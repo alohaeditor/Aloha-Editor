@@ -1,1 +1,4 @@
-GENTICS_Aloha_base = '/Aloha/';
+if (typeof GENTICS_Aloha_base == 'undefined') {
+	GENTICS_Aloha_base = '/Aloha/';
+}
+

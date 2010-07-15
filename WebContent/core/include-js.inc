@@ -1,4 +1,7 @@
-GENTICS_Aloha_base = '/Aloha/';
+if (typeof GENTICS_Aloha_base == 'undefined') {
+	GENTICS_Aloha_base = '/Aloha/';
+}
+
 document.write('<script type="text/javascript" src="/Aloha/deps/jquery-1.4.2.js"></script>');
 document.write('<script type="text/javascript" src="/Aloha/deps/jquery.json-2.2.min.js"></script>');
 document.write('<script type="text/javascript" src="/Aloha/deps/jquery.getUrlParam.js"></script>');
