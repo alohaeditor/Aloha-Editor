@@ -1,0 +1,16 @@
+restcall.savepage = Save page
+restcall.savepage.error = An error occurred while saving the page!
+button.language = Language
+button.page=Page
+button.preview=Preview
+button.edit=Edit
+button.livepreview=Live Preview
+button.properties=Properties
+button.objectproperties=Object Properties
+button.timemanagement=Timemanagement
+button.cancel=Cancel
+button.quit=Quit
+button.save=Save
+button.publish=Publish
+button.publishat=Publish at...
+insert_tag=Insert tag

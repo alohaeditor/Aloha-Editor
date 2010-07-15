@@ -1,0 +1,5 @@
+(function(){
+	var base = GENTICS.Aloha.autobase;
+	if (typeof GENTICS_Aloha_base != 'undefined') {
+			base = GENTICS_Aloha_base;
+	}

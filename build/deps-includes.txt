@@ -1,0 +1,14 @@
+deps/jquery-1.4.2.js
+deps/jquery.json-2.2.min.js
+deps/jquery.getUrlParam.js
+deps/jquery.cookie.js
+deps/extjs/ext-jquery-adapter-debug.js
+deps/extjs/ext-foundation-debug.js
+deps/extjs/cmp-foundation-debug.js
+deps/extjs/ext-dd-debug.js
+deps/extjs/window-debug.js
+deps/extjs/pkg-buttons-debug.js
+deps/extjs/pkg-tabs-debug.js
+deps/extjs/pkg-tips-debug.js
+deps/extjs/pkg-toolbars-debug.js
+deps/extjs/pkg-menu-debug.js
