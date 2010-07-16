@@ -133,6 +133,7 @@ GENTICS.Aloha.GCN.init = function () {
 	// Display welcome messages - simple alerts for testing
 	if (this.settings.welcomeMessages) {
 		jQuery.each(this.settings.welcomeMessages, function (index, message) {
+			// TODO migrate to Aloha messages
 			alert(message.message);
 		});
 	}
