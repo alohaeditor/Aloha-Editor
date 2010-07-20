@@ -179,9 +179,11 @@ GENTICS.Aloha.ListPlugin.transformList = function (ordered) {
 			// transform all li into p
 			var jqToTransform = jQuery(domToTransform);
 			jQuery.each(jqToTransform.children('li'), function(index, li) {
-				GENTICS.Aloha.Markup.transformDomObject(li, 'p');
+				var newPara = GENTICS.Aloha.Markup.transformDomObject(li, 'p');
+				// if any lists are in the paragraph, move the to after the paragraph
+				newPara.after(newPara.children('ol,ul'));
 			});
-			
+
 			// unwrap the li (remove the enclosing ul)
 			jqToTransform.children().unwrap();
 		}
@@ -217,7 +219,9 @@ GENTICS.Aloha.ListPlugin.transformList = function (ordered) {
 			// transform all li into p
 			var jqToTransform = jQuery(domToTransform);
 			jQuery.each(jqToTransform.children('li'), function(index, li) {
-				GENTICS.Aloha.Markup.transformDomObject(li, 'p');
+				var newPara = GENTICS.Aloha.Markup.transformDomObject(li, 'p');
+				// if any lists are in the paragraph, move the to after the paragraph
+				newPara.after(newPara.children('ol,ul'));
 			});
 			
 			// unwrap the li (remove the enclosing ul)
@@ -275,21 +279,25 @@ GENTICS.Aloha.ListPlugin.transformList = function (ordered) {
 GENTICS.Aloha.ListPlugin.indentList = function () {
 	var listItem = this.getNearestSelectedListItem();
 	if (listItem) {
-		var jqItemBefore = jQuery(listItem).prev('ul,ol,li');
+		var jqItemBefore = jQuery(listItem).prev('li');
+
+		// when we are in the first li of a list, there is no indenting
+		if (jqItemBefore.length == 0) {
+			// but we handled the TAB keystroke
+			return false;
+		}
 		var jqOldList = jQuery(listItem).parent();
 
 		// get the also selected siblings of the dom object
 		var selectedSiblings = GENTICS.Aloha.Selection.rangeObject.getSelectedSiblings(listItem);
 
+		
 		// create the new list element by cloning the selected list element's parent
 		var jqNewList = jQuery(listItem).parent().clone(false).empty();
 		jqNewList.append(listItem);
 
-		if (jqItemBefore.length > 0) {
-			jqItemBefore.after(jqNewList);
-		} else {
-			jqOldList.prepend(jqNewList);
-		}
+		// we found a list item before the first selected one, so append the new list to it
+		jqItemBefore.append(jqNewList);
 
 		// check for multiple selected items
 		if (selectedSiblings) {
@@ -320,7 +328,12 @@ GENTICS.Aloha.ListPlugin.outdentList = function () {
 		var jqListItem = jQuery(listItem);
 		var jqList = jqListItem.parent();
 
-		var jqParentList = jqList.parent();
+		// get the parent list
+		var jqParentList = jqList.parents('ul,ol');
+
+		// check whether the inner list is directly inserted into a li element
+		var wrappingLi = jqList.parent('li');
+
 		if (jqParentList.length > 0
 				&& GENTICS.Utils.NodeInfo.isListElement(jqParentList.get(0))) {
 			// the list is nested into another list
@@ -328,30 +341,45 @@ GENTICS.Aloha.ListPlugin.outdentList = function () {
 			// get the also selected siblings of the dom object
 			var selectedSiblings = GENTICS.Aloha.Selection.rangeObject.getSelectedSiblings(listItem);
 
-			// check whether there are li's before the first selected
-			if (jqListItem.prevAll('ul,ol,li').length > 0) {
-				// there are li's before the selected, so insert a clone of this
-				// list just before it, and move all elements before the
-				// selection into it
-				var jqNewPrevList = jqList.clone(false).empty();
-				jqNewPrevList.append(Array.prototype.reverse.call(jqListItem.prevAll()));
-				jqList.before(jqNewPrevList);
+			// check for multiple selected items
+			if (selectedSiblings && selectedSiblings.length > 0) {
+				var lastSelected = jQuery(selectedSiblings[selectedSiblings.length - 1]);
+			} else {
+				var lastSelected = jqListItem;
+			}
+
+			// check whether we found not selected li's after the selection
+			if (lastSelected.nextAll('li').length > 0) {
+				var jqNewPostList = jqList.clone(false).empty();
+				jqNewPostList.append(lastSelected.nextAll());
 			}
 
 			// now move all selected li's into the higher list
-			jqList.before(jqListItem);
+			if (wrappingLi.length > 0) {
+				if (typeof jqNewPostList !== 'undefined') {
+					jqListItem.append(jqNewPostList);
+				}
+				wrappingLi.after(jqListItem);
+			} else {
+				jqList.before(jqListItem);
+			}
 
 			// check for multiple selected items
-			if (selectedSiblings) {
-				for ( var i = 0; i < selectedSiblings.length; ++i) {
-					jqList.before(jQuery(selectedSiblings[i]));
+			if (selectedSiblings && selectedSiblings.length > 0) {
+				for ( var i = selectedSiblings.length - 1; i >= 0; --i) {
+					jqListItem.after(jQuery(selectedSiblings[i]));
 				}
 			}
 
 			// finally check whether there are elements left in the list
-			if (jqList.contents().length == 0) {
+			if (jqList.contents('li').length == 0) {
 				// list is completely empty, so remove it
 				jqList.remove();
+			}
+
+			// check whether the wrapping li is empty now
+			if (wrappingLi.length > 0 && wrappingLi.contents().length == 0) {
+				wrappingLi.remove();
 			}
 
 			// refresh the selection
