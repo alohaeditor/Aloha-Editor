@@ -39,6 +39,9 @@ GENTICS.Utils.Dom.split = function (range, limit, atEnd) {
 		limit = jQuery(document.body);
 	}
 	
+	// we may have to update the range if it is not collapsed and we are splitting at the start
+	var updateRange = (!range.isCollapsed() && !atEnd);
+	
 	// find the path up to the highest object that will be splitted
 	var path;
 	var parents = splitElement.parents().get();
@@ -76,8 +79,14 @@ GENTICS.Utils.Dom.split = function (range, limit, atEnd) {
 			
 			if (element.nodeType === 3) {
 				// text node
-				secondPart = element.data.substring(splitPosition, element.data.length);
-				element.data = element.data.substring(0, splitPosition);				
+				secondPart = document.createTextNode(element.data.substring(splitPosition, element.data.length));
+				element.data = element.data.substring(0, splitPosition);	
+				
+				// update the range if necessary
+				if (updateRange && range.endContainer === element) {
+					range.endContainer = secondPart;
+					range.endOffset -= splitPosition;
+				}
 			} else {
 				// other nodes
 				var newElement = jQuery(document.createElement(element.nodeName));
@@ -106,6 +115,17 @@ GENTICS.Utils.Dom.split = function (range, limit, atEnd) {
 			var next;
 			while (next = path[i+1].nextSibling) {
 				insertElement.append(next);
+			}
+			
+			// update the range if necessary
+			if (updateRange && range.endContainer === element) {
+				range.endContainer = newElement.get(0);
+				var prev = path[i+1];
+				var offset = 0;
+				while (prev = prev.previousSibling) {
+					offset++;
+				}
+				range.endOffset -= offset;
 			}
 		}
 	}
