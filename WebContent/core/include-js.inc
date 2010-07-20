@@ -21,6 +21,7 @@ document.write('<script type="text/javascript" src="/Aloha/utils/lang.js"></scri
 document.write('<script type="text/javascript" src="/Aloha/utils/range.js"></script>');
 document.write('<script type="text/javascript" src="/Aloha/utils/nodeinfo.js"></script>');
 document.write('<script type="text/javascript" src="/Aloha/utils/position.js"></script>');
+document.write('<script type="text/javascript" src="/Aloha/utils/dom.js"></script>');
 document.write('<script type="text/javascript" src="/Aloha/core/core.js"></script>');
 document.write('<script type="text/javascript" src="/Aloha/core/ui.js"></script>');
 document.write('<script type="text/javascript" src="/Aloha/core/css.js"></script>');
