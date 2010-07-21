@@ -3,6 +3,7 @@ utils/lang.js
 utils/range.js
 utils/nodeinfo.js
 utils/position.js
+utils/dom.js
 core/core.js
 core/ui.js
 core/css.js
