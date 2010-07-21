@@ -1,7 +1,9 @@
 Aloha Editor License
 ====================
 
-Aloha Editor is meant to be of benefit to both free open source as well as commercial software developers. It should be able to sustain continous development by itself and thus help all stakeholders profiting from the developments to come.Therefore we adopted a dual licensing approach for Aloha Editor.
+_(This information is copied directly from the website. Be aware that there is a LICENSE.txt file in the WebContent-directory.)_
+
+Aloha Editor is meant to be of benefit to both free open source as well as commercial software developers. It should be able to sustain continous development by itself and thus help all stakeholders profiting from the developments to come. Therefore we adopted a dual licensing approach for Aloha Editor.
 
 ##Opensource License.
 
