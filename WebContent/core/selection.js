@@ -30,8 +30,6 @@ jQuery.fn.textNodes = function(excludeBreaks, includeEmptyTextNodes) {
  * Selection object
  */
 GENTICS.Aloha.Selection = function() {
-	this.userSelection = new Object(); // Object containing the selection as returned by browser specific method
-	this.originalRangeObject = new Object(); // Range Object as created by browser
 	this.rangeObject = new Object(); // Pseudo Range Clone being cleaned up for better HTML wrapping support
 
 	// define basics first
@@ -1308,26 +1306,6 @@ GENTICS.Aloha.Selection.prototype.wrapMarkupAroundSelectionTree = function(selec
 };
 
 /**
- * recursively calculates the total length of all contained textnodes
- * @param domobj whose text length will be calculated
- * @return int length of the text
- */
-GENTICS.Aloha.Selection.prototype.getTextLength = function(domobj) {
-	if (domobj.jquery) {
-		domobj = domobj[0];
-	}
-	if (domobj.nodeType === 3) {
-		return domobj.length = 0;
-	} else{
-		var totalLength = 0;
-		jQuery(domobj).textNodes(true).each(function() {
-			totalLength += this.length;
-		});
-		return totalLength;
-	}
-};
-
-/**
  * takes a text node and return either the next recursive text node sibling or the previous
  * @param previousOrNext boolean, false for previous, true for next sibling
  * @param commonAncestorContainer dom object to be used as root for the sibling search
@@ -1533,24 +1511,6 @@ GENTICS.Aloha.Selection.prototype.canTag1WrapTag2 = function(t1, t2) {
 	var t1Array = this.tagHierarchy[ t1 ];
 	var returnVal = (t1Array.indexOf( t2 ) != -1) ? true : false;
 	return returnVal;	
-};
-
-
-/**
- * set the selection (the visible selected party of text) to a certain range
- * @param rangeObject Aloha rangeObject being source for the selection
- * @return void
- */
-GENTICS.Aloha.Selection.prototype.setSelection = function(rangeObject, allowCollapsed) {
-	rangeObject.select();
-};
-
-/**
- * Getter for this.commonAncestorContainer
- * @return obj Highest Common Root jQuery Object
- */
-GENTICS.Aloha.Selection.prototype.getCommonAncestorContainer = function() {  
-	return GENTICS.Aloha.Selection.commonAncestorContainer;
 };
 
 /**
