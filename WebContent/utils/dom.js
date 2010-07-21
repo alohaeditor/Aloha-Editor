@@ -69,31 +69,33 @@ GENTICS.Utils.Dom.split = function (range, limit, atEnd) {
 	var newDom;
 	var insertElement;
 	
-	// iterate over the path, create new dom nodes for every element and move the contents
-	// right of the split to the new element 
+	// iterate over the path, create new dom nodes for every element and move 
+	// the contents right of the split to the new element 
 	for(var i=0; i < path.length; i++) {
 		var element = path[i];
 		if (i === path.length -1) {
 			// last element in the path -> we have to split it
 			var secondPart;
 			
+			// split the last part into two parts
 			if (element.nodeType === 3) {
 				// text node
 				secondPart = document.createTextNode(element.data.substring(splitPosition, element.data.length));
 				element.data = element.data.substring(0, splitPosition);	
-				
-				// update the range if necessary
-				if (updateRange && range.endContainer === element) {
-					range.endContainer = secondPart;
-					range.endOffset -= splitPosition;
-				}
 			} else {
 				// other nodes
 				var newElement = jQuery(document.createElement(element.nodeName));
 				var children = $(element).contents();
-				secondPart = newElement.append(children.slice(splitPosition, children.length));
+				secondPart = newElement.append(children.slice(splitPosition, children.length)).get(0);
 			}
 			
+			// update the range if necessary
+			if (updateRange && range.endContainer === element) {
+				range.endContainer = secondPart;
+				range.endOffset -= splitPosition;
+			}
+			
+			// add the second part
 			if (insertElement) {
 				insertElement.prepend(secondPart);
 			} else {
