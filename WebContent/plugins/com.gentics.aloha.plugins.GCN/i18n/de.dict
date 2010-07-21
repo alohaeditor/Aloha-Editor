@@ -14,3 +14,7 @@ button.save=Speichern
 button.publish=Veröffentlichen
 button.publishat=Veröffentlichen am...
 insert_tag=Tag einfügen
+restcall.createtag.error = Beim Erstellen eines neuen Tags ist ein Fehler aufgetreten!
+restcall.reloadtag.error = Beim Aktualisieren eines Tags ist ein Fehler aufgetreten!
+confirm.editable.modified = Die Seite wurde geändert! Möchten Sie die Änderungen jetzt speichern?
+save.progress = Bitte warten, Änderungen werden gespeichert!

@@ -109,17 +109,12 @@ GENTICS.Aloha.GCN.init = function () {
 		// Restore the frame UI if the page is left
 		that.restoreFrameUI();
 
-		// check if something needs top be saved
-		for (var i in GENTICS.Aloha.editables) {
-			if (GENTICS.Aloha.editables[i].isModified) {
-				if (GENTICS.Aloha.editables[i].isModified()) {
-					// if an editable has been modified, the user can confirm if he wants the page to be saved
-					if (confirm(GENTICS.Aloha.i18n(GENTICS.Aloha, 'confirm_editable_modified'))) {
-						that.savePage({silent : true});
-						return false;
-					}
-					return;
-				}
+		// check if something needs to be saved
+		if (GENTICS.Aloha.isModified()) {
+			// if an editable has been modified, the user can confirm if he wants the page to be saved
+			if (confirm(GENTICS.Aloha.i18n(GENTICS.Aloha, 'confirm_editable_modified'))) {
+				that.savePage({silent : true, async : false});
+				return false;
 			}
 		}
 	});
@@ -133,8 +128,11 @@ GENTICS.Aloha.GCN.init = function () {
 	// Display welcome messages - simple alerts for testing
 	if (this.settings.welcomeMessages) {
 		jQuery.each(this.settings.welcomeMessages, function (index, message) {
-			// TODO migrate to Aloha messages
-			alert(message.message);
+			GENTICS.Aloha.showMessage(new GENTICS.Aloha.Message({
+				title : 'Gentics Content.Node',
+				text : message.message,
+				type : GENTICS.Aloha.Message.Type.ALERT
+			}));
 		});
 	}
 
@@ -669,8 +667,11 @@ GENTICS.Aloha.GCN.cancelEdit = function (callback) {
 		'description' : 'restcall.cancelpage',
 		'success' : callback,
 		'error' : function(data) {
-			// TODO this is just a dummy implementation of messages
-			alert(that.i18n('restcall.cancelpage.error'));
+			GENTICS.Aloha.showMessage(new GENTICS.Aloha.Message({
+				title : 'Gentics Content.Node',
+				text : that.i18n('restcall.cancelpage.error'),
+				type : GENTICS.Aloha.Message.Type.ALERT
+			}));
 		}
  	});
 };
@@ -746,11 +747,26 @@ GENTICS.Aloha.GCN.editPage = function () {
  * - onsuccess: handler function for saving success (defaults to just showing a message)
  * - onfailure: handler function for saving failure (defaults to just showing a message)
  * - silent: do not display any messages when saving was successful
+ * - async: whether the page saving shall be done asyncronously (true), which is the defaults
  */
 GENTICS.Aloha.GCN.savePage = function (data) {
 	var that = this;
 	if (typeof data == 'undefined') {
 		data = {};
+	}
+
+	if (typeof data.async == 'undefined') {
+		data.async = true;
+	}
+
+	// if the saving is done synchronously, we show a progress dialog
+	if (!data.async) {
+		var saveProgress = new GENTICS.Aloha.Message({
+			title : 'Gentics Content.Node',
+			text : GENTICS.Aloha.i18n(that, 'save.progress'),
+			type : GENTICS.Aloha.Message.Type.WAIT
+		});
+		GENTICS.Aloha.showMessage(saveProgress);
 	}
 
 	// construct the save request object, first with the meta information
@@ -801,8 +817,11 @@ GENTICS.Aloha.GCN.savePage = function (data) {
 	var onfailure = data ? data.onfailure : undefined;
 	if (typeof onfailure != 'function') {
 		onfailure = function(data) {
-			// TODO this is just a dummy implementation of messages
-			alert(that.i18n('restcall.savepage.error'));
+			GENTICS.Aloha.showMessage(new GENTICS.Aloha.Message({
+				title : 'Gentics Content.Node',
+				text : that.i18n('restcall.savepage.error'),
+				type : GENTICS.Aloha.Message.Type.ALERT
+			}));
 		};
 	}
 
@@ -822,11 +841,19 @@ GENTICS.Aloha.GCN.savePage = function (data) {
 				}
 			}
 
+			// hide the progress message (if any)
+			if (typeof saveProgress != 'undefined') {
+				GENTICS.Aloha.hideMessage(saveProgress);
+			}
+
 			// do our generic onsuccess handling
 			if (showMessages && data.messages) {
-				// TODO this is just a dummy implementation of messages
 				jQuery.each(data.messages, function (index, message) {
-					alert(message.message);
+					GENTICS.Aloha.showMessage(new GENTICS.Aloha.Message({
+						title : 'Gentics Content.Node',
+						text : message.message,
+						type : GENTICS.Aloha.Message.Type.ALERT
+					}));
 				});
 			}
 
@@ -835,7 +862,17 @@ GENTICS.Aloha.GCN.savePage = function (data) {
 				onsuccess(data);
 			}
 		},
-		'error' : onfailure
+		'error' : function (data) {
+			// hide the progress message (if any)
+			if (typeof saveProgress != 'undefined') {
+				GENTICS.Aloha.hideMessage(saveProgress);
+			}
+
+			if (onfailure) {
+				onfailure(data);
+			}
+		},
+		'async' : data.async
  	});
 };
 
@@ -951,7 +988,7 @@ GENTICS.Aloha.GCN.performRESTRequest = function (data) {
 	}
 
 	// do the request asynchronously or not
-	if (data.async) {
+	if (typeof data.async != 'undefined') {
 		ajaxObject.async = data.async;
 	}
 
@@ -1000,18 +1037,49 @@ GENTICS.Aloha.GCN.createGCNURL = function (data) {
  */
 GENTICS.Aloha.GCN.openGCNURL = function (data) {
 	var url = this.createGCNURL(data);
-	
+	var popup = data.popup;
+
+	// TODO remove this? (we do not maximize right now)
 	if (this.isEditFrameMaximized()) {
 		this.normalizeEditFrame();
 	}
-	
-	if (GENTICS.Aloha.Log.isDebugEnabled()) {
-		this.log('debug', 'opening url: ' + url);
-	}
-	if (data.popup) {
-		window.open(url);
+
+	this.openURL(url, popup);
+};
+
+/**
+ * Open the given URL in the editor frame or a popup. Check for modifications first, and if found, save the page first
+ * @param url url to be opened
+ * @param popup true when the url shall be opened in a popup, false if not (default)
+ */
+GENTICS.Aloha.GCN.openURL = function (url, popup) {
+	// check whether something was changed, if yes
+	if (GENTICS.Aloha.isModified()) {
+		this.savePage({
+			'unlock' : false,
+			'onsuccess' : function () {
+				if (GENTICS.Aloha.Log.isDebugEnabled()) {
+					this.log('debug', 'opening url: ' + url);
+				}
+
+				if (popup) {
+					window.open(url);
+				} else {
+					document.location.href = url;
+				}
+			},
+			'silent' : true,
+			'async' : false
+		});
 	} else {
-		document.location.href = url;
+		if (GENTICS.Aloha.Log.isDebugEnabled()) {
+			this.log('debug', 'opening url: ' + url);
+		}
+		if (popup) {
+			window.open(url);
+		} else {
+			document.location.href = url;
+		}
 	}
 };
 
@@ -1042,38 +1110,23 @@ GENTICS.Aloha.GCN.openTagFill = function(tagid) {
 		}
 	});
 
-	// lock all tag icons
-	jQuery('button.GENTICS_editicon').attr('disabled', 'true');
-	
-	// open a blank tagfill window which will load the tagfill dialog after saving
-	var tagFillWindow = window.open('about:blank',
-			'nodeeditor', 'dependent=yes,status=yes,scrollbars=yes,width=870,height=550,resizable=yes');
-	
-	// save the page and open the tagfill popup afterwards
-	this.savePage({
-		'onsuccess' : function() {
-			// redirect tagfill window
-			if (tagFillWindow.document) {
-				tagFillWindow.document.location = editLink;
-			}
-			
-			// unlock all tag icons
-			jQuery('button.GENTICS_editicon').attr('disabled', '');
-		},
-		'onfailure' : function(data) {
-			// close the empty tagfill window
-			if (tagFillWindow.document) {
-				tagFillWindow.close();
-			}
-			
-			alert(that.i18n('restcall.savepage.error'));
-
-			// unlock all tag icons
-			jQuery('button.GENTICS_editicon').attr('disabled', '');
-		},
-		'unlock' : false,
-		'silent' : true
-	});
+	// check whether the page is modified
+	if (GENTICS.Aloha.isModified()) {
+		// save the page and open the tagfill popup afterwards
+		this.savePage({
+			'onsuccess' : function() {
+				// open the tagfill window
+				window.open(editLink,
+						'nodeeditor', 'dependent=yes,status=yes,scrollbars=yes,width=870,height=550,resizable=yes');
+			},
+			'unlock' : false,
+			'silent' : true,
+			'async' : false
+		});
+	} else {
+		window.open(editLink,
+				'nodeeditor', 'dependent=yes,status=yes,scrollbars=yes,width=870,height=550,resizable=yes');
+	}
 };
 
 /**
@@ -1105,8 +1158,11 @@ GENTICS.Aloha.GCN.createTag = function(constructId) {
 					that.handleBlock(data, true);
 				},
 				'error' : function () {
-					// TODO error message
-					alert('Error');
+					GENTICS.Aloha.showMessage(new GENTICS.Aloha.Message({
+						title : 'Gentics Content.Node',
+						text : GENTICS.Aloha.i18n(that, 'restcall.createtag.error'),
+						type : GENTICS.Aloha.Message.Type.ALERT
+					}));
 				}
 			});
 		}
@@ -1158,8 +1214,11 @@ GENTICS.Aloha.GCN.reloadBlock = function(tagid) {
 			that.handleBlock(data, false);
 		},
 		'error' : function () {
-			// TODO error message
-			alert('Error');
+			GENTICS.Aloha.showMessage(new GENTICS.Aloha.Message({
+				title : 'Gentics Content.Node',
+				text : GENTICS.Aloha.i18n(that, 'restcall.reloadtag.error'),
+				type : GENTICS.Aloha.Message.Type.ALERT
+			}));
 		}
 	});
 };
