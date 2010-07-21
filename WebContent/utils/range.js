@@ -618,3 +618,184 @@ GENTICS.Utils.RangeObject.prototype.correctRange = function() {
 		}
 	}
 };
+
+/**
+ * Get the range tree of this range
+ * @return RangeTree
+ */
+GENTICS.Utils.RangeObject.prototype.getRangeTree = function () {
+	if (this.rangeTree) {
+		// sometimes it's cached
+		return this.rangeTree;
+	}
+
+	this.inselection = false;
+	this.rangeTree = this.recursiveGetRangeTree(this.getCommonAncestorContainer());
+
+	return this.rangeTree;
+};
+
+/**
+ * Recursive inner function for generating the range tree.
+ * @param currentObject current DOM object for which the range tree shall be generated
+ * @return array of Tree objects for the children of the current DOM object
+ */
+GENTICS.Utils.RangeObject.prototype.recursiveGetRangeTree = function (currentObject) {
+	// get all direct children of the given object
+	var jQueryCurrentObject = jQuery(currentObject);
+	var childCount = 0;
+	var that = this;
+	var currentElements = new Array();
+
+	jQueryCurrentObject.contents().each(function(index) {
+		var type = 'none';
+		var startOffset = false;
+		var endOffset = false;
+		var collapsedFound = false;
+
+		// check for collapsed selections between nodes
+		if (that.isCollapsed() && currentObject === that.startContainer && that.startOffset == index) {
+			// insert an extra rangetree object for the collapsed range here
+			currentElements[childCount] = new GENTICS.Utils.RangeTree();
+			currentElements[childCount].type = 'collapsed';
+			currentElements[childCount].domobj = undefined;
+			that.inselection = false;
+			collapsedFound = true;
+			childCount++;
+		}
+
+		if (!that.inselection && !collapsedFound) {
+			// the start of the selection was not yet found, so look for it now
+			// check whether the start of the selection is found here
+
+			// check is dependent on the node type
+			switch(this.nodeType) {
+			case 3: // text node
+				if (this === that.startContainer) {
+					// the selection starts here
+					that.inselection = true;
+
+					// when the startoffset is > 0, the selection type is only partial
+					type = that.startOffset > 0 ? 'partial' : 'full';
+					startOffset = that.startOffset;
+					endOffset = this.length;
+				}
+				break;
+			case 1: // element node
+				if (this === that.startContainer && that.startOffset == 0) {
+					// the selection starts here
+					that.inselection = true;
+					type = 'full';
+				}
+				if (currentObject === that.startContainer && that.startOffset == index) {
+					// the selection starts here
+					that.inselection = true;
+					type = 'full';
+				}
+				break;
+			}
+		}
+
+		if (that.inselection && !collapsedFound) {
+			if (type == 'none') {
+				type = 'full';
+			}
+			// we already found the start of the selection, so look for the end of the selection now
+			// check whether the end of the selection is found here
+
+			switch(this.nodeType) {
+			case 3: // text node
+				if (this === that.endContainer) {
+					// the selection ends here
+					that.inselection = false;
+
+					// check for partial selection here
+					if (that.endOffset < this.length) {
+						type = 'partial';
+					}
+					if (startOffset === false) {
+						startOffset = 0;
+					}
+					endOffset = that.endOffset;
+				}
+				break;
+			case 1: // element node
+				if (this === that.endContainer && that.endOffset == 0) {
+					that.inselection = false;
+				}
+				break;
+			}
+			if (currentObject === that.endContainer && that.endOffset <= index) {
+				that.inselection = false;
+				type = 'none';
+			}
+		}
+
+		// create the current selection tree entry
+		currentElements[childCount] = new GENTICS.Utils.RangeTree();
+		currentElements[childCount].domobj = this;
+		currentElements[childCount].type = type;
+		if (type == 'partial') {
+			currentElements[childCount].startOffset = startOffset;
+			currentElements[childCount].endOffset = endOffset;
+		}
+
+		// now do the recursion step into the current object
+		currentElements[childCount].children = that.recursiveGetRangeTree(this);
+
+		// check whether a selection was found within the children
+		if (currentElements[childCount].children.length > 0) {
+			var noneFound = false;
+			var partialFound = false;
+			var fullFound = false;
+			for (var i = 0; i < currentElements[childCount].children.length; ++i) {
+				switch(currentElements[childCount].children[i].type) {
+				case 'none':
+					noneFound = true;
+					break;
+				case 'full':
+					fullFound = true;
+					break;
+				case 'partial':
+					partialFound = true;
+					break;
+				}
+			}
+
+			if (partialFound || (fullFound && noneFound)) {
+				// found at least one 'partial' DOM object in the children, or both 'full' and 'none', so this element is also 'partial' contained
+				currentElements[childCount].type = 'partial';
+			} else if (fullFound && !partialFound && !noneFound) {
+				// only found 'full' contained children, so this element is also 'full' contained
+				currentElements[childCount].type = 'full';
+			}
+		}
+
+		childCount++;
+	});
+
+	// extra check for collapsed selections at the end of the current element
+	if (this.isCollapsed()
+			&& currentObject === this.startContainer
+			&& this.startOffset == this.childNodes.length) {
+		currentElements[childCount] = new GENTICS.Utils.RangeTree();
+		currentElements[childCount].type = 'collapsed';
+		currentElements[childCount].domobj = undefined;
+	}
+
+	return currentElements;
+};
+
+/**
+ * Class definition of a RangeTree, which gives a tree view of the DOM objects included in this range
+ * Structure:
+ * +
+ * |-domobj: <reference to the DOM Object> (NOT jQuery)
+ * |-type: defines if this node is marked by user [none|partial|full|collapsed]
+ * |-children: recursive structure like this
+ */
+GENTICS.Utils.RangeTree = function() {
+	this.domobj = new Object();
+	this.contained;
+	this.children = new Array();
+};
