@@ -261,7 +261,7 @@ GENTICS.Aloha.prototype.initI18n = function() {
 	}
 
 	if (typeof this.settings.i18n.available == 'undefined' || !this.settings.i18n.available) {
-		this.settings.i18n.available = ['en', 'de'];
+		this.settings.i18n.available = ['en', 'de', 'fr', 'eo'];
 	}
 
 	if (typeof this.settings.i18n.current == 'undefined' || !this.settings.i18n.current) {

@@ -26,7 +26,7 @@ GENTICS.Aloha.TablePlugin.createLayer = undefined;
 /**
  * Configure the available languages
  */
-GENTICS.Aloha.TablePlugin.languages = ['en', 'de'];
+GENTICS.Aloha.TablePlugin.languages = ['en', 'de', 'fr', 'eo'];
 
 /**
  * An Array which holds all newly created tables contains DOM-Nodes of
