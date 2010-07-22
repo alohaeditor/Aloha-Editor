@@ -27,7 +27,10 @@ jQuery.fn.textNodes = function(excludeBreaks, includeEmptyTextNodes) {
 };
 
 /**
- * Selection object
+ * @namespace GENTICS.Aloha
+ * @class Selection
+ * This singleton class always represents the current user selection
+ * @singleton
  */
 GENTICS.Aloha.Selection = function() {
 	this.rangeObject = new Object(); // Pseudo Range Clone being cleaned up for better HTML wrapping support
@@ -118,11 +121,13 @@ GENTICS.Aloha.Selection = function() {
 
 /**
  * Class definition of a SelectionTree (relevant for all formatting / markup changes)
+ * TODO: remove this (was moved to range.js)
  * Structure:
  * +
  * |-domobj: <reference to the DOM Object> (NOT jQuery)
  * |-selection: defines if this node is marked by user [none|partial|full]
  * |-children: recursive structure like this
+ * @hide
  */
 GENTICS.Aloha.Selection.prototype.SelectionTree = function() {
 	this.domobj = new Object();
@@ -136,6 +141,7 @@ GENTICS.Aloha.Selection.prototype.SelectionTree = function() {
  * Method is always called on selection change
  * @param objectClicked Object that triggered the selectionChange event
  * @return true when rangeObject was modified, false otherwise
+ * @hide
  */
 GENTICS.Aloha.Selection.prototype.onChange = function(objectClicked, event) {
 	if (this.updateSelectionTimeout) {
@@ -153,10 +159,11 @@ GENTICS.Aloha.Selection.prototype.onChange = function(objectClicked, event) {
  * Method is always called on selection change
  * @param event jQuery browser event object
  * @return true when rangeObject was modified, false otherwise
+ * @hide
  */
 GENTICS.Aloha.Selection.prototype.updateSelection = function(event) {
 	// get the rangeObject
-	var rangeObject = this.rangeObject = new GENTICS.Aloha.Selection.RangeObject(true);
+	var rangeObject = this.rangeObject = new GENTICS.Aloha.Selection.SelectionRange(true);
 
 	// find the CAC (Common Ancestor Container) and update the selection Tree
 	rangeObject.update();
@@ -180,9 +187,11 @@ GENTICS.Aloha.Selection.prototype.updateSelection = function(event) {
  * |-domobj: <reference to the DOM Object> (NOT jQuery)
  * |-selection: defines if this node is marked by user [none|partial|full]
  * |-children: recursive structure like this ("x.." because it's then shown last in DOM Browsers...)
+ * TODO: remove this (was moved to range.js)
  * 
  * @param rangeObject "Aloha clean" range object including a commonAncestorContainer
  * @return obj selection
+ * @hide
  */
 GENTICS.Aloha.Selection.prototype.getSelectionTree = function(rangeObject) {
 	if (!rangeObject) { // if called without any parameters, the method acts as getter for this.selectionTree
@@ -196,7 +205,7 @@ GENTICS.Aloha.Selection.prototype.getSelectionTree = function(rangeObject) {
 	this.inselection = false;
 
 	// before getting the selection tree, we do a cleanup
-	if (this.doCleanup({'mergetext' : true}, rangeObject.commonAncestorContainer)) {
+	if (GENTICS.Utils.Dom.doCleanup({'mergetext' : true}, rangeObject)) {
 		this.rangeObject.update();
 		this.rangeObject.select();
 	}
@@ -206,9 +215,11 @@ GENTICS.Aloha.Selection.prototype.getSelectionTree = function(rangeObject) {
 
 /**
  * Recursive inner function for generating the selection tree.
+ * TODO: remove this (was moved to range.js)
  * @param rangeObject range object
  * @param currentObject current DOM object for which the selection tree shall be generated
  * @return array of SelectionTree objects for the children of the current DOM object
+ * @hide
  */
 GENTICS.Aloha.Selection.prototype.recursiveGetSelectionTree = function (rangeObject, currentObject) {
 	// get all direct children of the given object
@@ -357,227 +368,12 @@ GENTICS.Aloha.Selection.prototype.recursiveGetSelectionTree = function (rangeObj
 };
 
 /**
- * Constructor for a range object.
- * Optionally you can pass in a range object that's properties will be assigned to the new range object.
- * 
- * @param rangeObject A range object thats properties will be assigned to the new range object. 
- */
-GENTICS.Aloha.Selection.prototype.RangeObject = function(rangeObject) {
-	// Call the super constructor
-	GENTICS.Utils.RangeObject.apply(this, arguments);
-	
-	/**
-	 * DOM object of the common ancestor from startContainer and endContainer
-	 */
-	this.commonAncestorContainer;
-
-	/**
-	 * The selection tree
-	 */
-	this.selectionTree;
-
-	/**
-	 * Array of DOM objects effective for the start container and inside the
-	 * editable part (inside the limit object). relevant for the button status
-	 */
-	this.markupEffectiveAtStart = [];
-
-	/**
-	 * Array of DOM objects effective for the start container, which lies
-	 * outside of the editable portion (starting with the limit object)
-	 */
-	this.unmodifiableMarkupAtStart = [];
-
-	/**
-	 * DOM object being the limit for all markup relevant activities
-	 */
-	this.limitObject;
-		
-	/**
-	 * DOM object being split when enter key gets hit
-	 */
-	this.splitObject;
-	
-	// If a range object was passed in we apply the values to the new range object
-	if (rangeObject) {
-		if (rangeObject.commonAncestorContainer) {
-			this.commonAncestorContainer = rangeObject.commonAncestorContainer;
-		}
-		if (rangeObject.selectionTree) {
-			this.selectionTree = rangeObject.selectionTree;
-		}
-		if (rangeObject.limitObject) {
-			this.limitObject = rangeObject.limitObject;
-		}
-		if (rangeObject.markupEffectiveAtStart) {
-			this.markupEffectiveAtStart = rangeObject.markupEffectiveAtStart;			
-		}
-		if (rangeObject.unmodifiableMarkupAtStart) {
-			this.unmodifiableMarkupAtStart = rangeObject.unmodifiableMarkupAtStart;
-		}
-		if (rangeObject.splitObject) {
-			this.splitObject = rangeObject.splitObject;			
-		}
-	}
-};
-
-// Inherit all methods and properties from GENTICS.Utils.RangeObject
-GENTICS.Aloha.Selection.prototype.RangeObject.prototype = new GENTICS.Utils.RangeObject();
-
-/**
- * Method to test if a range object is valid
- * @return true if valid, false otherwise
- */
-GENTICS.Aloha.Selection.prototype.RangeObject.prototype.select = function() {
-	// Call Utils' select()
-	GENTICS.Utils.RangeObject.prototype.select.apply(this, arguments);
-
-	// update the selection
-	GENTICS.Aloha.Selection.updateSelection();
-};
-
-/**
- * Method to update a range object internally
- * @param commonAncestorContainer (DOM Object); optional Parameter; if set, the parameter 
- * will be used instead of the automatically calculated CAC
- * @return void
- */
-GENTICS.Aloha.Selection.prototype.RangeObject.prototype.update = function(commonAncestorContainer) {
-	this.updatelimitObject();
-	this.updateMarkupEffectiveAtStart();
-	this.updateCommonAncestorContainer(commonAncestorContainer);
-
-	// reset the selectiontree (must be recalculated)
-	this.selectionTree = undefined;
-};
-
-/**
- * Get the selection tree for this range
- * @return selection tree
- */
-GENTICS.Aloha.Selection.prototype.RangeObject.prototype.getSelectionTree = function () {
-	// if not yet calculated, do this now
-	if (!this.selectionTree) {
-		this.selectionTree = GENTICS.Aloha.Selection.getSelectionTree(this);
-	}
-
-	return this.selectionTree;
-};
-
-/**
- * Get an array of domobj (in dom tree order) of siblings of the given domobj, which are contained in the selection
- * @param domobj dom object to start with
- * @return array of siblings of the given domobj, which are also selected
- */
-GENTICS.Aloha.Selection.prototype.RangeObject.prototype.getSelectedSiblings = function (domobj) {
-	var selectionTree = this.getSelectionTree();
-
-	return this.recursionGetSelectedSiblings(domobj, selectionTree);
-};
-
-/**
- * Recursive method to find the selected siblings of the given domobj (which should be selected as well)
- * @param domobj dom object for which the selected siblings shall be found
- * @param selectionTree current level of the selection tree
- * @return array of selected siblings of dom objects or false if none found
- */
-GENTICS.Aloha.Selection.prototype.RangeObject.prototype.recursionGetSelectedSiblings = function (domobj, selectionTree) {
-	var selectedSiblings = false;
-	var foundObj = false;
-
-	for (var i = 0; i < selectionTree.length; ++i) {
-		if (selectionTree[i].domobj === domobj) {
-			foundObj = true;
-			selectedSiblings = [];
-		} else if (!foundObj && selectionTree[i].children) {
-			// do the recursion
-			selectedSiblings = this.recursionGetSelectedSiblings(domobj, selectionTree[i].children);
-			if (selectedSiblings !== false) {
-				break;
-			}
-		} else if (foundObj && selectionTree[i].domobj && selectionTree[i].selection != 'collapsed' && selectionTree[i].selection != 'none') {
-			selectedSiblings.push(selectionTree[i].domobj);
-		} else if (foundObj && selectionTree[i].selection == 'none') {
-			break;
-		}
-	}
-
-	return selectedSiblings;
-};
-
-/**
- * Method updates member var markupEffectiveAtStart and splitObject, which is relevant primarily for button status and enter key behaviour
- * @return void
- */
-GENTICS.Aloha.Selection.prototype.RangeObject.prototype.updateMarkupEffectiveAtStart = function() {
-	// reset the current markup
-	this.markupEffectiveAtStart = [];
-	this.unmodifiableMarkupAtStart = [];
-
-	var parents = this.getStartContainerParents();
-	var limitFound = false;
-	for (var i = 0; i < parents.length; i++) {
-		var el = parents[i];
-		if (!limitFound && (el !== this.limitObject)) {
-			this.markupEffectiveAtStart[ i ] = el;
-			if (!splitObjectWasSet && GENTICS.Utils.NodeInfo.isSplitObject(el)) {
-				var splitObjectWasSet = true;
-				this.splitObject = el;
-			}
-		} else {
-			limitFound = true;
-			this.unmodifiableMarkupAtStart.push(el);
-		}
-	}
-	if (!splitObjectWasSet) {
-		this.splitObject = false;
-	}
-	return;
-};
-
-/**
- * Method updates member var markupEffectiveAtStart, which is relevant primarily for button status
- * @return void
- */
-GENTICS.Aloha.Selection.prototype.RangeObject.prototype.updatelimitObject = function() {
-	if (GENTICS.Aloha.editables && GENTICS.Aloha.editables.length > 0) {
-		var parents = jQuery(this.startContainer).parents();
-		var editables = GENTICS.Aloha.editables;
-		for (var i = 0; i < parents.length; i++) {
-			var el = parents[i];
-			for (var j = 0; j < editables.length; j++) {
-				var editable = editables[j].obj[0];
-				if (el === editable) {
-					this.limitObject = el;
-					return true;
-				}
-			}
-		}
-	}
-	this.limitObject = document.body;
-	return true;
-};
-
-/**
- * string representation of the range object
- * @param	verbose	set to true for verbose output
- * @return string representation of the range object
- */
-GENTICS.Aloha.Selection.prototype.RangeObject.prototype.toString = function(verbose) {
-	if (!verbose) {
-		return 'GENTICS.Aloha.Selection.RangeObject';
-	}
-	return 'GENTICS.Aloha.Selection.RangeObject {start [' + this.startContainer.nodeValue + '] offset ' 
-		+ this.startOffset + ', end [' + this.endContainer.nodeValue + '] offset ' + this.endOffset + '}';
-};
-
-/**
- * getter for GENTICS.Aloha.Selection.rangeObject
- * @api
- * @return obj Range object
+ * Get the currently selected range
+ * @return {GENTICS.Aloha.Selection.SelectionRange} currently selected range
+ * @method
  */
 GENTICS.Aloha.Selection.prototype.getRangeObject = function() {
-	return this.rangeObject; // without parameter this method acts as getter for this.rangeObject
+	return this.rangeObject;
 };
 
 /**
@@ -588,6 +384,7 @@ GENTICS.Aloha.Selection.prototype.getRangeObject = function() {
  * @param tagComparator method, which is used to compare the dom object and the jQuery markup object. the method must accept 2 parameters, the first is the domobj, the second is the jquery object. if no method is specified, the method this.standardTextLevelSemanticsComparator is used
  * @param limitObject dom object which limits the search are within the dom. normally this will be the active Editable
  * @return true, if the markup is effective on the range objects start or end node
+ * @hide
  */
 GENTICS.Aloha.Selection.prototype.isRangeObjectWithinMarkup = function(rangeObject, startOrEnd, markupObject, tagComparator, limitObject) {
 	domObj = !startOrEnd?rangeObject.startContainer:rangeObject.endContainer;
@@ -633,6 +430,7 @@ GENTICS.Aloha.Selection.prototype.isRangeObjectWithinMarkup = function(rangeObje
  * @param domobj domobject to compare with markup
  * @param markupObject jQuery object of the markup to compare with domobj
  * @return true if objects are equal and false if not
+ * @hide
  */
 GENTICS.Aloha.Selection.prototype.standardSectionsAndGroupingContentComparator = function(domobj, markupObject) {
 	if  (domobj.nodeType === 1) {
@@ -651,6 +449,7 @@ GENTICS.Aloha.Selection.prototype.standardSectionsAndGroupingContentComparator =
  * @param domobj domobject to compare with markup
  * @param markupObject jQuery object of the markup to compare with domobj
  * @return true if objects are equal and false if not
+ * @hide
  */
 GENTICS.Aloha.Selection.prototype.standardTextLevelSemanticsComparator = function(domobj, markupObject) {
 	// only element nodes can be compared
@@ -675,6 +474,7 @@ GENTICS.Aloha.Selection.prototype.standardTextLevelSemanticsComparator = functio
  * @param domobj domobject to compare with markup
  * @param markupObject jQuery object of the markup to compare with domobj
  * @return true if objects are equal and false if not
+ * @hide
  */
 GENTICS.Aloha.Selection.prototype.standardAttributesComparator = function(domobj, markupObject) {
 	if (domobj.attributes && domobj.attributes.length && domobj.attributes.length > 0) {
@@ -721,6 +521,7 @@ GENTICS.Aloha.Selection.prototype.standardAttributesComparator = function(domobj
  * @param markupObject jQuery object of the markup to be applied (e.g. created with obj = jQuery('<b></b>'); )
  * @param tagComparator method, which is used to compare the dom object and the jQuery markup object. the method must accept 2 parameters, the first is the domobj, the second is the jquery object. if no method is specified, the method this.standardTextLevelSemanticsComparator is used
  * @return void; TODO: should return true if the markup applied successfully and false if not
+ * @hide
  */
 GENTICS.Aloha.Selection.prototype.changeMarkup = function(rangeObject, markupObject, tagComparator) {
 	var tagName = markupObject[0].tagName.toLowerCase();
@@ -731,7 +532,7 @@ GENTICS.Aloha.Selection.prototype.changeMarkup = function(rangeObject, markupObj
 		var backupRangeObject = rangeObject;
 		
 		// create a new range object to not modify the orginal
-		rangeObject = new this.RangeObject(rangeObject);
+		rangeObject = new this.SelectionRange(rangeObject);
 		
 		// either select the active Editable as new commonAncestorContainer (CAC) or use the body
 		if (GENTICS.Aloha.activeEditable) {
@@ -801,7 +602,7 @@ GENTICS.Aloha.Selection.prototype.changeMarkup = function(rangeObject, markupObj
 		GENTICS.Aloha.Log.info(this, 'non-markup 2 markup OR with next2markup');
 		// move end of rangeObject to end of relevant markups
 		if (relevantMarkupObjectBeforeSelection && relevantMarkupObjectAfterSelection) {
-			var extendedRangeObject = new GENTICS.Aloha.Selection.RangeObject(rangeObject);
+			var extendedRangeObject = new GENTICS.Aloha.Selection.SelectionRange(rangeObject);
 			extendedRangeObject.startContainer = jQuery(relevantMarkupObjectBeforeSelection[ relevantMarkupObjectBeforeSelection.length-1 ]).textNodes()[0];
 			extendedRangeObject.startOffset = 0;
 			extendedRangeObject.endContainer = jQuery(relevantMarkupObjectAfterSelection[ relevantMarkupObjectAfterSelection.length-1 ]).textNodes().last()[0];
@@ -815,7 +616,7 @@ GENTICS.Aloha.Selection.prototype.changeMarkup = function(rangeObject, markupObj
 			GENTICS.Aloha.Log.info(this, 'extending previous markup');
 
 		} else if (relevantMarkupObjectBeforeSelection && !relevantMarkupObjectAfterSelection && relevantMarkupObjectsAtSelectionEnd) {
-			var extendedRangeObject = new GENTICS.Aloha.Selection.RangeObject(rangeObject);
+			var extendedRangeObject = new GENTICS.Aloha.Selection.SelectionRange(rangeObject);
 			extendedRangeObject.startContainer = jQuery(relevantMarkupObjectBeforeSelection[ relevantMarkupObjectBeforeSelection.length-1 ]).textNodes()[0];
 			extendedRangeObject.startOffset = 0;
 			extendedRangeObject.endContainer = jQuery(relevantMarkupObjectsAtSelectionEnd[ relevantMarkupObjectsAtSelectionEnd.length-1 ]).textNodes().last()[0];
@@ -861,6 +662,7 @@ GENTICS.Aloha.Selection.prototype.changeMarkup = function(rangeObject, markupObj
  * @param relevantMarkupObjectsAtSelectionEnd JS Array of dom objects, which are parents to the rangeObject.endContainer
  * @param rangeObj Aloha rangeObject
  * @return true, if rangeObjects and markup objects are identical, false otherwise
+ * @hide
  */
 GENTICS.Aloha.Selection.prototype.areMarkupObjectsAsLongAsRangeObject = function(relevantMarkupObjectsAtSelectionStart, relevantMarkupObjectsAtSelectionEnd, rangeObject) {
 	if (rangeObject.startOffset !== 0) {
@@ -889,6 +691,7 @@ GENTICS.Aloha.Selection.prototype.areMarkupObjectsAsLongAsRangeObject = function
  * @param rangeObj Aloha rangeObject
  * @param tagComparator method, which is used to compare the dom object and the jQuery markup object. the method must accept 2 parameters, the first is the domobj, the second is the jquery object. if no method is specified, the method this.standardTextLevelSemanticsComparator is used
  * @return true (always, since no "false" case is currently known...but might be added)
+ * @hide
  */
 GENTICS.Aloha.Selection.prototype.splitRelevantMarkupObject = function(relevantMarkupObjectsAtSelectionStart, relevantMarkupObjectsAtSelectionEnd, rangeObject, tagComparator) {
 	// mark them to be deleted
@@ -918,6 +721,7 @@ GENTICS.Aloha.Selection.prototype.splitRelevantMarkupObject = function(relevantM
  * @param relevantMarkupObjectsAtSelectionStart JS Array of dom objects
  * @param relevantMarkupObjectsAtSelectionEnd JS Array of dom objects
  * @return dom object closest to the root or false
+ * @hide
  */
 GENTICS.Aloha.Selection.prototype.intersectRelevantMarkupObjects = function(relevantMarkupObjectsAtSelectionStart, relevantMarkupObjectsAtSelectionEnd) {
 	var intersection = false;
@@ -943,6 +747,7 @@ GENTICS.Aloha.Selection.prototype.intersectRelevantMarkupObjects = function(rele
  * @param startOrEnd boolean; defines, if the existing markups should be extended forwards or backwards (is propably redundant and could be found out by comparing start or end container with the markup array dom objects)
  * @param tagComparator method, which is used to compare the dom object and the jQuery markup object. the method must accept 2 parameters, the first is the domobj, the second is the jquery object. if no method is specified, the method this.standardTextLevelSemanticsComparator is used
  * @return true
+ * @hide
  */
 GENTICS.Aloha.Selection.prototype.extendExistingMarkupWithSelection = function(relevantMarkupObjects, rangeObject, startOrEnd, tagComparator) {
 	if (!startOrEnd) { // = Start
@@ -955,7 +760,7 @@ GENTICS.Aloha.Selection.prototype.extendExistingMarkupWithSelection = function(r
 	}	
 	var objects = [];
 	for(var i = 0; i<relevantMarkupObjects.length; i++){
-		objects[i] = new this.RangeObject();
+		objects[i] = new this.SelectionRange();
 		el = relevantMarkupObjects[i];
 		if (extendMarkupsAtEnd && !extendMarkupsAtStart) {
 			objects[i].startContainer = rangeObject.startContainer; // jQuery(el).contents()[0];
@@ -984,6 +789,7 @@ GENTICS.Aloha.Selection.prototype.extendExistingMarkupWithSelection = function(r
  * @param domobj domobject to be cloned, cleaned and emptied
  * @param tagComparator method, which is used to compare the dom object and the jQuery markup object. the method must accept 2 parameters, the first is the domobj, the second is the jquery object. if no method is specified, the method this.standardTextLevelSemanticsComparator is used
  * @return jQuery wrapper object to be passed to e.g. this.applyMarkup(...)
+ * @hide
  */
 GENTICS.Aloha.Selection.prototype.getClonedMarkup4Wrapping = function(domobj) {
 	var wrapper = jQuery(domobj).clone().removeClass('preparedForRemoval').empty();
@@ -999,6 +805,7 @@ GENTICS.Aloha.Selection.prototype.getClonedMarkup4Wrapping = function(domobj) {
  * @param startOrEnd boolean; defines, if the existing markups should be reduced at the beginning of the tag or at the end (is propably redundant and could be found out by comparing start or end container with the markup array dom objects)
  * @param tagComparator method, which is used to compare the dom object and the jQuery markup object. the method must accept 2 parameters, the first is the domobj, the second is the jquery object. if no method is specified, the method this.standardTextLevelSemanticsComparator is used
  * @return true
+ * @hide
  */
 GENTICS.Aloha.Selection.prototype.insertCroppedMarkups = function(relevantMarkupObjects, rangeObject, startOrEnd, tagComparator) {
 	if (!startOrEnd) { // = Start
@@ -1011,7 +818,7 @@ GENTICS.Aloha.Selection.prototype.insertCroppedMarkups = function(relevantMarkup
 	}	
 	var objects = [];
 	for(var i = 0; i<relevantMarkupObjects.length; i++){
-		objects[i] = new this.RangeObject();
+		objects[i] = new this.SelectionRange();
 		var el = relevantMarkupObjects[i];
 		if (cropMarkupsAtEnd && !cropMarkupsAtStart) {
 			var textNodes = jQuery(el).textNodes(true);
@@ -1050,16 +857,16 @@ GENTICS.Aloha.Selection.prototype.insertCroppedMarkups = function(relevantMarkup
 
 /**
  * apply a certain markup to the current selection
- * @api
  * @param markupObject jQuery object of the markup to be applied (e.g. created with obj = jQuery('<b></b>'); )
  * @return void
+ * @hide
  */
 GENTICS.Aloha.Selection.prototype.changeMarkupOnSelection = function(markupObject) {
 	// change the markup
 	this.changeMarkup(this.getRangeObject(), markupObject, this.getStandardTagComparator(markupObject));
 
 	// merge text nodes
-	this.doCleanup({'mergetext' : true});
+	GENTICS.Utils.Dom.doCleanup({'mergetext' : true}, this.rangeObject);
 	// update the range and select it
 	this.rangeObject.update();
 	this.rangeObject.select();
@@ -1073,6 +880,7 @@ GENTICS.Aloha.Selection.prototype.changeMarkupOnSelection = function(markupObjec
  * @param tagComparator method, which is used to compare the dom object and the jQuery markup object. the method must accept 2 parameters, the first is the domobj, the second is the jquery object. if no method is specified, the method this.standardTextLevelSemanticsComparator is used
  * @param options JS object, with the following boolean properties: setRangeObject2NewMarkup, setRangeObject2NextSibling, setRangeObject2PreviousSibling
  * @return void
+ * @hide
  */
 GENTICS.Aloha.Selection.prototype.applyMarkup = function(selectionTree, rangeObject, markupObject, tagComparator, options) {
 	options = options ? options : new Object();
@@ -1100,6 +908,7 @@ GENTICS.Aloha.Selection.prototype.applyMarkup = function(selectionTree, rangeObj
  * returns the type of the given markup (trying to match HTML5)
  * @param markupObject jQuery object of the markup to be applied (e.g. created with obj = jQuery('<b></b>'); )
  * @return string name of the markup type
+ * @hide
  */
 GENTICS.Aloha.Selection.prototype.getMarkupType = function(markupObject) {
 	var nn = jQuery(markupObject)[0].nodeName.toLowerCase();
@@ -1116,6 +925,7 @@ GENTICS.Aloha.Selection.prototype.getMarkupType = function(markupObject) {
  * returns the standard tag comparator for the given markup object
  * @param markupObject jQuery object of the markup to be applied (e.g. created with obj = jQuery('<b></b>'); )
  * @return function tagComparator method, which is used to compare the dom object and the jQuery markup object. the method must accept 2 parameters, the first is the domobj, the second is the jquery object. if no method is specified, the method this.standardTextLevelSemanticsComparator is used
+ * @hide
  */
 GENTICS.Aloha.Selection.prototype.getStandardTagComparator = function(markupObject) {
 	var that = this;
@@ -1144,6 +954,7 @@ GENTICS.Aloha.Selection.prototype.getStandardTagComparator = function(markupObje
  * @param markupObject jQuery object of the markup to be applied (e.g. created with obj = jQuery('<b></b>'); )
  * @param tagComparator method, which is used to compare the dom object and the jQuery markup object. the method must accept 2 parameters, the first is the domobj, the second is the jquery object. if no method is specified, the method this.standardTextLevelSemanticsComparator is used
  * @return void
+ * @hide
  */
 GENTICS.Aloha.Selection.prototype.prepareForRemoval = function(selectionTree, markupObject, tagComparator) {
 	var that = this;
@@ -1179,6 +990,7 @@ GENTICS.Aloha.Selection.prototype.prepareForRemoval = function(selectionTree, ma
  * @param tagComparator method, which is used to compare the dom object and the jQuery markup object. the method must accept 2 parameters, the first is the domobj, the second is the jquery object. if no method is specified, the method this.standardTextLevelSemanticsComparator is used
  * @param options JS object, with the following boolean properties: setRangeObject2NewMarkup, setRangeObject2NextSibling, setRangeObject2PreviousSibling
  * @return void
+ * @hide
  */
 GENTICS.Aloha.Selection.prototype.wrapMarkupAroundSelectionTree = function(selectionTree, rangeObject, markupObject, tagComparator, options) {
 	// first let's find out if theoretically the whole selection can be wrapped with one tag and save it for later use
@@ -1305,6 +1117,7 @@ GENTICS.Aloha.Selection.prototype.wrapMarkupAroundSelectionTree = function(selec
  * @param commonAncestorContainer dom object to be used as root for the sibling search
  * @param currentTextNode dom object of the originating text node
  * @return dom object of the sibling text node
+ * @hide
  */
 GENTICS.Aloha.Selection.prototype.getTextNodeSibling = function(previousOrNext, commonAncestorContainer, currentTextNode) {
 	var textNodes = jQuery(commonAncestorContainer).textNodes(true);
@@ -1321,6 +1134,7 @@ GENTICS.Aloha.Selection.prototype.getTextNodeSibling = function(previousOrNext, 
  * @param selectionTree rangeObject selection tree
  * @param markupObject jQuery object of the markup to be applied (e.g. created with obj = jQuery('<b></b>'); )
  * @return JS array of wrappable selection trees
+ * @hide
  */
 GENTICS.Aloha.Selection.prototype.optimizeSelectionTree4Markup = function(selectionTree, markupObject, tagComparator) {
 	var groupMap = [];
@@ -1355,7 +1169,7 @@ GENTICS.Aloha.Selection.prototype.optimizeSelectionTree4Markup = function(select
 					groupMap[outerGroupIndex].elements = new Array();
 				}
 				if (markupObject.isReplacingElement) { //  && selectionTree[i].domobj.nodeType === 3	
-					/** we found the node to wrap for a replacing element. however there might 
+					/* we found the node to wrap for a replacing element. however there might 
 					 * be siblings which should be included as well
 					 * although they are actually not selected. example:
 					 * li
@@ -1438,6 +1252,7 @@ GENTICS.Aloha.Selection.prototype.optimizeSelectionTree4Markup = function(select
  * @param selectionTree rangeObject selection tree element (only one, not an array of)
  * @param markupObject lowercase string of the tag to be verified (e.g. "b")
  * @return true if the markup is allowed to wrap the selection tree element, false otherwise
+ * @hide
  */
 GENTICS.Aloha.Selection.prototype.isMarkupAllowedToStealSelectionTreeElement = function(selectionTreeElement, markupObject) {
 	if (!selectionTreeElement.domobj) {
@@ -1462,6 +1277,7 @@ GENTICS.Aloha.Selection.prototype.isMarkupAllowedToStealSelectionTreeElement = f
  * @param selectionTree rangeObject selection tree
  * @param markupObject lowercase string of the tag to be verified (e.g. "b")
  * @return true if selection can be applied as whole, false otherwise
+ * @hide
  */
 GENTICS.Aloha.Selection.prototype.canMarkupBeApplied2ElementAsWhole = function(selectionTree, markupObject) {
 	if (markupObject.jquery) htmlTag = markupObject[0].tagName;
@@ -1490,6 +1306,7 @@ GENTICS.Aloha.Selection.prototype.canMarkupBeApplied2ElementAsWhole = function(s
  * @param t1 string: tagname of outer tag to verify, e.g. "b"
  * @param t2 string: tagname of inner tag to verify, e.g. "b"
  * @return true if tag 1 can wrap tag 2, false otherwise
+ * @hide
  */
 GENTICS.Aloha.Selection.prototype.canTag1WrapTag2 = function(t1, t2) {
 	t1 = (t1 == '#text')?'textNode':t1.toLowerCase();
@@ -1508,130 +1325,13 @@ GENTICS.Aloha.Selection.prototype.canTag1WrapTag2 = function(t1, t2) {
 };
 
 /**
- * Cleanup the DOM, starting with the given startobject (or the common ancestor container)
- * Cleanup modes (given as parameters in 'cleanup'):
- * - 'mergetext' merges multiple successive text nodes starting at the children of the given node
- * - 'removeempty' removes empty element nodes
- * @param cleanup type of cleanup to be done
- * @param start start object, if not given, the commonancestorcontainer is used as startobject insted
- */
-GENTICS.Aloha.Selection.prototype.doCleanup = function(cleanup, start) {
-	var that = this;
-
-	if (typeof cleanup == 'undefined') {
-		cleanup = {'mergetext' : true, 'removeempty' : true};
-	}
-
-	if (typeof start == 'undefined') {
-		if (this.rangeObject) {
-			start = this.rangeObject.getCommonAncestorContainer();
-		}
-	}
-	// remember the previous text node here (successive text nodes will be merged into this)
-	var prevTextNode = false;
-	// check whether the range needed to be modified during merging
-	var modifiedRange = false;
-	// get the start object
-	var startObject = jQuery(start);
-
-	// iterate through all sub nodes
-	startObject.contents().each(function(index) {
-		// decide further actions by node type
-		switch(this.nodeType) {
-		// found a non-text node
-		case 1:
-			prevTextNode = false;
-			// do the recursion step here
-			modifiedRange |= that.doCleanup(cleanup, this);
-
-			// eventually remove empty elements
-			if (cleanup.removeempty && GENTICS.Utils.NodeInfo.isBlockLevelElement(this) && this.childNodes.length == 0) {
-				jQuery(this).remove();
-			}
-
-			break;
-		// found a text node
-		case 3:
-			// found a text node
-			if (prevTextNode && cleanup.mergetext) {
-				// the current text node will be merged into the last one, so
-				// check whether the selection starts or ends in the current
-				// text node
-				if (that.rangeObject.startContainer === this) {
-					// selection starts in the current text node
-
-					// update the start container to the last node
-					that.rangeObject.startContainer = prevTextNode;
-
-					// update the start offset
-					that.rangeObject.startOffset += prevTextNode.length;
-
-					// set the flag for range modification
-					modifiedRange = true;
-				}
-				
-				if (that.rangeObject.endContainer === this) {
-					// selection ends in the current text node
-
-					// update the end container to be the last node
-					that.rangeObject.endContainer = prevTextNode;
-
-					// update the end offset
-					that.rangeObject.endOffset += prevTextNode.length;
-
-					// set the flag for range modification
-					modifiedRange = true;
-				}
-
-				// now we check whether the selection starts or ends in the mother node after the current node
-				if (that.rangeObject.startContainer === startObject && that.rangeObject.startOffset > index) {
-					// there will be one less object, so reduce the startOffset by one
-					that.rangeObject.startOffset -= 1;
-				}
-				if (that.rangeObject.endContainer === startObject && that.rangeObject.endOffset > index) {
-					// there will be one less object, so reduce the endOffset by one
-					that.rangeObject.endOffset -= 1;
-				}
-
-				// now append the contents of the current text node into the previous
-				prevTextNode.data += this.data;
-
-				// remove this text node
-				jQuery(this).remove();
-			} else {
-				// remember it as the last text node
-				prevTextNode = this;
-			}
-			break;
-		}
-	});
-
-	// eventually remove the startnode itself
-	if (cleanup.removeempty
-			&& GENTICS.Utils.NodeInfo.isBlockLevelElement(start)
-			&& (!start.childNodes || start.childNodes.length == 0)) {
-		if (this.rangeObject.startContainer == start) {
-			this.rangeObject.startContainer = start.parentNode;
-			this.rangeObject.startOffset = GENTICS.Utils.NodeInfo.getIndexInParent(start);
-		}
-		if (this.rangeObject.endContainer == start) {
-			this.rangeObject.endContainer = start.parentNode;
-			this.rangeObject.endOffset = GENTICS.Utils.NodeInfo.getIndexInParent(start);
-		}
-		startObject.remove();
-		modifiedRange = true;
-	}
-
-	return modifiedRange;
-};
-
-/**
  * Check whether it is allowed to insert the given tag at the start of the
  * current selection. This method will check whether the markup effective for
  * the start and outside of the editable part (starting with the editable tag
  * itself) may wrap the given tag.
  * @param tagName {String} name of the tag which shall be inserted
  * @return true when it is allowed to insert that tag, false if not
+ * @hide
  */
 GENTICS.Aloha.Selection.prototype.mayInsertTag = function (tagName) {
 	if (typeof this.rangeObject.unmodifiableMarkupAtStart == 'object') {
@@ -1655,9 +1355,241 @@ GENTICS.Aloha.Selection.prototype.mayInsertTag = function (tagName) {
 /**
  * String representation
  * @return "GENTICS.Aloha.Selection"
+ * @hide
  */
 GENTICS.Aloha.Selection.prototype.toString = function() {  
 	return 'GENTICS.Aloha.Selection';
+};
+
+/**
+ * @namespace GENTICS.Aloha.Selection
+ * @class RangeObject
+ * Constructor for a range object.
+ * Optionally you can pass in a range object that's properties will be assigned to the new range object.
+ * @param rangeObject A range object thats properties will be assigned to the new range object. 
+ * @constructor
+ */
+GENTICS.Aloha.Selection.prototype.SelectionRange = function(rangeObject) {
+	// Call the super constructor
+	GENTICS.Utils.RangeObject.apply(this, arguments);
+	
+	/**
+	 * DOM object of the common ancestor from startContainer and endContainer
+	 */
+	this.commonAncestorContainer;
+
+	/**
+	 * The selection tree
+	 */
+	this.selectionTree;
+
+	/**
+	 * Array of DOM objects effective for the start container and inside the
+	 * editable part (inside the limit object). relevant for the button status
+	 */
+	this.markupEffectiveAtStart = [];
+
+	/**
+	 * Array of DOM objects effective for the start container, which lies
+	 * outside of the editable portion (starting with the limit object)
+	 */
+	this.unmodifiableMarkupAtStart = [];
+
+	/**
+	 * DOM object being the limit for all markup relevant activities
+	 */
+	this.limitObject;
+		
+	/**
+	 * DOM object being split when enter key gets hit
+	 */
+	this.splitObject;
+	
+	// If a range object was passed in we apply the values to the new range object
+	if (rangeObject) {
+		if (rangeObject.commonAncestorContainer) {
+			this.commonAncestorContainer = rangeObject.commonAncestorContainer;
+		}
+		if (rangeObject.selectionTree) {
+			this.selectionTree = rangeObject.selectionTree;
+		}
+		if (rangeObject.limitObject) {
+			this.limitObject = rangeObject.limitObject;
+		}
+		if (rangeObject.markupEffectiveAtStart) {
+			this.markupEffectiveAtStart = rangeObject.markupEffectiveAtStart;			
+		}
+		if (rangeObject.unmodifiableMarkupAtStart) {
+			this.unmodifiableMarkupAtStart = rangeObject.unmodifiableMarkupAtStart;
+		}
+		if (rangeObject.splitObject) {
+			this.splitObject = rangeObject.splitObject;			
+		}
+	}
+};
+
+// Inherit all methods and properties from GENTICS.Utils.RangeObject
+GENTICS.Aloha.Selection.prototype.SelectionRange.prototype = new GENTICS.Utils.RangeObject();
+
+/**
+ * Sets the visible selection in the Browser based on the range object.
+ * If the selection is collapsed, this will result in a blinking cursor, 
+ * otherwise in a text selection.
+ * @method
+ */
+GENTICS.Aloha.Selection.prototype.SelectionRange.prototype.select = function() {
+	// Call Utils' select()
+	GENTICS.Utils.RangeObject.prototype.select.apply(this, arguments);
+
+	// update the selection
+	GENTICS.Aloha.Selection.updateSelection();
+};
+
+/**
+ * Method to update a range object internally
+ * @param commonAncestorContainer (DOM Object); optional Parameter; if set, the parameter 
+ * will be used instead of the automatically calculated CAC
+ * @return void
+ * @hide
+ */
+GENTICS.Aloha.Selection.prototype.SelectionRange.prototype.update = function(commonAncestorContainer) {
+	this.updatelimitObject();
+	this.updateMarkupEffectiveAtStart();
+	this.updateCommonAncestorContainer(commonAncestorContainer);
+
+	// reset the selectiontree (must be recalculated)
+	this.selectionTree = undefined;
+};
+
+/**
+ * Get the selection tree for this range
+ * TODO: remove this (was moved to range.js)
+ * @return selection tree
+ * @hide
+ */
+GENTICS.Aloha.Selection.prototype.SelectionRange.prototype.getSelectionTree = function () {
+	// if not yet calculated, do this now
+	if (!this.selectionTree) {
+		this.selectionTree = GENTICS.Aloha.Selection.getSelectionTree(this);
+	}
+
+	return this.selectionTree;
+};
+
+/**
+ * TODO: move this to range.js
+ * Get an array of domobj (in dom tree order) of siblings of the given domobj, which are contained in the selection
+ * @param domobj dom object to start with
+ * @return array of siblings of the given domobj, which are also selected
+ * @hide 
+ */
+GENTICS.Aloha.Selection.prototype.SelectionRange.prototype.getSelectedSiblings = function (domobj) {
+	var selectionTree = this.getSelectionTree();
+
+	return this.recursionGetSelectedSiblings(domobj, selectionTree);
+};
+
+/**
+ * TODO: move this to range.js
+ * Recursive method to find the selected siblings of the given domobj (which should be selected as well)
+ * @param domobj dom object for which the selected siblings shall be found
+ * @param selectionTree current level of the selection tree
+ * @return array of selected siblings of dom objects or false if none found
+ * @hide
+ */
+GENTICS.Aloha.Selection.prototype.SelectionRange.prototype.recursionGetSelectedSiblings = function (domobj, selectionTree) {
+	var selectedSiblings = false;
+	var foundObj = false;
+
+	for (var i = 0; i < selectionTree.length; ++i) {
+		if (selectionTree[i].domobj === domobj) {
+			foundObj = true;
+			selectedSiblings = [];
+		} else if (!foundObj && selectionTree[i].children) {
+			// do the recursion
+			selectedSiblings = this.recursionGetSelectedSiblings(domobj, selectionTree[i].children);
+			if (selectedSiblings !== false) {
+				break;
+			}
+		} else if (foundObj && selectionTree[i].domobj && selectionTree[i].selection != 'collapsed' && selectionTree[i].selection != 'none') {
+			selectedSiblings.push(selectionTree[i].domobj);
+		} else if (foundObj && selectionTree[i].selection == 'none') {
+			break;
+		}
+	}
+
+	return selectedSiblings;
+};
+
+/**
+ * TODO: move this to range.js
+ * Method updates member var markupEffectiveAtStart and splitObject, which is relevant primarily for button status and enter key behaviour
+ * @return void
+ * @hide
+ */
+GENTICS.Aloha.Selection.prototype.SelectionRange.prototype.updateMarkupEffectiveAtStart = function() {
+	// reset the current markup
+	this.markupEffectiveAtStart = [];
+	this.unmodifiableMarkupAtStart = [];
+
+	var parents = this.getStartContainerParents();
+	var limitFound = false;
+	for (var i = 0; i < parents.length; i++) {
+		var el = parents[i];
+		if (!limitFound && (el !== this.limitObject)) {
+			this.markupEffectiveAtStart[ i ] = el;
+			if (!splitObjectWasSet && GENTICS.Utils.Dom.isSplitObject(el)) {
+				var splitObjectWasSet = true;
+				this.splitObject = el;
+			}
+		} else {
+			limitFound = true;
+			this.unmodifiableMarkupAtStart.push(el);
+		}
+	}
+	if (!splitObjectWasSet) {
+		this.splitObject = false;
+	}
+	return;
+};
+
+/**
+ * TODO: remove this
+ * Method updates member var markupEffectiveAtStart, which is relevant primarily for button status
+ * @return void
+ * @hide
+ */
+GENTICS.Aloha.Selection.prototype.SelectionRange.prototype.updatelimitObject = function() {
+	if (GENTICS.Aloha.editables && GENTICS.Aloha.editables.length > 0) {
+		var parents = jQuery(this.startContainer).parents();
+		var editables = GENTICS.Aloha.editables;
+		for (var i = 0; i < parents.length; i++) {
+			var el = parents[i];
+			for (var j = 0; j < editables.length; j++) {
+				var editable = editables[j].obj[0];
+				if (el === editable) {
+					this.limitObject = el;
+					return true;
+				}
+			}
+		}
+	}
+	this.limitObject = document.body;
+	return true;
+};
+
+/**
+ * string representation of the range object
+ * @param	verbose	set to true for verbose output
+ * @return string representation of the range object
+ * @hide
+ */
+GENTICS.Aloha.Selection.prototype.SelectionRange.prototype.toString = function(verbose) {
+	if (!verbose) {
+		return 'GENTICS.Aloha.Selection.SelectionRange';
+	}
+	return 'GENTICS.Aloha.Selection.SelectionRange {start [' + this.startContainer.nodeValue + '] offset ' 
+		+ this.startOffset + ', end [' + this.endContainer.nodeValue + '] offset ' + this.endOffset + '}';
 };
 
 GENTICS.Aloha.Selection = new GENTICS.Aloha.Selection();

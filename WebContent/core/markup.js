@@ -69,7 +69,7 @@ GENTICS.Aloha.Markup.prototype.preProcessKeyStrokes = function(event) {
 
 /** 
  * method handling shiftEnter
- * @param GENTICS.Aloha.Selection.RangeObject of the current selection
+ * @param GENTICS.Aloha.Selection.SelectionRange of the current selection
  * @return void
  */
 GENTICS.Aloha.Markup.prototype.processShiftEnter = function(rangeObject) {  
@@ -78,14 +78,14 @@ GENTICS.Aloha.Markup.prototype.processShiftEnter = function(rangeObject) {
 
 /** 
  * method handling Enter
- * @param GENTICS.Aloha.Selection.RangeObject of the current selection
+ * @param GENTICS.Aloha.Selection.SelectionRange of the current selection
  * @return void
  */
 GENTICS.Aloha.Markup.prototype.processEnter = function(rangeObject) { 
 	if (rangeObject.splitObject) {
 		// now comes a very evil hack for ie, when the enter is pressed in a text node in an li element, we just append an empty text node
 		if (jQuery.browser.msie
-				&& GENTICS.Utils.NodeInfo
+				&& GENTICS.Utils.Dom
 						.isListElement(rangeObject.splitObject)) {
 			jQuery(rangeObject.splitObject).append(
 					jQuery(document.createTextNode('')));
@@ -109,7 +109,7 @@ GENTICS.Aloha.Markup.prototype.insertHTMLCode = function (html) {
 
 /** 
  * insert an HTML Break <br /> into current selection
- * @param GENTICS.Aloha.Selection.RangeObject of the current selection
+ * @param GENTICS.Aloha.Selection.SelectionRange of the current selection
  * @return void
  */
 GENTICS.Aloha.Markup.prototype.insertHTMLBreak = function(selectionTree, rangeObject, inBetweenMarkup) {
@@ -134,7 +134,7 @@ GENTICS.Aloha.Markup.prototype.insertHTMLBreak = function(selectionTree, rangeOb
 
 				// now set the range
 				rangeObject.startContainer = rangeObject.endContainer = inBetweenMarkup[0].parentNode;
-				rangeObject.startOffset = rangeObject.endOffset = GENTICS.Utils.NodeInfo.getIndexInParent(inBetweenMarkup[0]) + 1;
+				rangeObject.startOffset = rangeObject.endOffset = GENTICS.Utils.Dom.getIndexInParent(inBetweenMarkup[0]) + 1;
 				rangeObject.correctRange();
 			} else if (el.domobj && el.domobj.nodeType === 3) { // textNode
 				// when the textnode is immediately followed by a blocklevel element (like p, h1, ...) we need to add an additional br in between
@@ -159,7 +159,7 @@ GENTICS.Aloha.Markup.prototype.insertHTMLBreak = function(selectionTree, rangeOb
 							checkObj = false;
 						}
 						// found a blocklevel element, we are done
-						if (GENTICS.Utils.NodeInfo.isBlockLevelElement(checkObj)) {
+						if (GENTICS.Utils.Dom.isBlockLevelElement(checkObj)) {
 							break;
 						}
 					}
@@ -289,13 +289,13 @@ GENTICS.Aloha.Markup.prototype.removeSelectedMarkup = function () {
 		return;
 	}
 
-	var newRange = new GENTICS.Aloha.Selection.RangeObject();
+	var newRange = new GENTICS.Aloha.Selection.SelectionRange();
 	// remove the selection
 	this.removeFromSelectionTree(rangeObject.getSelectionTree(), newRange);
 
 	// do a cleanup now (starting with the commonancestorcontainer)
 	newRange.update();
-	GENTICS.Aloha.Selection.doCleanup();
+	GENTICS.Utils.Dom.doCleanup({'merge' : true, 'removeempty' : true}, GENTICS.Aloha.Selection.rangeObject);
 	GENTICS.Aloha.Selection.rangeObject = newRange;
 
 	// need to set the collapsed selection now
@@ -356,13 +356,13 @@ GENTICS.Aloha.Markup.prototype.removeFromSelectionTree = function (selectionTree
 		} else if (el.selection == 'full') {
 			// eventually set the new range (if not done before)
 			if (!newRange.startContainer) {
-				var adjacentTextNode = GENTICS.Utils.NodeInfo.searchAdjacentTextNode(el.domobj.parentNode, GENTICS.Utils.NodeInfo.getIndexInParent(el.domobj) + 1, false, {'blocklevel' : false});
+				var adjacentTextNode = GENTICS.Utils.Dom.searchAdjacentTextNode(el.domobj.parentNode, GENTICS.Utils.Dom.getIndexInParent(el.domobj) + 1, false, {'blocklevel' : false});
 				if (adjacentTextNode) {
 					newRange.startContainer = newRange.endContainer = adjacentTextNode;
 					newRange.startOffset = newRange.endOffset = 0;
 				} else {
 					newRange.startContainer = newRange.endContainer = el.domobj.parentNode;
-					newRange.startOffset = newRange.endOffset = GENTICS.Utils.NodeInfo.getIndexInParent(el.domobj) + 1;
+					newRange.startOffset = newRange.endOffset = GENTICS.Utils.Dom.getIndexInParent(el.domobj) + 1;
 				}
 			}
 
@@ -374,7 +374,7 @@ GENTICS.Aloha.Markup.prototype.removeFromSelectionTree = function (selectionTree
 
 /** 
  * split passed rangeObject without or with optional markup
- * @param GENTICS.Aloha.Selection.RangeObject of the current selection
+ * @param GENTICS.Aloha.Selection.SelectionRange of the current selection
  * @param markup object (jQuery) to insert in between the split elements
  * @return void
  */
@@ -428,7 +428,7 @@ GENTICS.Aloha.Markup.prototype.splitRangeObject = function(rangeObject, markup) 
 		rangeObject.endOffset = 0;
 	} else {
 		rangeObject.startContainer = rangeObject.endContainer = followUpContainer.parent().get(0);
-		rangeObject.startOffset = rangeObject.endOffset = GENTICS.Utils.NodeInfo.getIndexInParent(followUpContainer.get(0));
+		rangeObject.startOffset = rangeObject.endOffset = GENTICS.Utils.Dom.getIndexInParent(followUpContainer.get(0));
 	}
 	
 	// finally update the range object again
@@ -441,7 +441,7 @@ GENTICS.Aloha.Markup.prototype.splitRangeObject = function(rangeObject, markup) 
 /** 
  * method to get the object after which the followUpContainer can be inserted during splitup
  * this is a helper method, not needed anywhere else
- * @param rangeObject GENTICS.Aloha.Selection.RangeObject of the current selection
+ * @param rangeObject GENTICS.Aloha.Selection.SelectionRange of the current selection
  * @param followUpContainer optional jQuery object; if provided the rangeObject will be split and the second part will be insert inside of this object
  * @return object after which the followUpContainer can be inserted
  */
@@ -470,7 +470,7 @@ GENTICS.Aloha.Markup.prototype.getInsertAfterObject = function(rangeObject, foll
  * @return fillUpElement HTML Code
  */
 GENTICS.Aloha.Markup.prototype.getFillUpElement = function(splitObject) {
-	if (GENTICS.Utils.NodeInfo.isListElement(splitObject) && jQuery.browser.msie) {
+	if (GENTICS.Utils.Dom.isListElement(splitObject) && jQuery.browser.msie) {
 //		return jQuery(document.createTextNode(''));
 		return false;
 	} else {
@@ -502,7 +502,7 @@ GENTICS.Aloha.Markup.prototype.removeElementContentWhitespaceObj = function(domA
 /** 
  * recursive method to parallelly walk through two dom subtrees, leave elements before startContainer in first subtree and move rest to other
  * @param selectionTree tree to iterate over as contained in rangeObject. must be passed separately to allow recursion in the selection tree, but not in the rangeObject
- * @param rangeObject GENTICS.Aloha.Selection.RangeObject of the current selection
+ * @param rangeObject GENTICS.Aloha.Selection.SelectionRange of the current selection
  * @param followUpContainer optional jQuery object; if provided the rangeObject will be split and the second part will be insert inside of this object
  * @param inBetweenMarkup jQuery object to be inserted between the two split parts. will be either a <br> (if no followUpContainer is passed) OR e.g. a table, which must be inserted between the splitobject AND the follow up
  * @return void
@@ -536,7 +536,7 @@ GENTICS.Aloha.Markup.prototype.splitRangeObjectHelper = function(selectionTree, 
 				// otherwise the followUpContainer is invalid and takes up no vertical space
 				if (followUpContainer.textNodes().length > 1) {
 					mirrorLevel.eq(i).remove();
-				} else if (GENTICS.Utils.NodeInfo.isSplitObject(followUpContainer[0])) {
+				} else if (GENTICS.Utils.Dom.isSplitObject(followUpContainer[0])) {
 					if (fillUpElement) {
 						followUpContainer.html(fillUpElement); // for your zoological german knowhow: ephemera = Eintagsfliege
 					} else {
@@ -561,7 +561,7 @@ GENTICS.Aloha.Markup.prototype.splitRangeObjectHelper = function(selectionTree, 
 						} else { // if the "empty" textnode is the last node left in the splitObject, replace it with a ephemera break
 							// if the parent is a blocklevel element, we insert the fillup element
 							var parent = jQuery(el.domobj).parent();
-							if (GENTICS.Utils.NodeInfo.isSplitObject(parent[0])) {
+							if (GENTICS.Utils.Dom.isSplitObject(parent[0])) {
 								if (fillUpElement) {
 									parent.html(fillUpElement);
 								} else {
@@ -578,7 +578,7 @@ GENTICS.Aloha.Markup.prototype.splitRangeObjectHelper = function(selectionTree, 
 						} else if (mirrorLevel.length > 1) {
 							// if not, check if the followUpContainer contains more than one node, because if yes, the "empty" textnode can be removed
 							mirrorLevel.eq( (i) ).remove();
-						} else if (GENTICS.Utils.NodeInfo.isBlockLevelElement(followUpContainer[0])) {
+						} else if (GENTICS.Utils.Dom.isBlockLevelElement(followUpContainer[0])) {
 							// if the "empty" textnode is the last node left in the followUpContainer (which is a blocklevel element), replace it with a ephemera break
 							if (fillUpElement) {
 								followUpContainer.html(fillUpElement);
@@ -616,10 +616,10 @@ GENTICS.Aloha.Markup.prototype.splitRangeObjectHelper = function(selectionTree, 
 	followUpContainer.find('.preparedForRemoval').remove();
 
 	// if splitObject / followUp are empty, place a fillUp inside
-	if (splitObject.contents().length === 0 && GENTICS.Utils.NodeInfo.isSplitObject(splitObject[0]) && fillUpElement) {
+	if (splitObject.contents().length === 0 && GENTICS.Utils.Dom.isSplitObject(splitObject[0]) && fillUpElement) {
 		splitObject.html(fillUpElement);
 	}
-	if (followUpContainer.contents().length === 0 && GENTICS.Utils.NodeInfo.isSplitObject(followUpContainer[0]) && fillUpElement) {
+	if (followUpContainer.contents().length === 0 && GENTICS.Utils.Dom.isSplitObject(followUpContainer[0]) && fillUpElement) {
 		followUpContainer.html(fillUpElement);
 	}
  };

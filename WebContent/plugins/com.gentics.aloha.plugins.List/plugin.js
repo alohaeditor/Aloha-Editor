@@ -135,7 +135,7 @@ GENTICS.Aloha.ListPlugin.getNearestSelectedListItem = function () {
 
 	for (var i = 0; i < rangeObject.markupEffectiveAtStart.length; i++) {
 		var effectiveMarkup = rangeObject.markupEffectiveAtStart[ i ];
-		if (GENTICS.Utils.NodeInfo.isListElement(effectiveMarkup)) {
+		if (GENTICS.Utils.Dom.isListElement(effectiveMarkup)) {
 			return effectiveMarkup;
 		}
 	}
@@ -169,7 +169,7 @@ GENTICS.Aloha.ListPlugin.transformList = function (ordered) {
 
 		var jqParentList = jqList.parent();
 		if (jqParentList.length > 0
-				&& GENTICS.Utils.NodeInfo.isListElement(jqParentList.get(0))) {
+				&& GENTICS.Utils.Dom.isListElement(jqParentList.get(0))) {
 			// when the list is nested into another, our list items will be
 			// added to the list items of the outer list
 			jqList.children().unwrap();
@@ -209,7 +209,7 @@ GENTICS.Aloha.ListPlugin.transformList = function (ordered) {
 
 		var jqParentList = jqList.parent();
 		if (jqParentList.length > 0
-				&& GENTICS.Utils.NodeInfo.isListElement(jqParentList.get(0))) {
+				&& GENTICS.Utils.Dom.isListElement(jqParentList.get(0))) {
 			// when the list is nested into another, our list items will be
 			// added to the list items of the outer list
 			jqList.children().unwrap();
@@ -243,7 +243,7 @@ GENTICS.Aloha.ListPlugin.transformList = function (ordered) {
 		if (selectedSiblings) {
 			var lastLi = false;
 			for (var i = 0; i < selectedSiblings.length; ++i) {
-				if (GENTICS.Utils.NodeInfo.isBlockLevelElement(selectedSiblings[i])) {
+				if (GENTICS.Utils.Dom.isBlockLevelElement(selectedSiblings[i])) {
 					if (lastLi) {
 						lastLi = false;
 					}
@@ -335,7 +335,7 @@ GENTICS.Aloha.ListPlugin.outdentList = function () {
 		var wrappingLi = jqList.parent('li');
 
 		if (jqParentList.length > 0
-				&& GENTICS.Utils.NodeInfo.isListElement(jqParentList.get(0))) {
+				&& GENTICS.Utils.Dom.isListElement(jqParentList.get(0))) {
 			// the list is nested into another list
 
 			// get the also selected siblings of the dom object

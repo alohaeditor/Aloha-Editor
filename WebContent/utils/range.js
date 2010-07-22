@@ -1,17 +1,9 @@
-/**
- * This software or sourcecode is provided as is without any expressed
- * or implied warranties and may not be copied, otherwise distributed
- * (especially forwarded to third parties), reproduced and combined with
- * other code without our express prior written consent. The software or
- * source code and the concepts it is based upon are to be kept confidential
- * towards third parties. The software or sourcecode may be used solely
- * for the purpose of evaluating and testing purposes for a time of one
- * month from the first submission of the software or source code. In case
- * no arrangements about further use can be reached, the software or 
- * sourcecode has to be deleted.
- * 
- * Copyright(C) 2010 Gentics Software GmbH
- */
+/*!
+* Aloha Editor
+* Author & Copyright (c) 2010 Gentics Software GmbH
+* aloha-sales@gentics.com
+* Licensed unter the terms of http://www.aloha-editor.com/license.html
+*/
 if (typeof GENTICS == 'undefined' || !GENTICS) {
 	var GENTICS = {};
 }
@@ -21,38 +13,48 @@ if (typeof GENTICS.Utils == 'undefined' || !GENTICS) {
 }
 
 /**
+ * @namespace GENTICS.Utils
+ * @class RangeObject
  * Represents a selection range in the browser that 
  * has some advanced features like selecting the range.
- * @param param if boolean true is passed, the range will be deducted from the current browser selection.
+ * @param {object} param if boolean true is passed, the range will be deducted from the current browser selection.
  * If another rangeObject is passed, it will be cloned.
  * If nothing is passed, the rangeObject will be empty.
- * @return RangeObject
- * @api
+ * @constructor
  */
 GENTICS.Utils.RangeObject = function(param) {
-	 /**
+	/**
 	 * DOM object of the start container of the selection.
 	 * This is always has to be a DOM text node.
+	 * @property startContainer
+	 * @type {DOMObject}
 	 */
 	this.startContainer;
 	
 	/**
 	 * Offset of the selection in the start container
+	 * @property startOffset
+	 * @type {Integer}
 	 */
 	this.startOffset;
 	
 	/**
 	 * DOM object of the end container of the selection.
 	 * This is always has to be a DOM text node.
+	 * @property endContainer
+	 * @type {DOMObject}
 	 */
 	this.endContainer;
 	
 	/**
 	 * Offset of the selection in the end container
+	 * @property endOffset
+	 * @type {Integer}
 	 */
 	this.endOffset;
 
 	/**
+	 * @hide
 	 * RangeTree cache for different root objects
 	 */
 	this.rangeTree = [];
@@ -82,6 +84,7 @@ GENTICS.Utils.RangeObject = function(param) {
  * @param message log message to output
  * @param obj optional JS object to output
  * @return void
+ * @hide
  */
 GENTICS.Utils.RangeObject.prototype.log = function(message, obj) {
 	if (GENTICS && GENTICS.Aloha && GENTICS.Aloha.Log) {
@@ -99,17 +102,19 @@ GENTICS.Utils.RangeObject.prototype.log = function(message, obj) {
 /**
  * Method to test if a range object is collapsed. 
  * A range is considered collapsed if either no endContainer exists or the endContainer/Offset equal startContainer/Offset
- * @return true if collapsed, false otherwise
- * @api
+ * @return {boolean} true if collapsed, false otherwise
+ * @method
  */
 GENTICS.Utils.RangeObject.prototype.isCollapsed = function() {
 	return (!this.endContainer || (this.startContainer === this.endContainer && this.startOffset === this.endOffset));
 };
 
 /**
- * Method to (re-)calculate the common ancestor container and to get it
- * @return dom object
- * @api
+ * Method to (re-)calculate the common ancestor container and to get it.
+ * The common ancestor container is the DOM Object which encloses the
+ * whole range and is nearest to the start and end container objects.
+ * @return {DOMObject} get the common ancestor container
+ * @method
  */
 GENTICS.Utils.RangeObject.prototype.getCommonAncestorContainer = function() {
 	if (this.commonAncestorContainer) {
@@ -127,7 +132,8 @@ GENTICS.Utils.RangeObject.prototype.getCommonAncestorContainer = function() {
 /**
  * Get the parent elements of the startcontainer. Note: when the startcontainer
  * is no text element, but a node, the node itself is returned as first element.
- * @return parent elements of the startcontainer as jQuery objects
+ * @return {jQuery} parent elements of the startcontainer as jQuery objects
+ * @method
  */
 GENTICS.Utils.RangeObject.prototype.getStartContainerParents = function() {
 	if (!this.startContainer) {
@@ -150,7 +156,8 @@ GENTICS.Utils.RangeObject.prototype.getStartContainerParents = function() {
 /**
  * Get the parent elements of the endcontainer. Note: when the endcontainer is
  * no text element, but a node, the node itself is returned as first element.
- * @return parent elements of the endcontainer as jQuery objects
+ * @return {jQuery} parent elements of the endcontainer as jQuery objects
+ * @method
  */
 GENTICS.Utils.RangeObject.prototype.getEndContainerParents = function() {
 	if (!this.endContainer) {
@@ -179,6 +186,7 @@ GENTICS.Utils.RangeObject.prototype.getEndContainerParents = function() {
  * @param commonAncestorContainer (DOM Object); optional Parameter; if set, the parameter 
  * will be used instead of the automatically calculated CAC
  * @return void
+ * @hide
  */
 GENTICS.Utils.RangeObject.prototype.updateCommonAncestorContainer = function(commonAncestorContainer) {
 	// this will be needed either right now for finding the CAC or later for the crossing index
@@ -213,6 +221,7 @@ GENTICS.Utils.RangeObject.prototype.updateCommonAncestorContainer = function(com
  * @param container container
  * @param offset offset
  * @return collapsed text range at that position
+ * @hide
  */
 GENTICS.Utils.RangeObject.prototype.getCollapsedIERange = function(container, offset) {
 	// create a text range
@@ -272,9 +281,7 @@ GENTICS.Utils.RangeObject.prototype.getCollapsedIERange = function(container, of
  * Sets the visible selection in the Browser based on the range object.
  * If the selection is collapsed, this will result in a blinking cursor, 
  * otherwise in a text selection.
- * 
- * @return void
- * @api
+ * @method
  */
 GENTICS.Utils.RangeObject.prototype.select = document.createRange === undefined ? function() { // first the IE version of this method
 	if (GENTICS.Aloha.Log.isDebugEnabled()) {
@@ -282,11 +289,11 @@ GENTICS.Utils.RangeObject.prototype.select = document.createRange === undefined 
 	}
 	// when the startcontainer is a textnode, which is followed by a blocklevel node (p, h1, ...), we need to add a <br> in between
 	if (this.startContainer.nodeType == 3
-			&& GENTICS.Utils.NodeInfo.isBlockLevelElement(this.startContainer.nextSibling)) {
+			&& GENTICS.Utils.Dom.isBlockLevelElement(this.startContainer.nextSibling)) {
 		jQuery(this.startContainer).after('<br/>');
 		// we eventually also need to update the offset of the end container
 		if (this.endContainer === this.startContainer.parentNode
-				&& GENTICS.Utils.NodeInfo.getIndexInParent(this.startContainer) < this.endOffset) {
+				&& GENTICS.Utils.Dom.getIndexInParent(this.startContainer) < this.endOffset) {
 			this.endOffset++;
 		}
 	}
@@ -331,6 +338,7 @@ GENTICS.Utils.RangeObject.prototype.select = document.createRange === undefined 
  * @param container container of the startpoint
  * @param offset offset of the startpoint in the container
  * @return object with 'element' (null if no element found) and 'characters'
+ * @hide
  */
 GENTICS.Utils.RangeObject.prototype.searchElementToLeft = function (container, offset) {
 	var checkElement = undefined;
@@ -362,6 +370,7 @@ GENTICS.Utils.RangeObject.prototype.searchElementToLeft = function (container, o
  * @param container container of the startpoint
  * @param offset offset of the startpoint in the container
  * @return object with 'element' (null if no element found) and 'characters'
+ * @hide
  */
 GENTICS.Utils.RangeObject.prototype.searchElementToRight = function (container, offset) {
 	var checkElement = undefined;
@@ -391,8 +400,9 @@ GENTICS.Utils.RangeObject.prototype.searchElementToRight = function (container, 
 
 /**
  * Method which updates the rangeObject including all extending properties like commonAncestorContainer etc...
- * TODO: is this method needed here? or should it contain the same code as GENTICS.Aloha.Selection.prototype.RangeObject.prototype.update?
+ * TODO: is this method needed here? or should it contain the same code as GENTICS.Aloha.Selection.prototype.SelectionRange.prototype.update?
  * @return void
+ * @hide
  */
 GENTICS.Utils.RangeObject.prototype.update = function(event) {
 	GENTICS.Utils.RangeObject.prototype.log('==========');
@@ -405,6 +415,7 @@ GENTICS.Utils.RangeObject.prototype.update = function(event) {
  * Initialize the current range object from the user selection of the browser.
  * @param event which calls the method
  * @return void
+ * @hide
  */
 GENTICS.Utils.RangeObject.prototype.initializeFromUserSelection = function(event) {
 	// definition of the needed helper function to find textNode
@@ -430,8 +441,6 @@ GENTICS.Utils.RangeObject.prototype.initializeFromUserSelection = function(event
 		}
 	};
 
-	/******************** HERE IT STARTS *******************************/
-	
 	// get Browser selection via IERange standardized window.getSelection()
 	var selection = window.getSelection();
 	if (!selection) {
@@ -460,6 +469,7 @@ GENTICS.Utils.RangeObject.prototype.initializeFromUserSelection = function(event
  * and end of the range in text nodes if possible and the end of the range never
  * at the beginning of an element or text node. Details of the algorithm can be
  * found in the code comments
+ * @method
  */
 GENTICS.Utils.RangeObject.prototype.correctRange = function() {
 	this.clearCaches();
@@ -481,14 +491,14 @@ GENTICS.Utils.RangeObject.prototype.correctRange = function() {
 
 			if (this.startOffset > 0 && this.startContainer.childNodes[this.startOffset - 1].nodeType == 1) {
 				// search for the next text node to the left
-				var adjacentTextNode = GENTICS.Utils.NodeInfo.searchAdjacentTextNode(this.startContainer, this.startOffset, true);
+				var adjacentTextNode = GENTICS.Utils.Dom.searchAdjacentTextNode(this.startContainer, this.startOffset, true);
 				if (adjacentTextNode) {
 					this.startContainer = this.endContainer = adjacentTextNode;
 					this.startOffset = this.endOffset = adjacentTextNode.data.length;
 					return;
 				}
 				// search for the next text node to the right
-				adjacentTextNode = GENTICS.Utils.NodeInfo.searchAdjacentTextNode(this.startContainer, this.startOffset, false);
+				adjacentTextNode = GENTICS.Utils.Dom.searchAdjacentTextNode(this.startContainer, this.startOffset, false);
 				if (adjacentTextNode) {
 					this.startContainer = this.endContainer = adjacentTextNode;
 					this.startOffset = this.endOffset = 0;
@@ -509,7 +519,7 @@ GENTICS.Utils.RangeObject.prototype.correctRange = function() {
 
 		// when the selection is in a text node at the start, look for an adjacent text node and if one found, move into that at the end
 		if (this.startContainer.nodeType == 3 && this.startOffset == 0) {
-			var adjacentTextNode = GENTICS.Utils.NodeInfo.searchAdjacentTextNode(this.startContainer.parentNode, GENTICS.Utils.NodeInfo.getIndexInParent(this.startContainer), true);
+			var adjacentTextNode = GENTICS.Utils.Dom.searchAdjacentTextNode(this.startContainer.parentNode, GENTICS.Utils.Dom.getIndexInParent(this.startContainer), true);
 			if (adjacentTextNode) {
 				this.startContainer = this.endContainer = adjacentTextNode;
 				this.startOffset = this.endOffset = adjacentTextNode.data.length;
@@ -549,8 +559,8 @@ GENTICS.Utils.RangeObject.prototype.correctRange = function() {
 		if (this.startContainer.nodeType == 3 && this.startOffset == this.startContainer.data.length) {
 			// check whether there is an adjacent text node to the right and if
 			// yes, move into it
-			var adjacentTextNode = GENTICS.Utils.NodeInfo
-					.searchAdjacentTextNode(this.startContainer.parentNode, GENTICS.Utils.NodeInfo
+			var adjacentTextNode = GENTICS.Utils.Dom
+					.searchAdjacentTextNode(this.startContainer.parentNode, GENTICS.Utils.Dom
 							.getIndexInParent(this.startContainer) + 1, false);
 			if (adjacentTextNode) {
 				this.startContainer = adjacentTextNode;
@@ -638,7 +648,7 @@ GENTICS.Utils.RangeObject.prototype.clearCaches = function () {
  * Get the range tree of this range.
  * The range tree will be cached for every root object. When the range itself is modified, the cache should be cleared by calling GENTICS.Utils.RangeObject.clearCaches
  * @param {DOMObject} root root object of the range tree, if non given, the common ancestor container of the start and end containers will be used
- * @return RangeTree for the given root object
+ * @return {RangeTree} array of RangeTree object for the given root object
  * @method
  */
 GENTICS.Utils.RangeObject.prototype.getRangeTree = function (root) {
@@ -661,6 +671,7 @@ GENTICS.Utils.RangeObject.prototype.getRangeTree = function (root) {
  * Recursive inner function for generating the range tree.
  * @param currentObject current DOM object for which the range tree shall be generated
  * @return array of Tree objects for the children of the current DOM object
+ * @hide
  */
 GENTICS.Utils.RangeObject.prototype.recursiveGetRangeTree = function (currentObject) {
 	// get all direct children of the given object
@@ -799,7 +810,7 @@ GENTICS.Utils.RangeObject.prototype.recursiveGetRangeTree = function (currentObj
 	// extra check for collapsed selections at the end of the current element
 	if (this.isCollapsed()
 			&& currentObject === this.startContainer
-			&& this.startOffset == this.childNodes.length) {
+			&& this.startOffset == currentObject.childNodes.length) {
 		currentElements[childCount] = new GENTICS.Utils.RangeTree();
 		currentElements[childCount].type = 'collapsed';
 		currentElements[childCount].domobj = undefined;
@@ -809,15 +820,42 @@ GENTICS.Utils.RangeObject.prototype.recursiveGetRangeTree = function (currentObj
 };
 
 /**
+ * @namespace GENTICS.Utils
+ * @class RangeTree
  * Class definition of a RangeTree, which gives a tree view of the DOM objects included in this range
  * Structure:
+ * <pre>
  * +
  * |-domobj: <reference to the DOM Object> (NOT jQuery)
  * |-type: defines if this node is marked by user [none|partial|full|collapsed]
  * |-children: recursive structure like this
+ * </pre>
  */
 GENTICS.Utils.RangeTree = function() {
+	/**
+	 * DOMObject, if the type is one of [none|partial|full], undefined if the type is [collapsed]
+	 * @property domobj
+	 * @type {DOMObject}
+	 */
 	this.domobj = new Object();
-	this.contained;
+
+	/**
+	 * type of the participation of the dom object in the range. Is one of:
+	 * <pre>
+	 * - none the DOMObject is outside of the range
+	 * - partial the DOMObject partially in the range
+	 * - full the DOMObject is completely in the range
+	 * - collapsed the current RangeTree element marks the position of a collapsed range between DOM nodes
+	 * </pre>
+	 * @property type
+	 * @type {String}
+	 */
+	this.type;
+
+	/**
+	 * Array of RangeTree objects which reflect the status of the child elements of the current DOMObject
+	 * @property children
+	 * @type {Array}
+	 */
 	this.children = new Array();
 };

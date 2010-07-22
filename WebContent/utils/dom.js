@@ -100,14 +100,42 @@ GENTICS.Utils.Dom.prototype.children = {
 };
 
 /**
- * Splits a DOM element at the given position up until the limit object, so that it is valid HTML again afterwards.
- * @method
+ * List of nodenames of blocklevel elements
+ * TODO: finish this list
+ * @hide
+ */
+GENTICS.Utils.Dom.prototype.blockLevelElements = {
+  'p' : true,
+  'h1' : true,
+  'h2' : true,
+  'h3' : true,
+  'h4' : true,
+  'h5' : true,
+  'h6' : true,
+  'blockquote' : true,
+  'div' : true,
+  'pre' : true
+};
+
+/**
+ * List of nodenames of list elements
+ * @hide
+ */
+GENTICS.Utils.Dom.prototype.listElements = {
+	'li' : true,
+	'ol' : true,
+	'ul' : true
+};
+
+/**
+ * Splits a DOM element at the given position up until the limiting object(s), so that it is valid HTML again afterwards.
  * @param {RangeObject} range Range object that indicates the position of the splitting.
  * 				This range will be updated, so that it represents the same range as before the split.
  * @param {jQuery} limit Limiting node(s) for the split. 
  * 				The limiting node will not be included in the split itself.
  * 				If no limiting object is set, the document body will be the limiting object.
  * @param {boolean} atEnd If set to true, the DOM will be splitted at the end of the range otherwise at the start.
+ * @method
  */
 GENTICS.Utils.Dom.prototype.split = function (range, limit, atEnd) {
 	var splitElement = jQuery(range.startContainer);
@@ -224,12 +252,12 @@ GENTICS.Utils.Dom.prototype.split = function (range, limit, atEnd) {
 /**
  * Check whether the HTML 5 specification allows direct nesting of the given DOM
  * objects.
- * @method
  * @param {object} outerDOMObject
  *            outer (nesting) DOM Object
  * @param {object} innerDOMObject
  *            inner (nested) DOM Object
  * @return {boolean} true when the nesting is allowed, false if not
+ * @method
  */
 GENTICS.Utils.Dom.prototype.allowsNesting = function (outerDOMObject, innerDOMObject) {
 	if (!outerDOMObject || !outerDOMObject.nodeName || !innerDOMObject
@@ -264,9 +292,9 @@ GENTICS.Utils.Dom.prototype.allowsNesting = function (outerDOMObject, innerDOMOb
 
 /**
  * Apply the given markup additively to the given range. The given rangeObject will be modified if necessary
+ * @param {GENTICS.Utils.RangeObject} rangeObject range to which the markup shall be added
+ * @param {jQuery} markup markup to be applied as jQuery object
  * @method
- * @param {object} rangeObject range as instance of GENTICS.Utils.RangeObject
- * @param {object} markup markup to be applied as jQuery object
  */
 GENTICS.Utils.Dom.prototype.addMarkup = function (rangeObject, markup) {
 	// split partially contained text nodes at the start and end of the range
@@ -319,11 +347,11 @@ GENTICS.Utils.Dom.prototype.recursiveAddMarkup = function (rangeTree, markup) {
 
 /**
  * Find the highest occurrence of a node with given nodename within the parents
- * of the start. When a limit object is given, the search stops there.
+ * of the start. When limit objects are given, the search stops there.
  * The limiting object is of the found type, it won't be considered
  * @param {DOMObject} start start object
  * @param {String} nodeName name of the node to search for (case-insensitive)
- * @param {jQuery} limit limit object (if none given, the search will stop when there are no more parents)
+ * @param {jQuery} limit Limiting node(s) as jQuery object (if none given, the search will stop when there are no more parents)
  * @return {DOMObject} the found DOM object or undefined
  * @method
  */
@@ -360,10 +388,10 @@ GENTICS.Utils.Dom.prototype.findHighestElement = function (start, nodeName, limi
 /**
  * Remove the given markup from the given range. The given rangeObject will be modified if necessary
  * TODO: add parameter deep/shallow
+ * @param {GENTICS.Utils.RangeObject} rangeObject range from which the markup shall be removed
+ * @param {jQuery} markup markup to be removed as jQuery object
+ * @param {jQuery} limit Limiting node(s) as jQuery object
  * @method
- * @param {object} rangeObject range as instance of GENTICS.Utils.RangeObject
- * @param {object} markup markup to be removed as jQuery object
- * @param {object} limit Limiting node(s) as jQuery object
  */
 GENTICS.Utils.Dom.prototype.removeMarkup = function (rangeObject, markup, limit) {
 	var nodeName = markup.get(0).nodeName;
@@ -440,13 +468,17 @@ GENTICS.Utils.Dom.prototype.recursiveRemoveMarkup = function (rangeTree, markup)
 /**
  * Cleanup the DOM, starting with the given startobject (or the common ancestor container of the given range)
  * Cleanup modes (given as properties in 'cleanup'):
- * - 'merge' merges multiple successive nodes of same type, if this is allowed, starting at the children of the given node
- * - 'removeempty' removes empty element nodes
+ * <pre>
+ * - merge: merges multiple successive nodes of same type, if this is allowed, starting at the children of the given node (defaults to false)
+ * - removeempty: removes empty element nodes (defaults to false)
+ * </pre>
+ * Example for calling this method:<br/>
+ * <code>GENTICS.Utils.Dom.doCleanup({merge:true,removeempty:false}, range)</code>
  * @param {object} cleanup type of cleanup to be done
- * @param {object} rangeObject range
- * @param {object} start start object, if not given, the commonancestorcontainer is used as startobject insted
+ * @param {GENTICS.Utils.RangeObject} rangeObject range which is eventually updated
+ * @param {DOMObject} start start object, if not given, the commonancestorcontainer is used as startobject insted
+ * @return {boolean} true when the range (startContainer/startOffset/endContainer/endOffset) was modified, false if not
  * @method
- * @return {boolean} true when the range was modified, false if not
  */
 GENTICS.Utils.Dom.prototype.doCleanup = function(cleanup, rangeObject, start) {
 	var that = this;
@@ -506,7 +538,7 @@ GENTICS.Utils.Dom.prototype.doCleanup = function(cleanup, rangeObject, start) {
 
 				// eventually remove empty elements
 				if (cleanup.removeempty) {
-					if (GENTICS.Utils.NodeInfo.isBlockLevelElement(this) && this.childNodes.length == 0) {
+					if (GENTICS.Utils.Dom.isBlockLevelElement(this) && this.childNodes.length == 0) {
 						jQuery(this).remove();
 						prevNode = false;
 					}
@@ -580,15 +612,15 @@ GENTICS.Utils.Dom.prototype.doCleanup = function(cleanup, rangeObject, start) {
 
 	// eventually remove the startnode itself
 	if (cleanup.removeempty
-			&& GENTICS.Utils.NodeInfo.isBlockLevelElement(start)
+			&& GENTICS.Utils.Dom.isBlockLevelElement(start)
 			&& (!start.childNodes || start.childNodes.length == 0)) {
 		if (rangeObject.startContainer == start) {
 			rangeObject.startContainer = start.parentNode;
-			rangeObject.startOffset = GENTICS.Utils.NodeInfo.getIndexInParent(start);
+			rangeObject.startOffset = GENTICS.Utils.Dom.getIndexInParent(start);
 		}
 		if (rangeObject.endContainer == start) {
 			rangeObject.endContainer = start.parentNode;
-			rangeObject.endOffset = GENTICS.Utils.NodeInfo.getIndexInParent(start);
+			rangeObject.endOffset = GENTICS.Utils.Dom.getIndexInParent(start);
 		}
 		startObject.remove();
 		modifiedRange = true;
@@ -599,6 +631,180 @@ GENTICS.Utils.Dom.prototype.doCleanup = function(cleanup, rangeObject, start) {
 	}
 
 	return modifiedRange;
+};
+
+/**
+ * Get the index of the given node within its parent node
+ * @param {DOMObject} node node to check
+ * @return {Integer} index in the parent node or false if no node given or node has no parent
+ * @method
+ */
+GENTICS.Utils.Dom.prototype.getIndexInParent = function (node) {
+	if (!node) {
+		return false;
+	}
+	var index = 0;
+	var check = node.previousSibling;
+	while(check) {
+		index++;
+		check = check.previousSibling;
+	};
+
+	return index;
+};
+
+/**
+ * Check whether the given node is a blocklevel element
+ * @param {DOMObject} node node to check
+ * @return {boolean} true if yes, false if not (or null)
+ * @method
+ */
+GENTICS.Utils.Dom.prototype.isBlockLevelElement = function (node) {
+	if (!node) {
+		return false;
+	}
+	if (node.nodeType == 1 && this.blockLevelElements[node.nodeName.toLowerCase()]) {
+		return true;
+	} else {
+		return false;
+	}
+};
+
+/**
+ * Check whether the given node is a linebreak element
+ * @param {DOMObject} node node to check
+ * @return {boolean} true for linebreak elements, false for everything else
+ * @method
+ */
+GENTICS.Utils.Dom.prototype.isLineBreakElement = function (node) {
+	if (!node) {
+		return false;
+	}
+	return node.nodeType == 1 && node.nodeName.toLowerCase() == 'br';
+};
+
+/**
+ * Check whether the given node is a list element
+ * @param {DOMObject} node node to check
+ * @return {boolean} true for list elements (li, ul, ol), false for everything else
+ * @method
+ */
+GENTICS.Utils.Dom.prototype.isListElement = function (node) {
+	if (!node) {
+		return false;
+	}
+	return node.nodeType == 1 && this.listElements[node.nodeName.toLowerCase()];
+};
+
+/**
+ * This method checks, whether the passed dom object is a dom object, that would
+ * be split in cases of pressing enter. This currently is true for paragraphs
+ * and headings
+ * @param {DOMObject} el
+ *            dom object to check
+ * @return {boolean} true for split objects, false for other
+ * @method
+ */
+GENTICS.Utils.Dom.prototype.isSplitObject = function(el) {
+	if (el.nodeType === 1){
+		switch(el.nodeName.toLowerCase()) {
+		case 'p':
+		case 'h1':
+		case 'h2':
+		case 'h3':
+		case 'h4':
+		case 'h5':
+		case 'h6':
+		case 'li':
+			return true;
+		}
+	}
+	return false;
+};
+
+/**
+ * Starting with the given position (between nodes), search in the given direction to an adjacent notempty text node
+ * @param {DOMObject} parent parent node containing the position
+ * @param {Integer} index index of the position within the parent node
+ * @param {boolean} searchleft true when search direction is 'left' (default), false for 'right'
+ * @param {object} stopat define at which types of element we shall stop, may contain the following properties
+ * <pre>
+ * - blocklevel (default: true)
+ * - list (default: true)
+ * - linebreak (default: true)
+ * </pre>
+ * @return {DOMObject} the found text node or false if none found
+ * @method
+ */
+GENTICS.Utils.Dom.prototype.searchAdjacentTextNode = function (parent, index, searchleft, stopat) {
+	if (!parent || parent.nodeType != 1 || index < 0 || index > parent.childNodes.length) {
+		return false;
+	}
+
+	if (typeof stopat == 'undefined') {
+		stopat = {'blocklevel' : true, 'list' : true, 'linebreak' : true};
+	}
+
+	if (stopat.blocklevel == 'undefined') {
+		stopal.blocklevel = true;
+	}
+	if (stopat.list == 'undefined') {
+		stopal.list = true;
+	}
+	if (stopat.linebreak == 'undefined') {
+		stopal.linebreak = true;
+	}
+
+	if (typeof searchleft == 'undefined') {
+		searchleft = true;
+	}
+
+	var nextNode = undefined;
+	var currentParent = parent;
+
+	// start at the node left/right of the given position
+	if (searchleft && index > 0) {
+		nextNode = parent.childNodes[index - 1];
+	}
+	if (!searchleft && index < parent.childNodes.length) {
+		nextNode = parent.childNodes[index];
+	}
+
+	while (true) {
+		if (!nextNode) {
+			// no next node found, check whether the parent is a blocklevel element
+			if (stopat.blocklevel && this.isBlockLevelElement(currentParent)) {
+				// do not leave block level elements
+				return false;
+			} else if (stopat.list && this.isListElement(currentParent)) {
+				// do not leave list elements
+				return false;
+			} else {
+				// continue with the parent
+				nextNode = searchleft ? currentParent.previousSibling : currentParent.nextSibling;
+				currentParent = currentParent.parentNode;
+			}
+		} else if (nextNode.nodeType == 3 && jQuery.trim(nextNode.data).length > 0) {
+			// we are lucky and found a notempty text node
+			return nextNode;
+		} else if (stopat.blocklevel && this.isBlockLevelElement(nextNode)) {
+			// we found a blocklevel element, stop here
+			return false;
+		} else if (stopat.linebreak && this.isLineBreakElement(nextNode)) {
+			// we found a linebreak, stop here
+			return false;
+		} else if (stopat.list && this.isListElement(nextNode)) {
+			// we found a linebreak, stop here
+			return false;
+		} else if (nextNode.nodeType == 3) {
+			// we found an empty text node, so step to the next
+			nextNode = searchleft ? nextNode.previousSibling : nextNode.nextSibling;
+		} else {
+			// we found a non-blocklevel element, step into
+			currentParent = nextNode;
+			nextNode = searchleft ? nextNode.lastChild : nextNode.firstChild;
+		}
+	};
 };
 
 /**
