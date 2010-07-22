@@ -294,9 +294,10 @@ GENTICS.Utils.Dom.prototype.allowsNesting = function (outerDOMObject, innerDOMOb
  * Apply the given markup additively to the given range. The given rangeObject will be modified if necessary
  * @param {GENTICS.Utils.RangeObject} rangeObject range to which the markup shall be added
  * @param {jQuery} markup markup to be applied as jQuery object
+ * @param {boolean} allownesting true when nesting of the added markup is allowed, false if not (default: false)
  * @method
  */
-GENTICS.Utils.Dom.prototype.addMarkup = function (rangeObject, markup) {
+GENTICS.Utils.Dom.prototype.addMarkup = function (rangeObject, markup, nesting) {
 	// split partially contained text nodes at the start and end of the range
 	if (rangeObject.startContainer.nodeType == 3 && rangeObject.startOffset > 0
 			&& rangeObject.startOffset < rangeObject.startContainer.data.length) {
@@ -311,7 +312,7 @@ GENTICS.Utils.Dom.prototype.addMarkup = function (rangeObject, markup) {
 
 	// get the range tree
 	var rangeTree = rangeObject.getRangeTree();
-	this.recursiveAddMarkup(rangeTree, markup);
+	this.recursiveAddMarkup(rangeTree, markup, rangeObject, nesting);
 
 	// cleanup DOM
 	this.doCleanup({'merge' : true, 'removeempty' : true}, rangeObject);
@@ -319,26 +320,48 @@ GENTICS.Utils.Dom.prototype.addMarkup = function (rangeObject, markup) {
 
 /**
  * Recursive helper method to add the given markup to the range
- * TODO: pass the range object itself and eventually update it if necessary
  * @param rangeTree rangetree at the current level
  * @param markup markup to be applied
+ * @param rangeObject range object, which eventually is updated
+ * @param nesting true when nesting of the added markup is allowed, false if not
  * @hide
  */
-GENTICS.Utils.Dom.prototype.recursiveAddMarkup = function (rangeTree, markup) {
+GENTICS.Utils.Dom.prototype.recursiveAddMarkup = function (rangeTree, markup, rangeObject, nesting) {
 	// iterate through all rangetree objects of that level
 	for (var i = 0; i < rangeTree.length; ++i) {
 		// check whether the rangetree object is fully contained and the markup may be wrapped around the object
 		if (rangeTree[i].type == 'full' && this.allowsNesting(markup.get(0), rangeTree[i].domobj)) {
-			// wrap the object
-			jQuery(rangeTree[i].domobj).wrap(markup);
+			// we wrap the object, when
+			// 1. nesting of markup is allowed or the node is not of the markup to be added
+			// 2. the node an element node or a non-empty text node
+			if ((nesting || rangeTree[i].domobj.nodeName != markup.get(0).nodeName)
+					&& (rangeTree[i].domobj.nodeType != 3 || jQuery
+							.trim(rangeTree[i].domobj.data).length != 0)) {
+				// wrap the object
+				jQuery(rangeTree[i].domobj).wrap(markup);
+
+				// TODO eventually update the range (if it changed)
+
+				// when nesting is not allowed, we remove the markup from the inner element
+				if (!nesting && rangeTree[i].domobj.nodeType != 3) {
+					var innerRange = new GENTICS.Utils.RangeObject();
+					innerRange.startContainer = innerRange.endContainer = rangeTree[i].domobj.parentNode;
+					innerRange.startOffset = 0;
+					innerRange.endOffset = innerRange.endContainer.childNodes.length;
+					this.removeMarkup(innerRange, markup, jQuery(rangeTree[i].domobj.parentNode));
+				}
+			}
 		} else {
 			// TODO check whether the object may be replaced by the given markup
 			if (false) {
 				// TODO replace
 			} else {
-				// recurse into the children (if any)
-				if (rangeTree[i].children) {
-					this.recursiveAddMarkup(rangeTree[i].children, markup);
+				// recurse into the children (if any), but not if nesting is not
+				// allowed and the object is of the markup to be added
+				if (nesting || rangeTree[i].domobj.nodeName != markup.get(0).nodeName) {
+					if (rangeTree[i].children && rangeTree[i].children.length > 0) {
+						this.recursiveAddMarkup(rangeTree[i].children, markup);
+					}
 				}
 			}
 		}
