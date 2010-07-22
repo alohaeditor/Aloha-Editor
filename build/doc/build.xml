@@ -1,0 +1,13 @@
+<?xml version = '1.0'?>
+<project name="Aloha API Documentation Builder" default="all">
+	<property name="parse" value="aloha-api.xml"/>
+	<property name="jarfile" value="ext-doc.jar"/>
+	<property name="outdir" value="../api-docs-out"/>
+	<property name="template" value="template/gentics/template.xml"/>
+
+	<target name="all">
+		<java jar="${jarfile}" fork="true">
+			<arg line="-p ${parse} -o ${outdir} -t ${template}"/>
+		</java>
+	</target>
+</project>
