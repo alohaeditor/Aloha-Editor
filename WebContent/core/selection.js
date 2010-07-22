@@ -431,15 +431,9 @@ GENTICS.Aloha.Selection.prototype.RangeObject.prototype = new GENTICS.Utils.Rang
 GENTICS.Aloha.Selection.prototype.RangeObject.prototype.select = function() {
 	// Call Utils' select()
 	GENTICS.Utils.RangeObject.prototype.select.apply(this, arguments);
-	
-	// now triggering the selectionChanged Event to allow updating the floating menu....
-	GENTICS.Aloha.EventRegistry.trigger(
-			new GENTICS.Aloha.Event(
-					'selectionChanged',
-					GENTICS.Aloha,
-					[ this ]
-			)
-	);
+
+	// update the selection
+	GENTICS.Aloha.Selection.updateSelection();
 };
 
 /**
@@ -1501,11 +1495,11 @@ GENTICS.Aloha.Selection.prototype.canTag1WrapTag2 = function(t1, t2) {
 	t1 = (t1 == '#text')?'textNode':t1.toLowerCase();
 	t2 = (t2 == '#text')?'textNode':t2.toLowerCase();
 	if (!this.tagHierarchy[ t1 ]) {
-		GENTICS.Aloha.Log.warn(this, t1 + ' is an unknown tag to the method canTag1WrapTag2 (paramter 1). Sadfully allowing the wrapping...');
+		// GENTICS.Aloha.Log.warn(this, t1 + ' is an unknown tag to the method canTag1WrapTag2 (paramter 1). Sadfully allowing the wrapping...');
 		return true;
 	}
 	if (!this.tagHierarchy[ t2 ]) { 
-		GENTICS.Aloha.Log.warn(this, t2 + ' is an unknown tag to the method canTag1WrapTag2 (paramter 2). Sadfully allowing the wrapping...');
+		// GENTICS.Aloha.Log.warn(this, t2 + ' is an unknown tag to the method canTag1WrapTag2 (paramter 2). Sadfully allowing the wrapping...');
 		return true;
 	}
 	var t1Array = this.tagHierarchy[ t1 ];
