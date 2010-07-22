@@ -12,7 +12,7 @@ GENTICS.Aloha.Format = new GENTICS.Aloha.Plugin('com.gentics.aloha.plugins.Forma
 /**
  * Configure the available languages
  */
-GENTICS.Aloha.Format.languages = ['en', 'de'];
+GENTICS.Aloha.Format.languages = ['en', 'de', 'fr', 'eo'];
 
 /**
  * dummy button configuration
