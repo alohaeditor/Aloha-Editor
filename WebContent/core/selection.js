@@ -1363,7 +1363,8 @@ GENTICS.Aloha.Selection.prototype.toString = function() {
 
 /**
  * @namespace GENTICS.Aloha.Selection
- * @class RangeObject
+ * @class SelectionRange
+ * @extends GENTICS.Utils.RangeObject
  * Constructor for a range object.
  * Optionally you can pass in a range object that's properties will be assigned to the new range object.
  * @param rangeObject A range object thats properties will be assigned to the new range object. 
@@ -1375,33 +1376,39 @@ GENTICS.Aloha.Selection.prototype.SelectionRange = function(rangeObject) {
 	
 	/**
 	 * DOM object of the common ancestor from startContainer and endContainer
+	 * @hide
 	 */
 	this.commonAncestorContainer;
 
 	/**
 	 * The selection tree
+	 * @hide
 	 */
 	this.selectionTree;
 
 	/**
 	 * Array of DOM objects effective for the start container and inside the
 	 * editable part (inside the limit object). relevant for the button status
+	 * @hide
 	 */
 	this.markupEffectiveAtStart = [];
 
 	/**
 	 * Array of DOM objects effective for the start container, which lies
 	 * outside of the editable portion (starting with the limit object)
+	 * @hide
 	 */
 	this.unmodifiableMarkupAtStart = [];
 
 	/**
 	 * DOM object being the limit for all markup relevant activities
+	 * @hide
 	 */
 	this.limitObject;
 		
 	/**
 	 * DOM object being split when enter key gets hit
+	 * @hide
 	 */
 	this.splitObject;
 	

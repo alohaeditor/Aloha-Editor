@@ -5,7 +5,11 @@
 	<property name="outdir" value="../api-docs-out"/>
 	<property name="template" value="template/gentics/template.xml"/>
 
-	<target name="all">
+	<target name="clean">
+		<delete dir="${outdir}" />
+	</target>
+
+	<target name="all" depends="clean">
 		<java jar="${jarfile}" fork="true">
 			<arg line="-p ${parse} -o ${outdir} -t ${template}"/>
 		</java>
