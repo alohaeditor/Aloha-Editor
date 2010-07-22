@@ -52,6 +52,11 @@ GENTICS.Utils.RangeObject = function(param) {
 	 */
 	this.endOffset;
 
+	/**
+	 * RangeTree cache for different root objects
+	 */
+	this.rangeTree = [];
+
 	// Take the values from the passed object
 	if (typeof param === 'object') {
 		if (param.startContainer !== undefined) {
@@ -394,7 +399,7 @@ GENTICS.Utils.RangeObject.prototype.update = function(event) {
 	GENTICS.Utils.RangeObject.prototype.log('now updating rangeObject');
 	this.initializeFromUserSelection(event);
 	this.updateCommonAncestorContainer();
-}
+};
 
 /**
  * Initialize the current range object from the user selection of the browser.
@@ -457,6 +462,7 @@ GENTICS.Utils.RangeObject.prototype.initializeFromUserSelection = function(event
  * found in the code comments
  */
 GENTICS.Utils.RangeObject.prototype.correctRange = function() {
+	this.clearCaches();
 	if (this.isCollapsed()) {
 		// collapsed ranges are treated specially
 
@@ -620,19 +626,35 @@ GENTICS.Utils.RangeObject.prototype.correctRange = function() {
 };
 
 /**
- * Get the range tree of this range
- * @return RangeTree
+ * Clear the caches for this range. This method must be called when the range itself (start-/endContainer or start-/endOffset) is modified.
+ * @method
  */
-GENTICS.Utils.RangeObject.prototype.getRangeTree = function () {
-	if (this.rangeTree) {
+GENTICS.Utils.RangeObject.prototype.clearCaches = function () {
+	this.rangeTree = [];
+	this.commonAncestorContainer = undefined;
+};
+
+/**
+ * Get the range tree of this range.
+ * The range tree will be cached for every root object. When the range itself is modified, the cache should be cleared by calling GENTICS.Utils.RangeObject.clearCaches
+ * @param {DOMObject} root root object of the range tree, if non given, the common ancestor container of the start and end containers will be used
+ * @return RangeTree for the given root object
+ * @method
+ */
+GENTICS.Utils.RangeObject.prototype.getRangeTree = function (root) {
+	if (typeof root == 'undefined') {
+		root = this.getCommonAncestorContainer();
+	}
+
+	if (this.rangeTree[root]) {
 		// sometimes it's cached
-		return this.rangeTree;
+		return this.rangeTree[root];
 	}
 
 	this.inselection = false;
-	this.rangeTree = this.recursiveGetRangeTree(this.getCommonAncestorContainer());
+	this.rangeTree[root] = this.recursiveGetRangeTree(root);
 
-	return this.rangeTree;
+	return this.rangeTree[root];
 };
 
 /**
