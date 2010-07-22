@@ -587,10 +587,10 @@ GENTICS.Aloha.FloatingMenu.setButtonScopeVisibility = function(scopeObject) {
  */
 GENTICS.Aloha.FloatingMenu.nextFloatTargetObj = function (obj, limitObj) {
 	// if we've hit the limit object we don't care for it's type
-	if (obj == limitObj) {
+	if (!obj || obj == limitObj) {
 		return obj;
 	}
-	
+
 	// fm will only float to h1-h6, p, div, td
 	switch (obj.nodeName.toLowerCase()) {
 		case "h1":
@@ -608,7 +608,7 @@ GENTICS.Aloha.FloatingMenu.nextFloatTargetObj = function (obj, limitObj) {
 			return obj;
 			break;
 		default:
-			return this.nextFloatTargetObj(obj.parentNode, limitObj)		
+			return this.nextFloatTargetObj(obj.parentNode, limitObj);
 			break;
 	}
 };
@@ -623,7 +623,7 @@ GENTICS.Aloha.FloatingMenu.calcFloatTarget = function(range) {
 	if (!GENTICS.Aloha.activeEditable) {
 		return false;
 	}
-	var targetObj = jQuery(this.nextFloatTargetObj(range.commonAncestorContainer, range.limitObject));
+	var targetObj = jQuery(this.nextFloatTargetObj(range.getCommonAncestorContainer(), range.limitObject));
 	var scrollTop = GENTICS.Utils.Position.Scroll.top;
 
 	var y = targetObj.offset().top - this.obj.height() - 50; // 50px offset above the current obj to have some space above
