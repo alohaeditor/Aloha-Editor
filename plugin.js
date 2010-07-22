@@ -108,7 +108,27 @@ GENTICS.Aloha.Format.initButtons = function () {
 						if (GENTICS.Aloha.activeEditable) {
 							GENTICS.Aloha.activeEditable.obj[0].focus();
 						}
-						GENTICS.Aloha.Selection.changeMarkupOnSelection(jQuery('<'+button+'></'+button+'>'));
+						var markup = jQuery('<'+button+'></'+button+'>');
+						var markupIsApplied = false;
+						var rangeObject = GENTICS.Aloha.Selection.rangeObject;
+
+						// check whether the markup is currently applied
+						for (var i = 0; i < rangeObject.markupEffectiveAtStart.length; i++) {
+							var effectiveMarkup = rangeObject.markupEffectiveAtStart[ i ];
+							if (GENTICS.Aloha.Selection.standardTextLevelSemanticsComparator(effectiveMarkup, markup)) {
+								markupIsApplied = true;
+							}
+						}
+
+						if (markupIsApplied) {
+							// remove the markup
+							GENTICS.Utils.Dom.removeMarkup(rangeObject, markup, GENTICS.Aloha.activeEditable.obj);
+						} else {
+							// add the markup
+							GENTICS.Utils.Dom.addMarkup(rangeObject, markup);
+						}
+						// select the modified range
+						rangeObject.select();
 						return false;
 					},
 					'tooltip' : that.i18n('button.' + button + '.tooltip'),
