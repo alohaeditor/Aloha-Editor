@@ -41,6 +41,9 @@ GENTICS.Aloha.GCN.init = function () {
 	var maximizeOptions = null;
 	
 	if (this.isGCNFrame()) {
+		// we want to hide the ribbon
+		GENTICS.Aloha.settings.ribbon = false;
+
 		// add stylesheet reference for the submenu
 		jQuery('head').append('<link type="text/css" href="' +
 				this.createGCNURL({
@@ -99,6 +102,16 @@ GENTICS.Aloha.GCN.init = function () {
 		// hide the menu on html/body click
 		jQuery('html').click(function () {
 			hide_layer(get_layer('nodesubmenu1'));
+			if (top.menu) {
+				top.menu.nodesubmenu1_clicked = false;
+			}
+		});
+
+		// minimize tree if not pinned
+		jQuery('html').mouseover(function () {
+			if (top.tree && top.tree.frame_small) {
+				top.tree.frame_small();
+			}
 		});
 	}
 	
@@ -1265,3 +1278,15 @@ GENTICS.Aloha.GCN.handleBlock = function(data, insert) {
 		this.alohaBlocks(data.blocks);
 	}
 };
+
+/**
+ * Very ugly integration of "autosave before switching to another url" feature
+ * of GCN. When content was modified but not saved, this will automatically save
+ * the modified content
+ * @param url
+ *            url to switch to
+ * @return void
+ */
+function cn3_go_list(url) {
+	GENTICS.Aloha.GCN.openURL(url);
+}
