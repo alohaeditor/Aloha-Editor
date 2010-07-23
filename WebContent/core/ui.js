@@ -262,8 +262,9 @@ GENTICS.Aloha.ui.Button.prototype.getExtConfigProperties = function() {
 		xtype : (menu && typeof this.onclick == 'function') ? 'splitbutton' : 'button',
 		tooltipType : 'qtip',
 		tooltip : this.tooltip,
-		id : this.id
-	}
+		id : this.id,
+        arrowAlign: this.size == 'large' || this.size == 'small' ? 'right' : 'bottom'
+	};
 
 	return buttonConfig;
 };
