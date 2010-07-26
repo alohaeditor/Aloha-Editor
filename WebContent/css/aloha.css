@@ -243,11 +243,11 @@ button.GENTICS_button_deleteColumns {
 }
 
 button.GENTICS_button_addPerson {
-	background-position: -208px 0 !important;
+	background-position: -224px 0 !important;
 }
 
 button.GENTICS_button_addEvent {
-	background-position: -224px 0 !important;
+	background-position: -208px 0 !important;
 }
 
 /*button status hover of format plugin*/
