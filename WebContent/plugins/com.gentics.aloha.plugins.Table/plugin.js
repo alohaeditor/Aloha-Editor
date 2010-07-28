@@ -327,7 +327,7 @@ GENTICS.Aloha.TablePlugin.createTable = function(cols, rows) {
 		table.appendChild(tbody);
 
 		// insert at current cursor position
-		this.insertAtCursorPos(table);
+		GENTICS.Utils.Dom.insertIntoDOM(jQuery(table), GENTICS.Aloha.Selection.getRangeObject(), jQuery(GENTICS.Aloha.activeEditable.obj));
 		
 		// if the table is inserted
 		var tableReloadedFromDOM = document.getElementById(tableId);
@@ -354,41 +354,6 @@ GENTICS.Aloha.TablePlugin.createTable = function(cols, rows) {
 	// no active editable => error
 	}else{
 		this.error('There is no active Editable where the table can be inserted!');
-	}
-};
-
-/**
- * TODO: this should not be done like this!
- * Inserts the given element at the cursor position of the current active Editable
- * 
- * @param elementThe element which should be inserted (a DOM-object)
- */
-GENTICS.Aloha.TablePlugin.insertAtCursorPos = function(element) {
-	// check if the element-parameter is set
-	if (typeof element != 'undefined') {
-		// check if there is an active editable
-		if (typeof GENTICS.Aloha.activeEditable.obj != 'undefined'){
-			var range, html;
-			// insertion for IE
-			if (jQuery.browser.msie) {
-				range = GENTICS.Aloha.Editable.range;
-				html = (element.nodeType == 3) ? element.data : element.outerHTML;
-				range.pasteHTML(html);
-				
-			// insertion for other browser
-			} else if (window.getSelection && window.getSelection().getRangeAt){
-				range = GENTICS.Aloha.Editable.range;
-				range.insertNode(element);
-				
-			// insertion didn't work trigger ERROR to user!
-			} else {
-				this.error("Table couldn't be inserted");
-			}
-		}else{
-			this.warn('No active Editable => do nothing.');
-		}
-	}else{
-		this.error('This method didn\'t get an element to insert!');
 	}
 };
 

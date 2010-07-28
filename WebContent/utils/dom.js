@@ -135,6 +135,7 @@ GENTICS.Utils.Dom.prototype.listElements = {
  * 				The limiting node will not be included in the split itself.
  * 				If no limiting object is set, the document body will be the limiting object.
  * @param {boolean} atEnd If set to true, the DOM will be splitted at the end of the range otherwise at the start.
+ * @return {object} jQuery object containing the two root DOM objects of the split or false if the DOM could not be split
  * @method
  */
 GENTICS.Utils.Dom.prototype.split = function (range, limit, atEnd) {
@@ -247,6 +248,8 @@ GENTICS.Utils.Dom.prototype.split = function (range, limit, atEnd) {
 	
 	// append the new dom
 	jQuery(path[0]).after(newDom);
+
+	return jQuery([path[0], newDom ? newDom : secondPart]);
 };
 
 /**
@@ -828,6 +831,72 @@ GENTICS.Utils.Dom.prototype.searchAdjacentTextNode = function (parent, index, se
 			nextNode = searchleft ? nextNode.lastChild : nextNode.firstChild;
 		}
 	};
+};
+
+/**
+ * Insert the given DOM Object into the start/end of the given range. The method
+ * will find the appropriate place in the DOM tree for inserting the given
+ * object, and will eventually split elements in between. The given range will
+ * be updated if necessary. The updated range will NOT embrace the inserted
+ * object, which means that the object is actually inserted before or after the
+ * given range (depending on the atEnd parameter)
+ * 
+ * @param {jQuery}
+ *            object object to insert into the DOM
+ * @param {GENTICS.Utils.RangeObject}
+ *            range range where to insert the object (at start or end)
+ * @param {jQuery}
+ *            limit limiting object(s) of the DOM modification
+ * @param {boolean}
+ *            atEnd true when the object shall be inserted at the end, false for
+ *            insertion at the start (default)
+ * @return true if the object could be inserted, false if not.
+ * @method
+ */
+GENTICS.Utils.Dom.prototype.insertIntoDOM = function (object, range, limit, atEnd) {
+	// first find the appropriate place to insert the given object
+	var parentElements = range.getContainerParents(limit, atEnd);
+	var that = this;
+	var newParent;
+
+	if (!limit) {
+		limit = jQuery(document.body);
+	}
+
+	// if no parent elements exist (up to the limit), the new parent will be the
+	// limiter itself
+	if (parentElements.length == 0) {
+		newParent = limit.get(0);
+	} else {
+		jQuery.each(parentElements, function (index, parent) {
+			if (that.allowsNesting(parent, object.get(0))) {
+				newParent = parent;
+				return false;
+			}
+		});
+	}
+
+	if (typeof newParent == 'undefined' && limit.length > 0) {
+		// found no possible new parent, so split up to the limit object
+		// TODO check whether it is allowed to insert the element at all
+		newParent = limit.get(0);
+	}
+
+	if (typeof newParent != 'undefined') {
+		// we found a possible new parent, so we split the DOM up to the new parent
+		var splitParts = this.split(range, jQuery(newParent), atEnd);
+		if (splitParts) {
+			// if the DOM could be split, we insert the new object in between the split parts
+			splitParts.eq(0).after(object);
+			return true;
+		} else {
+			// could not split, so could not insert
+			return false;
+		}
+	} else {
+		// found no possible new parent, so we shall not insert
+		return false;
+	}
 };
 
 /**

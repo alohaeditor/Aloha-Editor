@@ -63,13 +63,11 @@ GENTICS.Aloha.Editable.prototype.init = function() {
 		
 		this.obj.mousedown(function(e) {
 			that.activate(e);
-			that.updateRange(); //  TODO: Philipps updateRange() darf nicht direkt aufs obj.mousedown h�ren, muss hier raus
 			e.stopPropagation();
 		});	
 		
 		this.obj.focus(function(e) {
 			that.activate(e);
-			that.updateRange(); //  TODO: Philipps updateRange() darf nicht direkt aufs obj.mousedown h�ren, muss hier raus
 		});
 		
 		// find all a tags & apply Ctrl+Click behaviour
@@ -83,19 +81,7 @@ GENTICS.Aloha.Editable.prototype.init = function() {
 		//		return that.clickLink(event);
 		//	});
 		//});
-		
-		// attach the updateRange method to mouse up event, so that every time a user
-		// clicks into a Editable the cursor-position gets updated
-		this.obj.mouseup(function(e){
-			that.updateRange();
-		});
-		
-		// attach the updateRange method to key up event, so that every time a user
-		// strokes a key the cursor-position of the Editable gets updated
-		this.obj.keyup(function(e){
-			that.updateRange();
-		});
-		
+
 		// by catching the keydown we can prevent the browser from doing its own thing
 		// if it does not handle the keyStroke it returns true and therefore all other events (incl. browser's) continue
 		this.obj.keydown(function(event) { 
@@ -228,25 +214,6 @@ GENTICS.Aloha.Editable.prototype.activate = function(e) {
 				'oldActive' : oldActive
 			})
 	);
-};
-
-/**
- * This method saves a range-object which holds information about the last
- * cursor position.
- * @hide
- * @param e
- *            A jQuery-event object
- */
-GENTICS.Aloha.Editable.prototype.updateRange = function () {
-	if (this.isActive) {
-		if (jQuery.browser.msie) {
-			GENTICS.Aloha.Editable.range = document.selection.createRange();
-		} else if (window.getSelection && window.getSelection().getRangeAt) {
-			if (window.getSelection().rangeCount > 0) { // Chrome needs that, otherwise a JS error occurs
-				GENTICS.Aloha.Editable.range = window.getSelection().getRangeAt(0);
-			}
-		}
-	}
 };
 
 /**
