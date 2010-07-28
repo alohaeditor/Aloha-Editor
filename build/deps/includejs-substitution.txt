@@ -1,1 +1,1 @@
-document.write('<script type="text/javascript" src="/Aloha/\1"></script>');
+document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'\1"></script>');
