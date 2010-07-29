@@ -450,29 +450,6 @@ GENTICS.Utils.RangeObject.prototype.update = function(event) {
  * @hide
  */
 GENTICS.Utils.RangeObject.prototype.initializeFromUserSelection = function(event) {
-	// definition of the needed helper function to find textNode
-	var findLowestChild = function(container, offset, startOrEnd) {
-		
-		// if container is undefined, return false (happens, when the offset is after the last 
-		// childNode, which happens, when the whole thing is selected. will be corrected later
-		if (typeof container === 'undefined') {
-			GENTICS.Utils.RangeObject.prototype.log('returning false due to an undefined container (full selection)');
-			return false;
-		}
-		
-		GENTICS.Utils.RangeObject.prototype.log((startOrEnd?'end':'start') + 'Container: ' + container.nodeName + ' (' + container.data + '), offset: ' + offset);
-		// we are looking for the lowest element without children. if this is a type 1 node, it will be corrected later
-		if (container.childNodes.length === 0) {
-			GENTICS.Utils.RangeObject.prototype.log('returning childless node; type: ' + container.nodeType);
-			return container;
-		}
-				
-		// get childNodes
-		if (container.childNodes.length > 0 && offset <= container.childNodes.length) {
-			return findLowestChild(container.childNodes[offset], 0, startOrEnd); // this could possibly be wrong. maybe the 2nd parameter (offset) should depend on the 3rd parameter (startOrEnd)
-		}
-	};
-
 	// get Browser selection via IERange standardized window.getSelection()
 	var selection = window.getSelection();
 	if (!selection) {
