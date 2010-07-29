@@ -1,7 +1,6 @@
 utils/jquery.js
 utils/lang.js
 utils/range.js
-utils/nodeinfo.js
 utils/position.js
 utils/dom.js
 core/core.js
