@@ -1013,7 +1013,7 @@ GENTICS.Aloha.Selection.prototype.wrapMarkupAroundSelectionTree = function(selec
 		}
 
 		// skip empty text nodes
-		if (el.domobj && el.domobj.nodeType == 3 && jQuery.trim(el.domobj.data).length == 0) {
+		if (el.domobj && el.domobj.nodeType == 3 && jQuery.trim(jQuery(el.domobj).outerHTML()).length == 0) {
 			continue;
 		}
 
