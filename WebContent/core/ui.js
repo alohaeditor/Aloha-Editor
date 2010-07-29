@@ -346,7 +346,7 @@ Ext.ux.GENTICSMultiSplitButton = Ext.extend(Ext.Component, {
 				continue;
 			}
         	html += '<li>' +
-        		'<button class="' + item.iconClass + '" ext:qtip="' + item.tooltip + '" gtxmultisplititem="' + i + '">&nbsp;</button>' + 
+        		'<button xmlns:ext="http://www.extjs.com/" class="' + item.iconClass + '" ext:qtip="' + item.tooltip + '" gtxmultisplititem="' + i + '">&#160;</button>' + 
         		'</li>';
         }
 
@@ -359,7 +359,7 @@ Ext.ux.GENTICSMultiSplitButton = Ext.extend(Ext.Component, {
 			}
 			
         	html += '<li>' +
-    		'<button class="GENTICS_multisplit-wide ' + item.iconClass + '" ext:qtip="' + item.tooltip + '" gtxmultisplititem="' + i + '">' + 
+    		'<button xmlns:ext="http://www.extjs.com/" class="GENTICS_multisplit-wide ' + item.iconClass + '" ext:qtip="' + item.tooltip + '" gtxmultisplititem="' + i + '">' + 
     			item.text + '</button>' + 
     			'</li>';
 
@@ -387,7 +387,7 @@ Ext.ux.GENTICSMultiSplitButton = Ext.extend(Ext.Component, {
 		
 		// add the expand button
 		this.panelButton = jQuery(
-			this.el.createChild('<button class="GENTICS_multisplit_toggle GENTICS_multisplit_toggle_open">&nbsp;</button>').dom
+			this.el.createChild('<button class="GENTICS_multisplit_toggle GENTICS_multisplit_toggle_open">&#160;</button>').dom
 		);
 		this.panelButton.click(function () {
 			that.togglePanel();

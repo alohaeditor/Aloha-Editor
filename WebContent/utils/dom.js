@@ -197,7 +197,7 @@ GENTICS.Utils.Dom.prototype.split = function (range, limit, atEnd) {
 			} else {
 				// other nodes
 				var newElement = jQuery(document.createElement(element.nodeName));
-				var children = $(element).contents();
+				var children = jQuery(element).contents();
 				secondPart = newElement.append(children.slice(splitPosition, children.length)).get(0);
 			}
 			
@@ -212,7 +212,7 @@ GENTICS.Utils.Dom.prototype.split = function (range, limit, atEnd) {
 			if (insertElement) {
 				insertElement.prepend(secondPart);
 			} else {
-				$(element).after(secondPart);
+				jQuery(element).after(secondPart);
 			}
 		} else {
 			// create the new element of the same type and prepend it to the previously created element

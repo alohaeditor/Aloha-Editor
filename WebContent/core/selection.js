@@ -23,7 +23,7 @@ jQuery.fn.textNodes = function(excludeBreaks, includeEmptyTextNodes) {
             }
         }
     })(this[0]);
-    return $(ret);
+    return jQuery(ret);
 };
 
 /**

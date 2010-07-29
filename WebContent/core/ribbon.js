@@ -36,7 +36,7 @@ GENTICS.Aloha.Ribbon = function() {
 	var fadeButton = new Ext.Button({
 		iconCls : 'GENTICS_fade_out',
 		handler : function (button) {
-			var toolbar = $(that.toolbar.getEl().dom);
+			var toolbar = jQuery(that.toolbar.getEl().dom);
 			
 			if (button.iconCls == 'GENTICS_fade_out') {
 				toolbar.css('marginLeft', '34px');

@@ -636,7 +636,7 @@ GENTICS.Aloha.Table.prototype.activate = function() {
 	
 	// alter the table attributes
 	this.obj.addClass(this.get('className'));
-	this.obj.attr('contentEditable', 'false');
+	this.obj.attr('contenteditable', 'false');
 
 	// set an id to the table if not already set
 	if (this.obj.attr('id') == '') {
@@ -670,7 +670,7 @@ GENTICS.Aloha.Table.prototype.activate = function() {
 		
 		// if a mousedown is done on the table, just focus the first cell of the table
 		setTimeout(function() {
-			var firstCell = that.obj.find('tr:nth-child(2) td:nth-child(2)').children('div[contentEditable=true]').get(0);
+			var firstCell = that.obj.find('tr:nth-child(2) td:nth-child(2)').children('div[contenteditable=true]').get(0);
 			GENTICS.Aloha.TableHelper.unselectCells();
 			jQuery(firstCell).get(0).focus();
 		}, 5);
@@ -684,7 +684,7 @@ GENTICS.Aloha.Table.prototype.activate = function() {
 	// ### create a wrapper for the table (@see HINT below)
 	// wrapping div for the table to suppress the display of the resize-controls of
 	// the editable divs within the cells
-	var tableWrapper = jQuery('<div class="' + this.get('classTableWrapper') + '" contentEditable="false"></div>');
+	var tableWrapper = jQuery('<div class="' + this.get('classTableWrapper') + '" contenteditable="false"></div>');
 	
 	// wrap the tableWrapper around the table
 	this.obj.wrap(tableWrapper);
@@ -1820,7 +1820,7 @@ GENTICS.Aloha.Table.Cell.prototype.editableBlur = function(jqEvent){
 GENTICS.Aloha.Table.Cell.prototype.activate = function() {
 	// create the editable wrapper for the cells
 	var wrapper = jQuery('<div>');
-	wrapper.attr('contentEditable', 'true');
+	wrapper.attr('contenteditable', 'true');
 	wrapper.addClass('GENTICS_Table_Cell_editable');
 
 	var that = this;
@@ -1931,7 +1931,7 @@ GENTICS.Aloha.Table.Cell.prototype.selectAll = function(editableNode) {
 			// workaround for bug # 42885
 			if (window.opera
 					&& e.innerHTML.substring(e.innerHTML.length - 4) == '<BR>') {
-				e.innerHTML = e.innerHTML + '&nbsp;';
+				e.innerHTML = e.innerHTML + '&#160;';
 			}
 
 			var r = document.createRange();

@@ -56,7 +56,7 @@ GENTICS.Aloha.Editable.prototype.init = function() {
 	if (GENTICS.Aloha.ready) {
 		// initialize the object
 		this.obj.addClass('GENTICS_editable');
-		this.obj.attr('contentEditable', true);
+		this.obj.attr('contenteditable', true);
 		
 		// add focus event to the object to activate
 		var that = this;

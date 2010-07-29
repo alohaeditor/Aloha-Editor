@@ -479,7 +479,7 @@ GENTICS.Aloha.GCN.alohaEditables = function (editables) {
 GENTICS.Aloha.GCN.alohaBlocks = function (blocks) {
 	if (blocks) {
 		jQuery.each(blocks, function(index, block) {
-			jQuery('#' + block.id).addClass('GENTICS_block').attr('contentEditable', false);
+			jQuery('#' + block.id).addClass('GENTICS_block').attr('contenteditable', false);
 
 			// add the edit icon for the block
 			if (!GENTICS.Aloha.settings.readonly) {
