@@ -157,6 +157,7 @@ GENTICS.Aloha.ListPlugin.transformList = function (ordered) {
 
 		if (!domToTransform) {
 			GENTICS.Aloha.Log.error(this, 'Could not transform selection into a list');
+			return;
 		}
 	}
 
@@ -233,11 +234,16 @@ GENTICS.Aloha.ListPlugin.transformList = function (ordered) {
 		// get the also selected siblings of the dom object
 		var selectedSiblings = GENTICS.Aloha.Selection.rangeObject.getSelectedSiblings(domToTransform);
 
-		// transform the paragraph (or whatever) into an li and wrap it into a list
-		var jqNewLi = GENTICS.Aloha.Markup.transformDomObject(domToTransform, 'li');
+		// create a new list
 		var jqList = ordered ? jQuery('<ol></ol>') : jQuery('<ul></ul>');
-		jqNewLi.wrap(jqList);
-		jqList = jqNewLi.parent();
+		// add a new list item
+		var jqNewLi = jQuery('<li></li>');
+		// add the li into the list
+		jqList.append(jqNewLi);
+		// append the contents of the old dom element to the li
+		jQuery(domToTransform).contents().appendTo(jqNewLi);
+		// replace the old dom element with the new list
+		jQuery(domToTransform).replaceWith(jqList);
 
 		// now also transform all siblings
 		if (selectedSiblings) {
