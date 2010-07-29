@@ -796,7 +796,7 @@ GENTICS.Utils.Dom.prototype.searchAdjacentTextNode = function (parent, index, se
 		nextNode = parent.childNodes[index];
 	}
 
-	while (true) {
+	while (typeof currentParent != 'undefined') {
 		if (!nextNode) {
 			// no next node found, check whether the parent is a blocklevel element
 			if (stopat.blocklevel && this.isBlockLevelElement(currentParent)) {
