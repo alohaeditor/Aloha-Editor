@@ -2067,6 +2067,10 @@ GENTICS.Aloha.Table.Cell.prototype.editableKeyDown = function(jqEvent) {
  * @return void
  */
 GENTICS.Aloha.Table.Cell.prototype.checkForEmptyEvent = function(jqEvent) {
+	if (jQuery(this.wrapper).children().length > 0) {
+		return;
+	}
+
 	// get the editable contents
 	var text = this.wrapper.text();
 	
