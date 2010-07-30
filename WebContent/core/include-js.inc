@@ -19,7 +19,6 @@ document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'deps/e
 document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'utils/jquery.js"></script>');
 document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'utils/lang.js"></script>');
 document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'utils/range.js"></script>');
-document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'utils/nodeinfo.js"></script>');
 document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'utils/position.js"></script>');
 document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'utils/dom.js"></script>');
 document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'core/core.js"></script>');
