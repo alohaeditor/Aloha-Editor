@@ -1,2 +1,12 @@
 
+	
+	/* Generate xHTML valid css Elements */
+	function cssElement( link ) {
+		var csslink = document.createElement("link");
+		csslink.setAttribute("rel", "stylesheet");
+		csslink.setAttribute("type", "text/css");
+		csslink.setAttribute("href", link);
+		csslink.setAttribute("media", "all");
+		return csslink;
+	}
 })();

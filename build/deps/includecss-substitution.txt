@@ -1,1 +1,1 @@
-document.write('<link type="text/css" href="' + base + '\1?v=' + GENTICS.Aloha.version + '" rel="stylesheet" />');
+	header.appendChild(cssElement(base + '\1?v=' + GENTICS.Aloha.version));
