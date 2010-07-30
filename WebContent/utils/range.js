@@ -831,6 +831,38 @@ GENTICS.Utils.RangeObject.prototype.recursiveGetRangeTree = function (currentObj
 };
 
 /**
+ * Find certain the first occurrence of some markup within the parents of either the start or the end of this range.
+ * The markup can be identified by means of a given comparator function. The function will be passed every parent (up to the eventually given limit object, which itself is not considered) to the comparator function as this.
+ * When the comparator function returns boolean true, the markup found and finally returned from this function as dom object.<br/>
+ * Example for finding an anchor tag at the start of the range up to the active editable object:<br/>
+ * <pre>
+ * range.findMarkup(
+ *   function() {
+ *     return this.nodeName.toLowerCase() == 'a';
+ *   },
+ *   jQuery(GENTICS.Aloha.activeEditable.obj)
+ * );
+ * </pre>
+ * @param {function} comparator comparator function to find certain markup
+ * @param {jQuery} limit limit objects for limit the parents taken into consideration
+ * @param {boolean} atEnd true for searching at the end of the range, false for the start (default: false)
+ * @return {DOMObject} the found dom object or false if nothing found.
+ * @method
+ */
+GENTICS.Utils.RangeObject.prototype.findMarkup = function (comparator, limit, atEnd) {
+	var parents = this.getContainerParents(limit, atEnd);
+	var returnValue = false;
+	jQuery.each(parents, function (index, domObj) {
+		if (comparator.apply(domObj)) {
+			returnValue = domObj;
+			return false;
+		}
+	});
+
+	return returnValue;
+};
+
+/**
  * @namespace GENTICS.Utils
  * @class RangeTree
  * Class definition of a RangeTree, which gives a tree view of the DOM objects included in this range
