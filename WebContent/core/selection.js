@@ -168,7 +168,8 @@ GENTICS.Aloha.Selection.prototype.updateSelection = function(event) {
 	// find the CAC (Common Ancestor Container) and update the selection Tree
 	rangeObject.update();
 
-	// throw a new event when the editable has been created
+	// throw the event that the selection has changed. Plugins now have the
+	// chance to react on the changed selection
 	GENTICS.Aloha.EventRegistry.trigger(
 			new GENTICS.Aloha.Event(
 					'selectionChanged',
