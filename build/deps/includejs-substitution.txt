@@ -1,1 +1,1 @@
-	header.appendChild(cssElement(GENTICS_Aloha_base+'\1'));
+	header.appendChild(jsElement(GENTICS_Aloha_base+'\1'));
