@@ -80,6 +80,7 @@
 		<concat destfile="${srcdir}/core/include-js.inc" force="true">
 			<fileset file="deps/includejs-header.txt"/>
 			<filelist dir="${outdir}" files="${deps.includes.filename},${aloha.includes.filename}"></filelist>
+			<fileset file="deps/includejs-footer.txt"/>
 		</concat>
 
 		<!-- and the css file -->

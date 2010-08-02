@@ -1,0 +1,9 @@
+	
+	/* Generate xHTML valid js include Elements */
+	function jsElement( link ) {
+		var jslink = document.createElement("script");
+		jslink.setAttribute("type", "text/javascript");
+		jslink.setAttribute("src", link);
+		return jslink;
+	}
+})();
