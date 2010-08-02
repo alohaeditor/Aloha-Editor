@@ -2,7 +2,6 @@
 (function(){
 	
 	/* Check if base DIR is set through configuration otherwise set to default */
-	var base = GENTICS.Aloha.autobase;
 	if (typeof GENTICS_Aloha_base != 'undefined') {
 			base = GENTICS_Aloha_base;
 	}
