@@ -16,7 +16,13 @@
 GENTICS.Aloha.settings = {
 	errorhandling : false,
 	ribbon: false,	
-	"i18n": {"current": "en"},
+	"i18n": {
+		// you can either let the system detect the users language (set acceptLanguage on server)
+		// In PHP this would would be '<?=$_SERVER['HTTP_ACCEPT_LANGUAGE']?>' resulting in 
+		// "acceptLanguage": 'de-de,de;q=0.8,it;q=0.6,en-us;q=0.7,en;q=0.2'
+		// or set current on server side to be in sync with your backend system 
+		"current": "en" 
+	},
 	"plugins": { 
 		"com.gentics.aloha.plugins.GCN": { 
 			"enabled": false 
