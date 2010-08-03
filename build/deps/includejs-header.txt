@@ -2,8 +2,8 @@
 (function(){
 	
 	/* Check if base DIR is set through configuration otherwise set to default */
-	if (typeof GENTICS_Aloha_base != 'undefined') {
-			base = GENTICS_Aloha_base;
+	if (typeof GENTICS_Aloha_base == 'undefined') {
+			GENTICS_Aloha_base = '/Aloha/';
 	}
 
 	/* load javascript */

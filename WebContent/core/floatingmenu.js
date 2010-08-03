@@ -537,7 +537,7 @@ GENTICS.Aloha.FloatingMenu.setScope = function(scope) {
 
 	if (typeof scopeObject == 'undefined') {
 		// TODO log an error
-	} else {
+	} else if (this.currentScope != scope) {
 		this.currentScope = scope;
 
 		// first hide all buttons

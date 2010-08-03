@@ -1,3 +1,9 @@
-This software or sourcecode is provided as is without any expressed or implied warranties and may not be copied, otherwise distributed (especially forwarded to third parties), reproduced and combined with other code without our express prior written consent. The software or source code and the concepts it is based upon are to be kept confidential towards third parties. The software or sourcecode may be used solely for the purpose of evaluating and testing purposes for a time of one month from the first submission of the software or source code. In case no arrangements about further use can be reached, the software or sourcecode has to be deleted.
-Copyright(C) 2010 Gentics Software GmbH
+Aloha Editor License
 
+Aloha Editor is meant to be of benefit to both free open source as well as commercial software developers. It should be able to sustain continous development by itself and thus help all stakeholders profiting from the developments to come. Therefore we adopted a dual licensing approach for Aloha Editor.
+
+Opensource License.
+The Open Source version of this great software is released under the terms of AGPLv3 License.
+
+Commercial License.
+If you are a commercial software developer and you want to release your software under a different license than AGPLv3, you may purchase commercial licenses from Gentics Software GmbH. By purchasing commercial licenses we offer you the freedom to choose different ways of licensing and get professional support from our core developers. Contact us for more information: aloha-sales@gentics.com!
