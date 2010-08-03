@@ -234,7 +234,7 @@
 			<fileset dir="${packagedir}/examples">
 	            <include name="**/*.html" />
 			</fileset>
-			<regexp pattern="(&lt;script.*?src=&quot;)../core/include-js.inc(&quot;.*)"/>
+			<regexp pattern="(&lt;script.*?src=&quot;)../core/include.js(&quot;.*)"/>
 			<substitution expression="\1aloha/aloha.js\2"/>
 		</replaceregexp>
 		<!-- fix the includes of the plugins -->
