@@ -1846,7 +1846,13 @@ GENTICS.Aloha.Table.Cell.prototype.activate = function() {
 	wrapper.bind('blur',      function(jqEvent) { that.editableBlur(jqEvent);      });
 	wrapper.bind('keyup',     function(jqEvent) { that.editableKeyUp(jqEvent);     });
 	wrapper.bind('keydown',   function(jqEvent) { that.editableKeyDown(jqEvent);   });
-	
+
+	// we will treat the wrapper just like an editable
+	wrapper.GENTICS_contentEditableSelectionChange(function (event) {
+		GENTICS.Aloha.Selection.onChange(wrapper, event);
+		return wrapper;
+	});
+
 	this.obj.bind('mousedown', function(jqEvent) {
 		setTimeout(function() {
 			that.wrapper.trigger('focus');
