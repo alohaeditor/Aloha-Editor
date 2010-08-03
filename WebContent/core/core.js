@@ -32,7 +32,7 @@ GENTICS.Aloha.setAutobase = function () {
 		substitute = 2;
 	}
 	GENTICS.Aloha.prototype.autobase = path.slice(0, substitute * -1).join('/') + '/';
-}
+};
 GENTICS.Aloha.setAutobase();
 
 // provide aloha version, is automatically set during build process
