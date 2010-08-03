@@ -402,11 +402,11 @@ GENTICS.Aloha.ListPlugin.outdentList = function () {
  * Refresh the current selection and set to focus to the current editable again
  */
 GENTICS.Aloha.ListPlugin.refreshSelection = function () {
-	GENTICS.Aloha.Selection.rangeObject.update();
-	GENTICS.Aloha.Selection.rangeObject.select();
 	if (GENTICS.Aloha.activeEditable) {
 		GENTICS.Aloha.activeEditable.obj[0].focus();
 	}
+	GENTICS.Aloha.Selection.rangeObject.update();
+	GENTICS.Aloha.Selection.rangeObject.select();
 	GENTICS.Aloha.Selection.updateSelection();
 };
 
