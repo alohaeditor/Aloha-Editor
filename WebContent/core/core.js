@@ -267,7 +267,7 @@ GENTICS.Aloha.prototype.initI18n = function() {
 	// TODO read dict files automatically on build. Develop only with "en"
 	if (typeof this.settings.i18n.available == 'undefined' 
 		|| !this.settings.i18n.available 
-		|| !typeof this.settings.i18n.available == 'Array') {
+		|| !this.settings.i18n.available instanceof Array) {
 		
 		this.settings.i18n.available = ['en', 'de', 'fr', 'eo'];
 	}
@@ -277,7 +277,7 @@ GENTICS.Aloha.prototype.initI18n = function() {
 	 * reference http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.4
 	 * ACCEPT-LANGUAGE 'de-de,de;q=0.8,it;q=0.6,en-us;q=0.7,en;q=0.2';
 	 * Any implementation has to set it server side because this is not
-	 * accessable by JS. http://lists.w3.org/Archives/Public/public-html/2009Nov/0454.html
+	 * accessible by JS. http://lists.w3.org/Archives/Public/public-html/2009Nov/0454.html
 	*/ 
 	if ( (typeof this.settings.i18n.current == 'undefined' || !this.settings.i18n.current) &&
 		typeof this.settings.i18n.acceptLanguage == 'string' ) {
@@ -287,7 +287,7 @@ GENTICS.Aloha.prototype.initI18n = function() {
 	    var preferredLanugage = this.settings.i18n.acceptLanguage.split(",");
 	    for(i = 0; i < preferredLanugage.length; i++){
 	    	
-	    	// slpit language setting
+	    	// split language setting
 	    	var lang = preferredLanugage[i].split(";");
 	    	
 	    	// convert quality to float
@@ -302,7 +302,7 @@ GENTICS.Aloha.prototype.initI18n = function() {
 	    }
 	    
 	    // sort by quality
-	    acceptLanguage.sort(function (a,b) {return b[1] - a[1]});
+	    acceptLanguage.sort(function (a,b) {return b[1] - a[1];});
 	    
 	    // check in sorted order if any of preferred languages is available
 	    for(i = 0; i < acceptLanguage.length; i++) {
@@ -341,18 +341,17 @@ GENTICS.Aloha.prototype.initI18n = function() {
  * @method
  * @param {String} language language to be set
  * @param {Array} availableLanguages list of available languages
- * @param {String} fallbackLanguage
  * @return the actual language as a string
  */
 GENTICS.Aloha.prototype.getLanguage = function(language, availableLanguages) {
 	
-	if (!typeof availableLanguages == 'Array') {
+	if (!availableLanguages instanceof Array) {
 		GENTICS.Aloha.Log.error(this, 'Available languages must be an Array');
 		return null;
 	}
 	
 	if (typeof language == 'undefined' || !language) {
-		returnavailableLanguages[0];
+		return availableLanguages[0];
 	}
 	
 	for (var i = 0; i < availableLanguages.length; ++i) {
