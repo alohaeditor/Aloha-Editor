@@ -168,6 +168,9 @@ GENTICS.Aloha.Selection.prototype.updateSelection = function(event) {
 	// find the CAC (Common Ancestor Container) and update the selection Tree
 	rangeObject.update();
 
+	// initially set the scope to 'continuoustext'
+	GENTICS.Aloha.FloatingMenu.setScope('GENTICS.Aloha.continuoustext');
+
 	// throw the event that the selection has changed. Plugins now have the
 	// chance to react on the changed selection
 	GENTICS.Aloha.EventRegistry.trigger(

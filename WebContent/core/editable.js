@@ -178,15 +178,7 @@ GENTICS.Aloha.Editable.prototype.activate = function(e) {
 	if (document.selection && document.selection.createRange) {
 		this.obj.mouseup();
 	}
-	
-	GENTICS.Aloha.FloatingMenu.setScope('GENTICS.Aloha.continuoustext');
 
-	// Set the scope to continuoustext if the editable gets the focus
-	// This is necessary to get the correct scope if for example the table plugin was active before
-	this.obj.focus(function(){
-		GENTICS.Aloha.FloatingMenu.setScope('GENTICS.Aloha.continuoustext');
-	});
-	
 	/**
 	 * @event editableActivated fires after the editable has been activated by clicking on it.
 	 * This event is triggered in Aloha's global scope GENTICS.Aloha
