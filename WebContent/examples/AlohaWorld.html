@@ -3,7 +3,9 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Aloha, World!</title>
-
+<script>
+GENTICS_Aloha_base = 'file:///Users/haymo/Documents/workspace/Aloha-Editor/WebContent/';
+</script>
 <script type="text/javascript" src="../core/include.js"></script>
 <script type="text/javascript" src="../plugins/com.gentics.aloha.plugins.Format/plugin.js"></script>
 <script type="text/javascript" src="../plugins/com.gentics.aloha.plugins.Table/plugin.js"></script>
@@ -23,18 +25,38 @@ GENTICS.Aloha.settings = {
 		// or set current on server side to be in sync with your backend system 
 		"current": "en" 
 	},
-	"plugins": { 
-		"com.gentics.aloha.plugins.GCN": { 
-			"enabled": false 
-		},
-	 	"com.gentics.aloha.plugins.Format": { 
-			config : [ 'b', 'i','u','del','sub','sup', 'p', 'title', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'removeFormat'],
+	"plugins": {
+	 	"com.gentics.aloha.plugins.Format": {
+		 	// all elements with no specific configuration get this configuration
+			config : [ 'b', 'i','sub','sup'],
 		  	editables : {
-				title	: [ ], // no formatting allowed
-				teaser 	: [ 'b', 'i', 'u', 'del', 'sub', 'sup'  ] // just basic formattings, no headers, etc.
+				// no formatting allowed for title
+				'#title'	: [ ], 
+				// formatting for all editable DIVs
+				'div'		: [ 'b', 'i', 'del', 'sub', 'sup'  ], 
+				// content is a DIV and has class .article so it gets both buttons
+				'.article'	: [ 'b', 'i', 'p', 'title', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'removeFormat']
 		  	}
-		} 
- 	}
+		},
+	 	"com.gentics.aloha.plugins.List": { 
+			config : [ 'ul' ],
+		  	editables : {
+				// Even if this is configured it is not set because OL and UL are not allowed in H1.
+				'#title'	: [ 'ol' ], 
+				// all divs get OL
+				'div'		: [ 'ol' ], 
+				// content is a DIV. It would get only OL but with class .article it also gets UL.
+				'.article'	: [ 'ul' ]
+		  	}
+		},
+	 	"com.gentics.aloha.plugins.Table": { 
+			config : [ ],
+		  	editables : {
+				// Allow insert tables only into .article
+				'.article'	: [ 'table' ] 
+		  	}
+		}
+  	}
 };
 
 $(document).ready(function() {
@@ -48,12 +70,12 @@ $(document).ready(function() {
 <div id="main"> 
 <h1 id="title">Aloha, World!</h1>
 <div id="bodyContent">
-<div id="teaser">
+<div id="teaser" class="shorttext">
 <p><b>Aloha</b> in the Hawaiian language means affection, love, peace, compassion and mercy. Since the middle of the 19th century, it also
 has come to be used as an English greeting to say <i>goodbye</i> and <i>hello</i>. Currently, it is mostly used in the sense of hello; however,
 it is used as the above.</p>
 </div>
-<div id="content">
+<div id="content" class="article">
 <h2>Etymology</h2>
 <p>The word aloha derives from the Proto-Polynesian root <i>*qalofa</i>. It has cognates in other Polynesian languages, such as Samoan alofa
 and Māori aroha, also meaning "love."</p>

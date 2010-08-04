@@ -9,6 +9,9 @@
  */
 GENTICS.Aloha.GCN = new GENTICS.Aloha.Plugin('com.gentics.aloha.plugins.GCN');
 
+// TODO enable when moved to plugin repository
+GENTICS.Aloha.GCN.enabled = false;
+
 /**
  * Configure the available languages
  */

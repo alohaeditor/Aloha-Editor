@@ -131,6 +131,36 @@ GENTICS.Aloha.Plugin.prototype.settings = null;
 GENTICS.Aloha.Plugin.prototype.init = function() {};
 
 /**
+ * Get the configuration settings for the specified obj
+ * @param {Object} obj editable Object
+ * @return {Array} config
+ * @hide
+ */
+GENTICS.Aloha.Plugin.prototype.getObjectConfig = function (obj) {
+	
+	var config = [];
+	var configSpecified = false;
+	
+	if ( this.settings.editables ) {
+	
+		// check if the editable's selector matches and if so add its configuration to object configuration
+		jQuery.each( this.settings.editables, function (selector, selectorConfig) {
+			if ( obj.is(selector) ) {
+				configSpecified = true;
+				config = jQuery.merge(config, selectorConfig);
+			}
+		});	
+	}
+	
+	// fall back to default configuration
+	if ( !configSpecified ) {
+		config = this.settings.config;
+	}
+	
+	return config;
+}
+
+/**
  * Make the given jQuery object (representing an editable) clean for saving
  * @param obj jQuery object to make clean
  * @return void
