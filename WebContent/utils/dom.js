@@ -25,7 +25,7 @@ if (typeof GENTICS.Utils.Dom == 'undefined' || !GENTICS.Utils.Dom) {
  * Tags which can safely be merged
  * @hide
  */
-GENTICS.Utils.Dom.prototype.mergeableTags = ['b', 'code', 'del', 'em', 'i', 'ins', 'strong', 'sub', 'sup', '#text'];
+GENTICS.Utils.Dom.prototype.mergeableTags = ['a', 'b', 'code', 'del', 'em', 'i', 'ins', 'strong', 'sub', 'sup', '#text'];
 
 /**
  * Tags which make up Flow Content or Phrasing Content, according to the HTML 5 specification,
@@ -896,6 +896,46 @@ GENTICS.Utils.Dom.prototype.insertIntoDOM = function (object, range, limit, atEn
 	} else {
 		// found no possible new parent, so we shall not insert
 		return false;
+	}
+};
+
+/**
+ * Remove the given DOM object from the DOM and modify the given range to reflect the user expected range after the object was removed
+ * TODO: finish this
+ * @param {DOMObject} object DOM object to remove
+ * @param {GENTICS.Utils.RangeObject} range range which eventually be modified
+ * @param {boolean} preserveContent true if the contents of the removed DOM object shall be preserved, false if not (default: false)
+ * @return true if the DOM object could be removed, false if not
+ * @hide
+ */
+GENTICS.Utils.Dom.prototype.removeFromDOM = function (object, range, preserveContent) {
+	if (preserveContent) {
+		// check whether the range will need modification
+		var indexInParent = this.getIndexInParent(object);
+		var numChildren = jQuery(object).contents().length;
+		var parent = object.parentNode;
+
+		if (range.startContainer == parent && range.startOffset > indexInParent) {
+			range.startOffset += numChildren - 1;
+		} else if (range.startContainer == object) {
+			range.startContainer = parent;
+			range.startOffset = indexInParent + range.startOffset;
+		}
+
+		if (range.endContainer == parent && range.endOffset > indexInParent) {
+			range.endOffset += numChildren - 1;
+		} else if (range.endContainer == object) {
+			range.endContainer = parent;
+			range.endOffset = indexInParent + range.endOffset;
+		}
+
+		// we simply unwrap the children of the object
+		jQuery(object).contents().unwrap();
+
+		// eventually do cleanup
+		this.doCleanup({'merge' : true}, range, parent);
+	} else {
+		// TODO
 	}
 };
 
