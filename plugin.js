@@ -29,6 +29,11 @@ GENTICS.Aloha.TablePlugin.createLayer = undefined;
 GENTICS.Aloha.TablePlugin.languages = ['en', 'de', 'fr', 'eo'];
 
 /**
+ * default button configuration
+ */
+GENTICS.Aloha.TablePlugin.config = [ 'table' ];
+
+/**
  * An Array which holds all newly created tables contains DOM-Nodes of
  * table-objects
  */
@@ -105,7 +110,7 @@ GENTICS.Aloha.TablePlugin.init = function() {
 	GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'selectionChanged', function(event, properties) {
 
 		// get Plugin configuration
-		var config = that.getObjectConfig( GENTICS.Aloha.activeEditable.obj );
+		var config = that.getEditableConfig( GENTICS.Aloha.activeEditable.obj );
 		
 		// show hide buttons regarding configuration and DOM position
 		if ( jQuery.inArray('table', config) != -1  && GENTICS.Aloha.Selection.mayInsertTag('table') ) {
