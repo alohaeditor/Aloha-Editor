@@ -95,14 +95,13 @@ GENTICS.Aloha.ListPlugin.init = function() {
 };
 
 /**
- * applys a configuration specific for an editable
+ * Applys a configuration specific for an editable
  * buttons not available in this configuration are hidden
- * @param {Object} obj of the activated editable
- * @return void
+ * @param {jQuery} obj jQuery object of the activated editable
  */
 GENTICS.Aloha.ListPlugin.applyButtonConfig = function (obj) {
 
-	var config = this.getObjectConfig(obj)
+	var config = this.getEditableConfig(obj);
 	
 	// show/hide them according to the config
 	if (jQuery.inArray('ul', config) != -1 && GENTICS.Aloha.Selection.mayInsertTag('ul')) {
