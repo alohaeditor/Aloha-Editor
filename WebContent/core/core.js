@@ -488,7 +488,11 @@ GENTICS.Aloha.prototype.registerEditable = function (editable) {
  * @param {GENTICS.Aloha.Message} message the GENTICS.Aloha.Message object to be displayed
  */
 GENTICS.Aloha.prototype.showMessage = function (message) {
-	GENTICS.Aloha.FloatingMenu.obj.css('z-index', 8900);
+	
+	if (GENTICS.Aloha.FloatingMenu.obj) {
+		GENTICS.Aloha.FloatingMenu.obj.css('z-index', 8900);
+	}
+	
 	switch (message.type) {
 		case GENTICS.Aloha.Message.Type.ALERT:
 		    Ext.MessageBox.alert(message.title, message.text, message.callback);
