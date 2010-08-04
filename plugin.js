@@ -33,8 +33,6 @@ GENTICS.Aloha.Format.init = function () {
 		that.applyButtonConfig(params.editable.obj);
 	});
 
-	// NOT NEEDED !?
-//	this.initialized = true;
 };
 
 /**
@@ -45,7 +43,7 @@ GENTICS.Aloha.Format.init = function () {
  */
 GENTICS.Aloha.Format.applyButtonConfig = function (obj) {
 
-	config = this.getObjectConfig(obj);
+	config = this.getEditableConfig(obj);
 	
 	// now iterate all buttons and show/hide them according to the config
 	for (var button in this.buttons) {
