@@ -103,13 +103,20 @@ GENTICS.Aloha.TablePlugin.init = function() {
 	this.initTableButtons();
 
 	GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'selectionChanged', function(event, properties) {
-		if (GENTICS.Aloha.Selection.mayInsertTag('table')) {
+
+		// get Plugin configuration
+		var config = that.getObjectConfig( GENTICS.Aloha.activeEditable.obj );
+		
+		// show hide buttons regarding configuration and DOM position
+		if ( jQuery.inArray('table', config) != -1  && GENTICS.Aloha.Selection.mayInsertTag('table') ) {
 			that.createTableButton.show();
 		} else {
 			that.createTableButton.hide();
 		}
+		
 		// TODO this should not be necessary here!
 		GENTICS.Aloha.FloatingMenu.doLayout();
+	
 	});
 
 	// subscribe for the 'editableDeactivated' event to deactivate all tables in the editable
