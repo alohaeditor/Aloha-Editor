@@ -86,8 +86,16 @@ GENTICS.Aloha.Link.subscribeEvents = function () {
 
 	// add the event handler for selection change
 	GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'selectionChanged', function(event, rangeObject) {
-		// TODO show/hide the button according to the configuration
+		
+		// show/hide the button according to the configuration
+		var config = that.getEditableConfig(GENTICS.Aloha.activeEditable.obj);
 
+		if ( jQuery.inArray('a', config) != -1) {
+			that.addLinkButton.show();
+		} else {
+			that.addLinkButton.hide();
+		}
+		
 		// check whether the markup contains a link
 		var foundMarkup = rangeObject.findMarkup(function () {
 			return this.nodeName.toLowerCase() == 'a';
@@ -104,6 +112,9 @@ GENTICS.Aloha.Link.subscribeEvents = function () {
 			// GENTICS.Aloha.FloatingMenu.setScope('GENTICS.Aloha.continuoustext');
 			that.srcFieldButton.setAnchor(null);
 		}
+
+		// TODO this should not be necessary here!
+		GENTICS.Aloha.FloatingMenu.doLayout();
 	});
 };
 
