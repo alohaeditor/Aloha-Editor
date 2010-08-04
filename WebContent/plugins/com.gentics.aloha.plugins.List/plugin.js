@@ -15,6 +15,11 @@ GENTICS.Aloha.ListPlugin = new GENTICS.Aloha.Plugin('com.gentics.aloha.plugins.L
 GENTICS.Aloha.ListPlugin.languages = ['en', 'de', 'fr', 'eo'];
 
 /**
+ * default button configuration
+ */
+GENTICS.Aloha.ListPlugin.config = [ 'ul', 'ol' ];
+
+/**
  * List of transformable elements
  */
 GENTICS.Aloha.ListPlugin.transformableElements = {'p' : true, 'h1' : true, 'h2' : true, 'h3' : true, 'h4' : true, 'h5' : true, 'h6' : true, 'ul' : true, 'ol' : true};
@@ -23,6 +28,7 @@ GENTICS.Aloha.ListPlugin.transformableElements = {'p' : true, 'h1' : true, 'h2' 
  * Initialize the plugin, register the buttons
  */
 GENTICS.Aloha.ListPlugin.init = function() {
+	
 	var that = this;
 
 	// the 'create unordered list' button
@@ -76,14 +82,8 @@ GENTICS.Aloha.ListPlugin.init = function() {
 				break;
 			}
 		}
+		that.applyButtonConfig(GENTICS.Aloha.activeEditable.obj);
 
-		if (GENTICS.Aloha.Selection.mayInsertTag('ul')) {
-			that.createUnorderedListButton.show();
-			that.createOrderedListButton.show();
-		} else {
-			that.createUnorderedListButton.hide();
-			that.createOrderedListButton.hide();
-		}
 		// TODO this should not be necessary here!
 		GENTICS.Aloha.FloatingMenu.doLayout();
 	});
@@ -93,6 +93,30 @@ GENTICS.Aloha.ListPlugin.init = function() {
 		return that.processTab(event);
 	});
 };
+
+/**
+ * Applys a configuration specific for an editable
+ * buttons not available in this configuration are hidden
+ * @param {jQuery} obj jQuery object of the activated editable
+ */
+GENTICS.Aloha.ListPlugin.applyButtonConfig = function (obj) {
+
+	var config = this.getEditableConfig(obj);
+	
+	// show/hide them according to the config
+	if (jQuery.inArray('ul', config) != -1 && GENTICS.Aloha.Selection.mayInsertTag('ul')) {
+		this.createUnorderedListButton.show();
+	} else {
+		this.createUnorderedListButton.hide();
+	}
+
+	if (jQuery.inArray('ol', config) != -1 && GENTICS.Aloha.Selection.mayInsertTag('ol')) {
+		this.createOrderedListButton.show();
+	} else {
+		this.createOrderedListButton.hide();
+	}	
+};
+
 
 /**
  * Process Tab and Shift-Tab pressed in lists

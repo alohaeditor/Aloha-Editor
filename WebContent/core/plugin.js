@@ -131,6 +131,77 @@ GENTICS.Aloha.Plugin.prototype.settings = null;
 GENTICS.Aloha.Plugin.prototype.init = function() {};
 
 /**
+ * Get the configuration settings for an editable obj.
+ * 
+ * The default configuration parameters are:
+ * <pre>
+ * "com.gentics.aloha.plugins.List": { 
+ *		config : [ 'b', 'h1' ],
+ * 		editables : {
+ *			'#title'	: [ ], 
+ *			'div'		: [ 'b', 'i' ], 
+ *			'.article'	: [ 'h1' ]
+ *	  	}
+ *	}
+ * </pre>
+ *  
+ * The hash keys of the editables are css selectors. For a
+ *  
+ * <pre>
+ *  <div class="article">content</div>
+ * </pre>
+ *  
+ *  the selectors 'div' and '.article' match and the returned configuration is
+ *  
+ * <pre>
+ *  [ 'b', 'i', 'h1'] 
+ * </pre>
+ * 
+ * The '#title' object would return an empty configuration.
+ * 
+ * <pre>
+ *  [ ] 
+ * </pre>
+ *  
+ *  All other objects would get the 'config' configuration. If config is not set
+ * the plugin default configuration is returned.
+ * 
+ * <pre>
+ *  [ 'b', 'h1'] 
+ * </pre>
+ * 
+ * @param {jQuery} obj jQuery object of an Editable Object
+ * @return {Array} config A Array with configuration entries 
+ */
+GENTICS.Aloha.Plugin.prototype.getEditableConfig = function (obj) {
+	
+	var config = [];
+	var configSpecified = false;
+	
+	if ( this.settings.editables ) {
+	
+		// check if the editable's selector matches and if so add its configuration to object configuration
+		jQuery.each( this.settings.editables, function (selector, selectorConfig) {
+			if ( obj.is(selector) ) {
+				configSpecified = true;
+				config = jQuery.merge(config, selectorConfig);
+			}
+		});	
+	}
+	
+	// fall back to default configuration
+	if ( !configSpecified ) {
+		if ( this.settings.config == 'undefined' || !this.settings.config ) {
+			config = this.config;
+		} else {
+			config = this.settings.config;
+		}
+	}
+	
+	return config;
+}
+
+/**
  * Make the given jQuery object (representing an editable) clean for saving
  * @param obj jQuery object to make clean
  * @return void

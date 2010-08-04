@@ -29,6 +29,11 @@ GENTICS.Aloha.TablePlugin.createLayer = undefined;
 GENTICS.Aloha.TablePlugin.languages = ['en', 'de', 'fr', 'eo'];
 
 /**
+ * default button configuration
+ */
+GENTICS.Aloha.TablePlugin.config = [ 'table' ];
+
+/**
  * An Array which holds all newly created tables contains DOM-Nodes of
  * table-objects
  */
@@ -103,7 +108,12 @@ GENTICS.Aloha.TablePlugin.init = function() {
 	this.initTableButtons();
 
 	GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'selectionChanged', function(event, properties) {
-		if (GENTICS.Aloha.Selection.mayInsertTag('table')) {
+
+		// get Plugin configuration
+		var config = that.getEditableConfig( GENTICS.Aloha.activeEditable.obj );
+		
+		// show hide buttons regarding configuration and DOM position
+		if ( jQuery.inArray('table', config) != -1  && GENTICS.Aloha.Selection.mayInsertTag('table') ) {
 			that.createTableButton.show();
 		} else {
 			that.createTableButton.hide();
@@ -116,6 +126,7 @@ GENTICS.Aloha.TablePlugin.init = function() {
 
 		// TODO this should not be necessary here!
 		GENTICS.Aloha.FloatingMenu.doLayout();
+	
 	});
 
 	// subscribe for the 'editableDeactivated' event to deactivate all tables in the editable

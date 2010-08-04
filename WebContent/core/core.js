@@ -252,50 +252,115 @@ GENTICS.Aloha.prototype.trim = function(str) {
 
 /**
  * Initialize i18n, load the dictionary file
+ * Languages may have format as defined in 
+ * http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.10
+ * All language codes available http://www.loc.gov/standards/iso639-2/php/langcodes-search.php
+ * 
  * @hide
  */
 GENTICS.Aloha.prototype.initI18n = function() {
-	// TODO check whether current language an available languages
+	
 	if (typeof this.settings.i18n == 'undefined' || !this.settings.i18n) {
 		this.settings.i18n = {};
 	}
 
-	if (typeof this.settings.i18n.available == 'undefined' || !this.settings.i18n.available) {
+	// TODO read dict files automatically on build. Develop only with "en"
+	if (typeof this.settings.i18n.available == 'undefined' 
+		|| !this.settings.i18n.available 
+		|| !this.settings.i18n.available instanceof Array) {
+		
 		this.settings.i18n.available = ['en', 'de', 'fr', 'eo'];
 	}
 
-	if (typeof this.settings.i18n.current == 'undefined' || !this.settings.i18n.current) {
-		var browserLang = null;
-		if (navigator.language) {
-			browserLang = navigator.language;
-		} else if (navigator.browserLanguage) {
-			browserLang = navigator.browserLanguage;
-		} else {
-			browserLang = 'en';
-		}
+	/* 
+	 * try to guess ACCEPT-LANGUAGE from http header
+	 * reference http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.4
+	 * ACCEPT-LANGUAGE 'de-de,de;q=0.8,it;q=0.6,en-us;q=0.7,en;q=0.2';
+	 * Any implementation has to set it server side because this is not
+	 * accessible by JS. http://lists.w3.org/Archives/Public/public-html/2009Nov/0454.html
+	*/ 
+	if ( (typeof this.settings.i18n.current == 'undefined' || !this.settings.i18n.current) &&
+		typeof this.settings.i18n.acceptLanguage == 'string' ) {
 
-		for (var i = 0; i < this.settings.i18n.available.length; ++i) {
-			if (browserLang.indexOf(this.settings.i18n.available[i]) >= 0) {
-				this.settings.i18n.current = this.settings.i18n.available[i];
-				break;
-			}
-		}
-
-		if (!this.settings.i18n.current) {
-			this.settings.i18n.current = 'en';
-		}
+		var acceptLanguage = [];
+		// Split the string from ACCEPT-LANGUAGE
+	    var preferredLanugage = this.settings.i18n.acceptLanguage.split(",");
+	    for(i = 0; i < preferredLanugage.length; i++){
+	    	
+	    	// split language setting
+	    	var lang = preferredLanugage[i].split(";");
+	    	
+	    	// convert quality to float
+	    	if ( typeof lang[1] == 'undefined' || !lang[1] ) {
+	    	  lang[1] = 1;
+	    	} else {
+	    	  lang[1] = parseFloat(lang[1].substring(2, lang[1].length)); 
+	    	}
+	    	
+	    	// add converted language to accepted languages
+	    	acceptLanguage.push(lang);
+	    }
+	    
+	    // sort by quality
+	    acceptLanguage.sort(function (a,b) {return b[1] - a[1];});
+	    
+	    // check in sorted order if any of preferred languages is available
+	    for(i = 0; i < acceptLanguage.length; i++) {
+	    	if ( jQuery.inArray(acceptLanguage[i][0], this.settings.i18n.available) >= 0 ) {
+	    		this.settings.i18n.current = acceptLanguage[i][0];
+	    		break;
+	    	}
+	    }
 	}
 
-	// determine the actual language
+	/*
+	 * default language from for the browser navigator API.
+	 */ 
+	if (typeof this.settings.i18n.current == 'undefined' || !this.settings.i18n.current) {
+		this.settings.i18n.current = (navigator.language
+				? navigator.language       // gecko/webkit/opera
+				: navigator.userLanguage   // IE
+		);
+	}
+
+	// determine the actual language based on current and available languages
 	var actualLanguage = this.getLanguage(this.settings.i18n.current, this.settings.i18n.available);
 
 	if (!actualLanguage) {
-		GENTICS.Aloha.Log.error(this, 'Could not determine actual language, no languages available');
+		GENTICS.Aloha.Log.error(this, 'Could not determine actual language.');
 	} else {
 		// TODO load the dictionary file for the actual language
 		var fileUrl = this.settings.base + 'i18n/' + actualLanguage + '.dict';
 		this.loadI18nFile(fileUrl, this);
 	}
+};
+
+
+/**
+ * Check is language is among available languages
+ * @method
+ * @param {String} language language to be set
+ * @param {Array} availableLanguages list of available languages
+ * @return the actual language as a string
+ */
+GENTICS.Aloha.prototype.getLanguage = function(language, availableLanguages) {
+	
+	if (!availableLanguages instanceof Array) {
+		GENTICS.Aloha.Log.error(this, 'Available languages must be an Array');
+		return null;
+	}
+	
+	if (typeof language == 'undefined' || !language) {
+		return availableLanguages[0];
+	}
+	
+	for (var i = 0; i < availableLanguages.length; ++i) {
+		if (language == availableLanguages[i]) {
+			return language;
+		}
+	}
+
+	return availableLanguages[0];
 };
 
 /**
@@ -406,26 +471,6 @@ GENTICS.Aloha.prototype.i18n = function(component, key, replacements) {
 	}
 };
 
-/**
- * Get the actual language
- * @method
- * @param {String} current current selected language
- * @param {Array} available list of available languages
- * @return the actual language as a string
- */
-GENTICS.Aloha.prototype.getLanguage = function(current, available) {
-	if (!typeof available == 'Array') {
-		return null;
-	}
-
-	for (var i = 0; i < available.length; ++i) {
-		if (current == available[i]) {
-			return current;
-		}
-	}
-
-	return available[0];
-};
 
 /**
  * Register the given editable
@@ -443,7 +488,11 @@ GENTICS.Aloha.prototype.registerEditable = function (editable) {
  * @param {GENTICS.Aloha.Message} message the GENTICS.Aloha.Message object to be displayed
  */
 GENTICS.Aloha.prototype.showMessage = function (message) {
-	GENTICS.Aloha.FloatingMenu.obj.css('z-index', 8900);
+	
+	if (GENTICS.Aloha.FloatingMenu.obj) {
+		GENTICS.Aloha.FloatingMenu.obj.css('z-index', 8900);
+	}
+	
 	switch (message.type) {
 		case GENTICS.Aloha.Message.Type.ALERT:
 		    Ext.MessageBox.alert(message.title, message.text, message.callback);

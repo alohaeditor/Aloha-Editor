@@ -15,8 +15,7 @@ GENTICS.Aloha.Format = new GENTICS.Aloha.Plugin('com.gentics.aloha.plugins.Forma
 GENTICS.Aloha.Format.languages = ['en', 'de', 'fr', 'eo'];
 
 /**
- * dummy button configuration
- * 'cite','q','code','abbr', 'blockquote'
+ * default button configuration
  */
 GENTICS.Aloha.Format.config = [ 'b', 'i','del','sub','sup', 'p', 'title', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'removeFormat'];
 
@@ -24,35 +23,27 @@ GENTICS.Aloha.Format.config = [ 'b', 'i','del','sub','sup', 'p', 'title', 'h1', 
  * Initialize the plugin and set initialize flag on true
  */
 GENTICS.Aloha.Format.init = function () {
-	this.initButtons();
 
-	// override base configuration 
-	if (this.settings.config) {
-		this.config = this.settings.config;
-	}
+	this.initButtons();
 	
 	var that = this;
+	
 	// apply specific configuration if an editable has been activated
 	GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'editableActivated', function (e, params) {
-		that.applyButtonConfig(params.editable.obj.attr('id'));
+		that.applyButtonConfig(params.editable.obj);
 	});
-	
-	this.initialized = true;
+
 };
 
 /**
  * applys a configuration specific for an editable
  * buttons not available in this configuration are hidden
- * @param id of the activated editable
+ * @param {Object} id of the activated editable
  * @return void
  */
-GENTICS.Aloha.Format.applyButtonConfig = function (id) {
-	// specify the config to be used
-	if (this.settings.editables && this.settings.editables[id]) {
-		var config = this.settings.editables[id];
-	} else {
-		var config = this.config;
-	}
+GENTICS.Aloha.Format.applyButtonConfig = function (obj) {
+
+	config = this.getEditableConfig(obj);
 	
 	// now iterate all buttons and show/hide them according to the config
 	for (var button in this.buttons) {
@@ -79,6 +70,7 @@ GENTICS.Aloha.Format.applyButtonConfig = function (id) {
  * @param editable current editable object
  */
 GENTICS.Aloha.Format.initButtons = function () {
+	
 	var scope = 'GENTICS.Aloha.continuoustext';
 	this.buttons = {};
 	var that = this;
