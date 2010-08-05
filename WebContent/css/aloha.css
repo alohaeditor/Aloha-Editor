@@ -142,6 +142,10 @@ button.GENTICS_button_a {
 	background-position: -288px 0px !important;
 }
 
+button.GENTICS_button_a_remove {
+	background-position: -304px 0px !important;
+}
+
 /**
  * multisplit buttons
  */

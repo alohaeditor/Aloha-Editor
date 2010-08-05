@@ -82,7 +82,7 @@ GENTICS.Aloha.Link.initButtons = function () {
 		this.getUID('link'),
 		new GENTICS.Aloha.ui.Button({
 			// TODO use another icon here
-			'iconClass' : 'GENTICS_button GENTICS_button_a',
+			'iconClass' : 'GENTICS_button GENTICS_button_a_remove',
 			'size' : 'small',
 			'onclick' : function () {
 				var range = GENTICS.Aloha.Selection.getRangeObject();
