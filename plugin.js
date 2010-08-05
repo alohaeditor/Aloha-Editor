@@ -116,6 +116,11 @@ GENTICS.Aloha.Format.initButtons = function () {
 							// remove the markup
 							GENTICS.Utils.Dom.removeMarkup(rangeObject, markup, GENTICS.Aloha.activeEditable.obj);
 						} else {
+							// extend the range to a word
+							if (rangeObject.isCollapsed()) {
+								GENTICS.Utils.Dom.extendToWord(rangeObject);
+							}
+
 							// add the markup
 							GENTICS.Utils.Dom.addMarkup(rangeObject, markup);
 						}
