@@ -27,6 +27,8 @@ if (typeof GENTICS.Utils.Dom == 'undefined' || !GENTICS.Utils.Dom) {
  */
 GENTICS.Utils.Dom.prototype.mergeableTags = ['a', 'b', 'code', 'del', 'em', 'i', 'ins', 'strong', 'sub', 'sup', '#text'];
 
+GENTICS.Utils.Dom.prototype.nonWordBoundaryTags = ['a', 'b', 'code', 'del', 'em', 'i', 'ins', 'span', 'strong', 'sub', 'sup', '#text'];
+
 /**
  * Tags which make up Flow Content or Phrasing Content, according to the HTML 5 specification,
  * @see http://dev.w3.org/html5/spec/Overview.html#flow-content
@@ -937,6 +939,160 @@ GENTICS.Utils.Dom.prototype.removeFromDOM = function (object, range, preserveCon
 	} else {
 		// TODO
 	}
+};
+
+/**
+ * Extend the given range to have start and end at the nearest word boundaries to the left (start) and right (end)
+ * @param {GENTICS.Utils.RangeObject} range range to be extended
+ * @method
+ */
+GENTICS.Utils.Dom.prototype.extendToWord = function (range) {
+	// search the word boundaries to the left and right
+	var leftBoundary = this.searchWordBoundary(range.startContainer, range.startOffset, true);
+	var rightBoundary = this.searchWordBoundary(range.endContainer, range.endOffset, false);
+
+	// set the new boundaries
+	range.startContainer = leftBoundary.container;
+	range.startOffset = leftBoundary.offset;
+	range.endContainer = rightBoundary.container;
+	range.endOffset = rightBoundary.offset;
+
+	// correct the range
+	range.correctRange();
+
+	// clear caches
+	range.clearCaches();
+};
+
+/**
+ * Helper method to check whether the given DOM object is a word boundary.
+ * @param {DOMObject} object DOM object in question
+ * @return {boolean} true when the DOM object is a word boundary, false if not
+ * @hide
+ */
+GENTICS.Utils.Dom.prototype.isWordBoundaryElement = function (object) {
+	if (!object || !object.nodeName) {
+		return false;
+	}
+	return jQuery.inArray(object.nodeName.toLowerCase(), this.nonWordBoundaryTags) == -1;
+};
+
+/**
+ * Search for the next word boundary, starting at the given position
+ * @param {DOMObject} container container of the start position
+ * @param {Integer} offset offset of the start position
+ * @param {boolean} searchleft true for searching to the left, false for searching to the right (default: true)
+ * @return {object} object with properties 'container' and 'offset' marking the found word boundary
+ * @method
+ */
+GENTICS.Utils.Dom.prototype.searchWordBoundary = function (container, offset, searchleft) {
+	if (typeof searchleft == 'undefined') {
+		searchleft = true;
+	}
+	var boundaryFound = false;
+	while (!boundaryFound) {
+		// check the node type
+		if (container.nodeType == 3) {
+			// we are currently in a text node
+
+			// find the nearest word boundary character
+			if (!searchleft) {
+				// search right
+				var wordBoundaryPos = container.data.substring(offset).search(/\W/);
+				if (wordBoundaryPos != -1) {
+					// found a word boundary
+					offset = offset + wordBoundaryPos;
+					boundaryFound = true;
+				} else {
+					// found no word boundary, so we set the position after the container
+					offset = this.getIndexInParent(container) + 1;
+					container = container.parentNode;
+				}
+			} else {
+				// search left
+				var wordBoundaryPos = container.data.substring(0, offset).search(/\W/);
+				var tempWordBoundaryPos = wordBoundaryPos;
+				while (tempWordBoundaryPos != -1) {
+					wordBoundaryPos = tempWordBoundaryPos;
+					tempWordBoundaryPos = container.data.substring(
+							wordBoundaryPos + 1, offset).search(/\W/);
+					if (tempWordBoundaryPos != -1) {
+						tempWordBoundaryPos = tempWordBoundaryPos + wordBoundaryPos + 1;
+					}
+				}
+
+				if (wordBoundaryPos != -1) {
+					// found a word boundary
+					offset = wordBoundaryPos + 1;
+					boundaryFound = true;
+				} else {
+					// found no word boundary, so we set the position before the container
+					offset = this.getIndexInParent(container);
+					container = container.parentNode;
+				}
+			}
+		} else if (container.nodeType == 1) {
+			// we are currently in an element node (between nodes)
+
+			if (!searchleft) {
+				// check whether there is an element to the right
+				if (offset < container.childNodes.length) {
+					// there is an element to the right, check whether it is a word boundary element
+					if (this.isWordBoundaryElement(container.childNodes[offset])) {
+						// we are done
+						boundaryFound = true;
+					} else {
+						// element to the right is no word boundary, so enter it
+						container = container.childNodes[offset];
+						offset = 0;
+					}
+				} else {
+					// no element to the right, check whether the element itself is a boundary element
+					if (this.isWordBoundaryElement(container)) {
+						// we are done
+						boundaryFound = true;
+					} else {
+						// element itself is no boundary element, so go to parent
+						offset = this.getIndexInParent(container) + 1;
+						container = container.parentNode;
+					}
+				}
+			} else {
+				// check whether there is an element to the left
+				if (offset > 0) {
+					// there is an element to the left, check whether it is a word boundary element
+					if (this.isWordBoundaryElement(container.childNodes[offset - 1])) {
+						// we are done
+						boundaryFound = true;
+					} else {
+						// element to the left is no word boundary, so enter it
+						container = container.childNodes[offset - 1];
+						offset = container.nodeType == 3 ? container.data.length : container.childNodes.length;
+					}
+				} else {
+					// no element to the left, check whether the element itself is a boundary element
+					if (this.isWordBoundaryElement(container)) {
+						// we are done
+						boundaryFound = true;
+					} else {
+						// element itself is no boundary element, so go to parent
+						offset = this.getIndexInParent(container);
+						container = container.parentNode;
+					}
+				}
+			}
+		}
+	}
+
+	if (container.nodeType != 3) {
+		var textNode = this.searchAdjacentTextNode(container, offset, !searchleft);
+		if (textNode) {
+			container = textNode;
+			offset = searchleft ? 0 : container.data.length;
+		}
+	}
+
+	return {'container' : container, 'offset' : offset};
 };
 
 /**
