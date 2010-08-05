@@ -196,7 +196,7 @@ GENTICS.Utils.Dom.prototype.split = function (range, limit, atEnd) {
 				element.data = element.data.substring(0, splitPosition);	
 			} else {
 				// other nodes
-				var newElement = jQuery(document.createElement(element.nodeName));
+				var newElement = jQuery(element).clone(false).empty();
 				var children = jQuery(element).contents();
 				secondPart = newElement.append(children.slice(splitPosition, children.length)).get(0);
 			}
@@ -216,7 +216,7 @@ GENTICS.Utils.Dom.prototype.split = function (range, limit, atEnd) {
 			}
 		} else {
 			// create the new element of the same type and prepend it to the previously created element
-			var newElement = jQuery(document.createElement(element.nodeName));
+			var newElement = jQuery(element).clone(false).empty();
 			
 			if (!newDom) {
 				newDom = newElement;
