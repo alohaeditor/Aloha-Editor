@@ -20,7 +20,7 @@ GENTICS.Aloha.Link.languages = ['en', 'de'];
 GENTICS.Aloha.Link.config = ['a'];
 
 /**
- * Initialize the plugin and set initialize flag on true
+ * Initialize the plugin
  */
 GENTICS.Aloha.Link.init = function () {
 	this.initButtons();
@@ -76,6 +76,33 @@ GENTICS.Aloha.Link.initButtons = function () {
 		this.i18n('floatingmenu.tab.link'),
 		1
 	);
+
+	// add a button for removing the currently set link
+	GENTICS.Aloha.FloatingMenu.addButton(
+		this.getUID('link'),
+		new GENTICS.Aloha.ui.Button({
+			// TODO use another icon here
+			'iconClass' : 'GENTICS_button GENTICS_button_a',
+			'size' : 'small',
+			'onclick' : function () {
+				var range = GENTICS.Aloha.Selection.getRangeObject();
+				var foundMarkup = range.findMarkup(function() {
+					return this.nodeName.toLowerCase() == 'a';
+				}, jQuery(GENTICS.Aloha.activeEditable.obj));
+				if (foundMarkup) {
+					// remove the link
+					GENTICS.Utils.Dom.removeFromDOM(foundMarkup, range, true);
+					// set focus back to editable
+					GENTICS.Aloha.activeEditable.obj[0].focus();
+					// select the (possibly modified) range
+					range.select();
+				}
+			},
+			'tooltip' : this.i18n('button.removelink.tooltip')
+		}),
+		this.i18n('floatingmenu.tab.link'),
+		1
+	);
 };
 
 /**
@@ -126,6 +153,11 @@ GENTICS.Aloha.Link.subscribeEvents = function () {
 GENTICS.Aloha.Link.insertLink = function () {
 	var range = GENTICS.Aloha.Selection.getRangeObject();
 	GENTICS.Aloha.FloatingMenu.userActivatedTab = this.i18n('floatingmenu.tab.link');
+
+	if (range.isCollapsed()) {
+		GENTICS.Utils.Dom.extendToWord(range);
+	}
+
 	if (range.isCollapsed()) {
 		// insert a link with text here
 		var linkText = this.i18n('newlink.defaulttext');
@@ -173,15 +205,22 @@ Ext.ux.LinkSrcButton = Ext.extend(Ext.Component, {
 		Ext.ux.LinkSrcButton.superclass.onRender.apply(this, arguments);
 		this.wrapper = jQuery(this.el.dom);
 		this.input = jQuery('<input type="text" style="width:300px">');
+
+		// add the blur handler which stores back the entered url to the anchor
+		this.input.blur(function (event) {
+			if (that.anchor) {
+				that.input.val(jQuery.trim(that.input.val()));
+				if (that.input.val().length == 0) {
+					that.input.val('#');
+				}
+				jQuery(that.anchor).attr('href', that.input.val());
+			}
+		});
+
+		// add a key handler for enter key to blur the field (will store back
+		// the url) and set the focus back to the editable
 		this.input.keyup(function (event) {
 			if (event.keyCode == 13) {
-				if (that.anchor) {
-					that.input.val(jQuery.trim(that.input.val()));
-					if (that.input.val().length == 0) {
-						that.input.val('#');
-					}
-					jQuery(that.anchor).attr('href', that.input.val());
-				}
 				that.input.blur();
 				GENTICS.Aloha.activeEditable.obj[0].focus();
 				GENTICS.Aloha.Selection.getRangeObject().select();
