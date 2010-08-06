@@ -27,6 +27,10 @@ if (typeof GENTICS.Utils.Dom == 'undefined' || !GENTICS.Utils.Dom) {
  */
 GENTICS.Utils.Dom.prototype.mergeableTags = ['a', 'b', 'code', 'del', 'em', 'i', 'ins', 'strong', 'sub', 'sup', '#text'];
 
+/**
+ * Tags which do not mark word boundaries
+ * @hide
+ */
 GENTICS.Utils.Dom.prototype.nonWordBoundaryTags = ['a', 'b', 'code', 'del', 'em', 'i', 'ins', 'span', 'strong', 'sub', 'sup', '#text'];
 
 /**
@@ -106,28 +110,13 @@ GENTICS.Utils.Dom.prototype.children = {
  * TODO: finish this list
  * @hide
  */
-GENTICS.Utils.Dom.prototype.blockLevelElements = {
-  'p' : true,
-  'h1' : true,
-  'h2' : true,
-  'h3' : true,
-  'h4' : true,
-  'h5' : true,
-  'h6' : true,
-  'blockquote' : true,
-  'div' : true,
-  'pre' : true
-};
+GENTICS.Utils.Dom.prototype.blockLevelElements = ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'div', 'pre'];
 
 /**
  * List of nodenames of list elements
  * @hide
  */
-GENTICS.Utils.Dom.prototype.listElements = {
-	'li' : true,
-	'ol' : true,
-	'ul' : true
-};
+GENTICS.Utils.Dom.prototype.listElements = ['li', 'ol',	'ul'];
 
 /**
  * Splits a DOM element at the given position up until the limiting object(s), so that it is valid HTML again afterwards.
@@ -556,22 +545,27 @@ GENTICS.Utils.Dom.prototype.doCleanup = function(cleanup, rangeObject, start) {
 				// remove this node
 				jQuery(this).remove();
 			} else {
-				if (jQuery.inArray(this.nodeName.toLowerCase(), that.mergeableTags) >= 0) {
-					prevNode = this;
-				} else {
-					prevNode = false;
-				}
 				// do the recursion step here
 				modifiedRange |= that.doCleanup(cleanup, rangeObject, this);
 
 				// eventually remove empty elements
+				var removed = false;
 				if (cleanup.removeempty) {
 					if (GENTICS.Utils.Dom.isBlockLevelElement(this) && this.childNodes.length == 0) {
 						jQuery(this).remove();
-						prevNode = false;
+						removed = true;
 					}
 					if (jQuery.inArray(this.nodeName.toLowerCase(), that.mergeableTags) >= 0 && jQuery(this).text().length == 0) {
 						jQuery(this).remove();
+						removed = true;
+					}
+				}
+
+				// when the current node was not removed, we eventually store it as previous (mergeable) tag
+				if (!removed) {
+					if (jQuery.inArray(this.nodeName.toLowerCase(), that.mergeableTags) >= 0) {
+						prevNode = this;
+					} else {
 						prevNode = false;
 					}
 				}
@@ -691,7 +685,7 @@ GENTICS.Utils.Dom.prototype.isBlockLevelElement = function (node) {
 	if (!node) {
 		return false;
 	}
-	if (node.nodeType == 1 && this.blockLevelElements[node.nodeName.toLowerCase()]) {
+	if (node.nodeType == 1 && jQuery.inArray(node.nodeName.toLowerCase(), this.blockLevelElements) >= 0) {
 		return true;
 	} else {
 		return false;
@@ -721,7 +715,7 @@ GENTICS.Utils.Dom.prototype.isListElement = function (node) {
 	if (!node) {
 		return false;
 	}
-	return node.nodeType == 1 && this.listElements[node.nodeName.toLowerCase()];
+	return node.nodeType == 1 && jQuery.inArray(node.nodeName.toLowerCase(), this.listElements) >= 0;
 };
 
 /**
@@ -944,12 +938,24 @@ GENTICS.Utils.Dom.prototype.removeFromDOM = function (object, range, preserveCon
 /**
  * Extend the given range to have start and end at the nearest word boundaries to the left (start) and right (end)
  * @param {GENTICS.Utils.RangeObject} range range to be extended
+ * @param {boolean} fromBoundaries true if extending will also be done, if one or both ends of the range already are at a word boundary, false if not, default: false
  * @method
  */
-GENTICS.Utils.Dom.prototype.extendToWord = function (range) {
+GENTICS.Utils.Dom.prototype.extendToWord = function (range, fromBoundaries) {
 	// search the word boundaries to the left and right
 	var leftBoundary = this.searchWordBoundary(range.startContainer, range.startOffset, true);
 	var rightBoundary = this.searchWordBoundary(range.endContainer, range.endOffset, false);
+
+	// check whether we must not extend the range from word boundaries
+	if (!fromBoundaries) {
+		// we only extend the range if both ends would be different
+		if (range.startContainer == leftBoundary.container && range.startOffset == leftBoundary.offset) {
+			return;
+		}
+		if (range.endContainer == rightBoundary.container && range.endOffset == rightBoundary.offset) {
+			return;
+		}
+	}
 
 	// set the new boundaries
 	range.startContainer = leftBoundary.container;
