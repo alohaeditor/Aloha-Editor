@@ -52,8 +52,17 @@ GENTICS.Aloha.settings = {
 			config : [ 'a' ],
 		  	editables : {
 				// No links in the title.
-				'#title'	: [  ] 
-		  	}
+				'#title'	: [  ]
+		  	},
+		  	// all links that match the targetregex will get set the target
+ 			// e.g. ^(?!.*aloha-editor.com).* matches all href except aloha-editor.com
+		  	targetregex : '^(?!.*aloha-editor.com).*',
+		  	// this target is set when either targetregex matches or not set
+		    // e.g. _blank opens all links in new window
+		  	target : '_blank',
+		  	// the same for css class as for target
+		  	cssclassregex : '^(?!.*aloha-editor.com).*',
+		  	cssclass : 'aloha'
 		},
 	 	"com.gentics.aloha.plugins.Table": { 
 			config : [ ],
@@ -83,9 +92,10 @@ it is used as the above.</p>
 </div>
 <div id="content" class="article">
 <h2>Etymology</h2>
-<p>The word aloha derives from the Proto-Polynesian root <i>*qalofa</i>. It has cognates in other Polynesian languages, such as Samoan alofa
+<p>The word <a href="http://en.wikipedia.org/wiki/Aloha" target="_blank" class="aloha">aloha</a> derives from the Proto-Polynesian root <i>*qalofa</i>. It has cognates in other Polynesian languages, such as Samoan alofa
 and Māori aroha, also meaning "love."</p>
-<p>A folk etymology claims that it derives from a compound of the Hawaiian words alo meaning "presence", "front", "face", or "share"; and
+<p><a href="http://aloha-editor.com/">Aloha Editor</a> is the word's most advanced browser based Editor made with aloha passion.</p>
+<p>A folk etymology claims that it derives from a compound of the <a href="http://en.wikipedia.org/wiki/Hawaii" target="_blank" class="aloha">Hawaiian</a> words alo meaning "presence", "front", "face", or "share"; and
 ha, meaning "breath of life" or "essence of life." Although alo does indeed mean "presence" etc., the word for breath is spelled with a macron
 or kahakō over the a (hā) whereas the word aloha does not have a long a.</p>
 <h2>Usage</h2>
