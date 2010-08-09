@@ -1,5 +1,7 @@
 
-	
+
+	}
+
 	/* Generate xHTML valid css Elements */
 	function cssElement( link ) {
 		var csslink = document.createElement("link");
