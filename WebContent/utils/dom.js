@@ -34,6 +34,13 @@ GENTICS.Utils.Dom.prototype.mergeableTags = ['a', 'b', 'code', 'del', 'em', 'i',
 GENTICS.Utils.Dom.prototype.nonWordBoundaryTags = ['a', 'b', 'code', 'del', 'em', 'i', 'ins', 'span', 'strong', 'sub', 'sup', '#text'];
 
 /**
+ * Tags which are considered 'nonempty', even if they have no children (or not data)
+ * TODO: finish this list
+ * @hide
+ */
+GENTICS.Utils.Dom.prototype.nonEmptyTags = ['br'];
+
+/**
  * Tags which make up Flow Content or Phrasing Content, according to the HTML 5 specification,
  * @see http://dev.w3.org/html5/spec/Overview.html#flow-content
  * @see http://dev.w3.org/html5/spec/Overview.html#phrasing-content
@@ -240,7 +247,7 @@ GENTICS.Utils.Dom.prototype.split = function (range, limit, atEnd) {
 	// append the new dom
 	jQuery(path[0]).after(newDom);
 
-	return jQuery([path[0], newDom ? newDom : secondPart]);
+	return jQuery([path[0], newDom ? newDom.get(0) : secondPart]);
 };
 
 /**
@@ -541,6 +548,9 @@ GENTICS.Utils.Dom.prototype.doCleanup = function(cleanup, rangeObject, start) {
 
 				// merge the contents of this node into the previous one
 				jQuery(prevNode).append(jQuery(this).contents());
+
+				// after merging, we eventually need to cleanup the prevNode again
+				modifiedRange |= that.doCleanup(cleanup, rangeObject, prevNode);
 
 				// remove this node
 				jQuery(this).remove();
@@ -1099,6 +1109,39 @@ GENTICS.Utils.Dom.prototype.searchWordBoundary = function (container, offset, se
 	}
 
 	return {'container' : container, 'offset' : offset};
+};
+
+/**
+ * Check whether the given dom object is empty
+ * @param {DOMObject} domObject object to check
+ * @return {boolean} true when the object is empty, false if not
+ * @method
+ */
+GENTICS.Utils.Dom.prototype.isEmpty = function (domObject) {
+	// a non dom object is considered empty
+	if (!domObject) {
+		return true;
+	}
+
+	// some tags are considered to be non-empty
+	if (jQuery.inArray(domObject.nodeName.toLowerCase(), this.nonEmptyTags) != -1) {
+		return false;
+	}
+
+	// text nodes are not empty, if they contain non-whitespace characters
+	if (domObject.nodeType == 3) {
+		return domObject.data.search(/\S/) == -1;
+	}
+
+	// all other nodes are not empty if they contain at least one child which is not empty
+	for (var i = 0; i < domObject.childNodes.length; ++i) {
+		if (!this.isEmpty(domObject.childNodes[i])) {
+			return false;
+		}
+	}
+
+	// found no contents, so the element is empty
+	return true;
 };
 
 /**
