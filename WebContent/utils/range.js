@@ -159,7 +159,7 @@ GENTICS.Utils.RangeObject.prototype.getContainerParents = function (limit, fromE
 		limit = jQuery('body');
 	}
 
-	if (!parentStore[limit]) {
+	if (!parentStore[limit.get(0)]) {
 		var parents;
 
 		// for text nodes, get the parents
@@ -181,10 +181,10 @@ GENTICS.Utils.RangeObject.prototype.getContainerParents = function (limit, fromE
 		}
 
 		// store it (might be used again)
-		parentStore[limit] = parents;
+		parentStore[limit.get(0)] = parents;
 	}
 
-	return parentStore[limit];
+	return parentStore[limit.get(0)];
 };
 
 /**

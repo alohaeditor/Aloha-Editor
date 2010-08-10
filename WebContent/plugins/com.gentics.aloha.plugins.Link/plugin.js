@@ -149,7 +149,7 @@ GENTICS.Aloha.Link.subscribeEvents = function () {
 		// check whether the markup contains a link
 		var foundMarkup = rangeObject.findMarkup(function () {
 			return this.nodeName.toLowerCase() == 'a';
-		}, jQuery(GENTICS.Aloha.activeEditable.obj));
+		}, GENTICS.Aloha.activeEditable.obj);
 
 		if (foundMarkup) {
 			// link found
@@ -179,7 +179,7 @@ GENTICS.Aloha.Link.findLinkMarkup = function ( range ) {
 	}
 	return range.findMarkup(function() {
 		return this.nodeName.toLowerCase() == 'a';
-	}, jQuery(GENTICS.Aloha.activeEditable.obj));
+	}, GENTICS.Aloha.activeEditable.obj);
 };
 
 /**
