@@ -41,7 +41,7 @@ GENTICS.Aloha.Link.initButtons = function () {
 				var range = GENTICS.Aloha.Selection.getRangeObject();
 				var foundMarkup = range.findMarkup(function() {
 					return this.nodeName.toLowerCase() == 'a';
-				}, jQuery(GENTICS.Aloha.activeEditable.obj));
+				}, GENTICS.Aloha.activeEditable.obj);
 				if (foundMarkup) {
 					// remove the link
 					GENTICS.Utils.Dom.removeFromDOM(foundMarkup, range, true);
