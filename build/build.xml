@@ -77,7 +77,7 @@
 		<replaceregexp byline="true" file="${outdir}/${css.includes.filename}" match="(.+)" replace="${dev.includecss.subst}"/>
 
 		<!-- now concat the js files -->
-		<concat destfile="${srcdir}/core/include-js.inc" force="true">
+		<concat destfile="${srcdir}/core/include.js" force="true">
 			<fileset file="deps/includejs-header.txt"/>
 			<filelist dir="${outdir}" files="${deps.includes.filename},${aloha.includes.filename}"></filelist>
 			<fileset file="deps/includejs-footer.txt"/>
@@ -253,6 +253,13 @@
 		<zip destfile="${zipdir}/${filename}-${version}.zip" basedir="${outdir}" includes="aloha-${version}/**"/>
 	</target>
 
+	<target name="dictionaries">
+		<!-- now concat the dict files -->
+		<concat destfile="${outdir}/translation/de.dict" force="true">
+			<fileset dir="../" includes="**/de.dict" />
+		</concat>
+	</target>
+	
 	<!-- Build all -->
 	<target name="all" depends="clean,build,package" />
 </project>
