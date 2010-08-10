@@ -19,10 +19,45 @@ GENTICS.Aloha.Link.languages = ['en', 'de'];
  */
 GENTICS.Aloha.Link.config = ['a'];
 
+// TODO register those parameters for Link plug-in. 
+// Update code then where settings.
+
+/**
+ * all links that match the targetregex will get set the target
+ * e.g. ^(?!.*aloha-editor.com).* matches all href except aloha-editor.com
+ */
+GENTICS.Aloha.Link.targetregex = '';
+
+/**
+  * this target is set when either targetregex matches or not set
+  * e.g. _blank opens all links in new window
+  */
+GENTICS.Aloha.Link.target = '';
+
+/**
+ * all links that match the cssclassregex will get set the css class
+ * e.g. ^(?!.*aloha-editor.com).* matches all href except aloha-editor.com
+ */
+GENTICS.Aloha.Link.cssclassregex = '';
+
+/**
+  * this target is set when either cssclassregex matches or not set
+  */
+GENTICS.Aloha.Link.cssclass = '';
+
 /**
  * Initialize the plugin
  */
 GENTICS.Aloha.Link.init = function () {
+	if (GENTICS.Aloha.Link.settings.targetregex != undefined)
+		GENTICS.Aloha.Link.targetregex = GENTICS.Aloha.Link.settings.targetregex;
+	if (GENTICS.Aloha.Link.settings.target != undefined)
+		GENTICS.Aloha.Link.target = GENTICS.Aloha.Link.settings.target;
+	if (GENTICS.Aloha.Link.settings.cssclassregex != undefined)
+		GENTICS.Aloha.Link.cssclassregex = GENTICS.Aloha.Link.settings.cssclassregex;
+	if (GENTICS.Aloha.Link.settings.cssclass != undefined)
+		GENTICS.Aloha.Link.cssclass = GENTICS.Aloha.Link.settings.cssclass;
+		
 	this.initButtons();
 	this.subscribeEvents();
 };
@@ -33,35 +68,33 @@ GENTICS.Aloha.Link.init = function () {
 GENTICS.Aloha.Link.initButtons = function () {
 	var that = this;
 
-	this.addLinkButton = new GENTICS.Aloha.ui.Button({
+	// format Button
+	this.formatLinkButton = new GENTICS.Aloha.ui.Button({
 		'iconClass' : 'GENTICS_button GENTICS_button_a',
 		'size' : 'small',
-		'onclick' : function () {
-			if (GENTICS.Aloha.activeEditable) {
-				var range = GENTICS.Aloha.Selection.getRangeObject();
-				var foundMarkup = range.findMarkup(function() {
-					return this.nodeName.toLowerCase() == 'a';
-				}, GENTICS.Aloha.activeEditable.obj);
-				if (foundMarkup) {
-					// remove the link
-					GENTICS.Utils.Dom.removeFromDOM(foundMarkup, range, true);
-					// set focus back to editable
-					GENTICS.Aloha.activeEditable.obj[0].focus();
-					// select the (possibly modified) range
-					range.select();
-				} else {
-					that.insertLink();
-				}
-			}
-		},
+		'onclick' : function () { that.formatLink(); },
 		'tooltip' : this.i18n('button.addlink.tooltip'),
 		'toggle' : true
 	});
-
 	GENTICS.Aloha.FloatingMenu.addButton(
 		'GENTICS.Aloha.continuoustext',
-		this.addLinkButton,
+		this.formatLinkButton,
 		GENTICS.Aloha.i18n(GENTICS.Aloha, 'floatingmenu.tab.format'),
+		1
+	);
+
+	// insert Link
+	this.insertLinkButton = new GENTICS.Aloha.ui.Button({
+		'iconClass' : 'GENTICS_button GENTICS_button_a',
+		'size' : 'small',
+		'onclick' : function () { that.insertLink( false ); },
+		'tooltip' : this.i18n('button.addlink.tooltip'),
+		'toggle' : false
+	});
+	GENTICS.Aloha.FloatingMenu.addButton(
+		'GENTICS.Aloha.continuoustext',
+		this.insertLinkButton,
+		GENTICS.Aloha.i18n(GENTICS.Aloha, 'floatingmenu.tab.insert'),
 		1
 	);
 
@@ -69,6 +102,7 @@ GENTICS.Aloha.Link.initButtons = function () {
 	GENTICS.Aloha.FloatingMenu.createScope(this.getUID('link'), 'GENTICS.Aloha.continuoustext');
 
 	this.srcFieldButton = new GENTICS.Aloha.Link.SrcField();
+
 	// add the input field for links
 	GENTICS.Aloha.FloatingMenu.addButton(
 		this.getUID('link'),
@@ -84,20 +118,7 @@ GENTICS.Aloha.Link.initButtons = function () {
 			// TODO use another icon here
 			'iconClass' : 'GENTICS_button GENTICS_button_a_remove',
 			'size' : 'small',
-			'onclick' : function () {
-				var range = GENTICS.Aloha.Selection.getRangeObject();
-				var foundMarkup = range.findMarkup(function() {
-					return this.nodeName.toLowerCase() == 'a';
-				}, jQuery(GENTICS.Aloha.activeEditable.obj));
-				if (foundMarkup) {
-					// remove the link
-					GENTICS.Utils.Dom.removeFromDOM(foundMarkup, range, true);
-					// set focus back to editable
-					GENTICS.Aloha.activeEditable.obj[0].focus();
-					// select the (possibly modified) range
-					range.select();
-				}
-			},
+			'onclick' : function () { that.removeLink(); },
 			'tooltip' : this.i18n('button.removelink.tooltip')
 		}),
 		this.i18n('floatingmenu.tab.link'),
@@ -118,25 +139,26 @@ GENTICS.Aloha.Link.subscribeEvents = function () {
 		var config = that.getEditableConfig(GENTICS.Aloha.activeEditable.obj);
 
 		if ( jQuery.inArray('a', config) != -1) {
-			that.addLinkButton.show();
+			that.formatLinkButton.show();
+			that.insertLinkButton.show();
 		} else {
-			that.addLinkButton.hide();
+			that.formatLinkButton.hide();
+			that.insertLinkButton.hide();
 		}
 		
 		// check whether the markup contains a link
 		var foundMarkup = rangeObject.findMarkup(function () {
 			return this.nodeName.toLowerCase() == 'a';
-		}, jQuery(GENTICS.Aloha.activeEditable.obj));
+		}, GENTICS.Aloha.activeEditable.obj);
 
 		if (foundMarkup) {
 			// link found
-			that.addLinkButton.setPressed(true);
+			that.formatLinkButton.setPressed(true);
 			GENTICS.Aloha.FloatingMenu.setScope(that.getUID('link'));
 			that.srcFieldButton.setAnchor(foundMarkup);
 		} else {
 			// no link found
-			that.addLinkButton.setPressed(false);
-			// GENTICS.Aloha.FloatingMenu.setScope('GENTICS.Aloha.continuoustext');
+			that.formatLinkButton.setPressed(false);
 			that.srcFieldButton.setAnchor(null);
 		}
 
@@ -146,19 +168,54 @@ GENTICS.Aloha.Link.subscribeEvents = function () {
 };
 
 /**
+ * Check wheter inside a link tag 
+ * @param {GENTICS.Utils.RangeObject} range range where to insert the object (at start or end)
+ * @return markup
+ * @hide
+ */
+GENTICS.Aloha.Link.findLinkMarkup = function ( range ) {
+	if ( typeof range == 'undefined' ) {
+		var range = GENTICS.Aloha.Selection.getRangeObject();	
+	}
+	return range.findMarkup(function() {
+		return this.nodeName.toLowerCase() == 'a';
+	}, GENTICS.Aloha.activeEditable.obj);
+};
+
+/**
+ * Format the current selection or if collapsed the current word as link.
+ * If inside a link tag the link is removed.
+ */
+GENTICS.Aloha.Link.formatLink = function () {
+	var that = this;
+
+	var range = GENTICS.Aloha.Selection.getRangeObject();
+	if (GENTICS.Aloha.activeEditable) {
+		var foundMarkup = that.findLinkMarkup( range ); 
+		if ( foundMarkup ) {
+			that.removeLink();
+		} else {
+			that.insertLink();
+		}
+	}
+};
+
+/**
  * Insert a new link at the current selection. When the selection is collapsed,
  * the link will have a default link text, otherwise the selected text will be
  * the link text.
  */
-GENTICS.Aloha.Link.insertLink = function () {
-	var range = GENTICS.Aloha.Selection.getRangeObject();
+GENTICS.Aloha.Link.insertLink = function ( extendToWord ) {
+	
+	// activate floating menu tab
 	GENTICS.Aloha.FloatingMenu.userActivatedTab = this.i18n('floatingmenu.tab.link');
 
-	if (range.isCollapsed()) {
+	// if selection is collapsed then extend to the word.
+	var range = GENTICS.Aloha.Selection.getRangeObject();
+	if (range.isCollapsed() && extendToWord != false) {
 		GENTICS.Utils.Dom.extendToWord(range);
 	}
-
-	if (range.isCollapsed()) {
+	if ( range.isCollapsed() ) {
 		// insert a link with text here
 		var linkText = this.i18n('newlink.defaulttext');
 		var newLink = jQuery('<a href="#">' + linkText + '</a>');
@@ -166,16 +223,31 @@ GENTICS.Aloha.Link.insertLink = function () {
 		range.startContainer = range.endContainer = newLink.contents().get(0);
 		range.startOffset = 0;
 		range.endOffset = linkText.length;
-		range.select();
-
-		this.srcFieldButton.focus();
 	} else {
 		GENTICS.Utils.Dom.addMarkup(range, jQuery('<a href="#"></a>'), false);
-		range.select();
+	}
+	range.select();
+	this.srcFieldButton.focus();
+};
 
-		this.srcFieldButton.focus();
+/**
+ * Remove an a tag if inside any.
+ */
+GENTICS.Aloha.Link.removeLink = function () {
+	var that = this;
+
+	var range = GENTICS.Aloha.Selection.getRangeObject();
+	var foundMarkup = that.findLinkMarkup(); 
+	if ( foundMarkup ) {
+		// remove the link
+		GENTICS.Utils.Dom.removeFromDOM(foundMarkup, range, true);
+		// set focus back to editable
+		GENTICS.Aloha.activeEditable.obj[0].focus();
+		// select the (possibly modified) range
+		range.select();
 	}
 };
+
 
 /**
  * For now, we create our own extJS button implementation
@@ -202,30 +274,40 @@ Ext.ux.LinkSrcButton = Ext.extend(Ext.Component, {
 	 */
 	onRender : function () {
 		var that = this;
+
 		Ext.ux.LinkSrcButton.superclass.onRender.apply(this, arguments);
 		this.wrapper = jQuery(this.el.dom);
-		this.input = jQuery('<input type="text" style="width:300px">');
-
-		// add the blur handler which stores back the entered url to the anchor
-		this.input.blur(function (event) {
-			if (that.anchor) {
-				that.input.val(jQuery.trim(that.input.val()));
-				if (that.input.val().length == 0) {
-					that.input.val('#');
-				}
-				jQuery(that.anchor).attr('href', that.input.val());
-			}
-		});
-
-		// add a key handler for enter key to blur the field (will store back
-		// the url) and set the focus back to the editable
+		this.input = jQuery('<input id="GENTICS_Aloha_plugin_Link" type="text" style="width:300px">');
+		
+		// add a key handler for processing the input data
 		this.input.keyup(function (event) {
-			if (event.keyCode == 13) {
-				that.input.blur();
+			
+			// update link href in any case 
+			if (that.anchor) {
+				if (that.input.val().length == 0) {
+					jQuery(that.anchor).attr('href', '#');
+				} else {
+					jQuery(that.anchor).attr('href', that.input.val());
+				}
+			}
+			
+			// on ENTER or ESC leave the editing
+			// TODO should ESC reset the value that was set initally?
+			if (event.keyCode == 13 || event.keyCode == 27) {
+				
+				// Set focus to link element and select the object
 				GENTICS.Aloha.activeEditable.obj[0].focus();
 				GENTICS.Aloha.Selection.getRangeObject().select();
+			
+			} else {
+				
+				// TODO attach a link parser callback function with the link object
+				// For now hardcoded attribute handling with regex.
+				that.setAttribute(that.input.val(), 'target', GENTICS.Aloha.Link.targetregex, GENTICS.Aloha.Link.target);
+				that.setAttribute(that.input.val(), 'class', GENTICS.Aloha.Link.cssclassregex, GENTICS.Aloha.Link.cssclass);
 			}
 		});
+		
 		this.wrapper.append(this.input);
 		if (this.anchor) {
 			this.input.val(jQuery(this.anchor).attr('href'));
@@ -237,6 +319,30 @@ Ext.ux.LinkSrcButton = Ext.extend(Ext.Component, {
 		}
 	},
 
+	// Private
+	// Quick hack to allow attribute setting by regex
+	setAttribute: function (input, attr, regex, value) {
+		var that = this;
+
+		if ( typeof value != 'undefined' ) {
+			var setTarget = true;
+			if ( typeof regex  != 'undefined' ) {
+				var regex = new RegExp( regex );
+				if ( input.match(regex) ) {
+					setTarget = true;
+				} else {
+					setTarget = false;
+				}
+			}
+			if ( setTarget ) {
+				jQuery(that.anchor).attr(attr, value);
+			} else {
+				jQuery(that.anchor).removeAttr(attr);									
+			}
+		}
+
+	},
+	
 	/**
 	 * Set the anchor
 	 */
