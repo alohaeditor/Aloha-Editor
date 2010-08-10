@@ -56,30 +56,15 @@ jQuery.fn.GENTICS_contentEditableSelectionChange = function(callback) {
 		// remember that a selection was started
 		that.selectionStarted = true;
 	});
-
-	// in ie, the new selection cannot be read consistently, when doing this in
-	// the event handler to the mouseup event, so we need to do this in the
-	// 'onselectionchange' eventz
-	if (jQuery.browser.msie) {
-		document.attachEvent('onselectionchange', function (event) {
-			GENTICS.Aloha.Selection.eventOriginalTarget = that;
-			if (that.selectionStarted) {
-				callback(event);
-			}
-			GENTICS.Aloha.Selection.eventOriginalTarget = false;
-			that.selectionStarted = false;
-		});
-	} else {
-		jQuery(document).mouseup(function(event) {
-			GENTICS.Aloha.Selection.eventOriginalTarget = that;
-			if (that.selectionStarted) {
-				callback(event);
-			}
-			GENTICS.Aloha.Selection.eventOriginalTarget = false;
-			that.selectionStarted = false;
-		});
-	}
-
+	jQuery(document).mouseup(function(event) {
+		GENTICS.Aloha.Selection.eventOriginalTarget = that;
+		if (that.selectionStarted) {
+			callback(event);
+		}
+		GENTICS.Aloha.Selection.eventOriginalTarget = false;
+		that.selectionStarted = false;
+	});
+	
 	return this;
 };
 

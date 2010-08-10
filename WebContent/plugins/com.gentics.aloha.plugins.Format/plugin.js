@@ -101,22 +101,24 @@ GENTICS.Aloha.Format.initButtons = function () {
 							GENTICS.Aloha.activeEditable.obj[0].focus();
 						}
 						var markup = jQuery('<'+button+'></'+button+'>');
-						var markupIsApplied = false;
 						var rangeObject = GENTICS.Aloha.Selection.rangeObject;
 
-						// check whether the markup is currently applied
-						for (var i = 0; i < rangeObject.markupEffectiveAtStart.length; i++) {
-							var effectiveMarkup = rangeObject.markupEffectiveAtStart[ i ];
-							if (GENTICS.Aloha.Selection.standardTextLevelSemanticsComparator(effectiveMarkup, markup)) {
-								markupIsApplied = true;
-							}
-						}
+						// check whether the markup is found in the range (at the start of the range)
+						var foundMarkup = rangeObject.findMarkup(function() {
+							return this.nodeName.toLowerCase() == markup.get(0).nodeName.toLowerCase();
+						}, GENTICS.Aloha.activeEditable.obj);
 
-						if (markupIsApplied) {
+						if (foundMarkup) {
 							// remove the markup
-							GENTICS.Utils.Dom.removeMarkup(rangeObject, markup, GENTICS.Aloha.activeEditable.obj);
+							if (rangeObject.isCollapsed()) {
+								// when the range is collapsed, we remove exactly the one DOM element
+								GENTICS.Utils.Dom.removeFromDOM(foundMarkup, rangeObject, true);
+							} else {
+								// the range is not collapsed, so we remove the markup from the range
+								GENTICS.Utils.Dom.removeMarkup(rangeObject, markup, GENTICS.Aloha.activeEditable.obj);
+							}
 						} else {
-							// extend the range to a word
+							// when the range is collapsed, extend it to a word
 							if (rangeObject.isCollapsed()) {
 								GENTICS.Utils.Dom.extendToWord(rangeObject);
 							}
