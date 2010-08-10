@@ -106,7 +106,7 @@ GENTICS.Aloha.Format.initButtons = function () {
 						// check whether the markup is found in the range (at the start of the range)
 						var foundMarkup = rangeObject.findMarkup(function() {
 							return this.nodeName.toLowerCase() == markup.get(0).nodeName.toLowerCase();
-						}, jQuery(GENTICS.Aloha.activeEditable.obj));
+						}, GENTICS.Aloha.activeEditable.obj);
 
 						if (foundMarkup) {
 							// remove the markup
