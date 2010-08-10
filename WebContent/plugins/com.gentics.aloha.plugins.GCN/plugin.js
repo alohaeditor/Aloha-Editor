@@ -1129,8 +1129,10 @@ GENTICS.Aloha.GCN.openTagFill = function(tagid) {
 	var that = this;
 	
 	GENTICS.Aloha.FloatingMenu.setScope('GENTICS.Aloha.empty');
+	if ( GENTICS.Aloha.activeEditable ) {
 	GENTICS.Aloha.activeEditable.blur();
 	GENTICS.Aloha.Ribbon.hide();
+	}
 
 	var editdo = 10008;
 	var block = this.getBlock(tagid);
@@ -1181,7 +1183,7 @@ GENTICS.Aloha.GCN.openTagFill = function(tagid) {
 		//TODO Disable active editable to hide floating menu
 		GENTICS.Aloha.Ribbon.hide();
 		
-		try{
+		try {
 			GENTICS.Aloha.activeEditable.blur();
 			GENTICS.Aloha.GCN.lastActiveEditable = GENTICS.Aloha.activeEditable;
 			
