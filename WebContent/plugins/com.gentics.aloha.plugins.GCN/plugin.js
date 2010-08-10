@@ -25,16 +25,41 @@ GENTICS.Aloha.GCN.maximized = false;
 GENTICS.Aloha.GCN.buttons = {};
 
 /**
+ * this stores the last active editable since we disable all editables when a lightbox opens. We can use this property to reactivate the last active editable 
+ */
+GENTICS.Aloha.GCN.lastActiveEditable = {};
+
+/**
  * base url for the REST API
  */
 GENTICS.Aloha.GCN.restUrl = '/CNPortletapp/rest';
+
+/**
+ * Closes a current active lightbox
+ */
+GENTICS.Aloha.GCN.closeLightbox = function() {
+	
+	// close lightbox and show ribbon 
+	jQuery.prettyPhoto.close();
+	GENTICS.Aloha.Ribbon.show();
+	
+	//Reactivate the editable that was active before the lightbox was opened
+	if (GENTICS.Aloha.GCN.lastActiveEditable != undefined) {
+		GENTICS.Aloha.GCN.lastActiveEditable.activate(); 
+		GENTICS.Aloha.GCN.lastActiveEditable.obj.focus();
+	}
+
+};
 
 /**
  * Initializes the GCN plugin which creates all editables
  */
 GENTICS.Aloha.GCN.init = function () {
 	var that = this;
-
+ 
+	// intiate prettyphoto with facebook style 
+	jQuery().prettyPhoto({theme:'facebook'});
+			
 	/**
 	 * stores the maximize options which contains the frameset settings from the GCN frameset
 	 */
@@ -1102,6 +1127,10 @@ GENTICS.Aloha.GCN.openURL = function (url, popup) {
  */
 GENTICS.Aloha.GCN.openTagFill = function(tagid) {
 	var that = this;
+	
+	GENTICS.Aloha.FloatingMenu.setScope('GENTICS.Aloha.empty');
+	GENTICS.Aloha.activeEditable.blur();
+	GENTICS.Aloha.Ribbon.hide();
 
 	var editdo = 10008;
 	var block = this.getBlock(tagid);
@@ -1128,17 +1157,40 @@ GENTICS.Aloha.GCN.openTagFill = function(tagid) {
 		// save the page and open the tagfill popup afterwards
 		this.savePage({
 			'onsuccess' : function() {
-				// open the tagfill window
-				window.open(editLink,
-						'nodeeditor', 'dependent=yes,status=yes,scrollbars=yes,width=870,height=550,resizable=yes');
+
+			// Hide all aloha elements
+			// TODO Disable active editable to hide floating menu
+			GENTICS.Aloha.Ribbon.hide();
+			
+			try {
+				GENTICS.Aloha.activeEditable.blur();
+				GENTICS.Aloha.GCN.lastActiveEditable = GENTICS.Aloha.activeEditable;
+			} catch(e) {
+				GENTICS.Aloha.GCN.lastActiveEditable = undefined;
+			}
+			
+			// open the tagfill window within lightbox
+			jQuery.prettyPhoto.open(new Array(editLink+'&iframe=true&width=70%&height=70%'));
 			},
 			'unlock' : false,
 			'silent' : true,
 			'async' : false
 		});
 	} else {
-		window.open(editLink,
-				'nodeeditor', 'dependent=yes,status=yes,scrollbars=yes,width=870,height=550,resizable=yes');
+		// Hide all aloha elements
+		//TODO Disable active editable to hide floating menu
+		GENTICS.Aloha.Ribbon.hide();
+		
+		try{
+			GENTICS.Aloha.activeEditable.blur();
+			GENTICS.Aloha.GCN.lastActiveEditable = GENTICS.Aloha.activeEditable;
+			
+		} catch(e) {
+			GENTICS.Aloha.GCN.lastActiveEditable = undefined;
+		}
+		
+		jQuery.prettyPhoto.open(new Array(editLink+'&iframe=true&width=70%&height=70%'));
+		
 	}
 };
 

@@ -12,6 +12,7 @@
 document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'deps/jquery-1.4.2.js"></script>');
 document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'deps/jquery.json-2.2.min.js"></script>');
 document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'deps/jquery.getUrlParam.js"></script>');
+document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'deps/prettyPhoto/jquery.prettyPhoto.js"></script>');
 document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'deps/jquery.cookie.js"></script>');
 document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'deps/extjs/ext-jquery-adapter-debug.js"></script>');
 document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'deps/extjs/ext-foundation-debug.js"></script>');
