@@ -52,24 +52,26 @@ GENTICS.Aloha.Editable.prototype.range = undefined;
  * @hide
  */
 GENTICS.Aloha.Editable.prototype.init = function() {
+	var that = this;
+	
 	// only initialize the editable when Aloha is ready
 	if (GENTICS.Aloha.ready) {
+
 		// initialize the object
 		this.obj.addClass('GENTICS_editable');
 		this.obj.attr('contenteditable', true);
 		
 		// add focus event to the object to activate
-		var that = this;
-		
 		this.obj.mousedown(function(e) {
 			that.activate(e);
 			e.stopPropagation();
-		});	
-		
+		});		
 		this.obj.focus(function(e) {
 			that.activate(e);
 		});
 		
+		// NOTE: This should be a generic function (needs to be called by link
+		// plug-in as well. Further a contentChanged event should be introduced
 		// find all a tags & apply Ctrl+Click behaviour
 		// NOTE: ff will handle ctrl+click correctly by itself
 		// ie & chrome don't act accordingly, so opening a new tab has to be implemented
@@ -77,15 +79,24 @@ GENTICS.Aloha.Editable.prototype.init = function() {
 		// possible workaround: move ALL href's to onClick, which will trigger correctly 
 		// in all browsers (incl. ctrl key state), and open a new window :(
 		//this.obj.find('a').each(function () {
-		//	jQuery(this).click(function (event) {
+		//	jQuery(this.obj).click(function (event) {
 		//		return that.clickLink(event);
 		//	});
 		//});
 
 		// by catching the keydown we can prevent the browser from doing its own thing
-		// if it does not handle the keyStroke it returns true and therefore all other events (incl. browser's) continue
-		this.obj.keydown(function(event) { 
+		// if it does not handle the keyStroke it returns true and therefore all other
+		// events (incl. browser's) continue
+		this.obj.keydown( function(event) { 
 			return GENTICS.Aloha.Markup.preProcessKeyStrokes(event);
+		});
+
+		// handle shortcut keys
+		this.obj.keyup( function(event) { 
+			if (event['keyCode'] == 27 ) {
+				GENTICS.Aloha.deactivateEditable();
+				return false;
+			}
 		});
 		
 		// register the onSelectionChange Event with the Editable field
@@ -140,7 +151,7 @@ GENTICS.Aloha.Editable.prototype.isModified = function () {
 };
 
 /**
- * String representation of thie object
+ * String representation of the object
  * @method
  * @return GENTICS.Aloha.Editable
  */
@@ -154,31 +165,26 @@ GENTICS.Aloha.Editable.prototype.toString = function() {
  * @method
  */
 GENTICS.Aloha.Editable.prototype.activate = function(e) {
+	
+	// leave immediately if this is already the active editable
 	if (this.isActive) {
 		return;
 	}
 
-	// blur all editables, which are currently active
-	for (var i = 0; i < GENTICS.Aloha.editables.length; i++) {
-		if (GENTICS.Aloha.editables[i].isActive) {
-			// remember the last editable for the editableActivated event
-			var oldActive = GENTICS.Aloha.editables[i]; 
-			GENTICS.Aloha.editables[i].blur();
-		}
-	}
-	
-	// add active class to current object
-	this.obj.addClass('GENTICS_editable_active');
-	
-	// finally mark this object as active ...
-	this.isActive = true;
-	GENTICS.Aloha.activeEditable = this;
+	// get active Editable before setting the new one.
+	var oldActive = GENTICS.Aloha.getActiveEditable(); 
+
+	// set active Editable in core
+	GENTICS.Aloha.activateEditable( this );
 	
 	// ie specific: trigger one mouseup click to update the range-object
 	if (document.selection && document.selection.createRange) {
 		this.obj.mouseup();
 	}
 
+	// finally mark this object as active
+	this.isActive = true;
+	
 	/**
 	 * @event editableActivated fires after the editable has been activated by clicking on it.
 	 * This event is triggered in Aloha's global scope GENTICS.Aloha
@@ -203,9 +209,10 @@ GENTICS.Aloha.Editable.prototype.activate = function(e) {
 	// and trigger our *finished* event
 	GENTICS.Aloha.EventRegistry.trigger(
 			new GENTICS.Aloha.Event('editableActivated', this, {
-				'oldActive' : oldActive
+				'oldActive' : GENTICS.Aloha.getActiveEditable()
 			})
 	);
+
 };
 
 /**
@@ -215,12 +222,13 @@ GENTICS.Aloha.Editable.prototype.activate = function(e) {
  * @hide 
  */
 GENTICS.Aloha.Editable.prototype.blur = function() {
-	// set the current object editable & turn contenteditable off
-	this.obj.removeClass('GENTICS_editable_active');
-	
+
+	// blur this contenteditable
+	this.obj.blur();
+
 	// disable active status
 	this.isActive = false;
-
+	
 	/**
 	 * @event editableDeactivated fires after the editable has been activated by clicking on it.
 	 * This event is triggered in Aloha's global scope GENTICS.Aloha

@@ -9,6 +9,7 @@
 <script type="text/javascript" src="../plugins/com.gentics.aloha.plugins.Table/plugin.js"></script>
 <script type="text/javascript" src="../plugins/com.gentics.aloha.plugins.List/plugin.js"></script>
 <script type="text/javascript" src="../plugins/com.gentics.aloha.plugins.Link/plugin.js"></script>
+<script type="text/javascript" src="../plugins/com.gentics.aloha.plugins.HighlightEditables/plugin.js"></script>
 
 <link rel="stylesheet" href="examples.css" />
 
@@ -38,6 +39,7 @@ GENTICS.Aloha.settings = {
 		  	}
 		},
 	 	"com.gentics.aloha.plugins.List": { 
+		 	// all elements with no specific configuration get an UL, just for fun :)
 			config : [ 'ul' ],
 		  	editables : {
 				// Even if this is configured it is not set because OL and UL are not allowed in H1.
@@ -48,7 +50,8 @@ GENTICS.Aloha.settings = {
 				'.article'	: [ 'ul' ]
 		  	}
 		},
-	 	"com.gentics.aloha.plugins.Link": { 
+	 	"com.gentics.aloha.plugins.Link": {
+		 	// all elements with no specific configuration may insert links
 			config : [ 'a' ],
 		  	editables : {
 				// No links in the title.
@@ -65,6 +68,7 @@ GENTICS.Aloha.settings = {
 		  	cssclass : 'aloha'
 		},
 	 	"com.gentics.aloha.plugins.Table": { 
+		 	// all elements with no specific configuration are not allowed to insert tables
 			config : [ ],
 		  	editables : {
 				// Allow insert tables only into .article
@@ -72,11 +76,6 @@ GENTICS.Aloha.settings = {
 		  	}
 		}
   	}
-};
-
-GENTICS.Aloha.highlightEditables = function () {
-	alert('highlight');
-	return true;
 };
 
 $(document).ready(function() {

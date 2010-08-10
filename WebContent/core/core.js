@@ -84,13 +84,13 @@ GENTICS.Aloha.prototype.init = function () {
 		// if an Ext JS modal is visible, we don't want to loose the focus on
 		// the editable as we assume that the user must have clicked somewhere
 		// in the modal... where else could he click?
-		// loosing the editalbe focus in this case hinders correct table
+		// loosing the editable focus in this case hinders correct table
 		// column/row deletion, as the table module will clean it's selection
 		// as soon as the editable is deactivated. Furthermore you'd have to
 		// refocus the editable again, which is just strange UX
 		if (that.activeEditable && !that.isMessageVisible()) {
-			that.FloatingMenu.setScope('GENTICS.Aloha.empty');
 			that.activeEditable.blur();
+			that.FloatingMenu.setScope('GENTICS.Aloha.empty');
 			that.activeEditable = null;
 		}
 	});
@@ -127,17 +127,18 @@ GENTICS.Aloha.prototype.init = function () {
 
 	// initialize the floatingmenu
 	this.FloatingMenu.init();
+/* MOVED TO PLUGIN
 
 	// highlight editables as long as the mouse is moving
 	GENTICS.Utils.Position.addMouseMoveCallback(function () {
-		that.highlightEditables();
+		that._highlightEditables();
 	});
 
 	// fade editable borders when mouse stops moving
 	GENTICS.Utils.Position.addMouseStopCallback(function () {
-		that.fadeEditables();
+		that._fadeEditables();
 	});
-
+*/
 	// internationalize ext js message box buttons
 	Ext.MessageBox.buttonText.yes = GENTICS.Aloha.i18n(this, 'yes');
 	Ext.MessageBox.buttonText.no = GENTICS.Aloha.i18n(this, 'no');
@@ -152,39 +153,51 @@ GENTICS.Aloha.prototype.init = function () {
 	}
 };
 
+
 /**
- * highlights all editables, and will be called when the mouse is moving
+ * Activates editable and deactivates all other Editables
+ * @param {Editable} editable the Editable to be activated
  * @return void
- * @hide
  */
-GENTICS.Aloha.prototype.highlightEditables = function () {
-	for ( var i = 0; i < this.editables.length; i++) {
-		var editable = this.editables[i].obj;
-		if (!this.activeEditable) {
-			editable.addClass('GENTICS_editable_highlight');
+GENTICS.Aloha.prototype.activateEditable = function (editable) {
+
+	// blur all editables, which are currently active
+	for (var i = 0; i < this.editables.length; i++) {
+		if (this.editables[i] != editable && this.editables[i].isActive) {
+			// remember the last editable for the editableActivated event
+			var oldActive = this.editables[i]; 
+			this.editables[i].blur();
 		}
 	}
+	
+	this.activeEditable = editable;
 };
 
 /**
- * fades all highlighted editables
- * will be called when the mouse has stopped moving
- * @return void
- * @hide
+ * Returns the current Editable
+ * @return {Editable} returns the active Editable
  */
-GENTICS.Aloha.prototype.fadeEditables = function () {
-	for ( var i = 0; i < this.editables.length; i++) {
-		var editable = this.editables[i].obj;
-		if (editable.hasClass('GENTICS_editable_highlight')) {
-			editable.removeClass('GENTICS_editable_highlight')
-				.css('outline', '5px solid #FFE767')
-				.animate({
-					outlineWidth : '0px'
-				}, 300, 'swing', function () {
-					jQuery(this).css('outline', '');
-				});
-		}
+GENTICS.Aloha.prototype.getActiveEditable = function() {
+	return this.activeEditable;
+};
+
+/**
+ * deactivated the current Editable
+ * @return void
+ */
+GENTICS.Aloha.prototype.deactivateEditable = function () {
+	
+	if ( typeof this.activeEditable == 'undefined' || this.activeEditable == null ) {
+		return;
 	}
+
+	// blur the editable
+	this.activeEditable.blur();
+	
+	// set scope for floating menu
+	this.FloatingMenu.setScope('GENTICS.Aloha.empty');
+	
+	this.activeEditable = null;
 };
 
 /**
@@ -269,7 +282,7 @@ GENTICS.Aloha.prototype.initI18n = function() {
 		|| !this.settings.i18n.available 
 		|| !this.settings.i18n.available instanceof Array) {
 		
-		this.settings.i18n.available = ['en', 'de', 'fr', 'eo'];
+		this.settings.i18n.available = ['en', 'de', 'fr', 'eo', 'fi'];
 	}
 
 	/* 
@@ -555,6 +568,7 @@ GENTICS.Aloha.prototype.isModified = function () {
 GENTICS.Aloha = new GENTICS.Aloha();
 
 /**
+ * TODO move to util
  * reimplementation of indexOf for current Microsoft Browsers
  * IE does not support indexOf() for Arrays
  * @param object to look for
