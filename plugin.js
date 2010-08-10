@@ -17,21 +17,17 @@ GENTICS.Aloha.HighlightEditables.init = function () {
 	
 	// highlight editables as long as the mouse is moving
 	GENTICS.Utils.Position.addMouseMoveCallback(function () {
-		if ( that.mouseMove() != false ) {
-			for ( var i = 0; i < GENTICS.Aloha.editables.length; i++) {
-				var editable = GENTICS.Aloha.editables[i].obj;
-				if (!GENTICS.Aloha.activeEditable) {
-					editable.addClass('GENTICS_editable_highlight');
-				}
+		for ( var i = 0; i < GENTICS.Aloha.editables.length; i++) {
+			var editable = GENTICS.Aloha.editables[i].obj;
+			if (!GENTICS.Aloha.activeEditable) {
+				editable.addClass('GENTICS_editable_highlight');
 			}
 		}
 	});
 
 	// fade editable borders when mouse stops moving
 	GENTICS.Utils.Position.addMouseStopCallback(function () {
-		if ( that.mouseStop() != false ) {
-			that.fade();
-		}
+		that.fade();
 	});
 
 	// mark active Editable with a css class
@@ -53,23 +49,6 @@ GENTICS.Aloha.HighlightEditables.init = function () {
 			}
 	);
 
-};
-
-/**
- * Called when the mouse is moving
- * You may overwrite this method with your own highlightening algorithmus.
- * @return void
- */
-GENTICS.Aloha.HighlightEditables.mouseMove = function () {
-	return true;
-};
-
-/**
- * will be called when the mouse has stopped moving
- * @return void
- */
-GENTICS.Aloha.HighlightEditables.mouseStop = function () {
-	return true;
 };
 
 /**
