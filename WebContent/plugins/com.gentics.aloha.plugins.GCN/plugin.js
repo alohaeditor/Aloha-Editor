@@ -483,6 +483,27 @@ GENTICS.Aloha.GCN.init = function () {
 			);
 		}
 	}
+	
+	// now add highlighting functionality for the blocks
+	GENTICS.Utils.Position.addMouseMoveCallback(function () {
+		if (GENTICS.Aloha.activeEditable) {
+			jQuery('.GENTICS_editable_active .GENTICS_editicon:not(.GENTICS_editicon_hover)').fadeIn('fast');
+		} else {
+			jQuery('.GENTICS_editicon:not(.GENTICS_editicon_hover)').show();
+		}
+	});
+	GENTICS.Utils.Position.addMouseStopCallback(function () {
+		if (GENTICS.Aloha.activeEditable) {
+			jQuery('.GENTICS_editable_active .GENTICS_editicon:not(.GENTICS_editicon_hover)').fadeOut('normal');
+		} else {
+			jQuery('.GENTICS_editicon:not(.GENTICS_editicon_hover)').fadeOut('normal');
+		}
+	});
+	
+	// if an editable is activated all block icons have to be hidden
+	GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, "editableActivated", function () {
+		jQuery('.GENTICS_editicon').fadeOut('normal');
+	});
 };
 
 /**
@@ -504,7 +525,9 @@ GENTICS.Aloha.GCN.alohaEditables = function (editables) {
 GENTICS.Aloha.GCN.alohaBlocks = function (blocks) {
 	if (blocks) {
 		jQuery.each(blocks, function(index, block) {
-			jQuery('#' + block.id).addClass('GENTICS_block').attr('contenteditable', false);
+			jQuery('#' + block.id)
+				.addClass('GENTICS_block')
+				.attr('contenteditable', false)
 
 			// add the edit icon for the block
 			if (!GENTICS.Aloha.settings.readonly) {
@@ -515,10 +538,16 @@ GENTICS.Aloha.GCN.alohaBlocks = function (blocks) {
 				buttonTag.click(function () {
 					GENTICS.Aloha.GCN.openTagFill(block.tagid);
 				});
-				buttonTag.attr('alt', block.icontitle);
-				buttonTag.attr('title', block.icontitle);
-				buttonTag.addClass('GENTICS_editicon');
-				buttonTag.prepend(imgTag);
+				buttonTag.attr('alt', block.icontitle)
+					.attr('title', block.icontitle)
+					.addClass('GENTICS_editicon')
+					.mouseover(function () {
+						jQuery(this).addClass('GENTICS_editicon_hover');
+					})
+					.mouseout(function () {
+						jQuery(this).removeClass('GENTICS_editicon_hover');
+					})
+					.prepend(imgTag);
 				jQuery('#' + block.id).prepend(buttonTag);
 			}
 		});
