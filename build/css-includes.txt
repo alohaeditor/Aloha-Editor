@@ -1,4 +1,5 @@
 css/aloha.css
+deps/prettyPhoto/resources/css/prettyPhoto.css
 plugins/com.gentics.aloha.plugins.Table/resources/table.css
 deps/extjs/resources/css/ext-all.css
 deps/extjs/resources/css/xtheme-gray.css

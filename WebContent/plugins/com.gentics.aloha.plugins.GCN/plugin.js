@@ -25,16 +25,41 @@ GENTICS.Aloha.GCN.maximized = false;
 GENTICS.Aloha.GCN.buttons = {};
 
 /**
+ * this stores the last active editable since we disable all editables when a lightbox opens. We can use this property to reactivate the last active editable 
+ */
+GENTICS.Aloha.GCN.lastActiveEditable = {};
+
+/**
  * base url for the REST API
  */
 GENTICS.Aloha.GCN.restUrl = '/CNPortletapp/rest';
+
+/**
+ * Closes a current active lightbox
+ */
+GENTICS.Aloha.GCN.closeLightbox = function() {
+	
+	// close lightbox and show ribbon 
+	jQuery.prettyPhoto.close();
+	GENTICS.Aloha.Ribbon.show();
+	
+	//Reactivate the editable that was active before the lightbox was opened
+	if (GENTICS.Aloha.GCN.lastActiveEditable != undefined) {
+		GENTICS.Aloha.GCN.lastActiveEditable.activate(); 
+		GENTICS.Aloha.GCN.lastActiveEditable.obj.focus();
+	}
+
+};
 
 /**
  * Initializes the GCN plugin which creates all editables
  */
 GENTICS.Aloha.GCN.init = function () {
 	var that = this;
-
+ 
+	// intiate prettyphoto with facebook style 
+	jQuery().prettyPhoto({theme:'facebook'});
+			
 	/**
 	 * stores the maximize options which contains the frameset settings from the GCN frameset
 	 */
@@ -458,6 +483,27 @@ GENTICS.Aloha.GCN.init = function () {
 			);
 		}
 	}
+	
+	// now add highlighting functionality for the blocks
+	GENTICS.Utils.Position.addMouseMoveCallback(function () {
+		if (GENTICS.Aloha.activeEditable) {
+			jQuery('.GENTICS_editable_active .GENTICS_editicon:not(.GENTICS_editicon_hover)').fadeIn('fast');
+		} else {
+			jQuery('.GENTICS_editicon:not(.GENTICS_editicon_hover)').show();
+		}
+	});
+	GENTICS.Utils.Position.addMouseStopCallback(function () {
+		if (GENTICS.Aloha.activeEditable) {
+			jQuery('.GENTICS_editable_active .GENTICS_editicon:not(.GENTICS_editicon_hover)').fadeOut('normal');
+		} else {
+			jQuery('.GENTICS_editicon:not(.GENTICS_editicon_hover)').fadeOut('normal');
+		}
+	});
+	
+	// if an editable is activated all block icons have to be hidden
+	GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, "editableActivated", function () {
+		jQuery('.GENTICS_editicon').fadeOut('normal');
+	});
 };
 
 /**
@@ -479,7 +525,9 @@ GENTICS.Aloha.GCN.alohaEditables = function (editables) {
 GENTICS.Aloha.GCN.alohaBlocks = function (blocks) {
 	if (blocks) {
 		jQuery.each(blocks, function(index, block) {
-			jQuery('#' + block.id).addClass('GENTICS_block').attr('contenteditable', false);
+			jQuery('#' + block.id)
+				.addClass('GENTICS_block')
+				.attr('contenteditable', false)
 
 			// add the edit icon for the block
 			if (!GENTICS.Aloha.settings.readonly) {
@@ -490,10 +538,16 @@ GENTICS.Aloha.GCN.alohaBlocks = function (blocks) {
 				buttonTag.click(function () {
 					GENTICS.Aloha.GCN.openTagFill(block.tagid);
 				});
-				buttonTag.attr('alt', block.icontitle);
-				buttonTag.attr('title', block.icontitle);
-				buttonTag.addClass('GENTICS_editicon');
-				buttonTag.prepend(imgTag);
+				buttonTag.attr('alt', block.icontitle)
+					.attr('title', block.icontitle)
+					.addClass('GENTICS_editicon')
+					.mouseover(function () {
+						jQuery(this).addClass('GENTICS_editicon_hover');
+					})
+					.mouseout(function () {
+						jQuery(this).removeClass('GENTICS_editicon_hover');
+					})
+					.prepend(imgTag);
 				jQuery('#' + block.id).prepend(buttonTag);
 			}
 		});
@@ -1102,6 +1156,12 @@ GENTICS.Aloha.GCN.openURL = function (url, popup) {
  */
 GENTICS.Aloha.GCN.openTagFill = function(tagid) {
 	var that = this;
+	
+	GENTICS.Aloha.FloatingMenu.setScope('GENTICS.Aloha.empty');
+	if ( GENTICS.Aloha.activeEditable ) {
+	GENTICS.Aloha.activeEditable.blur();
+	GENTICS.Aloha.Ribbon.hide();
+	}
 
 	var editdo = 10008;
 	var block = this.getBlock(tagid);
@@ -1128,17 +1188,40 @@ GENTICS.Aloha.GCN.openTagFill = function(tagid) {
 		// save the page and open the tagfill popup afterwards
 		this.savePage({
 			'onsuccess' : function() {
-				// open the tagfill window
-				window.open(editLink,
-						'nodeeditor', 'dependent=yes,status=yes,scrollbars=yes,width=870,height=550,resizable=yes');
+
+			// Hide all aloha elements
+			// TODO Disable active editable to hide floating menu
+			GENTICS.Aloha.Ribbon.hide();
+			
+			try {
+				GENTICS.Aloha.activeEditable.blur();
+				GENTICS.Aloha.GCN.lastActiveEditable = GENTICS.Aloha.activeEditable;
+			} catch(e) {
+				GENTICS.Aloha.GCN.lastActiveEditable = undefined;
+			}
+			
+			// open the tagfill window within lightbox
+			jQuery.prettyPhoto.open(new Array(editLink+'&iframe=true&width=70%&height=70%'));
 			},
 			'unlock' : false,
 			'silent' : true,
 			'async' : false
 		});
 	} else {
-		window.open(editLink,
-				'nodeeditor', 'dependent=yes,status=yes,scrollbars=yes,width=870,height=550,resizable=yes');
+		// Hide all aloha elements
+		//TODO Disable active editable to hide floating menu
+		GENTICS.Aloha.Ribbon.hide();
+		
+		try {
+			GENTICS.Aloha.activeEditable.blur();
+			GENTICS.Aloha.GCN.lastActiveEditable = GENTICS.Aloha.activeEditable;
+			
+		} catch(e) {
+			GENTICS.Aloha.GCN.lastActiveEditable = undefined;
+		}
+		
+		jQuery.prettyPhoto.open(new Array(editLink+'&iframe=true&width=70%&height=70%'));
+		
 	}
 };
 
