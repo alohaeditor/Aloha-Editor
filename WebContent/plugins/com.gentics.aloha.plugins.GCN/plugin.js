@@ -58,7 +58,45 @@ GENTICS.Aloha.GCN.init = function () {
 	var that = this;
  
 	// intiate prettyphoto with facebook style 
-	jQuery().prettyPhoto({theme:'facebook'});
+	jQuery().prettyPhoto({
+		theme:'light_square',
+		opacity: 0.4,
+		markup: '<div class="pp_pic_holder"> \
+			<div class="pp_top"> \
+				<div class="pp_left"></div> \
+				<div class="pp_middle"></div> \
+				<div class="pp_right"></div> \
+			</div> \
+			<div class="pp_content_container"> \
+				<div class="pp_left"> \
+				<div class="pp_right"> \
+					<div class="pp_content"> \
+						<div class="pp_fade"> \
+							<a href="#" class="pp_expand" title="Expand the image">Expand</a> \
+							<div class="pp_loaderIcon"></div> \
+							<div class="pp_hoverContainer"> \
+								<a class="pp_next" href="#">next</a> \
+								<a class="pp_previous" href="#">previous</a> \
+							</div> \
+							<div id="pp_full_res"></div> \
+							<div class="pp_details"> \
+							</div> \
+						</div> \
+					</div> \
+				</div> \
+				</div> \
+			</div> \
+			<div class="pp_bottom"> \
+				<div class="pp_left"></div> \
+				<div class="pp_middle"></div> \
+				<div class="pp_right"></div> \
+			</div> \
+		</div> \
+		<div class="pp_overlay"></div> \
+		<div class="ppt"></div>'
+	
+	
+	});
 			
 	/**
 	 * stores the maximize options which contains the frameset settings from the GCN frameset
@@ -1201,7 +1239,7 @@ GENTICS.Aloha.GCN.openTagFill = function(tagid) {
 			}
 			
 			// open the tagfill window within lightbox
-			jQuery.prettyPhoto.open(new Array(editLink+'&iframe=true&width=70%&height=70%'));
+			jQuery.prettyPhoto.open(new Array(editLink+'&iframe=true&width=100%&height=100%'));
 			},
 			'unlock' : false,
 			'silent' : true,
@@ -1220,7 +1258,7 @@ GENTICS.Aloha.GCN.openTagFill = function(tagid) {
 			GENTICS.Aloha.GCN.lastActiveEditable = undefined;
 		}
 		
-		jQuery.prettyPhoto.open(new Array(editLink+'&iframe=true&width=70%&height=70%'));
+		jQuery.prettyPhoto.open(new Array(editLink+'&iframe=true&width=100%&height=100%'));
 		
 	}
 };
