@@ -282,7 +282,7 @@ GENTICS.Aloha.prototype.initI18n = function() {
 		|| !this.settings.i18n.available 
 		|| !this.settings.i18n.available instanceof Array) {
 		
-		this.settings.i18n.available = ['en', 'de', 'fr', 'eo', 'fi'];
+		this.settings.i18n.available = ['en', 'de', 'fr', 'eo', 'fi', 'ru'];
 	}
 
 	/* 

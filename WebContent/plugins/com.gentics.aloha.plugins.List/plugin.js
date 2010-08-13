@@ -12,7 +12,7 @@ GENTICS.Aloha.ListPlugin = new GENTICS.Aloha.Plugin('com.gentics.aloha.plugins.L
 /**
  * Configure the available languages
  */
-GENTICS.Aloha.ListPlugin.languages = ['en', 'de', 'fr', 'eo'];
+GENTICS.Aloha.ListPlugin.languages = ['en', 'de', 'fr', 'eo', 'fi', 'ru'];
 
 /**
  * default button configuration
