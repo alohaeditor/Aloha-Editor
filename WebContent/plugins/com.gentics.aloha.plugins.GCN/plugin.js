@@ -12,7 +12,7 @@ GENTICS.Aloha.GCN = new GENTICS.Aloha.Plugin('com.gentics.aloha.plugins.GCN');
 /**
  * Configure the available languages
  */
-GENTICS.Aloha.GCN.languages = ['en', 'de', 'fr', 'eo'];
+GENTICS.Aloha.GCN.languages = ['en', 'de', 'fr', 'eo', 'fi', 'it'];
 
 /**
  * True if Aloha has been maximized in GCN

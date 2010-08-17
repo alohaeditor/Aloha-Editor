@@ -71,6 +71,28 @@ GENTICS.Aloha.prototype.dictionaries = {};
  */
 GENTICS.Aloha.prototype.settings = {};
 
+
+/**
+ * represents the current state of the control keys
+ * @type boolean
+ * @hide 
+ */
+GENTICS.Aloha.prototype.isShift = false;
+GENTICS.Aloha.prototype.isAlt = false;
+GENTICS.Aloha.prototype.isCtrl = false;
+GENTICS.Aloha.prototype.isMetaL = false;
+GENTICS.Aloha.prototype.isMetaR = false;
+
+
+/**
+ * This represents the name of the users OS. Could be:
+ * 'Mac', 'Linux', 'Win', 'Unix', 'Unknown'
+ * @property
+ * @type string
+ */
+GENTICS.Aloha.prototype.OSName = "Unknown";
+
+
 /**
  * Initialize Aloha
  * called automatically by the loader
@@ -115,6 +137,12 @@ GENTICS.Aloha.prototype.init = function () {
 		};
 	}
 
+	// OS detection
+	if (navigator.appVersion.indexOf("Win")!=-1) this.OSName = "Win";
+	if (navigator.appVersion.indexOf("Mac")!=-1) this.OSName = "Mac";
+	if (navigator.appVersion.indexOf("X11")!=-1) this.OSName = "Unix";
+	if (navigator.appVersion.indexOf("Linux")!=-1) this.OSName = "Linux";
+	
 	// initialize the dictionary for Aloha itself
 	this.initI18n();
 
@@ -127,18 +155,7 @@ GENTICS.Aloha.prototype.init = function () {
 
 	// initialize the floatingmenu
 	this.FloatingMenu.init();
-/* MOVED TO PLUGIN
 
-	// highlight editables as long as the mouse is moving
-	GENTICS.Utils.Position.addMouseMoveCallback(function () {
-		that._highlightEditables();
-	});
-
-	// fade editable borders when mouse stops moving
-	GENTICS.Utils.Position.addMouseStopCallback(function () {
-		that._fadeEditables();
-	});
-*/
 	// internationalize ext js message box buttons
 	Ext.MessageBox.buttonText.yes = GENTICS.Aloha.i18n(this, 'yes');
 	Ext.MessageBox.buttonText.no = GENTICS.Aloha.i18n(this, 'no');
@@ -150,6 +167,23 @@ GENTICS.Aloha.prototype.init = function () {
 	// editable have to be initialized AFTER Aloha is ready
 	for ( var i = 0; i < this.editables.length; i++) {
 		this.editables[i].init();
+		
+		// Bind control key to all editables
+		// should we bind to document? For CTRL+S?
+		this.editables[i].obj.keyup(function (e) {
+			if (e.which == 16) that.isShift = false;
+			if (e.which == 17) that.isCtrl = false;
+			if (e.which == 18) that.isAlt = false;
+			if (e.which == 91) that.isMetaL = false;
+			if (e.which == 93) that.isMetaR = false;
+		});
+		this.editables[i].obj.keydown(function (e) {
+			if (e.which == 16) that.isShift = true;			
+			if (e.which == 17) that.isCtrl = true;
+			if (e.which == 91) that.isMetaL = true;
+			if (e.which == 93) that.isMetaR = true;
+			if (e.which == 18) that.isAlt = true;
+		});
 	}
 };
 
@@ -282,7 +316,7 @@ GENTICS.Aloha.prototype.initI18n = function() {
 		|| !this.settings.i18n.available 
 		|| !this.settings.i18n.available instanceof Array) {
 		
-		this.settings.i18n.available = ['en', 'de', 'fr', 'eo', 'fi', 'ru'];
+		this.settings.i18n.available = ['en', 'de', 'fr', 'eo', 'fi', 'ru', 'it'];
 	}
 
 	/* 
