@@ -33,6 +33,40 @@ jQuery.fn.GENTICS_aloha = function() {
 }; 
 
 /**
+ * jQuery destroy elements as editable
+ * 
+ * destroy all mached elements editable capabilities
+ * @return	jQuery object for the matched elements
+ * @api
+ */
+jQuery.fn.mahalo = function() {
+	return this.each(function() {
+		if ( jQuery(this).hasClass('GENTICS_editable') ) {
+			for (var i=0; i<GENTICS.Aloha.editables.length; i++) {
+				if ( GENTICS.Aloha.editables[i].obj.get(0) === this ) {
+					GENTICS.Aloha.editables[i].destroy();
+				}
+			}
+		}
+	});
+};
+
+/**
+ * namespaced fallback for jQuery destroy elements as editable
+ * 
+ * destroy all mached elements editable capabilities
+ * @return	jQuery object for the matched elements
+ * @api
+ */
+jQuery.fn.GENTICS_mahalo = function() {
+	return this.each(function() {
+		var that = this;
+	});
+}; 
+
+
+
+/**
  * jQuery Extension
  * new Event which is triggered whenever a selection (length >= 0) is made in 
  * an Aloha Editable element
