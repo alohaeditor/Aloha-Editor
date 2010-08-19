@@ -73,18 +73,6 @@ GENTICS.Aloha.prototype.settings = {};
 
 
 /**
- * represents the current state of the control keys
- * @type boolean
- * @hide 
- */
-GENTICS.Aloha.prototype.isShift = false;
-GENTICS.Aloha.prototype.isAlt = false;
-GENTICS.Aloha.prototype.isCtrl = false;
-GENTICS.Aloha.prototype.isMetaL = false;
-GENTICS.Aloha.prototype.isMetaR = false;
-
-
-/**
  * This represents the name of the users OS. Could be:
  * 'Mac', 'Linux', 'Win', 'Unix', 'Unknown'
  * @property
@@ -138,10 +126,18 @@ GENTICS.Aloha.prototype.init = function () {
 	}
 
 	// OS detection
-	if (navigator.appVersion.indexOf("Win")!=-1) this.OSName = "Win";
-	if (navigator.appVersion.indexOf("Mac")!=-1) this.OSName = "Mac";
-	if (navigator.appVersion.indexOf("X11")!=-1) this.OSName = "Unix";
-	if (navigator.appVersion.indexOf("Linux")!=-1) this.OSName = "Linux";
+	if (navigator.appVersion.indexOf("Win") != -1) {
+		this.OSName = "Win";
+	}
+	if (navigator.appVersion.indexOf("Mac") != -1) {
+		this.OSName = "Mac";
+	}
+	if (navigator.appVersion.indexOf("X11") != -1) {
+		this.OSName = "Unix";
+	}
+	if (navigator.appVersion.indexOf("Linux") != -1) {
+		this.OSName = "Linux";
+	}
 	
 	// initialize the dictionary for Aloha itself
 	this.initI18n();
@@ -167,23 +163,6 @@ GENTICS.Aloha.prototype.init = function () {
 	// editable have to be initialized AFTER Aloha is ready
 	for ( var i = 0; i < this.editables.length; i++) {
 		this.editables[i].init();
-		
-		// Bind control key to all editables
-		// should we bind to document? For CTRL+S?
-		this.editables[i].obj.keyup(function (e) {
-			if (e.which == 16) that.isShift = false;
-			if (e.which == 17) that.isCtrl = false;
-			if (e.which == 18) that.isAlt = false;
-			if (e.which == 91) that.isMetaL = false;
-			if (e.which == 93) that.isMetaR = false;
-		});
-		this.editables[i].obj.keydown(function (e) {
-			if (e.which == 16) that.isShift = true;			
-			if (e.which == 17) that.isCtrl = true;
-			if (e.which == 91) that.isMetaL = true;
-			if (e.which == 93) that.isMetaR = true;
-			if (e.which == 18) that.isAlt = true;
-		});
 	}
 };
 
@@ -527,6 +506,22 @@ GENTICS.Aloha.prototype.i18n = function(component, key, replacements) {
  */
 GENTICS.Aloha.prototype.registerEditable = function (editable) {
 	this.editables.push(editable);
+};
+
+/**
+ * Unregister the given editable. It will be deactivated and removed from editables.
+ * @param editable editable to unregister
+ * @return void
+ * @hide
+ */
+GENTICS.Aloha.prototype.unregisterEditable = function (editable) {
+	
+	// Find the index
+	var id = this.editables.indexOf( editable ); 
+	// Remove it if really found!
+	if (id != -1) {
+		this.editables.splice(id, 1); 
+	}
 };
 
 /**
