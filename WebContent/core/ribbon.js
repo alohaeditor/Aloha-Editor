@@ -21,8 +21,6 @@ GENTICS.Aloha.Ribbon = function() {
 		cls: 'GENTICS_ribbon ext-root'
 	});
 	
-	jQuery('body').css('paddingTop', '30px !important');
-	
 	// left spacer to gain some space from the left screen border
 	this.toolbar.add(new Ext.Toolbar.Spacer({width: '5'}));
 	// icon
@@ -140,9 +138,12 @@ GENTICS.Aloha.Ribbon.prototype.addSeparator = function() {
  * @hide
  */
 GENTICS.Aloha.Ribbon.prototype.init = function() {
+	
 	this.toolbar.render(document.body, 0);
 	
 	if (GENTICS.Aloha.settings.ribbon !== false) {
+		
+		jQuery('body').css('paddingTop', '30px !important');
 		this.show();
 	}
 };
