@@ -30,9 +30,14 @@ GENTICS.Aloha.GCN.buttons = {};
 GENTICS.Aloha.GCN.lastActiveEditable = {};
 
 /**
+ * base url for the GCN backend
+ */
+GENTICS.Aloha.GCN.backendUrl = '../CNPortletapp/';
+
+/**
  * base url for the REST API
  */
-GENTICS.Aloha.GCN.restUrl = '/CNPortletapp/rest';
+GENTICS.Aloha.GCN.restUrl = GENTICS.Aloha.GCN.backendUrl + 'rest';
 
 /**
  * Closes a current active lightbox
@@ -729,8 +734,14 @@ GENTICS.Aloha.GCN.restoreFrameUI = function () {
 GENTICS.Aloha.GCN.cancelEdit = function (callback) {
 	var that = this;
 
+	for (var i in GENTICS.Aloha.editables) {
+		if (GENTICS.Aloha.editables[i].setUnmodified) {
+			GENTICS.Aloha.editables[i].setUnmodified();
+		}
+	}
+
 	this.performRESTRequest({
-		'url' : this.restUrl + '/page/cancel/' + this.settings.id,
+		'url' : this.settings.stag_prefix + this.restUrl + '/page/cancel/' + this.settings.id,
 		'description' : 'restcall.cancelpage',
 		'success' : callback,
 		'error' : function(data) {
@@ -782,11 +793,12 @@ GENTICS.Aloha.GCN.previewPage = function () {
 	var that = this;
 
 	this.openGCNURL({
-		url : '/CNPortletapp/alohapage',
+		url : this.settings.stag_prefix + this.backendUrl + '/alohapage',
 		params : {
 			realid : that.settings.id,
-			language : jQuery(document).getUrlParam('language'),
-			real : 'view'
+			language : that.settings.languageid,
+			real : 'view',
+			links : that.settings.links
 		}
 	});
 };
@@ -798,11 +810,12 @@ GENTICS.Aloha.GCN.editPage = function () {
 	var that = this;
 
 	this.openGCNURL({
-		url : '/CNPortletapp/alohapage',
+		url : this.settings.stag_prefix + this.backendUrl + '/alohapage',
 		params : {
 			realid : that.settings.id,
-			language : jQuery(document).getUrlParam('language'),
-			real : 'edit'
+			language : that.settings.languageid,
+			real : 'edit',
+			links : that.settings.links
 		}
 	});
 };
@@ -897,7 +910,7 @@ GENTICS.Aloha.GCN.savePage = function (data) {
 
 	// make an API call to the REST API for storing the page
 	this.performRESTRequest({
-		'url' : this.restUrl + '/page/save/' + this.settings.id,
+		'url' : this.settings.stag_prefix + this.restUrl + '/page/save/' + this.settings.id,
 		'body' : requestBody,
 		'description' : 'restcall.savepage',
 		'success' : function (data) {
@@ -945,21 +958,33 @@ GENTICS.Aloha.GCN.savePage = function (data) {
 
 /**
  * publishes the current page
+ * @param success success handler, if none given, the publish request will not be done as AJAX request
  * @return void
  */
-GENTICS.Aloha.GCN.publishPage = function () {
+GENTICS.Aloha.GCN.publishPage = function (success) {
 	var that = this;
 	this.savePage({
 		onsuccess : function () {
-			var publishParams = that.isGCNFrame() ? {'do' : 14003, 'cmd' : 'pub'} : {'do' : 14012, 'realid' : that.settings.id, 'real' : 'pub'};
-			that.openGCNURL({
+			var publishParams = success ? {'do' : 14022, 'page_id' : that.settings.id} : (that.isGCNFrame() ? {'do' : 14003, 'cmd' : 'pub', 'PAGE_ID' : that.settings.id} : {'do' : 14012, 'realid' : that.settings.id, 'real' : 'pub'});
+			if (success) {
+				that.performRESTRequest({
+					url : that.settings.stag_prefix,
+					params : publishParams,
+					success : function () {
+						success.apply();
+					}
+				});
+			} else {
+				that.openGCNURL({
 					url : that.settings.stag_prefix,
 					params : publishParams
-			});
+				});
+			}
 		},
 		onfailure : function ()  {
 			// TODO error handling
-		}
+		},
+		silent : success ? true : false
 	});
 };
 
@@ -1045,7 +1070,7 @@ GENTICS.Aloha.GCN.performRESTRequest = function (data) {
 		'data' : jQuery.toJSON(data.body)
 	};
 
-	ajaxObject.url = data.url + '?sid=' + jQuery(document).getUrlParam('sid') + '&time=' + (new Date()).getTime();
+	ajaxObject.url = data.url + '?sid=' + this.settings.sid + '&time=' + (new Date()).getTime();
 
 	// add requestParams if given
 	if (data.params) {
@@ -1084,7 +1109,7 @@ GENTICS.Aloha.GCN.performRESTRequest = function (data) {
  * @return The created GCN URL as String
  */
 GENTICS.Aloha.GCN.createGCNURL = function (data) {
-	var url = data.url + '?sid=' + jQuery(document).getUrlParam('sid') + '&time=' + (new Date()).getTime();
+	var url = data.url + '?sid=' + this.settings.sid + '&time=' + (new Date()).getTime();
 	for (var paramName in data.params) {
 		url += '&' + paramName + '=' + encodeURI(data.params[paramName]);
 	}
@@ -1235,20 +1260,21 @@ GENTICS.Aloha.GCN.createTag = function(constructId) {
 
 	// make an API call to the REST API for storing the page
 	this.performRESTRequest({
-		'url' : this.restUrl + '/page/newtag/' + this.settings.id,
+		'url' : this.settings.stag_prefix + this.restUrl + '/page/newtag/' + this.settings.id,
 		'params' : {
 			'constructId' : constructId
 		},
 		'description' : 'restcall.createtag',
 		'success' : function (data) {
 			that.performRESTRequest({
-				'url' : '/CNPortletapp/alohatag',
+				'url' : that.settings.stag_prefix + that.backendUrl + '/alohatag',
 				'type' : 'GET',
 				'params' : {
 					'realid' : that.settings.id,
 					'real' : 'edit',
 					'template' : '<node ' + data.tag.name + '>',
-					'language' : jQuery(document).getUrlParam('language')
+					'language' : that.settings.languageid,
+					'links' : that.settings.links
 				},
 				'success' : function (data) {
 					that.handleBlock(data, true);
@@ -1298,13 +1324,14 @@ GENTICS.Aloha.GCN.reloadBlock = function(tagid) {
 
 	// render the tag
 	this.performRESTRequest({
-		'url' : '/CNPortletapp/alohatag',
+		'url' : this.settings.stag_prefix + this.backendUrl + '/alohatag',
 		'type' : 'GET',
 		'params' : {
 			'realid' : that.settings.id,
 			'real' : 'edit',
 			'template' : '<node ' + block.tagname + '>',
-			'language' : jQuery(document).getUrlParam('language')
+			'language' : that.settings.languageid,
+			'links' : that.settings.links
 		},
 		'success' : function (data) {
 			that.handleBlock(data, false);
