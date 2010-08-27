@@ -17,7 +17,7 @@ EXAMPLE.DummySavePlugin = new GENTICS.Aloha.Plugin('com.example.aloha.DummySave'
 /**
  * Configure the available languages
  */
-EXAMPLE.DummySavePlugin.languages = ['en', 'de'];
+EXAMPLE.DummySavePlugin.languages = ['en', 'de', 'fi', 'fr', 'it'];
 
 /**
  * Initialize the plugin and set initialize flag on true

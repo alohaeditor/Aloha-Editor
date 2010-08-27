@@ -71,6 +71,16 @@ GENTICS.Aloha.prototype.dictionaries = {};
  */
 GENTICS.Aloha.prototype.settings = {};
 
+
+/**
+ * This represents the name of the users OS. Could be:
+ * 'Mac', 'Linux', 'Win', 'Unix', 'Unknown'
+ * @property
+ * @type string
+ */
+GENTICS.Aloha.prototype.OSName = "Unknown";
+
+
 /**
  * Initialize Aloha
  * called automatically by the loader
@@ -115,6 +125,20 @@ GENTICS.Aloha.prototype.init = function () {
 		};
 	}
 
+	// OS detection
+	if (navigator.appVersion.indexOf("Win") != -1) {
+		this.OSName = "Win";
+	}
+	if (navigator.appVersion.indexOf("Mac") != -1) {
+		this.OSName = "Mac";
+	}
+	if (navigator.appVersion.indexOf("X11") != -1) {
+		this.OSName = "Unix";
+	}
+	if (navigator.appVersion.indexOf("Linux") != -1) {
+		this.OSName = "Linux";
+	}
+	
 	// initialize the dictionary for Aloha itself
 	this.initI18n();
 
@@ -127,18 +151,7 @@ GENTICS.Aloha.prototype.init = function () {
 
 	// initialize the floatingmenu
 	this.FloatingMenu.init();
-/* MOVED TO PLUGIN
 
-	// highlight editables as long as the mouse is moving
-	GENTICS.Utils.Position.addMouseMoveCallback(function () {
-		that._highlightEditables();
-	});
-
-	// fade editable borders when mouse stops moving
-	GENTICS.Utils.Position.addMouseStopCallback(function () {
-		that._fadeEditables();
-	});
-*/
 	// internationalize ext js message box buttons
 	Ext.MessageBox.buttonText.yes = GENTICS.Aloha.i18n(this, 'yes');
 	Ext.MessageBox.buttonText.no = GENTICS.Aloha.i18n(this, 'no');
@@ -282,7 +295,7 @@ GENTICS.Aloha.prototype.initI18n = function() {
 		|| !this.settings.i18n.available 
 		|| !this.settings.i18n.available instanceof Array) {
 		
-		this.settings.i18n.available = ['en', 'de', 'fr', 'eo', 'fi'];
+		this.settings.i18n.available = ['en', 'de', 'fr', 'eo', 'fi', 'ru', 'it'];
 	}
 
 	/* 
@@ -493,6 +506,22 @@ GENTICS.Aloha.prototype.i18n = function(component, key, replacements) {
  */
 GENTICS.Aloha.prototype.registerEditable = function (editable) {
 	this.editables.push(editable);
+};
+
+/**
+ * Unregister the given editable. It will be deactivated and removed from editables.
+ * @param editable editable to unregister
+ * @return void
+ * @hide
+ */
+GENTICS.Aloha.prototype.unregisterEditable = function (editable) {
+	
+	// Find the index
+	var id = this.editables.indexOf( editable ); 
+	// Remove it if really found!
+	if (id != -1) {
+		this.editables.splice(id, 1); 
+	}
 };
 
 /**

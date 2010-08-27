@@ -19,7 +19,7 @@ GENTICS.Aloha.Editable = function(obj) {
 	// the editable is not yet ready
 	this.ready = false;
 
-	// finally register the editable with Aloha
+	// register the editable with Aloha
 	GENTICS.Aloha.registerEditable(this);
 
 	// try to initialize the editable
@@ -65,25 +65,12 @@ GENTICS.Aloha.Editable.prototype.init = function() {
 		this.obj.mousedown(function(e) {
 			that.activate(e);
 			e.stopPropagation();
-		});		
+		});
+		
 		this.obj.focus(function(e) {
 			that.activate(e);
 		});
 		
-		// NOTE: This should be a generic function (needs to be called by link
-		// plug-in as well. Further a contentChanged event should be introduced
-		// find all a tags & apply Ctrl+Click behaviour
-		// NOTE: ff will handle ctrl+click correctly by itself
-		// ie & chrome don't act accordingly, so opening a new tab has to be implemented
-		// anyway, ie won't even trigger the event if you're ctrl+clicking on a link
-		// possible workaround: move ALL href's to onClick, which will trigger correctly 
-		// in all browsers (incl. ctrl key state), and open a new window :(
-		//this.obj.find('a').each(function () {
-		//	jQuery(this.obj).click(function (event) {
-		//		return that.clickLink(event);
-		//	});
-		//});
-
 		// by catching the keydown we can prevent the browser from doing its own thing
 		// if it does not handle the keyStroke it returns true and therefore all other
 		// events (incl. browser's) continue
@@ -126,6 +113,59 @@ GENTICS.Aloha.Editable.prototype.init = function() {
 		// now the editable is ready
 		this.ready = true;
 	}
+};
+
+/**
+ * destroy the editable
+ * @return void
+ * @hide
+ */
+GENTICS.Aloha.Editable.prototype.destroy = function() {
+	var that = this;
+	
+	// leave the element just to get sure
+	this.blur();
+	
+	// now the editable is not ready any more
+	this.ready = false;
+
+	// initialize the object
+	this.obj.removeClass('GENTICS_editable');
+	this.obj.removeAttr('contenteditable');
+	
+	// unbind all events 
+	// TODO should only unbind the specific handlers.
+	this.obj.unbind('mousedown'); 
+	this.obj.unbind('focus'); 
+	this.obj.unbind('keydown'); 
+	this.obj.unbind('keyup'); 
+	
+	/* TODO remove this event, it should implemented as bind and unbind
+	// register the onSelectionChange Event with the Editable field
+	this.obj.GENTICS_contentEditableSelectionChange(function (event) {
+		GENTICS.Aloha.Selection.onChange(that.obj, event);
+		return that.obj;
+	});
+	*/
+	
+	// throw a new event when the editable has been created
+	/**
+	 * @event editableCreated fires after a new editable has been destroyes, eg. via $('#editme').mahalo()
+	 * The event is triggered in Aloha's global scope GENTICS.Aloha
+	 * @param {Event} e the event object
+	 * @param {Array} a an array which contains a reference to the currently created editable on its first position 
+	 */
+	GENTICS.Aloha.EventRegistry.trigger(
+			new GENTICS.Aloha.Event(
+					'editableDestroyed',
+					GENTICS.Aloha,
+					[ this ]
+			)
+	);
+
+	// finally register the editable with Aloha
+	GENTICS.Aloha.unregisterEditable(this);
+
 };
 
 /**
