@@ -1394,6 +1394,11 @@ GENTICS.Aloha.GCN.reloadBlock = function(tagid) {
  * @return void
  */
 GENTICS.Aloha.GCN.handleBlock = function(data, insert) {
+	// if we have an URL to render the block content, we do this now
+	if (this.settings.renderBlockContentURL) {
+		data.content = this.renderBlockContent(data.content);
+	}
+
 	var blockObj = jQuery(data.content);
 
 	// find occurrances of the block and replace the html code
@@ -1425,6 +1430,32 @@ GENTICS.Aloha.GCN.handleBlock = function(data, insert) {
 		}
 		this.alohaBlocks(data.blocks);
 	}
+};
+
+/**
+ * Render the block content by posting it to the renderBlockContentURL configured in the plugin settings.
+ * @param content content of the block to be rendered
+ * @return rendered content
+ */
+GENTICS.Aloha.GCN.renderBlockContent = function (content) {
+	var that = this;
+	var newContent = content;
+
+	jQuery.ajax({
+		'url' : this.settings.renderBlockContentURL,
+		'type' : 'POST',
+		'timeout' : 10000,
+		'data' : {
+			'content' : content
+		},
+		'dataType' : 'text',
+		'async' : false,
+		'success' : function (data) {
+			newContent = data;
+		}
+	});
+
+	return newContent;
 };
 
 /**
