@@ -83,10 +83,10 @@ GENTICS.Aloha.Markup.prototype.preProcessKeyStrokes = function(event) {
 					this.removeSelectedMarkup();
 				}
 
-//				GENTICS.Aloha.Selection.updateSelection(false, true);
-//				this.processShiftEnter(rangeObject);
+				GENTICS.Aloha.Selection.updateSelection(false, true);
+				this.processShiftEnter(rangeObject);
 
-				this.insertBreak();
+//				this.insertBreak();
 
 				return false;
 			} else {
@@ -94,9 +94,10 @@ GENTICS.Aloha.Markup.prototype.preProcessKeyStrokes = function(event) {
 				if (!rangeObject.isCollapsed()) {
 					this.removeSelectedMarkup();
 				}
-//				GENTICS.Aloha.Selection.updateSelection(false, true);
-//				this.processEnter(rangeObject);
+				GENTICS.Aloha.Selection.updateSelection(false, true);
+				this.processEnter(rangeObject);
 
+/*
 				// next find the nearest enclosing split object
 				var splitObject = rangeObject.findMarkup(function() {
 					return GENTICS.Utils.Dom.isSplitObject(this);
@@ -138,6 +139,7 @@ GENTICS.Aloha.Markup.prototype.preProcessKeyStrokes = function(event) {
 				} else {
 					this.insertBreak();
 				}
+*/
 
 				return false;
 			}
