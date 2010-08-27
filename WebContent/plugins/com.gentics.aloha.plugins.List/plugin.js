@@ -82,7 +82,9 @@ GENTICS.Aloha.ListPlugin.init = function() {
 				break;
 			}
 		}
-		that.applyButtonConfig(GENTICS.Aloha.activeEditable.obj);
+		if (GENTICS.Aloha.activeEditable) {
+			that.applyButtonConfig(GENTICS.Aloha.activeEditable.obj);
+		}
 
 		// TODO this should not be necessary here!
 		GENTICS.Aloha.FloatingMenu.doLayout();

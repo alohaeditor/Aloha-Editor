@@ -134,36 +134,37 @@ GENTICS.Aloha.Link.subscribeEvents = function () {
 
 	// add the event handler for selection change
 	GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'selectionChanged', function(event, rangeObject) {
-		
-		// show/hide the button according to the configuration
-		var config = that.getEditableConfig(GENTICS.Aloha.activeEditable.obj);
-
-		if ( jQuery.inArray('a', config) != -1) {
-			that.formatLinkButton.show();
-			that.insertLinkButton.show();
-		} else {
-			that.formatLinkButton.hide();
-			that.insertLinkButton.hide();
+		if (GENTICS.Aloha.activeEditable) {
+			// show/hide the button according to the configuration
+			var config = that.getEditableConfig(GENTICS.Aloha.activeEditable.obj);
+			
+			if ( jQuery.inArray('a', config) != -1) {
+				that.formatLinkButton.show();
+				that.insertLinkButton.show();
+			} else {
+				that.formatLinkButton.hide();
+				that.insertLinkButton.hide();
+			}
+			
+			// check whether the markup contains a link
+			var foundMarkup = rangeObject.findMarkup(function () {
+				return this.nodeName.toLowerCase() == 'a';
+			}, GENTICS.Aloha.activeEditable.obj);
+			
+			if (foundMarkup) {
+				// link found
+				that.formatLinkButton.setPressed(true);
+				GENTICS.Aloha.FloatingMenu.setScope(that.getUID('link'));
+				that.srcFieldButton.setAnchor(foundMarkup);
+			} else {
+				// no link found
+				that.formatLinkButton.setPressed(false);
+				that.srcFieldButton.setAnchor(null);
+			}
+			
+			// TODO this should not be necessary here!
+			GENTICS.Aloha.FloatingMenu.doLayout();
 		}
-		
-		// check whether the markup contains a link
-		var foundMarkup = rangeObject.findMarkup(function () {
-			return this.nodeName.toLowerCase() == 'a';
-		}, GENTICS.Aloha.activeEditable.obj);
-
-		if (foundMarkup) {
-			// link found
-			that.formatLinkButton.setPressed(true);
-			GENTICS.Aloha.FloatingMenu.setScope(that.getUID('link'));
-			that.srcFieldButton.setAnchor(foundMarkup);
-		} else {
-			// no link found
-			that.formatLinkButton.setPressed(false);
-			that.srcFieldButton.setAnchor(null);
-		}
-
-		// TODO this should not be necessary here!
-		GENTICS.Aloha.FloatingMenu.doLayout();
 	});
 };
 
