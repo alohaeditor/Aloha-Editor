@@ -80,6 +80,13 @@ GENTICS.Aloha.prototype.settings = {};
  */
 GENTICS.Aloha.prototype.OSName = "Unknown";
 
+/**
+ * Array of callback functions to call when Aloha is ready
+ * @property
+ * @type Array
+ * @hide
+ */
+GENTICS.Aloha.prototype.readyCallbacks = new Array();
 
 /**
  * Initialize Aloha
@@ -158,12 +165,29 @@ GENTICS.Aloha.prototype.init = function () {
 	Ext.MessageBox.buttonText.cancel = GENTICS.Aloha.i18n(this, 'cancel');
 	
 	// set aloha ready
-	this.ready = true;
+	this.ready = true; 
 
-	// editable have to be initialized AFTER Aloha is ready
-	for ( var i = 0; i < this.editables.length; i++) {
-		this.editables[i].init();
+	// activate registered editables
+	for (var i = 0; i < this.editables.length; i++) {
+		if ( !this.editables[i].ready ) {
+			this.editables[i].init();
+		}
 	}
+	
+	// ready callback AFTER Aloha is ready
+	for ( var i = 0; i < this.readyCallbacks.length; i++) {
+		this.readyCallbacks[i].call();
+	}
+};
+
+/**
+ * adds a callback method which is invoked when Aloha is ready
+ * @param	callback	the callback method to be invoked
+ * @return	index of the callback
+ */
+GENTICS.Aloha.prototype.onReady = function (callback) {
+	this.readyCallbacks.push(callback);
+	return (this.readyCallbacks.length - 1);
 };
 
 

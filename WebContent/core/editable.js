@@ -13,6 +13,7 @@
  * @param {Object} obj jQuery object reference to the object
  */
 GENTICS.Aloha.Editable = function(obj) {
+		
 	// store object reference
 	this.obj = obj;
 
@@ -47,12 +48,70 @@ GENTICS.Aloha.Editable.prototype.originalContent = null;
 GENTICS.Aloha.Editable.prototype.range = undefined;
 
 /**
+ * Check if object can be edited by Aloha Editor
+ * @return {boolean } editable true if Aloha Editor can handle else false 
+ * @hide
+ */
+GENTICS.Aloha.Editable.prototype.check = function() {
+	
+	/* check elements
+	'map', 'meter', 'object', 'output', 'progress', 'samp',
+	'time', 'area', 'datalist', 'figure', 'kbd', 'keygen',
+	'mark', 'math', 'wbr', 'area',
+    */
+
+	// supported elements
+	var textElements = [ 'a', 'abbr', 'address', 'article', 'aside',
+				'b', 'bdo', 'blockquote',  'cite', 'code', 'command',
+				'del', 'details', 'dfn', 'div', 'dl', 'em', 'footer', 'h1', 'h2',
+				'h3', 'h4', 'h5', 'h6', 'header', 'i', 'ins', 'menu',
+				'nav', 'p', 'pre', 'q', 'ruby',  'section', 'small',
+				'span', 'strong',  'sub', 'sup', 'var']; 	
+	for (var i = 0; i < textElements.length; i++) {
+		var e = this.obj.get(0).nodeName.toLowerCase();
+		if ( this.obj.get(0).nodeName.toLowerCase() == textElements[i] ) {
+			return true;
+		}
+	}
+	
+	// special handled elements
+	if ( this.obj.get(0).nodeName.toLowerCase() == 'label') {
+		// need some special handling.
+	    return true;		
+	}
+	if ( this.obj.get(0).nodeName.toLowerCase() == 'button') {
+		// need some special handling.
+	    return true;		
+	}
+	if ( this.obj.get(0).nodeName.toLowerCase() == 'textarea') {
+		// need some special handling.
+	    return true;	
+	}
+				
+	// all other elements are not supported
+	/*		
+	'canvas', 'audio', 'br', 'embed', 'fieldset', 'hgroup', 'hr', 
+	'iframe', 'img', 'input', 'map', 'script', 'select', 'style', 
+	'svg', 'table', 'ul', 'video', 'ol', 'form', 'noscript',
+	 */
+	return false;
+}
+
+
+/**
  * Initialize the editable
  * @return void
  * @hide
  */
 GENTICS.Aloha.Editable.prototype.init = function() {
 	var that = this;
+	
+	// check if Aloha can handle the obj as Editable
+	if ( !this.check( this.obj ) ) {
+		//GENTICS.Aloha.log('warn', this, 'Aloha cannot handle {' + this.obj[0].nodeName + '}');
+		this.destroy();
+		return;
+	}
 	
 	// only initialize the editable when Aloha is ready
 	if (GENTICS.Aloha.ready) {
