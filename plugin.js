@@ -106,13 +106,13 @@ GENTICS.Aloha.ListPlugin.applyButtonConfig = function (obj) {
 	var config = this.getEditableConfig(obj);
 	
 	// show/hide them according to the config
-	if (jQuery.inArray('ul', config) != -1 && GENTICS.Aloha.Selection.mayInsertTag('ul')) {
+	if (jQuery.inArray('ul', config) != -1 && GENTICS.Aloha.Selection.canTag1WrapTag2(GENTICS.Aloha.Selection.rangeObject.unmodifiableMarkupAtStart[0].nodeName, "ul") != -1) {
 		this.createUnorderedListButton.show();
 	} else {
 		this.createUnorderedListButton.hide();
 	}
 
-	if (jQuery.inArray('ol', config) != -1 && GENTICS.Aloha.Selection.mayInsertTag('ol')) {
+	if (jQuery.inArray('ol', config) != -1 && GENTICS.Aloha.Selection.canTag1WrapTag2(GENTICS.Aloha.Selection.rangeObject.unmodifiableMarkupAtStart[0].nodeName, "ol") != -1) {
 		this.createOrderedListButton.show();
 	} else {
 		this.createOrderedListButton.hide();
