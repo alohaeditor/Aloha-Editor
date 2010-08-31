@@ -911,20 +911,30 @@ GENTICS.Aloha.GCN.savePage = function (data) {
 			var content = editable.getContents();
 			// now replace the <span> tags to <node> tags
 			content = content.replace(/<span class=\"GENTICS_block\" id=\"(\w+)\">x<\/span>/g, '<node $1>');
-			var properties = {};
-			if (!requestBody.page.tags[gcnEditable.tagname]) {
-				// create the tag entry
-				requestBody.page.tags[gcnEditable.tagname] = {
-					'name' : gcnEditable.tagname,
-					'active' : true,
-					'properties' : {}
+			// handle editables of meta attributes like page.name
+			if (gcnEditable.metaproperty) {
+				// only page properties are supportet at this time
+				if (gcnEditable.metaproperty.indexOf("page.") != 0) {
+					continue;
+				}
+				var prop = gcnEditable.metaproperty.replace(/^page\./,"");
+				requestBody.page[prop] = content;
+			} else {
+				var properties = {};
+				if (!requestBody.page.tags[gcnEditable.tagname]) {
+					// create the tag entry
+					requestBody.page.tags[gcnEditable.tagname] = {
+						'name' : gcnEditable.tagname,
+						'active' : true,
+						'properties' : {}
+					};
+				}
+	
+				requestBody.page.tags[gcnEditable.tagname].properties[gcnEditable.partname] = {
+					'type' : 'RICHTEXT',
+					'stringValue' : content
 				};
 			}
-
-			requestBody.page.tags[gcnEditable.tagname].properties[gcnEditable.partname] = {
-				'type' : 'RICHTEXT',
-				'stringValue' : content
-			};
 		} else {
 			// TODO we did not find the editable, what now?
 		}
