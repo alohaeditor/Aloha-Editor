@@ -269,6 +269,7 @@
 			//the TOC is always rebuilt from scratch.
 			last(ancestors).empty();
             (function descend(outline) {
+				var prevSiblings = [];
                 each(outline, function (node) {
 		            var $section = head(node);
                     var $entry = self.linkSection($section, ancestors, prevSiblings);
@@ -277,7 +278,6 @@
                     ancestors.pop();
                     prevSiblings.push($entry);
                 });
-				prevSiblings = [];
             })(tail(outline));
 			return this;
         },
@@ -292,9 +292,9 @@
             }
 			var $root = this.root();
             var $entry = TOC.anchorFromLinkId($root, linkId);
-            if (!$entry.length) {
-                $entry = $('<li><a/></li>');
-            }
+			if (!$entry.length) {
+				$entry = $('<li><a/></li>');
+			}
             $entry.find('a').
                 attr('href', '#' + linkId).
                 text($section.eq(0).text());
