@@ -44,6 +44,10 @@ document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'core/m
 document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'core/plugin.js"></script>');
 document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'core/selection.js"></script>');
 document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'core/sidebar.js"></script>');
+document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'plugins/com.gentics.aloha.plugins.Link/deps/jquery.autocomplete.js"></script>');
+document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'plugins/com.gentics.aloha.plugins.Link/ressourceregistry.js"></script>');
+document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'plugins/com.gentics.aloha.plugins.Link/ressource.js"></script>');
+document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'plugins/com.gentics.aloha.plugins.Link/ressourcedummy.js"></script>');
 	
 	/* Generate xHTML valid js include Elements */
 	function jsElement( link ) {

@@ -27,6 +27,31 @@ GENTICS.Aloha.Markup.prototype.addKeyHandler = function (keyCode, handler) {
 	this.keyHandlers[keyCode].push(handler);
 };
 
+GENTICS.Aloha.Markup.prototype.insertBreak = function () {
+	var range = GENTICS.Aloha.Selection.rangeObject;
+	if (!range.isCollapsed()) {
+		this.removeSelectedMarkup();
+	}
+
+	var newBreak = jQuery('<br/>');
+	GENTICS.Utils.Dom.insertIntoDOM(newBreak, range, GENTICS.Aloha.activeEditable.obj);
+
+	var nextTextNode = GENTICS.Utils.Dom.searchAdjacentTextNode(newBreak.parent().get(0), GENTICS.Utils.Dom.getIndexInParent(newBreak.get(0)) + 1, false);
+	if (nextTextNode) {
+		// trim leading whitespace
+		var nonWSIndex = nextTextNode.data.search(/\S/);
+		if (nonWSIndex > 0) {
+			nextTextNode.data = nextTextNode.data.substring(nonWSIndex);
+		}
+	}
+
+	range.startContainer = range.endContainer = newBreak.get(0).parentNode;
+	range.startOffset = range.endOffset = GENTICS.Utils.Dom.getIndexInParent(newBreak.get(0)) + 1;
+	range.correctRange();
+	range.clearCaches();
+	range.select();
+};
+
 /** 
  * first method to handle key strokes
  * @param event DOM event
@@ -53,13 +78,69 @@ GENTICS.Aloha.Markup.prototype.preProcessKeyStrokes = function(event) {
 		case 13: // ENTER
 			if (event.shiftKey) {
 				GENTICS.Aloha.Log.debug(this, '... got a smoking Shift+Enter, Cowboy');
+				// when the range is expanded, we remove the selected text
+				if (!rangeObject.isCollapsed()) {
+					this.removeSelectedMarkup();
+				}
+
 				GENTICS.Aloha.Selection.updateSelection(false, true);
 				this.processShiftEnter(rangeObject);
+
+//				this.insertBreak();
+
 				return false;
 			} else {
 				GENTICS.Aloha.Log.debug(this, '... got a lonely Enter, Mum');
+				if (!rangeObject.isCollapsed()) {
+					this.removeSelectedMarkup();
+				}
 				GENTICS.Aloha.Selection.updateSelection(false, true);
 				this.processEnter(rangeObject);
+
+/*
+				// next find the nearest enclosing split object
+				var splitObject = rangeObject.findMarkup(function() {
+					return GENTICS.Utils.Dom.isSplitObject(this);
+				}, GENTICS.Aloha.activeEditable.obj);
+
+				// if one found, split it, otherwise insert a break
+				if (splitObject) {
+					var splitResult = GENTICS.Utils.Dom.split(rangeObject, jQuery([splitObject.parentNode, GENTICS.Aloha.activeEditable.obj.get(0)]));
+					if (splitResult) {
+						// cleanup in the second part
+						GENTICS.Utils.Dom.doCleanup({'merge' : true, 'removeempty' : true}, rangeObject, splitResult.get(1));
+
+						// get the first text node in the second part of the split
+						var nextTextNode = GENTICS.Utils.Dom.searchAdjacentTextNode(splitResult.get(1), 0, false);
+						if (nextTextNode) {
+							// trim leading whitespace
+							var nonWSIndex = nextTextNode.data.search(/\S/);
+							if (nonWSIndex > 0) {
+								nextTextNode.data = nextTextNode.data.substring(nonWSIndex);
+							}
+						}
+
+						// check whether the split created an element which is empty and needs to have an element to be visible
+						if (GENTICS.Utils.Dom.isEmpty(splitResult.get(0))) {
+							splitResult.eq(0).append(this.getFillUpElement(splitResult.get(0)));
+						}
+						if (GENTICS.Utils.Dom.isEmpty(splitResult.get(1))) {
+							splitResult.eq(1).append(this.getFillUpElement(splitResult.get(1)));
+						}
+
+						rangeObject.startContainer = rangeObject.endContainer = splitResult.get(1);
+						rangeObject.startOffset = rangeObject.endOffset = 0;
+						rangeObject.correctRange();
+						rangeObject.clearCaches();
+						rangeObject.select();
+					} else {
+						this.insertBreak();
+					}
+				} else {
+					this.insertBreak();
+				}
+*/
+
 				return false;
 			}
 			break;
@@ -465,13 +546,12 @@ GENTICS.Aloha.Markup.prototype.getInsertAfterObject = function(rangeObject, foll
 };
 
 /** 
- * method to get the html code for a fillUpElement. this is needed for empty paragraphs etc., so that they take up their expexted height
+ * method to get the html code for a fillUpElement. this is needed for empty paragraphs etc., so that they take up their expected height
  * @param splitObject split object (dom object)
  * @return fillUpElement HTML Code
  */
 GENTICS.Aloha.Markup.prototype.getFillUpElement = function(splitObject) {
-	if (GENTICS.Utils.Dom.isListElement(splitObject) && jQuery.browser.msie) {
-//		return jQuery(document.createTextNode(''));
+	if (jQuery.browser.msie) {
 		return false;
 	} else {
 		return jQuery('<br class="GENTICS_ephemera" />');

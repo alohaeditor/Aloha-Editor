@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Aloha, World!</title>
+<title>Aloha, Documents!</title>
 <script>
 GENTICS_Aloha_base = "../";
 </script>
@@ -11,55 +11,23 @@ GENTICS_Aloha_base = "../";
 <script type="text/javascript" src="../plugins/com.gentics.aloha.plugins.Table/plugin.js"></script>
 <script type="text/javascript" src="../plugins/com.gentics.aloha.plugins.List/plugin.js"></script>
 <script type="text/javascript" src="../plugins/com.gentics.aloha.plugins.Link/plugin.js"></script>
-<script type="text/javascript" src="../plugins/com.gentics.aloha.plugins.HighlightEditables/plugin.js"></script>
 
-<link rel="stylesheet" href="examples.css" />
+
+<link rel="stylesheet" href="AlohaDocument.css" />
 
 <!-- turn an element into editable Aloha continuous text -->
 <script type="text/javascript">
 GENTICS.Aloha.settings = {
-	logLevels: {'error': true, 'warn': true, 'info': true, 'debug': false},
+	logLevels: {'error': true, 'warn': true, 'info': true, 'debug': true},
 	errorhandling : false,
-	ribbon: false,	
+	ribbon: true,	
 	"i18n": {
-		// you can either let the system detect the users language (set acceptLanguage on server)
-		// In PHP this would would be '<?=$_SERVER['HTTP_ACCEPT_LANGUAGE']?>' resulting in 
-		// "acceptLanguage": 'de-de,de;q=0.8,it;q=0.6,en-us;q=0.7,en;q=0.2'
-		// or set current on server side to be in sync with your backend system 
-		"current": "en" 
+		// let the system detect the users language
+		//"acceptLanguage": '<?=$_SERVER['HTTP_ACCEPT_LANGUAGE']?>'
+		"acceptLanguage": 'de-de,de;q=0.8,it;q=0.6,en-us;q=0.7,en;q=0.2'
 	},
 	"plugins": {
-	 	"com.gentics.aloha.plugins.Format": {
-		 	// all elements with no specific configuration get this configuration
-			config : [ 'b', 'i','sub','sup'],
-		  	editables : {
-				// no formatting allowed for title
-				'#title'	: [ ], 
-				// formatting for all editable DIVs
-				'div'		: [ 'b', 'i', 'del', 'sub', 'sup'  ], 
-				// content is a DIV and has class .article so it gets both buttons
-				'.article'	: [ 'b', 'i', 'p', 'title', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'removeFormat']
-		  	}
-		},
-	 	"com.gentics.aloha.plugins.List": { 
-		 	// all elements with no specific configuration get an UL, just for fun :)
-			config : [ 'ul' ],
-		  	editables : {
-				// Even if this is configured it is not set because OL and UL are not allowed in H1.
-				'#title'	: [ 'ol' ], 
-				// all divs get OL
-				'div'		: [ 'ol' ], 
-				// content is a DIV. It would get only OL but with class .article it also gets UL.
-				'.article'	: [ 'ul' ]
-		  	}
-		},
 	 	"com.gentics.aloha.plugins.Link": {
-		 	// all elements with no specific configuration may insert links
-			config : [ 'a' ],
-		  	editables : {
-				// No links in the title.
-				'#title'	: [  ]
-		  	},
 		  	// all links that match the targetregex will get set the target
  			// e.g. ^(?!.*aloha-editor.com).* matches all href except aloha-editor.com
 		  	targetregex : '^(?!.*aloha-editor.com).*',
@@ -68,42 +36,30 @@ GENTICS.Aloha.settings = {
 		  	target : '_blank',
 		  	// the same for css class as for target
 		  	cssclassregex : '^(?!.*aloha-editor.com).*',
-		  	cssclass : 'aloha',
-		  	ressource: GENTICS.Aloha.Ressources.Dummy
+		  	cssclass : 'external'
 		},
-	 	"com.gentics.aloha.plugins.Table": { 
-		 	// all elements with no specific configuration are not allowed to insert tables
-			config : [ ],
-		  	editables : {
-				// Allow insert tables only into .article
-				'.article'	: [ 'table' ] 
-		  	}
+	 	"com.gentics.aloha.plugins.Table": {
+			config: ['table']
 		}
   	}
 };
 
 $(document).ready(function() {
-	$('#title').aloha();
-	$('#teaser').aloha();
-	$('#content').aloha();	
+
+	$('#content').aloha();
 });  
 </script>
 </head>
 <body>
 <div id="main"> 
-<h1 id="title">Aloha, World!</h1>
 <div id="bodyContent">
-<div id="teaser" class="shorttext">
-<p><b>Aloha</b> in the Hawaiian language means affection, love, peace, compassion and mercy. Since the middle of the 19th century, it also
-has come to be used as an English greeting to say <i>goodbye</i> and <i>hello</i>. Currently, it is mostly used in the sense of hello; however,
-it is used as the above.</p>
-</div>
 <div id="content" class="article">
+<h1>Aloha</h1>
 <h2>Etymology</h2>
-<p>The word <a href="http://en.wikipedia.org/wiki/Aloha" target="_blank" class="aloha">aloha</a> derives from the Proto-Polynesian root <i>*qalofa</i>. It has cognates in other Polynesian languages, such as Samoan alofa
+<p>The word <a href="http://en.wikipedia.org/wiki/Aloha" target="_blank" class="external">aloha</a> derives from the Proto-Polynesian root <i>*qalofa</i>. It has cognates in other Polynesian languages, such as Samoan alofa
 and Māori aroha, also meaning "love."</p>
 <p><a href="http://aloha-editor.com/">Aloha Editor</a> is the word's most advanced browser based Editor made with aloha passion.</p>
-<p>A folk etymology claims that it derives from a compound of the <a href="http://en.wikipedia.org/wiki/Hawaii" target="_blank" class="aloha">Hawaiian</a> words alo meaning "presence", "front", "face", or "share"; and
+<p>A folk etymology claims that it derives from a compound of the <a href="http://en.wikipedia.org/wiki/Hawaii" target="_blank" class="external">Hawaiian</a> words alo meaning "presence", "front", "face", or "share"; and
 ha, meaning "breath of life" or "essence of life." Although alo does indeed mean "presence" etc., the word for breath is spelled with a macron
 or kahakō over the a (hā) whereas the word aloha does not have a long a.</p>
 <h2>Usage</h2>

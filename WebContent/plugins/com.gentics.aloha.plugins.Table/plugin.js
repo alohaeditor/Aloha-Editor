@@ -26,7 +26,7 @@ GENTICS.Aloha.TablePlugin.createLayer = undefined;
 /**
  * Configure the available languages
  */
-GENTICS.Aloha.TablePlugin.languages = ['en', 'de', 'fr', 'eo'];
+GENTICS.Aloha.TablePlugin.languages = ['en', 'de', 'fr', 'eo', 'fi', 'ru', 'it'];
 
 /**
  * default button configuration
@@ -109,24 +109,25 @@ GENTICS.Aloha.TablePlugin.init = function() {
 
 	GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'selectionChanged', function(event, properties) {
 
-		// get Plugin configuration
-		var config = that.getEditableConfig( GENTICS.Aloha.activeEditable.obj );
-		
-		// show hide buttons regarding configuration and DOM position
-		if ( jQuery.inArray('table', config) != -1  && GENTICS.Aloha.Selection.mayInsertTag('table') ) {
-			that.createTableButton.show();
-		} else {
-			that.createTableButton.hide();
+		if (GENTICS.Aloha.activeEditable) {
+			// get Plugin configuration
+			var config = that.getEditableConfig( GENTICS.Aloha.activeEditable.obj );
+			
+			// show hide buttons regarding configuration and DOM position
+			if ( jQuery.inArray('table', config) != -1  && GENTICS.Aloha.Selection.mayInsertTag('table') ) {
+				that.createTableButton.show();
+			} else {
+				that.createTableButton.hide();
+			}
+			
+			// set the scope if either columns or rows are selected
+			if (typeof GENTICS.Aloha.TableHelper.selectionType != undefined) {
+				GENTICS.Aloha.FloatingMenu.setScope(that.getUID(GENTICS.Aloha.TableHelper.selectionType));
+			}
+			
+			// TODO this should not be necessary here!
+			GENTICS.Aloha.FloatingMenu.doLayout();
 		}
-
-		// set the scope if either columns or rows are selected
-		if (typeof GENTICS.Aloha.TableHelper.selectionType != undefined) {
-			GENTICS.Aloha.FloatingMenu.setScope(that.getUID(GENTICS.Aloha.TableHelper.selectionType));
-		}
-
-		// TODO this should not be necessary here!
-		GENTICS.Aloha.FloatingMenu.doLayout();
-	
 	});
 
 	// subscribe for the 'editableDeactivated' event to deactivate all tables in the editable

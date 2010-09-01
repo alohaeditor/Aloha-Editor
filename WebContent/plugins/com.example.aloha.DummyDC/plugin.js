@@ -17,7 +17,7 @@ EXAMPLE.DummyDCPlugin = new GENTICS.Aloha.Plugin('com.example.aloha.DummyDC');
 /**
  * Configure the available languages
  */
-EXAMPLE.DummyDCPlugin.languages = ['en', 'de'];
+EXAMPLE.DummyDCPlugin.languages = ['en','de','eo','fi','fr','it'];
 
 /**
  * Initialize the plugin and set initialize flag on true
