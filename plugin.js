@@ -15,8 +15,8 @@
 (function(){
     var
         deps = GENTICS.Aloha.TOC ||
-               {'jQuery': jQuery,
-                'underscore': _},
+        {'jQuery': jQuery},
+	//,'underscore': _},
 
         $ = deps['jQuery'];
         // u = deps['underscore'],
@@ -313,6 +313,6 @@
             return $entry;
         }};
     };//create
-}(jQuery, _));
+}());
 
 //EOF
