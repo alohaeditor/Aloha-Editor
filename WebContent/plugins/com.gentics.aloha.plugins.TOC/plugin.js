@@ -59,10 +59,13 @@
     var TOC = GENTICS.Aloha.TOC = new GENTICS.Aloha.Plugin(namespace);
 
 	var $containers = null;
+	var allTocs = [];
 
     //-------------- plugin interface ---------------
 
     TOC.init = function(){
+		var s = TOC.settings;
+		s.updateInterval = s.updateInterval || 5000;
         TOC.initButtons();
 		TOC.spawn();
     };
@@ -72,7 +75,7 @@
 	        'iconClass' : 'GENTICS_button GENTICS_button_a',
 	        'size' : 'small',
 	        'onclick' : function () { TOC.insertAtSelection($containers); },
-	        'tooltip' : this.i18n('button.addlink.tooltip'),
+	        'tooltip' : this.i18n('button.addtoc.tooltip'),
 	        'toggle' : false
         });
         GENTICS.Aloha.FloatingMenu.addButton(
@@ -179,7 +182,7 @@
         var $tocContainer = $(document.getElementById(tocEditable.getId()));
 	    GENTICS.Utils.Dom.insertIntoDOM($tocElement, range, $tocContainer);
 
-	    TOC.create(id).register($containers).update();
+	    TOC.create(id).register($containers).update().tickTock();
     };
 	/**
 	 * Spawn containers for all ols with the toc_root class.
@@ -193,11 +196,12 @@
 				id = TOC.generateId('toc');
 				$(this).attr('id', id);
 			}
-			TOC.create(id).register($containers);
+			TOC.create(id).register($containers).tickTock();
 		});
 	};
 
     TOC.create = function (id) {
+		allTocs.push(this);
         return {
             'id': id,
             '$containers': $(),
@@ -215,7 +219,7 @@
 		 * the same containers can be passed in multiple times. they will
 		 * be registered only once.
          */
-        register: function($containers){
+        register: function ($containers){
 			var self = this;
 			// the .add() method ensures that the $containers will be in
 			// document order (required for correct TOC order)
@@ -232,6 +236,19 @@
             });
 			return self;
         },
+		tickTock: function (interval) {
+			var self = this;
+			interval = interval || TOC.settings.updateInterval;
+			if (!interval) {
+				return;
+			}
+			window.setInterval(function(){
+				// TODO: use the active editable instead of rebuilding
+				// the entire TOC
+				self.update();
+			}, interval);
+			return self;
+		},
         /**
          * there are various ways which can cause duplicate ids on targets
          * (e.g. pressing enter in a heading and writing in a new line, or
