@@ -200,6 +200,40 @@ GENTICS.Aloha.Editable.prototype.toString = function() {
 };
 
 /**
+ * check whether the editable has been disabled 
+ */
+GENTICS.Aloha.Editable.prototype.isDisabled = function () {
+	if (this.obj.attr("contenteditable") == "false" || !this.obj.attr("contenteditable")) {
+		return true;
+	} else {
+		return false;
+	}
+};
+
+/**
+ * disable this editable
+ * a disabled editable cannot be written on by keyboard
+ */
+GENTICS.Aloha.Editable.prototype.disable = function() {
+	if (this.isDisabled()) {
+		return;
+	}
+	this.obj.attr("contenteditable", "false");
+};
+
+/**
+ * enable this editable
+ * reenables a disabled editable to be writteable again 
+ */
+GENTICS.Aloha.Editable.prototype.enable = function() {
+	if (!this.isDisabled()) {
+		return;
+	}
+	this.obj.attr("contenteditable", "true");
+};
+
+
+/**
  * activates an Editable for editing
  * disables all other active items
  * @method
@@ -207,7 +241,7 @@ GENTICS.Aloha.Editable.prototype.toString = function() {
 GENTICS.Aloha.Editable.prototype.activate = function(e) {
 	
 	// leave immediately if this is already the active editable
-	if (this.isActive) {
+	if (this.isActive || this.isDisabled()) {
 		return;
 	}
 
