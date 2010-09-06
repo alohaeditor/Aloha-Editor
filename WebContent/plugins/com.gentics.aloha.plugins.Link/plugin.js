@@ -12,7 +12,7 @@ GENTICS.Aloha.Link = new GENTICS.Aloha.Plugin('com.gentics.aloha.plugins.Link');
 /**
  * Configure the available languages
  */
-GENTICS.Aloha.Link.languages = ['en', 'de'];
+GENTICS.Aloha.Link.languages = ['en', 'de', 'fr'];
 
 /**
  * Default configuration allows links everywhere
@@ -174,14 +174,14 @@ GENTICS.Aloha.Link.bindInteractions = function () {
         GENTICS.Aloha.editables[i].obj.find('a').each( function( i ) {
             
             // show pointer on mouse over
-            $(this).mouseenter( function(e) {
+            jQuery(this).mouseenter( function(e) {
     			GENTICS.Aloha.Log.debug(GENTICS.Aloha.Link, 'mouse over link.');
     			that.mouseOverLink = this;
            	 	that.updateMousePointer();
             });
             
             // in any case on leave show text cursor
-            $(this).mouseleave( function(e) {
+            jQuery(this).mouseleave( function(e) {
     			GENTICS.Aloha.Log.debug(GENTICS.Aloha.Link, 'mouse left link.');
            	 	that.moseOverLink = null;
            	 	that.updateMousePointer();
@@ -189,7 +189,7 @@ GENTICS.Aloha.Link.bindInteractions = function () {
 
             
             // follow link on ctrl or meta + click
-            $(this).click(function(e) { 
+            jQuery(this).click(function(e) { 
                 if (e.metaKey || e.ctrlKey) {
                 	
                 	// blur current editable. user is wating for the link to load
@@ -208,7 +208,7 @@ GENTICS.Aloha.Link.bindInteractions = function () {
         }); 
     }
     
-	$(document).keyup(function (e) {
+	jQuery(document).keyup(function (e) {
 		switch( e.which ) {
 			case 17:
     			GENTICS.Aloha.Log.debug(GENTICS.Aloha.Link, 'ctrl up');
@@ -234,7 +234,7 @@ GENTICS.Aloha.Link.bindInteractions = function () {
 		}
 	});
     
-	$(document).keydown(function (e) {
+	jQuery(document).keydown(function (e) {
 		switch( e.which ) {
 			case 17:
 				GENTICS.Aloha.Log.debug(GENTICS.Aloha.Link, 'meta ctrl');
@@ -267,11 +267,11 @@ GENTICS.Aloha.Link.updateMousePointer = function () {
 
     if ( (that.isCrtlDown || that.isMetaDown ) && that.mouseOverLink != null) {
 		GENTICS.Aloha.Log.debug(GENTICS.Aloha.Link, 'set pointer');
-		$(that.mouseOverLink).removeClass('GENTICS_link_text');
-		$(that.mouseOverLink).addClass('GENTICS_link_pointer');
+		jQuery(that.mouseOverLink).removeClass('GENTICS_link_text');
+		jQuery(that.mouseOverLink).addClass('GENTICS_link_pointer');
     } else {
-		$(that.mouseOverLink).removeClass('GENTICS_link_pointer');
-		$(that.mouseOverLink).addClass('GENTICS_link_text');
+		jQuery(that.mouseOverLink).removeClass('GENTICS_link_pointer');
+		jQuery(that.mouseOverLink).addClass('GENTICS_link_text');
     }
 }
 
@@ -286,32 +286,34 @@ GENTICS.Aloha.Link.subscribeEvents = function () {
     GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'selectionChanged', function(event, rangeObject) {
         
         // show/hide the button according to the configuration
-        var config = that.getEditableConfig(GENTICS.Aloha.activeEditable.obj);
-        if ( jQuery.inArray('a', config) != -1) {
-            that.formatLinkButton.show();
-            that.insertLinkButton.show();
-        } else {
-            that.formatLinkButton.hide();
-            that.insertLinkButton.hide();
-            // leave if a is not allowed
-            return;
-        }
-        
-        var foundMarkup = that.findLinkMarkup( rangeObject )
-        if ( foundMarkup ) {
-            // link found
-            that.insertLinkButton.hide();
-            that.formatLinkButton.setPressed(true);
-            GENTICS.Aloha.FloatingMenu.setScope(that.getUID('link'));
-            that.srcFieldButton.setAnchor(foundMarkup);
-        } else {
-            // no link found
-            that.formatLinkButton.setPressed(false);
-            that.srcFieldButton.setAnchor(null);
-        }
-
-        // TODO this should not be necessary here!
-        GENTICS.Aloha.FloatingMenu.doLayout();
+    	if (GENTICS.Aloha.activeEditable) {
+    		var config = that.getEditableConfig(GENTICS.Aloha.activeEditable.obj);
+    		if ( jQuery.inArray('a', config) != -1) {
+    			that.formatLinkButton.show();
+    			that.insertLinkButton.show();
+    		} else {
+    			that.formatLinkButton.hide();
+    			that.insertLinkButton.hide();
+    			// leave if a is not allowed
+    			return;
+    		}
+    		
+    		var foundMarkup = that.findLinkMarkup( rangeObject )
+    		if ( foundMarkup ) {
+    			// link found
+    			that.insertLinkButton.hide();
+    			that.formatLinkButton.setPressed(true);
+    			GENTICS.Aloha.FloatingMenu.setScope(that.getUID('link'));
+    			that.srcFieldButton.setAnchor(foundMarkup);
+    		} else {
+    			// no link found
+    			that.formatLinkButton.setPressed(false);
+    			that.srcFieldButton.setAnchor(null);
+    		}
+    		
+    		// TODO this should not be necessary here!
+    		GENTICS.Aloha.FloatingMenu.doLayout();
+    	}
     });
     
 };
