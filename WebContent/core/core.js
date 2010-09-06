@@ -91,6 +91,7 @@ GENTICS.Aloha.prototype.readyCallbacks = new Array();
 /**
  * Initialize Aloha
  * called automatically by the loader
+ * @event the "ready" event is triggered as soon as Aloha has finished it's initialization process
  * @hide
  */
 GENTICS.Aloha.prototype.init = function () {
@@ -174,22 +175,10 @@ GENTICS.Aloha.prototype.init = function () {
 		}
 	}
 	
-	// ready callback AFTER Aloha is ready
-	for ( var i = 0; i < this.readyCallbacks.length; i++) {
-		this.readyCallbacks[i].call();
-	}
+	GENTICS.Aloha.EventRegistry.trigger(
+		new GENTICS.Aloha.Event("ready", GENTICS.Aloha, null)
+	);
 };
-
-/**
- * adds a callback method which is invoked when Aloha is ready
- * @param	callback	the callback method to be invoked
- * @return	index of the callback
- */
-GENTICS.Aloha.prototype.onReady = function (callback) {
-	this.readyCallbacks.push(callback);
-	return (this.readyCallbacks.length - 1);
-};
-
 
 /**
  * Activates editable and deactivates all other Editables
