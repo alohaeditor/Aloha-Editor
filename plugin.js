@@ -18,9 +18,9 @@ GENTICS.Aloha.HighlightEditables.init = function () {
 	// highlight editables as long as the mouse is moving
 	GENTICS.Utils.Position.addMouseMoveCallback(function () {
 		for ( var i = 0; i < GENTICS.Aloha.editables.length; i++) {
-			var editable = GENTICS.Aloha.editables[i].obj;
-			if (!GENTICS.Aloha.activeEditable) {
-				editable.addClass('GENTICS_editable_highlight');
+			var editable = GENTICS.Aloha.editables[i];
+			if (!GENTICS.Aloha.activeEditable && !editable.isDisabled()) {
+				editable.obj.addClass('GENTICS_editable_highlight');
 			}
 		}
 	});
