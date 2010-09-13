@@ -67,7 +67,9 @@
 		var s = TOC.settings;
 		s.updateInterval = s.updateInterval || 5000;
         TOC.initButtons();
-		TOC.spawn();
+		$(document).ready(function(){
+			TOC.spawn();
+		});
     };
 
     TOC.initButtons = function(){
@@ -196,7 +198,7 @@
 				id = TOC.generateId('toc');
 				$(this).attr('id', id);
 			}
-			TOC.create(id).register($containers).tickTock();
+			TOC.create(id).register($containers).update().tickTock();
 		});
 	};
 
@@ -243,6 +245,7 @@
 				return;
 			}
 			window.setInterval(function(){
+				self.register(TOC.editableContainers());
 				// TODO: use the active editable instead of rebuilding
 				// the entire TOC
 				self.update();
