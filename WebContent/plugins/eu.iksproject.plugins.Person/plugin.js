@@ -9,7 +9,7 @@ if (typeof eu == "undefined") {
 eu.iksproject.PersonPlugin = new GENTICS.Aloha.Plugin('eu.iksproject.plugins.Person');
 eu.iksproject.LoaderPlugin.loadAsset('eu.iksproject.plugins.Person', 'person', 'css');
 
-eu.iksproject.PersonPlugin.languages = ['en', 'fi'];
+eu.iksproject.PersonPlugin.languages = ['en', 'fi', 'fr'];
 
 /**
  * Initialize the plugin, register the buttons

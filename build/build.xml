@@ -252,13 +252,6 @@
 		<mkdir dir="${zipdir}" />
 		<zip destfile="${zipdir}/${filename}-${version}.zip" basedir="${outdir}" includes="aloha-${version}/**"/>
 	</target>
-
-	<target name="dictionaries">
-		<!-- now concat the dict files -->
-		<concat destfile="${outdir}/translation/de.dict" force="true">
-			<fileset dir="../" includes="**/de.dict" />
-		</concat>
-	</target>
 	
 	<!-- Build all -->
 	<target name="all" depends="clean,build,package" />

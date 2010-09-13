@@ -80,13 +80,32 @@ GENTICS.Aloha.prototype.settings = {};
  */
 GENTICS.Aloha.prototype.OSName = "Unknown";
 
+/**
+ * Array of callback functions to call when Aloha is ready
+ * @property
+ * @type Array
+ * @hide
+ */
+GENTICS.Aloha.prototype.readyCallbacks = new Array();
 
 /**
  * Initialize Aloha
  * called automatically by the loader
+ * @event the "ready" event is triggered as soon as Aloha has finished it's initialization process
  * @hide
  */
 GENTICS.Aloha.prototype.init = function () {
+	// check browser version on init
+	// this has to be revamped, as 
+	if (jQuery.browser.webkit && parseFloat(jQuery.browser.version) < 532.5 || // Chrome/Safari 4
+		jQuery.browser.mozilla && parseFloat(jQuery.browser.version) < 1.9 || // FF 3.5
+		jQuery.browser.msie && parseFloat(jQuery.browser.version) < 7 || // IE 7	
+		jQuery.browser.opera) { // right now, Opera does not work :(
+		alert("Sorry, your browser is not supported at the moment.");
+		return;
+	}
+	
+	
 	var that = this;
 	
 	// register the body click event to blur editables
@@ -158,14 +177,19 @@ GENTICS.Aloha.prototype.init = function () {
 	Ext.MessageBox.buttonText.cancel = GENTICS.Aloha.i18n(this, 'cancel');
 	
 	// set aloha ready
-	this.ready = true;
+	this.ready = true; 
 
-	// editable have to be initialized AFTER Aloha is ready
-	for ( var i = 0; i < this.editables.length; i++) {
-		this.editables[i].init();
+	// activate registered editables
+	for (var i = 0; i < this.editables.length; i++) {
+		if ( !this.editables[i].ready ) {
+			this.editables[i].init();
+		}
 	}
+	
+	GENTICS.Aloha.EventRegistry.trigger(
+		new GENTICS.Aloha.Event("ready", GENTICS.Aloha, null)
+	);
 };
-
 
 /**
  * Activates editable and deactivates all other Editables
@@ -295,7 +319,7 @@ GENTICS.Aloha.prototype.initI18n = function() {
 		|| !this.settings.i18n.available 
 		|| !this.settings.i18n.available instanceof Array) {
 		
-		this.settings.i18n.available = ['en', 'de', 'fr', 'eo', 'fi', 'ru', 'it'];
+		this.settings.i18n.available = ['en', 'de', 'fr', 'eo', 'fi', 'ru', 'it', 'pl'];
 	}
 
 	/* 
