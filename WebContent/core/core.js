@@ -99,7 +99,7 @@ GENTICS.Aloha.prototype.init = function () {
 	// this has to be revamped, as 
 	if (jQuery.browser.webkit && parseFloat(jQuery.browser.version) < 532.5 || // Chrome/Safari 4
 		jQuery.browser.mozilla && parseFloat(jQuery.browser.version) < 1.9 || // FF 3.5
-		jQuery.browser.msie && parseFloat(jQuery.browser.version) < 7 || // IE 7	
+		jQuery.browser.msie && jQuery.browser.version < 7 || // IE 7	
 		jQuery.browser.opera) { // right now, Opera does not work :(
 		alert("Sorry, your browser is not supported at the moment.");
 		return;
