@@ -623,6 +623,15 @@ GENTICS.Aloha.FloatingMenu.calcFloatTarget = function(range) {
 	if (!GENTICS.Aloha.activeEditable) {
 		return false;
 	}
+	
+	// check if the designated editable is disabled
+	for (var i = 0; i < GENTICS.Aloha.editables.length; i++) {
+		if (GENTICS.Aloha.editables[i].obj.get(0) == range.limitObject &&
+				GENTICS.Aloha.editables[i].isDisabled()) {
+			return false;
+		}
+	}
+	
 	var targetObj = jQuery(this.nextFloatTargetObj(range.getCommonAncestorContainer(), range.limitObject));
 	var scrollTop = GENTICS.Utils.Position.Scroll.top;
 
