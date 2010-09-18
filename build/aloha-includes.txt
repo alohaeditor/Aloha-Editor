@@ -3,8 +3,11 @@ utils/lang.js
 utils/range.js
 utils/position.js
 utils/dom.js
+core/ext-alohaproxy.js
+core/ext-alohareader.js
 core/core.js
 core/ui.js
+core/ui-attributefield.js
 core/css.js
 core/editable.js
 core/ribbon.js

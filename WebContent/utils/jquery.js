@@ -38,3 +38,59 @@ jQuery.fn.between = function(content, offset) {
 		}
 	}
 };
+
+/**
+ * jQuery Keydown extension Extension
+ *
+ */
+
+jQuery.fn.cmdkeydown  = function( fn ) {
+	return fn ? this.bind( 'cmdkeydown', fn ) : this.trigger( 'cmdkeydown' );
+};
+
+jQuery.fn.cmdkeyup  = function( fn ) {
+	return fn ? this.bind( 'cmdkeyup', fn ) : this.trigger( 'cmdkeyup' );
+};
+
+jQuery(document).keyup(function (e) {
+	switch( e.which ) {
+		case 17:
+			jQuery.isCtrlDown = false;
+			jQuery.fn.trigger('cmdkeyup',  ['ctrl'] );
+			break;
+		case 91:
+			jQuery.isMetaLDown = false;
+			if ( !jQuery.isMetaRDown ) {
+				jQuery.isMetaDown = false;
+			}
+			jQuery.fn.trigger('cmdkeyup',  ['meta'] );
+			break;
+		case 93:
+			jQuery.isMetaRDown = false;
+			if ( !jQuery.isMetaLDown ) {
+				jQuery.isMetaDown = false;
+			}
+			jQuery.fn.trigger('cmdkeyup',  ['meta'] );
+			break;
+	}
+});
+
+jQuery(document).keydown(function (e) {
+	switch( e.which ) {
+		case 17:
+			jQuery.isCtrlDown = true;
+			jQuery.fn.trigger('cmdkeydown',  e );
+			break;
+		case 91:
+			jQuery.isMetaLDown = true;
+			jQuery.isMetaDown = true;
+			jQuery.fn.trigger('cmdkeydown',  e );
+			break;
+		case 93:
+			jQuery.isMetaRDown = true;
+			jQuery.isMetaDown = true;
+			jQuery.fn.trigger('cmdkeydown',  e );
+			break;
+	}
+});
+
