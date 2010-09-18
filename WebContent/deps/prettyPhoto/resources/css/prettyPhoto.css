@@ -168,14 +168,14 @@
 		position: absolute;
 		top: 0;
 		width: 100%;
-		z-index: 9500;
+		z-index: 19500;
 	}
 	
 	div.pp_pic_holder {
 		display: none;
 		position: absolute;
 		width: 100px;
-		z-index: 10000;
+		z-index: 20000;
 	}
 		
 		.pp_top {

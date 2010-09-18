@@ -91,9 +91,21 @@ GENTICS.Aloha.prototype.readyCallbacks = new Array();
 /**
  * Initialize Aloha
  * called automatically by the loader
+ * @event the "ready" event is triggered as soon as Aloha has finished it's initialization process
  * @hide
  */
 GENTICS.Aloha.prototype.init = function () {
+	// check browser version on init
+	// this has to be revamped, as 
+	if (jQuery.browser.webkit && parseFloat(jQuery.browser.version) < 532.5 || // Chrome/Safari 4
+		jQuery.browser.mozilla && parseFloat(jQuery.browser.version) < 1.9 || // FF 3.5
+		jQuery.browser.msie && parseFloat(jQuery.browser.version) < 7 || // IE 7	
+		jQuery.browser.opera) { // right now, Opera does not work :(
+		alert("Sorry, your browser is not supported at the moment.");
+		return;
+	}
+	
+	
 	var that = this;
 	
 	// register the body click event to blur editables
@@ -175,22 +187,10 @@ GENTICS.Aloha.prototype.init = function () {
 		}
 	}
 	
-	// ready callback AFTER Aloha is ready
-	for ( var i = 0; i < this.readyCallbacks.length; i++) {
-		this.readyCallbacks[i].call();
-	}
+	GENTICS.Aloha.EventRegistry.trigger(
+		new GENTICS.Aloha.Event("ready", GENTICS.Aloha, null)
+	);
 };
-
-/**
- * adds a callback method which is invoked when Aloha is ready
- * @param	callback	the callback method to be invoked
- * @return	index of the callback
- */
-GENTICS.Aloha.prototype.onReady = function (callback) {
-	this.readyCallbacks.push(callback);
-	return (this.readyCallbacks.length - 1);
-};
-
 
 /**
  * Activates editable and deactivates all other Editables
@@ -320,7 +320,7 @@ GENTICS.Aloha.prototype.initI18n = function() {
 		|| !this.settings.i18n.available 
 		|| !this.settings.i18n.available instanceof Array) {
 		
-		this.settings.i18n.available = ['en', 'de', 'fr', 'eo', 'fi', 'ru', 'it'];
+		this.settings.i18n.available = ['en', 'de', 'fr', 'eo', 'fi', 'ru', 'it', 'pl'];
 	}
 
 	/* 
