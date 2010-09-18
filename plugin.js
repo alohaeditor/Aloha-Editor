@@ -12,7 +12,7 @@ GENTICS.Aloha.Link = new GENTICS.Aloha.Plugin('com.gentics.aloha.plugins.Link');
 /**
  * Configure the available languages
  */
-GENTICS.Aloha.Link.languages = ['en', 'de', 'fr', 'ru'];
+GENTICS.Aloha.Link.languages = ['en', 'de', 'fr', 'ru', 'pl'];
 
 /**
  * Default configuration allows links everywhere
