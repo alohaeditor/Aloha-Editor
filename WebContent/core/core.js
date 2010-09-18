@@ -152,6 +152,7 @@ GENTICS.Aloha.prototype.init = function () {
 	// initialize all plugins
 	this.PluginRegistry.init();
 	// TODO call init on all other Aloha Core objects (messageline, etc.)
+	this.ResourceRegistry.init();
 	
 	// intitialize the ribbon
 	this.Ribbon.init();

@@ -21,4 +21,4 @@ core/sidebar.js
 plugins/com.gentics.aloha.plugins.Link/deps/jquery.autocomplete.js
 plugins/com.gentics.aloha.plugins.Link/ressourceregistry.js
 plugins/com.gentics.aloha.plugins.Link/ressource.js
-plugins/com.gentics.aloha.plugins.Link/ressourcedummy.js
+plugins/com.gentics.aloha.plugins.Link/LinkList.js

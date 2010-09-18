@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Aloha, World!</title>
 <script>
-GENTICS_Aloha_base = "../";
+GENTICS_Aloha_base = "file:///Users/haymo/Documents/workspace/Aloha-Editor/WebContent/";
 </script>
 <script type="text/javascript" src="../core/include.js"></script>
 <script type="text/javascript" src="../plugins/com.gentics.aloha.plugins.Format/plugin.js"></script>
@@ -12,6 +12,7 @@ GENTICS_Aloha_base = "../";
 <script type="text/javascript" src="../plugins/com.gentics.aloha.plugins.List/plugin.js"></script>
 <script type="text/javascript" src="../plugins/com.gentics.aloha.plugins.Link/plugin.js"></script>
 <script type="text/javascript" src="../plugins/com.gentics.aloha.plugins.HighlightEditables/plugin.js"></script>
+<script type="text/javascript" src="../plugins/com.gentics.aloha.plugins.TOC/plugin.js"></script>
 
 <link rel="stylesheet" href="examples.css" />
 
@@ -27,6 +28,16 @@ GENTICS.Aloha.settings = {
 		// "acceptLanguage": 'de-de,de;q=0.8,it;q=0.6,en-us;q=0.7,en;q=0.2'
 		// or set current on server side to be in sync with your backend system 
 		"current": "en" 
+	},
+	"resources": {
+	 	"com.gentics.aloha.resources.LinkList": {
+	 		data: [
+ 		        { id: 1, name: 'Aloha Developers Wiki', url:'http://www.aloha-editor.com/wiki', resourceObjectType:'website', weight: 0.50 },
+ 		        { id: 2, name: 'Aloha Editor - The HTML5 Editor', url:'http://aloha-editor.com', resourceObjectType:'website', weight: 0.90  },
+ 		        { id: 3, name: 'Aloha Demo', url:'http://www.aloha-editor.com/demos.html', resourceObjectType:'website', weight: 0.75  },
+ 		        { id: 4, name: 'Aloha Logo', url:'http://www.aloha-editor.com/images/aloha-editor-logo.png', resourceObjectType:'image', weight: 0.10  },
+	 		]
+		}
 	},
 	"plugins": {
 	 	"com.gentics.aloha.plugins.Format": {
@@ -69,7 +80,8 @@ GENTICS.Aloha.settings = {
 		  	// the same for css class as for target
 		  	cssclassregex : '^(?!.*aloha-editor.com).*',
 		  	cssclass : 'aloha',
-		  	ressource: GENTICS.Aloha.Ressources.Dummy
+		  	// use all resources of type website for autosuggest
+		  	resourceObjectTypes: ['website']
 		},
 	 	"com.gentics.aloha.plugins.Table": { 
 		 	// all elements with no specific configuration are not allowed to insert tables
@@ -102,7 +114,7 @@ it is used as the above.</p>
 <h2>Etymology</h2>
 <p>The word <a href="http://en.wikipedia.org/wiki/Aloha" target="_blank" class="aloha">aloha</a> derives from the Proto-Polynesian root <i>*qalofa</i>. It has cognates in other Polynesian languages, such as Samoan alofa
 and Māori aroha, also meaning "love."</p>
-<p><a href="http://aloha-editor.com/">Aloha Editor</a> is the word's most advanced browser based Editor made with aloha passion.</p>
+<p><a href="http://aloha-editor.com">Aloha Editor</a> is the word's most advanced browser based Editor made with aloha passion.</p>
 <p>A folk etymology claims that it derives from a compound of the <a href="http://en.wikipedia.org/wiki/Hawaii" target="_blank" class="aloha">Hawaiian</a> words alo meaning "presence", "front", "face", or "share"; and
 ha, meaning "breath of life" or "essence of life." Although alo does indeed mean "presence" etc., the word for breath is spelled with a macron
 or kahakō over the a (hā) whereas the word aloha does not have a long a.</p>
