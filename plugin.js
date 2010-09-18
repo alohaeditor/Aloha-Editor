@@ -515,7 +515,7 @@ GENTICS.Aloha.Link.makeClean = function (obj) {
  		doRequest : function(action, rs, params, reader, cb, scope, arg) {
  	        try {
  	        	var rotypes = this.getResourceObjectTypes();
- 	        	GENTICS.Aloha.ResourceRegistry.query(params.query, rotypes, function( resourceResult ) {
+ 	        	GENTICS.Aloha.ResourceManager.query(params.query, rotypes, function( resourceResult ) {
  	        		var result = reader.readRecords(resourceResult);
 	 	 	        cb.call(scope, result, arg, true);
  	        	});
@@ -580,7 +580,7 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
     onSelect: function (item) { 
 		this.setValue(item.data.url);
 		// call the resource marker
-		GENTICS.Aloha.ResourceRegistry.markObject(this.targetObject, item.data);
+		GENTICS.Aloha.ResourceManager.markObject(this.targetObject, item.data);
 		this.collapse();
 	},
     listeners: {
