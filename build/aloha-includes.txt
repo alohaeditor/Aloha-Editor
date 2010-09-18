@@ -18,7 +18,6 @@ core/message.js
 core/plugin.js
 core/selection.js
 core/sidebar.js
-plugins/com.gentics.aloha.plugins.Link/deps/jquery.autocomplete.js
-plugins/com.gentics.aloha.plugins.Link/ressourceregistry.js
-plugins/com.gentics.aloha.plugins.Link/ressource.js
+core/resourcemanager.js
+core/resource.js
 plugins/com.gentics.aloha.plugins.Link/LinkList.js

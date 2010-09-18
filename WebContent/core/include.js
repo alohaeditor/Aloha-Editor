@@ -27,8 +27,7 @@ document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'deps/e
 document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'deps/extjs/pkg-tips-debug.js"></script>');
 document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'deps/extjs/pkg-toolbars-debug.js"></script>');
 document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'deps/extjs/pkg-menu-debug.js"></script>');
-document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'deps/extjs/pkg-forms-debug.js"></script>');
-document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'utils/jquery.js"></script>');
+document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'deps/extjs/pkg-forms-debug.js"></script>');document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'utils/jquery.js"></script>');
 document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'utils/lang.js"></script>');
 document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'utils/range.js"></script>');
 document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'utils/position.js"></script>');
@@ -48,9 +47,8 @@ document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'core/m
 document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'core/plugin.js"></script>');
 document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'core/selection.js"></script>');
 document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'core/sidebar.js"></script>');
-document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'plugins/com.gentics.aloha.plugins.Link/deps/jquery.autocomplete.js"></script>');
-document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'plugins/com.gentics.aloha.plugins.Link/ressourceregistry.js"></script>');
-document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'plugins/com.gentics.aloha.plugins.Link/ressource.js"></script>');
+document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'core/resourcemanager.js"></script>');
+document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'core/resource.js"></script>');
 document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'plugins/com.gentics.aloha.plugins.Link/LinkList.js"></script>');
 	
 	/* Generate xHTML valid js include Elements */

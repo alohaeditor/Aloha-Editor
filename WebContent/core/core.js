@@ -158,18 +158,11 @@ GENTICS.Aloha.prototype.init = function () {
 		this.OSName = "Linux";
 	}
 	
-	// initialize the dictionary for Aloha itself
+	// initialize the Aloha core components
 	this.initI18n();
-
-	// initialize all plugins
 	this.PluginRegistry.init();
-	// TODO call init on all other Aloha Core objects (messageline, etc.)
-	this.ResourceRegistry.init();
-	
-	// intitialize the ribbon
+	this.ResourceManager.init();
 	this.Ribbon.init();
-
-	// initialize the floatingmenu
 	this.FloatingMenu.init();
 
 	// internationalize ext js message box buttons
