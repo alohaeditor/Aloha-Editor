@@ -112,73 +112,27 @@ GENTICS.Aloha.Link.createButtons = function () {
     // add the new scope for links
     GENTICS.Aloha.FloatingMenu.createScope(this.getUID('link'), 'GENTICS.Aloha.continuoustext');
 
-    this.srcField = new GENTICS.Aloha.AttributeField();
-   
-    this.srcField.setResourceObjectTypes(GENTICS.Aloha.Link.resourceObjectTypes);
-    
-    // update link object when src changes
-    this.srcField.addListener('keyup', function(obj, event) {
-    	// TODO this event is never fired. Why?
-    	// if the user presses ESC we do a rough check if he has entered a link or searched for something
-	    if (event.keyCode == 27) { 
-	    	var curval = that.srcField.getQueryValue();
-	    	if (
-	    		curval[0] == '/' || // local link
-	    		curval.match(/^.*\.([a-z]){2,4}$/i) || // local file with extension
-	    		curval[0] == '#' || // inner document link
-	    		curval.match(/^htt.*/i)  // external link
-	    	) {
-	    		// could be a link better leave it as it is
-	    	} else {
-	    		// the user searched for something and aborted restore original value
-	    		that.srcField.setValue(that.srcField.getValue());
-	    	}
-	    }
-    	that.srcChange();
-    });
-    
-    // on mark the edited link in order the user has a visual feedback
-    this.srcField.addListener('focus', function(obj, event) {
-        var obj = that.srcField.getTargetObject();
-        if ( obj ) {
-        	that.objbgc = jQuery(obj).css('background-color');
-        	jQuery(obj).css('background-color','Highlight');
-        }
-    });
-
-    // on blur check if href is empty. If so remove the a tag
-    this.srcField.addListener('blur', function(obj, event) {
-        if ( this.getValue() == '' ) {
-            that.removeLink();
-        }
-        // remove the highlighting and restore original color if was set before
-        var obj = that.srcField.getTargetObject();
-        if ( obj ) {
-        	if ( !that.objbgc ) {
-        		that.objbgc = '';
-        	}
-    		jQuery(obj).css('background-color', that.objbgc);
-        }
-    });
-    
+    this.hrefField = new GENTICS.Aloha.ui.AttributeField();
+    this.hrefField.setResourceObjectTypes(GENTICS.Aloha.Link.resourceObjectTypes);
     // add the input field for links
     GENTICS.Aloha.FloatingMenu.addButton(
         this.getUID('link'),
-        this.srcField,
+        this.hrefField,
         this.i18n('floatingmenu.tab.link'),
         1
     );
 
+    this.formatLinkButton = new GENTICS.Aloha.ui.Button({
+        // TODO use another icon here
+        'iconClass' : 'GENTICS_button GENTICS_button_a_remove',
+        'size' : 'small',
+        'onclick' : function () { that.removeLink(); },
+        'tooltip' : this.i18n('button.removelink.tooltip')
+    });
     // add a button for removing the currently set link
     GENTICS.Aloha.FloatingMenu.addButton(
         this.getUID('link'),
-        new GENTICS.Aloha.ui.Button({
-            // TODO use another icon here
-            'iconClass' : 'GENTICS_button GENTICS_button_a_remove',
-            'size' : 'small',
-            'onclick' : function () { that.removeLink(); },
-            'tooltip' : this.i18n('button.removelink.tooltip')
-        }),
+        this.formatLinkButton,
         this.i18n('floatingmenu.tab.link'),
         1
     );
@@ -192,6 +146,34 @@ GENTICS.Aloha.Link.createButtons = function () {
 GENTICS.Aloha.Link.bindInteractions = function () {
     var that = this;
 
+    // update link object when src changes
+    this.hrefField.addListener('keyup', function(obj, event) {
+    	// TODO this event is never fired. Why?
+    	// if the user presses ESC we do a rough check if he has entered a link or searched for something
+	    if (event.keyCode == 27) { 
+	    	var curval = that.hrefField.getQueryValue();
+	    	if (
+	    		curval[0] == '/' || // local link
+	    		curval.match(/^.*\.([a-z]){2,4}$/i) || // local file with extension
+	    		curval[0] == '#' || // inner document link
+	    		curval.match(/^htt.*/i)  // external link
+	    	) {
+	    		// could be a link better leave it as it is
+	    	} else {
+	    		// the user searched for something and aborted restore original value
+	    		that.hrefField.setValue(that.hrefField.getValue());
+	    	}
+	    }
+    	that.srcChange();
+    });
+
+    // on blur check if href is empty. If so remove the a tag
+    this.hrefField.addListener('blur', function(obj, event) {
+        if ( this.getValue() == '' ) {
+            that.removeLink();
+        }
+    });
+    
     // add to all editables the Link shortcut
     for (var i = 0; i < GENTICS.Aloha.editables.length; i++) {
 
@@ -204,7 +186,7 @@ GENTICS.Aloha.Link.bindInteractions = function () {
 		            // TODO this should not be necessary here!
 		            GENTICS.Aloha.FloatingMenu.doLayout();
 		
-		            that.srcField.focus();
+		            that.hrefField.focus();
 		
 		        } else {
 		            that.insertLink();
@@ -319,11 +301,11 @@ GENTICS.Aloha.Link.subscribeEvents = function () {
         	that.insertLinkButton.hide();
         	that.formatLinkButton.setPressed(true);
             GENTICS.Aloha.FloatingMenu.setScope(that.getUID('link'));
-            that.srcField.setTargetObject(foundMarkup, 'href');
+            that.hrefField.setTargetObject(foundMarkup, 'href');
         } else {
             // no link found
         	that.formatLinkButton.setPressed(false);
-        	that.srcField.setTargetObject(null);
+        	that.hrefField.setTargetObject(null);
         }
 
         // TODO this should not be necessary here!
@@ -401,7 +383,7 @@ GENTICS.Aloha.Link.insertLink = function ( extendToWord ) {
         GENTICS.Utils.Dom.addMarkup(range, newLink, false);
     }
     range.select();
-    this.srcField.focus();
+    this.hrefField.focus();
     this.srcChange();
 };
 
@@ -427,8 +409,8 @@ GENTICS.Aloha.Link.removeLink = function () {
  */
 GENTICS.Aloha.Link.srcChange = function () {
 	// For now hard coded attribute handling with regex.
-	this.srcField.setAttribute('target', this.target, this.targetregex, this.srcField.getQueryValue());
-	this.srcField.setAttribute('class', this.cssclass, this.cssclassregex, this.srcField.getQueryValue());
+	this.hrefField.setAttribute('target', this.target, this.targetregex, this.hrefField.getQueryValue());
+	this.hrefField.setAttribute('class', this.cssclass, this.cssclassregex, this.hrefField.getQueryValue());
 }
 
 /**

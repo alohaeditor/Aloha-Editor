@@ -38,20 +38,53 @@ jQuery.fn.between = function(content, offset) {
 		}
 	}
 };
-
 /**
- * jQuery Keydown extension Extension
- *
+ * jQuery removeCss Extension
+ * 
+ * removes one or more style attributes completely. If the style attribute would be empty,
+ * it will be removed  
+ * 
+ * @param cssName CSS style names, devided by ;
  */
 
+jQuery.fn.removeCss = function( cssName ) {
+	return this.each( function() {
+		var oldstyle = jQuery(this).attr('style');
+    	var style = jQuery.grep(jQuery(this).attr('style').split(";"), function(curStyleAttr) {
+        			var curStyleAttrName = curStyleAttr.split(":");
+        			if (curStyleAttrName[0]) {
+        				if ( curStyleAttrName[0].toUpperCase().trim().indexOf(cssName.toUpperCase()) == -1) {
+        					return curStyleAttr;
+        				}
+        			}
+                }).join(";").trim();
+		jQuery(this).removeAttr('style');
+    	if (style.trim()) {
+    		jQuery(this).attr('style', style);
+    	}
+    	return jQuery(this);
+    });
+};
+
+/**
+ * jQuery command Keydown extension Extension
+ *
+ * The method is fired when a Alt, Ctrl, Meta key down happens.
+ */
 jQuery.fn.cmdkeydown  = function( fn ) {
 	return fn ? this.bind( 'cmdkeydown', fn ) : this.trigger( 'cmdkeydown' );
 };
 
+/**
+ * jQuery command Keydown extension Extension
+ *
+ * The method is fired when a Alt, Ctrl, Meta key down happens.
+ */
 jQuery.fn.cmdkeyup  = function( fn ) {
 	return fn ? this.bind( 'cmdkeyup', fn ) : this.trigger( 'cmdkeyup' );
 };
 
+// fires the cmdkeyup event
 jQuery(document).keyup(function (e) {
 	switch( e.which ) {
 		case 17:
@@ -75,6 +108,7 @@ jQuery(document).keyup(function (e) {
 	}
 });
 
+//fires the cmdkeydown event
 jQuery(document).keydown(function (e) {
 	switch( e.which ) {
 		case 17:

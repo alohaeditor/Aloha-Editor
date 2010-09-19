@@ -42,16 +42,16 @@ GENTICS.Aloha.ResourceManager.prototype.init = function() {
 			jQuery.extend(resource.settings, GENTICS.Aloha.settings.resources[resource.resourceName])
 		}
 		
-		if (resource.settings.enabled == true) {
+//		if (resource.settings.enabled == true) {
 			// initialize the resource
 			resource.init();
-		}
+//		}
 	}
 };
 
 /**
  * Register a Resource
- * @param {Resource} resource Resource to register
+ * @param {GENTICS.Aloha.Resource} resource Resource to register
  */
 
 GENTICS.Aloha.ResourceManager.prototype.register = function(resource) {
@@ -80,13 +80,14 @@ GENTICS.Aloha.ResourceManager.prototype.getResource = function(resourceName) {
 			return this.resources[i];
 		}
 	}
-	
+	return null;
 };
 
 /** 
  * Searches a all resources for resourceObjects matching query and resourceObjectType
  * @param {String} query the query string passed to the resource
  * @param {Array} resourceObjectTypes an array of strings with searched resourceObjectTypes
+ * @param {function} callback defines an callback function( resourceResult ) which will be called after a time out of 5sec or when all resources returned their result
  * @return {Array} Array of resourceItems
  */
 GENTICS.Aloha.ResourceManager.prototype.query = function(searchText, resourceObjectTypes, callback) {
@@ -99,16 +100,19 @@ GENTICS.Aloha.ResourceManager.prototype.query = function(searchText, resourceObj
 		that.queryCallback(callback, allitems, timer);
 	}, 5000);
 	
+	// reset callback queue
+	this.openCallbacks = [];
+	
 	// iterate through all registered resources
 	for ( var i = 0; i < this.resources.length; i++) {
 		
 		// add this resource to the callback stack
 		this.openCallbacks.push(this.resources[i].resourceName);
 		
-		this.resources[i].query( searchText, resourceObjectTypes, function (items, resourceName) {
+		this.resources[i].query( searchText, resourceObjectTypes, function (items) {
 		    
 			// remove the resource from the callback stack
-			var id = that.openCallbacks.indexOf( resourceName );
+			var id = that.openCallbacks.indexOf( this.resourceName );
 			if (id != -1) {
 				that.openCallbacks.splice(id, 1); 
 			} // else a strange error happened...
@@ -116,7 +120,7 @@ GENTICS.Aloha.ResourceManager.prototype.query = function(searchText, resourceObj
 			// mark with resourceName if not done by resource plugin
 			if ( !items.length == 0 && !items[0].resourceName ) {
 				for ( var j = 0; j < items.length; j++) {
-					items[j].resourceName = resourceName;
+					items[j].resourceName = this.resourceName;
 				}
 			}
 			
@@ -128,6 +132,11 @@ GENTICS.Aloha.ResourceManager.prototype.query = function(searchText, resourceObj
 	}
 };
 
+/**
+ * checks if all resources returned  and calls the callback
+ * @return void
+ * @hide
+ */
 GENTICS.Aloha.ResourceManager.prototype.queryCallback = function (cb, items, timer) {
 
 	// if we all callbacks came back we are done!
@@ -180,6 +189,7 @@ GENTICS.Aloha.ResourceManager.prototype.makeClean = function(obj) {
  * * data-GENTICS-aloha-resource: stores the resourceName
  * * data-GENTICS-aloha-resource-id: stores the resourceItem.id
  * @param obj jQuery object to make clean
+ * @param resourceItem Aloha.ResourceItem the item which is aplied to obj
  * @return void
  */
 GENTICS.Aloha.ResourceManager.prototype.markObject = function (obj, resourceItem) {

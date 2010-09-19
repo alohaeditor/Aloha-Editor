@@ -10,7 +10,7 @@
  * Create the Resources object. Namespace for Resources
  * @hide
  */
-GENTICS.Aloha.Resources = {};
+if ( !GENTICS.Aloha.Resources ) GENTICS.Aloha.Resources = {};
 
 /**
  * register the plugin with unique name
@@ -41,5 +41,5 @@ GENTICS.Aloha.Resources.LinkList.query = function(searchText, resourceObjectType
 			( e.name.match(r) || e.url.match(r) ) 
 		);
 	});
-	callback.call( this, d, this.resourceName);
+	callback.call( this, d);
 };

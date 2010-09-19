@@ -22,14 +22,6 @@ GENTICS.Aloha.Resource = function(resourceName, basePath) {
 	GENTICS.Aloha.ResourceManager.register(this);
 };
 
-
-/**
- * contains the unique resource name.
- * @property
- * @type string
- */
-GENTICS.Aloha.Resource.prototype.resourceName = null;
-
 /**
  * contains the resource's settings object
  * @cfg {Object} settings the resources settings stored in an object
@@ -46,24 +38,29 @@ GENTICS.Aloha.Resource.prototype.init = function() {};
 /** 
  * Searches a resource for resource items matching searchText if none found returns null.
  * The resource items must be an array like
- * 
+ * <pre>
  * 	var data = [ 
  *	            {id: 1, name:'Link A', url:'/pageA.html', weight: 0.75, resourceObjectType: 'website'},
  * 	            {id: 2, name:'Link B', url:'/pageB.html', weight: 0.75, resourceObjectType: 'website'},
  *	            {id: 3, name:'Image 1', url:'/image1.jpg', weight: 0.50, resourceObjectType: 'image'},
  *	            {id: 4, name:'Image 2', url:'/image2.png', weight: 0.50, resourceObjectType: 'image'}
  *	];
+ * </pre>
  * 
- * id: is necessary to identify a resource
- * name: is used to list in the search result list
- * url: is used for linking
- * weight: is used to sort the result list. 1 is highest, 0 is lowest priority.
- * resourceObjectType: identifies the resource with a certain type.
+ * <pre>
+ * * id: is necessary to identify a resource
+ * * name: is used to list in the search result list
+ * * url: is used for linking
+ * * weight: is used to sort the result list. 1 is highest, 0 is lowest priority.
+ * * resourceObjectType: identifies the resource with a certain type.
+ * </pre>
  * 
  * @param {string} searchText the query string to be searched for.
+ * @param {Array} resourceObjectTypes an array of strings with searched resourceObjectTypes
+ * @param {function} callback needs to be called callback.call( this, ResourceItems ) with the result items
  * @return {Array} resourceObjectTypes the resource object types to be looked for.
  */
-GENTICS.Aloha.Resource.prototype.query = function(searchText, resourceObjectTypes) { return null; };
+GENTICS.Aloha.Resource.prototype.query = function(searchText, resourceObjectTypes, callback) { return null; };
 
 /**
  * Make the given jQuery object (representing an object marked as resource of this type)
@@ -80,6 +77,5 @@ GENTICS.Aloha.Resource.prototype.makeClean = function (obj) {};
  * (see http://dev.w3.org/html5/spec/elements.html#embedding-custom-non-visible-data)
  * @param obj jQuery object to make clean
  * @return void
- * @hide
  */
 GENTICS.Aloha.Resource.prototype.markObject = function (obj, resourceItem) {};

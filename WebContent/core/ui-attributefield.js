@@ -5,6 +5,10 @@
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
 
+/**
+ * Aloha wrapper for the ExtJS combobox 
+ * @hide
+ */
 Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
     typeAhead: false,
     mode: 'remote',
@@ -66,12 +70,32 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 			        GENTICS.Aloha.activeEditable.obj[0].focus();
 			        GENTICS.Aloha.Selection.getRangeObject().select();
 		    	}, 0);
-		        this.triggerBlur();
 		    }
 		    // update attribute 
 			var v = this.wrap.dom.children[0].value;
 	        this.setAttribute(this.targetAttribute, v);
-		}
+		},
+	    'focus': function(obj, event) {
+			// set background color to give visual feedback which link is modified
+	        var target = jQuery(this.getTargetObject());
+	        var s = target.css('background-color');
+	        if ( target && target.context.style && target.context.style['background-color'] ) {
+	        	target.attr('data-original-background-color', target.context.style['background-color']);
+	        }
+	        target.css('background-color','Highlight');
+	    },
+	    'blur': function(obj, event) {
+	        // remove the highlighting and restore original color if was set before
+	        var target = jQuery(this.getTargetObject());
+	        if ( target ) {
+	        	if ( color = target.attr('data-original-background-color')  ) {
+	        		jQuery(target).css('background-color', color);
+	        	} else {
+	        		jQuery(target).removeCss('background-color');
+	        	}
+	    		jQuery(target).removeAttr('data-original-background-color');
+	        }
+	    }
     }, 
     // Private hack to allow attribute setting by regex
     setAttribute: function (attr, value, regex, reference) {
@@ -84,7 +108,7 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
             // check if a reference value is submitted to check against with a regex
 	        if ( typeof reference != 'undefined' ) {
 	            var regxp = new RegExp( regex );
-	            if ( ! reference.match(regxp) ) {
+	            if ( !reference.match(regxp) ) {
 	                setAttr = false;
 	            }
 	        }
@@ -98,11 +122,6 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
             }
         }
     },
-    
-    
-	/**
-	 * Set the anchor
-	 */
 	setTargetObject : function (obj, attr) {
 	    this.targetObject = obj;
 	    this.targetAttribute = attr;
@@ -125,26 +144,31 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 
 /**
  * Register the Aloha attribute field 
+ * @hide
  */
 Ext.reg('alohaattributefield', Ext.ux.AlohaAttributeField);
 
 
 /**
- * This class extends the Button
+ * Aloha Attribute Field Button
+ * @namespace GENTICS.Aloha.ui
+ * @class AttributeField
  */
-GENTICS.Aloha.AttributeField = function () {
+GENTICS.Aloha.ui.AttributeField = function () {
     GENTICS.Aloha.ui.Button.apply(this, arguments);
 };
 
 /**
  * Inherit all methods and properties from GENTICS.Aloha.ui.Button
+ * @hide
  */
-GENTICS.Aloha.AttributeField.prototype = new GENTICS.Aloha.ui.Button();
+GENTICS.Aloha.ui.AttributeField.prototype = new GENTICS.Aloha.ui.Button();
 
 /**
  * Create a extjs alohaattributefield
+ * @hide
  */
-GENTICS.Aloha.AttributeField.prototype.getExtConfigProperties = function() {
+GENTICS.Aloha.ui.AttributeField.prototype.getExtConfigProperties = function() {
     return {
         xtype : 'alohaattributefield',
         id : this.id
@@ -152,18 +176,21 @@ GENTICS.Aloha.AttributeField.prototype.getExtConfigProperties = function() {
 };
 
 /**
- * Wrapper for setting the target Object
+ * Sets the target Object of which the Attribute should be modified
+ * @param {jQuery} obj the target object
+ * @param {String} attr Attribute to be modified ex. "href" of a link
+ * @void
  */
-GENTICS.Aloha.AttributeField.prototype.setTargetObject = function (obj, attr) {
+GENTICS.Aloha.ui.AttributeField.prototype.setTargetObject = function (obj, attr) {
     if (this.extButton) {
         this.extButton.setTargetObject(obj, attr);
     }
 };
 
 /**
- * Wrapper for getting the target Object
+ * @return {jQuery} object Returns the current target Object
  */
-GENTICS.Aloha.AttributeField.prototype.getTargetObject = function () {
+GENTICS.Aloha.ui.AttributeField.prototype.getTargetObject = function () {
     if (this.extButton) {
         return this.extButton.getTargetObject();
     } else {
@@ -173,9 +200,10 @@ GENTICS.Aloha.AttributeField.prototype.getTargetObject = function () {
 
 
 /**
- * Wrapper for setting the focus to this field
+ * Focus to this field
+ * @void
  */
-GENTICS.Aloha.AttributeField.prototype.focus = function () {
+GENTICS.Aloha.ui.AttributeField.prototype.focus = function () {
     if (this.extButton) {
         this.extButton.focus();
         this.extButton.selectText( 0, this.extButton.getValue().length );
@@ -184,10 +212,13 @@ GENTICS.Aloha.AttributeField.prototype.focus = function () {
 
 /**
  * Adding a listener to the field
+ * @param {String} eventname The name of the event. Ex. 'keyup'
+ * @param {function} handler The function that should be called when the event happens.
+ * @param {Object} scope The scope object which the event should be attached
  */
-GENTICS.Aloha.AttributeField.prototype.addListener = function ( eventName, handler, scope, options) {
+GENTICS.Aloha.ui.AttributeField.prototype.addListener = function ( eventName, handler, scope) {
     if (this.extButton) {
-    	this.extButton.addListener(eventName, handler, scope, options);
+    	this.extButton.addListener(eventName, handler, null);
     } else {
     	// if extButton not yet initialized adding listeners could be a problem
     	// so all events are collected in a queue and added on initalizing
@@ -195,54 +226,67 @@ GENTICS.Aloha.AttributeField.prototype.addListener = function ( eventName, handl
     			'eventName': eventName,
     			'handler': handler,
     			'scope': scope,
-    			'options': options
+    			'options': null
     	};
     	this.listenerQueue.push(listener);
     }
 };
 
 /**
- * Wrapper for setting an attribute optionally based on a regex on reference 
+ * Sets an attribute optionally based on a regex on reference
+ * @param {String} attr The Attribute name which should be set. Ex. "lang"
+ * @param {String} value The value to set. Ex. "de-AT"
+ * @param {String} regex The regex when the attribute should be set. The regex is applied to the value of refernece.
+ * @param {String} reference The value for the regex.
  */
-GENTICS.Aloha.AttributeField.prototype.setAttribute = function (attr, value, regex, reference) {
+GENTICS.Aloha.ui.AttributeField.prototype.setAttribute = function (attr, value, regex, reference) {
     if (this.extButton) {
     	this.extButton.setAttribute(attr, value, regex, reference);
     }
 };
 
 /**
- * Wrapper for setting an attribute optionally based on a regex on reference 
+ * When at least on resourceObjectType is set the value in the Attribute field does a query to all registered resources.
+ * @param {Array} resourceObjectTypes The array of resourceObjectTypes to be searched for.
+ * @void
  */
-GENTICS.Aloha.AttributeField.prototype.setResourceObjectTypes = function (rotypes) {
+GENTICS.Aloha.ui.AttributeField.prototype.setResourceObjectTypes = function (resourceObjectTypes) {
     if (this.extButton) {
-    	this.extButton.setResourceObjectType(rotypes);
+    	this.extButton.setResourceObjectType(resourceObjectTypes);
     } else {
-    	this.resourceObjectTypes = rotypes;
+    	this.resourceObjectTypes = resourceObjectTypes;
     }
 };
 
 /**
- * Wrapper for getting the current value
+ * Returns the current value
+ * @return {String} attributeValue
  */
-GENTICS.Aloha.AttributeField.prototype.getValue = function () {
+GENTICS.Aloha.ui.AttributeField.prototype.getValue = function () {
     if (this.extButton) {
     	return this.extButton.getValue();
     }
     return null;
 };
 
-GENTICS.Aloha.AttributeField.prototype.setValue = function (v) {
+/**
+ * Sets the current value
+ * @param {String} va attributeValue
+ */
+GENTICS.Aloha.ui.AttributeField.prototype.setValue = function (v) {
     if (this.extButton) {
     	this.extButton.setValue(v);
     }
 };
+
 /**
- * Wrapper for getting the current query value
+ * Returns the current query value.
+ * @return {String} queryValue
  */
-GENTICS.Aloha.AttributeField.prototype.getQueryValue = function () {
+GENTICS.Aloha.ui.AttributeField.prototype.getQueryValue = function () {
     if (this.extButton) {
     	//return this.extButton.getValue();
     	return this.extButton.wrap.dom.children[0].value;
     }
     return null;
-}
+};

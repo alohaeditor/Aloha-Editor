@@ -24,3 +24,4 @@ core/sidebar.js
 core/resourcemanager.js
 core/resource.js
 plugins/com.gentics.aloha.plugins.Link/LinkList.js
+plugins/com.gentics.aloha.plugins.Link/delicious.js
