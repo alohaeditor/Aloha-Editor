@@ -148,8 +148,7 @@ GENTICS.Aloha.Resources.delicious.getNavigation = function(mother, resourceObjec
 		
 		// return all tags
 		var items = [];
-//		if ( !mother || !mother.id && 1==2) {
-		if ( 1==2) {
+		if ( !mother || mother.id == this.resourceName ) {
 
 			for (var i = 0; i < this.tags.length; i++) {
 				items.push({
@@ -163,7 +162,6 @@ GENTICS.Aloha.Resources.delicious.getNavigation = function(mother, resourceObjec
 			callback.call( this, items);
 		
 		} else {
-			mother = {id:''};
 			jQuery.ajax({ type: "GET",
 				dataType: "jsonp",
 				url: 'http://feeds.delicious.com/v2/json/tags/'+that.settings.username+'/'+mother.id,
