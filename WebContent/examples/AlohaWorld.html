@@ -98,45 +98,6 @@ $(document).ready(function() {
 	$('#content').aloha();	
 });
 
-
-
-GENTICS.Aloha.EventRegistry.subscribe(
-		GENTICS.Aloha, 
-		"ready", 
-		function(){
-			var tree = new Ext.tree.TreePanel({
-			    useArrows: true,
-			    autoScroll: true,
-			    animate: true,
-			    enableDD: true,
-			    containerScroll: true,
-			    border: false,
-			    loader: new Ext.tree.AlohaTreeLoader({
-			        resourceObjectTypes: []
-			    }),
-			    root: {
-			        nodeType: 'async',
-			        text: 'Aloha Repositories',
-			        draggable: false,
-			        id: 'aloha'
-			    },
-		        rootVisible: false,
-		        listeners: {
-			    	'beforeload': function(node){ 
-			    	    this.loader.baseParams = {node: node.attributes}; 
-			    	},
-		            'click': function(n) {
-		            	var resourceItem = n.attributes;
-		                Ext.Msg.alert('Aloha Tree Click', 'You clicked: "' + resourceItem.id + '"');
-		            }
-		        }
-			});
-
-			tree.render('tree-div');
-		    tree.getRootNode().expand();
-		}
-);
-
 </script>
 </head>
 <body>
