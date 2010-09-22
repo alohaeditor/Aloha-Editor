@@ -25,6 +25,7 @@ document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'deps/e
 document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'deps/extjs/pkg-buttons-debug.js"></script>');
 document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'deps/extjs/pkg-tabs-debug.js"></script>');
 document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'deps/extjs/pkg-tips-debug.js"></script>');
+document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'deps/extjs/pkg-tree-debug.js"></script>');
 document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'deps/extjs/pkg-toolbars-debug.js"></script>');
 document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'deps/extjs/pkg-menu-debug.js"></script>');
 document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'deps/extjs/pkg-forms-debug.js"></script>');document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'utils/jquery.js"></script>');
@@ -34,6 +35,7 @@ document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'utils/
 document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'utils/dom.js"></script>');
 document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'core/ext-alohaproxy.js"></script>');
 document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'core/ext-alohareader.js"></script>');
+document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'core/ext-alohatreeloader.js"></script>');
 document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'core/core.js"></script>');
 document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'core/ui.js"></script>');
 document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'core/ui-attributefield.js"></script>');

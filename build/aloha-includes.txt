@@ -5,6 +5,7 @@ utils/position.js
 utils/dom.js
 core/ext-alohaproxy.js
 core/ext-alohareader.js
+core/ext-alohatreeloader.js
 core/core.js
 core/ui.js
 core/ui-attributefield.js

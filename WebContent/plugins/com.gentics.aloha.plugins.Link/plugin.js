@@ -161,7 +161,7 @@ GENTICS.Aloha.Link.bindInteractions = function () {
 	    		// could be a link better leave it as it is
 	    	} else {
 	    		// the user searched for something and aborted restore original value
-	    		that.hrefField.setValue(that.hrefField.getValue());
+//	    		that.hrefField.setValue(that.hrefField.getValue());
 	    	}
 	    }
     	that.srcChange();
@@ -336,7 +336,7 @@ GENTICS.Aloha.Link.findLinkMarkup = function ( range ) {
  * If inside a link tag the link is removed.
  */
 GENTICS.Aloha.Link.formatLink = function () {
-
+	
 	var range = GENTICS.Aloha.Selection.getRangeObject();
     
     if (GENTICS.Aloha.activeEditable) {

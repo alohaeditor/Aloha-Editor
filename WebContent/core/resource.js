@@ -39,11 +39,11 @@ GENTICS.Aloha.Resource.prototype.init = function() {};
  * Searches a resource for resource items matching searchText if none found returns null.
  * The resource items must be an array like
  * <pre>
- * 	var data = [ 
- *	            {id: 1, name:'Link A', url:'/pageA.html', weight: 0.75, resourceObjectType: 'website'},
- * 	            {id: 2, name:'Link B', url:'/pageB.html', weight: 0.75, resourceObjectType: 'website'},
- *	            {id: 3, name:'Image 1', url:'/image1.jpg', weight: 0.50, resourceObjectType: 'image'},
- *	            {id: 4, name:'Image 2', url:'/image2.png', weight: 0.50, resourceObjectType: 'image'}
+ * [ 
+ * 		{id: 1, name:'Link A', url:'/pageA.html', weight: 0.75, resourceObjectType: 'website'},
+ * 	    {id: 2, name:'Link B', url:'/pageB.html', weight: 0.75, resourceObjectType: 'website'},
+ *	    {id: 3, name:'Image 1', url:'/image1.jpg', weight: 0.50, resourceObjectType: 'image'},
+ *	    {id: 4, name:'Image 2', url:'/image2.png', weight: 0.50, resourceObjectType: 'image'}
  *	];
  * </pre>
  * 
@@ -53,14 +53,33 @@ GENTICS.Aloha.Resource.prototype.init = function() {};
  * * url: is used for linking
  * * weight: is used to sort the result list. 1 is highest, 0 is lowest priority.
  * * resourceObjectType: identifies the resource with a certain type.
+ * * resourceName: the name of this resource. This is needed to identify the rsource in a merged list.
  * </pre>
  * 
  * @param {string} searchText the query string to be searched for.
  * @param {Array} resourceObjectTypes an array of strings with searched resourceObjectTypes
  * @param {function} callback needs to be called callback.call( this, ResourceItems ) with the result items
- * @return {Array} resourceObjectTypes the resource object types to be looked for.
+ * @return {Array} resourceItems the resource object types to be looked for.
  */
-GENTICS.Aloha.Resource.prototype.query = function(searchText, resourceObjectTypes, callback) { return null; };
+GENTICS.Aloha.Resource.prototype.query = function(searchText, resourceObjectTypes, callback) { return true; };
+
+/**
+ * Returns all children of a given mother resourceItem.
+ * @param {resourceItem} mother the resouceItem in from which the chidlren should be returned.
+ * @param {Array} resourceObjectTypes an array of strings with desired resourceObjectTypes
+ * @param {function} callback needs to be called callback.call( this, ResourceItems ) with the result items
+ * @return {Array} resourceItems the resource object types to be looked for.
+ */
+GENTICS.Aloha.Resource.prototype.getChildren = function(mother, resourceObjectTypes, filter, callback) { return true; };
+
+/**
+ * Returns  navigation items.
+ * @param {resourceItem} mother the resouceItem in from which the naviagtion should be returned.
+ * @param {Array} resourceObjectTypes an array of strings with desired resourceObjectTypes. 
+ * @param {function} callback needs to be called callback.call( this, ResourceItems ) with the result items
+ * @return {Array} resourceItems the resource object types to be looked for.
+ */
+GENTICS.Aloha.Resource.prototype.getNavigation = function(mother, resourceObjectTypes, filter, callback) { return true; };
 
 /**
  * Make the given jQuery object (representing an object marked as resource of this type)

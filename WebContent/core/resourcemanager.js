@@ -94,28 +94,29 @@ GENTICS.Aloha.ResourceManager.prototype.query = function(searchText, resourceObj
 	
 	var that = this;
 	var allitems = [];
-	
-	// start timer in case a resource does not deliver in time
-	var timer = setTimeout( function() {
-		that.queryCallback(callback, allitems, timer);
-	}, 5000);
-	
+
 	// reset callback queue
 	this.openCallbacks = [];
 	
+	// start timer in case a resource does not deliver in time
+	var timer = setTimeout( function() {
+		// reset callback stack
+		that.openCallbacks = [];
+		that.queryCallback(callback, allitems, timer);
+	}, 5000);
+
 	// iterate through all registered resources
 	for ( var i = 0; i < this.resources.length; i++) {
 		
-		// add this resource to the callback stack
 		this.openCallbacks.push(this.resources[i].resourceName);
 		
-		this.resources[i].query( searchText, resourceObjectTypes, function (items) {
+		var notImplemented = this.resources[i].query( searchText, resourceObjectTypes, function (items) {
 		    
 			// remove the resource from the callback stack
 			var id = that.openCallbacks.indexOf( this.resourceName );
 			if (id != -1) {
 				that.openCallbacks.splice(id, 1); 
-			} // else a strange error happened...
+			}
 			
 			// mark with resourceName if not done by resource plugin
 			if ( !items.length == 0 && !items[0].resourceName ) {
@@ -129,6 +130,14 @@ GENTICS.Aloha.ResourceManager.prototype.query = function(searchText, resourceObj
 
 			that.queryCallback(callback, allitems, timer);
 		});
+		
+		// remove this resource from the callback stack
+		if ( !notImplemented ) {
+			var id = that.openCallbacks.indexOf( this.resourceName );
+			if (id != -1) {
+				that.openCallbacks.splice(id, 1); 
+			}
+		}
 	}
 };
 
@@ -156,6 +165,84 @@ GENTICS.Aloha.ResourceManager.prototype.queryCallback = function (cb, items, tim
 		
 		// Give data back.
 		cb.call( this, result);
+	}
+};
+
+/**
+ * Returns  navigation items.
+ * @param {resourceItem} mother the resouceItem  in from which the naviagtion should be returned.
+ * @param {Array} resourceObjectTypes an array of strings with desired resourceObjectTypes. 
+ * @param {function} callback needs to be called callback.call( this, ResourceItems ) with the result items
+ * @return {Array} resourceItems the resource object types to be looked for.
+ */
+GENTICS.Aloha.ResourceManager.prototype.getNavigation = function (mother, resourceObjectTypes, filter, callback) {
+
+	var that = this;
+	var allitems = [];
+	var resources = [];
+
+	// reset callback queue
+	this.openNavigationCallbacks = [];
+	
+	// start timer in case a resource does not deliver in time
+	var timer = setTimeout( function() {
+		// reset callback stack
+		that.openNavigationCallbacks = [];
+		that.getNavigationCallback(callback, allitems, timer);
+	}, 5000);
+
+	// only query the mother resourceName for Navigation Elements
+	if ( mother && mother.resourceName ) {
+		resources.push(this.getResource(mother.resourceName))
+	} else {
+		resources = this.resources;
+	}
+
+	// iterate through all registered resources
+	for ( var i = 0; i < resources.length; i++) {
+		
+		this.openNavigationCallbacks.push(resources[i].resourceName);
+		
+		var notImplemented = resources[i].getNavigation( mother, resourceObjectTypes, filter, function (items) {
+		    
+			// remove the resource from the callback stack
+			var id = that.openNavigationCallbacks.indexOf( this.resourceName );
+			if (id != -1) {
+				that.openNavigationCallbacks.splice(id, 1); 
+			}
+	
+			// merge new items with the rest
+			jQuery.merge( allitems, items ); 
+
+			that.getNavigationCallback(callback, allitems, timer);
+		});
+		
+		// remove this resource from the callback stack
+		if ( !notImplemented ) {
+			var id = that.openNavigationCallbacks.indexOf( this.resourceName );
+			if (id != -1) {
+				that.openNavigationCallbacks.splice(id, 1); 
+			}
+		}
+
+	}
+};
+
+/**
+* checks if all resources returned  and calls the callback
+* @return void
+* @hide
+*/
+GENTICS.Aloha.ResourceManager.prototype.getNavigationCallback = function (cb, items, timer) {
+
+	// if we all callbacks came back we are done!
+	if (this.openNavigationCallbacks.length == 0) {
+		
+		// unset the timer...
+		clearTimeout(timer);
+    
+		// Give data back.
+		cb.call( this, items);
 	}
 };
 
