@@ -183,6 +183,22 @@ GENTICS.Aloha.ResourceManager.prototype.getNavigation = function (mother, resour
 
 	// reset callback queue
 	this.openNavigationCallbacks = [];
+
+	// return repositories
+	if ( mother && mother.id == 'aloha' && this.resources.length > 0 ) {
+		var repos = [];
+		for ( var i = 0; i < this.resources.length; i++) {
+			repos.push({
+				id: this.resources[i].resourceName,
+				name: this.resources[i].resourceName,
+				resourceName: this.resources[i].resourceName,
+				hasMoreItems: true,
+				resourceObjectType: 'repository'
+			})
+		}
+		that.getNavigationCallback(callback, repos, null);
+		return;
+	}
 	
 	// start timer in case a resource does not deliver in time
 	var timer = setTimeout( function() {
@@ -239,7 +255,7 @@ GENTICS.Aloha.ResourceManager.prototype.getNavigationCallback = function (cb, it
 	if (this.openNavigationCallbacks.length == 0) {
 		
 		// unset the timer...
-		clearTimeout(timer);
+		if (timer) clearTimeout(timer);
     
 		// Give data back.
 		cb.call( this, items);

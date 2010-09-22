@@ -1,4 +1,4 @@
-/*!
+	/*!
 * Aloha Editor
 * Author & Copyright (c) 2010 Gentics Software GmbH
 * aloha-sales@gentics.com
@@ -12,8 +12,10 @@ Ext.tree.AlohaTreeLoader = function(config) {
 };
 
 Ext.extend( Ext.tree.AlohaTreeLoader, Ext.tree.TreeLoader, {
-	directFn : function(node, callback) {
-    	GENTICS.Aloha.ResourceManager.getNavigation(null, this.resourceObjectTypes, null, function( items ) {
+	paramOrder: ['node', 'id'],
+	nodeParameter: 'id',
+	directFn : function(node, id, callback) {
+    	GENTICS.Aloha.ResourceManager.getNavigation(node, this.resourceObjectTypes, null, function( items ) {
  	        var response = {};
  	        response= {
  	            status: true,
@@ -26,8 +28,12 @@ Ext.extend( Ext.tree.AlohaTreeLoader, Ext.tree.TreeLoader, {
     	});
 	},
     createNode: function(node) {
-        node.text = node.name;
-        node.leaf = node.hasMoreItems;
+		if ( node.name ) {
+			node.text = node.name;
+		}
+		if ( node.hasMoreItems ) {
+			node.leaf = !node.hasMoreItems;
+		}
         return Ext.tree.TreeLoader.prototype.createNode.call(this, node);
     },
 	setResourceObjectTypes: function(otypes){
