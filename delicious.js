@@ -22,7 +22,7 @@ GENTICS.Aloha.Resources.delicious = new GENTICS.Aloha.Resource('com.gentics.aloh
  * @property
  * @cfg
  */
-GENTICS.Aloha.Resources.delicious.settings.username = '';
+GENTICS.Aloha.Resources.delicious.settings.username = 'draftkraft';
 
 /**
  * Defines the value to use for sorting the items. Allowed a values 0-0.75 
@@ -68,7 +68,7 @@ GENTICS.Aloha.Resources.delicious.init = function() {
 			}
 		});
 	} else {
-		this.deliciousURL += 'tag/'
+		this.deliciousURL += 'tag/';
 	}
 };
 
@@ -134,5 +134,60 @@ GENTICS.Aloha.Resources.delicious.query = function(searchText, resourceObjectTyp
 				callback.call( that, items);
 			}
 		});
+	}
+};
+
+/**
+ * Returns all tags for username in a tree style way
+ */
+GENTICS.Aloha.Resources.delicious.getNavigation = function(mother, resourceObjectTypes, filter, callback) {
+	var that = this;
+	
+	// tags are only available when a username is available
+	if ( this.settings.username ) {
+		
+		// return all tags
+		var items = [];
+//		if ( !mother || !mother.id && 1==2) {
+		if ( 1==2) {
+
+			for (var i = 0; i < this.tags.length; i++) {
+				items.push({
+					id: this.tags[i],
+					name: this.tags[i],
+					url: 'http://feeds.delicious.com/v2/rss/tags/'+that.settings.username+'/'+this.tags[i],
+					resourceName: this.resourceName,
+					resourceObjectType: 'tag' 
+				});
+		    }
+			callback.call( this, items);
+		
+		} else {
+			mother = {id:''};
+			jQuery.ajax({ type: "GET",
+				dataType: "jsonp",
+				url: 'http://feeds.delicious.com/v2/json/tags/'+that.settings.username+'/'+mother.id,
+				success: function(data) {
+					var items = [];
+					// convert data
+					for (var tag in data) {
+						// the id is tag[+tag+...+tag]
+						var id = (mother)?mother.id + '+' + tag:tag;
+						items.push({
+							id: id,
+							name: tag,
+							hasMoreItems: true,
+							url: 'http://feeds.delicious.com/v2/rss/tags/'+that.settings.username+'/'+id,
+							resourceName: that.resourceName,
+							resourceObjectType: 'tag' 
+						});
+				    }
+					callback.call( that, items);
+				}
+			});
+			
+		}
+	} else {
+		callback.call( this, []);;
 	}
 };
