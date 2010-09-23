@@ -136,7 +136,9 @@ GENTICS.Aloha.ResourceManager.prototype.query = function(searchText, resourceObj
 			var id = that.openCallbacks.indexOf( this.resources[i].resourceName );
 			if (id != -1) {
 				this.openCallbacks.splice(id, 1);
-				this.queryCallback(callback, allitems, timer);
+				if ( i == resources.length - 1 ) {
+					this.queryCallback(callback, allitems, timer);
+				}
 			}
 		}
 	}
@@ -239,7 +241,9 @@ GENTICS.Aloha.ResourceManager.prototype.getNavigation = function (mother, resour
 			var id = that.openNavigationCallbacks.indexOf( resources[i].resourceName );
 			if (id != -1) {
 				this.openNavigationCallbacks.splice(id, 1);
-				this.getNavigationCallback(callback, allitems, timer); 
+				if ( i == resources.length - 1 ) {
+					this.getNavigationCallback(callback, allitems, timer);
+				}
 			}
 		}
 

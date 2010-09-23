@@ -34,6 +34,9 @@ Ext.extend( Ext.tree.AlohaTreeLoader, Ext.tree.TreeLoader, {
 		if ( node.hasMoreItems ) {
 			node.leaf = !node.hasMoreItems;
 		}
+		if ( node.resourceObjectType ) {
+			node.cls = node.resourceObjectType;
+		}
         return Ext.tree.TreeLoader.prototype.createNode.call(this, node);
     },
 	setResourceObjectTypes: function(otypes){
