@@ -132,10 +132,11 @@ GENTICS.Aloha.ResourceManager.prototype.query = function(searchText, resourceObj
 		});
 		
 		// remove this resource from the callback stack
-		if ( !notImplemented ) {
-			var id = that.openCallbacks.indexOf( this.resourceName );
+		if ( notImplemented ) {
+			var id = that.openCallbacks.indexOf( this.resources[i].resourceName );
 			if (id != -1) {
-				that.openCallbacks.splice(id, 1); 
+				this.openCallbacks.splice(id, 1);
+				this.queryCallback(callback, allitems, timer);
 			}
 		}
 	}
@@ -234,10 +235,11 @@ GENTICS.Aloha.ResourceManager.prototype.getNavigation = function (mother, resour
 		});
 		
 		// remove this resource from the callback stack
-		if ( !notImplemented ) {
-			var id = that.openNavigationCallbacks.indexOf( this.resourceName );
+		if ( notImplemented ) {
+			var id = that.openNavigationCallbacks.indexOf( resources[i].resourceName );
 			if (id != -1) {
-				that.openNavigationCallbacks.splice(id, 1); 
+				this.openNavigationCallbacks.splice(id, 1);
+				this.getNavigationCallback(callback, allitems, timer); 
 			}
 		}
 
