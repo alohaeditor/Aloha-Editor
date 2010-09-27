@@ -86,6 +86,22 @@
 	z-index: 8800;
 }
 
+.x-combo-selected {
+	background-color: Highlight !important;
+}
+
+.x-tree-root-ct {
+	padding: 0px;
+}
+
+.x-tree-node {
+	list-style: none;
+}
+
+.x-tree-node-ct {
+	padding: 0px;
+}
+
 /*hide dotted browser border on focus*/
 .GENTICS_button a:focus {
 	outline: none;

@@ -59,7 +59,10 @@
         <source src="../../WebContent/core/plugin.js" />
         <source src="../../WebContent/core/ribbon.js" />
         <source src="../../WebContent/core/ui.js" />
+        <source src="../../WebContent/core/ui-attributefield.js" />
         <source src="../../WebContent/core/selection.js" />
+        <source src="../../WebContent/core/resource.js" />
+        <source src="../../WebContent/core/resourcemanager.js" />
         <source src="../../WebContent/utils/range.js" />
         <source src="../../WebContent/utils/dom.js" />
     </sources>

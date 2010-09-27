@@ -245,6 +245,13 @@
 			<regexp pattern="(&lt;script.*?src=&quot;)../plugins/(.*?&quot;.*)"/>
 			<substitution expression="\1aloha/plugins/\2"/>
 		</replaceregexp>
+		<replaceregexp flags="g" byline="true">
+			<fileset dir="${packagedir}/examples">
+	            <include name="**/*.html" />
+			</fileset>
+			<regexp pattern="&lt;script&gt;GENTICS_Aloha_base.*&lt;/script&gt;"/>
+			<substitution expression=""/>
+		</replaceregexp>
 	</target>
 
 	<!-- Package the output into a ZIP File -->

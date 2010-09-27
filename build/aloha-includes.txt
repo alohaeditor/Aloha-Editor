@@ -3,8 +3,12 @@ utils/lang.js
 utils/range.js
 utils/position.js
 utils/dom.js
+core/ext-alohaproxy.js
+core/ext-alohareader.js
+core/ext-alohatreeloader.js
 core/core.js
 core/ui.js
+core/ui-attributefield.js
 core/css.js
 core/editable.js
 core/ribbon.js
@@ -18,7 +22,7 @@ core/message.js
 core/plugin.js
 core/selection.js
 core/sidebar.js
-plugins/com.gentics.aloha.plugins.Link/deps/jquery.autocomplete.js
-plugins/com.gentics.aloha.plugins.Link/ressourceregistry.js
-plugins/com.gentics.aloha.plugins.Link/ressource.js
-plugins/com.gentics.aloha.plugins.Link/ressourcedummy.js
+core/resourcemanager.js
+core/resource.js
+plugins/com.gentics.aloha.plugins.Link/LinkList.js
+plugins/com.gentics.aloha.plugins.Link/delicious.js

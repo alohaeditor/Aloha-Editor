@@ -89,6 +89,12 @@ GENTICS.Aloha.ui.Button = function(properties) {
 	 */
 	this.extButton;
 
+	/**
+	 * holds the listeners of the button
+	 * @hide
+	 */
+	this.listenerQueue = [];
+	
 	GENTICS.Utils.applyProperties(this, properties);
 
 	/**

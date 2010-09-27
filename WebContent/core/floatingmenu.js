@@ -111,7 +111,7 @@ GENTICS.Aloha.FloatingMenu.init = function() {
 			that.floatTo(target);
 		}
 	});
-	this.generateComponent();
+	this.generateComponent();	
 	this.initialized = true;
 };
 
@@ -816,6 +816,15 @@ GENTICS.Aloha.FloatingMenu.Group.prototype.getExtComponent = function () {
 		// now find the Ext.Buttons and set to the GENTICS buttons
 		jQuery.each(this.buttons, function(index, buttonInfo) {
 			buttonInfo.button.extButton = that.extButtonGroup.findById(buttonInfo.button.id);
+			// if there are any listeners added before initializing the extButtons
+			if ( buttonInfo.button.listenerQueue && buttonInfo.button.listenerQueue.length > 0 ) {
+				while ( l = buttonInfo.button.listenerQueue.shift() ) {
+					buttonInfo.button.extButton.addListener(l.eventName, l.handler, l.scope, l.options);
+				}
+			}
+			if (buttonInfo.button.extButton.setResourceObjectTypes) {
+				buttonInfo.button.extButton.setResourceObjectTypes(buttonInfo.button.resourceObjectTypes);
+			}
 		});
 	}
 
