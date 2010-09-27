@@ -15,12 +15,12 @@ if ( !GENTICS.Aloha.Resources ) GENTICS.Aloha.Resources = {};
 /**
  * register the plugin with unique name
  */
-GENTICS.Aloha.Resources.delicious = new GENTICS.Aloha.Resource('com.gentics.aloha.resources.gcn');
+GENTICS.Aloha.Resources.gcn = new GENTICS.Aloha.Resource('com.gentics.aloha.resources.gcn');
 
 /**
  * init Delicious resource
  */
-GENTICS.Aloha.Resources.delicious.init = function() {
+GENTICS.Aloha.Resources.gcn.init = function() {
 	var that = this;
 	
 };
@@ -29,7 +29,7 @@ GENTICS.Aloha.Resources.delicious.init = function() {
  * Searches a resource for resource items matching query if resourceObjectTypes.
  * If none found it returns null.
  */
-GENTICS.Aloha.Resources.delicious.query = function(searchText, resourceObjectTypes, callback) {
+GENTICS.Aloha.Resources.gcn.query = function(searchText, resourceObjectTypes, callback) {
 	var that = this;
 	callback.call( that, []);
 };
@@ -37,13 +37,13 @@ GENTICS.Aloha.Resources.delicious.query = function(searchText, resourceObjectTyp
 /**
  * Returns all tags for username in a tree style way
  */
-GENTICS.Aloha.Resources.delicious.getNavigation = function(mother, resourceObjectTypes, filter, callback) {
+GENTICS.Aloha.Resources.gcn.getNavigation = function(mother, resourceObjectTypes, filter, callback) {
 	var that = this;
 
 	var request = {
-		url: 'http://dev42.office:99/data.json',
+		url: 'http://dev42.office:99/CNPortletapp/rest/folder/getNavigationObject/',
 		type: 'POST',
-		body: {node:832},
+		body: {folderId:384},
 		success: function(data) {
 			var items = [];
 			// convert data
@@ -60,6 +60,7 @@ GENTICS.Aloha.Resources.delicious.getNavigation = function(mother, resourceObjec
 			callback.call( that, items);
 		}
 	};
-	
+	//TODO replace the sid by a dynamical loaded one
+	GENTICS.Aloha.GCN.settings.sid='D2vAPXCX4ucQ6QH';
 	GENTICS.Aloha.GCN.performRESTRequest(request);
 };
