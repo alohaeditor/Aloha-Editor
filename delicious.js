@@ -18,7 +18,7 @@ if ( !GENTICS.Aloha.Resources ) GENTICS.Aloha.Resources = {};
 GENTICS.Aloha.Resources.delicious = new GENTICS.Aloha.Resource('com.gentics.aloha.resources.delicious');
 
 /**
- * If no username if give, the public respoitory is searched:
+ * If no username is given, the public respoitory is searched:
  * @property
  * @cfg
  */
