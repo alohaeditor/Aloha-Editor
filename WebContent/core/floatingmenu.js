@@ -638,8 +638,13 @@ GENTICS.Aloha.FloatingMenu.calcFloatTarget = function(range) {
 	var y = targetObj.offset().top - this.obj.height() - 50; // 50px offset above the current obj to have some space above
 
 	// if the floating menu would be placed higher than the top of the screen... 
-	if (y < (scrollTop + 30)) { // 30px = 26px ribbon height + some breathing room
-		y = targetObj.offset().top + targetObj.height() + 30; // 30px correction to add a slight margin
+	var ribbonOffset = 0;
+	if ( GENTICS.Aloha.Ribbon && 
+			GENTICS.Aloha.settings.ribbon !== false) {
+		ribbonOffset = 30; // 30px = 26px ribbon height + some breathing room
+	}
+	if ( y < (scrollTop + ribbonOffset)) { 
+		y = targetObj.offset().top + targetObj.height() + ribbonOffset;
 	}
 	
 	return {
@@ -824,8 +829,12 @@ GENTICS.Aloha.FloatingMenu.Group.prototype.getExtComponent = function () {
 			}
 			if (buttonInfo.button.extButton.setResourceObjectTypes) {
 				buttonInfo.button.extButton.setResourceObjectTypes(buttonInfo.button.resourceObjectTypes);
-				buttonInfo.button.extButton.displayField = buttonInfo.button.displayField;
-				buttonInfo.button.extButton.tpl = buttonInfo.button.tpl;
+				if ( buttonInfo.button.displayField) {
+					buttonInfo.button.extButton.displayField = buttonInfo.button.displayField;
+				}
+				if ( buttonInfo.button.tpl ) {
+					buttonInfo.button.extButton.tpl = buttonInfo.button.tpl;
+				}
 			}
 		});
 	}

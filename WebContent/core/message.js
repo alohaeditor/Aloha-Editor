@@ -27,7 +27,7 @@ GENTICS.Aloha.Message = function (data) {
  * @property
  */
 GENTICS.Aloha.Message.Type = {
-// reserved for ribbon messages
+// reserved for messages
 //	SUCCESS : 'success',
 //	INFO : 'info',
 //	WARN : 'warn',
