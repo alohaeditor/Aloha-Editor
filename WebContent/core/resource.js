@@ -20,13 +20,13 @@ GENTICS.Aloha.Resource = function(resourceName, basePath) {
 	this.resourceName = resourceName;
 	this.basePath = basePath ? basePath : resourceName;
 	GENTICS.Aloha.ResourceManager.register(this);
+	
+	/**
+	 * contains the resource's settings object
+	 * @cfg {Object} settings the resources settings stored in an object
+	 */
+	this.settings = {};
 };
-
-/**
- * contains the resource's settings object
- * @cfg {Object} settings the resources settings stored in an object
- */
-GENTICS.Aloha.Resource.prototype.settings = {};
 
 /**
  * Init method of the resource. Called from Aloha Core to initialize this resource
