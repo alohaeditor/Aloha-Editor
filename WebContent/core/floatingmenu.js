@@ -824,6 +824,8 @@ GENTICS.Aloha.FloatingMenu.Group.prototype.getExtComponent = function () {
 			}
 			if (buttonInfo.button.extButton.setResourceObjectTypes) {
 				buttonInfo.button.extButton.setResourceObjectTypes(buttonInfo.button.resourceObjectTypes);
+				buttonInfo.button.extButton.displayField = buttonInfo.button.displayField;
+				buttonInfo.button.extButton.tpl = buttonInfo.button.tpl;
 			}
 		});
 	}
