@@ -14,7 +14,7 @@
  * product
  */
 .GENTICS_block.product {
-	width: 158px;
+	width: 156px;
 	height: 170px;
 	border: 2px solid #dfdfdf;
 	padding: 10px;
@@ -26,7 +26,7 @@
 	-moz-box-shadow: rgba(0, 0, 0, 0.1) 5px 5px 20px;
 	box-shadow: rgba(0, 0, 0, 0.1) 5px 5px 20px;
 	float: left;
-	margin: 0 30px 30px 0;
+	margin: 0 32px 30px 0;
 	background: white;
 	background: -webkit-gradient(
 	    linear,
