@@ -1019,7 +1019,7 @@ GENTICS.Aloha.GCN.publishPage = function (success) {
 	var that = this;
 	this.savePage({
 		onsuccess : function () {
-			var publishParams = success ? {'do' : 14022, 'page_id' : that.settings.id} : (that.isGCNFrame() ? {'do' : 14003, 'cmd' : 'pub', 'PAGE_ID' : that.settings.id} : {'do' : 14012, 'realid' : that.settings.id, 'real' : 'pub'});
+			var publishParams = success ? {'do' : 14023, 'page_id' : that.settings.id} : (that.isGCNFrame() ? {'do' : 14003, 'cmd' : 'pub', 'PAGE_ID' : that.settings.id} : {'do' : 14012, 'realid' : that.settings.id, 'real' : 'pub'});
 			if (success) {
 				that.performRESTRequest({
 					url : that.settings.stag_prefix,
