@@ -7,22 +7,22 @@
 */
 
 /**
- * Create the Resources object. Namespace for Resources
+ * Create the Repositories object. Namespace for Repositories
  * @hide
  */
-if ( !GENTICS.Aloha.Resources ) GENTICS.Aloha.Resources = {};
+if ( !GENTICS.Aloha.Repositories ) GENTICS.Aloha.Repositories = {};
 
 /**
  * register the plugin with unique name
  */
-GENTICS.Aloha.Resources.delicious = new GENTICS.Aloha.Resource('com.gentics.aloha.resources.delicious');
+GENTICS.Aloha.Repositories.delicious = new GENTICS.Aloha.Repository('com.gentics.aloha.repositories.delicious');
 
 /**
  * If no username if give, the public respoitory is searched:
  * @property
  * @cfg
  */
-GENTICS.Aloha.Resources.delicious.settings.username = 'draftkraft';
+GENTICS.Aloha.Repositories.delicious.settings.username = 'draftkraft';
 
 /**
  * Defines the value to use for sorting the items. Allowed a values 0-0.75 
@@ -31,14 +31,14 @@ GENTICS.Aloha.Resources.delicious.settings.username = 'draftkraft';
  * @default 0.35
  * @cfg
  */
-GENTICS.Aloha.Resources.delicious.settings.weight = 0.35;
+GENTICS.Aloha.Repositories.delicious.settings.weight = 0.35;
 
 
 
 /**
- * init Delicious resource
+ * init Delicious repository
  */
-GENTICS.Aloha.Resources.delicious.init = function() {
+GENTICS.Aloha.Repositories.delicious.init = function() {
 	var that = this;
 	
 	// check weight 
@@ -74,13 +74,13 @@ GENTICS.Aloha.Resources.delicious.init = function() {
 
 
 /**
- * Searches a resource for resource items matching query if resourceObjectTypes.
+ * Searches a repository for items matching query if objectTypeFilter.
  * If none found it returns null.
  */
-GENTICS.Aloha.Resources.delicious.query = function(searchText, resourceObjectTypes, callback) {
+GENTICS.Aloha.Repositories.delicious.query = function(queryString, objectTypeFilter, filter, inFolderId, orderBy, maxItems, skipCount, renditionFilter, callback) {
 	var that = this;
 	
-	if ( jQuery.inArray('website', resourceObjectTypes) == -1) {
+	if ( jQuery.inArray('website', objectTypeFilter) == -1) {
 		
 		// return if no website type is requested 
 		callback.call( this, []);
@@ -92,7 +92,7 @@ GENTICS.Aloha.Resources.delicious.query = function(searchText, resourceObjectTyp
 		if ( this.settings.username ) {
 
 			// search in user tags
-			var queryTags = searchText.split(' ');
+			var queryTags = queryString.split(' ');
 		    for (var i = 0; i < queryTags.length; i++) {
 				var queryTag = queryTags[i].trim();
 				if ( jQuery.inArray(queryTag, that.tags) == -1 ) {
@@ -111,7 +111,7 @@ GENTICS.Aloha.Resources.delicious.query = function(searchText, resourceObjectTyp
 		} else {
 			
 			// handle each word as tag
-			tags = searchText.split(' ');
+			tags = queryString.split(' ');
 			
 		}
 
@@ -120,16 +120,18 @@ GENTICS.Aloha.Resources.delicious.query = function(searchText, resourceObjectTyp
 			url: that.deliciousURL + tags.join('+'),
 			success: function(data) {
 				var items = [];
-				// convert data to resourceItems
+				// convert data to Aloha objects
 				for (var i = 0; i < data.length; i++) {
-					items.push({
-						id: data[i].u,
-						name: data[i].d,
-						url: data[i].u,
-						weight: that.settings.weight + (15-1)/100,
-						resourceName: that.resourceName,
-						resourceObjectType: 'website' 
-					});
+					if (typeof data[i] != 'function' ) {
+						items.push({
+							id: data[i].u,
+							displayName: data[i].d,
+							repositoryId: that.repositoryId,
+							objectType: 'website', 
+							url: data[i].u,
+							weight: that.settings.weight + (15-1)/100
+						});
+					}
 			    }
 				callback.call( that, items);
 			}
@@ -140,7 +142,7 @@ GENTICS.Aloha.Resources.delicious.query = function(searchText, resourceObjectTyp
 /**
  * Returns all tags for username in a tree style way
  */
-GENTICS.Aloha.Resources.delicious.getNavigation = function(mother, resourceObjectTypes, filter, callback) {
+GENTICS.Aloha.Repositories.delicious.getChildren = function(objectTypeFilter, filter, inFolderId, inTreeId, orderBy, maxItems, skipCount, renditionFilter, callback) {
 	var that = this;
 	
 	// tags are only available when a username is available
@@ -148,38 +150,42 @@ GENTICS.Aloha.Resources.delicious.getNavigation = function(mother, resourceObjec
 		
 		// return all tags
 		var items = [];
-		if ( !mother || mother.id == this.resourceName ) {
+		if ( inFolderId == this.repositoryId ) {
 
 			for (var i = 0; i < this.tags.length; i++) {
-				items.push({
-					id: this.tags[i],
-					name: this.tags[i],
-					url: 'http://feeds.delicious.com/v2/rss/tags/'+that.settings.username+'/'+this.tags[i],
-					resourceName: this.resourceName,
-					resourceObjectType: 'tag' 
-				});
+				if (typeof this.tags[i] != 'function' ) {
+					items.push({
+						id: this.tags[i],
+						displayName: this.tags[i],
+						repositoryId: this.repositoryId,
+						objectType: 'tag', 
+						url: 'http://feeds.delicious.com/v2/rss/tags/'+that.settings.username+'/'+this.tags[i]
+					});
+				}
 		    }
 			callback.call( this, items);
 		
 		} else {
 			jQuery.ajax({ type: "GET",
 				dataType: "jsonp",
-				url: 'http://feeds.delicious.com/v2/json/tags/'+that.settings.username+'/'+mother.id,
+				url: 'http://feeds.delicious.com/v2/json/tags/'+that.settings.username+'/'+inFolderId,
 				success: function(data) {
 					var items = [];
 					// convert data
 					for (var tag in data) {
 						// the id is tag[+tag+...+tag]
-						var id = (mother)?mother.id + '+' + tag:tag;
-						items.push({
-							id: id,
-							name: tag,
-							hasMoreItems: true,
-							url: 'http://feeds.delicious.com/v2/rss/tags/'+that.settings.username+'/'+id,
-							resourceName: that.resourceName,
-							resourceObjectType: 'tag' 
-						});
-				    }
+						var id = (inFolderId)?inFolderId + '+' + tag:tag;
+						if (typeof data[tag] != 'function' ) {
+							items.push({
+								id: id,
+								displayName: tag,
+								repositoryId: that.repositoryId,
+								objectType: 'tag', 
+								url: 'http://feeds.delicious.com/v2/rss/tags/'+that.settings.username+'/'+id,
+								hasMoreItems: true
+							});
+						}
+					}
 					callback.call( that, items);
 				}
 			});
