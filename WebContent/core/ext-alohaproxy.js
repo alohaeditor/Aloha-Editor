@@ -17,9 +17,9 @@ Ext.data.AlohaProxy = function( ) {
 Ext.extend(Ext.data.AlohaProxy, Ext.data.DataProxy, {
 	doRequest : function(action, rs, params, reader, cb, scope, arg) {
         try {
-        	var rotypes = this.getResourceObjectTypes();
-        	GENTICS.Aloha.ResourceManager.query(params.query, rotypes, function( resourceResult ) {
-        		var result = reader.readRecords(resourceResult);
+        	 // GENTICS.Aloha.RepositoryManager.query( objectTypeFilter, filter, inFolderId, orderBy, maxItems, skipCount, renditionFilter, repositoryId, callback)
+        	GENTICS.Aloha.RepositoryManager.query(params.query, this.objectTypeFilter, null, null, null, null, null, null, null, function( items ) {
+        		var result = reader.readRecords( items );
  	 	        cb.call(scope, result, arg, true);
         	});
         } catch (e) {
@@ -28,11 +28,11 @@ Ext.extend(Ext.data.AlohaProxy, Ext.data.DataProxy, {
             return false;
         }
 	},
-	resourceObjectTypes : null,
-	setResourceObjectTypes : function (otypes) {
-		this.resourceObjectTypes = otypes;
+	objectTypeFilter : null,
+	setObjectTypeFilter : function (otFilter) {
+		this.objectTypeFilter = otFilter;
 	},
-	getResourceObjectTypes : function () {
-		return this.resourceObjectTypes;
+	getObjectTypeFilter : function () {
+		return this.objectTypeFilter;
 	}
 });	

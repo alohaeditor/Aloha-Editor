@@ -46,9 +46,9 @@ GENTICS.Aloha.Link.cssclassregex = '';
 GENTICS.Aloha.Link.cssclass = '';
 
 /**
- * the defined resource object types to be used for this instance
+ * the defined object types to be used for this instance
  */
-GENTICS.Aloha.Link.resourceObjectTypes = [];
+GENTICS.Aloha.Link.objectTypeFilter = [];
 
 /**
  * Initialize the plugin
@@ -62,8 +62,8 @@ GENTICS.Aloha.Link.init = function () {
         GENTICS.Aloha.Link.cssclassregex = GENTICS.Aloha.Link.settings.cssclassregex;
     if (GENTICS.Aloha.Link.settings.cssclass != undefined)
         GENTICS.Aloha.Link.cssclass = GENTICS.Aloha.Link.settings.cssclass;
-    if (GENTICS.Aloha.Link.settings.resourceObjectTypes != undefined)
-        GENTICS.Aloha.Link.resourceObjectTypes = GENTICS.Aloha.Link.settings.resourceObjectTypes;
+    if (GENTICS.Aloha.Link.settings.objectTypeFilter != undefined)
+        GENTICS.Aloha.Link.objectTypeFilter = GENTICS.Aloha.Link.settings.objectTypeFilter;
         
     this.createButtons();
     this.subscribeEvents();
@@ -113,7 +113,7 @@ GENTICS.Aloha.Link.createButtons = function () {
     GENTICS.Aloha.FloatingMenu.createScope(this.getUID('link'), 'GENTICS.Aloha.continuoustext');
 
     this.hrefField = new GENTICS.Aloha.ui.AttributeField();
-    this.hrefField.setResourceObjectTypes(GENTICS.Aloha.Link.resourceObjectTypes);
+    this.hrefField.setObjectTypeFilter(GENTICS.Aloha.Link.objectTypeFilter);
     // add the input field for links
     GENTICS.Aloha.FloatingMenu.addButton(
         this.getUID('link'),

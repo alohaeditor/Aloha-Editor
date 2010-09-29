@@ -52,10 +52,8 @@ document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'core/m
 document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'core/plugin.js"></script>');
 document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'core/selection.js"></script>');
 document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'core/sidebar.js"></script>');
-document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'core/resourcemanager.js"></script>');
-document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'core/resource.js"></script>');
-document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'plugins/com.gentics.aloha.plugins.Link/LinkList.js"></script>');
-document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'plugins/com.gentics.aloha.plugins.Link/delicious.js"></script>');
+document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'core/repositorymanager.js"></script>');
+document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'core/repository.js"></script>');
 	
 	/* Generate xHTML valid js include Elements */
 	function jsElement( link ) {

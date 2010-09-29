@@ -19,28 +19,28 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 	valueField: 'id',
 	displayField: 'url',
 	enableKeyEvents: true,
-	listEmptyText: GENTICS.Aloha.i18n( GENTICS.Aloha, 'resource.no_item_found' ),
-	loadingText: GENTICS.Aloha.i18n( GENTICS.Aloha, 'resource.loading' ) + '...',
+	listEmptyText: GENTICS.Aloha.i18n( GENTICS.Aloha, 'repository.no_item_found' ),
+	loadingText: GENTICS.Aloha.i18n( GENTICS.Aloha, 'repository.loading' ) + '...',
 	store: new Ext.data.Store({
 		proxy: new Ext.data.AlohaProxy(),
-		reader: new Ext.data.AlohaResourceReader()
+		reader: new Ext.data.AlohaObjectReader()
     }),
     tpl: new Ext.XTemplate(
         '<tpl for="."><div class="x-combo-list-item">',
-            '<span><b>{name}</b><br />{url}</span><span class="GENTICS_resourceName">{resourceName}</span>',
+            '<span><b>{displayName}</b><br />{url}</span>',
         '</div></tpl>'
     ),
     onSelect: function (item) { 
 		this.setValue(item.data.url);
-		// call the resource marker
-		GENTICS.Aloha.ResourceManager.markObject(this.targetObject, item.data);
+		// call the repository marker
+		GENTICS.Aloha.RepositoryManager.markObject(this.targetObject, item.data);
 		this.collapse();
 	},
     listeners: {
-		// resource object types could have changed
+		// repository object types could have changed
 		'beforequery': function (obj, event) {
 			if (this.store != null && this.store.proxy != null) {
-				this.store.proxy.setResourceObjectTypes(this.getResourceObjectTypes());
+				this.store.proxy.setObjectTypeFilter(this.getObjectTypeFilter());
 			}
 		},
 		'afterrender': function (obj, event) {
@@ -134,11 +134,11 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 	getTargetObject : function () {
 	    return this.targetObject;
 	},
-	setResourceObjectTypes : function (otypes) {
-		this.resourceObjectTypes = otypes;
+	setObjectTypeFilter : function (otFilter) {
+		this.objectTypeFilter = otFilter;
 	},
-	getResourceObjectTypes : function () {
-		return this.resourceObjectTypes;
+	getObjectTypeFilter : function () {
+		return this.objectTypeFilter;
 	}
 });
 
@@ -246,15 +246,15 @@ GENTICS.Aloha.ui.AttributeField.prototype.setAttribute = function (attr, value, 
 };
 
 /**
- * When at least on resourceObjectType is set the value in the Attribute field does a query to all registered resources.
- * @param {Array} resourceObjectTypes The array of resourceObjectTypes to be searched for.
+ * When at least on objectType is set the value in the Attribute field does a query to all registered repositories.
+ * @param {Array} objectTypeFilter The array of objectTypeFilter to be searched for.
  * @void
  */
-GENTICS.Aloha.ui.AttributeField.prototype.setResourceObjectTypes = function (resourceObjectTypes) {
+GENTICS.Aloha.ui.AttributeField.prototype.setObjectTypeFilter = function (objectTypeFilter) {
     if (this.extButton) {
-    	this.extButton.setResourceObjectType(resourceObjectTypes);
+    	this.extButton.setObjectType(objectTypeFilter);
     } else {
-    	this.resourceObjectTypes = resourceObjectTypes;
+    	this.objectTypeFilter = objectTypeFilter;
     }
 };
 

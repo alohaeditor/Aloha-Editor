@@ -5,7 +5,7 @@
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
  	
-Ext.data.AlohaResourceReader = function(meta, recordType) {
+Ext.data.AlohaObjectReader = function(meta, recordType) {
 	meta = {};
     Ext.applyIf(meta, {
 		idProperty: 'id',
@@ -14,15 +14,15 @@ Ext.data.AlohaResourceReader = function(meta, recordType) {
 		fields: [
 			'id',
 			'url',
-			'name',
-			'resourceObjectType',
+			'displayName',
+			'objectType',
 			'weight',
-			'resourceName'
+			'repositoryId'
 		]
     });
     Ext.data.JsonReader.superclass.constructor.call(this, meta, meta.fields);
 };
 
-Ext.extend(Ext.data.AlohaResourceReader, Ext.data.JsonReader, {
+Ext.extend(Ext.data.AlohaObjectReader, Ext.data.JsonReader, {
 	// extend of necessary
 });

@@ -3,5 +3,5 @@ floatingmenu.tab.insert=Einfügen
 yes=Ja
 no=Nein
 cancel=Abbrechen
-resource.no_item_found=No Link found
-resource.loading=Loading
+repository.no_item_found=No Link found
+repository.loading=Loading

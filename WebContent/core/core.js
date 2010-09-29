@@ -161,7 +161,7 @@ GENTICS.Aloha.prototype.init = function () {
 	// initialize the Aloha core components
 	this.initI18n();
 	this.PluginRegistry.init();
-	this.ResourceManager.init();
+	this.RepositoryManager.init();
 	this.Ribbon.init();
 	this.FloatingMenu.init();
 

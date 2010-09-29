@@ -822,8 +822,8 @@ GENTICS.Aloha.FloatingMenu.Group.prototype.getExtComponent = function () {
 					buttonInfo.button.extButton.addListener(l.eventName, l.handler, l.scope, l.options);
 				}
 			}
-			if (buttonInfo.button.extButton.setResourceObjectTypes) {
-				buttonInfo.button.extButton.setResourceObjectTypes(buttonInfo.button.resourceObjectTypes);
+			if (buttonInfo.button.extButton.setObjectTypeFilter) {
+				buttonInfo.button.extButton.setObjectTypeFilter(buttonInfo.button.objectTypeFilter);
 			}
 		});
 	}
