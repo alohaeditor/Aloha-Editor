@@ -41,9 +41,9 @@ GENTICS.Aloha.Repositories.gcn.getChildren = function(objectTypeFilter, filter, 
 	var that = this;
 
 	var request = {
-		url: 'http://dev42.office:99/data.json',
+		url: 'http://dev42.office:99/CNPortletapp/rest/folder/getNavigationObject/',
 		type: 'POST',
-		body: {node:832},
+		body: {folderId:384},
 		success: function(data) {
 			var items = [];
 			// convert data
@@ -62,6 +62,7 @@ GENTICS.Aloha.Repositories.gcn.getChildren = function(objectTypeFilter, filter, 
 			callback.call( that, items);
 		}
 	};
-	
+	//TODO replace the sid by a dynamical loaded one
+	GENTICS.Aloha.GCN.settings.sid='D2vAPXCX4ucQ6QH';
 	GENTICS.Aloha.GCN.performRESTRequest(request);
 };

@@ -31,7 +31,11 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
         '</div></tpl>'
     ),
     onSelect: function (item) { 
-		this.setValue(item.data.url);
+		// TODO split display field by '.' and get corresponding attribute
+		var v = item.data[this.displayField];
+		this.setValue(v);
+		this.setAttribute(this.targetAttribute, v);
+	
 		// call the repository marker
 		GENTICS.Aloha.RepositoryManager.markObject(this.targetObject, item.data);
 		this.collapse();
@@ -289,4 +293,33 @@ GENTICS.Aloha.ui.AttributeField.prototype.getQueryValue = function () {
     	return this.extButton.wrap.dom.children[0].value;
     }
     return null;
+};
+
+/**
+ * Set the display field, which is displayed in the combobox
+ * @param {String} displayField name of the field to be displayed
+ * @return display field name on success, null otherwise
+ */
+GENTICS.Aloha.ui.AttributeField.prototype.setDisplayField = function (displayField) {
+    if (this.extButton) {
+    	return this.extButton.displayField = displayField;
+    } else {
+    	return this.displayField = displayField;
+    }
+    return null;
+};
+
+/**
+ * Set the row template for autocomplete hints. The default template is:
+ * <span><b>{name}</b><br />{url}</span>
+ * @param {String} tpl template to be rendered for each row
+ * @return template on success or null otherwise
+ */
+GENTICS.Aloha.ui.AttributeField.prototype.setTemplate = function (tpl) {
+	if (this.extButton) {
+		return this.extButton.tpl = '<tpl for="."><div class="x-combo-list-item">' + tpl + '</div></tpl>';
+	} else {
+		return this.tpl = '<tpl for="."><div class="x-combo-list-item">' + tpl + '</div></tpl>';
+	}
+	return null;
 };

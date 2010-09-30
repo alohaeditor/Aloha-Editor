@@ -216,7 +216,7 @@ GENTICS.Aloha.Link.bindInteractions = function () {
             
             // follow link on ctrl or meta + click
             jQuery(this).click( function(e) { 
-                if (e.metaKey || e.ctrlKey) {
+                if (e.metaKey) {
                 	
                 	// blur current editable. user is wating for the link to load
                 	GENTICS.Aloha.activeEditable.blur();
@@ -235,27 +235,18 @@ GENTICS.Aloha.Link.bindInteractions = function () {
         }); 
     }
      
-	jQuery(document).cmdkeydown(function (e) {
-		switch( e.cmdKey ) {
-			case 'meta':
-			case 'crtl':
-				that.updateMousePointer();
-				break;
-			default:
-				break;
-		}
-	});
-	
-	jQuery(document).cmdkeyup(function (e) {
-		switch( e.cmdKey ) {
-			case 'meta':
-			case 'crtl':
-				that.updateMousePointer();
-				break;
-			default:
-				break;
-		}
-	});
+    jQuery(document).keydown(function (e) {
+		GENTICS.Aloha.Log.debug(GENTICS.Aloha.Link, 'Meta key down.');
+    	that.metaKey = e.metaKey;
+   	 	that.updateMousePointer();
+    });
+
+    jQuery(document).keyup(function (e) {
+		GENTICS.Aloha.Log.debug(GENTICS.Aloha.Link, 'Meta key up.');
+    	that.metaKey = e.metaKey;
+   	 	that.updateMousePointer();
+    });
+
 }
 
 /**
@@ -263,7 +254,7 @@ GENTICS.Aloha.Link.bindInteractions = function () {
  */
 GENTICS.Aloha.Link.updateMousePointer = function () {
 
-    if ( (this.isCrtlDown || this.isMetaDown ) && this.mouseOverLink ) {
+    if ( this.metaKey && this.mouseOverLink ) {
 		GENTICS.Aloha.Log.debug(GENTICS.Aloha.Link, 'set pointer');
 		jQuery(this.mouseOverLink).removeClass('GENTICS_link_text');
 		jQuery(this.mouseOverLink).addClass('GENTICS_link_pointer');
