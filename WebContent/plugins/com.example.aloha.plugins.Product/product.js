@@ -20,7 +20,7 @@ GENTICS.Aloha.Repositories.Product.settings.data = [
 ];
 
 /**
- * Searches a resource for resource items matching query if resourceObjectTypes.
+ * Searches a resource for resource items matching query if objectTypes.
  * If none found it returns null.
  */
 GENTICS.Aloha.Repositories.Product.query = function(queryString, objectTypeFilter, filter, inFolderId, orderBy, maxItems, skipCount, renditionFilter, callback) {

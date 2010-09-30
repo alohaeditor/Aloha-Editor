@@ -169,6 +169,8 @@ GENTICS.Aloha.prototype.init = function () {
 	Ext.MessageBox.buttonText.yes = GENTICS.Aloha.i18n(this, 'yes');
 	Ext.MessageBox.buttonText.no = GENTICS.Aloha.i18n(this, 'no');
 	Ext.MessageBox.buttonText.cancel = GENTICS.Aloha.i18n(this, 'cancel');
+	Ext.ux.AlohaAttributeField.prototype.listEmptyText = GENTICS.Aloha.i18n( GENTICS.Aloha, 'repository.no_item_found' );
+	Ext.ux.AlohaAttributeField.prototype.loadingText = GENTICS.Aloha.i18n( GENTICS.Aloha, 'repository.loading' ) + '...';
 	
 	// set aloha ready
 	this.ready = true; 

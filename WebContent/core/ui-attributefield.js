@@ -19,8 +19,6 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 	valueField: 'id',
 	displayField: 'url',
 	enableKeyEvents: true,
-	listEmptyText: GENTICS.Aloha.i18n( GENTICS.Aloha, 'repository.no_item_found' ),
-	loadingText: GENTICS.Aloha.i18n( GENTICS.Aloha, 'repository.loading' ) + '...',
 	store: new Ext.data.Store({
 		proxy: new Ext.data.AlohaProxy(),
 		reader: new Ext.data.AlohaObjectReader()
