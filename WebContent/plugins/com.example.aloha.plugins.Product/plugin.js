@@ -103,6 +103,6 @@ EXAMPLE.Product.insertProduct = function () {
  * update a selected product
  */
 EXAMPLE.Product.updateProduct = function (obj, resourceItem) {
-	obj.find('.name').text(resourceItem.name);
+	obj.find('.name').text(resourceItem.displayName);
 	obj.find('.image').css('backgroundImage', 'url(' + resourceItem.url + ')');
 };
