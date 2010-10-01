@@ -93,6 +93,8 @@ KaraCos.Img.subscribeEvents = function () {
         	that.insertImgButton.hide();
         	GENTICS.Aloha.FloatingMenu.setScope(that.getUID('img'));
             that.imgSrcField.setTargetObject(foundMarkup, 'src');
+            that.imgSrcField.focus();
+            GENTICS.Aloha.FloatingMenu.userActivatedTab = that.i18n('floatingmenu.tab.img');
         } else {
         	that.imgSrcField.setTargetObject(null);
         }
@@ -107,6 +109,10 @@ KaraCos.Img.findImgMarkup = function ( range ) {
         var range = GENTICS.Aloha.Selection.getRangeObject();   
     }
 	try {
+		if (range.startContainer)
+			if (range.startContainer.childNodes)
+				if (range.startOffset)
+					if (range.startContainer.childNodes[range.startOffset])
 	    if (range.startContainer.childNodes[range.startOffset].nodeName.toLowerCase() == 'img') {
 			//console.log(range);
 			return range.startContainer.childNodes[range.startOffset];
@@ -123,8 +129,17 @@ KaraCos.Img.insertImg = function() {
     //    GENTICS.Utils.Dom.extendToWord(range);
     //}
     if ( range.isCollapsed() ) {
+    	//rangeb4 = range;
+    	//console.log(rangeb4);
     	var newImg = jQuery('<img src=""></img>');
-        GENTICS.Utils.Dom.insertIntoDOM(newImg, range, jQuery(GENTICS.Aloha.activeEditable.obj));
+    	GENTICS.Utils.Dom.insertIntoDOM(newImg, range, jQuery(GENTICS.Aloha.activeEditable.obj));
+    	//range.correctRange();
+    	//this.findImgMarkup(range).click();
+    	//console.log(range);
+        
+        //range.select();
+        //this.imgSrcField.focus();
+        // linkText.length;
     } else {
     	alert('img cannot markup a selection');
     }
