@@ -113,7 +113,7 @@ GENTICS.Aloha.Link.createButtons = function () {
     GENTICS.Aloha.FloatingMenu.createScope(this.getUID('link'), 'GENTICS.Aloha.continuoustext');
 
     this.hrefField = new GENTICS.Aloha.ui.AttributeField();
-    this.hrefField.setObjectTypeFilter(GENTICS.Aloha.Link.objectTypeFilter);
+    this.hrefField.setObjectTypeFilter([GENTICS.Aloha.Link.objectTypeFilter]);
     // add the input field for links
     GENTICS.Aloha.FloatingMenu.addButton(
         this.getUID('link'),

@@ -24,34 +24,104 @@ KaraCos.Img.init=function(){
    }; // END INIT
 
 KaraCos.Img.resourceObjectTypes = [];
-
+KaraCos.Img.PropsWindow = 
 KaraCos.Img.initImage = function() {
 	var that = this;
-	
 	this.insertImgButton = new GENTICS.Aloha.ui.Button({
-        'label' : 'IMG',
-        'size' : 'small',
-        'onclick' : function () { that.insertImg(); },
-        'tooltip' : that.i18n('button.addimg.tooltip'),
-        'toggle' : true
-    });
+		'label' : 'IMG',
+		'size' : 'small',
+		'onclick' : function () { that.insertImg(); },
+		'tooltip' : that.i18n('button.addimg.tooltip'),
+		'toggle' : false
+	});
 	GENTICS.Aloha.FloatingMenu.addButton(
-	        'GENTICS.Aloha.continuoustext',
-	        this.insertImgButton,
-	        GENTICS.Aloha.i18n(GENTICS.Aloha, 'floatingmenu.tab.insert'),
-	        1
-	    );
+			'GENTICS.Aloha.continuoustext',
+			this.insertImgButton,
+			GENTICS.Aloha.i18n(GENTICS.Aloha, 'floatingmenu.tab.insert'),
+			1
+	);
+	
 	GENTICS.Aloha.FloatingMenu.createScope(this.getUID('img'), 'GENTICS.Aloha.continuoustext');
-
-    this.imgSrcField = new GENTICS.Aloha.ui.AttributeField();
-    this.imgSrcField.setResourceObjectTypes(KaraCos.Img.resourceObjectTypes);
+	
+	
+	var alignLeftButton = new GENTICS.Aloha.ui.Button({
+        'iconClass': 'GENTICS_button karacos_img_align_left',
+        'size': 'small',
+        'onclick' : function() {
+            var img = that.findImgMarkup();
+            jQuery(img).css('float', 'left');
+        },
+        'tooltip': that.i18n('button.img.align.left.tooltip')
+    });
+	var alignRightButton = new GENTICS.Aloha.ui.Button({
+        'iconClass': 'GENTICS_button karacos_img_align_right',
+        'size': 'small',
+        'onclick' : function() {
+            var img = that.findImgMarkup();
+            jQuery(img).css('float', 'right');
+        },
+        'tooltip': that.i18n('button.img.align.right.tooltip')
+    });
+    var alignNoneButton = new GENTICS.Aloha.ui.Button({
+        'iconClass': 'GENTICS_button karacos_img_align_none',
+        'size': 'small',
+        'onclick' : function() {
+    	var img = that.findImgMarkup();
+        jQuery(img).css('float', '');
+        },
+        'tooltip': that.i18n('button.img.align.none.tooltip')
+    });
+    
+    var imgSrcLabel = new GENTICS.Aloha.ui.Button({
+    	'label': that.i18n('field.img.src.label'),
+    	'tooltip': that.i18n('field.img.src.tooltip'),
+    	'size': 'small',
+    });
+    this.imgSrcField = new GENTICS.Aloha.ui.AttributeField({	
+    });
+    this.imgSrcField.setObjectTypeFilter(KaraCos.Img.resourceObjectTypes);
     // add the input field for links
+    var imgTitleLabel = new GENTICS.Aloha.ui.Button({
+    	'label': that.i18n('field.img.title.label'),
+    	'tooltip': that.i18n('field.img.title.tooltip'),
+    	'size': 'small',
+    });
+    this.imgTitleField = new GENTICS.Aloha.ui.AttributeField({
+    });
+    this.imgTitleField.setObjectTypeFilter([KaraCos.Img.resourceObjectTypes]);
+
     GENTICS.Aloha.FloatingMenu.addButton(
-        this.getUID('img'),
-        this.imgSrcField,
-        this.i18n('floatingmenu.tab.img'),
-        1
+    		this.getUID('img'),
+    		this.imgSrcField,
+    		this.i18n('floatingmenu.tab.img'),
+    		1
     );
+    GENTICS.Aloha.FloatingMenu.addButton(
+    		this.getUID('img'),
+    		alignRightButton,
+    		this.i18n('floatingmenu.tab.img'),
+    		1
+    );
+    GENTICS.Aloha.FloatingMenu.addButton(
+    		this.getUID('img'),
+    		alignLeftButton,
+    		this.i18n('floatingmenu.tab.img'),
+    		1
+    );
+    GENTICS.Aloha.FloatingMenu.addButton(
+    		this.getUID('img'),
+    		alignNoneButton,
+    		this.i18n('floatingmenu.tab.img'),
+    		1
+    );
+    GENTICS.Aloha.FloatingMenu.addButton(
+    		this.getUID('img'),
+    		this.imgTitleField,
+    		this.i18n('floatingmenu.tab.img'),
+    		1
+    );
+    
+
     
     
 }
@@ -93,8 +163,11 @@ KaraCos.Img.subscribeEvents = function () {
         	that.insertImgButton.hide();
         	GENTICS.Aloha.FloatingMenu.setScope(that.getUID('img'));
             that.imgSrcField.setTargetObject(foundMarkup, 'src');
+            that.imgTitleField.setTargetObject(foundMarkup, 'title');
             that.imgSrcField.focus();
             GENTICS.Aloha.FloatingMenu.userActivatedTab = that.i18n('floatingmenu.tab.img');
+            tabComponent = GENTICS.Aloha.FloatingMenu.tabMap[that.i18n('floatingmenu.tab.img')].getExtComponent();
+            GENTICS.Aloha.FloatingMenu.extTabPanel.setWidth(450);
         } else {
         	that.imgSrcField.setTargetObject(null);
         }
@@ -115,7 +188,11 @@ KaraCos.Img.findImgMarkup = function ( range ) {
 					if (range.startContainer.childNodes[range.startOffset])
 	    if (range.startContainer.childNodes[range.startOffset].nodeName.toLowerCase() == 'img') {
 			//console.log(range);
-			return range.startContainer.childNodes[range.startOffset];
+			result = range.startContainer.childNodes[range.startOffset];
+			if (! result.css) result.css = "";
+			if (! result.title) result.title = "";
+			if (! result.src) result.src = "";
+			return result;
 		}
 	} catch (e) {}
     return null;
@@ -125,13 +202,13 @@ KaraCos.Img.insertImg = function() {
 	var range = GENTICS.Aloha.Selection.getRangeObject();
 	
     // if selection is collapsed then extend to the word.
-    //if (range.isCollapsed()) {
+    //if (range.isCollaps//ed()) {
     //    GENTICS.Utils.Dom.extendToWord(range);
     //}
     if ( range.isCollapsed() ) {
     	//rangeb4 = range;
     	//console.log(rangeb4);
-    	var newImg = jQuery('<img src=""></img>');
+    	var newImg = jQuery('<img src="" title="" style=""></img>');
     	GENTICS.Utils.Dom.insertIntoDOM(newImg, range, jQuery(GENTICS.Aloha.activeEditable.obj));
     	//range.correctRange();
     	//this.findImgMarkup(range).click();
