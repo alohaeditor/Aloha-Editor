@@ -166,8 +166,6 @@ KaraCos.Img.subscribeEvents = function () {
             that.imgTitleField.setTargetObject(foundMarkup, 'title');
             that.imgSrcField.focus();
             GENTICS.Aloha.FloatingMenu.userActivatedTab = that.i18n('floatingmenu.tab.img');
-            tabComponent = GENTICS.Aloha.FloatingMenu.tabMap[that.i18n('floatingmenu.tab.img')].getExtComponent();
-            GENTICS.Aloha.FloatingMenu.extTabPanel.setWidth(450);
         } else {
         	that.imgSrcField.setTargetObject(null);
         }

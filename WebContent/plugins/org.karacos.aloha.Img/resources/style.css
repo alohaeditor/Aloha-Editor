@@ -1,0 +1,20 @@
+button.karacos_img_align_left {
+    background-image: url(images/image-align-left.png) !important;
+}
+
+button.karacos_img_align_right {
+    background-image: url(images/image-align-right.png) !important;
+}
+
+button.karacos_img_align_none {
+    background-image: url(images/image-align-none.png) !important;
+}
+
+button.karacos_img_title {
+    background-image: url(images/image-title.png) !important;
+}
+
+button.karacos_img_border {
+    background-image: url(images/image-border.png) !important;
+}
+
