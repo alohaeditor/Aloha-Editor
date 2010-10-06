@@ -2,6 +2,7 @@
 * Aloha Img plugin
 * This plugin is a contribution of Nicolas Karageuzian
 * Licensed unter the terms of AGPL http://www.gnu.org/licenses/agpl-3.0.html
+* Requires IKS Loader
 */
 
 if(typeof KaraCos=="undefined"||!KaraCos)
@@ -10,6 +11,7 @@ if(typeof KaraCos=="undefined"||!KaraCos)
     }
 
 KaraCos.Img=new GENTICS.Aloha.Plugin("org.karacos.aloha.Img");
+eu.iksproject.LoaderPlugin.loadAsset('org.karacos.aloha.Img', 'style', 'css');
 KaraCos.Img.languages=["en","fr"];
 KaraCos.Img.config = ['img'];
 /*
