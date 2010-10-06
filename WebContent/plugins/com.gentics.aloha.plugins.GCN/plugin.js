@@ -997,7 +997,7 @@ GENTICS.Aloha.GCN.savePage = function (data) {
 						},
 						'class' : {
 							'type' : 'STRING',
-							'stringValue' : block.data.class
+							'stringValue' : block.data['class']
 						}
 					}
 				};
