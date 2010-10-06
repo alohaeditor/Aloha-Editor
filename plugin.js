@@ -275,32 +275,34 @@ GENTICS.Aloha.Link.subscribeEvents = function () {
     GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'selectionChanged', function(event, rangeObject) {
         
         // show/hide the button according to the configuration
-        var config = that.getEditableConfig(GENTICS.Aloha.activeEditable.obj);
-        if ( jQuery.inArray('a', config) != -1) {
-        	that.formatLinkButton.show();
-        	that.insertLinkButton.show();
-        } else {
-        	that.formatLinkButton.hide();
-        	that.insertLinkButton.hide();
-            // leave if a is not allowed
-            return;
-        }
-        
-        var foundMarkup = that.findLinkMarkup( rangeObject )
-        if ( foundMarkup ) {
-            // link found
-        	that.insertLinkButton.hide();
-        	that.formatLinkButton.setPressed(true);
-            GENTICS.Aloha.FloatingMenu.setScope(that.getUID('link'));
-            that.hrefField.setTargetObject(foundMarkup, 'href');
-        } else {
-            // no link found
-        	that.formatLinkButton.setPressed(false);
-        	that.hrefField.setTargetObject(null);
-        }
-
-        // TODO this should not be necessary here!
-        GENTICS.Aloha.FloatingMenu.doLayout();
+    	if (GENTICS.Aloha.activeEditable) {
+    		var config = that.getEditableConfig(GENTICS.Aloha.activeEditable.obj);
+    		if ( jQuery.inArray('a', config) != -1) {
+    			that.formatLinkButton.show();
+    			that.insertLinkButton.show();
+    		} else {
+    			that.formatLinkButton.hide();
+    			that.insertLinkButton.hide();
+    			// leave if a is not allowed
+    			return;
+    		}
+    		
+    		var foundMarkup = that.findLinkMarkup( rangeObject )
+    		if ( foundMarkup ) {
+    			// link found
+    			that.insertLinkButton.hide();
+    			that.formatLinkButton.setPressed(true);
+    			GENTICS.Aloha.FloatingMenu.setScope(that.getUID('link'));
+    			that.hrefField.setTargetObject(foundMarkup, 'href');
+    		} else {
+    			// no link found
+    			that.formatLinkButton.setPressed(false);
+    			that.hrefField.setTargetObject(null);
+    		}
+    		
+    		// TODO this should not be necessary here!
+    		GENTICS.Aloha.FloatingMenu.doLayout();
+    	}
 
     });
     
