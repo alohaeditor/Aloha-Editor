@@ -422,7 +422,7 @@ GENTICS.Aloha.GCN.init = function () {
 		var cancelButton = new GENTICS.Aloha.ui.Button({
 			label : this.i18n('button.cancel'),
 			onclick : function() {
-				that.cancelEdit(function () {that.previewPage()});
+				that.cancelEdit(function () {that.previewPage();});
 			},
 			menu : [
 				new GENTICS.Aloha.ui.Button({
@@ -572,43 +572,58 @@ GENTICS.Aloha.GCN.alohaEditables = function (editables) {
  * @param blocks
  */
 GENTICS.Aloha.GCN.alohaBlocks = function (blocks) {
+	var that = this;
 	if (blocks) {
 		jQuery.each(blocks, function(index, block) {
-			jQuery('#' + block.id)
-				.addClass('GENTICS_block')
-				.attr('contenteditable', false)
+			if (!that.isMagicLinkBlock(block)) {
+				jQuery('#' + block.id).addClass('GENTICS_block').attr(
+						'contenteditable', false);
 
-			// add the edit icon for the block
-			if (!GENTICS.Aloha.settings.readonly) {
-				var imgTag = jQuery('<img>');
-				imgTag.attr('border', 0);
-				imgTag.attr('src', block.iconurl);
-				var buttonTag = jQuery('<button>');
-				buttonTag.click(function () {
-					GENTICS.Aloha.GCN.openTagFill(block.tagid);
-				});
-				buttonTag.attr('alt', block.icontitle)
-					.attr('title', block.icontitle)
-					.addClass('GENTICS_editicon')
-					.mouseover(function () {
-						jQuery(this).addClass('GENTICS_editicon_hover');
-					})
-					.mouseout(function () {
-						jQuery(this).removeClass('GENTICS_editicon_hover');
-					})
-					.prepend(imgTag);
-				jQuery('#' + block.id).prepend(buttonTag);
+				// add the edit icon for the block
+				if (!GENTICS.Aloha.settings.readonly) {
+					var imgTag = jQuery('<img>');
+					imgTag.attr('border', 0);
+					imgTag.attr('src', block.iconurl);
+					var buttonTag = jQuery('<button>');
+					buttonTag.click(function() {
+						GENTICS.Aloha.GCN.openTagFill(block.tagid);
+					});
+					buttonTag.attr('alt', block.icontitle).attr('title',
+							block.icontitle).addClass('GENTICS_editicon')
+							.mouseover(
+									function() {
+										jQuery(this).addClass(
+												'GENTICS_editicon_hover');
+									}).mouseout(
+									function() {
+										jQuery(this).removeClass(
+												'GENTICS_editicon_hover');
+									}).prepend(imgTag);
+					jQuery('#' + block.id).prepend(buttonTag);
+				}
 			}
 		});
 	}
 };
 
 /**
- * stores frameset informations for normalizing the GCN edit frame
- * used by normalizeEditFrame() and written by maximizeEditFrame()
+ * Check whether the given block is the magic link block (by checking the
+ * tagname)
  * 
- * the object is prefilled with basic fallback options, which
- * are assumed to generate a consistent frame layout
+ * @param block
+ *            block to check
+ * @return true if the block is a magic link block, false if not
+ */
+GENTICS.Aloha.GCN.isMagicLinkBlock = function(block) {
+	return block.tagname.substring(0, 16) == "gtxalohapagelink";
+};
+
+/**
+ * stores frameset informations for normalizing the GCN edit frame used by
+ * normalizeEditFrame() and written by maximizeEditFrame()
+ * 
+ * the object is prefilled with basic fallback options, which are assumed to
+ * generate a consistent frame layout
  */
 GENTICS.Aloha.GCN.maximizeOptions = {
 		fsContent_cols : '0,*,0',
@@ -907,6 +922,23 @@ GENTICS.Aloha.GCN.savePage = function (data) {
 		}
 	};
 
+	// first of all, get all a-Tags which contain a link to the GCN pages repository, but have no tag
+	if (this.settings.magiclinkconstruct) {
+		jQuery('a[data-GENTICS-aloha-repository="com.gentics.aloha.GCN.Page"]').each(function(index, anchor) {
+			var jqAnchor = jQuery(anchor);
+			var block = that.getBlockById(jqAnchor.attr('id'));
+			
+			if (!block) {
+				// no block exists for this anchor, so create one
+				that.createTag(that.settings.magiclinkconstruct, false, function(data) {
+					that.handleBlock(data, false);
+					var jqRenderedTag = jQuery(data.content);
+					jqAnchor.attr('id', jqRenderedTag.attr('id'));
+				});
+			}
+		});
+	}
+
 	// now add the editables as tags
 	requestBody.page.tags = {};
 	for( var i = 0; i < GENTICS.Aloha.editables.length; ++i) {
@@ -944,6 +976,33 @@ GENTICS.Aloha.GCN.savePage = function (data) {
 		} else {
 			// TODO we did not find the editable, what now?
 		}
+	}
+
+	// go through all blocks, find the magic link blocks and add as tags to the
+	// save request
+	if (this.settings.blocks) {
+		jQuery.each(this.settings.blocks, function(index, block) {
+			if (that.isMagicLinkBlock(block)) {
+				requestBody.page.tags[block.tagname] = {
+					'name' : block.tagname,
+					'active' : true,
+					'properties' : {
+						'url' : {
+							'type' : 'PAGE',
+							'pageId' : block.data.url
+						},
+						'text' : {
+							'type' : 'STRING',
+							'stringValue' : block.data.text
+						},
+						'class' : {
+							'type' : 'STRING',
+							'stringValue' : block.data['class']
+						}
+					}
+				};
+			}
+		});
 	}
 
 	var onsuccess = data ? data.onsuccess : undefined;
@@ -1086,7 +1145,29 @@ GENTICS.Aloha.GCN.findLoadedEditable = function (id) {
  * @return void
  */
 GENTICS.Aloha.GCN.makeClean = function (obj) {
-	// find all blocks and replace by <span> tags, which we can find later and replace by <node tags>
+	var that = this;
+
+	// find all a-Tags with data-GENTICS-aloha-repository set to the GCN pages
+	// repository
+	obj.find('a[data-GENTICS-aloha-repository="com.gentics.aloha.GCN.Page"]')
+		.each(function(index, anchor) {
+			var jqAnchor = jQuery(anchor);
+			var block = that.getBlockById(jqAnchor.attr('id'));
+
+			// get the link data and store in the block
+			if (block) {
+				block.data = {
+					'url' : jqAnchor.attr(
+							'data-GENTICS-aloha-object-id')
+							.substring(6),
+					'text' : jqAnchor.text(),
+					'class' : jqAnchor.attr('class')
+				};
+			}
+	});
+
+	// find all blocks and replace by <span> tags, which we can find later and
+	// replace by <node tags>
 	if (this.settings.blocks) {
 		jQuery.each(this.settings.blocks, function(index, block) {
 			obj.find('#' + block.id).replaceWith('<span class="GENTICS_block" id="' + block.tagname + '">x</span>');
@@ -1243,7 +1324,7 @@ GENTICS.Aloha.GCN.openTagFill = function(tagid) {
 	}
 
 	var editdo = 10008;
-	var block = this.getBlock(tagid);
+	var block = this.getBockByTagId(tagid);
 	if (block && block.editdo) {
 		editdo = block.editdo;
 	}
@@ -1306,15 +1387,28 @@ GENTICS.Aloha.GCN.openTagFill = function(tagid) {
 
 /**
  * Create a new tag in the page
- * @param constructId construct id
+ * 
+ * @param constructId
+ *            construct id
+ * @param async
+ *            true if the call shall be made asynchronously (default), false for
+ *            synchronous call
+ * @param success
+ *            callback function to be called, when the tag was created, if not
+ *            set, the tag will be inserted into the page
  * @return void
  */
-GENTICS.Aloha.GCN.createTag = function(constructId) {
+GENTICS.Aloha.GCN.createTag = function(constructId, async, success) {
 	var that = this;
 
-	// make an API call to the REST API for storing the page
-	this.performRESTRequest({
-		'url' : this.settings.stag_prefix + this.restUrl + '/page/newtag/' + this.settings.id,
+	if (typeof async == 'undefined') {
+		async = true;
+	}
+
+	// make an API call to the REST API for creating a new tag
+	this.performRESTRequest( {
+		'url' : this.settings.stag_prefix + this.restUrl + '/page/newtag/'
+				+ this.settings.id,
 		'params' : {
 			'constructId' : constructId
 		},
@@ -1330,7 +1424,7 @@ GENTICS.Aloha.GCN.createTag = function(constructId) {
 					'language' : that.settings.languageid,
 					'links' : that.settings.links
 				},
-				'success' : function (data) {
+				'success' : success ? success : function(data) {
 					that.handleBlock(data, true);
 				},
 				'error' : function () {
@@ -1339,10 +1433,12 @@ GENTICS.Aloha.GCN.createTag = function(constructId) {
 						text : GENTICS.Aloha.i18n(that, 'restcall.createtag.error'),
 						type : GENTICS.Aloha.Message.Type.ALERT
 					}));
-				}
+				},
+				'async' : async
 			});
-		}
- 	});
+		},
+		'async' : async
+	});
 };
 
 /**
@@ -1350,7 +1446,7 @@ GENTICS.Aloha.GCN.createTag = function(constructId) {
  * @param tagid id of the tag
  * @return block information or false if not found
  */
-GENTICS.Aloha.GCN.getBlock = function(tagid) {
+GENTICS.Aloha.GCN.getBockByTagId = function(tagid) {
 	if (!this.settings.blocks) {
 		return false;
 	}
@@ -1364,12 +1460,32 @@ GENTICS.Aloha.GCN.getBlock = function(tagid) {
 };
 
 /**
+ * Get the block with given id
+ * 
+ * @param id
+ *            id of the block
+ * @return block information or false if not found
+ */
+GENTICS.Aloha.GCN.getBlockById = function(id) {
+	if (!this.settings.blocks) {
+		return false;
+	}
+	for ( var i = 0; i < this.settings.blocks.length; ++i) {
+		if (this.settings.blocks[i].id == id) {
+			return this.settings.blocks[i];
+		}
+	}
+
+	return false;
+};
+
+/**
  * Reload the block with given tagid
  * @param tagid id of the tag
  */
 GENTICS.Aloha.GCN.reloadBlock = function(tagid) {
 	// first get the block
-	var block = this.getBlock(tagid);
+	var block = this.getBockByTagId(tagid);
 	var that = this;
 
 	if (!block) {
