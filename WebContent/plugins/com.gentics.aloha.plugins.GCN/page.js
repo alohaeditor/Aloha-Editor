@@ -20,12 +20,6 @@ GENTICS.Aloha.Repositories.Page.query = function(queryString, objectTypeFilter, 
 		success: function(data) {
 			callback.call( that, data.pages);
 		}
+		// TODO handle errors
 	});
 };
-
-/**
- * callback after a product has been selected from the resource
- */
-//GENTICS.Aloha.Repositories.Page.markObject = function (obj, resourceItem) {
-	
-//};

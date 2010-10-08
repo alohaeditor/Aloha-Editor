@@ -57,6 +57,7 @@
 
     var namespace = 'com.gentics.aloha.plugins.TOC';
     var TOC = GENTICS.Aloha.TOC = new GENTICS.Aloha.Plugin(namespace);
+    GENTICS.Aloha.TOC.languages = ['en', 'de' ];
 
 	var $containers = null;
 	var allTocs = [];
@@ -74,7 +75,7 @@
 
     TOC.initButtons = function(){
         TOC.insertTocButton = new GENTICS.Aloha.ui.Button({
-	        'iconClass' : 'GENTICS_button GENTICS_button_a',
+	        'iconClass' : 'GENTICS_button GENTICS_button_ul',
 	        'size' : 'small',
 	        'onclick' : function () { TOC.insertAtSelection($containers); },
 	        'tooltip' : this.i18n('button.addtoc.tooltip'),
