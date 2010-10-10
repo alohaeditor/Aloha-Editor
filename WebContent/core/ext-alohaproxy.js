@@ -12,13 +12,26 @@ Ext.data.AlohaProxy = function( ) {
     Ext.data.AlohaProxy.superclass.constructor.call(this, {
         api: api
     });
+    this.params = {
+    		queryString: null,
+    		objectTypeFilter: null,
+    		filter: null,
+    		inFolderId: null,
+    		orderBy: null,
+    		maxItems: null,
+    		skipCount: null,
+    		renditionFilter: null,
+    		repositoryId: null
+    };
 };
 
 Ext.extend(Ext.data.AlohaProxy, Ext.data.DataProxy, {
 	doRequest : function(action, rs, params, reader, cb, scope, arg) {
+		jQuery.extend(this.params, params);
+		var p = this.params;
         try {
-        	 // GENTICS.Aloha.RepositoryManager.query( objectTypeFilter, filter, inFolderId, orderBy, maxItems, skipCount, renditionFilter, repositoryId, callback)
-        	GENTICS.Aloha.RepositoryManager.query(params.query, this.objectTypeFilter, null, null, null, null, null, null, null, function( items ) {
+        	 // GENTICS.Aloha.RepositoryManager.query(queryString, objectTypeFilter, filter, inFolderId, orderBy, maxItems, skipCount, renditionFilter, repositoryId, callback)
+        	GENTICS.Aloha.RepositoryManager.query(p.queryString, p.objectTypeFilter, p.filter, p.inFolderId, p.orderBy, p.maxItems, p.skipCount, p.renditionFilter, p.repositoryId, function( items ) {
         		var result = reader.readRecords( items );
  	 	        cb.call(scope, result, arg, true);
         	});
@@ -28,11 +41,13 @@ Ext.extend(Ext.data.AlohaProxy, Ext.data.DataProxy, {
             return false;
         }
 	},
-	objectTypeFilter : null,
 	setObjectTypeFilter : function (otFilter) {
-		this.objectTypeFilter = otFilter;
+		this.params.objectTypeFilter = otFilter;
 	},
 	getObjectTypeFilter : function () {
-		return this.objectTypeFilter;
+		return this.params.objectTypeFilter;
+	},
+	setParams : function (p) {
+		jQuery.extend(this.params, p);
 	}
 });	

@@ -42,7 +42,10 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 		// repository object types could have changed
 		'beforequery': function (obj, event) {
 			if (this.store != null && this.store.proxy != null) {
-				this.store.proxy.setObjectTypeFilter(this.getObjectTypeFilter());
+				this.store.proxy.setParams({
+					objectTypeFilter: this.getObjectTypeFilter(),
+					queryString: obj.query
+				});
 			}
 		},
 		'afterrender': function (obj, event) {
