@@ -68,6 +68,15 @@ EXAMPLE.Product.init = function () {
         // re-layout the Floating Menu
         GENTICS.Aloha.FloatingMenu.doLayout();
     });
+	
+    GENTICS.Aloha.EventRegistry.subscribe(
+			GENTICS.Aloha, 
+			"editableDeactivated", 
+			function (jEvent, aEvent) {
+		        jQuery('.product-selected').removeClass('product-selected');
+			}
+	);
+    
 };
 
 /**
