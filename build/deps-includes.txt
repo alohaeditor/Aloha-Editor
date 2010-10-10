@@ -16,8 +16,6 @@ deps/extjs/pkg-buttons-debug.js
 deps/extjs/pkg-tabs-debug.js
 deps/extjs/pkg-tips-debug.js
 deps/extjs/pkg-tree-debug.js
-deps/extjs/pkg-grid-editor-debug.js
-deps/extjs/pkg-grid-foundation-debug.js
 deps/extjs/pkg-toolbars-debug.js
 deps/extjs/pkg-menu-debug.js
 deps/extjs/pkg-forms-debug.js
