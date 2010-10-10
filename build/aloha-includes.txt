@@ -9,6 +9,7 @@ core/ext-alohatreeloader.js
 core/core.js
 core/ui.js
 core/ui-attributefield.js
+core/ui-browser.js
 core/css.js
 core/editable.js
 core/ribbon.js

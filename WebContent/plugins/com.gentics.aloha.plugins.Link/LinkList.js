@@ -47,26 +47,30 @@ GENTICS.Aloha.Repositories.LinkList.init = function() {
     	var u = this.settings.data[i].uri = this.parseUri(this.settings.data[i].url);
 
     	// add hostname as root folder 
-    	this.addFolder('', u.host);
-    	var path = '/' + u.host;
+    	var path = this.addFolder('', u.host);
 
     	var pathparts = u.path.split('/');
     	for (j = 0; j < pathparts.length; j++) {
     		if ( 
     			pathparts[j] && 
-    			// it's a file because it has an extension.
+    			// It's a file because it has an extension.
+    			// Could improve this one :)
     			pathparts[j].lastIndexOf('.') < 0
     		) {
-	    		this.addFolder(path, pathparts[j]);
-	    		path += '/' + pathparts[j];
+	    		path = this.addFolder(path, pathparts[j]);
     		}
     	}
     	this.settings.data[i].parentId = path;
     }
+    
+    // repository name
+    this.repositoryName = 'Linklist';
 }
 
 GENTICS.Aloha.Repositories.LinkList.addFolder = function (path, name) {
-	var p = path + '/' + name;
+	
+	var p = path ? path + '/' + name : name;
+	
 	if ( name && !this.folder[p] ) {
 		this.folder[p] = {
 				id: p,
@@ -76,6 +80,7 @@ GENTICS.Aloha.Repositories.LinkList.addFolder = function (path, name) {
 				repositoryId: this.repositoryId
 		};
 	}
+	return p;
 }
 
 /**
@@ -83,11 +88,15 @@ GENTICS.Aloha.Repositories.LinkList.addFolder = function (path, name) {
  * If none found it returns null.
  */
 GENTICS.Aloha.Repositories.LinkList.query = function(queryString, objectTypeFilter, filter, inFolderId, orderBy, maxItems, skipCount, renditionFilter, callback) {
+	// Not supported; filter, orderBy, maxItems, skipcount, renditionFilter
+	// 
 	var d = this.settings.data.filter(function(e, i, a) {
 		var r = new RegExp(queryString, 'i'); 
+		var ret = false;
 		return (
-			jQuery.inArray(e.objectType, objectTypeFilter) > -1 &&
-			( e.displayName.match(r) || e.url.match(r) ) 
+			( !queryString || e.displayName.match(r) || e.url.match(r) ) && 
+			( !objectTypeFilter || jQuery.inArray(e.objectType, objectTypeFilter) > -1) &&
+			( !inFolderId || inFolderId == e.parentId )
 		);
 	});
 	callback.call( this, d);

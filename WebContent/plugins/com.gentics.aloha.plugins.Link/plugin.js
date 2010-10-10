@@ -137,6 +137,25 @@ GENTICS.Aloha.Link.createButtons = function () {
         1
     );
 
+    this.browser = new GENTICS.Aloha.ui.Browser();
+    this.browser.setObjectTypeFilter(GENTICS.Aloha.Link.objectTypeFilter);
+    this.repositoryButton = new GENTICS.Aloha.ui.Button({
+        'iconClass' : 'GENTICS_button GENTICS_button_a',
+        'size' : 'small',
+        'onclick' : function () {
+			that.browser.show();
+		},
+        'tooltip' : this.i18n('button.addlink.tooltip'),
+        'toggle' : false
+    });
+    
+//    // COMMENT IN AND TEST THE BROWSER
+//    GENTICS.Aloha.FloatingMenu.addButton(
+//        this.getUID('link'),
+//        this.repositoryButton,
+//        this.i18n('floatingmenu.tab.link'),
+//        1
+//    );
 };
 
 /**
