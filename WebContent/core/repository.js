@@ -1,4 +1,3 @@
-
 /*!
 * Aloha Editor
 * Author & Copyright (c) 2010 Gentics Software GmbH
@@ -15,16 +14,23 @@
  */
 GENTICS.Aloha.Repository = function(repositoryId, basePath) {
 	/**
-	 * Settings of the repository
+	 * @cfg {String} repositoryId is the unique Id for this Repository instance 
 	 */
 	this.repositoryId = repositoryId;
-	this.basePath = basePath ? basePath : repositoryId;
-	GENTICS.Aloha.RepositoryManager.register(this);
+	
 	/**
 	 * contains the repository's settings object
 	 * @cfg {Object} settings the repository's settings stored in an object
 	 */
 	this.settings = {};
+
+	/**
+	 * @cfg {String} repositoryName is the name for this Repository instance 
+	 */
+	this.repositoryName = repositoryId;
+	
+	GENTICS.Aloha.RepositoryManager.register(this);
+
 };
 
 /**
@@ -46,7 +52,8 @@ GENTICS.Aloha.Repository.prototype.init = function() {};
  * @param {Integer} maxItems OPTIONAL number items to return as result
  * @param {Integer} skipCount OPTIONAL This is tricky in a merged multi repository scenario
  * @param {array} renditionFilter OPTIONAL Instead of termlist an array of kind or mimetype is expected. If null or array.length == 0 all renditions are returned. See http://docs.oasis-open.org/cmis/CMIS/v1.0/cd04/cmis-spec-v1.0.html#_Ref237323310 for renditionFilter
- * @return {Array} Items 
+ * @return {Array} Items
+ * TODO Migrate to a parameter object 
  */
 GENTICS.Aloha.Repository.prototype.query = function(queryString, objectTypeFilter, filter, inFolderId, orderBy, maxItems, skipCount, renditionFilter, callback) { return true; };
 

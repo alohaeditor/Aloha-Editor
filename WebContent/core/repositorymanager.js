@@ -39,13 +39,10 @@ GENTICS.Aloha.RepositoryManager.prototype.init = function() {
 		
 		// merge the specific settings with the repository default settings
 		if ( GENTICS.Aloha.settings.repositories[repository.repositoryId] ) {
-			jQuery.extend(repository.settings, GENTICS.Aloha.settings.repositories[repository.repositoryId])
+			jQuery.extend(repository.settings, GENTICS.Aloha.settings.repositories[repository.repositoryId]);
 		}
 		
-//		if (repository.settings.enabled == true) {
-			// initialize the repository
-			repository.init();
-//		}
+		repository.init();
 	}
 };
 
@@ -94,6 +91,7 @@ GENTICS.Aloha.RepositoryManager.prototype.query = function(queryString, objectTy
 	
 	var that = this;
 	var allitems = [];
+	var repositories = [];
 
 	// reset callback queue
 	this.openCallbacks = [];
@@ -107,19 +105,19 @@ GENTICS.Aloha.RepositoryManager.prototype.query = function(queryString, objectTy
 
 	// only query the repositoryId for Navigation Elements
 	if ( repositoryId ) {
-		repositories.push(this.getRepository(repositoryId))
+		repositories.push(this.getRepository(repositoryId));
 	} else {
 		repositories = this.repositories;
 	}
 
 	// iterate through all registered repositories
-	for ( var i = 0; i < this.repositories.length; i++) {
+	for ( var i = 0; i < repositories.length; i++) {
 		
-		this.openCallbacks.push(this.repositories[i].repositoryId);
+		this.openCallbacks.push(repositories[i].repositoryId);
 		
         try {
         	
-			var notImplemented = this.repositories[i].query( queryString, objectTypeFilter, filter, inFolderId, orderBy, maxItems, skipCount, renditionFilter, function (items) {
+			var notImplemented = repositories[i].query( queryString, objectTypeFilter, filter, inFolderId, orderBy, maxItems, skipCount, renditionFilter, function (items) {
 			    
 				// remove the repository from the callback stack
 				var id = that.openCallbacks.indexOf( this.repositoryId );
@@ -148,7 +146,7 @@ GENTICS.Aloha.RepositoryManager.prototype.query = function(queryString, objectTy
 		
 		// remove this repository from the callback stack
 		if ( notImplemented ) {
-			var id = that.openCallbacks.indexOf( this.repositories[i].repositoryId );
+			var id = that.openCallbacks.indexOf( repositories[i].repositoryId );
 			if (id != -1) {
 				this.openCallbacks.splice(id, 1);
 				if ( i == repositories.length - 1 ) {
@@ -208,7 +206,7 @@ GENTICS.Aloha.RepositoryManager.prototype.getChildren = function ( objectTypeFil
 		for ( var i = 0; i < this.repositories.length; i++) {
 			repos.push({
 				id: this.repositories[i].repositoryId,
-				displayName: this.repositories[i].repositoryId,
+				displayName: this.repositories[i].repositoryName,
 				repositoryId: this.repositories[i].repositoryId,
 				objectType: 'repository',
 				hasMoreItems: true
@@ -227,7 +225,7 @@ GENTICS.Aloha.RepositoryManager.prototype.getChildren = function ( objectTypeFil
 
 	// only query the repositoryId for Navigation Elements
 	if ( repositoryId ) {
-		repositories.push(this.getRepository(repositoryId))
+		repositories.push(this.getRepository(repositoryId));
 	} else {
 		repositories = this.repositories;
 	}
