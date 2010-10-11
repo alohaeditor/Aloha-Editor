@@ -98,7 +98,7 @@
 						<? endif; ?>
 					</textarea>
 					<input type="submit" value="Update Textarea"/>
-				</textarea>
+				</form>
 			</div>
 		</div>
 	</body>
