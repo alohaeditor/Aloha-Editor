@@ -176,6 +176,8 @@ GENTICS.Aloha.ui.AttributeField.prototype = new GENTICS.Aloha.ui.Button();
 GENTICS.Aloha.ui.AttributeField.prototype.getExtConfigProperties = function() {
     return {
         xtype : 'alohaattributefield',
+        rowspan: this.rowspan||undefined,
+        width: this.width||undefined,
         id : this.id
     };
 };

@@ -256,8 +256,9 @@ GENTICS.Aloha.ui.Button.prototype.getExtConfigProperties = function() {
 		pressed : this.pressed,
 		icon: this.icon,
 		iconCls: this.iconClass,
-		scale : this.size,
-		rowspan : (this.size == 'large' || this.size == 'medium') ? 2 : 1,
+		scale : this.scale||this.size,
+		width : this.width||undefined,
+		rowspan : this.rowspan || ((this.size == 'large' || this.size == 'medium') ? 2 : 1),
 		menu : menu,
 		handler : function(element, event) {
 			if (typeof that.onclick === 'function') {
@@ -269,7 +270,7 @@ GENTICS.Aloha.ui.Button.prototype.getExtConfigProperties = function() {
 		tooltipType : 'qtip',
 		tooltip : this.tooltip,
 		id : this.id,
-        arrowAlign: this.size == 'large' || this.size == 'small' ? 'right' : 'bottom'
+        arrowAlign: this.arrowAlign || (this.size == 'large' || this.size == 'small' ? 'right' : 'bottom')
 	};
 
 	return buttonConfig;
