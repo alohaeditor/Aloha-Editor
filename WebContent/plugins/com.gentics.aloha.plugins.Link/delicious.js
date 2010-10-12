@@ -208,6 +208,6 @@ GENTICS.Aloha.Repositories.delicious.getChildren = function(objectTypeFilter, fi
 			
 		}
 	} else {
-		callback.call( this, []);;
+		callback.call( this, []);
 	}
 };

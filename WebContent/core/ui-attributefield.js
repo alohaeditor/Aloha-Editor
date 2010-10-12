@@ -28,14 +28,11 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
             '<span><b>{displayName}</b><br />{url}</span>',
         '</div></tpl>'
     ),
-    onSelect: function (item) { 
-		// TODO split display field by '.' and get corresponding attribute
-		var v = item.data[this.displayField];
-		this.setValue(v);
-		this.setAttribute(this.targetAttribute, v);
-	
-		// call the repository marker
-		GENTICS.Aloha.RepositoryManager.markObject(this.targetObject, item.data);
+    onSelect: function (item) {
+		this.setItem(item.data);
+		if ( typeof this.alohaButton.onSelect == 'function' ) {
+			this.alohaButton.onSelect.call(this.alohaButton, item.data);
+		}
 		this.collapse();
 	},
     listeners: {
@@ -102,6 +99,22 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 	        }
 	    }
     }, 
+    setItem: function( item, displayField ) {
+    	console.log('set item: '+item);
+    	this.resourceItem = item;
+    	if ( item ) {
+	    	displayField = (displayField) ? displayField : this.displayField;
+			// TODO split display field by '.' and get corresponding attribute, because it could be a properties attribute.
+			var v = item[displayField];
+	    	this.setValue( v );
+			this.setAttribute(this.targetAttribute, v);
+			// call the repository marker
+			GENTICS.Aloha.RepositoryManager.markObject(this.targetObject, item);
+    	}
+    },
+    getItem: function( ) {
+    	return this.resourceItem;
+    },
     // Private hack to allow attribute setting by regex
     setAttribute: function (attr, value, regex, reference) {
     	
@@ -160,6 +173,12 @@ Ext.reg('alohaattributefield', Ext.ux.AlohaAttributeField);
  * @class AttributeField
  */
 GENTICS.Aloha.ui.AttributeField = function () {
+
+	/**
+	 * @cfg Function called when an element is selected
+	 */
+	this.onSelect = null;
+
     GENTICS.Aloha.ui.Button.apply(this, arguments);
 };
 
@@ -175,6 +194,7 @@ GENTICS.Aloha.ui.AttributeField.prototype = new GENTICS.Aloha.ui.Button();
  */
 GENTICS.Aloha.ui.AttributeField.prototype.getExtConfigProperties = function() {
     return {
+    	alohaButton: this,
         xtype : 'alohaattributefield',
         id : this.id
     };
@@ -261,6 +281,28 @@ GENTICS.Aloha.ui.AttributeField.prototype.setObjectTypeFilter = function (object
     } else {
     	this.objectTypeFilter = objectTypeFilter;
     }
+};
+
+/**
+ * Sets an item to the link tag.
+ * @param {resourceItem} item  
+ */
+GENTICS.Aloha.ui.AttributeField.prototype.setItem = function ( item , displayField ) {
+	console.log(item);
+    if (this.extButton) {
+    	this.extButton.setItem( item, displayField );
+    }
+};
+
+/**
+ * Gets current item set.
+ * @return {resourceItem} item  
+ */
+GENTICS.Aloha.ui.AttributeField.prototype.getItem = function ( ) {
+    if (this.extButton) {
+    	return this.extButton.getItem();
+    }
+    return null;
 };
 
 /**

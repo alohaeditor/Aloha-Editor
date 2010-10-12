@@ -12,7 +12,7 @@
  * @param {String} repositoryId unique repository identifier
  * @param {String} basePath (optional) basepath of the repository (relative to 'repositories' folder). If not given, the basePath is taken
  */
-GENTICS.Aloha.Repository = function(repositoryId, basePath) {
+GENTICS.Aloha.Repository = function(repositoryId, repositoryName) {
 	/**
 	 * @cfg {String} repositoryId is the unique Id for this Repository instance 
 	 */
@@ -27,7 +27,7 @@ GENTICS.Aloha.Repository = function(repositoryId, basePath) {
 	/**
 	 * @cfg {String} repositoryName is the name for this Repository instance 
 	 */
-	this.repositoryName = repositoryId;
+	this.repositoryName = (repositoryName) ? repositoryName : repositoryId;
 	
 	GENTICS.Aloha.RepositoryManager.register(this);
 
