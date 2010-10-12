@@ -57,7 +57,12 @@ GENTICS.Aloha.ui.Browser = function () {
 		title : 'Objectlist',
 		stateful : true,
 		stateId : 'grid',
-		selModel: new Ext.grid.RowSelectionModel({singleSelect:true})
+		selModel: new Ext.grid.RowSelectionModel({singleSelect:true}),
+		listeners : {
+			'dblclick' : function(e) {
+				that.onItemSelect();
+			}
+		}
 	});
     this.grid.getSelectionModel().on({
     	'selectionchange' : function(sm, n, node){
@@ -131,6 +136,7 @@ GENTICS.Aloha.ui.Browser = function () {
 		onEsc: function () { 
 			this.hide();
 		},
+		defaultButton: this.nav,
 		plain : true,
 		initHidden: true,
 		items : [ this.nav, this.grid ],
@@ -143,13 +149,7 @@ GENTICS.Aloha.ui.Browser = function () {
 			text : 'Select',
 			disabled : true,
 			handler : function() {
-				var sm =  that.grid.getSelectionModel();
-				var sel = (sm) ? sm.getSelected() : null;
-				var resourceItem = (sel) ? sel.data : null;
-				that.win.hide();
-				if ( typeof that.onSelect == 'function' ) {
-					that.onSelect.call(that, resourceItem);
-				}
+				that.onItemSelect();
 			}
 		}],
 	    toFront : function(e) {
@@ -159,6 +159,16 @@ GENTICS.Aloha.ui.Browser = function () {
 	        return this;
 	    }
 	});
+	
+	this.onItemSelect = function () {
+		var sm =  this.grid.getSelectionModel();
+		var sel = (sm) ? sm.getSelected() : null;
+		var resourceItem = (sel) ? sel.data : null;
+		this.win.hide();
+		if ( typeof this.onSelect == 'function' ) {
+			this.onSelect.call(this, resourceItem);
+		}
+	};
 };
 	
 GENTICS.Aloha.ui.Browser.prototype.setObjectTypeFilter = function(otf) {
