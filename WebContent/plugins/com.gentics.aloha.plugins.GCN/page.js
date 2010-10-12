@@ -11,15 +11,30 @@ GENTICS.Aloha.Repositories.Page = new GENTICS.Aloha.Repository('com.gentics.aloh
  */
 GENTICS.Aloha.Repositories.Page.query = function(queryString, objectTypeFilter, filter, inFolderId, orderBy, maxItems, skipCount, renditionFilter, callback) {
 	var that = this;
-	jQuery.ajax({ type: "POST",
-		url: "/Portal.Node/portal?gentics.rs=search.Search&gentics.rsid=jsonsearch&gentics.pb=center",
-		dataType : "json",
-		data : {
-			q : queryString + "*" // always query for page name + wildcard
+	var params = {
+		'name' : queryString,
+		'links' : GENTICS.Aloha.GCN.settings.links
+	};
+	if (maxItems) {
+		params['maxresults'] = maxItems;
+	}
+	// TODO handle errors
+	GENTICS.Aloha.GCN.performRESTRequest({
+		'url' : GENTICS.Aloha.GCN.settings.stag_prefix + GENTICS.Aloha.GCN.restUrl + '/folder/findPages',
+		'params' : params,
+		'success' : function(data) {
+			// TODO let the portal render <plink>s
+			jQuery.each(data.pages, function(index, page) {
+				page.id = "10007." + page.id;
+				page.displayName = page.name;
+				page.objectType = "website";
+				// TODO make this more efficient (don't make a single call for every url)
+				if (page.url && GENTICS.Aloha.GCN.settings.renderBlockContentURL) {
+					page.url = GENTICS.Aloha.GCN.renderBlockContent(page.url);
+				}
+			});
+			callback.call(that, data.pages);
 		},
-		success: function(data) {
-			callback.call( that, data.pages);
-		}
-		// TODO handle errors
-	});
+		'type' : 'GET'
+ 	});
 };

@@ -60,12 +60,6 @@ GENTICS.Aloha.TablePlugin.parameters = {
 	selectionArea        : 10                                     // width/height of the selection rows (in pixel)
 };
 
-/**
- * The configuration-object for the implementer of the plugin. All keys of the
- * "parameters" object could be overwritten within this object and will simply
- * be used instead.
- */
-GENTICS.Aloha.TablePlugin.config = new Object();
 /* -- END ATTRIBUTES -- */
 
 /* -- METHODS -- */
