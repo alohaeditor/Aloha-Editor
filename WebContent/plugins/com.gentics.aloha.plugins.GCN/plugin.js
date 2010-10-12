@@ -193,7 +193,7 @@ GENTICS.Aloha.GCN.init = function () {
 		// check if something needs to be saved
 		if (GENTICS.Aloha.isModified()) {
 			// if an editable has been modified, the user can confirm if he wants the page to be saved
-			if (confirm(GENTICS.Aloha.i18n(GENTICS.Aloha, 'confirm_editable_modified'))) {
+			if (confirm(GENTICS.Aloha.i18n(GENTICS.Aloha, 'confirm.editable.modified'))) {
 				that.savePage({silent : true, async : false});
 				return false;
 			}

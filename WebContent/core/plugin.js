@@ -191,7 +191,7 @@ GENTICS.Aloha.Plugin.prototype.getEditableConfig = function (obj) {
 	
 	// fall back to default configuration
 	if ( !configSpecified ) {
-		if ( this.settings.config == 'undefined' || !this.settings.config ) {
+		if ( typeof this.settings.config == 'undefined' || !this.settings.config ) {
 			config = this.config;
 		} else {
 			config = this.settings.config;

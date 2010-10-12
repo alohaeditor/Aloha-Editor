@@ -18,6 +18,7 @@ GENTICS.Aloha.Repositories.Page.query = function(queryString, objectTypeFilter, 
 	if (maxItems) {
 		params['maxresults'] = maxItems;
 	}
+	// TODO handle errors
 	GENTICS.Aloha.GCN.performRESTRequest({
 		'url' : GENTICS.Aloha.GCN.settings.stag_prefix + GENTICS.Aloha.GCN.restUrl + '/folder/findPages',
 		'params' : params,
@@ -37,10 +38,3 @@ GENTICS.Aloha.Repositories.Page.query = function(queryString, objectTypeFilter, 
 		'type' : 'GET'
  	});
 };
-
-/**
- * callback after a product has been selected from the resource
- */
-//GENTICS.Aloha.Repositories.Page.markObject = function (obj, resourceItem) {
-	
-//};

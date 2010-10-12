@@ -40,7 +40,7 @@ GENTICS.Aloha.HighlightEditables.init = function () {
 			} 
 	);
 
-	// remove active EDitable ccs class
+	// remove active Editable ccs class
 	GENTICS.Aloha.EventRegistry.subscribe(
 			GENTICS.Aloha, 
 			"editableDeactivated", 
