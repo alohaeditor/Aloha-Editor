@@ -580,20 +580,27 @@ GENTICS.Aloha.GCN.alohaBlocks = function (blocks) {
 					imgTag.attr('border', 0);
 					imgTag.attr('src', block.iconurl);
 					var buttonTag = jQuery('<button>');
-					buttonTag.click(function() {
+					buttonTag.click(function(e) {
 						GENTICS.Aloha.GCN.openTagFill(block.tagid);
+						// return false is VERY important here as editing <a>-tags will follow
+						// the link as soon as you click on the button
+						// eg. <a href=""><button class="GENTICS_editicon" ...></a> will cause
+						// this situation
+						return false;
 					});
 					buttonTag.attr('alt', block.icontitle).attr('title',
 							block.icontitle).addClass('GENTICS_editicon')
-							.mouseover(
-									function() {
-										jQuery(this).addClass(
-												'GENTICS_editicon_hover');
-									}).mouseout(
-									function() {
-										jQuery(this).removeClass(
-												'GENTICS_editicon_hover');
-									}).prepend(imgTag);
+						.mouseover(
+							function() {
+								jQuery(this).addClass(
+										'GENTICS_editicon_hover');
+							})
+						.mouseout(
+							function() {
+								jQuery(this).removeClass(
+										'GENTICS_editicon_hover');
+							})
+						.prepend(imgTag);
 					jQuery('#' + block.id).prepend(buttonTag);
 				}
 			}
