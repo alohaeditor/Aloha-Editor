@@ -14,7 +14,10 @@
 GENTICS.Aloha.Ribbon = function() {
 	
 	var that = this;
-	
+
+	// flag to mark whether ribbon is visible
+	this.visible = false;
+
 	// the ribbon
 	this.toolbar = new Ext.Toolbar({
 		height: 30,
@@ -153,6 +156,7 @@ GENTICS.Aloha.Ribbon.prototype.init = function() {
  */
 GENTICS.Aloha.Ribbon.prototype.hide = function () {
 	jQuery('.GENTICS_ribbon').fadeOut();
+	this.visible = false;
 };
 
 /**
@@ -160,6 +164,15 @@ GENTICS.Aloha.Ribbon.prototype.hide = function () {
  */
 GENTICS.Aloha.Ribbon.prototype.show = function () {
 	jQuery('.GENTICS_ribbon').fadeIn();
+	this.visible = true;
+};
+
+/**
+ * Check whether the ribbon is visible right now
+ * @return true when the ribbon is visible, false when not
+ */
+GENTICS.Aloha.Ribbon.prototype.isVisible = function () {
+	return this.visible;
 };
 
 GENTICS.Aloha.Ribbon = new GENTICS.Aloha.Ribbon();

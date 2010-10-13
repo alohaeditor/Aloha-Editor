@@ -18,6 +18,11 @@
  */
 GENTICS.Aloha.ui.Browser = function () {
 
+	/**
+	 * @cfg Function called when an element is selected
+	 */
+	this.onSelect = null;
+	
 	var that = this;
 	
 	// define the grid that represents the filelist
@@ -51,8 +56,26 @@ GENTICS.Aloha.ui.Browser = function () {
 		width : 600,
 		title : 'Objectlist',
 		stateful : true,
-		stateId : 'grid'
+		stateId : 'grid',
+		selModel: new Ext.grid.RowSelectionModel({singleSelect:true}),
+		listeners : {
+			'dblclick' : function(e) {
+				that.onItemSelect();
+			}
+		}
 	});
+    this.grid.getSelectionModel().on({
+    	'selectionchange' : function(sm, n, node){
+    		var resourceItem = that.grid.getSelectionModel().getSelected();
+    		if (resourceItem) {
+                this.win.buttons[1].enable();
+    		} else {
+                this.win.buttons[1].disable();
+    		}
+        },
+        scope:this
+    });
+
 
 	// define the treepanel
 	this.tree = new Ext.tree.TreePanel( {
@@ -79,24 +102,18 @@ GENTICS.Aloha.ui.Browser = function () {
 			}
 		}
 	});
-	
     this.tree.getSelectionModel().on({
         'selectionchange' : function(sm, node){
-            if(node){
-                this.tree.fireEvent('alohatreeselect', node.attributes);
+            if (node) {
+            	var resourceItem = node.attributes;
+        		that.grid.store.load({ params: {
+        			inFolderId: resourceItem.id,
+        			objectTypeFilter: that.objectTypeFilter,
+        			repositoryId: resourceItem.repositoryId
+        		}});
             }
         },
         scope:this
-    });
-    
-    this.tree.addEvents({alohatreeselect:true});
-    
-    this.tree.on('alohatreeselect', function(resourceItem) {
-		that.grid.store.load({ params: {
-			inFolderId: resourceItem.id,
-			objectTypeFilter: that.objectTypeFilter,
-			repositoryId: resourceItem.repositoryId
-		}});
     });
 
 	// nest the tree within a panel
@@ -116,6 +133,10 @@ GENTICS.Aloha.ui.Browser = function () {
 		width : 800,
 		height : 300,
 		closeAction : 'hide',
+		onEsc: function () { 
+			this.hide();
+		},
+		defaultButton: this.nav,
 		plain : true,
 		initHidden: true,
 		items : [ this.nav, this.grid ],
@@ -126,7 +147,10 @@ GENTICS.Aloha.ui.Browser = function () {
 			}
 		}, {
 			text : 'Select',
-			disabled : true
+			disabled : true,
+			handler : function() {
+				that.onItemSelect();
+			}
 		}],
 	    toFront : function(e) {
 	        this.manager = this.manager || Ext.WindowMgr;
@@ -135,6 +159,16 @@ GENTICS.Aloha.ui.Browser = function () {
 	        return this;
 	    }
 	});
+	
+	this.onItemSelect = function () {
+		var sm =  this.grid.getSelectionModel();
+		var sel = (sm) ? sm.getSelected() : null;
+		var resourceItem = (sel) ? sel.data : null;
+		this.win.hide();
+		if ( typeof this.onSelect == 'function' ) {
+			this.onSelect.call(this, resourceItem);
+		}
+	};
 };
 	
 GENTICS.Aloha.ui.Browser.prototype.setObjectTypeFilter = function(otf) {
@@ -148,4 +182,5 @@ GENTICS.Aloha.ui.Browser.prototype.getObjectTypeFilter = function() {
 GENTICS.Aloha.ui.Browser.prototype.show = function() {
 	this.win.show(); // first show,
 	this.win.toFront(true);
+	this.win.focus();
 };
