@@ -199,7 +199,7 @@
 				id = TOC.generateId('toc');
 				$(this).attr('id', id);
 			}
-			TOC.create(id).register($containers).update().tickTock();
+			TOC.create(id).register($containers).tickTock();
 		});
 	};
 
