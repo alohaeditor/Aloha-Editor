@@ -30,7 +30,7 @@ KaraCos.Img.PropsWindow =
 KaraCos.Img.initImage = function() {
 	var that = this;
 	this.insertImgButton = new GENTICS.Aloha.ui.Button({
-		'label' : 'IMG',
+		'iconClass': 'GENTICS_button karacos_img_insert',
 		'size' : 'small',
 		'onclick' : function () { that.insertImg(); },
 		'tooltip' : that.i18n('button.addimg.tooltip'),
@@ -208,7 +208,8 @@ KaraCos.Img.insertImg = function() {
     if ( range.isCollapsed() ) {
     	//rangeb4 = range;
     	//console.log(rangeb4);
-    	var newImg = jQuery('<img src="" title="" style=""></img>');
+    	imagetag = '<img src="' + GENTICS_Aloha_base + 'plugins/org.karacos.aloha.Img/images/blank.jpeg" title="" style=""></img>'
+    	var newImg = jQuery(imagetag);
     	GENTICS.Utils.Dom.insertIntoDOM(newImg, range, jQuery(GENTICS.Aloha.activeEditable.obj));
     	//range.correctRange();
     	//this.findImgMarkup(range).click();
