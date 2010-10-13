@@ -647,6 +647,12 @@ GENTICS.Aloha.FloatingMenu.calcFloatTarget = function(range) {
 		y = targetObj.offset().top + targetObj.height() + ribbonOffset;
 	}
 	
+	// if the floating menu would float off the bottom of the screen
+	// we don't want it to move, so we'll return false
+	if (y > jQuery(window).height() + jQuery(window).scrollTop()) {
+		return false;
+	}
+	
 	return {
 		x : GENTICS.Aloha.activeEditable.obj.offset().left,
 		y : y 
