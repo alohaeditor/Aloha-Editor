@@ -78,6 +78,10 @@ GENTICS.Aloha.FloatingMenu.left = 100;
  */
 GENTICS.Aloha.FloatingMenu.pinned = false;
 
+/**
+ * just a reference to the jQuery(window) object, which is used quite often
+ */
+GENTICS.Aloha.FloatingMenu.window = jQuery(window);
 
 /**
  * Initialize the floatingmenu
@@ -86,7 +90,7 @@ GENTICS.Aloha.FloatingMenu.pinned = false;
 GENTICS.Aloha.FloatingMenu.init = function() {
 	this.currentScope = 'GENTICS.Aloha.global';
 	var that = this;
-	jQuery(window).unload(function () {
+	this.window.unload(function () {
 		// store fm position if the panel is pinned to be able to restore it next time
 		if (that.pinned) {
 			jQuery.cookie('GENTICS.Aloha.FloatingMenu.pinned', 'true');
@@ -343,7 +347,7 @@ GENTICS.Aloha.FloatingMenu.togglePin = function() {
 		this.pinned = false;
 	} else {
 		el.addClass('GENTICS_floatingmenu_pinned');
-		this.top = this.obj.offset().top - jQuery(window).scrollTop();
+		this.top = this.obj.offset().top - this.window.scrollTop();
 		
 		// update position as preparation for fixed position 
 		this.obj.css('top', this.top);
@@ -645,6 +649,12 @@ GENTICS.Aloha.FloatingMenu.calcFloatTarget = function(range) {
 	}
 	if ( y < (scrollTop + ribbonOffset)) { 
 		y = targetObj.offset().top + targetObj.height() + ribbonOffset;
+	}
+	
+	// if the floating menu would float off the bottom of the screen
+	// we don't want it to move, so we'll return false
+	if (y > this.window.height() + this.window.scrollTop()) {
+		return false;
 	}
 	
 	return {

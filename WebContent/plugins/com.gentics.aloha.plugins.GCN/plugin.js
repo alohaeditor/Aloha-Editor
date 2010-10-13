@@ -46,14 +46,9 @@ GENTICS.Aloha.GCN.closeLightbox = function() {
 	
 	// close lightbox and show ribbon 
 	jQuery.prettyPhoto.close();
-	GENTICS.Aloha.Ribbon.show();
-	
-	//Reactivate the editable that was active before the lightbox was opened
-	if (GENTICS.Aloha.GCN.lastActiveEditable != undefined) {
-		GENTICS.Aloha.GCN.lastActiveEditable.activate(); 
-		GENTICS.Aloha.GCN.lastActiveEditable.obj.focus();
-	}
 
+	// restore the aloha elements
+	this.restoreAlohaElements();
 };
 
 /**
@@ -467,13 +462,20 @@ GENTICS.Aloha.GCN.init = function () {
 	// add insert contenttag menu to the floating menu
 	var contentTagsMenu = new Array();
 	var constructs = new Array();
+	var constructButtons = new Array();
 
 	if (this.settings.constructCategories) {
+		// iterate over all construct categories
 		for (var i=0; i<this.settings.constructCategories.length; i++) {
 			constructs = new Array();
-			for (var j=0; j<this.settings.constructCategories[i].constructs.length; j++) {
-				constructs.push(new GENTICS.Aloha.ui.Button({
-					label : this.settings.constructCategories[i].constructs[j].name,
+
+			// constructs without category will be added as buttons directly to the floating menu
+			var emptyCategory = (this.settings.constructCategories[i].name == "");
+
+			// iterate over all constructs
+			for (var j=0; j < this.settings.constructCategories[i].constructs.length; j++) {
+				// create a button for the construct
+				var constructButton = new GENTICS.Aloha.ui.Button({
 					icon : this.createGCNURL({
 						'url' : that.settings.stag_prefix,
 						params : {
@@ -485,23 +487,39 @@ GENTICS.Aloha.GCN.init = function () {
 					constructId : this.settings.constructCategories[i].constructs[j].id,
 					onclick : function() {
 						that.createTag(this.constructId);
-					}
-				}));
+					},
+					size : 'small'
+				});
+				if (emptyCategory) {
+					// use construct name as tooltip
+					constructButton.tooltip = this.settings.constructCategories[i].constructs[j].name;
+
+					// directly add the button to the floating menu
+					constructButtons.push(constructButton);
+				} else {
+					// use construct name as label
+					constructButton.label = this.settings.constructCategories[i].constructs[j].name;
+
+					// add the button to the list
+					constructs.push(constructButton);
+				}
 			}
-			
-			contentTagsMenu.push(new GENTICS.Aloha.ui.Button({
-				label : this.settings.constructCategories[i].name,
-				icon : this.createGCNURL({
-					'url' : that.settings.stag_prefix,
-					params : {
+
+			if (!emptyCategory) {
+				contentTagsMenu.push(new GENTICS.Aloha.ui.Button({
+					label : this.settings.constructCategories[i].name,
+					icon : this.createGCNURL({
+						'url' : that.settings.stag_prefix,
+						params : {
 						'do' : 11,
 						'img' : 'constructopen.gif',
 						'module' : 'content'
 					}
-				}),
-				menu : constructs,
-				onclick : function () {} // nothing to do here
-			}));
+					}),
+					menu : constructs,
+					onclick : function () {} // nothing to do here
+				}));
+			}
 		}
 
 		if (contentTagsMenu.length > 0) {
@@ -522,8 +540,20 @@ GENTICS.Aloha.GCN.init = function () {
 					size : 'medium'
 				}),
 				GENTICS.Aloha.i18n(GENTICS.Aloha, 'floatingmenu.tab.insert'),
-				1
+				2
 			);
+		}
+
+		if (constructButtons.length > 0) {
+			// add constructs without category directly to the floating menu
+			for (var i = 0; i < constructButtons.length; ++i) {
+				GENTICS.Aloha.FloatingMenu.addButton(
+					'GENTICS.Aloha.continuoustext',
+					constructButtons[i],
+					GENTICS.Aloha.i18n(GENTICS.Aloha, 'floatingmenu.tab.insert'),
+					2
+				);
+			}
 		}
 	}
 	
@@ -585,20 +615,27 @@ GENTICS.Aloha.GCN.alohaBlocks = function (blocks) {
 					imgTag.attr('border', 0);
 					imgTag.attr('src', block.iconurl);
 					var buttonTag = jQuery('<button>');
-					buttonTag.click(function() {
+					buttonTag.click(function(e) {
 						GENTICS.Aloha.GCN.openTagFill(block.tagid);
+						// return false is VERY important here as editing <a>-tags will follow
+						// the link as soon as you click on the button
+						// eg. <a href=""><button class="GENTICS_editicon" ...></a> will cause
+						// this situation
+						return false;
 					});
 					buttonTag.attr('alt', block.icontitle).attr('title',
 							block.icontitle).addClass('GENTICS_editicon')
-							.mouseover(
-									function() {
-										jQuery(this).addClass(
-												'GENTICS_editicon_hover');
-									}).mouseout(
-									function() {
-										jQuery(this).removeClass(
-												'GENTICS_editicon_hover');
-									}).prepend(imgTag);
+						.mouseover(
+							function() {
+								jQuery(this).addClass(
+										'GENTICS_editicon_hover');
+							})
+						.mouseout(
+							function() {
+								jQuery(this).removeClass(
+										'GENTICS_editicon_hover');
+							})
+						.prepend(imgTag);
 					jQuery('#' + block.id).prepend(buttonTag);
 				}
 			}
@@ -1316,12 +1353,6 @@ GENTICS.Aloha.GCN.openURL = function (url, popup) {
  */
 GENTICS.Aloha.GCN.openTagFill = function(tagid) {
 	var that = this;
-	
-	GENTICS.Aloha.FloatingMenu.setScope('GENTICS.Aloha.empty');
-	if ( GENTICS.Aloha.activeEditable ) {
-	GENTICS.Aloha.activeEditable.blur();
-	GENTICS.Aloha.Ribbon.hide();
-	}
 
 	var editdo = 10008;
 	var block = this.getBockByTagId(tagid);
@@ -1349,19 +1380,11 @@ GENTICS.Aloha.GCN.openTagFill = function(tagid) {
 		this.savePage({
 			'onsuccess' : function() {
 
-			// Hide all aloha elements
-			// TODO Disable active editable to hide floating menu
-			GENTICS.Aloha.Ribbon.hide();
-			
-			try {
-				GENTICS.Aloha.activeEditable.blur();
-				GENTICS.Aloha.GCN.lastActiveEditable = GENTICS.Aloha.activeEditable;
-			} catch(e) {
-				GENTICS.Aloha.GCN.lastActiveEditable = undefined;
-			}
-			
-			// open the tagfill window within lightbox
-			jQuery.prettyPhoto.open(new Array(editLink+'&iframe=true&width=100%&height=100%'));
+				// Hide all aloha elements
+				that.hideAlohaElements();
+
+				// open the tagfill window within lightbox
+				jQuery.prettyPhoto.open(new Array(editLink+'&iframe=true&width=100%&height=100%'));
 			},
 			'unlock' : false,
 			'silent' : true,
@@ -1369,19 +1392,8 @@ GENTICS.Aloha.GCN.openTagFill = function(tagid) {
 		});
 	} else {
 		// Hide all aloha elements
-		//TODO Disable active editable to hide floating menu
-		GENTICS.Aloha.Ribbon.hide();
-		
-		try {
-			GENTICS.Aloha.activeEditable.blur();
-			GENTICS.Aloha.GCN.lastActiveEditable = GENTICS.Aloha.activeEditable;
-			
-		} catch(e) {
-			GENTICS.Aloha.GCN.lastActiveEditable = undefined;
-		}
-		
+		that.hideAlohaElements();
 		jQuery.prettyPhoto.open(new Array(editLink+'&iframe=true&width=100%&height=100%'));
-		
 	}
 };
 
@@ -1588,6 +1600,42 @@ GENTICS.Aloha.GCN.renderBlockContent = function (content) {
 	});
 
 	return newContent;
+};
+
+/**
+ * Helper method that hides aloha elements, e.g. when the lightbox is shown
+ */
+GENTICS.Aloha.GCN.hideAlohaElements = function () {
+	if (GENTICS.Aloha.Ribbon.isVisible()) {
+		// hide the ribbon
+		GENTICS.Aloha.Ribbon.hide();
+		// remember that we did that
+		this.ribbonHidden = true;
+	}
+
+	// blur the currently active editable
+	if (GENTICS.Aloha.activeEditable) {
+		this.lastActiveEditable = GENTICS.Aloha.activeEditable;
+		GENTICS.Aloha.activeEditable.blur();
+	}
+};
+
+/**
+ * Helper method to restore the aloha elements, which were hidden via hideAlohaElements()
+ */
+GENTICS.Aloha.GCN.restoreAlohaElements = function () {
+	if (this.ribbonHidden) {
+		// show the ribbon again
+		GENTICS.Aloha.Ribbon.show();
+		this.ribbonHidden = undefined;
+	}
+
+	// Reactivate the editable that was active before
+	if (this.lastActiveEditable != undefined) {
+		this.lastActiveEditable.activate(); 
+		this.lastActiveEditable.obj.focus();
+		this.lastActiveEditable = undefined;
+	}
 };
 
 /**

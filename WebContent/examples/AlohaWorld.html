@@ -82,7 +82,15 @@ GENTICS.Aloha.settings = {
 		  	cssclassregex : '^(?!.*aloha-editor.com).*',
 		  	cssclass : 'aloha',
 		  	// use all resources of type website for autosuggest
-		  	objectTypeFilter: ['website']
+		  	objectTypeFilter: ['website'],
+		  	// handle change of href
+		  	onHrefChange: function( obj, href, item ) {
+			  	if ( item ) {
+					jQuery(obj).attr('data-name', item.displayName);
+			  	} else {
+					jQuery(obj).removeAttr('data-name');
+			  	}
+		  	}
 		},
 	 	"com.gentics.aloha.plugins.Table": { 
 		 	// all elements with no specific configuration are not allowed to insert tables
