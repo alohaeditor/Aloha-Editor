@@ -67,6 +67,8 @@
     TOC.init = function(){
 		var s = TOC.settings;
 		s.updateInterval = s.updateInterval || 5000;
+		// minimum number of entries in the TOC. if the TOC contains less entries, it will be hidden
+		s.minEntries = s.minEntries || 3;
         TOC.initButtons();
 		$(document).ready(function(){
 			TOC.spawn();
@@ -199,7 +201,7 @@
 				id = TOC.generateId('toc');
 				$(this).attr('id', id);
 			}
-			TOC.create(id).register($containers).update().tickTock();
+			TOC.create(id).register($containers).tickTock();
 		});
 	};
 
@@ -300,6 +302,14 @@
                     prevSiblings.push($entry);
                 });
             })(tail(outline));
+
+            // count number of li's in the TOC, if less than minEntries, hide the TOC
+            if (self.root().find('li').length >= TOC.settings.minEntries) {
+            	self.root().show();
+            } else {
+            	self.root().hide();
+            }
+
 			return this;
         },
         /**
