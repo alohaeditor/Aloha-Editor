@@ -96,18 +96,18 @@ GENTICS.Aloha.prototype.readyCallbacks = new Array();
  */
 GENTICS.Aloha.prototype.init = function () {
 	// check browser version on init
-	// this has to be revamped, as 
+	// this has to be revamped, as
 	if (jQuery.browser.webkit && parseFloat(jQuery.browser.version) < 532.5 || // Chrome/Safari 4
 		jQuery.browser.mozilla && parseFloat(jQuery.browser.version) < 1.9 || // FF 3.5
-		jQuery.browser.msie && jQuery.browser.version < 7 || // IE 7	
+		jQuery.browser.msie && jQuery.browser.version < 7 || // IE 7
 		jQuery.browser.opera) { // right now, Opera does not work :(
 		alert("Sorry, your browser is not supported at the moment.");
 		return;
 	}
-	
-	
+
+
 	var that = this;
-	
+
 	// register the body click event to blur editables
 	jQuery('html').mousedown(function() {
 		// if an Ext JS modal is visible, we don't want to loose the focus on
@@ -123,7 +123,7 @@ GENTICS.Aloha.prototype.init = function () {
 			that.activeEditable = null;
 		}
 	});
-	
+
 	// initialize the base path to the aloha files
 	if (typeof this.settings.base == 'undefined' || !this.settings.base) {
 		this.settings.base = GENTICS.Aloha.autobase;
@@ -157,7 +157,7 @@ GENTICS.Aloha.prototype.init = function () {
 	if (navigator.appVersion.indexOf("Linux") != -1) {
 		this.OSName = "Linux";
 	}
-	
+
 	// initialize the Aloha core components
 	this.initI18n();
 	this.PluginRegistry.init();
@@ -171,9 +171,9 @@ GENTICS.Aloha.prototype.init = function () {
 	Ext.MessageBox.buttonText.cancel = GENTICS.Aloha.i18n(this, 'cancel');
 	Ext.ux.AlohaAttributeField.prototype.listEmptyText = GENTICS.Aloha.i18n( GENTICS.Aloha, 'repository.no_item_found' );
 	Ext.ux.AlohaAttributeField.prototype.loadingText = GENTICS.Aloha.i18n( GENTICS.Aloha, 'repository.loading' ) + '...';
-	
+
 	// set aloha ready
-	this.ready = true; 
+	this.ready = true;
 
 	// activate registered editables
 	for (var i = 0; i < this.editables.length; i++) {
@@ -181,7 +181,7 @@ GENTICS.Aloha.prototype.init = function () {
 			this.editables[i].init();
 		}
 	}
-	
+
 	GENTICS.Aloha.EventRegistry.trigger(
 		new GENTICS.Aloha.Event("ready", GENTICS.Aloha, null)
 	);
@@ -198,11 +198,11 @@ GENTICS.Aloha.prototype.activateEditable = function (editable) {
 	for (var i = 0; i < this.editables.length; i++) {
 		if (this.editables[i] != editable && this.editables[i].isActive) {
 			// remember the last editable for the editableActivated event
-			var oldActive = this.editables[i]; 
+			var oldActive = this.editables[i];
 			this.editables[i].blur();
 		}
 	}
-	
+
 	this.activeEditable = editable;
 };
 
@@ -219,17 +219,17 @@ GENTICS.Aloha.prototype.getActiveEditable = function() {
  * @return void
  */
 GENTICS.Aloha.prototype.deactivateEditable = function () {
-	
+
 	if ( typeof this.activeEditable == 'undefined' || this.activeEditable == null ) {
 		return;
 	}
 
 	// blur the editable
 	this.activeEditable.blur();
-	
+
 	// set scope for floating menu
 	this.FloatingMenu.setScope('GENTICS.Aloha.empty');
-	
+
 	this.activeEditable = null;
 };
 
@@ -255,23 +255,23 @@ GENTICS.Aloha.prototype.identStr = function (object) {
 	if (object instanceof jQuery) {
 		object = object[0];
 	}
-	if (!(object instanceof HTMLElement)) { 
+	if (!(object instanceof HTMLElement)) {
 		GENTICS.Aloha.Log.warn(this, '{' + object.toString() + '} provided is not an HTML element');
 		return object.toString();
 	}
 
 	var out = object.tagName.toLowerCase();
-	
+
 	// an id should be unique, so we're okay with that
 	if (object.id) {
-		return out + '#' + object.id; 
+		return out + '#' + object.id;
 	}
-	
-	// as there was no id, we fall back to the objects class 
+
+	// as there was no id, we fall back to the objects class
 	if (object.className) {
 		return out + '.' + object.className;
 	}
-	
+
 	// could not identify object by id or class name - so just return the tag name
 	return out;
 };
@@ -279,7 +279,7 @@ GENTICS.Aloha.prototype.identStr = function (object) {
 /**
  * a basic trim function as found on
  * http://blog.stevenlevithan.com/archives/faster-trim-javascript
- * 
+ *
  * @param str
  *            to be trimmed
  * @return trimmed string
@@ -298,33 +298,33 @@ GENTICS.Aloha.prototype.trim = function(str) {
 
 /**
  * Initialize i18n, load the dictionary file
- * Languages may have format as defined in 
+ * Languages may have format as defined in
  * http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.10
  * All language codes available http://www.loc.gov/standards/iso639-2/php/langcodes-search.php
- * 
+ *
  * @hide
  */
 GENTICS.Aloha.prototype.initI18n = function() {
-	
+
 	if (typeof this.settings.i18n == 'undefined' || !this.settings.i18n) {
 		this.settings.i18n = {};
 	}
 
 	// TODO read dict files automatically on build. Develop only with "en"
-	if (typeof this.settings.i18n.available == 'undefined' 
-		|| !this.settings.i18n.available 
+	if (typeof this.settings.i18n.available == 'undefined'
+		|| !this.settings.i18n.available
 		|| !this.settings.i18n.available instanceof Array) {
-		
+
 		this.settings.i18n.available = ['en', 'de', 'fr', 'eo', 'fi', 'ru', 'it', 'pl'];
 	}
 
-	/* 
+	/*
 	 * try to guess ACCEPT-LANGUAGE from http header
 	 * reference http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.4
 	 * ACCEPT-LANGUAGE 'de-de,de;q=0.8,it;q=0.6,en-us;q=0.7,en;q=0.2';
 	 * Any implementation has to set it server side because this is not
 	 * accessible by JS. http://lists.w3.org/Archives/Public/public-html/2009Nov/0454.html
-	*/ 
+	*/
 	if ( (typeof this.settings.i18n.current == 'undefined' || !this.settings.i18n.current) &&
 		typeof this.settings.i18n.acceptLanguage == 'string' ) {
 
@@ -332,24 +332,24 @@ GENTICS.Aloha.prototype.initI18n = function() {
 		// Split the string from ACCEPT-LANGUAGE
 	    var preferredLanugage = this.settings.i18n.acceptLanguage.split(",");
 	    for(i = 0; i < preferredLanugage.length; i++){
-	    	
+
 	    	// split language setting
 	    	var lang = preferredLanugage[i].split(";");
-	    	
+
 	    	// convert quality to float
 	    	if ( typeof lang[1] == 'undefined' || !lang[1] ) {
 	    	  lang[1] = 1;
 	    	} else {
-	    	  lang[1] = parseFloat(lang[1].substring(2, lang[1].length)); 
+	    	  lang[1] = parseFloat(lang[1].substring(2, lang[1].length));
 	    	}
-	    	
+
 	    	// add converted language to accepted languages
 	    	acceptLanguage.push(lang);
 	    }
-	    
+
 	    // sort by quality
 	    acceptLanguage.sort(function (a,b) {return b[1] - a[1];});
-	    
+
 	    // check in sorted order if any of preferred languages is available
 	    for(i = 0; i < acceptLanguage.length; i++) {
 	    	if ( jQuery.inArray(acceptLanguage[i][0], this.settings.i18n.available) >= 0 ) {
@@ -361,7 +361,7 @@ GENTICS.Aloha.prototype.initI18n = function() {
 
 	/*
 	 * default language from for the browser navigator API.
-	 */ 
+	 */
 	if (typeof this.settings.i18n.current == 'undefined' || !this.settings.i18n.current) {
 		this.settings.i18n.current = (navigator.language
 				? navigator.language       // gecko/webkit/opera
@@ -390,16 +390,16 @@ GENTICS.Aloha.prototype.initI18n = function() {
  * @return the actual language as a string
  */
 GENTICS.Aloha.prototype.getLanguage = function(language, availableLanguages) {
-	
+
 	if (!availableLanguages instanceof Array) {
 		GENTICS.Aloha.Log.error(this, 'Available languages must be an Array');
 		return null;
 	}
-	
+
 	if (typeof language == 'undefined' || !language) {
 		return availableLanguages[0];
 	}
-	
+
 	for (var i = 0; i < availableLanguages.length; ++i) {
 		if (language == availableLanguages[i]) {
 			return language;
@@ -421,7 +421,7 @@ GENTICS.Aloha.prototype.loadI18nFile = function(fileUrl, component) {
 	jQuery.ajax(
 		{
 			async : false,
-			datatype : 'text',
+			dataType : 'text',
 			url : fileUrl,
 			error: function(request, textStatus, error) {
 				GENTICS.Aloha.Log.error(component, 'Error while getting dictionary file ' + fileUrl + ': server returned ' + textStatus);
@@ -437,7 +437,7 @@ GENTICS.Aloha.prototype.loadI18nFile = function(fileUrl, component) {
 };
 
 /**
- * 
+ *
  * @param data
  * @param component
  * @hide
@@ -472,7 +472,7 @@ GENTICS.Aloha.prototype.parseI18nFile = function(data, component) {
  * @method
  * @param {String} component component for which the key shall be localized
  * @param {String} key key to be localized
- * @param {Array} replacements array of replacements 
+ * @param {Array} replacements array of replacements
  * @return localized string
  */
 GENTICS.Aloha.prototype.i18n = function(component, key, replacements) {
@@ -535,12 +535,12 @@ GENTICS.Aloha.prototype.registerEditable = function (editable) {
  * @hide
  */
 GENTICS.Aloha.prototype.unregisterEditable = function (editable) {
-	
+
 	// Find the index
-	var id = this.editables.indexOf( editable ); 
+	var id = this.editables.indexOf( editable );
 	// Remove it if really found!
 	if (id != -1) {
-		this.editables.splice(id, 1); 
+		this.editables.splice(id, 1);
 	}
 };
 
@@ -550,11 +550,11 @@ GENTICS.Aloha.prototype.unregisterEditable = function (editable) {
  * @param {GENTICS.Aloha.Message} message the GENTICS.Aloha.Message object to be displayed
  */
 GENTICS.Aloha.prototype.showMessage = function (message) {
-	
+
 	if (GENTICS.Aloha.FloatingMenu.obj) {
 		GENTICS.Aloha.FloatingMenu.obj.css('z-index', 8900);
 	}
-	
+
 	switch (message.type) {
 		case GENTICS.Aloha.Message.Type.ALERT:
 		    Ext.MessageBox.alert(message.title, message.text, message.callback);
