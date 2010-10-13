@@ -462,13 +462,20 @@ GENTICS.Aloha.GCN.init = function () {
 	// add insert contenttag menu to the floating menu
 	var contentTagsMenu = new Array();
 	var constructs = new Array();
+	var constructButtons = new Array();
 
 	if (this.settings.constructCategories) {
+		// iterate over all construct categories
 		for (var i=0; i<this.settings.constructCategories.length; i++) {
 			constructs = new Array();
-			for (var j=0; j<this.settings.constructCategories[i].constructs.length; j++) {
-				constructs.push(new GENTICS.Aloha.ui.Button({
-					label : this.settings.constructCategories[i].constructs[j].name,
+
+			// constructs without category will be added as buttons directly to the floating menu
+			var emptyCategory = (this.settings.constructCategories[i].name == "");
+
+			// iterate over all constructs
+			for (var j=0; j < this.settings.constructCategories[i].constructs.length; j++) {
+				// create a button for the construct
+				var constructButton = new GENTICS.Aloha.ui.Button({
 					icon : this.createGCNURL({
 						'url' : that.settings.stag_prefix,
 						params : {
@@ -480,23 +487,39 @@ GENTICS.Aloha.GCN.init = function () {
 					constructId : this.settings.constructCategories[i].constructs[j].id,
 					onclick : function() {
 						that.createTag(this.constructId);
-					}
-				}));
+					},
+					size : 'small'
+				});
+				if (emptyCategory) {
+					// use construct name as tooltip
+					constructButton.tooltip = this.settings.constructCategories[i].constructs[j].name;
+
+					// directly add the button to the floating menu
+					constructButtons.push(constructButton);
+				} else {
+					// use construct name as label
+					constructButton.label = this.settings.constructCategories[i].constructs[j].name;
+
+					// add the button to the list
+					constructs.push(constructButton);
+				}
 			}
-			
-			contentTagsMenu.push(new GENTICS.Aloha.ui.Button({
-				label : this.settings.constructCategories[i].name,
-				icon : this.createGCNURL({
-					'url' : that.settings.stag_prefix,
-					params : {
+
+			if (!emptyCategory) {
+				contentTagsMenu.push(new GENTICS.Aloha.ui.Button({
+					label : this.settings.constructCategories[i].name,
+					icon : this.createGCNURL({
+						'url' : that.settings.stag_prefix,
+						params : {
 						'do' : 11,
 						'img' : 'constructopen.gif',
 						'module' : 'content'
 					}
-				}),
-				menu : constructs,
-				onclick : function () {} // nothing to do here
-			}));
+					}),
+					menu : constructs,
+					onclick : function () {} // nothing to do here
+				}));
+			}
 		}
 
 		if (contentTagsMenu.length > 0) {
@@ -517,8 +540,20 @@ GENTICS.Aloha.GCN.init = function () {
 					size : 'medium'
 				}),
 				GENTICS.Aloha.i18n(GENTICS.Aloha, 'floatingmenu.tab.insert'),
-				1
+				2
 			);
+		}
+
+		if (constructButtons.length > 0) {
+			// add constructs without category directly to the floating menu
+			for (var i = 0; i < constructButtons.length; ++i) {
+				GENTICS.Aloha.FloatingMenu.addButton(
+					'GENTICS.Aloha.continuoustext',
+					constructButtons[i],
+					GENTICS.Aloha.i18n(GENTICS.Aloha, 'floatingmenu.tab.insert'),
+					2
+				);
+			}
 		}
 	}
 	
