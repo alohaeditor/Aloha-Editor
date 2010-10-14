@@ -9,14 +9,14 @@ GENTICS.Aloha.Repositories.Page = new GENTICS.Aloha.Repository('com.gentics.aloh
  * Searches a resource for resource items matching query if objectTypes.
  * If none found it returns null.
  */
-GENTICS.Aloha.Repositories.Page.query = function(queryString, objectTypeFilter, filter, inFolderId, orderBy, maxItems, skipCount, renditionFilter, callback) {
+GENTICS.Aloha.Repositories.Page.query = function( p, callback) {
 	var that = this;
 	var params = {
-		'name' : queryString,
+		'name' : p.queryString,
 		'links' : GENTICS.Aloha.GCN.settings.links
 	};
-	if (maxItems) {
-		params['maxresults'] = maxItems;
+	if (p.maxItems) {
+		params['maxresults'] = p.maxItems;
 	}
 	// TODO handle errors
 	GENTICS.Aloha.GCN.performRESTRequest({

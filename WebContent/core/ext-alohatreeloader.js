@@ -14,8 +14,12 @@ Ext.extend( Ext.tree.AlohaTreeLoader, Ext.tree.TreeLoader, {
 	paramOrder: ['node', 'id'],
 	nodeParameter: 'id',
 	directFn : function(node, id, callback) {
-		// GENTICS.Aloha.RepositoryManager.getChildren ( objectTypeFilter, filter, inFolderId, orderBy, maxItems, skipCount, renditionFilter, repositoryId, function( items ) {
-		GENTICS.Aloha.RepositoryManager.getChildren ( this.objectTypeFilter, null, node.id, null, null, null, null, null, node.repositoryId, function( items ) {
+		var params = {
+				inFolderId: node.id,
+				objectTypeFilter: this.objectTypeFilter,
+				repositoryId: node.repositoryId
+		};
+		GENTICS.Aloha.RepositoryManager.getChildren ( params, function( items ) {
  	        var response = {};
  	        response= {
  	            status: true,

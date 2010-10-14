@@ -27,11 +27,10 @@ Ext.data.AlohaProxy = function( ) {
 
 Ext.extend(Ext.data.AlohaProxy, Ext.data.DataProxy, {
 	doRequest : function(action, rs, params, reader, cb, scope, arg) {
-		jQuery.extend(this.params, params);
 		var p = this.params;
+		jQuery.extend(p, params);
         try {
-        	 // GENTICS.Aloha.RepositoryManager.query(queryString, objectTypeFilter, filter, inFolderId, orderBy, maxItems, skipCount, renditionFilter, repositoryId, callback)
-        	GENTICS.Aloha.RepositoryManager.query(p.queryString, p.objectTypeFilter, p.filter, p.inFolderId, p.orderBy, p.maxItems, p.skipCount, p.renditionFilter, p.repositoryId, function( items ) {
+        	GENTICS.Aloha.RepositoryManager.query( p, function( items ) {
         		var result = reader.readRecords( items );
  	 	        cb.call(scope, result, arg, true);
         	});

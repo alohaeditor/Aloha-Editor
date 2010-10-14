@@ -29,7 +29,7 @@ GENTICS.Aloha.Repositories.gcn.init = function() {
  * Searches a repository for object items matching query if objectTypeFilter.
  * If none found it returns null.
  */
-GENTICS.Aloha.Repositories.gcn.query = function(queryString, objectTypeFilter, filter, inFolderId, orderBy, maxItems, skipCount, renditionFilter, callback) {
+GENTICS.Aloha.Repositories.gcn.query = function( p, callback) {
 	var that = this;
 	callback.call( that, []);
 };
@@ -37,7 +37,7 @@ GENTICS.Aloha.Repositories.gcn.query = function(queryString, objectTypeFilter, f
 /**
  * Returns all tags for username in a tree style way
  */
-GENTICS.Aloha.Repositories.gcn.getChildren = function(objectTypeFilter, filter, inFolderId, inTreeId, orderBy, maxItems, skipCount, renditionFilter, callback) {
+GENTICS.Aloha.Repositories.gcn.getChildren = function( p, callback) {
 	var that = this;
 
 	var request = {
