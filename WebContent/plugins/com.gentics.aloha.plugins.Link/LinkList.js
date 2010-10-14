@@ -87,16 +87,16 @@ GENTICS.Aloha.Repositories.LinkList.addFolder = function (path, name) {
  * Searches a repository for object items matching query if objectTypeFilter.
  * If none found it returns null.
  */
-GENTICS.Aloha.Repositories.LinkList.query = function(queryString, objectTypeFilter, filter, inFolderId, orderBy, maxItems, skipCount, renditionFilter, callback) {
+GENTICS.Aloha.Repositories.LinkList.query = function( p, callback) {
 	// Not supported; filter, orderBy, maxItems, skipcount, renditionFilter
 	// 
 	var d = this.settings.data.filter(function(e, i, a) {
-		var r = new RegExp(queryString, 'i'); 
+		var r = new RegExp(p.queryString, 'i'); 
 		var ret = false;
 		return (
-			( !queryString || e.displayName.match(r) || e.url.match(r) ) && 
-			( !objectTypeFilter || jQuery.inArray(e.objectType, objectTypeFilter) > -1) &&
-			( !inFolderId || inFolderId == e.parentId )
+			( !p.queryString || e.displayName.match(r) || e.url.match(r) ) && 
+			( !p.objectTypeFilter || jQuery.inArray(e.objectType, p.objectTypeFilter) > -1) &&
+			( !p.inFolderId || p.inFolderId == e.parentId )
 		);
 	});
 	callback.call( this, d);
@@ -105,13 +105,13 @@ GENTICS.Aloha.Repositories.LinkList.query = function(queryString, objectTypeFilt
 /**
  * returns the folder structure as parsed at init.
  */
-GENTICS.Aloha.Repositories.LinkList.getChildren = function(objectTypeFilter, filter, inFolderId, inTreeId, orderBy, maxItems, skipCount, renditionFilter, callback) {
+GENTICS.Aloha.Repositories.LinkList.getChildren = function( p, callback) {
 	var d = [];
 	for ( e in this.folder ) {
 		var l = this.folder[e].parentId;
 		if ( typeof this.folder[e] != 'function' && ( // extjs prevention
-			this.folder[e].parentId == inFolderId || // all subfolders
-			(!this.folder[e].parentId && inFolderId == this.repositoryId) // the hostname 
+			this.folder[e].parentId == p.inFolderId || // all subfolders
+			(!this.folder[e].parentId && p.inFolderId == this.repositoryId) // the hostname 
 		)) {
 			d.push(this.folder[e]);
 		}

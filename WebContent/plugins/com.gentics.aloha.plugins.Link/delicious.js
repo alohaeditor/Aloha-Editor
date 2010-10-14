@@ -83,10 +83,10 @@ GENTICS.Aloha.Repositories.delicious.init = function() {
  * Searches a repository for items matching query if objectTypeFilter.
  * If none found it returns null.
  */
-GENTICS.Aloha.Repositories.delicious.query = function(queryString, objectTypeFilter, filter, inFolderId, orderBy, maxItems, skipCount, renditionFilter, callback) {
+GENTICS.Aloha.Repositories.delicious.query = function( p, callback) {
 	var that = this;
 	
-	if ( objectTypeFilter && jQuery.inArray('website', objectTypeFilter) == -1) {
+	if ( p.objectTypeFilter && jQuery.inArray('website', p.objectTypeFilter) == -1) {
 		
 		// return if no website type is requested 
 		callback.call( this, []);
@@ -98,7 +98,7 @@ GENTICS.Aloha.Repositories.delicious.query = function(queryString, objectTypeFil
 		if ( this.settings.username ) {
 
 			// search in user tags
-			var queryTags = queryString ? queryString.split(' ') : [];
+			var queryTags = p.queryString ? p.queryString.split(' ') : [];
 		    for (var i = 0; i < queryTags.length; i++) {
 				var queryTag = queryTags[i].trim();
 				if ( jQuery.inArray(queryTag, that.tags) == -1 ) {
@@ -117,16 +117,16 @@ GENTICS.Aloha.Repositories.delicious.query = function(queryString, objectTypeFil
 		} else {
 			
 			// handle each word as tag
-			tags = queryString.split(' ');
+			tags = p.queryString.split(' ');
 			
 		}
 
 		// search in tree
-		var folderTags = inFolderId ? inFolderId.split('+') : [];
+		var folderTags = p.inFolderId ? p.inFolderId.split('+') : [];
 		jQuery.extend(tags, folderTags);
 
 		// if we have a query and no tag matching return 
-		if ( queryString && tags.length == 0 ) {
+		if ( p.queryString && tags.length == 0 ) {
 			callback.call( that, []);
 			return;
 		}
@@ -158,7 +158,7 @@ GENTICS.Aloha.Repositories.delicious.query = function(queryString, objectTypeFil
 /**
  * Returns all tags for username in a tree style way
  */
-GENTICS.Aloha.Repositories.delicious.getChildren = function(objectTypeFilter, filter, inFolderId, inTreeId, orderBy, maxItems, skipCount, renditionFilter, callback) {
+GENTICS.Aloha.Repositories.delicious.getChildren = function( p, callback) {
 	var that = this;
 	
 	// tags are only available when a username is available
@@ -166,7 +166,7 @@ GENTICS.Aloha.Repositories.delicious.getChildren = function(objectTypeFilter, fi
 		
 		// return all tags
 		var items = [];
-		if ( inFolderId == this.repositoryId ) {
+		if ( p.inFolderId == this.repositoryId ) {
 
 			for (var i = 0; i < this.tags.length; i++) {
 				if (typeof this.tags[i] != 'function' ) {
@@ -184,13 +184,13 @@ GENTICS.Aloha.Repositories.delicious.getChildren = function(objectTypeFilter, fi
 		} else {
 			jQuery.ajax({ type: "GET",
 				dataType: "jsonp",
-				url: 'http://feeds.delicious.com/v2/json/tags/'+that.settings.username+'/'+inFolderId,
+				url: 'http://feeds.delicious.com/v2/json/tags/'+that.settings.username+'/'+p.inFolderId,
 				success: function(data) {
 					var items = [];
 					// convert data
 					for (var tag in data) {
 						// the id is tag[+tag+...+tag]
-						var id = (inFolderId)?inFolderId + '+' + tag:tag;
+						var id = (p.inFolderId)?p.inFolderId + '+' + tag:tag;
 						if (typeof data[tag] != 'function' ) {
 							items.push({
 								id: id,

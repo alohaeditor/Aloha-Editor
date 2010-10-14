@@ -44,32 +44,33 @@ GENTICS.Aloha.Repository.prototype.init = function() {};
  * Searches a repository for object items matching queryString if none found returns null.
  * The returned object items must be an array of Aloha.Repository.Object
  * 
- * @param {String} queryString 
- * @param {array} objectTypeFilter OPTIONAL Object types that will be returned.
- * @param {array} filter OPTIONAL Attributes that will be returned.
- * @param {string} inFolderId OPTIONAL his is a predicate function that tests whether or not a candidate object is a child-object of the folder object identified by the given inFolderId (objectId).
- * @param {array} orderBy OPTIONAL ex. [{lastModificationDate:’DESC’, name:’ASC’}]
- * @param {Integer} maxItems OPTIONAL number items to return as result
- * @param {Integer} skipCount OPTIONAL This is tricky in a merged multi repository scenario
- * @param {array} renditionFilter OPTIONAL Instead of termlist an array of kind or mimetype is expected. If null or array.length == 0 all renditions are returned. See http://docs.oasis-open.org/cmis/CMIS/v1.0/cd04/cmis-spec-v1.0.html#_Ref237323310 for renditionFilter
- * @return {Array} Items
- * TODO Migrate to a parameter object 
+ * @property {String} queryString 
+ * @property {array} objectTypeFilter OPTIONAL Object types that will be returned.
+ * @property {array} filter OPTIONAL Attributes that will be returned.
+ * @property {string} inFolderId OPTIONAL his is a predicate function that tests whether or not a candidate object is a child-object of the folder object identified by the given inFolderId (objectId).
+ * @property {string} inTreeId OPTIONAL This is a predicate function that tests whether or not a candidate object is a descendant-object of the folder object identified by the given inTreeId (objectId).
+ * @property {array} orderBy OPTIONAL ex. [{lastModificationDate:’DESC’, name:’ASC’}]
+ * @property {Integer} maxItems OPTIONAL number items to return as result
+ * @property {Integer} skipCount OPTIONAL This is tricky in a merged multi repository scenario
+ * @property {array} renditionFilter OPTIONAL Instead of termlist an array of kind or mimetype is expected. If null or array.length == 0 all renditions are returned. See http://docs.oasis-open.org/cmis/CMIS/v1.0/cd04/cmis-spec-v1.0.html#_Ref237323310 for renditionFilter
+ * @param {object} params object with properties
+ * @param {function} callback this method must be called with all result items
  */
-GENTICS.Aloha.Repository.prototype.query = function(queryString, objectTypeFilter, filter, inFolderId, orderBy, maxItems, skipCount, renditionFilter, callback) { return true; };
+GENTICS.Aloha.Repository.prototype.query = function( params, callback ) { return true; };
 
 /**
  * Returns all children of a given motherId.
- * @param {array} objectTypeFilter OPTIONAL Object types that will be returned.
- * @param {array} filter OPTIONAL Attributes that will be returned.
- * @param {string} inFolderId OPTIONAL his is a predicate function that tests whether or not a candidate object is a child-object of the folder object identified by the given inFolderId (objectId).
- * @param {string} inTreeId OPTIONAL This is a predicate function that tests whether or not a candidate object is a descendant-object of the folder object identified by the given inTreeId (objectId).
- * @param {array} orderBy OPTIONAL ex. [{lastModificationDate:’DESC’, name:’ASC’}]
- * @param {Integer} maxItems OPTIONAL number items to return as result
- * @param {Integer} skipCount OPTIONAL This is tricky in a merged multi repository scenario
- * @param {array} renditionFilter OPTIONAL Instead of termlist an array of kind or mimetype is expected. If null or array.length == 0 all renditions are returned. See http://docs.oasis-open.org/cmis/CMIS/v1.0/cd04/cmis-spec-v1.0.html#_Ref237323310 for renditionFilter
- * @return {Array} Items 
+ * @property {array} objectTypeFilter OPTIONAL Object types that will be returned.
+ * @property {array} filter OPTIONAL Attributes that will be returned.
+ * @property {string} inFolderId OPTIONAL his is a predicate function that tests whether or not a candidate object is a child-object of the folder object identified by the given inFolderId (objectId).
+ * @property {array} orderBy OPTIONAL ex. [{lastModificationDate:’DESC’, name:’ASC’}]
+ * @property {Integer} maxItems OPTIONAL number items to return as result
+ * @property {Integer} skipCount OPTIONAL This is tricky in a merged multi repository scenario
+ * @property {array} renditionFilter OPTIONAL Instead of termlist an array of kind or mimetype is expected. If null or array.length == 0 all renditions are returned. See http://docs.oasis-open.org/cmis/CMIS/v1.0/cd04/cmis-spec-v1.0.html#_Ref237323310 for renditionFilter
+ * @param {object} params object with properties
+ * @param {function} callback this method must be called with all result items
  */
-GENTICS.Aloha.Repository.prototype.getChildren = function(objectTypeFilter, filter, inFolderId, inTreeId, orderBy, maxItems, skipCount, renditionFilter, callback) { return true; };
+GENTICS.Aloha.Repository.prototype.getChildren = function( params, callback ) { return true; };
 
 
 /**
