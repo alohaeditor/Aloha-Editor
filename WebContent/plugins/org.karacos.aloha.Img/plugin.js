@@ -219,7 +219,9 @@ KaraCos.Img.findImgMarkup = function ( range ) {
 			if (! result.src) result.src = "";
 			return result;
 		}
-	} catch (e) {console.log(e);}
+	} catch (e) {
+		GENTICS.Aloha.Log.error(e,"Error");
+	}
     return null;
     
 };
