@@ -1,0 +1,3 @@
+[submodule "WebContent/plugins/com.bal.aloha.plugins.Image"]
+	path = WebContent/plugins/com.bal.aloha.plugins.Image
+	url = git@github.com:balupton/Aloha-Image-Plugin.git
