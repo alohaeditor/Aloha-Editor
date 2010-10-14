@@ -100,7 +100,6 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 	    }
     }, 
     setItem: function( item, displayField ) {
-    	console.log('set item: '+item);
     	this.resourceItem = item;
     	if ( item ) {
 	    	displayField = (displayField) ? displayField : this.displayField;
@@ -288,7 +287,6 @@ GENTICS.Aloha.ui.AttributeField.prototype.setObjectTypeFilter = function (object
  * @param {resourceItem} item  
  */
 GENTICS.Aloha.ui.AttributeField.prototype.setItem = function ( item , displayField ) {
-	console.log(item);
     if (this.extButton) {
     	this.extButton.setItem( item, displayField );
     }

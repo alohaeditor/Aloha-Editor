@@ -23,11 +23,11 @@ GENTICS.Aloha.Repositories.Product.settings.data = [
  * Searches a resource for resource items matching query if objectTypes.
  * If none found it returns null.
  */
-GENTICS.Aloha.Repositories.Product.query = function(queryString, objectTypeFilter, filter, inFolderId, orderBy, maxItems, skipCount, renditionFilter, callback) {
+GENTICS.Aloha.Repositories.Product.query = function( p, callback) {
 	var d = this.settings.data.filter(function(e, i, a) {
-		var r = new RegExp(queryString, 'i'); 
+		var r = new RegExp(p.queryString, 'i'); 
 		return (
-			jQuery.inArray(e.objectType, objectTypeFilter) > -1 &&
+			jQuery.inArray(e.objectType, p.objectTypeFilter) > -1 &&
 			( e.displayName.match(r) || e.url.match(r) ) 
 		);
 	});
