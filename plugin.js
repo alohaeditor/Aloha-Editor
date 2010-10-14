@@ -181,7 +181,7 @@
 
         // we start out with an empty ordered list
         var $tocElement = $("<ol class='toc_root'></ol>").
-			attr('id', id);
+			attr('id', id).attr('contenteditable', 'false');
 	    var range = GENTICS.Aloha.Selection.getRangeObject();
         var tocEditable = GENTICS.Aloha.activeEditable;
         var $tocContainer = $(document.getElementById(tocEditable.getId()));
