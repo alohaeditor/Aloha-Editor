@@ -1,4 +1,31 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<?
+	# Stripslashes with support for Arrays
+	function stripslashes_deep ( $value ) {
+		// Originally from BalPHP {@link http://www.balupton/projects/balphp}
+		// Authorised by Benjamin Arthur Lupton {@link http://www.balupton.com/} (the copyright holder)
+		// for use and license under the Aloha Editor Contributors Agreement
+		$value = is_array($value) ? array_map('stripslashes_deep', $value) : stripslashes($value);
+		return $value;
+	}
+	
+	# Normalises Magic Quotes
+	function fix_magic_quotes ( ) {
+		// Originally from BalPHP {@link http://www.balupton/projects/balphp}
+		// Authorised by Benjamin Arthur Lupton {@link http://www.balupton.com/} (the copyright holder)
+		// for use and license under the Aloha Editor Contributors Agreement
+		if ( ini_get('magic_quotes_gpc') ) {
+			$_POST = array_map('stripslashes_deep', $_POST);
+			$_GET = array_map('stripslashes_deep', $_GET);
+			$_COOKIE = array_map('stripslashes_deep', $_COOKIE);
+			$_REQUEST = array_map('stripslashes_deep', $_REQUEST);
+			ini_set('magic_quotes_gpc', 0);
+		}
+	}
+	
+	# Fix the magic quotes
+	fix_magic_quotes();
+	
+?><!DOCTYPE html>
 <html>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -20,33 +47,12 @@
 		<script type="text/javascript">
 			GENTICS.Aloha.settings = {
 				logLevels: {'error': true, 'warn': true, 'info': true, 'debug': true},
-				errorhandling : false,
-				ribbon: true,   
-				"i18n": {
-					// let the system detect the users language
-					//"acceptLanguage": '<?=$_SERVER['HTTP_ACCEPT_LANGUAGE']?>'
-					"acceptLanguage": 'de-de,de;q=0.8,it;q=0.6,en-us;q=0.7,en;q=0.2'
-				},
-				"plugins": {
-					"com.gentics.aloha.plugins.Link": {
-						// all links that match the targetregex will get set the target
-						// e.g. ^(?!.*aloha-editor.com).* matches all href except aloha-editor.com
-						targetregex : '^(?!.*aloha-editor.com).*',
-						// this target is set when either targetregex matches or not set
-						// e.g. _blank opens all links in new window
-						target : '_blank',
-						// the same for css class as for target
-						cssclassregex : '^(?!.*aloha-editor.com).*',
-						cssclass : 'external'
-					},
-					"com.gentics.aloha.plugins.Table": {
-						config: ['table']
-					}
-				}
+				errorhandling: false,
+				ribbon: false
 			};
-			$(document).ready(function() {
+			$(function(){
 				$('#content').aloha();
-			});  
+			}); 
 		</script>
 	</head>
 	<body>
