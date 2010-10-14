@@ -12,7 +12,7 @@ GENTICS.Aloha.Repositories.Page = new GENTICS.Aloha.Repository('com.gentics.aloh
 GENTICS.Aloha.Repositories.Page.query = function(queryString, objectTypeFilter, filter, inFolderId, orderBy, maxItems, skipCount, renditionFilter, callback) {
 	var that = this;
 	var params = {
-		'name' : queryString,
+		'query' : queryString,
 		'links' : GENTICS.Aloha.GCN.settings.links
 	};
 	if (maxItems) {
