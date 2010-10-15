@@ -240,9 +240,9 @@ KaraCos.Img.subscribeEvents = function () {
             that.imgTitleField.setTargetObject(foundMarkup, 'title');
             that.imgSrcField.focus();
             GENTICS.Aloha.FloatingMenu.userActivatedTab = that.i18n('floatingmenu.tab.img');
-            GENTICS.Aloha.FloatingMenu.extTabPanel.width(550);
-            GENTICS.Aloha.FloatingMenu.obj.width(550);
-            GENTICS.Aloha.FloatingMenu.obj.doLayout();
+            GENTICS.Aloha.FloatingMenu.extTabPanel.setWidth(450);
+            //GENTICS.Aloha.FloatingMenu.obj.width(550);
+            //GENTICS.Aloha.FloatingMenu.obj.doLayout();
             GENTICS.Aloha.FloatingMenu.extTabPanel.doLayout();
         } else {
         	that.imgSrcField.setTargetObject(null);
