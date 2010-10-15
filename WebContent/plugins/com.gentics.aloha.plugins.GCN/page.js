@@ -12,11 +12,11 @@ GENTICS.Aloha.Repositories.Page = new GENTICS.Aloha.Repository('com.gentics.aloh
 GENTICS.Aloha.Repositories.Page.query = function( p, callback) {
 	var that = this;
 	var params = {
-		'name' : p.queryString,
+		'query' : p.queryString,
 		'links' : GENTICS.Aloha.GCN.settings.links
 	};
 	if (p.maxItems) {
-		params['maxresults'] = p.maxItems;
+		params['maxItems'] = p.maxItems;
 	}
 	// TODO handle errors
 	GENTICS.Aloha.GCN.performRESTRequest({

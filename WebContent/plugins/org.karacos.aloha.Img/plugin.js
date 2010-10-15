@@ -12,7 +12,7 @@ if(typeof KaraCos=="undefined"||!KaraCos)
 
 KaraCos.Img=new GENTICS.Aloha.Plugin("org.karacos.aloha.Img");
 
-KaraCos.Img.languages=["en","fr"];
+KaraCos.Img.languages=["en","fr","de"];
 KaraCos.Img.config = ['img'];
 /*
  * Initalize plugin
