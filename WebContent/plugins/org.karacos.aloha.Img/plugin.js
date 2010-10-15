@@ -33,7 +33,8 @@ KaraCos.Img.init=function(){
 
 KaraCos.Img.objectTypeFilter = [];
 
-//KaraCos.Img.PropsWindow =  
+
+// KaraCos.Img.PropsWindow =
 KaraCos.Img.initImage = function() {
 	var that = this;
 	this.insertImgButton = new GENTICS.Aloha.ui.Button({
@@ -50,7 +51,8 @@ KaraCos.Img.initImage = function() {
 			1
 	);
 	
-//	GENTICS.Aloha.FloatingMenu.createScope(this.getUID('img'), 'GENTICS.Aloha.continuoustext');
+// GENTICS.Aloha.FloatingMenu.createScope(this.getUID('img'),
+// 'GENTICS.Aloha.continuoustext');
 	GENTICS.Aloha.FloatingMenu.createScope(this.getUID('image'), 'global');
 	
 	var alignLeftButton = new GENTICS.Aloha.ui.Button({
@@ -130,6 +132,74 @@ KaraCos.Img.initImage = function() {
     		1
     );
     
+    var incPadding = new GENTICS.Aloha.ui.Button({
+    	iconClass: 'GENTICS_button karacos_img_padding_increase',
+    	size: 'small',
+    	onclick: function() {
+    	var image = that.findImgMarkup();
+    	Image = jQuery(image);
+    	// Apply
+    	Image.increase('padding');
+    	},
+    	tooltip: this.i18n('padding.increase'),
+    	});
+    GENTICS.Aloha.FloatingMenu.addButton(
+    		this.getUID('image'),
+    		incPadding,
+    		this.i18n('floatingmenu.tab.img'),
+    		2
+    );
+   var decPadding = new GENTICS.Aloha.ui.Button({
+    	iconClass: 'GENTICS_button karacos_img_padding_decrease',
+    	size: 'small',
+    	onclick: function() {
+    	var image = that.findImgMarkup();
+    	Image = jQuery(image);
+    	// Apply
+    	Image.decrease('padding');
+    	},
+    	tooltip: this.i18n('padding.decrease'),
+    	});
+   GENTICS.Aloha.FloatingMenu.addButton(
+   		this.getUID('image'),
+   		decPadding,
+   		this.i18n('floatingmenu.tab.img'),
+   		2
+   );
+   var  incSize = new GENTICS.Aloha.ui.Button({
+	   iconClass: 'GENTICS_button karacos_img_size_increase',
+	   size: 'small',
+	   onclick: function() {
+	   var image = that.findImgMarkup();
+	   Image = jQuery(image);
+	   // Apply
+	   Image.increase('height').increase('width');
+	   },
+	   tooltip: this.i18n('size.increase'),
+	   });
+   GENTICS.Aloha.FloatingMenu.addButton(
+	   		this.getUID('image'),
+	   		incSize,
+	   		this.i18n('floatingmenu.tab.img'),
+	   		2
+	   );
+   var decSize = new GENTICS.Aloha.ui.Button({
+	   iconClass: 'GENTICS_button karacos_img_size_decrease',
+	   size: 'small',
+	   onclick: function() {
+	   var image = that.findImgMarkup();
+	   Image = jQuery(image);
+	   // Apply
+	   Image.decrease('height').decrease('width');
+	   },
+	   tooltip: that.i18n('size.decrease'),
+	   });
+   GENTICS.Aloha.FloatingMenu.addButton(
+	   		this.getUID('image'),
+	   		decSize,
+	   		this.i18n('floatingmenu.tab.img'),
+	   		2
+	   );
 }
 
 KaraCos.Img.bindInteractions = function () {
@@ -140,10 +210,10 @@ KaraCos.Img.bindInteractions = function () {
     	that.srcChange();
     });
 
-    // on blur check if href is empty. If so remove the a tag
     this.imgSrcField.addListener('blur', function(obj, event) {
-       	// TODO remove image or do something usefull if the user leaves the 
-    	//      image without defining a valid image src.
+    	console.log();
+       	// TODO remove image or do something usefull if the user leaves the
+    	// image without defining a valid image src.
     });
      
 }
@@ -163,13 +233,17 @@ KaraCos.Img.subscribeEvents = function () {
             return;
         }
         if ( foundMarkup ) {
-        	//img found
+        	// img found
         	that.insertImgButton.hide();
         	GENTICS.Aloha.FloatingMenu.setScope(that.getUID('image'));
             that.imgSrcField.setTargetObject(foundMarkup, 'src');
             that.imgTitleField.setTargetObject(foundMarkup, 'title');
             that.imgSrcField.focus();
             GENTICS.Aloha.FloatingMenu.userActivatedTab = that.i18n('floatingmenu.tab.img');
+            GENTICS.Aloha.FloatingMenu.extTabPanel.width(550);
+            GENTICS.Aloha.FloatingMenu.obj.width(550);
+            GENTICS.Aloha.FloatingMenu.obj.doLayout();
+            GENTICS.Aloha.FloatingMenu.extTabPanel.doLayout();
         } else {
         	that.imgSrcField.setTargetObject(null);
         }
@@ -180,7 +254,7 @@ KaraCos.Img.subscribeEvents = function () {
     // add to all editables the image click
     for (var i = 0; i < GENTICS.Aloha.editables.length; i++) {
 
-	    // add a click (=select)  event to all image.
+	    // add a click (=select) event to all image.
 	    GENTICS.Aloha.editables[i].obj.find('img').each( function( i ) {
 	        // select the image when clicked
 	        jQuery(this).click( KaraCos.Img.clickImage );
@@ -190,14 +264,14 @@ KaraCos.Img.subscribeEvents = function () {
 
 KaraCos.Img.clickImage = function ( e ) { 
 	// select the image
-//	var offset = GENTICS.Utils.Dom.getIndexInParent(this);
-//	var imgRange = new GENTICS.Utils.RangeObject({
-//		startContainer: jQuery(this).parent(),
-//		endContainer: jQuery(this).parent(),
-//		startOffset: offset,
-//		endOffset: offset+1
-//	});
-//	imgRange.select();
+// var offset = GENTICS.Utils.Dom.getIndexInParent(this);
+// var imgRange = new GENTICS.Utils.RangeObject({
+// startContainer: jQuery(this).parent(),
+// endContainer: jQuery(this).parent(),
+// startOffset: offset,
+// endOffset: offset+1
+// });
+// imgRange.select();
 };
 
 
@@ -212,7 +286,7 @@ KaraCos.Img.findImgMarkup = function ( range ) {
 				if (range.startOffset)
 					if (range.startContainer.childNodes[range.startOffset])
 	    if (range.startContainer.childNodes[range.startOffset].nodeName.toLowerCase() == 'img') {
-			//console.log(range);
+			// console.log(range);
 			result = range.startContainer.childNodes[range.startOffset];
 			if (! result.css) result.css = "";
 			if (! result.title) result.title = "";
@@ -230,40 +304,45 @@ KaraCos.Img.insertImg = function() {
 	var range = GENTICS.Aloha.Selection.getRangeObject();
 	
     if ( range.isCollapsed() ) {
-    	// TODO I would suggest to call the srcChange method. So all image src changes are on one single point.
+    	// TODO I would suggest to call the srcChange method. So all image src
+		// changes are on one single point.
     	imagetag = '<img src="' + GENTICS_Aloha_base + 'plugins/org.karacos.aloha.Img/images/blank.jpeg" title="" style=""></img>'
     	var newImg = jQuery(imagetag);
     	// add the click selection handler
     	newImg.click( KaraCos.Img.clickImage );
     	GENTICS.Utils.Dom.insertIntoDOM(newImg, range, jQuery(GENTICS.Aloha.activeEditable.obj));
     	// select the image when inserted
-//    	var offset = GENTICS.Utils.Dom.getIndexInParent(newImg.get(0));
-//    	var imgRange = new GENTICS.Utils.RangeObject({
-//    		startContainer: newImg.parent(),
-//    		endContainer: newImg.parent(),
-//    		startOffset: offset,
-//    		endOffset: offset+1
-//    	});
-//    	imgRange.select();
+// var offset = GENTICS.Utils.Dom.getIndexInParent(newImg.get(0));
+// var imgRange = new GENTICS.Utils.RangeObject({
+// startContainer: newImg.parent(),
+// endContainer: newImg.parent(),
+// startOffset: offset,
+// endOffset: offset+1
+// });
+// imgRange.select();
     	
     } else {
-    	// TODO NEVER alert!! i18n !! Instead log. We have a messaging stack on 
-    	//      the roadmap which will offer you the possibility to push messages.
+    	// TODO NEVER alert!! i18n !! Instead log. We have a messaging stack on
+    	// the roadmap which will offer you the possibility to push messages.
     	alert('img cannot markup a selection');
-    	// TODO the desired behavior could be that the selected content is replaced by an image.
-    	// TODO it should be editor's choice, with an Ext Dialog instead of alert.
+    	// TODO the desired behavior could be that the selected content is
+		// replaced by an image.
+    	// TODO it should be editor's choice, with an Ext Dialog instead of
+		// alert.
     }
 }
 
 
 KaraCos.Img.srcChange = function () {
 	// TODO the src changed. I suggest :
-	// 1. set an loading image (I suggest set src base64 enc) to show the user we are trying to load an image
+	// 1. set an loading image (I suggest set src base64 enc) to show the user
+	// we are trying to load an image
 	// 2. start a request to get the image
 	// 3a. the image is ok change the src
 	// 3b. the image is not availbable show an error.
-	//     this.imgSrcField.getTargetObject(), (the img tag) 
-	//     this.imgSrcField.getQueryValue(), (the query value in the inputfield)
-	//     this.imgSrcField.getItem() (optinal a selected resource item)
-	// TODO additionally implement an srcChange Handler to let implementer customize
+	// this.imgSrcField.getTargetObject(), (the img tag)
+	// this.imgSrcField.getQueryValue(), (the query value in the inputfield)
+	// this.imgSrcField.getItem() (optinal a selected resource item)
+	// TODO additionally implement an srcChange Handler to let implementer
+	// customize
 }
