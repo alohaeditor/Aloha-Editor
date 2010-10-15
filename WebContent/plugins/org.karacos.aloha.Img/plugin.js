@@ -1,9 +1,51 @@
-/*!
-* Aloha Img plugin
-* This plugin is a contribution of Nicolas Karageuzian
+/*
+* Aloha Image Plugin - Allow image manipulation in Aloha Editor
+* 
+*   Copyright (C) 2010 by Nicolas Karageuzian - http://nka.me/
+* 	Copyright (C) 2010 by TaPo-IT OG (Developed by Herbert Poul) - http://tapo-it.at
+*	Copyright (C) 2010 by Benjamin Athur Lupton - http://www.balupton.com
 * Licensed unter the terms of AGPL http://www.gnu.org/licenses/agpl-3.0.html
-* Requires IKS Loader
+*
+* do not require anymore IKS Loader
 */
+
+// Attributes manipulation utilities
+// Aloha team may want to factorize, it could be useful for other plugins
+	// Prototypes
+	String.prototype.toInteger = String.prototype.toInteger || function(){
+		return parseInt(String(this).replace(/px$/,'')||0,10);
+	};
+	String.prototype.toFloat = String.prototype.toInteger || function(){
+		return parseFloat(String(this).replace(/px$/,'')||0,10);
+	};
+	Number.prototype.toInteger = Number.prototype.toInteger || String.prototype.toInteger;
+	Number.prototype.toFloat = Number.prototype.toFloat || String.prototype.toFloat;
+
+	// jQuery
+	jQuery.fn.increase = jQuery.fn.increase || function(attr){
+		var	obj = jQuery(this),
+			value = obj.css(attr).toFloat(),
+			newValue = Math.round((value||1)*1.2);
+		if (value == newValue) { // when value is 2, won't increase
+			newValue++;
+		}
+		// Apply
+		obj.css(attr,newValue);
+		// Chain
+		return obj;
+	}
+	jQuery.fn.decrease = jQuery.fn.decrease || function(attr){
+		var	obj = jQuery(this),
+			value = obj.css(attr).toFloat(),
+			newValue = Math.round((value||0)*0.8);
+		// Apply
+		if (value == newValue && newValue >0) { // when value is 2, won't increase
+			newValue--;
+		}
+		obj.css(attr,newValue);
+		// Chain
+		return obj;
+	}
 
 if(typeof KaraCos=="undefined"||!KaraCos)
     {
@@ -173,7 +215,7 @@ KaraCos.Img.initImage = function() {
 	   var image = that.findImgMarkup();
 	   Image = jQuery(image);
 	   // Apply
-	   Image.increase('height').increase('width');
+		   Image.increase('height').increase('width');
 	   },
 	   tooltip: this.i18n('size.increase'),
 	   });
