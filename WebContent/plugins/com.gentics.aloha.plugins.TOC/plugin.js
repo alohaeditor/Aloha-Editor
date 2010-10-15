@@ -68,7 +68,7 @@
 		var s = TOC.settings;
 		s.updateInterval = s.updateInterval || 5000;
 		// minimum number of entries in the TOC. if the TOC contains less entries, it will be hidden
-		s.minEntries = s.minEntries || 3;
+		s.minEntries = s.minEntries || 0;
         TOC.initButtons();
 		$(document).ready(function(){
 			TOC.spawn();
@@ -304,7 +304,8 @@
             })(tail(outline));
 
             // count number of li's in the TOC, if less than minEntries, hide the TOC
-            if (self.root().find('li').length >= TOC.settings.minEntries) {
+            var minEntries = self.root().attr('data-TOC-minEntries') || TOC.settings.minEntries;
+            if (self.root().find('li').length >= minEntries) {
             	self.root().show();
             } else {
             	self.root().hide();
