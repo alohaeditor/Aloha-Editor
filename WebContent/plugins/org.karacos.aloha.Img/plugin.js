@@ -11,8 +11,8 @@ if(typeof KaraCos=="undefined"||!KaraCos)
     }
 
 KaraCos.Img=new GENTICS.Aloha.Plugin("org.karacos.aloha.Img");
-eu.iksproject.LoaderPlugin.loadAsset('org.karacos.aloha.Img', 'style', 'css');
-KaraCos.Img.languages=["en","fr"];
+
+KaraCos.Img.languages=["en","fr","de"];
 KaraCos.Img.config = ['img'];
 /*
  * Initalize plugin
@@ -26,12 +26,14 @@ KaraCos.Img.init=function(){
 	that.initImage();
 	that.bindInteractions();
 	that.subscribeEvents();
+	stylePath = GENTICS_Aloha_base + '/plugins/org.karacos.aloha.Img/style.css';
+	jQuery('<link rel="stylesheet" />').attr('href', stylePath).appendTo('head');
+	
    }; // END INIT
 
 KaraCos.Img.objectTypeFilter = [];
 
 //KaraCos.Img.PropsWindow =  
-	
 KaraCos.Img.initImage = function() {
 	var that = this;
 	this.insertImgButton = new GENTICS.Aloha.ui.Button({
@@ -217,7 +219,9 @@ KaraCos.Img.findImgMarkup = function ( range ) {
 			if (! result.src) result.src = "";
 			return result;
 		}
-	} catch (e) {}
+	} catch (e) {
+		GENTICS.Aloha.Log.debug(e,"Error finding img markup.");
+	}
     return null;
     
 };
@@ -247,6 +251,7 @@ KaraCos.Img.insertImg = function() {
     	//      the roadmap which will offer you the possibility to push messages.
     	alert('img cannot markup a selection');
     	// TODO the desired behavior could be that the selected content is replaced by an image.
+    	// TODO it should be editor's choice, with an Ext Dialog instead of alert.
     }
 }
 
