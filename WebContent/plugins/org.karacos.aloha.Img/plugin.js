@@ -294,7 +294,7 @@ KaraCos.Img.findImgMarkup = function ( range ) {
 			return result;
 		}
 	} catch (e) {
-		GENTICS.Aloha.Log.error(e,"Error");
+		GENTICS.Aloha.Log.debug(e,"Error finding img markup.");
 	}
     return null;
     
