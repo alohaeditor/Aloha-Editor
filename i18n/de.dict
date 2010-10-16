@@ -1,0 +1,16 @@
+button.addimg.tooltip=Bild hinzufügen
+floatingmenu.tab.img=Bild
+button.uploadimg.tooltip=Bild hochladen
+button.uploadimg.label=Hochladen
+button.img.align.left.tooltip=Linksbündig
+button.img.align.right.tooltip=Rechtsbündig
+button.img.align.none.tooltip=Keine Ausrichtung
+field.img.title.label=
+field.img.title.tooltip=
+field.img.src.label=
+field.img.src.tooltip=
+border=
+padding.increase= 
+padding.decrease= 
+size.increase= 
+size.decrease= 
