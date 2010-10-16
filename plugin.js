@@ -137,7 +137,6 @@ GENTICS.Aloha.Image.dropEventHandler = function(event){
     
     // parameter for event handler :
     // {'file': file, 'img': img}
-    var objects = [];
     while(--len >= 0) {
     	
         //alert("testing " + files[i].name);
@@ -151,13 +150,12 @@ GENTICS.Aloha.Image.dropEventHandler = function(event){
                 img,
                 GENTICS.Aloha.Selection.getRangeObject(),
                 GENTICS.Aloha.activeEditable.obj);
-            objects.push({'file':this.linkedFile,'img': img})
+            GENTICS.Aloha.EventRegistry.trigger(
+            		new GENTICS.Aloha.Event('dropFile', GENTICS.Aloha, {'file':this.linkedFile,'img': img})
+            );
         };
         reader.readAsDataURL(files[len]);
     } //while
-    GENTICS.Aloha.EventRegistry.trigger(
-    		  new GENTICS.Aloha.Event('dropFiles', GENTICS.Aloha, {'objects': objects})
-    		);
     return false;
 };
 
