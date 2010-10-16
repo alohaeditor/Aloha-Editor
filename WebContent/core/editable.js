@@ -59,7 +59,12 @@ GENTICS.Aloha.Editable.prototype.check = function() {
 	'time', 'area', 'datalist', 'figure', 'kbd', 'keygen',
 	'mark', 'math', 'wbr', 'area',
     */
-
+	
+	// Extract El
+	var	obj = this.obj,
+		el = obj.get(0),
+		nodeName = el.nodeName.toLowerCase();
+	
 	// supported elements
 	var textElements = [ 'a', 'abbr', 'address', 'article', 'aside',
 				'b', 'bdo', 'blockquote',  'cite', 'code', 'command',
@@ -68,24 +73,40 @@ GENTICS.Aloha.Editable.prototype.check = function() {
 				'nav', 'p', 'pre', 'q', 'ruby',  'section', 'small',
 				'span', 'strong',  'sub', 'sup', 'var']; 	
 	for (var i = 0; i < textElements.length; i++) {
-		var e = this.obj.get(0).nodeName.toLowerCase();
-		if ( this.obj.get(0).nodeName.toLowerCase() == textElements[i] ) {
+		var e = nodeName;
+		if ( nodeName == textElements[i] ) {
 			return true;
 		}
 	}
 	
 	// special handled elements
-	if ( this.obj.get(0).nodeName.toLowerCase() == 'label') {
-		// need some special handling.
-	    return true;		
-	}
-	if ( this.obj.get(0).nodeName.toLowerCase() == 'button') {
-		// need some special handling.
-	    return true;		
-	}
-	if ( this.obj.get(0).nodeName.toLowerCase() == 'textarea') {
-		// need some special handling.
-	    return true;	
+	switch ( nodeName ) {
+		case 'label':
+		case 'button':
+			// need some special handling.
+	    	break;
+		
+		case 'textarea':
+			// Goals:
+			// 1. Create a div alongside the textarea
+			var div = jQuery('<div/>').insertAfter(obj);
+			// 2. Populate the div with the value of the textarea
+			div.html(obj.val());
+			// 3. Hide the textarea
+			obj.hide();
+			// 4. Attach a onsubmit to the form to place the HTML of the div back into the textarea
+			var updateFunction = function(){
+				var val = div.html();
+				obj.val(val);
+			};
+			obj.parents('form:first').submit(updateFunction);
+			// 5. Swap textarea reference with the new div
+			this.obj = div;
+			// 6. Supported
+			return true;
+			
+		default:
+			break;
 	}
 				
 	// all other elements are not supported

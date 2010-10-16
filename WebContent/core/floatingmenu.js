@@ -822,7 +822,7 @@ GENTICS.Aloha.FloatingMenu.Group.prototype.getExtComponent = function () {
 			// count the number of buttons (large buttons count as 2)
 			buttonCount += button.button.size == 'small' ? 1 : 2;
 		});
-
+		
 		this.extButtonGroup = new Ext.ButtonGroup({
 			'columns' : Math.ceil(buttonCount / 2),
 			'items': items
