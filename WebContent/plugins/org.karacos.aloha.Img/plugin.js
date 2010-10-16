@@ -139,7 +139,7 @@ KaraCos.Img.dropEventHandler = function(event){
     
     // parameter for event handler :
     // {'file': file, 'img': img}
-    var images = [];
+    var objects = [];
     while(--len >= 0) {
     	
         //alert("testing " + files[i].name);
@@ -158,7 +158,7 @@ KaraCos.Img.dropEventHandler = function(event){
         reader.readAsDataURL(files[len]);
     } //while
     GENTICS.Aloha.EventRegistry.trigger(
-    		  new GENTICS.Aloha.Event('dropFiles', GENTICS.Aloha, {'images': images})
+    		  new GENTICS.Aloha.Event('dropFiles', GENTICS.Aloha, {'objects': objects})
     		);
     return false;
 };
