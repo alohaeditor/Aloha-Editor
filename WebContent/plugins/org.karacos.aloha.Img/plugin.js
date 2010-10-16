@@ -52,12 +52,12 @@ if(typeof KaraCos=="undefined"||!KaraCos)
 		return obj;
 	}
 
+/**
+ *  Attach drag and drop listeners to document body
+ * this prevents incorrect drops, reloading the page with the dropped item
+ * This may or may not be helpful
+ */
 KaraCos.sinkBodyEvent = function() {
-	//==================
-	// Attach drag and drop listeners to document body
-	// this prevents incorrect drops, reloading the page with the dropped item
-	// This may or may not be helpful
-	
 	 if (!document.body.BodyDragSinker){
 		 //console.log("Processing body event sink");
 		 document.body.BodyDragSinker = true;
@@ -79,11 +79,8 @@ KaraCos.sinkBodyEvent = function() {
 					//console.log('ext event');
 					//console.log(event);
 					//alert("drop event, body sinker");
-					if (event.browserEvent.originalEvent.sink) {
-						event.browserEvent.stopPropagation();
-						event.preventDefault();
-						event.stopPropagation(); // which one is the most effective
-						event.stopEvent();
+					if (event.browserEvent.originalEvent.sink) { // is event maked to be sinked
+						event.stopEvent(); // this prevents default browser comportment
 					}
 				} catch (error) {
 					//TODO : log error
@@ -111,6 +108,8 @@ KaraCos.Img.init=function(){
     	KaraCos.Img.objectTypeFilter = KaraCos.Img.settings.objectTypeFilter;	
     if (KaraCos.Img.settings.dropEventHandler != undefined)
     	KaraCos.Img.dropEventHandler = KaraCos.Img.settings.dropEventHandler;	
+    //this.addEvents('dropImage');
+    console.log(this);
     var that=this;
 	that.initImage();
 	that.bindInteractions();
@@ -137,24 +136,32 @@ KaraCos.Img.dropEventHandler = function(event){
         return true;
     }
     var len = files.length;
+    
+    // parameter for event handler :
+    // {'file': file, 'img': img}
+    var images = [];
     while(--len >= 0) {
     	
         //alert("testing " + files[i].name);
         var reader = new FileReader();
+        reader.linkedFile = files[len];
         reader.onloadend = function(readEvent) {
-            var img = jQuery('<img src="" alt="xyz" />');
+        	var img = jQuery('<img src="" alt="xyz" />');
             img.attr('src', readEvent.target.result);
             //GENTICS.Aloha.Selection.changeMarkupOnSelection(img);
             GENTICS.Utils.Dom.insertIntoDOM(
                 img,
                 GENTICS.Aloha.Selection.getRangeObject(),
                 GENTICS.Aloha.activeEditable.obj);
+            images.push({'file':this.linkedFile,'img': img})
         };
         reader.readAsDataURL(files[len]);
     } //while
-
+    GENTICS.Aloha.EventRegistry.trigger(
+    		  new GENTICS.Aloha.Event('dropFiles', GENTICS.Aloha, {'images': images})
+    		);
     return false;
-}
+};
 
 // KaraCos.Img.PropsWindow =
 KaraCos.Img.initImage = function() {
@@ -322,7 +329,7 @@ KaraCos.Img.initImage = function() {
 	   		this.i18n('floatingmenu.tab.img'),
 	   		2
 	   );
-}
+};
 
 KaraCos.Img.bindInteractions = function () {
     var that = this;
@@ -338,7 +345,7 @@ KaraCos.Img.bindInteractions = function () {
     	// image without defining a valid image src.
     });
      
-}
+};
 
 KaraCos.Img.subscribeEvents = function () {
 	var that = this;
@@ -387,7 +394,7 @@ KaraCos.Img.subscribeEvents = function () {
         editable.obj[0].addEventListener('drop', that.dropEventHandler, false);
     });
     
-}
+};
 
 KaraCos.Img.clickImage = function ( e ) { 
 	// select the image
