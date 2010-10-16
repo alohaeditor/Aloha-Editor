@@ -107,8 +107,7 @@ GENTICS.Aloha.Image.init=function(){
     	GENTICS.Aloha.Image.objectTypeFilter = GENTICS.Aloha.Image.settings.objectTypeFilter;	
     if (GENTICS.Aloha.Image.settings.dropEventHandler != undefined)
     	GENTICS.Aloha.Image.dropEventHandler = GENTICS.Aloha.Image.settings.dropEventHandler;	
-    //this.addEvents('dropImage');
-    console.log(this);
+
     var that=this;
 	that.initImage();
 	that.bindInteractions();
