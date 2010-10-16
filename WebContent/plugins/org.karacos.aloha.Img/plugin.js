@@ -9,6 +9,11 @@
 * do not require anymore IKS Loader
 */
 
+if(typeof KaraCos=="undefined"||!KaraCos)
+    {
+    var KaraCos={};
+    }
+
 // Attributes manipulation utilities
 // Aloha team may want to factorize, it could be useful for other plugins
 	// Prototypes
@@ -47,10 +52,51 @@
 		return obj;
 	}
 
-if(typeof KaraCos=="undefined"||!KaraCos)
-    {
-    var KaraCos={};
-    }
+KaraCos.sinkBodyEvent = function() {
+	//==================
+	// Attach drag and drop listeners to document body
+	// this prevents incorrect drops, reloading the page with the dropped item
+	// This may or may not be helpful
+	
+	 if (!document.body.BodyDragSinker){
+		 //console.log("Processing body event sink");
+		 document.body.BodyDragSinker = true;
+		 
+		 var body = Ext.fly(document.body);
+		 body.on({
+			dragenter:function(event){
+				return true;
+			}
+			,dragleave:function(event){
+				return true;
+			}
+			,dragover:function(event){				
+				event.stopEvent();
+				return false;
+			}
+			,drop:function(event){
+				try {
+					//console.log('ext event');
+					//console.log(event);
+					//alert("drop event, body sinker");
+					if (event.browserEvent.originalEvent.sink) {
+						event.browserEvent.stopPropagation();
+						event.preventDefault();
+						event.stopPropagation(); // which one is the most effective
+						event.stopEvent();
+					}
+				} catch (error) {
+					//TODO : log error
+					//console.log(error);
+				}
+				return true;
+			}
+		});
+
+	} // if
+	// end body events
+	//================== 
+};
 
 KaraCos.Img=new GENTICS.Aloha.Plugin("org.karacos.aloha.Img");
 
@@ -63,7 +109,8 @@ KaraCos.Img.init=function(){
 	// get settings
     if (KaraCos.Img.settings.objectTypeFilter != undefined)
     	KaraCos.Img.objectTypeFilter = KaraCos.Img.settings.objectTypeFilter;	
-	
+    if (KaraCos.Img.settings.dropEventHandler != undefined)
+    	KaraCos.Img.dropEventHandler = KaraCos.Img.settings.dropEventHandler;	
     var that=this;
 	that.initImage();
 	that.bindInteractions();
@@ -75,6 +122,39 @@ KaraCos.Img.init=function(){
 
 KaraCos.Img.objectTypeFilter = [];
 
+/**
+ * Default behaviour for dropped image
+ * car be overriden in settings
+ */
+KaraCos.Img.dropEventHandler = function(event){
+	var e = event;
+    event.sink = true;
+    var files = e.dataTransfer.files;
+    var count = files.length;
+    // if no files where dropped, use default handler
+    if (count < 1) {
+    	event.sink = false;
+        return true;
+    }
+    var len = files.length;
+    while(--len >= 0) {
+    	
+        //alert("testing " + files[i].name);
+        var reader = new FileReader();
+        reader.onloadend = function(readEvent) {
+            var img = jQuery('<img src="" alt="xyz" />');
+            img.attr('src', readEvent.target.result);
+            //GENTICS.Aloha.Selection.changeMarkupOnSelection(img);
+            GENTICS.Utils.Dom.insertIntoDOM(
+                img,
+                GENTICS.Aloha.Selection.getRangeObject(),
+                GENTICS.Aloha.activeEditable.obj);
+        };
+        reader.readAsDataURL(files[len]);
+    } //while
+
+    return false;
+}
 
 // KaraCos.Img.PropsWindow =
 KaraCos.Img.initImage = function() {
@@ -302,6 +382,11 @@ KaraCos.Img.subscribeEvents = function () {
 	        jQuery(this).click( KaraCos.Img.clickImage );
 	    });
     }
+    KaraCos.sinkBodyEvent();
+    GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'editableCreated', function(event, editable) {
+        editable.obj[0].addEventListener('drop', that.dropEventHandler, false);
+    });
+    
 }
 
 KaraCos.Img.clickImage = function ( e ) { 

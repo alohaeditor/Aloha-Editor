@@ -43,7 +43,9 @@ GENTICS.Aloha.settings = {
 	},
 	"plugins": {
 		"org.karacos.aloha.Img": {
-	  		objectTypeFilter: ['image'] 			
+	  		objectTypeFilter: ['image'],
+	  		// if you wanna try to override default drop action, uncomment line below
+	  		//dropEventHandler: function(event) {alert('event drop');}, //event handler for drop action
 		},
 	 	"com.gentics.aloha.plugins.Format": {
 		 	// all elements with no specific configuration get this configuration
