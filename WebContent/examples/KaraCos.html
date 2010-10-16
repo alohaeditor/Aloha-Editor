@@ -109,16 +109,13 @@ $(document).ready(function() {
 
 	//method 2 for handling fileupload event
 	// let the image being loaded by browser before custom behaviour
-	GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'objects', function(event,images) {
-		// objects is an array of objects dropped by action with 2 attributes :
+	GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'dropFile', function(event,object) {
+		// object has 2 attributes :
 		// - file : file Api browser object
 		// - img : jQuery img tag.
-		len = images.length;
 		// for each dropped file 
-		while(--len >= 0) {
-		  image = objects[len].img; // the jquery object
-		  file = objects[len].file; // the file object
-		}
+		  image = object.img; // the jquery object
+		  file = object.file; // the file object
 		});
 });
 
