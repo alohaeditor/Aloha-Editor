@@ -128,6 +128,8 @@ GENTICS.Aloha.Image.dropEventHandler = function(event){
 	target = jQuery(event.target);
 	if (target.hasClass('GENTICS_editable')) {
 		editable = target;
+		target.append('<p></p>');
+		target = target.children(':last');
 	} else {
 		editable = target.parent('.GENTICS_editable');
 	}
