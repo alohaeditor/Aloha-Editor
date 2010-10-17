@@ -151,7 +151,7 @@ GENTICS.Aloha.Image.dropEventHandler = function(event){
                 GENTICS.Aloha.Selection.getRangeObject(),
                 GENTICS.Aloha.activeEditable.obj);
             GENTICS.Aloha.EventRegistry.trigger(
-            		new GENTICS.Aloha.Event('dropFile', GENTICS.Aloha, {'file':this.linkedFile,'img': img})
+            		new GENTICS.Aloha.Event('dropFileInEditable', GENTICS.Aloha, {'file':this.linkedFile,'img': img})
             );
         };
         reader.readAsDataURL(files[len]);
