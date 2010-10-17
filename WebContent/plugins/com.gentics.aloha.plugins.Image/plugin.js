@@ -124,6 +124,18 @@ GENTICS.Aloha.Image.objectTypeFilter = [];
  * car be overriden in settings
  */
 GENTICS.Aloha.Image.dropEventHandler = function(event){
+	var editable = null;
+	target = jQuery(event.target);
+	if (target.hasClass('GENTICS_editable')) {
+		editable = target;
+	} else {
+		editable = target.parent('.GENTICS_editable');
+	}
+	var	range = new GENTICS.Aloha.Selection.SelectionRange();
+	range.update(target);
+	range.startContainer = target;
+	range.endContainer = target;
+	range.correctRange();
 	var e = event;
     event.sink = true;
     var files = e.dataTransfer.files;
@@ -143,13 +155,10 @@ GENTICS.Aloha.Image.dropEventHandler = function(event){
         var reader = new FileReader();
         reader.linkedFile = files[len];
         reader.onloadend = function(readEvent) {
-        	var img = jQuery('<img src="" alt="xyz" />');
+        	var img = jQuery('<img src=""></img>');
             img.attr('src', readEvent.target.result);
             //GENTICS.Aloha.Selection.changeMarkupOnSelection(img);
-            GENTICS.Utils.Dom.insertIntoDOM(
-                img,
-                GENTICS.Aloha.Selection.getRangeObject(),
-                GENTICS.Aloha.activeEditable.obj);
+            GENTICS.Utils.Dom.insertIntoDOM(img,range, editable);
             GENTICS.Aloha.EventRegistry.trigger(
             		new GENTICS.Aloha.Event('dropFileInEditable', GENTICS.Aloha, {'file':this.linkedFile,'img': img})
             );
@@ -383,7 +392,8 @@ GENTICS.Aloha.Image.subscribeEvents = function () {
     }
     KaraCos.sinkBodyEvent();
     GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'editableCreated', function(event, editable) {
-        editable.obj[0].addEventListener('drop', that.dropEventHandler, false);
+    	GENTICS.Aloha.Image.droppedEditable = editable;
+    	editable.obj[0].addEventListener('drop', that.dropEventHandler, false);
     });
     
 };
