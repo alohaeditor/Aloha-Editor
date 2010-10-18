@@ -34,3 +34,6 @@
 [submodule "WebContent/plugins/com.gentics.aloha.plugins.Annotations"]
 	path = WebContent/plugins/com.gentics.aloha.plugins.Annotations
 	url = git@github.com:alohaeditor/Aloha-Plugin-Annotations.git
+[submodule "WebContent/plugins/com.gentics.aloha.plugins.TOC"]
+	path = WebContent/plugins/com.gentics.aloha.plugins.TOC
+	url = git@github.com:alohaeditor/Aloha-Plugin-TOC.git
