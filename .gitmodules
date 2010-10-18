@@ -1,3 +1,24 @@
 [submodule "WebContent/plugins/com.bal.aloha.plugins.Image"]
 	path = WebContent/plugins/com.bal.aloha.plugins.Image
 	url = git@github.com:balupton/Aloha-Image-Plugin.git
+[submodule "WebContent/plugins/com.gentics.aloha.plugins.HighlightEditables"]
+	path = WebContent/plugins/com.gentics.aloha.plugins.HighlightEditables
+	url = git@github.com:alohaeditor/Aloha-Plugin-HighlightEditables.git
+[submodule "WebContent/plugins/com.gentics.aloha.plugins.GCN"]
+	path = WebContent/plugins/com.gentics.aloha.plugins.GCN
+	url = git@github.com:alohaeditor/Aloha-Plugin-GCN.git
+[submodule "WebContent/plugins/com.gentics.aloha.plugins.Format"]
+	path = WebContent/plugins/com.gentics.aloha.plugins.Format
+	url = git@github.com:alohaeditor/Aloha-Plugin-Format.git
+[submodule "WebContent/plugins/com.gentics.aloha.plugins.Link"]
+	path = WebContent/plugins/com.gentics.aloha.plugins.Link
+	url = git@github.com:alohaeditor/Aloha-Plugin-Link.git
+[submodule "WebContent/plugins/com.gentics.aloha.plugins.List"]
+	path = WebContent/plugins/com.gentics.aloha.plugins.List
+	url = git@github.com:alohaeditor/Aloha-Plugin-List.git
+[submodule "WebContent/plugins/com.gentics.aloha.plugins.Table"]
+	path = WebContent/plugins/com.gentics.aloha.plugins.Table
+	url = git@github.com:alohaeditor/Aloha-Plugin-Table.git
+[submodule "WebContent/plugins/com.gentics.aloha.plugins.Image"]
+	path = WebContent/plugins/com.gentics.aloha.plugins.Image
+	url = git@github.com:alohaeditor/Aloha-Plugin-Image.git
