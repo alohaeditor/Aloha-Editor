@@ -8,11 +8,6 @@
 * do not require anymore IKS Loader
 */
 
-if(typeof KaraCos=="undefined"||!KaraCos)
-    {
-    var KaraCos={};
-    }
-
 // Attributes manipulation utilities
 // Aloha team may want to factorize, it could be useful for other plugins
 	// Prototypes
@@ -51,48 +46,7 @@ if(typeof KaraCos=="undefined"||!KaraCos)
 		return obj;
 	}
 
-/**
- *  Attach drag and drop listeners to document body
- * this prevents incorrect drops, reloading the page with the dropped item
- * This may or may not be helpful
- */
-KaraCos.sinkBodyEvent = function() {
-	 if (!document.body.BodyDragSinker){
-		 //console.log("Processing body event sink");
-		 document.body.BodyDragSinker = true;
-		 
-		 var body = Ext.fly(document.body);
-		 body.on({
-			dragenter:function(event){
-				return true;
-			}
-			,dragleave:function(event){
-				return true;
-			}
-			,dragover:function(event){				
-				event.stopEvent();
-				return false;
-			}
-			,drop:function(event){
-				try {
-					//console.log('ext event');
-					//console.log(event);
-					//alert("drop event, body sinker");
-					if (event.browserEvent.originalEvent.sink) { // is event maked to be sinked
-						event.stopEvent(); // this prevents default browser comportment
-					}
-				} catch (error) {
-					//TODO : log error
-					//console.log(error);
-				}
-				return true;
-			}
-		});
 
-	} // if
-	// end body events
-	//================== 
-};
 
 GENTICS.Aloha.Image=new GENTICS.Aloha.Plugin("com.gentics.aloha.plugins.Image");
 
@@ -114,6 +68,8 @@ GENTICS.Aloha.Image.init=function(){
 	that.subscribeEvents();
 	stylePath = GENTICS_Aloha_base + '/plugins/com.gentics.aloha.plugins.Image/style.css';
 	jQuery('<link rel="stylesheet" />').attr('href', stylePath).appendTo('head');
+	dndFilePath = GENTICS_Aloha_base + '/plugins/com.gentics.aloha.plugins.DragnDrop/plugin.js';
+	jQuery('<script type="text/javascript" />').attr('src', dndFilePath).appendTo('head');
 	
    }; // END INIT
 
@@ -123,52 +79,7 @@ GENTICS.Aloha.Image.objectTypeFilter = [];
  * Default behaviour for dropped image
  * car be overriden in settings
  */
-GENTICS.Aloha.Image.dropEventHandler = function(event){
-	var editable = null;
-	target = jQuery(event.target);
-	if (target.hasClass('GENTICS_editable')) {
-		editable = target;
-		target.append('<p></p>');
-		target = target.children(':last');
-	} else {
-		editable = target.parent('.GENTICS_editable');
-	}
-	var	range = new GENTICS.Aloha.Selection.SelectionRange();
-	range.update(target);
-	range.startContainer = target;
-	range.endContainer = target;
-	range.correctRange();
-	var e = event;
-    event.sink = true;
-    var files = e.dataTransfer.files;
-    var count = files.length;
-    // if no files where dropped, use default handler
-    if (count < 1) {
-    	event.sink = false;
-        return true;
-    }
-    var len = files.length;
-    
-    // parameter for event handler :
-    // {'file': file, 'img': img}
-    while(--len >= 0) {
-    	
-        //alert("testing " + files[i].name);
-        var reader = new FileReader();
-        reader.linkedFile = files[len];
-        reader.onloadend = function(readEvent) {
-        	var img = jQuery('<img src=""></img>');
-            img.attr('src', readEvent.target.result);
-            //GENTICS.Aloha.Selection.changeMarkupOnSelection(img);
-            GENTICS.Utils.Dom.insertIntoDOM(img,range, editable);
-            GENTICS.Aloha.EventRegistry.trigger(
-            		new GENTICS.Aloha.Event('dropFileInEditable', GENTICS.Aloha, {'file':this.linkedFile,'img': img})
-            );
-        };
-        reader.readAsDataURL(files[len]);
-    } //while
-    return false;
-};
+
 
 // GENTICS.Aloha.Image.PropsWindow =
 GENTICS.Aloha.Image.initImage = function() {
@@ -356,7 +267,21 @@ GENTICS.Aloha.Image.bindInteractions = function () {
 
 GENTICS.Aloha.Image.subscribeEvents = function () {
 	var that = this;
-	
+	//handles dropped files
+	GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'dropFileInEditable', function(event,data) {
+		var reader = new FileReader();
+		reader.config = that.getEditableConfig(data.editable);
+		reader.attachedData = data;
+        reader.onloadend = function(readEvent) {
+        	var img = jQuery('<img src=""></img>');
+        	img.attr('src', readEvent.target.result);
+            //GENTICS.Aloha.Selection.changeMarkupOnSelection(img);
+        	this.attachedData.display.append(img);
+        	this.attachedData.display.removeClass('GENTICS_default_file_icon');
+        	console.log(this.attachedData.display);
+        };
+        reader.readAsDataURL(data.file);
+	});
     // add the event handler for selection change
     GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'selectionChanged', function(event, rangeObject) {
     	var foundMarkup = that.findImgMarkup( rangeObject );
@@ -382,7 +307,6 @@ GENTICS.Aloha.Image.subscribeEvents = function () {
     	// TODO this should not be necessary here!
     	GENTICS.Aloha.FloatingMenu.doLayout();
     });
-    
     // add to all editables the image click
     for (var i = 0; i < GENTICS.Aloha.editables.length; i++) {
 
@@ -392,12 +316,6 @@ GENTICS.Aloha.Image.subscribeEvents = function () {
 	        jQuery(this).click( GENTICS.Aloha.Image.clickImage );
 	    });
     }
-    KaraCos.sinkBodyEvent();
-    GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'editableCreated', function(event, editable) {
-    	GENTICS.Aloha.Image.droppedEditable = editable;
-    	editable.obj[0].addEventListener('drop', that.dropEventHandler, false);
-    });
-    
 };
 
 GENTICS.Aloha.Image.clickImage = function ( e ) { 

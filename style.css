@@ -35,3 +35,11 @@ button.GENTICS_img_size_increase {
 button.GENTICS_img_size_decrease {
 	background-image: url(images/size-decrease.gif) !important;
 	}
+
+.GENTICS_default_file_icon {
+	background-image: url(images/page.png) !important;
+	width: 16px;
+	height:16px;
+	margin: 0;
+	padding:0;
+	}
