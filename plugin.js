@@ -51,7 +51,8 @@
 GENTICS.Aloha.Image=new GENTICS.Aloha.Plugin("com.gentics.aloha.plugins.Image");
 
 GENTICS.Aloha.Image.languages=["en","fr","de"];
-GENTICS.Aloha.Image.config = ['img'];
+GENTICS.Aloha.Image.config = { 'img': { 'max_width': '50px',
+		'max_height': '50px' }};
 /*
  * Initalize plugin
  */
@@ -68,7 +69,7 @@ GENTICS.Aloha.Image.init=function(){
 	that.subscribeEvents();
 	stylePath = GENTICS_Aloha_base + '/plugins/com.gentics.aloha.plugins.Image/style.css';
 	jQuery('<link rel="stylesheet" />').attr('href', stylePath).appendTo('head');
-	dndFilePath = GENTICS_Aloha_base + '/plugins/com.gentics.aloha.plugins.DragnDrop/plugin.js';
+	dndFilePath = GENTICS_Aloha_base + '/plugins/com.gentics.aloha.plugins.DragnDropFiles/plugin.js';
 	jQuery('<script type="text/javascript" />').attr('src', dndFilePath).appendTo('head');
 	
    }; // END INIT
@@ -273,12 +274,13 @@ GENTICS.Aloha.Image.subscribeEvents = function () {
 		reader.config = that.getEditableConfig(data.editable);
 		reader.attachedData = data;
         reader.onloadend = function(readEvent) {
-        	var img = jQuery('<img src=""></img>');
+        	var img = jQuery('<img style="" title="" src=""></img>');
         	img.attr('src', readEvent.target.result);
+        	img.click( GENTICS.Aloha.Image.clickImage );
             //GENTICS.Aloha.Selection.changeMarkupOnSelection(img);
         	this.attachedData.display.append(img);
         	this.attachedData.display.removeClass('GENTICS_default_file_icon');
-        	console.log(this.attachedData.display);
+        	//console.log(this.attachedData.display);
         };
         reader.readAsDataURL(data.file);
 	});
@@ -286,7 +288,7 @@ GENTICS.Aloha.Image.subscribeEvents = function () {
     GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'selectionChanged', function(event, rangeObject) {
     	var foundMarkup = that.findImgMarkup( rangeObject );
     	var config = that.getEditableConfig(GENTICS.Aloha.activeEditable.obj);
-        if ( jQuery.inArray('img', config) != -1) {
+        if ( config.img ) {
         	that.insertImgButton.show();
         } else {
         	that.insertImgButton.hide();
@@ -320,14 +322,18 @@ GENTICS.Aloha.Image.subscribeEvents = function () {
 
 GENTICS.Aloha.Image.clickImage = function ( e ) { 
 	// select the image
-// var offset = GENTICS.Utils.Dom.getIndexInParent(this);
-// var imgRange = new GENTICS.Utils.RangeObject({
-// startContainer: jQuery(this).parent(),
-// endContainer: jQuery(this).parent(),
-// startOffset: offset,
-// endOffset: offset+1
-// });
-// imgRange.select();
+	// HELP: can't find a way...
+	
+   var offset = GENTICS.Utils.Dom.getIndexInParent(this);
+   var imgRange = new GENTICS.Utils.RangeObject({
+	   startContainer: jQuery(this).parent(),
+	   endContainer: jQuery(this).parent(),
+	   startOffset: offset
+   });
+   imgRange.correctRange();
+   console.log(imgRange);
+   imgRange.select();
+   
 };
 
 
