@@ -117,7 +117,7 @@ GENTICS.Aloha.DnDFile.dropEventHandler = function(event){
     while(--len >= 0) {
     	
         //alert("testing " + files[i].name);
-        var display = jQuery('<div class="GENTICS_default_file_icon"></div>');
+        var display = jQuery('<p class="GENTICS_default_file_icon"></p>');
         
         GENTICS.Utils.Dom.insertIntoDOM(display,range, editable);
         GENTICS.Aloha.EventRegistry.trigger(
