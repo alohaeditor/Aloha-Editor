@@ -1,0 +1,33 @@
+.GENTICS_drop_file_box {
+	width: 64px;
+	height: 64px;
+	margin:0;
+	padding:0;
+	float:left;
+	border: solid 1px grey;
+	}
+
+.GENTICS_drop_file_icon {
+	position: relative;
+	top: 24px;
+	left:24px;
+	width: 16px;
+	height:16px;
+	margin: 0;
+	padding:0;
+	}
+.GENTICS_drop_file_default {
+	width: 16px;
+	height:16px;
+	margin: 0;
+	padding:0;
+	background-image: url(resources/images/page.png) !important;
+}
+
+.GENTICS_drop_file_details {
+	position: relative;
+	top: 24px;
+	width:60px;
+	height:24px;
+	text-align:center;
+	}
