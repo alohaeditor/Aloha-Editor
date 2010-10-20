@@ -69,8 +69,13 @@ GENTICS.Aloha.Image.init=function(){
 	that.subscribeEvents();
 	stylePath = GENTICS_Aloha_base + '/plugins/com.gentics.aloha.plugins.Image/style.css';
 	jQuery('<link rel="stylesheet" />').attr('href', stylePath).appendTo('head');
-	dndFilePath = GENTICS_Aloha_base + '/plugins/com.gentics.aloha.plugins.DragnDropFiles/plugin.js';
-	jQuery('<script type="text/javascript" />').attr('src', dndFilePath).appendTo('head');
+/*
+	if (!GENTICS.Aloha.DnDFile) {
+		dndFilePath = GENTICS_Aloha_base + '/plugins/com.gentics.aloha.plugins.DragnDropFiles/plugin.js';
+		jQuery('<script type="text/javascript" />').attr('src', dndFilePath).appendTo('head');
+	}
+ * 
+ */
 	
    }; // END INIT
 
@@ -270,19 +275,24 @@ GENTICS.Aloha.Image.subscribeEvents = function () {
 	var that = this;
 	//handles dropped files
 	GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'dropFileInEditable', function(event,data) {
-		var reader = new FileReader();
-		reader.config = that.getEditableConfig(data.editable);
-		reader.attachedData = data;
-        reader.onloadend = function(readEvent) {
-        	var img = jQuery('<img style="" title="" src=""></img>');
-        	img.attr('src', readEvent.target.result);
-        	img.click( GENTICS.Aloha.Image.clickImage );
-            //GENTICS.Aloha.Selection.changeMarkupOnSelection(img);
-        	this.attachedData.display.append(img);
-        	this.attachedData.display.removeClass('GENTICS_default_file_icon');
-        	//console.log(this.attachedData.display);
-        };
-        reader.readAsDataURL(data.file);
+		console.log(data.file);
+		if (data.file.type.match(/image\//)) {			
+			var reader = new FileReader();
+			reader.config = that.getEditableConfig(data.editable);
+			reader.attachedData = data;
+			reader.onloadend = function(readEvent) {
+				img = jQuery('<img style="" title="" src=""></img>');
+				//img.attr('src', readEvent.target.result);
+				img.click( GENTICS.Aloha.Image.clickImage );
+				//GENTICS.Aloha.Selection.changeMarkupOnSelection(img);
+				//this.attachedData.display.append(img);
+				img.attr('src', readEvent.target.result);
+				this.attachedData.display.replaceWith(img);
+				//this.attachedData.display.removeClass('GENTICS_default_file_icon');
+				//console.log(this.attachedData.display);
+			};
+			reader.readAsDataURL(data.file);
+		}
 	});
     // add the event handler for selection change
     GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'selectionChanged', function(event, rangeObject) {
@@ -323,17 +333,19 @@ GENTICS.Aloha.Image.subscribeEvents = function () {
 GENTICS.Aloha.Image.clickImage = function ( e ) { 
 	// select the image
 	// HELP: can't find a way...
-	
-   var offset = GENTICS.Utils.Dom.getIndexInParent(this);
+	/*
+   var offset = 1;//GENTICS.Utils.Dom.getIndexInParent(this);
    var imgRange = new GENTICS.Utils.RangeObject({
 	   startContainer: jQuery(this).parent(),
 	   endContainer: jQuery(this).parent(),
-	   startOffset: offset
+	   startOffset: offset,
+	   endOffset: offset+1
    });
    imgRange.correctRange();
+   imgRange.update();
    console.log(imgRange);
    imgRange.select();
-   
+   */
 };
 
 
