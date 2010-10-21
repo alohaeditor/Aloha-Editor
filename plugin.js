@@ -138,7 +138,7 @@ GENTICS.Aloha.TablePlugin.init = function() {
  */
 GENTICS.Aloha.TablePlugin.isEditableTable = function(table) {
 	var parent = jQuery(table.parentNode);
-	if (parent.attr('contenteditable') == 'true') {
+	if (parent.attr('contentEditable') == 'true') {
 		return true;
 	} else {
 		return false;
@@ -648,7 +648,7 @@ GENTICS.Aloha.Table.prototype.activate = function() {
 	
 	// alter the table attributes
 	this.obj.addClass(this.get('className'));
-	this.obj.attr('contenteditable', 'false');
+	this.obj.attr('contentEditable', 'false');
 
 	// set an id to the table if not already set
 	if (this.obj.attr('id') == '') {
@@ -682,7 +682,7 @@ GENTICS.Aloha.Table.prototype.activate = function() {
 		
 		// if a mousedown is done on the table, just focus the first cell of the table
 		setTimeout(function() {
-			var firstCell = that.obj.find('tr:nth-child(2) td:nth-child(2)').children('div[contenteditable=true]').get(0);
+			var firstCell = that.obj.find('tr:nth-child(2) td:nth-child(2)').children('div[contentEditable=true]').get(0);
 			GENTICS.Aloha.TableHelper.unselectCells();
 			jQuery(firstCell).get(0).focus();
 		}, 5);
@@ -696,7 +696,7 @@ GENTICS.Aloha.Table.prototype.activate = function() {
 	// ### create a wrapper for the table (@see HINT below)
 	// wrapping div for the table to suppress the display of the resize-controls of
 	// the editable divs within the cells
-	var tableWrapper = jQuery('<div class="' + this.get('classTableWrapper') + '" contenteditable="false"></div>');
+	var tableWrapper = jQuery('<div class="' + this.get('classTableWrapper') + '" contentEditable="false"></div>');
 	
 	// wrap the tableWrapper around the table
 	this.obj.wrap(tableWrapper);
@@ -1673,7 +1673,7 @@ GENTICS.Aloha.Table.prototype.deactivate = function() {
 	if (GENTICS.Aloha.trim(this.obj.attr('class')) == '') {
 		this.obj.removeAttr('class');
 	}
-	this.obj.removeAttr('contenteditable');
+	this.obj.removeAttr('contentEditable');
 	this.obj.removeAttr('id');
 
 	// unwrap the selectionLeft-div if available
@@ -1835,7 +1835,7 @@ GENTICS.Aloha.Table.Cell.prototype.activate = function() {
 	// create the editable wrapper for the cells
 	var wrapper = this.obj.children('div').eq(0);
 
-	wrapper.attr('contenteditable', 'true');
+	wrapper.attr('contentEditable', 'true');
 	wrapper.addClass('GENTICS_Table_Cell_editable');
 
 
