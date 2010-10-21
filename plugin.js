@@ -5,6 +5,9 @@
  * copyright (c) 2010 Nicolas Karageuzian - http://nka.me/
  */
 
+
+
+
 GENTICS.Aloha.DnDFile = new GENTICS.Aloha.Plugin("com.gentics.aloha.plugins.DragnDropFiles");
 GENTICS.Aloha.DnDFile.languages=['en','fr'];
 GENTICS.Aloha.DnDFile.config = { 'drop' : {	'max_file_size': 200000,
@@ -17,8 +20,8 @@ GENTICS.Aloha.DnDFile.config = { 'drop' : {	'max_file_size': 200000,
 								};
 
 GENTICS.Aloha.DnDFile.init = function() {
+	
 	var that = this;
-	console.log(this);
 	this.sinkBodyEvent();
 	/*
 	GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'editableCreated', function(event, editable) {
@@ -43,6 +46,18 @@ GENTICS.Aloha.DnDFile.init = function() {
     		this.i18n('floatingmenu.tab.file'),
     		1
     );
+};
+
+/**
+ * Gets Aloha editable object from DOM id
+ * TODO: move this block to core.js 
+ */
+GENTICS.Aloha.DnDFile.getEditableById = function (id) {
+	for (var i = 0; i < GENTICS.Aloha.editables.length; i++) {
+		if (GENTICS.Aloha.editables[i].getId() == id) {
+			return GENTICS.Aloha.editables[i];
+		}
+	}
 };
 
 /**
@@ -191,21 +206,13 @@ GENTICS.Aloha.DnDFile.dropEventHandler = function(event){
 		editable = target;
 		target = editable.children(':last');
 		if (target.hasClass('GENTICS_editable')) {
+			//nested space is needed in this tag, otherwise select won't success...
 			editable.append('<p> </p>');
 			target = editable.children(':last');
 		}
 	} else {
 		editable = target.parent('.GENTICS_editable');
 	}
-	var	range = new GENTICS.Aloha.Selection.SelectionRange({
-		   startContainer: target,
-		   endContainer: target,
-		   startOffset: event.rangeOffset,
-		   endOffset: event.rangeOffset
-	   });
-	range.update();
-    // parameter for event handler :
-    // {'file': file, 'img': img}
     while(--len >= 0) {
     	if (files[len].size > GENTICS.Aloha.DnDFile.config.drop.max_file_size) {
     		event.stopPropagation();
@@ -213,15 +220,25 @@ GENTICS.Aloha.DnDFile.dropEventHandler = function(event){
     	    return false;
     	}
         //alert("testing " + files[i].name);
-    	//nested space is needed in this tag, otherwise select won't success...
+    	
         if (editable[0] != null) {
+        	GENTICS.Aloha.DnDFile.getEditableById(editable.attr('id')).activate();
+        	GENTICS.Aloha.activateEditable(GENTICS.Aloha.DnDFile.getEditableById(editable.attr('id')));
+        	
+        	//var range = GENTICS.Aloha.Selection.getRangeObject();
+        	var	range = new GENTICS.Aloha.Selection.SelectionRange();
+        	range.initializeFromUserSelection(e);
+        	
+        	range.correctRange();
+        	//range.update();
+        	
         	var config = GENTICS.Aloha.DnDFile.getEditableConfig(editable);
            	if (config.drop) {
         		var display = jQuery('<div class="GENTICS_drop_file_box"><div class="GENTICS_drop_file_icon GENTICS_drop_file_default"></div>' +
         				'<div class="GENTICS_drop_file_details">'+ files[len].name +'</div></div>');
         		display.data('file',files[len]);
-        		target.parent().append(display);
-        		//GENTICS.Utils.Dom.insertIntoDOM(display,range, editable);
+        		//target.parent().append(display);
+        		GENTICS.Utils.Dom.insertIntoDOM(display,range, editable);//jQuery(GENTICS.Aloha.activeEditable.obj));
         		GENTICS.Aloha.EventRegistry.trigger(
         				new GENTICS.Aloha.Event('dropFileInEditable', GENTICS.Aloha, {
         					'file':files[len],
