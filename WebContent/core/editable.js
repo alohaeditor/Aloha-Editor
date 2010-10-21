@@ -139,7 +139,7 @@ GENTICS.Aloha.Editable.prototype.init = function() {
 
 		// initialize the object
 		this.obj.addClass('GENTICS_editable');
-		this.obj.attr('contenteditable', true);
+		this.obj.attr('contentEditable', true);
 		
 		// add focus event to the object to activate
 		this.obj.mousedown(function(e) {
@@ -211,7 +211,7 @@ GENTICS.Aloha.Editable.prototype.destroy = function() {
 
 	// initialize the object
 	this.obj.removeClass('GENTICS_editable');
-	this.obj.removeAttr('contenteditable');
+	this.obj.removeAttr('contentEditable');
 	
 	// unbind all events 
 	// TODO should only unbind the specific handlers.
@@ -283,7 +283,7 @@ GENTICS.Aloha.Editable.prototype.toString = function() {
  * check whether the editable has been disabled 
  */
 GENTICS.Aloha.Editable.prototype.isDisabled = function () {
-	if (this.obj.attr("contenteditable") == "false" || !this.obj.attr("contenteditable")) {
+	if (this.obj.attr("contentEditable") == "false" || !this.obj.attr("contentEditable")) {
 		return true;
 	} else {
 		return false;
@@ -298,7 +298,7 @@ GENTICS.Aloha.Editable.prototype.disable = function() {
 	if (this.isDisabled()) {
 		return;
 	}
-	this.obj.attr("contenteditable", "false");
+	this.obj.attr("contentEditable", "false");
 };
 
 /**
@@ -309,7 +309,7 @@ GENTICS.Aloha.Editable.prototype.enable = function() {
 	if (!this.isDisabled()) {
 		return;
 	}
-	this.obj.attr("contenteditable", "true");
+	this.obj.attr("contentEditable", "true");
 };
 
 
