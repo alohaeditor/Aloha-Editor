@@ -3,5 +3,6 @@ deps/extjs/resources/css/ext-all.css
 deps/extjs/resources/css/xtheme-gray.css
 deps/prettyPhoto/resources/css/prettyPhoto.css
 plugins/com.gentics.aloha.plugins.Table/resources/table.css
+plugins/com.gentics.aloha.plugins.Table/resources/table-styles.css
 plugins/com.gentics.aloha.plugins.Link/css/Link.css
 plugins/com.gentics.aloha.plugins.HighlightEditables/css/HighlightEditables.css
