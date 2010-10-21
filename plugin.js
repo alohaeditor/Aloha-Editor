@@ -32,7 +32,7 @@
 		obj.css(attr,newValue);
 		// Chain
 		return obj;
-	}
+	};
 	jQuery.fn.decrease = jQuery.fn.decrease || function(attr){
 		var	obj = jQuery(this),
 			value = obj.css(attr).toFloat(),
@@ -44,7 +44,7 @@
 		obj.css(attr,newValue);
 		// Chain
 		return obj;
-	}
+	};
 
 
 
@@ -134,7 +134,7 @@ GENTICS.Aloha.Image.initImage = function() {
     var imgSrcLabel = new GENTICS.Aloha.ui.Button({
     	'label': that.i18n('field.img.src.label'),
     	'tooltip': that.i18n('field.img.src.tooltip'),
-    	'size': 'small',
+    	'size': 'small'
     });
     this.imgSrcField = new GENTICS.Aloha.ui.AttributeField({});
     this.imgSrcField.setObjectTypeFilter( this.objectTypeFilter );
@@ -143,7 +143,7 @@ GENTICS.Aloha.Image.initImage = function() {
     var imgTitleLabel = new GENTICS.Aloha.ui.Button({
     	'label': that.i18n('field.img.title.label'),
     	'tooltip': that.i18n('field.img.title.tooltip'),
-    	'size': 'small',
+    	'size': 'small'
     });
     this.imgTitleField = new GENTICS.Aloha.ui.AttributeField();
     this.imgTitleField.setObjectTypeFilter();
@@ -188,7 +188,7 @@ GENTICS.Aloha.Image.initImage = function() {
     	// Apply
     	Image.increase('padding');
     	},
-    	tooltip: this.i18n('padding.increase'),
+    	tooltip: this.i18n('padding.increase')
     	});
     GENTICS.Aloha.FloatingMenu.addButton(
     		this.getUID('image'),
@@ -205,7 +205,7 @@ GENTICS.Aloha.Image.initImage = function() {
     	// Apply
     	Image.decrease('padding');
     	},
-    	tooltip: this.i18n('padding.decrease'),
+    	tooltip: this.i18n('padding.decrease')
     	});
    GENTICS.Aloha.FloatingMenu.addButton(
    		this.getUID('image'),
@@ -222,7 +222,7 @@ GENTICS.Aloha.Image.initImage = function() {
 	   // Apply
 		   Image.increase('height').increase('width');
 	   },
-	   tooltip: this.i18n('size.increase'),
+	   tooltip: this.i18n('size.increase')
 	   });
    GENTICS.Aloha.FloatingMenu.addButton(
 	   		this.getUID('image'),
@@ -239,7 +239,7 @@ GENTICS.Aloha.Image.initImage = function() {
 	   // Apply
 	   Image.decrease('height').decrease('width');
 	   },
-	   tooltip: that.i18n('size.decrease'),
+	   tooltip: that.i18n('size.decrease')
 	   });
    GENTICS.Aloha.FloatingMenu.addButton(
 	   		this.getUID('image'),
@@ -362,7 +362,7 @@ GENTICS.Aloha.Image.insertImg = function() {
     if ( range.isCollapsed() ) {
     	// TODO I would suggest to call the srcChange method. So all image src
 		// changes are on one single point.
-    	imagetag = '<img src="' + GENTICS_Aloha_base + 'plugins/com.gentics.aloha.plugins.Image/images/blank.jpeg" title="" style=""></img>'
+    	imagetag = '<img src="' + GENTICS_Aloha_base + 'plugins/com.gentics.aloha.plugins.Image/images/blank.jpeg" title="" style=""></img>';
     	var newImg = jQuery(imagetag);
     	// add the click selection handler
     	newImg.click( GENTICS.Aloha.Image.clickImage );
@@ -386,7 +386,7 @@ GENTICS.Aloha.Image.insertImg = function() {
     	// TODO it should be editor's choice, with an Ext Dialog instead of
 		// alert.
     }
-}
+};
 
 
 GENTICS.Aloha.Image.srcChange = function () {
@@ -401,4 +401,4 @@ GENTICS.Aloha.Image.srcChange = function () {
 	// this.imgSrcField.getItem() (optinal a selected resource item)
 	// TODO additionally implement an srcChange Handler to let implementer
 	// customize
-}
+};
