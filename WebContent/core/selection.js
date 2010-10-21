@@ -1572,7 +1572,7 @@ GENTICS.Aloha.Selection.prototype.SelectionRange.prototype.updateMarkupEffective
  */
 GENTICS.Aloha.Selection.prototype.SelectionRange.prototype.updatelimitObject = function() {
 	if (GENTICS.Aloha.editables && GENTICS.Aloha.editables.length > 0) {
-		var parents = jQuery(this.startContainer).parents();
+		var parents = this.getStartContainerParents();
 		var editables = GENTICS.Aloha.editables;
 		for (var i = 0; i < parents.length; i++) {
 			var el = parents[i];
