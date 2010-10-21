@@ -6,7 +6,7 @@
  */
 
 GENTICS.Aloha.DnDFile = new GENTICS.Aloha.Plugin("com.gentics.aloha.plugins.DragnDropFiles");
-GENTICS.Aloha.DnDFile.languages=[];
+GENTICS.Aloha.DnDFile.languages=['en','fr'];
 GENTICS.Aloha.DnDFile.config = { 'drop' : {	'max_file_size': 200000,
 											'max_file_count': 2,
 											'upload': {'url': "",
@@ -34,6 +34,15 @@ GENTICS.Aloha.DnDFile.init = function() {
 	stylePath = GENTICS_Aloha_base + '/plugins/com.gentics.aloha.plugins.DragnDropFiles/style.css';
 	jQuery('<link rel="stylesheet" />').attr('href', stylePath).appendTo('head');
 	this.subscribeEvents();
+	
+	GENTICS.Aloha.FloatingMenu.createScope(this.getUID('DragnDrop'), 'global');
+	this.fileNameField = new GENTICS.Aloha.ui.AttributeField({});
+	GENTICS.Aloha.FloatingMenu.addButton(
+    		this.getUID('DragnDrop'),
+    		this.fileNameField,
+    		this.i18n('floatingmenu.tab.file'),
+    		1
+    );
 };
 
 /**
@@ -103,6 +112,10 @@ GENTICS.Aloha.DnDFile.sinkBodyEvent = function() {
 	// end body events
 	//================== 
 };
+
+/**
+ * On selection change
+ */
 GENTICS.Aloha.DnDFile.subscribeEvents = function () {
 	var that = this;
 	 GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'selectionChanged', function(event, rangeObject) {
@@ -110,16 +123,31 @@ GENTICS.Aloha.DnDFile.subscribeEvents = function () {
 			 that.selectedFile = null;
 		 }
 		 var foundMarkup = that.findFileObject( rangeObject );
+		 if (foundMarkup) {
+			 GENTICS.Aloha.FloatingMenu.setScope(that.getUID('DragnDrop'));
+			 GENTICS.Aloha.FloatingMenu.userActivatedTab = that.i18n('floatingmenu.tab.file');
+			 //that.fileNameField  <- sets the filename here
+			 //continue with selection correction...
+		 } else {
+		 }
 		 //var config = that.getEditableConfig(GENTICS.Aloha.activeEditable.obj);
 		 //console.log(config);
 	 	});
 };
 
+/**
+ * Find file object
+ * 
+ */
 GENTICS.Aloha.DnDFile.findFileObject = function(range) {
 	if ( typeof range == 'undefined' ) {
         var range = GENTICS.Aloha.Selection.getRangeObject();   
     }
 	try {
+		if (range.getContainerParents().is('.GENTICS_drop_file_box')) {
+			return range.getContainerParents().filter('.GENTICS_drop_file_box');
+		}
+		/*
 		if (range.startContainer)
 			if (range.startContainer.childNodes)
 				if (range.startOffset)
@@ -128,7 +156,7 @@ GENTICS.Aloha.DnDFile.findFileObject = function(range) {
 			// console.log(range);
 			result = range.startContainer.childNodes[range.startOffset];
 			return result;
-		}
+		} */
 	} catch (e) {
 		GENTICS.Aloha.Log.debug(this,"Error finding fileobj markup.");
 	}
@@ -136,6 +164,9 @@ GENTICS.Aloha.DnDFile.findFileObject = function(range) {
     
 };
 
+/**
+ * The drop event handler, filtering
+ */
 GENTICS.Aloha.DnDFile.dropEventHandler = function(event){
 	var e = event;
 	event.sink = true;
@@ -188,6 +219,7 @@ GENTICS.Aloha.DnDFile.dropEventHandler = function(event){
            	if (config.drop) {
         		var display = jQuery('<div class="GENTICS_drop_file_box"><div class="GENTICS_drop_file_icon GENTICS_drop_file_default"></div>' +
         				'<div class="GENTICS_drop_file_details">'+ files[len].name +'</div></div>');
+        		display.data('file',files[len]);
         		target.parent().append(display);
         		//GENTICS.Utils.Dom.insertIntoDOM(display,range, editable);
         		GENTICS.Aloha.EventRegistry.trigger(
