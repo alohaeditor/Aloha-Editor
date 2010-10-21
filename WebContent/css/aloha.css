@@ -36,6 +36,7 @@
 /* 
  * Floating Menu 
  */
+
 .GENTICS_floatingmenu .x-tab-panel-header {
 	border-width: 0px 0px 1px 0px;
 	background: none;
@@ -255,7 +256,7 @@ button.GENTICS_button_deleteRows {
 button.GENTICS_button_deleteColumns {
 	background-position: -192px 0 !important;
 }
-
+/* iks test buttons */
 button.GENTICS_button_addPerson {
 	background-position: -224px 0 !important;
 }

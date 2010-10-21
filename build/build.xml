@@ -194,8 +194,11 @@
 			<arg line="--type js --nomunge --verbose --charset UTF-8 -o" />
 			<srcfile />
 			<targetfile />
-			
-			<fileset dir="${alohadir}/plugins/" includes="**/*.js" />
+
+			<fileset dir="${alohadir}/plugins/">
+				<exclude name="**/examples/**"/>
+				<include name="**/*.js"/>
+			</fileset>
 		</apply>
 
 		<!-- remove all javascript files from the deps folder as they are already included in aloha -->
