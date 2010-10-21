@@ -266,7 +266,7 @@ GENTICS.Aloha.Link.bindInteractions = function () {
    	 	that.updateMousePointer();
     });
 
-}
+};
 
 /**
  * Updates the mouse pointer
@@ -281,7 +281,7 @@ GENTICS.Aloha.Link.updateMousePointer = function () {
 		jQuery(this.mouseOverLink).removeClass('GENTICS_link_pointer');
 		jQuery(this.mouseOverLink).addClass('GENTICS_link_text');
     }
-}
+};
 
 /**
  * Subscribe for events
@@ -305,7 +305,7 @@ GENTICS.Aloha.Link.subscribeEvents = function () {
             return;
         }
         
-        var foundMarkup = that.findLinkMarkup( rangeObject )
+        var foundMarkup = that.findLinkMarkup( rangeObject );
         if ( foundMarkup ) {
             // link found
         	that.insertLinkButton.hide();
@@ -421,7 +421,7 @@ GENTICS.Aloha.Link.srcChange = function () {
 	// For now hard coded attribute handling with regex.
 	this.hrefField.setAttribute('target', this.target, this.targetregex, this.hrefField.getQueryValue());
 	this.hrefField.setAttribute('class', this.cssclass, this.cssclassregex, this.hrefField.getQueryValue());
-}
+};
 
 /**
  * Make the given jQuery object (representing an editable) clean for saving

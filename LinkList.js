@@ -65,7 +65,7 @@ GENTICS.Aloha.Repositories.LinkList.init = function() {
     
     // repository name
     this.repositoryName = 'Linklist';
-}
+};
 
 GENTICS.Aloha.Repositories.LinkList.addFolder = function (path, name) {
 	
@@ -81,7 +81,7 @@ GENTICS.Aloha.Repositories.LinkList.addFolder = function (path, name) {
 		};
 	}
 	return p;
-}
+};
 
 /**
  * Searches a repository for object items matching query if objectTypeFilter.
