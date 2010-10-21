@@ -183,7 +183,7 @@ GENTICS.Aloha.DnDFile.dropEventHandler = function(event){
     	}
         //alert("testing " + files[i].name);
     	//nested space is needed in this tag, otherwise select won't success...
-        if (editable != null) {
+        if (editable[0] != null) {
         	var config = GENTICS.Aloha.DnDFile.getEditableConfig(editable);
            	if (config.drop) {
         		var display = jQuery('<div class="GENTICS_drop_file_box"><div class="GENTICS_drop_file_icon GENTICS_drop_file_default"></div>' +
