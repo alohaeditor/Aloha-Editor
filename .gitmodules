@@ -40,3 +40,6 @@
 [submodule "WebContent/plugins/com.example.aloha.plugins.Save"]
 	path = WebContent/plugins/com.example.aloha.plugins.Save
 	url = https://github.com/alohaeditor/Aloha-Plugin-Save.git
+[submodule "WebContent/plugins/com.gentics.aloha.plugins.DragAndDropFiles"]
+	path = WebContent/plugins/com.gentics.aloha.plugins.DragAndDropFiles
+	url = https://github.com/alohaeditor/Aloha-Plugin-DragAndDropFiles.git
