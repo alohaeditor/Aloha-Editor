@@ -37,11 +37,15 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 	},
     listeners: {
 		// repository object types could have changed
-		'beforequery': function (obj, event) {
+		'beforequery': function (event) {
+			if( this.noQuery ) {
+				event.cancel = true;
+				return;
+			}
 			if (this.store != null && this.store.proxy != null) {
 				this.store.proxy.setParams({
 					objectTypeFilter: this.getObjectTypeFilter(),
-					queryString: obj.query
+					queryString: event.query
 				});
 			}
 		},
@@ -97,6 +101,11 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 	        	}
 	    		jQuery(target).removeAttr('data-original-background-color');
 	        }
+	    },
+	    'expand': function (combo ) {
+	    	if( this.noQuery ) {
+	    		this.collapse();
+	    	}
 	    }
     }, 
     setItem: function( item, displayField ) {
@@ -156,7 +165,8 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 	},
 	getObjectTypeFilter : function () {
 		return this.objectTypeFilter;
-	}
+	},
+	noQuery: true
 });
 
 /**
@@ -171,14 +181,15 @@ Ext.reg('alohaattributefield', Ext.ux.AlohaAttributeField);
  * @namespace GENTICS.Aloha.ui
  * @class AttributeField
  */
-GENTICS.Aloha.ui.AttributeField = function () {
+GENTICS.Aloha.ui.AttributeField = function (arguments) {
 
 	/**
 	 * @cfg Function called when an element is selected
 	 */
 	this.onSelect = null;
 
-    GENTICS.Aloha.ui.Button.apply(this, arguments);
+	GENTICS.Utils.applyProperties(this, arguments);
+
 };
 
 /**
@@ -280,8 +291,12 @@ GENTICS.Aloha.ui.AttributeField.prototype.setAttribute = function (attr, value, 
  */
 GENTICS.Aloha.ui.AttributeField.prototype.setObjectTypeFilter = function (objectTypeFilter) {
     if (this.extButton) {
+    	this.noQuery = false;
     	this.extButton.setObjectType(objectTypeFilter);
     } else {
+    	if ( !objectTypeFilter ) {
+    		objectTypeFilter = 'all';
+    	}
     	this.objectTypeFilter = objectTypeFilter;
     }
 };
