@@ -831,6 +831,8 @@ GENTICS.Aloha.FloatingMenu.Group.prototype.getExtComponent = function () {
 		// now find the Ext.Buttons and set to the GENTICS buttons
 		jQuery.each(this.buttons, function(index, buttonInfo) {
 			buttonInfo.button.extButton = that.extButtonGroup.findById(buttonInfo.button.id);
+			// the following code is a work arround because ExtJS initializes later.
+			// The ui wrapper store the information and here we use it... ugly.
 			// if there are any listeners added before initializing the extButtons
 			if ( buttonInfo.button.listenerQueue && buttonInfo.button.listenerQueue.length > 0 ) {
 				while ( l = buttonInfo.button.listenerQueue.shift() ) {
@@ -838,6 +840,12 @@ GENTICS.Aloha.FloatingMenu.Group.prototype.getExtComponent = function () {
 				}
 			}
 			if (buttonInfo.button.extButton.setObjectTypeFilter) {
+				if (buttonInfo.button.objectTypeFilter) {
+					buttonInfo.button.extButton.noQuery = false;
+				}
+				if ( buttonInfo.button.objectTypeFilter == 'all' ) {
+					buttonInfo.button.objectTypeFilter = null;
+				}
 				buttonInfo.button.extButton.setObjectTypeFilter(buttonInfo.button.objectTypeFilter);
 				if ( buttonInfo.button.displayField) {
 					buttonInfo.button.extButton.displayField = buttonInfo.button.displayField;
