@@ -337,8 +337,9 @@ GENTICS.Aloha.TablePlugin.initTableButtons = function () {
 	
 	// for cells
     // add summary field
-    this.summary = new GENTICS.Aloha.ui.AttributeField();
-    this.summary.setObjectTypeFilter();
+    this.summary = new GENTICS.Aloha.ui.AttributeField({
+    	'width':350
+    });
     this.summary.addListener('keyup', function(obj, event) {
     	that.activeTable.checkWai();
     });
@@ -1010,8 +1011,8 @@ GENTICS.Aloha.Table.prototype.attachSelectionRow = function() {
 			var columnToInsert = jQuery('<td>').clone();
 			columnToInsert.addClass(this.get('classLeftUpperCorner'));
 			this.wai = jQuery('<div/>');
-			this.wai.width(33);
-			this.wai.height(20);
+			this.wai.width(25);
+			this.wai.height(12);
 			this.wai.click( function(e) {
 				
 				// select Table

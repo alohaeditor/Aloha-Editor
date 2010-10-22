@@ -55,6 +55,8 @@ td.GENTICS_Aloha_Table_selectRow {
 .GENTICS_Aloha_Table td.GENTICS_Aloha_Table_selectRow,
 .GENTICS_Aloha_Table tr.GENTICS_Aloha_Table_selectColumn td {
 	border: 0;
+	margin:0;
+	padding:0;
 	background-color: #D0D0D0;
 	font-size: 0.01em;
 }
@@ -87,12 +89,8 @@ td.GENTICS_Aloha_Table_selectRow {
 	font-size: 8px;
 	width: 15px;
 	height: 15px;
-	-moz-border-radius: 2px;
-	-webkit-border-radius: 2px;
-	border-radius: 2px;
 }
 .GENTICS_Table_Createdialog table td.hover {
-	border-color: #1c94c4;
 	background-color: #1c94c4;
 }
 .GENTICS_Table_Createdialog #table-size-info {
