@@ -10,41 +10,41 @@
 
 // Attributes manipulation utilities
 // Aloha team may want to factorize, it could be useful for other plugins
-	// Prototypes
-	String.prototype.toInteger = String.prototype.toInteger || function(){
-		return parseInt(String(this).replace(/px$/,'')||0,10);
-	};
-	String.prototype.toFloat = String.prototype.toInteger || function(){
-		return parseFloat(String(this).replace(/px$/,'')||0,10);
-	};
-	Number.prototype.toInteger = Number.prototype.toInteger || String.prototype.toInteger;
-	Number.prototype.toFloat = Number.prototype.toFloat || String.prototype.toFloat;
+// Prototypes
+String.prototype.toInteger = String.prototype.toInteger || function(){
+	return parseInt(String(this).replace(/px$/,'')||0,10);
+};
+String.prototype.toFloat = String.prototype.toInteger || function(){
+	return parseFloat(String(this).replace(/px$/,'')||0,10);
+};
+Number.prototype.toInteger = Number.prototype.toInteger || String.prototype.toInteger;
+Number.prototype.toFloat = Number.prototype.toFloat || String.prototype.toFloat;
 
-	// jQuery
-	jQuery.fn.increase = jQuery.fn.increase || function(attr){
-		var	obj = jQuery(this),
-			value = obj.css(attr).toFloat(),
-			newValue = Math.round((value||1)*1.2);
-		if (value == newValue) { // when value is 2, won't increase
-			newValue++;
-		}
-		// Apply
-		obj.css(attr,newValue);
-		// Chain
-		return obj;
-	};
-	jQuery.fn.decrease = jQuery.fn.decrease || function(attr){
-		var	obj = jQuery(this),
-			value = obj.css(attr).toFloat(),
-			newValue = Math.round((value||0)*0.8);
-		// Apply
-		if (value == newValue && newValue >0) { // when value is 2, won't increase
-			newValue--;
-		}
-		obj.css(attr,newValue);
-		// Chain
-		return obj;
-	};
+// jQuery
+jQuery.fn.increase = jQuery.fn.increase || function(attr){
+	var	obj = jQuery(this),
+		value = obj.css(attr).toFloat(),
+		newValue = Math.round((value||1)*1.2);
+	if (value == newValue) { // when value is 2, won't increase
+		newValue++;
+	}
+	// Apply
+	obj.css(attr,newValue);
+	// Chain
+	return obj;
+};
+jQuery.fn.decrease = jQuery.fn.decrease || function(attr){
+	var	obj = jQuery(this),
+		value = obj.css(attr).toFloat(),
+		newValue = Math.round((value||0)*0.8);
+	// Apply
+	if (value == newValue && newValue >0) { // when value is 2, won't increase
+		newValue--;
+	}
+	obj.css(attr,newValue);
+	// Chain
+	return obj;
+};
 
 
 
@@ -264,7 +264,11 @@ GENTICS.Aloha.Image.bindInteractions = function () {
     });
 
     this.imgSrcField.addListener('blur', function(obj, event) {
-    	console.log();
+    	console.log(obj);
+    	img = jQuery(obj.getTargetObject());
+    	if (img.attr('src') == "") {
+    		img.remove();
+    	}
        	// TODO remove image or do something usefull if the user leaves the
     	// image without defining a valid image src.
     });
@@ -275,7 +279,7 @@ GENTICS.Aloha.Image.subscribeEvents = function () {
 	var that = this;
 	//handles dropped files
 	GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'dropFileInEditable', function(event,data) {
-		console.log(data.file);
+		//console.log(data.file);
 		if (data.file.type.match(/image\//)) {			
 			var reader = new FileReader();
 			reader.config = that.getEditableConfig(data.editable);
