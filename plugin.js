@@ -32,7 +32,7 @@
 		obj.css(attr,newValue);
 		// Chain
 		return obj;
-	}
+	};
 	jQuery.fn.decrease = jQuery.fn.decrease || function(attr){
 		var	obj = jQuery(this),
 			value = obj.css(attr).toFloat(),
@@ -44,7 +44,7 @@
 		obj.css(attr,newValue);
 		// Chain
 		return obj;
-	}
+	};
 
 
 
@@ -380,7 +380,7 @@ GENTICS.Aloha.Image.insertImg = function() {
     if ( range.isCollapsed() ) {
     	// TODO I would suggest to call the srcChange method. So all image src
 		// changes are on one single point.
-    	imagetag = '<img src="' + GENTICS_Aloha_base + 'plugins/com.gentics.aloha.plugins.Image/images/blank.jpeg" title="" style=""></img>'
+    	imagetag = '<img src="' + GENTICS_Aloha_base + 'plugins/com.gentics.aloha.plugins.Image/images/blank.jpeg" title="" style=""></img>';
     	var newImg = jQuery(imagetag);
     	// add the click selection handler
     	newImg.click( GENTICS.Aloha.Image.clickImage );
@@ -404,7 +404,7 @@ GENTICS.Aloha.Image.insertImg = function() {
     	// TODO it should be editor's choice, with an Ext Dialog instead of
 		// alert.
     }
-}
+};
 
 
 GENTICS.Aloha.Image.srcChange = function () {
@@ -419,4 +419,4 @@ GENTICS.Aloha.Image.srcChange = function () {
 	// this.imgSrcField.getItem() (optinal a selected resource item)
 	// TODO additionally implement an srcChange Handler to let implementer
 	// customize
-}
+};
