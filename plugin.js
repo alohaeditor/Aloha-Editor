@@ -201,7 +201,7 @@ GENTICS.Aloha.DnDFile.dropEventHandler = function(event){
 	}
 	
 	var editable = null;
-	target = jQuery(e.rangeParent);
+	target = jQuery(e.target);
 	//If drop in editable
 	if (target.hasClass('GENTICS_editable')) {
 		editable = target;
@@ -222,24 +222,20 @@ GENTICS.Aloha.DnDFile.dropEventHandler = function(event){
 	} else {
     	GENTICS.Aloha.DnDFile.getEditableById(editable.attr('id')).activate();
     	GENTICS.Aloha.activateEditable(GENTICS.Aloha.DnDFile.getEditableById(editable.attr('id')));
+    	range = GENTICS.Aloha.DnDFile.InitializeRangeForDropEvent(event, editable);
     	//GENTICS.Aloha.Selection.updateSelection(e);
     	//var range = GENTICS.Aloha.Selection.getRangeObject(true);
-    	// var range = new GENTICS.Utils.RangeObject();
-    	var	range = new GENTICS.Aloha.Selection.SelectionRange();
-    	range.initializeFromUserSelection(e);
-    	range.updateCommonAncestorContainer(editable[0]);
-    	range.startContainer = e.rangeParent;
-    	range.endContainer = e.rangeParent;
-    	range.startOffset = e.rangeOffset;
-    	range.endOffset = e.rangeOffset;
-    	range.startParent = target.parent()[0];
-    	range.endParent = target.parent()[0];
-    	range.limitObject = editable[0];
-    	range.unmodifiableMarkupAtStart = editable;
+    	// 
+    	
+    	//range.initializeFromUserSelection(e);
+    	//range.updateCommonAncestorContainer(editable[0]);
+    	
+    	
+    	
+    	
     	//range.correctRange();
     	//range.update();
-    	GENTICS.Aloha.Selection.rangeObject = range;
-    	range.select();
+    	//GENTICS.Aloha.Selection.rangeObject = range;
 	    while(--len >= 0) {
 	    	if (files[len].size > GENTICS.Aloha.DnDFile.config.drop.max_file_size) {
 	    		event.stopPropagation();
@@ -255,8 +251,8 @@ GENTICS.Aloha.DnDFile.dropEventHandler = function(event){
         	//var	range = new GENTICS.Aloha.Selection.SelectionRange(simpleRange);
         	//range.select();
         	//range.endOffset = range.startOffset + 1;
-        	range.correctRange();
-        	range.update();
+        	//range.correctRange();
+        	//range.update();
         	//range.select();
         	var config = GENTICS.Aloha.DnDFile.getEditableConfig(editable);
            	if (config.drop) {
@@ -279,4 +275,36 @@ GENTICS.Aloha.DnDFile.dropEventHandler = function(event){
         }//else 
         	
     return false;
+};
+
+GENTICS.Aloha.DnDFile.InitializeRangeForDropEvent = function(event, editable) {
+	//var range = new GENTICS.Utils.RangeObject();
+	target = jQuery(event.target);
+	var	range = new GENTICS.Aloha.Selection.SelectionRange();
+	try {
+		range.startContainer = e.rangeParent;
+		range.endContainer = e.rangeParent;
+	} catch(error) {
+		range.startContainer = target[0];//.parent()[0];
+		range.endContainer = target[0];//.parent()[0];
+	}
+	range.startParent = target.parent()[0];
+	range.endParent = target.parent()[0];
+	range.updateCommonAncestorContainer(editable[0]);
+	range.unmodifiableMarkupAtStart = editable;
+	range.limitObject = editable[0];
+	
+	try {
+		range.startOffset = event.rangeOffset;
+		range.endOffset = event.rangeOffset;    		
+	} catch(error) {
+		range.startOffset = 0;
+		range.endOffset = 0;    		
+	}
+	try {
+		range.select();
+	} catch (error) {
+		console.log(error);
+	}
+	return range;
 };
