@@ -192,6 +192,7 @@ GENTICS.Aloha.DnDFile.dropEventHandler = function(event){
 		event.sink = false;
 		return true;
 	}
+	event.stopPropagation();
 
 	if (len > GENTICS.Aloha.DnDFile.config.drop.max_file_count) {
 		event.stopPropagation();
@@ -200,7 +201,7 @@ GENTICS.Aloha.DnDFile.dropEventHandler = function(event){
 	}
 	
 	var editable = null;
-	target = jQuery(event.target);
+	target = jQuery(e.rangeParent);
 	//If drop in editable
 	if (target.hasClass('GENTICS_editable')) {
 		editable = target;
@@ -213,32 +214,57 @@ GENTICS.Aloha.DnDFile.dropEventHandler = function(event){
 	} else {
 		editable = target.parent('.GENTICS_editable');
 	}
-    while(--len >= 0) {
-    	if (files[len].size > GENTICS.Aloha.DnDFile.config.drop.max_file_size) {
-    		event.stopPropagation();
-    		GENTICS.Aloha.Log.warn(GENTICS.Aloha.DnDFile,"max_file_size exeeded");
-    	    return false;
-    	}
-        //alert("testing " + files[i].name);
+	if (editable[0] == null) {
+		while(--len >= 0) {
+			GENTICS.Aloha.EventRegistry.trigger(
+        			new GENTICS.Aloha.Event('dropFileInPage', GENTICS.Aloha,files[len]));
+		}
+	} else {
+    	GENTICS.Aloha.DnDFile.getEditableById(editable.attr('id')).activate();
+    	GENTICS.Aloha.activateEditable(GENTICS.Aloha.DnDFile.getEditableById(editable.attr('id')));
+    	//GENTICS.Aloha.Selection.updateSelection(e);
+    	//var range = GENTICS.Aloha.Selection.getRangeObject(true);
+    	// var range = new GENTICS.Utils.RangeObject();
+    	var	range = new GENTICS.Aloha.Selection.SelectionRange();
+    	range.initializeFromUserSelection(e);
+    	range.updateCommonAncestorContainer(editable[0]);
+    	range.startContainer = e.rangeParent;
+    	range.endContainer = e.rangeParent;
+    	range.startOffset = e.rangeOffset;
+    	range.endOffset = e.rangeOffset;
+    	range.startParent = target.parent()[0];
+    	range.endParent = target.parent()[0];
+    	range.limitObject = editable[0];
+    	range.unmodifiableMarkupAtStart = editable;
+    	//range.correctRange();
+    	//range.update();
+    	GENTICS.Aloha.Selection.rangeObject = range;
+    	range.select();
+	    while(--len >= 0) {
+	    	if (files[len].size > GENTICS.Aloha.DnDFile.config.drop.max_file_size) {
+	    		event.stopPropagation();
+	    		GENTICS.Aloha.Log.warn(GENTICS.Aloha.DnDFile,"max_file_size exeeded");
+	    	    return false;
+	    	}
+	        //alert("testing " + files[i].name);
     	
-        if (editable[0] != null) {
-        	GENTICS.Aloha.DnDFile.getEditableById(editable.attr('id')).activate();
-        	GENTICS.Aloha.activateEditable(GENTICS.Aloha.DnDFile.getEditableById(editable.attr('id')));
-        	
-        	//var range = GENTICS.Aloha.Selection.getRangeObject();
-        	var	range = new GENTICS.Aloha.Selection.SelectionRange();
-        	range.initializeFromUserSelection(e);
-        	
+        
+        	//var simpleRange = new GENTICS.Utils.RangeObject();
+        	//simpleRange.initializeFromUserSelection(e);
+        	//simpleRange.correctRange();
+        	//var	range = new GENTICS.Aloha.Selection.SelectionRange(simpleRange);
+        	//range.select();
+        	//range.endOffset = range.startOffset + 1;
         	range.correctRange();
-        	//range.update();
-        	
+        	range.update();
+        	//range.select();
         	var config = GENTICS.Aloha.DnDFile.getEditableConfig(editable);
            	if (config.drop) {
         		var display = jQuery('<div class="GENTICS_drop_file_box"><div class="GENTICS_drop_file_icon GENTICS_drop_file_default"></div>' +
         				'<div class="GENTICS_drop_file_details">'+ files[len].name +'</div></div>');
         		display.data('file',files[len]);
         		//target.parent().append(display);
-        		GENTICS.Utils.Dom.insertIntoDOM(display,range, editable);//jQuery(GENTICS.Aloha.activeEditable.obj));
+        		GENTICS.Utils.Dom.insertIntoDOM(display,range, editable);// jQuery(GENTICS.Aloha.activeEditable.obj));
         		GENTICS.Aloha.EventRegistry.trigger(
         				new GENTICS.Aloha.Event('dropFileInEditable', GENTICS.Aloha, {
         					'file':files[len],
@@ -249,11 +275,8 @@ GENTICS.Aloha.DnDFile.dropEventHandler = function(event){
             	GENTICS.Aloha.EventRegistry.trigger(
             			new GENTICS.Aloha.Event('dropFileInPage', GENTICS.Aloha,files[len]));
            	}
-        } else {
-        	GENTICS.Aloha.EventRegistry.trigger(
-        			new GENTICS.Aloha.Event('dropFileInPage', GENTICS.Aloha,files[len]));
-        }
-    } //while
-    event.stopPropagation();
+        } //while
+        }//else 
+        	
     return false;
 };
