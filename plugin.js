@@ -15,7 +15,7 @@ GENTICS.Aloha.DnDFile.config = { 'drop' : {	'max_file_size': 200000,
 											'upload': {'url': "",
 												'file_name_param':"",
 												'additional_params': {"location":""},
-												'www-encoded': false },
+												'www-encoded': false }
 											}
 								};
 
