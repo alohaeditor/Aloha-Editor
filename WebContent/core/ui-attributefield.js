@@ -232,7 +232,9 @@ GENTICS.Aloha.ui.AttributeField.prototype.getTargetObject = function () {
 GENTICS.Aloha.ui.AttributeField.prototype.focus = function () {
     if (this.extButton) {
         this.extButton.focus();
-        this.extButton.selectText( 0, this.extButton.getValue().length );
+        if ( this.extButton.getValue().length > 0 ) {
+               this.extButton.selectText( 0, this.extButton.getValue().length );
+        }
     }
 };
 
