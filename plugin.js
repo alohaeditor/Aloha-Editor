@@ -140,7 +140,7 @@ GENTICS.Aloha.Image.initImage = function() {
     var imgSrcLabel = new GENTICS.Aloha.ui.Button({
     	'label': that.i18n('field.img.src.label'),
     	'tooltip': that.i18n('field.img.src.tooltip'),
-    	'size': 'small',
+    	'size': 'small'
     });
     this.imgSrcField = new GENTICS.Aloha.ui.AttributeField({});
     this.imgSrcField.setObjectTypeFilter( this.objectTypeFilter );
@@ -149,7 +149,7 @@ GENTICS.Aloha.Image.initImage = function() {
     var imgTitleLabel = new GENTICS.Aloha.ui.Button({
     	'label': that.i18n('field.img.title.label'),
     	'tooltip': that.i18n('field.img.title.tooltip'),
-    	'size': 'small',
+    	'size': 'small'
     });
     this.imgTitleField = new GENTICS.Aloha.ui.AttributeField();
     this.imgTitleField.setObjectTypeFilter();
@@ -194,7 +194,7 @@ GENTICS.Aloha.Image.initImage = function() {
     	// Apply
     	Image.increase('padding');
     	},
-    	tooltip: this.i18n('padding.increase'),
+    	tooltip: this.i18n('padding.increase')
     	});
     GENTICS.Aloha.FloatingMenu.addButton(
     		this.getUID('image'),
@@ -211,7 +211,7 @@ GENTICS.Aloha.Image.initImage = function() {
     	// Apply
     	Image.decrease('padding');
     	},
-    	tooltip: this.i18n('padding.decrease'),
+    	tooltip: this.i18n('padding.decrease')
     	});
    GENTICS.Aloha.FloatingMenu.addButton(
    		this.getUID('image'),
@@ -228,7 +228,7 @@ GENTICS.Aloha.Image.initImage = function() {
 	   // Apply
 		   Image.increase('height').increase('width');
 	   },
-	   tooltip: this.i18n('size.increase'),
+	   tooltip: this.i18n('size.increase')
 	   });
    GENTICS.Aloha.FloatingMenu.addButton(
 	   		this.getUID('image'),
@@ -245,7 +245,7 @@ GENTICS.Aloha.Image.initImage = function() {
 	   // Apply
 	   Image.decrease('height').decrease('width');
 	   },
-	   tooltip: that.i18n('size.decrease'),
+	   tooltip: that.i18n('size.decrease')
 	   });
    GENTICS.Aloha.FloatingMenu.addButton(
 	   		this.getUID('image'),
