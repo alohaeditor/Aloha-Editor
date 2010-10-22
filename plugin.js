@@ -8,9 +8,9 @@
 
 
 
-GENTICS.Aloha.DnDFile = new GENTICS.Aloha.Plugin("com.gentics.aloha.plugins.DragnDropFiles");
-GENTICS.Aloha.DnDFile.languages=['en','fr'];
-GENTICS.Aloha.DnDFile.config = { 'drop' : {	'max_file_size': 200000,
+GENTICS.Aloha.DragAndDropFiles = new GENTICS.Aloha.Plugin("com.gentics.aloha.plugins.DragAndDropFiles");
+GENTICS.Aloha.DragAndDropFiles.languages=['en','fr'];
+GENTICS.Aloha.DragAndDropFiles.config = { 'drop' : {	'max_file_size': 200000,
 											'max_file_count': 2,
 											'upload': {'url': "",
 												'file_name_param':"",
@@ -19,7 +19,7 @@ GENTICS.Aloha.DnDFile.config = { 'drop' : {	'max_file_size': 200000,
 											}
 								};
 
-GENTICS.Aloha.DnDFile.init = function() {
+GENTICS.Aloha.DragAndDropFiles.init = function() {
 	
 	var that = this;
 	this.sinkBodyEvent();
@@ -34,7 +34,7 @@ GENTICS.Aloha.DnDFile.init = function() {
 	});
 	*/
 	jQuery('body')[0].addEventListener('drop', that.dropEventHandler, false);
-	stylePath = GENTICS_Aloha_base + '/plugins/com.gentics.aloha.plugins.DragnDropFiles/style.css';
+	stylePath = GENTICS_Aloha_base + '/plugins/com.gentics.aloha.plugins.DragAndDropFiles/style.css';
 	jQuery('<link rel="stylesheet" />').attr('href', stylePath).appendTo('head');
 	this.subscribeEvents();
 	
@@ -52,7 +52,7 @@ GENTICS.Aloha.DnDFile.init = function() {
  * Gets Aloha editable object from DOM id
  * TODO: move this block to core.js 
  */
-GENTICS.Aloha.DnDFile.getEditableById = function (id) {
+GENTICS.Aloha.DragAndDropFiles.getEditableById = function (id) {
 	for (var i = 0; i < GENTICS.Aloha.editables.length; i++) {
 		if (GENTICS.Aloha.editables[i].getId() == id) {
 			return GENTICS.Aloha.editables[i];
@@ -65,7 +65,7 @@ GENTICS.Aloha.DnDFile.getEditableById = function (id) {
  * this prevents incorrect drops, reloading the page with the dropped item
  * This may or may not be helpful
  */
-GENTICS.Aloha.DnDFile.sinkBodyEvent = function() {
+GENTICS.Aloha.DragAndDropFiles.sinkBodyEvent = function() {
 	 if (!document.body.BodyDragSinker){
 		 //console.log("Processing body event sink");
 		 document.body.BodyDragSinker = true;
@@ -98,19 +98,19 @@ GENTICS.Aloha.DnDFile.sinkBodyEvent = function() {
 				    	event.sink = false;
 				        return true;
 				    }
-				    if (len > GENTICS.Aloha.DnDFile.config.drop.max_file_count) {
-				    	GENTICS.Aloha.log.warn(GENTICS.Aloha.DnDFile,"too much files dropped");
+				    if (len > GENTICS.Aloha.DragAndDropFiles.config.drop.max_file_count) {
+				    	GENTICS.Aloha.log.warn(GENTICS.Aloha.DragAndDropFiles,"too much files dropped");
 				    	event.stopEvent();
 				    	return true;
 				    }
 				    //max_file_count
 				    while(--len >= 0) {
-				    	if (files[len].size <= GENTICS.Aloha.DnDFile.config.drop.max_file_size) {
+				    	if (files[len].size <= GENTICS.Aloha.DragAndDropFiles.config.drop.max_file_size) {
 					    	GENTICS.Aloha.EventRegistry.trigger(
 			            			new GENTICS.Aloha.Event('dropFileInPage', GENTICS.Aloha,files[len]));
 				    	} else {
 				    		//TODO: Too big file
-				    		GENTICS.Aloha.log.warn(GENTICS.Aloha.DnDFile,"max_file_size exeeded");
+				    		GENTICS.Aloha.log.warn(GENTICS.Aloha.DragAndDropFiles,"max_file_size exeeded");
 				    	}
 				    }
 				    event.stopEvent();
@@ -131,7 +131,7 @@ GENTICS.Aloha.DnDFile.sinkBodyEvent = function() {
 /**
  * On selection change
  */
-GENTICS.Aloha.DnDFile.subscribeEvents = function () {
+GENTICS.Aloha.DragAndDropFiles.subscribeEvents = function () {
 	var that = this;
 	 GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'selectionChanged', function(event, rangeObject) {
 		 if (that.selectedFile != null) {
@@ -154,7 +154,7 @@ GENTICS.Aloha.DnDFile.subscribeEvents = function () {
  * Find file object
  * 
  */
-GENTICS.Aloha.DnDFile.findFileObject = function(range) {
+GENTICS.Aloha.DragAndDropFiles.findFileObject = function(range) {
 	if ( typeof range == 'undefined' ) {
         var range = GENTICS.Aloha.Selection.getRangeObject();   
     }
@@ -182,7 +182,7 @@ GENTICS.Aloha.DnDFile.findFileObject = function(range) {
 /**
  * The drop event handler, filtering
  */
-GENTICS.Aloha.DnDFile.dropEventHandler = function(event){
+GENTICS.Aloha.DragAndDropFiles.dropEventHandler = function(event){
 	var e = event;
 	event.sink = true;
 	var files = e.dataTransfer.files;
@@ -194,9 +194,9 @@ GENTICS.Aloha.DnDFile.dropEventHandler = function(event){
 	}
 	event.stopPropagation();
 
-	if (len > GENTICS.Aloha.DnDFile.config.drop.max_file_count) {
+	if (len > GENTICS.Aloha.DragAndDropFiles.config.drop.max_file_count) {
 		event.stopPropagation();
-		GENTICS.Aloha.Log.warn(GENTICS.Aloha.DnDFile,"too much files dropped");
+		GENTICS.Aloha.Log.warn(GENTICS.Aloha.DragAndDropFiles,"too much files dropped");
 	    return false;
 	}
 	
@@ -220,9 +220,9 @@ GENTICS.Aloha.DnDFile.dropEventHandler = function(event){
         			new GENTICS.Aloha.Event('dropFileInPage', GENTICS.Aloha,files[len]));
 		}
 	} else {
-    	GENTICS.Aloha.DnDFile.getEditableById(editable.attr('id')).activate();
-    	GENTICS.Aloha.activateEditable(GENTICS.Aloha.DnDFile.getEditableById(editable.attr('id')));
-    	range = GENTICS.Aloha.DnDFile.InitializeRangeForDropEvent(event, editable);
+    	GENTICS.Aloha.DragAndDropFiles.getEditableById(editable.attr('id')).activate();
+    	GENTICS.Aloha.activateEditable(GENTICS.Aloha.DragAndDropFiles.getEditableById(editable.attr('id')));
+    	range = GENTICS.Aloha.DragAndDropFiles.InitializeRangeForDropEvent(event, editable);
     	//GENTICS.Aloha.Selection.updateSelection(e);
     	//var range = GENTICS.Aloha.Selection.getRangeObject(true);
     	// 
@@ -237,9 +237,9 @@ GENTICS.Aloha.DnDFile.dropEventHandler = function(event){
     	//range.update();
     	//GENTICS.Aloha.Selection.rangeObject = range;
 	    while(--len >= 0) {
-	    	if (files[len].size > GENTICS.Aloha.DnDFile.config.drop.max_file_size) {
+	    	if (files[len].size > GENTICS.Aloha.DragAndDropFiles.config.drop.max_file_size) {
 	    		event.stopPropagation();
-	    		GENTICS.Aloha.Log.warn(GENTICS.Aloha.DnDFile,"max_file_size exeeded");
+	    		GENTICS.Aloha.Log.warn(GENTICS.Aloha.DragAndDropFiles,"max_file_size exeeded");
 	    	    return false;
 	    	}
 	        //alert("testing " + files[i].name);
@@ -254,7 +254,7 @@ GENTICS.Aloha.DnDFile.dropEventHandler = function(event){
         	//range.correctRange();
         	//range.update();
         	//range.select();
-        	var config = GENTICS.Aloha.DnDFile.getEditableConfig(editable);
+        	var config = GENTICS.Aloha.DragAndDropFiles.getEditableConfig(editable);
            	if (config.drop) {
         		var display = jQuery('<div class="GENTICS_drop_file_box"><div class="GENTICS_drop_file_icon GENTICS_drop_file_default"></div>' +
         				'<div class="GENTICS_drop_file_details">'+ files[len].name +'</div></div>');
@@ -277,7 +277,7 @@ GENTICS.Aloha.DnDFile.dropEventHandler = function(event){
     return false;
 };
 
-GENTICS.Aloha.DnDFile.InitializeRangeForDropEvent = function(event, editable) {
+GENTICS.Aloha.DragAndDropFiles.InitializeRangeForDropEvent = function(event, editable) {
 	//var range = new GENTICS.Utils.RangeObject();
 	target = jQuery(event.target);
 	var	range = new GENTICS.Aloha.Selection.SelectionRange();
