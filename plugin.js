@@ -264,13 +264,12 @@ GENTICS.Aloha.Image.bindInteractions = function () {
     });
 
     this.imgSrcField.addListener('blur', function(obj, event) {
-    	console.log(obj);
+    	// TODO remove image or do something usefull if the user leaves the
+    	// image without defining a valid image src.
     	img = jQuery(obj.getTargetObject());
     	if (img.attr('src') == "") {
     		img.remove();
-    	}
-       	// TODO remove image or do something usefull if the user leaves the
-    	// image without defining a valid image src.
+    	} // image removal when src field is blank
     });
      
 };
