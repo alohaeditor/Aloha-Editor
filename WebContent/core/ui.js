@@ -142,9 +142,8 @@ GENTICS.Aloha.ui.Button.prototype.setPressed = function(pressed) {
 GENTICS.Aloha.ui.Button.prototype.isPressed = function() {
 	if (this.toggle) {
 		return this.pressed;
-	} else {
-		return false;
 	}
+	return false;
 };
 
 /**
@@ -345,7 +344,7 @@ Ext.ux.GENTICSMultiSplitButton = Ext.extend(Ext.Component, {
 		// add a new button to the list for each configured item
 		for (var i=0; i<this.items.length; i++) {
 			item = this.items[i];
-			if (item.visible == undefined) {
+			if (typeof item.visible == 'undefined') {
 				item.visible = true;
 			}
 			// wide buttons will always be rendered at the bottom of the list
@@ -387,16 +386,16 @@ Ext.ux.GENTICSMultiSplitButton = Ext.extend(Ext.Component, {
     	});
 
 		// add onclick event handler
-		this.ulObj = jQuery(this.el.createChild(html).dom);
-		this.ulObj.click(function (event) {
+		this.ulObj = jQuery(this.el.createChild(html).dom)
+		.click(function (event) {
 			that.onClick(event);
 		});
 		
 		// add the expand button
 		this.panelButton = jQuery(
 			this.el.createChild('<button class="GENTICS_multisplit_toggle GENTICS_multisplit_toggle_open">&#160;</button>').dom
-		);
-		this.panelButton.click(function () {
+		)
+		.click(function () {
 			that.togglePanel();
 		});
     },
@@ -484,8 +483,10 @@ Ext.ux.GENTICSMultiSplitButton = Ext.extend(Ext.Component, {
 		if (el) {
 			this.ulObj.css('margin-top', 0);
 			var top = el.position().top;
-			this.ulObj.css('margin-top', - top + 6);
-			this.ulObj.css('height', 46 + top - 6);
+			this.ulObj.css({
+				'margin-top': - top + 6,
+				'height': 46 + top - 6
+			});
 		}
 
 		this.activeDOMElement = undefined;
@@ -515,7 +516,7 @@ Ext.ux.GENTICSMultiSplitButton = Ext.extend(Ext.Component, {
 		}
 		
     	// detach the ul element and reattach it onto the body
-		this.ulObj.appendTo(jQuery(document.body));
+		this.ulObj.appendTo(jQuery('body'));
 		this.ulObj.addClass('GENTICS_multisplit-expanded');
 		this.ulObj.mousedown(function (e) {
 			e.stopPropagation();
@@ -523,8 +524,10 @@ Ext.ux.GENTICSMultiSplitButton = Ext.extend(Ext.Component, {
 
 		// relocate the ul
 		var o = this.wrapper.offset();
-		this.ulObj.css('top', o.top - 1);
-		this.ulObj.css('left', o.left - 1);
+		this.ulObj.css({
+			'top': o.top - 1,
+			'left': o.left - 1
+		});
 
 		// display expand animation
 		this.ulObj.animate({

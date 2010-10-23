@@ -11,7 +11,7 @@
  * @singleton
  */
 GENTICS.Aloha.PluginRegistry = function() {
-	this.plugins = new Array();
+	this.plugins = [];
 };
 
 /**

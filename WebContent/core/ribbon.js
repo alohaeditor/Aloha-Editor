@@ -40,18 +40,18 @@ GENTICS.Aloha.Ribbon = function() {
 			var toolbar = jQuery(that.toolbar.getEl().dom);
 			
 			if (button.iconCls == 'GENTICS_fade_out') {
-				toolbar.css('marginLeft', '34px');
 				toolbar.animate({
-					left: '-100%'
+					left: '-100%',
+					'marginLeft': '34px'
 				});
 				jQuery('body').animate({
 					paddingTop: 0
 				});
 				button.setIconClass('GENTICS_fade_in');
 			} else {
-				toolbar.css('marginLeft', '0px');
 				toolbar.animate({
-					left: '0%'
+					left: '0%',
+					'marginLeft': 0
 				});
 				jQuery('body').animate({
 					paddingTop: 30

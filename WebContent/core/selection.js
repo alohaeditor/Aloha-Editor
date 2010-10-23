@@ -33,7 +33,7 @@ jQuery.fn.textNodes = function(excludeBreaks, includeEmptyTextNodes) {
  * @singleton
  */
 GENTICS.Aloha.Selection = function() {
-	this.rangeObject = new Object(); // Pseudo Range Clone being cleaned up for better HTML wrapping support
+	this.rangeObject = {}; // Pseudo Range Clone being cleaned up for better HTML wrapping support
 
 	// define basics first
 	this.tagHierarchy = {
@@ -130,9 +130,9 @@ GENTICS.Aloha.Selection = function() {
  * @hide
  */
 GENTICS.Aloha.Selection.prototype.SelectionTree = function() {
-	this.domobj = new Object();
+	this.domobj = {};
 	this.selection;
-	this.children = new Array();
+	this.children = [];
 };
 
 /**
@@ -174,11 +174,11 @@ GENTICS.Aloha.Selection.prototype.updateSelection = function(event) {
 	// throw the event that the selection has changed. Plugins now have the
 	// chance to react on the changed selection
 	GENTICS.Aloha.EventRegistry.trigger(
-			new GENTICS.Aloha.Event(
-					'selectionChanged',
-					GENTICS.Aloha,
-					[ rangeObject, event ]
-			)
+		new GENTICS.Aloha.Event(
+			'selectionChanged',
+			GENTICS.Aloha,
+			[ rangeObject, event ]
+		)
 	);
 
 	return true;	
@@ -230,7 +230,7 @@ GENTICS.Aloha.Selection.prototype.recursiveGetSelectionTree = function (rangeObj
 	var jQueryCurrentObject = jQuery(currentObject);
 	var childCount = 0;
 	var that = this;
-	var currentElements = new Array();
+	var currentElements = [];
 
 	jQueryCurrentObject.contents().each(function(index) {
 		var selectionType = 'none';
@@ -416,7 +416,7 @@ GENTICS.Aloha.Selection.prototype.isRangeObjectWithinMarkup = function(rangeObje
 			}
 			if (tagComparator(this, markupObject)) {
 				if (returnVal === false) {
-					returnVal = new Array();
+					returnVal = [];
 				}
 				GENTICS.Aloha.Log.debug(that,'reached object equal to markup');		
 				i++;
@@ -542,7 +542,7 @@ GENTICS.Aloha.Selection.prototype.changeMarkup = function(rangeObject, markupObj
 		if (GENTICS.Aloha.activeEditable) {
 			var newCAC= GENTICS.Aloha.activeEditable.obj.get(0);
 		} else {
-			var newCAC = document.body;
+			var newCAC = jQuery('body');
 		}		
 		// update rangeObject by setting the newCAC and automatically recalculating the selectionTree
 		rangeObject.update(newCAC);
@@ -563,7 +563,7 @@ GENTICS.Aloha.Selection.prototype.changeMarkup = function(rangeObject, markupObj
 	if (GENTICS.Aloha.activeEditable) {
 		var limitObject = GENTICS.Aloha.activeEditable.obj[0];
 	} else {
-		var limitObject = document.body;
+		var limitObject = jQuery('body');
 	}
 	
 	var relevantMarkupObjectsAtSelectionStart = this.isRangeObjectWithinMarkup(rangeObject, false, markupObject, tagComparator, limitObject);
@@ -673,14 +673,14 @@ GENTICS.Aloha.Selection.prototype.areMarkupObjectsAsLongAsRangeObject = function
 		return false;
 	}
 	for (var i = 0; i < relevantMarkupObjectsAtSelectionStart.length; i++) {
-		var el = relevantMarkupObjectsAtSelectionStart[i];
-		if (jQuery(el).textNodes().first()[0] !== rangeObject.startContainer) {
+		var el = jQuery(relevantMarkupObjectsAtSelectionStart[i]);
+		if (el.textNodes().first()[0] !== rangeObject.startContainer) {
 			return false;
 		}
 	}
 	for (var i = 0; i < relevantMarkupObjectsAtSelectionEnd.length; i++) {
-		var el = relevantMarkupObjectsAtSelectionEnd[i];
-		if (jQuery(el).textNodes().last()[0] !== rangeObject.endContainer || jQuery(el).textNodes().last()[0].length != rangeObject.endOffset) {
+		var el = jQuery(relevantMarkupObjectsAtSelectionEnd[i]);
+		if (el.textNodes().last()[0] !== rangeObject.endContainer || el.textNodes().last()[0].length != rangeObject.endOffset) {
 			return false;
 		}
 	}	
@@ -815,8 +815,7 @@ GENTICS.Aloha.Selection.prototype.insertCroppedMarkups = function(relevantMarkup
 	if (!startOrEnd) { // = Start
 		// start part of rangeObject should be used, therefor existing markups are cropped at the end
 		var cropMarkupsAtEnd = true;
-	}
-	if (startOrEnd) { // = End
+	} else { // = End
 		// end part of rangeObject should be used, therefor existing markups are cropped at start (beginning)
 		var cropMarkupsAtStart = true;
 	}	
@@ -887,7 +886,7 @@ GENTICS.Aloha.Selection.prototype.changeMarkupOnSelection = function(markupObjec
  * @hide
  */
 GENTICS.Aloha.Selection.prototype.applyMarkup = function(selectionTree, rangeObject, markupObject, tagComparator, options) {
-	options = options ? options : new Object();
+	options = options ? options : {};
 	// first same tags from within fully selected nodes for removal
 	this.prepareForRemoval(selectionTree, markupObject, tagComparator);
 	
@@ -998,7 +997,7 @@ GENTICS.Aloha.Selection.prototype.prepareForRemoval = function(selectionTree, ma
  */
 GENTICS.Aloha.Selection.prototype.wrapMarkupAroundSelectionTree = function(selectionTree, rangeObject, markupObject, tagComparator, options) {
 	// first let's find out if theoretically the whole selection can be wrapped with one tag and save it for later use
-	var objects2wrap = new Array; // // this will be used later to collect objects
+	var objects2wrap = []; // // this will be used later to collect objects
 	var j = -1; // internal counter
 
 	GENTICS.Aloha.Log.debug(this,'The formatting <' + markupObject[0].tagName + '> will be wrapped around the selection');
@@ -1157,9 +1156,9 @@ GENTICS.Aloha.Selection.prototype.optimizeSelectionTree4Markup = function(select
 				if (groupMap[outerGroupIndex] !== undefined) {
 					outerGroupIndex++;
 				}
-				groupMap[outerGroupIndex] = new Object();
+				groupMap[outerGroupIndex] = {};
 				groupMap[outerGroupIndex].wrappable = true;
-				groupMap[outerGroupIndex].elements = new Array();
+				groupMap[outerGroupIndex].elements = [];
 				groupMap[outerGroupIndex].elements[innerGroupIndex] = selectionTree[i];				
 				outerGroupIndex++;
 			
@@ -1168,9 +1167,9 @@ GENTICS.Aloha.Selection.prototype.optimizeSelectionTree4Markup = function(select
 			if (this.canMarkupBeApplied2ElementAsWhole([ selectionTree[i] ], markupObject)) {
 				// if yes, add it to the current group
 				if (groupMap[outerGroupIndex] === undefined) {
-					groupMap[outerGroupIndex] = new Object();
+					groupMap[outerGroupIndex] = {};
 					groupMap[outerGroupIndex].wrappable = true;
-					groupMap[outerGroupIndex].elements = new Array();
+					groupMap[outerGroupIndex].elements = [];
 				}
 				if (markupObject.isReplacingElement) { //  && selectionTree[i].domobj.nodeType === 3	
 					/* we found the node to wrap for a replacing element. however there might 
@@ -1224,7 +1223,7 @@ GENTICS.Aloha.Selection.prototype.optimizeSelectionTree4Markup = function(select
 				if (groupMap[outerGroupIndex] !== undefined) {
 					outerGroupIndex++;
 				}
-				groupMap[outerGroupIndex] = new Object();
+				groupMap[outerGroupIndex] = {};
 				groupMap[outerGroupIndex].wrappable = false;
 				groupMap[outerGroupIndex].element = selectionTree[i];
 				innerGroupIndex = 0;
@@ -1585,7 +1584,7 @@ GENTICS.Aloha.Selection.prototype.SelectionRange.prototype.updatelimitObject = f
 			}
 		}
 	}
-	this.limitObject = document.body;
+	this.limitObject = jQuery('body');
 	return true;
 };
 
