@@ -13,7 +13,12 @@
  * @param {Object} obj jQuery object reference to the object
  */
 GENTICS.Aloha.Editable = function(obj) {
-		
+
+	// check wheter the object has an ID otherwise generate and set globally unique ID
+	if ( !obj.attr('id') ) {
+		obj.attr('id', GENTICS.Utils.guid());
+	}
+
 	// store object reference
 	this.obj = obj;
 
@@ -54,7 +59,7 @@ GENTICS.Aloha.Editable.prototype.range = undefined;
  */
 GENTICS.Aloha.Editable.prototype.check = function() {
 	
-	/* check elements
+	/* TODO check those elements
 	'map', 'meter', 'object', 'output', 'progress', 'samp',
 	'time', 'area', 'datalist', 'figure', 'kbd', 'keygen',
 	'mark', 'math', 'wbr', 'area',
@@ -72,6 +77,7 @@ GENTICS.Aloha.Editable.prototype.check = function() {
 				'h3', 'h4', 'h5', 'h6', 'header', 'i', 'ins', 'menu',
 				'nav', 'p', 'pre', 'q', 'ruby',  'section', 'small',
 				'span', 'strong',  'sub', 'sup', 'var']; 	
+	
 	for (var i = 0; i < textElements.length; i++) {
 		var e = nodeName;
 		if ( nodeName == textElements[i] ) {
@@ -83,33 +89,32 @@ GENTICS.Aloha.Editable.prototype.check = function() {
 	switch ( nodeName ) {
 		case 'label':
 		case 'button':
-			// need some special handling.
+			// TODO need some special handling.
 	    	break;
 		
 		case 'textarea':
-			// Goals:
-			// 1. Create a div alongside the textarea
+			// Create a div alongside the textarea
 			var div = jQuery('<div/>').insertAfter(obj);
-			// 2. Populate the div with the value of the textarea
+			// Populate the div with the value of the textarea
 			div.html(obj.val());
-			// 3. Hide the textarea
+			// Hide the textarea
 			obj.hide();
-			// 4. Attach a onsubmit to the form to place the HTML of the div back into the textarea
+			// Attach a onsubmit to the form to place the HTML of the div back into the textarea
 			var updateFunction = function(){
 				var val = div.html();
 				obj.val(val);
 			};
 			obj.parents('form:first').submit(updateFunction);
-			// 5. Swap textarea reference with the new div
+			// Swap textarea reference with the new div
 			this.obj = div;
-			// 6. Supported
+			// Supported
 			return true;
 			
 		default:
 			break;
 	}
 				
-	// all other elements are not supported
+	// the following elements are not supported
 	/*		
 	'canvas', 'audio', 'br', 'embed', 'fieldset', 'hgroup', 'hr', 
 	'iframe', 'img', 'input', 'map', 'script', 'select', 'style', 
@@ -327,7 +332,7 @@ GENTICS.Aloha.Editable.prototype.activate = function(e) {
 
 	// get active Editable before setting the new one.
 	var oldActive = GENTICS.Aloha.getActiveEditable(); 
-
+	
 	// set active Editable in core
 	GENTICS.Aloha.activateEditable( this );
 	

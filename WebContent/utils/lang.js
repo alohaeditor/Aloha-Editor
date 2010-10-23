@@ -38,3 +38,21 @@ GENTICS.Utils.applyProperties = function (target, properties) {
 		}
 	}
 };
+
+/**
+ * Generate a unique hexadecimal string with 4 charachters
+ * @return {string} 
+ */
+GENTICS.Utils.uniqeString4 = function () {
+   return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
+};
+
+/**
+ * Generate a unique value represented as a 32 character hexadecimal string,
+ * such as 21EC2020-3AEA-1069-A2DD-08002B30309D
+ * @return {string} 
+ */
+GENTICS.Utils.guid = function () {
+	var S4 = GENTICS.Utils.uniqeString4;
+	return (S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4());
+};

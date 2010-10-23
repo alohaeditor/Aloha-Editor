@@ -234,6 +234,23 @@ GENTICS.Aloha.prototype.deactivateEditable = function () {
 };
 
 /**
+ * Gets an editable by an ID or null if no Editable with that ID registered.
+ * @param {string} id the element id to look for.
+ * @return {GENTICS.Aloha.Editable} editable
+ */
+GENTICS.Aloha.prototype.getEditableById = function (id) {
+	
+	// serach all editables for id
+	for (var i = 0; i < GENTICS.Aloha.editables.length; i++) {
+		if (GENTICS.Aloha.editables[i].getId() == id) {
+			return GENTICS.Aloha.editables[i];
+		}
+	}
+	
+	return null;
+};
+
+/**
  * Logs a message to the console
  * @param level Level of the log ("error", "warn" or "info", "debug")
  * @param component Component that calls the log
