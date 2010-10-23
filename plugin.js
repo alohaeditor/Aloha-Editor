@@ -1,50 +1,63 @@
 /**
- * Aloha Editor
- * Drag and Drop files plugin for Aloha Editor
- * copyright (c) 2010 Nicolas Karageuzian - http://nka.me/
- * Copyright (c) 2010 Gentics Software GmbH
- *
- * Handles drag and drop for files
+ * Drag and Drop files plugin for Aloha
  * 
+ * Handles drag and drop for files
+ * copyright (c) 2010 Nicolas Karageuzian - http://nka.me/
  */
+
+
+
 
 GENTICS.Aloha.DragAndDropFiles = new GENTICS.Aloha.Plugin("com.gentics.aloha.plugins.DragAndDropFiles");
-
-/**
- * Configure the available languages
- */
 GENTICS.Aloha.DragAndDropFiles.languages=['en','fr'];
+GENTICS.Aloha.DragAndDropFiles.config = { 'drop' : {	'max_file_size': 200000,
+											'max_file_count': 2,
+											'upload': {'url': "",
+												'file_name_param':"",
+												'additional_params': {"location":""},
+												'www-encoded': false }
+											}
+								};
 
-/**
- * TODO make configuration adoptable to each editable
- */
-GENTICS.Aloha.DragAndDropFiles.config = { 
-	'drop' : {
-		'max_file_size': 200000,
-		'max_file_count': 2,
-		'upload': {
-			'url': "",
-			'file_name_param':"",
-			'additional_params': {
-				"location":""
-			},
-			'www-encoded': false 
-		}
-	}
-};
-/**
- * Add a drop listener to the body of the whole document
- */
 GENTICS.Aloha.DragAndDropFiles.init = function() {
+	
 	var that = this;
-	
-	// add the listener
 	this.sinkBodyEvent();
-	
+	/*
+	GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'editableCreated', function(event, editable) {
+		//config = that.getEditableConfig(editable);
+		//console.log(config);
+		//if (config.drop) {
+		//	editable.obj[0].dropFileConfig = config.drop;
+			editable.obj[0].addEventListener('drop', that.dropEventHandler, false);
+		//}
+	});
+	*/
+	jQuery('body')[0].addEventListener('drop', that.dropEventHandler, false);
 	stylePath = GENTICS_Aloha_base + '/plugins/com.gentics.aloha.plugins.DragAndDropFiles/style.css';
 	jQuery('<link rel="stylesheet" />').attr('href', stylePath).appendTo('head');
 	this.subscribeEvents();
 	
+	GENTICS.Aloha.FloatingMenu.createScope(this.getUID('DragnDrop'), 'global');
+	this.fileNameField = new GENTICS.Aloha.ui.AttributeField({});
+	GENTICS.Aloha.FloatingMenu.addButton(
+    		this.getUID('DragnDrop'),
+    		this.fileNameField,
+    		this.i18n('floatingmenu.tab.file'),
+    		1
+    );
+};
+
+/**
+ * Gets Aloha editable object from DOM id
+ * TODO: move this block to core.js 
+ */
+GENTICS.Aloha.DragAndDropFiles.getEditableById = function (id) {
+	for (var i = 0; i < GENTICS.Aloha.editables.length; i++) {
+		if (GENTICS.Aloha.editables[i].getId() == id) {
+			return GENTICS.Aloha.editables[i];
+		}
+	}
 };
 
 /**
@@ -53,104 +66,217 @@ GENTICS.Aloha.DragAndDropFiles.init = function() {
  * This may or may not be helpful
  */
 GENTICS.Aloha.DragAndDropFiles.sinkBodyEvent = function() {
-	var that = this;
-
-//	// This is redundant to body.on({'drag': funtcion() {} }); 	 
-//	jQuery('body')[0].addEventListener('drop', that.dropEventHandler, false);
-
-	if ( !document.body.GENTICS_ALoha_DragSink ) {
-		 
-		//console.log("Processing body event sink");
-		 document.body.GENTICS_ALoha_DragSink = true;
+	 if (!document.body.BodyDragSinker){
+		 //console.log("Processing body event sink");
+		 document.body.BodyDragSinker = true;
 		 
 		 var body = Ext.fly(document.body);
-		 
 		 body.on({
-			dragenter: function(event) {
-			 	// TODO outline all drag targets
+			dragenter:function(event){
 				return true;
 			}
-			,dragleave: function(event) {
-			 	// remove drag targets outlines
+			,dragleave:function(event){
 				return true;
 			}
-			// TODO move Drag over to editables as then the drag symbol should change
-			,dragover: function(event) {	
+			,dragover:function(event){				
 				event.stopEvent();
 				return false;
 			}
-			// TODO move Drag over to editables as then the drag symbol should change
-			,drop: function(event) {
+			,drop:function(event){
 				try {
 					//console.log('ext event');
+					//console.log(event);
+					//alert("drop event, body sinker");
 					if (event.browserEvent.originalEvent.sink) { // is event maked to be sinked
 						event.stopEvent(); // this prevents default browser comportment
 						return true;
 					}
 					var files = e.dataTransfer.files;
 				    var len = files.length;
-				    
 				    // if no files where dropped, use default handler
 				    if (len < 1) {
 				    	event.sink = false;
 				        return true;
 				    }
-				    if (len > that.config.drop.max_file_count) {
-				    	GENTICS.Aloha.log.warn(that, "Too many files dropped. Only "+that.config.drop.max_file_count+" allowed (drop.max_file_count)." );
+				    if (len > GENTICS.Aloha.DragAndDropFiles.config.drop.max_file_count) {
+				    	GENTICS.Aloha.log.warn(GENTICS.Aloha.DragAndDropFiles,"too much files dropped");
 				    	event.stopEvent();
 				    	return true;
 				    }
-				    // max_file_count
+				    //max_file_count
 				    while(--len >= 0) {
-				    	if (files[len].size <= that.config.drop.max_file_size) {
-				    		
-				    		// ######### CORE VALUE OF the plugin ###########
-				    		// TODO handle the hole upload event here. This is the main business for this plugin.
-				    		
-				    		// TODO define API how plugins may accept drop elements, update status information about single or multiple uplod,
-				    		// finish upload and change elements accordingly.
-				    		// TODO implement all available methods from https://developer.mozilla.org/en/DOM/FileReader for FF3.6+
-				    		// REF https://developer.mozilla.org/en/Using_files_from_web_applications
-				    		// TODO support more borwsers with DnD http://stackoverflow.com/questions/2657653/drag-and-drop-file-upload-in-google-chrome-chromium
-			    			var reader = new FileReader();
-			    			reader.config = that.getEditableConfig(data.editable);
-			    			reader.attachedData = data;
-			    			reader.onloadend = function(readyEvent) {
-			    				// TODO upload finished
-			    			};
-			    			reader.readAsDataURL(data.file);
-				    		
-			    			// TODO pass all available data to the event.
-			    			// TODO pass an update upload status event methode
-			    			// TODO pass an update upload finished event methode
-			        		GENTICS.Aloha.EventRegistry.trigger(
-		        				new GENTICS.Aloha.Event('dropFileInEditable', GENTICS.Aloha, {
-		        					'file':files[len],
-		        					'display': display,
-		        					'range': range,
-		        					'editable': editable
-		        				})
-			        		);
+				    	if (files[len].size <= GENTICS.Aloha.DragAndDropFiles.config.drop.max_file_size) {
+					    	GENTICS.Aloha.EventRegistry.trigger(
+			            			new GENTICS.Aloha.Event('dropFileInPage', GENTICS.Aloha,files[len]));
 				    	} else {
-				    		// TODO: throw errors and push to messageing system.
-				    		GENTICS.Aloha.log.warn(that,"Maximal filesize exeeded. (drop.max_file_size).");
+				    		//TODO: Too big file
+				    		GENTICS.Aloha.log.warn(GENTICS.Aloha.DragAndDropFiles,"max_file_size exeeded");
 				    	}
 				    }
 				    event.stopEvent();
 				    	
 				} catch (error) {
-					// TODO log error
-					// TODO push messages to user
+					//TODO : log error
 					//console.log(error);
 				}
 				return true;
 			}
 		});
+
 	} // if
+	// end body events
+	//================== 
 };
 
-// TODO do we realy need a range Object? May be it makes sense to attach it to the event
-// for plugin developers comfort. 
+/**
+ * On selection change
+ */
+GENTICS.Aloha.DragAndDropFiles.subscribeEvents = function () {
+	var that = this;
+	 GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'selectionChanged', function(event, rangeObject) {
+		 if (that.selectedFile != null) {
+			 that.selectedFile = null;
+		 }
+		 var foundMarkup = that.findFileObject( rangeObject );
+		 if (foundMarkup) {
+			 GENTICS.Aloha.FloatingMenu.setScope(that.getUID('DragnDrop'));
+			 GENTICS.Aloha.FloatingMenu.userActivatedTab = that.i18n('floatingmenu.tab.file');
+			 //that.fileNameField  <- sets the filename here
+			 //continue with selection correction...
+		 } else {
+		 }
+		 //var config = that.getEditableConfig(GENTICS.Aloha.activeEditable.obj);
+		 //console.log(config);
+	 	});
+};
+
+/**
+ * Find file object
+ * 
+ */
+GENTICS.Aloha.DragAndDropFiles.findFileObject = function(range) {
+	if ( typeof range == 'undefined' ) {
+        var range = GENTICS.Aloha.Selection.getRangeObject();   
+    }
+	try {
+		if (range.getContainerParents().is('.GENTICS_drop_file_box')) {
+			return range.getContainerParents().filter('.GENTICS_drop_file_box');
+		}
+		/*
+		if (range.startContainer)
+			if (range.startContainer.childNodes)
+				if (range.startOffset)
+					if (range.startContainer.childNodes[range.startOffset])
+	    if (range.startContainer.childNodes[range.startOffset].hasClass('GENTICS_drop_file_box')) {
+			// console.log(range);
+			result = range.startContainer.childNodes[range.startOffset];
+			return result;
+		} */
+	} catch (e) {
+		GENTICS.Aloha.Log.debug(this,"Error finding fileobj markup.");
+	}
+    return null;
+    
+};
+
+/**
+ * The drop event handler, filtering
+ */
+GENTICS.Aloha.DragAndDropFiles.dropEventHandler = function(event){
+	var e = event;
+	event.sink = true;
+	var files = e.dataTransfer.files;
+	var len = files.length;
+	// if no files where dropped, use default handler
+	if (len < 1) {
+		event.sink = false;
+		return true;
+	}
+	event.stopPropagation();
+
+	if (len > GENTICS.Aloha.DragAndDropFiles.config.drop.max_file_count) {
+		event.stopPropagation();
+		GENTICS.Aloha.Log.warn(GENTICS.Aloha.DragAndDropFiles,"too much files dropped");
+	    return false;
+	}
+	
+	var editable = null;
+	target = jQuery(e.target);
+	//If drop in editable
+	if (target.hasClass('GENTICS_editable')) {
+		editable = target;
+		target = editable.children(':last');
+		if (target.hasClass('GENTICS_editable')) {
+			//nested space is needed in this tag, otherwise select won't success...
+			editable.append('<p> </p>');
+			target = editable.children(':last');
+		}
+	} else {
+		editable = target.parent('.GENTICS_editable');
+	}
+	if (editable[0] == null) {
+		while(--len >= 0) {
+			GENTICS.Aloha.EventRegistry.trigger(
+        			new GENTICS.Aloha.Event('dropFileInPage', GENTICS.Aloha,files[len]));
+		}
+	} else {
+    	GENTICS.Aloha.DragAndDropFiles.getEditableById(editable.attr('id')).activate();
+    	GENTICS.Aloha.activateEditable(GENTICS.Aloha.DragAndDropFiles.getEditableById(editable.attr('id')));
+    	range = GENTICS.Aloha.DragAndDropFiles.InitializeRangeForDropEvent(event, editable);
+    	//GENTICS.Aloha.Selection.updateSelection(e);
+    	//var range = GENTICS.Aloha.Selection.getRangeObject(true);
+    	// 
+    	
+    	//range.initializeFromUserSelection(e);
+    	//range.updateCommonAncestorContainer(editable[0]);
+    	
+    	
+    	
+    	
+    	//range.correctRange();
+    	//range.update();
+    	//GENTICS.Aloha.Selection.rangeObject = range;
+	    while(--len >= 0) {
+	    	if (files[len].size > GENTICS.Aloha.DragAndDropFiles.config.drop.max_file_size) {
+	    		event.stopPropagation();
+	    		GENTICS.Aloha.Log.warn(GENTICS.Aloha.DragAndDropFiles,"max_file_size exeeded");
+	    	    return false;
+	    	}
+	        //alert("testing " + files[i].name);
+    	
+        
+        	//var simpleRange = new GENTICS.Utils.RangeObject();
+        	//simpleRange.initializeFromUserSelection(e);
+        	//simpleRange.correctRange();
+        	//var	range = new GENTICS.Aloha.Selection.SelectionRange(simpleRange);
+        	//range.select();
+        	//range.endOffset = range.startOffset + 1;
+        	//range.correctRange();
+        	//range.update();
+        	//range.select();
+        	var config = GENTICS.Aloha.DragAndDropFiles.getEditableConfig(editable);
+           	if (config.drop) {
+        		var display = jQuery('<div class="GENTICS_drop_file_box"><div class="GENTICS_drop_file_icon GENTICS_drop_file_default"></div>' +
+        				'<div class="GENTICS_drop_file_details">'+ files[len].name +'</div></div>');
+        		display.data('file',files[len]);
+        		//target.parent().append(display);
+        		GENTICS.Utils.Dom.insertIntoDOM(display,range, editable);// jQuery(GENTICS.Aloha.activeEditable.obj));
+        		GENTICS.Aloha.EventRegistry.trigger(
+        				new GENTICS.Aloha.Event('dropFileInEditable', GENTICS.Aloha, {
+        					'file':files[len],
+        					'display': display,
+        					'range': range,
+        					'editable': editable}));
+           	} else {
+            	GENTICS.Aloha.EventRegistry.trigger(
+            			new GENTICS.Aloha.Event('dropFileInPage', GENTICS.Aloha,files[len]));
+           	}
+        } //while
+        }//else 
+        	
+    return false;
+};
+
 GENTICS.Aloha.DragAndDropFiles.InitializeRangeForDropEvent = function(event, editable) {
 	//var range = new GENTICS.Utils.RangeObject();
 	target = jQuery(event.target);
