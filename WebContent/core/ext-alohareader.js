@@ -14,8 +14,8 @@ Ext.data.AlohaObjectReader = function(meta, recordType) {
 		fields: [
 			'id',
 			'url',
-			'displayName',
-			'objectType',
+			'name',
+			'type',
 			'weight',
 			'repositoryId'
 		]

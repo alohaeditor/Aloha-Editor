@@ -25,7 +25,7 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
     }),
     tpl: new Ext.XTemplate(
         '<tpl for="."><div class="x-combo-list-item">',
-            '<span><b>{displayName}</b><br />{url}</span>',
+            '<span><b>{name}</b><br />{url}</span>',
         '</div></tpl>'
     ),
     onSelect: function (item) {

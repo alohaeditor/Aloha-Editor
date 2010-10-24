@@ -36,11 +36,11 @@ GENTICS.Aloha.ui.Browser = function () {
 			reader : new Ext.data.AlohaObjectReader()
 		}),
 		columns : [ {
-			id : 'displayName',
+			id : 'name',
 			header : 'Name',
 			width : 100,
 			sortable : true,
-			dataIndex : 'displayName'
+			dataIndex : 'name'
 		}, {
 			header : 'URL',
 			renderer : function(val) {
@@ -51,7 +51,7 @@ GENTICS.Aloha.ui.Browser = function () {
 			dataIndex : 'url'
 		} ],
 		stripeRows : true,
-		autoExpandColumn : 'displayName',
+		autoExpandColumn : 'name',
 		height : 350,
 		width : 600,
 		title : 'Objectlist',

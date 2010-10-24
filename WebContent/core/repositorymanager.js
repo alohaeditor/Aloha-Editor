@@ -200,13 +200,13 @@ GENTICS.Aloha.RepositoryManager.prototype.getChildren = function ( params, callb
 	if ( params.inFolderId == 'aloha' && this.repositories.length > 0 ) {
 		var repos = [];
 		for ( var i = 0; i < this.repositories.length; i++) {
-			repos.push({
+			repos.push( new GENTICS.Aloha.Repository.Folder ({
 				id: this.repositories[i].repositoryId,
-				displayName: this.repositories[i].repositoryName,
+				name: this.repositories[i].repositoryName,
 				repositoryId: this.repositories[i].repositoryId,
-				objectType: 'repository',
+				type: 'repository',
 				hasMoreItems: true
-			})
+			}));
 		}
 		that.getChildrenCallback(callback, repos, null);
 		return;
