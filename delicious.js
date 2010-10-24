@@ -139,14 +139,14 @@ GENTICS.Aloha.Repositories.delicious.query = function( p, callback) {
 				// convert data to Aloha objects
 				for (var i = 0; i < data.length; i++) {
 					if (typeof data[i] != 'function' ) {
-						items.push({
+						items.push(new GENTICS.Aloha.Repository.Document ({
 							id: data[i].u,
-							displayName: data[i].d,
+							name: data[i].d,
 							repositoryId: that.repositoryId,
-							objectType: 'website', 
+							type: 'website', 
 							url: data[i].u,
 							weight: that.settings.weight + (15-1)/100
-						});
+						}));
 					}
 			    }
 				callback.call( that, items);
@@ -170,13 +170,13 @@ GENTICS.Aloha.Repositories.delicious.getChildren = function( p, callback) {
 
 			for (var i = 0; i < this.tags.length; i++) {
 				if (typeof this.tags[i] != 'function' ) {
-					items.push({
+					items.push(new GENTICS.Aloha.Repository.Folder ({
 						id: this.tags[i],
-						displayName: this.tags[i],
+						name: this.tags[i],
 						repositoryId: this.repositoryId,
-						objectType: 'tag', 
+						type: 'tag', 
 						url: 'http://feeds.delicious.com/v2/rss/tags/'+that.settings.username+'/'+this.tags[i]
-					});
+					}));
 				}
 		    }
 			callback.call( this, items);
@@ -192,14 +192,14 @@ GENTICS.Aloha.Repositories.delicious.getChildren = function( p, callback) {
 						// the id is tag[+tag+...+tag]
 						var id = (p.inFolderId)?p.inFolderId + '+' + tag:tag;
 						if (typeof data[tag] != 'function' ) {
-							items.push({
+							items.push(new GENTICS.Aloha.Repository.Folder({
 								id: id,
-								displayName: tag,
+								name: tag,
 								repositoryId: that.repositoryId,
-								objectType: 'tag', 
+								type: 'tag', 
 								url: 'http://feeds.delicious.com/v2/rss/tags/'+that.settings.username+'/'+id,
 								hasMoreItems: true
-							});
+							}));
 						}
 					}
 					callback.call( that, items);

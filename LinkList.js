@@ -20,13 +20,17 @@ GENTICS.Aloha.Repositories.LinkList = new GENTICS.Aloha.Repository('com.gentics.
 /**
  * configure data as array with following format:
  * 
- * [{ id: 1, name: 'Aloha Editor - The HTML5 Editor', url:'http://aloha-editor.com', objectType:'website' }];	
-
+ * [
+ * { name: 'Aloha Editor - The HTML5 Editor', url:'http://aloha-editor.com', type:'website' },
+ * { name: 'Aloha Logo', url:'http://www.aloha-editor.com/images/aloha-editor-logo.png', type:'image'  }
+ * ];	
+ * 
  * @property
  * @cfg
  */
 GENTICS.Aloha.Repositories.LinkList.settings.data = [
-	{ id: 1, name: 'Aloha Editor - The HTML5 Editor', url:'http://aloha-editor.com', objectType:'website' }
+	{ name: 'Aloha Editor - The HTML5 Editor', url:'http://aloha-editor.com', type:'website' },
+	{ name: 'Aloha Logo', url:'http://www.aloha-editor.com/images/aloha-editor-logo.png', type:'image'  }
 ];
 
 /**
@@ -44,7 +48,10 @@ GENTICS.Aloha.Repositories.LinkList.init = function() {
 	// generate folder structure
     for (var i = 0; i < this.settings.data.length; i++) {
     	
-    	var u = this.settings.data[i].uri = this.parseUri(this.settings.data[i].url);
+    	var e = this.settings.data[i];
+    	e.repositoryId = this.repositoryId;
+    	e.id = e.id ? e.id : e.url;
+    	var u = e.uri = this.parseUri(e.url);
 
     	// add hostname as root folder 
     	var path = this.addFolder('', u.host);
@@ -60,7 +67,8 @@ GENTICS.Aloha.Repositories.LinkList.init = function() {
 	    		path = this.addFolder(path, pathparts[j]);
     		}
     	}
-    	this.settings.data[i].parentId = path;
+    	e.parentId = path;
+    	this.settings.data[i] = new GENTICS.Aloha.Repository.Document(e);
     }
     
     // repository name
@@ -69,16 +77,17 @@ GENTICS.Aloha.Repositories.LinkList.init = function() {
 
 GENTICS.Aloha.Repositories.LinkList.addFolder = function (path, name) {
 	
+	var type = path ? 'folder' : 'hostname';
 	var p = path ? path + '/' + name : name;
 	
 	if ( name && !this.folder[p] ) {
-		this.folder[p] = {
+		this.folder[p] = new GENTICS.Aloha.Repository.Folder({
 				id: p,
-				displayName: (name)?name:p,
+				name: (name)?name:p,
 				parentId: path,
-				objectType: 'host',
+				type: 'host',
 				repositoryId: this.repositoryId
-		};
+		});
 	}
 	return p;
 };
@@ -94,8 +103,8 @@ GENTICS.Aloha.Repositories.LinkList.query = function( p, callback) {
 		var r = new RegExp(p.queryString, 'i'); 
 		var ret = false;
 		return (
-			( !p.queryString || e.displayName.match(r) || e.url.match(r) ) && 
-			( !p.objectTypeFilter || jQuery.inArray(e.objectType, p.objectTypeFilter) > -1) &&
+			( !p.queryString || e.name.match(r) || e.url.match(r) ) && 
+			( !p.objectTypeFilter || jQuery.inArray(e.type, p.objectTypeFilter) > -1) &&
 			( !p.inFolderId || p.inFolderId == e.parentId )
 		);
 	});
