@@ -277,6 +277,12 @@ GENTICS.Aloha.Image.bindInteractions = function () {
 GENTICS.Aloha.Image.subscribeEvents = function () {
 	var that = this;
 	//handles dropped files
+	GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'UploadSuccess', function(event,data) {
+		//TODO - Wait for DragAndDrop
+		img = jQuery("#GENTICS_image_uploading_"+data.file.id);
+		img.attr("src",data.result.data);
+		img.attr("id",'');		
+	});
 	GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'dropFileInEditable', function(event,data) {
 		//console.log(data.file);
 		if (data.file.type.match(/image\//)) {			
@@ -284,13 +290,15 @@ GENTICS.Aloha.Image.subscribeEvents = function () {
 			reader.config = that.getEditableConfig(data.editable);
 			reader.attachedData = data;
 			reader.onloadend = function(readEvent) {
-				img = jQuery('<img style="" title="" src=""></img>');
+				id = "GENTICS_image_uploading_" + data.ul_id;
+				img = jQuery('<img id="'+id+'" style="" title="" src=""></img>');
 				//img.attr('src', readEvent.target.result);
 				img.click( GENTICS.Aloha.Image.clickImage );
 				//GENTICS.Aloha.Selection.changeMarkupOnSelection(img);
 				//this.attachedData.display.append(img);
 				img.attr('src', readEvent.target.result);
 				this.attachedData.display.replaceWith(img);
+				//GENTICS.Utils.Dom.insertIntoDOM(img,data.range,  jQuery(GENTICS.Aloha.activeEditable.obj));
 				//this.attachedData.display.removeClass('GENTICS_default_file_icon');
 				//console.log(this.attachedData.display);
 			};
