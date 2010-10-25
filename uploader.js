@@ -63,6 +63,23 @@ Ext.extend(GENTICS.Aloha.Uploader, Ext.Window, {
 			return '<div class="GENTICS_uploader_status_icon"><img src="'+this.iconStatusDone+'" width=16 height=16></div>';
 		}
 	},
+	fileAlert:function(text){
+		if(this.fileAlertMsg === undefined || !this.fileAlertMsg.isVisible()){
+			this.fileAlertMsgText = 'Error uploading:<BR>'+text;
+			this.fileAlertMsg = Ext.MessageBox.show({
+				title:'Upload Error',
+				msg: this.fileAlertMsgText,
+				buttons: Ext.Msg.OK,
+				modal:false,
+				icon: Ext.MessageBox.ERROR
+			});
+		}else{
+				this.fileAlertMsgText += text;
+				this.fileAlertMsg.updateText(this.fileAlertMsgText);
+				this.fileAlertMsg.getDialog().focus();
+		}
+		
+	},
 	progressBarColumnTemplate: new Ext.XTemplate(
 			'<div class="GENTICS_uploader-progress-cell-inner GENTICS_uploader-progress-cell-inner-center GENTICS_uploader-progress-cell-foreground">',
 				'<div>{value} %</div>',
