@@ -38,16 +38,20 @@ GENTICS.Aloha.DragAndDropFiles.init = function() {
 	jQuery('<link rel="stylesheet" />').attr('href', stylePath).appendTo('head');
 	
 	// TODO: have to finish specs, lines below may move to a new plugin
-	this.subscribeEvents();
-	
-	GENTICS.Aloha.FloatingMenu.createScope(this.getUID('DragnDrop'), 'global');
-	this.fileNameField = new GENTICS.Aloha.ui.AttributeField({});
-	GENTICS.Aloha.FloatingMenu.addButton(
-    		this.getUID('DragnDrop'),
-    		this.fileNameField,
-    		this.i18n('floatingmenu.tab.file'),
-    		1
-    );
+		this.subscribeEvents();
+		var uxXHR = '' + GENTICS_Aloha_base + '/plugins/com.gentics.aloha.plugins.DragAndDropFiles/deps/Ext.ux.XHRUpload.js';
+		jQuery('<script type="text/javascript" />').attr('src', uxXHR).appendTo('head');
+		var uploaderPath = '' + GENTICS_Aloha_base + '/plugins/com.gentics.aloha.plugins.DragAndDropFiles/uploader.js';
+		jQuery('<script type="text/javascript" />').attr('src', uploaderPath).appendTo('head');
+		
+		GENTICS.Aloha.FloatingMenu.createScope(this.getUID('DragnDrop'), 'global');
+		this.fileNameField = new GENTICS.Aloha.ui.AttributeField({});
+		GENTICS.Aloha.FloatingMenu.addButton(
+	    		this.getUID('DragnDrop'),
+	    		this.fileNameField,
+	    		this.i18n('floatingmenu.tab.file'),
+	    		1
+	    );
 };
 
 /**
@@ -123,6 +127,8 @@ GENTICS.Aloha.DragAndDropFiles.setBodyDropHandler = function() {
 				        		var display = jQuery('<div class="GENTICS_drop_file_box"><div class="GENTICS_drop_file_icon GENTICS_drop_file_default"></div>' +
 				        				'<div class="GENTICS_drop_file_details">'+ files[len].name +'</div></div>');
 				        		display.data('file',files[len]);
+				        		GENTICS.Aloha.uploadWindow.addFileUpload(files[len],config.drop.upload.url);
+				        		GENTICS.Aloha.uploadWindow.show(document.body);
 				        		//target.parent().append(display);
 				        		GENTICS.Utils.Dom.insertIntoDOM(display,range,  jQuery(GENTICS.Aloha.activeEditable.obj));
 				        		GENTICS.Aloha.EventRegistry.trigger(
@@ -132,6 +138,8 @@ GENTICS.Aloha.DragAndDropFiles.setBodyDropHandler = function() {
 				        					'range': range,
 				        					'editable': editable}));
 				           	} else {
+				           		GENTICS.Aloha.uploadWindow.addFileUpload(files[len],this.config.drop.upload.url);
+				        		GENTICS.Aloha.uploadWindow.show(document.body);
 				            	GENTICS.Aloha.EventRegistry.trigger(
 				            			new GENTICS.Aloha.Event('dropFileInPage', GENTICS.Aloha,files[len]));
 				           	}
@@ -141,7 +149,7 @@ GENTICS.Aloha.DragAndDropFiles.setBodyDropHandler = function() {
 				    	
 				} catch (error) {
 					//TODO : log error
-					GENTICS.Aloha.log.error(GENTICS.Aloha.DragAndDropFiles,error);
+					GENTICS.Aloha.Log.error(GENTICS.Aloha.DragAndDropFiles,error);
 					//console.log(error);
 				}
 				return false;

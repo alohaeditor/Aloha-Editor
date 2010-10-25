@@ -1,0 +1,183 @@
+/**
+ * Upload Handler
+ * Copyright (c) 2010 Nicolas Karageuzian
+ */
+
+
+
+GENTICS.Aloha.Uploader = function(config) {
+	this.initialConfig = config;
+	imagebase = GENTICS_Aloha_base + '/plugins/com.gentics.aloha.plugins.DragAndDropFiles/resources/images/';
+	this.iconStatusPending = imagebase + 'hourglass.png'
+	this.iconStatusSending = imagebase + 'loading.gif'
+	this.iconStatusAborted = imagebase + 'cross.png'
+	this.iconStatusError = imagebase + 'cross.png'
+	this.iconStatusDone = imagebase + 'tick.png'
+	Ext.apply(this, config);
+	var fields = ['id', 'name', 'size', 'status', 'progress'];
+	this.fileRecord = Ext.data.Record.create(fields);
+	var that = this;
+	this.fileGrid = new Ext.grid.GridPanel({
+				/*
+				x:0
+				,y:30
+				,width:this.initialConfig.gridWidth || 420
+				,height:this.initialConfig.gridHeight || 200
+				,enableHdMenu:false
+				 * 
+				 */
+				region: 'center',
+				store:new Ext.data.ArrayStore({
+					fields: fields,
+					reader: new Ext.data.ArrayReader({idIndex: 0}, this.fileRecord)
+				}),
+				columns:[
+					{header:'File Name',dataIndex:'name', width:150}
+					,{header:'Size',dataIndex:'size', width:60, renderer:Ext.util.Format.fileSize}
+					,{header:'&nbsp;',dataIndex:'status', width:30, scope:that, renderer:that.statusIconRenderer}
+					,{header:'Status',dataIndex:'status', width:60}
+					,{header:'Progress',dataIndex:'progress',scope:that, renderer:that.progressBarColumnRenderer}
+				]
+			});
+	this.items = [this.fileGrid];
+	GENTICS.Aloha.Uploader.superclass.constructor.call(this);
+}; // Constructor function
+
+/**
+ * Class description
+ */
+Ext.extend(GENTICS.Aloha.Uploader, Ext.Window, {
+	statusIconRenderer:function(value){
+		switch(value){
+		default:
+			return value;
+		case 'Pending':
+			return '<div class="GENTICS_uploader_status_icon"><img src="'+this.iconStatusPending+'" width=16 height=16></div>';
+		case 'Sending':
+			return '<div class="GENTICS_uploader_status_icon"><img src="'+this.iconStatusSending+'" width=16 height=16></div>';
+		case 'Aborted':
+			return '<div class="GENTICS_uploader_status_icon"><img src="'+this.iconStatusAborted+'" width=16 height=16></div>';
+		case 'Error':
+			return '<div class="GENTICS_uploader_status_icon"><img src="'+this.iconStatusError+'" width=16 height=16></div>';
+		case 'Done':
+			return '<div class="GENTICS_uploader_status_icon"><img src="'+this.iconStatusDone+'" width=16 height=16></div>';
+		}
+	},
+	progressBarColumnTemplate: new Ext.XTemplate(
+			'<div class="GENTICS_uploader-progress-cell-inner GENTICS_uploader-progress-cell-inner-center GENTICS_uploader-progress-cell-foreground">',
+				'<div>{value} %</div>',
+			'</div>',
+			'<div class="GENTICS_uploader-progress-cell-inner GENTICS_uploader-progress-cell-inner-center GENTICS_uploader-progress-cell-background" style="left:{value}%">',
+				'<div style="left:-{value}%">{value} %</div>',
+			'</div>'
+    ),
+	progressBarColumnRenderer:function(value, meta, record, rowIndex, colIndex, store){
+        meta.css += ' x-grid3-td-progress-cell';
+		return this.progressBarColumnTemplate.apply({
+			value: value
+		});
+	},
+	
+	/**
+	 * 
+	 */
+	updateFile:function(fileRec, key, value){
+		fileRec.set(key, value);
+		fileRec.commit();
+	},
+	/**
+	 * Add a file to upload in the grid
+	 */
+	addFileUpload: function(file,path) {
+		Ext.apply(file,{
+			id: ++this.fileId
+			,status: 'Pending'
+			,progress: '0'
+			,complete: '0'
+		});
+		try {
+			var fileRec = new this.fileRecord(file);
+			this.fileGrid.store.add(fileRec);
+			fileRec.file = file;
+			//File upload process
+			upload = new Ext.ux.XHRUpload({
+				//TODO: make this configurable
+				url: '/content/'
+				,filePostName:'att_file'
+				,fileNameHeader:'X-File-Name'
+				,extraHeaders:{'Accept':'application/json'}
+				,sendMultiPartFormData:false
+				,file:file
+				,listeners:{
+					scope:this
+					,uploadloadstart:function(event){
+						this.updateFile(fileRec, 'status', 'Sending');
+					}
+					,uploadprogress:function(event){
+						this.updateFile(fileRec, 'progress', Math.round((event.loaded / event.total)*100));
+					}
+					// XHR Events
+					,loadstart:function(event){
+						this.updateFile(fileRec, 'status', 'Sending');
+					}
+					,progress:function(event){
+						fileRec.set('progress', Math.round((event.loaded / event.total)*100) );
+						fileRec.commit();
+					}
+					,abort:function(event){
+						this.updateFile(fileRec, 'status', 'Aborted');
+						this.fireEvent('fileupload', this, false, {error:'XHR upload aborted'});
+					}
+					,error:function(event){
+						this.updateFile(fileRec, 'status', 'Error');
+						this.fireEvent('fileupload', this, false, {error:'XHR upload error'});
+					}
+					,load:function(event){
+						
+						try{
+							var result = Ext.util.JSON.decode(upload.xhr.responseText);//throws a SyntaxError.
+						}catch(e){
+							Ext.MessageBox.show({
+								buttons: Ext.MessageBox.OK
+								,icon: Ext.MessageBox.ERROR
+								,modal:false
+								,title:'Upload Error!'
+								,msg:'Invalid JSON Data Returned!<BR><BR>Please refresh the page to try again.'
+							});
+							this.updateFile(fileRec, 'status', 'Error');
+							this.fireEvent('fileupload', this, false, {error:'Invalid JSON returned'});
+							return true;
+						}
+						if( result.success ){
+							fileRec.set('progress', 100 );
+							fileRec.set('status', 'Done');
+							fileRec.commit();						
+							this.fireEvent('fileupload', this, true, result);
+						}else{
+							this.fileAlert('<BR>'+file.name+'<BR><b>'+result.error+'</b><BR>');
+							this.updateFile(fileRec, 'status', 'Error');
+							this.fireEvent('fileupload', this, false, result);
+						}
+					} // on load
+				}, // listeners
+			}); //XHRUpload
+			upload.send();
+		} catch (error) {
+			//TODO : error handling
+			console.log(error);
+		}
+	}
+	
+});
+
+GENTICS.Aloha.uploadWindow = new GENTICS.Aloha.Uploader({
+	
+	//TODO : external config
+    title: 'Upload status',
+    width:435,
+    height:140,
+    //border:false,
+    plain:true,
+    layout: 'border',
+    closeAction: 'hide',
+});
