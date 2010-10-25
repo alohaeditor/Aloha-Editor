@@ -143,10 +143,14 @@ Ext.extend(GENTICS.Aloha.Uploader, Ext.Window, {
 					}
 					,abort:function(event){
 						this.updateFile(fileRec, 'status', 'Aborted');
+						GENTICS.Aloha.EventRegistry.trigger(
+			        			new GENTICS.Aloha.Event('UploadFailure', GENTICS.Aloha,fileRec));
 						this.fireEvent('fileupload', this, false, {error:'XHR upload aborted'});
 					}
 					,error:function(event){
 						this.updateFile(fileRec, 'status', 'Error');
+						GENTICS.Aloha.EventRegistry.trigger(
+			        			new GENTICS.Aloha.Event('UploadFailure', GENTICS.Aloha,fileRec));
 						this.fireEvent('fileupload', this, false, {error:'XHR upload error'});
 					}
 					,load:function(event){
@@ -162,23 +166,30 @@ Ext.extend(GENTICS.Aloha.Uploader, Ext.Window, {
 								,msg:'Invalid JSON Data Returned!<BR><BR>Please refresh the page to try again.'
 							});
 							this.updateFile(fileRec, 'status', 'Error');
+							GENTICS.Aloha.EventRegistry.trigger(
+				        			new GENTICS.Aloha.Event('UploadFailure', GENTICS.Aloha,fileRec));
 							this.fireEvent('fileupload', this, false, {error:'Invalid JSON returned'});
 							return true;
 						}
 						if( result.success ){
 							fileRec.set('progress', 100 );
 							fileRec.set('status', 'Done');
-							fileRec.commit();						
+							fileRec.commit();		
+							GENTICS.Aloha.EventRegistry.trigger(
+				        			new GENTICS.Aloha.Event('UploadSuccess', GENTICS.Aloha,{file: fileRec,result:result}));
 							this.fireEvent('fileupload', this, true, result);
 						}else{
 							this.fileAlert('<BR>'+file.name+'<BR><b>'+result.error+'</b><BR>');
 							this.updateFile(fileRec, 'status', 'Error');
+							GENTICS.Aloha.EventRegistry.trigger(
+				        			new GENTICS.Aloha.Event('UploadFailure', GENTICS.Aloha,fileRec));
 							this.fireEvent('fileupload', this, false, result);
 						}
 					} // on load
 				}, // listeners
 			}); //XHRUpload
 			upload.send();
+			return fileRec.id;
 		} catch (error) {
 			//TODO : error handling
 			console.log(error);

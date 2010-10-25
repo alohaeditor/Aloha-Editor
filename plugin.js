@@ -124,16 +124,16 @@ GENTICS.Aloha.DragAndDropFiles.setBodyDropHandler = function() {
 					    	}
 				        	var config = GENTICS.Aloha.DragAndDropFiles.getEditableConfig(editable);
 				           	if (config.drop) {
-				        		var display = jQuery('<div class="GENTICS_drop_file_box"><div class="GENTICS_drop_file_icon GENTICS_drop_file_default"></div>' +
-				        				'<div class="GENTICS_drop_file_details">'+ files[len].name +'</div></div>');
-				        		display.data('file',files[len]);
-				        		GENTICS.Aloha.uploadWindow.addFileUpload(files[len],config.drop.upload.url);
+				        		ul_id = GENTICS.Aloha.uploadWindow.addFileUpload(files[len],config.drop.upload.url);
 				        		GENTICS.Aloha.uploadWindow.show(document.body);
+				        		var display = jQuery('<div id="GENTICS_drop_file_uploading_'+ul_id+'" class="GENTICS_drop_file_box"><div class="GENTICS_drop_file_icon GENTICS_drop_file_default"></div>' +
+				        				'<div class="GENTICS_drop_file_details">'+ files[len].name +'</div></div>');
 				        		//target.parent().append(display);
 				        		GENTICS.Utils.Dom.insertIntoDOM(display,range,  jQuery(GENTICS.Aloha.activeEditable.obj));
 				        		GENTICS.Aloha.EventRegistry.trigger(
 				        				new GENTICS.Aloha.Event('dropFileInEditable', GENTICS.Aloha, {
 				        					'file':files[len],
+				        					'ul_id': ul_id,
 				        					'display': display,
 				        					'range': range,
 				        					'editable': editable}));
