@@ -51,6 +51,13 @@ GENTICS.Aloha.Link.cssclass = '';
 GENTICS.Aloha.Link.objectTypeFilter = [];
 
 /**
+ * handle change on href change
+ * called function( obj, href, item );
+ */
+GENTICS.Aloha.Link.onHrefChange = null;
+
+
+/**
  * Initialize the plugin
  */
 GENTICS.Aloha.Link.init = function () {
@@ -64,6 +71,8 @@ GENTICS.Aloha.Link.init = function () {
         GENTICS.Aloha.Link.cssclass = GENTICS.Aloha.Link.settings.cssclass;
     if (GENTICS.Aloha.Link.settings.objectTypeFilter != undefined)
         GENTICS.Aloha.Link.objectTypeFilter = GENTICS.Aloha.Link.settings.objectTypeFilter;
+    if (GENTICS.Aloha.Link.settings.onHrefChange != undefined)
+        GENTICS.Aloha.Link.onHrefChange = GENTICS.Aloha.Link.settings.onHrefChange;
         
     this.createButtons();
     this.subscribeEvents();
@@ -112,8 +121,36 @@ GENTICS.Aloha.Link.createButtons = function () {
     // add the new scope for links
     GENTICS.Aloha.FloatingMenu.createScope(this.getUID('link'), 'GENTICS.Aloha.continuoustext');
 
-    this.hrefField = new GENTICS.Aloha.ui.AttributeField();
-    this.hrefField.setObjectTypeFilter([GENTICS.Aloha.Link.objectTypeFilter]);
+    this.browser = new GENTICS.Aloha.ui.Browser();
+    this.browser.setObjectTypeFilter(GENTICS.Aloha.Link.objectTypeFilter);
+    this.browser.onSelect = function( item ) {
+    	// set href Value
+    	that.hrefField.setItem( item );
+		// call hrefChange
+    	that.hrefChange();
+    };
+    this.repositoryButton = new GENTICS.Aloha.ui.Button({
+        'iconClass' : 'GENTICS_button_big GENTICS_button_tree',
+        'size' : 'large',
+        'onclick' : function () {
+			that.browser.show();
+		},
+        'tooltip' : this.i18n('button.addlink.tooltip'),
+        'toggle' : false
+    });
+    
+    // COMMENT IN AND TEST THE BROWSER
+    GENTICS.Aloha.FloatingMenu.addButton(
+        this.getUID('link'),
+        this.repositoryButton,
+        this.i18n('floatingmenu.tab.link'),
+        1
+    );
+
+    this.hrefField = new GENTICS.Aloha.ui.AttributeField({
+    	'width':320
+    });
+    this.hrefField.setObjectTypeFilter(GENTICS.Aloha.Link.objectTypeFilter);
     // add the input field for links
     GENTICS.Aloha.FloatingMenu.addButton(
         this.getUID('link'),
@@ -122,7 +159,7 @@ GENTICS.Aloha.Link.createButtons = function () {
         1
     );
 
-    this.formatLinkButton = new GENTICS.Aloha.ui.Button({
+    this.removeLinkButton = new GENTICS.Aloha.ui.Button({
         // TODO use another icon here
         'iconClass' : 'GENTICS_button GENTICS_button_a_remove',
         'size' : 'small',
@@ -132,30 +169,11 @@ GENTICS.Aloha.Link.createButtons = function () {
     // add a button for removing the currently set link
     GENTICS.Aloha.FloatingMenu.addButton(
         this.getUID('link'),
-        this.formatLinkButton,
+        this.removeLinkButton,
         this.i18n('floatingmenu.tab.link'),
         1
     );
 
-    this.browser = new GENTICS.Aloha.ui.Browser();
-    this.browser.setObjectTypeFilter(GENTICS.Aloha.Link.objectTypeFilter);
-    this.repositoryButton = new GENTICS.Aloha.ui.Button({
-        'iconClass' : 'GENTICS_button GENTICS_button_a',
-        'size' : 'small',
-        'onclick' : function () {
-			that.browser.show();
-		},
-        'tooltip' : this.i18n('button.addlink.tooltip'),
-        'toggle' : false
-    });
-    
-//    // COMMENT IN AND TEST THE BROWSER
-//    GENTICS.Aloha.FloatingMenu.addButton(
-//        this.getUID('link'),
-//        this.repositoryButton,
-//        this.i18n('floatingmenu.tab.link'),
-//        1
-//    );
 };
 
 /**
@@ -183,7 +201,7 @@ GENTICS.Aloha.Link.bindInteractions = function () {
 //	    		that.hrefField.setValue(that.hrefField.getValue());
 	    	}
 	    }
-    	that.srcChange();
+    	that.hrefChange();
     });
 
     // on blur check if href is empty. If so remove the a tag
@@ -396,7 +414,7 @@ GENTICS.Aloha.Link.insertLink = function ( extendToWord ) {
     }
     range.select();
     this.hrefField.focus();
-    this.srcChange();
+    this.hrefChange();
 };
 
 /**
@@ -419,10 +437,13 @@ GENTICS.Aloha.Link.removeLink = function () {
 /**
  * Updates the link object depending on the src field
  */
-GENTICS.Aloha.Link.srcChange = function () {
+GENTICS.Aloha.Link.hrefChange = function () {
 	// For now hard coded attribute handling with regex.
 	this.hrefField.setAttribute('target', this.target, this.targetregex, this.hrefField.getQueryValue());
 	this.hrefField.setAttribute('class', this.cssclass, this.cssclassregex, this.hrefField.getQueryValue());
+	if ( typeof this.onHrefChange == 'function' ) {
+		this.onHrefChange.call(this, this.hrefField.getTargetObject(),  this.hrefField.getQueryValue(), this.hrefField.getItem() )
+	}
 };
 
 /**
