@@ -67,49 +67,120 @@ GENTICS.Utils.Dom.prototype.tags = {
 };
 
 /**
- * Possible children of tags (some of them), according to the HTML 5
- * specification. see http://dev.w3.org/html5/spec/Overview.html#elements-1
+ * Possible children of tags, according to the HTML 5
+ * specification.
+ * See http://dev.w3.org/html5/spec/Overview.html#elements-1
+ * Moved to http://www.whatwg.org/specs/web-apps/current-work/#elements-1
  * @hide
  */
 GENTICS.Utils.Dom.prototype.children = {
-	'a' : 'phrasing',
+	'a' : 'phrasing', // transparent
+	'abbr' : 'phrasing',
+	'address' : 'flow',
+	'area' : 'empty',
+	'article' : 'flow',
+	'aside' : 'flow',
+	'audio' : 'source', // transparent
 	'b' : 'phrasing',
+	'base' : 'empty',
+	'bdo' : 'phrasing',
 	'blockquote' : 'flow',
+	'body' : 'flow',
 	'br' : 'empty',
+	'button' : 'phrasing',
+	'canvas' : 'phrasing', // transparent
 	'caption' : 'flow',
 	'cite' : 'phrasing',
 	'code' : 'phrasing',
 	'col' : 'empty',
 	'colgroup' : 'col',
+	'command' : 'empty',
+	'datalist' : ['phrasing', 'option'],
+	'dd' : 'flow',
 	'del' : 'phrasing',
 	'div' : 'flow',
+	'details' : ['summary', 'flow'],
+	'dfn' : 'flow',
+	'div' : 'flow',
+	'dl' : ['dt','dd'],
+	'dt' : 'phrasing', // varies
+	'em' : 'phrasing',
+	'embed' : 'empty',
+	'fieldset' : ['legend', 'flow'],
+	'figcaption': 'flow',
+	'figure' :  ['figcaption', 'flow'],
+	'footer' : 'flow',
+	'form' : 'flow',
 	'h1' : 'phrasing',
 	'h2' : 'phrasing',
 	'h3' : 'phrasing',
 	'h4' : 'phrasing',
 	'h5' : 'phrasing',
 	'h6' : 'phrasing',
+	//head
+	'header' : 'flow',
+	'hgroup' : ['h1','h2','h3','h4','h5','h6'],
 	'hr' : 'empty',
+	//html :)
 	'i' : 'phrasing',
+	'iframe' : '#text',
 	'img' : 'empty',
-	'ins' : 'phrasing',
+	'input' : 'empty',
+	'ins' : 'phrasing', // transparent
+	'kbd' : 'phrasing',
+	'keygen' : 'empty',
+	'label' : 'phrasing',
+	'legend' : 'phrasing',
 	'li' : 'flow',
+	'link' : 'empty',
+	'map' : 'area', // transparent
+	'mark' : 'phrasing',
+	'menu' : ['li', 'flow'],
+	'meta' : 'empty',
+	'meter' : 'phrasing',
+	'nav' : 'flow',
+	'noscript' : 'phrasing', // varies
+	'object' : 'param', // transparent
 	'ol' : 'li',
+	'optgroup' : 'option',
+	'option' : '#text',
+	'output' : 'phrasing',
 	'p' : 'phrasing',
+	'param' : 'empty',
 	'pre' : 'phrasing',
+	'progress' : 'phrasing',
+	'q' : 'phrasing',
+	'rp' : 'phrasing',
+	'rt' : 'phrasing',
+	'ruby' : ['phrasing', 'rt', 'rp'],
+	's' : 'phrasing',
+	'samp' : 'pharsing',
+	'script' : '#script', //script 
+	'section' : 'flow',
+	'select' : ['option', 'optgroup'],
 	'small' : 'phrasing',
+	'source' : 'empty',
 	'span' : 'phrasing',
 	'strong' : 'phrasing',
+	'style' : 'phrasing', // varies
 	'sub' : 'phrasing',
+	'summary' : 'phrasing',
 	'sup' : 'phrasing',
 	'table' : ['caption', 'colgroup', 'thead', 'tbody', 'tfoot', 'tr'],
 	'tbody' : 'tr',
 	'td' : 'flow',
+	'textarea' : '#text',
 	'tfoot' : 'tr',
 	'th' : 'phrasing',
 	'thead' : 'tr',
+	'time' : 'phrasing',
+	'title' : '#text',
 	'tr' : ['th', 'td'],
-	'ul' : 'li'
+	'track' : 'empty',
+	'ul' : 'li',
+	'var' : 'phrasing',
+	'video' : 'source', // transparent
+	'wbr' : 'empty'
 };
 
 /**
