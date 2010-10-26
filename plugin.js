@@ -18,7 +18,7 @@ GENTICS.Aloha.DragAndDropFiles.languages=['en','fr'];
  */
 GENTICS.Aloha.DragAndDropFiles.config = { 'drop' : {	'max_file_size': 200000,
 											'max_file_count': 2,
-											'upload': {//'uploader_class':GENTICS.Aloha.Uploader,
+											'upload': {'uploader_class':'GENTICS.Aloha.Uploader',
 										 			'config': {
 										 				// can add more elements for Ext window styling 
 										 				'method':'POST',
@@ -52,29 +52,8 @@ GENTICS.Aloha.DragAndDropFiles.init = function() {
 //		var uploaderPath = '' + GENTICS_Aloha_base + '/plugins/com.gentics.aloha.plugins.DragAndDropFiles/uploader.js';
 //		jQuery('<script type="text/javascript" />').attr('src', uploaderPath).appendTo('head');
 		try {
-			//uploader_class = null;
-			config = this.config.drop.upload.config;
+			this.uploader = this.initUploader(this.settings.config);
 			
-//			try {
-//				uploader_class = this.settings.config.drop.upload.uploader_class;
-//			} catch(error) {
-//				GENTICS.Aloha.Log.info(this,"Custom class loading error or not specified, using default");
-//			}
-//			if (uploader_class == null) {
-//				uploader_class = this.config.drop.upload.uploader_class;
-//			}
-			Ext.apply(config,{	
-				title: 'Upload status',
-				width:435,
-				height:140,
-				//border:false,
-				plain:true,
-				layout: 'border',
-				closeAction: 'hide'
-				}, this.settings.config.drop.upload.config);
-			//Ext.apply(config, );
-			Ext.apply(GENTICS.Aloha.uploadWindow, config);
-			this.uploader = GENTICS.Aloha.uploadWindow; //GENTICS.Aloha.Uploader(config.drop.upload.config);
 		} catch(error) {
 			GENTICS.Aloha.Log.warn(this,error);
 			GENTICS.Aloha.Log.warn(this,"Error creating uploader, no upload will be processed");
@@ -88,6 +67,32 @@ GENTICS.Aloha.DragAndDropFiles.init = function() {
 	    		this.i18n('floatingmenu.tab.file'),
 	    		1
 	    );
+};
+/**
+ * Init the uploader for given conf
+ */
+GENTICS.Aloha.DragAndDropFiles.initUploader = function(customConfig) {
+	var uploader_class = undefined;
+	try {
+		uploader_class = eval(customConfig.drop.upload.uploader_class);
+	} catch(error) {
+		GENTICS.Aloha.Log.info(this,"Custom class loading error or not specified, using default");
+	}
+	if (uploader_class == undefined) {
+		uploader_class = eval(this.config.drop.upload.uploader_class);
+	}
+	config = this.config.drop.upload.config;
+	Ext.apply(config,{	
+		title: 'Upload status',
+		width:435,
+		height:140,
+		//border:false,
+		plain:true,
+		layout: 'border',
+		closeAction: 'hide'
+		}, customConfig.drop.upload.config);
+	uploader = new uploader_class(config);
+	return uploader;
 };
 
 /**
@@ -124,8 +129,8 @@ GENTICS.Aloha.DragAndDropFiles.setBodyDropHandler = function() {
 				    	event.sink = false;
 				        return true;
 				    }
-				    if (len > GENTICS.Aloha.DragAndDropFiles.config.drop.max_file_count) {
-				    	GENTICS.Aloha.log.warn(GENTICS.Aloha.DragAndDropFiles,"too much files dropped");
+				    if (len > that.config.drop.max_file_count) {
+				    	GENTICS.Aloha.log.warn(that,"too much files dropped");
 				    	event.stopEvent();
 				    	return true;
 				    }
@@ -145,20 +150,24 @@ GENTICS.Aloha.DragAndDropFiles.setBodyDropHandler = function() {
 					}
 					if (editable[0] == null) {
 						while(--len >= 0) {
-							GENTICS.Aloha.EventRegistry.trigger(
-				        			new GENTICS.Aloha.Event('dropFileInPage', GENTICS.Aloha,files[len]));
+//							GENTICS.Aloha.EventRegistry.trigger(
+//				        			new GENTICS.Aloha.Event('dropFileInPage', GENTICS.Aloha, files[len]));
+							ul_id = that.uploader.addFileUpload(files[len]);
+			            	that.uploader.startFileUpload(ul_id);
 						}
+						that.uploader.show(document.body);
 					} else {
 						GENTICS.Aloha.getEditableById(editable.attr('id')).activate();
-						range = GENTICS.Aloha.DragAndDropFiles.InitializeRangeForDropEvent(event, editable);
+						range = that.InitializeRangeForDropEvent(event, editable);
 
 					    while(--len >= 0) {
-					    	if (files[len].size > GENTICS.Aloha.DragAndDropFiles.config.drop.max_file_size) {
+					    	if (files[len].size > that.config.drop.max_file_size) {
 					    		event.stopPropagation();
-					    		GENTICS.Aloha.Log.warn(GENTICS.Aloha.DragAndDropFiles,"max_file_size exeeded");
+					    		GENTICS.Aloha.Log.warn(that,"max_file_size exeeded");
 					    	    return false;
 					    	}
-				        	var config = GENTICS.Aloha.DragAndDropFiles.getEditableConfig(editable);
+					    	//TODO : have a look in core for solving the per-editable config issue
+				        	var config = that.getEditableConfig(editable);
 				           	if (config.drop) {
 				           		ul_id = that.uploader.addFileUpload(files[len],config.drop.upload.url);
 				        		var display = jQuery('<div id="GENTICS_drop_file_uploading_'+ul_id+'" class="GENTICS_drop_file_box"><div class="GENTICS_drop_file_icon GENTICS_drop_file_default"></div>' +
@@ -177,7 +186,7 @@ GENTICS.Aloha.DragAndDropFiles.setBodyDropHandler = function() {
 				           	} else {
 				            	GENTICS.Aloha.EventRegistry.trigger(
 				            			new GENTICS.Aloha.Event('dropFileInPage', GENTICS.Aloha,files[len]));
-				            	that.uploader.addFileUpload(files[len],this.config.drop.upload.url);
+				            	ul_id = that.uploader.addFileUpload(files[len]);
 				            	that.uploader.show(document.body);
 				            	that.uploader.startFileUpload(ul_id);
 				           	}
