@@ -58,6 +58,7 @@ div.karacos_uploader_status_icon {
     height: 100%;
     width: 100%;
     overflow: hidden;
+    color:black;
 }
 
 .x-grid3-cell-background {

@@ -114,15 +114,27 @@ Ext.extend(GENTICS.Aloha.Uploader, Ext.Window, {
 		});
 		try {
 			var fileRec = new this.fileRecord(file);
-			this.fileGrid.store.add(fileRec);
 			fileRec.file = file;
+			this.fileGrid.store.add(fileRec);
+			return fileRec.id;
+		} catch (error) {
+			//TODO : error handling
+			console.log(error);
+		}
+	},
+	startFileUpload: function(id) {
+		try {
+			var fileRec = this.fileGrid.store.get(id);
+			var file = fileRec.file;
 			//File upload process
 			upload = new Ext.ux.XHRUpload({
 				//TODO: make this configurable
-				url: '/content/'
-				,filePostName:'att_file'
-				,fileNameHeader:'X-File-Name'
-				,extraHeaders:{'Accept':'application/json'}
+				method:this.method
+				,url: this.url
+				,filePostName:this.file_name_param
+				,fileNameHeader:this.file_name_header
+				,extraHeaders:this.extra_headers
+				,extraPostData:this.extra_post_data
 				,sendMultiPartFormData:false
 				,file:file
 				,listeners:{
@@ -189,7 +201,6 @@ Ext.extend(GENTICS.Aloha.Uploader, Ext.Window, {
 				}, // listeners
 			}); //XHRUpload
 			upload.send();
-			return fileRec.id;
 		} catch (error) {
 			//TODO : error handling
 			console.log(error);
