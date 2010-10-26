@@ -71,6 +71,21 @@ jQuery.fn.removeCss = function( cssName ) {
  *
  * The method is fired when a Alt, Ctrl, Meta key down happens.
  */
-jQuery.fn.cmdkeydown  = function( fn ) {
-	return fn ? jQuery(document).bind( 'cmdkeydown', fn ) : jQuery(document).trigger( 'cmdkeydown' );
+jQuery.fn.contentEditable  = function( b ) {
+	// ie does not understand contenteditable but contentEditable
+	// contentEditable is not xhtml compatible.
+	var ce = 'contenteditable';
+	if (jQuery.browser.msie && parseInt(jQuery.browser.version) == 7 ) {
+		ce = 'contentEditable';
+	}
+	if ( b == undefined ) {
+		jQuery(this).attr(ce);
+	} else {
+		if (b) {
+			b='true';
+		} else {
+			b='false';
+		}
+		jQuery(this).attr(ce, b);
+	}
 };
