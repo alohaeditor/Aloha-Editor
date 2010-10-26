@@ -216,7 +216,7 @@ GENTICS.Aloha.Link.bindInteractions = function () {
 
         // CTRL+L
         GENTICS.Aloha.editables[i].obj.keydown(function (e) {
-    		if ( (e.metaKey || e.ctrlKey) && e.which == 76 ) {
+    		if ( e.metaKey && e.which == 76 ) {
 		        if ( that.findLinkMarkup() ) {
 		            GENTICS.Aloha.FloatingMenu.userActivatedTab = that.i18n('floatingmenu.tab.link');
 		
@@ -442,6 +442,13 @@ GENTICS.Aloha.Link.hrefChange = function () {
 	if ( typeof this.onHrefChange == 'function' ) {
 		this.onHrefChange.call(this, this.hrefField.getTargetObject(),  this.hrefField.getQueryValue(), this.hrefField.getItem() )
 	}
+	GENTICS.Aloha.EventRegistry.trigger(
+			new GENTICS.Aloha.Event('hrefChanged', GENTICS.Aloha, {
+				'obj' : this.hrefField.getTargetObject(),
+				'href': this.hrefField.getQueryValue(),
+				'item': this.hrefField.getItem()
+			})
+	);
 };
 
 /**
