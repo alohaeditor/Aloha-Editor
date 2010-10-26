@@ -5,11 +5,11 @@
 <title>Aloha, Drag And Drop Files !</title>
 <script>GENTICS_Aloha_base="../../../";</script>
 <script type="text/javascript" src="../../../core/include.js"></script>
-<script type="text/javascript" src="../../../plugins/com.gentics.aloha.plugins.Format/plugin.js"></script>
-<script type="text/javascript" src="../../../plugins/com.gentics.aloha.plugins.Image/plugin.js"></script>
-
-<script type="text/javascript" src="../../com.gentics.aloha.plugins.DragAndDropFiles/plugin.js"></script>
-
+<script type="text/javascript" src="../../com.gentics.aloha.plugins.Format/plugin.js"></script>
+<script type="text/javascript" src="../../com.gentics.aloha.plugins.Image/plugin.js"></script>
+<script type="text/javascript" src="../deps/Ext.ux.XHRUpload.js"></script>
+<script type="text/javascript" src="../lib/uploader.js"></script>
+<script type="text/javascript" src="../plugin.js"></script>
 
 <link rel="stylesheet" href="AlohaDragAndDropFiles.css" />
 
@@ -28,6 +28,13 @@ GENTICS.Aloha.settings = {
 	 	"com.gentics.aloha.plugins.Image": {
 		},
 		"com.gentics.aloha.plugins.DragAndDropFiles": {
+			config : { 'drop' : {'max_file_size': '200000',
+	   										 'upload': {//'uploader_class':GENTICS.Aloha.Uploader, //this is the default
+	   										 			'config': {
+		   										 			'url': '/content/',
+		   										 			'extra_headers':{'Accept':'application/json'},
+		   										 			'additional_params': {"location":""},
+					   										'www-encoded': false }}}}
 		},
 	 	"com.gentics.aloha.plugins.Table": {
 			config: ['table']

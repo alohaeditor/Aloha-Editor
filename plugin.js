@@ -18,16 +18,17 @@ GENTICS.Aloha.DragAndDropFiles.languages=['en','fr'];
  */
 GENTICS.Aloha.DragAndDropFiles.config = { 'drop' : {	'max_file_size': 200000,
 											'max_file_count': 2,
-											'upload': {'uploader_class':'GENTICS.Aloha.Uploader',
+											'upload': {//'uploader_class':GENTICS.Aloha.Uploader,
 										 			'config': {
+										 				// can add more elements for Ext window styling 
 										 				'method':'POST',
 											 			'url': "",
 											 			'file_name_param':"filename",
 											 			'file_name_header':'X-File-Name',
-											 			'extra_headers':{},
-											 			'extra_post_data': {},
+											 			'extra_headers':{}, //Extra parameters
+											 			'extra_post_data': {}, //Extra parameters
 											 			'send_multipart_form': false, //true for html4 TODO: make browser check
-											 			'additional_params': {"location":""},
+											 			//'additional_params': {"location":""},
 											 			'www-encoded': false }
 													}
 											}
@@ -46,25 +47,36 @@ GENTICS.Aloha.DragAndDropFiles.init = function() {
 	
 	// TODO: have to finish specs, lines below may move to a new plugin
 		this.subscribeEvents();
-		var uxXHR = '' + GENTICS_Aloha_base + '/plugins/com.gentics.aloha.plugins.DragAndDropFiles/deps/Ext.ux.XHRUpload.js';
-		jQuery('<script type="text/javascript" />').attr('src', uxXHR).appendTo('head');
-		var uploaderPath = '' + GENTICS_Aloha_base + '/plugins/com.gentics.aloha.plugins.DragAndDropFiles/uploader.js';
-		jQuery('<script type="text/javascript" />').attr('src', uploaderPath).appendTo('head');
+//		var uxXHR = '' + GENTICS_Aloha_base + '/plugins/com.gentics.aloha.plugins.DragAndDropFiles/deps/Ext.ux.XHRUpload.js';
+//		jQuery('<script type="text/javascript" />').attr('src', uxXHR).appendTo('head');
+//		var uploaderPath = '' + GENTICS_Aloha_base + '/plugins/com.gentics.aloha.plugins.DragAndDropFiles/uploader.js';
+//		jQuery('<script type="text/javascript" />').attr('src', uploaderPath).appendTo('head');
 		try {
-			uploader_class = null;
-			config = this.config;
+			//uploader_class = null;
+			config = this.config.drop.upload.config;
 			
-			try {
-				uploader_class = eval(this.settings.drop.upload.uploader_class);
-			} catch(error) {
-				GENTICS.Aloha.Log.info(this,"Custom class loading error or not specified, using default");
-			}
-			if (uploader_class == null) {
-				uploader_class = eval(this.config.drop.upload.uploader_class);
-			}
-			Ext.apply(config, this.settings);
-			this.uploader = uploader_class(config.drop.upload.config);
+//			try {
+//				uploader_class = this.settings.config.drop.upload.uploader_class;
+//			} catch(error) {
+//				GENTICS.Aloha.Log.info(this,"Custom class loading error or not specified, using default");
+//			}
+//			if (uploader_class == null) {
+//				uploader_class = this.config.drop.upload.uploader_class;
+//			}
+			Ext.apply(config,{	
+				title: 'Upload status',
+				width:435,
+				height:140,
+				//border:false,
+				plain:true,
+				layout: 'border',
+				closeAction: 'hide'
+				}, this.settings.config.drop.upload.config);
+			//Ext.apply(config, );
+			Ext.apply(GENTICS.Aloha.uploadWindow, config);
+			this.uploader = GENTICS.Aloha.uploadWindow; //GENTICS.Aloha.Uploader(config.drop.upload.config);
 		} catch(error) {
+			GENTICS.Aloha.Log.warn(this,error);
 			GENTICS.Aloha.Log.warn(this,"Error creating uploader, no upload will be processed");
 		}
 		
@@ -85,8 +97,8 @@ GENTICS.Aloha.DragAndDropFiles.init = function() {
 GENTICS.Aloha.DragAndDropFiles.setBodyDropHandler = function() {
 	 if (!document.body.BodyDragSinker){
 		 document.body.BodyDragSinker = true;
-		 
-		 var body = Ext.fly(document.body);
+		 var that = this;
+		 body = Ext.fly(document.body);
 		 body.on({
 			dragenter:function(event){
 				return true;
@@ -148,7 +160,7 @@ GENTICS.Aloha.DragAndDropFiles.setBodyDropHandler = function() {
 					    	}
 				        	var config = GENTICS.Aloha.DragAndDropFiles.getEditableConfig(editable);
 				           	if (config.drop) {
-				           		ul_id = this.uploader.addFileUpload(files[len],config.drop.upload.url);
+				           		ul_id = that.uploader.addFileUpload(files[len],config.drop.upload.url);
 				        		var display = jQuery('<div id="GENTICS_drop_file_uploading_'+ul_id+'" class="GENTICS_drop_file_box"><div class="GENTICS_drop_file_icon GENTICS_drop_file_default"></div>' +
 				        				'<div class="GENTICS_drop_file_details">'+ files[len].name +'</div></div>');
 				        		//target.parent().append(display);
@@ -160,13 +172,14 @@ GENTICS.Aloha.DragAndDropFiles.setBodyDropHandler = function() {
 				        					'display': display,
 				        					'range': range,
 				        					'editable': editable}));
-				        		this.uploader.show(document.body);
-				        		this.uploader.startFileUpload(ul_id);
+				        		that.uploader.show(document.body);
+				        		that.uploader.startFileUpload(ul_id);
 				           	} else {
 				            	GENTICS.Aloha.EventRegistry.trigger(
 				            			new GENTICS.Aloha.Event('dropFileInPage', GENTICS.Aloha,files[len]));
-				            	GENTICS.Aloha.uploadWindow.show(document.body);
-				            	GENTICS.Aloha.uploadWindow.addFileUpload(files[len],this.config.drop.upload.url);
+				            	that.uploader.addFileUpload(files[len],this.config.drop.upload.url);
+				            	that.uploader.show(document.body);
+				            	that.uploader.startFileUpload(ul_id);
 				           	}
 				        } //while
 					}
