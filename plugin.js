@@ -313,6 +313,8 @@ GENTICS.Aloha.Image.subscribeEvents = function () {
         	that.insertImgButton.show();
         } else {
         	that.insertImgButton.hide();
+        	// TODO this should not be necessary here!
+        	GENTICS.Aloha.FloatingMenu.doLayout();
             // leave if img is not allowed
             return;
         }
