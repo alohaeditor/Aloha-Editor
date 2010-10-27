@@ -356,9 +356,13 @@ GENTICS.Aloha.Link.findLinkMarkup = function ( range ) {
 	if ( typeof range == 'undefined' ) {
         var range = GENTICS.Aloha.Selection.getRangeObject();   
     }
-    return range.findMarkup(function() {
-        return this.nodeName.toLowerCase() == 'a';
-    }, GENTICS.Aloha.activeEditable.obj);
+	if ( GENTICS.Aloha.activeEditable ) {
+		return range.findMarkup(function() {
+	        return this.nodeName.toLowerCase() == 'a';
+	    }, GENTICS.Aloha.activeEditable.obj);
+	} else {
+		return null;
+	}
 };
 
 /**
