@@ -25,3 +25,4 @@ core/selection.js
 core/sidebar.js
 core/repositorymanager.js
 core/repository.js
+core/repositoryobjects.js

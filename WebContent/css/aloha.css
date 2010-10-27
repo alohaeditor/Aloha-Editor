@@ -114,6 +114,10 @@ button.GENTICS_button {
 	background: url(../images/base.png) no-repeat !important;
 }
 
+button.GENTICS_button_big {
+	background: url(../images/base_big.png) no-repeat !important;
+}
+
 /*buttons for format plugin*/
 button.GENTICS_button_b {
 	background-position: 0px 0px;
@@ -265,6 +269,10 @@ button.GENTICS_button_addPerson {
 
 button.GENTICS_button_addEvent {
 	background-position: -208px 0 !important;
+}
+
+button.GENTICS_button_tree {
+	background-position: -0 0 !important;
 }
 
 /*button status hover of format plugin*/

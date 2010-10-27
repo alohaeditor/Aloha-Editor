@@ -32,8 +32,8 @@ Ext.extend( Ext.tree.AlohaTreeLoader, Ext.tree.TreeLoader, {
     	});
 	},
     createNode: function(node) {
-		if ( node.displayName ) {
-			node.text = node.displayName;
+		if ( node.name ) {
+			node.text = node.name;
 		}
 		if ( node.hasMoreItems ) {
 			node.leaf = !node.hasMoreItems;

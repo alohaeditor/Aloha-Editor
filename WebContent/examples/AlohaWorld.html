@@ -14,7 +14,7 @@
 <script type="text/javascript" src="../plugins/com.gentics.aloha.plugins.Link/delicious.js"></script>
 <script type="text/javascript" src="../plugins/com.gentics.aloha.plugins.Link/LinkList.js"></script>
 
-<link rel="stylesheet" href="examples.css" />
+<link rel="stylesheet" href="AlohaWorld.css" />
 
 <!-- turn an element into editable Aloha continuous text -->
 <script type="text/javascript">
@@ -32,11 +32,11 @@ GENTICS.Aloha.settings = {
 	"repositories": {
 	 	"com.gentics.aloha.repositories.LinkList": {
 	 		data: [
- 		        { id: 1, displayName: 'Aloha Developers Wiki', url:'http://www.aloha-editor.com/wiki', objectType:'website', weight: 0.50 },
- 		        { id: 2, displayName: 'Aloha Editor - The HTML5 Editor', url:'http://aloha-editor.com', objectType:'website', weight: 0.90  },
- 		        { id: 3, displayName: 'Aloha Demo', url:'http://www.aloha-editor.com/demos.html', objectType:'website', weight: 0.75  },
- 		        { id: 4, displayName: 'Aloha Wordpress Demo', url:'http://www.aloha-editor.com/demos/wordpress-demo/index.html', objectType:'website', weight: 0.75  },
- 		        { id: 5, displayName: 'Aloha Logo', url:'http://www.aloha-editor.com/images/aloha-editor-logo.png', objectType:'image', weight: 0.10  }
+ 		        { name: 'Aloha Developers Wiki', url:'http://www.aloha-editor.com/wiki', type:'website', weight: 0.50 },
+ 		        { name: 'Aloha Editor - The HTML5 Editor', url:'http://aloha-editor.com', type:'website', weight: 0.90  },
+ 		        { name: 'Aloha Demo', url:'http://www.aloha-editor.com/demos.html', type:'website', weight: 0.75  },
+ 		        { name: 'Aloha Wordpress Demo', url:'http://www.aloha-editor.com/demos/wordpress-demo/index.html', type:'website', weight: 0.75  },
+ 		        { name: 'Aloha Logo', url:'http://www.aloha-editor.com/images/aloha-editor-logo.png', type:'image', weight: 0.10  }
 	 		]
 		}
 	},
@@ -86,7 +86,7 @@ GENTICS.Aloha.settings = {
 		  	// handle change of href
 		  	onHrefChange: function( obj, href, item ) {
 			  	if ( item ) {
-					jQuery(obj).attr('data-name', item.displayName);
+					jQuery(obj).attr('data-name', item.name);
 			  	} else {
 					jQuery(obj).removeAttr('data-name');
 			  	}
