@@ -189,7 +189,7 @@ GENTICS.Aloha.Plugin.prototype.getEditableConfig = function (obj) {
 					configObj = jQuery.merge(configObj, selectorConfig);
 				} else {
 					configObj = {};
-					configObj = jQuery.extend(true, configObj, that.config, selectorConfig);
+					configObj = jQuery.extend(true, configObj, selectorConfig);
 				}
 			}
 		});	
