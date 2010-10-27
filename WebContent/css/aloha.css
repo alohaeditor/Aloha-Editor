@@ -271,6 +271,9 @@ button.GENTICS_button_addEvent {
 	background-position: -208px 0 !important;
 }
 
+button.GENTICS_button_abbr {
+	background-position: -336px 0px !important;
+}
 button.GENTICS_button_tree {
 	background-position: -0 0 !important;
 }

@@ -181,15 +181,18 @@ Ext.reg('alohaattributefield', Ext.ux.AlohaAttributeField);
  * @namespace GENTICS.Aloha.ui
  * @class AttributeField
  */
-GENTICS.Aloha.ui.AttributeField = function (arguments) {
+GENTICS.Aloha.ui.AttributeField = function (properties) {
 
 	/**
 	 * @cfg Function called when an element is selected
 	 */
 	this.onSelect = null;
+	this.listenerQueue = [];
+	this.objectTypeFilter = null;
+	this.tpl = null;
+	this.displayField = null;
 
-	GENTICS.Utils.applyProperties(this, arguments);
-
+	this.init(properties);
 };
 
 /**
