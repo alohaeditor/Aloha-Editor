@@ -81,8 +81,8 @@ GENTICS.Aloha.DragAndDropFiles.initUploader = function(customConfig) {
 	if (uploader_class == undefined) {
 		uploader_class = eval(this.config.drop.upload.uploader_class);
 	}
-	config = this.config.drop.upload.config;
-	Ext.apply(config,{	
+	var uploader_config = this.config.drop.upload.config;
+	Ext.apply(uploader_config,{	
 		title: 'Upload status',
 		width:435,
 		height:140,
@@ -91,7 +91,7 @@ GENTICS.Aloha.DragAndDropFiles.initUploader = function(customConfig) {
 		layout: 'border',
 		closeAction: 'hide'
 		}, customConfig.drop.upload.config);
-	uploader = new uploader_class(config);
+	uploader = new uploader_class(uploader_config);
 	return uploader;
 };
 
@@ -167,9 +167,9 @@ GENTICS.Aloha.DragAndDropFiles.setBodyDropHandler = function() {
 					    	    return false;
 					    	}
 					    	//TODO : have a look in core for solving the per-editable config issue
-				        	var config = that.getEditableConfig(editable);
-				           	if (config.drop) {
-				           		ul_id = that.uploader.addFileUpload(files[len],config.drop.upload.url);
+				        	var edConfig = that.getEditableConfig(editable);
+				           	if (edConfig.drop) {
+				           		ul_id = that.uploader.addFileUpload(files[len],edConfig.drop.upload.config.url);
 				        		var display = jQuery('<div id="GENTICS_drop_file_uploading_'+ul_id+'" class="GENTICS_drop_file_box"><div class="GENTICS_drop_file_icon GENTICS_drop_file_default"></div>' +
 				        				'<div class="GENTICS_drop_file_details">'+ files[len].name +'</div></div>');
 				        		//target.parent().append(display);
