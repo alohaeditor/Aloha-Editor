@@ -175,16 +175,22 @@ GENTICS.Aloha.Plugin.prototype.init = function() {};
  */
 GENTICS.Aloha.Plugin.prototype.getEditableConfig = function (obj) {
 	
-	var config = [];
+	var configObj = null;
 	var configSpecified = false;
 	
 	if ( this.settings.editables ) {
-	
+		var that = this;
 		// check if the editable's selector matches and if so add its configuration to object configuration
 		jQuery.each( this.settings.editables, function (selector, selectorConfig) {
 			if ( obj.is(selector) ) {
 				configSpecified = true;
-				config = jQuery.merge(config, selectorConfig);
+				if (selectorConfig.constructor == (new Array).constructor) {
+					configObj = [];
+					configObj = jQuery.merge(configObj, selectorConfig);
+				} else {
+					configObj = {};
+					configObj = jQuery.extend(true, configObj, that.config, selectorConfig);
+				}
 			}
 		});	
 	}
@@ -192,13 +198,13 @@ GENTICS.Aloha.Plugin.prototype.getEditableConfig = function (obj) {
 	// fall back to default configuration
 	if ( !configSpecified ) {
 		if ( typeof this.settings.config == 'undefined' || !this.settings.config ) {
-			config = this.config;
+			configObj = this.config;
 		} else {
-			config = this.settings.config;
+			configObj = this.settings.config;
 		}
 	}
 	
-	return config;
+	return configObj;
 }
 
 /**
