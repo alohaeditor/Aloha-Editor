@@ -45,3 +45,35 @@ a.aloha {
   padding: 0px 13px 0px 0px;
 }
 
+/* Abbreviation styling */
+abbr, acronym
+{
+	border-bottom: .1em dotted;
+	cursor: help;
+}
+
+/* A basic table styling */
+table
+{
+  padding: 0;
+  margin: 0;
+  border-collapse: collapse;
+  border: 1px solid #333;
+  color: #000;
+}
+
+table caption
+{
+  caption-side: bottom;
+  font-size: 0.8em;
+  font-style: italic;
+  text-align: right;
+  padding: 0.5em 0;
+}
+
+table th, table td
+{
+  border: 1px solid #666;
+  padding: 0.5em;
+  text-align: left;
+}
