@@ -498,7 +498,7 @@ Ext.ux.GENTICSMultiSplitButton = Ext.extend(Ext.Component, {
 		}
 		
 		// reposition multisplit contents to the active item
-		if (el) {
+		if (el && this.ulObj) {
 			this.ulObj.css('margin-top', 0);
 			var top = el.position().top;
 			this.ulObj.css('margin-top', - top + 6);
