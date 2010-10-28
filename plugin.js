@@ -169,6 +169,7 @@ GENTICS.Aloha.DragAndDropFiles.setBodyDropHandler = function() {
 					    	//TODO : have a look in core for solving the per-editable config issue
 				        	var edConfig = that.getEditableConfig(editable);
 				           	if (edConfig.drop) {
+				           		GENTICS.Aloha.Repositories.Uploader.addFileUpload(files[len]);
 				           		ul_id = that.uploader.addFileUpload(files[len],edConfig.drop.upload.config.url);
 				        		var display = jQuery('<div id="GENTICS_drop_file_uploading_'+ul_id+'" class="GENTICS_drop_file_box"><div class="GENTICS_drop_file_icon GENTICS_drop_file_default"></div>' +
 				        				'<div class="GENTICS_drop_file_details">'+ files[len].name +'</div></div>');
