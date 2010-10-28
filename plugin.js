@@ -46,7 +46,7 @@ GENTICS.Aloha.DragAndDropFiles.init = function() {
 	jQuery('<link rel="stylesheet" />').attr('href', stylePath).appendTo('head');
 	
 	// TODO: have to finish specs, lines below may move to a new plugin
-		this.subscribeEvents();
+		//this.subscribeEvents();
 //		var uxXHR = '' + GENTICS_Aloha_base + '/plugins/com.gentics.aloha.plugins.DragAndDropFiles/deps/Ext.ux.XHRUpload.js';
 //		jQuery('<script type="text/javascript" />').attr('src', uxXHR).appendTo('head');
 //		var uploaderPath = '' + GENTICS_Aloha_base + '/plugins/com.gentics.aloha.plugins.DragAndDropFiles/uploader.js';
@@ -96,7 +96,7 @@ GENTICS.Aloha.DragAndDropFiles.initUploader = function(customConfig) {
 };
 
 /**
- *  Attach drag and drop listeners to document body
+ *  Attach drag and drop listeners to document body (ExtJs way)
  * 
  */
 GENTICS.Aloha.DragAndDropFiles.setBodyDropHandler = function() {
@@ -126,7 +126,7 @@ GENTICS.Aloha.DragAndDropFiles.setBodyDropHandler = function() {
 				    var len = files.length;
 				    // if no files where dropped, use default handler
 				    if (len < 1) {
-				    	event.sink = false;
+				    	e.sink = false;
 				        return true;
 				    }
 				    if (len > that.config.drop.max_file_count) {
@@ -158,7 +158,7 @@ GENTICS.Aloha.DragAndDropFiles.setBodyDropHandler = function() {
 						that.uploader.show(document.body);
 					} else {
 						GENTICS.Aloha.getEditableById(editable.attr('id')).activate();
-						range = that.InitializeRangeForDropEvent(event, editable);
+						range = that.InitializeRangeForDropEvent(e, editable);
 
 					    while(--len >= 0) {
 					    	if (files[len].size > that.config.drop.max_file_size) {
@@ -219,36 +219,16 @@ GENTICS.Aloha.DragAndDropFiles.InitializeRangeForDropEvent = function(event, edi
 		target.html(" ");
 	}
 	var	range = new GENTICS.Aloha.Selection.SelectionRange();
-	//try {
 	if (target.textNodes().length == 0) {
-		range.startContainer = target[0];
-		range.endContainer = target[0];
+		range.startContainer = target[0].childNodes[0];
+		range.endContainer = target[0].childNodes[0];
 	} else {
 		range.startContainer = target.textNodes()[0];
 		range.endContainer = target.textNodes()[0];
 	}
-//	} catch(error) {
-//		range.startContainer = target.parent()[0];
-//		range.endContainer = target.parent()[0];
-//	}
-	if (target.textNodes().length == 0) {
-		range.startParent = target.parent()[0];
-		range.endParent = target.parent()[0];
-	} else {
-		range.startParent = target;
-		range.endParent = target;
-	}
-	range.updateCommonAncestorContainer( target.parent()[0]);
-	range.unmodifiableMarkupAtStart =  editable[0];
-	range.limitObject =  editable[0];
-	
-	//try {
-	//	range.startOffset = event.rangeOffset;
-	//	range.endOffset = event.rangeOffset;    		
-	//} catch(error) {
+
 		range.startOffset = 0;
 		range.endOffset = 0;    		
-	//}
 	try {
 		range.select();
 	} catch (error) {
