@@ -5,3 +5,4 @@ deps/prettyPhoto/resources/css/prettyPhoto.css
 plugins/com.gentics.aloha.plugins.Table/resources/table.css
 plugins/com.gentics.aloha.plugins.Link/css/Link.css
 plugins/com.gentics.aloha.plugins.HighlightEditables/css/HighlightEditables.css
+plugins/com.gentics.aloha.plugins.LinkChecker/css/LinkChecker.css
