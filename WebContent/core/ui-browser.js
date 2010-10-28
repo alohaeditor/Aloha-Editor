@@ -24,32 +24,34 @@ GENTICS.Aloha.ui.Browser = function () {
 	this.onSelect = null;
 	
 	var that = this;
+	this.exploreStore = new Ext.data.Store( {
+		proxy : new Ext.data.AlohaProxy(),
+		reader : new Ext.data.AlohaObjectReader()
+	});
 	
+	this.colModel = new Ext.grid.ColumnModel([ {
+		id : 'name',
+		header : 'Name',
+		width : 100,
+		sortable : true,
+		dataIndex : 'name'
+	}, {
+		header : 'URL',
+		renderer : function(val) {
+			return val;
+		},
+		width : 300,
+		sortable : true,
+		dataIndex : 'url'
+	} ]);
 	// define the grid that represents the filelist
 	this.grid = new Ext.grid.GridPanel( {
 		region : 'center',
 		autoScroll : true,
 		// the datastore can be used by the gridpanel to fetch data from
 		// repository manager
-		store : new Ext.data.Store( {
-			proxy : new Ext.data.AlohaProxy(),
-			reader : new Ext.data.AlohaObjectReader()
-		}),
-		columns : [ {
-			id : 'name',
-			header : 'Name',
-			width : 100,
-			sortable : true,
-			dataIndex : 'name'
-		}, {
-			header : 'URL',
-			renderer : function(val) {
-				return val;
-			},
-			width : 300,
-			sortable : true,
-			dataIndex : 'url'
-		} ],
+		store : this.exploreStore,
+		colModel : this.colModel,
 		stripeRows : true,
 		autoExpandColumn : 'name',
 		height : 350,
@@ -105,8 +107,18 @@ GENTICS.Aloha.ui.Browser = function () {
     this.tree.getSelectionModel().on({
         'selectionchange' : function(sm, node){
             if (node) {
-            	var resourceItem = node.attributes;
-        		that.grid.store.load({ params: {
+            	try{            		
+            		var resourceItem = node.attributes;
+            		if (resourceItem.colModel) {
+            			this.grid.reconfigure(this.exploreStore,resourceItem.colModel);
+            		} else {
+            			this.grid.reconfigure(this.exploreStore,this.colModel);
+            		}
+            	} catch (error) {}
+            	
+            	this.grid.setTitle(node.text);
+            	//this.win.doLayout();
+            	this.exploreStore.load({ params: {
         			inFolderId: resourceItem.id,
         			objectTypeFilter: that.objectTypeFilter,
         			repositoryId: resourceItem.repositoryId
