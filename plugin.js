@@ -346,11 +346,11 @@ GENTICS.Aloha.Image.subscribeEvents = function () {
 GENTICS.Aloha.Image.clickImage = function ( e ) { 
 	// select the image
 	// HELP: can't find a way...
-	/*
+	thisimg = jQuery(this);
    var offset = 1;//GENTICS.Utils.Dom.getIndexInParent(this);
    var imgRange = new GENTICS.Utils.RangeObject({
-	   startContainer: jQuery(this).parent(),
-	   endContainer: jQuery(this).parent(),
+	   startContainer: thisimg.parent(),
+	   endContainer: thisimg.parent(),
 	   startOffset: offset,
 	   endOffset: offset+1
    });
@@ -358,7 +358,7 @@ GENTICS.Aloha.Image.clickImage = function ( e ) {
    imgRange.update();
    console.log(imgRange);
    imgRange.select();
-   */
+   
 };
 
 
