@@ -204,7 +204,7 @@ GENTICS.Utils.Dom.prototype.listElements = ['li', 'ol',	'ul'];
  * 				The limiting node will not be included in the split itself.
  * 				If no limiting object is set, the document body will be the limiting object.
  * @param {boolean} atEnd If set to true, the DOM will be splitted at the end of the range otherwise at the start.
- * @return {object} jQuery object containing the two root DOM objects of the split or false if the DOM could not be split
+ * @return {object} jQuery object containing the two root DOM objects of the split, true if the DOM did not need to be split or false if the DOM could not be split
  * @method
  */
 GENTICS.Utils.Dom.prototype.split = function (range, limit, atEnd) {
@@ -243,7 +243,7 @@ GENTICS.Utils.Dom.prototype.split = function (range, limit, atEnd) {
 	
 	// nothing found to split -> return here
 	if (! path) {
-		return;
+		return true;
 	}
 	
 	path = path.reverse();
@@ -962,7 +962,29 @@ GENTICS.Utils.Dom.prototype.insertIntoDOM = function (object, range, limit, atEn
 	if (typeof newParent != 'undefined') {
 		// we found a possible new parent, so we split the DOM up to the new parent
 		var splitParts = this.split(range, jQuery(newParent), atEnd);
-		if (splitParts) {
+		if (splitParts === true) {
+			// DOM was not split (there was no need to split it), insert the new object anyway
+			var container = range.startContainer;
+			var offset = range.startOffset;
+			if (atEnd) {
+				container = range.endContainer;
+				offset = range.endOffset;
+			}
+			if (offset == 0) {
+				// insert right before the first element in the container
+				var contents = jQuery(container).contents();
+				if (contents.length > 0) {
+					contents.eq(0).before(object);
+				} else {
+					jQuery(container).append(object);
+				}
+				return true;
+			} else {
+				// insert right after the element at offset-1
+				jQuery(container).contents().eq(offset-1).after(object);
+				return true;
+			}
+		} else if (splitParts) {
 			// if the DOM could be split, we insert the new object in between the split parts
 			splitParts.eq(0).after(object);
 			return true;
@@ -1213,6 +1235,35 @@ GENTICS.Utils.Dom.prototype.isEmpty = function (domObject) {
 
 	// found no contents, so the element is empty
 	return true;
+};
+
+/**
+ * Set the cursor (collapsed selection) right after the given DOM object
+ * @param domObject DOM object
+ * @method
+ */
+GENTICS.Utils.Dom.prototype.setCursorAfter = function (domObject) {
+	var newRange = new GENTICS.Utils.RangeObject();
+	newRange.startContainer = newRange.endContainer = domObject.parentNode;
+	newRange.startOffset = newRange.endOffset = this.getIndexInParent(domObject);
+
+	// select the range
+	newRange.select();
+};
+
+/**
+ * Set the cursor (collapsed selection) at the start into the given DOM object
+ * @param domObject DOM object
+ * @method
+ */
+GENTICS.Utils.Dom.prototype.setCursorInto = function (domObject) {
+	// set a new range into the given dom object
+	var newRange = new GENTICS.Utils.RangeObject();
+	newRange.startContainer = newRange.endContainer = domObject;
+	newRange.startOffset = newRange.endOffset = 0;
+
+	// select the range
+	newRange.select();
 };
 
 /**

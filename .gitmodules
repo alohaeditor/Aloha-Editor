@@ -49,3 +49,6 @@
 [submodule "WebContent/plugins/com.gentics.aloha.plugins.LinkChecker"]
 	path = WebContent/plugins/com.gentics.aloha.plugins.LinkChecker
 	url = https://github.com/alohaeditor/Aloha-Plugin-LinkChecker.git
+[submodule "WebContent/plugins/com.gentics.aloha.plugins.Paste"]
+	path = WebContent/plugins/com.gentics.aloha.plugins.Paste
+	url = https://github.com/alohaeditor/Aloha-Plugin-Paste.git

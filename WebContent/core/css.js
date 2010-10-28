@@ -18,6 +18,7 @@
 		header.appendChild(cssElement(base + 'plugins/com.gentics.aloha.plugins.Table/resources/table.css?v=' + GENTICS.Aloha.version));
 		header.appendChild(cssElement(base + 'plugins/com.gentics.aloha.plugins.Link/css/Link.css?v=' + GENTICS.Aloha.version));
 		header.appendChild(cssElement(base + 'plugins/com.gentics.aloha.plugins.HighlightEditables/css/HighlightEditables.css?v=' + GENTICS.Aloha.version));
+		header.appendChild(cssElement(base + 'plugins/com.gentics.aloha.plugins.LinkChecker/css/LinkChecker.css?v=' + GENTICS.Aloha.version));
 
 	}
 
