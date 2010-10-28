@@ -297,8 +297,8 @@ GENTICS.Aloha.Image.subscribeEvents = function () {
 				//GENTICS.Aloha.Selection.changeMarkupOnSelection(img);
 				//this.attachedData.display.append(img);
 				img.attr('src', readEvent.target.result);
-				this.attachedData.display.replaceWith(img);
-				//GENTICS.Utils.Dom.insertIntoDOM(img,data.range,  jQuery(GENTICS.Aloha.activeEditable.obj));
+				//this.attachedData.display.replaceWith(img);
+				GENTICS.Utils.Dom.insertIntoDOM(img,reader.attachedData.range,  jQuery(GENTICS.Aloha.activeEditable.obj));
 				//this.attachedData.display.removeClass('GENTICS_default_file_icon');
 				//console.log(this.attachedData.display);
 			};
