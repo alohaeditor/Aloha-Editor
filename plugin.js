@@ -146,7 +146,7 @@ GENTICS.Aloha.DragAndDropFiles.setBodyDropHandler = function() {
 							target = editable.children(':last');
 						}
 					} else {
-						editable = target.parent('.GENTICS_editable');
+						editable = target.parents('.GENTICS_editable');
 					}
 					if (editable[0] == null) {
 						while(--len >= 0) {
@@ -173,7 +173,7 @@ GENTICS.Aloha.DragAndDropFiles.setBodyDropHandler = function() {
 				        		var display = jQuery('<div id="GENTICS_drop_file_uploading_'+ul_id+'" class="GENTICS_drop_file_box"><div class="GENTICS_drop_file_icon GENTICS_drop_file_default"></div>' +
 				        				'<div class="GENTICS_drop_file_details">'+ files[len].name +'</div></div>');
 				        		//target.parent().append(display);
-				        		GENTICS.Utils.Dom.insertIntoDOM(display,range,  jQuery(GENTICS.Aloha.activeEditable.obj));
+				        		//GENTICS.Utils.Dom.insertIntoDOM(display,range,  jQuery(GENTICS.Aloha.activeEditable.obj));
 				        		GENTICS.Aloha.EventRegistry.trigger(
 				        				new GENTICS.Aloha.Event('dropFileInEditable', GENTICS.Aloha, {
 				        					'file':files[len],
@@ -215,19 +215,32 @@ GENTICS.Aloha.DragAndDropFiles.setBodyDropHandler = function() {
 GENTICS.Aloha.DragAndDropFiles.InitializeRangeForDropEvent = function(event, editable) {
 	//var range = new GENTICS.Utils.RangeObject();
 	target = jQuery(event.target);
-	var	range = new GENTICS.Aloha.Selection.SelectionRange();
-	try {
-		range.startContainer = e.rangeParent;
-		range.endContainer = e.rangeParent;
-	} catch(error) {
-		range.startContainer = target[0];//.parent()[0];
-		range.endContainer = target[0];//.parent()[0];
+	if (target.textNodes().length == 0 && target.html().length == 0) {
+		target.html(" ");
 	}
-	range.startParent = target.parent()[0];
-	range.endParent = target.parent()[0];
-	range.updateCommonAncestorContainer(editable[0]);
-	range.unmodifiableMarkupAtStart = editable;
-	range.limitObject = editable[0];
+	var	range = new GENTICS.Aloha.Selection.SelectionRange();
+	//try {
+	if (target.textNodes().length == 0) {
+		range.startContainer = target[0];
+		range.endContainer = target[0];
+	} else {
+		range.startContainer = target.textNodes()[0];
+		range.endContainer = target.textNodes()[0];
+	}
+//	} catch(error) {
+//		range.startContainer = target.parent()[0];
+//		range.endContainer = target.parent()[0];
+//	}
+	if (target.textNodes().length == 0) {
+		range.startParent = target.parent()[0];
+		range.endParent = target.parent()[0];
+	} else {
+		range.startParent = target;
+		range.endParent = target;
+	}
+	range.updateCommonAncestorContainer( target.parent()[0]);
+	range.unmodifiableMarkupAtStart =  editable[0];
+	range.limitObject =  editable[0];
 	
 	//try {
 	//	range.startOffset = event.rangeOffset;
@@ -239,7 +252,7 @@ GENTICS.Aloha.DragAndDropFiles.InitializeRangeForDropEvent = function(event, edi
 	try {
 		range.select();
 	} catch (error) {
-		console.log(error);
+		GENTICS.Aloha.log(this,error);
 	}
 	return range;
 };
