@@ -141,8 +141,6 @@ GENTICS.Aloha.TablePlugin.init = function() {
 
 	// subscribe for the 'editableActivated' event to activate all tables in the editable
 	GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'editableActivated', function(event, props) {
-		var that = this;
-		
 		props.editable.obj.find('table').each(function() {
 			// shortcut for TableRegistry
 			var tr = GENTICS.Aloha.TablePlugin.TableRegistry;
@@ -150,7 +148,25 @@ GENTICS.Aloha.TablePlugin.init = function() {
 				if (tr[i].obj.attr('id') == jQuery(this).attr('id')) {
 					// activate the table
 					tr[i].activate();
+					// and continue with the next table tag
+					return true;
 				}
+			}
+
+			// if we come here, we did not find the table in our registry, so we need to create a new one
+			// only convert tables which are editable
+			if (that.isEditableTable(this)) {
+
+				// instantiate a new table-object 
+				var table = new GENTICS.Aloha.Table(this);
+		
+				table.parentEditable = props.editable;
+
+				// activate the table
+				table.activate();
+		
+				// add the activated table to the TableRegistry
+				GENTICS.Aloha.TablePlugin.TableRegistry.push(table);
 			}
 		});
 	});
@@ -462,7 +478,7 @@ GENTICS.Aloha.TablePlugin.setFocusedTable = function(focusTable) {
         if ( focusTable.obj.children("caption").is('caption') ) {
         	// set caption button
         	that.captionButton.setPressed(true);
-        	var c = focusTable.obj.children("caption") 
+        	var c = focusTable.obj.children("caption");
         	c.contentEditable(true);
         	c.bind('mousedown', function(jqEvent) {
         		//focusTable.focus();
@@ -856,7 +872,7 @@ GENTICS.Aloha.Table.prototype.checkWai = function() {
 	} else {
 		w.addClass(this.get('waiRed'));
 	}
-}
+};
 
 /**
  * Add the selection-column to the left side of the table and attach the events
