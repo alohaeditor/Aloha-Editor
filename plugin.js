@@ -190,7 +190,7 @@ GENTICS.Aloha.TablePlugin.init = function() {
  */
 GENTICS.Aloha.TablePlugin.isEditableTable = function(table) {
 	var parent = jQuery(table.parentNode);
-	if (parent.attr('contenteditable') == 'true') {
+	if (parent.contentEditable() == 'true') {
 		return true;
 	} else {
 		return false;
@@ -354,13 +354,9 @@ GENTICS.Aloha.TablePlugin.initTableButtons = function () {
 					// select first cell of table
 				} else {						
 					var captionText = that.i18n('empty.caption');
-					var c = jQuery('<caption>'+captionText+'</caption>');
-					c.contentEditable(true);
+					var c = jQuery('<caption></caption>');
 					that.activeTable.obj.append(c);
-		        	c.bind('mousedown', function(jqEvent) {
-		        		this.focus();
-		        	});
-			        c.focus();
+					that.makeCaptionEditable(c, captionText);
 				}
 			}
 		}
@@ -386,6 +382,28 @@ GENTICS.Aloha.TablePlugin.initTableButtons = function () {
         GENTICS.Aloha.i18n(this, 'floatingmenu.tab.table'),
         1
     );
+};
+
+/**
+ * Helper method to make the caption editable
+ * @param caption caption as jQuery object
+ * @param captionText default text for the caption
+ */
+GENTICS.Aloha.TablePlugin.makeCaptionEditable = function(caption, captionText) {
+	if (captionText) {
+		cSpan.text(captionText);
+	}
+	var cSpan = caption.children('div').eq(0);
+	if (cSpan.length == 0) {
+		cSpan = jQuery('<div></div>');
+		caption.contents().wrap(cSpan);
+	}
+	cSpan.contentEditable(true);
+	cSpan.unbind('mousedown');
+	cSpan.bind('mousedown', function(jqEvent) {
+		this.focus();
+	});
+    cSpan.focus();
 };
 
 /**
@@ -479,11 +497,7 @@ GENTICS.Aloha.TablePlugin.setFocusedTable = function(focusTable) {
         	// set caption button
         	that.captionButton.setPressed(true);
         	var c = focusTable.obj.children("caption");
-        	c.contentEditable(true);
-        	c.bind('mousedown', function(jqEvent) {
-        		//focusTable.focus();
-        		this.focus();
-        	});
+        	that.makeCaptionEditable(c);
         }
 		focusTable.hasFocus = true;
 	}
@@ -762,7 +776,7 @@ GENTICS.Aloha.Table.prototype.activate = function() {
 	
 	// alter the table attributes
 	this.obj.addClass(this.get('className'));
-	this.obj.attr('contenteditable', 'false');
+	this.obj.contentEditable(false);
 
 	// set an id to the table if not already set
 	if (this.obj.attr('id') == '') {
@@ -805,7 +819,6 @@ GENTICS.Aloha.Table.prototype.activate = function() {
 //		}, 0);
 		
 		// stop bubbling and default-behaviour
-// DEACTIVATED by Haymo prevents selecting caption
 		jqEvent.stopPropagation();
 		jqEvent.preventDefault();
 		return false;
@@ -814,8 +827,9 @@ GENTICS.Aloha.Table.prototype.activate = function() {
 	// ### create a wrapper for the table (@see HINT below)
 	// wrapping div for the table to suppress the display of the resize-controls of
 	// the editable divs within the cells
-	var tableWrapper = jQuery('<div class="' + this.get('classTableWrapper') + '" contenteditable="false"></div>');
-	
+	var tableWrapper = jQuery('<div class="' + this.get('classTableWrapper') + '"></div>');
+	tableWrapper.contentEditable(false);
+
 	// wrap the tableWrapper around the table
 	this.obj.wrap(tableWrapper);
 
@@ -843,7 +857,11 @@ GENTICS.Aloha.Table.prototype.activate = function() {
 	
 	// attach events for the last cell
 	this.attachLastCellEvents();
+
+	// make the caption editable
 	
+	this.makeCaptionEditable();
+
 	// check WAI status
 	this.checkWai();
 	
@@ -858,6 +876,16 @@ GENTICS.Aloha.Table.prototype.activate = function() {
 					[ this ]
 			)
 	);
+};
+
+/**
+ * Make the table caption editable (if present)
+ */
+GENTICS.Aloha.Table.prototype.makeCaptionEditable = function() {
+	var caption = this.obj.find('caption').eq(0);
+	if (caption) {
+		GENTICS.Aloha.TablePlugin.makeCaptionEditable(caption);
+	}
 };
 
 /**
@@ -1762,8 +1790,8 @@ GENTICS.Aloha.Table.prototype.focus = function() {
 
 		// select first cell
 		// TODO put cursor in first cell without selecting
-		var firstCell = this.obj.find('tr:nth-child(2) td:nth-child(2)').children('div[contenteditable=true]').get(0);
-		jQuery(firstCell).get(0).focus();
+//		var firstCell = this.obj.find('tr:nth-child(2) td:nth-child(2)').children('div[contenteditable=true]').get(0);
+//		jQuery(firstCell).get(0).focus();
 
 	}
 	
@@ -1869,7 +1897,7 @@ GENTICS.Aloha.Table.prototype.deactivate = function() {
 	if (GENTICS.Aloha.trim(this.obj.attr('class')) == '') {
 		this.obj.removeAttr('class');
 	}
-	this.obj.removeAttr('contenteditable');
+//	this.obj.contentEditable('');
 //	this.obj.removeAttr('id');
 
 	// unwrap the selectionLeft-div if available
@@ -1893,7 +1921,12 @@ GENTICS.Aloha.Table.prototype.deactivate = function() {
 		var Cell = this.cells[i];
 		Cell.deactivate();
 	}
-	
+
+	// remove editable span in caption (if any)
+	this.obj.find('caption div').each(function() {
+		jQuery(this).contents().unwrap();
+	});
+
 	// better unset ;-) otherwise activate() may think you're activated.
 	this.isActive = false;
 };
@@ -2036,7 +2069,7 @@ GENTICS.Aloha.Table.Cell.prototype.activate = function() {
 	// create the editable wrapper for the cells
 	var wrapper = this.obj.children('div').eq(0);
 
-	wrapper.attr('contenteditable', 'true');
+	wrapper.contentEditable(true);
 	wrapper.addClass('GENTICS_Table_Cell_editable');
 
 
