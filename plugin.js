@@ -41,9 +41,6 @@ GENTICS.Aloha.LinkChecker.init = function () {
 	// remember reference to this class for callback
 	var that = this;
 
-	stylePath = GENTICS_Aloha_base + '/plugins/com.gentics.aloha.plugins.LinkChecker/css/LinkChecker.css';
-	jQuery('<link rel="stylesheet" />').attr('href', stylePath).appendTo('head');
-
 	// mark active Editable with a css class
 	GENTICS.Aloha.EventRegistry.subscribe(
 			GENTICS.Aloha, 
