@@ -113,7 +113,7 @@ GENTICS.Aloha.Ribbon.prototype.addButton = function (button) {
 			}
 			button.pressed = !button.pressed;
 		}
-	}
+	};
 	
 	var extButton;
 	
@@ -134,7 +134,7 @@ GENTICS.Aloha.Ribbon.prototype.addButton = function (button) {
  */
 GENTICS.Aloha.Ribbon.prototype.addSeparator = function() {
 	this.toolbar.insert(this.toolbar.items.getCount() - 3, new Ext.Toolbar.Separator());
-}
+};
 
 /**
  * Initilization of the Ribbon
