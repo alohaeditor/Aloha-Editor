@@ -6,9 +6,9 @@
 */
 
 .GENTICS_link_error {
-	color: red;
+	color: red !important;
 }
 
 .GENTICS_link_warn {
-	color: red;
+	color: red !important;
 }

@@ -149,7 +149,7 @@ GENTICS.Aloha.LinkChecker.urlExists = function (url, successFunc, failureFunc, t
 				try {
 					// if response HTTP status 200 link is ok
 					// this implementation does NOT cover redirects!
-				    if (xhr.status == 200) {
+				    if (xhr.status < 400) {
 				    	successFunc.call(this, xhr); 
 				    } else {
 						failureFunc.call(this, xhr);
