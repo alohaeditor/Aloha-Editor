@@ -108,6 +108,8 @@ GENTICS.Aloha.ui.Browser = function () {
         'selectionchange' : function(sm, node){
             if (node) {
             	try{            		
+            		// sets the ui object containing the items list
+            		resourceItem.viewGrid = this.grid;
             		var resourceItem = node.attributes;
             		if (resourceItem.colModel) {
             			this.grid.reconfigure(this.exploreStore,resourceItem.colModel);
@@ -115,7 +117,6 @@ GENTICS.Aloha.ui.Browser = function () {
             			this.grid.reconfigure(this.exploreStore,this.colModel);
             		}
             	} catch (error) {}
-            	
             	this.grid.setTitle(node.text);
             	//this.win.doLayout();
             	this.exploreStore.load({ params: {
