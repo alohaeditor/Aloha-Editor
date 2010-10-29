@@ -35,6 +35,19 @@
 	height: 0;
 }
 
+/* fixes modal dialog border issues in GCN backend */
+table.x-toolbar-ct {
+        border: 0px;
+}
+
+table.x-toolbar-ct td {
+        border: 0px;
+}
+
+table.x-toolbar-ct table {
+        border: 0px;
+}
+
 /* 
  * Floating Menu 
  */
@@ -436,3 +449,4 @@ ul.GENTICS_multisplit-expanded {
 ul.GENTICS_multisplit button.GENTICS_button_removeFormat {
 	background-image: url(../images/removeformat.png) !important;
 }
+
