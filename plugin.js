@@ -54,7 +54,7 @@ GENTICS.Aloha.LinkChecker.init = function () {
 			function (jEvent, aEvent) {
 				// find all link tags
 				aEvent.editable.obj.find('a').each(function() {
-					that.checkLink(this, 0);
+					that.checkLink(this, jQuery(this).attr('href'), 0);
 				});
 			} 
 	);
@@ -74,13 +74,17 @@ GENTICS.Aloha.LinkChecker.init = function () {
 			GENTICS.Aloha, 
 			"hrefChanged", 
 			function (jEvent, aEvent) {
+<<<<<<< HEAD
 				that.checkLink(aEvent.obj, 700);
+=======
+				that.checkLink(aEvent.obj, 'hrefChanged');
+>>>>>>> eb1d725ea3f6ad91f8a5b26770a296ef98763aef
 			}
 	);
 
 };
 
-GENTICS.Aloha.LinkChecker.checkLink = function (obj, delay, timeout) {
+GENTICS.Aloha.LinkChecker.checkLink = function (obj, scope, delay, timeout) {
 	
 	var that = this;
 	
@@ -98,7 +102,7 @@ GENTICS.Aloha.LinkChecker.checkLink = function (obj, delay, timeout) {
 		url = this.proxyUrl + url;
 	}
 	
-	this.timer[url] = this.urlExists(
+	this.timer[scope] = this.urlExists(
 		url, 
 		// success
 		function(xhr) {
@@ -124,7 +128,7 @@ GENTICS.Aloha.LinkChecker.checkLink = function (obj, delay, timeout) {
 				}
 			}
 		}, 
-		this.timer[url], 
+		this.timer[scope], 
 		timeout, 
 		delay
 	);
@@ -151,7 +155,7 @@ GENTICS.Aloha.LinkChecker.urlExists = function (url, successFunc, failureFunc, t
 				try {
 					// if response HTTP status 200 link is ok
 					// this implementation does NOT cover redirects!
-				    if (xhr.status == 200) {
+				    if (xhr.status < 400) {
 				    	successFunc.call(this, xhr); 
 				    } else {
 						failureFunc.call(this, xhr);

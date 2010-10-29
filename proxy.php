@@ -5,12 +5,12 @@
  * Licensed unter the terms of http://www.aloha-editor.com/license.html
  * aloha-sales@gentics.com
  * Author Haymo Meran h.meran@gentics.com
- * Author Johannes Schüth j.schuett@gentics.com
- * Authot Tobias Steiner t.steiner@gentics.com
+ * Author Johannes Schüth j.schuet@gentics.com
+ * Author Tobias Steiner t.steiner@gentics.com
  * 
  * Testing from the command line:
- * function getallheaders(){return array('X-Gentics' => 'x');};
- * $url = 'https://google.com/adsense';
+ * function getallheaders(){return array('X-Gentics' => 'X');};
+ * https url example: https://google.com/adsense
  * 
  */
 
@@ -19,156 +19,219 @@
 //$_SERVER['REQUEST_METHOD'] = 'HEAD';
 //error_reporting(E_ALL);
 
-function myErrorHandler($errno, $errstr, $errfile, $errline)
-{
-	// 500 could be missleading... 
-	// Should we return a special Error when a proxy error occurs?
-	header("HTTP/1.0 500 Internal Error");
-	echo "Gentics Aloha Editor AJAX Gateway Error: $errstr, $errline";
-	exit();
-}
-set_error_handler("myErrorHandler");
+$request = array(
+    'method'   => $_SERVER['REQUEST_METHOD'],
+    'protocol' => $_SERVER['SERVER_PROTOCOL'],
+    'headers'  => getallheaders(),
+    //possibly use $HTTP_RAW_POST_DATA if available
+    'payload'  => http_build_query($_POST),
+);
 
 // read url parameter
-if ( array_key_exists('url', $_GET)) {
-	$url = urldecode($_GET['url']);
+if (array_key_exists('url', $_GET)) {
+	$request['url'] = urldecode($_GET['url']);
 } else {
 	header("HTTP/1.0 400 Bad Request");
 	echo "Gentics AJAX Gateway failed because parameter url is missing.";
 	exit();
 }
 
-$protocol = $_SERVER['SERVER_PROTOCOL'];
-$method   = $_SERVER['REQUEST_METHOD'];
-
 // check if link exists
-$res = proxy_request($url, $method, $protocol);
+$response = http_request($request);
 
 // Note HEAD does not always work even if specified...
 // We use HEAD for Linkchecking so we do a 2nd request.
-if (strtoupper($method) == 'HEAD' && (int)$res['status'] >= 400 ) {
-	$res = proxy_request($url, 'GET', $protocol, 5, true);
+if (strtoupper($method) == 'HEAD' && (int)$response['status'] >= 400 ) {
+
+	$request['method'] = 'GET';
+	$response = http_request($request);
+
+	//since we handle a HEAD, we don't need to proxy any contents
+	fclose($response['socket']);
+	$response['socket'] = null;
 }
 
 // forward each returned header...
-foreach ($res['headers'] as $header) {
+foreach ($response['headers'] as $header) {
 	if (trim($header)) {
-		$h = explode(':', $header);
-		// Don't send Transfer-Encoding: handled by this server...
-		if ( strtolower($h[0]) != 'transfer-encoding' ) {
-			header($header);
-		}
+		header($header);
 	}
 }
 
-// output body
-echo $res['body'];
+//there is no need to specify a content length since we don't do keep
+//alive, and this can cause problems for integration (e.g. gzip output,
+//which would change the content length)
+header('Content-Length:');
 
-// request method always HTTP/1.0 because we never keep-alive.
-function proxy_request($url, $method, $protocol = 'HTTP/1.1', $timeout = 5, $header_only = false) {
+// output the contents if any
+if (null !== $response['socket']) {
+	fpassthru($response['socket']);
+	fclose($response['socket']);
+}
 
+exit;
+
+/**
+ * Query an HTTP(S) URL with the given request parameters and return the
+ * response headers and status code. The socket is returned as well and
+ * will point to the begining of the response payload (after all headers
+ * have been read), and must be closed with fclose().
+ * @param $url the request URL
+ * @param $request the request method may optionally be overridden.
+ * @param $timeout connection and read timeout in seconds
+ */
+function http_request($request, $timeout = 5) {
+
+	$url = $request['url'];
 	// Extract the hostname from url
 	$parts = parse_url($url);
-	if ( !array_key_exists('host', $parts) ) {
-		return trigger_error("url ($url) has no host. Is it relative?", E_USER_ERROR);
-	} else {
+	if (array_key_exists('host', $parts)) {
 		$remote = $parts['host'];
+	} else {
+		return myErrorHandler("url ($url) has no host. Is it relative?");
 	}
 	if (array_key_exists('port', $parts)) {
 		$port = $parts['port'];
 	} else {
 		$port = 0;
 	}
-	$request_headers = "";
-	
+
 	// Beware that RFC2616 (HTTP/1.1) defines header fields as case-insensitive entities.
-	foreach (getallheaders() as $name => $value) {
+	$request_headers = "";
+	foreach ($request['headers'] as $name => $value) {
 		switch (strtolower($name)) {
 		//ommit some headers
 		case "keep-alive":
 		case "connection":
+		case "cookie":
+		//TPDP: we don't handle any compressions encodings. this is only
+		//a problem if client communication is already compressed (which
+		//would double compress the content, once from the remote server
+		//to us, and once from us to the client, but the client would
+		//de-compress only once).
+		case "accept-encoding":
 			break;
 		// correct the host parameter
 		case "host":
-			$request_headers .= "$name: $remote\r\n";
+			$host_info = $remote;
+			if ($port) {
+				$host_info .= ':' . $port;
+			}
+			$request_headers .= "$name: $host_info\r\n";
 			break;
-		// add all other headers to the answer
+		// forward all other headers
 		default:
 			$request_headers .= "$name: $value\r\n";
 			break;
 		}
 	}
 
-	$scheme = strtolower($parts['scheme']);
-
-	//set fsockopen scheme (only documented for ssl), and the default port
-	switch ($scheme) {
+	//set fsockopen transport scheme, and the default port
+	switch (strtolower($parts['scheme'])) {
 	case 'https':
 		$scheme = 'ssl://';
-		if ( !$port ) $port = 443;
+		if ( ! $port ) $port = 443;
 		break;
 	case 'http':
 		$scheme = '';
-		if ( !$port ) $port = 80;
+		if ( ! $port ) $port = 80;
 		break;
 	default:
-		//keep the unknown scheme and null port. maybe some PHP magic
-		//will do the right thing http://php.net/manual/en/transports.inet.php
-		$scheme = $scheme . '://';
-		if ( !$port ) {
-			return trigger_error("Unknown scheme ($scheme) and no port.", E_USER_ERROR);
+		//some other transports are available but not really supported
+		//by this script: http://php.net/manual/en/transports.inet.php
+		$scheme = $parts['scheme'] . '://';
+		if ( ! $port ) {
+			return myErrorHandler("Unknown scheme ($scheme) and no port.");
 		}
 		break;
 	}
 
-	$sock = fsockopen("$scheme$remote", $port, $errno, $errstr, $timeout);
-
-	if ( ! $sock) {
-		return trigger_error("Unable to open URL ($url): $errstr", E_USER_ERROR);
+	//we make the request with socket operations since we don't want to
+	//depend on the curl extension, and the higher level wrappers don't
+	//give us usable error information.
+	$sock = @fsockopen("$scheme$remote", $port, $errno, $errstr, $timeout);
+	if ( ! $sock ) {
+		return myErrorHandler("Unable to open URL ($url): $errstr");
 	}
 
 	//timeout in fsockopen is only for the connection, the following is
 	//for reading the content
 	stream_set_timeout($sock, $timeout);
 
-	//host should only be specified for proxy requests
-	$relative_part = '/';
-	if (array_key_exists('path', $parts))     $relative_part  = $parts['path'];
-	if (array_key_exists('query', $parts))    $relative_part .= '?' . $parts['query'];
-	if (array_key_exists('fragment', $parts)) $relative_part .= '#' . $parts['fragment'];
+	//absolute url should only be specified for proxy requests
+	if (array_key_exists('path', $parts)) {
+		$path_info  = $parts['path'];
+	} else {
+		$path_info  = '/';
+	}
 
-	$out = "$method $relative_part $protocol\r\n"
-	     . $request_headers
-         . "Connection: Close\r\n\r\n";
+	if (array_key_exists('query',    $parts)) $path_info .= '?' . $parts['query'];
+	if (array_key_exists('fragment', $parts)) $path_info .= '#' . $parts['fragment'];
+
+	$out = $request["method"]." ".$path_info." ".$request["protocol"]."\r\n"
+		 . $request_headers
+		 . "Connection: Close\r\n\r\n";
 	fwrite($sock, $out);
+	fwrite($sock, $request['payload']);
 
-	//possibly use $HTTP_RAW_POST_DATA if available
-	$post_data = http_build_query($_POST);
-	fwrite($sock, $post_data);
-
-	$headers = array();
-    while (!feof($sock)) {
-		$header = trim(fgets($sock));
-		if ($header == "") {
-			break;
-		}
-		$headers[] = $header;
-	}
-
-	// read content if not set header_only
-	if ( !$header_only ) {
-		$body = stream_get_contents($sock);
-	}
-
-	fclose($sock);
+	$header_str = stream_get_line($sock, 1024*16, "\r\n\r\n");
+	$headers = http_parse_headers($header_str);
 
 	// get http status
-	preg_match('|HTTP/\d\.\d\s+(\d+)\s+.*|i',$headers[0],$match);
+	preg_match('|HTTP/\d+\.\d+\s+(\d+)\s+.*|i',$headers[0],$match);
 	$status = $match[1];
 
-	return Array('headers'=>$headers, 'body'=>$body, 'status'=>$status);
+	return array('headers' => $headers, 'socket' => $sock, 'status' => $status);
+}
+
+/**
+ * Parses a string containing multiple HTTP header lines into an array
+ * of key => values.
+ * Inspired by HTTP::Daemon (CPAN).
+ */
+function http_parse_headers($header_str) {
+	$headers = array();
+
+	//ignore leading blank lines
+	$header_str = preg_replace("/^(?:\x0D?\x0A)+/", '', $header_str);
+
+	while (preg_match("/^([^\x0A]*?)\x0D?(?:\x0A|\$)/", $header_str, $matches)) {
+		$header_str = substr($header_str, strlen($matches[0]));
+		$header_line = $matches[1];
+
+		if (empty($headers)) {
+			// the status line
+			$headers[] = $header_line;
+		}
+		elseif (preg_match('/^([^:\s]+)\s*:\s*(.*)/', $header_line, $matches)) {
+			if (isset($key)) {
+				//previous header is finished (was potentially multi-line)
+				$headers[$key] = $val;
+			}
+			list(,$key,$val) = $matches;
+		}
+		elseif (preg_match('/^\s+(.*)/', $header_line, $matches)) {
+			//continue a multi-line header
+			$val .= " ".$matches[1];
+		}
+		else {
+			//empty (possibly malformed) header signals the end of all headers
+			break;
+		}
+	}
+	if (isset($key)) {
+		$headers[$key] = $val;
+	}
+	return $headers;
+}
+
+function myErrorHandler($msg)
+{
+	// 500 could be misleading... 
+	// Should we return a special Error when a proxy error occurs?
+	header("HTTP/1.0 500 Internal Error");
+	echo "Gentics Aloha Editor AJAX Gateway Error: $msg";
+	exit();
 }
 
 //EOF
-
-?>
