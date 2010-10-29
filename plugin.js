@@ -74,7 +74,7 @@ GENTICS.Aloha.LinkChecker.init = function () {
 			GENTICS.Aloha, 
 			"hrefChanged", 
 			function (jEvent, aEvent) {
-				that.checkLink(aEvent.obj);
+				that.checkLink(aEvent.obj, 700);
 			}
 	);
 
@@ -87,7 +87,9 @@ GENTICS.Aloha.LinkChecker.checkLink = function (obj, delay, timeout) {
 	// extract url from link object
 	var url = jQuery(obj).attr('href');
 	
-	if ( !url ) {
+	// i probably an internal link
+	if ( !/^http/.test( url.toLowerCase() ) ) {
+		this.makeCleanLink(obj);
 		return;
 	}
 	

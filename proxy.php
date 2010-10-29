@@ -16,7 +16,7 @@
 
 // for debugging
 //$_SERVER['SERVER_PROTOCOL'] = 'HTTP/1.0';
-$_SERVER['REQUEST_METHOD'] = 'HEAD';
+//$_SERVER['REQUEST_METHOD'] = 'HEAD';
 //error_reporting(E_ALL);
 
 function myErrorHandler($errno, $errstr, $errfile, $errline)

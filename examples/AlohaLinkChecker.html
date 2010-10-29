@@ -5,7 +5,6 @@
 <title>Aloha, link checker!</title>
 <script>GENTICS_Aloha_base="../../../";</script>
 <script type="text/javascript" src="../../../core/include.js"></script>
-<script type="text/javascript" src="../../../plugins/com.gentics.aloha.plugins.Format/plugin.js"></script>
 <script type="text/javascript" src="../../../plugins/com.gentics.aloha.plugins.Link/plugin.js"></script>
 <script type="text/javascript" src="../plugin.js"></script>
  
@@ -26,7 +25,8 @@ GENTICS.Aloha.settings = {
 	"plugins": {
 	 	"com.gentics.aloha.plugins.LinkChecker": {
 	 		'config': ['a'],
-	 		'proxyUrl': 'http://localhost:8888/Sites/Aloha-Editor/WebContent/plugins/com.gentics.aloha.plugins.LinkChecker/proxy.php?url='
+	 		// use a proxy when you call it through a webserver
+//	 		'proxyUrl': 'http://localhost:8888/Sites/Aloha-Editor/WebContent/plugins/com.gentics.aloha.plugins.LinkChecker/proxy.php?url='
 		}
   	}
 };
