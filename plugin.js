@@ -54,7 +54,7 @@ GENTICS.Aloha.LinkChecker.init = function () {
 			function (jEvent, aEvent) {
 				// find all link tags
 				aEvent.editable.obj.find('a').each(function() {
-					that.checkLink(this, 0);
+					that.checkLink(this, jQuery(this).attr('href'), 0);
 				});
 			} 
 	);
@@ -74,13 +74,13 @@ GENTICS.Aloha.LinkChecker.init = function () {
 			GENTICS.Aloha, 
 			"hrefChanged", 
 			function (jEvent, aEvent) {
-				that.checkLink(aEvent.obj);
+				that.checkLink(aEvent.obj, 'hrefChanged');
 			}
 	);
 
 };
 
-GENTICS.Aloha.LinkChecker.checkLink = function (obj, delay, timeout) {
+GENTICS.Aloha.LinkChecker.checkLink = function (obj, scope, delay, timeout) {
 	
 	var that = this;
 	
@@ -96,7 +96,7 @@ GENTICS.Aloha.LinkChecker.checkLink = function (obj, delay, timeout) {
 		url = this.proxyUrl + url;
 	}
 	
-	this.timer[url] = this.urlExists(
+	this.timer[scope] = this.urlExists(
 		url, 
 		// success
 		function(xhr) {
@@ -122,7 +122,7 @@ GENTICS.Aloha.LinkChecker.checkLink = function (obj, delay, timeout) {
 				}
 			}
 		}, 
-		this.timer[url], 
+		this.timer[scope], 
 		timeout, 
 		delay
 	);
