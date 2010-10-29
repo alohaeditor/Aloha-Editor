@@ -203,9 +203,8 @@ GENTICS.Aloha.Plugin.prototype.getEditableConfig = function (obj) {
 			configObj = this.settings.config;
 		}
 	}
-	
 	return configObj;
-}
+};
 
 /**
  * Make the given jQuery object (representing an editable) clean for saving

@@ -121,7 +121,7 @@ GENTICS.Aloha.Editable.prototype.check = function() {
 	'svg', 'table', 'ul', 'video', 'ol', 'form', 'noscript',
 	 */
 	return false;
-}
+};
 
 
 /**

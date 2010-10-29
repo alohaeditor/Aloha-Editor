@@ -319,7 +319,7 @@ GENTICS.Aloha.RepositoryManager.prototype.makeClean = function(obj) {
  * @return void
  */
 GENTICS.Aloha.RepositoryManager.prototype.markObject = function (obj, item) {
-	var repository = this.getRepository(item.repositoryId)
+	var repository = this.getRepository(item.repositoryId);
 	if ( repository ) {
 		jQuery(obj).attr('data-GENTICS-aloha-repository', item.repositoryId);
 		jQuery(obj).attr('data-GENTICS-aloha-object-id', item.id);
