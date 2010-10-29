@@ -390,19 +390,30 @@ GENTICS.Aloha.TablePlugin.initTableButtons = function () {
  * @param captionText default text for the caption
  */
 GENTICS.Aloha.TablePlugin.makeCaptionEditable = function(caption, captionText) {
-	if (captionText) {
-		cSpan.text(captionText);
-	}
 	var cSpan = caption.children('div').eq(0);
 	if (cSpan.length == 0) {
+		// generate a new div
 		cSpan = jQuery('<div></div>');
-		caption.contents().wrap(cSpan);
+		if (caption.contents().length > 0) {
+			// when the caption has content, we wrap it with the new div
+			caption.contents().wrap(cSpan);
+		} else {
+			// caption has no content, so insert the default caption text
+			if (captionText) {
+				cSpan.text(captionText);
+			}
+			// and append the div into the caption
+			caption.append(cSpan);
+		}
 	}
+	// make the div editable
 	cSpan.contentEditable(true);
 	cSpan.unbind('mousedown');
+	// focus on click
 	cSpan.bind('mousedown', function(jqEvent) {
 		this.focus();
 	});
+	// and focus now
     cSpan.focus();
 };
 
