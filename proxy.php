@@ -19,16 +19,11 @@
 //$_SERVER['REQUEST_METHOD'] = 'HEAD';
 //error_reporting(E_ALL);
 
-//error handling can be overriden for easy integration
-if ( ! isset($PROXY_HANDLE_ERRORS_OVERRIDE) || ! $PROXY_HANDLE_ERRORS_OVERRIDE ) {
-	set_error_handler("myErrorHandler");
-}
-
 $request = array(
     'method'   => $_SERVER['REQUEST_METHOD'],
     'protocol' => $_SERVER['SERVER_PROTOCOL'],
     'headers'  => getallheaders(),
-	//possibly use $HTTP_RAW_POST_DATA if availa
+    //possibly use $HTTP_RAW_POST_DATA if available
     'payload'  => http_build_query($_POST),
 );
 
@@ -87,12 +82,13 @@ exit;
  */
 function http_request($request, $timeout = 5) {
 
+	$url = $request['url'];
 	// Extract the hostname from url
-	$parts = parse_url($request['url']);
+	$parts = parse_url($url);
 	if (array_key_exists('host', $parts)) {
 		$remote = $parts['host'];
 	} else {
-		return trigger_error("url ($url) has no host. Is it relative?", E_USER_ERROR);
+		return myErrorHandler("url ($url) has no host. Is it relative?");
 	}
 	if (array_key_exists('port', $parts)) {
 		$port = $parts['port'];
@@ -108,10 +104,11 @@ function http_request($request, $timeout = 5) {
 		case "keep-alive":
 		case "connection":
 		case "cookie":
-		//TODO: there is some problem with gzip encoded responses. the
-		//content-length is OK but some characters are simply read or
-		//written incorrectly. This deserves looking into, since this
-		//could mean that binary data generally isn't handled correctly.
+		//TPDP: we don't handle any compressions encodings. this is only
+		//a problem if client communication is already compressed (which
+		//would double compress the content, once from the remote server
+		//to us, and once from us to the client, but the client would
+		//de-compress only once).
 		case "accept-encoding":
 			break;
 		// correct the host parameter
@@ -144,7 +141,7 @@ function http_request($request, $timeout = 5) {
 		//by this script: http://php.net/manual/en/transports.inet.php
 		$scheme = $parts['scheme'] . '://';
 		if ( ! $port ) {
-			return trigger_error("Unknown scheme ($scheme) and no port.", E_USER_ERROR);
+			return myErrorHandler("Unknown scheme ($scheme) and no port.");
 		}
 		break;
 	}
@@ -152,9 +149,9 @@ function http_request($request, $timeout = 5) {
 	//we make the request with socket operations since we don't want to
 	//depend on the curl extension, and the higher level wrappers don't
 	//give us usable error information.
-	$sock = fsockopen("$scheme$remote", $port, $errno, $errstr, $timeout);
+	$sock = @fsockopen("$scheme$remote", $port, $errno, $errstr, $timeout);
 	if ( ! $sock ) {
-		return trigger_error("Unable to open URL ($url): $errstr", E_USER_ERROR);
+		return myErrorHandler("Unable to open URL ($url): $errstr");
 	}
 
 	//timeout in fsockopen is only for the connection, the following is
@@ -177,15 +174,8 @@ function http_request($request, $timeout = 5) {
 	fwrite($sock, $out);
 	fwrite($sock, $request['payload']);
 
-	$headers = array();
-	while ( ! feof($sock) ) {
-		//TODO: a head may span multiple lines
-		$header = stream_get_line($sock, 4096, "\r\n");
-		if ($header == "") {
-			break;
-		}
-		$headers[] = $header;
-	}
+	$header_str = stream_get_line($sock, 1024*16, "\r\n\r\n");
+	$headers = http_parse_headers($header_str);
 
 	// get http status
 	preg_match('|HTTP/\d+\.\d+\s+(\d+)\s+.*|i',$headers[0],$match);
@@ -194,12 +184,53 @@ function http_request($request, $timeout = 5) {
 	return array('headers' => $headers, 'socket' => $sock, 'status' => $status);
 }
 
-function myErrorHandler($errno, $errstr, $errfile, $errline)
+/**
+ * Parses a string containing multiple HTTP header lines into an array
+ * of key => values.
+ * Inspired by HTTP::Daemon (CPAN).
+ */
+function http_parse_headers($header_str) {
+	$headers = array();
+
+	//ignore leading blank lines
+	$header_str = preg_replace("/^(?:\x0D?\x0A)+/", '', $header_str);
+
+	while (preg_match("/^([^\x0A]*?)\x0D?(?:\x0A|\$)/", $header_str, $matches)) {
+		$header_str = substr($header_str, strlen($matches[0]));
+		$header_line = $matches[1];
+
+		if (empty($headers)) {
+			// the status line
+			$headers[] = $header_line;
+		}
+		elseif (preg_match('/^([^:\s]+)\s*:\s*(.*)/', $header_line, $matches)) {
+			if (isset($key)) {
+				//previous header is finished (was potentially multi-line)
+				$headers[$key] = $val;
+			}
+			list(,$key,$val) = $matches;
+		}
+		elseif (preg_match('/^\s+(.*)/', $header_line, $matches)) {
+			//continue a multi-line header
+			$val .= " ".$matches[1];
+		}
+		else {
+			//empty (possibly malformed) header signals the end of all headers
+			break;
+		}
+	}
+	if (isset($key)) {
+		$headers[$key] = $val;
+	}
+	return $headers;
+}
+
+function myErrorHandler($msg)
 {
 	// 500 could be misleading... 
 	// Should we return a special Error when a proxy error occurs?
 	header("HTTP/1.0 500 Internal Error");
-	echo "Gentics Aloha Editor AJAX Gateway Error: $errstr, $errline";
+	echo "Gentics Aloha Editor AJAX Gateway Error: $msg";
 	exit();
 }
 
