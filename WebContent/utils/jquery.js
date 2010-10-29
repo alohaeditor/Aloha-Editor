@@ -67,9 +67,7 @@ jQuery.fn.removeCss = function( cssName ) {
 };
 
 /**
- * jQuery command Keydown extension Extension
- *
- * The method is fired when a Alt, Ctrl, Meta key down happens.
+ * Make the object contenteditable. Care about browser version (name of contenteditable attribute depends on it)
  */
 jQuery.fn.contentEditable  = function( b ) {
 	// ie does not understand contenteditable but contentEditable
@@ -79,9 +77,11 @@ jQuery.fn.contentEditable  = function( b ) {
 		ce = 'contentEditable';
 	}
 	if ( b == undefined ) {
-		jQuery(this).attr(ce);
+		return jQuery(this).attr(ce);
+	} else if (b === '') {
+		jQuery(this).removeAttr(ce);
 	} else {
-		if (b) {
+		if (b && b !== 'false') {
 			b='true';
 		} else {
 			b='false';
