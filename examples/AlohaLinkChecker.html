@@ -25,7 +25,8 @@ GENTICS.Aloha.settings = {
 	},
 	"plugins": {
 	 	"com.gentics.aloha.plugins.LinkChecker": {
-	 		'config': ['a']
+	 		'config': ['a'],
+	 		'proxyUrl': 'http://localhost:8888/Sites/Aloha-Editor/WebContent/plugins/com.gentics.aloha.plugins.LinkChecker/proxy.php?url='
 		}
   	}
 };
@@ -34,6 +35,16 @@ $(document).ready(function() {
 	$('#content').aloha();
 });  
 </script>
+<style type="text/css">
+
+.GENTICS_link_error {
+	color: red;
+}
+
+.GENTICS_link_warn {
+	color: red;
+}
+</style>
 </head>
 <body>
 <div id="main"> 
