@@ -41,7 +41,15 @@ Ext.extend( Ext.tree.AlohaTreeLoader, Ext.tree.TreeLoader, {
 		if ( node.objectType ) {
 			node.cls = node.objectType;
 		}
-        return Ext.tree.TreeLoader.prototype.createNode.call(this, node);
+		if (node.baseType) {
+			//basetype 'document' should not contains more items
+			if (node.baseType == "document") node.leaf = true;
+		}
+        result = Ext.tree.TreeLoader.prototype.createNode.call(this, node);
+        // attach original repo object to node (TreeNode object loose some of it)
+        // will be used in ui-browser to get custom ui components from repository
+        result.repoData = node;
+        return result;
     },
 	objectTypeFilter : null,
 	setObjectTypeFilter : function (otFilter) {
