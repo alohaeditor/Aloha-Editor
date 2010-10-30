@@ -21,6 +21,23 @@ if (typeof GENTICS.Aloha.ui == 'undefined') {
  * - toggle: Boolean that indicates if the button is a toggle button.
  */
 GENTICS.Aloha.ui.Button = function(properties) {
+	this.init(properties);
+};
+
+/**
+ * Init method for an Aloha button.
+ * This method is necessary due to JS specific initalization.
+ * @namespace GENTICS.Aloha.ui
+ * @class Button
+ * @param {Object} properties Properties of the button:
+ * - label: Label that is displayed on the button.
+ * - onclick: Callback function of the button when activated.
+ * - menu: Array of GENTICS.Aloha.ui.Button elements that are displayed as drop-down menu.
+ * - iconClass: Icon displayed on the button.
+ * - icon: URL to an icon that is displayed on the button.
+ * - toggle: Boolean that indicates if the button is a toggle button.
+ */
+GENTICS.Aloha.ui.Button.prototype.init = function(properties) {
 	/**
 	 * Label that is displayed on the button
 	 * @hide
@@ -481,7 +498,7 @@ Ext.ux.GENTICSMultiSplitButton = Ext.extend(Ext.Component, {
 		}
 		
 		// reposition multisplit contents to the active item
-		if (el) {
+		if (el && this.ulObj) {
 			this.ulObj.css('margin-top', 0);
 			var top = el.position().top;
 			this.ulObj.css('margin-top', - top + 6);

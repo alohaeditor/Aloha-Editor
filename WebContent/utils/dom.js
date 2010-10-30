@@ -67,49 +67,120 @@ GENTICS.Utils.Dom.prototype.tags = {
 };
 
 /**
- * Possible children of tags (some of them), according to the HTML 5
- * specification. see http://dev.w3.org/html5/spec/Overview.html#elements-1
+ * Possible children of tags, according to the HTML 5
+ * specification.
+ * See http://dev.w3.org/html5/spec/Overview.html#elements-1
+ * Moved to http://www.whatwg.org/specs/web-apps/current-work/#elements-1
  * @hide
  */
 GENTICS.Utils.Dom.prototype.children = {
-	'a' : 'phrasing',
+	'a' : 'phrasing', // transparent
+	'abbr' : 'phrasing',
+	'address' : 'flow',
+	'area' : 'empty',
+	'article' : 'flow',
+	'aside' : 'flow',
+	'audio' : 'source', // transparent
 	'b' : 'phrasing',
+	'base' : 'empty',
+	'bdo' : 'phrasing',
 	'blockquote' : 'flow',
+	'body' : 'flow',
 	'br' : 'empty',
+	'button' : 'phrasing',
+	'canvas' : 'phrasing', // transparent
 	'caption' : 'flow',
 	'cite' : 'phrasing',
 	'code' : 'phrasing',
 	'col' : 'empty',
 	'colgroup' : 'col',
+	'command' : 'empty',
+	'datalist' : ['phrasing', 'option'],
+	'dd' : 'flow',
 	'del' : 'phrasing',
 	'div' : 'flow',
+	'details' : ['summary', 'flow'],
+	'dfn' : 'flow',
+	'div' : 'flow',
+	'dl' : ['dt','dd'],
+	'dt' : 'phrasing', // varies
+	'em' : 'phrasing',
+	'embed' : 'empty',
+	'fieldset' : ['legend', 'flow'],
+	'figcaption': 'flow',
+	'figure' :  ['figcaption', 'flow'],
+	'footer' : 'flow',
+	'form' : 'flow',
 	'h1' : 'phrasing',
 	'h2' : 'phrasing',
 	'h3' : 'phrasing',
 	'h4' : 'phrasing',
 	'h5' : 'phrasing',
 	'h6' : 'phrasing',
+	//head
+	'header' : 'flow',
+	'hgroup' : ['h1','h2','h3','h4','h5','h6'],
 	'hr' : 'empty',
+	//html :)
 	'i' : 'phrasing',
+	'iframe' : '#text',
 	'img' : 'empty',
-	'ins' : 'phrasing',
+	'input' : 'empty',
+	'ins' : 'phrasing', // transparent
+	'kbd' : 'phrasing',
+	'keygen' : 'empty',
+	'label' : 'phrasing',
+	'legend' : 'phrasing',
 	'li' : 'flow',
+	'link' : 'empty',
+	'map' : 'area', // transparent
+	'mark' : 'phrasing',
+	'menu' : ['li', 'flow'],
+	'meta' : 'empty',
+	'meter' : 'phrasing',
+	'nav' : 'flow',
+	'noscript' : 'phrasing', // varies
+	'object' : 'param', // transparent
 	'ol' : 'li',
+	'optgroup' : 'option',
+	'option' : '#text',
+	'output' : 'phrasing',
 	'p' : 'phrasing',
+	'param' : 'empty',
 	'pre' : 'phrasing',
+	'progress' : 'phrasing',
+	'q' : 'phrasing',
+	'rp' : 'phrasing',
+	'rt' : 'phrasing',
+	'ruby' : ['phrasing', 'rt', 'rp'],
+	's' : 'phrasing',
+	'samp' : 'pharsing',
+	'script' : '#script', //script 
+	'section' : 'flow',
+	'select' : ['option', 'optgroup'],
 	'small' : 'phrasing',
+	'source' : 'empty',
 	'span' : 'phrasing',
 	'strong' : 'phrasing',
+	'style' : 'phrasing', // varies
 	'sub' : 'phrasing',
+	'summary' : 'phrasing',
 	'sup' : 'phrasing',
 	'table' : ['caption', 'colgroup', 'thead', 'tbody', 'tfoot', 'tr'],
 	'tbody' : 'tr',
 	'td' : 'flow',
+	'textarea' : '#text',
 	'tfoot' : 'tr',
 	'th' : 'phrasing',
 	'thead' : 'tr',
+	'time' : 'phrasing',
+	'title' : '#text',
 	'tr' : ['th', 'td'],
-	'ul' : 'li'
+	'track' : 'empty',
+	'ul' : 'li',
+	'var' : 'phrasing',
+	'video' : 'source', // transparent
+	'wbr' : 'empty'
 };
 
 /**
@@ -133,7 +204,7 @@ GENTICS.Utils.Dom.prototype.listElements = ['li', 'ol',	'ul'];
  * 				The limiting node will not be included in the split itself.
  * 				If no limiting object is set, the document body will be the limiting object.
  * @param {boolean} atEnd If set to true, the DOM will be splitted at the end of the range otherwise at the start.
- * @return {object} jQuery object containing the two root DOM objects of the split or false if the DOM could not be split
+ * @return {object} jQuery object containing the two root DOM objects of the split, true if the DOM did not need to be split or false if the DOM could not be split
  * @method
  */
 GENTICS.Utils.Dom.prototype.split = function (range, limit, atEnd) {
@@ -172,7 +243,7 @@ GENTICS.Utils.Dom.prototype.split = function (range, limit, atEnd) {
 	
 	// nothing found to split -> return here
 	if (! path) {
-		return;
+		return true;
 	}
 	
 	path = path.reverse();
@@ -891,7 +962,29 @@ GENTICS.Utils.Dom.prototype.insertIntoDOM = function (object, range, limit, atEn
 	if (typeof newParent != 'undefined') {
 		// we found a possible new parent, so we split the DOM up to the new parent
 		var splitParts = this.split(range, jQuery(newParent), atEnd);
-		if (splitParts) {
+		if (splitParts === true) {
+			// DOM was not split (there was no need to split it), insert the new object anyway
+			var container = range.startContainer;
+			var offset = range.startOffset;
+			if (atEnd) {
+				container = range.endContainer;
+				offset = range.endOffset;
+			}
+			if (offset == 0) {
+				// insert right before the first element in the container
+				var contents = jQuery(container).contents();
+				if (contents.length > 0) {
+					contents.eq(0).before(object);
+				} else {
+					jQuery(container).append(object);
+				}
+				return true;
+			} else {
+				// insert right after the element at offset-1
+				jQuery(container).contents().eq(offset-1).after(object);
+				return true;
+			}
+		} else if (splitParts) {
 			// if the DOM could be split, we insert the new object in between the split parts
 			splitParts.eq(0).after(object);
 			return true;
@@ -1142,6 +1235,35 @@ GENTICS.Utils.Dom.prototype.isEmpty = function (domObject) {
 
 	// found no contents, so the element is empty
 	return true;
+};
+
+/**
+ * Set the cursor (collapsed selection) right after the given DOM object
+ * @param domObject DOM object
+ * @method
+ */
+GENTICS.Utils.Dom.prototype.setCursorAfter = function (domObject) {
+	var newRange = new GENTICS.Utils.RangeObject();
+	newRange.startContainer = newRange.endContainer = domObject.parentNode;
+	newRange.startOffset = newRange.endOffset = this.getIndexInParent(domObject);
+
+	// select the range
+	newRange.select();
+};
+
+/**
+ * Set the cursor (collapsed selection) at the start into the given DOM object
+ * @param domObject DOM object
+ * @method
+ */
+GENTICS.Utils.Dom.prototype.setCursorInto = function (domObject) {
+	// set a new range into the given dom object
+	var newRange = new GENTICS.Utils.RangeObject();
+	newRange.startContainer = newRange.endContainer = domObject;
+	newRange.startOffset = newRange.endOffset = 0;
+
+	// select the range
+	newRange.select();
 };
 
 /**
