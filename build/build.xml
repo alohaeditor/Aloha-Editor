@@ -1,47 +1,55 @@
 <?xml version = '1.0'?>
 <!DOCTYPE project> 
 <project name="Aloha Builder" default="all">
+	<!-- Define some properties we use in our build process -->
 	<property file="build.properties" />
-	<property name="srcdir" value="../WebContent/" />
-	<property name="testdir" value="../test/" />
-	<property name="filename" value="aloha" />
-	<property name="outdir" value="out" />
-	<property name="zipdir" value="out" />
-	<property name="packagedir" value="${outdir}/aloha-${version}" />
-	<property name="compressor" value="yuicompressor-2.4.2.jar" />
+	<property name="srcdir" 						value="../WebContent/" />
+	<property name="srcdir.examples" 				value="${srcdir}/examples" />
+	<property name="testdir" 						value="../test/" />
+	<property name="filename" 						value="aloha" />
+	<property name="outdir" 						value="out" />
+	<property name="includesdir" 					value="includes" />
+	<property name="zipdir" 						value="out" />
+	<property name="depsdir" 						value="deps" />
+	<property name="packagedir" 					value="${outdir}/aloha-${version}" />
+	<property name="compiler.yui" 					value="${depsdir}/yuicompressor-2.4.2.jar" />
+	<property name="compiler.closure" 				value="${depsdir}/closure.jar" />
 	
-	<!-- files for the includes -->
-	<property name="aloha.includes.filename" value="aloha-includes.txt"/>
-	<property name="deps.includes.filename" value="deps-includes.txt"/>
-	<property name="css.includes.filename" value="css-includes.txt"/>
-	<property name="plugins.includes.filename" value="plugin-includes.txt"/>
-
-	<!-- "debug", "aloha" and "examples" directories for the builded version -->
-	<property name="debugdir" value="${packagedir}/debug" />
-	<property name="alohadir" value="${packagedir}/aloha" />
-	<property name="examplesdir" value="${packagedir}/examples" />
-
-	<!-- java executable used for yui compressor -->
+	<!-- Define the output directories -->
+	<property name="outdirs.uncompressed" 			value="${packagedir}/uncompressed" />
+	<property name="outdirs.compressed" 			value="${packagedir}/aloha" />
+	<property name="outdirs.examples" 				value="${packagedir}/examples" />
+	
+	<!-- Define the files for the includes (they are listed within the following files) -->
+	<property name="includes.core.js.filename" 		value="core-js.txt"/>
+	<property name="includes.deps.js.filename" 		value="deps-js.txt"/>
+	<property name="includes.plugins.js.filename" 	value="plugins-js.txt"/>
+	<property name="includes.core.css.filename" 	value="core-css.txt"/>
+	<property name="includes.deps.css.filename" 	value="deps-css.txt"/>
+	<property name="includes.plugins.css.filename" 	value="plugins-css.txt"/>
+	
+	<!-- Define the files for generation -->
+	<property name="outfiles.core.js.filename" 		value="${filename}-core.js"/>
+	<property name="outfiles.deps.js.filename" 		value="${filename}-deps.js"/>
+	<property name="outfiles.plugins.js.filename" 	value="${filename}-plugins.js"/>
+	<property name="outfiles.all.js.filename" 		value="${filename}.js"/>
+	<property name="outfiles.core.css.filename" 	value="${filename}-core.css"/>
+	<property name="outfiles.deps.css.filename" 	value="${filename}-deps.css"/>
+	<property name="outfiles.plugins.css.filename" 	value="${filename}-plugins.css"/>
+	<property name="outfiles.all.css.filename" 		value="${filename}.css"/>
+	
+	<!-- Define the java executable used for compilers -->
 	<property name="java" value="${java.home}${file.separator}bin${file.separator}java" />
-	
 	<path id="minify.classpath">
 		<fileset dir="deps">
 			<include name="**/*.jar" />
 		</fileset>
 	</path>
-	
 	<tstamp>
 		<format property="now" pattern="yyyy-MM-dd HH:mm:ss" locale="en,UK"/>
 	</tstamp>
-
-	<!-- This target is called with parameters includefile -->
-	<target name="prepare_includes" depends="makedirs">
-		<copy file="${includefile}" todir="${outdir}" overwrite="true"/>
-		<fixcrlf file="${outdir}/${includefile}" eol="unix"/>
-		<replaceregexp file="${outdir}/${includefile}" flags="gm" match="\n" replace=" "/>
-	</target>
-
-	<!-- Make clean (remove all files from out directory) -->
+	
+	<!-- Clean the output directories and files -->
 	<target name="clean">
 		<delete dir="${outdir}" />
 		<delete dir="${zipdir}" />
@@ -49,44 +57,56 @@
 
 	<!-- Create the output directories -->
 	<target name="makedirs">
-		<mkdir dir="${packagedir}/aloha" />
-		<mkdir dir="${packagedir}/debug" />
+		<mkdir dir="${outdirs.uncompressed}" />
+		<mkdir dir="${outdirs.compressed}" />
 	</target>
 
-	<!-- recreate the file include-js.inc -->
+	<!-- This target is called with parameters includefile (called later, this is merely a function) -->
+	<target name="prepare_includes" depends="makedirs">
+		<copy file="${includesdir}/${includefile}" todir="${outdir}" overwrite="true"/>
+		<fixcrlf file="${outdir}/${includefile}" eol="unix"/>
+		<replaceregexp file="${outdir}/${includefile}" flags="gm" match="\n" replace=" "/>
+	</target>
+	
+	<!-- Copys a directory - params [to] and [folder] -->
+	<target name="copydir">
+		<mkdir dir="${to}/${folder}" />
+		<copy todir="${to}/${folder}">
+			<fileset dir="${srcdir}/${folder}" />
+		</copy>
+	</target>
+	
+	<!-- Create the include.js file - This is used for dev purposes, not production purposes, so as such; IT IS STILL NEEDED
+		 We don't care for plugins in the include.js -->
 	<target name="build-dev-include" depends="makedirs">
-		<!-- 
-			replace everything for development includes
-		-->
-		
 		<!-- this sets the property for the inclusion of a js file -->
 		<loadfile property="dev.includejs.subst" srcfile="deps/includejs-substitution.txt"/>
 		<!-- this sets the property for the inclusion of a css file -->
 		<loadfile property="dev.includecss.subst" srcfile="deps/includecss-substitution.txt"/>
 		
 		<!-- first the deps -->
-		<copy file="${deps.includes.filename}" todir="${outdir}" overwrite="true"/>
-		<replaceregexp byline="true" file="${outdir}/${deps.includes.filename}" match="(.+)" replace="${dev.includejs.subst}"/>
+		<copy file="${outfiles.deps.filename}" todir="${outdir}" overwrite="true"/>
+		<replaceregexp byline="true" file="${outdir}/${outfiles.deps.filename}" match="(.+)" replace="${dev.includejs.subst}"/>
 
 		<!-- now aloha core -->
-		<copy file="${aloha.includes.filename}" todir="${outdir}" overwrite="true"/>
-		<replaceregexp byline="true" file="${outdir}/${aloha.includes.filename}" match="(.+)" replace="${dev.includejs.subst}"/>
+		<copy file="${outfiles.core.filename}" todir="${outdir}" overwrite="true"/>
+		<replaceregexp byline="true" file="${outdir}/${outfiles.core.filename}" match="(.+)" replace="${dev.includejs.subst}"/>
 
 		<!-- and the css includes -->
-		<copy file="${css.includes.filename}" todir="${outdir}" overwrite="true"/>
-		<replaceregexp byline="true" file="${outdir}/${css.includes.filename}" match="(.+)" replace="${dev.includecss.subst}"/>
+		<copy file="${outfiles.css.filename}" todir="${outdir}" overwrite="true"/>
+		<replaceregexp byline="true" file="${outdir}/${outfiles.css.filename}" match="(.+)" replace="${dev.includecss.subst}"/>
 
 		<!-- now concat the js files -->
 		<concat destfile="${srcdir}/core/include.js" force="true">
 			<fileset file="deps/includejs-header.txt"/>
-			<filelist dir="${outdir}" files="${deps.includes.filename},${aloha.includes.filename}"></filelist>
+			<filelist dir="${outdir}" files="${outfiles.deps.filename},${outfiles.core.filename}"></filelist>
 			<fileset file="deps/includejs-footer.txt"/>
 		</concat>
 
 		<!-- and the css file -->
 		<concat destfile="${srcdir}/core/css.js" force="true">
 			<fileset file="deps/includecss-header.txt"/>
-			<filelist dir="${outdir}" files="${css.includes.filename}"></filelist>
+			<filelist dir="${outdir}" files="${outfiles.css.filename}"></filelist>
 			<fileset file="deps/includecss-footer.txt"/>
 		</concat>
 		
@@ -100,118 +120,228 @@
 		<loadfile property="testloader.includecss.subst" srcfile="${testdir}includecss-substitution.txt"/>
 		
 		<!-- first the deps -->
-		<copy file="${deps.includes.filename}" todir="${outdir}" overwrite="true"/>
-		<replaceregexp byline="true" file="${outdir}/${deps.includes.filename}" match="(.+)" replace="${testloader.includejs.subst}"/>
+		<copy file="${outfiles.deps.filename}" todir="${outdir}" overwrite="true"/>
+		<replaceregexp byline="true" file="${outdir}/${outfiles.deps.filename}" match="(.+)" replace="${testloader.includejs.subst}"/>
 
 		<!-- now aloha core -->
-		<copy file="${aloha.includes.filename}" todir="${outdir}" overwrite="true"/>
-		<replaceregexp byline="true" file="${outdir}/${aloha.includes.filename}" match="(.+)" replace="${testloader.includejs.subst}"/>
+		<copy file="${outfiles.core.filename}" todir="${outdir}" overwrite="true"/>
+		<replaceregexp byline="true" file="${outdir}/${outfiles.core.filename}" match="(.+)" replace="${testloader.includejs.subst}"/>
 
 		<!-- and the css includes -->
-		<copy file="${css.includes.filename}" todir="${outdir}" overwrite="true"/>
-		<replaceregexp byline="true" file="${outdir}/${css.includes.filename}" match="(.+)" replace="${testloader.includecss.subst}"/>
+		<copy file="${outfiles.css.filename}" todir="${outdir}" overwrite="true"/>
+		<replaceregexp byline="true" file="${outdir}/${outfiles.css.filename}" match="(.+)" replace="${testloader.includecss.subst}"/>
 
 		<!-- now concat all files into the testloader -->
 		<concat destfile="${testdir}testloader.html" force="true">
-			<filelist dir="${outdir}" files="${css.includes.filename},${deps.includes.filename},${aloha.includes.filename}"></filelist>
+			<filelist dir="${outdir}" files="${outfiles.css.filename},${outfiles.deps.filename},${outfiles.core.filename}"></filelist>
 		</concat>
 	</target>
-
-	<!-- copies the folder given in parameter "folder" from the source directory to the debug directory -->
-	<target name="copytodebug">
-		<mkdir dir="${debugdir}/${folder}" />
-		<copy todir="${debugdir}/${folder}">
-			<fileset dir="${srcdir}/${folder}" />
+	
+	<!-- Prepare the Uncompressed Directory -->
+	<target name="prepareuncompressed" depends="makedirs">
+		<!-- Copy the Necessary Dirs/Files to the Uncompressed Dir -->
+		<antcall target="copydir">
+			<param name="folder" value="deps"/>
+			<param name="to" value="${outdirs.uncompressed}"/>
+		</antcall>
+		<antcall target="copydir">
+			<param name="folder" value="css"/>
+			<param name="to" value="${outdirs.uncompressed}"/>
+		</antcall>
+		<antcall target="copydir">
+			<param name="folder" value="images"/>
+			<param name="to" value="${outdirs.uncompressed}"/>
+		</antcall>
+		<antcall target="copydir">
+			<param name="folder" value="i18n"/>
+			<param name="to" value="${outdirs.uncompressed}"/>
+		</antcall>
+		<antcall target="copydir">
+			<param name="folder" value="plugins"/>
+			<param name="to" value="${outdirs.uncompressed}"/>
+		</antcall>
+	</target>
+	
+	<!-- Combine JS Files -->
+	<target name="combine-js" depends="prepareuncompressed">
+		<!-- Load the Core File List -->
+		<antcall target="prepare_includes">
+			<param name="includefile" value="${includes.core.js.filename}"/>
+		</antcall>
+		<loadfile property="includes.core.js.list" srcfile="${outdir}/${includes.core.js.filename}"/>
+		
+		<!-- Load the Deps File List -->
+		<antcall target="prepare_includes">
+			<param name="includefile" value="${includes.deps.js.filename}"/>
+		</antcall>
+		<loadfile property="includes.deps.js.list" srcfile="${outdir}/${includes.deps.js.filename}"/>
+		
+		<!-- Load the Plugins File List -->
+		<antcall target="prepare_includes">
+			<param name="includefile" value="${includes.plugins.js.filename}"/>
+		</antcall>
+		<loadfile property="includes.plugins.js.list" srcfile="${outdir}/${includes.plugins.js.filename}"/>
+		
+		<!-- 
+			Create the Uncompressed Files
+		-->
+		
+		<!-- Generate Aloha Core file -->
+		<concat destfile="${outdirs.uncompressed}/${outfiles.core.js.filename}" force="no">
+			<filelist dir="${srcdir}" files="${includes.core.js.list}"/>
+		</concat>
+		
+		<!-- Generate Aloha Deps file -->
+		<concat destfile="${outdirs.uncompressed}//${outfiles.deps.js.filename}" force="no">
+			<filelist dir="${srcdir}" files="${includes.deps.js.list}"/>
+		</concat>
+	
+		<!-- Generate Aloha Deps file -->
+		<concat destfile="${outdirs.uncompressed}/${outfiles.plugins.js.filename}" force="no">
+			<filelist dir="${srcdir}" files="${includes.plugins.js.list}"/>
+		</concat>
+		
+		<!-- 
+			Create the Combined File
+		-->
+		
+		<!-- Find & Replace GENTICS.Aloha.version inside the Aloha Core file with the current build version -->
+		<replace file="${outdirs.uncompressed}/${outfiles.core.js.filename}" token="##ALOHAVERSION##" value="${version}"/>
+		
+		<!-- Create a Combined File -->
+		<concat destfile="${outdirs.uncompressed}/${filename}.js" force="no">
+			<fileset dir="${outdirs.uncompressed}" includes="${outfiles.deps.js.filename},${outfiles.core.js.filename},${outfiles.plugins.js.filename}" />
+		</concat>
+	</target>
+	
+	<!-- Combine CSS Files -->
+	<target name="combine-css" depends="prepareuncompressed">
+		<!-- Load the Core File List -->
+		<antcall target="prepare_includes">
+			<param name="includefile" value="${includes.core.css.filename}"/>
+		</antcall>
+		<loadfile property="includes.core.css.list" srcfile="${outdir}/${includes.core.css.filename}"/>
+		
+		<!-- Load the Deps File List -->
+		<antcall target="prepare_includes">
+			<param name="includefile" value="${includes.deps.css.filename}"/>
+		</antcall>
+		<loadfile property="includes.deps.css.list" srcfile="${outdir}/${includes.deps.css.filename}"/>
+		
+		<!-- Load the Plugins File List -->
+		<antcall target="prepare_includes">
+			<param name="includefile" value="${includes.plugins.css.filename}"/>
+		</antcall>
+		<loadfile property="includes.plugins.css.list" srcfile="${outdir}/${includes.plugins.css.filename}"/>
+		
+		<!-- 
+			Create the Uncompressed Files
+		-->
+		
+		<!-- Generate Aloha Core file -->
+		<concat destfile="${outdirs.uncompressed}/${outfiles.core.css.filename}" force="no">
+			<filelist dir="${srcdir}" files="${includes.core.css.list}"/>
+		</concat>
+		
+		<!-- Generate Aloha Deps file -->
+		<concat destfile="${outdirs.uncompressed}//${outfiles.deps.css.filename}" force="no">
+			<filelist dir="${srcdir}" files="${includes.deps.css.list}"/>
+		</concat>
+	
+		<!-- Generate Aloha Deps file -->
+		<concat destfile="${outdirs.uncompressed}/${outfiles.plugins.css.filename}" force="no">
+			<filelist dir="${srcdir}" files="${includes.plugins.css.list}"/>
+		</concat>
+		
+		<!-- 
+			Create the Combined File
+		-->
+		
+		<!-- Find & Replace GENTICS.Aloha.version inside the Aloha Core file with the current build version -->
+		<replace file="${outdirs.uncompressed}/${outfiles.core.css.filename}" token="##ALOHAVERSION##" value="${version}"/>
+		
+		<!-- Create a Combined File -->
+		<concat destfile="${outdirs.uncompressed}/${filename}.css" force="no">
+			<fileset dir="${outdirs.uncompressed}" includes="${outfiles.deps.css.filename},${outfiles.core.css.filename},${outfiles.plugins.css.filename}" />
+		</concat>
+	</target>
+	
+	<!-- Prepare the Compressed Directory -->
+	<target name="preparecompressed" depends="makedirs">
+		<!-- Remove Javascript + CSS Files from the various folders (as we just included them) -->
+		<delete>
+			<fileset dir="${outdirs.uncompressed}/deps/" includes="**/*.js" />
+			<fileset dir="${outdirs.uncompressed}/deps/" includes="**/*.css" />
+		</delete>
+		
+		<!-- Copy the Necessary Dirs/Files to the Compressed Dir --> 
+		<copy todir="${outdirs.compressed}">
+			<fileset dir="${outdirs.uncompressed}" />
 		</copy>
 	</target>
 	
-	<!-- "build" Aloha, Concat all .js files into a single .js file, which contains the current version in the filename -->
-	<target name="build" depends="makedirs">
-		<!-- prepare the includes -->
-		<antcall target="prepare_includes">
-			<param name="includefile" value="${aloha.includes.filename}"/>
-		</antcall>
-		<loadfile property="aloha.includes" srcfile="${outdir}/${aloha.includes.filename}"/>
-		<antcall target="prepare_includes">
-			<param name="includefile" value="${deps.includes.filename}"/>
-		</antcall>
-		<loadfile property="deps.includes" srcfile="${outdir}/${deps.includes.filename}"/>
-
-		<!-- 
-			build the debug version of Aloha 
-		-->
-		
-		<!-- aloha without dependencies builds as debug/aloha-nodeps.js -->
-		<concat destfile="${debugdir}/${filename}-nodeps.js" force="no">
-			<filelist dir="${srcdir}" files="${aloha.includes}"/>
-		</concat>
-
-		<!-- replace GENTICS.Aloha.version with current version -->
-		<replace file="${debugdir}/${filename}-nodeps.js" token="##ALOHAVERSION##" value="${version}"/>
-		
-		<!-- add dependencies build aloha.js -->
-		<concat destfile="${debugdir}/${filename}.js" force="no">
-			<filelist dir="${srcdir}" files="${deps.includes}"/>
-			<fileset dir="${debugdir}" includes="${filename}-nodeps.js" />
-		</concat>
-		
-		<!-- copy all necessary resources to the debug folder -->
-		<antcall target="copytodebug"><param name="folder" value="deps"/></antcall>
-		<antcall target="copytodebug"><param name="folder" value="css"/></antcall>
-		<antcall target="copytodebug"><param name="folder" value="images"/></antcall>
-		<antcall target="copytodebug"><param name="folder" value="i18n"/></antcall>
-		<antcall target="copytodebug"><param name="folder" value="plugins"/></antcall>
-		
-		<!--
-			build the final, compressed version of Aloha
-		-->
-		
-		<!-- copy the debug output to the aloha folder -->
-		<copy todir="${alohadir}">
-			<fileset dir="${debugdir}" />
-		</copy>
-		
-		<!-- compress the nodeps version -->
-		<java jar="deps/${compressor}" fork="true" failonerror="true" output="${outdir}/compressor.log" append="true">
-			<arg line="--type js -o ${alohadir}/${filename}-nodeps.js --nomunge --verbose --charset UTF-8 ${alohadir}/${filename}-nodeps.js" />
+	<!-- Compress the JS Files  -->
+	<target name="compress-js" depends="preparecompressed">
+		<!-- Compress Aloha Core file -->
+		<java jar="${compiler.closure}" fork="true" failonerror="true" output="${outdir}/closure.log" append="true">
+			<arg line="--js_output_file=${outdirs.compressed}/${outfiles.core.js.filename} --js=${outdirs.uncompressed}/${outfiles.core.js.filename}" />
 			<classpath refid="minify.classpath" />
 		</java>
 		
-		<!-- compress the version with dependencies -->
-		<java jar="deps/${compressor}" fork="true" failonerror="true" output="${outdir}/compressor.log" append="true">
-			<arg line="--type js -o ${alohadir}/${filename}.js --nomunge --verbose --charset UTF-8 ${alohadir}/${filename}.js" />
+		<!-- Compress Aloha Deps file -->
+		<java jar="${compiler.closure}" fork="true" failonerror="true" output="${outdir}/closure.log" append="true">
+			<arg line="--js_output_file=${outdirs.compressed}/${outfiles.deps.js.filename} --js=${outdirs.uncompressed}/${outfiles.deps.js.filename}" />
 			<classpath refid="minify.classpath" />
 		</java>
 		
-		<!-- compress all plugin.js files -->
-		<apply executable="${java}" output="${outdir}/compressor.log" append="true" failonerror="true" relative="true" dir="${alohadir}/plugins">
-			<mapper type="identity" />
-			
-			<arg value="-cp" /> 
-			<arg pathref="minify.classpath" /> 
-			<arg value="-jar" />
-			<arg value="${basedir}/deps/${compressor}" />
-			<arg line="--type js --nomunge --verbose --charset UTF-8 -o" />
-			<srcfile />
-			<targetfile />
-
-			<fileset dir="${alohadir}/plugins/">
-				<exclude name="**/examples/**"/>
-				<include name="**/*.js"/>
-			</fileset>
-		</apply>
-
-		<!-- remove all javascript files from the deps folder as they are already included in aloha -->
-		<delete>
-			<fileset dir="${alohadir}/deps/" includes="**/*.js" />
-		</delete>
+		<!-- Compress Aloha Plugins file -->
+		<java jar="${compiler.closure}" fork="true" failonerror="true" output="${outdir}/closure.log" append="true">
+			<arg line="--js_output_file=${outdirs.compressed}/${outfiles.plugins.js.filename} --js=${outdirs.uncompressed}/${outfiles.plugins.js.filename}" />
+			<classpath refid="minify.classpath" />
+		</java>
 		
+		<!-- Compress Aloha Combined file -->
+		<java jar="${compiler.closure}" fork="true" failonerror="true" output="${outdir}/closure.log" append="true">
+			<arg line="--js_output_file=${outdirs.compressed}/${filename}.js --js=${outdirs.uncompressed}/${filename}.js" />
+			<classpath refid="minify.classpath" />
+		</java>
+	</target>
+	
+	<!-- Compress the CSS Files -->
+	<target name="compress-css" depends="preparecompressed">
+		<!-- Compress Aloha Core file -->
+		<java jar="${compiler.yui}" fork="true" failonerror="true" output="${outdir}/yui.log" append="true">
+			<arg line="--type css -o ${outdirs.compressed}/${outfiles.core.css.filename} --nomunge --verbose --charset UTF-8 ${outdirs.compressed}/${outfiles.core.css.filename}" />
+			<classpath refid="minify.classpath" />
+		</java>
+		
+		<!-- Compress Aloha Deps file -->
+		<java jar="${compiler.yui}" fork="true" failonerror="true" output="${outdir}/yui.log" append="true">
+			<arg line="--type css -o ${outdirs.compressed}/${outfiles.deps.css.filename} --nomunge --verbose --charset UTF-8 ${outdirs.compressed}/${outfiles.deps.css.filename}" />
+			<classpath refid="minify.classpath" />
+		</java>
+		
+		<!-- Compress Aloha Plugins file -->
+		<java jar="${compiler.yui}" fork="true" failonerror="true" output="${outdir}/yui.log" append="true">
+			<arg line="--type css -o ${outdirs.compressed}/${outfiles.plugins.css.filename} --nomunge --verbose --charset UTF-8 ${outdirs.compressed}/${outfiles.plugins.css.filename}" />
+			<classpath refid="minify.classpath" />
+		</java>
+		
+		<!-- Compress Aloha Combined file -->
+		<java jar="${compiler.yui}" fork="true" failonerror="true" output="${outdir}/yui.log" append="true">
+			<arg line="--type css -o ${outdirs.compressed}/${filename}.css --nomunge --verbose --charset UTF-8 ${outdirs.compressed}/${filename}.css" />
+			<classpath refid="minify.classpath" />
+		</java>
+	</target>
+	
+	<!-- Adjust -->
+	<target name="adjust">
 		<!-- create the version files -->
 		<copy todir="${packagedir}" file="${srcdir}/VERSION.txt"/>
 		<replace file="${packagedir}/VERSION.txt" token="##ALOHABUILT##" value="${now}"/>
 		<replace file="${packagedir}/VERSION.txt" token="##ALOHAVERSION##" value="${version}"/>
-		<copy todir="${alohadir}" file="${packagedir}/VERSION.txt"/>
-		<copy todir="${debugdir}" file="${packagedir}/VERSION.txt"/>
+		<copy todir="${outdirs.compressed}" file="${packagedir}/VERSION.txt"/>
+		<copy todir="${outdirs.uncompressed}" file="${packagedir}/VERSION.txt"/>
 		
 		<!-- copy the index file to the output and replace the versions -->
 		<copy todir="${packagedir}" file="${srcdir}/index.html"/>
@@ -223,14 +353,14 @@
 		<!--
 			build the examples
 		-->
-		<mkdir dir="${examplesdir}"/>
-		<copy todir="${examplesdir}">
-			<fileset dir="${srcdir}/examples" />
+		<mkdir dir="${outdirs.examples}"/>
+		<copy todir="${outdirs.examples}">
+			<fileset dir="${srcdir.examples}" />
 		</copy>
 		<!-- copy aloha to the examples -->
-		<mkdir dir="${examplesdir}/aloha" />
-		<copy todir="${examplesdir}/aloha">
-			<fileset dir="${alohadir}" />
+		<mkdir dir="${outdirs.examples}/aloha" />
+		<copy todir="${outdirs.examples}/aloha">
+			<fileset dir="${outdirs.compressed}" />
 		</copy>
 		<!-- fix the include of the main file -->
 		<replaceregexp flags="g" byline="true">
@@ -257,12 +387,12 @@
 		</replaceregexp>
 	</target>
 
-	<!-- Package the output into a ZIP File -->
-	<target name="package">
+	<target name="package" depends="adjust">
+		<!-- Package the output into a ZIP File -->
 		<mkdir dir="${zipdir}" />
 		<zip destfile="${zipdir}/${filename}-${version}.zip" basedir="${outdir}" includes="aloha-${version}/**"/>
 	</target>
 	
 	<!-- Build all -->
-	<target name="all" depends="clean,build,package" />
+	<target name="all" depends="clean,combine-js,combine-css,compress-js,compress-css" />
 </project>
