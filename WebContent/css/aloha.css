@@ -23,16 +23,32 @@
 /*
  * Ext JS fixes
  */
-.GENTICS_floatingmenu table, .GENTICS_floatingmenu tr, .GENTICS_floatingmenu td, .ext-root table, .ext-root tr, .ext-root td, 
+.GENTICS_floatingmenu table, .GENTICS_floatingmenu tr, .GENTICS_floatingmenu td, 
+.ext-root tr:nth-child(2n), .ext-root tr:nth-child(3n), .ext-root tr:nth-child(4n), .ext-root tr:nth-child(5n),
+.ext-root table, .ext-root tr, .ext-root td, 
 .x-layer table, .x-layer tr, .x-layer td,
 .x-window table, .x-window tr, .x-window td {
 	border: 0;
 	padding: 0;
 	margin: 0;
+background-color: transparent;
 }
 .GENTICS_floatingmenu table, .GENTICS_floatingmenu tr, .GENTICS_floatingmenu td {
 	width: 0;
 	height: 0;
+}
+
+/* fixes modal dialog border issues in GCN backend */
+table.x-toolbar-ct {
+        border: 0px;
+}
+
+table.x-toolbar-ct td {
+        border: 0px;
+}
+
+table.x-toolbar-ct table {
+        border: 0px;
 }
 
 /* 
@@ -436,3 +452,4 @@ ul.GENTICS_multisplit-expanded {
 ul.GENTICS_multisplit button.GENTICS_button_removeFormat {
 	background-image: url(../images/removeformat.png) !important;
 }
+
