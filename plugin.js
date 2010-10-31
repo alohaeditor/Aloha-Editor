@@ -150,8 +150,8 @@ GENTICS.Aloha.DragAndDropFiles.setBodyDropHandler = function() {
 					}
 					if (editable[0] == null) {
 						while(--len >= 0) {
-							ul_id = GENTICS.Aloha.Repositories.Uploader.addFileUpload(files[len]);
-							GENTICS.Aloha.Repositories.Uploader.startFileUpload(ul_id,this.config.drop.upload.config);
+							fileObj = GENTICS.Aloha.Repositories.Uploader.addFileUpload(files[len]);
+							GENTICS.Aloha.Repositories.Uploader.startFileUpload(fileObj.id,this.config.drop.upload.config);
 //							GENTICS.Aloha.EventRegistry.trigger(
 //				        			new GENTICS.Aloha.Event('dropFileInPage', GENTICS.Aloha, files[len]));
 							//ul_id = that.uploader.addFileUpload(files[len]);
@@ -168,33 +168,24 @@ GENTICS.Aloha.DragAndDropFiles.setBodyDropHandler = function() {
 					    		GENTICS.Aloha.Log.warn(that,"max_file_size exeeded");
 					    	    return false;
 					    	}
-					    	ul_id = GENTICS.Aloha.Repositories.Uploader.addFileUpload(files[len]);
+					    	fileObj = GENTICS.Aloha.Repositories.Uploader.addFileUpload(files[len]);
 					    	
 					    	//TODO : have a look in core for solving the per-editable config issue
 				        	var edConfig = that.getEditableConfig(editable);
 				           	if (edConfig.drop) {
-				           		GENTICS.Aloha.Repositories.Uploader.startFileUpload(ul_id,edConfig.drop.upload.config);
-				           		//ul_id = that.uploader.addFileUpload(files[len],edConfig.drop.upload.config.url);
-				        		var display = jQuery('<div id="GENTICS_drop_file_uploading_'+ul_id+'" class="GENTICS_drop_file_box"><div class="GENTICS_drop_file_icon GENTICS_drop_file_default"></div>' +
+				           		GENTICS.Aloha.Repositories.Uploader.startFileUpload(fileObj.id,edConfig.drop.upload.config);
+				        		var display = jQuery('<div id="'+fileObj.id+'" class="GENTICS_drop_file_box"><div class="GENTICS_drop_file_icon GENTICS_drop_file_default"></div>' +
 				        				'<div class="GENTICS_drop_file_details">'+ files[len].name +'</div></div>');
-				        		//target.parent().append(display);
-				        		//GENTICS.Utils.Dom.insertIntoDOM(display,range,  jQuery(GENTICS.Aloha.activeEditable.obj));
 				        		GENTICS.Aloha.EventRegistry.trigger(
 				        				new GENTICS.Aloha.Event('dropFileInEditable', GENTICS.Aloha, {
-				        					'file':files[len],
-				        					'ul_id': ul_id,
-				        					'display': display,
+				        					'fileObj':fileObj,
 				        					'range': range,
 				        					'editable': editable}));
-				        		//that.uploader.show(document.body);
-				        		//that.uploader.startFileUpload(ul_id);
 				           	} else {
 				            	GENTICS.Aloha.EventRegistry.trigger(
 				            			new GENTICS.Aloha.Event('dropFileInPage', GENTICS.Aloha,files[len]));
-				            	GENTICS.Aloha.Repositories.Uploader.startFileUpload(ul_id,this.config.drop.upload.config);
-				            	//ul_id = that.uploader.addFileUpload(files[len]);
-				            	//that.uploader.show(document.body);
-				            	//that.uploader.startFileUpload(ul_id);
+				            	GENTICS.Aloha.Repositories.Uploader.startFileUpload(fileObj.id,this.config.drop.upload.config);
+
 				           	}
 				           	
 				        } //while
