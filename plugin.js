@@ -278,31 +278,34 @@ GENTICS.Aloha.Image.subscribeEvents = function () {
 	var that = this;
 	//handles dropped files
 	GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'UploadSuccess', function(event,data) {
-		//TODO - Wait for DragAndDrop
-		img = jQuery("#GENTICS_image_uploading_"+data.file.id);
-		img.attr("src",data.result.data);
-		img.attr("id",'');		
+		if (data.file.type.match(/image\//)) {	
+			img = jQuery('#'+data.id);
+			img.attr("src",data.src);
+			img.attr("id",'');
+		}
+	});
+	GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'UploadFailure', function(event,data) {
+		if (data.file.type.match(/image\//)) {	
+			img = jQuery('#'+data.id);
+			img.remove();
+		}
 	});
 	GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'dropFileInEditable', function(event,data) {
 		//console.log(data.file);
-		if (data.file.type.match(/image\//)) {			
+		if (data.fileObj.file.type.match(/image\//)) {			
 			var reader = new FileReader();
 			reader.config = that.getEditableConfig(data.editable);
 			reader.attachedData = data;
 			reader.onloadend = function(readEvent) {
-				id = "GENTICS_image_uploading_" + data.ul_id;
-				img = jQuery('<img id="'+id+'" style="" title="" src=""></img>');
-				//img.attr('src', readEvent.target.result);
+				img = jQuery('<img id="'+reader.attachedData.fileObj.id+'" style="" title="" src=""></img>');
 				img.click( GENTICS.Aloha.Image.clickImage );
-				//GENTICS.Aloha.Selection.changeMarkupOnSelection(img);
-				//this.attachedData.display.append(img);
-				img.attr('src', readEvent.target.result);
-				//this.attachedData.display.replaceWith(img);
+				if (reader.attachedData.fileObj.src == undefined) {
+					reader.attachedData.fileObj.src =readEvent.target.result;
+				}
+				img.attr('src', reader.attachedData.fileObj.src );
 				GENTICS.Utils.Dom.insertIntoDOM(img,reader.attachedData.range,  jQuery(GENTICS.Aloha.activeEditable.obj));
-				//this.attachedData.display.removeClass('GENTICS_default_file_icon');
-				//console.log(this.attachedData.display);
 			};
-			reader.readAsDataURL(data.file);
+			reader.readAsDataURL(data.fileObj.file);
 		}
 	});
     // add the event handler for selection change
