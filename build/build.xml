@@ -24,20 +24,20 @@
 	<!-- Define the files for the includes (they are listed within the following files) -->
 	<property name="includes.core.js.filename" 		value="core-js.txt"/>
 	<property name="includes.deps.js.filename" 		value="deps-js.txt"/>
-	<property name="includes.plugins.js.filename" 	value="plugins-js.txt"/>
 	<property name="includes.core.css.filename" 	value="core-css.txt"/>
 	<property name="includes.deps.css.filename" 	value="deps-css.txt"/>
-	<property name="includes.plugins.css.filename" 	value="plugins-css.txt"/>
 	
 	<!-- Define the files for generation -->
 	<property name="outfiles.core.js.filename" 		value="${filename}-core.js"/>
 	<property name="outfiles.deps.js.filename" 		value="${filename}-deps.js"/>
-	<property name="outfiles.plugins.js.filename" 	value="${filename}-plugins.js"/>
 	<property name="outfiles.all.js.filename" 		value="${filename}.js"/>
 	<property name="outfiles.core.css.filename" 	value="${filename}-core.css"/>
 	<property name="outfiles.deps.css.filename" 	value="${filename}-deps.css"/>
-	<property name="outfiles.plugins.css.filename" 	value="${filename}-plugins.css"/>
 	<property name="outfiles.all.css.filename" 		value="${filename}.css"/>
+	
+	<!-- Define some manual includes -->
+	<property name="outfiles.uncompressed.includes.js"	value="deps/jquery-1.4.2.js"/>
+	<property name="outfiles.compressed.includes.js"	value="deps/jquery-1.4.2.min.js"/>
 	
 	<!-- Define the java executable used for compilers -->
 	<property name="java" value="${java.home}${file.separator}bin${file.separator}java" />
@@ -75,6 +75,30 @@
 		<copy todir="${to}/${folder}">
 			<fileset dir="${srcdir}/${folder}" />
 		</copy>
+	</target>
+	
+	<!-- Function: Compress a CSS File using YUI - $infile, $outfile -->
+	<target name="yuicss">
+		<java jar="${compiler.yui}" fork="true" failonerror="true" output="${outdir}/yui.log" append="true">
+			<arg line="--type css -o ${outfile} --verbose --charset UTF-8 ${infile}" />
+			<classpath refid="minify.classpath" />
+		</java>
+	</target>
+	
+	<!-- Function: Compress a JavaScript File using YUI - $infile, $outfile -->
+	<target name="yuijs">
+		<java jar="${compiler.yui}" fork="true" failonerror="true" output="${outdir}/yui.log" append="true">
+			<arg line="--nomunge --type js -o ${outfile} --verbose --charset UTF-8 ${infile}" />
+			<classpath refid="minify.classpath" />
+		</java>
+	</target>
+	
+	<!-- Function: Compress a JavaScript File using Closure - $infile, $outfile -->
+	<target name="closurejs">
+		<java jar="${compiler.closure}" fork="true" failonerror="true" output="${outdir}/closure.log" append="true">
+			<arg line="--js_output_file=${outfile} --js=${infile}" />
+			<classpath refid="minify.classpath" />
+		</java>
 	</target>
 	
 	<!-- Create the include.js file - This is used for dev purposes, not production purposes, so as such; IT IS STILL NEEDED
@@ -177,12 +201,6 @@
 		</antcall>
 		<loadfile property="includes.deps.js.list" srcfile="${outdir}/${includes.deps.js.filename}"/>
 		
-		<!-- Load the Plugins File List -->
-		<antcall target="prepare_includes">
-			<param name="includefile" value="${includes.plugins.js.filename}"/>
-		</antcall>
-		<loadfile property="includes.plugins.js.list" srcfile="${outdir}/${includes.plugins.js.filename}"/>
-		
 		<!-- 
 			Create the Uncompressed Files
 		-->
@@ -193,13 +211,8 @@
 		</concat>
 		
 		<!-- Generate Aloha Deps File -->
-		<concat destfile="${outdirs.uncompressed}//${outfiles.deps.js.filename}" force="no">
+		<concat destfile="${outdirs.uncompressed}/${outfiles.deps.js.filename}" force="no">
 			<filelist dir="${srcdir}" files="${includes.deps.js.list}"/>
-		</concat>
-	
-		<!-- Generate Aloha Plugins File -->
-		<concat destfile="${outdirs.uncompressed}/${outfiles.plugins.js.filename}" force="no">
-			<filelist dir="${srcdir}" files="${includes.plugins.js.list}"/>
 		</concat>
 		
 		<!-- 
@@ -211,11 +224,11 @@
 		
 		<!-- Create a Combined File -->
 		<concat destfile="${outdirs.uncompressed}/${filename}.js" force="no">
-			<fileset dir="${outdirs.uncompressed}" includes="${outfiles.deps.js.filename},${outfiles.core.js.filename},${outfiles.plugins.js.filename}" />
+			<filelist dir="${outdirs.uncompressed}" files="${outfiles.uncompressed.includes.js},${outfiles.deps.js.filename},${outfiles.core.js.filename}" />
 		</concat>
 	</target>
 	
-	<!-- Combine CSS Files -->
+	<!-- Combine CSS Files (deprecated) -->
 	<target name="combine-css" depends="prepareuncompressed">
 		<!-- Load the Core File List -->
 		<antcall target="prepare_includes">
@@ -229,12 +242,6 @@
 		</antcall>
 		<loadfile property="includes.deps.css.list" srcfile="${outdir}/${includes.deps.css.filename}"/>
 		
-		<!-- Load the Plugins File List -->
-		<antcall target="prepare_includes">
-			<param name="includefile" value="${includes.plugins.css.filename}"/>
-		</antcall>
-		<loadfile property="includes.plugins.css.list" srcfile="${outdir}/${includes.plugins.css.filename}"/>
-		
 		<!-- 
 			Create the Uncompressed Files
 		-->
@@ -245,13 +252,8 @@
 		</concat>
 		
 		<!-- Generate Aloha Deps File -->
-		<concat destfile="${outdirs.uncompressed}//${outfiles.deps.css.filename}" force="no">
+		<concat destfile="${outdirs.uncompressed}/${outfiles.deps.css.filename}" force="no">
 			<filelist dir="${srcdir}" files="${includes.deps.css.list}"/>
-		</concat>
-	
-		<!-- Generate Aloha Plugins File -->
-		<concat destfile="${outdirs.uncompressed}/${outfiles.plugins.css.filename}" force="no">
-			<filelist dir="${srcdir}" files="${includes.plugins.css.list}"/>
 		</concat>
 		
 		<!-- 
@@ -263,18 +265,12 @@
 		
 		<!-- Create a Combined File -->
 		<concat destfile="${outdirs.uncompressed}/${filename}.css" force="no">
-			<fileset dir="${outdirs.uncompressed}" includes="${outfiles.deps.css.filename},${outfiles.core.css.filename},${outfiles.plugins.css.filename}" />
+			<filelist dir="${outdirs.uncompressed}" files="${outfiles.deps.css.filename},${outfiles.core.css.filename}" />
 		</concat>
 	</target>
 	
 	<!-- Prepare the Compressed Directory -->
 	<target name="preparecompressed" depends="makedirs">
-		<!-- Remove Javascript + CSS Files from the various folders (as we just included them) -->
-		<delete>
-			<fileset dir="${outdirs.uncompressed}/deps/" includes="**/*.js" />
-			<fileset dir="${outdirs.uncompressed}/deps/" includes="**/*.css" />
-		</delete>
-		
 		<!-- Copy the Necessary Dirs/Files to the Compressed Dir --> 
 		<copy todir="${outdirs.compressed}">
 			<fileset dir="${outdirs.uncompressed}" />
@@ -283,10 +279,25 @@
 	
 	<!-- Compress the JS Files  -->
 	<target name="compress-js" depends="preparecompressed">
+		<!-- Compress Aloha Core File -->
+		<antcall target="closurejs">
+			<param name="infile" value="${outdirs.uncompressed}/${outfiles.core.js.filename}"/>
+			<param name="outfile" value="${outdirs.compressed}/${outfiles.core.js.filename}"/>
+		</antcall>
+		
+		<!-- Compress Aloha Deps File -->
+		<antcall target="yuijs">
+			<param name="infile" value="${outdirs.uncompressed}/${outfiles.deps.js.filename}"/>
+			<param name="outfile" value="${outdirs.compressed}/${outfiles.deps.js.filename}"/>
+		</antcall>
+		
+		<!-- Compress Aloha Combined File -->
+		<concat destfile="${outdirs.compressed}/${filename}.js" force="no">
+			<filelist dir="${outdirs.compressed}" files="${outfiles.compressed.includes.js},${outfiles.deps.js.filename},${outfiles.core.js.filename}" />
+		</concat>
+		
 		<!-- Compress Aloha Plugins Files -->
 		<apply executable="${java}" output="${outdir}/closure.log" dir="${outdirs.compressed}/${pluginsdir}"  append="true" failonerror="true" relative="true" addsourcefile="true" verbose="true" parallel="false" skipemptyfilesets="true">
-			<mapper type="glob" from="*.js" to="*-min.js"/>
-
 			<arg value="-cp" /> 
 			<arg pathref="minify.classpath" /> 
 			<arg line="-jar ${compiler.closure}" />
@@ -294,86 +305,63 @@
 			<targetfile />
 			<arg line="--js" />
 			<srcfile />
-		
+
 			<fileset dir="${outdirs.compressed}/${pluginsdir}">
 				<exclude name="**/examples/**"/>
-				<include name="**/**/*.js"/>
 				<include name="**/*.js"/>
 			</fileset>
+			<mapper type="glob" from="*.js" to="*.min.js"/>
 		</apply>
+
+		<!-- Adjust Aloha Plugins Files (remove .min) -->
+		<move todir="${outdirs.compressed}/${pluginsdir}" includeemptydirs="false">
+			<fileset dir="${outdirs.compressed}/${pluginsdir}">
+				<exclude name="**/examples/**"/>
+				<include name="**/*.min.js"/>
+			</fileset>
+			<mapper type="glob" from="*.min.js" to="*.js"/>
+		</move>
 		
-		<!-- Compress Aloha Core File -->
-		<java jar="${compiler.closure}" fork="true" failonerror="true" output="${outdir}/closure.log" append="true">
-			<arg line="--js_output_file=${outdirs.compressed}/${outfiles.core.js.filename} --js=${outdirs.uncompressed}/${outfiles.core.js.filename}" />
-			<classpath refid="minify.classpath" />
-		</java>
-		
-		<!-- Compress Aloha Deps File -->
-		<java jar="${compiler.closure}" fork="true" failonerror="true" output="${outdir}/closure.log" append="true">
-			<arg line="--js_output_file=${outdirs.compressed}/${outfiles.deps.js.filename} --js=${outdirs.uncompressed}/${outfiles.deps.js.filename}" />
-			<classpath refid="minify.classpath" />
-		</java>
-		
-		<!-- Compress Aloha Plugins File -->
-		<java jar="${compiler.closure}" fork="true" failonerror="true" output="${outdir}/closure.log" append="true">
-			<arg line="--js_output_file=${outdirs.compressed}/${outfiles.plugins.js.filename} --js=${outdirs.uncompressed}/${outfiles.plugins.js.filename}" />
-			<classpath refid="minify.classpath" />
-		</java>
-		
-		<!-- Compress Aloha Combined File -->
-		<java jar="${compiler.closure}" fork="true" failonerror="true" output="${outdir}/closure.log" append="true">
-			<arg line="--js_output_file=${outdirs.compressed}/${filename}.js --js=${outdirs.uncompressed}/${filename}.js" />
-			<classpath refid="minify.classpath" />
-		</java>
+		<!-- Clean Aloha Plugins Files (as the .min.js files may not have been entirely removed) -->
+		<delete>
+			<fileset dir="${outdirs.compressed}/${pluginsdir}">
+				<exclude name="**/examples/**"/>
+				<include name="**/*.min.js"/>
+			</fileset>
+		</delete>
 	</target>
 	
 	<!-- Compress the CSS Files -->
 	<target name="compress-css" depends="preparecompressed">
-		<!-- Compress Aloha Core File -->
-		<java jar="${compiler.yui}" fork="true" failonerror="true" output="${outdir}/yui.log" append="true">
-			<arg line="--type css -o ${outdirs.compressed}/${outfiles.core.css.filename} --verbose --charset UTF-8 ${outdirs.compressed}/${outfiles.core.css.filename}" />
-			<classpath refid="minify.classpath" />
-		</java>
-		
-		<!-- Compress Aloha Deps File -->
-		<java jar="${compiler.yui}" fork="true" failonerror="true" output="${outdir}/yui.log" append="true">
-			<arg line="--type css -o ${outdirs.compressed}/${outfiles.deps.css.filename} --verbose --charset UTF-8 ${outdirs.compressed}/${outfiles.deps.css.filename}" />
-			<classpath refid="minify.classpath" />
-		</java>
-		
-		<!-- Compress Aloha Plugins File -->
-		<java jar="${compiler.yui}" fork="true" failonerror="true" output="${outdir}/yui.log" append="true">
-			<arg line="--type css -o ${outdirs.compressed}/${outfiles.plugins.css.filename} --verbose --charset UTF-8 ${outdirs.compressed}/${outfiles.plugins.css.filename}" />
-			<classpath refid="minify.classpath" />
-		</java>
-		
 		<!-- Compress Aloha Plugins Files -->
-		<apply executable="${java}" output="${outdir}/yui.log" dir="${outdirs.compressed}/${pluginsdir}"  append="true" failonerror="true" relative="true" addsourcefile="true" verbose="true" parallel="false" skipemptyfilesets="true">
-			<mapper type="identity" />
-
+		<apply executable="${java}" output="${outdir}/yui.log" dir="${outdirs.compressed}"  append="true" failonerror="true" relative="true" addsourcefile="true" verbose="true" parallel="false" skipemptyfilesets="true">
 			<arg value="-cp" /> 
 			<arg pathref="minify.classpath" /> 
 			<arg line="-jar ${compiler.yui}" />
 			<arg line="--type css --verbose --charset UTF-8 -o" />
 			<targetfile />
 			<srcfile />
-			
-			<fileset dir="${outdirs.compressed}/${pluginsdir}">
+
+			<fileset dir="${outdirs.compressed}">
 				<exclude name="**/examples/**"/>
-				<include name="**/**/*.css"/>
 				<include name="**/*.css"/>
 			</fileset>
+			<mapper type="identity" />
 		</apply>
-		
-		<!-- Compress Aloha Combined File -->
-		<java jar="${compiler.yui}" fork="true" failonerror="true" output="${outdir}/yui.log" append="true">
-			<arg line="--type css -o ${outdirs.compressed}/${filename}.css --verbose --charset UTF-8 ${outdirs.compressed}/${filename}.css" />
-			<classpath refid="minify.classpath" />
-		</java>
 	</target>
 	
 	<!-- Adjust -->
 	<target name="adjust">
+		<!-- Remove Javascript Files from the various folders (as we just combined them) -->
+		<delete>
+			<fileset dir="${outdirs.uncompressed}/deps">
+				<include name="**/*.js"/>
+			</fileset>
+			<fileset dir="${outdirs.compressed}/deps">
+				<include name="**/*.js"/>
+			</fileset>
+		</delete>
+		
 		<!-- create the version files -->
 		<copy todir="${packagedir}" file="${srcdir}/VERSION.txt"/>
 		<replace file="${packagedir}/VERSION.txt" token="##ALOHABUILT##" value="${now}"/>
@@ -432,5 +420,6 @@
 	</target>
 	
 	<!-- Build all -->
-	<target name="all" depends="clean,combine-js,combine-css,compress-js,compress-css" />
+	<target name="build" depends="clean,combine-js,compress-js,compress-css" />
+	<target name="all" depends="build,adjust,package" />
 </project>

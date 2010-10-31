@@ -1,4 +1,3 @@
-deps/jquery-1.4.2.js
 deps/jquery.json-2.2.min.js
 deps/jquery.getUrlParam.js
 deps/prettyPhoto/jquery.prettyPhoto.js

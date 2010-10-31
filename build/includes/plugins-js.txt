@@ -1,3 +1,0 @@
-plugins/com.gentics.aloha.plugins.Table/plugin.js
-plugins/com.gentics.aloha.plugins.Link/plugin.js
-plugins/com.gentics.aloha.plugins.HighlightEditables/plugin.js
