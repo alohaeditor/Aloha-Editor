@@ -101,64 +101,69 @@
 		</java>
 	</target>
 	
-	<!-- Create the include.js file - This is used for dev purposes, not production purposes, so as such; IT IS STILL NEEDED
-		 We don't care for plugins in the include.js -->
+	<!-- Create the include.js file - This is used for dev purposes, not production purposes, so as such; IT IS STILL NEEDED -->
 	<target name="build-dev-include" depends="makedirs">
-		<!-- this sets the property for the inclusion of a js file -->
+		<!-- Load in the Regular Expression Replaces -->
 		<loadfile property="dev.includejs.subst" srcfile="deps/includejs-substitution.txt"/>
-		<!-- this sets the property for the inclusion of a css file -->
 		<loadfile property="dev.includecss.subst" srcfile="deps/includecss-substitution.txt"/>
 		
-		<!-- first the deps -->
-		<copy file="${outfiles.deps.filename}" todir="${outdir}" overwrite="true"/>
-		<replaceregexp byline="true" file="${outdir}/${outfiles.deps.filename}" match="(.+)" replace="${dev.includejs.subst}"/>
+		<!-- The Core JS -->
+		<copy file="${includesdir}/${includes.core.js.filename}" todir="${outdir}" overwrite="true"/>
+		<replaceregexp byline="true" file="${outdir}/${includes.core.js.filename}" match="(.+)" replace="${dev.includejs.subst}"/>
+		
+		<!-- The Deps JS -->
+		<copy file="${includesdir}/${includes.deps.js.filename}" todir="${outdir}" overwrite="true"/>
+		<replaceregexp byline="true" file="${outdir}/${includes.deps.js.filename}" match="(.+)" replace="${dev.includejs.subst}"/>
+		
+		<!-- The Core CSS -->
+		<copy file="${includesdir}/${includes.core.css.filename}" todir="${outdir}" overwrite="true"/>
+		<replaceregexp byline="true" file="${outdir}/${includes.core.css.filename}" match="(.+)" replace="${dev.includecss.subst}"/>
+		
+		<!-- The Deps CSS -->
+		<copy file="${includesdir}/${includes.deps.css.filename}" todir="${outdir}" overwrite="true"/>
+		<replaceregexp byline="true" file="${outdir}/${includes.deps.css.filename}" match="(.+)" replace="${dev.includecss.subst}"/>
 
-		<!-- now aloha core -->
-		<copy file="${outfiles.core.filename}" todir="${outdir}" overwrite="true"/>
-		<replaceregexp byline="true" file="${outdir}/${outfiles.core.filename}" match="(.+)" replace="${dev.includejs.subst}"/>
-
-		<!-- and the css includes -->
-		<copy file="${outfiles.css.filename}" todir="${outdir}" overwrite="true"/>
-		<replaceregexp byline="true" file="${outdir}/${outfiles.css.filename}" match="(.+)" replace="${dev.includecss.subst}"/>
-
-		<!-- now concat the js files -->
+		<!-- Merge JS Files -->
 		<concat destfile="${srcdir}/core/include.js" force="true">
 			<fileset file="deps/includejs-header.txt"/>
-			<filelist dir="${outdir}" files="${outfiles.deps.filename},${outfiles.core.filename}"></filelist>
+			<filelist dir="${outdir}" files="${includes.deps.js.filename},${includes.core.js.filename}"></filelist>
 			<fileset file="deps/includejs-footer.txt"/>
 		</concat>
 
-		<!-- and the css file -->
+		<!-- Merge CSS files -->
 		<concat destfile="${srcdir}/core/css.js" force="true">
 			<fileset file="deps/includecss-header.txt"/>
-			<filelist dir="${outdir}" files="${outfiles.css.filename}"></filelist>
+			<filelist dir="${outdir}" files="${includes.deps.css.filename},${includes.core.css.filename}"></filelist>
 			<fileset file="deps/includecss-footer.txt"/>
 		</concat>
 		
 		<!--
-			replace everything for the testloader
+			Now do the same thing for the Testloader
 		-->
 		
-		<!-- this sets the property for the inclusion of a js file -->
+		<!-- Load in the Regular Expression Replaces -->
 		<loadfile property="testloader.includejs.subst" srcfile="${testdir}includejs-substitution.txt"/>
-		<!-- this sets the property for the inclusion of a css file -->
 		<loadfile property="testloader.includecss.subst" srcfile="${testdir}includecss-substitution.txt"/>
 		
-		<!-- first the deps -->
-		<copy file="${outfiles.deps.filename}" todir="${outdir}" overwrite="true"/>
-		<replaceregexp byline="true" file="${outdir}/${outfiles.deps.filename}" match="(.+)" replace="${testloader.includejs.subst}"/>
-
-		<!-- now aloha core -->
-		<copy file="${outfiles.core.filename}" todir="${outdir}" overwrite="true"/>
-		<replaceregexp byline="true" file="${outdir}/${outfiles.core.filename}" match="(.+)" replace="${testloader.includejs.subst}"/>
-
-		<!-- and the css includes -->
-		<copy file="${outfiles.css.filename}" todir="${outdir}" overwrite="true"/>
-		<replaceregexp byline="true" file="${outdir}/${outfiles.css.filename}" match="(.+)" replace="${testloader.includecss.subst}"/>
-
-		<!-- now concat all files into the testloader -->
+		<!-- The Core JS -->
+		<copy file="${includesdir}/${includes.core.js.filename}" todir="${outdir}" overwrite="true"/>
+		<replaceregexp byline="true" file="${outdir}/${includes.core.js.filename}" match="(.+)" replace="${testloader.includejs.subst}"/>
+		
+		<!-- The Deps JS -->
+		<copy file="${includesdir}/${includes.deps.js.filename}" todir="${outdir}" overwrite="true"/>
+		<replaceregexp byline="true" file="${outdir}/${includes.deps.js.filename}" match="(.+)" replace="${testloader.includejs.subst}"/>
+		
+		<!-- The Core CSS -->
+		<copy file="${includesdir}/${includes.core.css.filename}" todir="${outdir}" overwrite="true"/>
+		<replaceregexp byline="true" file="${outdir}/${includes.core.css.filename}" match="(.+)" replace="${testloader.includecss.subst}"/>
+		
+		<!-- The Deps CSS -->
+		<copy file="${includesdir}/${includes.deps.css.filename}" todir="${outdir}" overwrite="true"/>
+		<replaceregexp byline="true" file="${outdir}/${includes.deps.css.filename}" match="(.+)" replace="${testloader.includecss.subst}"/>
+		
+		<!-- Merge Files -->
 		<concat destfile="${testdir}testloader.html" force="true">
-			<filelist dir="${outdir}" files="${outfiles.css.filename},${outfiles.deps.filename},${outfiles.core.filename}"></filelist>
+			<filelist dir="${outdir}" files="${includes.deps.css.filename},${includes.core.css.filename},${includes.deps.js.filename},${includes.core.js.filename}"></filelist>
 		</concat>
 	</target>
 	
