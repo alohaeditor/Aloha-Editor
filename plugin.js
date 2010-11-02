@@ -86,7 +86,8 @@ GENTICS.Aloha.LinkChecker.checkLink = function (obj, scope, delay, timeout) {
 	
 	// extract url from link object
 	var url = jQuery(obj).attr('href');
-	
+	var cleanUrl = url;
+
 	// i probably an internal link
 	if ( typeof url == 'string' && !/^http/.test( url.toLowerCase() ) ) {
 		this.makeCleanLink(obj);
@@ -113,10 +114,10 @@ GENTICS.Aloha.LinkChecker.checkLink = function (obj, scope, delay, timeout) {
 					var e = '0';
 				}
 				var o = jQuery(obj);
-				if ( o.attr('title') ) {
+				if ( o.attr('title') && !o.attr('data-title') ) {
 					o.attr('data-title', o.attr('title'));
 				}
-				o.attr('title', url+'. '+that.i18n('error.'+e));
+				o.attr('title', cleanUrl+'. '+that.i18n('error.'+e));
 				if ( jQuery.inArray(xhr.status, that.warningCodes) >= 0 ) {					
 					o.addClass('GENTICS_link_warn');
 				} else {
@@ -172,6 +173,8 @@ GENTICS.Aloha.LinkChecker.makeCleanLink = function (obj) {
 		var o = jQuery(obj);
 		if ( o.attr('data-title') ) {
 			o.attr('title', o.attr('data-title'));
+		} else {
+			o.removeAttr('title');
 		}
 		o.removeAttr('data-title');
 		o.removeClass('GENTICS_link_error');
