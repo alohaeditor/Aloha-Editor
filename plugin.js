@@ -133,39 +133,40 @@ GENTICS.Aloha.Abbr.subscribeEvents = function () {
 	
     // add the event handler for selection change
     GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'selectionChanged', function(event, rangeObject) {
-        
-        // show/hide the button according to the configuration
-        var config = that.getEditableConfig(GENTICS.Aloha.activeEditable.obj);
-        
-        if ( jQuery.inArray('abbr', config) != -1) {
-        	that.formatAbbrButton.show();
-        	that.insertAbbrButton.show();
-        } else {
-        	that.formatAbbrButton.hide();
-        	that.insertAbbrButton.hide();
-            // leave if a is not allowed
-            return;
-        }
-        
+        if (GENTICS.Aloha.activeEditable) {
+        	// show/hide the button according to the configuration
+        	var config = that.getEditableConfig(GENTICS.Aloha.activeEditable.obj);
+        	
+        	if ( jQuery.inArray('abbr', config) != -1) {
+        		that.formatAbbrButton.show();
+        		that.insertAbbrButton.show();
+        	} else {
+        		that.formatAbbrButton.hide();
+        		that.insertAbbrButton.hide();
+        		// leave if a is not allowed
+        		return;
+        	}
+        	
 //        if ( !GENTICS.Aloha.Selection.mayInsertTag('abbr') ) {
 //        	that.insertAbbrButton.hide();
 //        }
-        
-        var foundMarkup = that.findAbbrMarkup( rangeObject );
-        if ( foundMarkup ) {
-            // abbr found
-        	that.insertAbbrButton.hide();
-        	that.formatAbbrButton.setPressed(true);
-            GENTICS.Aloha.FloatingMenu.setScope(that.getUID('abbr'));
-            that.abbrField.setTargetObject(foundMarkup, 'title');
-        } else {
-            // no abbr found
-        	that.formatAbbrButton.setPressed(false);
-        	that.abbrField.setTargetObject(null);
+        	
+        	var foundMarkup = that.findAbbrMarkup( rangeObject );
+        	if ( foundMarkup ) {
+        		// abbr found
+        		that.insertAbbrButton.hide();
+        		that.formatAbbrButton.setPressed(true);
+        		GENTICS.Aloha.FloatingMenu.setScope(that.getUID('abbr'));
+        		that.abbrField.setTargetObject(foundMarkup, 'title');
+        	} else {
+        		// no abbr found
+        		that.formatAbbrButton.setPressed(false);
+        		that.abbrField.setTargetObject(null);
+        	}
+        	
+        	// TODO this should not be necessary here!
+        	GENTICS.Aloha.FloatingMenu.doLayout();
         }
-
-        // TODO this should not be necessary here!
-        GENTICS.Aloha.FloatingMenu.doLayout();
 
     });
     
