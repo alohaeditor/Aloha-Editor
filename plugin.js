@@ -366,8 +366,13 @@ GENTICS.Aloha.TablePlugin.initTableButtons = function () {
 						newRange.startContainer = newRange.endContainer = captionContent.get(0);
 						newRange.startOffset = 0;
 						newRange.endOffset = captionContent.text().length;
+
+						// blur all editables within the table
+						that.activeTable.obj.find('div.GENTICS_Table_Cell_editable').blur();
+
 						cDiv.focus();
 						newRange.select();
+						GENTICS.Aloha.Selection.updateSelection();
 					}
 				}
 			}
@@ -402,6 +407,8 @@ GENTICS.Aloha.TablePlugin.initTableButtons = function () {
  * @param captionText default text for the caption
  */
 GENTICS.Aloha.TablePlugin.makeCaptionEditable = function(caption, captionText) {
+	var that = this;
+
 	var cSpan = caption.children('div').eq(0);
 	if (cSpan.length == 0) {
 		// generate a new div
@@ -423,7 +430,12 @@ GENTICS.Aloha.TablePlugin.makeCaptionEditable = function(caption, captionText) {
 	cSpan.unbind('mousedown');
 	// focus on click
 	cSpan.bind('mousedown', function(jqEvent) {
-		this.focus();
+		cSpan.focus();
+
+		// stop bubble, otherwise the mousedown of the table is called ...
+		jqEvent.preventDefault();
+		jqEvent.stopPropagation();
+		return false;
 	});
 };
 
