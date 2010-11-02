@@ -357,6 +357,18 @@ GENTICS.Aloha.TablePlugin.initTableButtons = function () {
 					var c = jQuery('<caption></caption>');
 					that.activeTable.obj.append(c);
 					that.makeCaptionEditable(c, captionText);
+
+					// get the editable span within the caption and select it
+					var cDiv = c.find('div').eq(0);
+					var captionContent = cDiv.contents().eq(0);
+					if (captionContent.length > 0) {
+						var newRange = new GENTICS.Utils.RangeObject();
+						newRange.startContainer = newRange.endContainer = captionContent.get(0);
+						newRange.startOffset = 0;
+						newRange.endOffset = captionContent.text().length;
+						cDiv.focus();
+						newRange.select();
+					}
 				}
 			}
 		}
@@ -413,8 +425,6 @@ GENTICS.Aloha.TablePlugin.makeCaptionEditable = function(caption, captionText) {
 	cSpan.bind('mousedown', function(jqEvent) {
 		this.focus();
 	});
-	// and focus now
-    cSpan.focus();
 };
 
 /**
