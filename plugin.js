@@ -74,11 +74,7 @@ GENTICS.Aloha.LinkChecker.init = function () {
 			GENTICS.Aloha, 
 			"hrefChanged", 
 			function (jEvent, aEvent) {
-<<<<<<< HEAD
-				that.checkLink(aEvent.obj, 700);
-=======
 				that.checkLink(aEvent.obj, 'hrefChanged');
->>>>>>> eb1d725ea3f6ad91f8a5b26770a296ef98763aef
 			}
 	);
 
