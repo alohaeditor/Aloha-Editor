@@ -88,7 +88,7 @@ GENTICS.Aloha.LinkChecker.checkLink = function (obj, scope, delay, timeout) {
 	var url = jQuery(obj).attr('href');
 	
 	// i probably an internal link
-	if ( !/^http/.test( url.toLowerCase() ) ) {
+	if ( typeof url == 'string' && !/^http/.test( url.toLowerCase() ) ) {
 		this.makeCleanLink(obj);
 		return;
 	}
