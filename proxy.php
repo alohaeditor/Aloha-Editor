@@ -52,10 +52,8 @@ if (strtoupper($method) == 'HEAD' && (int)$response['status'] >= 400 ) {
 }
 
 // forward each returned header...
-foreach ($response['headers'] as $header) {
-	if (trim($header)) {
-		header($header);
-	}
+foreach ($response['headers'] as $key => $value) {
+	header("$key: $value");
 }
 
 //there is no need to specify a content length since we don't do keep
