@@ -636,7 +636,8 @@ GENTICS.Utils.Dom.prototype.doCleanup = function(cleanup, rangeObject, start) {
 						jQuery(this).remove();
 						removed = true;
 					}
-					if (jQuery.inArray(this.nodeName.toLowerCase(), that.mergeableTags) >= 0 && jQuery(this).text().length == 0) {
+					if (jQuery.inArray(this.nodeName.toLowerCase(), that.mergeableTags) >= 0 
+							&& jQuery(this).text().length == 0 && this.childNodes.length == 0) {
 						jQuery(this).remove();
 						removed = true;
 					}
