@@ -1,13 +1,19 @@
 /* This is auto generated on build-dev-include build. Templates at /build/deps/includecss* */ 
-(function(){
+(function(window,undefined){
 	
-	if ( typeof this.GENTICS_Aloha_autoloadcss == 'undefined' || !(this.GENTICS_Aloha_autoloadcss == false) ) {
+	/* Generate xHTML valid css Elements */
+	function cssElement( link ) {
+		var csslink = document.createElement("link");
+		csslink.setAttribute("rel", "stylesheet");
+		csslink.setAttribute("type", "text/css");
+		csslink.setAttribute("href", link);
+		csslink.setAttribute("media", "all");
+		return csslink;
+	}
 	
+	if ( typeof window.GENTICS_Aloha_autoloadcss === 'undefined' || !window.GENTICS_Aloha_autoloadcss ) {
 		/* Check if base DIR is set through configuration otherwise set to default */
-		var base = GENTICS.Aloha.autobase;
-		if (typeof GENTICS_Aloha_base != 'undefined') {
-				base = GENTICS_Aloha_base;
-		}
-	
+		var base = GENTICS.Aloha.autobase || window.GENTICS_Aloha_base || '';
+		
 		/* load stylsheets */
 		var header = document.getElementsByTagName("head")[0];

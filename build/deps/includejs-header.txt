@@ -2,9 +2,7 @@
 (function(window,undefined){
 	
 	/* Check if base DIR is set through configuration otherwise set to default */
-	if ( typeof window.GENTICS_Aloha_base === 'undefined' ) {
-		window.GENTICS_Aloha_base = '/Aloha/';
-	}
+	window.GENTICS_Aloha_base = window.GENTICS_Aloha_base||'/Aloha/';
 	
 	/* load javascript */
 	var header = document.getElementsByTagName("head")[0];
