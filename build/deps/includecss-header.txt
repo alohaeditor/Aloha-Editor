@@ -11,7 +11,7 @@
 		return csslink;
 	}
 	
-	if ( typeof window.GENTICS_Aloha_autoloadcss === 'undefined' || !window.GENTICS_Aloha_autoloadcss ) {
+	if ( typeof window.GENTICS_Aloha_autoloadcss === 'undefined' || window.GENTICS_Aloha_autoloadcss ) {
 		/* Check if base DIR is set through configuration otherwise set to default */
 		var base = GENTICS.Aloha.autobase || window.GENTICS_Aloha_base || '';
 		
