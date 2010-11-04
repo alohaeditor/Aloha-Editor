@@ -19,15 +19,13 @@ GENTICS.Aloha.LinkChecker.languages = ['en'];
 GENTICS.Aloha.LinkChecker.errorCodes = [400, 401, 402, 403, 404, 405,
                                         406, 407, 408, 409, 410, 411,
                                         412, 413, 414, 415, 416, 417,
-                                        418, 422, 423, 424, 425, 426,
-                                        449, 450, 500, 501, 502, 503,
-                                        504, 505, 506, 507, 509, 510];
+                                        418, 500, 501, 502, 503, 504,
+                                        505, 506];
 /**
  * This codes are asumed temporary errors.
  */
-GENTICS.Aloha.LinkChecker.warningCodes = [404, 411, 412, 413, 426, 449,
-                                          450, 500, 503, 504, 505, 507,
-                                          509, 510];
+GENTICS.Aloha.LinkChecker.warningCodes = [404, 411, 412, 413, 500, 503,
+                                          504, 505];
 
 
 /**
@@ -94,7 +92,6 @@ GENTICS.Aloha.LinkChecker.checkLink = function (obj, scope, delay, timeout) {
 	}
 	
 	if ( this.proxyUrl ) {
-//		url = this.proxyUrl + this.urlencode(url);
 		url = this.proxyUrl + url;
 	}
 	
