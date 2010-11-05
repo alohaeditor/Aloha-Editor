@@ -8,15 +8,19 @@ community and commercial stakeholders. This way both parties (community and comm
 profit from each other by code and financial ressources for core developement.
 Therefore we adopted a dual licensing approach for Aloha Editor.
 
-Opensource License
-==================
-
+Opensource Software License
+===========================
 The Open Source version of Aloha Editor is released under the terms of AGPLv3 License.
 http://www.gnu.org/licenses/agpl.html
  
-Commercial License
-==================
-
+Commercial Software License
+============================
 The commercial version of Aloha Editor allows to use, modify, copy and distrubute without
 any restrictions as stated in the commerical license agreement.
  
+ 
+Translation License
+===================
+All contributions to translations of dictionary entries apply to the Creative Commons 
+Attribution License V3.0 BY. By contributing transaltions you agree to the license terms.
+http://creativecommons.org/licenses/by/3.0/
