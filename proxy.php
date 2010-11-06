@@ -23,8 +23,10 @@ $request = array(
     'method'   => $_SERVER['REQUEST_METHOD'],
     'protocol' => $_SERVER['SERVER_PROTOCOL'],
     'headers'  => getallheaders(),
-    //possibly use $HTTP_RAW_POST_DATA if available
-    'payload'  => http_build_query($_POST),
+    //TODO: multipart/form-data is not handled by php://input. there
+    //doesn't seem to be a generic way to get at the raw post data for
+    //that content-type.
+    'payload'  => file_get_contents('php://input'),
 );
 
 // read url parameter
@@ -53,13 +55,18 @@ if (strtoupper($method) == 'HEAD' && (int)$response['status'] >= 400 ) {
 
 // forward each returned header...
 foreach ($response['headers'] as $key => $value) {
+	if (strtolower($key) == 'content-length') {
+		//there is no need to specify a content length since we don't do keep
+		//alive, and this can cause problems for integration (e.g. gzip output,
+		//which would change the content length)
+		//Note: overriding with header('Content-length:') will set
+		//the content-length to zero for some reason
+		continue;
+	}
 	header("$key: $value");
 }
 
-//there is no need to specify a content length since we don't do keep
-//alive, and this can cause problems for integration (e.g. gzip output,
-//which would change the content length)
-header('Content-Length:');
+header('Connection: close');
 
 // output the contents if any
 if (null !== $response['socket']) {
@@ -98,15 +105,16 @@ function http_request($request, $timeout = 5) {
 	$request_headers = "";
 	foreach ($request['headers'] as $name => $value) {
 		switch (strtolower($name)) {
-		//ommit some headers
+		//omit some headers
 		case "keep-alive":
 		case "connection":
 		case "cookie":
-		//TPDP: we don't handle any compressions encodings. this is only
-		//a problem if client communication is already compressed (which
-		//would double compress the content, once from the remote server
-		//to us, and once from us to the client, but the client would
-		//de-compress only once).
+		//TODO: we don't handle any compression encodings. compression
+		//can cause a problem if client communication is already being
+		//compressed by the server/app that integrates this script
+		//(which would double compress the content, once from the remote
+		//server to us, and once from us to the client, but the client
+		//would de-compress only once).
 		case "accept-encoding":
 			break;
 		// correct the host parameter
@@ -152,11 +160,11 @@ function http_request($request, $timeout = 5) {
 		return myErrorHandler("Unable to open URL ($url): $errstr");
 	}
 
-	//timeout in fsockopen is only for the connection, the following is
-	//for reading the content
+	//the timeout in fsockopen is only for the connection, the following
+	//is for reading the content
 	stream_set_timeout($sock, $timeout);
 
-	//absolute url should only be specified for proxy requests
+	//an absolute url should only be specified for proxy requests
 	if (array_key_exists('path', $parts)) {
 		$path_info  = $parts['path'];
 	} else {
@@ -168,15 +176,16 @@ function http_request($request, $timeout = 5) {
 
 	$out = $request["method"]." ".$path_info." ".$request["protocol"]."\r\n"
 		 . $request_headers
-		 . "Connection: Close\r\n\r\n";
+		 . "Connection: close\r\n\r\n";
 	fwrite($sock, $out);
 	fwrite($sock, $request['payload']);
 
 	$header_str = stream_get_line($sock, 1024*16, "\r\n\r\n");
 	$headers = http_parse_headers($header_str);
+	$status_line = array_shift($headers);
 
 	// get http status
-	preg_match('|HTTP/\d+\.\d+\s+(\d+)\s+.*|i',$headers[0],$match);
+	preg_match('|HTTP/\d+\.\d+\s+(\d+)\s+.*|i',$status_line,$match);
 	$status = $match[1];
 
 	return array('headers' => $headers, 'socket' => $sock, 'status' => $status);
@@ -195,20 +204,20 @@ function http_parse_headers($header_str) {
 
 	while (preg_match("/^([^\x0A]*?)\x0D?(?:\x0A|\$)/", $header_str, $matches)) {
 		$header_str = substr($header_str, strlen($matches[0]));
-		$header_line = $matches[1];
+		$status_line = $matches[1];
 
 		if (empty($headers)) {
 			// the status line
-			$headers[] = $header_line;
+			$headers[] = $status_line;
 		}
-		elseif (preg_match('/^([^:\s]+)\s*:\s*(.*)/', $header_line, $matches)) {
+		elseif (preg_match('/^([^:\s]+)\s*:\s*(.*)/', $status_line, $matches)) {
 			if (isset($key)) {
 				//previous header is finished (was potentially multi-line)
 				$headers[$key] = $val;
 			}
 			list(,$key,$val) = $matches;
 		}
-		elseif (preg_match('/^\s+(.*)/', $header_line, $matches)) {
+		elseif (preg_match('/^\s+(.*)/', $status_line, $matches)) {
 			//continue a multi-line header
 			$val .= " ".$matches[1];
 		}
