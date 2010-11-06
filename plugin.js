@@ -19,15 +19,13 @@ GENTICS.Aloha.LinkChecker.languages = ['en'];
 GENTICS.Aloha.LinkChecker.errorCodes = [400, 401, 402, 403, 404, 405,
                                         406, 407, 408, 409, 410, 411,
                                         412, 413, 414, 415, 416, 417,
-                                        418, 422, 423, 424, 425, 426,
-                                        449, 450, 500, 501, 502, 503,
-                                        504, 505, 506, 507, 509, 510];
+                                        418, 500, 501, 502, 503, 504,
+                                        505, 506];
 /**
  * This codes are asumed temporary errors.
  */
-GENTICS.Aloha.LinkChecker.warningCodes = [404, 411, 412, 413, 426, 449,
-                                          450, 500, 503, 504, 505, 507,
-                                          509, 510];
+GENTICS.Aloha.LinkChecker.warningCodes = [404, 411, 412, 413, 500, 503,
+                                          504, 505];
 
 
 /**
@@ -43,7 +41,10 @@ GENTICS.Aloha.LinkChecker.init = function () {
 
 	// initialize the timer
 	this.timer = {};
-	
+
+	// initialize the running requests
+	this.xhr = {};
+
 	// remember reference to this class for callback
 	var that = this;
 
@@ -95,10 +96,15 @@ GENTICS.Aloha.LinkChecker.checkLink = function (obj, scope, delay, timeout) {
 	}
 	
 	if ( this.proxyUrl ) {
-//		url = this.proxyUrl + this.urlencode(url);
 		url = this.proxyUrl + url;
 	}
-	
+
+	// abort already running ajax requests for the scope
+	if (this.xhr[scope]) {
+		this.xhr[scope].abort();
+		this.xhr[scope] = undefined;
+	}
+
 	this.timer[scope] = this.urlExists(
 		url, 
 		// success
@@ -114,10 +120,15 @@ GENTICS.Aloha.LinkChecker.checkLink = function (obj, scope, delay, timeout) {
 					var e = '0';
 				}
 				var o = jQuery(obj);
-				if ( o.attr('title') && !o.attr('data-title') ) {
+				// when the link has a title and was not yet marked as being invalid, we store the title in 'data-title'
+				if ( o.attr('title') && !o.attr('data-invalid') ) {
 					o.attr('data-title', o.attr('title'));
 				}
+				// now we mark the link as being invalid
+				o.attr('data-invalid', 'true');
+				// and we set an error message to the title
 				o.attr('title', cleanUrl+'. '+that.i18n('error.'+e));
+				// set the link class
 				if ( jQuery.inArray(xhr.status, that.warningCodes) >= 0 ) {					
 					o.addClass('GENTICS_link_warn');
 				} else {
@@ -125,16 +136,17 @@ GENTICS.Aloha.LinkChecker.checkLink = function (obj, scope, delay, timeout) {
 				}
 			}
 		}, 
-		this.timer[scope], 
+		scope, 
 		timeout, 
 		delay
 	);
 };
 
-GENTICS.Aloha.LinkChecker.urlExists = function (url, successFunc, failureFunc, timer, timeout, delay) {
-	
+GENTICS.Aloha.LinkChecker.urlExists = function (url, successFunc, failureFunc, scope, timeout, delay) {
+	var that = this;
+
 	// abort timer for that request
-	clearTimeout(timer);
+	clearTimeout(this.timer[scope]);
 	
 	delay = (delay != null && delay != undefined ) ? delay : 700;
 
@@ -142,7 +154,7 @@ GENTICS.Aloha.LinkChecker.urlExists = function (url, successFunc, failureFunc, t
     var newTimer = setTimeout( function() {
     	
     	// start request 
-		var myXHR = jQuery.ajax({
+		that.xhr[scope] = jQuery.ajax({
 			url: url,
 			timeout: timeout ? 10000 : timeout,
 			type: 'HEAD',
@@ -171,12 +183,17 @@ GENTICS.Aloha.LinkChecker.urlExists = function (url, successFunc, failureFunc, t
 GENTICS.Aloha.LinkChecker.makeCleanLink = function (obj) {
 	if ( obj ) {
 		var o = jQuery(obj);
+		// restore the original title (if one existed)
 		if ( o.attr('data-title') ) {
 			o.attr('title', o.attr('data-title'));
 		} else {
+			// otherwise remove the title
 			o.removeAttr('title');
 		}
+		// remove the temporary data
 		o.removeAttr('data-title');
+		o.removeAttr('data-invalid');
+		// remove the classes
 		o.removeClass('GENTICS_link_error');
 		o.removeClass('GENTICS_link_warn');
 	}
