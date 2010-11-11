@@ -4,7 +4,9 @@
 * aloha-sales@gentics.com
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
-.GENTICS_editable {}
+.GENTICS_editable {
+	min-height: 1.2em;
+}
 
 .GENTICS_editable_active .GENTICS_block {
 	background-color: #B7D6FA !important;
