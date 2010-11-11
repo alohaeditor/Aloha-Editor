@@ -25,9 +25,27 @@
 [submodule "WebContent/plugins/com.gentics.aloha.plugins.Abbr"]
 	path = WebContent/plugins/com.gentics.aloha.plugins.Abbr
 	url = https://github.com/alohaeditor/Aloha-Plugin-Abbreviation.git
+[submodule "WebContent/plugins/com.gentics.aloha.plugins.Autotagging"]
+	path = WebContent/plugins/com.gentics.aloha.plugins.Autotagging
+	url = https://github.com/alohaeditor/Aloha-Plugin-Autotagging.git
+[submodule "WebContent/plugins/com.gentics.aloha.plugins.Annotations"]
+	path = WebContent/plugins/com.gentics.aloha.plugins.Annotations
+	url = https://github.com/alohaeditor/Aloha-Plugin-Annotations.git
+[submodule "WebContent/plugins/com.gentics.aloha.plugins.Collator"]
+	path = WebContent/plugins/com.gentics.aloha.plugins.Collator
+	url = https://github.com/alohaeditor/Aloha-Plugin-Collator.git
+[submodule "WebContent/plugins/com.gentics.aloha.plugins.DragAndDropFiles"]
+	path = WebContent/plugins/com.gentics.aloha.plugins.DragAndDropFiles
+	url = https://github.com/alohaeditor/Aloha-Plugin-DragAndDropFiles.git
 [submodule "WebContent/plugins/com.gentics.aloha.plugins.LinkChecker"]
 	path = WebContent/plugins/com.gentics.aloha.plugins.LinkChecker
 	url = https://github.com/alohaeditor/Aloha-Plugin-LinkChecker.git
+[submodule "WebContent/plugins/com.gentics.aloha.plugins.Image"]
+	path = WebContent/plugins/com.gentics.aloha.plugins.Image
+	url = https://github.com/alohaeditor/Aloha-Plugin-Image.git
+[submodule "WebContent/plugins/org.karacos.aloha.Plugin"]
+	path = WebContent/plugins/org.karacos.aloha.Plugin
+	url = https://github.com/nka11/Aloha-Plugin-KaraCos.git
 [submodule "WebContent/plugins/com.gentics.aloha.plugins.Paste"]
 	path = WebContent/plugins/com.gentics.aloha.plugins.Paste
 	url = https://github.com/alohaeditor/Aloha-Plugin-Paste.git
