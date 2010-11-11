@@ -22,6 +22,18 @@
 	display: none;
 }
 
+.GENTICS_block .GENTICS_block .GENTICS_editicon {
+	margin-top: 15px;
+}
+
+.GENTICS_block .GENTICS_block .GENTICS_block .GENTICS_editicon {
+	margin-top: 30px;
+}
+
+.GENTICS_block .GENTICS_block .GENTICS_block .GENTICS_block .GENTICS_editicon {
+	margin-top: 45px;
+}
+
 /*
  * Ext JS fixes
  */
