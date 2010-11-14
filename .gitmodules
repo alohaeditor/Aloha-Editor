@@ -22,8 +22,8 @@
 [submodule "WebContent/plugins/com.example.aloha.plugins.Save"]
 	path = WebContent/plugins/com.example.aloha.plugins.Save
 	url = https://github.com/alohaeditor/Aloha-Plugin-Save.git
-[submodule "WebContent/plugins/com.gentics.aloha.plugins.Abbr"]
-	path = WebContent/plugins/com.gentics.aloha.plugins.Abbr
+[submodule "WebContent/plugins/com.gentics.aloha.plugins.Abbreviation"]
+	path = WebContent/plugins/com.gentics.aloha.plugins.Abbreviation
 	url = https://github.com/alohaeditor/Aloha-Plugin-Abbreviation.git
 [submodule "WebContent/plugins/com.gentics.aloha.plugins.Autotagging"]
 	path = WebContent/plugins/com.gentics.aloha.plugins.Autotagging
