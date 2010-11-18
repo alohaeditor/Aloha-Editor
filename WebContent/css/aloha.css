@@ -22,6 +22,11 @@
 	display: none;
 }
 
+.GENTICS_editicon img {
+	width: 18px;
+	height: 18px;
+}
+
 .GENTICS_block .GENTICS_block .GENTICS_editicon {
 	margin-top: 15px;
 }
