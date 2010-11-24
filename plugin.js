@@ -17,7 +17,7 @@ GENTICS.Aloha.Format.languages = ['en', 'de', 'fr', 'eo', 'fi', 'ru', 'it', 'pl'
 /**
  * default button configuration
  */
-GENTICS.Aloha.Format.config = [ 'b', 'i','del','sub','sup', 'p', 'title', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'removeFormat'];
+GENTICS.Aloha.Format.config = [ 'b', 'i','del','sub','sup', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'removeFormat'];
 
 /**
  * Initialize the plugin and set initialize flag on true
