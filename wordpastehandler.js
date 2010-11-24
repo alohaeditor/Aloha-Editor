@@ -73,16 +73,17 @@ GENTICS.Aloha.PastePlugin.WordPasteHandler.isOrderedList = function(listSpan) {
 GENTICS.Aloha.PastePlugin.WordPasteHandler.transformListsFromWord = function (jqPasteDiv) {
 	var that = this;
 
+	// this will be the class to mark paragraphs that will be transformed to lists
+	var listElementClass = 'aloha-list-element';
+
 	// first step is to find all paragraphs which will be converted into list elements and mark them by adding the class 'aloha-list-element'
 	var detectionFilter = 'p.MsoListParagraphCxSpFirst,p.MsoListParagraph,p span';
-	var listElementClass = 'aloha-list-element';
 	var paragraphs = jqPasteDiv.find(detectionFilter);
 	paragraphs.each(function() {
 		var jqElem = jQuery(this);
 		// detect special classes
 		if (jqElem.hasClass('MsoListParagraphCxSpFirst') || jqElem.hasClass('MsoListParagraph')) {
 			jqElem.addClass(listElementClass);
-			return true;
 		} else if (jqElem.css('font-family').indexOf('Symbol') >= 0) {
 			jqElem.closest('p').addClass(listElementClass);
 		} else if (jqElem.css('mso-list') != '') {
@@ -90,10 +91,20 @@ GENTICS.Aloha.PastePlugin.WordPasteHandler.transformListsFromWord = function (jq
 		}
 	});
 
+	// now we search for paragraphs with three levels of nested spans, where the innermost span contains nothing but &nbsp;
+	detectionFilter = 'p > span > span > span';
+	var spans = jqPasteDiv.find(detectionFilter);
+	spans.each(function() {
+		var jqElem = jQuery(this);
+		var innerText = jqElem.text().trim().replace(/&nbsp;/g, '');
+		if (innerText.length == 0) {
+			jqElem.closest('p').addClass(listElementClass);
+		}
+	});
+
+	// no detect all marked paragraphs and transform into lists
 	detectionFilter = 'p.' + listElementClass;
 	var negateDetectionFilter = ':not('+detectionFilter+')';
-
-	// detect lists with only one element or the starts of lists with more elements
 	paragraphs = jqPasteDiv.find(detectionFilter);
 
 	if (paragraphs.length > 0) {
