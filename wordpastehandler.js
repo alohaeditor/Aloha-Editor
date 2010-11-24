@@ -98,7 +98,20 @@ GENTICS.Aloha.PastePlugin.WordPasteHandler.transformListsFromWord = function (jq
 		var jqElem = jQuery(this);
 		var innerText = jqElem.text().trim().replace(/&nbsp;/g, '');
 		if (innerText.length == 0) {
-			jqElem.closest('p').addClass(listElementClass);
+			// check whether the outermost of the three spans contains nothing more than numbering
+			var outerText = jqElem.parent().parent().text().trim().replace(/&nbsp;/g, '');
+
+			// patterns for list numbering
+			// 1.
+			// 1)
+			// (1)
+			// a.
+			// a)
+			// I.
+			// i.
+			if (outerText.match(/^([0-9]{1,3}\.)|([0-9]{1,3}\)|([a-zA-Z]{1,5}\.)|([a-zA-Z]{1,5}\)))$/)) {
+				jqElem.closest('p').addClass(listElementClass);
+			}
 		}
 	});
 
