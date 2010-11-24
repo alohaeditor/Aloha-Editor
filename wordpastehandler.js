@@ -72,91 +72,117 @@ GENTICS.Aloha.PastePlugin.WordPasteHandler.isOrderedList = function(listSpan) {
  */
 GENTICS.Aloha.PastePlugin.WordPasteHandler.transformListsFromWord = function (jqPasteDiv) {
 	var that = this;
-	// detect lists with only one element or the starts of lists with more elements
-	jqPasteDiv.find('p.MsoListParagraphCxSpFirst,p.MsoListParagraph').each(function() {
+
+	// first step is to find all paragraphs which will be converted into list elements and mark them by adding the class 'aloha-list-element'
+	var detectionFilter = 'p.MsoListParagraphCxSpFirst,p.MsoListParagraph,p span';
+	var listElementClass = 'aloha-list-element';
+	var paragraphs = jqPasteDiv.find(detectionFilter);
+	paragraphs.each(function() {
 		var jqElem = jQuery(this);
-		// first remove all font tags
-		jqElem.find('font').each(function() {
-			jQuery(this).contents().unwrap();
-		});
+		// detect special classes
+		if (jqElem.hasClass('MsoListParagraphCxSpFirst') || jqElem.hasClass('MsoListParagraph')) {
+			jqElem.addClass(listElementClass);
+			return true;
+		} else if (jqElem.css('font-family').indexOf('Symbol') >= 0) {
+			jqElem.closest('p').addClass(listElementClass);
+		} else if (jqElem.css('mso-list') != '') {
+			jqElem.closest('p').addClass(listElementClass);
+		}
+	});
 
-		// initialize the nestlevel and the margin (we will try to detect nested
-		// lists by comparing the left margin)
-		var nestLevel = 0;
-		var margin = parseFloat(jqElem.css('marginLeft'));
-		// this array will hold all ul/ol elements
-		var lists = [];
-		// get all following list elements
-		var following = jqElem.nextUntil(':not(p.MsoListParagraphCxSpMiddle,p.MsoListParagraphCxSpLast)');
+	detectionFilter = 'p.' + listElementClass;
+	var negateDetectionFilter = ':not('+detectionFilter+')';
 
-		// get the first span in the element
-		var firstSpan = jQuery(jqElem.children('span:first'));
-		// use the span to detect whether the list shall be ordered or unordered
-		var ordered = that.isOrderedList(firstSpan);
-		// finally remove the span (numbers, bullets are rendered by the browser)
-		firstSpan.remove();
+	// detect lists with only one element or the starts of lists with more elements
+	paragraphs = jqPasteDiv.find(detectionFilter);
 
-		// create the list element
-		var jqList = jQuery(ordered ? '<ol></ol>' : '<ul></ul>');
-		lists.push(jqList);
-
-		// add a new list item
-		var jqNewLi = jQuery('<li></li>');
-		// add the li into the list
-		jqList.append(jqNewLi);
-		// append the contents of the old dom element to the li
-		jqElem.contents().appendTo(jqNewLi);
-		// replace the old dom element with the new list
-		jqElem.replaceWith(jqList);
-
-		// now proceed all following list elements
-		following.each(function() {
+	if (paragraphs.length > 0) {
+		paragraphs.each(function() {
 			var jqElem = jQuery(this);
-			// remove all font tags
+			jqElem.removeClass(listElementClass);
+			// first remove all font tags
 			jqElem.find('font').each(function() {
 				jQuery(this).contents().unwrap();
 			});
-			// check the new margin
-			var newMargin = parseFloat(jqElem.css('marginLeft'));
-
-			// get the first span
-			firstSpan = jQuery(jqElem.children('span:first'));
-			// ... and use it to detect ordered/unordered list elements (this
-			// information will only be used at the start of a new list anyway)
-			ordered = that.isOrderedList(firstSpan);
-			// remove the span
+			
+			// initialize the nestlevel and the margin (we will try to detect nested
+			// lists by comparing the left margin)
+			var nestLevel = 0;
+			var margin = parseFloat(jqElem.css('marginLeft'));
+			// this array will hold all ul/ol elements
+			var lists = [];
+			// get all following list elements
+			var following = jqElem.nextUntil(negateDetectionFilter);
+			
+			// get the first span in the element
+			var firstSpan = jQuery(jqElem.children('span:first'));
+			// use the span to detect whether the list shall be ordered or unordered
+			var ordered = that.isOrderedList(firstSpan);
+			// finally remove the span (numbers, bullets are rendered by the browser)
 			firstSpan.remove();
-
-			// check for nested lists by comparing the margins
-			if (newMargin > margin) {
-				// create a new list
-				var jqNewList = jQuery(ordered ? '<ol></ol>' : '<ul></ul>');
-				// append the new list to the last list item of the prior list
-				jqList.children(':last').append(jqNewList);
-
-				// store the list and increase the nest level
-				jqList = jqNewList;
-				lists.push(jqList);
-				nestLevel++;
-				margin = newMargin;
-			} else if (newMargin < margin && nestLevel > 0) {
-				// end nested list and append element to outer list
-				lists.pop();
-				nestLevel--;
-				jqList = lists[nestLevel];
-				margin = newMargin;
-			}
-
-			// create a list item
-			jqNewLi = jQuery('<li></li>');
+			
+			// create the list element
+			var jqList = jQuery(ordered ? '<ol></ol>' : '<ul></ul>');
+			lists.push(jqList);
+			
+			// add a new list item
+			var jqNewLi = jQuery('<li></li>');
 			// add the li into the list
 			jqList.append(jqNewLi);
 			// append the contents of the old dom element to the li
 			jqElem.contents().appendTo(jqNewLi);
-			// remove the old dom element
-			jqElem.remove();
+			// replace the old dom element with the new list
+			jqElem.replaceWith(jqList);
+			
+			// now proceed all following list elements
+			following.each(function() {
+				var jqElem = jQuery(this);
+				// remove all font tags
+				jqElem.find('font').each(function() {
+					jQuery(this).contents().unwrap();
+				});
+				// check the new margin
+				var newMargin = parseFloat(jqElem.css('marginLeft'));
+				
+				// get the first span
+				firstSpan = jQuery(jqElem.children('span:first'));
+				// ... and use it to detect ordered/unordered list elements (this
+				// information will only be used at the start of a new list anyway)
+				ordered = that.isOrderedList(firstSpan);
+				// remove the span
+				firstSpan.remove();
+				
+				// check for nested lists by comparing the margins
+				if (newMargin > margin) {
+					// create a new list
+					var jqNewList = jQuery(ordered ? '<ol></ol>' : '<ul></ul>');
+					// append the new list to the last list item of the prior list
+					jqList.children(':last').append(jqNewList);
+					
+					// store the list and increase the nest level
+					jqList = jqNewList;
+					lists.push(jqList);
+					nestLevel++;
+					margin = newMargin;
+				} else if (newMargin < margin && nestLevel > 0) {
+					// end nested list and append element to outer list
+					lists.pop();
+					nestLevel--;
+					jqList = lists[nestLevel];
+					margin = newMargin;
+				}
+				
+				// create a list item
+				jqNewLi = jQuery('<li></li>');
+				// add the li into the list
+				jqList.append(jqNewLi);
+				// append the contents of the old dom element to the li
+				jqElem.contents().appendTo(jqNewLi);
+				// remove the old dom element
+				jqElem.remove();
+			});
 		});
-	});
+	}
 };
 
 /**
