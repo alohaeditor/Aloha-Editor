@@ -59,11 +59,11 @@ GENTICS.Aloha.PastePlugin.WordPasteHandler.detectWordContent = function (jqPaste
  */
 GENTICS.Aloha.PastePlugin.WordPasteHandler.isOrderedList = function(listSpan) {
 	// when the span has fontFamily "Wingdings" it is an unordered list
-	if (listSpan.css('fontFamily') == 'Wingdings') {
+	if (listSpan.css('fontFamily') == 'Wingdings' || listSpan.css('fontFamily') == 'Symbol') {
 		return false;
 	}
 	// otherwise check for a number, letter or '(' as first character
-	return listSpan.text().match(/^\(?[0-9a-cA-C]/) ? true : false;
+	return listSpan.text().match(/^([0-9]{1,3}\.)|([0-9]{1,3}\)|([a-zA-Z]{1,5}\.)|([a-zA-Z]{1,5}\)))$/) ? true : false;
 };
 
 /**
@@ -75,6 +75,7 @@ GENTICS.Aloha.PastePlugin.WordPasteHandler.transformListsFromWord = function (jq
 
 	// this will be the class to mark paragraphs that will be transformed to lists
 	var listElementClass = 'aloha-list-element';
+	var bulletClass = 'aloha-list-bullet';
 
 	// first step is to find all paragraphs which will be converted into list elements and mark them by adding the class 'aloha-list-element'
 	var detectionFilter = 'p.MsoListParagraphCxSpFirst,p.MsoListParagraph,p span';
@@ -92,7 +93,7 @@ GENTICS.Aloha.PastePlugin.WordPasteHandler.transformListsFromWord = function (jq
 	});
 
 	// now we search for paragraphs with three levels of nested spans, where the innermost span contains nothing but &nbsp;
-	detectionFilter = 'p > span > span > span';
+	detectionFilter = 'p span span span';
 	var spans = jqPasteDiv.find(detectionFilter);
 	spans.each(function() {
 		var jqElem = jQuery(this);
@@ -111,6 +112,7 @@ GENTICS.Aloha.PastePlugin.WordPasteHandler.transformListsFromWord = function (jq
 			// i.
 			if (outerText.match(/^([0-9]{1,3}\.)|([0-9]{1,3}\)|([a-zA-Z]{1,5}\.)|([a-zA-Z]{1,5}\)))$/)) {
 				jqElem.closest('p').addClass(listElementClass);
+				jqElem.parent().parent().addClass(bulletClass);
 			}
 		}
 	});
@@ -139,7 +141,10 @@ GENTICS.Aloha.PastePlugin.WordPasteHandler.transformListsFromWord = function (jq
 			var following = jqElem.nextUntil(negateDetectionFilter);
 			
 			// get the first span in the element
-			var firstSpan = jQuery(jqElem.children('span:first'));
+			var firstSpan = jQuery(jqElem.find('span.' + bulletClass));
+			if (firstSpan.length == 0) {
+				firstSpan = jQuery(jqElem.children('span:first'));
+			}
 			// use the span to detect whether the list shall be ordered or unordered
 			var ordered = that.isOrderedList(firstSpan);
 			// finally remove the span (numbers, bullets are rendered by the browser)
@@ -169,7 +174,10 @@ GENTICS.Aloha.PastePlugin.WordPasteHandler.transformListsFromWord = function (jq
 				var newMargin = parseFloat(jqElem.css('marginLeft'));
 				
 				// get the first span
-				firstSpan = jQuery(jqElem.children('span:first'));
+				firstSpan = jQuery(jqElem.find('span.' + bulletClass));
+				if (firstSpan.length == 0) {
+					firstSpan = jQuery(jqElem.children('span:first'));
+				}
 				// ... and use it to detect ordered/unordered list elements (this
 				// information will only be used at the start of a new list anyway)
 				ordered = that.isOrderedList(firstSpan);
