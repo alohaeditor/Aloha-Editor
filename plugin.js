@@ -31,11 +31,13 @@ GENTICS.Aloha.PastePlugin.init = function() {
 		if (jQuery.browser.msie) {
 			editable.obj.bind('beforepaste', function(event) {
 				that.redirectPaste();
+				event.stopPropagation();
 			});
 		} else {
 			editable.obj.bind('paste', function(event) {
 				that.redirectPaste();
 				window.setTimeout(function() {that.getPastedContent();}, 10);
+				event.stopPropagation();
 			});
 		}
 	});
