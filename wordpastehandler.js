@@ -87,7 +87,7 @@ GENTICS.Aloha.PastePlugin.WordPasteHandler.transformListsFromWord = function (jq
 			jqElem.addClass(listElementClass);
 		} else if (jqElem.css('font-family').indexOf('Symbol') >= 0) {
 			jqElem.closest('p').addClass(listElementClass);
-		} else if (jqElem.css('mso-list') != '') {
+		} else if (jqElem.css('mso-list') && jqElem.css('mso-list') != '') {
 			jqElem.closest('p').addClass(listElementClass);
 		}
 	});
