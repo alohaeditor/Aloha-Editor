@@ -177,12 +177,12 @@ GENTICS.Aloha.Markup.prototype.processShiftEnter = function(rangeObject) {
 GENTICS.Aloha.Markup.prototype.processEnter = function(rangeObject) { 
 	if (rangeObject.splitObject) {
 		// now comes a very evil hack for ie, when the enter is pressed in a text node in an li element, we just append an empty text node
-		if (jQuery.browser.msie
-				&& GENTICS.Utils.Dom
-						.isListElement(rangeObject.splitObject)) {
-			jQuery(rangeObject.splitObject).append(
-					jQuery(document.createTextNode('')));
-		}
+//		if (jQuery.browser.msie
+//				&& GENTICS.Utils.Dom
+//						.isListElement(rangeObject.splitObject)) {
+//			jQuery(rangeObject.splitObject).append(
+//					jQuery(document.createTextNode('')));
+//		}
 
 		this.splitRangeObject(rangeObject);
 	} else { // if there is no split object, the Editable is the paragraph type itself (e.g. a p or h2)
@@ -235,31 +235,37 @@ GENTICS.Aloha.Markup.prototype.insertHTMLBreak = function(selectionTree, rangeOb
 						&& el.domobj.nextSibling.nodeType == 1
 						&& GENTICS.Aloha.Selection.replacingElements[el.domobj.nextSibling.nodeName
 								.toLowerCase()]) {
+					// TODO check whether this depends on the browser
 					jqEl.after('<br/>');
 				}
-				// when the textnode is the last inside a blocklevel element
-				// (like p, h1, ...) we need to add an additional br as very
-				// last object in the blocklevel element
-				var checkObj = el.domobj;
-				while (checkObj) {
-					if (checkObj.nextSibling) {
-						checkObj = false;
-					} else {
-						// go to the parent
-						checkObj = checkObj.parentNode;
-						// reached the limit object, we are done
-						if (checkObj === rangeObject.limitObject) {
+
+				if (this.needEndingBreak()) {
+					// when the textnode is the last inside a blocklevel element
+					// (like p, h1, ...) we need to add an additional br as very
+					// last object in the blocklevel element
+					var checkObj = el.domobj;
+					while (checkObj) {
+						if (checkObj.nextSibling) {
 							checkObj = false;
-						}
-						// found a blocklevel element, we are done
-						if (GENTICS.Utils.Dom.isBlockLevelElement(checkObj)) {
-							break;
+						} else {
+							// go to the parent
+							checkObj = checkObj.parentNode;
+							// found a blocklevel element, we are done
+							if (GENTICS.Utils.Dom.isBlockLevelElement(checkObj)) {
+								break;
+							}
+							// reached the limit object, we are done
+							if (checkObj === rangeObject.limitObject) {
+								checkObj = false;
+							}
 						}
 					}
-				}
-				// when we found a blocklevel element, insert a break at the end
-				if (checkObj) {
-					jQuery(checkObj).append('<br/>');
+					// when we found a blocklevel element, insert a break at the
+					// end. Mark the break so that it is cleaned when the
+					// content is fetched.
+					if (checkObj) {
+						jQuery(checkObj).append('<br class="GENTICS_cleanme"/>');
+					}
 				}
 
 				// insert the break
@@ -301,6 +307,15 @@ GENTICS.Aloha.Markup.prototype.insertHTMLBreak = function(selectionTree, rangeOb
 		}
 	}
 	rangeObject.select();
+};
+
+/**
+ * Check whether blocklevel elements need breaks at the end to visibly render a newline
+ * @return true if an ending break is necessary, false if not
+ */
+GENTICS.Aloha.Markup.prototype.needEndingBreak = function () {
+	// currently, all browser except IE need ending breaks
+	return !jQuery.browser.msie;
 };
 
 /**
@@ -566,7 +581,7 @@ GENTICS.Aloha.Markup.prototype.getFillUpElement = function(splitObject) {
 	if (jQuery.browser.msie) {
 		return false;
 	} else {
-		return jQuery('<br class="GENTICS_ephemera" />');
+		return jQuery('<br class="GENTICS_cleanme" />');
 	}
 };
 
