@@ -201,13 +201,13 @@ GENTICS.Aloha.Log.prototype.isDebugEnabled = function() {
  * @hide
  */
 GENTICS.Aloha.Log.prototype.addToLogHistory = function(entry) {
-	// when maxEntries is set to something illegal, we do nothing (log history is disabled)
-	if (GENTICS.Aloha.settings.logHistory.maxEntries <= 0) {
-		return;
-	}
-
-	// check whether the level is one we like to have logged
-	if (!GENTICS.Aloha.settings.logHistory.levels[entry.level]) {
+	
+	if (
+		// when maxEntries is set to something illegal, we do nothing (log history is disabled)
+		GENTICS.Aloha.settings.logHistory.maxEntries <= 0
+		// check whether the level is one we like to have logged
+		|| !GENTICS.Aloha.settings.logHistory.levels[entry.level]
+	) {
 		return;
 	}
 
@@ -250,7 +250,7 @@ GENTICS.Aloha.Log.prototype.getLogHistory = function() {
  * @hide
  */
 GENTICS.Aloha.Log.prototype.flushLogHistory = function() {
-	this.logHistory = new Array();
+	this.logHistory = [];
 	this.highWaterMarkReached = false;
 };
 

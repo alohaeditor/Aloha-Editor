@@ -23,7 +23,7 @@
  * @singleton
  */
 GENTICS.Aloha.RepositoryManager = function() {
-	this.repositories = new Array();
+	this.repositories = [];
 };
 
 
@@ -333,8 +333,10 @@ GENTICS.Aloha.RepositoryManager.prototype.makeClean = function(obj) {
 GENTICS.Aloha.RepositoryManager.prototype.markObject = function (obj, item) {
 	var repository = this.getRepository(item.repositoryId);
 	if ( repository ) {
-		jQuery(obj).attr('data-GENTICS-aloha-repository', item.repositoryId);
-		jQuery(obj).attr('data-GENTICS-aloha-object-id', item.id);
+		jQuery(obj).attr({
+			'data-GENTICS-aloha-repository': item.repositoryId,
+			'data-GENTICS-aloha-object-id': item.id
+		});
 		repository.markObject(obj, item);
 	} else {
 		GENTICS.Aloha.Log.error(this, "Trying to apply a repository { " + item.name + " } to an object, but item has no repositoryId.");

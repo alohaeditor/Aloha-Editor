@@ -91,7 +91,6 @@ GENTICS.Aloha.Editable.prototype.check = function() {
 				'span', 'strong',  'sub', 'sup', 'var']; 	
 	
 	for (var i = 0; i < textElements.length; i++) {
-		var e = nodeName;
 		if ( nodeName == textElements[i] ) {
 			return true;
 		}
@@ -197,11 +196,11 @@ GENTICS.Aloha.Editable.prototype.init = function() {
 		 * @param {Array} a an array which contains a reference to the currently created editable on its first position 
 		 */
 		GENTICS.Aloha.EventRegistry.trigger(
-				new GENTICS.Aloha.Event(
-						'editableCreated',
-						GENTICS.Aloha,
-						[ this ]
-				)
+			new GENTICS.Aloha.Event(
+				'editableCreated',
+				GENTICS.Aloha,
+				[ this ]
+			)
 		);
 
 		// mark the editable as unmodified
@@ -253,11 +252,11 @@ GENTICS.Aloha.Editable.prototype.destroy = function() {
 	 * @param {Array} a an array which contains a reference to the currently created editable on its first position 
 	 */
 	GENTICS.Aloha.EventRegistry.trigger(
-			new GENTICS.Aloha.Event(
-					'editableDestroyed',
-					GENTICS.Aloha,
-					[ this ]
-			)
+		new GENTICS.Aloha.Event(
+			'editableDestroyed',
+			GENTICS.Aloha,
+			[ this ]
+		)
 	);
 
 	// finally register the editable with Aloha
@@ -280,11 +279,7 @@ GENTICS.Aloha.Editable.prototype.setUnmodified = function () {
  * @return boolean true if the editable has been modified, false otherwise
  */
 GENTICS.Aloha.Editable.prototype.isModified = function () {
-	if (this.originalContent != this.getContents()) {
-		return true;
-	} else {
-		return false;
-	}
+	return this.originalContent != this.getContents();
 };
 
 /**
@@ -300,11 +295,7 @@ GENTICS.Aloha.Editable.prototype.toString = function() {
  * check whether the editable has been disabled 
  */
 GENTICS.Aloha.Editable.prototype.isDisabled = function () {
-	if (this.obj.attr("contentEditable") == "false" || !this.obj.attr("contentEditable")) {
-		return true;
-	} else {
-		return false;
-	}
+	return this.obj.attr("contentEditable") == "false" || !this.obj.attr("contentEditable");
 };
 
 /**
@@ -312,10 +303,9 @@ GENTICS.Aloha.Editable.prototype.isDisabled = function () {
  * a disabled editable cannot be written on by keyboard
  */
 GENTICS.Aloha.Editable.prototype.disable = function() {
-	if (this.isDisabled()) {
-		return;
+	if (!this.isDisabled()) {
+		this.obj.attr("contentEditable", "false");
 	}
-	this.obj.attr("contentEditable", "false");
 };
 
 /**
@@ -323,10 +313,9 @@ GENTICS.Aloha.Editable.prototype.disable = function() {
  * reenables a disabled editable to be writteable again 
  */
 GENTICS.Aloha.Editable.prototype.enable = function() {
-	if (!this.isDisabled()) {
-		return;
+	if (this.isDisabled()) {
+		this.obj.attr("contentEditable", "true");
 	}
-	this.obj.attr("contentEditable", "true");
 };
 
 
@@ -379,9 +368,9 @@ GENTICS.Aloha.Editable.prototype.activate = function(e) {
 	 */
 	// and trigger our *finished* event
 	GENTICS.Aloha.EventRegistry.trigger(
-			new GENTICS.Aloha.Event('editableActivated', this, {
-				'oldActive' : GENTICS.Aloha.getActiveEditable()
-			})
+		new GENTICS.Aloha.Event('editableActivated', this, {
+			'oldActive' : GENTICS.Aloha.getActiveEditable()
+		})
 	);
 
 };
@@ -419,7 +408,7 @@ GENTICS.Aloha.Editable.prototype.blur = function() {
 	 * @param {Event} e the event object
 	 */	
 	GENTICS.Aloha.EventRegistry.trigger(
-			new GENTICS.Aloha.Event('editableDeactivated', this)
+		new GENTICS.Aloha.Event('editableDeactivated', this)
 	);
 };
 
@@ -430,12 +419,9 @@ GENTICS.Aloha.Editable.prototype.blur = function() {
  * @hide
  */
 GENTICS.Aloha.Editable.prototype.empty = function(str) {
-	if (null === str) {
-		return true;
-	}
-
+	return (null === str)
 	// br is needed for chrome
-	return (GENTICS.Aloha.trim(str) == '' || str == '<br>');
+	|| (GENTICS.Aloha.trim(str) == '' || str == '<br>');
 };
 
 /**

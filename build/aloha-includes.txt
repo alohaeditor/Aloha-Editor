@@ -4,6 +4,7 @@ utils/range.js
 utils/position.js
 utils/dom.js
 core/license.js
+utils/indexof.js
 core/ext-alohaproxy.js
 core/ext-alohareader.js
 core/ext-alohatreeloader.js
