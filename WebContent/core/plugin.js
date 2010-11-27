@@ -44,8 +44,6 @@ GENTICS.Aloha.PluginRegistry.prototype.register = function(plugin) {
  */
 GENTICS.Aloha.PluginRegistry.prototype.init = function() {
 	// iterate through all registered plugins
-	var loaded = 0,
-		length = this.plugins.length;
 	for ( var i = 0; i < this.plugins.length; i++) {
 		var plugin = this.plugins[i];
 
@@ -70,27 +68,15 @@ GENTICS.Aloha.PluginRegistry.prototype.init = function() {
 
 		if (!actualLanguage) {
 			GENTICS.Aloha.Log.warn(this, 'Could not determine actual language, no languages available for plugin ' + plugin);
-				
-			if(++loaded == length) {
-				GENTICS.Aloha.EventRegistry.trigger(
-					new GENTICS.Aloha.Event('i18nPluginsReady', GENTICS.Aloha, null)
-				);
-			}
 		} else {
 			// load the dictionary file for the actual language
 			var fileUrl = GENTICS.Aloha.settings.base + 'plugins/' + plugin.basePath + '/i18n/' + actualLanguage + '.dict';
-			GENTICS.Aloha.loadI18nFile(fileUrl, plugin, function () {
-				if (plugin.settings.enabled == true) {
-					// initialize the plugin
-					plugin.init();
-				}
-				
-				if(++loaded == length) {
-					GENTICS.Aloha.EventRegistry.trigger(
-						new GENTICS.Aloha.Event('i18nPluginsReady', GENTICS.Aloha, null)
-					);
-				}
-			});
+			GENTICS.Aloha.loadI18nFile(fileUrl, plugin);
+		}
+
+		if (plugin.settings.enabled == true) {
+			// initialize the plugin
+			this.plugins[i].init();
 		}
 	}
 };
