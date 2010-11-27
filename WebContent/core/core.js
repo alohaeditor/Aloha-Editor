@@ -158,22 +158,38 @@ GENTICS.Aloha.prototype.init = function () {
 	}
 
 	// OS detection
-	if (navigator.appVersion.indexOf("Win") != -1) {
-		this.OSName = "Win";
+	if (navigator.appVersion.indexOf('Win') != -1) {
+		this.OSName = 'Win';
 	}
-	if (navigator.appVersion.indexOf("Mac") != -1) {
-		this.OSName = "Mac";
+	if (navigator.appVersion.indexOf('Mac') != -1) {
+		this.OSName = 'Mac';
 	}
-	if (navigator.appVersion.indexOf("X11") != -1) {
-		this.OSName = "Unix";
+	if (navigator.appVersion.indexOf('X11') != -1) {
+		this.OSName = 'Unix';
 	}
-	if (navigator.appVersion.indexOf("Linux") != -1) {
-		this.OSName = "Linux";
+	if (navigator.appVersion.indexOf('Linux') != -1) {
+		this.OSName = 'Linux';
 	}
 	
 	// initialize the Aloha core components
+	GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'i18nReady', this.loadPlugins);
+	GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'i18nPluginsReady', this.loadGui);
 	this.initI18n();
+};
+
+/**
+ * Loads plugins that need i18n to be initialized
+ * @return void
+ */
+GENTICS.Aloha.prototype.loadPlugins = function () {
 	this.PluginRegistry.init();
+};
+
+/**
+ * Loads GUI components that need i18n to be initialized
+ * @return void
+ */
+GENTICS.Aloha.prototype.loadGui = function () {
 	this.RepositoryManager.init();
 	this.FloatingMenu.init();
 
@@ -183,7 +199,7 @@ GENTICS.Aloha.prototype.init = function () {
 	Ext.MessageBox.buttonText.cancel = GENTICS.Aloha.i18n(this, 'cancel');
 	Ext.ux.AlohaAttributeField.prototype.listEmptyText = GENTICS.Aloha.i18n( GENTICS.Aloha, 'repository.no_item_found' );
 	Ext.ux.AlohaAttributeField.prototype.loadingText = GENTICS.Aloha.i18n( GENTICS.Aloha, 'repository.loading' ) + '...';
-	
+
 	// set aloha ready
 	this.ready = true; 
 
@@ -193,9 +209,9 @@ GENTICS.Aloha.prototype.init = function () {
 			this.editables[i].init();
 		}
 	}
-	
+
 	GENTICS.Aloha.EventRegistry.trigger(
-		new GENTICS.Aloha.Event("ready", GENTICS.Aloha, null)
+		new GENTICS.Aloha.Event('ready', GENTICS.Aloha, null)
 	);
 };
 
@@ -359,11 +375,11 @@ GENTICS.Aloha.prototype.initI18n = function() {
 
 		var acceptLanguage = [];
 		// Split the string from ACCEPT-LANGUAGE
-	    var preferredLanugage = this.settings.i18n.acceptLanguage.split(",");
-	    for(i = 0; i < preferredLanugage.length; i++) {
+	    var preferredLanguage = this.settings.i18n.acceptLanguage.split(",");
+	    for(i = 0; i < preferredLanguage.length; i++) {
 	    	
 	    	// split language setting
-	    	var lang = preferredLanugage[i].split(";");
+	    	var lang = preferredLanguage[i].split(";");
 	    	
 	    	// convert quality to float
 	    	if ( typeof lang[1] == 'undefined' || !lang[1] ) {
@@ -406,7 +422,11 @@ GENTICS.Aloha.prototype.initI18n = function() {
 	} else {
 		// TODO load the dictionary file for the actual language
 		var fileUrl = this.settings.base + 'i18n/' + actualLanguage + '.dict';
-		this.loadI18nFile(fileUrl, this);
+		this.loadI18nFile(fileUrl, this, function () {
+			GENTICS.Aloha.EventRegistry.trigger(
+				new GENTICS.Aloha.Event('i18nReady', GENTICS.Aloha, null)
+			);
+		});
 	}
 };
 
@@ -444,22 +464,27 @@ GENTICS.Aloha.prototype.getLanguage = function(language, availableLanguages) {
  * @param {String} component
  * @hide
  */
-GENTICS.Aloha.prototype.loadI18nFile = function(fileUrl, component) {
+GENTICS.Aloha.prototype.loadI18nFile = function(fileUrl, component, callback) {
 	// Note: this ajax request must be done synchronously, because the otherwise
 	// the first i18n calls might come before the dictionary is available
 	jQuery.ajax(
 		{
-			async : false,
 			datatype : 'text',
 			url : fileUrl,
 			error: function(request, textStatus, error) {
 				GENTICS.Aloha.Log.error(component, 'Error while getting dictionary file ' + fileUrl + ': server returned ' + textStatus);
+				if(typeof callback == 'function') {
+					callback.call(component);
+				}
 			},
 			success: function(data, textStatus, request) {
 				if (GENTICS.Aloha.Log.isInfoEnabled()) {
 					GENTICS.Aloha.Log.info(component, 'Loaded dictionary file ' + fileUrl);
 				}
 				GENTICS.Aloha.parseI18nFile(data, component);
+				if(typeof callback == 'function') {
+					callback.call(component);
+				}
 			}
 		}
 	);
@@ -672,3 +697,4 @@ jQuery(document).ready(function() {
 		});
 	}
 });
+
