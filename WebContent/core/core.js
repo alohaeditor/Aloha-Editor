@@ -175,7 +175,6 @@ GENTICS.Aloha.prototype.init = function () {
 	this.initI18n();
 	this.PluginRegistry.init();
 	this.RepositoryManager.init();
-	this.Ribbon.init();
 	this.FloatingMenu.init();
 
 	// internationalize ext js message box buttons

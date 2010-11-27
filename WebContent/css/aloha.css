@@ -350,7 +350,7 @@ div.GENTICS_button a:hover {
 	background-image: url('../images/maximize.png') !important;
 }
 
-html body .GENTICS_ribbon {
+html body #GENTICS_ribbon {
 	z-index:90000;
 	position:fixed;
 	top:0;

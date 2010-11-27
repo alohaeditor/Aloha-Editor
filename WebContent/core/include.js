@@ -47,7 +47,6 @@ document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'core/u
 document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'core/ui-browser.js"></script>');
 document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'core/css.js"></script>');
 document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'core/editable.js"></script>');
-document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'core/ribbon.js"></script>');
 document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'core/event.js"></script>');
 document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'core/floatingmenu.js"></script>');
 document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'core/ierange-m2.js"></script>');
