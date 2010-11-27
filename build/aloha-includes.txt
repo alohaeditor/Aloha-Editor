@@ -14,7 +14,6 @@ core/ui-attributefield.js
 core/ui-browser.js
 core/css.js
 core/editable.js
-core/ribbon.js
 core/event.js
 core/floatingmenu.js
 core/ierange-m2.js
