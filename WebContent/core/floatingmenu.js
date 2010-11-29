@@ -636,7 +636,8 @@ GENTICS.Aloha.FloatingMenu.nextFloatTargetObj = function (obj, limitObj) {
  * @hide
  */
 GENTICS.Aloha.FloatingMenu.calcFloatTarget = function(range) {
-	if (!GENTICS.Aloha.activeEditable) {
+	// TODO in IE8 somteimes a broken range is handed to this function - investigate this 
+	if (!GENTICS.Aloha.activeEditable || typeof range.getCommonAncestorContainer == "undefined") {
 		return false;
 	}
 	

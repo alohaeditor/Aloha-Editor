@@ -665,11 +665,24 @@ if(!Array.indexOf){
 	};
 }
 
+/*
+ * mark jQuery as Aloha's own version. In case someone is loading another version of jQuery this can be used
+ * to detect and proclaim this problem 
+ */
+jQuery.isAloha = true;
+
 /**
  * Initialize Aloha when the dom is ready and Ext is ready
  * @hide
  */
 jQuery(document).ready(function() {
+	// if there is no Aloha flag on jQuery, then jQuery has been overloaded
+	if (!jQuery.isAloha && window.console && console.error) {
+		console.error("Aloha ERROR: jQuery was included at least a second time after loading Aloha. " + 
+			"This will cause serious problems. You must not load other versions " +
+			"of jQuery with Aloha.");
+	}
+
 	if (Ext.isReady) {
 		GENTICS.Aloha.init();
 	} else {
