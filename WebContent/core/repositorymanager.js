@@ -18,7 +18,7 @@
 */
 /**
  * Repository Manager
- * @namespace GENTICS.Aloha
+ * @namespace GENTICS.Aloha.Repository
  * @class RepositoryManager
  * @singleton
  */
@@ -94,10 +94,40 @@ GENTICS.Aloha.RepositoryManager.prototype.getRepository = function(repositoryId)
 
 /** 
  * Searches a all repositories for repositoryObjects matching query and repositoryObjectType
- * @param {String} query the query string passed to the repository
- * @param {Array} objectTypeFilter an array of strings with searched objectTypeFilter
- * @param {function} callback defines an callback function( repositoryResult ) which will be called after a time out of 5sec or when all repositories returned their result
- * @return {Array} Array of Items
+ * 
+<pre><code>
+    var params = {
+    		queryString: 'hello',
+    		objectTypeFilter: ['website'],
+    		filter: null,
+    		inFolderId: null,
+    		orderBy: null,
+    		maxItems: null,
+    		skipCount: null,
+    		renditionFilter: null,
+    		repositoryId: null
+    };
+    GENTICS.Aloha.RepositoryManager.query( params, function( items ) {
+		// do something with the result items 
+		console.log(items);
+	});
+</code></pre>
+ * 
+ * @param {object} params object with properties
+ * <div class="mdetail-params"><ul>
+ * <li><code> queryString</code> :  String <div class="sub-desc">The query string for full text search</div></li>
+ * <li><code> objectTypeFilter</code> : array  (optional) <div class="sub-desc">Object types that will be returned.</div></li>
+ * <li><code> filter</code> : array (optional) <div class="sub-desc">Attributes that will be returned.</div></li>
+ * <li><code> inFolderId</code> : boolean  (optional) <div class="sub-desc">This is indicates whether or not a candidate object is a child-object of the folder object identified by the given inFolderId (objectId).</div></li>
+ * <li><code> inTreeId</code> : boolean  (optional) <div class="sub-desc">This indicates whether or not a candidate object is a descendant-object of the folder object identified by the given inTreeId (objectId).</div></li>
+ * <li><code> orderBy</code> : array  (optional) <div class="sub-desc">ex. [{lastModificationDate:’DESC’, name:’ASC’}]</div></li>
+ * <li><code> maxItems</code> : Integer  (optional) <div class="sub-desc">number items to return as result</div></li>
+ * <li><code> skipCount</code> : Integer  (optional) <div class="sub-desc">This is tricky in a merged multi repository scenario</div></li>
+ * <li><code> renditionFilter</code> : array  (optional) <div class="sub-desc">Instead of termlist an array of kind or mimetype is expected. If null or array.length == 0 all renditions are returned. See http://docs.oasis-open.org/cmis/CMIS/v1.0/cd04/cmis-spec-v1.0.html#_Ref237323310 for renditionFilter</div></li>
+ * </ul></div>
+ * @param {function} callback defines a callback function( items ) which will be called when all repositories returned their results or after a time out of 5sec. 
+ * "items" is an Array of objects construced with Document/Folder.
+ * @void
  */
 GENTICS.Aloha.RepositoryManager.prototype.query = function( params, callback ) {
 	
@@ -197,7 +227,20 @@ GENTICS.Aloha.RepositoryManager.prototype.queryCallback = function (cb, items, t
 };
 
 /**
- * Returns children items.
+ * Returns children items. (see query for an example)
+ * @param {object} params object with properties
+ * <div class="mdetail-params"><ul>
+ * <li><code> objectTypeFilter</code> : array  (optional) <div class="sub-desc">Object types that will be returned.</div></li>
+ * <li><code> filter</code> : array  (optional) <div class="sub-desc">Attributes that will be returned.</div></li>
+ * <li><code> inFolderId</code> : boolean  (optional) <div class="sub-desc">This indicates whether or not a candidate object is a child-object of the folder object identified by the given inFolderId (objectId).</div></li>
+ * <li><code> orderBy</code> : array  (optional) <div class="sub-desc">ex. [{lastModificationDate:’DESC’, name:’ASC’}]</div></li>
+ * <li><code> maxItems</code> : Integer  (optional) <div class="sub-desc">number items to return as result</div></li>
+ * <li><code> skipCount</code> : Integer  (optional) <div class="sub-desc">This is tricky in a merged multi repository scenario</div></li>
+ * <li><code> renditionFilter</code> : array  (optional) <div class="sub-desc">Instead of termlist an array of kind or mimetype is expected. If null or array.length == 0 all renditions are returned. See http://docs.oasis-open.org/cmis/CMIS/v1.0/cd04/cmis-spec-v1.0.html#_Ref237323310 for renditionFilter</div></li>
+ * </ul></div>
+ * @param {function} callback defines a callback function( items ) which will be called when all repositories returned their results or after a time out of 5sec. 
+ * "items" is an Array of objects construced with Document/Folder.
+ * @void
  */
 GENTICS.Aloha.RepositoryManager.prototype.getChildren = function ( params, callback ) {
 
