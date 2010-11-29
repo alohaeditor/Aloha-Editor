@@ -74,7 +74,7 @@ GENTICS.Aloha.PluginRegistry.prototype.init = function() {
 			// Initializes the plugin that have no dict file matching
 			if (plugin.settings.enabled == true) {
 				// initialize the plugin
-				plug.init();
+				plugin.init();
 			}
 				
 			if(++loaded == length) {
