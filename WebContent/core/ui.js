@@ -1,9 +1,22 @@
 /*!
-* Aloha Editor
-* Author & Copyright (c) 2010 Gentics Software GmbH
-* aloha-sales@gentics.com
-* Licensed unter the terms of http://www.aloha-editor.com/license.html
+*   This file is part of Aloha Editor
+*   Author & Copyright (c) 2010 Gentics Software GmbH, aloha@gentics.com
+*   Licensed unter the terms of http://www.aloha-editor.com/license.html
+*//*
+*	Aloha Editor is free software: you can redistribute it and/or modify
+*   it under the terms of the GNU Affero General Public License as published by
+*   the Free Software Foundation, either version 3 of the License, or
+*   (at your option) any later version.*
+*
+*   Aloha Editor is distributed in the hope that it will be useful,
+*   but WITHOUT ANY WARRANTY; without even the implied warranty of
+*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+*   GNU Affero General Public License for more details.
+*
+*   You should have received a copy of the GNU Affero General Public License
+*   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+
 if (typeof GENTICS.Aloha.ui == 'undefined') {
 	GENTICS.Aloha.ui = function() {};
 }
@@ -159,9 +172,8 @@ GENTICS.Aloha.ui.Button.prototype.setPressed = function(pressed) {
 GENTICS.Aloha.ui.Button.prototype.isPressed = function() {
 	if (this.toggle) {
 		return this.pressed;
-	} else {
-		return false;
 	}
+	return false;
 };
 
 /**
@@ -362,7 +374,7 @@ Ext.ux.GENTICSMultiSplitButton = Ext.extend(Ext.Component, {
 		// add a new button to the list for each configured item
 		for (var i=0; i<this.items.length; i++) {
 			item = this.items[i];
-			if (item.visible == undefined) {
+			if (typeof item.visible == 'undefined') {
 				item.visible = true;
 			}
 			// wide buttons will always be rendered at the bottom of the list
@@ -404,16 +416,16 @@ Ext.ux.GENTICSMultiSplitButton = Ext.extend(Ext.Component, {
     	});
 
 		// add onclick event handler
-		this.ulObj = jQuery(this.el.createChild(html).dom);
-		this.ulObj.click(function (event) {
+		this.ulObj = jQuery(this.el.createChild(html).dom)
+		.click(function (event) {
 			that.onClick(event);
 		});
 		
 		// add the expand button
 		this.panelButton = jQuery(
 			this.el.createChild('<button class="GENTICS_multisplit_toggle GENTICS_multisplit_toggle_open">&#160;</button>').dom
-		);
-		this.panelButton.click(function () {
+		)
+		.click(function () {
 			that.togglePanel();
 		});
     },
@@ -501,8 +513,10 @@ Ext.ux.GENTICSMultiSplitButton = Ext.extend(Ext.Component, {
 		if (el && this.ulObj) {
 			this.ulObj.css('margin-top', 0);
 			var top = el.position().top;
-			this.ulObj.css('margin-top', - top + 6);
-			this.ulObj.css('height', 46 + top - 6);
+			this.ulObj.css({
+				'margin-top': - top + 6,
+				'height': 46 + top - 6
+			});
 		}
 
 		this.activeDOMElement = undefined;
@@ -532,7 +546,7 @@ Ext.ux.GENTICSMultiSplitButton = Ext.extend(Ext.Component, {
 		}
 		
     	// detach the ul element and reattach it onto the body
-		this.ulObj.appendTo(jQuery(document.body));
+		this.ulObj.appendTo(jQuery('body'));
 		this.ulObj.addClass('GENTICS_multisplit-expanded');
 		this.ulObj.mousedown(function (e) {
 			e.stopPropagation();
@@ -540,8 +554,10 @@ Ext.ux.GENTICSMultiSplitButton = Ext.extend(Ext.Component, {
 
 		// relocate the ul
 		var o = this.wrapper.offset();
-		this.ulObj.css('top', o.top - 1);
-		this.ulObj.css('left', o.left - 1);
+		this.ulObj.css({
+			'top': o.top - 1,
+			'left': o.left - 1
+		});
 
 		// display expand animation
 		this.ulObj.animate({
