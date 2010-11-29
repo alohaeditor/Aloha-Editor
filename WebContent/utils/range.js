@@ -876,6 +876,41 @@ GENTICS.Utils.RangeObject.prototype.findMarkup = function (comparator, limit, at
 };
 
 /**
+ * Get the text enclosed by this range
+ * @return {String} the text of the range
+ * @method
+ */
+GENTICS.Utils.RangeObject.prototype.getText = function() {
+	if (this.isCollapsed()) {
+		return '';
+	} else {
+		return this.recursiveGetText(this.getRangeTree());
+	}
+};
+
+GENTICS.Utils.RangeObject.prototype.recursiveGetText = function (tree) {
+	if (!tree) {
+		return '';
+	} else {
+		var that = this;
+		var text = '';
+		jQuery.each(tree, function() {
+			if (this.type == 'full') {
+				// fully selected element/text node
+				text += jQuery(this.domobj).text();
+			} else if (this.type == 'partial' && this.domobj.nodeType == 3) {
+				// partially selected text node
+				text += jQuery(this.domobj).text().substring(this.startOffset, this.endOffset);
+			} else if (this.type == 'partial' && this.domobj.nodeType == 1 && this.children) {
+				// partially selected element node
+				text += that.recursiveGetText(this.children);
+			}
+		});
+		return text;
+	}
+};
+
+/**
  * @namespace GENTICS.Utils
  * @class RangeTree
  * Class definition of a RangeTree, which gives a tree view of the DOM objects included in this range
