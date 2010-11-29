@@ -70,27 +70,36 @@ GENTICS.Aloha.PluginRegistry.prototype.init = function() {
 
 		if (!actualLanguage) {
 			GENTICS.Aloha.Log.warn(this, 'Could not determine actual language, no languages available for plugin ' + plugin);
+			
+			// Initializes the plugin that have no dict file matching
+			if (plugin.settings.enabled == true) {
+				// initialize the plugin
+				plug.init();
+			}
 				
 			if(++loaded == length) {
 				GENTICS.Aloha.EventRegistry.trigger(
-					new GENTICS.Aloha.Event('i18nPluginsReady', GENTICS.Aloha, null)
+					new GENTICS.Aloha.Event('i18nPluginsReady', GENTICS.Aloha, plugin)
 				);
 			}
 		} else {
 			// load the dictionary file for the actual language
 			var fileUrl = GENTICS.Aloha.settings.base + 'plugins/' + plugin.basePath + '/i18n/' + actualLanguage + '.dict';
-			GENTICS.Aloha.loadI18nFile(fileUrl, plugin, function () {
-				if (plugin.settings.enabled == true) {
-					// initialize the plugin
-					plugin.init();
-				}
+			// Initializes the plugin when
+			GENTICS.Aloha.loadI18nFile(fileUrl, plugin, (function (plug) {
+				return function () {
+					if (plugin.settings.enabled == true) {
+						// initialize the plugin
+						plug.init();
+					}
 				
-				if(++loaded == length) {
-					GENTICS.Aloha.EventRegistry.trigger(
-						new GENTICS.Aloha.Event('i18nPluginsReady', GENTICS.Aloha, null)
-					);
+					if(++loaded == length) {
+						GENTICS.Aloha.EventRegistry.trigger(
+							new GENTICS.Aloha.Event('i18nPluginsReady', GENTICS.Aloha, null)
+						);
+					}
 				}
-			});
+			})(plugin));
 		}
 	}
 };
