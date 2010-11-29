@@ -1,5 +1,5 @@
 /*!
- * Ext JS Library 3.2.1
+ * Ext JS Library 3.2.2
  * Copyright(c) 2006-2010 Ext JS, Inc.
  * licensing@extjs.com
  * http://www.extjs.com/license
@@ -2445,6 +2445,10 @@ Ext.extend(Ext.Layer, Ext.Element, {
             }
         }
         return this;
+    },
+    
+    getConstrainOffset : function(){
+        return this.shadowOffset;    
     },
 
     isVisible : function(){
@@ -6267,7 +6271,7 @@ Ext.layout.BorderLayout.Region.prototype = {
                 this.collapsedEl.on('click', this.onExpandClick, this, {stopEvent:true});
             }else {
                 if(this.collapsible !== false && !this.hideCollapseTool) {
-                    var t = this.toolTemplate.append(
+                    var t = this.expandToolEl = this.toolTemplate.append(
                             this.collapsedEl.dom,
                             {id:'expand-'+this.position}, true);
                     t.addClassOnOver('x-tool-expand-'+this.position+'-over');
@@ -6686,7 +6690,7 @@ Ext.layout.BorderLayout.Region.prototype = {
         if (this.autoHideSlideTask && this.autoHideSlideTask.cancel){
             this.autoHideSlideTask.cancel();
         }
-        Ext.destroy(this.miniCollapsedEl, this.collapsedEl);
+        Ext.destroyMembers(this, 'miniCollapsedEl', 'collapsedEl', 'expandToolEl');
     }
 };
 
@@ -6924,7 +6928,8 @@ Ext.extend(Ext.layout.BorderLayout.SplitRegion, Ext.layout.BorderLayout.Region, 
     }
 });
 
-Ext.Container.LAYOUTS['border'] = Ext.layout.BorderLayout;/**
+Ext.Container.LAYOUTS['border'] = Ext.layout.BorderLayout;
+/**
  * @class Ext.layout.FormLayout
  * @extends Ext.layout.AnchorLayout
  * <p>This layout manager is specifically designed for rendering and managing child Components of
@@ -7078,7 +7083,7 @@ Ext.layout.FormLayout = Ext.extend(Ext.layout.AnchorLayout, {
                 labelAdjust: 0
             });
         }else{
-            this.labelSeparator = ct.labelSeparator || this.labelSeparator;
+            this.labelSeparator = Ext.isDefined(ct.labelSeparator) ? ct.labelSeparator : this.labelSeparator;
             ct.labelWidth = ct.labelWidth || 100;
             if(Ext.isNumber(ct.labelWidth)){
                 var pad = Ext.isNumber(ct.labelPad) ? ct.labelPad : 5;
@@ -7663,6 +7668,11 @@ Ext.layout.TableLayout = Ext.extend(Ext.layout.ContainerLayout, {
     // private
     isValidParent : function(c, target){
         return c.getPositionEl().up('table', 5).dom.parentNode === (target.dom || target);
+    },
+    
+    destroy: function(){
+        delete this.table;
+        Ext.layout.TableLayout.superclass.destroy.call(this);
     }
 
     /**
@@ -9153,7 +9163,7 @@ new Ext.Panel({
     },
     footerCfg: {
         tag: 'h2',
-        cls: 'x-panel-footer'        // same as the Default class
+        cls: 'x-panel-footer',        // same as the Default class
         html: 'footer html'
     },
     footerCssClass: 'custom-footer', // additional css class, see {@link Ext.element#addClass addClass}
@@ -11125,7 +11135,8 @@ Ext.extend(Ext.Editor, Ext.Component, {
         delete this.field.lastSize;
         this.field.setSize(w, h);
         if(this.el){
-            if(Ext.isGecko2 || Ext.isOpera){
+            // IE7 in strict mode doesn't size properly.
+            if(Ext.isGecko2 || Ext.isOpera || (Ext.isIE7 && Ext.isStrict)){
                 // prevent layer scrollbars
                 this.el.setSize(w, h);
             }
@@ -12489,6 +12500,14 @@ Ext.slider.Thumb = Ext.extend(Object, {
         if (this.dragStartValue != value) {
             slider.fireEvent('changecomplete', slider, value, this);
         }
+    },
+    
+    /**
+     * @private
+     * Destroys the thumb
+     */
+    destroy: function(){
+        Ext.destroyMembers(this, 'tracker', 'el');
     }
 });
 
@@ -13055,7 +13074,10 @@ Ext.slider.MultiSlider = Ext.extend(Ext.BoxComponent, {
         for(; i < len; ++i){
             thumbs[i].el.stopFx();    
         }
-        this.innerEl.setWidth(w - (this.el.getPadding('l') + this.endEl.getPadding('r')));
+        // check to see if we're using an auto width
+        if(Ext.isNumber(w)){
+            this.innerEl.setWidth(w - (this.el.getPadding('l') + this.endEl.getPadding('r')));
+        }
         this.syncThumb();
         Ext.slider.MultiSlider.superclass.onResize.apply(this, arguments);
     },
@@ -13147,7 +13169,12 @@ Ext.slider.MultiSlider = Ext.extend(Ext.BoxComponent, {
 
     // private
     beforeDestroy : function(){
-        Ext.destroyMembers(this, 'endEl', 'innerEl', 'thumb', 'halfThumb', 'focusEl', 'tracker', 'thumbHolder');
+        var thumbs = this.thumbs;
+        for(var i = 0, len = thumbs.length; i < len; ++i){
+            thumbs[i].destroy();
+            thumbs[i] = null;
+        }
+        Ext.destroyMembers(this, 'endEl', 'innerEl', 'focusEl', 'thumbHolder');
         Ext.slider.MultiSlider.superclass.beforeDestroy.call(this);
     }
 });

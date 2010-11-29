@@ -1,10 +1,10 @@
 /*!
- * Ext JS Library 3.2.1
+ * Ext JS Library 3.2.2
  * Copyright(c) 2006-2010 Ext JS, Inc.
  * licensing@extjs.com
  * http://www.extjs.com/license
  */
-html,body,div,dl,dt,dd,pre,form,fieldset,input,blockquote,.ext-root th,.ext-root td{margin:0;padding:0;}img,body,html{border:0;}address,caption,cite,code,dfn,em,strong,th,var{font-style:normal;font-weight:normal;}caption,th {text-align:left;}q:before,q:after{content:'';}.ext-el-mask {
+html,body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,fieldset,input,p,blockquote,th,td{margin:0;padding:0;}img,body,html{border:0;}address,caption,cite,code,dfn,em,strong,th,var{font-style:normal;font-weight:normal;}ol,ul {list-style:none;}caption,th {text-align:left;}h1,h2,h3,h4,h5,h6{font-size:100%;}q:before,q:after{content:'';}.ext-el-mask {
     z-index: 100;
     position: absolute;
     top:0;
@@ -16,12 +16,6 @@ html,body,div,dl,dt,dd,pre,form,fieldset,input,blockquote,.ext-root th,.ext-root
     height: 100%;
     zoom: 1;
 }
-.ext-root ol, .ext-root ul, .x-menu ul, .x-menu ol {
-	list-style:none;
-	margin:0;
-	padding:0;
-}
-
 
 .ext-el-mask-msg {
     z-index: 20001;
@@ -902,9 +896,11 @@ textarea.x-form-field {
     margin-bottom:-2px; /* another bogus margin bug, safari/mac only */
 }
 
+/*
 .ext-strict .ext-ie8 .x-form-text, .ext-strict .ext-ie8 textarea.x-form-field {
     margin-bottom: 1px;
 }
+*/
 
 .ext-gecko .x-form-text , .ext-ie8 .x-form-text {
     padding-top:2px; /* FF won't center the text vertically */
@@ -1174,6 +1170,10 @@ textarea {
     height:19px;
 }
 
+.ext-webkit .x-small-editor .x-form-field-wrap .x-form-trigger{
+    height:21px;
+}
+
 .ext-webkit .x-small-editor .x-form-text{padding-top:3px;font-size:100%;}
 
 .x-form-clear {
@@ -1384,6 +1384,10 @@ fieldset.x-panel-collapsed .x-fieldset-bwrap {
     -moz-outline: none;
     outline: none;
     overflow: auto;
+}
+
+.ext-mac.ext-gecko .x-window-body .x-form-item {
+    overflow:hidden;
 }
 
 .ext-gecko .x-form-item {
@@ -3531,6 +3535,13 @@ a.x-menu-item {
 }
 
 /*
+ * Fixes an issue with "fat" separators in webkit
+ */
+.ext-webkit .x-menu-sep{
+    height: 1px;
+}
+
+/*
  * Ugly mess to remove the white border under the picker
  */
 .ext-ie .x-date-menu{
@@ -5614,7 +5625,7 @@ ul.x-tab-strip-bottom{
 }
 
 .x-item-disabled .x-tbar-loading{
-	background-image: url(../images/default/grid/loading.gif) !important;
+	background-image: url(../images/default/grid/refresh-disabled.gif) !important;
 }
 
 .x-item-disabled .x-tbar-page-first{

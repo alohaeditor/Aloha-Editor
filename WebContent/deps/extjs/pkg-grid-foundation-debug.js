@@ -1,5 +1,5 @@
 /*!
- * Ext JS Library 3.2.1
+ * Ext JS Library 3.2.2
  * Copyright(c) 2006-2010 Ext JS, Inc.
  * licensing@extjs.com
  * http://www.extjs.com/license
@@ -656,8 +656,10 @@ function(grid, rowIndex, columnIndex, e) {
                 s = cs[i];
                 c = cm.getColumnById(s.id);
                 if(c){
-                    c.hidden = s.hidden;
-                    c.width = s.width;
+                    cm.setState(i, {
+                        hidden: s.hidden,
+                        width: s.width    
+                    });
                     oldIndex = cm.getIndexById(s.id);
                     if(oldIndex != i){
                         cm.moveColumn(oldIndex, i);
@@ -2363,12 +2365,13 @@ viewConfig: {
         var width = 0;
         var w;
         for (i = 0; i < colCount; i++){
-            if(!cm.isHidden(i) && !cm.isFixed(i) && i !== omitColumn){
+            if(!cm.isFixed(i) && i !== omitColumn){
                 w = cm.getColumnWidth(i);
-                cols.push(i);
-                extraCol = i;
-                cols.push(w);
-                width += w;
+                cols.push(i, w);
+                if(!cm.isHidden(i)){
+                    extraCol = i;
+                    width += w;
+                }
             }
         }
         var frac = (aw - cm.getTotalWidth())/width;
@@ -4040,6 +4043,14 @@ myGrid.getColumnModel().setHidden(0, true); // hide column 0 (0 = the first colu
             }
         }
         this.purgeListeners();
+    },
+    
+    /**
+     * @private
+     * Setup any saved state for the column, ensures that defaults are applied.
+     */
+    setState : function(col, state){
+        Ext.applyIf(this.config[col], state);
     }
 });
 

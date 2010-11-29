@@ -1,5 +1,5 @@
 /*!
- * Ext JS Library 3.2.1
+ * Ext JS Library 3.2.2
  * Copyright(c) 2006-2010 Ext JS, Inc.
  * licensing@extjs.com
  * http://www.extjs.com/license
@@ -3240,6 +3240,7 @@ Ext.dd.DragTracker = Ext.extend(Ext.util.Observable,  {
 
     destroy : function(){
         this.el.un('mousedown', this.onMouseDown, this);
+        delete this.el;
     },
 
     onMouseDown: function(e, target){
@@ -4249,21 +4250,21 @@ Ext.extend(Ext.dd.DragSource, Ext.dd.DDProxy, {
  * @param {Mixed} el The container element
  * @param {Object} config
  */
-Ext.dd.DropTarget = function(el, config){
-    this.el = Ext.get(el);
+Ext.dd.DropTarget = Ext.extend(Ext.dd.DDTarget, {
     
-    Ext.apply(this, config);
+    constructor : function(el, config){
+        this.el = Ext.get(el);
     
-    if(this.containerScroll){
-        Ext.dd.ScrollManager.register(this.el);
-    }
+        Ext.apply(this, config);
     
-    Ext.dd.DropTarget.superclass.constructor.call(this, this.el.dom, this.ddGroup || this.group, 
-          {isTarget: true});
-
-};
-
-Ext.extend(Ext.dd.DropTarget, Ext.dd.DDTarget, {
+        if(this.containerScroll){
+            Ext.dd.ScrollManager.register(this.el);
+        }
+    
+        Ext.dd.DropTarget.superclass.constructor.call(this, this.el.dom, this.ddGroup || this.group, 
+              {isTarget: true});        
+    },
+    
     /**
      * @cfg {String} ddGroup
      * A named drag drop group to which this object belongs.  If a group is specified, then this object will only
@@ -4347,6 +4348,13 @@ Ext.extend(Ext.dd.DropTarget, Ext.dd.DDTarget, {
      */
     notifyDrop : function(dd, e, data){
         return false;
+    },
+    
+    destroy : function(){
+        Ext.dd.DropTarget.superclass.destroy.call(this);
+        if(this.containerScroll){
+            Ext.dd.ScrollManager.unregister(this.el);
+        }
     }
 });/**
  * @class Ext.dd.DragZone
@@ -4406,14 +4414,15 @@ myDataView.on('render', function(v) {
  * @param {Mixed} el The container element
  * @param {Object} config
  */
-Ext.dd.DragZone = function(el, config){
-    Ext.dd.DragZone.superclass.constructor.call(this, el, config);
-    if(this.containerScroll){
-        Ext.dd.ScrollManager.register(this.el);
-    }
-};
-
-Ext.extend(Ext.dd.DragZone, Ext.dd.DragSource, {
+Ext.dd.DragZone = Ext.extend(Ext.dd.DragSource, {
+    
+    constructor : function(el, config){
+        Ext.dd.DragZone.superclass.constructor.call(this, el, config);
+        if(this.containerScroll){
+            Ext.dd.ScrollManager.register(this.el);
+        }
+    },
+    
     /**
      * This property contains the data representing the dragged object. This data is set up by the implementation
      * of the {@link #getDragData} method. It must contain a <tt>ddel</tt> property, but can contain
@@ -4473,6 +4482,13 @@ Ext.extend(Ext.dd.DragZone, Ext.dd.DragSource, {
      */
     getRepairXY : function(e){
         return Ext.Element.fly(this.dragData.ddel).getXY();  
+    },
+    
+    destroy : function(){
+        Ext.dd.DragZone.superclass.destroy.call(this);
+        if(this.containerScroll){
+            Ext.dd.ScrollManager.unregister(this.el);
+        }
     }
 });/**
  * @class Ext.dd.DropZone

@@ -1,5 +1,5 @@
 /*!
- * Ext JS Library 3.2.1
+ * Ext JS Library 3.2.2
  * Copyright(c) 2006-2010 Ext JS, Inc.
  * licensing@extjs.com
  * http://www.extjs.com/license
@@ -165,7 +165,6 @@ Ext.DomHelper = function(){
             attr,
             val,
             key,
-            keyVal,
             cn;
 
         if(typeof o == "string"){
@@ -281,21 +280,18 @@ Ext.DomHelper = function(){
          * a function which returns such a specification.
          */
         applyStyles : function(el, styles){
-            if(styles){
-                var i = 0,
-                    len,
-                    style,
-                    matches;
+            if (styles) {
+                var matches;
 
                 el = Ext.fly(el);
-                if(typeof styles == "function"){
+                if (typeof styles == "function") {
                     styles = styles.call();
                 }
-                if(typeof styles == "string"){
-                    while((matches = cssRe.exec(styles))){
+                if (typeof styles == "string") {
+                    while ((matches = cssRe.exec(styles))) {
                         el.setStyle(matches[1], matches[2]);
                     }
-                }else if (typeof styles == "object"){
+                } else if (typeof styles == "object") {
                     el.setStyle(styles);
                 }
             }
@@ -1222,17 +1218,23 @@ Ext.DomQuery = function(){
             ri = -1, 
             useGetStyle = custom == "{",	    
             fn = Ext.DomQuery.operators[op],	    
-            a,	    
-            innerHTML;
+            a,
+            xml,
+            hasXml;
+            
         for(var i = 0, ci; ci = cs[i]; i++){
 	    // skip non-element nodes.
             if(ci.nodeType != 1){
                 continue;
             }
+            // only need to do this for the first node
+            if(!hasXml){
+                xml = Ext.DomQuery.isXml(ci);
+                hasXml = true;
+            }
 	    
-            innerHTML = ci.innerHTML;
             // we only need to change the property names if we're dealing with html nodes, not XML
-            if(innerHTML !== null && innerHTML !== undefined){
+            if(!xml){
                 if(useGetStyle){
                     a = Ext.DomQuery.getStyle(ci, attr);
                 } else if (attr == "class" || attr == "className"){
@@ -1372,10 +1374,10 @@ Ext.DomQuery = function(){
         compile : function(path, type){
             type = type || "select";
 
-	    // setup fn preamble
+    	    // setup fn preamble
             var fn = ["var f = function(root){\n var mode; ++batch; var n = root || document;\n"],
-		mode,		
-		lastPath,
+        		mode,		
+        		lastPath,
             	matchers = Ext.DomQuery.matchers,
             	matchersLn = matchers.length,
             	modeMatch,
@@ -2144,11 +2146,11 @@ myGridPanel.on({
         var me = this,
             e,
             oe,
-            isF,
-        ce;
+            ce;
+            
         if (typeof eventName == 'object') {
             o = eventName;
-            for (e in o){
+            for (e in o) {
                 oe = o[e];
                 if (!me.filterOptRe.test(e)) {
                     me.addListener(e, oe.fn || oe, oe.scope || o.scope, oe.fn ? oe : o);
@@ -2336,7 +2338,8 @@ EXTUTIL.Event.prototype = {
     },
 
     createListener: function(fn, scope, o){
-        o = o || {}, scope = scope || this.obj;
+        o = o || {};
+        scope = scope || this.obj;
         var l = {
             fn: fn,
             scope: scope,
@@ -3317,6 +3320,7 @@ Ext.EventManager.addListener("myDiv", 'click', handleClick);
  */
 Ext.EventObject = function(){
     var E = Ext.lib.Event,
+        clickRe = /(dbl)?click/,
         // safari keypress events for special keys return bad keycodes
         safariKeys = {
             3 : 13, // enter
@@ -3351,7 +3355,7 @@ Ext.EventObject = function(){
             if(e){
                 // normalize buttons
                 me.button = e.button ? btnMap[e.button] : (e.which ? e.which - 1 : -1);
-                if(e.type == 'click' && me.button == -1){
+                if(clickRe.test(e.type) && me.button == -1){
                     me.button = 0;
                 }
                 me.type = e.type;
@@ -3948,10 +3952,7 @@ Ext.Element = function(element, forceNew){
     this.id = id || Ext.id(dom);
 };
 
-var D = Ext.lib.Dom,
-    DH = Ext.DomHelper,
-    E = Ext.lib.Event,
-    A = Ext.lib.Anim,
+var DH = Ext.DomHelper,
     El = Ext.Element,
     EC = Ext.elCache;
 
@@ -3968,7 +3969,7 @@ El.prototype = {
             val,
             useSet = (useSet !== false) && !!el.setAttribute;
 
-        for(attr in o){
+        for (attr in o) {
             if (o.hasOwnProperty(attr)) {
                 val = o[attr];
                 if (attr == 'style') {
@@ -5321,12 +5322,13 @@ el.alignTo("other-el", "c-bl", [-6, 0]);
             vw -= offsets.right;
             vh -= offsets.bottom;
 
-            var vr = vx+vw;
-            var vb = vy+vh;
-
-            var xy = proposedXY || (!local ? this.getXY() : [this.getLeft(true), this.getTop(true)]);
-            var x = xy[0], y = xy[1];
-            var w = this.dom.offsetWidth, h = this.dom.offsetHeight;
+            var vr = vx + vw,
+                vb = vy + vh,
+                xy = proposedXY || (!local ? this.getXY() : [this.getLeft(true), this.getTop(true)]),
+                x = xy[0], y = xy[1],
+                offset = this.getConstrainOffset(),
+                w = this.dom.offsetWidth + offset, 
+                h = this.dom.offsetHeight + offset;
 
             // only move it if it needs it
             var moved = false;
@@ -5407,6 +5409,11 @@ el.alignTo("other-el", "c-bl", [-6, 0]);
 //         }
 //         return moved ? [x, y] : false;
 //    },
+
+    // private, used internally
+    getConstrainOffset : function(){
+        return 0;
+    },
     
     /**
     * Calculates the x, y to center this element on the screen
@@ -5800,14 +5807,12 @@ Ext.Element.addMethods(function(){
     // local style camelizing for speed
     var propCache = {},
         camelRe = /(-[a-z])/gi,
-        classReCache = {},
         view = document.defaultView,
         propFloat = Ext.isIE ? 'styleFloat' : 'cssFloat',
         opacityRe = /alpha\(opacity=(.*)\)/i,
         trimRe = /^\s+|\s+$/g,
         spacesRe = /\s+/,
         wordsRe = /\w/g,
-        EL = Ext.Element,
         PADDING = "padding",
         MARGIN = "margin",
         BORDER = "border",
@@ -5997,7 +6002,7 @@ Ext.Element.addMethods(function(){
                     }
                     prop = chkCache(prop);
                     // Fix bug caused by this: https://bugs.webkit.org/show_bug.cgi?id=13343
-                    if(wk && /marginRight/.test(prop)){
+                    if(wk && (/marginRight/.test(prop))) {
                         display = this.getStyle('display');
                         el.style.display = 'inline-block';
                     }
@@ -6049,7 +6054,7 @@ Ext.Element.addMethods(function(){
                 color = (typeof prefix != 'undefined') ? prefix : '#',
                 h;
 
-            if(!v || /transparent|inherit/.test(v)){
+            if(!v || (/transparent|inherit/.test(v))) {
                 return defaultValue;
             }
             if(/^r/.test(v)){
@@ -6071,9 +6076,8 @@ Ext.Element.addMethods(function(){
          * @return {Ext.Element} this
          */
         setStyle : function(prop, value){
-            var tmp,
-                style,
-                camel;
+            var tmp, style;
+            
             if (typeof prop != 'object') {
                 tmp = {};
                 tmp[prop] = value;
@@ -6292,7 +6296,7 @@ Ext.fly('elId').setHeight(150, {
         },
 
         margins : margins
-    }
+    };
 }()
 );
 /**
@@ -7174,18 +7178,21 @@ Ext.Element.addMethods({
      * @param {Boolean/Object} animate (optional) true for the default animation or a standard Element animation config object
      * @return {Element} this
      */
-    scrollTo : function(side, value, animate){
-        var top = /top/i.test(side), //check if we're scrolling top or left
-        	me = this,
-        	dom = me.dom,
+    scrollTo : function(side, value, animate) {
+        //check if we're scrolling top or left
+        var top = /top/i.test(side),
+            me = this,
+            dom = me.dom,
             prop;
         if (!animate || !me.anim) {
-            prop = 'scroll' + (top ? 'Top' : 'Left'), // just setting the value, so grab the direction
+            // just setting the value, so grab the direction
+            prop = 'scroll' + (top ? 'Top' : 'Left');
             dom[prop] = value;
-        }else{
-            prop = 'scroll' + (top ? 'Left' : 'Top'), // if scrolling top, we need to grab scrollLeft, if left, scrollTop
-            me.anim({scroll: {to: top ? [dom[prop], value] : [value, dom[prop]]}},
-            		 me.preanim(arguments, 2), 'scroll');
+        }
+        else {
+            // if scrolling top, we need to grab scrollLeft, if left, scrollTop
+            prop = 'scroll' + (top ? 'Left' : 'Top');
+            me.anim({scroll: {to: top ? [dom[prop], value] : [value, dom[prop]]}}, me.preanim(arguments, 2), 'scroll');
         }
         return me;
     },
@@ -7197,31 +7204,34 @@ Ext.Element.addMethods({
      * @param {Boolean} hscroll (optional) False to disable horizontal scroll (defaults to true)
      * @return {Ext.Element} this
      */
-    scrollIntoView : function(container, hscroll){
+    scrollIntoView : function(container, hscroll) {
         var c = Ext.getDom(container) || Ext.getBody().dom,
-        	el = this.dom,
-        	o = this.getOffsetsTo(c),
+            el = this.dom,
+            o = this.getOffsetsTo(c),
             l = o[0] + c.scrollLeft,
             t = o[1] + c.scrollTop,
             b = t + el.offsetHeight,
             r = l + el.offsetWidth,
-        	ch = c.clientHeight,
-        	ct = parseInt(c.scrollTop, 10),
-        	cl = parseInt(c.scrollLeft, 10),
-        	cb = ct + ch,
-        	cr = cl + c.clientWidth;
+            ch = c.clientHeight,
+            ct = parseInt(c.scrollTop, 10),
+            cl = parseInt(c.scrollLeft, 10),
+            cb = ct + ch,
+            cr = cl + c.clientWidth;
 
         if (el.offsetHeight > ch || t < ct) {
-        	c.scrollTop = t;
-        } else if (b > cb){
+            c.scrollTop = t;
+        }
+        else if (b > cb) {
             c.scrollTop = b-ch;
         }
-        c.scrollTop = c.scrollTop; // corrects IE, other browsers will ignore
+        // corrects IE, other browsers will ignore
+        c.scrollTop = c.scrollTop;
 
-        if(hscroll !== false){
-			if(el.offsetWidth > c.clientWidth || l < cl){
+        if (hscroll !== false) {
+            if (el.offsetWidth > c.clientWidth || l < cl) {
                 c.scrollLeft = l;
-            }else if(r > cr){
+            }
+            else if (r > cr) {
                 c.scrollLeft = r - c.clientWidth;
             }
             c.scrollLeft = c.scrollLeft;
@@ -7230,7 +7240,7 @@ Ext.Element.addMethods({
     },
 
     // private
-    scrollChildIntoView : function(child, hscroll){
+    scrollChildIntoView : function(child, hscroll) {
         Ext.fly(child, '_scrollChildIntoView').scrollIntoView(this, hscroll);
     },
     
@@ -7243,11 +7253,11 @@ Ext.Element.addMethods({
      * @return {Boolean} Returns true if a scroll was triggered or false if the element
      * was scrolled as far as it could go.
      */
-     scroll : function(direction, distance, animate){
-         if(!this.isScrollable()){
-             return;
-         }
-         var el = this.dom,
+     scroll : function(direction, distance, animate) {
+        if (!this.isScrollable()) {
+            return false;
+        }
+        var el = this.dom,
             l = el.scrollLeft, t = el.scrollTop,
             w = el.scrollWidth, h = el.scrollHeight,
             cw = el.clientWidth, ch = el.clientHeight,
@@ -7260,13 +7270,13 @@ Ext.Element.addMethods({
             };
             hash.d = hash.b;
             hash.u = hash.t;
-            
-         direction = direction.substr(0, 1);
-         if((v = hash[direction]) > -1){
+        
+        direction = direction.substr(0, 1);
+        if ((v = hash[direction]) > -1) {
             scrolled = true;
             this.scrollTo(direction == 'l' || direction == 'r' ? 'left' : 'top', v, this.preanim(arguments, 2));
-         }
-         return scrolled;
+        }
+        return scrolled;
     }
 });/**
  * @class Ext.Element
@@ -7734,7 +7744,9 @@ function(){
 	            mask.remove();
                 data(dom, 'mask', undefined);
 	        }
-	        me.removeClass([XMASKED, XMASKEDRELATIVE]);
+	        if(me.isMasked()){
+                me.removeClass([XMASKED, XMASKEDRELATIVE]);
+            }
 	    },
 
 	    /**
@@ -9108,18 +9120,17 @@ Ext.CompositeElementLite.prototype = {
     filter : function(selector){
         var els = [],
             me = this,
-            elements = me.elements,
             fn = Ext.isFunction(selector) ? selector
                 : function(el){
                     return el.is(selector);
                 };
 
-
-        me.each(function(el, self, i){
-            if(fn(el, i) !== false){
+        me.each(function(el, self, i) {
+            if (fn(el, i) !== false) {
                 els[els.length] = me.transformElement(el);
             }
         });
+        
         me.elements = els;
         return me;
     },
@@ -9432,6 +9443,7 @@ Ext.select = Ext.Element.select;(function(){
      * <p>Be aware that file upload packets are sent with the content type <a href="http://www.faqs.org/rfcs/rfc2388.html">multipart/form</a>
      * and some server technologies (notably JEE) may require some custom processing in order to
      * retrieve parameter names and parameter values from the packet content.</p>
+     * <p>Also note that it's not possible to check the response code of the hidden iframe, so the success handler will ALWAYS fire.</p>
      * @constructor
      * @param {Object} config a configuration object.
      */
@@ -12273,11 +12285,12 @@ mc.add(otherEl);
     reorder: function(mapping) {
         this.suspendEvents();
 
-        var items     = this.items,
-            index     = 0,
-            length    = items.length,
-            order     = [],
-            remaining = [];
+        var items = this.items,
+            index = 0,
+            length = items.length,
+            order = [],
+            remaining = [],
+            oldIndex;
 
         //object of {oldPosition: newPosition} reversed to {newPosition: oldPosition}
         for (oldIndex in mapping) {
@@ -13665,48 +13678,51 @@ Ext.util.CSS = function(){
  @param {Mixed} el The element to listen on
  @param {Object} config
  */
-Ext.util.ClickRepeater = function(el, config)
-{
-    this.el = Ext.get(el);
-    this.el.unselectable();
+Ext.util.ClickRepeater = Ext.extend(Ext.util.Observable, {
+    
+    constructor : function(el, config){
+        this.el = Ext.get(el);
+        this.el.unselectable();
 
-    Ext.apply(this, config);
+        Ext.apply(this, config);
 
-    this.addEvents(
-    /**
-     * @event mousedown
-     * Fires when the mouse button is depressed.
-     * @param {Ext.util.ClickRepeater} this
-     */
+        this.addEvents(
+        /**
+         * @event mousedown
+         * Fires when the mouse button is depressed.
+         * @param {Ext.util.ClickRepeater} this
+         * @param {Ext.EventObject} e
+         */
         "mousedown",
-    /**
-     * @event click
-     * Fires on a specified interval during the time the element is pressed.
-     * @param {Ext.util.ClickRepeater} this
-     */
+        /**
+         * @event click
+         * Fires on a specified interval during the time the element is pressed.
+         * @param {Ext.util.ClickRepeater} this
+         * @param {Ext.EventObject} e
+         */
         "click",
-    /**
-     * @event mouseup
-     * Fires when the mouse key is released.
-     * @param {Ext.util.ClickRepeater} this
-     */
+        /**
+         * @event mouseup
+         * Fires when the mouse key is released.
+         * @param {Ext.util.ClickRepeater} this
+         * @param {Ext.EventObject} e
+         */
         "mouseup"
-    );
+        );
 
-    if(!this.disabled){
-        this.disabled = true;
-        this.enable();
-    }
+        if(!this.disabled){
+            this.disabled = true;
+            this.enable();
+        }
 
-    // allow inline handler
-    if(this.handler){
-        this.on("click", this.handler,  this.scope || this);
-    }
+        // allow inline handler
+        if(this.handler){
+            this.on("click", this.handler,  this.scope || this);
+        }
 
-    Ext.util.ClickRepeater.superclass.constructor.call(this);
-};
-
-Ext.extend(Ext.util.ClickRepeater, Ext.util.Observable, {
+        Ext.util.ClickRepeater.superclass.constructor.call(this);        
+    },
+    
     interval : 20,
     delay: 250,
     preventDefault : true,
@@ -13768,16 +13784,16 @@ Ext.extend(Ext.util.ClickRepeater, Ext.util.Observable, {
         this.purgeListeners();
     },
 
-    handleDblClick : function(){
+    handleDblClick : function(e){
         clearTimeout(this.timer);
         this.el.blur();
 
-        this.fireEvent("mousedown", this);
-        this.fireEvent("click", this);
+        this.fireEvent("mousedown", this, e);
+        this.fireEvent("click", this, e);
     },
 
     // private
-    handleMouseDown : function(){
+    handleMouseDown : function(e){
         clearTimeout(this.timer);
         this.el.blur();
         if(this.pressClass){
@@ -13788,25 +13804,25 @@ Ext.extend(Ext.util.ClickRepeater, Ext.util.Observable, {
         Ext.getDoc().on("mouseup", this.handleMouseUp, this);
         this.el.on("mouseout", this.handleMouseOut, this);
 
-        this.fireEvent("mousedown", this);
-        this.fireEvent("click", this);
+        this.fireEvent("mousedown", this, e);
+        this.fireEvent("click", this, e);
 
         // Do not honor delay or interval if acceleration wanted.
         if (this.accelerate) {
             this.delay = 400;
         }
-        this.timer = this.click.defer(this.delay || this.interval, this);
+        this.timer = this.click.defer(this.delay || this.interval, this, [e]);
     },
 
     // private
-    click : function(){
-        this.fireEvent("click", this);
+    click : function(e){
+        this.fireEvent("click", this, e);
         this.timer = this.click.defer(this.accelerate ?
             this.easeOutExpo(this.mousedownTime.getElapsed(),
                 400,
                 -390,
                 12000) :
-            this.interval, this);
+            this.interval, this, [e]);
     },
 
     easeOutExpo : function (t, b, c, d) {
@@ -13832,13 +13848,13 @@ Ext.extend(Ext.util.ClickRepeater, Ext.util.Observable, {
     },
 
     // private
-    handleMouseUp : function(){
+    handleMouseUp : function(e){
         clearTimeout(this.timer);
         this.el.un("mouseover", this.handleMouseReturn, this);
         this.el.un("mouseout", this.handleMouseOut, this);
         Ext.getDoc().un("mouseup", this.handleMouseUp, this);
         this.el.removeClass(this.pressClass);
-        this.fireEvent("mouseup", this);
+        this.fireEvent("mouseup", this, e);
     }
 });/**
  * @class Ext.KeyNav
