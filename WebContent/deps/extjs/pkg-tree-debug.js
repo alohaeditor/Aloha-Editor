@@ -1,5 +1,5 @@
 /*!
- * Ext JS Library 3.2.1
+ * Ext JS Library 3.2.2
  * Copyright(c) 2006-2010 Ext JS, Inc.
  * licensing@extjs.com
  * http://www.extjs.com/license
@@ -638,6 +638,12 @@ new Ext.tree.TreePanel({
      * (bSuccess, oLastNode) where bSuccess is if the expand was successful and oLastNode is the last node that was expanded.
      */
     expandPath : function(path, attr, callback){
+        if(Ext.isEmpty(path)){
+            if(callback){
+                callback(false, undefined);
+            }
+            return;
+        }
         attr = attr || 'id';
         var keys = path.split(this.pathSeparator);
         var curNode = this.root;
@@ -676,6 +682,12 @@ new Ext.tree.TreePanel({
      * (bSuccess, oSelNode) where bSuccess is if the selection was successful and oSelNode is the selected node.
      */
     selectPath : function(path, attr, callback){
+        if(Ext.isEmpty(path)){
+            if(callback){
+                callback(false, undefined);
+            }
+            return;
+        }
         attr = attr || 'id';
         var keys = path.split(this.pathSeparator),
             v = keys.pop();

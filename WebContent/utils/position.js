@@ -48,6 +48,15 @@ GENTICS.Utils.Position.Scroll = {
 };
 
 /**
+ * contains the scroll corrections to apply on special cases (ribbon for example)
+ * @api
+ */
+GENTICS.Utils.Position.ScrollCorrection = {
+		top : 0,
+		left : 0
+};
+
+/**
  * contains the current mouse position (x,y) as well as an indicator if the mouse is moving
  * @api
  */
@@ -63,12 +72,12 @@ GENTICS.Utils.Position.Mouse = {
 /**
  * contains all mousestop callbacks
  */
-GENTICS.Utils.Position.mouseStopCallbacks = new Array();
+GENTICS.Utils.Position.mouseStopCallbacks = [];
 
 /**
  * contains all mousemove callbacks
  */
-GENTICS.Utils.Position.mouseMoveCallbacks = new Array();
+GENTICS.Utils.Position.mouseMoveCallbacks = [];
 
 /**
  * updates scroll position and the scrolling status 

@@ -1,5 +1,5 @@
 /*!
- * Ext JS Library 3.2.1
+ * Ext JS Library 3.2.2
  * Copyright(c) 2006-2010 Ext JS, Inc.
  * licensing@extjs.com
  * http://www.extjs.com/license
@@ -1607,10 +1607,25 @@ Ext.form.TwinTriggerField = Ext.extend(Ext.form.TriggerField, {
     getTrigger : function(index){
         return this.triggers[index];
     },
+    
+    afterRender: function(){
+        Ext.form.TwinTriggerField.superclass.afterRender.call(this);
+        var triggers = this.triggers,
+            i = 0,
+            len = triggers.length;
+            
+        for(; i < len; ++i){
+            if(this['hideTrigger' + (i + 1)]){
+                    triggers[i].hide();
+                }
+
+        }    
+    },
 
     initTrigger : function(){
-        var ts = this.trigger.select('.x-form-trigger', true);
-        var triggerField = this;
+        var ts = this.trigger.select('.x-form-trigger', true),
+            triggerField = this;
+            
         ts.each(function(t, all, index){
             var triggerIndex = 'Trigger'+(index+1);
             t.hide = function(){
@@ -1625,11 +1640,6 @@ Ext.form.TwinTriggerField = Ext.extend(Ext.form.TriggerField, {
                 triggerField.el.setWidth(w-triggerField.trigger.getWidth());
                 this['hidden' + triggerIndex] = false;
             };
-
-            if(this['hide'+triggerIndex]){
-                t.dom.style.display = 'none';
-                this['hidden' + triggerIndex] = true;
-            }
             this.mon(t, 'click', this['on'+triggerIndex+'Click'], this, {preventDefault:true});
             t.addClassOnOver('x-form-trigger-over');
             t.addClassOnClick('x-form-trigger-click');
@@ -1897,6 +1907,7 @@ Ext.form.NumberField = Ext.extend(Ext.form.TextField,  {
     },
 
     setValue : function(v){
+        v = this.fixPrecision(v);
     	v = Ext.isNumber(v) ? v : parseFloat(String(v).replace(this.decimalSeparator, "."));
         v = isNaN(v) ? '' : String(v).replace(".", this.decimalSeparator);
         return Ext.form.NumberField.superclass.setValue.call(this, v);
@@ -1936,7 +1947,7 @@ Ext.form.NumberField = Ext.extend(Ext.form.TextField,  {
     beforeBlur : function(){
         var v = this.parseValue(this.getRawValue());
         if(!Ext.isEmpty(v)){
-            this.setValue(this.fixPrecision(v));
+            this.setValue(v);
         }
     }
 });
@@ -2067,7 +2078,7 @@ disabledDates: ["^03"]
         } else {
             // set time to 12 noon, then clear the time
             var parsedDate = Date.parseDate(value + ' ' + this.initTime, format + ' ' + this.initTimeFormat);
-            
+
             if (parsedDate) return parsedDate.clearTime();
         }
     },
@@ -2170,7 +2181,7 @@ disabledDates: ["^03"]
             this.menu.picker.setMaxDate(this.maxValue);
         }
     },
-    
+
     /**
      * Runs all of NumberFields validations and returns an array of any errors. Note that this first
      * runs TextField's validations, so the returned array is an amalgamation of all field errors.
@@ -2182,32 +2193,32 @@ disabledDates: ["^03"]
      */
     getErrors: function(value) {
         var errors = Ext.form.DateField.superclass.getErrors.apply(this, arguments);
-        
+
         value = this.formatDate(value || this.processValue(this.getRawValue()));
-        
+
         if (value.length < 1) { // if it's blank and textfield didn't flag it then it's valid
              return errors;
         }
-        
+
         var svalue = value;
         value = this.parseDate(value);
         if (!value) {
             errors.push(String.format(this.invalidText, svalue, this.format));
             return errors;
         }
-        
+
         var time = value.getTime();
-        if (this.minValue && time < this.minValue.getTime()) {
+        if (this.minValue && time < this.minValue.clearTime().getTime()) {
             errors.push(String.format(this.minText, this.formatDate(this.minValue)));
         }
-        
-        if (this.maxValue && time > this.maxValue.getTime()) {
+
+        if (this.maxValue && time > this.maxValue.clearTime().getTime()) {
             errors.push(String.format(this.maxText, this.formatDate(this.maxValue)));
         }
-        
+
         if (this.disabledDays) {
             var day = value.getDay();
-            
+
             for(var i = 0; i < this.disabledDays.length; i++) {
                 if (day === this.disabledDays[i]) {
                     errors.push(this.disabledDaysText);
@@ -2215,12 +2226,12 @@ disabledDates: ["^03"]
                 }
             }
         }
-        
+
         var fvalue = this.formatDate(value);
         if (this.disabledDatesRE && this.disabledDatesRE.test(fvalue)) {
             errors.push(String.format(this.disabledDatesText, fvalue));
         }
-        
+
         return errors;
     },
 
@@ -2369,7 +2380,8 @@ dateField.setValue('2006-05-04');
      * @method autoSize
      */
 });
-Ext.reg('datefield', Ext.form.DateField);/**
+Ext.reg('datefield', Ext.form.DateField);
+/**
  * @class Ext.form.DisplayField
  * @extends Ext.form.Field
  * A display-only text field which is not validated and not submitted.
@@ -2981,24 +2993,28 @@ var combo = new Ext.form.ComboBox({
         }
         return zindex;
     },
+    
+    getZIndex : function(listParent){
+        listParent = listParent || Ext.getDom(this.getListParent() || Ext.getBody());
+        var zindex = parseInt(Ext.fly(listParent).getStyle('z-index'), 10);
+        if(!zindex){
+            zindex = this.getParentZIndex();
+        }
+        return (zindex || 12000) + 5;
+    },
 
     // private
     initList : function(){
         if(!this.list){
             var cls = 'x-combo-list',
-                listParent = Ext.getDom(this.getListParent() || Ext.getBody()),
-                zindex = parseInt(Ext.fly(listParent).getStyle('z-index'), 10);
-
-            if (!zindex) {
-                zindex = this.getParentZIndex();
-            }
+                listParent = Ext.getDom(this.getListParent() || Ext.getBody());
 
             this.list = new Ext.Layer({
                 parentEl: listParent,
                 shadow: this.shadow,
                 cls: [cls, this.listClass].join(' '),
                 constrain:false,
-                zindex: (zindex || 12000) + 5
+                zindex: this.getZIndex(listParent)
             });
 
             var lw = this.listWidth || Math.max(this.wrap.getWidth(), this.minListWidth);
@@ -3755,14 +3771,7 @@ myCombo.keyNav.tab = function() {   // Override TAB handling function
         this.list.alignTo.apply(this.list, [this.el].concat(this.listAlign));
 
         // zindex can change, re-check it and set it if necessary
-        var listParent = Ext.getDom(this.getListParent() || Ext.getBody()),
-            zindex = parseInt(Ext.fly(listParent).getStyle('z-index') ,10);
-        if (!zindex){
-            zindex = this.getParentZIndex();
-        }
-        if (zindex) {
-            this.list.setZIndex(zindex + 5);
-        }
+        this.list.setZIndex(this.getZIndex());
         this.list.show();
         if(Ext.isGecko2){
             this.innerList.setOverflow('auto'); // necessary for FF 2.0/Mac
@@ -3929,7 +3938,7 @@ Ext.form.Checkbox = Ext.extend(Ext.form.Field,  {
             this.checked = this.el.dom.checked;
         }
         // Need to repaint for IE, otherwise positioning is broken
-        if(Ext.isIE){
+        if (Ext.isIE && !Ext.isStrict) {
             this.wrap.repaint();
         }
         this.resizeEl = this.positionEl = this.wrap;
@@ -4543,6 +4552,11 @@ Ext.form.CompositeField = Ext.extend(Ext.form.Field, {
      * True to combine errors from the individual fields into a single error message at the CompositeField level (defaults to true)
      */
     combineErrors: true,
+    
+    /**
+     * @cfg {String} labelConnector The string to use when joining segments of the built label together (defaults to ', ')
+     */
+    labelConnector: ', ',
 
     //inherit docs
     //Builds the composite field label
@@ -4785,7 +4799,7 @@ Ext.form.CompositeField = Ext.extend(Ext.form.Field, {
      * @return {String} The built label
      */
     buildLabel: function(segments) {
-        return segments.join(", ");
+        return Ext.clean(segments).join(this.labelConnector);
     },
 
     /**
@@ -7101,8 +7115,7 @@ Ext.form.HtmlEditor = Ext.extend(Ext.form.Field, {
      */
     toggleSourceEdit : function(sourceEditMode){
         var iframeHeight,
-            elHeight,
-            ls;
+            elHeight;
 
         if (sourceEditMode === undefined) {
             sourceEditMode = !this.sourceEditMode;
@@ -7118,7 +7131,7 @@ Ext.form.HtmlEditor = Ext.extend(Ext.form.Field, {
         }
         if (this.sourceEditMode) {
             // grab the height of the containing panel before we hide the iframe
-            ls = this.getSize();
+            this.previousSize = this.getSize();
 
             iframeHeight = Ext.get(this.iframe).getHeight();
 
@@ -7141,7 +7154,8 @@ Ext.form.HtmlEditor = Ext.extend(Ext.form.Field, {
             this.el.dom.setAttribute('tabIndex', -1);
             this.deferFocus();
 
-            this.setSize(ls);
+            this.setSize(this.previousSize);
+            delete this.previousSize;
             this.iframe.style.height = elHeight + 'px';
         }
         this.fireEvent('editmodechange', this, this.sourceEditMode);

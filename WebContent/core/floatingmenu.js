@@ -657,14 +657,9 @@ GENTICS.Aloha.FloatingMenu.calcFloatTarget = function(range) {
 
 	var y = targetObj.offset().top - this.obj.height() - 50; // 50px offset above the current obj to have some space above
 
-	// if the floating menu would be placed higher than the top of the screen... 
-	var ribbonOffset = 0;
-	if ( GENTICS.Aloha.Ribbon && 
-			GENTICS.Aloha.settings.ribbon === true) {
-		ribbonOffset = 30; // 30px = 26px ribbon height + some breathing room
-	}
-	if ( y < (scrollTop + ribbonOffset)) { 
-		y = targetObj.offset().top + targetObj.height() + ribbonOffset;
+	// if the floating menu would be placed higher than the top of the screen...
+	if ( y < scrollTop) {
+		y = targetObj.offset().top + targetObj.height() + GENTICS.Utils.Position.ScrollCorrection.top;
 	}
 	
 	// if the floating menu would float off the bottom of the screen

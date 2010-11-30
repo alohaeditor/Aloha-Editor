@@ -1,5 +1,5 @@
 /*!
- * Ext JS Library 3.2.1
+ * Ext JS Library 3.2.2
  * Copyright(c) 2006-2010 Ext JS, Inc.
  * licensing@extjs.com
  * http://www.extjs.com/license
@@ -374,9 +374,10 @@ Ext.Button = Ext.extend(Ext.BoxComponent, {
 
         if(this.repeat){
             var repeater = new Ext.util.ClickRepeater(btn, Ext.isObject(this.repeat) ? this.repeat : {});
-            this.mon(repeater, 'click', this.onClick, this);
+            this.mon(repeater, 'click', this.onRepeatClick, this);
+        }else{
+            this.mon(btn, this.clickEvent, this.onClick, this);
         }
-        this.mon(btn, this.clickEvent, this.onClick, this);
     },
 
     // private
@@ -444,7 +445,7 @@ Ext.Button = Ext.extend(Ext.BoxComponent, {
             this.clearTip();
         }
         if(this.menu && this.destroyMenu !== false) {
-            Ext.destroy(this.menu);
+            Ext.destroy(this.btnEl, this.menu);
         }
         Ext.destroy(this.repeater);
     },
@@ -607,6 +608,11 @@ Ext.Button = Ext.extend(Ext.BoxComponent, {
      */
     hasVisibleMenu : function(){
         return this.menu && this.menu.ownerCt == this && this.menu.isVisible();
+    },
+    
+    // private
+    onRepeatClick : function(repeat, e){
+        this.onClick(e);
     },
 
     // private
