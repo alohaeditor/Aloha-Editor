@@ -23,21 +23,25 @@
 	
 	<!-- Define the files for the includes (they are listed within the following files) -->
 	<property name="includes.core.js.filename" 		value="core-js.txt"/>
-	<property name="includes.deps.js.filename" 		value="deps-js.txt"/>
 	<property name="includes.core.css.filename" 	value="core-css.txt"/>
+	<property name="includes.deps.js.filename" 		value="deps-js.txt"/>
 	<property name="includes.deps.css.filename" 	value="deps-css.txt"/>
+	<property name="includes.jquery.js.filename" 	value="jquery-js.txt"/>
+	<property name="includes.jquery.css.filename" 	value="jquery-css.txt"/>
+	<property name="includes.ext.js.filename" 		value="ext-js.txt"/>
+	<property name="includes.ext.css.filename" 		value="et-css.txt"/>
 	
 	<!-- Define the files for generation -->
 	<property name="outfiles.core.js.filename" 		value="${filename}-core.js"/>
-	<property name="outfiles.deps.js.filename" 		value="${filename}-deps.js"/>
-	<property name="outfiles.all.js.filename" 		value="${filename}.js"/>
 	<property name="outfiles.core.css.filename" 	value="${filename}-core.css"/>
+	<property name="outfiles.deps.js.filename" 		value="${filename}-deps.js"/>
 	<property name="outfiles.deps.css.filename" 	value="${filename}-deps.css"/>
+	<property name="outfiles.ext.js.filename" 		value="${filename}-ext.js"/>
+	<property name="outfiles.ext.css.filename" 		value="${filename}-ext.css"/>
+	<property name="outfiles.jquery.js.filename" 	value="${filename}-jquery.js"/>
+	<property name="outfiles.jquery.css.filename" 	value="${filename}-jquery.css"/>
+	<property name="outfiles.all.js.filename" 		value="${filename}.js"/>
 	<property name="outfiles.all.css.filename" 		value="${filename}.css"/>
-	
-	<!-- Define some manual includes -->
-	<property name="outfiles.uncompressed.includes.js"	value="deps/jquery-1.4.2.js"/>
-	<property name="outfiles.compressed.includes.js"	value="deps/jquery-1.4.2.min.js"/>
 	
 	<!-- Define the java executable used for compilers -->
 	<property name="java" value="${java.home}${file.separator}bin${file.separator}java" />
@@ -107,63 +111,50 @@
 		<loadfile property="dev.includejs.subst" srcfile="deps/includejs-substitution.txt"/>
 		<loadfile property="dev.includecss.subst" srcfile="deps/includecss-substitution.txt"/>
 		
-		<!-- The Core JS -->
-		<copy file="${includesdir}/${includes.core.js.filename}" todir="${outdir}" overwrite="true"/>
-		<replaceregexp byline="true" file="${outdir}/${includes.core.js.filename}" match="(.+)" replace="${dev.includejs.subst}"/>
+		<!-- The jQuery JS -->
+		<copy file="${includesdir}/${includes.jquery.js.filename}" todir="${outdir}" overwrite="true"/>
+		<replaceregexp byline="true" file="${outdir}/${includes.jquery.js.filename}" match="(.+)" replace="${dev.includejs.subst}"/>
 		
+		<!-- The jQuery CSS -->
+		<copy file="${includesdir}/${includes.jquery.css.filename}" todir="${outdir}" overwrite="true"/>
+		<replaceregexp byline="true" file="${outdir}/${includes.jquery.css.filename}" match="(.+)" replace="${dev.includecss.subst}"/>
+	
+		<!-- The EXT JS -->
+		<copy file="${includesdir}/${includes.ext.js.filename}" todir="${outdir}" overwrite="true"/>
+		<replaceregexp byline="true" file="${outdir}/${includes.ext.js.filename}" match="(.+)" replace="${dev.includejs.subst}"/>
+		
+		<!-- The EXT CSS -->
+		<copy file="${includesdir}/${includes.ext.css.filename}" todir="${outdir}" overwrite="true"/>
+		<replaceregexp byline="true" file="${outdir}/${includes.ext.css.filename}" match="(.+)" replace="${dev.includecss.subst}"/>
+	
 		<!-- The Deps JS -->
 		<copy file="${includesdir}/${includes.deps.js.filename}" todir="${outdir}" overwrite="true"/>
 		<replaceregexp byline="true" file="${outdir}/${includes.deps.js.filename}" match="(.+)" replace="${dev.includejs.subst}"/>
-		
-		<!-- The Core CSS -->
-		<copy file="${includesdir}/${includes.core.css.filename}" todir="${outdir}" overwrite="true"/>
-		<replaceregexp byline="true" file="${outdir}/${includes.core.css.filename}" match="(.+)" replace="${dev.includecss.subst}"/>
 		
 		<!-- The Deps CSS -->
 		<copy file="${includesdir}/${includes.deps.css.filename}" todir="${outdir}" overwrite="true"/>
 		<replaceregexp byline="true" file="${outdir}/${includes.deps.css.filename}" match="(.+)" replace="${dev.includecss.subst}"/>
 
-		<!-- Merge JS Files -->
-		<concat destfile="${srcdir}/core/include.js" force="true">
-			<fileset file="deps/includejs-header.txt"/>
-			<filelist dir="${outdir}" files="${includes.deps.js.filename},${includes.core.js.filename}"></filelist>
-			<fileset file="deps/includejs-footer.txt"/>
-		</concat>
-
-		<!-- Merge CSS files -->
-		<concat destfile="${srcdir}/core/css.js" force="true">
-			<fileset file="deps/includecss-header.txt"/>
-			<filelist dir="${outdir}" files="${includes.deps.css.filename},${includes.core.css.filename}"></filelist>
-			<fileset file="deps/includecss-footer.txt"/>
-		</concat>
-		
-		<!--
-			Now do the same thing for the Testloader
-		-->
-		
-		<!-- Load in the Regular Expression Replaces -->
-		<loadfile property="testloader.includejs.subst" srcfile="${testdir}includejs-substitution.txt"/>
-		<loadfile property="testloader.includecss.subst" srcfile="${testdir}includecss-substitution.txt"/>
-		
 		<!-- The Core JS -->
 		<copy file="${includesdir}/${includes.core.js.filename}" todir="${outdir}" overwrite="true"/>
-		<replaceregexp byline="true" file="${outdir}/${includes.core.js.filename}" match="(.+)" replace="${testloader.includejs.subst}"/>
-		
-		<!-- The Deps JS -->
-		<copy file="${includesdir}/${includes.deps.js.filename}" todir="${outdir}" overwrite="true"/>
-		<replaceregexp byline="true" file="${outdir}/${includes.deps.js.filename}" match="(.+)" replace="${testloader.includejs.subst}"/>
+		<replaceregexp byline="true" file="${outdir}/${includes.core.js.filename}" match="(.+)" replace="${dev.includejs.subst}"/>
 		
 		<!-- The Core CSS -->
 		<copy file="${includesdir}/${includes.core.css.filename}" todir="${outdir}" overwrite="true"/>
-		<replaceregexp byline="true" file="${outdir}/${includes.core.css.filename}" match="(.+)" replace="${testloader.includecss.subst}"/>
+		<replaceregexp byline="true" file="${outdir}/${includes.core.css.filename}" match="(.+)" replace="${dev.includecss.subst}"/>
 		
-		<!-- The Deps CSS -->
-		<copy file="${includesdir}/${includes.deps.css.filename}" todir="${outdir}" overwrite="true"/>
-		<replaceregexp byline="true" file="${outdir}/${includes.deps.css.filename}" match="(.+)" replace="${testloader.includecss.subst}"/>
-		
-		<!-- Merge Files -->
-		<concat destfile="${testdir}testloader.html" force="true">
-			<filelist dir="${outdir}" files="${includes.deps.css.filename},${includes.core.css.filename},${includes.deps.js.filename},${includes.core.js.filename}"></filelist>
+		<!-- Merge JS Files into Autoloader -->
+		<concat destfile="${srcdir}/core/include.js" force="true">
+			<fileset file="deps/includejs-header.txt"/>
+			<filelist dir="${outdir}" files="${includes.jquery.js.filename},${includes.ext.js.filename},${includes.deps.js.filename},${includes.core.js.filename}"></filelist>
+			<fileset file="deps/includejs-footer.txt"/>
+		</concat>
+
+		<!-- Merge CSS Files into Autoloader -->
+		<concat destfile="${srcdir}/core/css.js" force="true">
+			<fileset file="deps/includecss-header.txt"/>
+			<filelist dir="${outdir}" files="${includes.jquery.css.filename},${includes.ext.css.filename},${includes.deps.css.filename},${includes.core.css.filename}"></filelist>
+			<fileset file="deps/includecss-footer.txt"/>
 		</concat>
 	</target>
 	
@@ -194,11 +185,17 @@
 	
 	<!-- Combine JS Files -->
 	<target name="combine-js" depends="prepareuncompressed">
-		<!-- Load the Core File List -->
+		<!-- Load the jQuery File List -->
 		<antcall target="prepare_includes">
-			<param name="includefile" value="${includes.core.js.filename}"/>
+			<param name="includefile" value="${includes.jquery.js.filename}"/>
 		</antcall>
-		<loadfile property="includes.core.js.list" srcfile="${outdir}/${includes.core.js.filename}"/>
+		<loadfile property="includes.jquery.js.list" srcfile="${outdir}/${includes.jquery.js.filename}"/>
+		
+		<!-- Load the EXT File List -->
+		<antcall target="prepare_includes">
+			<param name="includefile" value="${includes.ext.js.filename}"/>
+		</antcall>
+		<loadfile property="includes.ext.js.list" srcfile="${outdir}/${includes.ext.js.filename}"/>
 		
 		<!-- Load the Deps File List -->
 		<antcall target="prepare_includes">
@@ -206,18 +203,34 @@
 		</antcall>
 		<loadfile property="includes.deps.js.list" srcfile="${outdir}/${includes.deps.js.filename}"/>
 		
+		<!-- Load the Core File List -->
+		<antcall target="prepare_includes">
+			<param name="includefile" value="${includes.core.js.filename}"/>
+		</antcall>
+		<loadfile property="includes.core.js.list" srcfile="${outdir}/${includes.core.js.filename}"/>
+		
 		<!-- 
 			Create the Uncompressed Files
 		-->
 		
-		<!-- Generate Aloha Core File -->
-		<concat destfile="${outdirs.uncompressed}/${outfiles.core.js.filename}" force="no">
-			<filelist dir="${srcdir}" files="${includes.core.js.list}"/>
+		<!-- Generate Aloha jQuery File -->
+		<concat destfile="${outdirs.uncompressed}/${outfiles.jquery.js.filename}" force="no">
+			<filelist dir="${srcdir}" files="${includes.jquery.js.list}"/>
+		</concat>
+		
+		<!-- Generate Aloha EXT File -->
+		<concat destfile="${outdirs.uncompressed}/${outfiles.ext.js.filename}" force="no">
+			<filelist dir="${srcdir}" files="${includes.ext.js.list}"/>
 		</concat>
 		
 		<!-- Generate Aloha Deps File -->
 		<concat destfile="${outdirs.uncompressed}/${outfiles.deps.js.filename}" force="no">
 			<filelist dir="${srcdir}" files="${includes.deps.js.list}"/>
+		</concat>
+		
+		<!-- Generate Aloha Core File -->
+		<concat destfile="${outdirs.uncompressed}/${outfiles.core.js.filename}" force="no">
+			<filelist dir="${srcdir}" files="${includes.core.js.list}"/>
 		</concat>
 		
 		<!-- 
@@ -229,7 +242,7 @@
 		
 		<!-- Create a Combined File -->
 		<concat destfile="${outdirs.uncompressed}/${filename}.js" force="no">
-			<filelist dir="${outdirs.uncompressed}" files="${outfiles.uncompressed.includes.js},${outfiles.deps.js.filename},${outfiles.core.js.filename}" />
+			<filelist dir="${outdirs.uncompressed}" files="${outfiles.jquery.js.filename},${outfiles.ext.js.filename},${outfiles.deps.js.filename},${outfiles.core.js.filename}" />
 		</concat>
 	</target>
 	
@@ -284,21 +297,33 @@
 	
 	<!-- Compress the JS Files  -->
 	<target name="compress-js" depends="preparecompressed">
+		<!-- Compress Aloha jQuery File -->
+		<antcall target="yuijs">
+			<param name="infile" value="${outdirs.uncompressed}/${outfiles.jquery.js.filename}"/>
+			<param name="outfile" value="${outdirs.compressed}/${outfiles.jquery.js.filename}"/>
+		</antcall>
+		
+		<!-- Compress Aloha EXT File -->
+		<antcall target="yuijs">
+			<param name="infile" value="${outdirs.uncompressed}/${outfiles.ext.js.filename}"/>
+			<param name="outfile" value="${outdirs.compressed}/${outfiles.ext.js.filename}"/>
+		</antcall>
+		
+		<!-- Compress Aloha Deps File -->
+		<antcall target="closurejs">
+			<param name="infile" value="${outdirs.uncompressed}/${outfiles.deps.js.filename}"/>
+			<param name="outfile" value="${outdirs.compressed}/${outfiles.deps.js.filename}"/>
+		</antcall>
+		
 		<!-- Compress Aloha Core File -->
 		<antcall target="closurejs">
 			<param name="infile" value="${outdirs.uncompressed}/${outfiles.core.js.filename}"/>
 			<param name="outfile" value="${outdirs.compressed}/${outfiles.core.js.filename}"/>
 		</antcall>
 		
-		<!-- Compress Aloha Deps File -->
-		<antcall target="yuijs">
-			<param name="infile" value="${outdirs.uncompressed}/${outfiles.deps.js.filename}"/>
-			<param name="outfile" value="${outdirs.compressed}/${outfiles.deps.js.filename}"/>
-		</antcall>
-		
 		<!-- Compress Aloha Combined File -->
 		<concat destfile="${outdirs.compressed}/${filename}.js" force="no">
-			<filelist dir="${outdirs.compressed}" files="${outfiles.compressed.includes.js},${outfiles.deps.js.filename},${outfiles.core.js.filename}" />
+			<filelist dir="${outdirs.compressed}" files="${outfiles.jquery.js.filename},${outfiles.ext.js.filename},${outfiles.deps.js.filename},${outfiles.core.js.filename}" />
 		</concat>
 		
 		<!-- Compress Aloha Plugins Files -->
@@ -367,7 +392,7 @@
 			</fileset>
 		</delete>
 		
-		<!-- create the version files -->
+		<!-- Create the Version Files -->
 		<copy todir="${packagedir}" file="${srcdir}/VERSION.txt"/>
 		<replace file="${packagedir}/VERSION.txt" token="##ALOHABUILT##" value="${now}"/>
 		<replace file="${packagedir}/VERSION.txt" token="##ALOHAVERSION##" value="${version}"/>
