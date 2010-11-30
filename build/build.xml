@@ -18,8 +18,7 @@
 	
 	<!-- Define the output directories -->
 	<property name="outdirs.uncompressed" 			value="${packagedir}/uncompressed" />
-	<property name="outdirs.compressed" 			value="${packagedir}/aloha" />
-	<property name="outdirs.examples" 				value="${packagedir}/examples" />
+	<property name="outdirs.compressed" 			value="${packagedir}/compressed" />
 	
 	<!-- Define the files for the includes (they are listed within the following files) -->
 	<property name="includes.core.js.filename" 		value="core-js.txt"/>
@@ -212,6 +211,10 @@
 			<param name="to" value="${outdirs.uncompressed}"/>
 		</antcall>
 		<antcall target="copydir">
+			<param name="folder" value="examples"/>
+			<param name="to" value="${outdirs.uncompressed}"/>
+		</antcall>
+		<antcall target="copydir">
 			<param name="folder" value="images"/>
 			<param name="to" value="${outdirs.uncompressed}"/>
 		</antcall>
@@ -255,22 +258,22 @@
 			Create the Uncompressed Files
 		-->
 		
-		<!-- Generate Aloha jQuery File -->
+		<!-- Generate jQuery File -->
 		<concat destfile="${outdirs.uncompressed}/${outfiles.jquery.js.filename}" force="no">
 			<filelist dir="${srcdir}" files="${includes.jquery.js.list}"/>
 		</concat>
 		
-		<!-- Generate Aloha EXT File -->
+		<!-- Generate EXT File -->
 		<concat destfile="${outdirs.uncompressed}/${outfiles.ext.js.filename}" force="no">
 			<filelist dir="${srcdir}" files="${includes.ext.js.list}"/>
 		</concat>
 		
-		<!-- Generate Aloha Deps File -->
+		<!-- Generate Deps File -->
 		<concat destfile="${outdirs.uncompressed}/${outfiles.deps.js.filename}" force="no">
 			<filelist dir="${srcdir}" files="${includes.deps.js.list}"/>
 		</concat>
 		
-		<!-- Generate Aloha Core File -->
+		<!-- Generate Core File -->
 		<concat destfile="${outdirs.uncompressed}/${outfiles.core.js.filename}" force="no">
 			<filelist dir="${srcdir}" files="${includes.core.js.list}"/>
 		</concat>
@@ -279,11 +282,11 @@
 			Create the Combined File
 		-->
 		
-		<!-- Find & Replace GENTICS.Aloha.version inside the Aloha Core file with the current build version -->
+		<!-- Find & Replace GENTICS.Aloha.version inside the Core file with the current build version -->
 		<replace file="${outdirs.uncompressed}/${outfiles.core.js.filename}" token="##ALOHAVERSION##" value="${version}"/>
 		
 		<!-- Create a Combined File -->
-		<concat destfile="${outdirs.uncompressed}/${outfiles.all.js.filename}.js" force="no">
+		<concat destfile="${outdirs.uncompressed}/${outfiles.all.js.filename}" force="no">
 			<filelist dir="${outdirs.uncompressed}" files="${outfiles.jquery.js.filename},${outfiles.ext.js.filename},${outfiles.deps.js.filename},${outfiles.core.js.filename}" />
 		</concat>
 	</target>
@@ -298,36 +301,36 @@
 	
 	<!-- Compress the JS Files  -->
 	<target name="compress-js" depends="preparecompressed">
-		<!-- Compress Aloha jQuery File -->
+		<!-- Compress jQuery File -->
 		<antcall target="yuijs">
 			<param name="infile" value="${outdirs.uncompressed}/${outfiles.jquery.js.filename}"/>
 			<param name="outfile" value="${outdirs.compressed}/${outfiles.jquery.js.filename}"/>
 		</antcall>
 		
-		<!-- Compress Aloha EXT File -->
+		<!-- Compress EXT File -->
 		<antcall target="yuijs">
 			<param name="infile" value="${outdirs.uncompressed}/${outfiles.ext.js.filename}"/>
 			<param name="outfile" value="${outdirs.compressed}/${outfiles.ext.js.filename}"/>
 		</antcall>
 		
-		<!-- Compress Aloha Deps File -->
+		<!-- Compress Deps File -->
 		<antcall target="closurejs">
 			<param name="infile" value="${outdirs.uncompressed}/${outfiles.deps.js.filename}"/>
 			<param name="outfile" value="${outdirs.compressed}/${outfiles.deps.js.filename}"/>
 		</antcall>
 		
-		<!-- Compress Aloha Core File -->
+		<!-- Compress Core File -->
 		<antcall target="closurejs">
 			<param name="infile" value="${outdirs.uncompressed}/${outfiles.core.js.filename}"/>
 			<param name="outfile" value="${outdirs.compressed}/${outfiles.core.js.filename}"/>
 		</antcall>
 		
-		<!-- Compress Aloha Combined File -->
-		<concat destfile="${outdirs.compressed}/${outfiles.all.js.filename}.js" force="no">
+		<!-- Compress Combined File -->
+		<concat destfile="${outdirs.compressed}/${outfiles.all.js.filename}" force="no">
 			<filelist dir="${outdirs.compressed}" files="${outfiles.jquery.js.filename},${outfiles.ext.js.filename},${outfiles.deps.js.filename},${outfiles.core.js.filename}" />
 		</concat>
 		
-		<!-- Compress Aloha Plugins Files -->
+		<!-- Compress Plugins Files -->
 		<apply executable="${java}" output="${outdir}/closure.log" dir="${outdirs.compressed}/${pluginsdir}"  append="true" failonerror="true" relative="true" addsourcefile="true" verbose="true" parallel="false" skipemptyfilesets="true">
 			<arg value="-cp" /> 
 			<arg pathref="minify.classpath" /> 
@@ -344,7 +347,7 @@
 			<mapper type="glob" from="*.js" to="*.min.js"/>
 		</apply>
 
-		<!-- Adjust Aloha Plugins Files (remove .min) -->
+		<!-- Adjust Plugins Files (remove .min) -->
 		<move todir="${outdirs.compressed}/${pluginsdir}" includeemptydirs="false">
 			<fileset dir="${outdirs.compressed}/${pluginsdir}">
 				<exclude name="**/examples/**"/>
@@ -353,7 +356,7 @@
 			<mapper type="glob" from="*.min.js" to="*.js"/>
 		</move>
 		
-		<!-- Clean Aloha Plugins Files (as the .min.js files may not have been entirely removed) -->
+		<!-- Clean Plugins Files (as the .min.js files may not have been entirely removed) -->
 		<delete>
 			<fileset dir="${outdirs.compressed}/${pluginsdir}">
 				<exclude name="**/examples/**"/>
@@ -364,7 +367,7 @@
 	
 	<!-- Compress the CSS Files -->
 	<target name="compress-css" depends="preparecompressed">
-		<!-- Compress Aloha Plugins Files -->
+		<!-- Compress Plugins Files -->
 		<apply executable="${java}" output="${outdir}/yui.log" dir="${outdirs.compressed}"  append="true" failonerror="true" relative="true" addsourcefile="true" verbose="true" parallel="false" skipemptyfilesets="true">
 			<arg value="-cp" /> 
 			<arg pathref="minify.classpath" /> 
@@ -407,47 +410,34 @@
 		<copy todir="${outdirs.compressed}" file="${packagedir}/VERSION.txt"/>
 		<copy todir="${outdirs.uncompressed}" file="${packagedir}/VERSION.txt"/>
 		
-		<!-- copy the index file to the output and replace the versions -->
-		<copy todir="${packagedir}" file="${srcdir}/index.html"/>
-		<copy todir="${packagedir}" file="${srcdir}/bg.png"/>
-		<copy todir="${packagedir}" file="${srcdir}/logo.gif"/>
-		<replace file="${packagedir}/index.html" token="##ALOHABUILT##" value="${now}"/>
-		<replace file="${packagedir}/index.html" token="##ALOHAVERSION##" value="${version}"/>
-
-		<!--
-			build the examples
-		-->
-		<mkdir dir="${outdirs.examples}"/>
-		<copy todir="${outdirs.examples}">
-			<fileset dir="${srcdir.examples}" />
-		</copy>
-		<!-- copy aloha to the examples -->
-		<mkdir dir="${outdirs.examples}/aloha" />
-		<copy todir="${outdirs.examples}/aloha">
-			<fileset dir="${outdirs.compressed}" />
-		</copy>
-		<!-- fix the include of the main file -->
+		<!-- Update the Main Include in the Example Files -->
 		<replaceregexp flags="g" byline="true">
-			<fileset dir="${packagedir}/examples">
-	            <include name="**/*.html" />
+			<fileset dir="${packagedir}">
+				<include name="*/examples/*.html"/>
+				<include name="*/plugins/*/*.html"/>
 			</fileset>
-			<regexp pattern="(&lt;script.*?src=&quot;)../core/include.js(&quot;.*)"/>
-			<substitution expression="\1${outfiles.all.js.filename}\2"/>
+			<regexp pattern="(&lt;script.*?src=&quot;(../)+)core/include.js(&quot;.*)"/>
+			<substitution expression="\1${outfiles.all.js.filename}\3"/>
 		</replaceregexp>
-		<!-- fix the includes of the plugins -->
+		
+		<!-- Update the Plugin Includes in the Example Files -->
 		<replaceregexp flags="g" byline="true">
-			<fileset dir="${packagedir}/examples">
-	            <include name="**/*.html" />
+			<fileset dir="${packagedir}">
+				<include name="*/examples/*.html"/>
+				<include name="*/plugins/*/*.html"/>
 			</fileset>
-			<regexp pattern="(&lt;script.*?src=&quot;)../plugins/(.*?&quot;.*)"/>
-			<substitution expression="\1aloha/plugins/\2"/>
+			<regexp pattern="(&lt;script.*?src=&quot;(../)+)plugins/(.*?&quot;.*)"/>
+			<substitution expression="\1plugins/\3"/>
 		</replaceregexp>
+		
+		<!-- Update the GENTICS_Aloha_base in the Exampe Files -->
 		<replaceregexp flags="g" byline="true">
-			<fileset dir="${packagedir}/examples">
-	            <include name="**/*.html" />
+			<fileset dir="${packagedir}">
+				<include name="*/examples/*.html"/>
+				<include name="*/plugins/*/*.html"/>
 			</fileset>
-			<regexp pattern="&lt;script&gt;GENTICS_Aloha_base.*&lt;/script&gt;"/>
-			<substitution expression=""/>
+			<regexp pattern="(&lt;script&gt;)GENTICS_Aloha_base[^']+'(.*)['].*(&lt;/script&gt;)"/>
+			<substitution expression="\1GENTICS_Aloha_base = '\2';\3"/>
 		</replaceregexp>
 	</target>
 
