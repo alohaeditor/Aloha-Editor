@@ -17,15 +17,15 @@
 *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-if (typeof GENTICS == 'undefined' || !GENTICS) {
+if (typeof GENTICS !== 'object') {
 	var GENTICS = {};
 }
 
-if (typeof GENTICS.Utils == 'undefined' || !GENTICS.Utils) {
+if (typeof GENTICS.Utils !== 'object') {
 	GENTICS.Utils = {};
 }
 
-if (typeof GENTICS.Utils.Dom == 'undefined' || !GENTICS.Utils.Dom) {
+if (typeof GENTICS.Utils.Dom !== 'function') {
 	/**
 	 * @namespace GENTICS.Utils
 	 * @class Dom provides methods to get information about the DOM and to manipulate it

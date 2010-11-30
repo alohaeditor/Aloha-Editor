@@ -18,8 +18,7 @@
 		/* load stylsheets */
 		var header = document.getElementsByTagName("head")[0];
 		header.appendChild(cssElement(base + 'deps/extjs/resources/css/ext-all.css?v=' + GENTICS.Aloha.version));
-		header.appendChild(cssElement(base + 'deps/extjs/resources/css/xtheme-gray.css?v=' + GENTICS.Aloha.version));
-		header.appendChild(cssElement(base + 'deps/prettyPhoto/resources/css/prettyPhoto.css?v=' + GENTICS.Aloha.version));		header.appendChild(cssElement(base + 'css/aloha.css?v=' + GENTICS.Aloha.version));
+		header.appendChild(cssElement(base + 'deps/extjs/resources/css/xtheme-gray.css?v=' + GENTICS.Aloha.version));		header.appendChild(cssElement(base + 'deps/prettyPhoto/resources/css/prettyPhoto.css?v=' + GENTICS.Aloha.version));		header.appendChild(cssElement(base + 'css/aloha.css?v=' + GENTICS.Aloha.version));
 	}
 
 })(window);

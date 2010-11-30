@@ -29,7 +29,7 @@
 	<property name="includes.jquery.js.filename" 	value="jquery-js.txt"/>
 	<property name="includes.jquery.css.filename" 	value="jquery-css.txt"/>
 	<property name="includes.ext.js.filename" 		value="ext-js.txt"/>
-	<property name="includes.ext.css.filename" 		value="et-css.txt"/>
+	<property name="includes.ext.css.filename" 		value="ext-css.txt"/>
 	
 	<!-- Define the files for generation -->
 	<property name="outfiles.core.js.filename" 		value="${filename}-core.js"/>
