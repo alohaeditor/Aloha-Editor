@@ -33,15 +33,10 @@
 	
 	<!-- Define the files for generation -->
 	<property name="outfiles.core.js.filename" 		value="${filename}-core.js"/>
-	<property name="outfiles.core.css.filename" 	value="${filename}-core.css"/>
 	<property name="outfiles.deps.js.filename" 		value="${filename}-deps.js"/>
-	<property name="outfiles.deps.css.filename" 	value="${filename}-deps.css"/>
 	<property name="outfiles.ext.js.filename" 		value="${filename}-ext.js"/>
-	<property name="outfiles.ext.css.filename" 		value="${filename}-ext.css"/>
 	<property name="outfiles.jquery.js.filename" 	value="${filename}-jquery.js"/>
-	<property name="outfiles.jquery.css.filename" 	value="${filename}-jquery.css"/>
 	<property name="outfiles.all.js.filename" 		value="${filename}.js"/>
-	<property name="outfiles.all.css.filename" 		value="${filename}.css"/>
 	
 	<!-- Define the java executable used for compilers -->
 	<property name="java" value="${java.home}${file.separator}bin${file.separator}java" />
@@ -105,8 +100,10 @@
 		</java>
 	</target>
 	
-	<!-- Create the include.js file - This is used for dev purposes, not production purposes, so as such; IT IS STILL NEEDED -->
-	<target name="build-dev-include" depends="makedirs">
+	
+	<!-- Update the include.js and css.js files - they are used for dev purposes -->
+	<target name="build-dev-include" depends="build-include" />
+	<target name="build-include" depends="makedirs">
 		<!-- Load in the Regular Expression Replaces -->
 		<loadfile property="dev.includejs.subst" srcfile="deps/includejs-substitution.txt"/>
 		<loadfile property="dev.includecss.subst" srcfile="deps/includecss-substitution.txt"/>
@@ -155,6 +152,51 @@
 			<fileset file="deps/includecss-header.txt"/>
 			<filelist dir="${outdir}" files="${includes.jquery.css.filename},${includes.ext.css.filename},${includes.deps.css.filename},${includes.core.css.filename}"></filelist>
 			<fileset file="deps/includecss-footer.txt"/>
+		</concat>
+	</target>
+	
+	<!-- Update the Testloader with the latest files -->
+	<!-- Balupton votes for this to be deprecated and removed... -->
+	<target name="build-testloader">
+		<!-- Load in the Regular Expression Replaces -->
+		<loadfile property="testloader.includejs.subst" srcfile="${testdir}includejs-substitution.txt"/>
+		<loadfile property="testloader.includecss.subst" srcfile="${testdir}includecss-substitution.txt"/>
+		
+		<!-- The jQuery JS -->
+		<copy file="${includesdir}/${includes.jquery.js.filename}" todir="${outdir}" overwrite="true"/>
+		<replaceregexp byline="true" file="${outdir}/${includes.jquery.js.filename}" match="(.+)" replace="${testloader.includejs.subst}"/>
+		
+		<!-- The jQuery CSS -->
+		<copy file="${includesdir}/${includes.jquery.css.filename}" todir="${outdir}" overwrite="true"/>
+		<replaceregexp byline="true" file="${outdir}/${includes.jquery.css.filename}" match="(.+)" replace="${testloader.includecss.subst}"/>
+		
+		<!-- The EXT JS -->
+		<copy file="${includesdir}/${includes.ext.js.filename}" todir="${outdir}" overwrite="true"/>
+		<replaceregexp byline="true" file="${outdir}/${includes.ext.js.filename}" match="(.+)" replace="${testloader.includejs.subst}"/>
+		
+		<!-- The EXT CSS -->
+		<copy file="${includesdir}/${includes.ext.css.filename}" todir="${outdir}" overwrite="true"/>
+		<replaceregexp byline="true" file="${outdir}/${includes.ext.css.filename}" match="(.+)" replace="${testloader.includecss.subst}"/>
+
+		<!-- The Deps JS -->
+		<copy file="${includesdir}/${includes.deps.js.filename}" todir="${outdir}" overwrite="true"/>
+		<replaceregexp byline="true" file="${outdir}/${includes.deps.js.filename}" match="(.+)" replace="${testloader.includejs.subst}"/>
+
+		<!-- The Deps CSS -->
+		<copy file="${includesdir}/${includes.deps.css.filename}" todir="${outdir}" overwrite="true"/>
+		<replaceregexp byline="true" file="${outdir}/${includes.deps.css.filename}" match="(.+)" replace="${testloader.includecss.subst}"/>
+		
+		<!-- The Core JS -->
+		<copy file="${includesdir}/${includes.core.js.filename}" todir="${outdir}" overwrite="true"/>
+		<replaceregexp byline="true" file="${outdir}/${includes.core.js.filename}" match="(.+)" replace="${testloader.includejs.subst}"/>
+
+		<!-- The Core CSS -->
+		<copy file="${includesdir}/${includes.core.css.filename}" todir="${outdir}" overwrite="true"/>
+		<replaceregexp byline="true" file="${outdir}/${includes.core.css.filename}" match="(.+)" replace="${testloader.includecss.subst}"/>
+		
+		<!-- Merge Files -->
+		<concat destfile="${testdir}testloader.html" force="true">
+			<filelist dir="${outdir}" files="${includes.jquery.css.filename},${includes.ext.css.filename},${includes.deps.css.filename},${includes.core.css.filename},${includes.jquery.js.filename},${includes.ext.js.filename},${includes.deps.js.filename},${includes.core.js.filename}"></filelist>
 		</concat>
 	</target>
 	
@@ -241,49 +283,8 @@
 		<replace file="${outdirs.uncompressed}/${outfiles.core.js.filename}" token="##ALOHAVERSION##" value="${version}"/>
 		
 		<!-- Create a Combined File -->
-		<concat destfile="${outdirs.uncompressed}/${filename}.js" force="no">
+		<concat destfile="${outdirs.uncompressed}/${outfiles.all.js.filename}.js" force="no">
 			<filelist dir="${outdirs.uncompressed}" files="${outfiles.jquery.js.filename},${outfiles.ext.js.filename},${outfiles.deps.js.filename},${outfiles.core.js.filename}" />
-		</concat>
-	</target>
-	
-	<!-- Combine CSS Files (deprecated) -->
-	<target name="combine-css" depends="prepareuncompressed">
-		<!-- Load the Core File List -->
-		<antcall target="prepare_includes">
-			<param name="includefile" value="${includes.core.css.filename}"/>
-		</antcall>
-		<loadfile property="includes.core.css.list" srcfile="${outdir}/${includes.core.css.filename}"/>
-		
-		<!-- Load the Deps File List -->
-		<antcall target="prepare_includes">
-			<param name="includefile" value="${includes.deps.css.filename}"/>
-		</antcall>
-		<loadfile property="includes.deps.css.list" srcfile="${outdir}/${includes.deps.css.filename}"/>
-		
-		<!-- 
-			Create the Uncompressed Files
-		-->
-		
-		<!-- Generate Aloha Core File -->
-		<concat destfile="${outdirs.uncompressed}/${outfiles.core.css.filename}" force="no">
-			<filelist dir="${srcdir}" files="${includes.core.css.list}"/>
-		</concat>
-		
-		<!-- Generate Aloha Deps File -->
-		<concat destfile="${outdirs.uncompressed}/${outfiles.deps.css.filename}" force="no">
-			<filelist dir="${srcdir}" files="${includes.deps.css.list}"/>
-		</concat>
-		
-		<!-- 
-			Create the Combined File
-		-->
-		
-		<!-- Find & Replace GENTICS.Aloha.version inside the Aloha Core file with the current build version -->
-		<replace file="${outdirs.uncompressed}/${outfiles.core.css.filename}" token="##ALOHAVERSION##" value="${version}"/>
-		
-		<!-- Create a Combined File -->
-		<concat destfile="${outdirs.uncompressed}/${filename}.css" force="no">
-			<filelist dir="${outdirs.uncompressed}" files="${outfiles.deps.css.filename},${outfiles.core.css.filename}" />
 		</concat>
 	</target>
 	
@@ -322,7 +323,7 @@
 		</antcall>
 		
 		<!-- Compress Aloha Combined File -->
-		<concat destfile="${outdirs.compressed}/${filename}.js" force="no">
+		<concat destfile="${outdirs.compressed}/${outfiles.all.js.filename}.js" force="no">
 			<filelist dir="${outdirs.compressed}" files="${outfiles.jquery.js.filename},${outfiles.ext.js.filename},${outfiles.deps.js.filename},${outfiles.core.js.filename}" />
 		</concat>
 		
@@ -382,6 +383,13 @@
 	
 	<!-- Adjust -->
 	<target name="adjust">
+		<!-- Remove the source include list files as we don't need them anymore -->
+		<delete>
+			<fileset dir="${outdir}">
+				<include name="*.txt"/>
+			</fileset>
+		</delete>
+		
 		<!-- Remove Javascript Files from the various folders (as we just combined them) -->
 		<delete>
 			<fileset dir="${outdirs.uncompressed}/deps">
@@ -424,7 +432,7 @@
 	            <include name="**/*.html" />
 			</fileset>
 			<regexp pattern="(&lt;script.*?src=&quot;)../core/include.js(&quot;.*)"/>
-			<substitution expression="\1aloha/aloha.js\2"/>
+			<substitution expression="\1${outfiles.all.js.filename}\2"/>
 		</replaceregexp>
 		<!-- fix the includes of the plugins -->
 		<replaceregexp flags="g" byline="true">
@@ -450,6 +458,6 @@
 	</target>
 	
 	<!-- Build all -->
-	<target name="build" depends="clean,combine-js,compress-js,compress-css" />
+	<target name="build" depends="clean,combine-js,compress-js,compress-css,build-include,build-testloader" />
 	<target name="all" depends="build,adjust,package" />
 </project>
