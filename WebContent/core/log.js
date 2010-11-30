@@ -1,8 +1,20 @@
 /*!
-* Aloha Editor
-* Author & Copyright (c) 2010 Gentics Software GmbH
-* aloha-sales@gentics.com
-* Licensed unter the terms of http://www.aloha-editor.com/license.html
+*   This file is part of Aloha Editor
+*   Author & Copyright (c) 2010 Gentics Software GmbH, aloha@gentics.com
+*   Licensed unter the terms of http://www.aloha-editor.com/license.html
+*//*
+*	Aloha Editor is free software: you can redistribute it and/or modify
+*   it under the terms of the GNU Affero General Public License as published by
+*   the Free Software Foundation, either version 3 of the License, or
+*   (at your option) any later version.*
+*
+*   Aloha Editor is distributed in the hope that it will be useful,
+*   but WITHOUT ANY WARRANTY; without even the implied warranty of
+*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+*   GNU Affero General Public License for more details.
+*
+*   You should have received a copy of the GNU Affero General Public License
+*   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 /**
  * This is the aloha Log
@@ -189,13 +201,13 @@ GENTICS.Aloha.Log.prototype.isDebugEnabled = function() {
  * @hide
  */
 GENTICS.Aloha.Log.prototype.addToLogHistory = function(entry) {
-	// when maxEntries is set to something illegal, we do nothing (log history is disabled)
-	if (GENTICS.Aloha.settings.logHistory.maxEntries <= 0) {
-		return;
-	}
-
-	// check whether the level is one we like to have logged
-	if (!GENTICS.Aloha.settings.logHistory.levels[entry.level]) {
+	
+	if (
+		// when maxEntries is set to something illegal, we do nothing (log history is disabled)
+		GENTICS.Aloha.settings.logHistory.maxEntries <= 0
+		// check whether the level is one we like to have logged
+		|| !GENTICS.Aloha.settings.logHistory.levels[entry.level]
+	) {
 		return;
 	}
 
@@ -238,7 +250,7 @@ GENTICS.Aloha.Log.prototype.getLogHistory = function() {
  * @hide
  */
 GENTICS.Aloha.Log.prototype.flushLogHistory = function() {
-	this.logHistory = new Array();
+	this.logHistory = [];
 	this.highWaterMarkReached = false;
 };
 

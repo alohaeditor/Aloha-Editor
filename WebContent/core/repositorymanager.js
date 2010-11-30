@@ -1,8 +1,20 @@
 /*!
-* Aloha Editor
-* Author & Copyright (c) 2010 Gentics Software GmbH
-* aloha-sales@gentics.com
-* Licensed unter the terms of http://www.aloha-editor.com/license.html
+*   This file is part of Aloha Editor
+*   Author & Copyright (c) 2010 Gentics Software GmbH, aloha@gentics.com
+*   Licensed unter the terms of http://www.aloha-editor.com/license.html
+*//*
+*	Aloha Editor is free software: you can redistribute it and/or modify
+*   it under the terms of the GNU Affero General Public License as published by
+*   the Free Software Foundation, either version 3 of the License, or
+*   (at your option) any later version.*
+*
+*   Aloha Editor is distributed in the hope that it will be useful,
+*   but WITHOUT ANY WARRANTY; without even the implied warranty of
+*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+*   GNU Affero General Public License for more details.
+*
+*   You should have received a copy of the GNU Affero General Public License
+*   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 /**
  * Repository Manager
@@ -11,7 +23,7 @@
  * @singleton
  */
 GENTICS.Aloha.RepositoryManager = function() {
-	this.repositories = new Array();
+	this.repositories = [];
 };
 
 
@@ -321,8 +333,10 @@ GENTICS.Aloha.RepositoryManager.prototype.makeClean = function(obj) {
 GENTICS.Aloha.RepositoryManager.prototype.markObject = function (obj, item) {
 	var repository = this.getRepository(item.repositoryId);
 	if ( repository ) {
-		jQuery(obj).attr('data-GENTICS-aloha-repository', item.repositoryId);
-		jQuery(obj).attr('data-GENTICS-aloha-object-id', item.id);
+		jQuery(obj).attr({
+			'data-GENTICS-aloha-repository': item.repositoryId,
+			'data-GENTICS-aloha-object-id': item.id
+		});
 		repository.markObject(obj, item);
 	} else {
 		GENTICS.Aloha.Log.error(this, "Trying to apply a repository { " + item.name + " } to an object, but item has no repositoryId.");

@@ -1,11 +1,24 @@
 /*!
-* Aloha Editor
-* Author & Copyright (c) 2010 Gentics Software GmbH
-* aloha-sales@gentics.com
-* Licensed unter the terms of http://www.aloha-editor.com/license.html
+*   This file is part of Aloha Editor
+*   Author & Copyright (c) 2010 Gentics Software GmbH, aloha@gentics.com
+*   Licensed unter the terms of http://www.aloha-editor.com/license.html
+*//*
+*	Aloha Editor is free software: you can redistribute it and/or modify
+*   it under the terms of the GNU Affero General Public License as published by
+*   the Free Software Foundation, either version 3 of the License, or
+*   (at your option) any later version.*
+*
+*   Aloha Editor is distributed in the hope that it will be useful,
+*   but WITHOUT ANY WARRANTY; without even the implied warranty of
+*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+*   GNU Affero General Public License for more details.
+*
+*   You should have received a copy of the GNU Affero General Public License
+*   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+
 if (typeof GENTICS == 'undefined' || !GENTICS) {
-	/*!
+	/*
 	 * The GENTICS global namespace object. If GENTICS is already defined, the
 	 * existing GENTICS object will not be overwritten so that defined
 	 * namespaces are preserved.
@@ -23,7 +36,7 @@ GENTICS.Aloha = function () {};
 
 // determine path of aloha for configuration
 GENTICS.Aloha.setAutobase = function () {
-	var scriptTags = document.getElementsByTagName('script');
+	var scriptTags = jQuery('script');
 	var path = scriptTags[scriptTags.length-1].src.split('?')[0]; // use last script tag (others are not yet parsed), remove any ?query
 	path = path.split('/');
 	var substitute = 1;
@@ -43,7 +56,7 @@ GENTICS.Aloha.prototype.version='##ALOHAVERSION##';
  * @property
  * @type Array
  */
-GENTICS.Aloha.prototype.editables = new Array();
+GENTICS.Aloha.prototype.editables = [];
 
 /**
  * The currently active editable is referenced here
@@ -86,7 +99,7 @@ GENTICS.Aloha.prototype.OSName = "Unknown";
  * @type Array
  * @hide
  */
-GENTICS.Aloha.prototype.readyCallbacks = new Array();
+GENTICS.Aloha.prototype.readyCallbacks = [];
 
 /**
  * Initialize Aloha
@@ -348,7 +361,7 @@ GENTICS.Aloha.prototype.initI18n = function() {
 		var acceptLanguage = [];
 		// Split the string from ACCEPT-LANGUAGE
 	    var preferredLanugage = this.settings.i18n.acceptLanguage.split(",");
-	    for(i = 0; i < preferredLanugage.length; i++){
+	    for(i = 0; i < preferredLanugage.length; i++) {
 	    	
 	    	// split language setting
 	    	var lang = preferredLanugage[i].split(";");
@@ -462,7 +475,7 @@ GENTICS.Aloha.prototype.loadI18nFile = function(fileUrl, component) {
 GENTICS.Aloha.prototype.parseI18nFile = function(data, component) {
 	data = data.replace(/\r/g, '');
 	var entries = data.split('\n');
-	var dictionary = new Object();
+	var dictionary = {};
 	for (var i = 0; i < entries.length; ++i) {
 		var entry = entries[i];
 		var equal = entry.indexOf('=');
@@ -634,29 +647,24 @@ GENTICS.Aloha.prototype.isModified = function () {
 GENTICS.Aloha = new GENTICS.Aloha();
 
 /**
- * TODO move to util
- * reimplementation of indexOf for current Microsoft Browsers
- * IE does not support indexOf() for Arrays
- * @param object to look for
- * @return index of obj in Array or -1 if not found
- * @hide
+/*
+ * mark jQuery as Aloha's own version. In case someone is loading another version of jQuery this can be used
+ * to detect and proclaim this problem 
  */
-if(!Array.indexOf){
-	Array.prototype.indexOf = function(obj){
-		for(var i=0; i<this.length; i++){
-		    if(this[i]===obj){
-		     return i;
-		    }
-	   	}
-	   	return -1;
-	};
-}
+jQuery.isAloha = true;
 
 /**
  * Initialize Aloha when the dom is ready and Ext is ready
  * @hide
  */
 jQuery(document).ready(function() {
+	// if there is no Aloha flag on jQuery, then jQuery has been overloaded
+	if (!jQuery.isAloha && window.console && console.error) {
+		console.error("Aloha ERROR: jQuery was included at least a second time after loading Aloha. " + 
+			"This will cause serious problems. You must not load other versions " +
+			"of jQuery with Aloha.");
+	}
+
 	if (Ext.isReady) {
 		GENTICS.Aloha.init();
 	} else {

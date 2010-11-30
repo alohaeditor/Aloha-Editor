@@ -1,12 +1,6 @@
-[submodule "WebContent/plugins/com.bal.aloha.plugins.Image"]
-	path = WebContent/plugins/com.bal.aloha.plugins.Image
-	url = git://github.com:balupton/Aloha-Image-Plugin.git
 [submodule "WebContent/plugins/com.gentics.aloha.plugins.HighlightEditables"]
 	path = WebContent/plugins/com.gentics.aloha.plugins.HighlightEditables
 	url = https://github.com/alohaeditor/Aloha-Plugin-HighlightEditables.git
-[submodule "WebContent/plugins/com.gentics.aloha.plugins.GCN"]
-	path = WebContent/plugins/com.gentics.aloha.plugins.GCN
-	url = https://github.com/alohaeditor/Aloha-Plugin-GCN.git
 [submodule "WebContent/plugins/com.gentics.aloha.plugins.Format"]
 	path = WebContent/plugins/com.gentics.aloha.plugins.Format
 	url = https://github.com/alohaeditor/Aloha-Plugin-Format.git
@@ -19,30 +13,15 @@
 [submodule "WebContent/plugins/com.gentics.aloha.plugins.Table"]
 	path = WebContent/plugins/com.gentics.aloha.plugins.Table
 	url = https://github.com/alohaeditor/Aloha-Plugin-Table.git
-[submodule "WebContent/plugins/com.gentics.aloha.plugins.Image"]
-	path = WebContent/plugins/com.gentics.aloha.plugins.Image
-	url = https://github.com/alohaeditor/Aloha-Plugin-Image.git
 [submodule "WebContent/plugins/com.example.aloha.plugins.Product"]
 	path = WebContent/plugins/com.example.aloha.plugins.Product
 	url = https://github.com/alohaeditor/Aloha-Plugin-Product.git
-[submodule "WebContent/plugins/com.gentics.aloha.plugins.Autotagging"]
-	path = WebContent/plugins/com.gentics.aloha.plugins.Autotagging
-	url = https://github.com/alohaeditor/Aloha-Plugin-Autotagging.git
-[submodule "WebContent/plugins/com.gentics.aloha.plugins.Collator"]
-	path = WebContent/plugins/com.gentics.aloha.plugins.Collator
-	url = https://github.com/alohaeditor/Aloha-Plugin-Collator.git
-[submodule "WebContent/plugins/com.gentics.aloha.plugins.Annotations"]
-	path = WebContent/plugins/com.gentics.aloha.plugins.Annotations
-	url = https://github.com/alohaeditor/Aloha-Plugin-Annotations.git
 [submodule "WebContent/plugins/com.gentics.aloha.plugins.TOC"]
 	path = WebContent/plugins/com.gentics.aloha.plugins.TOC
 	url = https://github.com/alohaeditor/Aloha-Plugin-TOC.git
 [submodule "WebContent/plugins/com.example.aloha.plugins.Save"]
 	path = WebContent/plugins/com.example.aloha.plugins.Save
 	url = https://github.com/alohaeditor/Aloha-Plugin-Save.git
-[submodule "WebContent/plugins/com.gentics.aloha.plugins.DragAndDropFiles"]
-	path = WebContent/plugins/com.gentics.aloha.plugins.DragAndDropFiles
-	url = https://github.com/alohaeditor/Aloha-Plugin-DragAndDropFiles.git
 [submodule "WebContent/plugins/com.gentics.aloha.plugins.Abbr"]
 	path = WebContent/plugins/com.gentics.aloha.plugins.Abbr
 	url = https://github.com/alohaeditor/Aloha-Plugin-Abbreviation.git

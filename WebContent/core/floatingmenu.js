@@ -1,8 +1,20 @@
 /*!
-* Aloha Editor
-* Author & Copyright (c) 2010 Gentics Software GmbH
-* aloha-sales@gentics.com
-* Licensed unter the terms of http://www.aloha-editor.com/license.html
+*   This file is part of Aloha Editor
+*   Author & Copyright (c) 2010 Gentics Software GmbH, aloha@gentics.com
+*   Licensed unter the terms of http://www.aloha-editor.com/license.html
+*//*
+*	Aloha Editor is free software: you can redistribute it and/or modify
+*   it under the terms of the GNU Affero General Public License as published by
+*   the Free Software Foundation, either version 3 of the License, or
+*   (at your option) any later version.*
+*
+*   Aloha Editor is distributed in the hope that it will be useful,
+*   but WITHOUT ANY WARRANTY; without even the implied warranty of
+*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+*   GNU Affero General Public License for more details.
+*
+*   You should have received a copy of the GNU Affero General Public License
+*   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 /**
  * Aloha's Floating Menu
@@ -39,7 +51,7 @@ GENTICS.Aloha.FloatingMenu.scopes = {
  * Array of tabs within the floatingmenu
  * @hide
  */
-GENTICS.Aloha.FloatingMenu.tabs = new Array();
+GENTICS.Aloha.FloatingMenu.tabs = [];
 
 /**
  * 'Map' of tabs (for easy access)
@@ -57,7 +69,7 @@ GENTICS.Aloha.FloatingMenu.initialized = false;
  * Array containing all buttons
  * @hide
  */
-GENTICS.Aloha.FloatingMenu.allButtons = new Array();
+GENTICS.Aloha.FloatingMenu.allButtons = [];
 
 /**
  * top part of the floatingmenu position
@@ -319,13 +331,14 @@ GENTICS.Aloha.FloatingMenu.generateComponent = function () {
  * @method
  */
 GENTICS.Aloha.FloatingMenu.refreshShadow = function () {
-	if (!this.panelBody) {
-		return;
+	if (this.panelBody) {
+		GENTICS.Aloha.FloatingMenu.shadow.css({
+			'top': this.top + 24, // 24px top offset to reflect tab bar height
+			'left': this.left,
+			'width': this.panelBody.width() + 'px',
+			'height': this.panelBody.height() + 'px'
+		});
 	}
-	GENTICS.Aloha.FloatingMenu.shadow.css('top', this.top + 24); // 24px top offset to reflect tab bar height
-	GENTICS.Aloha.FloatingMenu.shadow.css('left', this.left);
-	GENTICS.Aloha.FloatingMenu.shadow.width(this.panelBody.width());
-	GENTICS.Aloha.FloatingMenu.shadow.height(this.panelBody.height());
 };
 
 /**
@@ -338,8 +351,10 @@ GENTICS.Aloha.FloatingMenu.togglePin = function() {
 		el.removeClass('GENTICS_floatingmenu_pinned');
 		this.top = this.obj.offset().top;
 		
-		this.obj.css('top', this.top);
-		this.obj.css('position', 'absolute');
+		this.obj.css({
+			'top': this.top,
+			'position': 'absolute'
+		});
 
 		this.shadow.css('position', 'absolute');
 		this.refreshShadow();
@@ -349,10 +364,10 @@ GENTICS.Aloha.FloatingMenu.togglePin = function() {
 		el.addClass('GENTICS_floatingmenu_pinned');
 		this.top = this.obj.offset().top - this.window.scrollTop();
 		
-		// update position as preparation for fixed position 
-		this.obj.css('top', this.top);
-		// fix the floating menu in place
-		this.obj.css('position', 'fixed');
+		this.obj.css({
+			'top': this.top, // update position as preparation for fixed position 
+			'position': 'fixed' // fix the floating menu in place
+		});
 		
 		// do the same for the shadow
 		this.shadow.css('position', 'fixed');
@@ -624,7 +639,8 @@ GENTICS.Aloha.FloatingMenu.nextFloatTargetObj = function (obj, limitObj) {
  * @hide
  */
 GENTICS.Aloha.FloatingMenu.calcFloatTarget = function(range) {
-	if (!GENTICS.Aloha.activeEditable) {
+	// TODO in IE8 somteimes a broken range is handed to this function - investigate this 
+	if (!GENTICS.Aloha.activeEditable || typeof range.getCommonAncestorContainer == "undefined") {
 		return false;
 	}
 	
@@ -709,7 +725,7 @@ GENTICS.Aloha.FloatingMenu.floatTo = function(position) {
  */
 GENTICS.Aloha.FloatingMenu.Tab = function(label) {
 	this.label = label;
-	this.groups = new Array();
+	this.groups = [];
 	this.groupMap = {};
 	this.visible = true;
 };
@@ -791,7 +807,7 @@ GENTICS.Aloha.FloatingMenu.Tab.prototype.doLayout = function() {
  * @constructor
  */
 GENTICS.Aloha.FloatingMenu.Group = function() {
-	this.buttons = new Array();
+	this.buttons = [];
 };
 
 /**
@@ -811,7 +827,7 @@ GENTICS.Aloha.FloatingMenu.Group.prototype.getExtComponent = function () {
 	var that = this;
 
 	if (typeof this.extButtonGroup == 'undefined') {
-		var items = new Array();
+		var items = [];
 		var buttonCount = 0;
 
 		// add all buttons
