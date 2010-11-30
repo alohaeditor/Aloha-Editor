@@ -415,6 +415,7 @@
 			<fileset dir="${packagedir}">
 				<include name="*/examples/*.html"/>
 				<include name="*/plugins/*/*.html"/>
+				<include name="*/plugins/*/examples/*.html"/>
 			</fileset>
 			<regexp pattern="(&lt;script.*?src=&quot;(../)+)core/include.js(&quot;.*)"/>
 			<substitution expression="\1${outfiles.all.js.filename}\3"/>
@@ -425,6 +426,7 @@
 			<fileset dir="${packagedir}">
 				<include name="*/examples/*.html"/>
 				<include name="*/plugins/*/*.html"/>
+				<include name="*/plugins/*/examples/*.html"/>
 			</fileset>
 			<regexp pattern="(&lt;script.*?src=&quot;(../)+)plugins/(.*?&quot;.*)"/>
 			<substitution expression="\1plugins/\3"/>
@@ -435,6 +437,7 @@
 			<fileset dir="${packagedir}">
 				<include name="*/examples/*.html"/>
 				<include name="*/plugins/*/*.html"/>
+				<include name="*/plugins/*/examples/*.html"/>
 			</fileset>
 			<regexp pattern="(&lt;script&gt;)GENTICS_Aloha_base[^']+'(.*)['].*(&lt;/script&gt;)"/>
 			<substitution expression="\1GENTICS_Aloha_base = '\2';\3"/>
