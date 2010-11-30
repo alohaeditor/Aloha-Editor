@@ -1,5 +1,5 @@
 /*!
- * Ext JS Library 3.2.1
+ * Ext JS Library 3.2.2
  * Copyright(c) 2006-2010 Ext JS, Inc.
  * licensing@extjs.com
  * http://www.extjs.com/license
@@ -964,7 +964,7 @@ Ext.list.ListView = Ext.extend(Ext.DataView, {
     /*
      * IE has issues when setting percentage based widths to 100%. Default to 99.
      */
-    maxWidth: Ext.isIE ? 99 : 100,
+    maxColumnWidth: Ext.isIE ? 99 : 100,
 
     initComponent : function(){
         if(this.columnResize){
@@ -1029,8 +1029,8 @@ Ext.list.ListView = Ext.extend(Ext.DataView, {
         // auto calculate missing column widths
         if(colsWithWidth < len){
             var remaining = len - colsWithWidth;
-            if(allocatedWidth < this.maxWidth){
-                var perCol = ((this.maxWidth-allocatedWidth) / remaining)/100;
+            if(allocatedWidth < this.maxColumnWidth){
+                var perCol = ((this.maxColumnWidth-allocatedWidth) / remaining)/100;
                 for(var j = 0; j < len; j++){
                     var c = cs[j];
                     if(!c.width){
@@ -1394,7 +1394,7 @@ Ext.list.ColumnResizer = Ext.extend(Ext.util.Observable, {
             len = cs.length,
             w = this.view.innerHd.getWidth(),
             minPct = this.minPct * 100,
-            pct = Math.ceil((nw * vw.maxWidth) / w),
+            pct = Math.ceil((nw * vw.maxColumnWidth) / w),
             diff = (cs[index].width * 100) - pct,
             eachItem = Math.floor(diff / (len-1-index)),
             mod = diff - (eachItem * (len-1-index));

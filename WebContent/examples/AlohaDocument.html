@@ -9,6 +9,7 @@
 <script type="text/javascript" src="../plugins/com.gentics.aloha.plugins.Table/plugin.js"></script>
 <script type="text/javascript" src="../plugins/com.gentics.aloha.plugins.List/plugin.js"></script>
 <script type="text/javascript" src="../plugins/com.gentics.aloha.plugins.Link/plugin.js"></script>
+<script type="text/javascript" src="../plugins/com.gentics.aloha.plugins.Ribbon/plugin.js"></script>
 
 <link rel="stylesheet" href="AlohaDocument.css" />
 
@@ -17,7 +18,6 @@
 GENTICS.Aloha.settings = {
 	logLevels: {'error': true, 'warn': true, 'info': true, 'debug': true},
 	errorhandling : false,
-	ribbon: true,	
 	"i18n": {
 		// let the system detect the users language
 		//"acceptLanguage": '<?=$_SERVER['HTTP_ACCEPT_LANGUAGE']?>'
@@ -37,6 +37,9 @@ GENTICS.Aloha.settings = {
 		},
 	 	"com.gentics.aloha.plugins.Table": {
 			config: ['table']
+		},
+	 	"com.gentics.aloha.plugins.Ribbon": {
+			enable: true
 		}
   	}
 };

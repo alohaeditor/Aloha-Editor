@@ -1,5 +1,5 @@
 /*!
- * Ext JS Library 3.2.1
+ * Ext JS Library 3.2.2
  * Copyright(c) 2006-2010 Ext JS, Inc.
  * licensing@extjs.com
  * http://www.extjs.com/license
@@ -1096,15 +1096,13 @@ sortInfo: {
     },
 
     /**
-     * @property isDestroyed
-     * @type Boolean
+     * @property {Boolean} isDestroyed
      * True if the store has been destroyed already. Read only
      */
     isDestroyed: false,
 
     /**
-     * @property hasMultiSort
-     * @type Boolean
+     * @property {Boolean} hasMultiSort
      * True if this store is currently sorted by more than one field/direction combination.
      */
     hasMultiSort: false,
@@ -1290,7 +1288,7 @@ sortInfo: {
              * @event clear
              * Fires when the data cache has been cleared.
              * @param {Store} this
-             * @param {Record[]} The records that were cleared.
+             * @param {Record[]} records The records that were cleared.
              */
             'clear',
             /**
@@ -2327,9 +2325,9 @@ myStore.reload(lastOptions);
         }
 
         /**
+         * Object containing overall sort direction and an ordered array of sorter configs used when sorting on multiple fields
          * @property multiSortInfo
          * @type Object
-         * Object containing overall sort direction and an ordered array of sorter configs used when sorting on multiple fields
          */
         this.multiSortInfo = {
             sorters  : sorters,
