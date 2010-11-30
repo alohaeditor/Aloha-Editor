@@ -142,7 +142,8 @@
 		<!-- Merge JS Files into Autoloader -->
 		<concat destfile="${srcdir}/core/include.js" force="true">
 			<fileset file="deps/includejs-header.txt"/>
-			<filelist dir="${outdir}" files="${includes.jquery.js.filename},${includes.ext.js.filename},${includes.deps.js.filename},${includes.core.js.filename}"></filelist>
+			<!-- We delibrately exclude jquery from the list of files below, as jquery we manually auto include in the includejs-header.txt -->
+			<filelist dir="${outdir}" files="${includes.ext.js.filename},${includes.deps.js.filename},${includes.core.js.filename}"></filelist>
 			<fileset file="deps/includejs-footer.txt"/>
 		</concat>
 
