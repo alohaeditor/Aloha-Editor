@@ -9,9 +9,9 @@
 	
 	/* Check if jQuery Exists, if not include it */
 	if (typeof window.jQuery === 'undefined') {
-		document.write('<script type="text/javascript" src="'+window.GENTICS_Aloha_base+'deps/jquery-1.4.2.js"></script>');
+		document.write('<script type="text/javascript" src="'+window.GENTICS_Aloha_base+'deps/jquery-1.4.4.js"></script>');
 	}
-	document.write('<script type="text/javascript" src="'+window.GENTICS_Aloha_base+'deps/jquery-1.4.4.js"></script>');document.write('<script type="text/javascript" src="'+window.GENTICS_Aloha_base+'deps/extjs/ext-jquery-adapter.js"></script>');
+	document.write('<script type="text/javascript" src="'+window.GENTICS_Aloha_base+'deps/extjs/ext-jquery-adapter.js"></script>');
 document.write('<script type="text/javascript" src="'+window.GENTICS_Aloha_base+'deps/extjs/ext-foundation.js"></script>');
 document.write('<script type="text/javascript" src="'+window.GENTICS_Aloha_base+'deps/extjs/cmp-foundation.js"></script>');
 document.write('<script type="text/javascript" src="'+window.GENTICS_Aloha_base+'deps/extjs/data-foundation.js"></script>');
