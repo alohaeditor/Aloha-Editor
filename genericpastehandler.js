@@ -105,6 +105,9 @@ GENTICS.Aloha.PastePlugin.GenericPasteHandler.unwrapTags = function(jqPasteDiv) 
  * @param jqPasteDiv
  */
 GENTICS.Aloha.PastePlugin.GenericPasteHandler.removeStyles = function(jqPasteDiv) {
+	// completely remove style tags
+	jqPasteDiv.find('style').remove();
+
 	// remove style attributes and classes
 	jqPasteDiv.find('*').each(function() {
 		jQuery(this).removeAttr('style').removeClass();
