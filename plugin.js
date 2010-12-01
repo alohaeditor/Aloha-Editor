@@ -93,8 +93,7 @@ GENTICS.Aloha.PastePlugin.getPastedContent = function() {
 		var pasteDivContents = this.pasteDiv.contents();
 		for (var i = pasteDivContents.length - 1; i >= 0; --i) {
 			// insert the elements
-			// TODO when inserting is not possible, eventually unwrap the contents and insert that?
-			GENTICS.Utils.Dom.insertIntoDOM(jQuery(pasteDivContents.get(i)), that.currentRange, that.currentEditable.obj, false);
+			that.pasteElement(pasteDivContents.get(i));
 		}
 
 		// activate and focus the editable
@@ -114,6 +113,31 @@ GENTICS.Aloha.PastePlugin.getPastedContent = function() {
 
 	// empty the pasteDiv
 	this.pasteDiv.text('');
+};
+
+/**
+ * Paste the given object into the current selection.
+ * If inserting fails (because the object is not allowed to be inserted), unwrap the contents and try with that.
+ * @param object object to be pasted
+ */
+GENTICS.Aloha.PastePlugin.pasteElement = function(object) {
+	var jqObject = jQuery(object);
+	var that = this;
+	// try to insert the element into the DOM
+	if (!GENTICS.Utils.Dom.insertIntoDOM(jqObject, this.currentRange, this.currentEditable.obj, false)) {
+		// if that is not possible, we unwrap the content and insert every child element
+		var contents = jqObject.contents();
+
+		// when a block level element was unwrapped, we at least insert a break
+		if (GENTICS.Utils.Dom.isBlockLevelElement(object) || GENTICS.Utils.Dom.isListElement(object)) {
+			that.pasteElement(jQuery('<br/>').get(0));
+		}
+
+		// and now all children (starting from the back)
+		for (var i = contents.length - 1; i >= 0; --i) {
+			that.pasteElement(contents[i]);
+		}
+	}
 };
 
 /**

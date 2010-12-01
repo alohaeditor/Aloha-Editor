@@ -87,6 +87,8 @@ GENTICS.Aloha.PastePlugin.WordPasteHandler.transformListsFromWord = function (jq
 			jqElem.addClass(listElementClass);
 		} else if (jqElem.css('font-family').indexOf('Symbol') >= 0) {
 			jqElem.closest('p').addClass(listElementClass);
+		} else if (jqElem.css('font-family').indexOf('Wingdings') >= 0) {
+			jqElem.closest('p').addClass(listElementClass);
 		} else if (jqElem.css('mso-list') && jqElem.css('mso-list') != '') {
 			jqElem.closest('p').addClass(listElementClass);
 		}
@@ -110,7 +112,8 @@ GENTICS.Aloha.PastePlugin.WordPasteHandler.transformListsFromWord = function (jq
 			// a)
 			// I.
 			// i.
-			if (outerText.match(/^([0-9]{1,3}\.)|([0-9]{1,3}\)|([a-zA-Z]{1,5}\.)|([a-zA-Z]{1,5}\)))$/)) {
+			// o § (or any other single character)
+			if (outerText.match(/^([0-9]{1,3}\.)|([0-9]{1,3}\))|([a-zA-Z]{1,5}\.)|([a-zA-Z]{1,5}\))|(.)$/)) {
 				jqElem.closest('p').addClass(listElementClass);
 				jqElem.parent().parent().addClass(bulletClass);
 			}
@@ -233,99 +236,6 @@ GENTICS.Aloha.PastePlugin.WordPasteHandler.transformTitles = function(jqPasteDiv
 };
 
 /**
- * Transform tables which were pasted from word
- * @param jqPasteDiv
- */
-GENTICS.Aloha.PastePlugin.WordPasteHandler.transformTables = function(jqPasteDiv) {
-	// remove border, cellspacing, cellpadding from all tables
-	jqPasteDiv.find('table').each(function() {
-		jQuery(this).removeAttr('border').removeAttr('cellspacing').removeAttr('cellpadding');
-	});
-	// remove width, height and valign from all table cells
-	jqPasteDiv.find('td').each(function() {
-		jQuery(this).removeAttr('width').removeAttr('height').removeAttr('valign');
-	});
-};
-
-/**
- * Transform formattings
- * @param jqPasteDiv
- */
-GENTICS.Aloha.PastePlugin.WordPasteHandler.transformFormattings = function(jqPasteDiv) {
-	// find all formattings we will transform
-	jqPasteDiv.find('strong,em,s,u').each(function() {
-		if (this.nodeName.toLowerCase() == 'strong') {
-			// transform strong to b
-			GENTICS.Aloha.Markup.transformDomObject(jQuery(this), 'b');
-		} else if (this.nodeName.toLowerCase() == 'em') {
-			// transform em to i
-			GENTICS.Aloha.Markup.transformDomObject(jQuery(this), 'i');
-		} else if (this.nodeName.toLowerCase() == 's') {
-			// transform s to del
-			GENTICS.Aloha.Markup.transformDomObject(jQuery(this), 'del');
-		} else if (this.nodeName.toLowerCase() == 'u') {
-			// transform u?
-			jQuery(this).contents().unwrap();
-		}
-	});
-};
-
-/**
- * Remove all comments
- * @param jqPasteDiv
- */
-GENTICS.Aloha.PastePlugin.WordPasteHandler.removeComments = function(jqPasteDiv) {
-	// ok, remove all comments
-	jqPasteDiv.contents().each(function() {
-		if (this.nodeType == 8) {
-			jQuery(this).remove();
-		}
-	});
-};
-
-/**
- * Remove some unwanted tags from content pasted from word
- * @param jqPasteDiv
- */
-GENTICS.Aloha.PastePlugin.WordPasteHandler.unwrapTags = function(jqPasteDiv) {
-	// unwrap contents of span,font and div tags
-	jqPasteDiv.find('span,font,div').each(function() {
-		jQuery(this).contents().unwrap();
-	});
-};
-
-/**
- * Remove styles
- * @param jqPasteDiv
- */
-GENTICS.Aloha.PastePlugin.WordPasteHandler.removeStyles = function(jqPasteDiv) {
-	// remove style attributes and classes
-	jqPasteDiv.find('*').each(function() {
-		jQuery(this).removeAttr('style').removeClass();
-	});
-};
-
-/**
- * Remove all elements which are in different namespaces
- * @param jqPasteDiv
- */
-GENTICS.Aloha.PastePlugin.WordPasteHandler.removeNamespacedElements = function(jqPasteDiv) {
-	// get all elements
-	jqPasteDiv.find('*').each(function() {
-		// try to determine the namespace prefix ('prefix' works for W3C
-		// compliant browsers, 'scopeName' for IE)
-
-		var nsPrefix = this.prefix ? this.prefix
-				: (this.scopeName ? this.scopeName : undefined);
-		// when the prefix is set (and different from 'HTML'), we remove the
-		// element
-		if (nsPrefix && nsPrefix != 'HTML') {
-			jQuery(this).remove();
-		}
-	});
-};
-
-/**
  * This is the main transformation method
  * @param jqPasteDiv
  */
@@ -333,24 +243,6 @@ GENTICS.Aloha.PastePlugin.WordPasteHandler.transformWordContent = function (jqPa
 	// transform lists
 	this.transformListsFromWord(jqPasteDiv);
 
-	// transform tables
-	this.transformTables(jqPasteDiv);
-
 	// transform titles
 	this.transformTitles(jqPasteDiv);
-
-	// remove comments
-	this.removeComments(jqPasteDiv);
-
-	// unwrap font and span tags
-	this.unwrapTags(jqPasteDiv);
-
-	// remove styles
-	this.removeStyles(jqPasteDiv);
-
-	// remove namespaced elements
-	this.removeNamespacedElements(jqPasteDiv);
-
-	// transform formattings
-	this.transformFormattings(jqPasteDiv);
 };
