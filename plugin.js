@@ -2168,10 +2168,10 @@ GENTICS.Aloha.Table.Cell.prototype.deactivate = function() {
 	var wrapper = this.obj.children('.GENTICS_Table_Cell_editable');
 
 	if (wrapper.length) {
-		// get the inner html of the contenteditable div
-		var innerHtml = wrapper.html();
+		// unwrap the contents of the wrapper (which removes the wrapper)
+		wrapper.contents().unwrap();
 		
-		// remove the contenteditable div and its attached events
+		// remove the contenteditable div and its attached events (is this still necessary?)
 		wrapper.unbind();
 		wrapper.remove();
 		
@@ -2181,10 +2181,6 @@ GENTICS.Aloha.Table.Cell.prototype.deactivate = function() {
 		if (GENTICS.Aloha.trim(this.obj.attr('class')) == '') {
 			this.obj.removeAttr('class');
 		}
-		
-		// set the inner html of the contenteditable div as html for the table-data
-		// field
-		this.obj.html(innerHtml);
 	}
 };
 
