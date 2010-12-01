@@ -969,8 +969,12 @@ GENTICS.Utils.Dom.prototype.insertIntoDOM = function (object, range, limit, atEn
 
 	if (typeof newParent == 'undefined' && limit.length > 0) {
 		// found no possible new parent, so split up to the limit object
-		// TODO check whether it is allowed to insert the element at all
 		newParent = limit.get(0);
+	}
+
+	// check whether it is allowed to insert the element at all
+	if (!this.allowsNesting(newParent, object.get(0))) {
+		return false;
 	}
 
 	if (typeof newParent != 'undefined') {
