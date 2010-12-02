@@ -941,10 +941,13 @@ GENTICS.Utils.Dom.prototype.searchAdjacentTextNode = function (parent, index, se
  * @param {boolean}
  *            atEnd true when the object shall be inserted at the end, false for
  *            insertion at the start (default)
+ * @param {boolean}
+ * 			  true when the insertion shall be done, even if inserting the element
+ * 			  would not be allowed, false to deny inserting unallowed elements (default)
  * @return true if the object could be inserted, false if not.
  * @method
  */
-GENTICS.Utils.Dom.prototype.insertIntoDOM = function (object, range, limit, atEnd) {
+GENTICS.Utils.Dom.prototype.insertIntoDOM = function (object, range, limit, atEnd, force) {
 	// first find the appropriate place to insert the given object
 	var parentElements = range.getContainerParents(limit, atEnd);
 	var that = this;
@@ -973,7 +976,7 @@ GENTICS.Utils.Dom.prototype.insertIntoDOM = function (object, range, limit, atEn
 	}
 
 	// check whether it is allowed to insert the element at all
-	if (!this.allowsNesting(newParent, object.get(0))) {
+	if (!this.allowsNesting(newParent, object.get(0)) && !force) {
 		return false;
 	}
 
