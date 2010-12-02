@@ -60,6 +60,12 @@ GENTICS.Aloha.PastePlugin.redirectPaste = function() {
 	this.currentRange = new GENTICS.Utils.RangeObject(true);
 	this.currentEditable = GENTICS.Aloha.activeEditable;
 
+	// store the current scroll position
+	var w = jQuery(window);
+	this.scrollTop = w.scrollTop();
+	this.scrollLeft = w.scrollLeft();
+	this.height = jQuery(document).height();
+
 	// empty the pasteDiv
 	this.pasteDiv.text('');
 
@@ -107,9 +113,20 @@ GENTICS.Aloha.PastePlugin.getPastedContent = function() {
 			// if nothing was pasted, just reselect the old range
 			this.currentRange.select();
 		}
+
+		// finally scroll back to the original scroll position, plus eventually difference in height
+		if (this.scrollTop !== false && this.scrollLeft !== false && this.height !== false) {
+			var w = jQuery(window);
+			var heightDiff = jQuery(document).height() - this.height;
+			w.scrollTop(this.scrollTop + heightDiff);
+			w.scrollLeft(this.scrollLeft);
+		}
 	}
 	this.currentRange = false;
 	this.currentEditable = false;
+	this.scrollTop = false;
+	this.scollLeft = false;
+	this.height = false;
 
 	// empty the pasteDiv
 	this.pasteDiv.text('');
