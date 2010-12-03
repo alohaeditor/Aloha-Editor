@@ -32,10 +32,23 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 		reader: new Ext.data.AlohaObjectReader()
     }),
     tpl: new Ext.XTemplate(
-        '<tpl for="."><div class="x-combo-list-item">',
-            '<span><b>{name}</b><br />{url}</span>',
-        '</div></tpl>'
-    ),
+			'<tpl for="."><div class="x-combo-list-item">',
+			'<tpl if="this.hasRepositoryTemplate(values)">{[ this.renderRepositoryTemplate(values) ]}</tpl>',
+			'<tpl if="!this.hasRepositoryTemplate(values)"><span><b>{name}</b></span></tpl>',
+		'</div></tpl>',
+		{
+			hasRepositoryTemplate : function(values) {
+				var rep = GENTICS.Aloha.RepositoryManager.getRepository(values.repositoryId);
+				return rep && rep.hasTemplate();
+			},
+			renderRepositoryTemplate : function(values) {
+				var rep = GENTICS.Aloha.RepositoryManager.getRepository(values.repositoryId);
+				if (rep && rep.hasTemplate()) {
+					return rep.getTemplate().apply(values);
+				}
+			}
+		}
+	),
     onSelect: function (item) {
 		this.setItem(item.data);
 		if ( typeof this.alohaButton.onSelect == 'function' ) {
@@ -387,10 +400,27 @@ GENTICS.Aloha.ui.AttributeField.prototype.setDisplayField = function (displayFie
  * @return template on success or null otherwise
  */
 GENTICS.Aloha.ui.AttributeField.prototype.setTemplate = function (tpl) {
+	var template = new Ext.XTemplate(
+			'<tpl for="."><div class="x-combo-list-item">',
+			'<tpl if="this.hasRepositoryTemplate(values)">{[ this.renderRepositoryTemplate(values) ]}</tpl>',
+			'<tpl if="!this.hasRepositoryTemplate(values)">' + tpl + '</tpl>',
+		'</div></tpl>',
+		{
+			hasRepositoryTemplate : function(values) {
+				var rep = GENTICS.Aloha.RepositoryManager.getRepository(values.repositoryId);
+				return rep && rep.hasTemplate();
+			},
+			renderRepositoryTemplate : function(values) {
+				var rep = GENTICS.Aloha.RepositoryManager.getRepository(values.repositoryId);
+				if (rep && rep.hasTemplate()) {
+					return rep.getTemplate().apply(values);
+				}
+			}
+		}
+	);
 	if (this.extButton) {
-		return this.extButton.tpl = '<tpl for="."><div class="x-combo-list-item">' + tpl + '</div></tpl>';
+		return this.extButton.tpl = template;
 	} else {
-		return this.tpl = '<tpl for="."><div class="x-combo-list-item">' + tpl + '</div></tpl>';
+		return this.tpl = template;
 	}
-	return null;
 };

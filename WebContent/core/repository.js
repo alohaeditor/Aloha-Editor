@@ -166,3 +166,35 @@ GENTICS.Aloha.Repositories.myRepository.markObject = function (obj, resourceItem
  * @return void
  */
 GENTICS.Aloha.Repository.prototype.markObject = function (obj, repositoryItem) {};
+
+/**
+ * Set a template for rendering objects of this repository
+ * @param {String} template
+ * @return void
+ * @method
+ */
+GENTICS.Aloha.Repository.prototype.setTemplate = function(template) {
+	if (template) {
+		this.extTpl = new Ext.XTemplate(template);
+	} else {
+		this.extTpl = null;
+	}
+};
+
+/**
+ * Checks whether the repository has a template
+ * @return {boolean} true when the repository has a template, false if not
+ * @method
+ */
+GENTICS.Aloha.Repository.prototype.hasTemplate = function() {
+	return this.extTpl ? true : false;
+};
+
+/**
+ * Get the parsed template
+ * @return {Object} parsed template
+ * @method
+ */
+GENTICS.Aloha.Repository.prototype.getTemplate = function() {
+	return this.extTpl;
+};

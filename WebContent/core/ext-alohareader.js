@@ -28,6 +28,7 @@ Ext.data.AlohaObjectReader = function(meta, recordType) {
 			'name',
 			'type',
 			'weight',
+			'path',
 			'repositoryId'
 		]
     });
