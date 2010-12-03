@@ -150,6 +150,7 @@ GENTICS.Aloha.Link.createButtons = function () {
     this.hrefField = new GENTICS.Aloha.ui.AttributeField({
     	'width':320
     });
+    this.hrefField.setTemplate('<span><b>{name}</b><br/>{url}</span>');
     this.hrefField.setObjectTypeFilter(GENTICS.Aloha.Link.objectTypeFilter);
     // add the input field for links
     GENTICS.Aloha.FloatingMenu.addButton(
