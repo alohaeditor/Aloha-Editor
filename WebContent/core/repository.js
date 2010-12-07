@@ -173,7 +173,7 @@ GENTICS.Aloha.Repository.prototype.markObject = function (obj, repositoryItem) {
  * @return void
  * @method
  */
-GENTICS.Aloha.Repository.prototype.setTemplate = function(template) {
+GENTICS.Aloha.Repository.prototype.setTemplate = function (template) {
 	if (template) {
 		this.extTpl = new Ext.XTemplate(template);
 	} else {
@@ -186,7 +186,7 @@ GENTICS.Aloha.Repository.prototype.setTemplate = function(template) {
  * @return {boolean} true when the repository has a template, false if not
  * @method
  */
-GENTICS.Aloha.Repository.prototype.hasTemplate = function() {
+GENTICS.Aloha.Repository.prototype.hasTemplate = function () {
 	return this.extTpl ? true : false;
 };
 
@@ -195,6 +195,14 @@ GENTICS.Aloha.Repository.prototype.hasTemplate = function() {
  * @return {Object} parsed template
  * @method
  */
-GENTICS.Aloha.Repository.prototype.getTemplate = function() {
+GENTICS.Aloha.Repository.prototype.getTemplate = function () {
 	return this.extTpl;
 };
+
+/**
+ * Get the repositoryItem with given id
+ * @param itemId {String} id of the repository item to fetch
+ * @param callback {function} callback function
+ * @return {GENTICS.Aloha.Repository.Object} item with given id
+ */
+GENTICS.Aloha.Repository.prototype.getObjectById = function ( itemId, callback ) { return true; };

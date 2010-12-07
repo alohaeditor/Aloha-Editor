@@ -25,7 +25,7 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 	hideTrigger: true,
 	minChars: 3,
 	valueField: 'id',
-	displayField: 'url',
+	displayField: 'name',
 	enableKeyEvents: true,
 	store: new Ext.data.Store({
 		proxy: new Ext.data.AlohaProxy(),
@@ -78,6 +78,9 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 			
 		},
     	'keydown': function (obj, event) {
+			// unset the currently selected object
+			this.resourceItem = null;
+
 			// on ENTER or ESC leave the editing
 			// just remember here the status and remove cursor on keyup event
 			// Otherwise cursor moves to content and no more blur event happens!!??
@@ -98,9 +101,11 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 			        GENTICS.Aloha.Selection.getRangeObject().select();
 		    	}, 0);
 		    }
-		    // update attribute 
-			var v = this.wrap.dom.children[0].value;
-	        this.setAttribute(this.targetAttribute, v);
+		    // update attribute, but only if no resource item was selected
+		    if (!this.resourceItem) {
+		    	var v = this.wrap.dom.children[0].value;
+		    	this.setAttribute(this.targetAttribute, v);
+		    }
 		},
 	    'focus': function(obj, event) {
 			// set background color to give visual feedback which link is modified
@@ -136,7 +141,7 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 			// TODO split display field by '.' and get corresponding attribute, because it could be a properties attribute.
 			var v = item[displayField];
 	    	this.setValue( v );
-			this.setAttribute(this.targetAttribute, v);
+			this.setAttribute(this.targetAttribute, item[this.valueField]);
 			// call the repository marker
 			GENTICS.Aloha.RepositoryManager.markObject(this.targetObject, item);
     	}
@@ -146,7 +151,6 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
     },
     // Private hack to allow attribute setting by regex
     setAttribute: function (attr, value, regex, reference) {
-    	
         if ( this.targetObject) {
             
         	// set the attribute
@@ -172,11 +176,20 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 	setTargetObject : function (obj, attr) {
 	    this.targetObject = obj;
 	    this.targetAttribute = attr;
-        if (this.targetObject && this.targetAttribute) {
-            this.setValue(jQuery(this.targetObject).attr(this.targetAttribute));
-        } else {
-            this.setValue('');
-        }
+
+    	if (this.targetObject && this.targetAttribute) {
+			this.setValue(jQuery(this.targetObject).attr(this.targetAttribute));
+    	} else {
+	    	this.setValue('');
+    	}
+
+	    // check whether a repository item is linked to the object
+	    var that = this;
+	    GENTICS.Aloha.RepositoryManager.getObject(obj, function (items) {
+	    	if (items && items.length > 0) {
+	    		that.setItem(items[0]);
+	    	}
+	    });
 	},
 	getTargetObject : function () {
 	    return this.targetObject;
@@ -212,6 +225,7 @@ GENTICS.Aloha.ui.AttributeField = function (properties) {
 	this.objectTypeFilter = null;
 	this.tpl = null;
 	this.displayField = null;
+	this.valueField = null;
 
 	this.init(properties);
 };
@@ -227,13 +241,20 @@ GENTICS.Aloha.ui.AttributeField.prototype = new GENTICS.Aloha.ui.Button();
  * @hide
  */
 GENTICS.Aloha.ui.AttributeField.prototype.getExtConfigProperties = function() {
-    return {
-    	alohaButton: this,
-        xtype : 'alohaattributefield',
-        rowspan: this.rowspan||undefined,
-        width: this.width||undefined,
-        id : this.id
-    };
+	var props = {
+	    	alohaButton: this,
+	        xtype : 'alohaattributefield',
+	        rowspan: this.rowspan||undefined,
+	        width: this.width||undefined,
+	        id : this.id
+	};
+	if (this.valueField) {
+		props.valueField = this.valueField;
+	}
+	if (this.displayField) {
+		props.displayField = this.displayField;
+	}
+    return props;
 };
 
 /**

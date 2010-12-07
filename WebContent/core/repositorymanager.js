@@ -369,8 +369,8 @@ GENTICS.Aloha.RepositoryManager.prototype.makeClean = function(obj) {
  * (see http://dev.w3.org/html5/spec/elements.html#embedding-custom-non-visible-data)
  * * data-GENTICS-aloha-repository: stores the repositoryId
  * * data-GENTICS-aloha-object-id: stores the object.id
- * @param obj jQuery object to make clean
- * @param object Aloha.Repository.Object the item which is aplied to obj
+ * @param obj {DOMObject} DOM object to mark
+ * @param object {Aloha.Repository.Object} the item which is applied to obj
  * @return void
  */
 GENTICS.Aloha.RepositoryManager.prototype.markObject = function (obj, item) {
@@ -381,6 +381,20 @@ GENTICS.Aloha.RepositoryManager.prototype.markObject = function (obj, item) {
 		repository.markObject(obj, item);
 	} else {
 		GENTICS.Aloha.Log.error(this, "Trying to apply a repository { " + item.name + " } to an object, but item has no repositoryId.");
+	}
+};
+
+/**
+ * Get the object for which the given DOM object is marked from the repository.
+ * @param obj {DOMObject} DOM object which probably is marked
+ * @param callback {function} callback function
+ */
+GENTICS.Aloha.RepositoryManager.prototype.getObject = function (obj, callback) {
+	var jqObj = jQuery(obj);
+	var repository = this.getRepository(jqObj.attr('data-GENTICS-aloha-repository'));
+	var itemId = jqObj.attr('data-GENTICS-aloha-object-id');
+	if (repository && itemId) {
+		repository.getObjectById(itemId, callback);
 	}
 };
 
