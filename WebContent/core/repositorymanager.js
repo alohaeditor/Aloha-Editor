@@ -390,11 +390,26 @@ GENTICS.Aloha.RepositoryManager.prototype.markObject = function (obj, item) {
  * @param callback {function} callback function
  */
 GENTICS.Aloha.RepositoryManager.prototype.getObject = function (obj, callback) {
+	var that = this;
 	var jqObj = jQuery(obj);
 	var repository = this.getRepository(jqObj.attr('data-GENTICS-aloha-repository'));
 	var itemId = jqObj.attr('data-GENTICS-aloha-object-id');
 	if (repository && itemId) {
-		repository.getObjectById(itemId, callback);
+		// initialize the item cache (per repository) if not already done
+		this.itemCache = this.itemCache || [];
+		this.itemCache[repository.repositoryId] = this.itemCache[repository.repositoryId] || [];
+
+		// when the item is cached, we just call the callback method
+		if (this.itemCache[repository.repositoryId][itemId]) {
+			callback.call(this, [this.itemCache[repository.repositoryId][itemId]]);
+		} else {
+			// otherwise we get the object from the repository
+			repository.getObjectById(itemId, function (items) {
+				// make sure the item is in the cache (for subsequent calls)
+				that.itemCache[repository.repositoryId][itemId] = items[0];
+				callback.call(this, items);
+			});
+		}
 	}
 };
 
