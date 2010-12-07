@@ -129,7 +129,7 @@ GENTICS.Aloha.PastePlugin.GenericPasteHandler.removeNamespacedElements = functio
 		// when the prefix is set (and different from 'HTML'), we remove the
 		// element
 		if ((nsPrefix && nsPrefix != 'HTML') || this.nodeName.indexOf(':') >= 0 ) {
-			jQuery(this).remove();
+			jQuery(this).contents().unwrap();
 		}
 	});
 };
