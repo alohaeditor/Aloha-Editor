@@ -211,3 +211,36 @@ GENTICS.Aloha.Repositories.delicious.getChildren = function( p, callback) {
 		callback.call( this, []);
 	}
 };
+
+/**
+ * Get the repositoryItem with given id
+ * @param itemId {String} id of the repository item to fetch
+ * @param callback {function} callback function
+ * @return {GENTICS.Aloha.Repository.Object} item with given id
+ */
+GENTICS.Aloha.Repositories.delicious.getObjectById = function ( itemId, callback ) {
+	var that = this;
+
+	jQuery.ajax({
+		type: 'GET',
+		dataType: "jsonp",
+		url: 'http://feeds.delicious.com/v2/json/urlinfo/' + jQuery.md5(itemId),
+		success: function (data) {
+			var items = [];
+			// convert data to Aloha objects
+			for (var i = 0; i < data.length; i++) {
+				if (typeof data[i] != 'function' ) {
+					items.push(new GENTICS.Aloha.Repository.Document ({
+						id: itemId,
+						name: data[i].title,
+						repositoryId: that.repositoryId,
+						type: 'website', 
+						url: itemId,
+						weight: that.settings.weight + (15-1)/100
+					}));
+				}
+		    }
+			callback.call( that, items);
+		}
+	});
+};

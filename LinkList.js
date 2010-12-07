@@ -158,3 +158,22 @@ GENTICS.Aloha.Repositories.LinkList.parseUri = function(str) {
 
 	return uri;
 };
+
+/**
+ * Get the repositoryItem with given id
+ * @param itemId {String} id of the repository item to fetch
+ * @param callback {function} callback function
+ * @return {GENTICS.Aloha.Repository.Object} item with given id
+ */
+GENTICS.Aloha.Repositories.LinkList.getObjectById = function (itemId, callback) {
+	var d = [];
+
+	for (var i = 0; i < this.settings.data.length; i++) {
+		if (this.settings.data[i].id == itemId) {
+			d.push(this.settings.data[i]);
+		}
+	}
+
+	callback.call(this, d);
+	return true;
+};
