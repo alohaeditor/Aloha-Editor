@@ -50,11 +50,15 @@
 	border: 0;
 	padding: 0;
 	margin: 0;
-background-color: transparent;
+	background-color: transparent;
 }
 .GENTICS_floatingmenu table, .GENTICS_floatingmenu tr, .GENTICS_floatingmenu td {
 	width: 0;
 	height: 0;
+}
+
+table.x-table-layout, table.x-btn.x-btn-icon, table.x-toolbar-ct, .x-toolbar-left table {
+        margin: 0;
 }
 
 /* fixes modal dialog border issues in GCN backend */
