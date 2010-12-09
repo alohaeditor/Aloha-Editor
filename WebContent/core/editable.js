@@ -244,6 +244,13 @@ GENTICS.Aloha.Editable.prototype.destroy = function() {
 	});
 	*/
 	
+	// also hide the floating menu if the current editable was active
+	if (this.isActive) {
+		GENTICS.Aloha.FloatingMenu.obj.hide();
+		GENTICS.Aloha.FloatingMenu.shadow.hide();
+	}
+	
+	
 	// throw a new event when the editable has been created
 	/**
 	 * @event editableCreated fires after a new editable has been destroyes, eg. via $('#editme').mahalo()
