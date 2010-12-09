@@ -18,7 +18,7 @@
 */
 /**
  * Repository Manager
- * @namespace GENTICS.Aloha
+ * @namespace GENTICS.Aloha.Repository
  * @class RepositoryManager
  * @singleton
  */
@@ -94,10 +94,40 @@ GENTICS.Aloha.RepositoryManager.prototype.getRepository = function(repositoryId)
 
 /** 
  * Searches a all repositories for repositoryObjects matching query and repositoryObjectType
- * @param {String} query the query string passed to the repository
- * @param {Array} objectTypeFilter an array of strings with searched objectTypeFilter
- * @param {function} callback defines an callback function( repositoryResult ) which will be called after a time out of 5sec or when all repositories returned their result
- * @return {Array} Array of Items
+ * 
+<pre><code>
+    var params = {
+    		queryString: 'hello',
+    		objectTypeFilter: ['website'],
+    		filter: null,
+    		inFolderId: null,
+    		orderBy: null,
+    		maxItems: null,
+    		skipCount: null,
+    		renditionFilter: null,
+    		repositoryId: null
+    };
+    GENTICS.Aloha.RepositoryManager.query( params, function( items ) {
+		// do something with the result items 
+		console.log(items);
+	});
+</code></pre>
+ * 
+ * @param {object} params object with properties
+ * <div class="mdetail-params"><ul>
+ * <li><code> queryString</code> :  String <div class="sub-desc">The query string for full text search</div></li>
+ * <li><code> objectTypeFilter</code> : array  (optional) <div class="sub-desc">Object types that will be returned.</div></li>
+ * <li><code> filter</code> : array (optional) <div class="sub-desc">Attributes that will be returned.</div></li>
+ * <li><code> inFolderId</code> : boolean  (optional) <div class="sub-desc">This is indicates whether or not a candidate object is a child-object of the folder object identified by the given inFolderId (objectId).</div></li>
+ * <li><code> inTreeId</code> : boolean  (optional) <div class="sub-desc">This indicates whether or not a candidate object is a descendant-object of the folder object identified by the given inTreeId (objectId).</div></li>
+ * <li><code> orderBy</code> : array  (optional) <div class="sub-desc">ex. [{lastModificationDate:’DESC’, name:’ASC’}]</div></li>
+ * <li><code> maxItems</code> : Integer  (optional) <div class="sub-desc">number items to return as result</div></li>
+ * <li><code> skipCount</code> : Integer  (optional) <div class="sub-desc">This is tricky in a merged multi repository scenario</div></li>
+ * <li><code> renditionFilter</code> : array  (optional) <div class="sub-desc">Instead of termlist an array of kind or mimetype is expected. If null or array.length == 0 all renditions are returned. See http://docs.oasis-open.org/cmis/CMIS/v1.0/cd04/cmis-spec-v1.0.html#_Ref237323310 for renditionFilter</div></li>
+ * </ul></div>
+ * @param {function} callback defines a callback function( items ) which will be called when all repositories returned their results or after a time out of 5sec. 
+ * "items" is an Array of objects construced with Document/Folder.
+ * @void
  */
 GENTICS.Aloha.RepositoryManager.prototype.query = function( params, callback ) {
 	
@@ -197,7 +227,20 @@ GENTICS.Aloha.RepositoryManager.prototype.queryCallback = function (cb, items, t
 };
 
 /**
- * Returns children items.
+ * Returns children items. (see query for an example)
+ * @param {object} params object with properties
+ * <div class="mdetail-params"><ul>
+ * <li><code> objectTypeFilter</code> : array  (optional) <div class="sub-desc">Object types that will be returned.</div></li>
+ * <li><code> filter</code> : array  (optional) <div class="sub-desc">Attributes that will be returned.</div></li>
+ * <li><code> inFolderId</code> : boolean  (optional) <div class="sub-desc">This indicates whether or not a candidate object is a child-object of the folder object identified by the given inFolderId (objectId).</div></li>
+ * <li><code> orderBy</code> : array  (optional) <div class="sub-desc">ex. [{lastModificationDate:’DESC’, name:’ASC’}]</div></li>
+ * <li><code> maxItems</code> : Integer  (optional) <div class="sub-desc">number items to return as result</div></li>
+ * <li><code> skipCount</code> : Integer  (optional) <div class="sub-desc">This is tricky in a merged multi repository scenario</div></li>
+ * <li><code> renditionFilter</code> : array  (optional) <div class="sub-desc">Instead of termlist an array of kind or mimetype is expected. If null or array.length == 0 all renditions are returned. See http://docs.oasis-open.org/cmis/CMIS/v1.0/cd04/cmis-spec-v1.0.html#_Ref237323310 for renditionFilter</div></li>
+ * </ul></div>
+ * @param {function} callback defines a callback function( items ) which will be called when all repositories returned their results or after a time out of 5sec. 
+ * "items" is an Array of objects construced with Document/Folder.
+ * @void
  */
 GENTICS.Aloha.RepositoryManager.prototype.getChildren = function ( params, callback ) {
 
@@ -326,8 +369,8 @@ GENTICS.Aloha.RepositoryManager.prototype.makeClean = function(obj) {
  * (see http://dev.w3.org/html5/spec/elements.html#embedding-custom-non-visible-data)
  * * data-GENTICS-aloha-repository: stores the repositoryId
  * * data-GENTICS-aloha-object-id: stores the object.id
- * @param obj jQuery object to make clean
- * @param object Aloha.Repository.Object the item which is aplied to obj
+ * @param obj {DOMObject} DOM object to mark
+ * @param object {Aloha.Repository.Object} the item which is applied to obj
  * @return void
  */
 GENTICS.Aloha.RepositoryManager.prototype.markObject = function (obj, item) {
@@ -338,6 +381,35 @@ GENTICS.Aloha.RepositoryManager.prototype.markObject = function (obj, item) {
 		repository.markObject(obj, item);
 	} else {
 		GENTICS.Aloha.Log.error(this, "Trying to apply a repository { " + item.name + " } to an object, but item has no repositoryId.");
+	}
+};
+
+/**
+ * Get the object for which the given DOM object is marked from the repository.
+ * @param obj {DOMObject} DOM object which probably is marked
+ * @param callback {function} callback function
+ */
+GENTICS.Aloha.RepositoryManager.prototype.getObject = function (obj, callback) {
+	var that = this;
+	var jqObj = jQuery(obj);
+	var repository = this.getRepository(jqObj.attr('data-GENTICS-aloha-repository'));
+	var itemId = jqObj.attr('data-GENTICS-aloha-object-id');
+	if (repository && itemId) {
+		// initialize the item cache (per repository) if not already done
+		this.itemCache = this.itemCache || [];
+		this.itemCache[repository.repositoryId] = this.itemCache[repository.repositoryId] || [];
+
+		// when the item is cached, we just call the callback method
+		if (this.itemCache[repository.repositoryId][itemId]) {
+			callback.call(this, [this.itemCache[repository.repositoryId][itemId]]);
+		} else {
+			// otherwise we get the object from the repository
+			repository.getObjectById(itemId, function (items) {
+				// make sure the item is in the cache (for subsequent calls)
+				that.itemCache[repository.repositoryId][itemId] = items[0];
+				callback.call(this, items);
+			});
+		}
 	}
 };
 
