@@ -31,6 +31,11 @@ GENTICS.Aloha.GoogleTranslate.apiKey = "AIzaSyBgsTE6JQ5wsgERpi6m2xBY-9pCn2I5zcA"
 GENTICS.Aloha.GoogleTranslate.init = function () {
 	var that = this;
 
+	// use configured api key
+	if (this.settings.apiKey) {
+		this.apiKey = this.settings.apiKey;
+	}
+	
 	// import our styles
 	jQuery("head").append('<link rel="stylesheet" href="../plugins/com.gentics.aloha.plugins.GoogleTranslate/css/googleTranslatePlugin.css" />');
 	
@@ -112,6 +117,13 @@ GENTICS.Aloha.GoogleTranslate.translate = function (targetLang) {
 				'&target=' + targetLang + '&prettyprint=false' +
 				qparams,
 			success: function(res) {
+				// handle errors
+				if (typeof res.error == "object") {
+					that.log("ERROR", "Unable to translate. Error: [" + res.error.code + "] " + res.error.message);
+					return false;
+				}
+			
+				// translation successful
 				if (res.data && res.data.translations) {
 					var key = 0; // for some reason google translate api will provide an empty entry at [0]
 					for (var i=0; i<tree.length; i++) {
