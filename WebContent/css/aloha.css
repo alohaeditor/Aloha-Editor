@@ -64,6 +64,7 @@ table.x-table-layout, table.x-btn.x-btn-icon, table.x-toolbar-ct, .x-toolbar-lef
 /* fixes modal dialog border issues in GCN backend */
 table.x-toolbar-ct {
         border: 0px;
+        margin: 0px;
 }
 
 table.x-toolbar-ct td {
@@ -72,6 +73,7 @@ table.x-toolbar-ct td {
 
 table.x-toolbar-ct table {
         border: 0px;
+        margin: 0px;
 }
 
 /* 
