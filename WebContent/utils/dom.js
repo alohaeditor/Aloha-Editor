@@ -507,7 +507,7 @@ GENTICS.Utils.Dom.prototype.removeMarkup = function (rangeObject, markup, limit)
 	var endSplitLimit = this.findHighestElement(rangeObject.endContainer, nodeName, limit);
 	var didSplit = false;
 
-	if (startSplitLimit /* && rangeObject.startOffset > 0 */) {
+	if (startSplitLimit && rangeObject.startOffset > 0) {
 		// when the start is in the start of its container, we don't split
 		this.split(rangeObject, jQuery(startSplitLimit).parent(), false);
 		didSplit = true;
@@ -515,14 +515,14 @@ GENTICS.Utils.Dom.prototype.removeMarkup = function (rangeObject, markup, limit)
 
 	if (endSplitLimit) {
 		// when the end is in the end of its container, we don't split
-//		if (rangeObject.endContainer.nodeType == 3 && rangeObject.endOffset < rangeObject.endContainer.data.length) {
+		if (rangeObject.endContainer.nodeType == 3 && rangeObject.endOffset < rangeObject.endContainer.data.length) {
 			this.split(rangeObject, jQuery(endSplitLimit).parent(), true);
 			didSplit = true;
-//		}
-//		if (rangeObject.endContainer.nodeType == 1 && rangeObject.endOffset < rangeObject.childNodes.length) {
-//			this.split(rangeObject, jQuery(endSplitLimit).parent(), true);
-//			didSplit = true;
-//		}
+		}
+		if (rangeObject.endContainer.nodeType == 1 && rangeObject.endOffset < rangeObject.childNodes.length) {
+			this.split(rangeObject, jQuery(endSplitLimit).parent(), true);
+			didSplit = true;
+		}
 	}
 
 	// when we split the DOM, we maybe need to correct the range
