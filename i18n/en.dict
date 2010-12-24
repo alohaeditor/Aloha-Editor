@@ -1,4 +1,7 @@
 floatingmenu.tab.table=Table
+floatingmenu.tab.tablelayout=Tablelayout
+button.removeFormat.tooltip=Remove formatting
+button.removeFormat.text=Remove formatting
 deleterows.confirm=Do you really want to delete the selected rows?
 deletecolumns.confirm=Do you really want to delete the selected columns?
 deletetable.confirm=Do you really want to delete the table?

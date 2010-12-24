@@ -66,11 +66,36 @@ GENTICS.Aloha.TablePlugin.parameters = {
 
 /* -- METHODS -- */
 /**
+ * @hide
+ * {name:'green', text:'Green',tooltip:'Green',iconClass:'GENTICS_table GENTICS_button_green',cssClass:'green'}
+ */
+GENTICS.Aloha.TablePlugin.checkConfig = function (c){
+	for ( var i=0; i<c.length; i++) {
+		c[i].text = c[i].text ? c[i].text : c[i].name;
+		c[i].tooltip = c[i].tooltip ? c[i].tooltip : c[i].text;
+		c[i].iconClass = c[i].iconClass ? c[i].iconClass : 'GENTICS_button_'+c[i].name;
+		c[i].cssClass = c[i].cssClass ? c[i].cssClass : c[i].name;
+	}
+	return c;
+};
+/**
  * Init method of the Table-plugin transforms all tables in the document
  * 
  * @return void
  */
 GENTICS.Aloha.TablePlugin.init = function() {
+	
+	// apply settings
+    if (this.settings.tableConfig != undefined)
+        this.tableConfig = this.settings.tableConfig;
+    this.tableConfig = this.checkConfig(this.tableConfig);
+    if (this.settings.columnConfig != undefined)
+        this.columnConfig = this.settings.columnConfig;
+    this.columnConfig = this.checkConfig(this.columnConfig);
+    if (this.settings.rowConfig != undefined)
+        this.rowConfig = this.settings.rowConfig;
+    this.rowConfig = this.checkConfig(this.rowConfig);
+	
 	// add reference to the create layer object
 	this.createLayer = new GENTICS.Aloha.Table.CreateLayer();
 
@@ -227,120 +252,8 @@ GENTICS.Aloha.TablePlugin.initTableButtons = function () {
 	);
 
 	// now the specific table buttons
-	// for columns
-	GENTICS.Aloha.FloatingMenu.addButton(
-		this.getUID('column'),
-		new GENTICS.Aloha.ui.Button({
-			'iconClass' : 'GENTICS_button GENTICS_button_addColumnLeft',
-			'size' : 'small',
-			'tooltip' : this.i18n('button.addcolleft.tooltip'),
-			'onclick' : function () {
-				if (that.activeTable) {
-					that.activeTable.addColumnsLeft();
-				}
-			}
-		}),
-		GENTICS.Aloha.i18n(this, 'floatingmenu.tab.table'),
-		1
-	);
-	GENTICS.Aloha.FloatingMenu.addButton(
-		this.getUID('column'),
-		new GENTICS.Aloha.ui.Button({
-			'iconClass' : 'GENTICS_button GENTICS_button_addColumnRight',
-			'size' : 'small',
-			'tooltip' : this.i18n('button.addcolright.tooltip'),
-			'onclick' : function () {
-				if (that.activeTable) {
-					that.activeTable.addColumnsRight();
-				}
-			}
-		}),
-		GENTICS.Aloha.i18n(this, 'floatingmenu.tab.table'),
-		1
-	);
-	GENTICS.Aloha.FloatingMenu.addButton(
-		this.getUID('column'),
-		new GENTICS.Aloha.ui.Button({
-			'iconClass' : 'GENTICS_button GENTICS_button_deleteColumns',
-			'size' : 'small',
-			'tooltip' : this.i18n('button.delcols.tooltip'),
-			'onclick' : function () {
-				if (that.activeTable) {
-					var aTable = that.activeTable;
-					GENTICS.Aloha.showMessage(new GENTICS.Aloha.Message({
-						title : GENTICS.Aloha.i18n(that, 'Table'),
-						text : GENTICS.Aloha.i18n(that, 'deletecolumns.confirm'),
-						type : GENTICS.Aloha.Message.Type.CONFIRM,
-						callback : function (sel) {
-							if (sel == 'yes') {
-								aTable.deleteColumns();
-							}
-						} 
-					}));
-				}
-			}
-		}),
-		GENTICS.Aloha.i18n(this, 'floatingmenu.tab.table'),
-		1
-	);
-
-	// for rows
-	GENTICS.Aloha.FloatingMenu.addButton(
-		this.getUID('row'),
-		new GENTICS.Aloha.ui.Button({
-			'iconClass' : 'GENTICS_button GENTICS_button_addRowBefore',
-			'size' : 'small',
-			'tooltip' : this.i18n('button.addrowbefore.tooltip'),
-			'onclick' : function () {
-				if (that.activeTable) {
-					that.activeTable.addRowsBefore(true);
-				}
-			}
-		}),
-		GENTICS.Aloha.i18n(this, 'floatingmenu.tab.table'),
-		1
-	);
-	GENTICS.Aloha.FloatingMenu.addButton(
-		this.getUID('row'),
-		new GENTICS.Aloha.ui.Button({
-			'iconClass' : 'GENTICS_button GENTICS_button_addRowAfter',
-			'size' : 'small',
-			'tooltip' : this.i18n('button.addrowafter.tooltip'),
-			'onclick' : function () {
-				if (that.activeTable) {
-					that.activeTable.addRowsAfter(true);
-				}
-			}
-		}),
-		GENTICS.Aloha.i18n(this, 'floatingmenu.tab.table'),
-		1
-	);
-	GENTICS.Aloha.FloatingMenu.addButton(
-		this.getUID('row'),
-		new GENTICS.Aloha.ui.Button({
-			'iconClass' : 'GENTICS_button GENTICS_button_deleteRows',
-			'size' : 'small',
-			'tooltip' : this.i18n('button.delrows.tooltip'),
-			'onclick' : function () {
-				if (that.activeTable) {
-					var aTable = that.activeTable;
-					GENTICS.Aloha.showMessage(new GENTICS.Aloha.Message({
-						title : GENTICS.Aloha.i18n(that, 'Table'),
-						text : GENTICS.Aloha.i18n(that, 'deleterows.confirm'),
-						type : GENTICS.Aloha.Message.Type.CONFIRM,
-						callback : function (sel) {
-							if (sel == 'yes') {
-								aTable.deleteRows();
-							}
-						} 
-					}));
-				}
-			}
-		}),
-		GENTICS.Aloha.i18n(this, 'floatingmenu.tab.table'),
-		1
-	);
 	
+	// format caption
 	this.captionButton = new GENTICS.Aloha.ui.Button({
 		'iconClass' : 'GENTICS_button GENTICS_button_table_caption',
 		'size' : 'small',
@@ -399,6 +312,392 @@ GENTICS.Aloha.TablePlugin.initTableButtons = function () {
         GENTICS.Aloha.i18n(this, 'floatingmenu.tab.table'),
         1
     );
+	
+	// generate formatting buttons
+	this.tableMSItems = [];
+//	for ( var c = 0; c < this.tableConfig.length; c++) {
+	jQuery.each(this.tableConfig, function(j, itemConf) {
+		that.tableMSItems.push({
+			'name' : itemConf.name,
+			'text' : GENTICS.Aloha.i18n(this, itemConf.text),
+		    'tooltip' : GENTICS.Aloha.i18n(this, itemConf.tooltip),
+	   	    'iconClass' : 'GENTICS_button GENTICS_table_layout ' + itemConf.iconClass,
+	   	    'click' : function() {
+				//set table css class
+				if ( that.activeTable ) {
+					for (var f = 0; f < that.tableConfig.length; f++) {
+						that.activeTable.obj.removeClass(that.tableConfig[f].cssClass);
+					}
+					that.activeTable.obj.addClass(itemConf.cssClass);
+				}
+			}
+		});
+	});
+	if ( this.tableMSItems.length > 0 ) {
+		this.tableMSItems.push({
+			'name' : 'removeFormat',
+			'text' : that.i18n('button.removeFormat.text'),
+	    	'tooltip' : that.i18n('button.removeFormat.tooltip'),
+	   	    'iconClass' : 'GENTICS_button GENTICS_button_removeFormat',
+	   	    'wide' : true,
+	   	    'click' : function() {
+				// remove all table classes
+				if ( that.activeTable ) {
+					for (var f = 0; f < that.tableConfig.length; f++) {
+						that.activeTable.obj.removeClass(that.tableConfig[f].cssClass);
+					}
+				}
+			}
+		});
+	}
+	this.tableMSButton = new GENTICS.Aloha.ui.MultiSplitButton({
+		'items' : this.tableMSItems
+	});
+	if (this.tableMSItems.length > 0) {
+		GENTICS.Aloha.FloatingMenu.addButton(
+			this.getUID('cell'),
+			this.tableMSButton,
+			GENTICS.Aloha.i18n(this, 'floatingmenu.tab.tablelayout'),
+			3
+		);
+	}
+	
+	
+	// for columns
+	GENTICS.Aloha.FloatingMenu.addButton(
+		this.getUID('column'),
+		new GENTICS.Aloha.ui.Button({
+			'iconClass' : 'GENTICS_button GENTICS_button_addColumnLeft',
+			'size' : 'small',
+			'tooltip' : this.i18n('button.addcolleft.tooltip'),
+			'onclick' : function () {
+				if (that.activeTable) {
+					that.activeTable.addColumnsLeft();
+				}
+			}
+		}),
+		GENTICS.Aloha.i18n(this, 'floatingmenu.tab.table'),
+		1
+	);
+	GENTICS.Aloha.FloatingMenu.addButton(
+		this.getUID('column'),
+		new GENTICS.Aloha.ui.Button({
+			'iconClass' : 'GENTICS_button GENTICS_button_addColumnRight',
+			'size' : 'small',
+			'tooltip' : this.i18n('button.addcolright.tooltip'),
+			'onclick' : function () {
+				if (that.activeTable) {
+					that.activeTable.addColumnsRight();
+				}
+			}
+		}),
+		GENTICS.Aloha.i18n(this, 'floatingmenu.tab.table'),
+		1
+	);
+	GENTICS.Aloha.FloatingMenu.addButton(
+		this.getUID('column'),
+		new GENTICS.Aloha.ui.Button({
+			'iconClass' : 'GENTICS_button GENTICS_button_deleteColumns',
+			'size' : 'small',
+			'tooltip' : this.i18n('button.delcols.tooltip'),
+			'onclick' : function () {
+				if (that.activeTable) {
+					var aTable = that.activeTable;
+					GENTICS.Aloha.showMessage(new GENTICS.Aloha.Message({
+						title : GENTICS.Aloha.i18n(that, 'Table'),
+						text : GENTICS.Aloha.i18n(that, 'deletecolumns.confirm'),
+						type : GENTICS.Aloha.Message.Type.CONFIRM,
+						callback : function (sel) {
+							if (sel == 'yes') {
+								aTable.deleteColumns();
+							}
+						} 
+					}));
+				}
+			}
+		}),
+		GENTICS.Aloha.i18n(this, 'floatingmenu.tab.table'),
+		1
+	);
+	this.columnHeader = new GENTICS.Aloha.ui.Button({
+		'iconClass' : 'GENTICS_button GENTICS_button_col_header',
+		'size' : 'small',
+		'tooltip' : this.i18n('button.columnheader.tooltip'),
+		'onclick' : function () {
+			// table header
+			if (that.activeTable) {
+				var sc = GENTICS.Aloha.TableHelper.selectedCells;
+				// if a selection was made, transform the selected cells
+				that.columnsToSelect = [];
+				for (var i = 0; i < sc.length; i++) {
+					for (var j = 0; j < sc[i].length; j++) {
+						if ( i == 0 ){
+							that.columnsToSelect.push(sc[i][j].cellIndex)
+						}
+						if ( this.isPressed() ) {
+							sc[i][j] = GENTICS.Aloha.Markup.transformDomObject(sc[i][j], 'td');
+						} else { 
+							sc[i][j] = GENTICS.Aloha.Markup.transformDomObject(sc[i][j], 'th').attr('scope', 'column');
+						}
+						jQuery(sc[i][j]).bind('mousedown', function(jqEvent) {
+							var wrapper = jQuery(this).children('div').eq(0);
+							setTimeout(function() {
+								wrapper.trigger('focus');
+							}, 1);
+							// unselect cells
+							GENTICS.Aloha.TableHelper.unselectCells();
+						});
+
+					}
+				}
+				// selection could have changed.
+				if ( that.activeTable ) {
+					that.activeTable.refresh();
+					that.activeTable.selectColumns();
+				}
+			}
+		},
+		'toggle' : true
+	});
+	GENTICS.Aloha.FloatingMenu.addButton(
+		this.getUID('column'),
+		this.columnHeader,
+		GENTICS.Aloha.i18n(this, 'floatingmenu.tab.table'),
+		1
+	);
+	
+	// generate formatting buttons
+	this.columnMSItems = [];
+    jQuery.each(this.columnConfig, function(j, itemConf) {
+		var item = {
+				'name' : itemConf.name,
+				'text' : GENTICS.Aloha.i18n(that, itemConf.text),
+			    'tooltip' : GENTICS.Aloha.i18n(that, itemConf.tooltip),
+		   	    'iconClass' : 'GENTICS_button GENTICS_column_layout ' + itemConf.iconClass,
+		   	    'click' : function(x,y,z) {
+					var sc = GENTICS.Aloha.TableHelper.selectedCells;
+					// if a selection was made, transform the selected cells
+					for (var i = 0; i < sc.length; i++) {
+						for (var j = 0; j < sc[i].length; j++) {
+							// remove all columnformattings
+							for (var f = 0; f < that.columnConfig.length; f++) {
+								jQuery(sc[i][j]).removeClass(that.columnConfig[f].cssClass);
+							}
+							// set new style
+							jQuery(sc[i][j]).addClass(itemConf.cssClass);
+						}
+					}
+					// selection could have changed.
+					if ( that.activeTable ) {
+						that.activeTable.selectColumns();
+					}
+				}
+			};
+		that.columnMSItems.push(item);
+	});
+	if ( this.columnMSItems.length > 0 ) {
+		this.columnMSItems.push({
+			'name' : 'removeFormat',
+			'text' : that.i18n('button.removeFormat.text'),
+	    	'tooltip' : that.i18n('button.removeFormat.tooltip'),
+	   	    'iconClass' : 'GENTICS_button GENTICS_button_removeFormat',
+	   	    'wide' : true,
+	   	    'click' : function() {
+				var sc = GENTICS.Aloha.TableHelper.selectedCells;
+				// if a selection was made, transform the selected cells
+				for (var i = 0; i < sc.length; i++) {
+					for (var j = 0; j < sc[i].length; j++) {
+						for (var f = 0; f < that.columnConfig.length; f++) {
+							jQuery(sc[i][j]).removeClass(that.columnConfig[f].cssClass);
+						}
+					}
+				}
+				// selection could have changed.
+				if ( that.activeTable ) {
+					that.activeTable.selectColumns();
+				}
+			}
+		});
+	}
+	this.columnMSButton = new GENTICS.Aloha.ui.MultiSplitButton({
+		'items' : this.columnMSItems
+	});
+	if (this.columnMSItems.length > 0) {
+		GENTICS.Aloha.FloatingMenu.addButton(
+			this.getUID('column'),
+			this.columnMSButton,
+			GENTICS.Aloha.i18n(this, 'floatingmenu.tab.table'),
+			3
+		);
+	}
+
+	// for rows
+	GENTICS.Aloha.FloatingMenu.addButton(
+		this.getUID('row'),
+		new GENTICS.Aloha.ui.Button({
+			'iconClass' : 'GENTICS_button GENTICS_button_addRowBefore',
+			'size' : 'small',
+			'tooltip' : this.i18n('button.addrowbefore.tooltip'),
+			'onclick' : function () {
+				if (that.activeTable) {
+					that.activeTable.addRowsBefore(true);
+				}
+			}
+		}),
+		GENTICS.Aloha.i18n(this, 'floatingmenu.tab.table'),
+		1
+	);
+	GENTICS.Aloha.FloatingMenu.addButton(
+		this.getUID('row'),
+		new GENTICS.Aloha.ui.Button({
+			'iconClass' : 'GENTICS_button GENTICS_button_addRowAfter',
+			'size' : 'small',
+			'tooltip' : this.i18n('button.addrowafter.tooltip'),
+			'onclick' : function () {
+				if (that.activeTable) {
+					that.activeTable.addRowsAfter(true);
+				}
+			}
+		}),
+		GENTICS.Aloha.i18n(this, 'floatingmenu.tab.table'),
+		1
+	);
+	GENTICS.Aloha.FloatingMenu.addButton(
+		this.getUID('row'),
+		new GENTICS.Aloha.ui.Button({
+			'iconClass' : 'GENTICS_button GENTICS_button_deleteRows',
+			'size' : 'small',
+			'tooltip' : this.i18n('button.delrows.tooltip'),
+			'onclick' : function () {
+				if (that.activeTable) {
+					var aTable = that.activeTable;
+					GENTICS.Aloha.showMessage(new GENTICS.Aloha.Message({
+						title : GENTICS.Aloha.i18n(that, 'Table'),
+						text : GENTICS.Aloha.i18n(that, 'deleterows.confirm'),
+						type : GENTICS.Aloha.Message.Type.CONFIRM,
+						callback : function (sel) {
+							if (sel == 'yes') {
+								aTable.deleteRows();
+							}
+						} 
+					}));
+				}
+			}
+		}),
+		GENTICS.Aloha.i18n(this, 'floatingmenu.tab.table'),
+		1
+	);
+	this.rowHeader = new GENTICS.Aloha.ui.Button({
+		'iconClass' : 'GENTICS_button GENTICS_button_row_header',
+		'size' : 'small',
+		'tooltip' : this.i18n('button.rowheader.tooltip'),
+		'onclick' : function () {
+			// table header
+			if (that.activeTable) {
+				var sc = GENTICS.Aloha.TableHelper.selectedCells;
+				that.rowsToSelect = [];
+				// if a selection was made, transform the selected cells
+				for (var i = 0; i < sc.length; i++) {
+					for (var j = 0; j < sc[i].length; j++) {
+						if ( i == 0 ) {
+							that.rowsToSelect.push(sc[i].rowIndex);
+						}
+						if ( this.isPressed() ) {
+							sc[i][j] = GENTICS.Aloha.Markup.transformDomObject(sc[i][j], 'td');
+						} else { 
+							sc[i][j] = GENTICS.Aloha.Markup.transformDomObject(sc[i][j], 'th').attr('scope', 'column');
+						}
+						jQuery(sc[i][j]).bind('mousedown', function(jqEvent) {
+							var wrapper = jQuery(this).children('div').eq(0);
+							setTimeout(function() {
+								wrapper.trigger('focus');
+							}, 1);
+							// unselect cells
+							GENTICS.Aloha.TableHelper.unselectCells();
+						});
+
+					}
+				}
+				// selection could have changed.
+				if ( that.activeTable ) {
+					that.activeTable.refresh();
+					that.activeTable.selectRows();
+				}
+			}
+		},
+		'toggle' : true
+	});
+	GENTICS.Aloha.FloatingMenu.addButton(
+		this.getUID('row'),
+		this.rowHeader,
+		GENTICS.Aloha.i18n(this, 'floatingmenu.tab.table'),
+		1
+	);
+
+	// generate formatting buttons
+	this.rowMSItems = [];
+//	for ( var c = 0; c < this.rowConfig.length; c++) {
+    jQuery.each(this.rowConfig, function(j, itemConf) {
+		that.rowMSItems.push({
+			'name' : itemConf.name,
+			'text' : GENTICS.Aloha.i18n(that, itemConf.text),
+		    'tooltip' : GENTICS.Aloha.i18n(that, itemConf.tooltip),
+	   	    'iconClass' : 'GENTICS_button GENTICS_row_layout ' + itemConf.iconClass,
+	   	    'click' : function() {
+				var sc = GENTICS.Aloha.TableHelper.selectedCells;
+				// if a selection was made, transform the selected cells
+				for (var i = 0; i < sc.length; i++) {
+					for (var j = 0; j < sc[i].length; j++) {
+						// remove all row formattings
+						for (var f = 0; f < that.rowConfig.length; f++) {
+							jQuery(sc[i][j]).removeClass(that.rowConfig[f].cssClass);
+						}
+						// set new style 
+						jQuery(sc[i][j]).addClass(itemConf.cssClass);
+					}
+				}
+				// selection could have changed.
+				if ( that.activeTable ) {
+					that.activeTable.selectRows();
+				}
+			}
+		});
+	});
+	if ( this.rowMSItems.length > 0 ) {
+		this.rowMSItems.push({
+			'name' : 'removeFormat',
+			'text' : that.i18n('button.removeFormat.text'),
+	    	'tooltip' : that.i18n('button.removeFormat.tooltip'),
+	   	    'iconClass' : 'GENTICS_button GENTICS_button_removeFormat',
+	   	    'wide' : true,
+	   	    'click' : function() {
+				var sc = GENTICS.Aloha.TableHelper.selectedCells;
+				// if a selection was made, transform the selected cells
+				for (var i = 0; i < sc.length; i++) {
+					for (var j = 0; j < sc[i].length; j++) {
+						for (var f = 0; f < that.rowConfig.length; f++) {
+							jQuery(sc[i][j]).removeClass(that.rowConfig[f].cssClass);
+						}
+					}
+				}
+				// selection could have changed.
+				if (that.activeTable) {
+					that.activeTable.selectRows();
+				}
+			}
+		});
+	}
+	this.rowMSButton = new GENTICS.Aloha.ui.MultiSplitButton({
+		'items' : this.rowMSItems
+	});
+	if (this.rowMSItems.length > 0) {
+		GENTICS.Aloha.FloatingMenu.addButton(
+			this.getUID('row'),
+			this.rowMSButton,
+			GENTICS.Aloha.i18n(this, 'floatingmenu.tab.table'),
+			3
+		);
+	}	
 };
 
 /**
@@ -534,7 +833,24 @@ GENTICS.Aloha.TablePlugin.setFocusedTable = function(focusTable) {
         }
 		focusTable.hasFocus = true;
 	}
-	GENTICS.Aloha.TablePlugin.activeTable = focusTable;
+	
+	this.activeTable = focusTable;
+	
+	// show configured formatting classes
+	for ( var i = 0; i < this.tableMSItems.length; i++ ) {
+		this.tableMSButton.extButton.showItem(this.tableMSItems[i].name);
+	}
+	this.tableMSButton.setActiveItem();
+	if (this.activeTable){
+		for ( var i = 0; i < this.tableConfig.length; i++) {
+			if ( this.activeTable.obj.hasClass(this.tableConfig[i].cssClass) ) {
+				this.tableMSButton.setActiveItem(this.tableConfig[i].name);
+				k = this.tableConfig.length;
+			}
+		}
+	}
+
+
 };
 
 /**
@@ -669,27 +985,9 @@ GENTICS.Aloha.Table = function(table) {
 		this.obj.attr('id', GENTICS.Utils.guid());
 	}
 	
-	// find the dimensions of the table
-	var rows = this.obj.find("tr");
-	var firstRow = jQuery(rows.get(0));
-	this.numCols = firstRow.children("td, th").length;
-	this.numRows = rows.length;
-
-	// init the cell-attribute with an empty array
-	this.cells = new Array();
-
-	// iterate over table cells and create Cell-objects
-	var rows = this.obj.find('tr');
-	for (var i = 0; i < rows.length; i++) {
-		var row = jQuery(rows[i]);
-		var cols = row.children();
-		for (var j = 0; j < cols.length; j++) {
-			var col = cols[j];
-			var Cell = new GENTICS.Aloha.Table.Cell(col, this);
-			this.cells.push(Cell);
-		}
-	}
+	this.refresh();
 };
+
 /* -- ATTRIBUTES -- */
 /**
  * Attribute holding the jQuery-table-represenation
@@ -766,6 +1064,32 @@ GENTICS.Aloha.Table.prototype.fmPluginId = undefined;
 /* -- END ATTRIBUTES -- */
 
 /* -- METHODS -- */
+/**
+ * @hide
+ */
+GENTICS.Aloha.Table.prototype.refresh = function() {
+	// find the dimensions of the table
+	var rows = this.obj.find("tr");
+	var firstRow = jQuery(rows.get(0));
+	var selector = "td:not(td."+this.get('classLeftUpperCorner')+"), th";
+	this.numCols = firstRow.children(selector).length;
+	this.numRows = rows.length;
+
+	// init the cell-attribute with an empty array
+	this.cells = new Array();
+
+	// iterate over table cells and create Cell-objects
+	var rows = this.obj.find('tr');
+	for (var i = 0; i < rows.length; i++) {
+		var row = jQuery(rows[i]);
+		var cols = row.children();
+		for (var j = 0; j < cols.length; j++) {
+			var col = cols[j];
+			var Cell = new GENTICS.Aloha.Table.Cell(col, this);
+			this.cells.push(Cell);
+		}
+	}
+};
 /**
  * Wrapper-Mehotd to return a property of GENTICS.Aloha.TablePlugin.get
  * 
@@ -955,7 +1279,8 @@ GENTICS.Aloha.Table.prototype.attachSelectionColumn = function() {
 		var columnToInsert = emptyCell.clone();
 		columnToInsert.addClass(this.get('classSelectionColumn'));
 		columnToInsert.css('width', this.get('selectionArea') + 'px');
-		rowObj.find('td:first').before(columnToInsert);
+		// TODO first could also be a tbody or thead
+		rowObj.find(':first').before(columnToInsert);
 		
 		// rowIndex + 1 because an addtional row is still added
 		var rowIndex = i + 1;
@@ -1300,8 +1625,20 @@ GENTICS.Aloha.Table.prototype.releaseLastCellEvents = function() {
  */
 GENTICS.Aloha.Table.prototype.attachLastCellEvents = function() {
 	var that = this;
-	this.obj.find('tr:last td:last').bind('keydown', function(jqEvent) {
+	
+	this.releaseLastCellEvents();
+
+	var o = this.obj.find('tr:last td:last');
+	o.bind('keydown', function(jqEvent) {
 		that.lastCellKeyDown(jqEvent);
+	})	
+	o.bind('mousedown', function(jqEvent) {
+		var wrapper = jQuery(this).children('div').eq(0);		
+		setTimeout(function() {
+			wrapper.trigger('focus');
+		}, 1);
+		// unselect cells
+		GENTICS.Aloha.TableHelper.unselectCells();
 	});
 };
 
@@ -1319,7 +1656,7 @@ GENTICS.Aloha.Table.prototype.lastCellKeyDown = function(jqEvent) {
 	
 	// only add a row on a single key-press of tab (so check if alt-, shift- or
 	// ctrl-key are NOT pressed)
-	if (KEYCODE_TAB == jqEvent.keyCode && !jqEvent.altKey && !jqEvent.shiftKey && !jqEvent.ctrlKey) {
+	if (KEYCODE_TAB == jqEvent.keyCode && !jqEvent.altKey && !jqEvent.shiftKey && !jqEvent.ctrlKey && !jqEvent.metaKey) {
 		// add a row after the current row (false stands for not highlighting the new row)
 		this.addRowsAfter(false);
 		
@@ -1780,7 +2117,7 @@ GENTICS.Aloha.Table.prototype.addColumns = function (position) {
 					cell = cellObj.obj;
 				}
 				
-				var insertionColumn = jQuery(jQuery(row).find("td").get(newColId));
+				var insertionColumn = jQuery(jQuery(row).find("td, th").get(newColId));
 				switch (position) {
 					case 'left':
 						if (jQuery.inArray(currentColId, colIdArray) < 0) {
@@ -1859,6 +2196,11 @@ GENTICS.Aloha.Table.prototype.selectColumns = function() {
 	// unselect selected cells
 	GENTICS.Aloha.TableHelper.unselectCells();
 
+	// activate all column formatting button
+	for ( var i = 0; i < GENTICS.Aloha.TablePlugin.columnMSItems.length; i++ ) {
+		GENTICS.Aloha.TablePlugin.columnMSButton.extButton.showItem(GENTICS.Aloha.TablePlugin.columnMSItems[i].name);
+	}
+
 	GENTICS.Aloha.TableHelper.selectionType = 'column';
 	GENTICS.Aloha.FloatingMenu.setScope(GENTICS.Aloha.TablePlugin.getUID('column'));
 
@@ -1875,6 +2217,18 @@ GENTICS.Aloha.Table.prototype.selectColumns = function() {
 		for (var j = 0; j < this.columnsToSelect.length; j++) {
 			var colIndex = this.columnsToSelect[j];
 			var cell = rowCells[colIndex];
+			if ( j == 0 && i == 0 && cell ) {
+				// set the status of the table header button to the status of the frist selected column
+				GENTICS.Aloha.TablePlugin.columnHeader.setPressed((cell.nodeName.toLowerCase() == 'th'));
+				// set the first class found as active item in the multisplit button
+				GENTICS.Aloha.TablePlugin.columnMSButton.setActiveItem();
+				for ( var k = 0; k < GENTICS.Aloha.TablePlugin.columnConfig.length; k++) {
+					if ( jQuery(cell).hasClass(GENTICS.Aloha.TablePlugin.columnConfig[k].cssClass) ) {
+						GENTICS.Aloha.TablePlugin.columnMSButton.setActiveItem(GENTICS.Aloha.TablePlugin.columnConfig[k].name);
+						k = GENTICS.Aloha.TablePlugin.columnConfig.length;
+					}
+				}
+			}
 			toSelect.push(cell);
 			selectedCellsInCol.push(cell);
 		}
@@ -1899,11 +2253,32 @@ GENTICS.Aloha.Table.prototype.selectRows = function() {
 	
 	// unselect selected cells
 	GENTICS.Aloha.TableHelper.unselectCells();
+	
+	// activate all column formatting button
+	for ( var i = 0; i < GENTICS.Aloha.TablePlugin.rowMSItems.length; i++ ) {
+		GENTICS.Aloha.TablePlugin.rowMSButton.extButton.showItem(GENTICS.Aloha.TablePlugin.rowMSItems[i].name);
+	}
+
 	this.rowsToSelect.sort(function(a,b){return a - b;});
 	
 	for (var i = 0; i < this.rowsToSelect.length; i++) {
 		var rowId = this.rowsToSelect[i];
 		var rowCells = jQuery(this.obj.find('tr').get(rowId).cells).toArray();
+		if ( i == 0 ) {
+			// set the status of the table header button to the status of the frist selected row
+			// it is the 2 (index 1) cell. The first is the selection-helper
+			GENTICS.Aloha.TablePlugin.rowHeader.setPressed((rowCells[1].nodeName.toLowerCase() == 'th'));
+			// set the first class found as active item in the multisplit button
+			for (var j = 0; j < rowCells.length; j++) {
+				GENTICS.Aloha.TablePlugin.rowMSButton.setActiveItem();
+				for ( var k = 0; k < GENTICS.Aloha.TablePlugin.rowConfig.length; k++) {
+					if ( jQuery(rowCells[j]).hasClass(GENTICS.Aloha.TablePlugin.rowConfig[k].cssClass) ) {
+						GENTICS.Aloha.TablePlugin.rowMSButton.setActiveItem(GENTICS.Aloha.TablePlugin.rowConfig[k].name);
+						k = GENTICS.Aloha.TablePlugin.rowConfig.length;
+					}
+				}
+			}
+		}
 
 		// shift the first element (which is a selection-helper cell)
 		rowCells.shift();
@@ -2206,7 +2581,7 @@ GENTICS.Aloha.Table.Cell.prototype.selectAll = function(editableNode) {
 	if (!jQuery.browser.msie) {
 		var s = window.getSelection();
 		// Safari
-		if (s.setBaseAndExtent) {
+		if (s.setBaseAndExtent && e > 0 ) {
 			s.setBaseAndExtent(e, 0, e, e.innerText.length - 1);
 		}
 		// Firefox and Opera
