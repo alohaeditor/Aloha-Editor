@@ -788,9 +788,19 @@ GENTICS.Aloha.Markup.prototype.transformDomObject = function (domobj, nodeName) 
 	// first create the new element
 	var jqOldObj = jQuery(domobj);
 	var jqNewObj = jQuery('<' + nodeName + '></' + nodeName + '>');
-	// TODO what about attributes?
 
-	// now move the contents of the old dom object into the new dom object
+	// TODO what about events? css properties?
+	
+	// copy attributes
+	if (jqOldObj[0].attributes) {
+	    for (i = 0; i < jqOldObj[0].attributes.length; i++) {
+	    	jqNewObj.attr(jqOldObj[0].attributes[i].nodeName, jqOldObj[0].attributes[i].nodeValue);
+	    }
+	}
+    // copy inline CSS
+	jqNewObj[0].style.cssText = jqOldObj[0].style.cssText;
+	
+    // now move the contents of the old dom object into the new dom object
 	jqOldObj.contents().appendTo(jqNewObj);
 
 	// finally replace the old object with the new one
