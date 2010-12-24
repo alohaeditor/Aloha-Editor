@@ -69,11 +69,47 @@ Aloha.TablePlugin.parameters = {
 
 /* -- METHODS -- */
 /**
+ * @hide
+ * {name:'green', text:'Green',tooltip:'Green',iconClass:'GENTICS_table GENTICS_button_green',cssClass:'green'}
+ */
+Aloha.TablePlugin.checkConfig = function (c){
+	if ( typeof c == 'object' && c.length ) {
+		var newC = [];
+		for ( var i=0; i < c.length; i++) {
+			// IE has the annoying behaviour that arrays contain undefined elements, if they are generated ending with , (comma)
+			if (c[i]) {
+				newC.push({
+					text : c[i].text ? c[i].text : c[i].name,
+					tooltip : c[i].tooltip ? c[i].tooltip : c[i].text,
+					iconClass : c[i].iconClass ? c[i].iconClass : 'GENTICS_button_'+c[i].name,
+					cssClass : c[i].cssClass ? c[i].cssClass : c[i].name
+				});
+			}
+		}
+		c = newC;
+	} else {
+		c = [];
+	}
+	return c;
+};
+/**
  * Init method of the Table-plugin transforms all tables in the document
  *
  * @return void
  */
 Aloha.TablePlugin.init = function() {
+	
+	// apply settings
+    if (this.settings.tableConfig != undefined)
+        this.tableConfig = this.settings.tableConfig;
+    this.tableConfig = this.checkConfig(this.tableConfig);
+    if (this.settings.columnConfig != undefined)
+        this.columnConfig = this.settings.columnConfig;
+    this.columnConfig = this.checkConfig(this.columnConfig);
+    if (this.settings.rowConfig != undefined)
+        this.rowConfig = this.settings.rowConfig;
+    this.rowConfig = this.checkConfig(this.rowConfig);
+	
 	// add reference to the create layer object
 	this.createLayer = new Aloha.Table.CreateLayer();
 
@@ -230,6 +266,117 @@ Aloha.TablePlugin.initTableButtons = function () {
 	);
 
 	// now the specific table buttons
+	
+	// format caption
+	this.captionButton = new Aloha.ui.Button({
+		'iconClass' : 'GENTICS_button GENTICS_button_table_caption',
+		'size' : 'small',
+		'tooltip' : this.i18n('button.caption.tooltip'),
+        'toggle' : true,
+		'onclick' : function () {
+			if (that.activeTable) {
+				// look if table object has a child caption
+				if ( that.activeTable.obj.children("caption").is('caption') ) {
+					that.activeTable.obj.children("caption").remove();
+					// select first cell of table
+				} else {						
+					var captionText = that.i18n('empty.caption');
+					var c = jQuery('<caption></caption>');
+					that.activeTable.obj.append(c);
+					that.makeCaptionEditable(c, captionText);
+
+					// get the editable span within the caption and select it
+					var cDiv = c.find('div').eq(0);
+					var captionContent = cDiv.contents().eq(0);
+					if (captionContent.length > 0) {
+						var newRange = new GENTICS.Utils.RangeObject();
+						newRange.startContainer = newRange.endContainer = captionContent.get(0);
+						newRange.startOffset = 0;
+						newRange.endOffset = captionContent.text().length;
+
+						// blur all editables within the table
+						that.activeTable.obj.find('div.GENTICS_Table_Cell_editable').blur();
+
+						cDiv.focus();
+						newRange.select();
+						Aloha.Selection.updateSelection();
+					}
+				}
+			}
+		}
+	});
+	Aloha.FloatingMenu.addButton(
+		this.getUID('cell'),
+		this.captionButton,
+		Aloha.i18n(this, 'floatingmenu.tab.table'),
+		1
+	);
+	
+	// for cells
+    // add summary field
+    this.summary = new Aloha.ui.AttributeField({
+    	'width':350
+    });
+    this.summary.addListener('keyup', function(obj, event) {
+    	that.activeTable.checkWai();
+    });
+    Aloha.FloatingMenu.addButton(
+        this.getUID('cell'),
+        this.summary,
+        Aloha.i18n(this, 'floatingmenu.tab.table'),
+        1
+    );
+	
+	// generate formatting buttons
+	this.tableMSItems = [];
+//	for ( var c = 0; c < this.tableConfig.length; c++) {
+	jQuery.each(this.tableConfig, function(j, itemConf) {
+		that.tableMSItems.push({
+			'name' : itemConf.name,
+			'text' : that.i18n(itemConf.text),
+		    	'tooltip' : that.i18n(itemConf.tooltip),
+	   	   	'iconClass' : 'GENTICS_button GENTICS_table_layout ' + itemConf.iconClass,
+	   	   	'click' : function() {
+				//set table css class
+				if ( that.activeTable ) {
+					for (var f = 0; f < that.tableConfig.length; f++) {
+						that.activeTable.obj.removeClass(that.tableConfig[f].cssClass);
+					}
+					that.activeTable.obj.addClass(itemConf.cssClass);
+				}
+			}
+		});
+	});
+	if ( this.tableMSItems.length > 0 ) {
+		this.tableMSItems.push({
+			'name' : 'removeFormat',
+			'text' : that.i18n('button.removeFormat.text'),
+	    	'tooltip' : that.i18n('button.removeFormat.tooltip'),
+	   	    'iconClass' : 'GENTICS_button GENTICS_button_removeFormat',
+	   	    'wide' : true,
+	   	    'click' : function() {
+				// remove all table classes
+				if ( that.activeTable ) {
+					for (var f = 0; f < that.tableConfig.length; f++) {
+						that.activeTable.obj.removeClass(that.tableConfig[f].cssClass);
+					}
+				}
+			}
+		});
+	}
+	this.tableMSButton = new Aloha.ui.MultiSplitButton({
+		'items' : this.tableMSItems
+	});
+	if (this.tableMSItems.length > 0) {
+		Aloha.FloatingMenu.addButton(
+			this.getUID('cell'),
+			this.tableMSButton,
+			Aloha.i18n(this, 'floatingmenu.tab.tablelayout'),
+			3
+		);
+	}
+	
+	
 	// for columns
 	Aloha.FloatingMenu.addButton(
 		this.getUID('column'),
@@ -286,6 +433,117 @@ Aloha.TablePlugin.initTableButtons = function () {
 		Aloha.i18n(this, 'floatingmenu.tab.table'),
 		1
 	);
+	this.columnHeader = new Aloha.ui.Button({
+		'iconClass' : 'GENTICS_button GENTICS_button_col_header',
+		'size' : 'small',
+		'tooltip' : this.i18n('button.columnheader.tooltip'),
+		'onclick' : function () {
+			// table header
+			if (that.activeTable) {
+				var sc = Aloha.TableHelper.selectedCells;
+				// if a selection was made, transform the selected cells
+				that.columnsToSelect = [];
+				for (var i = 0; i < sc.length; i++) {
+					for (var j = 0; j < sc[i].length; j++) {
+						if ( i == 0 ){
+							that.columnsToSelect.push(sc[i][j].cellIndex)
+						}
+						if ( this.isPressed() ) {
+							sc[i][j] = Aloha.Markup.transformDomObject(sc[i][j], 'td');
+						} else { 
+							sc[i][j] = Aloha.Markup.transformDomObject(sc[i][j], 'th').attr('scope', 'column');
+						}
+						jQuery(sc[i][j]).bind('mousedown', function(jqEvent) {
+							var wrapper = jQuery(this).children('div').eq(0);
+							setTimeout(function() {
+								wrapper.trigger('focus');
+							}, 1);
+							// unselect cells
+							Aloha.TableHelper.unselectCells();
+						});
+
+					}
+				}
+				// selection could have changed.
+				if ( that.activeTable ) {
+					that.activeTable.refresh();
+					that.activeTable.selectColumns();
+				}
+			}
+		},
+		'toggle' : true
+	});
+	Aloha.FloatingMenu.addButton(
+		this.getUID('column'),
+		this.columnHeader,
+		Aloha.i18n(this, 'floatingmenu.tab.table'),
+		1
+	);
+	
+	// generate formatting buttons
+	this.columnMSItems = [];
+    jQuery.each(this.columnConfig, function(j, itemConf) {
+		var item = {
+				'name' : itemConf.name,
+				'text' : that.i18n(itemConf.text),
+			        'tooltip' : that.i18n(itemConf.tooltip),
+		   	        'iconClass' : 'GENTICS_button GENTICS_column_layout ' + itemConf.iconClass,
+		   	        'click' : function(x,y,z) {
+					var sc = Aloha.TableHelper.selectedCells;
+					// if a selection was made, transform the selected cells
+					for (var i = 0; i < sc.length; i++) {
+						for (var j = 0; j < sc[i].length; j++) {
+							// remove all columnformattings
+							for (var f = 0; f < that.columnConfig.length; f++) {
+								jQuery(sc[i][j]).removeClass(that.columnConfig[f].cssClass);
+							}
+							// set new style
+							jQuery(sc[i][j]).addClass(itemConf.cssClass);
+						}
+					}
+					// selection could have changed.
+					if ( that.activeTable ) {
+						that.activeTable.selectColumns();
+					}
+				}
+			};
+		that.columnMSItems.push(item);
+	});
+	if ( this.columnMSItems.length > 0 ) {
+		this.columnMSItems.push({
+			'name' : 'removeFormat',
+			'text' : that.i18n('button.removeFormat.text'),
+	    	'tooltip' : that.i18n('button.removeFormat.tooltip'),
+	   	    'iconClass' : 'GENTICS_button GENTICS_button_removeFormat',
+	   	    'wide' : true,
+	   	    'click' : function() {
+				var sc = Aloha.TableHelper.selectedCells;
+				// if a selection was made, transform the selected cells
+				for (var i = 0; i < sc.length; i++) {
+					for (var j = 0; j < sc[i].length; j++) {
+						for (var f = 0; f < that.columnConfig.length; f++) {
+							jQuery(sc[i][j]).removeClass(that.columnConfig[f].cssClass);
+						}
+					}
+				}
+				// selection could have changed.
+				if ( that.activeTable ) {
+					that.activeTable.selectColumns();
+				}
+			}
+		});
+	}
+	this.columnMSButton = new Aloha.ui.MultiSplitButton({
+		'items' : this.columnMSItems
+	});
+	if (this.columnMSItems.length > 0) {
+		Aloha.FloatingMenu.addButton(
+			this.getUID('column'),
+			this.columnMSButton,
+			Aloha.i18n(this, 'floatingmenu.tab.table'),
+			3
+		);
+	}
 
 	// for rows
 	Aloha.FloatingMenu.addButton(
@@ -344,64 +602,125 @@ Aloha.TablePlugin.initTableButtons = function () {
 		1
 	);
 
-	this.captionButton = new Aloha.ui.Button({
-		'iconClass' : 'aloha-button aloha-button-table-caption',
+	this.rowHeader = new Aloha.ui.Button({
+		'iconClass' : 'GENTICS_button GENTICS_button_row_header',
 		'size' : 'small',
-		'tooltip' : this.i18n('button.caption.tooltip'),
-        'toggle' : true,
+		'tooltip' : this.i18n('button.rowheader.tooltip'),
 		'onclick' : function () {
+			// table header
 			if (that.activeTable) {
-				// look if table object has a child caption
-				if ( that.activeTable.obj.children("caption").is('caption') ) {
-					that.activeTable.obj.children("caption").remove();
-					// select first cell of table
-				} else {
-					var captionText = that.i18n('empty.caption');
-					var c = jQuery('<caption></caption>');
-					that.activeTable.obj.append(c);
-					that.makeCaptionEditable(c, captionText);
-
-					// get the editable span within the caption and select it
-					var cDiv = c.find('div').eq(0);
-					var captionContent = cDiv.contents().eq(0);
-					if (captionContent.length > 0) {
-						var newRange = new GENTICS.Utils.RangeObject();
-						newRange.startContainer = newRange.endContainer = captionContent.get(0);
-						newRange.startOffset = 0;
-						newRange.endOffset = captionContent.text().length;
-
-						// blur all editables within the table
-						that.activeTable.obj.find('div.aloha-table-cell-editable').blur();
-
-						cDiv.focus();
-						newRange.select();
-						Aloha.Selection.updateSelection();
+				var sc = Aloha.TableHelper.selectedCells;
+				that.rowsToSelect = [];
+				// if a selection was made, transform the selected cells
+				for (var i = 0; i < sc.length; i++) {
+					for (var j = 0; j < sc[i].length; j++) {
+						if ( i == 0 ) {
+							that.rowsToSelect.push(sc[i].rowIndex);
+						}
+						if ( this.isPressed() ) {
+							sc[i][j] = Aloha.Markup.transformDomObject(sc[i][j], 'td');
+						} else { 
+							sc[i][j] = Aloha.Markup.transformDomObject(sc[i][j], 'th').attr('scope', 'column');
+						}
+						jQuery(sc[i][j]).bind('mousedown', function(jqEvent) {
+							var wrapper = jQuery(this).children('div').eq(0);
+							setTimeout(function() {
+								wrapper.trigger('focus');
+							}, 1);
+							// unselect cells
+							Aloha.TableHelper.unselectCells();
+						});
 					}
 				}
+				// selection could have changed.
+				if ( that.activeTable ) {
+					that.activeTable.refresh();
+					that.activeTable.selectRows();
+				}
 			}
-		}
+		},
+		'toggle' : true
 	});
+
 	Aloha.FloatingMenu.addButton(
-		this.getUID('cell'),
-		this.captionButton,
+		this.getUID('row'),
+		this.rowHeader,
 		Aloha.i18n(this, 'floatingmenu.tab.table'),
 		1
 	);
 
-	// for cells
-    // add summary field
-    this.summary = new Aloha.ui.AttributeField({
-    	'width':350
-    });
-    this.summary.addListener('keyup', function(obj, event) {
-    	that.activeTable.checkWai();
-    });
-    Aloha.FloatingMenu.addButton(
-        this.getUID('cell'),
-        this.summary,
-        Aloha.i18n(this, 'floatingmenu.tab.table'),
-        1
-    );
+	Aloha.FloatingMenu.addButton(
+		this.getUID('row'),
+		this.rowHeader,
+		Aloha.i18n(this, 'floatingmenu.tab.table'),
+		1
+	);
+
+	// generate formatting buttons
+	this.rowMSItems = [];
+//	for ( var c = 0; c < this.rowConfig.length; c++) {
+    jQuery.each(this.rowConfig, function(j, itemConf) {
+		that.rowMSItems.push({
+			'name' : itemConf.name,
+			'text' : Aloha.i18n(that, itemConf.text),
+		    'tooltip' : Aloha.i18n(that, itemConf.tooltip),
+	   	    'iconClass' : 'GENTICS_button GENTICS_row_layout ' + itemConf.iconClass,
+	   	    'click' : function() {
+				var sc = Aloha.TableHelper.selectedCells;
+				// if a selection was made, transform the selected cells
+				for (var i = 0; i < sc.length; i++) {
+					for (var j = 0; j < sc[i].length; j++) {
+						// remove all row formattings
+						for (var f = 0; f < that.rowConfig.length; f++) {
+							jQuery(sc[i][j]).removeClass(that.rowConfig[f].cssClass);
+						}
+						// set new style 
+						jQuery(sc[i][j]).addClass(itemConf.cssClass);
+					}
+				}
+				// selection could have changed.
+				if ( that.activeTable ) {
+					that.activeTable.selectRows();
+				}
+			}
+		});
+	});
+	if ( this.rowMSItems.length > 0 ) {
+		this.rowMSItems.push({
+			'name' : 'removeFormat',
+			'text' : that.i18n('button.removeFormat.text'),
+	    	'tooltip' : that.i18n('button.removeFormat.tooltip'),
+	   	    'iconClass' : 'GENTICS_button GENTICS_button_removeFormat',
+	   	    'wide' : true,
+	   	    'click' : function() {
+				var sc = Aloha.TableHelper.selectedCells;
+				// if a selection was made, transform the selected cells
+				for (var i = 0; i < sc.length; i++) {
+					for (var j = 0; j < sc[i].length; j++) {
+						for (var f = 0; f < that.rowConfig.length; f++) {
+							jQuery(sc[i][j]).removeClass(that.rowConfig[f].cssClass);
+						}
+					}
+				}
+				// selection could have changed.
+				if (that.activeTable) {
+					that.activeTable.selectRows();
+				}
+			}
+		});
+	}
+	this.rowMSButton = new Aloha.ui.MultiSplitButton({
+		'items' : this.rowMSItems
+	});
+
+	if (this.rowMSItems.length > 0) {
+		Aloha.FloatingMenu.addButton(
+			this.getUID('row'),
+			this.rowMSButton,
+			Aloha.i18n(this, 'floatingmenu.tab.table'),
+			3
+		);
+	}	
 };
 
 /**
@@ -537,7 +856,22 @@ Aloha.TablePlugin.setFocusedTable = function(focusTable) {
         }
 		focusTable.hasFocus = true;
 	}
-	Aloha.TablePlugin.activeTable = focusTable;
+	
+	this.activeTable = focusTable;
+	
+	// show configured formatting classes
+	for ( var i = 0; i < this.tableMSItems.length; i++ ) {
+		this.tableMSButton.extButton.showItem(this.tableMSItems[i].name);
+	}
+	this.tableMSButton.setActiveItem();
+	if (this.activeTable){
+		for ( var i = 0; i < this.tableConfig.length; i++) {
+			if ( this.activeTable.obj.hasClass(this.tableConfig[i].cssClass) ) {
+				this.tableMSButton.setActiveItem(this.tableConfig[i].name);
+				k = this.tableConfig.length;
+			}
+		}
+	}
 };
 
 /**
@@ -671,28 +1005,10 @@ Aloha.Table = function(table) {
 	if ( !this.obj.attr('id') ) {
 		this.obj.attr('id', GENTICS.Utils.guid());
 	}
-
-	// find the dimensions of the table
-	var rows = this.obj.find("tr");
-	var firstRow = jQuery(rows.get(0));
-	this.numCols = firstRow.children("td, th").length;
-	this.numRows = rows.length;
-
-	// init the cell-attribute with an empty array
-	this.cells = new Array();
-
-	// iterate over table cells and create Cell-objects
-	var rows = this.obj.find('tr');
-	for (var i = 0; i < rows.length; i++) {
-		var row = jQuery(rows[i]);
-		var cols = row.children();
-		for (var j = 0; j < cols.length; j++) {
-			var col = cols[j];
-			var Cell = new Aloha.Table.Cell(col, this);
-			this.cells.push(Cell);
-		}
-	}
+	
+	this.refresh();
 };
+
 /* -- ATTRIBUTES -- */
 /**
  * Attribute holding the jQuery-table-represenation
@@ -769,6 +1085,33 @@ Aloha.Table.prototype.fmPluginId = undefined;
 /* -- END ATTRIBUTES -- */
 
 /* -- METHODS -- */
+/**
+ * @hide
+ */
+Aloha.Table.prototype.refresh = function() {
+	// find the dimensions of the table
+	var rows = this.obj.find("tr");
+	var firstRow = jQuery(rows.get(0));
+	var selector = "td:not(td."+this.get('classLeftUpperCorner')+"), th";
+	this.numCols = firstRow.children(selector).length;
+	this.numRows = rows.length;
+
+	// init the cell-attribute with an empty array
+	this.cells = new Array();
+
+	// iterate over table cells and create Cell-objects
+	var rows = this.obj.find('tr');
+	for (var i = 0; i < rows.length; i++) {
+		var row = jQuery(rows[i]);
+		var cols = row.children();
+		for (var j = 0; j < cols.length; j++) {
+			var col = cols[j];
+			var Cell = new Aloha.Table.Cell(col, this);
+			this.cells.push(Cell);
+		}
+	}
+};
+
 /**
  * Wrapper-Mehotd to return a property of Aloha.TablePlugin.get
  *
@@ -955,7 +1298,9 @@ Aloha.Table.prototype.attachSelectionColumn = function() {
 		columnToInsert = emptyCell.clone();
 		columnToInsert.addClass(this.get('classSelectionColumn'));
 		columnToInsert.css('width', this.get('selectionArea') + 'px');
-		rowObj.find('td:first').before(columnToInsert);
+
+		// TODO first could also be a tbody or thead
+		rowObj.find(':first').before(columnToInsert);
 
 		// rowIndex + 1 because an addtional row is still added
 		rowIndex = i + 1;
@@ -1301,8 +1646,20 @@ Aloha.Table.prototype.releaseLastCellEvents = function() {
  */
 Aloha.Table.prototype.attachLastCellEvents = function() {
 	var that = this;
-	this.obj.find('tr:last td:last').bind('keydown', function(jqEvent) {
+	
+	this.releaseLastCellEvents();
+
+	var o = this.obj.find('tr:last td:last');
+	o.bind('keydown', function(jqEvent) {
 		that.lastCellKeyDown(jqEvent);
+	})	
+	o.bind('mousedown', function(jqEvent) {
+		var wrapper = jQuery(this).children('div').eq(0);		
+		setTimeout(function() {
+			wrapper.trigger('focus');
+		}, 1);
+		// unselect cells
+		Aloha.TableHelper.unselectCells();
 	});
 };
 
@@ -1320,7 +1677,7 @@ Aloha.Table.prototype.lastCellKeyDown = function(jqEvent) {
 
 	// only add a row on a single key-press of tab (so check if alt-, shift- or
 	// ctrl-key are NOT pressed)
-	if (KEYCODE_TAB == jqEvent.keyCode && !jqEvent.altKey && !jqEvent.shiftKey && !jqEvent.ctrlKey) {
+	if (KEYCODE_TAB == jqEvent.keyCode && !jqEvent.altKey && !jqEvent.shiftKey && !jqEvent.ctrlKey && !jqEvent.metaKey) {
 		// add a row after the current row (false stands for not highlighting the new row)
 		this.addRowsAfter(false);
 
@@ -1781,7 +2138,8 @@ Aloha.Table.prototype.addColumns = function (position) {
 					cell = cellObj.obj;
 				}
 
-				var insertionColumn = jQuery(jQuery(row).find("td").get(newColId));
+				var insertionColumn = jQuery(jQuery(row).find("td, th").get(newColId));
+
 				switch (position) {
 					case 'left':
 						if (jQuery.inArray(currentColId, colIdArray) < 0) {
@@ -1860,6 +2218,11 @@ Aloha.Table.prototype.selectColumns = function() {
 	// unselect selected cells
 	Aloha.TableHelper.unselectCells();
 
+	// activate all column formatting button
+	for ( var i = 0; i < Aloha.TablePlugin.columnMSItems.length; i++ ) {
+		Aloha.TablePlugin.columnMSButton.extButton.showItem(Aloha.TablePlugin.columnMSItems[i].name);
+	}
+
 	Aloha.TableHelper.selectionType = 'column';
 	Aloha.FloatingMenu.setScope(Aloha.TablePlugin.getUID('column'));
 
@@ -1876,6 +2239,18 @@ Aloha.Table.prototype.selectColumns = function() {
 		for (var j = 0; j < this.columnsToSelect.length; j++) {
 			var colIndex = this.columnsToSelect[j];
 			var cell = rowCells[colIndex];
+			if ( j == 0 && i == 0 && cell ) {
+				// set the status of the table header button to the status of the frist selected column
+				Aloha.TablePlugin.columnHeader.setPressed((cell.nodeName.toLowerCase() == 'th'));
+				// set the first class found as active item in the multisplit button
+				Aloha.TablePlugin.columnMSButton.setActiveItem();
+				for ( var k = 0; k < Aloha.TablePlugin.columnConfig.length; k++) {
+					if ( jQuery(cell).hasClass(Aloha.TablePlugin.columnConfig[k].cssClass) ) {
+						Aloha.TablePlugin.columnMSButton.setActiveItem(Aloha.TablePlugin.columnConfig[k].name);
+						k = Aloha.TablePlugin.columnConfig.length;
+					}
+				}
+			}
 			toSelect.push(cell);
 			selectedCellsInCol.push(cell);
 		}
@@ -1900,11 +2275,32 @@ Aloha.Table.prototype.selectRows = function() {
 
 	// unselect selected cells
 	Aloha.TableHelper.unselectCells();
+	
+	// activate all column formatting button
+	for ( var i = 0; i < Aloha.TablePlugin.rowMSItems.length; i++ ) {
+		Aloha.TablePlugin.rowMSButton.extButton.showItem(Aloha.TablePlugin.rowMSItems[i].name);
+	}
+
 	this.rowsToSelect.sort(function(a,b){return a - b;});
 
 	for (var i = 0; i < this.rowsToSelect.length; i++) {
 		var rowId = this.rowsToSelect[i];
 		var rowCells = jQuery(this.obj.find('tr').get(rowId).cells).toArray();
+		if ( i == 0 ) {
+			// set the status of the table header button to the status of the frist selected row
+			// it is the 2 (index 1) cell. The first is the selection-helper
+			Aloha.TablePlugin.rowHeader.setPressed((rowCells[1].nodeName.toLowerCase() == 'th'));
+			// set the first class found as active item in the multisplit button
+			for (var j = 0; j < rowCells.length; j++) {
+				Aloha.TablePlugin.rowMSButton.setActiveItem();
+				for ( var k = 0; k < Aloha.TablePlugin.rowConfig.length; k++) {
+					if ( jQuery(rowCells[j]).hasClass(Aloha.TablePlugin.rowConfig[k].cssClass) ) {
+						Aloha.TablePlugin.rowMSButton.setActiveItem(Aloha.TablePlugin.rowConfig[k].name);
+						k = Aloha.TablePlugin.rowConfig.length;
+					}
+				}
+			}
+		}
 
 		// shift the first element (which is a selection-helper cell)
 		rowCells.shift();
@@ -2169,10 +2565,10 @@ Aloha.Table.Cell.prototype.deactivate = function() {
 	var wrapper = this.obj.children('.aloha-table-cell-editable');
 
 	if (wrapper.length) {
-		// get the inner html of the contenteditable div
-		var innerHtml = wrapper.html();
-
-		// remove the contenteditable div and its attached events
+		// unwrap the contents of the wrapper (which removes the wrapper)
+		wrapper.contents().unwrap();
+		
+		// remove the contenteditable div and its attached events (is this still necessary?)
 		wrapper.unbind();
 		wrapper.remove();
 
@@ -2182,10 +2578,6 @@ Aloha.Table.Cell.prototype.deactivate = function() {
 		if (jQuery.trim(this.obj.attr('class')) == '') {
 			this.obj.removeAttr('class');
 		}
-
-		// set the inner html of the contenteditable div as html for the table-data
-		// field
-		this.obj.html(innerHtml);
 	}
 };
 
@@ -2211,7 +2603,7 @@ Aloha.Table.Cell.prototype.selectAll = function(editableNode) {
 	if (!jQuery.browser.msie) {
 		var s = window.getSelection();
 		// Safari
-		if (s.setBaseAndExtent) {
+		if (s.setBaseAndExtent && e > 0 ) {
 			s.setBaseAndExtent(e, 0, e, e.innerText.length - 1);
 		}
 		// Firefox and Opera
@@ -2642,7 +3034,7 @@ Aloha.TableHelper.prototype.getNewTableID = function() {
 /**
  * Initialize a new Object from the same object to get access to the prototype methods
  */
-Aloha.TableHelper = new Aloha.TableHelper();
 
+Aloha.TableHelper = new Aloha.TableHelper();
 
 })(window);

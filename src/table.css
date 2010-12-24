@@ -57,13 +57,13 @@ td.aloha-table-selectrow {
 	border: 0;
 	margin:0;
 	padding:0;
-	background-color: #D0D0D0;
+	background-color: #D0D0D0 !important;
 	font-size: 0.01em;
 }
 
 .aloha-table td.aloha-table-selectrow:hover,
 .aloha-table tr.aloha-table-selectcolumn td:hover {
-	background-color: #c0c0c0;
+	background-color: #c0c0c0 !important;
 }
 
 /**
@@ -109,4 +109,39 @@ div.aloha-table-cell-editable {
 }
 button.aloha-button-table-caption {
 	background-position: -320px 0px !important;
+}
+
+/* TODO: change naming convention to a style more like above */
+ul.GENTICS_multisplit button.GENTICS_table_layout,
+ul.GENTICS_multisplit button.GENTICS_column_layout,
+ul.GENTICS_multisplit button.GENTICS_row_layout {
+       background-image: url(table_layout.png) !important;
+}
+
+button.GENTICS_button_hor-minimalist-a {
+       background-position: 0px 0 !important;
+}
+
+button.GENTICS_button_box-table-a {
+       background-position: -52px 0 !important;
+}
+
+button.GENTICS_button_hor-zebra {
+       background-position: -104px 0 !important;
+}
+
+button.GENTICS_button_row_bigbold {
+       background-position: 0px -42px !important;
+}
+
+button.GENTICS_button_row_redwhite {
+       background-position: -52px -42px !important;
+}
+
+button.GENTICS_button_col_bigbold {
+       background-position: 0px -84px !important;
+}
+
+button.GENTICS_button_col_redwhite {
+       background-position: -52px -84px !important;
 }
