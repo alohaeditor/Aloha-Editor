@@ -469,6 +469,11 @@ GENTICS.Utils.RangeObject.prototype.initializeFromUserSelection = function(event
 		return false;
 	}
 	
+	// check if a ragne exists
+	if ( selection.rangeCount == 0 ) {
+		return false;
+	}
+
 	// getBrowserRange
 	var browserRange = selection.getRangeAt(0);
 	if (!browserRange) {
