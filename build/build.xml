@@ -433,7 +433,7 @@
 			<substitution expression="\1plugins/\3"/>
 		</replaceregexp>
 		
-		<!-- Update the GENTICS_Aloha_base in the Exampe Files -->
+		<!-- Update the GENTICS_Aloha_base in the Example Files -->
 		<replaceregexp flags="g" byline="true">
 			<fileset dir="${packagedir}">
 				<include name="*/examples/*.html"/>

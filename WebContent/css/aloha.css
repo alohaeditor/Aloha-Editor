@@ -22,6 +22,11 @@
 	display: none;
 }
 
+.GENTICS_editicon img {
+	width: 18px;
+	height: 18px;
+}
+
 .GENTICS_block .GENTICS_block .GENTICS_editicon {
 	margin-top: 15px;
 }
@@ -45,16 +50,21 @@
 	border: 0;
 	padding: 0;
 	margin: 0;
-background-color: transparent;
+	background-color: transparent;
 }
 .GENTICS_floatingmenu table, .GENTICS_floatingmenu tr, .GENTICS_floatingmenu td {
 	width: 0;
 	height: 0;
 }
 
+table.x-table-layout, table.x-btn.x-btn-icon, table.x-toolbar-ct, .x-toolbar-left table {
+        margin: 0;
+}
+
 /* fixes modal dialog border issues in GCN backend */
 table.x-toolbar-ct {
         border: 0px;
+        margin: 0px;
 }
 
 table.x-toolbar-ct td {
@@ -63,6 +73,7 @@ table.x-toolbar-ct td {
 
 table.x-toolbar-ct table {
         border: 0px;
+        margin: 0px;
 }
 
 /* 
@@ -303,6 +314,12 @@ button.GENTICS_button_addEvent {
 
 button.GENTICS_button_abbr {
 	background-position: -336px 0px !important;
+}
+button.GENTICS_button_row_header {
+	background-position: -352px 0px !important;
+}
+button.GENTICS_button_col_header {
+	background-position: -368px 0px !important;
 }
 button.GENTICS_button_tree {
 	background-position: -0 0 !important;

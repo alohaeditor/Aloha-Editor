@@ -159,12 +159,11 @@ GENTICS.Aloha.Editable.prototype.init = function() {
 		
 		// add focus event to the object to activate
 		this.obj.mousedown(function(e) {
-			that.activate(e);
-			e.stopPropagation();
+			return that.activate(e);
 		});
 		
 		this.obj.focus(function(e) {
-			that.activate(e);
+			return that.activate(e);
 		});
 		
 		// by catching the keydown we can prevent the browser from doing its own thing
@@ -243,6 +242,13 @@ GENTICS.Aloha.Editable.prototype.destroy = function() {
 		return that.obj;
 	});
 	*/
+	
+	// also hide the floating menu if the current editable was active
+	if (this.isActive) {
+		GENTICS.Aloha.FloatingMenu.obj.hide();
+		GENTICS.Aloha.FloatingMenu.shadow.hide();
+	}
+	
 	
 	// throw a new event when the editable has been created
 	/**
@@ -325,14 +331,28 @@ GENTICS.Aloha.Editable.prototype.enable = function() {
  * @method
  */
 GENTICS.Aloha.Editable.prototype.activate = function(e) {
-	
-	// leave immediately if this is already the active editable
-	if (this.isActive || this.isDisabled()) {
-		return;
+	// stop event propagation for nested editables
+	if (e) {
+		e.stopPropagation();
 	}
 
 	// get active Editable before setting the new one.
 	var oldActive = GENTICS.Aloha.getActiveEditable(); 
+
+	// handle special case in which a nested editable is focused by a click
+	// in this case the "focus" event would be triggered on the parent element
+	// which actually shifts the focus away to it's parent. this if is here to
+	// prevent this situation
+	if (e && e.type == "focus" && oldActive != null && oldActive.obj.parent().get(0) == e.currentTarget) {
+		return;
+	}
+	
+	// leave immediately if this is already the active editable
+	if (this.isActive || this.isDisabled()) {
+		// we don't want parent editables to be triggered as well, so return false
+		return;
+	}
+
 	
 	// set active Editable in core
 	GENTICS.Aloha.activateEditable( this );
@@ -372,7 +392,6 @@ GENTICS.Aloha.Editable.prototype.activate = function(e) {
 			'oldActive' : GENTICS.Aloha.getActiveEditable()
 		})
 	);
-
 };
 
 /**
@@ -432,6 +451,10 @@ GENTICS.Aloha.Editable.prototype.empty = function(str) {
 GENTICS.Aloha.Editable.prototype.getContents = function() {
 	// clone the object
 	var clonedObj = this.obj.clone(true);
+
+	// do core cleanup
+	clonedObj.find('.GENTICS_cleanme').remove();
+
 	GENTICS.Aloha.PluginRegistry.makeClean(clonedObj);
 	return clonedObj.html();
 };
