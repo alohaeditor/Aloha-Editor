@@ -70,6 +70,9 @@ GENTICS.Aloha.TablePlugin.parameters = {
  * {name:'green', text:'Green',tooltip:'Green',iconClass:'GENTICS_table GENTICS_button_green',cssClass:'green'}
  */
 GENTICS.Aloha.TablePlugin.checkConfig = function (c){
+	if ( typeof c === 'undefined' || typeof c.length === 'undefined' ) {
+		return [];
+	}
 	for ( var i=0; i<c.length; i++) {
 		c[i].text = c[i].text ? c[i].text : c[i].name;
 		c[i].tooltip = c[i].tooltip ? c[i].tooltip : c[i].text;
@@ -86,15 +89,9 @@ GENTICS.Aloha.TablePlugin.checkConfig = function (c){
 GENTICS.Aloha.TablePlugin.init = function() {
 	
 	// apply settings
-    if (this.settings.tableConfig != undefined)
-        this.tableConfig = this.settings.tableConfig;
-    this.tableConfig = this.checkConfig(this.tableConfig);
-    if (this.settings.columnConfig != undefined)
-        this.columnConfig = this.settings.columnConfig;
-    this.columnConfig = this.checkConfig(this.columnConfig);
-    if (this.settings.rowConfig != undefined)
-        this.rowConfig = this.settings.rowConfig;
-    this.rowConfig = this.checkConfig(this.rowConfig);
+    this.tableConfig = this.checkConfig(this.tableConfig||this.settings.tableConfig);
+    this.columnConfig = this.checkConfig(this.columnConfig||this.settings.columnConfig);
+    this.rowConfig = this.checkConfig(this.rowConfig||this.settings.rowConfig);
 	
 	// add reference to the create layer object
 	this.createLayer = new GENTICS.Aloha.Table.CreateLayer();
@@ -767,7 +764,7 @@ GENTICS.Aloha.TablePlugin.createDialog = function(callingElement) {
  */
 GENTICS.Aloha.TablePlugin.createTable = function(cols, rows) {
 	// Check if there is an active Editable and that it contains an element (= .obj)
-	if (GENTICS.Aloha.activeEditable != null && typeof GENTICS.Aloha.activeEditable.obj != 'undefined') {
+	if (GENTICS.Aloha.activeEditable != null && typeof GENTICS.Aloha.activeEditable.obj !== 'undefined') {
 		// create a dom-table object
 		var table = document.createElement('table');
 		var tableId = table.id = GENTICS.Aloha.TableHelper.getNewTableID();
@@ -823,7 +820,7 @@ GENTICS.Aloha.TablePlugin.setFocusedTable = function(focusTable) {
 	for (var i = 0; i < GENTICS.Aloha.TablePlugin.TableRegistry.length; i++) {
 		GENTICS.Aloha.TablePlugin.TableRegistry[i].hasFocus = false;
 	}
-	if (typeof focusTable != 'undefined') {
+	if (typeof focusTable !== 'undefined') {
         this.summary.setTargetObject(focusTable.obj, 'summary');
         if ( focusTable.obj.children("caption").is('caption') ) {
         	// set caption button
@@ -1691,7 +1688,7 @@ GENTICS.Aloha.Table.prototype.deleteRows = function() {
 		}
 	
 	// if no rows were selected, delete the row, where the cursor is placed in 
-	}else if (typeof GENTICS.Aloha.Table.Cell.lastActiveCell != 'undefined') {
+	}else if (typeof GENTICS.Aloha.Table.Cell.lastActiveCell !== 'undefined') {
 		rowIDs.push(GENTICS.Aloha.Table.Cell.lastActiveCell.obj.context.parentNode.rowIndex);
 	}
 	
@@ -1788,7 +1785,7 @@ GENTICS.Aloha.Table.prototype.deleteColumns = function() {
 		}
 	
 	// if no columns were selected, delete the column, where the cursor is placed in 
-	}else if (typeof GENTICS.Aloha.Table.Cell.lastActiveCell != 'undefined') {
+	}else if (typeof GENTICS.Aloha.Table.Cell.lastActiveCell !== 'undefined') {
 		colIDs.push(GENTICS.Aloha.Table.Cell.lastActiveCell.obj.context.cellIndex);
 	}
 	
@@ -1935,7 +1932,7 @@ GENTICS.Aloha.Table.prototype.addRowsAfter = function(highlightNewRows) {
  * @return void
  */
 GENTICS.Aloha.Table.prototype.addRows = function(position, highlightNewRows) {
-	if (typeof GENTICS.Aloha.TablePlugin.activeTable != 'undefined') {
+	if (typeof GENTICS.Aloha.TablePlugin.activeTable !== 'undefined') {
 		// release listening events of the last cell
 		this.releaseLastCellEvents();
 		
@@ -1967,7 +1964,7 @@ GENTICS.Aloha.Table.prototype.addRows = function(position, highlightNewRows) {
 			}
 		
 		// no rows selected, insert 1 new row before/after the row of the last active cell
-		}else if (typeof GENTICS.Aloha.Table.Cell.lastActiveCell != 'undefined') {
+		}else if (typeof GENTICS.Aloha.Table.Cell.lastActiveCell !== 'undefined') {
 			rowId = GENTICS.Aloha.Table.Cell.lastActiveCell.obj.context.parentNode.rowIndex;
 		}
 		
@@ -2061,7 +2058,7 @@ GENTICS.Aloha.Table.prototype.addColumnsLeft = function() {
  * @return void
  */
 GENTICS.Aloha.Table.prototype.addColumns = function (position) {
-	if (typeof GENTICS.Aloha.TablePlugin.activeTable != 'undefined') {
+	if (typeof GENTICS.Aloha.TablePlugin.activeTable !== 'undefined') {
 		// release listening events of the last cell
 		this.releaseLastCellEvents();
 		
@@ -2089,7 +2086,7 @@ GENTICS.Aloha.Table.prototype.addColumns = function (position) {
 					break;
 			}
 		// otherwise take the column-index of the last active cell
-		}else if (typeof GENTICS.Aloha.Table.Cell.lastActiveCell != 'undefined') {
+		}else if (typeof GENTICS.Aloha.Table.Cell.lastActiveCell !== 'undefined') {
 			colId = GENTICS.Aloha.Table.Cell.lastActiveCell.obj.context.cellIndex;
 		}
 		
