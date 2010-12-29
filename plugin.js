@@ -63,25 +63,6 @@ GENTICS.Aloha.GoogleTranslate.init = function () {
 };
 
 /**
- * replace text in a selectionTree
- * @param selectionTreeEntry a single selection tree entry where the text should be replaced
- * @param text replacement text
- * @return void
- */
-GENTICS.Aloha.GoogleTranslate.replaceText = function (selectionTreeEntry, text) {
-	// special treatment for text nodes, which have to be replaced
-	if (selectionTreeEntry.domobj.nodeType == 3) {
-		jQuery(selectionTreeEntry.domobj)
-			.replaceWith(document
-					.createTextNode(text)
-			);
-	} else {
-		jQuery(selectionTreeEntry.domobj)
-			.text(text);
-	}
-};
-
-/**
  * translate a text using the google translate api
  * @param target language
  * @return void
@@ -125,23 +106,64 @@ GENTICS.Aloha.GoogleTranslate.translate = function (targetLang) {
 			
 				// translation successful
 				if (res.data && res.data.translations) {
-					var key = 0; // for some reason google translate api will provide an empty entry at [0]
-					for (var i=0; i<tree.length; i++) {
-						c = tree[i];
-						if (c.selection != "none") {
-							if (c.selection == "full") {
-								that.replaceText(c, res.data.translations[key].translatedText);
-							} else if (c.selection == "partial") {
-								var txt = jQuery(c.domobj).text();
-								var pre = txt.substring(0, c.startOffset);
-								var post = txt.substring(c.endOffset - 1, txt.length);
-								that.replaceText(c, pre + res.data.translations[key].translatedText + post);
-							}
-							key++;
-						}
-					}
+					that.applyTranslation(res.data.translations, tree);
 				}
 			}
 		});
 	}	
+};
+
+/**
+ * apply a translation provided by google to the current selection
+ * @param translations list of translations provided by google
+ * @param tree the selection tree the translations will be applied to
+ */
+GENTICS.Aloha.GoogleTranslate.applyTranslation = function (translations, tree) {
+	var key = 0;
+	for (var i=0; i<tree.length; i++) {
+		c = tree[i];
+		if (c.selection != "none") {
+			if (c.selection == "full") {
+				this.replaceText(c, translations[key].translatedText);
+			} else if (c.selection == "partial") {
+				var txt = jQuery(c.domobj).text();
+				var pre = txt.substring(0, c.startOffset);
+				var post = txt.substring(c.endOffset, txt.length);
+				this.replaceText(c, pre + translations[key].translatedText + post);
+			}
+			key++;
+		}
+	}
+};
+
+/**
+ * replace text in a selectionTree
+ * @param selectionTreeEntry a single selection tree entry where the text should be replaced
+ * @param text replacement text
+ * @return void
+ */
+GENTICS.Aloha.GoogleTranslate.replaceText = function (selectionTreeEntry, text) {
+	// GoogleTranslate API will trim spaces so we have to check if
+	// there was a leading or trailing space
+	// check if the first char of the original string is a space
+	if (selectionTreeEntry.domobj.textContent.substring(0,1) == ' ') {
+		text = ' ' + text;
+	}
+	
+	// check if the last character of the original string is a space
+	if (selectionTreeEntry.domobj.textContent.substring(
+			selectionTreeEntry.domobj.textContent.length-1,selectionTreeEntry.domobj.textContent.length) == ' ') {
+		text = text + ' ';
+	}
+	
+	// special treatment for text nodes, which have to be replaced
+	if (selectionTreeEntry.domobj.nodeType == 3) {
+		jQuery(selectionTreeEntry.domobj)
+			.replaceWith(document
+			.createTextNode(text)
+		);
+	} else {
+		jQuery(selectionTreeEntry.domobj)
+			.text(text);
+	}
 };
