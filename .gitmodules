@@ -35,3 +35,6 @@
 [submodule "WebContent/plugins/com.gentics.aloha.plugins.Ribbon"]
 	path = WebContent/plugins/com.gentics.aloha.plugins.Ribbon
 	url = http://github.com/alohaeditor/Aloha-Plugin-Ribbon.git
+[submodule "Aloha-Plugin-Ribbon"]
+	path = Aloha-Plugin-Ribbon
+	url = http://github.com/alohaeditor/Aloha-Plugin-Ribbon.git
