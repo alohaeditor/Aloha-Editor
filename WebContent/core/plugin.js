@@ -43,10 +43,25 @@ GENTICS.Aloha.PluginRegistry.prototype.register = function(plugin) {
  * @hide
  */
 GENTICS.Aloha.PluginRegistry.prototype.init = function() {
-	// iterate through all registered plugins
 	var loaded = 0,
-		length = this.plugins.length;
-	for ( var i = 0; i < this.plugins.length; i++) {
+		length = this.plugins.length
+		pluginsStack = [];
+	
+	// Initialize the plugins in the right order when they are loaded
+	GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'i18nPluginsLoaded', function () {
+		for ( var i = 0; i < length; i++) {
+			if (pluginsStack[i].settings.enabled == true) {
+				pluginsStack[i].init();
+			}
+		}
+		
+		GENTICS.Aloha.EventRegistry.trigger(
+			new GENTICS.Aloha.Event('i18nPluginsReady', GENTICS.Aloha, null)
+		);
+	});
+	
+	// iterate through all registered plugins
+	for ( var i = 0; i < length; i++) {
 		var plugin = this.plugins[i];
 
 		// get the plugin settings
@@ -64,42 +79,34 @@ GENTICS.Aloha.PluginRegistry.prototype.init = function() {
 			plugin.settings.enabled = true;
 		}
 
+		// Push the plugin in the right order into the plugins stack
+		pluginsStack.push(plugin);
+		
 		// initialize i18n for the plugin
 		// determine the actual language
 		var actualLanguage = plugin.languages ? GENTICS.Aloha.getLanguage(GENTICS.Aloha.settings.i18n.current, plugin.languages) : null;
 
 		if (!actualLanguage) {
+			// The plugin that have no dict file matching
 			GENTICS.Aloha.Log.warn(this, 'Could not determine actual language, no languages available for plugin ' + plugin);
-			
-			// Initializes the plugin that have no dict file matching
-			if (plugin.settings.enabled == true) {
-				// initialize the plugin
-				plugin.init();
-			}
 				
-			if(++loaded == length) {
+			if(++loaded === length) {
 				GENTICS.Aloha.EventRegistry.trigger(
-					new GENTICS.Aloha.Event('i18nPluginsReady', GENTICS.Aloha, plugin)
+					new GENTICS.Aloha.Event('i18nPluginsLoaded', GENTICS.Aloha, null)
 				);
 			}
 		} else {
 			// load the dictionary file for the actual language
 			var fileUrl = GENTICS.Aloha.settings.base + 'plugins/' + plugin.basePath + '/i18n/' + actualLanguage + '.dict';
+			
 			// Initializes the plugin when
-			GENTICS.Aloha.loadI18nFile(fileUrl, plugin, (function (plug) {
-				return function () {
-					if (plugin.settings.enabled == true) {
-						// initialize the plugin
-						plug.init();
-					}
-				
-					if(++loaded == length) {
-						GENTICS.Aloha.EventRegistry.trigger(
-							new GENTICS.Aloha.Event('i18nPluginsReady', GENTICS.Aloha, null)
-						);
-					}
+			GENTICS.Aloha.loadI18nFile(fileUrl, plugin, function () {
+				if(++loaded === length) {
+					GENTICS.Aloha.EventRegistry.trigger(
+						new GENTICS.Aloha.Event('i18nPluginsLoaded', GENTICS.Aloha, null)
+					);
 				}
-			})(plugin));
+			});
 		}
 	}
 };
