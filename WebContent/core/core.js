@@ -469,7 +469,7 @@ GENTICS.Aloha.prototype.loadI18nFile = function(fileUrl, component, callback) {
 	// the first i18n calls might come before the dictionary is available
 	jQuery.ajax(
 		{
-			datatype : 'text',
+			dataType : 'text',
 			url : fileUrl,
 			error: function(request, textStatus, error) {
 				GENTICS.Aloha.Log.error(component, 'Error while getting dictionary file ' + fileUrl + ': server returned ' + textStatus);
