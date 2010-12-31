@@ -688,13 +688,6 @@ jQuery(document).ready(function() {
 			"This will cause serious problems. You must not load other versions " +
 			"of jQuery with Aloha.");
 	}
-
-	if (Ext.isReady) {
-		GENTICS.Aloha.init();
-	} else {
-		Ext.onReady(function() {
-			GENTICS.Aloha.init();
-		});
-	}
+	GENTICS.Aloha.init();
 });
 
