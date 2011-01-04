@@ -359,7 +359,7 @@ GENTICS.Aloha.Image.clickImage = function ( e ) {
    });
    imgRange.correctRange();
    imgRange.update();
-   console.log(imgRange);
+   // console.log(imgRange);
    imgRange.select();
    
 };
