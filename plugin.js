@@ -50,7 +50,7 @@ jQuery.fn.decrease = jQuery.fn.decrease || function(attr){
 
 GENTICS.Aloha.Image=new GENTICS.Aloha.Plugin("com.gentics.aloha.plugins.Image");
 
-GENTICS.Aloha.Image.languages=["en","fr","de","ru"];
+GENTICS.Aloha.Image.languages=["en","fr","de","ru","cz"];
 GENTICS.Aloha.Image.config = { 'img': { 'max_width': '50px',
 		'max_height': '50px' }};
 /*
