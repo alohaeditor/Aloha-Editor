@@ -155,7 +155,7 @@ GENTICS.Aloha.Editable.prototype.init = function() {
 
 		// initialize the object
 		this.obj.addClass('GENTICS_editable');
-		this.obj.attr('contentEditable', true);
+		this.obj.contentEditable(true);
 		
 		// add focus event to the object to activate
 		this.obj.mousedown(function(e) {
@@ -226,14 +226,12 @@ GENTICS.Aloha.Editable.prototype.destroy = function() {
 
 	// initialize the object
 	this.obj.removeClass('GENTICS_editable');
-	this.obj.removeAttr('contentEditable');
+	// Disable contentEditable
+	this.obj.contentEditable(false);
 	
 	// unbind all events 
 	// TODO should only unbind the specific handlers.
-	this.obj.unbind('mousedown'); 
-	this.obj.unbind('focus'); 
-	this.obj.unbind('keydown'); 
-	this.obj.unbind('keyup'); 
+	this.obj.unbind('mousedown focus keydown keyup'); 
 	
 	/* TODO remove this event, it should implemented as bind and unbind
 	// register the onSelectionChange Event with the Editable field
@@ -310,7 +308,7 @@ GENTICS.Aloha.Editable.prototype.isDisabled = function () {
  */
 GENTICS.Aloha.Editable.prototype.disable = function() {
 	if (!this.isDisabled()) {
-		this.obj.attr("contentEditable", "false");
+		this.obj.contentEditable(false);
 	}
 };
 
@@ -320,7 +318,7 @@ GENTICS.Aloha.Editable.prototype.disable = function() {
  */
 GENTICS.Aloha.Editable.prototype.enable = function() {
 	if (this.isDisabled()) {
-		this.obj.attr("contentEditable", "true");
+		this.obj.contentEditable(true);
 	}
 };
 
