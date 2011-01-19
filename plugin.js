@@ -70,11 +70,15 @@ GENTICS.Aloha.TablePlugin.parameters = {
  * {name:'green', text:'Green',tooltip:'Green',iconClass:'GENTICS_table GENTICS_button_green',cssClass:'green'}
  */
 GENTICS.Aloha.TablePlugin.checkConfig = function (c){
-	for ( var i=0; i<c.length; i++) {
-		c[i].text = c[i].text ? c[i].text : c[i].name;
-		c[i].tooltip = c[i].tooltip ? c[i].tooltip : c[i].text;
-		c[i].iconClass = c[i].iconClass ? c[i].iconClass : 'GENTICS_button_'+c[i].name;
-		c[i].cssClass = c[i].cssClass ? c[i].cssClass : c[i].name;
+	if ( typeof c == 'object' && c.length ) {
+		for ( var i=0; i < c.length; i++) {
+			c[i].text = c[i].text ? c[i].text : c[i].name;
+			c[i].tooltip = c[i].tooltip ? c[i].tooltip : c[i].text;
+			c[i].iconClass = c[i].iconClass ? c[i].iconClass : 'GENTICS_button_'+c[i].name;
+			c[i].cssClass = c[i].cssClass ? c[i].cssClass : c[i].name;
+		}
+	} else {
+		c = [];
 	}
 	return c;
 };
