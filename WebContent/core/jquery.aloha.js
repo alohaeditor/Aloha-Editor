@@ -26,7 +26,9 @@
 jQuery.fn.aloha = function() {
 	return this.each(function() {
 		// create a new aloha editable object for each queried object
-		new GENTICS.Aloha.Editable(jQuery(this));
+		if (!GENTICS.Aloha.isEditable(this)) {
+			new GENTICS.Aloha.Editable(jQuery(this));
+		}
 	});
 };
 
@@ -40,7 +42,9 @@ jQuery.fn.aloha = function() {
 jQuery.fn.GENTICS_aloha = function() {
 	return this.each(function() {
 		// create a new aloha editable object for each queried object
-		new GENTICS.Aloha.Editable(jQuery(this));
+		if (!GENTICS.Aloha.isEditable(this)) {
+			new GENTICS.Aloha.Editable(jQuery(this));
+		}
 	});
 }; 
 
@@ -53,12 +57,8 @@ jQuery.fn.GENTICS_aloha = function() {
  */
 jQuery.fn.mahalo = function() {
 	return this.each(function() {
-		if ( jQuery(this).hasClass('GENTICS_editable') ) {
-			for (var i=0; i<GENTICS.Aloha.editables.length; i++) {
-				if ( GENTICS.Aloha.editables[i].obj.get(0) === this ) {
-					GENTICS.Aloha.editables[i].destroy();
-				}
-			}
+		if (GENTICS.Aloha.isEditable(this)) {
+			GENTICS.Aloha.getEditableById(jQuery(this).attr('id')).destroy();
 		}
 	});
 };

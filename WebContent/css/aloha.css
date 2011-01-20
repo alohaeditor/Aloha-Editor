@@ -483,4 +483,9 @@ ul.GENTICS_multisplit-expanded {
 ul.GENTICS_multisplit button.GENTICS_button_removeFormat {
 	background-image: url(../images/removeformat.png) !important;
 }
-
+.GENTICS_textarea {
+	overflow: hidden;
+	border:1px solid #ccc;
+	padding:6px;
+	overflow:auto;
+}
