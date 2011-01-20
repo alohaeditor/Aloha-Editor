@@ -37,6 +37,10 @@ GENTICS.Aloha.Editable = function(obj) {
 	// the editable is not yet ready
 	this.ready = false;
 
+	// initialize the timers for smartContentChange
+	this.timer = false; // use instead of local timer?
+	this.timer_is_on = false;
+
 	// register the editable with Aloha
 	GENTICS.Aloha.registerEditable(this);
 
@@ -464,4 +468,38 @@ GENTICS.Aloha.Editable.prototype.getContents = function() {
  */
 GENTICS.Aloha.Editable.prototype.getId = function() {
 	return this.obj.attr('id');
+};
+
+/**
+ * Handle a smartContentChange; This is used for smart actions within the content/while editing.
+ * @method
+ */
+GENTICS.Aloha.Editable.prototype.smartContentChange = function(event, rangeObject) {
+	var that = this;
+	
+	// @todo also check if delay is a valid value (microseconds)
+	var delay = (GENTICS.Aloha.settings.smartContentChange.delay != null && GENTICS.Aloha.settings.smartContentChange.delay != undefined) ? GENTICS.Aloha.settings.smartContentChange.delay : 5000;
+	
+	if (that.timer_is_on != true) {
+		that.timer_is_on = true;
+		
+		$('#aloha_status_value').text('timer start [timerId: ' + that.timer + '] ...');
+
+		GENTICS.Aloha.EventRegistry.trigger(
+			new GENTICS.Aloha.Event('smartContentChanged', GENTICS.Aloha, {
+			'editableContent' : GENTICS.Aloha.activeEditable,
+			'keyCode' : event['keyCode'], // @todo set char value here instead of keyCode
+			'type' : '', // keypress, timer, blur -- type used
+			'changedDom' : rangeObject.getCommonAncestorContainer()
+			})
+		);
+		
+		that.timer = setTimeout(function() {
+			that.timer_is_on = false;
+			$('#aloha_status_value').text('timer end [timerId: ' + that.timer + '] ...');
+		},delay);
+		
+	} else {
+		$('#aloha_status_value').text('timer is running [timerId: ' + that.timer + '] ...');
+	}
 };
