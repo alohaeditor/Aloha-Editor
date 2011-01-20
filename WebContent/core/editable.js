@@ -25,7 +25,7 @@
  * @param {Object} obj jQuery object reference to the object
  */
 GENTICS.Aloha.Editable = function(obj) {
-
+	
 	// check wheter the object has an ID otherwise generate and set globally unique ID
 	if ( !obj.attr('id') ) {
 		obj.attr('id', GENTICS.Utils.guid());
@@ -33,6 +33,7 @@ GENTICS.Aloha.Editable = function(obj) {
 
 	// store object reference
 	this.obj = obj;
+	this.originalObj = obj;
 
 	// the editable is not yet ready
 	this.ready = false;
@@ -75,6 +76,8 @@ GENTICS.Aloha.Editable.prototype.range = undefined;
  */
 GENTICS.Aloha.Editable.prototype.check = function() {
 	
+	var that = this;
+	
 	/* TODO check those elements
 	'map', 'meter', 'object', 'output', 'progress', 'samp',
 	'time', 'area', 'datalist', 'figure', 'kbd', 'keygen',
@@ -109,14 +112,17 @@ GENTICS.Aloha.Editable.prototype.check = function() {
 		
 		case 'textarea':
 			// Create a div alongside the textarea
-			var div = jQuery('<div/>').insertAfter(obj);
+			var div = jQuery('<div id="'+this.getId()+'-aloha" class="GENTICS_textarea"/>').insertAfter(obj);
+			// Risize the div to the textarea
+			div.height(obj.height());
+			div.width(obj.width());
 			// Populate the div with the value of the textarea
 			div.html(obj.val());
 			// Hide the textarea
 			obj.hide();
 			// Attach a onsubmit to the form to place the HTML of the div back into the textarea
 			var updateFunction = function(){
-				var val = div.html();
+				var val = that.getContents();
 				obj.val(val);
 			};
 			obj.parents('form:first').submit(updateFunction);
@@ -217,13 +223,34 @@ GENTICS.Aloha.Editable.prototype.init = function() {
 /**
  * destroy the editable
  * @return void
- * @hide
  */
 GENTICS.Aloha.Editable.prototype.destroy = function() {
 	var that = this;
 	
 	// leave the element just to get sure
 	this.blur();
+	
+	// original Object
+	var	oo = this.originalObj.get(0),
+		onn = oo.nodeName.toLowerCase();
+	
+	// special handled elements
+	switch ( onn ) {
+		case 'label':
+		case 'button':
+			// TODO need some special handling.
+	    	break;
+		
+		case 'textarea':
+			// restore content to original textarea
+			var val = this.getContents();
+			this.originalObj.val(val);
+			this.obj.remove();
+			this.originalObj.show();
+			
+		default:
+			break;
+	}
 	
 	// now the editable is not ready any more
 	this.ready = false;

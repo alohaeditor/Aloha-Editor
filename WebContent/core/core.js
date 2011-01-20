@@ -268,6 +268,11 @@ GENTICS.Aloha.prototype.deactivateEditable = function () {
  */
 GENTICS.Aloha.prototype.getEditableById = function (id) {
 	
+	// if the element is a textarea than route to the editable div
+	if (jQuery('#'+id).get(0).nodeName.toLowerCase() == 'textarea' ) {
+		id = id + '-aloha';
+	}
+	
 	// serach all editables for id
 	for (var i = 0; i < GENTICS.Aloha.editables.length; i++) {
 		if (GENTICS.Aloha.editables[i].getId() == id) {
@@ -276,6 +281,20 @@ GENTICS.Aloha.prototype.getEditableById = function (id) {
 	}
 	
 	return null;
+};
+
+/**
+ * Checks wheater an object is a registered Aloha Editable.
+ * @param {jQuery} obj the jQuery object to be checked.
+ * @return {boolean}
+ */
+GENTICS.Aloha.prototype.isEditable = function (obj) {
+	for (var i=0; i<this.editables.length; i++) {
+		if ( this.editables[i].originalObj.get(0) === obj ) {
+			return true;
+		}
+	}
+	return false;
 };
 
 /**
