@@ -72,12 +72,8 @@ jQuery.fn.mahalo = function() {
  */
 jQuery.fn.GENTICS_mahalo = function() {
 	return this.each(function() {
-		if ( jQuery(this).hasClass('GENTICS_editable') ) {
-			for (var i=0; i<GENTICS.Aloha.editables.length; i++) {
-				if ( GENTICS.Aloha.editables[i].obj.get(0) === this ) {
-					GENTICS.Aloha.editables[i].destroy();
-				}
-			}
+		if (GENTICS.Aloha.isEditable(this)) {
+			GENTICS.Aloha.getEditableById(jQuery(this).attr('id')).destroy();
 		}
 	});
 }; 
