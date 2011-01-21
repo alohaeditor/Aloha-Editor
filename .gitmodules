@@ -38,3 +38,6 @@
 [submodule "WebContent/plugins/com.gentics.aloha.plugins.CropNResize"]
 	path = WebContent/plugins/com.gentics.aloha.plugins.CropNResize
 	url = https://github.com/alohaeditor/Aloha-Plugin-CropNResize.git
+[submodule "WebContent/plugins/com.gentics.aloha.plugins.GoogleTranslate"]
+	path = WebContent/plugins/com.gentics.aloha.plugins.GoogleTranslate
+	url = https://github.com/alohaeditor/Aloha-Plugin-GoogleTranslate.git
