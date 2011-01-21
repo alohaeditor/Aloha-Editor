@@ -36,7 +36,7 @@ GENTICS.Aloha.PastePlugin.init = function() {
 		} else {
 			editable.obj.bind('paste', function(event) {
 				that.redirectPaste();
-				window.setTimeout(function() {that.getPastedContent();}, 10);
+				window.setTimeout(function() {that.getPastedContent(event);}, 10);
 				event.stopPropagation();
 			});
 		}
@@ -45,7 +45,7 @@ GENTICS.Aloha.PastePlugin.init = function() {
 	// for msie, we need to bind an event to our pasteDiv
 	if (jQuery.browser.msie) {
 		this.pasteDiv.bind('paste', function(event) {
-			window.setTimeout(function() {that.getPastedContent();}, 10);
+			window.setTimeout(function() {that.getPastedContent(event);}, 10);
 		});
 	}
 };
@@ -71,7 +71,10 @@ GENTICS.Aloha.PastePlugin.redirectPaste = function() {
 
 	// blur the active editable
 	if (this.currentEditable) {
-		this.currentEditable.blur();
+		// @todo test in IE!
+		//this.currentEditable.blur();
+		// alternative:
+		this.currentEditable.obj.blur();
 	}
 
 	// set the cursor into the paste div
@@ -84,14 +87,14 @@ GENTICS.Aloha.PastePlugin.redirectPaste = function() {
 /**
  * Get the pasted content and insert into the current editable
  */
-GENTICS.Aloha.PastePlugin.getPastedContent = function() {
+GENTICS.Aloha.PastePlugin.getPastedContent = function(event) {
 	var that = this;
 
 	// call all paste handlers
 	for (var i = 0; i < this.pasteHandlers.length; ++i) {
 		this.pasteHandlers[i].handlePaste(this.pasteDiv);
 	}
-
+	
 	// TODO collapse the range or remove the currently selected DOM
 
 	// insert the content into the editable at the current range
@@ -103,7 +106,8 @@ GENTICS.Aloha.PastePlugin.getPastedContent = function() {
 		}
 
 		// activate and focus the editable
-		this.currentEditable.activate();
+		// @todo test in IE
+		//this.currentEditable.activate();
 		this.currentEditable.obj.focus();
 
 		// set the cursor after the inserted DOM element
@@ -127,6 +131,9 @@ GENTICS.Aloha.PastePlugin.getPastedContent = function() {
 	this.scrollTop = false;
 	this.scollLeft = false;
 	this.height = false;
+
+	// call smartContentChange after paste action
+	GENTICS.Aloha.activeEditable.smartContentChange(event);
 
 	// empty the pasteDiv
 	this.pasteDiv.text('');
