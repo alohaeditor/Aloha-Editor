@@ -38,10 +38,14 @@ GENTICS.Aloha.Editable = function(obj) {
 	// the editable is not yet ready
 	this.ready = false;
 
-	// initialize the timers for smartContentChange
-	this.timer = false; // use instead of local timer?
-	this.timer_is_on = false;
-
+	// delimiters, timer and idle for smartContentChange
+	// smartContentChange triggers -- tab: '\u0009' - space: '\u0020' - enter: 'Enter'
+	this.sccDelimiters = [':', ';', '.', '!', '?', '\u0009', 'Enter'];
+	this.sccIdle = 10000;
+	this.sccDelay = 1000;
+	this.sccTimerIdle = false;
+	this.sccTimerDelay = false;
+	
 	// register the editable with Aloha
 	GENTICS.Aloha.registerEditable(this);
 
@@ -153,6 +157,27 @@ GENTICS.Aloha.Editable.prototype.check = function() {
 GENTICS.Aloha.Editable.prototype.init = function() {
 	var that = this;
 	
+	// smartContentChange settings
+	if (GENTICS.Aloha.settings && GENTICS.Aloha.settings.smartContentChange) {
+		if (GENTICS.Aloha.settings.smartContentChange.delimiters) {
+			this.sccDelimiters = GENTICS.Aloha.settings.smartContentChange.delimiters;
+		} else {
+			this.sccDelimiters = this.sccDelimiters;
+		}
+		
+		if (GENTICS.Aloha.settings.smartContentChange.idle) {
+			this.sccIdle = GENTICS.Aloha.settings.smartContentChange.idle;
+		} else {
+			this.sccIdle = this.sccIdle;
+		}
+		
+		if (GENTICS.Aloha.settings.smartContentChange.delay) {
+			this.sccDelay = GENTICS.Aloha.settings.smartContentChange.delay;
+		} else {
+			this.sccDelay = this.sccDelay;
+		}
+	}
+	
 	// check if Aloha can handle the obj as Editable
 	if ( !this.check( this.obj ) ) {
 		//GENTICS.Aloha.log('warn', this, 'Aloha cannot handle {' + this.obj[0].nodeName + '}');
@@ -182,13 +207,16 @@ GENTICS.Aloha.Editable.prototype.init = function() {
 		this.obj.keydown( function(event) { 
 			return GENTICS.Aloha.Markup.preProcessKeyStrokes(event);
 		});
-
+		
 		// handle shortcut keys
 		this.obj.keyup( function(event) { 
 			if (event['keyCode'] == 27 ) {
 				GENTICS.Aloha.deactivateEditable();
 				return false;
 			}
+			
+			// check if this key stroke triggers a smartContentChange
+			GENTICS.Aloha.activeEditable.smartContentChange(event);
 		});
 		
 		// register the onSelectionChange Event with the Editable field
@@ -215,6 +243,8 @@ GENTICS.Aloha.Editable.prototype.init = function() {
 		// mark the editable as unmodified
 		this.setUnmodified();
 		
+		this.snapshotContent = this.getContents();
+
 		// now the editable is ready
 		this.ready = true;
 	}
@@ -228,7 +258,9 @@ GENTICS.Aloha.Editable.prototype.destroy = function() {
 	var that = this;
 	
 	// leave the element just to get sure
-	this.blur();
+	if (this == GENTICS.Aloha.GetActiveEditable()) {
+		this.blur();
+	}
 	
 	// original Object
 	var	oo = this.originalObj.get(0),
@@ -239,7 +271,7 @@ GENTICS.Aloha.Editable.prototype.destroy = function() {
 		case 'label':
 		case 'button':
 			// TODO need some special handling.
-	    	break;
+			break;
 		
 		case 'textarea':
 			// restore content to original textarea
@@ -442,7 +474,7 @@ GENTICS.Aloha.Editable.prototype.blur = function() {
 	 * This event is triggered in Aloha's global scope GENTICS.Aloha
 	 * @param {Event} e the event object
 	 * @param {Array} a an array which contains a reference to this editable 
-	 */	
+	 */
 	// trigger a 'general' editableDeactivated event
 	GENTICS.Aloha.EventRegistry.trigger(
 		new GENTICS.Aloha.Event('editableDeactivated', GENTICS.Aloha, {
@@ -454,10 +486,15 @@ GENTICS.Aloha.Editable.prototype.blur = function() {
 	 * @event editableDeactivated fires after the editable has been activated by clicking on it.
 	 * This event is triggered in the Editable's scope
 	 * @param {Event} e the event object
-	 */	
+	 */
 	GENTICS.Aloha.EventRegistry.trigger(
 		new GENTICS.Aloha.Event('editableDeactivated', this)
 	);
+	
+	/**
+	 * @event smartContentChanged
+	 */
+	GENTICS.Aloha.activeEditable.smartContentChange({type : 'blur'}, null);
 };
 
 /**
@@ -499,34 +536,124 @@ GENTICS.Aloha.Editable.prototype.getId = function() {
 
 /**
  * Handle a smartContentChange; This is used for smart actions within the content/while editing.
- * @method
+ * @hide
  */
-GENTICS.Aloha.Editable.prototype.smartContentChange = function(event, rangeObject) {
+GENTICS.Aloha.Editable.prototype.smartContentChange = function(event) {
 	var that = this;
 	
-	// @todo also check if delay is a valid value (microseconds)
-	var delay = (GENTICS.Aloha.settings.smartContentChange.delay != null && GENTICS.Aloha.settings.smartContentChange.delay != undefined) ? GENTICS.Aloha.settings.smartContentChange.delay : 5000;
+	clearTimeout(this.sccTimerDelay);
+	clearTimeout(this.sccTimerIdle);
 	
-	if (that.timer_is_on != true) {
-		that.timer_is_on = true;
-		
-		$('#aloha_status_value').text('timer start [timerId: ' + that.timer + '] ...');
+	if (this.snapshotContent == GENTICS.Aloha.activeEditable.getContents()) {
+		return false;
+	}
 
+	// ignore meta keys like crtl+v or crtl+l and so on
+	if (event && (event.metaKey || event.crtlKey || event.altKey)) {
+		return false;
+	}
+	
+	var uniChar = null;
+	
+	// regex unicode
+	if (event && event.originalEvent) {
+		
+		var re = new RegExp("U\\+(\\w{4})");
+		var match = re.exec(event.originalEvent.keyIdentifier);
+		if (match != undefined) {
+			uniChar = eval('"\\u' + match[1] + '"');
+		}
+		if (uniChar === null) {
+			uniChar = event.originalEvent.keyIdentifier;
+		}
+	}
+	
+	// handle "Enter" -- it's not "U+1234" -- when returned via "event.originalEvent.keyIdentifier"
+	// reference: http://www.w3.org/TR/2007/WD-DOM-Level-3-Events-20071221/keyset.html
+	if (jQuery.inArray(uniChar, this.sccDelimiters) >= 0) {
+		
+		clearTimeout(this.sccTimerIdle);
+		
+		this.sccTimerDelay = setTimeout(function() {
+			
+			GENTICS.Aloha.EventRegistry.trigger(
+				new GENTICS.Aloha.Event('smartContentChanged', GENTICS.Aloha, {
+				'editable' : GENTICS.Aloha.activeEditable,
+				'keyIdentifier' : event.originalEvent.keyIdentifier,
+				'keyCode' : event.keyCode,
+				'char' : uniChar,
+				'triggerType' : 'keypress', // keypress, timer, blur, paste
+				'snapshotContent' : that.getSnapshotContent()
+				})
+			);
+
+			GENTICS.Aloha.Log.debug(this, 'smartContentChanged: event type keypress triggered');
+		},this.sccDelay);
+	}
+
+	else if (uniChar != null) {
+
+		this.sccTimerIdle = setTimeout(function() {
+			// in the rare case idle time is lower then delay time
+			clearTimeout(this.sccTimerDelay);
+			GENTICS.Aloha.EventRegistry.trigger(
+				new GENTICS.Aloha.Event('smartContentChanged', GENTICS.Aloha, {
+				'editable' : GENTICS.Aloha.activeEditable,
+				'keyIdentifier' : null,
+				'keyCode' : null,
+				'char' : null,
+				'triggerType' : 'idle',
+				'snapshotContent' : that.getSnapshotContent()
+				})
+			);
+			
+			GENTICS.Aloha.Log.debug(this, 'smartContentChanged: event type timer triggered');
+		},this.sccIdle);
+		
+	}
+
+	else if (event && event.type === 'paste') {
 		GENTICS.Aloha.EventRegistry.trigger(
 			new GENTICS.Aloha.Event('smartContentChanged', GENTICS.Aloha, {
-			'editableContent' : GENTICS.Aloha.activeEditable,
-			'keyCode' : event['keyCode'], // @todo set char value here instead of keyCode
-			'type' : '', // keypress, timer, blur -- type used
-			'changedDom' : rangeObject.getCommonAncestorContainer()
+			'editable' : GENTICS.Aloha.activeEditable,
+			'keyIdentifier' : null,
+			'keyCode' : null,
+			'char' : null,
+			'triggerType' : 'paste', // paste
+			'snapshotContent' : that.getSnapshotContent()
 			})
 		);
 		
-		that.timer = setTimeout(function() {
-			that.timer_is_on = false;
-			$('#aloha_status_value').text('timer end [timerId: ' + that.timer + '] ...');
-		},delay);
-		
-	} else {
-		$('#aloha_status_value').text('timer is running [timerId: ' + that.timer + '] ...');
+		GENTICS.Aloha.Log.debug(this, 'smartContentChanged: event type paste triggered');
 	}
+
+	else if (event && event.type === 'blur') {
+		GENTICS.Aloha.EventRegistry.trigger(
+			new GENTICS.Aloha.Event('smartContentChanged', GENTICS.Aloha, {
+			'editable' : GENTICS.Aloha.activeEditable,
+			'keyIdentifier' : null,
+			'keyCode' : null,
+			'char' : null,
+			'triggerType' : 'blur',
+			'snapshotContent' : that.getSnapshotContent()
+			})
+		);
+		
+		GENTICS.Aloha.Log.debug(this, 'smartContentChanged: event type blur triggered');
+	}
+	
+
+};
+
+/**
+ * Get a snapshot of the active editable as a HTML string
+ * @hide
+ * @return snapshot of the editable
+ */
+GENTICS.Aloha.Editable.prototype.getSnapshotContent = function() {	
+	var ret = this.snapshotContent;
+	
+	this.snapshotContent = this.getContents();
+	
+	return ret;
 };

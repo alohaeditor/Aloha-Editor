@@ -19,10 +19,7 @@
 /**
  * Markup object
  */
-GENTICS.Aloha.Markup = function() {
-	// delimiters as smartContentChange triggers -- tab: '\u0009' - space: '\u0020' - enter: 'Enter'
-	this.smartContentChangeDelimiters = [':', ';', '.', '!', '?', '\u0009', 'Enter'];
-};
+GENTICS.Aloha.Markup = function() {};
 
 /**
  * Key handlers for special key codes
@@ -89,43 +86,6 @@ GENTICS.Aloha.Markup.prototype.preProcessKeyStrokes = function(event) {
 		}
 	}
 	
-	// check and raise smartContentChange
-	if (GENTICS.Aloha.settings.smartContentChange.delimiters) {
-		var smartDelimiters = GENTICS.Aloha.settings.smartContentChange.delimiters;
-	} else {
-		var smartDelimiters = this.smartContentChangeDelimiters;
-	}
-	
-	// just for dev/debug...
-	$('#aloha_status_value').text('keyIdentifier: ' + event.originalEvent.keyIdentifier + ' ...');
-	if (event.originalEvent.keyIdentifier != 'Alt' && event.originalEvent.keyIdentifier != 'Meta') {
-		//alert(event.originalEvent.keyIdentifier);
-		$('#aloha_status_value').text('keyIdentifier: ' + event.originalEvent.keyIdentifier + ' ...');
-	}
-	
-	// trigger smartContentChanged
-	//alert(event.originalEvent.keyIdentifier);
-	var uniChar = false;
-	var keyIdentifier = false;
-	
-	// regex unicode
-	var re = new RegExp("U\\+(\\w{4})");
-	var match = re.exec(event.originalEvent.keyIdentifier);
-	if (match != undefined) {
-		uniChar = '"\\u' + match[1] + '"';
-	} else {
-		// handle special chars like "Enter" -- it's not "U+1234" -- when returned via "event.originalEvent.keyIdentifier"
-		//keyIdentifier = event.originalEvent.keyIdentifier;
-		uniChar = event.originalEvent.keyIdentifier;
-	}
-	
-	if ((jQuery.inArray(eval(uniChar), smartDelimiters) >= 0) || (jQuery.inArray(keyIdentifier, smartDelimiters) >= 0)) {
-		//alert('smartContentChanged: ' + event.which + ' XYX ' + String.fromCharCode(event.which) + ' XYX ' + uniChar + ': ' + eval(uniChar));
-		GENTICS.Aloha.Log.debug(this, 'keyTrigger: smartContentChanged');
-		// @todo pass also uniChar/keyIdentifier to smartContentChange()???
-		GENTICS.Aloha.activeEditable.smartContentChange(event, rangeObject);
-	}
-
 	switch(event['keyCode']) {
 		case 13: // ENTER
 			if (event.shiftKey) {
