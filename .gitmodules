@@ -41,3 +41,9 @@
 [submodule "WebContent/plugins/com.gentics.aloha.plugins.GoogleTranslate"]
 	path = WebContent/plugins/com.gentics.aloha.plugins.GoogleTranslate
 	url = https://github.com/alohaeditor/Aloha-Plugin-GoogleTranslate.git
+[submodule "WebContent/plugins/com.gentics.aloha.plugins.Image"]
+	path = WebContent/plugins/com.gentics.aloha.plugins.Image
+	url = https://github.com/alohaeditor/Aloha-Plugin-Image.git
+[submodule "WebContent/plugins/com.gentics.aloha.plugins.DragAndDropFiles"]
+	path = WebContent/plugins/com.gentics.aloha.plugins.DragAndDropFiles
+	url = https://github.com/alohaeditor/Aloha-Plugin-DragAndDropFiles.git
