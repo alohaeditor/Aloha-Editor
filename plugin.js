@@ -44,7 +44,11 @@ GENTICS.Aloha.DragAndDropFiles.init = function() {
 	this.setBodyDropHandler();
 	stylePath = GENTICS_Aloha_base + '/plugins/com.gentics.aloha.plugins.DragAndDropFiles/style.css';
 	jQuery('<link rel="stylesheet" />').attr('href', stylePath).appendTo('head');
-	
+	if (this.settings.config === undefined) {
+		this.settings.config = this.config;
+	} else {
+		this.settings.config = jQuery.extend(true, this.config, this.settings.config);
+	}
 	try {
 			this.uploader = this.initUploader(this.settings.config);
 			
@@ -101,7 +105,7 @@ GENTICS.Aloha.DragAndDropFiles.setBodyDropHandler = function() {
 				    	e.sink = false;
 				        return true;
 				    }
-				    if (len > that.config.drop.max_file_count) {
+				    if (len > that.settings.config.drop.max_file_count) {
 				    	GENTICS.Aloha.log.warn(that,"too much files dropped");
 				    	event.stopEvent();
 				    	return true;
@@ -137,7 +141,7 @@ GENTICS.Aloha.DragAndDropFiles.setBodyDropHandler = function() {
 						range = that.InitializeRangeForDropEvent(e, editable);
 
 					    while(--len >= 0) {
-					    	if (files[len].size > that.config.drop.max_file_size) {
+					    	if (files[len].size > that.settings.config.drop.max_file_size) {
 					    		event.stopPropagation();
 					    		GENTICS.Aloha.Log.warn(that,"max_file_size exeeded");
 					    	    return false;
