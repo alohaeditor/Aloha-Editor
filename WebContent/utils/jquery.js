@@ -29,8 +29,9 @@
 jQuery.fn.between = function(content, offset) {
 	if (this[0].nodeType !== 3) {
 		// we are not in a text node, just insert the element at the corresponding position
-		if (offset > this.children().size()) {
-			offset = this.children().size();
+		var offSize = this.children().size();
+		if (offset > offSize) {
+			offset = offSize;
 		}
 		if (offset <= 0) {
 			this.prepend(content);
@@ -62,20 +63,21 @@ jQuery.fn.between = function(content, offset) {
 
 jQuery.fn.removeCss = function( cssName ) {
 	return this.each( function() {
-		var oldstyle = jQuery(this).attr('style');
-    	var style = jQuery.grep(jQuery(this).attr('style').split(";"), function(curStyleAttr) {
-        			var curStyleAttrName = curStyleAttr.split(":");
+		var that = jQuery(this),
+			oldstyle = that.attr('style'),
+			style = jQuery.grep(oldstyle.split(';'), function(curStyleAttr) {
+        			var curStyleAttrName = curStyleAttr.split(':');
         			if (curStyleAttrName[0]) {
         				if ( curStyleAttrName[0].toUpperCase().trim().indexOf(cssName.toUpperCase()) == -1) {
         					return curStyleAttr;
         				}
         			}
-                }).join(";").trim();
-		jQuery(this).removeAttr('style');
+                }).join(';').trim();
+		that.removeAttr('style');
     	if (style.trim()) {
-    		jQuery(this).attr('style', style);
+    		that.attr('style', style);
     	}
-    	return jQuery(this);
+    	return that;
     });
 };
 
@@ -85,20 +87,21 @@ jQuery.fn.removeCss = function( cssName ) {
 jQuery.fn.contentEditable  = function( b ) {
 	// ie does not understand contenteditable but contentEditable
 	// contentEditable is not xhtml compatible.
-	var ce = 'contenteditable';
+	var that = jQuery(this),
+		ce = 'contenteditable';
 	if (jQuery.browser.msie && parseInt(jQuery.browser.version) == 7 ) {
 		ce = 'contentEditable';
 	}
 	if ( b == undefined ) {
-		return jQuery(this).attr(ce);
+		return that.attr(ce);
 	} else if (b === '') {
-		jQuery(this).removeAttr(ce);
+		that.removeAttr(ce);
 	} else {
 		if (b && b !== 'false') {
 			b='true';
 		} else {
 			b='false';
 		}
-		jQuery(this).attr(ce, b);
+		that.attr(ce, b);
 	}
 };

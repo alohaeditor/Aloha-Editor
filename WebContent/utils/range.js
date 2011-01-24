@@ -17,11 +17,11 @@
 *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-if (typeof GENTICS == 'undefined' || !GENTICS) {
+if (typeof GENTICS === 'undefined' || !GENTICS) {
 	var GENTICS = {};
 }
 
-if (typeof GENTICS.Utils == 'undefined' || !GENTICS) {
+if (typeof GENTICS.Utils === 'undefined' || !GENTICS) {
 	GENTICS.Utils = {};
 }
 
@@ -84,16 +84,16 @@ GENTICS.Utils.RangeObject = function(param) {
 
 	// Take the values from the passed object
 	if (typeof param === 'object') {
-		if (param.startContainer !== undefined) {
+		if (typeof param.startContainer !== 'undefined') {
 			this.startContainer = param.startContainer;
 		}
-		if (param.startOffset !== undefined) {
+		if (typeof param.startOffset !== 'undefined') {
 			this.startOffset = param.startOffset;
 		}
-		if (param.endContainer !== undefined) {
+		if (typeof param.endContainer !== 'undefined') {
 			this.endContainer = param.endContainer;
 		}
-		if (param.endOffset !== undefined) {
+		if (typeof param.endOffset !== 'undefined') {
 			this.endOffset = param.endOffset;
 		}		
 	} else if (param === true) {
@@ -168,7 +168,7 @@ GENTICS.Utils.RangeObject.prototype.getContainerParents = function (limit, fromE
 		return false;
 	}
 
-	if (typeof limit == 'undefined') {
+	if (typeof limit === 'undefined') {
 		limit = jQuery('body');
 	}
 
@@ -235,8 +235,8 @@ GENTICS.Utils.RangeObject.prototype.getEndContainerParents = function(limit) {
  */
 GENTICS.Utils.RangeObject.prototype.updateCommonAncestorContainer = function(commonAncestorContainer) {
 	// this will be needed either right now for finding the CAC or later for the crossing index
-	var parentsStartContainer = this.getStartContainerParents();
-	var parentsEndContainer = this.getEndContainerParents();
+	var parentsStartContainer = this.getStartContainerParents(),
+		parentsEndContainer = this.getEndContainerParents();
 
 	// if no parameter was passed, calculate it
 	if (!commonAncestorContainer) {
@@ -306,8 +306,8 @@ GENTICS.Utils.RangeObject.prototype.getCollapsedIERange = function(container, of
 			}
 		} else {
 			// also found no element to the right, use the container itself
-			var parent = container.nodeType == 3 ? container.parentNode : container;
-			var tmpRange = document.body.createTextRange();
+			var parent = container.nodeType == 3 ? container.parentNode : container,
+				tmpRange = document.body.createTextRange();
 			tmpRange.moveToElementText(parent);
 			ieRange.setEndPoint('StartToStart', tmpRange);
 
@@ -681,7 +681,7 @@ GENTICS.Utils.RangeObject.prototype.clearCaches = function () {
  * @method
  */
 GENTICS.Utils.RangeObject.prototype.getRangeTree = function (root) {
-	if (typeof root == 'undefined') {
+	if (typeof root === 'undefined') {
 		root = this.getCommonAncestorContainer();
 	}
 
@@ -704,10 +704,10 @@ GENTICS.Utils.RangeObject.prototype.getRangeTree = function (root) {
  */
 GENTICS.Utils.RangeObject.prototype.recursiveGetRangeTree = function (currentObject) {
 	// get all direct children of the given object
-	var jQueryCurrentObject = jQuery(currentObject);
-	var childCount = 0;
-	var that = this;
-	var currentElements = new Array();
+	var jQueryCurrentObject = jQuery(currentObject),
+		childCount = 0,
+		that = this,
+		currentElements = [];
 
 	jQueryCurrentObject.contents().each(function(index) {
 		var type = 'none';
@@ -933,7 +933,7 @@ GENTICS.Utils.RangeTree = function() {
 	 * @property domobj
 	 * @type {DOMObject}
 	 */
-	this.domobj = new Object();
+	this.domobj = {};
 
 	/**
 	 * type of the participation of the dom object in the range. Is one of:
@@ -953,5 +953,5 @@ GENTICS.Utils.RangeTree = function() {
 	 * @property children
 	 * @type {Array}
 	 */
-	this.children = new Array();
+	this.children = [];
 };

@@ -46,12 +46,12 @@ GENTICS.Aloha.Log.prototype.highWaterMarkReached = false;
  */
 GENTICS.Aloha.Log.prototype.init = function() {
 	// initialize the logging settings (if not present)
-	if (typeof GENTICS.Aloha.settings.logLevels == 'undefined' || !GENTICS.Aloha.settings.logLevels) {
+	if (typeof GENTICS.Aloha.settings.logLevels === 'undefined' || !GENTICS.Aloha.settings.logLevels) {
 		GENTICS.Aloha.settings.logLevels = {'error' : true, 'warn' : true};
 	}
 
 	// initialize the logHistory settings (if not present)
-	if (typeof GENTICS.Aloha.settings.logHistory == 'undefined' || !GENTICS.Aloha.settings.logHistory) {
+	if (typeof GENTICS.Aloha.settings.logHistory === 'undefined' || !GENTICS.Aloha.settings.logHistory) {
 		GENTICS.Aloha.settings.logHistory = {};
 	}
 	// set the default values for the loghistory
@@ -75,7 +75,7 @@ GENTICS.Aloha.Log.prototype.init = function() {
  * @param {String} message log message
  */
 GENTICS.Aloha.Log.prototype.log = function(level, component, message) {
-	if (typeof level == 'undefined' || !level) {
+	if (typeof level === 'undefined' || !level) {
 		level = 'error';
 	}
 	level = level.toLowerCase();

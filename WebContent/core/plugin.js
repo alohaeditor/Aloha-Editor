@@ -122,7 +122,7 @@ GENTICS.Aloha.PluginRegistry.prototype.makeClean = function(obj) {
 	for ( var i = 0; i < this.plugins.length; i++) {
 		var plugin = this.plugins[i];
 		if (GENTICS.Aloha.Log.isDebugEnabled()) {
-			GENTICS.Aloha.Log.debug(this, "Passing contents of HTML Element with id { " + obj.attr("id") + " } for cleaning to plugin { " + plugin.prefix + " }");
+			GENTICS.Aloha.Log.debug(this, 'Passing contents of HTML Element with id { ' + obj.attr('id') + ' } for cleaning to plugin { ' + plugin.prefix + ' }');
 		}
 		plugin.makeClean(obj);
 	}
@@ -139,7 +139,7 @@ GENTICS.Aloha.PluginRegistry = new GENTICS.Aloha.PluginRegistry();
  * @hide
  */
 GENTICS.Aloha.PluginRegistry.toString = function() {
-	return "com.gentics.aloha.PluginRegistry";
+	return 'com.gentics.aloha.PluginRegistry';
 };
 
 /**
@@ -238,7 +238,7 @@ GENTICS.Aloha.Plugin.prototype.getEditableConfig = function (obj) {
 
 	// fall back to default configuration
 	if ( !configSpecified ) {
-		if ( typeof this.settings.config == 'undefined' || !this.settings.config ) {
+		if ( typeof this.settings.config === 'undefined' || !this.settings.config ) {
 			configObj = this.config;
 		} else {
 			configObj = this.settings.config;
@@ -263,7 +263,7 @@ GENTICS.Aloha.Plugin.prototype.makeClean = function (obj) {};
  * @hide
  */
 GENTICS.Aloha.Plugin.prototype.getUID = function(id) {
-	return this.prefix + "." + id;
+	return this.prefix + '.' + id;
 };
 
 /**

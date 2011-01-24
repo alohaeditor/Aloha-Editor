@@ -17,7 +17,7 @@
 *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-if (typeof GENTICS == 'undefined' || !GENTICS) {
+if (typeof GENTICS === 'undefined' || !GENTICS) {
 	/*
 	 * The GENTICS global namespace object. If GENTICS is already defined, the
 	 * existing GENTICS object will not be overwritten so that defined
@@ -49,7 +49,7 @@ GENTICS.Aloha.setAutobase = function () {
 GENTICS.Aloha.setAutobase();
 
 // provide aloha version, is automatically set during build process
-GENTICS.Aloha.prototype.version='##ALOHAVERSION##';
+GENTICS.Aloha.prototype.version = '##ALOHAVERSION##';
 
 /**
  * Array of editables that are managed by Aloha
@@ -91,7 +91,7 @@ GENTICS.Aloha.prototype.settings = {};
  * @property
  * @type string
  */
-GENTICS.Aloha.prototype.OSName = "Unknown";
+GENTICS.Aloha.prototype.OSName = 'Unknown';
 
 /**
  * Array of callback functions to call when Aloha is ready
@@ -114,7 +114,7 @@ GENTICS.Aloha.prototype.init = function () {
 		jQuery.browser.mozilla && parseFloat(jQuery.browser.version) < 1.9 || // FF 3.5
 		jQuery.browser.msie && jQuery.browser.version < 7 || // IE 7	
 		jQuery.browser.opera) { // right now, Opera does not work :(
-		alert("Sorry, your browser is not supported at the moment.");
+		alert('Sorry, your browser is not supported at the moment.');
 		return;
 	}
 	
@@ -138,9 +138,9 @@ GENTICS.Aloha.prototype.init = function () {
 	});
 	
 	// initialize the base path to the aloha files
-	if (typeof this.settings.base == 'undefined' || !this.settings.base) {
+	if (typeof this.settings.base === 'undefined' || !this.settings.base) {
 		this.settings.base = GENTICS.Aloha.autobase;
-		if (typeof GENTICS_Aloha_base != 'undefined') {
+		if (typeof GENTICS_Aloha_base !== 'undefined') {
 			this.settings.base = GENTICS_Aloha_base;
 		}
 	}
@@ -225,8 +225,6 @@ GENTICS.Aloha.prototype.activateEditable = function (editable) {
 	// blur all editables, which are currently active
 	for (var i = 0; i < this.editables.length; i++) {
 		if (this.editables[i] != editable && this.editables[i].isActive) {
-			// remember the last editable for the editableActivated event
-			var oldActive = this.editables[i]; 
 			this.editables[i].blur();
 		}
 	}
@@ -248,7 +246,7 @@ GENTICS.Aloha.prototype.getActiveEditable = function() {
  */
 GENTICS.Aloha.prototype.deactivateEditable = function () {
 	
-	if ( typeof this.activeEditable == 'undefined' || this.activeEditable == null ) {
+	if ( typeof this.activeEditable === 'undefined' || this.activeEditable == null ) {
 		return;
 	}
 
@@ -341,26 +339,6 @@ GENTICS.Aloha.prototype.identStr = function (object) {
 };
 
 /**
- * a basic trim function as found on
- * http://blog.stevenlevithan.com/archives/faster-trim-javascript
- * 
- * @param str
- *            to be trimmed
- * @return trimmed string
- * @hide
- */
-GENTICS.Aloha.prototype.trim = function(str) {
-	str = str.replace(/^\s+/, '');
-	for (var i = str.length - 1; i >= 0; i--) {
-		if (/\S/.test(str.charAt(i))) {
-			str = str.substring(0, i + 1);
-			break;
-		}
-	}
-	return str;
-};
-
-/**
  * Initialize i18n, load the dictionary file
  * Languages may have format as defined in 
  * http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.10
@@ -370,12 +348,12 @@ GENTICS.Aloha.prototype.trim = function(str) {
  */
 GENTICS.Aloha.prototype.initI18n = function() {
 	
-	if (typeof this.settings.i18n == 'undefined' || !this.settings.i18n) {
+	if (typeof this.settings.i18n === 'undefined' || !this.settings.i18n) {
 		this.settings.i18n = {};
 	}
 
 	// TODO read dict files automatically on build. Develop only with "en"
-	if (typeof this.settings.i18n.available == 'undefined' 
+	if (typeof this.settings.i18n.available === 'undefined' 
 		|| !this.settings.i18n.available 
 		|| !this.settings.i18n.available instanceof Array) {
 		
@@ -389,8 +367,8 @@ GENTICS.Aloha.prototype.initI18n = function() {
 	 * Any implementation has to set it server side because this is not
 	 * accessible by JS. http://lists.w3.org/Archives/Public/public-html/2009Nov/0454.html
 	*/ 
-	if ( (typeof this.settings.i18n.current == 'undefined' || !this.settings.i18n.current) &&
-		typeof this.settings.i18n.acceptLanguage == 'string' ) {
+	if ( (typeof this.settings.i18n.current === 'undefined' || !this.settings.i18n.current) &&
+		typeof this.settings.i18n.acceptLanguage === 'string' ) {
 
 		var acceptLanguage = [];
 		// Split the string from ACCEPT-LANGUAGE
@@ -398,10 +376,10 @@ GENTICS.Aloha.prototype.initI18n = function() {
 	    for(i = 0; i < preferredLanguage.length; i++) {
 	    	
 	    	// split language setting
-	    	var lang = preferredLanguage[i].split(";");
+	    	var lang = preferredLanguage[i].split(';');
 	    	
 	    	// convert quality to float
-	    	if ( typeof lang[1] == 'undefined' || !lang[1] ) {
+	    	if ( typeof lang[1] === 'undefined' || !lang[1] ) {
 	    	  lang[1] = 1;
 	    	} else {
 	    	  lang[1] = parseFloat(lang[1].substring(2, lang[1].length)); 
@@ -464,7 +442,7 @@ GENTICS.Aloha.prototype.getLanguage = function(language, availableLanguages) {
 		return null;
 	}
 	
-	if (typeof language == 'undefined' || !language) {
+	if (typeof language === 'undefined' || !language) {
 		return availableLanguages[0];
 	}
 	
@@ -517,16 +495,15 @@ GENTICS.Aloha.prototype.loadI18nFile = function(fileUrl, component, callback) {
  */
 GENTICS.Aloha.prototype.parseI18nFile = function(data, component) {
 	data = data.replace(/\r/g, '');
-	var entries = data.split('\n');
-	var dictionary = {};
+	var entries = data.split('\n'),
+		dictionary = {};
 	for (var i = 0; i < entries.length; ++i) {
-		var entry = entries[i];
-		var equal = entry.indexOf('=');
+		var entry = entries[i],
+			equal = entry.indexOf('=');
 		if (equal > 0) {
-			var key = GENTICS.Aloha.trim(entry.substring(0, equal));
-			var value = GENTICS.Aloha.trim(entry.substring(equal + 1, entry.length));
-			value = value.replace(/\\n/g, '\n');
-			value = value.replace(/\\\\/g, '\\');
+			var key = jQuery.trim(entry.substring(0, equal)),
+				value = jQuery.trim(entry.substring(equal + 1, entry.length));
+			value = value.replace(/\\n/g, '\n').replace(/\\\\/g, '\\');
 
 			// check for duplicate keys and print a warning
 			if (dictionary[key]) {
@@ -552,19 +529,17 @@ GENTICS.Aloha.prototype.i18n = function(component, key, replacements) {
 	var value = null;
 
 	// first get the dictionary for the component
-	if (this.dictionaries[component.toString()]) {
-		if (this.dictionaries[component.toString()][key]) {
-			value = this.dictionaries[component.toString()][key];
-		}
+	if (this.dictionaries[component.toString()] && this.dictionaries[component.toString()][key]) {
+		value = this.dictionaries[component.toString()][key];
 	}
 
 	// when the value was not found and component is not GENTICS.Aloha, do a fallback
-	if (!value && component != GENTICS.Aloha) {
-		if (this.dictionaries[GENTICS.Aloha.toString()]) {
-			if (this.dictionaries[GENTICS.Aloha.toString()][key]) {
-				value = this.dictionaries[GENTICS.Aloha.toString()][key];
-			}
-		}
+	if (!value
+		&& component != GENTICS.Aloha
+		&& this.dictionaries[GENTICS.Aloha.toString()]
+		&& this.dictionaries[GENTICS.Aloha.toString()][key])
+	{
+		value = this.dictionaries[GENTICS.Aloha.toString()][key];
 	}
 
 	// value still not found, so output the key
@@ -574,7 +549,7 @@ GENTICS.Aloha.prototype.i18n = function(component, key, replacements) {
 		// substitute placeholders
 		if (typeof replacements != 'undefined' && replacements != null) {
 			for ( var i = 0; i < replacements.length; ++i) {
-				if (typeof replacements[i] != 'undefined' && replacements[i] != null) {
+				if (typeof replacements[i] !== 'undefined' && replacements[i] != null) {
 					var regEx = new RegExp('\\{' + (i) + '\\}', 'g');
 					var safeArgument = replacements[i].toString().replace(/\{/g, '\\{');
 					safeArgument = safeArgument.replace(/\}/g, '\\}');
@@ -583,9 +558,7 @@ GENTICS.Aloha.prototype.i18n = function(component, key, replacements) {
 			}
 		}
 
-		value = value.replace(/\{\d\}/g, '');
-		value = value.replace(/\\\{/g, '{');
-		value = value.replace(/\\\}/g, '}');
+		value = value.replace(/\{\d\}/g, '').replace(/\\\{/g, '{').replace(/\\\}/g, '}');
 		return value;
 	}
 };
@@ -677,10 +650,8 @@ GENTICS.Aloha.prototype.toString = function () {
 GENTICS.Aloha.prototype.isModified = function () {
 	// check if something needs top be saved
 	for (var i in this.editables) {
-		if (this.editables[i].isModified) {
-			if (this.editables[i].isModified()) {
-				return true;
-			}
+		if (this.editables[i].isModified && this.editables[i].isModified()) {
+			return true;
 		}
 	}
 
@@ -703,9 +674,9 @@ jQuery.isAloha = true;
 jQuery(document).ready(function() {
 	// if there is no Aloha flag on jQuery, then jQuery has been overloaded
 	if (!jQuery.isAloha && window.console && console.error) {
-		console.error("Aloha ERROR: jQuery was included at least a second time after loading Aloha. " + 
-			"This will cause serious problems. You must not load other versions " +
-			"of jQuery with Aloha.");
+		console.error('Aloha ERROR: jQuery was included at least a second time after loading Aloha. ' + 
+			'This will cause serious problems. You must not load other versions ' +
+			'of jQuery with Aloha.');
 	}
 	GENTICS.Aloha.init();
 });

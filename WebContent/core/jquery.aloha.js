@@ -118,6 +118,6 @@ jQuery.fn.outerHTML = function(s) {
 	if (s) {
 		return this.before(s).remove();
 	} else {
-		return jQuery("<p>").append(this.eq(0).clone()).html();
+		return jQuery('<p>').append(this.eq(0).clone()).html();
 	}
 };	

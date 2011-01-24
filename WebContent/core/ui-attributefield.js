@@ -51,7 +51,7 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 	),
     onSelect: function (item) {
 		this.setItem(item.data);
-		if ( typeof this.alohaButton.onSelect == 'function' ) {
+		if ( typeof this.alohaButton.onSelect === 'function' ) {
 			this.alohaButton.onSelect.call(this.alohaButton, item.data);
 		}
 		this.collapse();
@@ -157,7 +157,7 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
         	var setAttr = true;
 
             // check if a reference value is submitted to check against with a regex
-	        if ( typeof reference != 'undefined' ) {
+	        if ( typeof reference !== 'undefined' ) {
 	            var regxp = new RegExp( regex );
 	            if ( !reference.match(regxp) ) {
 	                setAttr = false;

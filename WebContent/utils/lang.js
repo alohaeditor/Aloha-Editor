@@ -17,11 +17,11 @@
 *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-if (typeof GENTICS == 'undefined' || !GENTICS) {
+if (typeof GENTICS === 'undefined' || !GENTICS) {
 	var GENTICS = {};
 }
 
-if (typeof GENTICS.Utils == 'undefined' || !GENTICS) {
+if (typeof GENTICS.Utils === 'undefined' || !GENTICS) {
 	GENTICS.Utils = {};
 }
 
@@ -67,5 +67,5 @@ GENTICS.Utils.uniqeString4 = function () {
  */
 GENTICS.Utils.guid = function () {
 	var S4 = GENTICS.Utils.uniqeString4;
-	return (S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4());
+	return (S4()+S4()+'-'+S4()+'-'+S4()+'-'+S4()+'-'+S4()+S4()+S4());
 };

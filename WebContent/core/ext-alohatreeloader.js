@@ -37,7 +37,7 @@ Ext.extend( Ext.tree.AlohaTreeLoader, Ext.tree.TreeLoader, {
  	            scope: this,
  			    argument: {callback: callback, node: node}
  	   		};
- 	      	if(typeof callback == "function"){
+ 	      	if(typeof callback === 'function'){
  	        	callback(items, response);
  	      	}	 	        
     	});

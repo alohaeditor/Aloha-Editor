@@ -37,7 +37,7 @@ GENTICS.Aloha.RepositoryManager.prototype.openCallbacks = [];
 GENTICS.Aloha.RepositoryManager.prototype.init = function() {
 	
 	// get the repository settings
-	if (GENTICS.Aloha.settings.repositories == undefined) {
+	if (typeof GENTICS.Aloha.settings.repositories === 'undefined') {
 		GENTICS.Aloha.settings.repositories = {};
 	}
 
@@ -45,7 +45,7 @@ GENTICS.Aloha.RepositoryManager.prototype.init = function() {
 	for ( var i = 0; i < this.repositories.length; i++) {
 		var repository = this.repositories[i];
 		
-		if (repository.settings == undefined) {
+		if (typeof repository.settings === 'undefined') {
 			repository.settings = {};
 		}
 		
@@ -69,10 +69,10 @@ GENTICS.Aloha.RepositoryManager.prototype.register = function(repository) {
 		if ( !this.getRepository(repository.repositoryId) ) {
 			this.repositories.push(repository); 
 		} else {
-			GENTICS.Aloha.Log.warn(this, "A repository with name { " + repository.repositoryId+ " } already registerd. Ignoring this.");
+			GENTICS.Aloha.Log.warn(this, 'A repository with name { ' + repository.repositoryId + ' } already registerd. Ignoring this.');
 		}
 	} else {
-		GENTICS.Aloha.Log.error(this, "Trying to register a repository which is not an instance of GENTICS.Aloha.Repository.");
+		GENTICS.Aloha.Log.error(this, 'Trying to register a repository which is not an instance of GENTICS.Aloha.Repository.');
 	}
 	
 };
@@ -356,7 +356,7 @@ GENTICS.Aloha.RepositoryManager.prototype.makeClean = function(obj) {
 		for ( var i = 0; i < that.repositories.length; i++) {
 			repository.makeClean(obj);
 		}	
-		GENTICS.Aloha.Log.debug(that, "Passing contents of HTML Element with id { " + this.attr("id") + " } for cleaning to repository { " + repository.repositoryId + " }");
+		GENTICS.Aloha.Log.debug(that, 'Passing contents of HTML Element with id { ' + this.attr('id') + ' } for cleaning to repository { ' + repository.repositoryId + ' }');
 		repository.makeClean(this);
 	});	
 };
@@ -382,7 +382,7 @@ GENTICS.Aloha.RepositoryManager.prototype.markObject = function (obj, item) {
 		});
 		repository.markObject(obj, item);
 	} else {
-		GENTICS.Aloha.Log.error(this, "Trying to apply a repository { " + item.name + " } to an object, but item has no repositoryId.");
+		GENTICS.Aloha.Log.error(this, 'Trying to apply a repository { ' + item.name + ' } to an object, but item has no repositoryId.');
 	}
 };
 
@@ -426,5 +426,5 @@ GENTICS.Aloha.RepositoryManager = new GENTICS.Aloha.RepositoryManager();
  * @hide
  */
 GENTICS.Aloha.RepositoryManager.toString = function() {
-	return "com.gentics.aloha.RepositoryManager";
+	return 'com.gentics.aloha.RepositoryManager';
 };

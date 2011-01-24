@@ -80,8 +80,6 @@ GENTICS.Aloha.Editable.prototype.range = undefined;
  */
 GENTICS.Aloha.Editable.prototype.check = function() {
 	
-	var that = this;
-	
 	/* TODO check those elements
 	'map', 'meter', 'object', 'output', 'progress', 'samp',
 	'time', 'area', 'datalist', 'figure', 'kbd', 'keygen',
@@ -89,12 +87,13 @@ GENTICS.Aloha.Editable.prototype.check = function() {
     */
 	
 	// Extract El
-	var	obj = this.obj,
+	var	that = this,
+		obj = this.obj,
 		el = obj.get(0),
-		nodeName = el.nodeName.toLowerCase();
+		nodeName = el.nodeName.toLowerCase(),
 	
 	// supported elements
-	var textElements = [ 'a', 'abbr', 'address', 'article', 'aside',
+	    textElements = [ 'a', 'abbr', 'address', 'article', 'aside',
 				'b', 'bdo', 'blockquote',  'cite', 'code', 'command',
 				'del', 'details', 'dfn', 'div', 'dl', 'em', 'footer', 'h1', 'h2',
 				'h3', 'h4', 'h5', 'h6', 'header', 'i', 'ins', 'menu',
@@ -117,11 +116,11 @@ GENTICS.Aloha.Editable.prototype.check = function() {
 		case 'textarea':
 			// Create a div alongside the textarea
 			var div = jQuery('<div id="'+this.getId()+'-aloha" class="GENTICS_textarea"/>').insertAfter(obj);
-			// Risize the div to the textarea
-			div.height(obj.height());
-			div.width(obj.width());
+			// Resize the div to the textarea
+			div.height(obj.height())
+			   .width(obj.width())
 			// Populate the div with the value of the textarea
-			div.html(obj.val());
+			   .html(obj.val());
 			// Hide the textarea
 			obj.hide();
 			// Attach a onsubmit to the form to place the HTML of the div back into the textarea
@@ -189,8 +188,8 @@ GENTICS.Aloha.Editable.prototype.init = function() {
 	if (GENTICS.Aloha.ready) {
 
 		// initialize the object
-		this.obj.addClass('GENTICS_editable');
-		this.obj.contentEditable(true);
+		this.obj.addClass('GENTICS_editable')
+		        .contentEditable(true);
 		
 		// add focus event to the object to activate
 		this.obj.mousedown(function(e) {
@@ -255,7 +254,6 @@ GENTICS.Aloha.Editable.prototype.init = function() {
  * @return void
  */
 GENTICS.Aloha.Editable.prototype.destroy = function() {
-	var that = this;
 	
 	// leave the element just to get sure
 	if (this == GENTICS.Aloha.getActiveEditable()) {
@@ -263,7 +261,8 @@ GENTICS.Aloha.Editable.prototype.destroy = function() {
 	}
 	
 	// original Object
-	var	oo = this.originalObj.get(0),
+	var	that = this,
+		oo = this.originalObj.get(0),
 		onn = oo.nodeName.toLowerCase();
 	
 	// special handled elements
@@ -288,13 +287,13 @@ GENTICS.Aloha.Editable.prototype.destroy = function() {
 	this.ready = false;
 
 	// initialize the object
-	this.obj.removeClass('GENTICS_editable');
+	this.obj.removeClass('GENTICS_editable')
 	// Disable contentEditable
-	this.obj.contentEditable(false);
+	        .contentEditable(false)
 	
 	// unbind all events 
 	// TODO should only unbind the specific handlers.
-	this.obj.unbind('mousedown focus keydown keyup'); 
+	        .unbind('mousedown focus keydown keyup'); 
 	
 	/* TODO remove this event, it should implemented as bind and unbind
 	// register the onSelectionChange Event with the Editable field
@@ -370,9 +369,7 @@ GENTICS.Aloha.Editable.prototype.isDisabled = function () {
  * a disabled editable cannot be written on by keyboard
  */
 GENTICS.Aloha.Editable.prototype.disable = function() {
-	if (!this.isDisabled()) {
-		this.obj.contentEditable(false);
-	}
+	this.isDisabled() || this.obj.contentEditable(false);
 };
 
 /**
@@ -380,9 +377,7 @@ GENTICS.Aloha.Editable.prototype.disable = function() {
  * reenables a disabled editable to be writteable again 
  */
 GENTICS.Aloha.Editable.prototype.enable = function() {
-	if (this.isDisabled()) {
-		this.obj.contentEditable(true);
-	}
+	this.isDisabled() && this.obj.contentEditable(true);
 };
 
 
@@ -506,7 +501,7 @@ GENTICS.Aloha.Editable.prototype.blur = function() {
 GENTICS.Aloha.Editable.prototype.empty = function(str) {
 	return (null === str)
 	// br is needed for chrome
-	|| (GENTICS.Aloha.trim(str) == '' || str == '<br>');
+	|| (jQuery.trim(str) == '' || str == '<br/>');
 };
 
 /**
@@ -558,9 +553,9 @@ GENTICS.Aloha.Editable.prototype.smartContentChange = function(event) {
 	// regex unicode
 	if (event && event.originalEvent) {
 		
-		var re = new RegExp("U\\+(\\w{4})");
-		var match = re.exec(event.originalEvent.keyIdentifier);
-		if (match != undefined) {
+		var re = new RegExp("U\\+(\\w{4})"),
+			match = re.exec(event.originalEvent.keyIdentifier);
+		if (typeof match !== 'undefined') {
 			uniChar = eval('"\\u' + match[1] + '"');
 		}
 		if (uniChar === null) {

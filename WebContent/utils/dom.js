@@ -221,8 +221,8 @@ GENTICS.Utils.Dom.prototype.listElements = ['li', 'ol',	'ul'];
  * @method
  */
 GENTICS.Utils.Dom.prototype.split = function (range, limit, atEnd) {
-	var splitElement = jQuery(range.startContainer);
-	var splitPosition = range.startOffset;
+	var splitElement = jQuery(range.startContainer),
+		splitPosition = range.startOffset;
 	
 	if (atEnd) {
 		splitElement = jQuery(range.endContainer);
@@ -237,8 +237,8 @@ GENTICS.Utils.Dom.prototype.split = function (range, limit, atEnd) {
 	var updateRange = (!range.isCollapsed() && !atEnd);
 	
 	// find the path up to the highest object that will be splitted
-	var path;
-	var parents = splitElement.parents().get();
+	var path,
+		parents = splitElement.parents().get();
 	parents.unshift(splitElement.get(0));
 		
 	jQuery.each(parents, function(index, element) {
@@ -260,14 +260,15 @@ GENTICS.Utils.Dom.prototype.split = function (range, limit, atEnd) {
 	}
 	
 	path = path.reverse();
-	var newDom;
-	var insertElement;
+	var newDom,
+		insertElement;
 	
 	// iterate over the path, create new dom nodes for every element and move 
-	// the contents right of the split to the new element 
-	for(var i=0; i < path.length; i++) {
+	// the contents right of the split to the new element
+	var pathLength = path.length;
+	for(var i=0; i < pathLength; i++) {
 		var element = path[i];
-		if (i === path.length -1) {
+		if (i === pathLength - 1) {
 			// last element in the path -> we have to split it
 			var secondPart;
 			
@@ -278,8 +279,8 @@ GENTICS.Utils.Dom.prototype.split = function (range, limit, atEnd) {
 				element.data = element.data.substring(0, splitPosition);	
 			} else {
 				// other nodes
-				var newElement = jQuery(element).clone(false).empty();
-				var children = jQuery(element).contents();
+				var newElement = jQuery(element).clone(false).empty(),
+					children = jQuery(element).contents();
 				secondPart = newElement.append(children.slice(splitPosition, children.length)).get(0);
 			}
 			
@@ -317,8 +318,8 @@ GENTICS.Utils.Dom.prototype.split = function (range, limit, atEnd) {
 			// update the range if necessary
 			if (updateRange && range.endContainer === element) {
 				range.endContainer = newElement.get(0);
-				var prev = path[i+1];
-				var offset = 0;
+				var prev = path[i+1],
+					offset = 0;
 				while (prev = prev.previousSibling) {
 					offset++;
 				}
@@ -464,9 +465,9 @@ GENTICS.Utils.Dom.prototype.recursiveAddMarkup = function (rangeTree, markup, ra
  * @method
  */
 GENTICS.Utils.Dom.prototype.findHighestElement = function (start, nodeName, limit) {
-	var testObject = start;
 	nodeName = nodeName.toLowerCase();
-
+	
+	var testObject = start;
 	// helper function to stop when we reach a limit object
 	var isLimit = limit ? function () {
 		return limit.filter(
@@ -484,7 +485,7 @@ GENTICS.Utils.Dom.prototype.findHighestElement = function (start, nodeName, limi
 	// now get the highest parent that has the given markup (until we reached
 	// one of the limit objects or there are no more parent nodes)
 	while (!isLimit() && testObject) {
-		if (testObject.nodeName.toLowerCase() == nodeName) {
+		if (testObject.nodeName.toLowerCase() === nodeName) {
 			highestObject = testObject;
 		}
 		testObject = testObject.parentNode;
@@ -502,10 +503,10 @@ GENTICS.Utils.Dom.prototype.findHighestElement = function (start, nodeName, limi
  * @method
  */
 GENTICS.Utils.Dom.prototype.removeMarkup = function (rangeObject, markup, limit) {
-	var nodeName = markup.get(0).nodeName;
-	var startSplitLimit = this.findHighestElement(rangeObject.startContainer, nodeName, limit);
-	var endSplitLimit = this.findHighestElement(rangeObject.endContainer, nodeName, limit);
-	var didSplit = false;
+	var nodeName = markup.get(0).nodeName,
+		startSplitLimit = this.findHighestElement(rangeObject.startContainer, nodeName, limit),
+		endSplitLimit = this.findHighestElement(rangeObject.endContainer, nodeName, limit),
+		didSplit = false;
 
 	if (startSplitLimit && rangeObject.startOffset > 0) {
 		// when the start is in the start of its container, we don't split
@@ -531,11 +532,11 @@ GENTICS.Utils.Dom.prototype.removeMarkup = function (rangeObject, markup, limit)
 	}
 
 	// find the highest occurrence of the markup
-	var highestObject = this.findHighestElement(rangeObject.getCommonAncestorContainer(), nodeName, limit);
-	var root = highestObject ? highestObject.parentNode : undefined;
-
-	// construct the range tree
-	var rangeTree = rangeObject.getRangeTree(root);
+	var highestObject = this.findHighestElement(rangeObject.getCommonAncestorContainer(), nodeName, limit),
+		root = highestObject ? highestObject.parentNode : undefined,
+		// construct the range tree
+		rangeTree = rangeObject.getRangeTree(root);
+	
 	// remove the markup from the range tree
 	this.recursiveRemoveMarkup(rangeTree, markup);
 	
@@ -591,21 +592,21 @@ GENTICS.Utils.Dom.prototype.recursiveRemoveMarkup = function (rangeTree, markup)
 GENTICS.Utils.Dom.prototype.doCleanup = function(cleanup, rangeObject, start) {
 	var that = this;
 
-	if (typeof cleanup == 'undefined') {
+	if (typeof cleanup === 'undefined') {
 		cleanup = {'merge' : true, 'removeempty' : true};
 	}
 
-	if (typeof start == 'undefined') {
+	if (typeof start === 'undefined') {
 		if (rangeObject) {
 			start = rangeObject.getCommonAncestorContainer();
 		}
 	}
 	// remember the previous node here (successive nodes of same type will be merged into this)
-	var prevNode = false;
+	var prevNode = false,
 	// check whether the range needed to be modified during merging
-	var modifiedRange = false;
+		modifiedRange = false,
 	// get the start object
-	var startObject = jQuery(start);
+		startObject = jQuery(start);
 
 	// iterate through all sub nodes
 	startObject.contents().each(function(index) {
@@ -760,8 +761,8 @@ GENTICS.Utils.Dom.prototype.getIndexInParent = function (node) {
 	if (!node) {
 		return false;
 	}
-	var index = 0;
-	var check = node.previousSibling;
+	var index = 0,
+		check = node.previousSibling;
 	while(check) {
 		index++;
 		check = check.previousSibling;
@@ -858,21 +859,21 @@ GENTICS.Utils.Dom.prototype.searchAdjacentTextNode = function (parent, index, se
 		return false;
 	}
 
-	if (typeof stopat == 'undefined') {
+	if (typeof stopat === 'undefined') {
 		stopat = {'blocklevel' : true, 'list' : true, 'linebreak' : true};
 	}
 
-	if (stopat.blocklevel == 'undefined') {
+	if (typeof stopat.blocklevel === 'undefined') {
 		stopal.blocklevel = true;
 	}
-	if (stopat.list == 'undefined') {
+	if (typeof stopat.list === 'undefined') {
 		stopal.list = true;
 	}
-	if (stopat.linebreak == 'undefined') {
+	if (typeof stopat.linebreak === 'undefined') {
 		stopal.linebreak = true;
 	}
 
-	if (typeof searchleft == 'undefined') {
+	if (typeof searchleft === 'undefined') {
 		searchleft = true;
 	}
 
@@ -887,7 +888,7 @@ GENTICS.Utils.Dom.prototype.searchAdjacentTextNode = function (parent, index, se
 		nextNode = parent.childNodes[index];
 	}
 
-	while (typeof currentParent != 'undefined') {
+	while (typeof currentParent !== 'undefined') {
 		if (!nextNode) {
 			// no next node found, check whether the parent is a blocklevel element
 			if (stopat.blocklevel && this.isBlockLevelElement(currentParent)) {
@@ -949,9 +950,9 @@ GENTICS.Utils.Dom.prototype.searchAdjacentTextNode = function (parent, index, se
  */
 GENTICS.Utils.Dom.prototype.insertIntoDOM = function (object, range, limit, atEnd, force) {
 	// first find the appropriate place to insert the given object
-	var parentElements = range.getContainerParents(limit, atEnd);
-	var that = this;
-	var newParent;
+	var parentElements = range.getContainerParents(limit, atEnd),
+		that = this,
+		newParent;
 
 	if (!limit) {
 		limit = jQuery(document.body);
@@ -970,7 +971,7 @@ GENTICS.Utils.Dom.prototype.insertIntoDOM = function (object, range, limit, atEn
 		});
 	}
 
-	if (typeof newParent == 'undefined' && limit.length > 0) {
+	if (typeof newParent === 'undefined' && limit.length > 0) {
 		// found no possible new parent, so split up to the limit object
 		newParent = limit.get(0);
 	}
@@ -980,7 +981,7 @@ GENTICS.Utils.Dom.prototype.insertIntoDOM = function (object, range, limit, atEn
 		return false;
 	}
 
-	if (typeof newParent != 'undefined') {
+	if (typeof newParent !== 'undefined') {
 		// we found a possible new parent, so we split the DOM up to the new parent
 		var splitParts = this.split(range, jQuery(newParent), atEnd);
 		if (splitParts === true) {
@@ -1031,9 +1032,9 @@ GENTICS.Utils.Dom.prototype.insertIntoDOM = function (object, range, limit, atEn
 GENTICS.Utils.Dom.prototype.removeFromDOM = function (object, range, preserveContent) {
 	if (preserveContent) {
 		// check whether the range will need modification
-		var indexInParent = this.getIndexInParent(object);
-		var numChildren = jQuery(object).contents().length;
-		var parent = object.parentNode;
+		var indexInParent = this.getIndexInParent(object),
+			numChildren = jQuery(object).contents().length,
+			parent = object.parentNode;
 
 		if (range.startContainer == parent && range.startOffset > indexInParent) {
 			range.startOffset += numChildren - 1;
@@ -1067,8 +1068,8 @@ GENTICS.Utils.Dom.prototype.removeFromDOM = function (object, range, preserveCon
  */
 GENTICS.Utils.Dom.prototype.extendToWord = function (range, fromBoundaries) {
 	// search the word boundaries to the left and right
-	var leftBoundary = this.searchWordBoundary(range.startContainer, range.startOffset, true);
-	var rightBoundary = this.searchWordBoundary(range.endContainer, range.endOffset, false);
+	var leftBoundary = this.searchWordBoundary(range.startContainer, range.startOffset, true),
+		rightBoundary = this.searchWordBoundary(range.endContainer, range.endOffset, false);
 
 	// check whether we must not extend the range from word boundaries
 	if (!fromBoundaries) {
@@ -1116,7 +1117,7 @@ GENTICS.Utils.Dom.prototype.isWordBoundaryElement = function (object) {
  * @method
  */
 GENTICS.Utils.Dom.prototype.searchWordBoundary = function (container, offset, searchleft) {
-	if (typeof searchleft == 'undefined') {
+	if (typeof searchleft === 'undefined') {
 		searchleft = true;
 	}
 	var boundaryFound = false;
@@ -1248,7 +1249,8 @@ GENTICS.Utils.Dom.prototype.isEmpty = function (domObject) {
 	}
 
 	// all other nodes are not empty if they contain at least one child which is not empty
-	for (var i = 0; i < domObject.childNodes.length; ++i) {
+	var childNodes = domObject.childNodes.length;
+	for (var i = 0; i < childNodes; ++i) {
 		if (!this.isEmpty(domObject.childNodes[i])) {
 			return false;
 		}

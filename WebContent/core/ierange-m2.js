@@ -99,7 +99,8 @@ if(document.attachEvent && document.selection) {
 		convertToDOMRange: function (textRange, document) {
 			function adoptBoundary(domRange, textRange, bStart) {
 				// iterate backwards through parent element to find anchor location
-				var cursorNode = document.createElement('a'), cursor = textRange.duplicate();
+				var cursorNode = document.createElement('a'),
+					cursor = textRange.duplicate();
 				cursor.collapse(bStart);
 				var parent = cursor.parentElement();
 				do {
@@ -129,10 +130,10 @@ if(document.attachEvent && document.selection) {
 		convertFromDOMRange: function (domRange) {
 			function adoptEndPoint(textRange, domRange, bStart) {
 				// find anchor node and offset
-				var container = domRange[bStart ? 'startContainer' : 'endContainer'];
-				var offset = domRange[bStart ? 'startOffset' : 'endOffset'], textOffset = 0;
-				var anchorNode = DOMUtils.isDataNode(container) ? container : container.childNodes[offset];
-				var anchorParent = DOMUtils.isDataNode(container) ? container.parentNode : container;
+				var container = domRange[bStart ? 'startContainer' : 'endContainer'],
+					offset = domRange[bStart ? 'startOffset' : 'endOffset'], textOffset = 0,
+					anchorNode = DOMUtils.isDataNode(container) ? container : container.childNodes[offset],
+					anchorParent = DOMUtils.isDataNode(container) ? container.parentNode : container;
 				// visible data nodes need a text offset
 				if (container.nodeType == 3 || container.nodeType == 4)
 					textOffset = offset;

@@ -176,7 +176,7 @@ GENTICS.Aloha.ui.Browser = function () {
 		var sel = (sm) ? sm.getSelected() : null;
 		var resourceItem = (sel) ? sel.data : null;
 		this.win.hide();
-		if ( typeof this.onSelect == 'function' ) {
+		if ( typeof this.onSelect === 'function' ) {
 			this.onSelect.call(this, resourceItem);
 		}
 	};

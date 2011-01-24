@@ -17,11 +17,11 @@
 *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-if (typeof GENTICS == 'undefined' || !GENTICS) {
+if (typeof GENTICS === 'undefined' || !GENTICS) {
 	var GENTICS = {};
 }
 
-if (typeof GENTICS.Utils == 'undefined' || !GENTICS) {
+if (typeof GENTICS.Utils === 'undefined' || !GENTICS) {
 	GENTICS.Utils = {};
 }
 
@@ -154,7 +154,7 @@ GENTICS.Utils.Position.addMouseMoveCallback = function (callback) {
 // timeouts will interfere with mouse movement
 // detection
 jQuery(document).ready(function() {
-	setInterval("GENTICS.Utils.Position.update()", 500);
+	setInterval('GENTICS.Utils.Position.update()', 500);
 });
 
 // listen to the mousemove event and update positions

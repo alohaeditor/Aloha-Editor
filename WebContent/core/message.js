@@ -55,7 +55,7 @@ GENTICS.Aloha.Message.Type = {
  * @hide
  */
 GENTICS.Aloha.Message.prototype.toString = function () {
-  return this.type + ": " + this.message;
+  return this.type + ': ' + this.message;
 };
 
 /**
@@ -78,9 +78,9 @@ GENTICS.Aloha.MessageLine.prototype.add = function(message) {
   while(this.messages.length > 4) {
 	this.messages.shift();
   }
-  jQuery("#gtx_aloha_messageline").empty();
+  jQuery('#gtx_aloha_messageline').empty();
   for ( var i = 0; i < this.messages.length; i++) {
-	  jQuery("#gtx_aloha_messageline").append((this.messages[i].toString() + "<br/>"));
+	  jQuery('#gtx_aloha_messageline').append((this.messages[i].toString() + '<br/>'));
   }
 };
 

@@ -55,6 +55,17 @@ GENTICS.Aloha.EventRegistry.prototype.subscribe = function (eventSource, eventNa
 };
 
 /**
+ * Unsubscribe the given Event from the event source
+ * @method
+ * @param {object} eventSource event source object
+ * @param {string} eventName event name
+ * @param {function} handleMethod event handler method
+ */
+GENTICS.Aloha.EventRegistry.prototype.unsubscribe = function (eventSource, eventName, handleMethod) {
+	jQuery(eventSource).unbind(eventName, handleMethod);
+};
+
+/**
  * Trigger the given event
  * @method
  * @param {object} event Aloha event object

@@ -415,10 +415,10 @@ GENTICS.Aloha.Selection.prototype.isRangeObjectWithinMarkup = function(rangeObje
 			return that.standardTextLevelSemanticsComparator(domobj, markupObject); // TODO should actually be this.getStandardTagComparator(markupObject)
 		};
 	}	
-	var parents = jQuery(domObj).parents();
-	var returnVal = false;
-	var i = -1;
-	var that = this;
+	var parents = jQuery(domObj).parents(),
+		returnVal = false,
+		i = -1,
+		that = this;
 	if (parents.length > 0) {
 		parents.each(function() {
 			// the limit object was reached (normally the Editable Element)
@@ -497,8 +497,8 @@ GENTICS.Aloha.Selection.prototype.standardAttributesComparator = function(domobj
 		for (var i = 0; i < domobj.attributes.length; i++) {
 			var attr = domobj.attributes[i];
 			if (attr.nodeName.toLowerCase() == 'class' && attr.nodeValue.length > 0) {
-				var classString = attr.nodeValue;
-				var classes = classString.split(' ');
+				var classString = attr.nodeValue,
+					classes = classString.split(' ');
 			}
 		}
 	}
@@ -506,8 +506,8 @@ GENTICS.Aloha.Selection.prototype.standardAttributesComparator = function(domobj
 		for (var i = 0; i < markupObject[0].attributes.length; i++) {
 			var attr = markupObject[0].attributes[i];
 			if (attr.nodeName.toLowerCase() == 'class' && attr.nodeValue.length > 0) {
-				var classString = attr.nodeValue;
-				var classes2 = classString.split(' ');
+				var classString = attr.nodeValue,
+					classes2 = classString.split(' ');
 			}
 		}
 	}
@@ -657,7 +657,7 @@ GENTICS.Aloha.Selection.prototype.changeMarkup = function(rangeObject, markupObj
 	}
 	
 	// remove all marked items
-	jQuery(".preparedForRemoval").zap();
+	jQuery('.preparedForRemoval').zap();
 	
 	// recalculate cac and selectionTree
 	rangeObject.update();
@@ -684,15 +684,18 @@ GENTICS.Aloha.Selection.prototype.areMarkupObjectsAsLongAsRangeObject = function
 	if (rangeObject.startOffset !== 0) {
 		return false;
 	}
-	for (var i = 0; i < relevantMarkupObjectsAtSelectionStart.length; i++) {
+	var relMarkupStart = relevantMarkupObjectsAtSelectionStart.length;
+	for (var i = 0; i < relMarkupStart; i++) {
 		var el = jQuery(relevantMarkupObjectsAtSelectionStart[i]);
 		if (el.textNodes().first()[0] !== rangeObject.startContainer) {
 			return false;
 		}
 	}
-	for (var i = 0; i < relevantMarkupObjectsAtSelectionEnd.length; i++) {
-		var el = jQuery(relevantMarkupObjectsAtSelectionEnd[i]);
-		if (el.textNodes().last()[0] !== rangeObject.endContainer || el.textNodes().last()[0].length != rangeObject.endOffset) {
+	var relMarkupEnd = relevantMarkupObjectsAtSelectionEnd.length;
+	for (var i = 0; i < relMarkupEnd; i++) {
+		var el = jQuery(relevantMarkupObjectsAtSelectionEnd[i]),
+			textNode = el.textNodes().last()[0];
+		if (textNode !== rangeObject.endContainer || textNode.length != rangeObject.endOffset) {
 			return false;
 		}
 	}	
@@ -744,9 +747,11 @@ GENTICS.Aloha.Selection.prototype.intersectRelevantMarkupObjects = function(rele
 	if (!relevantMarkupObjectsAtSelectionStart || !relevantMarkupObjectsAtSelectionEnd) {
 		return intersection; // we can only intersect, if we have to arrays!
 	}
-	for (var i = 0; i < relevantMarkupObjectsAtSelectionStart.length; i++) {
+	var relMarkupStart = relevantMarkupObjectsAtSelectionStart.length,
+		relMarkupEnd = relevantMarkupObjectsAtSelectionEnd.length;
+	for (var i = 0; i < relMarkupStart; i++) {
 		var elStart = relevantMarkupObjectsAtSelectionStart[i];
-		for (var j = 0; j < relevantMarkupObjectsAtSelectionEnd.length; j++) {
+		for (var j = 0; j < relMarkupEnd; j++) {
 			var elEnd = relevantMarkupObjectsAtSelectionEnd[j];
 			if (elStart === elEnd) {
 				intersection = elStart;
@@ -775,7 +780,7 @@ GENTICS.Aloha.Selection.prototype.extendExistingMarkupWithSelection = function(r
 		var extendMarkupsAtEnd = true;
 	}	
 	var objects = [];
-	for(var i = 0; i<relevantMarkupObjects.length; i++){
+	for(var i = 0; i < relevantMarkupObjects.length; i++){
 		objects[i] = new this.SelectionRange();
 		el = relevantMarkupObjects[i];
 		if (extendMarkupsAtEnd && !extendMarkupsAtStart) {
@@ -881,6 +886,7 @@ GENTICS.Aloha.Selection.prototype.changeMarkupOnSelection = function(markupObjec
 	this.changeMarkup(this.getRangeObject(), markupObject, this.getStandardTagComparator(markupObject));
 
 	// merge text nodes
+
 	GENTICS.Utils.Dom.doCleanup({'mergetext' : true}, this.rangeObject);
 	// update the range and select it
 	this.rangeObject.update();

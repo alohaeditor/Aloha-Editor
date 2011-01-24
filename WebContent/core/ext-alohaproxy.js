@@ -46,7 +46,7 @@ Ext.extend(Ext.data.AlohaProxy, Ext.data.DataProxy, {
  	 	        cb.call(scope, result, arg, true);
         	});
         } catch (e) {
-            this.fireEvent("loadexception", this, null, arg, e);
+            this.fireEvent('loadexception', this, null, arg, e);
             this.fireEvent('exception', this, 'response', action, arg, null, e);
             return false;
         }

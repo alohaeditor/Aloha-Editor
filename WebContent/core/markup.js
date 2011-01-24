@@ -206,7 +206,7 @@ GENTICS.Aloha.Markup.prototype.insertHTMLCode = function (html) {
  * @return void
  */
 GENTICS.Aloha.Markup.prototype.insertHTMLBreak = function(selectionTree, rangeObject, inBetweenMarkup) {
-	inBetweenMarkup = inBetweenMarkup ? inBetweenMarkup: jQuery('<br />');
+	inBetweenMarkup = inBetweenMarkup ? inBetweenMarkup: jQuery('<br/>');
 	for (var i = 0; i < selectionTree.length; i++) {
 		var el = selectionTree[i];
 		var jqEl = el.domobj ? jQuery(el.domobj) : undefined;
@@ -581,7 +581,7 @@ GENTICS.Aloha.Markup.prototype.getFillUpElement = function(splitObject) {
 	if (jQuery.browser.msie) {
 		return false;
 	} else {
-		return jQuery('<br class="GENTICS_cleanme" />');
+		return jQuery('<br class="GENTICS_cleanme"/>');
 	}
 };
 
