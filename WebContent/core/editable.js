@@ -258,7 +258,7 @@ GENTICS.Aloha.Editable.prototype.destroy = function() {
 	var that = this;
 	
 	// leave the element just to get sure
-	if (this == GENTICS.Aloha.GetActiveEditable()) {
+	if (this == GENTICS.Aloha.getActiveEditable()) {
 		this.blur();
 	}
 	
