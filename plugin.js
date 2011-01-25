@@ -104,8 +104,7 @@ GENTICS.Aloha.Image.initImage = function() {
 			1
 	);
 	
-// GENTICS.Aloha.FloatingMenu.createScope(this.getUID('img'),
-// 'GENTICS.Aloha.continuoustext');
+	
 	GENTICS.Aloha.FloatingMenu.createScope(this.getUID('image'), 'global');
 	
 	var alignLeftButton = new GENTICS.Aloha.ui.Button({
@@ -297,7 +296,8 @@ GENTICS.Aloha.Image.subscribeEvents = function () {
 			reader.config = that.getEditableConfig(data.editable);
 			reader.attachedData = data;
 			reader.onloadend = function(readEvent) {
-				img = jQuery('<img id="'+reader.attachedData.fileObj.id+'" style="" title="" src=""></img>');
+				var imagestyle = "width: " + reader.config.img.max_width + "; height: " + reader.config.img.max_height;
+				img = jQuery('<img id="'+reader.attachedData.fileObj.id+'" style="'+imagestyle+'" title="" src=""></img>');
 				img.click( GENTICS.Aloha.Image.clickImage );
 				if (reader.attachedData.fileObj.src == undefined) {
 					reader.attachedData.fileObj.src =readEvent.target.result;
@@ -312,8 +312,9 @@ GENTICS.Aloha.Image.subscribeEvents = function () {
     GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'selectionChanged', function(event, rangeObject) {
     	var foundMarkup = that.findImgMarkup( rangeObject );
     	var config = that.getEditableConfig(GENTICS.Aloha.activeEditable.obj);
-        if ( config.img ) {
+        if ( config.img !== undefined ) {
         	that.insertImgButton.show();
+        	GENTICS.Aloha.FloatingMenu.doLayout();
         } else {
         	that.insertImgButton.hide();
         	// TODO this should not be necessary here!
@@ -392,11 +393,12 @@ GENTICS.Aloha.Image.findImgMarkup = function ( range ) {
 
 GENTICS.Aloha.Image.insertImg = function() {
 	var range = GENTICS.Aloha.Selection.getRangeObject();
-	
+	var config = that.getEditableConfig(GENTICS.Aloha.activeEditable.obj);
     if ( range.isCollapsed() ) {
     	// TODO I would suggest to call the srcChange method. So all image src
 		// changes are on one single point.
-    	imagetag = '<img src="' + GENTICS_Aloha_base + 'plugins/com.gentics.aloha.plugins.Image/images/blank.jpeg" title="" style=""></img>';
+    	var imagestyle = "width: " + config.img.max_width + "; height: " + config.img.max_height;
+    	imagetag = '<img style="'+imagestyle+'" src="' + GENTICS_Aloha_base + 'plugins/com.gentics.aloha.plugins.Image/images/blank.jpeg" title="" style=""></img>';
     	var newImg = jQuery(imagetag);
     	// add the click selection handler
     	newImg.click( GENTICS.Aloha.Image.clickImage );
@@ -412,9 +414,7 @@ GENTICS.Aloha.Image.insertImg = function() {
 // imgRange.select();
     	
     } else {
-    	// TODO NEVER alert!! i18n !! Instead log. We have a messaging stack on
-    	// the roadmap which will offer you the possibility to push messages.
-    	alert('img cannot markup a selection');
+    	GENTICS.Aloha.Log.error('img cannot markup a selection');
     	// TODO the desired behavior could be that the selected content is
 		// replaced by an image.
     	// TODO it should be editor's choice, with an Ext Dialog instead of
