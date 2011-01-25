@@ -174,8 +174,9 @@ GENTICS.Aloha.Plugin.prototype.init = function() {};
 
 /**
  * Get the configuration settings for an editable obj.
- * 
- * The default configuration parameters are:
+ * Handles both conf arrays or conf objects
+ * <ul>
+ * <li>Array configuration parameters are:
  * <pre>
  * "com.gentics.aloha.plugins.List": { 
  *		config : [ 'b', 'h1' ],
@@ -210,7 +211,28 @@ GENTICS.Aloha.Plugin.prototype.init = function() {};
  * 
  * <pre>
  *  [ 'b', 'h1'] 
+ * </pre></li>
+ * <li>Object configuration parameters are :
+ * <pre>
+ * "com.gentics.aloha.plugins.Image": {
+ * 	    config : { 'img': { 'max_width': '50px',
+ * 					'max_height': '50px' }},
+ * 		editables : {
+ * 		    '#title'	: {},
+ *          'div'		: {'img': {}},
+ *          '.article'	: {'img': { 'max_width': '150px',
+ *          				'max_height': '150px' }}
+ *          }
+ *      }
  * </pre>
+ *  The '#title' object would return an empty configuration.<br/>
+ *  The 'div' object would return the default configuration.<br/>
+ *  the '.article' would return :
+ *  <pre>
+ *           {'img': { 'max_width': '150px',
+ *          		'max_height': '150px' }}
+ *  </pre>
+ * </li>
  * 
  * @param {jQuery} obj jQuery object of an Editable Object
  * @return {Array} config A Array with configuration entries 
@@ -230,7 +252,11 @@ GENTICS.Aloha.Plugin.prototype.getEditableConfig = function (obj) {
 					configObj = jQuery.merge(configObj, selectorConfig);
 				} else {
 					configObj = {};
-					configObj = jQuery.extend(true, configObj, that.config, selectorConfig);
+					for (var k in selectorConfig) {
+						configObj[k] = {};
+						configObj[k] = jQuery.extend(true, configObj[k], that.config[k], selectorConfig[k]);
+					}
+					
 				}
 			}
 		});	
