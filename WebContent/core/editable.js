@@ -361,7 +361,7 @@ GENTICS.Aloha.Editable.prototype.toString = function() {
  * check whether the editable has been disabled 
  */
 GENTICS.Aloha.Editable.prototype.isDisabled = function () {
-	return this.obj.attr("contentEditable") == "false" || !this.obj.attr("contentEditable");
+	return !this.obj.contentEditable() || this.obj.contentEditable() === 'false';
 };
 
 /**
@@ -399,7 +399,7 @@ GENTICS.Aloha.Editable.prototype.activate = function(e) {
 	// in this case the "focus" event would be triggered on the parent element
 	// which actually shifts the focus away to it's parent. this if is here to
 	// prevent this situation
-	if (e && e.type == "focus" && oldActive != null && oldActive.obj.parent().get(0) == e.currentTarget) {
+	if (e && e.type == 'focus' && oldActive != null && oldActive.obj.parent().get(0) == e.currentTarget) {
 		return;
 	}
 	
@@ -555,7 +555,7 @@ GENTICS.Aloha.Editable.prototype.smartContentChange = function(event) {
 		
 		var re = new RegExp("U\\+(\\w{4})"),
 			match = re.exec(event.originalEvent.keyIdentifier);
-		if (typeof match !== 'undefined') {
+		if (typeof match !== null) {
 			uniChar = eval('"\\u' + match[1] + '"');
 		}
 		if (uniChar === null) {

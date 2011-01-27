@@ -92,7 +92,7 @@ jQuery.fn.contentEditable  = function( b ) {
 	if (jQuery.browser.msie && parseInt(jQuery.browser.version) == 7 ) {
 		ce = 'contentEditable';
 	}
-	if ( b == undefined ) {
+	if (typeof b === 'undefined' ) {
 		return that.attr(ce);
 	} else if (b === '') {
 		that.removeAttr(ce);
