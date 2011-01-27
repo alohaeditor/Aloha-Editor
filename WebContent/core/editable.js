@@ -555,7 +555,7 @@ GENTICS.Aloha.Editable.prototype.smartContentChange = function(event) {
 		
 		var re = new RegExp("U\\+(\\w{4})"),
 			match = re.exec(event.originalEvent.keyIdentifier);
-		if (typeof match !== null) {
+		if (match !== null) {
 			uniChar = eval('"\\u' + match[1] + '"');
 		}
 		if (uniChar === null) {

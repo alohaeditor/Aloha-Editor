@@ -25,6 +25,7 @@
 	<property name="includes.core.css.filename" 	value="core-css.txt"/>
 	<property name="includes.deps.js.filename" 		value="deps-js.txt"/>
 	<property name="includes.deps.css.filename" 	value="deps-css.txt"/>
+	<property name="includes.plugins.css.filename" 	value="plugins-css.txt"/>
 	<property name="includes.jquery.js.filename" 	value="jquery-js.txt"/>
 	<property name="includes.jquery.css.filename" 	value="jquery-css.txt"/>
 	<property name="includes.ext.js.filename" 		value="ext-js.txt"/>
@@ -130,6 +131,10 @@
 		<!-- The Deps CSS -->
 		<copy file="${includesdir}/${includes.deps.css.filename}" todir="${outdir}" overwrite="true"/>
 		<replaceregexp byline="true" file="${outdir}/${includes.deps.css.filename}" match="(.+)" replace="${dev.includecss.subst}"/>
+		
+		<!-- The Plugins CSS -->
+		<copy file="${includesdir}/${includes.plugins.css.filename}" todir="${outdir}" overwrite="true"/>
+		<replaceregexp byline="true" file="${outdir}/${includes.plugins.css.filename}" match="(.+)" replace="${dev.includecss.subst}"/>
 
 		<!-- The Core JS -->
 		<copy file="${includesdir}/${includes.core.js.filename}" todir="${outdir}" overwrite="true"/>
@@ -150,7 +155,7 @@
 		<!-- Merge CSS Files into Autoloader -->
 		<concat destfile="${srcdir}/core/css.js" force="true">
 			<fileset file="deps/includecss-header.txt"/>
-			<filelist dir="${outdir}" files="${includes.jquery.css.filename},${includes.ext.css.filename},${includes.deps.css.filename},${includes.core.css.filename}"></filelist>
+			<filelist dir="${outdir}" files="${includes.jquery.css.filename},${includes.ext.css.filename},${includes.deps.css.filename},${includes.plugins.css.filename},${includes.core.css.filename}"></filelist>
 			<fileset file="deps/includecss-footer.txt"/>
 		</concat>
 	</target>
@@ -185,6 +190,10 @@
 		<!-- The Deps CSS -->
 		<copy file="${includesdir}/${includes.deps.css.filename}" todir="${outdir}" overwrite="true"/>
 		<replaceregexp byline="true" file="${outdir}/${includes.deps.css.filename}" match="(.+)" replace="${testloader.includecss.subst}"/>
+
+		<!-- The Deps CSS -->
+		<copy file="${includesdir}/${includes.plugins.css.filename}" todir="${outdir}" overwrite="true"/>
+		<replaceregexp byline="true" file="${outdir}/${includes.plugins.css.filename}" match="(.+)" replace="${testloader.includecss.subst}"/>
 		
 		<!-- The Core JS -->
 		<copy file="${includesdir}/${includes.core.js.filename}" todir="${outdir}" overwrite="true"/>
@@ -196,7 +205,7 @@
 		
 		<!-- Merge Files -->
 		<concat destfile="${testdir}testloader.html" force="true">
-			<filelist dir="${outdir}" files="${includes.jquery.css.filename},${includes.ext.css.filename},${includes.deps.css.filename},${includes.core.css.filename},${includes.jquery.js.filename},${includes.ext.js.filename},${includes.deps.js.filename},${includes.core.js.filename}"></filelist>
+			<filelist dir="${outdir}" files="${includes.jquery.css.filename},${includes.ext.css.filename},${includes.deps.css.filename},${includes.plugins.css.filename},${includes.core.css.filename},${includes.jquery.js.filename},${includes.ext.js.filename},${includes.deps.js.filename},${includes.core.js.filename}"></filelist>
 		</concat>
 	</target>
 	
