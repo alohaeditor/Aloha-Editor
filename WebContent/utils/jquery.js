@@ -90,7 +90,7 @@ jQuery.fn.contentEditable  = function( b ) {
 		ce = 'contentEditable';
 	}
 	if ( b == undefined ) {
-		return jQuery(this).attr(ce);
+		return jQuery(this).attr('contentEditable');
 	} else if (b === '') {
 		jQuery(this).removeAttr(ce);
 	} else {
