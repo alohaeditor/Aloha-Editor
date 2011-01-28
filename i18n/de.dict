@@ -1,4 +1,7 @@
+floatingmenu.tab.tablelayout=Tablelayout
 floatingmenu.tab.table=Tabelle
+button.removeFormat.tooltip=Formatierung entfernen
+button.removeFormat.text=Formatierung entfernen
 deleterows.confirm=Wollen Sie die ausgewählten Zeilen wirklich löschen?
 deletecolumns.confirm=Wollen Sie die ausgewählten Spalten wirklich löschen?
 deletetable.confirm=Wollen Sie wirklich die ganze Tabelle löschen?
