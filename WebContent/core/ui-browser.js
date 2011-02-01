@@ -181,17 +181,19 @@ GENTICS.Aloha.ui.Browser = function () {
 		}
 	};
 };
-	
-GENTICS.Aloha.ui.Browser.prototype.setObjectTypeFilter = function(otf) {
-	this.objectTypeFilter = otf;
-};
 
-GENTICS.Aloha.ui.Browser.prototype.getObjectTypeFilter = function() {
-	return this.objectTypeFilter;
-};
+GENTICS.Aloha.ui.Browser.prototype = {	
+	setObjectTypeFilter: function(otf) {
+		this.objectTypeFilter = otf;
+	},
 
-GENTICS.Aloha.ui.Browser.prototype.show = function() {
-	this.win.show(); // first show,
-	this.win.toFront(true);
-	this.win.focus();
+	getObjectTypeFilter: function() {
+		return this.objectTypeFilter;
+	},
+
+	show: function() {
+		this.win.show(); // first show,
+		this.win.toFront(true);
+		this.win.focus();
+	}
 };

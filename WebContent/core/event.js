@@ -43,35 +43,37 @@ GENTICS.Aloha.Event = function (eventName, eventSource, properties) {
  */
 GENTICS.Aloha.EventRegistry = function () {};
 
-/**
- * Subscribe on the given Event from the event source
- * @method
- * @param {object} eventSource event source object
- * @param {string} eventName event name
- * @param {function} handleMethod event handler method
- */
-GENTICS.Aloha.EventRegistry.prototype.subscribe = function (eventSource, eventName, handleMethod) {
-	jQuery(eventSource).bind(eventName, handleMethod);
-};
+GENTICS.Aloha.EventRegistry.prototype = {
+	/**
+	 * Subscribe on the given Event from the event source
+	 * @method
+	 * @param {object} eventSource event source object
+	 * @param {string} eventName event name
+	 * @param {function} handleMethod event handler method
+	 */
+	subscribe: function (eventSource, eventName, handleMethod) {
+		jQuery(eventSource).bind(eventName, handleMethod);
+	},
 
-/**
- * Unsubscribe the given Event from the event source
- * @method
- * @param {object} eventSource event source object
- * @param {string} eventName event name
- * @param {function} handleMethod event handler method
- */
-GENTICS.Aloha.EventRegistry.prototype.unsubscribe = function (eventSource, eventName, handleMethod) {
-	jQuery(eventSource).unbind(eventName, handleMethod);
-};
+	/**
+	 * Unsubscribe the given Event from the event source
+	 * @method
+	 * @param {object} eventSource event source object
+	 * @param {string} eventName event name
+	 * @param {function} handleMethod event handler method
+	 */
+	unsubscribe: function (eventSource, eventName, handleMethod) {
+		jQuery(eventSource).unbind(eventName, handleMethod);
+	},
 
-/**
- * Trigger the given event
- * @method
- * @param {object} event Aloha event object
- */
-GENTICS.Aloha.EventRegistry.prototype.trigger = function (event) {
-	jQuery(event.source).trigger(event.name, event.properties);
+	/**
+	 * Trigger the given event
+	 * @method
+	 * @param {object} event Aloha event object
+	 */
+	trigger: function (event) {
+		jQuery(event.source).trigger(event.name, event.properties);
+	}
 };
 
 GENTICS.Aloha.EventRegistry = new GENTICS.Aloha.EventRegistry();

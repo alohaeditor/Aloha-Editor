@@ -21,39 +21,41 @@
  */
 GENTICS.Aloha.Sidebar = function () {};
 
-/**
- * Add a panel to this sidebar
- * @param panel panel to add to this sidebar
- * @return void
- */
-GENTICS.Aloha.Sidebar.prototype.add = function(panel) {};
+GENTICS.Aloha.Sidebar.prototype = {
+	/**
+	 * Add a panel to this sidebar
+	 * @param panel panel to add to this sidebar
+	 * @return void
+	 */
+	add: function(panel) {},
 
-/**
- * Render this sidebar
- * @return HTML Code of the rendered sidebar
- */
-GENTICS.Aloha.Sidebar.prototype.render = function() {};
+	/**
+	 * Render this sidebar
+	 * @return HTML Code of the rendered sidebar
+	 */
+	render: function() {},
 
-/**
- * Open the given panel in the sidebar and close all other (not pinned) panels
- * @param panel panel to open
- * @return void
- */
-GENTICS.Aloha.Sidebar.prototype.openPanel = function(panel) {};
+	/**
+	 * Open the given panel in the sidebar and close all other (not pinned) panels
+	 * @param panel panel to open
+	 * @return void
+	 */
+	openPanel: function(panel) {},
 
-/**
- * Close the given panel in the sidebar
- * @param panel panel to close
- * @return void
- */
-GENTICS.Aloha.Sidebar.prototype.closePanel = function(panel) {};
+	/**
+	 * Close the given panel in the sidebar
+	 * @param panel panel to close
+	 * @return void
+	 */
+	closePanel: function(panel) {},
 
-/**
- * Toggle the "pinned" status of the panel
- * @param panel panel to pin/unpin
- * @return void
- */
-GENTICS.Aloha.Sidebar.prototype.togglePinPanel = function(panel) {};
+	/**
+	 * Toggle the "pinned" status of the panel
+	 * @param panel panel to pin/unpin
+	 * @return void
+	 */
+	togglePinPanel: function(panel) {}
+};
 
 /**
  * Right Sidebar

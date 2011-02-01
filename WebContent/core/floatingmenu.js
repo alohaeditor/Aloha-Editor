@@ -653,10 +653,9 @@ GENTICS.Aloha.FloatingMenu.calcFloatTarget = function(range) {
 		}
 	}
 	
-	var targetObj = jQuery(this.nextFloatTargetObj(range.getCommonAncestorContainer(), range.limitObject));
-	var scrollTop = GENTICS.Utils.Position.Scroll.top;
-
-	var y = targetObj.offset().top - this.obj.height() - 50; // 50px offset above the current obj to have some space above
+	var targetObj = jQuery(this.nextFloatTargetObj(range.getCommonAncestorContainer(), range.limitObject)),
+		scrollTop = GENTICS.Utils.Position.Scroll.top,
+		y = targetObj.offset().top - this.obj.height() - 50; // 50px offset above the current obj to have some space above
 
 	// if the floating menu would be placed higher than the top of the screen...
 	if ( y < scrollTop) {
@@ -726,74 +725,76 @@ GENTICS.Aloha.FloatingMenu.Tab = function(label) {
 	this.visible = true;
 };
 
-/**
- * Get the group with given index. If it does not yet exist, create a new one
- * @method
- * @param {int} group group index of the group to get
- * @return group object
- */
-GENTICS.Aloha.FloatingMenu.Tab.prototype.getGroup = function(group) {
-	var groupObject = this.groupMap[group];
-	if (typeof groupObject === 'undefined') {
-		groupObject = new GENTICS.Aloha.FloatingMenu.Group();
-		this.groupMap[group] = groupObject;
-		this.groups.push(groupObject);
-		// TODO resort the groups
-	}
+GENTICS.Aloha.FloatingMenu.Tab.prototype = {
+	/**
+	 * Get the group with given index. If it does not yet exist, create a new one
+	 * @method
+	 * @param {int} group group index of the group to get
+	 * @return group object
+	 */
+	getGroup: function(group) {
+		var groupObject = this.groupMap[group];
+		if (typeof groupObject === 'undefined') {
+			groupObject = new GENTICS.Aloha.FloatingMenu.Group();
+			this.groupMap[group] = groupObject;
+			this.groups.push(groupObject);
+			// TODO resort the groups
+		}
 
-	return groupObject;
-};
+		return groupObject;
+	},
 
-/**
- * Get the EXT component representing the tab
- * @return EXT component (EXT.Panel)
- * @hide
- */
-GENTICS.Aloha.FloatingMenu.Tab.prototype.getExtComponent = function () {
-	var that = this;
+	/**
+	 * Get the EXT component representing the tab
+	 * @return EXT component (EXT.Panel)
+	 * @hide
+	 */
+	getExtComponent: function () {
+		var that = this;
 
-	if (typeof this.extPanel === 'undefined') {
-		// generate the panel here
-		this.extPanel = new Ext.Panel({
-			'tbar' : [],
-			'title' : this.label,
-			'style': 'margin-top:0px',
-			'bodyStyle': 'display:none',
-			'autoScroll': true
-		});
+		if (typeof this.extPanel === 'undefined') {
+			// generate the panel here
+			this.extPanel = new Ext.Panel({
+				'tbar' : [],
+				'title' : this.label,
+				'style': 'margin-top:0px',
+				'bodyStyle': 'display:none',
+				'autoScroll': true
+			});
 
-		// add the groups
+			// add the groups
+			jQuery.each(this.groups, function(index, group) {
+				// let each group generate its ext component and add them to the panel
+				that.extPanel.getTopToolbar().add(group.getExtComponent());
+			});
+		}
+
+		return this.extPanel;
+	},
+
+	/**
+	 * Recalculate the visibility of all groups within the tab
+	 * @hide
+	 */
+	doLayout: function() {
+		var that = this;
+
+		if (GENTICS.Aloha.Log.isDebugEnabled()) {
+			GENTICS.Aloha.Log.debug(this, 'doLayout called for tab ' + this.label);
+		}
+		this.visible = false;
+
+		// check all groups in this tab
 		jQuery.each(this.groups, function(index, group) {
-			// let each group generate its ext component and add them to the panel
-			that.extPanel.getTopToolbar().add(group.getExtComponent());
+			that.visible |= group.doLayout();
 		});
+
+		if (GENTICS.Aloha.Log.isDebugEnabled()) {
+			GENTICS.Aloha.Log.debug(this, 'tab ' + this.label + (this.visible ? ' is ' : ' is not ') + 'visible now');
+		}
+
+		return this.visible;
 	}
-
-	return this.extPanel;
-};
-
-/**
- * Recalculate the visibility of all groups within the tab
- * @hide
- */
-GENTICS.Aloha.FloatingMenu.Tab.prototype.doLayout = function() {
-	var that = this;
-
-	if (GENTICS.Aloha.Log.isDebugEnabled()) {
-		GENTICS.Aloha.Log.debug(this, 'doLayout called for tab ' + this.label);
-	}
-	this.visible = false;
-
-	// check all groups in this tab
-	jQuery.each(this.groups, function(index, group) {
-		that.visible |= group.doLayout();
-	});
-
-	if (GENTICS.Aloha.Log.isDebugEnabled()) {
-		GENTICS.Aloha.Log.debug(this, 'tab ' + this.label + (this.visible ? ' is ' : ' is not ') + 'visible now');
-	}
-
-	return this.visible;
 };
 
 /**
@@ -806,98 +807,100 @@ GENTICS.Aloha.FloatingMenu.Group = function() {
 	this.buttons = [];
 };
 
-/**
- * Add a button to this group
- * @param {Button} buttonInfo to add to the group
- */
-GENTICS.Aloha.FloatingMenu.Group.prototype.addButton = function(buttonInfo) {
-	this.buttons.push(buttonInfo);
-};
+GENTICS.Aloha.FloatingMenu.Group.prototype = {
+	/**
+	 * Add a button to this group
+	 * @param {Button} buttonInfo to add to the group
+	 */
+	addButton: function(buttonInfo) {
+		this.buttons.push(buttonInfo);
+	},
 
-/**
- * Get the EXT component representing the group (Ext.ButtonGroup)
- * @return the Ext.ButtonGroup
- * @hide
- */
-GENTICS.Aloha.FloatingMenu.Group.prototype.getExtComponent = function () {
-	var that = this;
+	/**
+	 * Get the EXT component representing the group (Ext.ButtonGroup)
+	 * @return the Ext.ButtonGroup
+	 * @hide
+	 */
+	getExtComponent: function () {
+		var that = this;
 
-	if (typeof this.extButtonGroup === 'undefined') {
-		var items = [],
-			buttonCount = 0;
+		if (typeof this.extButtonGroup === 'undefined') {
+			var items = [],
+				buttonCount = 0;
 
-		// add all buttons
-		jQuery.each(this.buttons, function(index, button) {
-			// let each button generate its ext component and add them to the group
-			items.push(button.button.getExtConfigProperties());
+			// add all buttons
+			jQuery.each(this.buttons, function(index, button) {
+				// let each button generate its ext component and add them to the group
+				items.push(button.button.getExtConfigProperties());
 
-			// count the number of buttons (large buttons count as 2)
-			buttonCount += button.button.size == 'small' ? 1 : 2;
-		});
+				// count the number of buttons (large buttons count as 2)
+				buttonCount += button.button.size == 'small' ? 1 : 2;
+			});
 		
-		this.extButtonGroup = new Ext.ButtonGroup({
-			'columns' : Math.ceil(buttonCount / 2),
-			'items': items
-		});
+			this.extButtonGroup = new Ext.ButtonGroup({
+				'columns' : Math.ceil(buttonCount / 2),
+				'items': items
+			});
 
-		// now find the Ext.Buttons and set to the GENTICS buttons
-		jQuery.each(this.buttons, function(index, buttonInfo) {
-			buttonInfo.button.extButton = that.extButtonGroup.findById(buttonInfo.button.id);
-			// the following code is a work arround because ExtJS initializes later.
-			// The ui wrapper store the information and here we use it... ugly.
-			// if there are any listeners added before initializing the extButtons
-			if ( buttonInfo.button.listenerQueue && buttonInfo.button.listenerQueue.length > 0 ) {
-				while ( l = buttonInfo.button.listenerQueue.shift() ) {
-					buttonInfo.button.extButton.addListener(l.eventName, l.handler, l.scope, l.options);
+			// now find the Ext.Buttons and set to the GENTICS buttons
+			jQuery.each(this.buttons, function(index, buttonInfo) {
+				buttonInfo.button.extButton = that.extButtonGroup.findById(buttonInfo.button.id);
+				// the following code is a work arround because ExtJS initializes later.
+				// The ui wrapper store the information and here we use it... ugly.
+				// if there are any listeners added before initializing the extButtons
+				if ( buttonInfo.button.listenerQueue && buttonInfo.button.listenerQueue.length > 0 ) {
+					while ( l = buttonInfo.button.listenerQueue.shift() ) {
+						buttonInfo.button.extButton.addListener(l.eventName, l.handler, l.scope, l.options);
+					}
 				}
-			}
-			if (buttonInfo.button.extButton.setObjectTypeFilter) {
-				if (buttonInfo.button.objectTypeFilter) {
-					buttonInfo.button.extButton.noQuery = false;
+				if (buttonInfo.button.extButton.setObjectTypeFilter) {
+					if (buttonInfo.button.objectTypeFilter) {
+						buttonInfo.button.extButton.noQuery = false;
+					}
+					if ( buttonInfo.button.objectTypeFilter == 'all' ) {
+						buttonInfo.button.objectTypeFilter = null;
+					}
+					buttonInfo.button.extButton.setObjectTypeFilter(buttonInfo.button.objectTypeFilter);
+					if ( buttonInfo.button.displayField) {
+						buttonInfo.button.extButton.displayField = buttonInfo.button.displayField;
+					}
+					if ( buttonInfo.button.tpl ) {
+						buttonInfo.button.extButton.tpl = buttonInfo.button.tpl;
+					}
 				}
-				if ( buttonInfo.button.objectTypeFilter == 'all' ) {
-					buttonInfo.button.objectTypeFilter = null;
-				}
-				buttonInfo.button.extButton.setObjectTypeFilter(buttonInfo.button.objectTypeFilter);
-				if ( buttonInfo.button.displayField) {
-					buttonInfo.button.extButton.displayField = buttonInfo.button.displayField;
-				}
-				if ( buttonInfo.button.tpl ) {
-					buttonInfo.button.extButton.tpl = buttonInfo.button.tpl;
-				}
-			}
-		});
-	}
-
-	return this.extButtonGroup;
-};
-
-/**
- * Recalculate the visibility of the buttons and the group
- * @hide
- */
-GENTICS.Aloha.FloatingMenu.Group.prototype.doLayout = function () {
-	var groupVisible = false,
-		that = this;
-
-	jQuery.each(this.buttons, function(index, button) {
-		var extButton = that.extButtonGroup.findById(button.button.id),
-			buttonVisible = button.button.isVisible() && button.scopeVisible;
-
-		if (buttonVisible && extButton.hidden) {
-			extButton.show();
-		} else if (!buttonVisible && !extButton.hidden) {
-			extButton.hide();
+			});
 		}
 
-		groupVisible |= buttonVisible;
-	});
+		return this.extButtonGroup;
+	},
 
-	if (groupVisible && this.extButtonGroup.hidden) {
-		this.extButtonGroup.show();
-	} else if (!groupVisible && !this.extButtonGroup.hidden) {
-		this.extButtonGroup.hide();
+	/**
+	 * Recalculate the visibility of the buttons and the group
+	 * @hide
+	 */
+	doLayout: function () {
+		var groupVisible = false,
+			that = this;
+
+		jQuery.each(this.buttons, function(index, button) {
+			var extButton = that.extButtonGroup.findById(button.button.id),
+				buttonVisible = button.button.isVisible() && button.scopeVisible;
+
+			if (buttonVisible && extButton.hidden) {
+				extButton.show();
+			} else if (!buttonVisible && !extButton.hidden) {
+				extButton.hide();
+			}
+
+			groupVisible |= buttonVisible;
+		});
+
+		if (groupVisible && this.extButtonGroup.hidden) {
+			this.extButtonGroup.show();
+		} else if (!groupVisible && !this.extButtonGroup.hidden) {
+			this.extButtonGroup.hide();
+		}
+
+		return groupVisible;
 	}
-
-	return groupVisible;
 };

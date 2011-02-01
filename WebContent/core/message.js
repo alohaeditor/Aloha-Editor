@@ -49,13 +49,15 @@ GENTICS.Aloha.Message.Type = {
 	WAIT : 'wait' // wait dialog with loading bar. has to be hidden via GENTICS.Aloha.hideMessage()
 };
 
-/**
- * Returns a textual representation of the message
- * @return textual representation of the message
- * @hide
- */
-GENTICS.Aloha.Message.prototype.toString = function () {
-  return this.type + ': ' + this.message;
+GENTICS.Aloha.Message.prototype = {
+	/**
+	 * Returns a textual representation of the message
+	 * @return textual representation of the message
+	 * @hide
+	 */
+	toString: function () {
+	  return this.type + ': ' + this.message;
+	}
 };
 
 /**
@@ -72,17 +74,22 @@ GENTICS.Aloha.MessageLine = function () {
  * @return void
  * @hide
  */
-GENTICS.Aloha.MessageLine.prototype.add = function(message) {
-  // dummy implementation to add a message
-  this.messages[this.messages.length] = message;
-  while(this.messages.length > 4) {
-	this.messages.shift();
-  }
-  jQuery('#gtx_aloha_messageline').empty();
-  for ( var i = 0; i < this.messages.length; i++) {
-	  jQuery('#gtx_aloha_messageline').append((this.messages[i].toString() + '<br/>'));
-  }
-};
+GENTICS.Aloha.MessageLine.prototype = {
+	add: function(message) {
+		var messages = this.messages,
+			messageline = '';
+		// dummy implementation to add a message
+		messages[this.messages.length] = message;
+		while(messages.length > 4) {
+			messages.shift();
+		}
+		
+		for ( var i = 0; i < messages.length; i++) {
+			messageline += messages[i].toString() + '<br/>';
+		}
+		jQuery('#gtx_aloha_messageline').html(messageline);
+	}
+}
 
 /**
  * Message Line Object
