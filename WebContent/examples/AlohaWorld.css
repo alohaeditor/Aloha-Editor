@@ -93,15 +93,15 @@ table caption
   padding: 0.5em 0;
 }
 
-ol, ul {
+#main ol, ul {
 	list-style-position: inside;
 }
 
-ol {
+#main ol {
 	list-style-type: decimal;
 }
 
-ul {
+#main ul {
 	list-style-type: disc;
 }
 
