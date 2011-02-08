@@ -94,8 +94,10 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 			// set background color to give visual feedback which link is modified
 	        var target = jQuery(this.getTargetObject());
 	        var s = target.css('background-color');
-	        this.setValue("");
-			jQuery(this.wrap.dom.children[0]).css("color", "black");
+	        if (this.getValue() === this.placeholder) {
+	            this.setValue("");
+    			jQuery(this.wrap.dom.children[0]).css("color", "black");    	        
+	        }
 	        if ( target && target.context.style && target.context.style['background-color'] ) {
 	        	target.attr('data-original-background-color', target.context.style['background-color']);
 	        }
@@ -112,8 +114,10 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 	        	}
 	    		jQuery(target).removeAttr('data-original-background-color');
 	        }
-	        jQuery(this.wrap.dom.children[0]).css("color", "#AAA");
-			this.setValue(this.placeholder);
+	        if (this.getValue() === '') {
+	            jQuery(this.wrap.dom.children[0]).css("color", "#AAA");
+    			this.setValue(this.placeholder);    	        
+	        }
 	    },
 	    'expand': function (combo ) {
 	    	if( this.noQuery ) {
