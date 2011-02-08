@@ -1,13 +1,14 @@
 body {
   font-family: sans-serif;
-}
-
-body {
   background-image: url("images/background.png");
 }
 
 #bodyContent {
 	font-size:0.8em;
+}
+
+p {
+	margin-bottom: 10px;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -90,4 +91,99 @@ table caption
   font-style: italic;
   text-align: right;
   padding: 0.5em 0;
+}
+
+ol, ul {
+	list-style-position: inside;
+}
+
+ol {
+	list-style-type: decimal;
+}
+
+ul {
+	list-style-type: disc;
+}
+
+/**
+ * basic table styles
+ */
+.hor-minimalist-a
+{
+	background: #fff;
+	border-collapse: collapse;
+	text-align: left;
+}
+.hor-minimalist-a th
+{
+	font-size: 130%;
+	font-weight: normal;
+	padding: 10px 8px;
+	border-bottom: 2px solid #6678b1;
+}
+.hor-minimalist-a td
+{
+	padding: 9px 8px 0px 8px;
+}
+.hor-minimalist-a tbody tr:hover td
+{
+	color: #009;
+}
+
+.box-table-a
+{
+	text-align: left;
+	border-collapse: collapse;
+}
+.box-table-a th
+{
+	font-size: 115%;
+	font-weight: normal;
+	padding: 8px;
+	background: #b9c9fe;
+	border-top: 4px solid #aabcfe;
+	border-bottom: 1px solid #fff;
+}
+.box-table-a td
+{
+	padding: 8px;
+	background: #e8edff; 
+	border-bottom: 1px solid #fff;
+	border-top: 1px solid transparent;
+}
+.box-table-a tr:hover td
+{
+	background: #d0dafd;
+}
+
+.hor-zebra
+{
+	text-align: left;
+	border-collapse: collapse;
+}
+.hor-zebra th
+{
+	font-size: 130%;
+	font-weight: bold;
+	padding: 10px 8px;
+	border-bottom: 2px solid #6678b1;
+	
+}
+.hor-zebra td
+{
+	padding: 8px;
+}
+.hor-zebra tr:nth-child(2n+1) td
+{
+	background: #e8edff; 
+}
+
+td.bigbold {
+	font-size: 200%;
+	font-weight: bold;
+}
+td.redwhite {
+	background-color: red;
+	color: white;
+	font-weight: bold;
 }
