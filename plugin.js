@@ -390,7 +390,7 @@ GENTICS.Aloha.Image.insertImg = function() {
 		// TODO I would suggest to call the srcChange method. So all image src
 		// changes are on one single point.
 		var imagestyle = "width: " + config.img.max_width + "; height: " + config.img.max_height,
-			imagetag = '<img style="'+imagestyle+'" src="' + GENTICS_Aloha_base + 'plugins/com.gentics.aloha.plugins.Image/images/blank.jpeg" title="" style=""></img>',
+			imagetag = '<img style="'+imagestyle+'" src="' + GENTICS_Aloha_base + 'plugins/com.gentics.aloha.plugins.Image/images/blank.jpeg" title="" />',
 			newImg = jQuery(imagetag);
 		// add the click selection handler
 		//newImg.click( GENTICS.Aloha.Image.clickImage ); - Using delegate now
