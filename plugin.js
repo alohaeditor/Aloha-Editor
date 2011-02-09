@@ -109,7 +109,7 @@ GENTICS.Aloha.Image.initImage = function() {
 		1
 	);
 	
-	GENTICS.Aloha.FloatingMenu.createScope(this.getUID('image'), 'global');
+	GENTICS.Aloha.FloatingMenu.createScope(this.getUID('image'), 'GENTICS.Aloha.empty');
 	
 	var alignLeftButton = new GENTICS.Aloha.ui.Button({
 		'iconClass': 'GENTICS_button GENTICS_img_align_left',
@@ -291,7 +291,7 @@ GENTICS.Aloha.Image.subscribeEvents = function () {
 			reader.onloadend = function(readEvent) {
 				var imagestyle = "width: " + reader.config.img.max_width + "; height: " + reader.config.img.max_height,
 					img = jQuery('<img id="'+reader.attachedData.fileObj.id+'" style="'+imagestyle+'" title="" src="" />');
-				img.click( GENTICS.Aloha.Image.clickImage );
+				//img.click( GENTICS.Aloha.Image.clickImage ); - Using delegate now
 				if (typeof reader.attachedData.fileObj.src === 'undefined') {
 					reader.attachedData.fileObj.src = readEvent.target.result;
 				}
@@ -335,7 +335,7 @@ GENTICS.Aloha.Image.subscribeEvents = function () {
 	for (var i = 0; i < GENTICS.Aloha.editables.length; i++) {
 
 		// add a click (=select) event to all image.
-		GENTICS.Aloha.editables[i].obj.find('img').click( GENTICS.Aloha.Image.clickImage );
+		GENTICS.Aloha.editables[i].obj.delegate('img', 'click', GENTICS.Aloha.Image.clickImage);
 	}
 };
 
@@ -393,7 +393,7 @@ GENTICS.Aloha.Image.insertImg = function() {
 			imagetag = '<img style="'+imagestyle+'" src="' + GENTICS_Aloha_base + 'plugins/com.gentics.aloha.plugins.Image/images/blank.jpeg" title="" style=""></img>',
 			newImg = jQuery(imagetag);
 		// add the click selection handler
-		newImg.click( GENTICS.Aloha.Image.clickImage );
+		//newImg.click( GENTICS.Aloha.Image.clickImage ); - Using delegate now
 		GENTICS.Utils.Dom.insertIntoDOM(newImg, range, jQuery(GENTICS.Aloha.activeEditable.obj));
 		// select the image when inserted
 // var offset = GENTICS.Utils.Dom.getIndexInParent(newImg.get(0));
@@ -413,6 +413,7 @@ GENTICS.Aloha.Image.insertImg = function() {
 		// alert.
 	}
 };
+
 
 GENTICS.Aloha.Image.srcChange = function () {
 	// TODO the src changed. I suggest :
