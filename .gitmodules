@@ -31,6 +31,3 @@
 [submodule "WebContent/plugins/com.gentics.aloha.plugins.Paste"]
 	path = WebContent/plugins/com.gentics.aloha.plugins.Paste
 	url = https://github.com/alohaeditor/Aloha-Plugin-Paste.git
-[submodule "WebContent/plugins/com.gentics.aloha.plugins.CropNResize"]
-	path = WebContent/plugins/com.gentics.aloha.plugins.CropNResize
-	url = https://github.com/alohaeditor/Aloha-Plugin-CropNResize.git
