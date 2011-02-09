@@ -48,9 +48,9 @@ jQuery.fn.decrease = jQuery.fn.decrease || function(attr){
 
 
 
-GENTICS.Aloha.Image=new GENTICS.Aloha.Plugin("com.gentics.aloha.plugins.Image");
+GENTICS.Aloha.Image = new GENTICS.Aloha.Plugin('com.gentics.aloha.plugins.Image');
 
-GENTICS.Aloha.Image.languages=["en","fr","de"];
+GENTICS.Aloha.Image.languages = ['en', 'fr', 'de'];
 GENTICS.Aloha.Image.config = {
 	'img': {
 		'max_width': '50px',
@@ -60,7 +60,7 @@ GENTICS.Aloha.Image.config = {
 /*
  * Initalize plugin
  */
-GENTICS.Aloha.Image.init=function(){
+GENTICS.Aloha.Image.init = function(){
 	// get settings
 	if (typeof GENTICS.Aloha.Image.settings.objectTypeFilter !== 'undefined')
 		GENTICS.Aloha.Image.objectTypeFilter = GENTICS.Aloha.Image.settings.objectTypeFilter;	
