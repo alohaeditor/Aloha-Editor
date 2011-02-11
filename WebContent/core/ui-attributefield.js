@@ -96,7 +96,7 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 	        var s = target.css('background-color');
 	        if (this.getValue() === this.placeholder) {
 	            this.setValue("");
-    			jQuery(this.wrap.dom.children[0]).css("color", "black");    	        
+	            jQuery(this.wrap.dom.children[0]).css("color", "black");    	        
 	        }
 	        if ( target && target.context.style && target.context.style['background-color'] ) {
 	        	target.attr('data-original-background-color', target.context.style['background-color']);
@@ -116,7 +116,7 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 	        }
 	        if (this.getValue() === '') {
 	            jQuery(this.wrap.dom.children[0]).css("color", "#AAA");
-    			this.setValue(this.placeholder);    	        
+	            this.setValue(this.placeholder);    	        
 	        }
 	    },
 	    'expand': function (combo ) {
