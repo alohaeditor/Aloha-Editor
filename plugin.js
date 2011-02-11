@@ -323,10 +323,10 @@ GENTICS.Aloha.TablePlugin.initTableButtons = function () {
 	jQuery.each(this.tableConfig, function(j, itemConf) {
 		that.tableMSItems.push({
 			'name' : itemConf.name,
-			'text' : GENTICS.Aloha.i18n(this, itemConf.text),
-		    'tooltip' : GENTICS.Aloha.i18n(this, itemConf.tooltip),
-	   	    'iconClass' : 'GENTICS_button GENTICS_table_layout ' + itemConf.iconClass,
-	   	    'click' : function() {
+			'text' : that.i18n(itemConf.text),
+		    	'tooltip' : that.i18n(itemConf.tooltip),
+	   	   	'iconClass' : 'GENTICS_button GENTICS_table_layout ' + itemConf.iconClass,
+	   	   	'click' : function() {
 				//set table css class
 				if ( that.activeTable ) {
 					for (var f = 0; f < that.tableConfig.length; f++) {
@@ -475,10 +475,10 @@ GENTICS.Aloha.TablePlugin.initTableButtons = function () {
     jQuery.each(this.columnConfig, function(j, itemConf) {
 		var item = {
 				'name' : itemConf.name,
-				'text' : GENTICS.Aloha.i18n(that, itemConf.text),
-			    'tooltip' : GENTICS.Aloha.i18n(that, itemConf.tooltip),
-		   	    'iconClass' : 'GENTICS_button GENTICS_column_layout ' + itemConf.iconClass,
-		   	    'click' : function(x,y,z) {
+				'text' : that.i18n(itemConf.text),
+			        'tooltip' : that.i18n(itemConf.tooltip),
+		   	        'iconClass' : 'GENTICS_button GENTICS_column_layout ' + itemConf.iconClass,
+		   	        'click' : function(x,y,z) {
 					var sc = GENTICS.Aloha.TableHelper.selectedCells;
 					// if a selection was made, transform the selected cells
 					for (var i = 0; i < sc.length; i++) {
