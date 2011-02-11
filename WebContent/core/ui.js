@@ -685,7 +685,9 @@ GENTICS.Aloha.ui.MultiSplitButton.prototype.getExtConfigProperties = function() 
  * @param {String} name	name of the item to be set active
  */
 GENTICS.Aloha.ui.MultiSplitButton.prototype.setActiveItem = function(name) {
-	this.extButton.setActiveItem(name);
+	if (this.extButton) {
+		this.extButton.setActiveItem(name);
+	}
 };
 
 /**

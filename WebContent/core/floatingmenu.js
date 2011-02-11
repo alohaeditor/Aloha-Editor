@@ -649,7 +649,14 @@ GENTICS.Aloha.FloatingMenu.calcFloatTarget = function(range) {
 		}
 	}
 	
-	var targetObj = jQuery(this.nextFloatTargetObj(range.getCommonAncestorContainer(), range.limitObject));
+	var target = this.nextFloatTargetObj(range.getCommonAncestorContainer(), range.limitObject);
+	
+	// check if an invalid target object has been provided
+	if (!target) {
+		return false;
+	}
+	
+	var targetObj = jQuery(target);
 	var scrollTop = GENTICS.Utils.Position.Scroll.top;
 
 	var y = targetObj.offset().top - this.obj.height() - 50; // 50px offset above the current obj to have some space above
