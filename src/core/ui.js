@@ -688,7 +688,7 @@ Aloha.ui.MultiSplitButton = Class.extend({
 	 * @param {String} name	name of the item to be set active
 	 */
 	setActiveItem: function(name) {
-		if (typeof name !== 'undefined') {
+		if (this.extButton && typeof name !== 'undefined') {
 			this.extButton.setActiveItem(name);
 		}
 	},

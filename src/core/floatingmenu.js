@@ -668,7 +668,12 @@ Aloha.FloatingMenu.calcFloatTarget = function(range) {
 		}
 	}
 
-	targetObj = jQuery(this.nextFloatTargetObj(range.getCommonAncestorContainer(), range.limitObject));
+	var target = this.nextFloatTargetObj(range.getCommonAncestorContainer(), range.limitObject);
+	if ( ! target ) {
+		return false;
+	}
+
+	targetObj = jQuery(target);
 	scrollTop = GENTICS.Utils.Position.Scroll.top;
 	if (!targetObj || !targetObj.offset()) {
 		return false;
