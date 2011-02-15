@@ -80,6 +80,14 @@ table.x-toolbar-ct table {
  * Floating Menu 
  */
 
+.GENTICS_floatingmenu {
+	position: absolute;
+}
+
+.GENTICS_floatingmenu.fixed {
+	position: fixed;
+}
+
 .GENTICS_floatingmenu .x-tab-panel-header {
 	border-width: 0px 0px 1px 0px;
 	background: none;
@@ -128,6 +136,10 @@ table.x-toolbar-ct table {
 	left: -1000;
 	display: none;
 	z-index: 8800;
+}
+
+#GENTICS_floatingmenu_shadow.fixed {
+	position: fixed;
 }
 
 .x-combo-selected {
@@ -331,7 +343,7 @@ div.GENTICS_button a:hover {
 }
 
 .GENTICS_floatingmenu {
-	display: none;	
+	display: none;
 }
 
 /*button status active of format plugin*/
@@ -383,9 +395,9 @@ html body #GENTICS_ribbon {
 }
 
 .GENTICS_shadow {
-	-moz-box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.3);
-	-webkit-box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.3);
-    box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.3);
+	-moz-box-shadow: 3px 3px 5px #999;
+	-webkit-box-shadow: 3px 3px 5px #999;
+	box-shadow: 3px 3px 5px #999;
 }
 
 /*

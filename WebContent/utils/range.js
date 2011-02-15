@@ -162,8 +162,8 @@ GENTICS.Utils.RangeObject.prototype = {
 	 * @method
 	 */
 	getContainerParents: function (limit, fromEnd) {
-		var container = fromEnd ? this.endContainer : this.startContainer;
-		var parentStore = fromEnd ? this.endParents : this.startParents;
+		var container = fromEnd ? this.endContainer : this.startContainer,
+			parentStore = fromEnd ? this.endParents : this.startParents;
 
 		if (!container) {
 			return false;
@@ -329,7 +329,7 @@ GENTICS.Utils.RangeObject.prototype = {
 	 * otherwise in a text selection.
 	 * @method
 	 */
-	select: document.createRange === undefined ? function() { // first the IE version of this method
+	select: (typeof document.createRange) === 'undefined' ? function() { // first the IE version of this method
 		if (GENTICS.Aloha.Log.isDebugEnabled()) {
 			GENTICS.Aloha.Log.debug(this, 'Set selection to current range (IE version)');
 		}
@@ -564,8 +564,8 @@ GENTICS.Utils.RangeObject.prototype = {
 					this.startOffset = 0;
 				} else if (this.startOffset < this.startContainer.childNodes.length && this.startContainer.childNodes[this.startOffset].nodeType == 1) {
 					// there is an element node to the right, so recursively check all first child nodes until we find a text node
-					var textNode = false;
-					var checkedElement = this.startContainer.childNodes[this.startOffset];
+					var textNode = false,
+						checkedElement = this.startContainer.childNodes[this.startOffset];
 					while (textNode === false && checkedElement.childNodes && checkedElement.childNodes.length > 0) {
 						// go to the first child of the checked element
 						checkedElement = checkedElement.childNodes[0];
@@ -642,8 +642,8 @@ GENTICS.Utils.RangeObject.prototype = {
 					this.endOffset = this.endContainer.data.length;
 				} else if (this.endOffset > 0 && this.endContainer.childNodes[this.endOffset - 1].nodeType == 1) {
 					// there is an element node to the left, so recursively check all last child nodes until we find a text node
-					var textNode = false;
-					var checkedElement = this.endContainer.childNodes[this.endOffset - 1];
+					var textNode = false,
+						checkedElement = this.endContainer.childNodes[this.endOffset - 1];
 					while (textNode === false && checkedElement.childNodes && checkedElement.childNodes.length > 0) {
 						// go to the last child of the checked element
 						checkedElement = checkedElement.childNodes[checkedElement.childNodes.length - 1];

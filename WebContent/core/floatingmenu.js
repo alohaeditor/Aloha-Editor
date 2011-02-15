@@ -245,8 +245,8 @@ GENTICS.Aloha.FloatingMenu.generateComponent = function () {
 	});
 	
 	// add the dropshadow
-	jQuery('body').append('<div id="GENTICS_floatingmenu_shadow" class="GENTICS_shadow">&#160;</div>');
-	this.shadow = jQuery('#GENTICS_floatingmenu_shadow');
+	this.shadow = jQuery('<div id="GENTICS_floatingmenu_shadow" class="GENTICS_shadow">&#160;</div>');
+	jQuery('body').append(this.shadow);
 	
 	// add an empty pin tab item, store reference
 	var pinTab = this.extTabPanel.add({
@@ -266,7 +266,7 @@ GENTICS.Aloha.FloatingMenu.generateComponent = function () {
 		});
 	
 	// a reference to the panels body needed for shadow size & position
-	this.panelBody = jQuery('.GENTICS_floatingmenu .x-tab-panel-bwrap');
+	this.panelBody = jQuery('div.GENTICS_floatingmenu div.x-tab-panel-bwrap');
 	
 	// do the visibility
 	this.doLayout();
@@ -313,15 +313,15 @@ GENTICS.Aloha.FloatingMenu.generateComponent = function () {
 	
 	// listen to selectionChanged event
 	GENTICS.Aloha.EventRegistry.subscribe(
-			GENTICS.Aloha,
-			'selectionChanged',
-			function(event, rangeObject) {
-				if (!that.pinned) {
-					var pos = that.calcFloatTarget(rangeObject);
-					if (pos) {
-						that.floatTo(pos);
-					}
+		GENTICS.Aloha,
+		'selectionChanged',
+		function(event, rangeObject) {
+			if (!that.pinned) {
+				var pos = that.calcFloatTarget(rangeObject);
+				if (pos) {
+					that.floatTo(pos);
 				}
+			}
 	});
 };
 
@@ -352,12 +352,11 @@ GENTICS.Aloha.FloatingMenu.togglePin = function() {
 		el.removeClass('GENTICS_floatingmenu_pinned');
 		this.top = this.obj.offset().top;
 		
-		this.obj.css({
-			'top': this.top,
-			'position': 'absolute'
+		this.obj.removeClass('fixed').css({
+			'top': this.top
 		});
 
-		this.shadow.css('position', 'absolute');
+		this.shadow.removeClass('fixed');
 		this.refreshShadow();
 		
 		this.pinned = false;
@@ -365,13 +364,12 @@ GENTICS.Aloha.FloatingMenu.togglePin = function() {
 		el.addClass('GENTICS_floatingmenu_pinned');
 		this.top = this.obj.offset().top - this.window.scrollTop();
 		
-		this.obj.css({
-			'top': this.top, // update position as preparation for fixed position 
-			'position': 'fixed' // fix the floating menu in place
+		this.obj.addClass('fixed').css({
+			'top': this.top // update position for fixed position
 		});
 		
 		// do the same for the shadow
-		this.shadow.css('position', 'fixed');
+		this.shadow.addClass('fixed');
 		this.refreshShadow();
 		
 		this.pinned = true;
@@ -395,8 +393,7 @@ GENTICS.Aloha.FloatingMenu.createScope = function(scope, extendedScopes) {
 
 	// TODO check whether the extended scopes already exist
 
-	var scopeObject = this.scopes[scope];
-	if (scopeObject) {
+	if (this.scopes[scope]) {
 		// TODO what if the scope already exists?
 	} else {
 		// generate the new scope
