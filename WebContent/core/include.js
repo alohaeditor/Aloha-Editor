@@ -52,9 +52,10 @@ document.write('<script type="text/javascript" src="' + window.GENTICS_Aloha_bas
 
 document.write('<script type="text/javascript" src="' + window.GENTICS_Aloha_base + 'deps/prettyPhoto/jquery.prettyPhoto.js"></script>');
 
-document.write('<script type="text/javascript" src="' + window.GENTICS_Aloha_base + 'deps/jquery.cookie.js"></script>');
+document.write('<script type="text/javascript" src="' + window.GENTICS_Aloha_base + 'deps/jquery.store.js"></script>');
 
 document.write('<script type="text/javascript" src="' + window.GENTICS_Aloha_base + 'deps/jquery.md5.js"></script>');
+
 document.write('<script type="text/javascript" src="' + window.GENTICS_Aloha_base + 'utils/jquery.js"></script>');
 
 document.write('<script type="text/javascript" src="' + window.GENTICS_Aloha_base + 'utils/lang.js"></script>');

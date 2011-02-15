@@ -100,27 +100,26 @@ GENTICS.Aloha.FloatingMenu.window = jQuery(window);
  * @hide
  */
 GENTICS.Aloha.FloatingMenu.init = function() {
+	$.storage = new $.store();
 	this.currentScope = 'GENTICS.Aloha.global';
 	var that = this;
 	this.window.unload(function () {
 		// store fm position if the panel is pinned to be able to restore it next time
 		if (that.pinned) {
 			var offset = that.obj.offset();
-			jQuery.cookie('GENTICS.Aloha.FloatingMenu.pinned', 'true');
-			jQuery.cookie('GENTICS.Aloha.FloatingMenu.top', offset.top);
-			jQuery.cookie('GENTICS.Aloha.FloatingMenu.left', offset.left);
+			$.storage.set('GENTICS.Aloha.FloatingMenu.pinned', 'true');
+			$.storage.set('GENTICS.Aloha.FloatingMenu.top', offset.top);
+			$.storage.set('GENTICS.Aloha.FloatingMenu.left', offset.left);
 			if (GENTICS.Aloha.Log.isInfoEnabled()) {
 				GENTICS.Aloha.Log.info(this, 'stored FloatingMenu pinned position {' + offset.left 
 						+ ', ' + offset.top + '}');
 			}
 		} else {
-			// delete old cookies
-			jQuery.cookie('GENTICS.Aloha.FloatingMenu.pinned', null);
-			jQuery.cookie('GENTICS.Aloha.FloatingMenu.top', null);
-			jQuery.cookie('GENTICS.Aloha.FloatingMenu.left', null);
+			// delete old localStorages
+			$.storage.flush();
 		}
 		if (that.userActivatedTab) {
-			jQuery.cookie('GENTICS.Aloha.FloatingMenu.activeTab', that.userActivatedTab);
+			$.storage.set('GENTICS.Aloha.FloatingMenu.activeTab', that.userActivatedTab);
 		}
 	}).resize(function () {
 		var target = that.calcFloatTarget(GENTICS.Aloha.Selection.getRangeObject());
@@ -155,6 +154,7 @@ GENTICS.Aloha.FloatingMenu.panelBody = null;
  * @hide
  */
 GENTICS.Aloha.FloatingMenu.generateComponent = function () {
+	//$.storage.set('truc', 'ok');
 	var that = this;
 
 	// Initialize and configure the tooltips
@@ -275,11 +275,11 @@ GENTICS.Aloha.FloatingMenu.generateComponent = function () {
 	// this has to be done AFTER the tab panel has been rendered
 	this.obj = jQuery(this.extTabPanel.getEl().dom);
 	
-	if (jQuery.cookie('GENTICS.Aloha.FloatingMenu.pinned') == 'true') {
+	if ($.storage.get('GENTICS.Aloha.FloatingMenu.pinned') == 'true') {
 		this.togglePin();
 		
-		this.top = parseInt(jQuery.cookie('GENTICS.Aloha.FloatingMenu.top'));
-		this.left = parseInt(jQuery.cookie('GENTICS.Aloha.FloatingMenu.left'));
+		this.top = parseInt($.storage.get('GENTICS.Aloha.FloatingMenu.top'));
+		this.left = parseInt($.storage.get('GENTICS.Aloha.FloatingMenu.left'));
 		
 		// do some positioning fixes
 		if (this.top < 30) {
@@ -296,9 +296,9 @@ GENTICS.Aloha.FloatingMenu.generateComponent = function () {
 		this.refreshShadow();
 	}
 
-	// set the user activated tab stored in a cookie
-	if (jQuery.cookie('GENTICS.Aloha.FloatingMenu.activeTab')) {
-		this.userActivatedTab = jQuery.cookie('GENTICS.Aloha.FloatingMenu.activeTab');
+	// set the user activated tab stored in a localStorage
+	if ($.storage.get('GENTICS.Aloha.FloatingMenu.activeTab')) {
+		this.userActivatedTab = $.storage.get('GENTICS.Aloha.FloatingMenu.activeTab');
 	}
 
 	// for now, position the panel somewhere
