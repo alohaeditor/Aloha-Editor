@@ -85,7 +85,7 @@ table.x-toolbar-ct table {
 }
 
 .GENTICS_floatingmenu.fixed {
-	position: fixed;
+	position: fixed !important;
 }
 
 .GENTICS_floatingmenu .x-tab-panel-header {
@@ -139,7 +139,7 @@ table.x-toolbar-ct table {
 }
 
 #GENTICS_floatingmenu_shadow.fixed {
-	position: fixed;
+	position: fixed !important;
 }
 
 .x-combo-selected {
