@@ -1927,7 +1927,7 @@ GENTICS.Aloha.Table.prototype.selectRows = function() {
  */
 GENTICS.Aloha.Table.prototype.deactivate = function() {
 	this.obj.removeClass(this.get('className'));
-	if (GENTICS.Aloha.trim(this.obj.attr('class')) == '') {
+	if (jQuery.trim(this.obj.attr('class')) == '') {
 		this.obj.removeAttr('class');
 	}
 //	this.obj.contentEditable('');
@@ -2178,7 +2178,7 @@ GENTICS.Aloha.Table.Cell.prototype.deactivate = function() {
 		// remove the click event of the
 		this.obj.unbind('click');
 		
-		if (GENTICS.Aloha.trim(this.obj.attr('class')) == '') {
+		if (jQuery.trim(this.obj.attr('class')) == '') {
 			this.obj.removeAttr('class');
 		}
 		
