@@ -1,0 +1,19 @@
+button.GENTICS_button_align {
+	background: url(../images/align.png) no-repeat !important;
+}
+
+button.GENTICS_button_align_left{
+	background-position: 0px 0px !important;
+}
+
+button.GENTICS_button_align_center {
+	background-position: -16px 0px !important;
+}
+
+button.GENTICS_button_align_right {
+	background-position: -32px 0px !important;
+}
+
+button.GENTICS_button_align_justify {
+	background-position: -48px 0px !important;
+}
