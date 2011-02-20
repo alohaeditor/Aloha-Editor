@@ -350,7 +350,6 @@ class App
 
 	# Deploy the Changes From Master to Version + Dev
 	def deploy_from_master
-		has_changes
 		version
 		merge(BRANCH_MASTER)
 		dev
@@ -361,7 +360,6 @@ class App
 
 	# Deploy the Changes From Dev to Version + Master
 	def deploy_from_dev
-		has_changes
 		version
 		merge(BRANCH_DEV)
 		master
