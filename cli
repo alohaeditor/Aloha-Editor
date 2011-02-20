@@ -348,8 +348,19 @@ class App
 		update_branches
 	end
 
-	# Deploy the Changes to the Version + Master
-	def deploy
+	# Deploy the Changes From Master to Version + Dev
+	def deploy-from-master
+		has_changes
+		version
+		merge(BRANCH_MASTER)
+		dev
+		merge(BRANCH_MASTER)
+		master
+		push
+	end
+
+	# Deploy the Changes From Dev to Version + Master
+	def deploy-from-dev
 		has_changes
 		version
 		merge(BRANCH_DEV)
