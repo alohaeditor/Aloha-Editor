@@ -344,7 +344,6 @@ class App
 
 	# Upgrade Aloha Editor
 	def upgrade
-		has_changes
 		update_branches
 	end
 
