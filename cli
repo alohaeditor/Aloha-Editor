@@ -253,6 +253,11 @@ class App
 		end
 	end
 
+	# Merge a Branch In
+	def merge(branch)
+		run("git merge #{branch}")
+	end
+
 	# Stage Known Files
 	def add
 		run("git add -u")
@@ -307,6 +312,15 @@ class App
 			")
 	end
 
+	# Upgrade Submodules
+	def upgrade_submodules
+		run("
+			git submodule init;
+			git submodule update --merge;
+			git submodule foreach 'git checkout master; git pull --all';
+			")
+	end
+
 	# Update Branches
 	def update_branches
 		update_branch(BRANCH_MASTER)
@@ -335,13 +349,21 @@ class App
 
 	# Upgrade Aloha Editor
 	def upgrade
-		has_changes
 		update_branches
 	end
 
-	# Deploy the Changes to the Version + Master
-	def deploy
-		has_changes
+	# Deploy the Changes From Master to Version + Dev
+	def deploy_from_master
+		version
+		merge(BRANCH_MASTER)
+		dev
+		merge(BRANCH_MASTER)
+		master
+		push
+	end
+
+	# Deploy the Changes From Dev to Version + Master
+	def deploy_from_dev
 		version
 		merge(BRANCH_DEV)
 		master
