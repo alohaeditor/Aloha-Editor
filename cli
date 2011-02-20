@@ -307,6 +307,15 @@ class App
 			")
 	end
 
+	# Upgrade Submodules
+	def upgrade_submodules
+		run("
+			git submodule init;
+			git submodule update --merge;
+			git submodule foreach 'git checkout master; git pull --all';
+			")
+	end
+
 	# Update Branches
 	def update_branches
 		update_branch(BRANCH_MASTER)
