@@ -253,6 +253,11 @@ class App
 		end
 	end
 
+	# Merge a Branch In
+	def merge(branch)
+		run("git merge #{branch}")
+	end
+
 	# Stage Known Files
 	def add
 		run("git add -u")
