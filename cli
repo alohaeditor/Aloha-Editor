@@ -268,8 +268,16 @@ class App
 		run("git push origin --all")
 	end
 
+	# Pull From Everywhere
+	def pull
+		run("git pull --all")
+	end
+
 	# ===========================================================================
 	# Git Handlers
+
+	# ---------------------------------------------------------------------------
+	# Checkout
 
 	# Checkout Version Branch
 	def version
@@ -286,6 +294,18 @@ class App
 		checkout(BRANCH_MASTER)
 	end
 
+	# ---------------------------------------------------------------------------
+	# Branch
+
+	# Update Branch
+	def update_branch(branch)
+		checkout(branch)
+		update
+	end
+
+	# ---------------------------------------------------------------------------
+	# Branches
+
 	# Initialise Branches
 	def init_branches
 		remote_add(REMOTE_ALOHA_URL,REMOTE_ALOHA)
@@ -293,6 +313,16 @@ class App
 		version
 		dev
 	end
+
+	# Update Branches
+	def update_branches
+		update_branch(BRANCH_MASTER)
+		update_branch(BRANCH_VERSION)
+		update_branch(BRANCH_DEV)
+	end
+
+	# ---------------------------------------------------------------------------
+	# Submodules
 
 	# Initialise Submodules
 	def init_submodules
@@ -321,24 +351,8 @@ class App
 			")
 	end
 
-	# Update Branches
-	def update_branches
-		update_branch(BRANCH_MASTER)
-		update_branch(BRANCH_VERSION)
-		update_branch(BRANCH_DEV)
-	end
-
-	# Update Branch
-	def update_branch(branch)
-		checkout(branch)
-		update
-	end
-
-	# Update
-	def update
-		run("git pull --all")
-		update_submodules
-	end
+	# ---------------------------------------------------------------------------
+	# Utility
 
 	# Install Aloha Editor
 	def install
@@ -347,10 +361,20 @@ class App
 		update_branches
 	end
 
+	# Update
+	def update
+		pull
+		update_submodules
+	end
+
 	# Upgrade Aloha Editor
 	def upgrade
-		update_branches
+		pull
+		upgrade_submodules
 	end
+
+	# ---------------------------------------------------------------------------
+	# Deploy
 
 	# Deploy the Changes From Master to Version + Dev
 	def deploy_from_master
