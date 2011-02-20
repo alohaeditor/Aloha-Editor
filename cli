@@ -1,0 +1,475 @@
+#!/usr/bin/env ruby
+
+# == Name
+#	 cli - Aloha Editor's Command Line Interface
+#
+# == Synopsis
+#	 TODO: finish this section
+#
+# == Examples
+#	 TODO: finish this section
+#
+# == Options
+#	 -h, --help					Displays help message
+#	 -v, --version			 Display the version, then exit
+#	 -q, --quiet				 Output as little as possible, overrides verbose
+#	 -V, --verbose			 Verbose output
+#
+# == Author
+#	 Benjamin Arthur Lupton
+#
+# == Copyright
+#	 Copyright (c) 2008-2011 Benjamin Arthur Lupton
+#	 Licensed under the New BSD License
+#	 http://creativecommons.org/licenses/BSD/
+
+require 'optparse'
+require 'rdoc/usage'
+require 'ostruct'
+require 'date'
+
+class App
+	# Remotes
+	REMOTE_ALOHA_URL	= 'http://github.com/alohaeditor/Aloha-Editor.git'
+	REMOTE_ALOHA			= 'aloha'
+
+	# Versioning
+	BRANCH_DEV			= 'dev'
+	BRANCH_VERSION	= '0.9.4'
+	BRANCH_MASTER		= 'master'
+
+	# Building
+	BUILD_DIR			= './.build'
+
+	# Uglifiy
+	UGLIFY_URL		= 'https://github.com/mishoo/UglifyJS/raw/master/bin/uglifyjs'
+	UGLIFY_DIR		= './.build/uglify'
+	UGLIFY_FILE		= './.build/uglify/uglify'
+
+	# Closure
+	CLOSURE_URL		= 'http://closure-compiler.googlecode.com/files/compiler-latest.zip'
+	CLOSURE_DIR		= './.build/closure'
+	CLOSURE_ZIP		= './.build/closure/compiler.zip'
+	CLOSURE_FILE	= './.build/closure/compiler.jar'
+	SOURCE_MAP		= './scripts/closure.map'
+
+	# YUI
+	YUI_URL				= 'http://yuilibrary.com/downloads/yuicompressor/yuicompressor-2.4.2.zip'
+	YUI_DIR				= './.build/yui'
+	YUI_ZIP				= './.build/yui/compiler.zip'
+	YUI_FILE			= './.build/yui/yuicompressor-2.4.2/build/yuicompressor-2.4.2.jar'
+
+	# ===========================================================================
+	# Init Helpers
+
+	# Run a Command
+	def run ( cmd )
+		puts cmd + "\n"
+		result = `#{cmd}`
+		puts result
+		return result
+	end
+
+	# Download a File
+	def download ( url, file )
+		result = run("curl -L #{url} -o #{file}")
+	end
+
+	# Extract a File
+	def extract ( dir, file )
+		file = file.gsub(dir,'.')
+		result = run("cd #{dir} ; tar -xf #{file} ; rm -Rf #{file}")
+	end
+
+	# ===========================================================================
+	# Init Commands
+
+	# Initialise our CLI
+	def initialize
+		init_env
+	end
+
+	# Initialise our Environment
+	def init_env
+		# Check for Requirements
+		reqs = ['mkdir','curl','tar','git']
+		reqs.each do |req|
+			has_req = `which #{req}`.strip
+			if has_req.empty?
+				abort("CLI requires the following binary which is not installed: #{req}")
+			end
+		end
+
+		# Do not care for compilation yet
+		return
+
+		# Check for Closure Compiler
+		if !File.exists?(CLOSURE_FILE)
+			run("mkdir -p #{CLOSURE_DIR}")
+			puts "Downloading the Closure Compiler..."
+			download(CLOSURE_URL, CLOSURE_ZIP)
+			extract(CLOSURE_DIR, CLOSURE_ZIP)
+			run("chmod +x #{CLOSURE_FILE}")
+		end
+
+		# Check for Uglify
+		if !File.exists?(UGLIFY_FILE)
+			run("mkdir -p #{UGLIFY_DIR}")
+			puts "Downloading the Uglify Compiler..."
+			download(UGLIFY_URL, UGLIFY_FILE)
+			run("chmod +x #{UGLIFY_FILE}")
+		end
+
+		# Check for YUI Compiler
+		if !File.exists?(YUI_FILE)
+			run("mkdir -p #{YUI_DIR}")
+			puts "Downloading the YUI Compiler..."
+			download(YUI_URL, (YUI_ZIP))
+			extract(YUI_DIR, YUI_ZIP)
+			run("chmod +x #{YUI_FILE}")
+		end
+	end
+
+	# ===========================================================================
+	# Build Helpers
+
+	def compressCss ( in_file, out_file )
+		# Calculate
+		in_file_size = File.size(in_file)
+
+		# Handle
+		if in_file.equal? out_file
+			out_file = out_file.gsub(/\.js$/, '.min.js')
+			compressCssWithYui(in_file,out_file)
+			run("rm #{in_file}")
+			run("mv #{out_file} #{in_file}")
+			out_file = in_file
+		else
+			compressCssWithYui(in_file,out_file)
+			out_file_size = File.size(out_file)
+		end
+
+		# Calculate
+		out_file_size = File.size(out_file)
+		ratio = Float(out_file_size)/Float(in_file_size)
+		reduction = ((1-ratio)*100).round
+
+		# Log
+		puts "Compressed the file [#{in_file}] to [#{out_file}] with a #{reduction}% reduction"
+	end
+
+	def compressJs ( in_file, out_file )
+		# Calculate
+		in_file_size = File.size(in_file)
+
+		# Handle
+		if in_file.equal? out_file
+			out_file = out_file.gsub(/\.js$/, '.min.js')
+			compressJsWithUglify(in_file,out_file)
+			run("rm #{in_file}")
+			run("mv #{out_file} #{in_file}")
+			out_file = in_file
+		else
+			compressJsWithUglify(in_file,out_file)
+			out_file_size = File.size(out_file)
+		end
+
+		# Calculate
+		out_file_size = File.size(out_file)
+		ratio = Float(out_file_size)/Float(in_file_size)
+		reduction = ((1-ratio)*100).round
+
+		# Log
+		puts "Compressed the file [#{in_file}] to [#{out_file}] with a #{reduction}% reduction"
+	end
+
+	# Compress a CSS File with YUI
+	def compressCssWithYui ( in_file, out_file )
+		result = run("java -jar #{YUI_FILE} --type css -o #{out_file} --charset UTF-8 #{in_file}")
+	end
+
+	# Compress a Javascript File with Uglify
+	def compressJsWithUglify ( in_file, out_file )
+		result = run("#{UGLIFY_FILE} -o #{out_file} #{in_file}")
+	end
+
+	# Compress a Javascript file with Closure
+	def compressJsWithClosure ( in_file, out_file )
+		result = run("java -jar #{CLOSURE_FILE} --js_output_file=#{out_file} --js=#{in_file}")
+	end
+
+	# ===========================================================================
+	# Git Helpers
+
+	# Aborts if Changes are Found
+	def has_changes
+		result = run("git status")
+		if result.include? 'Changed but not updated'
+			abort("You have un-committed changes that need to be committed before we can proceed.\n#{result}")
+		end
+	end
+
+	# Check if a Branch Exists
+	def branch_exists(branch)
+		branches = run("git branch")
+		regex = Regexp.new('[\\n\\s\\*]+' +	Regexp.escape(branch) + '\\n')
+		result = ((branches =~ regex) ? true : false)
+		return result
+	end
+
+	# Check if a Branch Exists
+	def remote_branch_exists(branch)
+		branches = run("git branch -all")
+		regex = Regexp.new('\\/' +	Regexp.escape(branch) + '\\n')
+		result = ((branches =~ regex) ? true : false)
+		return result
+	end
+
+	# Checkout a Branch
+	def checkout(branch)
+		if branch_exists(branch)
+			run("git checkout #{branch}")
+		else
+			if remote_branch_exists(branch)
+				run("git checkout -b #{branch} #{REMOTE_ALOHA}/#{branch}")
+			else
+				run("git branch #{branch} #{BRANCH_MASTER}")
+			end
+		end
+	end
+
+	# Check if a Remote Exists
+	def remote_exists(remote)
+		remotes = run("git remote")
+		regex = Regexp.new('[\\n\\s\\*]+' +	Regexp.escape(remote) + '\\n')
+		result = ((remotes =~ regex) ? true : false)
+		return result
+	end
+
+	# Add a Remote
+	def remote_add(url,name)
+		unless remote_exists(name)
+			run("git remote add #{name} #{url}")
+		end
+	end
+
+	# Stage Known Files
+	def add
+		run("git add -u")
+	end
+
+	# Push to Origin
+	def push
+		run("git push origin --all")
+	end
+
+	# ===========================================================================
+	# Git Handlers
+
+	# Checkout Version Branch
+	def version
+		checkout(BRANCH_VERSION)
+	end
+
+	# Checkout Dev Branch
+	def dev
+		checkout(BRANCH_DEV)
+	end
+
+	# Checkout Master Branch
+	def master
+		checkout(BRANCH_MASTER)
+	end
+
+	# Initialise Branches
+	def init_branches
+		remote_add(REMOTE_ALOHA_URL,REMOTE_ALOHA)
+		master
+		version
+		dev
+	end
+
+	# Initialise Submodules
+	def init_submodules
+		run("
+			git submodule init;
+			git submodule update;
+			git submodule foreach --recursive 'git reset --hard; git branch -D dev; git checkout -b dev origin/dev; git branch -D master; git checkout -b master origin/master; git submodule init; git submodule update --merge';
+			")
+	end
+
+	# Update Submodules
+	def update_submodules
+		run("
+			git submodule init;
+			git submodule update --merge;
+			git submodule foreach 'git submodule init; git submodule update --merge';
+			")
+	end
+
+	# Update Branches
+	def update_branches
+		update_branch(BRANCH_MASTER)
+		update_branch(BRANCH_VERSION)
+		update_branch(BRANCH_DEV)
+	end
+
+	# Update Branch
+	def update_branch(branch)
+		checkout(branch)
+		update
+	end
+
+	# Update
+	def update
+		run("git pull --all")
+		update_submodules
+	end
+
+	# Install Aloha Editor
+	def install
+		init_branches
+		init_submodules
+		update_branches
+	end
+
+	# Upgrade Aloha Editor
+	def upgrade
+		has_changes
+		update_branches
+	end
+
+	# Deploy the Changes to the Version + Master
+	def deploy
+		has_changes
+		version
+		merge(BRANCH_DEV)
+		master
+		merge(BRANCH_DEV)
+		dev
+		push
+	end
+
+end
+
+# ===========================================================================
+# Booter
+
+class Booter
+	VERSION = :'0.0.1'
+
+	attr_reader :options
+
+	def initialize(arguments, stdin)
+		@arguments = arguments
+		@stdin = stdin
+
+		# Set defaults
+		@options = OpenStruct.new
+		@options.verbose = false
+		@options.quiet = false
+		# TO DO - add additional defaults
+	end
+
+	# Parse options, check arguments, then process the command
+	def run
+
+		if parsed_options? && arguments_valid?
+
+			puts "Start at #{DateTime.now}\n\n" if @options.verbose
+
+			output_options if @options.verbose # [Optional]
+
+			process_arguments
+			process_command
+
+			puts "\nFinished at #{DateTime.now}" if @options.verbose
+
+		else
+			output_usage
+		end
+
+	end
+
+	protected
+
+		def parsed_options?
+
+			# Specify options
+			opts = OptionParser.new
+			opts.on('-v', '--version')		{ output_version ; exit 0 }
+			opts.on('-h', '--help')			 { output_help }
+			opts.on('-V', '--verbose')		{ @options.verbose = true }
+			opts.on('-q', '--quiet')			{ @options.quiet = true }
+			# TO DO - add additional options
+
+			opts.parse!(@arguments) rescue return false
+
+			process_options
+			true
+		end
+
+		# Performs post-parse processing on options
+		def process_options
+			@options.verbose = false if @options.quiet
+		end
+
+		def output_options
+			puts :"Options:\n"
+
+			@options.marshal_dump.each do |name, val|
+				puts "	#{name} = #{val}"
+			end
+		end
+
+		# True if required arguments were provided
+		def arguments_valid?
+			# TO DO - implement your real logic here
+			true if @arguments.length == 1
+		end
+
+		# Setup the arguments
+		def process_arguments
+			# TO DO - place in local vars, etc
+		end
+
+		def output_help
+			output_version
+			RDoc::usage() #exits app
+		end
+
+		def output_usage
+			RDoc::usage(:'usage') # gets usage from comments above
+		end
+
+		def output_version
+			puts "#{File.basename(__FILE__)} version #{VERSION}"
+		end
+
+		def process_command
+			# Create Application
+			app = App.new
+
+			# Fetch + Execute
+			command = @arguments[0].gsub('-','_')
+			unless app.respond_to?(command)
+				abort("Unknown command: #{command}")
+			end
+			app.send(command)
+		end
+
+		def process_standard_input
+			input = @stdin.read
+			# TO DO - process input
+
+			# [Optional]
+			#@stdin.each do |line|
+			#	# TO DO - process each line
+			#end
+		end
+end
+
+
+# Create Booter
+booter = Booter.new(ARGV, STDIN)
+booter.run
