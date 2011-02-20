@@ -249,7 +249,7 @@ class App
 	# Add a Remote
 	def remote_add(url,name)
 		unless remote_exists(name)
-			run("git remote add #{name} #{url}")
+			run("git remote add #{name} #{url}; git fetch #{name}")
 		end
 	end
 
@@ -295,6 +295,7 @@ class App
 			git submodule init;
 			git submodule update;
 			git submodule foreach --recursive 'git reset --hard; git branch -D dev; git checkout -b dev origin/dev; git branch -D master; git checkout -b master origin/master; git submodule init; git submodule update --merge';
+			git submodule update;
 			")
 	end
 
@@ -304,6 +305,7 @@ class App
 			git submodule init;
 			git submodule update --merge;
 			git submodule foreach 'git submodule init; git submodule update --merge';
+			git submodule update --merge;
 			")
 	end
 
