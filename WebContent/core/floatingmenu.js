@@ -100,7 +100,7 @@ GENTICS.Aloha.FloatingMenu.window = jQuery(window);
  * @hide
  */
 GENTICS.Aloha.FloatingMenu.init = function() {
-	jQuery.storage = new $.store();
+	jQuery.storage = new jQuery.store();
 	this.currentScope = 'GENTICS.Aloha.global';
 	var that = this;
 	this.window.unload(function () {
