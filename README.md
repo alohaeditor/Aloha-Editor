@@ -1,26 +1,10 @@
-Aloha Editor
-============
+# Welcome to Aloha Editor
 
-Aloha Editor is meant to be an free and open source for all now and in future.
+For developers refer to the development guide here:
+http://aloha-editor.org/wiki/Development_guide
 
-We encourage continuous, selfsustainable development supported by both the open source  
-community and commercial stakeholders. This way both parties (community and commercial users)
-profit from each other by code and financial ressources for core developement.
-Therefore we adopted a dual licensing approach for Aloha Editor.
+For end users and implementors refer to the wiki here:
+http://aloha-editor.org/wiki/Main_Page
 
-Opensource Software License
-===========================
-The Open Source version of Aloha Editor is released under the terms of AGPLv3 License.
-http://www.gnu.org/licenses/agpl.html
- 
-Commercial Software License
-============================
-The commercial version of Aloha Editor allows to use, modify, copy and distrubute without
-any restrictions as stated in the commerical license agreement.
- 
- 
-Translation License
-===================
-All contributions to translations of dictionary entries apply to the Creative Commons 
-Attribution License V3.0 BY. By contributing transaltions you agree to the license terms.
-http://creativecommons.org/licenses/by/3.0/
+Visit our website here:
+http://aloha-editor.org/
