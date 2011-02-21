@@ -1,27 +1,17 @@
 #!/usr/bin/env ruby
 
 # == Name
-#	 cli - Aloha Editor's Command Line Interface
+#	cli - Aloha Editor's Command Line Interface
 #
 # == Synopsis
-#	 TODO: finish this section
-#
-# == Examples
-#	 TODO: finish this section
+#	Refer to the README file for usage
 #
 # == Options
-#	 -h, --help					Displays help message
-#	 -v, --version			 Display the version, then exit
-#	 -q, --quiet				 Output as little as possible, overrides verbose
-#	 -V, --verbose			 Verbose output
+#	-h, --help          Displays help message
+#	-v, --version       Display the version, then exit
+#	-q, --quiet         Output as little as possible, overrides verbose
+#	-V, --verbose       Verbose output
 #
-# == Author
-#	 Benjamin Arthur Lupton
-#
-# == Copyright
-#	 Copyright (c) 2008-2011 Benjamin Arthur Lupton
-#	 Licensed under the New BSD License
-#	 http://creativecommons.org/licenses/BSD/
 
 require 'optparse'
 require 'rdoc/usage'
@@ -92,7 +82,7 @@ class App
 	# Initialise our Environment
 	def init_env
 		# Check for Requirements
-		reqs = ['mkdir','curl','tar','git']
+		reqs = ['mkdir','curl','tar','git','ant']
 		reqs.each do |req|
 			has_req = `which #{req}`.strip
 			if has_req.empty?
@@ -353,6 +343,15 @@ class App
 
 	# ---------------------------------------------------------------------------
 	# Utility
+
+	# Give Birth to a New Aloha Editor
+	def birth
+		puts "Welcome to the Aloha Editor CLI.\nWhat is your repository URL? E.g. git@github.com:balupton/Aloha-Editor.git"
+		url = gets.chomp.strip
+		run("git init");
+		remote_add(url,"origin")
+		install
+	end
 
 	# Install Aloha Editor
 	def install
