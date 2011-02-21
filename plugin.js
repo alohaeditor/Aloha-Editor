@@ -68,7 +68,8 @@ GENTICS.Aloha.Image.init=function(){
 	that.bindInteractions();
 	that.subscribeEvents();
 	stylePath = GENTICS_Aloha_base + '/plugins/com.gentics.aloha.plugins.Image/style.css';
-	jQuery('<link rel="stylesheet" />').attr('href', stylePath).appendTo('head');
+	jQuery('head').append('<link rel="stylesheet" href="' 
+			+ stylePath + '"></script>');
 /*
 	if (!GENTICS.Aloha.DnDFile) {
 		dndFilePath = GENTICS_Aloha_base + '/plugins/com.gentics.aloha.plugins.DragnDropFiles/plugin.js';
