@@ -116,7 +116,9 @@ GENTICS.Aloha.FloatingMenu.init = function() {
 			}
 		} else {
 			// delete old localStorages
-			jQuery.storage.flush();
+			jQuery.storage.del('GENTICS.Aloha.FloatingMenu.pinned');
+			jQuery.storage.del('GENTICS.Aloha.FloatingMenu.top');
+			jQuery.storage.del('GENTICS.Aloha.FloatingMenu.left');
 		}
 		if (that.userActivatedTab) {
 			jQuery.storage.set('GENTICS.Aloha.FloatingMenu.activeTab', that.userActivatedTab);

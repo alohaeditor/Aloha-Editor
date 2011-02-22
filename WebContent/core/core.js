@@ -36,10 +36,11 @@ GENTICS.Aloha = function () {};
 
 // determine path of aloha for configuration
 GENTICS.Aloha.setAutobase = function () {
-	var scriptTags = jQuery('script');
-	var path = scriptTags[scriptTags.length-1].src.split('?')[0]; // use last script tag (others are not yet parsed), remove any ?query
+	var scriptTags = jQuery('script'),
+		path = scriptTags[scriptTags.length-1].src.split('?')[0], // use last script tag (others are not yet parsed), remove any ?query
+		substitute = 1;
 	path = path.split('/');
-	var substitute = 1;
+	
 	// included by include-js.inc so it is referenced by the "core/" path
 	if ('core' === path[path.length -2]) {
 		substitute = 2;
@@ -206,7 +207,7 @@ GENTICS.Aloha.prototype = {
 		this.ready = true; 
 
 		// activate registered editables
-		for (var i = 0; i < this.editables.length; i++) {
+		for (var i = 0, editablesLength = this.editables.length; i < editablesLength; i++) {
 			if ( !this.editables[i].ready ) {
 				this.editables[i].init();
 			}
@@ -225,7 +226,7 @@ GENTICS.Aloha.prototype = {
 	activateEditable: function (editable) {
 
 		// blur all editables, which are currently active
-		for (var i = 0; i < this.editables.length; i++) {
+		for (var i = 0, editablesLength = this.editables.length; i < editablesLength; i++) {
 			if (this.editables[i] != editable && this.editables[i].isActive) {
 				this.editables[i].blur();
 			}
@@ -274,7 +275,7 @@ GENTICS.Aloha.prototype = {
 		}
 	
 		// serach all editables for id
-		for (var i = 0; i < GENTICS.Aloha.editables.length; i++) {
+		for (var i = 0, editablesLength = GENTICS.Aloha.editables.length; i < editablesLength; i++) {
 			if (GENTICS.Aloha.editables[i].getId() == id) {
 				return GENTICS.Aloha.editables[i];
 			}
@@ -289,7 +290,7 @@ GENTICS.Aloha.prototype = {
 	 * @return {boolean}
 	 */
 	isEditable: function (obj) {
-		for (var i=0; i<this.editables.length; i++) {
+		for (var i=0, editablesLength = this.editables.length; i < editablesLength; i++) {
 			if ( this.editables[i].originalObj.get(0) === obj ) {
 				return true;
 			}
@@ -375,7 +376,7 @@ GENTICS.Aloha.prototype = {
 			var acceptLanguage = [],
 			// Split the string from ACCEPT-LANGUAGE
 				preferredLanguage = this.settings.i18n.acceptLanguage.split(",");
-			for(i = 0; i < preferredLanguage.length; i++) {
+			for(i = 0, languageLength = preferredLanguage.length; i < languageLength; i++) {
 				
 				// split language setting
 				var lang = preferredLanguage[i].split(';');
@@ -395,7 +396,7 @@ GENTICS.Aloha.prototype = {
 			acceptLanguage.sort(function (a,b) {return b[1] - a[1];});
 			
 			// check in sorted order if any of preferred languages is available
-			for(i = 0; i < acceptLanguage.length; i++) {
+			for(i = 0, languageLength = acceptLanguage.length; i < languageLength; i++) {
 				if ( jQuery.inArray(acceptLanguage[i][0], this.settings.i18n.available) >= 0 ) {
 					this.settings.i18n.current = acceptLanguage[i][0];
 					break;
@@ -448,7 +449,7 @@ GENTICS.Aloha.prototype = {
 			return availableLanguages[0];
 		}
 	
-		for (var i = 0; i < availableLanguages.length; ++i) {
+		for (var i = 0, languagesLength = availableLanguages.length; i < languagesLength; ++i) {
 			if (language == availableLanguages[i]) {
 				return language;
 			}
@@ -466,27 +467,25 @@ GENTICS.Aloha.prototype = {
 	loadI18nFile: function(fileUrl, component, callback) {
 		// Note: this ajax request must be done synchronously, because the otherwise
 		// the first i18n calls might come before the dictionary is available
-		jQuery.ajax(
-			{
-				dataType : 'text',
-				url : fileUrl,
-				error: function(request, textStatus, error) {
-					GENTICS.Aloha.Log.error(component, 'Error while getting dictionary file ' + fileUrl + ': server returned ' + textStatus);
-					if(typeof callback == 'function') {
-						callback.call(component);
-					}
-				},
-				success: function(data, textStatus, request) {
-					if (GENTICS.Aloha.Log.isInfoEnabled()) {
-						GENTICS.Aloha.Log.info(component, 'Loaded dictionary file ' + fileUrl);
-					}
-					GENTICS.Aloha.parseI18nFile(data, component);
-					if(typeof callback == 'function') {
-						callback.call(component);
-					}
+		jQuery.ajax({
+			dataType : 'text',
+			url : fileUrl,
+			error: function(request, textStatus, error) {
+				GENTICS.Aloha.Log.error(component, 'Error while getting dictionary file ' + fileUrl + ': server returned ' + textStatus);
+				if(typeof callback === 'function') {
+					callback.call(component);
+				}
+			},
+			success: function(data, textStatus, request) {
+				if (GENTICS.Aloha.Log.isInfoEnabled()) {
+					GENTICS.Aloha.Log.info(component, 'Loaded dictionary file ' + fileUrl);
+				}
+				GENTICS.Aloha.parseI18nFile(data, component);
+				if(typeof callback === 'function') {
+					callback.call(component);
 				}
 			}
-		);
+		});
 	},
 
 	/**
@@ -499,7 +498,7 @@ GENTICS.Aloha.prototype = {
 		data = data.replace(/\r/g, '');
 		var entries = data.split('\n'),
 			dictionary = {};
-		for (var i = 0; i < entries.length; ++i) {
+		for (var i = 0, entriesLength = entries.length; i < entriesLength; ++i) {
 			var entry = entries[i],
 				equal = entry.indexOf('=');
 			if (equal > 0) {
@@ -549,11 +548,11 @@ GENTICS.Aloha.prototype = {
 			return '??? ' + key + ' ???';
 		} else {
 			// substitute placeholders
-			if (typeof replacements != 'undefined' && replacements != null) {
-				for ( var i = 0; i < replacements.length; ++i) {
+			if (typeof replacements !== 'undefined' && replacements != null) {
+				for ( var i = 0, repLength = replacements.length; i < repLength; ++i) {
 					if (typeof replacements[i] !== 'undefined' && replacements[i] != null) {
-						var regEx = new RegExp('\\{' + (i) + '\\}', 'g');
-						var safeArgument = replacements[i].toString().replace(/\{/g, '\\{');
+						var regEx = new RegExp('\\{' + (i) + '\\}', 'g'),
+							safeArgument = replacements[i].toString().replace(/\{/g, '\\{');
 						safeArgument = safeArgument.replace(/\}/g, '\\}');
 						value = value.replace(regEx, safeArgument);
 					}
