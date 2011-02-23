@@ -119,7 +119,7 @@ GENTICS.Aloha.DragAndDropFiles.setBodyDropHandler = function() {
 				if (editable[0] == null) {
 					while(--len >= 0) {
 						fileObj = that.uploader.addFileUpload(files[len]);
-						that.uploader.startFileUpload(fileObj.id,this.config.drop.upload.config);
+						//that.uploader.startFileUpload(fileObj.id,this.config.drop.upload.config);
 						filesObjs.push(fileObj);
 					}
 				} else {
@@ -137,23 +137,31 @@ GENTICS.Aloha.DragAndDropFiles.setBodyDropHandler = function() {
 				    	var edConfig = that.getEditableConfig(editable);
 			           	if (edConfig.drop) {
 			           		dropInEditable = true;
-			           		that.uploader.startFileUpload(fileObj.id,edConfig.drop.upload.config);
+			           		//that.uploader.startFileUpload(fileObj.id,edConfig.drop.upload.config);
 			           	} else {
-			           		that.uploader.startFileUpload(fileObj.id,this.config.drop.upload.config);
+			           		//that.uploader.startFileUpload(fileObj.id,this.config.drop.upload.config);
 			           	}
 			           	
 			        } //while
-				    if (dropInEditable) {
-				    	GENTICS.Aloha.EventRegistry.trigger(
-	        				new GENTICS.Aloha.Event('dropFilesInEditable', GENTICS.Aloha, {
-	        					'filesObjs':filesObjs,
-	        					'range': range,
-	        					'editable': editable}));
-				    } else {
-				    	GENTICS.Aloha.EventRegistry.trigger(
-		            			new GENTICS.Aloha.Event('dropFilesInPage', GENTICS.Aloha,filesObjs));
-				    }
 				}
+				var len = filesObjs.length;
+				if (dropInEditable) {
+			    	GENTICS.Aloha.EventRegistry.trigger(
+        				new GENTICS.Aloha.Event('dropFilesInEditable', GENTICS.Aloha, {
+        					'filesObjs':filesObjs,
+        					'range': range,
+        					'editable': editable}));
+			    	var edConfig = that.getEditableConfig(editable);
+			    	while(--len >= 0) {
+			    		that.uploader.startFileUpload(filesObjs[len].id,edConfig.drop.upload.config);
+			    	}
+			    } else {
+			    	GENTICS.Aloha.EventRegistry.trigger(
+	            			new GENTICS.Aloha.Event('dropFilesInPage', GENTICS.Aloha,filesObjs));
+			    	while(--len >= 0) {
+			    		that.uploader.startFileUpload(filesObjs[len].id,this.config.drop.upload.config);
+			    	}
+			    }
 				event.stopPropagation();
 			 } catch (error) {
 				GENTICS.Aloha.Log.error(GENTICS.Aloha.DragAndDropFiles,error);
