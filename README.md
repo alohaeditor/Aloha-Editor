@@ -8,3 +8,5 @@ For end users and implementors refer to the wiki here:
 
 Visit our website here:
 [http://aloha-editor.org/](http://aloha-editor.org/)
+
+Thanks from the Aloha Editor Core Team :-)
