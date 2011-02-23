@@ -190,7 +190,7 @@ GENTICS.Aloha.Image.initImage = function() {
 		);
 	}
 	if (this.settings.config.img.ui.meta && !(this.settings.config.img.ui.align)) {
-		//TODO some hacking to get ui well
+		//TODO some hacking to get ui well when only meta fields
 	}
 	if (this.settings.config.img.ui.meta) {
 		GENTICS.Aloha.FloatingMenu.addButton(
@@ -269,21 +269,21 @@ GENTICS.Aloha.Image.initImage = function() {
 
 GENTICS.Aloha.Image.bindInteractions = function () {
 	var that = this;
-
-	// update image object when src changes
-	this.imgSrcField.addListener('keyup', function(obj, event) {  	
-		that.srcChange();
-	});
-
-	this.imgSrcField.addListener('blur', function(obj, event) {
-		// TODO remove image or do something usefull if the user leaves the
-		// image without defining a valid image src.
-		var img = jQuery(obj.getTargetObject());
-		if (img.attr('src') == '') {
-			img.remove();
-		} // image removal when src field is blank
-	});
-	 
+	if (this.settings.config.img.ui.meta) {
+		// update image object when src changes
+		this.imgSrcField.addListener('keyup', function(obj, event) {  	
+			that.srcChange();
+		});
+	
+		this.imgSrcField.addListener('blur', function(obj, event) {
+			// TODO remove image or do something usefull if the user leaves the
+			// image without defining a valid image src.
+			var img = jQuery(obj.getTargetObject());
+			if (img.attr('src') == '') {
+				img.remove();
+			} // image removal when src field is blank
+		});
+	}
 };
 
 GENTICS.Aloha.Image.subscribeEvents = function () {
@@ -346,7 +346,7 @@ GENTICS.Aloha.Image.subscribeEvents = function () {
 			GENTICS.Aloha.FloatingMenu.setScope(that.getUID('image'));
 			that.imgSrcField.setTargetObject(foundMarkup, 'src');
 			that.imgTitleField.setTargetObject(foundMarkup, 'title');
-			that.imgSrcField.focus();
+			//that.imgSrcField.focus();
 			GENTICS.Aloha.FloatingMenu.userActivatedTab = that.i18n('floatingmenu.tab.img');
 		} else {
 			that.imgSrcField.setTargetObject(null);
@@ -366,20 +366,18 @@ GENTICS.Aloha.Image.subscribeEvents = function () {
 GENTICS.Aloha.Image.clickImage = function ( e ) {
 	// select the image
 	// HELP: can't find a way...
-	var thisimg = jQuery(this);
-	var offset = 1;//GENTICS.Utils.Dom.getIndexInParent(this);
+	var thisimg = jQuery(this),
+		editable = thisimg.parents('.GENTICS_editable');
+	GENTICS.Aloha.getEditableById(editable.attr('id')).activate();
+	var offset = GENTICS.Utils.Dom.getIndexInParent(this);
 	var imgRange = GENTICS.Aloha.Selection.getRangeObject();
-	imgRange.startContainer = imgRange.endContainer = this;
-//	var imgRange = new GENTICS.Utils.RangeObject({
-//		startContainer: thisimg.parent(),
-//		endContainer: thisimg.parent(),
-//		startOffset: offset,
-//		endOffset: offset+1
-//	});
-//	imgRange.correctRange();
-//	imgRange.update();
-	// console.log(imgRange);
+	imgRange.startContainer = imgRange.endContainer = thisimg.parent()[0];
+	imgRange.startOffset = offset;
+	imgRange.endOffset = offset+1;
 	imgRange.select();
+	e.preventDefault();
+	e.stopPropagation();
+	return false;
 };
 
 
@@ -421,21 +419,12 @@ GENTICS.Aloha.Image.insertImg = function() {
 		// add the click selection handler
 		//newImg.click( GENTICS.Aloha.Image.clickImage ); - Using delegate now
 		GENTICS.Utils.Dom.insertIntoDOM(newImg, range, jQuery(GENTICS.Aloha.activeEditable.obj));
-		// select the image when inserted
-// var offset = GENTICS.Utils.Dom.getIndexInParent(newImg.get(0));
-// var imgRange = new GENTICS.Utils.RangeObject({
-// startContainer: newImg.parent(),
-// endContainer: newImg.parent(),
-// startOffset: offset,
-// endOffset: offset+1
-// });
-// imgRange.select();
 		
 	} else {
 		GENTICS.Aloha.Log.error('img cannot markup a selection');
 		// TODO the desired behavior could be that the selected content is
 		// replaced by an image.
-		// TODO it should be editor's choice, with an Ext Dialog instead of
+		// TODO it should be editor's choice, with an NON-Ext Dialog instead of
 		// alert.
 	}
 };
