@@ -512,7 +512,7 @@ GENTICS.Aloha.Editable.prototype = {
 	 */
 	getContents: function() {
 		// clone the object
-		var clonedObj = this.obj.clone(true);
+		var clonedObj = this.obj.clone();
 
 		// do core cleanup
 		clonedObj.find('.GENTICS_cleanme').remove();
