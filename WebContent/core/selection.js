@@ -25,12 +25,12 @@ jQuery.fn.textNodes = function(excludeBreaks, includeEmptyTextNodes) {
 
     (function(el){
         if (
-        		(el.nodeType == 3 && jQuery.trim(el.data) != '' && !includeEmptyTextNodes) || 
-        		(el.nodeType == 3 && includeEmptyTextNodes) || 
+        		(el.nodeType === 3 && jQuery.trim(el.data) != '' && !includeEmptyTextNodes) || 
+        		(el.nodeType === 3 && includeEmptyTextNodes) || 
         		(el.nodeName =="BR" && !excludeBreaks)) {
             ret.push(el);
         } else {
-            for (var i=0; i < el.childNodes.length; ++i) {
+            for (var i=0, childLength = el.childNodes.length; i < childLength; ++i) {
                 arguments.callee(el.childNodes[i]);
             }
         }
@@ -185,7 +185,7 @@ GENTICS.Aloha.Selection.prototype = {
 		GENTICS.Aloha.FloatingMenu.setScope('GENTICS.Aloha.continuoustext');
 
 		// throw the event that the selection has changed. Plugins now have the
-		// chance to react on the changed selection
+		// chance to react on the chancurrentElements[childCount].children.lengthged selection
 		GENTICS.Aloha.EventRegistry.trigger(
 			new GENTICS.Aloha.Event(
 				'selectionChanged',
@@ -340,13 +340,15 @@ GENTICS.Aloha.Selection.prototype = {
 
 			// now do the recursion step into the current object
 			currentElements[childCount].children = that.recursiveGetSelectionTree(rangeObject, this);
-
+			
+			var elementsLength = currentElements[childCount].children.length;
+			
 			// check whether a selection was found within the children
-			if (currentElements[childCount].children.length > 0) {
+			if (elementsLength > 0) {
 				var noneFound = false,
 					partialFound = false,
 					fullFound = false;
-				for (var i = 0; i < currentElements[childCount].children.length; ++i) {
+				for (var i = 0; i < elementsLength; ++i) {
 					switch(currentElements[childCount].children[i].selection) {
 					case 'none':
 						noneFound = true;
@@ -478,7 +480,7 @@ GENTICS.Aloha.Selection.prototype = {
 			if (!this.standardAttributesComparator(domobj, markupObject)) {
 				return false;
 			}
-			return true;
+			return true;domobj.attributes.length
 		} else {
 			GENTICS.Aloha.Log.debug(this,'only element nodes (nodeType == 1) can be compared');
 		}
@@ -495,7 +497,7 @@ GENTICS.Aloha.Selection.prototype = {
 	 */
 	standardAttributesComparator: function(domobj, markupObject) {
 		if (domobj.attributes && domobj.attributes.length && domobj.attributes.length > 0) {
-			for (var i = 0; i < domobj.attributes.length; i++) {
+			for (var i = 0, domAttrLength = domobj.attributes.length; i < domAttrLength; i++) {
 				var attr = domobj.attributes[i];
 				if (attr.nodeName.toLowerCase() == 'class' && attr.nodeValue.length > 0) {
 					var classString = attr.nodeValue,
@@ -504,7 +506,7 @@ GENTICS.Aloha.Selection.prototype = {
 			}
 		}
 		if (markupObject[0].attributes && markupObject[0].attributes.length && markupObject[0].attributes.length > 0) {
-			for (var i = 0; i < markupObject[0].attributes.length; i++) {
+			for (var i = 0, attrLength = markupObject[0].attributes.length; i < attrLength; i++) {
 				var attr = markupObject[0].attributes[i];
 				if (attr.nodeName.toLowerCase() == 'class' && attr.nodeValue.length > 0) {
 					var classString = attr.nodeValue,
@@ -522,7 +524,7 @@ GENTICS.Aloha.Selection.prototype = {
 			return false;
 		}
 		if (classes && classes2 && classes.length == classes2.length && classes.length != 0) {
-			for (var i = 0; i < classes.length; i++) {
+			for (var i = 0, classLength = classes.length; i < classLength; i++) {
 				if (!markupObject.hasClass(classes[ i ])) {
 					GENTICS.Aloha.Log.debug(this, 'tag comparison for <' + domobj.tagName.toLowerCase() + '> failed because of different classes');
 					return false;
@@ -685,15 +687,15 @@ GENTICS.Aloha.Selection.prototype = {
 		if (rangeObject.startOffset !== 0) {
 			return false;
 		}
-		var relMarkupStart = relevantMarkupObjectsAtSelectionStart.length;
-		for (var i = 0; i < relMarkupStart; i++) {
+		
+		for (var i = 0, relMarkupStart = relevantMarkupObjectsAtSelectionStart.length; i < relMarkupStart; i++) {
 			var el = jQuery(relevantMarkupObjectsAtSelectionStart[i]);
 			if (el.textNodes().first()[0] !== rangeObject.startContainer) {
 				return false;
 			}
 		}
-		var relMarkupEnd = relevantMarkupObjectsAtSelectionEnd.length;
-		for (var i = 0; i < relMarkupEnd; i++) {
+		
+		for (var i = 0, relMarkupEnd = relevantMarkupObjectsAtSelectionEnd.length; i < relMarkupEnd; i++) {
 			var el = jQuery(relevantMarkupObjectsAtSelectionEnd[i]),
 				textNode = el.textNodes().last()[0];
 			if (textNode !== rangeObject.endContainer || textNode.length != rangeObject.endOffset) {
@@ -781,15 +783,17 @@ GENTICS.Aloha.Selection.prototype = {
 			var extendMarkupsAtEnd = true;
 		}	
 		var objects = [];
-		for(var i = 0; i < relevantMarkupObjects.length; i++){
+		for(var i = 0, relMarkupLength = relevantMarkupObjects.length; i < relMarkupLength; i++){
 			objects[i] = new this.SelectionRange();
 			el = relevantMarkupObjects[i];
 			if (extendMarkupsAtEnd && !extendMarkupsAtStart) {
 				objects[i].startContainer = rangeObject.startContainer; // jQuery(el).contents()[0];
 				objects[i].startOffset = rangeObject.startOffset;
 				textnodes = jQuery(el).textNodes(true);
-				objects[i].endContainer = textnodes[ textnodes.length-1 ];
-				objects[i].endOffset = textnodes[ textnodes.length-1 ].length;
+				
+				var nodeNr = textnodes.length - 1;
+				objects[i].endContainer = textnodes[ nodeNr ];
+				objects[i].endOffset = textnodes[ nodeNr ].length;
 				objects[i].update();
 				this.applyMarkup(objects[i].getSelectionTree(), rangeObject, this.getClonedMarkup4Wrapping(el), tagComparator, {setRangeObject2NewMarkup: true});
 			}
