@@ -283,23 +283,27 @@ GENTICS.Aloha.Image.subscribeEvents = function () {
 			jQuery('#'+data.id).remove();
 		}
 	});
-	GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'dropFileInEditable', function(event,data) {
+	GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'dropFilesInEditable', function(event,data) {
 		//console.log(data.file);
-		if (data.fileObj.file.type.match(/image\//)) {			
-			var reader = new FileReader();
-			reader.config = that.getEditableConfig(data.editable);
-			reader.attachedData = data;
-			reader.onloadend = function(readEvent) {
-				var imagestyle = "width: " + reader.config.img.max_width + "; height: " + reader.config.img.max_height,
-					img = jQuery('<img id="'+reader.attachedData.fileObj.id+'" style="'+imagestyle+'" title="" src="" />');
-				//img.click( GENTICS.Aloha.Image.clickImage ); - Using delegate now
-				if (typeof reader.attachedData.fileObj.src === 'undefined') {
-					reader.attachedData.fileObj.src = readEvent.target.result;
-				}
-				img.attr('src', reader.attachedData.fileObj.src );
-				GENTICS.Utils.Dom.insertIntoDOM(img, reader.attachedData.range, jQuery(GENTICS.Aloha.activeEditable.obj));
-			};
-			reader.readAsDataURL(data.fileObj.file);
+		for (var fileObjId in data.filesObjs) {
+			var fileObj = data.filesObjs[fileObjId];
+			if (fileObj.file.type.match(/image\//)) {			
+				var reader = new FileReader();
+				reader.config = that.getEditableConfig(data.editable);
+				reader.attachedData = data;
+				reader.attachedFile = fileObj;
+				reader.onloadend = function(readEvent) {
+					var imagestyle = "width: " + reader.config.img.max_width + "; height: " + reader.config.img.max_height,
+					img = jQuery('<img id="'+reader.attachedFile.id+'" style="'+imagestyle+'" title="" src="" />');
+					//img.click( GENTICS.Aloha.Image.clickImage ); - Using delegate now
+					if (typeof reader.attachedFile.src === 'undefined') {
+						reader.attachedFile.src = readEvent.target.result;
+					}
+					img.attr('src', reader.attachedFile.src );
+					GENTICS.Utils.Dom.insertIntoDOM(img, reader.attachedData.range, jQuery(GENTICS.Aloha.activeEditable.obj));
+				};
+				reader.readAsDataURL(fileObj.file);
+			}
 		}
 	});
 	// add the event handler for selection change
@@ -343,16 +347,18 @@ GENTICS.Aloha.Image.subscribeEvents = function () {
 GENTICS.Aloha.Image.clickImage = function ( e ) {
 	// select the image
 	// HELP: can't find a way...
-	var thisimg = jQuery(this),
-		offset = 1,//GENTICS.Utils.Dom.getIndexInParent(this);
-		imgRange = new GENTICS.Utils.RangeObject({
-			startContainer: thisimg.parent(),
-			endContainer: thisimg.parent(),
-			startOffset: offset,
-			endOffset: offset+1
-		});
-	imgRange.correctRange();
-	imgRange.update();
+	var thisimg = jQuery(this);
+	var offset = 1;//GENTICS.Utils.Dom.getIndexInParent(this);
+	var imgRange = GENTICS.Aloha.Selection.getRangeObject();
+	imgRange.startContainer = imgRange.endContainer = this;
+//	var imgRange = new GENTICS.Utils.RangeObject({
+//		startContainer: thisimg.parent(),
+//		endContainer: thisimg.parent(),
+//		startOffset: offset,
+//		endOffset: offset+1
+//	});
+//	imgRange.correctRange();
+//	imgRange.update();
 	// console.log(imgRange);
 	imgRange.select();
 };
