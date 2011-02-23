@@ -372,6 +372,11 @@ class App
 		upgrade_submodules
 	end
 
+	# Build Aloha Editor
+	def build
+		run("cd build; ant build; cd ..")
+	end
+
 	# ---------------------------------------------------------------------------
 	# Deploy
 
