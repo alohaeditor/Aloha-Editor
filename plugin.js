@@ -83,16 +83,29 @@ GENTICS.Aloha.DragAndDropFiles.setBodyDropHandler = function() {
 		 document.body.BodyDragSinker = true;
 		 var that = this;
 		 var onstr = "",
+		 mydoc = document,
 		 methodName = "addEventListener";
-		 if (jQuery.browser.ie) {
+		 if (jQuery.browser.msie) {
 			 onstr = "on";
-			 methodName = "attachEvent"
+			 methodName = "attachEvent";
+			 mydoc = document.body;
 		 }
-		 document[methodName](onstr+"drop", function(event) {
+		 mydoc[methodName](onstr+"drop", function(event) {
 		 try {
-			 event.preventDefault();
+			 if (event.preventDefault)
+				 event.preventDefault();
+			 else
+				 event.cancelBubble = true;
 			 GENTICS.Aloha.Log.info(that,"a file have been dropped on document");
 			 
+			 if (jQuery.browser.msie) {
+				 var textdata = event.dataTransfer.getData('Text');
+				 var urldata = event.dataTransfer.getData('URL');
+				 var imagedataW = window.event.dataTransfer.getData('URL');
+				 var textdataW = window.event.dataTransfer.getData('Text');
+				 var x = textdataW;
+			 }
+
 			var files = event.dataTransfer.files;
 		    var len = files.length;
 		    // if no files where dropped, use default handler
@@ -102,7 +115,10 @@ GENTICS.Aloha.DragAndDropFiles.setBodyDropHandler = function() {
 		    }
 		    if (len > that.settings.config.drop.max_file_count) {
 		    	GENTICS.Aloha.Log.warn(that,"too much files dropped");
-		    	event.stopPropagation();
+		    	if (event.stopPropagation)
+					 event.stopPropagation();
+				 else 
+					 event.returnValue = false;
 		    	return true;
 		    }
 		    var editable = null;
@@ -113,7 +129,7 @@ GENTICS.Aloha.DragAndDropFiles.setBodyDropHandler = function() {
 				target = editable.children(':last');
 				if (target.hasClass('GENTICS_editable')) {
 					//nested space is needed in this tag, otherwise select won't success...
-					editable.append('<p> </p>');
+					//editable.append('<p> </p>');
 					target = editable.children(':last');
 				}
 			} else {
@@ -167,7 +183,10 @@ GENTICS.Aloha.DragAndDropFiles.setBodyDropHandler = function() {
 		    		that.uploader.startFileUpload(filesObjs[len].id,this.config.drop.upload.config);
 		    	}
 		    }
-			event.stopPropagation();
+			if (event.stopPropagation)
+				 event.stopPropagation();
+			 else 
+				 event.returnValue = false;
 		 } catch (error) {
 			GENTICS.Aloha.Log.error(GENTICS.Aloha.DragAndDropFiles,error);
 
@@ -175,19 +194,37 @@ GENTICS.Aloha.DragAndDropFiles.setBodyDropHandler = function() {
 		 return false;
 	 }, false);
 	 // TODO: improve below to allow default comportment behaviour if drop event is not a files drop event
-	 document[methodName](onstr+"dragenter", function(event) {
-		 event.preventDefault();
-		 event.stopPropagation();
+	 mydoc[methodName](onstr+"dragenter", function(event) {
+		 if (event.preventDefault)
+			 event.preventDefault();
+		 else
+			 event.cancelBubble = true;
+		 if (event.stopPropagation)
+			 event.stopPropagation();
+		 else 
+			 event.returnValue = false;
 		 return false;
 	 }, false);
-	 document[methodName](onstr+"dragleave", function(event) {
-		 event.preventDefault();
-		 event.stopPropagation();
+	 mydoc[methodName](onstr+"dragleave", function(event) {
+		 if (event.preventDefault)
+			 event.preventDefault();
+		 else
+			 event.cancelBubble = true;
+		 if (event.stopPropagation)
+			 event.stopPropagation();
+		 else 
+			 event.returnValue = false;
 		 return false;
 	 }, false);
-	 document[methodName](onstr+"dragover", function(event) {
-		 event.preventDefault();
-		 event.stopPropagation();
+	 mydoc[methodName](onstr+"dragover", function(event) {
+		 if (event.preventDefault)
+			 event.preventDefault();
+		 else
+			 event.cancelBubble = true;
+		 if (event.stopPropagation)
+			 event.stopPropagation();
+		 else 
+			 event.returnValue = false;
 		 return false;
 	 }, false);
 
@@ -220,7 +257,7 @@ GENTICS.Aloha.DragAndDropFiles.InitializeRangeForDropEvent = function(event, edi
 	try {
 		range.select();
 	} catch (error) {
-		GENTICS.Aloha.log(this,error);
+		GENTICS.Aloha.Log.error(this,error);
 	}
 	return range;
 };
@@ -262,4 +299,3 @@ GENTICS.Aloha.DragAndDropFiles.findFileObject = function(range) {
     return null;
     
 };
-
