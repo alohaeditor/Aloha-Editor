@@ -273,9 +273,9 @@ GENTICS.Aloha.Image.subscribeEvents = function () {
 	//handles dropped files
 	GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'UploadSuccess', function(event,data) {
 		if (data.file.type.match(/image\//)) {	
-			jQuery('#'+data.id)
-				.attr("src",data.src)
-				.removeAttr('id');
+			var imgObj = jQuery('#'+data.id);
+			imgObj.attr("src",data.src);
+			imgObj.removeAttr('id');
 		}
 	});
 	GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'UploadFailure', function(event,data) {
@@ -285,25 +285,26 @@ GENTICS.Aloha.Image.subscribeEvents = function () {
 	});
 	GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'dropFilesInEditable', function(event,data) {
 		//console.log(data.file);
-		for (var fileObjId in data.filesObjs) {
-			var fileObj = data.filesObjs[fileObjId];
-			if (fileObj.file.type.match(/image\//)) {			
-				var reader = new FileReader();
-				reader.config = that.getEditableConfig(data.editable);
-				reader.attachedData = data;
-				reader.attachedFile = fileObj;
-				reader.onloadend = function(readEvent) {
-					var imagestyle = "width: " + reader.config.img.max_width + "; height: " + reader.config.img.max_height,
-					img = jQuery('<img id="'+reader.attachedFile.id+'" style="'+imagestyle+'" title="" src="" />');
-					//img.click( GENTICS.Aloha.Image.clickImage ); - Using delegate now
-					if (typeof reader.attachedFile.src === 'undefined') {
-						reader.attachedFile.src = readEvent.target.result;
-					}
-					img.attr('src', reader.attachedFile.src );
-					GENTICS.Utils.Dom.insertIntoDOM(img, reader.attachedData.range, jQuery(GENTICS.Aloha.activeEditable.obj));
-				};
-				reader.readAsDataURL(fileObj.file);
-			}
+		len = data.filesObjs.length;
+		while (--len >= 0) {
+				var fileObj = data.filesObjs[len];
+				if (fileObj.file.type.match(/image\//)) {			
+					var reader = new FileReader();
+					reader.config = that.getEditableConfig(data.editable);
+					reader.attachedData = data;
+					reader.attachedFile = fileObj;
+					reader.onloadend = function(readEvent) {
+						var imagestyle = "width: " + this.config.img.max_width + "; height: " + this.config.img.max_height;
+						var img = jQuery('<img id="'+this.attachedFile.id+'" style="'+imagestyle+'" title="" src="" />');
+						//img.click( GENTICS.Aloha.Image.clickImage ); - Using delegate now
+						if (typeof this.attachedFile.src === 'undefined') {
+							this.attachedFile.src = readEvent.target.result;
+						}
+						img.attr('src', this.attachedFile.src );
+						GENTICS.Utils.Dom.insertIntoDOM(img, this.attachedData.range, jQuery(GENTICS.Aloha.activeEditable.obj));
+					};
+					reader.readAsDataURL(fileObj.file);
+				}
 		}
 	});
 	// add the event handler for selection change
