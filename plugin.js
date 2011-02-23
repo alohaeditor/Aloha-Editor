@@ -13,12 +13,13 @@ GENTICS.Aloha.DragAndDropFiles = new GENTICS.Aloha.Plugin("com.gentics.aloha.plu
  * Configure the available languages
  */
 GENTICS.Aloha.DragAndDropFiles.languages=['en','fr'];
+
 /**
- * TODO make configuration adoptable to each editable
+ * Default config, each editable may have his own stuff.
  */
-GENTICS.Aloha.DragAndDropFiles.config = { 'drop' : {	'max_file_size': 200000,
+GENTICS.Aloha.DragAndDropFiles.config = { 'drop' : {	'max_file_size': 300000,
 											'max_file_count': 2,
-											'upload': {//'uploader_class':'GENTICS.Aloha.Uploader',
+											'upload': {'uploader_instance':'GENTICS.Aloha.Repositories.Uploader',
 										 			'config': {
 										 				// can add more elements for Ext window styling 
 										 				'method':'POST',
@@ -63,17 +64,18 @@ GENTICS.Aloha.DragAndDropFiles.init = function() {
  * Init a custom uploader
  */
 GENTICS.Aloha.DragAndDropFiles.initUploader = function(customConfig) {
-	// TODO #1 complete code an see other #1 in this code
-	var uploader_class = undefined;
+	var uploader_instance = undefined;
 	try {
-		uploader_class = eval(customConfig.drop.upload.uploader_class);
+		uploader_instance = eval(customConfig.drop.upload.uploader_instance);
 	} catch(error) {
 		GENTICS.Aloha.Log.info(this,"Custom class loading error or not specified, using default");
+		uploader_instance = GENTICS.Aloha.Repositories.Uploader;
 	}
+	return uploader_instance;
 };
 
 /**
- *  Attach drag and drop listeners to document body (ExtJs way)
+ *  Attach drag and drop listeners to document body (Native JS way)
  * 
  */
 GENTICS.Aloha.DragAndDropFiles.setBodyDropHandler = function() {
@@ -94,7 +96,7 @@ GENTICS.Aloha.DragAndDropFiles.setBodyDropHandler = function() {
 			        return true;
 			    }
 			    if (len > that.settings.config.drop.max_file_count) {
-			    	GENTICS.Aloha.log.warn(that,"too much files dropped");
+			    	GENTICS.Aloha.Log.warn(that,"too much files dropped");
 			    	event.stopPropagation();
 			    	return true;
 			    }
@@ -112,17 +114,13 @@ GENTICS.Aloha.DragAndDropFiles.setBodyDropHandler = function() {
 				} else {
 					editable = target.parents('.GENTICS_editable');
 				}
+				filesObjs = [];
+				var dropInEditable = false;
 				if (editable[0] == null) {
 					while(--len >= 0) {
-						// TODO #1  GENTICS.Aloha.Repositories.Uploader should be replaced by custom config behaviour
-						//fileObj = that.uploader.addFileUpload(files[len]);
-						fileObj = GENTICS.Aloha.Repositories.Uploader.addFileUpload(files[len]);
-						// we may be more flexible here
-						//that.uploader.startFileUpload(ul_id);
-						GENTICS.Aloha.Repositories.Uploader.startFileUpload(fileObj.id,this.config.drop.upload.config);
-	//					 for example, throw an event
-						//GENTICS.Aloha.EventRegistry.trigger(
-	//		        			new GENTICS.Aloha.Event('dropFileInPage', GENTICS.Aloha, files[len]));
+						fileObj = that.uploader.addFileUpload(files[len]);
+						that.uploader.startFileUpload(fileObj.id,this.config.drop.upload.config);
+						filesObjs.push(fileObj);
 					}
 				} else {
 					GENTICS.Aloha.getEditableById(editable.attr('id')).activate();
@@ -134,36 +132,36 @@ GENTICS.Aloha.DragAndDropFiles.setBodyDropHandler = function() {
 				    		GENTICS.Aloha.Log.warn(that,"max_file_size exeeded");
 				    	    return false;
 				    	}
-				    	fileObj = GENTICS.Aloha.Repositories.Uploader.addFileUpload(files[len]);
-				    	
-				    	//TODO : have a look in core for solving the per-editable config issue
-			        	var edConfig = that.getEditableConfig(editable);
+				    	fileObj = that.uploader.addFileUpload(files[len]);
+				    	filesObjs.push(fileObj);
+				    	var edConfig = that.getEditableConfig(editable);
 			           	if (edConfig.drop) {
-			           		GENTICS.Aloha.Repositories.Uploader.startFileUpload(fileObj.id,edConfig.drop.upload.config);
-			        		var display = jQuery('<div id="'+fileObj.id+'" class="GENTICS_drop_file_box"><div class="GENTICS_drop_file_icon GENTICS_drop_file_default"></div>' +
-			        				'<div class="GENTICS_drop_file_details">'+ files[len].name +'</div></div>');
-			        		GENTICS.Aloha.EventRegistry.trigger(
-			        				new GENTICS.Aloha.Event('dropFileInEditable', GENTICS.Aloha, {
-			        					'fileObj':fileObj,
-			        					'range': range,
-			        					'editable': editable}));
+			           		dropInEditable = true;
+			           		that.uploader.startFileUpload(fileObj.id,edConfig.drop.upload.config);
 			           	} else {
-			            	GENTICS.Aloha.EventRegistry.trigger(
-			            			new GENTICS.Aloha.Event('dropFileInPage', GENTICS.Aloha,files[len]));
-			            	GENTICS.Aloha.Repositories.Uploader.startFileUpload(fileObj.id,this.config.drop.upload.config);
-	
+			           		that.uploader.startFileUpload(fileObj.id,this.config.drop.upload.config);
 			           	}
 			           	
 			        } //while
+				    if (dropInEditable) {
+				    	GENTICS.Aloha.EventRegistry.trigger(
+	        				new GENTICS.Aloha.Event('dropFilesInEditable', GENTICS.Aloha, {
+	        					'filesObjs':filesObjs,
+	        					'range': range,
+	        					'editable': editable}));
+				    } else {
+				    	GENTICS.Aloha.EventRegistry.trigger(
+		            			new GENTICS.Aloha.Event('dropFilesInPage', GENTICS.Aloha,filesObjs));
+				    }
 				}
 				event.stopPropagation();
 			 } catch (error) {
-				//TODO : log error
 				GENTICS.Aloha.Log.error(GENTICS.Aloha.DragAndDropFiles,error);
-				//console.log(error);
+
 			}
 			 return false;
 		 });
+		 // TODO: improve below to allow default comportment behaviour if drop event is not a files drop event
 		 document.addEventListener("dragenter", function(event) {
 			 event.preventDefault();
 			 event.stopPropagation();
