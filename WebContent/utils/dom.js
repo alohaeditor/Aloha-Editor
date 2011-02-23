@@ -266,8 +266,7 @@ GENTICS.Utils.Dom.prototype = {
 	
 		// iterate over the path, create new dom nodes for every element and move 
 		// the contents right of the split to the new element
-		var pathLength = path.length;
-		for(var i=0; i < pathLength; i++) {
+		for(var i=0, pathLength = path.length; i < pathLength; ++i) {
 			var element = path[i];
 			if (i === pathLength - 1) {
 				// last element in the path -> we have to split it
@@ -280,8 +279,9 @@ GENTICS.Utils.Dom.prototype = {
 					element.data = element.data.substring(0, splitPosition);	
 				} else {
 					// other nodes
-					var newElement = jQuery(element).clone(false).empty(),
-						children = jQuery(element).contents();
+					var jqelement = jQuery(element),
+						newElement = jqelement.clone(false).empty(),
+						children = jqelement.contents();
 					secondPart = newElement.append(children.slice(splitPosition, children.length)).get(0);
 				}
 			
@@ -300,18 +300,17 @@ GENTICS.Utils.Dom.prototype = {
 				}
 			} else {
 				// create the new element of the same type and prepend it to the previously created element
-				var newElement = jQuery(element).clone(false).empty();
+				var newElement = jQuery(element).clone(false).empty(),
+					next;
 			
 				if (!newDom) {
 					newDom = newElement;
-					insertElement = newElement;
 				} else {
 					insertElement.prepend(newElement);
-					insertElement = newElement;
 				}
+				insertElement = newElement;
 			
 				// move all contents right of the split to the new element
-				var next;
 				while (next = path[i+1].nextSibling) {
 					insertElement.append(next);
 				}
@@ -386,12 +385,12 @@ GENTICS.Utils.Dom.prototype = {
 	 */
 	addMarkup: function (rangeObject, markup, nesting) {
 		// split partially contained text nodes at the start and end of the range
-		if (rangeObject.startContainer.nodeType == 3 && rangeObject.startOffset > 0
+		if (rangeObject.startContainer.nodeType === 3 && rangeObject.startOffset > 0
 				&& rangeObject.startOffset < rangeObject.startContainer.data.length) {
 			this.split(rangeObject, jQuery(rangeObject.startContainer).parent(),
 				false);
 		}
-		if (rangeObject.endContainer.nodeType == 3 && rangeObject.endOffset > 0
+		if (rangeObject.endContainer.nodeType === 3 && rangeObject.endOffset > 0
 				&& rangeObject.endOffset < rangeObject.endContainer.data.length) {
 			this.split(rangeObject, jQuery(rangeObject.endContainer).parent(),
 				true);
@@ -415,7 +414,7 @@ GENTICS.Utils.Dom.prototype = {
 	 */
 	recursiveAddMarkup: function (rangeTree, markup, rangeObject, nesting) {
 		// iterate through all rangetree objects of that level
-		for (var i = 0; i < rangeTree.length; ++i) {
+		for (var i = 0, rangeLength = rangeTree.length; i < rangeLength; ++i) {
 			// check whether the rangetree object is fully contained and the markup may be wrapped around the object
 			if (rangeTree[i].type == 'full' && this.allowsNesting(markup.get(0), rangeTree[i].domobj)) {
 				// we wrap the object, when
@@ -445,10 +444,9 @@ GENTICS.Utils.Dom.prototype = {
 				} else {
 					// recurse into the children (if any), but not if nesting is not
 					// allowed and the object is of the markup to be added
-					if (nesting || rangeTree[i].domobj.nodeName != markup.get(0).nodeName) {
-						if (rangeTree[i].children && rangeTree[i].children.length > 0) {
-							this.recursiveAddMarkup(rangeTree[i].children, markup);
-						}
+					if ((nesting || rangeTree[i].domobj.nodeName != markup.get(0).nodeName)
+						&& rangeTree[i].children && rangeTree[i].children.length > 0) {
+						this.recursiveAddMarkup(rangeTree[i].children, markup);
 					}
 				}
 			}
@@ -468,9 +466,9 @@ GENTICS.Utils.Dom.prototype = {
 	findHighestElement: function (start, nodeName, limit) {
 		nodeName = nodeName.toLowerCase();
 	
-		var testObject = start;
+		var testObject = start,
 		// helper function to stop when we reach a limit object
-		var isLimit = limit ? function () {
+			isLimit = limit ? function () {
 			return limit.filter(
 					function() {
 						return testObject == this;
@@ -517,11 +515,11 @@ GENTICS.Utils.Dom.prototype = {
 
 		if (endSplitLimit) {
 			// when the end is in the end of its container, we don't split
-			if (rangeObject.endContainer.nodeType == 3 && rangeObject.endOffset < rangeObject.endContainer.data.length) {
+			if (rangeObject.endContainer.nodeType === 3 && rangeObject.endOffset < rangeObject.endContainer.data.length) {
 				this.split(rangeObject, jQuery(endSplitLimit).parent(), true);
 				didSplit = true;
 			}
-			if (rangeObject.endContainer.nodeType == 1 && rangeObject.endOffset < rangeObject.childNodes.length) {
+			if (rangeObject.endContainer.nodeType === 1 && rangeObject.endOffset < rangeObject.childNodes.length) {
 				this.split(rangeObject, jQuery(endSplitLimit).parent(), true);
 				didSplit = true;
 			}
@@ -554,7 +552,7 @@ GENTICS.Utils.Dom.prototype = {
 	 */
 	recursiveRemoveMarkup: function (rangeTree, markup) {
 		// iterate over the rangetree objects of this level
-		for (var i = 0; i < rangeTree.length; ++i) {
+		for (var i = 0, rangeLength = rangeTree.length; i < rangeLength; ++i) {
 			// check whether the object is the markup to be removed and is fully into the range
 			if (rangeTree[i].type == 'full' && rangeTree[i].domobj.nodeName == markup.get(0).nodeName) {
 				// found the markup, so remove it
@@ -597,10 +595,8 @@ GENTICS.Utils.Dom.prototype = {
 			cleanup = {'merge' : true, 'removeempty' : true};
 		}
 
-		if (typeof start === 'undefined') {
-			if (rangeObject) {
-				start = rangeObject.getCommonAncestorContainer();
-			}
+		if (typeof start === 'undefined' && rangeObject) {
+			start = rangeObject.getCommonAncestorContainer();
 		}
 		// remember the previous node here (successive nodes of same type will be merged into this)
 		var prevNode = false,
@@ -672,7 +668,7 @@ GENTICS.Utils.Dom.prototype = {
 			// found a text node
 			case 3:
 				// found a text node
-				if (prevNode && prevNode.nodeType == 3 && cleanup.merge) {
+				if (prevNode && prevNode.nodeType === 3 && cleanup.merge) {
 					// the current text node will be merged into the last one, so
 					// check whether the selection starts or ends in the current
 					// text node
@@ -782,7 +778,7 @@ GENTICS.Utils.Dom.prototype = {
 		if (!node) {
 			return false;
 		}
-		if (node.nodeType == 1 && jQuery.inArray(node.nodeName.toLowerCase(), this.blockLevelElements) >= 0) {
+		if (node.nodeType === 1 && jQuery.inArray(node.nodeName.toLowerCase(), this.blockLevelElements) >= 0) {
 			return true;
 		} else {
 			return false;
@@ -799,7 +795,7 @@ GENTICS.Utils.Dom.prototype = {
 		if (!node) {
 			return false;
 		}
-		return node.nodeType == 1 && node.nodeName.toLowerCase() == 'br';
+		return node.nodeType === 1 && node.nodeName.toLowerCase() == 'br';
 	},
 
 	/**
@@ -812,7 +808,7 @@ GENTICS.Utils.Dom.prototype = {
 		if (!node) {
 			return false;
 		}
-		return node.nodeType == 1 && jQuery.inArray(node.nodeName.toLowerCase(), this.listElements) >= 0;
+		return node.nodeType === 1 && jQuery.inArray(node.nodeName.toLowerCase(), this.listElements) >= 0;
 	},
 
 	/**
@@ -856,7 +852,7 @@ GENTICS.Utils.Dom.prototype = {
 	 * @method
 	 */
 	searchAdjacentTextNode: function (parent, index, searchleft, stopat) {
-		if (!parent || parent.nodeType != 1 || index < 0 || index > parent.childNodes.length) {
+		if (!parent || parent.nodeType !== 1 || index < 0 || index > parent.childNodes.length) {
 			return false;
 		}
 
@@ -903,7 +899,7 @@ GENTICS.Utils.Dom.prototype = {
 					nextNode = searchleft ? currentParent.previousSibling : currentParent.nextSibling;
 					currentParent = currentParent.parentNode;
 				}
-			} else if (nextNode.nodeType == 3 && jQuery.trim(nextNode.data).length > 0) {
+			} else if (nextNode.nodeType === 3 && jQuery.trim(nextNode.data).length > 0) {
 				// we are lucky and found a notempty text node
 				return nextNode;
 			} else if (stopat.blocklevel && this.isBlockLevelElement(nextNode)) {
@@ -915,7 +911,7 @@ GENTICS.Utils.Dom.prototype = {
 			} else if (stopat.list && this.isListElement(nextNode)) {
 				// we found a linebreak, stop here
 				return false;
-			} else if (nextNode.nodeType == 3) {
+			} else if (nextNode.nodeType === 3) {
 				// we found an empty text node, so step to the next
 				nextNode = searchleft ? nextNode.previousSibling : nextNode.nextSibling;
 			} else {
@@ -987,8 +983,8 @@ GENTICS.Utils.Dom.prototype = {
 			var splitParts = this.split(range, jQuery(newParent), atEnd);
 			if (splitParts === true) {
 				// DOM was not split (there was no need to split it), insert the new object anyway
-				var container = range.startContainer;
-				var offset = range.startOffset;
+				var container = range.startContainer,
+					offset = range.startOffset;
 				if (atEnd) {
 					container = range.endContainer;
 					offset = range.endOffset;
@@ -1124,7 +1120,7 @@ GENTICS.Utils.Dom.prototype = {
 		var boundaryFound = false;
 		while (!boundaryFound) {
 			// check the node type
-			if (container.nodeType == 3) {
+			if (container.nodeType === 3) {
 				// we are currently in a text node
 
 				// find the nearest word boundary character
@@ -1163,7 +1159,7 @@ GENTICS.Utils.Dom.prototype = {
 						container = container.parentNode;
 					}
 				}
-			} else if (container.nodeType == 1) {
+			} else if (container.nodeType === 1) {
 				// we are currently in an element node (between nodes)
 
 				if (!searchleft) {
@@ -1199,7 +1195,7 @@ GENTICS.Utils.Dom.prototype = {
 						} else {
 							// element to the left is no word boundary, so enter it
 							container = container.childNodes[offset - 1];
-							offset = container.nodeType == 3 ? container.data.length : container.childNodes.length;
+							offset = container.nodeType === 3 ? container.data.length : container.childNodes.length;
 						}
 					} else {
 						// no element to the left, check whether the element itself is a boundary element
@@ -1216,7 +1212,7 @@ GENTICS.Utils.Dom.prototype = {
 			}
 		}
 
-		if (container.nodeType != 3) {
+		if (container.nodeType !== 3) {
 			var textNode = this.searchAdjacentTextNode(container, offset, !searchleft);
 			if (textNode) {
 				container = textNode;
@@ -1245,13 +1241,12 @@ GENTICS.Utils.Dom.prototype = {
 		}
 
 		// text nodes are not empty, if they contain non-whitespace characters
-		if (domObject.nodeType == 3) {
+		if (domObject.nodeType === 3) {
 			return domObject.data.search(/\S/) == -1;
 		}
 
 		// all other nodes are not empty if they contain at least one child which is not empty
-		var childNodes = domObject.childNodes.length;
-		for (var i = 0; i < childNodes; ++i) {
+		for (var i = 0, childNodes = domObject.childNodes.length; i < childNodes; ++i) {
 			if (!this.isEmpty(domObject.childNodes[i])) {
 				return false;
 			}
