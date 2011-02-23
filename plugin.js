@@ -54,7 +54,11 @@ GENTICS.Aloha.Image.languages = ['en', 'fr', 'de'];
 GENTICS.Aloha.Image.config = {
 	'img': {
 		'max_width': '50px',
-		'max_height': '50px'
+		'max_height': '50px',
+		'ui': {'align': true,       // Menu elements to show/hide in menu - ONLY in default config section
+			'resize': true,
+			'meta': true,
+			'margin': true}
 	}
 };
 /*
@@ -111,142 +115,156 @@ GENTICS.Aloha.Image.initImage = function() {
 	);
 	
 	GENTICS.Aloha.FloatingMenu.createScope(this.getUID('image'), 'GENTICS.Aloha.empty');
-	
-	var alignLeftButton = new GENTICS.Aloha.ui.Button({
-		'iconClass': 'GENTICS_button GENTICS_img_align_left',
-		'size': 'small',
-		'onclick' : function() {
-			jQuery(that.findImgMarkup()).css('float', 'left');
-		},
-		'tooltip': that.i18n('button.img.align.left.tooltip')
-	});
-	var alignRightButton = new GENTICS.Aloha.ui.Button({
-		'iconClass': 'GENTICS_button GENTICS_img_align_right',
-		'size': 'small',
-		'onclick' : function() {
-			jQuery(that.findImgMarkup()).css('float', 'right');
-		},
-		'tooltip': that.i18n('button.img.align.right.tooltip')
-	});
-	var alignNoneButton = new GENTICS.Aloha.ui.Button({
-		'iconClass': 'GENTICS_button GENTICS_img_align_none',
-		'size': 'small',
-		'onclick' : function() {
-		var img = that.findImgMarkup();
-			jQuery(img).css('float', '');
-		},
-		'tooltip': that.i18n('button.img.align.none.tooltip')
-	});
-	
 	// add the src field for images
-	var imgSrcLabel = new GENTICS.Aloha.ui.Button({
-		'label': that.i18n('field.img.src.label'),
-		'tooltip': that.i18n('field.img.src.tooltip'),
-		'size': 'small'
-	});
-	this.imgSrcField = new GENTICS.Aloha.ui.AttributeField({});
-	this.imgSrcField.setObjectTypeFilter( this.objectTypeFilter );
+	var config = this.config;
+	if (!this.settings.config.img.ui) {
+		this.settings.config.img.ui = this.config.img.ui;
+	}
+	if (this.settings.config.img.ui.meta) {
+		var imgSrcLabel = new GENTICS.Aloha.ui.Button({
+			'label': that.i18n('field.img.src.label'),
+			'tooltip': that.i18n('field.img.src.tooltip'),
+			'size': 'small'
+		});
+		this.imgSrcField = new GENTICS.Aloha.ui.AttributeField({});
+		this.imgSrcField.setObjectTypeFilter( this.objectTypeFilter );
 
-	// add the title field for images
-	var imgTitleLabel = new GENTICS.Aloha.ui.Button({
-		'label': that.i18n('field.img.title.label'),
-		'tooltip': that.i18n('field.img.title.tooltip'),
-		'size': 'small'
-	});
-	this.imgTitleField = new GENTICS.Aloha.ui.AttributeField();
-	this.imgTitleField.setObjectTypeFilter();
-
-	GENTICS.Aloha.FloatingMenu.addButton(
-		this.getUID('image'),
-		this.imgSrcField,
-		this.i18n('floatingmenu.tab.img'),
-		1
-	);
-	GENTICS.Aloha.FloatingMenu.addButton(
-		this.getUID('image'),
-		alignRightButton,
-		this.i18n('floatingmenu.tab.img'),
-		1
-	);
-	GENTICS.Aloha.FloatingMenu.addButton(
-		this.getUID('image'),
-		alignLeftButton,
-		this.i18n('floatingmenu.tab.img'),
-		1
-	);
-	GENTICS.Aloha.FloatingMenu.addButton(
-		this.getUID('image'),
-		alignNoneButton,
-		this.i18n('floatingmenu.tab.img'),
-		1
-	);
-	GENTICS.Aloha.FloatingMenu.addButton(
-		this.getUID('image'),
-		this.imgTitleField,
-		this.i18n('floatingmenu.tab.img'),
-		1
-	);
-	
-	var incPadding = new GENTICS.Aloha.ui.Button({
-		iconClass: 'GENTICS_button GENTICS_img_padding_increase',
-		size: 'small',
-		onclick: function() {
-			// Apply
-			jQuery(that.findImgMarkup()).increase('padding');
-		},
-		tooltip: this.i18n('padding.increase')
-	});
-	GENTICS.Aloha.FloatingMenu.addButton(
-		this.getUID('image'),
-		incPadding,
-		this.i18n('floatingmenu.tab.img'),
-		2
-	);
-	var decPadding = new GENTICS.Aloha.ui.Button({
-		iconClass: 'GENTICS_button GENTICS_img_padding_decrease',
-		size: 'small',
-		onclick: function() {
-			// Apply
-			jQuery(that.findImgMarkup()).decrease('padding');
-		},
-		tooltip: this.i18n('padding.decrease')
-	});
-	GENTICS.Aloha.FloatingMenu.addButton(
-		this.getUID('image'),
-		decPadding,
-		this.i18n('floatingmenu.tab.img'),
-		2
-	);
-	var incSize = new GENTICS.Aloha.ui.Button({
-		iconClass: 'GENTICS_button GENTICS_img_size_increase',
-		size: 'small',
-		onclick: function() {
-			// Apply
-			jQuery(that.findImgMarkup()).increase('height').increase('width');
-		},
-		tooltip: this.i18n('size.increase')
-	});
-	GENTICS.Aloha.FloatingMenu.addButton(
-		this.getUID('image'),
-		incSize,
-		this.i18n('floatingmenu.tab.img'),
-		2
-	);
-	var decSize = new GENTICS.Aloha.ui.Button({
-		iconClass: 'GENTICS_button GENTICS_img_size_decrease',
-		size: 'small',
-		onclick: function() {
-			// Apply
-			jQuery(that.findImgMarkup()).decrease('height').decrease('width');
-		},
-		tooltip: that.i18n('size.decrease')
-	});
-	GENTICS.Aloha.FloatingMenu.addButton(
-		this.getUID('image'),
-		decSize,
-		this.i18n('floatingmenu.tab.img'),
-		2
-	);
+		// add the title field for images
+		var imgTitleLabel = new GENTICS.Aloha.ui.Button({
+			'label': that.i18n('field.img.title.label'),
+			'tooltip': that.i18n('field.img.title.tooltip'),
+			'size': 'small'
+		});
+		this.imgTitleField = new GENTICS.Aloha.ui.AttributeField();
+		this.imgTitleField.setObjectTypeFilter();
+		GENTICS.Aloha.FloatingMenu.addButton(
+				this.getUID('image'),
+				this.imgSrcField,
+				this.i18n('floatingmenu.tab.img'),
+				1
+		);
+	}
+	if (this.settings.config.img.ui.align) {
+		var alignLeftButton = new GENTICS.Aloha.ui.Button({
+			'iconClass': 'GENTICS_button GENTICS_img_align_left',
+			'size': 'small',
+			'onclick' : function() {
+				jQuery(that.findImgMarkup()).css('float', 'left');
+			},
+			'tooltip': that.i18n('button.img.align.left.tooltip')
+		});
+		var alignRightButton = new GENTICS.Aloha.ui.Button({
+			'iconClass': 'GENTICS_button GENTICS_img_align_right',
+			'size': 'small',
+			'onclick' : function() {
+				jQuery(that.findImgMarkup()).css('float', 'right');
+			},
+			'tooltip': that.i18n('button.img.align.right.tooltip')
+		});
+		var alignNoneButton = new GENTICS.Aloha.ui.Button({
+			'iconClass': 'GENTICS_button GENTICS_img_align_none',
+			'size': 'small',
+			'onclick' : function() {
+			var img = that.findImgMarkup();
+				jQuery(img).css('float', '');
+			},
+			'tooltip': that.i18n('button.img.align.none.tooltip')
+		});
+		GENTICS.Aloha.FloatingMenu.addButton(
+				this.getUID('image'),
+				alignRightButton,
+				this.i18n('floatingmenu.tab.img'),
+				1
+		);
+		GENTICS.Aloha.FloatingMenu.addButton(
+			this.getUID('image'),
+			alignLeftButton,
+			this.i18n('floatingmenu.tab.img'),
+			1
+		);
+		GENTICS.Aloha.FloatingMenu.addButton(
+			this.getUID('image'),
+			alignNoneButton,
+			this.i18n('floatingmenu.tab.img'),
+			1
+		);
+	}
+	if (this.settings.config.img.ui.meta && !(this.settings.config.img.ui.align)) {
+		//TODO some hacking to get ui well
+	}
+	if (this.settings.config.img.ui.meta) {
+		GENTICS.Aloha.FloatingMenu.addButton(
+				this.getUID('image'),
+				this.imgTitleField,
+				this.i18n('floatingmenu.tab.img'),
+				1
+		);
+	}
+	if (this.settings.config.img.ui.margin) {
+		
+		var incPadding = new GENTICS.Aloha.ui.Button({
+			iconClass: 'GENTICS_button GENTICS_img_padding_increase',
+			size: 'small',
+			onclick: function() {
+				// Apply
+				jQuery(that.findImgMarkup()).increase('padding');
+			},
+			tooltip: this.i18n('padding.increase')
+		});
+		GENTICS.Aloha.FloatingMenu.addButton(
+				this.getUID('image'),
+				incPadding,
+				this.i18n('floatingmenu.tab.img'),
+				2
+		);
+		var decPadding = new GENTICS.Aloha.ui.Button({
+			iconClass: 'GENTICS_button GENTICS_img_padding_decrease',
+			size: 'small',
+			onclick: function() {
+				// Apply
+				jQuery(that.findImgMarkup()).decrease('padding');
+			},
+			tooltip: this.i18n('padding.decrease')
+		});
+		GENTICS.Aloha.FloatingMenu.addButton(
+				this.getUID('image'),
+				decPadding,
+				this.i18n('floatingmenu.tab.img'),
+				2
+		);
+	}
+	if (this.settings.config.img.ui.resize) {
+		var incSize = new GENTICS.Aloha.ui.Button({
+			iconClass: 'GENTICS_button GENTICS_img_size_increase',
+			size: 'small',
+			onclick: function() {
+				// Apply
+				jQuery(that.findImgMarkup()).increase('height').increase('width');
+			},
+			tooltip: this.i18n('size.increase')
+		});
+		GENTICS.Aloha.FloatingMenu.addButton(
+				this.getUID('image'),
+				incSize,
+				this.i18n('floatingmenu.tab.img'),
+				2
+		);
+		var decSize = new GENTICS.Aloha.ui.Button({
+			iconClass: 'GENTICS_button GENTICS_img_size_decrease',
+			size: 'small',
+			onclick: function() {
+				// Apply
+				jQuery(that.findImgMarkup()).decrease('height').decrease('width');
+			},
+			tooltip: that.i18n('size.decrease')
+		});
+		GENTICS.Aloha.FloatingMenu.addButton(
+				this.getUID('image'),
+				decSize,
+				this.i18n('floatingmenu.tab.img'),
+				2
+		);
+	}
 };
 
 GENTICS.Aloha.Image.bindInteractions = function () {
