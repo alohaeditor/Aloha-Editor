@@ -340,7 +340,7 @@ class App
 		run([
 			"git submodule init",
 			"git submodule update",
-			"git submodule foreach --recursive 'git reset --hard ; git branch -D dev ; git checkout -b dev origin/dev ; git checkout master ; git submodule init ; git submodule update --merge'"
+			"git submodule foreach --recursive git reset --hard && git branch -D dev && git checkout -b dev origin/dev && git checkout master && git submodule init && git submodule update --merge"
 		])
 	end
 
@@ -349,7 +349,7 @@ class App
 		run([
 			"git submodule init",
 			"git submodule update --merge",
-			"git submodule foreach 'git submodule init; git submodule update --merge'"
+			"git submodule foreach git submodule init && git submodule update --merge"
 		])
 	end
 
@@ -358,7 +358,7 @@ class App
 		run([
 			"git submodule init",
 			"git submodule update --merge",
-			"git submodule foreach 'git checkout master; git pull --all'"
+			"git submodule foreach git checkout master && git pull --all"
 		])
 	end
 
