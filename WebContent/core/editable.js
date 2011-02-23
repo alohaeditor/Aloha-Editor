@@ -255,10 +255,14 @@ GENTICS.Aloha.Editable.prototype = {
 	 * @return void
 	 */
 	destroy: function() {
-	
+		
 		// leave the element just to get sure
 		if (this == GENTICS.Aloha.getActiveEditable()) {
 			this.blur();
+			
+			// also hide the floating menu if the current editable was active
+			GENTICS.Aloha.FloatingMenu.obj.hide();
+			GENTICS.Aloha.FloatingMenu.shadow.hide();
 		}
 	
 		// original Object
@@ -283,7 +287,7 @@ GENTICS.Aloha.Editable.prototype = {
 			default:
 				break;
 		}
-	
+		
 		// now the editable is not ready any more
 		this.ready = false;
 
@@ -291,7 +295,7 @@ GENTICS.Aloha.Editable.prototype = {
 		this.obj.removeClass('GENTICS_editable')
 		// Disable contentEditable
 			    .contentEditable(false)
-	
+		
 		// unbind all events 
 		// TODO should only unbind the specific handlers.
 			    .unbind('mousedown focus keydown keyup'); 
@@ -303,14 +307,7 @@ GENTICS.Aloha.Editable.prototype = {
 			return that.obj;
 		});
 		*/
-	
-		// also hide the floating menu if the current editable was active
-		if (this.isActive) {
-			GENTICS.Aloha.FloatingMenu.obj.hide();
-			GENTICS.Aloha.FloatingMenu.shadow.hide();
-		}
-	
-	
+		
 		// throw a new event when the editable has been created
 		/**
 		 * @event editableCreated fires after a new editable has been destroyes, eg. via $('#editme').mahalo()
@@ -325,7 +322,7 @@ GENTICS.Aloha.Editable.prototype = {
 				[ this ]
 			)
 		);
-
+		
 		// finally register the editable with Aloha
 		GENTICS.Aloha.unregisterEditable(this);
 
@@ -512,7 +509,7 @@ GENTICS.Aloha.Editable.prototype = {
 	 */
 	getContents: function() {
 		// clone the object
-		var clonedObj = this.obj.clone(true);
+		var clonedObj = this.obj.clone();
 
 		// do core cleanup
 		clonedObj.find('.GENTICS_cleanme').remove();

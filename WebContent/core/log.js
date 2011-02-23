@@ -216,7 +216,7 @@ GENTICS.Aloha.Log.prototype = {
 		this.logHistory.push(entry);
 
 		// check whether the highWaterMark was reached, if so, fire an event
-		if (this.highWaterMarkReached == false) {
+		if (!this.highWaterMarkReached) {
 			if (this.logHistory.length >= GENTICS.Aloha.settings.logHistory.maxEntries * GENTICS.Aloha.settings.logHistory.highWaterMark / 100) {
 				// fire the event
 				GENTICS.Aloha.EventRegistry.trigger(
