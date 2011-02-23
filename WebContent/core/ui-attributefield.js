@@ -75,7 +75,8 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 			jQuery(this.wrap.dom.children[0]).blur(function(e){ 		        
 				that.triggerBlur();
 			});
-			
+			jQuery(this.wrap.dom.children[0]).css("color", "#AAA");
+			this.setValue(this.placeholder);
 		},
     	'keydown': function (obj, event) {
 			// unset the currently selected object
@@ -111,6 +112,10 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 			// set background color to give visual feedback which link is modified
 	        var target = jQuery(this.getTargetObject());
 	        var s = target.css('background-color');
+	        if (this.getValue() === this.placeholder) {
+	            this.setValue("");
+	            jQuery(this.wrap.dom.children[0]).css("color", "black");    	        
+	        }
 	        if ( target && target.context.style && target.context.style['background-color'] ) {
 	        	target.attr('data-original-background-color', target.context.style['background-color']);
 	        }
@@ -126,6 +131,10 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 	        		jQuery(target).removeCss('background-color');
 	        	}
 	    		jQuery(target).removeAttr('data-original-background-color');
+	        }
+	        if (this.getValue() === '') {
+	            jQuery(this.wrap.dom.children[0]).css("color", "#AAA");
+	            this.setValue(this.placeholder);    	        
 	        }
 	    },
 	    'expand': function (combo ) {
@@ -246,6 +255,7 @@ GENTICS.Aloha.ui.AttributeField.prototype.getExtConfigProperties = function() {
 	        xtype : 'alohaattributefield',
 	        rowspan: this.rowspan||undefined,
 	        width: this.width||undefined,
+	        placeholder: this.placeholder||undefined,
 	        id : this.id
 	};
 	if (this.valueField) {

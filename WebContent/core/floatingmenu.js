@@ -100,7 +100,7 @@ GENTICS.Aloha.FloatingMenu.window = jQuery(window);
  * @hide
  */
 GENTICS.Aloha.FloatingMenu.init = function() {
-	jQuery.storage = new $.store();
+	jQuery.storage = new jQuery.store();
 	this.currentScope = 'GENTICS.Aloha.global';
 	var that = this;
 	this.window.unload(function () {
@@ -116,7 +116,9 @@ GENTICS.Aloha.FloatingMenu.init = function() {
 			}
 		} else {
 			// delete old localStorages
-			jQuery.storage.flush();
+			jQuery.storage.del('GENTICS.Aloha.FloatingMenu.pinned');
+			jQuery.storage.del('GENTICS.Aloha.FloatingMenu.top');
+			jQuery.storage.del('GENTICS.Aloha.FloatingMenu.left');
 		}
 		if (that.userActivatedTab) {
 			jQuery.storage.set('GENTICS.Aloha.FloatingMenu.activeTab', that.userActivatedTab);
@@ -154,7 +156,6 @@ GENTICS.Aloha.FloatingMenu.panelBody = null;
  * @hide
  */
 GENTICS.Aloha.FloatingMenu.generateComponent = function () {
-	//jQuery.storage.set('truc', 'ok');
 	var that = this;
 
 	// Initialize and configure the tooltips
@@ -181,11 +182,8 @@ GENTICS.Aloha.FloatingMenu.generateComponent = function () {
 				GENTICS.Aloha.FloatingMenu.shadow.hide();
 			},
 			endDrag : function(e) {
-				if (GENTICS.Aloha.FloatingMenu.pinned) {
-					var top = this.y - jQuery(document).scrollTop();
-				} else {
-					var top = this.y;
-				}
+				var top = (GENTICS.Aloha.FloatingMenu.pinned) ? this.y - jQuery(document).scrollTop() : this.y;
+				
 				that.left = this.x;
 				that.top = top;
 				this.panel.setPosition(this.x, top);
@@ -277,7 +275,7 @@ GENTICS.Aloha.FloatingMenu.generateComponent = function () {
 	
 	if (jQuery.storage.get('GENTICS.Aloha.FloatingMenu.pinned') == 'true') {
 		this.togglePin();
-		
+
 		this.top = parseInt(jQuery.storage.get('GENTICS.Aloha.FloatingMenu.top'));
 		this.left = parseInt(jQuery.storage.get('GENTICS.Aloha.FloatingMenu.left'));
 		
@@ -331,14 +329,19 @@ GENTICS.Aloha.FloatingMenu.generateComponent = function () {
  * position calculation is based on this.top and this.left coordinates
  * @method
  */
-GENTICS.Aloha.FloatingMenu.refreshShadow = function () {
+GENTICS.Aloha.FloatingMenu.refreshShadow = function (resize) {
 	if (this.panelBody) {
-		GENTICS.Aloha.FloatingMenu.shadow.css({
+		var props = {
 			'top': this.top + 24, // 24px top offset to reflect tab bar height
-			'left': this.left,
-			'width': this.panelBody.width() + 'px',
-			'height': this.panelBody.height() + 'px'
-		});
+			'left': this.left
+		};
+		
+		if(typeof resize === 'undefined' || !resize) {
+			props.width = this.panelBody.width() + 'px';
+			props.height = this.panelBody.height() + 'px';
+		}
+		
+		GENTICS.Aloha.FloatingMenu.shadow.css(props);
 	}
 };
 
@@ -369,7 +372,7 @@ GENTICS.Aloha.FloatingMenu.togglePin = function() {
 		});
 		
 		// do the same for the shadow
-		this.shadow.addClass('fixed');
+		this.shadow.addClass('fixed');props.start
 		this.refreshShadow();
 		
 		this.pinned = true;
@@ -643,7 +646,7 @@ GENTICS.Aloha.FloatingMenu.calcFloatTarget = function(range) {
 	}
 	
 	// check if the designated editable is disabled
-	for (var i = 0; i < GENTICS.Aloha.editables.length; i++) {
+	for (var i = 0, editableLength = GENTICS.Aloha.editables.length; i < editableLength; i++) {
 		if (GENTICS.Aloha.editables[i].obj.get(0) == range.limitObject &&
 				GENTICS.Aloha.editables[i].isDisabled()) {
 			return false;
@@ -699,7 +702,8 @@ GENTICS.Aloha.FloatingMenu.floatTo = function(position) {
 				} else if (props.prop == 'left') {
 					that.left = props.now;
 				}
-				that.refreshShadow();
+				
+				that.refreshShadow(false);
 			}
 		});
 
