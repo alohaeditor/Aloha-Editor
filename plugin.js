@@ -375,11 +375,16 @@ GENTICS.Aloha.Image.clickImage = function ( e ) {
 	imgRange.startOffset = offset;
 	imgRange.endOffset = offset+1;
 	imgRange.select();
-	e.preventDefault();
-	e.stopPropagation();
+	if (e.preventDefault)
+		e.preventDefault();
+	else
+		e.cancelBubble = true;
+	if (e.stopPropagation)
+		 e.stopPropagation();
+	 else 
+		 e.returnValue = false;
 	return false;
 };
-
 
 GENTICS.Aloha.Image.findImgMarkup = function ( range ) {
 	if ( typeof range === 'undefined' ) {
