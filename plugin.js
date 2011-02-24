@@ -82,15 +82,17 @@ GENTICS.Aloha.DragAndDropFiles.setBodyDropHandler = function() {
 	 if (!document.body.BodyDragSinker){
 		 document.body.BodyDragSinker = true;
 		 var that = this;
-		 var onstr = "",
-		 mydoc = document,
-		 methodName = "addEventListener";
+		 this.onstr = "";
+		 this.mydoc = document;
+		 this.methodName = "addEventListener";
 		 if (jQuery.browser.msie) {
-			 onstr = "on";
-			 methodName = "attachEvent";
-			 mydoc = document.body;
+			 this.onstr = "on";
+			 this.methodName = "attachEvent";
+			 this.mydoc = document.body;
 		 }
-		 mydoc[methodName](onstr+"drop", function(event) {
+		 
+		 // sets the default handler
+		 this.mydoc[this.methodName](this.onstr+"drop", function(event) {
 		 try {
 			 if (event.preventDefault)
 				 event.preventDefault();
@@ -129,7 +131,7 @@ GENTICS.Aloha.DragAndDropFiles.setBodyDropHandler = function() {
 				target = editable.children(':last');
 				if (target.hasClass('GENTICS_editable')) {
 					//nested space is needed in this tag, otherwise select won't success...
-					//editable.append('<p> </p>');
+					editable.append('<span> </span>');
 					target = editable.children(':last');
 				}
 			} else {
@@ -145,7 +147,7 @@ GENTICS.Aloha.DragAndDropFiles.setBodyDropHandler = function() {
 				}
 			} else {
 				GENTICS.Aloha.getEditableById(editable.attr('id')).activate();
-				range = that.InitializeRangeForDropEvent(event, editable);
+				var range = that.InitializeRangeForDropEvent(event, editable);
 
 			    while(--len >= 0) {
 			    	if (files[len].size > that.settings.config.drop.max_file_size) {
@@ -194,7 +196,7 @@ GENTICS.Aloha.DragAndDropFiles.setBodyDropHandler = function() {
 		 return false;
 	 }, false);
 	 // TODO: improve below to allow default comportment behaviour if drop event is not a files drop event
-	 mydoc[methodName](onstr+"dragenter", function(event) {
+	this.mydoc[this.methodName](this.onstr+"dragenter", function(event) {
 		 if (event.preventDefault)
 			 event.preventDefault();
 		 else
@@ -205,7 +207,7 @@ GENTICS.Aloha.DragAndDropFiles.setBodyDropHandler = function() {
 			 event.returnValue = false;
 		 return false;
 	 }, false);
-	 mydoc[methodName](onstr+"dragleave", function(event) {
+	this.mydoc[this.methodName](this.onstr+"dragleave", function(event) {
 		 if (event.preventDefault)
 			 event.preventDefault();
 		 else
@@ -216,7 +218,7 @@ GENTICS.Aloha.DragAndDropFiles.setBodyDropHandler = function() {
 			 event.returnValue = false;
 		 return false;
 	 }, false);
-	 mydoc[methodName](onstr+"dragover", function(event) {
+	this.mydoc[this.methodName](this.onstr+"dragover", function(event) {
 		 if (event.preventDefault)
 			 event.preventDefault();
 		 else
@@ -225,13 +227,19 @@ GENTICS.Aloha.DragAndDropFiles.setBodyDropHandler = function() {
 			 event.stopPropagation();
 		 else 
 			 event.returnValue = false;
-		 return false;
+		 //return false;
 	 }, false);
-
+	 
+	 
+	 
 	} // if
 	// end body events
 	//================== 
 };
+
+//GENTICS.Aloha.DragAndDropFiles.processEventForEditable = function(editable) {
+//	editalbe.
+//}
 
 /**
  * TODO do we realy need a range Object? May be it makes sense to attach it to the event
@@ -239,26 +247,27 @@ GENTICS.Aloha.DragAndDropFiles.setBodyDropHandler = function() {
  */
 GENTICS.Aloha.DragAndDropFiles.InitializeRangeForDropEvent = function(event, editable) {
 	//var range = new GENTICS.Utils.RangeObject();
-	target = jQuery(event.target);
+	var target = jQuery(event.target);
 	if (target.textNodes().length == 0 && target.html().length == 0) {
 		target.html(" ");
 	}
-	var	range = new GENTICS.Aloha.Selection.SelectionRange();
-	if (target.textNodes().length == 0) {
-		range.startContainer = target[0].childNodes[0];
-		range.endContainer = target[0].childNodes[0];
-	} else {
-		range.startContainer = target.textNodes()[0];
-		range.endContainer = target.textNodes()[0];
-	}
-
-		range.startOffset = 0;
-		range.endOffset = 0;    		
-	try {
-		range.select();
-	} catch (error) {
-		GENTICS.Aloha.Log.error(this,error);
-	}
+	var	range = new GENTICS.Aloha.Selection.SelectionRange(true);
+	range.update();
+//	if (target.textNodes().length == 0) {
+//		range.startContainer = target[0].childNodes[0];
+//		range.endContainer = target[0].childNodes[0];
+//	} else {
+//		range.startContainer = target.textNodes()[0];
+//		range.endContainer = target.textNodes()[0];
+//	}
+//
+//		range.startOffset = 0;
+//		range.endOffset = 0;    		
+//	try {
+//		range.select();
+//	} catch (error) {
+//		GENTICS.Aloha.Log.error(this,error);
+//	}
 	return range;
 };
 
