@@ -7,16 +7,22 @@
 #	Refer to the README file for usage
 #
 # == Options
-#	-h, --help          Displays help message
-#	-v, --version       Display the version, then exit
-#	-q, --quiet         Output as little as possible, overrides verbose
-#	-V, --verbose       Verbose output
+#	-h, --help					Displays help message
+#	-v, --version			 Display the version, then exit
+#	-q, --quiet				 Output as little as possible, overrides verbose
+#	-V, --verbose			 Verbose output
 #
 
 require 'optparse'
-require 'rdoc/usage'
 require 'ostruct'
 require 'date'
+
+begin
+	require 'rdoc/usage'
+	RDOC_INCLUDED = true
+rescue LoadError
+	RDOC_INCLUDED = false
+end
 
 class App
 	# Remotes
@@ -53,10 +59,25 @@ class App
 	# Init Helpers
 
 	# Run a Command
-	def run ( cmd )
-		puts cmd + "\n"
-		result = `#{cmd}`
-		puts result
+	def run ( command, output=true )
+
+		if command.kind_of?(Array)
+			result = ""
+			command.each do |c|
+				result = result + run(c,output)
+			end
+			return result
+		end
+
+		if output
+			puts command + "\n"
+		end
+
+		result = `#{command}`
+
+		if output
+			puts result
+		end
 		return result
 	end
 
@@ -68,7 +89,7 @@ class App
 	# Extract a File
 	def extract ( dir, file )
 		file = file.gsub(dir,'.')
-		result = run("cd #{dir} ; tar -xf #{file} ; rm -Rf #{file}")
+		result = run(["cd #{dir}","tar -xf #{file}","rm -Rf #{file}"])
 	end
 
 	# ===========================================================================
@@ -82,9 +103,9 @@ class App
 	# Initialise our Environment
 	def init_env
 		# Check for Requirements
-		reqs = ['mkdir','curl','tar','git','ant']
+		reqs = ['mkdir','curl','tar','git','ant','rm','mv','java']
 		reqs.each do |req|
-			has_req = `which #{req}`.strip
+			has_req = run("which #{req}",false).strip
 			if has_req.empty?
 				abort("CLI requires the following binary which is not installed: #{req}")
 			end
@@ -221,6 +242,7 @@ class App
 			run("git checkout #{branch}")
 		else
 			if remote_branch_exists(branch)
+				run("git fetch")
 				run("git checkout -b #{branch} #{REMOTE_ALOHA}/#{branch}")
 			else
 				run("git branch #{branch} #{BRANCH_MASTER}")
@@ -239,7 +261,7 @@ class App
 	# Add a Remote
 	def remote_add(url,name)
 		unless remote_exists(name)
-			run("git remote add #{name} #{url}; git fetch #{name}")
+			run(["git remote add #{name} #{url}","git fetch"])
 		end
 	end
 
@@ -316,29 +338,29 @@ class App
 
 	# Initialise Submodules
 	def init_submodules
-		run("
-			git submodule init;
-			git submodule update;
-			git submodule foreach --recursive 'git reset --hard; git branch -D dev; git checkout -b dev origin/dev; git checkout master; git submodule init; git submodule update --merge';
-			")
+		run([
+			"git submodule init",
+			"git submodule update",
+			"git submodule foreach --recursive git reset --hard && git branch -D dev && git checkout -b dev origin/dev && git checkout master && git submodule init && git submodule update --merge"
+		])
 	end
 
 	# Update Submodules
 	def update_submodules
-		run("
-			git submodule init;
-			git submodule update --merge;
-			git submodule foreach 'git submodule init; git submodule update --merge';
-			")
+		run([
+			"git submodule init",
+			"git submodule update --merge",
+			"git submodule foreach git submodule init && git submodule update --merge"
+		])
 	end
 
 	# Upgrade Submodules
 	def upgrade_submodules
-		run("
-			git submodule init;
-			git submodule update --merge;
-			git submodule foreach 'git checkout master; git pull --all';
-			")
+		run([
+			"git submodule init",
+			"git submodule update --merge",
+			"git submodule foreach git checkout master && git pull --all"
+		])
 	end
 
 	# ---------------------------------------------------------------------------
@@ -348,7 +370,7 @@ class App
 	def birth
 		puts "Welcome to the Aloha Editor CLI.\nWhat is your repository URL? E.g. git@github.com:balupton/Aloha-Editor.git"
 		url = gets.chomp.strip
-		run("git init");
+		run("git init")
 		remote_add(url,"origin")
 		install
 	end
@@ -374,7 +396,7 @@ class App
 
 	# Build Aloha Editor
 	def build
-		run("cd build; ant build; cd ..")
+		run(["cd build","ant build","cd .."])
 	end
 
 	# ---------------------------------------------------------------------------
@@ -443,6 +465,7 @@ class Booter
 
 	protected
 
+		# Parse options
 		def parsed_options?
 
 			# Specify options
@@ -485,11 +508,19 @@ class Booter
 
 		def output_help
 			output_version
-			RDoc::usage() #exits app
+			if RDOC_INCLUDED
+				RDoc::usage() #exits app
+			else
+				puts "No RDoc"
+			end
 		end
 
 		def output_usage
-			RDoc::usage(:'usage') # gets usage from comments above
+			if RDOC_INCLUDED
+				RDoc::usage(:'usage') # gets usage from comments above
+			else
+				puts "No RDoc"
+			end
 		end
 
 		def output_version
