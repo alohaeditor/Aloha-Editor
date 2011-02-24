@@ -222,7 +222,7 @@ class App
 
 	# Check if a Branch Exists
 	def branch_exists(branch)
-		branches = run("git branch")
+		branches = run("git branch",false)
 		regex = Regexp.new('[\\n\\s\\*]+' +	Regexp.escape(branch) + '\\n')
 		result = ((branches =~ regex) ? true : false)
 		return result
@@ -230,7 +230,7 @@ class App
 
 	# Check if a Branch Exists
 	def remote_branch_exists(branch)
-		branches = run("git branch -all")
+		branches = run("git branch -all",false)
 		regex = Regexp.new('\\/' +	Regexp.escape(branch) + '\\n')
 		result = ((branches =~ regex) ? true : false)
 		return result
@@ -242,7 +242,7 @@ class App
 			run("git checkout #{branch}")
 		else
 			if remote_branch_exists(branch)
-				run("git fetch")
+				fetch(REMOTE_ALOHA)
 				run("git checkout -b #{branch} #{REMOTE_ALOHA}/#{branch}")
 			else
 				run("git branch #{branch} #{BRANCH_MASTER}")
@@ -261,8 +261,14 @@ class App
 	# Add a Remote
 	def remote_add(url,name)
 		unless remote_exists(name)
-			run(["git remote add #{name} #{url}","git fetch"])
+			run("git remote add #{name} #{url}")
+			fetch(name)
 		end
+	end
+	
+	# Fetch a Remote
+	def fetch(remote="")
+		run("git fetch " + remote)
 	end
 
 	# Merge a Branch In
@@ -341,7 +347,7 @@ class App
 		run([
 			"git submodule init",
 			"git submodule update",
-			"git submodule foreach --recursive git reset --hard && git branch -D dev && git checkout -b dev origin/dev && git checkout master && git submodule init && git submodule update --merge"
+			"git submodule foreach --recursive git reset --hard && git branch -D dev && git checkout -b dev origin/dev && git checkout master && git submodule init && git submodule update"
 		])
 	end
 
@@ -379,7 +385,6 @@ class App
 	def install
 		init_branches
 		init_submodules
-		update_branches
 	end
 
 	# Update
