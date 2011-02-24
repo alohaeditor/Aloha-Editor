@@ -654,8 +654,11 @@ GENTICS.Aloha.FloatingMenu.calcFloatTarget = function(range) {
 	}
 	
 	var targetObj = jQuery(this.nextFloatTargetObj(range.getCommonAncestorContainer(), range.limitObject)),
-		scrollTop = GENTICS.Utils.Position.Scroll.top,
-		y = targetObj.offset().top - this.obj.height() - 50; // 50px offset above the current obj to have some space above
+		scrollTop = GENTICS.Utils.Position.Scroll.top;
+	if (!targetObj || !targetObj.offset()) {
+		return false;
+	}
+	var y = targetObj.offset().top - this.obj.height() - 50; // 50px offset above the current obj to have some space above
 
 	// if the floating menu would be placed higher than the top of the screen...
 	if ( y < scrollTop) {
