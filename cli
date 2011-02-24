@@ -235,7 +235,7 @@ class App
 		result = ((branches =~ regex) ? true : false)
 		return result
 	end
-
+	
 	# Checkout a Branch
 	def checkout(branch)
 		if branch_exists(branch)
@@ -341,7 +341,7 @@ class App
 		run([
 			"git submodule init",
 			"git submodule update",
-			"git submodule foreach --recursive git reset --hard && git branch -D dev && git checkout -b dev origin/dev && git checkout master && git submodule init && git submodule update --merge"
+			"git submodule foreach --recursive git reset --hard && git branch -D dev && git checkout -b dev origin/dev && git checkout master && git submodule init && git submodule update"
 		])
 	end
 
@@ -379,7 +379,6 @@ class App
 	def install
 		init_branches
 		init_submodules
-		update_branches
 	end
 
 	# Update
