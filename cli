@@ -618,10 +618,19 @@ class Booter
 				abort("Unknown command: #{command}")
 			end
 
-			if args.length > 0
-				app.send(command,args)
-			else
-				app.send(command)
+			case args.length
+				when 0
+					app.send(command)
+				when 1
+					app.send(command,args[0])
+				when 2
+					app.send(command,args[0],args[1])
+				when 3
+					app.send(command,args[0],args[1],args[2])
+				when 4
+					app.send(command,args[0],args[1],args[2],args[3])
+				else
+					app.send(command,args)
 			end
 		end
 
@@ -635,7 +644,6 @@ class Booter
 			#end
 		end
 end
-
 
 # Create Booter
 booter = Booter.new(ARGV, STDIN)
