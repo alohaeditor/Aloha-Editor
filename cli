@@ -321,15 +321,20 @@ class App
 		run("git fetch " + remote)
 	end
 
-	# Merge a Branch In
-	def merge(branch,parent=false)
-		if parent
-			checkout(branch)
-			checkout(parent)
-			merge(branch)
-		else
-			run("git merge #{branch}")
+	# Merge
+	def merge(base,*args)
+		if args.length === 0
+			return run("git merge #{base}")
 		end
+
+		checkout(base)
+
+		args.each do |branch|
+			checkout(branch)
+			merge(base)
+		end
+
+		checkout(base)
 	end
 
 	# Stage Known Files
@@ -482,13 +487,7 @@ class App
 
 	# Deploy
 	def deploy(base,*args)
-		args.each do |branch|
-			checkout(branch)
-			merge(base)
-		end
-
-		checkout(base)
-
+		merge(base,*args)
 		push
 	end
 
