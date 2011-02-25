@@ -145,7 +145,6 @@
 				"core/ui-browser.js",
 				"core/editable.js",
 				"core/floatingmenu.js",
-				"core/ierange-m2.js",
 				"core/log.js",
 				"core/markup.js",
 				"core/message.js",
@@ -154,7 +153,8 @@
 				"core/sidebar.js",
 				"core/repositorymanager.js",
 				"core/repository.js",
-				"core/repositoryobjects.js"
+				"core/repositoryobjects.js",
+				"core/rangy-core.js"
 			],
 			"img": true
 		}
