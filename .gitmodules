@@ -31,7 +31,6 @@
 [submodule "WebContent/plugins/com.gentics.aloha.plugins.Paste"]
 	path = WebContent/plugins/com.gentics.aloha.plugins.Paste
 	url = https://github.com/alohaeditor/Aloha-Plugin-Paste.git
-
 [submodule "WebContent/plugins/com.gentics.aloha.plugins.Ribbon"]
 	path = WebContent/plugins/com.gentics.aloha.plugins.Ribbon
 	url = http://github.com/alohaeditor/Aloha-Plugin-Ribbon.git
