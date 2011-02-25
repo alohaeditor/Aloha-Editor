@@ -256,7 +256,7 @@ class App
 		if command.kind_of?(Array)
 			result = ""
 			command.each do |c|
-				result = result + submodule_foreach(c,output)
+				result = result + submodule_foreach(c)
 			end
 			return result
 		end
