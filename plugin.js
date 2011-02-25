@@ -70,6 +70,9 @@ GENTICS.Aloha.DragAndDropFiles.initUploader = function(customConfig) {
 	} catch(error) {
 		GENTICS.Aloha.Log.info(this,"Custom class loading error or not specified, using default");
 		uploader_instance = GENTICS.Aloha.Repositories.Uploader;
+		if (customConfig.drop.upload.delegate) {
+			uploader_instance.delegateUploadEvent = customConfig.drop.upload.delegate; 
+		}
 	}
 	return uploader_instance;
 };
@@ -248,9 +251,9 @@ GENTICS.Aloha.DragAndDropFiles.setBodyDropHandler = function() {
 GENTICS.Aloha.DragAndDropFiles.InitializeRangeForDropEvent = function(event, editable) {
 	//var range = new GENTICS.Utils.RangeObject();
 	var target = jQuery(event.target);
-	if (target.textNodes().length == 0 && target.html().length == 0) {
-		target.html(" ");
-	}
+//	if (target.textNodes().length == 0 && target.html().length == 0) {
+//		target.html(" ");
+//	}
 	var	range = new GENTICS.Aloha.Selection.SelectionRange(true);
 	range.update();
 //	if (target.textNodes().length == 0) {
