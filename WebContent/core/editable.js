@@ -580,6 +580,32 @@ GENTICS.Aloha.Editable.prototype = {
 				);
 
 				GENTICS.Aloha.Log.debug(this, 'smartContentChanged: event type keypress triggered');
+				
+				var r = GENTICS.Aloha.Selection.rangeObject;
+				if (r.isCollapsed()
+					&& r.startContainer.nodeType == 3) {
+					
+					var posDummy = jQuery('<span id="GENTICS-Aloha-PosDummy" />');
+					
+					GENTICS.Utils.Dom.insertIntoDOM(
+						posDummy,
+						r,
+						this.obj,
+						null,
+						false,
+						false
+					);
+					
+					console.log(posDummy.offset().top, posDummy.offset().left);
+					
+					GENTICS.Utils.Dom.removeFromDOM(
+						posDummy,
+						r,
+						false
+					);
+					
+					r.select();
+				}
 			},this.sccDelay);
 		}
 
