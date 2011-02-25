@@ -55,7 +55,7 @@ GENTICS.Aloha.Image.config = {
 	'img': {
 		'max_width': '50px',
 		'max_height': '50px',
-		'ui': {'align': false,       // Menu elements to show/hide in menu - ONLY in default config section
+		'ui': {'align': true,       // Menu elements to show/hide in menu - ONLY in default config section
 			'resize': true,
 			'meta': true,
 			'margin': true,
