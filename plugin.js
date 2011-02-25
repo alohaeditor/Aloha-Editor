@@ -22,7 +22,7 @@ GENTICS.Aloha.PastePlugin.init = function() {
 
 	// first of all, generate an editable div, into which the pasting is done
 	this.pasteDiv = jQuery('<div style="position:absolute; top:-100000px; left:-100000px"></div>');
-	this.pasteDiv.attr('contentEditable', 'true');
+	this.pasteDiv.contentEditable(true);
 	jQuery('body').append(this.pasteDiv);
 
 	// subscribe to the event editableCreated to redirect paste events into our pasteDiv
