@@ -117,6 +117,9 @@ GENTICS.Aloha.Image.initImage = function() {
 	GENTICS.Aloha.FloatingMenu.createScope(this.getUID('image'), 'GENTICS.Aloha.empty');
 	// add the src field for images
 	var config = this.config;
+	if (!this.settings.config.img) {
+		this.settings.config.img = this.config.img;
+	}
 	if (!this.settings.config.img.ui) {
 		this.settings.config.img.ui = this.config.img.ui;
 	}
@@ -354,13 +357,10 @@ GENTICS.Aloha.Image.subscribeEvents = function () {
 		// TODO this should not be necessary here!
 		GENTICS.Aloha.FloatingMenu.doLayout();
 	});
-	
-	// add to all editables the image click
-	for (var i = 0; i < GENTICS.Aloha.editables.length; i++) {
-
-		// add a click (=select) event to all image.
-		GENTICS.Aloha.editables[i].obj.delegate('img', 'click', GENTICS.Aloha.Image.clickImage);
-	}
+	GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'editableCreated', function(event, editable) {
+	// add to editable the image click
+		editable.obj.delegate('img', 'click', GENTICS.Aloha.Image.clickImage);
+	});
 };
 
 GENTICS.Aloha.Image.clickImage = function ( e ) {
