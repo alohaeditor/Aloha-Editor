@@ -249,6 +249,22 @@ class App
 			end
 		end
 	end
+	
+	# Apply multiple commands to submodules
+	def submodule_foreach(command)
+	  # Recursion
+		if command.kind_of?(Array)
+			result = ""
+			command.each do |c|
+				result = result + submodule_foreach(c)
+			end
+			return result
+		end
+		
+		result = run("git submodule foreach --recursive '" + command + "'")
+		
+		return result
+	end
 
 	# Check if a Remote Exists
 	def remote_exists(remote)
@@ -346,8 +362,16 @@ class App
 	def init_submodules
 		run([
 			"git submodule init",
-			"git submodule update",
-			"git submodule foreach --recursive git reset --hard && git branch -D dev && git checkout -b dev origin/dev && git checkout master && git submodule init && git submodule update"
+			"git submodule update"
+		])
+		
+		submodule_foreach([
+			"git reset --hard",
+			"git branch -D dev",
+			"git checkout -b dev origin/dev",
+			"git checkout master",
+			"git submodule init",
+			"git submodule update"
 		])
 	end
 
@@ -355,8 +379,12 @@ class App
 	def update_submodules
 		run([
 			"git submodule init",
-			"git submodule update --merge",
-			"git submodule foreach git submodule init && git submodule update --merge"
+			"git submodule update --merge"
+		])
+		
+		submodule_foreach([
+			"git submodule init",
+			"git submodule update --merge"
 		])
 	end
 
@@ -364,8 +392,12 @@ class App
 	def upgrade_submodules
 		run([
 			"git submodule init",
-			"git submodule update --merge",
-			"git submodule foreach git checkout master && git pull --all"
+			"git submodule update --merge"
+		])
+		
+		submodule_foreach([
+			"git checkout master",
+			"git pull --all"
 		])
 	end
 
@@ -401,7 +433,7 @@ class App
 
 	# Build Aloha Editor
 	def build
-		run(["cd build","ant build","cd .."])
+		run("ant -f build/build.xml build")
 	end
 
 	# ---------------------------------------------------------------------------
