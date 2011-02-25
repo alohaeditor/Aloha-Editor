@@ -263,6 +263,7 @@ class App
 
 	# Check if a Branch Exists
 	def remote_branch_exists(branch)
+		fetch
 		branches = run("git branch -all",false)
 		regex = Regexp.new('\\/' +	Regexp.escape(branch.to_s) + '\\n')
 		result = ((branches =~ regex) ? true : false)
@@ -320,15 +321,20 @@ class App
 		run("git fetch " + remote)
 	end
 
-	# Merge a Branch In
-	def merge(branch,parent=false)
-		if parent
-			checkout(branch)
-			checkout(parent)
-			merge(branch)
-		else
-			run("git merge #{branch}")
+	# Merge
+	def merge(base,*args)
+		if args.length === 0
+			return run("git merge #{base}")
 		end
+
+		checkout(base)
+
+		args.each do |branch|
+			checkout(branch)
+			merge(base)
+		end
+
+		checkout(base)
 	end
 
 	# Stage Known Files
@@ -479,6 +485,12 @@ class App
 	# ---------------------------------------------------------------------------
 	# Deploy
 
+	# Deploy
+	def deploy(base,*args)
+		merge(base,*args)
+		push
+	end
+
 	# Deploy the Changes From Master to Version + Dev
 	def deploy_from_master
 		version
@@ -618,19 +630,10 @@ class Booter
 				abort("Unknown command: #{command}")
 			end
 
-			case args.length
-				when 0
-					app.send(command)
-				when 1
-					app.send(command,args[0])
-				when 2
-					app.send(command,args[0],args[1])
-				when 3
-					app.send(command,args[0],args[1],args[2])
-				when 4
-					app.send(command,args[0],args[1],args[2],args[3])
-				else
-					app.send(command,args)
+			if args.length === 0
+				app.send(command)
+			else
+				app.send(command,*args)
 			end
 		end
 
