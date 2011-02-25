@@ -400,6 +400,7 @@ class App
 
 		submodule_foreach([
 			"git reset --hard",
+			"git fetch origin",
 			"git checkout master",
 			"git submodule init",
 			"git submodule update",
