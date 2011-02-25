@@ -617,7 +617,12 @@ class Booter
 			unless app.respond_to?(command)
 				abort("Unknown command: #{command}")
 			end
-			app.send(command,args)
+
+			if args.length > 0
+				app.send(command,args)
+			else
+				app.send(command)
+			end
 		end
 
 		def process_standard_input
