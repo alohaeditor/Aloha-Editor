@@ -321,8 +321,14 @@ class App
 	end
 
 	# Merge a Branch In
-	def merge(branch)
-		run("git merge #{branch}")
+	def merge(branch,parent=false)
+		if parent
+			checkout(branch)
+			checkout(parent)
+			merge(branch)
+		else
+			run("git merge #{branch}")
+		end
 	end
 
 	# Stage Known Files
