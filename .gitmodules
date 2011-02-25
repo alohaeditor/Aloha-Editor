@@ -46,3 +46,6 @@
 [submodule "WebContent/plugins/com.gentics.aloha.plugins.DragAndDropFiles"]
 	path = WebContent/plugins/com.gentics.aloha.plugins.DragAndDropFiles
 	url = https://github.com/alohaeditor/Aloha-Plugin-DragAndDropFiles.git
+[submodule "WebContent/plugins/eu.iksproject.VIE"]
+	path = WebContent/plugins/eu.iksproject.VIE
+	url = http://github.com/alohaeditor/Aloha-Plugin-VIE.git
