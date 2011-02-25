@@ -263,6 +263,7 @@ class App
 
 	# Check if a Branch Exists
 	def remote_branch_exists(branch)
+		fetch
 		branches = run("git branch -all",false)
 		regex = Regexp.new('\\/' +	Regexp.escape(branch.to_s) + '\\n')
 		result = ((branches =~ regex) ? true : false)
