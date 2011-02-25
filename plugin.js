@@ -55,12 +55,60 @@ GENTICS.Aloha.Image.config = {
 	'img': {
 		'max_width': '50px',
 		'max_height': '50px',
-		'ui': {'align': true,       // Menu elements to show/hide in menu - ONLY in default config section
+		'ui': {'align': false,       // Menu elements to show/hide in menu - ONLY in default config section
 			'resize': true,
 			'meta': true,
-			'margin': true}
+			'margin': true,
+			'crop':true}
 	}
 };
+
+
+/**
+ * crop callback is triggered after the user clicked accept to accept his crop
+ * @param image jquery image object reference
+ * @param props cropping properties
+ */
+GENTICS.Aloha.Image.onCropped = function (image, props) {};
+
+/**
+ * reset callback is triggered before the internal reset procedure is applied
+ * if this function returns true, then the reset has been handled by the callback
+ * which means that no other reset will be applied
+ * if false is returned the internal reset procedure will be applied
+ * @param image jquery image object reference
+ * @return true if a reset has been applied, flase otherwise
+ */
+GENTICS.Aloha.Image.onReset = function (image) { return false; };
+
+
+/**
+ * The image that is currently edited
+ */
+GENTICS.Aloha.Image.obj = null;
+
+/**
+ * The Jcrop API reference
+ * this is needed to be able to destroy the cropping frame later on
+ * the variable is linked to the api object whilst cropping, or set to null otherwise
+ * strange, but done as documented http://deepliquid.com/content/Jcrop_API.html
+ */
+GENTICS.Aloha.Image.jcAPI = null;
+/**
+ * this will contain an image's original properties to be able to undo previous settings
+ * 
+ * when an image is clicked for the first time, a new object will be added to the array
+ * {
+ * 		obj : [the image object reference],
+ * 		src : [the original src url],
+ * 		width : [initial width],
+ * 		height : [initial height]
+ * }
+ * 
+ * when an image is clicked the second time, the array will be checked for the image object
+ * referenct, to prevent for double entries
+ */
+GENTICS.Aloha.Image.restoreProps = [];
 /*
  * Initalize plugin
  */
@@ -70,8 +118,28 @@ GENTICS.Aloha.Image.init = function(){
 		GENTICS.Aloha.Image.objectTypeFilter = GENTICS.Aloha.Image.settings.objectTypeFilter;	
 	if (typeof GENTICS.Aloha.Image.settings.dropEventHandler !== 'undefined')
 		GENTICS.Aloha.Image.dropEventHandler = GENTICS.Aloha.Image.settings.dropEventHandler;	
-
+	jQuery('head').append('<link rel="stylesheet" href="' 
+			+ GENTICS.Aloha.settings.base 
+			+ 'plugins/com.gentics.aloha.plugins.Image/css/ui-lightness/jquery-ui-1.8.10.cropnresize.css" />');
+	jQuery('head').append('<script type="text/javascript" src="' 
+			+ GENTICS.Aloha.settings.base 
+			+ 'plugins/com.gentics.aloha.plugins.Image/js/jquery.Jcrop.min.js"></script>');
+	jQuery('head').append('<link rel="stylesheet" href="' 
+			+ GENTICS.Aloha.settings.base 
+			+ 'plugins/com.gentics.aloha.plugins.Image/css/jquery.Jcrop.css" />');
+	jQuery('head').append('<link rel="stylesheet" href="' 
+			+ GENTICS.Aloha.settings.base 
+			+ 'plugins/com.gentics.aloha.plugins.CropNResize/css/cropnresize.css" />');
 	var that = this;
+	if (typeof this.settings.config.img.onCropped === "function") {
+		this.onCropped = this.settings.onCropped;
+	}
+	if (typeof this.settings.config.img.onReset === "function") {
+		this.onReset = this.settings.onReset;
+	}
+	if (typeof this.settings.config.img.aspectRatio !== "boolean") {
+		this.settings.aspectRatio = true;
+	}
 	that.initImage();
 	that.bindInteractions();
 	that.subscribeEvents();
@@ -236,6 +304,50 @@ GENTICS.Aloha.Image.initImage = function() {
 				2
 		);
 	}
+	if(this.settings.config.img.ui.crop) {
+		// create image scope
+		GENTICS.Aloha.FloatingMenu.createScope('GENTICS.Aloha.img', ['GENTICS.Aloha.global']);
+		
+		this.cropButton = new GENTICS.Aloha.ui.Button({
+			'size' : 'small',
+			'tooltip' : this.i18n('Crop'),
+			'toggle' : true,
+			'iconClass' : 'cnr_crop',
+			'onclick' : function (btn, event) {
+				if (btn.pressed) {
+					that.crop();
+				} else {
+					that.endCrop();
+				}
+			}
+		});
+
+		// add to floating menu
+		GENTICS.Aloha.FloatingMenu.addButton(
+			this.getUID('image'),
+			this.cropButton,
+			this.i18n('floatingmenu.tab.img'),
+			3
+		);
+	
+		/*
+		 * add a reset button
+		 */
+		GENTICS.Aloha.FloatingMenu.addButton(
+				this.getUID('image'),
+			new GENTICS.Aloha.ui.Button({
+				'size' : 'small',
+				'tooltip' : this.i18n('Reset'),
+				'toggle' : false,
+				'iconClass' : 'cnr_reset',
+				'onclick' : function (btn, event) {
+					that.reset();
+				}
+			}),
+			this.i18n('floatingmenu.tab.img'),
+			3
+		);
+	}
 	if (this.settings.config.img.ui.resize) {
 		var incSize = new GENTICS.Aloha.ui.Button({
 			iconClass: 'GENTICS_button GENTICS_img_size_increase',
@@ -269,7 +381,6 @@ GENTICS.Aloha.Image.initImage = function() {
 		);
 	}
 };
-
 GENTICS.Aloha.Image.bindInteractions = function () {
 	var that = this;
 	if (this.settings.config.img.ui.meta) {
@@ -366,6 +477,13 @@ GENTICS.Aloha.Image.subscribeEvents = function () {
 GENTICS.Aloha.Image.clickImage = function ( e ) {
 	// select the image
 	// HELP: can't find a way...
+	GENTICS.Aloha.Image.obj = jQuery(e.target);
+	GENTICS.Aloha.Image.restoreProps.push({
+		obj : e.srcElement,
+		src : GENTICS.Aloha.Image.obj.attr('src'),
+		width : GENTICS.Aloha.Image.obj.width(),
+		height : GENTICS.Aloha.Image.obj.height()
+	});
 	var thisimg = jQuery(this),
 		editable = thisimg.parents('.GENTICS_editable');
 	GENTICS.Aloha.getEditableById(editable.attr('id')).activate();
@@ -448,3 +566,123 @@ GENTICS.Aloha.Image.srcChange = function () {
 	// TODO additionally implement an srcChange Handler to let implementer
 	// customize
 };
+
+/**
+ * Code imported from Clemens CropnResize Plugin
+ * 
+ */
+
+GENTICS.Aloha.Image.initCropButtons = function() {
+	jQuery('body').append(
+			'<div id="GENTICS_CropNResize_btns">' + 
+			'<button class="cnr_crop_apply" title="' + this.i18n('Accept') + 
+				'" onclick="GENTICS.Aloha.Image.acceptCrop();">&#10004;</button>' +
+			'<button class="cnr_crop_cancel" title="' + this.i18n('Cancel') + 
+				'" onclick="GENTICS.Aloha.Image.endCrop();">&#10006;</button>' + 
+			'</div>'
+	);
+	
+	var btns = jQuery('#GENTICS_CropNResize_btns'),
+		oldLeft = 0,
+		oldTop = 0;
+	this.interval = setInterval(function () {
+		var jt = jQuery('.jcrop-tracker:first'),
+			off = jt.offset();
+		if (jt.css('height') != '0px' && jt.css('width') != '0px') {
+			btns.fadeIn('slow');
+		}
+		
+		// move the icons to the bottom right side
+		off.top = parseInt(off.top + jt.height() + 3);
+		off.left = parseInt(off.left + jt.width() - 55);
+		
+		// comparison to old values hinders flickering bug in FF
+		if (oldLeft != off.left || oldTop != off.top) {
+			btns.offset(off);
+		}
+		
+		oldLeft = off.left;
+		oldTop = off.top;
+	}, 10);
+};
+
+/**
+ * destroy crop confirm and cancel buttons
+ */
+GENTICS.Aloha.Image.destroyCropButtons = function () {
+	jQuery('#GENTICS_CropNResize_btns').remove();
+	clearInterval(this.interval);
+};
+
+GENTICS.Aloha.Image.crop = function () {
+	var that = this;
+	this.initCropButtons();
+	
+	this.jcAPI = jQuery.Jcrop(this.obj, {
+		onSelect : function () {
+			// ugly hack to keep scope :( 
+			setTimeout(function () {
+				GENTICS.Aloha.FloatingMenu.setScope(that.getUID('image'));
+			}, 10);
+		}
+	});
+};
+
+GENTICS.Aloha.Image.endCrop = function () {
+	if (this.jcAPI) {
+		this.jcAPI.destroy();
+		this.jcAPI = null;
+	}
+	
+	this.destroyCropButtons();
+	this.cropButton.extButton.toggle(false);
+	if(this.enableResize) {
+		this.resize();
+	}
+};
+
+/**
+ * resets the image to it's initial properties
+ */
+GENTICS.Aloha.Image.reset = function() {
+	if(this.enableCrop) {
+		this.endCrop();
+	}
+	if(this.enableResize) {
+		this.endResize();
+	}
+	
+	if (this.onReset(this.obj)) {
+		// the external reset procedure has already performed a reset, so there is no need to apply an internal reset
+		return;
+	}
+	
+	for (var i=0;i<this.restoreProps.length;i++) {
+		// restore from restoreProps if there is a match
+		if (this.obj.get(0) === this.restoreProps[i].obj) {
+			this.obj.attr('src', this.restoreProps[i].src);
+			this.obj.width(this.restoreProps[i].width);
+			this.obj.height(this.restoreProps[i].height);
+			return;
+		}
+	}
+}
+/**
+ * accept the current cropping area and apply the crop
+ */
+GENTICS.Aloha.Image.acceptCrop = function () {
+	/*
+	 * this.jcAPI.tellSelect()
+Object
+h: 218
+w: 296
+x: 45
+x2: 341
+y: 36
+y2: 254
+__proto__: Object
+	 */
+		this.onCropped(this.obj, this.jcAPI.tellSelect());
+		this.endCrop();
+};
+

@@ -1,0 +1,44 @@
+button.cnr_resize.x-btn-text, button.cnr_crop.x-btn-text, button.cnr_reset.x-btn-text {
+	background-image: url(../img/cropnresize.png);
+}
+button.cnr_crop {
+	background-position: -2px -2px !important;
+}
+button.cnr_reset {
+	background-position: -42px -2px !important;
+}
+#GENTICS_CropNResize_btns {
+	z-index: 10000;
+	width: 70px;
+	display: none;
+	position: absolute;
+}
+#GENTICS_CropNResize_btns button {
+	background: #ededed;
+	border: 1px solid #c6c6c6;
+	cursor: pointer;
+	color: #96ca03;
+	text-shadow: -1px -1px 1px rgba(0,0,0,0.3);
+	font-size: 16px;
+	border-radius: 3px;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	padding: 0px;
+	width: 23px;
+	height: 23px;
+	margin-right: 3px;
+}
+#GENTICS_CropNResize_btns button.cnr_crop_apply {
+	padding-left: 2px;
+}
+#GENTICS_CropNResize_btns button.cnr_crop_cancel {
+	color: #c92404;
+}
+/*
+ * fix to use big resize handle for images
+ */
+.ui-resizable-se { 
+	width: 16px;
+	height: 16px;
+	background-position: -80px -224px !important; 
+}
