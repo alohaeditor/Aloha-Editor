@@ -34,7 +34,7 @@ class App
 
 	# Versioning
 	BRANCH_DEV			= 'dev'
-	BRANCH_VERSION	= '0.9.4'
+	BRANCH_VERSION	= '0.10'
 	BRANCH_MASTER		= 'master'
 
 	# Building
