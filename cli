@@ -256,7 +256,7 @@ class App
 	# Check if a Branch Exists
 	def branch_exists(branch)
 		branches = run("git branch",false)
-		regex = Regexp.new('[\\n\\s\\*]+' +	Regexp.escape(branch) + '\\n')
+		regex = Regexp.new('[\\n\\s\\*]+' +	Regexp.escape(branch.to_s) + '\\n')
 		result = ((branches =~ regex) ? true : false)
 		return result
 	end
@@ -264,7 +264,7 @@ class App
 	# Check if a Branch Exists
 	def remote_branch_exists(branch)
 		branches = run("git branch -all",false)
-		regex = Regexp.new('\\/' +	Regexp.escape(branch) + '\\n')
+		regex = Regexp.new('\\/' +	Regexp.escape(branch.to_s) + '\\n')
 		result = ((branches =~ regex) ? true : false)
 		return result
 	end
@@ -321,8 +321,14 @@ class App
 	end
 
 	# Merge a Branch In
-	def merge(branch)
-		run("git merge #{branch}")
+	def merge(branch,parent=false)
+		if parent
+			checkout(branch)
+			checkout(parent)
+			merge(branch)
+		else
+			run("git merge #{branch}")
+		end
 	end
 
 	# Stage Known Files
@@ -569,7 +575,7 @@ class Booter
 		# True if required arguments were provided
 		def arguments_valid?
 			# TO DO - implement your real logic here
-			true if @arguments.length == 1
+			true if @arguments.length >= 1
 		end
 
 		# Setup the arguments
@@ -602,12 +608,21 @@ class Booter
 			# Create Application
 			app = App.new
 
+			# Extract
+			args = @arguments.clone
+			command = args.shift.gsub('-','_')
+
+
 			# Fetch + Execute
-			command = @arguments[0].gsub('-','_')
 			unless app.respond_to?(command)
 				abort("Unknown command: #{command}")
 			end
-			app.send(command)
+
+			if args.length > 0
+				app.send(command,args)
+			else
+				app.send(command)
+			end
 		end
 
 		def process_standard_input
