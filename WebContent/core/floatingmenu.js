@@ -848,9 +848,6 @@ GENTICS.Aloha.FloatingMenu.Group.prototype = {
 			}
 			
 			jQuery.each(this.buttons, function(index, button) {
-				// let each button generate its ext component and add them to the group
-				
-
 				// count the number of buttons (large buttons count as 2)
 				buttonCount += button.button.size == 'small' ? 1 : 2;
 			});
@@ -861,9 +858,9 @@ GENTICS.Aloha.FloatingMenu.Group.prototype = {
 			}
 			var len = this.buttons.length,
 				idx = 0,
-				half =  Math.ceil(buttonCount / 2);
+				half =  Math.ceil(this.buttons.length / 2) - this.buttons.length % 2 ;
 			
-			while (--len >=half) {
+			while (--len >= half) {
 				items.push(this.buttons[idx++].button.getExtConfigProperties());
 			}
 			++len;
