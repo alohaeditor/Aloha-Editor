@@ -78,7 +78,7 @@ class App
 		end
 
     # Windows
-    if WINDOWS_CLI 
+    if WINDOWS_CLI
       command_e = command.gsub('"','\\"')
       result = `bash -c "#{command_e}"`
     else
@@ -89,11 +89,17 @@ class App
 		if output
 			puts result
 		end
-		
+
 		# Done
 		return result
 	end
   
+  # Check if a binary exists
+  def bin_exists? (bin)
+  	exists = !run("which #{bin}",false).strip.empty?
+  	return exists
+  end
+
   # Check if a binary exists
   def bin_exists? (bin)
   	exists = !run("which #{bin}",false).strip.empty?
@@ -115,7 +121,7 @@ class App
   	unless req_exists
   		abort("CLI requires the following binary which is not installed: #{req}")
   	end
-    
+
     # Done
   	return true
   end
@@ -256,7 +262,7 @@ class App
 	# Check if a Branch Exists
 	def branch_exists(branch)
 		branches = run("git branch",false)
-		regex = Regexp.new('[\\n\\s\\*]+' +	Regexp.escape(branch) + '\\n')
+		regex = Regexp.new('[\\n\\s\\*]+' +	Regexp.escape(branch.to_s) + '\\n')
 		result = ((branches =~ regex) ? true : false)
 		return result
 	end
@@ -264,7 +270,7 @@ class App
 	# Check if a Branch Exists
 	def remote_branch_exists(branch)
 		branches = run("git branch -all",false)
-		regex = Regexp.new('\\/' +	Regexp.escape(branch) + '\\n')
+		regex = Regexp.new('\\/' +	Regexp.escape(branch.to_s) + '\\n')
 		result = ((branches =~ regex) ? true : false)
 		return result
 	end
@@ -282,7 +288,7 @@ class App
 			end
 		end
 	end
-	
+
 	# Apply multiple commands to submodules
 	def submodule_foreach(command)
 	  # Recursion
@@ -293,9 +299,9 @@ class App
 			end
 			return result
 		end
-		
+
 		result = run("git submodule foreach --recursive '" + command + "'")
-		
+
 		return result
 	end
 
@@ -314,15 +320,21 @@ class App
 			fetch(name)
 		end
 	end
-	
+
 	# Fetch a Remote
 	def fetch(remote="")
 		run("git fetch " + remote)
 	end
 
 	# Merge a Branch In
-	def merge(branch)
-		run("git merge #{branch}")
+	def merge(branch,parent=false)
+		if parent
+			checkout(branch)
+			checkout(parent)
+			merge(branch)
+		else
+			run("git merge #{branch}")
+		end
 	end
 
 	# Stage Known Files
@@ -397,11 +409,11 @@ class App
 			"git submodule init",
 			"git submodule update"
 		])
-		
+
 		submodule_foreach([
 			"git reset --hard",
-			"git branch -D dev",
-			"git checkout -b dev origin/dev",
+			"git remote update",
+			"git fetch origin",
 			"git checkout master",
 			"git submodule init",
 			"git submodule update"
@@ -414,7 +426,7 @@ class App
 			"git submodule init",
 			"git submodule update --merge"
 		])
-		
+
 		submodule_foreach([
 			"git submodule init",
 			"git submodule update --merge"
@@ -427,7 +439,7 @@ class App
 			"git submodule init",
 			"git submodule update --merge"
 		])
-		
+
 		submodule_foreach([
 			"git checkout master",
 			"git pull --all"
@@ -569,7 +581,7 @@ class Booter
 		# True if required arguments were provided
 		def arguments_valid?
 			# TO DO - implement your real logic here
-			true if @arguments.length == 1
+			true if @arguments.length >= 1
 		end
 
 		# Setup the arguments
@@ -602,12 +614,21 @@ class Booter
 			# Create Application
 			app = App.new
 
+			# Extract
+			args = @arguments.clone
+			command = args.shift.gsub('-','_')
+
+
 			# Fetch + Execute
-			command = @arguments[0].gsub('-','_')
 			unless app.respond_to?(command)
 				abort("Unknown command: #{command}")
 			end
-			app.send(command)
+
+			if args.length > 0
+				app.send(command,args)
+			else
+				app.send(command)
+			end
 		end
 
 		def process_standard_input
