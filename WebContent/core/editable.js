@@ -584,17 +584,25 @@ GENTICS.Aloha.Editable.prototype = {
 				var r = GENTICS.Aloha.Selection.rangeObject;
 				if (r.isCollapsed()
 					&& r.startContainer.nodeType == 3) {
-					var t = GENTICS.Aloha.Selection.rangeObject.startContainer.textContent;
 					
-					jQuery(r.commonAncestorContainer).html(
-						t.substr(0,r.startOffset)
-						+ '<span id="GENTICS-Aloha-PosDummy" />'
-						+ t.substr(r.startOffset, t.length)
+					var posDummy = jQuery('<span id="GENTICS-Aloha-PosDummy" />');
+					
+					GENTICS.Utils.Dom.insertIntoDOM(
+						posDummy,
+						r,
+						this.obj,
+						null,
+						false,
+						false
 					);
 					
-					var posDummy = jQuery('#GENTICS-Aloha-PosDummy');
 					console.log(posDummy.offset().top, posDummy.offset().left);
-					posDummy.remove();
+					
+					GENTICS.Utils.Dom.removeFromDOM(
+						posDummy,
+						r,
+						false
+					);
 					
 					r.select();
 				}
