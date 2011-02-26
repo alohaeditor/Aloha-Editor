@@ -18,7 +18,7 @@
 */
 (function(window, undefined) {
 	var
-		$ = jQuery = window.alohaQuery
+		$ = jQuery = window.alohaQuery,
 		GENTICS = window.GENTICS,
 		Aloha = GENTICS.Aloha;
 

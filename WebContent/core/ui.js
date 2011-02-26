@@ -16,15 +16,16 @@
 *   You should have received a copy of the GNU Affero General Public License
 *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+
+// Ensure Namespace
+window.GENTICS.Aloha.ui = window.GENTICS.Aloha.ui || {};
+
+// Closure
 (function(window, undefined) {
 	var
-		$ = jQuery = window.alohaQuery
+		$ = jQuery = window.alohaQuery,
 		GENTICS = window.GENTICS,
 		Aloha = GENTICS.Aloha;
-
-if (typeof GENTICS.Aloha.ui === 'undefined') {
-	GENTICS.Aloha.ui = function() {};
-}
 
 /**
  * Constructor for an Aloha button.
