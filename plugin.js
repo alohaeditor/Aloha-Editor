@@ -166,7 +166,7 @@ GENTICS.Aloha.GoogleTranslate.replaceText = function (selectionTreeEntry, text, 
 		);
 	} else {
 		jQuery(selectionTreeEntry.domobj)
-			.text(text)
+			.html(text)
 			// set the language attribute for non-text-nodes
 			.attr('lang', lang); 
 	}
