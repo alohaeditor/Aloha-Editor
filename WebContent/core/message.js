@@ -16,6 +16,12 @@
 *   You should have received a copy of the GNU Affero General Public License
 *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+(function(window, undefined) {
+	var
+		$ = jQuery = window.alohaQuery,
+		GENTICS = window.GENTICS,
+		Aloha = GENTICS.Aloha;
+
 /**
  * Message Object
  * @namespace GENTICS.Aloha
@@ -76,16 +82,17 @@ GENTICS.Aloha.MessageLine = function () {
  */
 GENTICS.Aloha.MessageLine.prototype = {
 	add: function(message) {
-		var messages = this.messages,
-			messageline = '';
+		var messageline = '',
+			messagesLength = this.messages.length;
 		// dummy implementation to add a message
-		messages[this.messages.length] = message;
-		while(messages.length > 4) {
-			messages.shift();
+		this.messages[messagesLength] = message;
+		while(messagesLength > 4) {
+			this.messages.shift();
+			--messagesLength;
 		}
-		
-		for ( var i = 0; i < messages.length; i++) {
-			messageline += messages[i].toString() + '<br/>';
+
+		for ( var i = 0; i < messagesLength; i++) {
+			messageline += this.messages[i].toString() + '<br/>';
 		}
 		jQuery('#gtx_aloha_messageline').html(messageline);
 	}
@@ -96,3 +103,5 @@ GENTICS.Aloha.MessageLine.prototype = {
  * @hide
  */
 GENTICS.Aloha.MessageLine = new GENTICS.Aloha.MessageLine();
+
+})(window);

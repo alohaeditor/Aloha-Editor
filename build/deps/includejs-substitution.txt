@@ -1,1 +1,1 @@
-document.write('<script type="text/javascript" src="' + window.GENTICS_Aloha_base + '\1"></script>');
+	includes.push(window.GENTICS_Aloha_base + '\1');

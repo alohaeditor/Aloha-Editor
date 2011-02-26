@@ -1,5 +1,5 @@
 /*!
-* 
+*
 *   This file is part of Aloha Editor
 *   Author & Copyright (c) 2010 Gentics Software GmbH, aloha@gentics.com
 *   Licensed unter the terms of http://www.aloha-editor.com/license.html
@@ -17,9 +17,16 @@
 *   You should have received a copy of the GNU Affero General Public License
 *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+
+(function(window, undefined) {
+	var
+		$ = jQuery = window.alohaQuery,
+		GENTICS = window.GENTICS,
+		Aloha = GENTICS.Aloha;
+
 /**
  * @namespace GENTICS.Aloha
- * @class Event represents an Aloha Event	
+ * @class Event represents an Aloha Event
  * @constructor
  * @param {String} eventName the name of the event
  * @param {Object} eventSource the source of the event, which might be any Aloha-specific object. Use the Gentics.Aloha object for global events
@@ -78,4 +85,4 @@ GENTICS.Aloha.EventRegistry.prototype = {
 
 GENTICS.Aloha.EventRegistry = new GENTICS.Aloha.EventRegistry();
 
-
+})(window);

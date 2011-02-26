@@ -16,6 +16,11 @@
 *   You should have received a copy of the GNU Affero General Public License
 *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+(function(window, undefined) {
+	var
+		$ = jQuery = window.alohaQuery,
+		GENTICS = window.GENTICS,
+		Aloha = GENTICS.Aloha;
 
 GENTICS.Aloha.Repository.Object = function() {};
 
@@ -23,11 +28,11 @@ GENTICS.Aloha.Repository.Object = function() {};
  * @namespace GENTICS.Aloha.Repository
  * @class Document
  * @constructor
- * 
+ *
  * Abstract Document suitable for most Objects.<br /><br />
- * 
+ *
  * Example:
- * 
+ *
 <pre><code>
  var item = new GENTICS.Aloha.Repository.Document({
  	id: 1,
@@ -36,7 +41,7 @@ GENTICS.Aloha.Repository.Object = function() {};
  	type: 'website',
  	url:'http://aloha-editor.com',
  });
-</code></pre> 
+</code></pre>
  *
  * @param {Object} properties An object with the data.
  * <div class="mdetail-params"><ul>
@@ -56,29 +61,29 @@ GENTICS.Aloha.Repository.Object = function() {};
  * <li><code>lastModifiedBy</code> : String (optional) <div class="sub-desc">User who last modified the object</div></li>
  * <li><code>lastModificationDate</code> : Date (optional) <div class="sub-desc">DateTime when the object was last modified</div></li>
  * </ul></div>
- * 
+ *
  */
 GENTICS.Aloha.Repository.Document = function(properties) {
 
 	var p = properties;
-	
+
 	this.type = 'document';
-	
+
 	// Basic error checking for MUST attributes
-	if (!p.id || 
+	if (!p.id ||
 		!p.name ||
 		!p.repositoryId
 	) {
 //		GENTICS.Aloha.Log.error(this, "No valid Aloha Object. Missing MUST property");
 		return;
 	}
-	
+
 	GENTICS.Utils.applyProperties(this, properties);
-	
+
 	this.baseType = 'document';
 };
 
-/** 
+/**
  * Not implemented method to generate this JS API doc correctly.
  */
 //GENTICS.Aloha.Repository.Document.prototype.empty = function() {};
@@ -89,9 +94,9 @@ GENTICS.Aloha.Repository.Document = function(properties) {
  * @class Folder
  * @constructor
  * Abstract Folder suitable for most strucural Objects.<br /><br />
- * 
+ *
  * Example:
- * 
+ *
 <pre><code>
  var item = new GENTICS.Aloha.Repository.Folder({
  	id: 2,
@@ -100,7 +105,7 @@ GENTICS.Aloha.Repository.Document = function(properties) {
  	type: 'directory',
  	parentId:'/www'
  });
-</code></pre> 
+</code></pre>
  * @param {Object} properties An object with the data.
  * <div class="mdetail-params"><ul>
  * <li><code>id</code> : String <div class="sub-desc">Unique identifier</div></li>
@@ -114,29 +119,31 @@ GENTICS.Aloha.Repository.Document = function(properties) {
  * <li><code>lastModifiedBy</code> : String (optional) <div class="sub-desc">User who last modified the object</div></li>
  * <li><code>lastModificationDate</code> : Date (optional) <div class="sub-desc">DateTime when the object was last modified</div></li>
  * </ul></div>
- * 
+ *
  */
 GENTICS.Aloha.Repository.Folder = function(properties) {
 
 	var p = properties;
-	
+
 	this.type = 'folder';
-	
+
 	// Basic error checking for MUST attributes
-	if (!p.id || 
+	if (!p.id ||
 		!p.name ||
 		!p.repositoryId
 	) {
 //		GENTICS.Aloha.Log.error(this, "No valid Aloha Object. Missing MUST property");
 		return;
 	}
-	
+
 	GENTICS.Utils.applyProperties(this, properties);
-	
+
 	this.baseType = 'folder';
 };
 
-/** 
+/**
  * Not implemented method to generate this JS API doc.
  */
 //GENTICS.Aloha.Repository.Document.prototype.empty = function() {};
+
+})(window);

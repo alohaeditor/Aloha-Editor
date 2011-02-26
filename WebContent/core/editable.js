@@ -16,6 +16,13 @@
 *   You should have received a copy of the GNU Affero General Public License
 *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+
+(function(window, undefined) {
+	var
+		$ = jQuery = window.alohaQuery,
+		GENTICS = window.GENTICS,
+		Aloha = GENTICS.Aloha;
+
 /**
  * Editable object
  * @namespace GENTICS.Aloha
@@ -25,7 +32,7 @@
  * @param {Object} obj jQuery object reference to the object
  */
 GENTICS.Aloha.Editable = function(obj) {
-	
+
 	// check wheter the object has an ID otherwise generate and set globally unique ID
 	if ( !obj.attr('id') ) {
 		obj.attr('id', GENTICS.Utils.guid());
@@ -45,7 +52,7 @@ GENTICS.Aloha.Editable = function(obj) {
 	this.sccDelay = 1000;
 	this.sccTimerIdle = false;
 	this.sccTimerDelay = false;
-	
+
 	// register the editable with Aloha
 	GENTICS.Aloha.registerEditable(this);
 
@@ -76,44 +83,44 @@ GENTICS.Aloha.Editable.prototype = {
 
 	/**
 	 * Check if object can be edited by Aloha Editor
-	 * @return {boolean } editable true if Aloha Editor can handle else false 
+	 * @return {boolean } editable true if Aloha Editor can handle else false
 	 * @hide
 	 */
 	check: function() {
-	
+
 		/* TODO check those elements
 		'map', 'meter', 'object', 'output', 'progress', 'samp',
 		'time', 'area', 'datalist', 'figure', 'kbd', 'keygen',
 		'mark', 'math', 'wbr', 'area',
 		*/
-	
+
 		// Extract El
 		var	that = this,
 			obj = this.obj,
 			el = obj.get(0),
 			nodeName = el.nodeName.toLowerCase(),
-	
+
 		// supported elements
 			textElements = [ 'a', 'abbr', 'address', 'article', 'aside',
 					'b', 'bdo', 'blockquote',  'cite', 'code', 'command',
 					'del', 'details', 'dfn', 'div', 'dl', 'em', 'footer', 'h1', 'h2',
 					'h3', 'h4', 'h5', 'h6', 'header', 'i', 'ins', 'menu',
 					'nav', 'p', 'pre', 'q', 'ruby',  'section', 'small',
-					'span', 'strong',  'sub', 'sup', 'var']; 	
-	
+					'span', 'strong',  'sub', 'sup', 'var'];
+
 		for (var i = 0; i < textElements.length; i++) {
 			if ( nodeName == textElements[i] ) {
 				return true;
 			}
 		}
-	
+
 		// special handled elements
 		switch ( nodeName ) {
 			case 'label':
 			case 'button':
 				// TODO need some special handling.
 				break;
-		
+
 			case 'textarea':
 				// Create a div alongside the textarea
 				var div = jQuery('<div id="'+this.getId()+'-aloha" class="GENTICS_textarea"/>').insertAfter(obj);
@@ -134,15 +141,15 @@ GENTICS.Aloha.Editable.prototype = {
 				this.obj = div;
 				// Supported
 				return true;
-			
+
 			default:
 				break;
 		}
-				
+
 		// the following elements are not supported
-		/*		
-		'canvas', 'audio', 'br', 'embed', 'fieldset', 'hgroup', 'hr', 
-		'iframe', 'img', 'input', 'map', 'script', 'select', 'style', 
+		/*
+		'canvas', 'audio', 'br', 'embed', 'fieldset', 'hgroup', 'hr',
+		'iframe', 'img', 'input', 'map', 'script', 'select', 'style',
 		'svg', 'table', 'ul', 'video', 'ol', 'form', 'noscript',
 		 */
 		return false;
@@ -156,7 +163,7 @@ GENTICS.Aloha.Editable.prototype = {
 	 */
 	init: function() {
 		var that = this;
-	
+
 		// smartContentChange settings
 		if (GENTICS.Aloha.settings && GENTICS.Aloha.settings.smartContentChange) {
 			if (GENTICS.Aloha.settings.smartContentChange.delimiters) {
@@ -164,73 +171,73 @@ GENTICS.Aloha.Editable.prototype = {
 			} else {
 				this.sccDelimiters = this.sccDelimiters;
 			}
-		
+
 			if (GENTICS.Aloha.settings.smartContentChange.idle) {
 				this.sccIdle = GENTICS.Aloha.settings.smartContentChange.idle;
 			} else {
 				this.sccIdle = this.sccIdle;
 			}
-		
+
 			if (GENTICS.Aloha.settings.smartContentChange.delay) {
 				this.sccDelay = GENTICS.Aloha.settings.smartContentChange.delay;
 			} else {
 				this.sccDelay = this.sccDelay;
 			}
 		}
-	
+
 		// check if Aloha can handle the obj as Editable
 		if ( !this.check( this.obj ) ) {
 			//GENTICS.Aloha.log('warn', this, 'Aloha cannot handle {' + this.obj[0].nodeName + '}');
 			this.destroy();
 			return;
 		}
-	
+
 		// only initialize the editable when Aloha is ready
 		if (GENTICS.Aloha.ready) {
 
 			// initialize the object
 			this.obj.addClass('GENTICS_editable')
 				    .contentEditable(true);
-		
+
 			// add focus event to the object to activate
 			this.obj.mousedown(function(e) {
 				return that.activate(e);
 			});
-		
+
 			this.obj.focus(function(e) {
 				return that.activate(e);
 			});
-		
+
 			// by catching the keydown we can prevent the browser from doing its own thing
 			// if it does not handle the keyStroke it returns true and therefore all other
 			// events (incl. browser's) continue
-			this.obj.keydown( function(event) { 
+			this.obj.keydown( function(event) {
 				return GENTICS.Aloha.Markup.preProcessKeyStrokes(event);
 			});
-		
+
 			// handle shortcut keys
-			this.obj.keyup( function(event) { 
+			this.obj.keyup( function(event) {
 				if (event['keyCode'] == 27 ) {
 					GENTICS.Aloha.deactivateEditable();
 					return false;
 				}
-			
+
 				// check if this key stroke triggers a smartContentChange
 				GENTICS.Aloha.activeEditable.smartContentChange(event);
 			});
-		
+
 			// register the onSelectionChange Event with the Editable field
 			this.obj.GENTICS_contentEditableSelectionChange(function (event) {
 				GENTICS.Aloha.Selection.onChange(that.obj, event);
 				return that.obj;
 			});
-		
+
 			// throw a new event when the editable has been created
 			/**
 			 * @event editableCreated fires after a new editable has been created, eg. via $('#editme').aloha()
 			 * The event is triggered in Aloha's global scope GENTICS.Aloha
 			 * @param {Event} e the event object
-			 * @param {Array} a an array which contains a reference to the currently created editable on its first position 
+			 * @param {Array} a an array which contains a reference to the currently created editable on its first position
 			 */
 			GENTICS.Aloha.EventRegistry.trigger(
 				new GENTICS.Aloha.Event(
@@ -242,7 +249,7 @@ GENTICS.Aloha.Editable.prototype = {
 
 			// mark the editable as unmodified
 			this.setUnmodified();
-		
+
 			this.snapshotContent = this.getContents();
 
 			// now the editable is ready
@@ -255,39 +262,39 @@ GENTICS.Aloha.Editable.prototype = {
 	 * @return void
 	 */
 	destroy: function() {
-		
+
 		// leave the element just to get sure
 		if (this == GENTICS.Aloha.getActiveEditable()) {
 			this.blur();
-			
+
 			// also hide the floating menu if the current editable was active
 			GENTICS.Aloha.FloatingMenu.obj.hide();
 			GENTICS.Aloha.FloatingMenu.shadow.hide();
 		}
-	
+
 		// original Object
 		var	that = this,
 			oo = this.originalObj.get(0),
 			onn = oo.nodeName.toLowerCase();
-	
+
 		// special handled elements
 		switch ( onn ) {
 			case 'label':
 			case 'button':
 				// TODO need some special handling.
 				break;
-		
+
 			case 'textarea':
 				// restore content to original textarea
 				var val = this.getContents();
 				this.originalObj.val(val);
 				this.obj.remove();
 				this.originalObj.show();
-			
+
 			default:
 				break;
 		}
-		
+
 		// now the editable is not ready any more
 		this.ready = false;
 
@@ -295,11 +302,11 @@ GENTICS.Aloha.Editable.prototype = {
 		this.obj.removeClass('GENTICS_editable')
 		// Disable contentEditable
 			    .contentEditable(false)
-		
-		// unbind all events 
+
+		// unbind all events
 		// TODO should only unbind the specific handlers.
-			    .unbind('mousedown focus keydown keyup'); 
-	
+			    .unbind('mousedown focus keydown keyup');
+
 		/* TODO remove this event, it should implemented as bind and unbind
 		// register the onSelectionChange Event with the Editable field
 		this.obj.GENTICS_contentEditableSelectionChange(function (event) {
@@ -307,13 +314,13 @@ GENTICS.Aloha.Editable.prototype = {
 			return that.obj;
 		});
 		*/
-		
+
 		// throw a new event when the editable has been created
 		/**
 		 * @event editableCreated fires after a new editable has been destroyes, eg. via $('#editme').mahalo()
 		 * The event is triggered in Aloha's global scope GENTICS.Aloha
 		 * @param {Event} e the event object
-		 * @param {Array} a an array which contains a reference to the currently created editable on its first position 
+		 * @param {Array} a an array which contains a reference to the currently created editable on its first position
 		 */
 		GENTICS.Aloha.EventRegistry.trigger(
 			new GENTICS.Aloha.Event(
@@ -322,7 +329,7 @@ GENTICS.Aloha.Editable.prototype = {
 				[ this ]
 			)
 		);
-		
+
 		// finally register the editable with Aloha
 		GENTICS.Aloha.unregisterEditable(this);
 
@@ -351,12 +358,12 @@ GENTICS.Aloha.Editable.prototype = {
 	 * @method
 	 * @return GENTICS.Aloha.Editable
 	 */
-	toString: function() {  
+	toString: function() {
 		return 'GENTICS.Aloha.Editable';
 	},
 
 	/**
-	 * check whether the editable has been disabled 
+	 * check whether the editable has been disabled
 	 */
 	isDisabled: function () {
 		return !this.obj.contentEditable() || this.obj.contentEditable() === 'false';
@@ -372,7 +379,7 @@ GENTICS.Aloha.Editable.prototype = {
 
 	/**
 	 * enable this editable
-	 * reenables a disabled editable to be writteable again 
+	 * reenables a disabled editable to be writteable again
 	 */
 	enable: function() {
 		this.isDisabled() && this.obj.contentEditable(true);
@@ -391,7 +398,7 @@ GENTICS.Aloha.Editable.prototype = {
 		}
 
 		// get active Editable before setting the new one.
-		var oldActive = GENTICS.Aloha.getActiveEditable(); 
+		var oldActive = GENTICS.Aloha.getActiveEditable();
 
 		// handle special case in which a nested editable is focused by a click
 		// in this case the "focus" event would be triggered on the parent element
@@ -400,17 +407,17 @@ GENTICS.Aloha.Editable.prototype = {
 		if (e && e.type == 'focus' && oldActive != null && oldActive.obj.parent().get(0) == e.currentTarget) {
 			return;
 		}uniChar = null
-	
+
 		// leave immediately if this is already the active editable
 		if (this.isActive || this.isDisabled()) {
 			// we don't want parent editables to be triggered as well, so return false
 			return;
 		}
 
-	
+
 		// set active Editable in core
 		GENTICS.Aloha.activateEditable( this );
-	
+
 		// ie specific: trigger one mouseup click to update the range-object
 		if (document.selection && document.selection.createRange) {
 			this.obj.mouseup();
@@ -418,13 +425,13 @@ GENTICS.Aloha.Editable.prototype = {
 
 		// finally mark this object as active
 		this.isActive = true;
-	
+
 		/**
 		 * @event editableActivated fires after the editable has been activated by clicking on it.
 		 * This event is triggered in Aloha's global scope GENTICS.Aloha
 		 * @param {Event} e the event object
 		 * @param {Array} a an array which contains a reference to last active editable on its first position, as well
-		 * as the currently active editable on it's second position 
+		 * as the currently active editable on it's second position
 		 */
 		// trigger a 'general' editableActivated event
 		GENTICS.Aloha.EventRegistry.trigger(
@@ -438,7 +445,7 @@ GENTICS.Aloha.Editable.prototype = {
 		 * @event editableActivated fires after the editable has been activated by clicking on it.
 		 * This event is triggered in the Editable's local scope
 		 * @param {Event} e the event object
-		 * @param {Array} a an array which contains a reference to last active editable on its first position 
+		 * @param {Array} a an array which contains a reference to last active editable on its first position
 		 */
 		// and trigger our *finished* event
 		GENTICS.Aloha.EventRegistry.trigger(
@@ -452,7 +459,7 @@ GENTICS.Aloha.Editable.prototype = {
 	 * handle the blur event
 	 * this must not be attached to the blur event, which will trigger far too often
 	 * eg. when a table within an editable is selected
-	 * @hide 
+	 * @hide
 	 */
 	blur: function() {
 
@@ -461,12 +468,12 @@ GENTICS.Aloha.Editable.prototype = {
 
 		// disable active status
 		this.isActive = false;
-	
+
 		/**
 		 * @event editableDeactivated fires after the editable has been activated by clicking on it.
 		 * This event is triggered in Aloha's global scope GENTICS.Aloha
 		 * @param {Event} e the event object
-		 * @param {Array} a an array which contains a reference to this editable 
+		 * @param {Array} a an array which contains a reference to this editable
 		 */
 		// trigger a 'general' editableDeactivated event
 		GENTICS.Aloha.EventRegistry.trigger(
@@ -483,7 +490,7 @@ GENTICS.Aloha.Editable.prototype = {
 		GENTICS.Aloha.EventRegistry.trigger(
 			new GENTICS.Aloha.Event('editableDeactivated', this)
 		);
-	
+
 		/**
 		 * @event smartContentChanged
 		 */
@@ -534,10 +541,10 @@ GENTICS.Aloha.Editable.prototype = {
 	smartContentChange: function(event) {
 		var that = this,
 			uniChar = null;
-	
+
 		clearTimeout(this.sccTimerDelay);
 		clearTimeout(this.sccTimerIdle);
-	
+
 		if (this.snapshotContent == GENTICS.Aloha.activeEditable.getContents()) {
 			return false;
 		}
@@ -546,10 +553,10 @@ GENTICS.Aloha.Editable.prototype = {
 		if (event && (event.metaKey || event.crtlKey || event.altKey)) {
 			return false;
 		}
-	
+
 		// regex unicode
 		if (event && event.originalEvent) {
-		
+
 			var re = new RegExp("U\\+(\\w{4})"),
 				match = re.exec(event.originalEvent.keyIdentifier);
 			if (match !== null) {
@@ -559,15 +566,15 @@ GENTICS.Aloha.Editable.prototype = {
 				uniChar = event.originalEvent.keyIdentifier;
 			}
 		}
-	
+
 		// handle "Enter" -- it's not "U+1234" -- when returned via "event.originalEvent.keyIdentifier"
 		// reference: http://www.w3.org/TR/2007/WD-DOM-Level-3-Events-20071221/keyset.html
 		if (jQuery.inArray(uniChar, this.sccDelimiters) >= 0) {
-		
+
 			clearTimeout(this.sccTimerIdle);
-		
+
 			this.sccTimerDelay = setTimeout(function() {
-			
+
 				GENTICS.Aloha.EventRegistry.trigger(
 					new GENTICS.Aloha.Event('smartContentChanged', GENTICS.Aloha, {
 					'editable' : GENTICS.Aloha.activeEditable,
@@ -580,13 +587,13 @@ GENTICS.Aloha.Editable.prototype = {
 				);
 
 				GENTICS.Aloha.Log.debug(this, 'smartContentChanged: event type keypress triggered');
-				
+
 				var r = GENTICS.Aloha.Selection.rangeObject;
 				if (r.isCollapsed()
 					&& r.startContainer.nodeType == 3) {
-					
+
 					var posDummy = jQuery('<span id="GENTICS-Aloha-PosDummy" />');
-					
+
 					GENTICS.Utils.Dom.insertIntoDOM(
 						posDummy,
 						r,
@@ -595,15 +602,15 @@ GENTICS.Aloha.Editable.prototype = {
 						false,
 						false
 					);
-					
+
 					console.log(posDummy.offset().top, posDummy.offset().left);
-					
+
 					GENTICS.Utils.Dom.removeFromDOM(
 						posDummy,
 						r,
 						false
 					);
-					
+
 					r.select();
 				}
 			},this.sccDelay);
@@ -624,10 +631,10 @@ GENTICS.Aloha.Editable.prototype = {
 					'snapshotContent' : that.getSnapshotContent()
 					})
 				);
-			
+
 				GENTICS.Aloha.Log.debug(this, 'smartContentChanged: event type timer triggered');
 			},this.sccIdle);
-		
+
 		}
 
 		else if (event && event.type === 'paste') {
@@ -641,7 +648,7 @@ GENTICS.Aloha.Editable.prototype = {
 				'snapshotContent' : that.getSnapshotContent()
 				})
 			);
-		
+
 			GENTICS.Aloha.Log.debug(this, 'smartContentChanged: event type paste triggered');
 		}
 
@@ -656,7 +663,7 @@ GENTICS.Aloha.Editable.prototype = {
 				'snapshotContent' : that.getSnapshotContent()
 				})
 			);
-		
+
 			GENTICS.Aloha.Log.debug(this, 'smartContentChanged: event type blur triggered');
 		}
 
@@ -667,11 +674,12 @@ GENTICS.Aloha.Editable.prototype = {
 	 * @hide
 	 * @return snapshot of the editable
 	 */
-	getSnapshotContent: function() {	
+	getSnapshotContent: function() {
 		var ret = this.snapshotContent;
-	
+
 		this.snapshotContent = this.getContents();
-	
+
 		return ret;
 	}
 };
+})(window);

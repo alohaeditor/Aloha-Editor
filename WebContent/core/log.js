@@ -16,6 +16,12 @@
 *   You should have received a copy of the GNU Affero General Public License
 *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+(function(window, undefined) {
+	var
+		$ = jQuery = window.alohaQuery,
+		GENTICS = window.GENTICS,
+		Aloha = GENTICS.Aloha;
+
 /**
  * This is the aloha Log
  * @namespace GENTICS.Aloha
@@ -202,7 +208,7 @@ GENTICS.Aloha.Log.prototype = {
 	 * @hide
 	 */
 	addToLogHistory: function(entry) {
-	
+
 		if (
 			// when maxEntries is set to something illegal, we do nothing (log history is disabled)
 			GENTICS.Aloha.settings.logHistory.maxEntries <= 0
@@ -261,3 +267,5 @@ GENTICS.Aloha.Log.prototype = {
  * @hide
  */
 GENTICS.Aloha.Log = new GENTICS.Aloha.Log();
+
+})(window);

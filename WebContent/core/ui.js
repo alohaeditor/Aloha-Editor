@@ -17,9 +17,15 @@
 *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-if (typeof GENTICS.Aloha.ui === 'undefined') {
-	GENTICS.Aloha.ui = function() {};
-}
+// Ensure Namespace
+window.GENTICS.Aloha.ui = window.GENTICS.Aloha.ui || {};
+
+// Closure
+(function(window, undefined) {
+	var
+		$ = jQuery = window.alohaQuery,
+		GENTICS = window.GENTICS,
+		Aloha = GENTICS.Aloha;
 
 /**
  * Constructor for an Aloha button.
@@ -64,39 +70,39 @@ GENTICS.Aloha.ui.Button.prototype = {
 		 * @hide
 		 */
 		this.label;
-	
+
 		/**
 		 * CSS class for an icon on the button
 		 * @hide
 		 */
 		this.iconClass;
-	
+
 		/**
 		 * URL to an icon to display on the button
 		 * @hide
 		 */
 		this.icon;
-	
+
 		/**
 		 * Callback function when the button is activated.
 		 * The "this" variable refers to the button inside the callback function.
 		 * @hide
 		 */
 		this.onclick;
-	
+
 		/**
 		 * Array of buttons that are displayed in a drop down menu.
 		 * If a menu is provided and no onclick callback then clicking the button also opens the menu
 		 * @hide
 		 */
 		this.menu;
-	
+
 		/**
 		 * Indicates if the button is a toggle button
 		 * @hide
 		 */
 		this.toggle;
-	
+
 		/**
 		 * Property that indicates if the button is in pressed state
 		 * @hide
@@ -132,7 +138,7 @@ GENTICS.Aloha.ui.Button.prototype = {
 		 * @hide
 		 */
 		this.listenerQueue = [];
-	
+
 		GENTICS.Utils.applyProperties(this, properties);
 
 		/**
@@ -166,7 +172,7 @@ GENTICS.Aloha.ui.Button.prototype = {
 	},
 
 	/**
-	 * Indicates if the button is currently in "pressed" state. 
+	 * Indicates if the button is currently in "pressed" state.
 	 * This is only relevant if the button is a toggle button.
 	 * If the button is no toggle button this function always returns false.
 	 * @return {bool} True if the button is pressed, false otherwise.
@@ -267,7 +273,7 @@ GENTICS.Aloha.ui.Button.prototype = {
 					that.onclick();
 				}
 			},
-			menu: submenu 
+			menu: submenu
 		};
 	},
 
@@ -279,7 +285,7 @@ GENTICS.Aloha.ui.Button.prototype = {
 	getExtConfigProperties: function() {
 		var that = this,
 			menu = this.getExtMenu(),
-		
+
 		// configuration for the button
 			buttonConfig = {
 			text : this.label,
@@ -314,11 +320,11 @@ GENTICS.Aloha.ui.Button.prototype = {
  * Display a Word-like formatting selection button
  * Selection images are typically 52*42 in size
  *
- * Example configuration 
+ * Example configuration
  * xtype : 'genticsmultisplitbutton',
  * items : [{
- *   'name'  : 'normal', // the buttons name, used to identify it 
- *   'title' : 'Basic Text', // the buttons title, which will be displayed 
+ *   'name'  : 'normal', // the buttons name, used to identify it
+ *   'title' : 'Basic Text', // the buttons title, which will be displayed
  *	 'icon'  : 'img/icon.jpg', // source for the icon
  *	 'click' : function() { alert('normal'); } // callback if the button is clicked
  *   'wide'  : false // wether it's a wide button, which would be dispalyed at the bottom
@@ -385,7 +391,7 @@ Ext.ux.GENTICSMultiSplitButton = Ext.extend(Ext.Component, {
 				continue;
 			}
         	html += '<li>' +
-        		'<button xmlns:ext="http://www.extjs.com/" class="' + item.iconClass + '" ext:qtip="' + item.tooltip + '" gtxmultisplititem="' + i + '">&#160;</button>' + 
+        		'<button xmlns:ext="http://www.extjs.com/" class="' + item.iconClass + '" ext:qtip="' + item.tooltip + '" gtxmultisplititem="' + i + '">&#160;</button>' +
         		'</li>';
         }
 
@@ -396,10 +402,10 @@ Ext.ux.GENTICSMultiSplitButton = Ext.extend(Ext.Component, {
 			if (!item.wide) {
 				continue;
 			}
-			
+
         	html += '<li>' +
-    		'<button xmlns:ext="http://www.extjs.com/" class="GENTICS_multisplit-wide ' + item.iconClass + '" ext:qtip="' + item.tooltip + '" gtxmultisplititem="' + i + '">' + 
-    			item.text + '</button>' + 
+    		'<button xmlns:ext="http://www.extjs.com/" class="GENTICS_multisplit-wide ' + item.iconClass + '" ext:qtip="' + item.tooltip + '" gtxmultisplititem="' + i + '">' +
+    			item.text + '</button>' +
     			'</li>';
 
         }
@@ -423,7 +429,7 @@ Ext.ux.GENTICSMultiSplitButton = Ext.extend(Ext.Component, {
 		.click(function (event) {
 			that.onClick(event);
 		});
-		
+
 		// add the expand button
 		this.panelButton = jQuery(
 			this.el.createChild('<button class="GENTICS_multisplit_toggle GENTICS_multisplit_toggle_open">&#160;</button>').dom
@@ -453,7 +459,7 @@ Ext.ux.GENTICSMultiSplitButton = Ext.extend(Ext.Component, {
 		if (!el.hasClass('GENTICS_multisplit-wide')) {
 			this.setActiveDOMElement(el);
 		}
-		
+
 		// invoke the items function
 		this.items[event.target.attributes.gtxmultisplititem.value].click();
     },
@@ -472,7 +478,7 @@ Ext.ux.GENTICSMultiSplitButton = Ext.extend(Ext.Component, {
 		if (this.activeItem == name) {
 			return;
 		}
-		
+
 		for (var i=0; i < this.items.length; i++) {
 			if (this.items[i].name == name) {
 				// found the item
@@ -511,7 +517,7 @@ Ext.ux.GENTICSMultiSplitButton = Ext.extend(Ext.Component, {
 		if (el == null || el.parent().is(':hidden')) {
 			return;
 		}
-		
+
 		// reposition multisplit contents to the active item
 		if (el && this.ulObj) {
 			this.ulObj.css('margin-top', 0);
@@ -537,7 +543,7 @@ Ext.ux.GENTICSMultiSplitButton = Ext.extend(Ext.Component, {
 			this.openPanel();
 		}
     },
-	    
+
     /**
      * expand the button panel
      * @return void
@@ -547,9 +553,9 @@ Ext.ux.GENTICSMultiSplitButton = Ext.extend(Ext.Component, {
 		if (this.panelOpened) {
 			return;
 		}
-		
+
 		var o = this.wrapper.offset();
-		
+
     	// detach the ul element and reattach it onto the body
 		this.ulObj
 		.appendTo(jQuery('body'))
@@ -596,7 +602,7 @@ Ext.ux.GENTICSMultiSplitButton = Ext.extend(Ext.Component, {
 			.removeClass('GENTICS_multisplit_toggle_close');
 		this.panelOpened = false;
 	},
-	
+
 	/**
 	 * hides a multisplit item
 	 * @return void
@@ -612,7 +618,7 @@ Ext.ux.GENTICSMultiSplitButton = Ext.extend(Ext.Component, {
 			}
 		}
 	},
-	
+
 	/**
 	 * shows an item
 	 * @return void
@@ -638,8 +644,8 @@ Ext.reg('genticsmultisplitbutton', Ext.ux.GENTICSMultiSplitButton);
  * @param {Object} properties properties object for the new multisplit button
  * 		however you just have to fill out the items property of this object
  * 		items : [{
- *   		'name'  : 'normal', // the buttons name, used to identify it 
- *   		'tooltip' : 'Basic Text', // the buttons tooltip, which will be displayed on hover 
+ *   		'name'  : 'normal', // the buttons name, used to identify it
+ *   		'tooltip' : 'Basic Text', // the buttons tooltip, which will be displayed on hover
  *   		'text'	: 'Basic Text', // text to display on wide buttons
  *	 		'icon'  : 'img/icon.jpg', // source for the icon
  *	 		'click' : function() { alert('normal'); } // callback if the button is clicked
@@ -733,3 +739,4 @@ GENTICS.Aloha.ui.MultiSplitButton.prototype = {
 		this.extButton.hideItem(name);
 	}
 };
+})(window);

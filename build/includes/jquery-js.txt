@@ -1,1 +1,1 @@
-deps/jquery-1.4.4.js
+deps/jquery-1.5.1.js

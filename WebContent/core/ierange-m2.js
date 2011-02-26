@@ -22,6 +22,7 @@
 *   document.attachEvent, this is a microsoft event and therefore only available
 *   in IE).
 */
+
 if(document.attachEvent && document.selection) {
 /*!
 *   DOM Ranges for Internet Explorer (m2)
