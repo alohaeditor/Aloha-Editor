@@ -38,6 +38,37 @@ GENTICS.Aloha.settings = {
 		},
 	 	"com.gentics.aloha.plugins.Table": {
 			config: ['table']
+		},
+		"com.gentics.aloha.plugins.Image": {
+				config : {
+					'img': {
+						'max_width': '50px',
+						'max_height': '50px',
+						// Menu elements to show/hide in menu - ONLY in default config section
+						'ui': {'align': true,       
+							'resize': true,
+							'meta': true,
+							'margin': true,
+							'crop':true},
+						/**
+						 *	ONLY in default config section
+						 * crop callback is triggered after the user clicked accept to accept his crop
+						 * @param image jquery image object reference
+						 * @param props cropping properties
+						 */
+						'onCropped':function (image, props) {},
+						/**
+						 * ONLY in default config section
+						 * reset callback is triggered before the internal reset procedure is applied
+						 * if this function returns true, then the reset has been handled by the callback
+						 * which means that no other reset will be applied
+						 * if false is returned the internal reset procedure will be applied
+						 * @param image jquery image object reference
+						 * @return true if a reset has been applied, flase otherwise
+						 */
+						'onReset': function (image) { return false; }
+					}
+			}
 		}
   	}
 };

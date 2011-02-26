@@ -59,26 +59,30 @@ GENTICS.Aloha.Image.config = {
 			'resize': true,
 			'meta': true,
 			'margin': true,
-			'crop':true}
+			'crop':true},
+		/**
+		 * crop callback is triggered after the user clicked accept to accept his crop
+		 * @param image jquery image object reference
+		 * @param props cropping properties
+		 */
+		'onCropped':function (image, props) {},
+		/**
+		 * reset callback is triggered before the internal reset procedure is applied
+		 * if this function returns true, then the reset has been handled by the callback
+		 * which means that no other reset will be applied
+		 * if false is returned the internal reset procedure will be applied
+		 * @param image jquery image object reference
+		 * @return true if a reset has been applied, flase otherwise
+		 */
+		'onReset': function (image) { return false; }
 	}
 };
 
 
-/**
- * crop callback is triggered after the user clicked accept to accept his crop
- * @param image jquery image object reference
- * @param props cropping properties
- */
+
 GENTICS.Aloha.Image.onCropped = function (image, props) {};
 
-/**
- * reset callback is triggered before the internal reset procedure is applied
- * if this function returns true, then the reset has been handled by the callback
- * which means that no other reset will be applied
- * if false is returned the internal reset procedure will be applied
- * @param image jquery image object reference
- * @return true if a reset has been applied, flase otherwise
- */
+
 GENTICS.Aloha.Image.onReset = function (image) { return false; };
 
 
@@ -131,15 +135,6 @@ GENTICS.Aloha.Image.init = function(){
 			+ GENTICS.Aloha.settings.base 
 			+ 'plugins/com.gentics.aloha.plugins.CropNResize/css/cropnresize.css" />');
 	var that = this;
-	if (typeof this.settings.config.img.onCropped === "function") {
-		this.onCropped = this.settings.onCropped;
-	}
-	if (typeof this.settings.config.img.onReset === "function") {
-		this.onReset = this.settings.onReset;
-	}
-	if (typeof this.settings.config.img.aspectRatio !== "boolean") {
-		this.settings.aspectRatio = true;
-	}
 	that.initImage();
 	that.bindInteractions();
 	that.subscribeEvents();
@@ -397,6 +392,15 @@ GENTICS.Aloha.Image.bindInteractions = function () {
 				img.remove();
 			} // image removal when src field is blank
 		});
+	}
+	if (this.settings.config.img.onCropped && typeof this.settings.config.img.onCropped === "function") {
+		this.onCropped = this.settings.onCropped;
+	}
+	if (this.settings.config.img.onReset && typeof this.settings.config.img.onReset === "function") {
+		this.onReset = this.settings.onReset;
+	}
+	if (this.settings.config.img.aspectRatio && typeof this.settings.config.img.aspectRatio !== "boolean") {
+		this.settings.aspectRatio = true;
 	}
 };
 
