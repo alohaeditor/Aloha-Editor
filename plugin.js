@@ -93,6 +93,7 @@ GENTICS.Aloha.GoogleTranslate.translate = function (targetLang) {
 		
 		jQuery.ajax({ type: "GET",
 			dataType: "jsonp",
+			targetLang: targetLang, // store a reference to the target language to have it available when success function is triggered
 			url: 'https://www.googleapis.com/language/translate/v2' + 
 				'?key=' + this.apiKey +
 				'&target=' + targetLang + '&prettyprint=false' +
@@ -106,7 +107,7 @@ GENTICS.Aloha.GoogleTranslate.translate = function (targetLang) {
 			
 				// translation successful
 				if (res.data && res.data.translations) {
-					that.applyTranslation(res.data.translations, tree);
+					that.applyTranslation(res.data.translations, tree, this.context.targetLang);
 				}
 			}
 		});
@@ -117,19 +118,20 @@ GENTICS.Aloha.GoogleTranslate.translate = function (targetLang) {
  * apply a translation provided by google to the current selection
  * @param translations list of translations provided by google
  * @param tree the selection tree the translations will be applied to
+ * @param {String} lang language the content has been translated to
  */
-GENTICS.Aloha.GoogleTranslate.applyTranslation = function (translations, tree) {
+GENTICS.Aloha.GoogleTranslate.applyTranslation = function (translations, tree, lang) {
 	var key = 0;
 	for (var i=0; i<tree.length; i++) {
 		c = tree[i];
 		if (c.selection != "none") {
 			if (c.selection == "full") {
-				this.replaceText(c, translations[key].translatedText);
+				this.replaceText(c, translations[key].translatedText, lang);
 			} else if (c.selection == "partial") {
 				var txt = jQuery(c.domobj).text();
 				var pre = txt.substring(0, c.startOffset);
 				var post = txt.substring(c.endOffset, txt.length);
-				this.replaceText(c, pre + translations[key].translatedText + post);
+				this.replaceText(c, pre + translations[key].translatedText + post, null);
 			}
 			key++;
 		}
@@ -142,7 +144,7 @@ GENTICS.Aloha.GoogleTranslate.applyTranslation = function (translations, tree) {
  * @param text replacement text
  * @return void
  */
-GENTICS.Aloha.GoogleTranslate.replaceText = function (selectionTreeEntry, text) {
+GENTICS.Aloha.GoogleTranslate.replaceText = function (selectionTreeEntry, text, lang) {
 	// GoogleTranslate API will trim spaces so we have to check if
 	// there was a leading or trailing space
 	// check if the first char of the original string is a space
@@ -164,6 +166,8 @@ GENTICS.Aloha.GoogleTranslate.replaceText = function (selectionTreeEntry, text) 
 		);
 	} else {
 		jQuery(selectionTreeEntry.domobj)
-			.text(text);
+			.text(text)
+			// set the language attribute for non-text-nodes
+			.attr('lang', lang); 
 	}
 };
