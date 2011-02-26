@@ -34,7 +34,7 @@ class App
 
 	# Versioning
 	BRANCH_DEV			= 'dev'
-	BRANCH_VERSION	= '0.9.4'
+	BRANCH_VERSION	= '0.10'
 	BRANCH_MASTER		= 'master'
 
 	# Building
@@ -78,7 +78,7 @@ class App
 		end
 
     # Windows
-    if WINDOWS_CLI 
+    if WINDOWS_CLI
       command_e = command.gsub('"','\\"')
       result = `bash -c "#{command_e}"`
     else
@@ -89,11 +89,17 @@ class App
 		if output
 			puts result
 		end
-		
+
 		# Done
 		return result
 	end
   
+  # Check if a binary exists
+  def bin_exists? (bin)
+  	exists = !run("which #{bin}",false).strip.empty?
+  	return exists
+  end
+
   # Check if a binary exists
   def bin_exists? (bin)
   	exists = !run("which #{bin}",false).strip.empty?
@@ -115,7 +121,7 @@ class App
   	unless req_exists
   		abort("CLI requires the following binary which is not installed: #{req}")
   	end
-    
+
     # Done
   	return true
   end
@@ -256,15 +262,16 @@ class App
 	# Check if a Branch Exists
 	def branch_exists(branch)
 		branches = run("git branch",false)
-		regex = Regexp.new('[\\n\\s\\*]+' +	Regexp.escape(branch) + '\\n')
+		regex = Regexp.new('[\\n\\s\\*]+' +	Regexp.escape(branch.to_s) + '\\n')
 		result = ((branches =~ regex) ? true : false)
 		return result
 	end
 
 	# Check if a Branch Exists
 	def remote_branch_exists(branch)
+		fetch
 		branches = run("git branch -all",false)
-		regex = Regexp.new('\\/' +	Regexp.escape(branch) + '\\n')
+		regex = Regexp.new('\\/' +	Regexp.escape(branch.to_s) + '\\n')
 		result = ((branches =~ regex) ? true : false)
 		return result
 	end
@@ -282,7 +289,7 @@ class App
 			end
 		end
 	end
-	
+
 	# Apply multiple commands to submodules
 	def submodule_foreach(command)
 	  # Recursion
@@ -293,9 +300,9 @@ class App
 			end
 			return result
 		end
-		
+
 		result = run("git submodule foreach --recursive '" + command + "'")
-		
+
 		return result
 	end
 
@@ -314,15 +321,26 @@ class App
 			fetch(name)
 		end
 	end
-	
+
 	# Fetch a Remote
 	def fetch(remote="")
 		run("git fetch " + remote)
 	end
 
-	# Merge a Branch In
-	def merge(branch)
-		run("git merge #{branch}")
+	# Merge
+	def merge(base,*args)
+		if args.length === 0
+			return run("git merge #{base}")
+		end
+
+		checkout(base)
+
+		args.each do |branch|
+			checkout(branch)
+			merge(base)
+		end
+
+		checkout(base)
 	end
 
 	# Stage Known Files
@@ -391,17 +409,30 @@ class App
 	# ---------------------------------------------------------------------------
 	# Submodules
 
+	# Add a Plugin
+	def plugin(url,name='')
+		url = url.gsub(/^.+?(github.com)./,'http://\\1/')
+
+		if name.empty?
+			name = 'com.gentics.aloha.plugins.' + url.gsub(/^.+?Aloha-Plugin-(\w+)\.git/,'\\1')
+		end
+
+		dir = 'WebContent/plugins/'+name
+
+		run("git submodule add #{url} #{dir}")
+	end
+
 	# Initialise Submodules
 	def init_submodules
 		run([
 			"git submodule init",
 			"git submodule update"
 		])
-		
+
 		submodule_foreach([
 			"git reset --hard",
-			"git branch -D dev",
-			"git checkout -b dev origin/dev",
+			"git remote update",
+			"git fetch origin",
 			"git checkout master",
 			"git submodule init",
 			"git submodule update"
@@ -414,7 +445,7 @@ class App
 			"git submodule init",
 			"git submodule update --merge"
 		])
-		
+
 		submodule_foreach([
 			"git submodule init",
 			"git submodule update --merge"
@@ -427,7 +458,7 @@ class App
 			"git submodule init",
 			"git submodule update --merge"
 		])
-		
+
 		submodule_foreach([
 			"git checkout master",
 			"git pull --all"
@@ -472,6 +503,12 @@ class App
 
 	# ---------------------------------------------------------------------------
 	# Deploy
+
+	# Deploy
+	def deploy(base,*args)
+		merge(base,*args)
+		push
+	end
 
 	# Deploy the Changes From Master to Version + Dev
 	def deploy_from_master
@@ -569,7 +606,7 @@ class Booter
 		# True if required arguments were provided
 		def arguments_valid?
 			# TO DO - implement your real logic here
-			true if @arguments.length == 1
+			true if @arguments.length >= 1
 		end
 
 		# Setup the arguments
@@ -602,12 +639,21 @@ class Booter
 			# Create Application
 			app = App.new
 
+			# Extract
+			args = @arguments.clone
+			command = args.shift.gsub('-','_')
+
+
 			# Fetch + Execute
-			command = @arguments[0].gsub('-','_')
 			unless app.respond_to?(command)
 				abort("Unknown command: #{command}")
 			end
-			app.send(command)
+
+			if args.length === 0
+				app.send(command)
+			else
+				app.send(command,*args)
+			end
 		end
 
 		def process_standard_input
@@ -620,7 +666,6 @@ class Booter
 			#end
 		end
 end
-
 
 # Create Booter
 booter = Booter.new(ARGV, STDIN)
