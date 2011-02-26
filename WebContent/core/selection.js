@@ -162,8 +162,9 @@ GENTICS.Aloha.Selection.prototype = {
 			this.updateSelectionTimeout = undefined;
 		}
 		this.updateSelectionTimeout = window.setTimeout(function () {
-			GENTICS.Aloha.Selection.updateSelection(event);
-		}, 5);
+			if (event.target.nodeName.toLowerCase() !== 'img')   // nka -> click on an image is handled by Image plugin
+				GENTICS.Aloha.Selection.updateSelection(event); // For some reason, even if event is stopped in plugin,
+		}, 5);                                                  // I have this selectionChange with a weird range...
 	},
 
 	/**
