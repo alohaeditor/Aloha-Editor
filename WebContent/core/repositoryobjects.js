@@ -17,6 +17,11 @@
 *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+(function(window, undefined) {
+	var jQuery = window.alohaQuery;
+	var GENTICS = window.GENTICS;
+	var	Aloha = GENTICS.Aloha;
+
 GENTICS.Aloha.Repository.Object = function() {};
 
 /**
@@ -140,3 +145,5 @@ GENTICS.Aloha.Repository.Folder = function(properties) {
  * Not implemented method to generate this JS API doc.
  */
 //GENTICS.Aloha.Repository.Document.prototype.empty = function() {};
+
+})(window);

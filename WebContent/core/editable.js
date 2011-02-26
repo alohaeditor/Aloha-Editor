@@ -16,6 +16,11 @@
 *   You should have received a copy of the GNU Affero General Public License
 *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+
+(function(window, undefined) {
+	var jQuery = window.alohaQuery;
+	var GENTICS = window.GENTICS;
+	var	Aloha = GENTICS.Aloha;
 /**
  * Editable object
  * @namespace GENTICS.Aloha
@@ -675,3 +680,4 @@ GENTICS.Aloha.Editable.prototype = {
 		return ret;
 	}
 };
+})(window);

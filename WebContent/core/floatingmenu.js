@@ -16,6 +16,12 @@
 *   You should have received a copy of the GNU Affero General Public License
 *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+
+(function(window, undefined) {
+	var jQuery = window.alohaQuery;
+	var GENTICS = window.GENTICS;
+	var	Aloha = GENTICS.Aloha;
+
 /**
  * Aloha's Floating Menu
  * @namespace GENTICS.Aloha
@@ -938,3 +944,5 @@ GENTICS.Aloha.FloatingMenu.Group.prototype = {
 		return groupVisible;
 	}
 };
+
+})(window);
