@@ -478,7 +478,16 @@ jQuery.extend(true,GENTICS.Aloha.Image,{
 		imgRange.startContainer = imgRange.endContainer = thisimg.parent()[0];
 		imgRange.startOffset = offset;
 		imgRange.endOffset = offset+1;
+//		imgRange.update();
 		imgRange.select();
+//		GENTICS.Aloha.EventRegistry.trigger(
+//            new GENTICS.Aloha.Event(
+//                'selectionChanged',
+//                GENTICS.Aloha,
+//                [ imgRange, e ]
+//            )
+//        );
+
 		if (e.preventDefault)
 			e.preventDefault();
 		else
@@ -498,8 +507,8 @@ jQuery.extend(true,GENTICS.Aloha.Image,{
 				&& typeof range.startContainer.childNodes !== 'undefined'
 				&& typeof range.startOffset !== 'undefined'
 				&& typeof range.startContainer.childNodes[range.startOffset] !== 'undefined'
-				&& range.startContainer.childNodes[range.startOffset].nodeName.toLowerCase() == 'img'
-				&& range.startOffset === range.endOffset+1)
+				&& range.startContainer.childNodes[range.startOffset].nodeName.toLowerCase() === 'img'
+				&& range.startOffset+1 === range.endOffset)
 			{
 				result = range.startContainer.childNodes[range.startOffset];
 				if (! result.css) result.css = '';
