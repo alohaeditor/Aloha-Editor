@@ -343,12 +343,22 @@ class App
 	end
 
 	# Push to Origin
-	def push
+	def push(remote='',branch='')
+		run("git push "+remote+" "+branch)
+	end
+
+	# Pull
+	def pull(remote='',branch='')
+		run("git pull "+remote+" "+branch)
+	end
+
+	# Push to Origin
+	def push_all
 		run("git push origin --all")
 	end
 
 	# Pull From Everywhere
-	def pull
+	def pull_all
 		run("git pull --all")
 	end
 
