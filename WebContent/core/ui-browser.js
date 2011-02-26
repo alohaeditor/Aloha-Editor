@@ -16,11 +16,11 @@
 *   You should have received a copy of the GNU Affero General Public License
 *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-
 (function(window, undefined) {
-	var jQuery = window.alohaQuery;
-	var GENTICS = window.GENTICS;
-	var	Aloha = GENTICS.Aloha;
+	var
+		$ = jQuery = window.alohaQuery
+		GENTICS = window.GENTICS,
+		Aloha = GENTICS.Aloha;
 
 /**
  * !!!! ATTENTION !!!!
@@ -38,9 +38,9 @@ GENTICS.Aloha.ui.Browser = function () {
 	 * @cfg Function called when an element is selected
 	 */
 	this.onSelect = null;
-	
+
 	var that = this;
-	
+
 	// define the grid that represents the filelist
 	this.grid = new Ext.grid.GridPanel( {
 		region : 'center',
@@ -141,7 +141,7 @@ GENTICS.Aloha.ui.Browser = function () {
 		collapsible : true,
 		items : [ this.tree ]
 	});
-				
+
 	// add the nested tree and grid (filelist) to the window
 	this.win = new Ext.Window( {
 		title : 'Resource Selector',
@@ -149,7 +149,7 @@ GENTICS.Aloha.ui.Browser = function () {
 		width : 800,
 		height : 300,
 		closeAction : 'hide',
-		onEsc: function () { 
+		onEsc: function () {
 			this.hide();
 		},
 		defaultButton: this.nav,
@@ -170,12 +170,12 @@ GENTICS.Aloha.ui.Browser = function () {
 		}],
 	    toFront : function(e) {
 	        this.manager = this.manager || Ext.WindowMgr;
-	        this.manager.bringToFront(this); 
+	        this.manager.bringToFront(this);
 	        this.setZIndex(9999999999); // bring really to front (floating menu is not registered as window...)
 	        return this;
 	    }
 	});
-	
+
 	this.onItemSelect = function () {
 		var sm =  this.grid.getSelectionModel();
 		var sel = (sm) ? sm.getSelected() : null;
@@ -187,7 +187,7 @@ GENTICS.Aloha.ui.Browser = function () {
 	};
 };
 
-GENTICS.Aloha.ui.Browser.prototype = {	
+GENTICS.Aloha.ui.Browser.prototype = {
 	setObjectTypeFilter: function(otf) {
 		this.objectTypeFilter = otf;
 	},

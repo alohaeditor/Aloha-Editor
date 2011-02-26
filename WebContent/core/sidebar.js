@@ -17,9 +17,10 @@
 *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 (function(window, undefined) {
-	var jQuery = window.alohaQuery;
-	var GENTICS = window.GENTICS;
-	var	Aloha = GENTICS.Aloha;
+	var
+		$ = jQuery = window.alohaQuery
+		GENTICS = window.GENTICS,
+		Aloha = GENTICS.Aloha;
 
 /**
  * Abstract Sidebar

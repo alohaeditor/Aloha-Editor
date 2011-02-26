@@ -1,14 +1,19 @@
-/* This is auto generated on build-dev-include build. Templates at /build/deps/includejs* */ 
+/* This is auto generated on build-dev-include build. Templates at /build/deps/includejs* */
 (function(window, undefined) {
-	
+
+	window.GENTICS = window.GENTICS || {};
+	window.GENTICS.Aloha = window.GENTICS.Aloha || {};
+	window.GENTICS.Aloha.settings = window.GENTICS.Aloha.settings || {};
+	window.GENTICS.Aloha.ui = window.GENTICS.Aloha.ui || {};
+	window.GENTICS_Plugins = window.GENTICS_Plugins || [];
+
 	/* Check if base DIR is set through configuration otherwise set to default */
 	window.GENTICS_Aloha_base = window.GENTICS_Aloha_base || '/Aloha/';
-	
-	/* load javascript */
-	var header = document.getElementsByTagName('head')[0];
-	
+
+	var includes = [];
+
+
 	/* Check if jQuery Exists, if not include it */
 	if (typeof window.jQuery === 'undefined') {
-		document.write('<script type="text/javascript" src="' + window.GENTICS_Aloha_base + 'deps/jquery-1.4.4.js"></script>');
+		includes.push(window.GENTICS_Aloha_base + 'deps/jquery-1.5.1.js');
 	}
-	

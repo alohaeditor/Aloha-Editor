@@ -15,43 +15,50 @@
 
 <!-- turn an element into editable Aloha continuous text -->
 <script type="text/javascript">
-GENTICS.Aloha.settings = {
-	logLevels: {'error': true, 'warn': true, 'info': true, 'debug': true},
-	errorhandling : false,
-	"i18n": {
-		// let the system detect the users language
-		//"acceptLanguage": '<?=$_SERVER['HTTP_ACCEPT_LANGUAGE']?>'
-		"acceptLanguage": 'de-de,de;q=0.8,it;q=0.6,en-us;q=0.7,en;q=0.2'
-	},
-	"plugins": {
-	 	"com.gentics.aloha.plugins.Link": {
-		  	// all links that match the targetregex will get set the target
- 			// e.g. ^(?!.*aloha-editor.com).* matches all href except aloha-editor.com
-		  	targetregex : '^(?!.*aloha-editor.com).*',
-		  	// this target is set when either targetregex matches or not set
-		    // e.g. _blank opens all links in new window
-		  	target : '_blank',
-		  	// the same for css class as for target
-		  	cssclassregex : '^(?!.*aloha-editor.com).*',
-		  	cssclass : 'external'
-		},
-	 	"com.gentics.aloha.plugins.Table": {
-			config: ['table']
-		},
-	 	"com.gentics.aloha.plugins.Ribbon": {
-			enable: true
-		}
-  	}
-};
+(function(window,undefined){
+	var
+		$ = window.jQuery,
+		GENTICS = window.GENTICS;
 
-$(document).ready(function() {
+	GENTICS.Aloha.settings = {
+		logLevels: {'error': true, 'warn': true, 'info': true, 'debug': true},
+		errorhandling : false,
+		"i18n": {
+			// let the system detect the users language
+			//"acceptLanguage": '<?=$_SERVER['HTTP_ACCEPT_LANGUAGE']?>'
+			"acceptLanguage": 'de-de,de;q=0.8,it;q=0.6,en-us;q=0.7,en;q=0.2'
+		},
+		"plugins": {
+			"com.gentics.aloha.plugins.Link": {
+					// all links that match the targetregex will get set the target
+				// e.g. ^(?!.*aloha-editor.com).* matches all href except aloha-editor.com
+					targetregex : '^(?!.*aloha-editor.com).*',
+					// this target is set when either targetregex matches or not set
+					// e.g. _blank opens all links in new window
+					target : '_blank',
+					// the same for css class as for target
+					cssclassregex : '^(?!.*aloha-editor.com).*',
+					cssclass : 'external'
+			},
+			"com.gentics.aloha.plugins.Table": {
+				config: ['table']
+			},
+			"com.gentics.aloha.plugins.Ribbon": {
+				enable: true
+			}
+			}
+	};
 
-	$('#content').aloha();
-});  
+	$(function(){
+		$('#content').aloha();
+	});
+
+})(window);
+
 </script>
 </head>
 <body>
-<div id="main"> 
+<div id="main">
 <div id="bodyContent">
 <div id="content" class="article">
 	<hgroup>

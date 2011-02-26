@@ -17,9 +17,10 @@
 *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 (function(window, undefined) {
-	var jQuery = window.alohaQuery;
-	var GENTICS = window.GENTICS;
-	var	Aloha = GENTICS.Aloha;
+	var
+		$ = jQuery = window.alohaQuery
+		GENTICS = window.GENTICS,
+		Aloha = GENTICS.Aloha;
 
 /**
  * Abstract Repository Class. Implement that class for your own repository.
@@ -27,14 +28,14 @@
  * @class Repository
  * @constructor
  * @param {String} repositoryId unique repository identifier
- * @param {String} repositoryName (optional) is the displyed name for this Repository instance 
+ * @param {String} repositoryName (optional) is the displyed name for this Repository instance
  */
 GENTICS.Aloha.Repository = function(repositoryId, repositoryName) {
 	/**
-	 * @property repositoryId is the unique Id for this Repository instance 
+	 * @property repositoryId is the unique Id for this Repository instance
 	 */
 	this.repositoryId = repositoryId;
-	
+
 	/**
 	 * contains the repository's settings object
 	 * @property settings {Object} the repository's settings stored in an object
@@ -42,10 +43,10 @@ GENTICS.Aloha.Repository = function(repositoryId, repositoryName) {
 	this.settings = {};
 
 	/**
-	 * @property repositoryName is the name for this Repository instance 
+	 * @property repositoryName is the name for this Repository instance
 	 */
 	this.repositoryName = (repositoryName) ? repositoryName : repositoryId;
-	
+
 	GENTICS.Aloha.RepositoryManager.register(this);
 
 };
@@ -58,29 +59,29 @@ GENTICS.Aloha.Repository.prototype = {
 	 */
 	init: function() {},
 
-	/** 
+	/**
 	 * Searches a repository for object items matching queryString if none found returns null.
 	 * The returned object items must be an array of Aloha.Repository.Object
-	 * 
+	 *
 	<pre><code>
 	// simple delicious implementation
 	GENTICS.Aloha.Repositories.myRepository.query = function (params, callback) {
-	
+
 		// make local var of this to use in ajax function
 		var that = this;
-	
+
 		// handle each word as tag
 		var tags = p.queryString.split(' ');
-	
-		// if we have a query and no tag matching return 
+
+		// if we have a query and no tag matching return
 		if ( p.queryString && tags.length == 0 ) {
 			callback.call( that, []);
 			return;
 		}
-	
+
 		// no handling of objectTypeFilter, filter, inFolderId, etc...
 		// in real implementation you should handle all parameters
-	
+
 		jQuery.ajax({ type: "GET",
 			dataType: "jsonp",
 			url: 'http://feeds.delicious.com/v2/json/' + tags.join('+'),
@@ -93,7 +94,7 @@ GENTICS.Aloha.Repository.prototype = {
 							id: data[i].u,
 							name: data[i].d,
 							repositoryId: that.repositoryId,
-							type: 'website', 
+							type: 'website',
 							url: data[i].u
 						}));
 					}
@@ -102,8 +103,8 @@ GENTICS.Aloha.Repository.prototype = {
 			}
 		});
 	};
-	</code></pre>			
-	 * 
+	</code></pre>
+	 *
 	 * @param {object} params object with properties
 	 * <div class="mdetail-params"><ul>
 	 * <li><code> queryString</code> :  String <div class="sub-desc">The query string for full text search</div></li>
@@ -140,8 +141,8 @@ GENTICS.Aloha.Repository.prototype = {
 
 	/**
 	 * Make the given jQuery object (representing an object marked as object of this type)
-	 * clean. All attributes needed for handling should be removed. 
-	 * 
+	 * clean. All attributes needed for handling should be removed.
+	 *
 	<pre><code>
 	GENTICS.Aloha.Repositories.myRepository.makeClean = function (obj) {
 		obj.removeAttr('data-myRepository-name');
@@ -153,22 +154,22 @@ GENTICS.Aloha.Repository.prototype = {
 	makeClean: function (obj) {},
 
 	/**
-	 * This method will be called when a user chooses an item from a repository and wants 
+	 * This method will be called when a user chooses an item from a repository and wants
 	 * to insert this item in his content.
 	 * Mark or modify an object as needed by that repository for handling, processing or identification.
 	 * Objects can be any DOM object as A, SPAN, ABBR, etc. or
 	 * special objects such as GENTICS_aloha_block elements.
 	 * (see http://dev.w3.org/html5/spec/elements.html#embedding-custom-non-visible-data)
-	 * 
+	 *
 	<pre><code>
 	GENTICS.Aloha.Repositories.myRepository.markObject = function (obj, resourceItem) {
 		obj.attr('data-myRepository-name').text(resourceItem.name);
 	};
 	</code></pre>
-	 * 
-	 * 
-	 * @param obj jQuery target object to which the repositoryItem will be applied 
-	 * @param repositoryItem The selected item. A class constructed from Document or Folder. 
+	 *
+	 *
+	 * @param obj jQuery target object to which the repositoryItem will be applied
+	 * @param repositoryItem The selected item. A class constructed from Document or Folder.
 	 * @return void
 	 */
 	markObject: function (obj, repositoryItem) {},

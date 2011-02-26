@@ -3,127 +3,128 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Aloha, World!</title>
-<script>GENTICS_Aloha_base="../";</script>
+<script>
+	GENTICS_Aloha_base = "../";
+	GENTICS_Plugins = ['Format','Table','List','HighlightEditables','TOC','Link/delicious.js','Link','Paste','Paste/wordpastehandler.js'];
+</script>
+<script type="text/javascript" src="../deps/jquery-1.5.1.js"></script>
 <script type="text/javascript" src="../core/include.js"></script>
-<script type="text/javascript" src="../plugins/com.gentics.aloha.plugins.Format/plugin.js"></script>
-<script type="text/javascript" src="../plugins/com.gentics.aloha.plugins.Table/plugin.js"></script>
-<script type="text/javascript" src="../plugins/com.gentics.aloha.plugins.List/plugin.js"></script>
-<script type="text/javascript" src="../plugins/com.gentics.aloha.plugins.Link/plugin.js"></script>
-<script type="text/javascript" src="../plugins/com.gentics.aloha.plugins.HighlightEditables/plugin.js"></script>
-<script type="text/javascript" src="../plugins/com.gentics.aloha.plugins.TOC/plugin.js"></script>
-<script type="text/javascript" src="../plugins/com.gentics.aloha.plugins.Link/delicious.js"></script>
-<script type="text/javascript" src="../plugins/com.gentics.aloha.plugins.Link/LinkList.js"></script>
-<script type="text/javascript" src="../plugins/com.gentics.aloha.plugins.Paste/plugin.js"></script>
-<script type="text/javascript" src="../plugins/com.gentics.aloha.plugins.Paste/wordpastehandler.js"></script>
 <link rel="stylesheet" href="AlohaWorld.css" />
 
 <!-- turn an element into editable Aloha continuous text -->
 <script type="text/javascript">
-GENTICS.Aloha.settings = {
-	logLevels: {'error': true, 'warn': true, 'info': true, 'debug': false},
-	errorhandling : false,
-	ribbon: false,	
-	"i18n": {
-		// you can either let the system detect the users language (set acceptLanguage on server)
-		// In PHP this would would be '<?=$_SERVER['HTTP_ACCEPT_LANGUAGE']?>' resulting in 
-		// "acceptLanguage": 'de-de,de;q=0.8,it;q=0.6,en-us;q=0.7,en;q=0.2'
-		// or set current on server side to be in sync with your backend system 
-		"current": "en" 
-	},
-	"repositories": {
-	 	"com.gentics.aloha.repositories.LinkList": {
-	 		data: [
- 		        { name: 'Aloha Developers Wiki', url:'http://www.aloha-editor.com/wiki', type:'website', weight: 0.50 },
- 		        { name: 'Aloha Editor - The HTML5 Editor', url:'http://aloha-editor.com', type:'website', weight: 0.90  },
- 		        { name: 'Aloha Demo', url:'http://www.aloha-editor.com/demos.html', type:'website', weight: 0.75  },
- 		        { name: 'Aloha Wordpress Demo', url:'http://www.aloha-editor.com/demos/wordpress-demo/index.html', type:'website', weight: 0.75  },
- 		        { name: 'Aloha Logo', url:'http://www.aloha-editor.com/images/aloha-editor-logo.png', type:'image', weight: 0.10  }
-	 		]
-		}
-	},
-	"plugins": {
-	 	"com.gentics.aloha.plugins.Format": {
-		 	// all elements with no specific configuration get this configuration
-			config : [ 'b', 'i','sub','sup'],
-		  	editables : {
-				// no formatting allowed for title
-				'#title'	: [ ], 
-				// formatting for all editable DIVs
-				'div'		: [ 'b', 'i', 'del', 'sub', 'sup'  ], 
-				// content is a DIV and has class .article so it gets both buttons
-				'.article'	: [ 'b', 'i', 'p', 'title', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'removeFormat']
-		  	}
-		},
-	 	"com.gentics.aloha.plugins.List": { 
-		 	// all elements with no specific configuration get an UL, just for fun :)
-			config : [ 'ul' ],
-		  	editables : {
-				// Even if this is configured it is not set because OL and UL are not allowed in H1.
-				'#title'	: [ 'ol' ], 
-				// all divs get OL
-				'div'		: [ 'ol' ], 
-				// content is a DIV. It would get only OL but with class .article it also gets UL.
-				'.article'	: [ 'ul' ]
-		  	}
-		},
-	 	"com.gentics.aloha.plugins.Link": {
-		 	// all elements with no specific configuration may insert links
-			config : [ 'a' ],
-		  	editables : {
-				// No links in the title.
-				'#title'	: [  ]
-		  	},
-		  	// all links that match the targetregex will get set the target
- 			// e.g. ^(?!.*aloha-editor.com).* matches all href except aloha-editor.com
-		  	targetregex : '^(?!.*aloha-editor.com).*',
-		  	// this target is set when either targetregex matches or not set
-		    // e.g. _blank opens all links in new window
-		  	target : '_blank',
-		  	// the same for css class as for target
-		  	cssclassregex : '^(?!.*aloha-editor.com).*',
-		  	cssclass : 'aloha',
-		  	// use all resources of type website for autosuggest
-		  	objectTypeFilter: ['website'],
-		  	// handle change of href
-		  	onHrefChange: function( obj, href, item ) {
-			  	if ( item ) {
-					jQuery(obj).attr('data-name', item.name);
-			  	} else {
-					jQuery(obj).removeAttr('data-name');
-			  	}
-		  	}
-		},
-	 	"com.gentics.aloha.plugins.Table": { 
-		 	// all elements with no specific configuration are not allowed to insert tables
-			config : [ ],
-		  	editables : {
-				// Allow insert tables only into .article
-				'.article'	: [ 'table' ] 
-		  	},
-		  	// [{name:'green', text:'Green', tooltip:'Green is cool', iconClass:'GENTICS_table GENTICS_button_green', cssClass:'green'}]
-			tableConfig : [
-          	    {name:'hor-minimalist-a'},
-          	    {name:'box-table-a'},
-          	    {name:'hor-zebra'},
-		    ],
-		    columnConfig : [
-          	    {name:'bigbold', iconClass:'GENTICS_button_col_bigbold'},
-          	    {name:'redwhite', iconClass:'GENTICS_button_col_redwhite'}
-		    ],
-			rowConfig : [
-         	    {name:'bigbold', iconClass:'GENTICS_button_row_bigbold'},
-         	    {name:'redwhite', iconClass:'GENTICS_button_row_redwhite'}
-		    ]
-		            	  	
-		}
-  	}
-};
+(function(window,undefined){
+	var
+		$ = window.jQuery,
+		GENTICS = window.GENTICS;
 
-$(document).ready(function() {
-	$('#title').aloha();
-	$('#teaser').aloha();
-	$('#content').aloha();
-});
+	GENTICS.Aloha.settings = {
+		logLevels: {'error': true, 'warn': true, 'info': true, 'debug': false},
+		errorhandling : false,
+		ribbon: false,
+		"i18n": {
+			// you can either let the system detect the users language (set acceptLanguage on server)
+			// In PHP this would would be '<?=$_SERVER['HTTP_ACCEPT_LANGUAGE']?>' resulting in
+			// "acceptLanguage": 'de-de,de;q=0.8,it;q=0.6,en-us;q=0.7,en;q=0.2'
+			// or set current on server side to be in sync with your backend system
+			"current": "en"
+		},
+		"repositories": {
+			"com.gentics.aloha.repositories.LinkList": {
+				data: [
+							{ name: 'Aloha Developers Wiki', url:'http://www.aloha-editor.com/wiki', type:'website', weight: 0.50 },
+							{ name: 'Aloha Editor - The HTML5 Editor', url:'http://aloha-editor.com', type:'website', weight: 0.90  },
+							{ name: 'Aloha Demo', url:'http://www.aloha-editor.com/demos.html', type:'website', weight: 0.75  },
+							{ name: 'Aloha Wordpress Demo', url:'http://www.aloha-editor.com/demos/wordpress-demo/index.html', type:'website', weight: 0.75  },
+							{ name: 'Aloha Logo', url:'http://www.aloha-editor.com/images/aloha-editor-logo.png', type:'image', weight: 0.10  }
+				]
+			}
+		},
+		"plugins": {
+			"com.gentics.aloha.plugins.Format": {
+				// all elements with no specific configuration get this configuration
+				config : [ 'b', 'i','sub','sup'],
+					editables : {
+					// no formatting allowed for title
+					'#title'	: [ ],
+					// formatting for all editable DIVs
+					'div'		: [ 'b', 'i', 'del', 'sub', 'sup'  ],
+					// content is a DIV and has class .article so it gets both buttons
+					'.article'	: [ 'b', 'i', 'p', 'title', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'removeFormat']
+					}
+			},
+			"com.gentics.aloha.plugins.List": {
+				// all elements with no specific configuration get an UL, just for fun :)
+				config : [ 'ul' ],
+					editables : {
+					// Even if this is configured it is not set because OL and UL are not allowed in H1.
+					'#title'	: [ 'ol' ],
+					// all divs get OL
+					'div'		: [ 'ol' ],
+					// content is a DIV. It would get only OL but with class .article it also gets UL.
+					'.article'	: [ 'ul' ]
+					}
+			},
+			"com.gentics.aloha.plugins.Link": {
+				// all elements with no specific configuration may insert links
+				config : [ 'a' ],
+					editables : {
+					// No links in the title.
+					'#title'	: [  ]
+					},
+					// all links that match the targetregex will get set the target
+				// e.g. ^(?!.*aloha-editor.com).* matches all href except aloha-editor.com
+					targetregex : '^(?!.*aloha-editor.com).*',
+					// this target is set when either targetregex matches or not set
+					// e.g. _blank opens all links in new window
+					target : '_blank',
+					// the same for css class as for target
+					cssclassregex : '^(?!.*aloha-editor.com).*',
+					cssclass : 'aloha',
+					// use all resources of type website for autosuggest
+					objectTypeFilter: ['website'],
+					// handle change of href
+					onHrefChange: function( obj, href, item ) {
+						if ( item ) {
+						jQuery(obj).attr('data-name', item.name);
+						} else {
+						jQuery(obj).removeAttr('data-name');
+						}
+					}
+			},
+			"com.gentics.aloha.plugins.Table": {
+				// all elements with no specific configuration are not allowed to insert tables
+				config : [ ],
+					editables : {
+					// Allow insert tables only into .article
+					'.article'	: [ 'table' ]
+					},
+					// [{name:'green', text:'Green', tooltip:'Green is cool', iconClass:'GENTICS_table GENTICS_button_green', cssClass:'green'}]
+				tableConfig : [
+									{name:'hor-minimalist-a'},
+									{name:'box-table-a'},
+									{name:'hor-zebra'},
+					],
+					columnConfig : [
+									{name:'bigbold', iconClass:'GENTICS_button_col_bigbold'},
+									{name:'redwhite', iconClass:'GENTICS_button_col_redwhite'}
+					],
+				rowConfig : [
+								{name:'bigbold', iconClass:'GENTICS_button_row_bigbold'},
+								{name:'redwhite', iconClass:'GENTICS_button_row_redwhite'}
+					]
+
+			}
+			}
+	};
+
+	$(function(){
+		$('#title').aloha();
+		$('#teaser').aloha();
+		$('#content').aloha();
+	});
+
+})(window);
 
 </script>
 <style>
@@ -166,7 +167,7 @@ $(document).ready(function() {
 .box-table-a td
 {
 	padding: 8px;
-	background: #e8edff; 
+	background: #e8edff;
 	border-bottom: 1px solid #fff;
 	border-top: 1px solid transparent;
 }
@@ -186,7 +187,7 @@ $(document).ready(function() {
 	font-weight: bold;
 	padding: 10px 8px;
 	border-bottom: 2px solid #6678b1;
-	
+
 }
 .hor-zebra td
 {
@@ -194,7 +195,7 @@ $(document).ready(function() {
 }
 .hor-zebra tr:nth-child(2n+1) td
 {
-	background: #e8edff; 
+	background: #e8edff;
 }
 
 td.bigbold {
@@ -209,7 +210,7 @@ td.redwhite {
 </style>
 </head>
 <body>
-<div id="main"> 
+<div id="main">
 <div id="tree-div"></div>
 <h1 id="title">Aloha, World!</h1>
 <div id="bodyContent">

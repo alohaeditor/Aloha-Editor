@@ -18,9 +18,10 @@
 */
 
 (function(window, undefined) {
-	var jQuery = window.alohaQuery;
-	var GENTICS = window.GENTICS;
-	var	Aloha = GENTICS.Aloha;
+	var
+		$ = jQuery = window.alohaQuery
+		GENTICS = window.GENTICS,
+		Aloha = GENTICS.Aloha;
 
 /**
  * Aloha's Floating Menu
@@ -117,7 +118,7 @@ GENTICS.Aloha.FloatingMenu.init = function() {
 			jQuery.storage.set('GENTICS.Aloha.FloatingMenu.top', offset.top);
 			jQuery.storage.set('GENTICS.Aloha.FloatingMenu.left', offset.left);
 			if (GENTICS.Aloha.Log.isInfoEnabled()) {
-				GENTICS.Aloha.Log.info(this, 'stored FloatingMenu pinned position {' + offset.left 
+				GENTICS.Aloha.Log.info(this, 'stored FloatingMenu pinned position {' + offset.left
 						+ ', ' + offset.top + '}');
 			}
 		} else {
@@ -135,7 +136,7 @@ GENTICS.Aloha.FloatingMenu.init = function() {
 			that.floatTo(target);
 		}
 	});
-	this.generateComponent();	
+	this.generateComponent();
 	this.initialized = true;
 };
 
@@ -169,7 +170,7 @@ GENTICS.Aloha.FloatingMenu.generateComponent = function () {
 	Ext.apply(Ext.QuickTips.getQuickTip(), {
 		minWidth : 10
 	});
-	
+
 	if (this.extTabPanel) {
 		// TODO dispose of the ext component
 	}
@@ -189,7 +190,7 @@ GENTICS.Aloha.FloatingMenu.generateComponent = function () {
 			},
 			endDrag : function(e) {
 				var top = (GENTICS.Aloha.FloatingMenu.pinned) ? this.y - jQuery(document).scrollTop() : this.y;
-				
+
 				that.left = this.x;
 				that.top = top;
 				this.panel.setPosition(this.x, top);
@@ -199,7 +200,7 @@ GENTICS.Aloha.FloatingMenu.generateComponent = function () {
 		},
 		floating: true,
 		defaults: {
-			autoScroll: true 
+			autoScroll: true
 		},
 		layoutOnTabChange : true,
 		shadow: false,
@@ -232,7 +233,7 @@ GENTICS.Aloha.FloatingMenu.generateComponent = function () {
 							}
 						}
 					});
-					
+
 					// adapt the shadow
 					GENTICS.Aloha.FloatingMenu.shadow.show();
 					GENTICS.Aloha.FloatingMenu.refreshShadow();
@@ -247,11 +248,11 @@ GENTICS.Aloha.FloatingMenu.generateComponent = function () {
 		// let each tab generate its ext component and add them to the panel
 		that.extTabPanel.add(tab.getExtComponent());
 	});
-	
+
 	// add the dropshadow
 	this.shadow = jQuery('<div id="GENTICS_floatingmenu_shadow" class="GENTICS_shadow">&#160;</div>');
 	jQuery('body').append(this.shadow);
-	
+
 	// add an empty pin tab item, store reference
 	var pinTab = this.extTabPanel.add({
 		title : '&#160;'
@@ -268,23 +269,23 @@ GENTICS.Aloha.FloatingMenu.generateComponent = function () {
 			that.togglePin();
 			e.stopPropagation();
 		});
-	
+
 	// a reference to the panels body needed for shadow size & position
 	this.panelBody = jQuery('div.GENTICS_floatingmenu div.x-tab-panel-bwrap');
-	
+
 	// do the visibility
 	this.doLayout();
 
 	// bind jQuery reference to extjs obj
 	// this has to be done AFTER the tab panel has been rendered
 	this.obj = jQuery(this.extTabPanel.getEl().dom);
-	
+
 	if (jQuery.storage.get('GENTICS.Aloha.FloatingMenu.pinned') == 'true') {
 		this.togglePin();
 
 		this.top = parseInt(jQuery.storage.get('GENTICS.Aloha.FloatingMenu.top'));
 		this.left = parseInt(jQuery.storage.get('GENTICS.Aloha.FloatingMenu.left'));
-		
+
 		// do some positioning fixes
 		if (this.top < 30) {
 			this.top = 30;
@@ -292,11 +293,11 @@ GENTICS.Aloha.FloatingMenu.generateComponent = function () {
 		if (this.left < 0) {
 			this.left = 0;
 		}
-		
+
 		if (GENTICS.Aloha.Log.isInfoEnabled()) {
 			GENTICS.Aloha.Log.info(this, 'restored FloatingMenu pinned position {' + this.left + ', ' + this.top + '}');
 		}
-		
+
 		this.refreshShadow();
 	}
 
@@ -307,14 +308,14 @@ GENTICS.Aloha.FloatingMenu.generateComponent = function () {
 
 	// for now, position the panel somewhere
 	this.extTabPanel.setPosition(this.left, this.top);
-	
+
 	// disable event bubbling for mousedown, because we don't want to recognize
 	// a click into the floatingmenu to be a click into nowhere (which would
 	// deactivate the editables)
 	this.obj.mousedown(function (e) {
 		e.stopPropagation();
 	});
-	
+
 	// listen to selectionChanged event
 	GENTICS.Aloha.EventRegistry.subscribe(
 		GENTICS.Aloha,
@@ -341,12 +342,12 @@ GENTICS.Aloha.FloatingMenu.refreshShadow = function (resize) {
 			'top': this.top + 24, // 24px top offset to reflect tab bar height
 			'left': this.left
 		};
-		
+
 		if(typeof resize === 'undefined' || !resize) {
 			props.width = this.panelBody.width() + 'px';
 			props.height = this.panelBody.height() + 'px';
 		}
-		
+
 		GENTICS.Aloha.FloatingMenu.shadow.css(props);
 	}
 };
@@ -360,27 +361,27 @@ GENTICS.Aloha.FloatingMenu.togglePin = function() {
 	if (this.pinned) {
 		el.removeClass('GENTICS_floatingmenu_pinned');
 		this.top = this.obj.offset().top;
-		
+
 		this.obj.removeClass('fixed').css({
 			'top': this.top
 		});
 
 		this.shadow.removeClass('fixed');
 		this.refreshShadow();
-		
+
 		this.pinned = false;
 	} else {
 		el.addClass('GENTICS_floatingmenu_pinned');
 		this.top = this.obj.offset().top - this.window.scrollTop();
-		
+
 		this.obj.addClass('fixed').css({
 			'top': this.top // update position for fixed position
 		});
-		
+
 		// do the same for the shadow
 		this.shadow.addClass('fixed');props.start
 		this.refreshShadow();
-		
+
 		this.pinned = true;
 	}
 };
@@ -646,11 +647,11 @@ GENTICS.Aloha.FloatingMenu.nextFloatTargetObj = function (obj, limitObj) {
  * @hide
  */
 GENTICS.Aloha.FloatingMenu.calcFloatTarget = function(range) {
-	// TODO in IE8 somteimes a broken range is handed to this function - investigate this 
+	// TODO in IE8 somteimes a broken range is handed to this function - investigate this
 	if (!GENTICS.Aloha.activeEditable || typeof range.getCommonAncestorContainer === 'undefined') {
 		return false;
 	}
-	
+
 	// check if the designated editable is disabled
 	for (var i = 0, editableLength = GENTICS.Aloha.editables.length; i < editableLength; i++) {
 		if (GENTICS.Aloha.editables[i].obj.get(0) == range.limitObject &&
@@ -658,7 +659,7 @@ GENTICS.Aloha.FloatingMenu.calcFloatTarget = function(range) {
 			return false;
 		}
 	}
-	
+
 	var targetObj = jQuery(this.nextFloatTargetObj(range.getCommonAncestorContainer(), range.limitObject)),
 		scrollTop = GENTICS.Utils.Position.Scroll.top;
 	if (!targetObj || !targetObj.offset()) {
@@ -670,16 +671,16 @@ GENTICS.Aloha.FloatingMenu.calcFloatTarget = function(range) {
 	if ( y < scrollTop) {
 		y += 50 + GENTICS.Utils.Position.ScrollCorrection.top;
 	}
-	
+
 	// if the floating menu would float off the bottom of the screen
 	// we don't want it to move, so we'll return false
 	if (y > this.window.height() + this.window.scrollTop()) {
 		return false;
 	}
-	
+
 	return {
 		x : GENTICS.Aloha.activeEditable.obj.offset().left,
-		y : y 
+		y : y
 	};
 };
 
@@ -694,7 +695,7 @@ GENTICS.Aloha.FloatingMenu.floatTo = function(position) {
 	if (this.pinned) {
 		return;
 	}
-	
+
 	var that = this;
 
 	// move to the new position
@@ -702,7 +703,7 @@ GENTICS.Aloha.FloatingMenu.floatTo = function(position) {
 		this.obj.animate({
 			top:  position.y,
 			left: position.x
-		}, { 
+		}, {
 			queue : false,
 			step : function (step, props) {
 				// update position reference
@@ -711,7 +712,7 @@ GENTICS.Aloha.FloatingMenu.floatTo = function(position) {
 				} else if (props.prop == 'left') {
 					that.left = props.now;
 				}
-				
+
 				that.refreshShadow(false);
 			}
 		});
@@ -833,7 +834,7 @@ GENTICS.Aloha.FloatingMenu.Group.prototype = {
 		} else {
 				this.buttons.push(buttonInfo);
 		}
-		
+
 	},
 
 	/**
@@ -852,20 +853,20 @@ GENTICS.Aloha.FloatingMenu.Group.prototype = {
 			if (this.fields.length > 1) {
 				columnCount = 1;
 			}
-			
+
 			jQuery.each(this.buttons, function(index, button) {
 				// count the number of buttons (large buttons count as 2)
 				buttonCount += button.button.size == 'small' ? 1 : 2;
 			});
 			columnCount = columnCount+ Math.ceil(buttonCount / 2);
-			
+
 			if (this.fields.length > 0) {
 				items.push(this.fields[0].button.getExtConfigProperties());
 			}
 			var len = this.buttons.length,
 				idx = 0,
 				half =  Math.ceil(this.buttons.length / 2) - this.buttons.length % 2 ;
-			
+
 			while (--len >= half) {
 				items.push(this.buttons[idx++].button.getExtConfigProperties());
 			}
@@ -876,7 +877,7 @@ GENTICS.Aloha.FloatingMenu.Group.prototype = {
 			while (--len >=0) {
 				items.push(this.buttons[idx++].button.getExtConfigProperties());
 			}
-			
+
 			this.extButtonGroup = new Ext.ButtonGroup({
 				'columns' : columnCount,
 				'items': items

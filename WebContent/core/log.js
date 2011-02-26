@@ -17,9 +17,10 @@
 *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 (function(window, undefined) {
-	var jQuery = window.alohaQuery;
-	var GENTICS = window.GENTICS;
-	var	Aloha = GENTICS.Aloha;
+	var
+		$ = jQuery = window.alohaQuery
+		GENTICS = window.GENTICS,
+		Aloha = GENTICS.Aloha;
 
 /**
  * This is the aloha Log
@@ -207,7 +208,7 @@ GENTICS.Aloha.Log.prototype = {
 	 * @hide
 	 */
 	addToLogHistory: function(entry) {
-	
+
 		if (
 			// when maxEntries is set to something illegal, we do nothing (log history is disabled)
 			GENTICS.Aloha.settings.logHistory.maxEntries <= 0

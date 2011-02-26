@@ -1,5 +1,5 @@
 /*!
-* 
+*
 *   This file is part of Aloha Editor
 *   Author & Copyright (c) 2010 Gentics Software GmbH, aloha@gentics.com
 *   Licensed unter the terms of http://www.aloha-editor.com/license.html
@@ -19,13 +19,14 @@
 */
 
 (function(window, undefined) {
-	var jQuery = window.alohaQuery;
-	var GENTICS = window.GENTICS;
-	var	Aloha = GENTICS.Aloha;
+	var
+		$ = jQuery = window.alohaQuery
+		GENTICS = window.GENTICS,
+		Aloha = GENTICS.Aloha;
 
 /**
  * @namespace GENTICS.Aloha
- * @class Event represents an Aloha Event	
+ * @class Event represents an Aloha Event
  * @constructor
  * @param {String} eventName the name of the event
  * @param {Object} eventSource the source of the event, which might be any Aloha-specific object. Use the Gentics.Aloha object for global events

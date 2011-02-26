@@ -1,2 +1,17 @@
-	
+
+	var value,url;
+	for ( i=0,n=window.GENTICS_Plugins.length; i<n; ++i ) {
+		value = window.GENTICS_Plugins[i];
+		if ( value.indexOf('/') === -1 ) {
+			value += '/plugin.js';
+		}
+		url = window.GENTICS_Aloha_base + 'plugins/com.gentics.aloha.plugins.' + value;
+		includes.push(url);
+	}
+
+	for ( i=0,n=includes.length; i<n; ++i ) {
+		value = includes[i];
+		document.write('<script src="'+value+'"></script>');
+	}
+
 })(window);

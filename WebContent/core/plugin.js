@@ -17,9 +17,10 @@
 *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 (function(window, undefined) {
-	var jQuery = window.alohaQuery;
-	var GENTICS = window.GENTICS;
-	var	Aloha = GENTICS.Aloha;
+	var
+		$ = jQuery = window.alohaQuery
+		GENTICS = window.GENTICS,
+		Aloha = GENTICS.Aloha;
 
 /**
  * Plugin Registry
@@ -52,7 +53,7 @@ GENTICS.Aloha.PluginRegistry.prototype = {
 		var loaded = 0,
 			length = this.plugins.length
 			pluginsStack = [];
-	
+
 		// Initialize the plugins in the right order when they are loaded
 		GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'i18nPluginsLoaded', function () {
 			for ( var i = 0; i < length; i++) {
@@ -60,12 +61,12 @@ GENTICS.Aloha.PluginRegistry.prototype = {
 					pluginsStack[i].init();
 				}
 			}
-		
+
 			GENTICS.Aloha.EventRegistry.trigger(
 				new GENTICS.Aloha.Event('i18nPluginsReady', GENTICS.Aloha, null)
 			);
 		});
-	
+
 		// iterate through all registered plugins
 		for ( var i = 0; i < length; i++) {
 			var plugin = this.plugins[i];
@@ -74,20 +75,20 @@ GENTICS.Aloha.PluginRegistry.prototype = {
 			if (typeof GENTICS.Aloha.settings.plugins === 'undefined') {
 				GENTICS.Aloha.settings.plugins = {};
 			}
-		
+
 			plugin.settings = GENTICS.Aloha.settings.plugins[plugin.prefix];
-		
+
 			if (typeof plugin.settings === 'undefined') {
 				plugin.settings = {};
 			}
-		
+
 			if (typeof plugin.settings.enabled === 'undefined') {
 				plugin.settings.enabled = true;
 			}
 
 			// Push the plugin in the right order into the plugins stack
 			pluginsStack.push(plugin);
-		
+
 			// initialize i18n for the plugin
 			// determine the actual language
 			var actualLanguage = plugin.languages ? GENTICS.Aloha.getLanguage(GENTICS.Aloha.settings.i18n.current, plugin.languages) : null;
@@ -95,7 +96,7 @@ GENTICS.Aloha.PluginRegistry.prototype = {
 			if (!actualLanguage) {
 				// The plugin that have no dict file matching
 				GENTICS.Aloha.Log.warn(this, 'Could not determine actual language, no languages available for plugin ' + plugin);
-				
+
 				if(++loaded === length) {
 					GENTICS.Aloha.EventRegistry.trigger(
 						new GENTICS.Aloha.Event('i18nPluginsLoaded', GENTICS.Aloha, null)
@@ -104,7 +105,7 @@ GENTICS.Aloha.PluginRegistry.prototype = {
 			} else {
 				// load the dictionary file for the actual language
 				var fileUrl = GENTICS.Aloha.settings.base + 'plugins/' + plugin.basePath + '/i18n/' + actualLanguage + '.dict';
-			
+
 				// Initializes the plugin when
 				GENTICS.Aloha.loadI18nFile(fileUrl, plugin, function () {
 					if(++loaded === length) {
@@ -186,39 +187,39 @@ GENTICS.Aloha.Plugin.prototype = {
 	 * <ul>
 	 * <li>Array configuration parameters are:
 	 * <pre>
-	 * "com.gentics.aloha.plugins.List": { 
+	 * "com.gentics.aloha.plugins.List": {
 	 *		config : [ 'b', 'h1' ],
 	 * 		editables : {
-	 *			'#title'	: [ ], 
-	 *			'div'		: [ 'b', 'i' ], 
+	 *			'#title'	: [ ],
+	 *			'div'		: [ 'b', 'i' ],
 	 *			'.article'	: [ 'h1' ]
 	 *	  	}
 	 *	}
 	 * </pre>
-	 *  
+	 *
 	 * The hash keys of the editables are css selectors. For a
-	 *  
+	 *
 	 * <pre>
 	 *  <div class="article">content</div>
 	 * </pre>
-	 *  
+	 *
 	 *  the selectors 'div' and '.article' match and the returned configuration is
-	 *  
+	 *
 	 * <pre>
-	 *  [ 'b', 'i', 'h1'] 
+	 *  [ 'b', 'i', 'h1']
 	 * </pre>
-	 * 
+	 *
 	 * The '#title' object would return an empty configuration.
-	 * 
+	 *
 	 * <pre>
-	 *  [ ] 
+	 *  [ ]
 	 * </pre>
-	 *  
+	 *
 	 *  All other objects would get the 'config' configuration. If config is not set
 	 * the plugin default configuration is returned.
-	 * 
+	 *
 	 * <pre>
-	 *  [ 'b', 'h1'] 
+	 *  [ 'b', 'h1']
 	 * </pre></li>
 	 * <li>Object configuration parameters are :
 	 * <pre>
@@ -241,9 +242,9 @@ GENTICS.Aloha.Plugin.prototype = {
 	 *          		'max_height': '150px' }}
 	 *  </pre>
 	 * </li>
-	 * 
+	 *
 	 * @param {jQuery} obj jQuery object of an Editable Object
-	 * @return {Array} config A Array with configuration entries 
+	 * @return {Array} config A Array with configuration entries
 	 */
 	getEditableConfig: function (obj) {
 		var configObj = null,
@@ -264,10 +265,10 @@ GENTICS.Aloha.Plugin.prototype = {
 							configObj[k] = {};
 							configObj[k] = jQuery.extend(true, configObj[k], that.config[k], selectorConfig[k]);
 						}
-					
+
 					}
 				}
-			});	
+			});
 		}
 
 		// fall back to default configuration

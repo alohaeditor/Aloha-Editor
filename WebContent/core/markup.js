@@ -17,9 +17,10 @@
 *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 (function(window, undefined) {
-	var jQuery = window.alohaQuery;
-	var GENTICS = window.GENTICS;
-	var	Aloha = GENTICS.Aloha;
+	var
+		$ = jQuery = window.alohaQuery
+		GENTICS = window.GENTICS,
+		Aloha = GENTICS.Aloha;
 
 /**
  * Markup object
@@ -70,7 +71,7 @@ GENTICS.Aloha.Markup.prototype = {
 		range.select();
 	},
 
-	/** 
+	/**
 	 * first method to handle key strokes
 	 * @param event DOM event
 	 * @param rangeObject as provided by GENTICS.Aloha.Selection.getRangeObject();
@@ -80,7 +81,7 @@ GENTICS.Aloha.Markup.prototype = {
 		if (event.type != 'keydown') {
 			return false;
 		}
-	
+
 		var rangeObject = GENTICS.Aloha.Selection.rangeObject;
 
 		if (this.keyHandlers[event['keyCode']]) {
@@ -91,7 +92,7 @@ GENTICS.Aloha.Markup.prototype = {
 				}
 			}
 		}
-	
+
 		switch(event['keyCode']) {
 			case 13: // ENTER
 				if (event.shiftKey) {
@@ -166,21 +167,21 @@ GENTICS.Aloha.Markup.prototype = {
 		return true;
 	},
 
-	/** 
+	/**
 	 * method handling shiftEnter
 	 * @param GENTICS.Aloha.Selection.SelectionRange of the current selection
 	 * @return void
 	 */
-	processShiftEnter: function(rangeObject) {  
+	processShiftEnter: function(rangeObject) {
 		this.insertHTMLBreak(rangeObject.getSelectionTree(), rangeObject);
 	},
 
-	/** 
+	/**
 	 * method handling Enter
 	 * @param GENTICS.Aloha.Selection.SelectionRange of the current selection
 	 * @return void
 	 */
-	processEnter: function(rangeObject) { 
+	processEnter: function(rangeObject) {
 		if (rangeObject.splitObject) {
 			// now comes a very evil hack for ie, when the enter is pressed in a text node in an li element, we just append an empty text node
 	//		if (jQuery.browser.msie
@@ -206,7 +207,7 @@ GENTICS.Aloha.Markup.prototype = {
 		this.insertHTMLBreak(rangeObject.getSelectionTree(), rangeObject, jQuery(html));
 	},
 
-	/** 
+	/**
 	 * insert an HTML Break <br /> into current selection
 	 * @param GENTICS.Aloha.Selection.SelectionRange of the current selection
 	 * @return void
@@ -299,15 +300,15 @@ GENTICS.Aloha.Markup.prototype = {
 						jQuery(rangeObject.commonAncestorContainer).append(this.getFillUpElement(rangeObject.splitObject));
 					}
 					jqEl.after(inBetweenMarkup);
-				
+
 					// now set the selection. Since we just added one break do the currect el
-					// the new position must be el's position + 1. el's position is the index 
+					// the new position must be el's position + 1. el's position is the index
 					// of the el in the selection tree, which is i. then we must add
 					// another +1 because we want to be AFTER the object, not before. therefor +2
 					rangeObject.startContainer = rangeObject.commonAncestorContainer;
 					rangeObject.endContainer = rangeObject.startContainer;
 					rangeObject.startOffset = i+2;
-					rangeObject.endOffset = i+2;			
+					rangeObject.endOffset = i+2;
 					rangeObject.update();
 				}
 			}
@@ -486,7 +487,7 @@ GENTICS.Aloha.Markup.prototype = {
 		}
 	},
 
-	/** 
+	/**
 	 * split passed rangeObject without or with optional markup
 	 * @param GENTICS.Aloha.Selection.SelectionRange of the current selection
 	 * @param markup object (jQuery) to insert in between the split elements
@@ -520,15 +521,15 @@ GENTICS.Aloha.Markup.prototype = {
 		// now let's find the place, where the followUp is inserted afterwards. normally that's the splitObject itself, but in
 		// some cases it might be their parent (e.g. inside a list, a <p> followUp must be inserted outside the list)
 		var insertAfterObject = this.getInsertAfterObject(rangeObject, followUpContainer);
-	
+
 		// now insert the followUpContainer
 		jQuery(followUpContainer).insertAfter(insertAfterObject); // attach the followUpContainer right after the insertAfterObject
-	
+
 		// in some cases, we want to remove the "empty" splitObject (e.g. LIs, if enter was hit twice)
 		if (rangeObject.splitObject.nodeName.toLowerCase() === 'li' && !GENTICS.Aloha.Selection.standardTextLevelSemanticsComparator(rangeObject.splitObject, followUpContainer)) {
 			jQuery(rangeObject.splitObject).remove();
 		}
-	
+
 		// find a possible text node in the followUpContainer and set the selection to it
 		// if no textnode is available, set the selection to the followup container itself
 		rangeObject.startContainer = followUpContainer.textNodes(true, true).first().get(0);
@@ -544,15 +545,15 @@ GENTICS.Aloha.Markup.prototype = {
 			rangeObject.startContainer = rangeObject.endContainer = followUpContainer.parent().get(0);
 			rangeObject.startOffset = rangeObject.endOffset = GENTICS.Utils.Dom.getIndexInParent(followUpContainer.get(0));
 		}
-	
+
 		// finally update the range object again
 		rangeObject.update();
-	
+
 		// now set the selection
 		rangeObject.select();
 	},
 
-	/** 
+	/**
 	 * method to get the object after which the followUpContainer can be inserted during splitup
 	 * this is a helper method, not needed anywhere else
 	 * @param rangeObject GENTICS.Aloha.Selection.SelectionRange of the current selection
@@ -578,7 +579,7 @@ GENTICS.Aloha.Markup.prototype = {
 		return false;
 	},
 
-	/** 
+	/**
 	 * method to get the html code for a fillUpElement. this is needed for empty paragraphs etc., so that they take up their expected height
 	 * @param splitObject split object (dom object)
 	 * @return fillUpElement HTML Code
@@ -591,7 +592,7 @@ GENTICS.Aloha.Markup.prototype = {
 		}
 	},
 
-	/** 
+	/**
 	 * removes textNodes from passed array, which only contain contentWhiteSpace (e.g. a \n between two tags)
 	 * @param domArray array of domObjects
 	 * @return void
@@ -612,7 +613,7 @@ GENTICS.Aloha.Markup.prototype = {
 		}
 	},
 
-	/** 
+	/**
 	 * recursive method to parallelly walk through two dom subtrees, leave elements before startContainer in first subtree and move rest to other
 	 * @param selectionTree tree to iterate over as contained in rangeObject. must be passed separately to allow recursion in the selection tree, but not in the rangeObject
 	 * @param rangeObject GENTICS.Aloha.Selection.SelectionRange of the current selection
@@ -622,27 +623,27 @@ GENTICS.Aloha.Markup.prototype = {
 	 */
 	splitRangeObjectHelper: function(selectionTree, rangeObject, followUpContainer, inBetweenMarkup) {
 		if (!followUpContainer) {
-			GENTICS.Aloha.Log.warn(this, 'no followUpContainer, no inBetweenMarkup, nothing to do...');			
-		}	
+			GENTICS.Aloha.Log.warn(this, 'no followUpContainer, no inBetweenMarkup, nothing to do...');
+		}
 
 		var fillUpElement = this.getFillUpElement(rangeObject.splitObject),
 			splitObject = jQuery(rangeObject.splitObject),
 			startMoving = false;
-		if (selectionTree.length > 0) {		
+		if (selectionTree.length > 0) {
 			var mirrorLevel = followUpContainer.contents();
-		
+
 			// if length of mirrorLevel and selectionTree are not equal, the mirrorLevel must be corrected. this happens, when the mirrorLevel contains whitespace textNodes
 			if (mirrorLevel.length !== selectionTree.length) {
 				this.removeElementContentWhitespaceObj(mirrorLevel);
 			}
-		
+
 			// var originalLevel = jQuery(rangeObject.commonAncestorContainer).contents();
 			for (var i = 0; i < selectionTree.length; i++) {
 				var el = selectionTree[i];
 				// remove all objects in the mirrorLevel, which are BEFORE the cursor
 				// OR if the cursor is at the last position of the last Textnode (causing an empty followUpContainer to be appended)
 				if (
-						(el.selection === 'none' && startMoving === false) || 
+						(el.selection === 'none' && startMoving === false) ||
 						(el.domobj && el.domobj.nodeType === 3 && el === selectionTree[ (selectionTree.length-1) ] && el.startOffset === el.domobj.data.length)
 				) {
 					// iteration is before cursor, leave this part inside the splitObject, remove from followUpContainer
@@ -662,13 +663,13 @@ GENTICS.Aloha.Markup.prototype = {
 					}
 					continue;
 				} else
-				
+
 					// split objects, which are AT the cursor Position or directly above
 					if (el.selection !== 'none') { // before cursor, leave this part inside the splitObject
 						// TODO better check for selection == 'partial' here?
 						if (el.domobj && el.domobj.nodeType === 3 && el.startOffset !== undefined) {
 							var completeText = el.domobj.data;
-							if (el.startOffset > 0) {// first check, if there will be some text left in the splitObject 
+							if (el.startOffset > 0) {// first check, if there will be some text left in the splitObject
 								el.domobj.data = completeText.substr(0,el.startOffset);
 							} else if (selectionTree.length > 1) { // if not, check if the splitObject contains more than one node, because then it can be removed. this happens, when ENTER is pressed inside of a textnode, but not at the borders
 								jQuery(el.domobj).remove();
@@ -709,10 +710,10 @@ GENTICS.Aloha.Markup.prototype = {
 						if (el.children.length > 0) {
 							this.splitRangeObjectHelper(el.children, rangeObject, mirrorLevel.eq(i), inBetweenMarkup);
 						}
-					} else 
-					
+					} else
+
 						// remove all objects in the origien, which are AFTER the cursor
-						if (el.selection === 'none' && startMoving === true) { 
+						if (el.selection === 'none' && startMoving === true) {
 							// iteration is after cursor, remove from splitObject and leave this part inside the followUpContainer
 							jqObj = jQuery(el.domobj).remove();
 						}
@@ -720,7 +721,7 @@ GENTICS.Aloha.Markup.prototype = {
 		} else {
 			GENTICS.Aloha.Log.error(this, 'can not split splitObject due to an empty selection tree');
 		}
-	
+
 		// and finally cleanup: remove all fillUps > 1
 		splitObject.find('br.GENTICS_ephemera:gt(0)').remove(); // remove all elements greater than (gt) 0, that also means: leave one
 		followUpContainer.find('br.GENTICS_ephemera:gt(0)').remove(); // remove all elements greater than (gt) 0, that also means: leave one
@@ -738,9 +739,9 @@ GENTICS.Aloha.Markup.prototype = {
 		}
 	},
 
-	/** 
+	/**
 	 * returns a jQuery object fitting the passed splitObject as follow up object
-	 * examples, 
+	 * examples,
 	 * - when passed a p it will return an empty p (clone of the passed p)
 	 * - when passed an h1, it will return either an h1 (clone of the passed one) or a new p (if the collapsed selection was at the end)
 	 * @param rangeObject Gentics.Aloha.RangeObject
@@ -772,7 +773,7 @@ GENTICS.Aloha.Markup.prototype = {
 					var returnObj = jQuery('<p></p>');
 					var inside = jQuery(rangeObject.splitObject).clone().contents();
 					returnObj.append(inside);
-					return returnObj;				
+					return returnObj;
 				}
 				// when the li is the last one and empty, we also just return a <p>
 				if (!rangeObject.splitObject.nextSibling && jQuery.trim(jQuery(rangeObject.splitObject).text()).length == 0) {
@@ -797,7 +798,7 @@ GENTICS.Aloha.Markup.prototype = {
 		var jqNewObj = jQuery('<' + nodeName + '></' + nodeName + '>');
 
 		// TODO what about events? css properties?
-	
+
 		// copy attributes
 		if (jqOldObj[0].attributes) {
 			for (i = 0; i < jqOldObj[0].attributes.length; i++) {
@@ -806,7 +807,7 @@ GENTICS.Aloha.Markup.prototype = {
 		}
 		// copy inline CSS
 		jqNewObj[0].style.cssText = jqOldObj[0].style.cssText;
-	
+
 		// now move the contents of the old dom object into the new dom object
 		jqOldObj.contents().appendTo(jqNewObj);
 
@@ -816,11 +817,11 @@ GENTICS.Aloha.Markup.prototype = {
 		return jqNewObj;
 	},
 
-	/** 
+	/**
 	 * String representation
 	 * @return "GENTICS.Aloha.Selection"
 	 */
-	toString: function() {  
+	toString: function() {
 		return 'GENTICS.Aloha.Markup';
 	}
 };
