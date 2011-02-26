@@ -403,6 +403,19 @@ class App
 	# ---------------------------------------------------------------------------
 	# Submodules
 
+	# Add a Plugin
+	def plugin(url,name='')
+		url = url.gsub(/^.+?(github.com)./,'http://\\1/')
+
+		if name.empty?
+			name = 'com.gentics.aloha.plugins.' + url.gsub(/^.+?Aloha-Plugin-(\w+)\.git/,'\\1')
+		end
+
+		dir = 'WebContent/plugins/'+name
+
+		run("git submodule add #{url} #{dir}")
+	end
+
 	# Initialise Submodules
 	def init_submodules
 		run([
