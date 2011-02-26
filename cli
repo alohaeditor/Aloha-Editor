@@ -93,12 +93,6 @@ class App
 		# Done
 		return result
 	end
-  
-  # Check if a binary exists
-  def bin_exists? (bin)
-  	exists = !run("which #{bin}",false).strip.empty?
-  	return exists
-  end
 
   # Check if a binary exists
   def bin_exists? (bin)
