@@ -16,6 +16,10 @@
 *   You should have received a copy of the GNU Affero General Public License
 *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+(function(window, undefined) {
+	var jQuery = window.alohaQuery;
+	var GENTICS = window.GENTICS;
+	var	Aloha = GENTICS.Aloha;
 
 if (typeof GENTICS.Aloha.ui === 'undefined') {
 	GENTICS.Aloha.ui = function() {};
@@ -733,3 +737,4 @@ GENTICS.Aloha.ui.MultiSplitButton.prototype = {
 		this.extButton.hideItem(name);
 	}
 };
+})(window);

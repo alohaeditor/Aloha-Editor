@@ -16,6 +16,11 @@
 *   You should have received a copy of the GNU Affero General Public License
 *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+(function(window, undefined) {
+	var jQuery = window.alohaQuery;
+	var GENTICS = window.GENTICS;
+	var	Aloha = GENTICS.Aloha;
+
 /**
  * Message Object
  * @namespace GENTICS.Aloha
@@ -96,3 +101,5 @@ GENTICS.Aloha.MessageLine.prototype = {
  * @hide
  */
 GENTICS.Aloha.MessageLine = new GENTICS.Aloha.MessageLine();
+
+})(window);

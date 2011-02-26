@@ -17,6 +17,11 @@
 *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+(function(window, undefined) {
+	var jQuery = window.alohaQuery;
+	var GENTICS = window.GENTICS;
+	var	Aloha = GENTICS.Aloha;
+
 /**
  * !!!! ATTENTION !!!!
  * This is work in progress. This implemenation may change heavily.
@@ -197,3 +202,5 @@ GENTICS.Aloha.ui.Browser.prototype = {
 		this.win.focus();
 	}
 };
+
+})(window);

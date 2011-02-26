@@ -54,8 +54,6 @@ document.write('<script type="text/javascript" src="' + window.GENTICS_Aloha_bas
 
 document.write('<script type="text/javascript" src="' + window.GENTICS_Aloha_base + 'deps/jquery.store.js"></script>');
 
-document.write('<script type="text/javascript" src="' + window.GENTICS_Aloha_base + 'deps/jquery.md5.js"></script>');
-
 document.write('<script type="text/javascript" src="' + window.GENTICS_Aloha_base + 'utils/jquery.js"></script>');
 
 document.write('<script type="text/javascript" src="' + window.GENTICS_Aloha_base + 'utils/lang.js"></script>');

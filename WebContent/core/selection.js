@@ -16,6 +16,11 @@
 *   You should have received a copy of the GNU Affero General Public License
 *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+(function(window, undefined) {
+	var jQuery = window.alohaQuery;
+	var GENTICS = window.GENTICS;
+	var	Aloha = GENTICS.Aloha;
+
 jQuery.fn.zap = function () {
 	return this.each(function(){ jQuery(this.childNodes).insertBefore(this); }).remove();
 };
@@ -1627,3 +1632,5 @@ GENTICS.Aloha.Selection.prototype.SelectionRange.prototype.toString = function(v
 };
 
 GENTICS.Aloha.Selection = new GENTICS.Aloha.Selection();
+
+})(window);

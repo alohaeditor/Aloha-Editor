@@ -17,14 +17,21 @@
 *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-if (typeof GENTICS === 'undefined' || !GENTICS) {
-	/*
-	 * The GENTICS global namespace object. If GENTICS is already defined, the
-	 * existing GENTICS object will not be overwritten so that defined
-	 * namespaces are preserved.
-	 */
-	var GENTICS = {};
-}
+/*
+ * The GENTICS global namespace object. If GENTICS is already defined, the
+ * existing GENTICS object will not be overwritten so that defined
+ * namespaces are preserved.
+ */
+var GENTICS = GENTICS || {};
+
+var alohaQuery = jQuery.noConflict(true);
+
+$ = alohaQuery;
+
+(function(window, undefined) {
+	var jQuery = window.alohaQuery;
+	var GENTICS = window.GENTICS;
+	var	Aloha = GENTICS.Aloha;
 
 /**
  * Base Aloha Object
@@ -45,11 +52,11 @@ GENTICS.Aloha.setAutobase = function () {
 	if ('core' === path[path.length -2]) {
 		substitute = 2;
 	}
-	GENTICS.Aloha.prototype.autobase = path.slice(0, substitute * -1).join('/') + '/';
+	GENTICS.Aloha.autobase = path.slice(0, substitute * -1).join('/') + '/';
 };
 GENTICS.Aloha.setAutobase();
 
-GENTICS.Aloha.prototype = {
+GENTICS.Aloha = {
 
 	// provide aloha version, is automatically set during build process
 	version: '##ALOHAVERSION##',
@@ -116,8 +123,8 @@ GENTICS.Aloha.prototype = {
 		if (jQuery.browser.webkit && parseFloat(jQuery.browser.version) < 532.5 || // Chrome/Safari 4
 			jQuery.browser.mozilla && parseFloat(jQuery.browser.version) < 1.9 || // FF 3.5
 			jQuery.browser.msie && jQuery.browser.version < 7 || // IE 7	
-			jQuery.browser.opera) { // right now, Opera does not work :(
-			alert('Sorry, your browser is not supported at the moment.');
+			jQuery.browser.opera && jQuery.browser.version < 11 ) { // right now, Opera needs some work
+			console.log('The browser you are using is not supported.');
 			return;
 		}
 	
@@ -660,26 +667,6 @@ GENTICS.Aloha.prototype = {
 	}
 };
 
-GENTICS.Aloha = new GENTICS.Aloha();
+// GENTICS.Aloha.init();
 
-/**
-/*
- * mark jQuery as Aloha's own version. In case someone is loading another version of jQuery this can be used
- * to detect and proclaim this problem 
- */
-jQuery.isAloha = true;
-
-/**
- * Initialize Aloha when the dom is ready and Ext is ready
- * @hide
- */
-jQuery(document).ready(function() {
-	// if there is no Aloha flag on jQuery, then jQuery has been overloaded
-	if (!jQuery.isAloha && window.console && console.error) {
-		console.error('Aloha ERROR: jQuery was included at least a second time after loading Aloha. ' + 
-			'This will cause serious problems. You must not load other versions ' +
-			'of jQuery with Aloha.');
-	}
-	GENTICS.Aloha.init();
-});
-
+})(window);
