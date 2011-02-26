@@ -276,10 +276,9 @@ class App
 			run("git checkout #{branch}")
 		else
 			if remote_branch_exists(branch)
-				fetch(REMOTE_ALOHA)
 				run("git checkout -b #{branch} #{REMOTE_ALOHA}/#{branch}")
 			else
-				run("git branch #{branch} #{BRANCH_MASTER}")
+				run("git branch #{branch}")
 			end
 		end
 	end
