@@ -214,7 +214,7 @@ GENTICS.Aloha.Markup.prototype = {
 	 */
 	insertHTMLBreak: function(selectionTree, rangeObject, inBetweenMarkup) {
 		inBetweenMarkup = inBetweenMarkup ? inBetweenMarkup: jQuery('<br/>');
-		for (var i = 0; i < selectionTree.length; i++) {
+		for (var i = 0, treeLength = selectionTree.length; i < treeLength; i++) {
 			var el = selectionTree[i],
 				jqEl = el.domobj ? jQuery(el.domobj) : undefined;
 			if (el.selection !== 'none') { // before cursor, leave this part inside the splitObject
@@ -347,13 +347,13 @@ GENTICS.Aloha.Markup.prototype = {
 	 */
 	getFromSelectionTree: function (selectionTree, astext) {
 		var text = '';
-		for (var i = 0; i < selectionTree.length; i++) {
+		for (var i = 0, treeLength = selectionTree.length; i < treeLength; i++) {
 			var el = selectionTree[i];
 			if (el.selection == 'partial') {
-				if (el.domobj.nodeType == 3) {
+				if (el.domobj.nodeType === 3) {
 					// partial text node selected, get the selected part
 					text += el.domobj.data.substring(el.startOffset, el.endOffset);
-				} else if (el.domobj.nodeType == 1 && el.children) {
+				} else if (el.domobj.nodeType === 1 && el.children) {
 					// partial element node selected, do the recursion into the children
 					if (astext) {
 						text += this.getFromSelectionTree(el.children, astext);
@@ -367,10 +367,10 @@ GENTICS.Aloha.Markup.prototype = {
 					}
 				}
 			} else if (el.selection == 'full') {
-				if (el.domobj.nodeType == 3) {
+				if (el.domobj.nodeType === 3) {
 					// full text node selected, get the text
 					text += jQuery(el.domobj).text();
-				} else if (el.domobj.nodeType == 1 && el.children) {
+				} else if (el.domobj.nodeType === 1 && el.children) {
 					// full element node selected, get the html of the node and all children
 					text += astext ? jQuery(el.domobj).text() : jQuery(el.domobj).outerHTML();
 				}
@@ -431,11 +431,11 @@ GENTICS.Aloha.Markup.prototype = {
 		var firstPartialElement = undefined;
 
 		// iterate through the selection tree
-		for (var i = 0; i < selectionTree.length; i++) {
+		for (var i = 0, treeLength = selectionTree.length; i < treeLength; i++) {
 			var el = selectionTree[i];
 			// check the type of selection
 			if (el.selection == 'partial') {
-				if (el.domobj.nodeType == 3) {
+				if (el.domobj.nodeType === 3) {
 					// partial text node selected, so remove the selected portion
 					var newdata = '';
 					if (el.startOffset > 0) {
@@ -451,7 +451,7 @@ GENTICS.Aloha.Markup.prototype = {
 						newRange.startContainer = newRange.endContainer = el.domobj;
 						newRange.startOffset = newRange.endOffset = el.startOffset;
 					}
-				} else if (el.domobj.nodeType == 1 && el.children) {
+				} else if (el.domobj.nodeType === 1 && el.children) {
 					// partial element node selected, so do the recursion into the children
 					this.removeFromSelectionTree(el.children, newRange);
 					if (firstPartialElement) {
@@ -638,7 +638,7 @@ GENTICS.Aloha.Markup.prototype = {
 			}
 
 			// var originalLevel = jQuery(rangeObject.commonAncestorContainer).contents();
-			for (var i = 0; i < selectionTree.length; i++) {
+			for (var i = 0, treeLength = selectionTree.length; i < treeLength; i++) {
 				var el = selectionTree[i];
 				// remove all objects in the mirrorLevel, which are BEFORE the cursor
 				// OR if the cursor is at the last position of the last Textnode (causing an empty followUpContainer to be appended)
@@ -759,8 +759,8 @@ GENTICS.Aloha.Markup.prototype = {
 				var lastObj = jQuery(rangeObject.splitObject).textNodes().last()[0];
 				// special case: when enter is hit at the end of a heading, the followUp should be a <p>
 				if (lastObj && rangeObject.startContainer === lastObj && rangeObject.startOffset === lastObj.length) {
-					var returnObj = jQuery('<p></p>');
-					var inside = jQuery(rangeObject.splitObject).clone().contents();
+					var returnObj = jQuery('<p></p>'),
+						inside = jQuery(rangeObject.splitObject).clone().contents();
 					returnObj.append(inside);
 					return returnObj;
 				}
@@ -770,13 +770,13 @@ GENTICS.Aloha.Markup.prototype = {
 				// TODO check whether the li is the last one
 				// special case: if enter is hit twice inside a list, the next item should be a <p> (and inserted outside the list)
 				if (rangeObject.startContainer.nodeName.toLowerCase() === 'br' && jQuery(rangeObject.startContainer).hasClass('GENTICS_ephemera')) {
-					var returnObj = jQuery('<p></p>');
-					var inside = jQuery(rangeObject.splitObject).clone().contents();
+					var returnObj = jQuery('<p></p>'),
+						inside = jQuery(rangeObject.splitObject).clone().contents();
 					returnObj.append(inside);
 					return returnObj;
 				}
 				// when the li is the last one and empty, we also just return a <p>
-				if (!rangeObject.splitObject.nextSibling && jQuery.trim(jQuery(rangeObject.splitObject).text()).length == 0) {
+				if (!rangeObject.splitObject.nextSibling && jQuery.trim(jQuery(rangeObject.splitObject).text()).length === 0) {
 					var returnObj = jQuery('<p></p>');
 					return returnObj;
 				}
