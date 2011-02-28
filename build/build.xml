@@ -72,7 +72,9 @@
 	<target name="copydir">
 		<mkdir dir="${to}/${folder}" />
 		<copy todir="${to}/${folder}">
-			<fileset dir="${srcdir}/${folder}" />
+			<fileset dir="${srcdir}/${folder}">
+				<exclude name="**/.git/**"/>
+			</fileset>
 		</copy>
 	</target>
 
