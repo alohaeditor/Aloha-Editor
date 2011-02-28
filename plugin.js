@@ -484,8 +484,8 @@ jQuery.extend(true,GENTICS.Aloha.Image,{
 		imgRange.startOffset = offset;
 		imgRange.endOffset = offset+1;
 		imgRange.select();
-		if (thisimg.attr('moz_resizable')) {
-			thisimg.attr('moz_resizable', false);
+		if (thisimg.attr('_moz_resizing')) {
+			thisimg.attr('_moz_resizing', false);
 		}
 		this.resize();
 		
