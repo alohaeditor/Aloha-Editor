@@ -97,10 +97,6 @@ GENTICS.Aloha.DragAndDropFiles.setBodyDropHandler = function() {
 		 // sets the default handler
 		 this.mydoc[this.methodName](this.onstr+"drop", function(event) {
 		 try {
-			 if (event.preventDefault)
-				 event.preventDefault();
-			 else
-				 event.cancelBubble = true;
 			 GENTICS.Aloha.Log.info(that,"a file have been dropped on document");
 			 
 			 if (jQuery.browser.msie) {
@@ -110,14 +106,21 @@ GENTICS.Aloha.DragAndDropFiles.setBodyDropHandler = function() {
 				 var textdataW = window.event.dataTransfer.getData('Text');
 				 var x = textdataW;
 			 }
-
+			 // if no files where dropped, use default handler
+			 if (!event.dataTransfer && !event.dataTransfer.files) {
+				 event.sink = false;
+			        return true; 
+			 }
 			var files = event.dataTransfer.files;
 		    var len = files.length;
-		    // if no files where dropped, use default handler
 		    if (len < 1) {
 		    	event.sink = false;
 		        return true;
 		    }
+		    if (event.preventDefault)
+		    	event.preventDefault();
+		    else
+		    	event.cancelBubble = true;
 		    if (len > that.settings.config.drop.max_file_count) {
 		    	GENTICS.Aloha.Log.warn(that,"too much files dropped");
 		    	if (event.stopPropagation)
@@ -193,7 +196,7 @@ GENTICS.Aloha.DragAndDropFiles.setBodyDropHandler = function() {
 			 else 
 				 event.returnValue = false;
 		 } catch (error) {
-			GENTICS.Aloha.Log.error(GENTICS.Aloha.DragAndDropFiles,error);
+			GENTICS.Aloha.Log.error(GENTICS.Aloha.DragAndDropFiles,"Exception while processing drop");
 
 		}
 		 return false;
