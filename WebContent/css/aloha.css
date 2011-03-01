@@ -395,9 +395,9 @@ html body #GENTICS_ribbon {
 }
 
 .GENTICS_shadow {
-	-moz-box-shadow: 3px 3px 5px #999;
-	-webkit-box-shadow: 3px 3px 5px #999;
-	box-shadow: 3px 3px 5px #999;
+	-moz-box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.3);
+	-webkit-box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.3);
+	box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.3);
 }
 
 /*
