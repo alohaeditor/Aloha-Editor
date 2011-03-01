@@ -17,7 +17,6 @@ core/editable.js
 core/event.js
 core/floatingmenu.js
 core/ierange-m2.js
-core/jquery.aloha.js
 core/log.js
 core/markup.js
 core/message.js

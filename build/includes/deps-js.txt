@@ -2,3 +2,4 @@ deps/jquery.json-2.2.min.js
 deps/jquery.getUrlParam.js
 deps/prettyPhoto/jquery.prettyPhoto.js
 deps/jquery.store.js
+core/jquery.aloha.js
