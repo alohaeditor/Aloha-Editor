@@ -426,8 +426,8 @@ class App
 
 	# Build Aloha Editor
 	def build
-		check_req(['java','ant'])
-		run("ant -f build/build.xml build")
+		check_req(['node','npm'])
+		run("node ./build/build.js")
 	end
 
 	# ---------------------------------------------------------------------------
