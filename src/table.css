@@ -1,0 +1,112 @@
+/**
+ * Hide the border for contenteditables
+ */
+.GENTICS_Table_Cell_editable,
+.GENTICS_Aloha_Table_wrapper {
+	outline: 0px solid transparent;
+}
+
+/* :TODO: make custom cursors visible in IE */
+.GENTICS_Aloha_Table tr.GENTICS_Aloha_Table_selectColumn td.GENTICS_Aloha_Table_leftUpperCorner,
+.GENTICS_Aloha_Table tr.GENTICS_Aloha_Table_selectColumn td.GENTICS_Aloha_Table_leftUpperCorner:hover {
+	cursor: default;
+	background-color: transparent;
+}
+
+tr.GENTICS_Aloha_Table_selectColumn td,
+td.GENTICS_Aloha_Table_selectRow {
+	visibility: hidden;
+}
+
+.GENTICS_editable_active tr.GENTICS_Aloha_Table_selectColumn td,
+.GENTICS_editable_active td.GENTICS_Aloha_Table_selectRow {
+	visibility: visible;
+}
+
+.GENTICS_Aloha_Table tr.GENTICS_Aloha_Table_selectColumn {
+	height: 10px;
+}
+
+.GENTICS_Aloha_Table td .GENTICS_Table_Cell_editable {
+	cursor: text !important;
+}
+
+.GENTICS_Aloha_Table tr.GENTICS_Aloha_Table_selectColumn td {
+	cursor: url(down.cur),default;
+}
+
+/* :TODO: make custom cursors visible in IE */
+.GENTICS_Aloha_Table td.GENTICS_Aloha_Table_selectRow {
+	cursor: url(left.cur),default;
+}
+
+.GENTICS_WAI_RED {
+	background-image: url(wai_red.png);
+}
+
+.GENTICS_WAI_GREEN {
+	background-image: url(wai_green.png);
+}
+
+.GENTICS_Aloha_Table td.GENTICS_Aloha_Table_leftUpperCorner div {
+	cursor: pointer !important;
+}
+
+.GENTICS_Aloha_Table td.GENTICS_Aloha_Table_selectRow,
+.GENTICS_Aloha_Table tr.GENTICS_Aloha_Table_selectColumn td {
+	border: 0;
+	margin:0;
+	padding:0;
+	background-color: #D0D0D0;
+	font-size: 0.01em;
+}
+
+.GENTICS_Aloha_Table td.GENTICS_Aloha_Table_selectRow:hover,
+.GENTICS_Aloha_Table tr.GENTICS_Aloha_Table_selectColumn td:hover {
+	background-color: #C0C0C0;
+}
+
+/**
+ * Create dialog
+*/
+.GENTICS_Table_Createdialog {
+	z-index: 99999;
+	position: absolute;
+	background-color: #F0F0F0;
+	border: 1px solid #cccccc;
+	-moz-border-radius: 2px;
+	-webkit-border-radius: 2px;
+	border-radius: 2px;
+}
+.GENTICS_Table_Createdialog table {
+	padding: 0px;
+	margin: 0px;
+}
+.GENTICS_Table_Createdialog table td {
+	margin: 0px;
+	padding: 0px;
+	border: 1px solid #AFAFAF;
+	font-size: 8px;
+	width: 15px;
+	height: 15px;
+}
+.GENTICS_Table_Createdialog table td.hover {
+	background-color: #1c94c4;
+}
+.GENTICS_Table_Createdialog #table-size-info {
+	text-align: center;
+	font-size: 0.8em;
+}
+.GENTICS_Aloha_Cell_selected {
+	background-color: #3399FF !important;
+	color: #FFF;
+}
+div.GENTICS_Table_Cell_editable {
+	height: 100%;
+	min-height: 100%;
+	width: 100%;
+	z-index: 99999;
+}
+button.GENTICS_button_table_caption {
+	background-position: -320px 0px !important;
+}
