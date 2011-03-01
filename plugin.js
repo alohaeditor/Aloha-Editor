@@ -445,7 +445,11 @@ GENTICS.Aloha.Link.removeLink = function () {
  */
 GENTICS.Aloha.Link.hrefChange = function () {
 	// For now hard coded attribute handling with regex.
-	this.hrefField.setAttribute('target', this.target, this.targetregex, this.hrefField.getQueryValue());
+	// Avoid creating the target attribute, if it's unnecessary, so
+	// that XSS scanners (AntiSamy) don't complain.
+	if (this.target !== '') {
+		this.hrefField.setAttribute('target', this.target, this.targetregex, this.hrefField.getQueryValue());
+	}
 	this.hrefField.setAttribute('class', this.cssclass, this.cssclassregex, this.hrefField.getQueryValue());
 	if ( typeof this.onHrefChange == 'function' ) {
 		this.onHrefChange.call(this, this.hrefField.getTargetObject(),  this.hrefField.getQueryValue(), this.hrefField.getItem() )
