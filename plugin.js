@@ -430,7 +430,12 @@ jQuery.extend(true,GENTICS.Aloha.Image,{
 			}
 		});
 		// add the event handler for selection change
-		GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'selectionChanged', function(event, rangeObject) {
+		GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'selectionChanged', function(event, rangeObject, originalEvent) {
+			if (originalEvent && originalEvent.target) {
+				if (!jQuery(originalEvent.target).hasClass('ui-resizable-handle')) {
+					that.endResize();
+				}
+			}
 			var foundMarkup = that.findImgMarkup( rangeObject ),
 				config = that.getEditableConfig(GENTICS.Aloha.activeEditable.obj);
 			
@@ -460,7 +465,7 @@ jQuery.extend(true,GENTICS.Aloha.Image,{
 		});
 		GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'editableCreated', function(event, editable) {
 		// add to editable the image click
-			editable.obj.delegate('img', 'click', function(event) {
+			editable.obj.delegate('img', 'mouseup', function(event) {
 				that.clickImage(event);
 			}
 			);
@@ -468,7 +473,6 @@ jQuery.extend(true,GENTICS.Aloha.Image,{
 	},
 	clickImage: function ( e ) {
 		this.endResize();
-		;
 		var thisimg = this.obj = jQuery(e.target),
 			editable = thisimg.parents('.GENTICS_editable');
 		this.restoreProps.push({
@@ -477,17 +481,18 @@ jQuery.extend(true,GENTICS.Aloha.Image,{
 			width : this.obj.width(),
 			height : this.obj.height()
 		});
+		this.resize();
 		GENTICS.Aloha.getEditableById(editable.attr('id')).activate();
 		var offset = GENTICS.Utils.Dom.getIndexInParent(e.target);
 		var imgRange = GENTICS.Aloha.Selection.getRangeObject();
 		imgRange.startContainer = imgRange.endContainer = thisimg.parent()[0];
 		imgRange.startOffset = offset;
 		imgRange.endOffset = offset+1;
-		imgRange.select();
 		if (thisimg.attr('_moz_resizing')) {
 			thisimg.attr('_moz_resizing', false);
 		}
-		this.resize();
+		imgRange.select();		
+
 		
 		// Prevents default event
 		
@@ -717,7 +722,7 @@ jQuery.extend(true,GENTICS.Aloha.Image,{
 	 * will toggle buttons accordingly and remove all markup that has been added for cropping
 	 */
 	endResize: function () {
-		if (this.obj && this.enableResize) {
+		if (this.obj) {
 			this.obj.resizable('destroy');
 		}
 	}
