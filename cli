@@ -294,9 +294,21 @@ class App
 	# ---------------------------------------------------------------------------
 	# Submodules
 
+	# Plugin Read Url
+	def plugin_read_url(url)
+		read_url = url.gsub(/^.+?(github.com)./,'http://\\1/')
+		return read_url
+	end
+
+	# Plugin Write Url
+	def plugin_write_url(url)
+		write_url = url.gsub(/^https?\:\/\/github.com\//,'git@github.com:/')
+		return write_url
+	end
+
 	# Add a Plugin
 	def plugin(url,name='')
-		url = url.gsub(/^.+?(github.com)./,'http://\\1/')
+		url = read_url(url)
 
 		if name.empty?
 			name = url.gsub(/^.+?Aloha-Plugin-(\w+)\.git/,'\\1').downcase
@@ -335,6 +347,16 @@ class App
 			"git submodule init",
 			"git submodule update --merge"
 		])
+	end
+
+	# Write Submodules
+	def write_submodules
+		submodule_foreach('sed -i "" -E "s/https?\:\/\/github\.com\//git\@github\.com\:/" .git/config')
+	end
+
+	# Read Submodules
+	def read_submodules
+		submodule_foreach('sed -i "" -E "s/git\@github.com\:/http://github.com\//" .git/config')
 	end
 
 	# Branch Submodules
