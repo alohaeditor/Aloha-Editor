@@ -299,7 +299,7 @@ class App
 		url = url.gsub(/^.+?(github.com)./,'http://\\1/')
 
 		if name.empty?
-			name = 'com.gentics.aloha.plugins.' + url.gsub(/^.+?Aloha-Plugin-(\w+)\.git/,'\\1')
+			name = url.gsub(/^.+?Aloha-Plugin-(\w+)\.git/,'\\1').downcase
 		end
 
 		dir = 'WebContent/plugins/'+name
