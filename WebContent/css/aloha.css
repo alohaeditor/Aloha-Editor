@@ -477,7 +477,7 @@ ul.GENTICS_multisplit button.GENTICS_multisplit-wide:hover {
 	border: 0;
 	border-top: 1px solid #cccccc;
 }
-ul.GENTICS_multisplit button.GENTICS_multisplit-activeitem {
+ul.GENTICS_multisplit .GENTICS_multisplit-activeitem button {
 	border: 2px solid #3B73D7;
 }
 ul.GENTICS_multisplit-expanded {

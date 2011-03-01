@@ -511,7 +511,7 @@ Ext.ux.GENTICSMultiSplitButton = Ext.extend(Ext.Component, {
 
 		jQuery(this.ulObj).find('.GENTICS_multisplit-activeitem').removeClass('GENTICS_multisplit-activeitem');
 		if(el) {
-			el.addClass('GENTICS_multisplit-activeitem');
+			el.parent().addClass('GENTICS_multisplit-activeitem');
 		}
 
 		if (el == null || el.parent().is(':hidden')) {
