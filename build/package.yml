@@ -1,0 +1,50 @@
+plugins:
+  - table
+  - highlighteditables
+  - link
+  - linkchecker
+
+css:
+  dep:
+    - dep/extjs/resources/css/ext-all.css
+    - dep/extjs/resources/css/xtheme-gray.css
+
+  core:
+    - css/aloha.css
+
+js:
+  dep:
+    - deps/jquery.json-2.2.min.js
+    - deps/jquery.getUrlParam.js
+    - deps/jquery.store.js
+
+  core:
+    - core/jquery.aloha.js
+    - core/license.js
+    - utils/jquery.js
+    - utils/lang.js
+    - utils/range.js
+    - utils/position.js
+    - utils/dom.js
+    - utils/indexof.js
+    - core/ext-alohaproxy.js
+    - core/ext-alohareader.js
+    - core/ext-alohatreeloader.js
+    - core/core.js
+    - core/ui.js
+    - core/ui-attributefield.js
+    - core/ui-browser.js
+    - core/css.js
+    - core/editable.js
+    - core/event.js
+    - core/floatingmenu.js
+    - core/ierange-m2.js
+    - core/log.js
+    - core/markup.js
+    - core/message.js
+    - core/plugin.js
+    - core/selection.js
+    - core/sidebar.js
+    - core/repositorymanager.js
+    - core/repository.js
+    - core/repositoryobjects.js

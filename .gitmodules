@@ -1,51 +1,63 @@
-[submodule "WebContent/plugins/com.gentics.aloha.plugins.HighlightEditables"]
-	path = WebContent/plugins/com.gentics.aloha.plugins.HighlightEditables
+[submodule "src/plugin/highlighteditables"]
+	path = src/plugin/highlighteditables
 	url = https://github.com/alohaeditor/Aloha-Plugin-HighlightEditables.git
-[submodule "WebContent/plugins/com.gentics.aloha.plugins.Format"]
-	path = WebContent/plugins/com.gentics.aloha.plugins.Format
+[submodule "src/plugin/format"]
+	path = src/plugin/format
 	url = https://github.com/alohaeditor/Aloha-Plugin-Format.git
-[submodule "WebContent/plugins/com.gentics.aloha.plugins.Link"]
-	path = WebContent/plugins/com.gentics.aloha.plugins.Link
+[submodule "src/plugin/link"]
+	path = src/plugin/link
 	url = https://github.com/alohaeditor/Aloha-Plugin-Link.git
-[submodule "WebContent/plugins/com.gentics.aloha.plugins.List"]
-	path = WebContent/plugins/com.gentics.aloha.plugins.List
+[submodule "src/plugin/list"]
+	path = src/plugin/list
 	url = https://github.com/alohaeditor/Aloha-Plugin-List.git
-[submodule "WebContent/plugins/com.gentics.aloha.plugins.Table"]
-	path = WebContent/plugins/com.gentics.aloha.plugins.Table
+[submodule "src/plugin/table"]
+	path = src/plugin/table
 	url = https://github.com/alohaeditor/Aloha-Plugin-Table.git
-[submodule "WebContent/plugins/com.example.aloha.plugins.Product"]
-	path = WebContent/plugins/com.example.aloha.plugins.Product
+[submodule "src/plugin/product"]
+	path = src/plugin/product
 	url = https://github.com/alohaeditor/Aloha-Plugin-Product.git
-[submodule "WebContent/plugins/com.gentics.aloha.plugins.TOC"]
-	path = WebContent/plugins/com.gentics.aloha.plugins.TOC
+[submodule "src/plugin/toc"]
+	path = src/plugin/toc
 	url = https://github.com/alohaeditor/Aloha-Plugin-TOC.git
-[submodule "WebContent/plugins/com.example.aloha.plugins.Save"]
-	path = WebContent/plugins/com.example.aloha.plugins.Save
+[submodule "src/plugin/save"]
+	path = src/plugin/save
 	url = https://github.com/alohaeditor/Aloha-Plugin-Save.git
-[submodule "WebContent/plugins/com.gentics.aloha.plugins.Abbr"]
-	path = WebContent/plugins/com.gentics.aloha.plugins.Abbr
+[submodule "src/plugin/abbr"]
+	path = src/plugin/abbr
 	url = https://github.com/alohaeditor/Aloha-Plugin-Abbreviation.git
-[submodule "WebContent/plugins/com.gentics.aloha.plugins.LinkChecker"]
-	path = WebContent/plugins/com.gentics.aloha.plugins.LinkChecker
+[submodule "src/plugin/linkchecker"]
+	path = src/plugin/linkchecker
 	url = https://github.com/alohaeditor/Aloha-Plugin-LinkChecker.git
-[submodule "WebContent/plugins/com.gentics.aloha.plugins.Paste"]
-	path = WebContent/plugins/com.gentics.aloha.plugins.Paste
+[submodule "src/plugin/paste"]
+	path = src/plugin/paste
 	url = https://github.com/alohaeditor/Aloha-Plugin-Paste.git
-[submodule "WebContent/plugins/com.gentics.aloha.plugins.Ribbon"]
-	path = WebContent/plugins/com.gentics.aloha.plugins.Ribbon
+[submodule "src/plugin/ribbon"]
+	path = src/plugin/ribbon
 	url = http://github.com/alohaeditor/Aloha-Plugin-Ribbon.git
-[submodule "WebContent/plugins/com.gentics.aloha.plugins.CropNResize"]
-	path = WebContent/plugins/com.gentics.aloha.plugins.CropNResize
+[submodule "src/plugin/cropnresize"]
+	path = src/plugin/cropnresize
 	url = https://github.com/alohaeditor/Aloha-Plugin-CropNResize.git
-[submodule "WebContent/plugins/com.gentics.aloha.plugins.GoogleTranslate"]
-	path = WebContent/plugins/com.gentics.aloha.plugins.GoogleTranslate
+[submodule "src/plugin/googletranslate"]
+	path = src/plugin/googletranslate
 	url = https://github.com/alohaeditor/Aloha-Plugin-GoogleTranslate.git
-[submodule "WebContent/plugins/com.gentics.aloha.plugins.Image"]
-	path = WebContent/plugins/com.gentics.aloha.plugins.Image
+[submodule "src/plugin/image"]
+	path = src/plugin/image
 	url = https://github.com/alohaeditor/Aloha-Plugin-Image.git
-[submodule "WebContent/plugins/com.gentics.aloha.plugins.DragAndDropFiles"]
-	path = WebContent/plugins/com.gentics.aloha.plugins.DragAndDropFiles
+[submodule "src/plugin/dragndropfiles"]
+	path = src/plugin/dragndropfiles
 	url = https://github.com/alohaeditor/Aloha-Plugin-DragAndDropFiles.git
-[submodule "WebContent/plugins/eu.iksproject.VIE"]
-	path = WebContent/plugins/eu.iksproject.VIE
+[submodule "src/plugin/vie"]
+	path = src/plugin/vie
 	url = http://github.com/alohaeditor/Aloha-Plugin-VIE.git
+[submodule "vendor/uglify"]
+	path = vendor/uglify
+	url = https://github.com/mishoo/UglifyJS.git
+[submodule "vendor/node"]
+	path = vendor/node
+	url = https://github.com/joyent/node.git
+[submodule "vendor/npm"]
+	path = vendor/npm
+	url = https://github.com/isaacs/npm.git
+[submodule "vendor/less"]
+	path = vendor/less
+	url = https://github.com/cloudhead/less.git
