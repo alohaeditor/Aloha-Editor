@@ -1,0 +1,249 @@
+<html>
+  <head>
+<!-- IMPORTANT: do not remove the next line, it will include scripts and styles necessary for the test to run -->
+<!-- #include file="${com.gentics.labs.browsertest.includedir}/head-include.inc" -->
+
+<!-- #include file="${com.gentics.aloha.src}/test/${com.gentics.aloha.loaderprefix}testloader.html" -->
+
+<script type="text/javascript">
+
+GENTICS.Aloha.settings = {
+	'logHistory' : {
+		'maxEntries' : 10,
+		'highWaterMark' : 90,
+		'levels' : {
+			'error' : true,
+			'warn' : true
+		}
+	},
+
+	'logLevels' : {
+		'error' : true,
+		'warn' : true,
+		'info' : true,
+		'debug' : true
+	}
+};
+</script>
+
+  <script type="text/javascript">
+
+/*
+ * ok, this is a GLOBAL variable, because in JavaScript, it is not possible to access "this" correctly when passing methods as event callbacks to GENTICS.Aloha.EventRegistry.subscribe
+ */
+eventCounter = 0;
+
+	// create the testcase
+	// TODO: rename the testcase
+	YAHOO.com.gentics.labs.browsertest.logHistoryTest = new YAHOO.tool.TestCase({
+
+	    //name of the test case - if not provided, one is auto-generated
+	    // TODO: provide a proper name for the testcase
+	    name : 'LogHistory Test',
+
+	    //---------------------------------------------------------------------
+	    // setUp and tearDown methods - optional
+	    //---------------------------------------------------------------------
+	    /*
+	     * Sets up data that is needed by each test.
+	     */
+	    setUp : function () {
+		    eventCounter = 0;
+		    GENTICS.Aloha.Log.flushLogHistory();
+	    },
+	    
+	    /*
+	     * Cleans up everything that was created by setUp().
+	     */
+	    tearDown : function () {
+			// TODO: implement teardown code for the tests
+	    },
+
+	    /*
+	     * Handler for the 'logFull' event
+	     */
+	    handleEvent : function() {
+		    eventCounter++;
+	    },
+
+	    /*
+	     * Test adding a single log entry
+	     */
+	    testAddLogEntry : function () {
+		    GENTICS.Aloha.Log.log('error', GENTICS.Aloha, 'This is a test logEntry');
+		    var logHistory = GENTICS.Aloha.Log.getLogHistory();
+
+		    // check the number of entries in the log history
+		    YAHOO.util.Assert.areEqual(1, logHistory.length, 'Check whether the entry is really in the log history');
+
+		    // check the message properties
+		    YAHOO.util.Assert.areEqual('error', logHistory[0].level, 'Check the level');
+		    YAHOO.util.Assert.areEqual(GENTICS.Aloha.toString(), logHistory[0].component, 'Check the component');
+		    YAHOO.util.Assert.areEqual('This is a test logEntry', logHistory[0].message, 'Check the message');
+		    YAHOO.util.Assert.isNotUndefined(logHistory[0].date, 'Check whether date is set');
+	    },
+
+	    /*
+	     * Test adding more log entries that possible
+	     */
+	    testAddManyLogEntries : function () {
+		    for (var i = 0; i < 20; ++i) {
+				GENTICS.Aloha.Log.log('error', GENTICS.Aloha, 'This is test entry #'+i);
+		    }
+		    // check the number of entries in the log history
+		    YAHOO.util.Assert.areEqual(10, GENTICS.Aloha.Log.getLogHistory().length, 'Check whether not more than maxEntries log entries are in the log history');
+
+		    // check whether the oldest entries are no longer present in the log history
+		    var logHistory = GENTICS.Aloha.Log.getLogHistory();
+		    for (var i = 0; i < 10; ++i) {
+		    	YAHOO.util.Assert.areEqual('This is test entry #' + (i+10), logHistory[i].message, 'Check entry message');
+		    }
+	    },
+
+	    /*
+	     * Test whether the history contains only the configured log levels
+	     */
+	    testLevelSetting : function () {
+		    // set the loglevel to 'error' (only)
+		    GENTICS.Aloha.settings.logHistory.levels.error = true;
+		    GENTICS.Aloha.settings.logHistory.levels.warn = false;
+
+		    // log an error and a warning
+		    GENTICS.Aloha.Log.log('error', GENTICS.Aloha, 'This is the error');
+		    GENTICS.Aloha.Log.log('warn', GENTICS.Aloha, 'This is the warning');
+
+		    // get the log history
+		    var logHistory = GENTICS.Aloha.Log.getLogHistory();
+		    YAHOO.util.Assert.areEqual(1, logHistory.length, 'Check whether we have one entry logged');
+
+		    // check whether only errors were logged
+		    for (var i = 0; i < logHistory.length; ++i) {
+		    	YAHOO.util.Assert.areEqual('error', logHistory[i].level, 'Check level of logged message'); 
+		    }
+	    },
+
+	    /*
+	     * Test whether the logfull event is fired when the history reaches the highwatermark
+	     */
+	    testLogFullEvent : function () {
+		    // first check whether the logHistory is really empty
+		    YAHOO.util.Assert.areEqual(0, GENTICS.Aloha.Log.getLogHistory().length, 'Check length of log history');
+
+
+	    	// add 11 log entries, check that we get exactly 1 event (after 9 log entries)
+	    	for (var i = 1; i <= 11; ++i) {
+		    	GENTICS.Aloha.Log.log('error', GENTICS.Aloha, 'This is log entry #' + i);
+		    	YAHOO.util.Assert.areEqual(i <= 8 ? 0 : 1, eventCounter, 'Check number of fired events after ' + i + ' log entries');
+	    	}
+	    },
+
+	    /*
+	     * Test flushen der logHistory
+	     */
+	    testFlushHistory : function() {
+			YAHOO.util.Assert.areEqual(0, eventCounter, 'Check # of logFull events fired');
+
+			// add 10 log entries
+			for (var i = 0; i < 10; ++i) {
+				GENTICS.Aloha.Log.log('error', GENTICS.Aloha, 'This is log entry #' + i);
+			}
+
+			// check # of events in log history
+			YAHOO.util.Assert.areEqual(10, GENTICS.Aloha.Log.getLogHistory().length, 'Check # of entries in log history');
+
+			// check whether we received the logFull event once
+			YAHOO.util.Assert.areEqual(1, eventCounter, 'Check # of logFull events fired');
+
+			// flush the log history
+			GENTICS.Aloha.Log.flushLogHistory();
+
+			// check # of events in log history
+			YAHOO.util.Assert.areEqual(0, GENTICS.Aloha.Log.getLogHistory().length, 'Check # of entries in log history');
+
+			// add 10 log entries again
+			for (var i = 0; i < 10; ++i) {
+				GENTICS.Aloha.Log.log('error', GENTICS.Aloha, 'This is log entry #' + i);
+			}
+
+			// check whether we received the logFull event a second time
+			YAHOO.util.Assert.areEqual(2, eventCounter, 'Check # of logFull events fired');
+	    },
+
+	    /*
+	     * Test the log methods for different log levels (.error(), .warn(), .info(), .debug())
+	     */
+	    testLogMethods : function() {
+	 	    GENTICS.Aloha.settings.logHistory.levels.error = true;
+	 	    GENTICS.Aloha.settings.logHistory.levels.warn = true;
+	 	    GENTICS.Aloha.settings.logHistory.levels.info = true;
+	 	    GENTICS.Aloha.settings.logHistory.levels.debug = true;
+
+	 		GENTICS.Aloha.Log.error(GENTICS.Aloha, 'This is an error');
+	 		GENTICS.Aloha.Log.warn(GENTICS.Aloha, 'This is a warning');
+	 		GENTICS.Aloha.Log.info(GENTICS.Aloha, 'This is an info');
+	 		GENTICS.Aloha.Log.debug(GENTICS.Aloha, 'This is a debug');
+
+	 		var logHistory = GENTICS.Aloha.Log.getLogHistory();
+	 		YAHOO.util.Assert.areEqual(4, logHistory.length, 'Check # of entries in the log history');
+	 		YAHOO.util.Assert.areEqual('This is an error', logHistory[0].message, 'Check message of the entry');
+	 		YAHOO.util.Assert.areEqual('error', logHistory[0].level, 'Check level of the entry');
+	 		YAHOO.util.Assert.areEqual('This is a warning', logHistory[1].message, 'Check message of the entry');
+	 		YAHOO.util.Assert.areEqual('warn', logHistory[1].level, 'Check level of the entry');
+	 		YAHOO.util.Assert.areEqual('This is an info', logHistory[2].message, 'Check message of the entry');
+	 		YAHOO.util.Assert.areEqual('info', logHistory[2].level, 'Check level of the entry');
+	 		YAHOO.util.Assert.areEqual('This is a debug', logHistory[3].message, 'Check message of the entry');
+	 		YAHOO.util.Assert.areEqual('debug', logHistory[3].level, 'Check level of the entry');
+	    },
+
+	    /*
+	     * Test the methods to check whether core log levels are enabled (.isErrorEnabled(), .isWarnEnabled(), .isInfoEnabled(), .isDebugEnabled())
+	     */
+	    testIsEnabledMethods : function() {
+	 	    GENTICS.Aloha.settings.logLevels.error = true;
+			YAHOO.util.Assert.isTrue(GENTICS.Aloha.Log.isErrorEnabled(), 'Check whether error logging is enabled');
+			YAHOO.util.Assert.isTrue(GENTICS.Aloha.Log.isLogLevelEnabled('error'), 'Check whether error logging is enabled');
+			GENTICS.Aloha.settings.logLevels.error = false;
+			YAHOO.util.Assert.isFalse(GENTICS.Aloha.Log.isErrorEnabled(), 'Check whether error logging is enabled');
+			YAHOO.util.Assert.isFalse(GENTICS.Aloha.Log.isLogLevelEnabled('error'), 'Check whether error logging is enabled');
+
+			GENTICS.Aloha.settings.logLevels.warn = true;
+			YAHOO.util.Assert.isTrue(GENTICS.Aloha.Log.isWarnEnabled(), 'Check whether warn logging is enabled');
+			YAHOO.util.Assert.isTrue(GENTICS.Aloha.Log.isLogLevelEnabled('warn'), 'Check whether warn logging is enabled');
+			GENTICS.Aloha.settings.logLevels.warn = false;
+			YAHOO.util.Assert.isFalse(GENTICS.Aloha.Log.isWarnEnabled(), 'Check whether warn logging is enabled');
+			YAHOO.util.Assert.isFalse(GENTICS.Aloha.Log.isLogLevelEnabled('warn'), 'Check whether warn logging is enabled');
+
+			GENTICS.Aloha.settings.logLevels.info = true;
+			YAHOO.util.Assert.isTrue(GENTICS.Aloha.Log.isInfoEnabled(), 'Check whether info logging is enabled');
+			YAHOO.util.Assert.isTrue(GENTICS.Aloha.Log.isLogLevelEnabled('info'), 'Check whether info logging is enabled');
+			GENTICS.Aloha.settings.logLevels.info = false;
+			YAHOO.util.Assert.isFalse(GENTICS.Aloha.Log.isInfoEnabled(), 'Check whether info logging is enabled');
+			YAHOO.util.Assert.isFalse(GENTICS.Aloha.Log.isLogLevelEnabled('info'), 'Check whether info logging is enabled');
+			
+			GENTICS.Aloha.settings.logLevels.debug = true;
+			YAHOO.util.Assert.isTrue(GENTICS.Aloha.Log.isDebugEnabled(), 'Check whether debug logging is enabled');
+			YAHOO.util.Assert.isTrue(GENTICS.Aloha.Log.isLogLevelEnabled('debug'), 'Check whether debug logging is enabled');
+			GENTICS.Aloha.settings.logLevels.debug = false;
+			YAHOO.util.Assert.isFalse(GENTICS.Aloha.Log.isDebugEnabled(), 'Check whether debug logging is enabled');
+			YAHOO.util.Assert.isFalse(GENTICS.Aloha.Log.isLogLevelEnabled('debug'), 'Check whether debug logging is enabled');
+		}
+	});
+
+	// add our testcase
+	YAHOO.com.gentics.labs.browsertest.Suite.add(YAHOO.com.gentics.labs.browsertest.logHistoryTest);
+
+	// subscribe the event handler (we do it here, because we want to subscribe only once)
+   	GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha.Log, 'logFull', YAHOO.com.gentics.labs.browsertest.logHistoryTest.handleEvent);
+
+</script>
+  </head>
+  <body class="yui-skin-sam">
+
+<!-- TODO: add your html code to be tested here -->
+<h1>LogHistory Test</h1>
+This tests the logHistory functions
+
+<!-- IMPORTANT: do not remove the next line, it will include html fragments necessary for the test to run -->
+<!-- #include file="${com.gentics.labs.browsertest.includedir}/body-include.inc" -->
+  </body>
+</html>
