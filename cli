@@ -362,7 +362,8 @@ class App
 	# Add Submodules
 	def add_submodules
 		submodule_foreach([
-			"git add *"
+			"git add *",
+			"git add -u"
 		])
 	end
 
