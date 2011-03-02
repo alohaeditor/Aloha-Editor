@@ -1,0 +1,5 @@
+div.pubmed {
+  width: 15px;
+  height: 32px;
+  background-image: url(../../img/pubmed.gif); /** sprite-ref: test */
+}

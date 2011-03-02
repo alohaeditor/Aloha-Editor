@@ -1,0 +1,28 @@
+/**
+ * Horizontal sprites with nasty combination of repeats causing a fairly large
+ * sprite height (lowest common multiply of heights of all repeated images).
+ */
+
+#h1 {
+  background-repeat: repeat-y;
+  background-image: url('../img/sprite-horizontal.png');
+  background-position: -0px top;
+}
+
+#h2 {
+  background-repeat: repeat-y;
+  background-image: url('../img/sprite-horizontal.png');
+  background-position: -17px top;
+}
+
+#h1 {
+  background-repeat: repeat-x;
+  background-image: url('../img/sprite-vertical.png');
+  background-position: left -0px;
+}
+
+#h2 {
+  background-repeat: repeat-x;
+  background-image: url('../img/sprite-vertical.png');
+  background-position: left -17px;
+}

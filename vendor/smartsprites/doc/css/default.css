@@ -1,0 +1,296 @@
+/**
+ * Design based on the Blackbox design by Viktor Persson (http://arcsin.se).
+ */
+/** sprite: vert; sprite-image: url(../img/vert.png); sprite-layout: vertical */
+* {
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	background: #000 url(../img/bg.png) repeat-x fixed left bottom;
+	color: #b0b0b0;
+	margin: 20px 0;
+	text-align: center;
+	font-family: Tahoma,sans-serif;
+  font-size: 12px;
+}
+
+a {
+	color: #FFA650;
+}
+
+ul {
+	margin: 12px 0;
+}
+
+li {
+	margin-left: 36px;
+  margin-bottom: 2ex;
+}
+
+.versions li {
+  margin-bottom: 0;
+}
+
+ul li {
+	list-style: url(../img/li.gif);
+}
+
+ol ol {
+  list-style-type: lower-alpha;
+}
+
+code, tt {
+	font-family: "Lucida Sans Unicode", monospace;
+  font-size: 13px;
+}
+
+code {
+  color: #e0e0e0;
+	display: block;
+	padding: 2ex;
+	white-space: pre;
+	margin: 2ex 0;
+  background-color: #080808;
+  border: 1px #202020 solid;
+  position: relative;
+}
+
+code strong {
+  font-weight: normal;
+}
+
+code strong.red {
+  color: red;
+}
+
+tt {
+  background-color: #303030;
+  padding: 0 3px;
+  color: #FF7E00;
+}
+
+.red {
+  color: red;
+}
+
+code span.nobreak {
+  background-image: url('../img/arrow_undo.png'); /** sprite-ref: vert */
+  background-repeat: no-repeat;
+  float: right;
+  position: relative;
+  top: -2.2ex;
+  width: 16px;
+  height: 16px;
+}
+
+strong {
+  color: #f0f0f0;
+}
+
+strong.new {
+  color: #ff4400;
+  padding-right: 0.5em;
+}
+
+div.quote {
+	margin-bottom: 12px;
+  margin-left: 8px;
+	font: normal 1.1em "Lucida Sans Unicode",serif;
+	background: url(../img/quote.gif) no-repeat;
+	padding-left: 28px;
+	color: #666;
+}
+
+/* Main structure */
+.main {
+	background: #000; 
+	border: 3px double #EEE; 
+	border-color: #141414 #202020 #222 #202020; 
+	margin: 20px auto 4px auto; 
+	text-align: left;
+	width: 750px; 
+}
+
+/* Header */
+.gfx {
+	background-color: #000;
+  background-position: right top;
+  background-image: url(../img/dark_pixel.jpg); /** sprite-ref: vert; sprite-alignment: right */
+  background-repeat: no-repeat;
+	height: 230px;
+}
+.gfx h1, h2 {
+	color: #909090;
+	font-family: Garamond, serif;
+  font-variant: small-caps;
+  font-weight: normal;
+}
+.gfx h1 {
+	padding: 118px 0px 0px 20px;
+  font-size: 56px;
+}
+.gfx h2 {
+	padding: 0px 0px 0px 20px;
+  font-size: 25px;
+}
+#smart, 
+#done-right,
+code strong,
+.orange
+{
+  color: #FF7E00;
+}
+
+#alpha {
+  font-size: 25px;
+  color: #606060;
+}
+
+#other-language {
+	color: #888;
+  padding: 8px 0 0 26px;
+  background-position: 4px 10px;
+  background-repeat: no-repeat;
+  background-image: url(../img/fr.png); /** sprite-ref: vert; sprite-margin-top: 10px; sprite-margin-left: 4px; */
+}
+
+/* Menu */
+ul.menu {
+	border-top: 1px solid #1A1A1A;
+  margin: 0;
+  font-variant: small-caps;
+  font-weight: normal;
+  font-size: 15px;
+}
+ul.menu li {
+  padding: 0;
+  margin: 0;
+  background-color: #000;
+	background-image: url(../img/bgmenu.png); /** sprite-ref: vert; sprite-alignment: repeat */
+  background-repeat: repeat-x;
+	border-right: 1px solid #222;
+	border-top: 1px solid #1A1A1A;
+	color: #444;
+	float: left;
+	padding-top: 8px;
+	width: 93px; height: 32px;
+  list-style: none;
+  text-align: center;
+}
+ul.menu li a {
+  color: #c0c0c0;
+}
+.menu a:hover {
+	background-position: left bottom;
+	color: #ffffff;
+  text-decoration: underline;
+}
+.menu li#last {
+	border-right: none;
+  width: 92px;
+}
+
+
+/* Content */
+.content {
+	border-top: 1px solid #1A1A1A;
+	background: #1A1A1A;
+	clear: both;
+}
+.content h1 {
+  font-variant: small-caps;
+  font-weight: normal;
+  font-size: 16px;
+	margin: 10px 10px;
+  font-weight: bold;
+  color: #d0d0d0;
+}
+.content p {
+	margin: 10px;
+}
+
+.content li p {
+  margin: 10px 0px;
+}
+
+/* Footer */
+.footer {
+	padding: 10px;
+  padding-left: 18px;
+	background: #0A0A0A;
+	color: #666;
+} 
+
+/* Bamboo build status */
+div.build-info {
+  margin-left: 10px;
+}
+
+#plan-status {
+  background-color: transparent;
+  border: none;
+  display: inline;
+  padding: 0;
+}
+
+#plan-status > p {
+  display: inline;
+  padding-right: 18px;
+}
+#plan-status > p.success {
+  color: #090;
+}
+#plan-status strong {
+  display: none;
+}
+
+#donate {
+  float: right;
+  width: 150px;
+}
+
+#donate-10,
+#donate-25,
+#donate-50,
+#donate-other {
+  width: 125px;
+  height: 38px;
+  margin-left: 2px;
+  background-color: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+#donate-10 span,
+#donate-25 span,
+#donate-50 span,
+#donate-other span {
+  display: none;
+}
+
+#donate-10 {
+  background-image: url(../img/donate-10.png); /** sprite-ref: vert */
+}
+
+#donate-25 {
+  background-image: url(../img/donate-25.png); /** sprite-ref: vert */
+}
+
+#donate-50 {
+  background-image: url(../img/donate-50.png); /** sprite-ref: vert */
+}
+
+#donate-other {
+  background-image: url(../img/donate-other.png); /** sprite-ref: vert */
+}
+
+.item {
+  background-color: #030303;
+	background-image: url(../img/bgitem.gif); /** sprite-ref: vert; sprite-alignment: repeat */
+	background-repeat: repeat-x;
+	padding: 8px 10px;
+}
+
+

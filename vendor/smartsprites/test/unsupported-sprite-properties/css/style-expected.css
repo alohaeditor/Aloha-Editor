@@ -1,0 +1,22 @@
+/**
+ * Sprite directives contain unsupported properties, e.g. being results of typos
+ */
+
+div.web {
+  width: 17px;
+  height: 17px;
+  background-image: url('../img/sprite.png');
+  background-position: left -0px;
+}
+
+div.pubmed {
+  width: 15px;
+  height: 32px;
+  background-image: url('../img/sprite.png');
+  background-position: right -17px;
+}
+
+div.logo {
+  background-image: url('../img/sprite.png');
+  background-position: left -33px;
+}

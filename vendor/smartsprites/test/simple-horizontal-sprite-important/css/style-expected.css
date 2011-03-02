@@ -1,0 +1,31 @@
+/**
+ * A simple horizontal sprites test.
+ */
+
+div.web {
+  width: 17px;
+  height: 17px;
+  background-image: url('../img/sprite.png') !important;
+  -background-image: url('../img/sprite-ie6.png') !important;
+  background-position: -0px top !important;
+}
+
+div.pubmed {
+  width: 15px;
+  height: 32px;
+  background-image: url('../img/sprite.png') !important;
+  -background-image: url('../img/sprite-ie6.png') !important;
+  background-position: -17px bottom !important;
+}
+
+div.logo {
+  background-image: url('../img/sprite.png') !important;
+  -background-image: url('../img/sprite-ie6.png') !important;
+  background-position: -32px top !important;
+}
+
+div.full-alpha {
+  background-image: url('../img/sprite.png') !important;
+  -background-image: url('../img/sprite-ie6.png') !important;
+  background-position: -80px top !important;
+}

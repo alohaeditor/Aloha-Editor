@@ -1,0 +1,9 @@
+/**
+ * Format of the image defined by the background-image is not supported. 
+ */
+
+#web { 
+  width: 17px; height: 17px; 
+  background-repeat: no-repeat; 
+  background-image: url(../img/web.iff); /** sprite-ref: test; */ 
+} 

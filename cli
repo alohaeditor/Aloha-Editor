@@ -427,7 +427,12 @@ class App
 	# Build Aloha Editor
 	def build
 		check_req(['node','npm'])
-		run("node ./build/build.js")
+		run([
+			"rm -Rf dist",
+			"mkdir dist",
+			"cp -R src dist/src",
+			"node ./build/build.js package.json"
+		])
 	end
 
 	# ---------------------------------------------------------------------------

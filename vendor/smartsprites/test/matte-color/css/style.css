@@ -1,0 +1,44 @@
+/**
+ * Testing matting color for rendering partial transparencies.
+ */
+
+/** sprite: full-alpha-m1; sprite-image: url('../img/sprite-full-alpha-m1.png'); sprite-matte-color: #ff0000 */
+/** sprite: full-alpha-m2; sprite-image: url('../img/sprite-full-alpha-m2.png'); sprite-matte-color: #ff0000 */
+/** sprite: full-alpha-m3; sprite-image: url('../img/sprite-full-alpha-m3.png'); sprite-matte-color: #0000ff */
+/** sprite: bit-alpha; sprite-image: url('../img/sprite-bit-alpha.png'); sprite-matte-color: #ff0000*/
+/** sprite: many-colors; sprite-image: url('../img/sprite-many-colors.png'); sprite-matte-color: #ff0000 */
+
+#full-alpha-m1 {
+	background: transparent no-repeat;
+	background-image: url(../img/full-alpha.png); /** sprite-ref: full-alpha-m1 */
+	width: 20px;
+	height: 20px;
+}
+
+#full-alpha-m2 {
+	background: transparent no-repeat;
+	background-image: url(../img/full-alpha.png); /** sprite-ref: full-alpha-m2 */
+	width: 20px;
+	height: 20px;
+}
+
+#full-alpha-m3 {
+	background: transparent no-repeat;
+	background-image: url(../img/full-alpha.png); /** sprite-ref: full-alpha-m3 */
+	width: 20px;
+	height: 20px;
+}
+
+#bit-alpha {
+	background: transparent no-repeat;
+	background-image: url(../img/bit-alpha.png); /** sprite-ref: bit-alpha */
+	width: 20px;
+	height: 20px;
+}
+
+#many-colors {
+	background: transparent no-repeat;
+	background-image: url(../img/many-colors.png); /** sprite-ref: many-colors */
+	width: 20px;
+	height: 20px;
+}

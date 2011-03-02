@@ -1,0 +1,35 @@
+/**
+ * Testing different image encoding types and possible color reductions.
+ */
+
+#bit-alpha-gif {
+  background: transparent no-repeat;
+  background-image: url(../img/sprite-bit-alpha.gif);
+  background-position: left -0px;
+  width: 20px;
+  height: 20px;
+}
+
+#bit-alpha-png {
+  background: transparent no-repeat;
+  background-image: url(../img/sprite-bit-alpha.png);
+  background-position: left -0px;
+  width: 20px;
+  height: 20px;
+}
+
+#full-alpha {
+  background: transparent no-repeat;
+  background-image: url(../img/sprite-full-alpha.png);
+  background-position: left -0px;
+  width: 20px;
+  height: 20px;
+}
+
+#many-colors {
+  background: transparent no-repeat;
+  background-image: url(../img/sprite-many-colors.png);
+  background-position: left -0px;
+  width: 20px;
+  height: 20px;
+}

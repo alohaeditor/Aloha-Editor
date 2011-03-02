@@ -58,6 +58,6 @@
 [submodule "vendor/npm"]
 	path = vendor/npm
 	url = https://github.com/isaacs/npm.git
-[submodule "vendor/less"]
-	path = vendor/less
-	url = https://github.com/cloudhead/less.git
+[submodule "vendor/less.js"]
+	path = vendor/less.js
+	url = https://github.com/cloudhead/less.js.git

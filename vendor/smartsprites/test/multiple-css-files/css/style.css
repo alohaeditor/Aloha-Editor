@@ -1,0 +1,12 @@
+/** sprite: test; sprite-image: url('../img/sprite.png'); sprite-layout: horizontal */
+div.web {
+  width: 17px;
+  height: 17px;
+  background-image: url(../img/web.gif); /** sprite-ref: test */
+}
+
+div.pubmed {
+  width: 15px;
+  height: 32px;
+  background-image: url(../img/pubmed.gif); /** sprite-ref: test; sprite-alignment: bottom */
+}

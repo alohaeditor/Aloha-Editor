@@ -1,0 +1,12 @@
+li.tab {
+  width: 1px;
+}
+li.drag div.tab-inside,
+li.drag div.tab-left,
+li.drag div.tab-right {
+}
+
+li.drag {
+  margin-left: -280px;
+  margin-top: -60px;
+}

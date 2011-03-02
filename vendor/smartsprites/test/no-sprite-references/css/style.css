@@ -1,0 +1,7 @@
+/**
+ * A sprite image is defined, but there are no references to it.
+ */
+
+/** sprite: test; sprite-image: url('../img/sprite.png'); */
+body {
+}

@@ -1,0 +1,24 @@
+/**
+ * A simple horizontal sprites test.
+ */
+
+/** sprite: test; sprite-image: url('../img/sprite.png'); sprite-layout: horizontal */
+div.web {
+  width: 17px;
+  height: 17px;
+  background-image: url(../img/web.gif)!important; /** sprite-ref: test */
+}
+
+div.pubmed {
+  width: 15px;
+  height: 32px;
+  background-image: url(../img/pubmed.gif) !  important; /** sprite-ref: test; sprite-alignment: bottom */
+}
+
+div.logo {
+  background-image: url(../img/logo.png)!  important  ; /** sprite-ref: test */
+}
+
+div.full-alpha {
+  background-image: url(../img/full-alpha.png) !important; /** sprite-ref: test */
+}

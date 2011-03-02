@@ -1,0 +1,10 @@
+/**
+ * Test for bug SMARTSPRITES-69.
+ */
+
+div.web {
+  width: 17px;
+  height: 17px;
+  background-image: url('../img/sprite.png');
+  background-position: left -16px;
+}

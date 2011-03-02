@@ -1,0 +1,52 @@
+/**
+ * Testing generating degraded versions of sprites for IE6.
+ */
+
+/** sprite: bit-alpha-png; sprite-image: url('../img/sprite-bit-alpha.png'); sprite-layout: vertical */
+/** sprite: bit-alpha-gif; sprite-image: url('../img/sprite-bit-alpha.gif'); sprite-layout: vertical */
+/** sprite: full-alpha; sprite-image: url('../img/sprite-full-alpha.png'); sprite-layout: vertical */
+/** sprite: many-colors; sprite-image: url('../img/sprite-many-colors.png'); sprite-layout: vertical */
+/** sprite: many-colors-bit-alpha; sprite-image: url('../img/sprite-many-colors-bit-alpha.png'); sprite-layout: vertical */
+/** sprite: many-colors-bit-alpha-no-ie6; sprite-image: url('../img/sprite-many-colors-bit-alpha-no-ie6.png'); sprite-layout: vertical; sprite-ie6-mode: none */
+
+#bit-alpha-gif {
+  background: transparent no-repeat;
+  background-image: url(../img/bit-alpha.gif); /** sprite-ref: bit-alpha-gif */
+  width: 20px;
+  height: 20px;
+}
+
+#bit-alpha-png {
+  background: transparent no-repeat;
+  background-image: url(../img/bit-alpha.png); /** sprite-ref: bit-alpha-png */
+  width: 20px;
+  height: 20px;
+}
+
+#full-alpha {
+  background: transparent no-repeat;
+  background-image: url(../img/full-alpha.png); /** sprite-ref: full-alpha */
+  width: 20px;
+  height: 20px;
+}
+
+#many-colors {
+  background: transparent no-repeat;
+  background-image: url(../img/many-colors.png); /** sprite-ref: many-colors */
+  width: 20px;
+  height: 20px;
+}
+
+#many-colors-bit-alpha {
+  background: transparent no-repeat;
+  background-image: url(../img/many-colors-bit-alpha.png); /** sprite-ref: many-colors-bit-alpha */
+  width: 20px;
+  height: 20px;
+}
+
+#many-colors-bit-alpha-no-ie6 {
+  background: transparent no-repeat;
+  background-image: url(../img/many-colors-bit-alpha.png); /** sprite-ref: many-colors-bit-alpha-no-ie6 */
+  width: 20px;
+  height: 20px;
+}

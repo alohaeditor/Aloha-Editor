@@ -1,0 +1,22 @@
+/**
+ * A simple horizontal sprites test.
+ */
+
+div.web {
+  width: 17px;
+  height: 17px;
+  background-image: url('../img/sprite.png?4f597e065cfe89bf84fdb6594bd3b59a');
+  background-position: -0px top;
+}
+
+div.pubmed {
+  width: 15px;
+  height: 32px;
+  background-image: url('../img/sprite.png?4f597e065cfe89bf84fdb6594bd3b59a');
+  background-position: -17px bottom;
+}
+
+div.logo {
+  background-image: url('../img/sprite2.png?1cbb5bd4c5577f487e1ca434009967c');
+  background-position: -0px top;
+}
