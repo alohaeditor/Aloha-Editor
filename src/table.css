@@ -32,20 +32,20 @@ td.GENTICS_Aloha_Table_selectRow {
 }
 
 .GENTICS_Aloha_Table tr.GENTICS_Aloha_Table_selectColumn td {
-	cursor: url(down.cur),default;
+	cursor: url(../img/down.cur),default;
 }
 
 /* :TODO: make custom cursors visible in IE */
 .GENTICS_Aloha_Table td.GENTICS_Aloha_Table_selectRow {
-	cursor: url(left.cur),default;
+	cursor: url(../img/left.cur),default;
 }
 
 .GENTICS_WAI_RED {
-	background-image: url(wai_red.png);
+	background-image: url(../img/wai_red.png);
 }
 
 .GENTICS_WAI_GREEN {
-	background-image: url(wai_green.png);
+	background-image: url(../img/wai_green.png);
 }
 
 .GENTICS_Aloha_Table td.GENTICS_Aloha_Table_leftUpperCorner div {
