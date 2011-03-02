@@ -469,7 +469,7 @@ jQuery.extend(true,GENTICS.Aloha.Image,{
 		GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'editableCreated', function(event, editable) {
 		// add to editable the image click
 			editable.obj.find('img').attr('_moz_resizing', false);
-			editable.obj.find('img').attr('contenteditable', false);
+			editable.obj.find('img').contentEditable(false);
 			editable.obj.delegate('img', 'mouseup', function(event) {
 				that.clickImage(event);
 			});
