@@ -5,7 +5,7 @@
 		if ( value.indexOf('/') === -1 ) {
 			value += '/plugin.js';
 		}
-		url = window.GENTICS_Aloha_base + 'plugins/com.gentics.aloha.plugins.' + value;
+		url = 'plugins/com.gentics.aloha.plugins.' + value;
 		includes.push(url);
 	}
 

@@ -1,1 +1,0 @@
-	includes.push(window.GENTICS_Aloha_base + '\1');

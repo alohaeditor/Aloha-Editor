@@ -359,6 +359,13 @@ class App
 		submodule_foreach('sed -i "" -E "s/git\@github.com\:/http://github.com\//" .git/config')
 	end
 
+	# Add Submodules
+	def add_submodules
+		submodule_foreach([
+			"git add *"
+		])
+	end
+
 	# Branch Submodules
 	def branch_submodules(branch)
 		submodule_foreach([
@@ -377,7 +384,7 @@ class App
 	# Push Submodules
 	def push_submodules
 		submodule_foreach([
-			"git push --all"
+			"git push --all || echo good"
 		])
 	end
 

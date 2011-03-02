@@ -18,26 +18,9 @@
 		"files": {
 			"meta": "package.json"
 		},
-		"js": {
-			"dep": [],
-			"core": [],
-			"plugin": []
-		},
-		"css": {
-			"dep": [],
-			"core": [],
-			"plugin": []
-		},
-		"i18n": {
-			"dep": [],
-			"core": [],
-			"plugin": []
-		},
-		"img": {
-			"dep": [],
-			"core": [],
-			"plugin": []
-		}
+		"js": [],
+		"css": [],
+		"i18n": []
 	}.extend(JSON.parse(fs.readFileSync(process.argv[2]||"package.json").toString()));
 
 	// App Functions
@@ -46,28 +29,21 @@
 		 * Initialise
 		 */
 		init: function(){
-			// Normalize Paths
-			config.paths.each(function(key,value){
-				config.paths[key] = fs.realpathSync(value);
-			});
-			config.js.each(function(group,files){
-				files.each(function(key,value){
-					config.js[group][key] = fs.realpathSync(config.paths.src+'/'+value);
-				});
-			});
-			config.css.each(function(group,files){
-				files.each(function(key,value){
-					config.css[group][key] = fs.realpathSync(config.paths.src+'/'+value);
-				});
-			});
-			config.i18n.each(function(group,files){
-				files.each(function(key,value){
-					config.i18n[group][key] = fs.realpathSync(config.paths.src+'/'+value);
-				});
+			// ----------------------------------------------------------------------
+			// Normalise
+
+			// Dirs
+			config.dir.each(function(key,value){
+				config.dir[key] = fs.realpathSync(value);
 			});
 
-			// Others
-			config.out = config.paths.dist+'/'+config.name;
+			// Templates
+			config.template.each(function(key,value){
+				config.template[key] = config.dir.template+'/'+value;
+			});
+
+			// Done
+			return true;
 		},
 
 		/**
@@ -147,7 +123,7 @@
 		 * @return {Path} pluginPath
 		 */
 		getPluginPath: function(plugin){
-			var pluginPath = config.paths.plugin+'/'+plugin;
+			var pluginPath = config.subdir.plugin+'/'+plugin;
 			return pluginPath;
 		},
 
@@ -157,7 +133,7 @@
 		 * @return {Path} pluginMetaPath
 		 */
 		getPluginMetaPath: function(plugin){
-			var pluginMetaPath = config.paths.plugin+'/'+plugin+'/'+config.files.meta;
+			var pluginMetaPath = config.subdir.plugin+'/'+plugin+'/'+config.files.meta;
 			return pluginMetaPath;
 		},
 
@@ -175,21 +151,21 @@
 					"js": [],
 					"css": [],
 					"i18n": []
-					//"img": []
 				};
 
 			// Check if the meta data exists
-			if ( !path.exists(plugin) ) {
-				// Create the meta data
-				pluginMetaData.js = app.findFilesWithExtension(pluginPath, ".js");
-				pluginMetaData.css = app.findFilesWithExtension(pluginPath, ".css");
-				pluginMetaData.i18n = app.findFilesWithExtension(pluginPath, ".dict");
-				//pluginMetaData.img = app.findFilesWithExtension(pluginPath, /^\.(jpe?g|gif|png|tiff?|w?bmp)$/);
-			}
-			else {
+			if ( path.exists(pluginMetaPath) ) {
 				// There is already meta data
 				pluginMetaData.extend(JSON.parse(fs.readFileSync(pluginMetaPath).toString()));
 			}
+
+			// Ensure the meta data
+			pluginMetaData.js = pluginMetaData.js || app.findFilesWithExtension(pluginPath, ".js");
+			pluginMetaData.css = pluginMetaData.css || app.findFilesWithExtension(pluginPath, ".css");
+			pluginMetaData.i18n = pluginMetaData.i18n || app.findFilesWithExtension(pluginPath, ".dict");
+
+			// Update the OUt Plugin NMeta Data
+
 
 			// Return the meta data
 			return pluginMetaData;
@@ -202,14 +178,12 @@
 		 */
 		mergePluginMetaData: function(plugin) {
 			// Prepare
-			var
-				pluginMetaData = app.getPluginMetaData(plugin);
+			var pluginMetaData = app.getPluginMetaData(plugin);
 
 			// Merge into Global Data
-			config.js.plugin = config.js.plugin.concat(pluginMetaData.js);
-			config.css.plugin = config.css.plugin.concat(pluginMetaData.css);
-			config.i18n.plugin = config.i18n.plugin.concat(pluginMetaData.i18n);
-			//config.img.plugin = config.js.plugin.concat(pluginMetaData.img);
+			config.js = config.js.concat(pluginMetaData.js);
+			config.css = config.css.concat(pluginMetaData.css);
+			config.i18n = config.i18n.concat(pluginMetaData.i18n);
 
 			// Done
 			return true;
@@ -219,69 +193,113 @@
 		 * Merge the Selected PLugins into the Config
 		 */
 		mergePlugins: function() {
+			// Merge in Plugin Data
 			config.plugins.each(function(key,plugin){
 				app.mergePluginMetaData(plugin);
 			});
+
+			// Done
 			return true;
 		},
-
 
 		/**
 		 * Bundle the Files
 		 */
 		bundle: function() {
 			// Prepare
-			var outPath, outText, bothPath, bothText;
+			var
+				fileSrcPath, fileOutPath,
+				bundleSrcText, bundleOutText, bundleSrcPath, bundleOutPath;
 
-			// Bundle JavaScript
-			bothText = '';
-			bothPath = config.out+'.js';
-			config.js.each(function(group,files){
-				// Prepare
-				outPath = config.out+'.'+group+'.js';
-				outText = '';
+			// Templates
+			templateBundleText = fs.readFileSync(config.template.bundle).toString();
+			templateReplaceText = fs.readFileSync(config.template.replace).toString();
+			templateHeaderText = fs.readFileSync(config.template.header).toString();
+			templateFooterText = fs.readFileSync(config.template.footer).toString();
 
-				// Cycle
-				files.each(function(i,filePath){
-					outText += fs.readFileSync(filePath).toString();
-				});
 
-				// Render
-				// fs.writeFileSync(outPath,outText);
+			// ----------------------------------------------------------------------
+			// Javascript
 
-				// Amend
-				bothText += outText;
+			// Prepare
+			bundleSrcText = ''; bundleSrcPath = config.dir.src+'/'+config.name+'.js';
+			bundleOutText = ''; bundleOutPath = config.dir.out+'/'+config.name+'.js';
+
+			// Adjust
+			bundleSrcText += templateHeaderText;
+
+			// Plugins
+			config.plugin.each(function(i,pluginName){
+				// Amend Src Text
+				bundleSrcText += templateBundleText.replace('%NAME%',pluginName);
+				bundleOutText += templateBundleText.replace('%NAME%',pluginName);
 			});
-			fs.writeFileSync(bothPath,bothText);
 
-			// Bundle CSS
-			bothText = '';
-			bothPath = config.out+'.css';
-			config.css.each(function(group,files){
+			// Bundle
+			config.js.each(function(i,filePath){
 				// Prepare
-				outPath = config.out+'.'+group+'.css';
-				outText = '';
+				fileSrcPath = config.dir.src+'/'+filePath;
+				fileOutPath = config.dir.out+'/'+filePath;
 
-				// Cycle
-				files.each(function(i,filePath){
-					var parentPath = filePath.replace(/[\/\\][^\/\\]+$/,'');
+				// Amend Out Text
+				bundleOutText += fs.readFileSync(fileOutPath).toString();
+				fs.unlickSync(fileOutPath);
 
-					outText += fs.readFileSync(filePath).toString().replace(/url\(([^\)]+)\)/g,function(str, p1, offset){
-						var url = p1.replace(/[\'\"]/g,'');
-						if ( url[0] !== '/' && !/\:/.test(url) ) {
-							url = fs.realpathSync(parentPath+'/'+url).replace(config.paths.dist+'/','');
+				// Amend Src Text
+				bundleSrcText += templateReplaceText.replace('%PATH%',filePath);
+			});
+
+			// Adjust
+			bundleSrcText += templateFooterText;
+
+			// Write
+			fs.writeFileSync(bundleSrcPath,bundleSrcText);
+			fs.writeFileSync(bundleOutPath,bundleOutText);
+
+
+			// ----------------------------------------------------------------------
+			// CSS
+
+			// Prepare
+			bundleSrcText = ''; bundleSrcPath = config.dir.src+'/'+config.name+'.css';
+			bundleOutText = ''; bundleOutPath = config.dir.out+'/'+config.name+'.css';
+
+			// Bundle
+			var parentOutPath;
+			config.js.each(function(i,filePath){
+				// Prepare
+				fileSrcPath = config.dir.src+'/'+filePath;
+				fileOutPath = config.dir.out+'/'+filePath;
+				parentOutPath = fileOutPath.replace(/[\/\\][^\/\\]+$/,'');
+
+				// Amend Out Text
+				bundleOutText += fs
+					.readFileSync(filePath)
+					.toString()
+					.replace(
+						/url\(([^\)]+)\)/g,
+						function(str, p1, offset){
+							// Trim quotes
+							var url = p1.replace(/[\'\"]/g,'');
+
+							// Update url
+							if ( url[0] !== '/' && !/\:/.test(url) ) {
+								url = fs.realpathSync(parentOutPath+'/'+url).replace(config.dir.out+'/','');
+							}
+
+							// Replace with new url
+							return 'url(\''+url+'\')';
 						}
-						return 'url(\''+url+'\')';
-					});
-				});
+					);
+				fs.unlickSync(fileOutPath);
 
-				// Render
-				// fs.writeFileSync(outPath,outText);
-
-				// Amend
-				bothText += outText;
+				// Amend Src Text
+				bundleSrcText += '@import url("'+filePath+'");\n';
 			});
-			fs.writeFileSync(bothPath,bothText);
+
+			// Write
+			fs.writeFileSync(bundleSrcPath,bundleSrcText);
+			fs.writeFileSync(bundleOutPath,bundleOutText);
 
 			// Done
 			return true;
@@ -293,8 +311,8 @@
 		compile: function() {
 			// Prepare
 			var
-				jsPath = config.paths.dist+'/'+config.name+'.js',
-				cssPath = config.paths.dist+'/'+config.name+'.css';
+				jsPath = config.dir.out+'/'+config.name+'.js',
+				cssPath = config.dir.out+'/'+config.name+'.css';
 
 			// JavaScript
 			var orig_code = fs.readFileSync(jsPath).toString();
@@ -307,7 +325,7 @@
 			// CSS
 			var data = fs.readFileSync(cssPath).toString();
 			new(less.Parser)({
-					paths: [config.paths.dist],
+					paths: [config.dir.out],
 					optimization: 1,
 					filename: cssPath
 			}).parse(data, function (err, tree) {
@@ -326,7 +344,8 @@
 			});
 
 			// Sprites
-			if ( false ) exec(
+			if ( false )
+			exec(
 				"java -Xms64m -Xmx256m -Djava.ext.dirs=./vendor/smartsprites/lib org.carrot2.labs.smartsprites.SmartSprites dist/aloha.css",
 				function (error, stdout, stderr) {
 					console.log('stdout: ' + stdout);

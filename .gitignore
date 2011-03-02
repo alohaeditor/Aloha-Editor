@@ -2,4 +2,5 @@
 .settings
 .gitmodules
 dist
+out
 .DS_Store

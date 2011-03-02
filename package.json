@@ -3,13 +3,32 @@
   "name": "aloha",
   "version": "0.10.0-dev",
 
-  /* Paths */
-  "paths": {
-    "src": "./src",
-    "dist": "./dist",
-    "demo": "./src/demo",
-    "plugin": "./src/plugin"
+  /* Dir */
+  "dir": {
+    "src": "src",
+    "out": "out",
+    "template": "template"
   },
+
+  /* SubDir */
+  "subdir": {
+    "demo": "demo",
+    "plugin": "plugin",
+    "i18n": "i18n"
+	},
+
+  /* Template */
+  "template": {
+  	"footer": "footer.js",
+  	"header": "header.js",
+  	"replace": "replace.js",
+  	"bundle": "bundle.js"
+  },
+
+  /* Plugins */
+  "plugin": [
+  	'format','link','linkchecker','table'
+  ],
 
   /* CSS Files */
   "css": [
