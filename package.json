@@ -1,63 +1,84 @@
 {
+	/* Meta */
+  "name": "aloha",
+  "version": "0.10.0-dev",
+
+  /* Paths */
   "paths": {
     "src": "./src",
     "dist": "./dist",
     "demo": "./src/demo",
     "plugin": "./src/plugin"
   },
-  "name": "aloha",
-  "version": "0.10.0-dev",
-  "plugins": [
-    "table",
-    "highlighteditables",
-    "link",
-    "linkchecker"
+
+  /* CSS Files */
+  "css": [
+		/* ExtJS */
+		"dep/extjs/resources/css/ext-all.css",
+		"dep/extjs/resources/css/xtheme-gray.css",
+
+		/* Core */
+		"css/aloha.css"
   ],
-  "css": {
-    "dep": [
-      "dep/extjs/resources/css/ext-all.css",
-      "dep/extjs/resources/css/xtheme-gray.css"
-    ],
-    "core": [
-      "css/aloha.css"
-    ]
-  },
-  "js": {
-    "dep": [
-      "dep/jquery.json-2.2.min.js",
-      "dep/jquery.getUrlParam.js",
-      "dep/jquery.store.js"
-    ],
-    "core": [
-      "core/jquery.aloha.js",
-      "core/license.js",
-      "util/jquery.js",
-      "util/lang.js",
-      "util/range.js",
-      "util/position.js",
-      "util/dom.js",
-      "util/indexof.js",
-      "core/ext-alohaproxy.js",
-      "core/ext-alohareader.js",
-      "core/ext-alohatreeloader.js",
-      "core/core.js",
-      "core/ui.js",
-      "core/ui-attributefield.js",
-      "core/ui-browser.js",
-      "core/css.js",
-      "core/editable.js",
-      "core/event.js",
-      "core/floatingmenu.js",
-      "core/ierange-m2.js",
-      "core/log.js",
-      "core/markup.js",
-      "core/message.js",
-      "core/plugin.js",
-      "core/selection.js",
-      "core/sidebar.js",
-      "core/repositorymanager.js",
-      "core/repository.js",
-      "core/repositoryobjects.js"
-    ]
-  }
+
+  /* JavaScript Files */
+  "js": [
+		/* jQuery */
+		"dep/jquery-1.5.1.js",
+
+		/* ExtJS */
+		"dep/extjs/ext-jquery-adapter.js",
+		"dep/extjs/ext-foundation.js",
+		"dep/extjs/cmp-foundation.js",
+		"dep/extjs/data-foundation.js",
+		"dep/extjs/data-json.js",
+		"dep/extjs/data-list-views.js",
+		"dep/extjs/ext-dd.js",
+		"dep/extjs/window.js",
+		"dep/extjs/resizable.js",
+		"dep/extjs/pkg-buttons.js",
+		"dep/extjs/pkg-tabs.js",
+		"dep/extjs/pkg-tips.js",
+		"dep/extjs/pkg-tree.js",
+		"dep/extjs/pkg-grid-foundation.js",
+		"dep/extjs/pkg-toolbars.js",
+		"dep/extjs/pkg-menu.js",
+		"dep/extjs/pkg-forms.js",
+
+		/* Dependencies */
+		"dep/jquery.json-2.2.min.js",
+		"dep/jquery.getUrlParam.js",
+		"dep/jquery.store.js",
+
+		/* Core */
+		"core/jquery.aloha.js",
+		"core/license.js",
+		"util/jquery.js",
+		"util/lang.js",
+		"util/range.js",
+		"util/position.js",
+		"util/dom.js",
+		"util/indexof.js",
+		"core/ext-alohaproxy.js",
+		"core/ext-alohareader.js",
+		"core/ext-alohatreeloader.js",
+		"core/core.js",
+		"core/ui.js",
+		"core/ui-attributefield.js",
+		"core/ui-browser.js",
+		"core/css.js",
+		"core/editable.js",
+		"core/event.js",
+		"core/floatingmenu.js",
+		"core/ierange-m2.js",
+		"core/log.js",
+		"core/markup.js",
+		"core/message.js",
+		"core/plugin.js",
+		"core/selection.js",
+		"core/sidebar.js",
+		"core/repositorymanager.js",
+		"core/repository.js",
+		"core/repositoryobjects.js"
+  ]
 }

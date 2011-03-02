@@ -3,14 +3,17 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Aloha, World!</title>
-<script>
-	GENTICS_Aloha_base = "../";
-	GENTICS_Plugins = ['Format','Table','List','HighlightEditables','TOC','Link/delicious.js','Link','Paste','Paste/wordpastehandler.js'];
-</script>
-<script type="text/javascript" src="../deps/jquery-1.5.1.js"></script>
-<script type="text/javascript" src="../core/include.js"></script>
-<link rel="stylesheet" href="AlohaWorld.css" />
 
+<script type="text/javascript" src="../deps/jquery-1.5.1.js"
+	id="jquery-include">
+</script>
+<script type="text/javascript" src="../core/include.js"
+	id="aloha-include"
+	data-plugins="format,table,list,highlighteditables,toc,link"
+	data-plugins-extra="link/demo/delicious.js,paste/wordpastehandler.js">
+</script>
+
+<link rel="stylesheet" href="index.css" />
 <!-- turn an element into editable Aloha continuous text -->
 <script type="text/javascript">
 (function(window,undefined){

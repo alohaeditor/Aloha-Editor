@@ -3,7 +3,7 @@ body {
 }
 
 body {
-  background-image: url("images/background.png");
+  background-image: url("../common/background.png");
 }
 
 #bodyContent {
@@ -41,7 +41,7 @@ h6 { font-size: 80%;  }
 }
 
 a.external {
-  background: url(images/external-link-ltr-icon.png) no-repeat 100% 50%;
+  background: url("../common/external-link-ltr-icon.png") no-repeat 100% 50%;
   padding: 0px 13px 0px 0px;
 }
 

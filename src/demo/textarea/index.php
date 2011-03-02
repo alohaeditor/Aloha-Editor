@@ -7,7 +7,7 @@
 		$value = is_array($value) ? array_map('stripslashes_deep', $value) : stripslashes($value);
 		return $value;
 	}
-	
+
 	# Normalises Magic Quotes
 	function fix_magic_quotes ( ) {
 		// Originally from BalPHP {@link http://www.balupton/projects/balphp}
@@ -21,10 +21,10 @@
 			ini_set('magic_quotes_gpc', 0);
 		}
 	}
-	
+
 	# Fix the magic quotes
 	fix_magic_quotes();
-	
+
 ?><!DOCTYPE html>
 <html>
 	<head>
@@ -32,17 +32,17 @@
 		<title>
 			Aloha, Documents!
 		</title>
-		
-		<script type="text/javascript">
-			GENTICS_Aloha_base="../";
+
+		<script type="text/javascript" src="../deps/jquery-1.5.1.js"
+			id="jquery-include">
 		</script>
-		<script type="text/javascript" src="../core/include.js"></script>
-		<script type="text/javascript" src="../plugins/com.gentics.aloha.plugins.Format/plugin.js"></script>
-		<!-- script type="text/javascript" src="../plugins/com.gentics.aloha.plugins.Table/plugin.js"></script -->
-		<script type="text/javascript" src="../plugins/com.gentics.aloha.plugins.List/plugin.js"></script>
-		<script type="text/javascript" src="../plugins/com.gentics.aloha.plugins.Link/plugin.js"></script>
-		<link rel="stylesheet" href="AlohaDocument.css" type="text/css">
-		
+		<script type="text/javascript" src="../core/include.js"
+			id="aloha-include"
+			data-plugins="format,list,link">
+		</script>
+
+		<link rel="stylesheet" href="index.css" type="text/css">
+
 		<!-- turn an element into editable Aloha continuous text -->
 		<script type="text/javascript">
 			GENTICS.Aloha.settings = {
@@ -52,7 +52,7 @@
 			};
 			$(function(){
 //				$('#content').aloha();
-			}); 
+			});
 		</script>
 		<style>
 textarea {
@@ -66,7 +66,7 @@ textarea {
 			<div id="bodyContent">
 				<form id="form" method="POST" action="">
 					<textarea id="content" class="article" name="content">
-<? 
+<?
 if ( !empty($_POST['content']) ) :
    echo $_POST['content'];
 else:
@@ -107,19 +107,19 @@ else:
 				$('#mahalo').show();
 				$('#getContents').show();
 				$(this).hide();
-			}); 
+			});
 
 			$('#mahalo').click(function(){
 				$('#content').mahalo();
 				$('#aloha').show();
 				$('#getContents').hide();
 				$(this).hide();
-			}); 
+			});
 
 			$('#getContents').click(function(){
 				var e = GENTICS.Aloha.getEditableById('content');
 				alert(e.getContents());
-			}); 
+			});
 		</script>
 	</body>
 </html>
