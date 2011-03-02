@@ -436,9 +436,9 @@ class App
 	def build
 		check_req(['node','npm'])
 		run([
-			"rm -Rf dist",
-			"mkdir dist",
-			"cp -R src dist/src",
+			"rm -Rf out",
+			"mkdir out",
+			"cp -R src/* out",
 			"node ./build/build.js package.json"
 		])
 	end

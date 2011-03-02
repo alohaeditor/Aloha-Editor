@@ -1,23 +1,20 @@
 {
-	/* Meta */
   "name": "aloha",
   "version": "0.10.0-dev",
 
-  /* Dir */
   "dir": {
     "src": "src",
     "out": "out",
     "template": "template"
   },
 
-  /* SubDir */
   "subdir": {
+    "src": "src",
     "demo": "demo",
     "plugin": "plugin",
     "i18n": "i18n"
 	},
 
-  /* Template */
   "template": {
   	"footer": "footer.js",
   	"header": "header.js",
@@ -25,27 +22,20 @@
   	"bundle": "bundle.js"
   },
 
-  /* Plugins */
   "plugin": [
-  	'format','link','linkchecker','table'
+  	"format","link","linkchecker","table"
   ],
 
-  /* CSS Files */
   "css": [
-		/* ExtJS */
 		"dep/extjs/resources/css/ext-all.css",
 		"dep/extjs/resources/css/xtheme-gray.css",
 
-		/* Core */
 		"css/aloha.css"
   ],
 
-  /* JavaScript Files */
   "js": [
-		/* jQuery */
 		"dep/jquery-1.5.1.js",
 
-		/* ExtJS */
 		"dep/extjs/ext-jquery-adapter.js",
 		"dep/extjs/ext-foundation.js",
 		"dep/extjs/cmp-foundation.js",
@@ -64,12 +54,10 @@
 		"dep/extjs/pkg-menu.js",
 		"dep/extjs/pkg-forms.js",
 
-		/* Dependencies */
 		"dep/jquery.json-2.2.min.js",
 		"dep/jquery.getUrlParam.js",
 		"dep/jquery.store.js",
 
-		/* Core */
 		"core/jquery.aloha.js",
 		"core/license.js",
 		"util/jquery.js",
@@ -85,7 +73,6 @@
 		"core/ui.js",
 		"core/ui-attributefield.js",
 		"core/ui-browser.js",
-		"core/css.js",
 		"core/editable.js",
 		"core/event.js",
 		"core/floatingmenu.js",

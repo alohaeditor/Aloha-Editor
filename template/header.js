@@ -3,3 +3,4 @@
 
 	// Prepare
 	var includes = [], jquery = 'jquery-1.5.1.js';
+	window.Aloha_loaded_plugins = window.Aloha_loaded_plugins||[];

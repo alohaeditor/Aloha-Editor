@@ -21,7 +21,14 @@
 		"js": [],
 		"css": [],
 		"i18n": []
-	}.extend(JSON.parse(fs.readFileSync(process.argv[2]||"package.json").toString()));
+	}.extend(
+		JSON.parse(
+			fs.readFileSync(
+				process.argv[2]||"package.json"
+			)
+			.toString()
+		)
+	);
 
 	// App Functions
 	var app = {
@@ -118,6 +125,16 @@
 		},
 
 		/**
+		 * Get Relative Path
+		 * @param {Path} path
+		 * @return {Path} relativePath
+		 */
+		getRelativePath: function(path){
+			var relativePath = path.replace(config.dir.out+'/','').replace(config.dir.src+'/','');
+			return relativePath;
+		},
+
+		/**
 		 * Get Plugin Path
 		 * @param {String} plugin
 		 * @return {Path} pluginPath
@@ -142,11 +159,11 @@
 		 * @param {Path} plugin
 		 * @return {Object} pluginMetaData
 		 */
-		getPluginMetaData: function(plugin) {
+		getPluginMetaData: function(pluginName) {
 			// Prepare
 			var
-				pluginPath = app.getPluginPath(plugin),
-				pluginMetaPath = app.getPluginMetaPath(plugin),
+				pluginPath = config.dir.out+'/'+app.getPluginPath(pluginName),
+				pluginMetaPath = config.dir.out+'/'+app.getPluginMetaPath(pluginName),
 				pluginMetaData = {
 					"js": [],
 					"css": [],
@@ -160,12 +177,14 @@
 			}
 
 			// Ensure the meta data
-			pluginMetaData.js = pluginMetaData.js || app.findFilesWithExtension(pluginPath, ".js");
-			pluginMetaData.css = pluginMetaData.css || app.findFilesWithExtension(pluginPath, ".css");
-			pluginMetaData.i18n = pluginMetaData.i18n || app.findFilesWithExtension(pluginPath, ".dict");
+			if ( !pluginMetaData.js.length )
+				pluginMetaData.js = app.findFilesWithExtension(pluginPath+'/'+config.subdir.src, ".js");
 
-			// Update the OUt Plugin NMeta Data
+			if ( !pluginMetaData.css.length )
+				pluginMetaData.css = app.findFilesWithExtension(pluginPath+'/'+config.subdir.src, ".css");
 
+			if ( !pluginMetaData.i18n.length )
+				pluginMetaData.i18n = app.findFilesWithExtension(pluginPath+'/'+config.subdir.i18n, ".dict");
 
 			// Return the meta data
 			return pluginMetaData;
@@ -176,9 +195,9 @@
 		 * @param {Path} pluginMetaPath
 		 * @return {Object} pluginMetaData
 		 */
-		mergePluginMetaData: function(plugin) {
+		mergePluginMetaData: function(pluginName) {
 			// Prepare
-			var pluginMetaData = app.getPluginMetaData(plugin);
+			var pluginMetaData = app.getPluginMetaData(pluginName);
 
 			// Merge into Global Data
 			config.js = config.js.concat(pluginMetaData.js);
@@ -194,8 +213,8 @@
 		 */
 		mergePlugins: function() {
 			// Merge in Plugin Data
-			config.plugins.each(function(key,plugin){
-				app.mergePluginMetaData(plugin);
+			config.plugin.each(function(key,pluginName){
+				app.mergePluginMetaData(pluginName);
 			});
 
 			// Done
@@ -238,12 +257,13 @@
 			// Bundle
 			config.js.each(function(i,filePath){
 				// Prepare
+				filePath = app.getRelativePath(filePath);
 				fileSrcPath = config.dir.src+'/'+filePath;
 				fileOutPath = config.dir.out+'/'+filePath;
 
 				// Amend Out Text
 				bundleOutText += fs.readFileSync(fileOutPath).toString();
-				fs.unlickSync(fileOutPath);
+				fs.unlinkSync(fileOutPath);
 
 				// Amend Src Text
 				bundleSrcText += templateReplaceText.replace('%PATH%',filePath);
@@ -266,15 +286,16 @@
 
 			// Bundle
 			var parentOutPath;
-			config.js.each(function(i,filePath){
+			config.css.each(function(i,filePath){
 				// Prepare
+				filePath = app.getRelativePath(filePath);
 				fileSrcPath = config.dir.src+'/'+filePath;
 				fileOutPath = config.dir.out+'/'+filePath;
 				parentOutPath = fileOutPath.replace(/[\/\\][^\/\\]+$/,'');
 
 				// Amend Out Text
 				bundleOutText += fs
-					.readFileSync(filePath)
+					.readFileSync(fileOutPath)
 					.toString()
 					.replace(
 						/url\(([^\)]+)\)/g,
@@ -291,7 +312,7 @@
 							return 'url(\''+url+'\')';
 						}
 					);
-				fs.unlickSync(fileOutPath);
+				fs.unlinkSync(fileOutPath);
 
 				// Amend Src Text
 				bundleSrcText += '@import url("'+filePath+'");\n';
