@@ -1,0 +1,45 @@
+button.GENTICS_img_align_left {
+    background-image: url(../img/image-align-left.png) !important;
+}
+
+button.GENTICS_img_align_right {
+    background-image: url(../img/image-align-right.png) !important;
+}
+
+button.GENTICS_img_align_none {
+    background-image: url(../img/image-align-none.png) !important;
+}
+
+button.GENTICS_img_title {
+    background-image: url(../img/image-title.png) !important;
+}
+
+button.GENTICS_img_border {
+    background-image: url(../img/image-border.png) !important;
+}
+
+button.GENTICS_img_insert {
+    background-image: url(../img/image.gif) !important;
+}
+
+button.GENTICS_img_padding_increase {
+	background-image: url(../img/padding-increase.gif) !important;
+	}
+
+button.GENTICS_img_padding_decrease {
+	background-image: url(../img/padding-decrease.gif) !important;
+	}
+button.GENTICS_img_size_increase {
+	background-image: url(../img/size-increase.gif) !important;
+	}
+button.GENTICS_img_size_decrease {
+	background-image: url(../img/size-decrease.gif) !important;
+	}
+
+.GENTICS_default_file_icon {
+	background-image: url(../img/page.png) !important;
+	width: 16px;
+	height:16px;
+	margin: 0;
+	padding:0;
+	}
