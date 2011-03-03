@@ -20,7 +20,7 @@ String.prototype.toFloat = String.prototype.toInteger || function(){
 Number.prototype.toInteger = Number.prototype.toInteger || String.prototype.toInteger;
 Number.prototype.toFloat = Number.prototype.toFloat || String.prototype.toFloat;
 
-jQuery.extend(true,jQuery.fn, {
+jQuery.extend(true, jQuery.fn, {
 	increase: jQuery.fn.increase || function(attr){
 		var	obj = jQuery(this),
 			value = obj.css(attr).toFloat(),
@@ -48,18 +48,20 @@ jQuery.extend(true,jQuery.fn, {
 });
 
 GENTICS.Aloha.Image = new GENTICS.Aloha.Plugin('com.gentics.aloha.plugins.Image');
-jQuery.extend(true,GENTICS.Aloha.Image,{
+jQuery.extend(true, GENTICS.Aloha.Image,{
 	languages: ['en', 'fr', 'de'],
 	config: {
 		'img': {
 			'max_width': '50px',
 			'max_height': '50px',
-			'ui': {'align': true,       // Menu elements to show/hide in menu - ONLY in default config section
-				'resize': true,			//resize buttons
+			'ui': {
+				'align': true,       // Menu elements to show/hide in menu - ONLY in default config section
+				'resize': true,		 //resize buttons
 				'meta': true,
 				'margin': true,
 				'crop':true,
-				'resizable': true},     //resizable ui-drag image
+				'resizable': true    //resizable ui-drag image
+			},
 			/**
 			 * crop callback is triggered after the user clicked accept to accept his crop
 			 * @param image jquery image object reference
@@ -90,7 +92,7 @@ jQuery.extend(true,GENTICS.Aloha.Image,{
 	 * the variable is linked to the api object whilst cropping, or set to null otherwise
 	 * strange, but done as documented http://deepliquid.com/content/Jcrop_API.html
 	 */
-	jcAPI:null,
+	jcAPI: null,
 	/**
 	 * this will contain an image's original properties to be able to undo previous settings
 	 * 
@@ -125,42 +127,43 @@ jQuery.extend(true,GENTICS.Aloha.Image,{
 			GENTICS.Aloha.Image.objectTypeFilter = GENTICS.Aloha.Image.settings.objectTypeFilter;	
 		if (typeof GENTICS.Aloha.Image.settings.dropEventHandler !== 'undefined')
 			GENTICS.Aloha.Image.dropEventHandler = GENTICS.Aloha.Image.settings.dropEventHandler;
-		if (this.settings.config.img.ui.resize) {
-			jQuery('head').append('<link rel="stylesheet" href="' 
+		
+		var head = jQuery('head');
+		
+		head.append('<link rel="stylesheet" href="' 
+				+ GENTICS_Aloha_base
+				+ 'plugins/com.gentics.aloha.plugins.Image/style.css' + '"/>');
+		
+		if (this.settings.config.img.ui.resizable) {
+			head.append('<link rel="stylesheet" href="' 
 					+ GENTICS.Aloha.settings.base 
 					+ 'plugins/com.gentics.aloha.plugins.Image/css/ui-lightness/jquery-ui-1.8.10.cropnresize.css" />');
-			jQuery('head').append('<script type="text/javascript" src="' 
+			head.append('<script type="text/javascript" src="' 
 					+ GENTICS.Aloha.settings.base 
 					+ 'plugins/com.gentics.aloha.plugins.Image/js/jquery-ui-1.8.10.custom.min.js"></script>');
 		}
 		if (this.settings.config.img.ui.crop) {
-			jQuery('head').append('<script type="text/javascript" src="' 
+			head.append('<script type="text/javascript" src="' 
 					+ GENTICS.Aloha.settings.base 
 					+ 'plugins/com.gentics.aloha.plugins.Image/js/jquery.Jcrop.min.js"></script>');
-			jQuery('head').append('<link rel="stylesheet" href="' 
+			head.append('<link rel="stylesheet" href="' 
 					+ GENTICS.Aloha.settings.base 
 					+ 'plugins/com.gentics.aloha.plugins.Image/css/jquery.Jcrop.css" />');
-			jQuery('head').append('<link rel="stylesheet" href="' 
-					+ GENTICS.Aloha.settings.base 
-					+ 'plugins/com.gentics.aloha.plugins.Image/css/cropnresize.css" />');
 		}
 		var that = this;
 		that.initImage();
 		that.bindInteractions();
 		that.subscribeEvents();
 		
-		stylePath = GENTICS_Aloha_base + '/plugins/com.gentics.aloha.plugins.Image/style.css';
-		jQuery('head').append('<link rel="stylesheet" href="' 
-				+ stylePath + '"/>');
-		
    }, // END INIT
+   
    /**
 	 * Do the UI/buttons Initialization
 	 */
    initImage: function() {
 		var that = this;
 		this.insertImgButton = new GENTICS.Aloha.ui.Button({
-			'iconClass': 'GENTICS_button GENTICS_img_insert',
+			'iconClass': 'GENTICS_button GENTICS_img insert',
 			'size' : 'small',
 			'onclick' : function () { that.insertImg(); },
 			'tooltip' : that.i18n('button.addimg.tooltip'),
@@ -201,7 +204,7 @@ jQuery.extend(true,GENTICS.Aloha.Image,{
 		}
 		if (this.settings.config.img.ui.align) {
 			var alignLeftButton = new GENTICS.Aloha.ui.Button({
-				'iconClass': 'GENTICS_button GENTICS_img_align_left',
+				'iconClass': 'GENTICS_button GENTICS_img align_left',
 				'size': 'small',
 				'onclick' : function() {
 					jQuery(that.findImgMarkup()).css('float', 'left');
@@ -209,7 +212,7 @@ jQuery.extend(true,GENTICS.Aloha.Image,{
 				'tooltip': that.i18n('button.img.align.left.tooltip')
 			});
 			var alignRightButton = new GENTICS.Aloha.ui.Button({
-				'iconClass': 'GENTICS_button GENTICS_img_align_right',
+				'iconClass': 'GENTICS_button GENTICS_img align_right',
 				'size': 'small',
 				'onclick' : function() {
 					jQuery(that.findImgMarkup()).css('float', 'right');
@@ -217,7 +220,7 @@ jQuery.extend(true,GENTICS.Aloha.Image,{
 				'tooltip': that.i18n('button.img.align.right.tooltip')
 			});
 			var alignNoneButton = new GENTICS.Aloha.ui.Button({
-				'iconClass': 'GENTICS_button GENTICS_img_align_none',
+				'iconClass': 'GENTICS_button GENTICS_img align_none',
 				'size': 'small',
 				'onclick' : function() {
 				var img = that.findImgMarkup();
@@ -226,16 +229,16 @@ jQuery.extend(true,GENTICS.Aloha.Image,{
 				'tooltip': that.i18n('button.img.align.none.tooltip')
 			});
 			GENTICS.Aloha.FloatingMenu.addButton(
-					this.getUID('image'),
-					alignRightButton,
-					this.i18n('floatingmenu.tab.img'),
-					1
-			);
-			GENTICS.Aloha.FloatingMenu.addButton(
 				this.getUID('image'),
 				alignLeftButton,
 				this.i18n('floatingmenu.tab.img'),
 				1
+			);
+			GENTICS.Aloha.FloatingMenu.addButton(
+					this.getUID('image'),
+					alignRightButton,
+					this.i18n('floatingmenu.tab.img'),
+					1
 			);
 			GENTICS.Aloha.FloatingMenu.addButton(
 				this.getUID('image'),
@@ -258,7 +261,7 @@ jQuery.extend(true,GENTICS.Aloha.Image,{
 		if (this.settings.config.img.ui.margin) {
 			
 			var incPadding = new GENTICS.Aloha.ui.Button({
-				iconClass: 'GENTICS_button GENTICS_img_padding_increase',
+				iconClass: 'GENTICS_button GENTICS img_padding_increase',
 				size: 'small',
 				onclick: function() {
 					// Apply
@@ -273,7 +276,7 @@ jQuery.extend(true,GENTICS.Aloha.Image,{
 					2
 			);
 			var decPadding = new GENTICS.Aloha.ui.Button({
-				iconClass: 'GENTICS_button GENTICS_img_padding_decrease',
+				iconClass: 'GENTICS_button GENTICS_img padding_decrease',
 				size: 'small',
 				onclick: function() {
 					// Apply
@@ -334,7 +337,7 @@ jQuery.extend(true,GENTICS.Aloha.Image,{
 		}
 		if (this.settings.config.img.ui.resize) {
 			var incSize = new GENTICS.Aloha.ui.Button({
-				iconClass: 'GENTICS_button GENTICS_img_size_increase',
+				iconClass: 'GENTICS_button GENTICS_img size_increase',
 				size: 'small',
 				onclick: function() {
 					// Apply
@@ -349,7 +352,7 @@ jQuery.extend(true,GENTICS.Aloha.Image,{
 					2
 			);
 			var decSize = new GENTICS.Aloha.ui.Button({
-				iconClass: 'GENTICS_button GENTICS_img_size_decrease',
+				iconClass: 'GENTICS_button GENTICS_img size_decrease',
 				size: 'small',
 				onclick: function() {
 					// Apply
@@ -365,13 +368,14 @@ jQuery.extend(true,GENTICS.Aloha.Image,{
 			);
 		}
 	}, // end of InitImage
+	
 	/**
 	 * Bind plugin interactions
 	 */
 	bindInteractions: function () {
 		var that = this;
 		
-		if(this.settings.config.img.ui.resize) {
+		if(this.settings.config.img.ui.resizable) {
 			try {
 				// this will disable mozillas image resizing facilities
 				document.execCommand('enableObjectResizing', false, 'false');
@@ -405,6 +409,7 @@ jQuery.extend(true,GENTICS.Aloha.Image,{
 			this.settings.aspectRatio = true;
 		}
 	},
+	
 	/**
 	 * Subscribe to Aloha events and DragAndDropPlugin Event
 	 */
@@ -450,7 +455,7 @@ jQuery.extend(true,GENTICS.Aloha.Image,{
 		// add the event handler for selection change
 		GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'selectionChanged', function(event, rangeObject, originalEvent) {
 			if (originalEvent && originalEvent.target) {
-				if (that.settings.config.img.ui.resize && !jQuery(originalEvent.target).hasClass('ui-resizable-handle')) {
+				if (that.settings.config.img.ui.resizable && !jQuery(originalEvent.target).hasClass('ui-resizable-handle')) {
 					that.endResize();
 				}
 			}
@@ -489,28 +494,31 @@ jQuery.extend(true,GENTICS.Aloha.Image,{
 			}
 		});
 		GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'editableCreated', function(event, editable) {
-		// add to editable the image click
+			// add to editable the image click
 			//editable.obj.find('img').attr('_moz_resizing', false);
 			//editable.obj.find('img').contentEditable(false);
 			editable.obj.delegate('img', 'mouseup', function (event) {
 				that.clickImage(event);
-				event.stopPropagation();
+				if (that.settings.config.img.ui.resizable) {
+					event.stopPropagation();
+				}
 			});
 		});
 	},
+	
 	clickImage: function ( e ) {
 		if (this.settings.config.img.ui.resizable) {
 			this.endResize();
 		}
 		var thisimg = this.obj = jQuery(e.target),
-			editable = thisimg.parents('.GENTICS_editable');
+			editable = thisimg.closest('.GENTICS_editable');
 		this.restoreProps.push({
 			obj : e.srcElement,
 			src : this.obj.attr('src'),
 			width : this.obj.width(),
 			height : this.obj.height()
 		});
-		if (this.settings.config.img.ui.resize) {
+		if (this.settings.config.img.ui.resizable) {
 			this.resize();
 		}
 		GENTICS.Aloha.getEditableById(editable.attr('id')).activate();
@@ -566,6 +574,7 @@ jQuery.extend(true,GENTICS.Aloha.Image,{
 		return null;
 		
 	},
+	
 	insertImg: function() {
 		var range = GENTICS.Aloha.Selection.getRangeObject(),
 			config = this.getEditableConfig(GENTICS.Aloha.activeEditable.obj);
@@ -587,6 +596,7 @@ jQuery.extend(true,GENTICS.Aloha.Image,{
 			// alert.
 		}
 	},
+	
 	srcChange: function () {
 		// TODO the src changed. I suggest :
 		// 1. set an loading image (I suggest set src base64 enc) to show the user
@@ -600,6 +610,7 @@ jQuery.extend(true,GENTICS.Aloha.Image,{
 		// TODO additionally implement an srcChange Handler to let implementer
 		// customize
 	},
+	
 	/**
 	 * Code imported from CropnResize Plugin
 	 * 
@@ -637,6 +648,7 @@ jQuery.extend(true,GENTICS.Aloha.Image,{
 			oldTop = off.top;
 		}, 10);
 	},
+	
 	/**
 	 * destroy crop confirm and cancel buttons
 	 */
@@ -663,6 +675,7 @@ jQuery.extend(true,GENTICS.Aloha.Image,{
 			}
 		});
 	},
+	
 	/** 
 	 * Terminates a crop
 	 */
@@ -678,6 +691,7 @@ jQuery.extend(true,GENTICS.Aloha.Image,{
 			this.resize();
 		}
 	},
+	
 	/**
 	 * Reset the image to it's original properties
 	 */
@@ -704,6 +718,7 @@ jQuery.extend(true,GENTICS.Aloha.Image,{
 			}
 		}
 	},
+	
 	/**
 	 * accept the current cropping area and apply the crop
 	 */
@@ -711,6 +726,7 @@ jQuery.extend(true,GENTICS.Aloha.Image,{
 			this.onCropped(this.obj, this.jcAPI.tellSelect());
 			this.endCrop();
 	},
+	
 	resize: function () {
 		var that = this;
 		try {
