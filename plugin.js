@@ -124,10 +124,15 @@ jQuery.extend(true,GENTICS.Aloha.Image,{
 		if (typeof GENTICS.Aloha.Image.settings.objectTypeFilter !== 'undefined')
 			GENTICS.Aloha.Image.objectTypeFilter = GENTICS.Aloha.Image.settings.objectTypeFilter;	
 		if (typeof GENTICS.Aloha.Image.settings.dropEventHandler !== 'undefined')
-			GENTICS.Aloha.Image.dropEventHandler = GENTICS.Aloha.Image.settings.dropEventHandler;	
-		jQuery('head').append('<link rel="stylesheet" href="' 
-				+ GENTICS.Aloha.settings.base 
-				+ 'plugins/com.gentics.aloha.plugins.Image/css/ui-lightness/jquery-ui-1.8.10.cropnresize.css" />');
+			GENTICS.Aloha.Image.dropEventHandler = GENTICS.Aloha.Image.settings.dropEventHandler;
+		if (this.settings.config.img.ui.resize) {
+			jQuery('head').append('<link rel="stylesheet" href="' 
+					+ GENTICS.Aloha.settings.base 
+					+ 'plugins/com.gentics.aloha.plugins.Image/css/ui-lightness/jquery-ui-1.8.10.cropnresize.css" />');
+			jQuery('head').append('<script type="text/javascript" src="' 
+					+ GENTICS.Aloha.settings.base 
+					+ 'plugins/com.gentics.aloha.plugins.Image/js/jquery-ui-1.8.10.custom.min.js"></script>');
+		}
 		if (this.settings.config.img.ui.crop) {
 			jQuery('head').append('<script type="text/javascript" src="' 
 					+ GENTICS.Aloha.settings.base 
@@ -135,10 +140,10 @@ jQuery.extend(true,GENTICS.Aloha.Image,{
 			jQuery('head').append('<link rel="stylesheet" href="' 
 					+ GENTICS.Aloha.settings.base 
 					+ 'plugins/com.gentics.aloha.plugins.Image/css/jquery.Jcrop.css" />');
+			jQuery('head').append('<link rel="stylesheet" href="' 
+					+ GENTICS.Aloha.settings.base 
+					+ 'plugins/com.gentics.aloha.plugins.Image/css/cropnresize.css" />');
 		}
-		jQuery('head').append('<link rel="stylesheet" href="' 
-				+ GENTICS.Aloha.settings.base 
-				+ 'plugins/com.gentics.aloha.plugins.CropNResize/css/cropnresize.css" />');
 		var that = this;
 		that.initImage();
 		that.bindInteractions();
@@ -365,6 +370,16 @@ jQuery.extend(true,GENTICS.Aloha.Image,{
 	 */
 	bindInteractions: function () {
 		var that = this;
+		
+		if(this.settings.config.img.ui.resize) {
+			try {
+				// this will disable mozillas image resizing facilities
+				document.execCommand('enableObjectResizing', false, 'false');
+			} catch (e) {
+				// this is just for internet explorer, who will not support disabling enableObjectResizing
+			}
+		}
+		
 		if (this.settings.config.img.ui.meta) {
 			// update image object when src changes
 			this.imgSrcField.addListener('keyup', function(obj, event) {  	
@@ -419,8 +434,8 @@ jQuery.extend(true,GENTICS.Aloha.Image,{
 						reader.attachedData = data;
 						reader.attachedFile = fileObj;
 						reader.onloadend = function(readEvent) {
-							var imagestyle = "width: " + this.config.img.max_width + "; height: " + this.config.img.max_height;
-							var img = jQuery('<img id="'+this.attachedFile.id+'" style="'+imagestyle+'" title="" src="" />');
+							var imagestyle = "width: " + this.config.img.max_width + "; height: " + this.config.img.max_height,
+								img = jQuery('<img id="'+this.attachedFile.id+'" style="'+imagestyle+'" title="" src="" />');
 							//img.click( GENTICS.Aloha.Image.clickImage ); - Using delegate now
 							if (typeof this.attachedFile.src === 'undefined') {
 								this.attachedFile.src = readEvent.target.result;
@@ -435,7 +450,7 @@ jQuery.extend(true,GENTICS.Aloha.Image,{
 		// add the event handler for selection change
 		GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'selectionChanged', function(event, rangeObject, originalEvent) {
 			if (originalEvent && originalEvent.target) {
-				if (!jQuery(originalEvent.target).hasClass('ui-resizable-handle')) {
+				if (that.settings.config.img.ui.resize && !jQuery(originalEvent.target).hasClass('ui-resizable-handle')) {
 					that.endResize();
 				}
 			}
@@ -456,22 +471,27 @@ jQuery.extend(true,GENTICS.Aloha.Image,{
 				// img found
 				that.insertImgButton.hide();
 				GENTICS.Aloha.FloatingMenu.setScope(that.getUID('image'));
-				that.imgSrcField.setTargetObject(foundMarkup, 'src');
-				that.imgTitleField.setTargetObject(foundMarkup, 'title');
+				if(that.settings.config.img.ui.meta) {
+					that.imgSrcField.setTargetObject(foundMarkup, 'src');
+					that.imgTitleField.setTargetObject(foundMarkup, 'title');
+				}
 				//that.imgSrcField.focus();
 				GENTICS.Aloha.FloatingMenu.userActivatedTab = that.i18n('floatingmenu.tab.img');
 			} else {
-				that.imgSrcField.setTargetObject(null);
+				if(that.settings.config.img.ui.meta) {
+					that.imgSrcField.setTargetObject(null);
+				}
 			}
 			// TODO this should not be necessary here!
 			GENTICS.Aloha.FloatingMenu.doLayout();
 		});
 		GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'editableCreated', function(event, editable) {
 		// add to editable the image click
-			editable.obj.find('img').attr('_moz_resizing', false);
-			editable.obj.find('img').contentEditable(false);
-			editable.obj.delegate('img', 'mouseup', function(event) {
+			//editable.obj.find('img').attr('_moz_resizing', false);
+			//editable.obj.find('img').contentEditable(false);
+			editable.obj.delegate('img', 'mouseup', function (event) {
 				that.clickImage(event);
+				event.stopPropagation();
 			});
 		});
 	},
@@ -487,28 +507,16 @@ jQuery.extend(true,GENTICS.Aloha.Image,{
 			width : this.obj.width(),
 			height : this.obj.height()
 		});
-		if (this.settings.config.img.ui.resizable) {
+		if (this.settings.config.img.ui.resize) {
 			this.resize();
-			}
+		}
 		GENTICS.Aloha.getEditableById(editable.attr('id')).activate();
-		var offset = GENTICS.Utils.Dom.getIndexInParent(e.target);
-		var imgRange = GENTICS.Aloha.Selection.getRangeObject();
+		var offset = GENTICS.Utils.Dom.getIndexInParent(e.target),
+			imgRange = GENTICS.Aloha.Selection.getRangeObject();
 		imgRange.startContainer = imgRange.endContainer = thisimg.parent()[0];
 		imgRange.startOffset = offset;
 		imgRange.endOffset = offset+1;
-		imgRange.select();		
-		
-		// Prevents default event
-		
-		if (e.preventDefault)
-			e.preventDefault();
-		else
-			e.cancelBubble = true;
-		if (e.stopPropagation)
-			 e.stopPropagation();
-		 else 
-			 e.returnValue = false;
-		return false;
+		imgRange.select();
 	},
 	
 	// Find img markup
