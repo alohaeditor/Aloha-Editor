@@ -454,36 +454,39 @@ jQuery.extend(true,GENTICS.Aloha.Image,{
 					that.endResize();
 				}
 			}
-			var foundMarkup = that.findImgMarkup( rangeObject ),
-				config = that.getEditableConfig(GENTICS.Aloha.activeEditable.obj);
 			
-			if (typeof config.img !== 'undefined' ) {
-				that.insertImgButton.show();
-				GENTICS.Aloha.FloatingMenu.doLayout();
-			} else {
-				that.insertImgButton.hide();
+			if(GENTICS.Aloha.activeEditable !== null) {
+				var foundMarkup = that.findImgMarkup( rangeObject ),
+					config = that.getEditableConfig(GENTICS.Aloha.activeEditable.obj);
+			
+				if (typeof config.img !== 'undefined' ) {
+					that.insertImgButton.show();
+					GENTICS.Aloha.FloatingMenu.doLayout();
+				} else {
+					that.insertImgButton.hide();
+					// TODO this should not be necessary here!
+					GENTICS.Aloha.FloatingMenu.doLayout();
+					// leave if img is not allowed
+					return;
+				}
+				if ( foundMarkup ) {
+					// img found
+					that.insertImgButton.hide();
+					GENTICS.Aloha.FloatingMenu.setScope(that.getUID('image'));
+					if(that.settings.config.img.ui.meta) {
+						that.imgSrcField.setTargetObject(foundMarkup, 'src');
+						that.imgTitleField.setTargetObject(foundMarkup, 'title');
+					}
+					//that.imgSrcField.focus();
+					GENTICS.Aloha.FloatingMenu.userActivatedTab = that.i18n('floatingmenu.tab.img');
+				} else {
+					if(that.settings.config.img.ui.meta) {
+						that.imgSrcField.setTargetObject(null);
+					}
+				}
 				// TODO this should not be necessary here!
 				GENTICS.Aloha.FloatingMenu.doLayout();
-				// leave if img is not allowed
-				return;
 			}
-			if ( foundMarkup ) {
-				// img found
-				that.insertImgButton.hide();
-				GENTICS.Aloha.FloatingMenu.setScope(that.getUID('image'));
-				if(that.settings.config.img.ui.meta) {
-					that.imgSrcField.setTargetObject(foundMarkup, 'src');
-					that.imgTitleField.setTargetObject(foundMarkup, 'title');
-				}
-				//that.imgSrcField.focus();
-				GENTICS.Aloha.FloatingMenu.userActivatedTab = that.i18n('floatingmenu.tab.img');
-			} else {
-				if(that.settings.config.img.ui.meta) {
-					that.imgSrcField.setTargetObject(null);
-				}
-			}
-			// TODO this should not be necessary here!
-			GENTICS.Aloha.FloatingMenu.doLayout();
 		});
 		GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'editableCreated', function(event, editable) {
 		// add to editable the image click
