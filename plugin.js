@@ -516,10 +516,22 @@ jQuery.extend(true,GENTICS.Aloha.Image,{
 		GENTICS.Aloha.getEditableById(editable.attr('id')).activate();
 		var offset = GENTICS.Utils.Dom.getIndexInParent(e.target),
 			imgRange = GENTICS.Aloha.Selection.getRangeObject();
-		imgRange.startContainer = imgRange.endContainer = thisimg.parent()[0];
-		imgRange.startOffset = offset;
-		imgRange.endOffset = offset+1;
-		imgRange.select();
+		
+		try {
+			imgRange.startContainer = imgRange.endContainer = thisimg.parent()[0];
+			imgRange.startOffset = offset;
+			imgRange.endOffset = offset+1;
+			imgRange.select();
+		} catch(e) {
+			var startTag = thisimg.parent()[0];
+			imgRange = new GENTICS.Utils.RangeObject({
+				startContainer: startTag,
+				endContainer: startTag,
+				startOffset: offset,
+				endOffset: offset+1
+			});
+			imgRange.select();
+		}
 	},
 	
 	// Find img markup
