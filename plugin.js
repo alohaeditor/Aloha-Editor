@@ -60,7 +60,8 @@ jQuery.extend(true, GENTICS.Aloha.Image,{
 				'meta': true,
 				'margin': true,
 				'crop':true,
-				'resizable': true    //resizable ui-drag image
+				'resizable': true,   //resizable ui-drag image
+				'aspectRatio': true
 			},
 			/**
 			 * crop callback is triggered after the user clicked accept to accept his crop
@@ -499,7 +500,7 @@ jQuery.extend(true, GENTICS.Aloha.Image,{
 			//editable.obj.find('img').contentEditable(false);
 			editable.obj.delegate('img', 'mouseup', function (event) {
 				that.clickImage(event);
-				if (that.settings.config.img.ui.resizable) {
+				if (that.settings.config.img.ui.resizable && !jQuery(this).hasClass('ui-resizable')) {
 					event.stopPropagation();
 				}
 			});
