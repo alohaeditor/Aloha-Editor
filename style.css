@@ -1,41 +1,41 @@
 /* Images */
-button.GENTICS_img.align_left {
-    background-image: url(images/image-align-left.png);
+button.AlohaImage_align_left {
+    background-image: url('images/image-align-left.png');
 }
 
-button.GENTICS_img.align_right {
+button.AlohaImage_align_right {
     background-image: url(images/image-align-right.png);
 }
 
-button.GENTICS_img.align_none {
+button.AlohaImage_align_none {
     background-image: url(images/image-align-none.png);
 }
 
-button.GENTICS_img.title {
+button.GENTICS_img.AlohaImage_title {
     background-image: url(images/image-title.png);
 }
 
-button.GENTICS_img.border {
+button.GENTICS_img.AlohaImage_border {
     background-image: url(images/image-border.png);
 }
 
-button.GENTICS_img.insert {
+button.GENTICS_img.AlohaImage_insert {
     background-image: url(images/image.gif);
 }
 
-button.GENTICS_img.padding_increase {
+button.GENTICS_img.AlohaImage_padding_increase {
 	background-image: url(images/padding-increase.gif);
 }
 	
-button.GENTICS_img.padding_decrease {
+button.GENTICS_img.AlohaImage_padding_decrease {
 	background-image: url(images/padding-decrease.gif);
 }
 
-button.GENTICS_img.size_increase {
+button.GENTICS_img.AlohaImage_size_increase {
 	background-image: url(images/size-increase.gif);
 }
 
-button.GENTICS_img.size_decrease {
+button.GENTICS_img.AlohaImage_size_decrease {
 	background-image: url(images/size-decrease.gif);
 }
 

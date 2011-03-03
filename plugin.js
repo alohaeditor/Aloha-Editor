@@ -132,7 +132,7 @@ jQuery.extend(true, GENTICS.Aloha.Image,{
 		var head = jQuery('head');
 		
 		head.append('<link rel="stylesheet" href="' 
-				+ GENTICS_Aloha_base
+				+ GENTICS.Aloha.settings.base
 				+ 'plugins/com.gentics.aloha.plugins.Image/style.css' + '"/>');
 		
 		if (this.settings.config.img.ui.resizable) {
@@ -164,7 +164,7 @@ jQuery.extend(true, GENTICS.Aloha.Image,{
    initImage: function() {
 		var that = this;
 		this.insertImgButton = new GENTICS.Aloha.ui.Button({
-			'iconClass': 'GENTICS_button GENTICS_img insert',
+			'iconClass': 'GENTICS_button GENTICS_img AlohaImage_insert',
 			'size' : 'small',
 			'onclick' : function () { that.insertImg(); },
 			'tooltip' : that.i18n('button.addimg.tooltip'),
@@ -205,7 +205,7 @@ jQuery.extend(true, GENTICS.Aloha.Image,{
 		}
 		if (this.settings.config.img.ui.align) {
 			var alignLeftButton = new GENTICS.Aloha.ui.Button({
-				'iconClass': 'GENTICS_button GENTICS_img align_left',
+				'iconClass': 'GENTICS_img AlohaImage_align_left',
 				'size': 'small',
 				'onclick' : function() {
 					jQuery(that.findImgMarkup()).css('float', 'left');
@@ -213,7 +213,7 @@ jQuery.extend(true, GENTICS.Aloha.Image,{
 				'tooltip': that.i18n('button.img.align.left.tooltip')
 			});
 			var alignRightButton = new GENTICS.Aloha.ui.Button({
-				'iconClass': 'GENTICS_button GENTICS_img align_right',
+				'iconClass': 'GENTICS_img AlohaImage_align_right',
 				'size': 'small',
 				'onclick' : function() {
 					jQuery(that.findImgMarkup()).css('float', 'right');
@@ -221,7 +221,7 @@ jQuery.extend(true, GENTICS.Aloha.Image,{
 				'tooltip': that.i18n('button.img.align.right.tooltip')
 			});
 			var alignNoneButton = new GENTICS.Aloha.ui.Button({
-				'iconClass': 'GENTICS_button GENTICS_img align_none',
+				'iconClass': 'GENTICS_img AlohaImage_align_none',
 				'size': 'small',
 				'onclick' : function() {
 				var img = that.findImgMarkup();
@@ -262,7 +262,7 @@ jQuery.extend(true, GENTICS.Aloha.Image,{
 		if (this.settings.config.img.ui.margin) {
 			
 			var incPadding = new GENTICS.Aloha.ui.Button({
-				iconClass: 'GENTICS_button GENTICS img_padding_increase',
+				iconClass: 'GENTICS_img AlohaImage_padding_increase',
 				size: 'small',
 				onclick: function() {
 					// Apply
@@ -277,7 +277,7 @@ jQuery.extend(true, GENTICS.Aloha.Image,{
 					2
 			);
 			var decPadding = new GENTICS.Aloha.ui.Button({
-				iconClass: 'GENTICS_button GENTICS_img padding_decrease',
+				iconClass: 'GENTICS_img AlohaImage_padding_decrease',
 				size: 'small',
 				onclick: function() {
 					// Apply
@@ -338,7 +338,7 @@ jQuery.extend(true, GENTICS.Aloha.Image,{
 		}
 		if (this.settings.config.img.ui.resize) {
 			var incSize = new GENTICS.Aloha.ui.Button({
-				iconClass: 'GENTICS_button GENTICS_img size_increase',
+				iconClass: 'GENTICS_img AlohaImage_size_increase',
 				size: 'small',
 				onclick: function() {
 					// Apply
@@ -353,7 +353,7 @@ jQuery.extend(true, GENTICS.Aloha.Image,{
 					2
 			);
 			var decSize = new GENTICS.Aloha.ui.Button({
-				iconClass: 'GENTICS_button GENTICS_img size_decrease',
+				iconClass: 'GENTICS_img AlohaImage_size_decrease',
 				size: 'small',
 				onclick: function() {
 					// Apply
@@ -483,7 +483,7 @@ jQuery.extend(true, GENTICS.Aloha.Image,{
 						that.imgSrcField.setTargetObject(foundMarkup, 'src');
 						that.imgTitleField.setTargetObject(foundMarkup, 'title');
 					}
-					//that.imgSrcField.focus();
+					that.imgSrcField.focus();
 					GENTICS.Aloha.FloatingMenu.userActivatedTab = that.i18n('floatingmenu.tab.img');
 				} else {
 					if(that.settings.config.img.ui.meta) {
@@ -497,12 +497,10 @@ jQuery.extend(true, GENTICS.Aloha.Image,{
 		GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'editableCreated', function(event, editable) {
 			// add to editable the image click
 			//editable.obj.find('img').attr('_moz_resizing', false);
-			//editable.obj.find('img').contentEditable(false);
+//			editable.obj.find('img').contentEditable(false);
 			editable.obj.delegate('img', 'mouseup', function (event) {
 				that.clickImage(event);
-				if (that.settings.config.img.ui.resizable && !jQuery(this).hasClass('ui-resizable')) {
-					event.stopPropagation();
-				}
+				event.stopPropagation();
 			});
 		});
 	},
