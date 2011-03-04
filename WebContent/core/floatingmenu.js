@@ -845,18 +845,21 @@ GENTICS.Aloha.FloatingMenu.Group.prototype = {
 			});
 			columnCount = columnCount + Math.ceil(buttonCount / 2);
 
-			if (this.fields.length > 0) {
-				items.push(this.fields[0].button.getExtConfigProperties());
-			}
 			var len = this.buttons.length,
 				idx = 0,
 				half =  Math.ceil(this.buttons.length / 2) - this.buttons.length % 2 ;
+			
+			if (this.fields.length > 0) {
+				that.buttons.push(this.fields[0]);
+				items.push(this.fields[0].button.getExtConfigProperties());
+			}
 
 			while (--len >= half) {
 				items.push(this.buttons[idx++].button.getExtConfigProperties());
 			}
 			++len;
 			if (this.fields.length > 1) {
+				that.buttons.push(this.fields[1]);
 				items.push(this.fields[1].button.getExtConfigProperties());
 			}
 			while (--len >=0) {
@@ -867,9 +870,9 @@ GENTICS.Aloha.FloatingMenu.Group.prototype = {
 				'columns' : columnCount,
 				'items': items
 			});
-			jQuery.each(this.fields, function(id, field){
-				that.buttons.push(field);
-			});
+//			jQuery.each(this.fields, function(id, field){
+//				that.buttons.push(field);
+//			});
 			// now find the Ext.Buttons and set to the GENTICS buttons
 			jQuery.each(this.buttons, function(index, buttonInfo) {
 				buttonInfo.button.extButton = that.extButtonGroup.findById(buttonInfo.button.id);
