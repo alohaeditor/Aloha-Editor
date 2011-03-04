@@ -54,8 +54,9 @@ jQuery.extend(true, GENTICS.Aloha.Image,{
 		'img': {
 			'max_width': '50px',
 			'max_height': '50px',
+			//Image manipulation options - ONLY in default config section
 			'ui': {
-				'align': true,       // Menu elements to show/hide in menu - ONLY in default config section
+				'align': true,       // Menu elements to show/hide in menu
 				'resize': true,		 //resize buttons
 				'meta': true,
 				'margin': true,
