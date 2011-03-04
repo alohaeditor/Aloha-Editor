@@ -802,6 +802,7 @@ GENTICS.Aloha.FloatingMenu.Tab.prototype = {
  */
 GENTICS.Aloha.FloatingMenu.Group = function() {
 	this.buttons = [];
+	this.fields = [];
 };
 
 GENTICS.Aloha.FloatingMenu.Group.prototype = {
@@ -810,7 +811,15 @@ GENTICS.Aloha.FloatingMenu.Group.prototype = {
 	 * @param {Button} buttonInfo to add to the group
 	 */
 	addButton: function(buttonInfo) {
-		this.buttons.push(buttonInfo);
+		if (buttonInfo.button instanceof GENTICS.Aloha.ui.AttributeField) {
+			if (this.fields.length < 2) {
+				this.fields.push(buttonInfo);
+			} else {
+				throw new Error("Too much fields in this group");
+			}
+		} else {
+				this.buttons.push(buttonInfo);
+		}
 	},
 
 	/**
@@ -823,22 +832,44 @@ GENTICS.Aloha.FloatingMenu.Group.prototype = {
 
 		if (typeof this.extButtonGroup === 'undefined') {
 			var items = [],
-				buttonCount = 0;
+				buttonCount = 0,
+				columnCount = 0;
+			
+			if (this.fields.length > 1) {
+				columnCount = 1;
+			}
 
-			// add all buttons
 			jQuery.each(this.buttons, function(index, button) {
-				// let each button generate its ext component and add them to the group
-				items.push(button.button.getExtConfigProperties());
-
 				// count the number of buttons (large buttons count as 2)
 				buttonCount += button.button.size == 'small' ? 1 : 2;
 			});
+			columnCount = columnCount + Math.ceil(buttonCount / 2);
+
+			if (this.fields.length > 0) {
+				items.push(this.fields[0].button.getExtConfigProperties());
+			}
+			var len = this.buttons.length,
+				idx = 0,
+				half =  Math.ceil(this.buttons.length / 2) - this.buttons.length % 2 ;
+
+			while (--len >= half) {
+				items.push(this.buttons[idx++].button.getExtConfigProperties());
+			}
+			++len;
+			if (this.fields.length > 1) {
+				items.push(this.fields[1].button.getExtConfigProperties());
+			}
+			while (--len >=0) {
+				items.push(this.buttons[idx++].button.getExtConfigProperties());
+			}
 		
 			this.extButtonGroup = new Ext.ButtonGroup({
-				'columns' : Math.ceil(buttonCount / 2),
+				'columns' : columnCount,
 				'items': items
 			});
-
+			jQuery.each(this.fields, function(id, field){
+				that.buttons.push(field);
+			});
 			// now find the Ext.Buttons and set to the GENTICS buttons
 			jQuery.each(this.buttons, function(index, buttonInfo) {
 				buttonInfo.button.extButton = that.extButtonGroup.findById(buttonInfo.button.id);
