@@ -8,6 +8,11 @@
  * 
  */
 
+//(function(window, undefined) {
+//    var
+//        $ = jQuery = window.alohaQuery,
+//        GENTICS = window.GENTICS,
+//        Aloha = GENTICS.Aloha;
 GENTICS.Aloha.DragAndDropFiles = new GENTICS.Aloha.Plugin("com.gentics.aloha.plugins.DragAndDropFiles");
 /**
  * Configure the available languages
@@ -91,114 +96,109 @@ GENTICS.Aloha.DragAndDropFiles.setBodyDropHandler = function() {
 		 if (jQuery.browser.msie) {
 			 this.onstr = "on";
 			 this.methodName = "attachEvent";
-			 this.mydoc = document.body;
+			 this.mydoc = document.body; 
 		 }
 		 
 		 // sets the default handler
 		 this.mydoc[this.methodName](this.onstr+"drop", function(event) {
-		 try {
-			 GENTICS.Aloha.Log.info(that,"a file have been dropped on document");
-			 
-			 if (jQuery.browser.msie) {
-				 var textdata = event.dataTransfer.getData('Text');
-				 var urldata = event.dataTransfer.getData('URL');
-				 var imagedataW = window.event.dataTransfer.getData('URL');
-				 var textdataW = window.event.dataTransfer.getData('Text');
-				 var x = textdataW;
-			 }
-			 // if no files where dropped, use default handler
-			 if (!event.dataTransfer && !event.dataTransfer.files) {
-				 event.sink = false;
-			        return true; 
-			 }
-			var files = event.dataTransfer.files;
-		    var len = files.length;
-		    if (len < 1) {
-		    	event.sink = false;
-		        return true;
-		    }
-		    if (event.preventDefault)
-		    	event.preventDefault();
-		    else
-		    	event.cancelBubble = true;
-		    if (len > that.settings.config.drop.max_file_count) {
-		    	GENTICS.Aloha.Log.warn(that,"too much files dropped");
-		    	if (event.stopPropagation)
-					 event.stopPropagation();
-				 else 
-					 event.returnValue = false;
-		    	return true;
-		    }
-		    var editable = null;
-			target = jQuery(event.target);
-			//If drop in editable
-			if (target.hasClass('GENTICS_editable')) {
-				editable = target;
-				target = editable.children(':last');
-				if (target.hasClass('GENTICS_editable')) {
-					//nested space is needed in this tag, otherwise select won't success...
-					editable.append('<span> </span>');
-					target = editable.children(':last');
-				}
-			} else {
-				editable = target.parents('.GENTICS_editable');
-			}
-			filesObjs = [];
-			var dropInEditable = false;
-			if (editable[0] == null) {
-				while(--len >= 0) {
-					fileObj = that.uploader.addFileUpload(files[len]);
-					//that.uploader.startFileUpload(fileObj.id,this.config.drop.upload.config);
-					filesObjs.push(fileObj);
-				}
-			} else {
-				GENTICS.Aloha.getEditableById(editable.attr('id')).activate();
-				var range = that.InitializeRangeForDropEvent(event, editable);
-
-			    while(--len >= 0) {
-			    	if (files[len].size > that.settings.config.drop.max_file_size) {
-			    		event.stopPropagation();
-			    		GENTICS.Aloha.Log.warn(that,"max_file_size exeeded");
-			    	    return false;
-			    	}
-			    	fileObj = that.uploader.addFileUpload(files[len]);
-			    	filesObjs.push(fileObj);
-			    	var edConfig = that.getEditableConfig(editable);
-		           	if (edConfig.drop) {
-		           		dropInEditable = true;
-		           		//that.uploader.startFileUpload(fileObj.id,edConfig.drop.upload.config);
-		           	} else {
-		           		//that.uploader.startFileUpload(fileObj.id,this.config.drop.upload.config);
-		           	}
-		           	
-		        } //while
-			}
-			var len = filesObjs.length;
-			if (dropInEditable) {
-		    	GENTICS.Aloha.EventRegistry.trigger(
-    				new GENTICS.Aloha.Event('dropFilesInEditable', GENTICS.Aloha, {
-    					'filesObjs':filesObjs,
-    					'range': range,
-    					'editable': editable}));
-		    	var edConfig = that.getEditableConfig(editable);
-		    	while(--len >= 0) {
-		    		that.uploader.startFileUpload(filesObjs[len].id,edConfig.drop.upload.config);
-		    	}
-		    } else {
-		    	GENTICS.Aloha.EventRegistry.trigger(
-            			new GENTICS.Aloha.Event('dropFilesInPage', GENTICS.Aloha,filesObjs));
-		    	while(--len >= 0) {
-		    		that.uploader.startFileUpload(filesObjs[len].id,this.config.drop.upload.config);
-		    	}
-		    }
-			if (event.stopPropagation)
+		 GENTICS.Aloha.Log.info(that,"a file have been dropped on document");
+		 
+		 if (jQuery.browser.msie) {
+			 var textdata = event.dataTransfer.getData('Text');
+			 var urldata = event.dataTransfer.getData('URL');
+			 var imagedataW = window.event.dataTransfer.getData('URL');
+			 var textdataW = window.event.dataTransfer.getData('Text');
+			 var x = textdataW;
+		 }
+		 // if no files where dropped, use default handler
+		 if (!event.dataTransfer && !event.dataTransfer.files) {
+			 event.sink = false;
+		        return true; 
+		 }
+		var files = event.dataTransfer.files,
+	    	len = files.length,
+	    	editable = null;
+	    if (len < 1) {
+	    	event.sink = false;
+	        return true;
+	    }
+	    if (event.preventDefault)
+	    	event.preventDefault();
+	    else
+	    	event.cancelBubble = true;
+	    if (len > that.settings.config.drop.max_file_count) {
+	    	GENTICS.Aloha.Log.warn(that,"too much files dropped");
+	    	if (event.stopPropagation)
 				 event.stopPropagation();
 			 else 
 				 event.returnValue = false;
-		 } catch (error) {
-			GENTICS.Aloha.Log.error(GENTICS.Aloha.DragAndDropFiles,"Exception while processing drop");
-
+	    	return true;
+	    }
+		target = jQuery(event.target);
+		//If drop in editable
+		if (target.hasClass('GENTICS_editable')) {
+			editable = target;
+			target = editable.children(':last');
+			if (target.hasClass('GENTICS_editable')) {
+				//nested space is needed in this tag, otherwise select won't success...
+				editable.append('<span> </span>');
+				target = editable.children(':last');
+			}
+		} else {
+			editable = target.parents('.GENTICS_editable');
 		}
+		var filesObjs = [],
+			dropInEditable = false;
+		if (editable[0] == null) {
+			while(--len >= 0) {
+				fileObj = that.uploader.addFileUpload(files[len]);
+				//that.uploader.startFileUpload(fileObj.id,this.config.drop.upload.config);
+				filesObjs.push(fileObj);
+			}
+		} else {
+			GENTICS.Aloha.getEditableById(editable.attr('id')).activate();
+			var range = that.InitializeRangeForDropEvent(event, editable);
+
+		    while(--len >= 0) {
+		    	if (files[len].size > that.settings.config.drop.max_file_size) {
+		    		event.stopPropagation();
+		    		GENTICS.Aloha.Log.warn(that,"max_file_size exeeded");
+		    	    return false;
+		    	}
+		    	fileObj = that.uploader.addFileUpload(files[len]);
+		    	filesObjs.push(fileObj);
+		    	var edConfig = that.getEditableConfig(editable);
+	           	if (edConfig.drop) {
+	           		dropInEditable = true;
+	           		//that.uploader.startFileUpload(fileObj.id,edConfig.drop.upload.config);
+	           	} else {
+	           		//that.uploader.startFileUpload(fileObj.id,this.config.drop.upload.config);
+	           	}
+	           	
+	        } //while
+		}
+		var len = filesObjs.length;
+		if (dropInEditable) {
+	    	GENTICS.Aloha.EventRegistry.trigger(
+				new GENTICS.Aloha.Event('dropFilesInEditable', GENTICS.Aloha, {
+					'filesObjs':filesObjs,
+					'range': range,
+					'editable': editable}));
+	    	var edConfig = that.getEditableConfig(editable);
+	    	while(--len >= 0) {
+	    		that.uploader.startFileUpload(filesObjs[len].id,edConfig.drop.upload.config);
+	    	}
+	    } else {
+	    	GENTICS.Aloha.EventRegistry.trigger(
+        			new GENTICS.Aloha.Event('dropFilesInPage', GENTICS.Aloha,filesObjs));
+	    	while(--len >= 0) {
+	    		that.uploader.startFileUpload(filesObjs[len].id,this.config.drop.upload.config);
+	    	}
+	    }
+		if (event.stopPropagation)
+			 event.stopPropagation();
+		 else 
+			 event.returnValue = false;
 		 return false;
 	 }, false);
 	 // TODO: improve below to allow default comportment behaviour if drop event is not a files drop event
@@ -314,3 +314,4 @@ GENTICS.Aloha.DragAndDropFiles.findFileObject = function(range) {
     return null;
     
 };
+//});
