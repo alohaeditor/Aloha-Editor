@@ -367,6 +367,16 @@ class App
 		])
 	end
 
+	# Commit Submodules
+	def commit_submodules(message)
+		submodule_foreach([
+			"git add *",
+			"git add -u",
+			"git commit -m \"#{message}\" | echo good",
+			"git push origin"
+		])
+	end
+
 	# Branch Submodules
 	def branch_submodules(branch)
 		submodule_foreach([
@@ -445,6 +455,16 @@ class App
 
 	# ---------------------------------------------------------------------------
 	# Deploy
+
+	# Commit
+	def commit(message)
+		run([
+			"git add *",
+			"git add -u",
+			"git commit -m \"#{message}\"",
+			"git push origin"
+		])
+	end
 
 	# Deploy
 	def deploy(base,*args)
