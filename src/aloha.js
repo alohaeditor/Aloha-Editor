@@ -23,7 +23,7 @@ window.GENTICS_Aloha_base = window.GENTICS_Aloha_base || false;
 	window.Aloha_loaded_plugins['linkchecker'] = true;
 	window.Aloha_loaded_plugins['table'] = true;
 	includes.push('dep/ext-3.3.1/adapter/jquery/ext-jquery-adapter.js');
-	includes.push('dep/ext-3.3.1/ext-all.js');
+	includes.push('dep/ext-3.3.1/ext-all-debug.js');
 	includes.push('dep/jquery.json-2.2.min.js');
 	includes.push('dep/jquery.getUrlParam.js');
 	includes.push('dep/jquery.store.js');
@@ -67,11 +67,23 @@ window.GENTICS_Aloha_base = window.GENTICS_Aloha_base || false;
 		value = includes[i];
 		url = window.GENTICS_Aloha_base + value;
 
-		// Append
+		// Append via Write
+		document.write('<script defer src="'+url+'"></script>');
+		continue;
+
+		// Append via jQuery
+		window.jQuery.ajax({
+			dataType : 'script',
+			url: url
+		});
+		continue;
+
+		// Append via DOM
 		scriptEl = document.createElement('script');
 		scriptEl.src = url;
 		scriptEl.setAttribute('defer','defer');
 		appendEl.appendChild(scriptEl);
+		continue;
 	}
 
 // </closure>

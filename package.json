@@ -36,7 +36,7 @@
 
   "js": [
 		"dep/ext-3.3.1/adapter/jquery/ext-jquery-adapter.js",
-		"dep/ext-3.3.1/ext-all.js",
+		"dep/ext-3.3.1/ext-all-debug.js",
 
 		"dep/jquery.json-2.2.min.js",
 		"dep/jquery.getUrlParam.js",
