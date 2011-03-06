@@ -17,8 +17,6 @@
 *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// Ensure Namespace
-window.GENTICS.Aloha.ui = window.GENTICS.Aloha.ui || {};
 
 // Closure
 (function(window, undefined) {
@@ -26,6 +24,9 @@ window.GENTICS.Aloha.ui = window.GENTICS.Aloha.ui || {};
 		$ = jQuery = window.alohaQuery,
 		GENTICS = window.GENTICS,
 		Aloha = GENTICS.Aloha;
+
+// Ensure Namespace
+GENTICS.Aloha.ui = GENTICS.Aloha.ui || {};
 
 /**
  * Constructor for an Aloha button.

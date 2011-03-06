@@ -23,12 +23,6 @@
  * namespaces are preserved.
  */
 
-// Ensure Namespace
-window.GENTICS = window.GENTICS || {};
-window.GENTICS.Aloha = window.GENTICS.Aloha || {};
-window.GENTICS.Aloha.settings = window.GENTICS.Aloha.settings || {};
-window.GENTICS.Aloha.ui = window.GENTICS.Aloha.ui || {};
-
 // Namespace jQuery
 window.alohaQuery = window.jQuery.sub();
 
@@ -46,22 +40,6 @@ window.alohaQuery = window.jQuery.sub();
 	 * @singleton
 	 */
 	GENTICS.Aloha = function () {};
-
-
-	// determine path of aloha for configuration
-	GENTICS.Aloha.setAutobase = function () {
-		var scriptTags = jQuery('script'),
-			path = scriptTags[scriptTags.length-1].src.split('?')[0], // use last script tag (others are not yet parsed), remove any ?query
-			substitute = 1;
-		path = path.split('/');
-
-		// included by include-js.inc so it is referenced by the "core/" path
-		if ('core' === path[path.length -2]) {
-			substitute = 2;
-		}
-		GENTICS.Aloha.autobase = path.slice(0, substitute * -1).join('/') + '/';
-	};
-	GENTICS.Aloha.setAutobase();
 
 	GENTICS.Aloha = {
 
@@ -154,13 +132,13 @@ window.alohaQuery = window.jQuery.sub();
 				}
 			});
 
-			// initialize the base path to the aloha files
-			if (typeof this.settings.base === 'undefined' || !this.settings.base) {
-				this.settings.base = GENTICS.Aloha.autobase;
-				if (typeof GENTICS_Aloha_base !== 'undefined') {
-					this.settings.base = GENTICS_Aloha_base;
-				}
-			}
+			// Initialise the base path to the aloha files
+			this.settings.base =
+				this.settings.base || window.GENTICS_Aloha_base || this.getAlohaUrl();
+
+			// Initialise pluginDir
+			this.settings.pluginDir =
+				this.settings.pluginDir || window.GENTICS_Aloha_pluginDir || 'plugin';
 
 			// initialize the Log
 			this.Log.init();
@@ -435,7 +413,7 @@ window.alohaQuery = window.jQuery.sub();
 				GENTICS.Aloha.Log.error(this, 'Could not determine actual language.');
 			} else {
 				// TODO load the dictionary file for the actual language
-				var fileUrl = this.settings.base + 'i18n/' + actualLanguage + '.dict';
+				var fileUrl = this.settings.base + '/i18n/' + actualLanguage + '.dict';
 				this.loadI18nFile(fileUrl, this, function () {
 					GENTICS.Aloha.EventRegistry.trigger(
 						new GENTICS.Aloha.Event('i18nReady', GENTICS.Aloha, null)
@@ -679,10 +657,8 @@ window.alohaQuery = window.jQuery.sub();
 		 * @return {String} alohaUrl
 		 */
 		getAlohaUrl: function(suffix){
-			var
-				$alohaScriptInclude = $('#aloha-script-include'),
-				alohaUrl = $alohaScriptInclude.attr('src').replace(/\/aloha.js$/,'');
-			return alohaUrl;
+			window.GENTICS_Aloha_base = window.GENTICS_Aloha_base || document.getElementById('aloha-script-include').src.replace(/aloha\.js$/,'').replace(/\/+$/,'');
+			return window.GENTICS_Aloha_base;
 		},
 
 		/**
@@ -703,7 +679,14 @@ window.alohaQuery = window.jQuery.sub();
 		 * @return
 		 */
 		loadJs: function(url){
-			document.write('<script src="'+url+'"></script>');
+			// Prepare
+			var scriptEl, appendEl = document.head;
+
+			// Append
+			scriptEl = document.createElement('script');
+			scriptEl.src = url;
+			scriptEl.setAttribute('defer','defer');
+			appendEl.appendChild(scriptEl);
 		},
 
 		/**
@@ -713,7 +696,15 @@ window.alohaQuery = window.jQuery.sub();
 		 * @return
 		 */
 		loadCss: function(url){
-			document.write('<script type="text/css" rel="stylesheet" href="'+url+'"></script>');
+			// Prepare
+			var linkEl, appendEl = document.head;
+
+			// Append
+			linkEl = document.createElement('link');
+			linkEl.type = 'text/css';
+			linkEl.rel = 'stylesheet';
+			linkEl.href = url;
+			appendEl.appendChild(linkEl);
 		},
 
 		/**
@@ -732,12 +723,29 @@ window.alohaQuery = window.jQuery.sub();
 			}
 			window.Aloha_loaded_plugins[pluginName] = true;
 
-			// Load In
-			$.ajax({
-				url: pluginUrl+'/package.json',
-				success: function(data, textStatus, jqXHR) {
-					// package.json exists, use it to load in dependencies
+			// Prepare Actions
+			var actions = {
+				/**
+				 * Load a Plugin by the Default Structure
+				 */
+				loadDefault: function(){
+					// Prepare
+					var
+						pluginJsUrl = pluginUrl+'/src/'+pluginName+'.js',
+						pluginCssUrl = pluginUrl+'/src/'+pluginName+'.css';
 
+					// Include
+					GENTICS.Aloha.loadJs(pluginJsUrl);
+					GENTICS.Aloha.loadCss(pluginCssUrl);
+
+					// Done
+					return true;
+				},
+
+				/**
+				 * Load a Plugin by it's specified Package
+				 */
+				loadPackage: function(data){
 					// Cycle through CSS
 					$.each(data.css||[], function(i,value){
 						lGENTICS.Aloha.loadCss(pluginUrl+'/'+value)
@@ -750,23 +758,42 @@ window.alohaQuery = window.jQuery.sub();
 
 					// Done
 					return true;
+				}
+			};
+
+			// Load In
+			try{
+			$.ajax({
+				url: pluginUrl+'/package.json',
+				dataType: 'json',
+				success: function(data, textStatus, jqXHR) {
+					// package.json exists,
+
+					// Load Package
+					if ( typeof data === 'object' ) {
+						actions.loadPackage();
+					}
+					else {
+						actions.loadDefault();
+					}
+
+					// Done
+					return true;
 				},
 				error: function (jqXHR, textStatus, errorThrown) {
-					// package.json doesn't exist, go by defaults
+					// package.json doesn't exist
 
-					// Prepare
-					var
-						pluginJsUrl = pluginUrl+'/src/'+pluginName+'.js',
-						pluginCssUrl = pluginUrl+'/src/'+pluginName+'.css';
-
-					// Include
-					GENTICS.Aloha.loadJs(pluginJsUrl);
-					GENTICS.Aloha.loadCss(pluginCssUrl);
+					// Load Defaults
+					actions.loadDefault();
 
 					// Done
 					return true;
 				}
 			});
+			}
+			catch ( e ) {
+				alert('asd');
+			}
 
 			// Done
 			return true;
@@ -792,6 +819,7 @@ window.alohaQuery = window.jQuery.sub();
 	// Initialise Aloha
 	$(function(){
 		GENTICS.Aloha.init();
+		$('body').trigger('alohaready');
 	});
 
 })(window);

@@ -235,6 +235,7 @@
 			templateReplaceText = fs.readFileSync(config.template.replace).toString();
 			templateHeaderText = fs.readFileSync(config.template.header).toString();
 			templateFooterText = fs.readFileSync(config.template.footer).toString();
+			templatePrefixText = fs.readFileSync(config.template.prefix).toString();
 
 
 			// ----------------------------------------------------------------------
@@ -245,7 +246,8 @@
 			bundleOutText = ''; bundleOutPath = config.dir.out+'/'+config.name+'.js';
 
 			// Adjust
-			bundleSrcText += templateHeaderText;
+			bundleSrcText += templatePrefixText+templateHeaderText;
+			bundleOutText += templatePrefixText;
 
 			// Plugins
 			config.plugin.each(function(i,pluginName){
@@ -393,7 +395,7 @@
 			app.bundle();
 
 			// Compile
-			app.compile();
+			//app.compile();
 
 			// Done
 			return true;

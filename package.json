@@ -19,7 +19,8 @@
   	"footer": "footer.js",
   	"header": "header.js",
   	"replace": "replace.js",
-  	"bundle": "bundle.js"
+  	"bundle": "bundle.js",
+  	"prefix": "prefix.js"
   },
 
   "plugin": [
@@ -27,32 +28,15 @@
   ],
 
   "css": [
-		"dep/extjs/resources/css/ext-all.css",
-		"dep/extjs/resources/css/xtheme-gray.css",
+		"dep/ext-3.3.1/resources/css/ext-all-notheme.css",
+		"dep/ext-3.3.1/resources/css/xtheme-gray.css",
 
 		"css/aloha.css"
   ],
 
   "js": [
-		"dep/jquery-1.5.1.js",
-
-		"dep/extjs/ext-jquery-adapter.js",
-		"dep/extjs/ext-foundation.js",
-		"dep/extjs/cmp-foundation.js",
-		"dep/extjs/data-foundation.js",
-		"dep/extjs/data-json.js",
-		"dep/extjs/data-list-views.js",
-		"dep/extjs/ext-dd.js",
-		"dep/extjs/window.js",
-		"dep/extjs/resizable.js",
-		"dep/extjs/pkg-buttons.js",
-		"dep/extjs/pkg-tabs.js",
-		"dep/extjs/pkg-tips.js",
-		"dep/extjs/pkg-tree.js",
-		"dep/extjs/pkg-grid-foundation.js",
-		"dep/extjs/pkg-toolbars.js",
-		"dep/extjs/pkg-menu.js",
-		"dep/extjs/pkg-forms.js",
+		"dep/ext-3.3.1/adapter/jquery/ext-jquery-adapter.js",
+		"dep/ext-3.3.1/ext-all.js",
 
 		"dep/jquery.json-2.2.min.js",
 		"dep/jquery.getUrlParam.js",

@@ -1,17 +1,17 @@
 
-	var value,url;
-	for ( i=0,n=window.GENTICS_Plugins.length; i<n; ++i ) {
-		value = window.GENTICS_Plugins[i];
-		if ( value.indexOf('/') === -1 ) {
-			value += '/plugin.js';
-		}
-		url = 'plugins/com.gentics.aloha.plugins.' + value;
-		includes.push(url);
-	}
-
+	// Insert Scripts
+	var value, url, scriptEl, appendEl = document.head;
 	for ( i=0,n=includes.length; i<n; ++i ) {
+		// Prepare
 		value = includes[i];
-		document.write('<script src="'+value+'"></script>');
+		url = window.GENTICS_Aloha_base + value;
+
+		// Append
+		scriptEl = document.createElement('script');
+		scriptEl.src = url;
+		scriptEl.setAttribute('defer','defer');
+		appendEl.appendChild(scriptEl);
 	}
 
+// </closure>
 })(window);

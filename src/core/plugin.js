@@ -104,7 +104,7 @@ GENTICS.Aloha.PluginRegistry.prototype = {
 				}
 			} else {
 				// load the dictionary file for the actual language
-				var fileUrl = GENTICS.Aloha.settings.base + 'plugins/' + plugin.basePath + '/i18n/' + actualLanguage + '.dict';
+				var fileUrl = GENTICS.Aloha.settings.base + '/' + GENTICS.Aloha.settings.pluginDir + '/' + plugin.basePath + '/i18n/' + actualLanguage + '.dict';
 
 				// Initializes the plugin when
 				GENTICS.Aloha.loadI18nFile(fileUrl, plugin, function () {

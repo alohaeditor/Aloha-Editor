@@ -1,31 +1,29 @@
+// Ensure Namespace
+window.GENTICS = window.GENTICS || {};
+window.GENTICS.Aloha = window.GENTICS.Aloha || {};
+window.GENTICS.Aloha.settings = window.GENTICS.Aloha.settings || {};
+window.GENTICS.Aloha.ui = window.GENTICS.Aloha.ui || {};
+window.Aloha_loaded_plugins = window.Aloha_loaded_plugins || [];
+window.GENTICS_Aloha_pluginDir = window.GENTICS_Aloha_pluginDir || false;
+window.GENTICS_Aloha_base = window.GENTICS_Aloha_base || false;
 /* This is auto generated on build-dev-include build. Templates at /build/deps/includejs* */
 (function(window, undefined) {
 
-	// Prepare
-	var includes = [], jquery = 'jquery-1.5.1.js';
+	// Prepare Script Loading
+	var
+		includes = [];
+
+	// Prepare baseUrl
+	window.GENTICS_Aloha_base = window.GENTICS_Aloha_base || document.getElementById('aloha-script-include').src.replace(/aloha\.js$/,'');
+
+	// Prepare Plugin Loading
 	window.Aloha_loaded_plugins = window.Aloha_loaded_plugins||[];
 	window.Aloha_loaded_plugins['format'] = true;
 	window.Aloha_loaded_plugins['link'] = true;
 	window.Aloha_loaded_plugins['linkchecker'] = true;
 	window.Aloha_loaded_plugins['table'] = true;
-	includes.push('dep/jquery-1.5.1.js');
-	includes.push('dep/extjs/ext-jquery-adapter.js');
-	includes.push('dep/extjs/ext-foundation.js');
-	includes.push('dep/extjs/cmp-foundation.js');
-	includes.push('dep/extjs/data-foundation.js');
-	includes.push('dep/extjs/data-json.js');
-	includes.push('dep/extjs/data-list-views.js');
-	includes.push('dep/extjs/ext-dd.js');
-	includes.push('dep/extjs/window.js');
-	includes.push('dep/extjs/resizable.js');
-	includes.push('dep/extjs/pkg-buttons.js');
-	includes.push('dep/extjs/pkg-tabs.js');
-	includes.push('dep/extjs/pkg-tips.js');
-	includes.push('dep/extjs/pkg-tree.js');
-	includes.push('dep/extjs/pkg-grid-foundation.js');
-	includes.push('dep/extjs/pkg-toolbars.js');
-	includes.push('dep/extjs/pkg-menu.js');
-	includes.push('dep/extjs/pkg-forms.js');
+	includes.push('dep/ext-3.3.1/adapter/jquery/ext-jquery-adapter.js');
+	includes.push('dep/ext-3.3.1/ext-all.js');
 	includes.push('dep/jquery.json-2.2.min.js');
 	includes.push('dep/jquery.getUrlParam.js');
 	includes.push('dep/jquery.store.js');
@@ -62,19 +60,19 @@
 	includes.push('plugin/linkchecker/src/linkchecker.js');
 	includes.push('plugin/table/src/table.js');
 
-	var value,url;
-	for ( i=0,n=window.GENTICS_Plugins.length; i<n; ++i ) {
-		value = window.GENTICS_Plugins[i];
-		if ( value.indexOf('/') === -1 ) {
-			value += '/plugin.js';
-		}
-		url = 'plugins/com.gentics.aloha.plugins.' + value;
-		includes.push(url);
-	}
-
+	// Insert Scripts
+	var value, url, scriptEl, appendEl = document.head;
 	for ( i=0,n=includes.length; i<n; ++i ) {
+		// Prepare
 		value = includes[i];
-		document.write('<script src="'+value+'"></script>');
+		url = window.GENTICS_Aloha_base + value;
+
+		// Append
+		scriptEl = document.createElement('script');
+		scriptEl.src = url;
+		scriptEl.setAttribute('defer','defer');
+		appendEl.appendChild(scriptEl);
 	}
 
+// </closure>
 })(window);
