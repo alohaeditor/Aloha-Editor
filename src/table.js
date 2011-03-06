@@ -12,13 +12,13 @@
 /**
  * Register the TablePlugin as GENTICS.Aloha.Plugin
  */
-GENTICS.Aloha.TablePlugin = new GENTICS.Aloha.Plugin('com.gentics.aloha.plugins.Table');
+GENTICS.Aloha.TablePlugin = new GENTICS.Aloha.Plugin('table');
 
 
 /* -- ATTRIBUTES -- */
 /**
  * The Create-Layer Object of the TablePlugin
- * 
+ *
  * @see GENTICS.Aloha.Table.CreateLayer
  */
 GENTICS.Aloha.TablePlugin.createLayer = undefined;
@@ -46,7 +46,7 @@ GENTICS.Aloha.TablePlugin.activeTable = undefined;
 
 /**
  * parameters-objects for tables
- * 
+ *
  * @param className
  *            The class of activated tables
  */
@@ -57,8 +57,8 @@ GENTICS.Aloha.TablePlugin.parameters = {
 	classLeftUpperCorner : 'GENTICS_Aloha_Table_leftUpperCorner', // class for the left upper corner cell
 	classTableWrapper    : 'GENTICS_Aloha_Table_wrapper',         // class of the outest table-wrapping div
 	classCellSelected    : 'GENTICS_Aloha_Cell_selected',         // class of cell which are selected (row/column selection)
-	waiRed				 : 'GENTICS_WAI_RED',                     // class that shows wai of div 
-	waiGreen			 : 'GENTICS_WAI_GREEN',                   // class that shows wai of div 
+	waiRed				 : 'GENTICS_WAI_RED',                     // class that shows wai of div
+	waiGreen			 : 'GENTICS_WAI_GREEN',                   // class that shows wai of div
 	selectionArea        : 10                                     // width/height of the selection rows (in pixel)
 };
 
@@ -67,7 +67,7 @@ GENTICS.Aloha.TablePlugin.parameters = {
 /* -- METHODS -- */
 /**
  * Init method of the Table-plugin transforms all tables in the document
- * 
+ *
  * @return void
  */
 GENTICS.Aloha.TablePlugin.init = function() {
@@ -78,7 +78,7 @@ GENTICS.Aloha.TablePlugin.init = function() {
 
 	// subscribe for the 'editableActivated' event to activate all tables in the editable
 	GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'editableCreated', function(event, editable) {
-		
+
 		// add a mousedown event to all created editables to check if focus leaves a table
 		editable.obj.bind('mousedown', function(jqEvent) {
 			GENTICS.Aloha.TablePlugin.setFocusedTable(undefined);
@@ -88,14 +88,14 @@ GENTICS.Aloha.TablePlugin.init = function() {
 			// only convert tables which are editable
 			if (that.isEditableTable(this)) {
 
-				// instantiate a new table-object 
+				// instantiate a new table-object
 				var table = new GENTICS.Aloha.Table(this);
-		
+
 				table.parentEditable = editable;
 
 				// activate the table
 //				table.activate();
-		
+
 				// add the activated table to the TableRegistry
 				GENTICS.Aloha.TablePlugin.TableRegistry.push(table);
 			}
@@ -110,20 +110,20 @@ GENTICS.Aloha.TablePlugin.init = function() {
 		if (GENTICS.Aloha.activeEditable) {
 			// get Plugin configuration
 			var config = that.getEditableConfig( GENTICS.Aloha.activeEditable.obj );
-			
+
 			// show hide buttons regarding configuration and DOM position
 			if ( jQuery.inArray('table', config) != -1  && GENTICS.Aloha.Selection.mayInsertTag('table') ) {
 				that.createTableButton.show();
 			} else {
 				that.createTableButton.hide();
 			}
-			
+
 			GENTICS.Aloha.TableHelper.unselectCells();
-			
+
 			var table = rangeObject.findMarkup(function() {
 		        return this.nodeName.toLowerCase() == 'table';
 		    }, GENTICS.Aloha.activeEditable.obj);
-			
+
 			// check wheater we are inside a table
 			if ( table ) {
 				// set the scope if either columns or rows are selected
@@ -133,7 +133,7 @@ GENTICS.Aloha.TablePlugin.init = function() {
 					that.activeTable.focusOut();
 				}
 			}
-		
+
 			// TODO this should not be necessary here!
 			GENTICS.Aloha.FloatingMenu.doLayout();
 		}
@@ -157,20 +157,20 @@ GENTICS.Aloha.TablePlugin.init = function() {
 			// only convert tables which are editable
 			if (that.isEditableTable(this)) {
 
-				// instantiate a new table-object 
+				// instantiate a new table-object
 				var table = new GENTICS.Aloha.Table(this);
-		
+
 				table.parentEditable = props.editable;
 
 				// activate the table
 				table.activate();
-		
+
 				// add the activated table to the TableRegistry
 				GENTICS.Aloha.TablePlugin.TableRegistry.push(table);
 			}
 		});
 	});
-	
+
 	// subscribe for the 'editableDeactivated' event to deactivate all tables in the editable
 	GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'editableDeactivated', function(event, properties) {
 		GENTICS.Aloha.TablePlugin.setFocusedTable(undefined);
@@ -275,7 +275,7 @@ GENTICS.Aloha.TablePlugin.initTableButtons = function () {
 							if (sel == 'yes') {
 								aTable.deleteColumns();
 							}
-						} 
+						}
 					}));
 				}
 			}
@@ -332,7 +332,7 @@ GENTICS.Aloha.TablePlugin.initTableButtons = function () {
 							if (sel == 'yes') {
 								aTable.deleteRows();
 							}
-						} 
+						}
 					}));
 				}
 			}
@@ -340,7 +340,7 @@ GENTICS.Aloha.TablePlugin.initTableButtons = function () {
 		GENTICS.Aloha.i18n(this, 'floatingmenu.tab.table'),
 		1
 	);
-	
+
 	this.captionButton = new GENTICS.Aloha.ui.Button({
 		'iconClass' : 'GENTICS_button GENTICS_button_table_caption',
 		'size' : 'small',
@@ -352,7 +352,7 @@ GENTICS.Aloha.TablePlugin.initTableButtons = function () {
 				if ( that.activeTable.obj.children("caption").is('caption') ) {
 					that.activeTable.obj.children("caption").remove();
 					// select first cell of table
-				} else {						
+				} else {
 					var captionText = that.i18n('empty.caption');
 					var c = jQuery('<caption></caption>');
 					that.activeTable.obj.append(c);
@@ -384,7 +384,7 @@ GENTICS.Aloha.TablePlugin.initTableButtons = function () {
 		GENTICS.Aloha.i18n(this, 'floatingmenu.tab.table'),
 		1
 	);
-	
+
 	// for cells
     // add summary field
     this.summary = new GENTICS.Aloha.ui.AttributeField({
@@ -441,7 +441,7 @@ GENTICS.Aloha.TablePlugin.makeCaptionEditable = function(caption, captionText) {
 
 /**
  * This function adds the createDialog to the calling element
- * 
+ *
  * @param callingElement
  *            The element, which was clicked. It's needed to set the right
  *            position to the create-table-dialog.
@@ -450,16 +450,16 @@ GENTICS.Aloha.TablePlugin.createDialog = function(callingElement) {
 	// set the calling element to the layer the calling element mostly will be
 	// the element which was clicked on it is used to position the createLayer
 	this.createLayer.set('target', callingElement);
-	
+
 	// show the createLayer
 	this.createLayer.show();
-	
+
 };
 
 /**
  * Creates a normal html-table, "activates" this table and inserts it into the
  * active Editable
- * 
+ *
  * @param cols
  *            number of colums for the created table
  * @param cols
@@ -473,7 +473,7 @@ GENTICS.Aloha.TablePlugin.createTable = function(cols, rows) {
 		var table = document.createElement('table');
 		var tableId = table.id = GENTICS.Aloha.TableHelper.getNewTableID();
 		var tbody = document.createElement('tbody');
-		
+
 		// create "rows"-number of rows
 		for (var i = 0; i < rows; i++) {
 			var tr = document.createElement('tr');
@@ -490,17 +490,17 @@ GENTICS.Aloha.TablePlugin.createTable = function(cols, rows) {
 
 		// insert at current cursor position
 		GENTICS.Utils.Dom.insertIntoDOM(jQuery(table), GENTICS.Aloha.Selection.getRangeObject(), jQuery(GENTICS.Aloha.activeEditable.obj));
-		
+
 		// if the table is inserted
 		var tableReloadedFromDOM = document.getElementById(tableId);
-		
+
 		var tableObj = new GENTICS.Aloha.Table(tableReloadedFromDOM);
-		
+
 		tableObj.parentEditable = GENTICS.Aloha.activeEditable;
-		
+
 		// transform the table to be editable
 		tableObj.activate();
-		
+
 		// after creating the table, trigger a click into the first cell to
 		// focus the content
 		// for IE set a timeout of 10ms to focus the first cell, other wise it
@@ -510,9 +510,9 @@ GENTICS.Aloha.TablePlugin.createTable = function(cols, rows) {
 		} else {
 			tableObj.cells[0].wrapper.get(0).focus();
 		}
-		
+
 		GENTICS.Aloha.TablePlugin.TableRegistry.push(tableObj);
-	
+
 	// no active editable => error
 	}else{
 		this.error('There is no active Editable where the table can be inserted!');
@@ -539,7 +539,7 @@ GENTICS.Aloha.TablePlugin.setFocusedTable = function(focusTable) {
 
 /**
  * Calls the GENTICS.Aloha.log function with 'error' level
- * 
+ *
  * @see GENTICS.Aloha.log
  * @param msg
  *            The message to display
@@ -551,7 +551,7 @@ GENTICS.Aloha.TablePlugin.error = function(msg) {
 
 /**
  * Calls the GENTICS.Aloha.log function with 'debug' level
- * 
+ *
  * @see GENTICS.Aloha.log
  * @param msg
  *            The message to display
@@ -563,7 +563,7 @@ GENTICS.Aloha.TablePlugin.debug = function(msg) {
 
 /**
  * Calls the GENTICS.Aloha.log function with 'info' level
- * 
+ *
  * @see GENTICS.Aloha.log
  * @param msg
  *            The message to display
@@ -575,7 +575,7 @@ GENTICS.Aloha.TablePlugin.info = function(msg) {
 
 /**
  * Calls the GENTICS.Aloha.log function with 'info' level
- * 
+ *
  * @see GENTICS.Aloha.log
  * @param msg
  *            The message to display
@@ -590,11 +590,11 @@ GENTICS.Aloha.TablePlugin.log = function(msg) {
  * First it searches in the config for the property.
  * If there is no property with the given name in the
  * "config"-object it returns the entry associated with
- * in the parameters-object 
- * 
+ * in the parameters-object
+ *
  * @param property
  * @return void
- * 
+ *
  */
 GENTICS.Aloha.TablePlugin.get = function (property) {
 	if (this.config[property]) {
@@ -609,8 +609,8 @@ GENTICS.Aloha.TablePlugin.get = function (property) {
 /**
  * The "set"-method takes a key and a value. It checks if there is a
  * key-value pair in the config-object. If so it saves the data in the
- * config-object. If not it saves the data in the parameters-object. 
- * 
+ * config-object. If not it saves the data in the parameters-object.
+ *
  * @param key the key which should be set
  * @param value the value which should be set for the associated key
  */
@@ -631,7 +631,7 @@ GENTICS.Aloha.TablePlugin.set = function (key, value) {
 GENTICS.Aloha.TablePlugin.makeClean = function (obj) {
 	// find all table tags
 	obj.find('table').each(function() {
-		// instantiate a new table-object 
+		// instantiate a new table-object
 		var table = new GENTICS.Aloha.Table(this);
 		// deactivate the table
 		table.deactivate();
@@ -640,7 +640,7 @@ GENTICS.Aloha.TablePlugin.makeClean = function (obj) {
 
 /**
  * String representation of the Table-object
- * 
+ *
  * @return The plugins namespace (string)
  */
 GENTICS.Aloha.TablePlugin.toString = function() {
@@ -656,7 +656,7 @@ GENTICS.Aloha.TablePlugin.toString = function() {
 ***************************/
 /**
  * Constructor of the table object
- * 
+ *
  * @param table
  *            the dom-representation of the held table
  * @return void
@@ -668,7 +668,7 @@ GENTICS.Aloha.Table = function(table) {
 	if ( !this.obj.attr('id') ) {
 		this.obj.attr('id', GENTICS.Utils.guid());
 	}
-	
+
 	// find the dimensions of the table
 	var rows = this.obj.find("tr");
 	var firstRow = jQuery(rows.get(0));
@@ -703,7 +703,7 @@ GENTICS.Aloha.Table.prototype.tableWrapper = undefined;
 
 /**
  * An array of all Cells contained in the Table
- * 
+ *
  * @see GENTICS.Aloha.Table.Cell
  */
 GENTICS.Aloha.Table.prototype.cells = undefined;
@@ -768,7 +768,7 @@ GENTICS.Aloha.Table.prototype.fmPluginId = undefined;
 /* -- METHODS -- */
 /**
  * Wrapper-Mehotd to return a property of GENTICS.Aloha.TablePlugin.get
- * 
+ *
  * @see GENTICS.Aloha.TablePlugin.get
  * @param property
  *            the property whichs value should be return
@@ -780,7 +780,7 @@ GENTICS.Aloha.Table.prototype.get = function(property) {
 
 /**
  * Wrapper-Method for GENTICS.Aloha.TablePlugin.set
- * 
+ *
  * @see GENTICS.Aloha.TablePlugin.set
  * @param key
  *            the key whichs value should be set
@@ -797,8 +797,8 @@ GENTICS.Aloha.Table.prototype.set = function(key, value) {
  * replaces the td-elements with equivalent GENTICS.Aloha.Table.Cell-elements
  * with attached events.
  * Furthermore it creates wrapping divs to realize a click-area for row- and
- * column selection and also attaches events. 
- * 
+ * column selection and also attaches events.
+ *
  * @return void
  */
 GENTICS.Aloha.Table.prototype.activate = function() {
@@ -806,7 +806,7 @@ GENTICS.Aloha.Table.prototype.activate = function() {
 		return;
 	}
 	var that = this;
-	
+
 	// alter the table attributes
 	this.obj.addClass(this.get('className'));
 	this.obj.contentEditable(false);
@@ -826,7 +826,7 @@ GENTICS.Aloha.Table.prototype.activate = function() {
 			}
 		}
 	});
-	
+
 	// handle click event of the table
 //	this.obj.bind('click', function(e){
 //		// stop bubbling the event to the outer divs, a click in the table
@@ -834,7 +834,7 @@ GENTICS.Aloha.Table.prototype.activate = function() {
 //		e.stopPropagation();
 //		return false;
 //	});
-	
+
 	this.obj.bind('mousedown', function(jqEvent) {
 		// focus the table if not already done
 		if (!that.hasFocus) {
@@ -850,13 +850,13 @@ GENTICS.Aloha.Table.prototype.activate = function() {
 //			// move focus in first cell
 //			that.obj.cells[0].wrapper.get(0).focus();
 //		}, 0);
-		
+
 		// stop bubbling and default-behaviour
 		jqEvent.stopPropagation();
 		jqEvent.preventDefault();
 		return false;
 	});
-	
+
 	// ### create a wrapper for the table (@see HINT below)
 	// wrapping div for the table to suppress the display of the resize-controls of
 	// the editable divs within the cells
@@ -875,32 +875,32 @@ GENTICS.Aloha.Table.prototype.activate = function() {
 	var htmlTableWrapper = this.obj.parents('.' + this.get('classTableWrapper'));
 	htmlTableWrapper.get(0).onresizestart   = function(e) { return false; };
 	htmlTableWrapper.get(0).oncontrolselect = function(e) { return false; };
-	
+
 	this.tableWrapper     = this.obj.parents('.' + this.get('classTableWrapper')).get(0);
-	
+
 	jQuery(this.cells).each(function () {
 		this.activate();
 	});
-	
+
 	// after the cells where replaced with contentEditables ... add selection cells
-	// first add the additional columns on the left side 
+	// first add the additional columns on the left side
 	this.attachSelectionColumn();
 	// then add the additional row at the top
 	this.attachSelectionRow();
-	
+
 	// attach events for the last cell
 	this.attachLastCellEvents();
 
 	// make the caption editable
-	
+
 	this.makeCaptionEditable();
 
 	// check WAI status
 	this.checkWai();
-	
+
 	// set flag, that the table is activated
 	this.isActive = true;
-	
+
 	// throw a new event when the table has been activated
 	GENTICS.Aloha.EventRegistry.trigger(
 			new GENTICS.Aloha.Event(
@@ -938,7 +938,7 @@ GENTICS.Aloha.Table.prototype.checkWai = function() {
 /**
  * Add the selection-column to the left side of the table and attach the events
  * for selection rows
- * 
+ *
  * @return void
  */
 GENTICS.Aloha.Table.prototype.attachSelectionColumn = function() {
@@ -956,10 +956,10 @@ GENTICS.Aloha.Table.prototype.attachSelectionColumn = function() {
 		columnToInsert.addClass(this.get('classSelectionColumn'));
 		columnToInsert.css('width', this.get('selectionArea') + 'px');
 		rowObj.find('td:first').before(columnToInsert);
-		
+
 		// rowIndex + 1 because an addtional row is still added
 		var rowIndex = i + 1;
-		
+
 		// this method sets the selection-events to the cell
 		this.attachRowSelectionEventsToCell(columnToInsert);
 	}
@@ -967,27 +967,27 @@ GENTICS.Aloha.Table.prototype.attachSelectionColumn = function() {
 
 /**
  * Binds the needed selection-mouse events to the given cell
- * 
+ *
  * @param cell
  *            The jquery object of the table-data field
  * @return void
  */
 GENTICS.Aloha.Table.prototype.attachRowSelectionEventsToCell = function(cell){
 	var that = this;
-	
+
 	// unbind eventually existing events of this cell
 	cell.unbind('mousedown');
 	cell.unbind('mouseover');
 
 	// prevent ie from selecting the contents of the table
 	cell.get(0).onselectstart = function() { return false; };
-	
+
 	cell.bind('mousedown', function(e){
 		// set flag that the mouse is pressed
 		that.mousedown = true;
 		return that.rowSelectionMouseDown(e);
 	});
-	
+
 	cell.bind('mouseover', function(e){
 		// only select more crows if the mouse is pressed
 		if ( that.mousedown ) {
@@ -998,7 +998,7 @@ GENTICS.Aloha.Table.prototype.attachRowSelectionEventsToCell = function(cell){
 
 /**
  * Mouse-Down event for the selection-cells on the left side of the table
- * 
+ *
  * @param jqEvent
  *            the jquery-event object
  * @return void
@@ -1007,18 +1007,18 @@ GENTICS.Aloha.Table.prototype.rowSelectionMouseDown = function (jqEvent) {
 
 	// focus the table (if not already done)
 	this.focus();
-	
+
 	// if no cells are selected, reset the selection-array
 	if (GENTICS.Aloha.TableHelper.selectedCells.length == 0) {
 		this.rowsToSelect = new Array();
 	}
-	
+
 	// set the origin-rowId of the mouse-click
 	this.clickedRowId = jqEvent.currentTarget.parentNode.rowIndex;
-	
+
 	// set single column selection
 	if (jqEvent.metaKey) {
-		var arrayIndex = jQuery.inArray(this.clickedRowId, this.rowsToSelect); 
+		var arrayIndex = jQuery.inArray(this.clickedRowId, this.rowsToSelect);
 		if (arrayIndex >= 0) {
 			this.rowsToSelect.splice(arrayIndex, 1);
 		}else{
@@ -1037,21 +1037,21 @@ GENTICS.Aloha.Table.prototype.rowSelectionMouseDown = function (jqEvent) {
 		for (var i = start; i <= end; i++) {
 			this.rowsToSelect.push(i);
 		}
-	// single column	
+	// single column
 	} else {
 		this.rowsToSelect = [this.clickedRowId];
 	}
-	
-	// mark the selection visual 
+
+	// mark the selection visual
 	this.selectRows();
-	
+
 	// prevent browser from selecting the table
 	jqEvent.preventDefault();
-	
+
 	// stop bubble, otherwise the mousedown of the table is called ...
 	jqEvent.stopPropagation();
-	
-	// prevent ff/chrome/safare from selecting the contents of the table 
+
+	// prevent ff/chrome/safare from selecting the contents of the table
 	return false;
 };
 
@@ -1059,56 +1059,56 @@ GENTICS.Aloha.Table.prototype.rowSelectionMouseDown = function (jqEvent) {
  * The mouse-over event for the selection-cells on the left side of the table.
  * On mouse-over check which column was clicked, calculate the span between
  * clicked and mouse-overed cell and mark them as selected
- * 
+ *
  * @param jqEvent
  *            the jquery-event object
  * @return void
  */
 GENTICS.Aloha.Table.prototype.rowSelectionMouseOver = function (jqEvent) {
-	var rowIndex = jqEvent.currentTarget.parentNode.rowIndex; 
-	
+	var rowIndex = jqEvent.currentTarget.parentNode.rowIndex;
+
 	// only select the row if the mouse was clicked and the clickedRowId isn't
 	// from the selection-row (row-id = 0)
 	if (this.mousedown && this.clickedRowId >= 0) {
-		
+
 		// select first cell
 //		var firstCell = this.obj.find('tr:nth-child(2) td:nth-child(2)').children('div[contenteditable=true]').get(0);
-//		jQuery(firstCell).get(0).focus();	
-		
+//		jQuery(firstCell).get(0).focus();
+
 		var indexInArray = jQuery.inArray(rowIndex, this.rowsToSelect);
-		
+
 		var start = (rowIndex < this.clickedRowId) ? rowIndex : this.clickedRowId;
 		var end = (rowIndex < this.clickedRowId) ? this.clickedRowId : rowIndex;
-		
+
 		this.rowsToSelect = new Array();
 		for (var i = start; i <= end; i++) {
 			this.rowsToSelect.push(i);
 		}
-		
+
 		// this actually selects the rows
 		this.selectRows();
-		
+
 		// prevent browser from selecting the table
 		jqEvent.preventDefault();
-		
+
 		// stop bubble, otherwise the mousedown of the table is called ...
 		jqEvent.stopPropagation();
-		
-		// prevent ff/chrome/safare from selecting the contents of the table 
+
+		// prevent ff/chrome/safare from selecting the contents of the table
 		return false;
 	}
 };
 
 /**
  * Binds the needed selection-mouse events to the given cell
- * 
+ *
  * @param cell
  *            The jquery object of the table-data field
  * @return void
  */
 GENTICS.Aloha.Table.prototype.attachSelectionRow = function() {
 	var that = this;
-	
+
 	// create an empty td
 	var emptyCell = jQuery('<td>');
 	emptyCell.html('\u00a0');
@@ -1120,7 +1120,7 @@ GENTICS.Aloha.Table.prototype.attachSelectionRow = function() {
 	selectionRow.css('height', this.get('selectionArea') + 'px');
 	for (var i = 0; i < numColumns; i++) {
 
-		var columnToInsert = emptyCell.clone();			
+		var columnToInsert = emptyCell.clone();
 		// the first cell should have no function, so only attach the events for
 		// the rest
 		if (i > 0) {
@@ -1133,17 +1133,17 @@ GENTICS.Aloha.Table.prototype.attachSelectionRow = function() {
 			this.wai.width(25);
 			this.wai.height(12);
 			this.wai.click( function(e) {
-				
+
 				// select Table
 				that.focus();
-				
+
 				// select first cell
 //				var firstCell = that.obj.find('tr:nth-child(2) td:nth-child(2)').children('div[contenteditable=true]').get(0);
 //				jQuery(firstCell).get(0).focus();
-				
+
 			    GENTICS.Aloha.FloatingMenu.userActivatedTab = GENTICS.Aloha.TablePlugin.i18n('floatingmenu.tab.table');
 				GENTICS.Aloha.FloatingMenu.doLayout();
-				
+
 				// jump in Summary field
 			    GENTICS.Aloha.TablePlugin.summary.focus();
 				e.stopPropagation();
@@ -1152,7 +1152,7 @@ GENTICS.Aloha.Table.prototype.attachSelectionRow = function() {
 			});
 			columnToInsert.append(this.wai);
 		}
-		
+
 		// add the cell to the row
 		selectionRow.append(columnToInsert);
 	}
@@ -1167,28 +1167,28 @@ GENTICS.Aloha.Table.prototype.attachSelectionRow = function() {
 
 /**
  * Binds the events for the column selection to the given cell.
- * 
+ *
  * @param cell
  *            the jquery object of the td-field
  * @return void
  */
 GENTICS.Aloha.Table.prototype.attachColumnSelectEventsToCell = function (cell) {
 	var that = this;
-	
+
 	// unbind eventually existing events of this cell
 	cell.unbind('mousedown');
 	cell.unbind('mouseover');
-	
+
 	// prevent ie from selecting the contents of the table
 	cell.get(0).onselectstart = function() { return false; };
-	
+
 	cell.bind('mousedown',  function(e) {
 		// set the mousedown flag
 		that.mousedown = true;
 		that.columnSelectionMouseDown(e);
 
 	});
-	
+
 	cell.bind('mouseover', function (e) {
 		// only select more crows if the mouse is pressed
 		if ( that.mousedown ) {
@@ -1201,7 +1201,7 @@ GENTICS.Aloha.Table.prototype.attachColumnSelectEventsToCell = function (cell) {
  * Mouse-down event for a columns-selection cell. It adds the index of the
  * clicked column to the "columnsToSelect"-Array and calls the method which
  * selects the column.
- * 
+ *
  * @param jqEvent
  *            the jquery event-object
  * @return void
@@ -1209,20 +1209,20 @@ GENTICS.Aloha.Table.prototype.attachColumnSelectEventsToCell = function (cell) {
 GENTICS.Aloha.Table.prototype.columnSelectionMouseDown = function (jqEvent) {
 
 	this.focus();
-	
+
 	// select first cell
 //	var firstCell = this.obj.find('tr:nth-child(2) td:nth-child(2)').children('div[contenteditable=true]').get(0);
-//	jQuery(firstCell).get(0).focus();	
+//	jQuery(firstCell).get(0).focus();
 
 	// if no cells are selected, reset the selection-array
 	if (GENTICS.Aloha.TableHelper.selectedCells.length == 0) {
 		this.columnsToSelect = new Array();
 	}
-	
+
 	// store the id of the column which has been originally clicked
 	this.clickedColumnId = jqEvent.currentTarget.cellIndex;
 	if (jqEvent.metaKey) {
-		var arrayIndex = jQuery.inArray(this.clickedColumnId, this.columnsToSelect); 
+		var arrayIndex = jQuery.inArray(this.clickedColumnId, this.columnsToSelect);
 		if (arrayIndex >= 0) {
 			this.columnsToSelect.splice(arrayIndex, 1);
 		}else{
@@ -1243,17 +1243,17 @@ GENTICS.Aloha.Table.prototype.columnSelectionMouseDown = function (jqEvent) {
 	}else{
 		this.columnsToSelect = [this.clickedColumnId];
 	}
-	
+
 	// this does actually the column-selection.
 	// it reads the columns which should be selected from "columnsToSelect"
 	this.selectColumns();
-	
+
 	// prevent browser from selecting the table
 	jqEvent.preventDefault();
-	
+
 	// stop bubble, otherwise the mousedown of the table is called ...
 	jqEvent.stopPropagation();
-	
+
 	return false;
 };
 
@@ -1261,7 +1261,7 @@ GENTICS.Aloha.Table.prototype.columnSelectionMouseDown = function (jqEvent) {
  * Mouseover-event for the column-selection cell. This method calcluates the
  * span between the clicked column and the mouse-overed cell and selects the
  * columns inbetween. and mark them as selected
- * 
+ *
  * @param jqEvent
  *            the jquery-event object
  * @return void
@@ -1270,22 +1270,22 @@ GENTICS.Aloha.Table.prototype.columnSelectionMouseOver = function (jqEvent) {
 	var colIndex = jqEvent.currentTarget.cellIndex;
 	if (this.mousedown && this.clickedColumnId > 0) {
 		var indexInArray = jQuery.inArray(colIndex, this.columnsToSelect);
-		
+
 		var start = (colIndex < this.clickedColumnId) ? colIndex : this.clickedColumnId;
 		var end = (colIndex < this.clickedColumnId) ? this.clickedColumnId : colIndex;
-		
+
 		this.columnsToSelect = new Array();
 		for (var i = start; i <= end; i++) {
 			this.columnsToSelect.push(i);
 		}
-		
+
 		this.selectColumns();
 	}
 };
 
 /**
  * Unbinds all events of the last cell
- * 
+ *
  * @return void
  */
 GENTICS.Aloha.Table.prototype.releaseLastCellEvents = function() {
@@ -1294,7 +1294,7 @@ GENTICS.Aloha.Table.prototype.releaseLastCellEvents = function() {
 
 /**
  * Attach a keydown-event for the last cell
- * 
+ *
  * @see GENTICS.Aloha.Table.lastCellKeyDown
  * @return void
  */
@@ -1309,24 +1309,24 @@ GENTICS.Aloha.Table.prototype.attachLastCellEvents = function() {
  * If the tab-key was pressed in the last cell create a new row and jump into
  * the first cell of the next row.
  * Only add a new row if no addtional key was pressed (shift, alt, ctrl)
- * 
+ *
  * @param jqEvent
  *            the jquery-event object
  * @return
  */
 GENTICS.Aloha.Table.prototype.lastCellKeyDown = function(jqEvent) {
 	var KEYCODE_TAB = 9;
-	
+
 	// only add a row on a single key-press of tab (so check if alt-, shift- or
 	// ctrl-key are NOT pressed)
 	if (KEYCODE_TAB == jqEvent.keyCode && !jqEvent.altKey && !jqEvent.shiftKey && !jqEvent.ctrlKey) {
 		// add a row after the current row (false stands for not highlighting the new row)
 		this.addRowsAfter(false);
-		
+
 		// stop propagation because this should overwrite all other events
 		jqEvent.stopPropagation();
-		
-		// for ie make a special case ... focus the first cell of the new row 
+
+		// for ie make a special case ... focus the first cell of the new row
 		if (jQuery.browser.msie) {
 			this.obj.find('tr:last td:nth-child(1) div.GENTICS_Table_Cell_editable').get(0).focus();
 			return false;
@@ -1338,31 +1338,31 @@ GENTICS.Aloha.Table.prototype.lastCellKeyDown = function(jqEvent) {
  * Deletes the selected rows. If no row are selected, delete the row, where the
  * cursor is positioned. If all rows of the table should be deleted, the whole
  * table is deletet and removed from the tableRegistry.
- * 
+ *
  * @return void
  */
 GENTICS.Aloha.Table.prototype.deleteRows = function() {
 	var rowIDs = new Array();
-	
+
 	// flag if the table should be deleted
 	var deleteTable = false;
-	
+
 	// if a selection was made, delete the selected cells
 	if (GENTICS.Aloha.TableHelper.selectedCells.length > 0) {
 		for (var i = 0; i < GENTICS.Aloha.TableHelper.selectedCells.length; i++) {
 			rowIDs.push(GENTICS.Aloha.TableHelper.selectedCells[i][0].parentNode.rowIndex);
 		}
-	
-	// if no rows were selected, delete the row, where the cursor is placed in 
+
+	// if no rows were selected, delete the row, where the cursor is placed in
 	}else if (typeof GENTICS.Aloha.Table.Cell.lastActiveCell != 'undefined') {
 		rowIDs.push(GENTICS.Aloha.Table.Cell.lastActiveCell.obj.context.parentNode.rowIndex);
 	}
-	
-	// if all rows should be deleted, set flag to remove the WHOLE table 
+
+	// if all rows should be deleted, set flag to remove the WHOLE table
 	if (rowIDs.length == this.numRows) {
 		deleteTable = true;
 	}
-	
+
 	// delete the whole table
 	if (deleteTable) {
 		var that = this;
@@ -1374,7 +1374,7 @@ GENTICS.Aloha.Table.prototype.deleteRows = function() {
 				if (sel == 'yes') {
 					that.deleteTable();
 				}
-			} 
+			}
 		}));
 	} else {
 		rowIDs.sort(function(a,b){return a - b;});
@@ -1383,14 +1383,14 @@ GENTICS.Aloha.Table.prototype.deleteRows = function() {
 		if (focusRowId > (this.numRows - rowIDs.length)) {
 			focusRowId --;
 		}
-		
+
 		// release the events of the last cell
 		this.releaseLastCellEvents();
-		
+
 		// get all rows
 		var rows = this.obj.find('tr');
 		var rows2delete = new Array();
-		
+
 		// build the array with the row-ids of th rows which should be deleted
 		for (var i = 0; i < rowIDs.length; i++) {
 			rows2delete.push(jQuery(rows[rowIDs[i]]));
@@ -1408,24 +1408,24 @@ GENTICS.Aloha.Table.prototype.deleteRows = function() {
 				}
 			}
 		}
-		
+
 		// remove the rows
 		for (var i = 0; i < rows2delete.length; i++) {
 			rows2delete[i].remove();
 		}
-		
+
 		// reduce the attribute storing the number of rows in the table
 		this.numRows -= rows2delete.length;
-		
+
 		if (jQuery.browser.msie){
 			setTimeout(this.obj.find('tr:nth-child(' + (focusRowId + 1) + ') td:nth-child(2) div.GENTICS_Table_Cell_editable').get(0).focus, 5);
 		}else{
 			this.obj.find('tr:nth-child(' + (focusRowId + 1) + ') td:nth-child(2) div.GENTICS_Table_Cell_editable').get(0).focus();
 		}
-		
+
 		// re-attach the events for the last cell
 		this.attachLastCellEvents();
-		
+
 		// finally unselect the marked cells
 		GENTICS.Aloha.TableHelper.unselectCells();
 	}
@@ -1435,31 +1435,31 @@ GENTICS.Aloha.Table.prototype.deleteRows = function() {
  * Deletes the selected columns. If no columns are selected, delete the column, where the
  * cursor is positioned. If all columns of the table should be deleted, the whole
  * table is deleted from the dom and removed from the tableRegistry.
- * 
+ *
  * @return void
  */
 GENTICS.Aloha.Table.prototype.deleteColumns = function() {
 	var colIDs = new Array();
-	
+
 	// flag if the table should be deleted
 	var deleteTable = false;
-	
+
 	// if a selection was made, delete the selected cells
 	if (GENTICS.Aloha.TableHelper.selectedCells.length > 0) {
 		for (var i = 0; i < GENTICS.Aloha.TableHelper.selectedCells[0].length; i++) {
 			colIDs.push(GENTICS.Aloha.TableHelper.selectedCells[0][i].cellIndex);
 		}
-	
-	// if no columns were selected, delete the column, where the cursor is placed in 
+
+	// if no columns were selected, delete the column, where the cursor is placed in
 	}else if (typeof GENTICS.Aloha.Table.Cell.lastActiveCell != 'undefined') {
 		colIDs.push(GENTICS.Aloha.Table.Cell.lastActiveCell.obj.context.cellIndex);
 	}
-	
-	// if all columns should be deleted, set flag to remove the WHOLE table 
+
+	// if all columns should be deleted, set flag to remove the WHOLE table
 	if (colIDs.length == this.numCols) {
 		deleteTable = true;
 	}
-	
+
 	// delete the whole table
 	if (deleteTable) {
 		var that = this;
@@ -1471,7 +1471,7 @@ GENTICS.Aloha.Table.prototype.deleteColumns = function() {
 				if (sel == 'yes') {
 					that.deleteTable();
 				}
-			} 
+			}
 		}));
 	} else {
 		colIDs.sort(function(a,b){return a - b;});
@@ -1480,14 +1480,14 @@ GENTICS.Aloha.Table.prototype.deleteColumns = function() {
 		if (focusColID > (this.numCols - colIDs.length)) {
 			focusColID --;
 		}
-		
+
 		// release the events of the last cell
 		this.releaseLastCellEvents();
-		
-		// get all rows to iterate 
+
+		// get all rows to iterate
 		var rows = this.obj.find('tr');
 		var cols2delete = new Array();
-		
+
 		// build the array with the row-ids of th rows which should be deleted
 		for (var i = 0; i < rows.length; i++) {
 			var cells = jQuery(rows[i]).children("td").toArray();
@@ -1495,7 +1495,7 @@ GENTICS.Aloha.Table.prototype.deleteColumns = function() {
 				cols2delete.push(cells[colIDs[j]]);
 			}
 		}
-		
+
 		// delete cells from cells-array
 		for (var i = 0; i < cols2delete.length; i ++) {
 			for (var j = 0; j < this.cells.length; j++) {
@@ -1505,31 +1505,31 @@ GENTICS.Aloha.Table.prototype.deleteColumns = function() {
 				}
 			}
 		}
-		
+
 		// remove the columns
 		for (var i = 0; i < cols2delete.length; i++) {
 			jQuery(cols2delete[i]).remove();
 		}
-		
+
 		// reduce the attribute storing the number of rows in the table
 		this.numCols -= colIDs.length;
-		
+
 		if (jQuery.browser.msie){
 			setTimeout(this.obj.find('tr:nth-child(2) td:nth-child(' + (focusColID + 1) + ') div.GENTICS_Table_Cell_editable').get(0).focus, 5);
 		}else{
 			this.obj.find('tr:nth-child(2) td:nth-child(' + (focusColID + 1) + ') div.GENTICS_Table_Cell_editable').get(0).focus();
 		}
-		
+
 		// re-attach the events for the last cell
 		this.attachLastCellEvents();
-		
+
 		GENTICS.Aloha.TableHelper.unselectCells();
 	}
 };
 
 /**
  * Deletes the table from the dom and remove it from the tableRegistry.
- * 
+ *
  * @return void
  */
 GENTICS.Aloha.Table.prototype.deleteTable = function() {
@@ -1564,7 +1564,7 @@ GENTICS.Aloha.Table.prototype.deleteTable = function() {
 
 /**
  * Wrapper function for this.addRow to add a row before the active row
- * 
+ *
  * @param highlightNewRows flag if the newly created rows should be marked as selected
  * @see GENTICS.Aloha.Table.prototype.addRow
  * @return
@@ -1575,7 +1575,7 @@ GENTICS.Aloha.Table.prototype.addRowsBefore = function(highlightNewRows) {
 
 /**
  * Wrapper function for this.addRow to add a row after the active row
- * 
+ *
  * @param highlightNewRows flag if the newly created rows should be marked as selected
  * @see GENTICS.Aloha.Table.prototype.addRow
  * @return
@@ -1589,7 +1589,7 @@ GENTICS.Aloha.Table.prototype.addRowsAfter = function(highlightNewRows) {
  * inserted before/after the first/last selected row. If no rows are selected, a
  * new row will be inserted before/after the row of the currently selected cell.
  * As well the row-selection events have to be bound again.
- * 
+ *
  * @param position
  *            could be 'after' or 'before'. defines the position where the new
  *            rows should be inserted
@@ -1601,19 +1601,19 @@ GENTICS.Aloha.Table.prototype.addRows = function(position, highlightNewRows) {
 	if (typeof GENTICS.Aloha.TablePlugin.activeTable != 'undefined') {
 		// release listening events of the last cell
 		this.releaseLastCellEvents();
-		
+
 		var that = this;
 		var numCols = this.numCols;
-		
+
 		// number of rows to insert
 		var rowsToInsert = 1;
 		// index where new rows should be inserted
 		var rowId = 1;
-		
-		// if rows were selected take the amount of selected cells for the new rows 
+
+		// if rows were selected take the amount of selected cells for the new rows
 		if (GENTICS.Aloha.TableHelper.selectedCells.length > 0) {
 			rowsToInsert = GENTICS.Aloha.TableHelper.selectedCells.length;
-			
+
 			// get the index where the new rows should be inserted
 			switch (position) {
 				case 'before':
@@ -1628,12 +1628,12 @@ GENTICS.Aloha.Table.prototype.addRows = function(position, highlightNewRows) {
 					}
 					break;
 			}
-		
+
 		// no rows selected, insert 1 new row before/after the row of the last active cell
 		}else if (typeof GENTICS.Aloha.Table.Cell.lastActiveCell != 'undefined') {
 			rowId = GENTICS.Aloha.Table.Cell.lastActiveCell.obj.context.parentNode.rowIndex;
 		}
-		
+
 		// the new row index for the created row
 		var newRowIndex = rowId;
 		// if the new rows should be inserted after the last selected row
@@ -1641,29 +1641,29 @@ GENTICS.Aloha.Table.prototype.addRows = function(position, highlightNewRows) {
 		if (position == 'after') {
 			newRowIndex += 1;
 		}
-		
+
 		var rowIdArray = new Array();
 		for (var j = 0; j < rowsToInsert; j++) {
 			rowIdArray.push(newRowIndex);
 			var insertionRow = jQuery('<tr>');
-			
+
 			// create the first column, the "select row" column
 			var selectionColumn = jQuery('<td>');
 			selectionColumn.addClass(this.get('classSelectionColumn'));
 			this.attachRowSelectionEventsToCell(selectionColumn);
 			insertionRow.append(selectionColumn);
-			
+
 			for (i = 0; i < numCols; i++) {
 				var newCol = jQuery('<td>');
 				newCol.html('\u00a0');
 				var cell = new GENTICS.Aloha.Table.Cell(newCol.get(0), GENTICS.Aloha.TablePlugin.activeTable);
 				cell.activate();
 				this.cells.push(cell);
-				
+
 				insertionRow.append(cell.obj);
 			}
-			
-			
+
+
 			var currentRow = jQuery(GENTICS.Aloha.TablePlugin.activeTable.obj.find("tr").get(rowId));
 
 			switch (position) {
@@ -1680,12 +1680,12 @@ GENTICS.Aloha.Table.prototype.addRows = function(position, highlightNewRows) {
 			this.numRows ++;
 		}
 		GENTICS.Aloha.TableHelper.unselectCells();
-		
+
 		this.rowsToSelect = rowIdArray;
 		if (highlightNewRows) {
 			this.selectRows();
 		}
-		
+
 		// re-attach events of the last cell
 		this.attachLastCellEvents();
 	}
@@ -1693,7 +1693,7 @@ GENTICS.Aloha.Table.prototype.addRows = function(position, highlightNewRows) {
 
 /**
  * Wrapper method to add columns on the right side
- * 
+ *
  * @see GENTICS.Aloha.Table.addColumns
  * @return void
  */
@@ -1703,7 +1703,7 @@ GENTICS.Aloha.Table.prototype.addColumnsRight = function () {
 
 /**
  * Wrapper method to add columns on the left side
- * 
+ *
  * @see GENTICS.Aloha.Table.addColumns
  * @return void
  */
@@ -1716,8 +1716,8 @@ GENTICS.Aloha.Table.prototype.addColumnsLeft = function() {
  * columns are selected, the amount of selected columns will be inserted on the
  * 'right' or 'left' side. If no cells are selected, 1 new column will be
  * inserted before/after the column of the last active cell.
- * As well all column-selection events must be bound to the firsts row-cell. 
- * 
+ * As well all column-selection events must be bound to the firsts row-cell.
+ *
  * @param position
  *            could be 'left' or 'right'. defines the position where the new
  *            columns should be inserted
@@ -1727,15 +1727,15 @@ GENTICS.Aloha.Table.prototype.addColumns = function (position) {
 	if (typeof GENTICS.Aloha.TablePlugin.activeTable != 'undefined') {
 		// release listening events of the last cell
 		this.releaseLastCellEvents();
-		
+
 		var that = this;
-		
+
 		// amount of columns to insert
 		var columnsToInsert = 1;
 		// index of the column from where the new columns should be inserted
 		var colId = 1;
-		
-		// if columns are selected, get the column-index of the column on the left/right selected end 
+
+		// if columns are selected, get the column-index of the column on the left/right selected end
 		if (GENTICS.Aloha.TableHelper.selectedCells.length > 0) {
 			columnsToInsert = GENTICS.Aloha.TableHelper.selectedCells[0].length;
 			switch (position) {
@@ -1755,31 +1755,31 @@ GENTICS.Aloha.Table.prototype.addColumns = function (position) {
 		}else if (typeof GENTICS.Aloha.Table.Cell.lastActiveCell != 'undefined') {
 			colId = GENTICS.Aloha.Table.Cell.lastActiveCell.obj.context.cellIndex;
 		}
-		
+
 		// the new col index for the created column
 		var newColId = colId;
-		
+
 		var emptyCell = jQuery('<td>');
 		var rows = this.obj.find('tr');
 		var colIdArray = new Array();
 		for (var i = 0; i < rows.length; i++){
 			var currentColId = newColId;
 			var row = rows[i];
-			
+
 			for (var j = 0; j < columnsToInsert; j++) {
 				var cell = emptyCell.clone();
 				cell.html('\u00a0');
-				// this is the first row, so make a column-selection cell 
+				// this is the first row, so make a column-selection cell
 				if (i == 0) {
 					this.attachColumnSelectEventsToCell(cell);
-					
+
 				}else{
 					cellObj = new GENTICS.Aloha.Table.Cell(cell.get(0), GENTICS.Aloha.TablePlugin.activeTable);
 					this.cells.push(cellObj);
 					cellObj.activate();
 					cell = cellObj.obj;
 				}
-				
+
 				var insertionColumn = jQuery(jQuery(row).find("td").get(newColId));
 				switch (position) {
 					case 'left':
@@ -1802,7 +1802,7 @@ GENTICS.Aloha.Table.prototype.addColumns = function (position) {
 		GENTICS.Aloha.TableHelper.unselectCells();
 		this.columnsToSelect = colIdArray;
 		this.selectColumns();
-		
+
 		// re-attach events of the last cell
 		this.attachLastCellEvents();
 	}
@@ -1810,7 +1810,7 @@ GENTICS.Aloha.Table.prototype.addColumns = function (position) {
 
 /**
  * Helper method to set the focus-attribute of the table to true
- * 
+ *
  * @return void
  */
 GENTICS.Aloha.Table.prototype.focus = function() {
@@ -1818,7 +1818,7 @@ GENTICS.Aloha.Table.prototype.focus = function() {
 		if (!this.parentEditable.isActive) {
 			this.parentEditable.obj.focus();
 		}
-		
+
 		GENTICS.Aloha.TablePlugin.setFocusedTable(this);
 
 		// select first cell
@@ -1827,17 +1827,17 @@ GENTICS.Aloha.Table.prototype.focus = function() {
 //		jQuery(firstCell).get(0).focus();
 
 	}
-	
+
 	// TODO workaround - fix this. the selection is updated later on by the browser
 	// using setTimeout here is hideous, but a simple execution-time call will fail
 // DEACTIVATED by Haymo prevents selecting rows
 //	setTimeout('GENTICS.Aloha.Selection.updateSelection(false, true)', 50);
-	
+
 };
 
 /**
  * Helper method to set the focus-attribute of the table to false
- * 
+ *
  * @return void
  */
 GENTICS.Aloha.Table.prototype.focusOut = function() {
@@ -1849,13 +1849,13 @@ GENTICS.Aloha.Table.prototype.focusOut = function() {
 
 /**
  * Marks all cells of the specified column as marked (adds a special class)
- * 
+ *
  * @return void
  */
 GENTICS.Aloha.Table.prototype.selectColumns = function() {
 	// get the class which selected cells should have
 	var selectClass = this.get('classCellSelected');
-	
+
 	// unselect selected cells
 	GENTICS.Aloha.TableHelper.unselectCells();
 
@@ -1870,7 +1870,7 @@ GENTICS.Aloha.Table.prototype.selectColumns = function() {
 	var toSelect = new Array();
 	for (var i = 0; i < rows.length; i++){
 		var rowCells = rows[i].cells;
-		
+
 		var selectedCellsInCol = new Array();
 		for (var j = 0; j < this.columnsToSelect.length; j++) {
 			var colIndex = this.columnsToSelect[j];
@@ -1890,24 +1890,24 @@ GENTICS.Aloha.Table.prototype.selectColumns = function() {
 
 /**
  * Marks all cells of the specified row as marked (adds a special class)
- * 
+ *
  * @return void
  */
 GENTICS.Aloha.Table.prototype.selectRows = function() {
 	// get the class which selected cells should have
 	var selectClass = this.get('classCellSelected');
-	
+
 	// unselect selected cells
 	GENTICS.Aloha.TableHelper.unselectCells();
 	this.rowsToSelect.sort(function(a,b){return a - b;});
-	
+
 	for (var i = 0; i < this.rowsToSelect.length; i++) {
 		var rowId = this.rowsToSelect[i];
 		var rowCells = jQuery(this.obj.find('tr').get(rowId).cells).toArray();
 
 		// shift the first element (which is a selection-helper cell)
 		rowCells.shift();
-		
+
 		GENTICS.Aloha.TableHelper.selectedCells.push(rowCells);
 		jQuery(rowCells).addClass(this.get('classCellSelected'));
 	}
@@ -1922,7 +1922,7 @@ GENTICS.Aloha.Table.prototype.selectRows = function() {
 /**
  * Deactivation of a Aloha-Table. Clean up ... remove the wrapping div and the
  * selection-helper divs
- * 
+ *
  * @return void
  */
 GENTICS.Aloha.Table.prototype.deactivate = function() {
@@ -1945,7 +1945,7 @@ GENTICS.Aloha.Table.prototype.deactivate = function() {
 	jQuery.each(this.obj.context.rows, function(){
 		jQuery(this).children('td.' + that.get('classSelectionColumn')).remove();
 	});
-	
+
 	// remove the "selection class" from all td and th in the table
 	this.obj.find('td, th').removeClass(this.get('classCellSelected'));
 	this.obj.unbind();
@@ -1966,7 +1966,7 @@ GENTICS.Aloha.Table.prototype.deactivate = function() {
 
 /**
  * toString-method for GENTICS.Aloha.Table object
- * 
+ *
  * @return void
  */
 GENTICS.Aloha.Table.prototype.toString = function() {
@@ -1985,7 +1985,7 @@ GENTICS.Aloha.Table.prototype.toString = function() {
  * The constructor for the Cell-Objects takes a DOM td-object, attaches
  * events, adds an wrapper into the cell and returns the modified td-object as
  * DOM representation
- * 
+ *
  * @param originalTd
  *            The original td-field which should will be transformed
  * @param colId
@@ -1994,7 +1994,7 @@ GENTICS.Aloha.Table.prototype.toString = function() {
  *            the internal id of the corresponding row (begin with 0)
  * @param tableObj
  *            GENTICS.Aloha.Table-Object which contains the cell
- * 
+ *
  * @return the created table-data field as DOM-representation
  */
 GENTICS.Aloha.Table.Cell = function(originalTd, tableObj) {
@@ -2004,7 +2004,7 @@ GENTICS.Aloha.Table.Cell = function(originalTd, tableObj) {
 /* -- ATTRIBUTES -- */
 /**
  * Reference to the jQuery-representation of the wrapping table
- * 
+ *
  * @see GENTICS.Aloha.Table.Cell.table
  */
 GENTICS.Aloha.Table.Cell.prototype.tableObj = undefined;
@@ -2040,7 +2040,7 @@ GENTICS.Aloha.Table.Cell.lastActiveCell = undefined;
  * Focus method for the contentediable div within a table data-field. The method
  * requires the event-property Cell as a GENTICS.Aloha.Table.Cell object. If the
  * Cell wasn't activated yet it does all relevant actions to activate the cell.
- * 
+ *
  * @param e
  *            the jquery event object
  * @return void
@@ -2050,10 +2050,10 @@ GENTICS.Aloha.Table.Cell.prototype.editableFocus = function(e) {
 	if (!this.hasFocus) {
 		// set an internal flag to focus the table
 		this.tableObj.focus();
-		
+
 		// set the clicked cell active as the active cell
 		GENTICS.Aloha.Table.Cell.activeCell = this;
-		
+
 		// set the clicked cell active as the last active cell (the difference
 		// to activeCell is that lastActiveCell won't be reset on blur)
 		GENTICS.Aloha.Table.Cell.lastActiveCell = this;
@@ -2079,7 +2079,7 @@ GENTICS.Aloha.Table.Cell.prototype.editableFocus = function(e) {
  * requires the event-property Cell as a GENTICS.Aloha.Table.Cell object. It
  * sets the hasFocus flag of the cell to false and removes the "active"
  * css-class.
- * 
+ *
  * @param jqEvent
  *            the jquery event object
  * @return void
@@ -2090,7 +2090,7 @@ GENTICS.Aloha.Table.Cell.prototype.editableBlur = function(jqEvent){
 
 	// reset the focus of the cell
 	this.hasFocus = false;
-	
+
 	// remove "active class"
 	this.obj.removeClass('GENTICS_Table_Cell_active');
 };
@@ -2115,16 +2115,16 @@ GENTICS.Aloha.Table.Cell.prototype.activate = function() {
 				return -1;
 			};
 		}
-		that.editableFocus(jqEvent);     
+		that.editableFocus(jqEvent);
 	});
-	wrapper.bind('mousedown', function(jqEvent) { 
+	wrapper.bind('mousedown', function(jqEvent) {
 		// ugly workaround for ext-js-adapter problem in ext-jquery-adapter-debug.js:1020
 		if (jqEvent.currentTarget) {
 			jqEvent.currentTarget.indexOf = function () {
 				return -1;
 			};
 		}
-		that.editableMouseDown(jqEvent); 
+		that.editableMouseDown(jqEvent);
 	});
 	wrapper.bind('blur',      function(jqEvent) { that.editableBlur(jqEvent);      });
 	wrapper.bind('keyup',     function(jqEvent) { that.editableKeyUp(jqEvent);     });
@@ -2140,28 +2140,28 @@ GENTICS.Aloha.Table.Cell.prototype.activate = function() {
 		setTimeout(function() {
 			that.wrapper.trigger('focus');
 		}, 1);
-		
+
 		// unselect cells
 		GENTICS.Aloha.TableHelper.unselectCells();
-		
+
 		jqEvent.stopPropagation();
 	});
 	this.obj.get(0).onselectstart = function (jqEvent) { return false; };
-	
-	
+
+
 	// set contenteditable wrapper div
 	this.wrapper = this.obj.children();
 	this.wrapper.get(0).onselectstart = function() {
 		window.event.cancelBubble = true;
 	};
-	
+
 	return this;
 };
 
 /**
  * The deactivate method removes the contenteditable helper div within the
  * table-data field and wraps the innerHtml to the outerHTML
- * 
+ *
  * @return void
  */
 GENTICS.Aloha.Table.Cell.prototype.deactivate = function() {
@@ -2170,18 +2170,18 @@ GENTICS.Aloha.Table.Cell.prototype.deactivate = function() {
 	if (wrapper.length) {
 		// get the inner html of the contenteditable div
 		var innerHtml = wrapper.html();
-		
+
 		// remove the contenteditable div and its attached events
 		wrapper.unbind();
 		wrapper.remove();
-		
+
 		// remove the click event of the
 		this.obj.unbind('click');
-		
+
 		if (jQuery.trim(this.obj.attr('class')) == '') {
 			this.obj.removeAttr('class');
 		}
-		
+
 		// set the inner html of the contenteditable div as html for the table-data
 		// field
 		this.obj.html(innerHtml);
@@ -2190,7 +2190,7 @@ GENTICS.Aloha.Table.Cell.prototype.deactivate = function() {
 
 /**
  * Native toString-method
- * 
+ *
  * @return string name of the namespace
  */
 GENTICS.Aloha.Table.Cell.prototype.toString = function() {
@@ -2199,7 +2199,7 @@ GENTICS.Aloha.Table.Cell.prototype.toString = function() {
 
 /**
  * Selects all inner-contens of an contentEditable-object
- * 
+ *
  * @param editableNode dom-representation of the editable node (div-element)
  * @return void
  */
@@ -2241,14 +2241,14 @@ GENTICS.Aloha.Table.Cell.prototype.selectAll = function(editableNode) {
 		r.moveToElementText(e);
 		r.select();
 	}
-	
+
 	GENTICS.Aloha.Selection.updateSelection(editableNode);
 };
 
 /**
  * The mouse-down event for the editable-div in the thd-field. Unselect all
  * cells when clicking on the editable-div.
- * 
+ *
  * @param jqEvent
  *            the jquery-event object
  * @return void
@@ -2256,7 +2256,7 @@ GENTICS.Aloha.Table.Cell.prototype.selectAll = function(editableNode) {
 GENTICS.Aloha.Table.Cell.prototype.editableMouseDown = function(jqEvent) {
 	// deselect all highlighted cells registered in the TableHelper object
 	GENTICS.Aloha.TableHelper.unselectCells();
-	
+
 	if (this.tableObj.hasFocus) {
 		jqEvent.stopPropagation();
 	}
@@ -2265,7 +2265,7 @@ GENTICS.Aloha.Table.Cell.prototype.editableMouseDown = function(jqEvent) {
 /**
  * The key-up event for the editable-div in the td-field. Just check if the div
  * is empty and insert an &nbsp;
- * 
+ *
  * @param jqEvent
  *            the jquery-event object
  * @return void
@@ -2278,7 +2278,7 @@ GENTICS.Aloha.Table.Cell.prototype.editableKeyUp = function(jqEvent) {
  * The key-down event for the ediable-div in the td-field. Check if the the div
  * is empty and insert an &nbsp. Furthermore if cells are selected, unselect
  * them.
- * 
+ *
  * @param jqEvent
  *            the jquery-event object
  * @return void
@@ -2297,7 +2297,7 @@ GENTICS.Aloha.Table.Cell.prototype.editableKeyDown = function(jqEvent) {
 		var KEYCODE_ARROWRIGHT = 39;
 		var KEYCODE_ARROWDOWN = 40;
 		switch (GENTICS.Aloha.TableHelper.selectionType) {
-			case 'row': 
+			case 'row':
 				switch(jqEvent.keyCode) {
 					case KEYCODE_ARROWUP:
 						var firstSelectedRow = GENTICS.Aloha.TableHelper.selectedCells[0][0].parentNode.rowIndex;
@@ -2314,9 +2314,9 @@ GENTICS.Aloha.Table.Cell.prototype.editableKeyDown = function(jqEvent) {
 						break;
 				}
 				this.tableObj.selectRows();
-				
+
 				break;
-			case 'column': 
+			case 'column':
 				switch(jqEvent.keyCode) {
 					case KEYCODE_ARROWLEFT:
 						var firstColSelected = GENTICS.Aloha.TableHelper.selectedCells[0][0].cellIndex;
@@ -2333,7 +2333,7 @@ GENTICS.Aloha.Table.Cell.prototype.editableKeyDown = function(jqEvent) {
 						break;
 				}
 				this.tableObj.selectColumns();
-				
+
 				break;
 		}
 		jqEvent.stopPropagation();
@@ -2345,7 +2345,7 @@ GENTICS.Aloha.Table.Cell.prototype.editableKeyDown = function(jqEvent) {
 /**
  * The custom keyup event for a table-cell Checks if the cell is empty and
  * inserts a space (\u00a0)
- * 
+ *
  * @param e
  *            the event object which is given by jquery
  * @return void
@@ -2357,7 +2357,7 @@ GENTICS.Aloha.Table.Cell.prototype.checkForEmptyEvent = function(jqEvent) {
 
 	// get the editable contents
 	var text = this.wrapper.text();
-	
+
 	// if empty insert a blank space and blur and focus the wrapper
 	if (text == ''){
 		this.wrapper.text('\u00a0');
@@ -2399,7 +2399,7 @@ GENTICS.Aloha.Table.CreateLayer.prototype.parameters = {
 GENTICS.Aloha.Table.CreateLayer.prototype.config = new Object();
 
 /**
- * Flag wether the CreateLayer is currently visble or not 
+ * Flag wether the CreateLayer is currently visble or not
  */
 GENTICS.Aloha.Table.CreateLayer.prototype.visible = false;
 /* -- END ATTRIBUTES -- */
@@ -2408,12 +2408,12 @@ GENTICS.Aloha.Table.CreateLayer.prototype.visible = false;
 /**
  * This function checks if there is an create-table-layer. If no layer exists, it creates one and puts it into the configuration.
  * If the layer was already created it sets the position of the panel and shows it.
- * 
+ *
  * @return void
  */
 GENTICS.Aloha.Table.CreateLayer.prototype.show = function(){
 	var layer = this.get('layer');
-	
+
 	// create the panel if the layer doesn't exist
 	if (layer == null) {
 		this.create();
@@ -2428,7 +2428,7 @@ GENTICS.Aloha.Table.CreateLayer.prototype.show = function(){
 /**
  * Creates the div-layer which holds a table with the given number of rows and cols.
  * It sets click and mouseover-events to the table data fields
- * 
+ *
  * @return void
  */
 GENTICS.Aloha.Table.CreateLayer.prototype.create = function () {
@@ -2436,34 +2436,34 @@ GENTICS.Aloha.Table.CreateLayer.prototype.create = function () {
 	var layer = jQuery('<div></div>');
 	layer.id = this.get('elemId');
 	layer.addClass(this.get('className'));
-	
+
 	var table = jQuery('<table></table>');
-	table.css('width', (this.get('numX') + 6) * 15); 
+	table.css('width', (this.get('numX') + 6) * 15);
 	var tr;
 	var td;
-	
+
 	for (var i = 0; i < this.get('numY'); i++) {
 		tr = jQuery('<tr></tr>');
-		
+
 		for (var j = 0; j < this.get('numX'); j++) {
 			td = jQuery('<td>\u00a0</td>');
-			
+
 			if (i == 0 && j == 0) {
 				td.addClass('hover');
-			}	
-			
+			}
+
 			td.bind('mouseover', {rowId: i, colId: j}, function(e) {
 				that.handleMouseOver(e, table);
 			});
-			
+
 			td.bind('click', {rowId: i, colId: j}, function(e){
 				var rows = e.data.rowId + 1;
 				var cols = e.data.colId + 1;
-				
+
 				GENTICS.Aloha.TablePlugin.createTable(cols, rows);
 				that.hide();
 			});
-			
+
 			tr.append(td);
 		}
 		table.append(tr);
@@ -2500,10 +2500,10 @@ GENTICS.Aloha.Table.CreateLayer.prototype.handleMouseOver = function(e, table) {
 	var rowId = e.data.rowId;
 	var colId = e.data.colId;
 	var innerRows = table.find('tr');
-	
+
 	for (var n = 0; n <= innerRows.length; n++) {
 		var innerCells = jQuery(innerRows[n]).find('td');
-		
+
 		for (var k = 0; k <= innerCells.length; k++) {
 			if (n <= rowId && k <= colId) {
 				jQuery(innerCells[k]).addClass('hover');
@@ -2516,7 +2516,7 @@ GENTICS.Aloha.Table.CreateLayer.prototype.handleMouseOver = function(e, table) {
 
 /**
  * Sets the "left" and "top" style-attributes according to the clicked target-button
- * 
+ *
  *  @return void
  */
 GENTICS.Aloha.Table.CreateLayer.prototype.setPosition = function() {
@@ -2529,7 +2529,7 @@ GENTICS.Aloha.Table.CreateLayer.prototype.setPosition = function() {
 
 /**
  * Hides the create-table panel width the jQuery-method hide()
- * 
+ *
  * @see jQuery().hide()
  * @return void
  */
@@ -2542,7 +2542,7 @@ GENTICS.Aloha.Table.CreateLayer.prototype.hide = function() {
  * The "get"-method returns the value of the given key. First it searches in the
  * config for the property. If there is no property with the given name in the
  * "config"-object it returns the entry associated with in the parameters-object
- * 
+ *
  * @param property
  * @return void
  */
@@ -2562,7 +2562,7 @@ GENTICS.Aloha.Table.CreateLayer.prototype.get = function(property) {
  * The "set"-method takes a key and a value. It checks if there is a key-value
  * pair in the config-object. If so it saves the data in the config-object. If
  * not it saves the data in the parameters-object.
- * 
+ *
  * @param key
  *            the key which should be set
  * @param value
@@ -2608,7 +2608,7 @@ GENTICS.Aloha.TableHelper.prototype.selectedCells = new Array();
 /* -- METHODS -- */
 /**
  * This method removes the "selected" class from all selected cells
- * 
+ *
  * @return void
  */
 GENTICS.Aloha.TableHelper.prototype.unselectCells = function(){
@@ -2626,7 +2626,7 @@ GENTICS.Aloha.TableHelper.prototype.getNewTableID = function() {
 	var factor = 1000000;
 	for (this.tableCounter; true; this.tableCounter ++) {
 		var id = idPrefix + (Math.ceil(Math.random() * factor));
-		// fill up the id with zeros 
+		// fill up the id with zeros
 		for (var j = id.length; j < idPrefix.length + factor.toString().length; j++) {
 			id += '0';
 		}
