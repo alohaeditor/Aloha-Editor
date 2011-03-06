@@ -7,7 +7,7 @@
 /**
  * register the plugin with unique name
  */
-GENTICS.Aloha.Format = new GENTICS.Aloha.Plugin('com.gentics.aloha.plugins.Format');
+GENTICS.Aloha.Format = new GENTICS.Aloha.Plugin('format');
 
 /**
  * Configure the available languages
@@ -25,9 +25,9 @@ GENTICS.Aloha.Format.config = [ 'b', 'i','del','sub','sup', 'p', 'h1', 'h2', 'h3
 GENTICS.Aloha.Format.init = function () {
 
 	this.initButtons();
-	
+
 	var that = this;
-	
+
 	// apply specific configuration if an editable has been activated
 	GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'editableActivated', function (e, params) {
 		that.applyButtonConfig(params.editable.obj);
@@ -44,7 +44,7 @@ GENTICS.Aloha.Format.init = function () {
 GENTICS.Aloha.Format.applyButtonConfig = function (obj) {
 
 	var config = this.getEditableConfig(obj);
-	
+
 	// now iterate all buttons and show/hide them according to the config
 	for (var button in this.buttons) {
 		if (jQuery.inArray(button, config) != -1) {
@@ -53,7 +53,7 @@ GENTICS.Aloha.Format.applyButtonConfig = function (obj) {
 			this.buttons[button].button.hide();
 		}
 	}
-	
+
 	// and the same for multisplit items
 	for (var i in this.multiSplitItems) {
 		if (jQuery.inArray(this.multiSplitItems[i].name, config) != -1) {
@@ -70,7 +70,7 @@ GENTICS.Aloha.Format.applyButtonConfig = function (obj) {
  * @param editable current editable object
  */
 GENTICS.Aloha.Format.initButtons = function () {
-	
+
 	var scope = 'GENTICS.Aloha.continuoustext';
 	this.buttons = {};
 	var that = this;
@@ -241,7 +241,7 @@ GENTICS.Aloha.Format.initButtons = function () {
 					if (!multiSplitItem.markup) {
 						continue;
 					}
-					
+
 					// now check whether one of the multiSplitItems fits to the effective markup
 					if (GENTICS.Aloha.Selection.standardTextLevelSemanticsComparator(effectiveMarkup, multiSplitItem.markup)) {
 						that.multiSplitButton.setActiveItem(multiSplitItem.name);
@@ -263,17 +263,17 @@ GENTICS.Aloha.Format.initButtons = function () {
 GENTICS.Aloha.Format.removeFormat = function() {
 	// FIXME: Very ugly, quick implementation must be changed after selection.js is consolidated
 	GENTICS.Aloha.Selection.changeMarkupOnSelection(jQuery('<p></p>'));
-	
+
 	var formats = ['b', 'i', 'cite', 'q', 'code', 'abbr', 'del', 'sub', 'sup'];
-	
+
 	var rangeObject = GENTICS.Aloha.Selection.rangeObject;
 	var startObj = jQuery(rangeObject.startContainer);
 	var limitObj = jQuery(rangeObject.limitObject);
-	
+
 	if (rangeObject.isCollapsed() || startObj === limitObj) {
 		return;
 	}
-	
+
 	// Iterate up from the start container to the limit object and apply all markups found once (remove them)
 	var parent = startObj.parent();
 	while (parent.get(0) !== limitObj.get(0)) {
@@ -284,15 +284,15 @@ GENTICS.Aloha.Format.removeFormat = function() {
 			formats.splice(index, 1);
 		}
 	}
-	
+
 	// Iterate over the rest of the available markups and apply them twice
 	for (var i in formats) {
 		GENTICS.Aloha.Selection.changeMarkupOnSelection(jQuery('<'+formats[i]+'></'+formats[i]+'>'));
 		GENTICS.Aloha.Selection.changeMarkupOnSelection(jQuery('<'+formats[i]+'></'+formats[i]+'>'));
 	}
-	
+
 	// TODO: trigger event - removed Format
-	
+
 };
 
 /**
