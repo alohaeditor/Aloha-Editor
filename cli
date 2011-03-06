@@ -466,7 +466,7 @@ class App
 	# Commit
 	def commit(message)
 		run([
-			"git add *",
+			"git add build src vendor",
 			"git add -u",
 			"git commit -m \"#{message}\"",
 			"git push origin"
