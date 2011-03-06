@@ -5,7 +5,7 @@
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
 
-GENTICS.Aloha.LinkChecker = new GENTICS.Aloha.Plugin('com.gentics.aloha.plugins.LinkChecker');
+GENTICS.Aloha.LinkChecker = new GENTICS.Aloha.Plugin('linkchecker');
 
 /**
  * Configure the available languages
@@ -32,9 +32,9 @@ GENTICS.Aloha.LinkChecker.warningCodes = [404, 411, 412, 413, 500, 503,
  * Initialize the plugin and set initialize flag on true
  */
 GENTICS.Aloha.LinkChecker.init = function () {
-	
+
 	this.proxyUrl = null;
-	
+
     if (GENTICS.Aloha.LinkChecker.settings.proxyUrl != undefined) {
         this.proxyUrl = GENTICS.Aloha.LinkChecker.settings.proxyUrl;
     }
@@ -50,20 +50,20 @@ GENTICS.Aloha.LinkChecker.init = function () {
 
 	// mark active Editable with a css class
 	GENTICS.Aloha.EventRegistry.subscribe(
-			GENTICS.Aloha, 
-			"editableActivated", 
+			GENTICS.Aloha,
+			"editableActivated",
 			function (jEvent, aEvent) {
 				// find all link tags
 				aEvent.editable.obj.find('a').each(function() {
 					that.checkLink(this, jQuery(this).attr('href'), 0);
 				});
-			} 
+			}
 	);
 
 	// remove active Editable ccs class
 	GENTICS.Aloha.EventRegistry.subscribe(
-			GENTICS.Aloha, 
-			"editableDeactivated", 
+			GENTICS.Aloha,
+			"editableDeactivated",
 			function (jEvent, aEvent) {
 				// remove link marks
 				that.makeClean(aEvent.editable.obj);
@@ -72,8 +72,8 @@ GENTICS.Aloha.LinkChecker.init = function () {
 
 	// remove active Editable ccs class
 	GENTICS.Aloha.EventRegistry.subscribe(
-			GENTICS.Aloha, 
-			"hrefChanged", 
+			GENTICS.Aloha,
+			"hrefChanged",
 			function (jEvent, aEvent) {
 				that.checkLink(aEvent.obj, 'hrefChanged');
 			}
@@ -82,9 +82,9 @@ GENTICS.Aloha.LinkChecker.init = function () {
 };
 
 GENTICS.Aloha.LinkChecker.checkLink = function (obj, scope, delay, timeout) {
-	
+
 	var that = this;
-	
+
 	// extract url from link object
 	var url = jQuery(obj).attr('href');
 	var cleanUrl = url;
@@ -94,7 +94,7 @@ GENTICS.Aloha.LinkChecker.checkLink = function (obj, scope, delay, timeout) {
 		this.makeCleanLink(obj);
 		return;
 	}
-	
+
 	if ( this.proxyUrl ) {
 		url = this.proxyUrl + url;
 	}
@@ -106,7 +106,7 @@ GENTICS.Aloha.LinkChecker.checkLink = function (obj, scope, delay, timeout) {
 	}
 
 	this.timer[scope] = this.urlExists(
-		url, 
+		url,
 		// success
 		function(xhr) {
 			that.makeCleanLink(obj);
@@ -129,15 +129,15 @@ GENTICS.Aloha.LinkChecker.checkLink = function (obj, scope, delay, timeout) {
 				// and we set an error message to the title
 				o.attr('title', cleanUrl+'. '+that.i18n('error.'+e));
 				// set the link class
-				if ( jQuery.inArray(xhr.status, that.warningCodes) >= 0 ) {					
+				if ( jQuery.inArray(xhr.status, that.warningCodes) >= 0 ) {
 					o.addClass('GENTICS_link_warn');
 				} else {
 					o.addClass('GENTICS_link_error');
 				}
 			}
-		}, 
-		scope, 
-		timeout, 
+		},
+		scope,
+		timeout,
 		delay
 	);
 };
@@ -147,13 +147,13 @@ GENTICS.Aloha.LinkChecker.urlExists = function (url, successFunc, failureFunc, s
 
 	// abort timer for that request
 	clearTimeout(this.timer[scope]);
-	
+
 	delay = (delay != null && delay != undefined ) ? delay : 700;
 
 	// start timer for delayed request
     var newTimer = setTimeout( function() {
-    	
-    	// start request 
+
+    	// start request
 		that.xhr[scope] = jQuery.ajax({
 			url: url,
 			timeout: timeout ? 10000 : timeout,
@@ -165,7 +165,7 @@ GENTICS.Aloha.LinkChecker.urlExists = function (url, successFunc, failureFunc, s
 					// if response HTTP status 200 link is ok
 					// this implementation does NOT cover redirects!
 				    if (xhr.status < 400) {
-				    	successFunc.call(this, xhr); 
+				    	successFunc.call(this, xhr);
 				    } else {
 						failureFunc.call(this, xhr);
 				  	}
@@ -173,10 +173,10 @@ GENTICS.Aloha.LinkChecker.urlExists = function (url, successFunc, failureFunc, s
 					failureFunc.call(this, {'status':0});
 				}
 			}
-		}); 
-		
+		});
+
 	}, delay);
-    
+
 	return newTimer;
 };
 
@@ -208,8 +208,8 @@ GENTICS.Aloha.LinkChecker.makeClean = function (editable) {
 };
 
 GENTICS.Aloha.LinkChecker.urlencode = function (str) {
-    // URL-encodes string  
-    // 
+    // URL-encodes string
+    //
     // version: 1008.1718
     // discuss at: http://phpjs.org/functions/urlencode
     // +   original by: Philip Peterson
@@ -236,7 +236,7 @@ GENTICS.Aloha.LinkChecker.urlencode = function (str) {
     // *     example 3: urlencode('http://www.google.nl/search?q=php.js&ie=utf-8&oe=utf-8&aq=t&rls=com.ubuntu:en-US:unofficial&client=firefox-a');
     // *     returns 3: 'http%3A%2F%2Fwww.google.nl%2Fsearch%3Fq%3Dphp.js%26ie%3Dutf-8%26oe%3Dutf-8%26aq%3Dt%26rls%3Dcom.ubuntu%3Aen-US%3Aunofficial%26client%3Dfirefox-a'
     str = (str+'').toString();
-    
+
     // Tilde should be allowed unescaped in future versions of PHP (as reflected below), but if you want to reflect current
     // PHP behavior, you would need to add ".replace(/~/g, '%7E');" to the following.
     return encodeURIComponent(str).replace(/!/g, '%21').replace(/'/g, '%27').replace(/\(/g, '%28').
