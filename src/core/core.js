@@ -413,7 +413,7 @@ window.alohaQuery = window.jQuery.sub();
 				GENTICS.Aloha.Log.error(this, 'Could not determine actual language.');
 			} else {
 				// TODO load the dictionary file for the actual language
-				var fileUrl = this.settings.base + '/i18n/' + actualLanguage + '.dict';
+				var fileUrl = this.settings.base + '/i18n/' + actualLanguage + '.json';
 				this.loadI18nFile(fileUrl, this, function () {
 					GENTICS.Aloha.EventRegistry.trigger(
 						new GENTICS.Aloha.Event('i18nReady', GENTICS.Aloha, null)
@@ -460,7 +460,7 @@ window.alohaQuery = window.jQuery.sub();
 			// Note: this ajax request must be done synchronously, because the otherwise
 			// the first i18n calls might come before the dictionary is available
 			jQuery.ajax({
-				dataType : 'text',
+				dataType : 'json',
 				url : fileUrl,
 				error: function(request, textStatus, error) {
 					GENTICS.Aloha.Log.error(component, 'Error while getting dictionary file ' + fileUrl + ': server returned ' + textStatus);
@@ -487,27 +487,14 @@ window.alohaQuery = window.jQuery.sub();
 		 * @hide
 		 */
 		parseI18nFile: function(data, component) {
-			data = data.replace(/\r/g, '');
-			var entries = data.split('\n'),
-				dictionary = {};
-			for (var i = 0, entriesLength = entries.length; i < entriesLength; ++i) {
-				var entry = entries[i],
-					equal = entry.indexOf('=');
-				if (equal > 0) {
-					var key = jQuery.trim(entry.substring(0, equal)),
-						value = jQuery.trim(entry.substring(equal + 1, entry.length));
-					value = value.replace(/\\n/g, '\n').replace(/\\\\/g, '\\');
-
-					// check for duplicate keys and print a warning
-					if (dictionary[key]) {
-						GENTICS.Aloha.Log.warn(component, 'Found duplicate key ' + key + ' in dictionary file, ignoring');
-					} else {
-						dictionary[key] = value;
-					}
-				}
+			// Check
+			if ( typeof data !== 'object' ) {
+				GENTICS.ALoha.Log.warn(component, 'i18n file was not json');
+				return false;
 			}
 
-			this.dictionaries[component.toString()] = dictionary;
+			// Save i18n
+			this.dictionaries[component.toString()] = data;
 		},
 
 		/**

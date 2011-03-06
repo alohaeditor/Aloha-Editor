@@ -61,3 +61,6 @@
 [submodule "vendor/less.js"]
 	path = vendor/less.js
 	url = https://github.com/cloudhead/less.js.git
+[submodule "vendor/node-iniparser"]
+	path = vendor/node-iniparser
+	url = https://github.com/balupton/node-iniparser.git

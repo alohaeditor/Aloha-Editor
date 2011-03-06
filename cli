@@ -372,7 +372,7 @@ class App
 		submodule_foreach([
 			"git add *",
 			"git add -u",
-			"git commit -m \"#{message}\" | echo good",
+			"git commit -m \"#{message}\" | echo",
 			"git push origin"
 		])
 	end
@@ -395,7 +395,7 @@ class App
 	# Push Submodules
 	def push_submodules
 		submodule_foreach([
-			"git push --all || echo good"
+			"git push --all | echo"
 		])
 	end
 
@@ -409,6 +409,13 @@ class App
 		submodule_foreach([
 			"git checkout master",
 			"git pull --all"
+		])
+	end
+
+	# Reset Submodules
+	def reset_submodules
+		submodule_foreach([
+			"git reset --hard"
 		])
 	end
 
