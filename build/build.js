@@ -395,7 +395,7 @@
 			app.bundle();
 
 			// Compile
-			//app.compile();
+			app.compile();
 
 			// Done
 			return true;

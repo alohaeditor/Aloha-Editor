@@ -43,7 +43,6 @@
 		"dep/jquery.store.js",
 
 		"core/jquery.aloha.js",
-		"core/license.js",
 		"util/jquery.js",
 		"util/lang.js",
 		"util/range.js",

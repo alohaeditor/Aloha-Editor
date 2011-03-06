@@ -1,6 +1,6 @@
 body {
   font-family: sans-serif;
-  background-image: url("images/background.png");
+  background-image: url("../common/background.png");
 }
 
 #bodyContent {
@@ -42,7 +42,7 @@ h6 { font-size: 80%;  }
 }
 
 a.aloha {
-  background: url(images/external-link-ltr-icon.png) no-repeat 100% 50%;
+  background: url(../common/external-link-ltr-icon.png) no-repeat 100% 50%;
   padding: 0px 13px 0px 0px;
 }
 
@@ -72,7 +72,7 @@ abbr, acronym
   padding: 0.5em 0;
 }
 
-.aloha_example table th, 
+.aloha_example table th,
 .aloha_example table td
 {
   border: 1px solid #666;
@@ -147,7 +147,7 @@ table caption
 .box-table-a td
 {
 	padding: 8px;
-	background: #e8edff; 
+	background: #e8edff;
 	border-bottom: 1px solid #fff;
 	border-top: 1px solid transparent;
 }
@@ -167,7 +167,7 @@ table caption
 	font-weight: bold;
 	padding: 10px 8px;
 	border-bottom: 2px solid #6678b1;
-	
+
 }
 .hor-zebra td
 {
@@ -175,7 +175,7 @@ table caption
 }
 .hor-zebra tr:nth-child(2n+1) td
 {
-	background: #e8edff; 
+	background: #e8edff;
 }
 
 td.bigbold {

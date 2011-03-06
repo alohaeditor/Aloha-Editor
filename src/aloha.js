@@ -14,7 +14,7 @@ window.GENTICS_Aloha_base = window.GENTICS_Aloha_base || false;
 		includes = [];
 
 	// Prepare baseUrl
-	window.GENTICS_Aloha_base = window.GENTICS_Aloha_base || document.getElementById('aloha-script-include').src.replace(/aloha\.js$/,'');
+	window.GENTICS_Aloha_base = window.GENTICS_Aloha_base || document.getElementById('aloha-script-include').src.replace(/aloha\.js$/,'').replace(/\/+$/,'');
 
 	// Prepare Plugin Loading
 	window.Aloha_loaded_plugins = window.Aloha_loaded_plugins||[];
@@ -28,7 +28,6 @@ window.GENTICS_Aloha_base = window.GENTICS_Aloha_base || false;
 	includes.push('dep/jquery.getUrlParam.js');
 	includes.push('dep/jquery.store.js');
 	includes.push('core/jquery.aloha.js');
-	includes.push('core/license.js');
 	includes.push('util/jquery.js');
 	includes.push('util/lang.js');
 	includes.push('util/range.js');
@@ -65,7 +64,7 @@ window.GENTICS_Aloha_base = window.GENTICS_Aloha_base || false;
 	for ( i=0,n=includes.length; i<n; ++i ) {
 		// Prepare
 		value = includes[i];
-		url = window.GENTICS_Aloha_base + value;
+		url = window.GENTICS_Aloha_base + '/' + value;
 
 		// Append via Write
 		document.write('<script defer src="'+url+'"></script>');

@@ -4,7 +4,7 @@
 	for ( i=0,n=includes.length; i<n; ++i ) {
 		// Prepare
 		value = includes[i];
-		url = window.GENTICS_Aloha_base + value;
+		url = window.GENTICS_Aloha_base + '/' + value;
 
 		// Append via Write
 		document.write('<script defer src="'+url+'"></script>');

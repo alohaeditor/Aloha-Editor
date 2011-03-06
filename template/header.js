@@ -6,7 +6,7 @@
 		includes = [];
 
 	// Prepare baseUrl
-	window.GENTICS_Aloha_base = window.GENTICS_Aloha_base || document.getElementById('aloha-script-include').src.replace(/aloha\.js$/,'');
+	window.GENTICS_Aloha_base = window.GENTICS_Aloha_base || document.getElementById('aloha-script-include').src.replace(/aloha\.js$/,'').replace(/\/+$/,'');
 
 	// Prepare Plugin Loading
 	window.Aloha_loaded_plugins = window.Aloha_loaded_plugins||[];
