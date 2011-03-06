@@ -7,7 +7,7 @@
 /**
  * register the plugin with unique name
  */
-GENTICS.Aloha.Link = new GENTICS.Aloha.Plugin('com.gentics.aloha.plugins.Link');
+GENTICS.Aloha.Link = new GENTICS.Aloha.Plugin('link');
 
 /**
  * Configure the available languages
@@ -19,7 +19,7 @@ GENTICS.Aloha.Link.languages = ['en', 'de', 'fr', 'ru', 'pl'];
  */
 GENTICS.Aloha.Link.config = ['a'];
 
-// TODO register those parameters for Link plug-in. 
+// TODO register those parameters for Link plug-in.
 // Update code then where settings.
 
 /**
@@ -73,7 +73,7 @@ GENTICS.Aloha.Link.init = function () {
         GENTICS.Aloha.Link.objectTypeFilter = GENTICS.Aloha.Link.settings.objectTypeFilter;
     if (GENTICS.Aloha.Link.settings.onHrefChange != undefined)
         GENTICS.Aloha.Link.onHrefChange = GENTICS.Aloha.Link.settings.onHrefChange;
-        
+
     this.createButtons();
     this.subscribeEvents();
     this.bindInteractions();
@@ -86,7 +86,7 @@ GENTICS.Aloha.Link.init = function () {
 GENTICS.Aloha.Link.createButtons = function () {
     var that = this;
 
-    // format Link Button 
+    // format Link Button
     // this button behaves like a formatting button like (bold, italics, etc)
     this.formatLinkButton = new GENTICS.Aloha.ui.Button({
         'iconClass' : 'GENTICS_button GENTICS_button_a',
@@ -138,7 +138,7 @@ GENTICS.Aloha.Link.createButtons = function () {
         'tooltip' : this.i18n('button.addlink.tooltip'),
         'toggle' : false
     });
-    
+
     // COMMENT IN AND TEST THE BROWSER
     GENTICS.Aloha.FloatingMenu.addButton(
         this.getUID('link'),
@@ -180,7 +180,7 @@ GENTICS.Aloha.Link.createButtons = function () {
 
 /**
  * Parse a all editables for links and bind an onclick event
- * Add the link short cut to all edtiables 
+ * Add the link short cut to all edtiables
  */
 GENTICS.Aloha.Link.bindInteractions = function () {
     var that = this;
@@ -189,7 +189,7 @@ GENTICS.Aloha.Link.bindInteractions = function () {
     this.hrefField.addListener('keyup', function(obj, event) {
     	// TODO this event is never fired. Why?
     	// if the user presses ESC we do a rough check if he has entered a link or searched for something
-	    if (event.keyCode == 27) { 
+	    if (event.keyCode == 27) {
 	    	var curval = that.hrefField.getQueryValue();
 	    	if (
 	    		curval[0] == '/' || // local link
@@ -212,7 +212,7 @@ GENTICS.Aloha.Link.bindInteractions = function () {
             that.removeLink();
         }
     });
-    
+
     // add to all editables the Link shortcut
     for (var i = 0; i < GENTICS.Aloha.editables.length; i++) {
 
@@ -221,30 +221,30 @@ GENTICS.Aloha.Link.bindInteractions = function () {
     		if ( e.metaKey && e.which == 76 ) {
 		        if ( that.findLinkMarkup() ) {
 		            GENTICS.Aloha.FloatingMenu.userActivatedTab = that.i18n('floatingmenu.tab.link');
-		
+
 		            // TODO this should not be necessary here!
 		            GENTICS.Aloha.FloatingMenu.doLayout();
-		
+
 		            that.hrefField.focus();
-		
+
 		        } else {
 		            that.insertLink();
 		        }
 	            // prevent from further handling
 	            // on a MAC Safari cursor would jump to location bar. Use ESC then META+L
-	            return false; 
+	            return false;
     		}
         });
-    	
+
         GENTICS.Aloha.editables[i].obj.find('a').each( function( i ) {
-            
+
             // show pointer on mouse over
             jQuery(this).mouseenter( function(e) {
     			GENTICS.Aloha.Log.debug(GENTICS.Aloha.Link, 'mouse over link.');
     			that.mouseOverLink = this;
            	 	that.updateMousePointer();
             });
-            
+
             // in any case on leave show text cursor
             jQuery(this).mouseleave( function(e) {
     			GENTICS.Aloha.Log.debug(GENTICS.Aloha.Link, 'mouse left link.');
@@ -252,28 +252,28 @@ GENTICS.Aloha.Link.bindInteractions = function () {
            	 	that.updateMousePointer();
             });
 
-            
+
             // follow link on ctrl or meta + click
-            jQuery(this).click( function(e) { 
+            jQuery(this).click( function(e) {
                 if (e.metaKey) {
-                	
+
                 	// blur current editable. user is wating for the link to load
                 	GENTICS.Aloha.activeEditable.blur();
-                	
+
                 	// hack to guarantee a browser history entry
                 	setTimeout( function() {
                 	      location.href = e.target;
                 	},0);
-                	
+
                 	// stop propagation
        				e.stopPropagation();
                     return false;
                 }
             });
 
-        }); 
+        });
     }
-     
+
     jQuery(document).keydown(function (e) {
 		GENTICS.Aloha.Log.debug(GENTICS.Aloha.Link, 'Meta key down.');
     	that.metaKey = e.metaKey;
@@ -309,7 +309,7 @@ GENTICS.Aloha.Link.updateMousePointer = function () {
 GENTICS.Aloha.Link.subscribeEvents = function () {
 
 	var that = this;
-	
+
     // add the event handler for selection change
     GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'selectionChanged', function(event, rangeObject) {
 
@@ -325,7 +325,7 @@ GENTICS.Aloha.Link.subscribeEvents = function () {
     			// leave if a is not allowed
     			return;
     		}
-    		
+
     		var foundMarkup = that.findLinkMarkup( rangeObject );
     		if ( foundMarkup ) {
     			// link found
@@ -338,25 +338,25 @@ GENTICS.Aloha.Link.subscribeEvents = function () {
     			that.formatLinkButton.setPressed(false);
     			that.hrefField.setTargetObject(null);
     		}
-    		
+
     		// TODO this should not be necessary here!
     		GENTICS.Aloha.FloatingMenu.doLayout();
     	}
 
     });
-    
+
 };
 
 /**
- * Check whether inside a link tag 
+ * Check whether inside a link tag
  * @param {GENTICS.Utils.RangeObject} range range where to insert the object (at start or end)
  * @return markup
  * @hide
  */
 GENTICS.Aloha.Link.findLinkMarkup = function ( range ) {
-    
+
 	if ( typeof range == 'undefined' ) {
-        var range = GENTICS.Aloha.Selection.getRangeObject();   
+        var range = GENTICS.Aloha.Selection.getRangeObject();
     }
 	if ( GENTICS.Aloha.activeEditable ) {
 		return range.findMarkup(function() {
@@ -372,9 +372,9 @@ GENTICS.Aloha.Link.findLinkMarkup = function ( range ) {
  * If inside a link tag the link is removed.
  */
 GENTICS.Aloha.Link.formatLink = function () {
-	
+
 	var range = GENTICS.Aloha.Selection.getRangeObject();
-    
+
     if (GENTICS.Aloha.activeEditable) {
         if ( this.findLinkMarkup( range ) ) {
             this.removeLink();
@@ -390,12 +390,12 @@ GENTICS.Aloha.Link.formatLink = function () {
  * the link text.
  */
 GENTICS.Aloha.Link.insertLink = function ( extendToWord ) {
-    
+
     // do not insert a link in a link
     if ( this.findLinkMarkup( range ) ) {
         return;
     }
-    
+
     // activate floating menu tab
     GENTICS.Aloha.FloatingMenu.userActivatedTab = this.i18n('floatingmenu.tab.link');
 
@@ -429,7 +429,7 @@ GENTICS.Aloha.Link.insertLink = function ( extendToWord ) {
 GENTICS.Aloha.Link.removeLink = function () {
 
     var range = GENTICS.Aloha.Selection.getRangeObject();
-    var foundMarkup = this.findLinkMarkup(); 
+    var foundMarkup = this.findLinkMarkup();
     if ( foundMarkup ) {
         // remove the link
         GENTICS.Utils.Dom.removeFromDOM(foundMarkup, range, true);
