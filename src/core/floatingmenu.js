@@ -349,7 +349,9 @@ Aloha.FloatingMenu.generateComponent = function () {
 		});
     } else if (this.behaviour === 'topalign') {
 		Aloha.bind('aloha-editable-activated', function(event, d) {
-            that.floatTo(d.editable.obj.offset());
+			var p = d.editable.obj.offset();
+			p.top = p.top - 90;
+            that.floatTo(p);
         });
     }
 };
