@@ -29,34 +29,13 @@ WINDOWS_CLI = `echo $PATH`.strip().eql?('$PATH') ? true : false
 
 class App
 	# Remotes
-	REMOTE_ALOHA_URL	= 'http://github.com/alohaeditor/Aloha-Editor.git'
-	REMOTE_ALOHA			= 'aloha'
+	REMOTE_GIT_URL	= 'http://github.com/alohaeditor/Aloha-Editor.git'
+	REMOTE_GIT			= 'aloha'
 
 	# Versioning
 	BRANCH_DEV			= 'dev'
 	BRANCH_VERSION	= '0.10'
 	BRANCH_MASTER		= 'master'
-
-	# Building
-	BUILD_DIR			= './.build'
-
-	# Uglifiy
-	UGLIFY_URL		= 'https://github.com/mishoo/UglifyJS/raw/master/bin/uglifyjs'
-	UGLIFY_DIR		= './.build/uglify'
-	UGLIFY_FILE		= './.build/uglify/uglify'
-
-	# Closure
-	CLOSURE_URL		= 'http://closure-compiler.googlecode.com/files/compiler-latest.zip'
-	CLOSURE_DIR		= './.build/closure'
-	CLOSURE_ZIP		= './.build/closure/compiler.zip'
-	CLOSURE_FILE	= './.build/closure/compiler.jar'
-	SOURCE_MAP		= './scripts/closure.map'
-
-	# YUI
-	YUI_URL				= 'http://yuilibrary.com/downloads/yuicompressor/yuicompressor-2.4.2.zip'
-	YUI_DIR				= './.build/yui'
-	YUI_ZIP				= './.build/yui/compiler.zip'
-	YUI_FILE			= './.build/yui/yuicompressor-2.4.2/build/yuicompressor-2.4.2.jar'
 
 	# ===========================================================================
 	# Init Helpers
@@ -143,103 +122,6 @@ class App
 	def init_env
 		# Check for Requirements
 		check_req(['mkdir','curl','tar','git','rm','mv'])
-
-		# Do not care for compilation yet
-		return
-
-		# Check for Closure Compiler
-		if !File.exists?(CLOSURE_FILE)
-			run("mkdir -p #{CLOSURE_DIR}")
-			puts "Downloading the Closure Compiler..."
-			download(CLOSURE_URL, CLOSURE_ZIP)
-			extract(CLOSURE_DIR, CLOSURE_ZIP)
-			run("chmod +x #{CLOSURE_FILE}")
-		end
-
-		# Check for Uglify
-		if !File.exists?(UGLIFY_FILE)
-			run("mkdir -p #{UGLIFY_DIR}")
-			puts "Downloading the Uglify Compiler..."
-			download(UGLIFY_URL, UGLIFY_FILE)
-			run("chmod +x #{UGLIFY_FILE}")
-		end
-
-		# Check for YUI Compiler
-		if !File.exists?(YUI_FILE)
-			run("mkdir -p #{YUI_DIR}")
-			puts "Downloading the YUI Compiler..."
-			download(YUI_URL, (YUI_ZIP))
-			extract(YUI_DIR, YUI_ZIP)
-			run("chmod +x #{YUI_FILE}")
-		end
-	end
-
-	# ===========================================================================
-	# Build Helpers
-
-	def compressCss ( in_file, out_file )
-		# Calculate
-		in_file_size = File.size(in_file)
-
-		# Handle
-		if in_file.equal? out_file
-			out_file = out_file.gsub(/\.js$/, '.min.js')
-			compressCssWithYui(in_file,out_file)
-			run("rm #{in_file}")
-			run("mv #{out_file} #{in_file}")
-			out_file = in_file
-		else
-			compressCssWithYui(in_file,out_file)
-			out_file_size = File.size(out_file)
-		end
-
-		# Calculate
-		out_file_size = File.size(out_file)
-		ratio = Float(out_file_size)/Float(in_file_size)
-		reduction = ((1-ratio)*100).round
-
-		# Log
-		puts "Compressed the file [#{in_file}] to [#{out_file}] with a #{reduction}% reduction"
-	end
-
-	def compressJs ( in_file, out_file )
-		# Calculate
-		in_file_size = File.size(in_file)
-
-		# Handle
-		if in_file.equal? out_file
-			out_file = out_file.gsub(/\.js$/, '.min.js')
-			compressJsWithUglify(in_file,out_file)
-			run("rm #{in_file}")
-			run("mv #{out_file} #{in_file}")
-			out_file = in_file
-		else
-			compressJsWithUglify(in_file,out_file)
-			out_file_size = File.size(out_file)
-		end
-
-		# Calculate
-		out_file_size = File.size(out_file)
-		ratio = Float(out_file_size)/Float(in_file_size)
-		reduction = ((1-ratio)*100).round
-
-		# Log
-		puts "Compressed the file [#{in_file}] to [#{out_file}] with a #{reduction}% reduction"
-	end
-
-	# Compress a CSS File with YUI
-	def compressCssWithYui ( in_file, out_file )
-		result = run("java -jar #{YUI_FILE} --type css -o #{out_file} --charset UTF-8 #{in_file}")
-	end
-
-	# Compress a Javascript File with Uglify
-	def compressJsWithUglify ( in_file, out_file )
-		result = run("#{UGLIFY_FILE} -o #{out_file} #{in_file}")
-	end
-
-	# Compress a Javascript file with Closure
-	def compressJsWithClosure ( in_file, out_file )
-		result = run("java -jar #{CLOSURE_FILE} --js_output_file=#{out_file} --js=#{in_file}")
 	end
 
 	# ===========================================================================
@@ -276,7 +158,7 @@ class App
 			run("git checkout #{branch}")
 		else
 			if remote_branch_exists(branch)
-				run("git checkout -b #{branch} #{REMOTE_ALOHA}/#{branch}")
+				run("git checkout -b #{branch} #{REMOTE_GIT}/#{branch}")
 			else
 				run("git branch #{branch}")
 			end
@@ -396,7 +278,7 @@ class App
 
 	# Initialise Branches
 	def init_branches
-		remote_add(REMOTE_ALOHA_URL,REMOTE_ALOHA)
+		remote_add(REMOTE_GIT_URL,REMOTE_GIT)
 		master
 		version
 		dev
@@ -412,12 +294,24 @@ class App
 	# ---------------------------------------------------------------------------
 	# Submodules
 
+	# Plugin Read Url
+	def plugin_read_url(url)
+		read_url = url.gsub(/^.+?(github.com)./,'http://\\1/')
+		return read_url
+	end
+
+	# Plugin Write Url
+	def plugin_write_url(url)
+		write_url = url.gsub(/^https?\:\/\/github.com\//,'git@github.com:/')
+		return write_url
+	end
+
 	# Add a Plugin
 	def plugin(url,name='')
-		url = url.gsub(/^.+?(github.com)./,'http://\\1/')
+		url = read_url(url)
 
 		if name.empty?
-			name = 'com.gentics.aloha.plugins.' + url.gsub(/^.+?Aloha-Plugin-(\w+)\.git/,'\\1')
+			name = url.gsub(/^.+?Aloha-Plugin-(\w+)\.git/,'\\1').downcase
 		end
 
 		dir = 'WebContent/plugins/'+name
@@ -455,6 +349,56 @@ class App
 		])
 	end
 
+	# Write Submodules
+	def write_submodules
+		submodule_foreach('sed -i "" -E "s/https?\:\/\/github\.com\//git\@github\.com\:/" .git/config')
+	end
+
+	# Read Submodules
+	def read_submodules
+		submodule_foreach('sed -i "" -E "s/git\@github.com\:/http://github.com\//" .git/config')
+	end
+
+	# Add Submodules
+	def add_submodules
+		submodule_foreach([
+			"git add *",
+			"git add -u"
+		])
+	end
+
+	# Commit Submodules
+	def commit_submodules(message)
+		submodule_foreach([
+			"git add *",
+			"git add -u",
+			"git commit -m \"#{message}\" | echo",
+			"git push origin"
+		])
+	end
+
+	# Branch Submodules
+	def branch_submodules(branch)
+		submodule_foreach([
+			"git branch #{branch}",
+			"git checkout #{branch}"
+		])
+	end
+
+	# Checkout Submodules
+	def checkout_submodules(branch)
+		submodule_foreach([
+			"git checkout #{branch}"
+		])
+	end
+
+	# Push Submodules
+	def push_submodules
+		submodule_foreach([
+			"git push --all | echo"
+		])
+	end
+
 	# Upgrade Submodules
 	def upgrade_submodules
 		run([
@@ -465,6 +409,13 @@ class App
 		submodule_foreach([
 			"git checkout master",
 			"git pull --all"
+		])
+	end
+
+	# Reset Submodules
+	def reset_submodules
+		submodule_foreach([
+			"git reset --hard"
 		])
 	end
 
@@ -500,12 +451,27 @@ class App
 
 	# Build Aloha Editor
 	def build
-		check_req(['java','ant'])
-		run("ant -f build/build.xml build")
+		check_req(['node','npm'])
+		run([
+			"rm -Rf out",
+			"mkdir out",
+			"cp -R src/* out",
+			"node ./build/build.js package.json"
+		])
 	end
 
 	# ---------------------------------------------------------------------------
 	# Deploy
+
+	# Commit
+	def commit(message)
+		run([
+			"git add build src vendor",
+			"git add -u",
+			"git commit -m \"#{message}\"",
+			"git push origin"
+		])
+	end
 
 	# Deploy
 	def deploy(base,*args)

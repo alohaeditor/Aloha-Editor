@@ -1,0 +1,10 @@
+/**
+ * Directory for the sprite image does not exist.
+ */
+
+div.web {
+  width: 17px;
+  height: 17px;
+  background-image: url('../img-sprite/sprite.png');
+  background-position: left -0px;
+}

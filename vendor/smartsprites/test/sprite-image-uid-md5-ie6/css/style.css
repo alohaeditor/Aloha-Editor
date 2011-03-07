@@ -1,0 +1,8 @@
+/**
+ * A simple horizontal sprites test.
+ */
+
+/** sprite: test; sprite-image: url('../img/sprite.png'); sprite-layout: horizontal; sprite-image-uid: md5 */
+div.logo {
+  background-image: url(../img/full-alpha.png); /** sprite-ref: test */
+}

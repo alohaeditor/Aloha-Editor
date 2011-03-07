@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="smartsprites" default="process">
+  <dirname property="smartsprites.basedir" file="${ant.file.smartsprites}"/>
+
+  <target name="process"
+          description="Performs CSS sprite processing">
+    <available file="${smartsprites.basedir}/smartsprites.properties" property="smartsprites.properties.available" />
+    <fail unless="smartsprites.properties.available">
+
+Please provide SmartSprite parameters in a 'smartsprites.properties' file.
+
+    </fail>
+
+    <property file="${smartsprites.basedir}/smartsprites.properties" />
+    <taskdef resource="smartsprites.xml">
+      <classpath>
+        <fileset dir="${smartsprites.basedir}/lib">
+          <include name="*.jar" />
+        </fileset>
+      </classpath>
+    </taskdef>
+
+    <!-- 
+         The simplest way to invoke SmartSprites is to provide a directory
+         in the rootdir parameter. SmartSprites will attempt to process all
+         files with 'css' extension from that directory. 
+      -->
+    <smartsprites rootdir="${root.dir.path}"
+                  documentrootdir="${document.root.dir.path}"
+                  outputdir="${output.dir.path}"
+                  cssfileencoding="${css.file.encoding}"
+                  cssfilesuffix="${css.file.suffix}"
+                  loglevel="${log.level}"
+                  spritepngdepth="${sprite.png.depth}"
+                  spritepngie6="${sprite.png.ie6}" />
+    
+    <!-- 
+         Alternatively, instead of rootdir, you can provide individual CSS
+         files for processing using one or more nested <fileset> elements.
+         This type of invocation gives more fine-grained control over which
+         CSS files are processed.
+         
+         For a description of how processing of individual CSS files relates
+         to rootdir and outputdir, please see the documentation on:
+         
+         http://smartsprites.osinski.name/
+      -->
+    <!--
+    <smartsprites documentrootdir="${document.root.dir.path}"
+                  outputdir="${output.dir.path}"
+                  cssfileencoding="${css.file.encoding}"
+                  cssfilesuffix="${css.file.suffix}"
+                  loglevel="${log.level}"
+                  spritepngdepth="${sprite.png.depth}"
+                  spritepngie6="${sprite.png.ie6}">
+      <fileset dir="${root.dir.path}">
+        <include name="**/*.css" />
+      </fileset>
+    </smartsprites>
+    -->
+  </target>
+</project>
+

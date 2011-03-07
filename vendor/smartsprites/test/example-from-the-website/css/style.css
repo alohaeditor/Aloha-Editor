@@ -1,0 +1,20 @@
+/** sprite: mysprite; sprite-image: url('../img/mysprite.png'); sprite-layout: vertical */  
+
+#web { 
+  width: 17px; height: 17px; 
+  background-repeat: no-repeat; 
+  background-image: url(../img/web.gif); /** sprite-ref: mysprite; */ 
+} 
+
+#logo { 
+  width: 50px; height: 50px; 
+  background-repeat: no-repeat; 
+  background-position: top right; 
+  background-image: url(../img/logo.png); /** sprite-ref: mysprite; sprite-alignment: right */ 
+} 
+
+#main-box { 
+  background-repeat: repeat-x; 
+  background-position: 5px left; 
+  background-image: url(../img/top-frame.gif); /** sprite-ref: mysprite; sprite-alignment: repeat;  sprite-margin-top: 5px */ 
+}

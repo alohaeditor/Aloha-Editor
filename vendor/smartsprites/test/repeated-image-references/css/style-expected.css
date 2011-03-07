@@ -1,0 +1,31 @@
+/**
+ * A test case for multiple references to the same image. 
+ */
+
+div.web {
+  width: 17px;
+  height: 17px;
+  background-image: url('../img/sprite.png');
+  background-position: -0px top;
+}
+
+div.web2 {
+  width: 17px;
+  height: 17px;
+  background-image: url('../img/sprite.png');
+  background-position: -0px top;
+}
+
+div.web-image-margin {
+  width: 17px;
+  height: 17px;
+  background-image: url('../img/sprite.png');
+  background-position: -17px top;
+}
+
+div.web-generated-margin {
+  width: 17px;
+  height: 17px;
+  background-image: url('../img/sprite.png');
+  background-position: -17px top;
+}

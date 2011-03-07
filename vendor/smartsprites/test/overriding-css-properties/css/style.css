@@ -1,0 +1,28 @@
+/**
+ * There is one background-position property that overrides the SmartSprites-generated one.
+ */
+
+/** sprite: test; sprite-image: url('../img/sprite.png'); sprite-layout: horizontal */
+div.web {
+  width: 17px;
+  height: 17px;
+  background-position: 0px 0px;
+  background-image: url(../img/web.gif); /** sprite-ref: test */
+  background-image: url(../img/webz.gif);
+}
+
+div.other-rule {
+  background-position: 0px 0px;
+}
+
+div.pubmed {
+  width: 15px;
+  height: 32px;
+  background-image: url(../img/pubmed.gif); /** sprite-ref: test; sprite-alignment: bottom */
+  background-position: 0px bottom;
+}
+
+div.logo {
+  background-position: 0px 0px;
+  background-image: url(../img/logo.png); /** sprite-ref: test */
+}

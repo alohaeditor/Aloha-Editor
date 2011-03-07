@@ -1,0 +1,17 @@
+/**
+ * A test of writing output to non-default output directory.
+ */
+
+div.web {
+  width: 17px;
+  height: 17px;
+  background-image: url('../img/relative.png');
+  background-position: -0px top;
+}
+
+div.pubmed {
+  width: 15px;
+  height: 32px;
+  background-image: url('../img/relative.png');
+  background-position: -17px top;
+}

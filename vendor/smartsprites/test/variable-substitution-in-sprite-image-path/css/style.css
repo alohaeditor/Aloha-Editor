@@ -1,0 +1,21 @@
+/**
+ * A simple horizontal sprites test.
+ */
+
+/** sprite: sprite; sprite-image: url('../img/${sprite}-${md5}.png'); sprite-layout: horizontal; */
+/** sprite: sprite2; sprite-image: url('../img/${md5}/${sprite}.png'); sprite-layout: horizontal; */
+div.web {
+  width: 17px;
+  height: 17px;
+  background-image: url(../img/web.gif); /** sprite-ref: sprite */
+}
+
+div.pubmed {
+  width: 15px;
+  height: 32px;
+  background-image: url(../img/pubmed.gif); /** sprite-ref: sprite; sprite-alignment: bottom */
+}
+
+div.logo {
+  background-image: url(../img/logo.png); /** sprite-ref: sprite2 */
+}

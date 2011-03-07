@@ -1,0 +1,16 @@
+/**
+ * A test of writing output to non-default output directory.
+ */
+
+/** sprite: relative; sprite-image: url('../img/relative.png'); sprite-layout: horizontal */
+div.web {
+  width: 17px;
+  height: 17px;
+  background-image: url(../../img/web.gif); /** sprite-ref: relative */
+}
+
+div.pubmed {
+  width: 15px;
+  height: 32px;
+  background-image: url(../../img/pubmed.gif); /** sprite-ref: relative */
+}

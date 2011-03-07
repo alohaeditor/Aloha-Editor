@@ -1,0 +1,109 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Tabs test</title>
+
+    <link rel="stylesheet" href="css/common.css" type="text/css" />
+    <!--[if IE 6]><link rel="stylesheet" href="css/common-ie6.css"><![endif]-->
+    <!--[if IE 7]><link rel="stylesheet" href="css/common-ie7.css"><![endif]-->
+
+    <script src="js/jquery-1.2.3.min.js" type="text/javascript"></script>
+    <script src="js/jquery.dimensions.min.js" type="text/javascript"></script>
+    <script src="js/ui.mouse.js" type="text/javascript"></script>
+    <script src="js/ui.sortable.js" type="text/javascript"></script>
+    <script src="js/ui.sortable.ext.js" type="text/javascript"></script>
+    <script src="js/carrot2.tabs.js" type="text/javascript"></script>
+    <script src="js/carrot2.layout.js" type="text/javascript"></script>
+    <script src="js/carrot2.util.js" type="text/javascript"></script>
+    <script type="text/javascript"><!--
+$(document).ready(function() {
+  $("body").enableUi();
+  $.enhanceMarkup();
+  $("#source-tabs").sourceTabs();
+});
+//--></script>
+  </head>
+
+  <body>
+    <noscript>
+      <div class="noscript">For browsers with no JavaScript support, please use the <a href="#">mobile version of Carrot<sup>2</sup></a>.</div>
+    </noscript>
+
+    <div id="logo">
+      <img class="hide" src="img/c2-logo-small.png" alt="Carrot2 Search Results Clustering Engine" />
+      <h1 class="hide">Carrot2 Search Results Clustering Engine</h1>
+      <p class="hide">
+        Carrot2 is an Open Source Search Results Clustering Engine. It can
+        automatically organize (cluster) search results into thematic
+        categories.
+      </p>
+    </div>
+
+    <hr class="hide" />
+
+    <div id="startup-main-area">
+      <div id="startup-main-area-top"></div>
+      <div id="startup-main-area-inside">
+        <div id="source-tabs" class="disabled-ui first-active">
+          <h3 class="hide">Choose where to search:</h3>
+
+          <ul class="tabs clearfix">
+            <li class="tab active active-first">
+              <a class="label web" href="?input=web">Web</a>
+              <span class="hide tab-info">Carrot<sup>2</sup> will search the Web with www.etools.ch and automatically organize the results into thematic categories</span>
+            </li>
+
+            <li class="tab passive">
+              <a class="label news" href="?input=news">News</a>
+              <span class="hide tab-info">Carrot<sup>2</sup> will send the query to Yahoo! News and automatically organize the results into thematic categories</span>
+            </li>
+
+            <li class="tab passive">
+              <a class="label yahoo" href="?input=yahoo">Yahoo!</a>
+              <span class="hide tab-info">Carrot<sup>2</sup> will search the Web with Yahoo! and automatically organize the results into thematic categories</span>
+            </li>
+
+            <li class="tab passive">
+              <a class="label google" href="?input=google">Google</a>
+              <span class="hide tab-info">Carrot<sup>2</sup> will search the Web with Google and automatically organize the results into thematic categories</span>
+            </li>
+
+            <li class="tab passive passive-last">
+              <a class="label jobs" href="?input=jobs">Jobs</a>
+              <span class="hide tab-info">Carrot<sup>2</sup> will search for jobs and automatically organize the results into thematic categories</span>
+            </li>
+          </ul>
+        </div>
+
+        <div id="startup-search-area" class="disabled-ui">
+          <form action="#">
+            <h3 class="hide">Type your query:</h3>
+
+            <input type="text" name="query" id="query" />
+            <input type="submit" value="Search" id="search" />
+          </form>
+          <div id="tab-info">
+            <span class="tab-info">Carrot<sup>2</sup> will search the Web with www.etools.ch and automatically organize the results into thematic categories</span>
+          </div>
+        </div>
+      </div>
+      <div id="startup-main-area-bottom"></div>
+    </div>
+
+    <hr class="hide" />
+
+    <div id="util-links">
+      <h3 class="hide">About Carrot<sup>2</sup>:</h3>
+      <ul>
+        <li><a href="#">About</a></li>
+        <li><a href="#">New features!</a></li>
+        <li><a href="#">More demos</a></li>
+        <li><a href="#">Plugins</a></li>
+        <li><a href="#">Download</a></li>
+        <li><a href="#">FAQ</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+    </div>
+  </body>
+</html>

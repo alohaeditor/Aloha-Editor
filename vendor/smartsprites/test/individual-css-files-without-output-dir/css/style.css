@@ -1,0 +1,6 @@
+/** sprite: test; sprite-image: url('../img/sprite.png'); */
+div.web {
+  width: 17px;
+  height: 17px;
+  background-image: url(../img/web.gif); /** sprite-ref: test */
+}

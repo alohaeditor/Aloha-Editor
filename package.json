@@ -1,0 +1,73 @@
+{
+  "name": "aloha",
+  "version": "0.10.0-dev",
+
+  "dir": {
+    "src": "src",
+    "out": "out",
+    "template": "template"
+  },
+
+  "subdir": {
+    "src": "src",
+    "demo": "demo",
+    "plugin": "plugin",
+    "i18n": "i18n"
+	},
+
+  "template": {
+  	"footer": "footer.js",
+  	"header": "header.js",
+  	"replace": "replace.js",
+  	"bundle": "bundle.js",
+  	"prefix": "prefix.js"
+  },
+
+  "plugin": [
+  	"format","link","linkchecker","table"
+  ],
+
+  "css": [
+		"dep/ext-3.3.1/resources/css/ext-all-notheme.css",
+		"dep/ext-3.3.1/resources/css/xtheme-gray.css",
+
+		"css/aloha.css"
+  ],
+
+  "js": [
+		"dep/ext-3.3.1/adapter/jquery/ext-jquery-adapter.js",
+		"dep/ext-3.3.1/ext-all-debug.js",
+
+		"dep/jquery.json-2.2.min.js",
+		"dep/jquery.getUrlParam.js",
+		"dep/jquery.store.js",
+
+		"core/jquery.aloha.js",
+		"util/jquery.js",
+		"util/lang.js",
+		"util/range.js",
+		"util/position.js",
+		"util/dom.js",
+		"util/indexof.js",
+		"core/ext-alohaproxy.js",
+		"core/ext-alohareader.js",
+		"core/ext-alohatreeloader.js",
+		"core/core.js",
+		"core/ui.js",
+		"core/ui-attributefield.js",
+		"core/ui-browser.js",
+		"core/editable.js",
+		"core/event.js",
+		"core/floatingmenu.js",
+		"core/ierange-m2.js",
+		"core/log.js",
+		"core/markup.js",
+		"core/message.js",
+		"core/plugin.js",
+		"core/selection.js",
+		"core/sidebar.js",
+		"core/repositorymanager.js",
+		"core/repository.js",
+		"core/repositoryobjects.js"
+  ]
+}

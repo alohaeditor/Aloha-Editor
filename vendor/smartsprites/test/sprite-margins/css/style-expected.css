@@ -1,0 +1,33 @@
+/**
+ * A simple horizontal sprites test.
+ */
+
+div.logo {
+  background-image: url('../img/sprite-horizontal.png');
+  background-position: -0px top;
+}
+
+div.logo {
+  background-image: url('../img/sprite-horizontal.png');
+  background-position: -248px bottom;
+}
+
+div.logo {
+  background-image: url('../img/sprite-horizontal.png');
+  background-position: -296px top;
+}
+
+div.logo {
+  background-image: url('../img/sprite-vertical.png');
+  background-position: left -0px;
+}
+
+div.logo {
+  background-image: url('../img/sprite-vertical.png');
+  background-position: right -247px;
+}
+
+div.logo {
+  background-image: url('../img/sprite-vertical.png');
+  background-position: left -294px;
+}

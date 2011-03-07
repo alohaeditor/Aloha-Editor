@@ -1,0 +1,1075 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+<meta name="description" content="SmartSprites maintains CSS sprites in your designs, fully automatically. No tedious copying and pasting to your CSS when adding or changing sprited images." />
+<meta name="keywords" content="keywords"/> 
+<meta name="author" content="Stanisław Osiński"/> 
+<link rel="stylesheet" href="http://builds.carrot2.org/styles/bamboo-status.css" type="text/css" media="all" title="Default" />
+<link rel="stylesheet" type="text/css" href="css/default-sprite.css"/>
+<title>SmartSprites: CSS Sprite Generator Done Right</title>
+</head>
+<body>
+<div class="main">
+	<div class="gfx">
+    <a id="other-language" href="http://www.traduction.cc/traduction/Documentation-SmartSprites-8.html">French version</a>
+    <h1><span id="smart">Smart</span>Sprites<span id="alpha"> (Alpha!)</span></h1>
+    <h2><span id="css-sprite-gen">CSS Sprite Generator</span> <span id="done-right">Done Right</span></h2>
+  </div>
+
+	<ul class="menu">
+		<li><a href="#about">About</a></li>
+		<li><a href="#usage">Usage</a></li>
+		<li><a href="download.html?v0.2.7">Download</a></li>
+		<li><a href="#source">Source code</a></li>
+		<li><a href="#tutorials">Tutorials</a></li>
+		<li><a href="#faq">FAQ</a></li>
+		<li><a href="#contact">Support</a></li>
+		<li id="last"></li>
+	</ul>
+
+	<div class="content">
+		<div class="item">
+      <div id="donate">
+        <h1>Please Donate</h1>
+        <p>
+          So far I've spent about 150 hours developing SmartSprites. The
+          0.2.4 release alone is <a
+          href="http://issues.carrot2.org/secure/ConfigureReport.jspa?versionId=10135&amp;sortingOrder=least&amp;completedFilter=all&amp;subtaskInclusion=onlySelected&amp;selectedProjectId=10040&amp;reportKey=com.atlassian.jira.plugin.system.reports%3Atime-tracking&amp;Next=Next">28 hours of my voluntary work</a>. 
+        </p>
+        <p>
+          If you find SmartSprites useful, please consider making a donation.
+        </p>
+      
+        <form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+        <input type="hidden" name="cmd" value="_s-xclick" />
+        <input type="hidden" name="encrypted" value="-----BEGIN PKCS7-----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-----END PKCS7-----" />
+        <button id="donate-10" type="submit"><span>Donate $10</span></button>
+        </form>
+
+        <form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+        <input type="hidden" name="cmd" value="_s-xclick" />
+        <input type="hidden" name="encrypted" value="-----BEGIN PKCS7-----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-----END PKCS7-----" />
+        <button id="donate-25" type="submit"><span>Donate $25</span></button>
+        </form>
+
+        <form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+        <input type="hidden" name="cmd" value="_s-xclick" />
+        <input type="hidden" name="encrypted" value="-----BEGIN PKCS7-----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-----END PKCS7-----" />
+        <button id="donate-50" type="submit"><span>Donate $50</span></button>
+        </form>
+
+        <form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+        <input type="hidden" name="cmd" value="_s-xclick" />
+        <input type="hidden" name="encrypted" value="-----BEGIN PKCS7-----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-----END PKCS7-----" />
+        <button id="donate-other" type="submit"><span>Other amount</span></button>
+        </form>
+      </div>
+      <a name="about"></a>
+			<h1>What is SmartSprites?</h1>
+      <p>
+        SmartSprites will let you <strong>easily introduce and
+        maintain <a href="http://www.alistapart.com/articles/sprites">CSS
+        sprites</a> in your designs</strong>. SmartSprites parses special
+        directives you can insert into your original CSS to mark individual
+        images to be turned into sprites. It then builds sprite images from the
+        collected images and automatically inserts the required CSS properties into
+        your style sheet, so that the sprites are used instead of the
+        individual images.
+      </p>
+
+      <p style="text-align: center">
+        <img src="img/how-smartsprites-works.jpg" alt="SmartSprites parses special directives you can insert into your original CSS to mark individual images to be turned into sprites. It then builds sprite images from the collected images and automatically inserts the required CSS properties to your style sheet, so that the sprites are used instead of the individual images." />
+      </p>
+
+      <p>
+        In other words, <strong>no tedious copying &amp; pasting to your
+        CSS</strong> when adding, removing or changing sprited images. Just
+        work with your CSS and original images as usual and have SmartSprites
+        automatically transform them to the sprite-powered version when
+        necessary.
+      </p>
+
+      <p>Other features of SmartSprites:</p>
+
+      <ul>
+        <li>
+          <strong>Alpha release</strong>: Please bear with, or better -- <a href="http://issues.carrot2.org/browse/SMARTSPRITES">report</a>, any issues you have.
+        </li>
+
+        <li>
+          <strong class="new">(NEW!)</strong><strong>Full support for GIF and
+          PNG8/24</strong>: SmartSprites can create sprites in both GIF and
+          PNG8/24 formats, including transparency. Moreover, it can
+          optimize the PNG output so that PNG24 is used only when needed.
+        </li>
+
+        <li>
+          <strong>"Spriting" x- and y-repeated images</strong>: SmartSprites
+          supports turning background images repeated along x and y axes into
+          sprites.
+        </li>
+
+        <li>
+          <strong>Right and bottom image position</strong>: SmartSprites can
+          turn into sprites also background images that are positioned to the
+          right or bottom of the container.
+        </li>
+
+        <li>
+          <strong>Vertical and horizontal sprites</strong>: SmartSprites can
+          create both vertically and horizontally laid-out sprites, required to
+          support x- and y-repeated and right and bottom-positioned backgrounds.
+        </li>
+
+        <li>
+          <strong>Customized sprite margins</strong>: With SmartSprites you can
+          customize left, right, top and bottom margins of each individual
+          sprite for pixel perfect positioning.
+        </li>
+
+        <li>
+          <strong>Multiple sprite images and CSS files</strong>: SmartSprites
+          can process multiple CSS files and produce many different sprites in
+          one step (e.g. one vertical for icons, another horizontal one for tabs).
+        </li>
+
+        <li>
+          <strong class="new">(NEW!)</strong><strong>Special support for
+          Internet Explorer 6</strong>: SmartSprites can generate IE6-friendly
+          PNG8 sprites preserving transparency wherever possible. Optionally, a matte color
+          can be set for each sprite separately.
+        </li>
+
+        <li>
+          <strong class="new">(NEW!)</strong><strong>CSS- and
+          document-root-relative image paths</strong>: Paths to individual
+          images and the resulting sprites can be specified both relatively to
+          the CSS file or in an absolute fashion, relatively to the provided
+          document root directory.
+        </li>
+
+        <li>
+          <strong class="new">(NEW!)</strong><strong>Integrated with JAWR</strong>: 
+          SmartSprites is integrated into <a href="https://jawr.dev.java.net/">JAWR</a>, 
+          a complete CSS/JS bundling and compression solution for Java.
+        </li>
+
+        <li>
+          <strong>Easy integration with build systems</strong>: Transparent
+          processing is the driving force behind SmartSprites, using a
+          dedicated Ant task <strong class="new">(NEW!)</strong>it can be very easily
+          integrated into automated build scripts.
+        </li>
+
+        <li>
+          <strong>Open Source BSD License</strong>: You can use and contribute
+          to SmartSprites no matter whether you're doing an Open Source or a
+          commercial project.
+        </li>
+      </ul>
+		</div>
+
+		<div class="item">
+      <a name="usage"></a>
+			<h1>Using SmartSprites</h1>
+      <ol>
+        <li>
+          <strong>Start with preparing your design (HTML, CSS, images) the
+          usual way.</strong> Use <tt>background-image</tt> to attach
+          images like icons, logos or e.g. x- or y-repeated backgrounds. You'll
+          probably end up with a CSS pattern along the lines of this:
+
+          <code>#web {
+  width: 17px; height: 17px;
+  background-repeat: no-repeat;
+  background-image: url(../img/web.gif);
+}
+
+#logo {
+  width: 50px; height: 50px;
+  background-repeat: no-repeat;
+  background-position: top right;
+  background-image: url(../img/logo.png);
+}
+
+#main-box {
+  background-repeat: repeat-x;
+  background-position: 5px left;
+  background-image: url(../img/top-frame.gif);
+}</code>
+
+          When you've verified that the original design works as indented, you're ready
+          to annotate it with SmartSprite's directives.
+        </li>
+
+        <li>
+          <p>
+            <strong>Annotate your CSS with SmartSprites directives</strong>.
+            SmartSprites directives must be enclosed between <tt>/**</tt> and
+            <tt>*/</tt> characters (CSS comments), which will make them
+            transparent to the browser, when you're working on your original
+            CSS. Inside the comments, the directives follow the common CSS syntax of
+            <tt>property: value</tt>. After adding annotations, the original CSS
+            will look like this (directives highlighted):
+          </p>
+
+          <code><strong class="red">/** sprite: mysprite; sprite-image: url('../img/mysprite.png'); sprite-layout: vertical */</strong>
+          
+#web {
+  width: 17px; height: 17px;
+  background-repeat: no-repeat;
+  background-image: url(../img/web.gif); <strong>/** sprite-ref: mysprite; */</strong>
+}
+
+#logo {
+  width: 50px; height: 50px;
+  background-repeat: no-repeat;
+  background-position: top right;
+  background-image: url(../img/logo.png); <strong>/** sprite-ref: mysprite; sprite-alignment: right */</strong>
+}
+
+#main-box {
+  background-repeat: repeat-x;
+  background-position: 5px left;
+  background-image: url(../img/top-frame.gif); <strong>/** sprite-ref: mysprite; sprite-alignment: repeat; <span class="nobreak"></span> 
+                                                                                 sprite-margin-top: 5px */</strong>
+}</code>
+
+          <p>
+            The first directive (in <span class="red">red</span>) tells
+            SmartSprites that there will be one sprite whose name is
+            <tt>mysprite</tt>, which should be saved to
+            <tt>../img/mysprite.png</tt> relative to the CSS file. Images in
+            this sprite will be laid out vertically (on top of each other).
+          </p>
+
+          <p>
+            The directive for the <tt>#web</tt> rule instructs SmartSprites to
+            add image located at <tt>../img/web.gif</tt> to the
+            <tt>mysprite</tt> sprite. SmartSprites will also replace that line
+            of CSS with properties referring to the sprite it created.
+          </p>
+
+          <p>
+            The directive for the <tt>#logo</tt> rule tells SmartSprites to add
+            <tt>../img/logo.png</tt> to the same sprite and align it to the
+            right edge of the sprite image. This way, the image can be
+            positioned towards the right edge of the box to achieve the same
+            effect as with the original <tt>background-position: top right</tt>
+            declaration.
+          </p>
+
+          <p>
+            Finally, the directive for the <tt>#main-box</tt> rule instructs
+            SmartSprites to repeat the <tt>../img/top-frame.png</tt> across
+            the full width of the sprite image, so that the effect of
+            <tt>background-repeat: repeat-x</tt> can be preserved.
+            Additionally, SmartSprites will offset the image from the bottom
+            edge of the neighbouring image in the sprite by 5px, so that the
+            effect of <tt>background-position: 5px top</tt> is also preserved.
+          </p>
+
+          <p>
+            Below is a detailed description of SmartSprites directives, which
+            you may find a little heavy, but it will allow you to use all the power
+            of SmartSprites. There are two types of SmartSprites directives:
+          </p>
+
+          <ol>
+            <li>
+              <p>
+                <strong>Sprite Image Directive</strong>, marked in <span
+                class="red">red</span>, is used to declare one sprite image,
+                which merges some number of individual images. Sprite image
+                directive must start with <tt>/** sprite:</tt> and must be
+                contained in a single line. A single CSS file can contain any
+                number of sprite image directives. The sprite image directive
+                specifies the following properties:
+              </p>
+
+              <ul>
+                <li><strong>Sprite ID</strong>, syntax: <tt>sprite:
+                unique-id</tt>, required. A unique identifier by which the
+                sprite image will be referred to. For each unique sprite id,
+                SmartSprites will create one sprite image. </li>
+
+                <li><strong>Sprite image location</strong>, syntax:
+                <tt>sprite-image: url('path/name.(png | gif | jpg)')</tt>,
+                required.  CSS file-relative path to the sprite image to be
+                created.  SmartSprites will infer the format of the image
+                based on the extension used.  Currently supported are:
+                gif, png and jpg.
+                
+                  <p>
+                    The path can contain a number of variable references
+                    of the form <tt>${variable}</tt>. The following variables
+                    are supported and will be replaced with the corresponding 
+                    content:
+                   
+                    <ul>
+                      <li>
+                        <tt>sprite</tt>: Sprite ID
+                      </li>
+                      
+                      <li>
+                        <tt>md5</tt>: MD5 hash of the sprite image file created
+                        by SmartSprites. The hash will change only if the sprite 
+                         image content or file format changes.
+                      </li>
+                     
+                      <li>
+                        <tt>date</tt>: timestamp taken at the time of sprite 
+                       image generation. The timestamp will be different every 
+                       time SmartSprites processing is run, even if the sprite 
+                       images do not change
+                      </li>
+                    </ul>
+                  </p>
+                  
+                  <p>
+                    The sprite image path can contain a <tt>?</tt> character
+                    to enable query-string-based cache busting. The portion
+                    of the path from the <tt>?</tt> character until the end
+                    of the path will be ignored when determining the actual
+                    name of the sprite image to be written to disk.
+                  </p>
+                  
+                  <p>
+                    Please note that you can put the variables anywhere in the
+                    sprite image path, e.g.
+                  </p>
+                  
+                  <code>sprite-image: url('../img/logo-<strong>${md5}</strong>.png')
+sprite-image: url('../<strong>${date}</strong>/<strong>${sprite}</strong>.png')
+sprite-image: url('../sprite.png?<strong>${md5}</strong>')</code>
+                </li>
+
+                <li><strong>Sprite image layout</strong>, syntax:
+                <tt>sprite-layout: vertical | horizontal</tt>, optional,
+                default value: <tt>horizontal</tt>. Specifies whether the
+                individual images should be laid out in the sprite image
+                vertically (on top of each other) or horizontally (next to
+                each other).
+                </li>
+
+                <li><a name="sprite-matte-color"><strong>Matte
+                color</strong></a>, syntax: <tt>sprite-matte-color:
+                #ff8822</tt>, optional, default value: <tt>#ffffff</tt>.
+                Specifies the matte color that should be used to render partial
+                transparencies on sprites saved in GIF or PNG8 formats. Note:
+                currently only the 6-digit hexadecimal color specifications are
+                supported.  See also the <a href="#png-depth">PNG color
+                depth</a> and <a href="#png-ie6">IE6-friendly PNG</a> options.
+                </li>
+
+                <li>
+                  <strong>IE6 compatibility mode</strong>, syntax: <tt>sprite-ie6-mode:
+                  auto | none</tt>, optional, default value: <tt>auto</tt>.
+                  Specifies whether an IE6-compatible image for this sprite should be generated
+                  when necessary (<tt>auto</tt>) or should not be generated at all
+                  (<tt>none</tt>). See the <a href="#png-ie6">IE6-friendly PNG</a> option for
+                  more details.
+                </li>
+              </ul>
+            </li>
+
+            <li>
+              <strong>Sprite Reference Directive</strong>, marked in <span
+              class="orange">orange</span>, is used to tell SmartSprites that
+              a specific individual image should be placed in the specified
+              sprite image. The sprite reference directive must contain
+              <strong>in one line</strong>, a <tt>background-image</tt> CSS
+              property specifying a CSS file-relative path to the individual
+              image and a CSS comment starting with <tt>/** sprite-ref:
+              </tt>. The sprite reference directive specifies the following
+              properties:
+
+              <ul>
+                <li><strong>Sprite Reference</strong>, syntax:
+                <tt>sprite-ref: sprite-id</tt>, required. A reference to one
+                of the sprites declared by the sprite image directives.
+                The individual image will be placed in the sprite with the
+                provided identifier.</li>
+
+                <li>
+                  <p>
+                    <strong>Sprite Alignment</strong>, syntax:
+                    <tt>sprite-alignment: left | right | top | bottom |
+                    repeat</tt>, optional, default value: <tt>left</tt> for
+                    sprites with vertical layout, <tt>top</tt> for sprites
+                    with horizontal layout. Defines the edge of the sprite
+                    image to which this individual image will be aligned. For
+                    vertically aligned sprites, the allowed values are
+                    <tt>left</tt> and <tt>right</tt>, while for horizontally
+                    aligned ones -- <tt>top</tt> and <tt>bottom</tt>.  Sprite
+                    alignment can come in handy when the original background
+                    image was positioned towards the right or bottom of the
+                    box (e.g. <tt>background-position: top right</tt>).
+                  </p>
+
+                  <p>
+                    One special alignment value is <tt>repeat</tt>. In this
+                    case, the contents of the individual image will be
+                    repeated across the whole width of a vertical sprite or
+                    the whole height of a horizontal sprite. This will
+                    allow you to use sprites for backgrounds that have
+                    <tt>background-repeat</tt> set to <tt>repeat-x</tt> or
+                    <tt>repeat-y</tt>. 
+                  </p>
+
+                  <p>
+                    <strong>Warning</strong>: the width (height) of the
+                    resulting sprite will be not smaller than the least
+                    common multiple of the widths of all individual images
+                    with alignment set to <tt>repeat</tt> in that vertical
+                    (horizontal) sprite. For example, if you have "repeated"
+                    individual images of widths (heights) 3px, 5px, 7px and
+                    11px in one vertical (horizontal) sprite, the width
+                    (height) of that sprite will be 1155px. Therefore, use
+                    <tt>sprite-alignment: repeat</tt> with caution.
+                  </p>
+                </li>
+
+                <li><strong>Sprite margins</strong>, syntax:
+                <tt>sprite-margin-(left | right | top | bottom):
+                OFFSETpx</tt>, optional, default value: <tt>0px</tt>. The
+                offset of this image from the left, right, top and bottom
+                edge or the neighbouring image in the sprite. This property
+                may be useful when the original image was not positioned
+                exactly on the edge of the box, but had e.g.
+                <tt>background-position: 5px left</tt>. Note: only pixel
+                values are allowed. Shorthand version of margins property
+                known from CSS is <strong>not</strong> yet supported here.
+                </li>
+              </ul>
+            </li>
+          </ol>
+
+          <p>
+            When you've finished annotating your CSS with SmartSprites
+            directives, you can have SmartSprites generate the sprite images
+            and modified CSS files for you. Before you do that, you will need
+            to install some software SmartSprites requires and SmartSprites
+            itself.
+          </p>
+        </li>
+
+        <li>
+          <p>
+            <strong>Obtain SmartSprites and the software it requires</strong>.
+          </p>
+
+          <ol>
+            <li>
+              Download and install Java JDK version 5 or above (<a
+              href="http://java.sun.com/javase/downloads/index.jsp">JDK 6</a>
+              recommended).
+            </li>
+
+            <li>
+              <a href="download.html?v0.2.7">Download SmartSprites</a>
+              and unpack the archive.
+            </li>
+          </ol>
+
+          <p>
+            Now you're really ready to run SmartSprites.
+          </p>
+        </li>
+
+        <li>
+          <p>
+            <strong>Run SmartSprites</strong>. 
+          </p>
+
+          <ol>
+            <li>
+              On Windows:
+              <code>smartsprites --root-dir-path c:/example</code>
+
+              On Linux:
+              <code>./smartsprites.sh --root-dir-path /home/user/example</code>
+            </li>
+            
+            <li>
+              <p>
+                After processing completes you should see on the screen messages similar to:
+              </p>
+
+              <code> process:
+   [java] INFO: Reading image from: C:\example\img\web.gif
+   [java] INFO: Reading image from: C:\example\img\logo.png
+   [java] INFO: Reading image from: C:\example\img\top-frame.gif
+   [java] INFO: Creating sprite image of size 48 x 75 for mysprite
+   [java] INFO: Creating CSS style sheet: C:\example\css\style-sprite.css
+   [java] SmartSprites processing completed in 328 ms</code>
+
+              <p>
+                If you notice any line containing a warning (<tt>WARN:</tt>),
+                please read it carefully and correct the problem. Otherwise,
+                your design may not look like the original version.
+              </p>
+
+              <p>
+                Upon successful completion, SmartSprites will create all the
+                sprite images in the locations specified by the sprite image
+                directives. Also, next to each processed CSS file,
+                SmartSprites will create a corresponding CSS file with a
+                <tt>-sprite</tt> suffix. The original CSS files will remain
+                unchanged. To switch your design to CSS sprites, link these
+                CSS files instead of the original ones in your HTML.
+              </p>
+
+              <p>
+                For our example, the generated CSS would look similar to this:
+              </p>
+
+              <code>#web { 
+  width: 17px; height: 17px; 
+  background-repeat: no-repeat; 
+  background-image: url('../img/mysprite.png');
+  background-position: left -0px;
+} 
+
+#logo { 
+  width: 50px; height: 50px; 
+  background-repeat: no-repeat; 
+  background-position: top right; 
+  background-image: url('../img/mysprite.png');
+  background-position: right -17px;
+} 
+
+#main-box { 
+  background-repeat: repeat-x; 
+  background-position: 5px left; 
+  background-image: url('../img/mysprite.png');
+  background-position: left -64px;
+}</code>
+
+              <p>
+                Notice that all of the SmartSprites directives have been
+                omitted in the generated CSS file. If you still see any of
+                them in the output file, it means these specific directives
+                had some syntactic or semantic errors and have been ignored.
+                Warning messages should help you to pinpoint the problems.
+              </p>
+
+              <p>
+                Also notice that SmartSprites currently doesn't remove the
+                original <tt>background-position</tt> properties, but appends
+                its own ones below to shadow them. Your design may break if
+                you have <tt>background-position</tt> or
+                <tt>background-image</tt> properties appearing
+                <strong>below</strong> the line with SmartSprite's sprite
+                reference directive.
+              </p>
+            </li>
+          </ol>
+        </li>
+
+        <li>
+          <strong>Check if your design still looks the same</strong>. Chances
+          are, it won't right away. See <a href="#faq">FAQ</a> for some tips.
+        </li>
+
+        <li>
+          <a name="global-options"><strong>Tune global options</strong></a>.
+          SmartSprites has a number of additional options you can specify
+          in the command line invocation to further tune your designs. 
+
+          <ul>
+            <li>
+              <a name="root-dir-path"><strong>--root-dir-path</strong></a>: directory in 
+              which SmartSprites processing should be done, required if <tt>css-files</tt>
+              not specified or if <tt><a href="#output-dir-path">output-dir-path</a></tt>
+              specified, default: not specified.
+              <p>
+                SmartSprites will process all files with the <tt>*.css</tt> extension found 
+                in <tt>root-dir-path</tt> or any subdirectory of it. For more fine-grained
+                control over the processed CSS files, see the 
+                <tt><a href="#css-files">css-files</a></tt> option. 
+              </p>
+              <p>
+                If the provided root directory path is relative, it will be resolved 
+                against the current working directory. 
+              </p>
+            </li>
+            
+            <li>
+              <a name="css-files"><strong>--css-files</strong></a>: paths of CSS files to
+              process, required if <tt><a href="#root-dir-path">root-dir-path</a></tt>
+              not specified, default: not specified.
+              
+              <p>
+                SmartSprites will process all CSS files listed using this option. If
+                <tt>css-files</tt> is to be used together with <tt><a href="#output-dir-path">output-dir-path</a></tt>,
+                <tt><a href="#root-dir-path">root-dir-path</a></tt> must also be specified
+                so that SmartSprites can preserve the directory structure found in 
+                <tt>root-dir-path</tt> in <tt>output-dir-path</tt>. If <tt>root-dir-path</tt> 
+                and <tt>output-dir-path</tt> are used, <tt>css-files</tt> outside of 
+                <tt>root-dir-path</tt> will be ignored. 
+              </p>
+              
+              <p>
+                Relative CSS file paths provided using this option will be resolved
+                against the current working directory. Please note that SmartSprites will 
+                not expand any wildcards (like <tt>style/*.css</tt>), it assumes
+                the expansion is performed at the command line shell level.
+              </p>
+              
+              <p>
+                To specify the list of CSS files to process in the SmartSprites Ant task, use
+                one or more nested <tt>fileset</tt> elements. Please see the 
+                <tt>build.xml</tt> file in the distribution archive for an example.
+              </p>
+            </li>
+            
+            <li>
+              <a name="output-dir-path"><strong>--output-dir-path</strong></a>: output directory for
+              processed CSS files and CSS-relative sprite images, optional, default: not specified.
+              <p>
+                If a non-empty <tt>output-dir-path</tt> is specified, a non-empty
+                <tt><a href="#root-dir-path">root-dir-path</a></tt> must also be provided.
+                The directory structure relative to the <tt>root-dir-path</tt> 
+                will be preserved in the output directory. E.g. if CSS files are contained 
+                in the <tt>css/base</tt> directory of <tt>root-dir-path</tt>, the
+                processed results will be written to
+                <tt>output-dir-path/css/base</tt>. Also, CSS-relative sprite
+                images will be written to the output directory. Sprite images
+                with document-root-relative URLs will be written relative to
+                the <tt>document-root-dir-path</tt>. If the
+                <tt>output-dir-path</tt> directory does not exist, it will be
+                created. If the provided output directory path is relative, it will be resolved 
+                against the current working directory. 
+              </p>
+              <p>
+                You can leave the <tt>output-dir-path</tt> empty, in which case the CSS
+                files will be written next to the original CSS files with the
+                <tt><a href="#css-file-suffix">css-file-suffix</a></tt>, and sprite images 
+                will be written relative to the original CSS files.  If you are using a 
+                non-empty <tt>output-dir-path</tt>, you might want to use an empty 
+                <tt>css-file-suffix</tt>.
+              </p>
+            </li>
+
+            <li>
+              <a name="document-dir-path"><strong>--document-root-dir-path</strong></a>: 
+              Document root path for document-root-relative (starting with <tt>/</tt>) 
+              image urls in CSS, optional, default: not specified.
+
+              <p>
+                All document-root-relative image and sprite URLs will be taken relative to
+                <tt>document-root-dir-path</tt>. Also document-root-relative
+                sprite URLs will be written relative to
+                <tt>document-root-dir-path</tt>.  You can leave this property
+                empty if your CSS uses only CSS-relative image URLs.
+                If the provided document root directory path is relative, it will be resolved 
+                against the current working directory. 
+              </p>
+            </li>
+
+            <li>
+              <strong>--log-level</strong>: Message logging level, optional, default: <tt>INFO</tt>.
+
+              <p>
+                Messages less important than <tt>log-level</tt> will not be shown. SmartSprites
+                has 3 levels of log messages (in the increasing order of importance):
+              </p>
+
+              <ol>
+                <li><strong>INFO</strong>: information messages, can be safely ignored</li>
+                <li><strong>IE6NOTICE</strong>: notices related to possible quality loss when creating IE6-friendly sprite images, see also the <a href="png-ie6">IE6-friendly PNG</a> option</li>
+                <li><strong>WARN</strong>: warnings related to syntax, IO and sprite rendering quality loss problems that may cause the converted sprite-based designs look broken</li>
+              </ol>
+            </li>
+
+            <li>
+              <p><a name="png-depth"><strong>--sprite-png-depth</strong></a>: Color depth of sprites in the PNG format, optional, default: <tt>AUTO</tt>.</p>
+
+              <ol>
+                <li>
+                  <strong>AUTO</strong>: PNG color depth will be chosen
+                  automatically. If the sprite image does not contain partial
+                  transparencies (alpha channel) and has less than 256
+                  colors, PNG8 will be used.  Otherwise, the sprite will be
+                  saved in PNG24.
+                </li>
+
+                <li>
+                  <strong>DIRECT</strong>: PNG sprites will always be saved in the PNG24 format.
+                </li>
+
+                <li>
+                  <strong>INDEXED</strong>: PNG sprites will always be saved in
+                  the PNG8 format.  If the sprite image contains partial
+                  transparencies (alpha channel) or has more than 255 colors,
+                  image quality loss may occur and appropriate warnings will be
+                  issued.  See also the <tt><a href="#sprite-matte-color">sprite-matte-color</a></tt>
+                  property.
+                </li>
+              </ol>
+            </li>
+
+            <li>
+              <a name="png-ie6"><strong>--sprite-png-ie6</strong></a>: Enables generation of
+              IE6-friendly sprite images, optional, default: <tt>disabled</tt>.
+
+              <p>
+                If <tt>sprite-png-ie6</tt> is specified, for each PNG sprite image with partial
+                transparencies (alpha channel) or more than 255 colors and any transparencies, SmartSprites will
+                generate a corresponding color-reduced PNG8 file for IE6. An extra IE6-only
+                CSS rule will be added to the generated CSS file to ensure that IE6 (and only IE6)
+                uses the color-reduced version:
+              </p>
+
+              <code>#web { 
+  width: 17px; height: 17px; 
+  background-repeat: no-repeat; 
+  background-image: url('../img/mysprite.png');
+  <strong>-background-image: url('../img/mysprite-ie6.png');</strong>
+  background-position: left -0px;
+}</code>
+              
+              <p>
+                See also the <tt><a href="#sprite-matte-color">sprite-matte-color</a></tt>
+                property.
+              </p>
+            </li>
+
+            <li>
+              <a name="css-file-encoding"><strong>--css-file-encoding</strong></a>: The encoding to assume for input
+              and output CSS files, default: <tt>UTF-8</tt>. For the list of allowed values, please
+              see the <a href="http://java.sun.com/j2se/1.5.0/docs/guide/intl/encoding.doc.html" target="_blank">list of encodings supported in Java</a>.
+            </li>
+
+            <li>
+              <a name="css-file-suffix"><strong>--css-file-suffix</strong></a>: Suffix to 
+              be appended to the processed CSS file name, optional, default: <tt>-sprite</tt>.
+            </li>
+          </ul>
+        </li>
+
+        <li>
+          <strong>Integrate SmartSprites with your build scripts.</strong> SmartSprites comes
+          with an Ant that performs sprite processing and has exactly the
+          same options as the command line invocation. For an example invocation
+          of the task, please take a look at the <tt>build.xml</tt> script, whose <tt>process</tt>
+          task reads parameters from <tt>smartsprites.properties</tt> and generates sprites.
+          Please note that, contrary to the command line interface, the Ant task resolves all 
+          relative paths against the directory in which the <tt>build.xml</tt> script is located.
+        </li>
+      </ol>
+		</div>
+
+		<div class="item">
+      <a name="faq"></a>
+			<h1>Frequently Asked Questions</h1>
+
+      <ol>
+        <li>
+          <p>
+            <strong>After conversion to sprites, my design doesn't resemble the
+            original at all. What's wrong?</strong>.  This may happen :-) First
+            of all, check for SmartSprites warning messages, these indicate
+            that some of the directives have been ignored due to syntactic or
+            semantic errors. Before further investigation, make sure you don't
+            get any warnings.
+          </p>
+
+          <p>
+            Secondly, make sure each SmartSprites directive fits entirely
+            in one line, including the <tt>*/</tt> sequence closing the
+            comment. Otherwise, you may get unpredictable results.
+          </p>
+
+          <p>
+            Thirdly, as shown in the previous section, SmartSprites for the
+            time being doesn't remove the original <tt>background-position</tt>
+            properties, but appends its own ones below to shadow them. Your
+            design may break if you have <tt>background-position</tt> or
+            <tt>background-image</tt> properties appearing
+            <strong>below</strong> the line with SmartSprite's sprite reference
+            directive. SmartSprites outputs a warning in such cases. If this
+            happens, move the overriding properties <strong>before</strong> the
+            sprite reference directive in your original CSS file and run
+            SmartSprites again.
+          </p>
+
+          <p>
+            Finally, you may want to check some 
+            <a href="http://joshjustice.wordpress.com/2009/10/27/css-sprite-best-practices/">SmartSprites tips on Josh's Blog</a>
+            and the excellent <a href="http://groups.google.com/group/smartsprites-css-sprite-generator/browse_thread/thread/6c71142e3647ac93">CSS
+            sprites starter notes</a> posted by a SmartSprites user on the discussion group.
+          </p>
+        </li>
+
+        <li>
+          <p>
+            <strong>Other images from the sprite "show through" at places.
+            Why?</strong>.  This can happen when the box you applied a sprited
+            image to is larger than the sprited image itself. In this
+            situation, other images in the sprite that are below or to the
+            right of it will also be visible. 
+          </p>
+          
+          <p>
+            To fix this you can size the box to make its dimensions equal
+            to the dimensions of the image. If this is impossible, use
+            sprite margins (e.g. <tt>sprite-margin-bottom</tt>) to create
+            some empty space around the image in the sprite, so that the
+            other images below it (or right of it) don't show through.
+          </p>
+        </li>
+
+        <li>
+          <strong>Repeating images in sprites doesn't work. Is it a
+          bug?</strong>.  Remember that images repeated horizontally
+          (<tt>background-repeat: repeat-x</tt>) must be added to a vertically
+          laid out sprite (<tt>sprite-layout: vertical</tt>), and images
+          repeated vertically (<tt>background-repeat: repeat-y</tt>) must be in
+          a horizontally laid out sprite (<tt>sprite-layout: horizontal</tt>).
+          There is no way they can work otherwise, hence two sprite image
+          layouts in SmartSprites.
+        </li>
+       
+        <li>
+          <strong>Is there any bigger example of using SmartsSprites I can take
+          a look at?</strong> Yes, look in the <tt>test/ real-world-example</tt>
+          directory of the distribution. This is the original design I was
+          working on when I came up with the idea of SmartSprites.
+        </li>
+        
+        <li>
+          <strong>Are there any tutorials about SmartSprites?</strong> 
+          Yes, you can find them in the <a href="#tutorials">tutorials section</a>.
+        </li>
+        
+        <li>
+          <strong>I've found a bug, how can I report it?</strong> Please use
+          our <a href="http://issues.carrot2.org/browse/SMARTSPRITES">issue
+          tracker</a>.
+        </li>
+        
+        <li>
+          <strong>Do you plan any new features for SmartSprites?</strong>
+          Yes, please see our <a
+          href="http://issues.carrot2.org/browse/SMARTSPRITES?report=com.atlassian.jira.plugin.system.project:roadmap-panel">road map</a> for
+          more information.
+        </li>
+      </ol>
+    </div>
+
+		<div class="item">
+      <a name="php"></a>
+			<h1>Version history</h1>
+
+      <p>
+        <strong>v0.2.7</strong>, released: January 2011, <a href="http://issues.carrot2.org/secure/ConfigureReport.jspa?atl_token=0c2dc83482a10b22abaaa7c2a2a36121a47103b6&versionId=10183&sortingOrder=least&completedFilter=all&subtaskInclusion=onlySelected&selectedProjectId=10040&reportKey=com.atlassian.jira.plugin.system.reports%3Atime-tracking&Next=Next">took about 3 hours of work</a>
+      </p>
+      <ul class="versions">
+        <li>Bugfix: <a href="http://issues.carrot2.org/browse/SMARTSPRITES-74">SMARTSPRITES-74</a></li>
+        <li>Bugfix: <a href="http://issues.carrot2.org/browse/SMARTSPRITES-71">SMARTSPRITES-71</a></li>
+        <li>Bugfix: <a href="http://issues.carrot2.org/browse/SMARTSPRITES-69">SMARTSPRITES-69</a></li>
+      </ul>
+
+      <p>
+        <strong>v0.2.6</strong>, released: December 2009, <a href="http://issues.carrot2.org/secure/ConfigureReport.jspa?versionId=10180&amp;sortingOrder=least&amp;completedFilter=all&amp;subtaskInclusion=onlySelected&amp;selectedProjectId=10040&amp;reportKey=com.atlassian.jira.plugin.system.reports%3Atime-tracking&amp;Next=Next">took 4 hours of work</a>
+      </p>
+      <ul class="versions">
+        <li>Bugfix: <a href="http://issues.carrot2.org/browse/SMARTSPRITES-53">SMARTSPRITES-53</a></li>
+        <li>Bugfix: <a href="http://issues.carrot2.org/browse/SMARTSPRITES-59">SMARTSPRITES-59</a></li>
+      </ul>
+
+      <p>
+        <strong>v0.2.5</strong>, released: December 2009, <a href="http://issues.carrot2.org/secure/ConfigureReport.jspa?versionId=10160&amp;sortingOrder=least&amp;completedFilter=all&amp;subtaskInclusion=onlySelected&amp;selectedProjectId=10040&amp;reportKey=com.atlassian.jira.plugin.system.reports%3Atime-tracking&amp;Next=Next">took 3 hours of work</a>
+      </p>
+      <ul class="versions">
+        <li>SmartSprites JAR available as a <a href="http://download.csssprites.org/maven2">Maven2 artifact</a> 
+            (<a href="http://issues.carrot2.org/browse/SMARTSPRITES-49">SMARTSPRITES-18</a>, 1 vote)</li>
+        <li>Bugfix: <a href="http://issues.carrot2.org/browse/SMARTSPRITES-54">SMARTSPRITES-54</a></li>
+      </ul>
+
+      <p>
+        <strong>v0.2.4</strong>, released: September 2009, <a href="http://issues.carrot2.org/secure/ConfigureReport.jspa?versionId=10135&amp;sortingOrder=least&amp;completedFilter=all&amp;subtaskInclusion=onlySelected&amp;selectedProjectId=10040&amp;reportKey=com.atlassian.jira.plugin.system.reports%3Atime-tracking&amp;Next=Next">took 28 hours of work</a>
+      </p>
+      <ul class="versions">
+        <li>Removal of duplicate images from sprites (<a href="http://issues.carrot2.org/browse/SMARTSPRITES-18">SMARTSPRITES-18</a>, 3 votes)</li>
+        <li>Support for <a href="#css-files">specifying individual CSS files to process</a> (<a href="http://issues.carrot2.org/browse/SMARTSPRITES-37">SMARTSPRITES-37</a>)</li>
+        <li>Bugfix: <a href="http://issues.carrot2.org/browse/SMARTSPRITES-42">SMARTSPRITES-42</a></li>
+        <li>Bugfix: <a href="http://issues.carrot2.org/browse/SMARTSPRITES-45">SMARTSPRITES-45</a></li>
+        <li>Google Collections JAR updated to version 1.0-rc2</li>
+      </ul>
+
+      <p>
+        <strong>v0.2.3</strong>, released: April 2009
+      </p>
+      <ul class="versions">
+        <li>Bugfix: <a href="http://issues.carrot2.org/browse/SMARTSPRITES-31">SMARTSPRITES-31</a></li>
+        <li>Bugfix: <a href="http://issues.carrot2.org/browse/SMARTSPRITES-32">SMARTSPRITES-32</a></li>
+        <li>
+          <a href="#css-file-encoding">CSS file encoding parameter</a> added  
+          (<a href="http://issues.carrot2.org/browse/SMARTSPRITES-33">SMARTSPRITES-33</a>)
+        </li>
+      </ul>
+
+      <p>
+        <strong>v0.2.2</strong>, released: April 2009
+      </p>
+      <ul class="versions">
+        <li>Support for <a href="#sprite-image-uid">appending MD5 hashes</a> or timestamps to sprite image URLs 
+            (<a href="http://issues.carrot2.org/browse/SMARTSPRITES-25">SMARTSPRITES-25</a>)</li>
+        <li>Bugfix: <a href="http://issues.carrot2.org/browse/SMARTSPRITES-26">SMARTSPRITES-26</a></li>
+      </ul>
+
+      <p>
+        <strong>v0.2.1</strong>, released: October 2008
+      </p>
+      <ul class="versions">
+        <li>Ant not needed anymore to run SmartSprites</li>
+        <li>
+          partial support for the <tt>!important</tt> modifier in <tt>background-image</tt>
+          declarations, see <a href="http://issues.carrot2.org/browse/SMARTSPRITES-23?focusedCommentId=10914#action_10914">SMARTSPRITES-23</a>
+          for a more in-depth discussion.
+        </li>
+      </ul>
+
+      <p>
+        <strong>v0.2</strong>, released: August 2008
+      </p>
+      <ul class="versions">
+        <li>full support for transparency in GIF, PNG8, PNG24</li>
+        <li>simple color quantization algorithm for GIF and PNG8</li>
+        <li>document-root-relative image paths support</li>
+        <li>arbitrary output directory support</li>
+        <li>SmartSprites Ant task</li>
+      </ul>
+
+      <p>
+        <strong>v0.1</strong>, released: February 2008
+      </p>
+      <ul class="versions">
+        <li>incubation release</li>
+      </ul>
+    </div>
+
+		<div class="item">
+      <a name="source"></a>
+			<h1>Source code</h1>
+
+      <p>
+        The source code is available on GitHub:
+
+        <code><a href="https://github.com/carrotsearch/smartsprites">https://github.com/carrotsearch/smartsprites</a></code>
+
+        The code is continuously built and tested on <a href="http://builds.carrot2.org/browse/SMARTSPRITES-HEAD">SmartSprites build server</a>, see below for build artifacts.
+      </p>
+
+      <div class="build-info">
+        Build status: <script type="text/javascript" src="http://builds.carrot2.org/js/showLatestBuildStatus.action?buildKey=SMARTSPRITES-HEAD">&#160;</script><br />
+        <a href="http://download.csssprites.org/">Download development version binaries</a><br />
+        <a href="http://builds.carrot2.org/browse/SMARTSPRITES-HEAD/latest/artifact/JOB1/Code-Quality-Reports/surefire-report.html">View Unit Tests Report</a><br />
+        <a href="http://builds.carrot2.org/browse/SMARTSPRITES-HEAD/latest/artifact/JOB1/Code-Quality-Reports/clover/index.html">View Code Coverage Report</a><br />
+        <a href="http://builds.carrot2.org/browse/SMARTSPRITES-HEAD/latest/artifact/JOB1/Code-Quality-Reports/cpd.html">View Code Duplication Report</a><br />
+        <a href="http://builds.carrot2.org/browse/SMARTSPRITES-HEAD/latest/artifact/JOB1/Code-Quality-Reports/findbugs.html">View Static Code Analysis Report</a>
+      </div>
+    </div>
+
+		<div class="item">
+      <a name="php"></a>
+			<h1>PHP version</h1>
+
+      <p>
+        For a PHP port of SmartSprites, please <a href="http://www.tanila.de/smartsprite/index.php">check here</a>. 
+        You may also want to check <a href="http://code.google.com/p/web-optimizator/">Web Optimizer</a>, which supports
+        fully automatic generation of CSS sprites.
+      </p>
+    </div>
+
+		<div class="item">
+			<h1>Contributors</h1>
+
+      <ul>
+        <li>
+          <strong>Navtej Sadhal of <a target="_blank" href="http://www.redfin.com/">Redfin</a></strong>: feature ideas and initial code for GIF / PNG8 transparency support
+        </li>
+      </ul>
+    </div>
+
+		<div class="item">
+			<h1>SmartSprites-powered sites</h1>
+
+      <ul>
+        <li>
+          <a href="http://www.tomsgutscheine.de/">Tom's Gutsheine</a>: voucher and coupon search (in German)
+        </li>
+        <li>
+          <a href="http://www.matthias-endler.de">Matthias Endler's blog</a>
+        </li>
+        <li>
+          <a href="http://www.bikesoup.co.uk/">Bikesoup</a>: The UK's Premier New &amp; Used Bicycle Marketplace
+        </li>
+      </ul>
+
+      <p>
+        If you would like to list your SmartSprites-powered site here,
+        please let me know on the <a
+        href="http://groups.google.com/group/smartsprites-css-sprite-generator">SmartSprites
+        discussion group</a>.
+      </p>
+    </div>
+
+		<div class="item">
+      <a name="tutorials"></a>
+			<h1>Tutorials</h1>
+
+      <ul>
+        <li>
+          <strong><a
+          href="http://groups.google.com/group/smartsprites-css-sprite-generator/browse_thread/thread/6c71142e3647ac93">Excellent
+          CSS sprites starter notes</a></strong> posted on SmartSprites discussion group.
+        </li>
+
+        <li>
+          <strong><a
+          href="http://www.mywebsitedesignersblog.com/2010/12/making-css-sprites-the-easy-way/">Website 
+          Designers Blog</a></strong> has a CSS sprites tutorial based on SmartSprites.
+        </li>
+
+        <li>
+          <strong><a
+          href="http://www.znetdevelopment.com/blogs/2008/10/18/css-sprites/">Z|NET
+          Development blog</a></strong> provides a short tutorial on running
+          SmartSprites.
+        </li>
+
+        <li>
+          <strong><a href="http://joshjustice.wordpress.com/2009/10/27/css-sprite-best-practices/">Josh's Blog</a></strong> 
+          has a number of tips and best practices related to working with SmartSprites.
+        </li>
+      </ul>
+    </div>
+
+		<div class="item">
+      <a name="contact"></a>
+			<h1>Support</h1>
+
+      <p>
+        If you have specific questions, problems or feature ideas for SmartSprites, please
+        visit the <a href="http://groups.google.com/group/smartsprites-css-sprite-generator">SmartSprites CSS Sprite Generator Users and Developers group</a>.
+      </p>
+    </div>
+	</div>
+	<div class="footer">&copy; 2008-2011 <a href="http://stanislaw.osinski.name">Stanislaw Osinski</a>. Design by <a href="http://arcsin.se">Arcsin</a></div>
+</div>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+var pageTracker = _gat._getTracker("UA-317750-9");
+pageTracker._initData();
+pageTracker._trackPageview();
+</script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+/**
+ * A simple horizontal sprites test.
+ */
+
+div.logo {
+  background-image: url('../img/sprite.png?e39f8f47b28023e4e0647eecc95f8e1e');
+  -background-image: url('../img/sprite-ie6.png?a61448d03f8b0d7b299e9fc958939c7c');
+  background-position: -0px top;
+}
