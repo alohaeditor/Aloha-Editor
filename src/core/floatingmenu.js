@@ -93,12 +93,25 @@ Aloha.FloatingMenu.pinned = false;
 Aloha.FloatingMenu.window = jQuery(window);
 
 /**
+ * define floating menu float behaviour. meant to be adjusted via
+ * GENTICS.Aloha.settings.floatingmenu.behaviour
+ * set it to 'float' for standard behaviour, or 'topalign' for a fixed fm 
+ */
+Aloha.FloatingMenu.behaviour = 'float';
+
+/**
  * Initialize the floatingmenu
  * @hide
  */
 Aloha.FloatingMenu.init = function() {
 	//debugger;
 	//console.log('jQuery.store:', jQuery.store, window.jQuery, window.alohaQuery);
+
+	// check for behaviour setting of the floating menu
+    if (Aloha.settings.floatingmenu && typeof Aloha.settings.floatingmenu.behaviour === 'string') {
+        this.behaviour = Aloha.settings.floatingmenu.behaviour;
+    }
+
 	jQuery.storage = new jQuery.store();
 	this.currentScope = 'Aloha.global';
 	var that = this;
@@ -123,9 +136,11 @@ Aloha.FloatingMenu.init = function() {
 			jQuery.storage.set('Aloha.FloatingMenu.activeTab', that.userActivatedTab);
 		}
 	}).resize(function () {
-		var target = that.calcFloatTarget(Aloha.Selection.getRangeObject());
-		if (target) {
-			that.floatTo(target);
+        if (this.behaviour === 'float') {
+			var target = that.calcFloatTarget(Aloha.Selection.getRangeObject());
+			if (target) {
+				that.floatTo(target);
+			}
 		}
 	});
 	this.generateComponent();
@@ -320,15 +335,23 @@ Aloha.FloatingMenu.generateComponent = function () {
 	this.obj.mouseup(function (e) {
 		e.originalEvent.stopSelectionUpdate = true;
 	});
-	// listen to selectionChanged event
-	Aloha.bind('aloha-selection-changed',function(event, rangeObject) {
-		if (!that.pinned) {
-			var pos = that.calcFloatTarget(rangeObject);
-			if (pos) {
-				that.floatTo(pos);
+
+	// adjust float behaviour
+	if (this.behaviour === 'float') {
+		// listen to selectionChanged event
+		Aloha.bind('aloha-selection-changed',function(event, rangeObject) {
+			if (!that.pinned) {
+				var pos = that.calcFloatTarget(rangeObject);
+				if (pos) {
+					that.floatTo(pos);
+				}
 			}
-		}
-	});
+		});
+    } else if (this.behaviour === 'topalign') {
+		Aloha.bind('aloha-editable-activated', function(event, d) {
+            that.floatTo(d.editable.obj.offset());
+        });
+    }
 };
 
 /**
@@ -647,13 +670,13 @@ Aloha.FloatingMenu.nextFloatTargetObj = function (obj, limitObj) {
 /**
  * calculates the float target coordinates for a range
  * @param range the fm should float to
- * @return object containing x and y coordinates, like { x : 20, y : 43 }
+ * @return object containing left and top coordinates, like { left : 20, top : 43 }
  * @hide
  */
 Aloha.FloatingMenu.calcFloatTarget = function(range) {
 	var
 		i, editableLength,
-		targetObj, scrollTop, y;
+		targetObj, scrollTop, top;
 
 	// TODO in IE8 somteimes a broken range is handed to this function - investigate this
 	if (!Aloha.activeEditable || typeof range.getCommonAncestorContainer === 'undefined') {
@@ -678,22 +701,22 @@ Aloha.FloatingMenu.calcFloatTarget = function(range) {
 	if (!targetObj || !targetObj.offset()) {
 		return false;
 	}
-	y = targetObj.offset().top - this.obj.height() - 50; // 50px offset above the current obj to have some space above
+	top = targetObj.offset().top - this.obj.height() - 50; // 50px offset above the current obj to have some space above
 
 	// if the floating menu would be placed higher than the top of the screen...
-	if ( y < scrollTop) {
-		y += 50 + GENTICS.Utils.Position.ScrollCorrection.top;
+	if ( top < scrollTop) {
+		top += 50 + GENTICS.Utils.Position.ScrollCorrection.top;
 	}
 
 	// if the floating menu would float off the bottom of the screen
 	// we don't want it to move, so we'll return false
-	if (y > this.window.height() + this.window.scrollTop()) {
+	if (top > this.window.height() + this.window.scrollTop()) {
 		return false;
 	}
 
 	return {
-		x : Aloha.activeEditable.obj.offset().left,
-		y : y
+		left : Aloha.activeEditable.obj.offset().left,
+		top : top
 	};
 };
 
@@ -701,7 +724,7 @@ Aloha.FloatingMenu.calcFloatTarget = function(range) {
  * float the fm to the desired position
  * the floating menu won't float if it is pinned
  * @method
- * @param {Object} object coordinate object which has a x and y property
+ * @param {Object} object coordinate object which has a top and left property
  */
 Aloha.FloatingMenu.floatTo = function(position) {
 	// no floating if the panel is pinned
@@ -712,10 +735,10 @@ Aloha.FloatingMenu.floatTo = function(position) {
 	var that = this;
 
 	// move to the new position
-	if (!this.floatedTo || this.floatedTo.x != position.x || this.floatedTo.y != position.y) {
+	if (!this.floatedTo || this.floatedTo.left != position.left || this.floatedTo.top != position.top) {
 		this.obj.animate({
-			top:  position.y,
-			left: position.x
+			top:  position.top,
+			left: position.left
 		}, {
 			queue : false,
 			step : function (step, props) {
