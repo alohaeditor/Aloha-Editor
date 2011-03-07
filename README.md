@@ -10,6 +10,6 @@ For help there is:
 To get updates you can:
 
 - Subscribe to GitHub updates by clicking the "watch" button up the top right of this page.
-- Subscribe to RSS feed updates for the [dev branch](http://www.google.com/reader/view/feed/https://github.com/alohaeditor/Aloha-Editor/commits/dev.atom) and/or [master branch](http://www.google.com/reader/view/feed/https://github.com/alohaeditor/Aloha-Editor/commits/dev.atom)
+- Subscribe to RSS feed updates for the [dev branch](https://github.com/alohaeditor/Aloha-Editor/commits/dev.atom) and/or [master branch](https://github.com/alohaeditor/Aloha-Editor/commits/master.atom)
 
 Also, lots of love and hugs from the Aloha Editor Team!
