@@ -96,12 +96,25 @@ GENTICS.Aloha.FloatingMenu.pinned = false;
 GENTICS.Aloha.FloatingMenu.window = jQuery(window);
 
 /**
+ * define floating menu float behaviour. meant to be adjusted via
+ * GENTICS.Aloha.settings.floatingmenu.behaviour
+ * set it to 'float' for standard behaviour, or 'topalign' for a fixed fm 
+ */
+GENTICS.Aloha.FloatingMenu.behaviour = 'float';
+
+/**
  * Initialize the floatingmenu
  * @hide
  */
 GENTICS.Aloha.FloatingMenu.init = function() {
+	// check for behaviour setting of the floating menu
+	if (GENTICS.Aloha.settings.floatingmenu && typeof GENTICS.Aloha.settings.floatingmenu.behaviour === 'string') {
+		this.behaviour = GENTICS.Aloha.settings.floatingmenu.behaviour;
+	}
+	
 	this.currentScope = 'GENTICS.Aloha.global';
 	var that = this;
+
 	this.window.unload(function () {
 		// store fm position if the panel is pinned to be able to restore it next time
 		if (that.pinned) {
@@ -122,9 +135,11 @@ GENTICS.Aloha.FloatingMenu.init = function() {
 			jQuery.cookie('GENTICS.Aloha.FloatingMenu.activeTab', that.userActivatedTab);
 		}
 	}).resize(function () {
-		var target = that.calcFloatTarget(GENTICS.Aloha.Selection.getRangeObject());
-		if (target) {
-			that.floatTo(target);
+		if (this.behaviour === 'float') {
+			var target = that.calcFloatTarget(GENTICS.Aloha.Selection.getRangeObject());
+			if (target) {
+				that.floatTo(target);
+			}
 		}
 	});
 	this.generateComponent();	
@@ -310,18 +325,28 @@ GENTICS.Aloha.FloatingMenu.generateComponent = function () {
 		e.stopPropagation();
 	});
 	
-	// listen to selectionChanged event
-	GENTICS.Aloha.EventRegistry.subscribe(
-			GENTICS.Aloha,
-			'selectionChanged',
-			function(event, rangeObject) {
-				if (!that.pinned) {
-					var pos = that.calcFloatTarget(rangeObject);
-					if (pos) {
-						that.floatTo(pos);
+	// adjust float behaviour
+	if (this.behaviour === 'float') {
+		// listen to selectionChanged event
+		GENTICS.Aloha.EventRegistry.subscribe(
+				GENTICS.Aloha,
+				'selectionChanged',
+				function(event, rangeObject) {
+					if (!that.pinned) {
+						var pos = that.calcFloatTarget(rangeObject);
+						if (pos) {
+							that.floatTo(pos);
+						}
 					}
-				}
-	});
+		});
+	} else if (this.behaviour === 'topalign') {
+		GENTICS.Aloha.EventRegistry.subscribe(
+				GENTICS.Aloha,
+				'editableActivated',
+				function(event, d) {
+					that.floatTo(d.editable.obj.offset());
+		});
+	}
 };
 
 /**
@@ -659,7 +684,7 @@ GENTICS.Aloha.FloatingMenu.calcFloatTarget = function(range) {
 	var targetObj = jQuery(target);
 	var scrollTop = GENTICS.Utils.Position.Scroll.top;
 
-	var y = targetObj.offset().top - this.obj.height() - 50; // 50px offset above the current obj to have some space above
+	var top = targetObj.offset().top - this.obj.height() - 50; // 50px offset above the current obj to have some space above
 
 	// if the floating menu would be placed higher than the top of the screen... 
 	var ribbonOffset = 0;
@@ -667,19 +692,19 @@ GENTICS.Aloha.FloatingMenu.calcFloatTarget = function(range) {
 			(GENTICS.Aloha.settings.ribbon === true || GENTICS.Aloha.settings.ribbon == "true" || GENTICS.Aloha.settings.ribbon == 1 )) {
 		ribbonOffset = 30; // 30px = 26px ribbon height + some breathing room
 	}
-	if ( y < (scrollTop + ribbonOffset)) { 
-		y = targetObj.offset().top + targetObj.height() + ribbonOffset;
+	if ( top < (scrollTop + ribbonOffset)) { 
+		top = targetObj.offset().top + targetObj.height() + ribbonOffset;
 	}
 	
 	// if the floating menu would float off the bottom of the screen
 	// we don't want it to move, so we'll return false
-	if (y > this.window.height() + this.window.scrollTop()) {
+	if (top > this.window.height() + this.window.scrollTop()) {
 		return false;
 	}
 	
 	return {
-		x : GENTICS.Aloha.activeEditable.obj.offset().left,
-		y : y 
+		left : GENTICS.Aloha.activeEditable.obj.offset().left,
+		top : top 
 	};
 };
 
@@ -687,7 +712,7 @@ GENTICS.Aloha.FloatingMenu.calcFloatTarget = function(range) {
  * float the fm to the desired position
  * the floating menu won't float if it is pinned
  * @method
- * @param {Object} object coordinate object which has a x and y property
+ * @param {Object} object coordinate object which has a left and top property
  */
 GENTICS.Aloha.FloatingMenu.floatTo = function(position) {
 	// no floating if the panel is pinned
@@ -698,10 +723,10 @@ GENTICS.Aloha.FloatingMenu.floatTo = function(position) {
 	var that = this;
 
 	// move to the new position
-	if (!this.floatedTo || this.floatedTo.x != position.x || this.floatedTo.y != position.y) {
+	if (!this.floatedTo || this.floatedTo.x != position.left || this.floatedTo.y != position.top) {
 		this.obj.animate({
-			top:  position.y,
-			left: position.x
+			top:  position.top,
+			left: position.left
 		}, { 
 			queue : false,
 			step : function (step, props) {
