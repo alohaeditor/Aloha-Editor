@@ -723,7 +723,7 @@ GENTICS.Aloha.FloatingMenu.floatTo = function(position) {
 	var that = this;
 
 	// move to the new position
-	if (!this.floatedTo || this.floatedTo.x != position.left || this.floatedTo.y != position.top) {
+	if (!this.floatedTo || this.floatedTo.left != position.left || this.floatedTo.top != position.top) {
 		this.obj.animate({
 			top:  position.top,
 			left: position.left
