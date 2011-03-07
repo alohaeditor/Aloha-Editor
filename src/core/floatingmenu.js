@@ -882,7 +882,9 @@ GENTICS.Aloha.FloatingMenu.Group.prototype = {
 				'columns' : columnCount,
 				'items': items
 			});
-
+            jQuery.each(this.fields, function(id, field){
+				that.buttons.push(field);
+			});
 			// now find the Ext.Buttons and set to the GENTICS buttons
 			jQuery.each(this.buttons, function(index, buttonInfo) {
 				buttonInfo.button.extButton = that.extButtonGroup.findById(buttonInfo.button.id);
