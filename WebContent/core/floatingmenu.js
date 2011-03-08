@@ -340,6 +340,7 @@ GENTICS.Aloha.FloatingMenu.generateComponent = function () {
 					}
 		});
 	} else if (this.behaviour === 'topalign') {
+		this.togglePin(false);
 		GENTICS.Aloha.EventRegistry.subscribe(
 				GENTICS.Aloha,
 				'editableActivated',
@@ -348,6 +349,7 @@ GENTICS.Aloha.FloatingMenu.generateComponent = function () {
 					p.top -= (that.obj.height() + 6);
 					that.floatTo(p);
 		});
+		
 		var d = jQuery(document);
 		d.scroll(function () {
 			if (!GENTICS.Aloha.activeEditable) {
@@ -357,10 +359,6 @@ GENTICS.Aloha.FloatingMenu.generateComponent = function () {
 			var fmHeight = that.obj.height();
 			var scrollTop = d.scrollTop();
 			
-			console.log('fmHeight: ' + fmHeight + ', pos top: ' + pos.top + ', scrollTop: ' + scrollTop);
-			
-			that.togglePin(false);
-			
 			if (scrollTop > pos.top - (fmHeight + 6) 
 				&& scrollTop < (pos.top + GENTICS.Aloha.activeEditable.obj.height() - 90)) {
 				if (!that.pinned) {
@@ -369,6 +367,7 @@ GENTICS.Aloha.FloatingMenu.generateComponent = function () {
 				}
 			} else if (scrollTop < pos.top) {
 				pos.top -= fmHeight + 6;
+				that.togglePin(false);
 				that.floatTo(pos);
 			}
 		});
