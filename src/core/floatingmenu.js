@@ -348,11 +348,13 @@ Aloha.FloatingMenu.generateComponent = function () {
 			}
 		});
     } else if (this.behaviour === 'topalign') {
+        this.togglePin(false);
 		Aloha.bind('aloha-editable-activated', function(event, d) {
 			var p = d.editable.obj.offset();
 			p.top -= (that.obj.height() + 6);
             that.floatTo(p);
         });
+
         $(document).scroll(function () {
             if (!Aloha.activeEditable) {
                 return;
@@ -360,8 +362,6 @@ Aloha.FloatingMenu.generateComponent = function () {
             var pos = Aloha.activeEditable.obj.offset(),
 			    fmHeight = that.obj.height(),
                 scrollTop = d.scrollTop();
-            
-            that.togglePin(false);
             
 			if (scrollTop > pos.top - (fmHeight + 6) 
                 && scrollTop < (pos.top + Aloha.activeEditable.obj.height() - 90)) {
@@ -371,6 +371,7 @@ Aloha.FloatingMenu.generateComponent = function () {
                 }
             } else if (scrollTop < pos.top) {
 				pos.top -= fmHeight + 6;
+				that.togglePin(false);
                 that.floatTo(pos);
             }
         });
