@@ -125,7 +125,7 @@
 			}
 
 			// Return relativePath
-			return relativePath;
+			return relativePath.strip('/');
 		}
 
 	};
