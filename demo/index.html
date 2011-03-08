@@ -1,41 +1,18 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Aloha, Abbreviations !</title>
-<script>GENTICS_Aloha_base="../../../";</script>
-<script type="text/javascript" src="../../../core/include.js"></script>
-<script type="text/javascript" src="../../../plugins/com.gentics.aloha.plugins.Format/plugin.js"></script>
-<script type="text/javascript" src="../plugin.js"></script>
- 
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+	<title>Aloha, Documents!</title>
+	<base href="../../../">
 
-<link rel="stylesheet" href="AlohaAbbr.css" />
+	<script	src="dep/jquery-1.5.1.js" ></script>
+	<script	src="aloha.js" id="aloha-script-include" data-plugins="format,abbr"></script>
+	<link href="aloha.css" id="aloha-style-include" rel="stylesheet">
 
-<!-- turn an element into editable Aloha continuous text -->
-<script type="text/javascript">
-GENTICS.Aloha.settings = {
-	logLevels: {'error': true, 'warn': true, 'info': true, 'debug': false},
-	errorhandling : false,
-	ribbon: false,	
-	"i18n": {
-		// let the system detect the users language
-		//"acceptLanguage": '<?=$_SERVER['HTTP_ACCEPT_LANGUAGE']?>'
-		"acceptLanguage": 'de-de,de;q=0.8,it;q=0.6,en-us;q=0.7,en;q=0.2'
-	},
-	"plugins": {
-	 	"com.gentics.aloha.plugins.Abbr": {
-	 		'config': ['abbr']
-		}
-  	}
-};
-
-$(document).ready(function() {
-	$('#content').aloha();
-});  
-</script>
+	<link rel="stylesheet" href="plugin/abbr/demo/index.css" type="text/css">
 </head>
 <body>
-<div id="main"> 
+<div id="main">
 <div id="bodyContent">
 <div id="content" class="article">
 <h1>Aloha</h1>
@@ -65,5 +42,40 @@ also used in the Nickelodeon program Rocket Power.</p>
 </div>
 </div>
 </div>
+
+	<script type="text/javascript" defer>
+		(function(window,undefined){
+			// Prepare
+			var
+				$ = window.jQuery,
+				GENTICS = window.GENTICS,
+				$body = $('body');
+
+			// Configure
+			GENTICS.Aloha.settings = {
+				logLevels: {'error': true, 'warn': true, 'info': true, 'debug': false},
+				errorhandling : false,
+				ribbon: false,
+				"i18n": {
+					// let the system detect the users language
+					//"acceptLanguage": '<?=$_SERVER['HTTP_ACCEPT_LANGUAGE']?>'
+					"acceptLanguage": 'de-de,de;q=0.8,it;q=0.6,en-us;q=0.7,en;q=0.2'
+				},
+				"plugins": {
+					"com.gentics.aloha.plugins.Abbr": {
+						'config': ['abbr']
+					}
+					}
+			};
+
+			// Bind to Aloha Ready Event
+			$body.bind('aloha',function(){
+				// Upgrade
+				$('#content').aloha();
+			});
+
+			// </closure>
+		})(window);
+	</script>
 </body>
 </html>
