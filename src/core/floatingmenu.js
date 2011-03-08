@@ -100,6 +100,12 @@ Aloha.FloatingMenu.window = jQuery(window);
 Aloha.FloatingMenu.behaviour = 'float';
 
 /**
+ * will only be hounoured when behaviour is set to 'topalign'. Adds a margin,
+ * so the floating menu is not directly attached to the top of the page
+ */
+Aloha.FloatingMenu.marginTop = 0;
+
+/**
  * Initialize the floatingmenu
  * @hide
  */
@@ -108,8 +114,13 @@ Aloha.FloatingMenu.init = function() {
 	//console.log('jQuery.store:', jQuery.store, window.jQuery, window.alohaQuery);
 
 	// check for behaviour setting of the floating menu
-    if (Aloha.settings.floatingmenu && typeof Aloha.settings.floatingmenu.behaviour === 'string') {
-        this.behaviour = Aloha.settings.floatingmenu.behaviour;
+    if (Aloha.settings.floatingmenu) {
+        if (typeof Aloha.settings.floatingmenu.behaviour === 'string') {
+            this.behaviour = Aloha.settings.floatingmenu.behaviour;
+        }
+        if (typeof Aloha.settings.floatingmenu.marginTop === 'number') {
+            this.marginTop = Aloha.settings.floatingmenu.marginTop;
+        }
     }
 
 	jQuery.storage = new jQuery.store();
@@ -348,13 +359,27 @@ Aloha.FloatingMenu.generateComponent = function () {
 			}
 		});
     } else if (this.behaviour === 'topalign') {
+        // topalign will retain the user's pinned status
+        // TODO maybe the pin should be hidden in that case?
         this.togglePin(false);
-		Aloha.bind('aloha-editable-activated', function(event, d) {
-			var p = d.editable.obj.offset();
-			p.top -= (that.obj.height() + 6);
-            that.floatTo(p);
+
+		// float the fm to each editable that is activated
+		Aloha.bind('aloha-editable-activated', function(event, data) {
+			var p = data.editable.obj.offset();
+			p.top -= 90; //dirty
+
+            if (p.top < $(document).scrollTop()) {
+                // scrollpos is below top of editable
+                that.obj.css('top', $(document).scrollTop() + that.marginTop);
+                that.obj.css('left', p.left);
+                that.togglePin(true);
+            } else {
+                // scroll pos is above top of editable
+                that.floatTo(p);
+            }
         });
 
+		// fm scroll behaviour
         $(document).scroll(function () {
             if (!Aloha.activeEditable) {
                 return;
@@ -362,19 +387,21 @@ Aloha.FloatingMenu.generateComponent = function () {
             var pos = Aloha.activeEditable.obj.offset(),
 			    fmHeight = that.obj.height(),
                 scrollTop = d.scrollTop();
-            
-			if (scrollTop > pos.top - (fmHeight + 6) 
-                && scrollTop < (pos.top + Aloha.activeEditable.obj.height() - 90)) {
-                if (!that.pinned) {
-                    that.obj.css('top', scrollTop);
-                    that.togglePin(true);
-                }
-            } else if (scrollTop < pos.top) {
-				pos.top -= fmHeight + 6;
-				that.togglePin(false);
+
+			if (scrollTop > (pos.top - fmHeight - 6 - that.marginTop)) {
+                // scroll pos is lower than top of editable
+                that.togglePin(true);
+                that.obj.css('top', that.marginTop);
+            } else if (scrollTop <= (pos.top - fmHeight - 6 - that.marginTop)) {
+                // scroll pos is above top of editable
+                pos.top -= fmHeight + 6;
+                that.togglePin(false);
                 that.floatTo(pos);
+            } else if (scrollTop > pos.top + Aloha.activeEditable.obj.height() - fmHeight) {
+                // scroll pos is past editable
+                that.togglePin(false);
             }
-        });
+		});
     }
 };
 
