@@ -350,8 +350,30 @@ Aloha.FloatingMenu.generateComponent = function () {
     } else if (this.behaviour === 'topalign') {
 		Aloha.bind('aloha-editable-activated', function(event, d) {
 			var p = d.editable.obj.offset();
-			p.top = p.top - 90;
+			p.top -= 90;
             that.floatTo(p);
+        });
+        var d = jQuery(document);
+        d.scroll(function () {
+            if (!Aloha.activeEditable) {
+                return;
+            }
+            var pos = Aloha.activeEditable.obj.offset();
+            var scrollTop = d.scrollTop();
+            
+            that.togglePin(false);
+            
+            if (scrollTop > pos.top 
+                && scrollTop < (pos.top + Aloha.activeEditable.obj.height() - 90)) {
+                if (!that.pinned) {
+                    that.obj.css('top', scrollTop);
+                    that.togglePin(true);
+                }
+            } else if (scrollTop < pos.top) {
+                that.togglePin(false);
+                pos.top -= that.obj.height() + 50;
+                that.floatTo(pos);
+            }
         });
     }
 };
@@ -381,9 +403,16 @@ Aloha.FloatingMenu.refreshShadow = function (resize) {
 /**
  * toggles the pinned status of the floating menu
  * @method
+ * @param {boolean} pinned set to true to activate pin, or set to false to deactivate pin. 
+ *             leave undefined to toggle pin status automatically
  */
-Aloha.FloatingMenu.togglePin = function() {
+Aloha.FloatingMenu.togglePin = function(pinned) {
 	var el = jQuery('.aloha-floatingmenu-pin');
+       
+    if (typeof pinned === 'boolean') {
+        this.pinned = !pinned;
+    }
+       
 	if (this.pinned) {
 		el.removeClass('aloha-floatingmenu-pinned');
 		this.top = this.obj.offset().top;
@@ -726,7 +755,7 @@ Aloha.FloatingMenu.calcFloatTarget = function(range) {
  * float the fm to the desired position
  * the floating menu won't float if it is pinned
  * @method
- * @param {Object} object coordinate object which has a top and left property
+ * @param {Object} coordinate object which has a left and top property
  */
 Aloha.FloatingMenu.floatTo = function(position) {
 	// no floating if the panel is pinned
@@ -734,10 +763,11 @@ Aloha.FloatingMenu.floatTo = function(position) {
 		return;
 	}
 
-	var that = this;
+	var that = this,
+	    fmpos = this.obj.offset();
 
 	// move to the new position
-	if (!this.floatedTo || this.floatedTo.left != position.left || this.floatedTo.top != position.top) {
+	if (fmpos.left != position.left || fmpos.top != position.top) {
 		this.obj.animate({
 			top:  position.top,
 			left: position.left
@@ -754,9 +784,6 @@ Aloha.FloatingMenu.floatTo = function(position) {
 				that.refreshShadow(false);
 			}
 		});
-
-		// remember the position we floated to
-		this.floatedTo = position;
 	}
 };
 
