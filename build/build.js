@@ -130,6 +130,15 @@
 				// Update plugin meta data
 				fs.writeFileSync(config.metaPath,JSON.stringify(autoConfig));
 			}
+			else {
+				// Files
+				config.js.each(function(key,value){
+					config.js[key] = config.rootPath+'/'+util.getRelativePath(value,config.rootPath);
+				});
+				config.css.each(function(key,value){
+					config.css[key] = config.rootPath+'/'+util.getRelativePath(value,config.rootPath);
+				});
+			}
 
 
 			// Done
