@@ -30,7 +30,8 @@
 		(function(window,undefined){
 			var
 				$ = window.jQuery,
-				GENTICS = window.GENTICS;
+				GENTICS = window.GENTICS,
+				$body = $('body');
 
 			GENTICS.Aloha.settings = {
 				"plugins": {
@@ -57,10 +58,11 @@
 				}
 			};
 
-			$(function() {
-					 $('#title').aloha();
-					 $('#teaser').aloha();
-					 $('#content').aloha();
+			// Bind to Aloha Ready Event
+			$body.bind('aloha',function(){
+				$('#title').aloha();
+				$('#teaser').aloha();
+				$('#content').aloha();
 			});
 
 		})(window);

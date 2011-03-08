@@ -803,10 +803,14 @@ window.alohaQuery = window.jQuery.sub();
 		});
 	}
 
+	// Prepare
+	var $body = $('body');
+	$body.createPromiseEvent('aloha');
+
 	// Initialise Aloha
 	$(function(){
 		GENTICS.Aloha.init();
-		$('body').trigger('alohaready');
+		$body.trigger('aloha');
 	});
 
 })(window);

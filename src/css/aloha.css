@@ -109,7 +109,7 @@ table.x-toolbar-ct table {
 	-webkit-border-top-right-radius: 3px;
 	border-top-left-radius: 3px;
 	border-top-right-radius: 3px;
-	background: url(../images/grabhandle.png) no-repeat scroll center 5px rgba(0, 0, 0, 0.4);
+	background: url(../img/grabhandle.png) no-repeat scroll center 5px rgba(0, 0, 0, 0.4);
 }
 
 .GENTICS_floatingmenu:hover .GENTICS_floatingmenu_pin {
@@ -117,7 +117,7 @@ table.x-toolbar-ct table {
 }
 
 .GENTICS_floatingmenu_pin {
-	background: url("../images/pin.png") no-repeat scroll 0 6px transparent;
+	background: url("../img/pin.png") no-repeat scroll 0 6px transparent;
 	cursor: pointer;
 	margin-left: 5px !important;
 	width: 16px;
@@ -164,11 +164,11 @@ table.x-toolbar-ct table {
 }
 
 button.GENTICS_button {
-	background: url(../images/base.png) no-repeat !important;
+	background: url(../img/base.png) no-repeat !important;
 }
 
 button.GENTICS_button_big {
-	background: url(../images/base_big.png) no-repeat !important;
+	background: url(../img/base_big.png) no-repeat !important;
 }
 
 /*buttons for format plugin*/
@@ -354,21 +354,21 @@ div.GENTICS_button a:hover {
 .GENTICS_logo {
 	width:37px !important;
 	height:25px !important;
-	background-image: url('../images/gentics_logo.png') !important;
+	background-image: url('../img/gentics_logo.png') !important;
 }
 
 .GENTICS_maximize {
-	background-image: url('../images/gentics_logo.png') !important;
+	background-image: url('../img/gentics_logo.png') !important;
 }
 
 .GENTICS_fade_out {
-	background-image: url('../images/fade_out.png') !important;
+	background-image: url('../img/fade_out.png') !important;
 	width:20px !important;
 	height:20px !important;
 }
 
 .GENTICS_fade_in {
-	background-image: url('../images/fade_in.png') !important;
+	background-image: url('../img/fade_in.png') !important;
 	width:20px !important;
 	height:20px !important;
 }
@@ -376,7 +376,7 @@ div.GENTICS_button a:hover {
 .GENTICS_maximize {
 	width:20px !important;
 	height:20px !important;
-	background-image: url('../images/maximize.png') !important;
+	background-image: url('../img/maximize.png') !important;
 }
 
 html body #GENTICS_ribbon {
@@ -404,7 +404,7 @@ html body #GENTICS_ribbon {
  * extJs GENTICS Multisplit Button
  */
 ul.GENTICS_multisplit button.GENTICS_button {
-	background-image: url(../images/base_multi.png) !important;
+	background-image: url(../img/base_multi.png) !important;
 	background-repeat: no-repeat;
 	background-position: 0 0;
 	/*
@@ -460,10 +460,10 @@ button.GENTICS_multisplit_toggle {
 	border: 0;
 }
 button.GENTICS_multisplit_toggle_open {
-	background-image: url(../images/multisplit-open.gif);
+	background-image: url(../img/multisplit-open.gif);
 }
 button.GENTICS_multisplit_toggle_close {
-	background-image: url(../images/multisplit-close.gif);
+	background-image: url(../img/multisplit-close.gif);
 }
 ul.GENTICS_multisplit button {
 	border: 1px solid #cccccc;
@@ -493,7 +493,7 @@ ul.GENTICS_multisplit-expanded {
 }
 
 ul.GENTICS_multisplit button.GENTICS_button_removeFormat {
-	background-image: url(../images/removeformat.png) !important;
+	background-image: url(../img/removeformat.png) !important;
 }
 .GENTICS_textarea {
 	overflow: hidden;
