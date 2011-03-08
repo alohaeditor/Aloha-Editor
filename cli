@@ -469,7 +469,8 @@ class App
 			"git add build src vendor",
 			"git add -u",
 			"git commit -m \"#{message}\"",
-			"git push origin"
+			"git push origin",
+			"git fetch"
 		])
 	end
 
