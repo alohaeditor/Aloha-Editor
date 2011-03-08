@@ -105,17 +105,32 @@
 
 			// Handle Auto
 			if ( (config.auto||false) === true ) {
+				// Prepare
+				var sourcePath = config.rootPath+'/'+config.subdir.src;
+
 				// Ensure the meta data
-				if ( !config.js.length ) {
-					config.js = util.findFilesWithExtensionSync(config.rootPath+'/'+config.subdir.src, ".js");
-				}
-				if ( !config.css.length ) {
-					config.css = util.findFilesWithExtensionSync(config.rootPath+'/'+config.subdir.src, ".css");
-				}
+				config.js = util.findFilesWithExtensionSync(sourcePath, ".js");
+				config.css = util.findFilesWithExtensionSync(sourcePath, ".css");
+
+				// Create autoConfig
+				var autoConfig = {
+					auto: true,
+					js: [],
+					css: []
+				};
+
+				// Add Files
+				config.js.each(function(i,v){
+					autoConfig.js.push(util.getRelativePath(v,config.rootPath));
+				});
+				config.css.each(function(i,v){
+					autoConfig.css.push(util.getRelativePath(v,config.rootPath));
+				});
 
 				// Update plugin meta data
-				fs.writeFileSync(config.metaPath,JSON.stringify(config));
+				fs.writeFileSync(config.metaPath,JSON.stringify(autoConfig));
 			}
+
 
 			// Done
 			return true;
