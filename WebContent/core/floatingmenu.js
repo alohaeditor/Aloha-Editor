@@ -345,7 +345,7 @@ GENTICS.Aloha.FloatingMenu.generateComponent = function () {
 				'editableActivated',
 				function(event, d) {
 					var p = d.editable.obj.offset();
-					p.top -= 90;
+					p.top -= (that.obj.height() + 6);
 					that.floatTo(p);
 		});
 		var d = jQuery(document);
@@ -354,20 +354,21 @@ GENTICS.Aloha.FloatingMenu.generateComponent = function () {
 				return;
 			}
 			var pos = GENTICS.Aloha.activeEditable.obj.offset();
+			var fmHeight = that.obj.height();
 			var scrollTop = d.scrollTop();
+			
+			console.log('fmHeight: ' + fmHeight + ', pos top: ' + pos.top + ', scrollTop: ' + scrollTop);
 			
 			that.togglePin(false);
 			
-			if (scrollTop > pos.top 
+			if (scrollTop > pos.top - (fmHeight + 6) 
 				&& scrollTop < (pos.top + GENTICS.Aloha.activeEditable.obj.height() - 90)) {
 				if (!that.pinned) {
 					that.obj.css('top', scrollTop);
 					that.togglePin(true);
 				}
 			} else if (scrollTop < pos.top) {
-				that.togglePin(false);
-				pos.top -= that.obj.height() + 50;
-				console.log('move fm to y:' + pos.top);
+				pos.top -= fmHeight + 6;
 				that.floatTo(pos);
 			}
 		});
