@@ -79,8 +79,17 @@ Object.prototype.extend = function(object){
 	else {
 		// Extend
 		object.each(function(key,object){
-			if ( typeof object === 'object' && typeof Me[key] === 'object' ) {
-				Me[key].extend(object);
+			if ( typeof object === 'object' ) {
+				if ( object instanceof Array ) {
+					Me[key] = [].extend(object);
+				}
+				else if ( typeof Me[key] === 'object' ) {
+					var backup = Me[key];
+					Me[key] = {}.extend(backup).extend(object);
+				}
+				else {
+					Me[key] = {}.extend(object);
+				}
 			}
 			else {
 				Me[key] = object;
@@ -90,3 +99,41 @@ Object.prototype.extend = function(object){
 	// Chain
 	return this;
 };
+
+/**
+ * Return a new string with any spaces trimmed the left and right of the string
+ * @version 1.0.0
+ * @date June 30, 2010
+ * @package jquery-sparkle {@link http://www.balupton/projects/jquery-sparkle}
+ * @author Benjamin "balupton" Lupton {@link http://www.balupton.com}
+ * @copyright (c) 2009-2010 Benjamin Arthur Lupton {@link http://www.balupton.com}
+ * @license GNU Affero General Public License version 3 {@link http://www.gnu.org/licenses/agpl-3.0.html}
+ */
+String.prototype.trim = String.prototype.trim || function() {
+	// Trim off any whitespace from the front and back
+	return this.replace(/^\s+|\s+$/g, '');
+};
+
+/**
+ * Return a new string with the value stripped from the left and right of the string
+ * @version 1.1.1
+ * @date July 22, 2010
+ * @since 1.0.0, June 30, 2010
+ * @package jquery-sparkle {@link http://www.balupton/projects/jquery-sparkle}
+ * @author Benjamin "balupton" Lupton {@link http://www.balupton.com}
+ * @copyright (c) 2009-2010 Benjamin Arthur Lupton {@link http://www.balupton.com}
+ * @license GNU Affero General Public License version 3 {@link http://www.gnu.org/licenses/agpl-3.0.html}
+ */
+String.prototype.strip = String.prototype.strip || function(value,regex){
+	// Strip a value from left and right, with optional regex support (defaults to false)
+	value = String(value);
+	var str = this;
+	if ( value.length ) {
+		if ( !(regex||false) ) {
+			// We must escape value as we do not want regex support
+			value = value.replace(/([\[\]\(\)\^\$\.\?\|\/\\])/g, '\\$1');
+		}
+		str = str.replace(eval('/^'+value+'+|'+value+'+$/g'), '');
+	}
+	return String(str);
+}

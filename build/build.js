@@ -11,37 +11,88 @@
     	pro = uglify.uglify,
     util = require('util'),
     exec = require('child_process').exec,
-		deps = require(__dirname+'/deps.js');
+		deps = require(__dirname+'/dep.js'),
+		util = require(__dirname+'/util.js');
 
-	// Configure
-	var config = {
-		"files": {
-			"meta": "package.json"
-		},
-		"js": [],
-		"css": [],
-		"i18n": []
-	}.extend(
-		JSON.parse(
-			fs.readFileSync(
-				process.argv[2]||"package.json"
-			)
-			.toString()
-		)
-	);
+	// Buildr Constructor
+	var Buildr = function(config){
+		this.config = {}.extend(this.config);
+		this.init.apply(this,arguments);
+	};
 
-	// App Functions
-	var app = {
+	// Buildr Definition
+	Buildr.prototype.extend({
 		/**
-		 * Initialise
-		 */
-		init: function(){
-			// ----------------------------------------------------------------------
-			// Normalise
+		 * Configuration
+		 **/
+		"config": {
+			"dir": {
+				// Exists in root path
+				"src": "src",
+				"out": "out",
+				"template": "template"
+			},
+			"subdir": {
+				// Exists in src and out paths
+				"src": "src",
+   			"demo": "demo",
+				"plugin": "plugin",
+				"i18n": "i18n"
+			},
+			"template": {
+				// Exists in template path
+				"footer": "footer.js",
+				"header": "header.js",
+				"replace": "replace.js",
+				"bundle": "bundle.js",
+				"prefix": "prefix.js"
+			},
+			"js": [],
+			"css": [],
+			"template": [],
+			"plugin": []
+		},
 
-			// Dirs
+		/**
+		 * Initialise the Builder
+		 * @param {Path} rootPath
+		 **/
+		init: function(rootPath){
+			// Normalise Configuration
+			this.parseConfig(rootPath);
+		},
+
+		/**
+		 * Parse the Configuration
+		 * @param {Path} rootPath
+		 **/
+		parseConfig: function(rootPath){
+			// Prepare
+			var config = this.config;
+
+			// Path
+			config.rootPath = fs.realpathSync(rootPath.strip('package.json'));
+			config.metaPath = config.rootPath+'/package.json';
+			var exists = util.fileExistsSync(config.metaPath);
+
+			// Check if the meta data exists
+			if ( exists ) {
+				// There is already meta data
+				config.extend(JSON.parse(fs.readFileSync(config.metaPath).toString()));
+			}
+			else {
+				// Set auto as true
+				config.auto = true;
+			}
+
+			// Directories
 			config.dir.each(function(key,value){
-				config.dir[key] = fs.realpathSync(value);
+				try {
+					config.dir[key] = fs.realpathSync(config.rootPath+'/'+value);
+				}
+				catch ( e ) {
+					config.dir[key] = false;
+				}
 			});
 
 			// Templates
@@ -49,89 +100,25 @@
 				config.template[key] = config.dir.template+'/'+value;
 			});
 
+			// Name
+			config.name = config.name || path.basename(config.rootPath);
+
+			// Handle Auto
+			if ( (config.auto||false) === true ) {
+				// Ensure the meta data
+				if ( !config.js.length ) {
+					config.js = util.findFilesWithExtensionSync(config.rootPath+'/'+config.subdir.src, ".js");
+				}
+				if ( !config.css.length ) {
+					config.css = util.findFilesWithExtensionSync(config.rootPath+'/'+config.subdir.src, ".css");
+				}
+
+				// Update plugin meta data
+				fs.writeFileSync(config.metaPath,JSON.stringify(config));
+			}
+
 			// Done
 			return true;
-		},
-
-		/**
-		 * Copy a file
-		 * @param {Path} src
-		 * @param {Path} dst
-		 */
-		cp: function(src,dst){
-			var txt = fs.readFileSync(src).toString();
-			fs.writeFileSync(dst,txt);
-			return true;
-		},
-
-		/**
-		 * Ensure Path Exists
-		 * @param {Path} p
-		 */
-		ensurePath: function(p){
-			p = p.replace(/[\/\\]$/,'');
-			try {
-				fs.statSync(p);
-				return true;
-			}
-			catch ( e ) {
-				var parent = p.replace(/[\/\\][^\/\\]+$/,'');
-				app.ensurePath(parent);
-				fs.mkdirSync(p,0700);
-				return true;
-			}
-		},
-
-		/**
-		 * Find all files with a particular extension
-		 * @param {Path} parentPath
-		 * @param {String} ext
-		 * @return {Array} foundFiles
-		 */
-		findFilesWithExtension: function(parentPath, ext){
-			// Prepare
-			var foundFiles = [];
-
-			// Cycle
-			fs.readdirSync(parentPath).each(function(key,file){
-				// Prepare
-				var
-					filePath = parentPath+'/'+file,
-					stat = fs.statSync(filePath);
-
-				// Check
-				if ( !stat ) return;
-
-				// Handle
-				if ( stat.isDirectory() ) {
-					// Recurse
-					foundFiles = foundFiles.concat(app.findFilesWithExtension(filePath,ext));
-				}
-				else {
-					// Check
-					var fileExt = path.extname(file);
-					if (
-						(typeof ext === 'string' && ext === fileExt) ||
-						(typeof ext === 'function' && ext.test(fileExt))
-					){
-						// Add
-						foundFiles.push(filePath);
-					}
-				}
-			});
-
-			// Done
-			return foundFiles;
-		},
-
-		/**
-		 * Get Relative Path
-		 * @param {Path} path
-		 * @return {Path} relativePath
-		 */
-		getRelativePath: function(path){
-			var relativePath = path.replace(config.dir.out+'/','').replace(config.dir.src+'/','');
-			return relativePath;
 		},
 
 		/**
@@ -140,18 +127,14 @@
 		 * @return {Path} pluginPath
 		 */
 		getPluginPath: function(plugin){
-			var pluginPath = config.subdir.plugin+'/'+plugin;
-			return pluginPath;
-		},
+			// Prepare
+			var config = this.config;
 
-		/**
-		 * Get Plugin Meta Path
-		 * @param {String} plugin
-		 * @return {Path} pluginMetaPath
-		 */
-		getPluginMetaPath: function(plugin){
-			var pluginMetaPath = config.subdir.plugin+'/'+plugin+'/'+config.files.meta;
-			return pluginMetaPath;
+			// Handle
+			var pluginPath = config.dir.src+'/'+config.subdir.plugin+'/'+plugin;
+
+			// Return
+			return pluginPath;
 		},
 
 		/**
@@ -161,33 +144,13 @@
 		 */
 		getPluginMetaData: function(pluginName) {
 			// Prepare
-			var
-				pluginPath = config.dir.out+'/'+app.getPluginPath(pluginName),
-				pluginMetaPath = config.dir.out+'/'+app.getPluginMetaPath(pluginName),
-				pluginMetaData = {
-					"js": [],
-					"css": [],
-					"i18n": []
-				};
+			var pluginPath = this.getPluginPath(pluginName);
 
-			// Check if the meta data exists
-			if ( path.exists(pluginMetaPath) ) {
-				// There is already meta data
-				pluginMetaData.extend(JSON.parse(fs.readFileSync(pluginMetaPath).toString()));
-			}
+			// Create Buildr
+			var pluginBuildr = new Buildr(pluginPath);
 
-			// Ensure the meta data
-			if ( !pluginMetaData.js.length )
-				pluginMetaData.js = app.findFilesWithExtension(pluginPath+'/'+config.subdir.src, ".js");
-
-			if ( !pluginMetaData.css.length )
-				pluginMetaData.css = app.findFilesWithExtension(pluginPath+'/'+config.subdir.src, ".css");
-
-			if ( !pluginMetaData.i18n.length )
-				pluginMetaData.i18n = app.findFilesWithExtension(pluginPath+'/'+config.subdir.i18n, ".dict");
-
-			// Return the meta data
-			return pluginMetaData;
+			// Return Meta Data
+			return pluginBuildr.config;
 		},
 
 		/**
@@ -197,12 +160,13 @@
 		 */
 		mergePluginMetaData: function(pluginName) {
 			// Prepare
-			var pluginMetaData = app.getPluginMetaData(pluginName);
+			var
+				config = this.config,
+				pluginMetaData = this.getPluginMetaData(pluginName);
 
 			// Merge into Global Data
 			config.js = config.js.concat(pluginMetaData.js);
 			config.css = config.css.concat(pluginMetaData.css);
-			config.i18n = config.i18n.concat(pluginMetaData.i18n);
 
 			// Done
 			return true;
@@ -212,9 +176,12 @@
 		 * Merge the Selected PLugins into the Config
 		 */
 		mergePlugins: function() {
+			// Prepare
+			var config = this.config, me = this;
+
 			// Merge in Plugin Data
 			config.plugin.each(function(key,pluginName){
-				app.mergePluginMetaData(pluginName);
+				me.mergePluginMetaData(pluginName);
 			});
 
 			// Done
@@ -227,8 +194,10 @@
 		bundle: function() {
 			// Prepare
 			var
+				me = this,
+				config = this.config,
 				fileSrcPath, fileOutPath,
-				bundleSrcText, bundleOutText, bundleSrcPath, bundleOutPath;
+				bundleSrcData, bundleOutData, bundleSrcPath, bundleOutPath;
 
 			// Templates
 			templateBundleText = fs.readFileSync(config.template.bundle).toString();
@@ -242,61 +211,60 @@
 			// Javascript
 
 			// Prepare
-			bundleSrcText = ''; bundleSrcPath = config.dir.src+'/'+config.name+'.js';
-			bundleOutText = ''; bundleOutPath = config.dir.out+'/'+config.name+'.js';
+			bundleSrcData = ''; bundleSrcPath = config.dir.src+'/'+config.name+'.js';
+			bundleOutData = ''; bundleOutPath = config.dir.out+'/'+config.name+'.js';
 
 			// Adjust
-			bundleSrcText += templatePrefixText+templateHeaderText;
-			bundleOutText += templatePrefixText;
+			bundleSrcData += templatePrefixText+templateHeaderText;
+			bundleOutData += templatePrefixText;
 
 			// Plugins
 			config.plugin.each(function(i,pluginName){
 				// Amend Src Text
-				bundleSrcText += templateBundleText.replace('%NAME%',pluginName);
-				bundleOutText += templateBundleText.replace('%NAME%',pluginName);
+				bundleSrcData += templateBundleText.replace('%NAME%',pluginName);
+				bundleOutData += templateBundleText.replace('%NAME%',pluginName);
 			});
 
 			// Bundle
 			config.js.each(function(i,filePath){
 				// Prepare
-				filePath = app.getRelativePath(filePath);
+				filePath = util.getRelativePath(filePath,[config.dir.src,config.dir.out]);
 				fileSrcPath = config.dir.src+'/'+filePath;
 				fileOutPath = config.dir.out+'/'+filePath;
 
 				// Amend Out Text
-				bundleOutText += fs.readFileSync(fileOutPath).toString();
+				bundleOutData += fs.readFileSync(fileOutPath).toString();
 				fs.unlinkSync(fileOutPath);
 
 				// Amend Src Text
-				bundleSrcText += templateReplaceText.replace('%PATH%',filePath);
+				bundleSrcData += templateReplaceText.replace('%PATH%',filePath);
 			});
 
 			// Adjust
-			bundleSrcText += templateFooterText;
+			bundleSrcData += templateFooterText;
 
 			// Write
-			fs.writeFileSync(bundleSrcPath,bundleSrcText);
-			fs.writeFileSync(bundleOutPath,bundleOutText);
+			fs.writeFileSync(bundleSrcPath,bundleSrcData);
+			fs.writeFileSync(bundleOutPath,bundleOutData);
 
 
 			// ----------------------------------------------------------------------
 			// CSS
 
 			// Prepare
-			bundleSrcText = ''; bundleSrcPath = config.dir.src+'/'+config.name+'.css';
-			bundleOutText = ''; bundleOutPath = config.dir.out+'/'+config.name+'.css';
+			bundleSrcData = ''; bundleSrcPath = config.dir.src+'/'+config.name+'.css';
+			bundleOutData = ''; bundleOutPath = config.dir.out+'/'+config.name+'.css';
 
 			// Bundle
-			var parentOutPath;
 			config.css.each(function(i,filePath){
 				// Prepare
-				filePath = app.getRelativePath(filePath);
+				filePath = util.getRelativePath(filePath,[config.dir.src,config.dir.out]);
 				fileSrcPath = config.dir.src+'/'+filePath;
 				fileOutPath = config.dir.out+'/'+filePath;
 				parentOutPath = fileOutPath.replace(/[\/\\][^\/\\]+$/,'');
 
 				// Amend Out Text
-				bundleOutText += fs
+				bundleOutData += fs
 					.readFileSync(fileOutPath)
 					.toString()
 					.replace(
@@ -317,12 +285,12 @@
 				fs.unlinkSync(fileOutPath);
 
 				// Amend Src Text
-				bundleSrcText += '@import url("'+filePath+'");\n';
+				bundleSrcData += '@import url("'+filePath+'");\n';
 			});
 
 			// Write
-			fs.writeFileSync(bundleSrcPath,bundleSrcText);
-			fs.writeFileSync(bundleOutPath,bundleOutText);
+			fs.writeFileSync(bundleSrcPath,bundleSrcData);
+			fs.writeFileSync(bundleOutPath,bundleOutData);
 
 			// Done
 			return true;
@@ -334,6 +302,7 @@
 		compile: function() {
 			// Prepare
 			var
+				config = this.config,
 				jsPath = config.dir.out+'/'+config.name+'.js',
 				cssPath = config.dir.out+'/'+config.name+'.css';
 
@@ -346,12 +315,14 @@
 			fs.writeFileSync(jsPath,final_code);
 
 			// CSS
-			var data = fs.readFileSync(cssPath).toString();
-			new(less.Parser)({
+			var
+				data = fs.readFileSync(cssPath).toString(),
+				options = {
 					paths: [config.dir.out],
 					optimization: 1,
 					filename: cssPath
-			}).parse(data, function (err, tree) {
+				};
+			new(less.Parser)(options).parse(data, function (err, tree) {
 					if (err) {
 							less.writeError(err, options);
 							process.exit(1);
@@ -367,17 +338,18 @@
 			});
 
 			// Sprites
-			if ( false )
-			exec(
-				"java -Xms64m -Xmx256m -Djava.ext.dirs=./vendor/smartsprites/lib org.carrot2.labs.smartsprites.SmartSprites dist/aloha.css",
-				function (error, stdout, stderr) {
-					console.log('stdout: ' + stdout);
-					console.log('stderr: ' + stderr);
-					if (error !== null) {
-						console.log('exec error: ' + error);
+			if ( false ) {
+				exec(
+					"java -Xms64m -Xmx256m -Djava.ext.dirs=./vendor/smartsprites/lib org.carrot2.labs.smartsprites.SmartSprites dist/aloha.css",
+					function (error, stdout, stderr) {
+						console.log('stdout: ' + stdout);
+						console.log('stderr: ' + stderr);
+						if (error !== null) {
+							console.log('exec error: ' + error);
+						}
 					}
-				}
-			);
+				);
+			}
 
 		},
 
@@ -385,25 +357,24 @@
 		 * Run the Application
 		 */
 		run: function() {
-			// Init
-			app.init();
-
 			// Merge
-			app.mergePlugins();
+			this.mergePlugins();
 
 			// Bundle
-			app.bundle();
+			this.bundle();
 
 			// Compile
-			app.compile();
+			this.compile();
 
 			// Done
 			return true;
 		}
-	};
+
+	});
 
 	// Run the Application
-	app.run();
+	var myBuildr = new Buildr(process.argv[2]||__dirname);
+	myBuildr.run();
 
 	// Done
 })();

@@ -54,10 +54,10 @@ window.GENTICS_Aloha_base = window.GENTICS_Aloha_base || false;
 	includes.push('core/repositorymanager.js');
 	includes.push('core/repository.js');
 	includes.push('core/repositoryobjects.js');
-	includes.push('plugin/format/src/format.js');
-	includes.push('plugin/link/src/link.js');
-	includes.push('plugin/linkchecker/src/linkchecker.js');
-	includes.push('plugin/table/src/table.js');
+	includes.push('/plugin/format/src/format.js');
+	includes.push('/plugin/link/src/link.js');
+	includes.push('/plugin/linkchecker/src/linkchecker.js');
+	includes.push('/plugin/table/src/table.js');
 
 	// Insert Scripts
 	var value, url, scriptEl, appendEl = document.head;

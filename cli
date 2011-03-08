@@ -456,7 +456,7 @@ class App
 			"rm -Rf out",
 			"mkdir out",
 			"cp -R src/* out",
-			"node ./build/build.js package.json"
+			"node ./build/build.js ."
 		])
 	end
 
