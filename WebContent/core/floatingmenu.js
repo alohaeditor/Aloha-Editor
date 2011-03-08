@@ -345,8 +345,31 @@ GENTICS.Aloha.FloatingMenu.generateComponent = function () {
 				'editableActivated',
 				function(event, d) {
 					var p = d.editable.obj.offset();
-					p.top = p.top - 90;
+					p.top -= 90;
 					that.floatTo(p);
+		});
+		var d = jQuery(document);
+		d.scroll(function () {
+			if (!GENTICS.Aloha.activeEditable) {
+				return;
+			}
+			var pos = GENTICS.Aloha.activeEditable.obj.offset();
+			var scrollTop = d.scrollTop();
+			
+			that.togglePin(false);
+			
+			if (scrollTop > pos.top 
+				&& scrollTop < (pos.top + GENTICS.Aloha.activeEditable.obj.height() - 90)) {
+				if (!that.pinned) {
+					that.obj.css('top', scrollTop);
+					that.togglePin(true);
+				}
+			} else if (scrollTop < pos.top) {
+				that.togglePin(false);
+				pos.top -= that.obj.height() + 50;
+				console.log('move fm to y:' + pos.top);
+				that.floatTo(pos);
+			}
 		});
 	}
 };
@@ -370,9 +393,16 @@ GENTICS.Aloha.FloatingMenu.refreshShadow = function () {
 /**
  * toggles the pinned status of the floating menu
  * @method
+ * @param {boolean} pinned set to true to activate pin, or set to false to deactivate pin. 
+ * 		leave undefined to toggle pin status automatically
  */
-GENTICS.Aloha.FloatingMenu.togglePin = function() {
+GENTICS.Aloha.FloatingMenu.togglePin = function(pinned) {
 	var el = jQuery('.GENTICS_floatingmenu_pin');
+	
+	if (typeof pinned === 'boolean') {
+		this.pinned = !pinned;
+	}
+	
 	if (this.pinned) {
 		el.removeClass('GENTICS_floatingmenu_pinned');
 		this.top = this.obj.offset().top;
@@ -714,7 +744,7 @@ GENTICS.Aloha.FloatingMenu.calcFloatTarget = function(range) {
  * float the fm to the desired position
  * the floating menu won't float if it is pinned
  * @method
- * @param {Object} object coordinate object which has a left and top property
+ * @param {Object} coordinate object which has a left and top property
  */
 GENTICS.Aloha.FloatingMenu.floatTo = function(position) {
 	// no floating if the panel is pinned
@@ -723,9 +753,10 @@ GENTICS.Aloha.FloatingMenu.floatTo = function(position) {
 	}
 	
 	var that = this;
-
+	var fmpos = this.obj.offset();
+	
 	// move to the new position
-	if (!this.floatedTo || this.floatedTo.left != position.left || this.floatedTo.top != position.top) {
+	if (fmpos.left != position.left || fmpos.top != position.top) {
 		this.obj.animate({
 			top:  position.top,
 			left: position.left
@@ -741,9 +772,6 @@ GENTICS.Aloha.FloatingMenu.floatTo = function(position) {
 				that.refreshShadow();
 			}
 		});
-
-		// remember the position we floated to
-		this.floatedTo = position;
 	}
 };
 
