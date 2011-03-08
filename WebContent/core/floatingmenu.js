@@ -103,13 +103,26 @@ GENTICS.Aloha.FloatingMenu.window = jQuery(window);
 GENTICS.Aloha.FloatingMenu.behaviour = 'float';
 
 /**
+ * will only be hounoured when behaviour is set to 'topalign'. Adds a margin,
+ * so the floating menu is not directly attached to the top of the page
+ */
+GENTICS.Aloha.FloatingMenu.marginTop = 0;
+
+
+
+/**
  * Initialize the floatingmenu
  * @hide
  */
 GENTICS.Aloha.FloatingMenu.init = function() {
 	// check for behaviour setting of the floating menu
-	if (GENTICS.Aloha.settings.floatingmenu && typeof GENTICS.Aloha.settings.floatingmenu.behaviour === 'string') {
-		this.behaviour = GENTICS.Aloha.settings.floatingmenu.behaviour;
+	if (GENTICS.Aloha.settings.floatingmenu) {
+		if (typeof GENTICS.Aloha.settings.floatingmenu.behaviour === 'string') {
+			this.behaviour = GENTICS.Aloha.settings.floatingmenu.behaviour;
+		}
+		if (typeof GENTICS.Aloha.settings.floatingmenu.marginTop === 'number') {
+			this.marginTop = GENTICS.Aloha.settings.floatingmenu.marginTop;
+		}
 	}
 	
 	this.currentScope = 'GENTICS.Aloha.global';
@@ -340,17 +353,31 @@ GENTICS.Aloha.FloatingMenu.generateComponent = function () {
 					}
 		});
 	} else if (this.behaviour === 'topalign') {
+		// topalign will retain the user's pinned status
+		// TODO maybe the pin should be hidden in that case?
 		this.togglePin(false);
+		var d = jQuery(document);
+		
+		// float the fm to each editable that is activated
 		GENTICS.Aloha.EventRegistry.subscribe(
 				GENTICS.Aloha,
 				'editableActivated',
-				function(event, d) {
-					var p = d.editable.obj.offset();
-					p.top -= (that.obj.height() + 6);
-					that.floatTo(p);
+				function(event, data) {
+					var p = data.editable.obj.offset();
+					p.top -= 90; // dirty.
+					
+					if (p.top < d.scrollTop()) {
+						// scrollpos is below top of editable
+						that.obj.css('top', d.scrollTop() + that.marginTop);
+						that.obj.css('left', p.left);
+						that.togglePin(true);
+					} else {
+						// scroll pos is above top of editable
+						that.floatTo(p);
+					}
 		});
 		
-		var d = jQuery(document);
+		// fm scroll behaviour
 		d.scroll(function () {
 			if (!GENTICS.Aloha.activeEditable) {
 				return;
@@ -359,16 +386,21 @@ GENTICS.Aloha.FloatingMenu.generateComponent = function () {
 			var fmHeight = that.obj.height();
 			var scrollTop = d.scrollTop();
 			
-			if (scrollTop > pos.top - (fmHeight + 6) 
-				&& scrollTop < (pos.top + GENTICS.Aloha.activeEditable.obj.height() - 90)) {
-				if (!that.pinned) {
-					that.obj.css('top', scrollTop);
-					that.togglePin(true);
-				}
-			} else if (scrollTop < pos.top) {
+			if (scrollTop > (pos.top - fmHeight - 6 - that.marginTop)) {
+				// scroll pos is lower than top of editable
+				that.togglePin(true);
+				that.obj.css('top', that.marginTop);
+				console.log('lower - fixing fm to y: ' + that.marginTop);
+			} else if (scrollTop <= (pos.top - fmHeight - 6 - that.marginTop)) {
+				// scroll pos is above top of editable
 				pos.top -= fmHeight + 6;
 				that.togglePin(false);
 				that.floatTo(pos);
+				console.log('above - y: ' + pos.top);
+			} else if (scrollTop > pos.top + GENTICS.Aloha.activeEditable.obj.height() - fmHeight) {
+				// scroll pos is past editable
+				that.togglePin(false);
+				console.log('below');
 			}
 		});
 	}
