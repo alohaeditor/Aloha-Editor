@@ -350,28 +350,27 @@ Aloha.FloatingMenu.generateComponent = function () {
     } else if (this.behaviour === 'topalign') {
 		Aloha.bind('aloha-editable-activated', function(event, d) {
 			var p = d.editable.obj.offset();
-			p.top -= 90;
+			p.top -= (that.obj.height() + 6);
             that.floatTo(p);
         });
-        var d = jQuery(document);
-        d.scroll(function () {
+        $(document).scroll(function () {
             if (!Aloha.activeEditable) {
                 return;
             }
-            var pos = Aloha.activeEditable.obj.offset();
-            var scrollTop = d.scrollTop();
+            var pos = Aloha.activeEditable.obj.offset(),
+			    fmHeight = that.obj.height(),
+                scrollTop = d.scrollTop();
             
             that.togglePin(false);
             
-            if (scrollTop > pos.top 
+			if (scrollTop > pos.top - (fmHeight + 6) 
                 && scrollTop < (pos.top + Aloha.activeEditable.obj.height() - 90)) {
                 if (!that.pinned) {
                     that.obj.css('top', scrollTop);
                     that.togglePin(true);
                 }
             } else if (scrollTop < pos.top) {
-                that.togglePin(false);
-                pos.top -= that.obj.height() + 50;
+				pos.top -= fmHeight + 6;
                 that.floatTo(pos);
             }
         });
