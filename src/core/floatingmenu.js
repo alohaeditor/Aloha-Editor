@@ -380,7 +380,7 @@ Aloha.FloatingMenu.generateComponent = function () {
         });
 
 		// fm scroll behaviour
-        $(document).scroll(function () {
+        $(window).scroll(function () {
             if (!Aloha.activeEditable) {
                 return;
             }
