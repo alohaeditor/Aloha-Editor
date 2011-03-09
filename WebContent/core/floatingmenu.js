@@ -378,7 +378,7 @@ GENTICS.Aloha.FloatingMenu.generateComponent = function () {
 		});
 		
 		// fm scroll behaviour
-		d.scroll(function () {
+		jQuery(window).scroll(function () {
 			if (!GENTICS.Aloha.activeEditable) {
 				return;
 			}
