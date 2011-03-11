@@ -735,7 +735,7 @@ window.alohaQuery = window.jQuery.sub();
 				loadPackage: function(data){
 					// Cycle through CSS
 					$.each(data.css||[], function(i,value){
-						lGENTICS.Aloha.loadCss(pluginUrl+'/'+value)
+						GENTICS.Aloha.loadCss(pluginUrl+'/'+value)
 					});
 
 					// Cycle through JS
@@ -758,7 +758,7 @@ window.alohaQuery = window.jQuery.sub();
 
 					// Load Package
 					if ( typeof data === 'object' ) {
-						actions.loadPackage();
+						actions.loadPackage(data);
 					}
 					else {
 						actions.loadDefault();
@@ -805,7 +805,9 @@ window.alohaQuery = window.jQuery.sub();
 
 	// Initialise Aloha
 	$(function(){
-		GENTICS.Aloha.init();
+		setTimeout( function() {
+			GENTICS.Aloha.init();			
+		}, 4000);
 		$('body').trigger('alohaready');
 	});
 

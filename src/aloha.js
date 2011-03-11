@@ -18,10 +18,6 @@ window.GENTICS_Aloha_base = window.GENTICS_Aloha_base || false;
 
 	// Prepare Plugin Loading
 	window.Aloha_loaded_plugins = window.Aloha_loaded_plugins||[];
-	window.Aloha_loaded_plugins['format'] = true;
-	window.Aloha_loaded_plugins['link'] = true;
-	window.Aloha_loaded_plugins['linkchecker'] = true;
-	window.Aloha_loaded_plugins['table'] = true;
 	includes.push('dep/ext-3.3.1/adapter/jquery/ext-jquery-adapter.js');
 	includes.push('dep/ext-3.3.1/ext-all-debug.js');
 	includes.push('dep/jquery.json-2.2.min.js');
@@ -54,10 +50,6 @@ window.GENTICS_Aloha_base = window.GENTICS_Aloha_base || false;
 	includes.push('core/repositorymanager.js');
 	includes.push('core/repository.js');
 	includes.push('core/repositoryobjects.js');
-	includes.push('plugin/format/src/format.js');
-	includes.push('plugin/link/src/link.js');
-	includes.push('plugin/linkchecker/src/linkchecker.js');
-	includes.push('plugin/table/src/table.js');
 
 	// Insert Scripts
 	var value, url, scriptEl, appendEl = document.head;
