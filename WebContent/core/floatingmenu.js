@@ -390,17 +390,14 @@ GENTICS.Aloha.FloatingMenu.generateComponent = function () {
 				// scroll pos is lower than top of editable
 				that.togglePin(true);
 				that.obj.css('top', that.marginTop);
-				console.log('lower - fixing fm to y: ' + that.marginTop);
 			} else if (scrollTop <= (pos.top - fmHeight - 6 - that.marginTop)) {
 				// scroll pos is above top of editable
 				pos.top -= fmHeight + 6;
 				that.togglePin(false);
 				that.floatTo(pos);
-				console.log('above - y: ' + pos.top);
 			} else if (scrollTop > pos.top + GENTICS.Aloha.activeEditable.obj.height() - fmHeight) {
 				// scroll pos is past editable
 				that.togglePin(false);
-				console.log('below');
 			}
 		});
 	}
