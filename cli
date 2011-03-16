@@ -308,7 +308,7 @@ class App
 
 	# Add a Plugin
 	def plugin(url,name='')
-		url = read_url(url)
+		url = plugin_read_url(url)
 
 		if name.empty?
 			name = url.gsub(/^.+?Aloha-Plugin-(\w+)\.git/,'\\1').downcase
