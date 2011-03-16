@@ -1,6 +1,23 @@
-var
-	str = 'floatingmenu.tab.format=Форматирование\nfloatingmenu.tab.insert=Вставить\nyes=Да\nno=Нет\ncancel=Отмена',
-	lines = str.split(/\r\n|\r|\n/),
-	result = lines.join('\n');
+require(__dirname+'/dep.js');
 
-console.log(result);
+var f = function(b){
+	this.config = {}.extend(this.config);
+	console.log(this.config);
+	this.config.b = b;
+	console.log(this.config);
+}
+f.prototype.config = {
+	a: 'a',
+	b: 'b'
+};
+
+var f1 = new f('bb');
+var f2 = new f('bbb');
+
+// logs
+// { a: 'a', b: 'b' }
+// { a: 'a', b: 'bb' }
+
+// expected
+// { a: 'a', b: 'b' }
+// { a: 'a', b: 'b' }

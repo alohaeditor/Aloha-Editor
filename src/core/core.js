@@ -803,12 +803,18 @@ window.alohaQuery = window.jQuery.sub();
 		});
 	}
 
+	// Prepare
+	var $body = $('body');
+	$body.createPromiseEvent('aloha');
+
 	// Initialise Aloha
 	$(function(){
 		setTimeout( function() {
 			GENTICS.Aloha.init();			
 		}, 4000);
 		$('body').trigger('alohaready');
+		GENTICS.Aloha.init();
+		$body.trigger('aloha');
 	});
 
 })(window);

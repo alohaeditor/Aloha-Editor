@@ -82,7 +82,8 @@
 		(function(window,undefined){
 			var
 				$ = window.jQuery,
-				GENTICS = window.GENTICS;
+				GENTICS = window.GENTICS,
+				$body = $('body');
 
 			GENTICS.Aloha.settings = {
 				logLevels: {'error': true, 'warn': true, 'info': true, 'debug': true},
@@ -90,7 +91,8 @@
 				ribbon: false
 			};
 
-			$(function(){
+			// Bind to Aloha Ready Event
+			$body.bind('aloha',function(){
 
 				$('#mahalo').hide();
 				$('#getContents').hide();

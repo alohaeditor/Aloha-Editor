@@ -456,7 +456,7 @@ class App
 			"rm -Rf out",
 			"mkdir out",
 			"cp -R src/* out",
-			"node ./build/build.js package.json"
+			"node ./build/build.js ."
 		])
 	end
 
@@ -469,7 +469,8 @@ class App
 			"git add build src vendor",
 			"git add -u",
 			"git commit -m \"#{message}\"",
-			"git push origin"
+			"git push origin",
+			"git fetch"
 		])
 	end
 

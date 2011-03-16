@@ -47,10 +47,13 @@
 	</div>
 	<script type="text/javascript" defer>
 		(function(window,undefined){
+			// Prepare
 			var
 				$ = window.jQuery,
-				GENTICS = window.GENTICS;
+				GENTICS = window.GENTICS,
+				$body = $('body');
 
+			// Customise
 			GENTICS.Aloha.settings = {
 				logLevels: {'error': true, 'warn': true, 'info': true, 'debug': true},
 				errorhandling : false,
@@ -80,10 +83,13 @@
 				}
 			};
 
-			$(function(){
+			// Bind to Aloha Ready Event
+			$body.bind('aloha',function(){
+				// Upgrade
 				$('#content').aloha();
 			});
 
+			// </closure>
 		})(window);
 	</script>
 </body>
