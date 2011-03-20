@@ -314,7 +314,7 @@ class App
 			name = url.gsub(/^.+?Aloha-Plugin-(\w+)\.git/,'\\1').downcase
 		end
 
-		dir = 'WebContent/plugins/'+name
+		dir = 'src/plugin/'+name
 
 		run("git submodule add #{url} #{dir}")
 	end
