@@ -64,3 +64,6 @@
 [submodule "vendor/node-iniparser"]
 	path = vendor/node-iniparser
 	url = https://github.com/balupton/node-iniparser.git
+[submodule "src/plugin/undo"]
+	path = src/plugin/undo
+	url = http://github.com/alohaeditor/Aloha-Plugin-Undo.git
