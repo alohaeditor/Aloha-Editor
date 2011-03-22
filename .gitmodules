@@ -49,18 +49,6 @@
 [submodule "src/plugin/vie"]
 	path = src/plugin/vie
 	url = http://github.com/alohaeditor/Aloha-Plugin-VIE.git
-[submodule "vendor/uglify"]
-	path = vendor/uglify
-	url = https://github.com/mishoo/UglifyJS.git
-[submodule "vendor/node"]
-	path = vendor/node
-	url = https://github.com/joyent/node.git
-[submodule "vendor/npm"]
-	path = vendor/npm
-	url = https://github.com/isaacs/npm.git
-[submodule "vendor/less.js"]
-	path = vendor/less.js
-	url = https://github.com/cloudhead/less.js.git
-[submodule "vendor/node-iniparser"]
-	path = vendor/node-iniparser
-	url = https://github.com/balupton/node-iniparser.git
+[submodule "src/plugin/undo"]
+	path = src/plugin/undo
+	url = http://github.com/alohaeditor/Aloha-Plugin-Undo.git
