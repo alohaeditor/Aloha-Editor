@@ -5,7 +5,7 @@
 		sys = require("sys"),
     fs = require("fs"),
     path = require("path"),
-		iniparser = require(__dirname+"/../vendor/node-iniparser/lib/node-iniparser.js"),
+		iniparser = require("node-iniparser.js"),
 		deps = require(__dirname+'/deps.js');
 
 	// Handle
