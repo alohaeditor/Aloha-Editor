@@ -1,7 +1,0 @@
-{
-	"js": [
-		"dep/undo.js",
-		"src/undo.js"
-	],
-	"css": []
-}
