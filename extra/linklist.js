@@ -15,16 +15,16 @@ if ( !GENTICS.Aloha.Repositories ) GENTICS.Aloha.Repositories = {};
 /**
  * register the plugin with unique name
  */
-GENTICS.Aloha.Repositories.LinkList = new GENTICS.Aloha.Repository('com.gentics.aloha.repositories.LinkList');
+GENTICS.Aloha.Repositories.LinkList = new GENTICS.Aloha.Repository('linklist');
 
 /**
  * configure data as array with following format:
- * 
+ *
  * [
  * { name: 'Aloha Editor - The HTML5 Editor', url:'http://aloha-editor.com', type:'website' },
  * { name: 'Aloha Logo', url:'http://www.aloha-editor.com/images/aloha-editor-logo.png', type:'image'  }
- * ];	
- * 
+ * ];
+ *
  * @property
  * @cfg
  */
@@ -40,26 +40,26 @@ GENTICS.Aloha.Repositories.LinkList.settings.data = [
 GENTICS.Aloha.Repositories.LinkList.folder =[];
 
 /**
- * initalize LinkList, parse all links, build folder structure and add 
+ * initalize LinkList, parse all links, build folder structure and add
  * additional properties to the items
  */
 GENTICS.Aloha.Repositories.LinkList.init = function() {
-	
+
 	// generate folder structure
     for (var i = 0; i < this.settings.data.length; i++) {
-    	
+
     	var e = this.settings.data[i];
     	e.repositoryId = this.repositoryId;
     	e.id = e.id ? e.id : e.url;
     	var u = e.uri = this.parseUri(e.url);
 
-    	// add hostname as root folder 
+    	// add hostname as root folder
     	var path = this.addFolder('', u.host);
 
     	var pathparts = u.path.split('/');
     	for (j = 0; j < pathparts.length; j++) {
-    		if ( 
-    			pathparts[j] && 
+    		if (
+    			pathparts[j] &&
     			// It's a file because it has an extension.
     			// Could improve this one :)
     			pathparts[j].lastIndexOf('.') < 0
@@ -70,16 +70,16 @@ GENTICS.Aloha.Repositories.LinkList.init = function() {
     	e.parentId = path;
     	this.settings.data[i] = new GENTICS.Aloha.Repository.Document(e);
     }
-    
+
     // repository name
     this.repositoryName = 'Linklist';
 };
 
 GENTICS.Aloha.Repositories.LinkList.addFolder = function (path, name) {
-	
+
 	var type = path ? 'folder' : 'hostname';
 	var p = path ? path + '/' + name : name;
-	
+
 	if ( name && !this.folder[p] ) {
 		this.folder[p] = new GENTICS.Aloha.Repository.Folder({
 				id: p,
@@ -98,12 +98,12 @@ GENTICS.Aloha.Repositories.LinkList.addFolder = function (path, name) {
  */
 GENTICS.Aloha.Repositories.LinkList.query = function( p, callback) {
 	// Not supported; filter, orderBy, maxItems, skipcount, renditionFilter
-	// 
+	//
 	var d = this.settings.data.filter(function(e, i, a) {
-		var r = new RegExp(p.queryString, 'i'); 
+		var r = new RegExp(p.queryString, 'i');
 		var ret = false;
 		return (
-			( !p.queryString || e.name.match(r) || e.url.match(r) ) && 
+			( !p.queryString || e.name.match(r) || e.url.match(r) ) &&
 			( !p.objectTypeFilter || jQuery.inArray(e.type, p.objectTypeFilter) > -1) &&
 			( !p.inFolderId || p.inFolderId == e.parentId )
 		);
@@ -120,7 +120,7 @@ GENTICS.Aloha.Repositories.LinkList.getChildren = function( p, callback) {
 		var l = this.folder[e].parentId;
 		if ( typeof this.folder[e] != 'function' && ( // extjs prevention
 			this.folder[e].parentId == p.inFolderId || // all subfolders
-			(!this.folder[e].parentId && p.inFolderId == this.repositoryId) // the hostname 
+			(!this.folder[e].parentId && p.inFolderId == this.repositoryId) // the hostname
 		)) {
 			d.push(this.folder[e]);
 		}
