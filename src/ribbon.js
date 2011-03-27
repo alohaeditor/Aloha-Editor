@@ -8,7 +8,7 @@
  * GENTICS.Aloha.Ribbon plugin adds a ribbon to the page, depending on Aloha
  */
 
-GENTICS.Aloha.Ribbon = new GENTICS.Aloha.Plugin('com.gentics.aloha.plugins.Ribbon');
+GENTICS.Aloha.Ribbon = new GENTICS.Aloha.Plugin('ribbon');
 
 /**
  * Aloha Ribbon
@@ -35,7 +35,7 @@ GENTICS.Aloha.Ribbon.init = function() {
 			cls: 'ext-root',
 			id: 'GENTICS_ribbon'
 		});
-	
+
 		// left spacer to gain some space from the left screen border
 		GENTICS.Aloha.Ribbon.toolbar.add(new Ext.Toolbar.Spacer({width: '5'}));
 		// icon
@@ -50,7 +50,7 @@ GENTICS.Aloha.Ribbon.init = function() {
 			iconCls : 'GENTICS_fade_out',
 			handler : function (button) {
 				var toolbar = jQuery(GENTICS.Aloha.Ribbon.toolbar.getEl().dom);
-			
+
 				if (button.iconCls == 'GENTICS_fade_out') {
 					toolbar.animate({
 						left: '-100%',
@@ -78,7 +78,7 @@ GENTICS.Aloha.Ribbon.init = function() {
 		GENTICS.Aloha.Ribbon.toolbar.add(new Ext.Toolbar.Spacer({width: '5'}));
 
 		GENTICS.Aloha.Ribbon.toolbar.render(document.body, 0);
-		
+
 		jQuery('body').css('paddingTop', '30px');
 		GENTICS.Aloha.Ribbon.show();
 	}
@@ -92,7 +92,7 @@ GENTICS.Aloha.Ribbon.setIcon = function (iconClass) {
 	if (typeof GENTICS.Aloha.Ribbon.icon.cls !== 'undefined') {
 		GENTICS.Aloha.Ribbon.icon.removeClass(GENTICS.Aloha.Ribbon.icon.cls);
 	}
-	
+
 	GENTICS.Aloha.Ribbon.icon.addClass(iconClass);
 };
 
@@ -101,7 +101,7 @@ GENTICS.Aloha.Ribbon.setIcon = function (iconClass) {
  * @param {Button} button Button to be added to the Ribbon
  */
 GENTICS.Aloha.Ribbon.addButton = function (button) {
-	
+
 	if (typeof button.menu === 'object') {
 		// build the drop down menu
 		var menu = new Ext.menu.Menu();
@@ -116,7 +116,7 @@ GENTICS.Aloha.Ribbon.addButton = function (button) {
 			}));
 		});
 	}
-	
+
 	// configuration for the button
 	var buttonConfig = {
 		text : button.label,
@@ -132,9 +132,9 @@ GENTICS.Aloha.Ribbon.addButton = function (button) {
 			button.pressed = !button.pressed;
 		}
 	}
-	
+
 	var extButton;
-	
+
 	// Build a split button if we have a menu and a handler
 	if (menu && typeof button.onclick == 'function') {
 		// build the split button for the menu
@@ -143,7 +143,7 @@ GENTICS.Aloha.Ribbon.addButton = function (button) {
 		// build a normal button
 		extButton = new Ext.Button(buttonConfig);
 	}
-	
+
 	GENTICS.Aloha.Ribbon.toolbar.insert(GENTICS.Aloha.Ribbon.toolbar.items.getCount() - 3, extButton);
 };
 
