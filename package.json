@@ -67,7 +67,7 @@
 		"compress": {
 			"js": true,
 			"css": true,
-			"img": true,
+			"img": false,
 			"html": false
 		},
 		"bundle": {
@@ -145,7 +145,7 @@
 				"core/repository.js",
 				"core/repositoryobjects.js"
 			],
-			"img": true
+			"img": false
 		}
 	}
 }

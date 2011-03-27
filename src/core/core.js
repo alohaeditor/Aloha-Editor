@@ -170,6 +170,9 @@ window.alohaQuery = window.jQuery.sub();
 			GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'i18nReady', this.loadPlugins);
 			GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'i18nPluginsReady', this.loadGui);
 			this.initI18n();
+
+			// Aloha is now Init'd, Time to fix the bug
+			$('body').trigger('aloha');
 		},
 
 		/**
@@ -797,7 +800,7 @@ window.alohaQuery = window.jQuery.sub();
 		}
 
 		// Load in Plugins
-		$.each(plugins,function(i,pluginName){
+		$.each(plugins||{},function(i,pluginName){
 			// Load Plugin
 			GENTICS.Aloha.loadPlugin(pluginName);
 		});
@@ -809,12 +812,10 @@ window.alohaQuery = window.jQuery.sub();
 
 	// Initialise Aloha
 	$(function(){
+		// Give the page 3 seconds to load in all the plugins
 		setTimeout( function() {
-			GENTICS.Aloha.init();			
-		}, 4000);
-		$('body').trigger('alohaready');
-		GENTICS.Aloha.init();
-		$body.trigger('aloha');
+			GENTICS.Aloha.init();
+		},3000);
 	});
 
 })(window);
