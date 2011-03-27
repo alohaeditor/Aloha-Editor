@@ -7,7 +7,7 @@
 /**
  * register the plugin with unique name
  */
-GENTICS.Aloha.GoogleTranslate = new GENTICS.Aloha.Plugin('com.gentics.aloha.plugins.GoogleTranslate');
+GENTICS.Aloha.GoogleTranslate = new GENTICS.Aloha.Plugin('googletranslate');
 
 /**
  * Configure the available languages
@@ -35,10 +35,10 @@ GENTICS.Aloha.GoogleTranslate.init = function () {
 	if (this.settings.apiKey) {
 		this.apiKey = this.settings.apiKey;
 	}
-	
+
 	// import our styles
-	jQuery("head").append('<link rel="stylesheet" href="../plugins/com.gentics.aloha.plugins.GoogleTranslate/css/googleTranslatePlugin.css" />');
-	
+	jQuery("head").append('<link rel="stylesheet" href="../plugins/googletranslate/src/googletranslate.css" />');
+
 	// create buttons for all translation langs
 	for (var i=0; i<this.translateLangs.length; i++) {
 	    GENTICS.Aloha.FloatingMenu.addButton(
@@ -46,7 +46,7 @@ GENTICS.Aloha.GoogleTranslate.init = function () {
 	        new GENTICS.Aloha.ui.Button({
 	            'iconClass' : 'GENTICS_button GENTICS_button_googleTranslate_' + that.translateLangs[i],
 	            'size' : 'small',
-	            'onclick' : function (a,b,c) { 
+	            'onclick' : function (a,b,c) {
 	        		// determine target lang using the icon class
 	        		// there should obviously be a better way to
 	        		// determine which button has been clicked...
@@ -84,17 +84,17 @@ GENTICS.Aloha.GoogleTranslate.translate = function (targetLang) {
 			}
 		}
 	}
-	
+
 	if (tSource.length > 0) {
 		var qparams = "";
 		for (var i=0; i < tSource.length; i++) {
 			qparams += "&q=" + tSource[i];
 		}
-		
+
 		jQuery.ajax({ type: "GET",
 			dataType: "jsonp",
 			targetLang: targetLang, // store a reference to the target language to have it available when success function is triggered
-			url: 'https://www.googleapis.com/language/translate/v2' + 
+			url: 'https://www.googleapis.com/language/translate/v2' +
 				'?key=' + this.apiKey +
 				'&target=' + targetLang + '&prettyprint=false' +
 				qparams,
@@ -104,14 +104,14 @@ GENTICS.Aloha.GoogleTranslate.translate = function (targetLang) {
 					that.log("ERROR", "Unable to translate. Error: [" + res.error.code + "] " + res.error.message);
 					return false;
 				}
-			
+
 				// translation successful
 				if (res.data && res.data.translations) {
 					that.applyTranslation(res.data.translations, tree, this.context.targetLang);
 				}
 			}
 		});
-	}	
+	}
 };
 
 /**
@@ -151,13 +151,13 @@ GENTICS.Aloha.GoogleTranslate.replaceText = function (selectionTreeEntry, text, 
 	if (selectionTreeEntry.domobj.textContent.substring(0,1) == ' ') {
 		text = ' ' + text;
 	}
-	
+
 	// check if the last character of the original string is a space
 	if (selectionTreeEntry.domobj.textContent.substring(
 			selectionTreeEntry.domobj.textContent.length-1,selectionTreeEntry.domobj.textContent.length) == ' ') {
 		text = text + ' ';
 	}
-	
+
 	// special treatment for text nodes, which have to be replaced
 	if (selectionTreeEntry.domobj.nodeType == 3) {
 		jQuery(selectionTreeEntry.domobj)
@@ -168,6 +168,6 @@ GENTICS.Aloha.GoogleTranslate.replaceText = function (selectionTreeEntry, text, 
 		jQuery(selectionTreeEntry.domobj)
 			.html(text)
 			// set the language attribute for non-text-nodes
-			.attr('lang', lang); 
+			.attr('lang', lang);
 	}
 };
