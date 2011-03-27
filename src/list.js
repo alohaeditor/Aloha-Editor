@@ -7,7 +7,7 @@
 /**
  * Register the ListPlugin as GENTICS.Aloha.Plugin
  */
-GENTICS.Aloha.ListPlugin = new GENTICS.Aloha.Plugin('com.gentics.aloha.plugins.List');
+GENTICS.Aloha.ListPlugin = new GENTICS.Aloha.Plugin('list');
 
 /**
  * Configure the available languages
@@ -28,7 +28,7 @@ GENTICS.Aloha.ListPlugin.transformableElements = {'p' : true, 'h1' : true, 'h2' 
  * Initialize the plugin, register the buttons
  */
 GENTICS.Aloha.ListPlugin.init = function() {
-	
+
 	var that = this;
 
 	// the 'create unordered list' button
@@ -112,7 +112,7 @@ GENTICS.Aloha.ListPlugin.applyButtonConfig = function (obj) {
 		} else {
 			this.createUnorderedListButton.hide();
 		}
-		
+
 		if (jQuery.inArray('ol', config) != -1 && GENTICS.Aloha.Selection.canTag1WrapTag2(GENTICS.Aloha.Selection.rangeObject.unmodifiableMarkupAtStart[0].nodeName, "ol") != -1) {
 			this.createOrderedListButton.show();
 		} else {
@@ -204,7 +204,7 @@ GENTICS.Aloha.ListPlugin.transformList = function (ordered) {
 			jqList.children().unwrap();
 		} else {
 			// we are in an unordered list and shall transform it to paragraphs
-			
+
 			// transform all li into p
 			var jqToTransform = jQuery(domToTransform);
 			jQuery.each(jqToTransform.children('li'), function(index, li) {
@@ -244,7 +244,7 @@ GENTICS.Aloha.ListPlugin.transformList = function (ordered) {
 			jqList.children().unwrap();
 		} else {
 			// we are in an unordered list and shall transform it to paragraphs
-			
+
 			// transform all li into p
 			var jqToTransform = jQuery(domToTransform);
 			jQuery.each(jqToTransform.children('li'), function(index, li) {
@@ -252,7 +252,7 @@ GENTICS.Aloha.ListPlugin.transformList = function (ordered) {
 				// if any lists are in the paragraph, move the to after the paragraph
 				newPara.after(newPara.children('ol,ul'));
 			});
-			
+
 			// unwrap the li (remove the enclosing ul)
 			jqToTransform.children().unwrap();
 		}
@@ -325,7 +325,7 @@ GENTICS.Aloha.ListPlugin.indentList = function () {
 		// get the also selected siblings of the dom object
 		var selectedSiblings = GENTICS.Aloha.Selection.rangeObject.getSelectedSiblings(listItem);
 
-		
+
 		// create the new list element by cloning the selected list element's parent
 		var jqNewList = jQuery(listItem).parent().clone(false).empty();
 		jqNewList.append(listItem);
