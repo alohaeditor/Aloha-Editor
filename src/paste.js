@@ -7,7 +7,7 @@
 /**
  * Register the PastePlugin as GENTICS.Aloha.Plugin
  */
-GENTICS.Aloha.PastePlugin = new GENTICS.Aloha.Plugin('com.gentics.aloha.plugins.Paste');
+GENTICS.Aloha.PastePlugin = new GENTICS.Aloha.Plugin('paste');
 
 /**
  * All registered paste handlers
@@ -79,7 +79,7 @@ GENTICS.Aloha.PastePlugin.redirectPaste = function() {
 
 	// set the cursor into the paste div
 	GENTICS.Utils.Dom.setCursorInto(this.pasteDiv.get(0));
-	
+
 	// focus the pasteDiv
 	this.pasteDiv.focus();
 };
@@ -94,7 +94,7 @@ GENTICS.Aloha.PastePlugin.getPastedContent = function(event) {
 	for (var i = 0; i < this.pasteHandlers.length; ++i) {
 		this.pasteHandlers[i].handlePaste(this.pasteDiv);
 	}
-	
+
 	// TODO collapse the range or remove the currently selected DOM
 
 	// insert the content into the editable at the current range
