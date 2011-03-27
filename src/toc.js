@@ -55,7 +55,7 @@
 		map(a, f);
 	}
 
-    var namespace = 'com.gentics.aloha.plugins.TOC';
+    var namespace = 'toc';
     var TOC = GENTICS.Aloha.TOC = new GENTICS.Aloha.Plugin(namespace);
     GENTICS.Aloha.TOC.languages = ['en', 'de' ];
 
