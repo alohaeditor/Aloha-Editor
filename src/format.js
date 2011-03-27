@@ -300,5 +300,5 @@ GENTICS.Aloha.Format.removeFormat = function() {
 * @return string
 */
 GENTICS.Aloha.Format.toString = function () {
-	return 'com.gentics.aloha.plugins.Format';
+	return 'format';
 };
