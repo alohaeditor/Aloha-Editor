@@ -5,7 +5,7 @@
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
 
-GENTICS.Aloha.HighlightEditables = new GENTICS.Aloha.Plugin('com.gentics.aloha.plugins.highlighteditables');
+GENTICS.Aloha.HighlightEditables = new GENTICS.Aloha.Plugin('highlighteditables');
 
 /**
  * Initialize the plugin and set initialize flag on true
@@ -14,7 +14,7 @@ GENTICS.Aloha.HighlightEditables.init = function () {
 
 	// remember refernce to this class for callback
 	var that = this;
-	
+
 	// highlight editables as long as the mouse is moving
 	GENTICS.Utils.Position.addMouseMoveCallback(function () {
 		for ( var i = 0; i < GENTICS.Aloha.editables.length; i++) {
@@ -32,18 +32,18 @@ GENTICS.Aloha.HighlightEditables.init = function () {
 
 	// mark active Editable with a css class
 	GENTICS.Aloha.EventRegistry.subscribe(
-			GENTICS.Aloha, 
-			"editableActivated", 
+			GENTICS.Aloha,
+			"editableActivated",
 			function (jEvent, aEvent) {
 				aEvent.editable.obj.addClass('GENTICS_editable_active');
 				that.fade();
-			} 
+			}
 	);
 
 	// remove active Editable ccs class
 	GENTICS.Aloha.EventRegistry.subscribe(
-			GENTICS.Aloha, 
-			"editableDeactivated", 
+			GENTICS.Aloha,
+			"editableDeactivated",
 			function (jEvent, aEvent) {
 				aEvent.editable.obj.removeClass('GENTICS_editable_active');
 			}
