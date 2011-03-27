@@ -97,12 +97,23 @@ window.alohaQuery = window.jQuery.sub();
 		readyCallbacks: [],
 
 		/**
+		 * Has aloha been initialised?
+		 */
+		initd: false,
+
+		/**
 		 * Initialize Aloha
 		 * called automatically by the loader
 		 * @event the "ready" event is triggered as soon as Aloha has finished it's initialization process
 		 * @hide
 		 */
 		init: function () {
+			// Check
+			if ( this.initd ) {
+				throw new Error('You are initialising Aloha Editor twice');
+			}
+			this.initd = true;
+
 			// check browser version on init
 			// this has to be revamped, as
 			if (jQuery.browser.webkit && parseFloat(jQuery.browser.version) < 532.5 || // Chrome/Safari 4
@@ -677,6 +688,9 @@ window.alohaQuery = window.jQuery.sub();
 			scriptEl.src = url;
 			scriptEl.setAttribute('defer','defer');
 			appendEl.appendChild(scriptEl);
+
+			// Chain
+			return this;
 		},
 
 		/**
@@ -695,6 +709,9 @@ window.alohaQuery = window.jQuery.sub();
 			linkEl.rel = 'stylesheet';
 			linkEl.href = url;
 			appendEl.appendChild(linkEl);
+
+			// Chain
+			return this;
 		},
 
 		/**
@@ -760,7 +777,7 @@ window.alohaQuery = window.jQuery.sub();
 					// package.json exists,
 
 					// Load Package
-					if ( typeof data === 'object' ) {
+					if ( typeof data === 'object' && typeof data.js !== 'undefined' ) {
 						actions.loadPackage(data);
 					}
 					else {
