@@ -23,6 +23,8 @@ window.GENTICS_Aloha_base = window.GENTICS_Aloha_base || false;
 	window.Aloha_loaded_plugins['link'] = true;
 	window.Aloha_loaded_plugins['linkchecker'] = true;
 	window.Aloha_loaded_plugins['table'] = true;
+	window.Aloha_loaded_plugins['cropnresize'] = true;
+	window.Aloha_loaded_plugins['image'] = true;
 	includes.push('dep/ext-3.2.1/adapter/jquery/ext-jquery-adapter.js');
 	includes.push('dep/ext-3.2.1/ext-all.js');
 	includes.push('dep/jquery.json-2.2.min.js');
@@ -59,6 +61,8 @@ window.GENTICS_Aloha_base = window.GENTICS_Aloha_base || false;
 	includes.push('plugin/link/src/link.js');
 	includes.push('plugin/linkchecker/src/linkchecker.js');
 	includes.push('plugin/table/src/table.js');
+	includes.push('plugin/cropnresize/src/cropnresize.js');
+	includes.push('plugin/image/src/image.js');
 
 	// Insert Scripts
 	var value, url, scriptEl, appendEl = document.head;
