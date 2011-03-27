@@ -47,3 +47,6 @@
 [submodule "WebContent/plugins/com.gentics.aloha.plugins.DragAndDropFiles"]
 	path = WebContent/plugins/com.gentics.aloha.plugins.DragAndDropFiles
 	url = https://github.com/alohaeditor/Aloha-Plugin-DragAndDropFiles.git
+[submodule "WebContent/plugins/org.karacos.aloha.Plugin"]
+	path = WebContent/plugins/org.karacos.aloha.Plugin
+	url = https://github.com/karacos/Aloha-Plugin-KaraCos.git
