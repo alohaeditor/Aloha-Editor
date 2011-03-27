@@ -147,7 +147,7 @@ GENTICS.Aloha.PluginRegistry = new GENTICS.Aloha.PluginRegistry();
  * @hide
  */
 GENTICS.Aloha.PluginRegistry.toString = function() {
-	return 'com.gentics.aloha.PluginRegistry';
+	return 'pluginregistry';
 };
 
 /**
@@ -187,7 +187,7 @@ GENTICS.Aloha.Plugin.prototype = {
 	 * <ul>
 	 * <li>Array configuration parameters are:
 	 * <pre>
-	 * "com.gentics.aloha.plugins.List": {
+	 * "list": {
 	 *		config : [ 'b', 'h1' ],
 	 * 		editables : {
 	 *			'#title'	: [ ],
@@ -223,7 +223,7 @@ GENTICS.Aloha.Plugin.prototype = {
 	 * </pre></li>
 	 * <li>Object configuration parameters are :
 	 * <pre>
-	 * "com.gentics.aloha.plugins.Image": {
+	 * "image": {
 	 * 	    config : { 'img': { 'max_width': '50px',
 	 * 					'max_height': '50px' }},
 	 * 		editables : {

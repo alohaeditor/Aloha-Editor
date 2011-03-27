@@ -36,7 +36,7 @@ GENTICS.Aloha.Repository.Object = function() {};
 <pre><code>
  var item = new GENTICS.Aloha.Repository.Document({
  	id: 1,
- 	repositoryId: 'com.gentics.aloha.repositories.MyRepository',
+ 	repositoryId: 'myrepository',
  	name: 'Aloha Editor - The HTML5 Editor',
  	type: 'website',
  	url:'http://aloha-editor.com',
@@ -100,7 +100,7 @@ GENTICS.Aloha.Repository.Document = function(properties) {
 <pre><code>
  var item = new GENTICS.Aloha.Repository.Folder({
  	id: 2,
- 	repositoryId: 'com.gentics.aloha.repositories.MyRepository',
+ 	repositoryId: 'myrepository',
  	name: 'images',
  	type: 'directory',
  	parentId:'/www'

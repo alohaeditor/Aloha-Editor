@@ -432,7 +432,7 @@ GENTICS.Aloha.RepositoryManager = new GENTICS.Aloha.RepositoryManager();
  * @hide
  */
 GENTICS.Aloha.RepositoryManager.toString = function() {
-	return 'com.gentics.aloha.RepositoryManager';
+	return 'repositorymanager';
 };
 
 })(window);
