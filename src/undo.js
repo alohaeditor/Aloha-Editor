@@ -31,7 +31,7 @@ GENTICS.Aloha.Undo.init = function () {
 			undo: function() {
 				this.reset(this.oldValue);
 			},
-			
+
 			redo: function() {
 				this.reset(this.newValue);
 			},
@@ -59,14 +59,14 @@ GENTICS.Aloha.Undo.init = function () {
 			}
 		});
 
-	
+
 	GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'smartContentChanged', function(jevent, aevent) {
 
 		// workaround because on redo the editable must be blured.
-		if ( aevent.triggerType != 'blur') stack.execute( new EditCommand( aevent.editable, aevent.snapshotContent) );	
-	
+		if ( aevent.triggerType != 'blur') stack.execute( new EditCommand( aevent.editable, aevent.snapshotContent) );
+
 	});
-	
+
 
 };
 
@@ -75,5 +75,5 @@ GENTICS.Aloha.Undo.init = function () {
 * @return string
 */
 GENTICS.Aloha.Undo.toString = function () {
-	return 'com.gentics.aloha.plugins.Undo';
+	return 'undo';
 };
