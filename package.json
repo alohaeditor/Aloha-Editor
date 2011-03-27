@@ -1,74 +1,151 @@
 {
-  "name": "aloha",
-  "version": "0.10.0-dev",
+	"name": "aloha-editor",
+	"version": "0.10.0",
+	"description": "The HTML5 WYSIWYG Editor",
+	"homepage": "https://github.com/alohaeditor/Aloha-Editor",
+	"keywords": [
+		"javascript",
+		"buildr",
+		"package",
+		"compile",
+		"compress",
+		"minify",
+		"bundle"
+	],
 
-  "dir": {
-    "src": "src",
-    "out": "out",
-    "template": "template"
-  },
+	"author": {
+		"name": "The Aloha Editor Team",
+		"email": "team@aloha-editor.org",
+		"web": "http://aloha-editor.org"
+	},
+	"maintainers": [
+		{
+			"name": "Haymo Meran",
+			"email": "h.meran@gentics.com",
+			"web": "http://haymo.org"
+		},
+		{
+			"name": "Benjamin Lupton",
+			"email": "b@lupton.cc",
+			"web": "http://balupton.com"
+		}
+	],
+	"contributors": [
+		{
+			"name": "The Aloha Editor Team",
+			"email": "team@aloha-editor.org",
+			"web": "http://aloha-editor.org"
+		}
+	],
 
-  "subdir": {
-    "src": "src",
-    "demo": "demo",
-    "plugin": "plugin",
-    "i18n": "i18n"
+	"bugs": {
+		"web": "https://github.com/alohaeditor/Aloha-Editor/issues"
 	},
 
-  "template": {
-  	"footer": "footer.js",
-  	"header": "header.js",
-  	"replace": "replace.js",
-  	"bundle": "bundle.js",
-  	"prefix": "prefix.js"
-  },
+	"licenses": [
+		{
+			"type": "AGPLv3",
+			"url": "http://www.opensource.org/licenses/agpl-v3"
+		},
+		{
+			"url": "http://aloha-editor.org/license"
+		}
+	],
 
-  "plugin": [
-  	"format","link","linkchecker","table"
-  ],
+	"repository" : {
+		"type" : "git",
+		"url" : "http://github.com/alohaeditor/Aloha-Editor.git"
+	},
 
-  "css": [
-		"src/dep/ext-3.3.1/resources/css/ext-all-notheme.css",
-		"src/dep/ext-3.3.1/resources/css/xtheme-gray.css",
+	"dependencies": {
+	   "buildr": ">=0.0.1"
+	},
 
-		"src/css/aloha.css"
-  ],
+	"compiler": "buildr .",
 
-  "js": [
-		"src/dep/ext-3.3.1/adapter/jquery/ext-jquery-adapter.js",
-		"src/dep/ext-3.3.1/ext-all-debug.js",
+	"buildr": {
+		"compress": {
+			"js": true,
+			"css": true,
+			"img": true,
+			"html": false
+		},
+		"bundle": {
+			"js": "aloha.js",
+			"css": "aloha.css",
+			"src": true
+		},
+		"directories": {
+			"out": "./out",
+			"src": "./src",
+			"templates": "./template",
+			"subpackages": "plugin"
+		},
+		"templates": {
+			"out_bundle_header.js": "out_bundle_header.js",
+			"out_bundle_footer.js": "out_bundle_footer.js",
+			"out_bundle_item.js": "out_bundle_item.js",
+			"out_bundle_subpackage.js": "out_bundle_subpackage.js",
+			"src_bundle_header.js": "src_bundle_header.js",
+			"src_bundle_footer.js": "src_bundle_footer.js",
+			"src_bundle_item.js": "src_bundle_item.js",
+			"src_bundle_subpackage.js": "src_bundle_subpackage.js"
+		},
+		"subpackages": [
+			"format",
+			"link",
+			"linkchecker",
+			"table"
+		],
+		"ignore": {
+			"img": [
+				"dep/ext-3.2.1",
+				"dep/ext-3.3.1"
+			]
+		},
+		"files": {
+			"css": [
+				"dep/ext-3.2.1/resources/css/ext-all-notheme.css",
+				"dep/ext-3.2.1/resources/css/xtheme-gray.css",
+				"css/aloha.css"
+			],
+			"js": [
+				"dep/ext-3.2.1/adapter/jquery/ext-jquery-adapter.js",
+				"dep/ext-3.2.1/ext-all.js",
 
-		"src/dep/jquery.json-2.2.min.js",
-		"src/dep/jquery.getUrlParam.js",
-		"src/dep/jquery.store.js",
+				"dep/jquery.json-2.2.min.js",
+				"dep/jquery.getUrlParam.js",
+				"dep/jquery.store.js",
 
-		"src/core/jquery.aloha.js",
-		"src/util/jquery.js",
-		"src/util/lang.js",
-		"src/util/range.js",
-		"src/util/position.js",
-		"src/util/dom.js",
-		"src/util/indexof.js",
-		"src/core/ext-alohaproxy.js",
-		"src/core/ext-alohareader.js",
-		"src/core/ext-alohatreeloader.js",
-		"src/core/core.js",
-		"src/core/ui.js",
-		"src/core/ui-attributefield.js",
-		"src/core/ui-browser.js",
-		"src/core/editable.js",
-		"src/core/event.js",
-		"src/core/floatingmenu.js",
-		"src/core/ierange-m2.js",
-		"src/core/log.js",
-		"src/core/markup.js",
-		"src/core/message.js",
-		"src/core/plugin.js",
-		"src/core/selection.js",
-		"src/core/sidebar.js",
-		"src/core/repositorymanager.js",
-		"src/core/repository.js",
-		"src/core/repositoryobjects.js"
-  ]
-
+				"core/jquery.aloha.js",
+				"util/jquery.js",
+				"util/lang.js",
+				"util/range.js",
+				"util/position.js",
+				"util/dom.js",
+				"util/indexof.js",
+				"core/ext-alohaproxy.js",
+				"core/ext-alohareader.js",
+				"core/ext-alohatreeloader.js",
+				"core/core.js",
+				"core/ui.js",
+				"core/ui-attributefield.js",
+				"core/ui-browser.js",
+				"core/editable.js",
+				"core/event.js",
+				"core/floatingmenu.js",
+				"core/ierange-m2.js",
+				"core/log.js",
+				"core/markup.js",
+				"core/message.js",
+				"core/plugin.js",
+				"core/selection.js",
+				"core/sidebar.js",
+				"core/repositorymanager.js",
+				"core/repository.js",
+				"core/repositoryobjects.js"
+			],
+			"img": true
+		}
+	}
 }
