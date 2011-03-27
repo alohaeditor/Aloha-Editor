@@ -453,10 +453,8 @@ class App
 	def build
 		check_req(['node','npm'])
 		run([
-			"rm -Rf out",
-			"mkdir out",
-			"cp -R src/* out",
-			"node ./build/build.js ."
+			"npm install buildr",
+			"buildr"
 		])
 	end
 
