@@ -14,4 +14,5 @@ button.addrowbefore.tooltip=Zeile darüber einfügen
 button.addrowafter.tooltip=Zeile darunter einfügen
 button.delrows.tooltip=Zeilen löschen
 button.caption.tooltip=Tabellen Bezeichnung
+button.rowheader.tooltip=Zeile als Table Header formatieren
 empty.caption=Tabellen Bezeichnung
