@@ -1,45 +1,103 @@
-button.GENTICS_img_align_left {
-    background-image: url(../img/image-align-left.png) !important;
+
+/* Images */
+button.AlohaImage_align_left {
+    background-image: url('images/image-align-left.png');
 }
 
-button.GENTICS_img_align_right {
-    background-image: url(../img/image-align-right.png) !important;
+button.AlohaImage_align_right {
+    background-image: url(images/image-align-right.png);
 }
 
-button.GENTICS_img_align_none {
-    background-image: url(../img/image-align-none.png) !important;
+button.AlohaImage_align_none {
+    background-image: url(images/image-align-none.png);
 }
 
-button.GENTICS_img_title {
-    background-image: url(../img/image-title.png) !important;
+button.GENTICS_img.AlohaImage_title {
+    background-image: url(images/image-title.png);
 }
 
-button.GENTICS_img_border {
-    background-image: url(../img/image-border.png) !important;
+button.GENTICS_img.AlohaImage_border {
+    background-image: url(images/image-border.png);
 }
 
-button.GENTICS_img_insert {
-    background-image: url(../img/image.gif) !important;
+button.GENTICS_img.AlohaImage_insert {
+    background-image: url(images/image.gif);
 }
 
-button.GENTICS_img_padding_increase {
-	background-image: url(../img/padding-increase.gif) !important;
-	}
+button.GENTICS_img.AlohaImage_padding_increase {
+	background-image: url(images/padding-increase.gif);
+}
+	
+button.GENTICS_img.AlohaImage_padding_decrease {
+	background-image: url(images/padding-decrease.gif);
+}
 
-button.GENTICS_img_padding_decrease {
-	background-image: url(../img/padding-decrease.gif) !important;
-	}
-button.GENTICS_img_size_increase {
-	background-image: url(../img/size-increase.gif) !important;
-	}
-button.GENTICS_img_size_decrease {
-	background-image: url(../img/size-decrease.gif) !important;
-	}
+button.GENTICS_img.AlohaImage_size_increase {
+	background-image: url(images/size-increase.gif);
+}
+
+button.GENTICS_img.AlohaImage_size_decrease {
+	background-image: url(images/size-decrease.gif);
+}
 
 .GENTICS_default_file_icon {
-	background-image: url(../img/page.png) !important;
+	background-image: url(images/page.png);
+
 	width: 16px;
 	height:16px;
 	margin: 0;
 	padding:0;
-	}
+}
+
+/* Crop and Resize */
+button.cnr_resize.x-btn-text, button.cnr_crop.x-btn-text, button.cnr_reset.x-btn-text {
+	background-image: url(images/cropnresize.png);
+}
+
+button.cnr_crop {
+	background-position: -2px -2px !important;
+}
+
+button.cnr_reset {
+	background-position: -42px -2px !important;
+}
+
+#GENTICS_CropNResize_btns {
+	z-index: 10000;
+	width: 70px;
+	display: none;
+	position: absolute;
+}
+
+#GENTICS_CropNResize_btns button {
+	background: #ededed;
+	border: 1px solid #c6c6c6;
+	cursor: pointer;
+	color: #96ca03;
+	text-shadow: -1px -1px 1px rgba(0,0,0,0.3);
+	font-size: 16px;
+	border-radius: 3px;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	padding: 0px;
+	width: 23px;
+	height: 23px;
+	margin-right: 3px;
+}
+
+#GENTICS_CropNResize_btns button.cnr_crop_apply {
+	padding-left: 2px;
+}
+
+#GENTICS_CropNResize_btns button.cnr_crop_cancel {
+	color: #c92404;
+}
+
+/*
+ * fix to use big resize handle for images
+ */
+.ui-resizable-se { 
+	width: 16px;
+	height: 16px;
+	background-position: -80px -224px !important; 
+}
