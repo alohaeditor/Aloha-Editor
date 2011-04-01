@@ -573,12 +573,13 @@ jQuery.extend(true, GENTICS.Aloha.Image,{
 	
 	insertImg: function() {
 		var range = GENTICS.Aloha.Selection.getRangeObject(),
-			config = this.getEditableConfig(GENTICS.Aloha.activeEditable.obj);
+			config = this.getEditableConfig(GENTICS.Aloha.activeEditable.obj),
+			imagePluginUrl = GENTICS.Aloha.getPluginUrl('image');
 		if ( range.isCollapsed() ) {
 			// TODO I would suggest to call the srcChange method. So all image src
 			// changes are on one single point.
 			var imagestyle = "width: " + config.img.max_width + "; height: " + config.img.max_height,
-				imagetag = '<img style="'+imagestyle+'" src="' + GENTICS_Aloha_base + 'plugins/com.gentics.aloha.plugins.Image/images/blank.jpeg" title="" />',
+				imagetag = '<img style="'+imagestyle+'" src="' + imagePluginUrl + "/img/blank.jpg" title="" />',
 				newImg = jQuery(imagetag);
 			// add the click selection handler
 			//newImg.click( GENTICS.Aloha.Image.clickImage ); - Using delegate now
