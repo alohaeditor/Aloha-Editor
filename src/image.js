@@ -48,7 +48,7 @@ jQuery.extend(true, jQuery.fn, {
 
 GENTICS.Aloha.Image = new GENTICS.Aloha.Plugin('image');
 jQuery.extend(true, GENTICS.Aloha.Image,{
-	languages: ['en', 'fr', 'de'],
+	languages: ['en', 'fr', 'de', 'ru', 'cz'],
 	config: {
 		'img': {
 			'max_width': '50px',
