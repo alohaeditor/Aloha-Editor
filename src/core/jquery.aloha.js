@@ -145,7 +145,7 @@
 			// Bind the event
 			bind: function(callback){
 				var $this = $(this);
-				   return $this.bind(eventName,callback);
+					return $this.bind(eventName,callback);
 			},
 
 			// Trigger the event
@@ -213,9 +213,12 @@
 
 		// Fetch already bound events
 		var boundHandlers = [];
-		$.each($this.data('events')[eventName], function(i,event){
-			boundHandlers.push(event.handler);
-		});
+		$.each(
+			($this.data('events') || {})[eventName] || [],
+			function(i,event){
+				boundHandlers.push(event.handler);
+			}
+		);
 
 		// Unbind already bound events
 		$this.unbind(eventName);
