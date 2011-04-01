@@ -53,6 +53,9 @@ GENTICS.Aloha.Editable = function(obj) {
 	this.sccTimerIdle = false;
 	this.sccTimerDelay = false;
 
+	// placeholder
+	this.placeholderClass = 'aloha-placeholder';
+
 	// register the editable with Aloha
 	GENTICS.Aloha.registerEditable(this);
 
@@ -126,9 +129,9 @@ GENTICS.Aloha.Editable.prototype = {
 				var div = jQuery('<div id="'+this.getId()+'-aloha" class="GENTICS_textarea"/>').insertAfter(obj);
 				// Resize the div to the textarea
 				div.height(obj.height())
-				   .width(obj.width())
+					.width(obj.width())
 				// Populate the div with the value of the textarea
-				   .html(obj.val());
+					.html(obj.val());
 				// Hide the textarea
 				obj.hide();
 				// Attach a onsubmit to the form to place the HTML of the div back into the textarea
@@ -197,7 +200,7 @@ GENTICS.Aloha.Editable.prototype = {
 
 			// initialize the object
 			this.obj.addClass('GENTICS_editable')
-				    .contentEditable(true);
+				.contentEditable(true);
 
 			// add focus event to the object to activate
 			this.obj.mousedown(function(e) {
@@ -252,9 +255,84 @@ GENTICS.Aloha.Editable.prototype = {
 
 			this.snapshotContent = this.getContents();
 
+			// init placeholder
+			this.initPlaceholder();
+
 			// now the editable is ready
 			this.ready = true;
 		}
+	},
+
+	/**
+	 * Init Placeholder
+	 *
+	 * @return void
+	 */
+	initPlaceholder: function() {
+		if (this.isEmpty() && GENTICS.Aloha.settings.placeholder) {
+			this.addPlaceholder();
+		}
+	},
+
+	/**
+	 * Check if the conteneditable is empty
+	 *
+	 * @return {bool}
+	 */
+	isEmpty: function() {
+		var editableTrimedContent = jQuery.trim(this.getContents()),
+			onlyBrTag = (editableTrimedContent == '<br>') ? true : false;
+
+		if (editableTrimedContent.length == 0 || onlyBrTag) {
+			return true;
+		} else {
+			return false;
+		}
+	},
+
+	/**
+	 * Add placeholder in editable
+	 *
+	 * @return void
+	 */
+	addPlaceholder: function() {
+
+		var div = jQuery('<div />'),
+			span = jQuery('<span />'),
+			el,
+			obj = this.obj;
+
+		if (GENTICS.Utils.Dom.allowsNesting(obj[0], div[0])) {
+			el = div;
+		} else {
+			el = span;
+		}
+
+		jQuery(obj).append(el.addClass(this.placeholderClass));
+		jQuery.each(
+			GENTICS.Aloha.settings.placeholder,
+			function (selector, selectorConfig) {
+				if (obj.is(selector)) {
+					el.html(selectorConfig);
+				}
+			}
+		);
+
+		// remove browser br
+		jQuery('br', obj).remove();
+		delete div, span, el;
+	},
+
+	/**
+	 * remove placeholder from contenteditable
+	 *
+	 * @return void
+	 */
+	removePlaceholder: function(obj) {
+		// remove browser br
+		jQuery('br', obj).remove();
+		// remove placeholder
+		jQuery('.' + this.placeholderClass, obj).remove();
 	},
 
 	/**
@@ -301,11 +379,11 @@ GENTICS.Aloha.Editable.prototype = {
 		// initialize the object
 		this.obj.removeClass('GENTICS_editable')
 		// Disable contentEditable
-			    .contentEditable(false)
+					.contentEditable(false)
 
 		// unbind all events
 		// TODO should only unbind the specific handlers.
-			    .unbind('mousedown focus keydown keyup');
+					.unbind('mousedown focus keydown keyup');
 
 		/* TODO remove this event, it should implemented as bind and unbind
 		// register the onSelectionChange Event with the Editable field
@@ -423,6 +501,10 @@ GENTICS.Aloha.Editable.prototype = {
 			this.obj.mouseup();
 		}
 
+		// Placeholder handling
+		this.removePlaceholder(this.obj);
+
+
 		// finally mark this object as active
 		this.isActive = true;
 
@@ -468,6 +550,9 @@ GENTICS.Aloha.Editable.prototype = {
 
 		// disable active status
 		this.isActive = false;
+
+		// placeholder
+		this.initPlaceholder();
 
 		/**
 		 * @event editableDeactivated fires after the editable has been activated by clicking on it.
@@ -520,6 +605,9 @@ GENTICS.Aloha.Editable.prototype = {
 
 		// do core cleanup
 		clonedObj.find('.GENTICS_cleanme').remove();
+
+		// remove placeholder
+		this.removePlaceholder(clonedObj);
 
 		GENTICS.Aloha.PluginRegistry.makeClean(clonedObj);
 		return clonedObj.html();
