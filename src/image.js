@@ -47,7 +47,7 @@ jQuery.extend(true, jQuery.fn, {
 	}
 });
 
-GENTICS.Aloha.Image = new GENTICS.Aloha.Plugin('com.gentics.aloha.plugins.Image');
+GENTICS.Aloha.Image = new GENTICS.Aloha.Plugin('image');
 jQuery.extend(true, GENTICS.Aloha.Image,{
 	languages: ['en', 'fr', 'de'],
 	config: {
@@ -118,7 +118,10 @@ jQuery.extend(true, GENTICS.Aloha.Image,{
 	 */
 	init: function(){
 		// get settings
-		var config = this.config;
+		var config = this.config,
+			me = this,
+			Aloha = GENTICS.Aloha,
+			imagePluginUrl = GENTICS.Aloha.getPluginUrl('image');
 		if (!this.settings.config.img) {
 			this.settings.config.img = this.config.img;
 		}
@@ -130,28 +133,21 @@ jQuery.extend(true, GENTICS.Aloha.Image,{
 		if (typeof GENTICS.Aloha.Image.settings.dropEventHandler !== 'undefined')
 			GENTICS.Aloha.Image.dropEventHandler = GENTICS.Aloha.Image.settings.dropEventHandler;
 		
-		var head = jQuery('head');
-		
-		head.append('<link rel="stylesheet" href="' 
-				+ GENTICS.Aloha.settings.base
-				+ 'plugins/com.gentics.aloha.plugins.Image/style.css' + '"/>');
-		
-		if (this.settings.config.img.ui.resizable) {
-			head.append('<link rel="stylesheet" href="' 
-					+ GENTICS.Aloha.settings.base 
-					+ 'plugins/com.gentics.aloha.plugins.Image/css/ui-lightness/jquery-ui-1.8.10.cropnresize.css" />');
-			head.append('<script type="text/javascript" src="' 
-					+ GENTICS.Aloha.settings.base 
-					+ 'plugins/com.gentics.aloha.plugins.Image/js/jquery-ui-1.8.10.custom.min.js"></script>');
+		if (typeof window.jQuery.ui === "undefined") {
+			
+			Aloha
+			.loadCss(imagePluginUrl+'/dep/ui/ui-lightness/jquery-ui-1.8.10.custom.css')
+			.loadCss(imagePluginUrl+'/dep/ui/ui-lightness/jquery-ui-1.8.10.cropnresize.css')
+			.loadJs(imagePluginUrl+'/dep/ui/jquery-ui-1.8.10.custom.min.js')
+			;
 		}
 		if (this.settings.config.img.ui.crop) {
-			head.append('<script type="text/javascript" src="' 
-					+ GENTICS.Aloha.settings.base 
-					+ 'plugins/com.gentics.aloha.plugins.Image/js/jquery.Jcrop.min.js"></script>');
-			head.append('<link rel="stylesheet" href="' 
-					+ GENTICS.Aloha.settings.base 
-					+ 'plugins/com.gentics.aloha.plugins.Image/css/jquery.Jcrop.css" />');
+			 Aloha
+			    .loadCss(imagePluginUrl+'/dep/jcrop/jquery.jcrop.css')
+			    .loadJs(imagePluginUrl+'/dep/jcrop/jquery.jcrop.min.js')
+			  ;
 		}
+		
 		var that = this;
 		that.initImage();
 		that.bindInteractions();
