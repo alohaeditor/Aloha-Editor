@@ -39,9 +39,12 @@ window.alohaQuery = window.jQuery.sub();
 	 * @class Aloha The Aloha base object, which contains all the core functionality
 	 * @singleton
 	 */
-	GENTICS.Aloha = function () {};
+	//GENTICS.Aloha = function () {};
 
-	GENTICS.Aloha = {
+
+
+
+	GENTICS.Aloha = jQuery.extend({
 
 		// provide aloha version, is automatically set during build process
 		version: '##ALOHAVERSION##',
@@ -805,7 +808,7 @@ window.alohaQuery = window.jQuery.sub();
 			// Done
 			return true;
 		}
-	};
+	}, GENTICS.Aloha);
 
 	// Load Plugins
 	var $alohaScriptInclude = $('#aloha-script-include');

@@ -91,6 +91,16 @@
 			color: white;
 			font-weight: bold;
 		}
+
+		.aloha-placeholder {
+			background: #ddd;
+			color: #666;
+			margin: 5px 0 0 0;
+		}
+
+		#typo3span {
+			display: block;
+		}
 	</style>
 </head>
 <body>
@@ -147,6 +157,13 @@
 					<li>The term inspired the name of the ALOHA Protocol introduced in the 1970s by the University of Hawaii.</li>
 					<li>In Hawaii someone can be said to have or show aloha in the way they treat others; whether family, friend, neighbor or stranger.</li>
 				</ul>
+
+				<h2>Placeholder</h2>
+				<div id="typo3"></div>
+
+				<h2>Inline Placeholder</h2>
+				<span id="typo3span"></span>
+
 			</div>
 		</div>
 	</div>
@@ -161,6 +178,11 @@
 				logLevels: {'error': true, 'warn': true, 'info': true, 'debug': false},
 				errorhandling : false,
 				ribbon: false,
+
+				"placeholder": {
+					'*': '<img src="http://aloha-editor.org/logo/Aloha%20Editor%20HTML5%20technology%20class%2016.png" alt="logo"/>&nbsp;Placeholder All',
+					'#typo3span': 'Placeholder for span'
+				},
 				"i18n": {
 					// you can either let the system detect the users language (set acceptLanguage on server)
 					// In PHP this would would be '<?=$_SERVER['HTTP_ACCEPT_LANGUAGE']?>' resulting in
@@ -259,9 +281,12 @@
 
 			// Bind to Aloha Ready Event
 			$body.bind('aloha',function(){
+				$('#typo3').aloha();
+				$('#typo3span').aloha();
 				$('#title').aloha();
 				$('#teaser').aloha();
 				$('#content').aloha();
+
 			});
 
 		})(window);
