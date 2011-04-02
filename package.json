@@ -58,7 +58,7 @@
 	},
 
 	"dependencies": {
-	   "buildr": ">=0.0.1"
+		"buildr": ">=0.2.3"
 	},
 
 	"compiler": "buildr .",
@@ -67,7 +67,7 @@
 		"compress": {
 			"js": true,
 			"css": true,
-			"img": false,
+			"img": true,
 			"html": false
 		},
 		"bundle": {
@@ -145,7 +145,7 @@
 				"core/repository.js",
 				"core/repositoryobjects.js"
 			],
-			"img": false
+			"img": true
 		}
 	}
 }
