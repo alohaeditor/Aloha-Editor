@@ -23,8 +23,6 @@ window.GENTICS_Aloha_base = window.GENTICS_Aloha_base || false;
 	window.Aloha_loaded_plugins['link'] = true;
 	window.Aloha_loaded_plugins['linkchecker'] = true;
 	window.Aloha_loaded_plugins['table'] = true;
-	window.Aloha_loaded_plugins['cropnresize'] = true;
-	window.Aloha_loaded_plugins['image'] = true;
 	includes.push('dep/ext-3.2.1/adapter/jquery/ext-jquery-adapter.js');
 	includes.push('dep/ext-3.2.1/ext-all.js');
 	includes.push('dep/jquery.json-2.2.min.js');

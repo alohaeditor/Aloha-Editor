@@ -772,7 +772,6 @@ window.alohaQuery = window.jQuery.sub();
 			};
 
 			// Load In
-			try{
 			$.ajax({
 				url: pluginUrl+'/package.json',
 				dataType: 'json',
@@ -800,10 +799,6 @@ window.alohaQuery = window.jQuery.sub();
 					return true;
 				}
 			});
-			}
-			catch ( e ) {
-				alert('asd');
-			}
 
 			// Done
 			return true;
@@ -820,7 +815,7 @@ window.alohaQuery = window.jQuery.sub();
 		}
 
 		// Load in Plugins
-		$.each(plugins||{},function(i,pluginName){
+		$.each(plugins||[],function(i,pluginName){
 			// Load Plugin
 			GENTICS.Aloha.loadPlugin(pluginName);
 		});
