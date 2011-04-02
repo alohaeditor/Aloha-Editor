@@ -1,47 +1,47 @@
 
 /* Images */
 button.AlohaImage_align_left {
-    background-image: url('images/image-align-left.png');
+    background-image: url(../img/image-align-left.png);
 }
 
 button.AlohaImage_align_right {
-    background-image: url(images/image-align-right.png);
+    background-image: url(../img/image-align-right.png);
 }
 
 button.AlohaImage_align_none {
-    background-image: url(images/image-align-none.png);
+    background-image: url(../img/image-align-none.png);
 }
 
 button.GENTICS_img.AlohaImage_title {
-    background-image: url(images/image-title.png);
+    background-image: url(../img/image-title.png);
 }
 
 button.GENTICS_img.AlohaImage_border {
-    background-image: url(images/image-border.png);
+    background-image: url(../img/image-border.png);
 }
 
 button.GENTICS_img.AlohaImage_insert {
-    background-image: url(images/image.gif);
+    background-image: url(../img/image.gif);
 }
 
 button.GENTICS_img.AlohaImage_padding_increase {
-	background-image: url(images/padding-increase.gif);
+	background-image: url(../img/padding-increase.gif);
 }
-	
+
 button.GENTICS_img.AlohaImage_padding_decrease {
-	background-image: url(images/padding-decrease.gif);
+	background-image: url(../img/padding-decrease.gif);
 }
 
 button.GENTICS_img.AlohaImage_size_increase {
-	background-image: url(images/size-increase.gif);
+	background-image: url(../img/size-increase.gif);
 }
 
 button.GENTICS_img.AlohaImage_size_decrease {
-	background-image: url(images/size-decrease.gif);
+	background-image: url(../img/size-decrease.gif);
 }
 
 .GENTICS_default_file_icon {
-	background-image: url(images/page.png);
+	background-image: url(../img/page.png);
 
 	width: 16px;
 	height:16px;
@@ -51,7 +51,7 @@ button.GENTICS_img.AlohaImage_size_decrease {
 
 /* Crop and Resize */
 button.cnr_resize.x-btn-text, button.cnr_crop.x-btn-text, button.cnr_reset.x-btn-text {
-	background-image: url(images/cropnresize.png);
+	background-image: url(../img/cropnresize.png);
 }
 
 button.cnr_crop {
@@ -96,8 +96,8 @@ button.cnr_reset {
 /*
  * fix to use big resize handle for images
  */
-.ui-resizable-se { 
+.ui-resizable-se {
 	width: 16px;
 	height: 16px;
-	background-position: -80px -224px !important; 
+	background-position: -80px -224px !important;
 }

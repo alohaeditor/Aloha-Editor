@@ -108,10 +108,10 @@
 		 *
 		 * when an image is clicked for the first time, a new object will be added to the array
 		 * {
-		 * 		obj : [the image object reference],
-		 * 		src : [the original src url],
-		 * 		width : [initial width],
-		 * 		height : [initial height]
+		 *		obj : [the image object reference],
+		 *		src : [the original src url],
+		 *		width : [initial width],
+		 *		height : [initial height]
 		 * }
 		 *
 		 * when an image is clicked the second time, the array will be checked for the image object
@@ -145,12 +145,12 @@
 
 				Aloha
 				.loadCss(imagePluginUrl+'/dep/ui/ui-lightness/jquery-ui-1.8.10.custom.css')
-				.loadCss(imagePluginUrl+'/dep/ui/ui-lightness/jquery-ui-1.8.10.cropnresize.css')
 				.loadJs(imagePluginUrl+'/dep/ui/jquery-ui-1.8.10.custom.min.js')
 				;
 			}
 			if (this.settings.config.img.ui.crop) {
 				 Aloha
+						.loadCss(imagePluginUrl+'/dep/ui/ui-lightness/jquery-ui-1.8.10.cropnresize.css')
 						.loadCss(imagePluginUrl+'/dep/jcrop/jquery.jcrop.css')
 						.loadJs(imagePluginUrl+'/dep/jcrop/jquery.jcrop.min.js')
 					;
@@ -383,7 +383,10 @@
 		 * Bind plugin interactions
 		 */
 		bindInteractions: function () {
-			var me = this;
+			// Prepare
+			var
+				me = this, config = this.config,
+				Aloha = GENTICS.Aloha;
 
 			if(this.settings.config.img.ui.resizable) {
 				try {
@@ -404,7 +407,7 @@
 					// TODO remove image or do something usefull if the user leaves the
 					// image without defining a valid image src.
 					var img = jQuery(obj.getTargetObject());
-					if (img.attr('src') == '') {
+					if ( img.attr('src') === '' ) {
 						img.remove();
 					} // image removal when src field is blank
 				});
@@ -444,29 +447,40 @@
 			});
 			Aloha.EventRegistry.subscribe(Aloha, 'dropFilesInEditable', function(event,data) {
 				//console.log(data.file);
-				len = data.filesObjs.length;
-				while (--len >= 0) {
-						var fileObj = data.filesObjs[len];
-						if (fileObj.file.type.match(/image\//)) {
-							var reader = new FileReader();
-							reader.config = me.getEditableConfig(data.editable);
-							reader.attachedData = data;
-							reader.attachedFile = fileObj;
-							reader.onloadend = function(readEvent) {
+				// Prepare
+				var
+					me = this,
+					len = data.filesObjs.length,
+					reader, fileObj,
+					onloadendHandler = function(readEvent,reader) {
+						// Prepare
+						var
+							imagestyle = "width: "+me.config.img.max_width+"; height: "+me.config.img.max_height,
+							img = jQuery('<img id="'+me.attachedFile.id+'" style="'+imagestyle+'" title="" src="" />');
 
-								var imagestyle = "width: " + this.config.img.max_width + "; height: " + this.config.img.max_height,
-									img = jQuery('<img id="'+this.attachedFile.id+'" style="'+imagestyle+'" title="" src="" />');
-								//img.click( GENTICS.Aloha.Image.clickImage ); - Using delegate now
-								if (typeof this.attachedFile.src === 'undefined') {
-									this.attachedFile.src = readEvent.target.result;
-								}
-								img.attr('src', this.attachedFile.src );
-								GENTICS.Utils.Dom.insertIntoDOM(img, this.attachedData.range, jQuery(Aloha.activeEditable.obj));
-							};
-							reader.readAsDataURL(fileObj.file);
+						//img.click( GENTICS.Aloha.Image.clickImage ); - Using delegate now
+						if (typeof me.attachedFile.src === 'undefined') {
+							me.attachedFile.src = readEvent.target.result;
 						}
+						img.attr('src', me.attachedFile.src );
+						GENTICS.Utils.Dom.insertIntoDOM(img, me.attachedData.range, jQuery(Aloha.activeEditable.obj));
+					};
+
+				// Loop
+				while (--len >= 0) {
+					fileObj = data.filesObjs[len];
+					if (fileObj.file.type.match(/image\//)) {
+						// Prepare
+						reader = new FileReader();
+						reader.config = me.getEditableConfig(data.editable);
+						reader.attachedData = data;
+						reader.attachedFile = fileObj;
+						reader.onloadend = onloadendHandler;
+					}
+					reader.readAsDataURL(fileObj.file);
 				}
 			});
+
 			// add the event handler for selection change
 			GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'selectionChanged', function(event, rangeObject, originalEvent) {
 				if (originalEvent && originalEvent.target) {
@@ -543,7 +557,7 @@
 				imgRange.startOffset = offset;
 				imgRange.endOffset = offset+1;
 				imgRange.select();
-			} catch(e) {
+			} catch(err) {
 				var startTag = thisimg.parent()[0];
 				imgRange = new GENTICS.Utils.RangeObject({
 					startContainer: startTag,
@@ -563,7 +577,7 @@
 				Aloha = GENTICS.Aloha;
 
 			if ( typeof range === 'undefined' ) {
-				var range = Aloha.Selection.getRangeObject();
+				range = Aloha.Selection.getRangeObject();
 			}
 			var targetObj = jQuery(range.startContainer);
 			try {
@@ -655,8 +669,8 @@
 				}
 
 				// move the icons to the bottom right side
-				off.top = parseInt(off.top + jt.height() + 3);
-				off.left = parseInt(off.left + jt.width() - 55);
+				off.top = parseInt(off.top + jt.height() + 3,10);
+				off.left = parseInt(off.left + jt.width() - 55,10);
 
 				// comparison to old values hinders flickering bug in FF
 				if (oldLeft != off.left || oldTop != off.top) {
