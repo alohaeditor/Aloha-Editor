@@ -95,9 +95,7 @@
 			"format",
 			"link",
 			"linkchecker",
-			"table",
-			"cropnresize",
-			"image"
+			"table"
 		],
 		"ignore": {
 			"img": [

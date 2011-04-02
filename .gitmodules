@@ -34,9 +34,6 @@
 [submodule "src/plugin/ribbon"]
 	path = src/plugin/ribbon
 	url = http://github.com/alohaeditor/Aloha-Plugin-Ribbon.git
-[submodule "src/plugin/cropnresize"]
-	path = src/plugin/cropnresize
-	url = https://github.com/alohaeditor/Aloha-Plugin-CropNResize.git
 [submodule "src/plugin/googletranslate"]
 	path = src/plugin/googletranslate
 	url = https://github.com/alohaeditor/Aloha-Plugin-GoogleTranslate.git

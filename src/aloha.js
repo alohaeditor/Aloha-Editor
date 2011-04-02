@@ -61,8 +61,6 @@ window.GENTICS_Aloha_base = window.GENTICS_Aloha_base || false;
 	includes.push('plugin/link/src/link.js');
 	includes.push('plugin/linkchecker/src/linkchecker.js');
 	includes.push('plugin/table/src/table.js');
-	includes.push('plugin/cropnresize/src/cropnresize.js');
-	includes.push('plugin/image/src/image.js');
 
 	// Insert Scripts
 	var value, url, scriptEl, appendEl = document.head;
