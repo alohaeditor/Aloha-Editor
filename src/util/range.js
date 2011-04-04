@@ -17,18 +17,10 @@
 *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-if (typeof GENTICS === 'undefined' || !GENTICS) {
-	var GENTICS = {};
-}
-
-if (typeof GENTICS.Utils === 'undefined' || !GENTICS) {
-	GENTICS.Utils = {};
-}
-
 /**
  * @namespace GENTICS.Utils
  * @class RangeObject
- * Represents a selection range in the browser that 
+ * Represents a selection range in the browser that
  * has some advanced features like selecting the range.
  * @param {object} param if boolean true is passed, the range will be deducted from the current browser selection.
  * If another rangeObject is passed, it will be cloned.
@@ -43,14 +35,14 @@ GENTICS.Utils.RangeObject = function(param) {
 	 * @type {DOMObject}
 	 */
 	this.startContainer;
-	
+
 	/**
 	 * Offset of the selection in the start container
 	 * @property startOffset
 	 * @type {Integer}
 	 */
 	this.startOffset;
-	
+
 	/**
 	 * DOM object of the end container of the selection.
 	 * This is always has to be a DOM text node.
@@ -58,7 +50,7 @@ GENTICS.Utils.RangeObject = function(param) {
 	 * @type {DOMObject}
 	 */
 	this.endContainer;
-	
+
 	/**
 	 * Offset of the selection in the end container
 	 * @property endOffset
@@ -95,7 +87,7 @@ GENTICS.Utils.RangeObject = function(param) {
 		}
 		if (typeof param.endOffset !== 'undefined') {
 			this.endOffset = param.endOffset;
-		}		
+		}
 	} else if (param === true) {
 		this.initializeFromUserSelection();
 	}
@@ -115,7 +107,7 @@ GENTICS.Utils.RangeObject.prototype = {
 			GENTICS.Aloha.Log.debug(this, message);
 			return false;
 		}
-		if (console) {		
+		if (console) {
 			console.log(message);
 			if (obj) {
 				console.log(obj);
@@ -124,7 +116,7 @@ GENTICS.Utils.RangeObject.prototype = {
 	},
 
 	/**
-	 * Method to test if a range object is collapsed. 
+	 * Method to test if a range object is collapsed.
 	 * A range is considered collapsed if either no endContainer exists or the endContainer/Offset equal startContainer/Offset
 	 * @return {boolean} true if collapsed, false otherwise
 	 * @method
@@ -145,10 +137,10 @@ GENTICS.Utils.RangeObject.prototype = {
 			// sometimes it's cached (or was set)
 			return this.commonAncestorContainer;
 		}
-	
+
 		// if it's not cached, calculate and then cache it
 		this.updateCommonAncestorContainer();
-	
+
 		// now return it anyway
 		return this.commonAncestorContainer;
 	},
@@ -224,12 +216,12 @@ GENTICS.Utils.RangeObject.prototype = {
 	},
 
 	/**
-	 * TODO: the commonAncestorContainer is not calculated correctly, if either the start or 
-	 * the endContainer would be the cac itself (e.g. when the startContainer is a textNode 
+	 * TODO: the commonAncestorContainer is not calculated correctly, if either the start or
+	 * the endContainer would be the cac itself (e.g. when the startContainer is a textNode
 	 * and the endContainer is the startContainer's parent <p>). in this case the cac will be set
 	 * to the parent div
 	 * Method to update a range object internally
-	 * @param commonAncestorContainer (DOM Object); optional Parameter; if set, the parameter 
+	 * @param commonAncestorContainer (DOM Object); optional Parameter; if set, the parameter
 	 * will be used instead of the automatically calculated CAC
 	 * @return void
 	 * @hide
@@ -246,7 +238,7 @@ GENTICS.Utils.RangeObject.prototype = {
 				GENTICS.Utils.RangeObject.prototype.log('could not find commonAncestorContainer');
 				return false;
 			}
-		
+
 			for (var i = 0; i < parentsStartContainer.length; i++) {
 				if (parentsEndContainer.index( parentsStartContainer[ i ] ) != -1) {
 					this.commonAncestorContainer = parentsStartContainer[ i ];
@@ -325,7 +317,7 @@ GENTICS.Utils.RangeObject.prototype = {
 
 	/**
 	 * Sets the visible selection in the Browser based on the range object.
-	 * If the selection is collapsed, this will result in a blinking cursor, 
+	 * If the selection is collapsed, this will result in a blinking cursor,
 	 * otherwise in a text selection.
 	 * @method
 	 */
@@ -369,11 +361,11 @@ GENTICS.Utils.RangeObject.prototype = {
 
 		// create a range
 		var range = document.createRange();
-	
+
 		// set start and endContainer
-		range.setStart(this.startContainer,this.startOffset);	
+		range.setStart(this.startContainer,this.startOffset);
 		range.setEnd(this.endContainer, this.endOffset);
-	
+
 		// update the selection
 		window.getSelection().removeAllRanges();
 		window.getSelection().addRange(range);
@@ -469,7 +461,7 @@ GENTICS.Utils.RangeObject.prototype = {
 		if (!selection) {
 			return false;
 		}
-	
+
 		// check if a ragne exists
 		if ( selection.rangeCount == 0 ) {
 			return false;

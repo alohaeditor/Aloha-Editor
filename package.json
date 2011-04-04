@@ -98,9 +98,11 @@
 			"table"
 		],
 		"ignore": {
+			"check": [
+				"dep"
+			],
 			"img": [
-				"dep/ext-3.2.1",
-				"dep/ext-3.3.1"
+				"dep"
 			]
 		},
 		"files": {

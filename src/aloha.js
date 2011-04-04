@@ -1,5 +1,6 @@
 // Ensure Namespace
 window.GENTICS = window.GENTICS || {};
+window.GENTICS.Utils = window.GENTICS.Utils || {};
 window.GENTICS.Aloha = window.GENTICS.Aloha || {};
 window.GENTICS.Aloha.settings = window.GENTICS.Aloha.settings || {};
 window.GENTICS.Aloha.ui = window.GENTICS.Aloha.ui || {};

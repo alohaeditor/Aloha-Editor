@@ -19,10 +19,10 @@
 
 /**
  * jQuery between Extension
- * 
+ *
  * insert either html code, a dom object OR a jQuery object inside of an existing text node.
  * if the chained jQuery object is not a text node, nothing will happen.
- * 
+ *
  * @param content HTML Code, DOM object or jQuery object to be inserted
  * @param offset character offset from the start where the content should be inserted
  */
@@ -43,7 +43,7 @@ jQuery.fn.between = function(content, offset) {
 		if (offset <= 0) {
 			this.before(content);
 		} else if (offset >= this[0].length) {
-			this.after(content);		
+			this.after(content);
 		} else {
 			var fullText = this[0].data;
 			this[0].data = fullText.substring(0, offset);
@@ -54,55 +54,66 @@ jQuery.fn.between = function(content, offset) {
 };
 /**
  * jQuery removeCss Extension
- * 
+ *
  * removes one or more style attributes completely. If the style attribute would be empty,
- * it will be removed  
- * 
+ * it will be removed
+ *
  * @param cssName CSS style names, devided by ;
  */
 
 jQuery.fn.removeCss = function( cssName ) {
-	return this.each( function() {
-		var that = jQuery(this),
-			oldstyle = that.attr('style'),
-			style = jQuery.grep(oldstyle.split(';'), function(curStyleAttr) {
-        			var curStyleAttrName = curStyleAttr.split(':');
-        			if (curStyleAttrName[0]) {
-        				if ( curStyleAttrName[0].toUpperCase().trim().indexOf(cssName.toUpperCase()) == -1) {
-        					return curStyleAttr;
-        				}
-        			}
-                }).join(';').trim();
-		that.removeAttr('style');
-    	if (style.trim()) {
-    		that.attr('style', style);
-    	}
-    	return that;
-    });
+	return jQuery(this).each(function(){
+		// Prepare
+		var
+			$el = jQuery(this),
+			oldstyle = $el.attr('style'),
+			style = jQuery.grep(
+				oldstyle.split(';'),
+				function(curStyleAttr) {
+					if (curStyleAttrName[0]) {
+						if ( curStyleAttrName[0].toUpperCase().trim().indexOf(cssName.toUpperCase()) == -1) {
+							return curStyleAttr;
+						}
+					}
+			}).join(';').trim();
+
+		// Remove
+		$el.removeAttr('style');
+		if (style.trim()) {
+			$el.attr('style', style);
+		}
+  });
 };
 
 /**
  * Make the object contenteditable. Care about browser version (name of contenteditable attribute depends on it)
  */
-jQuery.fn.contentEditable  = function( b ) {
+jQuery.fn.contentEditable = function( b ) {
 	// ie does not understand contenteditable but contentEditable
 	// contentEditable is not xhtml compatible.
-	var that = jQuery(this),
+	var
+		$el = jQuery(this),
 		ce = 'contenteditable';
-	if (jQuery.browser.msie && parseInt(jQuery.browser.version) == 7 ) {
+
+	// Check
+	if (jQuery.browser.msie && parseInt(jQuery.browser.version,10) == 7 ) {
 		ce = 'contentEditable';
 	}
 	if (typeof b === 'undefined' ) {
-		return that.attr(ce);
-	} else if (b === '') {
-		that.removeAttr(ce);
-	} else {
+		return $el.attr(ce);
+	}
+	else if (b === '') {
+		$el.removeAttr(ce);
+	}
+	else {
 		if (b && b !== 'false') {
 			b='true';
 		} else {
 			b='false';
 		}
-		that.attr(ce, b);
+		$el.attr(ce, b);
 	}
-	return that;
+
+	// Return
+	return $el;
 };

@@ -17,29 +17,21 @@
 *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-if (typeof GENTICS === 'undefined' || !GENTICS) {
-	var GENTICS = {};
-}
-
-if (typeof GENTICS.Utils === 'undefined' || !GENTICS) {
-	GENTICS.Utils = {};
-}
-
 /**
  * Takes over all properties from the 'properties' object to the target object.
  * If a property in 'target' with the same name as a property in 'properties' is already defined it is overridden.
- * 
+ *
  * Example:
- * 
+ *
  * var o1 = {a : 1, b : 'hello'};
  * var o2 = {a : 3, c : 'world'};
- * 
+ *
  * GENTICS.Utils.applyProperties(o1, o2);
- * 
+ *
  * Will result in an o1 object like this:
- * 
+ *
  * {a : 3, b: 'hello', c: 'world'}
- * 
+ *
  * @static
  * @return void
  */
@@ -54,7 +46,7 @@ GENTICS.Utils.applyProperties = function (target, properties) {
 
 /**
  * Generate a unique hexadecimal string with 4 charachters
- * @return {string} 
+ * @return {string}
  */
 GENTICS.Utils.uniqeString4 = function () {
    return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
@@ -63,7 +55,7 @@ GENTICS.Utils.uniqeString4 = function () {
 /**
  * Generate a unique value represented as a 32 character hexadecimal string,
  * such as 21EC2020-3AEA-1069-A2DD-08002B30309D
- * @return {string} 
+ * @return {string}
  */
 GENTICS.Utils.guid = function () {
 	var S4 = GENTICS.Utils.uniqeString4;
