@@ -64,6 +64,10 @@
 	"compiler": "buildr .",
 
 	"buildr": {
+		"check": {
+			"js": true,
+			"css": true
+		},
 		"compress": {
 			"js": true,
 			"css": true,
