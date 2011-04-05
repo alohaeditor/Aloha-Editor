@@ -52,7 +52,7 @@ GENTICS.Aloha.Editable = function(obj) {
 	this.sccDelay = 500;
 	this.sccTimerIdle = false;
 	this.sccTimerDelay = false;
-	
+
 	// see keyset http://www.w3.org/TR/2007/WD-DOM-Level-3-Events-20071221/keyset.html
 	this.keyCodeMap = {
        93 : "Apps", 		// The Application key
@@ -88,7 +88,7 @@ GENTICS.Aloha.Editable = function(obj) {
        16 : "Shift",        // The Shift key.
        38 : "Up",           // The Up Arrow key.
        91 : "Win", 			// The left Windows Logo key.
-       92 : "Win"           // The right Windows Logo key.       
+       92 : "Win"           // The right Windows Logo key.
 	};
 
 	// placeholder
@@ -257,7 +257,7 @@ GENTICS.Aloha.Editable.prototype = {
 				return GENTICS.Aloha.Markup.preProcessKeyStrokes(event);
 			});
 
-			// handle keypress 
+			// handle keypress
 			this.obj.keypress( function(event) {
 				// triggers a smartContentChange to get the right charcode
 				// To test try http://www.w3.org/2002/09/tests/keys.html
@@ -367,15 +367,32 @@ GENTICS.Aloha.Editable.prototype = {
 	},
 
 	/**
-	 * remove placeholder from contenteditable
+	 * remove placeholder from contenteditable. If setCursor is true,
+	 * will also set the cursor to the start of the selection. However,
+	 * this will be ASYNCHRONOUS, so if you rely on the fact that
+	 * the placeholder is removed after calling this method, setCursor
+	 * should be false (or not set)
 	 *
 	 * @return void
 	 */
-	removePlaceholder: function(obj) {
+	removePlaceholder: function(obj, setCursor) {
+		var placeholderClass = this.placeholderClass;
 		// remove browser br
 		jQuery('br', obj).remove();
-		// remove placeholder
-		jQuery('.' + this.placeholderClass, obj).remove();
+
+		// set the cursor // remove placeholder
+		if (setCursor === true) {
+			var range = GENTICS.Aloha.Selection.getRangeObject();
+			range.startContainer = range.endContainer = obj.get(0);
+			range.startOffset = range.endOffset = 0;
+			range.select();
+
+			window.setTimeout(function() {
+				jQuery('.' + placeholderClass, obj).remove();
+			}, 20);
+		} else {
+			jQuery('.' + placeholderClass, obj).remove();
+		}
 	},
 
 	/**
@@ -418,6 +435,9 @@ GENTICS.Aloha.Editable.prototype = {
 
 		// now the editable is not ready any more
 		this.ready = false;
+
+		// remove the placeholder if needed.
+		this.removePlaceholder(this.obj);
 
 		// initialize the object
 		this.obj.removeClass('GENTICS_editable')
@@ -545,7 +565,7 @@ GENTICS.Aloha.Editable.prototype = {
 		}
 
 		// Placeholder handling
-		this.removePlaceholder(this.obj);
+		this.removePlaceholder(this.obj, true);
 
 
 		// finally mark this object as active
@@ -683,7 +703,7 @@ GENTICS.Aloha.Editable.prototype = {
 			// regex to stripp unicode
 			var re = new RegExp("U\\+(\\w{4})"),
 				match = re.exec(event.originalEvent.keyIdentifier);
-				
+
 			// Use keyIdentifier if available
 			if ( event.originalEvent.keyIdentifier && 1 == 2) {
 				if (match !== null) {
@@ -694,14 +714,14 @@ GENTICS.Aloha.Editable.prototype = {
 				}
 			// FF & Opera don't support keyIdentifier
 			} else {
-				// Use among browsers reliable which http://api.jquery.com/keypress 
-				uniChar = (this.keyCodeMap[this.keyCode] || String.fromCharCode(event.which) || 'unknown');	
+				// Use among browsers reliable which http://api.jquery.com/keypress
+				uniChar = (this.keyCodeMap[this.keyCode] || String.fromCharCode(event.which) || 'unknown');
 			}
 		}
 		// handle "Enter" -- it's not "U+1234" -- when returned via "event.originalEvent.keyIdentifier"
 		// reference: http://www.w3.org/TR/2007/WD-DOM-Level-3-Events-20071221/keyset.html
 		if (jQuery.inArray(uniChar, this.sccDelimiters) >= 0) {
-			
+
 			clearTimeout(this.sccTimerIdle);
 			clearTimeout(this.sccTimerDelay);
 
@@ -753,10 +773,10 @@ GENTICS.Aloha.Editable.prototype = {
 		else if (uniChar != null) {
 
 			this.sccTimerIdle = setTimeout(function() {
-				
+
 				// in the rare case idle time is lower then delay time
 				clearTimeout(this.sccTimerDelay);
-				
+
 				GENTICS.Aloha.EventRegistry.trigger(
 					new GENTICS.Aloha.Event('smartContentChanged', GENTICS.Aloha, {
 					'editable' : GENTICS.Aloha.activeEditable,
@@ -769,13 +789,13 @@ GENTICS.Aloha.Editable.prototype = {
 				);
 
 				GENTICS.Aloha.Log.debug(this, 'smartContentChanged: event type timer triggered');
-			
+
 			},this.sccIdle);
 
 		}
 
 		else if (event && event.type === 'paste') {
-			
+
 			GENTICS.Aloha.EventRegistry.trigger(
 				new GENTICS.Aloha.Event('smartContentChanged', GENTICS.Aloha, {
 				'editable' : GENTICS.Aloha.activeEditable,
