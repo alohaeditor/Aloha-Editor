@@ -28,25 +28,7 @@
  * @class Log
  * @singleton
  */
-GENTICS.Aloha.Log = function () {};
-
-GENTICS.Aloha.Log.prototype = {
-	/**
-	 * Log History as array of Message Objects. Every object has the properties
-	 * 'level', 'component' and 'message'
-	 * @property
-	 * @type Array
-	 * @hide
-	 */
-	logHistory: null,
-
-	/**
-	 * Flag, which is set as soon as the highWaterMark for the log history is reached.
-	 * This flag is reset on every call of flushLogHistory()
-	 * @hide
-	 */
-	highWaterMarkReached: false,
-
+GENTICS.Aloha.Log = Class.extend({
 	/**
 	 * Initialize the logging
 	 * @hide
@@ -73,6 +55,22 @@ GENTICS.Aloha.Log.prototype = {
 		}
 		this.flushLogHistory();
 	},
+
+	/**
+	 * Log History as array of Message Objects. Every object has the properties
+	 * 'level', 'component' and 'message'
+	 * @property
+	 * @type Array
+	 * @hide
+	 */
+	logHistory: null,
+
+	/**
+	 * Flag, which is set as soon as the highWaterMark for the log history is reached.
+	 * This flag is reset on every call of flushLogHistory()
+	 * @hide
+	 */
+	highWaterMarkReached: false,
 
 	/**
 	 * Logs a message to the console
@@ -260,7 +258,7 @@ GENTICS.Aloha.Log.prototype = {
 		this.logHistory = [];
 		this.highWaterMarkReached = false;
 	}
-};
+});
 
 /**
  * Create the Log object

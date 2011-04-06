@@ -25,9 +25,7 @@
 /**
  * Markup object
  */
-GENTICS.Aloha.Markup = function() {};
-
-GENTICS.Aloha.Markup.prototype = {
+GENTICS.Aloha.Markup = Class.extend({
 	/**
 	 * Key handlers for special key codes
 	 */
@@ -824,7 +822,7 @@ GENTICS.Aloha.Markup.prototype = {
 	toString: function() {
 		return 'GENTICS.Aloha.Markup';
 	}
-};
+});
 
 GENTICS.Aloha.Markup = new GENTICS.Aloha.Markup();
 

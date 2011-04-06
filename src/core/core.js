@@ -41,9 +41,6 @@ window.alohaQuery = window.jQuery.sub();
 	 */
 	//GENTICS.Aloha = function () {};
 
-
-
-
 	GENTICS.Aloha = jQuery.extend({
 
 		// provide aloha version, is automatically set during build process

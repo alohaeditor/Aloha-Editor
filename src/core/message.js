@@ -33,29 +33,16 @@
  * 		type: one of GENTICS.Aloha.Message.Type
  * 		callback: callback function, which will be triggered after the message was confirmed, closed or accepted
  */
-GENTICS.Aloha.Message = function (data) {
-	this.title = data.title;
-	this.text = data.text;
-	this.type = data.type;
-	this.callback = data.callback;
-};
+GENTICS.Aloha.Message = Class.extend({
+	constructor: function (data) {
+		this.title = data.title;
+		this.text = data.text;
+		this.type = data.type;
+		this.callback = data.callback;
+	},
 
-/**
- * Message types enum. Contains all allowed types of messages
- * @property
- */
-GENTICS.Aloha.Message.Type = {
-// reserved for messages
-//	SUCCESS : 'success',
-//	INFO : 'info',
-//	WARN : 'warn',
-//	CRITICAL : 'critical',
-	CONFIRM : 'confirm', // confirm dialog, like js confirm()
-	ALERT : 'alert', // alert dialog like js alert()
-	WAIT : 'wait' // wait dialog with loading bar. has to be hidden via GENTICS.Aloha.hideMessage()
-};
 
-GENTICS.Aloha.Message.prototype = {
+
 	/**
 	 * Returns a textual representation of the message
 	 * @return textual representation of the message
@@ -64,23 +51,36 @@ GENTICS.Aloha.Message.prototype = {
 	toString: function () {
 	  return this.type + ': ' + this.message;
 	}
+});
+
+/**
+ * Message types enum. Contains all allowed types of messages
+ * @property
+ */
+GENTICS.Aloha.Message.Type = {
+	// reserved for messages
+	//	SUCCESS : 'success',
+	//	INFO : 'info',
+	//	WARN : 'warn',
+	//	CRITICAL : 'critical',
+	CONFIRM : 'confirm', // confirm dialog, like js confirm()
+	ALERT : 'alert', // alert dialog like js alert()
+	WAIT : 'wait' // wait dialog with loading bar. has to be hidden via GENTICS.Aloha.hideMessage()
 };
 
 /**
  * This is the message line
  * @hide
  */
-GENTICS.Aloha.MessageLine = function () {
-  this.messages = [];
-};
+GENTICS.Aloha.MessageLine = Class.extend({
+	messages: [],
 
-/**
- * Add a new message to the message line
- * @param message message to add
- * @return void
- * @hide
- */
-GENTICS.Aloha.MessageLine.prototype = {
+	/**
+	 * Add a new message to the message line
+	 * @param message message to add
+	 * @return void
+	 * @hide
+	 */
 	add: function(message) {
 		var messageline = '',
 			messagesLength = this.messages.length;
@@ -96,7 +96,7 @@ GENTICS.Aloha.MessageLine.prototype = {
 		}
 		jQuery('#gtx_aloha_messageline').html(messageline);
 	}
-}
+});
 
 /**
  * Message Line Object

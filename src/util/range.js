@@ -27,21 +27,41 @@
  * If nothing is passed, the rangeObject will be empty.
  * @constructor
  */
-GENTICS.Utils.RangeObject = function(param) {
+GENTICS.Utils.RangeObject = Class.extend({
+	constructor: function(param){
+		// Take the values from the passed object
+		if (typeof param === 'object') {
+			if (typeof param.startContainer !== 'undefined') {
+				this.startContainer = param.startContainer;
+			}
+			if (typeof param.startOffset !== 'undefined') {
+				this.startOffset = param.startOffset;
+			}
+			if (typeof param.endContainer !== 'undefined') {
+				this.endContainer = param.endContainer;
+			}
+			if (typeof param.endOffset !== 'undefined') {
+				this.endOffset = param.endOffset;
+			}
+		} else if (param === true) {
+			this.initializeFromUserSelection();
+		}
+	},
+
 	/**
 	 * DOM object of the start container of the selection.
 	 * This is always has to be a DOM text node.
 	 * @property startContainer
 	 * @type {DOMObject}
 	 */
-	this.startContainer;
+	startContainer: undefined,
 
 	/**
 	 * Offset of the selection in the start container
 	 * @property startOffset
 	 * @type {Integer}
 	 */
-	this.startOffset;
+	startOffset: undefined,
 
 	/**
 	 * DOM object of the end container of the selection.
@@ -49,51 +69,31 @@ GENTICS.Utils.RangeObject = function(param) {
 	 * @property endContainer
 	 * @type {DOMObject}
 	 */
-	this.endContainer;
+	endContainer: undefined,
 
 	/**
 	 * Offset of the selection in the end container
 	 * @property endOffset
 	 * @type {Integer}
 	 */
-	this.endOffset;
+	endOffset: undefined,
 
 	/**
 	 * Parents of the start container up to different limit objects
 	 */
-	this.startParents = [];
+	startParents: [],
 
 	/**
 	 * Parents of the end container up to different limit objects
 	 */
-	this.endParents = [];
+	endParents: [],
 
 	/**
 	 * @hide
 	 * RangeTree cache for different root objects
 	 */
-	this.rangeTree = [];
+	rangeTree: [],
 
-	// Take the values from the passed object
-	if (typeof param === 'object') {
-		if (typeof param.startContainer !== 'undefined') {
-			this.startContainer = param.startContainer;
-		}
-		if (typeof param.startOffset !== 'undefined') {
-			this.startOffset = param.startOffset;
-		}
-		if (typeof param.endContainer !== 'undefined') {
-			this.endContainer = param.endContainer;
-		}
-		if (typeof param.endOffset !== 'undefined') {
-			this.endOffset = param.endOffset;
-		}
-	} else if (param === true) {
-		this.initializeFromUserSelection();
-	}
-};
-
-GENTICS.Utils.RangeObject.prototype = {
 	/**
 	 * Output some log
 	 * TODO: move this to GENTICS.Aloha.Log
@@ -263,18 +263,20 @@ GENTICS.Utils.RangeObject.prototype = {
 	 */
 	getCollapsedIERange: function(container, offset) {
 		// create a text range
-		var ieRange = document.body.createTextRange()
+		var
+			ieRange = document.body.createTextRange(),
+			tmpRange, right, parent;
 
 		// search to the left for the next element
 			left = this.searchElementToLeft(container, offset);
 		if (left.element) {
 			// found an element, set the start to the end of that element
-			var tmpRange = document.body.createTextRange();
+			tmpRange = document.body.createTextRange();
 			tmpRange.moveToElementText(left.element);
 			ieRange.setEndPoint('StartToEnd', tmpRange);
 
 			// and correct the start
-			if (left.characters != 0) {
+			if (left.characters !== 0) {
 				ieRange.moveStart('character', left.characters);
 			} else {
 				// this is a hack, when we are at the start of a text node, move the range anyway
@@ -283,15 +285,15 @@ GENTICS.Utils.RangeObject.prototype = {
 			}
 		} else {
 			// found nothing to the left, so search right
-			var right = this.searchElementToRight(container, offset);
+			right = this.searchElementToRight(container, offset);
 			if (false && right.element) {
 				// found an element, set the start to the start of that element
-				var tmpRange = document.body.createTextRange();
+				tmpRange = document.body.createTextRange();
 				tmpRange.moveToElementText(right.element);
 				ieRange.setEndPoint('StartToStart', tmpRange);
 
 				// and correct the start
-				if (right.characters != 0) {
+				if (right.characters !== 0) {
 					ieRange.moveStart('character', -right.characters);
 				} else {
 					ieRange.moveStart('character', -1);
@@ -299,13 +301,13 @@ GENTICS.Utils.RangeObject.prototype = {
 				}
 			} else {
 				// also found no element to the right, use the container itself
-				var parent = container.nodeType == 3 ? container.parentNode : container,
-					tmpRange = document.body.createTextRange();
+				parent = container.nodeType == 3 ? container.parentNode : container;
+				tmpRange = document.body.createTextRange();
 				tmpRange.moveToElementText(parent);
 				ieRange.setEndPoint('StartToStart', tmpRange);
 
 				// and correct the start
-				if (left.characters != 0) {
+				if (left.characters !== 0) {
 					ieRange.moveStart('character', left.characters);
 				}
 			}
@@ -321,54 +323,61 @@ GENTICS.Utils.RangeObject.prototype = {
 	 * otherwise in a text selection.
 	 * @method
 	 */
-	select: (typeof document.createRange) === 'undefined' ? function() { // first the IE version of this method
-		if (GENTICS.Aloha.Log.isDebugEnabled()) {
-			GENTICS.Aloha.Log.debug(this, 'Set selection to current range (IE version)');
-		}
-		// when the startcontainer is a textnode, which is followed by a blocklevel node (p, h1, ...), we need to add a <br> in between
-		if (this.startContainer.nodeType == 3
-				&& GENTICS.Utils.Dom.isBlockLevelElement(this.startContainer.nextSibling)) {
-			jQuery(this.startContainer).after('<br/>');
-			// we eventually also need to update the offset of the end container
-			if (this.endContainer === this.startContainer.parentNode
-					&& GENTICS.Utils.Dom.getIndexInParent(this.startContainer) < this.endOffset) {
-				this.endOffset++;
+	select: function() {
+		if ( typeof document.createRange === 'undefined' ) {
+			// first the IE version of this method
+			if (GENTICS.Aloha.Log.isDebugEnabled()) {
+				GENTICS.Aloha.Log.debug(this, 'Set selection to current range (IE version)');
 			}
+			// when the startcontainer is a textnode, which is followed by a blocklevel node (p, h1, ...), we need to add a <br> in between
+			if (
+				this.startContainer.nodeType === 3 && GENTICS.Utils.Dom.isBlockLevelElement(this.startContainer.nextSibling)
+			) {
+				jQuery(this.startContainer).after('<br/>');
+				// we eventually also need to update the offset of the end container
+				if (
+					this.endContainer === this.startContainer.parentNode && GENTICS.Utils.Dom.getIndexInParent(this.startContainer) < this.endOffset
+				) {
+					this.endOffset++;
+				}
+			}
+
+			// create a text range
+			var ieRange = document.body.createTextRange(),
+
+			// get the start as collapsed range
+				startRange = this.getCollapsedIERange(this.startContainer, this.startOffset);
+			ieRange.setEndPoint('StartToStart', startRange);
+
+			if (this.isCollapsed()) {
+				// collapse the range
+				ieRange.collapse();
+			} else {
+				// get the end as collapsed range
+				var endRange = this.getCollapsedIERange(this.endContainer, this.endOffset);
+				ieRange.setEndPoint('EndToStart', endRange);
+			}
+
+			// select our range now
+			ieRange.select();
 		}
+		else {
+			// now for the rest of the world
+			if (GENTICS.Aloha.Log.isDebugEnabled()) {
+				GENTICS.Aloha.Log.debug(this, 'Set selection to current range (non IE version)');
+			}
 
-		// create a text range
-		var ieRange = document.body.createTextRange(),
+			// create a range
+			var range = document.createRange();
 
-		// get the start as collapsed range
-			startRange = this.getCollapsedIERange(this.startContainer, this.startOffset);
-		ieRange.setEndPoint('StartToStart', startRange);
+			// set start and endContainer
+			range.setStart(this.startContainer,this.startOffset);
+			range.setEnd(this.endContainer, this.endOffset);
 
-		if (this.isCollapsed()) {
-			// collapse the range
-			ieRange.collapse();
-		} else {
-			// get the end as collapsed range
-			var endRange = this.getCollapsedIERange(this.endContainer, this.endOffset);
-			ieRange.setEndPoint('EndToStart', endRange);
+			// update the selection
+			window.getSelection().removeAllRanges();
+			window.getSelection().addRange(range);
 		}
-
-		// select our range now
-		ieRange.select();
-	} : function() { // now for the rest of the world
-		if (GENTICS.Aloha.Log.isDebugEnabled()) {
-			GENTICS.Aloha.Log.debug(this, 'Set selection to current range (non IE version)');
-		}
-
-		// create a range
-		var range = document.createRange();
-
-		// set start and endContainer
-		range.setStart(this.startContainer,this.startOffset);
-		range.setEnd(this.endContainer, this.endOffset);
-
-		// update the selection
-		window.getSelection().removeAllRanges();
-		window.getSelection().addRange(range);
 	},
 
 	/**
@@ -379,10 +388,11 @@ GENTICS.Utils.RangeObject.prototype = {
 	 * @hide
 	 */
 	searchElementToLeft: function (container, offset) {
-		var checkElement = undefined,
+		var
+			checkElement,
 			characters = 0;
 
-		if (container.nodeType == 3) {
+		if (container.nodeType === 3) {
 			// start is in a text node
 			characters = offset;
 			// begin check at the element to the left (if any)
@@ -395,7 +405,7 @@ GENTICS.Utils.RangeObject.prototype = {
 		}
 
 		// move to the right until we find an element
-		while (checkElement && checkElement.nodeType == 3) {
+		while (checkElement && checkElement.nodeType === 3) {
 			characters += checkElement.data.length;
 			checkElement = checkElement.previousSibling;
 		}
@@ -411,10 +421,11 @@ GENTICS.Utils.RangeObject.prototype = {
 	 * @hide
 	 */
 	searchElementToRight: function (container, offset) {
-		var checkElement = undefined,
+		var
+			checkElement,
 			characters = 0;
 
-		if (container.nodeType == 3) {
+		if (container.nodeType === 3) {
 			// start is in a text node
 			characters = container.data.length - offset;
 
@@ -428,7 +439,7 @@ GENTICS.Utils.RangeObject.prototype = {
 		}
 
 		// move to the right until we find an element
-		while (checkElement && checkElement.nodeType == 3) {
+		while (checkElement && checkElement.nodeType === 3) {
 			characters += checkElement.data.length;
 			checkElement = checkElement.nextSibling;
 		}
@@ -463,7 +474,7 @@ GENTICS.Utils.RangeObject.prototype = {
 		}
 
 		// check if a ragne exists
-		if ( selection.rangeCount == 0 ) {
+		if ( !selection.rangeCount ) {
 			return false;
 		}
 
@@ -492,13 +503,18 @@ GENTICS.Utils.RangeObject.prototype = {
 	 * @method
 	 */
 	correctRange: function() {
+		var
+			adjacentTextNode,
+			textNode,
+			checkedElement;
+
 		this.clearCaches();
 		if (this.isCollapsed()) {
 			// collapsed ranges are treated specially
 
 			// first check if the range is not in a text node
-			if (this.startContainer.nodeType == 1) {
-				if (this.startOffset > 0 && this.startContainer.childNodes[this.startOffset - 1].nodeType == 3) {
+			if (this.startContainer.nodeType === 1) {
+				if (this.startOffset > 0 && this.startContainer.childNodes[this.startOffset - 1].nodeType === 3) {
 					// when the range is between nodes (container is an element
 					// node) and there is a text node to the left -> move into this text
 					// node (at the end)
@@ -509,9 +525,9 @@ GENTICS.Utils.RangeObject.prototype = {
 					return;
 				}
 
-				if (this.startOffset > 0 && this.startContainer.childNodes[this.startOffset - 1].nodeType == 1) {
+				if (this.startOffset > 0 && this.startContainer.childNodes[this.startOffset - 1].nodeType === 1) {
 					// search for the next text node to the left
-					var adjacentTextNode = GENTICS.Utils.Dom.searchAdjacentTextNode(this.startContainer, this.startOffset, true);
+					adjacentTextNode = GENTICS.Utils.Dom.searchAdjacentTextNode(this.startContainer, this.startOffset, true);
 					if (adjacentTextNode) {
 						this.startContainer = this.endContainer = adjacentTextNode;
 						this.startOffset = this.endOffset = adjacentTextNode.data.length;
@@ -526,7 +542,7 @@ GENTICS.Utils.RangeObject.prototype = {
 					}
 				}
 
-				if (this.startOffset < this.startContainer.childNodes.length && this.startContainer.childNodes[this.startOffset].nodeType == 3) {
+				if (this.startOffset < this.startContainer.childNodes.length && this.startContainer.childNodes[this.startOffset].nodeType === 3) {
 					// when the range is between nodes and there is a text node
 					// to the right -> move into this text node (at the start)
 					this.startContainer = this.startContainer.childNodes[this.startOffset];
@@ -538,8 +554,8 @@ GENTICS.Utils.RangeObject.prototype = {
 			}
 
 			// when the selection is in a text node at the start, look for an adjacent text node and if one found, move into that at the end
-			if (this.startContainer.nodeType == 3 && this.startOffset == 0) {
-				var adjacentTextNode = GENTICS.Utils.Dom.searchAdjacentTextNode(this.startContainer.parentNode, GENTICS.Utils.Dom.getIndexInParent(this.startContainer), true);
+			if (this.startContainer.nodeType === 3 && this.startOffset === 0) {
+				adjacentTextNode = GENTICS.Utils.Dom.searchAdjacentTextNode(this.startContainer.parentNode, GENTICS.Utils.Dom.getIndexInParent(this.startContainer), true);
 				if (adjacentTextNode) {
 					this.startContainer = this.endContainer = adjacentTextNode;
 					this.startOffset = this.endOffset = adjacentTextNode.data.length;
@@ -549,20 +565,20 @@ GENTICS.Utils.RangeObject.prototype = {
 			// expanded range found
 
 			// correct the start, but only if between nodes
-			if (this.startContainer.nodeType == 1) {
+			if (this.startContainer.nodeType === 1) {
 				// if there is a text node to the right, move into this
-				if (this.startOffset < this.startContainer.childNodes.length && this.startContainer.childNodes[this.startOffset].nodeType == 3) {
+				if (this.startOffset < this.startContainer.childNodes.length && this.startContainer.childNodes[this.startOffset].nodeType === 3) {
 					this.startContainer = this.startContainer.childNodes[this.startOffset];
 					this.startOffset = 0;
-				} else if (this.startOffset < this.startContainer.childNodes.length && this.startContainer.childNodes[this.startOffset].nodeType == 1) {
+				} else if (this.startOffset < this.startContainer.childNodes.length && this.startContainer.childNodes[this.startOffset].nodeType === 1) {
 					// there is an element node to the right, so recursively check all first child nodes until we find a text node
-					var textNode = false,
-						checkedElement = this.startContainer.childNodes[this.startOffset];
+					textNode = false;
+					checkedElement = this.startContainer.childNodes[this.startOffset];
 					while (textNode === false && checkedElement.childNodes && checkedElement.childNodes.length > 0) {
 						// go to the first child of the checked element
 						checkedElement = checkedElement.childNodes[0];
 						// when this element is a text node, we are done
-						if (checkedElement.nodeType == 3) {
+						if (checkedElement.nodeType === 3) {
 							textNode = checkedElement;
 						}
 					}
@@ -576,12 +592,12 @@ GENTICS.Utils.RangeObject.prototype = {
 			}
 
 			// check whether the start is inside a text node at the end
-			if (this.startContainer.nodeType == 3 && this.startOffset == this.startContainer.data.length) {
+			if (this.startContainer.nodeType === 3 && this.startOffset === this.startContainer.data.length) {
 				// check whether there is an adjacent text node to the right and if
 				// yes, move into it
-				var adjacentTextNode = GENTICS.Utils.Dom
+				adjacentTextNode = GENTICS.Utils.Dom
 						.searchAdjacentTextNode(this.startContainer.parentNode, GENTICS.Utils.Dom
-								.getIndexInParent(this.startContainer) + 1, false);
+						.getIndexInParent(this.startContainer) + 1, false);
 				if (adjacentTextNode) {
 					this.startContainer = adjacentTextNode;
 					this.startOffset = 0;
@@ -589,13 +605,13 @@ GENTICS.Utils.RangeObject.prototype = {
 			}
 
 			// now correct the end
-			if (this.endContainer.nodeType == 3 && this.endOffset == 0) {
+			if (this.endContainer.nodeType === 3 && this.endOffset === 0) {
 				// we are in a text node at the start
-				if (this.endContainer.previousSibling && this.endContainer.previousSibling.nodeType == 3) {
+				if (this.endContainer.previousSibling && this.endContainer.previousSibling.nodeType === 3) {
 					// found a text node to the left -> move into it (at the end)
 					this.endContainer = this.endContainer.previousSibling;
 					this.endOffset = this.endContainer.data.length;
-				} else if (this.endContainer.previousSibling && this.endContainer.previousSibling.nodeType == 1 && this.endContainer.parentNode) {
+				} else if (this.endContainer.previousSibling && this.endContainer.previousSibling.nodeType === 1 && this.endContainer.parentNode) {
 					// found an element node to the left -> move in between
 					var parentNode = this.endContainer.parentNode;
 					for (var offset = 0; offset < parentNode.childNodes.length; ++offset) {
@@ -608,14 +624,15 @@ GENTICS.Utils.RangeObject.prototype = {
 				}
 			}
 
-			if (this.endContainer.nodeType == 1 && this.endOffset == 0) {
+			if (this.endContainer.nodeType == 1 && this.endOffset === 0) {
 				// we are in an element node at the start, possibly move to the previous sibling at the end
 				if (this.endContainer.previousSibling) {
-					if (this.endContainer.previousSibling.nodeType == 3) {
+					if (this.endContainer.previousSibling.nodeType === 3) {
 						// previous sibling is a text node, move end into here (at the end)
 						this.endContainer = this.endContainer.previousSibling;
 						this.endOffset = this.endContainer.data.length;
-					} else if (this.endContainer.previousSibling.nodeType == 1
+					} else if (
+							this.endContainer.previousSibling.nodeType === 1
 							&& this.endContainer.previousSibling.childNodes
 							&& this.endContainer.previousSibling.childNodes.length > 0) {
 						// previous sibling is another element node with children,
@@ -629,18 +646,18 @@ GENTICS.Utils.RangeObject.prototype = {
 			// correct the end, but only if between nodes
 			if (this.endContainer.nodeType == 1) {
 				// if there is a text node to the left, move into this
-				if (this.endOffset > 0 && this.endContainer.childNodes[this.endOffset - 1].nodeType == 3) {
+				if (this.endOffset > 0 && this.endContainer.childNodes[this.endOffset - 1].nodeType === 3) {
 					this.endContainer = this.endContainer.childNodes[this.endOffset - 1];
 					this.endOffset = this.endContainer.data.length;
-				} else if (this.endOffset > 0 && this.endContainer.childNodes[this.endOffset - 1].nodeType == 1) {
+				} else if (this.endOffset > 0 && this.endContainer.childNodes[this.endOffset - 1].nodeType === 1) {
 					// there is an element node to the left, so recursively check all last child nodes until we find a text node
-					var textNode = false,
-						checkedElement = this.endContainer.childNodes[this.endOffset - 1];
+					textNode = false;
+					checkedElement = this.endContainer.childNodes[this.endOffset - 1];
 					while (textNode === false && checkedElement.childNodes && checkedElement.childNodes.length > 0) {
 						// go to the last child of the checked element
 						checkedElement = checkedElement.childNodes[checkedElement.childNodes.length - 1];
 						// when this element is a text node, we are done
-						if (checkedElement.nodeType == 3) {
+						if (checkedElement.nodeType === 3) {
 							textNode = checkedElement;
 						}
 					}
@@ -709,7 +726,7 @@ GENTICS.Utils.RangeObject.prototype = {
 				collapsedFound = false;
 
 			// check for collapsed selections between nodes
-			if (that.isCollapsed() && currentObject === that.startContainer && that.startOffset == index) {
+			if (that.isCollapsed() && currentObject === that.startContainer && that.startOffset === index) {
 				// insert an extra rangetree object for the collapsed range here
 				currentElements[childCount] = new GENTICS.Utils.RangeTree();
 				currentElements[childCount].type = 'collapsed';
@@ -737,12 +754,12 @@ GENTICS.Utils.RangeObject.prototype = {
 					}
 					break;
 				case 1: // element node
-					if (this === that.startContainer && that.startOffset == 0) {
+					if (this === that.startContainer && that.startOffset === 0) {
 						// the selection starts here
 						that.inselection = true;
 						type = 'full';
 					}
-					if (currentObject === that.startContainer && that.startOffset == index) {
+					if (currentObject === that.startContainer && that.startOffset === index) {
 						// the selection starts here
 						that.inselection = true;
 						type = 'full';
@@ -775,7 +792,7 @@ GENTICS.Utils.RangeObject.prototype = {
 					}
 					break;
 				case 1: // element node
-					if (this === that.endContainer && that.endOffset == 0) {
+					if (this === that.endContainer && that.endOffset === 0) {
 						that.inselection = false;
 					}
 					break;
@@ -896,10 +913,10 @@ GENTICS.Utils.RangeObject.prototype = {
 				if (this.type == 'full') {
 					// fully selected element/text node
 					text += jQuery(this.domobj).text();
-				} else if (this.type == 'partial' && this.domobj.nodeType == 3) {
+				} else if (this.type == 'partial' && this.domobj.nodeType === 3) {
 					// partially selected text node
 					text += jQuery(this.domobj).text().substring(this.startOffset, this.endOffset);
-				} else if (this.type == 'partial' && this.domobj.nodeType == 1 && this.children) {
+				} else if (this.type == 'partial' && this.domobj.nodeType === 1 && this.children) {
 					// partially selected element node
 					text += that.recursiveGetText(this.children);
 				}
@@ -907,7 +924,7 @@ GENTICS.Utils.RangeObject.prototype = {
 			return text;
 		}
 	}
-};
+});
 
 /**
  * @namespace GENTICS.Utils
@@ -921,13 +938,13 @@ GENTICS.Utils.RangeObject.prototype = {
  * |-children: recursive structure like this
  * </pre>
  */
-GENTICS.Utils.RangeTree = function() {
+GENTICS.Utils.RangeTree = Class.extend({
 	/**
 	 * DOMObject, if the type is one of [none|partial|full], undefined if the type is [collapsed]
 	 * @property domobj
 	 * @type {DOMObject}
 	 */
-	this.domobj = {};
+	domobj: {},
 
 	/**
 	 * type of the participation of the dom object in the range. Is one of:
@@ -940,12 +957,12 @@ GENTICS.Utils.RangeTree = function() {
 	 * @property type
 	 * @type {String}
 	 */
-	this.type;
+	type: null,
 
 	/**
 	 * Array of RangeTree objects which reflect the status of the child elements of the current DOMObject
 	 * @property children
 	 * @type {Array}
 	 */
-	this.children = [];
-};
+	children: []
+});

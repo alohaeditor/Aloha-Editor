@@ -729,14 +729,14 @@ GENTICS.Aloha.FloatingMenu.floatTo = function(position) {
  * @constructor
  * @param {String} label label of the tab
  */
-GENTICS.Aloha.FloatingMenu.Tab = function(label) {
-	this.label = label;
-	this.groups = [];
-	this.groupMap = {};
-	this.visible = true;
-};
+GENTICS.Aloha.FloatingMenu.Tab = Class.extend({
+	constructor: function(label) {
+		this.label = label;
+		this.groups = [];
+		this.groupMap = {};
+		this.visible = true;
+	},
 
-GENTICS.Aloha.FloatingMenu.Tab.prototype = {
 	/**
 	 * Get the group with given index. If it does not yet exist, create a new one
 	 * @method
@@ -806,7 +806,7 @@ GENTICS.Aloha.FloatingMenu.Tab.prototype = {
 
 		return this.visible;
 	}
-};
+});
 
 /**
  * Constructor for a floatingmenu group
@@ -814,12 +814,12 @@ GENTICS.Aloha.FloatingMenu.Tab.prototype = {
  * @class Group
  * @constructor
  */
-GENTICS.Aloha.FloatingMenu.Group = function() {
-	this.buttons = [];
-	this.fields = [];
-};
+GENTICS.Aloha.FloatingMenu.Group = Class.extend({
+	constructor: function() {
+		this.buttons = [];
+		this.fields = [];
+	},
 
-GENTICS.Aloha.FloatingMenu.Group.prototype = {
 	/**
 	 * Add a button to this group
 	 * @param {Button} buttonInfo to add to the group
@@ -948,6 +948,6 @@ GENTICS.Aloha.FloatingMenu.Group.prototype = {
 
 		return groupVisible;
 	}
-};
+});
 
 })(window);

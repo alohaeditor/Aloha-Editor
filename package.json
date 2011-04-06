@@ -66,7 +66,11 @@
 	"buildr": {
 		"check": {
 			"js": true,
-			"css": true
+			"css": true,
+			"jsOptions": {
+				"browser": true,
+				"laxbreak": true
+			}
 		},
 		"compress": {
 			"js": true,
@@ -116,6 +120,8 @@
 				"css/aloha.css"
 			],
 			"js": [
+				"util/base.js",
+
 				"dep/ext-3.2.1/adapter/jquery/ext-jquery-adapter.js",
 				"dep/ext-3.2.1/ext-all.js",
 
@@ -129,7 +135,6 @@
 				"util/range.js",
 				"util/position.js",
 				"util/dom.js",
-				"util/indexof.js",
 				"core/ext-alohaproxy.js",
 				"core/ext-alohareader.js",
 				"core/ext-alohatreeloader.js",

@@ -28,11 +28,9 @@
  * @class RepositoryManager
  * @singleton
  */
-GENTICS.Aloha.RepositoryManager = function() {
-	this.repositories = [];
-};
+GENTICS.Aloha.RepositoryManager = Class.extend({
+	repositories: [],
 
-GENTICS.Aloha.RepositoryManager.prototype = {
 	openCallbacks: [],
 
 	/**
@@ -419,7 +417,7 @@ GENTICS.Aloha.RepositoryManager.prototype = {
 			}
 		}
 	}
-};
+});
 
 /**
  * Create the RepositoryManager object

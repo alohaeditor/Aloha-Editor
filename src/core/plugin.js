@@ -28,29 +28,15 @@
  * @class PluginRegistry
  * @singleton
  */
-GENTICS.Aloha.PluginRegistry = function() {
-	this.plugins = [];
-};
-
-GENTICS.Aloha.PluginRegistry.prototype = {
-	/**
-	 * Register a plugin
-	 * @param {Plugin} plugin plugin to register
-	 */
-	register: function(plugin) {
-		if (plugin instanceof GENTICS.Aloha.Plugin) {
-			// TODO check for duplicate plugin prefixes
-			this.plugins.push(plugin);
-		}
-	},
-
+GENTICS.Aloha.PluginRegistry = Class.extend({
 	/**
 	 * Initialize all registered plugins
 	 * @return void
 	 * @hide
 	 */
 	init: function() {
-		var loaded = 0,
+		var
+			loaded = 0,
 			length = this.plugins.length
 			pluginsStack = [];
 
@@ -118,6 +104,19 @@ GENTICS.Aloha.PluginRegistry.prototype = {
 		}
 	},
 
+	plugins: [],
+
+	/**
+	 * Register a plugin
+	 * @param {Plugin} plugin plugin to register
+	 */
+	register: function(plugin) {
+		if (plugin instanceof GENTICS.Aloha.Plugin) {
+			// TODO check for duplicate plugin prefixes
+			this.plugins.push(plugin);
+		}
+	},
+
 	/**
 	 * Pass the given jQuery object, which represents an editable to all plugins, so that they can make the content clean (prepare for saving)
 	 * @param obj jQuery object representing an editable
@@ -133,8 +132,16 @@ GENTICS.Aloha.PluginRegistry.prototype = {
 			}
 			plugin.makeClean(obj);
 		}
+	},
+
+	/**
+	 * Expose a nice name for the PluginRegistry
+	 * @hide
+	 */
+	toString: function() {
+		return 'pluginregistry';
 	}
-}
+});
 
 /**
  * Create the PluginRegistry object
@@ -142,13 +149,6 @@ GENTICS.Aloha.PluginRegistry.prototype = {
  */
 GENTICS.Aloha.PluginRegistry = new GENTICS.Aloha.PluginRegistry();
 
-/**
- * Expose a nice name for the PluginRegistry
- * @hide
- */
-GENTICS.Aloha.PluginRegistry.toString = function() {
-	return 'pluginregistry';
-};
 
 /**
  * Abstract Plugin Object
@@ -158,16 +158,16 @@ GENTICS.Aloha.PluginRegistry.toString = function() {
  * @param {String} pluginPrefix unique plugin prefix
  * @param {String} basePath (optional) basepath of the plugin (relative to 'plugins' folder). If not given, the basePath pluginPrefix is taken
  */
-GENTICS.Aloha.Plugin = function(pluginPrefix, basePath) {
-	/**
-	 * Settings of the plugin
-	 */
-	this.prefix = pluginPrefix;
-	this.basePath = basePath ? basePath : pluginPrefix;
-	GENTICS.Aloha.PluginRegistry.register(this);
-};
+GENTICS.Aloha.Plugin = Class.extend({
+	constructor: function(pluginPrefix, basePath) {
+		/**
+		 * Settings of the plugin
+		 */
+		this.prefix = pluginPrefix;
+		this.basePath = basePath ? basePath : pluginPrefix;
+		GENTICS.Aloha.PluginRegistry.register(this);
+	},
 
-GENTICS.Aloha.Plugin.prototype = {
 	/**
 	 * contains the plugin's settings object
 	 * @cfg {Object} settings the plugins settings stored in an object
@@ -331,6 +331,6 @@ GENTICS.Aloha.Plugin.prototype = {
 	log: function (level, message) {
 		GENTICS.Aloha.Log.log(level, this, message);
 	}
-};
+});
 
 })(window);

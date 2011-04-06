@@ -17,24 +17,13 @@
 *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-if (typeof GENTICS !== 'object') {
-	var GENTICS = {};
-}
+/**
+ * @namespace GENTICS.Utils
+ * @class Dom provides methods to get information about the DOM and to manipulate it
+ * @singleton
+ */
+GENTICS.Utils.Dom = Class.extend({
 
-if (typeof GENTICS.Utils !== 'object') {
-	GENTICS.Utils = {};
-}
-
-if (typeof GENTICS.Utils.Dom !== 'function') {
-	/**
-	 * @namespace GENTICS.Utils
-	 * @class Dom provides methods to get information about the DOM and to manipulate it
-	 * @singleton
-	 */
-	GENTICS.Utils.Dom = function () {};
-} 
-
-GENTICS.Utils.Dom.prototype = {
 	/**
 	 * Tags which can safely be merged
 	 * @hide
@@ -169,7 +158,7 @@ GENTICS.Utils.Dom.prototype = {
 		'ruby' : ['phrasing', 'rt', 'rp'],
 		's' : 'phrasing',
 		'samp' : 'pharsing',
-		'script' : '#script', //script 
+		'script' : '#script', //script
 		'section' : 'flow',
 		'select' : ['option', 'optgroup'],
 		'small' : 'phrasing',
@@ -214,7 +203,7 @@ GENTICS.Utils.Dom.prototype = {
 	 * Splits a DOM element at the given position up until the limiting object(s), so that it is valid HTML again afterwards.
 	 * @param {RangeObject} range Range object that indicates the position of the splitting.
 	 * 				This range will be updated, so that it represents the same range as before the split.
-	 * @param {jQuery} limit Limiting node(s) for the split. 
+	 * @param {jQuery} limit Limiting node(s) for the split.
 	 * 				The limiting node will not be included in the split itself.
 	 * 				If no limiting object is set, the document body will be the limiting object.
 	 * @param {boolean} atEnd If set to true, the DOM will be splitted at the end of the range otherwise at the start.
@@ -224,24 +213,24 @@ GENTICS.Utils.Dom.prototype = {
 	split: function (range, limit, atEnd) {
 		var splitElement = jQuery(range.startContainer),
 			splitPosition = range.startOffset;
-	
+
 		if (atEnd) {
 			splitElement = jQuery(range.endContainer);
 			splitPosition = range.endOffset;
 		}
-	
+
 		if (limit.length < 1) {
 			limit = jQuery(document.body);
 		}
-	
+
 		// we may have to update the range if it is not collapsed and we are splitting at the start
 		var updateRange = (!range.isCollapsed() && !atEnd),
-	
+
 		// find the path up to the highest object that will be splitted
 			path,
 			parents = splitElement.parents().get();
 		parents.unshift(splitElement.get(0));
-		
+
 		jQuery.each(parents, function(index, element) {
 			var isLimit = limit.filter(
 					function(){
@@ -254,29 +243,29 @@ GENTICS.Utils.Dom.prototype = {
 				return false;
 			}
 		});
-	
+
 		// nothing found to split -> return here
 		if (! path) {
 			return true;
 		}
-	
+
 		path = path.reverse();
 		var newDom,
 			insertElement;
-	
-		// iterate over the path, create new dom nodes for every element and move 
+
+		// iterate over the path, create new dom nodes for every element and move
 		// the contents right of the split to the new element
 		for(var i=0, pathLength = path.length; i < pathLength; ++i) {
 			var element = path[i];
 			if (i === pathLength - 1) {
 				// last element in the path -> we have to split it
 				var secondPart;
-			
+
 				// split the last part into two parts
 				if (element.nodeType === 3) {
 					// text node
 					secondPart = document.createTextNode(element.data.substring(splitPosition, element.data.length));
-					element.data = element.data.substring(0, splitPosition);	
+					element.data = element.data.substring(0, splitPosition);
 				} else {
 					// other nodes
 					var jqelement = jQuery(element),
@@ -284,14 +273,14 @@ GENTICS.Utils.Dom.prototype = {
 						children = jqelement.contents();
 					secondPart = newElement.append(children.slice(splitPosition, children.length)).get(0);
 				}
-			
+
 				// update the range if necessary
 				if (updateRange && range.endContainer === element) {
 					range.endContainer = secondPart;
 					range.endOffset -= splitPosition;
 					range.clearCaches();
 				}
-			
+
 				// add the second part
 				if (insertElement) {
 					insertElement.prepend(secondPart);
@@ -302,19 +291,19 @@ GENTICS.Utils.Dom.prototype = {
 				// create the new element of the same type and prepend it to the previously created element
 				var newElement = jQuery(element).clone(false).empty(),
 					next;
-			
+
 				if (!newDom) {
 					newDom = newElement;
 				} else {
 					insertElement.prepend(newElement);
 				}
 				insertElement = newElement;
-			
+
 				// move all contents right of the split to the new element
 				while (next = path[i+1].nextSibling) {
 					insertElement.append(next);
 				}
-			
+
 				// update the range if necessary
 				if (updateRange && range.endContainer === element) {
 					range.endContainer = newElement.get(0);
@@ -328,7 +317,7 @@ GENTICS.Utils.Dom.prototype = {
 				}
 			}
 		}
-	
+
 		// append the new dom
 		jQuery(path[0]).after(newDom);
 
@@ -465,7 +454,7 @@ GENTICS.Utils.Dom.prototype = {
 	 */
 	findHighestElement: function (start, nodeName, limit) {
 		nodeName = nodeName.toLowerCase();
-	
+
 		var testObject = start,
 		// helper function to stop when we reach a limit object
 			isLimit = limit ? function () {
@@ -535,10 +524,10 @@ GENTICS.Utils.Dom.prototype = {
 			root = highestObject ? highestObject.parentNode : undefined,
 			// construct the range tree
 			rangeTree = rangeObject.getRangeTree(root);
-	
+
 		// remove the markup from the range tree
 		this.recursiveRemoveMarkup(rangeTree, markup);
-	
+
 		// cleanup DOM
 		this.doCleanup({'merge' : true, 'removeempty' : true}, rangeObject, root);
 	},
@@ -647,7 +636,7 @@ GENTICS.Utils.Dom.prototype = {
 							jQuery(this).remove();
 							removed = true;
 						}
-						if (jQuery.inArray(this.nodeName.toLowerCase(), that.mergeableTags) >= 0 
+						if (jQuery.inArray(this.nodeName.toLowerCase(), that.mergeableTags) >= 0
 								&& jQuery(this).text().length == 0 && this.childNodes.length == 0) {
 							jQuery(this).remove();
 							removed = true;
@@ -684,7 +673,7 @@ GENTICS.Utils.Dom.prototype = {
 						// set the flag for range modification
 						modifiedRange = true;
 					}
-				
+
 					if (rangeObject.endContainer === this) {
 						// selection ends in the current text node
 
@@ -929,7 +918,7 @@ GENTICS.Utils.Dom.prototype = {
 	 * be updated if necessary. The updated range will NOT embrace the inserted
 	 * object, which means that the object is actually inserted before or after the
 	 * given range (depending on the atEnd parameter)
-	 * 
+	 *
 	 * @param {jQuery}
 	 *            object object to insert into the DOM
 	 * @param {GENTICS.Utils.RangeObject}
@@ -1284,7 +1273,7 @@ GENTICS.Utils.Dom.prototype = {
 		// select the range
 		newRange.select();
 	}
-}
+});
 
 /**
  * Create the singleton object

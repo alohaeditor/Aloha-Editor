@@ -25,9 +25,7 @@
 /**
  * Abstract Sidebar
  */
-GENTICS.Aloha.Sidebar = function () {};
-
-GENTICS.Aloha.Sidebar.prototype = {
+GENTICS.Aloha.Sidebar = Class.extend({
 	/**
 	 * Add a panel to this sidebar
 	 * @param panel panel to add to this sidebar
@@ -61,7 +59,7 @@ GENTICS.Aloha.Sidebar.prototype = {
 	 * @return void
 	 */
 	togglePinPanel: function(panel) {}
-};
+});
 
 /**
  * Right Sidebar
@@ -81,12 +79,12 @@ GENTICS.Aloha.SidebarLeft = new GENTICS.Aloha.Sidebar();
 /**
  * Abstract Sidebar Panel
  */
-GENTICS.Aloha.Sidebar.Panel = function () {};
-
-/**
- * Render this panel
- * @return HTML Code of the rendered panel
- */
-GENTICS.Aloha.Sidebar.Panel.prototype.render = function() {};
+GENTICS.Aloha.Sidebar.Panel = Class.extend({
+	/**
+	 * Render this panel
+	 * @return HTML Code of the rendered panel
+	 */
+	render: function() {}
+});
 
 })(window);

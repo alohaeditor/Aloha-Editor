@@ -30,28 +30,27 @@
  * @param {String} repositoryId unique repository identifier
  * @param {String} repositoryName (optional) is the displyed name for this Repository instance
  */
-GENTICS.Aloha.Repository = function(repositoryId, repositoryName) {
-	/**
-	 * @property repositoryId is the unique Id for this Repository instance
-	 */
-	this.repositoryId = repositoryId;
+GENTICS.Aloha.Repository = Class.extend({
+	constructor: function(repositoryId, repositoryName) {
+		/**
+		 * @property repositoryId is the unique Id for this Repository instance
+		 */
+		this.repositoryId = repositoryId;
 
-	/**
-	 * contains the repository's settings object
-	 * @property settings {Object} the repository's settings stored in an object
-	 */
-	this.settings = {};
+		/**
+		 * contains the repository's settings object
+		 * @property settings {Object} the repository's settings stored in an object
+		 */
+		this.settings = {};
 
-	/**
-	 * @property repositoryName is the name for this Repository instance
-	 */
-	this.repositoryName = (repositoryName) ? repositoryName : repositoryId;
+		/**
+		 * @property repositoryName is the name for this Repository instance
+		 */
+		this.repositoryName = (repositoryName) ? repositoryName : repositoryId;
 
-	GENTICS.Aloha.RepositoryManager.register(this);
+		GENTICS.Aloha.RepositoryManager.register(this);
+	},
 
-};
-
-GENTICS.Aloha.Repository.prototype = {
 	/**
 	 * Init method of the repository. Called from Aloha Core to initialize this repository
 	 * @return void
@@ -213,6 +212,6 @@ GENTICS.Aloha.Repository.prototype = {
 	 * @return {GENTICS.Aloha.Repository.Object} item with given id
 	 */
 	getObjectById: function ( itemId, callback ) { return true; }
-};
+});
 
 })(window);
