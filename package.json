@@ -107,7 +107,8 @@
 		],
 		"ignore": {
 			"check": [
-				"dep"
+				"dep",
+				"util/base.js"
 			],
 			"img": [
 				"dep"

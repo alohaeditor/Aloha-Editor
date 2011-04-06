@@ -25,24 +25,28 @@ Ext.extend( Ext.tree.AlohaTreeLoader, Ext.tree.TreeLoader, {
 	paramOrder: ['node', 'id'],
 	nodeParameter: 'id',
 	directFn : function(node, id, callback) {
-		var params = {
+		var
+			params = {
 				inFolderId: node.id,
 				objectTypeFilter: this.objectTypeFilter,
 				repositoryId: node.repositoryId
-		};
+			};
+
 		GENTICS.Aloha.RepositoryManager.getChildren ( params, function( items ) {
- 	        var response = {};
- 	        response= {
- 	            status: true,
- 	            scope: this,
- 			    argument: {callback: callback, node: node}
- 	   		};
- 	      	if(typeof callback === 'function'){
- 	        	callback(items, response);
- 	      	}	 	        
-    	});
+			var response = {};
+
+			response = {
+				status: true,
+				scope: this,
+				argument: {callback: callback, node: node}
+			};
+
+			if(typeof callback === 'function'){
+				callback(items, response);
+			}
+		});
 	},
-    createNode: function(node) {
+	createNode: function(node) {
 		if ( node.name ) {
 			node.text = node.name;
 		}
@@ -61,4 +65,4 @@ Ext.extend( Ext.tree.AlohaTreeLoader, Ext.tree.TreeLoader, {
 	getObjectTypeFilter : function () {
 		return this.objectTypeFilter;
 	}
-});	
+});

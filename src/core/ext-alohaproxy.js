@@ -24,15 +24,15 @@ Ext.data.AlohaProxy = function( ) {
         api: api
     });
     this.params = {
-    		queryString: null,
-    		objectTypeFilter: null,
-    		filter: null,
-    		inFolderId: null,
-    		orderBy: null,
-    		maxItems: null,
-    		skipCount: null,
-    		renditionFilter: null,
-    		repositoryId: null
+			queryString: null,
+			objectTypeFilter: null,
+			filter: null,
+			inFolderId: null,
+			orderBy: null,
+			maxItems: null,
+			skipCount: null,
+			renditionFilter: null,
+			repositoryId: null
     };
 };
 
@@ -41,10 +41,10 @@ Ext.extend(Ext.data.AlohaProxy, Ext.data.DataProxy, {
 		var p = this.params;
 		jQuery.extend(p, params);
         try {
-        	GENTICS.Aloha.RepositoryManager.query( p, function( items ) {
-        		var result = reader.readRecords( items );
- 	 	        cb.call(scope, result, arg, true);
-        	});
+					GENTICS.Aloha.RepositoryManager.query( p, function( items ) {
+					var result = reader.readRecords( items );
+						cb.call(scope, result, arg, true);
+					});
         } catch (e) {
             this.fireEvent('loadexception', this, null, arg, e);
             this.fireEvent('exception', this, 'response', action, arg, null, e);
@@ -60,4 +60,4 @@ Ext.extend(Ext.data.AlohaProxy, Ext.data.DataProxy, {
 	setParams : function (p) {
 		jQuery.extend(this.params, p);
 	}
-});	
+});

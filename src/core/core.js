@@ -29,7 +29,7 @@ window.alohaQuery = window.jQuery.sub();
 // Start Closure
 (function(window, undefined) {
 	var
-		$ = jQuery = window.alohaQuery,
+		jQuery = window.alohaQuery, $ = jQuery,
 		GENTICS = window.GENTICS,
 		Aloha = GENTICS.Aloha;
 
@@ -155,7 +155,7 @@ window.alohaQuery = window.jQuery.sub();
 			this.Log.init();
 
 			// initialize the error handler for general javascript errors
-			if (!(this.settings.errorhandling == false)) {
+			if ( this.settings.errorhandling ) {
 				window.onerror = function (msg, url, linenumber) {
 					GENTICS.Aloha.Log.error(GENTICS.Aloha, 'Error message: ' + msg + '\nURL: ' + url + '\nLine Number: ' + linenumber);
 					// TODO eventually add a message to the message line?
@@ -541,9 +541,9 @@ window.alohaQuery = window.jQuery.sub();
 				return '??? ' + key + ' ???';
 			} else {
 				// substitute placeholders
-				if (typeof replacements !== 'undefined' && replacements != null) {
+				if (typeof replacements !== 'undefined' && replacements !== null) {
 					for ( var i = 0, repLength = replacements.length; i < repLength; ++i) {
-						if (typeof replacements[i] !== 'undefined' && replacements[i] != null) {
+						if (typeof replacements[i] !== 'undefined' && replacements[i] !== null) {
 							var regEx = new RegExp('\\{' + (i) + '\\}', 'g'),
 								safeArgument = replacements[i].toString().replace(/\{/g, '\\{');
 							safeArgument = safeArgument.replace(/\}/g, '\\}');
@@ -755,12 +755,12 @@ window.alohaQuery = window.jQuery.sub();
 				loadPackage: function(data){
 					// Cycle through CSS
 					$.each(data.css||[], function(i,value){
-						GENTICS.Aloha.loadCss(pluginUrl+'/'+value)
+						GENTICS.Aloha.loadCss(pluginUrl+'/'+value);
 					});
 
 					// Cycle through JS
 					$.each(data.js||[], function(i,value){
-						GENTICS.Aloha.loadJs(pluginUrl+'/'+value)
+						GENTICS.Aloha.loadJs(pluginUrl+'/'+value);
 					});
 
 					// Done

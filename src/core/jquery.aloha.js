@@ -264,4 +264,27 @@
 		return outerHtml;
 	};
 
+
+	jQuery.fn.zap = function () {
+		return this.each(function(){ jQuery(this.childNodes).insertBefore(this); }).remove();
+	};
+
+	jQuery.fn.textNodes = function(excludeBreaks, includeEmptyTextNodes) {
+			var ret = [];
+
+			(function(el){
+					if (
+							(el.nodeType === 3 && jQuery.trim(el.data) != '' && !includeEmptyTextNodes) ||
+							(el.nodeType === 3 && includeEmptyTextNodes) ||
+							(el.nodeName =="BR" && !excludeBreaks)) {
+							ret.push(el);
+					} else {
+							for (var i=0, childLength = el.childNodes.length; i < childLength; ++i) {
+									arguments.callee(el.childNodes[i]);
+							}
+					}
+			})(this[0]);
+			return jQuery(ret);
+	};
+
 })(jQuery);
