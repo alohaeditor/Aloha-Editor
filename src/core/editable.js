@@ -49,7 +49,7 @@ GENTICS.Aloha.Editable = Class.extend({
 
 		// delimiters, timer and idle for smartContentChange
 		// smartContentChange triggers -- tab: '\u0009' - space: '\u0020' - enter: 'Enter'
-		this.sccDelimiters = [':', ';', '.', '!', '?', ',', '\u0009', '\u0020', 'Enter'];
+		this.sccDelimiters = [':', ';', '.', '!', '?', ',', unescape('%u0009'), unescape('%u0020'), 'Enter'];
 		this.sccIdle = 5000;
 		this.sccDelay = 500;
 		this.sccTimerIdle = false;
@@ -57,13 +57,13 @@ GENTICS.Aloha.Editable = Class.extend({
 
 		// see keyset http://www.w3.org/TR/2007/WD-DOM-Level-3-Events-20071221/keyset.html
 		this.keyCodeMap = {
-				 93 : "Apps", 		// The Application key
+				 93 : "Apps",         // The Application key
 				 18 : "Alt",          // The Alt (Menu) key.
 				 20 : "CapsLock",     // The Caps Lock (Capital) key.
 				 17 : "Control",      // The Control (Ctrl) key.
 				 40 : "Down",         // The Down Arrow key.
 				 35 : "End",          // The End key.
-				 13 : "Enter",		// The Enter key.
+				 13 : "Enter",        // The Enter key.
 				112 : "F1",           // The F1 key.
 				113 : "F2",           // The F2 key.
 				114 : "F3",           // The F3 key.
@@ -89,7 +89,7 @@ GENTICS.Aloha.Editable = Class.extend({
 				145 : "Scroll",       // The scroll lock key
 				 16 : "Shift",        // The Shift key.
 				 38 : "Up",           // The Up Arrow key.
-				 91 : "Win", 			// The left Windows Logo key.
+				 91 : "Win",          // The left Windows Logo key.
 				 92 : "Win"           // The right Windows Logo key.
 		};
 
@@ -172,7 +172,7 @@ GENTICS.Aloha.Editable = Class.extend({
 
 			// handle shortcut keys
 			this.obj.keyup( function(event) {
-				if (event['keyCode'] == 27 ) {
+				if (event.keyCode === 27 ) {
 					GENTICS.Aloha.deactivateEditable();
 					return false;
 				}
@@ -326,7 +326,7 @@ GENTICS.Aloha.Editable = Class.extend({
 		var editableTrimedContent = jQuery.trim(this.getContents()),
 			onlyBrTag = (editableTrimedContent == '<br>') ? true : false;
 
-		if (editableTrimedContent.length == 0 || onlyBrTag) {
+		if (editableTrimedContent.length === 0 || onlyBrTag) {
 			return true;
 		} else {
 			return false;
@@ -340,7 +340,8 @@ GENTICS.Aloha.Editable = Class.extend({
 	 */
 	addPlaceholder: function() {
 
-		var div = jQuery('<div />'),
+		var
+			div = jQuery('<div />'),
 			span = jQuery('<span />'),
 			el,
 			obj = this.obj;
@@ -363,7 +364,7 @@ GENTICS.Aloha.Editable = Class.extend({
 
 		// remove browser br
 		jQuery('br', obj).remove();
-		delete div, span, el;
+		// delete div, span, el;
 	},
 
 	/**
@@ -429,6 +430,7 @@ GENTICS.Aloha.Editable = Class.extend({
 				this.originalObj.val(val);
 				this.obj.remove();
 				this.originalObj.show();
+				break;
 
 			default:
 				break;
@@ -516,7 +518,7 @@ GENTICS.Aloha.Editable = Class.extend({
 	 * a disabled editable cannot be written on by keyboard
 	 */
 	disable: function() {
-		this.isDisabled() || this.obj.contentEditable(false);
+		return this.isDisabled() || this.obj.contentEditable(false);
 	},
 
 	/**
@@ -524,7 +526,7 @@ GENTICS.Aloha.Editable = Class.extend({
 	 * reenables a disabled editable to be writteable again
 	 */
 	enable: function() {
-		this.isDisabled() && this.obj.contentEditable(true);
+		return this.isDisabled() && this.obj.contentEditable(true);
 	},
 
 
@@ -546,7 +548,7 @@ GENTICS.Aloha.Editable = Class.extend({
 		// in this case the "focus" event would be triggered on the parent element
 		// which actually shifts the focus away to it's parent. this if is here to
 		// prevent this situation
-		if (e && e.type == 'focus' && oldActive != null && oldActive.obj.parent().get(0) == e.currentTarget) {
+		if (e && e.type == 'focus' && oldActive !== null && oldActive.obj.parent().get(0) === e.currentTarget) {
 			return;
 		}
 
@@ -655,7 +657,7 @@ GENTICS.Aloha.Editable = Class.extend({
 	empty: function(str) {
 		return (null === str)
 		// br is needed for chrome
-		|| (jQuery.trim(str) == '' || str == '<br/>');
+		|| (jQuery.trim(str) === '' || str === '<br/>');
 	},
 
 	/**
@@ -708,7 +710,7 @@ GENTICS.Aloha.Editable = Class.extend({
 			// Use keyIdentifier if available
 			if ( event.originalEvent.keyIdentifier && 1 == 2) {
 				if (match !== null) {
-					uniChar = eval('"\\u' + match[1] + '"');
+					uniChar = unescape('%u' + match[1]);
 				}
 				if (uniChar === null) {
 					uniChar = event.originalEvent.keyIdentifier;
@@ -771,7 +773,7 @@ GENTICS.Aloha.Editable = Class.extend({
 			},this.sccDelay);
 		}
 
-		else if (uniChar != null) {
+		else if (uniChar !== null) {
 
 			this.sccTimerIdle = setTimeout(function() {
 

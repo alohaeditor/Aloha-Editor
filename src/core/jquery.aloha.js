@@ -274,7 +274,7 @@
 
 			(function(el){
 					if (
-							(el.nodeType === 3 && jQuery.trim(el.data) != '' && !includeEmptyTextNodes) ||
+							(el.nodeType === 3 && jQuery.trim(el.data) && !includeEmptyTextNodes) ||
 							(el.nodeType === 3 && includeEmptyTextNodes) ||
 							(el.nodeName =="BR" && !excludeBreaks)) {
 							ret.push(el);

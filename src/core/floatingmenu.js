@@ -283,8 +283,8 @@ GENTICS.Aloha.FloatingMenu.generateComponent = function () {
 	if (jQuery.storage.get('GENTICS.Aloha.FloatingMenu.pinned') == 'true') {
 		this.togglePin();
 
-		this.top = parseInt(jQuery.storage.get('GENTICS.Aloha.FloatingMenu.top'));
-		this.left = parseInt(jQuery.storage.get('GENTICS.Aloha.FloatingMenu.left'));
+		this.top = parseInt(jQuery.storage.get('GENTICS.Aloha.FloatingMenu.top'),10);
+		this.left = parseInt(jQuery.storage.get('GENTICS.Aloha.FloatingMenu.left'),10);
 
 		// do some positioning fixes
 		if (this.top < 30) {
@@ -379,7 +379,7 @@ GENTICS.Aloha.FloatingMenu.togglePin = function() {
 		});
 
 		// do the same for the shadow
-		this.shadow.addClass('fixed');props.start
+		this.shadow.addClass('fixed');//props.start
 		this.refreshShadow();
 
 		this.pinned = true;
@@ -495,7 +495,7 @@ GENTICS.Aloha.FloatingMenu.doLayout = function () {
 			}
 
 			// remember the first visible tab
-			if (firstVisibleTab == false) {
+			if (!firstVisibleTab) {
 				// this is the first visible tab (in case we need to switch to it)
 				firstVisibleTab = tab;
 			}
@@ -633,10 +633,8 @@ GENTICS.Aloha.FloatingMenu.nextFloatTargetObj = function (obj, limitObj) {
 		case 'ul':
 		case 'ol':
 			return obj;
-			break;
 		default:
 			return this.nextFloatTargetObj(obj.parentNode, limitObj);
-			break;
 	}
 };
 
@@ -894,7 +892,9 @@ GENTICS.Aloha.FloatingMenu.Group = Class.extend({
 				// The ui wrapper store the information and here we use it... ugly.
 				// if there are any listeners added before initializing the extButtons
 				if ( buttonInfo.button.listenerQueue && buttonInfo.button.listenerQueue.length > 0 ) {
-					while ( l = buttonInfo.button.listenerQueue.shift() ) {
+					while ( true ) {
+						l = buttonInfo.button.listenerQueue.shift();
+						if ( !l ) {break;}
 						buttonInfo.button.extButton.addListener(l.eventName, l.handler, l.scope, l.options);
 					}
 				}
