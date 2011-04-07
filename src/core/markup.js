@@ -82,8 +82,8 @@ GENTICS.Aloha.Markup = Class.extend({
 
 		var rangeObject = GENTICS.Aloha.Selection.rangeObject;
 
-		if (this.keyHandlers[event['keyCode']]) {
-			var handlers = this.keyHandlers[event['keyCode']];
+		if (this.keyHandlers[event.keyCode]) {
+			var handlers = this.keyHandlers[event.keyCode];
 			for (var i = 0; i < handlers.length; ++i) {
 				if (!handlers[i](event)) {
 					return false;
@@ -91,76 +91,76 @@ GENTICS.Aloha.Markup = Class.extend({
 			}
 		}
 
-		switch(event['keyCode']) {
-			case 13: // ENTER
-				if (event.shiftKey) {
-					GENTICS.Aloha.Log.debug(this, '... got a smoking Shift+Enter, Cowboy');
-					// when the range is expanded, we remove the selected text
-					if (!rangeObject.isCollapsed()) {
-						this.removeSelectedMarkup();
-					}
+		// ENTER
+		if  (event.keyCode === 13 ) {
+			if (event.shiftKey) {
+				GENTICS.Aloha.Log.debug(this, '... got a smoking Shift+Enter, Cowboy');
+				// when the range is expanded, we remove the selected text
+				if (!rangeObject.isCollapsed()) {
+					this.removeSelectedMarkup();
+				}
 
-					GENTICS.Aloha.Selection.updateSelection(false, true);
-					this.processShiftEnter(rangeObject);
+				GENTICS.Aloha.Selection.updateSelection(false, true);
+				this.processShiftEnter(rangeObject);
 
-	//				this.insertBreak();
+//				this.insertBreak();
 
-					return false;
-				} else {
-					GENTICS.Aloha.Log.debug(this, '... got a lonely Enter, Mum');
-					if (!rangeObject.isCollapsed()) {
-						this.removeSelectedMarkup();
-					}
-					GENTICS.Aloha.Selection.updateSelection(false, true);
-					this.processEnter(rangeObject);
+				return false;
+			}
+			else {
+				GENTICS.Aloha.Log.debug(this, '... got a lonely Enter, Mum');
+				if (!rangeObject.isCollapsed()) {
+					this.removeSelectedMarkup();
+				}
+				GENTICS.Aloha.Selection.updateSelection(false, true);
+				this.processEnter(rangeObject);
 
-	/*
-					// next find the nearest enclosing split object
-					var splitObject = rangeObject.findMarkup(function() {
-						return GENTICS.Utils.Dom.isSplitObject(this);
-					}, GENTICS.Aloha.activeEditable.obj);
+/*
+				// next find the nearest enclosing split object
+				var splitObject = rangeObject.findMarkup(function() {
+					return GENTICS.Utils.Dom.isSplitObject(this);
+				}, GENTICS.Aloha.activeEditable.obj);
 
-					// if one found, split it, otherwise insert a break
-					if (splitObject) {
-						var splitResult = GENTICS.Utils.Dom.split(rangeObject, jQuery([splitObject.parentNode, GENTICS.Aloha.activeEditable.obj.get(0)]));
-						if (splitResult) {
-							// cleanup in the second part
-							GENTICS.Utils.Dom.doCleanup({'merge' : true, 'removeempty' : true}, rangeObject, splitResult.get(1));
+				// if one found, split it, otherwise insert a break
+				if (splitObject) {
+					var splitResult = GENTICS.Utils.Dom.split(rangeObject, jQuery([splitObject.parentNode, GENTICS.Aloha.activeEditable.obj.get(0)]));
+					if (splitResult) {
+						// cleanup in the second part
+						GENTICS.Utils.Dom.doCleanup({'merge' : true, 'removeempty' : true}, rangeObject, splitResult.get(1));
 
-							// get the first text node in the second part of the split
-							var nextTextNode = GENTICS.Utils.Dom.searchAdjacentTextNode(splitResult.get(1), 0, false);
-							if (nextTextNode) {
-								// trim leading whitespace
-								var nonWSIndex = nextTextNode.data.search(/\S/);
-								if (nonWSIndex > 0) {
-									nextTextNode.data = nextTextNode.data.substring(nonWSIndex);
-								}
+						// get the first text node in the second part of the split
+						var nextTextNode = GENTICS.Utils.Dom.searchAdjacentTextNode(splitResult.get(1), 0, false);
+						if (nextTextNode) {
+							// trim leading whitespace
+							var nonWSIndex = nextTextNode.data.search(/\S/);
+							if (nonWSIndex > 0) {
+								nextTextNode.data = nextTextNode.data.substring(nonWSIndex);
 							}
-
-							// check whether the split created an element which is empty and needs to have an element to be visible
-							if (GENTICS.Utils.Dom.isEmpty(splitResult.get(0))) {
-								splitResult.eq(0).append(this.getFillUpElement(splitResult.get(0)));
-							}
-							if (GENTICS.Utils.Dom.isEmpty(splitResult.get(1))) {
-								splitResult.eq(1).append(this.getFillUpElement(splitResult.get(1)));
-							}
-
-							rangeObject.startContainer = rangeObject.endContainer = splitResult.get(1);
-							rangeObject.startOffset = rangeObject.endOffset = 0;
-							rangeObject.correctRange();
-							rangeObject.clearCaches();
-							rangeObject.select();
-						} else {
-							this.insertBreak();
 						}
+
+						// check whether the split created an element which is empty and needs to have an element to be visible
+						if (GENTICS.Utils.Dom.isEmpty(splitResult.get(0))) {
+							splitResult.eq(0).append(this.getFillUpElement(splitResult.get(0)));
+						}
+						if (GENTICS.Utils.Dom.isEmpty(splitResult.get(1))) {
+							splitResult.eq(1).append(this.getFillUpElement(splitResult.get(1)));
+						}
+
+						rangeObject.startContainer = rangeObject.endContainer = splitResult.get(1);
+						rangeObject.startOffset = rangeObject.endOffset = 0;
+						rangeObject.correctRange();
+						rangeObject.clearCaches();
+						rangeObject.select();
 					} else {
 						this.insertBreak();
 					}
-	*/
-
-					return false;
+				} else {
+					this.insertBreak();
 				}
-				break;
+*/
+
+				return false;
+			}
 		}
 		return true;
 	},
@@ -426,7 +426,7 @@ GENTICS.Aloha.Markup = Class.extend({
 	removeFromSelectionTree: function (selectionTree, newRange) {
 		// remember the first found partially selected element node (in case we need
 		// to merge it with the last found partially selected element node)
-		var firstPartialElement = undefined;
+		var firstPartialElement;
 
 		// iterate through the selection tree
 		for (var i = 0, treeLength = selectionTree.length; i < treeLength; i++) {
@@ -559,11 +559,12 @@ GENTICS.Aloha.Markup = Class.extend({
 	 * @return object after which the followUpContainer can be inserted
 	 */
 	getInsertAfterObject: function(rangeObject, followUpContainer) {
+		var passedSplitObject;
 		for (var i = 0; i < rangeObject.markupEffectiveAtStart.length; i++) {
 			el = rangeObject.markupEffectiveAtStart[ i ];
 			// check if we have already passed the splitObject (some other markup might come before)
 			if (el === rangeObject.splitObject){
-				var passedSplitObject = true;
+				passedSplitObject = true;
 			}
 			// if not passed splitObject, skip this markup
 			if (!passedSplitObject) {
@@ -597,14 +598,15 @@ GENTICS.Aloha.Markup = Class.extend({
 	 */
 	removeElementContentWhitespaceObj: function(domArray) {
 		var correction = 0,
-			removeLater = [];
-		for (var i = 0; i < domArray.length; i++) {
+			removeLater = [],
+			i;
+		for (i = 0; i < domArray.length; i++) {
 			var el = domArray[i];
 			if (el.isElementContentWhitespace) {
 				removeLater[removeLater.length] = i;
 			}
 		}
-		for (var i = 0; i < removeLater.length; i++) {
+		for (i = 0; i < removeLater.length; i++) {
 			var removeIndex = removeLater[i];
 			domArray.splice(removeIndex - correction, 1);
 			correction++;
@@ -746,7 +748,10 @@ GENTICS.Aloha.Markup = Class.extend({
 	 * @return void
 	 */
 	getSplitFollowUpContainer: function(rangeObject) {
-		var tagName = rangeObject.splitObject.nodeName.toLowerCase();
+		var
+			tagName = rangeObject.splitObject.nodeName.toLowerCase(),
+			returnObj, inside;
+
 		switch(tagName) {
 			case 'h1':
 			case 'h2':
@@ -757,8 +762,8 @@ GENTICS.Aloha.Markup = Class.extend({
 				var lastObj = jQuery(rangeObject.splitObject).textNodes().last()[0];
 				// special case: when enter is hit at the end of a heading, the followUp should be a <p>
 				if (lastObj && rangeObject.startContainer === lastObj && rangeObject.startOffset === lastObj.length) {
-					var returnObj = jQuery('<p></p>'),
-						inside = jQuery(rangeObject.splitObject).clone().contents();
+					returnObj = jQuery('<p></p>');
+					inside = jQuery(rangeObject.splitObject).clone().contents();
 					returnObj.append(inside);
 					return returnObj;
 				}
@@ -768,17 +773,18 @@ GENTICS.Aloha.Markup = Class.extend({
 				// TODO check whether the li is the last one
 				// special case: if enter is hit twice inside a list, the next item should be a <p> (and inserted outside the list)
 				if (rangeObject.startContainer.nodeName.toLowerCase() === 'br' && jQuery(rangeObject.startContainer).hasClass('GENTICS_ephemera')) {
-					var returnObj = jQuery('<p></p>'),
-						inside = jQuery(rangeObject.splitObject).clone().contents();
+					returnObj = jQuery('<p></p>');
+					inside = jQuery(rangeObject.splitObject).clone().contents();
 					returnObj.append(inside);
 					return returnObj;
 				}
 				// when the li is the last one and empty, we also just return a <p>
 				if (!rangeObject.splitObject.nextSibling && jQuery.trim(jQuery(rangeObject.splitObject).text()).length === 0) {
-					var returnObj = jQuery('<p></p>');
+					returnObj = jQuery('<p></p>');
 					return returnObj;
 				}
 		}
+
 		return jQuery(rangeObject.splitObject).clone();
 	},
 

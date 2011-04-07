@@ -69,11 +69,12 @@
 			"css": true,
 			"jsOptions": {
 				"browser": true,
-				"laxbreak": true
+				"laxbreak": true,
+				"boss": true
 			}
 		},
 		"compress": {
-			"js": true,
+			"js": false,
 			"css": true,
 			"img": true,
 			"html": false
@@ -130,8 +131,7 @@
 				"dep/jquery.getUrlParam.js",
 				"dep/jquery.store.js",
 
-				"core/jquery.aloha.js",
-				"util/jquery.js",
+				"core/jquery.js",
 				"util/lang.js",
 				"util/range.js",
 				"util/position.js",

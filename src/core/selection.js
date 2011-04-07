@@ -22,28 +22,6 @@
 		GENTICS = window.GENTICS,
 		Aloha = GENTICS.Aloha;
 
-	jQuery.fn.zap = function () {
-		return this.each(function(){ jQuery(this.childNodes).insertBefore(this); }).remove();
-	};
-
-	jQuery.fn.textNodes = function(excludeBreaks, includeEmptyTextNodes) {
-			var ret = [];
-
-			(function(el){
-					if (
-							(el.nodeType === 3 && jQuery.trim(el.data) != '' && !includeEmptyTextNodes) ||
-							(el.nodeType === 3 && includeEmptyTextNodes) ||
-							(el.nodeName =="BR" && !excludeBreaks)) {
-							ret.push(el);
-					} else {
-							for (var i=0, childLength = el.childNodes.length; i < childLength; ++i) {
-									arguments.callee(el.childNodes[i]);
-							}
-					}
-			})(this[0]);
-			return jQuery(ret);
-	};
-
 	/**
 	 * @namespace GENTICS.Aloha
 	 * @class Selection
@@ -51,7 +29,7 @@
 	 * @singleton
 	 */
 	GENTICS.Aloha.Selection = Class.extend({
-		constructor:function(){
+		constructor: function(){
 			// Pseudo Range Clone being cleaned up for better HTML wrapping support
 			this.rangeObject = {};
 
@@ -151,7 +129,7 @@
 		 */
 		SelectionTree: function() {
 			this.domobj = {};
-			this.selection;
+			this.selection = undefined;
 			this.children = [];
 		},
 
@@ -287,12 +265,12 @@
 						}
 						break;
 					case 1: // element node
-						if (this === rangeObject.startContainer && rangeObject.startOffset == 0) {
+						if (this === rangeObject.startContainer && rangeObject.startOffset === 0) {
 							// the selection starts here
 							that.inselection = true;
 							selectionType = 'full';
 						}
-						if (currentObject === rangeObject.startContainer && rangeObject.startOffset == index) {
+						if (currentObject === rangeObject.startContainer && rangeObject.startOffset === index) {
 							// the selection starts here
 							that.inselection = true;
 							selectionType = 'full';
@@ -325,7 +303,7 @@
 						}
 						break;
 					case 1: // element node
-						if (this === rangeObject.endContainer && rangeObject.endOffset == 0) {
+						if (this === rangeObject.endContainer && rangeObject.endOffset === 0) {
 							that.inselection = false;
 						}
 						break;
@@ -413,13 +391,14 @@
 		 * @hide
 		 */
 		isRangeObjectWithinMarkup: function(rangeObject, startOrEnd, markupObject, tagComparator, limitObject) {
-			domObj = !startOrEnd?rangeObject.startContainer:rangeObject.endContainer;
+			var
+				domObj = !startOrEnd?rangeObject.startContainer:rangeObject.endContainer,
+				that = this;
 			// check if a comparison method was passed as parameter ...
 			if (typeof tagComparator !== 'undefined' && typeof tagComparator !== 'function') {
 				GENTICS.Aloha.Log.error(this,'parameter tagComparator is not a function');
 			}
 			// ... if not use this as standard tag comparison method
-			var that = this;
 			if (typeof tagComparator === 'undefined') {
 				tagComparator = function(domobj, markupObject) {
 					return that.standardTextLevelSemanticsComparator(domobj, markupObject); // TODO should actually be this.getStandardTagComparator(markupObject)
@@ -427,8 +406,7 @@
 			}
 			var parents = jQuery(domObj).parents(),
 				returnVal = false,
-				i = -1,
-				that = this;
+				i = -1;
 			if (parents.length > 0) {
 				parents.each(function() {
 					// the limit object was reached (normally the Editable Element)
@@ -487,7 +465,7 @@
 				if (!this.standardAttributesComparator(domobj, markupObject)) {
 					return false;
 				}
-				return true;domobj.attributes.length
+				return true;//domobj.attributes.length
 			} else {
 				GENTICS.Aloha.Log.debug(this,'only element nodes (nodeType == 1) can be compared');
 			}
@@ -503,21 +481,24 @@
 		 * @hide
 		 */
 		standardAttributesComparator: function(domobj, markupObject) {
+			var i, attr, classString, classes, classes2;
+
 			if (domobj.attributes && domobj.attributes.length && domobj.attributes.length > 0) {
-				for (var i = 0, domAttrLength = domobj.attributes.length; i < domAttrLength; i++) {
-					var attr = domobj.attributes[i];
+				for (i = 0, domAttrLength = domobj.attributes.length; i < domAttrLength; i++) {
+					attr = domobj.attributes[i];
 					if (attr.nodeName.toLowerCase() == 'class' && attr.nodeValue.length > 0) {
-						var classString = attr.nodeValue,
-							classes = classString.split(' ');
+						classString = attr.nodeValue;
+						classes = classString.split(' ');
 					}
 				}
 			}
+
 			if (markupObject[0].attributes && markupObject[0].attributes.length && markupObject[0].attributes.length > 0) {
-				for (var i = 0, attrLength = markupObject[0].attributes.length; i < attrLength; i++) {
-					var attr = markupObject[0].attributes[i];
+				for (i = 0, attrLength = markupObject[0].attributes.length; i < attrLength; i++) {
+					attr = markupObject[0].attributes[i];
 					if (attr.nodeName.toLowerCase() == 'class' && attr.nodeValue.length > 0) {
-						var classString = attr.nodeValue,
-							classes2 = classString.split(' ');
+						classString = attr.nodeValue;
+						classes2 = classString.split(' ');
 					}
 				}
 			}
@@ -530,8 +511,8 @@
 				GENTICS.Aloha.Log.debug(this, 'tag comparison for <' + domobj.tagName.toLowerCase() + '> failed because of a different amount of classes');
 				return false;
 			}
-			if (classes && classes2 && classes.length == classes2.length && classes.length != 0) {
-				for (var i = 0, classLength = classes.length; i < classLength; i++) {
+			if (classes && classes2 && classes.length === classes2.length && classes.length !== 0) {
+				for (i = 0, classLength = classes.length; i < classLength; i++) {
 					if (!markupObject.hasClass(classes[ i ])) {
 						GENTICS.Aloha.Log.debug(this, 'tag comparison for <' + domobj.tagName.toLowerCase() + '> failed because of different classes');
 						return false;
@@ -550,21 +531,30 @@
 		 * @hide
 		 */
 		changeMarkup: function(rangeObject, markupObject, tagComparator) {
-			var tagName = markupObject[0].tagName.toLowerCase();
+			var
+				tagName = markupObject[0].tagName.toLowerCase(),
+				newCAC, limitObject,
+				backupRangeObject,
+				relevantMarkupObjectsAtSelectionStart = this.isRangeObjectWithinMarkup(rangeObject, false, markupObject, tagComparator, limitObject),
+				relevantMarkupObjectsAtSelectionEnd = this.isRangeObjectWithinMarkup(rangeObject, true, markupObject, tagComparator, limitObject),
+				nextSibling, relevantMarkupObjectAfterSelection,
+				prevSibling, relevantMarkupObjectBeforeSelection,
+				extendedRangeObject;
+
 			// if the element is a replacing element (like p/h1/h2/h3/h4/h5/h6...), which must not wrap each other
 			// use a clone of rangeObject
 			if (this.replacingElements[ tagName ]) {
 				// backup rangeObject for later selection;
-				var backupRangeObject = rangeObject;
+				backupRangeObject = rangeObject;
 
 				// create a new range object to not modify the orginal
 				rangeObject = new this.SelectionRange(rangeObject);
 
 				// either select the active Editable as new commonAncestorContainer (CAC) or use the body
 				if (GENTICS.Aloha.activeEditable) {
-					var newCAC= GENTICS.Aloha.activeEditable.obj.get(0);
+					newCAC= GENTICS.Aloha.activeEditable.obj.get(0);
 				} else {
-					var newCAC = jQuery('body');
+					newCAC = jQuery('body');
 				}
 				// update rangeObject by setting the newCAC and automatically recalculating the selectionTree
 				rangeObject.update(newCAC);
@@ -583,24 +573,19 @@
 
 			// is Start/End DOM Obj inside the markup to change
 			if (GENTICS.Aloha.activeEditable) {
-				var limitObject = GENTICS.Aloha.activeEditable.obj[0];
+				limitObject = GENTICS.Aloha.activeEditable.obj[0];
 			} else {
-				var limitObject = jQuery('body');
+				limitObject = jQuery('body');
 			}
 
-			var relevantMarkupObjectsAtSelectionStart = this.isRangeObjectWithinMarkup(rangeObject, false, markupObject, tagComparator, limitObject),
-				relevantMarkupObjectsAtSelectionEnd = this.isRangeObjectWithinMarkup(rangeObject, true, markupObject, tagComparator, limitObject);
-
-			if (!markupObject.isReplacingElement && rangeObject.startOffset == 0) { // don't care about replacers, because they never extend
-				var prevSibling;
+			if (!markupObject.isReplacingElement && rangeObject.startOffset === 0) { // don't care about replacers, because they never extend
 				if (prevSibling = this.getTextNodeSibling(false, rangeObject.commonAncestorContainer.parentNode, rangeObject.startContainer)) {
-					var relevantMarkupObjectBeforeSelection = this.isRangeObjectWithinMarkup({startContainer : prevSibling, startOffset : 0}, false, markupObject, tagComparator, limitObject);
+					relevantMarkupObjectBeforeSelection = this.isRangeObjectWithinMarkup({startContainer : prevSibling, startOffset : 0}, false, markupObject, tagComparator, limitObject);
 				}
 			}
-			if (!markupObject.isReplacingElement && (rangeObject.endOffset == rangeObject.endContainer.length)) { // don't care about replacers, because they never extend
-				var nextSibling;
+			if (!markupObject.isReplacingElement && (rangeObject.endOffset === rangeObject.endContainer.length)) { // don't care about replacers, because they never extend
 				if (nextSibling = this.getTextNodeSibling(true, rangeObject.commonAncestorContainer.parentNode, rangeObject.endContainer)) {
-					var relevantMarkupObjectAfterSelection = this.isRangeObjectWithinMarkup({startContainer: nextSibling, startOffset: 0}, false, markupObject, tagComparator, limitObject);
+					relevantMarkupObjectAfterSelection = this.isRangeObjectWithinMarkup({startContainer: nextSibling, startOffset: 0}, false, markupObject, tagComparator, limitObject);
 				}
 			}
 
@@ -612,23 +597,23 @@
 				this.prepareForRemoval(rangeObject.getSelectionTree(), markupObject, tagComparator);
 				jQuery(relevantMarkupObjectsAtSelectionStart).addClass('preparedForRemoval');
 				this.insertCroppedMarkups(relevantMarkupObjectsAtSelectionStart, rangeObject, false, tagComparator);
-			} else
+			}
 
 			// Alternative B: from markup to markup:
 			// remove selected markup (=split existing markup if single, shrink if two different)
-			if (!markupObject.isReplacingElement && relevantMarkupObjectsAtSelectionStart && relevantMarkupObjectsAtSelectionEnd) {
+			else if (!markupObject.isReplacingElement && relevantMarkupObjectsAtSelectionStart && relevantMarkupObjectsAtSelectionEnd) {
 				GENTICS.Aloha.Log.info(this, 'markup 2 markup');
 				this.prepareForRemoval(rangeObject.getSelectionTree(), markupObject, tagComparator);
 				this.splitRelevantMarkupObject(relevantMarkupObjectsAtSelectionStart, relevantMarkupObjectsAtSelectionEnd, rangeObject, tagComparator);
-			} else
+			}
 
 			// Alternative C: from no-markup to markup OR with next2markup:
 			// new markup is wrapped from selection start to end of originalmarkup, original is remove afterwards
-			if (!markupObject.isReplacingElement && ((!relevantMarkupObjectsAtSelectionStart && relevantMarkupObjectsAtSelectionEnd) || relevantMarkupObjectAfterSelection || relevantMarkupObjectBeforeSelection )) { //
+			else if (!markupObject.isReplacingElement && ((!relevantMarkupObjectsAtSelectionStart && relevantMarkupObjectsAtSelectionEnd) || relevantMarkupObjectAfterSelection || relevantMarkupObjectBeforeSelection )) { //
 				GENTICS.Aloha.Log.info(this, 'non-markup 2 markup OR with next2markup');
 				// move end of rangeObject to end of relevant markups
 				if (relevantMarkupObjectBeforeSelection && relevantMarkupObjectAfterSelection) {
-					var extendedRangeObject = new GENTICS.Aloha.Selection.SelectionRange(rangeObject);
+					extendedRangeObject = new GENTICS.Aloha.Selection.SelectionRange(rangeObject);
 					extendedRangeObject.startContainer = jQuery(relevantMarkupObjectBeforeSelection[ relevantMarkupObjectBeforeSelection.length-1 ]).textNodes()[0];
 					extendedRangeObject.startOffset = 0;
 					extendedRangeObject.endContainer = jQuery(relevantMarkupObjectAfterSelection[ relevantMarkupObjectAfterSelection.length-1 ]).textNodes().last()[0];
@@ -642,7 +627,7 @@
 					GENTICS.Aloha.Log.info(this, 'extending previous markup');
 
 				} else if (relevantMarkupObjectBeforeSelection && !relevantMarkupObjectAfterSelection && relevantMarkupObjectsAtSelectionEnd) {
-					var extendedRangeObject = new GENTICS.Aloha.Selection.SelectionRange(rangeObject);
+					extendedRangeObject = new GENTICS.Aloha.Selection.SelectionRange(rangeObject);
 					extendedRangeObject.startContainer = jQuery(relevantMarkupObjectBeforeSelection[ relevantMarkupObjectBeforeSelection.length-1 ]).textNodes()[0];
 					extendedRangeObject.startOffset = 0;
 					extendedRangeObject.endContainer = jQuery(relevantMarkupObjectsAtSelectionEnd[ relevantMarkupObjectsAtSelectionEnd.length-1 ]).textNodes().last()[0];
@@ -658,10 +643,10 @@
 				} else {
 					this.extendExistingMarkupWithSelection(relevantMarkupObjectsAtSelectionEnd, rangeObject, true, tagComparator);
 				}
-			} else
+			}
 
 			// Alternative D: no-markup to no-markup: easy
-			if (markupObject.isReplacingElement || (!relevantMarkupObjectsAtSelectionStart && !relevantMarkupObjectsAtSelectionEnd && !relevantMarkupObjectBeforeSelection && !relevantMarkupObjectAfterSelection)) {
+			else if (markupObject.isReplacingElement || (!relevantMarkupObjectsAtSelectionStart && !relevantMarkupObjectsAtSelectionEnd && !relevantMarkupObjectBeforeSelection && !relevantMarkupObjectAfterSelection)) {
 				GENTICS.Aloha.Log.info(this, 'non-markup 2 non-markup');
 				this.applyMarkup(rangeObject.getSelectionTree(), rangeObject, markupObject, tagComparator, {setRangeObject2NewMarkup: true});
 			}
@@ -691,20 +676,22 @@
 		 * @hide
 		 */
 		areMarkupObjectsAsLongAsRangeObject: function(relevantMarkupObjectsAtSelectionStart, relevantMarkupObjectsAtSelectionEnd, rangeObject) {
+			var i, el, textNode;
+
 			if (rangeObject.startOffset !== 0) {
 				return false;
 			}
 
-			for (var i = 0, relMarkupStart = relevantMarkupObjectsAtSelectionStart.length; i < relMarkupStart; i++) {
-				var el = jQuery(relevantMarkupObjectsAtSelectionStart[i]);
+			for (i = 0, relMarkupStart = relevantMarkupObjectsAtSelectionStart.length; i < relMarkupStart; i++) {
+				el = jQuery(relevantMarkupObjectsAtSelectionStart[i]);
 				if (el.textNodes().first()[0] !== rangeObject.startContainer) {
 					return false;
 				}
 			}
 
-			for (var i = 0, relMarkupEnd = relevantMarkupObjectsAtSelectionEnd.length; i < relMarkupEnd; i++) {
-				var el = jQuery(relevantMarkupObjectsAtSelectionEnd[i]),
-					textNode = el.textNodes().last()[0];
+			for (i = 0, relMarkupEnd = relevantMarkupObjectsAtSelectionEnd.length; i < relMarkupEnd; i++) {
+				el = jQuery(relevantMarkupObjectsAtSelectionEnd[i]);
+				textNode = el.textNodes().last()[0];
 				if (textNode !== rangeObject.endContainer || textNode.length != rangeObject.endOffset) {
 					return false;
 				}
@@ -781,13 +768,14 @@
 		 * @hide
 		 */
 		extendExistingMarkupWithSelection: function(relevantMarkupObjects, rangeObject, startOrEnd, tagComparator) {
+			var extendMarkupsAtStart, extendMarkupsAtEnd;
 			if (!startOrEnd) { // = Start
 				// start part of rangeObject should be used, therefor existing markups are cropped at the end
-				var extendMarkupsAtStart = true;
+				extendMarkupsAtStart = true;
 			}
 			if (startOrEnd) { // = End
 				// end part of rangeObject should be used, therefor existing markups are cropped at start (beginning)
-				var extendMarkupsAtEnd = true;
+				extendMarkupsAtEnd = true;
 			}
 			var objects = [];
 			for(var i = 0, relMarkupLength = relevantMarkupObjects.length; i < relMarkupLength; i++){
@@ -826,7 +814,7 @@
 		 */
 		getClonedMarkup4Wrapping: function(domobj) {
 			var wrapper = jQuery(domobj).clone().removeClass('preparedForRemoval').empty();
-			if (wrapper.attr('class').length == 0) {
+			if (wrapper.attr('class').length === 0) {
 				wrapper.removeAttr('class');
 			}
 			return wrapper;
@@ -842,12 +830,13 @@
 		 * @hide
 		 */
 		insertCroppedMarkups: function(relevantMarkupObjects, rangeObject, startOrEnd, tagComparator) {
+			var cropMarkupsAtEnd;
 			if (!startOrEnd) { // = Start
 				// start part of rangeObject should be used, therefor existing markups are cropped at the end
-				var cropMarkupsAtEnd = true;
+				cropMarkupsAtEnd = true;
 			} else { // = End
 				// end part of rangeObject should be used, therefor existing markups are cropped at start (beginning)
-				var cropMarkupsAtStart = true;
+				cropMarkupsAtStart = true;
 			}
 			var objects = [];
 			for(var i = 0; i<relevantMarkupObjects.length; i++){
@@ -862,7 +851,7 @@
 					if (objects[i].startContainer === rangeObject.startContainer && objects[i].startOffset === rangeObject.startOffset) {
 						continue;
 					}
-					if (rangeObject.startOffset == 0) {
+					if (rangeObject.startOffset === 0) {
 						objects[i].endContainer = this.getTextNodeSibling(false, el, rangeObject.startContainer);
 						objects[i].endOffset = objects[i].endContainer.length;
 					} else {
@@ -961,24 +950,29 @@
 		 * @hide
 		 */
 		getStandardTagComparator: function(markupObject) {
-			var that = this;
+			var that = this, result;
 			switch(this.getMarkupType(markupObject)) {
-			case 'textNode':
-				return function(p1, p2) {return false;};
-				break;
+				case 'textNode':
+					result = function(p1, p2) {
+						return false;
+					};
+					break;
 
-			case 'sectionOrGroupingContent':
-				return function(domobj, markupObject) {
-					return that.standardSectionsAndGroupingContentComparator(domobj, markupObject);
-				};
-				break;
+				case 'sectionOrGroupingContent':
+					result = function(domobj, markupObject) {
+						return that.standardSectionsAndGroupingContentComparator(domobj, markupObject);
+					};
+					break;
 
-			case 'textLevelSemantics':
-			default:
-				return function(domobj, markupObject) {
-					return that.standardTextLevelSemanticsComparator(domobj, markupObject);
-				};
+				case 'textLevelSemantics':
+				/* falls through */
+				default:
+					result = function(domobj, markupObject) {
+						return that.standardTextLevelSemanticsComparator(domobj, markupObject);
+					};
+					break;
 			}
+			return result;
 		},
 
 		/**
@@ -1028,12 +1022,16 @@
 		wrapMarkupAroundSelectionTree: function(selectionTree, rangeObject, markupObject, tagComparator, options) {
 			// first let's find out if theoretically the whole selection can be wrapped with one tag and save it for later use
 			var objects2wrap = [], // // this will be used later to collect objects
-				j = -1; // internal counter
+				j = -1, // internal counter,
+				breakpoint = true,
+				preText = '',
+				postText = '',
+				prevOrNext,
+				textNode2Start;
+
+
 
 			GENTICS.Aloha.Log.debug(this,'The formatting <' + markupObject[0].tagName + '> will be wrapped around the selection');
-
-			var preText = '',
-				postText = '';
 
 			// now lets iterate over the elements
 			for (var i = 0; i < selectionTree.length; i++) {
@@ -1046,7 +1044,7 @@
 				}
 
 				// skip empty text nodes
-				if (el.domobj && el.domobj.nodeType == 3 && jQuery.trim(jQuery(el.domobj).outerHTML()).length == 0) {
+				if (el.domobj && el.domobj.nodeType === 3 && jQuery.trim(jQuery(el.domobj).outerHTML()).length === 0) {
 					continue;
 				}
 
@@ -1086,7 +1084,7 @@
 					objects2wrap[j] = el.domobj;
 				}
 			}
-			breakpoint = true;
+
 			if (objects2wrap.length > 0) {
 				// wrap collected DOM object with markupObject
 				objects2wrap = jQuery(objects2wrap);
@@ -1103,7 +1101,6 @@
 
 				var newMarkup = objects2wrap.wrapAll(markupObject).parent();
 				newMarkup.before(preText).after(postText);
-				var breakpoint = true;
 
 				if (options.setRangeObject2NewMarkup) { // this is used, when markup is added to normal/normal Text
 					var textnodes = objects2wrap.textNodes();
@@ -1114,12 +1111,11 @@
 					if (textnodes.index(rangeObject.endContainer) != -1) {
 						rangeObject.endOffset = rangeObject.endContainer.length;
 					}
-
-					var breakpoint=true;
+					breakpoint=true;
 				}
 				if (options.setRangeObject2NextSibling){
-					var prevOrNext = true,
-						textNode2Start = newMarkup.textNodes(true).last()[0];
+					prevOrNext = true;
+					textNode2Start = newMarkup.textNodes(true).last()[0];
 					if (objects2wrap.index(rangeObject.startContainer) != -1) {
 						rangeObject.startContainer = this.getTextNodeSibling(prevOrNext, newMarkup.parent(), textNode2Start);
 						rangeObject.startOffset = 0;
@@ -1130,8 +1126,8 @@
 					}
 				}
 				if (options.setRangeObject2PreviousSibling){
-					var prevOrNext = false,
-						textNode2Start = newMarkup.textNodes(true).first()[0];
+					prevOrNext = false;
+					textNode2Start = newMarkup.textNodes(true).first()[0];
 					if (objects2wrap.index(rangeObject.startContainer) != -1) {
 						rangeObject.startContainer = this.getTextNodeSibling(prevOrNext, newMarkup.parent(), textNode2Start);
 						rangeObject.startOffset = 0;
@@ -1173,7 +1169,9 @@
 			var groupMap = [],
 				outerGroupIndex = 0,
 				innerGroupIndex = 0,
-				that = this;
+				that = this,
+				j;
+
 			if (typeof tagComparator === 'undefined') {
 				tagComparator = function(domobj, markupObject) {
 					return that.standardTextLevelSemanticsComparator(markupObject);
@@ -1217,7 +1215,7 @@
 
 							// first find start element starting from the current element going backwards until sibling 0
 							var startPosition = i;
-							for (var j = i-1; j >= 0; j--) {
+							for (j = i-1; j >= 0; j--) {
 								if (this.canMarkupBeApplied2ElementAsWhole([ selectionTree[ j ] ], markupObject) && this.isMarkupAllowedToStealSelectionTreeElement(selectionTree[ j ], markupObject)) {
 									startPosition = j;
 								} else {
@@ -1227,7 +1225,7 @@
 
 							// now find the end element starting from the current element going forward until the last sibling
 							var endPosition = i;
-							for (var j = i+1; j < selectionTree.length; j++) {
+							for (j = i+1; j < selectionTree.length; j++) {
 								if (this.canMarkupBeApplied2ElementAsWhole([ selectionTree[ j ] ], markupObject) && this.isMarkupAllowedToStealSelectionTreeElement(selectionTree[ j ], markupObject)) {
 									endPosition = j;
 								} else {
@@ -1237,7 +1235,7 @@
 
 							// now add the elements to the groupMap
 							innerGroupIndex = 0;
-							for (var j = startPosition; j <= endPosition; j++) {
+							for (j = startPosition; j <= endPosition; j++) {
 								groupMap[outerGroupIndex].elements[innerGroupIndex]	= selectionTree[j];
 								groupMap[outerGroupIndex].elements[innerGroupIndex].selection = 'full';
 								innerGroupIndex++;
@@ -1271,9 +1269,9 @@
 		 * wrapped by the markup to be applied, and therefor the markup does not have an equal markup to replace, then the DOM
 		 * manipulator has to decide which objects to wrap. real example:
 		 * <div>
-		 * 	<h1>headline</h1>
-		 * 	some text blabla bla<br>
-		 * 	more text HERE THE | CURSOR BLINKING and <b>even more bold text</b>
+		 *	<h1>headline</h1>
+		 *	some text blabla bla<br>
+		 *	more text HERE THE | CURSOR BLINKING and <b>even more bold text</b>
 		 * </div>
 		 * when the user now wants to apply e.g. a <p> tag, what will be wrapped? it could be useful if the manipulator would actually
 		 * wrap everything inside the div except the <h1>. but for this purpose someone has to decide, if the markup is
@@ -1568,14 +1566,17 @@
 				this.markupEffectiveAtStart = [];
 				this.unmodifiableMarkupAtStart = [];
 
-				var parents = this.getStartContainerParents(),
-					limitFound = false;
+				var
+					parents = this.getStartContainerParents(),
+					limitFound = false,
+					splitObjectWasSet;
+
 				for (var i = 0; i < parents.length; i++) {
 					var el = parents[i];
 					if (!limitFound && (el !== this.limitObject)) {
 						this.markupEffectiveAtStart[ i ] = el;
 						if (!splitObjectWasSet && GENTICS.Utils.Dom.isSplitObject(el)) {
-							var splitObjectWasSet = true;
+							splitObjectWasSet = true;
 							this.splitObject = el;
 						}
 					} else {

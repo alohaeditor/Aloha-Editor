@@ -29,9 +29,9 @@
  * @constructor
  * @param {Object} data object which contains the parts of the message
  *		title: the title
- * 		text: the message text to be displayed
- * 		type: one of GENTICS.Aloha.Message.Type
- * 		callback: callback function, which will be triggered after the message was confirmed, closed or accepted
+ *		text: the message text to be displayed
+ *		type: one of GENTICS.Aloha.Message.Type
+ *		callback: callback function, which will be triggered after the message was confirmed, closed or accepted
  */
 GENTICS.Aloha.Message = Class.extend({
 	constructor: function (data) {

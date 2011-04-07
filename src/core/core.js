@@ -23,9 +23,6 @@
  * namespaces are preserved.
  */
 
-// Namespace jQuery
-window.alohaQuery = window.jQuery.sub();
-
 // Start Closure
 (function(window, undefined) {
 	var
@@ -210,7 +207,7 @@ window.alohaQuery = window.jQuery.sub();
 			Ext.ux.AlohaAttributeField.prototype.loadingText = GENTICS.Aloha.i18n( GENTICS.Aloha, 'repository.loading' ) + '...';
 
 			// set aloha ready
-			this.ready = true;
+			GENTICS.Aloha.ready = true;
 
 			// activate registered editables
 			for (var i = 0, editablesLength = this.editables.length; i < editablesLength; i++) {
@@ -818,12 +815,12 @@ window.alohaQuery = window.jQuery.sub();
 		});
 	}
 
-	// Prepare
-	var $body = $('body');
-	$body.createPromiseEvent('aloha');
-
 	// Initialise Aloha
 	$(function(){
+		// Prepare
+		var $body = $('body');
+		$body.createPromiseEvent('aloha');
+
 		// Give the page 3 seconds to load in all the plugins
 		setTimeout( function() {
 			GENTICS.Aloha.init();

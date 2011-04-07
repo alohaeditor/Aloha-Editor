@@ -136,13 +136,34 @@ GENTICS.Aloha.RepositoryManager = Class.extend({
 
 		var that = this,
 			allitems = [],
-			repositories = [];
+			repositories = [],
+			timer,
+			notImplFunc = function (items) {
+				// remove the repository from the callback stack
+				var id = that.openCallbacks.indexOf( this.repositoryId );
+				if (id != -1) {
+					that.openCallbacks.splice(id, 1);
+				}
+
+				// mark with repositoryId if not done by repository plugin
+				if ( items.length && !items[0].repositoryId ) {
+					for ( var j = 0; j < items.length; j++) {
+						items[j].repositoryId = this.repositoryId;
+					}
+				}
+
+				// merge new items with the rest
+				jQuery.merge( allitems, items );
+
+				that.queryCallback(callback, allitems, timer);
+			},
+			notImplemented;
 
 		// reset callback queue
 		this.openCallbacks = [];
 
 		// start timer in case a repository does not deliver in time
-		var timer = setTimeout( function() {
+		timer = setTimeout( function() {
 			// reset callback stack
 			that.openCallbacks = [];
 			that.queryCallback(callback, allitems, timer);
@@ -161,32 +182,11 @@ GENTICS.Aloha.RepositoryManager = Class.extend({
 			this.openCallbacks.push(repositories[i].repositoryId);
 
 		    try {
-
-				var notImplemented = repositories[i].query( params, function (items) {
-
-					// remove the repository from the callback stack
-					var id = that.openCallbacks.indexOf( this.repositoryId );
-					if (id != -1) {
-						that.openCallbacks.splice(id, 1);
-					}
-
-					// mark with repositoryId if not done by repository plugin
-					if ( !items.length == 0 && !items[0].repositoryId ) {
-						for ( var j = 0; j < items.length; j++) {
-							items[j].repositoryId = this.repositoryId;
-						}
-					}
-
-					// merge new items with the rest
-					jQuery.merge( allitems, items );
-
-					that.queryCallback(callback, allitems, timer);
-				});
-
+					notImplemented = repositories[i].query(params,notImplFunc);
 		    } catch (e) {
-	//          this.fireEvent('exception', this, 'response', action, arg, null, e);
-	//          return false;
-		    	notImplemented = true;
+					// this.fireEvent('exception', this, 'response', action, arg, null, e);
+					// return false;
+					notImplemented = true;
 		    }
 
 			// remove this repository from the callback stack
@@ -210,7 +210,7 @@ GENTICS.Aloha.RepositoryManager = Class.extend({
 	queryCallback: function (cb, items, timer) {
 
 		// if we all callbacks came back we are done!
-		if (this.openCallbacks.length == 0) {
+		if (this.openCallbacks.length === 0) {
 
 			// unset the timer...
 			clearTimeout(timer);
@@ -220,9 +220,9 @@ GENTICS.Aloha.RepositoryManager = Class.extend({
 
 			// prepare result data for the JSON Reader
 			var result =  {
-					results: items.length,
-					items: items
-			 	 };
+				results: items.length,
+				items: items
+			};
 
 			// Give data back.
 			cb.call( this, result);
@@ -249,7 +249,22 @@ GENTICS.Aloha.RepositoryManager = Class.extend({
 
 		var that = this,
 			allitems = [],
-			repositories = [];
+			repositories = [],
+			i,
+			timer,
+			notImplFunc = function (items) {
+				// remove the repository from the callback stack
+				var id = that.openChildrenCallbacks.indexOf( this.repositoryId );
+				if (id != -1) {
+					that.openChildrenCallbacks.splice(id, 1);
+				}
+
+				// merge new items with the rest
+				jQuery.merge( allitems, items );
+
+				that.getChildrenCallback(callback, allitems, timer);
+			},
+			notImplemented;
 
 		// reset callback queue
 		this.openChildrenCallbacks = [];
@@ -257,7 +272,7 @@ GENTICS.Aloha.RepositoryManager = Class.extend({
 		// return repositories
 		if ( params.inFolderId == 'aloha' && this.repositories.length > 0 ) {
 			var repos = [];
-			for ( var i = 0; i < this.repositories.length; i++) {
+			for ( i = 0; i < this.repositories.length; i++) {
 				repos.push( new GENTICS.Aloha.Repository.Folder ({
 					id: this.repositories[i].repositoryId,
 					name: this.repositories[i].repositoryName,
@@ -271,7 +286,7 @@ GENTICS.Aloha.RepositoryManager = Class.extend({
 		}
 
 		// start timer in case a repository does not deliver in time
-		var timer = setTimeout( function() {
+		timer = setTimeout( function() {
 			// reset callback stack
 			that.openChildrenCallbacks = [];
 			that.getChildrenCallback(callback, allitems, timer);
@@ -285,30 +300,16 @@ GENTICS.Aloha.RepositoryManager = Class.extend({
 		}
 
 		// iterate through all registered repositories
-		for ( var i = 0; i < repositories.length; i++) {
+		for ( i = 0; i < repositories.length; i++) {
 
 			this.openChildrenCallbacks.push(repositories[i].repositoryId);
 
 		    try {
-
-				var notImplemented = repositories[i].getChildren( params, function (items) {
-
-					// remove the repository from the callback stack
-					var id = that.openChildrenCallbacks.indexOf( this.repositoryId );
-					if (id != -1) {
-						that.openChildrenCallbacks.splice(id, 1);
-					}
-
-					// merge new items with the rest
-					jQuery.merge( allitems, items );
-
-					that.getChildrenCallback(callback, allitems, timer);
-				});
-
+					notImplemented = repositories[i].getChildren( params, notImplFunc);
 		    } catch (e) {
-	//          this.fireEvent('exception', this, 'response', action, arg, null, e);
-	//          return false;
-		    	notImplemented = true;
+					// this.fireEvent('exception', this, 'response', action, arg, null, e);
+					// return false;
+					notImplemented = true;
 		    }
 
 			// remove this repository from the callback stack
@@ -333,7 +334,7 @@ GENTICS.Aloha.RepositoryManager = Class.extend({
 	getChildrenCallback: function (cb, items, timer) {
 
 		// if we all callbacks came back we are done!
-		if (this.openChildrenCallbacks.length == 0) {
+		if (this.openChildrenCallbacks.length === 0) {
 
 			// unset the timer...
 			if (timer) clearTimeout(timer);

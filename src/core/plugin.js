@@ -37,13 +37,20 @@ GENTICS.Aloha.PluginRegistry = Class.extend({
 	init: function() {
 		var
 			loaded = 0,
-			length = this.plugins.length
-			pluginsStack = [];
+			length = this.plugins.length,
+			pluginsStack = [],
+			i18nEvent = function () {
+				if(++loaded === length) {
+					GENTICS.Aloha.EventRegistry.trigger(
+						new GENTICS.Aloha.Event('i18nPluginsLoaded', GENTICS.Aloha, null)
+					);
+				}
+			};
 
 		// Initialize the plugins in the right order when they are loaded
 		GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'i18nPluginsLoaded', function () {
 			for ( var i = 0; i < length; i++) {
-				if (pluginsStack[i].settings.enabled == true) {
+				if (pluginsStack[i].settings.enabled) {
 					pluginsStack[i].init();
 				}
 			}
@@ -93,13 +100,7 @@ GENTICS.Aloha.PluginRegistry = Class.extend({
 				var fileUrl = GENTICS.Aloha.settings.base + '/' + GENTICS.Aloha.settings.pluginDir + '/' + plugin.basePath + '/i18n/' + actualLanguage + '.json';
 
 				// Initializes the plugin when
-				GENTICS.Aloha.loadI18nFile(fileUrl, plugin, function () {
-					if(++loaded === length) {
-						GENTICS.Aloha.EventRegistry.trigger(
-							new GENTICS.Aloha.Event('i18nPluginsLoaded', GENTICS.Aloha, null)
-						);
-					}
-				});
+				GENTICS.Aloha.loadI18nFile(fileUrl, plugin, i18nEvent);
 			}
 		}
 	},
@@ -189,11 +190,11 @@ GENTICS.Aloha.Plugin = Class.extend({
 	 * <pre>
 	 * "list": {
 	 *		config : [ 'b', 'h1' ],
-	 * 		editables : {
+	 *		editables : {
 	 *			'#title'	: [ ],
 	 *			'div'		: [ 'b', 'i' ],
 	 *			'.article'	: [ 'h1' ]
-	 *	  	}
+	 *		}
 	 *	}
 	 * </pre>
 	 *
@@ -223,23 +224,23 @@ GENTICS.Aloha.Plugin = Class.extend({
 	 * </pre></li>
 	 * <li>Object configuration parameters are :
 	 * <pre>
-	 * "image": {
-	 * 	    config : { 'img': { 'max_width': '50px',
-	 * 					'max_height': '50px' }},
-	 * 		editables : {
-	 * 		    '#title'	: {},
-	 *          'div'		: {'img': {}},
-	 *          '.article'	: {'img': { 'max_width': '150px',
-	 *          				'max_height': '150px' }}
-	 *          }
-	 *      }
+	 *	"image": {
+	 *		config : { 'img': { 'max_width': '50px',
+	 *		'max_height': '50px' }},
+	 *		editables : {
+	 *			'#title': {},
+	 *			'div': {'img': {}},
+	 *			'.article': {'img': { 'max_width': '150px',
+	 *			'max_height': '150px' }}
+	 *		}
+	 *	}
 	 * </pre>
 	 *  The '#title' object would return an empty configuration.<br/>
 	 *  The 'div' object would return the default configuration.<br/>
 	 *  the '.article' would return :
 	 *  <pre>
-	 *           {'img': { 'max_width': '150px',
-	 *          		'max_height': '150px' }}
+	 *		{'img': { 'max_width': '150px',
+	 *		'max_height': '150px' }}
 	 *  </pre>
 	 * </li>
 	 *
@@ -256,14 +257,16 @@ GENTICS.Aloha.Plugin = Class.extend({
 			jQuery.each( this.settings.editables, function (selector, selectorConfig) {
 				if ( obj.is(selector) ) {
 					configSpecified = true;
-					if (selectorConfig.constructor == (new Array).constructor) {
+					if (selectorConfig instanceof Array) {
 						configObj = [];
 						configObj = jQuery.merge(configObj, selectorConfig);
 					} else {
 						configObj = {};
 						for (var k in selectorConfig) {
-							configObj[k] = {};
-							configObj[k] = jQuery.extend(true, configObj[k], that.config[k], selectorConfig[k]);
+							if ( selectorConfig.hasOwnProperty(k) ) {
+								configObj[k] = {};
+								configObj[k] = jQuery.extend(true, configObj[k], that.config[k], selectorConfig[k]);
+							}
 						}
 
 					}

@@ -26,12 +26,12 @@
 if(document.attachEvent && document.selection) {
 /*!
 *   DOM Ranges for Internet Explorer (m2)
-*	  
+*
 *   Copyright (c) 2009 Tim Cameron Ryan
 *   Released under the MIT/X License
 *   available at http://code.google.com/p/ierange/
 */
-	 
+
 	/*
 	  Range reference:
 	    http://www.w3.org/TR/DOM-Level-2-Traversal-Range/ranges.html
@@ -46,15 +46,15 @@ if(document.attachEvent && document.selection) {
 	    http://jorgenhorstink.nl/2006/07/05/dom-range-implementation-in-ecmascript-completed/
 	    http://dylanschiemann.com/articles/dom2Range/dom2RangeExamples.html
 	*/
-	
+
 	//[TODO] better exception support
-	
+
 	(function () {	// sandbox
-	
+
 	/*
 	  DOM functions
 	 */
-	
+
 	var DOMUtils = {
 		findChildPosition: function (node) {
 			for (var i = 0; node = node.previousSibling; i++)
@@ -66,7 +66,7 @@ if(document.attachEvent && document.selection) {
 		},
 		isAncestorOf: function (parent, node) {
 			return !DOMUtils.isDataNode(parent) &&
-			    (parent.contains(DOMUtils.isDataNode(node) ? node.parentNode : node) ||		    
+			    (parent.contains(DOMUtils.isDataNode(node) ? node.parentNode : node) ||
 			    node.parentNode == parent);
 		},
 		isAncestorOrSelf: function (root, node) {
@@ -90,12 +90,12 @@ if(document.attachEvent && document.selection) {
 			node.parentNode.insertBefore(newNode, node.nextSibling);
 		}
 	};
-	
+
 	/*
 	  Text Range utilities
 	  functions to simplify text range manipulation in ie
 	 */
-	
+
 	var TextRangeUtils = {
 		convertToDOMRange: function (textRange, document) {
 			function adoptBoundary(domRange, textRange, bStart) {
@@ -108,7 +108,7 @@ if(document.attachEvent && document.selection) {
 					parent.insertBefore(cursorNode, cursorNode.previousSibling);
 					cursor.moveToElementText(cursorNode);
 				} while (cursor.compareEndPoints(bStart ? 'StartToStart' : 'StartToEnd', textRange) > 0 && cursorNode.previousSibling);
-	
+
 				// when we exceed or meet the cursor, we've found the node
 				if (cursor.compareEndPoints(bStart ? 'StartToStart' : 'StartToEnd', textRange) == -1 && cursorNode.nextSibling) {
 					// data node
@@ -120,14 +120,14 @@ if(document.attachEvent && document.selection) {
 				}
 				cursorNode.parentNode.removeChild(cursorNode);
 			}
-		
+
 			// return a DOM range
 			var domRange = new DOMRange(document);
 			adoptBoundary(domRange, textRange, true);
 			adoptBoundary(domRange, textRange, false);
 			return domRange;
 		},
-	
+
 		convertFromDOMRange: function (domRange) {
 			function adoptEndPoint(textRange, domRange, bStart) {
 				// find anchor node and offset
@@ -138,7 +138,7 @@ if(document.attachEvent && document.selection) {
 				// visible data nodes need a text offset
 				if (container.nodeType == 3 || container.nodeType == 4)
 					textOffset = offset;
-	
+
 				// create a cursor element node to position range (since we can't select text nodes)
 				var cursorNode = domRange._document.createElement('a');
 				anchorParent.insertBefore(cursorNode, anchorNode);
@@ -149,7 +149,7 @@ if(document.attachEvent && document.selection) {
 				textRange.setEndPoint(bStart ? 'StartToStart' : 'EndToStart', cursor);
 				textRange[bStart ? 'moveStart' : 'moveEnd']('character', textOffset);
 			}
-			
+
 			// return an IE text range
 			var textRange = domRange._document.body.createTextRange();
 			adoptEndPoint(textRange, domRange, true);
@@ -157,15 +157,15 @@ if(document.attachEvent && document.selection) {
 			return textRange;
 		}
 	};
-	
+
 	/*
 	  DOM Range
 	 */
-	 
+
 	function DOMRange(document) {
 		// save document parameter
 		this._document = document;
-		
+
 		// initialize range
 	//[TODO] this should be located at document[0], document[0]
 		this.startContainer = this.endContainer = document.body;
@@ -175,7 +175,7 @@ if(document.attachEvent && document.selection) {
 	DOMRange.START_TO_END = 1;
 	DOMRange.END_TO_END = 2;
 	DOMRange.END_TO_START = 3;
-	
+
 	DOMRange.prototype = {
 		// public properties
 		startContainer: null,
@@ -186,7 +186,7 @@ if(document.attachEvent && document.selection) {
 		collapsed: false,
 		// private properties
 		_document: null,
-		
+
 		// private methods
 		_refreshProperties: function () {
 			// collapsed attribute
@@ -197,7 +197,7 @@ if(document.attachEvent && document.selection) {
 				node = node.parentNode;
 			this.commonAncestorContainer = node;
 		},
-		
+
 		// range methods
 	//[TODO] collapse if start is after end, end is before start
 		setStart: function(container, offset) {
@@ -240,7 +240,7 @@ if(document.attachEvent && document.selection) {
 			else
 				this.setStart(this.endContainer, this.endOffset);
 		},
-	
+
 		// editing methods
 		cloneContents: function () {
 			// clone subtree
@@ -263,7 +263,12 @@ if(document.attachEvent && document.selection) {
 			// extract range
 			return (function extractSubtree(iterator) {
 				for (var node, frag = document.createDocumentFragment(); node = iterator.next(); ) {
-					iterator.hasPartialSubtree() ? node = node.cloneNode(false) : iterator.remove();
+					if ( iterator.hasPartialSubtree() ) {
+						node = node.cloneNode(false);
+					}
+					else {
+						iterator.remove();
+					}
 					if (iterator.hasPartialSubtree())
 						node.appendChild(extractSubtree(iterator.getSubtreeIterator()));
 					frag.appendChild(node);
@@ -279,8 +284,14 @@ if(document.attachEvent && document.selection) {
 			this.collapse(true);
 			// delete range
 			(function deleteSubtree(iterator) {
-				while (iterator.next())
-					iterator.hasPartialSubtree() ? deleteSubtree(iterator.getSubtreeIterator()) : iterator.remove();
+				while (iterator.next()) {
+					if ( iterator.hasPartialSubtree() ) {
+						deleteSubtree(iterator.getSubtreeIterator());
+					}
+					else {
+						iterator.remove();
+					}
+				}
 			})(new RangeIterator(range));
 		},
 		insertNode: function (newNode) {
@@ -301,7 +312,7 @@ if(document.attachEvent && document.selection) {
 			newNode.appendChild(content);
 			this.selectNode(newNode);
 		},
-	
+
 		// other methods
 		compareBoundaryPoints: function (how, sourceRange) {
 			// get anchors
@@ -330,7 +341,7 @@ if(document.attachEvent && document.selection) {
 				offsetB = sourceRange.endOffset;
 				break;
 			}
-			
+
 			// compare
 			return containerA.sourceIndex < containerB.sourceIndex ? -1 :
 			    containerA.sourceIndex == containerB.sourceIndex ?
@@ -345,7 +356,7 @@ if(document.attachEvent && document.selection) {
 			return range;
 		},
 		detach: function () {
-	//[TODO] Releases Range from use to improve performance. 
+	//[TODO] Releases Range from use to improve performance.
 		},
 		toString: function () {
 			return TextRangeUtils.convertFromDOMRange(this).text;
@@ -360,16 +371,16 @@ if(document.attachEvent && document.selection) {
 			return fragment;
 		}
 	};
-	
+
 	/*
 	  Range iterator
 	 */
-	
+
 	function RangeIterator(range) {
 		this.range = range;
 		if (range.collapsed)
 			return;
-	
+
 	//[TODO] ensure this works
 		// get anchors
 		var root = range.commonAncestorContainer;
@@ -380,7 +391,7 @@ if(document.attachEvent && document.selection) {
 		    range.endContainer.childNodes[range.endOffset] :
 		    DOMUtils.findClosestAncestor(root, range.endContainer).nextSibling;
 	}
-	
+
 	RangeIterator.prototype = {
 		// public properties
 		range: null,
@@ -388,7 +399,7 @@ if(document.attachEvent && document.selection) {
 		_current: null,
 		_next: null,
 		_end: null,
-	
+
 		// public methods
 		hasNext: function () {
 			return !!this._next;
@@ -398,7 +409,7 @@ if(document.attachEvent && document.selection) {
 			var current = this._current = this._next;
 			this._next = this._current && this._current.nextSibling != this._end ?
 			    this._current.nextSibling : null;
-	
+
 			// check for partial text nodes
 			if (DOMUtils.isDataNode(this._current)) {
 				if (this.range.endContainer == this._current)
@@ -437,30 +448,30 @@ if(document.attachEvent && document.selection) {
 			return new RangeIterator(subRange);
 		}
 	};
-	
+
 	/*
 	  DOM Selection
 	 */
-	 
+
 	//[NOTE] This is a very shallow implementation of the Selection object, based on Webkit's
 	// implementation and without redundant features. Complete selection manipulation is still
 	// possible with just removeAllRanges/addRange/getRangeAt.
-	
+
 	function DOMSelection(document) {
 		// save document parameter
 		this._document = document;
-		
+
 		// add DOM selection handler
 		var selection = this;
 		document.attachEvent('onselectionchange', function () { selection._selectionChangeHandler(); });
 	}
-	
+
 	DOMSelection.prototype = {
 		// public properties
 		rangeCount: 0,
 		// private properties
 		_document: null,
-		
+
 		// private methods
 		_selectionChangeHandler: function () {
 			// check if there exists a range
@@ -468,10 +479,10 @@ if(document.attachEvent && document.selection) {
 		},
 		_selectionExists: function (textRange) {
 			// checks if a created text range exists or is an editable cursor
-			return textRange.compareEndPoints('StartToEnd', textRange) != 0 ||
+			return textRange.compareEndPoints('StartToEnd', textRange) !== 0 ||
 			    textRange.parentElement().isContentEditable;
 		},
-		
+
 		// public methods
 		addRange: function (range) {
 			// add range or combine with existing range
@@ -511,21 +522,21 @@ if(document.attachEvent && document.selection) {
 			return this._document.selection.createRange().text;
 		}
 	};
-	
+
 	/*
 	  scripting hooks
 	 */
-	
+
 	document.createRange = function () {
 		return new DOMRange(document);
 	};
-	
+
 	var selection = new DOMSelection(document);
-	window.getSelection = function () {
+		window.getSelection = function () {
 		return selection;
 	};
-	
+
 	//[TODO] expose DOMRange/DOMSelection to window.?
-	
+
 	})();
 }

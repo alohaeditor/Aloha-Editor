@@ -35,11 +35,11 @@ GENTICS.Aloha.Repository.Object = function() {};
  *
 <pre><code>
  var item = new GENTICS.Aloha.Repository.Document({
- 	id: 1,
- 	repositoryId: 'myrepository',
- 	name: 'Aloha Editor - The HTML5 Editor',
- 	type: 'website',
- 	url:'http://aloha-editor.com',
+	id: 1,
+	repositoryId: 'myrepository',
+	name: 'Aloha Editor - The HTML5 Editor',
+	type: 'website',
+	url:'http://aloha-editor.com',
  });
 </code></pre>
  *
@@ -99,11 +99,11 @@ GENTICS.Aloha.Repository.Document = function(properties) {
  *
 <pre><code>
  var item = new GENTICS.Aloha.Repository.Folder({
- 	id: 2,
- 	repositoryId: 'myrepository',
- 	name: 'images',
- 	type: 'directory',
- 	parentId:'/www'
+	id: 2,
+	repositoryId: 'myrepository',
+	name: 'images',
+	type: 'directory',
+	parentId:'/www'
  });
 </code></pre>
  * @param {Object} properties An object with the data.

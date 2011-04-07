@@ -1,3 +1,6 @@
+// Namespace jQuery
+window.alohaQuery = window.jQuery.sub();
+
 // Ensure Namespace
 window.GENTICS = window.GENTICS || {};
 window.GENTICS.Utils = window.GENTICS.Utils || {};
