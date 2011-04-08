@@ -115,7 +115,7 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 				if ( color ) {
 					jQuery(target).css('background-color', color);
 				} else {
-					jQuery(target).removeCss('background-color');
+					jQuery(target).css('background-color', '');
 				}
 				jQuery(target).removeAttr('data-original-background-color');
 			}

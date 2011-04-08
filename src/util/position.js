@@ -3,6 +3,15 @@
  * Author & Copyright (c) 2010 Gentics Software GmbH, aloha@gentics.com
  * Licensed unter the terms of http://www.aloha-editor.com/license.html
  */
+// Start Closure
+(function(window, undefined) {
+	"use strict";
+	var
+		jQuery = window.alohaQuery, $ = jQuery,
+		GENTICS = window.GENTICS,
+		Class = window.Class,
+		console = window.console;
+
 /**
  * position utility, which will provide scroll and mouse positions
  * please note that the positions provided by this class are not
@@ -128,19 +137,4 @@ GENTICS.Utils.Position.addMouseMoveCallback = function (callback) {
 	return (this.mouseMoveCallbacks.length - 1);
 };
 
-// set interval to update the scroll position
-// NOTE high timeout of 500ms is required here
-// to prevent issues with mousemove. too short
-// timeouts will interfere with mouse movement
-// detection
-jQuery(document).ready(function() {
-	setInterval(function(){
-		GENTICS.Utils.Position.update();
-	}, 500);
-});
-
-// listen to the mousemove event and update positions
-jQuery('html').mousemove(function (e) {
-	GENTICS.Utils.Position.Mouse.x = e.pageX;
-	GENTICS.Utils.Position.Mouse.y = e.pageY;
-});
+})(window);

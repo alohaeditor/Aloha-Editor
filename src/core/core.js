@@ -23,12 +23,14 @@
 	 * @class Aloha The Aloha base object, which contains all the core functionality
 	 * @singleton
 	 */
-	//Aloha = function () {};
-
 	Aloha = jQuery.extend(Aloha,{
 
-		// provide aloha version, is automatically set during build process
-		version: '##ALOHAVERSION##',
+		/**
+		 * The Aloha Editor Version we are using
+		 * It should be set by us and updated for the particular branch
+		 * @property
+		 */
+		version: '0.10.0',
 
 		/**
 		 * Array of editables that are managed by Aloha

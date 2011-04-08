@@ -70,7 +70,10 @@
 			"jsOptions": {
 				"browser": true,
 				"laxbreak": true,
-				"boss": true
+				"boss": true,
+				"undef": true,
+				"onevar": true,
+				"strict": true
 			}
 		},
 		"compress": {

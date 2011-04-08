@@ -5,11 +5,15 @@
  */
 // Start Closure
 (function(window, undefined) {
+	"use strict";
 	var
 		jQuery = window.jQuery, $ = jQuery,
 		alohaQuery = window.alohaQuery,
 		GENTICS = window.GENTICS,
-		Aloha = window.Aloha;
+		Aloha = window.Aloha,
+		Class = window.Class,
+		console = window.console,
+		XMLSerializer = window.XMLSerializer;
 
 	/**
 	 * jQuery between Extension
@@ -21,9 +25,13 @@
 	 * @param offset character offset from the start where the content should be inserted
 	 */
 	jQuery.fn.between = function(content, offset) {
+		var
+			offSize,
+			fullText;
+
 		if (this[0].nodeType !== 3) {
 			// we are not in a text node, just insert the element at the corresponding position
-			var offSize = this.children().size();
+			offSize = this.children().size();
 			if (offset > offSize) {
 				offset = offSize;
 			}
@@ -39,44 +47,12 @@
 			} else if (offset >= this[0].length) {
 				this.after(content);
 			} else {
-				var fullText = this[0].data;
+				fullText = this[0].data;
 				this[0].data = fullText.substring(0, offset);
 				this.after(fullText.substring(offset, fullText.length));
 				this.after(content);
 			}
 		}
-	};
-	/**
-	 * jQuery removeCss Extension
-	 *
-	 * removes one or more style attributes completely. If the style attribute would be empty,
-	 * it will be removed
-	 *
-	 * @param cssName CSS style names, devided by ;
-	 */
-
-	jQuery.fn.removeCss = function( cssName ) {
-		return jQuery(this).each(function(){
-			// Prepare
-			var
-				$el = jQuery(this),
-				oldstyle = $el.attr('style'),
-				style = jQuery.grep(
-					oldstyle.split(';'),
-					function(curStyleAttr) {
-						if (curStyleAttrName[0]) {
-							if ( curStyleAttrName[0].toUpperCase().trim().indexOf(cssName.toUpperCase()) == -1) {
-								return curStyleAttr;
-							}
-						}
-				}).join(';').trim();
-
-			// Remove
-			$el.removeAttr('style');
-			if (style.trim()) {
-				$el.attr('style', style);
-			}
-		});
 	};
 
 	/**
@@ -229,7 +205,10 @@
 	 */
 	$.fn.createPromiseEvent = $.fn.createPromiseEvent || function(eventName){
 		// Prepare
-		var $this = $(this);
+		var
+			$this = $(this),
+			events,
+			boundHandlers;
 
 		// Check
 		if ( typeof $this.data('defer-'+eventName+'-resolved') !== 'undefined' ) {
@@ -239,7 +218,7 @@
 		$this.data('defer-'+eventName+'-resolved',false);
 
 		// Handle
-		var events = $.fn.createPromiseEvent.events = $.fn.createPromiseEvent.events || {
+		events = $.fn.createPromiseEvent.events = $.fn.createPromiseEvent.events || {
 			// Bind the event
 			bind: function(callback){
 				var $this = $(this);
@@ -310,7 +289,7 @@
 		};
 
 		// Fetch already bound events
-		var boundHandlers = [];
+		boundHandlers = [];
 		$.each(
 			($this.data('events') || {})[eventName] || [],
 			function(i,event){
@@ -384,5 +363,22 @@
 			})(this[0]);
 			return jQuery(ret);
 	};
+
+// set interval to update the scroll position
+// NOTE high timeout of 500ms is required here
+// to prevent issues with mousemove. too short
+// timeouts will interfere with mouse movement
+// detection
+jQuery(document).ready(function() {
+	setInterval(function(){
+		GENTICS.Utils.Position.update();
+	}, 500);
+});
+
+// listen to the mousemove event and update positions
+jQuery('html').mousemove(function (e) {
+	GENTICS.Utils.Position.Mouse.x = e.pageX;
+	GENTICS.Utils.Position.Mouse.y = e.pageY;
+});
 
 })(window);

@@ -3,6 +3,15 @@
  * Author & Copyright (c) 2010 Gentics Software GmbH, aloha@gentics.com
  * Licensed unter the terms of http://www.aloha-editor.com/license.html
  */
+// Start Closure
+(function(window, undefined) {
+	"use strict";
+	var
+		jQuery = window.alohaQuery, $ = jQuery,
+		GENTICS = window.GENTICS,
+		Class = window.Class,
+		console = window.console;
+
 /**
  * Takes over all properties from the 'properties' object to the target object.
  * If a property in 'target' with the same name as a property in 'properties' is already defined it is overridden.
@@ -47,3 +56,5 @@ GENTICS.Utils.guid = function () {
 	var S4 = GENTICS.Utils.uniqeString4;
 	return (S4()+S4()+'-'+S4()+'-'+S4()+'-'+S4()+'-'+S4()+S4()+S4());
 };
+
+})(window);

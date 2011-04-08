@@ -423,7 +423,7 @@ Ext.ux.MultiSplitButton = Ext.extend(Ext.Component, {
 		.click(function () {
 			me.togglePanel();
 		});
-    },
+  },
 
 	/**
 	 * callback if a button has been clicked
@@ -431,7 +431,7 @@ Ext.ux.MultiSplitButton = Ext.extend(Ext.Component, {
 	 * @return void
 	 * @hide
 	 */
-    onClick: function(event) {
+  onClick: function(event) {
 		// check if the element has a gtxmultisplititem attribute assigned
 		if (!event.target.attributes.gtxmultisplititem) {
 			return;
@@ -448,7 +448,7 @@ Ext.ux.MultiSplitButton = Ext.extend(Ext.Component, {
 
 		// invoke the items function
 		this.items[event.target.attributes.gtxmultisplititem.value].click();
-    },
+  },
 
 	/**
 	 * set the active item specified by its name

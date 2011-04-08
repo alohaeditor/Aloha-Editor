@@ -3,6 +3,15 @@
  * Author & Copyright (c) 2010 Gentics Software GmbH, aloha@gentics.com
  * Licensed unter the terms of http://www.aloha-editor.com/license.html
  */
+// Start Closure
+(function(window, undefined) {
+	"use strict";
+	var
+		jQuery = window.alohaQuery, $ = jQuery,
+		GENTICS = window.GENTICS,
+		Class = window.Class,
+		console = window.console;
+
 /**
  * @namespace GENTICS.Utils
  * @class RangeObject
@@ -140,8 +149,11 @@ GENTICS.Utils.RangeObject = Class.extend({
 	 * @method
 	 */
 	getContainerParents: function (limit, fromEnd) {
-		var container = fromEnd ? this.endContainer : this.startContainer,
-			parentStore = fromEnd ? this.endParents : this.startParents;
+		var
+			container = fromEnd ? this.endContainer : this.startContainer,
+			parentStore = fromEnd ? this.endParents : this.startParents,
+			parents, limitIndex,
+			i;
 
 		if (!container) {
 			return false;
@@ -152,21 +164,19 @@ GENTICS.Utils.RangeObject = Class.extend({
 		}
 
 		if (!parentStore[limit.get(0)]) {
-			var parents;
-
 			// for text nodes, get the parents
 			if (container.nodeType == 3) {
 				parents = jQuery(container).parents();
 			} else {
 				parents = jQuery(container).parents();
-				for (var i = parents.length; i > 0; --i) {
+				for (i = parents.length; i > 0; --i) {
 					parents[i] = parents[i - 1];
 				}
 				parents[0] = container;
 			}
 
 			// now slice this array
-			var limitIndex = parents.index(limit);
+			limitIndex = parents.index(limit);
 
 			if (limitIndex >= 0) {
 				parents = parents.slice(0, limitIndex);
@@ -952,3 +962,5 @@ GENTICS.Utils.RangeTree = Class.extend({
 	 */
 	children: []
 });
+
+})(window);

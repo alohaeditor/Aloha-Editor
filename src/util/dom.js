@@ -3,6 +3,15 @@
  * Author & Copyright (c) 2010 Gentics Software GmbH, aloha@gentics.com
  * Licensed unter the terms of http://www.aloha-editor.com/license.html
  */
+// Start Closure
+(function(window, undefined) {
+	"use strict";
+	var
+		jQuery = window.alohaQuery, $ = jQuery,
+		GENTICS = window.GENTICS,
+		Class = window.Class,
+		console = window.console;
+
 /**
  * @namespace GENTICS.Utils
  * @class Dom provides methods to get information about the DOM and to manipulate it
@@ -1273,3 +1282,5 @@ GENTICS.Utils.Dom = Class.extend({
  * @hide
  */
 GENTICS.Utils.Dom = new GENTICS.Utils.Dom();
+
+})(window);
