@@ -1,39 +1,26 @@
 /*!
-*   This file is part of Aloha Editor
-*   Author & Copyright (c) 2010 Gentics Software GmbH, aloha@gentics.com
-*   Licensed unter the terms of http://www.aloha-editor.com/license.html
-*//*
-*	Aloha Editor is free software: you can redistribute it and/or modify
-*   it under the terms of the GNU Affero General Public License as published by
-*   the Free Software Foundation, either version 3 of the License, or
-*   (at your option) any later version.*
-*
-*   Aloha Editor is distributed in the hope that it will be useful,
-*   but WITHOUT ANY WARRANTY; without even the implied warranty of
-*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*   GNU Affero General Public License for more details.
-*
-*   You should have received a copy of the GNU Affero General Public License
-*   along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ * This file is part of Aloha Editor
+ * Author & Copyright (c) 2010 Gentics Software GmbH, aloha@gentics.com
+ * Licensed unter the terms of http://www.aloha-editor.com/license.html
+ */
 (function(window, undefined) {
 	var
 		jQuery = window.alohaQuery, $ = jQuery,
 		GENTICS = window.GENTICS,
-		Aloha = GENTICS.Aloha;
+		Aloha = window.Aloha;
 
 /**
  * Message Object
- * @namespace GENTICS.Aloha
+ * @namespace Aloha
  * @class Message
  * @constructor
  * @param {Object} data object which contains the parts of the message
  *		title: the title
  *		text: the message text to be displayed
- *		type: one of GENTICS.Aloha.Message.Type
+ *		type: one of Aloha.Message.Type
  *		callback: callback function, which will be triggered after the message was confirmed, closed or accepted
  */
-GENTICS.Aloha.Message = Class.extend({
+Aloha.Message = Class.extend({
 	constructor: function (data) {
 		this.title = data.title;
 		this.text = data.text;
@@ -57,7 +44,7 @@ GENTICS.Aloha.Message = Class.extend({
  * Message types enum. Contains all allowed types of messages
  * @property
  */
-GENTICS.Aloha.Message.Type = {
+Aloha.Message.Type = {
 	// reserved for messages
 	//	SUCCESS : 'success',
 	//	INFO : 'info',
@@ -65,14 +52,14 @@ GENTICS.Aloha.Message.Type = {
 	//	CRITICAL : 'critical',
 	CONFIRM : 'confirm', // confirm dialog, like js confirm()
 	ALERT : 'alert', // alert dialog like js alert()
-	WAIT : 'wait' // wait dialog with loading bar. has to be hidden via GENTICS.Aloha.hideMessage()
+	WAIT : 'wait' // wait dialog with loading bar. has to be hidden via Aloha.hideMessage()
 };
 
 /**
  * This is the message line
  * @hide
  */
-GENTICS.Aloha.MessageLine = Class.extend({
+Aloha.MessageLine = Class.extend({
 	messages: [],
 
 	/**
@@ -102,6 +89,6 @@ GENTICS.Aloha.MessageLine = Class.extend({
  * Message Line Object
  * @hide
  */
-GENTICS.Aloha.MessageLine = new GENTICS.Aloha.MessageLine();
+Aloha.MessageLine = new Aloha.MessageLine();
 
 })(window);

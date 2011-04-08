@@ -1,31 +1,18 @@
 /*!
-*   This file is part of Aloha Editor
-*   Author & Copyright (c) 2010 Gentics Software GmbH, aloha@gentics.com
-*   Licensed unter the terms of http://www.aloha-editor.com/license.html
-*//*
-*	Aloha Editor is free software: you can redistribute it and/or modify
-*   it under the terms of the GNU Affero General Public License as published by
-*   the Free Software Foundation, either version 3 of the License, or
-*   (at your option) any later version.*
-*
-*   Aloha Editor is distributed in the hope that it will be useful,
-*   but WITHOUT ANY WARRANTY; without even the implied warranty of
-*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*   GNU Affero General Public License for more details.
-*
-*   You should have received a copy of the GNU Affero General Public License
-*   along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ * This file is part of Aloha Editor
+ * Author & Copyright (c) 2010 Gentics Software GmbH, aloha@gentics.com
+ * Licensed unter the terms of http://www.aloha-editor.com/license.html
+ */
 (function(window, undefined) {
 	var
 		jQuery = window.alohaQuery, $ = jQuery,
 		GENTICS = window.GENTICS,
-		Aloha = GENTICS.Aloha;
+		Aloha = window.Aloha;
 
 /**
  * Abstract Sidebar
  */
-GENTICS.Aloha.Sidebar = Class.extend({
+Aloha.Sidebar = Class.extend({
 	/**
 	 * Add a panel to this sidebar
 	 * @param panel panel to add to this sidebar
@@ -64,14 +51,14 @@ GENTICS.Aloha.Sidebar = Class.extend({
 /**
  * Right Sidebar
  */
-// GENTICS.Aloha.SidebarRight = function () {};
-GENTICS.Aloha.SidebarRight = new GENTICS.Aloha.Sidebar();
+// Aloha.SidebarRight = function () {};
+Aloha.SidebarRight = new Aloha.Sidebar();
 
 /**
  * Left Sidebar
  */
-// GENTICS.Aloha.SidebarLeft = function () {};
-GENTICS.Aloha.SidebarLeft = new GENTICS.Aloha.Sidebar();
+// Aloha.SidebarLeft = function () {};
+Aloha.SidebarLeft = new Aloha.Sidebar();
 
 
 //################### Aloha Sidebar Panels ######################
@@ -79,7 +66,7 @@ GENTICS.Aloha.SidebarLeft = new GENTICS.Aloha.Sidebar();
 /**
  * Abstract Sidebar Panel
  */
-GENTICS.Aloha.Sidebar.Panel = Class.extend({
+Aloha.Sidebar.Panel = Class.extend({
 	/**
 	 * Render this panel
 	 * @return HTML Code of the rendered panel

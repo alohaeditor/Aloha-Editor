@@ -4,12 +4,12 @@ window.alohaQuery = window.jQuery.sub();
 // Ensure Namespace
 window.GENTICS = window.GENTICS || {};
 window.GENTICS.Utils = window.GENTICS.Utils || {};
-window.GENTICS.Aloha = window.GENTICS.Aloha || {};
-window.GENTICS.Aloha.settings = window.GENTICS.Aloha.settings || {};
-window.GENTICS.Aloha.ui = window.GENTICS.Aloha.ui || {};
+window.Aloha = window.Aloha || {};
+window.Aloha.settings = window.Aloha.settings || {};
+window.Aloha.ui = window.Aloha.ui || {};
 window.Aloha_loaded_plugins = window.Aloha_loaded_plugins || [];
-window.GENTICS_Aloha_pluginDir = window.GENTICS_Aloha_pluginDir || false;
-window.GENTICS_Aloha_base = window.GENTICS_Aloha_base || false;
+window.Aloha_pluginDir = window.Aloha_pluginDir || false;
+window.Aloha_base = window.Aloha_base || false;
 
 /* This is auto generated on build-dev-include build. Templates at /build/deps/includejs* */
 (function(window, undefined) {
@@ -24,9 +24,6 @@ window.GENTICS_Aloha_base = window.GENTICS_Aloha_base || false;
 	// Prepare Plugin Loading
 	window.Aloha_loaded_plugins = window.Aloha_loaded_plugins||[];
 	window.Aloha_loaded_plugins['format'] = true;
-	window.Aloha_loaded_plugins['link'] = true;
-	window.Aloha_loaded_plugins['linkchecker'] = true;
-	window.Aloha_loaded_plugins['table'] = true;
 	includes.push('util/base.js');
 	includes.push('dep/ext-3.2.1/adapter/jquery/ext-jquery-adapter.js');
 	includes.push('dep/ext-3.2.1/ext-all.js');
@@ -46,7 +43,6 @@ window.GENTICS_Aloha_base = window.GENTICS_Aloha_base || false;
 	includes.push('core/ui-attributefield.js');
 	includes.push('core/ui-browser.js');
 	includes.push('core/editable.js');
-	includes.push('core/event.js');
 	includes.push('core/floatingmenu.js');
 	includes.push('core/ierange-m2.js');
 	includes.push('core/log.js');
@@ -59,9 +55,6 @@ window.GENTICS_Aloha_base = window.GENTICS_Aloha_base || false;
 	includes.push('core/repository.js');
 	includes.push('core/repositoryobjects.js');
 	includes.push('plugin/format/src/format.js');
-	includes.push('plugin/link/src/link.js');
-	includes.push('plugin/linkchecker/src/linkchecker.js');
-	includes.push('plugin/table/src/table.js');
 
 	// Insert Scripts
 	var value, url, scriptEl, appendEl = document.head;

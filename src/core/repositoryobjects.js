@@ -1,31 +1,18 @@
 /*!
-*   This file is part of Aloha Editor
-*   Author & Copyright (c) 2010 Gentics Software GmbH, aloha@gentics.com
-*   Licensed unter the terms of http://www.aloha-editor.com/license.html
-*//*
-*	Aloha Editor is free software: you can redistribute it and/or modify
-*   it under the terms of the GNU Affero General Public License as published by
-*   the Free Software Foundation, either version 3 of the License, or
-*   (at your option) any later version.*
-*
-*   Aloha Editor is distributed in the hope that it will be useful,
-*   but WITHOUT ANY WARRANTY; without even the implied warranty of
-*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*   GNU Affero General Public License for more details.
-*
-*   You should have received a copy of the GNU Affero General Public License
-*   along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ * This file is part of Aloha Editor
+ * Author & Copyright (c) 2010 Gentics Software GmbH, aloha@gentics.com
+ * Licensed unter the terms of http://www.aloha-editor.com/license.html
+ */
 (function(window, undefined) {
 	var
 		jQuery = window.alohaQuery, $ = jQuery,
 		GENTICS = window.GENTICS,
-		Aloha = GENTICS.Aloha;
+		Aloha = window.Aloha;
 
-GENTICS.Aloha.Repository.Object = function() {};
+Aloha.Repository.Object = function() {};
 
 /**
- * @namespace GENTICS.Aloha.Repository
+ * @namespace Aloha.Repository
  * @class Document
  * @constructor
  *
@@ -34,7 +21,7 @@ GENTICS.Aloha.Repository.Object = function() {};
  * Example:
  *
 <pre><code>
- var item = new GENTICS.Aloha.Repository.Document({
+ var item = new Aloha.Repository.Document({
 	id: 1,
 	repositoryId: 'myrepository',
 	name: 'Aloha Editor - The HTML5 Editor',
@@ -63,7 +50,7 @@ GENTICS.Aloha.Repository.Object = function() {};
  * </ul></div>
  *
  */
-GENTICS.Aloha.Repository.Document = function(properties) {
+Aloha.Repository.Document = function(properties) {
 
 	var p = properties;
 
@@ -74,7 +61,7 @@ GENTICS.Aloha.Repository.Document = function(properties) {
 		!p.name ||
 		!p.repositoryId
 	) {
-//		GENTICS.Aloha.Log.error(this, "No valid Aloha Object. Missing MUST property");
+//		Aloha.Log.error(this, "No valid Aloha Object. Missing MUST property");
 		return;
 	}
 
@@ -86,11 +73,11 @@ GENTICS.Aloha.Repository.Document = function(properties) {
 /**
  * Not implemented method to generate this JS API doc correctly.
  */
-//GENTICS.Aloha.Repository.Document.prototype.empty = function() {};
+//Aloha.Repository.Document.prototype.empty = function() {};
 
 
 /**
- * @namespace GENTICS.Aloha.Repository
+ * @namespace Aloha.Repository
  * @class Folder
  * @constructor
  * Abstract Folder suitable for most strucural Objects.<br /><br />
@@ -98,7 +85,7 @@ GENTICS.Aloha.Repository.Document = function(properties) {
  * Example:
  *
 <pre><code>
- var item = new GENTICS.Aloha.Repository.Folder({
+ var item = new Aloha.Repository.Folder({
 	id: 2,
 	repositoryId: 'myrepository',
 	name: 'images',
@@ -121,7 +108,7 @@ GENTICS.Aloha.Repository.Document = function(properties) {
  * </ul></div>
  *
  */
-GENTICS.Aloha.Repository.Folder = function(properties) {
+Aloha.Repository.Folder = function(properties) {
 
 	var p = properties;
 
@@ -132,7 +119,7 @@ GENTICS.Aloha.Repository.Folder = function(properties) {
 		!p.name ||
 		!p.repositoryId
 	) {
-//		GENTICS.Aloha.Log.error(this, "No valid Aloha Object. Missing MUST property");
+//		Aloha.Log.error(this, "No valid Aloha Object. Missing MUST property");
 		return;
 	}
 
@@ -144,6 +131,6 @@ GENTICS.Aloha.Repository.Folder = function(properties) {
 /**
  * Not implemented method to generate this JS API doc.
  */
-//GENTICS.Aloha.Repository.Document.prototype.empty = function() {};
+//Aloha.Repository.Document.prototype.empty = function() {};
 
 })(window);

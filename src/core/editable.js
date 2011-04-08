@@ -1,37 +1,24 @@
 /*!
-*   This file is part of Aloha Editor
-*   Author & Copyright (c) 2010 Gentics Software GmbH, aloha@gentics.com
-*   Licensed unter the terms of http://www.aloha-editor.com/license.html
-*//*
-*	Aloha Editor is free software: you can redistribute it and/or modify
-*   it under the terms of the GNU Affero General Public License as published by
-*   the Free Software Foundation, either version 3 of the License, or
-*   (at your option) any later version.*
-*
-*   Aloha Editor is distributed in the hope that it will be useful,
-*   but WITHOUT ANY WARRANTY; without even the implied warranty of
-*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*   GNU Affero General Public License for more details.
-*
-*   You should have received a copy of the GNU Affero General Public License
-*   along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ * This file is part of Aloha Editor
+ * Author & Copyright (c) 2010 Gentics Software GmbH, aloha@gentics.com
+ * Licensed unter the terms of http://www.aloha-editor.com/license.html
+ */
 
 (function(window, undefined) {
 	var
 		jQuery = window.alohaQuery, $ = jQuery,
 		GENTICS = window.GENTICS,
-		Aloha = GENTICS.Aloha;
+		Aloha = window.Aloha;
 
 /**
  * Editable object
- * @namespace GENTICS.Aloha
+ * @namespace Aloha
  * @class Editable
  * @method
  * @constructor
  * @param {Object} obj jQuery object reference to the object
  */
-GENTICS.Aloha.Editable = Class.extend({
+Aloha.Editable = Class.extend({
 	constructor: function(obj) {
 		var me = this;
 
@@ -97,7 +84,7 @@ GENTICS.Aloha.Editable = Class.extend({
 		this.placeholderClass = 'aloha-placeholder';
 
 		// register the editable with Aloha
-		GENTICS.Aloha.registerEditable(this);
+		Aloha.registerEditable(this);
 
 		// try to initialize the editable
 		this.init();
@@ -112,21 +99,21 @@ GENTICS.Aloha.Editable = Class.extend({
 		var me = this;
 
 		// smartContentChange settings
-		if (GENTICS.Aloha.settings && GENTICS.Aloha.settings.smartContentChange) {
-			if (GENTICS.Aloha.settings.smartContentChange.delimiters) {
-				this.sccDelimiters = GENTICS.Aloha.settings.smartContentChange.delimiters;
+		if (Aloha.settings && Aloha.settings.smartContentChange) {
+			if (Aloha.settings.smartContentChange.delimiters) {
+				this.sccDelimiters = Aloha.settings.smartContentChange.delimiters;
 			} else {
 				this.sccDelimiters = this.sccDelimiters;
 			}
 
-			if (GENTICS.Aloha.settings.smartContentChange.idle) {
-				this.sccIdle = GENTICS.Aloha.settings.smartContentChange.idle;
+			if (Aloha.settings.smartContentChange.idle) {
+				this.sccIdle = Aloha.settings.smartContentChange.idle;
 			} else {
 				this.sccIdle = this.sccIdle;
 			}
 
-			if (GENTICS.Aloha.settings.smartContentChange.delay) {
-				this.sccDelay = GENTICS.Aloha.settings.smartContentChange.delay;
+			if (Aloha.settings.smartContentChange.delay) {
+				this.sccDelay = Aloha.settings.smartContentChange.delay;
 			} else {
 				this.sccDelay = this.sccDelay;
 			}
@@ -134,82 +121,75 @@ GENTICS.Aloha.Editable = Class.extend({
 
 		// check if Aloha can handle the obj as Editable
 		if ( !this.check( this.obj ) ) {
-			//GENTICS.Aloha.log('warn', this, 'Aloha cannot handle {' + this.obj[0].nodeName + '}');
+			//Aloha.log('warn', this, 'Aloha cannot handle {' + this.obj[0].nodeName + '}');
 			this.destroy();
 			return;
 		}
 
 		// only initialize the editable when Aloha is ready
-		if (GENTICS.Aloha.ready) {
-
+		Aloha.bind('aloha',function(){
 			// initialize the object
-			this.obj.addClass('GENTICS_editable')
+			me.obj.addClass('aloha-editable')
 				.contentEditable(true);
 
 			// add focus event to the object to activate
-			this.obj.mousedown(function(e) {
+			me.obj.mousedown(function(e) {
 				return me.activate(e);
 			});
 
-			this.obj.focus(function(e) {
+			me.obj.focus(function(e) {
 				return me.activate(e);
 			});
 
 			// by catching the keydown we can prevent the browser from doing its own thing
 			// if it does not handle the keyStroke it returns true and therefore all other
 			// events (incl. browser's) continue
-			this.obj.keydown( function(event) {
-				this.keyCode = event.which;
-				return GENTICS.Aloha.Markup.preProcessKeyStrokes(event);
+			me.obj.keydown(function(event) {
+				me.keyCode = event.which;
+				return Aloha.Markup.preProcessKeyStrokes(event);
 			});
 
 			// handle keypress
-			this.obj.keypress( function(event) {
+			me.obj.keypress( function(event) {
 				// triggers a smartContentChange to get the right charcode
 				// To test try http://www.w3.org/2002/09/tests/keys.html
-				GENTICS.Aloha.activeEditable.smartContentChange(event);
+				Aloha.activeEditable.smartContentChange(event);
 			});
 
 			// handle shortcut keys
-			this.obj.keyup( function(event) {
+			me.obj.keyup(function(event) {
 				if (event.keyCode === 27 ) {
-					GENTICS.Aloha.deactivateEditable();
+					Aloha.deactivateEditable();
 					return false;
 				}
 			});
 
 			// register the onSelectionChange Event with the Editable field
-			this.obj.GENTICS_contentEditableSelectionChange(function (event) {
-				GENTICS.Aloha.Selection.onChange(me.obj, event);
+			me.obj.contentEditableSelectionChange(function (event) {
+				Aloha.Selection.onChange(me.obj, event);
 				return me.obj;
 			});
 
 			// throw a new event when the editable has been created
 			/**
 			 * @event editableCreated fires after a new editable has been created, eg. via $('#editme').aloha()
-			 * The event is triggered in Aloha's global scope GENTICS.Aloha
+			 * The event is triggered in Aloha's global scope Aloha
 			 * @param {Event} e the event object
 			 * @param {Array} a an array which contains a reference to the currently created editable on its first position
 			 */
-			GENTICS.Aloha.EventRegistry.trigger(
-				new GENTICS.Aloha.Event(
-					'editableCreated',
-					GENTICS.Aloha,
-					[ this ]
-				)
-			);
+			Aloha.trigger('aloha-editable-created',[this]);
 
 			// mark the editable as unmodified
-			this.setUnmodified();
+			me.setUnmodified();
 
-			this.snapshotContent = this.getContents();
+			me.snapshotContent = me.getContents();
 
 			// init placeholder
-			this.initPlaceholder();
+			me.initPlaceholder();
 
 			// now the editable is ready
-			this.ready = true;
-		}
+			me.ready = true;
+		});
 	},
 
 	/**
@@ -274,7 +254,7 @@ GENTICS.Aloha.Editable = Class.extend({
 
 			case 'textarea':
 				// Create a div alongside the textarea
-				var div = jQuery('<div id="'+this.getId()+'-aloha" class="GENTICS_textarea"/>').insertAfter(obj);
+				var div = jQuery('<div id="'+this.getId()+'-aloha" class="aloha-textarea"/>').insertAfter(obj);
 				// Resize the div to the textarea
 				div.height(obj.height())
 					.width(obj.width())
@@ -312,7 +292,7 @@ GENTICS.Aloha.Editable = Class.extend({
 	 * @return void
 	 */
 	initPlaceholder: function() {
-		if (this.isEmpty() && GENTICS.Aloha.settings.placeholder) {
+		if (this.isEmpty() && Aloha.settings.placeholder) {
 			this.addPlaceholder();
 		}
 	},
@@ -354,7 +334,7 @@ GENTICS.Aloha.Editable = Class.extend({
 
 		jQuery(obj).append(el.addClass(this.placeholderClass));
 		jQuery.each(
-			GENTICS.Aloha.settings.placeholder,
+			Aloha.settings.placeholder,
 			function (selector, selectorConfig) {
 				if (obj.is(selector)) {
 					el.html(selectorConfig);
@@ -383,7 +363,7 @@ GENTICS.Aloha.Editable = Class.extend({
 
 		// set the cursor // remove placeholder
 		if (setCursor === true) {
-			var range = GENTICS.Aloha.Selection.getRangeObject();
+			var range = Aloha.Selection.getRangeObject();
 			if ( !range.select ) {return;}
 			range.startContainer = range.endContainer = obj.get(0);
 			range.startOffset = range.endOffset = 0;
@@ -404,12 +384,12 @@ GENTICS.Aloha.Editable = Class.extend({
 	destroy: function() {
 
 		// leave the element just to get sure
-		if (this == GENTICS.Aloha.getActiveEditable()) {
+		if (this == Aloha.getActiveEditable()) {
 			this.blur();
 
 			// also hide the floating menu if the current editable was active
-			GENTICS.Aloha.FloatingMenu.obj.hide();
-			GENTICS.Aloha.FloatingMenu.shadow.hide();
+			Aloha.FloatingMenu.obj.hide();
+			Aloha.FloatingMenu.shadow.hide();
 		}
 
 		// original Object
@@ -443,7 +423,7 @@ GENTICS.Aloha.Editable = Class.extend({
 		this.removePlaceholder(this.obj);
 
 		// initialize the object
-		this.obj.removeClass('GENTICS_editable')
+		this.obj.removeClass('aloha-editable')
 		// Disable contentEditable
 					.contentEditable(false)
 
@@ -453,8 +433,8 @@ GENTICS.Aloha.Editable = Class.extend({
 
 		/* TODO remove this event, it should implemented as bind and unbind
 		// register the onSelectionChange Event with the Editable field
-		this.obj.GENTICS_contentEditableSelectionChange(function (event) {
-			GENTICS.Aloha.Selection.onChange(me.obj, event);
+		this.obj.contentEditableSelectionChange(function (event) {
+			Aloha.Selection.onChange(me.obj, event);
 			return me.obj;
 		});
 		*/
@@ -462,20 +442,14 @@ GENTICS.Aloha.Editable = Class.extend({
 		// throw a new event when the editable has been created
 		/**
 		 * @event editableCreated fires after a new editable has been destroyes, eg. via $('#editme').mahalo()
-		 * The event is triggered in Aloha's global scope GENTICS.Aloha
+		 * The event is triggered in Aloha's global scope Aloha
 		 * @param {Event} e the event object
 		 * @param {Array} a an array which contains a reference to the currently created editable on its first position
 		 */
-		GENTICS.Aloha.EventRegistry.trigger(
-			new GENTICS.Aloha.Event(
-				'editableDestroyed',
-				GENTICS.Aloha,
-				[ this ]
-			)
-		);
+		Aloha.trigger('aloha-editable-destroyed',[this]);
 
 		// finally register the editable with Aloha
-		GENTICS.Aloha.unregisterEditable(this);
+		Aloha.unregisterEditable(this);
 
 	},
 
@@ -500,10 +474,10 @@ GENTICS.Aloha.Editable = Class.extend({
 	/**
 	 * String representation of the object
 	 * @method
-	 * @return GENTICS.Aloha.Editable
+	 * @return Aloha.Editable
 	 */
 	toString: function() {
-		return 'GENTICS.Aloha.Editable';
+		return 'Aloha.Editable';
 	},
 
 	/**
@@ -542,7 +516,7 @@ GENTICS.Aloha.Editable = Class.extend({
 		}
 
 		// get active Editable before setting the new one.
-		var oldActive = GENTICS.Aloha.getActiveEditable();
+		var oldActive = Aloha.getActiveEditable();
 
 		// handle special case in which a nested editable is focused by a click
 		// in this case the "focus" event would be triggered on the parent element
@@ -560,7 +534,7 @@ GENTICS.Aloha.Editable = Class.extend({
 
 
 		// set active Editable in core
-		GENTICS.Aloha.activateEditable( this );
+		Aloha.activateEditable( this );
 
 		// ie specific: trigger one mouseup click to update the range-object
 		if (document.selection && document.selection.createRange) {
@@ -576,18 +550,16 @@ GENTICS.Aloha.Editable = Class.extend({
 
 		/**
 		 * @event editableActivated fires after the editable has been activated by clicking on it.
-		 * This event is triggered in Aloha's global scope GENTICS.Aloha
+		 * This event is triggered in Aloha's global scope Aloha
 		 * @param {Event} e the event object
 		 * @param {Array} a an array which contains a reference to last active editable on its first position, as well
 		 * as the currently active editable on it's second position
 		 */
 		// trigger a 'general' editableActivated event
-		GENTICS.Aloha.EventRegistry.trigger(
-			new GENTICS.Aloha.Event('editableActivated', GENTICS.Aloha, {
-				'oldActive' : oldActive,
-				'editable' : this
-			})
-		);
+		Aloha.trigger('aloha-editable-activated',{
+			'oldActive' : oldActive,
+			'editable' : this
+		});
 
 		/**
 		 * @event editableActivated fires after the editable has been activated by clicking on it.
@@ -596,11 +568,9 @@ GENTICS.Aloha.Editable = Class.extend({
 		 * @param {Array} a an array which contains a reference to last active editable on its first position
 		 */
 		// and trigger our *finished* event
-		GENTICS.Aloha.EventRegistry.trigger(
-			new GENTICS.Aloha.Event('editableActivated', this, {
-				'oldActive' : GENTICS.Aloha.getActiveEditable()
-			})
-		);
+		Aloha.trigger('aloha-editable-activated', {
+			'oldActive' : Aloha.getActiveEditable()
+		});
 	},
 
 	/**
@@ -622,30 +592,26 @@ GENTICS.Aloha.Editable = Class.extend({
 
 		/**
 		 * @event editableDeactivated fires after the editable has been activated by clicking on it.
-		 * This event is triggered in Aloha's global scope GENTICS.Aloha
+		 * This event is triggered in Aloha's global scope Aloha
 		 * @param {Event} e the event object
 		 * @param {Array} a an array which contains a reference to this editable
 		 */
 		// trigger a 'general' editableDeactivated event
-		GENTICS.Aloha.EventRegistry.trigger(
-			new GENTICS.Aloha.Event('editableDeactivated', GENTICS.Aloha, {
-				'editable' : this
-			})
-		);
+		Aloha.trigger('aloha-editable-deactivated',{
+			'editable' : this
+		});
 
 		/**
 		 * @event editableDeactivated fires after the editable has been activated by clicking on it.
 		 * This event is triggered in the Editable's scope
 		 * @param {Event} e the event object
 		 */
-		GENTICS.Aloha.EventRegistry.trigger(
-			new GENTICS.Aloha.Event('editableDeactivated', this)
-		);
+		Aloha.trigger('aloha-editable-deactivated');
 
 		/**
 		 * @event smartContentChanged
 		 */
-		GENTICS.Aloha.activeEditable.smartContentChange({type : 'blur'}, null);
+		Aloha.activeEditable.smartContentChange({type : 'blur'}, null);
 	},
 
 	/**
@@ -670,12 +636,12 @@ GENTICS.Aloha.Editable = Class.extend({
 		var clonedObj = this.obj.clone(false);
 
 		// do core cleanup
-		clonedObj.find('.GENTICS_cleanme').remove();
+		clonedObj.find('.aloha-cleanme').remove();
 
 		// remove placeholder
 		this.removePlaceholder(clonedObj);
 
-		GENTICS.Aloha.PluginRegistry.makeClean(clonedObj);
+		Aloha.PluginRegistry.makeClean(clonedObj);
 		return clonedObj.html();
 	},
 
@@ -730,20 +696,18 @@ GENTICS.Aloha.Editable = Class.extend({
 
 			this.sccTimerDelay = setTimeout(function() {
 
-				GENTICS.Aloha.EventRegistry.trigger(
-					new GENTICS.Aloha.Event('smartContentChanged', GENTICS.Aloha, {
-					'editable' : GENTICS.Aloha.activeEditable,
+				Aloha.trigger('aloha-smart-content-changed',{
+					'editable' : Aloha.activeEditable,
 					'keyIdentifier' : event.originalEvent.keyIdentifier,
 					'keyCode' : event.keyCode,
 					'char' : uniChar,
 					'triggerType' : 'keypress', // keypress, timer, blur, paste
 					'snapshotContent' : me.getSnapshotContent()
-					})
-				);
+				});
 
-				GENTICS.Aloha.Log.debug(this, 'smartContentChanged: event type keypress triggered');
+				Aloha.Log.debug(this, 'smartContentChanged: event type keypress triggered');
 /*
-				var r = GENTICS.Aloha.Selection.rangeObject;
+				var r = Aloha.Selection.rangeObject;
 				if (r.isCollapsed()
 					&& r.startContainer.nodeType == 3) {
 
@@ -780,52 +744,45 @@ GENTICS.Aloha.Editable = Class.extend({
 				// in the rare case idle time is lower then delay time
 				clearTimeout(this.sccTimerDelay);
 
-				GENTICS.Aloha.EventRegistry.trigger(
-					new GENTICS.Aloha.Event('smartContentChanged', GENTICS.Aloha, {
-					'editable' : GENTICS.Aloha.activeEditable,
+				Aloha.trigger('aloha-smart-content-changed',{
+					'editable' : Aloha.activeEditable,
 					'keyIdentifier' : null,
 					'keyCode' : null,
 					'char' : null,
 					'triggerType' : 'idle',
 					'snapshotContent' : me.getSnapshotContent()
-					})
-				);
+				});
 
-				GENTICS.Aloha.Log.debug(this, 'smartContentChanged: event type timer triggered');
+				Aloha.Log.debug(this, 'smartContentChanged: event type timer triggered');
 
 			},this.sccIdle);
 
 		}
 
 		else if (event && event.type === 'paste') {
-
-			GENTICS.Aloha.EventRegistry.trigger(
-				new GENTICS.Aloha.Event('smartContentChanged', GENTICS.Aloha, {
-				'editable' : GENTICS.Aloha.activeEditable,
+			Aloha.trigger('aloha-smart-content-changed',{
+				'editable' : Aloha.activeEditable,
 				'keyIdentifier' : null,
 				'keyCode' : null,
 				'char' : null,
 				'triggerType' : 'paste', // paste
 				'snapshotContent' : me.getSnapshotContent()
-				})
-			);
+			});
 
-			GENTICS.Aloha.Log.debug(this, 'smartContentChanged: event type paste triggered');
+			Aloha.Log.debug(this, 'smartContentChanged: event type paste triggered');
 		}
 
 		else if (event && event.type === 'blur') {
-			GENTICS.Aloha.EventRegistry.trigger(
-				new GENTICS.Aloha.Event('smartContentChanged', GENTICS.Aloha, {
-				'editable' : GENTICS.Aloha.activeEditable,
+			Aloha.trigger('aloha-smart-content-changed',{
+				'editable' : Aloha.activeEditable,
 				'keyIdentifier' : null,
 				'keyCode' : null,
 				'char' : null,
 				'triggerType' : 'blur',
 				'snapshotContent' : me.getSnapshotContent()
-				})
-			);
+			});
 
-			GENTICS.Aloha.Log.debug(this, 'smartContentChanged: event type blur triggered');
+			Aloha.Log.debug(this, 'smartContentChanged: event type blur triggered');
 		}
 
 	},

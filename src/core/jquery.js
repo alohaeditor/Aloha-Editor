@@ -1,29 +1,15 @@
 /*!
-*   This file is part of Aloha Editor
-*   Author & Copyright (c) 2010 Gentics Software GmbH, aloha@gentics.com
-*   Licensed unter the terms of http://www.aloha-editor.com/license.html
-*//*
-*	Aloha Editor is free software: you can redistribute it and/or modify
-*   it under the terms of the GNU Affero General Public License as published by
-*   the Free Software Foundation, either version 3 of the License, or
-*   (at your option) any later version.*
-*
-*   Aloha Editor is distributed in the hope that it will be useful,
-*   but WITHOUT ANY WARRANTY; without even the implied warranty of
-*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*   GNU Affero General Public License for more details.
-*
-*   You should have received a copy of the GNU Affero General Public License
-*   along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
+ * This file is part of Aloha Editor
+ * Author & Copyright (c) 2010 Gentics Software GmbH, aloha@gentics.com
+ * Licensed unter the terms of http://www.aloha-editor.com/license.html
+ */
 // Start Closure
 (function(window, undefined) {
 	var
 		jQuery = window.jQuery, $ = jQuery,
 		alohaQuery = window.alohaQuery,
 		GENTICS = window.GENTICS,
-		Aloha = GENTICS.Aloha;
+		Aloha = window.Aloha;
 
 	/**
 	 * jQuery between Extension
@@ -142,8 +128,9 @@
 			// Aloha Ready
 			$this.each(function() {
 				// create a new aloha editable object for each queried object
-				if ( !GENTICS.Aloha.isEditable(this) ) {
-					new GENTICS.Aloha.Editable($(this));
+				var $this = $(this);
+				if ( !Aloha.isEditable(this) ) {
+					new Aloha.Editable($this);
 				}
 			});
 		}
@@ -167,8 +154,8 @@
 	 */
 	$.fn.mahalo = function() {
 		return this.each(function() {
-			if (GENTICS.Aloha.isEditable(this)) {
-				GENTICS.Aloha.getEditableById($(this).attr('id')).destroy();
+			if (Aloha.isEditable(this)) {
+				Aloha.getEditableById($(this).attr('id')).destroy();
 			}
 		});
 	};
@@ -178,12 +165,12 @@
 	 * new Event which is triggered whenever a selection (length >= 0) is made in
 	 * an Aloha Editable element
 	 */
-	$.fn.GENTICS_contentEditableSelectionChange = function(callback) {
+	$.fn.contentEditableSelectionChange = function(callback) {
 		var that = this;
 
 		// update selection when keys are pressed
 		this.keyup(function(event){
-			var rangeObject = GENTICS.Aloha.Selection.getRangeObject();
+			var rangeObject = Aloha.Selection.getRangeObject();
 			callback(event);
 		});
 
@@ -198,11 +185,11 @@
 			that.selectionStarted = true;
 		});
 		$(document).mouseup(function(event) {
-			GENTICS.Aloha.Selection.eventOriginalTarget = that;
+			Aloha.Selection.eventOriginalTarget = that;
 			if (that.selectionStarted) {
 				callback(event);
 			}
-			GENTICS.Aloha.Selection.eventOriginalTarget = false;
+			Aloha.Selection.eventOriginalTarget = false;
 			that.selectionStarted = false;
 		});
 

@@ -1,34 +1,21 @@
 /*!
-*   This file is part of Aloha Editor
-*   Author & Copyright (c) 2010 Gentics Software GmbH, aloha@gentics.com
-*   Licensed unter the terms of http://www.aloha-editor.com/license.html
-*//*
-*	Aloha Editor is free software: you can redistribute it and/or modify
-*   it under the terms of the GNU Affero General Public License as published by
-*   the Free Software Foundation, either version 3 of the License, or
-*   (at your option) any later version.*
-*
-*   Aloha Editor is distributed in the hope that it will be useful,
-*   but WITHOUT ANY WARRANTY; without even the implied warranty of
-*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*   GNU Affero General Public License for more details.
-*
-*   You should have received a copy of the GNU Affero General Public License
-*   along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ * This file is part of Aloha Editor
+ * Author & Copyright (c) 2010 Gentics Software GmbH, aloha@gentics.com
+ * Licensed unter the terms of http://www.aloha-editor.com/license.html
+ */
 (function(window, undefined) {
 	var
 		jQuery = window.alohaQuery, $ = jQuery,
 		GENTICS = window.GENTICS,
-		Aloha = GENTICS.Aloha;
+		Aloha = window.Aloha;
 
 	/**
-	 * @namespace GENTICS.Aloha
+	 * @namespace Aloha
 	 * @class Selection
 	 * This singleton class always represents the current user selection
 	 * @singleton
 	 */
-	GENTICS.Aloha.Selection = Class.extend({
+	Aloha.Selection = Class.extend({
 		constructor: function(){
 			// Pseudo Range Clone being cleaned up for better HTML wrapping support
 			this.rangeObject = {};
@@ -147,7 +134,7 @@
 				this.updateSelectionTimeout = undefined;
 			}
 			this.updateSelectionTimeout = window.setTimeout(function () {
-					GENTICS.Aloha.Selection.updateSelection(event);
+					Aloha.Selection.updateSelection(event);
 			}, 5);
 		},
 
@@ -161,23 +148,17 @@
 		 */
 		updateSelection: function(event) {
 			// get the rangeObject
-			var rangeObject = this.rangeObject = new GENTICS.Aloha.Selection.SelectionRange(true);
+			var rangeObject = this.rangeObject = new Aloha.Selection.SelectionRange(true);
 
 			// find the CAC (Common Ancestor Container) and update the selection Tree
 			rangeObject.update();
 
 			// initially set the scope to 'continuoustext'
-			GENTICS.Aloha.FloatingMenu.setScope('GENTICS.Aloha.continuoustext');
+			Aloha.FloatingMenu.setScope('Aloha.continuoustext');
 
 			// throw the event that the selection has changed. Plugins now have the
 			// chance to react on the chancurrentElements[childCount].children.lengthged selection
-			GENTICS.Aloha.EventRegistry.trigger(
-				new GENTICS.Aloha.Event(
-					'selectionChanged',
-					GENTICS.Aloha,
-					[ rangeObject, event ]
-				)
-			);
+			Aloha.trigger('aloha-selection-changed', [ rangeObject, event ]);
 
 			return true;
 		},
@@ -200,7 +181,7 @@
 				return this.rangeObject.getSelectionTree();
 			}
 			if (!rangeObject.commonAncestorContainer) {
-				GENTICS.Aloha.Log.error(this, 'the rangeObject is missing the commonAncestorContainer');
+				Aloha.Log.error(this, 'the rangeObject is missing the commonAncestorContainer');
 				return false;
 			}
 
@@ -239,7 +220,7 @@
 				// check for collapsed selections between nodes
 				if (rangeObject.isCollapsed() && currentObject === rangeObject.startContainer && rangeObject.startOffset == index) {
 					// insert an extra selectiontree object for the collapsed selection here
-					currentElements[childCount] = new GENTICS.Aloha.Selection.SelectionTree();
+					currentElements[childCount] = new Aloha.Selection.SelectionTree();
 					currentElements[childCount].selection = 'collapsed';
 					currentElements[childCount].domobj = undefined;
 					that.inselection = false;
@@ -315,7 +296,7 @@
 				}
 
 				// create the current selection tree entry
-				currentElements[childCount] = new GENTICS.Aloha.Selection.SelectionTree();
+				currentElements[childCount] = new Aloha.Selection.SelectionTree();
 				currentElements[childCount].domobj = this;
 				currentElements[childCount].selection = selectionType;
 				if (selectionType == 'partial') {
@@ -363,7 +344,7 @@
 			if (rangeObject.isCollapsed()
 					&& currentObject === rangeObject.startContainer
 					&& rangeObject.startOffset == currentObject.childNodes.length) {
-				currentElements[childCount] = new GENTICS.Aloha.Selection.SelectionTree();
+				currentElements[childCount] = new Aloha.Selection.SelectionTree();
 				currentElements[childCount].selection = 'collapsed';
 				currentElements[childCount].domobj = undefined;
 			}
@@ -373,7 +354,7 @@
 
 		/**
 		 * Get the currently selected range
-		 * @return {GENTICS.Aloha.Selection.SelectionRange} currently selected range
+		 * @return {Aloha.Selection.SelectionRange} currently selected range
 		 * @method
 		 */
 		getRangeObject: function() {
@@ -396,7 +377,7 @@
 				that = this;
 			// check if a comparison method was passed as parameter ...
 			if (typeof tagComparator !== 'undefined' && typeof tagComparator !== 'function') {
-				GENTICS.Aloha.Log.error(this,'parameter tagComparator is not a function');
+				Aloha.Log.error(this,'parameter tagComparator is not a function');
 			}
 			// ... if not use this as standard tag comparison method
 			if (typeof tagComparator === 'undefined') {
@@ -411,14 +392,14 @@
 				parents.each(function() {
 					// the limit object was reached (normally the Editable Element)
 					if (this === limitObject) {
-						GENTICS.Aloha.Log.debug(that,'reached limit dom obj');
+						Aloha.Log.debug(that,'reached limit dom obj');
 						return false; // break() of jQuery .each(); THIS IS NOT THE FUNCTION RETURN VALUE
 					}
 					if (tagComparator(this, markupObject)) {
 						if (returnVal === false) {
 							returnVal = [];
 						}
-						GENTICS.Aloha.Log.debug(that,'reached object equal to markup');
+						Aloha.Log.debug(that,'reached object equal to markup');
 						i++;
 						returnVal[i] = this;
 						return true; // continue() of jQuery .each(); THIS IS NOT THE FUNCTION RETURN VALUE
@@ -438,11 +419,11 @@
 		 */
 		standardSectionsAndGroupingContentComparator: function(domobj, markupObject) {
 			if  (domobj.nodeType === 1) {
-				if (markupObject[0].tagName && GENTICS.Aloha.Selection.replacingElements[ domobj.tagName.toLowerCase() ] && GENTICS.Aloha.Selection.replacingElements[ domobj.tagName.toLowerCase() ].indexOf(markupObject[0].tagName.toLowerCase()) != -1) {
+				if (markupObject[0].tagName && Aloha.Selection.replacingElements[ domobj.tagName.toLowerCase() ] && Aloha.Selection.replacingElements[ domobj.tagName.toLowerCase() ].indexOf(markupObject[0].tagName.toLowerCase()) != -1) {
 					return true;
 				}
 			} else {
-				GENTICS.Aloha.Log.debug(this,'only element nodes (nodeType == 1) can be compared');
+				Aloha.Log.debug(this,'only element nodes (nodeType == 1) can be compared');
 			}
 			return false;
 		},
@@ -459,7 +440,7 @@
 			// only element nodes can be compared
 			if  (domobj.nodeType === 1) {
 				if (domobj.tagName.toLowerCase() != markupObject[0].tagName.toLowerCase()) {
-		//			GENTICS.Aloha.Log.debug(this, 'tag comparison for <' + domobj.tagName.toLowerCase() + '> and <' + markupObject[0].tagName.toLowerCase() + '> failed because tags are different');
+		//			Aloha.Log.debug(this, 'tag comparison for <' + domobj.tagName.toLowerCase() + '> and <' + markupObject[0].tagName.toLowerCase() + '> failed because tags are different');
 					return false;
 				}
 				if (!this.standardAttributesComparator(domobj, markupObject)) {
@@ -467,7 +448,7 @@
 				}
 				return true;//domobj.attributes.length
 			} else {
-				GENTICS.Aloha.Log.debug(this,'only element nodes (nodeType == 1) can be compared');
+				Aloha.Log.debug(this,'only element nodes (nodeType == 1) can be compared');
 			}
 			return false;
 		},
@@ -504,17 +485,17 @@
 			}
 
 			if (classes && !classes2 || classes2 && !classes) {
-				GENTICS.Aloha.Log.debug(this, 'tag comparison for <' + domobj.tagName.toLowerCase() + '> failed because one element has classes and the other has not');
+				Aloha.Log.debug(this, 'tag comparison for <' + domobj.tagName.toLowerCase() + '> failed because one element has classes and the other has not');
 				return false;
 			}
 			if (classes && classes2 && classes.length != classes.length) {
-				GENTICS.Aloha.Log.debug(this, 'tag comparison for <' + domobj.tagName.toLowerCase() + '> failed because of a different amount of classes');
+				Aloha.Log.debug(this, 'tag comparison for <' + domobj.tagName.toLowerCase() + '> failed because of a different amount of classes');
 				return false;
 			}
 			if (classes && classes2 && classes.length === classes2.length && classes.length !== 0) {
 				for (i = 0, classLength = classes.length; i < classLength; i++) {
 					if (!markupObject.hasClass(classes[ i ])) {
-						GENTICS.Aloha.Log.debug(this, 'tag comparison for <' + domobj.tagName.toLowerCase() + '> failed because of different classes');
+						Aloha.Log.debug(this, 'tag comparison for <' + domobj.tagName.toLowerCase() + '> failed because of different classes');
 						return false;
 					}
 				}
@@ -551,8 +532,8 @@
 				rangeObject = new this.SelectionRange(rangeObject);
 
 				// either select the active Editable as new commonAncestorContainer (CAC) or use the body
-				if (GENTICS.Aloha.activeEditable) {
-					newCAC= GENTICS.Aloha.activeEditable.obj.get(0);
+				if (Aloha.activeEditable) {
+					newCAC= Aloha.activeEditable.obj.get(0);
 				} else {
 					newCAC = jQuery('body');
 				}
@@ -566,14 +547,14 @@
 			// therefor the method can return false, if nothing is selected ( = rangeObject is collapsed)
 			else {
 				if (rangeObject.isCollapsed()) {
-					GENTICS.Aloha.Log.debug(this, 'early returning from applying markup because nothing is currently selected');
+					Aloha.Log.debug(this, 'early returning from applying markup because nothing is currently selected');
 					return false;
 				}
 			}
 
 			// is Start/End DOM Obj inside the markup to change
-			if (GENTICS.Aloha.activeEditable) {
-				limitObject = GENTICS.Aloha.activeEditable.obj[0];
+			if (Aloha.activeEditable) {
+				limitObject = Aloha.activeEditable.obj[0];
 			} else {
 				limitObject = jQuery('body');
 			}
@@ -593,7 +574,7 @@
 			// Alternative A: from markup to no-markup: markup will be removed in selection;
 			// reapplied from original markup start to selection start
 			if (!markupObject.isReplacingElement && (relevantMarkupObjectsAtSelectionStart && !relevantMarkupObjectsAtSelectionEnd)) {
-				GENTICS.Aloha.Log.info(this, 'markup 2 non-markup');
+				Aloha.Log.info(this, 'markup 2 non-markup');
 				this.prepareForRemoval(rangeObject.getSelectionTree(), markupObject, tagComparator);
 				jQuery(relevantMarkupObjectsAtSelectionStart).addClass('preparedForRemoval');
 				this.insertCroppedMarkups(relevantMarkupObjectsAtSelectionStart, rangeObject, false, tagComparator);
@@ -602,7 +583,7 @@
 			// Alternative B: from markup to markup:
 			// remove selected markup (=split existing markup if single, shrink if two different)
 			else if (!markupObject.isReplacingElement && relevantMarkupObjectsAtSelectionStart && relevantMarkupObjectsAtSelectionEnd) {
-				GENTICS.Aloha.Log.info(this, 'markup 2 markup');
+				Aloha.Log.info(this, 'markup 2 markup');
 				this.prepareForRemoval(rangeObject.getSelectionTree(), markupObject, tagComparator);
 				this.splitRelevantMarkupObject(relevantMarkupObjectsAtSelectionStart, relevantMarkupObjectsAtSelectionEnd, rangeObject, tagComparator);
 			}
@@ -610,35 +591,35 @@
 			// Alternative C: from no-markup to markup OR with next2markup:
 			// new markup is wrapped from selection start to end of originalmarkup, original is remove afterwards
 			else if (!markupObject.isReplacingElement && ((!relevantMarkupObjectsAtSelectionStart && relevantMarkupObjectsAtSelectionEnd) || relevantMarkupObjectAfterSelection || relevantMarkupObjectBeforeSelection )) { //
-				GENTICS.Aloha.Log.info(this, 'non-markup 2 markup OR with next2markup');
+				Aloha.Log.info(this, 'non-markup 2 markup OR with next2markup');
 				// move end of rangeObject to end of relevant markups
 				if (relevantMarkupObjectBeforeSelection && relevantMarkupObjectAfterSelection) {
-					extendedRangeObject = new GENTICS.Aloha.Selection.SelectionRange(rangeObject);
+					extendedRangeObject = new Aloha.Selection.SelectionRange(rangeObject);
 					extendedRangeObject.startContainer = jQuery(relevantMarkupObjectBeforeSelection[ relevantMarkupObjectBeforeSelection.length-1 ]).textNodes()[0];
 					extendedRangeObject.startOffset = 0;
 					extendedRangeObject.endContainer = jQuery(relevantMarkupObjectAfterSelection[ relevantMarkupObjectAfterSelection.length-1 ]).textNodes().last()[0];
 					extendedRangeObject.endOffset = extendedRangeObject.endContainer.length;
 					extendedRangeObject.update();
 					this.applyMarkup(extendedRangeObject.getSelectionTree(), rangeObject, markupObject, tagComparator);
-					GENTICS.Aloha.Log.info(this, 'double extending previous markup(previous and after selection), actually wrapping it ...');
+					Aloha.Log.info(this, 'double extending previous markup(previous and after selection), actually wrapping it ...');
 
 				} else if (relevantMarkupObjectBeforeSelection && !relevantMarkupObjectAfterSelection && !relevantMarkupObjectsAtSelectionEnd) {
 					this.extendExistingMarkupWithSelection(relevantMarkupObjectBeforeSelection, rangeObject, false, tagComparator);
-					GENTICS.Aloha.Log.info(this, 'extending previous markup');
+					Aloha.Log.info(this, 'extending previous markup');
 
 				} else if (relevantMarkupObjectBeforeSelection && !relevantMarkupObjectAfterSelection && relevantMarkupObjectsAtSelectionEnd) {
-					extendedRangeObject = new GENTICS.Aloha.Selection.SelectionRange(rangeObject);
+					extendedRangeObject = new Aloha.Selection.SelectionRange(rangeObject);
 					extendedRangeObject.startContainer = jQuery(relevantMarkupObjectBeforeSelection[ relevantMarkupObjectBeforeSelection.length-1 ]).textNodes()[0];
 					extendedRangeObject.startOffset = 0;
 					extendedRangeObject.endContainer = jQuery(relevantMarkupObjectsAtSelectionEnd[ relevantMarkupObjectsAtSelectionEnd.length-1 ]).textNodes().last()[0];
 					extendedRangeObject.endOffset = extendedRangeObject.endContainer.length;
 					extendedRangeObject.update();
 					this.applyMarkup(extendedRangeObject.getSelectionTree(), rangeObject, markupObject, tagComparator);
-					GENTICS.Aloha.Log.info(this, 'double extending previous markup(previous and relevant at the end), actually wrapping it ...');
+					Aloha.Log.info(this, 'double extending previous markup(previous and relevant at the end), actually wrapping it ...');
 
 				} else if (!relevantMarkupObjectBeforeSelection && relevantMarkupObjectAfterSelection) {
 					this.extendExistingMarkupWithSelection(relevantMarkupObjectAfterSelection, rangeObject, true, tagComparator);
-					GENTICS.Aloha.Log.info(this, 'extending following markup backwards');
+					Aloha.Log.info(this, 'extending following markup backwards');
 
 				} else {
 					this.extendExistingMarkupWithSelection(relevantMarkupObjectsAtSelectionEnd, rangeObject, true, tagComparator);
@@ -647,7 +628,7 @@
 
 			// Alternative D: no-markup to no-markup: easy
 			else if (markupObject.isReplacingElement || (!relevantMarkupObjectsAtSelectionStart && !relevantMarkupObjectsAtSelectionEnd && !relevantMarkupObjectBeforeSelection && !relevantMarkupObjectAfterSelection)) {
-				GENTICS.Aloha.Log.info(this, 'non-markup 2 non-markup');
+				Aloha.Log.info(this, 'non-markup 2 non-markup');
 				this.applyMarkup(rangeObject.getSelectionTree(), rangeObject, markupObject, tagComparator, {setRangeObject2NewMarkup: true});
 			}
 
@@ -920,7 +901,7 @@
 				if (el.wrappable) {
 					this.wrapMarkupAroundSelectionTree(el.elements, rangeObject, markupObject, tagComparator, options);
 				} else {
-					GENTICS.Aloha.Log.debug(this,'dive further into non-wrappable object');
+					Aloha.Log.debug(this,'dive further into non-wrappable object');
 					this.applyMarkup(el.element.children, rangeObject, markupObject, tagComparator, options);
 				}
 			}
@@ -935,12 +916,12 @@
 		getMarkupType: function(markupObject) {
 			var nn = jQuery(markupObject)[0].nodeName.toLowerCase();
 			if (markupObject.outerHTML) {
-				GENTICS.Aloha.Log.debug(this, 'Node name detected: ' + nn + ' for: ' + markupObject.outerHTML());
+				Aloha.Log.debug(this, 'Node name detected: ' + nn + ' for: ' + markupObject.outerHTML());
 			}
 			if (nn == '#text') {return 'textNode';}
 			if (this.replacingElements[ nn ]) {return 'sectionOrGroupingContent';}
 			if (this.tagHierarchy [ nn ]) {return 'textLevelSemantics';}
-			GENTICS.Aloha.Log.warn(this, 'unknown markup passed to this.getMarkupType(...): ' + markupObject.outerHTML());
+			Aloha.Log.warn(this, 'unknown markup passed to this.getMarkupType(...): ' + markupObject.outerHTML());
 		},
 
 		/**
@@ -987,7 +968,7 @@
 			var that = this;
 			// check if a comparison method was passed as parameter ...
 			if (typeof tagComparator !== 'undefined' && typeof tagComparator !== 'function') {
-				GENTICS.Aloha.Log.error(this,'parameter tagComparator is not a function');
+				Aloha.Log.error(this,'parameter tagComparator is not a function');
 			}
 			// ... if not use this as standard tag comparison method
 			if (typeof tagComparator === 'undefined') {
@@ -998,7 +979,7 @@
 				if (el.domobj && (el.selection == 'full' || (el.selection == 'partial' && markupObject.isReplacingElement))) {
 					// mark for removal
 					if (el.domobj.nodeType === 1 && tagComparator(el.domobj, markupObject)) {
-						GENTICS.Aloha.Log.debug(this, 'Marking for removal: ' + el.domobj.nodeName);
+						Aloha.Log.debug(this, 'Marking for removal: ' + el.domobj.nodeName);
 						jQuery(el.domobj).addClass('preparedForRemoval');
 					}
 				}
@@ -1031,7 +1012,7 @@
 
 
 
-			GENTICS.Aloha.Log.debug(this,'The formatting <' + markupObject[0].tagName + '> will be wrapped around the selection');
+			Aloha.Log.debug(this,'The formatting <' + markupObject[0].tagName + '> will be wrapped around the selection');
 
 			// now lets iterate over the elements
 			for (var i = 0; i < selectionTree.length; i++) {
@@ -1039,7 +1020,7 @@
 
 				// check if markup is allowed inside the elements parent
 				if (el.domobj && !this.canTag1WrapTag2(el.domobj.parentNode.tagName.toLowerCase(), markupObject[0].tagName.toLowerCase())) {
-					GENTICS.Aloha.Log.info(this,'Skipping the wrapping of <' + markupObject[0].tagName.toLowerCase() + '> because this tag is not allowed inside <' + el.domobj.parentNode.tagName.toLowerCase() + '>');
+					Aloha.Log.info(this,'Skipping the wrapping of <' + markupObject[0].tagName.toLowerCase() + '> because this tag is not allowed inside <' + el.domobj.parentNode.tagName.toLowerCase() + '>');
 					continue;
 				}
 
@@ -1063,7 +1044,7 @@
 						objects2wrap[j] = el.domobj;
 					} else if (el.endOffset !== undefined && el.startOffset !== undefined) {
 						if (el.startOffset == el.endOffset) { // do not wrap empty selections
-							GENTICS.Aloha.Log.debug(this, 'skipping empty selection');
+							Aloha.Log.debug(this, 'skipping empty selection');
 							continue;
 						}
 						j++;
@@ -1074,7 +1055,7 @@
 						objects2wrap[j] = el.domobj;
 					} else {
 						// a partially selected item without selectionStart/EndOffset is a nodeType 1 Element on the way to the textnode
-						GENTICS.Aloha.Log.debug(this, 'diving into object');
+						Aloha.Log.debug(this, 'diving into object');
 						this.applyMarkup(el.children, rangeObject, markupObject, tagComparator, options);
 					}
 				}
@@ -1318,7 +1299,7 @@
 			for (var i = 0; i < selectionTree.length; i++) {
 				var el = selectionTree[i];
 				if (el.domobj && (el.selection != "none" || markupObject.isReplacingElement)) {
-					// GENTICS.Aloha.Log.debug(this, 'Checking, if  <' + htmlTag + '> can be applied to ' + el.domobj.nodeName);
+					// Aloha.Log.debug(this, 'Checking, if  <' + htmlTag + '> can be applied to ' + el.domobj.nodeName);
 					if (!this.canTag1WrapTag2(htmlTag, el.domobj.nodeName)) {
 						return false;
 					}
@@ -1343,11 +1324,11 @@
 			t1 = (t1 == '#text')?'textNode':t1.toLowerCase();
 			t2 = (t2 == '#text')?'textNode':t2.toLowerCase();
 			if (!this.tagHierarchy[ t1 ]) {
-				// GENTICS.Aloha.Log.warn(this, t1 + ' is an unknown tag to the method canTag1WrapTag2 (paramter 1). Sadfully allowing the wrapping...');
+				// Aloha.Log.warn(this, t1 + ' is an unknown tag to the method canTag1WrapTag2 (paramter 1). Sadfully allowing the wrapping...');
 				return true;
 			}
 			if (!this.tagHierarchy[ t2 ]) {
-				// GENTICS.Aloha.Log.warn(this, t2 + ' is an unknown tag to the method canTag1WrapTag2 (paramter 2). Sadfully allowing the wrapping...');
+				// Aloha.Log.warn(this, t2 + ' is an unknown tag to the method canTag1WrapTag2 (paramter 2). Sadfully allowing the wrapping...');
 				return true;
 			}
 			var t1Array = this.tagHierarchy[ t1 ],
@@ -1378,22 +1359,22 @@
 				// all of the found DOM elements allow inserting the given tag
 				return true;
 			} else {
-				GENTICS.Aloha.Log.warn(this, 'Unable to determine whether tag ' + tagName + ' may be inserted');
+				Aloha.Log.warn(this, 'Unable to determine whether tag ' + tagName + ' may be inserted');
 				return true;
 			}
 		},
 
 		/**
 		 * String representation
-		 * @return "GENTICS.Aloha.Selection"
+		 * @return "Aloha.Selection"
 		 * @hide
 		 */
 		toString: function() {
-			return 'GENTICS.Aloha.Selection';
+			return 'Aloha.Selection';
 		},
 
 		/**
-		 * @namespace GENTICS.Aloha.Selection
+		 * @namespace Aloha.Selection
 		 * @class SelectionRange
 		 * @extends GENTICS.Utils.RangeObject
 		 * Constructor for a range object.
@@ -1476,7 +1457,7 @@
 				this._super();
 
 				// update the selection
-				GENTICS.Aloha.Selection.updateSelection();
+				Aloha.Selection.updateSelection();
 			},
 
 			/**
@@ -1504,7 +1485,7 @@
 			getSelectionTree: function () {
 				// if not yet calculated, do this now
 				if (!this.selectionTree) {
-					this.selectionTree = GENTICS.Aloha.Selection.getSelectionTree(this);
+					this.selectionTree = Aloha.Selection.getSelectionTree(this);
 				}
 
 				return this.selectionTree;
@@ -1597,9 +1578,9 @@
 			 * @hide
 			 */
 			updatelimitObject: function() {
-				if (GENTICS.Aloha.editables && GENTICS.Aloha.editables.length > 0) {
+				if (Aloha.editables && Aloha.editables.length > 0) {
 					var parents = this.getStartContainerParents(),
-						editables = GENTICS.Aloha.editables;
+						editables = Aloha.editables;
 					for (var i = 0; i < parents.length; i++) {
 						var el = parents[i];
 						for (var j = 0; j < editables.length; j++) {
@@ -1623,9 +1604,9 @@
 			 */
 			toString: function(verbose) {
 				if (!verbose) {
-					return 'GENTICS.Aloha.Selection.SelectionRange';
+					return 'Aloha.Selection.SelectionRange';
 				}
-				return 'GENTICS.Aloha.Selection.SelectionRange {start [' + this.startContainer.nodeValue + '] offset '
+				return 'Aloha.Selection.SelectionRange {start [' + this.startContainer.nodeValue + '] offset '
 					+ this.startOffset + ', end [' + this.endContainer.nodeValue + '] offset ' + this.endOffset + '}';
 			}
 
@@ -1633,6 +1614,6 @@
 
 	}); // Selection
 
-	GENTICS.Aloha.Selection = new GENTICS.Aloha.Selection();
+	Aloha.Selection = new Aloha.Selection();
 
 })(window);

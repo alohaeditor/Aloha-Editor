@@ -101,10 +101,7 @@
 			"src_bundle_subpackage.js": "src_bundle_subpackage.js"
 		},
 		"subpackages": [
-			"format",
-			"link",
-			"linkchecker",
-			"table"
+			"format"
 		],
 		"ignore": {
 			"check": [
@@ -144,7 +141,6 @@
 				"core/ui-attributefield.js",
 				"core/ui-browser.js",
 				"core/editable.js",
-				"core/event.js",
 				"core/floatingmenu.js",
 				"core/ierange-m2.js",
 				"core/log.js",

@@ -1,21 +1,8 @@
 /*!
-*   This file is part of Aloha Editor
-*   Author & Copyright (c) 2010 Gentics Software GmbH, aloha@gentics.com
-*   Licensed unter the terms of http://www.aloha-editor.com/license.html
-*//*
-*	Aloha Editor is free software: you can redistribute it and/or modify
-*   it under the terms of the GNU Affero General Public License as published by
-*   the Free Software Foundation, either version 3 of the License, or
-*   (at your option) any later version.*
-*
-*   Aloha Editor is distributed in the hope that it will be useful,
-*   but WITHOUT ANY WARRANTY; without even the implied warranty of
-*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*   GNU Affero General Public License for more details.
-*
-*   You should have received a copy of the GNU Affero General Public License
-*   along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ * This file is part of Aloha Editor
+ * Author & Copyright (c) 2010 Gentics Software GmbH, aloha@gentics.com
+ * Licensed unter the terms of http://www.aloha-editor.com/license.html
+ */
 
 /*
  * The GENTICS global namespace object. If GENTICS is already defined, the
@@ -28,17 +15,17 @@
 	var
 		jQuery = window.alohaQuery, $ = jQuery,
 		GENTICS = window.GENTICS,
-		Aloha = GENTICS.Aloha;
+		Aloha = window.Aloha;
 
 	/**
 	 * Base Aloha Object
-	 * @namespace GENTICS.Aloha
+	 * @namespace Aloha
 	 * @class Aloha The Aloha base object, which contains all the core functionality
 	 * @singleton
 	 */
-	//GENTICS.Aloha = function () {};
+	//Aloha = function () {};
 
-	GENTICS.Aloha = jQuery.extend({
+	Aloha = jQuery.extend(Aloha,{
 
 		// provide aloha version, is automatically set during build process
 		version: '##ALOHAVERSION##',
@@ -53,7 +40,7 @@
 		/**
 		 * The currently active editable is referenced here
 		 * @property
-		 * @type GENTICS.Aloha.Editable
+		 * @type Aloha.Editable
 		 */
 		activeEditable: null,
 
@@ -135,18 +122,18 @@
 				// refocus the editable again, which is just strange UX
 				if (that.activeEditable && !that.isMessageVisible()) {
 					that.activeEditable.blur();
-					that.FloatingMenu.setScope('GENTICS.Aloha.empty');
+					that.FloatingMenu.setScope('Aloha.empty');
 					that.activeEditable = null;
 				}
 			});
 
 			// Initialise the base path to the aloha files
 			this.settings.base =
-				this.settings.base || window.GENTICS_Aloha_base || this.getAlohaUrl();
+				this.settings.base || window.Aloha_base || this.getAlohaUrl();
 
 			// Initialise pluginDir
 			this.settings.pluginDir =
-				this.settings.pluginDir || window.GENTICS_Aloha_pluginDir || 'plugin';
+				this.settings.pluginDir || window.Aloha_pluginDir || 'plugin';
 
 			// initialize the Log
 			this.Log.init();
@@ -154,7 +141,7 @@
 			// initialize the error handler for general javascript errors
 			if ( this.settings.errorhandling ) {
 				window.onerror = function (msg, url, linenumber) {
-					GENTICS.Aloha.Log.error(GENTICS.Aloha, 'Error message: ' + msg + '\nURL: ' + url + '\nLine Number: ' + linenumber);
+					Aloha.Log.error(Aloha, 'Error message: ' + msg + '\nURL: ' + url + '\nLine Number: ' + linenumber);
 					// TODO eventually add a message to the message line?
 					return true;
 				};
@@ -175,12 +162,34 @@
 			}
 
 			// initialize the Aloha core components
-			GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'i18nReady', this.loadPlugins);
-			GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'i18nPluginsReady', this.loadGui);
+			Aloha.bind('aloha-i18n-ready',this.loadPlugins);
+			Aloha.bind('aloha-i18n-plugins-ready', this.loadGui);
 			this.initI18n();
 
-			// Aloha is now Init'd, Time to fix the bug
-			$('body').trigger('aloha');
+			// Events
+			Aloha.trigger('aloha');
+		},
+
+		correctEventName: function(eventName){
+			var result = eventName.replace(/\-([a-z])/g,function(a,b){
+				return b.toUpperCase();
+			});
+			return result;
+		},
+
+		unbind: function(eventName,eventHandler) {
+			eventName = this.correctEventName(eventName);
+			$('body').unbind(eventName,eventHandler);
+		},
+
+		bind: function(eventName,eventHandler) {
+			eventName = this.correctEventName(eventName);
+			$('body').bind(eventName,eventHandler);
+		},
+
+		trigger: function(eventName,data) {
+			eventName = this.correctEventName(eventName);
+			$('body').trigger(eventName,data);
 		},
 
 		/**
@@ -188,7 +197,7 @@
 		 * @return void
 		 */
 		loadPlugins: function () {
-			this.PluginRegistry.init();
+			Aloha.PluginRegistry.init();
 		},
 
 		/**
@@ -196,29 +205,27 @@
 		 * @return void
 		 */
 		loadGui: function () {
-			this.RepositoryManager.init();
-			this.FloatingMenu.init();
+			Aloha.RepositoryManager.init();
+			Aloha.FloatingMenu.init();
 
 			// internationalize ext js message box buttons
-			Ext.MessageBox.buttonText.yes = GENTICS.Aloha.i18n(this, 'yes');
-			Ext.MessageBox.buttonText.no = GENTICS.Aloha.i18n(this, 'no');
-			Ext.MessageBox.buttonText.cancel = GENTICS.Aloha.i18n(this, 'cancel');
-			Ext.ux.AlohaAttributeField.prototype.listEmptyText = GENTICS.Aloha.i18n( GENTICS.Aloha, 'repository.no_item_found' );
-			Ext.ux.AlohaAttributeField.prototype.loadingText = GENTICS.Aloha.i18n( GENTICS.Aloha, 'repository.loading' ) + '...';
+			Ext.MessageBox.buttonText.yes = Aloha.i18n(Aloha, 'yes');
+			Ext.MessageBox.buttonText.no = Aloha.i18n(Aloha, 'no');
+			Ext.MessageBox.buttonText.cancel = Aloha.i18n(Aloha, 'cancel');
+			Ext.ux.AlohaAttributeField.prototype.listEmptyText = Aloha.i18n( Aloha, 'repository.no_item_found' );
+			Ext.ux.AlohaAttributeField.prototype.loadingText = Aloha.i18n( Aloha, 'repository.loading' ) + '...';
 
 			// set aloha ready
-			GENTICS.Aloha.ready = true;
+			Aloha.ready = true;
 
 			// activate registered editables
-			for (var i = 0, editablesLength = this.editables.length; i < editablesLength; i++) {
-				if ( !this.editables[i].ready ) {
-					this.editables[i].init();
+			for (var i = 0, editablesLength = Aloha.editables.length; i < editablesLength; i++) {
+				if ( !Aloha.editables[i].ready ) {
+					Aloha.editables[i].init();
 				}
 			}
 
-			GENTICS.Aloha.EventRegistry.trigger(
-				new GENTICS.Aloha.Event('ready', GENTICS.Aloha, null)
-			);
+			Aloha.trigger('aloha-ready');
 		},
 
 		/**
@@ -260,7 +267,7 @@
 			this.activeEditable.blur();
 
 			// set scope for floating menu
-			this.FloatingMenu.setScope('GENTICS.Aloha.empty');
+			this.FloatingMenu.setScope('Aloha.empty');
 
 			this.activeEditable = null;
 		},
@@ -268,7 +275,7 @@
 		/**
 		 * Gets an editable by an ID or null if no Editable with that ID registered.
 		 * @param {string} id the element id to look for.
-		 * @return {GENTICS.Aloha.Editable} editable
+		 * @return {Aloha.Editable} editable
 		 */
 		getEditableById: function (id) {
 
@@ -278,9 +285,9 @@
 			}
 
 			// serach all editables for id
-			for (var i = 0, editablesLength = GENTICS.Aloha.editables.length; i < editablesLength; i++) {
-				if (GENTICS.Aloha.editables[i].getId() == id) {
-					return GENTICS.Aloha.editables[i];
+			for (var i = 0, editablesLength = Aloha.editables.length; i < editablesLength; i++) {
+				if (Aloha.editables[i].getId() == id) {
+					return Aloha.editables[i];
 				}
 			}
 
@@ -310,7 +317,7 @@
 		 * @hide
 		 */
 		log: function(level, component, message) {
-			GENTICS.Aloha.Log.log(level, component, message);
+			Aloha.Log.log(level, component, message);
 		},
 
 		/**
@@ -324,7 +331,7 @@
 				object = object[0];
 			}
 			if (!(object instanceof HTMLElement)) {
-				GENTICS.Aloha.Log.warn(this, '{' + object.toString() + '} provided is not an HTML element');
+				Aloha.Log.warn(this, '{' + object.toString() + '} provided is not an HTML element');
 				return object.toString();
 			}
 
@@ -421,14 +428,12 @@
 			var actualLanguage = this.getLanguage(this.settings.i18n.current, this.settings.i18n.available);
 
 			if (!actualLanguage) {
-				GENTICS.Aloha.Log.error(this, 'Could not determine actual language.');
+				Aloha.Log.error(this, 'Could not determine actual language.');
 			} else {
 				// TODO load the dictionary file for the actual language
 				var fileUrl = this.settings.base + '/i18n/' + actualLanguage + '.json';
 				this.loadI18nFile(fileUrl, this, function () {
-					GENTICS.Aloha.EventRegistry.trigger(
-						new GENTICS.Aloha.Event('i18nReady', GENTICS.Aloha, null)
-					);
+					Aloha.trigger('aloha-i18n-ready');
 				});
 			}
 		},
@@ -444,7 +449,7 @@
 		getLanguage: function(language, availableLanguages) {
 
 			if (!availableLanguages instanceof Array) {
-				GENTICS.Aloha.Log.error(this, 'Available languages must be an Array');
+				Aloha.Log.error(this, 'Available languages must be an Array');
 				return null;
 			}
 
@@ -474,16 +479,16 @@
 				dataType : 'json',
 				url : fileUrl,
 				error: function(request, textStatus, error) {
-					GENTICS.Aloha.Log.error(component, 'Error while getting dictionary file ' + fileUrl + ': server returned ' + textStatus);
+					Aloha.Log.error(component, 'Error while getting dictionary file ' + fileUrl + ': server returned ' + textStatus);
 					if(typeof callback === 'function') {
 						callback.call(component);
 					}
 				},
 				success: function(data, textStatus, request) {
-					if (GENTICS.Aloha.Log.isInfoEnabled()) {
-						GENTICS.Aloha.Log.info(component, 'Loaded dictionary file ' + fileUrl);
+					if (Aloha.Log.isInfoEnabled()) {
+						Aloha.Log.info(component, 'Loaded dictionary file ' + fileUrl);
 					}
-					GENTICS.Aloha.parseI18nFile(data, component);
+					Aloha.parseI18nFile(data, component);
 					if(typeof callback === 'function') {
 						callback.call(component);
 					}
@@ -500,7 +505,7 @@
 		parseI18nFile: function(data, component) {
 			// Check
 			if ( typeof data !== 'object' ) {
-				GENTICS.ALoha.Log.warn(component, 'i18n file was not json');
+				Aloha.Log.warn(component, 'i18n file was not json');
 				return false;
 			}
 
@@ -524,13 +529,13 @@
 				value = this.dictionaries[component.toString()][key];
 			}
 
-			// when the value was not found and component is not GENTICS.Aloha, do a fallback
+			// when the value was not found and component is not Aloha, do a fallback
 			if (!value
-				&& component != GENTICS.Aloha
-				&& this.dictionaries[GENTICS.Aloha.toString()]
-				&& this.dictionaries[GENTICS.Aloha.toString()][key])
+				&& component != Aloha
+				&& this.dictionaries[Aloha.toString()]
+				&& this.dictionaries[Aloha.toString()][key])
 			{
-				value = this.dictionaries[GENTICS.Aloha.toString()][key];
+				value = this.dictionaries[Aloha.toString()][key];
 			}
 
 			// value still not found, so output the key
@@ -584,22 +589,22 @@
 		/**
 		 * Displays a message according to it's type
 		 * @method
-		 * @param {GENTICS.Aloha.Message} message the GENTICS.Aloha.Message object to be displayed
+		 * @param {Aloha.Message} message the Aloha.Message object to be displayed
 		 */
 		showMessage: function (message) {
 
-			if (GENTICS.Aloha.FloatingMenu.obj) {
-				GENTICS.Aloha.FloatingMenu.obj.css('z-index', 8900);
+			if (Aloha.FloatingMenu.obj) {
+				Aloha.FloatingMenu.obj.css('z-index', 8900);
 			}
 
 			switch (message.type) {
-				case GENTICS.Aloha.Message.Type.ALERT:
+				case Aloha.Message.Type.ALERT:
 					Ext.MessageBox.alert(message.title, message.text, message.callback);
 					break;
-				case GENTICS.Aloha.Message.Type.CONFIRM:
+				case Aloha.Message.Type.CONFIRM:
 					Ext.MessageBox.confirm(message.title, message.text, message.callback);
 					break;
-				case GENTICS.Aloha.Message.Type.WAIT:
+				case Aloha.Message.Type.WAIT:
 					Ext.MessageBox.wait(message.text, message.title);
 					break;
 				default:
@@ -630,7 +635,7 @@
 		 * @hide
 		 */
 		toString: function () {
-			return 'GENTICS.Aloha';
+			return 'Aloha';
 		},
 
 		/**
@@ -655,8 +660,8 @@
 		 * @return {String} alohaUrl
 		 */
 		getAlohaUrl: function(suffix){
-			window.GENTICS_Aloha_base = window.GENTICS_Aloha_base || document.getElementById('aloha-script-include').src.replace(/aloha\.js$/,'').replace(/\/+$/,'');
-			return window.GENTICS_Aloha_base;
+			window.Aloha_base = window.Aloha_base || document.getElementById('aloha-script-include').src.replace(/aloha\.js$/,'').replace(/\/+$/,'');
+			return window.Aloha_base;
 		},
 
 		/**
@@ -666,7 +671,7 @@
 		 * @return {String} pluginUrl
 		 */
 		getPluginUrl: function(pluginName){
-			var pluginUrl = GENTICS.Aloha.getAlohaUrl() + '/plugin/'+pluginName;
+			var pluginUrl = Aloha.getAlohaUrl() + '/plugin/'+pluginName;
 			return pluginUrl;
 		},
 
@@ -719,7 +724,7 @@
 		 */
 		loadPlugin: function(pluginName){
 			// Prepare
-			var pluginUrl = GENTICS.Aloha.getPluginUrl(pluginName);
+			var pluginUrl = Aloha.getPluginUrl(pluginName);
 
 			// Check
 			if ( typeof window.Aloha_loaded_plugins[pluginName] !== 'undefined' ) {
@@ -739,8 +744,8 @@
 						pluginCssUrl = pluginUrl+'/src/'+pluginName+'.css';
 
 					// Include
-					GENTICS.Aloha.loadJs(pluginJsUrl);
-					GENTICS.Aloha.loadCss(pluginCssUrl);
+					Aloha.loadJs(pluginJsUrl);
+					Aloha.loadCss(pluginCssUrl);
 
 					// Done
 					return true;
@@ -752,12 +757,12 @@
 				loadPackage: function(data){
 					// Cycle through CSS
 					$.each(data.css||[], function(i,value){
-						GENTICS.Aloha.loadCss(pluginUrl+'/'+value);
+						Aloha.loadCss(pluginUrl+'/'+value);
 					});
 
 					// Cycle through JS
 					$.each(data.js||[], function(i,value){
-						GENTICS.Aloha.loadJs(pluginUrl+'/'+value);
+						Aloha.loadJs(pluginUrl+'/'+value);
 					});
 
 					// Done
@@ -797,7 +802,7 @@
 			// Done
 			return true;
 		}
-	}, GENTICS.Aloha);
+	});
 
 	// Load Plugins
 	var $alohaScriptInclude = $('#aloha-script-include');
@@ -811,7 +816,7 @@
 		// Load in Plugins
 		$.each(plugins||[],function(i,pluginName){
 			// Load Plugin
-			GENTICS.Aloha.loadPlugin(pluginName);
+			Aloha.loadPlugin(pluginName);
 		});
 	}
 
@@ -823,7 +828,7 @@
 
 		// Give the page 3 seconds to load in all the plugins
 		setTimeout( function() {
-			GENTICS.Aloha.init();
+			Aloha.init();
 		},3000);
 	});
 
