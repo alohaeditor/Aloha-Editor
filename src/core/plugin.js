@@ -41,7 +41,7 @@ Aloha.PluginRegistry = Class.extend({
 					pluginsStack[i].init();
 				}
 			}
-			me.trigger('aloha-i18n-plugins-ready');
+			Aloha.trigger('aloha-i18n-plugins-ready');
 		});
 
 		// iterate through all registered plugins
