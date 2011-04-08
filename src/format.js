@@ -4,32 +4,40 @@
 * aloha-sales@gentics.com
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
+
+// Start Closure
+(function(window, undefined) {
+	var
+		jQuery = window.alohaQuery, $ = jQuery,
+		GENTICS = window.GENTICS,
+		Aloha = window.Aloha;
+
 /**
  * register the plugin with unique name
  */
-GENTICS.Aloha.Format = new GENTICS.Aloha.Plugin('format');
+Aloha.Format = new Aloha.Plugin('format');
 
 /**
  * Configure the available languages
  */
-GENTICS.Aloha.Format.languages = ['en', 'de', 'fr', 'eo', 'fi', 'ru', 'it', 'pl'];
+Aloha.Format.languages = ['en', 'de', 'fr', 'eo', 'fi', 'ru', 'it', 'pl'];
 
 /**
  * default button configuration
  */
-GENTICS.Aloha.Format.config = [ 'b', 'i','del','sub','sup', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'removeFormat'];
+Aloha.Format.config = [ 'b', 'i','del','sub','sup', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'removeFormat'];
 
 /**
  * Initialize the plugin and set initialize flag on true
  */
-GENTICS.Aloha.Format.init = function () {
+Aloha.Format.init = function () {
 
 	this.initButtons();
 
 	var that = this;
 
 	// apply specific configuration if an editable has been activated
-	GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'editableActivated', function (e, params) {
+	Aloha.bind('aloha-editable-activated',function (e, params) {
 		that.applyButtonConfig(params.editable.obj);
 	});
 
@@ -41,7 +49,7 @@ GENTICS.Aloha.Format.init = function () {
  * @param {Object} id of the activated editable
  * @return void
  */
-GENTICS.Aloha.Format.applyButtonConfig = function (obj) {
+Aloha.Format.applyButtonConfig = function (obj) {
 
 	var config = this.getEditableConfig(obj);
 
@@ -57,9 +65,9 @@ GENTICS.Aloha.Format.applyButtonConfig = function (obj) {
 	// and the same for multisplit items
 	for (var i in this.multiSplitItems) {
 		if (jQuery.inArray(this.multiSplitItems[i].name, config) != -1) {
-			this.multiSplitButton.extButton.showItem(this.multiSplitItems[i].name);
+			this.multiSplitButton.showItem(this.multiSplitItems[i].name);
 		} else {
-			this.multiSplitButton.extButton.hideItem(this.multiSplitItems[i].name);
+			this.multiSplitButton.hideItem(this.multiSplitItems[i].name);
 		}
 	}
 };
@@ -69,18 +77,18 @@ GENTICS.Aloha.Format.applyButtonConfig = function (obj) {
  * @param event event object
  * @param editable current editable object
  */
-GENTICS.Aloha.Format.initButtons = function () {
+Aloha.Format.initButtons = function () {
 
-	var scope = 'GENTICS.Aloha.continuoustext';
+	var scope = 'Aloha.continuoustext';
 	this.buttons = {};
 	var that = this;
 
 	// collect the multisplit items here
-	this.multiSplitItems = new Array();
-	this.multiSplitButton;
+	this.multiSplitItems = [];
+	//this.multiSplitButton;
 
 	//iterate configuration array an push buttons to buttons array
-	jQuery.each(GENTICS.Aloha.Format.config, function(j, button) {
+	jQuery.each(Aloha.Format.config, function(j, button) {
 		switch( button ) {
 			// text level semantics:
 			case 'b':
@@ -92,21 +100,21 @@ GENTICS.Aloha.Format.initButtons = function () {
 			case 'del':
 			case 'sub':
 			case 'sup':
-				that.buttons[button] = {'button' : new GENTICS.Aloha.ui.Button({
-					'iconClass' : 'GENTICS_button GENTICS_button_' + button,
+				that.buttons[button] = {'button' : new Aloha.ui.Button({
+					'iconClass' : 'aloha-button aloha-button-' + button,
 					'size' : 'small',
 					'onclick' : function () {
 						// now focus back to the active element
-						if (GENTICS.Aloha.activeEditable) {
-							GENTICS.Aloha.activeEditable.obj[0].focus();
+						if (Aloha.activeEditable) {
+							Aloha.activeEditable.obj[0].focus();
 						}
 						var markup = jQuery('<'+button+'></'+button+'>');
-						var rangeObject = GENTICS.Aloha.Selection.rangeObject;
+						var rangeObject = Aloha.Selection.rangeObject;
 
 						// check whether the markup is found in the range (at the start of the range)
 						var foundMarkup = rangeObject.findMarkup(function() {
 							return this.nodeName.toLowerCase() == markup.get(0).nodeName.toLowerCase();
-						}, GENTICS.Aloha.activeEditable.obj);
+						}, Aloha.activeEditable.obj);
 
 						if (foundMarkup) {
 							// remove the markup
@@ -115,7 +123,7 @@ GENTICS.Aloha.Format.initButtons = function () {
 								GENTICS.Utils.Dom.removeFromDOM(foundMarkup, rangeObject, true);
 							} else {
 								// the range is not collapsed, so we remove the markup from the range
-								GENTICS.Utils.Dom.removeMarkup(rangeObject, markup, GENTICS.Aloha.activeEditable.obj);
+								GENTICS.Utils.Dom.removeMarkup(rangeObject, markup, Aloha.activeEditable.obj);
 							}
 						} else {
 							// when the range is collapsed, extend it to a word
@@ -133,10 +141,10 @@ GENTICS.Aloha.Format.initButtons = function () {
 					'tooltip' : that.i18n('button.' + button + '.tooltip'),
 					'toggle' : true
 				}), 'markup' : jQuery('<'+button+'></'+button+'>')};
-				GENTICS.Aloha.FloatingMenu.addButton(
+				Aloha.FloatingMenu.addButton(
 					scope,
 					that.buttons[button].button,
-					GENTICS.Aloha.i18n(GENTICS.Aloha, 'floatingmenu.tab.format'),
+					Aloha.i18n(Aloha, 'floatingmenu.tab.format'),
 					1
 				);
 				break;
@@ -151,76 +159,61 @@ GENTICS.Aloha.Format.initButtons = function () {
 			case 'pre':
 				that.multiSplitItems.push({
 					'name' : button,
-	       	    	'tooltip' : that.i18n('button.' + button + '.tooltip'),
-	           	    'iconClass' : 'GENTICS_button ' + that.i18n('GENTICS_button_' + button),
-	           	    'markup' : jQuery('<'+button+'></'+button+'>'),
-	           	    'click' : function() {
+					'tooltip' : that.i18n('button.' + button + '.tooltip'),
+					'iconClass' : 'aloha-button ' + that.i18n('aloha-button-' + button),
+					'markup' : jQuery('<'+button+'></'+button+'>'),
+					'click' : function() {
 						// now focus back to the active element
-						if (GENTICS.Aloha.activeEditable) {
-							GENTICS.Aloha.activeEditable.obj[0].focus();
+						if (Aloha.activeEditable) {
+							Aloha.activeEditable.obj[0].focus();
 						}
-						GENTICS.Aloha.Selection.changeMarkupOnSelection(jQuery('<' + button + '></' + button + '>'));
+						Aloha.Selection.changeMarkupOnSelection(jQuery('<' + button + '></' + button + '>'));
 					}
 				});
 				break;
-
-//			case 'title':
-//				that.multiSplitItems.push({
-//					'name' : button,
-//	       	    	'tooltip' : that.i18n('button.' + button + '.tooltip'),
-//	           	    'iconClass' : 'GENTICS_button ' + that.i18n('GENTICS_button_' + button),
-//	           	    'markup' : jQuery('<h1 property="dc:title"></h1>'),
-//	           	    'click' : function() {
-//						GENTICS.Aloha.Selection.changeMarkupOnSelection(jQuery('<h1 property="dc:title"></h1>'));
-//						// now focus back to the active element
-//						if (GENTICS.Aloha.activeEditable) {
-//							GENTICS.Aloha.activeEditable.obj[0].focus();
-//						}
-//					}
-//				});
-//				break;
 
 			// wide multisplit buttons
 			case 'removeFormat':
 				that.multiSplitItems.push({
 					'name' : button,
 					'text' : that.i18n('button.' + button + '.text'),
-	       	    	'tooltip' : that.i18n('button.' + button + '.tooltip'),
-	           	    'iconClass' : 'GENTICS_button GENTICS_button_' + button,
-	           	    'wide' : true,
-	           	    'click' : function() {
-						GENTICS.Aloha.Format.removeFormat();
+					'tooltip' : that.i18n('button.' + button + '.tooltip'),
+					'iconClass' : 'aloha-button aloha-button-' + button,
+					'wide' : true,
+					'click' : function() {
+						Aloha.Format.removeFormat();
 					}
 				});
 				break;
 			//no button defined
 			default:
-				GENTICS.Aloha.log('warn', this, 'Button "' + button + '" is not defined');
+				Aloha.log('warn', this, 'Button "' + button + '" is not defined');
 				break;
 		}
 	});
 
 	if (this.multiSplitItems.length > 0) {
-		this.multiSplitButton = new GENTICS.Aloha.ui.MultiSplitButton({
+		this.multiSplitButton = new Aloha.ui.MultiSplitButton({
 			'items' : this.multiSplitItems
 		});
-		GENTICS.Aloha.FloatingMenu.addButton(
+		Aloha.FloatingMenu.addButton(
 			scope,
 			this.multiSplitButton,
-			GENTICS.Aloha.i18n(GENTICS.Aloha, 'floatingmenu.tab.format'),
+			Aloha.i18n(Aloha, 'floatingmenu.tab.format'),
 			3
 		);
 	}
 
 	// add the event handler for selection change
-	GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'selectionChanged', function(event, rangeObject) {
+	Aloha.bind('aloha-selection-changed',function(event,rangeObject){
 		// iterate over all buttons
+		var statusWasSet = false;
 		jQuery.each(that.buttons, function(index, button) {
 			for (var i = 0; i < rangeObject.markupEffectiveAtStart.length; i++) {
 				var effectiveMarkup = rangeObject.markupEffectiveAtStart[ i ];
-				if (GENTICS.Aloha.Selection.standardTextLevelSemanticsComparator(effectiveMarkup, button.markup)) {
+				if (Aloha.Selection.standardTextLevelSemanticsComparator(effectiveMarkup, button.markup)) {
 					button.button.setPressed(true);
-					var statusWasSet = true;
+					statusWasSet = true;
 				}
 			}
 			if (!statusWasSet) {
@@ -243,7 +236,7 @@ GENTICS.Aloha.Format.initButtons = function () {
 					}
 
 					// now check whether one of the multiSplitItems fits to the effective markup
-					if (GENTICS.Aloha.Selection.standardTextLevelSemanticsComparator(effectiveMarkup, multiSplitItem.markup)) {
+					if (Aloha.Selection.standardTextLevelSemanticsComparator(effectiveMarkup, multiSplitItem.markup)) {
 						that.multiSplitButton.setActiveItem(multiSplitItem.name);
 						foundMultiSplit = true;
 					}
@@ -255,18 +248,19 @@ GENTICS.Aloha.Format.initButtons = function () {
 			}
 		}
 	});
+
 };
 
 /**
  * Removes all formatting from the current selection.
  */
-GENTICS.Aloha.Format.removeFormat = function() {
+Aloha.Format.removeFormat = function() {
 	// FIXME: Very ugly, quick implementation must be changed after selection.js is consolidated
-	GENTICS.Aloha.Selection.changeMarkupOnSelection(jQuery('<p></p>'));
+	Aloha.Selection.changeMarkupOnSelection(jQuery('<p></p>'));
 
 	var formats = ['b', 'i', 'cite', 'q', 'code', 'abbr', 'del', 'sub', 'sup'];
 
-	var rangeObject = GENTICS.Aloha.Selection.rangeObject;
+	var rangeObject = Aloha.Selection.rangeObject;
 	var startObj = jQuery(rangeObject.startContainer);
 	var limitObj = jQuery(rangeObject.limitObject);
 
@@ -280,15 +274,17 @@ GENTICS.Aloha.Format.removeFormat = function() {
 		var index = formats.indexOf(parent.get(0).nodeName.toLowerCase());
 		parent = parent.parent();
 		if (index != -1) {
-			GENTICS.Aloha.Selection.changeMarkupOnSelection(jQuery('<'+formats[index]+'></'+formats[index]+'>'));
+			Aloha.Selection.changeMarkupOnSelection(jQuery('<'+formats[index]+'></'+formats[index]+'>'));
 			formats.splice(index, 1);
 		}
 	}
 
 	// Iterate over the rest of the available markups and apply them twice
 	for (var i in formats) {
-		GENTICS.Aloha.Selection.changeMarkupOnSelection(jQuery('<'+formats[i]+'></'+formats[i]+'>'));
-		GENTICS.Aloha.Selection.changeMarkupOnSelection(jQuery('<'+formats[i]+'></'+formats[i]+'>'));
+		if ( formats.hasOwnProperty(i) ) {
+			Aloha.Selection.changeMarkupOnSelection(jQuery('<'+formats[i]+'></'+formats[i]+'>'));
+			Aloha.Selection.changeMarkupOnSelection(jQuery('<'+formats[i]+'></'+formats[i]+'>'));
+		}
 	}
 
 	// TODO: trigger event - removed Format
@@ -299,6 +295,8 @@ GENTICS.Aloha.Format.removeFormat = function() {
 * toString method
 * @return string
 */
-GENTICS.Aloha.Format.toString = function () {
+Aloha.Format.toString = function () {
 	return 'format';
 };
+
+})(window);
