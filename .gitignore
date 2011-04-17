@@ -1,6 +1,5 @@
 .project
 .settings
-.gitmodules
-build/out
-build/api-docs-out
+dist
+out
 .DS_Store

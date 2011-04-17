@@ -1,0 +1,81 @@
+<html>
+  <head>
+<!-- IMPORTANT: do not remove the next line, it will include scripts and styles necessary for the test to run -->
+<!-- #include file="${com.gentics.labs.browsertest.includedir}/head-include.inc" -->
+
+<!-- #include file="${com.gentics.aloha.src}/test/${com.gentics.aloha.loaderprefix}testloader.html" -->
+
+<script type="text/javascript">
+
+settingsTestPlugin = new GENTICS.Aloha.Plugin('com.example.settingstest');
+settingsTestPlugin.init = function () {
+	if (GENTICS.Aloha.settings.logHistory.maxEntries == 100 &&
+		this.settings.freakShow == true) {
+		this.success = true;
+	}
+};
+
+GENTICS.Aloha.settings = {
+	'logHistory' : {
+		'maxEntries' : 100,
+		'highWaterMark' : 90,
+		'levels' : {'error' : true, 'warn' : true}
+	},
+	'plugins' : {
+		'com.example.settingstest' : {
+			'freakShow' : true
+		}
+	}
+};
+</script>
+
+  <script type="text/javascript">
+
+	// create the testcase
+	// TODO: rename the testcase
+	YAHOO.com.gentics.labs.browsertest.Settings = new YAHOO.tool.TestCase({
+
+	    //name of the test case - if not provided, one is auto-generated
+	    // TODO: provide a proper name for the testcase
+	    name : 'Settings Test',
+
+	    //---------------------------------------------------------------------
+	    // setUp and tearDown methods - optional
+	    //---------------------------------------------------------------------
+	    
+	    /*
+	     * Sets up data that is needed by each test.
+	     */
+	    setUp : function () {
+	    },
+	    
+	    /*
+	     * Cleans up everything that was created by setUp().
+	     */
+	    tearDown : function () {
+			// TODO: implement teardown code for the tests
+	    },
+
+	    /**
+	     * Test whether the plugin could read the settings
+	     */
+	    testReadSettings : function () {
+	    	YAHOO.util.Assert.isTrue(settingsTestPlugin.success, 'Check whether plugin successfully read settings');
+	    }
+});
+
+	// add our testcase
+	YAHOO.com.gentics.labs.browsertest.Suite.add(YAHOO.com.gentics.labs.browsertest.Settings);
+
+</script>
+  </head>
+  <body class="yui-skin-sam">
+
+<!-- TODO: add your html code to be tested here -->
+<h1>Settings Test</h1>
+This tests GENTICS.Aloha.settings functions
+
+<!-- IMPORTANT: do not remove the next line, it will include html fragments necessary for the test to run -->
+<!-- #include file="${com.gentics.labs.browsertest.includedir}/body-include.inc" -->
+  </body>
+</html>

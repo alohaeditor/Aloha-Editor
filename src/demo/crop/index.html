@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+	<title>Aloha, Documents!</title>
+	<base href="../../">
+
+	<script	src="dep/jquery-1.5.1.js" ></script>
+	<script	src="aloha.js" id="aloha-script-include" data-plugins="format,highlighteditables,list,cropnresize"></script>
+	<link href="aloha.css" id="aloha-style-include" rel="stylesheet">
+
+	<link rel="stylesheet" href="demo/common/index.css" type="text/css">
+</head>
+<body>
+  <div id="main">
+		<div id="tree-div"></div>
+		<h1 id="title">Aloha, CropNResize!</h1>
+		<div id="bodyContent">
+			<div id="teaser" class="shorttext">
+				<p>This example will show you how to use the CropNResize plugin found at <a href="https://github.com/alohaeditor/Aloha-Plugin-CropNResize">https://github.com/alohaeditor/Aloha-Plugin-CropNResize</a>.</p>
+			</div>
+			<div id="content" class="article">
+				<p>Click the image to start resizing right away, as a resize handle will appear in it's south-east corner.</p>
+				<p><img src="images/cropnresize.jpg"></p>
+				<p><em>Note:</em> This is a very simple example, that will not allow subsequent cropping actions, or cropping combined with resizing.</p>
+			</div>
+		</div>
+  </div>
+   <script type="text/javascript" defer>
+		(function(window,undefined){
+			var
+				$ = window.jQuery,
+				GENTICS = window.GENTICS,
+				$body = $('body');
+
+			GENTICS.Aloha.settings = {
+				"plugins": {
+					"com.gentics.aloha.plugins.CropNResize": {
+						onCropped: function (image, props) {
+							// invoke the image cropper crop.php
+							image
+								.width(props.w) // set width
+								.height(props.h) // and height to new values
+								.attr(
+									"src",
+									"crop.php?src=" // and adjust src to the cropped image
+										+ image.attr('src')
+										+ "&x=" + props.x
+										+ "&y=" + props.y
+										+ "&w=" + props.w
+										+ "&h=" + props.h
+								);
+
+							// done
+							return true;
+						}
+					}
+				}
+			};
+
+			// Bind to Aloha Ready Event
+			$body.bind('aloha',function(){
+				$('#title').aloha();
+				$('#teaser').aloha();
+				$('#content').aloha();
+			});
+
+		})(window);
+  </script>
+</body>
+</html>
