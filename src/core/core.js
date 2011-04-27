@@ -12,6 +12,10 @@
 
 // Start Closure
 (function(window, undefined) {
+	// Namespace jQuery
+	window.alohaQuery = window.jQuery; // window.jQuery.sub();
+
+	// Prepare
 	var
 		jQuery = window.alohaQuery, $ = jQuery,
 		GENTICS = window.GENTICS,

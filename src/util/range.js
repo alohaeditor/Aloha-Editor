@@ -7,7 +7,7 @@
 (function(window, undefined) {
 	"use strict";
 	var
-		jQuery = window.alohaQuery, $ = jQuery,
+		jQuery = window.jQuery, $ = jQuery,
 		GENTICS = window.GENTICS,
 		Class = window.Class,
 		console = window.console;

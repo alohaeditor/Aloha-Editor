@@ -93,6 +93,7 @@ Aloha.FloatingMenu.window = jQuery(window);
  * @hide
  */
 Aloha.FloatingMenu.init = function() {
+	console.log('jQuery.store:', jQuery.store, window.jQuery, window.alohaQuery);
 	jQuery.storage = new jQuery.store();
 	this.currentScope = 'Aloha.global';
 	var that = this;
