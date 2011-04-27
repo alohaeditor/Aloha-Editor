@@ -91,22 +91,21 @@ GENTICS.Utils.RangeObject = Class.extend({
 
 	/**
 	 * Output some log
-	 * TODO: move this to GENTICS.Aloha.Log
+	 * TODO: move this to Aloha.Log
 	 * @param message log message to output
-	 * @param obj optional JS object to output
 	 * @return void
 	 * @hide
 	 */
-	log: function(message, obj) {
-		if (GENTICS && GENTICS.Aloha && GENTICS.Aloha.Log) {
-			GENTICS.Aloha.Log.debug(this, message);
+	log: function(message) {
+		var
+			Aloha = window.Aloha||false,
+			console = window.console||false;
+		if (Aloha && Aloha.Log) {
+			Aloha.Log.debug(this, message);
 			return false;
 		}
 		if (console) {
 			console.log(message);
-			if (obj) {
-				console.log(obj);
-			}
 		}
 	},
 
@@ -322,8 +321,8 @@ GENTICS.Utils.RangeObject = Class.extend({
 	select: function() {
 		if ( typeof document.createRange === 'undefined' ) {
 			// first the IE version of this method
-			if (GENTICS.Aloha.Log.isDebugEnabled()) {
-				GENTICS.Aloha.Log.debug(this, 'Set selection to current range (IE version)');
+			if (Aloha.Log.isDebugEnabled()) {
+				Aloha.Log.debug(this, 'Set selection to current range (IE version)');
 			}
 			// when the startcontainer is a textnode, which is followed by a blocklevel node (p, h1, ...), we need to add a <br> in between
 			if (
@@ -359,8 +358,8 @@ GENTICS.Utils.RangeObject = Class.extend({
 		}
 		else {
 			// now for the rest of the world
-			if (GENTICS.Aloha.Log.isDebugEnabled()) {
-				GENTICS.Aloha.Log.debug(this, 'Set selection to current range (non IE version)');
+			if (Aloha && Aloha.Log.isDebugEnabled()) {
+				Aloha.Log.debug(this, 'Set selection to current range (non IE version)');
 			}
 
 			// create a range
@@ -445,7 +444,7 @@ GENTICS.Utils.RangeObject = Class.extend({
 
 	/**
 	 * Method which updates the rangeObject including all extending properties like commonAncestorContainer etc...
-	 * TODO: is this method needed here? or should it contain the same code as GENTICS.Aloha.Selection.prototype.SelectionRange.prototype.update?
+	 * TODO: is this method needed here? or should it contain the same code as Aloha.Selection.prototype.SelectionRange.prototype.update?
 	 * @return void
 	 * @hide
 	 */
@@ -864,7 +863,7 @@ GENTICS.Utils.RangeObject = Class.extend({
 	 *   function() {
 	 *     return this.nodeName.toLowerCase() == 'a';
 	 *   },
-	 *   jQuery(GENTICS.Aloha.activeEditable.obj)
+	 *   jQuery(Aloha.activeEditable.obj)
 	 * );
 	 * </pre>
 	 * @param {function} comparator comparator function to find certain markup
