@@ -32,13 +32,14 @@ Aloha.Format.config = [ 'b', 'i','del','sub','sup', 'p', 'h1', 'h2', 'h3', 'h4',
  */
 Aloha.Format.init = function () {
 	// Prepare
-	var that = me;
+	var me = this;
 
 	this.initButtons();
 
 	// apply specific configuration if an editable has been activated
 	Aloha.bind('aloha-editable-activated',function (e, params) {
-		Aloha.Format.applyButtonConfig(params.editable.obj);
+		//debugger;
+		me.applyButtonConfig(params.editable.obj);
 	});
 
 };
