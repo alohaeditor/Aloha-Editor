@@ -22,6 +22,7 @@ Aloha.PluginRegistry = Class.extend({
 	 * @hide
 	 */
 	init: function() {
+		//debugger;
 		var
 			me = this,
 			loaded = 0,
@@ -36,11 +37,13 @@ Aloha.PluginRegistry = Class.extend({
 
 		// Initialize the plugins in the right order when they are loaded
 		Aloha.bind('aloha-i18n-plugins-loaded',function(){
+			//debugger;
 			for ( var i = 0; i < length; i++) {
 				if (pluginsStack[i].settings.enabled) {
 					pluginsStack[i].init();
 				}
 			}
+			//debugger;
 			Aloha.trigger('aloha-i18n-plugins-ready');
 		});
 

@@ -42,7 +42,7 @@ if (typeof JSON === 'undefined' || !JSON) {
 }
 
 (function($,undefined){
-console.log('Loading jQuery.store');
+//console.log('Loading jQuery.store');
 
 /**********************************************************************************
  * $.store base and convinience accessor

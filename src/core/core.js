@@ -168,6 +168,7 @@
 			}
 
 			// initialize the Aloha core components
+			//debugger;
 			Aloha.bind('aloha-i18n-ready',this.loadPlugins);
 			Aloha.bind('aloha-i18n-plugins-ready', this.loadGui);
 			this.initI18n();
@@ -190,11 +191,13 @@
 
 		bind: function(eventName,eventHandler) {
 			eventName = this.correctEventName(eventName);
+			console.log('Binding ['+eventName+'], has ['+(($('body').data('events')||{})[eventName]||[]).length+'] events');
 			$('body').bind(eventName,eventHandler);
 		},
 
 		trigger: function(eventName,data) {
 			eventName = this.correctEventName(eventName);
+			console.log('Trigger ['+eventName+'], has ['+(($('body').data('events')||{})[eventName]||[]).length+'] events');
 			$('body').trigger(eventName,data);
 		},
 
@@ -211,6 +214,7 @@
 		 * @return void
 		 */
 		loadGui: function () {
+			//debugger;
 			Aloha.RepositoryManager.init();
 			Aloha.FloatingMenu.init();
 

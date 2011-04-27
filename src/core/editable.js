@@ -560,17 +560,6 @@ Aloha.Editable = Class.extend({
 			'oldActive' : oldActive,
 			'editable' : this
 		});
-
-		/**
-		 * @event editableActivated fires after the editable has been activated by clicking on it.
-		 * This event is triggered in the Editable's local scope
-		 * @param {Event} e the event object
-		 * @param {Array} a an array which contains a reference to last active editable on its first position
-		 */
-		// and trigger our *finished* event
-		Aloha.trigger('aloha-editable-activated', {
-			'oldActive' : Aloha.getActiveEditable()
-		});
 	},
 
 	/**
@@ -600,13 +589,6 @@ Aloha.Editable = Class.extend({
 		Aloha.trigger('aloha-editable-deactivated',{
 			'editable' : this
 		});
-
-		/**
-		 * @event editableDeactivated fires after the editable has been activated by clicking on it.
-		 * This event is triggered in the Editable's scope
-		 * @param {Event} e the event object
-		 */
-		Aloha.trigger('aloha-editable-deactivated');
 
 		/**
 		 * @event smartContentChanged

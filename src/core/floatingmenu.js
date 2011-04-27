@@ -93,7 +93,8 @@ Aloha.FloatingMenu.window = jQuery(window);
  * @hide
  */
 Aloha.FloatingMenu.init = function() {
-	console.log('jQuery.store:', jQuery.store, window.jQuery, window.alohaQuery);
+	//debugger;
+	//console.log('jQuery.store:', jQuery.store, window.jQuery, window.alohaQuery);
 	jQuery.storage = new jQuery.store();
 	this.currentScope = 'Aloha.global';
 	var that = this;
@@ -150,6 +151,7 @@ Aloha.FloatingMenu.panelBody = null;
  * @hide
  */
 Aloha.FloatingMenu.generateComponent = function () {
+	//debugger;
 	var that = this;
 
 	// Initialize and configure the tooltips
@@ -448,6 +450,7 @@ Aloha.FloatingMenu.doLayout = function () {
 	if (Aloha.Log.isDebugEnabled()) {
 		Aloha.Log.debug(this, 'doLayout called for FloatingMenu, scope is ' + this.currentScope);
 	}
+	//debugger;
 	var that = this,
 		firstVisibleTab = false,
 		activeExtTab = this.extTabPanel.getActiveTab(),
