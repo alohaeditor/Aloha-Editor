@@ -1,48 +1,51 @@
 /*!
 * Aloha Editor
 * Author & Copyright (c) 2010 Gentics Software GmbH
-* aloha-sales@gentics.com
+* aloha-sales@gentics.com - way to over-lawyer it up Andrew :/
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
-/********************************
-  +---------------------------+
-  | GENTICS.Aloha.TablePlugin |
-  +---------------------------+
- ********************************/
+
+// Start Closure
+(function(window, undefined) {
+	var
+		jQuery = window.alohaQuery, $ = jQuery,
+		GENTICS = window.GENTICS,
+		Aloha = window.Aloha;
+
 /**
- * Register the TablePlugin as GENTICS.Aloha.Plugin
+ * Register the TablePlugin as Aloha.Plugin
  */
-GENTICS.Aloha.TablePlugin = new GENTICS.Aloha.Plugin('table');
+Aloha.TablePlugin = new Aloha.Plugin('table');
 
 
 /* -- ATTRIBUTES -- */
 /**
  * The Create-Layer Object of the TablePlugin
  *
- * @see GENTICS.Aloha.Table.CreateLayer
+ * @see Aloha.Table.CreateLayer
  */
-GENTICS.Aloha.TablePlugin.createLayer = undefined;
+Aloha.TablePlugin.createLayer = undefined;
 
 /**
  * Configure the available languages
  */
-GENTICS.Aloha.TablePlugin.languages = ['en', 'de', 'fr', 'eo', 'fi', 'ru', 'it', 'pl'];
+Aloha.TablePlugin.languages = ['en', 'de', 'fr', 'eo', 'fi', 'ru', 'it', 'pl'];
 
 /**
  * default button configuration
  */
-GENTICS.Aloha.TablePlugin.config = [ 'table' ];
+Aloha.TablePlugin.config = [ 'table' ];
 
 /**
  * An Array which holds all newly created tables contains DOM-Nodes of
  * table-objects
  */
-GENTICS.Aloha.TablePlugin.TableRegistry = new Array();
+Aloha.TablePlugin.TableRegistry = new Array();
 
 /**
  * Holds the active table-object
  */
-GENTICS.Aloha.TablePlugin.activeTable = undefined;
+Aloha.TablePlugin.activeTable = undefined;
 
 /**
  * parameters-objects for tables
@@ -50,7 +53,7 @@ GENTICS.Aloha.TablePlugin.activeTable = undefined;
  * @param className
  *            The class of activated tables
  */
-GENTICS.Aloha.TablePlugin.parameters = {
+Aloha.TablePlugin.parameters = {
 	className            : 'GENTICS_Aloha_Table',                 // class of editable tables
 	classSelectionRow    : 'GENTICS_Aloha_Table_selectColumn',    // class for the upper table-row to select columns
 	classSelectionColumn : 'GENTICS_Aloha_Table_selectRow',       // class for the left bound table-cells to select rows
@@ -70,18 +73,18 @@ GENTICS.Aloha.TablePlugin.parameters = {
  *
  * @return void
  */
-GENTICS.Aloha.TablePlugin.init = function() {
+Aloha.TablePlugin.init = function() {
 	// add reference to the create layer object
-	this.createLayer = new GENTICS.Aloha.Table.CreateLayer();
+	this.createLayer = new Aloha.Table.CreateLayer();
 
 	var that = this;
 
 	// subscribe for the 'editableActivated' event to activate all tables in the editable
-	GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'editableCreated', function(event, editable) {
+	Aloha.EventRegistry.subscribe(Aloha, 'editableCreated', function(event, editable) {
 
 		// add a mousedown event to all created editables to check if focus leaves a table
 		editable.obj.bind('mousedown', function(jqEvent) {
-			GENTICS.Aloha.TablePlugin.setFocusedTable(undefined);
+			Aloha.TablePlugin.setFocusedTable(undefined);
 		});
 
 		editable.obj.find('table').each(function() {
@@ -89,7 +92,7 @@ GENTICS.Aloha.TablePlugin.init = function() {
 			if (that.isEditableTable(this)) {
 
 				// instantiate a new table-object
-				var table = new GENTICS.Aloha.Table(this);
+				var table = new Aloha.Table(this);
 
 				table.parentEditable = editable;
 
@@ -97,7 +100,7 @@ GENTICS.Aloha.TablePlugin.init = function() {
 //				table.activate();
 
 				// add the activated table to the TableRegistry
-				GENTICS.Aloha.TablePlugin.TableRegistry.push(table);
+				Aloha.TablePlugin.TableRegistry.push(table);
 			}
 		});
 	});
@@ -105,29 +108,29 @@ GENTICS.Aloha.TablePlugin.init = function() {
 	// initialize the table buttons
 	this.initTableButtons();
 
-	GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'selectionChanged', function(event, rangeObject) {
+	Aloha.EventRegistry.subscribe(Aloha, 'selectionChanged', function(event, rangeObject) {
 
-		if (GENTICS.Aloha.activeEditable) {
+		if (Aloha.activeEditable) {
 			// get Plugin configuration
-			var config = that.getEditableConfig( GENTICS.Aloha.activeEditable.obj );
+			var config = that.getEditableConfig( Aloha.activeEditable.obj );
 
 			// show hide buttons regarding configuration and DOM position
-			if ( jQuery.inArray('table', config) != -1  && GENTICS.Aloha.Selection.mayInsertTag('table') ) {
+			if ( jQuery.inArray('table', config) != -1  && Aloha.Selection.mayInsertTag('table') ) {
 				that.createTableButton.show();
 			} else {
 				that.createTableButton.hide();
 			}
 
-			GENTICS.Aloha.TableHelper.unselectCells();
+			Aloha.TableHelper.unselectCells();
 
 			var table = rangeObject.findMarkup(function() {
 		        return this.nodeName.toLowerCase() == 'table';
-		    }, GENTICS.Aloha.activeEditable.obj);
+		    }, Aloha.activeEditable.obj);
 
 			// check wheater we are inside a table
 			if ( table ) {
 				// set the scope if either columns or rows are selected
-				GENTICS.Aloha.FloatingMenu.setScope(that.getUID(GENTICS.Aloha.TableHelper.selectionType));
+				Aloha.FloatingMenu.setScope(that.getUID(Aloha.TableHelper.selectionType));
 			} else {
 				if ( that.activeTable ) {
 					that.activeTable.focusOut();
@@ -135,15 +138,15 @@ GENTICS.Aloha.TablePlugin.init = function() {
 			}
 
 			// TODO this should not be necessary here!
-			GENTICS.Aloha.FloatingMenu.doLayout();
+			Aloha.FloatingMenu.doLayout();
 		}
 	});
 
 	// subscribe for the 'editableActivated' event to activate all tables in the editable
-	GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'editableActivated', function(event, props) {
+	Aloha.EventRegistry.subscribe(Aloha, 'editableActivated', function(event, props) {
 		props.editable.obj.find('table').each(function() {
 			// shortcut for TableRegistry
-			var tr = GENTICS.Aloha.TablePlugin.TableRegistry;
+			var tr = Aloha.TablePlugin.TableRegistry;
 			for (var i = 0; i < tr.length; i++){
 				if (tr[i].obj.attr('id') == jQuery(this).attr('id')) {
 					// activate the table
@@ -158,7 +161,7 @@ GENTICS.Aloha.TablePlugin.init = function() {
 			if (that.isEditableTable(this)) {
 
 				// instantiate a new table-object
-				var table = new GENTICS.Aloha.Table(this);
+				var table = new Aloha.Table(this);
 
 				table.parentEditable = props.editable;
 
@@ -166,17 +169,17 @@ GENTICS.Aloha.TablePlugin.init = function() {
 				table.activate();
 
 				// add the activated table to the TableRegistry
-				GENTICS.Aloha.TablePlugin.TableRegistry.push(table);
+				Aloha.TablePlugin.TableRegistry.push(table);
 			}
 		});
 	});
 
 	// subscribe for the 'editableDeactivated' event to deactivate all tables in the editable
-	GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'editableDeactivated', function(event, properties) {
-		GENTICS.Aloha.TablePlugin.setFocusedTable(undefined);
-		GENTICS.Aloha.TableHelper.unselectCells();
+	Aloha.EventRegistry.subscribe(Aloha, 'editableDeactivated', function(event, properties) {
+		Aloha.TablePlugin.setFocusedTable(undefined);
+		Aloha.TableHelper.unselectCells();
 		// shortcut for TableRegistry
-		var tr = GENTICS.Aloha.TablePlugin.TableRegistry;
+		var tr = Aloha.TablePlugin.TableRegistry;
 		for (var i = 0; i < tr.length; i++){
 			// activate the table
 			tr[i].deactivate();
@@ -188,7 +191,7 @@ GENTICS.Aloha.TablePlugin.init = function() {
  * test if the table is editable
  * @return boolean true if the table's parent element is contentEditable, false otherwise
  */
-GENTICS.Aloha.TablePlugin.isEditableTable = function(table) {
+Aloha.TablePlugin.isEditableTable = function(table) {
 	var parent = jQuery(table.parentNode);
 	if (parent.contentEditable() == 'true') {
 		return true;
@@ -200,37 +203,37 @@ GENTICS.Aloha.TablePlugin.isEditableTable = function(table) {
 /**
  * initialize the buttons and register them on floating menu
  */
-GENTICS.Aloha.TablePlugin.initTableButtons = function () {
+Aloha.TablePlugin.initTableButtons = function () {
 	var that = this;
 
 	// generate the new scopes
-	GENTICS.Aloha.FloatingMenu.createScope(this.getUID('row'), 'GENTICS.Aloha.global');
-	GENTICS.Aloha.FloatingMenu.createScope(this.getUID('column'), 'GENTICS.Aloha.global');
-	GENTICS.Aloha.FloatingMenu.createScope(this.getUID('cell'), 'GENTICS.Aloha.continuoustext');
+	Aloha.FloatingMenu.createScope(this.getUID('row'), 'Aloha.global');
+	Aloha.FloatingMenu.createScope(this.getUID('column'), 'Aloha.global');
+	Aloha.FloatingMenu.createScope(this.getUID('cell'), 'Aloha.continuoustext');
 
 	// the 'create table' button
-	this.createTableButton = new GENTICS.Aloha.ui.Button({
+	this.createTableButton = new Aloha.ui.Button({
 		'iconClass' : 'GENTICS_button GENTICS_button_table',
 		'size' : 'small',
 		'tooltip' : this.i18n('button.createtable.tooltip'),
 		'onclick' : function (element, event) {
-			GENTICS.Aloha.TablePlugin.createDialog(element.btnEl.dom);
+			Aloha.TablePlugin.createDialog(element.btnEl.dom);
 		}
 	});
 
 	// add to floating menu
-	GENTICS.Aloha.FloatingMenu.addButton(
-		'GENTICS.Aloha.continuoustext',
+	Aloha.FloatingMenu.addButton(
+		'Aloha.continuoustext',
 		this.createTableButton,
-		GENTICS.Aloha.i18n(GENTICS.Aloha, 'floatingmenu.tab.insert'),
+		Aloha.i18n(Aloha, 'floatingmenu.tab.insert'),
 		1
 	);
 
 	// now the specific table buttons
 	// for columns
-	GENTICS.Aloha.FloatingMenu.addButton(
+	Aloha.FloatingMenu.addButton(
 		this.getUID('column'),
-		new GENTICS.Aloha.ui.Button({
+		new Aloha.ui.Button({
 			'iconClass' : 'GENTICS_button GENTICS_button_addColumnLeft',
 			'size' : 'small',
 			'tooltip' : this.i18n('button.addcolleft.tooltip'),
@@ -240,12 +243,12 @@ GENTICS.Aloha.TablePlugin.initTableButtons = function () {
 				}
 			}
 		}),
-		GENTICS.Aloha.i18n(this, 'floatingmenu.tab.table'),
+		Aloha.i18n(this, 'floatingmenu.tab.table'),
 		1
 	);
-	GENTICS.Aloha.FloatingMenu.addButton(
+	Aloha.FloatingMenu.addButton(
 		this.getUID('column'),
-		new GENTICS.Aloha.ui.Button({
+		new Aloha.ui.Button({
 			'iconClass' : 'GENTICS_button GENTICS_button_addColumnRight',
 			'size' : 'small',
 			'tooltip' : this.i18n('button.addcolright.tooltip'),
@@ -255,22 +258,22 @@ GENTICS.Aloha.TablePlugin.initTableButtons = function () {
 				}
 			}
 		}),
-		GENTICS.Aloha.i18n(this, 'floatingmenu.tab.table'),
+		Aloha.i18n(this, 'floatingmenu.tab.table'),
 		1
 	);
-	GENTICS.Aloha.FloatingMenu.addButton(
+	Aloha.FloatingMenu.addButton(
 		this.getUID('column'),
-		new GENTICS.Aloha.ui.Button({
+		new Aloha.ui.Button({
 			'iconClass' : 'GENTICS_button GENTICS_button_deleteColumns',
 			'size' : 'small',
 			'tooltip' : this.i18n('button.delcols.tooltip'),
 			'onclick' : function () {
 				if (that.activeTable) {
 					var aTable = that.activeTable;
-					GENTICS.Aloha.showMessage(new GENTICS.Aloha.Message({
-						title : GENTICS.Aloha.i18n(that, 'Table'),
-						text : GENTICS.Aloha.i18n(that, 'deletecolumns.confirm'),
-						type : GENTICS.Aloha.Message.Type.CONFIRM,
+					Aloha.showMessage(new Aloha.Message({
+						title : Aloha.i18n(that, 'Table'),
+						text : Aloha.i18n(that, 'deletecolumns.confirm'),
+						type : Aloha.Message.Type.CONFIRM,
 						callback : function (sel) {
 							if (sel == 'yes') {
 								aTable.deleteColumns();
@@ -280,14 +283,14 @@ GENTICS.Aloha.TablePlugin.initTableButtons = function () {
 				}
 			}
 		}),
-		GENTICS.Aloha.i18n(this, 'floatingmenu.tab.table'),
+		Aloha.i18n(this, 'floatingmenu.tab.table'),
 		1
 	);
 
 	// for rows
-	GENTICS.Aloha.FloatingMenu.addButton(
+	Aloha.FloatingMenu.addButton(
 		this.getUID('row'),
-		new GENTICS.Aloha.ui.Button({
+		new Aloha.ui.Button({
 			'iconClass' : 'GENTICS_button GENTICS_button_addRowBefore',
 			'size' : 'small',
 			'tooltip' : this.i18n('button.addrowbefore.tooltip'),
@@ -297,12 +300,12 @@ GENTICS.Aloha.TablePlugin.initTableButtons = function () {
 				}
 			}
 		}),
-		GENTICS.Aloha.i18n(this, 'floatingmenu.tab.table'),
+		Aloha.i18n(this, 'floatingmenu.tab.table'),
 		1
 	);
-	GENTICS.Aloha.FloatingMenu.addButton(
+	Aloha.FloatingMenu.addButton(
 		this.getUID('row'),
-		new GENTICS.Aloha.ui.Button({
+		new Aloha.ui.Button({
 			'iconClass' : 'GENTICS_button GENTICS_button_addRowAfter',
 			'size' : 'small',
 			'tooltip' : this.i18n('button.addrowafter.tooltip'),
@@ -312,22 +315,22 @@ GENTICS.Aloha.TablePlugin.initTableButtons = function () {
 				}
 			}
 		}),
-		GENTICS.Aloha.i18n(this, 'floatingmenu.tab.table'),
+		Aloha.i18n(this, 'floatingmenu.tab.table'),
 		1
 	);
-	GENTICS.Aloha.FloatingMenu.addButton(
+	Aloha.FloatingMenu.addButton(
 		this.getUID('row'),
-		new GENTICS.Aloha.ui.Button({
+		new Aloha.ui.Button({
 			'iconClass' : 'GENTICS_button GENTICS_button_deleteRows',
 			'size' : 'small',
 			'tooltip' : this.i18n('button.delrows.tooltip'),
 			'onclick' : function () {
 				if (that.activeTable) {
 					var aTable = that.activeTable;
-					GENTICS.Aloha.showMessage(new GENTICS.Aloha.Message({
-						title : GENTICS.Aloha.i18n(that, 'Table'),
-						text : GENTICS.Aloha.i18n(that, 'deleterows.confirm'),
-						type : GENTICS.Aloha.Message.Type.CONFIRM,
+					Aloha.showMessage(new Aloha.Message({
+						title : Aloha.i18n(that, 'Table'),
+						text : Aloha.i18n(that, 'deleterows.confirm'),
+						type : Aloha.Message.Type.CONFIRM,
 						callback : function (sel) {
 							if (sel == 'yes') {
 								aTable.deleteRows();
@@ -337,11 +340,11 @@ GENTICS.Aloha.TablePlugin.initTableButtons = function () {
 				}
 			}
 		}),
-		GENTICS.Aloha.i18n(this, 'floatingmenu.tab.table'),
+		Aloha.i18n(this, 'floatingmenu.tab.table'),
 		1
 	);
 
-	this.captionButton = new GENTICS.Aloha.ui.Button({
+	this.captionButton = new Aloha.ui.Button({
 		'iconClass' : 'GENTICS_button GENTICS_button_table_caption',
 		'size' : 'small',
 		'tooltip' : this.i18n('button.caption.tooltip'),
@@ -372,31 +375,31 @@ GENTICS.Aloha.TablePlugin.initTableButtons = function () {
 
 						cDiv.focus();
 						newRange.select();
-						GENTICS.Aloha.Selection.updateSelection();
+						Aloha.Selection.updateSelection();
 					}
 				}
 			}
 		}
 	});
-	GENTICS.Aloha.FloatingMenu.addButton(
+	Aloha.FloatingMenu.addButton(
 		this.getUID('cell'),
 		this.captionButton,
-		GENTICS.Aloha.i18n(this, 'floatingmenu.tab.table'),
+		Aloha.i18n(this, 'floatingmenu.tab.table'),
 		1
 	);
 
 	// for cells
     // add summary field
-    this.summary = new GENTICS.Aloha.ui.AttributeField({
+    this.summary = new Aloha.ui.AttributeField({
     	'width':350
     });
     this.summary.addListener('keyup', function(obj, event) {
     	that.activeTable.checkWai();
     });
-    GENTICS.Aloha.FloatingMenu.addButton(
+    Aloha.FloatingMenu.addButton(
         this.getUID('cell'),
         this.summary,
-        GENTICS.Aloha.i18n(this, 'floatingmenu.tab.table'),
+        Aloha.i18n(this, 'floatingmenu.tab.table'),
         1
     );
 };
@@ -406,7 +409,7 @@ GENTICS.Aloha.TablePlugin.initTableButtons = function () {
  * @param caption caption as jQuery object
  * @param captionText default text for the caption
  */
-GENTICS.Aloha.TablePlugin.makeCaptionEditable = function(caption, captionText) {
+Aloha.TablePlugin.makeCaptionEditable = function(caption, captionText) {
 	var that = this;
 
 	var cSpan = caption.children('div').eq(0);
@@ -446,7 +449,7 @@ GENTICS.Aloha.TablePlugin.makeCaptionEditable = function(caption, captionText) {
  *            The element, which was clicked. It's needed to set the right
  *            position to the create-table-dialog.
  */
-GENTICS.Aloha.TablePlugin.createDialog = function(callingElement) {
+Aloha.TablePlugin.createDialog = function(callingElement) {
 	// set the calling element to the layer the calling element mostly will be
 	// the element which was clicked on it is used to position the createLayer
 	this.createLayer.set('target', callingElement);
@@ -466,12 +469,12 @@ GENTICS.Aloha.TablePlugin.createDialog = function(callingElement) {
  *            number of rows for the created table
  * @return void
  */
-GENTICS.Aloha.TablePlugin.createTable = function(cols, rows) {
+Aloha.TablePlugin.createTable = function(cols, rows) {
 	// Check if there is an active Editable and that it contains an element (= .obj)
-	if (GENTICS.Aloha.activeEditable != null && typeof GENTICS.Aloha.activeEditable.obj != 'undefined') {
+	if (Aloha.activeEditable != null && typeof Aloha.activeEditable.obj != 'undefined') {
 		// create a dom-table object
 		var table = document.createElement('table');
-		var tableId = table.id = GENTICS.Aloha.TableHelper.getNewTableID();
+		var tableId = table.id = Aloha.TableHelper.getNewTableID();
 		var tbody = document.createElement('tbody');
 
 		// create "rows"-number of rows
@@ -489,14 +492,14 @@ GENTICS.Aloha.TablePlugin.createTable = function(cols, rows) {
 		table.appendChild(tbody);
 
 		// insert at current cursor position
-		GENTICS.Utils.Dom.insertIntoDOM(jQuery(table), GENTICS.Aloha.Selection.getRangeObject(), jQuery(GENTICS.Aloha.activeEditable.obj));
+		GENTICS.Utils.Dom.insertIntoDOM(jQuery(table), Aloha.Selection.getRangeObject(), jQuery(Aloha.activeEditable.obj));
 
 		// if the table is inserted
 		var tableReloadedFromDOM = document.getElementById(tableId);
 
-		var tableObj = new GENTICS.Aloha.Table(tableReloadedFromDOM);
+		var tableObj = new Aloha.Table(tableReloadedFromDOM);
 
-		tableObj.parentEditable = GENTICS.Aloha.activeEditable;
+		tableObj.parentEditable = Aloha.activeEditable;
 
 		// transform the table to be editable
 		tableObj.activate();
@@ -511,7 +514,7 @@ GENTICS.Aloha.TablePlugin.createTable = function(cols, rows) {
 			tableObj.cells[0].wrapper.get(0).focus();
 		}
 
-		GENTICS.Aloha.TablePlugin.TableRegistry.push(tableObj);
+		Aloha.TablePlugin.TableRegistry.push(tableObj);
 
 	// no active editable => error
 	}else{
@@ -519,10 +522,10 @@ GENTICS.Aloha.TablePlugin.createTable = function(cols, rows) {
 	}
 };
 
-GENTICS.Aloha.TablePlugin.setFocusedTable = function(focusTable) {
+Aloha.TablePlugin.setFocusedTable = function(focusTable) {
 	var that = this;
-	for (var i = 0; i < GENTICS.Aloha.TablePlugin.TableRegistry.length; i++) {
-		GENTICS.Aloha.TablePlugin.TableRegistry[i].hasFocus = false;
+	for (var i = 0; i < Aloha.TablePlugin.TableRegistry.length; i++) {
+		Aloha.TablePlugin.TableRegistry[i].hasFocus = false;
 	}
 	if (typeof focusTable != 'undefined') {
         this.summary.setTargetObject(focusTable.obj, 'summary');
@@ -534,55 +537,55 @@ GENTICS.Aloha.TablePlugin.setFocusedTable = function(focusTable) {
         }
 		focusTable.hasFocus = true;
 	}
-	GENTICS.Aloha.TablePlugin.activeTable = focusTable;
+	Aloha.TablePlugin.activeTable = focusTable;
 };
 
 /**
- * Calls the GENTICS.Aloha.log function with 'error' level
+ * Calls the Aloha.log function with 'error' level
  *
- * @see GENTICS.Aloha.log
+ * @see Aloha.log
  * @param msg
  *            The message to display
  * @return void
  */
-GENTICS.Aloha.TablePlugin.error = function(msg) {
-	GENTICS.Aloha.Log.error(this, msg);
+Aloha.TablePlugin.error = function(msg) {
+	Aloha.Log.error(this, msg);
 };
 
 /**
- * Calls the GENTICS.Aloha.log function with 'debug' level
+ * Calls the Aloha.log function with 'debug' level
  *
- * @see GENTICS.Aloha.log
+ * @see Aloha.log
  * @param msg
  *            The message to display
  * @return void
  */
-GENTICS.Aloha.TablePlugin.debug = function(msg) {
-	GENTICS.Aloha.Log.debug(this, msg);
+Aloha.TablePlugin.debug = function(msg) {
+	Aloha.Log.debug(this, msg);
 };
 
 /**
- * Calls the GENTICS.Aloha.log function with 'info' level
+ * Calls the Aloha.log function with 'info' level
  *
- * @see GENTICS.Aloha.log
+ * @see Aloha.log
  * @param msg
  *            The message to display
  * @return void
  */
-GENTICS.Aloha.TablePlugin.info = function(msg) {
-	GENTICS.Aloha.Log.info(this, msg);
+Aloha.TablePlugin.info = function(msg) {
+	Aloha.Log.info(this, msg);
 };
 
 /**
- * Calls the GENTICS.Aloha.log function with 'info' level
+ * Calls the Aloha.log function with 'info' level
  *
- * @see GENTICS.Aloha.log
+ * @see Aloha.log
  * @param msg
  *            The message to display
  * @return void
  */
-GENTICS.Aloha.TablePlugin.log = function(msg) {
-	GENTICS.Aloha.log('log', this, msg);
+Aloha.TablePlugin.log = function(msg) {
+	Aloha.log('log', this, msg);
 };
 
 /**
@@ -596,7 +599,7 @@ GENTICS.Aloha.TablePlugin.log = function(msg) {
  * @return void
  *
  */
-GENTICS.Aloha.TablePlugin.get = function (property) {
+Aloha.TablePlugin.get = function (property) {
 	if (this.config[property]) {
 		return this.config[property];
 	}
@@ -614,7 +617,7 @@ GENTICS.Aloha.TablePlugin.get = function (property) {
  * @param key the key which should be set
  * @param value the value which should be set for the associated key
  */
-GENTICS.Aloha.TablePlugin.set = function (key, value) {
+Aloha.TablePlugin.set = function (key, value) {
 	if (this.config[key]) {
 		this.config[key] = value;
 	}else{
@@ -628,11 +631,11 @@ GENTICS.Aloha.TablePlugin.set = function (key, value) {
  * @param obj jQuery object to make clean
  * @return void
  */
-GENTICS.Aloha.TablePlugin.makeClean = function (obj) {
+Aloha.TablePlugin.makeClean = function (obj) {
 	// find all table tags
 	obj.find('table').each(function() {
 		// instantiate a new table-object
-		var table = new GENTICS.Aloha.Table(this);
+		var table = new Aloha.Table(this);
 		// deactivate the table
 		table.deactivate();
 	});
@@ -643,7 +646,7 @@ GENTICS.Aloha.TablePlugin.makeClean = function (obj) {
  *
  * @return The plugins namespace (string)
  */
-GENTICS.Aloha.TablePlugin.toString = function() {
+Aloha.TablePlugin.toString = function() {
 	return this.prefix;
 };
 /* -- END METHODS -- */
@@ -651,7 +654,7 @@ GENTICS.Aloha.TablePlugin.toString = function() {
 
 /**************************
   +---------------------+
-  | GENTICS.Aloha.Table |
+  | Aloha.Table |
   +---------------------+
 ***************************/
 /**
@@ -661,7 +664,7 @@ GENTICS.Aloha.TablePlugin.toString = function() {
  *            the dom-representation of the held table
  * @return void
  */
-GENTICS.Aloha.Table = function(table) {
+Aloha.Table = function(table) {
 	// set the table attribut "obj" as a jquery represenation of the dom-table
 	this.obj = jQuery(table);
 
@@ -685,7 +688,7 @@ GENTICS.Aloha.Table = function(table) {
 		var cols = row.children();
 		for (var j = 0; j < cols.length; j++) {
 			var col = cols[j];
-			var Cell = new GENTICS.Aloha.Table.Cell(col, this);
+			var Cell = new Aloha.Table.Cell(col, this);
 			this.cells.push(Cell);
 		}
 	}
@@ -694,114 +697,114 @@ GENTICS.Aloha.Table = function(table) {
 /**
  * Attribute holding the jQuery-table-represenation
  */
-GENTICS.Aloha.Table.prototype.obj = undefined;
+Aloha.Table.prototype.obj = undefined;
 
 /**
  * The DOM-element of the outest div-container wrapped around the cell
  */
-GENTICS.Aloha.Table.prototype.tableWrapper = undefined;
+Aloha.Table.prototype.tableWrapper = undefined;
 
 /**
  * An array of all Cells contained in the Table
  *
- * @see GENTICS.Aloha.Table.Cell
+ * @see Aloha.Table.Cell
  */
-GENTICS.Aloha.Table.prototype.cells = undefined;
+Aloha.Table.prototype.cells = undefined;
 
 /**
  * Number of rows of the table
  */
-GENTICS.Aloha.Table.prototype.numRows = undefined;
+Aloha.Table.prototype.numRows = undefined;
 
 /**
  * Number of rows of the table
  */
-GENTICS.Aloha.Table.prototype.numCols = undefined;
+Aloha.Table.prototype.numCols = undefined;
 
 /**
  * Flag wether the table is active or not
  */
-GENTICS.Aloha.Table.prototype.isActive = false;
+Aloha.Table.prototype.isActive = false;
 
 /**
  * Flag wether the table is focused or not
  */
-GENTICS.Aloha.Table.prototype.hasFocus = false;
+Aloha.Table.prototype.hasFocus = false;
 
 /**
  * The editable which contains the table
  */
-GENTICS.Aloha.Table.prototype.parentEditable = undefined;
+Aloha.Table.prototype.parentEditable = undefined;
 
 /**
  * Flag to check if the mouse was pressed. For row- and column-selection.
  */
-GENTICS.Aloha.Table.prototype.mousedown = false;
+Aloha.Table.prototype.mousedown = false;
 
 /**
  * ID of the column which was pressed when selecting columns
  */
-GENTICS.Aloha.Table.prototype.clickedColumnId = -1;
+Aloha.Table.prototype.clickedColumnId = -1;
 
 /**
  * ID of the row which was pressed when selecting rows
  */
-GENTICS.Aloha.Table.prototype.clickedRowId = -1;
+Aloha.Table.prototype.clickedRowId = -1;
 
 /**
  * collection of columnindexes of the columns which should be selected
  */
-GENTICS.Aloha.Table.prototype.columnsToSelect = new Array();
+Aloha.Table.prototype.columnsToSelect = new Array();
 
 /**
  * collection of rowindexes of the rows which should be selected
  */
-GENTICS.Aloha.Table.prototype.rowsToSelect = new Array();
+Aloha.Table.prototype.rowsToSelect = new Array();
 
 /**
  * contains the plugin id used for interaction with the floating menu
  */
-GENTICS.Aloha.Table.prototype.fmPluginId = undefined;
+Aloha.Table.prototype.fmPluginId = undefined;
 
 /* -- END ATTRIBUTES -- */
 
 /* -- METHODS -- */
 /**
- * Wrapper-Mehotd to return a property of GENTICS.Aloha.TablePlugin.get
+ * Wrapper-Mehotd to return a property of Aloha.TablePlugin.get
  *
- * @see GENTICS.Aloha.TablePlugin.get
+ * @see Aloha.TablePlugin.get
  * @param property
  *            the property whichs value should be return
  * @return the value associated with the property
  */
-GENTICS.Aloha.Table.prototype.get = function(property) {
-	return GENTICS.Aloha.TablePlugin.get(property);
+Aloha.Table.prototype.get = function(property) {
+	return Aloha.TablePlugin.get(property);
 };
 
 /**
- * Wrapper-Method for GENTICS.Aloha.TablePlugin.set
+ * Wrapper-Method for Aloha.TablePlugin.set
  *
- * @see GENTICS.Aloha.TablePlugin.set
+ * @see Aloha.TablePlugin.set
  * @param key
  *            the key whichs value should be set
  * @param value
  *            the value for the key
  * @return void
  */
-GENTICS.Aloha.Table.prototype.set = function(key, value) {
-	GENTICS.Aloha.TablePlugin.set(key, value);
+Aloha.Table.prototype.set = function(key, value) {
+	Aloha.TablePlugin.set(key, value);
 };
 
 /**
  * Transforms the existing dom-table into an editable aloha-table. In fact it
- * replaces the td-elements with equivalent GENTICS.Aloha.Table.Cell-elements
+ * replaces the td-elements with equivalent Aloha.Table.Cell-elements
  * with attached events.
  * Furthermore it creates wrapping divs to realize a click-area for row- and
  * column selection and also attaches events.
  *
  * @return void
  */
-GENTICS.Aloha.Table.prototype.activate = function() {
+Aloha.Table.prototype.activate = function() {
 	if (this.isActive) {
 		return;
 	}
@@ -813,16 +816,16 @@ GENTICS.Aloha.Table.prototype.activate = function() {
 
 	// set an id to the table if not already set
 	if (this.obj.attr('id') == '') {
-		this.obj.attr('id', GENTICS.Aloha.TableHelper.getNewTableID());
+		this.obj.attr('id', Aloha.TableHelper.getNewTableID());
 	}
 
 	// unset the selection type
-	GENTICS.Aloha.TableHelper.selectionType = undefined;
+	Aloha.TableHelper.selectionType = undefined;
 
 	this.obj.bind('keydown', function(jqEvent){
 		if (!jqEvent.ctrlKey && !jqEvent.shiftKey) {
-			if (GENTICS.Aloha.TableHelper.selectedCells.length > 0 && GENTICS.Aloha.TableHelper.selectedCells[0].length > 0) {
-				GENTICS.Aloha.TableHelper.selectedCells[0][0].firstChild.focus();
+			if (Aloha.TableHelper.selectedCells.length > 0 && Aloha.TableHelper.selectedCells[0].length > 0) {
+				Aloha.TableHelper.selectedCells[0][0].firstChild.focus();
 			}
 		}
 	});
@@ -845,7 +848,7 @@ GENTICS.Aloha.Table.prototype.activate = function() {
 //		// if a mousedown is done on the table, just focus the first cell of the table
 //		setTimeout(function() {
 //			var firstCell = that.obj.find('tr:nth-child(2) td:nth-child(2)').children('div[contenteditable=true]').get(0);
-//			GENTICS.Aloha.TableHelper.unselectCells();
+//			Aloha.TableHelper.unselectCells();
 //			jQuery(firstCell).get(0).focus();
 //			// move focus in first cell
 //			that.obj.cells[0].wrapper.get(0).focus();
@@ -902,10 +905,10 @@ GENTICS.Aloha.Table.prototype.activate = function() {
 	this.isActive = true;
 
 	// throw a new event when the table has been activated
-	GENTICS.Aloha.EventRegistry.trigger(
-			new GENTICS.Aloha.Event(
+	Aloha.EventRegistry.trigger(
+			new Aloha.Event(
 					'tableActivated',
-					GENTICS.Aloha,
+					Aloha,
 					[ this ]
 			)
 	);
@@ -914,17 +917,17 @@ GENTICS.Aloha.Table.prototype.activate = function() {
 /**
  * Make the table caption editable (if present)
  */
-GENTICS.Aloha.Table.prototype.makeCaptionEditable = function() {
+Aloha.Table.prototype.makeCaptionEditable = function() {
 	var caption = this.obj.find('caption').eq(0);
 	if (caption) {
-		GENTICS.Aloha.TablePlugin.makeCaptionEditable(caption);
+		Aloha.TablePlugin.makeCaptionEditable(caption);
 	}
 };
 
 /**
  * check the WAI conformity of the table and sets the attribute.
  */
-GENTICS.Aloha.Table.prototype.checkWai = function() {
+Aloha.Table.prototype.checkWai = function() {
 	var w = this.wai;
 	w.removeClass(this.get('waiGreen'));
 	w.removeClass(this.get('waiRed'));
@@ -941,7 +944,7 @@ GENTICS.Aloha.Table.prototype.checkWai = function() {
  *
  * @return void
  */
-GENTICS.Aloha.Table.prototype.attachSelectionColumn = function() {
+Aloha.Table.prototype.attachSelectionColumn = function() {
 	// create an empty cell
 	var emptyCell = jQuery('<td>');
 	// set the unicode '&nbsp;' code
@@ -972,7 +975,7 @@ GENTICS.Aloha.Table.prototype.attachSelectionColumn = function() {
  *            The jquery object of the table-data field
  * @return void
  */
-GENTICS.Aloha.Table.prototype.attachRowSelectionEventsToCell = function(cell){
+Aloha.Table.prototype.attachRowSelectionEventsToCell = function(cell){
 	var that = this;
 
 	// unbind eventually existing events of this cell
@@ -1003,13 +1006,13 @@ GENTICS.Aloha.Table.prototype.attachRowSelectionEventsToCell = function(cell){
  *            the jquery-event object
  * @return void
  */
-GENTICS.Aloha.Table.prototype.rowSelectionMouseDown = function (jqEvent) {
+Aloha.Table.prototype.rowSelectionMouseDown = function (jqEvent) {
 
 	// focus the table (if not already done)
 	this.focus();
 
 	// if no cells are selected, reset the selection-array
-	if (GENTICS.Aloha.TableHelper.selectedCells.length == 0) {
+	if (Aloha.TableHelper.selectedCells.length == 0) {
 		this.rowsToSelect = new Array();
 	}
 
@@ -1064,7 +1067,7 @@ GENTICS.Aloha.Table.prototype.rowSelectionMouseDown = function (jqEvent) {
  *            the jquery-event object
  * @return void
  */
-GENTICS.Aloha.Table.prototype.rowSelectionMouseOver = function (jqEvent) {
+Aloha.Table.prototype.rowSelectionMouseOver = function (jqEvent) {
 	var rowIndex = jqEvent.currentTarget.parentNode.rowIndex;
 
 	// only select the row if the mouse was clicked and the clickedRowId isn't
@@ -1106,7 +1109,7 @@ GENTICS.Aloha.Table.prototype.rowSelectionMouseOver = function (jqEvent) {
  *            The jquery object of the table-data field
  * @return void
  */
-GENTICS.Aloha.Table.prototype.attachSelectionRow = function() {
+Aloha.Table.prototype.attachSelectionRow = function() {
 	var that = this;
 
 	// create an empty td
@@ -1141,11 +1144,11 @@ GENTICS.Aloha.Table.prototype.attachSelectionRow = function() {
 //				var firstCell = that.obj.find('tr:nth-child(2) td:nth-child(2)').children('div[contenteditable=true]').get(0);
 //				jQuery(firstCell).get(0).focus();
 
-			    GENTICS.Aloha.FloatingMenu.userActivatedTab = GENTICS.Aloha.TablePlugin.i18n('floatingmenu.tab.table');
-				GENTICS.Aloha.FloatingMenu.doLayout();
+			    Aloha.FloatingMenu.userActivatedTab = Aloha.TablePlugin.i18n('floatingmenu.tab.table');
+				Aloha.FloatingMenu.doLayout();
 
 				// jump in Summary field
-			    GENTICS.Aloha.TablePlugin.summary.focus();
+			    Aloha.TablePlugin.summary.focus();
 				e.stopPropagation();
 				e.preventDefault();
 				return false;
@@ -1172,7 +1175,7 @@ GENTICS.Aloha.Table.prototype.attachSelectionRow = function() {
  *            the jquery object of the td-field
  * @return void
  */
-GENTICS.Aloha.Table.prototype.attachColumnSelectEventsToCell = function (cell) {
+Aloha.Table.prototype.attachColumnSelectEventsToCell = function (cell) {
 	var that = this;
 
 	// unbind eventually existing events of this cell
@@ -1206,7 +1209,7 @@ GENTICS.Aloha.Table.prototype.attachColumnSelectEventsToCell = function (cell) {
  *            the jquery event-object
  * @return void
  */
-GENTICS.Aloha.Table.prototype.columnSelectionMouseDown = function (jqEvent) {
+Aloha.Table.prototype.columnSelectionMouseDown = function (jqEvent) {
 
 	this.focus();
 
@@ -1215,7 +1218,7 @@ GENTICS.Aloha.Table.prototype.columnSelectionMouseDown = function (jqEvent) {
 //	jQuery(firstCell).get(0).focus();
 
 	// if no cells are selected, reset the selection-array
-	if (GENTICS.Aloha.TableHelper.selectedCells.length == 0) {
+	if (Aloha.TableHelper.selectedCells.length == 0) {
 		this.columnsToSelect = new Array();
 	}
 
@@ -1266,7 +1269,7 @@ GENTICS.Aloha.Table.prototype.columnSelectionMouseDown = function (jqEvent) {
  *            the jquery-event object
  * @return void
  */
-GENTICS.Aloha.Table.prototype.columnSelectionMouseOver = function (jqEvent) {
+Aloha.Table.prototype.columnSelectionMouseOver = function (jqEvent) {
 	var colIndex = jqEvent.currentTarget.cellIndex;
 	if (this.mousedown && this.clickedColumnId > 0) {
 		var indexInArray = jQuery.inArray(colIndex, this.columnsToSelect);
@@ -1288,17 +1291,17 @@ GENTICS.Aloha.Table.prototype.columnSelectionMouseOver = function (jqEvent) {
  *
  * @return void
  */
-GENTICS.Aloha.Table.prototype.releaseLastCellEvents = function() {
+Aloha.Table.prototype.releaseLastCellEvents = function() {
 	this.obj.find('tr:last td:last').unbind();
 };
 
 /**
  * Attach a keydown-event for the last cell
  *
- * @see GENTICS.Aloha.Table.lastCellKeyDown
+ * @see Aloha.Table.lastCellKeyDown
  * @return void
  */
-GENTICS.Aloha.Table.prototype.attachLastCellEvents = function() {
+Aloha.Table.prototype.attachLastCellEvents = function() {
 	var that = this;
 	this.obj.find('tr:last td:last').bind('keydown', function(jqEvent) {
 		that.lastCellKeyDown(jqEvent);
@@ -1314,7 +1317,7 @@ GENTICS.Aloha.Table.prototype.attachLastCellEvents = function() {
  *            the jquery-event object
  * @return
  */
-GENTICS.Aloha.Table.prototype.lastCellKeyDown = function(jqEvent) {
+Aloha.Table.prototype.lastCellKeyDown = function(jqEvent) {
 	var KEYCODE_TAB = 9;
 
 	// only add a row on a single key-press of tab (so check if alt-, shift- or
@@ -1341,21 +1344,21 @@ GENTICS.Aloha.Table.prototype.lastCellKeyDown = function(jqEvent) {
  *
  * @return void
  */
-GENTICS.Aloha.Table.prototype.deleteRows = function() {
+Aloha.Table.prototype.deleteRows = function() {
 	var rowIDs = new Array();
 
 	// flag if the table should be deleted
 	var deleteTable = false;
 
 	// if a selection was made, delete the selected cells
-	if (GENTICS.Aloha.TableHelper.selectedCells.length > 0) {
-		for (var i = 0; i < GENTICS.Aloha.TableHelper.selectedCells.length; i++) {
-			rowIDs.push(GENTICS.Aloha.TableHelper.selectedCells[i][0].parentNode.rowIndex);
+	if (Aloha.TableHelper.selectedCells.length > 0) {
+		for (var i = 0; i < Aloha.TableHelper.selectedCells.length; i++) {
+			rowIDs.push(Aloha.TableHelper.selectedCells[i][0].parentNode.rowIndex);
 		}
 
 	// if no rows were selected, delete the row, where the cursor is placed in
-	}else if (typeof GENTICS.Aloha.Table.Cell.lastActiveCell != 'undefined') {
-		rowIDs.push(GENTICS.Aloha.Table.Cell.lastActiveCell.obj.context.parentNode.rowIndex);
+	}else if (typeof Aloha.Table.Cell.lastActiveCell != 'undefined') {
+		rowIDs.push(Aloha.Table.Cell.lastActiveCell.obj.context.parentNode.rowIndex);
 	}
 
 	// if all rows should be deleted, set flag to remove the WHOLE table
@@ -1366,10 +1369,10 @@ GENTICS.Aloha.Table.prototype.deleteRows = function() {
 	// delete the whole table
 	if (deleteTable) {
 		var that = this;
-		GENTICS.Aloha.showMessage(new GENTICS.Aloha.Message({
-			title : GENTICS.Aloha.i18n(GENTICS.Aloha.TablePlugin, 'Table'),
-			text : GENTICS.Aloha.i18n(GENTICS.Aloha.TablePlugin, 'deletetable.confirm'),
-			type : GENTICS.Aloha.Message.Type.CONFIRM,
+		Aloha.showMessage(new Aloha.Message({
+			title : Aloha.i18n(Aloha.TablePlugin, 'Table'),
+			text : Aloha.i18n(Aloha.TablePlugin, 'deletetable.confirm'),
+			type : Aloha.Message.Type.CONFIRM,
 			callback : function (sel) {
 				if (sel == 'yes') {
 					that.deleteTable();
@@ -1427,7 +1430,7 @@ GENTICS.Aloha.Table.prototype.deleteRows = function() {
 		this.attachLastCellEvents();
 
 		// finally unselect the marked cells
-		GENTICS.Aloha.TableHelper.unselectCells();
+		Aloha.TableHelper.unselectCells();
 	}
 };
 
@@ -1438,21 +1441,21 @@ GENTICS.Aloha.Table.prototype.deleteRows = function() {
  *
  * @return void
  */
-GENTICS.Aloha.Table.prototype.deleteColumns = function() {
+Aloha.Table.prototype.deleteColumns = function() {
 	var colIDs = new Array();
 
 	// flag if the table should be deleted
 	var deleteTable = false;
 
 	// if a selection was made, delete the selected cells
-	if (GENTICS.Aloha.TableHelper.selectedCells.length > 0) {
-		for (var i = 0; i < GENTICS.Aloha.TableHelper.selectedCells[0].length; i++) {
-			colIDs.push(GENTICS.Aloha.TableHelper.selectedCells[0][i].cellIndex);
+	if (Aloha.TableHelper.selectedCells.length > 0) {
+		for (var i = 0; i < Aloha.TableHelper.selectedCells[0].length; i++) {
+			colIDs.push(Aloha.TableHelper.selectedCells[0][i].cellIndex);
 		}
 
 	// if no columns were selected, delete the column, where the cursor is placed in
-	}else if (typeof GENTICS.Aloha.Table.Cell.lastActiveCell != 'undefined') {
-		colIDs.push(GENTICS.Aloha.Table.Cell.lastActiveCell.obj.context.cellIndex);
+	}else if (typeof Aloha.Table.Cell.lastActiveCell != 'undefined') {
+		colIDs.push(Aloha.Table.Cell.lastActiveCell.obj.context.cellIndex);
 	}
 
 	// if all columns should be deleted, set flag to remove the WHOLE table
@@ -1463,10 +1466,10 @@ GENTICS.Aloha.Table.prototype.deleteColumns = function() {
 	// delete the whole table
 	if (deleteTable) {
 		var that = this;
-		GENTICS.Aloha.showMessage(new GENTICS.Aloha.Message({
-			title : GENTICS.Aloha.i18n(GENTICS.Aloha.TablePlugin, 'Table'),
-			text : GENTICS.Aloha.i18n(GENTICS.Aloha.TablePlugin, 'deletetable.confirm'),
-			type : GENTICS.Aloha.Message.Type.CONFIRM,
+		Aloha.showMessage(new Aloha.Message({
+			title : Aloha.i18n(Aloha.TablePlugin, 'Table'),
+			text : Aloha.i18n(Aloha.TablePlugin, 'deletetable.confirm'),
+			type : Aloha.Message.Type.CONFIRM,
 			callback : function (sel) {
 				if (sel == 'yes') {
 					that.deleteTable();
@@ -1523,7 +1526,7 @@ GENTICS.Aloha.Table.prototype.deleteColumns = function() {
 		// re-attach the events for the last cell
 		this.attachLastCellEvents();
 
-		GENTICS.Aloha.TableHelper.unselectCells();
+		Aloha.TableHelper.unselectCells();
 	}
 };
 
@@ -1532,10 +1535,10 @@ GENTICS.Aloha.Table.prototype.deleteColumns = function() {
  *
  * @return void
  */
-GENTICS.Aloha.Table.prototype.deleteTable = function() {
+Aloha.Table.prototype.deleteTable = function() {
 	var deleteIndex = -1;
-	for (var i = 0; i < GENTICS.Aloha.TablePlugin.TableRegistry.length; i++){
-		if (GENTICS.Aloha.TablePlugin.TableRegistry[i].obj.attr('id') == this.obj.attr('id')) {
+	for (var i = 0; i < Aloha.TablePlugin.TableRegistry.length; i++){
+		if (Aloha.TablePlugin.TableRegistry[i].obj.attr('id') == this.obj.attr('id')) {
 			deleteIndex = i;
 			break;
 		}
@@ -1544,11 +1547,11 @@ GENTICS.Aloha.Table.prototype.deleteTable = function() {
 		// before deleting the table, deactivate it
 		this.deactivate();
 
-		GENTICS.Aloha.TableHelper.selectionType = undefined;
-		GENTICS.Aloha.TablePlugin.TableRegistry.splice(i, 1);
+		Aloha.TableHelper.selectionType = undefined;
+		Aloha.TablePlugin.TableRegistry.splice(i, 1);
 
 		// we will set the cursor right before the removed table
-		var newRange = GENTICS.Aloha.Selection.rangeObject;
+		var newRange = Aloha.Selection.rangeObject;
 		// TODO set the correct range here (cursor shall be right before the removed table)
 		newRange.startContainer = newRange.endContainer = this.obj.get(0).parentNode;
 		newRange.startOffset = newRange.endOffset = GENTICS.Utils.Dom.getIndexInParent(this.obj.get(0).parentNode);
@@ -1566,10 +1569,10 @@ GENTICS.Aloha.Table.prototype.deleteTable = function() {
  * Wrapper function for this.addRow to add a row before the active row
  *
  * @param highlightNewRows flag if the newly created rows should be marked as selected
- * @see GENTICS.Aloha.Table.prototype.addRow
+ * @see Aloha.Table.prototype.addRow
  * @return
  */
-GENTICS.Aloha.Table.prototype.addRowsBefore = function(highlightNewRows) {
+Aloha.Table.prototype.addRowsBefore = function(highlightNewRows) {
 	this.addRows('before', highlightNewRows);
 };
 
@@ -1577,10 +1580,10 @@ GENTICS.Aloha.Table.prototype.addRowsBefore = function(highlightNewRows) {
  * Wrapper function for this.addRow to add a row after the active row
  *
  * @param highlightNewRows flag if the newly created rows should be marked as selected
- * @see GENTICS.Aloha.Table.prototype.addRow
+ * @see Aloha.Table.prototype.addRow
  * @return
  */
-GENTICS.Aloha.Table.prototype.addRowsAfter = function(highlightNewRows) {
+Aloha.Table.prototype.addRowsAfter = function(highlightNewRows) {
 	this.addRows('after', highlightNewRows);
 };
 
@@ -1597,8 +1600,8 @@ GENTICS.Aloha.Table.prototype.addRowsAfter = function(highlightNewRows) {
  *            flag if the newly created rows should be marked as selected
  * @return void
  */
-GENTICS.Aloha.Table.prototype.addRows = function(position, highlightNewRows) {
-	if (typeof GENTICS.Aloha.TablePlugin.activeTable != 'undefined') {
+Aloha.Table.prototype.addRows = function(position, highlightNewRows) {
+	if (typeof Aloha.TablePlugin.activeTable != 'undefined') {
 		// release listening events of the last cell
 		this.releaseLastCellEvents();
 
@@ -1611,27 +1614,27 @@ GENTICS.Aloha.Table.prototype.addRows = function(position, highlightNewRows) {
 		var rowId = 1;
 
 		// if rows were selected take the amount of selected cells for the new rows
-		if (GENTICS.Aloha.TableHelper.selectedCells.length > 0) {
-			rowsToInsert = GENTICS.Aloha.TableHelper.selectedCells.length;
+		if (Aloha.TableHelper.selectedCells.length > 0) {
+			rowsToInsert = Aloha.TableHelper.selectedCells.length;
 
 			// get the index where the new rows should be inserted
 			switch (position) {
 				case 'before':
-					if (GENTICS.Aloha.TableHelper.selectedCells[0].length){
-						rowId = GENTICS.Aloha.TableHelper.selectedCells[0][0].parentNode.rowIndex;
+					if (Aloha.TableHelper.selectedCells[0].length){
+						rowId = Aloha.TableHelper.selectedCells[0][0].parentNode.rowIndex;
 					}
 					break;
 				case 'after':
-					var lastRow = GENTICS.Aloha.TableHelper.selectedCells.length - 1;
-					if (GENTICS.Aloha.TableHelper.selectedCells[lastRow].length){
-						rowId = GENTICS.Aloha.TableHelper.selectedCells[lastRow][0].parentNode.rowIndex;
+					var lastRow = Aloha.TableHelper.selectedCells.length - 1;
+					if (Aloha.TableHelper.selectedCells[lastRow].length){
+						rowId = Aloha.TableHelper.selectedCells[lastRow][0].parentNode.rowIndex;
 					}
 					break;
 			}
 
 		// no rows selected, insert 1 new row before/after the row of the last active cell
-		}else if (typeof GENTICS.Aloha.Table.Cell.lastActiveCell != 'undefined') {
-			rowId = GENTICS.Aloha.Table.Cell.lastActiveCell.obj.context.parentNode.rowIndex;
+		}else if (typeof Aloha.Table.Cell.lastActiveCell != 'undefined') {
+			rowId = Aloha.Table.Cell.lastActiveCell.obj.context.parentNode.rowIndex;
 		}
 
 		// the new row index for the created row
@@ -1656,7 +1659,7 @@ GENTICS.Aloha.Table.prototype.addRows = function(position, highlightNewRows) {
 			for (i = 0; i < numCols; i++) {
 				var newCol = jQuery('<td>');
 				newCol.html('\u00a0');
-				var cell = new GENTICS.Aloha.Table.Cell(newCol.get(0), GENTICS.Aloha.TablePlugin.activeTable);
+				var cell = new Aloha.Table.Cell(newCol.get(0), Aloha.TablePlugin.activeTable);
 				cell.activate();
 				this.cells.push(cell);
 
@@ -1664,7 +1667,7 @@ GENTICS.Aloha.Table.prototype.addRows = function(position, highlightNewRows) {
 			}
 
 
-			var currentRow = jQuery(GENTICS.Aloha.TablePlugin.activeTable.obj.find("tr").get(rowId));
+			var currentRow = jQuery(Aloha.TablePlugin.activeTable.obj.find("tr").get(rowId));
 
 			switch (position) {
 				case 'before':
@@ -1674,12 +1677,12 @@ GENTICS.Aloha.Table.prototype.addRows = function(position, highlightNewRows) {
 					currentRow.after(insertionRow);
 					break;
 				default:
-					this.warn(this, 'Wrong call of GENTICS.Aloha.Table.prototype.addRow!');
+					this.warn(this, 'Wrong call of Aloha.Table.prototype.addRow!');
 			}
 			newRowIndex ++;
 			this.numRows ++;
 		}
-		GENTICS.Aloha.TableHelper.unselectCells();
+		Aloha.TableHelper.unselectCells();
 
 		this.rowsToSelect = rowIdArray;
 		if (highlightNewRows) {
@@ -1694,20 +1697,20 @@ GENTICS.Aloha.Table.prototype.addRows = function(position, highlightNewRows) {
 /**
  * Wrapper method to add columns on the right side
  *
- * @see GENTICS.Aloha.Table.addColumns
+ * @see Aloha.Table.addColumns
  * @return void
  */
-GENTICS.Aloha.Table.prototype.addColumnsRight = function () {
+Aloha.Table.prototype.addColumnsRight = function () {
 	this.addColumns('right');
 };
 
 /**
  * Wrapper method to add columns on the left side
  *
- * @see GENTICS.Aloha.Table.addColumns
+ * @see Aloha.Table.addColumns
  * @return void
  */
-GENTICS.Aloha.Table.prototype.addColumnsLeft = function() {
+Aloha.Table.prototype.addColumnsLeft = function() {
 	this.addColumns('left');
 };
 
@@ -1723,8 +1726,8 @@ GENTICS.Aloha.Table.prototype.addColumnsLeft = function() {
  *            columns should be inserted
  * @return void
  */
-GENTICS.Aloha.Table.prototype.addColumns = function (position) {
-	if (typeof GENTICS.Aloha.TablePlugin.activeTable != 'undefined') {
+Aloha.Table.prototype.addColumns = function (position) {
+	if (typeof Aloha.TablePlugin.activeTable != 'undefined') {
 		// release listening events of the last cell
 		this.releaseLastCellEvents();
 
@@ -1736,24 +1739,24 @@ GENTICS.Aloha.Table.prototype.addColumns = function (position) {
 		var colId = 1;
 
 		// if columns are selected, get the column-index of the column on the left/right selected end
-		if (GENTICS.Aloha.TableHelper.selectedCells.length > 0) {
-			columnsToInsert = GENTICS.Aloha.TableHelper.selectedCells[0].length;
+		if (Aloha.TableHelper.selectedCells.length > 0) {
+			columnsToInsert = Aloha.TableHelper.selectedCells[0].length;
 			switch (position) {
 				case 'left':
-					if (GENTICS.Aloha.TableHelper.selectedCells[0].length){
-						colId = GENTICS.Aloha.TableHelper.selectedCells[0][0].cellIndex;
+					if (Aloha.TableHelper.selectedCells[0].length){
+						colId = Aloha.TableHelper.selectedCells[0][0].cellIndex;
 					}
 					break;
 				case 'right':
-					var lastColumn = GENTICS.Aloha.TableHelper.selectedCells[0].length - 1;
-					if (GENTICS.Aloha.TableHelper.selectedCells[0].length){
-						colId = GENTICS.Aloha.TableHelper.selectedCells[0][lastColumn].cellIndex;
+					var lastColumn = Aloha.TableHelper.selectedCells[0].length - 1;
+					if (Aloha.TableHelper.selectedCells[0].length){
+						colId = Aloha.TableHelper.selectedCells[0][lastColumn].cellIndex;
 					}
 					break;
 			}
 		// otherwise take the column-index of the last active cell
-		}else if (typeof GENTICS.Aloha.Table.Cell.lastActiveCell != 'undefined') {
-			colId = GENTICS.Aloha.Table.Cell.lastActiveCell.obj.context.cellIndex;
+		}else if (typeof Aloha.Table.Cell.lastActiveCell != 'undefined') {
+			colId = Aloha.Table.Cell.lastActiveCell.obj.context.cellIndex;
 		}
 
 		// the new col index for the created column
@@ -1774,7 +1777,7 @@ GENTICS.Aloha.Table.prototype.addColumns = function (position) {
 					this.attachColumnSelectEventsToCell(cell);
 
 				}else{
-					cellObj = new GENTICS.Aloha.Table.Cell(cell.get(0), GENTICS.Aloha.TablePlugin.activeTable);
+					cellObj = new Aloha.Table.Cell(cell.get(0), Aloha.TablePlugin.activeTable);
 					this.cells.push(cellObj);
 					cellObj.activate();
 					cell = cellObj.obj;
@@ -1799,7 +1802,7 @@ GENTICS.Aloha.Table.prototype.addColumns = function (position) {
 			}
 		}
 		this.numCols += columnsToInsert;
-		GENTICS.Aloha.TableHelper.unselectCells();
+		Aloha.TableHelper.unselectCells();
 		this.columnsToSelect = colIdArray;
 		this.selectColumns();
 
@@ -1813,13 +1816,13 @@ GENTICS.Aloha.Table.prototype.addColumns = function (position) {
  *
  * @return void
  */
-GENTICS.Aloha.Table.prototype.focus = function() {
+Aloha.Table.prototype.focus = function() {
 	if (!this.hasFocus) {
 		if (!this.parentEditable.isActive) {
 			this.parentEditable.obj.focus();
 		}
 
-		GENTICS.Aloha.TablePlugin.setFocusedTable(this);
+		Aloha.TablePlugin.setFocusedTable(this);
 
 		// select first cell
 		// TODO put cursor in first cell without selecting
@@ -1831,7 +1834,7 @@ GENTICS.Aloha.Table.prototype.focus = function() {
 	// TODO workaround - fix this. the selection is updated later on by the browser
 	// using setTimeout here is hideous, but a simple execution-time call will fail
 // DEACTIVATED by Haymo prevents selecting rows
-//	setTimeout('GENTICS.Aloha.Selection.updateSelection(false, true)', 50);
+//	setTimeout('Aloha.Selection.updateSelection(false, true)', 50);
 
 };
 
@@ -1840,10 +1843,10 @@ GENTICS.Aloha.Table.prototype.focus = function() {
  *
  * @return void
  */
-GENTICS.Aloha.Table.prototype.focusOut = function() {
+Aloha.Table.prototype.focusOut = function() {
 	if (this.hasFocus) {
-		GENTICS.Aloha.TablePlugin.setFocusedTable(undefined);
-		GENTICS.Aloha.TableHelper.selectionType = undefined;
+		Aloha.TablePlugin.setFocusedTable(undefined);
+		Aloha.TableHelper.selectionType = undefined;
 	}
 };
 
@@ -1852,15 +1855,15 @@ GENTICS.Aloha.Table.prototype.focusOut = function() {
  *
  * @return void
  */
-GENTICS.Aloha.Table.prototype.selectColumns = function() {
+Aloha.Table.prototype.selectColumns = function() {
 	// get the class which selected cells should have
 	var selectClass = this.get('classCellSelected');
 
 	// unselect selected cells
-	GENTICS.Aloha.TableHelper.unselectCells();
+	Aloha.TableHelper.unselectCells();
 
-	GENTICS.Aloha.TableHelper.selectionType = 'column';
-	GENTICS.Aloha.FloatingMenu.setScope(GENTICS.Aloha.TablePlugin.getUID('column'));
+	Aloha.TableHelper.selectionType = 'column';
+	Aloha.FloatingMenu.setScope(Aloha.TablePlugin.getUID('column'));
 
 	this.columnsToSelect.sort(function(a,b){return a - b;});
 
@@ -1878,7 +1881,7 @@ GENTICS.Aloha.Table.prototype.selectColumns = function() {
 			toSelect.push(cell);
 			selectedCellsInCol.push(cell);
 		}
-		GENTICS.Aloha.TableHelper.selectedCells.push(selectedCellsInCol);
+		Aloha.TableHelper.selectedCells.push(selectedCellsInCol);
 	};
 	// blur all editables within the table
 	this.obj.find('div.GENTICS_Table_Cell_editable').blur();
@@ -1893,12 +1896,12 @@ GENTICS.Aloha.Table.prototype.selectColumns = function() {
  *
  * @return void
  */
-GENTICS.Aloha.Table.prototype.selectRows = function() {
+Aloha.Table.prototype.selectRows = function() {
 	// get the class which selected cells should have
 	var selectClass = this.get('classCellSelected');
 
 	// unselect selected cells
-	GENTICS.Aloha.TableHelper.unselectCells();
+	Aloha.TableHelper.unselectCells();
 	this.rowsToSelect.sort(function(a,b){return a - b;});
 
 	for (var i = 0; i < this.rowsToSelect.length; i++) {
@@ -1908,11 +1911,11 @@ GENTICS.Aloha.Table.prototype.selectRows = function() {
 		// shift the first element (which is a selection-helper cell)
 		rowCells.shift();
 
-		GENTICS.Aloha.TableHelper.selectedCells.push(rowCells);
+		Aloha.TableHelper.selectedCells.push(rowCells);
 		jQuery(rowCells).addClass(this.get('classCellSelected'));
 	}
-	GENTICS.Aloha.TableHelper.selectionType = 'row';
-	GENTICS.Aloha.FloatingMenu.setScope(GENTICS.Aloha.TablePlugin.getUID('row'));
+	Aloha.TableHelper.selectionType = 'row';
+	Aloha.FloatingMenu.setScope(Aloha.TablePlugin.getUID('row'));
 
 	// blur all editables within the table
 	this.obj.find('div.GENTICS_Table_Cell_editable').blur();
@@ -1925,7 +1928,7 @@ GENTICS.Aloha.Table.prototype.selectRows = function() {
  *
  * @return void
  */
-GENTICS.Aloha.Table.prototype.deactivate = function() {
+Aloha.Table.prototype.deactivate = function() {
 	this.obj.removeClass(this.get('className'));
 	if (jQuery.trim(this.obj.attr('class')) == '') {
 		this.obj.removeAttr('class');
@@ -1965,19 +1968,19 @@ GENTICS.Aloha.Table.prototype.deactivate = function() {
 };
 
 /**
- * toString-method for GENTICS.Aloha.Table object
+ * toString-method for Aloha.Table object
  *
  * @return void
  */
-GENTICS.Aloha.Table.prototype.toString = function() {
-	return 'GENTICS.Aloha.Table';
+Aloha.Table.prototype.toString = function() {
+	return 'Aloha.Table';
 };
 /* -- END METHODS -- */
 
 
 /*****************************
   +--------------------------+
-  | GENTICS.Aloha.Table.Cell |
+  | Aloha.Table.Cell |
   +--------------------------+
 ******************************/
 
@@ -1993,11 +1996,11 @@ GENTICS.Aloha.Table.prototype.toString = function() {
  * @param rowId
  *            the internal id of the corresponding row (begin with 0)
  * @param tableObj
- *            GENTICS.Aloha.Table-Object which contains the cell
+ *            Aloha.Table-Object which contains the cell
  *
  * @return the created table-data field as DOM-representation
  */
-GENTICS.Aloha.Table.Cell = function(originalTd, tableObj) {
+Aloha.Table.Cell = function(originalTd, tableObj) {
 	this.obj = jQuery(originalTd);
 	this.tableObj = tableObj;
 };
@@ -2005,58 +2008,58 @@ GENTICS.Aloha.Table.Cell = function(originalTd, tableObj) {
 /**
  * Reference to the jQuery-representation of the wrapping table
  *
- * @see GENTICS.Aloha.Table.Cell.table
+ * @see Aloha.Table.Cell.table
  */
-GENTICS.Aloha.Table.Cell.prototype.tableObj = undefined;
+Aloha.Table.Cell.prototype.tableObj = undefined;
 
 /**
  * Reference to the jQuery td-Object of the cell
  */
-GENTICS.Aloha.Table.Cell.prototype.obj = undefined;
+Aloha.Table.Cell.prototype.obj = undefined;
 
 /**
  * The jQuery wrapper of the cell
  */
-GENTICS.Aloha.Table.Cell.prototype.wrapper = undefined;
+Aloha.Table.Cell.prototype.wrapper = undefined;
 
 /**
  * Flag if the cell has focus
  */
-GENTICS.Aloha.Table.Cell.prototype.hasFocus = false;
+Aloha.Table.Cell.prototype.hasFocus = false;
 
 /**
  * The jQuery wrapper of the cell
  */
-GENTICS.Aloha.Table.Cell.activeCell = undefined;
+Aloha.Table.Cell.activeCell = undefined;
 
 /**
  * The jQuery wrapper of the cell
  */
-GENTICS.Aloha.Table.Cell.lastActiveCell = undefined;
+Aloha.Table.Cell.lastActiveCell = undefined;
 /* -- END ATTRIBUTES -- */
 
 
 /**
  * Focus method for the contentediable div within a table data-field. The method
- * requires the event-property Cell as a GENTICS.Aloha.Table.Cell object. If the
+ * requires the event-property Cell as a Aloha.Table.Cell object. If the
  * Cell wasn't activated yet it does all relevant actions to activate the cell.
  *
  * @param e
  *            the jquery event object
  * @return void
  */
-GENTICS.Aloha.Table.Cell.prototype.editableFocus = function(e) {
+Aloha.Table.Cell.prototype.editableFocus = function(e) {
 	// only do activation stuff if the cell don't has the focus
 	if (!this.hasFocus) {
 		// set an internal flag to focus the table
 		this.tableObj.focus();
 
 		// set the clicked cell active as the active cell
-		GENTICS.Aloha.Table.Cell.activeCell = this;
+		Aloha.Table.Cell.activeCell = this;
 
 		// set the clicked cell active as the last active cell (the difference
 		// to activeCell is that lastActiveCell won't be reset on blur)
-		GENTICS.Aloha.Table.Cell.lastActiveCell = this;
+		Aloha.Table.Cell.lastActiveCell = this;
 
 		// add an active-class
 		this.obj.addClass('GENTICS_Table_Cell_active');
@@ -2068,15 +2071,15 @@ GENTICS.Aloha.Table.Cell.prototype.editableFocus = function(e) {
 		this.selectAll(this.wrapper.get(0));
 
 		// unset the selection type
-		GENTICS.Aloha.TableHelper.selectionType = 'cell';
-//		GENTICS.Aloha.FloatingMenu.setScope(GENTICS.Aloha.TablePlugin.getUID('cell'));
+		Aloha.TableHelper.selectionType = 'cell';
+//		Aloha.FloatingMenu.setScope(Aloha.TablePlugin.getUID('cell'));
 
 	}
 };
 
 /**
  * Blur event for the contenteditable div within a table-data field. The method
- * requires the event-property Cell as a GENTICS.Aloha.Table.Cell object. It
+ * requires the event-property Cell as a Aloha.Table.Cell object. It
  * sets the hasFocus flag of the cell to false and removes the "active"
  * css-class.
  *
@@ -2084,9 +2087,9 @@ GENTICS.Aloha.Table.Cell.prototype.editableFocus = function(e) {
  *            the jquery event object
  * @return void
  */
-GENTICS.Aloha.Table.Cell.prototype.editableBlur = function(jqEvent){
+Aloha.Table.Cell.prototype.editableBlur = function(jqEvent){
 	// no active cell
-	GENTICS.Aloha.Table.Cell.activeCell = undefined;
+	Aloha.Table.Cell.activeCell = undefined;
 
 	// reset the focus of the cell
 	this.hasFocus = false;
@@ -2095,7 +2098,7 @@ GENTICS.Aloha.Table.Cell.prototype.editableBlur = function(jqEvent){
 	this.obj.removeClass('GENTICS_Table_Cell_active');
 };
 
-GENTICS.Aloha.Table.Cell.prototype.activate = function() {
+Aloha.Table.Cell.prototype.activate = function() {
 	// wrap the created div into the contents of the cell
 	this.obj.wrapInner('<div/>');
 
@@ -2132,7 +2135,7 @@ GENTICS.Aloha.Table.Cell.prototype.activate = function() {
 
 	// we will treat the wrapper just like an editable
 	wrapper.GENTICS_contentEditableSelectionChange(function (event) {
-		GENTICS.Aloha.Selection.onChange(wrapper, event);
+		Aloha.Selection.onChange(wrapper, event);
 		return wrapper;
 	});
 
@@ -2142,7 +2145,7 @@ GENTICS.Aloha.Table.Cell.prototype.activate = function() {
 		}, 1);
 
 		// unselect cells
-		GENTICS.Aloha.TableHelper.unselectCells();
+		Aloha.TableHelper.unselectCells();
 
 		jqEvent.stopPropagation();
 	});
@@ -2164,7 +2167,7 @@ GENTICS.Aloha.Table.Cell.prototype.activate = function() {
  *
  * @return void
  */
-GENTICS.Aloha.Table.Cell.prototype.deactivate = function() {
+Aloha.Table.Cell.prototype.deactivate = function() {
 	var wrapper = this.obj.children('.GENTICS_Table_Cell_editable');
 
 	if (wrapper.length) {
@@ -2193,8 +2196,8 @@ GENTICS.Aloha.Table.Cell.prototype.deactivate = function() {
  *
  * @return string name of the namespace
  */
-GENTICS.Aloha.Table.Cell.prototype.toString = function() {
-	return 'GENTICS.Aloha.Table.Cell';
+Aloha.Table.Cell.prototype.toString = function() {
+	return 'Aloha.Table.Cell';
 };
 
 /**
@@ -2203,7 +2206,7 @@ GENTICS.Aloha.Table.Cell.prototype.toString = function() {
  * @param editableNode dom-representation of the editable node (div-element)
  * @return void
  */
-GENTICS.Aloha.Table.Cell.prototype.selectAll = function(editableNode) {
+Aloha.Table.Cell.prototype.selectAll = function(editableNode) {
 	var e = (editableNode.jquery) ? editableNode.get(0) : editableNode;
 
 	// Not IE
@@ -2242,7 +2245,7 @@ GENTICS.Aloha.Table.Cell.prototype.selectAll = function(editableNode) {
 		r.select();
 	}
 
-	GENTICS.Aloha.Selection.updateSelection(editableNode);
+	Aloha.Selection.updateSelection(editableNode);
 };
 
 /**
@@ -2253,9 +2256,9 @@ GENTICS.Aloha.Table.Cell.prototype.selectAll = function(editableNode) {
  *            the jquery-event object
  * @return void
  */
-GENTICS.Aloha.Table.Cell.prototype.editableMouseDown = function(jqEvent) {
+Aloha.Table.Cell.prototype.editableMouseDown = function(jqEvent) {
 	// deselect all highlighted cells registered in the TableHelper object
-	GENTICS.Aloha.TableHelper.unselectCells();
+	Aloha.TableHelper.unselectCells();
 
 	if (this.tableObj.hasFocus) {
 		jqEvent.stopPropagation();
@@ -2270,7 +2273,7 @@ GENTICS.Aloha.Table.Cell.prototype.editableMouseDown = function(jqEvent) {
  *            the jquery-event object
  * @return void
  */
-GENTICS.Aloha.Table.Cell.prototype.editableKeyUp = function(jqEvent) {
+Aloha.Table.Cell.prototype.editableKeyUp = function(jqEvent) {
 	this.checkForEmptyEvent(jqEvent);
 };
 
@@ -2283,31 +2286,31 @@ GENTICS.Aloha.Table.Cell.prototype.editableKeyUp = function(jqEvent) {
  *            the jquery-event object
  * @return void
  */
-GENTICS.Aloha.Table.Cell.prototype.editableKeyDown = function(jqEvent) {
+Aloha.Table.Cell.prototype.editableKeyDown = function(jqEvent) {
 	this.checkForEmptyEvent(jqEvent);
 	if (!jqEvent.ctrlKey && !jqEvent.shiftKey) {
-		if (GENTICS.Aloha.TableHelper.selectedCells.length > 0 && GENTICS.Aloha.TableHelper.selectedCells[0].length > 0) {
-			GENTICS.Aloha.TableHelper.selectedCells[0][0].firstChild.focus();
-			GENTICS.Aloha.TableHelper.unselectCells();
+		if (Aloha.TableHelper.selectedCells.length > 0 && Aloha.TableHelper.selectedCells[0].length > 0) {
+			Aloha.TableHelper.selectedCells[0][0].firstChild.focus();
+			Aloha.TableHelper.unselectCells();
 			jqEvent.stopPropagation();
 		}
-	}else if(jqEvent.shiftKey && GENTICS.Aloha.TableHelper.selectedCells.length > 0){
+	}else if(jqEvent.shiftKey && Aloha.TableHelper.selectedCells.length > 0){
 		var KEYCODE_ARROWLEFT = 37;
 		var KEYCODE_ARROWUP = 38;
 		var KEYCODE_ARROWRIGHT = 39;
 		var KEYCODE_ARROWDOWN = 40;
-		switch (GENTICS.Aloha.TableHelper.selectionType) {
+		switch (Aloha.TableHelper.selectionType) {
 			case 'row':
 				switch(jqEvent.keyCode) {
 					case KEYCODE_ARROWUP:
-						var firstSelectedRow = GENTICS.Aloha.TableHelper.selectedCells[0][0].parentNode.rowIndex;
+						var firstSelectedRow = Aloha.TableHelper.selectedCells[0][0].parentNode.rowIndex;
 						if (firstSelectedRow > 1) {
 							this.tableObj.rowsToSelect.push(firstSelectedRow - 1);
 						}
 						break;
 					case KEYCODE_ARROWDOWN:
-						var lastRowIndex = GENTICS.Aloha.TableHelper.selectedCells.length - 1;
-						var lastSelectedRow = GENTICS.Aloha.TableHelper.selectedCells[lastRowIndex][0].parentNode.rowIndex;
+						var lastRowIndex = Aloha.TableHelper.selectedCells.length - 1;
+						var lastSelectedRow = Aloha.TableHelper.selectedCells[lastRowIndex][0].parentNode.rowIndex;
 						if (lastSelectedRow < this.tableObj.numRows) {
 							this.tableObj.rowsToSelect.push(lastSelectedRow + 1);
 						}
@@ -2319,14 +2322,14 @@ GENTICS.Aloha.Table.Cell.prototype.editableKeyDown = function(jqEvent) {
 			case 'column':
 				switch(jqEvent.keyCode) {
 					case KEYCODE_ARROWLEFT:
-						var firstColSelected = GENTICS.Aloha.TableHelper.selectedCells[0][0].cellIndex;
+						var firstColSelected = Aloha.TableHelper.selectedCells[0][0].cellIndex;
 						if (firstColSelected > 1) {
 							this.tableObj.columnsToSelect.push(firstColSelected - 1);
 						}
 						break;
 					case KEYCODE_ARROWRIGHT:
-						var lastColIndex = GENTICS.Aloha.TableHelper.selectedCells[0].length - 1;
-						var lastColSelected = GENTICS.Aloha.TableHelper.selectedCells[0][lastColIndex].cellIndex;
+						var lastColIndex = Aloha.TableHelper.selectedCells[0].length - 1;
+						var lastColSelected = Aloha.TableHelper.selectedCells[0][lastColIndex].cellIndex;
 						if (lastColSelected < this.tableObj.numCols) {
 							this.tableObj.columnsToSelect.push(lastColSelected + 1);
 						}
@@ -2350,7 +2353,7 @@ GENTICS.Aloha.Table.Cell.prototype.editableKeyDown = function(jqEvent) {
  *            the event object which is given by jquery
  * @return void
  */
-GENTICS.Aloha.Table.Cell.prototype.checkForEmptyEvent = function(jqEvent) {
+Aloha.Table.Cell.prototype.checkForEmptyEvent = function(jqEvent) {
 	if (jQuery(this.wrapper).children().length > 0) {
 		return;
 	}
@@ -2370,19 +2373,19 @@ GENTICS.Aloha.Table.Cell.prototype.checkForEmptyEvent = function(jqEvent) {
 
 /**************************************
   +---------------------------------+
-  | GENTICS.Aloha.Table.CreateLayer |
+  | Aloha.Table.CreateLayer |
   +---------------------------------+
 ***************************************/
 /**
  * Dummy initialize of the CreateLayer object
  */
-GENTICS.Aloha.Table.CreateLayer = function(){};
+Aloha.Table.CreateLayer = function(){};
 
 /* -- ATTRIBUTES -- */
 /**
  * Internal configuration of the create-table panel
  */
-GENTICS.Aloha.Table.CreateLayer.prototype.parameters = {
+Aloha.Table.CreateLayer.prototype.parameters = {
 	elemId: 'GENTICS_Aloha_Table_createLayer', // id of the create-table panel
 	className: 'GENTICS_Table_Createdialog',   // class-name of the create-table panel
 	numX: 10,	         // Number of cols in the create-layer
@@ -2396,12 +2399,12 @@ GENTICS.Aloha.Table.CreateLayer.prototype.parameters = {
  * the "parameters" object could be overwritten within this object and will
  * simply be used instead.
  */
-GENTICS.Aloha.Table.CreateLayer.prototype.config = new Object();
+Aloha.Table.CreateLayer.prototype.config = new Object();
 
 /**
  * Flag wether the CreateLayer is currently visble or not
  */
-GENTICS.Aloha.Table.CreateLayer.prototype.visible = false;
+Aloha.Table.CreateLayer.prototype.visible = false;
 /* -- END ATTRIBUTES -- */
 
 /* -- METHODS -- */
@@ -2411,7 +2414,7 @@ GENTICS.Aloha.Table.CreateLayer.prototype.visible = false;
  *
  * @return void
  */
-GENTICS.Aloha.Table.CreateLayer.prototype.show = function(){
+Aloha.Table.CreateLayer.prototype.show = function(){
 	var layer = this.get('layer');
 
 	// create the panel if the layer doesn't exist
@@ -2431,7 +2434,7 @@ GENTICS.Aloha.Table.CreateLayer.prototype.show = function(){
  *
  * @return void
  */
-GENTICS.Aloha.Table.CreateLayer.prototype.create = function () {
+Aloha.Table.CreateLayer.prototype.create = function () {
 	var that = this;
 	var layer = jQuery('<div></div>');
 	layer.id = this.get('elemId');
@@ -2460,7 +2463,7 @@ GENTICS.Aloha.Table.CreateLayer.prototype.create = function () {
 				var rows = e.data.rowId + 1;
 				var cols = e.data.colId + 1;
 
-				GENTICS.Aloha.TablePlugin.createTable(cols, rows);
+				Aloha.TablePlugin.createTable(cols, rows);
 				that.hide();
 			});
 
@@ -2496,7 +2499,7 @@ GENTICS.Aloha.Table.CreateLayer.prototype.create = function () {
  * @param table the aeffected table
  * @return void
  */
-GENTICS.Aloha.Table.CreateLayer.prototype.handleMouseOver = function(e, table) {
+Aloha.Table.CreateLayer.prototype.handleMouseOver = function(e, table) {
 	var rowId = e.data.rowId;
 	var colId = e.data.colId;
 	var innerRows = table.find('tr');
@@ -2519,7 +2522,7 @@ GENTICS.Aloha.Table.CreateLayer.prototype.handleMouseOver = function(e, table) {
  *
  *  @return void
  */
-GENTICS.Aloha.Table.CreateLayer.prototype.setPosition = function() {
+Aloha.Table.CreateLayer.prototype.setPosition = function() {
 	var targetObj = jQuery(this.get('target'));
 	var pos = targetObj.offset();
 	this.get('layer').css('left', pos.left + 'px');
@@ -2533,7 +2536,7 @@ GENTICS.Aloha.Table.CreateLayer.prototype.setPosition = function() {
  * @see jQuery().hide()
  * @return void
  */
-GENTICS.Aloha.Table.CreateLayer.prototype.hide = function() {
+Aloha.Table.CreateLayer.prototype.hide = function() {
 	this.get('layer').hide();
 	this.visible = false;
 };
@@ -2546,7 +2549,7 @@ GENTICS.Aloha.Table.CreateLayer.prototype.hide = function() {
  * @param property
  * @return void
  */
-GENTICS.Aloha.Table.CreateLayer.prototype.get = function(property) {
+Aloha.Table.CreateLayer.prototype.get = function(property) {
 	// return param from the config
 	if (this.config[property]) {
 		return this.config[property];
@@ -2568,7 +2571,7 @@ GENTICS.Aloha.Table.CreateLayer.prototype.get = function(property) {
  * @param value
  *            the value which should be set for the associated key
  */
-GENTICS.Aloha.Table.CreateLayer.prototype.set = function (key, value) {
+Aloha.Table.CreateLayer.prototype.set = function (key, value) {
 	// if the key already exists in the config-object, set it to the config-object
 	if (this.config[key]) {
 		this.config[key] = value;
@@ -2584,25 +2587,25 @@ GENTICS.Aloha.Table.CreateLayer.prototype.set = function (key, value) {
 
 /********************************
   +---------------------------+
-  | GENTICS.Aloha.TableHelper |
+  | Aloha.TableHelper |
   +---------------------------+
 *********************************/
 /**
  * The TableHelper object is a helper-object which consists of static/global attributes and functions
  */
-GENTICS.Aloha.TableHelper = function(){};
+Aloha.TableHelper = function(){};
 
 /* -- ATTRIBUTES -- */
 /**
  * Gives the type of the cell-selection
  * possible values are "row" or "col"
  */
-GENTICS.Aloha.TableHelper.prototype.selectionType = undefined;
+Aloha.TableHelper.prototype.selectionType = undefined;
 
 /**
  * Holds all currently selected table cells as an array of DOM "td" representations
  */
-GENTICS.Aloha.TableHelper.prototype.selectedCells = new Array();
+Aloha.TableHelper.prototype.selectedCells = new Array();
 /* -- END ATTRIBUTES -- */
 
 /* -- METHODS -- */
@@ -2611,17 +2614,17 @@ GENTICS.Aloha.TableHelper.prototype.selectedCells = new Array();
  *
  * @return void
  */
-GENTICS.Aloha.TableHelper.prototype.unselectCells = function(){
+Aloha.TableHelper.prototype.unselectCells = function(){
 	if (this.selectedCells.length > 0) {
 		for (var i = 0; i < this.selectedCells.length; i++) {
-			jQuery(this.selectedCells[i]).removeClass(GENTICS.Aloha.TablePlugin.get('classCellSelected'));
+			jQuery(this.selectedCells[i]).removeClass(Aloha.TablePlugin.get('classCellSelected'));
 		}
 		this.selectedCells = new Array();
 		this.selectionType = undefined;
 	}
 };
 
-GENTICS.Aloha.TableHelper.prototype.getNewTableID = function() {
+Aloha.TableHelper.prototype.getNewTableID = function() {
 	var idPrefix = 'GENTICS_Table_';
 	var factor = 1000000;
 	for (this.tableCounter; true; this.tableCounter ++) {
@@ -2640,4 +2643,7 @@ GENTICS.Aloha.TableHelper.prototype.getNewTableID = function() {
 /**
  * Initialize a new Object from the same object to get access to the prototype methods
  */
-GENTICS.Aloha.TableHelper = new GENTICS.Aloha.TableHelper();
+Aloha.TableHelper = new Aloha.TableHelper();
+
+
+})(window);
