@@ -1,4 +1,4 @@
-<?
+<?php
 	# Stripslashes with support for Arrays
 	function stripslashes_deep ( $value ) {
 		// Originally from BalPHP {@link http://www.balupton/projects/balphp}
@@ -30,13 +30,12 @@
 <head>
 	<meta http-equiv="content-type" content="text/html; charset=utf-8">
 	<title>Aloha, Documents!</title>
-	<base href="../../">
 
-	<script	src="dep/jquery-1.5.1.js" ></script>
-	<script	src="aloha.js" id="aloha-script-include" data-plugins="format,table,list,link"></script>
-	<link href="aloha.css" id="aloha-style-include" rel="stylesheet">
-
-	<link rel="stylesheet" href="demo/common/index.css" type="text/css">
+	<script	src="../../dep/jquery-1.5.1.js" ></script>
+	<script	src="../../aloha.js" id="aloha-script-include" data-plugins="format,table,list,link"></script>
+	
+	<link rel="stylesheet" href="../../aloha.css" id="aloha-style-include" type="text/css">
+	<link rel="stylesheet" href="../../demo/common/index.css" type="text/css">
 	<style>
 		textarea {
 			width:100%;
@@ -85,7 +84,7 @@
 				GENTICS = window.GENTICS,
 				$body = $('body');
 
-			GENTICS.Aloha.settings = {
+			Aloha.settings = {
 				logLevels: {'error': true, 'warn': true, 'info': true, 'debug': true},
 				errorhandling: false,
 				ribbon: false
