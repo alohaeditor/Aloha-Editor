@@ -12,7 +12,7 @@
 	var
 		jQuery = window.alohaQuery, $ = jQuery,
 		GENTICS = window.GENTICS,
-		Aloha = GENTICS.Aloha;
+		Aloha = window.Aloha;
 
 	// Attributes manipulation utilities
 	// Aloha team may want to factorize, it could be useful for other plugins
@@ -55,9 +55,13 @@
 	});
 
 	// Create our Image Plugin
-	GENTICS.Aloha.Image = new GENTICS.Aloha.Plugin('image');
-	jQuery.extend(true, GENTICS.Aloha.Image,{
+	Aloha.Image = new (Aloha.Plugin.extend({
+		constructor: function(){
+			this._super('image');
+		},
+		
 		languages: ['en', 'fr', 'de', 'ru', 'cz'],
+
 		config: {
 			'img': {
 				'max_width': '50px',
@@ -128,18 +132,17 @@
 			// get settings
 			var config = this.config,
 				me = this,
-				Aloha = GENTICS.Aloha,
-				imagePluginUrl = GENTICS.Aloha.getPluginUrl('image');
+				imagePluginUrl = Aloha.getPluginUrl('image');
 			if (!this.settings.config.img) {
 				this.settings.config.img = this.config.img;
 			}
 			if (!this.settings.config.img.ui) {
 				this.settings.config.img.ui = this.config.img.ui;
 			}
-			if (typeof GENTICS.Aloha.Image.settings.objectTypeFilter !== 'undefined')
-				GENTICS.Aloha.Image.objectTypeFilter = GENTICS.Aloha.Image.settings.objectTypeFilter;
-			if (typeof GENTICS.Aloha.Image.settings.dropEventHandler !== 'undefined')
-				GENTICS.Aloha.Image.dropEventHandler = GENTICS.Aloha.Image.settings.dropEventHandler;
+			if (typeof Aloha.Image.settings.objectTypeFilter !== 'undefined')
+				Aloha.Image.objectTypeFilter = Aloha.Image.settings.objectTypeFilter;
+			if (typeof Aloha.Image.settings.dropEventHandler !== 'undefined')
+				Aloha.Image.dropEventHandler = Aloha.Image.settings.dropEventHandler;
 
 			if (typeof window.jQuery.ui === "undefined") {
 
@@ -168,44 +171,43 @@
 		 initImage: function() {
 			// Prepare
 			var
-				me = this, config = this.config,
-				Aloha = GENTICS.Aloha;
+				me = this, config = this.config;
 
-			this.insertImgButton = new GENTICS.Aloha.ui.Button({
+			this.insertImgButton = new Aloha.ui.Button({
 				'iconClass': 'GENTICS_button GENTICS_img AlohaImage_insert',
 				'size' : 'small',
 				'onclick' : function () { me.insertImg(); },
 				'tooltip' : me.i18n('button.addimg.tooltip'),
 				'toggle' : false
 			});
-			GENTICS.Aloha.FloatingMenu.addButton(
-				'GENTICS.Aloha.continuoustext',
+			Aloha.FloatingMenu.addButton(
+				'Aloha.continuoustext',
 				this.insertImgButton,
-				GENTICS.Aloha.i18n(GENTICS.Aloha, 'floatingmenu.tab.insert'),
+				Aloha.i18n(Aloha, 'floatingmenu.tab.insert'),
 				1
 			);
 
-			GENTICS.Aloha.FloatingMenu.createScope(this.getUID('image'), 'GENTICS.Aloha.empty');
+			Aloha.FloatingMenu.createScope(this.getUID('image'), 'Aloha.empty');
 
 			// add the src field for images
 			if (this.settings.config.img.ui.meta) {
-				var imgSrcLabel = new GENTICS.Aloha.ui.Button({
+				var imgSrcLabel = new Aloha.ui.Button({
 					'label': me.i18n('field.img.src.label'),
 					'tooltip': me.i18n('field.img.src.tooltip'),
 					'size': 'small'
 				});
-				this.imgSrcField = new GENTICS.Aloha.ui.AttributeField();
+				this.imgSrcField = new Aloha.ui.AttributeField();
 				this.imgSrcField.setObjectTypeFilter( this.objectTypeFilter );
 
 				// add the title field for images
-				var imgTitleLabel = new GENTICS.Aloha.ui.Button({
+				var imgTitleLabel = new Aloha.ui.Button({
 					'label': me.i18n('field.img.title.label'),
 					'tooltip': me.i18n('field.img.title.tooltip'),
 					'size': 'small'
 				});
-				this.imgTitleField = new GENTICS.Aloha.ui.AttributeField();
+				this.imgTitleField = new Aloha.ui.AttributeField();
 				this.imgTitleField.setObjectTypeFilter();
-				GENTICS.Aloha.FloatingMenu.addButton(
+				Aloha.FloatingMenu.addButton(
 						this.getUID('image'),
 						this.imgSrcField,
 						this.i18n('floatingmenu.tab.img'),
@@ -213,7 +215,7 @@
 				);
 			}
 			if (config.img.ui.align) {
-				var alignLeftButton = new GENTICS.Aloha.ui.Button({
+				var alignLeftButton = new Aloha.ui.Button({
 					'iconClass': 'GENTICS_img AlohaImage_align_left',
 					'size': 'small',
 					'onclick' : function() {
@@ -221,7 +223,7 @@
 					},
 					'tooltip': me.i18n('button.img.align.left.tooltip')
 				});
-				var alignRightButton = new GENTICS.Aloha.ui.Button({
+				var alignRightButton = new Aloha.ui.Button({
 					'iconClass': 'GENTICS_img AlohaImage_align_right',
 					'size': 'small',
 					'onclick' : function() {
@@ -229,7 +231,7 @@
 					},
 					'tooltip': me.i18n('button.img.align.right.tooltip')
 				});
-				var alignNoneButton = new GENTICS.Aloha.ui.Button({
+				var alignNoneButton = new Aloha.ui.Button({
 					'iconClass': 'GENTICS_img AlohaImage_align_none',
 					'size': 'small',
 					'onclick' : function() {
@@ -238,19 +240,19 @@
 					},
 					'tooltip': me.i18n('button.img.align.none.tooltip')
 				});
-				GENTICS.Aloha.FloatingMenu.addButton(
+				Aloha.FloatingMenu.addButton(
 					this.getUID('image'),
 					alignLeftButton,
 					this.i18n('floatingmenu.tab.img'),
 					1
 				);
-				GENTICS.Aloha.FloatingMenu.addButton(
+				Aloha.FloatingMenu.addButton(
 						this.getUID('image'),
 						alignRightButton,
 						this.i18n('floatingmenu.tab.img'),
 						1
 				);
-				GENTICS.Aloha.FloatingMenu.addButton(
+				Aloha.FloatingMenu.addButton(
 					this.getUID('image'),
 					alignNoneButton,
 					this.i18n('floatingmenu.tab.img'),
@@ -261,7 +263,7 @@
 				//TODO some hacking to get ui well when only meta fields
 			}
 			if (config.img.ui.meta) {
-				GENTICS.Aloha.FloatingMenu.addButton(
+				Aloha.FloatingMenu.addButton(
 						this.getUID('image'),
 						this.imgTitleField,
 						this.i18n('floatingmenu.tab.img'),
@@ -270,7 +272,7 @@
 			}
 			if (config.img.ui.margin) {
 
-				var incPadding = new GENTICS.Aloha.ui.Button({
+				var incPadding = new Aloha.ui.Button({
 					iconClass: 'GENTICS_img AlohaImage_padding_increase',
 					size: 'small',
 					onclick: function() {
@@ -279,13 +281,13 @@
 					},
 					tooltip: this.i18n('padding.increase')
 				});
-				GENTICS.Aloha.FloatingMenu.addButton(
+				Aloha.FloatingMenu.addButton(
 						this.getUID('image'),
 						incPadding,
 						this.i18n('floatingmenu.tab.img'),
 						2
 				);
-				var decPadding = new GENTICS.Aloha.ui.Button({
+				var decPadding = new Aloha.ui.Button({
 					iconClass: 'GENTICS_img AlohaImage_padding_decrease',
 					size: 'small',
 					onclick: function() {
@@ -294,7 +296,7 @@
 					},
 					tooltip: this.i18n('padding.decrease')
 				});
-				GENTICS.Aloha.FloatingMenu.addButton(
+				Aloha.FloatingMenu.addButton(
 						this.getUID('image'),
 						decPadding,
 						this.i18n('floatingmenu.tab.img'),
@@ -303,9 +305,9 @@
 			}
 			if(config.img.ui.crop) {
 				// create image scope
-				GENTICS.Aloha.FloatingMenu.createScope('GENTICS.Aloha.img', ['GENTICS.Aloha.global']);
+				Aloha.FloatingMenu.createScope('Aloha.img', ['Aloha.global']);
 
-				this.cropButton = new GENTICS.Aloha.ui.Button({
+				this.cropButton = new Aloha.ui.Button({
 					'size' : 'small',
 					'tooltip' : this.i18n('Crop'),
 					'toggle' : true,
@@ -320,7 +322,7 @@
 				});
 
 				// add to floating menu
-				GENTICS.Aloha.FloatingMenu.addButton(
+				Aloha.FloatingMenu.addButton(
 					this.getUID('image'),
 					this.cropButton,
 					this.i18n('floatingmenu.tab.img'),
@@ -330,9 +332,9 @@
 				/*
 				 * add a reset button
 				 */
-				GENTICS.Aloha.FloatingMenu.addButton(
+				Aloha.FloatingMenu.addButton(
 						this.getUID('image'),
-					new GENTICS.Aloha.ui.Button({
+					new Aloha.ui.Button({
 						'size' : 'small',
 						'tooltip' : this.i18n('Reset'),
 						'toggle' : false,
@@ -346,7 +348,7 @@
 				);
 			}
 			if (config.img.ui.resize) {
-				var incSize = new GENTICS.Aloha.ui.Button({
+				var incSize = new Aloha.ui.Button({
 					iconClass: 'GENTICS_img AlohaImage_size_increase',
 					size: 'small',
 					onclick: function() {
@@ -355,13 +357,13 @@
 					},
 					tooltip: this.i18n('size.increase')
 				});
-				GENTICS.Aloha.FloatingMenu.addButton(
+				Aloha.FloatingMenu.addButton(
 						this.getUID('image'),
 						incSize,
 						this.i18n('floatingmenu.tab.img'),
 						2
 				);
-				var decSize = new GENTICS.Aloha.ui.Button({
+				var decSize = new Aloha.ui.Button({
 					iconClass: 'GENTICS_img AlohaImage_size_decrease',
 					size: 'small',
 					onclick: function() {
@@ -370,7 +372,7 @@
 					},
 					tooltip: me.i18n('size.decrease')
 				});
-				GENTICS.Aloha.FloatingMenu.addButton(
+				Aloha.FloatingMenu.addButton(
 						this.getUID('image'),
 						decSize,
 						this.i18n('floatingmenu.tab.img'),
@@ -385,8 +387,7 @@
 		bindInteractions: function () {
 			// Prepare
 			var
-				me = this, config = this.config,
-				Aloha = GENTICS.Aloha;
+				me = this, config = this.config;
 
 			if(this.settings.config.img.ui.resizable) {
 				try {
@@ -429,23 +430,22 @@
 		subscribeEvents: function () {
 			// Prepare
 			var
-				me = this, config = this.config,
-				Aloha = GENTICS.Aloha;
+				me = this, config = this.config;
 
 			//handles dropped files
-			Aloha.EventRegistry.subscribe(Aloha, 'UploadSuccess', function(event,data) {
+			Aloha.bind('aloha-upload-success', function(event,data) {
 				if (data.file.type.match(/image\//)) {
 					var imgObj = jQuery('#'+data.id);
 					imgObj.attr("src",data.src);
 					imgObj.removeAttr('id');
 				}
 			});
-			Aloha.EventRegistry.subscribe(Aloha, 'UploadFailure', function(event,data) {
+			Aloha.bind('aloha-upload-failure', function(event,data) {
 				if (data.file.type.match(/image\//)) {
 					jQuery('#'+data.id).remove();
 				}
 			});
-			Aloha.EventRegistry.subscribe(Aloha, 'dropFilesInEditable', function(event,data) {
+			Aloha.bind('aloha-drop-files-in-editable', function(event,data) {
 				//console.log(data.file);
 				// Prepare
 				var
@@ -458,7 +458,7 @@
 							imagestyle = "width: "+me.config.img.max_width+"; height: "+me.config.img.max_height,
 							img = jQuery('<img id="'+me.attachedFile.id+'" style="'+imagestyle+'" title="" src="" />');
 
-						//img.click( GENTICS.Aloha.Image.clickImage ); - Using delegate now
+						//img.click( Aloha.Image.clickImage ); - Using delegate now
 						if (typeof me.attachedFile.src === 'undefined') {
 							me.attachedFile.src = readEvent.target.result;
 						}
@@ -482,47 +482,47 @@
 			});
 
 			// add the event handler for selection change
-			GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'selectionChanged', function(event, rangeObject, originalEvent) {
+			Aloha.bind('aloha-selection-changed', function(event, rangeObject, originalEvent) {
 				if (originalEvent && originalEvent.target) {
 					if (me.settings.config.img.ui.resizable && !jQuery(originalEvent.target).hasClass('ui-resizable-handle')) {
 						me.endResize();
 					}
 				}
 
-				if(GENTICS.Aloha.activeEditable !== null) {
+				if(Aloha.activeEditable !== null) {
 					var foundMarkup = me.findImgMarkup( rangeObject ),
-						config = me.getEditableConfig(GENTICS.Aloha.activeEditable.obj);
+						config = me.getEditableConfig(Aloha.activeEditable.obj);
 
 					if (typeof config.img !== 'undefined' ) {
 						me.insertImgButton.show();
-						GENTICS.Aloha.FloatingMenu.doLayout();
+						Aloha.FloatingMenu.doLayout();
 					} else {
 						me.insertImgButton.hide();
 						// TODO this should not be necessary here!
-						GENTICS.Aloha.FloatingMenu.doLayout();
+						Aloha.FloatingMenu.doLayout();
 						// leave if img is not allowed
 						return;
 					}
 					if ( foundMarkup ) {
 						// img found
 						me.insertImgButton.hide();
-						GENTICS.Aloha.FloatingMenu.setScope(me.getUID('image'));
+						Aloha.FloatingMenu.setScope(me.getUID('image'));
 						if(me.settings.config.img.ui.meta) {
 							me.imgSrcField.setTargetObject(foundMarkup, 'src');
 							me.imgTitleField.setTargetObject(foundMarkup, 'title');
 						}
 						me.imgSrcField.focus();
-						GENTICS.Aloha.FloatingMenu.userActivatedTab = me.i18n('floatingmenu.tab.img');
+						Aloha.FloatingMenu.userActivatedTab = me.i18n('floatingmenu.tab.img');
 					} else {
 						if(me.settings.config.img.ui.meta) {
 							me.imgSrcField.setTargetObject(null);
 						}
 					}
 					// TODO this should not be necessary here!
-					GENTICS.Aloha.FloatingMenu.doLayout();
+					Aloha.FloatingMenu.doLayout();
 				}
 			});
-			GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'editableCreated', function(event, editable) {
+			Aloha.bind('aloha-editable-created', function(event, editable) {
 				// add to editable the image click
 				//editable.obj.find('img').attr('_moz_resizing', false);
 	//			editable.obj.find('img').contentEditable(false);
@@ -548,9 +548,9 @@
 			if (this.settings.config.img.ui.resizable) {
 				this.resize();
 			}
-			GENTICS.Aloha.getEditableById(editable.attr('id')).activate();
+			Aloha.getEditableById(editable.attr('id')).activate();
 			var offset = GENTICS.Utils.Dom.getIndexInParent(e.target),
-				imgRange = GENTICS.Aloha.Selection.getRangeObject();
+				imgRange = Aloha.Selection.getRangeObject();
 
 			try {
 				imgRange.startContainer = imgRange.endContainer = thisimg.parent()[0];
@@ -573,15 +573,14 @@
 		findImgMarkup: function ( range ) {
 			// Prepare
 			var
-				me = this, config = this.config,
-				Aloha = GENTICS.Aloha;
+				me = this, config = this.config;
 
 			if ( typeof range === 'undefined' ) {
 				range = Aloha.Selection.getRangeObject();
 			}
 			var targetObj = jQuery(range.startContainer);
 			try {
-				if ( GENTICS.Aloha.activeEditable ) {
+				if ( Aloha.activeEditable ) {
 					if ((  typeof range.startContainer !== 'undefined'
 						&& typeof range.startContainer.childNodes !== 'undefined'
 						&& typeof range.startOffset !== 'undefined'
@@ -608,9 +607,9 @@
 		},
 
 		insertImg: function() {
-			var range = GENTICS.Aloha.Selection.getRangeObject(),
-				config = this.getEditableConfig(GENTICS.Aloha.activeEditable.obj),
-				imagePluginUrl = GENTICS.Aloha.getPluginUrl('image');
+			var range = Aloha.Selection.getRangeObject(),
+				config = this.getEditableConfig(Aloha.activeEditable.obj),
+				imagePluginUrl = Aloha.getPluginUrl('image');
 			if ( range.isCollapsed() ) {
 				// TODO I would suggest to call the srcChange method. So all image src
 				// changes are on one single point.
@@ -652,9 +651,9 @@
 			jQuery('body').append(
 					'<div id="GENTICS_CropNResize_btns">' +
 					'<button class="cnr_crop_apply" title="' + this.i18n('Accept') +
-						'" onclick="GENTICS.Aloha.Image.acceptCrop();">&#10004;</button>' +
+						'" onclick="Aloha.Image.acceptCrop();">&#10004;</button>' +
 					'<button class="cnr_crop_cancel" title="' + this.i18n('Cancel') +
-						'" onclick="GENTICS.Aloha.Image.endCrop();">&#10006;</button>' +
+						'" onclick="Aloha.Image.endCrop();">&#10006;</button>' +
 					'</div>'
 			);
 
@@ -696,8 +695,7 @@
 		crop: function () {
 			// Prepare
 			var
-				me = this, config = this.config,
-				Aloha = GENTICS.Aloha;
+				me = this, config = this.config;
 
 			this.initCropButtons();
 			if (this.settings.config.img.ui.resizable) {
@@ -707,7 +705,7 @@
 				onSelect : function () {
 					// ugly hack to keep scope :(
 					setTimeout(function () {
-						GENTICS.Aloha.FloatingMenu.setScope(me.getUID('image'));
+						Aloha.FloatingMenu.setScope(me.getUID('image'));
 					}, 10);
 				}
 			});
@@ -780,7 +778,7 @@
 					// this is so ugly, but I could'nt figure out how to do it better...
 					if(this.enableCrop) {
 						setTimeout(function () {
-							GENTICS.Aloha.FloatingMenu.setScope(me.getUID('image'));
+							Aloha.FloatingMenu.setScope(me.getUID('image'));
 							me.done(event);
 						}, 10);
 					}
@@ -816,6 +814,6 @@
 		}
 
 
-	}); // End of extend
+	}))(); // End of extend
 
 })(window);
