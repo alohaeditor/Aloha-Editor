@@ -56,7 +56,7 @@
 
 	// Create our Image Plugin
 	Aloha.Image = new (Aloha.Plugin.extend({
-		constructor: function(){
+		_constructor: function(){
 			this._super('image');
 		},
 		
