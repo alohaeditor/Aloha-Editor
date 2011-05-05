@@ -113,7 +113,9 @@
 				jQuery.browser.mozilla && parseFloat(jQuery.browser.version) < 1.9 || // FF 3.5
 				jQuery.browser.msie && jQuery.browser.version < 7 || // IE 7
 				jQuery.browser.opera && jQuery.browser.version < 11 ) { // right now, Opera needs some work
-				console.log('The browser you are using is not supported.');
+  				if (window.console && console.log) {
+                                	console.log('The browser you are using is not supported.');
+				}
 				return;
 			}
 
@@ -194,13 +196,13 @@
 
 		bind: function(eventName,eventHandler) {
 			eventName = this.correctEventName(eventName);
-			console.log('Binding ['+eventName+'], has ['+(($('body').data('events')||{})[eventName]||[]).length+'] events');
+			this.log('debug', this, 'Binding ['+eventName+'], has ['+(($('body').data('events')||{})[eventName]||[]).length+'] events');
 			$('body').bind(eventName,eventHandler);
 		},
 
 		trigger: function(eventName,data) {
 			eventName = this.correctEventName(eventName);
-			console.log('Trigger ['+eventName+'], has ['+(($('body').data('events')||{})[eventName]||[]).length+'] events');
+			this.log('debug', this, 'Trigger ['+eventName+'], has ['+(($('body').data('events')||{})[eventName]||[]).length+'] events');
 			$('body').trigger(eventName,data);
 		},
 
