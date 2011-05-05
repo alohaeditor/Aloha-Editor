@@ -16,7 +16,7 @@
  * register the plugin with unique name
  */
 Aloha.Format = new (Aloha.Plugin.extend({
-	constructor: function(){
+	_constructor: function(){
 		this._super('format');
 	},
 
