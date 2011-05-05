@@ -1,21 +1,16 @@
 /*!
-*   This file is part of Aloha Editor
-*   Author & Copyright (c) 2010 Gentics Software GmbH, aloha@gentics.com
-*   Licensed unter the terms of http://www.aloha-editor.com/license.html
-*//*
-*	Aloha Editor is free software: you can redistribute it and/or modify
-*   it under the terms of the GNU Affero General Public License as published by
-*   the Free Software Foundation, either version 3 of the License, or
-*   (at your option) any later version.*
-*
-*   Aloha Editor is distributed in the hope that it will be useful,
-*   but WITHOUT ANY WARRANTY; without even the implied warranty of
-*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*   GNU Affero General Public License for more details.
-*
-*   You should have received a copy of the GNU Affero General Public License
-*   along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ * This file is part of Aloha Editor
+ * Author & Copyright (c) 2010 Gentics Software GmbH, aloha@gentics.com
+ * Licensed unter the terms of http://www.aloha-editor.com/license.html
+ */
+// Start Closure
+(function(window, undefined) {
+	"use strict";
+	var
+		jQuery = window.jQuery, $ = jQuery,
+		GENTICS = window.GENTICS,
+		Class = window.Class,
+		console = window.console;
 
 /**
  * @namespace GENTICS.Utils
@@ -28,7 +23,7 @@
  * @constructor
  */
 GENTICS.Utils.RangeObject = Class.extend({
-	constructor: function(param){
+	_constructor: function(param){
 		// Take the values from the passed object
 		if (typeof param === 'object') {
 			if (typeof param.startContainer !== 'undefined') {
@@ -96,22 +91,21 @@ GENTICS.Utils.RangeObject = Class.extend({
 
 	/**
 	 * Output some log
-	 * TODO: move this to GENTICS.Aloha.Log
+	 * TODO: move this to Aloha.Log
 	 * @param message log message to output
-	 * @param obj optional JS object to output
 	 * @return void
 	 * @hide
 	 */
-	log: function(message, obj) {
-		if (GENTICS && GENTICS.Aloha && GENTICS.Aloha.Log) {
-			GENTICS.Aloha.Log.debug(this, message);
+	log: function(message) {
+		var
+			Aloha = window.Aloha||false,
+			console = window.console||false;
+		if (Aloha && Aloha.Log) {
+			Aloha.Log.debug(this, message);
 			return false;
 		}
 		if (console) {
 			console.log(message);
-			if (obj) {
-				console.log(obj);
-			}
 		}
 	},
 
@@ -154,8 +148,11 @@ GENTICS.Utils.RangeObject = Class.extend({
 	 * @method
 	 */
 	getContainerParents: function (limit, fromEnd) {
-		var container = fromEnd ? this.endContainer : this.startContainer,
-			parentStore = fromEnd ? this.endParents : this.startParents;
+		var
+			container = fromEnd ? this.endContainer : this.startContainer,
+			parentStore = fromEnd ? this.endParents : this.startParents,
+			parents, limitIndex,
+			i;
 
 		if (!container) {
 			return false;
@@ -166,21 +163,19 @@ GENTICS.Utils.RangeObject = Class.extend({
 		}
 
 		if (!parentStore[limit.get(0)]) {
-			var parents;
-
 			// for text nodes, get the parents
 			if (container.nodeType == 3) {
 				parents = jQuery(container).parents();
 			} else {
 				parents = jQuery(container).parents();
-				for (var i = parents.length; i > 0; --i) {
+				for (i = parents.length; i > 0; --i) {
 					parents[i] = parents[i - 1];
 				}
 				parents[0] = container;
 			}
 
 			// now slice this array
-			var limitIndex = parents.index(limit);
+			limitIndex = parents.index(limit);
 
 			if (limitIndex >= 0) {
 				parents = parents.slice(0, limitIndex);
@@ -326,8 +321,8 @@ GENTICS.Utils.RangeObject = Class.extend({
 	select: function() {
 		if ( typeof document.createRange === 'undefined' ) {
 			// first the IE version of this method
-			if (GENTICS.Aloha.Log.isDebugEnabled()) {
-				GENTICS.Aloha.Log.debug(this, 'Set selection to current range (IE version)');
+			if (Aloha.Log.isDebugEnabled()) {
+				Aloha.Log.debug(this, 'Set selection to current range (IE version)');
 			}
 			// when the startcontainer is a textnode, which is followed by a blocklevel node (p, h1, ...), we need to add a <br> in between
 			if (
@@ -363,8 +358,8 @@ GENTICS.Utils.RangeObject = Class.extend({
 		}
 		else {
 			// now for the rest of the world
-			if (GENTICS.Aloha.Log.isDebugEnabled()) {
-				GENTICS.Aloha.Log.debug(this, 'Set selection to current range (non IE version)');
+			if (Aloha && Aloha.Log.isDebugEnabled()) {
+				Aloha.Log.debug(this, 'Set selection to current range (non IE version)');
 			}
 
 			// create a range
@@ -449,7 +444,7 @@ GENTICS.Utils.RangeObject = Class.extend({
 
 	/**
 	 * Method which updates the rangeObject including all extending properties like commonAncestorContainer etc...
-	 * TODO: is this method needed here? or should it contain the same code as GENTICS.Aloha.Selection.prototype.SelectionRange.prototype.update?
+	 * TODO: is this method needed here? or should it contain the same code as Aloha.Selection.prototype.SelectionRange.prototype.update?
 	 * @return void
 	 * @hide
 	 */
@@ -868,7 +863,7 @@ GENTICS.Utils.RangeObject = Class.extend({
 	 *   function() {
 	 *     return this.nodeName.toLowerCase() == 'a';
 	 *   },
-	 *   jQuery(GENTICS.Aloha.activeEditable.obj)
+	 *   jQuery(Aloha.activeEditable.obj)
 	 * );
 	 * </pre>
 	 * @param {function} comparator comparator function to find certain markup
@@ -966,3 +961,5 @@ GENTICS.Utils.RangeTree = Class.extend({
 	 */
 	children: []
 });
+
+})(window);

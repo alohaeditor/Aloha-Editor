@@ -3,13 +3,12 @@
 <head>
 	<meta http-equiv="content-type" content="text/html; charset=utf-8">
 	<title>Aloha, Documents!</title>
-	<base href="../../">
 
-	<script	src="dep/jquery-1.5.1.js" ></script>
-	<script	src="aloha.js" id="aloha-script-include" data-plugins="format,highlighteditables,list,cropnresize"></script>
-	<link href="aloha.css" id="aloha-style-include" rel="stylesheet">
-
-	<link rel="stylesheet" href="demo/common/index.css" type="text/css">
+	<script	src="../../dep/jquery-1.5.1.js" ></script>
+	<script	src="../../aloha.js" id="aloha-script-include" data-plugins="format,highlighteditables,list,cropnresize"></script>
+	
+	<link rel="stylesheet" href="../../aloha.css" id="aloha-style-include" type="text/css">
+	<link rel="stylesheet" href="../../demo/common/index.css" type="text/css">
 </head>
 <body>
   <div id="main">
@@ -21,7 +20,7 @@
 			</div>
 			<div id="content" class="article">
 				<p>Click the image to start resizing right away, as a resize handle will appear in it's south-east corner.</p>
-				<p><img src="images/cropnresize.jpg"></p>
+				<p><img src="cropnresize.jpg"></p>
 				<p><em>Note:</em> This is a very simple example, that will not allow subsequent cropping actions, or cropping combined with resizing.</p>
 			</div>
 		</div>
@@ -33,7 +32,7 @@
 				GENTICS = window.GENTICS,
 				$body = $('body');
 
-			GENTICS.Aloha.settings = {
+			Aloha.settings = {
 				"plugins": {
 					"com.gentics.aloha.plugins.CropNResize": {
 						onCropped: function (image, props) {

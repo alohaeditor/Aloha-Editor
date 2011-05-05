@@ -1,63 +1,50 @@
 /*!
-*   This file is part of Aloha Editor
-*   Author & Copyright (c) 2010 Gentics Software GmbH, aloha@gentics.com
-*   Licensed unter the terms of http://www.aloha-editor.com/license.html
-*//*
-*	Aloha Editor is free software: you can redistribute it and/or modify
-*   it under the terms of the GNU Affero General Public License as published by
-*   the Free Software Foundation, either version 3 of the License, or
-*   (at your option) any later version.*
-*
-*   Aloha Editor is distributed in the hope that it will be useful,
-*   but WITHOUT ANY WARRANTY; without even the implied warranty of
-*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*   GNU Affero General Public License for more details.
-*
-*   You should have received a copy of the GNU Affero General Public License
-*   along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ * This file is part of Aloha Editor
+ * Author & Copyright (c) 2010 Gentics Software GmbH, aloha@gentics.com
+ * Licensed unter the terms of http://www.aloha-editor.com/license.html
+ */
 (function(window, undefined) {
 	var
 		jQuery = window.alohaQuery, $ = jQuery,
 		GENTICS = window.GENTICS,
-		Aloha = GENTICS.Aloha;
+		Aloha = window.Aloha;
 
 /**
  * Plugin Registry
- * @namespace GENTICS.Aloha
+ * @namespace Aloha
  * @class PluginRegistry
  * @singleton
  */
-GENTICS.Aloha.PluginRegistry = Class.extend({
+Aloha.PluginRegistry = Class.extend({
 	/**
 	 * Initialize all registered plugins
 	 * @return void
 	 * @hide
 	 */
 	init: function() {
+		//debugger;
 		var
+			me = this,
 			loaded = 0,
 			length = this.plugins.length,
 			pluginsStack = [],
 			i18nEvent = function () {
-				if(++loaded === length) {
-					GENTICS.Aloha.EventRegistry.trigger(
-						new GENTICS.Aloha.Event('i18nPluginsLoaded', GENTICS.Aloha, null)
-					);
+				++loaded;
+				if ( loaded === length ) {
+					Aloha.trigger('aloha-i18n-plugins-loaded');
 				}
 			};
 
 		// Initialize the plugins in the right order when they are loaded
-		GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'i18nPluginsLoaded', function () {
+		Aloha.bind('aloha-i18n-plugins-loaded',function(){
+			//debugger;
 			for ( var i = 0; i < length; i++) {
 				if (pluginsStack[i].settings.enabled) {
 					pluginsStack[i].init();
 				}
 			}
-
-			GENTICS.Aloha.EventRegistry.trigger(
-				new GENTICS.Aloha.Event('i18nPluginsReady', GENTICS.Aloha, null)
-			);
+			//debugger;
+			Aloha.trigger('aloha-i18n-plugins-ready');
 		});
 
 		// iterate through all registered plugins
@@ -65,11 +52,11 @@ GENTICS.Aloha.PluginRegistry = Class.extend({
 			var plugin = this.plugins[i];
 
 			// get the plugin settings
-			if (typeof GENTICS.Aloha.settings.plugins === 'undefined') {
-				GENTICS.Aloha.settings.plugins = {};
+			if (typeof Aloha.settings.plugins === 'undefined') {
+				Aloha.settings.plugins = {};
 			}
 
-			plugin.settings = GENTICS.Aloha.settings.plugins[plugin.prefix];
+			plugin.settings = Aloha.settings.plugins[plugin.prefix];
 
 			if (typeof plugin.settings === 'undefined') {
 				plugin.settings = {};
@@ -84,23 +71,22 @@ GENTICS.Aloha.PluginRegistry = Class.extend({
 
 			// initialize i18n for the plugin
 			// determine the actual language
-			var actualLanguage = plugin.languages ? GENTICS.Aloha.getLanguage(GENTICS.Aloha.settings.i18n.current, plugin.languages) : null;
+			var actualLanguage = plugin.languages ? Aloha.getLanguage(Aloha.settings.i18n.current, plugin.languages) : null;
 
 			if (!actualLanguage) {
 				// The plugin that have no dict file matching
-				GENTICS.Aloha.Log.warn(this, 'Could not determine actual language, no languages available for plugin ' + plugin);
+				Aloha.Log.warn(this, 'Could not determine actual language, no languages available for plugin ' + plugin);
 
-				if(++loaded === length) {
-					GENTICS.Aloha.EventRegistry.trigger(
-						new GENTICS.Aloha.Event('i18nPluginsLoaded', GENTICS.Aloha, null)
-					);
+				++loaded;
+				if ( loaded === length ) {
+					ALoha.trigger('aloha-i18n-plugins-loaded');
 				}
 			} else {
 				// load the dictionary file for the actual language
-				var fileUrl = GENTICS.Aloha.settings.base + '/' + GENTICS.Aloha.settings.pluginDir + '/' + plugin.basePath + '/i18n/' + actualLanguage + '.json';
+				var fileUrl = Aloha.settings.base + '/' + Aloha.settings.pluginDir + '/' + plugin.basePath + '/i18n/' + actualLanguage + '.json';
 
 				// Initializes the plugin when
-				GENTICS.Aloha.loadI18nFile(fileUrl, plugin, i18nEvent);
+				Aloha.loadI18nFile(fileUrl, plugin, i18nEvent);
 			}
 		}
 	},
@@ -112,7 +98,7 @@ GENTICS.Aloha.PluginRegistry = Class.extend({
 	 * @param {Plugin} plugin plugin to register
 	 */
 	register: function(plugin) {
-		if (plugin instanceof GENTICS.Aloha.Plugin) {
+		if (plugin instanceof Aloha.Plugin) {
 			// TODO check for duplicate plugin prefixes
 			this.plugins.push(plugin);
 		}
@@ -128,8 +114,8 @@ GENTICS.Aloha.PluginRegistry = Class.extend({
 		// iterate through all registered plugins
 		for ( var i = 0; i < this.plugins.length; i++) {
 			var plugin = this.plugins[i];
-			if (GENTICS.Aloha.Log.isDebugEnabled()) {
-				GENTICS.Aloha.Log.debug(this, 'Passing contents of HTML Element with id { ' + obj.attr('id') + ' } for cleaning to plugin { ' + plugin.prefix + ' }');
+			if (Aloha.Log.isDebugEnabled()) {
+				Aloha.Log.debug(this, 'Passing contents of HTML Element with id { ' + obj.attr('id') + ' } for cleaning to plugin { ' + plugin.prefix + ' }');
 			}
 			plugin.makeClean(obj);
 		}
@@ -148,25 +134,25 @@ GENTICS.Aloha.PluginRegistry = Class.extend({
  * Create the PluginRegistry object
  * @hide
  */
-GENTICS.Aloha.PluginRegistry = new GENTICS.Aloha.PluginRegistry();
+Aloha.PluginRegistry = new Aloha.PluginRegistry();
 
 
 /**
  * Abstract Plugin Object
- * @namespace GENTICS.Aloha
+ * @namespace Aloha
  * @class Plugin
  * @constructor
  * @param {String} pluginPrefix unique plugin prefix
  * @param {String} basePath (optional) basepath of the plugin (relative to 'plugins' folder). If not given, the basePath pluginPrefix is taken
  */
-GENTICS.Aloha.Plugin = Class.extend({
+Aloha.Plugin = Class.extend({
 	constructor: function(pluginPrefix, basePath) {
 		/**
 		 * Settings of the plugin
 		 */
 		this.prefix = pluginPrefix;
 		this.basePath = basePath ? basePath : pluginPrefix;
-		GENTICS.Aloha.PluginRegistry.register(this);
+		Aloha.PluginRegistry.register(this);
 	},
 
 	/**
@@ -312,7 +298,7 @@ GENTICS.Aloha.Plugin = Class.extend({
 	 * @hide
 	 */
 	i18n: function(key, replacements) {
-		return GENTICS.Aloha.i18n(this, key, replacements);
+		return Aloha.i18n(this, key, replacements);
 	},
 
 	/**
@@ -332,7 +318,7 @@ GENTICS.Aloha.Plugin = Class.extend({
 	 * @hide
 	 */
 	log: function (level, message) {
-		GENTICS.Aloha.Log.log(level, this, message);
+		Aloha.Log.log(level, this, message);
 	}
 });
 

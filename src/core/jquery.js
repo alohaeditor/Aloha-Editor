@@ -1,29 +1,19 @@
 /*!
-*   This file is part of Aloha Editor
-*   Author & Copyright (c) 2010 Gentics Software GmbH, aloha@gentics.com
-*   Licensed unter the terms of http://www.aloha-editor.com/license.html
-*//*
-*	Aloha Editor is free software: you can redistribute it and/or modify
-*   it under the terms of the GNU Affero General Public License as published by
-*   the Free Software Foundation, either version 3 of the License, or
-*   (at your option) any later version.*
-*
-*   Aloha Editor is distributed in the hope that it will be useful,
-*   but WITHOUT ANY WARRANTY; without even the implied warranty of
-*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*   GNU Affero General Public License for more details.
-*
-*   You should have received a copy of the GNU Affero General Public License
-*   along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
+ * This file is part of Aloha Editor
+ * Author & Copyright (c) 2010 Gentics Software GmbH, aloha@gentics.com
+ * Licensed unter the terms of http://www.aloha-editor.com/license.html
+ */
 // Start Closure
 (function(window, undefined) {
+	"use strict";
 	var
 		jQuery = window.jQuery, $ = jQuery,
 		alohaQuery = window.alohaQuery,
 		GENTICS = window.GENTICS,
-		Aloha = GENTICS.Aloha;
+		Aloha = window.Aloha,
+		Class = window.Class,
+		console = window.console,
+		XMLSerializer = window.XMLSerializer;
 
 	/**
 	 * jQuery between Extension
@@ -35,9 +25,13 @@
 	 * @param offset character offset from the start where the content should be inserted
 	 */
 	jQuery.fn.between = function(content, offset) {
+		var
+			offSize,
+			fullText;
+
 		if (this[0].nodeType !== 3) {
 			// we are not in a text node, just insert the element at the corresponding position
-			var offSize = this.children().size();
+			offSize = this.children().size();
 			if (offset > offSize) {
 				offset = offSize;
 			}
@@ -53,44 +47,12 @@
 			} else if (offset >= this[0].length) {
 				this.after(content);
 			} else {
-				var fullText = this[0].data;
+				fullText = this[0].data;
 				this[0].data = fullText.substring(0, offset);
 				this.after(fullText.substring(offset, fullText.length));
 				this.after(content);
 			}
 		}
-	};
-	/**
-	 * jQuery removeCss Extension
-	 *
-	 * removes one or more style attributes completely. If the style attribute would be empty,
-	 * it will be removed
-	 *
-	 * @param cssName CSS style names, devided by ;
-	 */
-
-	jQuery.fn.removeCss = function( cssName ) {
-		return jQuery(this).each(function(){
-			// Prepare
-			var
-				$el = jQuery(this),
-				oldstyle = $el.attr('style'),
-				style = jQuery.grep(
-					oldstyle.split(';'),
-					function(curStyleAttr) {
-						if (curStyleAttrName[0]) {
-							if ( curStyleAttrName[0].toUpperCase().trim().indexOf(cssName.toUpperCase()) == -1) {
-								return curStyleAttr;
-							}
-						}
-				}).join(';').trim();
-
-			// Remove
-			$el.removeAttr('style');
-			if (style.trim()) {
-				$el.attr('style', style);
-			}
-		});
 	};
 
 	/**
@@ -142,8 +104,9 @@
 			// Aloha Ready
 			$this.each(function() {
 				// create a new aloha editable object for each queried object
-				if ( !GENTICS.Aloha.isEditable(this) ) {
-					new GENTICS.Aloha.Editable($(this));
+				var $this = $(this);
+				if ( !Aloha.isEditable(this) ) {
+					new Aloha.Editable($this);
 				}
 			});
 		}
@@ -167,8 +130,8 @@
 	 */
 	$.fn.mahalo = function() {
 		return this.each(function() {
-			if (GENTICS.Aloha.isEditable(this)) {
-				GENTICS.Aloha.getEditableById($(this).attr('id')).destroy();
+			if (Aloha.isEditable(this)) {
+				Aloha.getEditableById($(this).attr('id')).destroy();
 			}
 		});
 	};
@@ -178,12 +141,12 @@
 	 * new Event which is triggered whenever a selection (length >= 0) is made in
 	 * an Aloha Editable element
 	 */
-	$.fn.GENTICS_contentEditableSelectionChange = function(callback) {
+	$.fn.contentEditableSelectionChange = function(callback) {
 		var that = this;
 
 		// update selection when keys are pressed
 		this.keyup(function(event){
-			var rangeObject = GENTICS.Aloha.Selection.getRangeObject();
+			var rangeObject = Aloha.Selection.getRangeObject();
 			callback(event);
 		});
 
@@ -198,11 +161,11 @@
 			that.selectionStarted = true;
 		});
 		$(document).mouseup(function(event) {
-			GENTICS.Aloha.Selection.eventOriginalTarget = that;
+			Aloha.Selection.eventOriginalTarget = that;
 			if (that.selectionStarted) {
 				callback(event);
 			}
-			GENTICS.Aloha.Selection.eventOriginalTarget = false;
+			Aloha.Selection.eventOriginalTarget = false;
 			that.selectionStarted = false;
 		});
 
@@ -242,7 +205,10 @@
 	 */
 	$.fn.createPromiseEvent = $.fn.createPromiseEvent || function(eventName){
 		// Prepare
-		var $this = $(this);
+		var
+			$this = $(this),
+			events,
+			boundHandlers;
 
 		// Check
 		if ( typeof $this.data('defer-'+eventName+'-resolved') !== 'undefined' ) {
@@ -252,7 +218,7 @@
 		$this.data('defer-'+eventName+'-resolved',false);
 
 		// Handle
-		var events = $.fn.createPromiseEvent.events = $.fn.createPromiseEvent.events || {
+		events = $.fn.createPromiseEvent.events = $.fn.createPromiseEvent.events || {
 			// Bind the event
 			bind: function(callback){
 				var $this = $(this);
@@ -323,7 +289,7 @@
 		};
 
 		// Fetch already bound events
-		var boundHandlers = [];
+		boundHandlers = [];
 		$.each(
 			($this.data('events') || {})[eventName] || [],
 			function(i,event){
@@ -397,5 +363,22 @@
 			})(this[0]);
 			return jQuery(ret);
 	};
+
+// set interval to update the scroll position
+// NOTE high timeout of 500ms is required here
+// to prevent issues with mousemove. too short
+// timeouts will interfere with mouse movement
+// detection
+jQuery(document).ready(function() {
+	setInterval(function(){
+		GENTICS.Utils.Position.update();
+	}, 500);
+});
+
+// listen to the mousemove event and update positions
+jQuery('html').mousemove(function (e) {
+	GENTICS.Utils.Position.Mouse.x = e.pageX;
+	GENTICS.Utils.Position.Mouse.y = e.pageY;
+});
 
 })(window);

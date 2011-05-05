@@ -3,6 +3,9 @@
  * MIT Licensed.
  */
 // Inspired by base2 and Prototype
+/*
+ * The name of the "constructor" method was changed from "init" to "_constructor"
+ */
 (function(){
   var initializing = false, fnTest = /xyz/.test(function(){xyz;}) ? /\b_super\b/ : /.*/;
   // The base Class implementation (does nothing)
@@ -44,9 +47,9 @@
 
     // The dummy class constructor
     function Class() {
-      // All construction is actually done in the constructor method
-      if ( !initializing && this.constructor )
-        this.constructor.apply(this, arguments);
+      // All construction is actually done in the _constructor method
+      if ( !initializing && this._constructor )
+        this._constructor.apply(this, arguments);
     }
 
     // Populate our constructed prototype object

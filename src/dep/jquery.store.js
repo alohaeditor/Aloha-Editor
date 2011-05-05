@@ -1,9 +1,9 @@
 /*
  * jQuery store - Plugin for persistent data storage using localStorage, userData (and window.name)
- * 
+ *
  * Authors: Rodney Rehm
  * Web: http://medialize.github.com/jQuery-store/
- * 
+ *
  * Licensed under the MIT License:
  *   http://www.opensource.org/licenses/mit-license.php
  *
@@ -28,7 +28,7 @@
  **********************************************************************************
  */
 
-// IE fix 
+// IE fix
 if (typeof JSON === 'undefined' || !JSON) {
 	/*
 	 * The GENTICS global namespace object. If GENTICS is already defined, the
@@ -42,6 +42,7 @@ if (typeof JSON === 'undefined' || !JSON) {
 }
 
 (function($,undefined){
+//console.log('Loading jQuery.store');
 
 /**********************************************************************************
  * $.store base and convinience accessor
@@ -50,7 +51,7 @@ if (typeof JSON === 'undefined' || !JSON) {
 $.store = function( driver, serializers )
 {
 	var that = this;
-	
+
 	if( typeof driver == 'string' )
 	{
 		if( $.store.drivers[ driver ] )
@@ -65,10 +66,10 @@ $.store = function( driver, serializers )
 			|| !$.isFunction( driver.set )
 			|| !$.isFunction( driver.del )
 			|| !$.isFunction( driver.flush );
-			
+
 		if( invalidAPI )
 			throw new Error( 'The specified driver does not fulfill the API requirements' );
-		
+
 		this.driver = driver;
 	}
 	else
@@ -79,22 +80,22 @@ $.store = function( driver, serializers )
 			// skip unavailable drivers
 			if( !$.isFunction( this.available ) || !this.available() )
 				return true; // continue;
-			
+
 			that.driver = this;
 			if( that.driver.init() === false )
 			{
 				that.driver = null;
 				return true; // continue;
 			}
-			
+
 			return false; // break;
 		});
 	}
-	
+
 	// use default serializers if not told otherwise
 	if( !serializers )
 		serializers = $.store.serializers;
-	
+
 	// intialize serializers
 	this.serializers = {};
 	$.each( serializers, function( key, serializer )
@@ -102,7 +103,7 @@ $.store = function( driver, serializers )
 		// skip invalid processors
 		if( !$.isFunction( this.init ) )
 			return true; // continue;
-		
+
 		that.serializers[ key ] = this;
 		that.serializers[ key ].init( that.encoders, that.decoders );
 	});
@@ -137,7 +138,7 @@ $.extend( $.store.prototype, {
 	serialize: function( value )
 	{
 		var that = this;
-		
+
 		$.each( this.encoders, function()
 		{
 			var serializer = that.serializers[ this + "" ];
@@ -157,7 +158,7 @@ $.extend( $.store.prototype, {
 		var that = this;
 		if( !value )
 			return value;
-		
+
 		$.each( this.decoders, function()
 		{
 			var serializer = that.serializers[ this + "" ];
@@ -212,7 +213,7 @@ $.store.drivers = {
 			window.localStorage.clear();
 		}
 	},
-	
+
 	// IE6, IE7
 	'userData': {
 		// see http://msdn.microsoft.com/en-us/library/ms531424.aspx
@@ -237,7 +238,7 @@ $.store.drivers = {
 			// $.store can only utilize one userData store at a time, thus avoid duplicate initialization
 			if( this.initialized )
 				return;
-			
+
 			try
 			{
 				// Create a non-existing element and append it to the root element (html)
@@ -249,7 +250,7 @@ $.store.drivers = {
 			}
 			catch( e )
 			{
-				return false; 
+				return false;
 			}
 		},
 		get: function( key )
@@ -266,7 +267,7 @@ $.store.drivers = {
 		{
 			this.element.removeAttribute( key );
 			this.element.save( this.nodeName );
-			
+
 		},
 		flush: function()
 		{
@@ -275,7 +276,7 @@ $.store.drivers = {
 			this.element.save( this.nodeName );
 		}
 	},
-	
+
 	// most other browsers
 	'windowName': {
 		ident: "$.store.drivers.windowName",
@@ -327,7 +328,7 @@ $.store.drivers = {
 			{
 				this.cache[ key ] = undefined;
 			}
-			
+
 			this.save();
 		},
 		flush: function()
@@ -342,7 +343,7 @@ $.store.drivers = {
  **********************************************************************************/
 
 $.store.serializers = {
-	
+
 	'json': {
 		ident: "$.store.serializers.json",
 		init: function( encoders, decoders )
@@ -353,10 +354,10 @@ $.store.serializers = {
 		encode: JSON.stringify,
 		decode: JSON.parse
 	},
-	
+
 	// TODO: html serializer
 	// 'html' : {},
-	
+
 	'xml': {
 		ident: "$.store.serializers.xml",
 		init: function( encoders, decoders )
@@ -364,7 +365,7 @@ $.store.serializers = {
 			encoders.unshift( "xml" );
 			decoders.push( "xml" );
 		},
-		
+
 		// wouldn't be necessary if jQuery exposed this function
 		isXML: function( value )
 		{
@@ -379,7 +380,7 @@ $.store.serializers = {
 				return value;
 
 			var _value = { _serialized: this.ident, value: value };
-			
+
 			try
 			{
 				// Mozilla, Webkit, Opera
@@ -396,10 +397,10 @@ $.store.serializers = {
 				}
 				catch(E2){}
 			}
-			
+
 			return value;
 		},
-		
+
 		// decodes a XML node from string (taken from $.jStorage, MIT License)
 		decode: function( value )
 		{
@@ -422,13 +423,13 @@ $.store.serializers = {
 			{
 				return undefined;
 			}
-			
+
 			value.value = dom_parser.call(
-				"DOMParser" in window && (new DOMParser()) || window, 
-				value.value, 
+				"DOMParser" in window && (new DOMParser()) || window,
+				value.value,
 				'text/xml'
 			);
-			
+
 			return this.isXML( value.value ) ? value.value : undefined;
 		}
 	}

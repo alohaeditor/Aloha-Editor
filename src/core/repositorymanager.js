@@ -1,34 +1,21 @@
 /*!
-*   This file is part of Aloha Editor
-*   Author & Copyright (c) 2010 Gentics Software GmbH, aloha@gentics.com
-*   Licensed unter the terms of http://www.aloha-editor.com/license.html
-*//*
-*	Aloha Editor is free software: you can redistribute it and/or modify
-*   it under the terms of the GNU Affero General Public License as published by
-*   the Free Software Foundation, either version 3 of the License, or
-*   (at your option) any later version.*
-*
-*   Aloha Editor is distributed in the hope that it will be useful,
-*   but WITHOUT ANY WARRANTY; without even the implied warranty of
-*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*   GNU Affero General Public License for more details.
-*
-*   You should have received a copy of the GNU Affero General Public License
-*   along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ * This file is part of Aloha Editor
+ * Author & Copyright (c) 2010 Gentics Software GmbH, aloha@gentics.com
+ * Licensed unter the terms of http://www.aloha-editor.com/license.html
+ */
 (function(window, undefined) {
 	var
 		jQuery = window.alohaQuery, $ = jQuery,
 		GENTICS = window.GENTICS,
-		Aloha = GENTICS.Aloha;
+		Aloha = window.Aloha;
 
 /**
  * Repository Manager
- * @namespace GENTICS.Aloha.Repository
+ * @namespace Aloha.Repository
  * @class RepositoryManager
  * @singleton
  */
-GENTICS.Aloha.RepositoryManager = Class.extend({
+Aloha.RepositoryManager = Class.extend({
 	repositories: [],
 
 	openCallbacks: [],
@@ -41,8 +28,8 @@ GENTICS.Aloha.RepositoryManager = Class.extend({
 	init: function() {
 
 		// get the repository settings
-		if (typeof GENTICS.Aloha.settings.repositories === 'undefined') {
-			GENTICS.Aloha.settings.repositories = {};
+		if (typeof Aloha.settings.repositories === 'undefined') {
+			Aloha.settings.repositories = {};
 		}
 
 		// iterate through all registered repositories
@@ -54,8 +41,8 @@ GENTICS.Aloha.RepositoryManager = Class.extend({
 			}
 
 			// merge the specific settings with the repository default settings
-			if ( GENTICS.Aloha.settings.repositories[repository.repositoryId] ) {
-				jQuery.extend(repository.settings, GENTICS.Aloha.settings.repositories[repository.repositoryId]);
+			if ( Aloha.settings.repositories[repository.repositoryId] ) {
+				jQuery.extend(repository.settings, Aloha.settings.repositories[repository.repositoryId]);
 			}
 
 			repository.init();
@@ -64,18 +51,18 @@ GENTICS.Aloha.RepositoryManager = Class.extend({
 
 	/**
 	 * Register a Repository
-	 * @param {GENTICS.Aloha.Repository} repository Repository to register
+	 * @param {Aloha.Repository} repository Repository to register
 	 */
 	register: function(repository) {
 
-		if (repository instanceof GENTICS.Aloha.Repository) {
+		if (repository instanceof Aloha.Repository) {
 			if ( !this.getRepository(repository.repositoryId) ) {
 				this.repositories.push(repository);
 			} else {
-				GENTICS.Aloha.Log.warn(this, 'A repository with name { ' + repository.repositoryId + ' } already registerd. Ignoring this.');
+				Aloha.Log.warn(this, 'A repository with name { ' + repository.repositoryId + ' } already registerd. Ignoring this.');
 			}
 		} else {
-			GENTICS.Aloha.Log.error(this, 'Trying to register a repository which is not an instance of GENTICS.Aloha.Repository.');
+			Aloha.Log.error(this, 'Trying to register a repository which is not an instance of Aloha.Repository.');
 		}
 
 	},
@@ -83,7 +70,7 @@ GENTICS.Aloha.RepositoryManager = Class.extend({
 	/**
 	 * Returns a repository object identified by repositoryId.
 	 * @param {String} repositoryId the name of the repository
-	 * @return {GENTICS.Aloha.Repository} a repository or null if name not found
+	 * @return {Aloha.Repository} a repository or null if name not found
 	 */
 	getRepository: function(repositoryId) {
 
@@ -110,7 +97,7 @@ GENTICS.Aloha.RepositoryManager = Class.extend({
 				renditionFilter: null,
 				repositoryId: null
 		};
-		GENTICS.Aloha.RepositoryManager.query( params, function( items ) {
+		Aloha.RepositoryManager.query( params, function( items ) {
 			// do something with the result items
 			console.log(items);
 		});
@@ -273,7 +260,7 @@ GENTICS.Aloha.RepositoryManager = Class.extend({
 		if ( params.inFolderId == 'aloha' && this.repositories.length > 0 ) {
 			var repos = [];
 			for ( i = 0; i < this.repositories.length; i++) {
-				repos.push( new GENTICS.Aloha.Repository.Folder ({
+				repos.push( new Aloha.Repository.Folder ({
 					id: this.repositories[i].repositoryId,
 					name: this.repositories[i].repositoryName,
 					repositoryId: this.repositories[i].repositoryId,
@@ -360,7 +347,7 @@ GENTICS.Aloha.RepositoryManager = Class.extend({
 			for ( var i = 0; i < that.repositories.length; i++) {
 				repository.makeClean(obj);
 			}
-			GENTICS.Aloha.Log.debug(that, 'Passing contents of HTML Element with id { ' + this.attr('id') + ' } for cleaning to repository { ' + repository.repositoryId + ' }');
+			Aloha.Log.debug(that, 'Passing contents of HTML Element with id { ' + this.attr('id') + ' } for cleaning to repository { ' + repository.repositoryId + ' }');
 			repository.makeClean(this);
 		});
 	},
@@ -368,7 +355,7 @@ GENTICS.Aloha.RepositoryManager = Class.extend({
 	/**
 	 * Markes an object as repository of this type and with this item.id.
 	 * Objects can be any DOM objects as A, SPAN, ABBR, etc. or
-	 * special objects such as GENTICS_aloha_block elements.
+	 * special objects such as aloha-aloha_block elements.
 	 * This method marks the target obj with two private attributes:
 	 * (see http://dev.w3.org/html5/spec/elements.html#embedding-custom-non-visible-data)
 	 * * data-GENTICS-aloha-repository: stores the repositoryId
@@ -386,7 +373,7 @@ GENTICS.Aloha.RepositoryManager = Class.extend({
 			});
 			repository.markObject(obj, item);
 		} else {
-			GENTICS.Aloha.Log.error(this, 'Trying to apply a repository { ' + item.name + ' } to an object, but item has no repositoryId.');
+			Aloha.Log.error(this, 'Trying to apply a repository { ' + item.name + ' } to an object, but item has no repositoryId.');
 		}
 	},
 
@@ -424,13 +411,13 @@ GENTICS.Aloha.RepositoryManager = Class.extend({
  * Create the RepositoryManager object
  * @hide
  */
-GENTICS.Aloha.RepositoryManager = new GENTICS.Aloha.RepositoryManager();
+Aloha.RepositoryManager = new Aloha.RepositoryManager();
 
 /**
  * Expose a nice name for the RepositoryManager
  * @hide
  */
-GENTICS.Aloha.RepositoryManager.toString = function() {
+Aloha.RepositoryManager.toString = function() {
 	return 'repositorymanager';
 };
 

@@ -1,21 +1,16 @@
 /*!
-*   This file is part of Aloha Editor
-*   Author & Copyright (c) 2010 Gentics Software GmbH, aloha@gentics.com
-*   Licensed unter the terms of http://www.aloha-editor.com/license.html
-*//*
-*	Aloha Editor is free software: you can redistribute it and/or modify
-*   it under the terms of the GNU Affero General Public License as published by
-*   the Free Software Foundation, either version 3 of the License, or
-*   (at your option) any later version.*
-*
-*   Aloha Editor is distributed in the hope that it will be useful,
-*   but WITHOUT ANY WARRANTY; without even the implied warranty of
-*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*   GNU Affero General Public License for more details.
-*
-*   You should have received a copy of the GNU Affero General Public License
-*   along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ * This file is part of Aloha Editor
+ * Author & Copyright (c) 2010 Gentics Software GmbH, aloha@gentics.com
+ * Licensed unter the terms of http://www.aloha-editor.com/license.html
+ */
+// Start Closure
+(function(window, undefined) {
+	"use strict";
+	var
+		jQuery = window.jQuery, $ = jQuery,
+		GENTICS = window.GENTICS,
+		Class = window.Class,
+		console = window.console;
 
 /**
  * position utility, which will provide scroll and mouse positions
@@ -142,19 +137,4 @@ GENTICS.Utils.Position.addMouseMoveCallback = function (callback) {
 	return (this.mouseMoveCallbacks.length - 1);
 };
 
-// set interval to update the scroll position
-// NOTE high timeout of 500ms is required here
-// to prevent issues with mousemove. too short
-// timeouts will interfere with mouse movement
-// detection
-jQuery(document).ready(function() {
-	setInterval(function(){
-		GENTICS.Utils.Position.update();
-	}, 500);
-});
-
-// listen to the mousemove event and update positions
-jQuery('html').mousemove(function (e) {
-	GENTICS.Utils.Position.Mouse.x = e.pageX;
-	GENTICS.Utils.Position.Mouse.y = e.pageY;
-});
+})(window);

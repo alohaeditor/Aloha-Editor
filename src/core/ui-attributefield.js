@@ -1,22 +1,8 @@
 /*!
-*   This file is part of Aloha Editor
-*   Author & Copyright (c) 2010 Gentics Software GmbH, aloha@gentics.com
-*   Licensed unter the terms of http://www.aloha-editor.com/license.html
-*//*
-*	Aloha Editor is free software: you can redistribute it and/or modify
-*   it under the terms of the GNU Affero General Public License as published by
-*   the Free Software Foundation, either version 3 of the License, or
-*   (at your option) any later version.*
-*
-*   Aloha Editor is distributed in the hope that it will be useful,
-*   but WITHOUT ANY WARRANTY; without even the implied warranty of
-*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*   GNU Affero General Public License for more details.
-*
-*   You should have received a copy of the GNU Affero General Public License
-*   along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
+ * This file is part of Aloha Editor
+ * Author & Copyright (c) 2010 Gentics Software GmbH, aloha@gentics.com
+ * Licensed unter the terms of http://www.aloha-editor.com/license.html
+ */
 Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 	typeAhead: false,
 	mode: 'remote',
@@ -38,11 +24,11 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 		'</div></tpl>',
 		{
 			hasRepositoryTemplate : function(values) {
-				var rep = GENTICS.Aloha.RepositoryManager.getRepository(values.repositoryId);
+				var rep = Aloha.RepositoryManager.getRepository(values.repositoryId);
 				return rep && rep.hasTemplate();
 			},
 			renderRepositoryTemplate : function(values) {
-				var rep = GENTICS.Aloha.RepositoryManager.getRepository(values.repositoryId);
+				var rep = Aloha.RepositoryManager.getRepository(values.repositoryId);
 				if (rep && rep.hasTemplate()) {
 					return rep.getTemplate().apply(values);
 				}
@@ -98,8 +84,8 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 				// work around stupid behavior when moving focus :/
 				setTimeout(function(){
 					// Set focus to link element and select the object
-					GENTICS.Aloha.activeEditable.obj[0].focus();
-					GENTICS.Aloha.Selection.getRangeObject().select();
+					Aloha.activeEditable.obj[0].focus();
+					Aloha.Selection.getRangeObject().select();
 				},0);
 			}
 			// update attribute, but only if no resource item was selected
@@ -129,7 +115,7 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 				if ( color ) {
 					jQuery(target).css('background-color', color);
 				} else {
-					jQuery(target).removeCss('background-color');
+					jQuery(target).css('background-color', '');
 				}
 				jQuery(target).removeAttr('data-original-background-color');
 			}
@@ -153,7 +139,7 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 			this.setValue( v );
 		this.setAttribute(this.targetAttribute, item[this.valueField]);
 		// call the repository marker
-		GENTICS.Aloha.RepositoryManager.markObject(this.targetObject, item);
+		Aloha.RepositoryManager.markObject(this.targetObject, item);
 		}
 	},
 	getItem: function( ) {
@@ -194,7 +180,7 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 
 			// check whether a repository item is linked to the object
 			var that = this;
-			GENTICS.Aloha.RepositoryManager.getObject(obj, function (items) {
+			Aloha.RepositoryManager.getObject(obj, function (items) {
 			if (items && items.length > 0) {
 				that.setItem(items[0]);
 			}
@@ -221,11 +207,11 @@ Ext.reg('alohaattributefield', Ext.ux.AlohaAttributeField);
 
 /**
  * Aloha Attribute Field Button
- * @namespace GENTICS.Aloha.ui
+ * @namespace Aloha.ui
  * @class AttributeField
  */
-GENTICS.Aloha.ui.AttributeField = GENTICS.Aloha.ui.Button.extend({
-	constructor: function (properties) {
+Aloha.ui.AttributeField = Aloha.ui.Button.extend({
+	_constructor: function (properties) {
 
 		/**
 		 * @cfg Function called when an element is selected
@@ -436,11 +422,11 @@ GENTICS.Aloha.ui.AttributeField = GENTICS.Aloha.ui.Button.extend({
 			'</div></tpl>',
 			{
 				hasRepositoryTemplate : function(values) {
-					var rep = GENTICS.Aloha.RepositoryManager.getRepository(values.repositoryId);
+					var rep = Aloha.RepositoryManager.getRepository(values.repositoryId);
 					return rep && rep.hasTemplate();
 				},
 				renderRepositoryTemplate : function(values) {
-					var rep = GENTICS.Aloha.RepositoryManager.getRepository(values.repositoryId);
+					var rep = Aloha.RepositoryManager.getRepository(values.repositoryId);
 					if (rep && rep.hasTemplate()) {
 						return rep.getTemplate().apply(values);
 					}
