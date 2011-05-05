@@ -15,6 +15,9 @@
 	// Namespace jQuery
 	window.alohaQuery = window.jQuery; // window.jQuery.sub();
 
+        // emulate document.head support for browsers that do not have it
+        document.head = document.head || document.getElementsByTagName('head')[0];
+
 	// Prepare
 	var
 		jQuery = window.alohaQuery, $ = jQuery,
