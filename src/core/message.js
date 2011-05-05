@@ -21,7 +21,7 @@
  *		callback: callback function, which will be triggered after the message was confirmed, closed or accepted
  */
 Aloha.Message = Class.extend({
-	constructor: function (data) {
+	_constructor: function (data) {
 		this.title = data.title;
 		this.text = data.text;
 		this.type = data.type;

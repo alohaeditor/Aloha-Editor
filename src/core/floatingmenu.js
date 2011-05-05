@@ -715,7 +715,7 @@ Aloha.FloatingMenu.floatTo = function(position) {
  * @param {String} label label of the tab
  */
 Aloha.FloatingMenu.Tab = Class.extend({
-	constructor: function(label) {
+	_constructor: function(label) {
 		this.label = label;
 		this.groups = [];
 		this.groupMap = {};
@@ -800,7 +800,7 @@ Aloha.FloatingMenu.Tab = Class.extend({
  * @constructor
  */
 Aloha.FloatingMenu.Group = Class.extend({
-	constructor: function() {
+	_constructor: function() {
 		this.buttons = [];
 		this.fields = [];
 	},

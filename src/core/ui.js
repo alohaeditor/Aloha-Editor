@@ -26,7 +26,7 @@ Aloha.ui = Aloha.ui || {};
  * - toggle: Boolean that indicates if the button is a toggle button.
  */
 Aloha.ui.Button = Class.extend({
-	constructor: function(properties) {
+	_constructor: function(properties) {
 		this.init(properties);
 	},
 
@@ -637,7 +637,7 @@ Ext.reg('alohamultisplitbutton', Ext.ux.MultiSplitButton);
  *		}]
  */
 Aloha.ui.MultiSplitButton = Class.extend({
-	constructor: function(properties) {
+	_constructor: function(properties) {
 		/**
 		 * Items in the Multisplit Button
 		 * @hide

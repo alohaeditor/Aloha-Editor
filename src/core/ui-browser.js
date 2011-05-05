@@ -20,7 +20,7 @@
  * - icon representation
  */
 Aloha.ui.Browser = Class.extend({
-	constructor: function () {
+	_constructor: function () {
 
 		/**
 		 * @cfg Function called when an element is selected

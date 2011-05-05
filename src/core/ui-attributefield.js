@@ -211,7 +211,7 @@ Ext.reg('alohaattributefield', Ext.ux.AlohaAttributeField);
  * @class AttributeField
  */
 Aloha.ui.AttributeField = Aloha.ui.Button.extend({
-	constructor: function (properties) {
+	_constructor: function (properties) {
 
 		/**
 		 * @cfg Function called when an element is selected

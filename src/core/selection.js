@@ -16,7 +16,7 @@
 	 * @singleton
 	 */
 	Aloha.Selection = Class.extend({
-		constructor: function(){
+		_constructor: function(){
 			// Pseudo Range Clone being cleaned up for better HTML wrapping support
 			this.rangeObject = {};
 
@@ -1383,7 +1383,7 @@
 		 * @constructor
 		 */
 		SelectionRange: GENTICS.Utils.RangeObject.extend({
-			constructor: function(rangeObject){
+			_constructor: function(rangeObject){
 				this._super(rangeObject);
 				// If a range object was passed in we apply the values to the new range object
 				if (rangeObject) {

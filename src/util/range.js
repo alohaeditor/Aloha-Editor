@@ -23,7 +23,7 @@
  * @constructor
  */
 GENTICS.Utils.RangeObject = Class.extend({
-	constructor: function(param){
+	_constructor: function(param){
 		// Take the values from the passed object
 		if (typeof param === 'object') {
 			if (typeof param.startContainer !== 'undefined') {

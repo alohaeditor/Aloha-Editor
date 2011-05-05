@@ -19,7 +19,7 @@
  * @param {Object} obj jQuery object reference to the object
  */
 Aloha.Editable = Class.extend({
-	constructor: function(obj) {
+	_constructor: function(obj) {
 		var me = this;
 
 		// check wheter the object has an ID otherwise generate and set globally unique ID

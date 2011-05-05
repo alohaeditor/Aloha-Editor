@@ -18,7 +18,7 @@
  * @param {String} repositoryName (optional) is the displyed name for this Repository instance
  */
 Aloha.Repository = Class.extend({
-	constructor: function(repositoryId, repositoryName) {
+	_constructor: function(repositoryId, repositoryName) {
 		/**
 		 * @property repositoryId is the unique Id for this Repository instance
 		 */
