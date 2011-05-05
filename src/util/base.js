@@ -3,6 +3,9 @@
  * MIT Licensed.
  */
 // Inspired by base2 and Prototype
+/*
+ * The name of the "constructor" method was changed from "init" to "_constructor"
+ */
 (function(){
   var initializing = false, fnTest = /xyz/.test(function(){xyz;}) ? /\b_super\b/ : /.*/;
   // The base Class implementation (does nothing)
