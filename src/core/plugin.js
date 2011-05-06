@@ -47,6 +47,11 @@ Aloha.PluginRegistry = Class.extend({
 			Aloha.trigger('aloha-i18n-plugins-ready');
 		});
 
+		// if no plugins are loaded, we immediately trigger the event 'aloha-i18n-plugins-loaded' (otherwise the floatingmenue would not be initialized, which produces errors afterwards
+		if (length == 0) {
+			Aloha.trigger('aloha-i18n-plugins-loaded');
+		}
+
 		// iterate through all registered plugins
 		for ( var i = 0; i < length; i++) {
 			var plugin = this.plugins[i];
@@ -79,7 +84,7 @@ Aloha.PluginRegistry = Class.extend({
 
 				++loaded;
 				if ( loaded === length ) {
-					ALoha.trigger('aloha-i18n-plugins-loaded');
+					Aloha.trigger('aloha-i18n-plugins-loaded');
 				}
 			} else {
 				// load the dictionary file for the actual language
