@@ -358,8 +358,8 @@ Aloha.Editable = Class.extend({
 	 */
 	removePlaceholder: function(obj, setCursor) {
 		var placeholderClass = this.placeholderClass;
-		// remove browser br
-		jQuery('br', obj).remove();
+//		// remove browser br
+//		jQuery('br', obj).remove();
 
 		// set the cursor // remove placeholder
 		if (setCursor === true) {
@@ -613,7 +613,7 @@ Aloha.Editable = Class.extend({
 	 * @method
 	 * @return contents of the editable
 	 */
-	getContents: function() {
+	getContents: function(asObject) {
 		// clone the object
 		var clonedObj = this.obj.clone(false);
 
@@ -624,7 +624,7 @@ Aloha.Editable = Class.extend({
 		this.removePlaceholder(clonedObj);
 
 		Aloha.PluginRegistry.makeClean(clonedObj);
-		return clonedObj.html();
+		return asObject ? clonedObj.contents() : clonedObj.html();
 	},
 
 	/**
