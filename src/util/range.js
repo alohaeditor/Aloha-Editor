@@ -319,7 +319,7 @@ GENTICS.Utils.RangeObject = Class.extend({
 	 * @method
 	 */
 	select: function() {
-		if ( typeof document.createRange === 'undefined' ) {
+		if ( jQuery.browser.msie ) {
 			// first the IE version of this method
 			if (Aloha.Log.isDebugEnabled()) {
 				Aloha.Log.debug(this, 'Set selection to current range (IE version)');
