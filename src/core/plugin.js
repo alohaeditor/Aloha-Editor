@@ -151,7 +151,7 @@ Aloha.PluginRegistry = new Aloha.PluginRegistry();
  * @param {String} basePath (optional) basepath of the plugin (relative to 'plugins' folder). If not given, the basePath pluginPrefix is taken
  */
 Aloha.Plugin = Class.extend({
-	constructor: function(pluginPrefix, basePath) {
+	_constructor: function(pluginPrefix, basePath) {
 		/**
 		 * Settings of the plugin
 		 */
