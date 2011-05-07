@@ -155,9 +155,13 @@ Aloha.Plugin = Class.extend({
 		/**
 		 * Settings of the plugin
 		 */
-		this.prefix = pluginPrefix;
-		this.basePath = basePath ? basePath : pluginPrefix;
-		Aloha.PluginRegistry.register(this);
+		if (typeof pluginPrefix === "undefined") {
+			Aloha.Log.warn(this, 'Cannot initialise unnamed plugin, skipping');
+		} else {
+			this.prefix = pluginPrefix;
+			this.basePath = basePath ? basePath : pluginPrefix;
+			Aloha.PluginRegistry.register(this);
+		}
 	},
 
 	/**
