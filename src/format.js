@@ -15,8 +15,8 @@
 /**
  * register the plugin with unique name
  */
-Aloha.Format = new (Aloha.Plugin.extend({
-	_constructor: function(){
+Aloha.Format = new (Aloha.Plugin.extend({ 
+	 _constructor: function(){
 		this._super('format');
 	},
 
@@ -35,6 +35,7 @@ Aloha.Format = new (Aloha.Plugin.extend({
 	 */
 	init: function () {
 		// Prepare
+		this._super('format');
 		var me = this;
 
 		this.initButtons();
