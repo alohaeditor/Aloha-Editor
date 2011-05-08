@@ -163,75 +163,77 @@ Aloha.FloatingMenu.generateComponent = function () {
 	if (this.extTabPanel) {
 		// TODO dispose of the ext component
 	}
-
-	// generate the tabpanel object
-	this.extTabPanel = new Ext.TabPanel({
-		activeTab: 0,
-		width: 400, // 336px this fits the multisplit button and 6 small buttons placed in 3 cols
-		plain: false,
-		draggable: {
-			insertProxy: false,
-			onDrag : function(e) {
-				var pel = this.proxy.getEl();
-				this.x = pel.getLeft(true);
-				this.y = pel.getTop(true);
-				Aloha.FloatingMenu.shadow.hide();
+	else {
+		// generate the tabpanel object
+		this.extTabPanel = new Ext.TabPanel({
+			activeTab: 0,
+			width: 400, // 336px this fits the multisplit button and 6 small buttons placed in 3 cols
+			plain: false,
+			draggable: {
+				insertProxy: false,
+				onDrag : function(e) {
+					var pel = this.proxy.getEl();
+					this.x = pel.getLeft(true);
+					this.y = pel.getTop(true);
+					Aloha.FloatingMenu.shadow.hide();
+				},
+				endDrag : function(e) {
+					var top = (Aloha.FloatingMenu.pinned) ? this.y - jQuery(document).scrollTop() : this.y;
+					
+					that.left = this.x;
+					that.top = top;
+					this.panel.setPosition(this.x, top);
+					Aloha.FloatingMenu.refreshShadow();
+					Aloha.FloatingMenu.shadow.show();
+				}
 			},
-			endDrag : function(e) {
-				var top = (Aloha.FloatingMenu.pinned) ? this.y - jQuery(document).scrollTop() : this.y;
-
-				that.left = this.x;
-				that.top = top;
-				this.panel.setPosition(this.x, top);
-				Aloha.FloatingMenu.refreshShadow();
-				Aloha.FloatingMenu.shadow.show();
-			}
-		},
-		floating: true,
-		defaults: {
-			autoScroll: true
-		},
-		layoutOnTabChange : true,
-		shadow: false,
-		cls: 'aloha-floatingmenu ext-root',
-		listeners : {
-			'tabchange' : {
-				'fn' : function(tabPanel, tab) {
-					if (tab.title != that.autoActivatedTab) {
-						if (Aloha.Log.isDebugEnabled()) {
-							Aloha.Log.debug(that, 'User selected tab ' + tab.title);
-						}
-						// remember the last user-selected tab
-						that.userActivatedTab = tab.title;
-					} else {
-						if (Aloha.Log.isDebugEnabled()) {
-							Aloha.Log.debug(that, 'Tab ' + tab.title + ' was activated automatically');
-						}
-					}
-					that.autoActivatedTab = undefined;
-
-					// ok, this is kind of a hack: when the tab changes, we check all buttons for multisplitbuttons (which have the method setActiveDOMElement).
-					// if a DOM Element is queued to be set active, we try to do this now.
-					// the reason for this is that the active DOM element can only be set when the multisplit button is currently visible.
-					jQuery.each(that.allButtons, function(index, buttonInfo) {
-						if (typeof buttonInfo.button !== 'undefined'
-							&& typeof buttonInfo.button.extButton !== 'undefined'
-							&& typeof buttonInfo.button.extButton.setActiveDOMElement === 'function') {
-							if (typeof buttonInfo.button.extButton.activeDOMElement !== 'undefined') {
-								buttonInfo.button.extButton.setActiveDOMElement(buttonInfo.button.extButton.activeDOMElement);
+			floating: true,
+			defaults: {
+				autoScroll: true
+			},
+			layoutOnTabChange : true,
+			shadow: false,
+			cls: 'aloha-floatingmenu ext-root',
+			listeners : {
+				'tabchange' : {
+					'fn' : function(tabPanel, tab) {
+						if (tab.title != that.autoActivatedTab) {
+							if (Aloha.Log.isDebugEnabled()) {
+								Aloha.Log.debug(that, 'User selected tab ' + tab.title);
+							}
+							// remember the last user-selected tab
+							that.userActivatedTab = tab.title;
+						} else {
+							if (Aloha.Log.isDebugEnabled()) {
+								Aloha.Log.debug(that, 'Tab ' + tab.title + ' was activated automatically');
 							}
 						}
-					});
-
-					// adapt the shadow
-					Aloha.FloatingMenu.shadow.show();
-					Aloha.FloatingMenu.refreshShadow();
+						that.autoActivatedTab = undefined;
+						
+						// ok, this is kind of a hack: when the tab changes, we check all buttons for multisplitbuttons (which have the method setActiveDOMElement).
+						// if a DOM Element is queued to be set active, we try to do this now.
+						// the reason for this is that the active DOM element can only be set when the multisplit button is currently visible.
+						jQuery.each(that.allButtons, function(index, buttonInfo) {
+							if (typeof buttonInfo.button !== 'undefined'
+								&& typeof buttonInfo.button.extButton !== 'undefined'
+									&& typeof buttonInfo.button.extButton.setActiveDOMElement === 'function') {
+								if (typeof buttonInfo.button.extButton.activeDOMElement !== 'undefined') {
+									buttonInfo.button.extButton.setActiveDOMElement(buttonInfo.button.extButton.activeDOMElement);
+								}
+							}
+						});
+						
+						// adapt the shadow
+						Aloha.FloatingMenu.shadow.show();
+						Aloha.FloatingMenu.refreshShadow();
+					}
 				}
-			}
-		},
-		enableTabScroll : true
-	});
-
+			},
+			enableTabScroll : true
+		});
+		
+		
+	}
 	// add the tabs
 	jQuery.each(this.tabs, function(index, tab) {
 		// let each tab generate its ext component and add them to the panel

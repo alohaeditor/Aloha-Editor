@@ -40,7 +40,13 @@ Aloha.PluginRegistry = Class.extend({
 			//debugger;
 			for ( var i = 0; i < length; i++) {
 				if (pluginsStack[i].settings.enabled) {
-					pluginsStack[i].init();
+					try {
+						pluginsStack[i].init();
+					} catch(e) {
+						Aloha.Log.error(me, "Init of plugin "+ pluginsStack[i].prefix + " failed : " + e);
+						// removes the incrimined plugin from stack to avoid side effect
+						delete pluginsStack[i];
+					}
 				}
 			}
 			//debugger;
@@ -155,7 +161,7 @@ Aloha.Plugin = Class.extend({
 		/**
 		 * Settings of the plugin
 		 */
-		if (typeof pluginPrefix === "undefined") {
+		if (typeof pluginPrefix !== "string") {
 			Aloha.Log.warn(this, 'Cannot initialise unnamed plugin, skipping');
 		} else {
 			this.prefix = pluginPrefix;
