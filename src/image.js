@@ -133,6 +133,7 @@
 			var config = this.config,
 				me = this,
 				imagePluginUrl = Aloha.getPluginUrl('image');
+			/*
 			if (!this.settings.config.img) {
 				this.settings.config.img = this.config.img;
 			}
@@ -157,7 +158,7 @@
 						.loadCss(imagePluginUrl+'/dep/jcrop/jquery.jcrop.css')
 						.loadJs(imagePluginUrl+'/dep/jcrop/jquery.jcrop.min.js')
 					;
-			}
+			} // */
 
 			me.initImage();
 			me.bindInteractions();
@@ -648,6 +649,9 @@
 		 *
 		 */
 		initCropButtons: function() {
+			var btns = jQuery('#GENTICS_CropNResize_btns'),
+				oldLeft = 0,
+				oldTop = 0;
 			jQuery('body').append(
 					'<div id="GENTICS_CropNResize_btns">' +
 					'<button class="cnr_crop_apply" title="' + this.i18n('Accept') +
@@ -657,9 +661,6 @@
 					'</div>'
 			);
 
-			var btns = jQuery('#GENTICS_CropNResize_btns'),
-				oldLeft = 0,
-				oldTop = 0;
 			this.interval = setInterval(function () {
 				var jt = jQuery('.jcrop-tracker:first'),
 					off = jt.offset();
