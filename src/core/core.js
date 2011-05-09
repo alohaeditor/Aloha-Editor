@@ -9,6 +9,11 @@
  * existing GENTICS object will not be overwritten so that defined
  * namespaces are preserved.
  */
+var Aloha = window.Aloha;
+// before closure (for loading)
+Aloha = jQuery.extend(Aloha,{
+	
+});
 
 // Start Closure
 (function(window, undefined) {
@@ -129,7 +134,7 @@
 				// in the modal... where else could he click?
 				// loosing the editable focus in this case hinders correct table
 				// column/row deletion, as the table module will clean it's selection
-				// as soon as the editable is deactivated. Furthermore you'd have to
+				// as soon as the editable is deactivated. Fusubscriberthermore you'd have to
 				// refocus the editable again, which is just strange UX
 				if (that.activeEditable && !that.isMessageVisible()) {
 					that.activeEditable.blur();
@@ -181,14 +186,6 @@
 			// Events
 			Aloha.trigger('aloha');
 		},
-
-		correctEventName: function(eventName){
-			var result = eventName.replace(/\-([a-z])/g,function(a,b){
-				return b.toUpperCase();
-			});
-			return result;
-		},
-
 		unbind: function(eventName,eventHandler) {
 			eventName = this.correctEventName(eventName);
 			$('body').unbind(eventName,eventHandler);
@@ -204,6 +201,12 @@
 			eventName = this.correctEventName(eventName);
 			this.log('debug', this, 'Trigger ['+eventName+'], has ['+(($('body').data('events')||{})[eventName]||[]).length+'] events');
 			$('body').trigger(eventName,data);
+		},
+		correctEventName: function(eventName){
+			var result = eventName.replace(/\-([a-z])/g,function(a,b){
+				return b.toUpperCase();
+			});
+			return result;
 		},
 
 		/**
@@ -332,7 +335,8 @@
 		 * @hide
 		 */
 		log: function(level, component, message) {
-			Aloha.Log.log(level, component, message);
+			if (typeof Aloha.Log !== "undefined")
+				Aloha.Log.log(level, component, message);
 		},
 
 		/**
@@ -819,29 +823,14 @@
 		}
 	});
 
-	// Load Plugins
-	var $alohaScriptInclude = $('#aloha-script-include');
-	if ( $alohaScriptInclude ) {
-		// Determine Plugins
-		var plugins = $alohaScriptInclude.data('plugins');
-		if ( typeof plugins === 'string' ) {
-			plugins = plugins.split(',');
-		}
-
-		// Load in Plugins
-		$.each(plugins||[],function(i,pluginName){
-			// Load Plugin
-			Aloha.loadPlugin(pluginName);
-		});
-	}
 
 	// Initialise Aloha
 	$(function(){
 		// Prepare
 		var $body = $('body');
 		$body.createPromiseEvent('aloha');
-
 		// Give the page 3 seconds to load in all the plugins
+		// Looks like a jacky hack - Event programming could result to safe loading process..
 		setTimeout( function() {
 			Aloha.init();
 		},3000);

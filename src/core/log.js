@@ -41,6 +41,7 @@ Aloha.Log = Class.extend({
 			Aloha.settings.logHistory.levels = {'error' : true, 'warn' : true};
 		}
 		this.flushLogHistory();
+		Aloha.trigger('aloha-logger-ready');
 	},
 
 	/**
@@ -71,7 +72,10 @@ Aloha.Log = Class.extend({
 			level = 'error';
 		}
 		level = level.toLowerCase();
-
+		
+		if (typeof Aloha.settings.logLevels === "undefined") {
+			return;
+		}
 		// now check whether the log level is activated
 		if (!Aloha.settings.logLevels[level]) {
 			return;

@@ -237,7 +237,12 @@ Aloha.FloatingMenu.generateComponent = function () {
 	// add the tabs
 	jQuery.each(this.tabs, function(index, tab) {
 		// let each tab generate its ext component and add them to the panel
-		that.extTabPanel.add(tab.getExtComponent());
+		try {
+			that.extTabPanel.add(tab.getExtComponent());
+		} catch(e) {
+			Aloha.Log.error(that,"Error while inserting tab: " + e);
+			console.log(tab.getExtComponent());
+		}
 	});
 
 	// add the dropshadow
@@ -819,7 +824,12 @@ Aloha.FloatingMenu.Group = Class.extend({
 				throw new Error("Too much fields in this group");
 			}
 		} else {
+			// Every plugin API entryPoint (method) should be securised enough
+			// to avoid Aloha to block at startup even
+			// if a plugin is badly designed
+			if (typeof buttonInfo.button !== "undefined"){
 				this.buttons.push(buttonInfo);
+			}
 		}
 	},
 
@@ -915,27 +925,28 @@ Aloha.FloatingMenu.Group = Class.extend({
 	doLayout: function () {
 		var groupVisible = false,
 			that = this;
-
 		jQuery.each(this.buttons, function(index, button) {
-			var extButton = that.extButtonGroup.findById(button.button.id),
+			if (typeof button.button !== "undefined") {
+				var extButton = that.extButtonGroup.findById(button.button.id),
 				buttonVisible = button.button.isVisible() && button.scopeVisible;
-
-			if (buttonVisible && extButton.hidden) {
-				extButton.show();
-			} else if (!buttonVisible && !extButton.hidden) {
-				extButton.hide();
+				
+				if (buttonVisible && extButton.hidden) {
+					extButton.show();
+				} else if (!buttonVisible && !extButton.hidden) {
+					extButton.hide();
+				}
+				
+				groupVisible |= buttonVisible;
 			}
-
-			groupVisible |= buttonVisible;
 		});
-
 		if (groupVisible && this.extButtonGroup.hidden) {
 			this.extButtonGroup.show();
 		} else if (!groupVisible && !this.extButtonGroup.hidden) {
 			this.extButtonGroup.hide();
 		}
-
+		
 		return groupVisible;
+
 	}
 });
 
