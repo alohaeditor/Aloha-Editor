@@ -53,7 +53,6 @@
 			return obj;
 		}
 	});
-
 	// Create our Image Plugin
 	Aloha.Image = new (Aloha.Plugin.extend({
 		_constructor: function(){
@@ -175,7 +174,7 @@
 				me = this, config = this.config;
 
 			this.insertImgButton = new Aloha.ui.Button({
-				'iconClass': 'GENTICS_button GENTICS_img AlohaImage_insert',
+				'iconClass': 'aloha-button AlohaImage_insert',
 				'size' : 'small',
 				'onclick' : function () { me.insertImg(); },
 				'tooltip' : me.i18n('button.addimg.tooltip'),
