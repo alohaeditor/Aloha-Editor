@@ -159,7 +159,7 @@
 	
 		    // add the new scope for links
 		    Aloha.FloatingMenu.createScope(this.getUID('link'), 'Aloha.empty'); //'Aloha.continuoustext');
-	
+		    /*
 		    this.browser = new Aloha.ui.Browser();
 		    this.browser.setObjectTypeFilter(Aloha.Link.objectTypeFilter);
 		    this.browser.onSelect = function( item ) {
@@ -168,7 +168,7 @@
 				// call hrefChange
 		    	that.hrefChange();
 		    };
-		    /* Repository is broken, disabling feature for now
+		    // Repository is broken, disabling feature for now
 		    this.repositoryButton = new Aloha.ui.Button({
 		        'iconClass' : 'aloha-button-big aloha-button-tree',
 		        'size' : 'large',
@@ -177,7 +177,7 @@
 				},
 		        'tooltip' : this.i18n('button.addlink.tooltip'),
 		        'toggle' : false
-		    }); 
+		    });  
 	
 		    // COMMENT IN AND TEST THE BROWSER
 		    Aloha.FloatingMenu.addButton(
