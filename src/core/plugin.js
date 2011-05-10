@@ -25,15 +25,97 @@
 			var
 				me = this,
 				loaded = 0,
-				length = this.plugins.length,
+				length = 0,
+				plugins,
+				toload,
 				pluginsStack = [],
 				i18nEvent = function () {
 					++loaded;
 					if ( loaded === length ) {
 						Aloha.trigger('aloha-i18n-plugins-loaded');
 					}
-				};
-
+				},
+				$alohaScriptInclude = $('#aloha-script-include'),
+				allload = false;
+				
+				plugins = $alohaScriptInclude.data('plugins');
+				// Determine Plugins
+				if ( typeof plugins === 'string' ) {
+					plugins = plugins.split(',');
+				}
+				
+				Aloha.bind('aloha-js-plugins-loaded', function() {
+					length = me.plugins.length;
+					// iterate through all registered plugins
+					for ( var i = 0; i < length; i++) {
+						var plugin = me.plugins[i];
+						
+						// get the plugin settings
+						if (typeof Aloha.settings.plugins === 'undefined') {
+							Aloha.settings.plugins = {};
+						}
+						
+						plugin.settings = Aloha.settings.plugins[plugin.prefix];
+						
+						if (typeof plugin.settings === 'undefined') {
+							plugin.settings = {};
+						}
+						
+						if (typeof plugin.settings.enabled === 'undefined') {
+							plugin.settings.enabled = true;
+						}
+						
+						// Push the plugin in the right order into the plugins stack
+						pluginsStack.push(plugin);
+						
+						// initialize i18n for the plugin
+						// determine the actual language
+						var actualLanguage = plugin.languages ? Aloha.getLanguage(Aloha.settings.i18n.current, plugin.languages) : null;
+						
+						if (!actualLanguage) {
+							// The plugin that have no dict file matching
+							Aloha.Log.warn(me, 'Could not determine actual language, no languages available for plugin ' + plugin);
+							
+							++loaded;
+							if ( loaded === length ) {
+								Aloha.trigger('aloha-i18n-plugins-loaded');
+							}
+						} else {
+							// load the dictionary file for the actual language
+							var fileUrl = Aloha.settings.base + '/' + Aloha.settings.pluginDir + '/' + plugin.basePath + '/i18n/' + actualLanguage + '.json';
+							
+							// Initializes the plugin when
+							Aloha.loadI18nFile(fileUrl, plugin, i18nEvent);
+						}
+					}
+					// if no plugins are loaded, we immediately trigger the event 'aloha-i18n-plugins-loaded' (otherwise the floatingmenue would not be initialized, which produces errors afterwards
+					if (length == 0) {
+						Aloha.trigger('aloha-i18n-plugins-loaded');
+					}
+				});
+			//* Load Plugins
+			if ( $alohaScriptInclude ) {
+				// Load in Plugins
+				$.each(plugins||[],function(i,pluginName){
+					// Load Plugin
+					try {
+//						Aloha.bind("aloha-js-loaded-" + pluginName, function(){
+//						});
+						Aloha.loadPlugin(pluginName);
+					} catch(e) {
+						Aloha.Log.error(Aloha, "Error while loading " + pluginName);
+						delete plugins[plugins.indexOf(pluginName)];
+					}
+				});
+				window.setInterval(function() { 
+					if (allload === false && plugins.length === me.plugins.length) {
+						allload = true;
+						Aloha.trigger("aloha-js-plugins-loaded");
+					}
+				}, 1000);
+			} else {
+				Aloha.trigger("aloha-js-plugins-loaded");
+			}
 			// Initialize the plugins in the right order when they are loaded
 			Aloha.bind('aloha-i18n-plugins-loaded',function(){
 				var failures = [];
@@ -56,54 +138,6 @@
 				//debugger;
 				Aloha.trigger('aloha-i18n-plugins-ready');
 			});
-
-			// if no plugins are loaded, we immediately trigger the event 'aloha-i18n-plugins-loaded' (otherwise the floatingmenue would not be initialized, which produces errors afterwards
-			if (length == 0) {
-				Aloha.trigger('aloha-i18n-plugins-loaded');
-			}
-
-			// iterate through all registered plugins
-			for ( var i = 0; i < length; i++) {
-				var plugin = this.plugins[i];
-
-				// get the plugin settings
-				if (typeof Aloha.settings.plugins === 'undefined') {
-					Aloha.settings.plugins = {};
-				}
-
-				plugin.settings = Aloha.settings.plugins[plugin.prefix];
-
-				if (typeof plugin.settings === 'undefined') {
-					plugin.settings = {};
-				}
-
-				if (typeof plugin.settings.enabled === 'undefined') {
-					plugin.settings.enabled = true;
-				}
-
-				// Push the plugin in the right order into the plugins stack
-				pluginsStack.push(plugin);
-
-				// initialize i18n for the plugin
-				// determine the actual language
-				var actualLanguage = plugin.languages ? Aloha.getLanguage(Aloha.settings.i18n.current, plugin.languages) : null;
-
-				if (!actualLanguage) {
-					// The plugin that have no dict file matching
-					Aloha.Log.warn(this, 'Could not determine actual language, no languages available for plugin ' + plugin);
-
-					++loaded;
-					if ( loaded === length ) {
-						Aloha.trigger('aloha-i18n-plugins-loaded');
-					}
-				} else {
-					// load the dictionary file for the actual language
-					var fileUrl = Aloha.settings.base + '/' + Aloha.settings.pluginDir + '/' + plugin.basePath + '/i18n/' + actualLanguage + '.json';
-
-					// Initializes the plugin when
-					Aloha.loadI18nFile(fileUrl, plugin, i18nEvent);
-				}
-			}
 		},
 
 		plugins: [],
@@ -173,6 +207,7 @@
 				this.basePath = basePath ? basePath : pluginPrefix;
 				Aloha.PluginRegistry.register(this);
 			}
+//			Aloha.trigger("aloha-js-loaded-" + pluginPrefix);
 		},
 
 		/**
@@ -341,20 +376,4 @@
 			Aloha.Log.log(level, this, message);
 		}
 	});
-	//* Load Plugins
-	var $alohaScriptInclude = $('#aloha-script-include');
-	if ( $alohaScriptInclude ) {
-		// Determine Plugins
-		var plugins = $alohaScriptInclude.data('plugins');
-		if ( typeof plugins === 'string' ) {
-			plugins = plugins.split(',');
-		}
-		
-		// Load in Plugins
-		$.each(plugins||[],function(i,pluginName){
-			// Load Plugin
-			Aloha.loadPlugin(pluginName);
-		});
-	} //*
-
 })(window);
