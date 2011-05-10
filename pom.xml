@@ -1,0 +1,44 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.gentics</groupId>
+	<artifactId>alohaeditor</artifactId>
+	<version>0.1-SNAPSHOT</version>
+	<packaging>pom</packaging>
+
+	<name>Aloha Editor</name>
+	<url>http://aloha-editor.org</url>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+	 <build>
+                <plugins>
+                        <plugin>
+                                <groupId>org.codehaus.mojo</groupId>
+                                <artifactId>exec-maven-plugin</artifactId>
+                                <version>1.1</version>
+                                <executions>
+                                        <execution>
+                                                <phase>compile</phase>
+                                                <id>invoke build</id>
+                                                <goals>
+                                                        <goal>exec</goal>
+                                                </goals>
+                                        </execution>
+                                </executions>
+                                <configuration>
+                                        <executable>ruby</executable>
+                                        <arguments>
+						<argument>cli</argument>
+                                                <argument>build</argument>
+                                        </arguments>
+                                </configuration>
+                        </plugin>
+		</plugins>
+	</build>
+
+</project>
+
