@@ -46,3 +46,6 @@
 [submodule "src/plugin/vie"]
 	path = src/plugin/vie
 	url = http://github.com/alohaeditor/Aloha-Plugin-VIE.git
+[submodule "src/plugin/undo"]
+	path = src/plugin/undo
+	url = https://github.com/alohaeditor/Aloha-Plugin-Undo.git
