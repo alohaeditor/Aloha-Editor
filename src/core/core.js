@@ -616,7 +616,11 @@
 			}
 
 			// Save i18n
-			Aloha.dictionaries[component.toString()] = data;
+			if (Aloha.dictionaries[component.toString()]) {
+				$.extend(Aloha.dictionaries[component.toString()], data);
+			} else {
+				Aloha.dictionaries[component.toString()] = data;
+			}
 		},
 
 		/**
