@@ -13,8 +13,20 @@ window.Aloha_base = window.Aloha_base || false;
 
 	// Prepare Script Loading
 	var
-		includes = [];
-
+		includes = [],
+		$body = $('body'),
+		counter = 0,
+		scriptEl,
+		appendEl = document.head;
+	function loadJsFileAtIncludesCounter() {
+		scriptEl = document.createElement('script');
+		scriptEl.src = window.GENTICS_Aloha_base + '/' + includes[counter++];
+		scriptEl.setAttribute('defer','defer'); 
+		scriptEl.onload = function(event) {
+			$body.trigger('alohaLoadJs',{'file':includes[counter],'ref': counter});
+		}
+		appendEl.appendChild(scriptEl);
+	}
 	// Prepare baseUrl
 	window.GENTICS_Aloha_base = window.GENTICS_Aloha_base || document.getElementById('aloha-script-include').src.replace(/aloha\.js$/,'').replace(/\/+$/,'');
 
@@ -52,8 +64,18 @@ window.Aloha_base = window.Aloha_base || false;
 	includes.push('core/repository.js');
 	includes.push('core/repositoryobjects.js');
 	includes.push('plugin/format/src/format.js');
-
-	// Insert Scripts
+	
+	// Define recursive event handler
+	$body.bind('alohaLoadJs', function(event, data){
+		if (includes.length > counter) {
+			loadJsFileAtIncludesCounter();
+		}
+	});
+	//Initialize
+	loadJsFileAtIncludesCounter();
+	
+	
+	/* Insert Scripts
 	var value, url, scriptEl, appendEl = document.head;
 	for ( i=0,n=includes.length; i<n; ++i ) {
 		// Prepare
@@ -77,7 +99,7 @@ window.Aloha_base = window.Aloha_base || false;
 		scriptEl.setAttribute('defer','defer');
 		appendEl.appendChild(scriptEl);
 		continue;
-	}
+	} // */
 
 // </closure>
 })(window);
