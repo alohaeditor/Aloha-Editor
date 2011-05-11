@@ -23,7 +23,7 @@ window.Aloha_base = window.Aloha_base || false;
 		scriptEl.src = window.GENTICS_Aloha_base + '/' + includes[counter++];
 		scriptEl.setAttribute('defer','defer'); 
 		scriptEl.onload = function(event) {
-			$body.trigger('alohaLoadJs',{'file':includes[counter],'ref': counter});
+			$body.trigger('alohaLoadJs',{'file':includes[counter],'ref': counter,'total':includes.length});
 		}
 		appendEl.appendChild(scriptEl);
 	}
