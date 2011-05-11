@@ -494,7 +494,7 @@ GENTICS.Aloha.prototype.loadI18nFile = function(fileUrl, component) {
 GENTICS.Aloha.prototype.parseI18nFile = function(data, component) {
 	data = data.replace(/\r/g, '');
 	var entries = data.split('\n');
-	var dictionary = new Object();
+	var dictionary = this.dictionaries[component.toString()] || new Object();
 	for (var i = 0; i < entries.length; ++i) {
 		var entry = entries[i];
 		var equal = entry.indexOf('=');

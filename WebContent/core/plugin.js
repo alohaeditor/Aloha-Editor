@@ -69,6 +69,13 @@ GENTICS.Aloha.PluginRegistry.prototype.init = function() {
 		if (!actualLanguage) {
 			GENTICS.Aloha.Log.warn(this, 'Could not determine actual language, no languages available for plugin ' + plugin);
 		} else {
+			// first load the custom dictionary of the actual language
+			if (plugin.settings.customDictsPath) {
+				if (!plugin.settings.customDictsPath.match(/\/$/)) {
+					plugin.settings.customDictsPath = plugin.settings.customDictsPath + '/';
+				}
+				GENTICS.Aloha.loadI18nFile(plugin.settings.customDictsPath + actualLanguage + '.dict', plugin);
+			}
 			// load the dictionary file for the actual language
 			var fileUrl = GENTICS.Aloha.settings.base + 'plugins/' + plugin.basePath + '/i18n/' + actualLanguage + '.dict';
 			GENTICS.Aloha.loadI18nFile(fileUrl, plugin);
