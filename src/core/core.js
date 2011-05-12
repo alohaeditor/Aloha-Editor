@@ -181,7 +181,7 @@ Aloha = jQuery.extend(Aloha,{
 			Aloha.bind('aloha-i18n-ready',this.loadPlugins);
 			Aloha.bind('aloha-i18n-plugins-ready', this.loadGui);
 			this.initI18n();
-			Aloha.bind('aloha-i18n-plugins-loaded', function() {
+			Aloha.bind('aloha-ready', function() {
 				Aloha.trigger('aloha');
 			});
 			

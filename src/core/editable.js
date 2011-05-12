@@ -177,7 +177,7 @@ Aloha.Editable = Class.extend({
 			 * @param {Event} e the event object
 			 * @param {Array} a an array which contains a reference to the currently created editable on its first position
 			 */
-			Aloha.trigger('aloha-editable-created',[this]);
+			Aloha.trigger('aloha-editable-created',[me]);
 
 			// mark the editable as unmodified
 			me.setUnmodified();
