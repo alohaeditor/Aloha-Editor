@@ -132,7 +132,7 @@
 				"dep/jquery.getUrlParam.js",
 				"dep/jquery.store.js",
 
-				"core/jquery.js",
+				"core/jquery.aloha.js",
 				"util/lang.js",
 				"util/range.js",
 				"util/position.js",

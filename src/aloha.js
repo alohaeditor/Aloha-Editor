@@ -41,7 +41,7 @@ window.Aloha_base = window.Aloha_base || false;
 	includes.push('dep/jquery.json-2.2.min.js');
 	includes.push('dep/jquery.getUrlParam.js');
 	includes.push('dep/jquery.store.js');
-	includes.push('core/jquery.js');
+	includes.push('core/jquery.aloha.js');
 	includes.push('util/lang.js');
 	includes.push('util/range.js');
 	includes.push('util/position.js');
