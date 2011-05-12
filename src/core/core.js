@@ -825,15 +825,15 @@ Aloha = jQuery.extend(Aloha,{
 
 
 	// Initialise Aloha
-	$(function(){
+//	$(function(){
 		// Prepare
-		var $body = $('body');
-		$body.createPromiseEvent('aloha');
+//		var $body = $('body');
+//		$body.createPromiseEvent('aloha');
 		// Give the page 3 seconds to load in all the plugins
 		// Looks like a jacky hack - Event programming could result to safe loading process..
-		setTimeout( function() {
-			Aloha.init();
-		},3000);
-	});
+//		setTimeout( function() {
+//			Aloha.init(); // moving to aloha.js
+//		},3000);
+//	});
 
 })(window);
