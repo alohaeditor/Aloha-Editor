@@ -544,17 +544,14 @@
 				}
 			});
 			 // */
-			Aloha.bind('aloha-editable-created', function(event, data) {
+			Aloha.bind('aloha-editable-created', function(event, editable) {
 				// add to editable the image click
 				//editable.obj.find('img').attr('_moz_resizing', false);
 	//			editable.obj.find('img').contentEditable(false);
-				if (data.editable.imgclickhandle !== true) {
-					data.editable.obj.delegate('img', 'mouseup', function (event) {
-						me.clickImage(event);
-						event.stopPropagation();
-					});
-					data.editable.imgclickhandle = true;
-				}
+				editable.obj.delegate('img', 'mouseup', function (event) {
+					me.clickImage(event);
+					event.stopPropagation();
+				});
 			});
 		},
 
@@ -563,7 +560,7 @@
 				this.endResize();
 			}
 			var thisimg = this.obj = jQuery(e.target),
-				editable = thisimg.closest('.GENTICS_editable');
+				editable = thisimg.closest('.aloha-editable');
 			this.restoreProps.push({
 				obj : e.srcElement,
 				src : this.obj.attr('src'),
