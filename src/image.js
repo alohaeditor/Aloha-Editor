@@ -129,10 +129,18 @@
 		 */
 		init: function(){
 			// get settings
-			var config = this.config,
+			var 
 				me = this,
 				imagePluginUrl = Aloha.getPluginUrl('image');
-			/*
+			if (typeof this.settings === 'undefined') {
+				this.settings = Aloha.settings.plugins.image;
+				this.settings = jQuery.extend(true,this.settings,this.config);
+				// ensure an aggregate of all confs
+				jQuery.each(this.settings.editables, function(i,e){
+					this.settings = jQuery.extend(true,this.settings,e);
+				});
+			}
+			//*
 			if (!this.settings.config.img) {
 				this.settings.config.img = this.config.img;
 			}
@@ -159,20 +167,19 @@
 					;
 			} // */
 
-			me.initImage();
+			me.initializeButtons();
 			me.bindInteractions();
 			me.subscribeEvents();
 
 		 }, // END INIT
-
+		 
 		 /**
-		 * Do the UI/buttons Initialization
-		 */
-		 initImage: function() {
-			// Prepare
+		  * Create buttons
+		  */
+		 initializeButtons: function() {
 			var
-				me = this, config = this.config;
-
+				config = this.settings.config,
+				me = this;
 			this.insertImgButton = new Aloha.ui.Button({
 				'iconClass': 'aloha-button AlohaImage_insert',
 				'size' : 'small',
@@ -186,11 +193,11 @@
 				Aloha.i18n(Aloha, 'floatingmenu.tab.insert'),
 				1
 			);
-
 			Aloha.FloatingMenu.createScope(this.getUID('image'), 'Aloha.empty');
-
+			
+		 
 			// add the src field for images
-			if (this.settings.config.img.ui.meta) {
+			if (config.img.ui.meta) {
 				var imgSrcLabel = new Aloha.ui.Button({
 					'label': me.i18n('field.img.src.label'),
 					'tooltip': me.i18n('field.img.src.tooltip'),
@@ -235,7 +242,7 @@
 					'iconClass': 'GENTICS_img AlohaImage_align_none',
 					'size': 'small',
 					'onclick' : function() {
-					var img = me.findImgMarkup();
+						var img = me.findImgMarkup();
 						jQuery(img).css('float', '');
 					},
 					'tooltip': me.i18n('button.img.align.none.tooltip')
@@ -379,7 +386,7 @@
 						2
 				);
 			}
-		}, // end of InitImage
+		}, // end of Buttons creation
 
 		/**
 		 * Bind plugin interactions
@@ -387,9 +394,9 @@
 		bindInteractions: function () {
 			// Prepare
 			var
-				me = this, config = this.config;
-
-			if(this.settings.config.img.ui.resizable) {
+				me = this, config = this.settings.config;
+			//*
+			if(config.img.ui.resizable) {
 				try {
 					// this will disable mozillas image resizing facilities
 					document.execCommand('enableObjectResizing', false, 'false');
@@ -398,7 +405,7 @@
 				}
 			}
 
-			if (this.settings.config.img.ui.meta) {
+			if (config.img.ui.meta) {
 				// update image object when src changes
 				this.imgSrcField.addListener('keyup', function(obj, event) {
 					me.srcChange();
@@ -421,17 +428,31 @@
 			}
 			if (config.img.aspectRatio && typeof config.img.aspectRatio !== "boolean") {
 				this.settings.aspectRatio = true;
-			}
+			} // */
 		},
-
+		/**
+		 * 
+		 */
+		applyButtonConfig: function(editable) {
+			var 
+				config;
+		},
+		
 		/**
 		 * Subscribe to Aloha events and DragAndDropPlugin Event
 		 */
 		subscribeEvents: function () {
 			// Prepare
 			var
-				me = this, config = this.config;
-
+				me = this, config = this.settings;
+			Aloha.bind('aloha-editable-activated',function (e, params) {
+				//debugger;
+				try {
+					me.applyButtonConfig(params.editable.obj);
+				} catch (e) {
+					Aloha.Log.error(me, "Button configuration failed");
+				}
+			});
 			//handles dropped files
 			Aloha.bind('aloha-upload-success', function(event,data) {
 				if (data.file.type.match(/image\//)) {
@@ -480,8 +501,8 @@
 					reader.readAsDataURL(fileObj.file);
 				}
 			});
-
-			// add the event handler for selection change
+			
+			//* add the event handler for selection change
 			Aloha.bind('aloha-selection-changed', function(event, rangeObject, originalEvent) {
 				if (originalEvent && originalEvent.target) {
 					if (me.settings.config.img.ui.resizable && !jQuery(originalEvent.target).hasClass('ui-resizable-handle')) {
@@ -522,14 +543,18 @@
 					Aloha.FloatingMenu.doLayout();
 				}
 			});
-			Aloha.bind('aloha-editable-created', function(event, editable) {
+			 // */
+			Aloha.bind('aloha-editable-created', function(event, data) {
 				// add to editable the image click
 				//editable.obj.find('img').attr('_moz_resizing', false);
 	//			editable.obj.find('img').contentEditable(false);
-				editable.obj.delegate('img', 'mouseup', function (event) {
-					me.clickImage(event);
-					event.stopPropagation();
-				});
+				if (data.editable.imgclickhandle !== true) {
+					data.editable.obj.delegate('img', 'mouseup', function (event) {
+						me.clickImage(event);
+						event.stopPropagation();
+					});
+					data.editable.imgclickhandle = true;
+				}
 			});
 		},
 
