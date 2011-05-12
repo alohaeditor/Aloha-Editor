@@ -19,8 +19,10 @@ window.Aloha_base = window.Aloha_base || false;
 		scriptEl,
 		appendEl = document.head;
 	function loadJsFileAtIncludesCounter() {
+		var depitem = includes[counter++],
+			depfile;
 		scriptEl = document.createElement('script');
-		scriptEl.src = window.GENTICS_Aloha_base + '/' + includes[counter++];
+		scriptEl.src = window.GENTICS_Aloha_base + '/' + depitem;
 		scriptEl.setAttribute('defer','defer'); 
 		scriptEl.onload = function(event) {
 			$body.trigger('alohaLoadJs',{'file':includes[counter],'ref': counter,'total':includes.length});

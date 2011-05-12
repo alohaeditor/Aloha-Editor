@@ -126,7 +126,7 @@ Aloha.Editable = Class.extend({
 			return;
 		}
 
-		// only initialize the editable when Aloha is ready
+		// only initialize the editable when Aloha is fully ready (including plugins)
 		Aloha.bind('aloha',function(){
 			// initialize the object
 			me.obj.addClass('aloha-editable')

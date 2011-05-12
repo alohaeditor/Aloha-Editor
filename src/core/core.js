@@ -35,7 +35,7 @@ Aloha = jQuery.extend(Aloha,{
 	 * @class Aloha The Aloha base object, which contains all the core functionality
 	 * @singleton
 	 */
-	Aloha = jQuery.extend(Aloha,{
+	Aloha = jQuery.extend(true,Aloha,{
 
 		/**
 		 * The Aloha Editor Version we are using
@@ -77,7 +77,6 @@ Aloha = jQuery.extend(Aloha,{
 		 */
 		settings: {},
 
-
 		/**
 		 * This represents the name of the users OS. Could be:
 		 * 'Mac', 'Linux', 'Win', 'Unix', 'Unknown'
@@ -111,7 +110,7 @@ Aloha = jQuery.extend(Aloha,{
 				throw new Error('You are initialising Aloha Editor twice');
 			}
 			this.initd = true;
-
+			
 			// check browser version on init
 			// this has to be revamped, as
 			if (jQuery.browser.webkit && parseFloat(jQuery.browser.version) < 532.5 || // Chrome/Safari 4
