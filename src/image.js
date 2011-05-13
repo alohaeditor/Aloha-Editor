@@ -570,7 +570,6 @@
 			if (this.settings.config.img.ui.resizable) {
 				this.resize();
 			}
-			Aloha.getEditableById(editable.attr('id')).activate();
 			var offset = GENTICS.Utils.Dom.getIndexInParent(e.target),
 				imgRange = Aloha.Selection.getRangeObject();
 
