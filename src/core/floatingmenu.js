@@ -309,9 +309,11 @@ Aloha.FloatingMenu.generateComponent = function () {
 	// a click into the floatingmenu to be a click into nowhere (which would
 	// deactivate the editables)
 	this.obj.mousedown(function (e) {
-		e.stopPropagation();
+		e.stopImmediatePropagation();
 	});
-
+	this.obj.mouseup(function (e) {
+		e.stopImmediatePropagation();
+	});
 	// listen to selectionChanged event
 	Aloha.bind('aloha-selection-changed',function(event, rangeObject) {
 		if (!that.pinned) {
