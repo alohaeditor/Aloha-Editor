@@ -745,9 +745,12 @@ Aloha = jQuery.extend(Aloha,{
 			// Prepare
 			var pluginUrl = Aloha.getPluginUrl(pluginName);
 
-			// Check
+			// Check if plugin has already be loaded
 			if ( typeof window.Aloha_loaded_plugins[pluginName] !== 'undefined' ) {
-				return true; // continue
+				window.Aloha_loaded_plugins[pluginName] = false; // continue
+			}
+			if (window.Aloha_loaded_plugins[pluginName]) {
+				return true;
 			}
 			window.Aloha_loaded_plugins[pluginName] = true;
 

@@ -5,7 +5,7 @@
 	<title>Aloha, World!</title>
 
 	<script	src="../../dep/jquery-1.5.1.js" ></script>
-	<script	src="../../aloha.js" id="aloha-script-include" data-plugins="format,table,list,highlighteditables,toc,link"></script>
+	<script	src="../../aloha.js" id="aloha-script-include" data-plugins="format,highlighteditables,link"></script> <!--  toc,table,list, -->
 	
 	<link rel="stylesheet" href="../../aloha.css" id="aloha-style-include" type="text/css">
 	<link rel="stylesheet" href="../../demo/world/index.css" type="text/css">
@@ -279,7 +279,7 @@
 			};
 
 			// Bind to Aloha Ready Event
-			$body.bind('aloha',function(){
+			$body.bind('alohaReady',function(){
 				$('#typo3').aloha();
 				$('#typo3span').aloha();
 				$('#title').aloha();
