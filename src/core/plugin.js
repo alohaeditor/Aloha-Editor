@@ -42,6 +42,8 @@
 				// Determine Plugins
 				if ( typeof plugins === 'string' ) {
 					plugins = plugins.split(',');
+				} else {
+					plugins = [];
 				}
 				
 				Aloha.bind('aloha-js-plugins-loaded', function() {
