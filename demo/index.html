@@ -5,44 +5,12 @@
 <title>Aloha, Drag And Drop Files !</title>
 <script>GENTICS_Aloha_base="../../../";</script>
 <script type="text/javascript" src="../../../dep/jquery-1.5.1.js"></script>
-<script type="text/javascript" src="../../../aloha.js" id="aloha-script-include" data-plugins="format,image,dragndropfiles"></script>
-
-<link rel="stylesheet" href="style.css" />
+<script type="text/javascript" src="../../../aloha.js" id="aloha-script-include" data-plugins="format,dragndropfiles,image,link"></script>
+<link rel="stylesheet" href="../../../aloha.css" id="aloha-style-include" type="text/css"/>
+<link rel="stylesheet" href="style.css" type="text/css"/>
 
 <!-- turn an element into editable Aloha continuous text -->
-<script type="text/javascript">
 
-
-$(document).ready(function() {
-	Aloha.settings = {
-			logLevels: {'error': true, 'warn': true, 'info': true, 'debug': true},
-			errorhandling : false,
-			ribbon: false,	
-			"i18n": {
-				// let the system detect the users language
-				//"acceptLanguage": '<?=$_SERVER['HTTP_ACCEPT_LANGUAGE']?>'
-				"acceptLanguage": 'fr,de-de,de;q=0.8,it;q=0.6,en-us;q=0.7,en;q=0.2'
-			},
-			"plugins": {
-			 	"image": {
-				},
-				"dragndrop": {
-					config : { 'drop' : {'max_file_size': '200000',
-			   										 'upload': {//'uploader_class':GENTICS.Aloha.Uploader, //this is the default
-			   										 			'config': {
-				   										 			'url': '/content/',
-				   										 			'extra_headers':{'Accept':'application/json'},
-				   										 			'additional_params': {"location":""},
-							   										'www_encoded': false }}}}
-				},
-			 	"table": {
-					config: ['table']
-				}
-		  	}
-		};
-	$('#content').aloha();
-});  
-</script>
 </head>
 <body>
 <div id="main"> 
@@ -75,5 +43,59 @@ also used in the Nickelodeon program Rocket Power.</p>
 </div>
 </div>
 </div>
+<script type="text/javascript">
+
+
+(function(window,document) {
+	var
+		$ = window.jQuery,
+		GENTICS = window.GENTICS,
+		$body = $('body');
+	Aloha.settings = {
+			logLevels: {'error': true, 'warn': true, 'info': true, 'debug': true},
+			errorhandling : false,
+			ribbon: false,	
+			"i18n": {
+				// let the system detect the users language
+				//"acceptLanguage": '<?=$_SERVER['HTTP_ACCEPT_LANGUAGE']?>'
+				"acceptLanguage": 'fr,de-de,de;q=0.8,it;q=0.6,en-us;q=0.7,en;q=0.2'
+			},
+			"plugins": {
+				"format": {
+					// all elements with no specific configuration get this configuration
+					config : [ 'b', 'i','sub','sup'],
+						editables : {
+						// no formatting allowed for title
+						'#title'	: [ ],
+						// content is a DIV and has class .article so it gets both buttons
+						'#content'	: [ 'b', 'i', 'p', 'title', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'removeFormat']
+						}
+				},
+				"dragndropfiles": {
+					config : { 'drop' : {'max_file_size': '200000',
+			   										 'upload': {//'uploader_class':GENTICS.Aloha.Uploader, //this is the default
+			   										 			'config': {
+				   										 			'url': '/content/',
+				   										 			'extra_headers':{'Accept':'application/json'},
+				   										 			'additional_params': {"location":""},
+							   										'www_encoded': false }}}}
+				},
+			 	"table": {
+					config: ['table']
+				},
+				"image": {
+   					config : { 'img': { 'max_width': '50px',
+							'max_height': '50px' }},
+				  	editables : {
+						'#title'	: {},
+				  	}
+				}
+		  	}
+		};
+	$body.bind('alohaReady',function(){
+		$('#content').aloha();
+	});
+})(window, document);  
+</script>
 </body>
 </html>

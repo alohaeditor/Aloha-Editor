@@ -136,7 +136,7 @@
 			    else
 			    	event.cancelBubble = true;
 			    if (len > that.settings.config.drop.max_file_count) {
-			    	GENTICS.Aloha.Log.warn(that,"too much files dropped");
+			    	Aloha.Log.warn(that,"too much files dropped");
 			    	if (event.stopPropagation)
 						 event.stopPropagation();
 					 else 
@@ -165,13 +165,13 @@
 						filesObjs.push(fileObj);
 					}
 				} else {
-					GENTICS.Aloha.getEditableById(editable.attr('id')).activate();
+					Aloha.getEditableById(editable.attr('id')).activate();
 					var range = that.InitializeRangeForDropEvent(event, editable);
 
 				    while(--len >= 0) {
 				    	if (files[len].size > that.settings.config.drop.max_file_size) {
 				    		event.stopPropagation();
-				    		GENTICS.Aloha.Log.warn(that,"max_file_size exeeded");
+				    		Aloha.Log.warn(that,"max_file_size exeeded");
 				    	    return false;
 				    	}
 				    	fileObj = that.uploader.addFileUpload(files[len]);
@@ -188,18 +188,16 @@
 				}
 				var len = filesObjs.length;
 				if (dropInEditable) {
-			    	GENTICS.Aloha.EventRegistry.trigger(
-						new GENTICS.Aloha.Event('dropFilesInEditable', GENTICS.Aloha, {
+			    	Aloha.trigger('dropFilesInEditable', {
 							'filesObjs':filesObjs,
 							'range': range,
-							'editable': editable}));
+							'editable': editable});
 			    	var edConfig = that.getEditableConfig(editable);
 			    	while(--len >= 0) {
 			    		that.uploader.startFileUpload(filesObjs[len].id,edConfig.drop.upload.config);
 			    	}
 			    } else {
-			    	GENTICS.Aloha.EventRegistry.trigger(
-		        			new GENTICS.Aloha.Event('dropFilesInPage', GENTICS.Aloha,filesObjs));
+			    	Aloha.trigger('dropFilesInPage', filesObjs);
 			    	while(--len >= 0) {
 			    		that.uploader.startFileUpload(filesObjs[len].id,this.config.drop.upload.config);
 			    	}
@@ -261,7 +259,7 @@
 //			if (target.textNodes().length == 0 && target.html().length == 0) {
 //				target.html(" ");
 //			}
-			var	range = new GENTICS.Aloha.Selection.SelectionRange(true);
+			var	range = new Aloha.Selection.SelectionRange(true);
 			range.update();
 //			if (target.textNodes().length == 0) {
 //				range.startContainer = target[0].childNodes[0];
