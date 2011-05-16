@@ -4,47 +4,42 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Aloha, Drag And Drop Files !</title>
 <script>GENTICS_Aloha_base="../../../";</script>
-<script type="text/javascript" src="../../../core/include.js"></script>
-<script type="text/javascript" src="../../com.gentics.aloha.plugins.Format/plugin.js"></script>
-<script type="text/javascript" src="../../com.gentics.aloha.plugins.Image/plugin.js"></script>
-<script type="text/javascript" src="../deps/Ext.ux.XHRUpload.js"></script>
-<script type="text/javascript" src="../lib/DropFilesRepository.js"></script>
-<script type="text/javascript" src="../lib/uploader.js"></script>
-<script type="text/javascript" src="../plugin.js"></script>
+<script type="text/javascript" src="../../../dep/jquery-1.5.1.js"></script>
+<script type="text/javascript" src="../../../aloha.js" id="aloha-script-include" data-plugins="format,image,dragndropfiles"></script>
 
-<link rel="stylesheet" href="AlohaDragAndDropFiles.css" />
+<link rel="stylesheet" href="style.css" />
 
 <!-- turn an element into editable Aloha continuous text -->
 <script type="text/javascript">
-GENTICS.Aloha.settings = {
-	logLevels: {'error': true, 'warn': true, 'info': true, 'debug': true},
-	errorhandling : false,
-	ribbon: false,	
-	"i18n": {
-		// let the system detect the users language
-		//"acceptLanguage": '<?=$_SERVER['HTTP_ACCEPT_LANGUAGE']?>'
-		"acceptLanguage": 'fr,de-de,de;q=0.8,it;q=0.6,en-us;q=0.7,en;q=0.2'
-	},
-	"plugins": {
-	 	"com.gentics.aloha.plugins.Image": {
-		},
-		"com.gentics.aloha.plugins.DragAndDropFiles": {
-			config : { 'drop' : {'max_file_size': '200000',
-	   										 'upload': {//'uploader_class':GENTICS.Aloha.Uploader, //this is the default
-	   										 			'config': {
-		   										 			'url': '/content/',
-		   										 			'extra_headers':{'Accept':'application/json'},
-		   										 			'additional_params': {"location":""},
-					   										'www_encoded': false }}}}
-		},
-	 	"com.gentics.aloha.plugins.Table": {
-			config: ['table']
-		}
-  	}
-};
+
 
 $(document).ready(function() {
-
+	Aloha.settings = {
+			logLevels: {'error': true, 'warn': true, 'info': true, 'debug': true},
+			errorhandling : false,
+			ribbon: false,	
+			"i18n": {
+				// let the system detect the users language
+				//"acceptLanguage": '<?=$_SERVER['HTTP_ACCEPT_LANGUAGE']?>'
+				"acceptLanguage": 'fr,de-de,de;q=0.8,it;q=0.6,en-us;q=0.7,en;q=0.2'
+			},
+			"plugins": {
+			 	"image": {
+				},
+				"dragndrop": {
+					config : { 'drop' : {'max_file_size': '200000',
+			   										 'upload': {//'uploader_class':GENTICS.Aloha.Uploader, //this is the default
+			   										 			'config': {
+				   										 			'url': '/content/',
+				   										 			'extra_headers':{'Accept':'application/json'},
+				   										 			'additional_params': {"location":""},
+							   										'www_encoded': false }}}}
+				},
+			 	"table": {
+					config: ['table']
+				}
+		  	}
+		};
 	$('#content').aloha();
 });  
 </script>
