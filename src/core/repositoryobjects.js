@@ -77,7 +77,7 @@
 	//			assert(false, "Error, abstract type, subclass Document and implement empty")
 	//		};
 	
-		}); ;
+		});
 	
 	
 	
