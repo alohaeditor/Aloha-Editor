@@ -75,11 +75,11 @@
  * @return index of obj in Array or -1 if not found
  * @hide
  */
-Array.prototype.indexOf = Array.indexOf||function(obj){
-	for(var i=0; i<this.length; i++){
-			if(this[i]===obj){
-			 return i;
-			}
-		}
-		return -1;
-};
+//Array.prototype.indexOf = Array.indexOf||function(obj){
+//	for(var i=0; i<this.length; i++){
+//			if(this[i]===obj){
+//			 return i;
+//			}
+//		}
+//		return -1;
+//};
