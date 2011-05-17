@@ -275,7 +275,7 @@
 			// Iterate up from the start container to the limit object and apply all markups found once (remove them)
 			var parent = startObj.parent();
 			while (parent.get(0) !== limitObj.get(0)) {
-				var index = formats.indexOf(parent.get(0).nodeName.toLowerCase());
+				var index = $.inArray(parent.get(0).nodeName.toLowerCase(),formats);
 				parent = parent.parent();
 				if (index != -1) {
 					Aloha.Selection.changeMarkupOnSelection(jQuery('<'+formats[index]+'></'+formats[index]+'>'));
