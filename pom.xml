@@ -4,7 +4,7 @@
 
 	<groupId>com.gentics</groupId>
 	<artifactId>alohaeditor</artifactId>
-	<version>0.1-SNAPSHOT</version>
+	<version>0.10-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Aloha Editor</name>
@@ -16,6 +16,29 @@
 
 	 <build>
                 <plugins>
+
+			 <plugin>
+                                <artifactId>maven-assembly-plugin</artifactId>
+                                <version>2.2.1</version>
+                                <executions>
+                                        <execution>
+                                                <id>packagek</id>
+                                                <phase>package</phase>
+                                                <goals>
+                                                        <goal>single</goal>
+                                                </goals>
+                                                <configuration>
+                                                        <attach>true</attach>
+                                                        <appendAssemblyId>false</appendAssemblyId>
+                                                        <descriptors>
+                                                                <descriptor>${project.basedir}/src/main/assembly/package.xml</descriptor>
+                                                        </descriptors>
+                                                </configuration>
+                                        </execution>
+                                </executions>
+                        </plugin>
+
+
                         <plugin>
                                 <groupId>org.codehaus.mojo</groupId>
                                 <artifactId>exec-maven-plugin</artifactId>
@@ -39,6 +62,21 @@
                         </plugin>
 		</plugins>
 	</build>
+
+        <distributionManagement>
+                <repository>
+                        <id>archiva.com.gentics.public</id>
+                        <name>Gentics Public Repository</name>
+                        <url>http://archiva.gentics.com:8081/archiva/repository/com.gentics.public</url>
+                </repository>
+                <snapshotRepository>
+                        <id>archiva.com.gentics.public</id>
+                        <name>Gentics Public Repository</name>
+                        <url>http://archiva.gentics.com:8081/archiva/repository/com.gentics.public</url>
+                </snapshotRepository>
+        </distributionManagement>
+
+
 
 </project>
 

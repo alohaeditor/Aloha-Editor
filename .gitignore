@@ -3,3 +3,5 @@
 dist
 out
 .DS_Store
+/target
+/npm-debug.log
