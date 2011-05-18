@@ -38,7 +38,7 @@ if (typeof GENTICS.Utils.Dom == 'undefined' || !GENTICS.Utils.Dom) {
  * Tags which can safely be merged
  * @hide
  */
-GENTICS.Utils.Dom.prototype.mergeableTags = ['a', 'b', 'code', 'del', 'em', 'i', 'ins', 'strong', 'sub', 'sup', '#text'];
+GENTICS.Utils.Dom.prototype.mergeableTags = ['b', 'code', 'del', 'em', 'i', 'ins', 'strong', 'sub', 'sup', '#text'];
 
 /**
  * Tags which do not mark word boundaries
