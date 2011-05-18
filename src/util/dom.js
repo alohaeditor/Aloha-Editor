@@ -33,7 +33,7 @@ GENTICS.Utils.Dom = Class.extend({
 	 * Tags which can safely be merged
 	 * @hide
 	 */
-	mergeableTags: ['a', 'b', 'code', 'del', 'em', 'i', 'ins', 'strong', 'sub', 'sup', '#text'],
+	mergeableTags: ['b', 'code', 'del', 'em', 'i', 'ins', 'strong', 'sub', 'sup', '#text'],
 
 	/**
 	 * Tags which do not mark word boundaries
