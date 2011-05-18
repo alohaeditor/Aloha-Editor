@@ -91,6 +91,50 @@ GENTICS.Utils.RangeObject = Class.extend({
 	rangeTree: [],
 
 	/**
+	 * Delete all contents selected by the current range
+	 * @param rangeTree a GENTICS.Utils.RangeTree object may be provided to start from. This parameter is optional
+	 */
+	deleteContents: function (rangeTree) {
+		// if no rangeTree is provided we'll use our own
+		if (typeof rangeTree === 'undefined') {
+            rangeTree = this.getRangeTree();
+		}
+		
+		var e, // represents a single rangeTree entry
+            t; // new text node content
+		
+		// walk through the rangeTree and perform remove operations
+		for (var i=0; i<rangeTree.length; i++) {
+            e = rangeTree[i];
+            if (e.type === 'partial') {
+                // only type 1 (dom element node) and type 3 (text node) are interesting
+                if (e.domobj.nodeType === 1 && e.children.length > 0) {
+                    // its a dom element node - parse through it's children
+                    this.deleteContents(e.children);
+                } else if (e.domobj.nodeType === 3) {
+                    t = "";
+                    // text node
+                    // build new text node contents
+                    if (e.startOffset > 0) {
+                        t += e.domobj.textContent.substr(0, e.startOffset);
+                    }
+                    if (e.endOffset < e.domobj.textContent.length) {
+                        t += e.domobj.textContent.substr(e.endOffset);
+                    }
+                    // now replace old text node with new one
+                    jQuery(e.domobj)
+                        .replaceWith(document.createTextNode(t));
+                }
+            } else if (e.type === 'full') {
+                // delete the whole node
+                jQuery(e.domobj).remove();
+            }
+		}
+		
+		this.correctRange();
+	},
+
+	/**
 	 * Output some log
 	 * TODO: move this to Aloha.Log
 	 * @param message log message to output
