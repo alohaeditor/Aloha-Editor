@@ -42,7 +42,7 @@ class App
 
 	# Run a Command
 	def run ( command, output=true )
-    # Recurse
+		# Recurse
 		if command.kind_of?(Array)
 			result = ""
 			command.each do |c|
@@ -51,20 +51,20 @@ class App
 			return result
 		end
 
-    # Output
+		# Output
 		if output
 			puts command + "\n"
 		end
 
-    # Windows
-    if WINDOWS_CLI
-      command_e = command.gsub('"','\\"')
-      result = `bash -c "#{command_e}"`
-    else
-		  result = `#{command}`
+		# Windows
+		if WINDOWS_CLI
+			command_e = command.gsub('"','\\"')
+			result = `bash -c "#{command_e}"`
+		else
+			result = `#{command}`
 		end
 
-    # Output
+		# Output
 		if output
 			puts result
 		end
@@ -73,31 +73,41 @@ class App
 		return result
 	end
 
-  # Check if a binary exists
-  def bin_exists? (bin)
-  	exists = !run("which #{bin}",false).strip.empty?
-  	return exists
-  end
+	# Check if a binary exists
+	def bin_exists? (bin)
+		exists = !run("which #{bin}",false).strip.empty?
+		return exists
+	end
 
-  # Fail if the binary doesn't exist
-  def check_req (req)
-    # Recurse
-  	if req.kind_of?(Array)
-  		req.each do |r|
-  			check_req(r)
-  		end
-  		return true
-  	end
+	# Fail if the binary doesn't exist
+	def check_req (req,die=true)
+		# Prepare
+		result = true
 
-    # Check
-  	req_exists = bin_exists?(req)
-  	unless req_exists
-  		abort("CLI requires the following binary which is not installed: #{req}")
-  	end
+		# Orgy
+		if req.kind_of?(Array)
+			req.each do |r|
+				if !check_req(r,die)
+					result = false
+					break
+				end
+			end
+		
+		# Single
+		else
+			req_exists = bin_exists?(req)
+			if !req_exists
+				if die
+					abort("CLI requires the following binary which is not installed: #{req}")
+				else
+					result = false
+				end
+			end
+		end
 
-    # Done
-  	return true
-  end
+		# Done
+		return result
+	end
 
 	# Download a File
 	def download ( url, file )
@@ -167,7 +177,7 @@ class App
 
 	# Apply multiple commands to submodules
 	def submodule_foreach(command)
-	  # Recursion
+		# Recursion
 		if command.kind_of?(Array)
 			result = ""
 			command.each do |c|
@@ -452,10 +462,14 @@ class App
 	# Build Aloha Editor
 	def build
 		check_req(['node','npm'])
-		run([
-			"npm install -g buildr",
-			"buildr"
-		])
+		if check_req('buildr',false)
+			run("buildr")
+		else
+			run([
+				"npm -g install buildr",
+				"buildr"
+			])
+		end
 	end
 
 	# ---------------------------------------------------------------------------
