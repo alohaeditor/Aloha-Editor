@@ -9,7 +9,7 @@
 	<fileSets>
 		<fileSet>
 			<directory>${project.basedir}/out</directory>
-			<outputDirectory>/</outputDirectory>
+			<outputDirectory>/alohaeditor-${project.version}</outputDirectory>
 		</fileSet>
 	</fileSets>
 
