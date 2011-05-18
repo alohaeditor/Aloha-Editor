@@ -71,12 +71,19 @@ GENTICS.Aloha.TablePlugin.parameters = {
  */
 GENTICS.Aloha.TablePlugin.checkConfig = function (c){
 	if ( typeof c == 'object' && c.length ) {
+		var newC = [];
 		for ( var i=0; i < c.length; i++) {
-			c[i].text = c[i].text ? c[i].text : c[i].name;
-			c[i].tooltip = c[i].tooltip ? c[i].tooltip : c[i].text;
-			c[i].iconClass = c[i].iconClass ? c[i].iconClass : 'GENTICS_button_'+c[i].name;
-			c[i].cssClass = c[i].cssClass ? c[i].cssClass : c[i].name;
+			// IE has the annoying behaviour that arrays contain undefined elements, if they are generated ending with , (comma)
+			if (c[i]) {
+				newC.push({
+					text : c[i].text ? c[i].text : c[i].name,
+					tooltip : c[i].tooltip ? c[i].tooltip : c[i].text,
+					iconClass : c[i].iconClass ? c[i].iconClass : 'GENTICS_button_'+c[i].name,
+					cssClass : c[i].cssClass ? c[i].cssClass : c[i].name
+				});
+			}
 		}
+		c = newC;
 	} else {
 		c = [];
 	}

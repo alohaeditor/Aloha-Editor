@@ -15,4 +15,5 @@ button.addrowafter.tooltip=Add row after
 button.delrows.tooltip=Delete rows
 button.caption.tooltip=Table caption
 button.rowheader.tooltip=Format row as table-header
+button.columnheader.tooltip=Format column as table-header
 empty.caption=Table caption
