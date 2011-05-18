@@ -16,10 +16,56 @@ window.Aloha_base = window.Aloha_base || false;
 
 	// Prepare Script Loading
 	var
-		includes = [];
-
-	// Prepare baseUrl
-	window.GENTICS_Aloha_base = window.GENTICS_Aloha_base || document.getElementById('aloha-script-include').src.replace(/aloha\.js$/,'').replace(/\/+$/,'');
-
-	// Prepare Plugin Loading
-	window.Aloha_loaded_plugins = window.Aloha_loaded_plugins||[];
+		includes = [],
+		counter = 0,
+		scriptEl,
+		appendEl = document.getElementsByTagName('head')[0],
+		atAlohaFileLoaded = function(event) {
+			var $this = $(this);
+//			console.log("Aloha file loaded " + $this.attr('src'));
+//			console.log(event);
+//			try {
+				//console.log("alohaLoadJs trigger for "  + (($('body').data('events')||{})['alohaLoadJs']||[]).length + " binded handlers");
+				$('body').trigger('alohaLoadJs', {'script': $this.attr('src')});
+//			} catch(e) {
+//				console.log(e);
+//			}
+		},
+		loadJsFileAtIncludesCounter = function() {
+			var depitem =includes.pop(),
+				depfile, onload,
+				url;
+			//console.log("Loading file " + depitem);
+			url = window.GENTICS_Aloha_base + '/' + depitem;
+//			if ($.browser.webkit) {
+				scriptEl = document.createElement('script');
+				scriptEl.src = url;
+				scriptEl.setAttribute('defer','defer'); 
+				// ie
+				scriptEl.onreadystatechange = atAlohaFileLoaded;
+				// webkit + FF
+				scriptEl.onload = atAlohaFileLoaded;
+				appendEl.appendChild(scriptEl);
+		};
+	
+	// Wait for jQuery and DOM
+	$(function(){
+		// Define recursive event handler
+		$('body').bind('alohaLoadJs', function(event, data){
+			if (includes.length > 0) {
+				loadJsFileAtIncludesCounter();
+			} else {
+				//Last file loaded
+//				console.log("Initialize aloha")
+				var $body = $('body');
+				$body.createPromiseEvent('aloha');
+				window.Aloha.init();
+			}
+		});	
+//		console.log("Binded alohaLoadJs "  + (($('body').data('events')||{})['alohaLoadJs']||[]).length);
+		
+		
+		// Prepare baseUrl
+		window.GENTICS_Aloha_base = window.GENTICS_Aloha_base || document.getElementById('aloha-script-include').src.replace(/aloha\.js$/,'').replace(/\/+$/,'');
+		// Prepare Plugin Loading
+		window.Aloha_loaded_plugins = window.Aloha_loaded_plugins||[];
