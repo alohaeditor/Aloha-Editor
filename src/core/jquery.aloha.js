@@ -5,7 +5,7 @@
  */
 // Start Closure
 (function(window, undefined) {
-	"use strict";
+	//"use strict";
 	var
 		jQuery = window.jQuery, $ = jQuery,
 		alohaQuery = window.alohaQuery,
