@@ -453,7 +453,7 @@ class App
 	def build
 		check_req(['node','npm'])
 		run([
-			"npm -g install buildr",
+			"npm install -g buildr",
 			"buildr"
 		])
 	end
