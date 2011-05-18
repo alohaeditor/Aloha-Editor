@@ -1,6 +1,4 @@
-// Namespace jQuery
 window.alohaQuery = window.jQuery.sub();
-
 // Ensure Namespace
 window.GENTICS = window.GENTICS || {};
 window.GENTICS.Utils = window.GENTICS.Utils || {};
@@ -12,11 +10,12 @@ window.Aloha_pluginDir = window.Aloha_pluginDir || false;
 window.Aloha_base = window.Aloha_base || false;
 
 /* This is auto generated on build-dev-include build. Templates at /build/deps/includejs* */
-(function(window, undefined) {
+(function(window,document) {
 
 	// Prepare Script Loading
 	var
 		includes = [],
+		$ = window.alohaQuery,
 		counter = 0,
 		scriptEl,
 		appendEl = document.getElementsByTagName('head')[0],
@@ -67,5 +66,6 @@ window.Aloha_base = window.Aloha_base || false;
 		
 		// Prepare baseUrl
 		window.GENTICS_Aloha_base = window.GENTICS_Aloha_base || document.getElementById('aloha-script-include').src.replace(/aloha\.js$/,'').replace(/\/+$/,'');
+		
 		// Prepare Plugin Loading
 		window.Aloha_loaded_plugins = window.Aloha_loaded_plugins||[];

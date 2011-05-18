@@ -2,4 +2,4 @@
 	loadJsFileAtIncludesCounter();
 }); // DOM event
 // </closure>
-})(window);
+})(window, document);

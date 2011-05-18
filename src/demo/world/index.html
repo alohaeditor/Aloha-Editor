@@ -5,7 +5,7 @@
 	<title>Aloha, World!</title>
 
 	<script	src="../../dep/jquery-1.5.1.js" ></script>
-	<script	src="../../aloha.js" id="aloha-script-include" data-plugins="format,highlighteditables,link,image"></script> <!--  toc,table,list, -->
+	<script	src="../../aloha.js" id="aloha-script-include" data-plugins="format"></script> <!--  toc,table,list, highlighteditables,link,image-->
 	
 	<link rel="stylesheet" href="../../aloha.css" id="aloha-style-include" type="text/css">
 	<link rel="stylesheet" href="../../demo/world/index.css" type="text/css">
@@ -167,13 +167,8 @@
 		</div>
 	</div>
 	<script type="text/javascript" defer>
-		(function(window,undefined){
-			var
-				$ = window.jQuery,
-				GENTICS = window.GENTICS,
-				$body = $('body');
-
-			Aloha.settings = {
+	Aloha = Aloha || {};
+	Aloha.settings = {
 				logLevels: {'error': true, 'warn': true, 'info': true, 'debug': false},
 				errorhandling : false,
 				ribbon: false,
@@ -284,6 +279,13 @@
 					}
 					}
 			};
+		(function(window,undefined){
+			var
+				$ = window.jQuery,
+				GENTICS = window.GENTICS,
+				$body = $('body');
+
+			
 
 			// Bind to Aloha Ready Event
 			$body.bind('alohaReady',function(){
