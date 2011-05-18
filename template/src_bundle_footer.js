@@ -1,4 +1,4 @@
-	includes = .includes.reverse();
+	includes = includes.reverse();
 	loadJsFileAtIncludesCounter();
 }); // DOM event
 // </closure>
