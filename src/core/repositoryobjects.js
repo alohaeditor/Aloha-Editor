@@ -69,11 +69,11 @@
 				GENTICS.Utils.applyProperties(this, properties);
 	
 				this.baseType = 'document';
-			},
+			}
 	//		/**
 	//		 * Not implemented method to generate this JS API doc correctly.
 	//		 */
-	//		empty = function() {
+	//		,empty = function() {
 	//			assert(false, "Error, abstract type, subclass Document and implement empty")
 	//		};
 	
@@ -138,7 +138,7 @@
 	//	/**
 	//	* Not implemented method to generate this JS API doc correctly.
 	//	*/
-	//	empty = function() {
+	//	,empty = function() {
 	//		assert(false, "Error, abstract type, subclass Folder and implement empty")
 	//	};
 	});
