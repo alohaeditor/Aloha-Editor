@@ -108,7 +108,11 @@
 		}
 
 		// delete currently selected contents
-		this.currentRange.deleteContents();
+		// TODO the check here is needed as the current aloha stable branch will not have this function
+		// it has to be removed after merging 0.10 and the gentics fork
+		if (this.currentRange.deleteContents) {
+            this.currentRange.deleteContents();
+		}
 
 		// insert the content into the editable at the current range
 		if (this.currentRange && this.currentEditable) {
