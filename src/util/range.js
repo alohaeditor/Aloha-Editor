@@ -94,44 +94,40 @@ GENTICS.Utils.RangeObject = Class.extend({
 	 * Delete all contents selected by the current range
 	 * @param rangeTree a GENTICS.Utils.RangeTree object may be provided to start from. This parameter is optional
 	 */
-	deleteContents: function (rangeTree) {
-		// if no rangeTree is provided we'll use our own
-		if (typeof rangeTree === 'undefined') {
-            rangeTree = this.getRangeTree();
+	deleteContents: function () {
+		// split range at the beginning and start, so deletion is easier
+
+		// the split process will leave the tree in a state, where it
+		// will only contain fully selected or unselected nodes.
+		// there may be some nodes that are partially selected which can
+		// be ignored safely, as they are only remains of the original
+		// cursor position before the split without an actual selected
+		// content. threat them as if they were not selected.
+		var cac = jQuery(this.getCommonAncestorContainer());
+		GENTICS.Utils.Dom.split(this, cac, false);
+		GENTICS.Utils.Dom.split(this, cac, true);
+		this.clearCaches();
+		
+		// iterate over range tree to perform deletion
+		var rt = this.getRangeTree();
+		for (var i = 0; i < rt.length; i++) {
+			if (rt[i].type === 'full') {
+				// delete only fully selected nodes
+				jQuery(rt[i].domobj).remove();
+			}
 		}
 		
-		var e, // represents a single rangeTree entry
-            t; // new text node content
-		
-		// walk through the rangeTree and perform remove operations
-		for (var i=0; i<rangeTree.length; i++) {
-            e = rangeTree[i];
-            if (e.type === 'partial') {
-                // only type 1 (dom element node) and type 3 (text node) are interesting
-                if (e.domobj.nodeType === 1 && e.children.length > 0) {
-                    // its a dom element node - parse through it's children
-                    this.deleteContents(e.children);
-                } else if (e.domobj.nodeType === 3) {
-                    t = "";
-                    // text node
-                    // build new text node contents
-                    if (e.startOffset > 0) {
-                        t += e.domobj.textContent.substr(0, e.startOffset);
-                    }
-                    if (e.endOffset < e.domobj.textContent.length) {
-                        t += e.domobj.textContent.substr(e.endOffset);
-                    }
-                    // now replace old text node with new one
-                    jQuery(e.domobj)
-                        .replaceWith(document.createTextNode(t));
-                }
-            } else if (e.type === 'full') {
-                // delete the whole node
-                jQuery(e.domobj).remove();
-            }
+		// special handling if all contents of the cac have been deleted
+		// this case can be detected, if the cac contains just a single br,
+		// or no children at all. if this occurs the range will be collapsed
+		this.clearCaches();
+		rt = this.getRangeTree();
+		children = cac.children();
+		if (children.length === 0 || (children.length === 1 && children.get(0).nodeName === 'BR')) {
+			this.commonAncestorContainer = this.startContainer = this.endContainer = cac.get(0);
+			this.startOffset = 0;
+			this.endOffset = 0;
 		}
-		
-		this.correctRange();
 	},
 
 	/**
