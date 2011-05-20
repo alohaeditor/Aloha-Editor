@@ -3,24 +3,7 @@
  * Author & Copyright (c) 2010 Gentics Software GmbH, aloha@gentics.com
  * Licensed unter the terms of http://www.aloha-editor.com/license.html
  */
- 
-Aloha.settings = {
-	logLevels : {
-		'error': true,
-		'warn':  true,
-		'info':  false,
-		'debug': false
-	},
-	logHistory : {
-		levels : {
-			'error' : true,
-			'warn' : true,
-			'info' : false,
-			'debug' : false
-		}
-	},
-	errorhandling : true
-};
+
 
 function createCollapsedRange(container, offset) {
     	var range = new GENTICS.Utils.RangeObject({
@@ -98,16 +81,19 @@ function doEnterTest(editable, container, offset, shift, twice, reference) {
 		pressEnter(editable, shift);
 	}
 	// get the result
-	var result = Aloha.editables[0].getContents(true);
-
-	// get the reference
+	
+	 var result = Aloha.editables[0].getContents(true);
+		
 	var expected = $(reference).contents();
 
 	// compare the result with the expected result
 	deepEqual(result.extractHTML(), expected.extractHTML(), 'Check Operation Result');
+
+	// get the reference
+	
 }
 
-$(document).ready(function() {
+$(function() {
 	// Test whether Aloha is properly initialized
 	/*
 	  Note: this test is currently necessary, because it will catch the initial 'aloha' Event.
@@ -127,6 +113,7 @@ $(document).ready(function() {
 	});
 
 	$('body').bind('aloha', function() {
+		
 		module('Plaintext Enter Handling', {
 			setup: function() {
 				// get the editable area and the reference
@@ -134,7 +121,6 @@ $(document).ready(function() {
 				this.ref = $('#ref-plaintext');
 				// fill the editable area with the reference
 				this.edit.html(this.ref.html());
-
 				// aloha'fy the editable
 				this.edit.aloha();
 			},

@@ -26,7 +26,7 @@ $(document).ready(function() {
 
 	// Test whether Aloha is properly initialized
 	asyncTest('Aloha Startup Test', function() {
-		$('body').bind('aloha',function() {
+		$('body').bind('alohaReady',function() {
 			ok(true, 'Aloha Event was fired');
 			start();
 		});
@@ -37,7 +37,7 @@ $(document).ready(function() {
 	});
 
 	// All other tests are done when Aloha is ready
-	$('body').bind('aloha', function() {
+	$('body').bind('alohaReady', function() {
 		// check whether error or warn messages were logged during startup
 		test('Aloha Error Log Test', function() {
 			var logHistory = Aloha.Log.getLogHistory();

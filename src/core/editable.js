@@ -170,14 +170,7 @@ Aloha.Editable = Class.extend({
 				return me.obj;
 			});
 
-			// throw a new event when the editable has been created
-			/**
-			 * @event editableCreated fires after a new editable has been created, eg. via $('#editme').aloha()
-			 * The event is triggered in Aloha's global scope Aloha
-			 * @param {Event} e the event object
-			 * @param {Array} a an array which contains a reference to the currently created editable on its first position
-			 */
-			Aloha.trigger('aloha-editable-created',[me]);
+			
 
 			// mark the editable as unmodified
 			me.setUnmodified();
@@ -189,6 +182,14 @@ Aloha.Editable = Class.extend({
 
 			// now the editable is ready
 			me.ready = true;
+			// throw a new event when the editable has been created
+			/**
+			 * @event editableCreated fires after a new editable has been created, eg. via $('#editme').aloha()
+			 * The event is triggered in Aloha's global scope Aloha
+			 * @param {Event} e the event object
+			 * @param {Array} a an array which contains a reference to the currently created editable on its first position
+			 */
+			Aloha.trigger('aloha-editable-created',[me]);
 		});
 	},
 
