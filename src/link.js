@@ -414,6 +414,12 @@
 				GENTICS.Utils.Dom.addMarkup(range, newLink, false);
 			}
 			range.select();
+    
+			// prefill and select the new href
+			jQuery(this.hrefField.extButton.el.dom)
+				.attr('value', 'http://')
+				.select();
+
 			this.hrefField.focus();
 			this.hrefChange();
 		},
