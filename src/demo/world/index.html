@@ -281,17 +281,14 @@
 		</div>
 	</div>
 	<script type="text/javascript" defer>
-	
 		(function(window,undefined){
+			// Prepare
 			var
 				$ = window.alohaQuery,
-				GENTICS = window.GENTICS,
 				$body = $('body');
 
-			
-
 			// Bind to Aloha Ready Event
-			$body.bind('alohaReady',function(){
+			$body.bind('aloha',function(){
 				$('#typo3').aloha();
 				$('#typo3span').aloha();
 				$('#title').aloha();
@@ -299,7 +296,6 @@
 				$('#content').aloha();
 
 			});
-
 		})(window);
 	</script>
 </body>

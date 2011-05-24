@@ -104,7 +104,7 @@
 			"src_bundle_item.js": "src_bundle_item.js",
 			"src_bundle_subpackage.js": "src_bundle_subpackage.js"
 		},
-		"subpackages": [],
+		"subpackages": ["format"],
 		"ignore": {
 			"check": [
 				"dep",

@@ -68,15 +68,17 @@
 						}
 					}
 				};
+			
+			// Ensure
+			if (typeof Aloha.settings.plugins === 'undefined') {
+				Aloha.settings.plugins = {};
+			}
 
-			// iterate through all registered plugins
+			// Cycle
 			for ( i=0,n=total; i<n; i++) {
 				plugin = this.plugins[i];
 
 				// Ensure
-				if (typeof Aloha.settings.plugins === 'undefined') {
-					Aloha.settings.plugins = {};
-				}
 				plugin.settings = Aloha.settings.plugins[plugin.prefix] || {};
 				if (typeof plugin.settings.enabled === 'undefined') {
 					plugin.settings.enabled = true;

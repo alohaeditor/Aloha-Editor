@@ -23,7 +23,8 @@ window.Aloha_base = window.Aloha_base || false;
 	window.GENTICS_Aloha_base = window.GENTICS_Aloha_base || document.getElementById('aloha-script-include').src.replace(/aloha\.js$/,'').replace(/\/+$/,'');
 
 	// Prepare Plugin Loading
-	window.Aloha_loaded_plugins = window.Aloha_loaded_plugins||[];			includes.push('util/base.js');
+	window.Aloha_loaded_plugins = window.Aloha_loaded_plugins||[];		window.Aloha_loaded_plugins['format'] = true;
+			includes.push('util/base.js');
 			includes.push('dep/ext-3.2.1/adapter/jquery/ext-jquery-adapter.js');
 			includes.push('dep/ext-3.2.1/ext-all.js');
 			includes.push('dep/jquery.json-2.2.min.js');
@@ -53,6 +54,7 @@ window.Aloha_base = window.Aloha_base || false;
 			includes.push('core/repositorymanager.js');
 			includes.push('core/repository.js');
 			includes.push('core/repositoryobjects.js');
+			includes.push('plugin/format/src/format.js');
 
 	// Variables
 	var

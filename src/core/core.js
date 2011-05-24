@@ -828,7 +828,8 @@
 
 			// Check if plugin is already loaded
 			if ( typeof window.Aloha_loaded_plugins[pluginName] !== 'undefined' ) {
-				window.Aloha_loaded_plugins[pluginName] = false; // continue
+				next();
+				return;
 			}
 			window.Aloha_loaded_plugins[pluginName] = true;
 
