@@ -74,7 +74,8 @@
 				"boss": true,
 				"undef": true,
 				"onevar": true,
-				"strict": true
+				"strict": true,
+				"noarg": true
 			}
 		},
 		"compress": {
