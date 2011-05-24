@@ -6,7 +6,7 @@
 // Start Closure
 (function(window, undefined) {
 	"use strict";
-	
+
 	var
 		jQuery = window.jQuery, $ = jQuery,
 		alohaQuery = window.alohaQuery,
@@ -348,20 +348,23 @@
 	};
 
 	jQuery.fn.textNodes = function(excludeBreaks, includeEmptyTextNodes) {
-			var ret = [];
-
-			(function(el){
+			var
+				ret = [],
+				doSomething = function(el){
 					if (
-							(el.nodeType === 3 && jQuery.trim(el.data) && !includeEmptyTextNodes) ||
-							(el.nodeType === 3 && includeEmptyTextNodes) ||
-							(el.nodeName =="BR" && !excludeBreaks)) {
-							ret.push(el);
+						(el.nodeType === 3 && jQuery.trim(el.data) && !includeEmptyTextNodes) ||
+						(el.nodeType === 3 && includeEmptyTextNodes) ||
+						(el.nodeName =="BR" && !excludeBreaks)) {
+						ret.push(el);
 					} else {
-							for (var i=0, childLength = el.childNodes.length; i < childLength; ++i) {
-									arguments.callee(el.childNodes[i]);
-							}
+						for (var i=0, childLength = el.childNodes.length; i < childLength; ++i) {
+							doSomething(el.childNodes[i]);
+						}
 					}
-			})(this[0]);
+				};
+			
+			doSomething(this[0]);
+
 			return jQuery(ret);
 	};
 
