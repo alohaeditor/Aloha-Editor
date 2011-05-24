@@ -9,20 +9,9 @@
  * existing GENTICS object will not be overwritten so that defined
  * namespaces are preserved.
  */
-var Aloha = window.Aloha;
-// before closure (for loading)
-Aloha = jQuery.extend(Aloha,{
-	
-});
 
 // Start Closure
 (function(window, undefined) {
-	// Namespace jQuery
-	window.alohaQuery = window.jQuery; // window.jQuery.sub();
-
-        // emulate document.head support for browsers that do not have it
-        document.head = document.head || document.getElementsByTagName('head')[0];
-
 	// Prepare
 	var
 		jQuery = window.alohaQuery, $ = jQuery,
@@ -35,7 +24,7 @@ Aloha = jQuery.extend(Aloha,{
 	 * @class Aloha The Aloha base object, which contains all the core functionality
 	 * @singleton
 	 */
-	Aloha = jQuery.extend(true,Aloha,{
+	jQuery.extend(true,Aloha,{
 
 		/**
 		 * The Aloha Editor Version we are using
@@ -86,31 +75,104 @@ Aloha = jQuery.extend(Aloha,{
 		OSName: 'Unknown',
 
 		/**
-		 * Array of callback functions to call when Aloha is ready
-		 * @property
-		 * @type Array
-		 * @hide
-		 */
-		readyCallbacks: [],
-
-		/**
-		 * Has aloha been initialised?
-		 */
-		initd: false,
-
-		/**
-		 * Initialize Aloha
-		 * called automatically by the loader
-		 * @event the "ready" event is triggered as soon as Aloha has finished it's initialization process
-		 * @hide
+		 * Initialise the Initialisation Process
 		 */
 		init: function () {
-			// Check
-			if ( this.initd ) {
-				throw new Error('You are initialising Aloha Editor twice');
-			}
-			this.initd = true;
+			$(function(){
+				// Create Promises
+				Aloha.createPromiseEvent('aloha');
+
+				// Ready?
+				Aloha.bind('alohacoreloaded',function(){
+					// Mousemove Hooks
+					setInterval(function(){
+						GENTICS.Utils.Position.update();
+					},500);
+					$('html').mousemove(function (e) {
+						GENTICS.Utils.Position.Mouse.x = e.pageX;
+						GENTICS.Utils.Position.Mouse.y = e.pageY;
+					});
+
+					// Load & Initialise
+					Aloha.loadPlugins(function(){
+						Aloha.initAloha(function(){
+							Aloha.initI18n(function(){
+								Aloha.initPlugins(function(){
+									Aloha.initGui(function(){
+										Aloha.trigger('aloha');
+									})
+								})
+							})
+						})
+					});
+				});
+
+				// Check
+				if ( $('body').hasClass('alohacoreloaded') ) {
+					Aloha.trigger('alohacoreloaded');
+				}
+			});
+		},
+
+		/**
+		 * Load Plugins
+		 */
+		loadPlugins: function(next){
+			// Prepare
+			var
+				$alohaScriptInclude = $('#aloha-script-include')
+				// Async
+				completed = 0,
+				total = 0,
+				exited = false,
+				complete = function(){
+					if ( exited ) {
+						throw new Error('Something went wrong');
+					}
+					else {
+						completed++;
+						if ( completed === total ) {
+							exited = true;
+							// Forward
+							next();
+						}
+					}
+				};
 			
+			// Load
+			if ( $alohaScriptInclude ) {
+				// Determine Plugins
+				var plugins = $alohaScriptInclude.data('plugins');
+				if ( typeof plugins === 'string' ) {
+					plugins = plugins.split(',');
+				}
+
+				// Ensure
+				plugins = plugins||[];
+
+				// Handle
+				if ( plugins.length ) {
+					// Load in Plugins
+					$.each(plugins,function(i,pluginName){
+						++total;
+						Aloha.loadPlugin(pluginName,complete);
+					});
+				}
+				else {
+					// Forward
+					next();
+				}
+			}
+			else {
+				// Forward
+				next();
+			}
+		},
+
+		/**
+		 * Initialise Aloha
+		 */
+		initAloha: function(next){
 			// check browser version on init
 			// this has to be revamped, as
 			if (jQuery.browser.webkit && parseFloat(jQuery.browser.version) < 532.5 || // Chrome/Safari 4
@@ -123,9 +185,6 @@ Aloha = jQuery.extend(Aloha,{
 				return;
 			}
 
-
-			var that = this;
-
 			// register the body click event to blur editables
 			jQuery('html').mousedown(function() {
 				// if an Ext JS modal is visible, we don't want to loose the focus on
@@ -135,26 +194,26 @@ Aloha = jQuery.extend(Aloha,{
 				// column/row deletion, as the table module will clean it's selection
 				// as soon as the editable is deactivated. Fusubscriberthermore you'd have to
 				// refocus the editable again, which is just strange UX
-				if (that.activeEditable && !that.isMessageVisible()) {
-					that.activeEditable.blur();
-					that.FloatingMenu.setScope('Aloha.empty');
-					that.activeEditable = null;
+				if (Aloha.activeEditable && !Aloha.isMessageVisible()) {
+					Aloha.activeEditable.blur();
+					Aloha.FloatingMenu.setScope('Aloha.empty');
+					Aloha.activeEditable = null;
 				}
 			});
 
 			// Initialise the base path to the aloha files
-			this.settings.base =
-				this.settings.base || window.Aloha_base || this.getAlohaUrl();
+			Aloha.settings.base =
+				Aloha.settings.base || window.Aloha_base || Aloha.getAlohaUrl();
 
 			// Initialise pluginDir
-			this.settings.pluginDir =
-				this.settings.pluginDir || window.Aloha_pluginDir || 'plugin';
+			Aloha.settings.pluginDir =
+				Aloha.settings.pluginDir || window.Aloha_pluginDir || 'plugin';
 
 			// initialize the Log
-			this.Log.init();
+			Aloha.Log.init();
 
 			// initialize the error handler for general javascript errors
-			if ( this.settings.errorhandling ) {
+			if ( Aloha.settings.errorhandling ) {
 				window.onerror = function (msg, url, linenumber) {
 					Aloha.Log.error(Aloha, 'Error message: ' + msg + '\nURL: ' + url + '\nLine Number: ' + linenumber);
 					// TODO eventually add a message to the message line?
@@ -164,64 +223,123 @@ Aloha = jQuery.extend(Aloha,{
 
 			// OS detection
 			if (navigator.appVersion.indexOf('Win') != -1) {
-				this.OSName = 'Win';
+				Aloha.OSName = 'Win';
 			}
 			if (navigator.appVersion.indexOf('Mac') != -1) {
-				this.OSName = 'Mac';
+				Aloha.OSName = 'Mac';
 			}
 			if (navigator.appVersion.indexOf('X11') != -1) {
-				this.OSName = 'Unix';
+				Aloha.OSName = 'Unix';
 			}
 			if (navigator.appVersion.indexOf('Linux') != -1) {
-				this.OSName = 'Linux';
+				Aloha.OSName = 'Linux';
 			}
 
-			// initialize the Aloha core components
-			//debugger;
-			Aloha.bind('aloha-i18n-ready',this.loadPlugins);
-			Aloha.bind('aloha-i18n-plugins-ready', this.loadGui);
-			this.initI18n();
-			Aloha.bind('aloha-ready', function() {
-				Aloha.trigger('aloha');
-			});
-			
-		},
-		unbind: function(eventName,eventHandler) {
-			eventName = this.correctEventName(eventName);
-			$('body').unbind(eventName,eventHandler);
-		},
-
-		bind: function(eventName,eventHandler) {
-			eventName = this.correctEventName(eventName);
-			this.log('debug', this, 'Binding ['+eventName+'], has ['+(($('body').data('events')||{})[eventName]||[]).length+'] events');
-			$('body').bind(eventName,eventHandler);
-		},
-
-		trigger: function(eventName,data) {
-			eventName = this.correctEventName(eventName);
-			this.log('debug', this, 'Trigger ['+eventName+'], has ['+(($('body').data('events')||{})[eventName]||[]).length+'] events');
-			$('body').trigger(eventName,data);
-		},
-		correctEventName: function(eventName){
-			var result = eventName.replace(/\-([a-z])/g,function(a,b){
-				return b.toUpperCase();
-			});
-			return result;
+			// Forward
+			next();
 		},
 
 		/**
-		 * Loads plugins that need i18n to be initialized
+		 * Initialize i18n, load the dictionary file
+		 * Languages may have format as defined in
+		 * http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.10
+		 * All language codes available http://www.loc.gov/standards/iso639-2/php/langcodes-search.php
+		 *
+		 * @hide
+		 */
+		initI18n: function(next) {
+			if (typeof Aloha.settings.i18n === 'undefined' || !Aloha.settings.i18n) {
+				Aloha.settings.i18n = {};
+			}
+
+			// TODO read dict files automatically on build. Develop only with "en"
+			if (typeof Aloha.settings.i18n.available === 'undefined'
+				|| !Aloha.settings.i18n.available
+				|| !Aloha.settings.i18n.available instanceof Array) {
+
+				Aloha.settings.i18n.available = ['en', 'de', 'fr', 'eo', 'fi', 'ru', 'it', 'pl'];
+			}
+
+			/*
+			 * try to guess ACCEPT-LANGUAGE from http header
+			 * reference http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.4
+			 * ACCEPT-LANGUAGE 'de-de,de;q=0.8,it;q=0.6,en-us;q=0.7,en;q=0.2';
+			 * Any implementation has to set it server side because this is not
+			 * accessible by JS. http://lists.w3.org/Archives/Public/public-html/2009Nov/0454.html
+			*/
+			if ( (typeof Aloha.settings.i18n.current === 'undefined' || !Aloha.settings.i18n.current) &&
+				typeof Aloha.settings.i18n.acceptLanguage === 'string' ) {
+
+				var acceptLanguage = [],
+				// Split the string from ACCEPT-LANGUAGE
+					preferredLanguage = Aloha.settings.i18n.acceptLanguage.split(",");
+				for(i = 0, languageLength = preferredLanguage.length; i < languageLength; i++) {
+
+					// split language setting
+					var lang = preferredLanguage[i].split(';');
+
+					// convert quality to float
+					if ( typeof lang[1] === 'undefined' || !lang[1] ) {
+						lang[1] = 1;
+					} else {
+						lang[1] = parseFloat(lang[1].substring(2, lang[1].length));
+					}
+
+					// add converted language to accepted languages
+					acceptLanguage.push(lang);
+				}
+
+				// sort by quality
+				acceptLanguage.sort(function (a,b) {return b[1] - a[1];});
+
+				// check in sorted order if any of preferred languages is available
+				for(i = 0, languageLength = acceptLanguage.length; i < languageLength; i++) {
+					if ( jQuery.inArray(acceptLanguage[i][0], Aloha.settings.i18n.available) >= 0 ) {
+						Aloha.settings.i18n.current = acceptLanguage[i][0];
+						break;
+					}
+				}
+			}
+
+			/*
+			 * default language from for the browser navigator API.
+			 */
+			if (typeof Aloha.settings.i18n.current == 'undefined' || !Aloha.settings.i18n.current) {
+				Aloha.settings.i18n.current = (navigator.language
+						? navigator.language       // gecko/webkit/opera
+						: navigator.userLanguage   // IE
+				);
+			}
+
+			// determine the actual language based on current and available languages
+			var actualLanguage = Aloha.getLanguage(Aloha.settings.i18n.current, Aloha.settings.i18n.available);
+
+			if (!actualLanguage) {
+				Aloha.Log.error(this, 'Could not determine actual language.');
+			} else {
+				// TODO load the dictionary file for the actual language
+				var fileUrl = Aloha.settings.base + '/i18n/' + actualLanguage + '.json';
+				Aloha.loadI18nFile(fileUrl, this, function(){
+					next()
+				});
+			}
+		},
+
+		/**
+		 * Loads plugins Aloha need i18n to be initialized
 		 * @return void
 		 */
-		loadPlugins: function () {
-			Aloha.PluginRegistry.init();
+		initPlugins: function (next) {
+			Aloha.PluginRegistry.init(function(){
+				next();
+			});
 		},
 
 		/**
 		 * Loads GUI components that need i18n to be initialized
 		 * @return void
 		 */
-		loadGui: function () {
+		initGui: function (next) {
 			//debugger;
 			Aloha.RepositoryManager.init();
 			Aloha.FloatingMenu.init();
@@ -233,9 +351,6 @@ Aloha = jQuery.extend(Aloha,{
 			Ext.ux.AlohaAttributeField.prototype.listEmptyText = Aloha.i18n( Aloha, 'repository.no_item_found' );
 			Ext.ux.AlohaAttributeField.prototype.loadingText = Aloha.i18n( Aloha, 'repository.loading' ) + '...';
 
-			// set aloha ready
-			Aloha.ready = true;
-
 			// activate registered editables
 			for (var i = 0, editablesLength = Aloha.editables.length; i < editablesLength; i++) {
 				if ( !Aloha.editables[i].ready ) {
@@ -243,7 +358,36 @@ Aloha = jQuery.extend(Aloha,{
 				}
 			}
 
-			Aloha.trigger('aloha-ready');
+			// Forward
+			next();
+		},
+
+		createPromiseEvent: function(eventName){
+			//window.alohaQuery('body').createPromiseEvent(eventName);
+			window.jQuery('body').createPromiseEvent(eventName);
+		},
+		unbind: function(eventName,eventHandler) {
+			eventName = Aloha.correctEventName(eventName);
+			//window.alohaQuery('body').unbind(eventName);
+			window.jQuery('body').unbind(eventName);
+		},
+		bind: function(eventName,eventHandler) {
+			eventName = Aloha.correctEventName(eventName);
+			Aloha.log('debug', this, 'Binding ['+eventName+'], has ['+(($('body').data('events')||{})[eventName]||[]).length+'] events');
+			//window.alohaQuery('body').bind(eventName,eventHandler);
+			window.jQuery('body').bind(eventName,eventHandler);
+		},
+		trigger: function(eventName,data) {
+			eventName = Aloha.correctEventName(eventName);
+			Aloha.log('debug', this, 'Trigger ['+eventName+'], has ['+(($('body').data('events')||{})[eventName]||[]).length+'] events');
+			//window.alohaQuery('body').trigger(eventName,data);
+			window.jQuery('body').trigger(eventName,data);
+		},
+		correctEventName: function(eventName){
+			var result = eventName.replace(/\-([a-z])/g,function(a,b){
+				return b.toUpperCase();
+			});
+			return result;
 		},
 
 		/**
@@ -254,13 +398,13 @@ Aloha = jQuery.extend(Aloha,{
 		activateEditable: function (editable) {
 
 			// blur all editables, which are currently active
-			for (var i = 0, editablesLength = this.editables.length; i < editablesLength; i++) {
-				if (this.editables[i] != editable && this.editables[i].isActive) {
-					this.editables[i].blur();
+			for (var i = 0, editablesLength = Aloha.editables.length; i < editablesLength; i++) {
+				if (Aloha.editables[i] != editable && Aloha.editables[i].isActive) {
+					Aloha.editables[i].blur();
 				}
 			}
 
-			this.activeEditable = editable;
+			Aloha.activeEditable = editable;
 		},
 
 		/**
@@ -268,7 +412,7 @@ Aloha = jQuery.extend(Aloha,{
 		 * @return {Editable} returns the active Editable
 		 */
 		getActiveEditable: function() {
-			return this.activeEditable;
+			return Aloha.activeEditable;
 		},
 
 		/**
@@ -277,17 +421,17 @@ Aloha = jQuery.extend(Aloha,{
 		 */
 		deactivateEditable: function () {
 
-			if ( typeof this.activeEditable === 'undefined' || this.activeEditable === null ) {
+			if ( typeof Aloha.activeEditable === 'undefined' || Aloha.activeEditable === null ) {
 				return;
 			}
 
 			// blur the editable
-			this.activeEditable.blur();
+			Aloha.activeEditable.blur();
 
 			// set scope for floating menu
-			this.FloatingMenu.setScope('Aloha.empty');
+			Aloha.FloatingMenu.setScope('Aloha.empty');
 
-			this.activeEditable = null;
+			Aloha.activeEditable = null;
 		},
 
 		/**
@@ -318,8 +462,8 @@ Aloha = jQuery.extend(Aloha,{
 		 * @return {boolean}
 		 */
 		isEditable: function (obj) {
-			for (var i=0, editablesLength = this.editables.length; i < editablesLength; i++) {
-				if ( this.editables[i].originalObj.get(0) === obj ) {
+			for (var i=0, editablesLength = Aloha.editables.length; i < editablesLength; i++) {
+				if ( Aloha.editables[i].originalObj.get(0) === obj ) {
 					return true;
 				}
 			}
@@ -368,93 +512,6 @@ Aloha = jQuery.extend(Aloha,{
 
 			// could not identify object by id or class name - so just return the tag name
 			return out;
-		},
-
-		/**
-		 * Initialize i18n, load the dictionary file
-		 * Languages may have format as defined in
-		 * http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.10
-		 * All language codes available http://www.loc.gov/standards/iso639-2/php/langcodes-search.php
-		 *
-		 * @hide
-		 */
-		initI18n: function() {
-
-			if (typeof this.settings.i18n === 'undefined' || !this.settings.i18n) {
-				this.settings.i18n = {};
-			}
-
-			// TODO read dict files automatically on build. Develop only with "en"
-			if (typeof this.settings.i18n.available === 'undefined'
-				|| !this.settings.i18n.available
-				|| !this.settings.i18n.available instanceof Array) {
-
-				this.settings.i18n.available = ['en', 'de', 'fr', 'eo', 'fi', 'ru', 'it', 'pl'];
-			}
-
-			/*
-			 * try to guess ACCEPT-LANGUAGE from http header
-			 * reference http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.4
-			 * ACCEPT-LANGUAGE 'de-de,de;q=0.8,it;q=0.6,en-us;q=0.7,en;q=0.2';
-			 * Any implementation has to set it server side because this is not
-			 * accessible by JS. http://lists.w3.org/Archives/Public/public-html/2009Nov/0454.html
-			*/
-			if ( (typeof this.settings.i18n.current === 'undefined' || !this.settings.i18n.current) &&
-				typeof this.settings.i18n.acceptLanguage === 'string' ) {
-
-				var acceptLanguage = [],
-				// Split the string from ACCEPT-LANGUAGE
-					preferredLanguage = this.settings.i18n.acceptLanguage.split(",");
-				for(i = 0, languageLength = preferredLanguage.length; i < languageLength; i++) {
-
-					// split language setting
-					var lang = preferredLanguage[i].split(';');
-
-					// convert quality to float
-					if ( typeof lang[1] === 'undefined' || !lang[1] ) {
-						lang[1] = 1;
-					} else {
-						lang[1] = parseFloat(lang[1].substring(2, lang[1].length));
-					}
-
-					// add converted language to accepted languages
-					acceptLanguage.push(lang);
-				}
-
-				// sort by quality
-				acceptLanguage.sort(function (a,b) {return b[1] - a[1];});
-
-				// check in sorted order if any of preferred languages is available
-				for(i = 0, languageLength = acceptLanguage.length; i < languageLength; i++) {
-					if ( jQuery.inArray(acceptLanguage[i][0], this.settings.i18n.available) >= 0 ) {
-						this.settings.i18n.current = acceptLanguage[i][0];
-						break;
-					}
-				}
-			}
-
-			/*
-			 * default language from for the browser navigator API.
-			 */
-			if (typeof this.settings.i18n.current == 'undefined' || !this.settings.i18n.current) {
-				this.settings.i18n.current = (navigator.language
-						? navigator.language       // gecko/webkit/opera
-						: navigator.userLanguage   // IE
-				);
-			}
-
-			// determine the actual language based on current and available languages
-			var actualLanguage = this.getLanguage(this.settings.i18n.current, this.settings.i18n.available);
-
-			if (!actualLanguage) {
-				Aloha.Log.error(this, 'Could not determine actual language.');
-			} else {
-				// TODO load the dictionary file for the actual language
-				var fileUrl = this.settings.base + '/i18n/' + actualLanguage + '.json';
-				this.loadI18nFile(fileUrl, this, function () {
-					Aloha.trigger('aloha-i18n-ready');
-				});
-			}
 		},
 
 
@@ -529,7 +586,7 @@ Aloha = jQuery.extend(Aloha,{
 			}
 
 			// Save i18n
-			this.dictionaries[component.toString()] = data;
+			Aloha.dictionaries[component.toString()] = data;
 		},
 
 		/**
@@ -544,17 +601,17 @@ Aloha = jQuery.extend(Aloha,{
 			var value = null;
 
 			// first get the dictionary for the component
-			if (this.dictionaries[component.toString()] && this.dictionaries[component.toString()][key]) {
-				value = this.dictionaries[component.toString()][key];
+			if (Aloha.dictionaries[component.toString()] && Aloha.dictionaries[component.toString()][key]) {
+				value = Aloha.dictionaries[component.toString()][key];
 			}
 
 			// when the value was not found and component is not Aloha, do a fallback
 			if (!value
 				&& component != Aloha
-				&& this.dictionaries[Aloha.toString()]
-				&& this.dictionaries[Aloha.toString()][key])
+				&& Aloha.dictionaries[Aloha.toString()]
+				&& Aloha.dictionaries[Aloha.toString()][key])
 			{
-				value = this.dictionaries[Aloha.toString()][key];
+				value = Aloha.dictionaries[Aloha.toString()][key];
 			}
 
 			// value still not found, so output the key
@@ -586,7 +643,7 @@ Aloha = jQuery.extend(Aloha,{
 		 * @hide
 		 */
 		registerEditable: function (editable) {
-			this.editables.push(editable);
+			Aloha.editables.push(editable);
 		},
 
 		/**
@@ -598,10 +655,10 @@ Aloha = jQuery.extend(Aloha,{
 		unregisterEditable: function (editable) {
 
 			// Find the index
-			var id = this.editables.indexOf( editable );
+			var id = Aloha.editables.indexOf( editable );
 			// Remove it if really found!
 			if (id != -1) {
-				this.editables.splice(id, 1);
+				Aloha.editables.splice(id, 1);
 			}
 		},
 
@@ -627,7 +684,7 @@ Aloha = jQuery.extend(Aloha,{
 					Ext.MessageBox.wait(message.text, message.title);
 					break;
 				default:
-					this.log('warn', this, 'Unknown message type for message {' + message.toString() + '}');
+					Aloha.log('warn', this, 'Unknown message type for message {' + message.toString() + '}');
 					break;
 			}
 		},
@@ -664,8 +721,8 @@ Aloha = jQuery.extend(Aloha,{
 		 */
 		isModified: function () {
 			// check if something needs top be saved
-			for (var i in this.editables) {
-				if (this.editables[i].isModified && this.editables[i].isModified()) {
+			for (var i in Aloha.editables) {
+				if (Aloha.editables[i].isModified && Aloha.editables[i].isModified()) {
 					return true;
 				}
 			}
@@ -700,14 +757,17 @@ Aloha = jQuery.extend(Aloha,{
 		 * @param {String} pluginName
 		 * @return
 		 */
-		loadJs: function(url){
+		loadJs: function(url,next){
 			// Prepare
-			var scriptEl, appendEl = document.head;
+			var scriptEl, appendEl = document.head || document.getElementsByTagName('head')[0];
 
 			// Append
 			scriptEl = document.createElement('script');
 			scriptEl.src = url;
 			scriptEl.setAttribute('defer','defer');
+			scriptEl.onreadystatechange = next;
+			scriptEl.onload = next;
+			scriptEl.onerror = next;
 			appendEl.appendChild(scriptEl);
 
 			// Chain
@@ -720,7 +780,7 @@ Aloha = jQuery.extend(Aloha,{
 		 * @param {String} pluginName
 		 * @return
 		 */
-		loadCss: function(url){
+		loadCss: function(url,next){
 			// Prepare
 			var linkEl, appendEl = document.head;
 
@@ -729,6 +789,9 @@ Aloha = jQuery.extend(Aloha,{
 			linkEl.type = 'text/css';
 			linkEl.rel = 'stylesheet';
 			linkEl.href = url;
+			linkEl.onreadystatechange = next;
+			linkEl.onload = next;
+			linkEl.onerror = next;
 			appendEl.appendChild(linkEl);
 
 			// Chain
@@ -741,21 +804,36 @@ Aloha = jQuery.extend(Aloha,{
 		 * @param {String} pluginName
 		 * @return
 		 */
-		loadPlugin: function(pluginName){
+		loadPlugin: function(pluginName,next){
 			// Prepare
-			var pluginUrl = Aloha.getPluginUrl(pluginName);
+			var
+				pluginUrl = Aloha.getPluginUrl(pluginName),
+				actions,
+				// Async
+				completed = 0,
+				total = 0,
+				exited = false,
+				complete = function(){
+					if ( exited ) {
+						throw new Error('Something went wrong');
+					}
+					else {
+						completed++;
+						if ( completed === total ) {
+							exited = true;
+							next();
+						}
+					}
+				};
 
-			// Check if plugin has already be loaded
+			// Check if plugin is already loaded
 			if ( typeof window.Aloha_loaded_plugins[pluginName] !== 'undefined' ) {
 				window.Aloha_loaded_plugins[pluginName] = false; // continue
-			}
-			if (window.Aloha_loaded_plugins[pluginName]) {
-				return true;
 			}
 			window.Aloha_loaded_plugins[pluginName] = true;
 
 			// Prepare Actions
-			var actions = {
+			actions = {
 				/**
 				 * Load a Plugin by the Default Structure
 				 */
@@ -766,7 +844,8 @@ Aloha = jQuery.extend(Aloha,{
 						pluginCssUrl = pluginUrl+'/src/'+pluginName+'.css';
 
 					// Include
-					Aloha.loadJs(pluginJsUrl);
+					total += 1;
+					Aloha.loadJs(pluginJsUrl,complete);
 					Aloha.loadCss(pluginCssUrl);
 
 					// Done
@@ -784,7 +863,8 @@ Aloha = jQuery.extend(Aloha,{
 
 					// Cycle through JS
 					$.each(data.js||[], function(i,value){
-						Aloha.loadJs(pluginUrl+'/'+value);
+						++total;
+						Aloha.loadJs(pluginUrl+'/'+value,complete);
 					});
 
 					// Done
@@ -826,17 +906,7 @@ Aloha = jQuery.extend(Aloha,{
 		}
 	});
 
-
-	// Initialise Aloha
-//	$(function(){
-		// Prepare
-//		var $body = $('body');
-//		$body.createPromiseEvent('aloha');
-		// Give the page 3 seconds to load in all the plugins
-		// Looks like a jacky hack - Event programming could result to safe loading process..
-//		setTimeout( function() {
-//			Aloha.init(); // moving to aloha.js
-//		},3000);
-//	});
+	// Initialise Aloha Editor
+	Aloha.init();
 
 })(window);

@@ -8,6 +8,7 @@
 		jQuery = window.alohaQuery, $ = jQuery,
 		GENTICS = window.GENTICS,
 		Aloha = window.Aloha;
+	
 	/**
 	 * Plugin Registry
 	 * @namespace Aloha
@@ -20,128 +21,81 @@
 		 * @return void
 		 * @hide
 		 */
-		init: function() {
-			//debugger;
+		init: function(next) {
+			// Prepare
 			var
-				me = this,
-				loaded = 0,
-				length = 0,
-				plugins,
-				toload,
-				pluginsStack = [],
-				i18nEvent = function () {
-					++loaded;
-					if ( loaded === length ) {
-						Aloha.trigger('aloha-i18n-plugins-loaded');
+				me = this;
+			
+			// Load i18n files
+			this.loadI18n(function(){
+				// Initialise Plugins
+				for ( var i = 0; i < me.plugins.length; i++) {
+					if (me.plugins[i].settings.enabled) {
+						me.plugins[i].init();
 					}
-				},
-				$alohaScriptInclude = $('#aloha-script-include'),
-				allload = false;
-				
-				plugins = $alohaScriptInclude.data('plugins');
-				// Determine Plugins
-				if ( typeof plugins === 'string' ) {
-					plugins = plugins.split(',');
-				} else {
-					plugins = [];
 				}
 				
-				Aloha.bind('aloha-js-plugins-loaded', function() {
-					length = me.plugins.length;
-					// iterate through all registered plugins
-					for ( var i = 0; i < length; i++) {
-						var plugin = me.plugins[i];
-						
-						// get the plugin settings
-						if (typeof Aloha.settings.plugins === 'undefined') {
-							Aloha.settings.plugins = {};
-						}
-						
-						plugin.settings = Aloha.settings.plugins[plugin.prefix];
-						
-						if (typeof plugin.settings === 'undefined') {
-							plugin.settings = {};
-						}
-						
-						if (typeof plugin.settings.enabled === 'undefined') {
-							plugin.settings.enabled = true;
-						}
-						
-						// Push the plugin in the right order into the plugins stack
-						pluginsStack.push(plugin);
-						
-						// initialize i18n for the plugin
-						// determine the actual language
-						var actualLanguage = plugin.languages ? Aloha.getLanguage(Aloha.settings.i18n.current, plugin.languages) : null;
-						
-						if (!actualLanguage) {
-							// The plugin that have no dict file matching
-							Aloha.Log.warn(me, 'Could not determine actual language, no languages available for plugin ' + plugin);
-							
-							++loaded;
-							if ( loaded === length ) {
-								Aloha.trigger('aloha-i18n-plugins-loaded');
-							}
-						} else {
-							// load the dictionary file for the actual language
-							var fileUrl = Aloha.settings.base + '/' + Aloha.settings.pluginDir + '/' + plugin.basePath + '/i18n/' + actualLanguage + '.json';
-							
-							// Initializes the plugin when
-							Aloha.loadI18nFile(fileUrl, plugin, i18nEvent);
-						}
-					}
-					// if no plugins are loaded, we immediately trigger the event 'aloha-i18n-plugins-loaded' (otherwise the floatingmenue would not be initialized, which produces errors afterwards
-					if (length == 0) {
-						Aloha.trigger('aloha-i18n-plugins-loaded');
-					}
-				});
-			//* Load Plugins
-			if ( $alohaScriptInclude ) {
-				// Load in Plugins
-				$.each(plugins||[],function(i,pluginName){
-					// Load Plugin
-					try {
-//						Aloha.bind("aloha-js-loaded-" + pluginName, function(){
-//						});
-						Aloha.loadPlugin(pluginName);
-					} catch(e) {
-						Aloha.Log.error(Aloha, "Error while loading " + pluginName);
-						delete plugins[plugins.indexOf(pluginName)];
-					}
-				});
-				window.setInterval(function() { 
-					if (allload === false && plugins.length === me.plugins.length) {
-						allload = true;
-						Aloha.trigger("aloha-js-plugins-loaded");
-					}
-				}, 1000);
-			} else {
-				Aloha.trigger("aloha-js-plugins-loaded");
-			}
-			// Initialize the plugins in the right order when they are loaded
-			Aloha.bind('aloha-i18n-plugins-loaded',function(){
-				var failures = [];
-				//debugger;
-				for ( var i = 0; i < length; i++) {
-					if (pluginsStack[i].settings.enabled) {
-						try {
-							pluginsStack[i].init();
-						} catch(e) {
-							Aloha.Log.error(me, "Init of plugin "+ pluginsStack[i].prefix + " failed : " + e);
-							Aloha.Log.error(me,e);
-							failures.push(i);
-						}
-					}
-				}
-				for ( var i = 0, faillength = failures.length; i < faillength; i++) {
-					// removes the load failed plugins from stack to avoid side effect
-//					delete pluginsStack[failures[i]];
-				}
-				//debugger;
-				Aloha.trigger('aloha-i18n-plugins-ready');
+				// Forward
+				next();
 			});
 		},
 
+
+		/**
+		 * Load the i18n files for all plugins
+		 */
+		loadI18n: function(next) {
+			// Prepare
+			var
+				me = this,
+				i18nUrl,
+				actualLanguage,
+				plugin,
+				i,n,
+				// Async
+				completed = 0,
+				total = this.plugins.length,
+				exited = false,
+				complete = function(){
+					if ( exited ) {
+						throw new Error('Something went wrong');
+					}
+					else {
+						completed++;
+						if ( completed === total ) {
+							exited = true;
+							next();
+						}
+					}
+				};
+
+			// iterate through all registered plugins
+			for ( i=0,n=total; i<n; i++) {
+				plugin = this.plugins[i];
+
+				// Ensure
+				if (typeof Aloha.settings.plugins === 'undefined') {
+					Aloha.settings.plugins = {};
+				}
+				plugin.settings = Aloha.settings.plugins[plugin.prefix] || {};
+				if (typeof plugin.settings.enabled === 'undefined') {
+					plugin.settings.enabled = true;
+				}
+
+				// initialize i18n for the plugin
+				// determine the actual language
+				actualLanguage = plugin.languages ? Aloha.getLanguage(Aloha.settings.i18n.current, plugin.languages) : null;
+				if (!actualLanguage) {
+					// The plugin that have no dict file matching
+					Aloha.Log.warn(this, 'Could not determine actual language, no languages available for plugin ' + plugin);
+					complete();
+				} else {
+					i18nUrl = Aloha.settings.base + '/' + Aloha.settings.pluginDir + '/' + plugin.basePath + '/i18n/' + actualLanguage + '.json';
+					Aloha.loadI18nFile(i18nUrl,plugin,complete);
+				}
+			}
+		},
+		
 		plugins: [],
 
 		/**
@@ -209,7 +163,6 @@
 				this.basePath = basePath ? basePath : pluginPrefix;
 				Aloha.PluginRegistry.register(this);
 			}
-//			Aloha.trigger("aloha-js-loaded-" + pluginPrefix);
 		},
 
 		/**

@@ -364,21 +364,4 @@
 			return jQuery(ret);
 	};
 
-// set interval to update the scroll position
-// NOTE high timeout of 500ms is required here
-// to prevent issues with mousemove. too short
-// timeouts will interfere with mouse movement
-// detection
-jQuery(document).ready(function() {
-	setInterval(function(){
-		GENTICS.Utils.Position.update();
-	}, 500);
-});
-
-// listen to the mousemove event and update positions
-jQuery('html').mousemove(function (e) {
-	GENTICS.Utils.Position.Mouse.x = e.pageX;
-	GENTICS.Utils.Position.Mouse.y = e.pageY;
-});
-
 })(window);
