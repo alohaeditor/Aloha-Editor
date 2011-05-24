@@ -60,7 +60,16 @@ window.Aloha_base = window.Aloha_base || false;
 		// jQuery
 		jQuery = window.alohaQuery, $ = jQuery,
 		// Loading
-		webkit = /WebKit/.test(navigator.userAgent),
+		defer = false, /*
+			Until browsers can support the defer attribute properly
+			This should always be false
+			Defer makes it so that they load in parrallel but execute in order
+			If we don't have it then the script could execute in any order, which will cause errors
+			So for the meantime, this flag will always be false.
+			Which means that instead we load things one by one.
+			It will be slower, but if you care for speed, then why are you using the uncompressed version of Aloha Editor?
+			Alternatively we could introduce much better sniffing
+			/WebKit/.test(navigator.userAgent), */
 		scriptEls = [],
 		// Async
 		completed = 0,
@@ -81,7 +90,7 @@ window.Aloha_base = window.Aloha_base || false;
 					exited = true;
 					next();
 				}
-				else if ( !webkit ) {
+				else if ( !defer ) {
 					appendEl.appendChild(scriptEls[completed]);
 				}
 			}
@@ -104,7 +113,7 @@ window.Aloha_base = window.Aloha_base || false;
 		scriptEl.onerror = scriptLoaded;
 
 		// Add
-		if ( webkit ) {
+		if ( defer ) {
 			appendEl.appendChild(scriptEl);
 		}
 		else {
@@ -112,8 +121,8 @@ window.Aloha_base = window.Aloha_base || false;
 		}
 	}
 
-	// Non-Webkit
-	if ( !webkit ) {
+	// No Defer Support
+	if ( !defer ) {
 		appendEl.appendChild(scriptEls[0]);
 	}
 
