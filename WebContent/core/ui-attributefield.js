@@ -31,6 +31,7 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 		proxy: new Ext.data.AlohaProxy(),
 		reader: new Ext.data.AlohaObjectReader()
     }),
+    clickAttached: false, // remember that the click event has been attached to the innerList, as this is not implemented in the combobox
     tpl: new Ext.XTemplate(
 			'<tpl for="."><div class="x-combo-list-item">',
 			'<tpl if="this.hasRepositoryTemplate(values)">{[ this.renderRepositoryTemplate(values) ]}</tpl>',
@@ -132,8 +133,17 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 	    	if( this.noQuery ) {
 	    		this.collapse();
 	    	}
+	    	if (!this.clickAttached) {
+	    		var that = this;
+	    		// attach the missing mousedown event to be able to select autocomplete items by clicking on them
+	    		this.mon(this.innerList, 'mousedown', function (event) {
+	    				this.onViewClick(true); // select the item that has been clicked
+	    				event.stopEvent(); // stop floating menu from closing
+	    			}, this);
+	    		this.clickAttached = true;
+	    	}
 	    }
-    }, 
+    },
     setItem: function( item, displayField ) {
     	this.resourceItem = item;
     	if ( item ) {
