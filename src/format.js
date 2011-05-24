@@ -7,6 +7,7 @@
 
 // Start Closure
 (function(window, undefined) {
+	"use strict";
 	var
 		jQuery = window.alohaQuery, $ = jQuery,
 		GENTICS = window.GENTICS,
@@ -55,10 +56,11 @@
 		 */
 		applyButtonConfig: function (obj) {
 	
-			var config = this.getEditableConfig(obj);
+			var config = this.getEditableConfig(obj),
+				button, i;
 	
 			// now iterate all buttons and show/hide them according to the config
-			for (var button in this.buttons) {
+			for ( button in this.buttons) {
 				if (jQuery.inArray(button, config) != -1) {
 					this.buttons[button].button.show();
 				} else {
@@ -67,7 +69,7 @@
 			}
 	
 			// and the same for multisplit items
-			for (var i in this.multiSplitItems) {
+			for ( i in this.multiSplitItems) {
 				if (jQuery.inArray(this.multiSplitItems[i].name, config) != -1) {
 					this.multiSplitButton.showItem(this.multiSplitItems[i].name);
 				} else {
@@ -83,9 +85,10 @@
 		 */
 		initButtons: function () {
 	
-			var scope = 'Aloha.continuoustext';
+			var
+				scope = 'Aloha.continuoustext',
+				that = this;
 			this.buttons = {};
-			var that = this;
 	
 			// collect the multisplit items here
 			this.multiSplitItems = [];
@@ -108,15 +111,19 @@
 							'iconClass' : 'aloha-button aloha-button-' + button,
 							'size' : 'small',
 							'onclick' : function () {
+								var
+									markup = jQuery('<'+button+'></'+button+'>'),
+									rangeObject = Aloha.Selection.rangeObject,
+									foundMarkup;
+	
+
 								// now focus back to the active element
 								if (Aloha.activeEditable) {
 									Aloha.activeEditable.obj[0].focus();
 								}
-								var markup = jQuery('<'+button+'></'+button+'>');
-								var rangeObject = Aloha.Selection.rangeObject;
-	
+
 								// check whether the markup is found in the range (at the start of the range)
-								var foundMarkup = rangeObject.findMarkup(function() {
+								foundMarkup = rangeObject.findMarkup(function() {
 									return this.nodeName.toLowerCase() == markup.get(0).nodeName.toLowerCase();
 								}, Aloha.activeEditable.obj);
 	
@@ -211,10 +218,13 @@
 			// add the event handler for selection change
 			Aloha.bind('aloha-selection-changed',function(event,rangeObject){
 				// iterate over all buttons
-				var statusWasSet = false;
+				var
+					statusWasSet = false, effectiveMarkup,
+					foundMultiSplit, i, j, multiSplitItem;
+				
 				jQuery.each(that.buttons, function(index, button) {
-					for (var i = 0; i < rangeObject.markupEffectiveAtStart.length; i++) {
-						var effectiveMarkup = rangeObject.markupEffectiveAtStart[ i ];
+					for ( i = 0; i < rangeObject.markupEffectiveAtStart.length; i++) {
+						effectiveMarkup = rangeObject.markupEffectiveAtStart[ i ];
 						if (Aloha.Selection.standardTextLevelSemanticsComparator(effectiveMarkup, button.markup)) {
 							button.button.setPressed(true);
 							statusWasSet = true;
@@ -226,14 +236,14 @@
 				});
 	
 				if (that.multiSplitItems.length > 0) {
-					var foundMultiSplit = false;
+					foundMultiSplit = false;
 	
 					// iterate over the markup elements
-					for (var i = 0; i < rangeObject.markupEffectiveAtStart.length && !foundMultiSplit; i++) {
-						var effectiveMarkup = rangeObject.markupEffectiveAtStart[ i ];
+					for ( i = 0; i < rangeObject.markupEffectiveAtStart.length && !foundMultiSplit; i++) {
+						effectiveMarkup = rangeObject.markupEffectiveAtStart[ i ];
 	
-						for (var j = 0; j < that.multiSplitItems.length && !foundMultiSplit; j++) {
-							var multiSplitItem = that.multiSplitItems[j];
+						for ( j = 0; j < that.multiSplitItems.length && !foundMultiSplit; j++) {
+							multiSplitItem = that.multiSplitItems[j];
 	
 							if (!multiSplitItem.markup) {
 								continue;
@@ -262,20 +272,20 @@
 			// FIXME: Very ugly, quick implementation must be changed after selection.js is consolidated
 			Aloha.Selection.changeMarkupOnSelection(jQuery('<p></p>'));
 	
-			var formats = ['b', 'i', 'cite', 'q', 'code', 'abbr', 'del', 'sub', 'sup'];
-	
-			var rangeObject = Aloha.Selection.rangeObject;
-			var startObj = jQuery(rangeObject.startContainer);
-			var limitObj = jQuery(rangeObject.limitObject);
+			var formats = ['b', 'i', 'cite', 'q', 'code', 'abbr', 'del', 'sub', 'sup'],
+				rangeObject = Aloha.Selection.rangeObject,
+				startObj = jQuery(rangeObject.startContainer),
+				limitObj = jQuery(rangeObject.limitObject),
+				parent, index, i;
 	
 			if (rangeObject.isCollapsed() || startObj === limitObj) {
 				return;
 			}
 	
 			// Iterate up from the start container to the limit object and apply all markups found once (remove them)
-			var parent = startObj.parent();
+			parent = startObj.parent();
 			while (parent.get(0) !== limitObj.get(0)) {
-				var index = $.inArray(parent.get(0).nodeName.toLowerCase(),formats);
+				index = $.inArray(parent.get(0).nodeName.toLowerCase(),formats);
 				parent = parent.parent();
 				if (index != -1) {
 					Aloha.Selection.changeMarkupOnSelection(jQuery('<'+formats[index]+'></'+formats[index]+'>'));
@@ -284,7 +294,7 @@
 			}
 	
 			// Iterate over the rest of the available markups and apply them twice
-			for (var i in formats) {
+			for ( i in formats) {
 				if ( formats.hasOwnProperty(i) ) {
 					Aloha.Selection.changeMarkupOnSelection(jQuery('<'+formats[i]+'></'+formats[i]+'>'));
 					Aloha.Selection.changeMarkupOnSelection(jQuery('<'+formats[i]+'></'+formats[i]+'>'));
