@@ -3,6 +3,14 @@
  * Author & Copyright (c) 2010 Gentics Software GmbH, aloha@gentics.com
  * Licensed unter the terms of http://www.aloha-editor.com/license.html
  */
+(function(window, undefined) {
+	"use strict";
+	var
+		jQuery = window.alohaQuery, $ = jQuery,
+		GENTICS = window.GENTICS,
+		Aloha = window.Aloha,
+		Ext = window.Ext;
+
 Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 	typeAhead: false,
 	mode: 'remote',
@@ -96,8 +104,10 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 		},
 		'focus': function(obj, event) {
 			// set background color to give visual feedback which link is modified
-			var target = jQuery(this.getTargetObject());
-			var s = target.css('background-color');
+			var
+				target = jQuery(this.getTargetObject()),
+				s = target.css('background-color');
+			
 			if (this.getValue() === this.placeholder) {
 				this.setValue("");
 				jQuery(this.wrap.dom.children[0]).css("color", "black");
@@ -109,7 +119,10 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 		},
 		'blur': function(obj, event) {
 		// remove the highlighting and restore original color if was set before
-			var target = jQuery(this.getTargetObject());
+			var
+				target = jQuery(this.getTargetObject()),
+				color;
+
 			if ( target ) {
 				color = target.attr('data-original-background-color');
 				if ( color ) {
@@ -147,13 +160,11 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 	},
 	// Private hack to allow attribute setting by regex
 	setAttribute: function (attr, value, regex, reference) {
+		var setAttr = true, regxp;
 		if ( this.targetObject) {
-			// set the attribute
-			var setAttr = true;
-
 			// check if a reference value is submitted to check against with a regex
 			if ( typeof reference !== 'undefined' ) {
-				var regxp = new RegExp( regex );
+				regxp = new RegExp( regex );
 				if ( !reference.match(regxp) ) {
 					setAttr = false;
 				}
@@ -292,6 +303,8 @@ Aloha.ui.AttributeField = Aloha.ui.Button.extend({
 	 * @param {Object} scope The scope object which the event should be attached
 	 */
 	addListener: function ( eventName, handler, scope) {
+			var listener;
+
 			if (this.extButton) {
 				this.extButton.addListener(eventName, handler, null);
 			} else {
@@ -414,8 +427,9 @@ Aloha.ui.AttributeField = Aloha.ui.Button.extend({
 	 * @return template on success or null otherwise
 	 */
 	setTemplate: function (tpl) {
-		var result;
-		var template = new Ext.XTemplate(
+		var
+			result,
+			template = new Ext.XTemplate(
 				'<tpl for="."><div class="x-combo-list-item">',
 				'<tpl if="this.hasRepositoryTemplate(values)">{[ this.renderRepositoryTemplate(values) ]}</tpl>',
 				'<tpl if="!this.hasRepositoryTemplate(values)">' + tpl + '</tpl>',
@@ -442,3 +456,5 @@ Aloha.ui.AttributeField = Aloha.ui.Button.extend({
 	}
 
 });
+
+})(window);

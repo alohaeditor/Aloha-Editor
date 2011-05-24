@@ -4,10 +4,13 @@
  * Licensed unter the terms of http://www.aloha-editor.com/license.html
  */
 (function(window, undefined) {
+	"use strict";
 	var
 		jQuery = window.alohaQuery, $ = jQuery,
 		GENTICS = window.GENTICS,
-		Aloha = window.Aloha;
+		Aloha = window.Aloha,
+		Ext = window.Ext,
+		Class = window.Class;
 
 /**
  * !!!! ATTENTION !!!!
@@ -165,9 +168,10 @@ Aloha.ui.Browser = Class.extend({
 		});
 
 		this.onItemSelect = function () {
-			var sm =  this.grid.getSelectionModel();
-			var sel = (sm) ? sm.getSelected() : null;
-			var resourceItem = (sel) ? sel.data : null;
+			var
+				sm =  this.grid.getSelectionModel(),
+				sel = (sm) ? sm.getSelected() : null,
+				resourceItem = (sel) ? sel.data : null;
 			this.win.hide();
 			if ( typeof this.onSelect === 'function' ) {
 				this.onSelect.call(this, resourceItem);

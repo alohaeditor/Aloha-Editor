@@ -13,12 +13,15 @@
 // Start Closure
 (function(window, undefined) {
 	"use strict";
-	
+
 	// Prepare
 	var
 		jQuery = window.alohaQuery, $ = jQuery,
 		GENTICS = window.GENTICS,
-		Aloha = window.Aloha;
+		Aloha = window.Aloha,
+		console = window.console||false,
+		Ext = window.Ext,
+		HTMLElement = window.HTMLElement;
 
 	/**
 	 * Base Aloha Object
@@ -102,10 +105,10 @@
 								Aloha.initPlugins(function(){
 									Aloha.initGui(function(){
 										Aloha.trigger('aloha');
-									})
-								})
-							})
-						})
+									});
+								});
+							});
+						});
 					});
 				});
 
@@ -184,8 +187,8 @@
 				jQuery.browser.mozilla && parseFloat(jQuery.browser.version) < 1.9 || // FF 3.5
 				jQuery.browser.msie && jQuery.browser.version < 7 || // IE 7
 				jQuery.browser.opera && jQuery.browser.version < 11 ) { // right now, Opera needs some work
-  				if (window.console && console.log) {
-                                	console.log('The browser you are using is not supported.');
+				if (console && console.log) {
+					console.log('The browser you are using is not supported.');
 				}
 				return;
 			}
@@ -253,6 +256,8 @@
 		 * @hide
 		 */
 		initI18n: function(next) {
+			var i, acceptLanguage, preferredLanguage, languageLength, lang, actualLanguage, fileUrl;
+
 			if (typeof Aloha.settings.i18n === 'undefined' || !Aloha.settings.i18n) {
 				Aloha.settings.i18n = {};
 			}
@@ -275,13 +280,13 @@
 			if ( (typeof Aloha.settings.i18n.current === 'undefined' || !Aloha.settings.i18n.current) &&
 				typeof Aloha.settings.i18n.acceptLanguage === 'string' ) {
 
-				var acceptLanguage = [],
+				acceptLanguage = [];
 				// Split the string from ACCEPT-LANGUAGE
-					preferredLanguage = Aloha.settings.i18n.acceptLanguage.split(",");
+				preferredLanguage = Aloha.settings.i18n.acceptLanguage.split(",");
 				for(i = 0, languageLength = preferredLanguage.length; i < languageLength; i++) {
 
 					// split language setting
-					var lang = preferredLanguage[i].split(';');
+					lang = preferredLanguage[i].split(';');
 
 					// convert quality to float
 					if ( typeof lang[1] === 'undefined' || !lang[1] ) {
@@ -317,15 +322,15 @@
 			}
 
 			// determine the actual language based on current and available languages
-			var actualLanguage = Aloha.getLanguage(Aloha.settings.i18n.current, Aloha.settings.i18n.available);
+			actualLanguage = Aloha.getLanguage(Aloha.settings.i18n.current, Aloha.settings.i18n.available);
 
 			if (!actualLanguage) {
 				Aloha.Log.error(this, 'Could not determine actual language.');
 			} else {
 				// TODO load the dictionary file for the actual language
-				var fileUrl = Aloha.settings.base + '/i18n/' + actualLanguage + '.json';
+				fileUrl = Aloha.settings.base + '/i18n/' + actualLanguage + '.json';
 				Aloha.loadI18nFile(fileUrl, this, function(){
-					next()
+					next();
 				});
 			}
 		},
@@ -603,7 +608,9 @@
 		 * @return localized string
 		 */
 		i18n: function(component, key, replacements) {
-			var value = null;
+			var
+				value = null,
+				i, repLength, regEx, safeArgument;
 
 			// first get the dictionary for the component
 			if (Aloha.dictionaries[component.toString()] && Aloha.dictionaries[component.toString()][key]) {
@@ -625,10 +632,10 @@
 			} else {
 				// substitute placeholders
 				if (typeof replacements !== 'undefined' && replacements !== null) {
-					for ( var i = 0, repLength = replacements.length; i < repLength; ++i) {
+					for ( i = 0, repLength = replacements.length; i < repLength; ++i) {
 						if (typeof replacements[i] !== 'undefined' && replacements[i] !== null) {
-							var regEx = new RegExp('\\{' + (i) + '\\}', 'g'),
-								safeArgument = replacements[i].toString().replace(/\{/g, '\\{');
+							regEx = new RegExp('\\{' + (i) + '\\}', 'g');
+							safeArgument = replacements[i].toString().replace(/\{/g, '\\{');
 							safeArgument = safeArgument.replace(/\}/g, '\\}');
 							value = value.replace(regEx, safeArgument);
 						}

@@ -3,6 +3,12 @@
  * Author & Copyright (c) 2010 Gentics Software GmbH, aloha@gentics.com
  * Licensed unter the terms of http://www.aloha-editor.com/license.html
  */
+(function(window, undefined) {
+	"use strict";
+	var
+		jQuery = window.alohaQuery, $ = jQuery,
+		GENTICS = window.GENTICS,
+		Aloha = window.Aloha;
 
 /*
  * Only execute the following code if we are in IE (check for
@@ -527,3 +533,5 @@ if(document.attachEvent && document.selection) {
 
 	})();
 }
+
+})(window);
