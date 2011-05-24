@@ -120,14 +120,15 @@
 		loadPlugins: function(next){
 			// Prepare
 			var
-				$alohaScriptInclude = $('#aloha-script-include')
+				$alohaScriptInclude = $('#aloha-script-include'),
+				plugins,
 				// Async
 				completed = 0,
 				total = 0,
 				exited = false,
 				complete = function(){
 					if ( exited ) {
-						throw new Error('Something went wrong');
+						throw new Error('Something went wrong with loading plugins');
 					}
 					else {
 						completed++;
@@ -142,7 +143,7 @@
 			// Load
 			if ( $alohaScriptInclude ) {
 				// Determine Plugins
-				var plugins = $alohaScriptInclude.data('plugins');
+				plugins = $alohaScriptInclude.data('plugins');
 				if ( typeof plugins === 'string' ) {
 					plugins = plugins.split(',');
 				}
@@ -152,9 +153,11 @@
 
 				// Handle
 				if ( plugins.length ) {
+					// Prepare
+					total += plugins.length;
+
 					// Load in Plugins
 					$.each(plugins,function(i,pluginName){
-						++total;
 						Aloha.loadPlugin(pluginName,complete);
 					});
 				}
@@ -815,7 +818,7 @@
 				exited = false,
 				complete = function(){
 					if ( exited ) {
-						throw new Error('Something went wrong');
+						throw new Error('Something went wrong with loading of a plugin');
 					}
 					else {
 						completed++;
