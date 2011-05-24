@@ -4,10 +4,13 @@
  * Licensed unter the terms of http://www.aloha-editor.com/license.html
  */
 (function(window, undefined) {
+	"use strict";
+
 	var
 		jQuery = window.alohaQuery, $ = jQuery,
 		GENTICS = window.GENTICS,
-		Aloha = window.Aloha;
+		Aloha = window.Aloha,
+		Class = window.Class;
 	
 	/**
 	 * Plugin Registry
@@ -119,9 +122,10 @@
 		 * @hide
 		 */
 		makeClean: function(obj) {
+			var i, plugin;
 			// iterate through all registered plugins
-			for ( var i = 0; i < this.plugins.length; i++) {
-				var plugin = this.plugins[i];
+			for ( i = 0; i < this.plugins.length; i++) {
+				plugin = this.plugins[i];
 				if (Aloha.Log.isDebugEnabled()) {
 					Aloha.Log.debug(this, 'Passing contents of HTML Element with id { ' + obj.attr('id') + ' } for cleaning to plugin { ' + plugin.prefix + ' }');
 				}
@@ -247,10 +251,10 @@
 		 */
 		getEditableConfig: function (obj) {
 			var configObj = null,
-				configSpecified = false;
+				configSpecified = false,
+				that = this;
 
 			if ( this.settings.editables ) {
-				var that = this;
 				// check if the editable's selector matches and if so add its configuration to object configuration
 				jQuery.each( this.settings.editables, function (selector, selectorConfig) {
 					if ( obj.is(selector) ) {

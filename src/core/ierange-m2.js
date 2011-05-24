@@ -8,7 +8,8 @@
 	var
 		jQuery = window.alohaQuery, $ = jQuery,
 		GENTICS = window.GENTICS,
-		Aloha = window.Aloha;
+		Aloha = window.Aloha,
+		DOMUtils, TextRangeUtils, selection, DOMRange, RangeIterator, DOMSelection;
 
 /*
  * Only execute the following code if we are in IE (check for
@@ -42,13 +43,12 @@ if(document.attachEvent && document.selection) {
 
 	//[TODO] better exception support
 
-	(function () {	// sandbox
 
 	/*
 	  DOM functions
 	 */
 
-	var DOMUtils = {
+	DOMUtils = {
 		findChildPosition: function (node) {
 			for (var i = 0; node = node.previousSibling; i++)
 				continue;
@@ -89,14 +89,18 @@ if(document.attachEvent && document.selection) {
 	  functions to simplify text range manipulation in ie
 	 */
 
-	var TextRangeUtils = {
+	TextRangeUtils = {
 		convertToDOMRange: function (textRange, document) {
-			function adoptBoundary(domRange, textRange, bStart) {
+			var domRange,adoptBoundary;
+
+			adoptBoundary = function(domRange, textRange, bStart) {
 				// iterate backwards through parent element to find anchor location
 				var cursorNode = document.createElement('a'),
-					cursor = textRange.duplicate();
+					cursor = textRange.duplicate(),
+					parent;
+			
 				cursor.collapse(bStart);
-				var parent = cursor.parentElement();
+				parent = cursor.parentElement();
 				do {
 					parent.insertBefore(cursorNode, cursorNode.previousSibling);
 					cursor.moveToElementText(cursorNode);
@@ -112,10 +116,10 @@ if(document.attachEvent && document.selection) {
 					domRange[bStart ? 'setStartBefore' : 'setEndBefore'](cursorNode);
 				}
 				cursorNode.parentNode.removeChild(cursorNode);
-			}
+			};
 
 			// return a DOM range
-			var domRange = new DOMRange(document);
+			domRange = new DOMRange(document);
 			adoptBoundary(domRange, textRange, true);
 			adoptBoundary(domRange, textRange, false);
 			return domRange;
@@ -127,15 +131,18 @@ if(document.attachEvent && document.selection) {
 				var container = domRange[bStart ? 'startContainer' : 'endContainer'],
 					offset = domRange[bStart ? 'startOffset' : 'endOffset'], textOffset = 0,
 					anchorNode = DOMUtils.isDataNode(container) ? container : container.childNodes[offset],
-					anchorParent = DOMUtils.isDataNode(container) ? container.parentNode : container;
+					anchorParent = DOMUtils.isDataNode(container) ? container.parentNode : container,
+					cursorNode, cursor;
+				
 				// visible data nodes need a text offset
-				if (container.nodeType == 3 || container.nodeType == 4)
+				if (container.nodeType == 3 || container.nodeType == 4) {
 					textOffset = offset;
+				}
 
 				// create a cursor element node to position range (since we can't select text nodes)
-				var cursorNode = domRange._document.createElement('a');
+				cursorNode = domRange._document.createElement('a');
 				anchorParent.insertBefore(cursorNode, anchorNode);
-				var cursor = domRange._document.body.createTextRange();
+				cursor = domRange._document.body.createTextRange();
 				cursor.moveToElementText(cursorNode);
 				cursorNode.parentNode.removeChild(cursorNode);
 				// move range
@@ -154,16 +161,16 @@ if(document.attachEvent && document.selection) {
 	/*
 	  DOM Range
 	 */
-
-	function DOMRange(document) {
+	DOMRange = function(document) {
 		// save document parameter
 		this._document = document;
 
 		// initialize range
-	//[TODO] this should be located at document[0], document[0]
+		//[TODO] this should be located at document[0], document[0]
 		this.startContainer = this.endContainer = document.body;
 		this.endOffset = DOMUtils.getNodeLength(document.body);
-	}
+	};
+
 	DOMRange.START_TO_START = 0;
 	DOMRange.START_TO_END = 1;
 	DOMRange.END_TO_END = 2;
@@ -356,10 +363,13 @@ if(document.attachEvent && document.selection) {
 		},
 		createContextualFragment: function (tagString) {
 			// parse the tag string in a context node
-			var content = (DOMUtils.isDataNode(this.startContainer) ? this.startContainer.parentNode : this.startContainer).cloneNode(false);
+			var
+				content = (DOMUtils.isDataNode(this.startContainer) ? this.startContainer.parentNode : this.startContainer).cloneNode(false),
+				fragment;
+			
 			content.innerHTML = tagString;
 			// return a document fragment from the created node
-			for (var fragment = this._document.createDocumentFragment(); content.firstChild; )
+			for (fragment = this._document.createDocumentFragment(); content.firstChild; )
 				fragment.appendChild(content.firstChild);
 			return fragment;
 		}
@@ -368,22 +378,22 @@ if(document.attachEvent && document.selection) {
 	/*
 	  Range iterator
 	 */
-
-	function RangeIterator(range) {
+	RangeIterator = function(range) {
 		this.range = range;
-		if (range.collapsed)
+		if (range.collapsed) {
 			return;
+		}
 
-	//[TODO] ensure this works
+		//[TODO] ensure this works
 		// get anchors
 		var root = range.commonAncestorContainer;
 		this._next = range.startContainer == root && !DOMUtils.isDataNode(range.startContainer) ?
-		    range.startContainer.childNodes[range.startOffset] :
-		    DOMUtils.findClosestAncestor(root, range.startContainer);
+		range.startContainer.childNodes[range.startOffset] :
+		DOMUtils.findClosestAncestor(root, range.startContainer);
 		this._end = range.endContainer == root && !DOMUtils.isDataNode(range.endContainer) ?
-		    range.endContainer.childNodes[range.endOffset] :
-		    DOMUtils.findClosestAncestor(root, range.endContainer).nextSibling;
-	}
+		range.endContainer.childNodes[range.endOffset] :
+		DOMUtils.findClosestAncestor(root, range.endContainer).nextSibling;
+	};
 
 	RangeIterator.prototype = {
 		// public properties
@@ -413,11 +423,12 @@ if(document.attachEvent && document.selection) {
 			return current;
 		},
 		remove: function () {
+			var end, start;
 			// check for partial text nodes
 			if (DOMUtils.isDataNode(this._current) &&
 			    (this.range.startContainer == this._current || this.range.endContainer == this._current)) {
-				var start = this.range.startContainer == this._current ? this.range.startOffset : 0;
-				var end = this.range.endContainer == this._current ? this.range.endOffset : this._current.length;
+				start = this.range.startContainer == this._current ? this.range.startOffset : 0;
+				end = this.range.endContainer == this._current ? this.range.endOffset : this._current.length;
 				this._current.deleteData(start, end - start);
 			} else
 				this._current.parentNode.removeChild(this._current);
@@ -450,14 +461,14 @@ if(document.attachEvent && document.selection) {
 	// implementation and without redundant features. Complete selection manipulation is still
 	// possible with just removeAllRanges/addRange/getRangeAt.
 
-	function DOMSelection(document) {
+	DOMSelection = function (document) {
 		// save document parameter
 		this._document = document;
 
 		// add DOM selection handler
 		var selection = this;
 		document.attachEvent('onselectionchange', function () { selection._selectionChangeHandler(); });
-	}
+	};
 
 	DOMSelection.prototype = {
 		// public properties
@@ -524,14 +535,12 @@ if(document.attachEvent && document.selection) {
 		return new DOMRange(document);
 	};
 
-	var selection = new DOMSelection(document);
+	selection = new DOMSelection(document);
 		window.getSelection = function () {
 		return selection;
 	};
 
 	//[TODO] expose DOMRange/DOMSelection to window.?
-
-	})();
 }
 
 })(window);

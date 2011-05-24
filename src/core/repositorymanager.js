@@ -4,10 +4,12 @@
  * Licensed unter the terms of http://www.aloha-editor.com/license.html
  */
 (function(window, undefined) {
+	"use strict";
 	var
 		jQuery = window.alohaQuery, $ = jQuery,
 		GENTICS = window.GENTICS,
-		Aloha = window.Aloha;
+		Aloha = window.Aloha,
+		Class = window.Class;
 
 /**
  * Repository Manager
@@ -26,6 +28,7 @@ Aloha.RepositoryManager = Class.extend({
 	 * @hide
 	 */
 	init: function() {
+		var i, repository;
 
 		// get the repository settings
 		if (typeof Aloha.settings.repositories === 'undefined') {
@@ -33,8 +36,8 @@ Aloha.RepositoryManager = Class.extend({
 		}
 
 		// iterate through all registered repositories
-		for ( var i = 0; i < this.repositories.length; i++) {
-			var repository = this.repositories[i];
+		for ( i = 0; i < this.repositories.length; i++) {
+			repository = this.repositories[i];
 
 			if (typeof repository.settings === 'undefined') {
 				repository.settings = {};
@@ -125,16 +128,19 @@ Aloha.RepositoryManager = Class.extend({
 			allitems = [],
 			repositories = [],
 			timer,
+			i,id,
 			notImplFunc = function (items) {
+				var id, j;
+
 				// remove the repository from the callback stack
-				var id = that.openCallbacks.indexOf( this.repositoryId );
+				id = that.openCallbacks.indexOf( this.repositoryId );
 				if (id != -1) {
 					that.openCallbacks.splice(id, 1);
 				}
 
 				// mark with repositoryId if not done by repository plugin
 				if ( items.length && !items[0].repositoryId ) {
-					for ( var j = 0; j < items.length; j++) {
+					for ( j = 0; j < items.length; j++) {
 						items[j].repositoryId = this.repositoryId;
 					}
 				}
@@ -164,7 +170,7 @@ Aloha.RepositoryManager = Class.extend({
 		}
 
 		// iterate through all registered repositories
-		for ( var i = 0; i < repositories.length; i++) {
+		for ( i = 0; i < repositories.length; i++) {
 
 			this.openCallbacks.push(repositories[i].repositoryId);
 
@@ -178,7 +184,7 @@ Aloha.RepositoryManager = Class.extend({
 
 			// remove this repository from the callback stack
 			if ( notImplemented ) {
-				var id = that.openCallbacks.indexOf( repositories[i].repositoryId );
+				id = that.openCallbacks.indexOf( repositories[i].repositoryId );
 				if (id != -1) {
 					this.openCallbacks.splice(id, 1);
 					if ( i == repositories.length - 1 ) {
@@ -239,6 +245,8 @@ Aloha.RepositoryManager = Class.extend({
 			repositories = [],
 			i,
 			timer,
+			repos = [],
+			id,
 			notImplFunc = function (items) {
 				// remove the repository from the callback stack
 				var id = that.openChildrenCallbacks.indexOf( this.repositoryId );
@@ -258,7 +266,7 @@ Aloha.RepositoryManager = Class.extend({
 
 		// return repositories
 		if ( params.inFolderId == 'aloha' && this.repositories.length > 0 ) {
-			var repos = [];
+			repos = [];
 			for ( i = 0; i < this.repositories.length; i++) {
 				repos.push( new Aloha.Repository.Folder ({
 					id: this.repositories[i].repositoryId,
@@ -301,7 +309,7 @@ Aloha.RepositoryManager = Class.extend({
 
 			// remove this repository from the callback stack
 			if ( notImplemented ) {
-				var id = that.openChildrenCallbacks.indexOf( repositories[i].repositoryId );
+				id = that.openChildrenCallbacks.indexOf( repositories[i].repositoryId );
 				if (id != -1) {
 					this.openChildrenCallbacks.splice(id, 1);
 					if ( i == repositories.length - 1 ) {
