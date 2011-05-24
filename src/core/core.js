@@ -782,7 +782,7 @@
 		 */
 		loadCss: function(url,next){
 			// Prepare
-			var linkEl, appendEl = document.head;
+			var linkEl, appendEl = document.head || document.getElementsByTagName('head')[0];
 
 			// Append
 			linkEl = document.createElement('link');
