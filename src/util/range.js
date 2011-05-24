@@ -9,6 +9,7 @@
 	var
 		jQuery = window.jQuery, $ = jQuery,
 		GENTICS = window.GENTICS,
+		Aloha = window.Aloha,
 		Class = window.Class,
 		console = window.console;
 
@@ -224,7 +225,8 @@ GENTICS.Utils.RangeObject = Class.extend({
 	updateCommonAncestorContainer: function(commonAncestorContainer) {
 		// this will be needed either right now for finding the CAC or later for the crossing index
 		var parentsStartContainer = this.getStartContainerParents(),
-			parentsEndContainer = this.getEndContainerParents();
+			parentsEndContainer = this.getEndContainerParents(),
+			i;
 
 		// if no parameter was passed, calculate it
 		if (!commonAncestorContainer) {
@@ -234,7 +236,7 @@ GENTICS.Utils.RangeObject = Class.extend({
 				return false;
 			}
 
-			for (var i = 0; i < parentsStartContainer.length; i++) {
+			for (i = 0; i < parentsStartContainer.length; i++) {
 				if (parentsEndContainer.index( parentsStartContainer[ i ] ) != -1) {
 					this.commonAncestorContainer = parentsStartContainer[ i ];
 					break;
@@ -260,10 +262,10 @@ GENTICS.Utils.RangeObject = Class.extend({
 		// create a text range
 		var
 			ieRange = document.body.createTextRange(),
-			tmpRange, right, parent;
+			tmpRange, right, parent, left;
 
 		// search to the left for the next element
-			left = this.searchElementToLeft(container, offset);
+		left = this.searchElementToLeft(container, offset);
 		if (left.element) {
 			// found an element, set the start to the end of that element
 			tmpRange = document.body.createTextRange();
@@ -319,6 +321,8 @@ GENTICS.Utils.RangeObject = Class.extend({
 	 * @method
 	 */
 	select: function() {
+		var ieRange, endRange, startRange, range;
+
 		if ( jQuery.browser.msie ) {
 			// first the IE version of this method
 			if (Aloha.Log.isDebugEnabled()) {
@@ -338,10 +342,10 @@ GENTICS.Utils.RangeObject = Class.extend({
 			}
 
 			// create a text range
-			var ieRange = document.body.createTextRange(),
+			ieRange = document.body.createTextRange();
 
 			// get the start as collapsed range
-				startRange = this.getCollapsedIERange(this.startContainer, this.startOffset);
+			startRange = this.getCollapsedIERange(this.startContainer, this.startOffset);
 			ieRange.setEndPoint('StartToStart', startRange);
 
 			if (this.isCollapsed()) {
@@ -349,7 +353,7 @@ GENTICS.Utils.RangeObject = Class.extend({
 				ieRange.collapse();
 			} else {
 				// get the end as collapsed range
-				var endRange = this.getCollapsedIERange(this.endContainer, this.endOffset);
+				endRange = this.getCollapsedIERange(this.endContainer, this.endOffset);
 				ieRange.setEndPoint('EndToStart', endRange);
 			}
 
@@ -363,7 +367,7 @@ GENTICS.Utils.RangeObject = Class.extend({
 			}
 
 			// create a range
-			var range = document.createRange();
+			range = document.createRange();
 
 			// set start and endContainer
 			range.setStart(this.startContainer,this.startOffset);
@@ -463,7 +467,10 @@ GENTICS.Utils.RangeObject = Class.extend({
 	 */
 	initializeFromUserSelection: function(event) {
 		// get Browser selection via IERange standardized window.getSelection()
-		var selection = window.getSelection();
+		var
+			selection = window.getSelection(),
+			browserRange;
+		
 		if (!selection) {
 			return false;
 		}
@@ -474,7 +481,7 @@ GENTICS.Utils.RangeObject = Class.extend({
 		}
 
 		// getBrowserRange
-		var browserRange = selection.getRangeAt(0);
+		browserRange = selection.getRangeAt(0);
 		if (!browserRange) {
 			return false;
 		}
@@ -501,7 +508,9 @@ GENTICS.Utils.RangeObject = Class.extend({
 		var
 			adjacentTextNode,
 			textNode,
-			checkedElement;
+			checkedElement,
+			parentNode,
+			offset;
 
 		this.clearCaches();
 		if (this.isCollapsed()) {
@@ -608,8 +617,8 @@ GENTICS.Utils.RangeObject = Class.extend({
 					this.endOffset = this.endContainer.data.length;
 				} else if (this.endContainer.previousSibling && this.endContainer.previousSibling.nodeType === 1 && this.endContainer.parentNode) {
 					// found an element node to the left -> move in between
-					var parentNode = this.endContainer.parentNode;
-					for (var offset = 0; offset < parentNode.childNodes.length; ++offset) {
+					parentNode = this.endContainer.parentNode;
+					for (offset = 0; offset < parentNode.childNodes.length; ++offset) {
 						if (parentNode.childNodes[offset] == this.endContainer) {
 							this.endOffset = offset;
 							break;
@@ -718,7 +727,11 @@ GENTICS.Utils.RangeObject = Class.extend({
 			var type = 'none',
 				startOffset = false,
 				endOffset = false,
-				collapsedFound = false;
+				collapsedFound = false,
+				noneFound = false,
+				partialFound = false,
+				fullFound = false,
+				i;
 
 			// check for collapsed selections between nodes
 			if (that.isCollapsed() && currentObject === that.startContainer && that.startOffset === index) {
@@ -812,10 +825,7 @@ GENTICS.Utils.RangeObject = Class.extend({
 
 			// check whether a selection was found within the children
 			if (currentElements[childCount].children.length > 0) {
-				var noneFound = false,
-					partialFound = false,
-					fullFound = false;
-				for (var i = 0; i < currentElements[childCount].children.length; ++i) {
+				for ( i = 0; i < currentElements[childCount].children.length; ++i) {
 					switch(currentElements[childCount].children[i].type) {
 					case 'none':
 						noneFound = true;

@@ -12,6 +12,8 @@
 
 // Start Closure
 (function(window, undefined) {
+	"use strict";
+	
 	// Prepare
 	var
 		jQuery = window.alohaQuery, $ = jQuery,
