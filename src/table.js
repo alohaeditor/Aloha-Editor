@@ -80,7 +80,7 @@ Aloha.TablePlugin.init = function() {
 	var that = this;
 
 	// subscribe for the 'editableActivated' event to activate all tables in the editable
-	Aloha.EventRegistry.subscribe(Aloha, 'editableCreated', function(event, editable) {
+	Aloha.bind('aloha-editable-created', function(event, editable) {
 
 		// add a mousedown event to all created editables to check if focus leaves a table
 		editable.obj.bind('mousedown', function(jqEvent) {
@@ -108,7 +108,7 @@ Aloha.TablePlugin.init = function() {
 	// initialize the table buttons
 	this.initTableButtons();
 
-	Aloha.EventRegistry.subscribe(Aloha, 'selectionChanged', function(event, rangeObject) {
+	Aloha.bind('aloha-selection-changed', function(event, rangeObject) {
 
 		if (Aloha.activeEditable) {
 			// get Plugin configuration
@@ -143,7 +143,7 @@ Aloha.TablePlugin.init = function() {
 	});
 
 	// subscribe for the 'editableActivated' event to activate all tables in the editable
-	Aloha.EventRegistry.subscribe(Aloha, 'editableActivated', function(event, props) {
+	Aloha.bind('aloha-editable-activated', function(event, props) {
 		props.editable.obj.find('table').each(function() {
 			// shortcut for TableRegistry
 			var tr = Aloha.TablePlugin.TableRegistry;
@@ -175,7 +175,7 @@ Aloha.TablePlugin.init = function() {
 	});
 
 	// subscribe for the 'editableDeactivated' event to deactivate all tables in the editable
-	Aloha.EventRegistry.subscribe(Aloha, 'editableDeactivated', function(event, properties) {
+	Aloha.bind('aloha-editable-deactivated', function(event, properties) {
 		Aloha.TablePlugin.setFocusedTable(undefined);
 		Aloha.TableHelper.unselectCells();
 		// shortcut for TableRegistry
