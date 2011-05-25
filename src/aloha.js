@@ -71,6 +71,7 @@ window.Aloha_base = window.Aloha_base || false;
 			Alternatively we could introduce much better sniffing
 			/WebKit/.test(navigator.userAgent), */
 		scriptEls = [],
+		timeout = false,
 		// Async
 		completed = 0,
 		total = includes.length,
@@ -80,7 +81,19 @@ window.Aloha_base = window.Aloha_base || false;
 				$('body').addClass('alohacoreloaded').trigger('alohacoreloaded');
 			});
 		},
-		scriptLoaded = function(){
+		scriptLoaded = function(event){
+			// Check
+			if ( typeof this.readyState !== 'undefined' && this.readyState !== 'complete' ) {
+				return;
+			}
+
+			// Clean
+			if ( timeout ) {
+				window.clearTimeout(timeout);
+				timeout = false;
+			}
+
+			// Handle
 			if ( exited ) {
 				throw new Error('Too late, Aloha Editor already loaded');
 			}
@@ -91,6 +104,7 @@ window.Aloha_base = window.Aloha_base || false;
 					next();
 				}
 				else if ( !defer ) {
+					timeout = window.setTimeout(scriptLoaded,1000);
 					appendEl.appendChild(scriptEls[completed]);
 				}
 			}
@@ -114,6 +128,7 @@ window.Aloha_base = window.Aloha_base || false;
 
 		// Add
 		if ( defer ) {
+			timeout = window.setTimeout(scriptLoaded,1000);
 			appendEl.appendChild(scriptEl);
 		}
 		else {
@@ -123,6 +138,7 @@ window.Aloha_base = window.Aloha_base || false;
 
 	// No Defer Support
 	if ( !defer ) {
+		timeout = window.setTimeout(scriptLoaded,1000);
 		appendEl.appendChild(scriptEls[0]);
 	}
 

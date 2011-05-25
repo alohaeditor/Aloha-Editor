@@ -858,8 +858,8 @@
 
 					// Include
 					total += 1;
-					Aloha.loadJs(pluginJsUrl,complete);
 					Aloha.loadCss(pluginCssUrl);
+					Aloha.loadJs(pluginJsUrl,complete);
 
 					// Done
 					return true;
