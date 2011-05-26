@@ -80,6 +80,13 @@
 		OSName: 'Unknown',
 
 		/**
+		 * Which stage is the aloha init process at?
+		 * @property
+		 * @type string
+		 */
+		stage: 'loadingCore',
+
+		/**
 		 * Initialise the Initialisation Process
 		 */
 		init: function () {
@@ -99,11 +106,17 @@
 					});
 
 					// Load & Initialise
+					Aloha.stage = 'loadPlugins';
 					Aloha.loadPlugins(function(){
+						Aloha.stage = 'initAloha';
 						Aloha.initAloha(function(){
+							Aloha.stage = 'initI18n';
 							Aloha.initI18n(function(){
+								Aloha.stage = 'initPlugins';
 								Aloha.initPlugins(function(){
+									Aloha.stage = 'initGui';
 									Aloha.initGui(function(){
+										Aloha.stage = 'aloha';
 										Aloha.trigger('aloha');
 									});
 								});
@@ -132,6 +145,7 @@
 				total = 0,
 				exited = false,
 				complete = function(){
+					if ( console && console.log ) { console.log('loaded plugin '+(completed+1)+' of '+total); }
 					if ( exited ) {
 						throw new Error('Something went wrong with loading plugins');
 					}
@@ -786,15 +800,18 @@
 					this.timeout = false;
 				}
 
+				// Log
+				if ( console && console.log ) { console.log('loaded script '+url); }
+
 				// Forward
-				if ( exited ) {
-					throw new Error('Too late, script has already loaded');
-				}
-				else {
+				if ( !exited ) {
 					exited = true;
 					next();
 				}
 			};
+
+			// Log
+			if ( console && console.log ) { console.log('loading script '+url); }
 
 			// Append
 			scriptEl = document.createElement('script');
@@ -816,7 +833,7 @@
 		 * @param {String} pluginName
 		 * @return
 		 */
-		loadCss: function(url,next){
+		loadCss: function(url){
 			// Prepare
 			var linkEl, appendEl = document.head || document.getElementsByTagName('head')[0];
 
@@ -825,9 +842,6 @@
 			linkEl.type = 'text/css';
 			linkEl.rel = 'stylesheet';
 			linkEl.href = url;
-			linkEl.onreadystatechange = next;
-			linkEl.onload = next;
-			linkEl.onerror = next;
 			appendEl.appendChild(linkEl);
 
 			// Chain
@@ -864,22 +878,28 @@
 
 			// Check if plugin is already loaded
 			if ( typeof window.Aloha_loaded_plugins[pluginName] !== 'undefined' ) {
+				if ( console && console.log ) { console.log(pluginName+' already loaded'); }
 				next();
 				return;
 			}
 			window.Aloha_loaded_plugins[pluginName] = true;
 
+			// Log
+			if ( console && console.log ) { console.log(pluginName+' loading'); }
+			
 			// Prepare Actions
 			actions = {
 				/**
 				 * Load a Plugin by the Default Structure
 				 */
 				loadDefault: function(){
+					if ( console && console.log ) { console.log(pluginName+' loading default package'); }
+					
 					// Prepare
 					var
 						pluginJsUrl = pluginUrl+'/src/'+pluginName+'.js',
 						pluginCssUrl = pluginUrl+'/src/'+pluginName+'.css';
-
+					
 					// Include
 					total += 1;
 					Aloha.loadCss(pluginCssUrl);
@@ -893,6 +913,8 @@
 				 * Load a Plugin by it's specified Package
 				 */
 				loadPackage: function(data){
+					if ( console && console.log ) { console.log(pluginName+' loading custom package'); }
+
 					// Cycle through CSS
 					$.each(data.css||[], function(i,value){
 						Aloha.loadCss(pluginUrl+'/'+value);

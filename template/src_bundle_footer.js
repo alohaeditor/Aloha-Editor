@@ -37,12 +37,9 @@
 				window.clearTimeout(this.timeout);
 				this.timeout = false;
 			}
-
+			
 			// Handle
-			if ( exited ) {
-				throw new Error('Too late, Aloha Editor already loaded');
-			}
-			else {
+			if ( !exited ) {
 				completed++;
 				if ( completed === total ) {
 					exited = true;
