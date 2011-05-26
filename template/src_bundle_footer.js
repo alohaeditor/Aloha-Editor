@@ -14,7 +14,6 @@
 			Alternatively we could introduce much better sniffing
 			/WebKit/.test(navigator.userAgent), */
 		scriptEls = [],
-		timeout = false,
 		// Async
 		completed = 0,
 		total = includes.length,
@@ -25,15 +24,18 @@
 			});
 		},
 		scriptLoaded = function(event){
+			// Prepare
+			var nextScriptEl;
+
 			// Check
 			if ( typeof this.readyState !== 'undefined' && this.readyState !== 'complete' ) {
 				return;
 			}
 
 			// Clean
-			if ( timeout ) {
-				window.clearTimeout(timeout);
-				timeout = false;
+			if ( this.timeout ) {
+				window.clearTimeout(this.timeout);
+				this.timeout = false;
 			}
 
 			// Handle
@@ -47,8 +49,9 @@
 					next();
 				}
 				else if ( !defer ) {
-					timeout = window.setTimeout(scriptLoaded,1000);
-					appendEl.appendChild(scriptEls[completed]);
+					nextScriptEl = scriptEls[completed];
+					nextScriptEl.timeout = window.setTimeout(scriptLoaded,1000);
+					appendEl.appendChild(nextScriptEl);
 				}
 			}
 		},
@@ -71,7 +74,7 @@
 
 		// Add
 		if ( defer ) {
-			timeout = window.setTimeout(scriptLoaded,1000);
+			scriptEl.timeout = window.setTimeout(scriptLoaded,1000);
 			appendEl.appendChild(scriptEl);
 		}
 		else {
@@ -81,7 +84,7 @@
 
 	// No Defer Support
 	if ( !defer ) {
-		timeout = window.setTimeout(scriptLoaded,1000);
+		scriptEls[0].timeout = window.setTimeout(scriptLoaded,1000);
 		appendEl.appendChild(scriptEls[0]);
 	}
 

@@ -771,15 +771,39 @@
 		 */
 		loadJs: function(url,next){
 			// Prepare
-			var scriptEl, appendEl = document.head || document.getElementsByTagName('head')[0];
+			var scriptEl, appendEl = document.head || document.getElementsByTagName('head')[0], loaded, exited = false;
+
+			// Loaded
+			loaded = function(event) {
+				// Check
+				if ( typeof this.readyState !== 'undefined' && this.readyState !== 'complete' ) {
+					return;
+				}
+
+				// Clean
+				if ( this.timeout ) {
+					window.clearTimeout(this.timeout);
+					this.timeout = false;
+				}
+
+				// Forward
+				if ( exited ) {
+					throw new Error('Too late, script has already loaded');
+				}
+				else {
+					exited = true;
+					next();
+				}
+			};
 
 			// Append
 			scriptEl = document.createElement('script');
 			scriptEl.src = url;
 			scriptEl.setAttribute('defer','defer');
-			scriptEl.onreadystatechange = next;
-			scriptEl.onload = next;
-			scriptEl.onerror = next;
+			scriptEl.onreadystatechange = loaded;
+			scriptEl.onload = loaded;
+			scriptEl.onerror = loaded;
+			scriptEl.timeout = window.setTimeout(loaded,1000);
 			appendEl.appendChild(scriptEl);
 
 			// Chain
