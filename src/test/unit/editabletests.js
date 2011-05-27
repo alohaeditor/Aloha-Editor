@@ -107,9 +107,9 @@ $(document).ready(function() {
 			start();
 		});
 		this.timeout = setTimeout(function() {
-			ok(false, 'Aloha was not initialized within 5 seconds');
+			ok(false, 'Aloha was not initialized within 10 seconds');
 			start();
-		}, 5000);
+		}, 10000);
 	});
 
 	$('body').bind('aloha', function() {
