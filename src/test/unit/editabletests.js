@@ -93,8 +93,27 @@ function doEnterTest(editable, container, offset, shift, twice, reference) {
 	
 }
 
-$(function() {
+$(document).ready(function() {
+	// Test whether Aloha is properly initialized
+	/*
+	  Note: this test is currently necessary, because it will catch the initial 'aloha' Event.
+	  In the event handler of this event, due to a Bug Aloha will NOT YET be initialized, so if any test would fail when run then.
+	 */
+	asyncTest('Aloha Startup Test', function() {
+		var that = this;
+		$('body').bind('aloha',function() {
+			ok(true, 'Aloha Event was fired');
+			clearTimeout(that.timeout);
+			start();
+		});
+		this.timeout = setTimeout(function() {
+			ok(false, 'Aloha was not initialized within 5 seconds');
+			start();
+		}, 5000);
+	});
+
 	$('body').bind('aloha', function() {
+		
 		module('Plaintext Enter Handling', {
 			setup: function() {
 				// get the editable area and the reference
