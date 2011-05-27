@@ -97,10 +97,16 @@
 				} else {
 					i18nUrl = Aloha.settings.base + '/' + Aloha.settings.pluginDir + '/' + plugin.basePath + '/i18n/' + actualLanguage + '.json';
 					Aloha.loadI18nFile(i18nUrl,plugin,complete);
-				}
+  				}
+			}
+
+			// Make sure the initialization succeeds when no plugin is loaded
+			if (total == 0) {
+				exited = true;
+				next();
 			}
 		},
-		
+
 		plugins: [],
 
 		/**
