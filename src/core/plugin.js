@@ -19,6 +19,8 @@
 	 * @singleton
 	 */
 	Aloha.PluginRegistry = Class.extend({
+		plugins: {},
+
 		/**
 		 * Initialize all registered plugins
 		 * @return void
@@ -27,22 +29,91 @@
 		init: function(next) {
 			// Prepare
 			var
-				me = this;
+				me = this,
+				globalSettings = Aloha.settings.plugins||{},
+				userPluginIds = Aloha.getUserPlugins(),
+				i,plugin,pluginId;
 			
-			// Load i18n files
-			this.loadI18n(function(){
-				// Initialise Plugins
-				for ( var i = 0; i < me.plugins.length; i++) {
-					if (me.plugins[i].settings.enabled) {
-						me.plugins[i].init();
+			// Global to local settings
+			for ( pluginId in globalSettings ) {
+				if ( globalSettings.hasOwnProperty(pluginId) ) {
+					plugin = this.plugins[pluginId]||false;
+					if ( plugin ) {
+						plugin.settings = globalSettings[pluginId]||{};
 					}
 				}
-				
-				// Forward
-				next();
+			}
+
+			// Default: All loaded plugins are enabled
+			if ( !userPluginIds.length ) {
+				for ( pluginId in this.plugins ) {
+					if ( this.plugins.hasOwnProperty(pluginId) ) {
+						userPluginIds.push(pluginId);
+					}
+				}
+			}
+
+			// Enable Plugins specified by User
+			for ( i=0; i < userPluginIds.length; ++i ) {
+				pluginId = userPluginIds[i];
+				plugin = this.plugins[pluginId]||false;
+				if ( plugin ) {
+					plugin.settings = plugin.settings || {};
+					if ( typeof plugin.settings.enabled === 'undefined' ) {
+						plugin.settings.enabled = true;
+					}
+				}
+			}
+			
+			// Load locales for plugins
+			this.loadI18n(function(){
+				// Initialise plugins
+				this.eachEnabledPluginSync(
+					// Each
+					function(plugin){
+						plugin.init();
+					},
+					// All
+					function(){
+						// Forward
+						next();
+					}
+				);
 			});
 		},
 
+		/**
+		 * Cycle through all the enabled plugins
+		 */
+		eachEnabledPluginSync: function(callback,next){
+			this.eachPluginSync(
+				// Each
+				function(plugin){
+					if ( plugin.settings.enabled ) {
+						callback(plugin);
+					}
+				},
+				// All
+				function(){
+					// Forward
+					next();
+				}
+			);
+		},
+
+		/**
+		 * Cycle through all the loaded plugins
+		 */
+		eachPluginSync: function(callback,next){
+			var id, plugin;
+			for ( id in this.plugins ) {
+				if ( this.plugins.hasOwnProperty(id) ) {
+					plugin = this.plugins[id];
+					callback(plugin);
+				}
+			}
+			next();
+		},
 
 		/**
 		 * Load the i18n files for all plugins
@@ -50,14 +121,9 @@
 		loadI18n: function(next) {
 			// Prepare
 			var
-				me = this,
-				i18nUrl,
-				actualLanguage,
-				plugin,
-				i,n,
 				// Async
 				completed = 0,
-				total = this.plugins.length,
+				total = 0,
 				exited = false,
 				complete = function(){
 					if ( exited ) {
@@ -72,46 +138,47 @@
 					}
 				};
 			
-			// Ensure
-			if (typeof Aloha.settings.plugins === 'undefined') {
-				Aloha.settings.plugins = {};
-			}
-
 			// Cycle
-			for ( i=0,n=total; i<n; i++) {
-				plugin = this.plugins[i];
-
-				// Ensure
-				plugin.settings = Aloha.settings.plugins[plugin.prefix] || {};
-				if (typeof plugin.settings.enabled === 'undefined') {
-					plugin.settings.enabled = true;
+			this.eachEnabledPluginSync(
+				// Each
+				function(plugin){
+					// Ammend total
+					++total;
+					
+					// Determine plugin language
+					plugin.language = plugin.languages ? Aloha.getLanguage(Aloha.settings.i18n.current, plugin.languages) : null;
+					if ( !plugin.language ) {
+						// Error
+						Aloha.Log.warn(this, 'Could not determine actual language, no languages available for plugin ' + plugin);
+						complete();
+					}
+					else {
+						// Success
+						plugin.languageUrl = Aloha.settings.base + '/' + Aloha.settings.pluginDir + '/' + plugin.basePath + '/i18n/' + actualLanguage + '.json';
+						Aloha.loadI18nFile(plugin.languageUrl,plugin,complete);
+					}
+				},
+				// All
+				function(){
+					// Do nothing
+					// as we are asyncing it
 				}
-
-				// initialize i18n for the plugin
-				// determine the actual language
-				actualLanguage = plugin.languages ? Aloha.getLanguage(Aloha.settings.i18n.current, plugin.languages) : null;
-				if (!actualLanguage) {
-					// The plugin that have no dict file matching
-					Aloha.Log.warn(this, 'Could not determine actual language, no languages available for plugin ' + plugin);
-					complete();
-				} else {
-					i18nUrl = Aloha.settings.base + '/' + Aloha.settings.pluginDir + '/' + plugin.basePath + '/i18n/' + actualLanguage + '.json';
-					Aloha.loadI18nFile(i18nUrl,plugin,complete);
-				}
-			}
+			);
 		},
 		
-		plugins: [],
-
 		/**
 		 * Register a plugin
 		 * @param {Plugin} plugin plugin to register
 		 */
 		register: function(plugin) {
 			if (plugin instanceof Aloha.Plugin) {
-				
-				// TODO check for duplicate plugin prefixes
-				this.plugins.push(plugin);
+				if ( (plugin.id||false) === false ) {
+					throw new Error('Plugin does not have an id');
+				}
+				if ( typeof this.plugins[plugin.id] !== 'undefined' ) {
+					throw new Error('Already registered this plugin!');
+				}
+				this.plugins[plugin.id] = plugin;
 			}
 		},
 
@@ -158,6 +225,16 @@
 	 * @param {String} basePath (optional) basepath of the plugin (relative to 'plugins' folder). If not given, the basePath pluginPrefix is taken
 	 */
 	Aloha.Plugin = Class.extend({
+		id: null,
+		prefix: null,
+		basePath: null,
+
+		/**
+		 * contains the plugin's settings object
+		 * @cfg {Object} settings the plugins settings stored in an object
+		 */
+		settings: null,
+
 		_constructor: function(pluginPrefix, basePath) {
 			/**
 			 * Settings of the plugin
@@ -165,17 +242,11 @@
 			if (typeof pluginPrefix !== "string") {
 				Aloha.Log.warn(this, 'Cannot initialise unnamed plugin, skipping');
 			} else {
-				this.prefix = pluginPrefix;
+				this.id = this.prefix = pluginPrefix;
 				this.basePath = basePath ? basePath : pluginPrefix;
 				Aloha.PluginRegistry.register(this);
 			}
 		},
-
-		/**
-		 * contains the plugin's settings object
-		 * @cfg {Object} settings the plugins settings stored in an object
-		 */
-		settings: null,
 
 		/**
 		 * Init method of the plugin. Called from Aloha Core to initialize this plugin

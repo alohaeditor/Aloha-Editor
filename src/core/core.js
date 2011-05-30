@@ -125,8 +125,8 @@
 		loadPlugins: function(next){
 			// Prepare
 			var
-				$alohaScriptInclude = $('#aloha-script-include'),
-				plugins,
+				// Plugins
+				plugins = this.getUserPlugins(),
 				// Async
 				completed = 0,
 				total = 0,
@@ -143,38 +143,44 @@
 							next();
 						}
 					}
-				};
-			
-			// Load
-			if ( $alohaScriptInclude ) {
-				// Determine Plugins
-				plugins = $alohaScriptInclude.data('plugins');
-				if ( typeof plugins === 'string' ) {
-					plugins = plugins.split(',');
-				}
+				}; 
 
-				// Ensure
-				plugins = plugins||[];
+			// Handle
+			if ( plugins.length ) {
+				// Prepare
+				total += plugins.length;
 
-				// Handle
-				if ( plugins.length ) {
-					// Prepare
-					total += plugins.length;
-
-					// Load in Plugins
-					$.each(plugins,function(i,pluginName){
-						Aloha.loadPlugin(pluginName,complete);
-					});
-				}
-				else {
-					// Forward
-					next();
-				}
+				// Load in Plugins
+				$.each(plugins,function(i,pluginName){
+					Aloha.loadPlugin(pluginName,complete);
+				});
 			}
 			else {
 				// Forward
 				next();
 			}
+		},
+
+		/**
+		 * Fetch user plugins
+		 */
+		getUserPlugins: function(){
+			// Prepare
+			var
+				$alohaScriptInclude = $('#aloha-script-include'),
+				plugins = [];
+			
+			// Determine Plugins
+			plugins = $alohaScriptInclude.data('plugins');
+			if ( typeof plugins === 'string' ) {
+				plugins = plugins.split(',');
+			}
+
+			// Ensure
+			plugins = plugins||[];
+		
+			// Return
+			return plugins;
 		},
 
 		/**
