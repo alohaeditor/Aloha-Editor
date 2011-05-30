@@ -16,7 +16,7 @@ core/editable.js
 core/ribbon.js
 core/event.js
 core/floatingmenu.js
-core/ierange-m2.js
+core/rangy-core.js
 core/jquery.aloha.js
 core/log.js
 core/markup.js

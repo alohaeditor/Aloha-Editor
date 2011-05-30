@@ -367,7 +367,7 @@ GENTICS.Utils.RangeObject.prototype.getCollapsedIERange = function(container, of
  * otherwise in a text selection.
  * @method
  */
-GENTICS.Utils.RangeObject.prototype.select = document.createRange === undefined ? function() { // first the IE version of this method
+GENTICS.Utils.RangeObject.prototype.select = document.createRange === undefined && false ? function() { // first the IE version of this method
 	if (GENTICS.Aloha.Log.isDebugEnabled()) {
 		GENTICS.Aloha.Log.debug(this, 'Set selection to current range (IE version)');
 	}
@@ -406,15 +406,15 @@ GENTICS.Utils.RangeObject.prototype.select = document.createRange === undefined 
 	}
 
 	// create a range
-	var range = document.createRange();
+	var range = rangy.createRange();
 	
 	// set start and endContainer
 	range.setStart(this.startContainer,this.startOffset);	
 	range.setEnd(this.endContainer, this.endOffset);
 	
 	// update the selection
-	window.getSelection().removeAllRanges();
-	window.getSelection().addRange(range);
+	var sel = rangy.getSelection();
+	sel.setSingleRange(range);
 };
 
 /**
@@ -503,7 +503,7 @@ GENTICS.Utils.RangeObject.prototype.update = function(event) {
  */
 GENTICS.Utils.RangeObject.prototype.initializeFromUserSelection = function(event) {
 	// get Browser selection via IERange standardized window.getSelection()
-	var selection = window.getSelection();
+	var selection = rangy.getSelection();
 	if (!selection) {
 		return false;
 	}

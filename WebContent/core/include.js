@@ -50,7 +50,6 @@ document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'core/e
 document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'core/ribbon.js"></script>');
 document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'core/event.js"></script>');
 document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'core/floatingmenu.js"></script>');
-document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'core/ierange-m2.js"></script>');
 document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'core/jquery.aloha.js"></script>');
 document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'core/log.js"></script>');
 document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'core/markup.js"></script>');
@@ -60,7 +59,8 @@ document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'core/s
 document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'core/sidebar.js"></script>');
 document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'core/repositorymanager.js"></script>');
 document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'core/repository.js"></script>');
-document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'core/repositoryobjects.js"></script>');	
+document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'core/repositoryobjects.js"></script>');
+document.write('<script type="text/javascript" src="'+GENTICS_Aloha_base+'core/rangy-core.js"></script>');	
 	/* Generate xHTML valid js include Elements */
 	function jsElement( link ) {
 		var jslink = document.createElement("script");
