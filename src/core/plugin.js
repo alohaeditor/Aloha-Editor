@@ -68,7 +68,7 @@
 			// Load locales for plugins
 			this.loadI18n(function(){
 				// Initialise plugins
-				this.eachEnabledPluginSync(
+				me.eachEnabledPluginSync(
 					// Each
 					function(plugin){
 						plugin.init();
@@ -154,7 +154,7 @@
 					}
 					else {
 						// Success
-						plugin.languageUrl = Aloha.settings.base + '/' + Aloha.settings.pluginDir + '/' + plugin.basePath + '/i18n/' + actualLanguage + '.json';
+						plugin.languageUrl = Aloha.settings.base + '/' + Aloha.settings.pluginDir + '/' + plugin.basePath + '/i18n/' + plugin.language + '.json';
 						Aloha.loadI18nFile(plugin.languageUrl,plugin,complete);
 					}
 				},
