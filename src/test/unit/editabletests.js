@@ -4,7 +4,6 @@
  * Licensed unter the terms of http://www.aloha-editor.com/license.html
  */
 
-
 function createCollapsedRange(container, offset) {
     	var range = new GENTICS.Utils.RangeObject({
 		    startContainer : container,
