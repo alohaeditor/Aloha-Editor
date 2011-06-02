@@ -29,7 +29,7 @@
 				for ( i = 0; i < Aloha.editables.length; i++) {
 					editable = Aloha.editables[i];
 					if (!Aloha.activeEditable && !editable.isDisabled()) {
-						editable.obj.addClass('GENTICS_editable_highlight');
+						editable.obj.addClass('aloha-editable-highlight');
 					}
 				}
 			});
@@ -43,7 +43,7 @@
 			Aloha.bind(
 					"aloha-editable-activated",
 					function (jEvent, aEvent) {
-						aEvent.editable.obj.addClass('GENTICS_editable_active');
+						aEvent.editable.obj.addClass('aloha-editable-active');
 						that.fade();
 					}
 			);
@@ -51,7 +51,7 @@
 			// remove active Editable ccs class
 			Aloha.bind("aloha-editable-deactivated",
 					function (jEvent, aEvent) {
-						aEvent.editable.obj.removeClass('GENTICS_editable_active');
+						aEvent.editable.obj.removeClass('aloha-editable-active');
 					}
 			);
 	
@@ -67,8 +67,8 @@
 				};
 			for ( i = 0; i < Aloha.editables.length; i++) {
 				editable = Aloha.editables[i].obj;
-				if (editable.hasClass('GENTICS_editable_highlight')) {
-					editable.removeClass('GENTICS_editable_highlight')
+				if (editable.hasClass('aloha-editable-highlight')) {
+					editable.removeClass('aloha-editable-highlight')
 						.css('outline', '5px solid #FFE767')
 						.animate({
 							outlineWidth : '0px'

@@ -5,10 +5,10 @@
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
 
-.GENTICS_editable_highlight {
+.aloha-editable-highlight {
 	outline: #FFE767 solid 5px !important;
 }
 
-.GENTICS_editable_active, .GENTICS_editable_active[contenteditable=true]:focus {
+.aloha-editable-active, .aloha-editable-active[contenteditable=true]:focus {
 	outline: #B7D6FA solid 5px !important;
 }
