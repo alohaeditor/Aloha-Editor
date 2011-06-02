@@ -5,11 +5,11 @@
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
 
-.GENTICS_link_pointer {
+.aloha-link-pointer {
 	cursor: pointer;
 }
 
-.GENTICS_link_text {
+.aloha-link-text {
 	cursor: text;
 }
 

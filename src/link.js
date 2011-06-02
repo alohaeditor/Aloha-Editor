@@ -207,7 +207,7 @@
 	
 			this.removeLinkButton = new Aloha.ui.Button({
 				// TODO use another icon here
-				'iconClass' : 'aloha-button aloha-button-a_remove',
+				'iconClass' : 'aloha-button aloha-button-a-remove',
 				'size' : 'small',
 				'onclick' : function () { that.removeLink(); },
 				'tooltip' : this.i18n('button.removelink.tooltip')
@@ -336,11 +336,11 @@
 	
 			if ( this.metaKey && this.mouseOverLink ) {
 				Aloha.Log.debug(Aloha.Link, 'set pointer');
-				jQuery(this.mouseOverLink).removeClass('GENTICS_link_text');
-				jQuery(this.mouseOverLink).addClass('GENTICS_link_pointer');
+				jQuery(this.mouseOverLink).removeClass('aloha-link-text');
+				jQuery(this.mouseOverLink).addClass('aloha-link-pointer');
 			} else {
-				jQuery(this.mouseOverLink).removeClass('GENTICS_link_pointer');
-				jQuery(this.mouseOverLink).addClass('GENTICS_link_text');
+				jQuery(this.mouseOverLink).removeClass('aloha-link-pointer');
+				jQuery(this.mouseOverLink).addClass('aloha-link-text');
 			}
 		},
 		/**
@@ -458,8 +458,8 @@
 		makeClean: function (obj) {
 			// find all link tags
 			obj.find('a').each(function() {
-				jQuery(this).removeClass('GENTICS_link_pointer');
-				jQuery(this).removeClass('GENTICS_link_text');
+				jQuery(this).removeClass('aloha-link-pointer');
+				jQuery(this).removeClass('aloha-link-text');
 			});
 		}
 	}))();
