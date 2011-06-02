@@ -812,7 +812,7 @@
 				// Forward
 				if ( !exited ) {
 					exited = true;
-					next();
+					if ( next ) { next(); }
 				}
 			};
 

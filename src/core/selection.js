@@ -1,5 +1,4 @@
-/*!
- * This file is part of Aloha Editor
+/*! * This file is part of Aloha Editor
  * Author & Copyright (c) 2010 Gentics Software GmbH, aloha@gentics.com
  * Licensed unter the terms of http://www.aloha-editor.com/license.html
  */
@@ -921,13 +920,13 @@
 		 */
 		getMarkupType: function(markupObject) {
 			var nn = jQuery(markupObject)[0].nodeName.toLowerCase();
-			if (markupObject.outerHTML) {
-				Aloha.Log.debug(this, 'Node name detected: ' + nn + ' for: ' + markupObject.outerHTML());
+			if (markupObject.outerHtml) {
+				Aloha.Log.debug(this, 'Node name detected: ' + nn + ' for: ' + markupObject.outerHtml());
 			}
 			if (nn == '#text') {return 'textNode';}
 			if (this.replacingElements[ nn ]) {return 'sectionOrGroupingContent';}
 			if (this.tagHierarchy [ nn ]) {return 'textLevelSemantics';}
-			Aloha.Log.warn(this, 'unknown markup passed to this.getMarkupType(...): ' + markupObject.outerHTML());
+			Aloha.Log.warn(this, 'unknown markup passed to this.getMarkupType(...): ' + markupObject.outerHtml());
 		},
 
 		/**
@@ -1035,7 +1034,7 @@
 				}
 
 				// skip empty text nodes
-				if (el.domobj && el.domobj.nodeType === 3 && jQuery.trim(jQuery(el.domobj).outerHTML()).length === 0) {
+				if (el.domobj && el.domobj.nodeType === 3 && jQuery.trim(jQuery(el.domobj).outerHtml()).length === 0) {
 					continue;
 				}
 

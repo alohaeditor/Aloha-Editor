@@ -71,6 +71,7 @@
 				me.eachEnabledPluginSync(
 					// Each
 					function(plugin){
+						if ( console && console.log ) { console.log('init plugin '+plugin.id); }
 						plugin.init();
 					},
 					// All
