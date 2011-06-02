@@ -808,7 +808,8 @@ Aloha.Table.prototype.activate = function() {
 	if (this.isActive) {
 		return;
 	}
-	var that = this;
+	var that = this,
+		htmlTableWrapper, tableWrapper;
 
 	// alter the table attributes
 	this.obj.addClass(this.get('className'));
@@ -863,7 +864,7 @@ Aloha.Table.prototype.activate = function() {
 	// ### create a wrapper for the table (@see HINT below)
 	// wrapping div for the table to suppress the display of the resize-controls of
 	// the editable divs within the cells
-	var tableWrapper = jQuery('<div class="' + this.get('classTableWrapper') + '"></div>');
+	tableWrapper = jQuery('<div class="' + this.get('classTableWrapper') + '"></div>');
 	tableWrapper.contentEditable(false);
 
 	// wrap the tableWrapper around the table
@@ -875,7 +876,7 @@ Aloha.Table.prototype.activate = function() {
 	// Disable resize and selection of the controls (only IE)
 	// Events only can be set to elements which are loaded from the DOM (if they
 	// were created dynamically before) ;)
-	var htmlTableWrapper = this.obj.parents('.' + this.get('classTableWrapper'));
+	htmlTableWrapper = this.obj.parents('.' + this.get('classTableWrapper'));
 	htmlTableWrapper.get(0).onresizestart   = function(e) { return false; };
 	htmlTableWrapper.get(0).oncontrolselect = function(e) { return false; };
 
@@ -905,13 +906,7 @@ Aloha.Table.prototype.activate = function() {
 	this.isActive = true;
 
 	// throw a new event when the table has been activated
-	Aloha.EventRegistry.trigger(
-			new Aloha.Event(
-					'tableActivated',
-					Aloha,
-					[ this ]
-			)
-	);
+	Aloha.trigger('aloha-table-activated');
 };
 
 /**
@@ -946,22 +941,24 @@ Aloha.Table.prototype.checkWai = function() {
  */
 Aloha.Table.prototype.attachSelectionColumn = function() {
 	// create an empty cell
-	var emptyCell = jQuery('<td>');
+	var emptyCell = jQuery('<td>'),
+		rowIndex, columnToInsert, rowObj, that = this, rows, i;
+	
 	// set the unicode '&nbsp;' code
 	emptyCell.html('\u00a0');
 
-	var that = this;
-	var rows = this.obj.context.rows;
+	that = this;
+	rows = this.obj.context.rows;
 	// add a column before each first cell of each row
-	for (var i = 0; i < rows.length; i++) {
-		var rowObj = jQuery(rows[i]);
-		var columnToInsert = emptyCell.clone();
+	for ( i = 0; i < rows.length; i++) {
+		rowObj = jQuery(rows[i]);
+		columnToInsert = emptyCell.clone();
 		columnToInsert.addClass(this.get('classSelectionColumn'));
 		columnToInsert.css('width', this.get('selectionArea') + 'px');
 		rowObj.find('td:first').before(columnToInsert);
 
 		// rowIndex + 1 because an addtional row is still added
-		var rowIndex = i + 1;
+		rowIndex = i + 1;
 
 		// this method sets the selection-events to the cell
 		this.attachRowSelectionEventsToCell(columnToInsert);
@@ -1068,7 +1065,8 @@ Aloha.Table.prototype.rowSelectionMouseDown = function (jqEvent) {
  * @return void
  */
 Aloha.Table.prototype.rowSelectionMouseOver = function (jqEvent) {
-	var rowIndex = jqEvent.currentTarget.parentNode.rowIndex;
+	var rowIndex = jqEvent.currentTarget.parentNode.rowIndex,
+		indexInArray, start, end, i;
 
 	// only select the row if the mouse was clicked and the clickedRowId isn't
 	// from the selection-row (row-id = 0)
@@ -1078,13 +1076,13 @@ Aloha.Table.prototype.rowSelectionMouseOver = function (jqEvent) {
 //		var firstCell = this.obj.find('tr:nth-child(2) td:nth-child(2)').children('div[contenteditable=true]').get(0);
 //		jQuery(firstCell).get(0).focus();
 
-		var indexInArray = jQuery.inArray(rowIndex, this.rowsToSelect);
+		indexInArray = jQuery.inArray(rowIndex, this.rowsToSelect);
 
-		var start = (rowIndex < this.clickedRowId) ? rowIndex : this.clickedRowId;
-		var end = (rowIndex < this.clickedRowId) ? this.clickedRowId : rowIndex;
+		start = (rowIndex < this.clickedRowId) ? rowIndex : this.clickedRowId;
+		end = (rowIndex < this.clickedRowId) ? this.clickedRowId : rowIndex;
 
 		this.rowsToSelect = new Array();
-		for (var i = start; i <= end; i++) {
+		for ( i = start; i <= end; i++) {
 			this.rowsToSelect.push(i);
 		}
 
@@ -2134,7 +2132,7 @@ Aloha.Table.Cell.prototype.activate = function() {
 	wrapper.bind('keydown',   function(jqEvent) { that.editableKeyDown(jqEvent);   });
 
 	// we will treat the wrapper just like an editable
-	wrapper.GENTICS_contentEditableSelectionChange(function (event) {
+	wrapper.contentEditableSelectionChange(function (event) {
 		Aloha.Selection.onChange(wrapper, event);
 		return wrapper;
 	});
@@ -2354,15 +2352,16 @@ Aloha.Table.Cell.prototype.editableKeyDown = function(jqEvent) {
  * @return void
  */
 Aloha.Table.Cell.prototype.checkForEmptyEvent = function(jqEvent) {
-	if (jQuery(this.wrapper).children().length > 0) {
+	var
+		$wrapper = jQuery(this.wrapper),
+		text = $wrapper.text();
+	
+	if ( $wrapper.children().length > 0) {
 		return;
 	}
 
-	// get the editable contents
-	var text = this.wrapper.text();
-
 	// if empty insert a blank space and blur and focus the wrapper
-	if (text == ''){
+	if ( text === '' ){
 		this.wrapper.text('\u00a0');
 		this.wrapper.get(0).blur();
 		this.wrapper.get(0).focus();
