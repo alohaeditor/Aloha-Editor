@@ -1,4 +1,6 @@
-window.alohaQuery = window.jQuery.sub();
+// Create jQuery
+window.alohaQuery = window.jQuery;//.sub();
+
 // Ensure Namespace
 window.GENTICS = window.GENTICS || {};
 window.GENTICS.Utils = window.GENTICS.Utils || {};
@@ -9,71 +11,20 @@ window.Aloha_loaded_plugins = window.Aloha_loaded_plugins || [];
 window.Aloha_pluginDir = window.Aloha_pluginDir || false;
 window.Aloha_base = window.Aloha_base || false;
 
-/* This is auto generated on build-dev-include build. Templates at /build/deps/includejs* */
-(function(window,document) {
+// Handle
+(function(window,undefined) {
 
 	// Prepare Script Loading
 	var
-		$ = window.alohaQuery,
-		counter = 0,
-		scriptEl;
-	
-	// Wait for jQuery and DOM
-	$(function(){
-		var includes = [],
-			alohaInit = false,
-			appendEl = document.getElementsByTagName('head')[0],
-			atAlohaFileLoaded = function(event) {
-				var $this = $(this);
-//			console.log("Aloha file loaded " + $this.attr('src'));
-//			console.log(event);
-//			try {
-					//console.log("alohaLoadJs trigger for "  + (($('body').data('events')||{})['alohaLoadJs']||[]).length + " binded handlers");
-					$('body').trigger('alohaLoadJs', {'script': $this.attr('src')});
-//			} catch(e) {
-//				console.log(e);
-//			}
-			},
-			loadJsFileAtIncludesCounter = function() {
-				var depitem =includes.pop(),
-					depfile, onload,
-					url;
-				//console.log("Loading file " + depitem);
-				url = window.GENTICS_Aloha_base + '/' + depitem;
-//			if ($.browser.webkit) {
-					scriptEl = document.createElement('script');
-					scriptEl.src = url;
-					scriptEl.setAttribute('defer','defer'); 
-					// ie
-					scriptEl.onreadystatechange = atAlohaFileLoaded;
-					// webkit + FF
-					scriptEl.onload = atAlohaFileLoaded;
-					appendEl.appendChild(scriptEl);
-			};
-			// Define recursive event handler
-			$('body').bind('alohaLoadJs', function(event, data){
-				if (includes.length > 0) {
-					loadJsFileAtIncludesCounter();
-				} else {
-					//Last file loaded
-//				console.log("Initialize aloha")
-					if (!alohaInit) {
-						var $body = $('body');
-						alohaInit = true;
-						$body.createPromiseEvent('aloha');
-						window.Aloha.init();
-						
-					}
-				}
-			});	
-//		console.log("Binded alohaLoadJs "  + (($('body').data('events')||{})['alohaLoadJs']||[]).length);
-			
-			
-			// Prepare baseUrl
-			window.GENTICS_Aloha_base = window.GENTICS_Aloha_base || document.getElementById('aloha-script-include').src.replace(/aloha\.js$/,'').replace(/\/+$/,'');
-			
-			// Prepare Plugin Loading
-			window.Aloha_loaded_plugins = window.Aloha_loaded_plugins||[];			includes.push('util/base.js');
+		document = window.document,
+		includes = [];
+
+	// Prepare baseUrl
+	window.GENTICS_Aloha_base = window.GENTICS_Aloha_base || document.getElementById('aloha-script-include').src.replace(/aloha\.js$/,'').replace(/\/+$/,'');
+
+	// Prepare Plugin Loading
+	window.Aloha_loaded_plugins = window.Aloha_loaded_plugins||[];		window.Aloha_loaded_plugins['format'] = true;
+			includes.push('util/base.js');
 			includes.push('dep/ext-3.2.1/adapter/jquery/ext-jquery-adapter.js');
 			includes.push('dep/ext-3.2.1/ext-all.js');
 			includes.push('dep/jquery.json-2.2.min.js');
@@ -103,8 +54,93 @@ window.Aloha_base = window.Aloha_base || false;
 			includes.push('core/repositorymanager.js');
 			includes.push('core/repository.js');
 			includes.push('core/repositoryobjects.js');
-		includes = includes.reverse();
-		loadJsFileAtIncludesCounter();
-	}); // DOM event
+			includes.push('plugin/format/src/format.js');
+	// Variables
+	var
+		// jQuery
+		jQuery = window.alohaQuery, $ = jQuery,
+		// Loading
+		defer = false, /*
+			Until browsers can support the defer attribute properly
+			This should always be false
+			Defer makes it so that they load in parrallel but execute in order
+			If we don't have it then the script could execute in any order, which will cause errors
+			So for the meantime, this flag will always be false.
+			Which means that instead we load things one by one.
+			It will be slower, but if you care for speed, then why are you using the uncompressed version of Aloha Editor?
+			Alternatively we could introduce much better sniffing
+			/WebKit/.test(navigator.userAgent), */
+		scriptEls = [],
+		// Async
+		completed = 0,
+		total = includes.length,
+		exited = false,
+		next = function(){
+			$(function(){
+				$('body').addClass('alohacoreloaded').trigger('alohacoreloaded');
+			});
+		},
+		scriptLoaded = function(event){
+			// Prepare
+			var nextScriptEl;
+
+			// Check
+			if ( typeof this.readyState !== 'undefined' && this.readyState !== 'complete' ) {
+				return;
+			}
+
+			// Clean
+			if ( this.timeout ) {
+				window.clearTimeout(this.timeout);
+				this.timeout = false;
+			}
+			
+			// Handle
+			if ( !exited ) {
+				completed++;
+				if ( completed === total ) {
+					exited = true;
+					next();
+				}
+				else if ( !defer ) {
+					nextScriptEl = scriptEls[completed];
+					nextScriptEl.timeout = window.setTimeout(scriptLoaded,1000);
+					appendEl.appendChild(nextScriptEl);
+				}
+			}
+		},
+		// Loop
+		value, url, scriptEl, appendEl = document.head || document.getElementsByTagName('head')[0];
+	
+	// Insert Scripts
+	for ( i=0,n=total; i<n; ++i ) {
+		// Prepare
+		value = includes[i];
+		url = window.GENTICS_Aloha_base + '/' + value;
+
+		// Create
+		scriptEl = document.createElement('script');
+		scriptEl.src = url;
+		scriptEl.setAttribute('defer','defer');
+		scriptEl.onreadystatechange = scriptLoaded;
+		scriptEl.onload = scriptLoaded;
+		scriptEl.onerror = scriptLoaded;
+
+		// Add
+		if ( defer ) {
+			scriptEl.timeout = window.setTimeout(scriptLoaded,1000);
+			appendEl.appendChild(scriptEl);
+		}
+		else {
+			scriptEls.push(scriptEl);
+		}
+	}
+
+	// No Defer Support
+	if ( !defer ) {
+		scriptEls[0].timeout = window.setTimeout(scriptLoaded,1000);
+		appendEl.appendChild(scriptEls[0]);
+	}
+
 // </closure>
-})(window, document);
+})(window);

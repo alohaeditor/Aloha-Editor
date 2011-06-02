@@ -4,10 +4,14 @@
  * Licensed unter the terms of http://www.aloha-editor.com/license.html
  */
 (function(window, undefined) {
+	"use strict";
 	var
 		jQuery = window.alohaQuery, $ = jQuery,
 		GENTICS = window.GENTICS,
-		Aloha = window.Aloha;
+		Aloha = window.Aloha,
+		Ext = window.Ext,
+		console = window.console||false,
+		Class = window.Class;
 
 /**
  * Aloha's Floating Menu
@@ -152,7 +156,7 @@ Aloha.FloatingMenu.panelBody = null;
  */
 Aloha.FloatingMenu.generateComponent = function () {
 	//debugger;
-	var that = this;
+	var that = this, pinTab;
 
 	// Initialize and configure the tooltips
 	Ext.QuickTips.init();
@@ -250,7 +254,7 @@ Aloha.FloatingMenu.generateComponent = function () {
 	jQuery('body').append(this.shadow);
 
 	// add an empty pin tab item, store reference
-	var pinTab = this.extTabPanel.add({
+	pinTab = this.extTabPanel.add({
 		title : '&#160;'
 	});
 
@@ -416,13 +420,16 @@ Aloha.FloatingMenu.createScope = function(scope, extendedScopes) {
  */
 Aloha.FloatingMenu.addButton = function(scope, button, tab, group) {
 	// check whether the scope exists
-	var scopeObject = this.scopes[scope];
+	var
+		scopeObject = this.scopes[scope],
+		buttonInfo, tabObject, groupObject;
+	
 	if (typeof scopeObject === 'undefined') {
 		// TODO log an error and exit
 	}
 
 	// generate a buttonInfo object
-	var buttonInfo = {'button' : button, 'scopeVisible' : false};
+	buttonInfo = {'button' : button, 'scopeVisible' : false};
 
 	// add the button to the list of all buttons
 	this.allButtons.push(buttonInfo);
@@ -431,7 +438,7 @@ Aloha.FloatingMenu.addButton = function(scope, button, tab, group) {
 	scopeObject.buttons.push(buttonInfo);
 
 	// get the tab object
-	var tabObject = this.tabMap[tab];
+	tabObject = this.tabMap[tab];
 	if (typeof tabObject === 'undefined') {
 		// the tab object does not yet exist, so create a new tab and add it to the list
 		tabObject = new Aloha.FloatingMenu.Tab(tab);
@@ -440,7 +447,7 @@ Aloha.FloatingMenu.addButton = function(scope, button, tab, group) {
 	}
 
 	// get the group
-	var groupObject = tabObject.getGroup(group);
+	groupObject = tabObject.getGroup(group);
 
 	// now add the button to the group
 	groupObject.addButton(buttonInfo);
@@ -465,7 +472,8 @@ Aloha.FloatingMenu.doLayout = function () {
 		activeExtTab = this.extTabPanel.getActiveTab(),
 		activeTab = false,
 		floatingMenuVisible = false,
-		showUserActivatedTab = false;
+		showUserActivatedTab = false,
+		pos;
 
 	// let the tabs layout themselves
 	jQuery.each(this.tabs, function(index, tab) {
@@ -537,7 +545,7 @@ Aloha.FloatingMenu.doLayout = function () {
 		this.extTabPanel.setPosition(this.left, this.top);
 	} else if (!floatingMenuVisible && !this.extTabPanel.hidden) {
 		// remember the current position
-		var pos = this.extTabPanel.getPosition(true);
+		pos = this.extTabPanel.getPosition(true);
 		// restore previous position if the fm was pinned
 		this.left = pos[0] < 0 ? 100 : pos[0];
 		this.top = pos[1] < 0 ? 100 : pos[1];
@@ -641,25 +649,29 @@ Aloha.FloatingMenu.nextFloatTargetObj = function (obj, limitObj) {
  * @hide
  */
 Aloha.FloatingMenu.calcFloatTarget = function(range) {
+	var
+		i, editableLength,
+		targetObj, scrollTop, y;
+
 	// TODO in IE8 somteimes a broken range is handed to this function - investigate this
 	if (!Aloha.activeEditable || typeof range.getCommonAncestorContainer === 'undefined') {
 		return false;
 	}
 
 	// check if the designated editable is disabled
-	for (var i = 0, editableLength = Aloha.editables.length; i < editableLength; i++) {
+	for ( i = 0, editableLength = Aloha.editables.length; i < editableLength; i++) {
 		if (Aloha.editables[i].obj.get(0) == range.limitObject &&
 				Aloha.editables[i].isDisabled()) {
 			return false;
 		}
 	}
 
-	var targetObj = jQuery(this.nextFloatTargetObj(range.getCommonAncestorContainer(), range.limitObject)),
-		scrollTop = GENTICS.Utils.Position.Scroll.top;
+	targetObj = jQuery(this.nextFloatTargetObj(range.getCommonAncestorContainer(), range.limitObject));
+	scrollTop = GENTICS.Utils.Position.Scroll.top;
 	if (!targetObj || !targetObj.offset()) {
 		return false;
 	}
-	var y = targetObj.offset().top - this.obj.height() - 50; // 50px offset above the current obj to have some space above
+	y = targetObj.offset().top - this.obj.height() - 50; // 50px offset above the current obj to have some space above
 
 	// if the floating menu would be placed higher than the top of the screen...
 	if ( y < scrollTop) {
@@ -841,13 +853,15 @@ Aloha.FloatingMenu.Group = Class.extend({
 	 * @hide
 	 */
 	getExtComponent: function () {
-		var that = this;
+		var that = this, l,
+			items = [],
+			buttonCount = 0,
+			columnCount = 0,
+			len, idx, half;
+
 
 		if (typeof this.extButtonGroup === 'undefined') {
-			var items = [],
-				buttonCount = 0,
-				columnCount = 0;
-
+			
 			if (this.fields.length > 1) {
 				columnCount = 1;
 			}
@@ -858,9 +872,9 @@ Aloha.FloatingMenu.Group = Class.extend({
 			});
 			columnCount = columnCount + Math.ceil(buttonCount / 2);
 
-			var len = this.buttons.length,
-				idx = 0,
-				half =  Math.ceil(this.buttons.length / 2) - this.buttons.length % 2 ;
+			len = this.buttons.length;
+			idx = 0;
+			half =  Math.ceil(this.buttons.length / 2) - this.buttons.length % 2 ;
 
 			if (this.fields.length > 0) {
 				that.buttons.push(this.fields[0]);

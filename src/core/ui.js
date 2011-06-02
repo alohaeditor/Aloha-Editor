@@ -5,10 +5,14 @@
  */
 // Closure
 (function(window, undefined) {
+	"use strict";
+
 	var
 		jQuery = window.alohaQuery, $ = jQuery,
 		GENTICS = window.GENTICS,
-		Aloha = window.Aloha;
+		Aloha = window.Aloha,
+		Ext = window.Ext,
+		Class = window.Class;
 
 // Ensure Namespace
 Aloha.ui = Aloha.ui || {};
@@ -223,12 +227,12 @@ Aloha.ui.Button = Class.extend({
 	 * @hide
 	 */
 	getExtMenu: function() {
-		var menu;
+		var menu, i, entry;
 		if (typeof this.menu === 'object') {
 			// build the drop down menu
 			menu = new Ext.menu.Menu();
-			for (var i = 0; i < this.menu.length; ++i) {
-				var entry = this.menu[i];
+			for (i = 0; i < this.menu.length; ++i) {
+				entry = this.menu[i];
 				menu.addItem(new Ext.menu.Item(entry.getExtMenuConfigProperties()));
 			}
 		}
@@ -457,6 +461,8 @@ Ext.ux.MultiSplitButton = Ext.extend(Ext.Component, {
 	 * @hide
 	 */
 	setActiveItem: function(name) {
+		var i, button;
+
 		// collapse the panel
 		this.closePanel();
 
@@ -465,10 +471,10 @@ Ext.ux.MultiSplitButton = Ext.extend(Ext.Component, {
 			return;
 		}
 
-		for (var i=0; i < this.items.length; i++) {
+		for (i=0; i < this.items.length; i++) {
 			if (this.items[i].name == name) {
 				// found the item
-				var button = jQuery(this.ulObj).find('[gtxmultisplititem='+i+']');
+				button = jQuery(this.ulObj).find('[gtxmultisplititem='+i+']');
 				this.setActiveDOMElement(button);
 				this.activeItem = name;
 				return;
@@ -486,7 +492,7 @@ Ext.ux.MultiSplitButton = Ext.extend(Ext.Component, {
 	 */
 	setActiveDOMElement: function(el) {
 		// when the component (or one of its owners) is currently hidden, we need to set the active item later
-		var ct = this;
+		var ct = this, top;
 		while (typeof ct !== 'undefined') {
 			if (ct.hidden) {
 				this.activeDOMElement = el;
@@ -507,7 +513,7 @@ Ext.ux.MultiSplitButton = Ext.extend(Ext.Component, {
 		// reposition multisplit contents to the active item
 		if ( el && this.ulObj ) {
 			this.ulObj.css('margin-top', 0);
-			var top = el.position().top;
+			top = el.position().top;
 			this.ulObj.css({
 				'margin-top': - top + 6,
 				'height': 46 + top - 6

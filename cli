@@ -361,12 +361,12 @@ class App
 
 	# Write Submodules
 	def write_submodules
-		submodule_foreach('sed -i "" -E "s/https?\:\/\/github\.com\//git\@github\.com\:/" .git/config')
+		submodule_foreach('sed -i -r -e "s/https?\:\/\/github\.com\//git\@github\.com\:/" .git/config')
 	end
 
 	# Read Submodules
 	def read_submodules
-		submodule_foreach('sed -i "" -E "s/git\@github.com\:/http://github.com\//" .git/config')
+		submodule_foreach('sed -i -r -e "s/git\@github.com\:/http://github.com\//" .git/config')
 	end
 
 	# Add Submodules

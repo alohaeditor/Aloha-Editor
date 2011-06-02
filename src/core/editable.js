@@ -5,10 +5,13 @@
  */
 
 (function(window, undefined) {
+	"use strict";
 	var
 		jQuery = window.alohaQuery, $ = jQuery,
 		GENTICS = window.GENTICS,
-		Aloha = window.Aloha;
+		Aloha = window.Aloha,
+		Class = window.Class,
+		unescape = window.unescape;
 
 /**
  * Editable object
@@ -231,16 +234,16 @@ Aloha.Editable = Class.extend({
 			obj = this.obj,
 			el = obj.get(0),
 			nodeName = el.nodeName.toLowerCase(),
-
-		// supported elements
+			// supported elements
 			textElements = [ 'a', 'abbr', 'address', 'article', 'aside',
 					'b', 'bdo', 'blockquote',  'cite', 'code', 'command',
 					'del', 'details', 'dfn', 'div', 'dl', 'em', 'footer', 'h1', 'h2',
 					'h3', 'h4', 'h5', 'h6', 'header', 'i', 'ins', 'menu',
 					'nav', 'p', 'pre', 'q', 'ruby',  'section', 'small',
-					'span', 'strong',  'sub', 'sup', 'var'];
+					'span', 'strong',  'sub', 'sup', 'var'],
+			i, div, updateFunction;
 
-		for (var i = 0; i < textElements.length; i++) {
+		for (i = 0; i < textElements.length; i++) {
 			if ( nodeName == textElements[i] ) {
 				return true;
 			}
@@ -255,7 +258,7 @@ Aloha.Editable = Class.extend({
 
 			case 'textarea':
 				// Create a div alongside the textarea
-				var div = jQuery('<div id="'+this.getId()+'-aloha" class="aloha-textarea"/>').insertAfter(obj);
+				div = jQuery('<div id="'+this.getId()+'-aloha" class="aloha-textarea"/>').insertAfter(obj);
 				// Resize the div to the textarea
 				div.height(obj.height())
 					.width(obj.width())
@@ -264,7 +267,7 @@ Aloha.Editable = Class.extend({
 				// Hide the textarea
 				obj.hide();
 				// Attach a onsubmit to the form to place the HTML of the div back into the textarea
-				var updateFunction = function(){
+				updateFunction = function(){
 					var val = me.getContents();
 					obj.val(val);
 				};
@@ -358,13 +361,15 @@ Aloha.Editable = Class.extend({
 	 * @return void
 	 */
 	removePlaceholder: function(obj, setCursor) {
-		var placeholderClass = this.placeholderClass;
+		var
+			placeholderClass = this.placeholderClass,
+			range;
 //		// remove browser br
 //		jQuery('br', obj).remove();
 
 		// set the cursor // remove placeholder
 		if (setCursor === true) {
-			var range = Aloha.Selection.getRangeObject();
+			range = Aloha.Selection.getRangeObject();
 			if ( !range.select ) {return;}
 			range.startContainer = range.endContainer = obj.get(0);
 			range.startOffset = range.endOffset = 0;
@@ -396,7 +401,8 @@ Aloha.Editable = Class.extend({
 		// original Object
 		var	me = this,
 			oo = this.originalObj.get(0),
-			onn = oo.nodeName.toLowerCase();
+			onn = oo.nodeName.toLowerCase(),
+			val;
 
 		// special handled elements
 		switch ( onn ) {
@@ -407,7 +413,7 @@ Aloha.Editable = Class.extend({
 
 			case 'textarea':
 				// restore content to original textarea
-				var val = this.getContents();
+				val = this.getContents();
 				this.originalObj.val(val);
 				this.obj.remove();
 				this.originalObj.show();
@@ -643,7 +649,8 @@ Aloha.Editable = Class.extend({
 	 */
 	smartContentChange: function(event) {
 		var me = this,
-			uniChar = null;
+			uniChar = null,
+			re, match;
 
 		// ignore meta keys like crtl+v or crtl+l and so on
 		if (event && (event.metaKey || event.crtlKey || event.altKey)) {
@@ -653,8 +660,8 @@ Aloha.Editable = Class.extend({
 		if (event && event.originalEvent) {
 
 			// regex to stripp unicode
-			var re = new RegExp("U\\+(\\w{4})"),
-				match = re.exec(event.originalEvent.keyIdentifier);
+			re = new RegExp("U\\+(\\w{4})");
+			match = re.exec(event.originalEvent.keyIdentifier);
 
 			// Use keyIdentifier if available
 			if ( event.originalEvent.keyIdentifier && 1 == 2) {

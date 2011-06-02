@@ -1,3 +1,15 @@
+// Start Closure
+(function(window, undefined) {
+	"use strict";
+	
+	// Prepare
+	var
+		jQuery = window.alohaQuery, $ = jQuery,
+		Ext = window.Ext,
+		GENTICS = window.GENTICS,
+		Aloha = window.Aloha;
+
+
 /*!
  * This file is part of Aloha Editor
  * Author & Copyright (c) 2010 Gentics Software GmbH, aloha@gentics.com
@@ -48,3 +60,5 @@ Ext.extend(Ext.data.AlohaProxy, Ext.data.DataProxy, {
 		jQuery.extend(this.params, p);
 	}
 });
+
+})(window);

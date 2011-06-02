@@ -3,27 +3,6 @@
 <head>
 	<meta charset="UTF-8" />
 	<title>Aloha Editor Editable Test Suite</title>
-	<script language="javascript">
-	if (window.Aloha === undefined || window.Aloha === null)
-		Aloha = {};
-	Aloha.settings = {
-	logLevels : {
-		'error': true,
-		'warn':  true,
-		'info':  false,
-		'debug': false
-	},
-	logHistory : {
-		levels : {
-			'error' : true,
-			'warn' : true,
-			'info' : false,
-			'debug' : false
-		}
-	},
-	errorhandling : true
-};
-	</script>
 	<!-- include qunit -->
 	<link rel="stylesheet" href="../dep/qunit.css" type="text/css"/>
 	<script type="text/javascript" src="../dep/qunit.js"></script>
@@ -34,6 +13,8 @@
 	<script	src="../../aloha.js" id="aloha-script-include"></script>
 	<!-- include the tests -->
 	<script type="text/javascript" src="editabletests.js" defer></script>
+	<!-- inject into testswarm -->
+	<script type="text/javascript" src="../dep/swarminject.js"></script>
 </head>
 <body>
 	<h1 id="qunit-header">Aloha Editor Editable Test Suite</h1>

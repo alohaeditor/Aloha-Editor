@@ -4,26 +4,7 @@
 	<meta http-equiv="content-type" content="text/html; charset=utf-8">
 	<title>Aloha, Documents!</title>
 	<script	src="../../dep/jquery-1.5.1.js" ></script>
-	<script type="text/javascript">
-	window.Aloha = {settings: {
-					logLevels : {
-						'error': true,
-						'warn':  true,
-						'info':  false,
-						'debug': false
-					},
-					logHistory : {
-						levels : {
-							'error' : true,
-							'warn' : true,
-							'info' : false,
-							'debug' : false
-						}
-					},
-					errorhandling : true
-				}};</script>
 	<script	src="../../aloha.js" id="aloha-script-include" data-plugins="format"></script>
-	
 	<link rel="stylesheet" href="../../aloha.css" id="aloha-style-include">
 	<link rel="stylesheet" href="../../demo/common/index.css" type="text/css">
 </head>
@@ -62,20 +43,17 @@
 		</div>
 	</div>
 	<script type="text/javascript" defer>
-		$(function(){
-			
+		(function(window,undefined){
 			// Prepare
 			var
 				$ = window.jQuery,
 				$body = $('body');
-
-			$body.bind('alohaReady',function(){
-				// Upgrade
+			
+			// Aloha
+			$body.bind('aloha',function(){
 				$('#content').aloha();
 			});
-
-			// </closure>
-		});
+		})(window);
 	</script>
 </body>
 </html>

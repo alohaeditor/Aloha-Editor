@@ -4,10 +4,12 @@
  * Licensed unter the terms of http://www.aloha-editor.com/license.html
  */
 (function(window, undefined) {
+	"use strict";
 	var
 		jQuery = window.alohaQuery, $ = jQuery,
 		GENTICS = window.GENTICS,
-		Aloha = window.Aloha;
+		Aloha = window.Aloha,
+		Class = window.Class;
 
 /**
  * Markup object
@@ -32,18 +34,18 @@ Aloha.Markup = Class.extend({
 	},
 
 	insertBreak: function () {
-		var range = Aloha.Selection.rangeObject;
+		var range = Aloha.Selection.rangeObject,nonWSIndex,nextTextNode,newBreak;
 		if (!range.isCollapsed()) {
 			this.removeSelectedMarkup();
 		}
 
-		var newBreak = jQuery('<br/>');
+		newBreak = jQuery('<br/>');
 		GENTICS.Utils.Dom.insertIntoDOM(newBreak, range, Aloha.activeEditable.obj);
 
-		var nextTextNode = GENTICS.Utils.Dom.searchAdjacentTextNode(newBreak.parent().get(0), GENTICS.Utils.Dom.getIndexInParent(newBreak.get(0)) + 1, false);
+		nextTextNode = GENTICS.Utils.Dom.searchAdjacentTextNode(newBreak.parent().get(0), GENTICS.Utils.Dom.getIndexInParent(newBreak.get(0)) + 1, false);
 		if (nextTextNode) {
 			// trim leading whitespace
-			var nonWSIndex = nextTextNode.data.search(/\S/);
+			nonWSIndex = nextTextNode.data.search(/\S/);
 			if (nonWSIndex > 0) {
 				nextTextNode.data = nextTextNode.data.substring(nonWSIndex);
 			}
@@ -67,11 +69,13 @@ Aloha.Markup = Class.extend({
 			return false;
 		}
 
-		var rangeObject = Aloha.Selection.rangeObject;
+		var rangeObject = Aloha.Selection.rangeObject,
+			handlers,
+			i;
 
 		if (this.keyHandlers[event.keyCode]) {
-			var handlers = this.keyHandlers[event.keyCode];
-			for (var i = 0; i < handlers.length; ++i) {
+			handlers = this.keyHandlers[event.keyCode];
+			for ( i = 0; i < handlers.length; ++i) {
 				if (!handlers[i](event)) {
 					return false;
 				}
@@ -198,21 +202,23 @@ Aloha.Markup = Class.extend({
 	 * @return void
 	 */
 	insertHTMLBreak: function(selectionTree, rangeObject, inBetweenMarkup) {
+		var i, treeLength, el, jqEl, jqElBefore, jqElAfter, tmpObject, offset, checkObj;
+
 		inBetweenMarkup = inBetweenMarkup ? inBetweenMarkup: jQuery('<br/>');
-		for (var i = 0, treeLength = selectionTree.length; i < treeLength; i++) {
-			var el = selectionTree[i],
-				jqEl = el.domobj ? jQuery(el.domobj) : undefined;
+		for ( i = 0, treeLength = selectionTree.length; i < treeLength; i++) {
+			el = selectionTree[i];
+			jqEl = el.domobj ? jQuery(el.domobj) : undefined;
 			if (el.selection !== 'none') { // before cursor, leave this part inside the splitObject
 				if (el.selection == 'collapsed') {
 					// collapsed selection found (between nodes)
 					if (i > 0) {
 						// not at the start, so get the element to the left
-						var jqElBefore = jQuery(selectionTree[i-1].domobj);
+						jqElBefore = jQuery(selectionTree[i-1].domobj);
 						// and insert the break after it
 						jqElBefore.after(inBetweenMarkup);
 					} else {
 						// at the start, so get the element to the right
-						var jqElAfter = jQuery(selectionTree[1].domobj);
+						jqElAfter = jQuery(selectionTree[1].domobj);
 						// and insert the break before it
 						jqElAfter.before(inBetweenMarkup);
 					}
@@ -235,7 +241,7 @@ Aloha.Markup = Class.extend({
 						// when the textnode is the last inside a blocklevel element
 						// (like p, h1, ...) we need to add an additional br as very
 						// last object in the blocklevel element
-						var checkObj = el.domobj;
+						checkObj = el.domobj;
 						while (checkObj) {
 							if (checkObj.nextSibling) {
 								checkObj = false;
@@ -265,8 +271,8 @@ Aloha.Markup = Class.extend({
 
 					// correct the range
 					// count the number of previous siblings
-					var offset = 0,
-						tmpObject = inBetweenMarkup[0];
+					offset = 0;
+					tmpObject = inBetweenMarkup[0];
 					while (tmpObject) {
 						tmpObject = tmpObject.previousSibling;
 						offset++;
@@ -331,9 +337,9 @@ Aloha.Markup = Class.extend({
 	 * @return selected text from that level (incluiding all sublevels)
 	 */
 	getFromSelectionTree: function (selectionTree, astext) {
-		var text = '';
-		for (var i = 0, treeLength = selectionTree.length; i < treeLength; i++) {
-			var el = selectionTree[i];
+		var text = '', i, treeLength, el, clone;
+		for ( i = 0, treeLength = selectionTree.length; i < treeLength; i++) {
+			el = selectionTree[i];
 			if (el.selection == 'partial') {
 				if (el.domobj.nodeType === 3) {
 					// partial text node selected, get the selected part
@@ -344,7 +350,7 @@ Aloha.Markup = Class.extend({
 						text += this.getFromSelectionTree(el.children, astext);
 					} else {
 						// when the html shall be fetched, we create a clone of the element and remove all the children
-						var clone = jQuery(el.domobj).clone(false).empty();
+						clone = jQuery(el.domobj).clone(false).empty();
 						// then we do the recursion and add the selection into the clone
 						clone.html(this.getFromSelectionTree(el.children, astext));
 						// finally we get the html of the clone
@@ -383,13 +389,13 @@ Aloha.Markup = Class.extend({
 	 * Remove the currently selected markup
 	 */
 	removeSelectedMarkup: function () {
-		var rangeObject = Aloha.Selection.rangeObject;
+		var rangeObject = Aloha.Selection.rangeObject, newRange;
 
 		if (rangeObject.isCollapsed()) {
 			return;
 		}
 
-		var newRange = new Aloha.Selection.SelectionRange();
+		newRange = new Aloha.Selection.SelectionRange();
 		// remove the selection
 		this.removeFromSelectionTree(rangeObject.getSelectionTree(), newRange);
 
@@ -413,16 +419,16 @@ Aloha.Markup = Class.extend({
 	removeFromSelectionTree: function (selectionTree, newRange) {
 		// remember the first found partially selected element node (in case we need
 		// to merge it with the last found partially selected element node)
-		var firstPartialElement;
+		var firstPartialElement, newdata, i, el, adjacentTextNode, treeLength;
 
 		// iterate through the selection tree
-		for (var i = 0, treeLength = selectionTree.length; i < treeLength; i++) {
-			var el = selectionTree[i];
+		for (i = 0, treeLength = selectionTree.length; i < treeLength; i++) {
+			el = selectionTree[i];
 			// check the type of selection
 			if (el.selection == 'partial') {
 				if (el.domobj.nodeType === 3) {
 					// partial text node selected, so remove the selected portion
-					var newdata = '';
+					newdata = '';
 					if (el.startOffset > 0) {
 						newdata += el.domobj.data.substring(0, el.startOffset);
 					}
@@ -456,7 +462,7 @@ Aloha.Markup = Class.extend({
 			} else if (el.selection == 'full') {
 				// eventually set the new range (if not done before)
 				if (!newRange.startContainer) {
-					var adjacentTextNode = GENTICS.Utils.Dom.searchAdjacentTextNode(el.domobj.parentNode, GENTICS.Utils.Dom.getIndexInParent(el.domobj) + 1, false, {'blocklevel' : false});
+					adjacentTextNode = GENTICS.Utils.Dom.searchAdjacentTextNode(el.domobj.parentNode, GENTICS.Utils.Dom.getIndexInParent(el.domobj) + 1, false, {'blocklevel' : false});
 					if (adjacentTextNode) {
 						newRange.startContainer = newRange.endContainer = adjacentTextNode;
 						newRange.startOffset = newRange.endOffset = 0;
@@ -481,7 +487,9 @@ Aloha.Markup = Class.extend({
 	splitRangeObject: function(rangeObject, markup) {
 		// UAAAA: first check where the markup can be inserted... *grrrrr*, then decide where to split
 		// object which is split up
-		var splitObject = jQuery(rangeObject.splitObject);
+		var
+			splitObject = jQuery(rangeObject.splitObject),
+			selectionTree, insertAfterObject, followUpContainer;
 
 		// update the commonAncestor with the splitObject (so that the selectionTree is correct)
 		rangeObject.update(rangeObject.splitObject); // set the splitObject as new commonAncestorContainer and update the selectionTree
@@ -489,10 +497,10 @@ Aloha.Markup = Class.extend({
 		// calculate the selection tree. NOTE: it is necessary to do this before
 		// getting the followupcontainer, since getting the selection tree might
 		// possibly merge text nodes, which would lead to differences in the followupcontainer
-		var selectionTree = rangeObject.getSelectionTree(),
+		selectionTree = rangeObject.getSelectionTree();
 
 		// object to be inserted after the splitObject
-			followUpContainer = this.getSplitFollowUpContainer(rangeObject);
+		followUpContainer = this.getSplitFollowUpContainer(rangeObject);
 
 		// now split up the splitObject into itself AND the followUpContainer
 		this.splitRangeObjectHelper(selectionTree, rangeObject, followUpContainer); // split the current object into itself and the followUpContainer
@@ -505,7 +513,7 @@ Aloha.Markup = Class.extend({
 
 		// now let's find the place, where the followUp is inserted afterwards. normally that's the splitObject itself, but in
 		// some cases it might be their parent (e.g. inside a list, a <p> followUp must be inserted outside the list)
-		var insertAfterObject = this.getInsertAfterObject(rangeObject, followUpContainer);
+		insertAfterObject = this.getInsertAfterObject(rangeObject, followUpContainer);
 
 		// now insert the followUpContainer
 		jQuery(followUpContainer).insertAfter(insertAfterObject); // attach the followUpContainer right after the insertAfterObject
@@ -546,8 +554,9 @@ Aloha.Markup = Class.extend({
 	 * @return object after which the followUpContainer can be inserted
 	 */
 	getInsertAfterObject: function(rangeObject, followUpContainer) {
-		var passedSplitObject;
-		for (var i = 0; i < rangeObject.markupEffectiveAtStart.length; i++) {
+		var passedSplitObject,i,el;
+		
+		for (i = 0; i < rangeObject.markupEffectiveAtStart.length; i++) {
 			el = rangeObject.markupEffectiveAtStart[ i ];
 			// check if we have already passed the splitObject (some other markup might come before)
 			if (el === rangeObject.splitObject){
@@ -586,15 +595,18 @@ Aloha.Markup = Class.extend({
 	removeElementContentWhitespaceObj: function(domArray) {
 		var correction = 0,
 			removeLater = [],
-			i;
+			i,
+			el, removeIndex;
+		
 		for (i = 0; i < domArray.length; i++) {
-			var el = domArray[i];
+			el = domArray[i];
 			if (el.isElementContentWhitespace) {
 				removeLater[removeLater.length] = i;
 			}
 		}
+
 		for (i = 0; i < removeLater.length; i++) {
-			var removeIndex = removeLater[i];
+			removeIndex = removeLater[i];
 			domArray.splice(removeIndex - correction, 1);
 			correction++;
 		}
@@ -615,9 +627,11 @@ Aloha.Markup = Class.extend({
 
 		var fillUpElement = this.getFillUpElement(rangeObject.splitObject),
 			splitObject = jQuery(rangeObject.splitObject),
-			startMoving = false;
+			startMoving = false,
+			el, i, completeText, jqObj, mirrorLevel, parent, treeLength;
+		
 		if (selectionTree.length > 0) {
-			var mirrorLevel = followUpContainer.contents();
+			mirrorLevel = followUpContainer.contents();
 
 			// if length of mirrorLevel and selectionTree are not equal, the mirrorLevel must be corrected. this happens, when the mirrorLevel contains whitespace textNodes
 			if (mirrorLevel.length !== selectionTree.length) {
@@ -625,8 +639,8 @@ Aloha.Markup = Class.extend({
 			}
 
 			// var originalLevel = jQuery(rangeObject.commonAncestorContainer).contents();
-			for (var i = 0, treeLength = selectionTree.length; i < treeLength; i++) {
-				var el = selectionTree[i];
+			for (i = 0, treeLength = selectionTree.length; i < treeLength; i++) {
+				el = selectionTree[i];
 				// remove all objects in the mirrorLevel, which are BEFORE the cursor
 				// OR if the cursor is at the last position of the last Textnode (causing an empty followUpContainer to be appended)
 				if (
@@ -655,14 +669,14 @@ Aloha.Markup = Class.extend({
 					if (el.selection !== 'none') { // before cursor, leave this part inside the splitObject
 						// TODO better check for selection == 'partial' here?
 						if (el.domobj && el.domobj.nodeType === 3 && el.startOffset !== undefined) {
-							var completeText = el.domobj.data;
+							completeText = el.domobj.data;
 							if (el.startOffset > 0) {// first check, if there will be some text left in the splitObject
 								el.domobj.data = completeText.substr(0,el.startOffset);
 							} else if (selectionTree.length > 1) { // if not, check if the splitObject contains more than one node, because then it can be removed. this happens, when ENTER is pressed inside of a textnode, but not at the borders
 								jQuery(el.domobj).remove();
 							} else { // if the "empty" textnode is the last node left in the splitObject, replace it with a ephemera break
 								// if the parent is a blocklevel element, we insert the fillup element
-								var parent = jQuery(el.domobj).parent();
+								parent = jQuery(el.domobj).parent();
 								if (GENTICS.Utils.Dom.isSplitObject(parent[0])) {
 									if (fillUpElement) {
 										parent.html(fillUpElement);
@@ -737,7 +751,7 @@ Aloha.Markup = Class.extend({
 	getSplitFollowUpContainer: function(rangeObject) {
 		var
 			tagName = rangeObject.splitObject.nodeName.toLowerCase(),
-			returnObj, inside;
+			returnObj, inside, lastObj;
 
 		switch(tagName) {
 			case 'h1':
@@ -746,7 +760,7 @@ Aloha.Markup = Class.extend({
 			case 'h4':
 			case 'h5':
 			case 'h6':
-				var lastObj = jQuery(rangeObject.splitObject).textNodes().last()[0];
+				lastObj = jQuery(rangeObject.splitObject).textNodes().last()[0];
 				// special case: when enter is hit at the end of a heading, the followUp should be a <p>
 				if (lastObj && rangeObject.startContainer === lastObj && rangeObject.startOffset === lastObj.length) {
 					returnObj = jQuery('<p></p>');
@@ -785,8 +799,10 @@ Aloha.Markup = Class.extend({
 	 */
 	transformDomObject: function (domobj, nodeName) {
 		// first create the new element
-		var jqOldObj = jQuery(domobj);
-		var jqNewObj = jQuery('<' + nodeName + '></' + nodeName + '>');
+		var
+			jqOldObj = jQuery(domobj),
+			jqNewObj = jQuery('<' + nodeName + '></' + nodeName + '>'),
+			i;
 
 		// TODO what about events? css properties?
 

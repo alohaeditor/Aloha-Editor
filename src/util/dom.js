@@ -210,7 +210,9 @@ GENTICS.Utils.Dom = Class.extend({
 			splitElement = jQuery(range.startContainer),
 			splitPosition = range.startOffset,
 			updateRange, path, parents,
-			newDom, insertElement, secondPart;
+			newDom, insertElement, secondPart,
+			i, pathLength, element, jqelement, children, newElement,
+			next, prev, offset;
 
 
 		if (atEnd) {
@@ -251,8 +253,8 @@ GENTICS.Utils.Dom = Class.extend({
 
 		// iterate over the path, create new dom nodes for every element and move
 		// the contents right of the split to the new element
-		for(var i=0, pathLength = path.length; i < pathLength; ++i) {
-			var element = path[i], newElement;
+		for( i=0, pathLength = path.length; i < pathLength; ++i) {
+			element = path[i];
 			if (i === pathLength - 1) {
 				// last element in the path -> we have to split it
 
@@ -263,8 +265,8 @@ GENTICS.Utils.Dom = Class.extend({
 					element.data = element.data.substring(0, splitPosition);
 				} else {
 					// other nodes
-					var jqelement = jQuery(element),
-						children = jqelement.contents();
+					jqelement = jQuery(element);
+					children = jqelement.contents();
 					newElement = jqelement.clone(false).empty();
 					secondPart = newElement.append(children.slice(splitPosition, children.length)).get(0);
 				}
@@ -285,7 +287,6 @@ GENTICS.Utils.Dom = Class.extend({
 			} else {
 				// create the new element of the same type and prepend it to the previously created element
 				newElement = jQuery(element).clone(false).empty();
-				var next;
 
 				if (!newDom) {
 					newDom = newElement;
@@ -304,8 +305,8 @@ GENTICS.Utils.Dom = Class.extend({
 				// update the range if necessary
 				if (updateRange && range.endContainer === element) {
 					range.endContainer = newElement.get(0);
-					var prev = path[i+1],
-						offset = 0;
+					prev = path[i+1];
+					offset = 0;
 					while ( true ) {
 						prev = prev.previousSibling;
 						if ( !prev ) { break; }
@@ -401,8 +402,10 @@ GENTICS.Utils.Dom = Class.extend({
 	 * @hide
 	 */
 	recursiveAddMarkup: function (rangeTree, markup, rangeObject, nesting) {
+		var i, innerRange, rangeLength;
+
 		// iterate through all rangetree objects of that level
-		for (var i = 0, rangeLength = rangeTree.length; i < rangeLength; ++i) {
+		for ( i = 0, rangeLength = rangeTree.length; i < rangeLength; ++i) {
 			// check whether the rangetree object is fully contained and the markup may be wrapped around the object
 			if (rangeTree[i].type == 'full' && this.allowsNesting(markup.get(0), rangeTree[i].domobj)) {
 				// we wrap the object, when
@@ -418,7 +421,7 @@ GENTICS.Utils.Dom = Class.extend({
 
 					// when nesting is not allowed, we remove the markup from the inner element
 					if (!nesting && rangeTree[i].domobj.nodeType !== 3) {
-						var innerRange = new GENTICS.Utils.RangeObject();
+						innerRange = new GENTICS.Utils.RangeObject();
 						innerRange.startContainer = innerRange.endContainer = rangeTree[i].domobj.parentNode;
 						innerRange.startOffset = 0;
 						innerRange.endOffset = innerRange.endContainer.childNodes.length;
@@ -454,7 +457,10 @@ GENTICS.Utils.Dom = Class.extend({
 	findHighestElement: function (start, nodeName, limit) {
 		nodeName = nodeName.toLowerCase();
 
-		var testObject = start,
+		// this will be the highest found markup object (up to a limit object)
+		var highestObject,
+		// blah
+			testObject = start,
 		// helper function to stop when we reach a limit object
 			isLimit = limit ? function () {
 			return limit.filter(
@@ -465,9 +471,6 @@ GENTICS.Utils.Dom = Class.extend({
 		} : function () {
 			return false;
 		};
-
-		// this will be the highest found markup object (up to a limit object)
-		var highestObject;
 
 		// now get the highest parent that has the given markup (until we reached
 		// one of the limit objects or there are no more parent nodes)
@@ -493,7 +496,8 @@ GENTICS.Utils.Dom = Class.extend({
 		var nodeName = markup.get(0).nodeName,
 			startSplitLimit = this.findHighestElement(rangeObject.startContainer, nodeName, limit),
 			endSplitLimit = this.findHighestElement(rangeObject.endContainer, nodeName, limit),
-			didSplit = false;
+			didSplit = false,
+			highestObject, root, rangeTree;
 
 		if (startSplitLimit && rangeObject.startOffset > 0) {
 			// when the start is in the start of its container, we don't split
@@ -519,10 +523,10 @@ GENTICS.Utils.Dom = Class.extend({
 		}
 
 		// find the highest occurrence of the markup
-		var highestObject = this.findHighestElement(rangeObject.getCommonAncestorContainer(), nodeName, limit),
-			root = highestObject ? highestObject.parentNode : undefined,
-			// construct the range tree
-			rangeTree = rangeObject.getRangeTree(root);
+		highestObject = this.findHighestElement(rangeObject.getCommonAncestorContainer(), nodeName, limit);
+		root = highestObject ? highestObject.parentNode : undefined;
+		// construct the range tree
+		rangeTree = rangeObject.getRangeTree(root);
 
 		// remove the markup from the range tree
 		this.recursiveRemoveMarkup(rangeTree, markup);
@@ -539,12 +543,13 @@ GENTICS.Utils.Dom = Class.extend({
 	 * @hide
 	 */
 	recursiveRemoveMarkup: function (rangeTree, markup) {
+		var i, rangeLength, content;
 		// iterate over the rangetree objects of this level
-		for (var i = 0, rangeLength = rangeTree.length; i < rangeLength; ++i) {
+		for (i = 0, rangeLength = rangeTree.length; i < rangeLength; ++i) {
 			// check whether the object is the markup to be removed and is fully into the range
 			if (rangeTree[i].type == 'full' && rangeTree[i].domobj.nodeName == markup.get(0).nodeName) {
 				// found the markup, so remove it
-				var content = jQuery(rangeTree[i].domobj).contents();
+				content = jQuery(rangeTree[i].domobj).contents();
 				if (content.length > 0) {
 					// when the object has children, we unwrap them
 					content.first().unwrap();
@@ -577,7 +582,7 @@ GENTICS.Utils.Dom = Class.extend({
 	 * @method
 	 */
 	doCleanup: function(cleanup, rangeObject, start) {
-		var that = this;
+		var that = this, prevNode, modifiedRange, startObject;
 
 		if (typeof cleanup === 'undefined') {
 			cleanup = {'merge' : true, 'removeempty' : true};
@@ -587,11 +592,11 @@ GENTICS.Utils.Dom = Class.extend({
 			start = rangeObject.getCommonAncestorContainer();
 		}
 		// remember the previous node here (successive nodes of same type will be merged into this)
-		var prevNode = false,
+		prevNode = false;
 		// check whether the range needed to be modified during merging
-			modifiedRange = false,
+		modifiedRange = false;
 		// get the start object
-			startObject = jQuery(start);
+		startObject = jQuery(start);
 
 		// iterate through all sub nodes
 		startObject.contents().each(function(index) {
@@ -852,13 +857,13 @@ GENTICS.Utils.Dom = Class.extend({
 		}
 
 		if (typeof stopat.blocklevel === 'undefined') {
-			stopal.blocklevel = true;
+			stopat.blocklevel = true;
 		}
 		if (typeof stopat.list === 'undefined') {
-			stopal.list = true;
+			stopat.list = true;
 		}
 		if (typeof stopat.linebreak === 'undefined') {
-			stopal.linebreak = true;
+			stopat.linebreak = true;
 		}
 
 		if (typeof searchleft === 'undefined') {
@@ -941,7 +946,8 @@ GENTICS.Utils.Dom = Class.extend({
 		// first find the appropriate place to insert the given object
 		var parentElements = range.getContainerParents(limit, atEnd),
 			that = this,
-			newParent;
+			newParent,
+			container, offset, splitParts, contents;
 
 		if (!limit) {
 			limit = jQuery(document.body);
@@ -972,18 +978,18 @@ GENTICS.Utils.Dom = Class.extend({
 
 		if (typeof newParent !== 'undefined') {
 			// we found a possible new parent, so we split the DOM up to the new parent
-			var splitParts = this.split(range, jQuery(newParent), atEnd);
+			splitParts = this.split(range, jQuery(newParent), atEnd);
 			if (splitParts === true) {
 				// DOM was not split (there was no need to split it), insert the new object anyway
-				var container = range.startContainer,
-					offset = range.startOffset;
+				container = range.startContainer;
+				offset = range.startOffset;
 				if (atEnd) {
 					container = range.endContainer;
 					offset = range.endOffset;
 				}
 				if (offset === 0) {
 					// insert right before the first element in the container
-					var contents = jQuery(container).contents();
+					contents = jQuery(container).contents();
 					if (contents.length > 0) {
 						contents.eq(0).before(object);
 					} else {
@@ -1109,7 +1115,7 @@ GENTICS.Utils.Dom = Class.extend({
 		if (typeof searchleft === 'undefined') {
 			searchleft = true;
 		}
-		var boundaryFound = false, wordBoundaryPos;
+		var boundaryFound = false, wordBoundaryPos, tempWordBoundaryPos, textNode;
 		while (!boundaryFound) {
 			// check the node type
 			if (container.nodeType === 3) {
@@ -1131,7 +1137,7 @@ GENTICS.Utils.Dom = Class.extend({
 				} else {
 					// search left
 					wordBoundaryPos = container.data.substring(0, offset).search(/\W/);
-					var tempWordBoundaryPos = wordBoundaryPos;
+					tempWordBoundaryPos = wordBoundaryPos;
 					while (tempWordBoundaryPos != -1) {
 						wordBoundaryPos = tempWordBoundaryPos;
 						tempWordBoundaryPos = container.data.substring(
@@ -1205,7 +1211,7 @@ GENTICS.Utils.Dom = Class.extend({
 		}
 
 		if (container.nodeType !== 3) {
-			var textNode = this.searchAdjacentTextNode(container, offset, !searchleft);
+			textNode = this.searchAdjacentTextNode(container, offset, !searchleft);
 			if (textNode) {
 				container = textNode;
 				offset = searchleft ? 0 : container.data.length;

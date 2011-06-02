@@ -26,18 +26,18 @@ $(document).ready(function() {
 
 	// Test whether Aloha is properly initialized
 	asyncTest('Aloha Startup Test', function() {
-		$('body').bind('alohaReady',function() {
+		$('body').bind('aloha',function() {
 			ok(true, 'Aloha Event was fired');
 			start();
 		});
 		setTimeout(function() {
-			ok(false, 'Aloha was not initialized within 5 seconds');
+			ok(false, 'Aloha was not initialized within 10 seconds');
 			start();
-		}, 5000);
+		}, 10000);
 	});
 
 	// All other tests are done when Aloha is ready
-	$('body').bind('alohaReady', function() {
+	$('body').bind('aloha', function() {
 		// check whether error or warn messages were logged during startup
 		test('Aloha Error Log Test', function() {
 			var logHistory = Aloha.Log.getLogHistory();

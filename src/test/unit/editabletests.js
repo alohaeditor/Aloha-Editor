@@ -4,7 +4,6 @@
  * Licensed unter the terms of http://www.aloha-editor.com/license.html
  */
 
-
 function createCollapsedRange(container, offset) {
     	var range = new GENTICS.Utils.RangeObject({
 		    startContainer : container,
@@ -93,7 +92,7 @@ function doEnterTest(editable, container, offset, shift, twice, reference) {
 	
 }
 
-$(function() {
+$(document).ready(function() {
 	// Test whether Aloha is properly initialized
 	/*
 	  Note: this test is currently necessary, because it will catch the initial 'aloha' Event.
@@ -107,9 +106,9 @@ $(function() {
 			start();
 		});
 		this.timeout = setTimeout(function() {
-			ok(false, 'Aloha was not initialized within 5 seconds');
+			ok(false, 'Aloha was not initialized within 10 seconds');
 			start();
-		}, 5000);
+		}, 10000);
 	});
 
 	$('body').bind('aloha', function() {

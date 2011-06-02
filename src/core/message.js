@@ -4,10 +4,12 @@
  * Licensed unter the terms of http://www.aloha-editor.com/license.html
  */
 (function(window, undefined) {
+	"use strict";
 	var
 		jQuery = window.alohaQuery, $ = jQuery,
 		GENTICS = window.GENTICS,
-		Aloha = window.Aloha;
+		Aloha = window.Aloha,
+		Class = window.Class;
 
 /**
  * Message Object
@@ -70,7 +72,9 @@ Aloha.MessageLine = Class.extend({
 	 */
 	add: function(message) {
 		var messageline = '',
-			messagesLength = this.messages.length;
+			messagesLength = this.messages.length,
+			i;
+		
 		// dummy implementation to add a message
 		this.messages[messagesLength] = message;
 		while(messagesLength > 4) {
@@ -78,7 +82,7 @@ Aloha.MessageLine = Class.extend({
 			--messagesLength;
 		}
 
-		for ( var i = 0; i < messagesLength; i++) {
+		for ( i = 0; i < messagesLength; i++) {
 			messageline += this.messages[i].toString() + '<br/>';
 		}
 		jQuery('#gtx_aloha_messageline').html(messageline);
