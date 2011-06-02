@@ -7,6 +7,8 @@
 
 // Start Closure
 (function(window, undefined) {
+	"use strict";
+
 	var
 		jQuery = window.alohaQuery, $ = jQuery,
 		GENTICS = window.GENTICS,
@@ -77,10 +79,12 @@ Aloha.ListPlugin.init = function() {
 
 	// add the event handler for selection change
 	Aloha.bind('aloha-selection-changed', function(event, rangeObject) {
+		var i, effectiveMarkup;
+
 		that.createUnorderedListButton.setPressed(false);
 		that.createOrderedListButton.setPressed(false);
-		for (var i = 0; i < rangeObject.markupEffectiveAtStart.length; i++) {
-			var effectiveMarkup = rangeObject.markupEffectiveAtStart[ i ];
+		for ( i = 0; i < rangeObject.markupEffectiveAtStart.length; i++) {
+			effectiveMarkup = rangeObject.markupEffectiveAtStart[ i ];
 			if (Aloha.Selection.standardTextLevelSemanticsComparator(effectiveMarkup, jQuery('<ul></ul>'))) {
 				that.createUnorderedListButton.setPressed(true);
 				break;
@@ -134,13 +138,12 @@ Aloha.ListPlugin.applyButtonConfig = function (obj) {
  * Process Tab and Shift-Tab pressed in lists
  */
 Aloha.ListPlugin.processTab = function (event) {
-	switch(event['keyCode']) {
-		case 9: // TAB
-			if (event.shiftKey) {
-				return this.outdentList();
-			} else {
-				return this.indentList();
-			}
+	if (event.keyCode === 9/*tab*/ ) {
+		if (event.shiftKey) {
+			return this.outdentList();
+		} else {
+			return this.indentList();
+		}
 	}
 	return true;
 };
@@ -150,10 +153,11 @@ Aloha.ListPlugin.processTab = function (event) {
  * @return dom object or false
  */
 Aloha.ListPlugin.getStartingDomObjectToTransform = function () {
-	var rangeObject = Aloha.Selection.rangeObject;
+	var rangeObject = Aloha.Selection.rangeObject,
+		i, effectiveMarkup;
 
-	for (var i = 0; i < rangeObject.markupEffectiveAtStart.length; i++) {
-		var effectiveMarkup = rangeObject.markupEffectiveAtStart[ i ];
+	for ( i = 0; i < rangeObject.markupEffectiveAtStart.length; i++) {
+		effectiveMarkup = rangeObject.markupEffectiveAtStart[ i ];
 		if (this.transformableElements[effectiveMarkup.nodeName.toLowerCase()]) {
 			return effectiveMarkup;
 		}
@@ -167,10 +171,11 @@ Aloha.ListPlugin.getStartingDomObjectToTransform = function () {
  * @return dom object or false
  */
 Aloha.ListPlugin.getNearestSelectedListItem = function () {
-	var rangeObject = Aloha.Selection.rangeObject;
+	var rangeObject = Aloha.Selection.rangeObject,
+		i, effectiveMarkup;
 
-	for (var i = 0; i < rangeObject.markupEffectiveAtStart.length; i++) {
-		var effectiveMarkup = rangeObject.markupEffectiveAtStart[ i ];
+	for ( i = 0; i < rangeObject.markupEffectiveAtStart.length; i++) {
+		effectiveMarkup = rangeObject.markupEffectiveAtStart[ i ];
 		if (GENTICS.Utils.Dom.isListElement(effectiveMarkup)) {
 			return effectiveMarkup;
 		}
@@ -184,7 +189,10 @@ Aloha.ListPlugin.getNearestSelectedListItem = function () {
  * @param ordered true when transforming to/from an ordered list, false for unordered lists
  */
 Aloha.ListPlugin.transformList = function (ordered) {
-	var domToTransform = this.getStartingDomObjectToTransform();
+	var domToTransform = this.getStartingDomObjectToTransform(),
+		lastLi, i, jqNewLi, jqList, selectedSiblings, jqParentList,
+		newPara, jqToTransform, nodeName;
+		
 
 	if (!domToTransform) {
 		// wrap a paragraph around the selection
@@ -198,13 +206,13 @@ Aloha.ListPlugin.transformList = function (ordered) {
 	}
 
 	// check the dom object
-	var nodeName = domToTransform.nodeName.toLowerCase();
+	nodeName = domToTransform.nodeName.toLowerCase();
 
 	if (nodeName == 'ul' && !ordered) {
 		// first check whether the list is nested into another list
-		var jqList = jQuery(domToTransform);
+		jqList = jQuery(domToTransform);
 
-		var jqParentList = jqList.parent();
+		jqParentList = jqList.parent();
 		if (jqParentList.length > 0
 				&& GENTICS.Utils.Dom.isListElement(jqParentList.get(0))) {
 			// when the list is nested into another, our list items will be
@@ -214,9 +222,9 @@ Aloha.ListPlugin.transformList = function (ordered) {
 			// we are in an unordered list and shall transform it to paragraphs
 
 			// transform all li into p
-			var jqToTransform = jQuery(domToTransform);
+			jqToTransform = jQuery(domToTransform);
 			jQuery.each(jqToTransform.children('li'), function(index, li) {
-				var newPara = Aloha.Markup.transformDomObject(li, 'p');
+				newPara = Aloha.Markup.transformDomObject(li, 'p');
 				// if any lists are in the paragraph, move the to after the paragraph
 				newPara.after(newPara.children('ol,ul'));
 			});
@@ -242,9 +250,9 @@ Aloha.ListPlugin.transformList = function (ordered) {
 		this.mergeAdjacentLists(jQuery(domToTransform));
 	} else if (nodeName == 'ol' && ordered) {
 		// first check whether the list is nested into another list
-		var jqList = jQuery(domToTransform);
+		jqList = jQuery(domToTransform);
 
-		var jqParentList = jqList.parent();
+		jqParentList = jqList.parent();
 		if (jqParentList.length > 0
 				&& GENTICS.Utils.Dom.isListElement(jqParentList.get(0))) {
 			// when the list is nested into another, our list items will be
@@ -254,9 +262,9 @@ Aloha.ListPlugin.transformList = function (ordered) {
 			// we are in an unordered list and shall transform it to paragraphs
 
 			// transform all li into p
-			var jqToTransform = jQuery(domToTransform);
+			jqToTransform = jQuery(domToTransform);
 			jQuery.each(jqToTransform.children('li'), function(index, li) {
-				var newPara = Aloha.Markup.transformDomObject(li, 'p');
+				newPara = Aloha.Markup.transformDomObject(li, 'p');
 				// if any lists are in the paragraph, move the to after the paragraph
 				newPara.after(newPara.children('ol,ul'));
 			});
@@ -268,12 +276,12 @@ Aloha.ListPlugin.transformList = function (ordered) {
 		// we are in something different from a list and shall transform it into a list
 
 		// get the also selected siblings of the dom object
-		var selectedSiblings = Aloha.Selection.rangeObject.getSelectedSiblings(domToTransform);
+		selectedSiblings = Aloha.Selection.rangeObject.getSelectedSiblings(domToTransform);
 
 		// create a new list
-		var jqList = ordered ? jQuery('<ol></ol>') : jQuery('<ul></ul>');
+		jqList = ordered ? jQuery('<ol></ol>') : jQuery('<ul></ul>');
 		// add a new list item
-		var jqNewLi = jQuery('<li></li>');
+		jqNewLi = jQuery('<li></li>');
 		// add the li into the list
 		jqList.append(jqNewLi);
 		// append the contents of the old dom element to the li
@@ -283,8 +291,8 @@ Aloha.ListPlugin.transformList = function (ordered) {
 
 		// now also transform all siblings
 		if (selectedSiblings) {
-			var lastLi = false;
-			for (var i = 0; i < selectedSiblings.length; ++i) {
+			lastLi = false;
+			for ( i = 0; i < selectedSiblings.length; ++i) {
 				if (GENTICS.Utils.Dom.isBlockLevelElement(selectedSiblings[i])) {
 					if (lastLi) {
 						lastLi = false;
@@ -295,7 +303,7 @@ Aloha.ListPlugin.transformList = function (ordered) {
 					jqList.append(jqNewLi);
 				} else {
 					if (selectedSiblings[i].nodeType == 3
-							&& jQuery.trim(selectedSiblings[i].data).length == 0) {
+							&& jQuery.trim(selectedSiblings[i].data).length === 0) {
 						continue;
 					}
 					if (!lastLi) {
@@ -319,23 +327,25 @@ Aloha.ListPlugin.transformList = function (ordered) {
  * Indent the selected list items by moving them into a new created, nested list
  */
 Aloha.ListPlugin.indentList = function () {
-	var listItem = this.getNearestSelectedListItem();
+	var listItem = this.getNearestSelectedListItem(),
+		i, jqNewList, selectedSiblings, jqOldList, jqItemBefore;
+	
 	if (listItem) {
-		var jqItemBefore = jQuery(listItem).prev('li');
+		jqItemBefore = jQuery(listItem).prev('li');
 
 		// when we are in the first li of a list, there is no indenting
-		if (jqItemBefore.length == 0) {
+		if (jqItemBefore.length === 0) {
 			// but we handled the TAB keystroke
 			return false;
 		}
-		var jqOldList = jQuery(listItem).parent();
+		jqOldList = jQuery(listItem).parent();
 
 		// get the also selected siblings of the dom object
-		var selectedSiblings = Aloha.Selection.rangeObject.getSelectedSiblings(listItem);
+		selectedSiblings = Aloha.Selection.rangeObject.getSelectedSiblings(listItem);
 
 
 		// create the new list element by cloning the selected list element's parent
-		var jqNewList = jQuery(listItem).parent().clone(false).empty();
+		jqNewList = jQuery(listItem).parent().clone(false).empty();
 		jqNewList.append(listItem);
 
 		// we found a list item before the first selected one, so append the new list to it
@@ -343,7 +353,7 @@ Aloha.ListPlugin.indentList = function () {
 
 		// check for multiple selected items
 		if (selectedSiblings) {
-			for ( var i = 0; i < selectedSiblings.length; ++i) {
+			for ( i = 0; i < selectedSiblings.length; ++i) {
 				jqNewList.append(jQuery(selectedSiblings[i]));
 			}
 		}
@@ -364,35 +374,40 @@ Aloha.ListPlugin.indentList = function () {
  * Outdent nested list items by moving them into the outer list
  */
 Aloha.ListPlugin.outdentList = function () {
-	var listItem = this.getNearestSelectedListItem();
+	var
+		listItem = this.getNearestSelectedListItem(),
+		i, jqNewPostList,
+		jqListItem, jqList, jqParentList, wrappingLi,
+		selectedSiblings, lastSelected;
+	
 	if (listItem) {
 		// check whether the list is nested into another list
-		var jqListItem = jQuery(listItem);
-		var jqList = jqListItem.parent();
+		jqListItem = jQuery(listItem);
+		jqList = jqListItem.parent();
 
 		// get the parent list
-		var jqParentList = jqList.parents('ul,ol');
+		jqParentList = jqList.parents('ul,ol');
 
 		// check whether the inner list is directly inserted into a li element
-		var wrappingLi = jqList.parent('li');
+		wrappingLi = jqList.parent('li');
 
 		if (jqParentList.length > 0
 				&& GENTICS.Utils.Dom.isListElement(jqParentList.get(0))) {
 			// the list is nested into another list
 
 			// get the also selected siblings of the dom object
-			var selectedSiblings = Aloha.Selection.rangeObject.getSelectedSiblings(listItem);
+			selectedSiblings = Aloha.Selection.rangeObject.getSelectedSiblings(listItem);
 
 			// check for multiple selected items
 			if (selectedSiblings && selectedSiblings.length > 0) {
-				var lastSelected = jQuery(selectedSiblings[selectedSiblings.length - 1]);
+				lastSelected = jQuery(selectedSiblings[selectedSiblings.length - 1]);
 			} else {
-				var lastSelected = jqListItem;
+				lastSelected = jqListItem;
 			}
 
 			// check whether we found not selected li's after the selection
 			if (lastSelected.nextAll('li').length > 0) {
-				var jqNewPostList = jqList.clone(false).empty();
+				jqNewPostList = jqList.clone(false).empty();
 				jqNewPostList.append(lastSelected.nextAll());
 			}
 
@@ -408,19 +423,19 @@ Aloha.ListPlugin.outdentList = function () {
 
 			// check for multiple selected items
 			if (selectedSiblings && selectedSiblings.length > 0) {
-				for ( var i = selectedSiblings.length - 1; i >= 0; --i) {
+				for ( i = selectedSiblings.length - 1; i >= 0; --i) {
 					jqListItem.after(jQuery(selectedSiblings[i]));
 				}
 			}
 
 			// finally check whether there are elements left in the list
-			if (jqList.contents('li').length == 0) {
+			if (jqList.contents('li').length === 0) {
 				// list is completely empty, so remove it
 				jqList.remove();
 			}
 
 			// check whether the wrapping li is empty now
-			if (wrappingLi.length > 0 && wrappingLi.contents().length == 0) {
+			if (wrappingLi.length > 0 && wrappingLi.contents().length === 0) {
 				wrappingLi.remove();
 			}
 
@@ -452,18 +467,31 @@ Aloha.ListPlugin.refreshSelection = function () {
  */
 Aloha.ListPlugin.mergeAdjacentLists = function (jqList) {
 	// first get the first previous sibling of same type
-	var firstList = jqList.get(0);
-	while (firstList.previousSibling && firstList.previousSibling.nodeType == 1
-			&& firstList.previousSibling.nodeName == firstList.nodeName) {
+	var firstList = jqList.get(0), jqNextList;
+
+	while (
+		firstList.previousSibling
+		&& firstList.previousSibling.nodeType === 1
+		&& firstList.previousSibling.nodeName === firstList.nodeName
+	) {
 		firstList = firstList.previousSibling;
 	}
 
 	jqList = jQuery(firstList);
 	// now merge all adjacent lists into this one
-	while (firstList.nextSibling
-			&& ((firstList.nextSibling.nodeType == 1 && firstList.nextSibling.nodeName == firstList.nodeName) ||
-				(firstList.nextSibling.nodeType == 3 && jQuery.trim(firstList.nextSibling.data).length == 0))) {
-		var jqNextList = jQuery(firstList.nextSibling);
+	while (
+		firstList.nextSibling
+		&& (
+			(
+				firstList.nextSibling.nodeType === 1
+				&& firstList.nextSibling.nodeName === firstList.nodeName
+			) || (
+				firstList.nextSibling.nodeType === 3
+				&& jQuery.trim(firstList.nextSibling.data).length === 0
+			)
+		)
+	) {
+		jqNextList = jQuery(firstList.nextSibling);
 		if (firstList.nextSibling.nodeType == 1) {
 			jqNextList.contents().appendTo(jqList);
 		}
