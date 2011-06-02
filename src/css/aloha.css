@@ -168,7 +168,7 @@ button.aloha-button {
 }
 
 button.aloha-button-big {
-	background: url(../img/base_big.png) no-repeat !important;
+	background: url(../img/base-big.png) no-repeat !important;
 }
 
 /*buttons for format plugin*/
@@ -208,7 +208,7 @@ button.aloha-button-a {
 	background-position: -288px 0px !important;
 }
 
-button.aloha-button-a_remove {
+button.aloha-button-a-remove {
 	background-position: -304px 0px !important;
 }
 
@@ -219,7 +219,7 @@ button.aloha-button-p {
 	background-position: 0px 0 !important;
 }
 
-button.aloha-button-p_de {
+button.aloha-button-p-de {
 	background-position: 0px -42px !important;
 }
 
@@ -227,7 +227,7 @@ button.aloha-button-h1 {
 	background-position: -52px 0 !important;
 }
 
-button.aloha-button-h1_de {
+button.aloha-button-h1-de {
 	background-position: -52px -42px !important;
 }
 
@@ -235,7 +235,7 @@ button.aloha-button-h2 {
 	background-position: -104px 0 !important;
 }
 
-button.aloha-button-h2_de {
+button.aloha-button-h2-de {
 	background-position: -104px -42px !important;
 }
 
@@ -243,7 +243,7 @@ button.aloha-button-h3 {
 	background-position: -156px 0 !important;
 }
 
-button.aloha-button-h3_de {
+button.aloha-button-h3-de {
 	background-position: -156px -42px !important;
 }
 
@@ -251,7 +251,7 @@ button.aloha-button-h4 {
 	background-position: -208px 0 !important;
 }
 
-button.aloha-button-h4_de {
+button.aloha-button-h4-de {
 	background-position: -208px -42px !important;
 }
 
@@ -259,7 +259,7 @@ button.aloha-button-h5 {
 	background-position: -260px 0 !important;
 }
 
-button.aloha-button-h5_de {
+button.aloha-button-h5-de {
 	background-position: -260px -42px !important;
 }
 
@@ -267,7 +267,7 @@ button.aloha-button-h6 {
 	background-position: -312px 0 !important;
 }
 
-button.aloha-button-h6_de {
+button.aloha-button-h6-de {
 	background-position: -312px -42px !important;
 }
 
@@ -275,7 +275,7 @@ button.aloha-button-pre {
 	background-position: -364px 0 !important;
 }
 
-button.aloha-button-pre_de {
+button.aloha-button-pre-de {
 	background-position: -364px -42px !important;
 }
 
@@ -283,7 +283,7 @@ button.aloha-button-title {
 	background-position: -416px 0 !important;
 }
 
-button.aloha-button-title_de {
+button.aloha-button-title-de {
 	background-position: -416px -42px !important;
 }
 
@@ -327,10 +327,10 @@ button.aloha-button-addEvent {
 button.aloha-button-abbr {
 	background-position: -336px 0px !important;
 }
-button.aloha-button-row_header {
+button.aloha-button-row-header {
 	background-position: -352px 0px !important;
 }
-button.aloha-button-col_header {
+button.aloha-button-col-header {
 	background-position: -368px 0px !important;
 }
 button.aloha-button-tree {
@@ -354,21 +354,21 @@ div.aloha-button a:hover {
 .aloha-logo {
 	width:37px !important;
 	height:25px !important;
-	background-image: url('../img/gentics_logo.png') !important;
+	background-image: url('../img/gentics-logo.png') !important;
 }
 
 .aloha-maximize {
-	background-image: url('../img/gentics_logo.png') !important;
+	background-image: url('../img/gentics-logo.png') !important;
 }
 
 .aloha-fade-out {
-	background-image: url('../img/fade_out.png') !important;
+	background-image: url('../img/fade-out.png') !important;
 	width:20px !important;
 	height:20px !important;
 }
 
 .aloha-fade-in {
-	background-image: url('../img/fade_in.png') !important;
+	background-image: url('../img/fade-in.png') !important;
 	width:20px !important;
 	height:20px !important;
 }
@@ -404,7 +404,7 @@ html body #aloha-ribbon {
  * extJs GENTICS Multisplit Button
  */
 ul.aloha-multisplit button.aloha-button {
-	background-image: url(../img/base_multi.png) !important;
+	background-image: url(../img/base-multi.png) !important;
 	background-repeat: no-repeat;
 	background-position: 0 0;
 	/*
