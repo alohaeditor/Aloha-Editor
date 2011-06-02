@@ -140,9 +140,9 @@
 					o.attr('title', cleanUrl+'. '+that.i18n('error.'+e));
 					// set the link class
 					if ( jQuery.inArray(xhr.status, that.warningCodes) >= 0 ) {
-						o.addClass('GENTICS_link_warn');
+						o.addClass('aloha-link-warn');
 					} else {
-						o.addClass('GENTICS_link_error');
+						o.addClass('aloha-link-error');
 					}
 				}
 			},
@@ -204,8 +204,8 @@
 			o.removeAttr('data-title');
 			o.removeAttr('data-invalid');
 			// remove the classes
-			o.removeClass('GENTICS_link_error');
-			o.removeClass('GENTICS_link_warn');
+			o.removeClass('aloha-link-error');
+			o.removeClass('aloha-link-warn');
 		}
 	};
 

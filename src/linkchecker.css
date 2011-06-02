@@ -5,10 +5,10 @@
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
 
-.GENTICS_link_error {
+.aloha-link-error {
 	color: red !important;
 }
 
-.GENTICS_link_warn {
+.aloha-link-warn {
 	color: red !important;
 }
