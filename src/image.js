@@ -191,7 +191,7 @@
 				incPadding, decPadding;
 			
 			this.insertImgButton = new Aloha.ui.Button({
-				'iconClass': 'aloha-button AlohaImage_insert',
+				'iconClass': 'aloha-button aloha-image-insert',
 				'size' : 'small',
 				'onclick' : function () { me.insertImg(); },
 				'tooltip' : me.i18n('button.addimg.tooltip'),
@@ -233,7 +233,7 @@
 			}
 			if (config.img.ui.align) {
 				alignLeftButton = new Aloha.ui.Button({
-					'iconClass': 'GENTICS_img AlohaImage_align_left',
+					'iconClass': 'aloha-img aloha-image-align-left',
 					'size': 'small',
 					'onclick' : function() {
 						jQuery(me.findImgMarkup()).css('float', 'left');
@@ -241,7 +241,7 @@
 					'tooltip': me.i18n('button.img.align.left.tooltip')
 				});
 				alignRightButton = new Aloha.ui.Button({
-					'iconClass': 'GENTICS_img AlohaImage_align_right',
+					'iconClass': 'aloha-img aloha-image-align-right',
 					'size': 'small',
 					'onclick' : function() {
 						jQuery(me.findImgMarkup()).css('float', 'right');
@@ -249,7 +249,7 @@
 					'tooltip': me.i18n('button.img.align.right.tooltip')
 				});
 				alignNoneButton = new Aloha.ui.Button({
-					'iconClass': 'GENTICS_img AlohaImage_align_none',
+					'iconClass': 'aloha-img aloha-image-align-none',
 					'size': 'small',
 					'onclick' : function() {
 						var img = me.findImgMarkup();
@@ -290,7 +290,7 @@
 			if (config.img.ui.margin) {
 
 				incPadding = new Aloha.ui.Button({
-					iconClass: 'GENTICS_img AlohaImage_padding_increase',
+					iconClass: 'aloha-img aloha-image-padding-increase',
 					size: 'small',
 					onclick: function() {
 						// Apply
@@ -305,7 +305,7 @@
 						2
 				);
 				decPadding = new Aloha.ui.Button({
-					iconClass: 'GENTICS_img AlohaImage_padding_decrease',
+					iconClass: 'aloha-img aloha-image-padding-decrease',
 					size: 'small',
 					onclick: function() {
 						// Apply
@@ -328,7 +328,7 @@
 					'size' : 'small',
 					'tooltip' : this.i18n('Crop'),
 					'toggle' : true,
-					'iconClass' : 'cnr_crop',
+					'iconClass' : 'cnr-crop',
 					'onclick' : function (btn, event) {
 						if (btn.pressed) {
 							me.crop();
@@ -355,7 +355,7 @@
 						'size' : 'small',
 						'tooltip' : this.i18n('Reset'),
 						'toggle' : false,
-						'iconClass' : 'cnr_reset',
+						'iconClass' : 'cnr-reset',
 						'onclick' : function (btn, event) {
 							me.reset();
 						}
@@ -366,7 +366,7 @@
 			}
 			if (config.img.ui.resize) {
 				incSize = new Aloha.ui.Button({
-					iconClass: 'GENTICS_img AlohaImage_size_increase',
+					iconClass: 'aloha-img aloha-image-size-increase',
 					size: 'small',
 					onclick: function() {
 						// Apply
@@ -381,7 +381,7 @@
 						2
 				);
 				decSize = new Aloha.ui.Button({
-					iconClass: 'GENTICS_img AlohaImage_size_decrease',
+					iconClass: 'aloha-img aloha-image-size-decrease',
 					size: 'small',
 					onclick: function() {
 						// Apply
@@ -687,14 +687,14 @@
 		 *
 		 */
 		initCropButtons: function() {
-			var btns = jQuery('#GENTICS_CropNResize_btns'),
+			var btns = jQuery('#aloha-CropNResize-btns'),
 				oldLeft = 0,
 				oldTop = 0;
 			jQuery('body').append(
-					'<div id="GENTICS_CropNResize_btns">' +
-					'<button class="cnr_crop_apply" title="' + this.i18n('Accept') +
+					'<div id="aloha-CropNResize-btns">' +
+					'<button class="cnr-crop-apply" title="' + this.i18n('Accept') +
 						'" onclick="Aloha.Image.acceptCrop();">&#10004;</button>' +
-					'<button class="cnr_crop_cancel" title="' + this.i18n('Cancel') +
+					'<button class="cnr-crop-cancel" title="' + this.i18n('Cancel') +
 						'" onclick="Aloha.Image.endCrop();">&#10006;</button>' +
 					'</div>'
 			);
@@ -724,7 +724,7 @@
 		 * destroy crop confirm and cancel buttons
 		 */
 		destroyCropButtons: function () {
-			jQuery('#GENTICS_CropNResize_btns').remove();
+			jQuery('#aloha-CropNResize-btns').remove();
 			clearInterval(this.interval);
 		},
 
