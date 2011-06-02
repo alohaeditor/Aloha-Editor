@@ -31,9 +31,15 @@
 	// Insert jQuery Prototypes
 	jQuery.extend(true, jQuery.fn, {
 		increase: jQuery.fn.increase || function(attr){
-			var	obj = jQuery(this),
-				value = obj.css(attr).toFloat(),
-				newValue = Math.round((value||1)*1.2);
+			var	obj = jQuery(this), value, newValue;
+			// Check
+			if ( !obj.length ) {
+				return obj;
+			}
+			// Calculate
+			value = obj.css(attr).toFloat();
+			newValue = Math.round((value||1)*1.2);
+			// Apply
 			if (value == newValue) { // when value is 2, won't increase
 				newValue++;
 			}
@@ -43,9 +49,14 @@
 			return obj;
 		},
 		decrease: jQuery.fn.decrease || function(attr){
-			var	obj = jQuery(this),
-				value = obj.css(attr).toFloat(),
-				newValue = Math.round((value||0)*0.8);
+			var	obj = jQuery(this), value, newValue;
+			// Check
+			if ( !obj.length ) {
+				return obj;
+			}
+			// Calculate
+			value = obj.css(attr).toFloat();
+			newValue = Math.round((value||0)*0.8);
 			// Apply
 			if (value == newValue && newValue >0) { // when value is 2, won't increase
 				newValue--;
@@ -431,10 +442,10 @@
 				});
 			}
 			if (config.img.onCropped && typeof config.img.onCropped === "function") {
-				this.onCropped = this.settings.onCropped;
+				this.onCropped = config.img.onCropped;
 			}
 			if (config.img.onReset && typeof config.img.onReset === "function") {
-				this.onReset = this.settings.onReset;
+				this.onReset = config.img.onReset;
 			}
 			if (config.img.aspectRatio && typeof config.img.aspectRatio !== "boolean") {
 				this.settings.aspectRatio = true;
