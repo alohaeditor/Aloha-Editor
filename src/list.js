@@ -43,7 +43,7 @@ Aloha.ListPlugin.init = function() {
 
 	// the 'create unordered list' button
 	this.createUnorderedListButton = new Aloha.ui.Button({
-		'iconClass' : 'GENTICS_button GENTICS_button_ul',
+		'iconClass' : 'aloha-button aloha-button-ul',
 		'size' : 'small',
 		'tooltip' : this.i18n('button.createulist.tooltip'),
 		'toggle' : true,
@@ -61,7 +61,7 @@ Aloha.ListPlugin.init = function() {
 
 	// the 'create ordered list' button
 	this.createOrderedListButton = new Aloha.ui.Button({
-		'iconClass' : 'GENTICS_button GENTICS_button_ol',
+		'iconClass' : 'aloha-button aloha-button-ol',
 		'size' : 'small',
 		'tooltip' : this.i18n('button.createolist.tooltip'),
 		'toggle' : true,
