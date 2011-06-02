@@ -9,6 +9,8 @@
 
 // Start Closure
 (function(window, undefined) {
+	"use strict";
+	
 	var
 		jQuery = window.alohaQuery, $ = jQuery,
 		GENTICS = window.GENTICS,
@@ -132,6 +134,9 @@
 			var 
 				me = this,
 				imagePluginUrl = Aloha.getPluginUrl('image');
+			
+			this.settings.config = this.settings.config || {};
+			
 			if (typeof this.settings === 'undefined') {
 				this.settings = Aloha.settings.plugins.image;
 				this.settings = jQuery.extend(true,this.settings,this.config);
@@ -179,7 +184,12 @@
 		 initializeButtons: function() {
 			var
 				config = this.settings.config,
-				me = this;
+				me = this, 
+				incSize, decSize,
+				imgSrcLabel, imgTitleLabel,
+				alignLeftButton, alignRightButton, alignNoneButton,
+				incPadding, decPadding;
+			
 			this.insertImgButton = new Aloha.ui.Button({
 				'iconClass': 'aloha-button AlohaImage_insert',
 				'size' : 'small',
@@ -198,7 +208,7 @@
 		 
 			// add the src field for images
 			if (config.img.ui.meta) {
-				var imgSrcLabel = new Aloha.ui.Button({
+				imgSrcLabel = new Aloha.ui.Button({
 					'label': me.i18n('field.img.src.label'),
 					'tooltip': me.i18n('field.img.src.tooltip'),
 					'size': 'small'
@@ -207,7 +217,7 @@
 				this.imgSrcField.setObjectTypeFilter( this.objectTypeFilter );
 
 				// add the title field for images
-				var imgTitleLabel = new Aloha.ui.Button({
+				imgTitleLabel = new Aloha.ui.Button({
 					'label': me.i18n('field.img.title.label'),
 					'tooltip': me.i18n('field.img.title.tooltip'),
 					'size': 'small'
@@ -222,7 +232,7 @@
 				);
 			}
 			if (config.img.ui.align) {
-				var alignLeftButton = new Aloha.ui.Button({
+				alignLeftButton = new Aloha.ui.Button({
 					'iconClass': 'GENTICS_img AlohaImage_align_left',
 					'size': 'small',
 					'onclick' : function() {
@@ -230,7 +240,7 @@
 					},
 					'tooltip': me.i18n('button.img.align.left.tooltip')
 				});
-				var alignRightButton = new Aloha.ui.Button({
+				alignRightButton = new Aloha.ui.Button({
 					'iconClass': 'GENTICS_img AlohaImage_align_right',
 					'size': 'small',
 					'onclick' : function() {
@@ -238,7 +248,7 @@
 					},
 					'tooltip': me.i18n('button.img.align.right.tooltip')
 				});
-				var alignNoneButton = new Aloha.ui.Button({
+				alignNoneButton = new Aloha.ui.Button({
 					'iconClass': 'GENTICS_img AlohaImage_align_none',
 					'size': 'small',
 					'onclick' : function() {
@@ -279,7 +289,7 @@
 			}
 			if (config.img.ui.margin) {
 
-				var incPadding = new Aloha.ui.Button({
+				incPadding = new Aloha.ui.Button({
 					iconClass: 'GENTICS_img AlohaImage_padding_increase',
 					size: 'small',
 					onclick: function() {
@@ -294,7 +304,7 @@
 						this.i18n('floatingmenu.tab.img'),
 						2
 				);
-				var decPadding = new Aloha.ui.Button({
+				decPadding = new Aloha.ui.Button({
 					iconClass: 'GENTICS_img AlohaImage_padding_decrease',
 					size: 'small',
 					onclick: function() {
@@ -355,7 +365,7 @@
 				);
 			}
 			if (config.img.ui.resize) {
-				var incSize = new Aloha.ui.Button({
+				incSize = new Aloha.ui.Button({
 					iconClass: 'GENTICS_img AlohaImage_size_increase',
 					size: 'small',
 					onclick: function() {
@@ -370,7 +380,7 @@
 						this.i18n('floatingmenu.tab.img'),
 						2
 				);
-				var decSize = new Aloha.ui.Button({
+				decSize = new Aloha.ui.Button({
 					iconClass: 'GENTICS_img AlohaImage_size_decrease',
 					size: 'small',
 					onclick: function() {
@@ -449,7 +459,7 @@
 				//debugger;
 				try {
 					me.applyButtonConfig(params.editable.obj);
-				} catch (e) {
+				} catch (err) {
 					Aloha.Log.error(me, "Button configuration failed");
 				}
 			});
@@ -556,11 +566,15 @@
 		},
 
 		clickImage: function ( e ) {
+			var thisimg, editable, offset, imgRange, startTag;
+
 			if (this.settings.config.img.ui.resizable) {
 				this.endResize();
 			}
-			var thisimg = this.obj = jQuery(e.target),
-				editable = thisimg.closest('.aloha-editable');
+			
+			thisimg = this.obj = jQuery(e.target);
+			editable = thisimg.closest('.aloha-editable');
+			
 			this.restoreProps.push({
 				obj : e.srcElement,
 				src : this.obj.attr('src'),
@@ -570,8 +584,9 @@
 			if (this.settings.config.img.ui.resizable) {
 				this.resize();
 			}
-			var offset = GENTICS.Utils.Dom.getIndexInParent(e.target),
-				imgRange = Aloha.Selection.getRangeObject();
+
+			offset = GENTICS.Utils.Dom.getIndexInParent(e.target);
+			imgRange = Aloha.Selection.getRangeObject();
 
 			try {
 				imgRange.startContainer = imgRange.endContainer = thisimg.parent()[0];
@@ -579,7 +594,7 @@
 				imgRange.endOffset = offset+1;
 				imgRange.select();
 			} catch(err) {
-				var startTag = thisimg.parent()[0];
+				startTag = thisimg.parent()[0];
 				imgRange = new GENTICS.Utils.RangeObject({
 					startContainer: startTag,
 					endContainer: startTag,
@@ -594,12 +609,13 @@
 		findImgMarkup: function ( range ) {
 			// Prepare
 			var
-				me = this, config = this.config;
+				me = this, config = this.config,
+				result, targetObj;
 
 			if ( typeof range === 'undefined' ) {
 				range = Aloha.Selection.getRangeObject();
 			}
-			var targetObj = jQuery(range.startContainer);
+			targetObj = jQuery(range.startContainer);
 			try {
 				if ( Aloha.activeEditable ) {
 					if ((  typeof range.startContainer !== 'undefined'
@@ -610,7 +626,7 @@
 						&& range.startOffset+1 === range.endOffset) ||
 						 (targetObj.hasClass('Aloha_Image_Resize')))
 					{
-						var result = targetObj.find('img')[0];
+						result = targetObj.find('img')[0];
 						if (! result.css) result.css = '';
 						if (! result.title) result.title = '';
 						if (! result.src) result.src = '';
@@ -630,13 +646,15 @@
 		insertImg: function() {
 			var range = Aloha.Selection.getRangeObject(),
 				config = this.getEditableConfig(Aloha.activeEditable.obj),
-				imagePluginUrl = Aloha.getPluginUrl('image');
+				imagePluginUrl = Aloha.getPluginUrl('image'),
+				imagestyle, imagetag, newImg;
+			
 			if ( range.isCollapsed() ) {
 				// TODO I would suggest to call the srcChange method. So all image src
 				// changes are on one single point.
-				var imagestyle = "width: " + config.img.max_width + "; height: " + config.img.max_height,
-					imagetag = '<img style="'+imagestyle+'" src="' + imagePluginUrl + '/img/blank.jpg" title="" />',
-					newImg = jQuery(imagetag);
+				imagestyle = "width: " + config.img.max_width + "; height: " + config.img.max_height;
+				imagetag = '<img style="'+imagestyle+'" src="' + imagePluginUrl + '/img/blank.jpg" title="" />';
+				newImg = jQuery(imagetag);
 				// add the click selection handler
 				//newImg.click( Aloha.Image.clickImage ); - Using delegate now
 				GENTICS.Utils.Dom.insertIntoDOM(newImg, range, jQuery(Aloha.activeEditable.obj));
