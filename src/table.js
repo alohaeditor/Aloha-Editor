@@ -59,9 +59,9 @@ Aloha.TablePlugin.parameters = {
 	classSelectionColumn : 'aloha-table-selectrow',       // class for the left bound table-cells to select rows
 	classLeftUpperCorner : 'aloha-table-leftuppercorner', // class for the left upper corner cell
 	classTableWrapper    : 'aloha-table-wrapper',         // class of the outest table-wrapping div
-	classCellSelected    : 'aloha-cell_selected',         // class of cell which are selected (row/column selection)
-	waiRed				 : 'aloha-WAI_RED',                     // class that shows wai of div
-	waiGreen			 : 'aloha-WAI_GREEN',                   // class that shows wai of div
+	classCellSelected    : 'aloha-cell-selected',         // class of cell which are selected (row/column selection)
+	waiRed				 : 'aloha-wai-red',                     // class that shows wai of div
+	waiGreen			 : 'aloha-wai-green',                   // class that shows wai of div
 	selectionArea        : 10                                     // width/height of the selection rows (in pixel)
 };
 
@@ -371,7 +371,7 @@ Aloha.TablePlugin.initTableButtons = function () {
 						newRange.endOffset = captionContent.text().length;
 
 						// blur all editables within the table
-						that.activeTable.obj.find('div.aloha-table-Cell_editable').blur();
+						that.activeTable.obj.find('div.aloha-table-cell-editable').blur();
 
 						cDiv.focus();
 						newRange.select();
@@ -1329,7 +1329,7 @@ Aloha.Table.prototype.lastCellKeyDown = function(jqEvent) {
 
 		// for ie make a special case ... focus the first cell of the new row
 		if (jQuery.browser.msie) {
-			this.obj.find('tr:last td:nth-child(1) div.aloha-table-Cell_editable').get(0).focus();
+			this.obj.find('tr:last td:nth-child(1) div.aloha-table-cell-editable').get(0).focus();
 			return false;
 		}
 	}
@@ -1419,9 +1419,9 @@ Aloha.Table.prototype.deleteRows = function() {
 		this.numRows -= rows2delete.length;
 
 		if (jQuery.browser.msie){
-			setTimeout(this.obj.find('tr:nth-child(' + (focusRowId + 1) + ') td:nth-child(2) div.aloha-table-Cell_editable').get(0).focus, 5);
+			setTimeout(this.obj.find('tr:nth-child(' + (focusRowId + 1) + ') td:nth-child(2) div.aloha-table-cell-editable').get(0).focus, 5);
 		}else{
-			this.obj.find('tr:nth-child(' + (focusRowId + 1) + ') td:nth-child(2) div.aloha-table-Cell_editable').get(0).focus();
+			this.obj.find('tr:nth-child(' + (focusRowId + 1) + ') td:nth-child(2) div.aloha-table-cell-editable').get(0).focus();
 		}
 
 		// re-attach the events for the last cell
@@ -1516,9 +1516,9 @@ Aloha.Table.prototype.deleteColumns = function() {
 		this.numCols -= colIDs.length;
 
 		if (jQuery.browser.msie){
-			setTimeout(this.obj.find('tr:nth-child(2) td:nth-child(' + (focusColID + 1) + ') div.aloha-table-Cell_editable').get(0).focus, 5);
+			setTimeout(this.obj.find('tr:nth-child(2) td:nth-child(' + (focusColID + 1) + ') div.aloha-table-cell-editable').get(0).focus, 5);
 		}else{
-			this.obj.find('tr:nth-child(2) td:nth-child(' + (focusColID + 1) + ') div.aloha-table-Cell_editable').get(0).focus();
+			this.obj.find('tr:nth-child(2) td:nth-child(' + (focusColID + 1) + ') div.aloha-table-cell-editable').get(0).focus();
 		}
 
 		// re-attach the events for the last cell
@@ -1882,7 +1882,7 @@ Aloha.Table.prototype.selectColumns = function() {
 		Aloha.TableHelper.selectedCells.push(selectedCellsInCol);
 	};
 	// blur all editables within the table
-	this.obj.find('div.aloha-table-Cell_editable').blur();
+	this.obj.find('div.aloha-table-cell-editable').blur();
 
 	// add the class (visually selecting the cells)
 	jQuery(toSelect).addClass(selectClass);
@@ -1916,7 +1916,7 @@ Aloha.Table.prototype.selectRows = function() {
 	Aloha.FloatingMenu.setScope(Aloha.TablePlugin.getUID('row'));
 
 	// blur all editables within the table
-	this.obj.find('div.aloha-table-Cell_editable').blur();
+	this.obj.find('div.aloha-table-cell-editable').blur();
 };
 
 
@@ -2060,7 +2060,7 @@ Aloha.Table.Cell.prototype.editableFocus = function(e) {
 		Aloha.Table.Cell.lastActiveCell = this;
 
 		// add an active-class
-		this.obj.addClass('aloha-table-Cell_active');
+		this.obj.addClass('aloha-table-cell_active');
 
 		// set the focus flag
 		this.hasFocus = true;
@@ -2093,7 +2093,7 @@ Aloha.Table.Cell.prototype.editableBlur = function(jqEvent){
 	this.hasFocus = false;
 
 	// remove "active class"
-	this.obj.removeClass('aloha-table-Cell_active');
+	this.obj.removeClass('aloha-table-cell-active');
 };
 
 Aloha.Table.Cell.prototype.activate = function() {
@@ -2104,7 +2104,7 @@ Aloha.Table.Cell.prototype.activate = function() {
 	var wrapper = this.obj.children('div').eq(0);
 
 	wrapper.contentEditable(true);
-	wrapper.addClass('aloha-table-Cell_editable');
+	wrapper.addClass('aloha-table-cell-editable');
 
 
 	var that = this;
@@ -2166,7 +2166,7 @@ Aloha.Table.Cell.prototype.activate = function() {
  * @return void
  */
 Aloha.Table.Cell.prototype.deactivate = function() {
-	var wrapper = this.obj.children('.aloha-table-Cell_editable');
+	var wrapper = this.obj.children('.aloha-table-cell-editable');
 
 	if (wrapper.length) {
 		// get the inner html of the contenteditable div
@@ -2386,7 +2386,7 @@ Aloha.Table.CreateLayer = function(){};
  */
 Aloha.Table.CreateLayer.prototype.parameters = {
 	elemId: 'aloha-table-createLayer', // id of the create-table panel
-	className: 'aloha-table-Createdialog',   // class-name of the create-table panel
+	className: 'aloha-table-createdialog',   // class-name of the create-table panel
 	numX: 10,	         // Number of cols in the create-layer
 	numY: 10,            // Number of rows in the create-layer vertically
 	layer: undefined,    // Attribute holding the create-layer
