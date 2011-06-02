@@ -54,14 +54,14 @@ Aloha.TablePlugin.activeTable = undefined;
  *            The class of activated tables
  */
 Aloha.TablePlugin.parameters = {
-	className            : 'GENTICS_Aloha_Table',                 // class of editable tables
-	classSelectionRow    : 'GENTICS_Aloha_Table_selectColumn',    // class for the upper table-row to select columns
-	classSelectionColumn : 'GENTICS_Aloha_Table_selectRow',       // class for the left bound table-cells to select rows
-	classLeftUpperCorner : 'GENTICS_Aloha_Table_leftUpperCorner', // class for the left upper corner cell
-	classTableWrapper    : 'GENTICS_Aloha_Table_wrapper',         // class of the outest table-wrapping div
-	classCellSelected    : 'GENTICS_Aloha_Cell_selected',         // class of cell which are selected (row/column selection)
-	waiRed				 : 'GENTICS_WAI_RED',                     // class that shows wai of div
-	waiGreen			 : 'GENTICS_WAI_GREEN',                   // class that shows wai of div
+	className            : 'aloha-table',                 // class of editable tables
+	classSelectionRow    : 'aloha-table-selectcolumn',    // class for the upper table-row to select columns
+	classSelectionColumn : 'aloha-table-selectrow',       // class for the left bound table-cells to select rows
+	classLeftUpperCorner : 'aloha-table-leftuppercorner', // class for the left upper corner cell
+	classTableWrapper    : 'aloha-table-wrapper',         // class of the outest table-wrapping div
+	classCellSelected    : 'aloha-cell_selected',         // class of cell which are selected (row/column selection)
+	waiRed				 : 'aloha-WAI_RED',                     // class that shows wai of div
+	waiGreen			 : 'aloha-WAI_GREEN',                   // class that shows wai of div
 	selectionArea        : 10                                     // width/height of the selection rows (in pixel)
 };
 
@@ -213,7 +213,7 @@ Aloha.TablePlugin.initTableButtons = function () {
 
 	// the 'create table' button
 	this.createTableButton = new Aloha.ui.Button({
-		'iconClass' : 'GENTICS_button GENTICS_button_table',
+		'iconClass' : 'aloha-button aloha-button-table',
 		'size' : 'small',
 		'tooltip' : this.i18n('button.createtable.tooltip'),
 		'onclick' : function (element, event) {
@@ -234,7 +234,7 @@ Aloha.TablePlugin.initTableButtons = function () {
 	Aloha.FloatingMenu.addButton(
 		this.getUID('column'),
 		new Aloha.ui.Button({
-			'iconClass' : 'GENTICS_button GENTICS_button_addColumnLeft',
+			'iconClass' : 'aloha-button aloha-button-addcolumnleft',
 			'size' : 'small',
 			'tooltip' : this.i18n('button.addcolleft.tooltip'),
 			'onclick' : function () {
@@ -249,7 +249,7 @@ Aloha.TablePlugin.initTableButtons = function () {
 	Aloha.FloatingMenu.addButton(
 		this.getUID('column'),
 		new Aloha.ui.Button({
-			'iconClass' : 'GENTICS_button GENTICS_button_addColumnRight',
+			'iconClass' : 'aloha-button aloha-button-addcolumnright',
 			'size' : 'small',
 			'tooltip' : this.i18n('button.addcolright.tooltip'),
 			'onclick' : function () {
@@ -264,7 +264,7 @@ Aloha.TablePlugin.initTableButtons = function () {
 	Aloha.FloatingMenu.addButton(
 		this.getUID('column'),
 		new Aloha.ui.Button({
-			'iconClass' : 'GENTICS_button GENTICS_button_deleteColumns',
+			'iconClass' : 'aloha-button aloha-button-deleteColumns',
 			'size' : 'small',
 			'tooltip' : this.i18n('button.delcols.tooltip'),
 			'onclick' : function () {
@@ -291,7 +291,7 @@ Aloha.TablePlugin.initTableButtons = function () {
 	Aloha.FloatingMenu.addButton(
 		this.getUID('row'),
 		new Aloha.ui.Button({
-			'iconClass' : 'GENTICS_button GENTICS_button_addRowBefore',
+			'iconClass' : 'aloha-button aloha-button-addRowBefore',
 			'size' : 'small',
 			'tooltip' : this.i18n('button.addrowbefore.tooltip'),
 			'onclick' : function () {
@@ -306,7 +306,7 @@ Aloha.TablePlugin.initTableButtons = function () {
 	Aloha.FloatingMenu.addButton(
 		this.getUID('row'),
 		new Aloha.ui.Button({
-			'iconClass' : 'GENTICS_button GENTICS_button_addRowAfter',
+			'iconClass' : 'aloha-button aloha-button-addRowAfter',
 			'size' : 'small',
 			'tooltip' : this.i18n('button.addrowafter.tooltip'),
 			'onclick' : function () {
@@ -321,7 +321,7 @@ Aloha.TablePlugin.initTableButtons = function () {
 	Aloha.FloatingMenu.addButton(
 		this.getUID('row'),
 		new Aloha.ui.Button({
-			'iconClass' : 'GENTICS_button GENTICS_button_deleteRows',
+			'iconClass' : 'aloha-button aloha-button-deleteRows',
 			'size' : 'small',
 			'tooltip' : this.i18n('button.delrows.tooltip'),
 			'onclick' : function () {
@@ -345,7 +345,7 @@ Aloha.TablePlugin.initTableButtons = function () {
 	);
 
 	this.captionButton = new Aloha.ui.Button({
-		'iconClass' : 'GENTICS_button GENTICS_button_table_caption',
+		'iconClass' : 'aloha-button aloha-button-table-caption',
 		'size' : 'small',
 		'tooltip' : this.i18n('button.caption.tooltip'),
         'toggle' : true,
@@ -371,7 +371,7 @@ Aloha.TablePlugin.initTableButtons = function () {
 						newRange.endOffset = captionContent.text().length;
 
 						// blur all editables within the table
-						that.activeTable.obj.find('div.GENTICS_Table_Cell_editable').blur();
+						that.activeTable.obj.find('div.aloha-table-Cell_editable').blur();
 
 						cDiv.focus();
 						newRange.select();
@@ -1329,7 +1329,7 @@ Aloha.Table.prototype.lastCellKeyDown = function(jqEvent) {
 
 		// for ie make a special case ... focus the first cell of the new row
 		if (jQuery.browser.msie) {
-			this.obj.find('tr:last td:nth-child(1) div.GENTICS_Table_Cell_editable').get(0).focus();
+			this.obj.find('tr:last td:nth-child(1) div.aloha-table-Cell_editable').get(0).focus();
 			return false;
 		}
 	}
@@ -1419,9 +1419,9 @@ Aloha.Table.prototype.deleteRows = function() {
 		this.numRows -= rows2delete.length;
 
 		if (jQuery.browser.msie){
-			setTimeout(this.obj.find('tr:nth-child(' + (focusRowId + 1) + ') td:nth-child(2) div.GENTICS_Table_Cell_editable').get(0).focus, 5);
+			setTimeout(this.obj.find('tr:nth-child(' + (focusRowId + 1) + ') td:nth-child(2) div.aloha-table-Cell_editable').get(0).focus, 5);
 		}else{
-			this.obj.find('tr:nth-child(' + (focusRowId + 1) + ') td:nth-child(2) div.GENTICS_Table_Cell_editable').get(0).focus();
+			this.obj.find('tr:nth-child(' + (focusRowId + 1) + ') td:nth-child(2) div.aloha-table-Cell_editable').get(0).focus();
 		}
 
 		// re-attach the events for the last cell
@@ -1516,9 +1516,9 @@ Aloha.Table.prototype.deleteColumns = function() {
 		this.numCols -= colIDs.length;
 
 		if (jQuery.browser.msie){
-			setTimeout(this.obj.find('tr:nth-child(2) td:nth-child(' + (focusColID + 1) + ') div.GENTICS_Table_Cell_editable').get(0).focus, 5);
+			setTimeout(this.obj.find('tr:nth-child(2) td:nth-child(' + (focusColID + 1) + ') div.aloha-table-Cell_editable').get(0).focus, 5);
 		}else{
-			this.obj.find('tr:nth-child(2) td:nth-child(' + (focusColID + 1) + ') div.GENTICS_Table_Cell_editable').get(0).focus();
+			this.obj.find('tr:nth-child(2) td:nth-child(' + (focusColID + 1) + ') div.aloha-table-Cell_editable').get(0).focus();
 		}
 
 		// re-attach the events for the last cell
@@ -1882,7 +1882,7 @@ Aloha.Table.prototype.selectColumns = function() {
 		Aloha.TableHelper.selectedCells.push(selectedCellsInCol);
 	};
 	// blur all editables within the table
-	this.obj.find('div.GENTICS_Table_Cell_editable').blur();
+	this.obj.find('div.aloha-table-Cell_editable').blur();
 
 	// add the class (visually selecting the cells)
 	jQuery(toSelect).addClass(selectClass);
@@ -1916,12 +1916,12 @@ Aloha.Table.prototype.selectRows = function() {
 	Aloha.FloatingMenu.setScope(Aloha.TablePlugin.getUID('row'));
 
 	// blur all editables within the table
-	this.obj.find('div.GENTICS_Table_Cell_editable').blur();
+	this.obj.find('div.aloha-table-Cell_editable').blur();
 };
 
 
 /**
- * Deactivation of a Aloha-Table. Clean up ... remove the wrapping div and the
+ * Deactivation of a Aloha-table. Clean up ... remove the wrapping div and the
  * selection-helper divs
  *
  * @return void
@@ -2060,7 +2060,7 @@ Aloha.Table.Cell.prototype.editableFocus = function(e) {
 		Aloha.Table.Cell.lastActiveCell = this;
 
 		// add an active-class
-		this.obj.addClass('GENTICS_Table_Cell_active');
+		this.obj.addClass('aloha-table-Cell_active');
 
 		// set the focus flag
 		this.hasFocus = true;
@@ -2093,7 +2093,7 @@ Aloha.Table.Cell.prototype.editableBlur = function(jqEvent){
 	this.hasFocus = false;
 
 	// remove "active class"
-	this.obj.removeClass('GENTICS_Table_Cell_active');
+	this.obj.removeClass('aloha-table-Cell_active');
 };
 
 Aloha.Table.Cell.prototype.activate = function() {
@@ -2104,7 +2104,7 @@ Aloha.Table.Cell.prototype.activate = function() {
 	var wrapper = this.obj.children('div').eq(0);
 
 	wrapper.contentEditable(true);
-	wrapper.addClass('GENTICS_Table_Cell_editable');
+	wrapper.addClass('aloha-table-Cell_editable');
 
 
 	var that = this;
@@ -2166,7 +2166,7 @@ Aloha.Table.Cell.prototype.activate = function() {
  * @return void
  */
 Aloha.Table.Cell.prototype.deactivate = function() {
-	var wrapper = this.obj.children('.GENTICS_Table_Cell_editable');
+	var wrapper = this.obj.children('.aloha-table-Cell_editable');
 
 	if (wrapper.length) {
 		// get the inner html of the contenteditable div
@@ -2385,8 +2385,8 @@ Aloha.Table.CreateLayer = function(){};
  * Internal configuration of the create-table panel
  */
 Aloha.Table.CreateLayer.prototype.parameters = {
-	elemId: 'GENTICS_Aloha_Table_createLayer', // id of the create-table panel
-	className: 'GENTICS_Table_Createdialog',   // class-name of the create-table panel
+	elemId: 'aloha-table-createLayer', // id of the create-table panel
+	className: 'aloha-table-Createdialog',   // class-name of the create-table panel
 	numX: 10,	         // Number of cols in the create-layer
 	numY: 10,            // Number of rows in the create-layer vertically
 	layer: undefined,    // Attribute holding the create-layer
@@ -2624,7 +2624,7 @@ Aloha.TableHelper.prototype.unselectCells = function(){
 };
 
 Aloha.TableHelper.prototype.getNewTableID = function() {
-	var idPrefix = 'GENTICS_Table_';
+	var idPrefix = 'aloha-table-';
 	var factor = 1000000;
 	for (this.tableCounter; true; this.tableCounter ++) {
 		var id = idPrefix + (Math.ceil(Math.random() * factor));
