@@ -4,9 +4,9 @@
 * aloha-sales@gentics.com
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
-
-
 (function(window, undefined) {
+	"use strict";
+
 	var
 		jQuery = window.alohaQuery, $ = jQuery,
 		GENTICS = window.GENTICS,
@@ -24,8 +24,10 @@
 	
 			// highlight editables as long as the mouse is moving
 			GENTICS.Utils.Position.addMouseMoveCallback(function () {
-				for ( var i = 0; i < Aloha.editables.length; i++) {
-					var editable = Aloha.editables[i];
+				var i, editable;
+
+				for ( i = 0; i < Aloha.editables.length; i++) {
+					editable = Aloha.editables[i];
 					if (!Aloha.activeEditable && !editable.isDisabled()) {
 						editable.obj.addClass('GENTICS_editable_highlight');
 					}
@@ -58,16 +60,19 @@
 		 * fades all highlighted editables
 		 */
 		fade: function () {
-			for ( var i = 0; i < Aloha.editables.length; i++) {
-				var editable = Aloha.editables[i].obj;
+			var
+				i, editable,
+				animateEnd = function () {
+					jQuery(this).css('outline', '');
+				};
+			for ( i = 0; i < Aloha.editables.length; i++) {
+				editable = Aloha.editables[i].obj;
 				if (editable.hasClass('GENTICS_editable_highlight')) {
 					editable.removeClass('GENTICS_editable_highlight')
 						.css('outline', '5px solid #FFE767')
 						.animate({
 							outlineWidth : '0px'
-						}, 300, 'swing', function () {
-							jQuery(this).css('outline', '');
-						});
+						}, 300, 'swing', animateEnd);
 				}
 			}
 		}
