@@ -257,7 +257,7 @@
 			});
 	
 			// add to all editables the Link shortcut
-			$.each(Aloha.editables, function(editable){
+			$.each(Aloha.editables, function(key, editable){
 	
 				// CTRL+L
 				editable.obj.keydown(function (e) {
