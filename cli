@@ -466,6 +466,7 @@ class App
 			run("npm -g install buildr")
 		end
 		run("buildr")
+		run("chmod -R 766 .")
 	end
 
 	# Serve Aloha Editor
@@ -474,7 +475,7 @@ class App
 		unless check_req('sise',false)
 			run("npm -g install sise")
 		end
-		puts "Simple Server will now run, access it on http://localhost:#{port}/\nUse ctrl+c to quit the server'"
+		puts "Simple Server will now run, access it on http://localhost:#{port}/\nUse ctrl+c to quit the server"
 		run("sise src #{port}")
 	end
 

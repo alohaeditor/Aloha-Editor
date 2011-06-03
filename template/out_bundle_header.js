@@ -13,3 +13,9 @@ window.Aloha_base = window.Aloha_base || false;
 
 // Handle
 (function(window,undefined) {
+
+	// Variables
+	var
+		// jQuery
+		jQuery = window.alohaQuery, $ = jQuery;
+	

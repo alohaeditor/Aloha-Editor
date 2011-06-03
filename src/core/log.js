@@ -200,6 +200,9 @@ Aloha.Log = Class.extend({
 	 * @hide
 	 */
 	addToLogHistory: function(entry) {
+		if ( !Aloha.settings.logHistory ) {
+			this.init();
+		}
 
 		if (
 			// when maxEntries is set to something illegal, we do nothing (log history is disabled)
