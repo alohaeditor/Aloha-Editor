@@ -52,39 +52,39 @@ Aloha.ui.Button = Class.extend({
 		 * Label that is displayed on the button
 		 * @hide
 		 */
-		this.label = undefined;
+		this.label = false;
 
 		/**
 		 * CSS class for an icon on the button
 		 * @hide
 		 */
-		this.iconClass = undefined;
+		this.iconClass = false;
 
 		/**
 		 * URL to an icon to display on the button
 		 * @hide
 		 */
-		this.icon = undefined;
+		this.icon = false;
 
 		/**
 		 * Callback function when the button is activated.
 		 * The "this" variable refers to the button inside the callback function.
 		 * @hide
 		 */
-		this.onclick = undefined;
+		this.onclick = false;
 
 		/**
 		 * Array of buttons that are displayed in a drop down menu.
 		 * If a menu is provided and no onclick callback then clicking the button also opens the menu
 		 * @hide
 		 */
-		this.menu = undefined;
+		this.menu = null;
 
 		/**
 		 * Indicates if the button is a toggle button
 		 * @hide
 		 */
-		this.toggle = undefined;
+		this.toggle = false;
 
 		/**
 		 * Property that indicates if the button is in pressed state
@@ -108,13 +108,13 @@ Aloha.ui.Button = Class.extend({
 		 * Tooltip text
 		 * @hide
 		 */
-		this.tooltip = undefined;
+		this.tooltip = false;
 
 		/**
 		 * holds the ext object of the button
 		 * @hide
 		 */
-		this.extButton = undefined;
+		this.extButton = null;
 
 		/**
 		 * holds the listeners of the button
@@ -148,7 +148,7 @@ Aloha.ui.Button = Class.extend({
 	setPressed: function(pressed) {
 		if (this.toggle) {
 			this.pressed = pressed;
-			if (typeof this.extButton == 'object' && this.extButton.pressed != pressed) {
+			if (typeof this.extButton === 'object' && this.extButton.pressed != pressed) {
 				this.extButton.toggle(this.pressed);
 			}
 		}
@@ -228,7 +228,7 @@ Aloha.ui.Button = Class.extend({
 	 */
 	getExtMenu: function() {
 		var menu, i, entry;
-		if (typeof this.menu === 'object') {
+		if ( this.menu && typeof this.menu === 'object') {
 			// build the drop down menu
 			menu = new Ext.menu.Menu();
 			for (i = 0; i < this.menu.length; ++i) {
@@ -285,7 +285,9 @@ Aloha.ui.Button = Class.extend({
 				if (typeof me.onclick === 'function') {
 					me.onclick.apply(me, [element, event]);
 				}
-				me.pressed = !me.pressed;
+				if ( me.toggle ) {
+					me.pressed = !me.pressed;
+				}
 			},
 			xtype : (menu && typeof this.onclick == 'function') ? 'splitbutton' : 'button',
 			tooltipType : 'qtip',
