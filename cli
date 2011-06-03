@@ -466,7 +466,7 @@ class App
 			run("npm -g install buildr")
 		end
 		run("buildr")
-		run("chmod -R 766 .")
+		run("chmod -R 766 out")
 	end
 
 	# Serve Aloha Editor
