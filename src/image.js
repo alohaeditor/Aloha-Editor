@@ -302,6 +302,7 @@
 
 				incPadding = new Aloha.ui.Button({
 					iconClass: 'aloha-img aloha-image-padding-increase',
+					toggle: false,
 					size: 'small',
 					onclick: function() {
 						// Apply
@@ -317,6 +318,7 @@
 				);
 				decPadding = new Aloha.ui.Button({
 					iconClass: 'aloha-img aloha-image-padding-decrease',
+					toggle: false,
 					size: 'small',
 					onclick: function() {
 						// Apply
@@ -379,6 +381,7 @@
 				incSize = new Aloha.ui.Button({
 					iconClass: 'aloha-img aloha-image-size-increase',
 					size: 'small',
+					toggle: false,
 					onclick: function() {
 						// Apply
 						jQuery(me.findImgMarkup()).increase('height').increase('width');
@@ -394,6 +397,7 @@
 				decSize = new Aloha.ui.Button({
 					iconClass: 'aloha-img aloha-image-size-decrease',
 					size: 'small',
+					toggle: false,
 					onclick: function() {
 						// Apply
 						jQuery(me.findImgMarkup()).decrease('height').decrease('width');
