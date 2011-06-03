@@ -31,9 +31,9 @@ $(document).ready(function() {
 			start();
 		});
 		setTimeout(function() {
-			ok(false, 'Aloha was not initialized within 10 seconds');
+			ok(false, 'Aloha was not initialized within 60 seconds');
 			start();
-		}, 10000);
+		}, 60000);
 	});
 
 	// All other tests are done when Aloha is ready
