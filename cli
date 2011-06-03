@@ -473,10 +473,10 @@ class App
 	def server(port=3000)
 		check_req(['node','npm'])
 		unless check_req('sise',false)
-			run("npm -g install sise")
+			run("npm -g install simple-server")
 		end
 		puts "Simple Server will now run, access it on http://localhost:#{port}/\nUse ctrl+c to quit the server"
-		run("sise src #{port}")
+		run("sise . #{port}")
 	end
 
 	# ---------------------------------------------------------------------------
