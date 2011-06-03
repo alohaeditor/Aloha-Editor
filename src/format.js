@@ -84,10 +84,11 @@
 		 * @param editable current editable object
 		 */
 		initButtons: function () {
-	
 			var
 				scope = 'Aloha.continuoustext',
 				that = this;
+			
+			// reset
 			this.buttons = {};
 	
 			// collect the multisplit items here
