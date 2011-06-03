@@ -288,6 +288,10 @@ Aloha.ui.Button = Class.extend({
 				if ( me.toggle ) {
 					me.pressed = !me.pressed;
 				}
+				me.extButton.removeClass('x-btn-click');
+				if ( !me.extButton.pressed ) {
+					me.extButton.removeClass('x-btn-pressed');
+				}
 			},
 			xtype : (menu && typeof this.onclick == 'function') ? 'splitbutton' : 'button',
 			tooltipType : 'qtip',
