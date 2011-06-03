@@ -10,7 +10,8 @@
 		jQuery = window.alohaQuery, $ = jQuery,
 		GENTICS = window.GENTICS,
 		Aloha = window.Aloha,
-		Class = window.Class;
+		Class = window.Class,
+		console = window.console||false;
 	
 	/**
 	 * Plugin Registry
