@@ -26,7 +26,7 @@ window.Aloha_base = window.Aloha_base || false;
 	window.Aloha_loaded_plugins = window.Aloha_loaded_plugins||[];		window.Aloha_loaded_plugins['format'] = true;
 			includes.push('util/base.js');
 			includes.push('dep/ext-3.3.1/adapter/jquery/ext-jquery-adapter.js');
-			includes.push('dep/ext-3.3.1/ext-all-debug.js');
+			includes.push('dep/ext-3.3.1/ext-all.js');
 			includes.push('dep/jquery.json-2.2.min.js');
 			includes.push('dep/jquery.getUrlParam.js');
 			includes.push('dep/jquery.store.js');
