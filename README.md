@@ -1,6 +1,6 @@
 # [Aloha Editor - The HTML5 WYSIWYG Editor](http://aloha-editor.org/)
 
-_versions 0.10.0-alpha_
+_version 0.10.0-alpha_
 
 For help there is:
 
