@@ -46,7 +46,7 @@ This document is to serve as a "what has been done" in terms of the [Roadmap](ht
 
 ### 0.10
 
-- 0.10.0-alpha, June 6th, 2011
+- 0.10.0-alpha, Pending
 	- Structure overhaul
 		- `WebContent` is now `src`
 		- `build/out` is now `out`
