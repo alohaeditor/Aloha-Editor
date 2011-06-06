@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<title>Aloha Editor Apply Markup Test Suite</title>
+	<!-- include qunit -->
+	<link rel="stylesheet" href="../dep/qunit.css" type="text/css"/>
+	<script type="text/javascript" src="../dep/qunit.js"></script>
+	<!-- include jquery -->
+	<script	src="../../dep/jquery-1.5.1.js" ></script>
+	<!-- include aloha -->
+	<script	src="../../aloha.js" id="aloha-script-include"></script>
+	<!-- include the testutils -->
+	<script type="text/javascript" src="testutils.js"></script>
+	<!-- include the tests -->
+	<script type="text/javascript" src="apply-markup.js"></script>
+	<!-- inject into testswarm -->
+	<script type="text/javascript" src="../dep/swarminject.js"></script>
+</head>
+<body>
+	<h1 id="qunit-header">Aloha Editor Apply Markup Test Suite</h1>
+	<h2 id="qunit-banner"></h2>
+	<div id="qunit-testrunner-toolbar"></div>
+	<h2 id="qunit-userAgent"></h2>
+	<ol id="qunit-tests"></ol>
+	<div id="qunit-fixture">
+<!-- References for plaintext tests -->
+<div id="ref-plaintext">This is plain text</div>
+<div id="ref-plaintext-start-bold"><b>This</b> is plain text</div>
+<div id="ref-plaintext-middle-bold">This <b>is plain</b> text</div>
+<div id="ref-plaintext-end-bold">This is plain <b>text</b></div>
+
+<!-- Reference for cross markup tests -->
+<div id="ref-crossmarkup">This is <i>markup</i> text</div>
+<div id="ref-crossmarkup-start-bold"><b>This is </b><i><b>mark</b>up</i> text</div>
+<div id="ref-crossmarkup-inner-bold">This is <i>m<b>arku</b>p</i> text</div>
+<div id="ref-crossmarkup-outer-bold">This <b>is <i>markup</i> te</b>xt</div>
+<div id="ref-crossmarkup-end-bold">This is <i>mark<b>up</b></i><b> te</b>xt</div>
+<div id="ref-crossmarkup-start-italic"><i>This is markup</i> text</div>
+<div id="ref-crossmarkup-start-italic-nesting"><i>This is <i>mark</i>up</i> text</div>
+
+<div id="ref-crossmarkup-inner-italic">This is <i>m</i>arku<i>p</i> text</div>
+<div id="ref-crossmarkup-inner-italic-nesting">This is <i>m</i>arku<i>p</i> text</div>
+
+<div id="ref-crossmarkup-outer-italic">This <i>is markup te</i>xt</div>
+<div id="ref-crossmarkup-outer-italic-nesting">This <i>is <i>markup</i> te</i>xt</div>
+
+<div id="ref-crossmarkup-end-italic">This is <i>mark</i>up text</div>
+<div id="ref-crossmarkup-end-italic-nesting">This is <i>mark</i>up text</div>
+
+
+        </div>
+<div id="edit" style="margin:20px; border:1px solid #000000;"></div>
+</body>
+</html>
