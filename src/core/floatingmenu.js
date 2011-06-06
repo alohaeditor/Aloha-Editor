@@ -314,8 +314,11 @@ Aloha.FloatingMenu.generateComponent = function () {
 	// deactivate the editables)
 	this.obj.mousedown(function (e) {
 		e.stopPropagation();
+//		e.stopSelectionUpdate = true;
 	});
-
+	this.obj.mouseup(function (e) {
+		e.originalEvent.stopSelectionUpdate = true;
+	});
 	// listen to selectionChanged event
 	Aloha.bind('aloha-selection-changed',function(event, rangeObject) {
 		if (!that.pinned) {

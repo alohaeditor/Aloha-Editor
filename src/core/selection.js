@@ -149,6 +149,10 @@
 		 */
 		updateSelection: function(event) {
 			// get the rangeObject
+			console.log(event);
+			if (event !== undefined && event.originalEvent.stopSelectionUpdate === true) {
+				return;
+			}
 			var rangeObject = this.rangeObject = new Aloha.Selection.SelectionRange(true);
 
 			// find the CAC (Common Ancestor Container) and update the selection Tree
