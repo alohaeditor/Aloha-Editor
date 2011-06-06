@@ -604,9 +604,11 @@
 			imgRange = Aloha.Selection.getRangeObject();
 
 			try {
+				imgRange.commonAncestorContainer = imgRange.limitObject = editable[0];
 				imgRange.startContainer = imgRange.endContainer = thisimg.parent()[0];
 				imgRange.startOffset = offset;
 				imgRange.endOffset = offset+1;
+				imgRange.correctRange();
 				imgRange.select();
 			} catch(err) {
 				startTag = thisimg.parent()[0];
@@ -854,6 +856,8 @@
 				.addClass('Aloha_Image_Resize')
 				.bind('resizestart', function (e) {
 					e.preventDefault();
+				}).bind('mouseup', function (e) {
+					e.originalEvent.stopSelectionUpdate = true;
 				});
 		},
 
