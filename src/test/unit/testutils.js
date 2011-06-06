@@ -87,23 +87,27 @@ window.TestUtils = window.TestUtils || {};
 		 * Apply the given markup to the given range. This will either
 		 * add or remove the markup (depending on whether the markup is
 		 * currently active at the start of the range)
+		 * @param editable editable as jQuery object
 		 * @param rangeObject range object
 		 * @param markup as jQuery object
+		 * @param nesting true when nesting of the markup is allowed, false if not
 		 */
-		applyMarkup : function (rangeObject, markup) {
+		applyMarkup : function (editable, rangeObject, markup, nesting) {
 			var markupIsApplied = false;
+			rangeObject.clearCaches();
+			rangeObject.updateMarkupEffectiveAtStart();
 
 			for (var i = 0; i < rangeObject.markupEffectiveAtStart.length; i++) {
 				var effectiveMarkup = rangeObject.markupEffectiveAtStart[ i ];
-				if (GENTICS.Aloha.Selection.standardTextLevelSemanticsComparator(effectiveMarkup, markup)) {
+				if (Aloha.Selection.standardTextLevelSemanticsComparator(effectiveMarkup, markup)) {
 					markupIsApplied = true;
 				}
 			}
 
 			if (markupIsApplied) {
-				GENTICS.Utils.Dom.removeMarkup(rangeObject, markup);
+				GENTICS.Utils.Dom.removeMarkup(rangeObject, markup, editable);
 			} else {
-				GENTICS.Utils.Dom.addMarkup(rangeObject, markup);
+				GENTICS.Utils.Dom.addMarkup(rangeObject, markup, nesting);
 			}
 			rangeObject.correctRange();
 			rangeObject.select();
