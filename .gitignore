@@ -5,3 +5,4 @@ build/out
 build/api-docs-out
 .DS_Store
 /setalohabase.js
+WebContent/plugins/com.gentics.aloha.plugins.GCN/
