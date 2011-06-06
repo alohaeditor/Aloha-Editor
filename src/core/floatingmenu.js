@@ -315,9 +315,7 @@ Aloha.FloatingMenu.generateComponent = function () {
 	this.obj.mousedown(function (e) {
 		e.stopPropagation();
 	});
-	this.obj.find('.x-tab-panel-bwrap').mouseup(function (e) {
-		e.stopPropagation();
-	});
+
 	// listen to selectionChanged event
 	Aloha.bind('aloha-selection-changed',function(event, rangeObject) {
 		if (!that.pinned) {
