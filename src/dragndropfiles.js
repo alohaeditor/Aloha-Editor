@@ -5,7 +5,7 @@
  * Copyright (c) 2010 Gentics Software GmbH
  *
  * Handles drag and drop for files
- * 
+ *
  */
 
 //(function(window, undefined) {
@@ -35,18 +35,19 @@
 		 */
 		config: { 'drop' : {	'max_file_size': 300000,
 			'max_file_count': 2,
-			'upload': {'uploader_instance':'GENTICS.Aloha.Repositories.Uploader',
-		 			'config': {
-		 				// can add more elements for Ext window styling 
-		 				'method':'POST',
-			 			'url': "",
-			 			'file_name_param':"filename",
-			 			'file_name_header':'X-File-Name',
-			 			'extra_headers':{}, //Extra parameters
-			 			'extra_post_data': {}, //Extra parameters
-			 			'send_multipart_form': false, //true for html4 TODO: make browser check
-			 			//'additional_params': {"location":""},
-			 			'www_encoded': false }
+			'upload': {
+					'uploader_instance':'Aloha.Repositories.Uploader',
+					'config': {
+						// can add more elements for Ext window styling
+						'method':'POST',
+						'url': "",
+						'file_name_param':"filename",
+						'file_name_header':'X-File-Name',
+						'extra_headers':{}, //Extra parameters
+						'extra_post_data': {}, //Extra parameters
+						'send_multipart_form': false, //true for html4 TODO: make browser check
+						//'additional_params': {"location":""},
+						'www_encoded': false }
 					}
 			}
 		},
@@ -54,95 +55,102 @@
 		 * Add a drop listener to the body of the whole document
 		 */
 		init: function() {
-			Aloha.loadJs(Aloha.getPluginUrl('dragndropfiles') + '/src/dropfilesrepository.js')
 			var that = this;
-			// add the listener
-			this.setBodyDropHandler();
-//			stylePath = GENTICS_Aloha_base + '/plugins/com.gentics.aloha.plugins.DragAndDropFiles/style.css';
-//			jQuery('head').append('<link rel="stylesheet" href="' 
-//					+ stylePath + '"></script>');
-			if (this.settings.config === undefined) {
-				this.settings.config = this.config;
-			} else {
-				this.settings.config = jQuery.extend(true, this.config, this.settings.config);
-			}
-			try {
-					this.uploader = this.initUploader(this.settings.config);
-					
-				} catch(error) {
-					Aloha.Log.warn(this,error);
-					Aloha.Log.warn(this,"Error creating uploader, no upload will be processed");
+			Aloha.loadJs(Aloha.getPluginUrl('dragndropfiles') + '/src/dropfilesrepository.js', function(){
+
+
+				// add the listener
+				that.setBodyDropHandler();
+	//			stylePath = GENTICS_Aloha_base + '/plugins/com.gentics.aloha.plugins.DragAndDropFiles/style.css';
+	//			jQuery('head').append('<link rel="stylesheet" href="'
+	//					+ stylePath + '"></script>');
+				if (that.settings.config === undefined) {
+					that.settings.config = that.config;
+				} else {
+					that.settings.config = jQuery.extend(true, that.config, that.settings.config);
 				}
 
+				try {
+						that.uploader = that.initUploader(that.settings.config);
+					} catch(error) {
+						Aloha.Log.warn(that,error);
+						Aloha.Log.warn(that,"Error creating uploader, no upload will be processed");
+					}
+
+			});
+
+
 		},
+
+
 		/**
 		 * Init a custom uploader
 		 */
 		initUploader: function(customConfig) {
-			var uploader_instance = undefined;
+			var uploader_instance;
 			try {
 				uploader_instance = eval(customConfig.drop.upload.uploader_instance);
 			} catch(error) {
 				Aloha.Log.info(this,"Custom class loading error or not specified, using default");
 				uploader_instance = Aloha.Repositories.Uploader;
 				if (customConfig.drop.upload.delegate) {
-					uploader_instance.delegateUploadEvent = customConfig.drop.upload.delegate; 
+					uploader_instance.delegateUploadEvent = customConfig.drop.upload.delegate;
 				}
 			}
 			return uploader_instance;
 		},
 		/**
 		 *  Attach drag and drop listeners to document body (Native JS way)
-		 * 
+		 *
 		 */
 		setBodyDropHandler: function() {
-			 if (!document.body.BodyDragSinker){
-				 document.body.BodyDragSinker = true;
-				 var that = this;
-				 this.onstr = "";
-				 this.mydoc = document;
-				 this.methodName = "addEventListener";
-				 if (jQuery.browser.msie) {
-					 this.onstr = "on";
-					 this.methodName = "attachEvent";
-					 this.mydoc = document.body; 
-				 }
-				 
-				 // sets the default handler
-				 this.mydoc[this.methodName](this.onstr+"drop", function(event) {
-				 Aloha.Log.info(that,"a file have been dropped on document");
-				 
-				 if (jQuery.browser.msie) {
-					 var textdata = event.dataTransfer.getData('Text');
-					 var urldata = event.dataTransfer.getData('URL');
-					 var imagedataW = window.event.dataTransfer.getData('URL');
-					 var textdataW = window.event.dataTransfer.getData('Text');
-					 var x = textdataW;
-				 }
-				 // if no files where dropped, use default handler
-				 if (!event.dataTransfer && !event.dataTransfer.files) {
-					 event.sink = false;
-				        return true; 
-				 }
+			if (!document.body.BodyDragSinker){
+				document.body.BodyDragSinker = true;
+				var that = this;
+				this.onstr = "";
+				this.mydoc = document;
+				this.methodName = "addEventListener";
+				if (jQuery.browser.msie) {
+					this.onstr = "on";
+					this.methodName = "attachEvent";
+					this.mydoc = document.body;
+				}
+
+				// sets the default handler
+				this.mydoc[this.methodName](this.onstr+"drop", function(event) {
+				Aloha.Log.info(that,"a file have been dropped on document");
+
+				if (jQuery.browser.msie) {
+					var textdata = event.dataTransfer.getData('Text');
+					var urldata = event.dataTransfer.getData('URL');
+					var imagedataW = window.event.dataTransfer.getData('URL');
+					var textdataW = window.event.dataTransfer.getData('Text');
+					var x = textdataW;
+				}
+				// if no files where dropped, use default handler
+				if (!event.dataTransfer && !event.dataTransfer.files) {
+					event.sink = false;
+								return true;
+				}
 				var files = event.dataTransfer.files,
-			    	len = files.length,
-			    	editable = null;
-			    if (len < 1) {
-			    	event.sink = false;
-			        return true;
-			    }
-			    if (event.preventDefault)
-			    	event.preventDefault();
-			    else
-			    	event.cancelBubble = true;
-			    if (len > that.settings.config.drop.max_file_count) {
-			    	Aloha.Log.warn(that,"too much files dropped");
-			    	if (event.stopPropagation)
-						 event.stopPropagation();
-					 else 
-						 event.returnValue = false;
-			    	return true;
-			    }
+						len = files.length,
+						editable = null;
+					if (len < 1) {
+						event.sink = false;
+							return true;
+					}
+					if (event.preventDefault)
+						event.preventDefault();
+					else
+						event.cancelBubble = true;
+					if (len > that.settings.config.drop.max_file_count) {
+						Aloha.Log.warn(that,"too much files dropped");
+						if (event.stopPropagation)
+						event.stopPropagation();
+					else
+						event.returnValue = false;
+						return true;
+					}
 				target = jQuery(event.target);
 				//If drop in editable
 				if (target.hasClass('aloha-editable')) {
@@ -158,7 +166,7 @@
 				}
 				var filesObjs = [],
 					dropInEditable = false;
-				if (editable[0] == null) {
+				if (editable[0] === null) {
 					while(--len >= 0) {
 						fileObj = that.uploader.addFileUpload(files[len]);
 						//that.uploader.startFileUpload(fileObj.id,this.config.drop.upload.config);
@@ -168,86 +176,86 @@
 					Aloha.getEditableById(editable.attr('id')).activate();
 					var range = that.InitializeRangeForDropEvent(event, editable);
 
-				    while(--len >= 0) {
-				    	if (files[len].size > that.settings.config.drop.max_file_size) {
-				    		event.stopPropagation();
-				    		Aloha.Log.warn(that,"max_file_size exeeded");
-				    	    return false;
-				    	}
-				    	fileObj = that.uploader.addFileUpload(files[len]);
-				    	filesObjs.push(fileObj);
-				    	var edConfig = that.getEditableConfig(editable);
-			           	if (edConfig.drop) {
-			           		dropInEditable = true;
-			           		//that.uploader.startFileUpload(fileObj.id,edConfig.drop.upload.config);
-			           	} else {
-			           		//that.uploader.startFileUpload(fileObj.id,this.config.drop.upload.config);
-			           	}
-			           	
-			        } //while
+						while(--len >= 0) {
+							if (files[len].size > that.settings.config.drop.max_file_size) {
+								event.stopPropagation();
+								Aloha.Log.warn(that,"max_file_size exeeded");
+									return false;
+							}
+							fileObj = that.uploader.addFileUpload(files[len]);
+							filesObjs.push(fileObj);
+							var edConfig = that.getEditableConfig(editable);
+									if (edConfig.drop) {
+										dropInEditable = true;
+										//that.uploader.startFileUpload(fileObj.id,edConfig.drop.upload.config);
+									} else {
+										//that.uploader.startFileUpload(fileObj.id,this.config.drop.upload.config);
+									}
+
+							} //while
 				}
 				var len = filesObjs.length;
 				if (dropInEditable) {
-			    	Aloha.trigger('dropFilesInEditable', {
+						Aloha.trigger('aloha-drop-files-in-editable', {
 							'filesObjs':filesObjs,
 							'range': range,
 							'editable': editable});
-			    	var edConfig = that.getEditableConfig(editable);
-			    	while(--len >= 0) {
-			    		that.uploader.startFileUpload(filesObjs[len].id,edConfig.drop.upload.config);
-			    	}
-			    } else {
-			    	Aloha.trigger('dropFilesInPage', filesObjs);
-			    	while(--len >= 0) {
-			    		that.uploader.startFileUpload(filesObjs[len].id,this.config.drop.upload.config);
-			    	}
-			    }
+						var edConfig = that.getEditableConfig(editable);
+						while(--len >= 0) {
+							that.uploader.startFileUpload(filesObjs[len].id,edConfig.drop.upload.config);
+						}
+					} else {
+						Aloha.trigger('dropFilesInPage', filesObjs);
+						while(--len >= 0) {
+							that.uploader.startFileUpload(filesObjs[len].id,this.config.drop.upload.config);
+						}
+					}
 				if (event.stopPropagation)
-					 event.stopPropagation();
-				 else 
-					 event.returnValue = false;
-				 return false;
-			 }, false);
-			 // TODO: improve below to allow default comportment behaviour if drop event is not a files drop event
+					event.stopPropagation();
+				else
+					event.returnValue = false;
+				return false;
+			}, false);
+			// TODO: improve below to allow default comportment behaviour if drop event is not a files drop event
 			this.mydoc[this.methodName](this.onstr+"dragenter", function(event) {
-				 if (event.preventDefault)
-					 event.preventDefault();
-				 else
-					 event.cancelBubble = true;
-				 if (event.stopPropagation)
-					 event.stopPropagation();
-				 else 
-					 event.returnValue = false;
-				 return false;
-			 }, false);
+				if (event.preventDefault)
+					event.preventDefault();
+				else
+					event.cancelBubble = true;
+				if (event.stopPropagation)
+					event.stopPropagation();
+				else
+					event.returnValue = false;
+				return false;
+			}, false);
 			this.mydoc[this.methodName](this.onstr+"dragleave", function(event) {
-				 if (event.preventDefault)
-					 event.preventDefault();
-				 else
-					 event.cancelBubble = true;
-				 if (event.stopPropagation)
-					 event.stopPropagation();
-				 else 
-					 event.returnValue = false;
-				 return false;
-			 }, false);
+				if (event.preventDefault)
+					event.preventDefault();
+				else
+					event.cancelBubble = true;
+				if (event.stopPropagation)
+					event.stopPropagation();
+				else
+					event.returnValue = false;
+				return false;
+			}, false);
 			this.mydoc[this.methodName](this.onstr+"dragover", function(event) {
-				 if (event.preventDefault)
-					 event.preventDefault();
-				 else
-					 event.cancelBubble = true;
-				 if (event.stopPropagation)
-					 event.stopPropagation();
-				 else 
-					 event.returnValue = false;
-				 //return false;
-			 }, false);
-			 
-			 
-			 
+				if (event.preventDefault)
+					event.preventDefault();
+				else
+					event.cancelBubble = true;
+				if (event.stopPropagation)
+					event.stopPropagation();
+				else
+					event.returnValue = false;
+				//return false;
+			}, false);
+
+
+
 			} // if
 			// end body events
-			//================== 
+			//==================
 		},
 		/**
 		 * TODO do we realy need a range Object? May be it makes sense to attach it to the event
@@ -261,23 +269,22 @@
 //			}
 			var	range = new Aloha.Selection.SelectionRange(true);
 			range.update();
-//			if (target.textNodes().length == 0) {
-//				range.startContainer = target[0].childNodes[0];
-//				range.endContainer = target[0].childNodes[0];
-//			} else {
-//				range.startContainer = target.textNodes()[0];
-//				range.endContainer = target.textNodes()[0];
-//			}
+			if (target.textNodes().length == 0) {
+				range.startContainer = target[0].childNodes[0];
+				range.endContainer = target[0].childNodes[0];
+			} else {
+				range.startContainer = target.textNodes()[0];
+				range.endContainer = target.textNodes()[0];
+			}
 		//
-//				range.startOffset = 0;
-//				range.endOffset = 0;    		
-//			try {
-//				range.select();
-//			} catch (error) {
-//				GENTICS.Aloha.Log.error(this,error);
-//			}
+				range.startOffset = 0;
+				range.endOffset = 0;
+			try {
+				range.select();
+			} catch (error) {
+				Aloha.Log.error(this,error);
+			}
 			return range;
 		}
-		
 	}))();
 })(window, document);
