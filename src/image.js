@@ -10,7 +10,7 @@
 // Start Closure
 (function(window, undefined) {
 	"use strict";
-	
+
 	var
 		jQuery = window.alohaQuery, $ = jQuery,
 		GENTICS = window.GENTICS,
@@ -71,7 +71,7 @@
 		_constructor: function(){
 			this._super('image');
 		},
-		
+
 		languages: ['en', 'fr', 'de', 'ru', 'cz'],
 
 		config: {
@@ -142,12 +142,12 @@
 		 */
 		init: function(){
 			// get settings
-			var 
+			var
 				me = this,
 				imagePluginUrl = Aloha.getPluginUrl('image');
-			
+
 			this.settings.config = this.settings.config || {};
-			
+
 			if (typeof this.settings === 'undefined') {
 				this.settings = Aloha.settings.plugins.image;
 				this.settings = jQuery.extend(true,this.settings,this.config);
@@ -169,13 +169,13 @@
 				Aloha.Image.dropEventHandler = Aloha.Image.settings.dropEventHandler;
 
 			if (this.settings.config.img.ui.crop) {
-				 Aloha
+				Aloha
 						.loadCss(imagePluginUrl+'/dep/jcrop/jquery.jcrop.css')
 						.loadJs(imagePluginUrl+'/dep/jcrop/jquery.jcrop.min.js')
 					;
 			} // */
 			if (typeof window.jQuery.ui === "undefined") {
-				
+
 				Aloha.loadJs(imagePluginUrl+'/dep/ui/jquery-ui-1.8.10.custom.min.js');
 			}
 			Aloha.loadCss(imagePluginUrl+'/dep/ui/ui-lightness/jquery-ui-1.8.10.custom.css');
@@ -183,20 +183,20 @@
 			me.bindInteractions();
 			me.subscribeEvents();
 
-		 }, // END INIT
-		 
-		 /**
-		  * Create buttons
-		  */
-		 initializeButtons: function() {
+		}, // END INIT
+
+		/**
+			* Create buttons
+			*/
+		initializeButtons: function() {
 			var
 				config = this.settings.config,
-				me = this, 
+				me = this,
 				incSize, decSize,
 				imgSrcLabel, imgTitleLabel,
 				alignLeftButton, alignRightButton, alignNoneButton,
 				incPadding, decPadding;
-			
+
 			this.insertImgButton = new Aloha.ui.Button({
 				'iconClass': 'aloha-button aloha-image-insert',
 				'size' : 'small',
@@ -211,8 +211,8 @@
 				1
 			);
 			Aloha.FloatingMenu.createScope(this.getUID('image'), 'Aloha.empty');
-			
-		 
+
+
 			// add the src field for images
 			if (config.img.ui.meta) {
 				imgSrcLabel = new Aloha.ui.Button({
@@ -452,13 +452,13 @@
 			} // */
 		},
 		/**
-		 * 
+		 *
 		 */
 		applyButtonConfig: function(editable) {
-			var 
+			var
 				config;
 		},
-		
+
 		/**
 		 * Subscribe to Aloha events and DragAndDropPlugin Event
 		 */
@@ -491,21 +491,22 @@
 				//console.log(data.file);
 				// Prepare
 				var
-					me = this,
+					that = this,
 					len = data.filesObjs.length,
 					reader, fileObj,
 					onloadendHandler = function(readEvent,reader) {
 						// Prepare
 						var
-							imagestyle = "width: "+me.config.img.max_width+"; height: "+me.config.img.max_height,
-							img = jQuery('<img id="'+me.attachedFile.id+'" style="'+imagestyle+'" title="" src="" />');
+							imagestyle = "max-width: "+me.config.img.max_width+"; max-height: "+me.config.img.max_height,
+							img = jQuery('<img id="' + this.attachedFile.id + '" style="'+imagestyle+'" title="" src="" />');
 
 						//img.click( Aloha.Image.clickImage ); - Using delegate now
-						if (typeof me.attachedFile.src === 'undefined') {
-							me.attachedFile.src = readEvent.target.result;
+						if (typeof this.attachedFile.src === 'undefined') {
+							this.attachedFile.src = readEvent.target.result;
 						}
-						img.attr('src', me.attachedFile.src );
-						GENTICS.Utils.Dom.insertIntoDOM(img, me.attachedData.range, jQuery(Aloha.activeEditable.obj));
+						img.attr('src', this.attachedFile.src );
+
+						GENTICS.Utils.Dom.insertIntoDOM(img, this.attachedData.range, jQuery(Aloha.activeEditable.obj));
 					};
 
 				// Loop
@@ -522,7 +523,7 @@
 					reader.readAsDataURL(fileObj.file);
 				}
 			});
-			
+
 			//* add the event handler for selection change
 			Aloha.bind('aloha-selection-changed', function(event, rangeObject, originalEvent) {
 				if (originalEvent && originalEvent.target) {
@@ -564,7 +565,7 @@
 					Aloha.FloatingMenu.doLayout();
 				}
 			});
-			 // */
+			// */
 			Aloha.bind('aloha-editable-created', function(event, editable) {
 
 				try {
@@ -591,10 +592,10 @@
 			if (this.settings.config.img.ui.resizable) {
 				this.endResize();
 			}
-			
+
 			thisimg = this.obj = jQuery(e.target);
 			editable = thisimg.closest('.aloha-editable');
-			
+
 			this.restoreProps.push({
 				obj : e.srcElement,
 				src : this.obj.attr('src'),
@@ -646,7 +647,7 @@
 						&& typeof range.startContainer.childNodes[range.startOffset] !== 'undefined'
 						&& range.startContainer.childNodes[range.startOffset].nodeName.toLowerCase() === 'img'
 						&& range.startOffset+1 === range.endOffset) ||
-						 (targetObj.hasClass('Aloha_Image_Resize')))
+						(targetObj.hasClass('Aloha_Image_Resize')))
 					{
 						result = targetObj.find('img')[0];
 						if (! result.css) result.css = '';
@@ -670,11 +671,11 @@
 				config = this.getEditableConfig(Aloha.activeEditable.obj),
 				imagePluginUrl = Aloha.getPluginUrl('image'),
 				imagestyle, imagetag, newImg;
-			
+
 			if ( range.isCollapsed() ) {
 				// TODO I would suggest to call the srcChange method. So all image src
 				// changes are on one single point.
-				imagestyle = "width: " + config.img.max_width + "; height: " + config.img.max_height;
+				imagestyle = "max-width: " + config.img.max_width + "; max-height: " + config.img.max_height;
 				imagetag = '<img style="'+imagestyle+'" src="' + imagePluginUrl + '/img/blank.jpg" title="" />';
 				newImg = jQuery(imagetag);
 				// add the click selection handler
@@ -827,6 +828,16 @@
 		resize: function () {
 			var me = this;
 			this.obj.data('display-beforeresizable', this.obj.css('display'));
+
+			this.obj.css({
+				'height': this.obj.height(),
+				'width': this.obj.width()
+			});
+
+			this.obj.css({
+				'max-height': '',
+				'max-width': ''
+			});
 			this.obj.resizable({
 				stop : function (event, ui) {
 					me.onResized(me.obj);
@@ -842,10 +853,12 @@
 				handles: 'ne, se, sw, nw',
 				// the rest of the settings is directly set through the plugin settings object
 				aspectRatio : me.settings.aspectRatio,
+				/*
 				maxHeight : me.settings.maxHeight,
 				minHeight : me.settings.minHeight,
 				maxWidth : me.settings.maxWidth,
 				minWidth : me.settings.minWidth,
+				*/
 				grid : me.settings.grid
 			});
 			// this will prevent the user from resizing an image
