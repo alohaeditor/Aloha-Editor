@@ -11,7 +11,7 @@
 		/**
 		 * Type description for UploadFolder
 		 */
-		
+
 		UploadFolder = Aloha.Repository.Folder.extend({
 			_constructor: function (properties) {
 				this._super(properties);
@@ -28,7 +28,7 @@
 				return null;
 			}
 		}),
-	
+
 		/**
 		 * The file class
 		 */
@@ -45,7 +45,7 @@
 					xhr.onload = function(load) {
 						if (this.delegateUploadEvent(xhr.responseText)) {
 							Aloha.trigger('UploadSuccess',that);
-									
+
 						} else {
 							Aloha.trigger('UploadFailure', that);
 						}
@@ -59,14 +59,14 @@
 				}
 			},
 			xhr: new XMLHttpRequest(),
-			contentTypeHeader: 'text/plain; charset=x-user-defined-binary',	
+			contentTypeHeader: 'text/plain; charset=x-user-defined-binary',
 			/**
 			 * Process upload of a file
 			 */
 			startUpload: function(options) {
 				//if ()
 				var xhr = this.xhr;
-				
+
 				xhr.open(options.method, typeof(options.url) == "function" ? options.url(number) : options.url, true);
 				xhr.setRequestHeader("Cache-Control", "no-cache");
 				xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
@@ -88,32 +88,32 @@
 						var boundary = (1000000000000+Math.floor(Math.random()*8999999999998)).toString();
 						var dashdash = '--';
 						var crlf     = '\r\n';
-						
+
 						/* Build RFC2388 string. */
 						var builder = '';
-						
+
 						builder += dashdash;
 						builder += boundary;
 						builder += crlf;
-						
+
 						builder += 'Content-Disposition: form-data; name="'+(typeof(options.fieldName) == "function" ? options.fieldName() : options.fieldName)+'"';
 						builder += '; filename="' + this.file.fileName + '"';
 						builder += crlf;
-						
+
 						builder += 'Content-Type: application/octet-stream';
 						builder += crlf;
 						builder += crlf;
-						
+
 						/* Append binary data. */
 						builder += this.file.getAsBinary();
 						builder += crlf;
-						
+
 						/* Write boundary. */
 						builder += dashdash;
 						builder += boundary;
 						builder += dashdash;
 						builder += crlf;
-						
+
 						xhr.setRequestHeader('content-type', 'multipart/form-data; boundary=' + boundary);
 						xhr.sendAsBinary(builder);
 					}
@@ -121,8 +121,8 @@
 						options.onBrowserIncompatible();
 					}
 				}
-				
-				
+
+
 			},
 			/**
 			 * Method to override to handle backend response
@@ -145,8 +145,8 @@
 		_constructor: function(repositoryId, repositoryName) {
 			this._super(repositoryId, repositoryName);
 			uploadFolder = new UploadFolder({
-				id: "Uploads", 
-				name: "Uploads", 
+				id: "Uploads",
+				name: "Uploads",
 				displayName:"Uploads",
 				parentId:"/",
 				path:"Uploads",
@@ -155,7 +155,7 @@
 				repositoryId:"draganddropfilesrepository"
 			});
 
-			this.objects = [this.uploadFolder];
+			this.objects = [uploadFolder];
 			var that = this;
 			// upload queue FIFO
 			this.uploadQueue = {
@@ -181,7 +181,7 @@
 
 		},
 		config: {
-			// can add more elements for Ext window styling 
+			// can add more elements for Ext window styling
 			'method':'POST',
 			'url': "",
 			'file_name_param':"filename",
@@ -205,7 +205,7 @@
 				d = this.objects;
 			} else {
 				d = this.objects.filter(function(e, i, a) {
-					var r = new RegExp(p.queryString, 'i'); 
+					var r = new RegExp(p.queryString, 'i');
 					var ret = false;
 					try {
 						if ( (!p.queryString || e.url.match(r)) &&
@@ -215,9 +215,9 @@
 					} catch (error) {}
 					return ret;
 					/* (
-					( !queryString || e.displayName.match(r) || e.url.match(r) ) && 
+					( !queryString || e.displayName.match(r) || e.url.match(r) ) &&
 					( !objectTypeFilter || jQuery.inArray(e.objectType, objectTypeFilter) > -1) &&
-					( !inFolderId || inFolderId == e.parentId ) 
+					( !inFolderId || inFolderId == e.parentId )
 				);*/
 				});
 			}
@@ -253,11 +253,11 @@
 				id = 'ALOHA_idx_file' + len,
 				merge_conf = {};
 			jQuery.extend(true,merge_conf, this.config);
-			
+
 			this.objects.push(new UploadFile({
 				file:file,
-				id: id, 
-				name: file.name, 
+				id: id,
+				name: file.name,
 				displayName:file.name,
 				parentId:"Uploads",
 				path:"Uploads",
@@ -284,14 +284,14 @@
 				jQuery.extend(true,upload_config,this.upload_conf);
 				d[0].upload_config = upload_config;
 				this.uploadQueue.push(d[0]);
-				
+
 			} else {
 				Aloha.Log.error(this,"No file with that id");
 			}
 		}
 	}))('draganddropfilesrepository','Dropped Files');
-	
-	
-	
-	
+
+
+
+
 })(window,document);
