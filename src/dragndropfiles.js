@@ -277,7 +277,7 @@
 //				GENTICS.Aloha.Log.error(this,error);
 //			}
 			return range;
-		},
+		}
 		
 	}))();
 })(window, document);
