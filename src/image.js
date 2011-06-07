@@ -174,14 +174,11 @@
 						.loadJs(imagePluginUrl+'/dep/jcrop/jquery.jcrop.min.js')
 					;
 			} // */
-			if (typeof window.jQuery.ui !== "undefined") {
+			if (typeof window.jQuery.ui === "undefined") {
 				
-				Aloha
-				.loadCss(imagePluginUrl+'/dep/ui/ui-lightness/jquery-ui-1.8.10.custom.css')
-				.loadJs(imagePluginUrl+'/dep/ui/jquery-ui-1.8.10.custom.min.js')
-				;
+				Aloha.loadJs(imagePluginUrl+'/dep/ui/jquery-ui-1.8.10.custom.min.js');
 			}
-
+			Aloha.loadCss(imagePluginUrl+'/dep/ui/ui-lightness/jquery-ui-1.8.10.custom.css');
 			me.initializeButtons();
 			me.bindInteractions();
 			me.subscribeEvents();
