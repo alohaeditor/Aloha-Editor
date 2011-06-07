@@ -149,8 +149,9 @@
 		 */
 		updateSelection: function(event) {
 			// get the rangeObject
-			console.log(event);
-			if (event !== undefined && event.originalEvent.stopSelectionUpdate === true) {
+			
+			if (event !== undefined && event.originalEvent !== undefined &&
+					event.originalEvent.stopSelectionUpdate === true) {
 				return;
 			}
 			var rangeObject = this.rangeObject = new Aloha.Selection.SelectionRange(true);
