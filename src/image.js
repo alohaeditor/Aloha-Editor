@@ -566,6 +566,15 @@
 			});
 			 // */
 			Aloha.bind('aloha-editable-created', function(event, editable) {
+
+				try {
+					// this will disable mozillas image resizing facilities
+					document.execCommand('enableObjectResizing', false, 'false');
+				} catch (e) {
+					console.error(e);
+					// this is just for others, who will not support disabling enableObjectResizing
+				}
+
 				// add to editable the image click
 				//editable.obj.find('img').attr('_moz_resizing', false);
 	//			editable.obj.find('img').contentEditable(false);
@@ -817,12 +826,7 @@
 
 		resize: function () {
 			var me = this;
-			try {
-				// this will disable mozillas image resizing facilities
-				document.execCommand('enableObjectResizing', false, 'false');
-			} catch (e) {
-				// this is just for others, who will not support disabling enableObjectResizing
-			}
+			this.obj.data('display-beforeresizable', this.obj.css('display'));
 			this.obj.resizable({
 				stop : function (event, ui) {
 					me.onResized(me.obj);
@@ -851,6 +855,7 @@
 				.attr('contentEditable', false)
 				.addClass('Aloha_Image_Resize')
 				.addClass('aloha')
+				.css({position: 'relative'})
 				.bind('resizestart', function (e) {
 					e.preventDefault();
 				}).bind('mouseup', function (e) {
@@ -865,6 +870,7 @@
 		endResize: function () {
 			if (this.obj) {
 				this.obj.resizable('destroy');
+				this.obj.css({display: this.obj.data('display-before')});
 			}
 		}
 
