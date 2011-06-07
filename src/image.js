@@ -168,20 +168,19 @@
 			if (typeof Aloha.Image.settings.dropEventHandler !== 'undefined')
 				Aloha.Image.dropEventHandler = Aloha.Image.settings.dropEventHandler;
 
-			if (typeof window.jQuery.ui === "undefined") {
-
+			if (this.settings.config.img.ui.crop) {
+				 Aloha
+						.loadCss(imagePluginUrl+'/dep/jcrop/jquery.jcrop.css')
+						.loadJs(imagePluginUrl+'/dep/jcrop/jquery.jcrop.min.js')
+					;
+			} // */
+			if (typeof window.jQuery.ui !== "undefined") {
+				
 				Aloha
 				.loadCss(imagePluginUrl+'/dep/ui/ui-lightness/jquery-ui-1.8.10.custom.css')
 				.loadJs(imagePluginUrl+'/dep/ui/jquery-ui-1.8.10.custom.min.js')
 				;
 			}
-			if (this.settings.config.img.ui.crop) {
-				 Aloha
-						.loadCss(imagePluginUrl+'/dep/ui/ui-lightness/jquery-ui-1.8.10.cropnresize.css')
-						.loadCss(imagePluginUrl+'/dep/jcrop/jquery.jcrop.css')
-						.loadJs(imagePluginUrl+'/dep/jcrop/jquery.jcrop.min.js')
-					;
-			} // */
 
 			me.initializeButtons();
 			me.bindInteractions();
@@ -839,6 +838,7 @@
 						}, 10);
 					}
 				},
+				handles: 'ne, se, sw, nw',
 				// the rest of the settings is directly set through the plugin settings object
 				aspectRatio : me.settings.aspectRatio,
 				maxHeight : me.settings.maxHeight,
@@ -847,13 +847,13 @@
 				minWidth : me.settings.minWidth,
 				grid : me.settings.grid
 			});
-
 			// this will prevent the user from resizing an image
 			// using IE's resize handles
 			// however I could not manage to hide them completely
 			jQuery('.ui-wrapper')
 				.attr('contentEditable', false)
 				.addClass('Aloha_Image_Resize')
+				.addClass('aloha')
 				.bind('resizestart', function (e) {
 					e.preventDefault();
 				}).bind('mouseup', function (e) {
