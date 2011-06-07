@@ -1,6 +1,10 @@
-/*!
- * Aloha Editor
- */
+/*!--------------------------------------*
+  | Aloha Editor                         |
+  +--------------------------------------+
+  | Comments Plugin                      |
+  +--------------------------------------+
+  | comments.js                          |
+  *--------------------------------------*/
 
 (function (window, undefined) {
 	
@@ -231,11 +235,11 @@
 		// Toogle marking of commented text on and off
 		revealComments: function () {
 			if (this.isRevealing) {
-				jQuery('.' + clss + '-active')
+				$('.' + clss + '-active')
 					.removeClass(clss + '-active')
 					.css('background-color', '');
 			} else {
-				jQuery.each(this.comments, function (id, comment) {
+				$.each(this.comments, function (id, comment) {
 					comment.elements
 						.addClass(clss + '-active')
 						.css('background-color', comment.color);
@@ -249,7 +253,7 @@
 			var that = this,
 				el	= comment.elements,
 				pos	= el.first().offset(),
-				win	= jQuery(window);
+				win	= $(window);
 			
 			add_box.show().css('height', 'auto')
 				.find('input').val(current_user_email);
@@ -382,7 +386,7 @@
 			}, 250, 'easeOutExpo')
 				.find('ul').html('');
 			
-			jQuery('body').animate({
+			$('body').animate({
 				'margin-left': 300
 			}, 250, 'easeOutExpo');
 			
@@ -396,7 +400,7 @@
 				'width': 0
 			}, 250, 'easeOutExpo');
 			
-			jQuery('body').animate({
+			$('body').animate({
 				'margin-left': 0
 			}, 250, 'easeOutExpo');
 			
@@ -421,7 +425,7 @@
 			
 			el.append(li);
 			
-			jQuery.each(comment.kids, function () {
+			$.each(comment.kids, function () {
 				var ul = $('<ul>');
 				li.append(ul);
 				that.printThread(ul, this);
@@ -535,7 +539,7 @@
 		},
 		
 		insertComment : function (id, email, comment) {		
-			return jQuery.extend(comments_hash[id], {
+			return $.extend(comments_hash[id], {
 				email	  : email,
 				comment	  : comment,
 				timestamp : (new Date()).getTime()
@@ -543,7 +547,7 @@
 		},
 		
 		bodyClicked: function (event) {
-			var el = jQuery(event.target);
+			var el = $(event.target);
 			
 			if (this.isModalOpen && !el.hasClass(clss + '-addbox')) {
 				if (el.parents('.' + clss + '-addbox').length == 0) {
@@ -562,7 +566,7 @@
 		
 		// What's the best way to determin the img path
 		preloadImages: function () {
-			jQuery.each([
+			$.each([
 				'hr.png',
 				'textbox.png'
 			], function () {(new Image()).src = '/Aloha-Editor/src/plugin/comments/img/' + this;});
