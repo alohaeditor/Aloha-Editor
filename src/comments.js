@@ -161,27 +161,29 @@
 		
 		createBar: function () {
 			var that = this,
-				win	 = $(window),
 				bar	 = this.bar = $(
-					'<div class="' + clss + '-bar">'		  +
-						'<h2>'								  +
-							'Comments:'						  +
-							'<span alt="Add comment"></span>' +
-						'</h2>'								  +
-						'<ul></ul>'							  +
-						'<div class="' + clss + '-bar-bottom"></div>' +
+					'<div class="' + clss + '-bar">'				+
+						'<div class="' + clss + '-bar-inner">'		+
+							'<h2>'									+
+								'Comments:'							+
+								'<span alt="Add comment"></span>'	+
+							'</h2>'									+
+							'<ul></ul>'								+
+							'<div class="' + clss + '-bar-bottom">' +
+							'</div>'								+
+						'</div>'									+
 					'</div>'
-				).css({height: win.height()})
-					.click(function () {
-						that.barClicked.apply(that, arguments);
-					});
+				).click(function () {
+				 	that.barClicked.apply(that, arguments);
+				 });
 			
 			$('body').append(bar);
 			
-			win.resize(function () {
-				bar.css({height: win.height()});
+			$(window).resize(function () {
 				that.setBarScrolling();
 			});
+			
+			this.setBarScrolling();
 		},
 		
 		barClicked: function (event) {
@@ -422,7 +424,7 @@
 		},
 		
 		showBar: function (comment) {
-			var ul = this.bar.find('>ul:first').html('');
+			var ul = this.bar.find('ul:first').html('');
 			
 			this.bar.animate({
 				'width': 300
@@ -440,13 +442,12 @@
 		
 		setBarScrolling: function () {
 			var bottom = this.bar.find('.' + clss + '-bar-bottom').position();
-			
-			this.bar.css(
-				'overflow-y',
-				(bottom.top > this.bar.height()) ? 'scroll' : 'auto'
-			);
-			
-			console.log(this.bar, bottom.top, this.bar.height());
+			this.bar
+				.find('.' + clss + '-bar-inner')
+				.css({
+					height: $(window).height(),
+					'overflow-y': (bottom.top > this.bar.height()) ? 'scroll' : 'auto'
+				});
 		},
 		
 		closeBar: function () {

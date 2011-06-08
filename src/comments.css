@@ -190,13 +190,8 @@
 	margin-top: -14px;
 }
 
-.aloha-comments-bar {
- /* overflow-y: scroll; */
-	overflow: hidden;
-	position: fixed;
-	top: 0;
-	left: 0;
-	width: 0;
+
+.aloha-comments-bar-inner {
 	background-color: #222;
 	background-image: -webkit-radial-gradient(
 		rgba(50, 50, 50, 0.5) 0%,
@@ -209,6 +204,17 @@
 		rgba(0,  0,  0,  0.5)
 	);
 	border-right: 1px solid #111;
+}
+
+.aloha-comments-bar {
+ /* overflow-y: scroll; */
+	overflow: hidden;
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 0;
+	background: red;
+	padding-right: 30px;
 }
 .aloha-comments-bar h2 {
 	margin: 0;
