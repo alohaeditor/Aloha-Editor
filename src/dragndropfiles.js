@@ -38,7 +38,8 @@
 			'upload': {
 					'uploader_instance':'Aloha.Repositories.Uploader',
 					'config': {
-						// can add more elements for Ext window styling
+						'callback': function(resp) { return resp;}, // what to do with the server response, must return the new file location,
+																	//  if server return an error, throws an exception (throw "error")
 						'method':'POST',
 						'url': "",
 						'file_name_param':"filename",

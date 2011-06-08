@@ -43,12 +43,15 @@
 					that.ulProgress = rpe.loaded / rpe.total;
 					Aloha.trigger('aloha-upload-progress',that);
 					xhr.onload = function(load) {
-						if (that.delegateUploadEvent(xhr.responseText)) {
+						try {
+							that.src = that.upload_config.callback(xhr.responseText);
 							Aloha.trigger('aloha-upload-success',that);
-
-						} else {
+						} catch(e) {
 							Aloha.trigger('aloha-upload-failure', that);
 						}
+//						if (that.delegateUploadEvent(xhr.responseText)) {
+//
+//						} else {
 					};
 					xhr.onabort = function() {
 						Aloha.trigger('aloha-upload-abort', that);
@@ -124,18 +127,19 @@
 
 
 			},
-			/**
-			 * Method to override to handle backend response
-			 */
-			delegateUploadEvent: function(responseString,fileItem) {
-				try{
-					result = jQuery.parseJSON(responseString);
-					if (result.success)
-						return result.data;
-				}catch(e){
-					return false;
-				}
-			}
+//			/**
+//			 * Method to override to handle backend response
+//			 */
+//			delegateUploadEvent: function(responseString,fileItem) {
+//				try{
+//					result = jQuery.parseJSON(responseString);
+//					return result.success;
+////					if (result.success)
+////						return result.data;
+//				}catch(e){
+//					return false;
+//				}
+//			}
 		});
 	Aloha.Repositories = Aloha.Repositories||[];
 	/**
