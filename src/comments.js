@@ -186,6 +186,15 @@
 				that.setBarScrolling();
 			});
 			
+			this.bar.find('.' + clss + '-bar-toggle')
+				.click(function () {
+					if (that.isBarOpen) {
+						that.closeBar();
+					} else {
+						that.showBar();
+					}
+				});
+			
 			this.setBarScrolling();
 		},
 		
@@ -437,9 +446,16 @@
 				marginLeft: 300
 			}, 250, 'easeOutExpo');
 			
-			this.highlight(comment);
+			if (comment) {
+				this.highlight(comment);
+				this.printThread(ul, comment);
+			} else {
+				$.each(this.comments, function () {
+					console.log(this);
+				});
+			}
+			
 			this.isBarOpen = true;
-			this.printThread(ul, comment);
 			this.setBarScrolling();
 		},
 		
@@ -629,7 +645,7 @@
 				}
 			}
 			
-			if (this.isBarOpen && !el.hasClass(clss + '-bar')) {
+			if (1 == 0 && this.isBarOpen && !el.hasClass(clss + '-bar')) {
 				if (el.parents('.' + clss + '-bar').length == 0) {
 					this.closeBar();
 					this.removeHighlight();
