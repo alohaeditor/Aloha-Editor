@@ -30,14 +30,15 @@
 	
 	var dom_util = GENTICS.Utils.Dom,
 		clss = 'aloha-comments',
-		current_user_email = 'p.salema@gentics.com',
 		uid = +(new Date),
 		add_box = $(
 			'<div class="' + clss + '-addbox">' +
 				'<div class="' + clss + '-content">' +
 					'<h2>Comment:</h2>' +
 					'<input class="' + clss + '-user" value="" />' +
+					'<div class="' + clss + '-user-err-msg"></div>' +
 					'<textarea></textarea>' +
+					'<div class="' + clss + '-text-err-msg"></div>' +
 					'<ul class="' + clss + '-colors"></ul>' +
 					'<button class="' + clss + '-cancel">Cancel</button>' +
 					'<button class="' + clss + '-submit">Comment</button>' +
@@ -67,18 +68,18 @@
 	
 	Aloha.Comments = new (Aloha.Plugin.extend({
 		
-		user: null,
-		comments: {},
-		colors: {
+		user	 : null,
+		comments : {},
+		colors	 : {
 			'Golden Yellow' : '#fc0',
 			'Blood Red'		: '#c33',
 			'Sky Blue'		: '#9cf',
 			'Grass Green'	: '#9c0'
 		},
-		isModalOpen: false,
-		isRevealing: false,
-		bar: null,
-		isBarOpen: false,
+		isModalOpen	: false,
+		isRevealing	: false,
+		bar			: null,
+		isBarOpen	: false,
 		
 		_constructor: function () {
 			this._super('comments');
@@ -139,26 +140,25 @@
 			
 			Aloha.FloatingMenu.addButton(
 				'Aloha.continuoustext',
-				add_btn,
-				'Comments',
-				1
+				add_btn, 'Comments', 1
 			);
+			
 			Aloha.FloatingMenu.addButton(
 				'Aloha.continuoustext',
-				reveal_btn,
-				'Comments',
-				1
+				reveal_btn, 'Comments', 1
 			);
 		},
 		
 		cancelAdd: function () {
+			//console.log(current_comment);
 			this.closeModal();
 			this.removeHighlight();
 		},
 		
 		createBar: function () {
 			var that = this,
-				bar = this.bar = $(
+				win	 = $(window),
+				bar	 = this.bar = $(
 					'<div class="' + clss + '-bar">'		  +
 						'<h2>'								  +
 							'Comments:'						  +
@@ -166,12 +166,16 @@
 						'</h2>'								  +
 						'<ul></ul>'							  +
 					'</div>'
-				).css({height: $(window).height()})
+				).css({height: win.height()})
 					.click(function () {
 						that.barClicked.apply(that, arguments);
 					});
 			
 			$('body').append(bar);
+			
+			win.resize(function () {
+				bar.css({height: win.height()});
+			});
 		},
 		
 		barClicked: function (event) {
@@ -260,20 +264,19 @@
 		
 		openModal: function (comment) {
 			var that = this,
-				el	= comment.elements.first(),
-				pos	= el.offset(),
-				win	= $(window);
+				el	 = comment.elements.first(),
+				pos	 = el.offset();
 			
 			add_box.show().css('height', 'auto')
-				.find('input').val(current_user_email);
+				.find('input').val(this.user);
 			
 			var content = add_box.find('.' + clss + '-content'),
-				h = content.height(),
-				ah = 30,
+				h	= content.height(),
+				ah	= 30,
 				top = pos.top - (add_box.outerHeight(true) + ah);
 			
 			if (top <= 0) {
-				el = comment.elements.last();
+				el	= comment.elements.last();
 				pos = el.last().offset();
 				top = pos.top + el.height() + ah;
 				add_box.addClass(clss + '-point-from-bottom');
@@ -284,23 +287,27 @@
 			add_box.css({
 				left : pos.left + (el.width() / 2) - (add_box.outerWidth(true) / 2),
 				top  : top,
-				'margin-top': h,
-				opacity: 0
+				marginTop : h,
+				opacity	  : 0
 			}).animate({
-				'margin-top': 0,
-				opacity: 1
-			}, 750, 'easeOutElastic', function () {
-				$(document).scrollTop(add_box);
-			});
+				marginTop : 0,
+				opacity	  : 1
+			}, 800, 'easeOutElastic');
 			
-			if (!that.user) {
+			$('body').animate({
+				scrollTop: top - ah
+			}, 1600, 'easeOutExpo');
+			
+			if (this.user == '' || !this.user) {
 				add_box.find('input.' + clss + '-user').select();
 			} else {
-				add_box.find('input.' + clss + '-user').val(that.use);
+				add_box.find('input.' + clss + '-user').val(this.user);
 				add_box.find('textarea').val('').focus();
 			}
 			
-			content.css('height', 0).animate({height: h}, 750, 'easeOutElastic');
+			content
+				.css('height', 0)
+				.animate({height: h}, 800, 'easeOutElastic');
 			
 			this.isModalOpen = true;
 		},
@@ -339,7 +346,7 @@
 			
 			this.highlightElement(comment.commonAncestor);
 			
-			$('.' + clss + '-grayed').css('opacity', 0.1);
+			$('.' + clss + '-grayed').animate({opacity: 0.25}, 250);
 			
 			$('.' + clss + '-cleanme').each(function () {
 				if (dom_util.isEmpty(this)) {
@@ -462,7 +469,7 @@
 			if (reply.length == 0) {
 				reply = $(
 					'<div class="' + clss + '-bar-reply">'				+
-						'<input value="' + current_user_email + '" />'	+
+						'<input value="' + this.user + '" />'	+
 						'<textarea>Replying...</textarea>'				+
 						'<button>Reply</button>'						+
 					'</div>'
@@ -521,7 +528,7 @@
 					}
 				);
 				
-				current_user_email = email;
+				this.user = email;
 			}
 		},
 		
@@ -532,39 +539,46 @@
 		},
 		
 		submit: function () {
-			var text  = add_box.find('textarea'),
-				user  = add_box.find('.' + clss + '-user'),
-				email = user.val().trim(),
-				comment	= text.val().trim(),
-				errors	= false;
+			var textarea = add_box.find('textarea'),
+				input	 = add_box.find('.' + clss + '-user'),
+				email	 = input.val().trim(),
+				comment	 = textarea.val().trim(),
+				errors	 = false,
+				err_clss = clss + '-error';
 			
 			if (email == '') {
-				user.focus().addClass(clss + '-error');
+				input.focus().addClass(err_clss);
 				errors = true;
+			} else {
+				input.removeClass(err_clss);
 			}
 			
 			if (comment == '') {
-				text.focus().addClass(clss + '-error');
+				textarea.focus().addClass(err_clss);
 				errors = true;
+			} else {
+				textarea.removeClass(err_clss);
 			}
 			
 			if (!errors) {
-				this.insertComment(current_comment.id, email, comment);
+				$.extend(current_comment, {
+					email	  : email,
+					comment	  : comment,
+					timestamp : (new Date()).getTime()
+				});
+				this.insertComment(current_comment);
 				this.closeModal();
 				this.showBar(current_comment);
-				text.val('');
-				user.val('');
+				textarea.val('');
+				input.val('');
 			}
 			
-			current_user_email = email;
+			this.user = email;
 		},
 		
-		insertComment : function (id, email, comment) {		
-			return $.extend(comments_hash[id], {
-				email	  : email,
-				comment	  : comment,
-				timestamp : (new Date()).getTime()
-			});
+		insertComment: function (comment) {
+			comments_hash[comment.id] =
+				this.comments[comment.id] = comment;
 		},
 		
 		bodyClicked: function (event) {
