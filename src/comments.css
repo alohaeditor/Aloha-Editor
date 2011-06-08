@@ -191,7 +191,8 @@
 }
 
 .aloha-comments-bar {
-	overflow-y: scroll;
+ /* overflow-y: scroll; */
+	overflow: hidden;
 	position: fixed;
 	top: 0;
 	left: 0;
@@ -207,6 +208,7 @@
 		rgba(50, 50, 50, 0.6) 40%,
 		rgba(0,  0,  0,  0.5)
 	);
+	border-right: 1px solid #111;
 }
 .aloha-comments-bar h2 {
 	margin: 0;
@@ -259,7 +261,23 @@
 		rgba(0, 0, 0, .8) 100%
 	);
 }
-
+.aloha-comments-bar-bottom {
+	height: 20px;
+	background-image: -webkit-gradient(
+		linear,
+		center top,
+		center bottom,
+		color-stop(0.00, rgba(255, 255, 255, .1)),
+		color-stop(0.20, rgba(255, 255, 255, .05)),
+		color-stop(1.00, rgba(255, 255, 255, .0))
+	);
+	background-image: -moz-linear-gradient(
+		center top,
+		rgba(255, 255, 255, .1)	 0%,
+		rgba(255, 255, 255, .05) 20%,
+		rgba(255, 255, 255, .0)	 100%
+	);
+}
 .aloha-comments-bar-comment {
 	padding: 5px;
 	background-color: #fe9;
@@ -267,6 +285,7 @@
 	-moz-border-radius:		3px;
 	-webkit-border-radius:	3px;
 	color: #333;
+	font-size: 13px;
 }
 .aloha-comments-bar-comment img {
 	float: left;

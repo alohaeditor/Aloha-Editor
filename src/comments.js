@@ -2,6 +2,10 @@
   | Aloha Editor                         |
   +--------------------------------------+
   | Comments Plugin                      |
+  |                                      |
+  | TODO:                                |
+  |   - SHIFT + ENTER => submit comment  |
+  |                                      |
   +--------------------------------------+
   | comments.js                          |
   *--------------------------------------*/
@@ -165,6 +169,7 @@
 							'<span alt="Add comment"></span>' +
 						'</h2>'								  +
 						'<ul></ul>'							  +
+						'<div class="' + clss + '-bar-bottom"></div>' +
 					'</div>'
 				).css({height: win.height()})
 					.click(function () {
@@ -175,6 +180,7 @@
 			
 			win.resize(function () {
 				bar.css({height: win.height()});
+				that.setBarScrolling();
 			});
 		},
 		
@@ -223,8 +229,8 @@
 				timestamp : null,
 				email	  : null,
 				comment	  : null,
-				kids	  : [],
 				mom		  : null,
+				kids	  : [],
 				color	  : this.colors['Golden Yellow'],
 				elements  : $('.' + id),
 				commonAncestor: $(range.getCommonAncestorContainer())
@@ -267,13 +273,15 @@
 				el	 = comment.elements.first(),
 				pos	 = el.offset();
 			
-			add_box.show().css('height', 'auto')
+			add_box
+				.show()
+				.css('height', 'auto')
 				.find('input').val(this.user);
 			
 			var scroll_to,
 				content	 = add_box.find('.' + clss + '-content'),
-				input	 = add_box.find('input.' + clss + '-user'),
-				textarea = add_box.find('textarea').val(''),
+				input	 = add_box.find('input.' + clss + '-user').removeClass(clss + '-error'),
+				textarea = add_box.find('textarea').removeClass(clss + '-error').val(''),
 				h	= content.height(),
 				ah	= 30,
 				top = pos.top - (add_box.outerHeight(true) + ah);
@@ -414,18 +422,31 @@
 		},
 		
 		showBar: function (comment) {
+			var ul = this.bar.find('>ul:first').html('');
+			
 			this.bar.animate({
 				'width': 300
-			}, 250, 'easeOutExpo')
-				.find('ul').html('');
+			}, 250, 'easeOutExpo');
 			
 			$('body').animate({
-				'margin-left': 300
+				marginLeft: 300
 			}, 250, 'easeOutExpo');
 			
 			this.highlight(comment);
 			this.isBarOpen = true;
-			this.printThread(this.bar.find('>ul:first'), comment);
+			this.printThread(ul, comment);
+			this.setBarScrolling();
+		},
+		
+		setBarScrolling: function () {
+			var bottom = this.bar.find('.' + clss + '-bar-bottom').position();
+			
+			this.bar.css(
+				'overflow-y',
+				(bottom.top > this.bar.height()) ? 'scroll' : 'auto'
+			);
+			
+			console.log(this.bar, bottom.top, this.bar.height());
 		},
 		
 		closeBar: function () {
@@ -434,7 +455,7 @@
 			}, 250, 'easeOutExpo');
 			
 			$('body').animate({
-				'margin-left': 0
+				marginLeft: 0
 			}, 250, 'easeOutExpo');
 			
 			this.removeHighlight();
@@ -473,10 +494,10 @@
 			
 			if (reply.length == 0) {
 				reply = $(
-					'<div class="' + clss + '-bar-reply">'				+
-						'<input value="' + this.user + '" />'	+
-						'<textarea>Replying...</textarea>'				+
-						'<button>Reply</button>'						+
+					'<div class="' + clss + '-bar-reply">'	  +
+						'<input value="' + this.user + '" />' +
+						'<textarea>Replying...</textarea>'	  +
+						'<button>Reply</button>'			  +
 					'</div>'
 				);
 				li.find('>div').append(reply);
@@ -493,7 +514,7 @@
 				
 				reply.find('input').select();
 				
-				this.bar.scrollTop(reply);
+				this.bar.scrollTop(reply.offset().top);
 			}
 		},
 		
@@ -507,7 +528,8 @@
 				var id	  = clss + '-' + (++uid),
 					email = reply_tool.find('input').val().trim(),
 					text  = reply_tool.find('textarea')
-								.val().trim().replace(),
+								.val().trim()
+								.replace(/[\r\n]/g, '<br />'),
 					index = mom.kids.push({
 						id		  : id,
 						timestamp : (new Date()).getTime(),
@@ -564,6 +586,8 @@
 			} else {
 				textarea.removeClass(err_clss);
 			}
+			
+			comment = comment.replace(/[\r\n]/g, '<br />');
 			
 			if (!errors) {
 				$.extend(current_comment, {
