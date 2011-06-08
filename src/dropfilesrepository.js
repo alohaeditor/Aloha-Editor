@@ -190,6 +190,7 @@
 		config: {
 			// can add more elements for Ext window styling
 			'method':'POST',
+			'callback': function(resp) { return resp;},
 			'url': "",
 			'file_name_param':"filename",
 			'file_name_header':'X-File-Name',
