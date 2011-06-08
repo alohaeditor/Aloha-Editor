@@ -10,17 +10,15 @@
 	var
 		jQuery = window.alohaQuery, $ = jQuery,
 		GENTICS = window.GENTICS,
-		Aloha = window.Aloha;
-
-	var dmp = new diff_match_patch;
+	    Aloha = window.Aloha,
+	    dmp = new diff_match_patch,
+	    resetFlag = false;
 
 	function reversePatch(patch) {
 		var reversed = dmp.patch_deepCopy(patch);
 		for (var i = 0; i < reversed.length; i++) {
 			for (var j = 0; j < reversed[i].diffs.length; j++) {
-				if (reversed[i].diffs[j][0] != 0) {
-					reversed[i].diffs[j][0] = -(reversed[i].diffs[j][0]);
-				}
+				reversed[i].diffs[j][0] = -(reversed[i].diffs[j][0]);
 			}
 		}
 		return reversed;
@@ -50,20 +48,32 @@
 						this.patch = patch;
 					},
 					execute: function() {
+						//command object is created after execution.
 					},
 					undo: function() {
-						var contents = this.editable.getContents(),
-						    applied = dmp.patch_apply(reversePatch(this.patch), contents),
-						    oldValue = applied[0];
-						this.reset(oldValue);
+						this.phase(reversePatch(this.patch));
 					},
 					redo: function() {
+						this.phase(this.patch);
+					},
+					phase: function(patch) {
 						var contents = this.editable.getContents(),
-						    applied = dmp.patch_apply(this.patch, contents),
-						    newValue = applied[0];
+						    applied = dmp.patch_apply(patch, contents),
+						    newValue = applied[0],
+						    didNotApply = applied[1];
+						if (didNotApply.length) {
+							//error
+						}
 						this.reset(newValue);
 					},
 					reset: function(val) {
+						//we have to trigger a smartContentChange event
+						//after doing an undo or redo, but we mustn't
+						//push new commands on the stack, because there
+						//are no new commands, just the old commands on
+						//the stack that are undone or redone.
+						resetFlag = true;
+
 						var reactivate = null;
 						if (Aloha.getActiveEditable() === this.editable) {
 							Aloha.deactivateEditable();
@@ -75,6 +85,13 @@
 						if (null !== reactivate) {
 							reactivate.activate();
 						}
+
+						//TODO: this is a call to an internal
+						//function. There should be an API to generate
+						//new smartContentChangeEvents.
+						this.editable.smartContentChange({type : 'blur'});
+
+						resetFlag = false;
 					}
 				});
 
@@ -88,6 +105,12 @@
 				}
 				event.preventDefault();
 
+				//Before doing an undo, bring the smartContentChange
+				//event up to date.
+				if ( null !== Aloha.getActiveEditable() ) {
+					Aloha.getActiveEditable().smartContentChange({type : 'blur'});
+				}
+
 				if (event.shiftKey) {
 					stack.canRedo() && stack.redo();
 				} else {
@@ -96,15 +119,15 @@
 			});
 
 			Aloha.bind('alohaSmartContentChanged', function(jevent, aevent) {
-				// workaround because on redo the editable must be blured.
-				if ( aevent.triggerType != 'blur') {
-					// only push an EditCommand if something actually changed.
-					var oldValue = aevent.snapshotContent;
-					var newValue = aevent.editable.getContents();
-					var patch = dmp.patch_make(oldValue, newValue);
-					if (0 != patch.length) {
-						stack.execute( new EditCommand( aevent.editable, patch ) );
-					}
+				if (resetFlag) {
+					return;
+				}
+				var oldValue = aevent.snapshotContent,
+				newValue = aevent.editable.getContents(),
+				patch = dmp.patch_make(oldValue, newValue);
+				// only push an EditCommand if something actually changed.
+				if (0 !== patch.length) {
+					stack.execute( new EditCommand( aevent.editable, patch ) );
 				}
 			});
 		},
