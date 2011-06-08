@@ -4,76 +4,118 @@
 * aloha-sales@gentics.com
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
-/**
- * register the plugin with unique name
- */
-GENTICS.Aloha.Undo = new GENTICS.Aloha.Plugin('undo');
 
-/**
- * Configure the available languages
- */
-GENTICS.Aloha.Undo.languages = ['en', 'de'];
+(function(window, undefined){
+	"use strict";
+	var
+		jQuery = window.alohaQuery, $ = jQuery,
+		GENTICS = window.GENTICS,
+		Aloha = window.Aloha;
 
-/**
- * Initialize the plugin and set initialize flag on true
- */
-GENTICS.Aloha.Undo.init = function () {
+	var dmp = new diff_match_patch;
 
-	var stack = new Undo.Stack(),
-		EditCommand = Undo.Command.extend({
-			constructor: function(editable, oldValue) {
-				this.editable = editable;
-				this.oldValue = oldValue;
-				this.newValue = editable.getContents();
-			},
-			execute: function() {
-			},
-			undo: function() {
-				this.reset(this.oldValue);
-			},
-
-			redo: function() {
-				this.reset(this.newValue);
-			},
-			reset: function(val) {
-				this.editable.blur();
-				this.editable.obj.html(val);
-				this.editable.activate();
-				// restore selection
+	function reversePatch(patch) {
+		var reversed = dmp.patch_deepCopy(patch);
+		for (var i = 0; i < reversed.length; i++) {
+			for (var j = 0; j < reversed[i].diffs.length; j++) {
+				if (reversed[i].diffs[j][0] != 0) {
+					reversed[i].diffs[j][0] = -(reversed[i].diffs[j][0]);
+				}
 			}
-		});
+		}
+		return reversed;
+	}
 
-		stack.changed = function() {
-			// update UI
-		};
+	/**
+	 * register the plugin with unique name
+     */
+	Aloha.Undo = new (Aloha.Plugin.extend({
+		_constructor: function(){
+			this._super('undo');
+		},
 
-		$(document).keydown(function(event) {
-			if (!event.metaKey || event.keyCode != 90) {
-				return;
-			}
-			event.preventDefault();
-			if (event.shiftKey) {
-				stack.canRedo() && stack.redo();
-			} else {
-				stack.canUndo() && stack.undo();
-			}
-		});
+		/**
+		 * Configure the available languages
+		 */
+		languages: ['en', 'de'],
 
+		/**
+		 * Initialize the plugin and set initialize flag on true
+		 */
+		init: function () {
+			var stack = new Undo.Stack(),
+			    EditCommand = Undo.Command.extend({
+					constructor: function(editable, patch) {
+						this.editable = editable;
+						this.patch = patch;
+					},
+					execute: function() {
+					},
+					undo: function() {
+						var contents = this.editable.getContents(),
+						    applied = dmp.patch_apply(reversePatch(this.patch), contents),
+						    oldValue = applied[0];
+						this.reset(oldValue);
+					},
+					redo: function() {
+						var contents = this.editable.getContents(),
+						    applied = dmp.patch_apply(this.patch, contents),
+						    newValue = applied[0];
+						this.reset(newValue);
+					},
+					reset: function(val) {
+						var reactivate = null;
+						if (Aloha.getActiveEditable() === this.editable) {
+							Aloha.deactivateEditable();
+							reactivate = this.editable;
+						}
 
-	GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'smartContentChanged', function(jevent, aevent) {
+						this.editable.obj.html(val);
 
-		// workaround because on redo the editable must be blured.
-		if ( aevent.triggerType != 'blur') stack.execute( new EditCommand( aevent.editable, aevent.snapshotContent) );
+						if (null !== reactivate) {
+							reactivate.activate();
+						}
+					}
+				});
 
-	});
+			stack.changed = function() {
+				// update UI
+			};
 
+			$(document).keydown(function(event) {
+				if (!event.metaKey || event.keyCode != 90) {
+					return;
+				}
+				event.preventDefault();
 
-};
+				if (event.shiftKey) {
+					stack.canRedo() && stack.redo();
+				} else {
+					stack.canUndo() && stack.undo();
+				}
+			});
 
-/**
-* toString method
-* @return string
-*/
-GENTICS.Aloha.Undo.toString = function () {
-	return 'undo';
-};
+			Aloha.bind('alohaSmartContentChanged', function(jevent, aevent) {
+				// workaround because on redo the editable must be blured.
+				if ( aevent.triggerType != 'blur') {
+					// only push an EditCommand if something actually changed.
+					var oldValue = aevent.snapshotContent;
+					var newValue = aevent.editable.getContents();
+					var patch = dmp.patch_make(oldValue, newValue);
+					if (0 != patch.length) {
+						stack.execute( new EditCommand( aevent.editable, patch ) );
+					}
+				}
+			});
+		},
+
+		/**
+		 * toString method
+		 * @return string
+		 */
+		toString: function () {
+			return 'undo';
+		}
+
+	}))();
+})(window);
