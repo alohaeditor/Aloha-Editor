@@ -49,9 +49,9 @@
 		endColorstr='#eeeeee',
 		gradientType='0'
 	);
-	-moz-box-shadow:	0 2px 20px rgba(0, 0, 0, .4);
-	-webkit-box-shadow:	0 2px 20px rgba(0, 0, 0, .4);
-	box-shadow:			0 2px 20px rgba(0, 0, 0, .4);
+	-moz-box-shadow:	0 2px 20px rgba(0, 0, 0, .5);
+	-webkit-box-shadow:	0 2px 20px rgba(0, 0, 0, .5);
+	box-shadow:			0 2px 20px rgba(0, 0, 0, .5);
 }
 .aloha-comments-addbox-content {
 	overflow: hidden;

@@ -270,18 +270,23 @@
 			add_box.show().css('height', 'auto')
 				.find('input').val(this.user);
 			
-			var content = add_box.find('.' + clss + '-content'),
+			var scroll_to,
+				content	 = add_box.find('.' + clss + '-content'),
+				input	 = add_box.find('input.' + clss + '-user'),
+				textarea = add_box.find('textarea').val(''),
 				h	= content.height(),
 				ah	= 30,
 				top = pos.top - (add_box.outerHeight(true) + ah);
 			
 			if (top <= 0) {
+				scroll_to = pos.top - ah;
 				el	= comment.elements.last();
 				pos = el.last().offset();
 				top = pos.top + el.height() + ah;
 				add_box.addClass(clss + '-point-from-bottom');
 			} else {
 				add_box.removeClass(clss + '-point-from-bottom');
+				scroll_to = top - ah;
 			}
 			
 			add_box.css({
@@ -295,14 +300,14 @@
 			}, 800, 'easeOutElastic');
 			
 			$('body').animate({
-				scrollTop: top - ah
-			}, 1600, 'easeOutExpo');
+				scrollTop: scroll_to
+			}, 1000, 'easeOutExpo');
 			
 			if (this.user == '' || !this.user) {
-				add_box.find('input.' + clss + '-user').select();
+				input.select();
 			} else {
-				add_box.find('input.' + clss + '-user').val(this.user);
-				add_box.find('textarea').val('').focus();
+				input.val(this.user);
+				textarea.focus();
 			}
 			
 			content
