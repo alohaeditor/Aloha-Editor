@@ -83,11 +83,30 @@
 					var reader = new FileReader();
 					reader.onloadend = function() {
 						var canvas = $('<canvas>').first(),
-							tempimg = new Image();
+							tempimg = new Image(),
+							targetsize = {};
 						tempimg.src = reader.result; 
+						
+//						if (tempimg.width > options.image.width || tempimg.height > options.image.height ) {
+//							targetsize.width = 
+//						}
+						
+						if (tempimg.width > tempimg.height) {
+							if (tempimg.width > options.image.max_width) {
+								targetsize.width = options.image.max_width;
+								targetsize.height *= options.image.max_width / tempimg.width;
+							}
+						} else {
+							if (tempimg.height > options.image.max_height) {
+								targetsize.height = options.image.max_height;
+								targetsize.width *= options.image.max_height / tempimg.height;
+							}
+							
+						}
+						
 						var canvas = document.createElement('canvas');
-						canvas.setAttribute('width', tempimg.width);
-						canvas.setAttribute('height', tempimg.height);
+						canvas.setAttribute('width', targetsize.width);
+						canvas.setAttribute('height', targetsize.height);
 						canvas.getContext('2d').drawImage(
 						tempimg,
 						0,
@@ -96,8 +115,8 @@
 						tempimg.height,
 						0,
 						0,
-						tempimg.width,
-						tempimg.height
+						targetsize.width,
+						targetsize.height
 						);
 						xhr.send(canvas.toDataURL(that.file.type));
 					}
@@ -222,6 +241,10 @@
 			'send_multipart_form': false, //true for html4 TODO: make browser check
 			//'additional_params': {"location":""},
 			'www_encoded': false,
+			'image': {
+				'max_width': 800,
+				'max_height': 800
+			},
 			'fieldName': function(){
 				return 'filename'
 				}

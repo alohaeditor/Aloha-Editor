@@ -48,6 +48,10 @@
 						'extra_headers':{}, //Extra parameters
 						'extra_post_data': {}, //Extra parameters
 						'send_multipart_form': false, //true for html4 TODO: make browser check
+						'image': {
+							'max_width': 800,
+							'max_height': 800
+						},
 						//'additional_params': {"location":""},
 						'www_encoded': false }
 					}
@@ -180,7 +184,7 @@
 
 						while(--len >= 0) {
 							if (
-								!(typeof Canvas !== "undefined" &&
+								!(!!document.createElement('canvas').getContext &&
 								  files[len].type.match(/image\//) &&
 								  that.settings.drop.upload.config.image)
 								
