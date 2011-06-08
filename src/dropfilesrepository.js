@@ -41,20 +41,20 @@
 					that.loaded = rpe.loaded;
 					that.total = rpe.total;
 					that.ulProgress = rpe.loaded / rpe.total;
-					Aloha.trigger('Uploadprogress',that);
+					Aloha.trigger('aloha-upload-progress',that);
 					xhr.onload = function(load) {
 						if (that.delegateUploadEvent(xhr.responseText)) {
-							Aloha.trigger('UploadSuccess',that);
+							Aloha.trigger('aloha-upload-success',that);
 
 						} else {
-							Aloha.trigger('UploadFailure', that);
+							Aloha.trigger('aloha-upload-failure', that);
 						}
 					};
 					xhr.onabort = function() {
-						Aloha.trigger('UploadAbort', that);
+						Aloha.trigger('aloha-upload-abort', that);
 					};
 					xhr.onerror = function(e) {
-						Aloha.trigger('UploadError', that);
+						Aloha.trigger('aloha-upload-error', that);
 					};
 				}
 			},

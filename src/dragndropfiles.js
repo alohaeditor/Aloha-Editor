@@ -205,7 +205,7 @@
 							that.uploader.startFileUpload(filesObjs[len].id,edConfig.drop.upload.config);
 						}
 					} else {
-						Aloha.trigger('dropFilesInPage', filesObjs);
+						Aloha.trigger('loha-drop-files-in-page', filesObjs);
 						while(--len >= 0) {
 							that.uploader.startFileUpload(filesObjs[len].id,this.config.drop.upload.config);
 						}
