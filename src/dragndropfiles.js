@@ -42,6 +42,7 @@
 																	//  if server return an error, throws an exception (throw "error")
 						'method':'POST',
 						'url': "",
+						'accept': 'application/json',
 						'file_name_param':"filename",
 						'file_name_header':'X-File-Name',
 						'extra_headers':{}, //Extra parameters

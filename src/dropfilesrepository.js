@@ -75,10 +75,10 @@
 				xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
 				xhr.setRequestHeader(options.file_name_header, this.file.fileName);
 				xhr.setRequestHeader("X-File-Size", this.file.fileSize);
+				xhr.setRequestHeader("Accept", options.accept);
 	//		l
 				if (!options.send_multipart_form) {
 					xhr.setRequestHeader("Content-Type", this.file.type);
-					xhr.setRequestHeader("Accept", "application/json");
 					xhr.overrideMimeType(this.file.type);
 					xhr.send(this.file);
 				} else {
@@ -192,6 +192,7 @@
 			'method':'POST',
 			'callback': function(resp) { return resp;},
 			'url': "",
+			'accept': 'application/json',
 			'file_name_param':"filename",
 			'file_name_header':'X-File-Name',
 			'extra_headers':{}, //Extra parameters
