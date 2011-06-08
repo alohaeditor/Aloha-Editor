@@ -163,6 +163,7 @@
 			var that = this,
 				bar	 = this.bar = $(
 					'<div class="' + clss + '-bar">'				+
+						'<div class="' + clss + '-bar-shadow"></div>' +
 						'<div class="' + clss + '-bar-inner">'		+
 							'<h2>'									+
 								'Comments:'							+
@@ -442,12 +443,17 @@
 		
 		setBarScrolling: function () {
 			var bottom = this.bar.find('.' + clss + '-bar-bottom').position();
+			
 			this.bar
 				.find('.' + clss + '-bar-inner')
 				.css({
 					height: $(window).height(),
 					'overflow-y': (bottom.top > this.bar.height()) ? 'scroll' : 'auto'
 				});
+			
+			this.bar
+				.find('.' + clss + '-bar-shadow')
+				.css('height', this.bar.height());
 		},
 		
 		closeBar: function () {

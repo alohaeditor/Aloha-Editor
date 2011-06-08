@@ -205,16 +205,35 @@
 	);
 	border-right: 1px solid #111;
 }
-
+.aloha-comments-bar-shadow {
+	width: 20px;
+	position: absolute;
+	top: 0;
+	right: 0;
+	background-image: -webkit-gradient(
+		linear,
+		left center,
+		right center,
+		color-stop(0.00, rgba(0, 0, 0, .9)),
+		color-stop(0.10, rgba(0, 0, 0, .5)),
+		color-stop(0.30, rgba(0, 0, 0, .2)),
+		color-stop(1.00, rgba(0, 0, 0, .0))
+	);
+	background-image: -moz-linear-gradient(
+		center top,
+		rgba(0, 0, 0, .8) 0%,
+		rgba(0, 0, 0, .0) 10%,
+		rgba(0, 0, 0, .0) 90%,
+		rgba(0, 0, 0, .8) 100%
+	);
+}
 .aloha-comments-bar {
- /* overflow-y: scroll; */
 	overflow: hidden;
 	position: fixed;
 	top: 0;
 	left: 0;
 	width: 0;
-	background: red;
-	padding-right: 30px;
+	padding-right: 20px;
 }
 .aloha-comments-bar h2 {
 	margin: 0;
@@ -316,7 +335,6 @@
 	background: transparent;
 	border-width: 0;
 	font-size: 30px;
-	color: red;
 }
 
 .aloha-comments-bar-reply {
@@ -350,7 +368,6 @@
  * Toolbar
  */
 button.aloha-comments-btn {
-	background: red !important;
 	width: 40px;
 	height: 40px;
 }
