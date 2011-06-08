@@ -302,13 +302,13 @@
  * http://docs.jquery.com/UI/Resizable#theming
  */
 .aloha .ui-resizable { position: relative;}
-.aloha .ui-resizable-handle { position: absolute;font-size: 0.1px;z-index: 99999; display: block;background-color: Highlight}
+.aloha .ui-resizable-handle { position: absolute;font-size: 0.1px;z-index: 99999; display: block}
 .aloha .ui-resizable-disabled .ui-resizable-handle, .aloha .ui-resizable-autohide .ui-resizable-handle { display: none; }
 .aloha .ui-resizable-n { cursor: n-resize; height: 7px; width: 100%; top: -5px; left: 0; }
 .aloha .ui-resizable-s { cursor: s-resize; height: 7px; width: 100%; bottom: -5px; left: 0; }
 .aloha .ui-resizable-e { cursor: e-resize; width: 7px; right: -5px; top: 0; height: 100%; }
 .aloha .ui-resizable-w { cursor: w-resize; width: 7px; left: -5px; top: 0; height: 100%; }
-.aloha .ui-resizable-se { cursor: se-resize; width: 12px; height: 12px; right: -5px; bottom: -5px; }
-.aloha .ui-resizable-sw { cursor: sw-resize; width: 12px; height: 12px; left: -5px; bottom: -5px; }
-.aloha .ui-resizable-nw { cursor: nw-resize; width: 12px; height: 12px; left: -5px; top: -5px; }
-.aloha .ui-resizable-ne { cursor: ne-resize; width: 12px; height: 12px; right: -5px; top: -5px;}
+.aloha .ui-resizable-se { cursor: se-resize; width: 12px; height: 12px; right: -5px; bottom: -5px; background-color: Highlight; border: 1px solid black}
+.aloha .ui-resizable-sw { cursor: sw-resize; width: 12px; height: 12px; left: -5px; bottom: -5px; background-color: Highlight; border: 1px solid black}
+.aloha .ui-resizable-nw { cursor: nw-resize; width: 12px; height: 12px; left: -5px; top: -5px; background-color: Highlight; border: 1px solid black}
+.aloha .ui-resizable-ne { cursor: ne-resize; width: 12px; height: 12px; right: -5px; top: -5px;background-color: Highlight; border: 1px solid black}

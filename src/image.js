@@ -626,6 +626,7 @@
 				});
 				imgRange.select();
 			}
+			this.obj.css({'background-color': ''});
 		},
 
 		// Find img markup
@@ -710,7 +711,7 @@
 		 *
 		 */
 		initCropButtons: function() {
-			var btns = jQuery('#aloha-CropNResize-btns'),
+			var btns,
 				oldLeft = 0,
 				oldTop = 0;
 			jQuery('body').append(
@@ -721,7 +722,7 @@
 						'" onclick="Aloha.Image.endCrop();">&#10006;</button>' +
 					'</div>'
 			);
-
+			btns = jQuery('#aloha-CropNResize-btns');
 			this.interval = setInterval(function () {
 				var jt = jQuery('.jcrop-tracker:first'),
 					off = jt.offset();
@@ -883,7 +884,7 @@
 		endResize: function () {
 			if (this.obj) {
 				this.obj.resizable('destroy');
-				this.obj.css({display: this.obj.data('display-before')});
+				this.obj.css({display: this.obj.data('display-before'), top: '0', left: '0'});
 			}
 		}
 
