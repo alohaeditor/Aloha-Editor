@@ -95,9 +95,9 @@
 			} catch(error) {
 				Aloha.Log.info(this,"Custom class loading error or not specified, using default");
 				uploader_instance = Aloha.Repositories.Uploader;
-				if (customConfig.drop.upload.delegate) {
-					uploader_instance.delegateUploadEvent = customConfig.drop.upload.delegate;
-				}
+//				if (customConfig.drop.upload.delegate) {
+//					uploader_instance.delegateUploadEvent = customConfig.drop.upload.delegate;
+//				}
 			}
 			return uploader_instance;
 		},

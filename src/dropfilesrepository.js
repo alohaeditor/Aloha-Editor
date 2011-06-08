@@ -147,6 +147,7 @@
 	 */
 	Aloha.Repositories.Uploader = new (Aloha.Repository.extend({
 		_constructor: function(repositoryId, repositoryName) {
+			Aloha.Log.info(Aloha,"_constructor : Initializing default uploader");
 			this._super(repositoryId, repositoryName);
 			uploadFolder = new UploadFolder({
 				id: "Uploads",
