@@ -93,7 +93,7 @@
 					that.bodyClicked.apply(that, arguments);
 				})
 				.mouseup(function () {
-					console.log(Aloha.Selection);
+					//console.log(Aloha.Selection);
 				});
 			
 			$.each(this.colors, function (k, v) {
@@ -203,6 +203,15 @@
 				wrapper = $('<div class="' + classes.join(' ') + '">');
 			
 			dom_util.addMarkup(range, wrapper);
+			
+			// if the wrapper element does not exist, it means that there
+			// was nothing in the selection to wrap around, indicating an
+			// empty selection
+			if ($('.' + id).length == 0) {
+				// TODO: notify user
+				return;
+			}
+			
 			dom_util.doCleanup({'merge' : true, 'removeempty' : true}, range);
 			
 			var comment = current_comment = this.comments[id] = {
@@ -251,25 +260,38 @@
 		
 		openModal: function (comment) {
 			var that = this,
-				el	= comment.elements,
-				pos	= el.first().offset(),
+				el	= comment.elements.first(),
+				pos	= el.offset(),
 				win	= $(window);
 			
 			add_box.show().css('height', 'auto')
 				.find('input').val(current_user_email);
 			
 			var content = add_box.find('.' + clss + '-content'),
-				h = content.height();
+				h = content.height(),
+				ah = 30,
+				top = pos.top - (add_box.outerHeight(true) + ah);
+			
+			if (top <= 0) {
+				el = comment.elements.last();
+				pos = el.last().offset();
+				top = pos.top + el.height() + ah;
+				add_box.addClass(clss + '-point-from-bottom');
+			} else {
+				add_box.removeClass(clss + '-point-from-bottom');
+			}
 			
 			add_box.css({
-				left : pos.left + (el.first().width() / 2) - (add_box.outerWidth(true) / 2),
-				top  : pos.top - (add_box.outerHeight(true) + 30),
+				left : pos.left + (el.width() / 2) - (add_box.outerWidth(true) / 2),
+				top  : top,
 				'margin-top': h,
 				opacity: 0
 			}).animate({
 				'margin-top': 0,
 				opacity: 1
-			}, 750, 'easeOutElastic');
+			}, 750, 'easeOutElastic', function () {
+				$(document).scrollTop(add_box);
+			});
 			
 			if (!that.user) {
 				add_box.find('input.' + clss + '-user').select();
@@ -278,7 +300,6 @@
 				add_box.find('textarea').val('').focus();
 			}
 			
-			$(document).scrollTop(add_box);
 			content.css('height', 0).animate({height: h}, 750, 'easeOutElastic');
 			
 			this.isModalOpen = true;

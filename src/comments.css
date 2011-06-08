@@ -122,10 +122,20 @@
 	border-top-color: #aaa;
 	margin: 10px 0 0 130px;
 }
-
 .aloha-comments-arrow-inner {
 	border-top-color: #ddd;
 	margin: -16px 0 0 -15px;
+}
+.aloha-comments-point-from-bottom .aloha-comments-arrow {
+	top: 0px;
+	border-top-color: transparent;
+	border-bottom-color: #aaa;
+	margin-top: -30px;
+}
+.aloha-comments-point-from-bottom .aloha-comments-arrow-inner {
+	border-top-color: transparent;
+	border-bottom-color: #fff;
+	margin-top: -14px;
 }
 
 .aloha-comments-bar {
