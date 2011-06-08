@@ -179,11 +179,19 @@
 					var range = that.InitializeRangeForDropEvent(event, editable);
 
 						while(--len >= 0) {
-							if (files[len].size > that.settings.drop.max_file_size) {
-								event.stopPropagation();
-								Aloha.Log.warn(that,"max_file_size exeeded");
+							if (
+								!(typeof Canvas !== "undefined" &&
+								  files[len].type.match(/image\//) &&
+								  that.settings.drop.upload.config.image)
+								
+							) {
+								if (files[len].size > that.settings.drop.max_file_size) {
+									event.stopPropagation();
+									Aloha.Log.warn(that,"max_file_size exeeded");
 									return false;
+								}
 							}
+							
 							fileObj = that.uploader.addFileUpload(files[len]);
 							filesObjs.push(fileObj);
 							var edConfig = that.getEditableConfig(editable);

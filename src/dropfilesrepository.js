@@ -68,7 +68,7 @@
 			 */
 			startUpload: function() {
 				//if ()
-				var xhr = this.xhr, options = this.upload_config;
+				var xhr = this.xhr, options = this.upload_config, that = this;
 
 				xhr.open(options.method, typeof(options.url) == "function" ? options.url(number) : options.url, true);
 				xhr.setRequestHeader("Cache-Control", "no-cache");
@@ -78,9 +78,30 @@
 				xhr.setRequestHeader("Accept", options.accept);
 	//		l
 				if (!options.send_multipart_form) {
-					xhr.setRequestHeader("Content-Type", this.file.type);
+					xhr.setRequestHeader("Content-Type", this.file.type + ";base64");
 					xhr.overrideMimeType(this.file.type);
-					xhr.send(this.file);
+					var reader = new FileReader();
+					reader.onloadend = function() {
+						var canvas = $('<canvas>').first(),
+							tempimg = new Image();
+						tempimg.src = reader.result; 
+						var canvas = document.createElement('canvas');
+						canvas.setAttribute('width', tempimg.width);
+						canvas.setAttribute('height', tempimg.height);
+						canvas.getContext('2d').drawImage(
+						tempimg,
+						0,
+						0,
+						tempimg.width,
+						tempimg.height,
+						0,
+						0,
+						tempimg.width,
+						tempimg.height
+						);
+						xhr.send(canvas.toDataURL(that.file.type));
+					}
+					reader.readAsDataURL(this.file);
 				} else {
 					if (window.FormData) {//Many thanks to scottt.tw
 						var f = new FormData();
@@ -248,10 +269,14 @@
 //			}
 			callback.call( this, d);
 		},
+		/**
+		 * Triggers an upload
+		 * Resizes if it's an image which is too large
+		 */
 		addFileUpload: function(file) {
 			var type='';
 			//this.browser.show();
-
+			
 			var d = this.objects.filter(function(e, i, a) {
 				if (e.name == file.name) return true;
 				return false;
@@ -263,7 +288,9 @@
 				id = 'ALOHA_idx_file' + len,
 				merge_conf = {};
 			jQuery.extend(true,merge_conf, this.config);
-
+			
+			
+			
 			this.objects.push(new UploadFile({
 				file:file,
 				id: id,
