@@ -114,7 +114,28 @@
 							editables : {
 							'#title'	: {}
 							}
-					}
+					},
+					"dragndropfiles": { 'drop' : {    'max_file_size': 300000,
+									'max_file_count': 2,
+									'upload': {
+													'uploader_instance':'Aloha.Repositories.Uploader',
+													'config': {
+															// can add more elements for Ext window styling
+															'method':'POST',
+															'url': "upload.php",
+															'file_name_param':"filename",
+															'file_name_header':'X-File-Name',
+															'extra_headers':{}, //Extra parameters
+															'extra_post_data': {}, //Extra parameters
+															'send_multipart_form': false, //true for html4 TODO: make browser check
+															//'additional_params': {"location":""},
+															'www_encoded': false,
+															'callback': function(response) { return response; }
+														}
+													}
+									}
+							}
+
 					}
 			};
 	</script>
