@@ -192,6 +192,7 @@
 
 
 .aloha-comments-bar-inner {
+	z-index: 3;
 	background-color: #222;
 	background-image: -webkit-radial-gradient(
 		rgba(50, 50, 50, 0.5) 0%,
@@ -203,13 +204,55 @@
 		rgba(50, 50, 50, 0.6) 40%,
 		rgba(0,  0,  0,  0.5)
 	);
-	border-right: 1px solid #111;
+	border-right: 1px solid #333;
+}
+.aloha-comments-bar-toggle-img {
+	width: 40px;
+	height: 40px;
+	background: url(../img/comments.png) no-repeat center center;
+}
+.aloha-comments-bar-toggle {
+	z-index: 2;
+	display: block;
+	width: 40px;
+	height: 40px;
+	background-color: #222;
+	background-image: -webkit-gradient(
+		linear,
+		left center,
+		right center,
+		color-stop(0.00, rgba(0, 0, 0, .9)),
+		color-stop(0.10, rgba(0, 0, 0, .5)),
+		color-stop(0.30, rgba(0, 0, 0, .2)),
+		color-stop(1.00, rgba(0, 0, 0, .0))
+	);
+	background-image: -moz-linear-gradient(
+		center top,
+		rgba(0, 0, 0, .8) 0%,
+		rgba(0, 0, 0, .0) 10%,
+		rgba(0, 0, 0, .0) 90%,
+		rgba(0, 0, 0, .8) 100%
+	);
+	border: 1px solid #222;
+	position: absolute;
+	top: 20px;
+	right: 20px;
+	cursor: pointer;
+	
+	-moz-box-shadow:	4px 1px 20px rgba(0, 0, 0, .8);
+	-webkit-box-shadow:	4px 1px 20px rgba(0, 0, 0, .8);
+	box-shadow:			4px 1px 20px rgba(0, 0, 0, .8);
+	
+	border-radius:			5px;
+	-moz-border-radius:		5px;
+	-webkit-border-radius:	5px;
 }
 .aloha-comments-bar-shadow {
-	width: 20px;
+	z-index: 1;
+	width: 40px;
 	position: absolute;
 	top: 0;
-	right: 0;
+	right: 20px;
 	background-image: -webkit-gradient(
 		linear,
 		left center,
@@ -233,7 +276,7 @@
 	top: 0;
 	left: 0;
 	width: 0;
-	padding-right: 20px;
+	padding-right: 60px;
 }
 .aloha-comments-bar h2 {
 	margin: 0;
@@ -243,18 +286,6 @@
 	border-color: rgba(0, 0, 0, .4);
 	color: #999;
 	text-shadow: 0 0 4px rgba(0, 0, 0, .8);
-}
-.aloha-comments-bar h2 span {
-	display: block;
-	width: 32px;
-	height: 32px;
-	background: url(../img/add.png) no-repeat center center;
-	position: absolute;
-	top: 10px;
-	right: 10px;
-	cursor: pointer;
-	opacity: 0.75;
-	filter: alpha(opacity=75);
 }
 .aloha-comments-bar h2 span:hover {
 	opacity: 1;

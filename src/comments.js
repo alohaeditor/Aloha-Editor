@@ -163,11 +163,13 @@
 			var that = this,
 				bar	 = this.bar = $(
 					'<div class="' + clss + '-bar">'				+
-						'<div class="' + clss + '-bar-shadow"></div>' +
+						'<div class="' + clss + '-bar-shadow"></div>'		  +
+						'<div class="' + clss + '-bar-toggle">'				  +
+							'<div class="' + clss + '-bar-toggle-img"></div>' +
+						'</div>'											  +
 						'<div class="' + clss + '-bar-inner">'		+
 							'<h2>'									+
 								'Comments:'							+
-								'<span alt="Add comment"></span>'	+
 							'</h2>'									+
 							'<ul></ul>'								+
 							'<div class="' + clss + '-bar-bottom">' +
