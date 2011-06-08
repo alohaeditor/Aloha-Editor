@@ -43,7 +43,7 @@
 					that.ulProgress = rpe.loaded / rpe.total;
 					Aloha.trigger('Uploadprogress',that);
 					xhr.onload = function(load) {
-						if (this.delegateUploadEvent(xhr.responseText)) {
+						if (that.delegateUploadEvent(xhr.responseText)) {
 							Aloha.trigger('UploadSuccess',that);
 
 						} else {
@@ -63,9 +63,9 @@
 			/**
 			 * Process upload of a file
 			 */
-			startUpload: function(options) {
+			startUpload: function() {
 				//if ()
-				var xhr = this.xhr;
+				var xhr = this.xhr, options = this.upload_config;
 
 				xhr.open(options.method, typeof(options.url) == "function" ? options.url(number) : options.url, true);
 				xhr.setRequestHeader("Cache-Control", "no-cache");
@@ -164,15 +164,18 @@
 						this.queue.push(obj);
 					},
 					pop: function(){ // grabs first item of array and remove it
-						return this.queue[0];
+						var result = this.queue[0];
 						this.queue = this.queue.splice(1);
+						return result;
 					},
 					processQueue: function() { // Process file uploads
+						var file;
 						if (!this.processUpload) { // prevents concurrent runs of processQueue
 							this.processUpload = true;
 							// recalculate queue lenght after each upload
 							while(this.queue.length > 0) {
-								this.pop().uploadFile();
+								file = this.pop();
+								file.startUpload();
 							}
 							this.processUpload = false;
 						}
@@ -284,7 +287,7 @@
 				jQuery.extend(true,upload_config,this.upload_conf);
 				d[0].upload_config = upload_config;
 				this.uploadQueue.push(d[0]);
-
+				this.uploadQueue.processQueue();
 			} else {
 				Aloha.Log.error(this,"No file with that id");
 			}

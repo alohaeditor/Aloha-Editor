@@ -15,7 +15,7 @@
     <node id="n0">
       <data key="d3">
         <y:GenericNode configuration="BevelNode">
-          <y:Geometry height="420.2222222222223" width="269.0" x="-59.90740740740739" y="-35.495208740234375"/>
+          <y:Geometry height="417.3174540624798" width="269.0" x="-59.90740740740739" y="-35.495208740234375"/>
           <y:Fill color="#FF9900" transparent="false"/>
           <y:BorderStyle hasColor="false" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="internal" modelPosition="t" textColor="#000000" visible="true" width="97.087890625" x="85.9560546875" y="4.0">DragnDropFiles</y:NodeLabel>
@@ -141,7 +141,7 @@ DropFilesInEditable(items)</y:NodeLabel>
     <node id="n11">
       <data key="d3">
         <y:GenericNode configuration="com.yworks.flowchart.process">
-          <y:Geometry height="55.0" width="94.0" x="291.24074074074076" y="-5.6200471100983975"/>
+          <y:Geometry height="55.0" width="94.0" x="280.28703703703707" y="-5.6200471100983975"/>
           <y:Fill color="#E8EEF7" color2="#B7C9E3" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="98.494140625" x="-2.2470703125" y="18.515625">Process upload </y:NodeLabel>
@@ -217,7 +217,7 @@ UploadFailure(repoItem)</y:NodeLabel>
     <node id="n18">
       <data key="d3">
         <y:ShapeNode>
-          <y:Geometry height="30.0" width="168.42592592592592" x="243.07407407407408" y="-57.99041748046875"/>
+          <y:Geometry height="30.0" width="168.42592592592592" x="243.07407407407408" y="-105.6200471100984"/>
           <y:Fill color="#FFCC00" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" borderDistance="0.0" fontFamily="Dialog" fontSize="13" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="19.1328125" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="164.37353515625" x="2.026195384837962" y="5.43359375">repoItem: addFileUpload</y:NodeLabel>
@@ -338,11 +338,23 @@ DropFilesInPage(itemIds)</y:NodeLabel>
     <node id="n29">
       <data key="d3">
         <y:GenericNode configuration="com.yworks.flowchart.process">
-          <y:Geometry height="22.0" width="92.01851851851848" x="328.99074074074076" y="-13.101528591579864"/>
+          <y:Geometry height="22.0" width="92.01851851851848" x="318.03703703703707" y="-13.101528591579864"/>
           <y:Fill color="#E8EEF7" color2="#B7C9E3" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="91.685546875" x="0.1664858217592382" y="2.015625">(async thread)</y:NodeLabel>
         </y:GenericNode>
+      </data>
+    </node>
+    <node id="n30">
+      <data key="d2"/>
+      <data key="d3">
+        <y:ShapeNode>
+          <y:Geometry height="30.0" width="99.0" x="296.6446253946253" y="-59.36078785083913"/>
+          <y:Fill color="#FFCC00" transparent="false"/>
+          <y:BorderStyle color="#000000" type="line" width="1.0"/>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="internal" modelPosition="c" textColor="#000000" visible="true" width="85.3046875" x="6.84765625" y="6.015625">HandleResize</y:NodeLabel>
+          <y:Shape type="rectangle"/>
+        </y:ShapeNode>
       </data>
     </node>
     <edge id="e0" source="n22" target="n9">
@@ -642,6 +654,16 @@ DropFilesInPage(itemIds)</y:NodeLabel>
       <data key="d7">
         <y:PolyLineEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
+          <y:LineStyle color="#000000" type="line" width="1.0"/>
+          <y:Arrows source="none" target="standard"/>
+          <y:BendStyle smoothed="false"/>
+        </y:PolyLineEdge>
+      </data>
+    </edge>
+    <edge id="e27" source="n11" target="n30">
+      <data key="d7">
+        <y:PolyLineEdge>
+          <y:Path sx="-30.56587993614437" sy="-27.503030110671734" tx="0.0" ty="0.0"/>
           <y:LineStyle color="#000000" type="line" width="1.0"/>
           <y:Arrows source="none" target="standard"/>
           <y:BendStyle smoothed="false"/>

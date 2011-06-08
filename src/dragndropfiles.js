@@ -64,14 +64,14 @@
 	//			stylePath = GENTICS_Aloha_base + '/plugins/com.gentics.aloha.plugins.DragAndDropFiles/style.css';
 	//			jQuery('head').append('<link rel="stylesheet" href="'
 	//					+ stylePath + '"></script>');
-				if (that.settings.config === undefined) {
-					that.settings.config = that.config;
+				if (that.settings === undefined) {
+					that.settings = that.config;
 				} else {
-					that.settings.config = jQuery.extend(true, that.config, that.settings.config);
+					that.settings = jQuery.extend(true, that.config, that.settings);
 				}
 
 				try {
-						that.uploader = that.initUploader(that.settings.config);
+						that.uploader = that.initUploader(that.settings);
 					} catch(error) {
 						Aloha.Log.warn(that,error);
 						Aloha.Log.warn(that,"Error creating uploader, no upload will be processed");
@@ -143,7 +143,7 @@
 						event.preventDefault();
 					else
 						event.cancelBubble = true;
-					if (len > that.settings.config.drop.max_file_count) {
+					if (len > that.settings.drop.max_file_count) {
 						Aloha.Log.warn(that,"too much files dropped");
 						if (event.stopPropagation)
 						event.stopPropagation();
@@ -177,7 +177,7 @@
 					var range = that.InitializeRangeForDropEvent(event, editable);
 
 						while(--len >= 0) {
-							if (files[len].size > that.settings.config.drop.max_file_size) {
+							if (files[len].size > that.settings.drop.max_file_size) {
 								event.stopPropagation();
 								Aloha.Log.warn(that,"max_file_size exeeded");
 									return false;
