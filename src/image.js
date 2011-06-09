@@ -100,12 +100,54 @@
 				 * which means that no other reset will be applied
 				 * if false is returned the internal reset procedure will be applied
 				 * @param image jquery image object reference
-				 * @return true if a reset has been applied, flase otherwise
+				 * @return true if a reset has been applied, false otherwise
 				 */
 				'onReset': function (image) { return false; }
 			}
 		},
-		onCropped: function (image, props) {},
+		/**
+		 * Default implementation for crop using canvas
+		 */
+		onCropped: function (image, props) {
+			var canvas = document.createElement('canvas'),
+			 	context = canvas.getContext("2d"),
+			 	img = image.get(0),
+			 	finalprops = {},
+			 	ratio= {img:{}, disp: {}};
+			ratio.img.h = img.height;// image natural height
+			ratio.img.w = img.width;// image natural width
+			ratio.disp.h = image.height(); // image diplay heigth
+			ratio.disp.w = image.width(); // image diplay width
+			ratio.h=(ratio.img.h/ratio.disp.h);
+			ratio.w=(ratio.img.w/ratio.disp.w);
+			
+				
+			/* 
+		var sourceX = 150;
+        var sourceY = 0;
+        var sourceWidth = 150;
+        var sourceHeight = 150;
+        var destWidth = sourceWidth;
+        var destHeight = sourceHeight;
+        var destX = canvas.width / 2 - destWidth / 2;
+        var destY = canvas.height / 2 - destHeight / 2;
+			context.drawImage(imageObj, sourceX, sourceY, sourceWidth, sourceHeight, destX, destY, destWidth, destHeight);
+			 */
+			// props are related to displayed size of image.
+			// apply w/h ratio to props to get fprops which will be related to 'real' image dimensions
+			finalprops.x = props.x * ratio.w;
+			finalprops.y = props.y * ratio.h;
+			finalprops.w = props.w * ratio.w;
+			finalprops.h = props.h * ratio.h;
+			context.drawImage(img,
+					finalprops.x, finalprops.y,
+					finalprops.w, finalprops.h,
+					0,0,
+//					props.x2, props.y2,
+					props.w, props.h);
+			$('body').append(canvas);
+			
+		},
 		onReset: function (image) { return false; },
 		onResized: function (image) {},
 		/**
