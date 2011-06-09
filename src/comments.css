@@ -80,7 +80,15 @@
 .aloha-comments-addbox textarea.aloha-comments-error {
 	border-color: #f68;
 }
-.aloha-comments-addbox button {
+.aloha-comments-addbox h2 {
+	margin: 0 0 10px;
+	padding: 0;
+	font-size: 16px;
+	text-shadow: 0 0 1px rgba(0, 0, 0, .4);
+}
+
+
+.aloha-comments-btn {
 	float: right;
 	padding: 5px 10px;
 	border: 1px solid #aaa;
@@ -125,19 +133,14 @@
 	
 	text-shadow: 0 0 1px rgba(0, 0, 0, .4);
 }
-.aloha-comments-addbox button:hover {
+.aloha-comments-btn:hover {
 	-moz-box-shadow:	0 0 6px rgba(0, 0, 0, .4);
 	-webkit-box-shadow:	0 0 6px rgba(0, 0, 0, .4);
 	box-shadow:			0 0 6px rgba(0, 0, 0, .4);
 	opacity: 1;
 	filter: alpha(opacity=100);
 }
-.aloha-comments-addbox h2 {
-	margin: 0 0 10px;
-	padding: 0;
-	font-size: 16px;
-	text-shadow: 0 0 1px rgba(0, 0, 0, .4);
-}
+
 .aloha-comments-colors {
 	float: left;
 }
@@ -309,6 +312,7 @@
 	border-color: rgba(100, 100, 100, .4);
 }
 .aloha-comments-bar li {
+	margin-bottom: 5px;
 	padding: 10px;
 	border-bottom: 1px solid rgba(127, 127, 127, .3);
 	background-color: rgba(0, 0, 0, .4);
@@ -425,7 +429,7 @@
 /**
  * Toolbar
  */
-button.aloha-comments-btn {
+button.aloha-comments-toolbar-btn {
 	width: 40px;
 	height: 40px;
 }

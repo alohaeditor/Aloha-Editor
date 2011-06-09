@@ -1,14 +1,11 @@
-/*!--------------------------------------*
-  | Aloha Editor                         |
-  +--------------------------------------+
-  | Comments Plugin                      |
-  |                                      |
-  | TODO:                                |
-  |   - SHIFT + ENTER => submit comment  |
-  |                                      |
-  +--------------------------------------+
-  | comments.js                          |
-  *--------------------------------------*/
+/*!
+* Aloha Editor
+* Author & Copyright (c) 2010 Gentics Software GmbH
+* aloha-sales@gentics.com
+* Licensed unter the terms of http://www.aloha-editor.com/license.html
+*/
+
+// TODO: SHIFT + ENTER => submit comment  |
 
 (function (window, undefined) {
 	
@@ -44,8 +41,8 @@
 					'<textarea></textarea>' +
 					'<div class="' + clss + '-text-err-msg"></div>' +
 					'<ul class="' + clss + '-colors"></ul>' +
-					'<button class="' + clss + '-cancel">Cancel</button>' +
-					'<button class="' + clss + '-submit">Comment</button>' +
+					'<button class="' + clss + '-cancel ' + clss + '-btn">Cancel</button>' +
+					'<button class="' + clss + '-submit ' + clss + '-btn">Comment</button>' +
 					'<div class="' + clss + '-clear"></div>' +
 				'</div>' +
 				'<div class="' + clss + '-arrow">' +
@@ -124,7 +121,7 @@
 		initBtns: function () {
 			var that = this,
 				add_btn = new Aloha.ui.Button({
-					iconClass: 'aloha-button aloha-comments-btn aloha-comments-btn-add',
+					iconClass: 'aloha-button aloha-comments-toolbar-btn aloha-comments-btn-add',
 					onclick: function () {
 						if (!that.isModalOpen) {
 							that.addComment.apply(that, arguments);
@@ -133,7 +130,7 @@
 					tooltip: 'Add comments to the selected range'
 				}),
 				reveal_btn = new Aloha.ui.Button({
-					iconClass: 'aloha-button aloha-comments-btn aloha-comments-btn-reveal',
+					iconClass: 'aloha-button aloha-comments-toolbar-btn aloha-comments-btn-reveal',
 					onclick: function () {
 						if (!that.isModalOpen && !that.isBarOpen) {
 							that.revealComments.apply(that, arguments);
@@ -440,7 +437,8 @@
 		},
 		
 		showBar: function (comment) {
-			var ul = this.bar.find('ul:first').html('');
+			var that = this,
+				ul = this.bar.find('ul:first').html('');
 			
 			this.bar.animate({
 				'width': 300
@@ -455,7 +453,7 @@
 				this.printThread(ul, comment);
 			} else {
 				$.each(this.comments, function () {
-					console.log(this);
+					that.printThread(ul, this);
 				});
 			}
 			
@@ -649,23 +647,11 @@
 				}
 			}
 			
-			console.log(
-				el.hasClass(clss + '-bar'),
-				el.parents('.' + clss + '-bar')
-			);
-			
 			if (!this.isModalOpen) {
 				if (!el.hasClass(clss + '-bar')) {
 					if (el.parents('.' + clss + '-bar').length == 0) {
 						this.removeHighlight();
 					}
-				}
-			}
-			
-			if (1 == 0 && this.isBarOpen && !el.hasClass(clss + '-bar')) {
-				if (el.parents('.' + clss + '-bar').length == 0) {
-					this.closeBar();
-					this.removeHighlight();
 				}
 			}
 		},
@@ -675,7 +661,7 @@
 			$.each([
 				'hr.png',
 				'textbox.png'
-			], function () {(new Image()).src = '/Aloha-Editor/src/plugin/comments/img/' + this;});
+			], function () {(new Image()).src = '../../plugin/comments/img/' + this;});
 		}
 		
 	}))(); // Aloha.Comments
