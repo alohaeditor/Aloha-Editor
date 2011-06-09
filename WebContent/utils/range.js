@@ -207,7 +207,7 @@ GENTICS.Utils.RangeObject.prototype.getContainerParents = function (limit, fromE
 		return false;
 	}
 
-	if (typeof limit == 'undefined') {
+	if (typeof limit == 'undefined' || !limit) {
 		limit = jQuery('body');
 	}
 

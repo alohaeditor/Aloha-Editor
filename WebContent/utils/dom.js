@@ -873,13 +873,13 @@ GENTICS.Utils.Dom.prototype.searchAdjacentTextNode = function (parent, index, se
 	}
 
 	if (stopat.blocklevel == 'undefined') {
-		stopal.blocklevel = true;
+		stopat.blocklevel = true;
 	}
 	if (stopat.list == 'undefined') {
-		stopal.list = true;
+		stopat.list = true;
 	}
 	if (stopat.linebreak == 'undefined') {
-		stopal.linebreak = true;
+		stopat.linebreak = true;
 	}
 
 	if (typeof searchleft == 'undefined') {
@@ -1062,10 +1062,76 @@ GENTICS.Utils.Dom.prototype.removeFromDOM = function (object, range, preserveCon
 		// we simply unwrap the children of the object
 		jQuery(object).contents().unwrap();
 
-		// eventually do cleanup
+		// optionally do cleanup
 		this.doCleanup({'merge' : true}, range, parent);
 	} else {
 		// TODO
+	}
+};
+
+/**
+ * Remove the content defined by the given range from the DOM. Update the given
+ * range object to be a collapsed selection at the place of the previous
+ * selection.
+ * @param rangeObject range object
+ * @return true if the range could be removed, false if not
+ */
+GENTICS.Utils.Dom.prototype.removeRange = function (rangeObject) {
+	if (!rangeObject) {
+		// no range given
+		return false;
+	}
+	if (rangeObject.isCollapsed()) {
+		// the range is collapsed, nothing to delete
+		return false;
+	}
+
+	// split partially contained text nodes at the start and end of the range
+	if (rangeObject.startContainer.nodeType == 3 && rangeObject.startOffset > 0
+			&& rangeObject.startOffset < rangeObject.startContainer.data.length) {
+		this.split(rangeObject, jQuery(rangeObject.startContainer).parent(),
+			false);
+	}
+	if (rangeObject.endContainer.nodeType == 3 && rangeObject.endOffset > 0
+			&& rangeObject.endOffset < rangeObject.endContainer.data.length) {
+		this.split(rangeObject, jQuery(rangeObject.endContainer).parent(),
+			true);
+	}
+
+	// construct the range tree
+	var rangeTree = rangeObject.getRangeTree();
+
+	// collapse the range
+	rangeObject.endContainer = rangeObject.startContainer;
+	rangeObject.endOffset = rangeObject.startOffset;
+
+	// remove the markup from the range tree
+	this.recursiveRemoveRange(rangeTree, rangeObject);
+
+	// do some cleanup
+	this.doCleanup({'merge' : true}, rangeObject);
+
+	// clear the caches of the range object
+	rangeObject.clearCaches();
+};
+
+GENTICS.Utils.Dom.prototype.recursiveRemoveRange = function (rangeTree, rangeObject) {
+	// iterate over the rangetree objects of this level
+	for (var i = 0; i < rangeTree.length; ++i) {
+		// check for nodes fully in the range
+		if (rangeTree[i].type == 'full') {
+			// if the domobj is the startcontainer, we need to update the rangeObject
+			if (rangeObject.startContainer == rangeTree[i].domobj) {
+				rangeObject.startContainer = rangeObject.endContainer = rangeTree[i].domobj.parentNode;
+				rangeObject.startOffset = rangeObject.endOffset = this.getIndexInParent(rangeTree[i].domobj);
+			}
+
+			// remove the object from the DOM
+			jQuery(rangeTree[i].domobj).remove();
+		} else if (rangeTree[i].type == 'partial' && rangeTree[i].children) {
+			// node partially selected and has children, so do recursion
+			this.recursiveRemoveRange(rangeTree[i].children);
+		}
 	}
 };
 
