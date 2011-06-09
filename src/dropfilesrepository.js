@@ -83,40 +83,43 @@
 					var reader = new FileReader();
 					reader.onloadend = function() {
 						var canvas = $('<canvas>').first(),
-							tempimg = new Image(),
-							targetsize = {};
-						tempimg.src = reader.result; 
-						
-//						if (tempimg.width > options.image.width || tempimg.height > options.image.height ) {
-//							targetsize.width = 
-//						}
-						
+							targetsize = {},
+							tempimg = new Image();
+
+						tempimg.src = reader.result;
+
+						targetsize = {
+							height: tempimg.height,
+							width: tempimg.width
+						};
+
+
 						if (tempimg.width > tempimg.height) {
 							if (tempimg.width > options.image.max_width) {
 								targetsize.width = options.image.max_width;
-								targetsize.height *= options.image.max_width / tempimg.width;
+								targetsize.height = tempimg.height * options.image.max_width / tempimg.width;
 							}
 						} else {
 							if (tempimg.height > options.image.max_height) {
 								targetsize.height = options.image.max_height;
-								targetsize.width *= options.image.max_height / tempimg.height;
+								targetsize.width = tempimg.width * options.image.max_height / tempimg.height;
 							}
-							
+
 						}
-						
+
 						var canvas = document.createElement('canvas');
 						canvas.setAttribute('width', targetsize.width);
 						canvas.setAttribute('height', targetsize.height);
 						canvas.getContext('2d').drawImage(
-						tempimg,
-						0,
-						0,
-						tempimg.width,
-						tempimg.height,
-						0,
-						0,
-						targetsize.width,
-						targetsize.height
+							tempimg,
+							0,
+							0,
+							tempimg.width,
+							tempimg.height,
+							0,
+							0,
+							targetsize.width,
+							targetsize.height
 						);
 						xhr.send(canvas.toDataURL(that.file.type));
 					}
@@ -166,7 +169,7 @@
 				}
 
 
-			},
+			}
 //			/**
 //			 * Method to override to handle backend response
 //			 */
@@ -299,7 +302,7 @@
 		addFileUpload: function(file) {
 			var type='';
 			//this.browser.show();
-			
+
 			var d = this.objects.filter(function(e, i, a) {
 				if (e.name == file.name) return true;
 				return false;
@@ -311,9 +314,9 @@
 				id = 'ALOHA_idx_file' + len,
 				merge_conf = {};
 			jQuery.extend(true,merge_conf, this.config);
-			
-			
-			
+
+
+
 			this.objects.push(new UploadFile({
 				file:file,
 				id: id,
