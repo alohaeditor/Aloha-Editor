@@ -491,36 +491,32 @@
 				//console.log(data.file);
 				// Prepare
 				var
-					that = this,
+					that = this, img,
 					len = data.filesObjs.length,
-					reader, fileObj,
-					onloadendHandler = function(readEvent,reader) {
-						// Prepare
-						var
-							imagestyle = "max-width: "+me.config.img.max_width+"; max-height: "+me.config.img.max_height,
-							img = jQuery('<img id="' + this.attachedFile.id + '" style="'+imagestyle+'" title="" src="" />');
-
-						//img.click( Aloha.Image.clickImage ); - Using delegate now
-						if (typeof this.attachedFile.src === 'undefined') {
-							this.attachedFile.src = readEvent.target.result;
-						}
-						img.attr('src', this.attachedFile.src );
-
-						GENTICS.Utils.Dom.insertIntoDOM(img, this.attachedData.range, jQuery(Aloha.activeEditable.obj));
-					};
+					 fileObj, config;
 
 				// Loop
 				while (--len >= 0) {
 					fileObj = data.filesObjs[len];
 					if (fileObj.file.type.match(/image\//)) {
 						// Prepare
-						reader = new FileReader();
-						reader.config = me.getEditableConfig(data.editable);
-						reader.attachedData = data;
-						reader.attachedFile = fileObj;
-						reader.onloadend = onloadendHandler;
+						
+						config = me.getEditableConfig(data.editable);
+						// Prepare
+						img = jQuery('<img/>');
+						img.css({
+							"max-width":me.config.img.max_width,
+							"max-height": me.config.img.max_height
+						});
+						img.attr('id',fileObj.id);
+						if (typeof fileObj.src === 'undefined') {
+							img.attr('src', fileObj.data );
+							//fileObj.src = fileObj.data ;
+						} else {
+							img.attr('src',fileObj.src );
+						}
+						GENTICS.Utils.Dom.insertIntoDOM(img, data.range, jQuery(Aloha.activeEditable.obj));
 					}
-					reader.readAsDataURL(fileObj.file);
 				}
 			});
 
