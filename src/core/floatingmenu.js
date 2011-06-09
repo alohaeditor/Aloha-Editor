@@ -6,7 +6,7 @@
 (function(window, undefined) {
 	"use strict";
 	var
-		jQuery = window.alohaQuery, $ = jQuery,
+		jQuery = window.alohaQuery || window.jQuery, $ = jQuery,
 		GENTICS = window.GENTICS,
 		Aloha = window.Aloha,
 		Ext = window.Ext,
@@ -97,8 +97,6 @@ Aloha.FloatingMenu.window = jQuery(window);
  * @hide
  */
 Aloha.FloatingMenu.init = function() {
-	//debugger;
-	//console.log('jQuery.store:', jQuery.store, window.jQuery, window.alohaQuery);
 	jQuery.storage = new jQuery.store();
 	this.currentScope = 'Aloha.global';
 	var that = this;

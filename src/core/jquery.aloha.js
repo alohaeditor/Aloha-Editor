@@ -8,8 +8,7 @@
 	"use strict";
 
 	var
-		jQuery = window.jQuery, $ = jQuery,
-		alohaQuery = window.alohaQuery,
+		jQuery = window.alohaQuery || window.jQuery, $ = jQuery,
 		GENTICS = window.GENTICS,
 		Aloha = window.Aloha,
 		Class = window.Class,

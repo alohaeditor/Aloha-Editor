@@ -1,6 +1,3 @@
-// Create jQuery
-window.alohaQuery = window.jQuery;//.sub();
-
 // Ensure Namespace
 window.GENTICS = window.GENTICS || {};
 window.GENTICS.Utils = window.GENTICS.Utils || {};
@@ -58,7 +55,7 @@ window.Aloha_base = window.Aloha_base || false;
 	// Variables
 	var
 		// jQuery
-		jQuery = window.alohaQuery, $ = jQuery,
+		jQuery = window.alohaQuery || window.jQuery, $ = jQuery,
 		// Loading
 		defer = false, /*
 			Until browsers can support the defer attribute properly
