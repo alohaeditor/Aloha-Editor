@@ -126,7 +126,7 @@
 				add_btn = new Aloha.ui.Button({
 					iconClass: 'aloha-button aloha-comments-btn aloha-comments-btn-add',
 					onclick: function () {
-						if (!that.isModalOpen && !that.isBarOpen) {
+						if (!that.isModalOpen) {
 							that.addComment.apply(that, arguments);
 						}
 					},
@@ -189,10 +189,14 @@
 			this.bar.find('.' + clss + '-bar-toggle')
 				.click(function () {
 					if (that.isBarOpen) {
+						$(this).removeClass(clss + '-bar-toggle-opened');
 						that.closeBar();
 					} else {
+						$(this).addClass(clss + '-bar-toggle-opened');
 						that.showBar();
 					}
+					
+					
 				});
 			
 			this.setBarScrolling();
@@ -642,6 +646,19 @@
 				if (el.parents('.' + clss + '-addbox').length == 0) {
 					this.closeModal();
 					this.removeHighlight();
+				}
+			}
+			
+			console.log(
+				el.hasClass(clss + '-bar'),
+				el.parents('.' + clss + '-bar')
+			);
+			
+			if (!this.isModalOpen) {
+				if (!el.hasClass(clss + '-bar')) {
+					if (el.parents('.' + clss + '-bar').length == 0) {
+						this.removeHighlight();
+					}
 				}
 			}
 			
