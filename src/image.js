@@ -1,10 +1,16 @@
 /*
 * Aloha Image Plugin - Allow image manipulation in Aloha Editor
-* Copyright (C) 2010 by Nicolas Karageuzian - http://nka.me/
-*	Copyright (C) 2010 by Benjamin Athur Lupton - http://www.balupton.com
+* 
+* Copyright (C) 2010-2011 by Nicolas Karageuzian - http://nka.me/
+* Contributors 
+* 		Benjamin Athur Lupton - http://www.balupton.com
+* 		Thomas Lete
+* 		Nils Dehl
+* 		Christopher Hlubek
+* 		Edward Tsech
+* 		Haymo Meran
 * Licensed unter the terms of AGPL http://www.gnu.org/licenses/agpl-3.0.html
 *
-* do not require anymore IKS Loader
 */
 
 // Start Closure
@@ -237,7 +243,7 @@
 				incSize, decSize,
 				imgSrcLabel, imgTitleLabel,
 				alignLeftButton, alignRightButton, alignNoneButton,
-				incPadding, decPadding;
+				incPadding, decPadding,naturalSize;
 
 			this.insertImgButton = new Aloha.ui.Button({
 				'iconClass': 'aloha-button aloha-image-insert',
@@ -432,7 +438,7 @@
 						this.i18n('floatingmenu.tab.img'),
 						2
 				);
-				decSize = new Aloha.ui.Button({
+				naturalSize = new Aloha.ui.Button({
 					iconClass: 'aloha-img aloha-image-size-decrease',
 					size: 'small',
 					toggle: false,
@@ -449,6 +455,40 @@
 						2
 				);
 			}
+			
+			naturalSize = new Aloha.ui.Button({
+				iconClass: 'aloha-img aloha-image-size-natural',
+				size: 'small',
+				toggle: false,
+				onclick: function() {
+					var
+						img = new Image();
+					img.onload = function() {
+						var myimage = me.findImgMarkup();
+						if (me.settings.config.img.ui.resizable) {
+							me.endResize();
+						}
+						jQuery(myimage)
+							.css({'width': img.width + 'px',
+								  'height': img.height + 'px',
+								  'max-width': '',
+								  'max-height': ''
+								});
+						if (me.settings.config.img.ui.resizable) {
+							me.resize();
+						}
+					};
+					img.src = me.findImgMarkup().src;
+						
+				},
+				tooltip: me.i18n('size.natural')
+			});
+			Aloha.FloatingMenu.addButton(
+					this.getUID('image'),
+					naturalSize,
+					this.i18n('floatingmenu.tab.img'),
+					2
+			);
 		}, // end of Buttons creation
 
 		/**
