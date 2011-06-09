@@ -80,50 +80,47 @@
 				if (!options.send_multipart_form) {
 					xhr.setRequestHeader("Content-Type", this.file.type + ";base64");
 					xhr.overrideMimeType(this.file.type);
-					var reader = new FileReader();
-					reader.onloadend = function() {
-						var canvas = $('<canvas>').first(),
-							targetsize = {},
-							tempimg = new Image();
+					var canvas = $('<canvas>').first(),
+						targetsize = {},
+						tempimg = new Image();
 
-						tempimg.src = reader.result;
+					tempimg.src = this.file.data;
 
-						targetsize = {
-							height: tempimg.height,
-							width: tempimg.width
-						};
+					targetsize = {
+						height: tempimg.height,
+						width: tempimg.width
+					};
 
 
-						if (tempimg.width > tempimg.height) {
-							if (tempimg.width > options.image.max_width) {
-								targetsize.width = options.image.max_width;
-								targetsize.height = tempimg.height * options.image.max_width / tempimg.width;
-							}
-						} else {
-							if (tempimg.height > options.image.max_height) {
-								targetsize.height = options.image.max_height;
-								targetsize.width = tempimg.width * options.image.max_height / tempimg.height;
-							}
-
+					if (tempimg.width > tempimg.height) {
+						if (tempimg.width > options.image.max_width) {
+							targetsize.width = options.image.max_width;
+							targetsize.height = tempimg.height * options.image.max_width / tempimg.width;
+						}
+					} else {
+						if (tempimg.height > options.image.max_height) {
+							targetsize.height = options.image.max_height;
+							targetsize.width = tempimg.width * options.image.max_height / tempimg.height;
 						}
 
-						var canvas = document.createElement('canvas');
-						canvas.setAttribute('width', targetsize.width);
-						canvas.setAttribute('height', targetsize.height);
-						canvas.getContext('2d').drawImage(
-							tempimg,
-							0,
-							0,
-							tempimg.width,
-							tempimg.height,
-							0,
-							0,
-							targetsize.width,
-							targetsize.height
-						);
-						xhr.send(canvas.toDataURL(that.file.type));
 					}
-					reader.readAsDataURL(this.file);
+
+					var canvas = document.createElement('canvas');
+					canvas.setAttribute('width', targetsize.width);
+					canvas.setAttribute('height', targetsize.height);
+					canvas.getContext('2d').drawImage(
+						tempimg,
+						0,
+						0,
+						tempimg.width,
+						tempimg.height,
+						0,
+						0,
+						targetsize.width,
+						targetsize.height
+					);
+					xhr.send(canvas.toDataURL(that.file.type));
+					
 				} else {
 					if (window.FormData) {//Many thanks to scottt.tw
 						var f = new FormData();
