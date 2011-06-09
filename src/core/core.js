@@ -16,7 +16,7 @@
 
 	// Prepare
 	var
-		jQuery = window.alohaQuery, $ = jQuery,
+		jQuery = window.alohaQuery || window.jQuery, $ = jQuery,
 		GENTICS = window.GENTICS,
 		Aloha = window.Aloha,
 		console = window.console||false,
@@ -370,7 +370,6 @@
 		 * @return void
 		 */
 		initGui: function (next) {
-			//debugger;
 			Aloha.RepositoryManager.init();
 			Aloha.FloatingMenu.init();
 
@@ -392,28 +391,24 @@
 			next();
 		},
 
-		createPromiseEvent: function(eventName){
-			//window.alohaQuery('body').createPromiseEvent(eventName);
-			window.jQuery('body').createPromiseEvent(eventName);
+		createPromiseEvent: function(eventName) {
+			$('body').createPromiseEvent(eventName);
 		},
 		unbind: function(eventName,eventHandler) {
 			eventName = Aloha.correctEventName(eventName);
-			//window.alohaQuery('body').unbind(eventName);
-			window.jQuery('body').unbind(eventName);
+			$('body').unbind(eventName);
 		},
 		bind: function(eventName,eventHandler) {
 			eventName = Aloha.correctEventName(eventName);
 			Aloha.log('debug', this, 'Binding ['+eventName+'], has ['+(($('body').data('events')||{})[eventName]||[]).length+'] events');
-			//window.alohaQuery('body').bind(eventName,eventHandler);
-			window.jQuery('body').bind(eventName,eventHandler);
+			$('body').bind(eventName,eventHandler);
 		},
 		trigger: function(eventName,data) {
 			eventName = Aloha.correctEventName(eventName);
 			Aloha.log('debug', this, 'Trigger ['+eventName+'], has ['+(($('body').data('events')||{})[eventName]||[]).length+'] events');
-			//window.alohaQuery('body').trigger(eventName,data);
-			window.jQuery('body').trigger(eventName,data);
+			$('body').trigger(eventName,data);
 		},
-		correctEventName: function(eventName){
+		correctEventName: function(eventName) {
 			var result = eventName.replace(/\-([a-z])/g,function(a,b){
 				return b.toUpperCase();
 			});

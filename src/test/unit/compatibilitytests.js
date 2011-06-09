@@ -22,10 +22,10 @@ Aloha.settings = {
 	errorhandling : true
 };
 
-$(document).ready(function() {
+alohaQuery(document).ready(function($) {
 
-	test('.aloha() is working with deferred loading', function() {
-		var editable = $('#edit2');
+	test('.aloha() is working deferred on alohaQuery', function() {
+		var editable = alohaQuery('#edit2');
 		editable.aloha();
 		equals(1, editable.size(), 'Editable was found');
 		ok(true, '.aloha() could be called');
@@ -40,7 +40,7 @@ $(document).ready(function() {
 		setTimeout(function() {
 			ok(false, 'Aloha was not initialized within 60 seconds');
 			start();
-		}, 60000);
+		}, 5000);
 	});
 
 	// All other tests are done when Aloha is ready
@@ -60,4 +60,10 @@ $(document).ready(function() {
 			equals(editable.contentEditable(), "false", 'Check whether div is not contenteditable after .mahalo()');
 		});
 	});
+
+	// Test if legacy jQuery version is correct
+	test('jQuery compatibility test', function() {
+		equals(window.jQuery.fn.jquery, '1.2.1', 'Legacy jQuery version is correct');
+	});
+
 });
