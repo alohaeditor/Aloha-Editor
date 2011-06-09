@@ -68,7 +68,7 @@
 			 */
 			startUpload: function() {
 				//if ()
-				var xhr = this.xhr, options = this.upload_config, that = this;
+				var xhr = this.xhr, options = this.upload_config, that = this, data;
 
 				xhr.open(options.method, typeof(options.url) == "function" ? options.url(number) : options.url, true);
 				xhr.setRequestHeader("Cache-Control", "no-cache");
@@ -83,44 +83,46 @@
 					var canvas = $('<canvas>').first(),
 						targetsize = {},
 						tempimg = new Image();
-
-					tempimg.src = this.file.data;
-
-					targetsize = {
-						height: tempimg.height,
-						width: tempimg.width
+					Aloha.Log.debug(Aloha,"Original Data (length:" + this.file.data.length + ") = " + this.file.data.substring(0,30));
+					tempimg.onload = function() {
+						targetsize = {
+							height: tempimg.height,
+							width: tempimg.width
+						};
+	
+	
+						if (tempimg.width > tempimg.height) {
+							if (tempimg.width > options.image.max_width) {
+								targetsize.width = options.image.max_width;
+								targetsize.height = tempimg.height * options.image.max_width / tempimg.width;
+							}
+						} else {
+							if (tempimg.height > options.image.max_height) {
+								targetsize.height = options.image.max_height;
+								targetsize.width = tempimg.width * options.image.max_height / tempimg.height;
+							}
+	
+						}
+	
+						var canvas = document.createElement('canvas');
+						canvas.setAttribute('width', targetsize.width);
+						canvas.setAttribute('height', targetsize.height);
+						canvas.getContext('2d').drawImage(
+							tempimg,
+							0,
+							0,
+							tempimg.width,
+							tempimg.height,
+							0,
+							0,
+							targetsize.width,
+							targetsize.height
+						);
+						data = canvas.toDataURL(that.file.type);
+						Aloha.Log.debug(Aloha,"Sent Data (length:" + data.length + ") = " + data.substring(0,30));
+						xhr.send(data);
 					};
-
-
-					if (tempimg.width > tempimg.height) {
-						if (tempimg.width > options.image.max_width) {
-							targetsize.width = options.image.max_width;
-							targetsize.height = tempimg.height * options.image.max_width / tempimg.width;
-						}
-					} else {
-						if (tempimg.height > options.image.max_height) {
-							targetsize.height = options.image.max_height;
-							targetsize.width = tempimg.width * options.image.max_height / tempimg.height;
-						}
-
-					}
-
-					var canvas = document.createElement('canvas');
-					canvas.setAttribute('width', targetsize.width);
-					canvas.setAttribute('height', targetsize.height);
-					canvas.getContext('2d').drawImage(
-						tempimg,
-						0,
-						0,
-						tempimg.width,
-						tempimg.height,
-						0,
-						0,
-						targetsize.width,
-						targetsize.height
-					);
-					xhr.send(canvas.toDataURL(that.file.type));
-					
+					tempimg.src = this.file.data;
 				} else {
 					if (window.FormData) {//Many thanks to scottt.tw
 						var f = new FormData();
