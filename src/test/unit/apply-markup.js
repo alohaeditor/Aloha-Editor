@@ -62,6 +62,34 @@ function doMarkupTest(editable, startContainer, startOffset, endContainer, endOf
 */
 }
 
+/**
+ * Do a block markup test
+ * @param editable the editable
+ * @param startContainer
+ * @param startOffset
+ * @param endContainer
+ * @param endOffset
+ * @param markup markup to be applied
+ * @param original reference
+ * @param reference result selector
+ */
+function doBlockTest(editable, startContainer, startOffset, endContainer, endOffset, markup, original, reference) {
+	// generate the range
+	var range = TestUtils.generateRange(startContainer, startOffset, endContainer, endOffset);
+
+	// change the block markup
+    Aloha.Selection.changeMarkupOnSelection(markup);
+
+	// get the result
+	var result = Aloha.editables[0].getContents(true);
+
+	// get the expected results
+	var expected = $(reference).contents();
+
+	// compare the result with the expected result
+	deepEqual(result.extractHTML(), expected.extractHTML(), 'Check Operation Result');
+}
+
 $(document).ready(function() {
 
 	// Test whether Aloha is properly initialized
@@ -183,6 +211,42 @@ $(document).ready(function() {
 		// Test applying italic out of italic (with nesting)
 		test('Italic out of Italic end with nesting', function() {
 			doMarkupTest(this.edit, this.edit.find('i').contents().get(0), 4, this.edit.contents().get(2), 3, jQuery('<i></i>'), '#ref-crossmarkup', '#ref-crossmarkup-end-italic-nesting', true);
+		});
+
+		module('Header Handling', {
+			setup: function() {
+				// get the editable area and the reference
+				this.edit = $('#edit');
+				this.ref = $('#ref-header');
+				// fill the editable area with the reference
+				this.edit.html(this.ref.html());
+				// aloha'fy the editable
+				this.edit.aloha();
+			},
+			teardown: function() {
+				// de-aloha'fy the editable
+				this.edit.mahalo();
+			}
+		});
+
+		// Test applying p in first header
+		test('Paragraph in first Header', function() {
+			doBlockTest(this.edit, this.edit.find('h1').contents().get(0), 1, this.edit.find('h1').contents().get(0), 1, jQuery('<p></p>'), '#ref-header', '#ref-header-first-p');
+		});
+
+		// Test applying h2 in first header
+		test('Header in first Header', function() {
+			doBlockTest(this.edit, this.edit.find('h1').contents().get(0), 1, this.edit.find('h1').contents().get(0), 1, jQuery('<h2></h2>'), '#ref-header', '#ref-header-first-h2');
+		});
+
+		// Test applying h1 in first paragraph
+		test('Header in first Paragraph', function() {
+			doBlockTest(this.edit, this.edit.find('p').eq(0).contents().get(0), 1, this.edit.find('p').eq(0).contents().get(0), 1, jQuery('<h1></h1>'), '#ref-header', '#ref-header-second-h1');
+		});
+
+		// Test applying h1 in second paragraph
+		test('Header in second Paragraph', function() {
+			doBlockTest(this.edit, this.edit.find('p').eq(1).contents().get(0), 1, this.edit.find('p').eq(1).contents().get(0), 1, jQuery('<h1></h1>'), '#ref-header', '#ref-header-last-h1');
 		});
 	});
 });

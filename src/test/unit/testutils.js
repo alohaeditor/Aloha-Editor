@@ -44,7 +44,7 @@ window.TestUtils = window.TestUtils || {};
 		},
 
 		/**
-		 * helper function for generating ranges
+		 * Helper function for generating ranges. The range will be stored as selection in Aloha.
 		 * @param startContainer node where the selection starts
 		 * @param startOffset within the startContainer
 		 * @param endContainer node where the selection ends
