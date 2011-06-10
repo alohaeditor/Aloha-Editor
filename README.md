@@ -52,16 +52,19 @@ Image Plugin for enabling basic images manipulations in Aloha HTML5 Editor
 * resize slider
 * canvas resize
 
-Copyright (C) 2010-2011 The @alohaeditor Community
+Copyright (C) 2010-2011 The [Aloha Editor Community](https://github.com/alohaeditor) 
 
-    Author : Nicolas Karageuzian (@nka11)
-    Contributors :
-        Nils Dehl (@mrsunshine) 
-        Benjamin Athur Lupton (@balupton)
-        Christopher Hlubek (@chlu)
-        Thomas Lete (@bistory)
-        Haymo Meran (@draftkraft)
-        Clemens Prerovsky (@cprerovsky) (base of crop and resize feature is a borrow from cropnresize plugin)
-        Norbert Pomaroli (@npomaroli) (for his patience explaining Selection and Range)
-        Kirk Austin (http://www.kirkaustin.com/) who gave the impulsion to dive into html5 canvas	
-    Licensed under the terms of AGPL - http://www.gnu.org/licenses/agpl-3.0.html
+Author : [Nicolas Karageuzian](https://github.com/nka11)
+
+Contributors :
+
+* [Nils Dehl](https://github.com/mrsunshine) 
+* [Benjamin Athur Lupton](https://github.com/balupton)
+* [Christopher Hlubek](https://github.com/chlu)
+* [Thomas Lete](https://github.com/bistory)
+* [Haymo Meran](https://github.com/draftkraft)
+* [Clemens Prerovsky](https://github.com/cprerovsky) (base of crop and resize feature is a borrow from cropnresize plugin)
+* [Norbert Pomaroli](https://github.com/npomaroli) (for his patience explaining Selection and Range)
+* [Kirk Austin](http://www.kirkaustin.com/) who gave the impulsion to dive into html5 canvas	
+
+Licensed under the terms of AGPL - http://www.gnu.org/licenses/agpl-3.0.html
