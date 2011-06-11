@@ -612,7 +612,7 @@
 			}
 
 			// Save i18n
-			Aloha.dictionaries[component.toString()] = data;
+			Aloha.dictionaries[component.getName()] = data;
 		},
 
 		/**
@@ -626,10 +626,11 @@
 		i18n: function(component, key, replacements) {
 			var
 				value = null,
-				i, repLength, regEx, safeArgument;
+				i, repLength, regEx, safeArgument,
+				compName = component.getName();
 
 			// first get the dictionary for the component
-			if (Aloha.dictionaries[component.toString()] && Aloha.dictionaries[component.toString()][key]) {
+			if (Aloha.dictionaries[compName] && Aloha.dictionaries[compName][key]) {
 				value = Aloha.dictionaries[component.toString()][key];
 			}
 
@@ -739,6 +740,9 @@
 		 * @hide
 		 */
 		toString: function () {
+			return 'Aloha';
+		},
+		getName: function () {
 			return 'Aloha';
 		},
 
