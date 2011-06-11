@@ -578,6 +578,7 @@
 			// the first i18n calls might come before the dictionary is available
 			jQuery.ajax({
 				dataType : 'json',
+				accept: '*/*',
 				url : fileUrl,
 				error: function(request, textStatus, error) {
 					Aloha.Log.error(component, 'Error while getting dictionary file ' + fileUrl + ': server returned ' + textStatus);
