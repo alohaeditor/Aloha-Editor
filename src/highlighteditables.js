@@ -68,8 +68,8 @@
 			for ( i = 0; i < Aloha.editables.length; i++) {
 				editable = Aloha.editables[i].obj;
 				if (editable.hasClass('aloha-editable-highlight')) {
-					editable.removeClass('aloha-editable-highlight')
-						.css('outline', '5px solid #FFE767')
+					editable.css('outline', editable.css('outlineColor') + ' ' + editable.css('outlineStyle') + ' ' + editable.css('outlineWidth'))
+						.removeClass('aloha-editable-highlight')
 						.animate({
 							outlineWidth : '0px'
 						}, 300, 'swing', animateEnd);
