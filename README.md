@@ -8,9 +8,9 @@ Image Plugin for enabling basic images manipulations in Aloha HTML5 Editor
 * Insert image
 * Edit url and title
 * set align
-* Handles DragnDropFiles plugin events for image files dropped in current page.
+* Handles [DragnDropFiles Plugin](https://github.com/alohaeditor/Aloha-Plugin-DragAndDropFiles) events for image files dropped in current page.
 * css resize with controlbuttons or mousedrag
-* reset to natural size
+* reset to natural size (DEV)
 * canvas crop (EXPERIMENTAL)
 
 ## Example conf
@@ -52,7 +52,7 @@ Image Plugin for enabling basic images manipulations in Aloha HTML5 Editor
 * resize slider
 * canvas resize
 
-Copyright (C) 2010-2011 The [Aloha Editor Community](https://github.com/alohaeditor) 
+Copyright (c) 2010-2011 Gentics Software GmbH, aloha@gentics.com 
 
 Author : [Nicolas Karageuzian](https://github.com/nka11)
 
@@ -67,4 +67,17 @@ Contributors :
 * [Norbert Pomaroli](https://github.com/npomaroli) (for his patience explaining Selection and Range)
 * [Kirk Austin](http://www.kirkaustin.com/) who gave the impulsion to dive into html5 canvas	
 
-Licensed under the terms of AGPL - http://www.gnu.org/licenses/agpl-3.0.html
+Licensed under the terms of http://www.aloha-editor.org/license.html
+
+Aloha Editor is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.*
+
+Aloha Editor is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <http://www.gnu.org/licenses/>.
