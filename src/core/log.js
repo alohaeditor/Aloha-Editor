@@ -83,6 +83,7 @@ Aloha.Log = Class.extend({
 		if (!Aloha.settings.logLevels[level]) {
 			return;
 		}
+		component = component||"undefined";
 
 		this.addToLogHistory({'level' : level, 'component' : component.toString(), 'message' : message, 'date' : new Date()});
 		switch (level) {
