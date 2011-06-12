@@ -81,6 +81,11 @@ a:hover { color: #036; }
 /* ==== Aloha Editor Boilerplate Styles ==== */
 /* ========================================= */
 
+::-moz-selection{ background: #b7d7fc; color:#fff; text-shadow: none; }
+::selection { background:#b7d7fc; color:#fff; text-shadow: none; }
+a:link { -webkit-tap-highlight-color: #b7d7fc; }
+
+
 html, body {
 	font-family: Georgia, serif;
 	color: #555555;
@@ -88,45 +93,66 @@ html, body {
 }
 body {
 	text-align: center;
-	background: #f0f0f0;
+	font-size: 1.05em;
+	line-height: 1.5em;
 }
 em, i {
 	font-style: italic;
 }
-p,
-ul,
-ol {
-	font-size: 1.2em;
-	line-height: 1.5em;
+b {
+	font-weight: bold;
+}
+i {
+	font-style: italic;
 }
 a,
 a:link,
 a:visited {
 	color: #0C53A4;
 	text-decoration: none;
-	border-bottom: 1px dotted #0C53A4;
 }
 a:hover,
 a:focus,
 a:active {
 	text-decoration: none;
-	border-bottom: 0;
+	border-bottom: 1px solid #0C53A4;
 }
 h1,
 #content h1 {
+	margin: 1.6em 0 0.8em 0;
 	font-size: 167%;
 }
 h2,
 #content h2 {
+	margin: 1.4em 0 0.7em 0;
 	font-size: 146.5%;
 }
 h3,
 #content h3 {
+	margin: 1.2em 0 0.6em 0;
 	font-size: 131%;
 }
 h4,
 #content h4 {
+	margin: 1em 0 0.5em 0;
+	font-size: 120%;
+}
+h5,
+#content h5 {
+	margin: 0.8em 0 0.4em 0;
+	font-size: 110%;
+}
+h6,
+#content h6 {
+	margin: 0.6em 0 0.3em 0;
 	font-size: 100%;
+}
+#content pre {
+	margin: 1em 0 1em 0;
+	padding: 0.5em 0.5em 0.5em 1.5em;
+	background-color: #fff;
+	font-size: 90%;
+	line-height: 1.3em;
 }
 #whole-site {
 	width: 970px;
@@ -137,9 +163,12 @@ h4,
 #container {
 	width: 100%;
 	float: left;
+/*	
 	box-shadow: 0 -40px 40px #BBBBBB;
 	-moz-box-shadow: 0 -40px 40px #BBBBBB;
 	-webkit-box-shadow: 0 -40px 40px #BBBBBB;
+*/
+	
 	background: #ffffff;
 	min-height: 100%;
 }
@@ -149,28 +178,50 @@ h4,
 	margin: 20px 0 0 20px;
 }
 #editor-logo img {
-	width: 70px;
+	width: 200px;
+	margin-top: -15px;
+	margin-bottom: -15px;
 }
-p.top-text {
+#top-text {
 	float: right;
 	margin: 50px 20px 0 0;
 	font-size: 93%;
 	font-style: italic;
 }
-#navigation {
-	font-weight: bold;
-	clear: both;
-	padding: 5px 0;
-	float: left;
-	margin: 20px 0 0;
-	background: #0C53A4;
+#header {
 	width: 100%;
-	box-shadow: 0 0 40px #9B9999;
-	-moz-box-shadow: 0 0 40px #9B9999;
-	-webkit-box-shadow: 0 0 40px #9B9999;
+	clear: both;
+	float: left;
+}
+#navigation {
+	clear: both;
+	float: left;
+	margin: 20px 0 20px 0;
+	width: 100%;
+	height: 34px;
+}
+#navigation ul {
+	_border: 1px solid;
+	_border-color: #E5E5E5 #DBDBDB #D2D2D2;
+	_box-shadow: 0 0 5px #888;
+	-moz-box-shadow: 0 0 3px #333;
+	_-webkit-box-shadow: 0 0 3px #333;
+	
+	border-radius: 4px;
+	-moz-border-radius: 4px;
+	-mwebkit-border-radius: 4px;
+	
+	background: url(../images/navigation-bg.png) left top repeat-x;
+	_font-family: 'Lucida Grande', 'Lucida Sans Unicode', Helvetica, Arial, Verdana, sans-serif;
+	font-size: 1em;
+	clear: both;
+	float: left;
+	width: 100%;
+	filter:alpha(opacity=90);
+	-moz-opacity:.90;
+	opacity:.90;
 }
 #navigation li {
-	display: inline;
 	margin: 0 1em 0 0;
 	float: left;
 }
@@ -180,16 +231,16 @@ p.top-text {
 #navigation li a {
 	border-bottom: 0;
 	padding: 0.4em;
-	border-radius: 4px;
-	-moz-border-radius: 4px;
-	-webkit-border-radius: 4px;
-	color: #ffffff;
+	color: #eee;
+	display: block;
+	line-height: 1.5em;
+	font-size: 0.9em;
 }
 #navigation li a:hover,
 #navigation li a:active,
 #navigation li a:focus {
-	background: #ffffff;
-	color: #0C53A4;
+	color: #000;
+	background: url(../images/navigation-bg-hover.png) left top repeat-x;
 }
 /*** Main & Content ***/
 #main {
@@ -197,34 +248,46 @@ p.top-text {
 	clear: both;
 }
 #content {
+	border-radius: 5px;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	-o-border-radius: 5px;
+	-khtml-border-radius: 5px;
+	-webkit-box-shadow: rgba(0, 0, 0, 0.4) 0 1px 3px;
+	-moz-box-shadow: rgba(0, 0, 0, 0.4) 0 1px 3px;
+	box-shadow: rgba(0, 0, 0, 0.4) 0 1px 3px;
+	border: 1px solid;
+	border-color: #E5E5E5 #DBDBDB #D2D2D2;
+
+	background: -webkit-gradient(linear, left top, left bottom, from(#eee), to(#cae7f6));
+	background: -moz-linear-gradient(top, #afa, #eee);
+	
 	float: left;
-	width: 100%;
-	padding: 0 20px 0 20px;
+	clear: both;
+	width: 60%;
+	
+	padding: 20px;
 	max-width: 930px;
-	clear: both;
 }
-.example-block {
-	float: left;
-	width: 100%;
-	clear: both;
-	border: 0;
-	border-top: 3px solid #555555;
-	padding: 20px 0 0 0;
-	margin: 20px 0 0 0;
-}
-.example-block h1,
-.example-block h2,
-.example-block h3,
-.example-block h4 {
-	margin: 0 0 1.2em 0;
-}
+
 /*** STAGE ***/
 
 /* Stage area general */
 .stage-item {
 	display: none;
 }
-.stage-area {
+#main .stage-area {
+	border-radius: 5px;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	-o-border-radius: 5px;
+	-khtml-border-radius: 5px;
+	-webkit-box-shadow: rgba(0, 0, 0, 0.4) 0 1px 3px;
+	-moz-box-shadow: rgba(0, 0, 0, 0.4) 0 1px 3px;
+	box-shadow: rgba(0, 0, 0, 0.4) 0 1px 3px;
+	border: 1px solid;
+	border-color: #E5E5E5 #DBDBDB #D2D2D2;
+		
 	width: 100%;
 	height: 305px;
 	background: url(../images/stage-bg.png) left top repeat-x;
@@ -250,11 +313,14 @@ p.top-text {
 	margin: 0;
 	padding: 0;
 	list-style: none;
-	background: url(../images/stage-switcher-tab-bg.png) right top no-repeat;
+	_background: url(../images/stage-switcher-tab-bg.png) right top no-repeat;
 	height: 52px;
 	width: 100%;
 	position: relative;
 	cursor: pointer;
+	filter:alpha(opacity=83);
+	-moz-opacity:.83;
+	opacity:.83;
 }
 #main .stage-switcher li.hover {
 	background-image: url(../images/stage-switcher-tab-bg-hover.png);
@@ -273,19 +339,17 @@ p.top-text {
 	top: 9px;
 }
 #main .stage-switcher h2 {
-	font-size: 85%;
-	color: #ffffff;
+	font-size: 1em;
+	color: #fff;
 	margin: 0 0 0 55px;
 	padding: 6px 0 0 0;
-	font-weight: normal;
+	font-weight: bold;
 }
-#main .stage-switcher p {
+#main .stage-switcher p, #main .stage-switcher li.active p {
+	color: #fff;
 	margin: 0 0 0 55px;
 	font-size: 11px;
 	line-height: 1em;
-}
-#main .stage-switcher li.active p {
-	color: #555555;
 }
 /* Stage area content */
 #main .stage-area .new-version,
@@ -315,8 +379,7 @@ p.top-text {
 #main .stage-area .full-image h3,
 #main .stage-area .small-image h3 {
 	font-size: 116%;
-	color: #ffffff;
-	font-weight: normal;
+	font-weight: bold;
 	margin: 0;
 	padding: 0;
 	line-height: 1.2em;
@@ -339,7 +402,7 @@ p.top-text {
 }
 #main .stage-area .small-image .area-content {
 	float: left;
-	margin: 33px 150px 0 47px;
+	margin: 33px 160px 0 47px;
 }
 #main .stage-area .full-image .area-content {
 	float: left;
@@ -347,6 +410,19 @@ p.top-text {
 }
 #main .stage-area .left-area .area-content {
 	width: 215px;
+}
+#main .stage-area .area-content .aloha-textbox {
+	color: #000;
+	padding: 15px;
+/*	background: black;
+	filter:alpha(opacity=70);
+	-moz-opacity:.70;
+	opacity:.70;
+	-moz-box-shadow: 0 0 5px #fff;
+	-webkit-box-shadow: 0 0 5px #fff;
+	box-shadow: 0 0 5px #fff;
+	border: solid 1px #eee;
+	*/
 }
 footer {
 	clear: both;

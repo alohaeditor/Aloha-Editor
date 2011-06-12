@@ -18,144 +18,35 @@
 	<link rel="stylesheet" href="css/style.css">
 	<link rel="stylesheet" href="../../aloha.css" id="aloha-style-include" type="text/css">
 
+	<!--  HTML5 boilerplate stuff -->
 	<script src="js/libs/modernizr-1.7.min.js"></script>
 	<script	src="../../dep/jquery-1.5.1.js" ></script>
-	<script>!window.jQuery && document.write(unescape('%3Cscript src="js/libs/jquery-1.5.1.min.js"%3E%3C/script%3E'))</script>
-
 	<script src="js/plugins.js"></script>
 	<script src="js/script.js"></script>
-	<script language="javascript">
-	if (window.Aloha === undefined || window.Aloha === null)
-		Aloha = {};
-	Aloha.settings = {
-				logLevels: {'error': true, 'warn': true, 'info': true, 'debug': false},
-				errorhandling : false,
-				ribbon: false,
-
-				"placeholder": {
-					'*': '<img src="http://aloha-editor.org/logo/Aloha%20Editor%20HTML5%20technology%20class%2016.png" alt="logo"/>&nbsp;Placeholder All',
-					'#typo3span': 'Placeholder for span'
-				},
-				"i18n": {
-					// you can either let the system detect the users language (set acceptLanguage on server)
-					// In PHP this would would be '<?=$_SERVER['HTTP_ACCEPT_LANGUAGE']?>' resulting in
-					// "acceptLanguage": 'de-de,de;q=0.8,it;q=0.6,en-us;q=0.7,en;q=0.2'
-					// or set current on server side to be in sync with your backend system
-					"current": "en"
-				},
-				"repositories": {
-					"com.gentics.aloha.repositories.LinkList": {
-						data: [
-									{ name: 'Aloha Developers Wiki', url:'http://www.aloha-editor.com/wiki', type:'website', weight: 0.50 },
-									{ name: 'Aloha Editor - The HTML5 Editor', url:'http://aloha-editor.com', type:'website', weight: 0.90  },
-									{ name: 'Aloha Demo', url:'http://www.aloha-editor.com/demos.html', type:'website', weight: 0.75  },
-									{ name: 'Aloha Wordpress Demo', url:'http://www.aloha-editor.com/demos/wordpress-demo/index.html', type:'website', weight: 0.75  },
-									{ name: 'Aloha Logo', url:'http://www.aloha-editor.com/images/aloha-editor-logo.png', type:'image', weight: 0.10  }
-						]
-					}
-				},
-				"plugins": {
-					"format": {
-						// all elements with no specific configuration get this configuration
-						config : [ 'b', 'i','sub','sup'],
-							editables : {
-							// no formatting allowed for title
-							'#title'	: [ ],
-							// formatting for all editable DIVs
-							'div'		: [ 'b', 'i', 'del', 'sub', 'sup'  ],
-							// content is a DIV and has class .article so it gets both buttons
-							'.article'	: [ 'b', 'i', 'p', 'title', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'removeFormat']
-							}
-					},
-					"list": {
-						// all elements with no specific configuration get an UL, just for fun :)
-						config : [ 'ul' ],
-							editables : {
-							// Even if this is configured it is not set because OL and UL are not allowed in H1.
-							'#title'	: [ 'ol' ],
-							// all divs get OL
-							'div'		: [ 'ol' ],
-							// content is a DIV. It would get only OL but with class .article it also gets UL.
-							'.article'	: [ 'ul' ]
-							}
-					},
-					"link": {
-						// all elements with no specific configuration may insert links
-						config : [ 'a' ],
-							editables : {
-							// No links in the title.
-							'#title'	: [  ]
-							},
-							// all links that match the targetregex will get set the target
-						// e.g. ^(?!.*aloha-editor.com).* matches all href except aloha-editor.com
-							targetregex : '^(?!.*aloha-editor.com).*',
-							// this target is set when either targetregex matches or not set
-							// e.g. _blank opens all links in new window
-							target : '_blank',
-							// the same for css class as for target
-							cssclassregex : '^(?!.*aloha-editor.com).*',
-							cssclass : 'aloha',
-							// use all resources of type website for autosuggest
-							objectTypeFilter: ['website'],
-							// handle change of href
-							onHrefChange: function( obj, href, item ) {
-								if ( item ) {
-								jQuery(obj).attr('data-name', item.name);
-								} else {
-								jQuery(obj).removeAttr('data-name');
-								}
-							}
-					},
-					"table": {
-						// all elements with no specific configuration are not allowed to insert tables
-						config : [ ],
-							editables : {
-							// Allow insert tables only into .article
-							'.article'	: [ 'table' ]
-							},
-							// [{name:'green', text:'Green', tooltip:'Green is cool', iconClass:'GENTICS_table GENTICS_button_green', cssClass:'green'}]
-						tableConfig : [
-											{name:'hor-minimalist-a'},
-											{name:'box-table-a'},
-											{name:'hor-zebra'},
-							],
-							columnConfig : [
-											{name:'bigbold', iconClass:'GENTICS_button_col_bigbold'},
-											{name:'redwhite', iconClass:'GENTICS_button_col_redwhite'}
-							],
-						rowConfig : [
-										{name:'bigbold', iconClass:'GENTICS_button_row_bigbold'},
-										{name:'redwhite', iconClass:'GENTICS_button_row_redwhite'}
-							]
-
-					},
-					"image": {
-	   					config : { 'img': { 'max_width': '50px',
-								'max_height': '50px' }},
-					  	editables : {
-							'#title'	: {}
-					  	}
-					}
-					}
-			};
-	</script>
+	
 	<script src="js/aloha-boilerplate.js"></script>
+	
+	<!--  Aloha Editor config + program -->
+	<script src="js/aloha-config.js"></script>
 	<script	src="../../aloha.js" id="aloha-script-include" data-plugins="format"></script>
+
 </head>
 <body>
 	<div id="whole-site">
 		<div id="container">
-			<header>
+			<div id="header">
 				<a id="editor-logo" href="#"><img src="images/aloha-editor-logo.png" alt="Aloha Editor" /></a>
-				<p class="top-text GENTICS_editable GENTICS_editable_active">The Aloha Boilerplate</p>
-				<ul id="navigation">
-					<li><a href="#">Formatting Content</a></li>
-					<li><a href="#">Editing with Images</a></li>
-					<li><a href="#">Table Stuff</a></li>
-					<li><a href="#">Fancy Floatings</a></li>
+				<p id="top-text">The Aloha Boilerplate</p>
+			</div>
+			<div id="navigation">	
+				<ul>
+					<li><a href="#">formatting</a></li>
+					<li><a href="#">images</a></li>
+					<li><a href="#">tables</a></li>
+					<li><a href="#">boxes</a></li>
+					<li><a href="#">comments</a></li>
 				</ul>
-			</header>
-	
+			</div>			
 			<div id="main" role="main">
 			<!-- Stage area start -->
 				<div class="stage-area">
@@ -167,10 +58,12 @@
 							<div class="small-image stage-item">
 								<img src="images/stage-bg-formats.png" alt="" />
 								<div class="area-content">
-									<h3>Bold or headlines, whatever you might want</h3>
-									<h2>Formatting content with Aloha</h2>
+									<div class="aloha-textbox">
+									<p><b>Bold or headlines, whatever you might want</b></p>
+									<h2>Formatting content</h2>
 									<p>Editing any content with Aloha Editor is similar to editing with state of the art word processors on your desktop. No need to learn any HTML, Wiki or other markup language. The option dialogs have been designed for users not for techies. Writing content has never been that easy.</p>
 									<p><a href="#">More about content formatting</a></p>
+									</div>
 								</div>
 							</div>
 						</li>
@@ -179,7 +72,7 @@
 							<h2>Images</h2>
 							<p>Placing, scaling ...</p>
 							<div class="full-image stage-item">
-								<img src="images/stage-bg-images.jpg" alt="" />
+								<img src="images/stage-bg-images.png" alt="" />
 								<div class="area-content">
 									<h3>Place and edit images with Aloha</h3>
 									<h2>Image-Editing</h2>
@@ -193,7 +86,7 @@
 							<h2>Tables</h2>
 							<p>All you might put into tables</p>
 							<div class="full-image stage-item">
-								<img src="images/stage-bg-tables.jpg" alt="" />
+								<img src="images/stage-bg-tables.png" alt="" />
 								<div class="area-content">
 									<h3>Create and edit tables the way you want them to be</h3>
 									<h2>Table Stuff</h2>
@@ -202,41 +95,124 @@
 								</div>
 							</div>
 						</li>
+						<li>
+							<span class="stage-icon" style="background-image: url(images/stage-icon-boxes.png);"></span>
+							<h2>Boxes</h2>
+							<p>You may edit dynamic boxes</p>
+							<div class="full-image stage-item">
+								<img src="images/stage-bg-boxes.png" alt="" />
+								<div class="area-content">
+									<h3>You can edit dynamic content</h3>
+									<h2>Edit jQuery stuff</h2>
+									<p>Your imagination ist the limit. Edit every content even if it is dynamic.</p>
+									<p><a href="#">Try out jQuery boxes</a></p>
+								</div>
+							</div>
+						</li>
+						<li>
+							<span class="stage-icon" style="background-image: url(images/stage-icon-comments.png);"></span>
+							<h2>Comments</h2>
+							<p>threaded inline comments</p>
+							<div class="full-image stage-item">
+								<img src="images/stage-bg-comments.png" alt="" />
+								<div class="area-content">
+									<h3>Threaded inline enterprise commenting</h3>
+									<h2>Increase collaboration</h2>
+									<p>Your imagination ist the limit. Does more content fill the box and move it to the right?</p>
+									<p><a href="#">Try out jQuery boxes</a></p>
+								</div>
+							</div>
+						</li>
+
+
 					</ul>
 				</div>
 				<!-- Stage area end -->
 				<div id="content">
-					<h1>Formatting content</h1>
-					<p>Here you'll find some example content to show Aloha's possibilities regarding any kind of formatting.</p>
-					<div class="example-block">
-						<h1>Headline 1</h1>
-						<h2>Headline 2</h2>
-						<h3>Headline 3</h3>
-						<h4>Headline 4</h4>
-					</div>
-					<div class="example-block">
-						<p><strong>Aloha</strong> in the Hawaiian language means <em>affection, love, peace, compassion and mercy</em>. Since the middle of the 19th century, it also has come to be used as an English greeting to say goodbye and hello. Currently, it is mostly used in the sense of hello; however, it is used as the above.</p>
-					</div>
-				</div>
+					<p>Here you'll find some <b>xample content</b> to show Aloha's <i>possibilities</i> regarding any kind of formatting.</p>
+					<h1>Headline 1</h1>
+					<h2>Headline 2</h2>
+					<h3>Headline 3</h3>
+					<h4>Headline 4</h4>
+					<h5>Headline 5</h5>
+					<h6>Headline 6</h6>
+					<p>Here we test, a <a title="" href="http://aloha-editor.org">link</a> and other
+					formattings such as <b>bold</b>, <i>italic</i> or <del>deleted text</del>. You may 
+					also use formattings for maths 2<sup>2</sup> = 4 or chemical formulas like CO<sub>2</sub>.
+					</p>
+					<p>To describe code you would use fixed style <i>pre</i></p>
+					<pre>
+&lt;script type="text/javascript" defer&gt;
+(function(window,undefined){
+	// Prepare
+	var
+		$ = window.alohaQuery,
+		$body = $('body');
+
+	// Bind to Aloha Ready Event
+	$body.bind('aloha',function(){
+		$('#content').aloha();
+		$('.top-text').aloha();
+
+	});
+})(window);
+&lt;/script&gt;</pre>
+					<ul>
+						<li>List entry</li>
+						<li>
+							<ul>
+								<li>List entry</li>
+								<li>List entry</li>
+								<li>
+									<ul>
+										<li>List entry</li>
+										<li>List entry</li>
+									</ul>
+								</li>
+							</ul>
+						</li>
+						<li>List entry</li>
+						<li>List entry</li>
+						<li>List entry</li>
+					</ul>
+					<ol>
+						<li>List entry</li>
+						<li>
+							<ol>
+								<li>List entry</li>
+								<li>List entry</li>
+								<li>
+									<ol>
+										<li>List entry</li>
+										<li>List entry</li>
+									</ol>
+								</li>
+							</ol>
+						</li>
+						<li>List entry</li>
+						<li>List entry</li>
+						<li>List entry</li>
+					</ol>
+					
+					<p>For better sematical understanding and WAI compatibility you can describe abbreviations
+					like <abbr title="Hyper Text Markup Language">HTML</abbr> and 
+					<abbr title="Cascading Style Sheets">CSS</abbr>.
+					</p>
 			</div>
-	
-			<footer>
-				<p>FOOTER</p>
-			</footer>
 		</div>
 	</div>
 	<script type="text/javascript" defer>
 		(function(window,undefined){
 			// Prepare
 			var
-				$ = window.alohaQuery,
+				$ = window.jQuery,
 				$body = $('body');
 
 			// Bind to Aloha Ready Event
 			$body.bind('aloha',function(){
 				$('#content').aloha();
-				$('.top-text').aloha();
-
+				$('#top-text').aloha();
+				$('.area-content').aloha();
 			});
 		})(window);
 	</script>
