@@ -96,7 +96,10 @@ table.x-toolbar-ct table {
 .aloha-floatingmenu .x-tab-panel-header .x-tab-strip-wrap, .aloha-floatingmenu ul.x-tab-strip-top {
 	background: none;
 }
-
+.x-tab-strip-wrap ul li a:hover {
+	border: none;
+	text-decoration:none;
+}
 .aloha-floatingmenu .x-tab-panel-header {
 	padding-bottom: 0px;
 }
