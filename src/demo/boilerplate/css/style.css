@@ -401,10 +401,12 @@ h6,
 	line-height: 1.4em;
 }
 #main .stage-area .small-image .area-content {
-	float: left;
+	min-width: 400px;
+		float: left;
 	margin: 33px 160px 0 47px;
 }
 #main .stage-area .full-image .area-content {
+	min-width: 400px;
 	float: left;
 	margin: 33px 400px 0 47px;
 }
