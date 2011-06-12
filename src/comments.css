@@ -15,7 +15,7 @@
 	clear: both;
 }
 .aloha-comments-addbox {
-	z-index: 9999;
+	z-index: 2147483647;
 	position: absolute;
 	display: none;
 	width: 300px;
@@ -49,9 +49,9 @@
 		endColorstr='#eeeeee',
 		gradientType='0'
 	);
-	-moz-box-shadow:	0 2px 20px rgba(0, 0, 0, .5);
-	-webkit-box-shadow:	0 2px 20px rgba(0, 0, 0, .5);
-	box-shadow:			0 2px 20px rgba(0, 0, 0, .5);
+	-moz-box-shadow:	0 2px 5px rgba(0, 0, 0, .5);
+	-webkit-box-shadow:	0 2px 5px rgba(0, 0, 0, .5);
+	box-shadow:			0 2px 5px rgba(0, 0, 0, .5);
 }
 .aloha-comments-addbox-content {
 	overflow: hidden;
@@ -241,9 +241,9 @@
 	right: 20px;
 	cursor: pointer;
 	
-	-moz-box-shadow:	4px 1px 20px rgba(0, 0, 0, .8);
-	-webkit-box-shadow:	4px 1px 20px rgba(0, 0, 0, .8);
-	box-shadow:			4px 1px 20px rgba(0, 0, 0, .8);
+	-moz-box-shadow:	0px 0px 5px rgba(0, 0, 0, .7);
+	-webkit-box-shadow:	0px 0px 5px rgba(0, 0, 0, .7);
+	box-shadow:			0px 0px 5px rgba(0, 0, 0, .7);
 	
 	border-top-right-radius:	 5px;
 	-moz-border-radius-topright: 5px;
@@ -264,10 +264,10 @@
 	width: 35px;
 }
 .aloha-comments-bar-shadow {
-	width: 40px;
+	width: 5px;
 	position: absolute;
 	top: 0;
-	right: 20px;
+	left: 0px;
 	background-image: -webkit-gradient(
 		linear,
 		left center,
@@ -286,6 +286,7 @@
 	);
 }
 .aloha-comments-bar {
+	z-index: 2147483647;
 	overflow: hidden;
 	position: fixed;
 	top: 0;
