@@ -400,6 +400,9 @@
 		toString: function() {
 			return this.prefix;
 		},
+		getName: function() {
+			return this.prefix;
+		},
 
 		/**
 		 * Log a plugin message to the logger
