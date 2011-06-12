@@ -7,270 +7,306 @@
 /**
  * register the plugin with unique name
  */
-GENTICS.Aloha.Abbr = new GENTICS.Aloha.Plugin('com.gentics.aloha.plugins.Abbr');
-
-/**
- * Configure the available languages
- */
-GENTICS.Aloha.Abbr.languages = ['en', 'de'];
-
-/**
- * Default configuration allows abbrs everywhere
- */
-GENTICS.Aloha.Abbr.config = ['abbr'];
 
 
-/**
- * Initialize the plugin
- */
-GENTICS.Aloha.Abbr.init = function () {
-    
-    this.createButtons();
-    this.subscribeEvents();
-    this.bindInteractions();
 
-};
+(function(window, undefined) {
+	"use strict";
+	var
+		jQuery = window.alohaQuery, $ = jQuery,
+		GENTICS = window.GENTICS,
+		Aloha = window.Aloha;
 
-/**
- * Initialize the buttons
- */
-GENTICS.Aloha.Abbr.createButtons = function () {
-    var that = this;
+	/**
+	 * register the plugin with unique name
+	 */
+	Aloha.Abbr = new (Aloha.Plugin.extend({
+		_constructor: function(){
+			this._super('abbr');
+		},
+	
+		/**
+		 * Configure the available languages
+		 */
+		languages: ['en', 'de'],
+	
+		/**
+		 * default button configuration
+		 */
+		config: [ 'abbr'],
+	
+		/**
+		 * Initialize the plugin and set initialize flag on true
+		 */
+		init: function(){
 
-    // format Abbr Button 
-    // this button behaves like a formatting button like (bold, italics, etc)
-    this.formatAbbrButton = new GENTICS.Aloha.ui.Button({
-        'iconClass' : 'GENTICS_button GENTICS_button_abbr',
-        'size' : 'small',
-        'onclick' : function () { that.formatAbbr(); },
-        'tooltip' : this.i18n('button.abbr.tooltip'),
-        'toggle' : true
-    });
-    GENTICS.Aloha.FloatingMenu.addButton(
-        'GENTICS.Aloha.continuoustext',
-        this.formatAbbrButton,
-        GENTICS.Aloha.i18n(GENTICS.Aloha, 'floatingmenu.tab.format'),
-        1
-    );
+			this.createButtons();
+		    this.subscribeEvents();
+		    this.bindInteractions();
+		},
 
-    // insert Abbr
-    // always inserts a new abbr
-    this.insertAbbrButton = new GENTICS.Aloha.ui.Button({
-        'iconClass' : 'GENTICS_button GENTICS_button_abbr',
-        'size' : 'small',
-        'onclick' : function () { that.insertAbbr( false ); },
-        'tooltip' : this.i18n('button.addabbr.tooltip'),
-        'toggle' : false
-    });
-    GENTICS.Aloha.FloatingMenu.addButton(
-        'GENTICS.Aloha.continuoustext',
-        this.insertAbbrButton,
-        GENTICS.Aloha.i18n(GENTICS.Aloha, 'floatingmenu.tab.insert'),
-        1
-    );
+		/**
+		 * Initialize the buttons
+		 */
+		createButtons: function(){
+			
+		    var me = this;
 
-    // add the new scope for abbr
-    GENTICS.Aloha.FloatingMenu.createScope(this.getUID('abbr'), 'GENTICS.Aloha.continuoustext');
-    
-    this.abbrField = new GENTICS.Aloha.ui.AttributeField({
-    	'width':320
-    });
-    // add the input field for abbr
-    GENTICS.Aloha.FloatingMenu.addButton(
-        this.getUID('abbr'),
-        this.abbrField,
-        this.i18n('floatingmenu.tab.abbr'),
-        1
-    );
+		    // format Abbr Button 
+		    // this button behaves like a formatting button like (bold, italics, etc)
+		    this.formatAbbrButton = new Aloha.ui.Button({
+		        'iconClass' : 'aloha-button aloha-button-abbr',
+		        'size' : 'small',
+		        'onclick' : function () { me.formatAbbr(); },
+		        'tooltip' : this.i18n('button.abbr.tooltip'),
+		        'toggle' : true
+		    });
+		    Aloha.FloatingMenu.addButton(
+		        'Aloha.continuoustext',
+		        this.formatAbbrButton,
+		        Aloha.i18n(Aloha, 'floatingmenu.tab.format'),
+		        1
+		    )
 
-};
+		    // insert Abbr
+		    // always inserts a new abbr
+		    this.insertAbbrButton = new Aloha.ui.Button({
+		        'iconClass' : 'aloha-button aloha-button-abbr',
+		        'size' : 'small',
+		        'onclick' : function () { me.insertAbbr( false ); },
+		        'tooltip' : this.i18n('button.addabbr.tooltip'),
+		        'toggle' : false
+		    });
+			Aloha.FloatingMenu.addButton(
+		        'Aloha.continuoustext',
+		        this.insertAbbrButton,
+		        Aloha.i18n(Aloha, 'floatingmenu.tab.insert'),
+		        1
+		    );
 
-/**
- * Parse a all editables for abbreviations 
- * Add the abbr shortcut to all edtiables 
- */
-GENTICS.Aloha.Abbr.bindInteractions = function () {
-    var that = this;
-
-    // on blur check if abbr title is empty. If so remove the a tag
-    this.abbrField.addListener('blur', function(obj, event) {
-        if ( this.getValue() == '' ) {
-            that.removeAbbr();
-        }
-    });
-    
-    // add to all editables the abbr shortcut
-    for (var i = 0; i < GENTICS.Aloha.editables.length; i++) {
-
-        // CTRL+G
-        GENTICS.Aloha.editables[i].obj.keydown(function (e) {
-    		if ( e.metaKey && e.which == 71 ) {
-		        if ( that.findAbbrMarkup() ) {
-		            GENTICS.Aloha.FloatingMenu.userActivatedTab = that.i18n('floatingmenu.tab.abbr');
+		    // add the new scope for abbr
+		    Aloha.FloatingMenu.createScope(this.getUID('abbr'), 'Aloha.continuoustext');
+		    
+		    this.abbrField = new Aloha.ui.AttributeField({
+		    	'width':320
+		    });
+		    // add the input field for abbr
+		    Aloha.FloatingMenu.addButton(
+		        this.getUID('abbr'),
+		        this.abbrField,
+		        this.i18n('floatingmenu.tab.abbr'),
+		        1
+		    );
 		
-		            // TODO this should not be necessary here!
-		            GENTICS.Aloha.FloatingMenu.doLayout();
+		},
+
+		/**
+		 * Parse a all editables for abbreviations 
+		 * Add the abbr shortcut to all edtiables 
+		 */
+		bindInteractions: function(){
+		    
+			var me = this;
 		
-		            that.abbrField.focus();
-		
-		        } else {
-		            that.insertAbbr();
+		    // on blur check if abbr title is empty. If so remove the a tag
+		    this.abbrField.addListener('blur', function(obj, event) {
+		        if ( this.getValue() == '' ) {
+		            me.removeAbbr();
 		        }
-	            // prevent from further handling
-	            // on a MAC Safari cursor would jump to location bar. Use ESC then META+L
-	            return false; 
-    		}
-        });
-    }
-};
+		    });
+		    
+		    // add to all editables the abbr shortcut
+		    for (var i = 0; i < Aloha.editables.length; i++) {
+		
+		        // CTRL+G
+		        Aloha.editables[i].obj.keydown(function (e) {
+		    		if ( e.metaKey && e.which == 71 ) {
+				        if ( me.findAbbrMarkup() ) {
 
-/**
- * Subscribe for events
- */
-GENTICS.Aloha.Abbr.subscribeEvents = function () {
+				        	Aloha.FloatingMenu.userActivatedTab = me.i18n('floatingmenu.tab.abbr');
+				
+				            // TODO this should not be necessary here!
+				            Aloha.FloatingMenu.doLayout();
+				
+				            me.abbrField.focus();
+				
+				        } else {
+				            
+				        	me.insertAbbr();
+				        }
+			            
+				        // prevent from further handling
+			            // on a MAC Safari cursor would jump to location bar. Use ESC then META+L
+				        e.stopPropagation();
+				        e.preventDefault();
+			            return false; 
+		    		}
+		        });
+		    
+		    }
+		},
 
-	var that = this;
-	
-    // add the event handler for selection change
-    GENTICS.Aloha.EventRegistry.subscribe(GENTICS.Aloha, 'selectionChanged', function(event, rangeObject) {
-        if (GENTICS.Aloha.activeEditable) {
-        	// show/hide the button according to the configuration
-        	var config = that.getEditableConfig(GENTICS.Aloha.activeEditable.obj);
-        	
-        	if ( jQuery.inArray('abbr', config) != -1) {
-        		that.formatAbbrButton.show();
-        		that.insertAbbrButton.show();
-        	} else {
-        		that.formatAbbrButton.hide();
-        		that.insertAbbrButton.hide();
-        		// leave if a is not allowed
-        		return;
-        	}
-        	
-//        if ( !GENTICS.Aloha.Selection.mayInsertTag('abbr') ) {
-//        	that.insertAbbrButton.hide();
-//        }
-        	
-        	var foundMarkup = that.findAbbrMarkup( rangeObject );
-        	if ( foundMarkup ) {
-        		// abbr found
-        		that.insertAbbrButton.hide();
-        		that.formatAbbrButton.setPressed(true);
-        		GENTICS.Aloha.FloatingMenu.setScope(that.getUID('abbr'));
-        		that.abbrField.setTargetObject(foundMarkup, 'title');
-        	} else {
-        		// no abbr found
-        		that.formatAbbrButton.setPressed(false);
-        		that.abbrField.setTargetObject(null);
-        	}
-        	
-        	// TODO this should not be necessary here!
-        	GENTICS.Aloha.FloatingMenu.doLayout();
-        }
+		/**
+		 * Subscribe for events
+		 */
+		subscribeEvents: function () {
+		
+			var me = this;
+			
+		    // add the event handler for selection change
+			Aloha.bind('aloha-selection-changed', function(event, rangeObject) {
+		        if (Aloha.activeEditable) {
+		        	// show/hide the button according to the configuration
+		        	var config = me.getEditableConfig(Aloha.activeEditable.obj);
+		        	
+		        	if ( jQuery.inArray('abbr', config) != -1) {
+		        		me.formatAbbrButton.show();
+		        		me.insertAbbrButton.show();
+		        	} else {
+		        		me.formatAbbrButton.hide();
+		        		me.insertAbbrButton.hide();
+			        	// TODO this should not be necessary here!
+			        	Aloha.FloatingMenu.doLayout();
+		        		// leave if a is not allowed
+		        		return;
+		        	}
+		        	
+		//        if ( !Aloha.Selection.mayInsertTag('abbr') ) {
+		//        	me.insertAbbrButton.hide();
+		//        }
+		        	
+		        	var foundMarkup = me.findAbbrMarkup( rangeObject );
+		        	if ( foundMarkup ) {
+		        		// abbr found
+		        		me.insertAbbrButton.hide();
+		        		me.formatAbbrButton.setPressed(true);
+		        		Aloha.FloatingMenu.setScope(me.getUID('abbr'));
+		        		me.abbrField.setTargetObject(foundMarkup, 'title');
+		        	} else {
+		        		// no abbr found
+		        		me.formatAbbrButton.setPressed(false);
+		        		me.abbrField.setTargetObject(null);
+		        	}
+		        	
+		        	// TODO this should not be necessary here!
+		        	Aloha.FloatingMenu.doLayout();
+		        }
+		
+		    });
+		    
+		},
 
-    });
-    
-};
+		/**
+		 * Check whether inside a abbr tag 
+		 * @param {GENTICS.Utils.RangeObject} range range where to insert the object (at start or end)
+		 * @return markup
+		 * @hide
+		 */
+		findAbbrMarkup: function ( range ) {
+		    
+			if ( typeof range == 'undefined' ) {
+		        var range = Aloha.Selection.getRangeObject();   
+		    }
+			if ( Aloha.activeEditable ) {
+			    return range.findMarkup(function() {
+			        return this.nodeName.toLowerCase() == 'abbr';
+			    }, Aloha.activeEditable.obj);
+			} else {
+				return null;
+			}
+		},
 
-/**
- * Check whether inside a abbr tag 
- * @param {GENTICS.Utils.RangeObject} range range where to insert the object (at start or end)
- * @return markup
- * @hide
- */
-GENTICS.Aloha.Abbr.findAbbrMarkup = function ( range ) {
-    
-	if ( typeof range == 'undefined' ) {
-        var range = GENTICS.Aloha.Selection.getRangeObject();   
-    }
-	if ( GENTICS.Aloha.activeEditable ) {
-	    return range.findMarkup(function() {
-	        return this.nodeName.toLowerCase() == 'abbr';
-	    }, GENTICS.Aloha.activeEditable.obj);
-	} else {
-		return null;
-	}
-};
+		/**
+		 * Format the current selection or if collapsed the current word as abbr.
+		 * If inside a abbr tag the abbr is removed.
+		 */
+		formatAbbr: function () {
+			
+			var range = Aloha.Selection.getRangeObject();
+		    
+		    if (Aloha.activeEditable) {
+		        if ( this.findAbbrMarkup( range ) ) {
+		            this.removeAbbr();
+		        } else {
+		            this.insertAbbr();
+		        }
+		    }
+		},
 
-/**
- * Format the current selection or if collapsed the current word as abbr.
- * If inside a abbr tag the abbr is removed.
- */
-GENTICS.Aloha.Abbr.formatAbbr = function () {
-	
-	var range = GENTICS.Aloha.Selection.getRangeObject();
-    
-    if (GENTICS.Aloha.activeEditable) {
-        if ( this.findAbbrMarkup( range ) ) {
-            this.removeAbbr();
-        } else {
-            this.insertAbbr();
-        }
-    }
-};
+		/**
+		 * Insert a new abbr at the current selection. When the selection is collapsed,
+		 * the abbr will have a default abbr text, otherwise the selected text will be
+		 * the abbr text.
+		 */
+		insertAbbr: function ( extendToWord ) {
+		    
+		    // current selection or cursor position
+		    var range = Aloha.Selection.getRangeObject();
+		
+		    // do not insert a abbr in a abbr
+		    if ( this.findAbbrMarkup( range ) ) {
+		        return;
+		    }
+		    
+		    // activate floating menu tab
+		    Aloha.FloatingMenu.userActivatedTab = this.i18n('floatingmenu.tab.abbr');
+		
+		    // if selection is collapsed then extend to the word.
+		    if (range.isCollapsed() && extendToWord != false) {
+		        GENTICS.Utils.Dom.extendToWord(range);
+		    }
+		    if ( range.isCollapsed() ) {
+		        // insert a abbr with text here
+		        var abbrText = this.i18n('newabbr.defaulttext');
+		        var newAbbr = jQuery('<abbr title="">' + abbrText + '</abbr>');
+		        GENTICS.Utils.Dom.insertIntoDOM(newAbbr, range, jQuery(Aloha.activeEditable.obj));
+		        range.startContainer = range.endContainer = newAbbr.contents().get(0);
+		        range.startOffset = 0;
+		        range.endOffset = abbrText.length;
+		    } else {
+		        var newAbbr = jQuery('<abbr title=""></abbr>');
+		        GENTICS.Utils.Dom.addMarkup(range, newAbbr, false);
+		    }
+		    range.select();
+		    this.abbrField.focus();
+		//    this.abbrChange();
+		},
 
-/**
- * Insert a new abbr at the current selection. When the selection is collapsed,
- * the abbr will have a default abbr text, otherwise the selected text will be
- * the abbr text.
- */
-GENTICS.Aloha.Abbr.insertAbbr = function ( extendToWord ) {
-    
-    // do not insert a abbr in a abbr
-    if ( this.findAbbrMarkup( range ) ) {
-        return;
-    }
-    
-    // activate floating menu tab
-    GENTICS.Aloha.FloatingMenu.userActivatedTab = this.i18n('floatingmenu.tab.abbr');
+		/**
+		 * Remove an a tag.
+		 */
+		removeAbbr: function () {
+		
+		    var range = Aloha.Selection.getRangeObject();
+		    var foundMarkup = this.findAbbrMarkup(); 
+		    if ( foundMarkup ) {
+		        // remove the abbr
+		        GENTICS.Utils.Dom.removeFromDOM(foundMarkup, range, true);
+		        // set focus back to editable
+		        Aloha.activeEditable.obj[0].focus();
+		        // select the (possibly modified) range
+		        range.select();
+		    }
+		},
 
-    // current selection or cursor position
-    var range = GENTICS.Aloha.Selection.getRangeObject();
+		/**
+		 * Make the given jQuery object (representing an editable) clean for saving
+		 * Find all abbrs and remove editing objects
+		 * @param obj jQuery object to make clean
+		 * @return void
+		 */
+		makeClean: function (obj) {
+		// nothing to do...
+		},
+		
+		/**
+		* toString method
+		* @return string
+		*/
+		toString: function () {
+			return 'abbr';
+		}
 
-    // if selection is collapsed then extend to the word.
-    if (range.isCollapsed() && extendToWord != false) {
-        GENTICS.Utils.Dom.extendToWord(range);
-    }
-    if ( range.isCollapsed() ) {
-        // insert a abbr with text here
-        var abbrText = this.i18n('newabbr.defaulttext');
-        var newAbbr = jQuery('<abbr title="">' + abbrText + '</abbr>');
-        GENTICS.Utils.Dom.insertIntoDOM(newAbbr, range, jQuery(GENTICS.Aloha.activeEditable.obj));
-        range.startContainer = range.endContainer = newAbbr.contents().get(0);
-        range.startOffset = 0;
-        range.endOffset = abbrText.length;
-    } else {
-        var newAbbr = jQuery('<abbr title=""></abbr>');
-        GENTICS.Utils.Dom.addMarkup(range, newAbbr, false);
-    }
-    range.select();
-    this.abbrField.focus();
-//    this.abbrChange();
-};
 
-/**
- * Remove an a tag.
- */
-GENTICS.Aloha.Abbr.removeAbbr = function () {
-
-    var range = GENTICS.Aloha.Selection.getRangeObject();
-    var foundMarkup = this.findAbbrMarkup(); 
-    if ( foundMarkup ) {
-        // remove the abbr
-        GENTICS.Utils.Dom.removeFromDOM(foundMarkup, range, true);
-        // set focus back to editable
-        GENTICS.Aloha.activeEditable.obj[0].focus();
-        // select the (possibly modified) range
-        range.select();
-    }
-};
-
-/**
- * Make the given jQuery object (representing an editable) clean for saving
- * Find all abbrs and remove editing objects
- * @param obj jQuery object to make clean
- * @return void
- */
-GENTICS.Aloha.Abbr.makeClean = function (obj) {
-// nothing to do...
-};
+	}))();
+})(window);
