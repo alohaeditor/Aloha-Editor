@@ -16,7 +16,8 @@
 
 	// Prepare
 	var
-		jQuery = window.alohaQuery || window.jQuery, $ = jQuery,
+		jQuery = window.alohaQuery,
+		$ = jQuery,
 		GENTICS = window.GENTICS,
 		Aloha = window.Aloha,
 		console = window.console||false,
@@ -166,7 +167,7 @@
 
 				// Load in Plugins
 				$.each(plugins,function(i,pluginName){
-					Aloha.loadPlugin(pluginName,complete);
+					Aloha.loadPlugin($.trim(pluginName),complete);
 				});
 			}
 			else {
@@ -182,19 +183,15 @@
 			// Prepare
 			var
 				$alohaScriptInclude = $('#aloha-script-include'),
-				plugins = [];
+				plugins = $.trim($alohaScriptInclude.data('plugins'));
 			
 			// Determine Plugins
-			plugins = $alohaScriptInclude.data('plugins');
-			if ( typeof plugins === 'string' ) {
-				plugins = plugins.split(',');
+			if ( typeof plugins === 'string' && plugins != "") {
+				return plugins.split(',');
 			}
-
-			// Ensure
-			plugins = plugins||[];
 		
 			// Return
-			return plugins;
+			return [];
 		},
 
 		/**

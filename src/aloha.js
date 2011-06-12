@@ -11,6 +11,9 @@ window.Aloha_base = window.Aloha_base || false;
 // Handle
 (function(window,undefined) {
 
+	// alohaQuery should always be available
+	window.alohaQuery = window.alohaQuery||window.jQuery;
+	
 	// Prepare Script Loading
 	var
 		document = window.document,
