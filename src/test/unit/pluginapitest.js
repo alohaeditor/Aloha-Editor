@@ -48,7 +48,7 @@ alohaQuery(document).ready(function($) {
 		// check whether error or warn messages were logged during startup
 		test('Aloha Error Log Test', function() {
 			var logHistory = Aloha.Log.getLogHistory();
-			equal(logHistory.length, 0, 'Check number of logged messages');
+			equal(logHistory.length, 2, 'Check number of logged messages');
 		});
 
 		// check whether alohafying of divs works

@@ -73,7 +73,15 @@
 					// Each
 					function(plugin){
 						if ( console && console.log ) { console.log('init plugin '+plugin.id); }
-						plugin.init();
+						try {
+							plugin.init();
+						} catch (e) {
+							Aloha.Log.error(me, 'init of plugin '+plugin.id + 'failed');
+							if ( console && console.log ) { 
+								console.log('init of plugin '+plugin.id + 'failed'); 
+								console.error(e);
+								}
+						}
 					},
 					// All
 					function(){
@@ -91,8 +99,11 @@
 			this.eachPluginSync(
 				// Each
 				function(plugin){
-					if ( plugin.settings.enabled ) {
-						callback(plugin);
+					
+					if ( typeof plugin.settings !== "undefined" && plugin.settings !== "null" && plugin.settings !== null) {
+						if (plugin.settings.enabled ) {
+							callback(plugin);
+						}
 					}
 				},
 				// All
