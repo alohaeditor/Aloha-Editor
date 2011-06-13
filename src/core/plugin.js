@@ -76,9 +76,9 @@
 						try {
 							plugin.init();
 						} catch (e) {
-							Aloha.Log.error(me, 'init of plugin '+plugin.id + 'failed');
+							Aloha.Log.error(Aloha, 'init of plugin '+plugin.id + ' failed');
 							if ( console && console.log ) { 
-								console.log('init of plugin '+plugin.id + 'failed'); 
+								console.log('init of plugin '+plugin.id + ' failed'); 
 								console.error(e);
 								}
 						}
@@ -100,7 +100,7 @@
 				// Each
 				function(plugin){
 					
-					if ( typeof plugin.settings !== "undefined" && plugin.settings !== "null" && plugin.settings !== null) {
+					if ( typeof plugin.settings !== "undefined" && plugin.settings !== null) {
 						if (plugin.settings.enabled ) {
 							callback(plugin);
 						}

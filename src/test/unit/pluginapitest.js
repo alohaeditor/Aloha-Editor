@@ -50,15 +50,6 @@ alohaQuery(document).ready(function($) {
 			var logHistory = Aloha.Log.getLogHistory();
 			equal(logHistory.length, 2, 'Check number of logged messages');
 		});
-
-		// check whether alohafying of divs works
-		test('Aloha Editable Test', function() {
-			var editable = $('#edit');
-			editable.aloha();
-			equals(editable.contentEditable(), "true", 'Check whether div is contenteditable after .aloha()');
-			editable.mahalo();
-			equals(editable.contentEditable(), "false", 'Check whether div is not contenteditable after .mahalo()');
-		});
 	});
 
 });
