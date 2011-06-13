@@ -35,7 +35,7 @@
 		jQuery('body').append(this.pasteDiv);
 
 		// subscribe to the event editableCreated to redirect paste events into our pasteDiv
-		Aloha.EventRegistry.subscribe(Aloha, 'editableCreated', function(event, editable) {
+		Aloha.bind('aloha-editable-created', function(event, editable) {
 			// the events depend on the browser
 			if (jQuery.browser.msie) {
 				editable.obj.bind('beforepaste', function(event) {
@@ -45,7 +45,9 @@
 			} else {
 				editable.obj.bind('paste', function(event) {
 					that.redirectPaste();
-					window.setTimeout(function() {that.getPastedContent(event);}, 10);
+					window.setTimeout(function() {
+						that.getPastedContent(event);
+					}, 10);
 					event.stopPropagation();
 				});
 			}
