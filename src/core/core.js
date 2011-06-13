@@ -920,13 +920,13 @@
 
 					// Cycle through CSS
 					$.each(data.css||[], function(i,value){
-						Aloha.loadCss(pluginUrl+'/'+value);
+						Aloha.loadCss(pluginUrl+'/src/'+value);
 					});
 
 					// Cycle through JS
 					$.each(data.js||[], function(i,value){
 						++total;
-						Aloha.loadJs(pluginUrl+'/'+value,complete);
+						Aloha.loadJs(pluginUrl+'/src/'+value,complete);
 					});
 
 					// Done
