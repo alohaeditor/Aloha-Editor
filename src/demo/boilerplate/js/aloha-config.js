@@ -43,6 +43,14 @@
 							'#top-text'	: [  ]
 							}
 					},
+					"abbr": {
+						// all elements with no specific configuration get an UL, just for fun :)
+						config : [ 'abbr' ],
+							editables : {
+							// Even if this is configured it is not set because OL and UL are not allowed in H1.
+							'#top-text'	: [  ]
+							}
+					},
 					"link": {
 						// all elements with no specific configuration may insert links
 						config : [ 'a' ],

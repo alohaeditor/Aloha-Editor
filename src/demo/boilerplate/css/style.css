@@ -154,9 +154,18 @@ h6,
 	font-size: 90%;
 	line-height: 1.3em;
 }
+#content ol { 
+	list-style-type: lower-alpha;
+	padding-left: 1.45em;
+}
+#content ul { 
+	padding-left: 1.15em;
+		list-style-type: circle;
+}
+
 #whole-site {
 	width: 970px;
-	margin: 0px auto 0;
+	margin: 0 auto 0 auto;
 	text-align: left;
 	height: 100%;
 }
@@ -175,7 +184,7 @@ h6,
 #editor-logo {
 	border: 0;
 	float: left;
-	margin: 20px 0 0 20px;
+	margin: 20px 0 0 7px;
 }
 #editor-logo img {
 	width: 200px;
@@ -430,6 +439,29 @@ footer {
 	clear: both;
 	float: left;
 	height: 20px;
+}
+
+#aloha-loading {
+	font-family: Arial, Verdana;
+	font-size: 0.7em;
+	padding-left: 15px;
+	margin-left: 410px;
+	position: relative;
+	background: #ddd;
+	top:-3px;
+	position: absolute;
+	width: 150px;
+	border-radius: 3px;
+	-moz-border-radius: 3px;
+	-mwebkit-border-radius: 3px;
+	-moz-box-shadow: 0 0 3px #ccc;
+	-webkit-box-shadow: 0 0 3px #ccc;
+	box-shadow: 0 0 3px #ccc;
+	border: solid 1px #ccc;
+}
+#aloha-loading img {
+	position: relative;
+	top:5px;
 }
 /* ========================================= */
 /* ========================================= */

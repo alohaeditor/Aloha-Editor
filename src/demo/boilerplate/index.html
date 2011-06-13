@@ -23,15 +23,16 @@
 	
 	<!--  Aloha Editor -->
 	<script src="js/aloha-config.js"></script>
-	<script	src="../../aloha.js" id="aloha-script-include" data-plugins="format,highlighteditables,link,list,table"></script>
+	<script	src="../../aloha.js" id="aloha-script-include" data-plugins="format,highlighteditables,link,list,table,abbr,paste,undo,hints"></script>
 
 </head>
 <body>
 	<div id="whole-site">
+		<div id="aloha-loading"><span>Loading Aloha Editor</span> <img src="images/loading1.gif" title="loading program..."/></div>
 		<div id="container">
 			<div id="header">
 				<a id="editor-logo" href="#"><img src="images/aloha-editor-logo.png" alt="Aloha Editor" /></a>
-				<p id="top-text">The Aloha Boilerplate</p>
+				<p id="top-text">The Aloha Boilerplate.</p>
 			</div>
 			<div id="navigation">	
 				<ul>
@@ -124,7 +125,7 @@
 				</div>
 				<!-- Stage area end -->
 				<div id="content">
-					<p>Here you'll find some <b>xample content</b> to show Aloha's <i>possibilities</i> regarding any kind of formatting.</p>
+					<p>Here you'll find some <b>example content</b> to show Aloha's <i>possibilities</i> regarding any kind of formatting.</p>
 					<h1>Headline 1</h1>
 					<h2>Headline 2</h2>
 					<h3>Headline 3</h3>
@@ -152,43 +153,38 @@
 	});
 })(window);
 &lt;/script&gt;</pre>
-					<ul>
-						<li>List entry</li>
-						<li>
+					<p>
+						<ul>
+							<li>List entry</li>
 							<ul>
 								<li>List entry</li>
 								<li>List entry</li>
-								<li>
-									<ul>
-										<li>List entry</li>
-										<li>List entry</li>
-									</ul>
-								</li>
+								<ul>
+									<li>List entry</li>
+									<li>List entry</li>
+								</ul>
 							</ul>
-						</li>
-						<li>List entry</li>
-						<li>List entry</li>
-						<li>List entry</li>
-					</ul>
-					<ol>
-						<li>List entry</li>
-						<li>
+							<li>List entry</li>
+							<li>List entry</li>
+							<li>List entry</li>
+						</ul>
+					</p>
+					<p>
+						<ol>
+							<li>List entry</li>
 							<ol>
 								<li>List entry</li>
 								<li>List entry</li>
-								<li>
-									<ol>
-										<li>List entry</li>
-										<li>List entry</li>
-									</ol>
-								</li>
+								<ol>
+									<li>List entry</li>
+									<li>List entry</li>
+								</ol>
 							</ol>
-						</li>
-						<li>List entry</li>
-						<li>List entry</li>
-						<li>List entry</li>
-					</ol>
-					
+							<li>List entry</li>
+							<li>List entry</li>
+							<li>List entry</li>
+						</ol>
+					</p>					
 					<p>For better sematical understanding and WAI compatibility you can describe abbreviations
 					like <abbr title="Hyper Text Markup Language">HTML</abbr> and 
 					<abbr title="Cascading Style Sheets">CSS</abbr>.
@@ -203,11 +199,22 @@
 				$ = window.jQuery,
 				$body = $('body');
 
+			// Change text after core is loaded 
+			$body.bind('alohacoreloaded',function(){
+				// hide loading div
+				$('#aloha-loading span').html('Loading Plugins');
+			});
+			
 			// Bind to Aloha Ready Event
 			$body.bind('aloha',function(){
-				$('#content').aloha();
+				
+				// register all editable areas
 				$('#top-text').aloha();
+				$('#content').aloha();
 				$('.area-content').aloha();
+				
+				// hide loading div
+				$('#aloha-loading').hide();
 			});
 		})(window);
 	</script>
