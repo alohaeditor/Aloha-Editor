@@ -8,7 +8,7 @@
 (function(window, undefined){
 	"use strict";
 	var
-		jQuery = window.alohaQuery, $ = jQuery,
+		jQuery = window.alohaQuery || window.jQuery, $ = jQuery,
 		GENTICS = window.GENTICS,
 	    Aloha = window.Aloha,
 	    dmp = new diff_match_patch,
