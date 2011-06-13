@@ -823,7 +823,7 @@
 			scriptEl.onreadystatechange = loaded;
 			scriptEl.onload = loaded;
 			scriptEl.onerror = loaded;
-			scriptEl.timeout = window.setTimeout(loaded,1000);
+			scriptEl.timeout = window.setTimeout(loaded,600);
 			appendEl.appendChild(scriptEl);
 
 			// Chain
