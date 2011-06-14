@@ -54,9 +54,9 @@ alohaQuery(document).ready(function($) {
 			var plugins = Aloha.PluginRegistry.plugins,
 				editable = Aloha.getEditableById('edit'),
 				editableconfig;
-			equal('format' in plugins, true, 'Check if format plugin is present in registry');
+			equal('format' in plugins, false, 'Check if format plugin is absent from registry');
 			equal('plugintest' in plugins, true, 'Check if plugintest plugin is present in registry');
-			equals(Aloha.PluginRegistry.plugins.format.getEditableConfig(editable),null,'Check if getEditableConfig returns null');
+			equals(Aloha.PluginRegistry.plugins.plugintest.getEditableConfig(editable),undefined,'Check if getEditableConfig returns null');
 			
 		});
 	});
