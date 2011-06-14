@@ -72,13 +72,12 @@
 				me.eachEnabledPluginSync(
 					// Each
 					function(plugin){
-						if ( console && console.log ) { console.log('init plugin '+plugin.id); }
+						Aloha.Log.info(Aloha, 'Starting init plugin '+plugin.id);
 						try {
 							plugin.init();
 						} catch (e) {
-							Aloha.Log.error(Aloha, 'init of plugin '+plugin.id + ' failed');
+							Aloha.Log.error(Aloha, 'Init of plugin '+plugin.id + ' failed');
 							if ( console && console.log ) { 
-								console.log('init of plugin '+plugin.id + ' failed'); 
 								console.error(e);
 								}
 						}
@@ -255,7 +254,9 @@
 			 * Settings of the plugin
 			 */
 			if (typeof pluginPrefix !== "string") {
-				Aloha.Log.warn(this, 'Cannot initialise unnamed plugin, skipping');
+				if ( console && console.error ) {
+					console.error('Cannot initialise unnamed plugin, skipping');
+				}
 			} else {
 				this.id = this.prefix = pluginPrefix;
 				this.basePath = basePath ? basePath : pluginPrefix;

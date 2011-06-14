@@ -50,6 +50,15 @@ alohaQuery(document).ready(function($) {
 			var logHistory = Aloha.Log.getLogHistory();
 			equal(logHistory.length, 2, 'Check number of logged messages');
 		});
+		test('Aloha Plugins test', function(){
+			var plugins = Aloha.PluginRegistry.plugins,
+				editable = Aloha.getEditableById('edit'),
+				editableconfig;
+			equal('format' in plugins, true, 'Check if format plugin is present in registry');
+			equal('plugintest' in plugins, true, 'Check if plugintest plugin is present in registry');
+			equals(Aloha.PluginRegistry.plugins.format.getEditableConfig(editable),null,'Check if getEditableConfig returns null');
+			
+		});
 	});
 
 });
