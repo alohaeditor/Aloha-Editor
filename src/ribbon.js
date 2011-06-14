@@ -149,6 +149,7 @@
 			}
 
 			this.toolbar.insert(this.toolbar.items.getCount() - 3, extButton);
+			this.toolbar.doLayout();
 		},
 
 		/**
