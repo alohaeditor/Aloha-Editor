@@ -21,14 +21,20 @@
 		jQuery = window.alohaQuery || window.jQuery, $ = jQuery,
 		GENTICS = window.GENTICS,
 		Aloha = window.Aloha;
-	
+	/**
+	 * An empty extend of Plugin class
+	 */
+	Aloha.VeryBadPlugin = new (Aloha.Plugin.extend({}));
+	/**
+	 * Minimal working plugin with an error occuring in init
+	 */
 	Aloha.InitFailTest = new (Aloha.Plugin.extend({
 		_constructor: function(){
 			this._super('plugintest');
 		},
 		
 		init: function() {
-			throw "such error may happend while plugin's development";
+			throw new Error("such error may happend while plugin's development");
 			// it would be nice for the developer to have the error reported (and aloha should continue loading)
 		}
 	}));
