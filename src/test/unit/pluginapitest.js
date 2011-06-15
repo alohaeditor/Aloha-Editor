@@ -26,8 +26,8 @@ alohaQuery(document).ready(function($) {
 
 	test('.aloha() is loading', function() {
 		var editable = alohaQuery('#edit');
-		editable.aloha();
 		equals(editable.size(),1, 'Editable was found');
+		editable.aloha();
 		ok(true, '.aloha() could be called');
 	});
 

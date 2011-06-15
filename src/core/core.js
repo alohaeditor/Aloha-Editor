@@ -628,7 +628,7 @@
 
 			// first get the dictionary for the component
 			if (Aloha.dictionaries[compName] && Aloha.dictionaries[compName][key]) {
-				value = Aloha.dictionaries[component.toString()][key];
+				value = Aloha.dictionaries[compName][key];
 			}
 
 			// when the value was not found and component is not Aloha, do a fallback
