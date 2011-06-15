@@ -45,6 +45,16 @@ alohaQuery(document).ready(function($) {
 
 	// All other tests are done when Aloha is ready
 	$('body').bind('aloha', function() {
+		asyncTest('Aloha bind "aloha" after it was triggered', function() {
+			$('body').bind('aloha', function() {
+				ok(true, 'Binding a second time to the "aloha" event');
+				start();
+			});
+			setTimeout(function() {
+				ok(false, 'Second time event not catched');
+				start();
+			}, 5000);
+		});
 		// check whether error or warn messages were logged during startup
 		test('Aloha Error Log Test', function() {
 			var logHistory = Aloha.Log.getLogHistory();
