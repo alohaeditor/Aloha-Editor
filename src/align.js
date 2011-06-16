@@ -51,17 +51,16 @@
 			var that = this;
 
 			// apply specific configuration if an editable has been activated
-			Aloha.EventRegistry.subscribe(Aloha, 'editableActivated', function (e, params) {
+			Aloha.bind('aloha-editable-activated', function (e, params) {
 				that.applyButtonConfig(params.editable.obj);
 			});
 
 			// add the event handler for selection change
-		    Aloha.EventRegistry.subscribe(Aloha, 'selectionChanged', function(event, rangeObject) {
+		    Aloha.bind('aloha-selection-changed', function(event, rangeObject) {
 		    	if (Aloha.activeEditable) {
 		    		that.buttonPressed(rangeObject);
 		    	}
 		    });
-			alert('ok');
 		},
 
 		buttonPressed: function (rangeObject) {
@@ -124,8 +123,12 @@
 		 * @return void
 		 */
 		applyButtonConfig: function (obj) {
-
-			config = this.getEditableConfig(obj);
+			
+			if (typeof this.settings === 'undefined') {
+				config = this.config;
+			} else {
+				config = this.settings;
+			}
 
 			if ( jQuery.inArray('right', config) != -1) {
 				this.alignRightButton.show();
@@ -280,9 +283,12 @@
 		    // current selection or cursor position
 		    var range = Aloha.Selection.getRangeObject();
 
-		    range.findMarkup(function() {
-		        jQuery(this).css('text-align', that.alignment);
-		    }, Aloha.activeEditable.obj);
+		    // Iterates the whole selectionTree and align
+			jQuery.each(Aloha.Selection.getRangeObject().getSelectionTree(), function () {
+				if(this.selection !== 'none' && this.domobj.nodeType !== 3) {
+					jQuery(this.domobj).css('text-align', that.alignment);
+				}
+			});
 
 			if(this.alignment != this.lastAlignment)
 			{
