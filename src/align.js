@@ -30,7 +30,9 @@
 		/**
 		 * Configuration (available align options)
 		 */
-		config: ['right','left','center','justify'],
+		config: {
+			alignment: ['right','left','center','justify']
+		},
 		
 		/**
 		 * Alignment wanted by the user
@@ -124,12 +126,12 @@
 		 */
 		applyButtonConfig: function (obj) {
 			
-			if (typeof this.settings === 'undefined') {
-				config = this.config;
+			if (typeof this.settings.alignment === 'undefined') {
+				var config = this.config.alignment;
 			} else {
-				config = this.settings;
+				var config = this.settings.alignment;
 			}
-
+			
 			if ( jQuery.inArray('right', config) != -1) {
 				this.alignRightButton.show();
 			} else {
