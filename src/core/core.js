@@ -186,7 +186,7 @@
 				plugins = $.trim($alohaScriptInclude.data('plugins'));
 			
 			// Determine Plugins
-			if ( typeof plugins === 'string' && plugins != "") {
+			if ( typeof plugins === 'string' && plugins !== "") {
 				return plugins.split(',');
 			}
 		
