@@ -1,24 +1,10 @@
-How to add the plugin
----------------------
-
-Insert in the <head></head> :
-
-<script type="text/javascript" src="aloha/plugins/com.gentics.aloha.plugins.Align/plugin.js"></script>
-<link rel="stylesheet" href="aloha/plugins/com.gentics.aloha.plugins.Align/css/Align.css" />
-
 Config example
 --------------
 
-"com.gentics.aloha.plugins.Align": { 
+"align": { 
 	// Allow align left, center and justify only for all elements
 	// 4 possibilities : left, center, right and justify
-	config : [ 'left','center','justify'],
-  	editables : {
-		// No align for the title.
-		'#title'	: [  ],
-		// Allow align justify only for .article
-		'.article'	: [ 'justify' ] 
-  	}
+	config : [ 'left','center','justify']
 }
 
 This plugin is release under the LGPL license.
