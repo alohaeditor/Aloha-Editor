@@ -569,7 +569,7 @@ Ext.ux.MultiSplitButton = Ext.extend(Ext.Component, {
 			})
 			.animate({
 				// display expand animation
-				height: this.ulObj.prop('scrollHeight')
+				height: (this.ulObj.prop)?this.ulObj.prop('scrollHeight'):this.ulObj.attr('scrollHeight')
 			});
 
 		// TODO change to css
