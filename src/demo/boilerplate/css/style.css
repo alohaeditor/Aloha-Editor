@@ -299,7 +299,7 @@ h6,
 		
 	width: 100%;
 	height: 305px;
-	background: url(../images/stage-bg.png) left top repeat-x;
+	_background: url(../images/stage-bg.png) left top repeat-x;
 	position: relative;
 	overflow: hidden;
 	float: left;

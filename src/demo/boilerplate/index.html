@@ -23,7 +23,7 @@
 	
 	<!--  Aloha Editor -->
 	<script src="js/aloha-config.js"></script>
-	<script	src="../../aloha.js" id="aloha-script-include" data-plugins="format,highlighteditables,link,list,table,abbr,paste,undo,hints"></script>
+	<script	src="../../aloha.js" id="aloha-script-include" data-plugins="format,highlighteditables,link,list,table,abbr,paste,undo,hints,comments,image"></script>
 
 </head>
 <body>
@@ -47,7 +47,7 @@
 			<!-- Stage area start -->
 				<div class="stage-area">
 					<ul class="stage-switcher">
-						<li>
+						<li class="stage">
 							<span class="stage-icon" style="background-image: url(images/stage-icon-formats.png);"></span>
 							<h2>Formatting</h2>
 							<p>Bold, headlines, ...</p>
@@ -63,7 +63,7 @@
 								</div>
 							</div>
 						</li>
-						<li>
+						<li class="stage">
 							<span class="stage-icon" style="background-image: url(images/stage-icon-images.png);"></span>
 							<h2>Images</h2>
 							<p>Placing, scaling ...</p>
@@ -77,7 +77,7 @@
 								</div>
 							</div>
 						</li>
-						<li>
+						<li class="stage">
 							<span class="stage-icon" style="background-image: url(images/stage-icon-tables.png);"></span>
 							<h2>Tables</h2>
 							<p>All you might put into tables</p>
@@ -91,7 +91,7 @@
 								</div>
 							</div>
 						</li>
-						<li>
+						<li class="stage">
 							<span class="stage-icon" style="background-image: url(images/stage-icon-boxes.png);"></span>
 							<h2>Boxes</h2>
 							<p>You may edit dynamic boxes</p>
@@ -105,7 +105,7 @@
 								</div>
 							</div>
 						</li>
-						<li>
+						<li class="stage">
 							<span class="stage-icon" style="background-image: url(images/stage-icon-comments.png);"></span>
 							<h2>Comments</h2>
 							<p>threaded inline comments</p>
@@ -119,8 +119,6 @@
 								</div>
 							</div>
 						</li>
-
-
 					</ul>
 				</div>
 				<!-- Stage area end -->
@@ -194,10 +192,13 @@
 	</div>
 	<script type="text/javascript" defer>
 		(function(window,undefined){
+			
 			// Prepare
 			var
 				$ = window.jQuery,
 				$body = $('body');
+
+			$('.stage-area').alohaStage();
 
 			// Change text after core is loaded 
 			$body.bind('alohacoreloaded',function(){

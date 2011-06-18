@@ -1,15 +1,15 @@
 (function($) {
 	$.fn.alohaStage = function() {
 		var switcher = this.find('ul.stage-switcher'),
+			me = this,
 			current,
-			currentTab,
 			autoplay,
 			showNext = function() {
 				var nextTab;
-				if (!currentTab) {
+				if (!me.currentTab) {
 					nextTab = switcher.find('li').first();
 				} else {
-					nextTab = currentTab.next();
+					nextTab = me.currentTab.next();
 					if (nextTab.length == 0) {
 						nextTab = switcher.find('li').first();
 					}
@@ -18,28 +18,33 @@
 				autoplay = setTimeout(showNext, 6000);
 			};
 		switcher.children('li').each(function() {
-			var li = $(this),
-				item = $(this).find('.stage-item').detach();
+			var $this = $(this),
+				editable = $this.find('.area-content'), // make stage switcher available thru editable
+				item = $this.find('.stage-item').detach();
+			editable[0].tab = $this;
 			item.hide();
 			item.appendTo(switcher.parent());
-			li.click(function(event) {
+			$this.click(function(event) {
 				clearTimeout(autoplay);
-				if (currentTab) currentTab.removeClass('active');
-				currentTab = li;
-				li.addClass('active');
-				if (current) current.fadeOut(500);
+				if (me.currentTab) me.currentTab.removeClass('active');
+				me.currentTab = $this;
+				$this.addClass('active');
+				if (current && current != item ) {
+					if (current) current.fadeOut(500);
+				}
 				item.fadeIn(500);
 				current = item;
 			});
-			li.mouseover(function() {
-				li.addClass('hover');
+			$this.mouseover(function() {
+				$this.addClass('hover');
+				clearTimeout(autoplay);
 			});
-			li.mouseout(function() {
-				li.removeClass('hover');
+			$this.mouseout(function() {
+				$this.removeClass('hover');
+				autoplay = setTimeout(showNext, 6000);
 			});
 		});
 		showNext();
-		autoplay = setTimeout(showNext, 6000);
 		switcher.animate({right: -150}, {queue: false});
 		switcher.mouseenter(function() {
 			switcher.animate({right: 0}, {queue: false});
@@ -47,9 +52,18 @@
 		switcher.mouseleave(function() {
 			switcher.animate({right: -150}, {queue: false});
 		});
+		
+
+		$('body').bind('aloha',function(){
+			Aloha.bind('aloha-editable-activated', function(e,a){
+				if ( a.editable.obj[0].tab ) {
+					a.editable.obj[0].tab.click();
+				}
+			});
+			Aloha.bind('aloha-editable-deactivated', function(e,a){
+				autoplay = setTimeout(showNext, 6000);
+			});
+		});
+
 	};
 })(jQuery);
-
-$(function() {
-	$('.stage-area').alohaStage();
-});
