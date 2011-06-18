@@ -35,7 +35,7 @@
 		/**
 		 * Configure the available languages
 		 */
-		languages: ['en', 'de'],
+//		languages: ['en', 'de'],
 
 		/**
 		 * Initialize the plugin and set initialize flag on true
