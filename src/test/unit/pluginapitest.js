@@ -24,13 +24,6 @@ Aloha.settings = {
 
 alohaQuery(document).ready(function($) {
 
-	test('.aloha() is loading', function() {
-		var editable = alohaQuery('#edit');
-		equals(editable.size(),1, 'Editable was found');
-		editable.aloha();
-		ok(true, '.aloha() could be called');
-	});
-
 	// Test whether Aloha is properly initialized
 	asyncTest('Aloha Startup Test', function() {
 		$('body').bind('aloha',function() {
