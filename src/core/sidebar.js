@@ -3,77 +3,122 @@
  * Author & Copyright (c) 2010 Gentics Software GmbH, aloha@gentics.com
  * Licensed unter the terms of http://www.aloha-editor.com/license.html
  */
-(function(window, undefined) {
-	"use strict";
-	var
-		jQuery = window.alohaQuery || window.jQuery, $ = jQuery,
-		GENTICS = window.GENTICS,
-		Aloha = window.Aloha,
-		Class = window.Class;
 
-/**
- * Abstract Sidebar
- */
-Aloha.Sidebar = Class.extend({
-	/**
-	 * Add a panel to this sidebar
-	 * @param panel panel to add to this sidebar
-	 * @return void
-	 */
-	add: function(panel) {},
-
-	/**
-	 * Render this sidebar
-	 * @return HTML Code of the rendered sidebar
-	 */
-	render: function() {},
-
-	/**
-	 * Open the given panel in the sidebar and close all other (not pinned) panels
-	 * @param panel panel to open
-	 * @return void
-	 */
-	openPanel: function(panel) {},
-
-	/**
-	 * Close the given panel in the sidebar
-	 * @param panel panel to close
-	 * @return void
-	 */
-	closePanel: function(panel) {},
-
-	/**
-	 * Toggle the "pinned" status of the panel
-	 * @param panel panel to pin/unpin
-	 * @return void
-	 */
-	togglePinPanel: function(panel) {}
-});
-
-/**
- * Right Sidebar
- */
-// Aloha.SidebarRight = function () {};
-Aloha.SidebarRight = new Aloha.Sidebar();
-
-/**
- * Left Sidebar
- */
-// Aloha.SidebarLeft = function () {};
-Aloha.SidebarLeft = new Aloha.Sidebar();
-
-
-//################### Aloha Sidebar Panels ######################
-
-/**
- * Abstract Sidebar Panel
- */
-Aloha.Sidebar.Panel = Class.extend({
-	/**
-	 * Render this panel
-	 * @return HTML Code of the rendered panel
-	 */
-	render: function() {}
-});
-
+(function (window, undefined) {
+	
+	'use strict';
+	
+	var jQuery = window.alohaQuery || window.jQuery,
+	         $ = jQuery,
+	   GENTICS = window.GENTICS || (window.GENTICS = {}),
+	     Aloha = window.Aloha;
+	
+	var clss = 'aloha-sidebar',
+		uid  = +(new Date);
+	// ------------------------------------------------------------------------
+	// Extend jQuery easing animations
+	// ------------------------------------------------------------------------
+	$.extend($.easing, {
+		easeOutExpo: function (x, t, b, c, d) {
+			return (t==d) ? b+c : c * (-Math.pow(2, -10 * t/d) + 1) + b;
+		},
+		easeOutElastic: function (x, t, b, c, d) {
+			var s=1.70158;var p=0;var a=c;
+			if (t==0) return b;  if ((t/=d)==1) return b+c;  if (!p) p=d*.3;
+			if (a < Math.abs(c)) { a=c; var s=p/4; }
+			else var s = p/(2*Math.PI) * Math.asin (c/a);
+			return a*Math.pow(2,-10*t) * Math.sin( (t*d-s)*(2*Math.PI)/p ) + c + b;
+		}
+	});
+	
+	// ------------------------------------------------------------------------
+	// Helper functions
+	// ------------------------------------------------------------------------
+	function mkdotclass () {
+		var str = '',
+			prx = clss; // Make a copy of clss here for quicker lookup
+		$.each(arguments, function () {str += ' .' + prx + '-' + this;});
+		return str.trim();
+	};
+	
+	function mkclass () {
+		var str = '',
+			prx = clss;
+		$.each(arguments, function () {str += ' ' + prx + '-' + this;});
+		return str.trim();
+	};
+	
+	// ------------------------------------------------------------------------
+	// Sidebar
+	// ------------------------------------------------------------------------
+	var Sidebar = function () {
+		
+		this.container = null;
+		this.panels = {};
+		
+		this.init();
+		
+	};
+	
+	$.extend(Sidebar.prototype, {
+		
+		// We build as much of the sidebar as we can before appending it to the
+		// DOM in order to minimize reflow
+		init: function () {
+			var that = this,
+				body = $('body'),
+				bar	 = this.container = $('											\
+					<div class="' + mkclass('bar') + '">							\
+						<div class="' + mkclass('bar-shadow') + '"></div>			\
+						<div class="' + mkclass('bar-toggle') + '">					\
+							<div class="' + mkclass('bar-toggle-img') + '"></div>	\
+						</div>														\
+						<div class="' + mkclass('bar-inner') + '">					\
+							<h2>													\
+								Aloha Comments										\
+								<span class="' + mkclass('config-btn') + '"></span> \
+							</h2>													\
+							<ul></ul>												\
+							<div class="' + mkclass('bar-bottom') + '">				\
+							</div>													\
+						</div>														\
+					</div>															\
+				');
+			
+			bar.css('opacity', 0)
+			   .click(function () {
+					that.barClicked.apply(that, arguments);
+				});
+			
+			body.append(bar);
+			
+			$(window).resize(function () {
+				that._updateScrolling();
+			});
+			
+			this._updateScrolling();
+			
+			// Fade in nice and slow
+			bar.animate({opacity: 1}, 2000, 'linear');
+			
+			// Announce that the Sidebar has entered the building!
+			body.trigger(mkclass('initialized'));
+		},
+		
+		_updateScrolling: function () {
+		
+		}
+		
+	});
+	
+	$('body').bind(mkclass('initialized'), function () {
+		console.dir(arguments);
+	});
+	
+	// Automatically invoke the Sidebar as soon as the DOM is ready
+	$(function () {
+		//Aloha.Sidebar = new Sidebar();
+		window.Sidebar = new Sidebar();
+	});
+	
 })(window);
