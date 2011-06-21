@@ -104,7 +104,7 @@ GENTICS.Aloha.Repositories.LinkList.query = function( p, callback) {
 		var ret = false;
 		return (
 			( !p.queryString || e.name.match(r) || e.url.match(r) ) &&
-			( !p.objectTypeFilter || jQuery.inArray(e.type, p.objectTypeFilter) > -1) &&
+			( !p.objectTypeFilter || ( !p.objectTypeFilter.length ) ||  jQuery.inArray(e.type, p.objectTypeFilter) > -1) &&
 			( !p.inFolderId || p.inFolderId == e.parentId )
 		);
 	});
