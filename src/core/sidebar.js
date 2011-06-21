@@ -4,7 +4,12 @@
  * Licensed unter the terms of http://www.aloha-editor.com/license.html
  */
 
-(function (window, undefined) {
+// TODO use String.prototype.supplant
+// http://javascript.crockford.com/remedial.html
+
+
+// We give our immediately invoked function a name to make debugging easier
+(function Sidebar (window, undefined) {
 	
 	'use strict';
 	
@@ -67,7 +72,7 @@
 		init: function () {
 			var that = this,
 				body = $('body'),
-				bar	 = this.container = $('											\
+				bar	 = this.container = $('
 					<div class="' + mkclass('bar') + '">							\
 						<div class="' + mkclass('bar-shadow') + '"></div>			\
 						<div class="' + mkclass('bar-toggle') + '">					\
