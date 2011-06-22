@@ -4,10 +4,19 @@
  * Licensed unter the terms of http://www.aloha-editor.com/license.html
  */
 
-// TODO create and use String.prototype.supplant
+// ----------------------------------------------------------------------------
+//
+// Please look at http://www.aloha-editor.org/wiki/Sidebar for more
+// information. Please remember to document your contributions here.
+//
+// TODO:
+//	String.prototype.supplant method from here and place it into aloha factory
+//
+// ----------------------------------------------------------------------------
+
 
 // We give our immediately invoked function a name to aid in debugging
-(function Sidebar (window, undefined) {
+(function __Sidebar (window, undefined) {
 	
 	'use strict';
 	
@@ -52,8 +61,25 @@
 		return str.trim();
 	};
 	
+	var classes = {
+		bar		: mkclass('bar'),
+		shadow	: mkclass('bar-shadow'),
+		toggle	: mkclass('bar-toggle'),
+		'toggle-img': mkclass('bar-toggle-img'),
+		inner	: mkclass('bar-inner'),
+		tnd		: mkclass('config-btn'),
+		bottom	: mkclass('bar-bottom')
+	};
+	
+	String.prototype.supplant = function (/*'ld, rd,'*/obj) {
+		return this.replace(/\{([a-z0-9\-\_]+)\}/ig, function (str, p1, offset, s) {
+			return obj[p1] || str;
+		});
+	};
+	
 	// ------------------------------------------------------------------------
-	// Sidebar
+	// Sidebar constructor
+	// Define only instance properties here
 	// ------------------------------------------------------------------------
 	var Sidebar = function () {
 		
@@ -64,30 +90,37 @@
 		
 	};
 	
+	// ------------------------------------------------------------------------
+	// Sidebar prototype
+	// All properties to be shared across Sidebar instances can be placed in
+	// the prototype object
+	// ------------------------------------------------------------------------
 	$.extend(Sidebar.prototype, {
 		
-		// We build as much of the sidebar as we can before appending it to the
-		// DOM in order to minimize reflow
+		// We minimize reflow by building as much of the sidebar as we can 
+		// before appending it to DOM.
 		init: function () {
 			var that = this,
 				body = $('body'),
-				bar	 = this.container = $('\
-					<div class="' + mkclass('bar') + '">							\
-						<div class="' + mkclass('bar-shadow') + '"></div>			\
-						<div class="' + mkclass('bar-toggle') + '">					\
-							<div class="' + mkclass('bar-toggle-img') + '"></div>	\
-						</div>														\
-						<div class="' + mkclass('bar-inner') + '">					\
-							<h2>													\
-								Aloha Comments										\
-								<span class="' + mkclass('config-btn') + '"></span> \
-							</h2>													\
-							<ul></ul>												\
-							<div class="' + mkclass('bar-bottom') + '">				\
-							</div>													\
-						</div>														\
-					</div>															\
-				');
+				bar	 = this.container = $(
+					('\
+					<div class="{bar}">						 \
+						<div class="{shadow}"></div>		 \
+						<div class="{toggle}">				 \
+							<div class="{toggle-img}"></div> \
+						</div>								 \
+						<div class="{inner}">		 		 \
+							<h2>							 \
+								Aloha Comments				 \
+								<span class="{btn}"></span>  \
+							</h2>							 \
+							<ul></ul>						 \
+							<div class="{bottom}">			 \
+							</div>							 \
+						</div>								 \
+					</div>									 \
+				').supplant(classes)
+			);
 			
 			bar.css('opacity', 0)
 			   .click(function () {
@@ -116,7 +149,7 @@
 	});
 	
 	$('body').bind(mkclass('initialized'), function () {
-		console.dir(arguments);
+		console.log(arguments);
 	});
 	
 	// Automatically invoke the Sidebar as soon as the DOM is ready
