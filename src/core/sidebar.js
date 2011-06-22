@@ -4,11 +4,9 @@
  * Licensed unter the terms of http://www.aloha-editor.com/license.html
  */
 
-// TODO use String.prototype.supplant
-// http://javascript.crockford.com/remedial.html
+// TODO create and use String.prototype.supplant
 
-
-// We give our immediately invoked function a name to make debugging easier
+// We give our immediately invoked function a name to aid in debugging
 (function Sidebar (window, undefined) {
 	
 	'use strict';
@@ -20,6 +18,7 @@
 	
 	var clss = 'aloha-sidebar',
 		uid  = +(new Date);
+	
 	// ------------------------------------------------------------------------
 	// Extend jQuery easing animations
 	// ------------------------------------------------------------------------
@@ -72,7 +71,7 @@
 		init: function () {
 			var that = this,
 				body = $('body'),
-				bar	 = this.container = $('
+				bar	 = this.container = $('\
 					<div class="' + mkclass('bar') + '">							\
 						<div class="' + mkclass('bar-shadow') + '"></div>			\
 						<div class="' + mkclass('bar-toggle') + '">					\
