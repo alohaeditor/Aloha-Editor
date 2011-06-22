@@ -6,11 +6,8 @@
 
 // ----------------------------------------------------------------------------
 //
-// Please look at http://www.aloha-editor.org/wiki/Sidebar for more
-// information. Please remember to document your contributions here.
-//
-// TODO:
-//	String.prototype.supplant method from here and place it into aloha factory
+// Please look at http://www.aloha-editor.org/wiki/Sidebar for more information
+// Please remember to document your contributions there.
 //
 // ----------------------------------------------------------------------------
 
@@ -25,7 +22,14 @@
 	   GENTICS = window.GENTICS || (window.GENTICS = {}),
 	     Aloha = window.Aloha;
 	
-	var clss = 'aloha-sidebar';
+	// Pseudo-namespace prefix for Sidebar elements
+	// Rational:
+	// We use a prefix instead of an enclosing class or id because we need to
+	// be paranoid of accidentally inheritancing styles in an environment like
+	// the one in which Aloha-Editor, with its numerous custom plugins operates
+	// in. eg: .inner or .btn can be used in several plugins with eaching adding
+	// to the class styles.
+	var cssNS = 'aloha-sidebar';
 	
 	// ------------------------------------------------------------------------
 	// Extend jQuery easing animations
@@ -49,38 +53,42 @@
 	
 	function mkdotclass () {
 		var str = '',
-			prx = clss; // Make a copy of clss here for quicker lookup
+			prx = cssNS; // Make a copy of cssNS here for quicker lookup
 		$.each(arguments, function () {str += ' .' + prx + '-' + this;});
 		return str.trim();
 	};
 	
 	function mkclass () {
 		var str = '',
-			prx = clss;
+			prx = cssNS;
 		$.each(arguments, function () {str += ' ' + prx + '-' + this;});
 		return str.trim();
 	};
 	
-	String.prototype.supplant = function (/*'ld, rd,'*/obj) {
+	// TODO: Factorize this method to be used in other parts of Aloha-Editor
+	// TODO: Offer parameter to define left and right delimiters in case the
+	//		 default "{", and "}" are problematic
+	String.prototype.supplant = function (/*'lDelim, rDelim,'*/ obj) {
 		return this.replace(/\{([a-z0-9\-\_]+)\}/ig, function (str, p1, offset, s) {
 			return obj[p1] || str;
 		});
 	};
 	
 	var uid  = +(new Date),
-		classes = {
+		nameSpacedClasses = {
 			bar		: mkclass('bar'),
-			shadow	: mkclass('bar-shadow'),
-			toggle	: mkclass('bar-toggle'),
-			'toggle-img': mkclass('bar-toggle-img'),
-			inner	: mkclass('bar-inner'),
-			tnd		: mkclass('config-btn'),
-			bottom	: mkclass('bar-bottom')
+			bottom	: mkclass('bottom'),
+			inner	: mkclass('inner'),
+			panels	: mkclass('panels'),
+			shadow	: mkclass('shadow'),
+			toggle	: mkclass('toggle'),
+			'toggle-img' : mkclass('toggle-img'),
+			'config-btn' : mkclass('config-btn')
 		};
 	
 	// ------------------------------------------------------------------------
 	// Sidebar constructor
-	// Define only instance properties here
+	// Only instance properties are to be defined here
 	// ------------------------------------------------------------------------
 	var Sidebar = function () {
 		
@@ -105,27 +113,23 @@
 				body = $('body'),
 				bar	 = this.container = $(
 					('\
-					<div class="{bar}">						 \
-						<div class="{shadow}"></div>		 \
-						<div class="{toggle}">				 \
-							<div class="{toggle-img}"></div> \
-						</div>								 \
-						<div class="{inner}">		 		 \
-							<h2>							 \
-								Title						 \
-								<span class="{btn}"></span>  \
-							</h2>							 \
-							<ul></ul>						 \
-							<div class="{bottom}">			 \
-							</div>							 \
-						</div>								 \
-					</div>									 \
-				').supplant(classes)
+					<div class="{bar}">							\
+						<div class="{shadow}"></div>			\
+						<div class="{toggle}">					\
+							<div class="{toggle-img}"></div>	\
+						</div>									\
+						<div class="{inner}">		 			\
+							<ul class="{panels}"></ul>	\
+							<div class="{bottom}">				\
+							</div>								\
+						</div>									\
+					</div>										\
+				').supplant(nameSpacedClasses)
 			);
 			
 			bar.css('opacity', 0)
 			   .click(function () {
-					that.barClicked.apply(that, arguments);
+					that._barClicked.apply(that, arguments);
 				});
 			
 			body.append(bar);
@@ -137,25 +141,60 @@
 			this._updateScrolling();
 			
 			// Fade in nice and slow
-			bar.animate({opacity: 1}, 2000, 'linear');
+			bar.animate({opacity: 1}, 500, 'linear');
 			
 			// Announce that the Sidebar has entered the building!
 			body.trigger(mkclass('initialized'));
+			
+			console.log(bar);
 		},
 		
 		_updateScrolling: function () {
+			var bar = this.container,
+				bottom = bar.find(mkdotclass('bottom')).position(),
+				h = $(window).height();
+			
+			bar.height(h);
+			bar.find(mkdotclass('shadow')).height(h);
+			
+			
+			/*
+			
+			var panel = this._getCurrentPanel();
+			
+			if (!panel) {
+				return;
+			}
+			
+			panel.container
+				.css({
+					height	  : $(window).height(),
+					overflowY : (bottom.top > bar.height()) ? 'scroll' : 'auto'
+				});
+			*/
+		},
 		
+		_getCurrentPanel: function () {
+			
+		},
+		
+		_barClicked: function (ev) {
+		
+		},
+		
+		addPanel: function (panel) {
+			
 		}
 		
 	});
 	
 	$('body').bind(mkclass('initialized'), function () {
-		console.log(arguments);
 	});
 	
 	// Automatically invoke the Sidebar as soon as the DOM is ready
 	$(function () {
 		//Aloha.Sidebar = new Sidebar();
+		window.xSidebar = Sidebar;
 		window.Sidebar = new Sidebar();
 	});
 	
