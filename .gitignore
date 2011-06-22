@@ -2,6 +2,7 @@
 .settings
 .gitmodules
 build/out
+target
 build/api-docs-out
 .DS_Store
 /setalohabase.js
