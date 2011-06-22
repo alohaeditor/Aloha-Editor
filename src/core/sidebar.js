@@ -25,8 +25,7 @@
 	   GENTICS = window.GENTICS || (window.GENTICS = {}),
 	     Aloha = window.Aloha;
 	
-	var clss = 'aloha-sidebar',
-		uid  = +(new Date);
+	var clss = 'aloha-sidebar';
 	
 	// ------------------------------------------------------------------------
 	// Extend jQuery easing animations
@@ -47,6 +46,7 @@
 	// ------------------------------------------------------------------------
 	// Helper functions
 	// ------------------------------------------------------------------------
+	
 	function mkdotclass () {
 		var str = '',
 			prx = clss; // Make a copy of clss here for quicker lookup
@@ -61,21 +61,22 @@
 		return str.trim();
 	};
 	
-	var classes = {
-		bar		: mkclass('bar'),
-		shadow	: mkclass('bar-shadow'),
-		toggle	: mkclass('bar-toggle'),
-		'toggle-img': mkclass('bar-toggle-img'),
-		inner	: mkclass('bar-inner'),
-		tnd		: mkclass('config-btn'),
-		bottom	: mkclass('bar-bottom')
-	};
-	
 	String.prototype.supplant = function (/*'ld, rd,'*/obj) {
 		return this.replace(/\{([a-z0-9\-\_]+)\}/ig, function (str, p1, offset, s) {
 			return obj[p1] || str;
 		});
 	};
+	
+	var uid  = +(new Date),
+		classes = {
+			bar		: mkclass('bar'),
+			shadow	: mkclass('bar-shadow'),
+			toggle	: mkclass('bar-toggle'),
+			'toggle-img': mkclass('bar-toggle-img'),
+			inner	: mkclass('bar-inner'),
+			tnd		: mkclass('config-btn'),
+			bottom	: mkclass('bar-bottom')
+		};
 	
 	// ------------------------------------------------------------------------
 	// Sidebar constructor
@@ -111,7 +112,7 @@
 						</div>								 \
 						<div class="{inner}">		 		 \
 							<h2>							 \
-								Aloha Comments				 \
+								Title						 \
 								<span class="{btn}"></span>  \
 							</h2>							 \
 							<ul></ul>						 \
