@@ -4,9 +4,6 @@
 * aloha-sales@gentics.com
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
-/**
- * register the plugin with unique name
- */
 
 (function(window, undefined) {
 	"use strict";
@@ -221,6 +218,7 @@
 			);
 	
 		},
+		
 		/**
 		 * Parse a all editables for links and bind an onclick event
 		 * Add the link short cut to all edtiables
@@ -329,6 +327,7 @@
 				});
 	
 		},
+		
 		/**
 		 * Updates the mouse pointer
 		 */
@@ -343,6 +342,7 @@
 				jQuery(this.mouseOverLink).addClass('aloha-link-text');
 			}
 		},
+		
 		/**
 		 * Check whether inside a link tag
 		 * @param {GENTICS.Utils.RangeObject} range range where to insert the object (at start or end)
@@ -362,6 +362,7 @@
 				return null;
 			}
 		},
+		
 		/**
 		 * Format the current selection or if collapsed the current word as link.
 		 * If inside a link tag the link is removed.
@@ -378,6 +379,7 @@
 				}
 			}
 		},
+		
 		/**
 		 * Insert a new link at the current selection. When the selection is collapsed,
 		 * the link will have a default link text, otherwise the selected text will be
@@ -423,6 +425,7 @@
 			this.hrefField.focus();
 			this.hrefChange();
 		},
+		
 		/**
 		 * Remove an a tag.
 		 */
@@ -439,6 +442,7 @@
 				range.select();
 			}
 		},
+		
 		/**
 		 * Updates the link object depending on the src field
 		 */
