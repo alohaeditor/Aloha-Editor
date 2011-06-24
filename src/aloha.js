@@ -34,6 +34,18 @@ window.Aloha_base = window.Aloha_base || false;
 	  The scripts are not loaded using jQuery.getScript (or jQuery.ajax),
 	  because those scripts would not show up in the debuggers, which is
 	  inconvenient for debugging.
+
+	  In order to ensure the execution order of the scripts also for IE,
+	  we MUST NOT even generate the script elements before appending the first
+	  one to the head, because IE starts loading the scripts when the src attribute
+	  of the DOM element is set (although the DOM element is not even appended
+	  to the head).
+
+	  Therefore, the only secure way to do this is:
+	  1. create the script element for the first script
+	  2. append it to the head
+	  3. wait until the script is fully loaded (and executed),
+	     then proceed with step 1. for the next script
 	*/
 
 	// Add all core files and dependencies
@@ -72,7 +84,6 @@ window.Aloha_base = window.Aloha_base || false;
 	var
 		// jQuery
 		jQuery = window.alohaQuery || window.jQuery, $ = jQuery,
-		scriptEls = [],
 		completed = 0,
 		total = includes.length,
 		exited = false,
@@ -82,13 +93,34 @@ window.Aloha_base = window.Aloha_base || false;
 				$('body').addClass('alohacoreloaded').trigger('alohacoreloaded');
 			});
 		},
+		// get the script element for loading the script with given url
+		getScriptElement = function(url) {
+			// generate full url
+			var fullUrl = window.GENTICS_Aloha_base + '/' + url, scriptEl;
+
+			// Create the script element for loading the specified script
+			scriptEl = document.createElement('script');
+
+			// this event handler is for IE
+			scriptEl.onreadystatechange = scriptLoaded;
+
+			// these event handlers are for all other browsers
+			scriptEl.onload = scriptLoaded;
+			scriptEl.onerror = scriptLoaded;
+
+			// finally add the source
+			scriptEl.src = fullUrl;
+
+			return scriptEl;
+		},
 		// this method will be called whenever a script has been loaded (and executed)
 		scriptLoaded = function(event){
 			// Prepare
 			var nextScriptEl;
 
 			// This checks for IE, whether the script has been loaded
-			if ( typeof this.readyState !== 'undefined' && this.readyState !== 'complete' && this.readyState !== 'loaded' ) {
+			if ( typeof this.readyState !== 'undefined' && this.readyState !== 'complete'
+				&& this.readyState !== 'loaded' ) {
 				return;
 			}
 
@@ -100,38 +132,15 @@ window.Aloha_base = window.Aloha_base || false;
 					exited = true;
 					next();
 				} else {
-					nextScriptEl = scriptEls[completed];
+					nextScriptEl = getScriptElement(includes[completed]);
 					appendEl.appendChild(nextScriptEl);
 				}
 			}
 		},
-		// Loop
-		value, url, scriptEl, appendEl = document.head || document.getElementsByTagName('head')[0];
+		appendEl = document.head || document.getElementsByTagName('head')[0];
 
-	// Create script elements
-	for ( i=0, n=total; i<n; ++i ) {
-		// Prepare
-		value = includes[i];
-		url = window.GENTICS_Aloha_base + '/' + value;
-
-		// Create the script element for loading the specified script
-		scriptEl = document.createElement('script');
-		// this event handler is for IE
-		scriptEl.onreadystatechange = scriptLoaded;
-
-		// these event handlers are for all other browsers
-		scriptEl.onload = scriptLoaded;
-		scriptEl.onerror = scriptLoaded;
-
-		// finally add the source
-		scriptEl.src = url;
-
-		// Add the script element to the list
-		scriptEls.push(scriptEl);
-	}
-
-	// Add the first script element to the head.
-	appendEl.appendChild(scriptEls[0]);
+	// Add the first script element to the head. This will start the loading procedure
+	appendEl.appendChild(getScriptElement(includes[0]));
 
 // </closure>
 })(window);
