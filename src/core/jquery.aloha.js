@@ -231,8 +231,17 @@
 				// Prepare
 				var
 					$this = $(this),
+					Deferred = $this.data('defer-'+eventName),
+					specialEvent;
+				
+				// setup deferred object if the event has been triggered
+				// but not been setup before
+				if ( !Deferred ) {
+					specialEvent =  $.event.special[eventName];
+					specialEvent.setup.call(this);
 					Deferred = $this.data('defer-'+eventName);
-
+				}
+				
 				// Update Status
 				$this.data('defer-'+eventName+'-resolved',true);
 
