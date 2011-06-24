@@ -516,7 +516,6 @@ ul.aloha-multisplit button.aloha-button-removeFormat {
 /*	position: absolute; */
 	top: 0;
 	left: 0;
-	width: 300px;
 	padding-right: 30px;
 	text-align: left;
 	font-family: Arial, sans-serif;
@@ -534,8 +533,28 @@ ul.aloha-multisplit button.aloha-button-removeFormat {
 	height: 20px;
 	background: #333;
 }
-.aloha-sidebar-panel-container {
-	width: 100%;
-	height: 50px;
+.aloha-sidebar-panels {
+}
+.aloha-sidebar-panels li {
+	overflow: hidden;
+	background: red;
+	margin: 10px;
+	padding: 10px;
+}
+.aloha-sidebar-panel-title {
 	background: yellow;
+}
+.aloha-sidebar-panel-content {
+	background: pink;
+	overflow: hidden;
+	height: 0;
+}
+.aloha-sidebar-handle {
+	position: absolute;
+	top: 30px;
+	right: 0px;
+	width: 30px;
+	height: 30px;
+	overflow: hidden;
+	background: green;
 }
