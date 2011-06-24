@@ -201,8 +201,39 @@
 			*/
 		},
 		
-		_barClicked: function (ev) {
+		// Will use _handleBarclick method until we bubble up to the first
+		// significant thing that we can to interact with, and we do so
 		
+		_barClicked: function (ev) {
+			this._handleBarclick($(ev.target));
+		},
+		
+		_handleBarclick: function (el) {
+			if (el.hasClass(nsClass('panel-title'))) {
+				this._togglePanel(el);
+			} else if (el.hasClass(nsClass('panel-content'))) {
+				// console.log('Content clicked');
+			} else if (el.hasClass(nsClass('handle'))) {
+				// console.log('Handle clicked');
+			} else if (el.hasClass(nsClass('bar'))) {
+				// console.log('Sidebar clicked');
+			} else {
+				this._handleBarclick(el.parent());
+			}
+		},
+		
+		_getPanelById: function (id) {
+			return this.panels[id];
+		},
+		
+		_getPanelByElement: function (el) {
+			var li = (el[0].tagName == 'LI') ? el : el.parent('li');
+			return this._getPanelById(li[0].id);
+		},
+		
+		_togglePanel: function (el) {
+			var panel = this._getPanelByElement(el);
+			console.log(panel);
 		},
 		
 		open: function (duration, callback) {
@@ -211,13 +242,9 @@
 		close: function (duration, callback) {
 		},
 		
-		getPanelById: function (id) {
-			return this.panels[id];
-		},
-		
 		expandPanel: function (panel, callback) {
 			if (typeof panel == 'string') {
-				panel = this.getPanelById(panel);
+				panel = this._getPanelById(panel);
 			}
 			
 			if (panel){
@@ -229,7 +256,7 @@
 		
 		collapsePanel: function (panel, duration, callback) {
 			if (typeof panel == 'string') {
-				panel = this.getPanelById(panel);
+				panel = this._getPanelById(panel);
 			}
 			
 			if (panel){
@@ -311,8 +338,6 @@
 				old_h = el.height(),
 				new_h = el.height('auto').height();
 			
-			console.log(43);
-			
 			el.height(old_h).animate(
 				{height: new_h}, 1000, 'easeOutExpo',
 				function () {
@@ -321,6 +346,8 @@
 					}
 				}
 			);
+			
+			this.expanded = true;
 			
 			return this;
 		},
@@ -336,6 +363,8 @@
 					}
 				}
 			);
+			
+			this.expanded = false;
 			
 			return this;
 		},
@@ -375,7 +404,39 @@
 				{
 					id: 't2',
 					title: 'Test title 2',
-					content: 'Test content 2',
+					content: 'Test content 2<pre>\
+						12 \
+					    12 \
+					    12 \
+					    12 \
+					    12 \
+					    12 \
+					    12 \
+					    12 \
+					    12 \
+					    12 \
+					    12 \
+					    12 \
+					    12 \
+					    12 \
+					    12 \
+					    12 \
+					    12 \
+					    12 \
+					    12 \
+					    12 \
+					    12 \
+					    12 \
+					    12 \
+					    12 \
+					    12 \
+					    12 \
+					    12 \
+					    12 \
+					    12 \
+					    12 \
+					    12 \
+					</pre>',
 					expanded: true
 				}
 			]
