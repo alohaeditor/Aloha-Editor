@@ -232,8 +232,7 @@
 		},
 		
 		_togglePanel: function (el) {
-			var panel = this._getPanelByElement(el);
-			console.log(panel);
+			this._getPanelByElement(el).toggle();
 		},
 		
 		open: function (duration, callback) {
@@ -332,14 +331,22 @@
 			}
 		},
 		
+		toggle: function () {
+			if (this.expanded) {
+				this.collapse();
+			} else {
+				this.expand();
+			}
+		},
+		
 		expand: function (callback) {
 			var  that = this,
 				   el = this.content,
 				old_h = el.height(),
 				new_h = el.height('auto').height();
 			
-			el.height(old_h).animate(
-				{height: new_h}, 1000, 'easeOutExpo',
+			el.height(old_h).stop().animate(
+				{height: new_h}, 500, 'easeOutExpo',
 				function () {
 					if (typeof callback == 'function') {
 						callback.call(that);
@@ -355,8 +362,8 @@
 		collapse: function (duration, callback) {
 			var that = this;
 			
-			this.content.animate(
-				{height: 0}, 1000, 'easeOutExpo',
+			this.content.stop().animate(
+				{height: 0}, 500, 'easeOutExpo',
 				function () {
 					if (typeof callback == 'function') {
 						callback.call(that);

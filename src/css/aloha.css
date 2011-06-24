@@ -543,6 +543,7 @@ ul.aloha-multisplit button.aloha-button-removeFormat {
 }
 .aloha-sidebar-panel-title {
 	background: yellow;
+	cursor: pointer;
 }
 .aloha-sidebar-panel-content {
 	background: pink;
