@@ -127,6 +127,7 @@
 			</div>									 \
 		'));
 		this.width = 300;
+		this._activePanel = null;
 		
 		this.init(opts);
 	};
@@ -159,10 +160,7 @@
 			
 			$.extend(this, opts);
 			
-			bar.css({
-				opacity: 0,
-				width : this.width
-			}).click(function () {
+			bar.css('opacity', 0).click(function () {
 					that._barClicked.apply(that, arguments);
 				});
 			
@@ -205,8 +203,8 @@
 			*/
 		},
 		
-		_getCurrentPanel: function () {
-			
+		_getActivePanel: function () {
+			return this._activePanel;
 		},
 		
 		_barClicked: function (ev) {
@@ -223,17 +221,27 @@
 			this.panels[panel.id] = panel;
 			
 			this.container.find(nsSel('panels')).append(panel.element);
-			this.showPanel(panel);
+			this.openPanel(panel);
 			
 			return this;
 		},
 		
-		showPanel: function (panel) {
+		openPanel: function (panel) {
+			// Animation
 			var el = panel.element;
-			el.css('left', -this.width);
-			el.animate({left: 0}, 1000, 'easeOutExpo');
 			
-			console.log(el);
+			el.css({
+				marginLeft: -this.width,
+				opacity: 0,
+				width: this.width
+			});
+			
+			el.animate({
+				marginLeft: 0,
+				opacity: 1
+			}, 1000, 'easeOutExpo');
+			
+			this._activePanel = panel;
 			
 			return this;
 		}
@@ -289,6 +297,7 @@
 		
 		addFold: function () {
 			
+			return this;
 		},
 		
 		// @param fold - (jQuery) fold element, or hash key of object in
@@ -323,7 +332,7 @@
 	
 	
 	$('body').bind(nsClass('initialized'), function () {
-		//
+		
 	});
 	
 	// Automatically invoke the Sidebar as soon as the DOM is ready
