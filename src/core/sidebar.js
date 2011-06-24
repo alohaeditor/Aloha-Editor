@@ -40,6 +40,7 @@
 			bar			  : nsClass('bar'),
 			bottom		  : nsClass('bottom'),
 			'config-btn'  : nsClass('config-btn'),
+			handle		  : nsClass('handle'),
 			inner		  : nsClass('inner'),
 			panel		  : nsClass('panel'),
 			'panel-title' : nsClass('panel-title'),
@@ -121,8 +122,11 @@
 					<div class="{bottom}">			 \
 					</div>							 \
 				</div>								 \
+				<div class="{handle}">		 		 \
+				</div>								 \
 			</div>									 \
 		'));
+		this.width = 300;
 		
 		this.init(opts);
 	};
@@ -141,22 +145,7 @@
 				body = $('body'),
 				bar	 = this.container;
 			
-			bar.css('opacity', 0)
-			   .click(function () {
-					that._barClicked.apply(that, arguments);
-				});
-			
-			body.append(bar);
-			
-			$(window).resize(function () {
-				that._updateScrolling();
-			});
-			
-			this._updateScrolling();
-			
-			// Fade in nice and slow
-			bar.animate({opacity: 1}, 500, 'linear');
-			
+			// Add panels
 			if (typeof opts == 'object') {
 				var panels = opts.panels;
 				if (typeof panels == 'object') {
@@ -164,7 +153,29 @@
 						that.addPanel(this);
 					});
 				}
+				
+				delete opts.panels;
 			}
+			
+			$.extend(this, opts);
+			
+			bar.css({
+				opacity: 0,
+				width : this.width
+			}).click(function () {
+					that._barClicked.apply(that, arguments);
+				});
+			
+			body.append(bar);
+			
+			// Fade in nice and slow
+			bar.animate({opacity: 1}, 500, 'linear');
+			
+			$(window).resize(function () {
+				that._updateScrolling();
+			});
+			
+			this._updateScrolling();
 			
 			// Announce that the Sidebar has entered the building!
 			body.trigger(nsClass('initialized'));
@@ -177,7 +188,6 @@
 			
 			bar.height(h);
 			bar.find(nsSel('shadow')).height(h);
-			
 			
 			/*
 			
@@ -212,10 +222,20 @@
 			
 			this.panels[panel.id] = panel;
 			
-			var li = $('<li id="' + panel.id + '">')
-						.append(panel.title, panel.content);
+			this.container.find(nsSel('panels')).append(panel.element);
+			this.showPanel(panel);
 			
-			this.container.find(nsSel('panels')).append(li);
+			return this;
+		},
+		
+		showPanel: function (panel) {
+			var el = panel.element;
+			el.css('left', -this.width);
+			el.animate({left: 0}, 1000, 'easeOutExpo');
+			
+			console.log(el);
+			
+			return this;
 		}
 		
 	});
@@ -234,6 +254,7 @@
 		this.button = null;
 		this.title	 = $(renderTemplate('<div class="{panel-title}">Untitled</div>'));
 		this.content = $(renderTemplate('<div class="{panel}"></div>'));
+		this.element = null;
 		
 		this.init(opts);
 	};
@@ -246,39 +267,54 @@
 		init: function (opts) {
 			this.setTitle(opts.title)
 				.setContent(opts.content);
+			
+			this.element =
+				$('<li id="' +this.id + '">')
+					.append(this.title, this.content);
 		},
 		
 		// May also be called by the Sidebar to update title of panel
 		// @param html - Markup string, DOM object, or jQuery object 
 		setTitle: function (html) {
-			if (html) {
-				this.title.html(html);
-			}
-			
+			this.title.html(html);
 			return this;
 		},
 		
 		// May also be called by the Sidebar to update content of panel
-		// @param html - Markup string, DOM object, or jQuery object 
+		// @param html - Markup string, DOM object, or jQuery object
+		setContent: function (html) {
+			this.content.html(html);
+			return this;
+		},
+		
+		addFold: function () {
+			
+		},
+		
 		// @param fold - (jQuery) fold element, or hash key of object in
 		//				 this.folds
-		setContent: function (html, fold) {
-			if (html) {
-				var typeofFold = typeof fold,
-					obj;
-				
-				if (typeofFold == 'object') {
-					obj = fold;
-				} else if (typeofFold == 'string' || typeofFold == 'number') {
-					obj = this.folds[fold];
-				} else {
-					obj = this.content.html(html);
-				}
-				
-				if (typeof obj == 'object') {
-					obj.html(html);
-				}
+		updateFold: function (fold, title, content) {
+			var typeofFold = typeof fold,
+				el;
+			
+			if (typeofFold == 'object') {
+				el = fold;
+			} else if (typeofFold == 'string' || typeofFold == 'number') {
+				el = this.folds[fold];
 			}
+			
+			this.setFoldTitle(el, title)
+				.setFoldContent(el, content);
+			
+			return this;
+		},
+		
+		setFoldTitle: function (fold, title) {
+			
+			return this;
+		},
+		
+		setFoldContent: function (fold, content) {
 			
 			return this;
 		}
