@@ -37,17 +37,17 @@
 	
 	var uid  = +(new Date),
 		nsClasses = {
-			bar           : nsClass('bar'),
-			bottom        : nsClass('bottom'),
-			'config-btn'  : nsClass('config-btn'),
-			handle        : nsClass('handle'),
-			inner         : nsClass('inner'),
-			panel         : nsClass('panel'),
-			'panel-title' : nsClass('panel-title'),
-			panels        : nsClass('panels'),
-			shadow        : nsClass('shadow'),
-			toggle        : nsClass('toggle'),
-			'toggle-img'  : nsClass('toggle-img')
+			bar				: nsClass('bar'),
+			bottom			: nsClass('bottom'),
+			'config-btn'	: nsClass('config-btn'),
+			handle			: nsClass('handle'),
+			inner			: nsClass('inner'),
+			'panel-content'	: nsClass('panel-content'),
+			'panel-title'	: nsClass('panel-title'),
+			panels			: nsClass('panels'),
+			shadow			: nsClass('shadow'),
+			toggle			: nsClass('toggle'),
+			'toggle-img'	: nsClass('toggle-img')
 		};
 	
 	// ------------------------------------------------------------------------
@@ -129,7 +129,6 @@
 		this._activePanel = null;
 		// defaults
 		this.width = 300;
-		this.animDuraton = 500;
 		
 		this.init(opts);
 	};
@@ -151,7 +150,7 @@
 			
 			// Pluck panels list from opts
 			if (typeof opts == 'object') {
-				var panels = opts.panels;
+				panels = opts.panels;
 				delete opts.panels;
 			}
 			
@@ -166,23 +165,14 @@
 			
 			// Place the bar into the DOM
 			bar.appendTo(body)
-			   .click(function () {
-					that._barClicked.apply(that, arguments);
-				});
+			   .click(function () {that._barClicked.apply(that, arguments);})
+			   .find(nsSel('panels')).width(this.width);
 			
 			$(window).resize(function () {
 				that._updateScrolling();
 			});
 			
 			this._updateScrolling();
-			
-			// Open the first panel with 'opened' property set to true
-			$.each(this.panels, function () {
-				if (this.opened) {
-					that.openPanel(this);
-					return false;
-				}
-			});
 			
 			// Announce that the Sidebar has arrived!
 			body.trigger(nsClass('initialized'));
@@ -193,8 +183,8 @@
 				bottom = bar.find(nsSel('bottom')).position(),
 				h = $(window).height();
 			
-			bar.height(h);
-			bar.find(nsSel('shadow')).height(h);
+			bar.height(h)
+			   .find(nsSel('shadow')).height(h);
 			
 			/*
 			var panel = this.getActivePanel();
@@ -211,75 +201,40 @@
 			*/
 		},
 		
-		// @return the previous active panel which has just been replaced
-		_setActivePanel: function (panel) {
-			if (panel instanceof Panel) {
-				var old = this.getActivePanel();
-				
-				if (old) {
-					old.element.css('z-index', 0);
-					if (old.id == panel.id) {
-						old = null;
-					}
-				}
-				
-				this._activePanel = panel;
-				
-				panel.element.css('z-index', 9);
-			}
-			
-			return old;
-		},
-		
 		_barClicked: function (ev) {
 		
 		},
 		
 		open: function (duration, callback) {
-			return this.openPanel(this.getActivePanel(), duration, callback);
 		},
 		
 		close: function (duration, callback) {
-			return this.closePanel(this.getActivePanel(), duration, callback);
 		},
 		
-		getActivePanel: function () {
-			return this._activePanel;
+		getPanelById: function (id) {
+			return this.panels[id];
 		},
 		
-		openPanel: function (panel, duration, callback) {
-			var that = this,
-				prevPanel = this._setActivePanel(panel);
+		expandPanel: function (panel, callback) {
+			if (typeof panel == 'string') {
+				panel = this.getPanelById(panel);
+			}
 			
-			panel.open(
-				!(duration == null && typeof duration == 'undefined')
-					? duration : this.animDuraton,
-				function () {
-					if (prevPanel) {
-						prevPanel.element.hide();
-					}
-					
-					if (typeof callback == 'function') {
-						callback.apply(that);
-					}
-				}
-			);
+			if (panel){
+				panel.expand(callback);
+			}
 			
 			return this;
 		},
 		
-		closePanel: function (panel, duration, callback) {
-			var that = this;
+		collapsePanel: function (panel, duration, callback) {
+			if (typeof panel == 'string') {
+				panel = this.getPanelById(panel);
+			}
 			
-			panel.close(
-				!(duration == null && typeof duration == 'undefined')
-					? duration : this.animDuraton,
-				function (ev) {
-					if (typeof callback == 'function') {
-						callback.apply(that, ev);
-					}
-				}
-			);
+			if (panel){
+				panel.collapse(callback);
+			}
 			
 			return this;
 		},
@@ -312,14 +267,13 @@
 	//		  Sidebar?
 	// ------------------------------------------------------------------------
 	var Panel = function Panel (opts) {
-		this.id = nsClass(++uid);
-		this.folds	 = {};
-		this.button	 = null;
-		this.title	 = $(renderTemplate('<div class="{panel-title}">Untitled</div>'));
-		this.content = $(renderTemplate('<div class="{panel}"></div>'));
-		this.element = null;
-		// default
-		this.width = 300;
+		this.id		  = null;
+		this.folds	  = {};
+		this.button	  = null;
+		this.title	  = $(renderTemplate('<div class="{panel-title}">Untitled</div>'));
+		this.content  = $(renderTemplate('<div class="{panel-content}"></div>'));
+		this.element  = null;
+		this.expanded = false;
 		
 		this.init(opts);
 	};
@@ -338,31 +292,50 @@
 			
 			$.extend(this, opts);
 			
+			if (!this.id) {
+				this.id = nsClass(++uid);
+			}
+			
 			var li = this.element =
 				$('<li id="' +this.id + '">')
 					.append(this.title, this.content);
 			
-			li.css({
-				marginLeft: -this.width,
-				opacity: 0,
-				width: this.width
-			});
+			if (this.expanded ){
+				this.content.height('auto');
+			}
 		},
 		
-		open: function (duration, callback) {
-			this.element.animate({
-				marginLeft: 0,
-				opacity: 1
-			}, duration, 'easeOutExpo', callback);
+		expand: function (callback) {
+			var  that = this,
+				   el = this.content,
+				old_h = el.height(),
+				new_h = el.height('auto').height();
+			
+			console.log(43);
+			
+			el.height(old_h).animate(
+				{height: new_h}, 1000, 'easeOutExpo',
+				function () {
+					if (typeof callback == 'function') {
+						callback.call(that);
+					}
+				}
+			);
 			
 			return this;
 		},
 		
-		close: function (duration, callback) {
-			this.element.animate({
-				marginLeft: -this.width,
-				opacity: 0
-			}, duration, 'easeOutExpo', callback);
+		collapse: function (duration, callback) {
+			var that = this;
+			
+			this.content.animate(
+				{height: 0}, 1000, 'easeOutExpo',
+				function () {
+					if (typeof callback == 'function') {
+						callback.call(that);
+					}
+				}
+			);
 			
 			return this;
 		},
@@ -379,43 +352,9 @@
 		setContent: function (html) {
 			this.content.html(html);
 			return this;
-		},
-		
-		addFold: function () {
-			
-			return this;
-		},
-		
-		// @param fold - (jQuery) fold element, or hash key of object in
-		//				 this.folds
-		updateFold: function (fold, title, content) {
-			var typeofFold = typeof fold,
-				el;
-			
-			if (typeofFold == 'object') {
-				el = fold;
-			} else if (typeofFold == 'string' || typeofFold == 'number') {
-				el = this.folds[fold];
-			}
-			
-			this.setFoldTitle(el, title)
-				.setFoldContent(el, content);
-			
-			return this;
-		},
-		
-		setFoldTitle: function (fold, title) {
-			
-			return this;
-		},
-		
-		setFoldContent: function (fold, content) {
-			
-			return this;
 		}
 		
 	});
-	
 	
 	$('body').bind(nsClass('initialized'), function () {
 		
@@ -425,12 +364,19 @@
 	$(function () {
 		//Aloha.Sidebar = new Sidebar();
 		window.Sidebar = new Sidebar({
-			width: 400,
+			width: 300,
 			panels: [
 				{
+					id: 't1',
 					title: 'Test title',
 					content: 'Test content',
-					opened: true
+					expanded: true
+				},
+				{
+					id: 't2',
+					title: 'Test title 2',
+					content: 'Test content 2',
+					expanded: true
 				}
 			]
 		});

@@ -534,16 +534,20 @@ ul.aloha-multisplit button.aloha-button-removeFormat {
 	background: #333;
 }
 .aloha-sidebar-panels {
-	width: 100%;
-	background: yellow;
 }
 .aloha-sidebar-panels li {
-	position: relative;
-	border: 3px solid red;
 	overflow: hidden;
+	background: red;
+	margin: 10px;
+	padding: 10px;
 }
-.aloha-sidebar-panel {
+.aloha-sidebar-panel-title {
+	background: yellow;
+}
+.aloha-sidebar-panel-content {
 	background: pink;
+	overflow: hidden;
+	height: 0;
 }
 .aloha-sidebar-handle {
 	position: absolute;
