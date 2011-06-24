@@ -24,13 +24,6 @@ Aloha.settings = {
 
 alohaQuery(document).ready(function($) {
 
-	test('.aloha() is working deferred on alohaQuery', function() {
-		var editable = alohaQuery('#edit2');
-		editable.aloha();
-		equals(1, editable.size(), 'Editable was found');
-		ok(true, '.aloha() could be called');
-	});
-
 	// Test whether Aloha is properly initialized
 	asyncTest('Aloha Startup Test', function() {
 		$('body').bind('aloha',function() {
