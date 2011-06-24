@@ -22,6 +22,10 @@
 	   GENTICS = window.GENTICS || (window.GENTICS = {}),
 	     Aloha = window.Aloha;
 	
+	// ------------------------------------------------------------------------
+	// Local (helper) variables
+	// ------------------------------------------------------------------------
+	
 	// Pseudo-namespace prefix for Sidebar elements
 	// Rational:
 	// We use a prefix instead of an enclosing class or id because we need to
@@ -30,6 +34,20 @@
 	// eg: .inner or .btn can be used in several plugins, with eaching adding
 	// to the class styles properties that we don't want.
 	var cssNS = 'aloha-sidebar';
+	
+	var uid  = +(new Date),
+		nsClasses = {
+			bar			  : nsClass('bar'),
+			bottom		  : nsClass('bottom'),
+			'config-btn'  : nsClass('config-btn'),
+			inner		  : nsClass('inner'),
+			panel		  : nsClass('panel'),
+			'panel-title' : nsClass('panel-title'),
+			panels		  : nsClass('panels'),
+			shadow		  : nsClass('shadow'),
+			toggle		  : nsClass('toggle'),
+			'toggle-img'  : nsClass('toggle-img')
+		};
 	
 	// ------------------------------------------------------------------------
 	// Extend jQuery easing animations
@@ -51,6 +69,18 @@
 	// Local (helper) functions
 	// ------------------------------------------------------------------------
 	
+	// TODO: Consider Mustache.js for more comprehensive templating
+	//		 Is it light-weight? It needs to be.
+	// TODO: Offer parameter to define left and right delimiters in case the
+	//		 default "{", and "}" are problematic
+	String.prototype.supplant = function (/*'lDelim, rDelim,'*/ obj) {
+		return this.replace(/\{([a-z0-9\-\_]+)\}/ig, function (str, p1, offset, s) {
+			var replacement = obj[p1] || str;
+			return (typeof replacement == 'function')
+						? replacement() : replacement;
+		});
+	};
+	
 	// Creates a selector string with this component's namepsace prefixed the each classname
 	function nsSel () {
 		var str = '',
@@ -67,45 +97,20 @@
 		return str.trim();
 	};
 	
-	// TODO: Consider Mustache.js for more comprehensive templating
-	//		 Is it light-weight? It needs to be.
-	// TODO: Offer parameter to define left and right delimiters in case the
-	//		 default "{", and "}" are problematic
-	String.prototype.supplant = function (/*'lDelim, rDelim,'*/ obj) {
-		return this.replace(/\{([a-z0-9\-\_]+)\}/ig, function (str, p1, offset, s) {
-			var replacement = obj[p1] || str;
-			return (typeof replacement == 'function')
-						? replacement() : replacement;
-		});
+	function renderTemplate (str) {
+		return (typeof str == 'string')
+					? str.supplant(nsClasses)
+					: str;
 	};
-	
-	// ------------------------------------------------------------------------
-	// Local (helper) variables
-	// ------------------------------------------------------------------------
-	
-	var uid  = +(new Date),
-		nsClasses = {
-			bar			  : nsClass('bar'),
-			bottom		  : nsClass('bottom'),
-			'config-btn'  : nsClass('config-btn'),
-			inner		  : nsClass('inner'),
-			panel		  : nsClass('panel'),
-			'panel-title' : nsClass('panel-title'),
-			panels		  : nsClass('panels'),
-			shadow		  : nsClass('shadow'),
-			toggle		  : nsClass('toggle'),
-			'toggle-img'  : nsClass('toggle-img')
-		};
 	
 	// ------------------------------------------------------------------------
 	// Sidebar constructor
 	// Only instance properties are to be defined here
 	// ------------------------------------------------------------------------
 	var Sidebar = function Sidebar (opts) {
-		this.id = ++uid;
+		this.id = nsClass(++uid);
 		this.panels = {};
-		
-		this.container = $(('					 	 \
+		this.container = $(renderTemplate('			 \
 			<div class="{bar}">						 \
 				<div class="{shadow}"></div>		 \
 				<div class="{toggle}">				 \
@@ -117,7 +122,7 @@
 					</div>							 \
 				</div>								 \
 			</div>									 \
-		').supplant(nsClasses));
+		'));
 		
 		this.init(opts);
 	};
@@ -198,6 +203,8 @@
 		
 		},
 		
+		// We try and build as much of the panel DOM as we can before inserting
+		// it into the DOM in order to reduce reflow.
 		addPanel: function (panel) {
 			if (!(panel instanceof Panel)) {
 				panel = new Panel(panel);
@@ -205,9 +212,10 @@
 			
 			this.panels[panel.id] = panel;
 			
-			this.container.find(nsSel('panels')).append(
-				'<li>' + panel.container.html() + '</li>'
-			);
+			var li = $('<li id="' + panel.id + '">')
+						.append(panel.title, panel.content);
+			
+			this.container.find(nsSel('panels')).append(li);
 		}
 		
 	});
@@ -221,18 +229,11 @@
 	//		  Sidebar?
 	// ------------------------------------------------------------------------
 	var Panel = function Panel (opts) {
-		this.id = ++uid;
+		this.id = nsClass(++uid);
 		this.folds = {};
 		this.button = null;
-		
-		this.title = $((
-			'<div class="{panel-title}">Untitled</div>'
-		).supplant(nsClasses));
-		
-		this.container = $(('	  \
-			<div class="{panel}"> \
-			</div>				  \
-		').supplant(nsClasses));
+		this.title	 = $(renderTemplate('<div class="{panel-title}">Untitled</div>'));
+		this.content = $(renderTemplate('<div class="{panel}"></div>'));
 		
 		this.init(opts);
 	};
@@ -264,18 +265,18 @@
 		setContent: function (html, fold) {
 			if (html) {
 				var typeofFold = typeof fold,
-					container;
+					obj;
 				
 				if (typeofFold == 'object') {
-					container = fold;
+					obj = fold;
 				} else if (typeofFold == 'string' || typeofFold == 'number') {
-					container = this.folds[fold];
+					obj = this.folds[fold];
 				} else {
-					container = this.container.html(html);
+					obj = this.content.html(html);
 				}
 				
-				if (typeof container == 'object') {
-					container.html(html);
+				if (typeof obj == 'object') {
+					obj.html(html);
 				}
 			}
 			
