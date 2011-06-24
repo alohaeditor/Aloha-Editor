@@ -37,21 +37,21 @@
 	
 	var uid  = +(new Date),
 		nsClasses = {
-			bar			  : nsClass('bar'),
-			bottom		  : nsClass('bottom'),
+			bar           : nsClass('bar'),
+			bottom        : nsClass('bottom'),
 			'config-btn'  : nsClass('config-btn'),
-			handle		  : nsClass('handle'),
-			inner		  : nsClass('inner'),
-			panel		  : nsClass('panel'),
+			handle        : nsClass('handle'),
+			inner         : nsClass('inner'),
+			panel         : nsClass('panel'),
 			'panel-title' : nsClass('panel-title'),
-			panels		  : nsClass('panels'),
-			shadow		  : nsClass('shadow'),
-			toggle		  : nsClass('toggle'),
+			panels        : nsClass('panels'),
+			shadow        : nsClass('shadow'),
+			toggle        : nsClass('toggle'),
 			'toggle-img'  : nsClass('toggle-img')
 		};
 	
 	// ------------------------------------------------------------------------
-	// Extend jQuery easing animations
+	// Extend jQuery easing animations... for now
 	// ------------------------------------------------------------------------
 	$.extend($.easing, {
 		easeOutExpo: function (x, t, b, c, d) {
@@ -70,8 +70,8 @@
 	// Local (helper) functions
 	// ------------------------------------------------------------------------
 	
-	// TODO: Consider Mustache.js for more comprehensive templating
-	//		 Is it light-weight? It needs to be.
+	// TODO: This suffices for now. But we are to consider a more robust
+	//		 templating engine.
 	// TODO: Offer parameter to define left and right delimiters in case the
 	//		 default "{", and "}" are problematic
 	String.prototype.supplant = function (/*'lDelim, rDelim,'*/ obj) {
@@ -126,8 +126,10 @@
 				</div>								 \
 			</div>									 \
 		'));
-		this.width = 100;
 		this._activePanel = null;
+		// defaults
+		this.width = 300;
+		this.animDuraton = 500;
 		
 		this.init(opts);
 	};
@@ -163,19 +165,24 @@
 			}
 			
 			// Place the bar into the DOM
-			bar
-				.css('opacity', 0)
-				.appendTo(body)
-				.click(function () {
+			bar.appendTo(body)
+			   .click(function () {
 					that._barClicked.apply(that, arguments);
-				})
-				.animate({opacity: 1}, 500, 'linear'); // Fade in nice and slow
+				});
 			
 			$(window).resize(function () {
 				that._updateScrolling();
 			});
 			
 			this._updateScrolling();
+			
+			// Open the first panel with 'opened' property set to true
+			$.each(this.panels, function () {
+				if (this.opened) {
+					that.openPanel(this);
+					return false;
+				}
+			});
 			
 			// Announce that the Sidebar has arrived!
 			body.trigger(nsClass('initialized'));
@@ -190,7 +197,7 @@
 			bar.find(nsSel('shadow')).height(h);
 			
 			/*
-			var panel = this._getActivePanel();
+			var panel = this.getActivePanel();
 			
 			if (!panel) {
 				return;
@@ -204,16 +211,16 @@
 			*/
 		},
 		
-		_getActivePanel: function () {
-			return this._activePanel;
-		},
-		
-		// @return previous active panel which has just been replaced
+		// @return the previous active panel which has just been replaced
 		_setActivePanel: function (panel) {
 			if (panel instanceof Panel) {
-				var old = this._getActivePanel();
+				var old = this.getActivePanel();
+				
 				if (old) {
 					old.element.css('z-index', 0);
+					if (old.id == panel.id) {
+						old = null;
+					}
 				}
 				
 				this._activePanel = panel;
@@ -226,6 +233,55 @@
 		
 		_barClicked: function (ev) {
 		
+		},
+		
+		open: function (duration, callback) {
+			return this.openPanel(this.getActivePanel(), duration, callback);
+		},
+		
+		close: function (duration, callback) {
+			return this.closePanel(this.getActivePanel(), duration, callback);
+		},
+		
+		getActivePanel: function () {
+			return this._activePanel;
+		},
+		
+		openPanel: function (panel, duration, callback) {
+			var that = this,
+				prevPanel = this._setActivePanel(panel);
+			
+			panel.open(
+				!(duration == null && typeof duration == 'undefined')
+					? duration : this.animDuraton,
+				function () {
+					if (prevPanel) {
+						prevPanel.element.hide();
+					}
+					
+					if (typeof callback == 'function') {
+						callback.apply(that);
+					}
+				}
+			);
+			
+			return this;
+		},
+		
+		closePanel: function (panel, duration, callback) {
+			var that = this;
+			
+			panel.close(
+				!(duration == null && typeof duration == 'undefined')
+					? duration : this.animDuraton,
+				function (ev) {
+					if (typeof callback == 'function') {
+						callback.apply(that, ev);
+					}
+				}
+			);
+			
+			return this;
 		},
 		
 		// We try and build as much of the panel DOM as we can before inserting
@@ -241,19 +297,6 @@
 			this.panels[panel.id] = panel;
 			
 			this.container.find(nsSel('panels')).append(panel.element);
-			this.openPanel(panel);
-			
-			return this;
-		},
-		
-		openPanel: function (panel) {
-			var prevPanel = this._setActivePanel(panel);
-			
-			panel.open(1000, function () {
-				if (prevPanel) {
-					prevPanel.element.hide();
-				}
-			})
 			
 			return this;
 		}
@@ -270,11 +313,12 @@
 	// ------------------------------------------------------------------------
 	var Panel = function Panel (opts) {
 		this.id = nsClass(++uid);
-		this.folds = {};
-		this.button = null;
+		this.folds	 = {};
+		this.button	 = null;
 		this.title	 = $(renderTemplate('<div class="{panel-title}">Untitled</div>'));
 		this.content = $(renderTemplate('<div class="{panel}"></div>'));
 		this.element = null;
+		// default
 		this.width = 300;
 		
 		this.init(opts);
@@ -289,28 +333,36 @@
 			this.setTitle(opts.title)
 				.setContent(opts.content);
 			
-			if (opts.width) {
-				this.width = opts.width;
-			}
+			delete opts.title;
+			delete opts.content;
 			
-			this.element =
+			$.extend(this, opts);
+			
+			var li = this.element =
 				$('<li id="' +this.id + '">')
 					.append(this.title, this.content);
-		},
-		
-		open: function (duration, callback) {
-			var el = this.element;
 			
-			el.css({
+			li.css({
 				marginLeft: -this.width,
 				opacity: 0,
 				width: this.width
 			});
-			
-			el.animate({
+		},
+		
+		open: function (duration, callback) {
+			this.element.animate({
 				marginLeft: 0,
 				opacity: 1
-			}, 1000, 'easeOutExpo', callback);
+			}, duration, 'easeOutExpo', callback);
+			
+			return this;
+		},
+		
+		close: function (duration, callback) {
+			this.element.animate({
+				marginLeft: -this.width,
+				opacity: 0
+			}, duration, 'easeOutExpo', callback);
 			
 			return this;
 		},
@@ -373,11 +425,12 @@
 	$(function () {
 		//Aloha.Sidebar = new Sidebar();
 		window.Sidebar = new Sidebar({
-			width: 500,
+			width: 400,
 			panels: [
 				{
 					title: 'Test title',
-					content: 'Test content'
+					content: 'Test content',
+					opened: true
 				}
 			]
 		});
