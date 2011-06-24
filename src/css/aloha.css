@@ -511,7 +511,7 @@ ul.aloha-multisplit button.aloha-button-removeFormat {
  */
 .aloha-sidebar-bar {
 	z-index: 999999999;
-	overflow: hidden;
+	overflow:hidden;
 	position: fixed;
 /*	position: absolute; */
 	top: 0;
