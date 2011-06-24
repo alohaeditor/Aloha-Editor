@@ -126,7 +126,7 @@
 				</div>								 \
 			</div>									 \
 		'));
-		this.width = 300;
+		this.width = 100;
 		this._activePanel = null;
 		
 		this.init(opts);
@@ -139,35 +139,37 @@
 	// ------------------------------------------------------------------------
 	$.extend(Sidebar.prototype, {
 		
-		// Build as much of the sidebar as we can before appending it to DOM
-		// to minimize.
+		// Build as much of the sidebar as we can before appending it to DOM to
+		// minimize reflow.
 		init: function (opts) {
 			var that = this,
 				body = $('body'),
-				bar	 = this.container;
+				bar	 = this.container,
+				panels;
 			
-			// Add panels
+			// Pluck panels list from opts
 			if (typeof opts == 'object') {
 				var panels = opts.panels;
-				if (typeof panels == 'object') {
-					$.each(panels, function () {
-						that.addPanel(this);
-					});
-				}
-				
 				delete opts.panels;
 			}
 			
+			// Copy any implements, and overrides in opts to this Sidebar instance
 			$.extend(this, opts);
 			
-			bar.css('opacity', 0).click(function () {
-					that._barClicked.apply(that, arguments);
+			if (typeof panels == 'object') {
+				$.each(panels, function () {
+					that.addPanel(this);
 				});
+			}
 			
-			body.append(bar);
-			
-			// Fade in nice and slow
-			bar.animate({opacity: 1}, 500, 'linear');
+			// Place the bar into the DOM
+			bar
+				.css('opacity', 0)
+				.appendTo(body)
+				.click(function () {
+					that._barClicked.apply(that, arguments);
+				})
+				.animate({opacity: 1}, 500, 'linear'); // Fade in nice and slow
 			
 			$(window).resize(function () {
 				that._updateScrolling();
@@ -175,7 +177,7 @@
 			
 			this._updateScrolling();
 			
-			// Announce that the Sidebar has entered the building!
+			// Announce that the Sidebar has arrived!
 			body.trigger(nsClass('initialized'));
 		},
 		
@@ -188,8 +190,7 @@
 			bar.find(nsSel('shadow')).height(h);
 			
 			/*
-			
-			var panel = this._getCurrentPanel();
+			var panel = this._getActivePanel();
 			
 			if (!panel) {
 				return;
@@ -207,6 +208,22 @@
 			return this._activePanel;
 		},
 		
+		// @return previous active panel which has just been replaced
+		_setActivePanel: function (panel) {
+			if (panel instanceof Panel) {
+				var old = this._getActivePanel();
+				if (old) {
+					old.element.css('z-index', 0);
+				}
+				
+				this._activePanel = panel;
+				
+				panel.element.css('z-index', 9);
+			}
+			
+			return old;
+		},
+		
 		_barClicked: function (ev) {
 		
 		},
@@ -215,6 +232,9 @@
 		// it into the DOM in order to reduce reflow.
 		addPanel: function (panel) {
 			if (!(panel instanceof Panel)) {
+				if (!panel.width) {
+					panel.width = this.width;
+				}
 				panel = new Panel(panel);
 			}
 			
@@ -227,21 +247,13 @@
 		},
 		
 		openPanel: function (panel) {
-			// Animation
-			var el = panel.element;
+			var prevPanel = this._setActivePanel(panel);
 			
-			el.css({
-				marginLeft: -this.width,
-				opacity: 0,
-				width: this.width
-			});
-			
-			el.animate({
-				marginLeft: 0,
-				opacity: 1
-			}, 1000, 'easeOutExpo');
-			
-			this._activePanel = panel;
+			panel.open(1000, function () {
+				if (prevPanel) {
+					prevPanel.element.hide();
+				}
+			})
 			
 			return this;
 		}
@@ -263,6 +275,7 @@
 		this.title	 = $(renderTemplate('<div class="{panel-title}">Untitled</div>'));
 		this.content = $(renderTemplate('<div class="{panel}"></div>'));
 		this.element = null;
+		this.width = 300;
 		
 		this.init(opts);
 	};
@@ -276,9 +289,30 @@
 			this.setTitle(opts.title)
 				.setContent(opts.content);
 			
+			if (opts.width) {
+				this.width = opts.width;
+			}
+			
 			this.element =
 				$('<li id="' +this.id + '">')
 					.append(this.title, this.content);
+		},
+		
+		open: function (duration, callback) {
+			var el = this.element;
+			
+			el.css({
+				marginLeft: -this.width,
+				opacity: 0,
+				width: this.width
+			});
+			
+			el.animate({
+				marginLeft: 0,
+				opacity: 1
+			}, 1000, 'easeOutExpo', callback);
+			
+			return this;
 		},
 		
 		// May also be called by the Sidebar to update title of panel
@@ -339,6 +373,7 @@
 	$(function () {
 		//Aloha.Sidebar = new Sidebar();
 		window.Sidebar = new Sidebar({
+			width: 500,
 			panels: [
 				{
 					title: 'Test title',
