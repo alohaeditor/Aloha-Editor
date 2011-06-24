@@ -13,7 +13,7 @@
 
 
 // We give our immediately invoked function a name to aid in debugging
-(function __Sidebar (window, undefined) {
+(function SidebarClosure (window, undefined) {
 	
 	'use strict';
 	
@@ -25,10 +25,10 @@
 	// Pseudo-namespace prefix for Sidebar elements
 	// Rational:
 	// We use a prefix instead of an enclosing class or id because we need to
-	// be paranoid of accidentally inheritancing styles in an environment like
-	// the one in which Aloha-Editor, with its numerous custom plugins operates
-	// in. eg: .inner or .btn can be used in several plugins with eaching adding
-	// to the class styles.
+	// be paranoid of unintended style inheritance in an environment like the
+	// one in which Aloha-Editor operates in, with its numerous custom plugins.
+	// eg: .inner or .btn can be used in several plugins, with eaching adding
+	// to the class styles properties that we don't want.
 	var cssNS = 'aloha-sidebar';
 	
 	// ------------------------------------------------------------------------
@@ -48,55 +48,78 @@
 	});
 	
 	// ------------------------------------------------------------------------
-	// Helper functions
+	// Local (helper) functions
 	// ------------------------------------------------------------------------
 	
-	function mkdotclass () {
+	// Creates a selector string with this component's namepsace prefixed the each classname
+	function nsSel () {
 		var str = '',
 			prx = cssNS; // Make a copy of cssNS here for quicker lookup
 		$.each(arguments, function () {str += ' .' + prx + '-' + this;});
 		return str.trim();
 	};
 	
-	function mkclass () {
+	// Creates string with this component's namepsace prefixed the each classname
+	function nsClass () {
 		var str = '',
 			prx = cssNS;
 		$.each(arguments, function () {str += ' ' + prx + '-' + this;});
 		return str.trim();
 	};
 	
-	// TODO: Factorize this method to be used in other parts of Aloha-Editor
+	// TODO: Consider Mustache.js for more comprehensive templating
+	//		 Is it light-weight? It needs to be.
 	// TODO: Offer parameter to define left and right delimiters in case the
 	//		 default "{", and "}" are problematic
 	String.prototype.supplant = function (/*'lDelim, rDelim,'*/ obj) {
 		return this.replace(/\{([a-z0-9\-\_]+)\}/ig, function (str, p1, offset, s) {
-			return obj[p1] || str;
+			var replacement = obj[p1] || str;
+			return (typeof replacement == 'function')
+						? replacement() : replacement;
 		});
 	};
 	
+	// ------------------------------------------------------------------------
+	// Local (helper) variables
+	// ------------------------------------------------------------------------
+	
 	var uid  = +(new Date),
-		nameSpacedClasses = {
-			bar		: mkclass('bar'),
-			bottom	: mkclass('bottom'),
-			inner	: mkclass('inner'),
-			panels	: mkclass('panels'),
-			shadow	: mkclass('shadow'),
-			toggle	: mkclass('toggle'),
-			'toggle-img' : mkclass('toggle-img'),
-			'config-btn' : mkclass('config-btn')
+		nsClasses = {
+			bar			  : nsClass('bar'),
+			bottom		  : nsClass('bottom'),
+			'config-btn'  : nsClass('config-btn'),
+			inner		  : nsClass('inner'),
+			panel		  : nsClass('panel'),
+			'panel-title' : nsClass('panel-title'),
+			panels		  : nsClass('panels'),
+			shadow		  : nsClass('shadow'),
+			toggle		  : nsClass('toggle'),
+			'toggle-img'  : nsClass('toggle-img')
 		};
 	
 	// ------------------------------------------------------------------------
 	// Sidebar constructor
 	// Only instance properties are to be defined here
 	// ------------------------------------------------------------------------
-	var Sidebar = function () {
-		
-		this.container = null;
+	var Sidebar = function Sidebar (opts) {
+		this.id = ++uid;
 		this.panels = {};
 		
-		this.init();
+		this.container = $(('					 	 \
+			<div class="{bar}">						 \
+				<div class="{shadow}"></div>		 \
+				<div class="{toggle}">				 \
+					<div class="{toggle-img}"></div> \
+				</div>								 \
+				<div class="{inner}">		 		 \
+					<ul class="{panels}"></ul>		 \
+					<div class="{bottom}">			 \
+					</div>							 \
+				</div>								 \
+			</div>									 \
+		').supplant(nsClasses));
 		
+		this.init(opts);
 	};
 	
 	// ------------------------------------------------------------------------
@@ -106,26 +129,12 @@
 	// ------------------------------------------------------------------------
 	$.extend(Sidebar.prototype, {
 		
-		// We minimize reflow by building as much of the sidebar as we can 
-		// before appending it to DOM.
-		init: function () {
+		// Build as much of the sidebar as we can before appending it to DOM
+		// to minimize.
+		init: function (opts) {
 			var that = this,
 				body = $('body'),
-				bar	 = this.container = $(
-					('\
-					<div class="{bar}">							\
-						<div class="{shadow}"></div>			\
-						<div class="{toggle}">					\
-							<div class="{toggle-img}"></div>	\
-						</div>									\
-						<div class="{inner}">		 			\
-							<ul class="{panels}"></ul>	\
-							<div class="{bottom}">				\
-							</div>								\
-						</div>									\
-					</div>										\
-				').supplant(nameSpacedClasses)
-			);
+				bar	 = this.container;
 			
 			bar.css('opacity', 0)
 			   .click(function () {
@@ -143,19 +152,26 @@
 			// Fade in nice and slow
 			bar.animate({opacity: 1}, 500, 'linear');
 			
-			// Announce that the Sidebar has entered the building!
-			body.trigger(mkclass('initialized'));
+			if (typeof opts == 'object') {
+				var panels = opts.panels;
+				if (typeof panels == 'object') {
+					$.each(panels, function () {
+						that.addPanel(this);
+					});
+				}
+			}
 			
-			console.log(bar);
+			// Announce that the Sidebar has entered the building!
+			body.trigger(nsClass('initialized'));
 		},
 		
 		_updateScrolling: function () {
 			var bar = this.container,
-				bottom = bar.find(mkdotclass('bottom')).position(),
+				bottom = bar.find(nsSel('bottom')).position(),
 				h = $(window).height();
 			
 			bar.height(h);
-			bar.find(mkdotclass('shadow')).height(h);
+			bar.find(nsSel('shadow')).height(h);
 			
 			
 			/*
@@ -183,19 +199,107 @@
 		},
 		
 		addPanel: function (panel) {
+			if (!(panel instanceof Panel)) {
+				panel = new Panel(panel);
+			}
 			
+			this.panels[panel.id] = panel;
+			
+			this.container.find(nsSel('panels')).append(
+				'<li>' + panel.container.html() + '</li>'
+			);
 		}
 		
 	});
 	
-	$('body').bind(mkclass('initialized'), function () {
+	
+	// ------------------------------------------------------------------------
+	// Panel constructor
+	//
+	//	TODO: Can we get a way with never exposing Panel as Aloha.Panel and
+	//		  thereby force all interfacing with Panel to be done through the
+	//		  Sidebar?
+	// ------------------------------------------------------------------------
+	var Panel = function Panel (opts) {
+		this.id = ++uid;
+		this.folds = {};
+		this.button = null;
+		
+		this.title = $((
+			'<div class="{panel-title}">Untitled</div>'
+		).supplant(nsClasses));
+		
+		this.container = $(('	  \
+			<div class="{panel}"> \
+			</div>				  \
+		').supplant(nsClasses));
+		
+		this.init(opts);
+	};
+	
+	// ------------------------------------------------------------------------
+	// Panel prototype
+	// ------------------------------------------------------------------------
+	$.extend(Panel.prototype, {
+		
+		init: function (opts) {
+			this.setTitle(opts.title)
+				.setContent(opts.content);
+		},
+		
+		// May also be called by the Sidebar to update title of panel
+		// @param html - Markup string, DOM object, or jQuery object 
+		setTitle: function (html) {
+			if (html) {
+				this.title.html(html);
+			}
+			
+			return this;
+		},
+		
+		// May also be called by the Sidebar to update content of panel
+		// @param html - Markup string, DOM object, or jQuery object 
+		// @param fold - (jQuery) fold element, or hash key of object in
+		//				 this.folds
+		setContent: function (html, fold) {
+			if (html) {
+				var typeofFold = typeof fold,
+					container;
+				
+				if (typeofFold == 'object') {
+					container = fold;
+				} else if (typeofFold == 'string' || typeofFold == 'number') {
+					container = this.folds[fold];
+				} else {
+					container = this.container.html(html);
+				}
+				
+				if (typeof container == 'object') {
+					container.html(html);
+				}
+			}
+			
+			return this;
+		}
+		
+	});
+	
+	
+	$('body').bind(nsClass('initialized'), function () {
+		//
 	});
 	
 	// Automatically invoke the Sidebar as soon as the DOM is ready
 	$(function () {
 		//Aloha.Sidebar = new Sidebar();
-		window.xSidebar = Sidebar;
-		window.Sidebar = new Sidebar();
+		window.Sidebar = new Sidebar({
+			panels: [
+				{
+					title: 'Test title',
+					content: 'Test content'
+				}
+			]
+		});
 	});
 	
 })(window);
