@@ -54,4 +54,4 @@
 	url = http://github.com/alohaeditor/Aloha-Plugin-Hints.git
 [submodule "src/plugin/wai-lang"]
 	path = src/plugin/wai-lang
-	url = git://github.com/alohaeditor/Aloha-Plugin-WAI-Lang.git
+	url = https://github.com/alohaeditor/Aloha-Plugin-WAI-Lang.git
