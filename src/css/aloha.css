@@ -511,29 +511,42 @@ ul.aloha-multisplit button.aloha-button-removeFormat {
  */
 .aloha-sidebar-bar {
 	z-index: 999999999;
-	overflow:hidden;
 	position: fixed;
 /*	position: absolute; */
 	top: 0;
 	left: 0;
-	padding-right: 30px;
+	padding-right: 0px;
 	text-align: left;
 	font-family: Arial, sans-serif;
-	
-	background: #111;
 }
 .aloha-sidebar-shadow {
 	position: absolute;
 	top: 0;
-	right: 0;
-	width: 30px;
-	background: #f34;
+	right: -10px;
+	width: 10px;
+	background-image: -webkit-gradient(
+		linear,
+		left center,
+		right center,
+		color-stop(0.00, rgba(0, 0, 0, .4)),
+		color-stop(0.10, rgba(0, 0, 0, .3)),
+		color-stop(0.30, rgba(0, 0, 0, .2)),
+		color-stop(1.00, rgba(0, 0, 0, .0))
+	);
+	background-image: -moz-linear-gradient(
+		center top,
+		rgba(0, 0, 0, .8) 0%,
+		rgba(0, 0, 0, .0) 10%,
+		rgba(0, 0, 0, .0) 90%,
+		rgba(0, 0, 0, .8) 100%
+	);
 }
 .aloha-sidebar-bar-bottom {
 	height: 20px;
 	background: #333;
 }
 .aloha-sidebar-panels {
+	background: #eee;
 }
 .aloha-sidebar-panels li {
 	overflow: hidden;
@@ -553,7 +566,7 @@ ul.aloha-multisplit button.aloha-button-removeFormat {
 .aloha-sidebar-handle {
 	position: absolute;
 	top: 30px;
-	right: 0px;
+	right: -30px;
 	width: 30px;
 	height: 30px;
 	overflow: hidden;

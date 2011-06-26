@@ -201,9 +201,9 @@
 			*/
 		},
 		
-		// Will use _handleBarclick method until we bubble up to the first
+		// We delegate all sidebar onclick events to the container. 
+		// We then use _handleBarclick method until we bubble up to the first
 		// significant thing that we can to interact with, and we do so
-		
 		_barClicked: function (ev) {
 			this._handleBarclick($(ev.target));
 		},
@@ -325,6 +325,13 @@
 			var li = this.element =
 				$('<li id="' +this.id + '">')
 					.append(this.title, this.content);
+			
+			/* li.css({
+				'-webkit-transform'	: 'rotate(120deg)',
+				'-moz-transform'	: 'rotate(120deg)',
+				'-ms-transform'		: 'rotate(120deg)',
+				filter				: 'progid:DXImageTransform.Microsoft.BasicImage(rotation=1.5)'
+			}); */
 			
 			if (this.expanded ){
 				this.content.height('auto');
