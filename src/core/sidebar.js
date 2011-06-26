@@ -46,6 +46,8 @@
 			'panel-title'	: nsClass('panel-title'),
 			panels			: nsClass('panels'),
 			shadow			: nsClass('shadow'),
+			'panel-title-arrow'	: nsClass('panel-title-arrow'),
+			'panel-title-text'	: nsClass('panel-title-text'),
 			toggle			: nsClass('toggle'),
 			'toggle-img'	: nsClass('toggle-img')
 		};
@@ -119,8 +121,7 @@
 				</div>								 \
 				<div class="{inner}">		 		 \
 					<ul class="{panels}"></ul>		 \
-					<div class="{bottom}">			 \
-					</div>							 \
+					<div class="{bottom}"></div>	 \
 				</div>								 \
 				<div class="{handle}">		 		 \
 				</div>								 \
@@ -185,6 +186,7 @@
 			
 			bar.height(h)
 			   .find(nsSel('shadow')).height(h);
+			bar.find(nsSel('inner')).height(h);
 			
 			/*
 			var panel = this.getActivePanel();
@@ -296,7 +298,12 @@
 		this.id		  = null;
 		this.folds	  = {};
 		this.button	  = null;
-		this.title	  = $(renderTemplate('<div class="{panel-title}">Untitled</div>'));
+		this.title	  = $(renderTemplate('						 \
+			<div class="{panel-title}">							 \
+				<span class="{panel-title-arrow}"></span>		 \
+				<span class="{panel-title-text}">Untitled</span> \
+			</div>												 \
+		'));
 		this.content  = $(renderTemplate('<div class="{panel-content}"></div>'));
 		this.element  = null;
 		this.expanded = false;
@@ -326,15 +333,10 @@
 				$('<li id="' +this.id + '">')
 					.append(this.title, this.content);
 			
-			/* li.css({
-				'-webkit-transform'	: 'rotate(120deg)',
-				'-moz-transform'	: 'rotate(120deg)',
-				'-ms-transform'		: 'rotate(120deg)',
-				filter				: 'progid:DXImageTransform.Microsoft.BasicImage(rotation=1.5)'
-			}); */
 			
 			if (this.expanded ){
 				this.content.height('auto');
+				this.rotateArrow(90, 0);
 			}
 		},
 		
@@ -361,6 +363,8 @@
 				}
 			);
 			
+			this.rotateArrow(90);
+			
 			this.expanded = true;
 			
 			return this;
@@ -370,13 +374,15 @@
 			var that = this;
 			
 			this.content.stop().animate(
-				{height: 0}, 500, 'easeOutExpo',
+				{height: 4}, 500, 'easeOutExpo',
 				function () {
 					if (typeof callback == 'function') {
 						callback.call(that);
 					}
 				}
 			);
+			
+			this.rotateArrow(0);
 			
 			this.expanded = false;
 			
@@ -386,7 +392,7 @@
 		// May also be called by the Sidebar to update title of panel
 		// @param html - Markup string, DOM object, or jQuery object 
 		setTitle: function (html) {
-			this.title.html(html);
+			this.title.find(nsSel('panel-title-text')).html(html);
 			return this;
 		},
 		
@@ -395,6 +401,22 @@
 		setContent: function (html) {
 			this.content.html(html);
 			return this;
+		},
+		
+		rotateArrow: function (angle, duration) {
+			var arr = this.title.find(nsSel('panel-title-arrow'));
+			arr.animate({angle: angle}, {
+					duration: (typeof duration == 'number') ? duration : 500,
+					easing: 'easeOutExpo',
+					step: function (val, fx) {
+						arr.css({
+							'-webkit-transform'	: 'rotate(' + val + 'deg)',
+							'-moz-transform'	: 'rotate(' + val + 'deg)',
+							'-ms-transform'		: 'rotate(' + val + 'deg)'
+						 // filter				: 'progid:DXImageTransform.Microsoft.BasicImage(rotation=1.5)'
+						});
+					}
+				});
 		}
 		
 	});
@@ -413,7 +435,7 @@
 					id: 't1',
 					title: 'Test title',
 					content: 'Test content',
-					expanded: true
+					expanded: false
 				},
 				{
 					id: 't2',

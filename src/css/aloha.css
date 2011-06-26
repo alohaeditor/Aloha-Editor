@@ -515,9 +515,9 @@ ul.aloha-multisplit button.aloha-button-removeFormat {
 /*	position: absolute; */
 	top: 0;
 	left: 0;
-	padding-right: 0px;
 	text-align: left;
 	font-family: Arial, sans-serif;
+	font-size: 12px;
 }
 .aloha-sidebar-shadow {
 	position: absolute;
@@ -545,23 +545,45 @@ ul.aloha-multisplit button.aloha-button-removeFormat {
 	height: 20px;
 	background: #333;
 }
-.aloha-sidebar-panels {
-	background: #eee;
+.aloha-sidebar-inner {
+	background: #333;
 }
 .aloha-sidebar-panels li {
 	overflow: hidden;
-	background: red;
-	margin: 10px;
-	padding: 10px;
+	margin: 0;
+	padding: 10px 10px 0;
 }
 .aloha-sidebar-panel-title {
+	position: relative;
 	background: yellow;
+	padding: 5px 4px;
 	cursor: pointer;
+	-webkit-border-top-left-radius: 5px;
+	-webkit-border-top-right-radius: 5px;
+	line-height: 1em;
+}
+.aloha-sidebar-panel-title:hover {
+	background: gold;
+}
+.aloha-sidebar-panel-title-arrow {
+	position: absolute;
+	top: 2px;
+	left: 4px;
+	width: 16px;
+	height: 16px;
+	background: url(../img/arrow.png) no-repeat center center;
+}
+.aloha-sidebar-panel-title-text {
+	margin-left: 20px;
+	font-weight: bold;
 }
 .aloha-sidebar-panel-content {
-	background: pink;
 	overflow: hidden;
 	height: 0;
+	padding: 0 4px;
+	background: pink;
+	-webkit-border-bottom-left-radius: 5px;
+	-webkit-border-bottom-right-radius: 5px;
 }
 .aloha-sidebar-handle {
 	position: absolute;
