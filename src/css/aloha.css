@@ -534,7 +534,7 @@ ul.aloha-multisplit button.aloha-button-removeFormat {
 		color-stop(1.00, rgba(0, 0, 0, .0))
 	);
 	background-image: -moz-linear-gradient(
-		center top,
+		center left,
 		rgba(0, 0, 0, .8) 0%,
 		rgba(0, 0, 0, .0) 10%,
 		rgba(0, 0, 0, .0) 90%,
@@ -546,44 +546,85 @@ ul.aloha-multisplit button.aloha-button-removeFormat {
 	background: #333;
 }
 .aloha-sidebar-inner {
-	background: #333;
+	background-color: #333;
+	background-image: -webkit-radial-gradient(
+		rgba(0, 0, 0, 0.0) 50%,
+		rgba(0, 0, 0, 0.7) 90%,
+		rgba(0, 0, 0, 0.9) 100%
+	);
+	background-image: -moz-radial-gradient(
+		rgba(0, 0, 0, 0.0) 50%,
+		rgba(0, 0, 0, 0.7) 90%,
+		rgba(0, 0, 0, 0.9) 100%
+	);
+}
+.aloha-sidebar-panels {
+	padding: 20px 0;
 }
 .aloha-sidebar-panels li {
 	overflow: hidden;
 	margin: 0;
-	padding: 10px 10px 0;
+	padding: 0 20px;
+}
+.aloha-sidebar-panel-top {
+	-webkit-border-top-left-radius:	 5px;
+	-webkit-border-top-right-radius: 5px;
+	-moz-border-radius-topleft:		 5px;
+	-moz-border-radius-topright:	 5px;
+}
+.aloha-sidebar-panel-content.aloha-sidebar-panel-bottom {
+	padding-bottom: 0;
+	-webkit-border-bottom-left-radius:	5px;
+	-webkit-border-bottom-right-radius:	5px;
+	-moz-border-radius-bottomleft:		5px;
+	-moz-border-radius-bottomright:		5px;
+	border-bottom-width: 1px;
 }
 .aloha-sidebar-panel-title {
 	position: relative;
-	background: yellow;
-	padding: 5px 4px;
+	background: #111;
+	padding: 10px 10px 6px;
 	cursor: pointer;
-	-webkit-border-top-left-radius: 5px;
-	-webkit-border-top-right-radius: 5px;
+	font-weight: bold;
+	font-size: 14px;
 	line-height: 1em;
+	border: 1px solid rgba(0, 0, 0, 0.5);
+	border-bottom-width: 0;
+	text-shadow: 0 0 6px rgba(0, 0, 0, .8);
 }
 .aloha-sidebar-panel-title:hover {
-	background: gold;
+	color: #ccc;
 }
 .aloha-sidebar-panel-title-arrow {
 	position: absolute;
-	top: 2px;
-	left: 4px;
+	top: 8px;
+	left: 10px;
 	width: 16px;
 	height: 16px;
 	background: url(../img/arrow.png) no-repeat center center;
+	opacity: 0.2;
+	filter: alpha(opacity=20);
+}
+.aloha-sidebar-panel-title:hover .aloha-sidebar-panel-title-arrow {
+	opacity: 0.9;
+	filter: alpha(opacity=90);
 }
 .aloha-sidebar-panel-title-text {
-	margin-left: 20px;
+	margin-left: 24px;
 	font-weight: bold;
 }
 .aloha-sidebar-panel-content {
 	overflow: hidden;
-	height: 0;
+	height: 4px;
 	padding: 0 4px;
-	background: pink;
-	-webkit-border-bottom-left-radius: 5px;
-	-webkit-border-bottom-right-radius: 5px;
+	background: #111;
+	border: 1px solid rgba(0, 0, 0, 0.5);
+	border-top-width: 0;
+	border-bottom-width: 0;
+}
+.aloha-sidebar-panel-content-inner {
+	height: 30px;
+	background: red;
 }
 .aloha-sidebar-handle {
 	position: absolute;

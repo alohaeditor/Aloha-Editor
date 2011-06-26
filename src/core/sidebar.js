@@ -43,11 +43,15 @@
 			handle			: nsClass('handle'),
 			inner			: nsClass('inner'),
 			'panel-content'	: nsClass('panel-content'),
+			'panel-content-inner'
+							:  nsClass('panel-content-inner'),
 			'panel-title'	: nsClass('panel-title'),
 			panels			: nsClass('panels'),
 			shadow			: nsClass('shadow'),
-			'panel-title-arrow'	: nsClass('panel-title-arrow'),
-			'panel-title-text'	: nsClass('panel-title-text'),
+			'panel-title-arrow'
+							: nsClass('panel-title-arrow'),
+			'panel-title-text'
+							: nsClass('panel-title-text'),
 			toggle			: nsClass('toggle'),
 			'toggle-img'	: nsClass('toggle-img')
 		};
@@ -174,9 +178,24 @@
 			});
 			
 			this._updateScrolling();
+			this._roundCorners();
 			
 			// Announce that the Sidebar has arrived!
 			body.trigger(nsClass('initialized'));
+		},
+		
+		_roundCorners: function () {
+			var bar = this.container,
+				lis = bar.find(nsSel('panels>li')),
+				topClass = nsClass('panel-top'),
+				bottomClass = nsClass('panel-bottom');
+			
+			bar.find(nsSel('panel-top,', 'panel-bottom'))
+			   .removeClass(topClass)
+			   .removeClass(bottomClass);
+			 
+			lis.first().find(nsSel('panel-title')).addClass(topClass);
+			lis.last().find(nsSel('panel-content')).addClass(bottomClass);
 		},
 		
 		_updateScrolling: function () {
@@ -304,7 +323,11 @@
 				<span class="{panel-title-text}">Untitled</span> \
 			</div>												 \
 		'));
-		this.content  = $(renderTemplate('<div class="{panel-content}"></div>'));
+		this.content  = $(renderTemplate('					\
+			<div class="{panel-content}">					\
+				<div class="{panel-content-inner}"></div>	\
+			</div>											\
+		'));
 		this.element  = null;
 		this.expanded = false;
 		
@@ -332,7 +355,6 @@
 			var li = this.element =
 				$('<li id="' +this.id + '">')
 					.append(this.title, this.content);
-			
 			
 			if (this.expanded ){
 				this.content.height('auto');
@@ -399,7 +421,7 @@
 		// May also be called by the Sidebar to update content of panel
 		// @param html - Markup string, DOM object, or jQuery object
 		setContent: function (html) {
-			this.content.html(html);
+			this.content.find(nsSel('panel-content-inner')).html(html);
 			return this;
 		},
 		
@@ -429,11 +451,17 @@
 	$(function () {
 		//Aloha.Sidebar = new Sidebar();
 		window.Sidebar = new Sidebar({
-			width: 300,
+			width: 250,
 			panels: [
 				{
 					id: 't1',
 					title: 'Test title',
+					content: 'Test content',
+					expanded: false
+				},
+				{
+					id: 't3',
+					title: 'Test title 3',
 					content: 'Test content',
 					expanded: false
 				},
