@@ -192,38 +192,77 @@
 		},
 		
 		subscribeToEvents: function () {
+			var that = this;
+			
 			Aloha.bind('aloha-selection-changed', function(event, rangeObject) {
-				var config, foundMarkup;
-
-				if (Aloha.activeEditable) {
-					// show/hide the button according to the configuration
-					config = that.getEditableConfig(Aloha.activeEditable.obj);
-					if ( jQuery.inArray('span', config) != -1) {
-						that.addMarkupToSelectionButton.show();
-					} else {
-						that.addMarkupToSelectionButton.hide();
-						// leave if a is not allowed
-						return;
-					}
-
-					foundMarkup = that.findLinkMarkup( rangeObject );
-					if ( foundMarkup ) {
-						that.addMarkupToSelectionButton.hide();
-						Aloha.FloatingMenu.setScope(that.getUID('wai-lang'));
-						that.langField.setTargetObject(foundMarkup, 'lang');
-					} else {
-						that.langField.setTargetObject(null);
-					}
-
-					// TODO this should not be necessary here!
-					Aloha.FloatingMenu.doLayout();
+				var panels = that.panels,
+					obj,
+					effectiveElems = [],
+					effectiveOrig = [],
+					i = 0;
+				
+				for (; i < rangeObject.markupEffectiveAtStart.length; i++) {
+					obj = $(rangeObject.markupEffectiveAtStart[i]);
+					effectiveOrig.push(obj);
+					effectiveElems.push(obj.clone().wrap('<div>').parent('div'));
 				}
-
+				
+				$.each(panels, function () {
+					that.showActivePanel(this, effectiveElems, effectiveOrig);
+				});
 			});
 		},
 		
-		showActivePanels: function () {
-			console.dir(Aloha);
+		showActivePanel: function (panel, effectiveElems, effectiveOrig) {
+			var i = 0,
+				j = effectiveElems.length,
+				count = 0,
+				li = panel.content.parent('li'),
+				effective = $(),
+				elems;
+			
+			switch (typeof panel.activeOn) {
+			case 'function':
+				for (; i < j; i++) {
+					 elems = panel.activeOn(effectiveElems[i], effectiveOrig[0]);
+					 if (elems) {
+						 count += elems.length;
+						 effective.add(elems);
+					}
+				}
+				break;
+			case 'string':
+				for (; i < j; i++) {
+					elems = effectiveElems[i].find(panel.activeOn);
+					count += elems.length;
+					effective.add(elems);
+				}
+				break;
+			}
+			
+			if (count > 0) {
+				li.removeClass(nsClass('deactivated'));
+			} else  {
+				li.addClass(nsClass('deactivated'));
+			}
+			
+			this.roundCorners();
+			
+			if (count > 0) {
+				var h_old = li.height(),
+					h_new = li.height('auto').height();
+				
+				li.height(h_old).animate({
+					height: h_new,
+					opacity: 1
+				}, 200, 'easeOutExpo',
+				function () {$(this).height('auto');});
+			} else {
+				li.animate({
+					height: 0,
+					opacity: 0
+				}, 200, 'easeOutExpo');
+			}
 		},
 		
 		initToggler: function () {
@@ -294,7 +333,7 @@
 		
 		roundCorners: function () {
 			var bar = this.container,
-				lis = bar.find(nsSel('panels>li')),
+				lis = bar.find(nsSel('panels>li:not(', 'deactivated)')),
 				topClass = nsClass('panel-top'),
 				bottomClass = nsClass('panel-bottom');
 			
@@ -489,6 +528,11 @@
 				opts.init.apply(this);
 			}
 			
+			if (typeof opts.activeOn == 'object') {
+				this.activeOn = '>' + opts.activeOn.join(',>');
+				delete opts.activeOn;
+			}
+			
 			delete opts.init;
 			delete opts.title;
 			delete opts.content;
@@ -613,7 +657,7 @@
 					init: function () {
 						console.log(this);
 					},
-					activeOn: []
+					activeOn: ['a']
 				},
 				{
 					id: 't2',
@@ -651,13 +695,17 @@
 					    ... \
 					    ... \
 					</pre>',
-					expanded: false
+					expanded: false,
+					activeOn: ['h2', 'p']
 				},
 				{
 					id: 't3',
 					title: 'Click me to open',
 					content: 'Test content',
-					expanded: false
+					expanded: false,
+					activeOn: function (elem, orig) {
+						return orig;
+					}
 				}
 			]
 		});
