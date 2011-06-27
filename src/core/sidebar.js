@@ -36,11 +36,13 @@
 	var cssNS = 'aloha-sidebar';
 	
 	var uid  = +(new Date),
+		// namespaced classnames
 		nsClasses = {
 			bar				: nsClass('bar'),
 			bottom			: nsClass('bottom'),
 			'config-btn'	: nsClass('config-btn'),
 			handle			: nsClass('handle'),
+			'handle-icon'	: nsClass('handle-icon'),
 			inner			: nsClass('inner'),
 			'panel-content'	: nsClass('panel-content'),
 			'panel-content-inner'
@@ -86,6 +88,14 @@
 		});
 	};
 	
+	// It is prefered that we render strings through this function rather than
+	// going directly to String.prototype.supplant
+	function renderTemplate (str) {
+		return (typeof str == 'string')
+					? str.supplant(nsClasses)
+					: str;
+	};
+	
 	// Creates a selector string with this component's namepsace prefixed the each classname
 	function nsSel () {
 		var str = '',
@@ -100,12 +110,6 @@
 			prx = cssNS;
 		$.each(arguments, function () {str += ' ' + prx + '-' + this;});
 		return str.trim();
-	};
-	
-	function renderTemplate (str) {
-		return (typeof str == 'string')
-					? str.supplant(nsClasses)
-					: str;
 	};
 	
 	// ------------------------------------------------------------------------
@@ -176,11 +180,31 @@
 			
 			this._updateScrolling();
 			this._roundCorners();
+			this._initToggler();
 			
-			var toggledClass = nsClass('toggled');
+			// Announce that the Sidebar has arrived!
+			body.trigger(nsClass('initialized'));
+		},
+		
+		_initToggler: function () {
+			var that = this,
+				bar = this.container,
+				icon = bar.find(nsSel('handle-icon')),
+				toggledClass = nsClass('toggled'),
+				bounceTimer;
+			
+			if (this.isOpen) {
+				this._rotateArrow(180, 0);
+			}
 			
 			bar.find(nsSel('handle'))
 				.click(function () {
+					if (bounceTimer) {
+						clearInterval(bounceTimer);
+					}
+					
+					icon.stop().css('marginLeft', 5);
+					
 					if (that.isOpen) {
 						$(this).removeClass(toggledClass);
 						that.close();
@@ -192,13 +216,33 @@
 					}
 				}).hover(
 					function () {
+						var flag = that.isOpen ? 1 : -1;
+						
+						icon.stop();
+						
+						if (bounceTimer) {
+							clearInterval(bounceTimer);
+						}
+						
+						bounceTimer = setInterval(function () {
+							flag *= -1;
+							icon.animate({marginLeft: '-=' + (flag * 5)}, 300);
+						}, 300);
+						
 						if (that.isOpen) {
 							$(this).stop().animate({marginRight: 5}, 200);
 						} else {
 							$(this).stop().animate({marginRight: 0}, 200);
 						}
 					},
+					
 					function () {
+						if (bounceTimer) {
+							clearInterval(bounceTimer);
+						}
+						
+						icon.stop().css('marginLeft', 5);
+						
 						if (that.isOpen) {
 							$(this).stop().animate({marginRight: 0}, 600, 'easeOutElastic');
 						} else {
@@ -206,10 +250,6 @@
 						} 
 					}
 				);
-			
-			
-			// Announce that the Sidebar has arrived!
-			body.trigger(nsClass('initialized'));
 		},
 		
 		_roundCorners: function () {
@@ -284,11 +324,29 @@
 			this._getPanelByElement(el).toggle();
 		},
 		
+		_rotateArrow: function (angle, duration) {
+			var arr = this.container.find(nsSel('handle-icon'));
+			arr.animate({angle: angle}, {
+					duration: (typeof duration == 'number') ? duration : 500,
+					easing: 'easeOutExpo',
+					step: function (val, fx) {
+						arr.css({
+							'-webkit-transform'	: 'rotate(' + val + 'deg)',
+							'-moz-transform'	: 'rotate(' + val + 'deg)',
+							'-ms-transform'		: 'rotate(' + val + 'deg)'
+						 // filter				: 'progid:DXImageTransform.Microsoft.BasicImage(rotation=1.5)'
+						});
+					}
+				});
+		},
+		
 		open: function (duration, callback) {
+			this._rotateArrow(180, 0);
 			this.container.animate({marginLeft: 0}, 500, 'easeOutExpo');
 		},
 		
 		close: function (duration, callback) {
+			this._rotateArrow(0, 0);
 			this.container.animate({marginLeft: -this.width}, 500, 'easeOutExpo');
 		},
 		
