@@ -134,7 +134,7 @@
 		this._activePanel = null;
 		// defaults
 		this.width = 300;
-		this.isOpen = true;
+		this.isOpen = false;
 		
 		this.init(opts);
 	};
@@ -182,6 +182,10 @@
 			this._roundCorners();
 			this._initToggler();
 			
+			if (!this.isOpen) {
+				this.close(0);
+			}
+			
 			// Announce that the Sidebar has arrived!
 			body.trigger(nsClass('initialized'));
 		},
@@ -203,7 +207,7 @@
 						clearInterval(bounceTimer);
 					}
 					
-					icon.stop().css('marginLeft', 5);
+					icon.stop().css('marginLeft', 4);
 					
 					if (that.isOpen) {
 						$(this).removeClass(toggledClass);
@@ -218,15 +222,15 @@
 					function () {
 						var flag = that.isOpen ? 1 : -1;
 						
-						icon.stop();
-						
 						if (bounceTimer) {
 							clearInterval(bounceTimer);
 						}
 						
+						icon.stop();
+						
 						bounceTimer = setInterval(function () {
 							flag *= -1;
-							icon.animate({marginLeft: '-=' + (flag * 5)}, 300);
+							icon.animate({marginLeft: '-=' + (flag * 4)}, 300);
 						}, 300);
 						
 						if (that.isOpen) {
@@ -241,7 +245,7 @@
 							clearInterval(bounceTimer);
 						}
 						
-						icon.stop().css('marginLeft', 5);
+						icon.stop().css('marginLeft', 4);
 						
 						if (that.isOpen) {
 							$(this).stop().animate({marginRight: 0}, 600, 'easeOutElastic');
@@ -327,7 +331,7 @@
 		_rotateArrow: function (angle, duration) {
 			var arr = this.container.find(nsSel('handle-icon'));
 			arr.animate({angle: angle}, {
-					duration: (typeof duration == 'number') ? duration : 500,
+					duration: (typeof duration == 'number' || typeof duration == 'string') ? duration : 500,
 					easing: 'easeOutExpo',
 					step: function (val, fx) {
 						arr.css({
@@ -342,12 +346,26 @@
 		
 		open: function (duration, callback) {
 			this._rotateArrow(180, 0);
-			this.container.animate({marginLeft: 0}, 500, 'easeOutExpo');
+			
+			this.container.animate(
+				{marginLeft: 0},
+				(typeof duration == 'number' || typeof duration == 'string') ? duration : 500,
+				'easeOutExpo'
+			);
+			
+			$('body').animate({marginLeft: this.width}, 500, 'easeOutExpo');
 		},
 		
 		close: function (duration, callback) {
 			this._rotateArrow(0, 0);
-			this.container.animate({marginLeft: -this.width}, 500, 'easeOutExpo');
+			
+			this.container.animate(
+				{marginLeft: -this.width},
+				(typeof duration == 'number' || typeof duration == 'string') ? duration : 500,
+				'easeOutExpo'
+			);
+			
+			$('body').animate({marginLeft: 0}, 500, 'easeOutExpo');
 		},
 		
 		expandPanel: function (panel, callback) {
@@ -431,6 +449,11 @@
 			this.setTitle(opts.title)
 				.setContent(opts.content);
 			
+			if (typeof opts.init == 'function') {
+				opts.init.apply(this);
+			}
+			
+			delete opts.init;
 			delete opts.title;
 			delete opts.content;
 			
@@ -550,7 +573,11 @@
 					id: 't1',
 					title: 'Start open',
 					content: 'Test content',
-					expanded: true
+					expanded: true,
+					init: function () {
+						console.log(this);
+					},
+					activeOn: []
 				},
 				{
 					id: 't2',
