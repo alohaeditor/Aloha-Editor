@@ -4,7 +4,7 @@
 	
 	// Prepare
 	var
-		jQuery = window.alohaQuery, $ = jQuery,
+		jQuery = window.alohaQuery || window.jQuery, $ = jQuery,
 		Ext = window.Ext,
 		GENTICS = window.GENTICS,
 		Aloha = window.Aloha;

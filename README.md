@@ -1,5 +1,7 @@
 # [Aloha Editor - The HTML5 WYSIWYG Editor](http://aloha-editor.org/)
 
+_version 0.10.0-alpha_
+
 For help there is:
 
 - [the development guide](http://aloha-editor.org/wiki/Development_guide) for developers

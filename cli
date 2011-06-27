@@ -462,14 +462,21 @@ class App
 	# Build Aloha Editor
 	def build
 		check_req(['node','npm'])
-		if check_req('buildr',false)
-			run("buildr")
-		else
-			run([
-				"npm -g install buildr",
-				"buildr"
-			])
+		unless check_req('buildr',false)
+			run("npm -g install buildr")
 		end
+		run("buildr")
+		run("chmod -R 766 out")
+	end
+
+	# Serve Aloha Editor
+	def server(port=3000)
+		check_req(['node','npm'])
+		unless check_req('sise',false)
+			run("npm -g install simple-server")
+		end
+		puts "Simple Server will now run, access it on http://localhost:#{port}/\nUse ctrl+c to quit the server"
+		run("sise . #{port}")
 	end
 
 	# ---------------------------------------------------------------------------

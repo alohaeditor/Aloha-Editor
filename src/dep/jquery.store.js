@@ -41,8 +41,7 @@ if (typeof JSON === 'undefined' || !JSON) {
 	};
 }
 
-(function($,undefined){
-//console.log('Loading jQuery.store');
+(function($,undefined) {
 
 /**********************************************************************************
  * $.store base and convinience accessor
@@ -435,4 +434,4 @@ $.store.serializers = {
 	}
 };
 
-})(jQuery);
+})(window.alohaQuery || window.jQuery);

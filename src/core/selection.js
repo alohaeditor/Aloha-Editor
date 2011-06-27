@@ -5,7 +5,7 @@
 (function(window, undefined) {
 	"use strict";
 	var
-		jQuery = window.alohaQuery, $ = jQuery,
+		jQuery = window.alohaQuery || window.jQuery, $ = jQuery,
 		GENTICS = window.GENTICS,
 		Aloha = window.Aloha,
 		Class = window.Class;
@@ -149,6 +149,11 @@
 		 */
 		updateSelection: function(event) {
 			// get the rangeObject
+
+			if (event !== undefined && event.originalEvent !== undefined &&
+					event.originalEvent.stopSelectionUpdate === true) {
+				return;
+			}
 			var rangeObject = this.rangeObject = new Aloha.Selection.SelectionRange(true);
 
 			// find the CAC (Common Ancestor Container) and update the selection Tree
@@ -210,17 +215,17 @@
 			var jQueryCurrentObject = jQuery(currentObject),
 				childCount = 0,
 				that = this,
-				currentElements = [],
-				i,elementsLength,
-				noneFound = false,
-				partialFound = false,
-				fullFound = false;
+				currentElements = [];
 
 			jQueryCurrentObject.contents().each(function(index) {
 				var selectionType = 'none',
 					startOffset = false,
 					endOffset = false,
-					collapsedFound = false;
+					collapsedFound = false,
+					i, elementsLength,
+					noneFound = false,
+					partialFound = false,
+					fullFound = false;
 
 				// check for collapsed selections between nodes
 				if (rangeObject.isCollapsed() && currentObject === rangeObject.startContainer && rangeObject.startOffset == index) {

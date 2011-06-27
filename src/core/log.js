@@ -6,7 +6,7 @@
 (function(window, undefined) {
 	"use strict";
 	var
-		jQuery = window.alohaQuery, $ = jQuery,
+		jQuery = window.alohaQuery || window.jQuery, $ = jQuery,
 		GENTICS = window.GENTICS,
 		Aloha = window.Aloha,
 		console = window.console||false,
@@ -83,6 +83,7 @@ Aloha.Log = Class.extend({
 		if (!Aloha.settings.logLevels[level]) {
 			return;
 		}
+		component = component||"undefined";
 
 		this.addToLogHistory({'level' : level, 'component' : component.toString(), 'message' : message, 'date' : new Date()});
 		switch (level) {
@@ -200,6 +201,9 @@ Aloha.Log = Class.extend({
 	 * @hide
 	 */
 	addToLogHistory: function(entry) {
+		if ( !Aloha.settings.logHistory ) {
+			this.init();
+		}
 
 		if (
 			// when maxEntries is set to something illegal, we do nothing (log history is disabled)

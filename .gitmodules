@@ -49,3 +49,9 @@
 [submodule "src/plugin/undo"]
 	path = src/plugin/undo
 	url = https://github.com/alohaeditor/Aloha-Plugin-Undo.git
+[submodule "src/plugin/hints"]
+	path = src/plugin/hints
+	url = http://github.com/alohaeditor/Aloha-Plugin-Hints.git
+[submodule "src/plugin/wai-lang"]
+	path = src/plugin/wai-lang
+	url = https://github.com/alohaeditor/Aloha-Plugin-WAI-Lang.git

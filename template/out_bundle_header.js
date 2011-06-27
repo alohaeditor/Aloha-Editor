@@ -1,6 +1,3 @@
-// Create jQuery
-window.alohaQuery = window.jQuery;//.sub();
-
 // Ensure Namespace
 window.GENTICS = window.GENTICS || {};
 window.GENTICS.Utils = window.GENTICS.Utils || {};
@@ -13,3 +10,12 @@ window.Aloha_base = window.Aloha_base || false;
 
 // Handle
 (function(window,undefined) {
+
+	// alohaQuery should always be available
+	window.alohaQuery = window.alohaQuery||window.jQuery;
+
+	// Variables
+	var
+		// jQuery
+		jQuery = window.alohaQuery || window.jQuery, $ = jQuery;
+	

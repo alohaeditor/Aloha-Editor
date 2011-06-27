@@ -77,3 +77,15 @@ table th, table td
   padding: 0.5em;
   text-align: left;
 }
+
+
+#main ul,
+#main ol {
+  margin:0 1.5em 1.5em 1.5em;
+}
+#main ul li {
+  list-style-type:disc;
+}
+#main ol li {
+  list-style-type:decimal;
+}

@@ -1,7 +1,7 @@
 	// Variables
 	var
 		// jQuery
-		jQuery = window.alohaQuery, $ = jQuery,
+		jQuery = window.alohaQuery || window.jQuery, $ = jQuery,
 		// Loading
 		defer = false, /*
 			Until browsers can support the defer attribute properly

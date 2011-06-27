@@ -4,63 +4,6 @@
  * Licensed unter the terms of http://www.aloha-editor.com/license.html
  */
 
-function createCollapsedRange(container, offset) {
-    	var range = new GENTICS.Utils.RangeObject({
-		    startContainer : container,
-		    startOffset : offset,
-		    endContainer : container,
-		    endOffset : offset
-    	});
-    	range.correctRange();
-    	return range;
-}
-
-function setCursor(editable, container, offset) {
-	var range = createCollapsedRange(container, offset);
-	editable.focus();
-	range.select();
-	Aloha.Selection.updateSelection();
-	return range;
-}
-
-function pressEnter(editable, shiftKey) {
-	if (shiftKey) {
-		editable.simulate('keydown', {keyCode: 13, shiftKey : true});
-		editable.simulate('keyup', {keyCode: 13, shiftKey : true});
-	} else {
-		editable.simulate('keydown', {keyCode: 13});
-		editable.simulate('keyup', {keyCode: 13});
-	}
-
-	// finally we need to update the aloha selection (which is normally done automatically)
-	Aloha.Selection.updateSelection();
-};
-
-$.fn.extractHTML = function() {
-	var attributes = ['class', 'id'];
-	var fullResult = [];
-
-	$.each(this, function() {
-		var $that = $(this);
-		var result = {};
-		fullResult.push(result);
-		result.nodeName = $that[0].nodeName;
-		if ($that[0].nodeType == 3) {
-			result.text = $that.text();
-		} else if ($that[0].nodeType == 1) {
-			$.each(attributes, function(index, attr) {
-				result[attr] = $that.attr(attr);
-			});
-			var contents = $that.contents();
-			if (contents.length) {
-				result.contents = contents.extractHTML();
-			}
-		}
-	});
-
-	return fullResult;
-};
-
 /**
  * Do an enter test
  * @param editable the editable
@@ -72,24 +15,21 @@ $.fn.extractHTML = function() {
  */
 function doEnterTest(editable, container, offset, shift, twice, reference) {
 	// set cursor
-	setCursor(editable, container, offset);
+	TestUtils.setCursor(editable, container, offset);
 	// press enter
-	pressEnter(editable, shift);
+	TestUtils.pressEnter(editable, shift);
 	// possibly again
 	if (twice) {
-		pressEnter(editable, shift);
+		TestUtils.pressEnter(editable, shift);
 	}
 	// get the result
 	
 	 var result = Aloha.editables[0].getContents(true);
-		
+
 	var expected = $(reference).contents();
 
 	// compare the result with the expected result
 	deepEqual(result.extractHTML(), expected.extractHTML(), 'Check Operation Result');
-
-	// get the reference
-	
 }
 
 $(document).ready(function() {
@@ -106,13 +46,13 @@ $(document).ready(function() {
 			start();
 		});
 		this.timeout = setTimeout(function() {
-			ok(false, 'Aloha was not initialized within 10 seconds');
+			ok(false, 'Aloha was not initialized within 60 seconds');
 			start();
-		}, 10000);
+		}, 60000);
 	});
 
 	$('body').bind('aloha', function() {
-		
+
 		module('Plaintext Enter Handling', {
 			setup: function() {
 				// get the editable area and the reference
@@ -159,7 +99,7 @@ $(document).ready(function() {
 			doEnterTest(this.edit, this.edit.contents().get(0), 18, false, true, '#ref-plaintext-end-dblenter');
 		});
 
-                module('Heading Enter Handling', {
+		module('Heading Enter Handling', {
 			setup: function() {
 				// get the editable area and the reference
 				this.edit = $('#edit');
@@ -180,23 +120,23 @@ $(document).ready(function() {
 			doEnterTest(this.edit, this.edit.find('h1').contents().get(0), 0, false, false, '#ref-heading-start-enter');
 		});
 
-       		test('Double Enter at start', function() {
+		test('Double Enter at start', function() {
 			doEnterTest(this.edit, this.edit.find('h1').contents().get(0), 0, false, true, '#ref-heading-start-dblenter');
 		});
 
-                test('Enter in middle', function() {
+		test('Enter in middle', function() {
 			doEnterTest(this.edit, this.edit.find('h1').contents().get(0), 3, false, false, '#ref-heading-mid-enter');
 		});
 
-       		test('Double Enter in middle', function() {
+		test('Double Enter in middle', function() {
 			doEnterTest(this.edit, this.edit.find('h1').contents().get(0), 3, false, true, '#ref-heading-mid-dblenter');
 		});
 
-                test('Enter in bold', function() {
+		test('Enter in bold', function() {
 			doEnterTest(this.edit, this.edit.find('b').contents().get(0), 2, false, false, '#ref-heading-bold-enter');
 		});
 
-       		test('Double Enter in bold', function() {
+		test('Double Enter in bold', function() {
 			doEnterTest(this.edit, this.edit.find('b').contents().get(0), 2, false, true, '#ref-heading-bold-dblenter');
 		});
 
@@ -204,7 +144,7 @@ $(document).ready(function() {
 			doEnterTest(this.edit, this.edit.find('h1').contents().last().get(0), 8, false, false, '#ref-heading-end-enter');
 		});
 
-       		test('Double Enter at end', function() {
+		test('Double Enter at end', function() {
 			doEnterTest(this.edit, this.edit.find('h1').contents().last().get(0), 8, false, true, '#ref-heading-end-dblenter');
 		});
 
@@ -229,23 +169,23 @@ $(document).ready(function() {
 			doEnterTest(this.edit, this.edit.find('h1').contents().get(0), 0, true, false, '#ref-heading-start-shift-enter');
 		});
 
-       		test('Double Shift Enter at start', function() {
+		test('Double Shift Enter at start', function() {
 			doEnterTest(this.edit, this.edit.find('h1').contents().get(0), 0, true, true, '#ref-heading-start-shift-dblenter');
 		});
 
-                test('Shift Enter in middle', function() {
+		test('Shift Enter in middle', function() {
 			doEnterTest(this.edit, this.edit.find('h1').contents().get(0), 3, true, false, '#ref-heading-mid-shift-enter');
 		});
 
-       		test('Double Shift Enter in middle', function() {
+		test('Double Shift Enter in middle', function() {
 			doEnterTest(this.edit, this.edit.find('h1').contents().get(0), 3, true, true, '#ref-heading-mid-shift-dblenter');
 		});
 
-                test('Shift Enter in bold', function() {
+		test('Shift Enter in bold', function() {
 			doEnterTest(this.edit, this.edit.find('b').contents().get(0), 2, true, false, '#ref-heading-bold-shift-enter');
 		});
 
-       		test('Double Shift Enter in bold', function() {
+		test('Double Shift Enter in bold', function() {
 			doEnterTest(this.edit, this.edit.find('b').contents().get(0), 2, true, true, '#ref-heading-bold-shift-dblenter');
 		});
 
@@ -253,7 +193,7 @@ $(document).ready(function() {
 			doEnterTest(this.edit, this.edit.find('h1').contents().last().get(0), 8, true, false, '#ref-heading-end-shift-enter');
 		});
 
-       		test('Double Shift Enter at end', function() {
+		test('Double Shift Enter at end', function() {
 			doEnterTest(this.edit, this.edit.find('h1').contents().last().get(0), 8, true, true, '#ref-heading-end-shift-dblenter');
 		});
 
@@ -306,7 +246,7 @@ $(document).ready(function() {
 			doEnterTest(this.edit, this.edit.find('i').contents().get(0), 3, false, true, '#ref-paragraph-miditalic-dblenter');
 		});
 
-                test('Enter at end of italic', function() {
+		test('Enter at end of italic', function() {
 			doEnterTest(this.edit, this.edit.find('i').contents().get(0), 6, false, false, '#ref-paragraph-enditalic-enter');
 		});
 
@@ -355,7 +295,7 @@ $(document).ready(function() {
 			doEnterTest(this.edit, this.edit.find('p').contents().get(2), 3, true, true, '#ref-paragraph-mid-shift-dblenter');
 		});
 
-                test('Shift Enter at start of italic', function() {
+		test('Shift Enter at start of italic', function() {
 			doEnterTest(this.edit, this.edit.find('i').contents().get(0), 0, true, false, '#ref-paragraph-startitalic-shift-enter');
 		});
 
@@ -367,7 +307,7 @@ $(document).ready(function() {
 			doEnterTest(this.edit, this.edit.find('i').contents().get(0), 3, true, false, '#ref-paragraph-miditalic-shift-enter');
 		});
 
-                test('Shift Enter at end of italic', function() {
+		test('Shift Enter at end of italic', function() {
 			doEnterTest(this.edit, this.edit.find('i').contents().get(0), 6, true, false, '#ref-paragraph-enditalic-shift-enter');
 		});
 
@@ -387,7 +327,7 @@ $(document).ready(function() {
 			doEnterTest(this.edit, this.edit.find('p').contents().get(2), 20, true, true, '#ref-paragraph-end-shift-dblenter');
 		});
 
-                module('List Enter Handling', {
+		module('List Enter Handling', {
 			setup: function() {
 				// get the editable area and the reference
 				this.edit = $('#edit');
@@ -476,7 +416,7 @@ $(document).ready(function() {
 			doEnterTest(this.edit, this.edit.find('li').eq(2).contents().get(0), 5, false, true, '#ref-list-lastend-dblenter');
 		});
 
-                module('List Shift Enter Handling', {
+		module('List Shift Enter Handling', {
 			setup: function() {
 				// get the editable area and the reference
 				this.edit = $('#edit');

@@ -105,11 +105,12 @@
 			"src_bundle_item.js": "src_bundle_item.js",
 			"src_bundle_subpackage.js": "src_bundle_subpackage.js"
 		},
-		"subpackages": ["format"],
+		"subpackages": [],
 		"ignore": {
 			"check": [
 				"dep",
-				"util/base.js"
+				"util/base.js",
+				"core/rangy-core.js"
 			],
 			"img": [
 				"dep"
@@ -130,6 +131,7 @@
 				"dep/jquery.json-2.2.min.js",
 				"dep/jquery.getUrlParam.js",
 				"dep/jquery.store.js",
+				"dep/rangy-core.js",
 
 				"core/jquery.aloha.js",
 				"util/lang.js",
@@ -145,7 +147,6 @@
 				"core/ui-browser.js",
 				"core/editable.js",
 				"core/floatingmenu.js",
-				"core/ierange-m2.js",
 				"core/log.js",
 				"core/markup.js",
 				"core/message.js",

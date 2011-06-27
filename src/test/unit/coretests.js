@@ -24,6 +24,17 @@ Aloha.settings = {
 
 $(document).ready(function() {
 
+	/* 
+	 * For this to work jquery.aloha.js needs to be loaded synchronously.
+	 * Usually this is not the case.
+	 */
+//	test('.aloha() is working with deferred loading', function() {
+//		var editable = $('#edit2');
+//		editable.aloha();
+//		equals(1, editable.size(), 'Editable was found');
+//		ok(true, '.aloha() could be called');
+//	});
+
 	// Test whether Aloha is properly initialized
 	asyncTest('Aloha Startup Test', function() {
 		$('body').bind('aloha',function() {
@@ -31,9 +42,9 @@ $(document).ready(function() {
 			start();
 		});
 		setTimeout(function() {
-			ok(false, 'Aloha was not initialized within 10 seconds');
+			ok(false, 'Aloha was not initialized within 60 seconds');
 			start();
-		}, 10000);
+		}, 60000);
 	});
 
 	// All other tests are done when Aloha is ready

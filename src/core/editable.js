@@ -7,7 +7,7 @@
 (function(window, undefined) {
 	"use strict";
 	var
-		jQuery = window.alohaQuery, $ = jQuery,
+		jQuery = window.alohaQuery || window.jQuery, $ = jQuery,
 		GENTICS = window.GENTICS,
 		Aloha = window.Aloha,
 		Class = window.Class,
@@ -436,7 +436,7 @@ Aloha.Editable = Class.extend({
 
 		// unbind all events
 		// TODO should only unbind the specific handlers.
-					.unbind('mousedown focus keydown keyup');
+					.unbind('mousedown click dblclick focus keydown keyup');
 
 		/* TODO remove this event, it should implemented as bind and unbind
 		// register the onSelectionChange Event with the Editable field

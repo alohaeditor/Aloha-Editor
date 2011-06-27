@@ -1,6 +1,3 @@
-// Create jQuery
-window.alohaQuery = window.jQuery;//.sub();
-
 // Ensure Namespace
 window.GENTICS = window.GENTICS || {};
 window.GENTICS.Utils = window.GENTICS.Utils || {};
@@ -14,6 +11,9 @@ window.Aloha_base = window.Aloha_base || false;
 // Handle
 (function(window,undefined) {
 
+	// alohaQuery should always be available
+	window.alohaQuery = window.alohaQuery||window.jQuery;
+
 	// Prepare Script Loading
 	var
 		document = window.document,
@@ -23,8 +23,7 @@ window.Aloha_base = window.Aloha_base || false;
 	window.GENTICS_Aloha_base = window.GENTICS_Aloha_base || document.getElementById('aloha-script-include').src.replace(/aloha\.js$/,'').replace(/\/+$/,'');
 
 	// Prepare Plugin Loading
-	window.Aloha_loaded_plugins = window.Aloha_loaded_plugins||[];		window.Aloha_loaded_plugins['format'] = true;
-			includes.push('util/base.js');
+	window.Aloha_loaded_plugins = window.Aloha_loaded_plugins||[];			includes.push('util/base.js');
 			includes.push('dep/ext-3.2.1/adapter/jquery/ext-jquery-adapter.js');
 			includes.push('dep/ext-3.2.1/ext-all.js');
 			includes.push('dep/jquery.json-2.2.min.js');
@@ -44,7 +43,6 @@ window.Aloha_base = window.Aloha_base || false;
 			includes.push('core/ui-browser.js');
 			includes.push('core/editable.js');
 			includes.push('core/floatingmenu.js');
-			includes.push('core/ierange-m2.js');
 			includes.push('core/log.js');
 			includes.push('core/markup.js');
 			includes.push('core/message.js');
@@ -54,11 +52,11 @@ window.Aloha_base = window.Aloha_base || false;
 			includes.push('core/repositorymanager.js');
 			includes.push('core/repository.js');
 			includes.push('core/repositoryobjects.js');
-			includes.push('plugin/format/src/format.js');
+			includes.push('core/rangy-core.js');
 	// Variables
 	var
 		// jQuery
-		jQuery = window.alohaQuery, $ = jQuery,
+		jQuery = window.alohaQuery || window.jQuery, $ = jQuery,
 		// Loading
 		defer = false, /*
 			Until browsers can support the defer attribute properly

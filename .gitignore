@@ -6,3 +6,4 @@ out
 /target
 /npm-debug.log
 node_modules
+/setalohabase.js

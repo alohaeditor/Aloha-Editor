@@ -16,7 +16,8 @@
 
 	// Prepare
 	var
-		jQuery = window.alohaQuery, $ = jQuery,
+		jQuery = window.alohaQuery,
+		$ = jQuery,
 		GENTICS = window.GENTICS,
 		Aloha = window.Aloha,
 		console = window.console||false,
@@ -166,7 +167,7 @@
 
 				// Load in Plugins
 				$.each(plugins,function(i,pluginName){
-					Aloha.loadPlugin(pluginName,complete);
+					Aloha.loadPlugin($.trim(pluginName),complete);
 				});
 			}
 			else {
@@ -182,19 +183,15 @@
 			// Prepare
 			var
 				$alohaScriptInclude = $('#aloha-script-include'),
-				plugins = [];
+				plugins = $.trim($alohaScriptInclude.data('plugins'));
 			
 			// Determine Plugins
-			plugins = $alohaScriptInclude.data('plugins');
-			if ( typeof plugins === 'string' ) {
-				plugins = plugins.split(',');
+			if ( typeof plugins === 'string' && plugins !== "") {
+				return plugins.split(',');
 			}
-
-			// Ensure
-			plugins = plugins||[];
 		
 			// Return
-			return plugins;
+			return [];
 		},
 
 		/**
@@ -370,7 +367,6 @@
 		 * @return void
 		 */
 		initGui: function (next) {
-			//debugger;
 			Aloha.RepositoryManager.init();
 			Aloha.FloatingMenu.init();
 
@@ -392,28 +388,24 @@
 			next();
 		},
 
-		createPromiseEvent: function(eventName){
-			//window.alohaQuery('body').createPromiseEvent(eventName);
-			window.jQuery('body').createPromiseEvent(eventName);
+		createPromiseEvent: function(eventName) {
+			$('body').createPromiseEvent(eventName);
 		},
 		unbind: function(eventName,eventHandler) {
 			eventName = Aloha.correctEventName(eventName);
-			//window.alohaQuery('body').unbind(eventName);
-			window.jQuery('body').unbind(eventName);
+			$('body').unbind(eventName);
 		},
 		bind: function(eventName,eventHandler) {
 			eventName = Aloha.correctEventName(eventName);
 			Aloha.log('debug', this, 'Binding ['+eventName+'], has ['+(($('body').data('events')||{})[eventName]||[]).length+'] events');
-			//window.alohaQuery('body').bind(eventName,eventHandler);
-			window.jQuery('body').bind(eventName,eventHandler);
+			$('body').bind(eventName,eventHandler);
 		},
 		trigger: function(eventName,data) {
 			eventName = Aloha.correctEventName(eventName);
 			Aloha.log('debug', this, 'Trigger ['+eventName+'], has ['+(($('body').data('events')||{})[eventName]||[]).length+'] events');
-			//window.alohaQuery('body').trigger(eventName,data);
-			window.jQuery('body').trigger(eventName,data);
+			$('body').trigger(eventName,data);
 		},
-		correctEventName: function(eventName){
+		correctEventName: function(eventName) {
 			var result = eventName.replace(/\-([a-z])/g,function(a,b){
 				return b.toUpperCase();
 			});
@@ -583,6 +575,7 @@
 			// the first i18n calls might come before the dictionary is available
 			jQuery.ajax({
 				dataType : 'json',
+				accept: '*/*',
 				url : fileUrl,
 				error: function(request, textStatus, error) {
 					Aloha.Log.error(component, 'Error while getting dictionary file ' + fileUrl + ': server returned ' + textStatus);
@@ -616,7 +609,11 @@
 			}
 
 			// Save i18n
-			Aloha.dictionaries[component.toString()] = data;
+			if (Aloha.dictionaries[component.toString()]) {
+				$.extend(Aloha.dictionaries[component.toString()], data);
+			} else {
+				Aloha.dictionaries[component.toString()] = data;
+			}
 		},
 
 		/**
@@ -630,11 +627,12 @@
 		i18n: function(component, key, replacements) {
 			var
 				value = null,
-				i, repLength, regEx, safeArgument;
+				i, repLength, regEx, safeArgument,
+				compName = component.getName();
 
 			// first get the dictionary for the component
-			if (Aloha.dictionaries[component.toString()] && Aloha.dictionaries[component.toString()][key]) {
-				value = Aloha.dictionaries[component.toString()][key];
+			if (Aloha.dictionaries[compName] && Aloha.dictionaries[compName][key]) {
+				value = Aloha.dictionaries[compName][key];
 			}
 
 			// when the value was not found and component is not Aloha, do a fallback
@@ -745,6 +743,9 @@
 		toString: function () {
 			return 'Aloha';
 		},
+		getName: function () {
+			return 'Aloha';
+		},
 
 		/**
 		 * Check whether at least one editable was modified
@@ -826,7 +827,7 @@
 			scriptEl.onreadystatechange = loaded;
 			scriptEl.onload = loaded;
 			scriptEl.onerror = loaded;
-			scriptEl.timeout = window.setTimeout(loaded,1000);
+			scriptEl.timeout = window.setTimeout(loaded,600);
 			appendEl.appendChild(scriptEl);
 
 			// Chain
