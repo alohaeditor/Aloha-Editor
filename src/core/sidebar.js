@@ -89,7 +89,7 @@
 	// Creates a selector string with this component's namepsace prefixed the each classname
 	function nsSel () {
 		var str = '',
-			prx = cssNS; // Make a copy of cssNS here for quicker lookup
+			prx = cssNS; // ... for quicker lookup
 		$.each(arguments, function () {str += ' .' + prx + '-' + this;});
 		return str.trim();
 	};
@@ -115,15 +115,17 @@
 	var Sidebar = function Sidebar (opts) {
 		this.id = nsClass(++uid);
 		this.panels = {};
-		this.container = $(renderTemplate('		 \
-			<div class="{bar}">					 \
-				<div class="{handle}"></div>	 \
-				<div class="{shadow}"></div>	 \
-				<div class="{inner}">		 	 \
-					<ul class="{panels}"></ul>	 \
-					<div class="{bottom}"></div> \
-				</div>							 \
-			</div>								 \
+		this.container = $(renderTemplate('				\
+			<div class="{bar}">							\
+				<div class="{shadow}"></div>			\
+				<div class="{handle}">					\
+					<span class="{handle-icon}"></span>	\
+				</div>									\
+				<div class="{inner}">		 			\
+					<ul class="{panels}"></ul>			\
+					<div class="{bottom}"></div>		\
+				</div>									\
+			</div>										\
 		'));
 		this._activePanel = null;
 		// defaults
@@ -180,33 +182,28 @@
 			bar.find(nsSel('handle'))
 				.click(function () {
 					if (that.isOpen) {
-						toggler.removeClass(toggledClass);
+						$(this).removeClass(toggledClass);
 						that.close();
 						that.isOpen = false;
 					} else {
-						toggler.addClass(toggledClass);
+						$(this).addClass(toggledClass);
 						that.open();
 						that.isOpen = true;
 					}
 				}).hover(
 					function () {
-						var el = $(this);
 						if (that.isOpen) {
-							console.log(2, el);
-							el.animate({
-								marginRight: 5,
-								width: 25
-							}, 200);
+							$(this).stop().animate({marginRight: 5}, 200);
+						} else {
+							$(this).stop().animate({marginRight: 0}, 200);
 						}
 					},
 					function () {
-						var el = $(this);
 						if (that.isOpen) {
-							el.animate({
-								marginRight: 0,
-								width: 30
-							}, 200);
-						}
+							$(this).stop().animate({marginRight: 0}, 600, 'easeOutElastic');
+						} else {
+							$(this).stop().animate({marginRight: 5}, 600, 'easeOutElastic');
+						} 
 					}
 				);
 			
@@ -288,9 +285,11 @@
 		},
 		
 		open: function (duration, callback) {
+			this.container.animate({marginLeft: 0}, 500, 'easeOutExpo');
 		},
 		
 		close: function (duration, callback) {
+			this.container.animate({marginLeft: -this.width}, 500, 'easeOutExpo');
 		},
 		
 		expandPanel: function (panel, callback) {
@@ -433,7 +432,7 @@
 			var that = this;
 			
 			this.content.stop().animate(
-				{height: 5}, 500, 'easeOutExpo',
+				{height: 5}, 250, 'easeOutExpo',
 				function () {
 					if (typeof callback == 'function') {
 						callback.call(that);
@@ -483,7 +482,6 @@
 	$('body').bind(nsClass('initialized'), function () {
 		
 	});
-	
 	// Automatically invoke the Sidebar as soon as the DOM is ready
 	$(function () {
 		//Aloha.Sidebar = new Sidebar();
