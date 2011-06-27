@@ -461,51 +461,51 @@
 			panels: [
 				{
 					id: 't1',
-					title: 'Test title',
+					title: 'Start open',
 					content: 'Test content',
-					expanded: false
-				},
-				{
-					id: 't2',
-					title: 'Test title 2',
-					content: 'Test content 2<pre>\
-						12 \
-					    12 \
-					    12 \
-					    12 \
-					    12 \
-					    12 \
-					    12 \
-					    12 \
-					    12 \
-					    12 \
-					    12 \
-					    12 \
-					    12 \
-					    12 \
-					    12 \
-					    12 \
-					    12 \
-					    12 \
-					    12 \
-					    12 \
-					    12 \
-					    12 \
-					    12 \
-					    12 \
-					    12 \
-					    12 \
-					    12 \
-					    12 \
-					    12 \
-					    12 \
-					    12 \
-					</pre>',
 					expanded: true
 				},
 				{
+					id: 't2',
+					title: 'Long content',
+					content: '<pre>\
+						... \
+					    ... \
+					    ... \
+					    ... \
+					    ... \
+					    ... \
+					    ... \
+					    ... \
+					    ... \
+					    ... \
+					    ... \
+					    ... \
+					    ... \
+					    ... \
+					    ... \
+					    ... \
+					    ... \
+					    ... \
+					    ... \
+					    ... \
+					    ... \
+					    ... \
+					    ... \
+					    ... \
+					    ... \
+					    ... \
+					    ... \
+					    ... \
+					    ... \
+					    ... \
+					    ... \
+					</pre>',
+					expanded: false
+				},
+				{
 					id: 't3',
-					title: 'Test title 3',
+					title: 'Click me to open',
 					content: 'Test content',
 					expanded: false
 				}
