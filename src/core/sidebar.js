@@ -227,7 +227,7 @@
 					 elems = panel.activeOn(effectiveElems[i], effectiveOrig[0]);
 					 if (elems) {
 						 count += elems.length;
-						 effective.add(elems);
+						 $.merge(effective, elems);
 					}
 				}
 				break;
@@ -235,7 +235,7 @@
 				for (; i < j; i++) {
 					elems = effectiveElems[i].find(panel.activeOn);
 					count += elems.length;
-					effective.add(elems);
+					 $.merge(effective, elems);
 				}
 				break;
 			}
@@ -249,14 +249,7 @@
 			this.roundCorners();
 			
 			if (count > 0) {
-				var h_old = li.height(),
-					h_new = li.height('auto').height();
-				
-				li.height(h_old).animate({
-					height: h_new,
-					opacity: 1
-				}, 200, 'easeOutExpo',
-				function () {$(this).height('auto');});
+				panel.activate(effective);
 			} else {
 				li.animate({
 					height: 0,
@@ -524,16 +517,11 @@
 			this.setTitle(opts.title)
 				.setContent(opts.content);
 			
-			if (typeof opts.init == 'function') {
-				opts.init.apply(this);
-			}
-			
 			if (typeof opts.activeOn == 'object') {
 				this.activeOn = '>' + opts.activeOn.join(',>');
 				delete opts.activeOn;
 			}
 			
-			delete opts.init;
 			delete opts.title;
 			delete opts.content;
 			
@@ -557,6 +545,27 @@
 				.attr('unselectable', 'on')
 				.css('-moz-user-select', 'none')
 				.each(function() {this.onselectstart = function() {return false;};});
+			
+			if (typeof this.onInit == 'function') {
+				this.onInit.apply(this);
+			}
+		},
+		
+		activate: function (effective) {
+			var li = this.content.parent('li'),
+				h_old = li.height(),
+				h_new = li.height('auto').height();
+			
+			li.height(h_old).animate({
+				height: h_new,
+				opacity: 1
+			}, 200, 'easeOutExpo', function () {
+				$(this).height('auto');
+			});
+			
+			if (typeof this.onActivate == 'function') {
+				this.onActivate.call(this, effective);
+			}
 		},
 		
 		toggle: function () {
@@ -654,8 +663,11 @@
 					title: 'Start open',
 					content: 'Test content',
 					expanded: true,
-					init: function () {
-						console.log(this);
+					onInit: function () {
+						console.log(3, this);
+					},
+					onActivate: function (effective) {
+						console.log(effective);
 					},
 					activeOn: ['a']
 				},
