@@ -55,3 +55,6 @@
 [submodule "src/plugin/wai-lang"]
 	path = src/plugin/wai-lang
 	url = https://github.com/alohaeditor/Aloha-Plugin-WAI-Lang.git
+[submodule "src/plugin/metaview"]
+	path = src/plugin/metaview
+	url = git@github.com:alohaeditor/Aloha-Plugin-MetaView.git
