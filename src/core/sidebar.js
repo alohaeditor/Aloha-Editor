@@ -131,7 +131,6 @@
 				</div>									\
 			</div>										\
 		'));
-		this._activePanel = null;
 		// defaults
 		this.width = 300;
 		this.isOpen = false;
@@ -171,26 +170,63 @@
 			
 			// Place the bar into the DOM
 			bar.appendTo(body)
-			   .click(function () {that._barClicked.apply(that, arguments);})
+			   .click(function () {that.barClicked.apply(that, arguments);})
 			   .find(nsSel('panels')).width(this.width);
 			
 			$(window).resize(function () {
-				that._updateScrolling();
+				that.updateScrolling();
 			});
 			
-			this._updateScrolling();
-			this._roundCorners();
-			this._initToggler();
+			this.updateScrolling();
+			this.roundCorners();
+			this.initToggler();
 			
 			if (!this.isOpen) {
 				this.close(0);
 			}
 			
+			this.subscribeToEvents();
+			
 			// Announce that the Sidebar has arrived!
 			body.trigger(nsClass('initialized'));
 		},
 		
-		_initToggler: function () {
+		subscribeToEvents: function () {
+			Aloha.bind('aloha-selection-changed', function(event, rangeObject) {
+				var config, foundMarkup;
+
+				if (Aloha.activeEditable) {
+					// show/hide the button according to the configuration
+					config = that.getEditableConfig(Aloha.activeEditable.obj);
+					if ( jQuery.inArray('span', config) != -1) {
+						that.addMarkupToSelectionButton.show();
+					} else {
+						that.addMarkupToSelectionButton.hide();
+						// leave if a is not allowed
+						return;
+					}
+
+					foundMarkup = that.findLinkMarkup( rangeObject );
+					if ( foundMarkup ) {
+						that.addMarkupToSelectionButton.hide();
+						Aloha.FloatingMenu.setScope(that.getUID('wai-lang'));
+						that.langField.setTargetObject(foundMarkup, 'lang');
+					} else {
+						that.langField.setTargetObject(null);
+					}
+
+					// TODO this should not be necessary here!
+					Aloha.FloatingMenu.doLayout();
+				}
+
+			});
+		},
+		
+		showActivePanels: function () {
+			console.dir(Aloha);
+		},
+		
+		initToggler: function () {
 			var that = this,
 				bar = this.container,
 				icon = bar.find(nsSel('handle-icon')),
@@ -198,7 +234,7 @@
 				bounceTimer;
 			
 			if (this.isOpen) {
-				this._rotateArrow(180, 0);
+				this.rotateArrow(180, 0);
 			}
 			
 			bar.find(nsSel('handle'))
@@ -256,7 +292,7 @@
 				);
 		},
 		
-		_roundCorners: function () {
+		roundCorners: function () {
 			var bar = this.container,
 				lis = bar.find(nsSel('panels>li')),
 				topClass = nsClass('panel-top'),
@@ -270,7 +306,7 @@
 			lis.last().find(nsSel('panel-content')).addClass(bottomClass);
 		},
 		
-		_updateScrolling: function () {
+		updateScrolling: function () {
 			var bar = this.container,
 				bottom = bar.find(nsSel('bottom')).position(),
 				h = $(window).height();
@@ -295,15 +331,15 @@
 		},
 		
 		// We delegate all sidebar onclick events to the container. 
-		// We then use _handleBarclick method until we bubble up to the first
+		// We then use handleBarclick method until we bubble up to the first
 		// significant thing that we can to interact with, and we do so
-		_barClicked: function (ev) {
-			this._handleBarclick($(ev.target));
+		barClicked: function (ev) {
+			this.handleBarclick($(ev.target));
 		},
 		
-		_handleBarclick: function (el) {
+		handleBarclick: function (el) {
 			if (el.hasClass(nsClass('panel-title'))) {
-				this._togglePanel(el);
+				this.togglePanel(el);
 			} else if (el.hasClass(nsClass('panel-content'))) {
 				// console.log('Content clicked');
 			} else if (el.hasClass(nsClass('handle'))) {
@@ -311,24 +347,24 @@
 			} else if (el.hasClass(nsClass('bar'))) {
 				// console.log('Sidebar clicked');
 			} else {
-				this._handleBarclick(el.parent());
+				this.handleBarclick(el.parent());
 			}
 		},
 		
-		_getPanelById: function (id) {
+		getPanelById: function (id) {
 			return this.panels[id];
 		},
 		
-		_getPanelByElement: function (el) {
+		getPanelByElement: function (el) {
 			var li = (el[0].tagName == 'LI') ? el : el.parent('li');
-			return this._getPanelById(li[0].id);
+			return this.getPanelById(li[0].id);
 		},
 		
-		_togglePanel: function (el) {
-			this._getPanelByElement(el).toggle();
+		togglePanel: function (el) {
+			this.getPanelByElement(el).toggle();
 		},
 		
-		_rotateArrow: function (angle, duration) {
+		rotateArrow: function (angle, duration) {
 			var arr = this.container.find(nsSel('handle-icon'));
 			arr.animate({angle: angle}, {
 					duration: (typeof duration == 'number' || typeof duration == 'string') ? duration : 500,
@@ -345,7 +381,7 @@
 		},
 		
 		open: function (duration, callback) {
-			this._rotateArrow(180, 0);
+			this.rotateArrow(180, 0);
 			
 			this.container.animate(
 				{marginLeft: 0},
@@ -357,7 +393,7 @@
 		},
 		
 		close: function (duration, callback) {
-			this._rotateArrow(0, 0);
+			this.rotateArrow(0, 0);
 			
 			this.container.animate(
 				{marginLeft: -this.width},
@@ -370,7 +406,7 @@
 		
 		expandPanel: function (panel, callback) {
 			if (typeof panel == 'string') {
-				panel = this._getPanelById(panel);
+				panel = this.getPanelById(panel);
 			}
 			
 			if (panel){
@@ -382,7 +418,7 @@
 		
 		collapsePanel: function (panel, duration, callback) {
 			if (typeof panel == 'string') {
-				panel = this._getPanelById(panel);
+				panel = this.getPanelById(panel);
 			}
 			
 			if (panel){
