@@ -360,6 +360,12 @@
 				this.content.height('auto');
 				this.rotateArrow(90, 0);
 			}
+			
+			// Disable text selection on title element
+			this.title
+				.attr('unselectable', 'on')
+				.css('-moz-user-select', 'none')
+				.each(function() {this.onselectstart = function() {return false;};});
 		},
 		
 		toggle: function () {
@@ -396,7 +402,7 @@
 			var that = this;
 			
 			this.content.stop().animate(
-				{height: 4}, 500, 'easeOutExpo',
+				{height: 5}, 500, 'easeOutExpo',
 				function () {
 					if (typeof callback == 'function') {
 						callback.call(that);
@@ -460,12 +466,6 @@
 					expanded: false
 				},
 				{
-					id: 't3',
-					title: 'Test title 3',
-					content: 'Test content',
-					expanded: false
-				},
-				{
 					id: 't2',
 					title: 'Test title 2',
 					content: 'Test content 2<pre>\
@@ -502,6 +502,12 @@
 					    12 \
 					</pre>',
 					expanded: true
+				},
+				{
+					id: 't3',
+					title: 'Test title 3',
+					content: 'Test content',
+					expanded: false
 				}
 			]
 		});
