@@ -45,15 +45,13 @@
 			'panel-content'	: nsClass('panel-content'),
 			'panel-content-inner'
 							:  nsClass('panel-content-inner'),
-			'panel-title'	: nsClass('panel-title'),
 			panels			: nsClass('panels'),
+			'panel-title'	: nsClass('panel-title'),
 			shadow			: nsClass('shadow'),
 			'panel-title-arrow'
 							: nsClass('panel-title-arrow'),
 			'panel-title-text'
-							: nsClass('panel-title-text'),
-			toggle			: nsClass('toggle'),
-			'toggle-img'	: nsClass('toggle-img')
+							: nsClass('panel-title-text')
 		};
 	
 	// ------------------------------------------------------------------------
@@ -117,23 +115,20 @@
 	var Sidebar = function Sidebar (opts) {
 		this.id = nsClass(++uid);
 		this.panels = {};
-		this.container = $(renderTemplate('			 \
-			<div class="{bar}">						 \
-				<div class="{shadow}"></div>		 \
-				<div class="{toggle}">				 \
-					<div class="{toggle-img}"></div> \
-				</div>								 \
-				<div class="{inner}">		 		 \
-					<ul class="{panels}"></ul>		 \
-					<div class="{bottom}"></div>	 \
-				</div>								 \
-				<div class="{handle}">		 		 \
-				</div>								 \
-			</div>									 \
+		this.container = $(renderTemplate('		 \
+			<div class="{bar}">					 \
+				<div class="{handle}"></div>	 \
+				<div class="{shadow}"></div>	 \
+				<div class="{inner}">		 	 \
+					<ul class="{panels}"></ul>	 \
+					<div class="{bottom}"></div> \
+				</div>							 \
+			</div>								 \
 		'));
 		this._activePanel = null;
 		// defaults
 		this.width = 300;
+		this.isOpen = true;
 		
 		this.init(opts);
 	};
@@ -179,6 +174,42 @@
 			
 			this._updateScrolling();
 			this._roundCorners();
+			
+			var toggledClass = nsClass('toggled');
+			
+			bar.find(nsSel('handle'))
+				.click(function () {
+					if (that.isOpen) {
+						toggler.removeClass(toggledClass);
+						that.close();
+						that.isOpen = false;
+					} else {
+						toggler.addClass(toggledClass);
+						that.open();
+						that.isOpen = true;
+					}
+				}).hover(
+					function () {
+						var el = $(this);
+						if (that.isOpen) {
+							console.log(2, el);
+							el.animate({
+								marginRight: 5,
+								width: 25
+							}, 200);
+						}
+					},
+					function () {
+						var el = $(this);
+						if (that.isOpen) {
+							el.animate({
+								marginRight: 0,
+								width: 30
+							}, 200);
+						}
+					}
+				);
+			
 			
 			// Announce that the Sidebar has arrived!
 			body.trigger(nsClass('initialized'));

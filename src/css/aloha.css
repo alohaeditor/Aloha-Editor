@@ -534,11 +534,11 @@ ul.aloha-multisplit button.aloha-button-removeFormat {
 		color-stop(1.00, rgba(0, 0, 0, .0))
 	);
 	background-image: -moz-linear-gradient(
-		center left,
-		rgba(0, 0, 0, .8) 0%,
-		rgba(0, 0, 0, .0) 10%,
-		rgba(0, 0, 0, .0) 90%,
-		rgba(0, 0, 0, .8) 100%
+		left center,
+		rgba(0, 0, 0, .4) 0%,
+		rgba(0, 0, 0, .3) 10%,
+		rgba(0, 0, 0, .2) 30%,
+		rgba(0, 0, 0, .0) 100%
 	);
 }
 .aloha-sidebar-bar-bottom {
@@ -672,4 +672,7 @@ ul.aloha-multisplit button.aloha-button-removeFormat {
 	height: 30px;
 	overflow: hidden;
 	background: green;
+}
+.aloha-sidebar-handle:hover {
+	background: red;
 }
