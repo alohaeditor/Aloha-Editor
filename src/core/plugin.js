@@ -139,6 +139,10 @@
 				exited = false,
 				complete = function(){
 					if ( exited ) {
+						// TODO: Make error message more verbose
+						// As a developer I find this a little funny. Lay users, on the other
+						// hand, will want you head for this. Shouldn't error messages tell the
+						// user something they *don't* know?
 						throw new Error('Something went wrong');
 					}
 					else {

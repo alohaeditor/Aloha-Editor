@@ -252,10 +252,10 @@
 			if (count > 0) {
 				panel.activate(effective);
 			} else {
-				li.animate({
+				li.stop().animate({
 					height: 0,
 					opacity: 0
-				}, 200, 'easeOutExpo');
+				}, 500, 'easeOutExpo');
 			}
 		},
 		
@@ -505,6 +505,7 @@
 		'));
 		this.element  = null;
 		this.expanded = false;
+		this.effectiveElement = null;
 		
 		this.init(opts);
 	};
@@ -553,16 +554,20 @@
 		},
 		
 		activate: function (effective) {
-			var li = this.content.parent('li'),
-				h_old = li.height(),
-				h_new = li.height('auto').height();
+			var li = this.content.parent('li').stop();
+				//h_old = li.height(),
+				//h_new = li.height('auto').height();
 			
-			li.height(h_old).animate({
-				height: h_new,
+			//li.height(h_old)
+			
+			li.animate({
+				//height: h_new,
 				opacity: 1
-			}, 200, 'easeOutExpo', function () {
+			}, 500, 'linear', function () {
 				$(this).height('auto');
 			});
+			
+			this.effectiveElement = effective;
 			
 			if (typeof this.onActivate == 'function') {
 				this.onActivate.call(this, effective);
@@ -665,64 +670,50 @@
 			width: 250,
 			panels: [
 				{
-					activeOn: ['h1'],
-					id: 't1',
-					title: 'Open on h1',
+				 // id: 't1',
+					title: 'Headers',
 					content: '',
-					expanded: true,
+					expanded: false,
 					onInit: function () {},
+					activeOn: ['h1,h2,h3,h4,h5,h6,h7'],
 					onActivate: function (effective) {
-						//effective.html(effective);
-						console.log(effective);
+						var domobj = effective[0],
+							str = '',
+							typeOf;
+						
+						$.each(domobj, function (k, v) {
+							if ((typeOf = typeof v) == 'string' || typeOf == 'number') {
+								str += k + ' => ' + v + '<br />';
+							}
+						});
+						
+						this.setContent(str);
+					}
+				},
+				{
+				 // id: 't2',
+					title: 'Links',
+					content: 'Change href:<br /><input type="text" value=""/>',
+					expanded: true,
+					activeOn: ['a'],
+					onInit: function () {
+						var that = this;
+						this.content.find('input').change(function () {
+							that.effectiveElement.attr('href', $(this).val());
+						})
 					},
+					onActivate: function (effective) {
+						this.content.find('input').val(effective.attr('href'));
+					}
 				},
 				{
-					activeOn: ['h2', 'h3'],
-					id: 't2',
-					title: 'Open on h2 and h3',
-					content: '<pre>\
-						... \
-					    ... \
-					    ... \
-					    ... \
-					    ... \
-					    ... \
-					    ... \
-					    ... \
-					    ... \
-					    ... \
-					    ... \
-					    ... \
-					    ... \
-					    ... \
-					    ... \
-					    ... \
-					    ... \
-					    ... \
-					    ... \
-					    ... \
-					    ... \
-					    ... \
-					    ... \
-					    ... \
-					    ... \
-					    ... \
-					    ... \
-					    ... \
-					    ... \
-					    ... \
-					    ... \
-					</pre>',
-					expanded: false
-				},
-				{
+				 // id: 't3',
+					title: 'Everthing',
+					content: '...',
+					expanded: true,
 					activeOn: function (elem) {
 						return true;
-					},
-					id: 't3',
-					title: 'Open on all',
-					content: 'Test content',
-					expanded: false
+					}
 				}
 			]
 		});
