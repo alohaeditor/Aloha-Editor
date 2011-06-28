@@ -222,6 +222,7 @@
 		},
 		
 		// Perfoms an algorithm to dynamically fix appropriate heights for panels
+		// TODO: Improve this when you have time
 		correctHeight: function () {
 			var height = this.container.find(nsSel('inner')).height() - (15 * 2),
 				panels = [];
@@ -241,8 +242,7 @@
 				targetHeight,
 				panelInner,
 				panelText,
-				hungry = [],
-				iter = 0,
+				undone = [],
 				toadd = 0;
 			
 			while (panels.length > 0 && remainingHeight > 0) {
@@ -251,7 +251,7 @@
 				remainingHeight += toadd;
 				
 				toadd = 0;
-				hungry = [];
+				undone = [];
 				
 				for (; j >= 0; j--) {
 					panel = panels[j];
@@ -269,15 +269,19 @@
 					panelText = panelInner.find(nsSel('panel-content-inner-text'));
 					
 					if (panelText.height() > targetHeight) {
-						hungry.push(panel);
+						undone.push(panel);
 						toadd += targetHeight;
 						panelInner.css('overflow-y', 'scroll');
 					} else {
 						panelInner.css('overflow-y', 'none');
 					}
+					
+					if (panel.expanded) {
+						panel.expand();
+					}
 				}
 				
-				panels = hungry;
+				panels = undone;
 			}
 		},
 		
@@ -466,11 +470,12 @@
 					duration: (typeof duration == 'number' || typeof duration == 'string') ? duration : 500,
 					easing: 'easeOutExpo',
 					step: function (val, fx) {
+						var ieAngle = angle / 90;
 						arr.css({
 							'-webkit-transform'	: 'rotate(' + val + 'deg)',
 							'-moz-transform'	: 'rotate(' + val + 'deg)',
-							'-ms-transform'		: 'rotate(' + val + 'deg)'
-						 // filter				: 'progid:DXImageTransform.Microsoft.BasicImage(rotation=1.5)'
+							'-ms-transform'		: 'rotate(' + val + 'deg)',
+							filter				: 'progid:DXImageTransform.Microsoft.BasicImage(rotation=' + ieAngle + ')'
 						});
 					}
 				});
@@ -704,11 +709,12 @@
 					duration: (typeof duration == 'number') ? duration : 500,
 					easing: 'easeOutExpo',
 					step: function (val, fx) {
+						var ieAngle = angle / 90;
 						arr.css({
 							'-webkit-transform'	: 'rotate(' + val + 'deg)',
 							'-moz-transform'	: 'rotate(' + val + 'deg)',
 							'-ms-transform'		: 'rotate(' + val + 'deg)',
-							filter				: 'progid:DXImageTransform.Microsoft.BasicImage(rotation=1.5)'
+							filter				: 'progid:DXImageTransform.Microsoft.BasicImage(rotation=' + ieAngle + ')'
 						});
 					}
 				});
