@@ -39,7 +39,6 @@
 		// namespaced classnames
 		nsClasses = {
 			bar				: nsClass('bar'),
-			bottom			: nsClass('bottom'),
 			'config-btn'	: nsClass('config-btn'),
 			handle			: nsClass('handle'),
 			'handle-icon'	: nsClass('handle-icon'),
@@ -51,7 +50,6 @@
 							:  nsClass('panel-content-inner-text'),
 			panels			: nsClass('panels'),
 			'panel-title'	: nsClass('panel-title'),
-			right			: nsClass('right'),
 			shadow			: nsClass('shadow'),
 			'panel-title-arrow'
 							: nsClass('panel-title-arrow'),
@@ -123,14 +121,13 @@
 		this.id = nsClass(++uid);
 		this.panels = {};
 		this.container = $(renderTemplate('				\
-			<div class="{bar}">					\
+			<div class="{bar}">							\
 				<div class="{shadow}"></div>			\
 				<div class="{handle}">					\
 					<span class="{handle-icon}"></span>	\
 				</div>									\
 				<div class="{inner}">		 			\
 					<ul class="{panels}"></ul>			\
-					<div class="{bottom}"></div>		\
 				</div>									\
 			</div>										\
 		'));
@@ -170,6 +167,10 @@
 					that.addPanel(this);
 				});
 			}
+			
+			this.right = (this.position == 'right');
+			
+			bar.addClass(nsClass('right'));
 			
 			// Place the bar into the DOM
 			bar.css('opacity', 0)
@@ -336,7 +337,7 @@
 				bounceTimer;
 			
 			if (this.isOpen) {
-				this.rotateArrow(180, 0);
+				this.rotateArrow(this.right ? 0 : 180, 0);
 			}
 			
 			bar.find(nsSel('handle'))
@@ -371,10 +372,14 @@
 							icon.animate({marginLeft: '-=' + (flag * 4)}, 300);
 						}, 300);
 						
+						var anim = this.right
+								 ? {marginRight: 5}
+								 : {marginLrft: 0};
+						
 						if (that.isOpen) {
-							$(this).stop().animate({marginRight: 5}, 200);
+							$(this).stop().animate(anim, 200);
 						} else {
-							$(this).stop().animate({marginRight: 0}, 200);
+							$(this).stop().animate(anim, 200);
 						}
 					},
 					
@@ -469,27 +474,41 @@
 		},
 		
 		open: function (duration, callback) {
-			this.rotateArrow(180, 0);
+			this.rotateArrow(this.right ? 0 : 180, 0);
+			
+			var anim = this.right ? {marginRight: 0}
+								  : {marginLeft: 0};
 			
 			this.container.animate(
-				{marginLeft: 0},
+				anim,
 				(typeof duration == 'number' || typeof duration == 'string') ? duration : 500,
 				'easeOutExpo'
 			);
 			
-			$('body').animate({marginLeft: this.width}, 500, 'easeOutExpo');
+			anim = this.right
+					 ? {marginRight: 0}
+					 : {marginLeft: this.width};
+			
+			$('body').animate(anim, 500, 'easeOutExpo');
 		},
 		
 		close: function (duration, callback) {
-			this.rotateArrow(0, 0);
+			this.rotateArrow(this.right ? 180 : 0, 0);
+			
+			var anim = this.right ? {marginRight: -this.width}
+								  : {marginLeft: -this.width};
 			
 			this.container.animate(
-				{marginLeft: -this.width},
+				anim,
 				(typeof duration == 'number' || typeof duration == 'string') ? duration : 500,
 				'easeOutExpo'
 			);
 			
-			$('body').animate({marginLeft: 0}, 500, 'easeOutExpo');
+			anim = this.right
+					 ? {marginRight: this.width}
+					 : {marginLeft: 0};
+			
+			$('body').animate(anim, 500, 'easeOutExpo');
 		},
 		
 		expandPanel: function (panel, callback) {
@@ -716,6 +735,7 @@
 	$(function () {
 		//Aloha.Sidebar = new Sidebar();
 		window.Sidebar = new Sidebar({
+			position: 'right',
 			width: 250,
 			panels: [
 				{

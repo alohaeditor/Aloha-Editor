@@ -520,8 +520,10 @@ ul.aloha-multisplit button.aloha-button-removeFormat {
 	font-size: 12px;
 }
 .aloha-sidebar-bar.aloha-sidebar-right {
+	left: auto;
 	right: 0;
 }
+
 .aloha-sidebar-shadow {
 	position: absolute;
 	top: 0;
@@ -544,10 +546,26 @@ ul.aloha-multisplit button.aloha-button-removeFormat {
 		rgba(0, 0, 0, .0) 100%
 	);
 }
-.aloha-sidebar-bar-bottom {
-	height: 20px;
-	background: #333;
+.aloha-sidebar-right .aloha-sidebar-shadow {
+	left: -10px;
+	background-image: -webkit-gradient(
+		linear,
+		right center,
+		left center,
+		color-stop(0.00, rgba(0, 0, 0, .4)),
+		color-stop(0.10, rgba(0, 0, 0, .3)),
+		color-stop(0.30, rgba(0, 0, 0, .2)),
+		color-stop(1.00, rgba(0, 0, 0, .0))
+	);
+	background-image: -moz-linear-gradient(
+		right center,
+		rgba(0, 0, 0, .4) 0%,
+		rgba(0, 0, 0, .3) 10%,
+		rgba(0, 0, 0, .2) 30%,
+		rgba(0, 0, 0, .0) 100%
+	);
 }
+
 .aloha-sidebar-inner {
 	position: relative;
 	background-color: #ddd;
@@ -711,12 +729,28 @@ ul.aloha-multisplit button.aloha-button-removeFormat {
 	-webkit-box-shadow:	0px 0px 20px rgba(0, 0, 0, .8);
 	box-shadow:			0px 0px 20px rgba(0, 0, 0, .8);
 	
-	border-top-right-radius:	 5px;
-	border-bottom-right-radius:	 5px;
-	-moz-border-radius-topright: 5px;
-	-moz-border-radius-bottomright: 5px;
-	-webkit-border-top-right-radius: 5px;
+	border-top-right-radius:	 		5px;
+	border-bottom-right-radius:	 		5px;
+	-moz-border-radius-topright: 		5px;
+	-moz-border-radius-bottomright: 	5px;
+	-webkit-border-top-right-radius: 	5px;
 	-webkit-border-bottom-right-radius: 5px;
+}
+.aloha-sidebar-right .aloha-sidebar-handle {
+	left: -30px;
+	border-top-right-radius:	 		0px;
+	border-bottom-right-radius:	 		0px;
+	-moz-border-radius-topright: 		0px;
+	-moz-border-radius-bottomright: 	0px;
+	-webkit-border-top-right-radius: 	0px;
+	-webkit-border-bottom-right-radius: 0px;
+	
+	border-top-left-radius:	 			5px;
+	border-bottom-left-radius:	 		5px;
+	-moz-border-radius-topleft: 		5px;
+	-moz-border-radius-bottomleft: 		5px;
+	-webkit-border-top-left-radius: 	5px;
+	-webkit-border-bottom-left-radius:	5px;
 }
 .aloha-sidebar-handle-icon {
 	display: block;
