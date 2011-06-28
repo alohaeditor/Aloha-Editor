@@ -47,6 +47,8 @@
 			'panel-content'	: nsClass('panel-content'),
 			'panel-content-inner'
 							:  nsClass('panel-content-inner'),
+			'panel-content-inner-text'
+							:  nsClass('panel-content-inner-text'),
 			panels			: nsClass('panels'),
 			'panel-title'	: nsClass('panel-title'),
 			shadow			: nsClass('shadow'),
@@ -232,14 +234,23 @@
 				j = panels.length,
 				panel,
 				maxPanelHeight = height / j,
-				targetContentHeight,
-				inner;
+				targetHeight,
+				panelInner,
+				panelText;
 			
 			for (; i < j; i++) {
 				panel = panels[i];
-				targetContentHeight = maxPanelHeight - panel.title.outerHeight() - 10;
-				inner = panel.content.find(nsSel('panel-content-inner'));
-				inner.height(targetContentHeight);
+				targetHeight = maxPanelHeight - panel.title.outerHeight() - 10;
+				panelInner = panel.content.find(nsSel('panel-content-inner'));
+				panelInner.height(targetHeight);
+				
+				panelText = panelInner.find(nsSel('panel-content-inner-text'));
+				
+				if (panelText.height() > targetHeight) {
+					panelInner.css('overflow-y', 'scroll');
+				} else {
+					panelInner.css('overflow-y', 'none');
+				}
 			}
 		},
 		
@@ -523,10 +534,13 @@
 				<span class="{panel-title-text}">Untitled</span> \
 			</div>												 \
 		'));
-		this.content  = $(renderTemplate('					\
-			<div class="{panel-content}">					\
-				<div class="{panel-content-inner}"></div>	\
-			</div>											\
+		this.content  = $(renderTemplate('			\
+			<div class="{panel-content}">			\
+				<div class="{panel-content-inner}">	\
+					<div class="{panel-content-inner-text}">\
+					</div>							\
+				</div>								\
+			</div>									\
 		'));
 		this.element  = null;
 		this.expanded = false;
@@ -676,7 +690,7 @@
 				html = '&nbsp;';
 			}
 			
-			this.content.find(nsSel('panel-content-inner')).html(html);
+			this.content.find(nsSel('panel-content-inner-text')).html(html);
 			return this;
 		},
 		
