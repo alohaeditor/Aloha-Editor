@@ -133,7 +133,7 @@
 		'));
 		// defaults
 		this.width = 300;
-		this.isOpen = false;
+		this.isOpen = true;
 		
 		this.init(opts);
 	};
@@ -200,9 +200,9 @@
 			
 			Aloha.bind('aloha-selection-changed', function(event, rangeObject) {
 				var panels = that.panels,
-					obj,
 					effective = [],
-					i = 0;
+					i = 0,
+					obj;
 				
 				for (; i < rangeObject.markupEffectiveAtStart.length; i++) {
 					obj = $(rangeObject.markupEffectiveAtStart[i]);
@@ -212,7 +212,35 @@
 				$.each(panels, function () {
 					that.showActivePanel(this, effective);
 				});
+			
+				that.fixHeights();
 			});
+		},
+		
+		fixHeights: function () {
+			var height = this.container.find(nsSel('inner')).height() - (15 * 2),
+				panels = [];
+			
+			$.each(this.panels, function () {
+				console.log(this.isActive);
+				if (this.isActive) {
+					panels.push(this);
+				}
+			});
+			
+			var i = 0,
+				j = panels.length,
+				panel,
+				maxPanelHeight = height / j,
+				targetContentHeight,
+				inner;
+			
+			for (; i < j; i++) {
+				panel = panels[i];
+				targetContentHeight = maxPanelHeight - panel.title.outerHeight() - 10;
+				inner = panel.content.find(nsSel('panel-content-inner'));
+				inner.height(targetContentHeight);
+			}
 		},
 		
 		showActivePanel: function (panel, effectiveElems) {
@@ -252,10 +280,7 @@
 			if (count > 0) {
 				panel.activate(effective);
 			} else {
-				li.stop().animate({
-					height: 0,
-					opacity: 0
-				}, 500, 'easeOutExpo');
+				panel.deactivate();
 			}
 		},
 		
@@ -506,6 +531,7 @@
 		this.element  = null;
 		this.expanded = false;
 		this.effectiveElement = null;
+		this.isActive = true;
 		
 		this.init(opts);
 	};
@@ -554,6 +580,8 @@
 		},
 		
 		activate: function (effective) {
+			this.isActive = true;
+			
 			var li = this.content.parent('li').stop();
 				//h_old = li.height(),
 				//h_new = li.height('auto').height();
@@ -572,6 +600,16 @@
 			if (typeof this.onActivate == 'function') {
 				this.onActivate.call(this, effective);
 			}
+		},
+		
+		deactivate: function () {
+			this.isActive = false;
+			
+			this.content.parent('li')
+				.stop().animate({
+					height: 0,
+					opacity: 0
+				}, 500, 'easeOutExpo');
 		},
 		
 		toggle: function () {

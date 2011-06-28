@@ -583,6 +583,7 @@ ul.aloha-multisplit button.aloha-button-removeFormat {
 }
 .aloha-sidebar-panel-title {
 	position: relative;
+	overflow: hidden;
 	padding: 8px 8px 4px;
 	border: 1px solid rgba(0, 0, 0, 0.3);
 	border-bottom-width: 0;
@@ -638,6 +639,7 @@ ul.aloha-multisplit button.aloha-button-removeFormat {
 }
 .aloha-sidebar-panel-title-text {
 	margin-left: 24px;
+	white-space: nowrap;
 }
 .aloha-sidebar-panel-content {
 	overflow: hidden;
