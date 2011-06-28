@@ -706,7 +706,7 @@ ul.aloha-multisplit button.aloha-button-removeFormat {
 	
 	-moz-box-shadow:	0px 0px 20px rgba(0, 0, 0, .8);
 	-webkit-box-shadow:	0px 0px 20px rgba(0, 0, 0, .8);
-	box-shadow:		0px 0px 20px rgba(0, 0, 0, .8);
+	box-shadow:			0px 0px 20px rgba(0, 0, 0, .8);
 	
 	border-top-right-radius:	 5px;
 	border-bottom-right-radius:	 5px;
@@ -724,4 +724,40 @@ ul.aloha-multisplit button.aloha-button-removeFormat {
 	margin: 5px;
 	opacity: 0.5;
 	filter: alpha(opacity=50);
+}
+
+#aloha-sidebar-panel-elements-btns {
+	background: #ddd;
+	padding: 5px;
+	margin: 10px 5px 5px;
+	-moz-border-radius:		5px;
+	-webkit-border-radius:	5px;
+	border-radius:			5px;
+}
+#aloha-sidebar-panel-elements input {
+	padding: 2px;
+	background: transparent;
+	border: 1px solid transparent;
+	color: #555;
+	width: auto;
+}
+#aloha-sidebar-panel-elements input:hover {
+	-moz-box-shadow:	1px 1px 4px rgba(0, 0, 0, .2);
+	-webkit-box-shadow:	1px 1px 4px rgba(0, 0, 0, .2);
+	box-shadow:			1px 1px 4px rgba(0, 0, 0, .2);
+	border: 1px solid #eee;
+}
+#aloha-sidebar-panel-elements input:focus {
+	-moz-box-shadow:	2px 2px 6px rgba(0, 0, 0, .15);
+	-webkit-box-shadow:	2px 2px 6px rgba(0, 0, 0, .15);
+	box-shadow:			2px 2px 6px rgba(0, 0, 0, .15);
+	border: 1px solid #ccc;
+}
+#aloha-sidebar-panel-elements button {
+	width: 100%;
+	padding: 5px;
+}
+
+.red {
+	background:red;
 }

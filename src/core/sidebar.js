@@ -193,6 +193,8 @@
 			// Fade in nice and slow
 			bar.animate({opacity: 1}, 1000);
 			
+			this.correctHeight();
+			
 			// Announce that the Sidebar has arrived!
 			body.trigger(nsClass('initialized'));
 		},
@@ -215,11 +217,12 @@
 					that.showActivePanel(this, effective);
 				});
 			
-				that.fixHeights();
+				that.correctHeight();
 			});
 		},
 		
-		fixHeights: function () {
+		// Perfoms an algorithm to dynamically fix appropriate heights for panels
+		correctHeight: function () {
 			var height = this.container.find(nsSel('inner')).height() - (15 * 2),
 				panels = [];
 			
@@ -229,27 +232,52 @@
 				}
 			});
 			
-			var i = 0,
-				j = panels.length,
+			if (panels.length == 0) {
+				return;
+			}
+			
+			var remainingHeight = height - ((panels[0].title.outerHeight() + 10) * panels.length),
 				panel,
-				maxPanelHeight = height / j,
 				targetHeight,
 				panelInner,
-				panelText;
+				panelText,
+				hungry = [],
+				iter = 0,
+				toadd = 0;
 			
-			for (; i < j; i++) {
-				panel = panels[i];
-				targetHeight = maxPanelHeight - panel.title.outerHeight() - 10;
-				panelInner = panel.content.find(nsSel('panel-content-inner'));
-				panelInner.height(targetHeight);
+			while (panels.length > 0 && remainingHeight > 0) {
+				var j = panels.length - 1;
 				
-				panelText = panelInner.find(nsSel('panel-content-inner-text'));
+				remainingHeight += toadd;
 				
-				if (panelText.height() > targetHeight) {
-					panelInner.css('overflow-y', 'scroll');
-				} else {
-					panelInner.css('overflow-y', 'none');
+				toadd = 0;
+				hungry = [];
+				
+				for (; j >= 0; j--) {
+					panel = panels[j];
+					panelInner = panel.content.find(nsSel('panel-content-inner'));
+					
+					targetHeight = Math.min(
+						panelInner.height('auto').height(),
+						Math.floor(remainingHeight / (j + 1))
+					);
+					
+					panelInner.height(targetHeight);
+					
+					remainingHeight -= targetHeight;
+					
+					panelText = panelInner.find(nsSel('panel-content-inner-text'));
+					
+					if (panelText.height() > targetHeight) {
+						hungry.push(panel);
+						toadd += targetHeight;
+						panelInner.css('overflow-y', 'scroll');
+					} else {
+						panelInner.css('overflow-y', 'none');
+					}
 				}
+				
+				panels = hungry;
 			}
 		},
 		
@@ -558,11 +586,6 @@
 			this.setTitle(opts.title)
 				.setContent(opts.content);
 			
-			if (typeof opts.activeOn == 'object') {
-				this.activeOn = opts.activeOn.join(',');
-				delete opts.activeOn;
-			}
-			
 			delete opts.title;
 			delete opts.content;
 			
@@ -594,22 +617,8 @@
 		
 		activate: function (effective) {
 			this.isActive = true;
-			
-			var li = this.content.parent('li').stop();
-				//h_old = li.height(),
-				//h_new = li.height('auto').height();
-			
-			//li.height(h_old)
-			
-			li.height('auto').animate({
-				//height: h_new,
-				opacity: 1
-			}, 500, 'linear', function () {
-				$(this).height('auto');
-			});
-			
+			this.content.parent('li').show();
 			this.effectiveElement = effective;
-			
 			if (typeof this.onActivate == 'function') {
 				this.onActivate.call(this, effective);
 			}
@@ -617,12 +626,8 @@
 		
 		deactivate: function () {
 			this.isActive = false;
-			
-			this.content.parent('li')
-				.stop().animate({
-					height: 0,
-					opacity: 0
-				}, 500, 'easeOutExpo');
+			this.content.parent('li').hide();
+			this.effectiveElement = null;
 		},
 		
 		toggle: function () {
@@ -702,8 +707,8 @@
 						arr.css({
 							'-webkit-transform'	: 'rotate(' + val + 'deg)',
 							'-moz-transform'	: 'rotate(' + val + 'deg)',
-							'-ms-transform'		: 'rotate(' + val + 'deg)'
-						 // filter				: 'progid:DXImageTransform.Microsoft.BasicImage(rotation=1.5)'
+							'-ms-transform'		: 'rotate(' + val + 'deg)',
+							filter				: 'progid:DXImageTransform.Microsoft.BasicImage(rotation=1.5)'
 						});
 					}
 				});
@@ -721,13 +726,29 @@
 			width: 250,
 			panels: [
 				{
-				 // id: 't1',
-					title: 'Headers',
-					content: '',
-					expanded: false,
-					onInit: function () {},
-					activeOn: ['h1,h2,h3,h4,h5,h6,h7'],
+				 // id: 't2',
+					title	 : 'Links',
+					content  : 'Change href:<br /><input type="text" value=""/>',
+					expanded : true,
+					activeOn : 'a',
+					onInit	 : function () {
+						var that = this;
+						this.content.find('input').change(function () {
+							that.effectiveElement.attr('href', $(this).val());
+						})
+					},
 					onActivate: function (effective) {
+						this.content.find('input').val(effective.attr('href'));
+					}
+				},
+				{
+				 // id: 't1',
+					title	   : 'Headers',
+					content	   : '',
+					expanded   : false,
+					onInit	   : function () {},
+					activeOn   : 'h1,h2,h3,h4,h5,h6,h7',
+					onActivate : function (effective) {
 						var domobj = effective[0],
 							str = '',
 							typeOf;
@@ -742,28 +763,52 @@
 					}
 				},
 				{
-				 // id: 't2',
-					title: 'Links',
-					content: 'Change href:<br /><input type="text" value=""/>',
-					expanded: true,
-					activeOn: ['a'],
-					onInit: function () {
+					id		 : 'aloha-sidebar-panel-elements',
+					title	 : 'Element',
+					content	 : '',
+					expanded : true,
+					activeOn : function (elem) {
+						return true;
+					},
+					onInit	 : function () {
+						var content = this.setContent('\
+							<div id="aloha-sidebar-panel-elements-props">	\
+								id:											\
+								<input type="text" value=""					\
+									id="aloha-sidebar-panel-elements-id" />	\
+								<br />										\
+								classname:									\
+								<input type="text" value=""					\
+									id="aloha-sidebar-panel-elements-classname" />\
+								<br />										\
+							</div>											\
+							<div id="aloha-sidebar-panel-elements-btns">	\
+								<button>Update</button>						\
+							</div>											\
+						').content;
+						
+						var autosize = function(){ 
+							var size = parseInt($(this).attr('size')); 
+							var chars = $(this).val().length; 
+							$(this).attr('size', chars); 
+                        };
+						
+						content.find('input').attr('size', 'auto')
+							.keyup(autosize).change(autosize);
+						
 						var that = this;
-						this.content.find('input').change(function () {
-							that.effectiveElement.attr('href', $(this).val());
-						})
+						
+						content.find('button').click(function () {
+							that.effectiveElement
+								.attr({id : $('#aloha-sidebar-panel-elements-id').val() || null})
+								.attr('class', $('#aloha-sidebar-panel-elements-classname').val() || null);
+						});
 					},
 					onActivate: function (effective) {
-						this.content.find('input').val(effective.attr('href'));
-					}
-				},
-				{
-				 // id: 't3',
-					title: 'Everthing',
-					content: '...',
-					expanded: true,
-					activeOn: function (elem) {
-						return true;
+						$('#aloha-sidebar-panel-elements-id')
+							.val(effective.attr('id'))
+						$('#aloha-sidebar-panel-elements-classname')
+							.val(effective.attr('class'))
 					}
 				}
 			]
