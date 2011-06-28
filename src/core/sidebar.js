@@ -560,7 +560,7 @@
 			
 			//li.height(h_old)
 			
-			li.animate({
+			li.height('auto').animate({
 				//height: h_new,
 				opacity: 1
 			}, 500, 'linear', function () {
