@@ -131,7 +131,7 @@
 				"dep/jquery.json-2.2.min.js",
 				"dep/jquery.getUrlParam.js",
 				"dep/jquery.store.js",
-				"dep/rangy-core.js",
+				"core/rangy-core.js",
 
 				"core/jquery.aloha.js",
 				"util/lang.js",
