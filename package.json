@@ -110,6 +110,7 @@
 			"check": [
 				"dep",
 				"util/base.js",
+				"util/range.js",
 				"core/rangy-core.js"
 			],
 			"img": [
