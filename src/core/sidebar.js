@@ -224,7 +224,6 @@
 				panels = [];
 			
 			$.each(this.panels, function () {
-				console.log(this.isActive);
 				if (this.isActive) {
 					panels.push(this);
 				}
@@ -577,7 +576,7 @@
 				$('<li id="' +this.id + '">')
 					.append(this.title, this.content);
 			
-			if (this.expanded ){
+			if (this.expanded){
 				this.content.height('auto');
 				this.rotateArrow(90, 0);
 			}
