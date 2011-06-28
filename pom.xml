@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.gentics</groupId>
-	<artifactId>alohaeditor</artifactId>
+	<artifactId>alohaeditor-legacy</artifactId>
 	<version>0.9.3-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
