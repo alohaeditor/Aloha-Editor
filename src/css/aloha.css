@@ -519,6 +519,9 @@ ul.aloha-multisplit button.aloha-button-removeFormat {
 	font-family: Arial, sans-serif;
 	font-size: 12px;
 }
+.aloha-sidebar-bar.aloha-sidebar-right {
+	right: 0;
+}
 .aloha-sidebar-shadow {
 	position: absolute;
 	top: 0;

@@ -51,6 +51,7 @@
 							:  nsClass('panel-content-inner-text'),
 			panels			: nsClass('panels'),
 			'panel-title'	: nsClass('panel-title'),
+			right			: nsClass('right'),
 			shadow			: nsClass('shadow'),
 			'panel-title-arrow'
 							: nsClass('panel-title-arrow'),
@@ -122,7 +123,7 @@
 		this.id = nsClass(++uid);
 		this.panels = {};
 		this.container = $(renderTemplate('				\
-			<div class="{bar}">							\
+			<div class="{bar}">					\
 				<div class="{shadow}"></div>			\
 				<div class="{handle}">					\
 					<span class="{handle-icon}"></span>	\
@@ -177,10 +178,10 @@
 			   .find(nsSel('panels')).width(this.width);
 			
 			$(window).resize(function () {
-				that.updateScrolling();
+				that.updateHeight();
 			});
 			
-			this.updateScrolling();
+			this.updateHeight();
 			this.roundCorners();
 			this.initToggler();
 			
@@ -271,9 +272,10 @@
 					if (panelText.height() > targetHeight) {
 						undone.push(panel);
 						toadd += targetHeight;
+						panelInner.css('overflow-x', 'hidden');
 						panelInner.css('overflow-y', 'scroll');
 					} else {
-						panelInner.css('overflow-y', 'none');
+						panelInner.css('overflow-y', 'hidden');
 					}
 					
 					if (panel.expanded) {
@@ -406,28 +408,13 @@
 			lis.last().find(nsSel('panel-content')).addClass(bottomClass);
 		},
 		
-		updateScrolling: function () {
+		updateHeight: function () {
 			var bar = this.container,
-				bottom = bar.find(nsSel('bottom')).position(),
 				h = $(window).height();
 			
 			bar.height(h)
 			   .find(nsSel('shadow')).height(h);
 			bar.find(nsSel('inner')).height(h);
-			
-			/*
-			var panel = this.getActivePanel();
-			
-			if (!panel) {
-				return;
-			}
-			
-			panel.container
-				.css({
-					height	  : $(window).height(),
-					overflowY : (bottom.top > bar.height()) ? 'scroll' : 'auto'
-				});
-			*/
 		},
 		
 		// We delegate all sidebar onclick events to the container. 
