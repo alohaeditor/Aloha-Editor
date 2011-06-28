@@ -169,7 +169,8 @@
 			}
 			
 			// Place the bar into the DOM
-			bar.appendTo(body)
+			bar.css('opacity', 0)
+			   .appendTo(body)
 			   .click(function () {that.barClicked.apply(that, arguments);})
 			   .find(nsSel('panels')).width(this.width);
 			
@@ -187,6 +188,9 @@
 			
 			this.subscribeToEvents();
 			
+			// Fade in nice and slow
+			bar.animate({opacity: 1}, 1000);
+			
 			// Announce that the Sidebar has arrived!
 			body.trigger(nsClass('initialized'));
 		},
@@ -197,45 +201,42 @@
 			Aloha.bind('aloha-selection-changed', function(event, rangeObject) {
 				var panels = that.panels,
 					obj,
-					effectiveElems = [],
-					effectiveOrig = [],
+					effective = [],
 					i = 0;
 				
 				for (; i < rangeObject.markupEffectiveAtStart.length; i++) {
 					obj = $(rangeObject.markupEffectiveAtStart[i]);
-					effectiveOrig.push(obj);
-					effectiveElems.push(obj.clone().wrap('<div>').parent('div'));
+					effective.push(obj);
 				}
 				
 				$.each(panels, function () {
-					that.showActivePanel(this, effectiveElems, effectiveOrig);
+					that.showActivePanel(this, effective);
 				});
 			});
 		},
 		
-		showActivePanel: function (panel, effectiveElems, effectiveOrig) {
+		showActivePanel: function (panel, effectiveElems) {
 			var i = 0,
 				j = effectiveElems.length,
 				count = 0,
 				li = panel.content.parent('li'),
-				effective = $(),
-				elems;
+				effective = $();
 			
 			switch (typeof panel.activeOn) {
 			case 'function':
 				for (; i < j; i++) {
-					 elems = panel.activeOn(effectiveElems[i], effectiveOrig[0]);
-					 if (elems) {
-						 count += elems.length;
-						 $.merge(effective, elems);
+					 if (panel.activeOn(effectiveElems[i])) {
+						 count++;
+						 $.merge(effective, effectiveElems[i]);
 					}
 				}
 				break;
 			case 'string':
 				for (; i < j; i++) {
-					elems = effectiveElems[i].find(panel.activeOn);
-					count += elems.length;
-					 $.merge(effective, elems);
+					if (effectiveElems[i].is(panel.activeOn)) {
+						count++;
+						$.merge(effective, effectiveElems[i]);
+					}
 				}
 				break;
 			}
@@ -518,7 +519,7 @@
 				.setContent(opts.content);
 			
 			if (typeof opts.activeOn == 'object') {
-				this.activeOn = '>' + opts.activeOn.join(',>');
+				this.activeOn = opts.activeOn.join(',');
 				delete opts.activeOn;
 			}
 			
@@ -627,6 +628,11 @@
 		// May also be called by the Sidebar to update content of panel
 		// @param html - Markup string, DOM object, or jQuery object
 		setContent: function (html) {
+			// We do this so that empty panel contents don't appear collapsed
+			if (!html || html == '') {
+				html = '&nbsp;';
+			}
+			
 			this.content.find(nsSel('panel-content-inner')).html(html);
 			return this;
 		},
@@ -659,21 +665,21 @@
 			width: 250,
 			panels: [
 				{
+					activeOn: ['h1'],
 					id: 't1',
-					title: 'Start open',
-					content: 'Test content',
+					title: 'Open on h1',
+					content: '',
 					expanded: true,
-					onInit: function () {
-						console.log(3, this);
-					},
+					onInit: function () {},
 					onActivate: function (effective) {
+						//effective.html(effective);
 						console.log(effective);
 					},
-					activeOn: ['a']
 				},
 				{
+					activeOn: ['h2', 'h3'],
 					id: 't2',
-					title: 'Long content',
+					title: 'Open on h2 and h3',
 					content: '<pre>\
 						... \
 					    ... \
@@ -707,17 +713,16 @@
 					    ... \
 					    ... \
 					</pre>',
-					expanded: false,
-					activeOn: ['h2', 'p']
+					expanded: false
 				},
 				{
+					activeOn: function (elem) {
+						return true;
+					},
 					id: 't3',
-					title: 'Click me to open',
+					title: 'Open on all',
 					content: 'Test content',
-					expanded: false,
-					activeOn: function (elem, orig) {
-						return orig;
-					}
+					expanded: false
 				}
 			]
 		});
