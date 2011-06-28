@@ -205,12 +205,12 @@
 		makeClean: function(obj) {
 			var i, plugin;
 			// iterate through all registered plugins
-			for ( i = 0; i < this.plugins.length; i++) {
-				plugin = this.plugins[i];
+			for ( plugin in this.plugins ) {
 				if (Aloha.Log.isDebugEnabled()) {
-					Aloha.Log.debug(this, 'Passing contents of HTML Element with id { ' + obj.attr('id') + ' } for cleaning to plugin { ' + plugin.prefix + ' }');
+					Aloha.Log.debug(this, 'Passing contents of HTML Element with id { ' + obj.attr('id') + 
+						' } for cleaning to plugin { ' + plugin + ' }');
 				}
-				plugin.makeClean(obj);
+				this.plugins[plugin].makeClean(obj);
 			}
 		},
 
