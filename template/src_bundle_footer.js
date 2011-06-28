@@ -2,88 +2,63 @@
 	var
 		// jQuery
 		jQuery = window.alohaQuery || window.jQuery, $ = jQuery,
-		// Loading
-		defer = false, /*
-			Until browsers can support the defer attribute properly
-			This should always be false
-			Defer makes it so that they load in parrallel but execute in order
-			If we don't have it then the script could execute in any order, which will cause errors
-			So for the meantime, this flag will always be false.
-			Which means that instead we load things one by one.
-			It will be slower, but if you care for speed, then why are you using the uncompressed version of Aloha Editor?
-			Alternatively we could introduce much better sniffing
-			/WebKit/.test(navigator.userAgent), */
-		scriptEls = [],
-		// Async
 		completed = 0,
 		total = includes.length,
 		exited = false,
+		// this method will be called after the last script has been loaded (and executed)
 		next = function(){
 			$(function(){
 				$('body').addClass('alohacoreloaded').trigger('alohacoreloaded');
 			});
 		},
+		// get the script element for loading the script with given url
+		getScriptElement = function(url) {
+			// generate full url
+			var fullUrl = window.GENTICS_Aloha_base + '/' + url, scriptEl;
+
+			// Create the script element for loading the specified script
+			scriptEl = document.createElement('script');
+
+			// this event handler is for IE
+			scriptEl.onreadystatechange = scriptLoaded;
+
+			// these event handlers are for all other browsers
+			scriptEl.onload = scriptLoaded;
+			scriptEl.onerror = scriptLoaded;
+
+			// finally add the source
+			scriptEl.src = fullUrl;
+
+			return scriptEl;
+		},
+		// this method will be called whenever a script has been loaded (and executed)
 		scriptLoaded = function(event){
 			// Prepare
 			var nextScriptEl;
 
-			// Check
-			if ( typeof this.readyState !== 'undefined' && this.readyState !== 'complete' ) {
+			// This checks for IE, whether the script has been loaded
+			if ( typeof this.readyState !== 'undefined' && this.readyState !== 'complete'
+				&& this.readyState !== 'loaded' ) {
 				return;
 			}
 
-			// Clean
-			if ( this.timeout ) {
-				window.clearTimeout(this.timeout);
-				this.timeout = false;
-			}
-			
-			// Handle
+			// Check whether there are more scripts to be loaded.
 			if ( !exited ) {
 				completed++;
 				if ( completed === total ) {
+					// all the scripts have be loaded
 					exited = true;
 					next();
-				}
-				else if ( !defer ) {
-					nextScriptEl = scriptEls[completed];
-					nextScriptEl.timeout = window.setTimeout(scriptLoaded,1000);
+				} else {
+					nextScriptEl = getScriptElement(includes[completed]);
 					appendEl.appendChild(nextScriptEl);
 				}
 			}
 		},
-		// Loop
-		value, url, scriptEl, appendEl = document.head || document.getElementsByTagName('head')[0];
-	
-	// Insert Scripts
-	for ( i=0,n=total; i<n; ++i ) {
-		// Prepare
-		value = includes[i];
-		url = window.GENTICS_Aloha_base + '/' + value;
+		appendEl = document.head || document.getElementsByTagName('head')[0];
 
-		// Create
-		scriptEl = document.createElement('script');
-		scriptEl.src = url;
-		scriptEl.setAttribute('defer','defer');
-		scriptEl.onreadystatechange = scriptLoaded;
-		scriptEl.onload = scriptLoaded;
-		scriptEl.onerror = scriptLoaded;
-
-		// Add
-		if ( defer ) {
-			scriptEl.timeout = window.setTimeout(scriptLoaded,1000);
-			appendEl.appendChild(scriptEl);
-		}
-		else {
-			scriptEls.push(scriptEl);
-		}
-	}
-
-	// No Defer Support
-	if ( !defer ) {
-		scriptEls[0].timeout = window.setTimeout(scriptLoaded,1000);
-		appendEl.appendChild(scriptEls[0]);
-	}
+	// Add the first script element to the head. This will start the loading procedure
+	appendEl.appendChild(getScriptElement(includes[0]));
 
 // </closure>
 })(window);

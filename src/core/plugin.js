@@ -166,8 +166,19 @@
 					}
 					else {
 						// Success
+                        // load the dictionary file for the actual language
 						plugin.languageUrl = Aloha.settings.base + '/' + Aloha.settings.pluginDir + '/' + plugin.basePath + '/i18n/' + plugin.language + '.json';
-						Aloha.loadI18nFile(plugin.languageUrl,plugin,complete);
+						Aloha.loadI18nFile(plugin.languageUrl,plugin,function(){
+							// load the custom dictionary of the actual language
+							if (plugin.settings.customDictsPath) {
+								if (!plugin.settings.customDictsPath.match(/\/$/)) {
+									plugin.settings.customDictsPath = plugin.settings.customDictsPath + '/';
+								}
+								Aloha.loadI18nFile(plugin.settings.customDictsPath + plugin.language + '.json', plugin, complete);
+							} else {
+								complete();
+							}
+						});
 					}
 				},
 				// All

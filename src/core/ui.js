@@ -14,8 +14,29 @@
 		Ext = window.Ext,
 		Class = window.Class;
 
-// Ensure Namespace
-Aloha.ui = Aloha.ui || {};
+	// Ensure Namespace
+	Aloha.ui = Aloha.ui || {};
+
+	/**
+	 * This is the Gentics Version of the ExtJS Menu. It is necessary to extend the
+	 * Ext.menu.Menu in order to stop propagation of the mousedown event on the DOM
+	 * element of the menu, because a click in the menu shall not deactivate the
+	 * editable.
+	 */
+	Ext.ux.GENTICSMenu = Ext.extend(Ext.menu.Menu, {
+		/**
+         * overwrite onRender
+         */
+		onRender: function() {
+            // call the super method
+            Ext.ux.GENTICSMenu.superclass.onRender.apply(this, arguments);
+
+            // stop propagation of the mousedown event
+            jQuery(this.el.dom).mousedown(function (e) {
+                e.stopPropagation();
+            });
+		}
+	});
 
 /**
  * Constructor for an Aloha button.
@@ -230,7 +251,7 @@ Aloha.ui.Button = Class.extend({
 		var menu, i, entry;
 		if ( this.menu && typeof this.menu === 'object') {
 			// build the drop down menu
-			menu = new Ext.menu.Menu();
+			menu = new Ext.ux.GENTICSMenu();
 			for (i = 0; i < this.menu.length; ++i) {
 				entry = this.menu[i];
 				menu.addItem(new Ext.menu.Item(entry.getExtMenuConfigProperties()));
@@ -693,7 +714,7 @@ Aloha.ui.MultiSplitButton = Class.extend({
 	 * @param {String} name	name of the item to be set active
 	 */
 	setActiveItem: function(name) {
-		if (typeof name !== 'undefined') {
+		if (this.extButton && typeof name !== 'undefined') {
 			this.extButton.setActiveItem(name);
 		}
 	},

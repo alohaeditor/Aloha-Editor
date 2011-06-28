@@ -91,6 +91,49 @@ GENTICS.Utils.RangeObject = Class.extend({
 	rangeTree: [],
 
 	/**
+	 * Delete all contents selected by the current range
+	 * @param rangeTree a GENTICS.Utils.RangeTree object may be provided to start from. This parameter is optional
+	 */
+	deleteContents: function () {
+		
+		var cac, rt, i, children;
+		
+		// split range at the beginning and start, so deletion is easier
+
+		// the split process will leave the tree in a state, where it
+		// will only contain fully selected or unselected nodes.
+		// there may be some nodes that are partially selected which can
+		// be ignored safely, as they are only remains of the original
+		// cursor position before the split without an actual selected
+		// content. threat them as if they were not selected.
+		cac = jQuery(this.getCommonAncestorContainer());
+		GENTICS.Utils.Dom.split(this, cac, false);
+		GENTICS.Utils.Dom.split(this, cac, true);
+		this.clearCaches();
+		
+		// iterate over range tree to perform deletion
+		rt = this.getRangeTree();
+		for (i = 0; i < rt.length; i++) {
+			if (rt[i].type === 'full') {
+				// delete only fully selected nodes
+				jQuery(rt[i].domobj).remove();
+			}
+		}
+		
+		// special handling if all contents of the cac have been deleted
+		// this case can be detected, if the cac contains just a single br,
+		// or no children at all. if this occurs the range will be collapsed
+		this.clearCaches();
+		rt = this.getRangeTree();
+		children = cac.children();
+		if (children.length === 0 || (children.length === 1 && children.get(0).nodeName === 'BR')) {
+			this.commonAncestorContainer = this.startContainer = this.endContainer = cac.get(0);
+			this.startOffset = 0;
+			this.endOffset = 0;
+		}
+	},
+
+	/**
 	 * Output some log
 	 * TODO: move this to Aloha.Log
 	 * @param message log message to output
@@ -159,7 +202,7 @@ GENTICS.Utils.RangeObject = Class.extend({
 			return false;
 		}
 
-		if (typeof limit === 'undefined') {
+		if ( typeof limit === 'undefined' || ! limit ) {
 			limit = jQuery('body');
 		}
 
@@ -321,62 +364,23 @@ GENTICS.Utils.RangeObject = Class.extend({
 	 * @method
 	 */
 	select: function() {
-		var ieRange, endRange, startRange, range;
+		var ieRange, endRange, startRange, range, sel;
 
-		if ( jQuery.browser.msie ) {
-			// first the IE version of this method
-			if (Aloha.Log.isDebugEnabled()) {
-				Aloha.Log.debug(this, 'Set selection to current range (IE version)');
-			}
-			// when the startcontainer is a textnode, which is followed by a blocklevel node (p, h1, ...), we need to add a <br> in between
-			if (
-				this.startContainer.nodeType === 3 && GENTICS.Utils.Dom.isBlockLevelElement(this.startContainer.nextSibling)
-			) {
-				jQuery(this.startContainer).after('<br/>');
-				// we eventually also need to update the offset of the end container
-				if (
-					this.endContainer === this.startContainer.parentNode && GENTICS.Utils.Dom.getIndexInParent(this.startContainer) < this.endOffset
-				) {
-					this.endOffset++;
-				}
-			}
-
-			// create a text range
-			ieRange = document.body.createTextRange();
-
-			// get the start as collapsed range
-			startRange = this.getCollapsedIERange(this.startContainer, this.startOffset);
-			ieRange.setEndPoint('StartToStart', startRange);
-
-			if (this.isCollapsed()) {
-				// collapse the range
-				ieRange.collapse();
-			} else {
-				// get the end as collapsed range
-				endRange = this.getCollapsedIERange(this.endContainer, this.endOffset);
-				ieRange.setEndPoint('EndToStart', endRange);
-			}
-
-			// select our range now
-			ieRange.select();
+		// now for the rest of the world
+		if (Aloha && Aloha.Log.isDebugEnabled()) {
+			Aloha.Log.debug(this, 'Set selection to current range (non IE version)');
 		}
-		else {
-			// now for the rest of the world
-			if (Aloha && Aloha.Log.isDebugEnabled()) {
-				Aloha.Log.debug(this, 'Set selection to current range (non IE version)');
-			}
 
-			// create a range
-			range = document.createRange();
+		// create a range
+		range = rangy.createRange();
 
-			// set start and endContainer
-			range.setStart(this.startContainer,this.startOffset);
-			range.setEnd(this.endContainer, this.endOffset);
+		// set start and endContainer
+		range.setStart(this.startContainer,this.startOffset);
+		range.setEnd(this.endContainer, this.endOffset);
 
-			// update the selection
-			window.getSelection().removeAllRanges();
-			window.getSelection().addRange(range);
-		}
+		// update the selection
+		sel = rangy.getSelection();
+		sel.setSingleRange(range);
 	},
 
 	/**
@@ -466,9 +470,8 @@ GENTICS.Utils.RangeObject = Class.extend({
 	 * @hide
 	 */
 	initializeFromUserSelection: function(event) {
-		// get Browser selection via IERange standardized window.getSelection()
 		var
-			selection = window.getSelection(),
+			selection = window.rangy.getSelection(),
 			browserRange;
 		
 		if (!selection) {
