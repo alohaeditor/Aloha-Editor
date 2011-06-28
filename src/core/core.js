@@ -97,6 +97,12 @@
 
 				// Ready?
 				Aloha.bind('alohacoreloaded',function(){
+					// initialize rangy. This is probably necessary here,
+					// because due to the current loading mechanism, rangy
+					// doesn't initialize itself in all browsers
+					if (rangy) {
+						rangy.init();
+					}
 					// Mousemove Hooks
 					setInterval(function(){
 						GENTICS.Utils.Position.update();
