@@ -518,7 +518,7 @@ ul.aloha-multisplit button.aloha-button-removeFormat {
 	text-align: left;
 	font-family: Arial, sans-serif;
 	font-size: 12px;
-	border-right: 1px solid #aaa;
+	border-right: 1px solid #888;
 	-moz-box-shadow:	0px 0px 10px rgba(0, 0, 0, .5);
 	-webkit-box-shadow:	0px 0px 10px rgba(0, 0, 0, .5);
 	box-shadow:			0px 0px 10px rgba(0, 0, 0, .5);
@@ -528,21 +528,21 @@ ul.aloha-multisplit button.aloha-button-removeFormat {
 	left: auto;
 	right: 0;
 	border-right-width: 0;
-	border-left: 1px solid #aaa;
+	border-left: 1px solid #888;
 }
 
 .aloha-sidebar-inner {
 	position: relative;
-	background-color: #ddd;
+	background-color: #ccc;
 	background-image: -webkit-radial-gradient(
 		rgba(0, 0, 0, 0.0) 20%,
-		rgba(0, 0, 0, 0.1) 80%,
-		rgba(0, 0, 0, 0.2) 100%
+		rgba(0, 0, 0, 0.2) 80%,
+		rgba(0, 0, 0, 0.3) 100%
 	);
 	background-image: -moz-radial-gradient(
 		rgba(0, 0, 0, 0.0) 20%,
-		rgba(0, 0, 0, 0.1) 80%,
-		rgba(0, 0, 0, 0.2) 100%
+		rgba(0, 0, 0, 0.2) 80%,
+		rgba(0, 0, 0, 0.3) 100%
 	);
 }
 .aloha-sidebar-panels {
