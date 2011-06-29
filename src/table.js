@@ -416,6 +416,8 @@ Aloha.TablePlugin.makeCaptionEditable = function(caption, captionText) {
 	if (cSpan.length == 0) {
 		// generate a new div
 		cSpan = jQuery('<div></div>');
+		jQuery(cSpan).addClass('aloha-ui');
+		jQuery(cSpan).addClass('aloha-editable-caption');
 		if (caption.contents().length > 0) {
 			// when the caption has content, we wrap it with the new div
 			caption.contents().wrap(cSpan);

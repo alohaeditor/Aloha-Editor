@@ -39,12 +39,17 @@ td.aloha-table-selectrow {
 .aloha-table td.aloha-table-selectrow {
 	cursor: url(../img/left.cur),default;
 }
+.aloha-editable div.aloha-table-wrapper, .aloha-table-wrapper div.aloha-table-cell-editable, 
+.aloha-table-wrapper .aloha-table-leftuppercorner div, .aloha-table-wrapper tr.aloha-table-selectcolumn td,
+.aloha-table-wrapper td.aloha-table-selectrow , .aloha-table-wrapper div.aloha-editable-caption
+{ margin:0; border:none; background:none; padding:0; }
 
-.aloha-wai-red {
+
+.aloha-table-wrapper div.aloha-wai-red {
 	background-image: url(../img/wai-red.png);
 }
 
-.aloha-wai-green {
+.aloha-table-wrapper div.aloha-wai-green {
 	background-image: url(../img/wai-green.png);
 }
 
