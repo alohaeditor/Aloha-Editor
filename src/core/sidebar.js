@@ -729,7 +729,7 @@
 	$(function () {
 		//Aloha.Sidebar = new Sidebar();
 		window.Sidebar = new Sidebar({
-			position: 'left',
+			position: 'right',
 			width: 250,
 			panels: [
 				{
