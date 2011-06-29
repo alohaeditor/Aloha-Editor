@@ -52,6 +52,13 @@
 	margin: 0;
 	background-color: transparent;
 }
+
+.ext-root ol, .ext-root ul, .x-menu ul, .x-menu ol {
+	list-style:none;
+	margin:0;
+	padding:0;
+}
+
 .aloha-floatingmenu table, .aloha-floatingmenu tr, .aloha-floatingmenu td {
 	width: 0;
 	height: 0;
