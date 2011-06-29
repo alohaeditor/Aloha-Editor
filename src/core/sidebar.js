@@ -162,7 +162,7 @@
 			
 			if (typeof panels == 'object') {
 				$.each(panels, function () {
-					that.addPanel(this);
+					that.addPanel(this, true);
 				});
 			}
 			
@@ -194,10 +194,14 @@
 			// Fade in nice and slow
 			bar.animate({opacity: 1}, 1000);
 			
+			$(window).resize(function () {
+				that.correctHeight();
+			});
+			
 			this.correctHeight();
 			
-			// Announce that the Sidebar has arrived!
-			body.trigger(nsClass('initialized'));
+			// Announce that this Sidebar instance has arrived!
+			body.trigger(nsClass('initialized'), this);
 		},
 		
 		subscribeToEvents: function () {
@@ -530,7 +534,7 @@
 		
 		// We try and build as much of the panel DOM as we can before inserting
 		// it into the DOM in order to reduce reflow.
-		addPanel: function (panel) {
+		addPanel: function (panel, deferRounding) {
 			if (!(panel instanceof Panel)) {
 				if (!panel.width) {
 					panel.width = this.width;
@@ -541,6 +545,10 @@
 			this.panels[panel.id] = panel;
 			
 			this.container.find(nsSel('panels')).append(panel.element);
+			
+			if (deferRounding !== true) {
+				this.roundCorners();
+			}
 			
 			return this;
 		}
@@ -721,105 +729,12 @@
 		
 	});
 	
-	$('body').bind(nsClass('initialized'), function () {
+	// Expose Sidebar through Aloha as soon Aloha becomes available
+	$('body').bind('aloha', function () {
+		Aloha.Sidebar = Sidebar;
 		
-	});
-	
-	// Automatically invoke the Sidebar as soon as the DOM is ready
-	$(function () {
-		//Aloha.Sidebar = new Sidebar();
-		window.Sidebar = new Sidebar({
-			position: 'right',
-			width: 250,
-			panels: [
-				{
-				 // id: 't2',
-					title	 : 'Links',
-					content  : 'Change href:<br /><input type="text" value=""/>',
-					expanded : true,
-					activeOn : 'a',
-					onInit	 : function () {
-						var that = this;
-						this.content.find('input').change(function () {
-							that.effectiveElement.attr('href', $(this).val());
-						})
-					},
-					onActivate: function (effective) {
-						this.content.find('input').val(effective.attr('href'));
-					}
-				},
-				{
-				 // id: 't1',
-					title	   : 'Headers',
-					content	   : '',
-					expanded   : false,
-					onInit	   : function () {},
-					activeOn   : 'h1,h2,h3,h4,h5,h6,h7',
-					onActivate : function (effective) {
-						var domobj = effective[0],
-							str = '',
-							typeOf;
-						
-						$.each(domobj, function (k, v) {
-							if ((typeOf = typeof v) == 'string' || typeOf == 'number') {
-								str += k + ' => ' + v + '<br />';
-							}
-						});
-						
-						this.setContent(str);
-					}
-				},
-				{
-					id		 : 'aloha-sidebar-panel-elements',
-					title	 : 'Element',
-					content	 : '',
-					expanded : true,
-					activeOn : function (elem) {
-						return true;
-					},
-					onInit	 : function () {
-						var content = this.setContent('								\
-							<div id="aloha-sidebar-panel-elements-props">			\
-								id:													\
-								<input type="text" value=""							\
-									id="aloha-sidebar-panel-elements-id" />			\
-								<br />												\
-								classname:											\
-								<input type="text" value=""							\
-									id="aloha-sidebar-panel-elements-classname" />	\
-								<br />												\
-							</div>													\
-							<div id="aloha-sidebar-panel-elements-btns">			\
-								<button>Update</button>								\
-							</div>													\
-						').content;
-						
-						var autosize = function(){ 
-							var size = parseInt($(this).attr('size')); 
-							var chars = $(this).val().length; 
-							$(this).attr('size', chars); 
-                        };
-						
-						content.find('input').attr('size', 'auto')
-							.keyup(autosize).change(autosize);
-						
-						var that = this;
-						
-						content.find('button').click(function () {
-							that.effectiveElement
-								.attr({id : $('#aloha-sidebar-panel-elements-id').val() || null})
-								.attr('class', $('#aloha-sidebar-panel-elements-classname').val() || null);
-						});
-					},
-					onActivate: function (effective) {
-						$('#aloha-sidebar-panel-elements-id')
-							.val(effective.attr('id'))
-						$('#aloha-sidebar-panel-elements-classname')
-							.val(effective.attr('class'))
-					}
-				}
-			]
-		});
+		// Broadcast that this Sidebar  is ready for use
+		$('body').trigger(nsClass('ready'), this);
 	});
 	
 })(window);

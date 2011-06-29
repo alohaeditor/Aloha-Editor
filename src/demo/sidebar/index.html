@@ -219,6 +219,110 @@
 				
 				// hide loading div
 				$('#aloha-loading').hide();
+				
+				// Sidebar
+				$body.bind('aloha-sidebar-ready', function () {
+					
+					new Aloha.Sidebar({
+						position: 'right',
+						width: 250,
+						isOpen: true,
+						panels: [
+							{
+								title	   : 'Headers',
+								content	   : '',
+								expanded   : false,
+								onInit	   : function () {},
+								activeOn   : 'h1,h2,h3,h4,h5,h6,h7',
+								onActivate : function (effective) {
+									var domobj = effective[0],
+										str = '',
+										typeOf;
+									
+									$.each(domobj, function (k, v) {
+										if ((typeOf = typeof v) == 'string' || typeOf == 'number') {
+											str += k + ' => ' + v + '<br />';
+										}
+									});
+									
+									this.setContent(str);
+								}
+							},
+							{
+								id		 : 'aloha-sidebar-panel-elements',
+								title	 : 'Element',
+								content	 : '',
+								expanded : true,
+								activeOn : function (elem) {
+									return true;
+								},
+								onInit	 : function () {
+									var content = this.setContent('								\
+										<div id="aloha-sidebar-panel-elements-props">			\
+											id:													\
+											<input type="text" value=""							\
+												id="aloha-sidebar-panel-elements-id" />			\
+											<br />												\
+											classname:											\
+											<input type="text" value=""							\
+												id="aloha-sidebar-panel-elements-classname" />	\
+											<br />												\
+										</div>													\
+										<div id="aloha-sidebar-panel-elements-btns">			\
+											<button>Update</button>								\
+										</div>													\
+									').content;
+									
+									var autosize = function(){ 
+										var size = parseInt($(this).attr('size')); 
+										var chars = $(this).val().length; 
+										$(this).attr('size', chars); 
+									};
+									
+									content.find('input').attr('size', 'auto')
+										.keyup(autosize).change(autosize);
+									
+									var that = this;
+									
+									content.find('button').click(function () {
+										if (that.effectiveElement) {
+											that.effectiveElement
+												.attr({id : $('#aloha-sidebar-panel-elements-id').val() || null})
+												.attr('class', $('#aloha-sidebar-panel-elements-classname').val() || null);
+										}
+									});
+								},
+								onActivate: function (effective) {
+									$('#aloha-sidebar-panel-elements-id')
+										.val(effective.attr('id'))
+									$('#aloha-sidebar-panel-elements-classname')
+										.val(effective.attr('class'))
+								}
+							}
+						]
+					});
+					
+				});
+
+				// Add another panel after sidebar has been initialized
+				$body.bind('aloha-sidebar-initialized', function (ev, sidebar) {
+					sidebar.addPanel({
+						title	 : 'Links',
+						content  : 'Change href:<br /><input type="text" value=""/>',
+						expanded : true,
+						activeOn : 'a',
+						onInit	 : function () {
+							var that = this;
+							this.content.find('input').change(function () {
+								that.effectiveElement.attr('href', $(this).val());
+							})
+						},
+						onActivate: function (effective) {
+							this.content.find('input').val(effective.attr('href'));
+						}
+					});
+				});
+				
 			});
 		})(window);
 	</script>
