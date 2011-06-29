@@ -131,7 +131,7 @@
 		'));
 		// defaults
 		this.width = 300;
-		this.isOpen = true;
+		this.isOpen = false;
 		
 		this.init(opts);
 	};
@@ -184,8 +184,9 @@
 			this.roundCorners();
 			this.initToggler();
 			
-			if (!this.isOpen) {
-				this.close(0);
+			this.container.css(this.position == 'right' ? 'marginRight' : 'marginLeft', -this.width);
+			if (this.isOpen) {
+				this.open(0);
 			}
 			
 			this.subscribeToEvents();
@@ -480,13 +481,9 @@
 				'easeOutExpo'
 			);
 			
-			if (isRight) {
-			
-			} else {
-				$('body').animate({
-					marginLeft: this.width
-				}, 500, 'easeOutExpo');
-			}
+			$('body').animate(
+			isRight ? {marginRight: '+=' + this.width} : {marginLeft: '+=' + this.width},
+			500, 'easeOutExpo');
 		},
 		
 		close: function (duration, callback) {
@@ -502,13 +499,9 @@
 				'easeOutExpo'
 			);
 			
-			if (isRight) {
-			
-			} else {
-				$('body').animate({
-					marginLeft: 0
-				}, 500, 'easeOutExpo');
-			}
+			$('body').animate(
+			isRight ? {marginRight: '-=' + this.width} : {marginLeft: '-=' + this.width},
+			500, 'easeOutExpo');
 		},
 		
 		expandPanel: function (panel, callback) {
