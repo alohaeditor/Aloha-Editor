@@ -50,7 +50,6 @@
 							:  nsClass('panel-content-inner-text'),
 			panels			: nsClass('panels'),
 			'panel-title'	: nsClass('panel-title'),
-			shadow			: nsClass('shadow'),
 			'panel-title-arrow'
 							: nsClass('panel-title-arrow'),
 			'panel-title-text'
@@ -122,7 +121,6 @@
 		this.panels = {};
 		this.container = $(renderTemplate('				\
 			<div class="{bar}">							\
-				<div class="{shadow}"></div>			\
 				<div class="{handle}">					\
 					<span class="{handle-icon}"></span>	\
 				</div>									\
@@ -168,9 +166,9 @@
 				});
 			}
 			
-			this.right = (this.position == 'right');
-			
-			bar.addClass(nsClass('right'));
+			if (this.position == 'right') {
+				bar.addClass(nsClass('right'));
+			}
 			
 			// Place the bar into the DOM
 			bar.css('opacity', 0)
@@ -334,10 +332,11 @@
 				bar = this.container,
 				icon = bar.find(nsSel('handle-icon')),
 				toggledClass = nsClass('toggled'),
-				bounceTimer;
+				bounceTimer,
+				isRight = (this.position == 'right');
 			
 			if (this.isOpen) {
-				this.rotateArrow(this.right ? 0 : 180, 0);
+				this.rotateArrow(isRight ? 0 : 180, 0);
 			}
 			
 			bar.find(nsSel('handle'))
@@ -359,7 +358,7 @@
 					}
 				}).hover(
 					function () {
-						var flag = that.isOpen ? 1 : -1;
+						var flag = that.isOpen ? -1 : 1;
 						
 						if (bounceTimer) {
 							clearInterval(bounceTimer);
@@ -367,20 +366,20 @@
 						
 						icon.stop();
 						
+						$(this).stop().animate(
+							isRight ? {marginLeft: '-=' + (flag * 5)} : {marginRight: '-=' + (flag * 5)},
+							200
+						);
+						
+						var bounceAnim = 
+						
 						bounceTimer = setInterval(function () {
 							flag *= -1;
-							icon.animate({marginLeft: '-=' + (flag * 4)}, 300);
+							icon.animate(
+								isRight ? {left: '-=' + (flag * 4)} : {right: '-=' + (flag * 4)},
+								300
+							);
 						}, 300);
-						
-						var anim = this.right
-								 ? {marginRight: 5}
-								 : {marginLrft: 0};
-						
-						if (that.isOpen) {
-							$(this).stop().animate(anim, 200);
-						} else {
-							$(this).stop().animate(anim, 200);
-						}
 					},
 					
 					function () {
@@ -388,13 +387,12 @@
 							clearInterval(bounceTimer);
 						}
 						
-						icon.stop().css('marginLeft', 4);
+						icon.stop().css(isRight ? 'left' : 'right', 5);
 						
-						if (that.isOpen) {
-							$(this).stop().animate({marginRight: 0}, 600, 'easeOutElastic');
-						} else {
-							$(this).stop().animate({marginRight: 5}, 600, 'easeOutElastic');
-						} 
+						$(this).stop().animate(
+							isRight ? {marginLeft: 0} : {marginRight: 0},
+							600, 'easeOutElastic'
+						);
 					}
 				);
 		},
@@ -414,16 +412,12 @@
 		},
 		
 		updateHeight: function () {
-			var bar = this.container,
-				h = $(window).height();
-			
-			bar.height(h)
-			   .find(nsSel('shadow')).height(h);
-			bar.find(nsSel('inner')).height(h);
+			var h = $(window).height();
+			this.container.height(h).find(nsSel('inner')).height(h);
 		},
 		
-		// We delegate all sidebar onclick events to the container. 
-		// We then use handleBarclick method until we bubble up to the first
+		// Delegate all sidebar onclick events to the container. 
+		// Then use handleBarclick method until we bubble up to the first
 		// significant thing that we can to interact with, and we do so
 		barClicked: function (ev) {
 			this.handleBarclick($(ev.target));
@@ -474,41 +468,47 @@
 		},
 		
 		open: function (duration, callback) {
-			this.rotateArrow(this.right ? 0 : 180, 0);
+			var isRight = (this.position == 'right'),
+				anim = isRight ? {marginRight: 0} : {marginLeft: 0};
 			
-			var anim = this.right ? {marginRight: 0}
-								  : {marginLeft: 0};
+			this.rotateArrow(isRight ? 0 : 180, 0);
 			
 			this.container.animate(
 				anim,
-				(typeof duration == 'number' || typeof duration == 'string') ? duration : 500,
+				(typeof duration == 'number' || typeof duration == 'string')
+					? duration : 500,
 				'easeOutExpo'
 			);
 			
-			anim = this.right
-					 ? {marginRight: 0}
-					 : {marginLeft: this.width};
+			if (isRight) {
 			
-			$('body').animate(anim, 500, 'easeOutExpo');
+			} else {
+				$('body').animate({
+					marginLeft: this.width
+				}, 500, 'easeOutExpo');
+			}
 		},
 		
 		close: function (duration, callback) {
-			this.rotateArrow(this.right ? 180 : 0, 0);
+			var isRight = (this.position == 'right'),
+				anim = isRight ? {marginRight: -this.width} : {marginLeft: -this.width};
 			
-			var anim = this.right ? {marginRight: -this.width}
-								  : {marginLeft: -this.width};
+			this.rotateArrow(isRight ? 180 : 0, 0);
 			
 			this.container.animate(
 				anim,
-				(typeof duration == 'number' || typeof duration == 'string') ? duration : 500,
+				(typeof duration == 'number' || typeof duration == 'string')
+					? duration : 500,
 				'easeOutExpo'
 			);
 			
-			anim = this.right
-					 ? {marginRight: this.width}
-					 : {marginLeft: 0};
+			if (isRight) {
 			
-			$('body').animate(anim, 500, 'easeOutExpo');
+			} else {
+				$('body').animate({
+					marginLeft: 0
+				}, 500, 'easeOutExpo');
+			}
 		},
 		
 		expandPanel: function (panel, callback) {
@@ -523,7 +523,7 @@
 			return this;
 		},
 		
-		collapsePanel: function (panel, duration, callback) {
+		collapsePanel: function (panel, callback) {
 			if (typeof panel == 'string') {
 				panel = this.getPanelById(panel);
 			}
@@ -572,13 +572,13 @@
 				<span class="{panel-title-text}">Untitled</span> \
 			</div>												 \
 		'));
-		this.content  = $(renderTemplate('			\
-			<div class="{panel-content}">			\
-				<div class="{panel-content-inner}">	\
+		this.content  = $(renderTemplate('					\
+			<div class="{panel-content}">					\
+				<div class="{panel-content-inner}">			\
 					<div class="{panel-content-inner-text}">\
-					</div>							\
-				</div>								\
-			</div>									\
+					</div>									\
+				</div>										\
+			</div>											\
 		'));
 		this.element  = null;
 		this.expanded = false;
@@ -731,11 +731,12 @@
 	$('body').bind(nsClass('initialized'), function () {
 		
 	});
+	
 	// Automatically invoke the Sidebar as soon as the DOM is ready
 	$(function () {
 		//Aloha.Sidebar = new Sidebar();
 		window.Sidebar = new Sidebar({
-			position: 'right',
+			position: 'left',
 			width: 250,
 			panels: [
 				{
@@ -784,20 +785,20 @@
 						return true;
 					},
 					onInit	 : function () {
-						var content = this.setContent('\
-							<div id="aloha-sidebar-panel-elements-props">	\
-								id:											\
-								<input type="text" value=""					\
-									id="aloha-sidebar-panel-elements-id" />	\
-								<br />										\
-								classname:									\
-								<input type="text" value=""					\
-									id="aloha-sidebar-panel-elements-classname" />\
-								<br />										\
-							</div>											\
-							<div id="aloha-sidebar-panel-elements-btns">	\
-								<button>Update</button>						\
-							</div>											\
+						var content = this.setContent('								\
+							<div id="aloha-sidebar-panel-elements-props">			\
+								id:													\
+								<input type="text" value=""							\
+									id="aloha-sidebar-panel-elements-id" />			\
+								<br />												\
+								classname:											\
+								<input type="text" value=""							\
+									id="aloha-sidebar-panel-elements-classname" />	\
+								<br />												\
+							</div>													\
+							<div id="aloha-sidebar-panel-elements-btns">			\
+								<button>Update</button>								\
+							</div>													\
 						').content;
 						
 						var autosize = function(){ 
