@@ -100,8 +100,8 @@
 					// initialize rangy. This is probably necessary here,
 					// because due to the current loading mechanism, rangy
 					// doesn't initialize itself in all browsers
-					if (rangy) {
-						rangy.init();
+					if (window.rangy) {
+						window.rangy.init();
 					}
 					// Mousemove Hooks
 					setInterval(function(){
