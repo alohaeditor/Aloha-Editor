@@ -148,13 +148,17 @@
 
 			// Handle
 			if ( plugins.length ) {
-				var pluginParts = [];
+				var pluginParts = [], pathMapping = {};
 				$.each(plugins, function(i, element) {
-					pluginParts.push('plugin/' + element + '/src/' + element); // TODO
+					pluginParts.push('plugin/' + element + '/plugin');
+					pathMapping['plugin/' + element ] = 'plugin/' + element + '/src';
 				});
-				require(pluginParts, function() {
-					next();
-				});
+				require({
+						paths: pathMapping
+					},
+					pluginParts,
+					next
+				);
 			}
 			else {
 				// Forward
@@ -184,7 +188,6 @@
 		 * Initialise Aloha
 		 */
 		initAloha: function(next){
-			console.log("i");
 			// check browser version on init
 			// this has to be revamped, as
 			if (jQuery.browser.webkit && parseFloat(jQuery.browser.version) < 532.5 || // Chrome/Safari 4

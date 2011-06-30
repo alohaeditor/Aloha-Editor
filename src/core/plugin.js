@@ -65,7 +65,6 @@
 					}
 				}
 			}
-			
 			// Load locales for plugins
 			this.loadI18n(function(){
 				// Initialise plugins
@@ -79,7 +78,7 @@
 							Aloha.Log.error(Aloha, 'Init of plugin '+plugin.id + ' failed');
 							if ( console && console.log ) { 
 								console.error(e);
-								}
+							}
 						}
 					},
 					// All
@@ -98,7 +97,6 @@
 			this.eachPluginSync(
 				// Each
 				function(plugin){
-					
 					if ( typeof plugin.settings !== "undefined" && plugin.settings !== null) {
 						if (plugin.settings.enabled ) {
 							callback(plugin);
