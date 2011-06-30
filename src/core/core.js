@@ -91,6 +91,7 @@
 		 * Initialise the Initialisation Process
 		 */
 		init: function () {
+			
 			$(function(){
 				// Create Promises
 				Aloha.createPromiseEvent('aloha');
@@ -116,13 +117,17 @@
 					Aloha.stage = 'loadPlugins';
 					Aloha.loadPlugins(function(){
 						Aloha.stage = 'initAloha';
+						console.log("a");
 						Aloha.initAloha(function(){
 							Aloha.stage = 'initI18n';
+							console.log("b");
 							Aloha.initI18n(function(){
 								Aloha.stage = 'initPlugins';
+								console.log("c");
 								Aloha.initPlugins(function(){
 									Aloha.stage = 'initGui';
 									Aloha.initGui(function(){
+										console.log("Fully init!!");
 										Aloha.stage = 'aloha';
 										Aloha.trigger('aloha');
 									});
@@ -165,18 +170,20 @@
 						}
 					}
 				}; 
-
+				
 			// Handle
 			if ( plugins.length ) {
+				console.log("LP2");
 				// Prepare
 				total += plugins.length;
 
-				// Load in Plugins
+				//require(['order!plugins/' + // Load in Plugins
 				$.each(plugins,function(i,pluginName){
 					Aloha.loadPlugin($.trim(pluginName),complete);
 				});
 			}
 			else {
+				console.log("LP3", next);
 				// Forward
 				next();
 			}
@@ -204,6 +211,7 @@
 		 * Initialise Aloha
 		 */
 		initAloha: function(next){
+			console.log("i");
 			// check browser version on init
 			// this has to be revamped, as
 			if (jQuery.browser.webkit && parseFloat(jQuery.browser.version) < 532.5 || // Chrome/Safari 4
@@ -216,6 +224,7 @@
 				return;
 			}
 
+console.log("i2");
 			// register the body click event to blur editables
 			jQuery('html').mousedown(function() {
 				// if an Ext JS modal is visible, we don't want to loose the focus on
@@ -231,18 +240,18 @@
 					Aloha.activeEditable = null;
 				}
 			});
-
+console.log("i3");
 			// Initialise the base path to the aloha files
 			Aloha.settings.base =
 				Aloha.settings.base || window.Aloha_base || Aloha.getAlohaUrl();
-
+console.log("i3a");
 			// Initialise pluginDir
 			Aloha.settings.pluginDir =
 				Aloha.settings.pluginDir || window.Aloha_pluginDir || 'plugin';
 
 			// initialize the Log
 			Aloha.Log.init();
-
+console.log("i4");
 			// initialize the error handler for general javascript errors
 			if ( Aloha.settings.errorhandling ) {
 				window.onerror = function (msg, url, linenumber) {
@@ -265,7 +274,7 @@
 			if (navigator.appVersion.indexOf('Linux') != -1) {
 				Aloha.OSName = 'Linux';
 			}
-
+console.log("i4");
 			// Forward
 			next();
 		},
@@ -775,7 +784,7 @@
 		 * @return {String} alohaUrl
 		 */
 		getAlohaUrl: function(suffix){
-			window.Aloha_base = window.Aloha_base || document.getElementById('aloha-script-include').src.replace(/aloha\.js$/,'').replace(/\/+$/,'');
+			window.Aloha_base = window.Aloha_base || document.getElementById('aloha-script-include').src.replace(/require.js$/,'').replace(/\/+$/,'');
 			return window.Aloha_base;
 		},
 

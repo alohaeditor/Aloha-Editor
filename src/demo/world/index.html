@@ -118,8 +118,9 @@
 					}
 			};
 	</script>
-	<script	src="../../dep/jquery-1.5.1.js" ></script>
-	<script	src="../../aloha.js" id="aloha-script-include" data-plugins="format"></script> <!--  toc,table,list, highlighteditables,link,image-->
+	
+	<script src="../../require.js" data-main="../../aloha.js" id="aloha-script-include" data-plugins="format"></script>
+	<!--<script	src="../../aloha.js" id="aloha-script-include" data-plugins="format"></script> <!--  toc,table,list, highlighteditables,link,image-->
 	
 	<link rel="stylesheet" href="../../aloha.css" id="aloha-style-include" type="text/css">
 	<link rel="stylesheet" href="../../demo/world/index.css" type="text/css">
@@ -281,20 +282,26 @@
 		</div>
 	</div>
 	<script type="text/javascript" defer>
-		(function(window,undefined){
-			// Prepare
-			var $body = $('body');
+		require({
+			baseUrl: '../../'
+		},
+		['order!dep/jquery-1.5.1'], function() {
+			require.ready(function() {
+				console.log("X");
+				// Prepare
+				var $body = $('body');
 
-			// Bind to Aloha Ready Event
-			$body.bind('aloha',function(){
-				$('#typo3').aloha();
-				$('#typo3span').aloha();
-				$('#title').aloha();
-				$('#teaser').aloha();
-				$('#content').aloha();
+				// Bind to Aloha Ready Event
+				$body.bind('aloha',function(){
+					$('#typo3').aloha();
+					$('#typo3span').aloha();
+					$('#title').aloha();
+					$('#teaser').aloha();
+					$('#content').aloha();
 
+				});
 			});
-		})(window);
+		});
 	</script>
 </body>
 </html>
