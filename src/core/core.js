@@ -117,17 +117,13 @@
 					Aloha.stage = 'loadPlugins';
 					Aloha.loadPlugins(function(){
 						Aloha.stage = 'initAloha';
-						console.log("a");
 						Aloha.initAloha(function(){
 							Aloha.stage = 'initI18n';
-							console.log("b");
 							Aloha.initI18n(function(){
 								Aloha.stage = 'initPlugins';
-								console.log("c");
 								Aloha.initPlugins(function(){
 									Aloha.stage = 'initGui';
 									Aloha.initGui(function(){
-										console.log("Fully init!!");
 										Aloha.stage = 'aloha';
 										Aloha.trigger('aloha');
 									});
@@ -148,42 +144,19 @@
 		 * Load Plugins
 		 */
 		loadPlugins: function(next){
-			// Prepare
-			var
-				// Plugins
-				plugins = this.getUserPlugins(),
-				// Async
-				completed = 0,
-				total = 0,
-				exited = false,
-				complete = function(){
-					if ( console && console.log ) { console.log('loaded plugin '+(completed+1)+' of '+total); }
-					if ( exited ) {
-						throw new Error('Something went wrong with loading plugins');
-					}
-					else {
-						completed++;
-						if ( completed === total ) {
-							exited = true;
-							// Forward
-							next();
-						}
-					}
-				}; 
-				
+			var plugins = this.getUserPlugins();
+
 			// Handle
 			if ( plugins.length ) {
-				console.log("LP2");
-				// Prepare
-				total += plugins.length;
-
-				//require(['order!plugins/' + // Load in Plugins
-				$.each(plugins,function(i,pluginName){
-					Aloha.loadPlugin($.trim(pluginName),complete);
+				var pluginParts = [];
+				$.each(plugins, function(i, element) {
+					pluginParts.push('plugin/' + element + '/src/' + element); // TODO
+				});
+				require(pluginParts, function() {
+					next();
 				});
 			}
 			else {
-				console.log("LP3", next);
 				// Forward
 				next();
 			}
@@ -224,7 +197,6 @@
 				return;
 			}
 
-console.log("i2");
 			// register the body click event to blur editables
 			jQuery('html').mousedown(function() {
 				// if an Ext JS modal is visible, we don't want to loose the focus on
@@ -240,18 +212,16 @@ console.log("i2");
 					Aloha.activeEditable = null;
 				}
 			});
-console.log("i3");
 			// Initialise the base path to the aloha files
 			Aloha.settings.base =
 				Aloha.settings.base || window.Aloha_base || Aloha.getAlohaUrl();
-console.log("i3a");
 			// Initialise pluginDir
 			Aloha.settings.pluginDir =
 				Aloha.settings.pluginDir || window.Aloha_pluginDir || 'plugin';
 
 			// initialize the Log
 			Aloha.Log.init();
-console.log("i4");
+
 			// initialize the error handler for general javascript errors
 			if ( Aloha.settings.errorhandling ) {
 				window.onerror = function (msg, url, linenumber) {
@@ -274,7 +244,7 @@ console.log("i4");
 			if (navigator.appVersion.indexOf('Linux') != -1) {
 				Aloha.OSName = 'Linux';
 			}
-console.log("i4");
+
 			// Forward
 			next();
 		},
@@ -800,56 +770,6 @@ console.log("i4");
 		},
 
 		/**
-		 * Load in a JS File
-		 * @method
-		 * @param {String} pluginName
-		 * @return
-		 */
-		loadJs: function(url,next){
-			// Prepare
-			var scriptEl, appendEl = document.head || document.getElementsByTagName('head')[0], loaded, exited = false;
-
-			// Loaded
-			loaded = function(event) {
-				// Check
-				if ( typeof this.readyState !== 'undefined' && this.readyState !== 'complete' ) {
-					return;
-				}
-
-				// Clean
-				if ( this.timeout ) {
-					window.clearTimeout(this.timeout);
-					this.timeout = false;
-				}
-
-				// Log
-				if ( console && console.log ) { console.log('loaded script '+url); }
-
-				// Forward
-				if ( !exited ) {
-					exited = true;
-					if ( next ) { next(); }
-				}
-			};
-
-			// Log
-			if ( console && console.log ) { console.log('loading script '+url); }
-
-			// Append
-			scriptEl = document.createElement('script');
-			scriptEl.src = url;
-			scriptEl.setAttribute('defer','defer');
-			scriptEl.onreadystatechange = loaded;
-			scriptEl.onload = loaded;
-			scriptEl.onerror = loaded;
-			scriptEl.timeout = window.setTimeout(loaded,600);
-			appendEl.appendChild(scriptEl);
-
-			// Chain
-			return this;
-		},
-
-		/**
 		 * Load in a CSS File
 		 * @method
 		 * @param {String} pluginName
@@ -868,122 +788,6 @@ console.log("i4");
 
 			// Chain
 			return this;
-		},
-
-		/**
-		 * Load in a Plugin
-		 * @method
-		 * @param {String} pluginName
-		 * @return
-		 */
-		loadPlugin: function(pluginName,next){
-			// Prepare
-			var
-				pluginUrl = Aloha.getPluginUrl(pluginName),
-				actions,
-				// Async
-				completed = 0,
-				total = 0,
-				exited = false,
-				complete = function(){
-					if ( exited ) {
-						throw new Error('Something went wrong with loading of a plugin');
-					}
-					else {
-						completed++;
-						if ( completed === total ) {
-							exited = true;
-							next();
-						}
-					}
-				};
-
-			// Check if plugin is already loaded
-			if ( typeof window.Aloha_loaded_plugins[pluginName] !== 'undefined' ) {
-				if ( console && console.log ) { console.log(pluginName+' already loaded'); }
-				next();
-				return;
-			}
-			window.Aloha_loaded_plugins[pluginName] = true;
-
-			// Log
-			if ( console && console.log ) { console.log(pluginName+' loading'); }
-			
-			// Prepare Actions
-			actions = {
-				/**
-				 * Load a Plugin by the Default Structure
-				 */
-				loadDefault: function(){
-					if ( console && console.log ) { console.log(pluginName+' loading default package'); }
-					
-					// Prepare
-					var
-						pluginJsUrl = pluginUrl+'/src/'+pluginName+'.js',
-						pluginCssUrl = pluginUrl+'/src/'+pluginName+'.css';
-					
-					// Include
-					total += 1;
-					Aloha.loadCss(pluginCssUrl);
-					Aloha.loadJs(pluginJsUrl,complete);
-
-					// Done
-					return true;
-				},
-
-				/**
-				 * Load a Plugin by it's specified Package
-				 */
-				loadPackage: function(data){
-					if ( console && console.log ) { console.log(pluginName+' loading custom package'); }
-
-					// Cycle through CSS
-					$.each(data.css||[], function(i,value){
-						Aloha.loadCss(pluginUrl+'/'+value);
-					});
-
-					// Cycle through JS
-					$.each(data.js||[], function(i,value){
-						++total;
-						Aloha.loadJs(pluginUrl+'/'+value,complete);
-					});
-
-					// Done
-					return true;
-				}
-			};
-
-			// Load In
-			$.ajax({
-				url: pluginUrl+'/package.json',
-				dataType: 'json',
-				success: function(data, textStatus, jqXHR) {
-					// package.json exists,
-
-					// Load Package
-					if ( typeof data === 'object' && typeof data.js !== 'undefined' ) {
-						actions.loadPackage(data);
-					}
-					else {
-						actions.loadDefault();
-					}
-
-					// Done
-					return true;
-				},
-				error: function (jqXHR, textStatus, errorThrown) {
-					// package.json doesn't exist
-
-					// Load Defaults
-					actions.loadDefault();
-
-					// Done
-					return true;
-				}
-			});
-
-			// Done
-			return true;
 		}
 	});
 
