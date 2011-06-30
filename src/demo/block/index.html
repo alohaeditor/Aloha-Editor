@@ -7,13 +7,17 @@
 	if (window.Aloha === undefined || window.Aloha === null)
 		Aloha = {};
 	Aloha.settings = {
-				logLevels: {'error': true, 'warn': true, 'info': true, 'debug': true},
+				logLevels: {'error': true, 'warn': true, 'info': false, 'debug': false},
 				errorhandling : false,
 
 				"plugins": {
 					"block": {
 						// all elements with no specific configuration get this configuration
-						config : {}
+						defaults : {
+							'.aloha-block': {
+								lastname: 'K'
+							}
+						}
 					}
 					
 				}
@@ -35,10 +39,13 @@
 		<div id="bodyContent">
 			<div id="teaser" class="shorttext">
 				<p>
-					<b>Aloha</b> in the Hawaiian language means affection, love, peace, compassion and mercy. Since the middle of the 19th century, it also
+					<b>Aloha</b> in <span class="aloha-block">This is an uneditable aloha block!</span>the Hawaiian language means affection, love, peace, compassion and mercy. Since the middle of the 19th century, it also
 					has come to be used as an English greeting to say <i>goodbye</i> and <i>hello</i>. Currently, it is mostly used in the sense of hello; however,
 					it is used as the above.
 				</p>
+				<div class="aloha-block" data-name="Sebastian">
+					This is an uneditable aloha block!
+				</div>
 			</div>
 			<div id="content" class="article">
 				<h2>Etymology</h2>
@@ -73,7 +80,6 @@
 				$('#title').aloha();
 				$('#teaser').aloha();
 				$('#content').aloha();
-
 			});
 		})(window);
 	</script>
