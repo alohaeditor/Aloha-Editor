@@ -19,3 +19,6 @@
 [submodule "undo"]
 	path = undo
 	url = git@github.com:alohaeditor/Aloha-Plugin-Undo.git
+[submodule "list"]
+	path = list
+	url = git@github.com:alohaeditor/Aloha-Plugin-List.git
