@@ -17,14 +17,12 @@
 	<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 	<link rel="stylesheet" href="css/style.css">
 	<link rel="stylesheet" href="../../aloha.css" id="aloha-style-include" type="text/css">
-
-	<script src="js/libs/jquery-1.6.1.js" ></script>
-<!--
-	<script src="../../dep/jquery-1.5.1.js" ></script>
-	<script src="../../dep/jquery-1.6.js" ></script>
--->
+	
+	<!--<script src="js/libs/jquery-1.5.1.js" ></script>-->
+	
+	<script src="js/aloha-config.js"></script>,common/highlighteditables,common/link,common/list,common/table,common/abbr,common/paste,common/undo,common/hints,common/comments,common/image
+	<script src="../../require.js" data-main="../../aloha.js" id="aloha-script-include" data-plugins="common/format"></script>
 	<script src="js/aloha-boilerplate.js"></script>
-
 </head>
 <body>
 	<div id="whole-site">
@@ -190,17 +188,27 @@
 			</div>
 		</div>
 	</div>
-	<!--  Aloha Editor -->
-	<script defer src="js/aloha-config.js"></script>
-	<script	defer src="../../aloha.js" id="aloha-script-include" data-plugins="format,highlighteditables,link,list,table,abbr,paste,undo,hints,comments,image"></script>
-	<script type="text/javascript" defer>
-		(function(window,undefined){
-			
+	<script type="text/javascript">
+		
+		require.ready(function() {
 			// Prepare
 			var
 				$ = window.jQuery,
 				$body = $('body');
 
+		console.log("binding aloha evt");
+		$body.bind('aloha',function(){
+			console.log("aloha fired");
+
+			// register all editable areas
+			$('#top-text').aloha();
+			$('#content').aloha();
+			$('.area-content').aloha();
+
+			// hide loading div
+			$('#aloha-loading').hide();
+		});
+		
 			$('.stage-area').alohaStage();
 
 			// Change text after core is loaded 
@@ -208,19 +216,9 @@
 				// hide loading div
 				$('#aloha-loading span').html('Loading Plugins');
 			});
+console.log("a");
 			
-			// Bind to Aloha Ready Event
-			$body.bind('aloha',function(){
-				
-				// register all editable areas
-				$('#top-text').aloha();
-				$('#content').aloha();
-				$('.area-content').aloha();
-				
-				// hide loading div
-				$('#aloha-loading').hide();
-			});
-		})(window);
+		});
 	</script>
 
 	<!--[if lt IE 7 ]>
