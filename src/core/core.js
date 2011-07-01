@@ -151,15 +151,30 @@
 		 * Load Plugins
 		 */
 		loadPlugins: function(next){
-			var bundledPlugins = this.getPluginsToBeLoaded();
+			// contains an array like [common/format, common/block]
+			var configuredPluginsWithBundle = this.getPluginsToBeLoaded();
 
-			if (bundledPlugins.length) {
+			if (configuredPluginsWithBundle.length) {
 				var paths = {}, pluginNames = [], requiredInitializers = [];
-				
-				$.each(bundledPlugins, function(i, bundledPlugin) {
+
+				// Background: We do not use CommonJS packages for our Plugins
+				// as this breaks the loading order when these modules have
+				// other dependencies.
+				// We "emulate" the commonjs modules with the path mapping.
+				/* require(
+				 *  { paths: {
+				 *      'format': 'plugins/common/format/lib',
+				 *      'format/nls': 'plugins/common/format/nls',
+				 *      ... for every plugin ...
+				 *    }
+				 *  },
+				 *  ['format/format-plugin', ... for every plugin ...],
+				 *  next <-- when everything is loaded, we continue
+				 */
+				$.each(configuredPluginsWithBundle, function(i, configuredPluginWithBundle) {
 					var tmp, bundleName, pluginName;
 					
-					tmp = bundledPlugin.split('/');
+					tmp = configuredPluginWithBundle.split('/');
 					bundleName = tmp[0];
 					pluginName = tmp[1];
 					// TODO assertion if pluginName or bundleName NULL _-> ERROR!!
@@ -172,15 +187,11 @@
 					paths[pluginName + '/nls'] = 'plugins/' + bundleName + '/' + pluginName + '/nls';
 					
 					requiredInitializers.push(pluginName + '/' + pluginName + '-plugin');
-					
 				});
 				
 				this.loadedPlugins = pluginNames;
 				
-				// Background: We do not use CommonJS packages for our Plugins
-				// as this breaks the loading order when these modules have
-				// other dependencies.
-				// We "emulate" the commonjs modules with the path mapping.
+				// Main Require.js loading call, which fetches all the plugins.
 				require(
 					{
 						paths: paths
@@ -645,7 +656,7 @@
 			return this;
 		},
 		i18n: function(component, key, replacements) {
-			console.log("Called deprecated i18n function!!", component, key);
+			window.console && window.console.log && console.log("Called deprecated i18n function!!", component, key);
 			return key;
 		}
 	});
