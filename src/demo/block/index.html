@@ -4,28 +4,30 @@
 	<meta http-equiv="content-type" content="text/html; charset=utf-8">
 	<title>Aloha Block Plugin Testcase</title>
 	<script language="javascript">
-	if (window.Aloha === undefined || window.Aloha === null)
-		Aloha = {};
-	Aloha.settings = {
-				logLevels: {'error': true, 'warn': true, 'info': false, 'debug': false},
-				errorhandling : false,
+		Aloha = window.Aloha || {};
 
-				"plugins": {
-					"block": {
-						// all elements with no specific configuration get this configuration
-						defaults : {
-							'.aloha-block': {
-								lastname: 'K'
-							}
+		Aloha.settings = {
+			logLevels: {'error': true, 'warn': true, 'info': false, 'debug': false},
+			errorhandling : false,
+
+			"plugins": {
+				"block": {
+					// all elements with no specific configuration get this configuration
+					defaults : {
+						'.aloha-block': {
+							lastname: 'K'
 						}
 					}
-					
 				}
-			};
+
+			}
+		};
 	</script>
-	<script src="../../require.js" data-main="../../aloha.js" id="aloha-script-include" data-plugins="format,block"></script>
+	
+	<script src="../../require.js" data-main="../../aloha.js" id="aloha-script-include" data-plugins="common/format,common/block"></script>
 	
 	<link rel="stylesheet" href="../../aloha.css" id="aloha-style-include" type="text/css">
+	<link rel="stylesheet" href="../../plugins/common/block/css/block.css" type="text/css" />
 	<link rel="stylesheet" href="../../demo/world/index.css" type="text/css">
 
 	<style>

@@ -32,7 +32,7 @@
 			var
 				me = this,
 				globalSettings = Aloha.settings.plugins||{},
-				userPluginIds = Aloha.getUserPlugins(),
+				userPluginIds = Aloha.getLoadedPlugins(),
 				i,plugin,pluginId;
 			
 			// Global to local settings
@@ -53,7 +53,6 @@
 					}
 				}
 			}
-
 			// Enable Plugins specified by User
 			for ( i=0; i < userPluginIds.length; ++i ) {
 				pluginId = userPluginIds[i];
@@ -63,130 +62,12 @@
 					if ( typeof plugin.settings.enabled === 'undefined' ) {
 						plugin.settings.enabled = true;
 					}
-				}
-			}
-			// Load locales for plugins
-			this.loadI18n(function(){
-				// Initialise plugins
-				me.eachEnabledPluginSync(
-					// Each
-					function(plugin){
-						Aloha.Log.info(Aloha, 'Starting init plugin '+plugin.id);
-						try {
-							plugin.init();
-						} catch (e) {
-							Aloha.Log.error(Aloha, 'Init of plugin '+plugin.id + ' failed');
-							if ( console && console.log ) { 
-								console.error(e);
-							}
-						}
-					},
-					// All
-					function(){
-						// Forward
-						next();
+					if (plugin.settings.enabled) {
+						plugin.init();
 					}
-				);
-			});
-		},
-
-		/**
-		 * Cycle through all the enabled plugins
-		 */
-		eachEnabledPluginSync: function(callback,next){
-			this.eachPluginSync(
-				// Each
-				function(plugin){
-					if ( typeof plugin.settings !== "undefined" && plugin.settings !== null) {
-						if (plugin.settings.enabled ) {
-							callback(plugin);
-						}
-					}
-				},
-				// All
-				function(){
-					// Forward
-					next();
-				}
-			);
-		},
-
-		/**
-		 * Cycle through all the loaded plugins
-		 */
-		eachPluginSync: function(callback,next){
-			var id, plugin;
-			for ( id in this.plugins ) {
-				if ( this.plugins.hasOwnProperty(id) ) {
-					plugin = this.plugins[id];
-					callback(plugin);
 				}
 			}
 			next();
-		},
-
-		/**
-		 * Load the i18n files for all plugins
-		 */
-		loadI18n: function(next) {
-			// Prepare
-			var
-				// Async
-				completed = 0,
-				total = 0,
-				exited = false,
-				complete = function(){
-					if ( exited ) {
-						throw new Error('Something went wrong');
-					}
-					else {
-						completed++;
-						if ( completed === total ) {
-							exited = true;
-							next();
-						}
-					}
-				};
-			
-			// Cycle
-			this.eachEnabledPluginSync(
-				// Each
-				function(plugin){
-					// Ammend total
-					++total;
-					
-					// Determine plugin language
-					plugin.language = plugin.languages ? Aloha.getLanguage(Aloha.settings.i18n.current, plugin.languages) : null;
-					if ( !plugin.language ) {
-						// Error
-						Aloha.Log.warn(this, 'Could not determine actual language, no languages available for plugin ' + plugin);
-						complete();
-					}
-					else {
-						// Success
-                        // load the dictionary file for the actual language
-						plugin.languageUrl = Aloha.settings.base + '/' + Aloha.settings.pluginDir + '/' + plugin.basePath + '/i18n/' + plugin.language + '.json';
-						Aloha.loadI18nFile(plugin.languageUrl,plugin,function(){
-							// load the custom dictionary of the actual language
-							if (plugin.settings.customDictsPath) {
-								if (!plugin.settings.customDictsPath.match(/\/$/)) {
-									plugin.settings.customDictsPath = plugin.settings.customDictsPath + '/';
-								}
-								Aloha.loadI18nFile(plugin.settings.customDictsPath + plugin.language + '.json', plugin, complete);
-							} else {
-								complete();
-							}
-						});
-					}
-				},
-				// All
-				function(){
-					// Forward if we have nothing async to do
-					if (total === 0) {
-						next();
-					}
-				}
-			);
 		},
 
 		/**

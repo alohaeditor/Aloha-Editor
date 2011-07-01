@@ -86,6 +86,16 @@
 		 * @type string
 		 */
 		stage: 'loadingCore',
+		
+		/**
+		 * A list of loaded plugin names. Available after the
+		 * "loadPlugins" stage.
+		 *
+		 * @property
+		 * @type array
+		 * @internal
+		 */
+		loadedPlugins: [],
 
 		/**
 		 * Initialise the Initialisation Process
@@ -118,15 +128,12 @@
 					Aloha.loadPlugins(function(){
 						Aloha.stage = 'initAloha';
 						Aloha.initAloha(function(){
-							Aloha.stage = 'initI18n';
-							Aloha.initI18n(function(){
-								Aloha.stage = 'initPlugins';
-								Aloha.initPlugins(function(){
-									Aloha.stage = 'initGui';
-									Aloha.initGui(function(){
-										Aloha.stage = 'aloha';
-										Aloha.trigger('aloha');
-									});
+							Aloha.stage = 'initPlugins';
+							Aloha.initPlugins(function(){
+								Aloha.stage = 'initGui';
+								Aloha.initGui(function(){
+									Aloha.stage = 'aloha';
+									Aloha.trigger('aloha');
 								});
 							});
 						});
@@ -144,32 +151,53 @@
 		 * Load Plugins
 		 */
 		loadPlugins: function(next){
-			var plugins = this.getUserPlugins();
+			var bundledPlugins = this.getPluginsToBeLoaded();
 
-			// Handle
-			if ( plugins.length ) {
-				var pluginParts = [], pathMapping = {};
-				$.each(plugins, function(i, element) {
-					pluginParts.push('plugin/' + element + '/plugin');
-					pathMapping['plugin/' + element ] = 'plugin/' + element + '/src';
+			if (bundledPlugins.length) {
+				var paths = {}, pluginNames = [], requiredInitializers = [];
+				
+				$.each(bundledPlugins, function(i, bundledPlugin) {
+					var tmp, bundleName, pluginName;
+					
+					tmp = bundledPlugin.split('/');
+					bundleName = tmp[0];
+					pluginName = tmp[1];
+					// TODO assertion if pluginName or bundleName NULL _-> ERROR!!
+
+					pluginNames.push(pluginName);
+					paths[pluginName] = 'plugins/' + bundleName + '/' + pluginName + '/lib';
+					requiredInitializers.push(pluginName + '/' + pluginName + '-plugin');
+					
 				});
-				require({
-						paths: pathMapping
+				
+				this.loadedPlugins = pluginNames;
+				
+				// Background: We do not use CommonJS packages for our Plugins
+				// as this breaks the loading order when these modules have
+				// other dependencies.
+				// We "emulate" the commonjs modules with the path mapping.
+				require(
+					{
+						paths: paths
 					},
-					pluginParts,
+					requiredInitializers,
 					next
 				);
 			}
 			else {
-				// Forward
 				next();
 			}
 		},
 
 		/**
-		 * Fetch user plugins
+		 * Fetches plugins the user wants to have loaded. Returns all plugins the user
+		 * has specified with the data-plugins property as array, with the bundle
+		 * name in front.
+		 * 
+		 * @return array
+		 * @internal
 		 */
-		getUserPlugins: function(){
+		getPluginsToBeLoaded: function(){
 			// Prepare
 			var
 				$alohaScriptInclude = $('#aloha-script-include'),
@@ -182,6 +210,15 @@
 		
 			// Return
 			return [];
+		},
+		
+		/**
+		 * Returns list of loaded plugins (without Bundle name)
+		 *
+		 * @return array
+		 */
+		getLoadedPlugins: function() {
+			return this.loadedPlugins;
 		},
 
 		/**
@@ -250,94 +287,6 @@
 
 			// Forward
 			next();
-		},
-
-		/**
-		 * Initialize i18n, load the dictionary file
-		 * Languages may have format as defined in
-		 * http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.10
-		 * All language codes available http://www.loc.gov/standards/iso639-2/php/langcodes-search.php
-		 *
-		 * @hide
-		 */
-		initI18n: function(next) {
-			var i, acceptLanguage, preferredLanguage, languageLength, lang, actualLanguage, fileUrl;
-
-			if (typeof Aloha.settings.i18n === 'undefined' || !Aloha.settings.i18n) {
-				Aloha.settings.i18n = {};
-			}
-
-			// TODO read dict files automatically on build. Develop only with "en"
-			if (typeof Aloha.settings.i18n.available === 'undefined'
-				|| !Aloha.settings.i18n.available
-				|| !Aloha.settings.i18n.available instanceof Array) {
-
-				Aloha.settings.i18n.available = ['en', 'de', 'fr', 'eo', 'fi', 'ru', 'it', 'pl'];
-			}
-
-			/*
-			 * try to guess ACCEPT-LANGUAGE from http header
-			 * reference http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.4
-			 * ACCEPT-LANGUAGE 'de-de,de;q=0.8,it;q=0.6,en-us;q=0.7,en;q=0.2';
-			 * Any implementation has to set it server side because this is not
-			 * accessible by JS. http://lists.w3.org/Archives/Public/public-html/2009Nov/0454.html
-			*/
-			if ( (typeof Aloha.settings.i18n.current === 'undefined' || !Aloha.settings.i18n.current) &&
-				typeof Aloha.settings.i18n.acceptLanguage === 'string' ) {
-
-				acceptLanguage = [];
-				// Split the string from ACCEPT-LANGUAGE
-				preferredLanguage = Aloha.settings.i18n.acceptLanguage.split(",");
-				for(i = 0, languageLength = preferredLanguage.length; i < languageLength; i++) {
-
-					// split language setting
-					lang = preferredLanguage[i].split(';');
-
-					// convert quality to float
-					if ( typeof lang[1] === 'undefined' || !lang[1] ) {
-						lang[1] = 1;
-					} else {
-						lang[1] = parseFloat(lang[1].substring(2, lang[1].length));
-					}
-
-					// add converted language to accepted languages
-					acceptLanguage.push(lang);
-				}
-
-				// sort by quality
-				acceptLanguage.sort(function (a,b) {return b[1] - a[1];});
-
-				// check in sorted order if any of preferred languages is available
-				for(i = 0, languageLength = acceptLanguage.length; i < languageLength; i++) {
-					if ( jQuery.inArray(acceptLanguage[i][0], Aloha.settings.i18n.available) >= 0 ) {
-						Aloha.settings.i18n.current = acceptLanguage[i][0];
-						break;
-					}
-				}
-			}
-
-			/*
-			 * default language from for the browser navigator API.
-			 */
-			if (typeof Aloha.settings.i18n.current == 'undefined' || !Aloha.settings.i18n.current) {
-				Aloha.settings.i18n.current = (navigator.language
-						? navigator.language       // gecko/webkit/opera
-						: navigator.userLanguage   // IE
-				);
-			}
-
-			// determine the actual language based on current and available languages
-			actualLanguage = Aloha.getLanguage(Aloha.settings.i18n.current, Aloha.settings.i18n.available);
-
-			if (!actualLanguage) {
-				Aloha.Log.error(this, 'Could not determine actual language.');
-			} else {
-				// TODO load the dictionary file for the actual language
-				fileUrl = Aloha.settings.base + '/i18n/' + actualLanguage + '.json';
-				Aloha.loadI18nFile(fileUrl, this, function(){
-					next();
-				});
-			}
 		},
 
 		/**
@@ -553,108 +502,6 @@
 		},
 
 		/**
-		 * parses an i18n file
-		 * @param {String} fileUrl
-		 * @param {String} component
-		 * @hide
-		 */
-		loadI18nFile: function(fileUrl, component, callback) {
-			// Note: this ajax request must be done synchronously, because the otherwise
-			// the first i18n calls might come before the dictionary is available
-			jQuery.ajax({
-				dataType : 'json',
-				accept: '*/*',
-				url : fileUrl,
-				error: function(request, textStatus, error) {
-					Aloha.Log.error(component, 'Error while getting dictionary file ' + fileUrl + ': server returned ' + textStatus);
-					if(typeof callback === 'function') {
-						callback.call(component);
-					}
-				},
-				success: function(data, textStatus, request) {
-					if (Aloha.Log.isInfoEnabled()) {
-						Aloha.Log.info(component, 'Loaded dictionary file ' + fileUrl);
-					}
-					Aloha.parseI18nFile(data, component);
-					if(typeof callback === 'function') {
-						callback.call(component);
-					}
-				}
-			});
-		},
-
-		/**
-		 *
-		 * @param data
-		 * @param component
-		 * @hide
-		 */
-		parseI18nFile: function(data, component) {
-			// Check
-			if ( typeof data !== 'object' ) {
-				Aloha.Log.warn(component, 'i18n file was not json');
-				return false;
-			}
-
-			// Save i18n
-			if (Aloha.dictionaries[component.toString()]) {
-				$.extend(Aloha.dictionaries[component.toString()], data);
-			} else {
-				Aloha.dictionaries[component.toString()] = data;
-			}
-		},
-
-		/**
-		 * Method to translate the given key for the given component either from the component dictionary, or from the Aloha core library.
-		 * @method
-		 * @param {String} component component for which the key shall be localized
-		 * @param {String} key key to be localized
-		 * @param {Array} replacements array of replacements
-		 * @return localized string
-		 */
-		i18n: function(component, key, replacements) {
-			var
-				value = null,
-				i, repLength, regEx, safeArgument,
-				compName = component.getName();
-
-			// first get the dictionary for the component
-			if (Aloha.dictionaries[compName] && Aloha.dictionaries[compName][key]) {
-				value = Aloha.dictionaries[compName][key];
-			}
-
-			// when the value was not found and component is not Aloha, do a fallback
-			if (!value
-				&& component != Aloha
-				&& Aloha.dictionaries[Aloha.toString()]
-				&& Aloha.dictionaries[Aloha.toString()][key])
-			{
-				value = Aloha.dictionaries[Aloha.toString()][key];
-			}
-
-			// value still not found, so output the key
-			if (!value) {
-				return '??? ' + key + ' ???';
-			} else {
-				// substitute placeholders
-				if (typeof replacements !== 'undefined' && replacements !== null) {
-					for ( i = 0, repLength = replacements.length; i < repLength; ++i) {
-						if (typeof replacements[i] !== 'undefined' && replacements[i] !== null) {
-							regEx = new RegExp('\\{' + (i) + '\\}', 'g');
-							safeArgument = replacements[i].toString().replace(/\{/g, '\\{');
-							safeArgument = safeArgument.replace(/\}/g, '\\}');
-							value = value.replace(regEx, safeArgument);
-						}
-					}
-				}
-
-				value = value.replace(/\{\d\}/g, '').replace(/\\\{/g, '{').replace(/\\\}/g, '}');
-				return value;
-			}
-		},
-
-
-		/**
 		 * Register the given editable
 		 * @param editable editable to register
 		 * @return void
@@ -791,6 +638,10 @@
 
 			// Chain
 			return this;
+		},
+		i18n: function(component, key, replacements) {
+			console.log("Called deprecated i18n function!!", component, key);
+			return key;
 		}
 	});
 
