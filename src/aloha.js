@@ -20,7 +20,7 @@ require(
 		// alohaQuery should always be available
 		window.alohaQuery = window.alohaQuery || window.jQuery;
 		var jQuery = window.alohaQuery || window.jQuery, $ = jQuery;
-		
+
 		// require core
 		require(
 			{

@@ -12,7 +12,7 @@
 		Aloha = window.Aloha,
 		Class = window.Class,
 		console = window.console||false;
-	
+
 	/**
 	 * Plugin Registry
 	 * @namespace Aloha
@@ -34,7 +34,7 @@
 				globalSettings = Aloha.settings.plugins||{},
 				userPluginIds = Aloha.getLoadedPlugins(),
 				i,plugin,pluginId;
-			
+
 			// Global to local settings
 			for ( pluginId in globalSettings ) {
 				if ( globalSettings.hasOwnProperty(pluginId) ) {
@@ -97,7 +97,7 @@
 			// iterate through all registered plugins
 			for ( plugin in this.plugins ) {
 				if (Aloha.Log.isDebugEnabled()) {
-					Aloha.Log.debug(this, 'Passing contents of HTML Element with id { ' + obj.attr('id') + 
+					Aloha.Log.debug(this, 'Passing contents of HTML Element with id { ' + obj.attr('id') +
 						' } for cleaning to plugin { ' + plugin + ' }');
 				}
 				this.plugins[plugin].makeClean(obj);
