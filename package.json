@@ -59,7 +59,7 @@
 
 	"dependencies": {
 		"express": ">=2.2.2",
-		"buildr": ">=0.2.3"
+		"buildr": "0.2"
 	},
 
 	"compiler": "buildr .",
