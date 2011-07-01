@@ -7,9 +7,6 @@
 [submodule "link"]
 	path = link
 	url = git@github.com:alohaeditor/Aloha-Plugin-Link.git
-[submodule "Aloha-Plugin-List"]
-	path = list
-	url = git@github.com:alohaeditor/Aloha-Plugin-List.git
 [submodule "table"]
 	path = table
 	url = git@github.com:alohaeditor/Aloha-Plugin-Table.git
