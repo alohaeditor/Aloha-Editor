@@ -61,3 +61,6 @@
 [submodule "src/plugin/block"]
 	path = src/plugin/block
 	url = git@github.com:alohaeditor/Aloha-Plugin-Block.git
+[submodule "src/plugins/common"]
+	path = src/plugins/common
+	url = git://github.com/alohaeditor/Aloha-Bundle-Common.git
