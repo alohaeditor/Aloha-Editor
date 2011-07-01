@@ -5,11 +5,10 @@
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
 
-define('block/block-plugin', [
+define([
 	'block/lifecyclemanager',
-	'block/renderer/debugrenderer',
-	'block/renderer/defaultrenderer'
-], function(BlockLifecycleManager) {
+	'block/block/defaultblock'
+], function(LifecycleManager) {
 	"use strict";
 	var
 		jQuery = window.alohaQuery || window.jQuery, $ = jQuery,
@@ -25,13 +24,13 @@ define('block/block-plugin', [
 		},
 
 		init: function () {
-			BlockLifecycleManager.registerEventHandlers();
+			LifecycleManager.registerEventHandlers();
 			// find all blocks marked with .aloha-block + this.config.defaults
 			// run initializer on this
 			// TODO: Extract to new method -> immer wenn content dazu kommt!
 			// 
 			// in loop
-			jQuery('.aloha-block').alohaBlock({});
+			jQuery('.aloha-block').alohaBlock();
 		}
 	}))();
 	
@@ -40,8 +39,9 @@ define('block/block-plugin', [
 	 * @api
 	 */
 	$.fn.alohaBlock = function(instanceDefaults) {
+		instanceDefaults = instanceDefaults || {};
 		$(this).each(function(index, element) {
-			BlockLifecycleManager.blockify(element, instanceDefaults);
+			LifecycleManager.blockify(element, instanceDefaults);
 		});
 
 		// Chain
@@ -51,5 +51,3 @@ define('block/block-plugin', [
 	// $.fn.mahaloBlock = TODO
 	return BlockPlugin;
 });
-	
-	// $.fn.mahaloBlock = TODO

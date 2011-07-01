@@ -5,15 +5,15 @@
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
 
-define("block/block", ['require'],
-function(require) {
+define(['block/lifecyclemanager'],
+function(LifecycleManager) {
 	"use strict";
 	
 	var
 		jQuery = window.alohaQuery || window.jQuery, $ = jQuery,
 		Aloha = window.Aloha;
 
-	var Block = Class.extend({
+	var AbstractBlock = Class.extend({
 		
 		/**
 		 * @var string ID of the assigned element. Not sure if it exists.
@@ -23,6 +23,7 @@ function(require) {
 		/**
 		 * @var jQuery element
 		 * Only used for caching; always use getElement() to access it!
+		 * @hide
 		 */
 		element: null,
 		
@@ -32,6 +33,7 @@ function(require) {
 		_constructor: function(element) {
 			this.id = element.attr('id');
 			this.element = element;
+			
 		},
 		
 		/**
@@ -53,6 +55,10 @@ function(require) {
 			return this.id;
 		},
 		
+		/**
+		 * Get the element
+		 * @return
+		 */
 		getElement: function() {
 			if (this.element.parent().length === 0) {
 				// this.element has been disconnected from the current page (i.e. by copy/paste)
@@ -61,26 +67,35 @@ function(require) {
 			}
 			return this.element;
 		},
-		
-		// TODO: we need a helper which updates "element", e.g. on move
-		
+
 		render: function() {
-			var LifecycleManager = require("block/lifecyclemanager"); // Circular dependency, that's why we need to load it differently.
-			
-			var rendererName, renderer, element;
-			
-			element = this.getElement();
-			
-			rendererName = element.data('renderer');
-			renderer = LifecycleManager.getRenderer(rendererName);
-			if (!renderer) {
-				// TODO: use message subsystem later
-				Aloha.Log.error('Aloha.Block', 'Renderer "' + rendererName + '" not found');
-				return;
+			// TODO implement render
+		},
+		
+		attr: function(attributeNameOrObject, attributeValue) {
+			var me = this;
+			if (arguments.length == 2) {
+				this.setAttribute(attributeNameOrObject, attributeValue);
+			} else if (typeof attributeNameOrObject === 'object') {
+				$.each(attributeNameOrObject, function(key, value) {
+					me.setAttribute(key, value);
+				})
+			} else if (typeof attributeNameOrObject === 'string') {
+				this.getAttribute(attributeNameOrObject);
+			} else {
+				this.getAttributes();
 			}
-			element.html(renderer.render(element.data()));
+		},
+		
+		setAttribute: function(name, value) {
+			this.getElement().attr('data-' + name, value);
+		},
+		getAttribute: function(name) {
+			// TODO
+		},
+		getAttributes: function() {
+			// TODO
 		}
 	});
-	
-	return Block;
+	return AbstractBlock;
 });

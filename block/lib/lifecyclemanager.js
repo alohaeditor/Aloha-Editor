@@ -5,9 +5,8 @@
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
 
-define("block/lifecyclemanager",
-	["block/block"],
-function(Block) {
+define([],
+function() {
 	"use strict";
 	
 	var
@@ -18,15 +17,13 @@ function(Block) {
 	var LifecycleManager = new (Class.extend({
 
 		defaults: {
-			renderer: 'DefaultRenderer',
-			something: 'DefaultRenderer'
+			'block-type': 'DefaultBlock'
 		},
-
+		blockTypes: {},
+		
 		// container for all blocks
 		// Key: ID, value: Block
 		blocks: {},
-
-		renderers: {},
 
 		registerEventHandlers: function() {
 			// Register event handlers for activating an Aloha Block
@@ -49,26 +46,38 @@ function(Block) {
 				}
 			});
 		},
+		
+		/**
+		 * Blockify a given element with the instance defaults
+		 * Directly called when one does $.alohaBlock(instanceDefaults)
+		 *
+		 * @hide
+		 */
 		blockify: function(element, instanceDefaults) {
+			var attributes, block;
 			element = $(element);
-			var config = this.getConfig(element, instanceDefaults);
 			
-			// write back merged configuration
-			$.each(config, function(k, v) {
-				element.attr('data-' + k, v);
-			});
+			// TODO: check if object is already Block-ified
 			
+			attributes = this.getConfig(element, instanceDefaults);
+
 			element.contentEditable(false);
 			element.addClass('aloha-block');
 			if (!element.attr('id')) {
 				element.attr('id', GENTICS.Utils.guid());
 			}
 
-			var block = new Block(element);
-			this.registerBlock(block);
+			if (!this.blockTypes[attributes['block-type']]) {
+				Aloha.Log.error(this, 'Block Type ' + attributes['block-type'] + ' not found!');
+				return;
+			}
+			block = new (this.blockTypes[attributes['block-type']])(element);
+			block.attr(attributes);
+
+			// Register block
+			this.blocks[block.getId()] = block;
 
 			block.render();
-			// TODO: check if object is already Block-ified
 		},
 
 		/**
@@ -82,19 +91,35 @@ function(Block) {
 				}
 			});
 		},
+		
+		/**
+		 * Merges the config from different places, and return the merged config.
+		 *
+		 * @hide
+		 */
 		getConfig: function(blockElement, instanceDefaults) {
-			
-			// TODO: merge from this.settings
+			// TODO: merge from plugin settings
 			// TODO: What about double matches / overrides / multiple selectors applying?
 			var settingsDefaults = {dummy: 'bar'};
 
-			return $.extend({}, this.defaults, settingsDefaults, instanceDefaults, blockElement.data());
+			return $.extend(
+				{},
+				this.defaults,
+				settingsDefaults,
+				instanceDefaults,
+				blockElement.data(),
+				{	// Override the "about" property
+					about: blockElement.attr('about')
+				}
+			);
 		},
-		registerBlock: function(block) {
-			// TODO: store with ID
-			this.blocks[block.getId()] = block;
-		},
-
+		
+		/**
+		 * Receive the Block instance, when ID or DOM node is given.
+		 * 
+		 * @param {String}|{DOMNode}
+		 * @return {Block} Block instance
+		 */
 		getBlock: function(idOrDomNode) {
 			var id;
 			if (typeof idOrDomNode === 'object') {
@@ -110,16 +135,8 @@ function(Block) {
 			// TODO
 		},
 		
-		registerRenderer: function(identifier, renderer) {
-			this.renderers[identifier] = renderer;
-		},
-		
-		getRenderer: function(identifier) {
-			return this.renderers[identifier];
-		},
-		
-		unregisterRenderer: function() {
-			// TODO
+		registerBlockType: function(identifier, blockType) {
+			this.blockTypes[identifier] = blockType;
 		}
 	}))();
 	
