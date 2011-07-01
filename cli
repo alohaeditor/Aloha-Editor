@@ -463,7 +463,7 @@ class App
 	def build
 		check_req(['node','npm'])
 		unless check_req('buildr',false)
-			run("npm -g install buildr")
+			run("npm -g install buildr@0.2")
 		end
 		run("buildr")
 		run("chmod -R 766 out")
