@@ -23,8 +23,7 @@
 				}
 			};
 	</script>
-	<script	src="../../dep/jquery-1.5.1.js" ></script>
-	<script	src="../../aloha.js" id="aloha-script-include" data-plugins="format,block"></script> <!--  toc,table,list, highlighteditables,link,image-->
+	<script src="../../require.js" data-main="../../aloha.js" id="aloha-script-include" data-plugins="format,block"></script>
 	
 	<link rel="stylesheet" href="../../aloha.css" id="aloha-style-include" type="text/css">
 	<link rel="stylesheet" href="../../demo/world/index.css" type="text/css">
@@ -70,18 +69,23 @@
 			</div>
 		</div>
 	</div>
-	<script type="text/javascript" defer>
-		(function(window,undefined){
-			// Prepare
-			var $body = $('body');
+	<script type="text/javascript">
+		require({
+			baseUrl: '../../'
+		},
+		['order!dep/jquery-1.5.1'], function() {
+			require.ready(function() {
+				// Prepare
+				var $body = $('body');
 
-			// Bind to Aloha Ready Event
-			$body.bind('aloha',function(){
-				$('#title').aloha();
-				$('#teaser').aloha();
-				$('#content').aloha();
+				// Bind to Aloha Ready Event
+				$body.bind('aloha',function(){
+					$('#title').aloha();
+					$('#teaser').aloha();
+					$('#content').aloha();
+				});
 			});
-		})(window);
+		});
 	</script>
 </body>
 </html>
