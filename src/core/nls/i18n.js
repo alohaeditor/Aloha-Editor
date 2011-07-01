@@ -1,4 +1,4 @@
-define('core/nls/labels', {
+define({
 	"root": {
 		"plugin.abbr.floatingmenu.tab.abbr":"Abbreviation",
 		"floatingmenu.tab.format":"Format",

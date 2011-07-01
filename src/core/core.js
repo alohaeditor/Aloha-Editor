@@ -166,6 +166,11 @@
 
 					pluginNames.push(pluginName);
 					paths[pluginName] = 'plugins/' + bundleName + '/' + pluginName + '/lib';
+					
+					// As the "nls" path lies NOT inside /lib/, but is a sibling to /lib/, we need
+					// to register it explicitely.
+					paths[pluginName + '/nls'] = 'plugins/' + bundleName + '/' + pluginName + '/nls';
+					
 					requiredInitializers.push(pluginName + '/' + pluginName + '-plugin');
 					
 				});

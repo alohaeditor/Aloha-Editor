@@ -132,6 +132,17 @@
                             }
                             require.mixin(value, partBundle);
                         }
+						
+						// MODIFICATION FROM ALOHA START: add a t() function
+						value.t = function(key) {
+							if (this[key]) {
+								return this[key];
+							} else {
+								return key;
+							}
+						}
+						// END OF ALOHA MODIFICATION
+
 						//All done, notify the loader.
                         onLoad(value);
                     });
