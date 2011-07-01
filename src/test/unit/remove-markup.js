@@ -120,6 +120,60 @@ $(document).ready(function() {
 			doRemoveMarkupTest(this.edit, this.afterBold, 3, this.afterBold, 5, jQuery('<b></b>'), '#ref-remove-simple', '#ref-remove-simple-after');
 		});
 
+        module('Remove Markup in Paragraph', {
+			setup: function() {
+				// get the editable area and the reference
+				this.edit = $('#edit');
+				this.ref = $('#ref-remove-para');
+				// fill the editable area with the reference
+				this.edit.html(this.ref.html());
+				// aloha'fy the editable
+				this.edit.aloha();
+
+				// find the text node before the bold node
+				this.beforeBold = this.edit.find('p').eq(0).contents().get(0);
+				// find the text node in the bold node
+				this.bold = this.edit.find('b').eq(0).contents().get(0);
+				// find the text node after the bold node
+				this.afterBold = this.edit.find('p').eq(0).contents().get(2);
+			},
+
+			teardown: function() {
+				// de-aloha'fy the editable
+				this.edit.mahalo();
+			}
+		});
+
+		// Test removing markup before occurrance
+		test('Before Occurrance', function() {
+			doRemoveMarkupTest(this.edit, this.beforeBold, 0, this.beforeBold, 4, jQuery('<b></b>'), '#ref-remove-para', '#ref-remove-para-before');
+		});
+
+		// Test removing markup into occurrance
+		test('Into Occurrance', function() {
+			doRemoveMarkupTest(this.edit, this.beforeBold, 0, this.bold, 2, jQuery('<b></b>'), '#ref-remove-para', '#ref-remove-para-into');
+		});
+
+		// Test removing markup exactly from occurrance
+		test('Exact Occurrance', function() {
+			doRemoveMarkupTest(this.edit, this.bold, 0, this.bold, 4, jQuery('<b></b>'), '#ref-remove-para', '#ref-remove-para-exact');
+		});
+
+		// Test removing markup across occurrance
+		test('Across Occurrance', function() {
+			doRemoveMarkupTest(this.edit, this.beforeBold, 2, this.afterBold, 3, jQuery('<b></b>'), '#ref-remove-para', '#ref-remove-para-across');
+		});
+
+		// Test removing markup out of occurrance
+		test('Out of Occurrance', function() {
+			doRemoveMarkupTest(this.edit, this.bold, 2, this.afterBold, 3, jQuery('<b></b>'), '#ref-remove-para', '#ref-remove-para-out');
+		});
+
+		// Test removing markup after of occurrance
+		test('After Occurrance', function() {
+			doRemoveMarkupTest(this.edit, this.afterBold, 3, this.afterBold, 5, jQuery('<b></b>'), '#ref-remove-para', '#ref-remove-para-after');
+		});
+
         module('Remove Multiple Markup', {
 			setup: function() {
 				// get the editable area and the reference
