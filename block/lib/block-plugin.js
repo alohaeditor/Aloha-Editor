@@ -7,7 +7,8 @@
 
 define([
 	'block/lifecyclemanager',
-	'block/block/defaultblock'
+	'block/block/defaultblock',
+	'block/block/debugblock'
 ], function(LifecycleManager) {
 	"use strict";
 	var

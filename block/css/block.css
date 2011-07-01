@@ -1,3 +1,22 @@
+.aloha-block dl.debug-block {
+	background: #EEEEEE;
+	border: 1px dashed #999999;
+	border-radius: 7px;
+	float: left;
+	margin: 5px 0;
+	padding: 4px;
+	width: 100%;
+}
+.aloha-block dl.debug-block dt {
+	width:30%;
+	float:left;
+	font-weight:bold;
+}
+
+.aloha-block dl.debug-block dd {
+	width:70%;
+	float:left;
+}
 .aloha-block-active {
 	border:1px solid red;
 }

@@ -81,20 +81,28 @@ function(LifecycleManager) {
 					me.setAttribute(key, value);
 				})
 			} else if (typeof attributeNameOrObject === 'string') {
-				this.getAttribute(attributeNameOrObject);
+				return this.getAttribute(attributeNameOrObject);
 			} else {
-				this.getAttributes();
+				return this.getAttributes();
 			}
 		},
 		
 		setAttribute: function(name, value) {
-			this.getElement().attr('data-' + name, value);
+			if (name === 'about') {
+				this.getElement().attr('about', value);
+			} else {
+				this.getElement().attr('data-' + name, value);	
+			}
 		},
 		getAttribute: function(name) {
-			// TODO
+			return this.getAttributes()[name];
 		},
 		getAttributes: function() {
-			// TODO
+			var element = this.getElement();
+
+			return $.extend({}, element.data(), {
+				about: element.attr('about')
+			});
 		}
 	});
 	return AbstractBlock;
