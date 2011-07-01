@@ -533,15 +533,7 @@ GENTICS.Utils.Dom = Class.extend({
 
 		// find the highest occurrence of the markup
 		highestObject = this.findHighestElement(rangeObject.getCommonAncestorContainer(), nodeName, limit);
-		root = highestObject ? highestObject.parentNode : undefined;
-
-		// if no highest object found, but the CAC is one of the limit objects, we use the CAC as root
-		if (!root && limit.filter(
-			function() {
-				return this == rangeObject.getCommonAncestorContainer();
-			}).length > 0) {
-			root = rangeObject.getCommonAncestorContainer();
-		}
+		root = highestObject ? highestObject.parentNode : rangeObject.getCommonAncestorContainer();
 
 		if (root) {
 			// construct the range tree
