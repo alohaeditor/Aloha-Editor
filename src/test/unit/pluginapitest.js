@@ -33,7 +33,7 @@ alohaQuery(document).ready(function($) {
 		setTimeout(function() {
 			ok(false, 'Aloha was not initialized within 60 seconds');
 			start();
-		}, 5000);
+		}, 60000);
 	});
 
 	// All other tests are done when Aloha is ready
