@@ -6,6 +6,7 @@
 */
 .aloha-editable {
 	min-height: 1.2em;
+	outline: none;
 }
 
 .aloha-editable-active .aloha-block {
