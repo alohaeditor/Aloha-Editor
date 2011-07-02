@@ -1,0 +1,3 @@
+[submodule "comments"]
+	path = comments
+	url = git@github.com:alohaeditor/Aloha-Plugin-Comments.git
