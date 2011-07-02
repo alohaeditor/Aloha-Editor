@@ -173,20 +173,26 @@ function(i18n, undefined) {
 				 *  next <-- when everything is loaded, we continue
 				 */
 				$.each(configuredPluginsWithBundle, function(i, configuredPluginWithBundle) {
-					var tmp, bundleName, pluginName;
+					var tmp, bundleName, pluginName, bundlePath;
 
 					tmp = configuredPluginWithBundle.split('/');
 					bundleName = tmp[0];
 					pluginName = tmp[1];
 					// TODO assertion if pluginName or bundleName NULL _-> ERROR!!
 
+					if (Aloha.settings.bundles && Aloha.settings.bundles[bundleName]) {
+						bundlePath = Aloha.settings.bundles[bundleName];
+					} else {
+						bundlePath = 'plugins/' + bundleName;
+					}
+
 					pluginNames.push(pluginName);
-					paths[pluginName] = 'plugins/' + bundleName + '/' + pluginName + '/lib';
+					paths[pluginName] = bundlePath + '/' + pluginName + '/lib';
 
 					// As the "nls" path lies NOT inside /lib/, but is a sibling to /lib/, we need
 					// to register it explicitely. The same goes for the "css" folder.
 					$.each(['nls', 'css', 'vendor'], function() {
-						paths[pluginName + '/' + this] = 'plugins/' + bundleName + '/' + pluginName + '/' + this;
+						paths[pluginName + '/' + this] = bundlePath + '/' + pluginName + '/' + this;
 					});
 
 					requiredInitializers.push(pluginName + '/' + pluginName + '-plugin');

@@ -10,21 +10,24 @@
 			logLevels: {'error': true, 'warn': true, 'info': false, 'debug': false},
 			errorhandling : true,
 
-			"plugins": {
-				"block": {
+			plugins: {
+				block: {
 					// all elements with no specific configuration get this configuration
 					defaults : {
-						'.aloha-block': {
-							lastname: 'K'
+						'.product-teaser': {
+							'block-type': 'ProductTeaserBlock'
 						}
 					}
 				}
-
+			},
+			bundles: {
+				// Path for custom bundle relative from require.js path
+				user: 'demo/block'
 			}
 		};
 	</script>
 	
-	<script src="../../require.js" data-main="../../aloha.js" id="aloha-script-include" data-plugins="common/format,common/block"></script>
+	<script src="../../require.js" data-main="../../aloha.js" id="aloha-script-include" data-plugins="common/format,common/block,user/blockdemo"></script>
 
 	<link rel="stylesheet" href="../../aloha.css" type="text/css">
 	<link rel="stylesheet" href="../../demo/world/index.css" type="text/css">
@@ -35,18 +38,19 @@
 <body>
 	<div id="main">
 		<div id="tree-div"></div>
-		<h1 id="title">Aloha, World!</h1>
+		<h1 id="title">Aloha, Blocks!</h1>
 		<div id="bodyContent">
+			<h2>Block inside editable</h2>
 			<div id="teaser" class="shorttext">
 				<p>
-					<b>Aloha</b> in <span class="aloha-block">This is an uneditable aloha block!</span>the Hawaiian language means affection, love, peace, compassion and mercy. Since the middle of the 19th century, it also
-					has come to be used as an English greeting to say <i>goodbye</i> and <i>hello</i>. Currently, it is mostly used in the sense of hello; however,
-					it is used as the above.
+					Try our new <span class="product-teaser" data-sku="2423423" data-title="Big can of fresh Aloha soup" data-price="27 €">Big can of fresh Aloha soup <span class="price">(27 €)</span></span>, it tastes delicious!
 				</p>
-				<div class="aloha-block" data-name="Sebastian">
-					This is an uneditable aloha block!
+				<div class="aloha-block">
+					This is a default aloha block, which uses the <strong>DefaultRenderer</strong>
 				</div>
 			</div>
+			<h2>Block inside editable</h2>
+
 			<div id="content" class="article">
 				<h2>Etymology</h2>
 				<p>
