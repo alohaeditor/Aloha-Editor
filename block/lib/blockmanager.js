@@ -25,6 +25,10 @@ function() {
 		// Key: ID, value: Block
 		blocks: {},
 
+		_construct: function() {
+			Aloha.FloatingMenu.createScope('Aloha.Block');
+		},
+
 		registerEventHandlers: function() {
 			// Register event handlers for deactivating an Aloha Block
 			$(document).bind('click', function() {
@@ -126,6 +130,7 @@ function() {
 		},
 		
 		registerBlockType: function(identifier, blockType) {
+			Aloha.FloatingMenu.createScope('Aloha.Block.' + identifier, 'Aloha.Block');
 			this.blockTypes[identifier] = blockType;
 		},
 

@@ -36,7 +36,7 @@ function(BlockManager) {
 			this.element = element;
 
 			// Register event handlers for activating an Aloha Block
-			this.element.bind('click', function() {
+			this.element.bind('click', function(event) {
 				var activeBlocks = BlockManager.getActiveBlocks();
 				delete activeBlocks[that.id];
 				that.activate();
@@ -50,7 +50,17 @@ function(BlockManager) {
 				});
 				return false;
 			});
-
+			
+			// The "contentEditableSelectionChange" event listens on
+			// mouseDown and focus, and we need to suppress these events
+			// such that the editable does not update its selection.
+			this.element.bind('mousedown', function() {
+				return false;
+			});
+			
+			this.element.bind('focus', function() {
+				return false;
+			});
 			this.init();
 		},
 
@@ -67,6 +77,10 @@ function(BlockManager) {
 				return;
 			}
 			this.getElement().addClass('aloha-block-active');
+
+			// TODO: Clear selection here!
+			// TODO: move to blockmanager or so
+			Aloha.FloatingMenu.setScope('Aloha.Block.' + this.attr('block-type'));
 		},
 		
 		deactivate: function() {
