@@ -62,7 +62,13 @@ function() {
 			}
 			element.addClass('aloha-block-' + attributes['block-type']);
 			block = new (this.blockTypes[attributes['block-type']])(element);
-			block.attr(attributes);
+
+			// Save attributes on block, but ignore jquery attribute.
+			$.each(attributes, function(k, v) {
+				if (k.indexOf('jQuery') === 0) return;
+
+				block.attr(k, v);
+			});
 
 			// Register block
 			this.blocks[block.getId()] = block;
