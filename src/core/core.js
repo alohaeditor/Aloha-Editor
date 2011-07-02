@@ -245,6 +245,19 @@ function(i18n, undefined) {
 		getLoadedPlugins: function() {
 			return this.loadedPlugins;
 		},
+		
+		/**
+		 * Returns true if a certain plugin is loaded, false otherwise.
+		 */
+		isPluginLoaded: function(pluginName) {
+			var found = false;
+			$.each(this.loadedPlugins, function() {
+				if (pluginName === this) {
+					found = true;
+				}
+			});
+			return found;
+		},
 
 		/**
 		 * Initialise Aloha

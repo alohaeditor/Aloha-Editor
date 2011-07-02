@@ -63,7 +63,9 @@
 						plugin.settings.enabled = true;
 					}
 					if (plugin.settings.enabled) {
-						plugin.init();
+						if (plugin.checkDependencies()) {
+							plugin.init();
+						}
 					}
 				}
 			}
@@ -137,7 +139,14 @@
 		 * contains the plugin's settings object
 		 * @cfg {Object} settings the plugins settings stored in an object
 		 */
-		settings: null,
+		settings: {},
+		
+		/**
+		 * Names of other plugins which must be loaded in order for this plugin to
+		 * function.
+		 * @cfg {Array}
+		 */
+		dependencies: [],
 
 		_constructor: function(pluginPrefix, basePath) {
 			/**
@@ -152,6 +161,20 @@
 				this.basePath = basePath ? basePath : pluginPrefix;
 				Aloha.PluginRegistry.register(this);
 			}
+		},
+
+		/**
+		 * @return true if dependencies satisfied, false otherwise
+		 */
+		checkDependencies: function() {
+			var dependenciesSatisfied = true, that = this;
+			$.each(this.dependencies, function() {
+				if (!Aloha.isPluginLoaded(this)) {
+					dependenciesSatisfied = false;
+					Aloha.Log.error('plugin.' + that.id, 'Required plugin "' + this + '" not found.');
+				}
+			});
+			return dependenciesSatisfied;
 		},
 
 		/**
