@@ -17,7 +17,7 @@ function() {
 	var BlockManager = new (Class.extend({
 
 		defaults: {
-			'block-type': 'DebugBlock'
+			'block-type': 'DefaultBlock'
 		},
 		blockTypes: {},
 		
@@ -63,7 +63,11 @@ function() {
 			// Register block
 			this.blocks[block.getId()] = block;
 
-			block.render();
+			var result = block.render();
+			// Convenience for simple string content
+			if (typeof result === 'string') {
+				block.setContent(result);
+			}
 		},
 
 		/**

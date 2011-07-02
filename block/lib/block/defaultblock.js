@@ -10,8 +10,11 @@ function(AbstractBlock) {
 	"use strict";
 
 	var DefaultBlock = AbstractBlock.extend({
-		render: function(attributes) {
-			return "Hallo default";
+		init: function() {
+			this.attr('default-content', this.element.html());
+		},
+		render: function() {
+			return this.attr('default-content');
 		}
 	});
 

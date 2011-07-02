@@ -51,8 +51,14 @@ function(BlockManager) {
 				return false;
 			});
 
+			this.init();
 		},
-		
+
+		/**
+		 * Template method to initialize the block
+		 */
+		init: function() {},
+
 		/**
 		 * Activated when the block is clicked
 		 */
@@ -126,6 +132,9 @@ function(BlockManager) {
 			return $.extend({}, element.data(), {
 				about: element.attr('about')
 			});
+		},
+		setContent: function(content) {
+			this.getElement().html(content);
 		}
 	});
 	return AbstractBlock;

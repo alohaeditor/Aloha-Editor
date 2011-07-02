@@ -21,18 +21,22 @@ define([
 	 */
 	var BlockPlugin = new (Aloha.Plugin.extend({
 		settings: {},
-		_constructor: function(){
+
+		_constructor: function() {
 			this._super('block');
 		},
 
 		init: function () {
 			BlockManager.registerEventHandlers();
-			// find all blocks marked with .aloha-block + this.config.defaults
-			// run initializer on this
-			// TODO: Extract to new method -> immer wenn content dazu kommt!
-			// 
-			// in loop
-			jQuery('.aloha-block').alohaBlock();
+			if (!this.settings.defaults) {
+				this.settings.defaults = {};
+			}
+			if (!this.settings.defaults['.aloha-block']) {
+				this.settings.defaults['.aloha-block'] = {};
+			}
+			$.each(this.settings.defaults, function(selector, instanceDefaults) {
+				$(selector).alohaBlock(instanceDefaults);
+			})
 		}
 	}))();
 	

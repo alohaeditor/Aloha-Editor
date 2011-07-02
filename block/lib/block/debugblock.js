@@ -19,7 +19,7 @@ function(AbstractBlock) {
 			
 			renderedAttributes += '</table>';
 
-			this.getElement().html(renderedAttributes);
+			return renderedAttributes;
 		}
 	});
 
