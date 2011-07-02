@@ -10,8 +10,9 @@
  * namespaces are preserved.
  */
 
-// Start Closure
-(function(window, undefined) {
+define(
+['i18n!core/nls/i18n'],
+function(i18n, undefined) {
 	"use strict";
 
 	// Prepare
@@ -30,7 +31,7 @@
 	 * @class Aloha The Aloha base object, which contains all the core functionality
 	 * @singleton
 	 */
-	jQuery.extend(true,Aloha,{
+	jQuery.extend(true, Aloha, {
 
 		/**
 		 * The Aloha Editor Version we are using
@@ -86,7 +87,7 @@
 		 * @type string
 		 */
 		stage: 'loadingCore',
-		
+
 		/**
 		 * A list of loaded plugin names. Available after the
 		 * "loadPlugins" stage.
@@ -101,7 +102,7 @@
 		 * Initialise the Initialisation Process
 		 */
 		init: function () {
-			
+
 			$(function(){
 				// Create Promises
 				Aloha.createPromiseEvent('aloha');
@@ -173,7 +174,7 @@
 				 */
 				$.each(configuredPluginsWithBundle, function(i, configuredPluginWithBundle) {
 					var tmp, bundleName, pluginName;
-					
+
 					tmp = configuredPluginWithBundle.split('/');
 					bundleName = tmp[0];
 					pluginName = tmp[1];
@@ -181,16 +182,18 @@
 
 					pluginNames.push(pluginName);
 					paths[pluginName] = 'plugins/' + bundleName + '/' + pluginName + '/lib';
-					
+
 					// As the "nls" path lies NOT inside /lib/, but is a sibling to /lib/, we need
-					// to register it explicitely.
-					paths[pluginName + '/nls'] = 'plugins/' + bundleName + '/' + pluginName + '/nls';
-					
+					// to register it explicitely. The same goes for the "css" folder.
+					$.each(['nls', 'css', 'vendor'], function() {
+						paths[pluginName + '/' + this] = 'plugins/' + bundleName + '/' + pluginName + '/' + this;
+					});
+
 					requiredInitializers.push(pluginName + '/' + pluginName + '-plugin');
 				});
-				
+
 				this.loadedPlugins = pluginNames;
-				
+
 				// Main Require.js loading call, which fetches all the plugins.
 				require(
 					{
@@ -209,7 +212,7 @@
 		 * Fetches plugins the user wants to have loaded. Returns all plugins the user
 		 * has specified with the data-plugins property as array, with the bundle
 		 * name in front.
-		 * 
+		 *
 		 * @return array
 		 * @internal
 		 */
@@ -218,16 +221,16 @@
 			var
 				$alohaScriptInclude = $('#aloha-script-include'),
 				plugins = $.trim($alohaScriptInclude.data('plugins'));
-			
+
 			// Determine Plugins
 			if ( typeof plugins === 'string' && plugins !== "") {
 				return plugins.split(',');
 			}
-		
+
 			// Return
 			return [];
 		},
-		
+
 		/**
 		 * Returns list of loaded plugins (without Bundle name)
 		 *
@@ -324,11 +327,11 @@
 			Aloha.FloatingMenu.init();
 
 			// internationalize ext js message box buttons
-			Ext.MessageBox.buttonText.yes = Aloha.i18n(Aloha, 'yes');
-			Ext.MessageBox.buttonText.no = Aloha.i18n(Aloha, 'no');
-			Ext.MessageBox.buttonText.cancel = Aloha.i18n(Aloha, 'cancel');
-			Ext.ux.AlohaAttributeField.prototype.listEmptyText = Aloha.i18n( Aloha, 'repository.no_item_found' );
-			Ext.ux.AlohaAttributeField.prototype.loadingText = Aloha.i18n( Aloha, 'repository.loading' ) + '...';
+			Ext.MessageBox.buttonText.yes = i18n.t(Aloha, 'yes');
+			Ext.MessageBox.buttonText.no = i18n.t(Aloha, 'no');
+			Ext.MessageBox.buttonText.cancel = i18n.t(Aloha, 'cancel');
+			Ext.ux.AlohaAttributeField.prototype.listEmptyText = i18n.t( Aloha, 'repository.no_item_found' );
+			Ext.ux.AlohaAttributeField.prototype.loadingText = i18n.t( Aloha, 'repository.loading' ) + '...';
 
 			// activate registered editables
 			for (var i = 0, editablesLength = Aloha.editables.length; i < editablesLength; i++) {
@@ -663,5 +666,4 @@
 
 	// Initialise Aloha Editor
 	Aloha.init();
-
-})(window);
+});
