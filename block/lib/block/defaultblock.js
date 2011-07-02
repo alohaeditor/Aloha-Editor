@@ -5,8 +5,8 @@
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
 
-define(['block/block/abstractblock', 'block/lifecyclemanager'],
-function(AbstractBlock, LifecycleManager) {
+define(['block/block/abstractblock'],
+function(AbstractBlock) {
 	"use strict";
 
 	var DefaultBlock = AbstractBlock.extend({
@@ -14,7 +14,6 @@ function(AbstractBlock, LifecycleManager) {
 			return "Hallo default";
 		}
 	});
-	LifecycleManager.registerBlockType('DefaultBlock', DefaultBlock);
 
 	return DefaultBlock;
 });

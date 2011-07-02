@@ -6,10 +6,11 @@
 */
 
 define([
-	'block/lifecyclemanager',
+	'block/blockmanager',
 	'block/block/defaultblock',
-	'block/block/debugblock'
-], function(LifecycleManager) {
+	'block/block/debugblock',
+	'css!block/css/block.css'
+], function(BlockManager, DefaultBlock, DebugBlock) {
 	"use strict";
 	var
 		jQuery = window.alohaQuery || window.jQuery, $ = jQuery,
@@ -25,7 +26,7 @@ define([
 		},
 
 		init: function () {
-			LifecycleManager.registerEventHandlers();
+			BlockManager.registerEventHandlers();
 			// find all blocks marked with .aloha-block + this.config.defaults
 			// run initializer on this
 			// TODO: Extract to new method -> immer wenn content dazu kommt!
@@ -42,13 +43,17 @@ define([
 	$.fn.alohaBlock = function(instanceDefaults) {
 		instanceDefaults = instanceDefaults || {};
 		$(this).each(function(index, element) {
-			LifecycleManager.blockify(element, instanceDefaults);
+			BlockManager.blockify(element, instanceDefaults);
 		});
 
 		// Chain
 		return $(this);
 	};
-	
+
+	// Register default block types
+	BlockManager.registerBlockType('DebugBlock', DebugBlock);
+	BlockManager.registerBlockType('DefaultBlock', DefaultBlock);
+
 	// $.fn.mahaloBlock = TODO
 	return BlockPlugin;
 });

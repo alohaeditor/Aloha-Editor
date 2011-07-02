@@ -14,10 +14,10 @@ function() {
 		GENTICS = window.GENTICS,
 		Aloha = window.Aloha;
 
-	var LifecycleManager = new (Class.extend({
+	var BlockManager = new (Class.extend({
 
 		defaults: {
-			'block-type': 'DefaultBlock'
+			'block-type': 'DebugBlock'
 		},
 		blockTypes: {},
 		
@@ -26,24 +26,9 @@ function() {
 		blocks: {},
 
 		registerEventHandlers: function() {
-			// Register event handlers for activating an Aloha Block
-			$('.aloha-block').live('click', function() {
-				var block = LifecycleManager.getBlock(this);
-				if (!block.isActive()) {
-					// We did not click on an active block
-					LifecycleManager.deactivateActiveBlocks();
-				}
-				block.activate();
-			});
-
 			// Register event handlers for deactivating an Aloha Block
-			$('body').live('click', function(event) {
-				// TODO: also check if the user does stuff inside the property panel; as this should also be allowed.
-				if (!$(event.target).is('.aloha-block')) {
-					// We did not click on a aloha block,
-					// so we need to disable the currently active blocks
-					LifecycleManager.deactivateActiveBlocks();
-				}
+			$(document).bind('click', function() {
+				BlockManager.deactivateActiveBlocks();
 			});
 		},
 		
@@ -71,6 +56,7 @@ function() {
 				Aloha.Log.error(this, 'Block Type ' + attributes['block-type'] + ' not found!');
 				return;
 			}
+			element.addClass('aloha-block-' + attributes['block-type']);
 			block = new (this.blockTypes[attributes['block-type']])(element);
 			block.attr(attributes);
 
@@ -85,7 +71,7 @@ function() {
 		 */
 		deactivateActiveBlocks: function() {
 			$('.aloha-block-active').each(function(index, element) {
-				var block = LifecycleManager.getBlock(element);
+				var block = BlockManager.getBlock(element);
 				if (block) {
 					block.deactivate();
 				}
@@ -137,8 +123,18 @@ function() {
 		
 		registerBlockType: function(identifier, blockType) {
 			this.blockTypes[identifier] = blockType;
+		},
+
+		getActiveBlocks: function() {
+			var activeBlocks = {};
+			$.each(this.blocks, function(blockId, block) {
+				if (block.isActive()) {
+					activeBlocks[blockId] = block;
+				}
+			});
+			return activeBlocks;
 		}
 	}))();
 	
-	return LifecycleManager;
+	return BlockManager;
 });

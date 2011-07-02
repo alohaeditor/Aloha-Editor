@@ -5,23 +5,23 @@
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
 
-define(['block/block/abstractblock', 'block/lifecyclemanager'],
-function(AbstractBlock, LifecycleManager) {
+define(['block/block/abstractblock'],
+function(AbstractBlock) {
 	"use strict";
 
 	var DebugBlock = AbstractBlock.extend({
 		render: function() {
-			var renderedAttributes = '<dl class="debug-block">';
+			this.element.css({display: 'block'});
+			var renderedAttributes = '<table class="debug-block">';
 			$.each(this.attr(), function(k, v) {
-				renderedAttributes += '<dt>' + k + '</dt><dd>' + v + '</dd>'
+				renderedAttributes += '<tr><th>' + k + '</th><td>' + v + '</td></tr>';
 			});
 			
-			renderedAttributes += '</dl><div class="clear"></div>';
+			renderedAttributes += '</table>';
 
 			this.getElement().html(renderedAttributes);
 		}
 	});
-	LifecycleManager.registerBlockType('DebugBlock', DebugBlock);
 
 	return DebugBlock;
 });

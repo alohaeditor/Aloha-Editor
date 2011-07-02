@@ -5,8 +5,8 @@
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
 
-define(['block/lifecyclemanager'],
-function(LifecycleManager) {
+define(['block/blockmanager'],
+function(BlockManager) {
 	"use strict";
 	
 	var
@@ -31,19 +31,42 @@ function(LifecycleManager) {
 		 * @var jQuery element
 		 */
 		_constructor: function(element) {
+			var that = this;
 			this.id = element.attr('id');
 			this.element = element;
-			
+
+			// Register event handlers for activating an Aloha Block
+			this.element.bind('click', function() {
+				var activeBlocks = BlockManager.getActiveBlocks();
+				delete activeBlocks[that.id];
+				that.activate();
+				that.element.parents('.aloha-block').each(function() {
+					var block = BlockManager.getBlock(this);
+					delete activeBlocks[block.id];
+					block.activate();
+				});
+				$.each(activeBlocks, function() {
+					this.deactivate();
+				});
+				return false;
+			});
+
 		},
 		
 		/**
 		 * Activated when the block is clicked
 		 */
 		activate: function() {
+			if (this.isActive()) {
+				return;
+			}
 			this.getElement().addClass('aloha-block-active');
 		},
 		
 		deactivate: function() {
+			if (!this.isActive()) {
+				return;
+			}
 			this.getElement().removeClass('aloha-block-active');
 		},
 		
