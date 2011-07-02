@@ -22,3 +22,6 @@
 [submodule "list"]
 	path = list
 	url = git@github.com:alohaeditor/Aloha-Plugin-List.git
+[submodule "align"]
+	path = align
+	url = git@github.com:alohaeditor/Aloha-Plugin-Align.git
