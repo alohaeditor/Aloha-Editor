@@ -57,7 +57,7 @@ function() {
 			}
 
 			if (!this.blockTypes[attributes['block-type']]) {
-				Aloha.Log.error(this, 'Block Type ' + attributes['block-type'] + ' not found!');
+				Aloha.Log.error('block/blockmanager', 'Block Type ' + attributes['block-type'] + ' not found!');
 				return;
 			}
 			element.addClass('aloha-block-' + attributes['block-type']);

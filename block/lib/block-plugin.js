@@ -6,11 +6,12 @@
 */
 
 define([
+	'core/plugin',
 	'block/blockmanager',
 	'block/block/defaultblock',
 	'block/block/debugblock',
 	'css!block/css/block.css'
-], function(BlockManager, DefaultBlock, DebugBlock) {
+], function(Plugin, BlockManager, DefaultBlock, DebugBlock) {
 	"use strict";
 	var
 		jQuery = window.alohaQuery || window.jQuery, $ = jQuery,
@@ -19,16 +20,15 @@ define([
 	/**
 	 * register the plugin with unique name
 	 */
-	var BlockPlugin = new (Aloha.Plugin.extend({
+	var BlockPlugin = Plugin.create('block', {
 		settings: {},
 		dependencies: ['paste'],
 
-		_constructor: function() {
-			this._super('block');
-		},
-
 		init: function () {
-			var defaultBlockSettings;
+			var that = this;
+			// Register default block types
+			BlockManager.registerBlockType('DebugBlock', DebugBlock);
+			BlockManager.registerBlockType('DefaultBlock', DefaultBlock);
 
 			require(
 				['block/blockpastehandler', 'paste/paste-plugin'],
@@ -37,6 +37,14 @@ define([
 				});
 
 			BlockManager.registerEventHandlers();
+			
+			Aloha.bind('aloha', function() {
+				// When Aloha is fully loaded, we initialize the blocks.
+				that._createBlocks();
+			});
+		},
+		_createBlocks: function() {
+			var defaultBlockSettings;
 
 			if (!this.settings.defaults) {
 				this.settings.defaults = {};
@@ -52,9 +60,8 @@ define([
 			});
 			$('.aloha-block').alohaBlock(defaultBlockSettings);
 		}
-	}))();
-	
-	
+	});
+
 	/**
 	 * @api
 	 */
@@ -67,10 +74,6 @@ define([
 		// Chain
 		return $(this);
 	};
-
-	// Register default block types
-	BlockManager.registerBlockType('DebugBlock', DebugBlock);
-	BlockManager.registerBlockType('DefaultBlock', DefaultBlock);
 
 	// $.fn.mahaloBlock = TODO
 	return BlockPlugin;
