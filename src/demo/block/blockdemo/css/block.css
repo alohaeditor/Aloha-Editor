@@ -10,6 +10,7 @@
 	width:229px;
 	height:158px;
 	box-shadow:0 0 5px #333;
+	z-index:1000;
 }
 .stock-quote-overlay.company-MSFT {
 	background:url('../img/stock-quote-msft.gif');

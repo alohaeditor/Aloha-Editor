@@ -10,13 +10,15 @@ define([
 	'block/blockmanager',
 	'blockdemo/productteaserblock',
 	'blockdemo/companyblock',
+	'blockdemo/editableproductteaserblock',
 	'css!blockdemo/css/block.css'
-], function(/*Plugin,*/ BlockManager, ProductTeaserBlock, CompanyBlock) {
+], function(/*Plugin,*/ BlockManager, ProductTeaserBlock, CompanyBlock, EditableProductTeaserBlock) {
 	"use strict";
 	//return Plugin.create('block', {
 		//init: function() {
 			BlockManager.registerBlockType('ProductTeaserBlock', ProductTeaserBlock);
 			BlockManager.registerBlockType('CompanyBlock', CompanyBlock);
+			BlockManager.registerBlockType('EditableProductTeaserBlock', EditableProductTeaserBlock);
 			//Editable.registerCleanHandler(this._mySpeciCleanMethod);
 		//}//,
 		
