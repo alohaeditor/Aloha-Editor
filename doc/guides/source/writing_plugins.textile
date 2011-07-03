@@ -1,0 +1,150 @@
+h2. Writing Plugins
+
+After reading this guide, you will be able to:
+
+* Create plugins to adjust Aloha to your needs.
+* Load and define dependencies with RequireJS.
+
+endprologue.
+
+h3. What's a plugin?
+
+A plugin extends Aloha with new behaviour and can be loaded by the user. It should be self-contained, so that it can be used for other Aloha installations.
+
+A full-blown plugin has the following file structure:
+
+* @pluginname@
+** @css@ - Stylesheets
+** @doc@ - Documentation, if exists
+** @img@ - Image assets
+** @lib@ - RequireJS modules
+** @nls@ - Localization files, see "Localization and I18N":#localization
+** @test@ - Unit tests
+** @vendor@ - Legacy JavaScript dependencies, not managed by RequireJS
+** @package.json@ - Metadata about your package, in CommonJS format
+
+h3. A basic Aloha plugin
+
+For a very basic plugin, nothing else than a plugin module in @lib/@ has to be
+created. The module is named as @pluginname-plugin.js@.
+
+<javascript filename="aloha/plugins/custom/helloworld/lib/helloworld-plugin.js">
+define(
+['core/plugin'],
+function(Plugin) {
+    "use strict";
+
+    return Plugin.create('myplugin', {
+        init: function() {
+            // Executed on plugin initialization
+        },
+        destroy: function() {
+            // Executed on unloading plugins
+        }
+    });
+});
+</javascript>
+
+This cpde loads the core plugin module (which defines the @Plugin@ class) and creates a plugin with the name @myplugin@.
+
+Loading the new plugin is easy, just add it to the list of plugins in the main
+script tag loading Aloha.
+
+<html>
+<head>
+	<script src="javascripts/aloha/require.js"
+			data-main="javascripts/aloha/aloha.js"
+			id="aloha-script-include"
+			data-plugins="common/format,custom/myplugin">
+	</script>
+	<link rel="stylesheet" href="javascripts/aloha/aloha.css" type="text/css">
+</head>
+</html>
+
+NOTE: If your plugin should be published to the public you should consider writing a @package.json@ file with metadata about the plugin.
+
+h3. Plugin bundles
+
+* Preexisting bundles
+* Naming implications
+
+h3. RequireJS modules explained
+
+We use "RequireJS":http://requirejs.org to manage JavaScript dependencies, that's why some
+basic understanding of it is very helpful.
+
+The basic element of RequireJS is a so called *module* which is one file that *defines* and exports a class or other JavaScript value. This reference can be used in other modules by *requiring* that module.
+
+INFO: Roughly, a RequireJS module is the same as a JavaScript @Class@, but without a global variable.
+
+In the following example, we define two modules. The first module @foo@ defines a class with a method @doSomething()@. The second module @bar@ has a dependency to @foo@, and RequireJS injects what has been returned by @foo@.
+
+<javascript filename="myplugin/lib/foo.js">
+define(
+[],
+function() {
+    "use strict";
+    return Class.extend({
+        doSomething: function() {
+        }
+    });
+});
+</javascript>
+
+<javascript filename="myplugin/lib/bar.js">
+define(
+['myplugin/foo'],
+function(Foo) {
+    "use strict";
+    var fooInstance = new Foo();
+    fooInstance.doSomething();
+});
+</javascript>
+
+Note that a module does not define its own name, it is simply named by its location on the file system.
+
+So, at which place does Aloha look up modules? We'll explain this with a few examples:
+
+|_. Definition in RequireJS |_. File Name |_. Explanation |
+| @myplugin/foo@ | @path_to_bundle/myplugin/lib/foo.js@ | Including other RequireJS modules is the most common case |
+| @myplugin/vendor/legacy_lib@ | @path_to_bundle/myplugin/vendor/legacy_lib.js@ | Include a legacy library |
+| @css!myplugin/css/cssfile.css@ | @path_to_bundle/myplugin/css/cssfile.css@ | Includes the CSS file in the document @<head>@. Explained "here":#includingCssFiles |
+
+WARNING: Circular dependencies need some special treatment. It is most often a sign of bad code, but if you need to do this, follow the "guide at the RequireJS website":http://requirejs.org/docs/api.html#circular.
+
+
+INFO: By using the RequireJS module format, the global scope is not modified polluted by the
+Aloha namespace
+
+* Defining and requiring Dependencies / Dependency Management
+
+h3. Classes and Extension Mechanisms
+
+* Using Class.extend etc...
+
+
+
+h3. Localization
+
+
+
+h3. Including CSS files
+
+
+
+
+
+
+
+
+
+Let's begin by installing the Aloha Editor library. There are two ways to choose right now.
+
+INFO: Actually you don’t "install" Aloha Editor, since it is neither a standalone CMS nor an HTML editor to create
+websites. It is a JavaScript Library which has to be embedded and integrated in your web application.
+Use it like a supersonic textarea. You can edit any DOM element with this supersonic textarea,
+but you need to care about configuration and storage.
+
+h3. Changelog
+
+* July 3, 2011: Initial version by "Sebastian Kurfürst":credits.html#skurfuerst and "Christopher Hlubek":credits.html#hlubek

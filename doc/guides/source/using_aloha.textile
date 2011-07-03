@@ -86,6 +86,27 @@ after the inclusion of @require.js@.
 
 Et voilà! You should now see the floating menu of Aloha when you click into your content.
 
+Since the @.aloha()@ plugin can be called on any jQuery set, you could create many editables at once by specifying a
+CSS class or any other jQuery selector.
+
+<javascript>
+// Make all elements with class="content" editable
+$('.content').aloha();
+</javascript>
+
+h3. Using plugins
+
+* Loading plugins
+* Configuring plugins
+
+h3. Installing additional plugins
+
+* Plugin Bundles explained
+
+TODO Christopher ;-)
+
+h3. jQuery and JavaScript framework compatibility
+
 h3. Changelog
 
 * July 3, 2011: Initial version by "Sebastian Kurfürst":credits.html#skurfuerst and "Christopher Hlubek":credits.html#hlubek
