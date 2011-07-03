@@ -83,21 +83,10 @@
 		</div>
 	</div>
 	<script type="text/javascript">
-		require({
-			baseUrl: '../../'
-		},
-		['order!dep/jquery-1.5.1'], function() {
-			require.ready(function() {
-				// Prepare
-				var $body = $('body');
-
-				// Bind to Aloha Ready Event
-				$body.bind('aloha',function(){
-					$('#title').aloha();
-					$('#teaser').aloha();
-					$('#content').aloha();
-				});
-			});
+		require(['aloha'], function() {
+			$('#title').aloha();
+			$('#teaser').aloha();
+			$('#content').aloha();
 		});
 	</script>
 </body>

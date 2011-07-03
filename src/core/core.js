@@ -17,7 +17,7 @@ function(PluginRegistry, i18n, undefined) {
 
 	// Prepare
 	var
-		jQuery = window.alohaQuery,
+		jQuery = window.alohaQuery || window.jQuery,
 		$ = jQuery,
 		GENTICS = window.GENTICS,
 		Aloha = window.Aloha,
