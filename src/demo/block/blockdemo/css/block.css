@@ -1,0 +1,16 @@
+.aloha-block-CompanyBlock .aloha-block-inner {
+	border-bottom:1px dotted #CCC;
+	position:relative;
+}
+
+.stock-quote-overlay {
+	position:absolute;
+	top:20px;
+	left:0;
+	width:229px;
+	height:158px;
+	box-shadow:0 0 5px #333;
+}
+.stock-quote-overlay.company-MSFT {
+	background:url('../img/stock-quote-msft.gif');
+}

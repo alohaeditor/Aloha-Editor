@@ -16,6 +16,9 @@
 					defaults : {
 						'.product-teaser': {
 							'block-type': 'ProductTeaserBlock'
+						},
+						'.company': {
+							'block-type': 'CompanyBlock'
 						}
 					}
 				}
@@ -28,7 +31,7 @@
 	</script>
 	
 	<script src="../../require.js" data-main="../../aloha.js" id="aloha-script-include" data-plugins="common/format,common/block,user/blockdemo,common/paste"></script>
-
+	
 	<link rel="stylesheet" href="../../aloha.css" type="text/css">
 	<link rel="stylesheet" href="../../demo/world/index.css" type="text/css">
 
@@ -42,21 +45,20 @@
 		<div id="bodyContent">
 			<h2>Block inside editable</h2>
 			<div id="teaser" class="shorttext">
-				<p>
-					Try our new <span class="product-teaser" data-sku="2423423" data-title="Big can of fresh Aloha soup" data-price="27 €">Big can of fresh Aloha soup <span class="price">(27 €)</span></span>, it tastes delicious!
-				</p>
-				<div class="aloha-block">
-					This is a default aloha block, which uses the <strong>DefaultRenderer</strong>
-				</div>
+				<p><b>This is the Product Teaser Example:</b> Try our new <span class="product-teaser" data-sku="2423423" data-title="Big can of fresh Aloha soup" data-price="27 €">Big can of fresh Aloha soup <span class="price">(27 €)</span></span>, it tastes delicious!</p>
+				<p>Some other content here...</p>
+				<p><b>Stock Quote example:</b> When you hover over the name of the <span class="company" data-symbol="MSFT">Microsoft</span> company, the stock quotes are shown.</p>
 			</div>
 			<h2>Block inside editable</h2>
-
 			<div id="content" class="article">
 				<h2>Etymology</h2>
 				<p>
 					The word <a href="http://en.wikipedia.org/wiki/Aloha-invalid" target="_blank" class="aloha">aloha</a> derives from the Proto-Polynesian root <i>*qalofa</i>. It has cognates in other Polynesian languages, such as Samoan alofa
 					and Māori aroha, also meaning "love."
 				</p>
+				<div class="aloha-block">
+					This is a default aloha block, which uses the <strong>DefaultRenderer</strong>
+				</div>
 				<p>
 					A folk etymology claims that it derives from a compound of the <a href="http://en.wikipedia.org/wiki/Hawaii" target="_blank" class="aloha">Hawaiian</a> words alo meaning "presence", "front", "face", or "share"; and
 					ha, meaning "breath of life" or "essence of life." Although alo does indeed mean "presence" etc., the word for breath is spelled with a macron

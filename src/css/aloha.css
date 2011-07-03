@@ -9,10 +9,6 @@
 	outline: none;
 }
 
-.aloha-editable-active .aloha-block {
-	background-color: #B7D6FA !important;
-}
-
 .aloha-editable-zerowidthfix {
 	padding: 0px 5px 0px 5px !important;
 }
@@ -26,18 +22,6 @@
 .aloha-editicon img {
 	width: 18px;
 	height: 18px;
-}
-
-.aloha-block .aloha-block .aloha-editicon {
-	margin-top: 15px;
-}
-
-.aloha-block .aloha-block .aloha-block .aloha-editicon {
-	margin-top: 30px;
-}
-
-.aloha-block .aloha-block .aloha-block .aloha-block .aloha-editicon {
-	margin-top: 45px;
 }
 
 /*

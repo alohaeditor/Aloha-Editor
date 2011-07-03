@@ -95,6 +95,8 @@ GENTICS.Utils.RangeObject = Class.extend({
 	 * @param rangeTree a GENTICS.Utils.RangeTree object may be provided to start from. This parameter is optional
 	 */
 	deleteContents: function () {
+
+		// TODO Fix bug that causes wrong range in paste getContents
 		
 		var cac, rt, i, children;
 		

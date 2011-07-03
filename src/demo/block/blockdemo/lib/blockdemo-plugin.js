@@ -6,10 +6,23 @@
 */
 
 define([
+	//'core/plugin',
 	'block/blockmanager',
-	'blockdemo/productteaserblock'
-], function(BlockManager, ProductTeaserBlock) {
+	'blockdemo/productteaserblock',
+	'blockdemo/companyblock',
+	'css!blockdemo/css/block.css'
+], function(/*Plugin,*/ BlockManager, ProductTeaserBlock, CompanyBlock) {
 	"use strict";
-
-	BlockManager.registerBlockType('ProductTeaserBlock', ProductTeaserBlock);
+	//return Plugin.create('block', {
+		//init: function() {
+			BlockManager.registerBlockType('ProductTeaserBlock', ProductTeaserBlock);
+			BlockManager.registerBlockType('CompanyBlock', CompanyBlock);
+			//Editable.registerCleanHandler(this._mySpeciCleanMethod);
+		//}//,
+		
+		/*destroy: function() {
+			BlockManager.unregisterBlockType('ProductTeaserBlock');
+			Editable.unregisterCleanHandler(this._mySpeciCleanMethod);
+		}*/
+	//});
 });
