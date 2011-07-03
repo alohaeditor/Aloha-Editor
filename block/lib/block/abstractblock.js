@@ -37,10 +37,14 @@ function(BlockManager) {
 			this.element.bind('click', function(event) {
 				var activeBlocks = BlockManager.getActiveBlocks();
 				delete activeBlocks[that.id];
+
+				that._selectBlock(event);
 				that.activate();
 				that.element.parents('.aloha-block').each(function() {
 					var block = BlockManager.getBlock(this);
 					delete activeBlocks[block.id];
+					
+					block._selectBlock();
 					block.activate();
 				});
 				$.each(activeBlocks, function() {
@@ -79,15 +83,25 @@ function(BlockManager) {
 			// TODO: also activate surrounding editable if exists.
 			this.element.addClass('aloha-block-active');
 
-
-			var domElement =this.element[0];
+			// TODO: move to blockmanager or so
+			Aloha.FloatingMenu.setScope('Aloha.Block.' + this.attr('block-type'));
+		},
+		
+		_selectBlock: function(event) {
+			if (!event || $(event.target).is('.aloha-editable') || $(event.target).parents('.aloha-block, .aloha-editable').first().is('.aloha-editable')) {
+				console.log("Ignoring block");
+				// It was clicked on a Aloha-Editable inside a block; so we do not
+				// want to select the whole block and do an early return.
+				//return;
+			}
 			var parentDomElement = this.element.parent()[0];
-			var offset = GENTICS.Utils.Dom.getIndexInParent(domElement);
+			var offset = GENTICS.Utils.Dom.getIndexInParent(this.element[0]);
 			var range = Aloha.Selection.getRangeObject();
 
+			// TODO: do we need the "try" block? Taken from image plugin.
 			try {
-				range.commonAncestorContainer = range.limitObject = editable[0];
-				range.startContainer = range.endContainer = thisimg.parent()[0];
+				range.commonAncestorContainer = range.limitObject = parentDomElement;
+				range.startContainer = range.endContainer = parentDomElement;
 				range.startOffset = offset;
 				range.endOffset = offset+1;
 				range.correctRange();
@@ -102,9 +116,7 @@ function(BlockManager) {
 				range.select();
 				Aloha.Selection.updateSelection();
 			}
-
-			// TODO: move to blockmanager or so
-			Aloha.FloatingMenu.setScope('Aloha.Block.' + this.attr('block-type'));
+	
 		},
 		
 		deactivate: function() {
@@ -135,6 +147,8 @@ function(BlockManager) {
 			}
 			this.element.empty();
 			this.element.append(innerElement);
+			
+			innerElement.find('.aloha-editable').aloha();
 			this._renderToolbar();
 		},
 
