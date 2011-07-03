@@ -139,7 +139,7 @@ function(BlockManager) {
 		},
 
 		_renderToolbar: function() {
-			this.element.wrap('<span class="new" />').prepend('<span class="aloha-block-draghandle"></span>');
+			this.element.prepend('<span class="aloha-block-draghandle"></span>');
 		},
 
 		attr: function(attributeNameOrObject, attributeValue) {
