@@ -4,8 +4,8 @@
  * Licensed unter the terms of http://www.aloha-editor.com/license.html
  */
 define(
-['core/pluginregistry'],
-function(PluginRegistry) {
+['core/pluginmanager'],
+function(PluginManager) {
 	"use strict";
 
 	var
@@ -238,7 +238,7 @@ function(PluginRegistry) {
 	 */
 	Plugin.create = function(pluginName, definition) {
 		var pluginInstance = new (Plugin.extend(definition))(pluginName);
-		PluginRegistry.register(pluginInstance);
+		PluginManager.register(pluginInstance);
 
 		return pluginInstance;
 	};

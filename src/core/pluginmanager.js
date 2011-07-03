@@ -17,9 +17,10 @@ function() {
 
 
 	/**
-	 * Plugin Registry
+	 * The Plugin Manager controls the lifecycle of all Aloha Plugins.
+	 *
 	 * @namespace Aloha
-	 * @class PluginRegistry
+	 * @class PluginManager
 	 * @singleton
 	 */
 	return new (Class.extend({
@@ -109,11 +110,11 @@ function() {
 		},
 
 		/**
-		 * Expose a nice name for the PluginRegistry
+		 * Expose a nice name for the Plugin Manager
 		 * @hide
 		 */
 		toString: function() {
-			return 'pluginregistry';
+			return 'pluginmanager';
 		}
 	}))();
 });

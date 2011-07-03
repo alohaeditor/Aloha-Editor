@@ -11,8 +11,8 @@
  */
 
 define(
-['core/pluginregistry', 'i18n!core/nls/i18n'],
-function(PluginRegistry, i18n, undefined) {
+['core/pluginmanager', 'i18n!core/nls/i18n'],
+function(PluginManager, i18n, undefined) {
 	"use strict";
 
 	// Prepare
@@ -332,7 +332,7 @@ function(PluginRegistry, i18n, undefined) {
 		 * @return void
 		 */
 		initPlugins: function (next) {
-			PluginRegistry.init(function(){
+			PluginManager.init(function(){
 				next();
 			});
 		},

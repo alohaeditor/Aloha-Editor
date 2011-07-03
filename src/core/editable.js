@@ -5,8 +5,8 @@
  */
 
 define(
-['core/pluginregistry'],
-function(PluginRegistry) {
+['core/pluginmanager'],
+function(PluginManager) {
 	"use strict";
 	var
 		jQuery = window.alohaQuery || window.jQuery, $ = jQuery,
@@ -632,7 +632,7 @@ function(PluginRegistry) {
 			// remove placeholder
 			this.removePlaceholder(clonedObj);
 
-			PluginRegistry.makeClean(clonedObj);
+			PluginManager.makeClean(clonedObj);
 			return asObject ? clonedObj.contents() : clonedObj.html();
 		},
 
