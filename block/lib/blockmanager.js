@@ -73,11 +73,7 @@ function() {
 			// Register block
 			this.blocks[block.getId()] = block;
 
-			var result = block.render();
-			// Convenience for simple string content
-			if (typeof result === 'string') {
-				block.setContent(result);
-			}
+			block._renderAndSetContent();
 		},
 
 		/**

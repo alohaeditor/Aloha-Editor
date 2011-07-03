@@ -22,8 +22,6 @@ function(BlockManager) {
 		
 		/**
 		 * @var jQuery element
-		 * Only used for caching; always use getElement() to access it!
-		 * @hide
 		 */
 		element: null,
 		
@@ -55,6 +53,8 @@ function(BlockManager) {
 			// mouseDown and focus, and we need to suppress these events
 			// such that the editable does not update its selection.
 			this.element.bind('mousedown', function() {
+				// TODO: if you right-click on a block, this does not show
+				// the context menu. So, we somehow need to handle this differently
 				return false;
 			});
 			
@@ -76,9 +76,33 @@ function(BlockManager) {
 			if (this.isActive()) {
 				return;
 			}
-			this.getElement().addClass('aloha-block-active');
+			// TODO: also activate surrounding editable if exists.
+			this.element.addClass('aloha-block-active');
 
-			// TODO: Clear selection here!
+
+			var domElement =this.element[0];
+			var parentDomElement = this.element.parent()[0];
+			var offset = GENTICS.Utils.Dom.getIndexInParent(domElement);
+			var range = Aloha.Selection.getRangeObject();
+
+			try {
+				range.commonAncestorContainer = range.limitObject = editable[0];
+				range.startContainer = range.endContainer = thisimg.parent()[0];
+				range.startOffset = offset;
+				range.endOffset = offset+1;
+				range.correctRange();
+				range.select();
+			} catch(err) {
+				range = new GENTICS.Utils.RangeObject({
+					startContainer: parentDomElement,
+					endContainer: parentDomElement,
+					startOffset: offset,
+					endOffset: offset+1
+				});
+				range.select();
+				Aloha.Selection.updateSelection();
+			}
+
 			// TODO: move to blockmanager or so
 			Aloha.FloatingMenu.setScope('Aloha.Block.' + this.attr('block-type'));
 		},
@@ -87,34 +111,37 @@ function(BlockManager) {
 			if (!this.isActive()) {
 				return;
 			}
-			this.getElement().removeClass('aloha-block-active');
+			this.element.removeClass('aloha-block-active');
 		},
 		
 		isActive: function() {
-			return this.getElement().hasClass('aloha-block-active');
+			return this.element.hasClass('aloha-block-active');
 		},
 		
 		getId: function() {
 			return this.id;
 		},
-		
-		/**
-		 * Get the element
-		 * @return
-		 */
-		getElement: function() {
-			if (this.element.parent().length === 0) {
-				// this.element has been disconnected from the current page (i.e. by copy/paste)
-				// so we need to find the current instance on the page again
-				this.element = $('#' + this.id);
-			}
-			return this.element;
-		},
 
 		render: function() {
 			// TODO implement render
 		},
-		
+
+		_renderAndSetContent: function() {
+			var innerElement = $('<span class="aloha-block-inner" />');
+			var result = this.render(innerElement);
+			// Convenience for simple string content
+			if (typeof result === 'string') {
+				innerElement.html(result);
+			}
+			this.element.empty();
+			this.element.append(innerElement);
+			this._renderToolbar();
+		},
+
+		_renderToolbar: function() {
+			this.element.wrap('<span class="new" />').prepend('<span class="aloha-block-draghandle"></span>');
+		},
+
 		attr: function(attributeNameOrObject, attributeValue) {
 			var me = this;
 			if (arguments.length == 2) {
@@ -132,23 +159,27 @@ function(BlockManager) {
 		
 		setAttribute: function(name, value) {
 			if (name === 'about') {
-				this.getElement().attr('about', value);
+				this.element.attr('about', value);
 			} else {
-				this.getElement().attr('data-' + name, value);	
+				this.element.attr('data-' + name, value);	
 			}
 		},
+
 		getAttribute: function(name) {
 			return this.getAttributes()[name];
 		},
+
 		getAttributes: function() {
-			var element = this.getElement();
+			var element = this.element;
 
 			return $.extend({}, element.data(), {
 				about: element.attr('about')
 			});
 		},
+
 		setContent: function(content) {
-			this.getElement().html(content);
+			// TODO adjust to inner element
+			this.element.html(content);
 		}
 	});
 	return AbstractBlock;
