@@ -12,7 +12,7 @@ define([
 
 	var ProductTeaserBlock = AbstractBlock.extend({
 		render: function() {
-			return '<span class="aloha-editable">' + this.attr('title') + '</span><strong class="price">(' + this.attr('price') + ')</strong>';
+			return '<span class="aloha-editable">' + this.attr('title') + '</span> <strong class="price">(' + this.attr('price') + ')</strong>';
 		}
 	});
 

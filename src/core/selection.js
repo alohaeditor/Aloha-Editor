@@ -152,15 +152,20 @@
 
 			if (event !== undefined && event.originalEvent !== undefined &&
 					event.originalEvent.stopSelectionUpdate === true) {
-				return;
+				return false;
 			}
 			var rangeObject = this.rangeObject = new Aloha.Selection.SelectionRange(true);
 
 			// find the CAC (Common Ancestor Container) and update the selection Tree
 			rangeObject.update();
 
-			// initially set the scope to 'continuoustext'
-			Aloha.FloatingMenu.setScope('Aloha.continuoustext');
+			// Only set the specific scope if an event was provided, which means
+			// that somehow an editable was selected
+			// TODO Bind code to aloha-selection-changed event to remove coupling to floatingmenu
+			if (event !== undefined) {
+				// Initiallly set the scope to 'continuoustext'
+				Aloha.FloatingMenu.setScope('Aloha.continuoustext');
+			}
 
 			// throw the event that the selection has changed. Plugins now have the
 			// chance to react on the chancurrentElements[childCount].children.lengthged selection
