@@ -11,6 +11,9 @@
 	cursor: pointer;
 	outline: 1px solid #FFE98A;
 }
+.aloha-block .aloha-editable {
+	cursor: auto;
+}
 .aloha-block-active .aloha-block-inner,
 .aloha-block-active:hover .aloha-block-inner {
 	outline: 1px solid #2F7ECC;

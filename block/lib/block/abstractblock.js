@@ -39,6 +39,10 @@ function(BlockManager) {
 				delete activeBlocks[that.id];
 
 				that._selectBlock(event);
+
+				// Set scope to current block
+				Aloha.FloatingMenu.setScope('Aloha.Block.' + that.attr('block-type'));
+
 				that.activate();
 				that.element.parents('.aloha-block').each(function() {
 					var block = BlockManager.getBlock(this);
@@ -50,6 +54,7 @@ function(BlockManager) {
 				$.each(activeBlocks, function() {
 					this.deactivate();
 				});
+
 				return false;
 			});
 			
@@ -60,9 +65,9 @@ function(BlockManager) {
 				// TODO: if you right-click on a block, this does not show
 				// the context menu. So, we somehow need to handle this differently
 				return false;
-			});
-			
-			this.element.bind('focus', function() {
+			}).bind('focus', function() {
+				return false;
+			}).bind('dblclick', function() {
 				return false;
 			});
 			this.init();
@@ -82,18 +87,15 @@ function(BlockManager) {
 			}
 			// TODO: also activate surrounding editable if exists.
 			this.element.addClass('aloha-block-active');
-
-			// TODO: move to blockmanager or so
-			Aloha.FloatingMenu.setScope('Aloha.Block.' + this.attr('block-type'));
 		},
 		
 		_selectBlock: function(event) {
 			if (!event || $(event.target).is('.aloha-editable') || $(event.target).parents('.aloha-block, .aloha-editable').first().is('.aloha-editable')) {
-				console.log("Ignoring block");
 				// It was clicked on a Aloha-Editable inside a block; so we do not
 				// want to select the whole block and do an early return.
-				//return;
+				return;
 			}
+
 			var parentDomElement = this.element.parent()[0];
 			var offset = GENTICS.Utils.Dom.getIndexInParent(this.element[0]);
 			var range = Aloha.Selection.getRangeObject();
@@ -116,7 +118,6 @@ function(BlockManager) {
 				range.select();
 				Aloha.Selection.updateSelection();
 			}
-	
 		},
 		
 		deactivate: function() {
