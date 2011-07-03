@@ -11,8 +11,8 @@
  */
 
 define(
-['i18n!core/nls/i18n'],
-function(i18n, undefined) {
+['core/pluginregistry', 'i18n!core/nls/i18n'],
+function(PluginRegistry, i18n, undefined) {
 	"use strict";
 
 	// Prepare
@@ -332,7 +332,7 @@ function(i18n, undefined) {
 		 * @return void
 		 */
 		initPlugins: function (next) {
-			Aloha.PluginRegistry.init(function(){
+			PluginRegistry.init(function(){
 				next();
 			});
 		},
