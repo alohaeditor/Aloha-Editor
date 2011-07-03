@@ -8,3 +8,5 @@ out
 node_modules
 /setalohabase.js
 src/plugin/gcn
+nbproject
+doc/guides/staging

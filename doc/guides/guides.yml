@@ -1,0 +1,49 @@
+title: Aloha Guides
+description: These guides help you to make your content editable and to develop Aloha.
+
+team_name: The People That Make It Happen
+authors:
+  Documentation Team:
+    - name: Haymo Meran
+      nick: haymo
+      image: credits/haymo.jpg
+      description: Haymo is one of the founders of the Aloha project.
+  Contributors:
+    - name: Christopher Hlubek
+      nick: hlubek
+      image: credits/hlubek.jpg
+      description: Christopher Hlubek is a proud contributor of the Aloha project.
+    - name: Sebastian Kurfürst
+      nick: skurfuerst
+      image: credits/skurfuerst.jpg
+      description: Sebastian Kurfürst is a proud contributor of the Aloha project.
+
+index:
+  order:
+    - "Start Here"
+    - "Plugins"
+    - "Contributing to Aloha"
+  Start Here:
+    - title: "Using Aloha Editor"
+      url: using_aloha
+      text: "Learn how to embed Aloha Editor and make your content editable and how to use and configure Aloha plugins."
+    - title: "Writing Plugins"
+      url: writing_plugins
+      text: "In this guide, we will explain the plugin structure, the usage of requireJS and the plugin lifecylce in Aloha."
+  Plugins:
+    - title: "Block"
+      url: plugin_block
+      text: "Learn how to use and extend the block plugin for advanced content editing."
+    - title: "Image"
+      url: plugin_image
+      text: "Learn how to use and extend the block plugin for advanced content editing."
+  Contributing to Aloha:
+    - title: Development Process
+      url: development_process
+      text: "Everything about the Aloha Editor development process and being a good contributor."
+    - title: "Javascript Style Guide"
+      url: "style_guide"
+      text: "This guide covers the style of Aloha Editor."
+    - title: "Documentation Guidelines"
+      url: "documentation_guidelines"
+      text: "Writing and generating jsdoc documentation."
