@@ -191,7 +191,7 @@ function(PluginManager, FloatingMenu, i18n, undefined) {
 
 					// As the "nls" path lies NOT inside /lib/, but is a sibling to /lib/, we need
 					// to register it explicitely. The same goes for the "css" folder.
-					$.each(['nls', 'css', 'vendor'], function() {
+					$.each(['nls', 'css', 'vendor', 'res'], function() {
 						paths[pluginName + '/' + this] = bundlePath + '/' + pluginName + '/' + this;
 					});
 

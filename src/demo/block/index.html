@@ -22,6 +22,9 @@
 						},
 						'.editable-product-teaser': {
 							'block-type': 'EditableProductTeaserBlock'
+						},
+						'.vcard': {
+							'block-type': 'VCardBlock'
 						}
 					}
 				}
@@ -37,7 +40,7 @@
 	<script src="../../require.js" data-main="../../aloha.js" id="aloha-script-include" data-plugins=""></script>
 
 	<link rel="stylesheet" href="../../aloha.css" type="text/css">
-	<link rel="stylesheet" href="../../demo/world/index.css" type="text/css">
+	<link rel="stylesheet" href="index.css" type="text/css">
 
 	<style>
 	</style>
@@ -58,22 +61,35 @@
 
 			<h2>"Block"-Element Blocks inside editable</h2>
 			<div id="content" class="article">
-				<h2>Etymology</h2>
 				<p>
-					The word <a href="http://en.wikipedia.org/wiki/Aloha-invalid" target="_blank" class="aloha">aloha</a> derives from the Proto-Polynesian root <i>*qalofa</i>. It has cognates in other Polynesian languages, such as Samoan alofa
-					and Māori aroha, also meaning "love."
+					 Blocks can be embedded right inside an editable. "Block" element blocks are not very
+					 differen from inline element blocks. A simple example is the DefaultRenderer block type, which
+					 renders and stores the initial markup. Try copy and pasting or dragging it around!
 				</p>
+				<h3>DefaultRenderer</h3>
 				<div class="aloha-block">
-					This is a default aloha block, which uses the <strong>DefaultRenderer</strong>
+					<p>This is a default aloha block without special type, which uses the <strong>DefaultRenderer</strong>. It
+					is not editable and embedded as a "block" element.</p>
 				</div>
-				<p>
-					A folk etymology claims that it derives from a compound of the <a href="http://en.wikipedia.org/wiki/Hawaii" target="_blank" class="aloha">Hawaiian</a> words alo meaning "presence", "front", "face", or "share"; and
-					ha, meaning "breath of life" or "essence of life." Although alo does indeed mean "presence" etc., the word for breath is spelled with a macron
-					or kahakō over the a (hā) whereas the word aloha does not have a long a.
-				</p>
+				<h3>VCard block</h3
+				<p>This block is rendered with a template.</p>
+				<div class="vcard" data-firstname="John" data-lastname="Doe" data-url="http://example.com" data-email="john.doe@example.com" data-org="Example Inc.">
+					<a class="url fn n" href="http://example.com">
+						<span class="given-name">John</span>
+						<span class="family-name">Doe</span>
+					</a>
+					<div class="org">Example Inc.</div>
+					<a class="email" href="mailto:john.doe@example.com">john.doe@example.com</a>
+					<div class="adr">
+						<div class="street-address">123 Example street</div>
+						<span class="locality">San Francisco</span>, <span class="region">CA </span> <span class="postal-code">12345</span>
+						<span class="country-name">United States</span>
+					</div>
+					<div class="tel">555-555-5555</div>
+				</div>
 			</div>
 			
-			<h2>Inline blocks OUTSIDE editable</h2>
+			<h2>Inline blocks outside editable</h2>
 			<div>
 				<p><b>This is the Product Teaser Example:</b> Try our new <span class="product-teaser" data-sku="2423423" data-title="Big can of fresh Aloha soup" data-price="27 €">Big can of fresh Aloha soup <span class="price">(27 €)</span></span>, it tastes delicious!</p>
 				<p>Some other content here...</p>
@@ -82,7 +98,7 @@
 				<p>Here follows the <b>editable product teaser example</b>: Try our new <span class="editable-product-teaser" data-sku="2423423" data-title="Big can of fresh Aloha soup" data-price="27 €">Big can of fresh Aloha soup (27 €)</span> - which enables some great stuff.	
 			</div>
 			
-			<h2>"Block"-Element Blocks OUTSIDE editable</h2>
+			<h2>"Block"-Element Blocks outside editable</h2>
 			<div>
 				<p>
 					The word <a href="http://en.wikipedia.org/wiki/Aloha-invalid" target="_blank" class="aloha">aloha</a> derives from the Proto-Polynesian root <i>*qalofa</i>. It has cognates in other Polynesian languages, such as Samoan alofa

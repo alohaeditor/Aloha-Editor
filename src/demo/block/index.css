@@ -20,8 +20,16 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 h1 { font-size: 188%; }
-h2 { font-size: 150%; }
-h3 { font-size: 132%; }
+h2 {
+	font-size: 150%;
+	margin-bottom: 14px;
+}
+h3 {
+	font-size: 132%;
+	margin-bottom: 10px;
+	padding-bottom: 0;
+	border-bottom: none;
+}
 h4 { font-size: 116%; }
 h5 { font-size: 100%; }
 h6 { font-size: 80%;  }
@@ -186,4 +194,15 @@ td.redwhite {
 	background-color: red;
 	color: white;
 	font-weight: bold;
+}
+
+
+
+.vcard {
+	padding: 8px;
+	border: 1px solid #eee;
+	border-radius: 8px;
+}
+.vcard .n {
+	font-size: 130%;
 }
