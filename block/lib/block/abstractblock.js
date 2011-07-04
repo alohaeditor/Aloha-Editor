@@ -5,8 +5,8 @@
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
 
-define(['block/blockmanager'],
-function(BlockManager) {
+define(['block/blockmanager', 'core/floatingmenu'],
+function(BlockManager, FloatingMenu) {
 	"use strict";
 	
 	var
@@ -41,7 +41,7 @@ function(BlockManager) {
 				that._selectBlock(event);
 
 				// Set scope to current block
-				Aloha.FloatingMenu.setScope('Aloha.Block.' + that.attr('block-type'));
+				FloatingMenu.setScope('Aloha.Block.' + that.attr('block-type'));
 
 				that.activate();
 				that.element.parents('.aloha-block').each(function() {

@@ -5,8 +5,8 @@
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
 
-define([],
-function() {
+define(['core/floatingmenu'],
+function(FloatingMenu) {
 	"use strict";
 	
 	var
@@ -26,7 +26,7 @@ function() {
 		blocks: {},
 
 		_construct: function() {
-			Aloha.FloatingMenu.createScope('Aloha.Block');
+			FloatingMenu.createScope('Aloha.Block');
 		},
 
 		registerEventHandlers: function() {
@@ -132,7 +132,7 @@ function() {
 		},
 		
 		registerBlockType: function(identifier, blockType) {
-			Aloha.FloatingMenu.createScope('Aloha.Block.' + identifier, 'Aloha.Block');
+			FloatingMenu.createScope('Aloha.Block.' + identifier, 'Aloha.Block');
 			this.blockTypes[identifier] = blockType;
 		},
 
