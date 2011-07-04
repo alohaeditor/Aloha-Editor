@@ -2,31 +2,88 @@ h2. JavaScript Style Guide
 
 After reading this guide, you will be able to:
 
-* Create JavaScript code according to our coding guidelines
+* Follow our naming conventions for files, variables and types.
+* Use RequireJS in a clean way.
+* Write clean JavaScript code that looks good.
 
 endprologue.
 
-h3. RequireJS Module Skeleton
+h3. Code Conventions
 
-All RequireJS modules should follow this structure:
+WARNING: The current codebase does not yet follow all of these principles.
 
-<javascript>
+* We use only the +TAB+ character for indentation.
+* We use +UpperCamelCase+ for class names, and +lowerCamelCase+ for method and property names. The use of underscores is strongly discouraged.
+* Variables which contain jQuery elements should be named like +$element+.
+* We use +that+ as a name for a closure reference to +this+, but try to avoid it if there's the possibility of scope binding.
+
+* TODO: Name of callback functions, to aid debugging??
+
+h3. RequireJS module skeleton
+
+All files which are RequireJS modules (scripts in +package/lib+) should follow this structure.
+
+<javascript filename="package/lib/module.js">
 /*!
  * Aloha Editor
- * Author & Copyright (c) 2010 Gentics Software GmbH
+ * Author & Copyright (c) 2011 Gentics Software GmbH
  * aloha-sales@gentics.com
  * Licensed unter the terms of http://www.aloha-editor.com/license.html
  */
 
-define([],
-function() {
+define(['dependency'],
+function(Dependency) {
 	"use strict";
 
-	return Class.extend({
-		// class definition here.
+	// Declare exports
+
+	return exports;
+});
+</javascript>
+
+h3. Classes
+
+Every class should go into one module which means one file. The filename should be lowercase, even if the class is camelcased.
+
+<javascript filename="package/lib/classname.js">
+/*!
+ * Aloha Editor
+ * Author & Copyright (c) 2011 Gentics Software GmbH
+ * aloha-sales@gentics.com
+ * Licensed unter the terms of http://www.aloha-editor.com/license.html
+ */
+
+define(['core/observable'],
+function(Observable) {
+	"use strict";
+
+	/**
+	 * Description of the class
+	 *
+	 * @class MyClass
+	 */
+	return Class.extend(Observable, {
+
+		/**
+		 * An optional constructor
+		 *
+		 * @method
+		 * @constructor
+		 */
+		 _constructor: function() {
+
+		 }
+
 	});
 });
 </javascript>
+
+But a module is not limited to expose a class. You could also export one of the following:
+
+* Singletons (Class instances)
+* Mixins (Class definition without @Class.extend@ call)
+
+Or just about any other JavaScript value that is useful as a dependency.
 
 h3. Singletons
 
@@ -35,7 +92,7 @@ All singletons should follow this structure:
 <javascript>
 /*!
  * Aloha Editor
- * Author & Copyright (c) 2010 Gentics Software GmbH
+ * Author & Copyright (c) 2011 Gentics Software GmbH
  * aloha-sales@gentics.com
  * Licensed unter the terms of http://www.aloha-editor.com/license.html
  */
@@ -45,14 +102,17 @@ function() {
 	"use strict";
 
 	return new (Class.extend({
-		// class definition here.
+		// Class definition here
 	}))();
 });
 </javascript>
 
+It will define a class and return a new instance that will be exported. Singletons are useful for global objects
+that have state.
+
 h3. RequireJS Dependency Order
 
-WARNING: ausformulieren
+TODO: Explain the order
 
 * The base class
 * Other Classes
@@ -62,17 +122,9 @@ WARNING: ausformulieren
 * vendor
 * css
 
-h3. Code Conventions
-
-* We use the +TAB+ character for indentation.
-* We use +UpperCamelCase+ for class names, and +lowerCamelCase+ for method and property names. The use of underscores is strongly discouraged.
-
-* TODO: THAT / THIS -> use that!
-* TODO: Name of callback functions, to aid debugging??
-
 h3. Private methods and attributes
 
-* By convention, we prefix private methods and attributes with an underscore.
+By convention, we prefix private methods and attributes with an underscore.
 
 Good:
 
