@@ -9,7 +9,7 @@ endprologue.
 
 h3. What's a plugin?
 
-A plugin extends Aloha with new behaviour and can be loaded by the user. It should be self-contained, so that it can be used for other Aloha installations.
+A plugin extends Aloha with new behavior and can be loaded by the user. It should be self-contained, so that it can be used for other Aloha installations.
 
 A full-blown plugin has the following file structure:
 
@@ -23,10 +23,12 @@ A full-blown plugin has the following file structure:
 ** @vendor@ - Legacy JavaScript dependencies, not managed by RequireJS
 ** @package.json@ - Metadata about your package, in CommonJS format
 
+All file names are, by convention, lowercase.
+
 h3. A basic Aloha plugin
 
 For a very basic plugin, nothing else than a plugin module in @lib/@ has to be
-created. The module is named as @pluginname-plugin.js@.
+created. The module is named as +pluginname-plugin.js+.
 
 <javascript filename="aloha/plugins/custom/helloworld/lib/helloworld-plugin.js">
 define(
@@ -39,16 +41,16 @@ function(Plugin) {
             // Executed on plugin initialization
         },
         destroy: function() {
-            // Executed on unloading plugins
+            // Executed when this plugin is unloaded
         }
     });
 });
 </javascript>
 
-This cpde loads the core plugin module (which defines the @Plugin@ class) and creates a plugin with the name @myplugin@.
+This code requires the core plugin module (which defines the @Plugin@ class) and creates a plugin with the name @myplugin@.
 
 Loading the new plugin is easy, just add it to the list of plugins in the main
-script tag loading Aloha.
+script tag loading Aloha:
 
 <html>
 <head>
@@ -61,19 +63,22 @@ script tag loading Aloha.
 </head>
 </html>
 
-NOTE: If your plugin should be published to the public you should consider writing a @package.json@ file with metadata about the plugin.
+NOTE: If your plugin should be published to the public you should consider writing a @package.json@ file with metadata about the plugin. Furthermore, the name of your plugin shoulf be globally unique.
 
 h3. Plugin bundles
 
+WARNING: not yet done.
+
+TODO
 * Preexisting bundles
 * Naming implications
 
 h3. RequireJS modules explained
 
 We use "RequireJS":http://requirejs.org to manage JavaScript dependencies, that's why some
-basic understanding of it is very helpful.
+basic understanding is very helpful. By using RequireJS, we gain some nice benefits: First, we the dependency management between JavaScript files is done for us, meaning they are included in the correct order. Second, we do not pollute the global namespace, allowing tricks like "loading two different versions":http://requirejs.org/docs/requirements.html#8 of Aloha on a single page.
 
-The basic element of RequireJS is a so called *module* which is one file that *defines* and exports a class or other JavaScript value. This reference can be used in other modules by *requiring* that module.
+The basic element of RequireJS is a so called +module+ which is one file that defines and exports a class or other JavaScript value. This reference can be used in other modules by *requiring* that module.
 
 INFO: Roughly, a RequireJS module is the same as a JavaScript @Class@, but without a global variable.
 
@@ -101,42 +106,81 @@ function(Foo) {
 });
 </javascript>
 
-Note that a module does not define its own name, it is simply named by its location on the file system.
+Note that a module does not need to define its own name, it is simply named by its location on the file system.
+
+Modules are created using +define(dependencies, callback)+, where the first parameter @dependencies@ is a list of other RequireJS modules this plugin needs in order to function properly. The second parameter is @callback@ is a function which is executed *as soon as all dependencies are loaded*. The first dependency is passed to the @callback@ as first parameter, the second dependency as the second, and so on.
+
+NOTE: Circular dependencies need some special treatment. It is most often a sign of bad code, but if you need to do this, follow the "guide at the RequireJS website":http://requirejs.org/docs/api.html#circular.
 
 So, at which place does Aloha look up modules? We'll explain this with a few examples:
 
-|_. Definition in RequireJS |_. File Name |_. Explanation |
-| @myplugin/foo@ | @path_to_bundle/myplugin/lib/foo.js@ | Including other RequireJS modules is the most common case |
-| @myplugin/vendor/legacy_lib@ | @path_to_bundle/myplugin/vendor/legacy_lib.js@ | Include a legacy library |
-| @css!myplugin/css/cssfile.css@ | @path_to_bundle/myplugin/css/cssfile.css@ | Includes the CSS file in the document @<head>@. Explained "here":#includingCssFiles |
+|_. Definition in RequireJS |_. File Name |
+| @myplugin/foo@ | @path_to_bundle/myplugin/lib/foo.js@ <br /> Including other RequireJS modules is the most common case |
+| @myplugin/vendor/legacy_lib@ | @path_to_bundle/myplugin/vendor/legacy_lib.js@ <br /> Include a legacy library |
+| @css!myplugin/css/cssfile.css@ | @path_to_bundle/myplugin/css/cssfile.css@ <br /> Includes the CSS file in the document @<head>@. Explained "here":#including-css-files |
+| @i18n!myplugin/nls/i18n.js@ | depends on current language, see "Localization":#localization for details. |
 
-WARNING: Circular dependencies need some special treatment. It is most often a sign of bad code, but if you need to do this, follow the "guide at the RequireJS website":http://requirejs.org/docs/api.html#circular.
-
-
-INFO: By using the RequireJS module format, the global scope is not modified polluted by the
-Aloha namespace
-
-* Defining and requiring Dependencies / Dependency Management
+The bundle name is not part of the RequireJS definition, as this is installation-specific. You as plugin developer should not care about where other plugins are located on disk.
 
 h3. Classes and Extension Mechanisms
 
+We use the class definition syntax of "John Resig":http://ejohn.org - slightly adjusted. This means you can create a new class with +Class.extend({ ....})+. The following example shows how to create and instanciate a class, and how the constructor is called.
+
+<javascript>
+var Greeter = Class.extend({
+    name: null,
+
+    _constructor(name) {
+        this.name = name;
+    },
+
+    greet: function() {
+        alert('Good Morning ' + this.name);
+    }
+});
+var greeterInstance = new Greeter('Christopher');
+greeterInstance.greet(); // alerts "Good Morning Chistopher"
+</javascript>
+
+
+
+WARNING: not yet done.
+
 * Using Class.extend etc...
-
-
 
 h3. Localization
 
-
+WARNING: not yet done.
 
 h3. Including CSS files
 
+When your Aloha plugin needs some CSS files, you should place them in the @css@ folder of your plugin. Furthermore, your plugin should depend on the CSS file as follows:
 
+<javascript filename="myplugin/lib/myplugin-plugin.js">
+define(
+['core/plugin', 'css!myplugin/css/myplugin.css'],
+function(Plugin) {
+    "use strict";
 
+    return Plugin.create('myplugin', {
+        init: function() {
+            // Executed on plugin initialization
+        },
+        destroy: function() {
+            // Executed when this plugin is unloaded
+        }
+    });
+});
+</javascript>
 
+The key part is to set a dependency on +css!myplugin/css/myplugin.css+. Then, the loader knows that it needs to load the @myplugin.css@ stylesheet into the current website.
 
+NOTE: By default, CSS file loading is *asynchronous*, meaning that CSS files are loaded in the background, independently from the JavaScript loading.
+If you for some reason depend on the fact that a CSS file is included at a particular point in time (calles *synchronous loading*), you need to append the parameter @!nowait@ to the dependency, so the whole dependency looks like  @css!myplugin/css/myplugin.css!nowait@
 
+h3. Lifecycle of Plugins
 
-
+WARNING: not yet done.
 
 Let's begin by installing the Aloha Editor library. There are two ways to choose right now.
 
