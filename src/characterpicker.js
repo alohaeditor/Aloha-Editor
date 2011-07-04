@@ -13,31 +13,32 @@
 		Aloha = window.Aloha;
 
 	function CharacterOverlay(characters, onSelectCallback) {
-		var self = {};
-		function init() {
-			self.$node = $('<table class="aloha-character-picker-overlay" role="dialog"><tbody></tbody></table>');
-			/* don't let the mousedown bubble up. otherwise there won't be an activeEditable */
-			self.$node.mousedown(function(e) {
-				return false;
-			});
-			self.$tbody = self.$node.find('tbody');
-			self.$node.appendTo($('body'));
-			self.characterButtons = self._createCharacterButtons(self.$node);
-			self._initHideOnDocumentClick();
-			self._initHideOnEsc();
-			self._initCursorFocus();
-			self._initEvents();
-			return self;
-		}
-		self.show = function(insertButton) {
+		var self = this;
+		self.$node = $('<table class="aloha-character-picker-overlay" role="dialog"><tbody></tbody></table>');
+		// don't let the mousedown bubble up. otherwise there won't be an activeEditable 
+		self.$node.mousedown(function(e) {
+			return false;
+		});
+		self.$tbody = self.$node.find('tbody');
+		self.$node.appendTo($('body'));
+		self._createCharacterButtons(self.$node, characters, onSelectCallback);
+		self._initHideOnDocumentClick();
+		self._initHideOnEsc();
+		self._initCursorFocus(onSelectCallback);
+		self._initEvents();
+	}
+	CharacterOverlay.prototype = {
+		show: function( insertButton ) {
+			var self = this;
 			// position the overlay relative to the insert-button
 			self.$node.css($(insertButton).offset());
 			self.$node.show();
 			// focus the first character
 			self.$node.find('.focused').removeClass('focused');
 			$(self.$node.find('td')[0]).addClass('focused');
-		};
-		self._initHideOnDocumentClick = function() {
+		},
+		_initHideOnDocumentClick: function() {
+			var self = this;
 			// if the user clicks somewhere outside of the layer, the layer should be closed
 			// stop bubbling the click on the create-dialog up to the body event
 			self.$node.click(function(e) {
@@ -53,8 +54,9 @@
 					self.$node.hide();
 				}
 			});
-		};
-		self._initHideOnEsc = function() {
+		},
+		_initHideOnEsc: function() {
+			var self = this;
 			// escape closes the overlay
 			$(document).keyup(function(e) {
 				var overlayVisibleAndEscapeKeyPressed = (self.$node.css('display') === 'table') && (e.keyCode === 27);
@@ -62,8 +64,9 @@
 					self.$node.hide();
 				}
 			});
-		};
-		self._initCursorFocus = function() {
+		},
+		_initCursorFocus: function( onSelectCallback ) {
+			var self = this;
 			// you can navigate through the character table with the arrow keys
 			// and select one with the enter key
 			var $current, $next, $prev, $nextRow, $prevRow;
@@ -119,14 +122,16 @@
 					}
 				}
 			});
-		};
-		self._initEvents = function() {
+		},
+		_initEvents: function() {
+			var self = this;
 			// when the editable is deactivated, hide the layer
 			Aloha.bind('aloha-editable-deactivated', function(event, rangeObject) {
 				self.$node.hide();
 			});
-		};
-		self._createCharacterButtons = function($node) {
+		},
+		_createCharacterButtons: function($node, characters, onSelectCallback) {
+			var self = this;
 			function htmlEntityToSingleCharacter(character) {
 				// isn't there any better way?
 				var textarea = document.createElement('textarea');
@@ -167,8 +172,7 @@
 				mkButton(char).appendTo($row);
 				i++;
 			}
-		};
-		return init();
+		}
 	};
 
 	Aloha.CharacterPicker = new (Aloha.Plugin.extend({
@@ -195,7 +199,7 @@
 				Aloha.i18n(Aloha, 'floatingmenu.tab.insert'),
 				1
 			);
-			self.characterOverlay = CharacterOverlay(self.settings.characters, self.onCharacterSelect);
+			self.characterOverlay = new CharacterOverlay(self.settings.characters, self.onCharacterSelect);
 		},
 		onCharacterSelect: function(character) {
 			var self = this;
