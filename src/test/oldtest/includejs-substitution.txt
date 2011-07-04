@@ -1,0 +1,1 @@
+<script type="text/javascript" src="<!-- #echo var="${com.gentics.aloha.src.browser}" -->/\1"></script>
