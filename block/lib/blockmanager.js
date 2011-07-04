@@ -56,7 +56,6 @@ function(FloatingMenu, Ovservable) {
 			attributes = this.getConfig(element, instanceDefaults);
 
 			element.contentEditable(false);
-			element.addClass('aloha-block');
 			if (!element.attr('id')) {
 				element.attr('id', GENTICS.Utils.guid());
 			}
@@ -65,7 +64,7 @@ function(FloatingMenu, Ovservable) {
 				Aloha.Log.error('block/blockmanager', 'Block Type ' + attributes['block-type'] + ' not found!');
 				return;
 			}
-			element.addClass('aloha-block-' + attributes['block-type']);
+
 			block = new (this.blockTypes[attributes['block-type']])(element);
 
 			// Save attributes on block, but ignore jquery attribute.

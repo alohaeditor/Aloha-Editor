@@ -24,7 +24,12 @@ function(BlockManager, FloatingMenu) {
 		 * @var jQuery element
 		 */
 		element: null,
-		
+
+		/**
+		 * "inline" or "block", will be guessed from the original block dom element
+		 */
+		_domElementType: null,
+
 		/**
 		 * @var jQuery element
 		 */
@@ -33,6 +38,11 @@ function(BlockManager, FloatingMenu) {
 			this.id = element.attr('id');
 			this.element = element;
 			
+
+			this._domElementType = GENTICS.Utils.Dom.isBlockLevelElement(element[0]) ? 'block' : 'inline';
+
+			this.element.addClass('aloha-block');
+			this.element.addClass('aloha-block-' + this.attr('block-type'));
 
 			// Register event handlers for activating an Aloha Block
 			this.element.bind('click', function(event) {
@@ -148,7 +158,7 @@ function(BlockManager, FloatingMenu) {
 		},
 
 		_renderAndSetContent: function() {
-			var innerElement = $('<span class="aloha-block-inner" />');
+			var innerElement = $('<' + this._getWrapperElementType() + ' class="aloha-block-inner" />');
 			var result = this.render(innerElement);
 			// Convenience for simple string content
 			if (typeof result === 'string') {
@@ -156,8 +166,25 @@ function(BlockManager, FloatingMenu) {
 			}
 			this.element.empty();
 			this.element.append(innerElement);
-			innerElement.find('.aloha-editable').aloha();
+
+			this.createEditables(innerElement);
+
 			this._renderToolbar();
+		},
+
+		_getWrapperElementType: function() {
+			return this._domElementType === 'block' ? 'div' : 'span';
+		},
+
+		/**
+		 * Create editables from the inner content that was
+		 * rendered for this block.
+		 *
+		 * Override to use a custom implementation and to pass
+		 * special configuration to .aloha()
+		 */
+		createEditables: function(innerElement) {
+			innerElement.find('.aloha-editable').aloha();
 		},
 
 		_renderToolbar: function() {
@@ -168,10 +195,12 @@ function(BlockManager, FloatingMenu) {
 			var me = this;
 			if (arguments.length == 2) {
 				this.setAttribute(attributeNameOrObject, attributeValue);
+				return this;
 			} else if (typeof attributeNameOrObject === 'object') {
 				$.each(attributeNameOrObject, function(key, value) {
 					me.setAttribute(key, value);
-				})
+				});
+				return this;
 			} else if (typeof attributeNameOrObject === 'string') {
 				return this.getAttribute(attributeNameOrObject);
 			} else {
