@@ -16,6 +16,8 @@ define([
 	var template = _.template(vcardTemplate);
 
 	return AbstractBlock.extend({
+		title: 'vCard',
+		
 		render: function() {
 			return template($.extend(
 				{

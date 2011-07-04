@@ -196,9 +196,12 @@ function() {
 });
 </javascript>
 
-For a list of current mixins, you can soon check the API doc. Right now, there is only the core/observable.
+For a list of current mixins, you can soon check the API doc. Right now, there is only +core/observable+.
 
 h3. Localization
+
+If you have some labels in your plugin, these need to be made available in multiple languages, as Aloha is capable showing its user interface in a wide variety of languages.
+
 
 WARNING: not yet done.
 

@@ -11,13 +11,24 @@ define([
 	"use strict";
 
 	var CompanyBlock = AbstractBlock.extend({
+		title: 'Company',
+		
+		getSchema: function() {
+			return {
+				symbol: {
+					type: 'string'
+				}
+			};
+		},
 		render: function(element) {
 			
 			// Mapping Stock-Symbol -- Company Name (Fake!)
 			if (this.attr('symbol') === 'MSFT') {
 				element.html('Microsoft');
-			};
-			
+			} else {
+				element.html(this.attr('symbol'));
+			}
+
 			var that = this;
 			element.mouseover(function() {
 				that.element.append('<span class="stock-quote-overlay company-' + that.attr('symbol') + '"></span>');

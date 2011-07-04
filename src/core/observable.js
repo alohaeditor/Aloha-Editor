@@ -20,7 +20,7 @@ function() {
 		$ = jQuery;
 
 	return {
-		_eventHandlers: {},
+		_eventHandlers: null,
 		
 		/**
 		 * Attach a handler to an event
@@ -30,6 +30,7 @@ function() {
 		 * @param {Object} scope Optional. Set the scope in which handler is executed
 		 */
 		bind: function(eventType, handler, scope) {
+			this._eventHandlers = this._eventHandlers || {};
 			if (!this._eventHandlers[eventType]) {
 				this._eventHandlers[eventType] = [];
 			}
@@ -46,6 +47,7 @@ function() {
 		 * @param {Function} handler The function that is to be no longer executed. Optional. If not given, unregisters all functions for the given event.
 		 */
 		unbind: function(eventType, handler) {
+			this._eventHandlers = this._eventHandlers || {};
 			if (!this._eventHandlers[eventType]) {
 				return;
 			}
@@ -69,6 +71,7 @@ function() {
 		 * @param (String} eventType A string containing the event name for which the event handlers should be invoked.
 		 */
 		trigger: function(eventType) {
+			this._eventHandlers = this._eventHandlers || {};
 			if (!this._eventHandlers[eventType]) {
 				return;
 			}

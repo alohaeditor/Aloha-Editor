@@ -11,6 +11,9 @@ define([
 	"use strict";
 
 	var ProductTeaserBlock = AbstractBlock.extend({
+
+		title: 'product teaser',
+
 		render: function() {
 			return '<span class="aloha-editable">' + this.attr('title') + '</span> <strong class="price">(' + this.attr('price') + ')</strong>';
 		}
