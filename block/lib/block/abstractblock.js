@@ -5,15 +5,24 @@
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
 
-define(['block/blockmanager', 'core/floatingmenu'],
-function(BlockManager, FloatingMenu) {
+define(['block/blockmanager', 'core/observable', 'core/floatingmenu'],
+function(BlockManager, Observable, FloatingMenu) {
 	"use strict";
 	
 	var
 		jQuery = window.alohaQuery || window.jQuery, $ = jQuery,
 		Aloha = window.Aloha;
 
-	var AbstractBlock = Class.extend({
+	var AbstractBlock = Class.extend(Observable, {
+		
+		/**
+		 * @event change
+		 */
+		
+		/**
+		 * @var {String} Title for the block.
+		 */
+		title: null,
 		
 		/**
 		 * @var string ID of the assigned element. Not sure if it exists.
@@ -95,6 +104,17 @@ function(BlockManager, FloatingMenu) {
 		 * Template method to initialize the block
 		 */
 		init: function() {},
+
+		getSchema: function() {
+			return {};
+		},
+
+		/**
+		 * Template Method which should return the block title
+		 */
+		getTitle: function() {
+			return this.title;
+		},
 
 		/**
 		 * Activated when the block is clicked
@@ -192,23 +212,33 @@ function(BlockManager, FloatingMenu) {
 		},
 
 		attr: function(attributeNameOrObject, attributeValue) {
-			var me = this;
-			if (arguments.length == 2) {
-				this.setAttribute(attributeNameOrObject, attributeValue);
-				return this;
+			var that = this, attributeChanged = false;
+
+			if (arguments.length === 2) {
+				if (this._getAttribute(attributeNameOrObject) !== attributeValue) {
+					attributeChanged = true;
+				}
+				this._setAttribute(attributeNameOrObject, attributeValue);
 			} else if (typeof attributeNameOrObject === 'object') {
 				$.each(attributeNameOrObject, function(key, value) {
-					me.setAttribute(key, value);
+					if (that._getAttribute(key) !== value) {
+						attributeChanged = true;
+					}
+					that._setAttribute(key, value);
 				});
-				return this;
 			} else if (typeof attributeNameOrObject === 'string') {
-				return this.getAttribute(attributeNameOrObject);
+				return this._getAttribute(attributeNameOrObject);
 			} else {
-				return this.getAttributes();
+				return this._getAttributes();
 			}
+			if (attributeChanged) {
+				this._renderAndSetContent();
+				this.trigger('change');
+			}
+			return this;
 		},
 		
-		setAttribute: function(name, value) {
+		_setAttribute: function(name, value) {
 			if (name === 'about') {
 				this.element.attr('about', value);
 			} else {
@@ -216,13 +246,14 @@ function(BlockManager, FloatingMenu) {
 			}
 		},
 
-		getAttribute: function(name) {
-			return this.getAttributes()[name];
+		_getAttribute: function(name) {
+			return this._getAttributes()[name];
 		},
 
-		getAttributes: function() {
+		_getAttributes: function() {
 			var element = this.element;
-
+			
+			// TODO: element.data() not always up-to-date. We need to use the attributes instead.
 			return $.extend({}, element.data(), {
 				about: element.attr('about')
 			});

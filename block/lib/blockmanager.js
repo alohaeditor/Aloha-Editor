@@ -5,14 +5,15 @@
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
 
-define(['core/floatingmenu', 'core/observable'],
-function(FloatingMenu, Observable) {
+define(['core/floatingmenu', 'core/observable', 'core/registry'],
+function(FloatingMenu, Observable, Registry) {
 	"use strict";
 	
 	var
 		jQuery = window.alohaQuery || window.jQuery, $ = jQuery,
 		GENTICS = window.GENTICS,
 		Aloha = window.Aloha;
+
 	var BlockManager = new (Class.extend(Observable, {
 
 		/**
@@ -23,14 +24,15 @@ function(FloatingMenu, Observable) {
 		defaults: {
 			'block-type': 'DefaultBlock'
 		},
-		blockTypes: {},
 		
-		// container for all blocks
-		// Key: ID, value: Block
-		blocks: {},
+		blockTypes: null,
 
-		_construct: function() {
+		blocks: null,
+
+		_constructor: function() {
 			FloatingMenu.createScope('Aloha.Block');
+			this.blockTypes = new Registry();
+			this.blocks = new Registry();
 		},
 
 		registerEventHandlers: function() {
@@ -59,12 +61,12 @@ function(FloatingMenu, Observable) {
 				element.attr('id', GENTICS.Utils.guid());
 			}
 
-			if (!this.blockTypes[attributes['block-type']]) {
+			if (!this.blockTypes.has(attributes['block-type'])) {
 				Aloha.Log.error('block/blockmanager', 'Block Type ' + attributes['block-type'] + ' not found!');
 				return;
 			}
 
-			block = new (this.blockTypes[attributes['block-type']])(element);
+			block = new (this.blockTypes.get(attributes['block-type']))(element);
 
 			// Save attributes on block, but ignore jquery attribute.
 			$.each(attributes, function(k, v) {
@@ -74,7 +76,7 @@ function(FloatingMenu, Observable) {
 			});
 
 			// Register block
-			this.blocks[block.getId()] = block;
+			this.blocks.register(block.getId(), block);
 
 			block._renderAndSetContent();
 		},
@@ -127,21 +129,21 @@ function(FloatingMenu, Observable) {
 				id = idOrDomNode;
 			}
 
-			return this.blocks[id];
+			return this.blocks.get(id);
 		},
 		
 		unregisterBlock: function(blockOrBlockId) {
-			// TODO
+			
 		},
-		
+
 		registerBlockType: function(identifier, blockType) {
 			FloatingMenu.createScope('Aloha.Block.' + identifier, 'Aloha.Block');
-			this.blockTypes[identifier] = blockType;
+			this.blockTypes.register(identifier, blockType);
 		},
 
 		getActiveBlocks: function() {
 			var activeBlocks = {};
-			$.each(this.blocks, function(blockId, block) {
+			$.each(this.blocks.getEntries(), function(blockId, block) {
 				if (block.isActive()) {
 					activeBlocks[blockId] = block;
 				}

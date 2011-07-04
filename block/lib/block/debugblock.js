@@ -10,6 +10,7 @@ function(AbstractBlock) {
 	"use strict";
 
 	var DebugBlock = AbstractBlock.extend({
+		title: 'Debugging',
 		render: function() {
 			this.element.css({display: 'block'});
 			var renderedAttributes = '<table class="debug-block">';

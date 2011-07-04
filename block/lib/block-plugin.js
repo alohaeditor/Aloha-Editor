@@ -11,8 +11,10 @@ define([
 	'block/sidebarattributeeditor',
 	'block/block/defaultblock',
 	'block/block/debugblock',
+	'block/editormanager',
+	'block/editor/stringeditor',
 	'css!block/css/block.css'
-], function(Plugin, BlockManager, SidebarAttributeEditor, DefaultBlock, DebugBlock) {
+], function(Plugin, BlockManager, SidebarAttributeEditor, DefaultBlock, DebugBlock, EditorManager, StringEditor) {
 	"use strict";
 	var
 		jQuery = window.alohaQuery || window.jQuery, $ = jQuery,
@@ -30,6 +32,9 @@ define([
 			// Register default block types
 			BlockManager.registerBlockType('DebugBlock', DebugBlock);
 			BlockManager.registerBlockType('DefaultBlock', DefaultBlock);
+			
+			// Register default editors
+			EditorManager.register('string', StringEditor);
 
 			require(
 				['block/blockpastehandler', 'paste/paste-plugin'],
