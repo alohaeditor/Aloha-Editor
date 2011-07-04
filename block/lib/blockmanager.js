@@ -5,8 +5,8 @@
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
 
-define(['core/floatingmenu'],
-function(FloatingMenu) {
+define(['core/floatingmenu', 'core/observable'],
+function(FloatingMenu, Ovservable) {
 	"use strict";
 	
 	var
@@ -14,7 +14,12 @@ function(FloatingMenu) {
 		GENTICS = window.GENTICS,
 		Aloha = window.Aloha;
 
-	var BlockManager = new (Class.extend({
+	var BlockManager = new (Class.extend(Observable, {
+
+		/**
+		 * @event blockSelectionChange
+		 * @param {Array} Array of AbstractBlock objects, containing  selectedBlocks
+		 */
 
 		defaults: {
 			'block-type': 'DefaultBlock'

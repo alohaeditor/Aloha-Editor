@@ -8,10 +8,11 @@
 define([
 	'core/plugin',
 	'block/blockmanager',
+	'block/sidebarattributeeditor',
 	'block/block/defaultblock',
 	'block/block/debugblock',
 	'css!block/css/block.css'
-], function(Plugin, BlockManager, DefaultBlock, DebugBlock) {
+], function(Plugin, BlockManager, SidebarAttributeEditor, DefaultBlock, DebugBlock) {
 	"use strict";
 	var
 		jQuery = window.alohaQuery || window.jQuery, $ = jQuery,
@@ -41,6 +42,7 @@ define([
 			Aloha.bind('aloha', function() {
 				// When Aloha is fully loaded, we initialize the blocks.
 				that._createBlocks();
+				SidebarAttributeEditor.init();
 			});
 		},
 		_createBlocks: function() {

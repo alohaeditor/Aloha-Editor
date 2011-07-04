@@ -32,11 +32,14 @@ function(BlockManager, FloatingMenu) {
 			var that = this;
 			this.id = element.attr('id');
 			this.element = element;
+			
 
 			// Register event handlers for activating an Aloha Block
 			this.element.bind('click', function(event) {
-				var activeBlocks = BlockManager.getActiveBlocks();
-				delete activeBlocks[that.id];
+				var previouslyActiveBlocks = BlockManager.getActiveBlocks();
+				var activeBlocks = [];
+				
+				delete previouslyActiveBlocks[that.id];
 
 				that._selectBlock(event);
 
@@ -44,16 +47,21 @@ function(BlockManager, FloatingMenu) {
 				FloatingMenu.setScope('Aloha.Block.' + that.attr('block-type'));
 
 				that.activate();
+				activeBlocks.push(that);
+
 				that.element.parents('.aloha-block').each(function() {
 					var block = BlockManager.getBlock(this);
-					delete activeBlocks[block.id];
+					delete previouslyActiveBlocks[block.id];
 					
 					block._selectBlock();
 					block.activate();
+					activeBlocks.push(block);
 				});
-				$.each(activeBlocks, function() {
+				$.each(previouslyActiveBlocks, function() {
 					this.deactivate();
 				});
+				
+				BlockManager.trigger('blockSelectionChange', activeBlocks);
 
 				return false;
 			});
@@ -148,7 +156,6 @@ function(BlockManager, FloatingMenu) {
 			}
 			this.element.empty();
 			this.element.append(innerElement);
-			
 			innerElement.find('.aloha-editable').aloha();
 			this._renderToolbar();
 		},
