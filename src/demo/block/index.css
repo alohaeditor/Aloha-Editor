@@ -196,13 +196,25 @@ td.redwhite {
 	font-weight: bold;
 }
 
-
-
 .vcard {
+	max-width: 300px;
 	padding: 8px;
-	border: 1px solid #eee;
+	border: 1px solid #ddd;
+	background-color: #eee;
 	border-radius: 8px;
 }
 .vcard .n {
-	font-size: 130%;
+	font-size: 124%;
+	text-decoration: none;
+	font-weight: bold;
+}
+.vcard .n,
+.vcard .email,
+.vcard .org {
+	display: block;
+	margin: 0 0 5px 0;
+}
+.vcard .org {
+	font-weight: bold;
+	font-style: italic;
 }
