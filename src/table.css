@@ -51,7 +51,7 @@ td.aloha-table-selectrow {
 }
 
 .aloha-ui-table-wrapper table {
-	width: 100%;
+	/* width: 100%; */
 }
 .aloha-ui-table-wrapper td {
 	border: 1px solid #D0D0D0;
