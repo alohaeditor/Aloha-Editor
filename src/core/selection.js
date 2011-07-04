@@ -2,7 +2,10 @@
  * Author & Copyright (c) 2010 Gentics Software GmbH, aloha@gentics.com
  * Licensed unter the terms of http://www.aloha-editor.com/license.html
  */
-(function(window, undefined) {
+
+define(
+['core/floatingmenu'],
+function(FloatingMenu) {
 	"use strict";
 	var
 		jQuery = window.alohaQuery || window.jQuery, $ = jQuery,
@@ -164,7 +167,7 @@
 			// TODO Bind code to aloha-selection-changed event to remove coupling to floatingmenu
 			if (event !== undefined) {
 				// Initiallly set the scope to 'continuoustext'
-				Aloha.FloatingMenu.setScope('Aloha.continuoustext');
+				FloatingMenu.setScope('Aloha.continuoustext');
 			}
 
 			// throw the event that the selection has changed. Plugins now have the
@@ -1649,4 +1652,5 @@
 
 	Aloha.Selection = new Aloha.Selection();
 
-})(window);
+	return Aloha.Selection;
+});

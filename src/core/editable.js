@@ -5,8 +5,8 @@
  */
 
 define(
-['core/pluginmanager'],
-function(PluginManager) {
+['core/pluginmanager', 'core/floatingmenu'],
+function(PluginManager, FloatingMenu) {
 	"use strict";
 	var
 		jQuery = window.alohaQuery || window.jQuery, $ = jQuery,
@@ -396,8 +396,8 @@ function(PluginManager) {
 				this.blur();
 
 				// also hide the floating menu if the current editable was active
-				Aloha.FloatingMenu.obj.hide();
-				Aloha.FloatingMenu.shadow.hide();
+				FloatingMenu.obj.hide();
+				FloatingMenu.shadow.hide();
 			}
 
 			// original Object

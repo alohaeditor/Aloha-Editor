@@ -3,8 +3,9 @@
  * Author & Copyright (c) 2010 Gentics Software GmbH, aloha@gentics.com
  * Licensed unter the terms of http://www.aloha-editor.com/license.html
  */
-// Closure
-(function(window, undefined) {
+define(
+['core/floatingmenu'],
+function(FloatingMenu) {
 	"use strict";
 
 	var
@@ -190,7 +191,7 @@ Aloha.ui.Button = Class.extend({
 
 	/**
 	 * Show the button. When this button is added to the FloatingMenu, it is
-	 * necessary to call Aloha.FloatingMenu.doLayout() after the visibility
+	 * necessary to call FloatingMenu.doLayout() after the visibility
 	 * of the button is changed
 	 */
 	show: function() {
@@ -199,7 +200,7 @@ Aloha.ui.Button = Class.extend({
 
 	/**
 	 * Hide the button. When this button is added to the FloatingMenu, it is
-	 * necessary to call Aloha.FloatingMenu.doLayout() after the visibility
+	 * necessary to call FloatingMenu.doLayout() after the visibility
 	 * of the button is changed
 	 */
 	hide: function() {
@@ -436,10 +437,10 @@ Ext.ux.MultiSplitButton = Ext.extend(Ext.Component, {
 		// register on move event, which occurs when the panel was dragged
 		// this should be done within the constructor, but ist not possible there
 		// since the extTabPanel will not be initialized at this moment
-		Aloha.FloatingMenu.extTabPanel.on('move', function () {
+		FloatingMenu.extTabPanel.on('move', function () {
 			me.closePanel();
 		});
-		Aloha.FloatingMenu.extTabPanel.on('tabchange', function () {
+		FloatingMenu.extTabPanel.on('tabchange', function () {
 			me.closePanel();
 		});
 
@@ -758,4 +759,4 @@ Aloha.ui.MultiSplitButton = Class.extend({
  */
 Aloha.ui.MultiSplitButton.idCounter = 0;
 
-})(window);
+});

@@ -11,8 +11,8 @@
  */
 
 define(
-['core/pluginmanager', 'i18n!core/nls/i18n'],
-function(PluginManager, i18n, undefined) {
+['core/pluginmanager', 'core/floatingmenu', 'i18n!core/nls/i18n'],
+function(PluginManager, FloatingMenu, i18n, undefined) {
 	"use strict";
 
 	// Prepare
@@ -286,7 +286,7 @@ function(PluginManager, i18n, undefined) {
 				// refocus the editable again, which is just strange UX
 				if (Aloha.activeEditable && !Aloha.isMessageVisible()) {
 					Aloha.activeEditable.blur();
-					Aloha.FloatingMenu.setScope('Aloha.empty');
+					FloatingMenu.setScope('Aloha.empty');
 					Aloha.activeEditable = null;
 				}
 			});
@@ -343,7 +343,7 @@ function(PluginManager, i18n, undefined) {
 		 */
 		initGui: function (next) {
 			Aloha.RepositoryManager.init();
-			Aloha.FloatingMenu.init();
+			FloatingMenu.init();
 
 			// internationalize ext js message box buttons
 			Ext.MessageBox.buttonText.yes = i18n.t(Aloha, 'yes');
@@ -426,7 +426,7 @@ function(PluginManager, i18n, undefined) {
 			Aloha.activeEditable.blur();
 
 			// set scope for floating menu
-			Aloha.FloatingMenu.setScope('Aloha.empty');
+			FloatingMenu.setScope('Aloha.empty');
 
 			Aloha.activeEditable = null;
 		},
@@ -572,8 +572,8 @@ function(PluginManager, i18n, undefined) {
 		 */
 		showMessage: function (message) {
 
-			if (Aloha.FloatingMenu.obj) {
-				Aloha.FloatingMenu.obj.css('z-index', 8900);
+			if (FloatingMenu.obj) {
+				FloatingMenu.obj.css('z-index', 8900);
 			}
 
 			switch (message.type) {

@@ -3,7 +3,9 @@
  * Author & Copyright (c) 2010 Gentics Software GmbH, aloha@gentics.com
  * Licensed unter the terms of http://www.aloha-editor.com/license.html
  */
-(function(window, undefined) {
+define(
+['core/ui'],
+function() { // TODO add parameter for UI class after refactoring UI to requirejs
 	"use strict";
 	var
 		jQuery = window.alohaQuery || window.jQuery, $ = jQuery,
@@ -224,7 +226,6 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
  * @hide
  */
 Ext.reg('alohaattributefield', Ext.ux.AlohaAttributeField);
-
 
 /**
  * Aloha Attribute Field Button
@@ -467,4 +468,4 @@ Aloha.ui.AttributeField = Aloha.ui.Button.extend({
 
 });
 
-})(window);
+});
