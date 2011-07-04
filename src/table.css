@@ -1,74 +1,108 @@
 /**
  * Hide the border for contenteditables
  */
-.aloha-table-cell-editable,
-.aloha-table-wrapper {
+.aloha-ui-table-cell-editable,
+.aloha-ui-table-wrapper {
 	outline: 0px solid transparent;
 }
 
-/* :tODO: make custom cursors visible in IE */
-.aloha-table tr.aloha-table-selectcolumn td.aloha-table-leftuppercorner,
-.aloha-table tr.aloha-table-selectcolumn td.aloha-table-leftuppercorner:hover {
+/* :TODO: make custom cursors visible in IE */
+.aloha-table tr.aloha-ui-table-selectcolumn td.aloha-ui-table-leftuppercorner,
+.aloha-table tr.aloha-ui-table-selectcolumn td.aloha-ui-table-leftuppercorner:hover {
 	cursor: default;
-	background-color: transparent;
+	background: #D0D0D0;
+	padding: 0;
 }
 
-tr.aloha-table-selectcolumn td,
+tr.aloha-ui-table-selectcolumn td,
 td.aloha-table-selectrow {
 	visibility: hidden;
 }
 
-.aloha-editable-active tr.aloha-table-selectcolumn td,
+.aloha-editable-active tr.aloha-ui-table-selectcolumn td,
 .aloha-editable-active td.aloha-table-selectrow {
 	visibility: visible;
 }
 
-.aloha-table tr.aloha-table-selectcolumn {
-	height: 10px;
+.aloha-table tr.aloha-ui-table-selectcolumn {
+	height: 0px;
 }
 
-.aloha-table td .aloha-table-cell-editable {
+.aloha-table td .aloha-ui-table-cell-editable {
 	cursor: text !important;
 }
 
-.aloha-table tr.aloha-table-selectcolumn td {
+.aloha-table tr.aloha-ui-table-selectcolumn td {
 	cursor: url(../img/down.cur),default;
 }
 
-/* :tODO: make custom cursors visible in IE */
+/* :TODO: make custom cursors visible in IE */
 .aloha-table td.aloha-table-selectrow {
 	cursor: url(../img/left.cur),default;
 }
-.aloha-editable div.aloha-table-wrapper, .aloha-table-wrapper div.aloha-table-cell-editable, 
-.aloha-table-wrapper .aloha-table-leftuppercorner div, .aloha-table-wrapper tr.aloha-table-selectcolumn td,
-.aloha-table-wrapper td.aloha-table-selectrow , .aloha-table-wrapper div.aloha-editable-caption
-{ margin:0; border:none; background:none; padding:0; }
-
-
-.aloha-table-wrapper div.aloha-wai-red {
-	background-image: url(../img/wai-red.png);
+.aloha-editable div.aloha-ui-table-wrapper, .aloha-ui-table-wrapper div.aloha-ui-table-cell-editable, 
+.aloha-ui-table-wrapper .aloha-ui-table-leftuppercorner div, .aloha-ui-table-wrapper tr.aloha-ui-table-selectcolumn td,
+.aloha-ui-table-wrapper td.aloha-table-selectrow , .aloha-ui-table-wrapper div.aloha-editable-caption
+{
+	margin: 0;
+	padding: 0;
+	border: none;
+	background: none;
 }
 
-.aloha-table-wrapper div.aloha-wai-green {
-	background-image: url(../img/wai-green.png);
+.aloha-ui-table-wrapper table {
+	width: 100%;
+}
+.aloha-ui-table-wrapper td {
+	border: 1px solid #D0D0D0;
 }
 
-.aloha-table td.aloha-table-leftuppercorner div {
+
+.aloha-ui-table-wrapper div.aloha-ui-wai-red {
+	background: url(../img/wai-red.png) no-repeat center center;
+}
+
+.aloha-ui-table-wrapper div.aloha-ui-wai-green {
+	background: url(../img/wai-green.png) no-repeat center center;
+}
+
+.aloha-table td.aloha-ui-table-leftuppercorner div {
 	cursor: pointer !important;
 }
 
 .aloha-table td.aloha-table-selectrow,
-.aloha-table tr.aloha-table-selectcolumn td {
-	border: 0;
+.aloha-table tr.aloha-ui-table-selectcolumn td {
+	border: 1px solid #D0D0D0;
 	margin:0;
 	padding:0;
-	background-color: #D0D0D0;
+	background-color: #fff;
+	background-image: -webkit-gradient(
+		linear,
+		center top,
+		center bottom,
+		color-stop(0.00, rgba(0, 0, 0, 0.0)),
+		color-stop(0.80, rgba(0, 0, 0, 0.1)),
+		color-stop(1.00, rgba(0, 0, 0, 0.15))
+	);
+	background-image: -moz-linear-gradient(
+		center top,
+		rgba(0, 0, 0, 0.0) 0%,
+		rgba(0, 0, 0, 0.1) 80%,
+		rgba(0, 0, 0, 0.15) 100%
+	);
+	filter: progid:DXImageTransform.Microsoft.Gradient(
+		startColorstr='#ffffff',
+		endColorstr='#eeeeee',
+		gradientType='0'
+	);
 	font-size: 0.01em;
+	line-height: 0px;
+
 }
 
 .aloha-table td.aloha-table-selectrow:hover,
-.aloha-table tr.aloha-table-selectcolumn td:hover {
-	background-color: #c0c0c0;
+.aloha-table tr.aloha-ui-table-selectcolumn td:hover {
+	background-color: #FFE767;
 }
 
 /**
@@ -106,10 +140,11 @@ td.aloha-table-selectrow {
 	background-color: #3399FF !important;
 	color: #FFF;
 }
-div.aloha-table-cell-editable {
+.aloha-ui-table-wrapper div.aloha-ui-table-cell-editable {
 	height: 100%;
 	min-height: 100%;
 	width: 100%;
+	padding: 0.3em;
 	z-index: 99999;
 }
 button.aloha-button-table-caption {

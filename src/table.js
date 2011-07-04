@@ -54,15 +54,15 @@ Aloha.TablePlugin.activeTable = undefined;
  *            The class of activated tables
  */
 Aloha.TablePlugin.parameters = {
-	className            : 'aloha-table',                 // class of editable tables
-	classSelectionRow    : 'aloha-table-selectcolumn',    // class for the upper table-row to select columns
-	classSelectionColumn : 'aloha-table-selectrow',       // class for the left bound table-cells to select rows
-	classLeftUpperCorner : 'aloha-table-leftuppercorner', // class for the left upper corner cell
-	classTableWrapper    : 'aloha-table-wrapper',         // class of the outest table-wrapping div
-	classCellSelected    : 'aloha-cell-selected',         // class of cell which are selected (row/column selection)
-	waiRed				 : 'aloha-wai-red',                     // class that shows wai of div
-	waiGreen			 : 'aloha-wai-green',                   // class that shows wai of div
-	selectionArea        : 10                                     // width/height of the selection rows (in pixel)
+	className            : 'aloha-table',					 // class of editable tables
+	classSelectionRow    : 'aloha-ui-table-selectcolumn',	 // class for the upper table-row to select columns
+	classSelectionColumn : 'aloha-table-selectrow',			 // class for the left bound table-cells to select rows
+	classLeftUpperCorner : 'aloha-ui-table-leftuppercorner', // class for the left upper corner cell
+	classTableWrapper    : 'aloha-ui-table-wrapper',		 // class of the outest table-wrapping div
+	classCellSelected    : 'aloha-cell-selected',			 // class of cell which are selected (row/column selection)
+	waiRed				 : 'aloha-ui-wai-red',				 // class that shows wai of div
+	waiGreen			 : 'aloha-ui-wai-green',			 // class that shows wai of div
+	selectionArea        : 10								 // width/height of the selection rows (in pixel)
 };
 
 /* -- END ATTRIBUTES -- */
@@ -371,7 +371,7 @@ Aloha.TablePlugin.initTableButtons = function () {
 						newRange.endOffset = captionContent.text().length;
 
 						// blur all editables within the table
-						that.activeTable.obj.find('div.aloha-table-cell-editable').blur();
+						that.activeTable.obj.find('div.aloha-ui-table-cell-editable').blur();
 
 						cDiv.focus();
 						newRange.select();
@@ -1331,7 +1331,7 @@ Aloha.Table.prototype.lastCellKeyDown = function(jqEvent) {
 
 		// for ie make a special case ... focus the first cell of the new row
 		if (jQuery.browser.msie) {
-			this.obj.find('tr:last td:nth-child(1) div.aloha-table-cell-editable').get(0).focus();
+			this.obj.find('tr:last td:nth-child(1) div.aloha-ui-table-cell-editable').get(0).focus();
 			return false;
 		}
 	}
@@ -1421,9 +1421,9 @@ Aloha.Table.prototype.deleteRows = function() {
 		this.numRows -= rows2delete.length;
 
 		if (jQuery.browser.msie){
-			setTimeout(this.obj.find('tr:nth-child(' + (focusRowId + 1) + ') td:nth-child(2) div.aloha-table-cell-editable').get(0).focus, 5);
+			setTimeout(this.obj.find('tr:nth-child(' + (focusRowId + 1) + ') td:nth-child(2) div.aloha-ui-table-cell-editable').get(0).focus, 5);
 		}else{
-			this.obj.find('tr:nth-child(' + (focusRowId + 1) + ') td:nth-child(2) div.aloha-table-cell-editable').get(0).focus();
+			this.obj.find('tr:nth-child(' + (focusRowId + 1) + ') td:nth-child(2) div.aloha-ui-table-cell-editable').get(0).focus();
 		}
 
 		// re-attach the events for the last cell
@@ -1518,9 +1518,9 @@ Aloha.Table.prototype.deleteColumns = function() {
 		this.numCols -= colIDs.length;
 
 		if (jQuery.browser.msie){
-			setTimeout(this.obj.find('tr:nth-child(2) td:nth-child(' + (focusColID + 1) + ') div.aloha-table-cell-editable').get(0).focus, 5);
+			setTimeout(this.obj.find('tr:nth-child(2) td:nth-child(' + (focusColID + 1) + ') div.aloha-ui-table-cell-editable').get(0).focus, 5);
 		}else{
-			this.obj.find('tr:nth-child(2) td:nth-child(' + (focusColID + 1) + ') div.aloha-table-cell-editable').get(0).focus();
+			this.obj.find('tr:nth-child(2) td:nth-child(' + (focusColID + 1) + ') div.aloha-ui-table-cell-editable').get(0).focus();
 		}
 
 		// re-attach the events for the last cell
@@ -1884,7 +1884,7 @@ Aloha.Table.prototype.selectColumns = function() {
 		Aloha.TableHelper.selectedCells.push(selectedCellsInCol);
 	};
 	// blur all editables within the table
-	this.obj.find('div.aloha-table-cell-editable').blur();
+	this.obj.find('div.aloha-ui-table-cell-editable').blur();
 
 	// add the class (visually selecting the cells)
 	jQuery(toSelect).addClass(selectClass);
@@ -1918,7 +1918,7 @@ Aloha.Table.prototype.selectRows = function() {
 	Aloha.FloatingMenu.setScope(Aloha.TablePlugin.getUID('row'));
 
 	// blur all editables within the table
-	this.obj.find('div.aloha-table-cell-editable').blur();
+	this.obj.find('div.aloha-ui-table-cell-editable').blur();
 };
 
 
@@ -2106,7 +2106,7 @@ Aloha.Table.Cell.prototype.activate = function() {
 	var wrapper = this.obj.children('div').eq(0);
 
 	wrapper.contentEditable(true);
-	wrapper.addClass('aloha-table-cell-editable');
+	wrapper.addClass('aloha-ui-table-cell-editable');
 
 
 	var that = this;
@@ -2168,7 +2168,7 @@ Aloha.Table.Cell.prototype.activate = function() {
  * @return void
  */
 Aloha.Table.Cell.prototype.deactivate = function() {
-	var wrapper = this.obj.children('.aloha-table-cell-editable');
+	var wrapper = this.obj.children('.aloha-ui-table-cell-editable');
 
 	if (wrapper.length) {
 		// get the inner html of the contenteditable div
