@@ -82,6 +82,11 @@ Aloha.Markup = Class.extend({
 			}
 		}
 
+		// handle left (37) and right (39) keys for block detection
+		if (event.keyCode === 37 || event.keyCode === 39) {
+			this.processCursor(rangeObject, event.keyCode);
+		}
+
 		// ENTER
 		if  (event.keyCode === 13 ) {
 			if (event.shiftKey) {
@@ -154,6 +159,40 @@ Aloha.Markup = Class.extend({
 			}
 		}
 		return true;
+	},
+
+	/**
+	 * handles cursor keys
+	 * left = 37
+	 * right = 39
+	 */
+	processCursor: function(range, keyCode) {
+		var rt = range.getRangeTree(), // RangeTree reference		
+			blocks,
+			i = 0;
+		
+		if (!range.isCollapsed()) {
+			return;
+		}
+		
+		for (;i < rt.length; i++) {
+			if (rt[i].type === 'partial' && rt[i].startContainer === rt[i].endContainer) {
+				//console.log(rt[i].domobj, range.startOffset, rt[i].domobj.length);
+				
+				// detect block when moving cursor right
+				// TODO cleanup code - nextSibling might not work correctly in all browsers
+				if (keyCode === 39 && range.startOffset === rt[i].domobj.length && $(rt[i].domobj.nextSibling).attr('contenteditable') === 'false') {
+					// console.log('block found!');
+					// TODO select block
+				}
+				
+				// detect block when moving cursor left
+				if (keyCode === 37 && range.startOffset === rt[i].domobj.length && $(rt[i].domobj).parents('[contenteditable=false]').length > 0) {
+					// console.log('block found');
+					// TODO select block
+				}
+			}
+		}
 	},
 
 	/**
