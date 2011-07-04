@@ -1,0 +1,124 @@
+h2. JavaScript Style Guide
+
+After reading this guide, you will be able to:
+
+* Create JavaScript code according to our coding guidelines
+
+endprologue.
+
+h3. RequireJS Module Skeleton
+
+All RequireJS modules should follow this structure:
+
+<javascript>
+/*!
+ * Aloha Editor
+ * Author & Copyright (c) 2010 Gentics Software GmbH
+ * aloha-sales@gentics.com
+ * Licensed unter the terms of http://www.aloha-editor.com/license.html
+ */
+
+define([],
+function() {
+	"use strict";
+
+	return Class.extend({
+		// class definition here.
+	});
+});
+</javascript>
+
+h3. Singletons
+
+All singletons should follow this structure:
+
+<javascript>
+/*!
+ * Aloha Editor
+ * Author & Copyright (c) 2010 Gentics Software GmbH
+ * aloha-sales@gentics.com
+ * Licensed unter the terms of http://www.aloha-editor.com/license.html
+ */
+
+define([],
+function() {
+	"use strict";
+
+	return new (Class.extend({
+		// class definition here.
+	}))();
+});
+</javascript>
+
+h3. RequireJS Dependency Order
+
+WARNING: ausformulieren
+
+* The base class
+* Other Classes
+* i18n
+* i18nCore
+* Text files
+* vendor
+* css
+
+h3. Code Conventions
+
+* We use the +TAB+ character for indentation.
+* We use +UpperCamelCase+ for class names, and +lowerCamelCase+ for method and property names. The use of underscores is strongly discouraged.
+
+* TODO: THAT / THIS
+* TODO: Name of callback functions, to aid debugging??
+
+h3. Private methods and attributes
+
+* By convention, we prefix private methods and attributes with an underscore.
+
+Good:
+
+* +_myPrivateMethod()+
+* +_myPrivateAttribute+
+
+Bad:
+
+* @myPrivateMethod()@
+* @myPrivateAttribute@
+
+h3. API
+
+WARNING: Incomplete. How to mark stuff as API?
+
+h3. Naming of methods
+
+h4. Initialization Methods
+
+Initialization methods should be named +init()+.
+
+Good:
+
+* +init()+
+* +initSidebar()+
+
+Bad:
+
+* @initialize()@
+* @initializeSidebar()@
+* @start()@
+* @run()@
+
+h4. Shutdown methods
+
+Shutdown methods should be named +destroy()+.
+
+Good:
+
+* +destroy()+
+
+Bad:
+
+* @shutdown()@
+* @stop()@
+
+h3. Changelog
+
+* July 3, 2011: Initial version by "Sebastian Kurfürst":credits.html#skurfuerst and "Christopher Hlubek":credits.html#hlubek

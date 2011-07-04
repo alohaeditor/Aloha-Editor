@@ -19,6 +19,7 @@ A full-blown plugin has the following file structure:
 ** @img@ - Image assets
 ** @lib@ - RequireJS modules
 ** @nls@ - Localization files, see "Localization and I18N":#localization
+** @res@ - other resources which do not fit into other directories, like JavaScript templates
 ** @test@ - Unit tests
 ** @vendor@ - Legacy JavaScript dependencies, not managed by RequireJS
 ** @package.json@ - Metadata about your package, in CommonJS format
@@ -119,12 +120,15 @@ So, at which place does Aloha look up modules? We'll explain this with a few exa
 | @myplugin/vendor/legacy_lib@ | @path_to_bundle/myplugin/vendor/legacy_lib.js@ <br /> Include a legacy library |
 | @css!myplugin/css/cssfile.css@ | @path_to_bundle/myplugin/css/cssfile.css@ <br /> Includes the CSS file in the document @<head>@. Explained "here":#including-css-files |
 | @i18n!myplugin/nls/i18n.js@ | depends on current language, see "Localization":#localization for details. |
+| @text!myplugin/res/template.html@ | Load a text file (e.g. templates). See "Text file loading":#text-files for details. |
 
 The bundle name is not part of the RequireJS definition, as this is installation-specific. You as plugin developer should not care about where other plugins are located on disk.
 
 h3. Classes and Extension Mechanisms
 
-We use the class definition syntax of "John Resig":http://ejohn.org - slightly adjusted. This means you can create a new class with +Class.extend({ ....})+. The following example shows how to create and instanciate a class, and how the constructor is called.
+We use the class definition syntax of "John Resig":http://ejohn.org - slightly adjusted. This means you can create a new class with +Class.extend({ ....})+.
+
+The following example shows how to create and instanciate a class, and how the constructor (which must be named +_construct()+) is called.
 
 <javascript>
 var Greeter = Class.extend({
@@ -142,15 +146,34 @@ var greeterInstance = new Greeter('Christopher');
 greeterInstance.greet(); // alerts "Good Morning Chistopher"
 </javascript>
 
+WARNING: Add paragraph about subclassing "Greeter".
+
+We also support mixins by specifying multiple arguments to @Class.extend@. For example, in order to make your class observable, you can mix in @core/observable@:
+
+<javascript>
+define(
+['core/observable'],
+function(Observable) {
+    "use strict";
+
+    return Class.extend(Observable, {
+    	// your methods here
+    });
+});
+</javascript>
 
 
 WARNING: not yet done.
 
-* Using Class.extend etc...
+
 
 h3. Localization
 
 WARNING: not yet done.
+
+h3. Text Files
+
+WARNING: not yet done
 
 h3. Including CSS files
 
@@ -188,6 +211,14 @@ INFO: Actually you don’t "install" Aloha Editor, since it is neither a standal
 websites. It is a JavaScript Library which has to be embedded and integrated in your web application.
 Use it like a supersonic textarea. You can edit any DOM element with this supersonic textarea,
 but you need to care about configuration and storage.
+
+h3. Observable
+
+WARNING: still document
+
+h3. Dependencies between plugins
+
+WARNING: Still document
 
 h3. Changelog
 

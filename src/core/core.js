@@ -657,26 +657,6 @@ function(PluginManager, i18n, undefined) {
 			return pluginUrl;
 		},
 
-		/**
-		 * Load in a CSS File
-		 * @method
-		 * @param {String} pluginName
-		 * @return
-		 */
-		loadCss: function(url){
-			// Prepare
-			var linkEl, appendEl = document.head || document.getElementsByTagName('head')[0];
-
-			// Append
-			linkEl = document.createElement('link');
-			linkEl.type = 'text/css';
-			linkEl.rel = 'stylesheet';
-			linkEl.href = url;
-			appendEl.appendChild(linkEl);
-
-			// Chain
-			return this;
-		},
 		i18n: function(component, key, replacements) {
 			window.console && window.console.log && console.log("Called deprecated i18n function!!", component, key);
 			return key;
