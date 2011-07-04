@@ -42,7 +42,7 @@ index:
       url: development_process
       text: "Everything about the Aloha Editor development process and being a good contributor."
     - title: "Javascript Style Guide"
-      url: "style_guide"
+      url: style_guide
       text: "This guide covers the style of Aloha Editor."
     - title: "Documentation Guidelines"
       url: "documentation_guidelines"

@@ -12,8 +12,9 @@
 // ----------------------------------------------------------------------------
 
 
-// We give our immediately invoked function a name to aid in debugging
-(function SidebarClosure (window, undefined) {
+define(
+[],
+function() {
 	
 	'use strict';
 	
@@ -132,7 +133,6 @@
 		// defaults
 		this.width = 300;
 		this.isOpen = false;
-		
 		this.init(opts);
 	};
 	
@@ -737,4 +737,5 @@
 		$('body').trigger(nsClass('ready'), this);
 	});
 	
-})(window);
+	return Sidebar;
+});

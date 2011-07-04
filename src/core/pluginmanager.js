@@ -84,7 +84,6 @@ function() {
 			if (!plugin.id) {
 				throw new Error('Plugin does not have an id');
 			}
-			console.log(plugin.id);
 			if (this.plugins[plugin.id]) {
 				throw new Error('Already registered the plugin "' + plugin.id  + '"!');
 			}
