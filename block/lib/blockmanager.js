@@ -6,14 +6,13 @@
 */
 
 define(['core/floatingmenu', 'core/observable'],
-function(FloatingMenu, Ovservable) {
+function(FloatingMenu, Observable) {
 	"use strict";
 	
 	var
 		jQuery = window.alohaQuery || window.jQuery, $ = jQuery,
 		GENTICS = window.GENTICS,
 		Aloha = window.Aloha;
-
 	var BlockManager = new (Class.extend(Observable, {
 
 		/**
