@@ -52,6 +52,9 @@ td.aloha-table-selectrow {
 
 .aloha-ui-table-wrapper table {
 	/* width: 100%; */
+	-moz-box-shadow:	0 2px 5px rgba(0, 0, 0, .2);
+	-webkit-box-shadow:	0 2px 5px rgba(0, 0, 0, .2);
+	box-shadow:		0 2px 5px rgba(0, 0, 0, .2);
 }
 .aloha-ui-table-wrapper td {
 	border: 1px solid #D0D0D0;
@@ -75,7 +78,7 @@ td.aloha-table-selectrow {
 	border: 1px solid #D0D0D0;
 	margin:0;
 	padding:0;
-	background-color: #fff;
+	background-color: rgba(255, 255, 255, 0.8);
 	background-image: -webkit-gradient(
 		linear,
 		center top,
@@ -149,4 +152,13 @@ td.aloha-table-selectrow {
 }
 button.aloha-button-table-caption {
 	background-position: -320px 0px !important;
+}
+
+
+button.aloha-button.aloha-button-addcolumnleft {
+	background-position: -112px 0 !important;
+}
+
+button.aloha-button.aloha-button-addcolumnright {
+	background-position: -128px 0 !important;
 }
