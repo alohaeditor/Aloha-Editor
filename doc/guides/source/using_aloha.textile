@@ -96,6 +96,8 @@ $('.content').aloha();
 
 h3. Using plugins
 
+WARNING: still write this
+
 * Loading plugins
 * Configuring plugins
 
@@ -103,9 +105,11 @@ h3. Installing additional plugins
 
 * Plugin Bundles explained
 
-TODO Christopher ;-)
+WARNING: still write this
 
 h3. jQuery and JavaScript framework compatibility
+
+WARNING: still write this
 
 h3. Changelog
 

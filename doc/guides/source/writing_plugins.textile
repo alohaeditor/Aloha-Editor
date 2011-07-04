@@ -4,6 +4,7 @@ After reading this guide, you will be able to:
 
 * Create plugins to adjust Aloha to your needs.
 * Load and define dependencies with RequireJS.
+* Include other resources from your plugins
 
 endprologue.
 
@@ -37,7 +38,7 @@ define(
 function(Plugin) {
     "use strict";
 
-    return Plugin.create('myplugin', {
+    return Plugin.create('helloworld', {
         init: function() {
             // Executed on plugin initialization
         },
@@ -58,7 +59,7 @@ script tag loading Aloha:
 	<script src="javascripts/aloha/require.js"
 			data-main="javascripts/aloha/aloha.js"
 			id="aloha-script-include"
-			data-plugins="common/format,custom/myplugin">
+			data-plugins="common/format,custom/helloworld">
 	</script>
 	<link rel="stylesheet" href="javascripts/aloha/aloha.css" type="text/css">
 </head>
@@ -134,7 +135,7 @@ The following example shows how to create and instanciate a class, and how the c
 var Greeter = Class.extend({
     name: null,
 
-    _constructor(name) {
+    _constructor: function(name) {
         this.name = name;
     },
 
@@ -146,9 +147,23 @@ var greeterInstance = new Greeter('Christopher');
 greeterInstance.greet(); // alerts "Good Morning Chistopher"
 </javascript>
 
-WARNING: Add paragraph about subclassing "Greeter".
+Now, if we want to subclass @Greeter@, this is very easy: Just use @Greeter.extend@ for that:
 
-We also support mixins by specifying multiple arguments to @Class.extend@. For example, in order to make your class observable, you can mix in @core/observable@:
+<javascript>
+var GreeterForMen = Greeter.extend({
+	_constructor: function(name) {
+		this._super('Mr. ' + name);
+	}
+});
+var greeterInstance = new GreeterForMen('Christopher');
+greeterInstance.greet(); // alerts "Good Morning Mr. Chistopher"
+</javascript>
+
+You can use +this._super()+ to call the superclass constructor.
+
+h3. Mixin Support
+
+Our class definition also supports mixins, so you can specify multiple arguments to @Class.extend@. For example, in order to make your class observable, you can mix in @core/observable@:
 
 <javascript>
 define(
@@ -162,10 +177,26 @@ function(Observable) {
 });
 </javascript>
 
+A mixin itself should not use Class.extend, but instead just return a simple object. You see this in the following example:
 
-WARNING: not yet done.
+<javascript filename="core/observable.js">
+define(
+[],
+function() {
+	"use strict";
 
+	return {
+		bind: function(eventType, handler, scope) {
+			// implement method here
+		},
+		trigger: function(eventType) {
+			// implement method here
+		}
+	};
+});
+</javascript>
 
+For a list of current mixins, you can soon check the API doc. Right now, there is only the core/observable.
 
 h3. Localization
 
@@ -205,20 +236,36 @@ h3. Lifecycle of Plugins
 
 WARNING: not yet done.
 
-Let's begin by installing the Aloha Editor library. There are two ways to choose right now.
-
-INFO: Actually you don’t "install" Aloha Editor, since it is neither a standalone CMS nor an HTML editor to create
-websites. It is a JavaScript Library which has to be embedded and integrated in your web application.
-Use it like a supersonic textarea. You can edit any DOM element with this supersonic textarea,
-but you need to care about configuration and storage.
-
-h3. Observable
-
-WARNING: still document
-
 h3. Dependencies between plugins
 
-WARNING: Still document
+If a plugin A needs plugin B to work, you cannot just specify it as a dependency of another RequireJS module, as this will break without a meaningful error message to the user.
+
+Let's see how to define a dependency to the @block@-Plugin:
+
+<javascript filename="helloworld/lib/helloworld-plugin.js">
+define(
+['core/plugin'],
+function(Plugin) {
+    "use strict";
+
+    return Plugin.create('helloworld', {
+    	dependencies: ['block'],
+
+        init: function() {
+        	require('block/blockmanager', function(BlockManager) {
+        		// Use BlockManager here
+        	});
+            // Executed on plugin initialization
+        },
+        destroy: function() {
+            // Executed when this plugin is unloaded
+        }
+    });
+});
+</javascript>
+
+Here, we specify a dependency to another plugin using the +dependencies+ property of our @Plugin@. Then, the plugin manager makes sure that the dependent plugin is actually loaded, and outpus an error message if not.
+When everything is loaded, we can access a module from the other plugin by using a nested require() statement, as shown for the +Blockmanager+ in the example above.
 
 h3. Changelog
 

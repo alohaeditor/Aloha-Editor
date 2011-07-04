@@ -67,7 +67,7 @@ h3. Code Conventions
 * We use the +TAB+ character for indentation.
 * We use +UpperCamelCase+ for class names, and +lowerCamelCase+ for method and property names. The use of underscores is strongly discouraged.
 
-* TODO: THAT / THIS
+* TODO: THAT / THIS -> use that!
 * TODO: Name of callback functions, to aid debugging??
 
 h3. Private methods and attributes
