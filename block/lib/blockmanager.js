@@ -5,8 +5,8 @@
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
 
-define([],
-function() {
+define(['core/observable'],
+function(Observable) {
 	"use strict";
 	
 	var
@@ -14,7 +14,12 @@ function() {
 		GENTICS = window.GENTICS,
 		Aloha = window.Aloha;
 
-	var BlockManager = new (Class.extend({
+	var BlockManager = new (Class.extend(Observable, {
+
+		/**
+		 * @event blockSelectionChange
+		 * @param {Array} Array of AbstractBlock objects, containing  selectedBlocks
+		 */
 
 		defaults: {
 			'block-type': 'DefaultBlock'
