@@ -220,7 +220,7 @@ h6,
 	-moz-border-radius: 4px;
 	-mwebkit-border-radius: 4px;
 	
-	background: url(../images/navigation-bg.png) left top repeat-x;
+	background: url(../img/navigation-bg.png) left top repeat-x;
 	_font-family: 'Lucida Grande', 'Lucida Sans Unicode', Helvetica, Arial, Verdana, sans-serif;
 	font-size: 1em;
 	clear: both;
@@ -249,7 +249,7 @@ h6,
 #navigation li a:active,
 #navigation li a:focus {
 	color: #000;
-	background: url(../images/navigation-bg-hover.png) left top repeat-x;
+	background: url(../img/navigation-bg-hover.png) left top repeat-x;
 }
 /*** Main & Content ***/
 #main {
@@ -299,7 +299,7 @@ h6,
 		
 	width: 100%;
 	height: 305px;
-	_background: url(../images/stage-bg.png) left top repeat-x;
+	_background: url(../img/stage-bg.png) left top repeat-x;
 	position: relative;
 	overflow: hidden;
 	float: left;
@@ -310,7 +310,7 @@ h6,
 	width: 205px;
 	height: 100%;
 	display: block;
-	background: url(../images/stage-switcher-bg.png) right top repeat-y;
+	background: url(../img/stage-switcher-bg.png) right top repeat-y;
 	margin: 0;
 	padding: 0;
 	position: absolute;
@@ -322,7 +322,7 @@ h6,
 	margin: 0;
 	padding: 0;
 	list-style: none;
-	_background: url(../images/stage-switcher-tab-bg.png) right top no-repeat;
+	_background: url(../img/stage-switcher-tab-bg.png) right top no-repeat;
 	height: 52px;
 	width: 100%;
 	position: relative;
@@ -332,10 +332,10 @@ h6,
 	opacity:.83;
 }
 #main .stage-switcher li.hover {
-	background-image: url(../images/stage-switcher-tab-bg-hover.png);
+	background-image: url(../img/stage-switcher-tab-bg-hover.png);
 }
 #main .stage-switcher li.active {
-	background-image: url(../images/stage-switcher-tab-bg-active.png);
+	background-image: url(../img/stage-switcher-tab-bg-active.png);
 }
 #main .stage-switcher .stage-icon {
 	position: absolute;

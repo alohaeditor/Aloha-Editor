@@ -31,7 +31,7 @@
                                                         <attach>true</attach>
                                                         <appendAssemblyId>false</appendAssemblyId>
                                                         <descriptors>
-                                                                <descriptor>${project.basedir}/src/main/assembly/package.xml</descriptor>
+                                                                <descriptor>${project.basedir}/build/maven/package.xml</descriptor>
                                                         </descriptors>
                                                 </configuration>
                                         </execution>
@@ -53,11 +53,7 @@
                                         </execution>
                                 </executions>
                                 <configuration>
-                                        <executable>ruby</executable>
-                                        <arguments>
-						<argument>cli</argument>
-                                                <argument>build</argument>
-                                        </arguments>
+                                        <executable>bin/build.sh</executable>
                                 </configuration>
                         </plugin>
 		</plugins>

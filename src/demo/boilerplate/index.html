@@ -26,10 +26,10 @@
 </head>
 <body>
 	<div id="whole-site">
-		<div id="aloha-loading"><span>Loading Aloha Editor</span> <img src="images/loading1.gif" title="loading program..."/></div>
+		<div id="aloha-loading"><span>Loading Aloha Editor</span> <img src="img/loading1.gif" title="loading program..."/></div>
 		<div id="container">
 			<div id="header">
-				<a id="editor-logo" href="#"><img src="images/aloha-editor-logo.png" alt="Aloha Editor" /></a>
+				<a id="editor-logo" href="#"><img src="img/aloha-editor-logo.png" alt="Aloha Editor" /></a>
 				<p id="top-text">The Aloha Boilerplate.</p>
 			</div>
 			<div id="navigation">	
@@ -46,11 +46,11 @@
 				<div class="stage-area">
 					<ul class="stage-switcher">
 						<li class="stage">
-							<span class="stage-icon" style="background-image: url(images/stage-icon-formats.png);"></span>
+							<span class="stage-icon" style="background-image: url(img/stage-icon-formats.png);"></span>
 							<h2>Formatting</h2>
 							<p>Bold, headlines, ...</p>
 							<div class="small-image stage-item">
-								<img src="images/stage-bg-formats.png" alt="" />
+								<img src="img/stage-bg-formats.png" alt="" />
 								<div class="area-content">
 									<div class="aloha-textbox">
 									<p><b>Bold or headlines, whatever you might want</b></p>
@@ -62,11 +62,11 @@
 							</div>
 						</li>
 						<li class="stage">
-							<span class="stage-icon" style="background-image: url(images/stage-icon-images.png);"></span>
+							<span class="stage-icon" style="background-image: url(img/stage-icon-images.png);"></span>
 							<h2>Images</h2>
 							<p>Placing, scaling ...</p>
 							<div class="full-image stage-item">
-								<img src="images/stage-bg-images.png" alt="" />
+								<img src="img/stage-bg-images.png" alt="" />
 								<div class="area-content">
 									<h3>Place and edit images with Aloha</h3>
 									<h2>Image-Editing</h2>
@@ -76,11 +76,11 @@
 							</div>
 						</li>
 						<li class="stage">
-							<span class="stage-icon" style="background-image: url(images/stage-icon-tables.png);"></span>
+							<span class="stage-icon" style="background-image: url(img/stage-icon-tables.png);"></span>
 							<h2>Tables</h2>
 							<p>All you might put into tables</p>
 							<div class="full-image stage-item">
-								<img src="images/stage-bg-tables.png" alt="" />
+								<img src="img/stage-bg-tables.png" alt="" />
 								<div class="area-content">
 									<h3>Create and edit tables the way you want them to be</h3>
 									<h2>Table Stuff</h2>
@@ -90,11 +90,11 @@
 							</div>
 						</li>
 						<li class="stage">
-							<span class="stage-icon" style="background-image: url(images/stage-icon-boxes.png);"></span>
+							<span class="stage-icon" style="background-image: url(img/stage-icon-boxes.png);"></span>
 							<h2>Boxes</h2>
 							<p>You may edit dynamic boxes</p>
 							<div class="full-image stage-item">
-								<img src="images/stage-bg-boxes.png" alt="" />
+								<img src="img/stage-bg-boxes.png" alt="" />
 								<div class="area-content">
 									<h3>You can edit dynamic content</h3>
 									<h2>Edit jQuery stuff</h2>
@@ -104,11 +104,11 @@
 							</div>
 						</li>
 						<li class="stage">
-							<span class="stage-icon" style="background-image: url(images/stage-icon-comments.png);"></span>
+							<span class="stage-icon" style="background-image: url(img/stage-icon-comments.png);"></span>
 							<h2>Comments</h2>
 							<p>threaded inline comments</p>
 							<div class="full-image stage-item">
-								<img src="images/stage-bg-comments.png" alt="" />
+								<img src="img/stage-bg-comments.png" alt="" />
 								<div class="area-content">
 									<h3>Threaded inline enterprise commenting</h3>
 									<h2>Increase collaboration</h2>
@@ -196,18 +196,16 @@
 				$ = window.jQuery,
 				$body = $('body');
 
-		console.log("binding aloha evt");
-		$body.bind('aloha',function(){
-			console.log("aloha fired");
-
-			// register all editable areas
-			$('#top-text').aloha();
-			$('#content').aloha();
-			$('.area-content').aloha();
-
-			// hide loading div
-			$('#aloha-loading').hide();
-		});
+			$body.bind('aloha',function(){
+	
+				// register all editable areas
+				$('#top-text').aloha();
+				$('#content').aloha();
+				$('.area-content').aloha();
+	
+				// hide loading div
+				$('#aloha-loading').hide();
+			});
 		
 			$('.stage-area').alohaStage();
 
@@ -216,7 +214,6 @@
 				// hide loading div
 				$('#aloha-loading span').html('Loading Plugins');
 			});
-console.log("a");
 			
 		});
 	</script>

@@ -1,4 +1,4 @@
 #!/bin/sh
 
 MYDIR=`cd \`dirname "$0"\`; pwd`
-$MYDIR/../requirejs/bin/x $MYDIR/build.js "$@"
+$MYDIR/../requirejs/build/build.sh $MYDIR/aloha.build.js "$@"

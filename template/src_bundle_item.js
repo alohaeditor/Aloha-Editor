@@ -1,1 +1,0 @@
-			includes.push('%URL%');
