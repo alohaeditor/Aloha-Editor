@@ -1,0 +1,35 @@
+.aloha-character-picker-overlay {
+    position: absolute;
+    display: none;
+    float: left;
+    padding: 3px;
+    top: 0;
+    left: 0;
+    border: 1px solid #afafaf;
+    border-collapse: separate;
+    background-color: #fff;
+    z-index: 12000;
+}
+
+.aloha-character-picker-overlay td {
+    border: none;
+    padding: 0;
+}
+
+.aloha-character-picker-overlay td span {
+    display: block;
+    padding: 5px;
+    background-color: #fff;
+    border: 1px solid #afafaf;
+}
+
+.aloha-character-picker-overlay td.mouseover span {
+    border: 1px solid #fdea83;
+    background-color: #fefce1;
+}
+
+.aloha-character-picker-overlay td.focused span {
+    border: 1px solid #407bcf;
+    background-color: #b9d6f9;
+}
+
