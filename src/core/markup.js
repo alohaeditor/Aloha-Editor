@@ -84,7 +84,7 @@ Aloha.Markup = Class.extend({
 
 		// handle left (37) and right (39) keys for block detection
 		if (event.keyCode === 37 || event.keyCode === 39) {
-			return this.processCursor(rangeObject, event.keyCode, event);
+			return this.processCursor(rangeObject, event.keyCode);
 		}
 
 		// ENTER
@@ -162,11 +162,17 @@ Aloha.Markup = Class.extend({
 	},
 
 	/**
-	 * handles cursor keys
-	 * left = 37
-	 * right = 39
+	 * Processing of cursor keys
+	 * will currently detect blocks (elements with contenteditable=false)
+	 * and selects them (normally the cursor would jump right past them)
+	 *
+	 * For each block a 'block-selected' event will be triggered.
+	 *
+	 * @param range the current range object
+	 * @param keyCode keyCode of current keypress
+	 * @return false if a block was found to prevent further events, true otherwise
 	 */
-	processCursor: function(range, keyCode, event) {
+	processCursor: function(range, keyCode) {
 		var rt = range.getRangeTree(), // RangeTree reference
 			i = 0,
 			cursorLeft = keyCode === 37,
@@ -176,7 +182,7 @@ Aloha.Markup = Class.extend({
 			cursorAtLastPos = false; // check if the cursor is within the last position of the currently active dom element
 		
 		if (!range.isCollapsed()) {
-			return;
+			return true;
 		}
 		
 		for (;i < rt.length; i++) {
