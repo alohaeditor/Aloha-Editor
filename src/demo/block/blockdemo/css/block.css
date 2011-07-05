@@ -21,8 +21,8 @@
 	background-image:url('../img/stock-quote-aapl.gif');
 }
 
-.aloha-block:hover .block-draghandle-topright,
-.aloha-block-active .block-draghandle-topright {
+.aloha-block:hover > .block-draghandle-topright,
+.aloha-block-active > .block-draghandle-topright {
 	display:block;
 }
 

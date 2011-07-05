@@ -134,7 +134,7 @@ define([
 		}
 	});
 
-	var TwoColumnBlock = block.AbstractBlock.extend({
+	var AbstractTwoColumnBlock = block.AbstractBlock.extend({
 		containerDefinitions: {
 			left: {
 				selector: '.column-left'
@@ -155,6 +155,7 @@ define([
 		whenAllChildrenBlockified: function(next) {
 			var that = this, numberOfNotYetBlockifiedElements = 0, $containersWithDomBlocks = {};
 
+			var template = $('<div />').html(this.element.html());
 
 			var findBlocksForDomElements = function() {
 				var containersWithBlocks = {};
@@ -173,6 +174,8 @@ define([
 				}
 			}
 			$.each(this.containerDefinitions, function(name, config) {
+				template.find(config.selector).empty();
+
 				var $container = that.element.find(config.selector).first();
 				var $elements = $container.children(); // TODO: block container only contains other blocks as children, nothing else!
 				$elements.each(function() {
@@ -185,6 +188,11 @@ define([
 				});
 				$containersWithDomBlocks[name] = $elements;
 			});
+
+			if (!this.attr('template')) {
+				this.attr('template', template.html());
+			}
+
 			if (numberOfNotYetBlockifiedElements <= 0) {
 				next(findBlocksForDomElements());
 			}
@@ -192,35 +200,86 @@ define([
 		init: function() {
 			var that = this;
 			this.whenAllChildrenBlockified(function(containersWithBlocks) {
+
+				// Serialize child containers / blocks
 				$.each(containersWithBlocks, function(containerName, blockList) {
 					var serializedBlocks = [];
 
 					$.each(blockList, function() {
 						var block = this;
 						serializedBlocks.push(block.serialize());
+						// TODO for later -- if we have stuff between blocks - block.element.children().remove() might be helpful.
 					});
-					that.attr(containerName, JSON.stringify(serializedBlocks));
+					that.attr(containerName, JSON.stringify(serializedBlocks)); // TODO: use cross-browser version of JSON.stringify.
 				});
 
 				that._initialized = true;
 				that.element.trigger('block-initialized');
 			});
-
-
-			//containers[name] = ; // TODO: later check that only one element returned from selector, else ERROR
-
-			//console.log(containers);
-			//this.attr('default-content', this.element.html());
 		},
-		render: function() {
+
+		_currentlyRendering: null,
+		_renderAndSetContent: function() {
+			if (this._currentlyRendering) return;
+			this._currentlyRendering = true;
+
+			var innerElement = $('<' + this._getWrapperElementType() + ' class="aloha-block-inner" />');
+			var result = this.render(innerElement);
+			// Convenience for simple string content
+			if (typeof result === 'string') {
+				innerElement.html(result);
+			}
+			this.element.empty();
+			this.element.append(innerElement);
+
+			this.createEditables(innerElement);
+
+			this.renderToolbar();
+		},
+		render: function(innerElement) {
 			var that = this;
 			if (!this._initialized) {
 				// If block is not yet initialized, we will defer rendering internally.
-				//this.element.bind('block-initialized', function() {
-				//	that.render();
-				//})
+				this.element.bind('block-initialized', function() {
+					that.element.unbind('block-initialized');
+					that.render(innerElement);
+				});
+
 				return;
 			}
+			innerElement.html(this.attr('template'));
+			$.each(this.containerDefinitions, function(name, config) {
+				var serializedBlocks = JSON.parse(that.attr(name)); // TODO: use cross-browser version of JSON.parse.
+				$.each(serializedBlocks, function() {
+					var serializedBlock = this;
+					// TODO: copy/paste code from BlockPasteHandler
+					var newBlock = $('<' + serializedBlock.tag + '/>');
+					newBlock.attr('class', serializedBlock.classes);
+
+					$.each(serializedBlock.attributes, function(k, v) {
+						if (k === 'about') {
+							newBlock.attr('about', v);
+						} else {
+							newBlock.attr('data-' + k, v);
+						}
+					});
+
+					innerElement.find(config.selector).append(newBlock);
+					BlockManager._blockify(newBlock);
+				});
+			});
+			this._currentlyRendering = false;
+		}
+	});
+
+	var TwoColumnBlock = AbstractTwoColumnBlock.extend({
+		title: 'Two Column block',
+		getSchema: function() {
+			return {
+				template: {
+					type: 'string'
+				}
+			};
 		}
 	});
 
