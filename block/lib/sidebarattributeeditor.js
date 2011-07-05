@@ -67,6 +67,10 @@ function(BlockManager, Sidebar, EditorManager) {
 					expanded: true,
 					onInit: function() {
 						var $form = $('<form />');
+						$form.submit(function() {
+							// Disable form submission
+							return false;
+						});
 						$.each(schema, function(attributeName, definition) {
 							var editor = EditorManager.createEditor(definition);
 
