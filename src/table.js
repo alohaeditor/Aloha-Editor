@@ -310,7 +310,7 @@ TablePlugin.initRowsBtns = function () {
 	);
 	
 	this.rowHeader = new Aloha.ui.Button({
-		iconClass : 'GENTICS_button GENTICS_button_row_header',
+		iconClass : 'aloha-button aloha-button-row-header',
 		size	  :  'small',
 		tooltip	  :  this.i18n('button.rowheader.tooltip'),
 		toggle	  :  true,
@@ -364,13 +364,11 @@ TablePlugin.initRowsBtns = function () {
 	this.rowMSItems = [];
 	
     jQuery.each(this.rowConfig, function(j, itemConf) {
-		console.log(itemConf);
-		
 		that.rowMSItems.push({
 			name	  : itemConf.name,
 			text	  : Aloha.i18n(that, itemConf.text),
 		    tooltip	  : Aloha.i18n(that, itemConf.tooltip),
-	   	    iconClass : 'GENTICS_button GENTICS_row_layout ' + itemConf.iconClass,
+	   	    iconClass : 'aloha-button aloha-row-layout ' + itemConf.iconClass,
 	   	    click	  : function() {
 				var sc = Aloha.TableHelper.selectedCells;
 				// if a selection was made, transform the selected cells
@@ -398,7 +396,7 @@ TablePlugin.initRowsBtns = function () {
 			name	  : 'removeFormat',
 			text	  : that.i18n('button.removeFormat.text'),
 	    	tooltip	  : that.i18n('button.removeFormat.tooltip'),
-	   	    iconClass : 'GENTICS_button GENTICS_button_removeFormat',
+	   	    iconClass : 'aloha-button aloha-button-removeFormat',
 	   	    wide	  : true,
 	   	    click	  : function() {
 				var sc = Aloha.TableHelper.selectedCells;
@@ -444,7 +442,7 @@ TablePlugin.initColumnBtns = function () {
 	menu.addButton(
 		this.getUID('column'),
 		new Aloha.ui.Button({
-			iconClass : 'aloha-button aloha-button-addcolumnleft',
+			iconClass : 'aloha-button aloha-button-add-col-left',
 			size	  : 'small',
 			tooltip   : this.i18n('button.addcolleft.tooltip'),
 			onclick   : function () {
@@ -461,7 +459,7 @@ TablePlugin.initColumnBtns = function () {
 	menu.addButton(
 		this.getUID('column'),
 		new Aloha.ui.Button({
-			iconClass : 'aloha-button aloha-button-addcolumnright',
+			iconClass : 'aloha-button aloha-button-add-col-right',
 			size	  : 'small',
 			tooltip   : this.i18n('button.addcolright.tooltip'),
 			onclick   : function () {
@@ -501,7 +499,7 @@ TablePlugin.initColumnBtns = function () {
 	);
 	
 	this.columnHeader = new Aloha.ui.Button({
-		iconClass : 'GENTICS_button GENTICS_button_col_header',
+		iconClass : 'aloha-button aloha-button-col-header',
 		size	  : 'small',
 		tooltip	  : this.i18n('button.columnheader.tooltip'),
 		toggle	  : true,
@@ -555,7 +553,7 @@ TablePlugin.initColumnBtns = function () {
 			name	  : itemConf.name,
 			text	  : that.i18n(itemConf.text),
 			tooltip	  : that.i18n(itemConf.tooltip),
-			iconClass : 'GENTICS_button GENTICS_column_layout ' + itemConf.iconClass,
+			iconClass : 'aloha-button aloha-column-layout ' + itemConf.iconClass,
 			click	  : function (x,y,z) {
 				var sc = Aloha.TableHelper.selectedCells;
 				// if a selection was made, transform the selected cells
@@ -584,7 +582,7 @@ TablePlugin.initColumnBtns = function () {
 			name	  : 'removeFormat',
 			text	  : that.i18n('button.removeFormat.text'),
 	    	tooltip	  : that.i18n('button.removeFormat.tooltip'),
-	   	    iconClass : 'GENTICS_button GENTICS_button_removeFormat',
+	   	    iconClass : 'aloha-button aloha-button-removeFormat',
 	   	    wide	  : true,
 	   	    click	  : function () {
 				var sc = Aloha.TableHelper.selectedCells;
@@ -652,17 +650,74 @@ Aloha.TablePlugin.initTableButtons = function () {
 	// now the specific table buttons
 	
 	//---------------------------------------------------------------
-	// for columns
+	// generate formatting buttons for columns
 	//---------------------------------------------------------------
 	this.initColumnBtns();
 	
 	//---------------------------------------------------------------
-	// for rows
+	// generate formatting buttons for rows
 	//---------------------------------------------------------------
 	this.initRowsBtns();
 	
-	alert(45);
+	//---------------------------------------------------------------
+	// generate formatting buttons fors tables
+	//---------------------------------------------------------------
+	this.tableMSItems = [];
 	
+	var tableConfig = this.tableConfig;
+	
+	jQuery.each(tableConfig, function(j, itemConf) {
+		that.tableMSItems.push({
+			name	  : itemConf.name,
+			text	  : that.i18n(itemConf.text),
+		    tooltip	  : that.i18n(itemConf.tooltip),
+	   	   	iconClass : 'aloha-button aloha-table-layout ' + itemConf.iconClass,
+	   	   	click	  : function() {
+				// set table css class
+				if (that.activeTable) {
+					for (var f = 0; f < tableConfig.length; f++) {
+						that.activeTable.obj.removeClass(tableConfig[f].cssClass);
+					}
+					that.activeTable.obj.addClass(itemConf.cssClass);
+				}
+			}
+		});
+	});
+	
+	if (this.tableMSItems.length > 0) {
+		this.tableMSItems.push({
+			name	  : 'removeFormat',
+			text	  : that.i18n('button.removeFormat.text'),
+	    	tooltip   : that.i18n('button.removeFormat.tooltip'),
+	   	    iconClass : 'aloha-button aloha-button-removeFormat',
+	   	    wide	  : true,
+	   	    click	  : function() {
+				// remove all table classes
+				if (activeTable) {
+					for (var f = 0; f < tableConfig.length; f++) {
+						activeTable.obj.removeClass(that.tableConfig[f].cssClass);
+					}
+				}
+			}
+		});
+	}
+	
+	this.tableMSButton = new Aloha.ui.MultiSplitButton({
+		items : this.tableMSItems
+	});
+	
+	if (this.tableMSItems.length > 0) {
+		menu.addButton(
+			this.getUID('cell'),
+			this.tableMSButton,
+			that.i18n(this, 'floatingmenu.tab.tablelayout'),
+			3
+		);
+	}
+	
+	//---------------------------------------------------------------
+	// caption button
+	//---------------------------------------------------------------
 	this.captionButton = new Aloha.ui.Button({
 		iconClass : 'aloha-button aloha-button-table-caption',
 		size	  : 'small',
@@ -707,12 +762,11 @@ Aloha.TablePlugin.initTableButtons = function () {
 		Aloha.i18n(this, 'floatingmenu.tab.table'),
 		1
 	);
-
-	// for cells
-    // add summary field
-    this.summary = new Aloha.ui.AttributeField({
-    	width: 350
-    });
+	
+	//---------------------------------------------------------------
+	// add summary field for cells
+	//--------------------------------------------------------------- 
+    this.summary = new Aloha.ui.AttributeField({width: 350 });
 	
     this.summary.addListener('keyup', function(obj, event) {
     	that.activeTable.checkWai();
@@ -724,61 +778,6 @@ Aloha.TablePlugin.initTableButtons = function () {
         Aloha.i18n(this, 'floatingmenu.tab.table'),
         1
     );
-	
-	// generate formatting buttons
-	this.tableMSItems = [];
-	
-	var tableConfig = this.tableConfig;
-	
-	jQuery.each(tableConfig, function(j, itemConf) {
-		that.tableMSItems.push({
-			name	  : itemConf.name,
-			text	  : that.i18n(itemConf.text),
-		    tooltip	  : that.i18n(itemConf.tooltip),
-	   	   	iconClass : 'GENTICS_button GENTICS_table_layout ' + itemConf.iconClass,
-	   	   	click	  : function() {
-				// set table css class
-				if (that.activeTable) {
-					for (var f = 0; f < tableConfig.length; f++) {
-						that.activeTable.obj.removeClass(tableConfig[f].cssClass);
-					}
-					that.activeTable.obj.addClass(itemConf.cssClass);
-				}
-			}
-		});
-	});
-	
-	if (this.tableMSItems.length > 0) {
-		this.tableMSItems.push({
-			name	  : 'removeFormat',
-			text	  : that.i18n('button.removeFormat.text'),
-	    	tooltip   : that.i18n('button.removeFormat.tooltip'),
-	   	    iconClass : 'GENTICS_button GENTICS_button_removeFormat',
-	   	    wide	  : true,
-	   	    click	  : function() {
-				// remove all table classes
-				if (activeTable) {
-					for (var f = 0; f < tableConfig.length; f++) {
-						activeTable.obj.removeClass(that.tableConfig[f].cssClass);
-					}
-				}
-			}
-		});
-	}
-	
-	this.tableMSButton = new Aloha.ui.MultiSplitButton({
-		items : this.tableMSItems
-	});
-	
-	if (this.tableMSItems.length > 0) {
-		menu.addButton(
-			this.getUID('cell'),
-			this.tableMSButton,
-			that.i18n(this, 'floatingmenu.tab.tablelayout'),
-			3
-		);
-	}
-
 };
 
 /**
@@ -871,7 +870,11 @@ Aloha.TablePlugin.createTable = function(cols, rows) {
 		table.appendChild(tbody);
 
 		// insert at current cursor position
-		GENTICS.Utils.Dom.insertIntoDOM(jQuery(table), Aloha.Selection.getRangeObject(), jQuery(Aloha.activeEditable.obj));
+		GENTICS.Utils.Dom.insertIntoDOM(
+			jQuery(table),
+			Aloha.Selection.getRangeObject(),
+			jQuery(Aloha.activeEditable.obj)
+		);
 
 		// if the table is inserted
 		var tableReloadedFromDOM = document.getElementById(tableId);
@@ -896,24 +899,28 @@ Aloha.TablePlugin.createTable = function(cols, rows) {
 		Aloha.TablePlugin.TableRegistry.push(tableObj);
 
 	// no active editable => error
-	}else{
+	} else {
 		this.error('There is no active Editable where the table can be inserted!');
 	}
 };
 
 Aloha.TablePlugin.setFocusedTable = function(focusTable) {
 	var that = this;
+	
 	for (var i = 0; i < Aloha.TablePlugin.TableRegistry.length; i++) {
 		Aloha.TablePlugin.TableRegistry[i].hasFocus = false;
 	}
+	
 	if (typeof focusTable != 'undefined') {
         this.summary.setTargetObject(focusTable.obj, 'summary');
-        if ( focusTable.obj.children("caption").is('caption') ) {
+        
+		if (focusTable.obj.children("caption").is('caption')) {
         	// set caption button
         	that.captionButton.setPressed(true);
         	var c = focusTable.obj.children("caption");
         	that.makeCaptionEditable(c);
         }
+		
 		focusTable.hasFocus = true;
 	}
 	Aloha.TablePlugin.activeTable = focusTable;
@@ -933,7 +940,6 @@ Aloha.TablePlugin.setFocusedTable = function(focusTable) {
 			}
 		}
 	}
-	
 };
 
 /**
