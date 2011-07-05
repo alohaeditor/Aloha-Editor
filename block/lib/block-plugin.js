@@ -5,6 +5,10 @@
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
 
+/**
+ * @name block
+ * @namespace Block plugin
+ */
 define([
 	'core/plugin',
 	'block/blockmanager',
@@ -15,12 +19,13 @@ define([
 	'css!block/css/block.css'
 ], function(Plugin, BlockManager, SidebarAttributeEditor, block, EditorManager, editor) {
 	"use strict";
+
 	var
 		jQuery = window.alohaQuery || window.jQuery, $ = jQuery,
 		Aloha = window.Aloha;
 
 	/**
-	 * register the plugin with unique name
+	 * Register the plugin with unique name
 	 */
 	var BlockPlugin = Plugin.create('block', {
 		settings: {},
@@ -72,16 +77,34 @@ define([
 	});
 
 	/**
-	 * @api
+	 * See (http://jquery.com/).
+	 * @name jQuery
+	 * @class
+	 * See the jQuery Library  (http://jquery.com/) for full details.  This just
+	 * documents the function and classes that are added to jQuery by this plug-in.
 	 */
-	$.fn.alohaBlock = function(instanceDefaults) {
+
+	/**
+	 * See (http://jquery.com/).
+	 * @name jQuery.fn
+	 * @class
+	 * See the jQuery Library  (http://jquery.com/) for full details.  This just
+	 * documents the function and classes that are added to jQuery by this plug-in.
+	 */
+
+	/**
+	 * Create Aloha blocks from the matched elements
+	 * @api
+	 * @param {Object} instanceDefaults
+	 */
+	jQuery.fn.alohaBlock = function(instanceDefaults) {
 		instanceDefaults = instanceDefaults || {};
 		$(this).each(function(index, element) {
 			BlockManager.blockify(element, instanceDefaults);
 		});
 
 		// Chain
-		return $(this);
+		return jQuery(this);
 	};
 
 	// $.fn.mahaloBlock = TODO

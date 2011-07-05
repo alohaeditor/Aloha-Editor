@@ -8,12 +8,20 @@
 define(
 ['paste/abstractpastehandler', 'block/blockmanager'],
 function(AbstractPasteHandler, BlockManager) {
-	"use strict";
 
-	var BlockPasteHandler = AbstractPasteHandler.extend({
+	/**
+	 * @name block.BlockPasteHandler
+	 * @class Special block paste handler
+	 *
+	 * The blog paste handler handles pasting of blocks in editables. Pasted
+	 * block markup will be replaced by a freshly rendered block instance.
+	 */
+	var BlockPasteHandler = AbstractPasteHandler.extend(
+	/** @lends block.BlockPasteHandler */
+	{
 		/**
 		 * Handle the pasting. Remove all unwanted stuff.
-		 * @param jqPasteDiv
+		 * @param {jQuery} jqPasteDiv
 		 */
 		handlePaste: function(jqPasteDiv) {
 			jqPasteDiv.find('.aloha-block').each(function() {

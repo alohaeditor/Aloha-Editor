@@ -5,6 +5,10 @@
  * Licensed unter the terms of http://www.aloha-editor.com/license.html
  */
 
+/**
+ * @name block.block
+ * @namespace Block models
+ */
 define(['block/blockmanager', 'core/observable', 'core/floatingmenu'],
 function(BlockManager, Observable, FloatingMenu) {
 	"use strict";
@@ -13,36 +17,48 @@ function(BlockManager, Observable, FloatingMenu) {
 		jQuery = window.alohaQuery || window.jQuery, $ = jQuery,
 		Aloha = window.Aloha;
 
-	var AbstractBlock = Class.extend(Observable, {
+	/**
+	 * @name block.block.AbstractBlock
+	 * @class An abstract block that must be used as a base class for custom blocks
+	 */
+	var AbstractBlock = Class.extend(Observable,
+	/** @lends block.block.AbstractBlock */
+	{
 
 		/**
-		 * @event change
+		 * @name block.block.AbstractBlock#change
+		 * @event
 		 */
 
 		/**
-		 * @var {String} Title for the block. Displayed in sidebar.
+		 * Title for the block, used to display the name in the sidebar.
+		 * @type String
 		 * @api
 		 */
 		title: null,
 
 		/**
-		 * @var string ID of the assigned element. Not sure if it exists.
+		 * Id of the assigned element, used to identify a block
+		 * @type String
 		 */
 		id: null,
 
 		/**
-		 * @var jQuery element
+		 * The original block element
+		 * @type jQuery
 		 */
 		// TODO: Rename to $element
 		element: null,
 
 		/**
-		 * "inline" or "block", will be guessed from the original block dom element
+		 * Either "inline" or "block", will be guessed from the original block dom element
+		 * @type String
 		 */
 		_domElementType: null,
 
 		/**
-		 * @var jQuery element
+		 * @param {jQuery} element Element that declares the block
+		 * @constructor
 		 */
 		_constructor: function(element) {
 			var that = this;
@@ -89,7 +105,12 @@ function(BlockManager, Observable, FloatingMenu) {
 		init: function() {},
 
 		/**
+		 * Get a schema of attributes with
+		 *
+		 * TODO Document schema format
+		 *
 		 * @api
+		 * @returns {Object}
 		 */
 		getSchema: function() {
 			return null;
@@ -145,6 +166,7 @@ function(BlockManager, Observable, FloatingMenu) {
 			this.element.addClass('aloha-block-active');
 		},
 
+
 		_unhighlight: function() {
 			this.element.removeClass('aloha-block-active');
 		},
@@ -159,6 +181,9 @@ function(BlockManager, Observable, FloatingMenu) {
 			GENTICS.Utils.Dom.selectDomNode(this.element[0]);
 		},
 
+		/**
+		 * Deactive the block
+		 */
 		deactivate: function() {
 			this._unhighlight();
 			this.element.parents('.aloha-block').each(function() {
@@ -169,20 +194,26 @@ function(BlockManager, Observable, FloatingMenu) {
 			// TODO: remove the current selection here
 		},
 
+		/**
+		 * @returns {Boolean} True if this block is active
+		 */
 		isActive: function() {
 			return this.element.hasClass('aloha-block-active');
 		},
 
+		/**
+		 * Get the id of the block
+		 * @returns {String}
+		 */
 		getId: function() {
 			return this.id;
 		},
 
 		/**
+		 * Template method to render contents of the block, must be implemented by specific block type
 		 * @api
 		 */
-		render: function() {
-			// TODO implement render
-		},
+		render: function() {},
 
 		_renderAndSetContent: function() {
 			var innerElement = $('<' + this._getWrapperElementType() + ' class="aloha-block-inner" />');
@@ -209,16 +240,28 @@ function(BlockManager, Observable, FloatingMenu) {
 		 *
 		 * Override to use a custom implementation and to pass
 		 * special configuration to .aloha()
+		 *
+		 * @param {jQuery} innerElement
 		 */
 		createEditables: function(innerElement) {
 			innerElement.find('.aloha-editable').aloha();
 		},
 
+		/**
+		 * Render block toolbar elements
+		 *
+		 * Template method to render custom block UI.
+		 */
 		renderToolbar: function() {
 			this.element.prepend('<span class="aloha-block-draghandle"></span>');
 		},
+
 		/**
+		 * Get or set one or many attributes
+		 *
 		 * @api
+		 * @param {String|Object} attributeNameOrObject
+		 * @param {String} attributeValue
 		 */
 		attr: function(attributeNameOrObject, attributeValue) {
 			var that = this, attributeChanged = false;
@@ -275,7 +318,14 @@ function(BlockManager, Observable, FloatingMenu) {
 		}
 	});
 
-	var DefaultBlock = AbstractBlock.extend({
+	/**
+	 * @name block.block.DefaultBlock
+	 * @class A default block that renders the initial content
+	 * @extends block.block.AbstractBlock
+	 */
+	var DefaultBlock = AbstractBlock.extend(
+	/** @lends block.block.DefaultBlock */
+	{
 		init: function() {
 			this.attr('default-content', this.element.html());
 		},
@@ -284,7 +334,14 @@ function(BlockManager, Observable, FloatingMenu) {
 		}
 	});
 
-	var DebugBlock = AbstractBlock.extend({
+	/**
+	 * @name block.block.DebugBlock
+	 * @class A debug block outputs its attributes in a table
+	 * @extends block.block.AbstractBlock
+	 */
+	var DebugBlock = AbstractBlock.extend(
+	/** @lends block.block.DebugBlock */
+	{
 		title: 'Debugging',
 		render: function() {
 			this.element.css({display: 'block'});

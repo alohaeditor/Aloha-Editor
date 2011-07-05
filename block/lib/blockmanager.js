@@ -14,30 +14,57 @@ function(FloatingMenu, Observable, Registry) {
 		GENTICS = window.GENTICS,
 		Aloha = window.Aloha;
 
-	var BlockManager = new (Class.extend(Observable, {
+	/**
+	 * @name block.blockmanager
+	 * @class Block manager singleton
+	 */
+	var BlockManager = new (Class.extend(Observable,
+	/** @lends block.blockmanager */
+	{
 
 		/**
-		 * @event block-selection-change
-		 * @param {Array} Array of AbstractBlock objects, containing  selectedBlocks
+		 * @name block.blockmanager#block-selection-change
+		 * @event
+		 * @param {Array} selectedBlocks Array of AbstractBlock objects, containing selectedBlocks
 		 */
 
 		defaults: {
 			'block-type': 'DefaultBlock'
 		},
 
+		/**
+		 * Registry of block types
+		 * @type Registry
+		 */
 		blockTypes: null,
 
+		/**
+		 * Registry of blocks
+		 * @type Registry
+		 */
 		blocks: null,
 
+		/**
+		 * @constructor
+		 */
 		_constructor: function() {
 			FloatingMenu.createScope('Aloha.Block');
 			this.blockTypes = new Registry();
 			this.blocks = new Registry();
 		},
 
+		/**
+		 * Register initial event handlers
+		 *
+		 * @private
+		 */
 		registerEventHandlers: function() {
 			// Register event handlers for deactivating an Aloha Block
-			$(document).bind('click', function() {
+			$(document).bind('click', function(event) {
+				if ($(event.target).parents('.aloha-sidebar-bar').length > 0) {
+					// If we are inside the sidebar, we do not want to deactivate active blocks...
+					return;
+				}
 				BlockManager._deactivateActiveBlocks();
 			});
 		},
@@ -46,7 +73,7 @@ function(FloatingMenu, Observable, Registry) {
 		 * Blockify a given element with the instance defaults
 		 * Directly called when one does $.alohaBlock(instanceDefaults)
 		 *
-		 * @hide
+		 * @private
 		 */
 		blockify: function(element, instanceDefaults) {
 			var attributes, block;
@@ -82,7 +109,9 @@ function(FloatingMenu, Observable, Registry) {
 		},
 
 		/**
-		 * Only internal helper function
+		 * Deactivate all active blocks
+		 *
+		 * @private
 		 */
 		_deactivateActiveBlocks: function() {
 			$('.aloha-block-active').each(function(index, element) {
@@ -96,7 +125,7 @@ function(FloatingMenu, Observable, Registry) {
 		/**
 		 * Merges the config from different places, and return the merged config.
 		 *
-		 * @hide
+		 * @private
 		 */
 		getConfig: function(blockElement, instanceDefaults) {
 			// TODO: merge from plugin settings
@@ -116,10 +145,10 @@ function(FloatingMenu, Observable, Registry) {
 		},
 
 		/**
-		 * Receive the Block instance, when ID or DOM node is given.
-		 *
-		 * @param {String}|{DOMNode}
-		 * @return {Block} Block instance
+		 * Get a Block instance by id or DOM node
+		 * 
+		 * @param {String|DOMNode} idOrDomNode
+		 * @return {block.block.AbstractBlock} Block instance
 		 */
 		getBlock: function(idOrDomNode) {
 			var id;
@@ -132,15 +161,30 @@ function(FloatingMenu, Observable, Registry) {
 			return this.blocks.get(id);
 		},
 
-		unregisterBlock: function(blockOrBlockId) {
-
+		/**
+		 * Unregister (e.g. remove) the given block
+		 *
+		 * @param {Object|String} blockOrBlockId Block or block id
+		 */
+		_unregisterBlock: function(blockOrBlockId) {
 		},
 
+		/**
+		 * Register the given block type
+		 *
+		 * @param {String} Identifier
+		 * @param {Class} A class that extends block.block.AbstractBlock
+		 */
 		registerBlockType: function(identifier, blockType) {
 			FloatingMenu.createScope('Aloha.Block.' + identifier, 'Aloha.Block');
 			this.blockTypes.register(identifier, blockType);
 		},
 
+		/**
+		 * Get all active blocks indexed by block id
+		 *
+		 * @return {Object}
+		 */
 		getActiveBlocks: function() {
 			var activeBlocks = {};
 			$.each(this.blocks.getEntries(), function(blockId, block) {

@@ -14,15 +14,25 @@ function(BlockManager, Sidebar, EditorManager) {
 		jQuery = window.alohaQuery || window.jQuery,
 		$ = jQuery;
 
-	return new (Class.extend({
+	/**
+	 * @name block.sidebarattributeeditor
+	 * @class Sidebar attribute editor singleton
+	 */
+	return new (Class.extend(
+	/** @lends block.sidebarattributeeditor */
+	{
 
 		_sidebar: null,
 
+		/**
+		 * Initialize the sidebar attribute editor and bind events
+		 */
 		init: function() {
 			var that = this;
 			that._initSidebar();
 			BlockManager.bind('block-selection-change', this._onBlockSelectionChange, this);
 		},
+
 		_initSidebar: function() {
 			this._sidebar = new Sidebar({
 				position: 'right',
