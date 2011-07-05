@@ -33,6 +33,7 @@ function(BlockManager, Observable, FloatingMenu) {
 		/**
 		 * @var jQuery element
 		 */
+		// TODO: Rename to $element
 		element: null,
 
 		/**
@@ -57,6 +58,7 @@ function(BlockManager, Observable, FloatingMenu) {
 			// Register event handlers for activating an Aloha Block
 			this.element.bind('click', function(event) {
 				that.activate();
+				return false;
 			});
 			
 			Aloha.bind('aloha-block-selected', function(event,obj) {
@@ -90,7 +92,7 @@ function(BlockManager, Observable, FloatingMenu) {
 		 * @api
 		 */
 		getSchema: function() {
-			return {};
+			return null;
 		},
 
 		/**
@@ -112,7 +114,7 @@ function(BlockManager, Observable, FloatingMenu) {
 
 			delete previouslyActiveBlocks[this.id];
 
-			this._selectBlock(event);
+			this._selectBlock();
 
 			// Set scope to current block
 			FloatingMenu.setScope('Aloha.Block.' + this.attr('block-type'));
@@ -124,7 +126,6 @@ function(BlockManager, Observable, FloatingMenu) {
 				var block = BlockManager.getBlock(this);
 				delete previouslyActiveBlocks[block.id];
 
-				block._selectBlock();
 				block._highlight();
 				activeBlocks.push(block);
 			});
@@ -141,11 +142,11 @@ function(BlockManager, Observable, FloatingMenu) {
 		 * Activated when the block is clicked
 		 */
 		_highlight: function() {
-			if (this.isActive()) {
-				return;
-			}
-			// TODO: also activate surrounding editable if exists.
 			this.element.addClass('aloha-block-active');
+		},
+
+		_unhighlight: function() {
+			this.element.removeClass('aloha-block-active');
 		},
 
 		_selectBlock: function(event) {
@@ -159,10 +160,13 @@ function(BlockManager, Observable, FloatingMenu) {
 		},
 
 		deactivate: function() {
-			if (!this.isActive()) {
-				return;
-			}
+			this._unhighlight();
+			this.element.parents('.aloha-block').each(function() {
+				this._unhighlight();
+			});
+			BlockManager.trigger('block-selection-change', []);
 			this.element.removeClass('aloha-block-active');
+			// TODO: remove the current selection here
 		},
 
 		isActive: function() {
@@ -192,7 +196,7 @@ function(BlockManager, Observable, FloatingMenu) {
 
 			this.createEditables(innerElement);
 
-			this._renderToolbar();
+			this.renderToolbar();
 		},
 
 		_getWrapperElementType: function() {
@@ -210,10 +214,9 @@ function(BlockManager, Observable, FloatingMenu) {
 			innerElement.find('.aloha-editable').aloha();
 		},
 
-		_renderToolbar: function() {
+		renderToolbar: function() {
 			this.element.prepend('<span class="aloha-block-draghandle"></span>');
 		},
-
 		/**
 		 * @api
 		 */

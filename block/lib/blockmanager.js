@@ -8,7 +8,7 @@
 define(['core/floatingmenu', 'core/observable', 'core/registry'],
 function(FloatingMenu, Observable, Registry) {
 	"use strict";
-	
+
 	var
 		jQuery = window.alohaQuery || window.jQuery, $ = jQuery,
 		GENTICS = window.GENTICS,
@@ -24,7 +24,7 @@ function(FloatingMenu, Observable, Registry) {
 		defaults: {
 			'block-type': 'DefaultBlock'
 		},
-		
+
 		blockTypes: null,
 
 		blocks: null,
@@ -38,10 +38,10 @@ function(FloatingMenu, Observable, Registry) {
 		registerEventHandlers: function() {
 			// Register event handlers for deactivating an Aloha Block
 			$(document).bind('click', function() {
-				BlockManager.deactivateActiveBlocks();
+				BlockManager._deactivateActiveBlocks();
 			});
 		},
-		
+
 		/**
 		 * Blockify a given element with the instance defaults
 		 * Directly called when one does $.alohaBlock(instanceDefaults)
@@ -51,9 +51,9 @@ function(FloatingMenu, Observable, Registry) {
 		blockify: function(element, instanceDefaults) {
 			var attributes, block;
 			element = $(element);
-			
+
 			// TODO: check if object is already Block-ified
-			
+
 			attributes = this.getConfig(element, instanceDefaults);
 
 			element.contentEditable(false);
@@ -84,7 +84,7 @@ function(FloatingMenu, Observable, Registry) {
 		/**
 		 * Only internal helper function
 		 */
-		deactivateActiveBlocks: function() {
+		_deactivateActiveBlocks: function() {
 			$('.aloha-block-active').each(function(index, element) {
 				var block = BlockManager.getBlock(element);
 				if (block) {
@@ -92,7 +92,7 @@ function(FloatingMenu, Observable, Registry) {
 				}
 			});
 		},
-		
+
 		/**
 		 * Merges the config from different places, and return the merged config.
 		 *
@@ -114,10 +114,10 @@ function(FloatingMenu, Observable, Registry) {
 				}
 			);
 		},
-		
+
 		/**
 		 * Receive the Block instance, when ID or DOM node is given.
-		 * 
+		 *
 		 * @param {String}|{DOMNode}
 		 * @return {Block} Block instance
 		 */
@@ -131,9 +131,9 @@ function(FloatingMenu, Observable, Registry) {
 
 			return this.blocks.get(id);
 		},
-		
+
 		unregisterBlock: function(blockOrBlockId) {
-			
+
 		},
 
 		registerBlockType: function(identifier, blockType) {
@@ -151,6 +151,6 @@ function(FloatingMenu, Observable, Registry) {
 			return activeBlocks;
 		}
 	}))();
-	
+
 	return BlockManager;
 });
