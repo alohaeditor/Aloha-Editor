@@ -66,10 +66,11 @@ function(BlockManager, Sidebar, EditorManager) {
 								editor.setValue(block.attr(attributeName));
 							})
 
+							$form.append(editor.render());
+
 							// Set initial value Block -> Editor
 							editor.setValue(block.attr(attributeName));
 
-							$form.append(editor.render());
 							editors.push(editor);
 						});
 						this.setContent($form);

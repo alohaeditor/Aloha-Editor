@@ -42,3 +42,7 @@
 	border-top-left-radius:5px;
 	border-top-right-radius:5px;
 }
+
+.aloha-block-editor label {
+	display:block;
+}

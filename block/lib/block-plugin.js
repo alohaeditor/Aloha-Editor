@@ -12,9 +12,9 @@ define([
 	'block/block/defaultblock',
 	'block/block/debugblock',
 	'block/editormanager',
-	'block/editor/stringeditor',
+	'block/editor',
 	'css!block/css/block.css'
-], function(Plugin, BlockManager, SidebarAttributeEditor, DefaultBlock, DebugBlock, EditorManager, StringEditor) {
+], function(Plugin, BlockManager, SidebarAttributeEditor, DefaultBlock, DebugBlock, EditorManager, editor) {
 	"use strict";
 	var
 		jQuery = window.alohaQuery || window.jQuery, $ = jQuery,
@@ -32,9 +32,10 @@ define([
 			// Register default block types
 			BlockManager.registerBlockType('DebugBlock', DebugBlock);
 			BlockManager.registerBlockType('DefaultBlock', DefaultBlock);
-			
+
 			// Register default editors
-			EditorManager.register('string', StringEditor);
+			EditorManager.register('string', editor.StringEditor);
+			EditorManager.register('number', editor.NumberEditor);
 
 			require(
 				['block/blockpastehandler', 'paste/paste-plugin'],
@@ -43,7 +44,7 @@ define([
 				});
 
 			BlockManager.registerEventHandlers();
-			
+
 			Aloha.bind('aloha', function() {
 				// When Aloha is fully loaded, we initialize the blocks.
 				that._createBlocks();

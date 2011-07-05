@@ -16,7 +16,7 @@ function(Registry) {
 				throw 'Editor for type "' + definition.type + '" not found.';
 			}
 			var Editor = this.get(definition.type);
-			return new Editor();
+			return new Editor(definition);
 		}
 	}))();
 });
