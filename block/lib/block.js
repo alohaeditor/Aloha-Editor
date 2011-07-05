@@ -1,9 +1,9 @@
 /*!
-* Aloha Editor
-* Author & Copyright (c) 2010 Gentics Software GmbH
-* aloha-sales@gentics.com
-* Licensed unter the terms of http://www.aloha-editor.com/license.html
-*/
+ * Aloha Editor
+ * Author & Copyright (c) 2010 Gentics Software GmbH
+ * aloha-sales@gentics.com
+ * Licensed unter the terms of http://www.aloha-editor.com/license.html
+ */
 
 define(['block/blockmanager', 'core/observable', 'core/floatingmenu'],
 function(BlockManager, Observable, FloatingMenu) {
@@ -249,5 +249,34 @@ function(BlockManager, Observable, FloatingMenu) {
 			this.element.html(content);
 		}
 	});
-	return AbstractBlock;
+
+	var DefaultBlock = AbstractBlock.extend({
+		init: function() {
+			this.attr('default-content', this.element.html());
+		},
+		render: function() {
+			return this.attr('default-content');
+		}
+	});
+
+	var DebugBlock = AbstractBlock.extend({
+		title: 'Debugging',
+		render: function() {
+			this.element.css({display: 'block'});
+			var renderedAttributes = '<table class="debug-block">';
+			$.each(this.attr(), function(k, v) {
+				renderedAttributes += '<tr><th>' + k + '</th><td>' + v + '</td></tr>';
+			});
+
+			renderedAttributes += '</table>';
+
+			return renderedAttributes;
+		}
+	});
+
+	return {
+		AbstractBlock: AbstractBlock,
+		DefaultBlock: DefaultBlock,
+		DebugBlock: DebugBlock
+	};
 });
