@@ -167,9 +167,11 @@ button.aloha-button.aloha-button-add-col-right {
  * Custom row, column formatting
  */
 
+ul.aloha-multisplit button.aloha-button.aloha-button-row-redwhite,
 ul.aloha-multisplit button.aloha-button.aloha-button-col-redwhite {
 	background: #c56 !important;
 }
+ul.aloha-multisplit button.aloha-button.aloha-button-row-bigbold,
 ul.aloha-multisplit button.aloha-button.aloha-button-col-bigbold {
 	background: #333 !important;
 }
