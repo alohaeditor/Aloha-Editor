@@ -134,28 +134,7 @@ function(BlockManager, Observable, FloatingMenu) {
 				return;
 			}
 
-			var parentDomElement = this.element.parent()[0];
-			var offset = GENTICS.Utils.Dom.getIndexInParent(this.element[0]);
-			var range = Aloha.Selection.getRangeObject();
-
-			// TODO: do we need the "try" block? Taken from image plugin.
-			try {
-				range.commonAncestorContainer = range.limitObject = parentDomElement;
-				range.startContainer = range.endContainer = parentDomElement;
-				range.startOffset = offset;
-				range.endOffset = offset+1;
-				range.correctRange();
-				range.select();
-			} catch(err) {
-				range = new GENTICS.Utils.RangeObject({
-					startContainer: parentDomElement,
-					endContainer: parentDomElement,
-					startOffset: offset,
-					endOffset: offset+1
-				});
-				range.select();
-				Aloha.Selection.updateSelection();
-			}
+			GENTICS.Utils.Dom.selectDomNode(this.element[0]);
 		},
 
 		deactivate: function() {
