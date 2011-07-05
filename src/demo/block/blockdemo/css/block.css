@@ -21,8 +21,6 @@
 	background-image:url('../img/stock-quote-aapl.gif');
 }
 
-
-
 .aloha-block:hover .block-draghandle-topright,
 .aloha-block-active .block-draghandle-topright {
 	display:block;
@@ -30,7 +28,7 @@
 
 .block-draghandle-topright {
 	position:absolute;
-	right:0;
+	right:-1px;
 	top:-13px;
 	width:44px;
 	height:12px;
@@ -42,4 +40,15 @@
 	border-right:1px solid #CCC;
 	border-top-left-radius:5px;
 	border-top-right-radius:5px;
+}
+.block-draghandle-topright a {
+	padding: 0 2px;
+	font-size: 11px;
+	text-decoration: none;
+	color: #777;
+	display: block;
+}
+.block-draghandle-topright a span {
+	color: #710909;
+	font-weight: bold;
 }

@@ -124,10 +124,11 @@ define([
 	var CustomHandleBlock = block.DefaultBlock.extend({
 		renderToolbar: function() {
 			var that = this;
-			var deleteHandle = $('<span class="block-draghandle-topright">Delete</span>');
+			var deleteHandle = $('<span class="block-draghandle-topright"><a href="#"><span>x</span> delete</a></span>');
 			this.element.prepend(deleteHandle);
 			deleteHandle.click(function() {
 				that.destroy();
+				return false;
 			});
 		}
 	});
