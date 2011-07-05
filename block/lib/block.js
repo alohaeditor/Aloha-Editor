@@ -58,6 +58,12 @@ function(BlockManager, Observable, FloatingMenu) {
 			this.element.bind('click', function(event) {
 				that.activate();
 			});
+			
+			Aloha.bind('aloha-block-selected', function(event,obj) {
+				if (that.element.get(0) === obj) {
+					that.activate();
+				}
+			});
 
 			// The "contentEditableSelectionChange" event listens on
 			// mouseDown and focus, and we need to suppress these events
