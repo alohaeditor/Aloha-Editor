@@ -63,16 +63,9 @@ define([
 			if (!this.settings.defaults) {
 				this.settings.defaults = {};
 			}
-			if (!this.settings.defaults['.aloha-block']) {
-				this.settings.defaults['.aloha-block'] = {};
-			}
-
-			defaultBlockSettings = this.settings.defaults['.aloha-block'];
-			delete this.settings.defaults['.aloha-block'];
 			$.each(this.settings.defaults, function(selector, instanceDefaults) {
 				$(selector).alohaBlock(instanceDefaults);
 			});
-			$('.aloha-block').alohaBlock(defaultBlockSettings);
 		}
 	});
 

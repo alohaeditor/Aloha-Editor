@@ -65,7 +65,6 @@ function(BlockManager, Observable, FloatingMenu) {
 			this.id = element.attr('id');
 			this.element = element;
 
-
 			this._domElementType = GENTICS.Utils.Dom.isBlockLevelElement(element[0]) ? 'block' : 'inline';
 
 			this.element.addClass('aloha-block');
@@ -96,6 +95,20 @@ function(BlockManager, Observable, FloatingMenu) {
 				return false;
 			});
 			this.init();
+
+			this._registerAsBlockified();
+		},
+
+		serialize: function() {
+			return {
+				tag: this.element[0].tagName,
+				attributes: this._getAttributes(), // contains data-properties AND about
+				classes: this.element.attr('class') // TODO: filter out aloha-block-active...
+			}
+		},
+
+		_registerAsBlockified: function() {
+			this.element.trigger('block-initialized');
 		},
 
 		/**
