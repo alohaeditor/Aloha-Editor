@@ -166,7 +166,7 @@ Aloha.Markup = Class.extend({
 	 * will currently detect blocks (elements with contenteditable=false)
 	 * and selects them (normally the cursor would jump right past them)
 	 *
-	 * For each block a 'block-selected' event will be triggered.
+	 * For each block an 'aloha-block-selected' event will be triggered.
 	 *
 	 * @param range the current range object
 	 * @param keyCode keyCode of current keypress
@@ -196,7 +196,7 @@ Aloha.Markup = Class.extend({
 				if (cursorRight && nextSiblingIsBlock) {
 					obj = rt[i].domobj.nextSibling;
 					GENTICS.Utils.Dom.selectDomNode(obj);
-					Aloha.trigger('block-selected', obj);
+					Aloha.trigger('aloha-block-selected', obj);
 					return false;
 				}
 			
@@ -204,7 +204,7 @@ Aloha.Markup = Class.extend({
 					// TODO select block
 					obj = $(rt[i].domobj).parents('[contenteditable=false]').get(0);
 					GENTICS.Utils.Dom.selectDomNode(obj);
-					Aloha.trigger('block-selected', obj);
+					Aloha.trigger('aloha-block-selected', obj);
 					return false;
 				}
 			}
