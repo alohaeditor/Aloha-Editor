@@ -84,7 +84,7 @@ Aloha.Markup = Class.extend({
 
 		// handle left (37) and right (39) keys for block detection
 		if (event.keyCode === 37 || event.keyCode === 39) {
-			this.processCursor(rangeObject, event.keyCode);
+			return this.processCursor(rangeObject, event.keyCode, event);
 		}
 
 		// ENTER
@@ -166,30 +166,35 @@ Aloha.Markup = Class.extend({
 	 * left = 37
 	 * right = 39
 	 */
-	processCursor: function(range, keyCode) {
-		var rt = range.getRangeTree(), // RangeTree reference		
-			blocks,
-			i = 0;
+	processCursor: function(range, keyCode, event) {
+		var rt = range.getRangeTree(), // RangeTree reference
+			i = 0,
+			cursorLeft = keyCode === 37,
+			cursorRight = keyCode === 39,
+			nextSiblingIsBlock = false, // check whether the next sibling is a block (contenteditable = false)
+			cursorIsWithinBlock = false, // check whether the cursor is positioned within a block (contenteditable = false)
+			cursorAtLastPos = false; // check if the cursor is within the last position of the currently active dom element
 		
 		if (!range.isCollapsed()) {
 			return;
 		}
 		
 		for (;i < rt.length; i++) {
-			if (rt[i].type === 'partial' && rt[i].startContainer === rt[i].endContainer) {
-				//console.log(rt[i].domobj, range.startOffset, rt[i].domobj.length);
-				
-				// detect block when moving cursor right
-				// TODO cleanup code - nextSibling might not work correctly in all browsers
-				if (keyCode === 39 && range.startOffset === rt[i].domobj.length && $(rt[i].domobj.nextSibling).attr('contenteditable') === 'false') {
-					// console.log('block found!');
-					// TODO select block
+			cursorAtLastPos = range.startOffset === rt[i].domobj.length;
+			if (cursorAtLastPos) {
+				nextSiblingIsBlock = $(rt[i].domobj.nextSibling).attr('contenteditable') === 'false';
+				cursorIsWithinBlock = $(rt[i].domobj).parents('[contenteditable=false]').length > 0;
+			
+				// TODO nextSibling might not work correctly in all browsers
+				if (cursorRight && nextSiblingIsBlock) {
+					GENTICS.Utils.Dom.selectDomNode(rt[i].domobj.nextSibling);
+					return false;
 				}
-				
-				// detect block when moving cursor left
-				if (keyCode === 37 && range.startOffset === rt[i].domobj.length && $(rt[i].domobj).parents('[contenteditable=false]').length > 0) {
-					// console.log('block found');
+			
+				if (cursorLeft && cursorIsWithinBlock) {
 					// TODO select block
+					GENTICS.Utils.Dom.selectDomNode($(rt[i].domobj).parents('[contenteditable=false]').get(0));
+					return false;
 				}
 			}
 		}
