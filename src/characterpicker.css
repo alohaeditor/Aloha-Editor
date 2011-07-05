@@ -33,3 +33,6 @@
     background-color: #b9d6f9;
 }
 
+.x-btn button.aloha-button-characterpicker {
+    background: url( '../img/icon.png' );
+}
