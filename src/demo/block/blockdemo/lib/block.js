@@ -49,8 +49,16 @@ define([
 	});
 
 	var EditableProductTeaserBlock = block.AbstractBlock.extend({
-
 		title: 'product teaser',
+
+		getSchema: function() {
+			return {
+				'price': {
+					type: 'number',
+					label: 'Price'
+				}
+			}
+		},
 
 		render: function() {
 			return '<span class="aloha-editable">' + this.attr('title') + '</span> <strong class="price">(' + this.attr('price') + ')</strong>';
