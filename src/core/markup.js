@@ -192,19 +192,19 @@ Aloha.Markup = Class.extend({
 				nextSiblingIsBlock = $(rt[i].domobj.nextSibling).attr('contenteditable') === 'false';
 				cursorIsWithinBlock = $(rt[i].domobj).parents('[contenteditable=false]').length > 0;
 			
-				// TODO nextSibling might not work correctly in all browsers
 				if (cursorRight && nextSiblingIsBlock) {
 					obj = rt[i].domobj.nextSibling;
 					GENTICS.Utils.Dom.selectDomNode(obj);
 					Aloha.trigger('aloha-block-selected', obj);
+					Aloha.Selection.preventSelectionChanged();
 					return false;
 				}
 			
 				if (cursorLeft && cursorIsWithinBlock) {
-					// TODO select block
 					obj = $(rt[i].domobj).parents('[contenteditable=false]').get(0);
 					GENTICS.Utils.Dom.selectDomNode(obj);
 					Aloha.trigger('aloha-block-selected', obj);
+					Aloha.Selection.preventSelectionChanged();
 					return false;
 				}
 			}

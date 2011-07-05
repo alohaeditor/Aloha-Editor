@@ -24,6 +24,8 @@ function(FloatingMenu) {
 			// Pseudo Range Clone being cleaned up for better HTML wrapping support
 			this.rangeObject = {};
 
+			this.preventSelectionChangedFlag = false; // will remember if someone urged us to skip the next aloha-selection-changed event
+
 			// define basics first
 			this.tagHierarchy = {
 				'textNode' : [],
@@ -143,6 +145,23 @@ function(FloatingMenu) {
 		},
 
 		/**
+		 * prevents the next aloha-selection-changed event from being triggered
+		 */
+		preventSelectionChanged: function () {
+			this.preventSelectionChangedFlag = true;
+		},
+
+		/**
+		 * will return wheter selection change event was prevented or not, and reset the preventSelectionChangedFlag
+		 * @return boolean true if aloha-selection-change event was prevented
+		 */
+		isSelectionChangedPrevented: function () {
+			var prevented = this.preventSelectionChangedFlag;
+			this.preventSelectionChangedFlag = false;
+			return prevented;
+		},
+
+		/**
 		 * INFO: Method is used for integration with Gentics Aloha, has no use otherwise
 		 * Updates the rangeObject according to the current user selection
 		 * Method is always called on selection change
@@ -161,6 +180,11 @@ function(FloatingMenu) {
 
 			// find the CAC (Common Ancestor Container) and update the selection Tree
 			rangeObject.update();
+
+			// check if aloha-selection-changed event has been prevented
+			if (this.isSelectionChangedPrevented()) {
+				return true;
+			}
 
 			// Only set the specific scope if an event was provided, which means
 			// that somehow an editable was selected
