@@ -48,6 +48,10 @@ function(BlockManager, Sidebar, EditorManager) {
 					block = this,
 					editors = [];
 
+				if (!schema) {
+					// If no schema returned, we do not want to add panels.
+					return;
+				}
 				that._sidebar.addPanel({
 					title: block.getTitle(),
 					expanded: true,
