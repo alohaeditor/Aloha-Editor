@@ -59,6 +59,8 @@ function(FloatingMenu, Observable, Registry) {
 		 * @private
 		 */
 		registerEventHandlers: function() {
+			var that = this;
+			
 			// Register event handlers for deactivating an Aloha Block
 			$(document).bind('click', function(event) {
 				if ($(event.target).parents('.aloha-sidebar-bar').length > 0) {
@@ -66,6 +68,12 @@ function(FloatingMenu, Observable, Registry) {
 					return;
 				}
 				BlockManager._deactivateActiveBlocks();
+			});
+			
+			
+			// Register event handler to deactivate currently active block
+			Aloha.bind('aloha-selection-changed', function () {
+				that._deactivateActiveBlocks();
 			});
 		},
 
