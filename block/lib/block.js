@@ -20,7 +20,8 @@ function(BlockManager, Observable, FloatingMenu) {
 		 */
 
 		/**
-		 * @var {String} Title for the block.
+		 * @var {String} Title for the block. Displayed in sidebar.
+		 * @api
 		 */
 		title: null,
 
@@ -102,9 +103,13 @@ function(BlockManager, Observable, FloatingMenu) {
 
 		/**
 		 * Template method to initialize the block
+		 * @api
 		 */
 		init: function() {},
 
+		/**
+		 * @api
+		 */
 		getSchema: function() {
 			return {};
 		},
@@ -152,6 +157,9 @@ function(BlockManager, Observable, FloatingMenu) {
 			return this.id;
 		},
 
+		/**
+		 * @api
+		 */
 		render: function() {
 			// TODO implement render
 		},
@@ -190,6 +198,9 @@ function(BlockManager, Observable, FloatingMenu) {
 			this.element.prepend('<span class="aloha-block-draghandle"></span>');
 		},
 
+		/**
+		 * @api
+		 */
 		attr: function(attributeNameOrObject, attributeValue) {
 			var that = this, attributeChanged = false;
 
@@ -242,11 +253,6 @@ function(BlockManager, Observable, FloatingMenu) {
 			});
 
 			return attributes;
-		},
-
-		setContent: function(content) {
-			// TODO adjust to inner element
-			this.element.html(content);
 		}
 	});
 

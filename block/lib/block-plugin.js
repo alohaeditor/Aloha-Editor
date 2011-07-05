@@ -35,6 +35,8 @@ define([
 			// Register default editors
 			EditorManager.register('string', editor.StringEditor);
 			EditorManager.register('number', editor.NumberEditor);
+			EditorManager.register('url', editor.UrlEditor);
+			EditorManager.register('email', editor.EmailEditor);
 
 			require(
 				['block/blockpastehandler', 'paste/paste-plugin'],

@@ -100,10 +100,22 @@ function(Observable) {
 		formInputElementDefinition: '<input type="range" />'
 	});
 
+	var UrlEditor = AbstractFormElementEditor.extend({
+		formInputElementDefinition: '<input type="url" />'
+	});
+
+	var EmailEditor = AbstractFormElementEditor.extend({
+		formInputElementDefinition: '<input type="email" />'
+	});
+
+
 	return {
 		AbstractEditor: AbstractEditor,
 		AbstractFormElementEditor: AbstractFormElementEditor,
+
 		StringEditor: StringEditor,
-		NumberEditor: NumberEditor
+		NumberEditor: NumberEditor,
+		UrlEditor: UrlEditor,
+		EmailEditor: EmailEditor
 	}
 });
