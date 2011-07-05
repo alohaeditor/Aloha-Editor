@@ -73,10 +73,10 @@ function(BlockManager, Observable, FloatingMenu) {
 
 			// Register event handlers for activating an Aloha Block
 			this.element.bind('click', function(event) {
-				that.activate();
+				that.activate(event.target);
 				return false;
 			});
-			
+
 			Aloha.bind('aloha-block-selected', function(event,obj) {
 				if (that.element.get(0) === obj) {
 					that.activate();
@@ -126,15 +126,16 @@ function(BlockManager, Observable, FloatingMenu) {
 		/**
 		 * activates the block
 		 * will select the block's contents, highlight it, update the floating menu and update the sidebar (if needed)
+		 * @param {DOMNode} clickedDomNode The DOM node which has been clicked. Should only be set INTERNALLY, if you call activate() programmatically, DO NOT SET THIS PARAM! We need the DOM node to see whether we clicked inside an embedded editable or not.
 		 * @api
 		 */
-		activate: function() {
+		activate: function(clickedDomNode) {
 			var previouslyActiveBlocks = BlockManager.getActiveBlocks(),
 				activeBlocks = [];
 
 			delete previouslyActiveBlocks[this.id];
 
-			this._selectBlock();
+			this._selectBlock(clickedDomNode);
 
 			// Set scope to current block
 			FloatingMenu.setScope('Aloha.Block.' + this.attr('block-type'));
@@ -185,12 +186,12 @@ function(BlockManager, Observable, FloatingMenu) {
 			this.element.removeClass('aloha-block-active');
 		},
 
-		_selectBlock: function(event) {
-			/*if (!event || $(event.target).is('.aloha-editable') || $(event.target).parents('.aloha-block, .aloha-editable').first().is('.aloha-editable')) {
+		_selectBlock: function(domNode) {
+			if (!domNode || $(domNode).is('.aloha-editable') || $(domNode).parents('.aloha-block, .aloha-editable').first().is('.aloha-editable')) {
 				// It was clicked on a Aloha-Editable inside a block; so we do not
 				// want to select the whole block and do an early return.
 				return;
-			}*/
+			}
 
 			GENTICS.Utils.Dom.selectDomNode(this.element[0]);
 		},
