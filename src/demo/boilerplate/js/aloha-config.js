@@ -10,26 +10,28 @@
 		errorhandling : false,
 		ribbon: false,
 
-		"i18n": {
+		i18n: {
 			// you can either let the system detect the users language (set acceptLanguage on server)
 			// In PHP this would would be '<?=$_SERVER['HTTP_ACCEPT_LANGUAGE']?>' resulting in
 			// "acceptLanguage": 'de-de,de;q=0.8,it;q=0.6,en-us;q=0.7,en;q=0.2'
 			// or set current on server side to be in sync with your backend system
-			"current": "en"
+			current: 'en'
 		},
-		"repositories": {
-			"linklist": {
+		
+		repositories: {
+			linklist: {
 				data: [
-							{ name: 'Aloha Developers Wiki', url:'http://www.aloha-editor.com/wiki', type:'website', weight: 0.50 },
-							{ name: 'Aloha Editor - The HTML5 Editor', url:'http://aloha-editor.com', type:'website', weight: 0.90  },
-							{ name: 'Aloha Demo', url:'http://www.aloha-editor.com/demos.html', type:'website', weight: 0.75  },
-							{ name: 'Aloha Wordpress Demo', url:'http://www.aloha-editor.com/demos/wordpress-demo/index.html', type:'website', weight: 0.75  },
-							{ name: 'Aloha Logo', url:'http://www.aloha-editor.com/images/aloha-editor-logo.png', type:'image', weight: 0.10  }
+					{ name: 'Aloha Developers Wiki',			url:'http://www.aloha-editor.com/wiki',								type:'website', weight: 0.50 },
+					{ name: 'Aloha Editor - The HTML5 Editor',	url:'http://aloha-editor.com',										type:'website', weight: 0.90 },
+					{ name: 'Aloha Demo',						url:'http://www.aloha-editor.com/demos.html',						type:'website', weight: 0.75 },
+					{ name: 'Aloha Wordpress Demo',				url:'http://www.aloha-editor.com/demos/wordpress-demo/index.html',	type:'website', weight: 0.75 },
+					{ name: 'Aloha Logo',						url:'http://www.aloha-editor.com/images/aloha-editor-logo.png',		type:'image',	weight: 0.10 }
 				]
 			}
 		},
-		"plugins": {
-			"format": {
+		
+		plugins: {
+			format: {
 				// all elements with no specific configuration get this configuration
 				config : [  'b', 'i', 'p', 'sub', 'sup', 'del', 'title', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'removeFormat' ],
 					editables : {
@@ -37,7 +39,7 @@
 					'#top-text'	: [  ]
 					}
 			},
-			"list": {
+			list: {
 				// all elements with no specific configuration get an UL, just for fun :)
 				config : [ 'ul', 'ol' ],
 					editables : {
@@ -45,7 +47,7 @@
 					'#top-text'	: [  ]
 					}
 			},
-			"abbr": {
+			abbr: {
 				// all elements with no specific configuration get an UL, just for fun :)
 				config : [ 'abbr' ],
 					editables : {
@@ -53,7 +55,7 @@
 					'#top-text'	: [  ]
 					}
 			},
-			"link": {
+			link: {
 				// all elements with no specific configuration may insert links
 				config : [ 'a' ],
 					editables : {
@@ -72,11 +74,11 @@
 					// use all resources of type website for autosuggest
 					objectTypeFilter: ['website'],
 					// handle change of href
-					onHrefChange: function( obj, href, item ) {
-						if ( item ) {
-						jQuery(obj).attr('data-name', item.name);
+					onHrefChange: function(obj, href, item) {
+						if (item) {
+							jQuery(obj).attr('data-name', item.name);
 						} else {
-						jQuery(obj).removeAttr('data-name');
+							jQuery(obj).removeAttr('data-name');
 						}
 					}
 			},
@@ -104,7 +106,7 @@
 			},
 			"image": {
 				config : { 
-					'img': { 
+					img: { 
 						'max_width'	: '50px',
 						'max_height': '50px' 
 					}
