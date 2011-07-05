@@ -204,12 +204,13 @@ Aloha.TablePlugin.isEditableTable = function(table) {
  * initialize the buttons and register them on floating menu
  */
 Aloha.TablePlugin.initTableButtons = function () {
-	var that = this;
+	var that = this,
+		menu = Aloha.FloatingMenu;
 
 	// generate the new scopes
-	Aloha.FloatingMenu.createScope(this.getUID('row'), 'Aloha.global');
-	Aloha.FloatingMenu.createScope(this.getUID('column'), 'Aloha.global');
-	Aloha.FloatingMenu.createScope(this.getUID('cell'), 'Aloha.continuoustext');
+	menu.createScope(this.getUID('row'), 'Aloha.global');
+	menu.createScope(this.getUID('column'), 'Aloha.global');
+	menu.createScope(this.getUID('cell'), 'Aloha.continuoustext');
 
 	// the 'create table' button
 	this.createTableButton = new Aloha.ui.Button({
@@ -222,7 +223,7 @@ Aloha.TablePlugin.initTableButtons = function () {
 	});
 
 	// add to floating menu
-	Aloha.FloatingMenu.addButton(
+	menu.addButton(
 		'Aloha.continuoustext',
 		this.createTableButton,
 		Aloha.i18n(Aloha, 'floatingmenu.tab.insert'),
@@ -231,7 +232,7 @@ Aloha.TablePlugin.initTableButtons = function () {
 
 	// now the specific table buttons
 	// for columns
-	Aloha.FloatingMenu.addButton(
+	menu.addButton(
 		this.getUID('column'),
 		new Aloha.ui.Button({
 			'iconClass' : 'aloha-button aloha-button-addcolumnleft',
@@ -246,7 +247,7 @@ Aloha.TablePlugin.initTableButtons = function () {
 		Aloha.i18n(this, 'floatingmenu.tab.table'),
 		1
 	);
-	Aloha.FloatingMenu.addButton(
+	menu.addButton(
 		this.getUID('column'),
 		new Aloha.ui.Button({
 			'iconClass' : 'aloha-button aloha-button-addcolumnright',
@@ -261,7 +262,7 @@ Aloha.TablePlugin.initTableButtons = function () {
 		Aloha.i18n(this, 'floatingmenu.tab.table'),
 		1
 	);
-	Aloha.FloatingMenu.addButton(
+	menu.addButton(
 		this.getUID('column'),
 		new Aloha.ui.Button({
 			'iconClass' : 'aloha-button aloha-button-deleteColumns',
@@ -288,7 +289,7 @@ Aloha.TablePlugin.initTableButtons = function () {
 	);
 
 	// for rows
-	Aloha.FloatingMenu.addButton(
+	menu.addButton(
 		this.getUID('row'),
 		new Aloha.ui.Button({
 			'iconClass' : 'aloha-button aloha-button-addRowBefore',
@@ -303,7 +304,7 @@ Aloha.TablePlugin.initTableButtons = function () {
 		Aloha.i18n(this, 'floatingmenu.tab.table'),
 		1
 	);
-	Aloha.FloatingMenu.addButton(
+	menu.addButton(
 		this.getUID('row'),
 		new Aloha.ui.Button({
 			'iconClass' : 'aloha-button aloha-button-addRowAfter',
@@ -318,7 +319,7 @@ Aloha.TablePlugin.initTableButtons = function () {
 		Aloha.i18n(this, 'floatingmenu.tab.table'),
 		1
 	);
-	Aloha.FloatingMenu.addButton(
+	menu.addButton(
 		this.getUID('row'),
 		new Aloha.ui.Button({
 			'iconClass' : 'aloha-button aloha-button-deleteRows',
@@ -345,11 +346,11 @@ Aloha.TablePlugin.initTableButtons = function () {
 	);
 
 	this.captionButton = new Aloha.ui.Button({
-		'iconClass' : 'aloha-button aloha-button-table-caption',
-		'size' : 'small',
-		'tooltip' : this.i18n('button.caption.tooltip'),
-        'toggle' : true,
-		'onclick' : function () {
+		'iconClass'	: 'aloha-button aloha-button-table-caption',
+		'size'		: 'small',
+		'tooltip'	: this.i18n('button.caption.tooltip'),
+        'toggle'	: true,
+		'onclick'	: function () {
 			if (that.activeTable) {
 				// look if table object has a child caption
 				if ( that.activeTable.obj.children("caption").is('caption') ) {
@@ -381,7 +382,8 @@ Aloha.TablePlugin.initTableButtons = function () {
 			}
 		}
 	});
-	Aloha.FloatingMenu.addButton(
+	
+	menu.addButton(
 		this.getUID('cell'),
 		this.captionButton,
 		Aloha.i18n(this, 'floatingmenu.tab.table'),
@@ -391,12 +393,14 @@ Aloha.TablePlugin.initTableButtons = function () {
 	// for cells
     // add summary field
     this.summary = new Aloha.ui.AttributeField({
-    	'width':350
+    	width: 350
     });
+	
     this.summary.addListener('keyup', function(obj, event) {
     	that.activeTable.checkWai();
     });
-    Aloha.FloatingMenu.addButton(
+	
+    menu.addButton(
         this.getUID('cell'),
         this.summary,
         Aloha.i18n(this, 'floatingmenu.tab.table'),
