@@ -26,7 +26,7 @@ function(AbstractPasteHandler, BlockManager) {
 		handlePaste: function(jqPasteDiv) {
 			jqPasteDiv.find('.aloha-block').each(function() {
 				var oldBlock = $(this);
-				
+
 				var dataAttributes = {};
 				$.each(oldBlock.data(), function(k, v) {
 					dataAttributes['data-' + k] = v;
@@ -38,9 +38,9 @@ function(AbstractPasteHandler, BlockManager) {
 							'class': oldBlock.attr('class')
 						}, dataAttributes))
 					.removeClass('aloha-block-active');
-				
+
 				oldBlock.replaceWith(newBlock);
-				BlockManager.blockify(newBlock);
+				BlockManager._blockify(newBlock);
 			});
 		}
 	});

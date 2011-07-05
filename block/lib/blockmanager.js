@@ -25,7 +25,13 @@ function(FloatingMenu, Observable, Registry) {
 		/**
 		 * @name block.blockmanager#block-selection-change
 		 * @event
-		 * @param {Array} selectedBlocks Array of AbstractBlock objects, containing selectedBlocks
+		 * @param {Array} selectedBlocks Array of AbstractBlock objects, containing selected blocks. The first element in the array is the innermost block, and the other elements are the parent blocks.
+		 */
+
+		/**
+		 * @name block.blockmanager#block-delete
+		 * @event fired directly before a block is deleted
+		 * @param {AbstractBlock} the block to be deleted
 		 */
 
 		defaults: {
@@ -83,7 +89,7 @@ function(FloatingMenu, Observable, Registry) {
 		 *
 		 * @private
 		 */
-		blockify: function(element, instanceDefaults) {
+		_blockify: function(element, instanceDefaults) {
 			var attributes, block;
 			element = $(element);
 
@@ -154,7 +160,7 @@ function(FloatingMenu, Observable, Registry) {
 
 		/**
 		 * Get a Block instance by id or DOM node
-		 * 
+		 *
 		 * @param {String|DOMNode} idOrDomNode
 		 * @return {block.block.AbstractBlock} Block instance
 		 */
@@ -175,6 +181,13 @@ function(FloatingMenu, Observable, Registry) {
 		 * @param {Object|String} blockOrBlockId Block or block id
 		 */
 		_unregisterBlock: function(blockOrBlockId) {
+			var id;
+			if (typeof blockOrBlockId === 'object') {
+				id = blockOrBlockId.getId();
+			} else {
+				id = blockOrBlockId;
+			}
+			this.blocks.unregister(blockOrBlockId);
 		},
 
 		/**

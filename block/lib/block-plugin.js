@@ -100,7 +100,7 @@ define([
 	jQuery.fn.alohaBlock = function(instanceDefaults) {
 		instanceDefaults = instanceDefaults || {};
 		$(this).each(function(index, element) {
-			BlockManager.blockify(element, instanceDefaults);
+			BlockManager._blockify(element, instanceDefaults);
 		});
 
 		// Chain

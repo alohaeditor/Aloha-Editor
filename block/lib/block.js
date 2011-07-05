@@ -125,9 +125,8 @@ function(BlockManager, Observable, FloatingMenu) {
 
 		/**
 		 * activates the block
-		 * will select the block's contents, highlight it, an update the floating menu
-		 *
-		 * @return always boolean false
+		 * will select the block's contents, highlight it, update the floating menu and update the sidebar (if needed)
+		 * @api
 		 */
 		activate: function() {
 			var previouslyActiveBlocks = BlockManager.getActiveBlocks(),
@@ -157,6 +156,21 @@ function(BlockManager, Observable, FloatingMenu) {
 			BlockManager.trigger('block-selection-change', activeBlocks);
 
 			return false;
+		},
+
+		/**
+		 * Destroy this block instance completely. Removes the element from the DOM,
+		 * unregisters it, and triggers a delete event on the BlockManager.
+		 *
+		 * @return
+		 * @api
+		 */
+		destroy: function() {
+			BlockManager.trigger('block-delete', this);
+			BlockManager._unregisterBlock(this);
+			this.element.remove();
+			this.unbindAll();
+			BlockManager.trigger('block-selection-change', []);
 		},
 
 		/**
