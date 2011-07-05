@@ -96,12 +96,12 @@
 					{name: 'hor-zebra'},
 				],
 				columnConfig : [
-					{name: 'aloha-table-style-bigbold',  iconClass: 'aloha-button-col-bigbold'},
-					{name: 'aloha-table-style-redwhite', iconClass: 'aloha-button-col-redwhite'}
+					{name: 'table-style-bigbold',  iconClass: 'aloha-button-col-bigbold'},
+					{name: 'table-style-redwhite', iconClass: 'aloha-button-col-redwhite'}
 				],
 				rowConfig : [
-					{name: 'aloha-table-style-bigbold',  iconClass: 'aloha-button-row-bigbold'},
-					{name: 'aloha-table-style-redwhite', iconClass: 'aloha-button-row-redwhite'}
+					{name: 'table-style-bigbold',  iconClass: 'aloha-button-row-bigbold'},
+					{name: 'table-style-redwhite', iconClass: 'aloha-button-row-redwhite'}
 				]
 			},
 			"image": {
