@@ -167,11 +167,16 @@ function(BlockManager, Observable, FloatingMenu) {
 		 * @api
 		 */
 		destroy: function() {
+			var that = this;
 			BlockManager.trigger('block-delete', this);
 			BlockManager._unregisterBlock(this);
-			this.element.remove();
+
 			this.unbindAll();
-			BlockManager.trigger('block-selection-change', []);
+
+			this.element.fadeOut('fast', function() {
+				that.element.remove();
+				BlockManager.trigger('block-selection-change', []);
+			});
 		},
 
 		/**
