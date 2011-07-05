@@ -28,6 +28,10 @@
 						},
 						'.customhandles': {
 							'block-type': 'CustomHandleBlock'
+						},
+
+						'.two-columns': {
+							'block-type': 'TwoColumnBlock'
 						}
 					}
 				}
@@ -107,19 +111,31 @@
 			</div>
 
 			<h2>"Block"-Element Blocks outside editable</h2>
-			<div>
-				<p>
-					The word <a href="http://en.wikipedia.org/wiki/Aloha-invalid" target="_blank" class="aloha">aloha</a> derives from the Proto-Polynesian root <i>*qalofa</i>. It has cognates in other Polynesian languages, such as Samoan alofa
-					and Māori aroha, also meaning "love."
-				</p>
-				<div class="aloha-block">
-					This is a default aloha block, which uses the <strong>DefaultRenderer</strong>
+			<div class="two-columns">
+				<div class="column-left">
+					<div class="vcard" data-firstname="John" data-lastname="Doe" data-url="http://example.com" data-email="john.doe@example.com" data-org="Example Inc.">
+						<a class="url fn n" href="http://example.com">
+							<span class="given-name">John</span>
+							<span class="family-name">Doe</span>
+						</a>
+						<div class="org">Example Inc.</div>
+						<a class="email" href="mailto:john.doe@example.com">john.doe@example.com</a>
+						<div class="adr">
+							<div class="street-address">123 Example street</div>
+							<span class="locality">San Francisco</span>, <span class="region">CA </span> <span class="postal-code">12345</span>
+							<span class="country-name">United States</span>
+						</div>
+						<div class="tel">555-555-5555</div>
+					</div>
 				</div>
-				<p>
-					A folk etymology claims that it derives from a compound of the <a href="http://en.wikipedia.org/wiki/Hawaii" target="_blank" class="aloha">Hawaiian</a> words alo meaning "presence", "front", "face", or "share"; and
-					ha, meaning "breath of life" or "essence of life." Although alo does indeed mean "presence" etc., the word for breath is spelled with a macron
-					or kahakō over the a (hā) whereas the word aloha does not have a long a.
-				</p>
+				<div class="column-right">
+
+					<div class="customhandles">
+						<p>Some content</p>
+						<p>Some more content</p>
+					</div>
+				</div>
+				<div class="clear"></div>
 			</div>
 		</div>
 	</div>
@@ -128,6 +144,7 @@
 			$('#title').aloha();
 			$('#teaser').aloha();
 			$('#content').aloha();
+			$('.textcontent').aloha();
 		});
 	</script>
 </body>

@@ -19,6 +19,7 @@ define([
 			BlockManager.registerBlockType('EditableProductTeaserBlock', block.EditableProductTeaserBlock);
 			BlockManager.registerBlockType('VCardBlock', block.VCardBlock);
 			BlockManager.registerBlockType('CustomHandleBlock', block.CustomHandleBlock);
+			BlockManager.registerBlockType('TwoColumnBlock', block.TwoColumnBlock);
 		}
 	});
 });

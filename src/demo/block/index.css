@@ -223,3 +223,20 @@ td.redwhite {
 	width:200px;
 	height:100px;
 }
+
+.two-columns {
+	width:100%;
+	float:left;
+}
+.two-columns .column-left {
+	float:left;
+	width:48%;
+}
+.two-columns .column-right {
+	margin-left:2%;
+	width:50%;
+	float:left;
+}
+.two-columns .clear {
+	clear:both;
+}
