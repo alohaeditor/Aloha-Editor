@@ -11,7 +11,12 @@
 	height:158px;
 	box-shadow:0 0 5px #333;
 	z-index:1000;
+	background-repeat:no-repeat;
+	background-color: #FFF;
 }
 .stock-quote-overlay.company-MSFT {
-	background:url('../img/stock-quote-msft.gif');
+	background-image:url('../img/stock-quote-msft.gif');
+}
+.stock-quote-overlay.company-AAPL {
+	background-image:url('../img/stock-quote-aapl.gif');
 }
