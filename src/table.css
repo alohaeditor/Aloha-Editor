@@ -176,10 +176,10 @@ ul.aloha-multisplit button.aloha-button.aloha-button-col-bigbold {
 	background: #333 !important;
 }
 
-.aloha-table-style-bigbold {
+.table-style-bigbold {
 	font-weight: bold;
 }
-.aloha-table-style-redwhite  {
+.table-style-redwhite  {
 	background: #c56;
 	color: #fff
 }

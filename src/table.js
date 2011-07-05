@@ -322,11 +322,11 @@ TablePlugin.initRowsBtns = function () {
 				// if a selection was made, transform the selected cells
 				for (var i = 0; i < sc.length; i++) {
 					for (var j = 0; j < sc[i].length; j++) {
-						if ( i == 0 ) {
+						if (i == 0) {
 							that.rowsToSelect.push(sc[i].rowIndex);
 						}
 						
-						if ( this.isPressed() ) {
+						if (this.isPressed()) {
 							sc[i][j] = Aloha.Markup.transformDomObject(sc[i][j], 'td');
 						} else { 
 							sc[i][j] = Aloha.Markup.transformDomObject(sc[i][j], 'th').attr('scope', 'column');
@@ -1180,7 +1180,7 @@ Aloha.Table.prototype.refresh = function () {
 	// find the dimensions of the table
 	var rows = this.obj.find("tr");
 	var firstRow = jQuery(rows.get(0));
-	var selector = "td:not(td."+this.get('classLeftUpperCorner')+"), th";
+	var selector = "td:not(td." + this.get('classLeftUpperCorner') + "), th";
 	this.numCols = firstRow.children(selector).length;
 	this.numRows = rows.length;
 
@@ -1239,8 +1239,10 @@ Aloha.Table.prototype.activate = function () {
 	if (this.isActive) {
 		return;
 	}
+	
 	var that = this,
-		htmlTableWrapper, tableWrapper;
+		htmlTableWrapper,
+		tableWrapper;
 
 	// alter the table attributes
 	this.obj.addClass(this.get('className'));
@@ -1300,8 +1302,8 @@ Aloha.Table.prototype.activate = function () {
 
 	// wrap the tableWrapper around the table
 	this.obj.wrap(tableWrapper);
-
-	// :HINT The outest div (Editable) of the table is still in an editable
+	
+	// :HINT The outer most div (Editable) of the table is still in an editable
 	// div. So IE will surround the the wrapper div with a resize-border
 	// Workaround => just disable the handles so hopefully won't happen any ugly stuff.
 	// Disable resize and selection of the controls (only IE)
@@ -1311,18 +1313,18 @@ Aloha.Table.prototype.activate = function () {
 	htmlTableWrapper.get(0).onresizestart   = function (e) { return false; };
 	htmlTableWrapper.get(0).oncontrolselect = function (e) { return false; };
 
-	this.tableWrapper     = this.obj.parents('.' + this.get('classTableWrapper')).get(0);
+	this.tableWrapper = this.obj.parents('.' + this.get('classTableWrapper')).get(0);
 
 	jQuery(this.cells).each(function () {
 		this.activate();
 	});
-
+	
 	// after the cells where replaced with contentEditables ... add selection cells
 	// first add the additional columns on the left side
 	this.attachSelectionColumn();
 	// then add the additional row at the top
 	this.attachSelectionRow();
-
+	
 	// attach events for the last cell
 	this.attachLastCellEvents();
 
@@ -1379,20 +1381,20 @@ Aloha.Table.prototype.attachSelectionColumn = function () {
 	
 	// set the unicode '&nbsp;' code
 	emptyCell.html('\u00a0');
-
+	
 	that = this;
 	rows = this.obj.context.rows;
 	// add a column before each first cell of each row
-	for ( i = 0; i < rows.length; i++) {
+	for (i = 0; i < rows.length; i++) {
 		rowObj = jQuery(rows[i]);
 		columnToInsert = emptyCell.clone();
 		columnToInsert.addClass(this.get('classSelectionColumn'));
 		columnToInsert.css('width', this.get('selectionArea') + 'px');
-		rowObj.find('td:first').before(columnToInsert);
-
+		rowObj.find('td:first,th:first').before(columnToInsert);
+		
 		// rowIndex + 1 because an addtional row is still added
 		rowIndex = i + 1;
-
+		
 		// this method sets the selection-events to the cell
 		this.attachRowSelectionEventsToCell(columnToInsert);
 	}
@@ -1407,20 +1409,20 @@ Aloha.Table.prototype.attachSelectionColumn = function () {
  */
 Aloha.Table.prototype.attachRowSelectionEventsToCell = function (cell){
 	var that = this;
-
+	
 	// unbind eventually existing events of this cell
 	cell.unbind('mousedown');
 	cell.unbind('mouseover');
-
+	
 	// prevent ie from selecting the contents of the table
 	cell.get(0).onselectstart = function () { return false; };
-
+	
 	cell.bind('mousedown', function (e){
 		// set flag that the mouse is pressed
 		that.mousedown = true;
 		return that.rowSelectionMouseDown(e);
 	});
-
+	
 	cell.bind('mouseover', function (e){
 		// only select more crows if the mouse is pressed
 		if ( that.mousedown ) {
@@ -1437,24 +1439,23 @@ Aloha.Table.prototype.attachRowSelectionEventsToCell = function (cell){
  * @return void
  */
 Aloha.Table.prototype.rowSelectionMouseDown = function (jqEvent) {
-
 	// focus the table (if not already done)
 	this.focus();
-
+	
 	// if no cells are selected, reset the selection-array
 	if (Aloha.TableHelper.selectedCells.length == 0) {
 		this.rowsToSelect = new Array();
 	}
-
+	
 	// set the origin-rowId of the mouse-click
 	this.clickedRowId = jqEvent.currentTarget.parentNode.rowIndex;
-
+	
 	// set single column selection
 	if (jqEvent.metaKey) {
 		var arrayIndex = jQuery.inArray(this.clickedRowId, this.rowsToSelect);
 		if (arrayIndex >= 0) {
 			this.rowsToSelect.splice(arrayIndex, 1);
-		}else{
+		} else {
 			this.rowsToSelect.push(this.clickedRowId);
 		}
 	// block of colums selection
@@ -1504,10 +1505,9 @@ Aloha.Table.prototype.rowSelectionMouseOver = function (jqEvent) {
 	// only select the row if the mouse was clicked and the clickedRowId isn't
 	// from the selection-row (row-id = 0)
 	if (this.mousedown && this.clickedRowId >= 0) {
-
 		// select first cell
-//		var firstCell = this.obj.find('tr:nth-child(2) td:nth-child(2)').children('div[contenteditable=true]').get(0);
-//		jQuery(firstCell).get(0).focus();
+		// var firstCell = this.obj.find('tr:nth-child(2) td:nth-child(2)').children('div[contenteditable=true]').get(0);
+		// jQuery(firstCell).get(0).focus();
 
 		indexInArray = jQuery.inArray(rowIndex, this.rowsToSelect);
 
@@ -2538,7 +2538,7 @@ Aloha.Table.Cell.prototype.editableFocus = function (e) {
 		Aloha.Table.Cell.lastActiveCell = this;
 
 		// add an active-class
-		this.obj.addClass('aloha-table-cell_active');
+		this.obj.addClass('aloha-table-cell-active');
 
 		// set the focus flag
 		this.hasFocus = true;
