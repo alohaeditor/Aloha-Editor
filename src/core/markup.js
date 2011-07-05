@@ -179,7 +179,8 @@ Aloha.Markup = Class.extend({
 			cursorRight = keyCode === 39,
 			nextSiblingIsBlock = false, // check whether the next sibling is a block (contenteditable = false)
 			cursorIsWithinBlock = false, // check whether the cursor is positioned within a block (contenteditable = false)
-			cursorAtLastPos = false; // check if the cursor is within the last position of the currently active dom element
+			cursorAtLastPos = false, // check if the cursor is within the last position of the currently active dom element
+			obj; // will contain references to dom objects
 		
 		if (!range.isCollapsed()) {
 			return true;
@@ -193,13 +194,17 @@ Aloha.Markup = Class.extend({
 			
 				// TODO nextSibling might not work correctly in all browsers
 				if (cursorRight && nextSiblingIsBlock) {
-					GENTICS.Utils.Dom.selectDomNode(rt[i].domobj.nextSibling);
+					obj = rt[i].domobj.nextSibling;
+					GENTICS.Utils.Dom.selectDomNode(obj);
+					Aloha.trigger('block-selected', obj);
 					return false;
 				}
 			
 				if (cursorLeft && cursorIsWithinBlock) {
 					// TODO select block
-					GENTICS.Utils.Dom.selectDomNode($(rt[i].domobj).parents('[contenteditable=false]').get(0));
+					obj = $(rt[i].domobj).parents('[contenteditable=false]').get(0);
+					GENTICS.Utils.Dom.selectDomNode(obj);
+					Aloha.trigger('block-selected', obj);
 					return false;
 				}
 			}
