@@ -162,3 +162,22 @@ button.aloha-button.aloha-button-add-col-left {
 button.aloha-button.aloha-button-add-col-right {
 	background-position: -128px 0 !important;
 }
+
+/**
+ * Custom row, column formatting
+ */
+
+ul.aloha-multisplit button.aloha-button.aloha-button-col-redwhite {
+	background: #c56 !important;
+}
+ul.aloha-multisplit button.aloha-button.aloha-button-col-bigbold {
+	background: #333 !important;
+}
+
+.aloha-table-style-bigbold {
+	font-weight: bold;
+}
+.aloha-table-style-redwhite  {
+	background: #c56;
+	color: #fff
+}

@@ -6,7 +6,7 @@
 */
 
 // Start Closure
-(function AlohaTablePlugin (window, undefined) {
+(function AlohaTablePluginClosure (window, undefined) {
 
 	var
 		jQuery = window.alohaQuery || window.jQuery, $ = jQuery,
@@ -73,7 +73,7 @@ TablePlugin.parameters = {
  * @hide
  * {name:'green', text:'Green',tooltip:'Green',iconClass:'GENTICS_table GENTICS_button_green',cssClass:'green'}
  */
-TablePlugin.checkConfig = function (c){
+TablePlugin.checkConfig = function (c) {
 	if (typeof c == 'object' && c.length) {
 		var newC = [];
 		
@@ -96,12 +96,13 @@ TablePlugin.checkConfig = function (c){
 	
 	return c;
 };
+
 /**
  * Init method of the Table-plugin transforms all tables in the document
  *
  * @return void
  */
-TablePlugin.init = function() {
+TablePlugin.init = function () {
 	
 	//---------------------------------------------------------------
 	// apply settings
@@ -128,14 +129,13 @@ TablePlugin.init = function() {
 	var that = this;
 
 	// subscribe for the 'editableActivated' event to activate all tables in the editable
-	Aloha.bind('aloha-editable-created', function(event, editable) {
-
+	Aloha.bind('aloha-editable-created', function (event, editable) {
 		// add a mousedown event to all created editables to check if focus leaves a table
-		editable.obj.bind('mousedown', function(jqEvent) {
+		editable.obj.bind('mousedown', function (jqEvent) {
 			TablePlugin.setFocusedTable(undefined);
 		});
 
-		editable.obj.find('table').each(function() {
+		editable.obj.find('table').each(function () {
 			// only convert tables which are editable
 			if (that.isEditableTable(this)) {
 				// instantiate a new table-object
@@ -155,7 +155,7 @@ TablePlugin.init = function() {
 	// initialize the table buttons
 	this.initTableButtons();
 
-	Aloha.bind('aloha-selection-changed', function(event, rangeObject) {
+	Aloha.bind('aloha-selection-changed', function (event, rangeObject) {
 		if (Aloha.activeEditable) {
 			// get Plugin configuration
 			var config = that.getEditableConfig( Aloha.activeEditable.obj );
@@ -169,7 +169,7 @@ TablePlugin.init = function() {
 
 			Aloha.TableHelper.unselectCells();
 
-			var table = rangeObject.findMarkup(function() {
+			var table = rangeObject.findMarkup(function () {
 		        return this.nodeName.toLowerCase() == 'table';
 		    }, Aloha.activeEditable.obj);
 
@@ -189,8 +189,8 @@ TablePlugin.init = function() {
 	});
 
 	// subscribe for the 'editableActivated' event to activate all tables in the editable
-	Aloha.bind('aloha-editable-activated', function(event, props) {
-		props.editable.obj.find('table').each(function() {
+	Aloha.bind('aloha-editable-activated', function (event, props) {
+		props.editable.obj.find('table').each(function () {
 			// shortcut for TableRegistry
 			var tr = TablePlugin.TableRegistry;
 			for (var i = 0; i < tr.length; i++){
@@ -220,7 +220,7 @@ TablePlugin.init = function() {
 	});
 
 	// subscribe for the 'editableDeactivated' event to deactivate all tables in the editable
-	Aloha.bind('aloha-editable-deactivated', function(event, properties) {
+	Aloha.bind('aloha-editable-deactivated', function (event, properties) {
 		TablePlugin.setFocusedTable(undefined);
 		Aloha.TableHelper.unselectCells();
 		// shortcut for TableRegistry
@@ -236,7 +236,7 @@ TablePlugin.init = function() {
  * test if the table is editable
  * @return boolean true if the table's parent element is contentEditable, false otherwise
  */
-TablePlugin.isEditableTable = function(table) {
+TablePlugin.isEditableTable = function (table) {
 	var parent = jQuery(table.parentNode);
 	if (parent.contentEditable() == 'true') {
 		return true;
@@ -332,9 +332,9 @@ TablePlugin.initRowsBtns = function () {
 							sc[i][j] = Aloha.Markup.transformDomObject(sc[i][j], 'th').attr('scope', 'column');
 						}
 						
-						jQuery(sc[i][j]).bind('mousedown', function(jqEvent) {
+						jQuery(sc[i][j]).bind('mousedown', function (jqEvent) {
 							var wrapper = jQuery(this).children('div').eq(0);
-							setTimeout(function() {
+							setTimeout(function () {
 								wrapper.trigger('focus');
 							}, 1);
 							// unselect cells
@@ -363,13 +363,13 @@ TablePlugin.initRowsBtns = function () {
 	// generate formatting buttons
 	this.rowMSItems = [];
 	
-    jQuery.each(this.rowConfig, function(j, itemConf) {
+    jQuery.each(this.rowConfig, function (j, itemConf) {
 		that.rowMSItems.push({
 			name	  : itemConf.name,
 			text	  : Aloha.i18n(that, itemConf.text),
 		    tooltip	  : Aloha.i18n(that, itemConf.tooltip),
 	   	    iconClass : 'aloha-button aloha-row-layout ' + itemConf.iconClass,
-	   	    click	  : function() {
+	   	    click	  : function () {
 				var sc = Aloha.TableHelper.selectedCells;
 				// if a selection was made, transform the selected cells
 				for (var i = 0; i < sc.length; i++) {
@@ -398,7 +398,7 @@ TablePlugin.initRowsBtns = function () {
 	    	tooltip	  : that.i18n('button.removeFormat.tooltip'),
 	   	    iconClass : 'aloha-button aloha-button-removeFormat',
 	   	    wide	  : true,
-	   	    click	  : function() {
+	   	    click	  : function () {
 				var sc = Aloha.TableHelper.selectedCells;
 				// if a selection was made, transform the selected cells
 				for (var i = 0; i < sc.length; i++) {
@@ -521,7 +521,7 @@ TablePlugin.initColumnBtns = function () {
 						}
 						jQuery(sc[i][j]).bind('mousedown', function (jqEvent) {
 							var wrapper = jQuery(this).children('div').eq(0);
-							setTimeout(function() {
+							setTimeout(function () {
 								wrapper.trigger('focus');
 							}, 1);
 							// unselect cells
@@ -548,7 +548,7 @@ TablePlugin.initColumnBtns = function () {
 	
 	// generate formatting buttons
 	this.columnMSItems = [];
-    jQuery.each(this.columnConfig, function(j, itemConf) {
+    jQuery.each(this.columnConfig, function (j, itemConf) {
 		var item = {
 			name	  : itemConf.name,
 			text	  : that.i18n(itemConf.text),
@@ -666,13 +666,13 @@ Aloha.TablePlugin.initTableButtons = function () {
 	
 	var tableConfig = this.tableConfig;
 	
-	jQuery.each(tableConfig, function(j, itemConf) {
+	jQuery.each(tableConfig, function (j, itemConf) {
 		that.tableMSItems.push({
 			name	  : itemConf.name,
 			text	  : that.i18n(itemConf.text),
 		    tooltip	  : that.i18n(itemConf.tooltip),
 	   	   	iconClass : 'aloha-button aloha-table-layout ' + itemConf.iconClass,
-	   	   	click	  : function() {
+	   	   	click	  : function () {
 				// set table css class
 				if (that.activeTable) {
 					for (var f = 0; f < tableConfig.length; f++) {
@@ -691,7 +691,7 @@ Aloha.TablePlugin.initTableButtons = function () {
 	    	tooltip   : that.i18n('button.removeFormat.tooltip'),
 	   	    iconClass : 'aloha-button aloha-button-removeFormat',
 	   	    wide	  : true,
-	   	    click	  : function() {
+	   	    click	  : function () {
 				// remove all table classes
 				if (activeTable) {
 					for (var f = 0; f < tableConfig.length; f++) {
@@ -768,7 +768,7 @@ Aloha.TablePlugin.initTableButtons = function () {
 	//--------------------------------------------------------------- 
     this.summary = new Aloha.ui.AttributeField({width: 350 });
 	
-    this.summary.addListener('keyup', function(obj, event) {
+    this.summary.addListener('keyup', function (obj, event) {
     	that.activeTable.checkWai();
     });
 	
@@ -785,7 +785,7 @@ Aloha.TablePlugin.initTableButtons = function () {
  * @param caption caption as jQuery object
  * @param captionText default text for the caption
  */
-Aloha.TablePlugin.makeCaptionEditable = function(caption, captionText) {
+Aloha.TablePlugin.makeCaptionEditable = function (caption, captionText) {
 	var that = this;
 
 	var cSpan = caption.children('div').eq(0);
@@ -810,7 +810,7 @@ Aloha.TablePlugin.makeCaptionEditable = function(caption, captionText) {
 	cSpan.contentEditable(true);
 	cSpan.unbind('mousedown');
 	// focus on click
-	cSpan.bind('mousedown', function(jqEvent) {
+	cSpan.bind('mousedown', function (jqEvent) {
 		cSpan.focus();
 
 		// stop bubble, otherwise the mousedown of the table is called ...
@@ -827,7 +827,7 @@ Aloha.TablePlugin.makeCaptionEditable = function(caption, captionText) {
  *            The element, which was clicked. It's needed to set the right
  *            position to the create-table-dialog.
  */
-Aloha.TablePlugin.createDialog = function(callingElement) {
+Aloha.TablePlugin.createDialog = function (callingElement) {
 	// set the calling element to the layer the calling element mostly will be
 	// the element which was clicked on it is used to position the createLayer
 	this.createLayer.set('target', callingElement);
@@ -847,7 +847,7 @@ Aloha.TablePlugin.createDialog = function(callingElement) {
  *            number of rows for the created table
  * @return void
  */
-Aloha.TablePlugin.createTable = function(cols, rows) {
+Aloha.TablePlugin.createTable = function (cols, rows) {
 	// Check if there is an active Editable and that it contains an element (= .obj)
 	if (Aloha.activeEditable != null && typeof Aloha.activeEditable.obj != 'undefined') {
 		// create a dom-table object
@@ -891,7 +891,7 @@ Aloha.TablePlugin.createTable = function(cols, rows) {
 		// for IE set a timeout of 10ms to focus the first cell, other wise it
 		// won't work
 		if (jQuery.browser.msie) {
-			window.setTimeout(function() { tableObj.cells[0].wrapper.get(0).focus(); }, 20);
+			window.setTimeout(function () { tableObj.cells[0].wrapper.get(0).focus(); }, 20);
 		} else {
 			tableObj.cells[0].wrapper.get(0).focus();
 		}
@@ -904,7 +904,7 @@ Aloha.TablePlugin.createTable = function(cols, rows) {
 	}
 };
 
-Aloha.TablePlugin.setFocusedTable = function(focusTable) {
+Aloha.TablePlugin.setFocusedTable = function (focusTable) {
 	var that = this;
 	
 	for (var i = 0; i < Aloha.TablePlugin.TableRegistry.length; i++) {
@@ -950,7 +950,7 @@ Aloha.TablePlugin.setFocusedTable = function(focusTable) {
  *            The message to display
  * @return void
  */
-Aloha.TablePlugin.error = function(msg) {
+Aloha.TablePlugin.error = function (msg) {
 	Aloha.Log.error(this, msg);
 };
 
@@ -962,7 +962,7 @@ Aloha.TablePlugin.error = function(msg) {
  *            The message to display
  * @return void
  */
-Aloha.TablePlugin.debug = function(msg) {
+Aloha.TablePlugin.debug = function (msg) {
 	Aloha.Log.debug(this, msg);
 };
 
@@ -974,7 +974,7 @@ Aloha.TablePlugin.debug = function(msg) {
  *            The message to display
  * @return void
  */
-Aloha.TablePlugin.info = function(msg) {
+Aloha.TablePlugin.info = function (msg) {
 	Aloha.Log.info(this, msg);
 };
 
@@ -986,7 +986,7 @@ Aloha.TablePlugin.info = function(msg) {
  *            The message to display
  * @return void
  */
-Aloha.TablePlugin.log = function(msg) {
+Aloha.TablePlugin.log = function (msg) {
 	Aloha.log('log', this, msg);
 };
 
@@ -1035,7 +1035,7 @@ Aloha.TablePlugin.set = function (key, value) {
  */
 Aloha.TablePlugin.makeClean = function (obj) {
 	// find all table tags
-	obj.find('table').each(function() {
+	obj.find('table').each(function () {
 		// instantiate a new table-object
 		var table = new Aloha.Table(this);
 		// deactivate the table
@@ -1048,7 +1048,7 @@ Aloha.TablePlugin.makeClean = function (obj) {
  *
  * @return The plugins namespace (string)
  */
-Aloha.TablePlugin.toString = function() {
+Aloha.TablePlugin.toString = function () {
 	return this.prefix;
 };
 /* -- END METHODS -- */
@@ -1066,7 +1066,7 @@ Aloha.TablePlugin.toString = function() {
  *            the dom-representation of the held table
  * @return void
  */
-Aloha.Table = function(table) {
+Aloha.Table = function (table) {
 	// set the table attribut "obj" as a jquery represenation of the dom-table
 	this.obj = jQuery(table);
 
@@ -1176,7 +1176,7 @@ $.extend(Aloha.Table.prototype, {
 /**
  * @hide
  */
-Aloha.Table.prototype.refresh = function() {
+Aloha.Table.prototype.refresh = function () {
 	// find the dimensions of the table
 	var rows = this.obj.find("tr");
 	var firstRow = jQuery(rows.get(0));
@@ -1208,7 +1208,7 @@ Aloha.Table.prototype.refresh = function() {
  *            the property whichs value should be return
  * @return the value associated with the property
  */
-Aloha.Table.prototype.get = function(property) {
+Aloha.Table.prototype.get = function (property) {
 	return Aloha.TablePlugin.get(property);
 };
 
@@ -1222,7 +1222,7 @@ Aloha.Table.prototype.get = function(property) {
  *            the value for the key
  * @return void
  */
-Aloha.Table.prototype.set = function(key, value) {
+Aloha.Table.prototype.set = function (key, value) {
 	Aloha.TablePlugin.set(key, value);
 };
 
@@ -1235,7 +1235,7 @@ Aloha.Table.prototype.set = function(key, value) {
  *
  * @return void
  */
-Aloha.Table.prototype.activate = function() {
+Aloha.Table.prototype.activate = function () {
 	if (this.isActive) {
 		return;
 	}
@@ -1254,7 +1254,7 @@ Aloha.Table.prototype.activate = function() {
 	// unset the selection type
 	Aloha.TableHelper.selectionType = undefined;
 
-	this.obj.bind('keydown', function(jqEvent){
+	this.obj.bind('keydown', function (jqEvent){
 		if (!jqEvent.ctrlKey && !jqEvent.shiftKey) {
 			if (Aloha.TableHelper.selectedCells.length > 0 && Aloha.TableHelper.selectedCells[0].length > 0) {
 				Aloha.TableHelper.selectedCells[0][0].firstChild.focus();
@@ -1263,14 +1263,14 @@ Aloha.Table.prototype.activate = function() {
 	});
 
 	// handle click event of the table
-//	this.obj.bind('click', function(e){
+//	this.obj.bind('click', function (e){
 //		// stop bubbling the event to the outer divs, a click in the table
 //		// should only be handled in the table
 //		e.stopPropagation();
 //		return false;
 //	});
 
-	this.obj.bind('mousedown', function(jqEvent) {
+	this.obj.bind('mousedown', function (jqEvent) {
 		// focus the table if not already done
 		if (!that.hasFocus) {
 			that.focus();
@@ -1278,7 +1278,7 @@ Aloha.Table.prototype.activate = function() {
 
 // DEACTIVATED by Haymo prevents selecting rows
 //		// if a mousedown is done on the table, just focus the first cell of the table
-//		setTimeout(function() {
+//		setTimeout(function () {
 //			var firstCell = that.obj.find('tr:nth-child(2) td:nth-child(2)').children('div[contenteditable=true]').get(0);
 //			Aloha.TableHelper.unselectCells();
 //			jQuery(firstCell).get(0).focus();
@@ -1308,8 +1308,8 @@ Aloha.Table.prototype.activate = function() {
 	// Events only can be set to elements which are loaded from the DOM (if they
 	// were created dynamically before) ;)
 	htmlTableWrapper = this.obj.parents('.' + this.get('classTableWrapper'));
-	htmlTableWrapper.get(0).onresizestart   = function(e) { return false; };
-	htmlTableWrapper.get(0).oncontrolselect = function(e) { return false; };
+	htmlTableWrapper.get(0).onresizestart   = function (e) { return false; };
+	htmlTableWrapper.get(0).oncontrolselect = function (e) { return false; };
 
 	this.tableWrapper     = this.obj.parents('.' + this.get('classTableWrapper')).get(0);
 
@@ -1343,7 +1343,7 @@ Aloha.Table.prototype.activate = function() {
 /**
  * Make the table caption editable (if present)
  */
-Aloha.Table.prototype.makeCaptionEditable = function() {
+Aloha.Table.prototype.makeCaptionEditable = function () {
 	var caption = this.obj.find('caption').eq(0);
 	if (caption) {
 		Aloha.TablePlugin.makeCaptionEditable(caption);
@@ -1353,7 +1353,7 @@ Aloha.Table.prototype.makeCaptionEditable = function() {
 /**
  * check the WAI conformity of the table and sets the attribute.
  */
-Aloha.Table.prototype.checkWai = function() {
+Aloha.Table.prototype.checkWai = function () {
 	var w = this.wai;
 	
 	w.removeClass(this.get('waiGreen'));
@@ -1372,7 +1372,7 @@ Aloha.Table.prototype.checkWai = function() {
  *
  * @return void
  */
-Aloha.Table.prototype.attachSelectionColumn = function() {
+Aloha.Table.prototype.attachSelectionColumn = function () {
 	// create an empty cell
 	var emptyCell = jQuery('<td>'),
 		rowIndex, columnToInsert, rowObj, that = this, rows, i;
@@ -1405,7 +1405,7 @@ Aloha.Table.prototype.attachSelectionColumn = function() {
  *            The jquery object of the table-data field
  * @return void
  */
-Aloha.Table.prototype.attachRowSelectionEventsToCell = function(cell){
+Aloha.Table.prototype.attachRowSelectionEventsToCell = function (cell){
 	var that = this;
 
 	// unbind eventually existing events of this cell
@@ -1413,15 +1413,15 @@ Aloha.Table.prototype.attachRowSelectionEventsToCell = function(cell){
 	cell.unbind('mouseover');
 
 	// prevent ie from selecting the contents of the table
-	cell.get(0).onselectstart = function() { return false; };
+	cell.get(0).onselectstart = function () { return false; };
 
-	cell.bind('mousedown', function(e){
+	cell.bind('mousedown', function (e){
 		// set flag that the mouse is pressed
 		that.mousedown = true;
 		return that.rowSelectionMouseDown(e);
 	});
 
-	cell.bind('mouseover', function(e){
+	cell.bind('mouseover', function (e){
 		// only select more crows if the mouse is pressed
 		if ( that.mousedown ) {
 			return that.rowSelectionMouseOver(e);
@@ -1459,7 +1459,7 @@ Aloha.Table.prototype.rowSelectionMouseDown = function (jqEvent) {
 		}
 	// block of colums selection
 	} else if (jqEvent.shiftKey) {
-		this.rowsToSelect.sort(function(a,b){return a - b;});
+		this.rowsToSelect.sort(function (a,b){return a - b;});
 		var start = this.rowsToSelect[0];
 		var end = this.clickedRowId;
 		if (start > end) {
@@ -1540,7 +1540,7 @@ Aloha.Table.prototype.rowSelectionMouseOver = function (jqEvent) {
  *            The jquery object of the table-data field
  * @return void
  */
-Aloha.Table.prototype.attachSelectionRow = function() {
+Aloha.Table.prototype.attachSelectionRow = function () {
 	var that = this;
 
 	// create an empty td
@@ -1566,7 +1566,7 @@ Aloha.Table.prototype.attachSelectionRow = function() {
 			this.wai = jQuery('<div/>');
 			this.wai.width(25);
 			this.wai.height(12);
-			this.wai.click( function(e) {
+			this.wai.click( function (e) {
 
 				// select Table
 				that.focus();
@@ -1591,7 +1591,7 @@ Aloha.Table.prototype.attachSelectionRow = function() {
 		selectionRow.append(columnToInsert);
 	}
 	// global mouseup event to reset the selection properties
-	jQuery(document).bind('mouseup', function(e) {
+	jQuery(document).bind('mouseup', function (e) {
 		that.mousedown = false;
 		that.clickedColumnId = -1;
 		that.clickedRowId = -1;
@@ -1614,9 +1614,9 @@ Aloha.Table.prototype.attachColumnSelectEventsToCell = function (cell) {
 	cell.unbind('mouseover');
 
 	// prevent ie from selecting the contents of the table
-	cell.get(0).onselectstart = function() { return false; };
+	cell.get(0).onselectstart = function () { return false; };
 
-	cell.bind('mousedown',  function(e) {
+	cell.bind('mousedown',  function (e) {
 		// set the mousedown flag
 		that.mousedown = true;
 		that.columnSelectionMouseDown(e);
@@ -1663,7 +1663,7 @@ Aloha.Table.prototype.columnSelectionMouseDown = function (jqEvent) {
 			this.columnsToSelect.push(this.clickedColumnId);
 		}
 	}else if (jqEvent.shiftKey) {
-		this.columnsToSelect.sort(function(a,b){return a - b;});
+		this.columnsToSelect.sort(function (a,b){return a - b;});
 		var start = this.columnsToSelect[0];
 		var end = this.clickedColumnId;
 		if (start > end) {
@@ -1722,7 +1722,7 @@ Aloha.Table.prototype.columnSelectionMouseOver = function (jqEvent) {
  *
  * @return void
  */
-Aloha.Table.prototype.releaseLastCellEvents = function() {
+Aloha.Table.prototype.releaseLastCellEvents = function () {
 	this.obj.find('tr:last td:last').unbind();
 };
 
@@ -1732,9 +1732,9 @@ Aloha.Table.prototype.releaseLastCellEvents = function() {
  * @see Aloha.Table.lastCellKeyDown
  * @return void
  */
-Aloha.Table.prototype.attachLastCellEvents = function() {
+Aloha.Table.prototype.attachLastCellEvents = function () {
 	var that = this;
-	this.obj.find('tr:last td:last').bind('keydown', function(jqEvent) {
+	this.obj.find('tr:last td:last').bind('keydown', function (jqEvent) {
 		that.lastCellKeyDown(jqEvent);
 	});
 };
@@ -1748,7 +1748,7 @@ Aloha.Table.prototype.attachLastCellEvents = function() {
  *            the jquery-event object
  * @return
  */
-Aloha.Table.prototype.lastCellKeyDown = function(jqEvent) {
+Aloha.Table.prototype.lastCellKeyDown = function (jqEvent) {
 	var KEYCODE_TAB = 9;
 
 	// only add a row on a single key-press of tab (so check if alt-, shift- or
@@ -1775,7 +1775,7 @@ Aloha.Table.prototype.lastCellKeyDown = function(jqEvent) {
  *
  * @return void
  */
-Aloha.Table.prototype.deleteRows = function() {
+Aloha.Table.prototype.deleteRows = function () {
 	var rowIDs = new Array();
 
 	// flag if the table should be deleted
@@ -1811,7 +1811,7 @@ Aloha.Table.prototype.deleteRows = function() {
 			}
 		}));
 	} else {
-		rowIDs.sort(function(a,b){return a - b;});
+		rowIDs.sort(function (a,b){return a - b;});
 		// check which cell should be focused after the deletion
 		var focusRowId = rowIDs[0];
 		if (focusRowId > (this.numRows - rowIDs.length)) {
@@ -1872,7 +1872,7 @@ Aloha.Table.prototype.deleteRows = function() {
  *
  * @return void
  */
-Aloha.Table.prototype.deleteColumns = function() {
+Aloha.Table.prototype.deleteColumns = function () {
 	var colIDs = new Array();
 
 	// flag if the table should be deleted
@@ -1908,7 +1908,7 @@ Aloha.Table.prototype.deleteColumns = function() {
 			}
 		}));
 	} else {
-		colIDs.sort(function(a,b){return a - b;});
+		colIDs.sort(function (a,b){return a - b;});
 		// check which cell should be focused after the deletion
 		var focusColID = colIDs[0];
 		if (focusColID > (this.numCols - colIDs.length)) {
@@ -1966,7 +1966,7 @@ Aloha.Table.prototype.deleteColumns = function() {
  *
  * @return void
  */
-Aloha.Table.prototype.deleteTable = function() {
+Aloha.Table.prototype.deleteTable = function () {
 	var deleteIndex = -1;
 	for (var i = 0; i < Aloha.TablePlugin.TableRegistry.length; i++){
 		if (Aloha.TablePlugin.TableRegistry[i].obj.attr('id') == this.obj.attr('id')) {
@@ -2003,7 +2003,7 @@ Aloha.Table.prototype.deleteTable = function() {
  * @see Aloha.Table.prototype.addRow
  * @return
  */
-Aloha.Table.prototype.addRowsBefore = function(highlightNewRows) {
+Aloha.Table.prototype.addRowsBefore = function (highlightNewRows) {
 	this.addRows('before', highlightNewRows);
 };
 
@@ -2014,7 +2014,7 @@ Aloha.Table.prototype.addRowsBefore = function(highlightNewRows) {
  * @see Aloha.Table.prototype.addRow
  * @return
  */
-Aloha.Table.prototype.addRowsAfter = function(highlightNewRows) {
+Aloha.Table.prototype.addRowsAfter = function (highlightNewRows) {
 	this.addRows('after', highlightNewRows);
 };
 
@@ -2031,7 +2031,7 @@ Aloha.Table.prototype.addRowsAfter = function(highlightNewRows) {
  *            flag if the newly created rows should be marked as selected
  * @return void
  */
-Aloha.Table.prototype.addRows = function(position, highlightNewRows) {
+Aloha.Table.prototype.addRows = function (position, highlightNewRows) {
 	if (typeof Aloha.TablePlugin.activeTable != 'undefined') {
 		// release listening events of the last cell
 		this.releaseLastCellEvents();
@@ -2141,7 +2141,7 @@ Aloha.Table.prototype.addColumnsRight = function () {
  * @see Aloha.Table.addColumns
  * @return void
  */
-Aloha.Table.prototype.addColumnsLeft = function() {
+Aloha.Table.prototype.addColumnsLeft = function () {
 	this.addColumns('left');
 };
 
@@ -2247,7 +2247,7 @@ Aloha.Table.prototype.addColumns = function (position) {
  *
  * @return void
  */
-Aloha.Table.prototype.focus = function() {
+Aloha.Table.prototype.focus = function () {
 	if (!this.hasFocus) {
 		if (!this.parentEditable.isActive) {
 			this.parentEditable.obj.focus();
@@ -2274,7 +2274,7 @@ Aloha.Table.prototype.focus = function() {
  *
  * @return void
  */
-Aloha.Table.prototype.focusOut = function() {
+Aloha.Table.prototype.focusOut = function () {
 	if (this.hasFocus) {
 		Aloha.TablePlugin.setFocusedTable(undefined);
 		Aloha.TableHelper.selectionType = undefined;
@@ -2286,7 +2286,7 @@ Aloha.Table.prototype.focusOut = function() {
  *
  * @return void
  */
-Aloha.Table.prototype.selectColumns = function() {
+Aloha.Table.prototype.selectColumns = function () {
 	// get the class which selected cells should have
 	var selectClass = this.get('classCellSelected');
 	// Create local copy in this scope for quicker look-up reference in 3-level deep for-loops
@@ -2303,7 +2303,7 @@ Aloha.Table.prototype.selectColumns = function() {
 	Aloha.TableHelper.selectionType = 'column';
 	Aloha.FloatingMenu.setScope(TablePlugin.getUID('column'));
 
-	this.columnsToSelect.sort(function(a,b){return a - b;});
+	this.columnsToSelect.sort(function (a,b){return a - b;});
 
 	var rows = this.obj.find("tr").toArray();
 	// first row is the selection row (dump it => not needed)
@@ -2349,7 +2349,7 @@ Aloha.Table.prototype.selectColumns = function() {
  *
  * @return void
  */
-Aloha.Table.prototype.selectRows = function() {
+Aloha.Table.prototype.selectRows = function () {
 	// get the class which selected cells should have
 	var selectClass = this.get('classCellSelected');
 	var TablePlugin = Aloha.TablePlugin;
@@ -2362,7 +2362,7 @@ Aloha.Table.prototype.selectRows = function() {
 		TablePlugin.rowMSButton.extButton.showItem(TablePlugin.rowMSItems[i].name);
 	}
 	
-	this.rowsToSelect.sort(function(a,b){return a - b;});
+	this.rowsToSelect.sort(function (a,b){return a - b;});
 
 	for (var i = 0; i < this.rowsToSelect.length; i++) {
 		var rowId = this.rowsToSelect[i];
@@ -2404,7 +2404,7 @@ Aloha.Table.prototype.selectRows = function() {
  *
  * @return void
  */
-Aloha.Table.prototype.deactivate = function() {
+Aloha.Table.prototype.deactivate = function () {
 	this.obj.removeClass(this.get('className'));
 	if (jQuery.trim(this.obj.attr('class')) == '') {
 		this.obj.removeAttr('class');
@@ -2421,7 +2421,7 @@ Aloha.Table.prototype.deactivate = function() {
 	this.obj.find('tr.' + this.get('classSelectionRow') + ':first').remove();
 	// remove the selection column (first column left)
 	var that = this;
-	jQuery.each(this.obj.context.rows, function(){
+	jQuery.each(this.obj.context.rows, function (){
 		jQuery(this).children('td.' + that.get('classSelectionColumn')).remove();
 	});
 
@@ -2435,7 +2435,7 @@ Aloha.Table.prototype.deactivate = function() {
 	}
 
 	// remove editable span in caption (if any)
-	this.obj.find('caption div').each(function() {
+	this.obj.find('caption div').each(function () {
 		jQuery(this).contents().unwrap();
 	});
 
@@ -2448,7 +2448,7 @@ Aloha.Table.prototype.deactivate = function() {
  *
  * @return void
  */
-Aloha.Table.prototype.toString = function() {
+Aloha.Table.prototype.toString = function () {
 	return 'Aloha.Table';
 };
 /* -- END METHODS -- */
@@ -2476,7 +2476,7 @@ Aloha.Table.prototype.toString = function() {
  *
  * @return the created table-data field as DOM-representation
  */
-Aloha.Table.Cell = function(originalTd, tableObj) {
+Aloha.Table.Cell = function (originalTd, tableObj) {
 	this.obj = jQuery(originalTd);
 	this.tableObj = tableObj;
 };
@@ -2524,7 +2524,7 @@ Aloha.Table.Cell.lastActiveCell = undefined;
  *            the jquery event object
  * @return void
  */
-Aloha.Table.Cell.prototype.editableFocus = function(e) {
+Aloha.Table.Cell.prototype.editableFocus = function (e) {
 	// only do activation stuff if the cell don't has the focus
 	if (!this.hasFocus) {
 		// set an internal flag to focus the table
@@ -2563,7 +2563,7 @@ Aloha.Table.Cell.prototype.editableFocus = function(e) {
  *            the jquery event object
  * @return void
  */
-Aloha.Table.Cell.prototype.editableBlur = function(jqEvent){
+Aloha.Table.Cell.prototype.editableBlur = function (jqEvent){
 	// no active cell
 	Aloha.Table.Cell.activeCell = undefined;
 
@@ -2574,7 +2574,7 @@ Aloha.Table.Cell.prototype.editableBlur = function(jqEvent){
 	this.obj.removeClass('aloha-table-cell-active');
 };
 
-Aloha.Table.Cell.prototype.activate = function() {
+Aloha.Table.Cell.prototype.activate = function () {
 	// wrap the created div into the contents of the cell
 	this.obj.wrapInner('<div/>');
 
@@ -2587,7 +2587,7 @@ Aloha.Table.Cell.prototype.activate = function() {
 
 	var that = this;
 	// attach events to the editable div-object
-	wrapper.bind('focus', function(jqEvent) {
+	wrapper.bind('focus', function (jqEvent) {
 		// ugly workaround for ext-js-adapter problem in ext-jquery-adapter-debug.js:1020
 		if (jqEvent.currentTarget) {
 			jqEvent.currentTarget.indexOf = function () {
@@ -2596,7 +2596,7 @@ Aloha.Table.Cell.prototype.activate = function() {
 		}
 		that.editableFocus(jqEvent);
 	});
-	wrapper.bind('mousedown', function(jqEvent) {
+	wrapper.bind('mousedown', function (jqEvent) {
 		// ugly workaround for ext-js-adapter problem in ext-jquery-adapter-debug.js:1020
 		if (jqEvent.currentTarget) {
 			jqEvent.currentTarget.indexOf = function () {
@@ -2605,9 +2605,9 @@ Aloha.Table.Cell.prototype.activate = function() {
 		}
 		that.editableMouseDown(jqEvent);
 	});
-	wrapper.bind('blur',      function(jqEvent) { that.editableBlur(jqEvent);      });
-	wrapper.bind('keyup',     function(jqEvent) { that.editableKeyUp(jqEvent);     });
-	wrapper.bind('keydown',   function(jqEvent) { that.editableKeyDown(jqEvent);   });
+	wrapper.bind('blur',      function (jqEvent) { that.editableBlur(jqEvent);      });
+	wrapper.bind('keyup',     function (jqEvent) { that.editableKeyUp(jqEvent);     });
+	wrapper.bind('keydown',   function (jqEvent) { that.editableKeyDown(jqEvent);   });
 
 	// we will treat the wrapper just like an editable
 	wrapper.contentEditableSelectionChange(function (event) {
@@ -2615,8 +2615,8 @@ Aloha.Table.Cell.prototype.activate = function() {
 		return wrapper;
 	});
 
-	this.obj.bind('mousedown', function(jqEvent) {
-		setTimeout(function() {
+	this.obj.bind('mousedown', function (jqEvent) {
+		setTimeout(function () {
 			that.wrapper.trigger('focus');
 		}, 1);
 
@@ -2630,7 +2630,7 @@ Aloha.Table.Cell.prototype.activate = function() {
 
 	// set contenteditable wrapper div
 	this.wrapper = this.obj.children();
-	this.wrapper.get(0).onselectstart = function() {
+	this.wrapper.get(0).onselectstart = function () {
 		window.event.cancelBubble = true;
 	};
 
@@ -2643,7 +2643,7 @@ Aloha.Table.Cell.prototype.activate = function() {
  *
  * @return void
  */
-Aloha.Table.Cell.prototype.deactivate = function() {
+Aloha.Table.Cell.prototype.deactivate = function () {
 	var wrapper = this.obj.children('.aloha-ui-table-cell-editable');
 
 	if (wrapper.length) {
@@ -2672,7 +2672,7 @@ Aloha.Table.Cell.prototype.deactivate = function() {
  *
  * @return string name of the namespace
  */
-Aloha.Table.Cell.prototype.toString = function() {
+Aloha.Table.Cell.prototype.toString = function () {
 	return 'Aloha.Table.Cell';
 };
 
@@ -2682,7 +2682,7 @@ Aloha.Table.Cell.prototype.toString = function() {
  * @param editableNode dom-representation of the editable node (div-element)
  * @return void
  */
-Aloha.Table.Cell.prototype.selectAll = function(editableNode) {
+Aloha.Table.Cell.prototype.selectAll = function (editableNode) {
 	var e = (editableNode.jquery) ? editableNode.get(0) : editableNode;
 
 	// Not IE
@@ -2732,7 +2732,7 @@ Aloha.Table.Cell.prototype.selectAll = function(editableNode) {
  *            the jquery-event object
  * @return void
  */
-Aloha.Table.Cell.prototype.editableMouseDown = function(jqEvent) {
+Aloha.Table.Cell.prototype.editableMouseDown = function (jqEvent) {
 	// deselect all highlighted cells registered in the TableHelper object
 	Aloha.TableHelper.unselectCells();
 
@@ -2749,7 +2749,7 @@ Aloha.Table.Cell.prototype.editableMouseDown = function(jqEvent) {
  *            the jquery-event object
  * @return void
  */
-Aloha.Table.Cell.prototype.editableKeyUp = function(jqEvent) {
+Aloha.Table.Cell.prototype.editableKeyUp = function (jqEvent) {
 	this.checkForEmptyEvent(jqEvent);
 };
 
@@ -2762,7 +2762,7 @@ Aloha.Table.Cell.prototype.editableKeyUp = function(jqEvent) {
  *            the jquery-event object
  * @return void
  */
-Aloha.Table.Cell.prototype.editableKeyDown = function(jqEvent) {
+Aloha.Table.Cell.prototype.editableKeyDown = function (jqEvent) {
 	this.checkForEmptyEvent(jqEvent);
 	if (!jqEvent.ctrlKey && !jqEvent.shiftKey) {
 		if (Aloha.TableHelper.selectedCells.length > 0 && Aloha.TableHelper.selectedCells[0].length > 0) {
@@ -2829,7 +2829,7 @@ Aloha.Table.Cell.prototype.editableKeyDown = function(jqEvent) {
  *            the event object which is given by jquery
  * @return void
  */
-Aloha.Table.Cell.prototype.checkForEmptyEvent = function(jqEvent) {
+Aloha.Table.Cell.prototype.checkForEmptyEvent = function (jqEvent) {
 	var
 		$wrapper = jQuery(this.wrapper),
 		text = $wrapper.text();
@@ -2856,7 +2856,7 @@ Aloha.Table.Cell.prototype.checkForEmptyEvent = function(jqEvent) {
 /**
  * Dummy initialize of the CreateLayer object
  */
-Aloha.Table.CreateLayer = function(){};
+Aloha.Table.CreateLayer = function (){};
 
 /* -- ATTRIBUTES -- */
 /**
@@ -2891,7 +2891,7 @@ Aloha.Table.CreateLayer.prototype.visible = false;
  *
  * @return void
  */
-Aloha.Table.CreateLayer.prototype.show = function(){
+Aloha.Table.CreateLayer.prototype.show = function (){
 	var layer = this.get('layer');
 
 	// create the panel if the layer doesn't exist
@@ -2932,11 +2932,11 @@ Aloha.Table.CreateLayer.prototype.create = function () {
 				td.addClass('hover');
 			}
 
-			td.bind('mouseover', {rowId: i, colId: j}, function(e) {
+			td.bind('mouseover', {rowId: i, colId: j}, function (e) {
 				that.handleMouseOver(e, table);
 			});
 
-			td.bind('click', {rowId: i, colId: j}, function(e){
+			td.bind('click', {rowId: i, colId: j}, function (e){
 				var rows = e.data.rowId + 1;
 				var cols = e.data.colId + 1;
 
@@ -2957,15 +2957,15 @@ Aloha.Table.CreateLayer.prototype.create = function () {
 	this.setPosition();
 
 	// stop bubbling the click on the create-dialog up to the body event
-	layer.bind('click', function(e) {
+	layer.bind('click', function (e) {
 		e.stopPropagation();
-	}).mousedown(function(e) {
+	}).mousedown(function (e) {
 		e.stopPropagation();
 	});
 
 	// append layer to body and
 	// hide the create layer if user clicks anywhere in the body
-	jQuery('body').append(layer).bind('click', function(e) {
+	jQuery('body').append(layer).bind('click', function (e) {
 		if (e.target != that.get('target') && that.visible) {
 			that.hide();
 		}
@@ -2978,7 +2978,7 @@ Aloha.Table.CreateLayer.prototype.create = function () {
  * @param table the aeffected table
  * @return void
  */
-Aloha.Table.CreateLayer.prototype.handleMouseOver = function(e, table) {
+Aloha.Table.CreateLayer.prototype.handleMouseOver = function (e, table) {
 	var rowId = e.data.rowId;
 	var colId = e.data.colId;
 	var innerRows = table.find('tr');
@@ -3001,7 +3001,7 @@ Aloha.Table.CreateLayer.prototype.handleMouseOver = function(e, table) {
  *
  *  @return void
  */
-Aloha.Table.CreateLayer.prototype.setPosition = function() {
+Aloha.Table.CreateLayer.prototype.setPosition = function () {
 	var targetObj = jQuery(this.get('target'));
 	var pos = targetObj.offset();
 	this.get('layer').css('left', pos.left + 'px');
@@ -3014,7 +3014,7 @@ Aloha.Table.CreateLayer.prototype.setPosition = function() {
  * @see jQuery().hide()
  * @return void
  */
-Aloha.Table.CreateLayer.prototype.hide = function() {
+Aloha.Table.CreateLayer.prototype.hide = function () {
 	this.get('layer').hide();
 	this.visible = false;
 };
@@ -3027,7 +3027,7 @@ Aloha.Table.CreateLayer.prototype.hide = function() {
  * @param property
  * @return void
  */
-Aloha.Table.CreateLayer.prototype.get = function(property) {
+Aloha.Table.CreateLayer.prototype.get = function (property) {
 	// return param from the config
 	if (this.config[property]) {
 		return this.config[property];
@@ -3072,7 +3072,7 @@ Aloha.Table.CreateLayer.prototype.set = function (key, value) {
 /**
  * The TableHelper object is a helper-object which consists of static/global attributes and functions
  */
-Aloha.TableHelper = function(){};
+Aloha.TableHelper = function (){};
 
 /* -- ATTRIBUTES -- */
 /**
@@ -3093,7 +3093,7 @@ Aloha.TableHelper.prototype.selectedCells = new Array();
  *
  * @return void
  */
-Aloha.TableHelper.prototype.unselectCells = function(){
+Aloha.TableHelper.prototype.unselectCells = function (){
 	if (this.selectedCells.length > 0) {
 		for (var i = 0; i < this.selectedCells.length; i++) {
 			jQuery(this.selectedCells[i]).removeClass(Aloha.TablePlugin.get('classCellSelected'));
@@ -3103,7 +3103,7 @@ Aloha.TableHelper.prototype.unselectCells = function(){
 	}
 };
 
-Aloha.TableHelper.prototype.getNewTableID = function() {
+Aloha.TableHelper.prototype.getNewTableID = function () {
 	var idPrefix = 'aloha-table-';
 	var factor = 1000000;
 	for (this.tableCounter; true; this.tableCounter ++) {
