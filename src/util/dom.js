@@ -1348,9 +1348,23 @@ GENTICS.Utils.Dom = Class.extend({
 	setCursorAfter: function (domObject) {
 		var newRange = new GENTICS.Utils.RangeObject();
 		newRange.startContainer = newRange.endContainer = domObject.parentNode;
-		newRange.startOffset = newRange.endOffset = this.getIndexInParent(domObject);
+		newRange.startOffset = newRange.endOffset = this.getIndexInParent(domObject) + 1;
 
 		// select the range
+		newRange.select();
+	},
+	
+	/**
+	 * Select a DOM node
+	 * will create a new range which spans the provided dom node and selects it afterwards
+	 * @param domObject DOM object
+	 * @method
+	 */
+	selectDomNode: function (domObject) {
+		var newRange = new GENTICS.Utils.RangeObject();
+		newRange.startContainer = newRange.endContainer = domObject.parentNode;
+		newRange.startOffset = this.getIndexInParent(domObject);
+		newRange.endOffset = newRange.startOffset + 1;
 		newRange.select();
 	},
 
