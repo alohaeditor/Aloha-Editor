@@ -55,34 +55,7 @@ function(BlockManager, Observable, FloatingMenu) {
 
 			// Register event handlers for activating an Aloha Block
 			this.element.bind('click', function(event) {
-				var previouslyActiveBlocks = BlockManager.getActiveBlocks();
-				var activeBlocks = [];
-
-				delete previouslyActiveBlocks[that.id];
-
-				that._selectBlock(event);
-
-				// Set scope to current block
-				FloatingMenu.setScope('Aloha.Block.' + that.attr('block-type'));
-
 				that.activate();
-				activeBlocks.push(that);
-
-				that.element.parents('.aloha-block').each(function() {
-					var block = BlockManager.getBlock(this);
-					delete previouslyActiveBlocks[block.id];
-
-					block._selectBlock();
-					block.activate();
-					activeBlocks.push(block);
-				});
-				$.each(previouslyActiveBlocks, function() {
-					this.deactivate();
-				});
-
-				BlockManager.trigger('blockSelectionChange', activeBlocks);
-
-				return false;
 			});
 
 			// The "contentEditableSelectionChange" event listens on
@@ -117,9 +90,46 @@ function(BlockManager, Observable, FloatingMenu) {
 		},
 
 		/**
-		 * Activated when the block is clicked
+		 * activates the block
+		 * will select the block's contents, highlight it, an update the floating menu
+		 *
+		 * @return always boolean false
 		 */
 		activate: function() {
+			var previouslyActiveBlocks = BlockManager.getActiveBlocks(),
+				activeBlocks = [];
+
+			delete previouslyActiveBlocks[this.id];
+
+			this._selectBlock(event);
+
+			// Set scope to current block
+			FloatingMenu.setScope('Aloha.Block.' + this.attr('block-type'));
+
+			this._highlight();
+			activeBlocks.push(this);
+
+			this.element.parents('.aloha-block').each(function() {
+				var block = BlockManager.getBlock(this);
+				delete previouslyActiveBlocks[block.id];
+
+				block._selectBlock();
+				block._highlight();
+				activeBlocks.push(block);
+			});
+			$.each(previouslyActiveBlocks, function() {
+				this.deactivate();
+			});
+
+			BlockManager.trigger('block-selection-change', activeBlocks);
+
+			return false;
+		},
+
+		/**
+		 * Activated when the block is clicked
+		 */
+		_highlight: function() {
 			if (this.isActive()) {
 				return;
 			}
@@ -128,11 +138,11 @@ function(BlockManager, Observable, FloatingMenu) {
 		},
 
 		_selectBlock: function(event) {
-			if (!event || $(event.target).is('.aloha-editable') || $(event.target).parents('.aloha-block, .aloha-editable').first().is('.aloha-editable')) {
+			/*if (!event || $(event.target).is('.aloha-editable') || $(event.target).parents('.aloha-block, .aloha-editable').first().is('.aloha-editable')) {
 				// It was clicked on a Aloha-Editable inside a block; so we do not
 				// want to select the whole block and do an early return.
 				return;
-			}
+			}*/
 
 			GENTICS.Utils.Dom.selectDomNode(this.element[0]);
 		},

@@ -21,7 +21,7 @@ function(BlockManager, Sidebar, EditorManager) {
 		init: function() {
 			var that = this;
 			that._initSidebar();
-			BlockManager.bind('blockSelectionChange', this._onBlockSelectionChange, this);
+			BlockManager.bind('block-selection-change', this._onBlockSelectionChange, this);
 		},
 		_initSidebar: function() {
 			this._sidebar = new Sidebar({

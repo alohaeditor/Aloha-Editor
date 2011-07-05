@@ -17,7 +17,7 @@ function(FloatingMenu, Observable, Registry) {
 	var BlockManager = new (Class.extend(Observable, {
 
 		/**
-		 * @event blockSelectionChange
+		 * @event block-selection-change
 		 * @param {Array} Array of AbstractBlock objects, containing  selectedBlocks
 		 */
 
