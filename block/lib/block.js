@@ -100,6 +100,7 @@ function(BlockManager, Observable, FloatingMenu) {
 		},
 
 		serialize: function() {
+			// TODO: use ALL attributes, not just data-....
 			return {
 				tag: this.element[0].tagName,
 				attributes: this._getAttributes(), // contains data-properties AND about
@@ -218,9 +219,10 @@ function(BlockManager, Observable, FloatingMenu) {
 		 * Deactive the block
 		 */
 		deactivate: function() {
+			var that = this;
 			this._unhighlight();
 			this.element.parents('.aloha-block').each(function() {
-				this._unhighlight();
+				that._unhighlight();
 			});
 			BlockManager.trigger('block-selection-change', []);
 			this.element.removeClass('aloha-block-active');

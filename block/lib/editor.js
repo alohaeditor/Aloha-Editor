@@ -104,8 +104,8 @@ function(Observable) {
 		render: function() {
 			var $wrapper = $('<div class="aloha-block-editor" />');
 			var guid = GENTICS.Utils.guid();
-			$wrapper.append(this.renderLabel(guid).attr('id', guid));
-			$wrapper.append(this.renderFormElement(guid).attr('id', guid));
+			$wrapper.append(this.renderLabel().attr('id', guid));
+			$wrapper.append(this.renderFormElement().attr('id', guid));
 			return $wrapper;
 		},
 
@@ -114,7 +114,9 @@ function(Observable) {
 		 * @return {jQuery}
 		 */
 		renderLabel: function() {
-			return $('<label />').html(this.schema.label);
+			var element = $('<label />');
+			element.html(this.schema.label);
+			return element;
 		},
 
 		/**
@@ -195,7 +197,7 @@ function(Observable) {
 	 * @extends block.editor.AbstractFormElementEditor
 	 */
 	var EmailEditor = AbstractFormElementEditor.extend(
-	/** @lends block.editor.UrlEditor */
+	/** @lends block.editor.EmailEditor */
 	{
 		formInputElementDefinition: '<input type="email" />'
 	});

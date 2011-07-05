@@ -27,6 +27,8 @@ function(AbstractPasteHandler, BlockManager) {
 			jqPasteDiv.find('.aloha-block').each(function() {
 				var oldBlock = $(this);
 
+				// TODO: use block.serialize();
+
 				var dataAttributes = {};
 				$.each(oldBlock.data(), function(k, v) {
 					dataAttributes['data-' + k] = v;
