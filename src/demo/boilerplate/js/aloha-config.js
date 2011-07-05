@@ -21,11 +21,11 @@
 		repositories: {
 			linklist: {
 				data: [
-					{ name: 'Aloha Developers Wiki',			url:'http://www.aloha-editor.com/wiki',								type:'website', weight: 0.50 },
-					{ name: 'Aloha Editor - The HTML5 Editor',	url:'http://aloha-editor.com',										type:'website', weight: 0.90 },
-					{ name: 'Aloha Demo',						url:'http://www.aloha-editor.com/demos.html',						type:'website', weight: 0.75 },
-					{ name: 'Aloha Wordpress Demo',				url:'http://www.aloha-editor.com/demos/wordpress-demo/index.html',	type:'website', weight: 0.75 },
-					{ name: 'Aloha Logo',						url:'http://www.aloha-editor.com/images/aloha-editor-logo.png',		type:'image',	weight: 0.10 }
+					{ name: 'Aloha Developers Wiki',			url: 'http://www.aloha-editor.com/wiki',							type: 'website', weight: 0.50 },
+					{ name: 'Aloha Editor - The HTML5 Editor',	url: 'http://aloha-editor.com',										type: 'website', weight: 0.90 },
+					{ name: 'Aloha Demo',						url: 'http://www.aloha-editor.com/demos.html',						type: 'website', weight: 0.75 },
+					{ name: 'Aloha Wordpress Demo',				url: 'http://www.aloha-editor.com/demos/wordpress-demo/index.html',	type: 'website', weight: 0.75 },
+					{ name: 'Aloha Logo',						url: 'http://www.aloha-editor.com/images/aloha-editor-logo.png',	type: 'image',	 weight: 0.10 }
 				]
 			}
 		},
