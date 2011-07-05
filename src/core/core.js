@@ -123,7 +123,6 @@ function(PluginManager, FloatingMenu, i18n, undefined) {
 						GENTICS.Utils.Position.Mouse.x = e.pageX;
 						GENTICS.Utils.Position.Mouse.y = e.pageY;
 					});
-
 					// Load & Initialise
 					Aloha.stage = 'loadPlugins';
 					Aloha.loadPlugins(function(){

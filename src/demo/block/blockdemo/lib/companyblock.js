@@ -23,12 +23,17 @@ define([
 		render: function(element) {
 			
 			// Mapping Stock-Symbol -- Company Name (Fake!)
-			if (this.attr('symbol') === 'MSFT') {
-				element.html('Microsoft');
-			} else {
-				element.html(this.attr('symbol'));
+			switch (this.attr('symbol')) {
+				case 'MSFT':
+					element.html('Microsoft');
+					break;
+				case 'AAPL':
+					element.html('Apple Inc.');
+					break;
+				default:
+					element.html(this.attr('symbol'));
 			}
-
+			
 			var that = this;
 			element.mouseover(function() {
 				that.element.append('<span class="stock-quote-overlay company-' + that.attr('symbol') + '"></span>');
