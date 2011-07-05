@@ -14,12 +14,14 @@ function(Observable) {
 		Aloha = window.Aloha;
 
 	return Class.extend(Observable, {
-		
+
 		_$input: null,
 
+		_constructor: function() {
+			this._$input = $('<input type="text" />');
+		},
 		render: function() {
 			var that = this;
-			this._$input = $('<input type="text" />');
 			this._$input.change(function() {
 				// TODO: trigger this event only if validation successful.
 				that.trigger('change', that.getValue());
@@ -37,6 +39,13 @@ function(Observable) {
 		 */
 		setValue: function(value) {
 			this._$input.val(value);
+		},
+
+		/**
+		 * On deactivating, we still need to trigger a change event if the value has been modified.
+		 */
+		_deactivate: function() {
+			this.trigger('change', this.getValue());
 		},
 
 		destroy: function() {

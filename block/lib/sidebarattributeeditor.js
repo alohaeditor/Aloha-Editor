@@ -15,7 +15,7 @@ function(BlockManager, Sidebar, EditorManager) {
 		$ = jQuery;
 
 	return new (Class.extend({
-		
+
 		_sidebar: null,
 
 		init: function() {
@@ -31,13 +31,13 @@ function(BlockManager, Sidebar, EditorManager) {
 				panels: []
 			});
 		},
-		
+
 		/**
 		 * @param {Array} selectedBlocks
 		 */
 		_onBlockSelectionChange: function(selectedBlocks) {
 			var that = this;
-			
+
 			// TODO: Clearing the whole sidebar might not be what we want; instead we might only want
 			// to clear certain panels.
 			that._sidebar.container.find('.aloha-sidebar-panels').children().remove();
@@ -45,20 +45,47 @@ function(BlockManager, Sidebar, EditorManager) {
 
 			$.each(selectedBlocks, function() {
 				var schema = this.getSchema(),
-					block = this;
+					block = this,
+					editors = [];
 
 				that._sidebar.addPanel({
 					title: block.getTitle(),
+					expanded: true,
 					onInit: function() {
 						var $form = $('<form />');
 						$.each(schema, function(attributeName, definition) {
 							var editor = EditorManager.createEditor(definition);
+
+							// Editor -> Block binding
 							editor.bind('change', function(value) {
 								block.attr(attributeName, value);
 							});
+
+							// Block -> Editor binding
+							block.bind('change', function() {
+								editor.setValue(block.attr(attributeName));
+							})
+
+							// Set initial value Block -> Editor
+							editor.setValue(block.attr(attributeName));
+
 							$form.append(editor.render());
+							editors.push(editor);
 						});
 						this.setContent($form);
+					},
+
+					deactivate: function() {
+						// On deactivating the panel, we need to tell each editor to deactivate itself,
+						// so it can throw another change event.
+						$.each(editors, function(index, editor) {
+							editor._deactivate();
+						});
+
+						// This code is from the superclass
+						this.isActive = false;
+						this.content.parent('li').hide();
+						this.effectiveElement = null;
 					}
 				});
 			});

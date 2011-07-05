@@ -8,27 +8,27 @@
 define(['block/blockmanager', 'core/observable', 'core/floatingmenu'],
 function(BlockManager, Observable, FloatingMenu) {
 	"use strict";
-	
+
 	var
 		jQuery = window.alohaQuery || window.jQuery, $ = jQuery,
 		Aloha = window.Aloha;
 
 	var AbstractBlock = Class.extend(Observable, {
-		
+
 		/**
 		 * @event change
 		 */
-		
+
 		/**
 		 * @var {String} Title for the block.
 		 */
 		title: null,
-		
+
 		/**
 		 * @var string ID of the assigned element. Not sure if it exists.
 		 */
 		id: null,
-		
+
 		/**
 		 * @var jQuery element
 		 */
@@ -46,7 +46,7 @@ function(BlockManager, Observable, FloatingMenu) {
 			var that = this;
 			this.id = element.attr('id');
 			this.element = element;
-			
+
 
 			this._domElementType = GENTICS.Utils.Dom.isBlockLevelElement(element[0]) ? 'block' : 'inline';
 
@@ -57,7 +57,7 @@ function(BlockManager, Observable, FloatingMenu) {
 			this.element.bind('click', function(event) {
 				var previouslyActiveBlocks = BlockManager.getActiveBlocks();
 				var activeBlocks = [];
-				
+
 				delete previouslyActiveBlocks[that.id];
 
 				that._selectBlock(event);
@@ -71,7 +71,7 @@ function(BlockManager, Observable, FloatingMenu) {
 				that.element.parents('.aloha-block').each(function() {
 					var block = BlockManager.getBlock(this);
 					delete previouslyActiveBlocks[block.id];
-					
+
 					block._selectBlock();
 					block.activate();
 					activeBlocks.push(block);
@@ -79,12 +79,12 @@ function(BlockManager, Observable, FloatingMenu) {
 				$.each(previouslyActiveBlocks, function() {
 					this.deactivate();
 				});
-				
+
 				BlockManager.trigger('blockSelectionChange', activeBlocks);
 
 				return false;
 			});
-			
+
 			// The "contentEditableSelectionChange" event listens on
 			// mouseDown and focus, and we need to suppress these events
 			// such that the editable does not update its selection.
@@ -126,7 +126,7 @@ function(BlockManager, Observable, FloatingMenu) {
 			// TODO: also activate surrounding editable if exists.
 			this.element.addClass('aloha-block-active');
 		},
-		
+
 		_selectBlock: function(event) {
 			if (!event || $(event.target).is('.aloha-editable') || $(event.target).parents('.aloha-block, .aloha-editable').first().is('.aloha-editable')) {
 				// It was clicked on a Aloha-Editable inside a block; so we do not
@@ -157,18 +157,18 @@ function(BlockManager, Observable, FloatingMenu) {
 				Aloha.Selection.updateSelection();
 			}
 		},
-		
+
 		deactivate: function() {
 			if (!this.isActive()) {
 				return;
 			}
 			this.element.removeClass('aloha-block-active');
 		},
-		
+
 		isActive: function() {
 			return this.element.hasClass('aloha-block-active');
 		},
-		
+
 		getId: function() {
 			return this.id;
 		},
@@ -237,12 +237,12 @@ function(BlockManager, Observable, FloatingMenu) {
 			}
 			return this;
 		},
-		
+
 		_setAttribute: function(name, value) {
 			if (name === 'about') {
 				this.element.attr('about', value);
 			} else {
-				this.element.attr('data-' + name, value);	
+				this.element.attr('data-' + name, value);
 			}
 		},
 
@@ -251,12 +251,18 @@ function(BlockManager, Observable, FloatingMenu) {
 		},
 
 		_getAttributes: function() {
-			var element = this.element;
-			
-			// TODO: element.data() not always up-to-date. We need to use the attributes instead.
-			return $.extend({}, element.data(), {
-				about: element.attr('about')
+			var attributes = {};
+
+			// element.data() not always up-to-date, that's why we iterate over the attributes directly.
+			$.each(this.element[0].attributes, function(i, attribute) {
+				if (attribute.name === 'about') {
+					attributes['about'] = attribute.value;
+				} else if (attribute.name.substr(0, 5) === 'data-') {
+					attributes[attribute.name.substr(5)] = attribute.value;
+				}
 			});
+
+			return attributes;
 		},
 
 		setContent: function(content) {
