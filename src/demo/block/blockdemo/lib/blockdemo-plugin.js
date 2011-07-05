@@ -18,6 +18,7 @@ define([
 			BlockManager.registerBlockType('CompanyBlock', block.CompanyBlock);
 			BlockManager.registerBlockType('EditableProductTeaserBlock', block.EditableProductTeaserBlock);
 			BlockManager.registerBlockType('VCardBlock', block.VCardBlock);
+			BlockManager.registerBlockType('CustomHandleBlock', block.CustomHandleBlock);
 		}
 	});
 });

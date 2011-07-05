@@ -218,3 +218,8 @@ td.redwhite {
 	font-weight: bold;
 	font-style: italic;
 }
+
+.customhandles {
+	width:200px;
+	height:100px;
+}

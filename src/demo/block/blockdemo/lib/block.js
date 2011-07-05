@@ -121,10 +121,17 @@ define([
 		}
 	});
 
+	var CustomHandleBlock = block.DefaultBlock.extend({
+		renderToolbar: function() {
+			this.element.prepend('<span class="block-draghandle-topright">Delete</span>');
+		}
+	});
+
 	return {
 		CompanyBlock: CompanyBlock,
 		EditableProductTeaserBlock: EditableProductTeaserBlock,
 		ProductTeaserBlock: ProductTeaserBlock,
-		VCardBlock: VCardBlock
+		VCardBlock: VCardBlock,
+		CustomHandleBlock: CustomHandleBlock
 	};
 });

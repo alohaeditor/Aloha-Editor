@@ -20,3 +20,26 @@
 .stock-quote-overlay.company-AAPL {
 	background-image:url('../img/stock-quote-aapl.gif');
 }
+
+
+
+.aloha-block:hover .block-draghandle-topright,
+.aloha-block-active .block-draghandle-topright {
+	display:block;
+}
+
+.block-draghandle-topright {
+	position:absolute;
+	right:0;
+	top:-13px;
+	width:44px;
+	height:12px;
+	overflow:hidden;
+	display:none;
+	background:url(../img/toolbar-draghandle.gif);
+	border-top:1px solid #CCC;
+	border-left:1px solid #CCC;
+	border-right:1px solid #CCC;
+	border-top-left-radius:5px;
+	border-top-right-radius:5px;
+}
