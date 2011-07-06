@@ -1376,21 +1376,24 @@ Aloha.Table.prototype.checkWai = function () {
  */
 Aloha.Table.prototype.attachSelectionColumn = function () {
 	// create an empty cell
-	var emptyCell = jQuery('<td>'),
-		rowIndex, columnToInsert, rowObj, that = this, rows, i;
+	var that = this,
+		emptyCell = jQuery('<td>'),
+		columnToInsert,
+		rowIndex, rowObj, rows, i;
 	
 	// set the unicode '&nbsp;' code
 	emptyCell.html('\u00a0');
 	
-	that = this;
 	rows = this.obj.context.rows;
+	
 	// add a column before each first cell of each row
 	for (i = 0; i < rows.length; i++) {
 		rowObj = jQuery(rows[i]);
 		columnToInsert = emptyCell.clone();
 		columnToInsert.addClass(this.get('classSelectionColumn'));
 		columnToInsert.css('width', this.get('selectionArea') + 'px');
-		rowObj.find('td:first,th:first').before(columnToInsert);
+		
+		rowObj.find('td,th').first().before(columnToInsert);
 		
 		// rowIndex + 1 because an addtional row is still added
 		rowIndex = i + 1;
@@ -1545,10 +1548,13 @@ Aloha.Table.prototype.attachSelectionRow = function () {
 
 	// create an empty td
 	var emptyCell = jQuery('<td>');
-	emptyCell.html('\u00a0');
-
+	emptyCell.html('\u00a0 x');
+	
 	// get the number of columns in the table (length of the cells in the first row)
 	var numColumns = this.obj.context.rows[0].cells.length;
+	
+	console.log(numColumns);
+	
 	var selectionRow = jQuery('<tr>');
 	selectionRow.addClass(this.get('classSelectionRow'));
 	selectionRow.css('height', this.get('selectionArea') + 'px');
@@ -1563,39 +1569,42 @@ Aloha.Table.prototype.attachSelectionRow = function () {
 		} else {
 			var columnToInsert = jQuery('<td>').clone();
 			columnToInsert.addClass(this.get('classLeftUpperCorner'));
-			this.wai = jQuery('<div/>');
-			this.wai.width(25);
-			this.wai.height(12);
-			this.wai.click( function (e) {
-
-				// select Table
-				that.focus();
-
-				// select first cell
-//				var firstCell = that.obj.find('tr:nth-child(2) td:nth-child(2)').children('div[contenteditable=true]').get(0);
-//				jQuery(firstCell).get(0).focus();
-
-			    Aloha.FloatingMenu.userActivatedTab = Aloha.TablePlugin.i18n('floatingmenu.tab.table');
-				Aloha.FloatingMenu.doLayout();
-
-				// jump in Summary field
-			    Aloha.TablePlugin.summary.focus();
-				e.stopPropagation();
-				e.preventDefault();
-				return false;
-			});
+			this.wai =
+				jQuery('<div/>')
+					.width(25)
+					.height(12)
+					.click(function (e) {
+						// select Table
+						that.focus();
+						
+						// select first cell
+						// var firstCell = that.obj.find('tr:nth-child(2) td:nth-child(2)').children('div[contenteditable=true]').get(0);
+						// jQuery(firstCell).get(0).focus();
+						
+						Aloha.FloatingMenu.userActivatedTab = Aloha.TablePlugin.i18n('floatingmenu.tab.table');
+						Aloha.FloatingMenu.doLayout();
+						
+						// jump in Summary field
+						Aloha.TablePlugin.summary.focus();
+						e.stopPropagation();
+						e.preventDefault();
+						return false;
+					});
+			
 			columnToInsert.append(this.wai);
 		}
-
+		
 		// add the cell to the row
 		selectionRow.append(columnToInsert);
 	}
+	
 	// global mouseup event to reset the selection properties
 	jQuery(document).bind('mouseup', function (e) {
 		that.mousedown = false;
 		that.clickedColumnId = -1;
 		that.clickedRowId = -1;
 	});
+	
 	this.obj.find('tr:first').before(selectionRow);
 };
 
@@ -2416,7 +2425,7 @@ Aloha.Table.prototype.deactivate = function () {
 	if (this.obj.parents('.' + this.get('classTableWrapper')).length){
 		this.obj.unwrap();
 	}
-
+	
 	// remove the selection row
 	this.obj.find('tr.' + this.get('classSelectionRow') + ':first').remove();
 	// remove the selection column (first column left)
