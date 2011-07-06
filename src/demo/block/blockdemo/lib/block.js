@@ -82,7 +82,7 @@ define([
 		},
 
 		render: function() {
-			return this.attr('title') + ' <strong class="price">(' + this.attr('price') + ')</strong>';
+			return this.attr('title') + ' <strong class="price">(' + this.attr('price') + ' &euro;)</strong>';
 		}
 	});
 
