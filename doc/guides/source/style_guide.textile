@@ -13,11 +13,17 @@ h3. Code Conventions
 WARNING: The current codebase does not yet follow all of these principles.
 
 * We use only the +TAB+ character for indentation.
-* We use +UpperCamelCase+ for class names, and +lowerCamelCase+ for method and property names. The use of underscores is strongly discouraged.
-* Variables which contain jQuery elements should be named like +$element+.
+* We use +UpperCamelCase+ for class names, and +lowerCamelCase+ for method and property names.
+* Methods and properties that begin with an underscore (+_+) are @private@.
+* Variables which contain *jQuery* elements should be named like +$element+, starting with a @$@.
 * We use +that+ as a name for a closure reference to +this+, but try to avoid it if there's the possibility of scope binding.
+  Unfortunately jQuery's event handlers do not allow easy scope binding.
 
-* TODO: Name of callback functions, to aid debugging??
+h3. Code Documentation
+
+We use @JSDoc@ for code documentation. Please see +plugins/common/block/+ for an example on how to use this.
+
+Further information about rendering documentation can be found in the "Documentation Guide":/documentation_guidelines.html.
 
 h3. RequireJS module skeleton
 
@@ -42,6 +48,8 @@ function(Dependency) {
 </javascript>
 
 h3. Classes
+
+WARNING: Not current anymore, we strive for a more JS - style.
 
 Every class should go into one module which means one file. The filename should be lowercase, even if the class is camelcased.
 
@@ -122,23 +130,26 @@ TODO: Explain the order
 * vendor
 * css
 
-h3. Private methods and attributes
+h3. Public API, Private methods and attributes
 
-By convention, we prefix private methods and attributes with an underscore.
+All methods and properties which are public API are marked with +@api+. The public API is supported
+for a longer period by the Aloha Core Team, and when a public API changes, this is clearly communicated in the
+Release Notes of a version.
 
-Good:
+On the contrary, we prefix +private+ methods and attributes with an underscore. The *user* of an API should never
+override or call methods +private+ methods as they are not meant for him to be overridden.
 
-* +_myPrivateMethod()+
-* +_myPrivateAttribute+
+There's also a type in between: methods which are not +private+ but do not have a +@api+ annotation. They
+can be safely overridden by the user, and he should not experience any unwanted behavior. Still, the names or
+functionality of these methods can change without notice between releases.
+In the long run, all of these methods should become part of the public API, as soon as they are proven in real
+life.
 
-Bad:
+To sum it up, we have three types of methods/properties:
 
-* @myPrivateMethod()@
-* @myPrivateAttribute@
-
-h3. API
-
-WARNING: Incomplete. How to mark stuff as API?
+* +@api+ methods: Public API, the user of the object can rely on the functionality to be stable, changes in @api are clearly communicated
+* non-@@api@ but also not private: The user can use it, but needs to be aware the method might still change.
+* private (prefixed with +_+): The user should never ever call or access this. Very strange things might happen.
 
 h3. Naming of methods
 
