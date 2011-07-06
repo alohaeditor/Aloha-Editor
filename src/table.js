@@ -329,7 +329,7 @@ TablePlugin.initRowsBtns = function () {
 						if (this.isPressed()) {
 							sc[i][j] = Aloha.Markup.transformDomObject(sc[i][j], 'td');
 						} else { 
-							sc[i][j] = Aloha.Markup.transformDomObject(sc[i][j], 'th').attr('scope', 'column');
+							sc[i][j] = Aloha.Markup.transformDomObject(sc[i][j], 'th').attr('scope', 'col');
 						}
 						
 						jQuery(sc[i][j]).bind('mousedown', function (jqEvent) {
@@ -340,7 +340,12 @@ TablePlugin.initRowsBtns = function () {
 							// unselect cells
 							Aloha.TableHelper.unselectCells();
 						});
-
+						
+						/*
+							Destructive. For debugging.
+							Indicate directionality of header
+							jQuery(sc[i][j]).html('v');
+						*/
 					}
 				}
 				
@@ -514,11 +519,13 @@ TablePlugin.initColumnBtns = function () {
 						if (i == 0) {
 							that.columnsToSelect.push(sc[i][j].cellIndex)
 						}
+						
 						if (this.isPressed()) {
 							sc[i][j] = Aloha.Markup.transformDomObject(sc[i][j], 'td');
 						} else { 
-							sc[i][j] = Aloha.Markup.transformDomObject(sc[i][j], 'th').attr('scope', 'column');
+							sc[i][j] = Aloha.Markup.transformDomObject(sc[i][j], 'th').attr('scope', 'row');
 						}
+						
 						jQuery(sc[i][j]).bind('mousedown', function (jqEvent) {
 							var wrapper = jQuery(this).children('div').eq(0);
 							setTimeout(function () {
@@ -527,7 +534,12 @@ TablePlugin.initColumnBtns = function () {
 							// unselect cells
 							Aloha.TableHelper.unselectCells();
 						});
-
+						
+						/*
+							Destructive. For debugging.
+							Indicate directionality of header
+							jQuery(sc[i][j]).html('>');
+						*/
 					}
 				}
 				// selection could have changed.
@@ -1548,7 +1560,7 @@ Aloha.Table.prototype.attachSelectionRow = function () {
 
 	// create an empty td
 	var emptyCell = jQuery('<td>');
-	emptyCell.html('\u00a0 x');
+	emptyCell.html('\u00a0');
 	
 	// get the number of columns in the table (length of the cells in the first row)
 	var numColumns = this.obj.context.rows[0].cells.length;
