@@ -11,7 +11,44 @@
 	height:158px;
 	box-shadow:0 0 5px #333;
 	z-index:1000;
+	background-repeat:no-repeat;
+	background-color: #FFF;
 }
 .stock-quote-overlay.company-MSFT {
-	background:url('../img/stock-quote-msft.gif');
+	background-image:url('../img/stock-quote-msft.gif');
+}
+.stock-quote-overlay.company-AAPL {
+	background-image:url('../img/stock-quote-aapl.gif');
+}
+
+.aloha-block:hover > .block-draghandle-topright,
+.aloha-block-active > .block-draghandle-topright {
+	display:block;
+}
+
+.block-draghandle-topright {
+	position:absolute;
+	right:-1px;
+	top:-13px;
+	width:44px;
+	height:12px;
+	overflow:hidden;
+	display:none;
+	background:url(../img/toolbar-draghandle.gif);
+	border-top:1px solid #CCC;
+	border-left:1px solid #CCC;
+	border-right:1px solid #CCC;
+	border-top-left-radius:5px;
+	border-top-right-radius:5px;
+}
+.block-draghandle-topright a {
+	padding: 0 2px;
+	font-size: 11px;
+	text-decoration: none;
+	color: #777;
+	display: block;
+}
+.block-draghandle-topright a span {
+	color: #710909;
+	font-weight: bold;
 }

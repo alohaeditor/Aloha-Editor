@@ -20,25 +20,25 @@ function(Observable) {
 		$ = jQuery;
 
 	return Class.extend(Observable, {
-		
+
 		_entries: null,
 
 		_constructor: function() {
 			this._entries = {};
 		},
-		
+
 		/**
 		 * @event register
 		 * @param entry
 		 * @param id
 		 */
-		
+
 		/**
 		 * @event unregister
 		 * @param entry
 		 * @param id
 		 */
-		
+
 		register: function(id, entry) {
 			this._entries[id] = entry;
 			this.trigger('register', entry, id);
@@ -46,7 +46,7 @@ function(Observable) {
 		unregister: function(id) {
 			var oldEntry = this._entries[id];
 			delete this._entries[id];
-			this.trigger('unregister', entry, id);
+			this.trigger('unregister', oldEntry, id);
 		},
 		get: function(id) {
 			return this._entries[id];
@@ -55,7 +55,7 @@ function(Observable) {
 			return (this._entries[id] ? true : false);
 		},
 		getEntries: function() {
-			// clone the entries so the user does not accidentally 
+			// clone the entries so the user does not accidentally modify our _entries object.
 			return $.extend({}, this._entries);
 		}
 	});

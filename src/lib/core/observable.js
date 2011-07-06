@@ -21,10 +21,10 @@ function() {
 
 	return {
 		_eventHandlers: null,
-		
+
 		/**
 		 * Attach a handler to an event
-		 * 
+		 *
 		 * @param {String} eventType A string containing the event name to bind to
 		 * @param {Function} handler A function to execute each time the event is triggered
 		 * @param {Object} scope Optional. Set the scope in which handler is executed
@@ -42,7 +42,7 @@ function() {
 
 		/**
 		 * Remove a previously-attached event handler
-		 * 
+		 *
 		 * @param {String} eventType A string containing the event name to unbind
 		 * @param {Function} handler The function that is to be no longer executed. Optional. If not given, unregisters all functions for the given event.
 		 */
@@ -63,11 +63,11 @@ function() {
 				});
 			}
 		},
-		
+
 		/**
 		 * Execute all handlers attached to the given event type.
 		 * All arguments except the eventType are directly passed to the callback function.
-		 * 
+		 *
 		 * @param (String} eventType A string containing the event name for which the event handlers should be invoked.
 		 */
 		trigger: function(eventType) {
@@ -87,6 +87,13 @@ function() {
 			$.each(this._eventHandlers[eventType], function(index, element) {
 				element.handler.apply(element.scope, preparedArguments);
 			});
+		},
+
+		/**
+		 * Clears all event handlers. Call this method when cleaning up.
+		 */
+		unbindAll: function() {
+			this._eventHandlers = null;
 		}
 	};
 });

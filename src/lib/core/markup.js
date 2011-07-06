@@ -84,7 +84,7 @@ Aloha.Markup = Class.extend({
 
 		// handle left (37) and right (39) keys for block detection
 		if (event.keyCode === 37 || event.keyCode === 39) {
-			this.processCursor(rangeObject, event.keyCode);
+			return this.processCursor(rangeObject, event.keyCode);
 		}
 
 		// ENTER
@@ -162,34 +162,50 @@ Aloha.Markup = Class.extend({
 	},
 
 	/**
-	 * handles cursor keys
-	 * left = 37
-	 * right = 39
+	 * Processing of cursor keys
+	 * will currently detect blocks (elements with contenteditable=false)
+	 * and selects them (normally the cursor would jump right past them)
+	 *
+	 * For each block an 'aloha-block-selected' event will be triggered.
+	 *
+	 * @param range the current range object
+	 * @param keyCode keyCode of current keypress
+	 * @return false if a block was found to prevent further events, true otherwise
 	 */
 	processCursor: function(range, keyCode) {
-		var rt = range.getRangeTree(), // RangeTree reference		
-			blocks,
-			i = 0;
+		var rt = range.getRangeTree(), // RangeTree reference
+			i = 0,
+			cursorLeft = keyCode === 37,
+			cursorRight = keyCode === 39,
+			nextSiblingIsBlock = false, // check whether the next sibling is a block (contenteditable = false)
+			cursorIsWithinBlock = false, // check whether the cursor is positioned within a block (contenteditable = false)
+			cursorAtLastPos = false, // check if the cursor is within the last position of the currently active dom element
+			obj; // will contain references to dom objects
 		
 		if (!range.isCollapsed()) {
-			return;
+			return true;
 		}
 		
 		for (;i < rt.length; i++) {
-			if (rt[i].type === 'partial' && rt[i].startContainer === rt[i].endContainer) {
-				//console.log(rt[i].domobj, range.startOffset, rt[i].domobj.length);
-				
-				// detect block when moving cursor right
-				// TODO cleanup code - nextSibling might not work correctly in all browsers
-				if (keyCode === 39 && range.startOffset === rt[i].domobj.length && $(rt[i].domobj.nextSibling).attr('contenteditable') === 'false') {
-					// console.log('block found!');
-					// TODO select block
+			cursorAtLastPos = range.startOffset === rt[i].domobj.length;
+			if (cursorAtLastPos) {
+				nextSiblingIsBlock = $(rt[i].domobj.nextSibling).attr('contenteditable') === 'false';
+				cursorIsWithinBlock = $(rt[i].domobj).parents('[contenteditable=false]').length > 0;
+			
+				if (cursorRight && nextSiblingIsBlock) {
+					obj = rt[i].domobj.nextSibling;
+					GENTICS.Utils.Dom.selectDomNode(obj);
+					Aloha.trigger('aloha-block-selected', obj);
+					Aloha.Selection.preventSelectionChanged();
+					return false;
 				}
-				
-				// detect block when moving cursor left
-				if (keyCode === 37 && range.startOffset === rt[i].domobj.length && $(rt[i].domobj).parents('[contenteditable=false]').length > 0) {
-					// console.log('block found');
-					// TODO select block
+			
+				if (cursorLeft && cursorIsWithinBlock) {
+					obj = $(rt[i].domobj).parents('[contenteditable=false]').get(0);
+					GENTICS.Utils.Dom.selectDomNode(obj);
+					Aloha.trigger('aloha-block-selected', obj);
+					Aloha.Selection.preventSelectionChanged();
+					return false;
 				}
 			}
 		}
