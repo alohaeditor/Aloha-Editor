@@ -1373,7 +1373,11 @@ Aloha.Table.prototype.checkWai = function () {
 	w.removeClass(this.get('waiGreen'));
 	w.removeClass(this.get('waiRed'));
 	
-	if (this.obj[0].summary.length > 5 ) {
+	// Y U NO explain why we must check that summary is longer than 5 characters?
+	// http://cdn3.knowyourmeme.com/i/000/089/665/original/tumblr_l96b01l36p1qdhmifo1_500.jpg
+	// if (this.obj[0].summary.length > 5) {
+
+	if (this.obj[0].summary.trim() != '') {
 		w.addClass(this.get('waiGreen'));
 	} else {
 		w.addClass(this.get('waiRed'));
