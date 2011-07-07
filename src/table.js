@@ -1935,7 +1935,7 @@ Aloha.Table.prototype.deleteColumns = function () {
 		// check which cell should be focused after the deletion
 		var focusColID = colIDs[0];
 		if (focusColID > (this.numCols - colIDs.length)) {
-			focusColID --;
+			focusColID--;
 		}
 
 		// release the events of the last cell
@@ -1943,11 +1943,12 @@ Aloha.Table.prototype.deleteColumns = function () {
 
 		// get all rows to iterate
 		var rows = this.obj.find('tr');
-		var cols2delete = new Array();
+		var cols2delete = [];
 
 		// build the array with the row-ids of th rows which should be deleted
 		for (var i = 0; i < rows.length; i++) {
-			var cells = jQuery(rows[i]).children("td").toArray();
+			var cells = jQuery(rows[i]).children("td,th").toArray();
+
 			for (var j = 0; j < colIDs.length; j++) {
 				cols2delete.push(cells[colIDs[j]]);
 			}
@@ -1972,9 +1973,15 @@ Aloha.Table.prototype.deleteColumns = function () {
 		this.numCols -= colIDs.length;
 
 		if (jQuery.browser.msie) {
-			setTimeout(this.obj.find('tr:nth-child(2) td:nth-child(' + (focusColID + 1) + ') div.aloha-ui-table-cell-editable').get(0).focus, 5);
+			setTimeout(
+				$(this.obj.find('tr:nth-child(2)').find('td,th')
+					.get(focusColID))
+						.find('div.aloha-ui-table-cell-editable')[0].focus, 5
+			);
 		} else {
-			this.obj.find('tr:nth-child(2) td:nth-child(' + (focusColID + 1) + ') div.aloha-ui-table-cell-editable').get(0).focus();
+			$(this.obj.find('tr:nth-child(2)').find('td,th')
+				.get(focusColID))
+					.find('div.aloha-ui-table-cell-editable')[0].focus();
 		}
 
 		// re-attach the events for the last cell
