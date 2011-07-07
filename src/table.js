@@ -751,7 +751,7 @@ Aloha.TablePlugin.initTableButtons = function () {
 					var cDiv = c.find('div').eq(0);
 					var captionContent = cDiv.contents().eq(0);
 					if (captionContent.length > 0) {
-						var newRange = new Utils.RangeObject();
+						var newRange = new GENTICS.Utils.RangeObject();
 						newRange.startContainer = newRange.endContainer = captionContent.get(0);
 						newRange.startOffset = 0;
 						newRange.endOffset = captionContent.text().length;
@@ -1588,7 +1588,7 @@ Aloha.Table.prototype.attachSelectionRow = function () {
 					.width(25)
 					.height(12)
 					.click(function (e) {
-						// select Table
+						// select the Table 
 						that.focus();
 						
 						// select first cell
@@ -1599,9 +1599,18 @@ Aloha.Table.prototype.attachSelectionRow = function () {
 						Aloha.FloatingMenu.doLayout();
 						
 						// jump in Summary field
-						Aloha.TablePlugin.summary.focus();
-						e.stopPropagation();
-						e.preventDefault();
+						// attempting to focus on summary input field will occasionally result in the
+						// following exception:
+						//uncaught exception: [Exception... "Component returned failure code: 0x80004005 (NS_ERROR_FAILURE) [nsIDOMHTMLInputElement.setSelectionRange]" nsresult: "0x80004005 (NS_ERROR_FAILURE)" location: "JS frame :: src/dep/ext-3.2.1/ext-all.js :: <TOP_LEVEL> :: line 11" data: no]
+						// this occurs when the tab in which the summary field is contained is not visible
+						// TODO: I'm adding a try catch clause here for the time being, but a proper solution, which addresses the problem of how to handle invisible fields ought to be persued.
+
+						try {
+							Aloha.TablePlugin.summary.focus();
+							e.stopPropagation();
+							e.preventDefault();
+						} catch (e) {}
+
 						return false;
 					});
 			
