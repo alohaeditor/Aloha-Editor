@@ -3,7 +3,9 @@
  * Author & Copyright (c) 2010 Gentics Software GmbH, aloha@gentics.com
  * Licensed unter the terms of http://www.aloha-editor.com/license.html
  */
-(function(window, undefined) {
+define(
+['core/repository'],
+function() {
 	"use strict";
 	var
 		jQuery = window.alohaQuery || window.jQuery, $ = jQuery,
@@ -144,4 +146,4 @@
 	//		assert(false, "Error, abstract type, subclass Folder and implement empty")
 	//	};
 	});
-})(window);
+});

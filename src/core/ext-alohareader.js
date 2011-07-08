@@ -1,5 +1,6 @@
-// Start Closure
-(function(window, undefined) {
+define(
+['dep/ext-3.2.1/ext-all'],
+function() {
 	"use strict";
 	
 	// Prepare
@@ -38,4 +39,4 @@ Ext.extend(Ext.data.AlohaObjectReader, Ext.data.JsonReader, {
 	// extend of necessary
 });
 
-})(window);
+});

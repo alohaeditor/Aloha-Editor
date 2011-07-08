@@ -4,7 +4,7 @@
  * Licensed unter the terms of http://www.aloha-editor.com/license.html
  */
 define(
-['core/floatingmenu'],
+['core/floatingmenu', 'dep/ext-3.2.1/ext-all'],
 function(FloatingMenu) {
 	"use strict";
 

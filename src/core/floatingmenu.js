@@ -4,7 +4,7 @@
  * Licensed unter the terms of http://www.aloha-editor.com/license.html
  */
 define(
-['util/base', 'dep/ext-3.2.1/ext-all'],
+['dep/jquery-1.5.1', 'util/base', 'dep/ext-3.2.1/adapter/jquery/ext-jquery-adapter', 'dep/ext-3.2.1/ext-all'],
 function() {
 	"use strict";
 	var

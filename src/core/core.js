@@ -251,7 +251,7 @@ function(PluginManager, FloatingMenu, i18n, undefined) {
 		isPluginLoaded: function(pluginName) {
 			var found = false;
 			$.each(this.loadedPlugins, function() {
-				if (pluginName === this) {
+				if (pluginName.toString() === this.toString()) {
 					found = true;
 				}
 			});
