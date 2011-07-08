@@ -2327,7 +2327,7 @@ Aloha.Table.prototype.focusOut = function () {
  */
 Aloha.Table.prototype.selectColumns = function () {
 
-	//console.log(11111111111111111111111);
+	console.log(11111111111111111111111);
 
 	// get the class which selected cells should have
 	var selectClass = this.get('classCellSelected');
@@ -2362,7 +2362,11 @@ Aloha.Table.prototype.selectColumns = function () {
 			
 			if ( j == 0 && i == 0 && cell ) {
 				// set the status of the table header button to the status of the frist selected column
-				TablePlugin.columnHeader.setPressed((cell.nodeName.toLowerCase() == 'th'));
+				TablePlugin.columnHeader.setPressed(
+					cell.nodeName.toLowerCase() == 'th'
+						&&
+					$(cell).attr('scope') == 'row'
+				);
 				// set the first class found as active item in the multisplit button
 				TablePlugin.columnMSButton.setActiveItem();
 				for (var k = 0; k < TablePlugin.columnConfig.length; k++) {
@@ -2411,9 +2415,15 @@ Aloha.Table.prototype.selectRows = function () {
 		var rowCells = jQuery(this.obj.find('tr').get(rowId).cells).toArray();
 		
 		if (i == 0) {
-			// set the status of the table header button to the status of the frist selected row
-			// it is the 2 (index 1) cell. The first is the selection-helper
-			TablePlugin.rowHeader.setPressed((rowCells[1].nodeName.toLowerCase() == 'th'));
+			// set the status of the table header button to the status of the first selected
+			// data row it is the 2 (index 1) cell. The first is the selection-helper
+			
+			TablePlugin.rowHeader.setPressed(
+				rowCells[1].nodeName.toLowerCase() == 'th'
+					&&
+				$(rowCells[1]).attr('scope') == 'col'
+			);
+
 			// set the first class found as active item in the multisplit button
 			for (var j = 0; j < rowCells.length; j++) {
 				TablePlugin.rowMSButton.setActiveItem();
