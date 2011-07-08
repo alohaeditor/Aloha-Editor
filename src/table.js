@@ -41,7 +41,7 @@ TablePlugin.config = [ 'table' ];
  * An Array which holds all newly created tables contains DOM-Nodes of
  * table-objects
  */
-TablePlugin.TableRegistry = new Array();
+TablePlugin.TableRegistry = [];
 
 /**
  * Holds the active table-object
@@ -1093,7 +1093,7 @@ Aloha.Table = function (table) {
 	this.numRows = rows.length;
 
 	// init the cell-attribute with an empty array
-	this.cells = new Array();
+	this.cells = [];
 
 	// iterate over table cells and create Cell-objects
 	var rows = this.obj.find('tr');
@@ -1197,7 +1197,7 @@ Aloha.Table.prototype.refresh = function () {
 	this.numRows = rows.length;
 
 	// init the cell-attribute with an empty array
-	this.cells = new Array();
+	this.cells = [];
 
 	// iterate over table cells and create Cell-objects
 	var rows = this.obj.find('tr');
@@ -1463,7 +1463,7 @@ Aloha.Table.prototype.rowSelectionMouseDown = function (jqEvent) {
 	
 	// if no cells are selected, reset the selection-array
 	if (Aloha.TableHelper.selectedCells.length == 0) {
-		this.rowsToSelect = new Array();
+		this.rowsToSelect = [];
 	}
 	
 	// set the origin-rowId of the mouse-click
@@ -1486,7 +1486,7 @@ Aloha.Table.prototype.rowSelectionMouseDown = function (jqEvent) {
 			start = end;
 			end = this.rowsToSelect[0];
 		}
-		this.rowsToSelect = new Array();
+		this.rowsToSelect = [];
 		for (var i = start; i <= end; i++) {
 			this.rowsToSelect.push(i);
 		}
@@ -1533,7 +1533,7 @@ Aloha.Table.prototype.rowSelectionMouseOver = function (jqEvent) {
 		start = (rowIndex < this.clickedRowId) ? rowIndex : this.clickedRowId;
 		end = (rowIndex < this.clickedRowId) ? this.clickedRowId : rowIndex;
 
-		this.rowsToSelect = new Array();
+		this.rowsToSelect = [];
 		for ( i = start; i <= end; i++) {
 			this.rowsToSelect.push(i);
 		}
@@ -1673,7 +1673,6 @@ Aloha.Table.prototype.attachColumnSelectEventsToCell = function (cell) {
  * @return void
  */
 Aloha.Table.prototype.columnSelectionMouseDown = function (jqEvent) {
-
 	this.focus();
 
 	// select first cell
@@ -1682,7 +1681,7 @@ Aloha.Table.prototype.columnSelectionMouseDown = function (jqEvent) {
 
 	// if no cells are selected, reset the selection-array
 	if (Aloha.TableHelper.selectedCells.length == 0) {
-		this.columnsToSelect = new Array();
+		this.columnsToSelect = [];
 	}
 
 	// store the id of the column which has been originally clicked
@@ -1702,7 +1701,7 @@ Aloha.Table.prototype.columnSelectionMouseDown = function (jqEvent) {
 			start = end;
 			end = this.columnsToSelect[0];
 		}
-		this.columnsToSelect = new Array();
+		this.columnsToSelect = [];
 		for (var i = start; i <= end; i++) {
 			this.columnsToSelect.push(i);
 		}
@@ -1740,7 +1739,7 @@ Aloha.Table.prototype.columnSelectionMouseOver = function (jqEvent) {
 		var start = (colIndex < this.clickedColumnId) ? colIndex : this.clickedColumnId;
 		var end = (colIndex < this.clickedColumnId) ? this.clickedColumnId : colIndex;
 
-		this.columnsToSelect = new Array();
+		this.columnsToSelect = [];
 		for (var i = start; i <= end; i++) {
 			this.columnsToSelect.push(i);
 		}
@@ -1808,7 +1807,7 @@ Aloha.Table.prototype.lastCellKeyDown = function (jqEvent) {
  * @return void
  */
 Aloha.Table.prototype.deleteRows = function () {
-	var rowIDs = new Array();
+	var rowIDs = [];
 
 	// flag if the table should be deleted
 	var deleteTable = false;
@@ -1855,7 +1854,7 @@ Aloha.Table.prototype.deleteRows = function () {
 
 		// get all rows
 		var rows = this.obj.find('tr');
-		var rows2delete = new Array();
+		var rows2delete = [];
 
 		// build the array with the row-ids of th rows which should be deleted
 		for (var i = 0; i < rowIDs.length; i++) {
@@ -1905,7 +1904,7 @@ Aloha.Table.prototype.deleteRows = function () {
  * @return void
  */
 Aloha.Table.prototype.deleteColumns = function () {
-	var colIDs = new Array();
+	var colIDs = [];
 
 	// flag if the table should be deleted
 	var deleteTable = false;
@@ -2115,7 +2114,7 @@ Aloha.Table.prototype.addRows = function (position, highlightNewRows) {
 			newRowIndex += 1;
 		}
 
-		var rowIdArray = new Array();
+		var rowIdArray = [];
 		for (var j = 0; j < rowsToInsert; j++) {
 			rowIdArray.push(newRowIndex);
 			var insertionRow = jQuery('<tr>');
@@ -2235,7 +2234,7 @@ Aloha.Table.prototype.addColumns = function (position) {
 
 		var emptyCell = jQuery('<td>');
 		var rows = this.obj.find('tr');
-		var colIdArray = new Array();
+		var colIdArray = [];
 		for (var i = 0; i < rows.length; i++) {
 			var currentColId = newColId;
 			var row = rows[i];
@@ -2348,12 +2347,12 @@ Aloha.Table.prototype.selectColumns = function () {
 	var rows = this.obj.find("tr").toArray();
 	// first row is the selection row (dump it => not needed)
 	rows.shift();
-	var toSelect = new Array();
+	var toSelect = [];
 	
 	for (var i = 0; i < rows.length; i++) {
 		var rowCells = rows[i].cells;
 
-		var selectedCellsInCol = new Array();
+		var selectedCellsInCol = [];
 		for (var j = 0; j < this.columnsToSelect.length; j++) {
 			var colIndex = this.columnsToSelect[j];
 			var cell = rowCells[colIndex];
@@ -3125,7 +3124,7 @@ Aloha.TableHelper.prototype.selectionType = undefined;
 /**
  * Holds all currently selected table cells as an array of DOM "td" representations
  */
-Aloha.TableHelper.prototype.selectedCells = new Array();
+Aloha.TableHelper.prototype.selectedCells = [];
 /* -- END ATTRIBUTES -- */
 
 /* -- METHODS -- */
@@ -3139,7 +3138,7 @@ Aloha.TableHelper.prototype.unselectCells = function () {
 		for (var i = 0; i < this.selectedCells.length; i++) {
 			jQuery(this.selectedCells[i]).removeClass(Aloha.TablePlugin.get('classCellSelected'));
 		}
-		this.selectedCells = new Array();
+		this.selectedCells = [];
 		this.selectionType = undefined;
 	}
 };
