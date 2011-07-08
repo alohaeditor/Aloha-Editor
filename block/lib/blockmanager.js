@@ -50,6 +50,8 @@ function(FloatingMenu, Observable, Registry) {
 		 */
 		blocks: null,
 
+		activeBlocks: null,
+
 		/**
 		 * @constructor
 		 */
@@ -57,6 +59,7 @@ function(FloatingMenu, Observable, Registry) {
 			FloatingMenu.createScope('Aloha.Block');
 			this.blockTypes = new Registry();
 			this.blocks = new Registry();
+			this.activeBlocks = {};
 		},
 
 		/**
@@ -69,6 +72,7 @@ function(FloatingMenu, Observable, Registry) {
 
 			// Register event handlers for deactivating an Aloha Block
 			$(document).bind('click', function(event) {
+				if (that.activeBlocks == {}) return;
 				if ($(event.target).parents('.aloha-sidebar-bar, .aloha-block-do-not-deactivate').length > 0
 					|| $(event.target).is('.aloha-sidebar-bar, .aloha-block-do-not-deactivate')) {
 					// If we are inside the sidebar, we do not want to deactivate active blocks...
@@ -123,8 +127,8 @@ function(FloatingMenu, Observable, Registry) {
 		 * @private
 		 */
 		_deactivateActiveBlocks: function() {
-			$('.aloha-block-active').each(function(index, element) {
-				var block = BlockManager.getBlock(element);
+			$.each($.extend({}, this.activeBlocks), function(id) {
+				var block = BlockManager.getBlock(id);
 				if (block) {
 					block.deactivate();
 				}
@@ -209,6 +213,14 @@ function(FloatingMenu, Observable, Registry) {
 				}
 			});
 			return activeBlocks;
+		},
+
+		_setActive: function(block) {
+			this.activeBlocks[block.id] = true;
+		},
+
+		_setInactive: function(block) {
+			delete this.activeBlocks[block.id];
 		}
 	}))();
 

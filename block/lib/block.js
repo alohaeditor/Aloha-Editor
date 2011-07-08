@@ -197,11 +197,13 @@ function(BlockManager, Observable, FloatingMenu) {
 		 * Activated when the block is clicked
 		 */
 		_highlight: function() {
+			BlockManager._setActive(this);
 			this.element.addClass('aloha-block-active');
 		},
 
 
 		_unhighlight: function() {
+			BlockManager._setInactive(this);
 			this.element.removeClass('aloha-block-active');
 		},
 
@@ -225,7 +227,6 @@ function(BlockManager, Observable, FloatingMenu) {
 				that._unhighlight();
 			});
 			BlockManager.trigger('block-selection-change', []);
-			this.element.removeClass('aloha-block-active');
 			// TODO: remove the current selection here
 		},
 
