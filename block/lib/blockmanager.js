@@ -69,7 +69,6 @@ function(FloatingMenu, Observable, Registry) {
 
 			// Register event handlers for deactivating an Aloha Block
 			$(document).bind('click', function(event) {
-
 				if ($(event.target).parents('.aloha-sidebar-bar, .aloha-block-do-not-deactivate').length > 0
 					|| $(event.target).is('.aloha-sidebar-bar, .aloha-block-do-not-deactivate')) {
 					// If we are inside the sidebar, we do not want to deactivate active blocks...
@@ -212,6 +211,9 @@ function(FloatingMenu, Observable, Registry) {
 			return activeBlocks;
 		}
 	}))();
+
+	Aloha.Block = Aloha.Block || {};
+	Aloha.Block.BlockManager = BlockManager;
 
 	return BlockManager;
 });
