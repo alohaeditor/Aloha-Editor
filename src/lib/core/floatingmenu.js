@@ -4,7 +4,7 @@
  * Licensed unter the terms of http://www.aloha-editor.com/license.html
  */
 define(
-['util/base', 'dep/ext-3.2.1/ext-all'],
+['util/base', 'vendor/ext-3.2.1/ext-all'],
 function() {
 	"use strict";
 	var
