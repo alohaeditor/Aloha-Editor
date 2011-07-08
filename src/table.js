@@ -327,7 +327,7 @@ TablePlugin.initRowsBtns = function () {
 						}
 						
 						if (this.isPressed()) {
-							sc[i][j] = Aloha.Markup.transformDomObject(sc[i][j], 'td');
+							sc[i][j] = Aloha.Markup.transformDomObject(sc[i][j], 'td').removeAttr('scope');
 						} else { 
 							sc[i][j] = Aloha.Markup.transformDomObject(sc[i][j], 'th').attr('scope', 'col');
 						}
@@ -521,7 +521,7 @@ TablePlugin.initColumnBtns = function () {
 						}
 						
 						if (this.isPressed()) {
-							sc[i][j] = Aloha.Markup.transformDomObject(sc[i][j], 'td');
+							sc[i][j] = Aloha.Markup.transformDomObject(sc[i][j], 'td').removeAttr('scope');
 						} else { 
 							sc[i][j] = Aloha.Markup.transformDomObject(sc[i][j], 'th').attr('scope', 'row');
 						}
@@ -2326,9 +2326,6 @@ Aloha.Table.prototype.focusOut = function () {
  * @return void
  */
 Aloha.Table.prototype.selectColumns = function () {
-
-	//console.log(11111111111111111111111);
-
 	// get the class which selected cells should have
 	var selectClass = this.get('classCellSelected');
 	// Create local copy in this scope for quicker look-up reference in 3-level deep for-loops
@@ -2345,24 +2342,34 @@ Aloha.Table.prototype.selectColumns = function () {
 	Aloha.TableHelper.selectionType = 'column';
 	Aloha.FloatingMenu.setScope(TablePlugin.getUID('column'));
 
+	
+	//console.log(this.columnsToSelect);
+
 	this.columnsToSelect.sort(function (a,b) {return a - b;});
 
 	var rows = this.obj.find("tr").toArray();
-	// first row is the selection row (dump it => not needed)
+	// first row is the selection row (dump it, it's not needed)
 	rows.shift();
 	var toSelect = [];
 	
+
+	//console.log(rows);
+
 	for (var i = 0; i < rows.length; i++) {
 		var rowCells = rows[i].cells;
-
 		var selectedCellsInCol = [];
+
 		for (var j = 0; j < this.columnsToSelect.length; j++) {
 			var colIndex = this.columnsToSelect[j];
 			var cell = rowCells[colIndex];
 			
 			if ( j == 0 && i == 0 && cell ) {
 				// set the status of the table header button to the status of the frist selected column
-				TablePlugin.columnHeader.setPressed((cell.nodeName.toLowerCase() == 'th'));
+				TablePlugin.columnHeader.setPressed(
+					cell.nodeName.toLowerCase() == 'th'
+						&&
+					$(cell).attr('scope') == 'row'
+				);
 				// set the first class found as active item in the multisplit button
 				TablePlugin.columnMSButton.setActiveItem();
 				for (var k = 0; k < TablePlugin.columnConfig.length; k++) {
@@ -2380,6 +2387,8 @@ Aloha.Table.prototype.selectColumns = function () {
 	};
 	// blur all editables within the table
 	this.obj.find('div.aloha-ui-table-cell-editable').blur();
+
+	//console.log(toSelect);
 
 	// add the class (visually selecting the cells)
 	jQuery(toSelect).addClass(selectClass);
@@ -2411,9 +2420,15 @@ Aloha.Table.prototype.selectRows = function () {
 		var rowCells = jQuery(this.obj.find('tr').get(rowId).cells).toArray();
 		
 		if (i == 0) {
-			// set the status of the table header button to the status of the frist selected row
-			// it is the 2 (index 1) cell. The first is the selection-helper
-			TablePlugin.rowHeader.setPressed((rowCells[1].nodeName.toLowerCase() == 'th'));
+			// set the status of the table header button to the status of the first selected
+			// data row it is the 2 (index 1) cell. The first is the selection-helper
+			
+			TablePlugin.rowHeader.setPressed(
+				rowCells[1].nodeName.toLowerCase() == 'th'
+					&&
+				$(rowCells[1]).attr('scope') == 'col'
+			);
+
 			// set the first class found as active item in the multisplit button
 			for (var j = 0; j < rowCells.length; j++) {
 				TablePlugin.rowMSButton.setActiveItem();
@@ -3139,6 +3154,9 @@ Aloha.TableHelper.prototype.selectedCells = [];
 Aloha.TableHelper.prototype.unselectCells = function () {
 	if (this.selectedCells.length > 0) {
 		for (var i = 0; i < this.selectedCells.length; i++) {
+
+			//console.log(this.selectedCells[i], 32535);
+
 			jQuery(this.selectedCells[i]).removeClass(Aloha.TablePlugin.get('classCellSelected'));
 		}
 		this.selectedCells = [];

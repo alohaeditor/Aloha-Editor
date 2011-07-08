@@ -53,9 +53,9 @@ td.aloha-table-selectrow {
 .aloha-ui-table-wrapper {
 	display: inline-block;
 	/* width: 100%; */
-	-moz-box-shadow:	0 2px 15px rgba(0, 0, 0, .1);
-	-webkit-box-shadow:	0 2px 15px rgba(0, 0, 0, .1);
-	box-shadow:			0 2px 15px rgba(0, 0, 0, .1);
+	-moz-box-shadow:	0 2px 15px rgba(0, 0, 0, .2);
+	-webkit-box-shadow:	0 2px 15px rgba(0, 0, 0, .2);
+	box-shadow:			0 2px 15px rgba(0, 0, 0, .2);
 }
 .aloha-ui-table-wrapper td {
 	border: 1px solid #D0D0D0;
