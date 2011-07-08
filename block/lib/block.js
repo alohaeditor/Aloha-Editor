@@ -297,11 +297,12 @@ function(BlockManager, Observable, FloatingMenu) {
 		 * @api
 		 * @param {String|Object} attributeNameOrObject
 		 * @param {String} attributeValue
+		 * @param {Boolean} Optional. If true, we do not fire change events.
 		 */
-		attr: function(attributeNameOrObject, attributeValue) {
+		attr: function(attributeNameOrObject, attributeValue, suppressEvents) {
 			var that = this, attributeChanged = false;
 
-			if (arguments.length === 2) {
+			if (arguments.length >= 2) {
 				if (this._getAttribute(attributeNameOrObject) !== attributeValue) {
 					attributeChanged = true;
 				}
@@ -318,7 +319,7 @@ function(BlockManager, Observable, FloatingMenu) {
 			} else {
 				return this._getAttributes();
 			}
-			if (attributeChanged) {
+			if (attributeChanged && !suppressEvents) {
 				this._renderAndSetContent();
 				this.trigger('change');
 			}
