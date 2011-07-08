@@ -47,7 +47,9 @@ function(BlockManager, Sidebar, EditorManager) {
 		 */
 		_onBlockSelectionChange: function(selectedBlocks) {
 			var that = this;
-
+			if (!this._sidebar) {
+				return;
+			}
 			// TODO: Clearing the whole sidebar might not be what we want; instead we might only want
 			// to clear certain panels.
 			that._sidebar.container.find('.aloha-sidebar-panels').children().remove();

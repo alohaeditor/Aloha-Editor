@@ -54,7 +54,9 @@ define([
 			Aloha.bind('aloha', function() {
 				// When Aloha is fully loaded, we initialize the blocks.
 				that._createBlocks();
-				SidebarAttributeEditor.init();
+				if (that.settings['sidebarAttributeEditor'] !== false) {
+					SidebarAttributeEditor.init();
+				}
 			});
 		},
 		_createBlocks: function() {
