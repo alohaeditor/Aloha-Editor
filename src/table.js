@@ -83,7 +83,7 @@ TablePlugin.checkConfig = function (c) {
 				newC.push({
 					text	  : c[i].text	   ? c[i].text		: c[i].name,
 					tooltip	  : c[i].tooltip   ? c[i].tooltip	: c[i].text,
-					iconClass : c[i].iconClass ? c[i].iconClass	: 'GENTICS_button_' + c[i].name,
+					iconClass : c[i].iconClass ? c[i].iconClass	: 'aloha-button-' + c[i].name,
 					cssClass  : c[i].cssClass  ? c[i].cssClass	: c[i].name
 				});
 			}
@@ -1709,7 +1709,7 @@ Aloha.Table.prototype.columnSelectionMouseDown = function (jqEvent) {
 		this.columnsToSelect = [this.clickedColumnId];
 	}
 
-	// this does actually the column-selection.
+	// this does the actual column-selection.
 	// it reads the columns which should be selected from "columnsToSelect"
 	this.selectColumns();
 
@@ -2326,6 +2326,9 @@ Aloha.Table.prototype.focusOut = function () {
  * @return void
  */
 Aloha.Table.prototype.selectColumns = function () {
+
+	//console.log(11111111111111111111111);
+
 	// get the class which selected cells should have
 	var selectClass = this.get('classCellSelected');
 	// Create local copy in this scope for quicker look-up reference in 3-level deep for-loops
