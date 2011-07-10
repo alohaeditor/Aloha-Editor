@@ -68,7 +68,6 @@ function(BlockManager, Observable, FloatingMenu) {
 			this._domElementType = GENTICS.Utils.Dom.isBlockLevelElement(element[0]) ? 'block' : 'inline';
 
 			this.element.addClass('aloha-block');
-			this.element.addClass('aloha-block-' + this.attr('block-type'));
 
 			// Register event handlers for activating an Aloha Block
 			this.element.bind('click', function(event) {

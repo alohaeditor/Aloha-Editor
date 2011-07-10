@@ -107,6 +107,7 @@ function(FloatingMenu, Observable, Registry) {
 			}
 
 			block = new (this.blockTypes.get(attributes['block-type']))(element);
+			block.element.addClass('aloha-block-' + attributes['block-type']);
 
 			// Save attributes on block, but ignore jquery attribute.
 			$.each(attributes, function(k, v) {
@@ -143,7 +144,7 @@ function(FloatingMenu, Observable, Registry) {
 		getConfig: function(blockElement, instanceDefaults) {
 			// TODO: merge from plugin settings
 			// TODO: What about double matches / overrides / multiple selectors applying?
-			var settingsDefaults = {dummy: 'bar'};
+			var settingsDefaults = {};
 
 			return $.extend(
 				{},
