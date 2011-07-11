@@ -172,17 +172,21 @@ function(PluginManager, FloatingMenu, i18n, undefined) {
 				 *  next <-- when everything is loaded, we continue
 				 */
 				$.each(configuredPluginsWithBundle, function(i, configuredPluginWithBundle) {
-					var tmp, bundleName, pluginName, bundlePath;
+					var tmp, bundleName, pluginName, bundlePath = '';
 
 					tmp = configuredPluginWithBundle.split('/');
 					bundleName = tmp[0];
 					pluginName = tmp[1];
 					// TODO assertion if pluginName or bundleName NULL _-> ERROR!!
 
+
+					if (Aloha.settings.basePath) {
+						bundlePath = Aloha.settings.basePath;
+					}
 					if (Aloha.settings.bundles && Aloha.settings.bundles[bundleName]) {
-						bundlePath = Aloha.settings.bundles[bundleName];
+						bundlePath += Aloha.settings.bundles[bundleName];
 					} else {
-						bundlePath = 'plugins/' + bundleName;
+						bundlePath += 'plugins/' + bundleName;
 					}
 
 					pluginNames.push(pluginName);
@@ -244,7 +248,7 @@ function(PluginManager, FloatingMenu, i18n, undefined) {
 		getLoadedPlugins: function() {
 			return this.loadedPlugins;
 		},
-		
+
 		/**
 		 * Returns true if a certain plugin is loaded, false otherwise.
 		 */
