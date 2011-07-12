@@ -82,7 +82,8 @@ Aloha.Markup = Class.extend({
 			}
 		}
 
-		// ENTER
+		// ENTER --
+		// 
 		if  (event.keyCode === 13 ) {
 			if (event.shiftKey) {
 				Aloha.Log.debug(this, '... got a smoking Shift+Enter, Cowboy');

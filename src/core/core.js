@@ -975,7 +975,35 @@
 
 			// Done
 			return true;
-		}
+		},
+		/**
+		 * Utility to compute a conf object for a given editable
+		 */
+		getEditableConfig: function(obj) {
+			if (this.settings.editables) {
+				jQuery.each( this.settings.editables, function (selector, selectorConfig) {
+                    if ( obj.is(selector) ) {
+                        configSpecified = true;
+                        configObj = {};
+                        for (var k in selectorConfig) {
+                            if ( selectorConfig.hasOwnProperty(k) ) {
+                                configObj[k] = {};
+                                configObj[k] = jQuery.extend(true, configObj[k], that.config[k], selectorConfig[k]);
+                            }
+                        }
+                    }
+				});
+			}
+			if ( !configSpecified ) {
+                if ( typeof this.settings.config === 'undefined' || !this.settings.config ) {
+                    configObj = this.config;
+                } else {
+                    configObj = this.settings.config;
+                }
+            }
+
+            return configObj;
+		};
 	});
 
 	// Initialise Aloha Editor
