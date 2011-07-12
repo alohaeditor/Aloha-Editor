@@ -11,24 +11,24 @@
     z-index: 12000;
 }
 
+.aloha-character-picker-overlay {
+	border-collapse:collapse;
+}
+
 .aloha-character-picker-overlay td {
-    border: none;
-    padding: 0;
-}
-
-.aloha-character-picker-overlay td span {
-    display: block;
-    padding: 5px;
-    background-color: #fff;
+    width: 1.5em;
+    height: 1.5em;
     border: 1px solid #afafaf;
+    font-size: 0.8em;
+    padding: 0.05em;
 }
 
-.aloha-character-picker-overlay td.mouseover span {
+.aloha-character-picker-overlay td.mouseover {
     border: 1px solid #fdea83;
     background-color: #fefce1;
 }
 
-.aloha-character-picker-overlay td.focused span {
+.aloha-character-picker-overlay td.focused {
     border: 1px solid #407bcf;
     background-color: #b9d6f9;
 }

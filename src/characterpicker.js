@@ -141,7 +141,7 @@
 			}
 			function mkButton(c) {
 				var character = htmlEntityToSingleCharacter(c)
-				return $('<td><span>' + character + '</span></td>')
+				return $('<td>' + character + '</td>')
 					.mouseover(function() {
 						$(this).addClass('mouseover');
 					})
