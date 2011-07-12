@@ -182,7 +182,7 @@ function(PluginManager, FloatingMenu, i18n, undefined) {
 					if (Aloha.settings.bundles && Aloha.settings.bundles[bundleName]) {
 						bundlePath = Aloha.settings.bundles[bundleName];
 					} else {
-						bundlePath = 'plugins/' + bundleName;
+						bundlePath = '../plugins/' + bundleName;
 					}
 
 					pluginNames.push(pluginName);
