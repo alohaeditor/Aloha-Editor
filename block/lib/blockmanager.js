@@ -119,13 +119,14 @@ function(FloatingMenu, Observable, Registry) {
 			// Save attributes on block, but ignore jquery attribute.
 			$.each(attributes, function(k, v) {
 				if (k.indexOf('jQuery') === 0) return;
-
 				block.attr(k, v, true);
 			});
 
+			// Remove the attributes from the child element, as they have been moved to the parent element.
 			$.each(element.data(), function(k, v) {
 				element.removeAttr('data-' + k);
 			});
+			element.removeAttr('about');
 
 			// Register block
 			this.blocks.register(block.getId(), block);
