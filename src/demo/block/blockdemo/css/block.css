@@ -21,14 +21,14 @@
 	background-image:url('../img/stock-quote-aapl.gif');
 }
 
-.aloha-block:hover > .block-draghandle-topright,
-.aloha-block-active > .block-draghandle-topright {
+.aloha-block:hover > .block-draghandle-topleft,
+.aloha-block-active > .block-draghandle-topleft {
 	display:block;
 }
 
-.block-draghandle-topright {
+.block-draghandle-topleft {
 	position:absolute;
-	right:-1px;
+	left:-1px;
 	top:-13px;
 	width:44px;
 	height:12px;
@@ -41,14 +41,14 @@
 	border-top-left-radius:5px;
 	border-top-right-radius:5px;
 }
-.block-draghandle-topright a {
+.block-draghandle-topleft a {
 	padding: 0 2px;
 	font-size: 11px;
 	text-decoration: none;
 	color: #777;
 	display: block;
 }
-.block-draghandle-topright a span {
+.block-draghandle-topleft a span {
 	color: #710909;
 	font-weight: bold;
 }
