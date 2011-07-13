@@ -88,10 +88,9 @@ Aloha.Markup = Class.extend({
 		disableEnter = Aloha.getEditableConfig(Aloha.getActiveEditable().obj).disableEnter;
 		Aloha.Log.debug(Aloha,"disableEnter for " + Aloha.getActiveEditable().obj.attr('id') + " = " + disableEnter);
 		if (event.keyCode === 13 && disableEnter === true) {
-			event.stopImmediatePropagation();
-			event.preventDefault();
+			return false;
 		}
-		if  (event.keyCode === 13 && !(disableEnter)) {
+		if  (event.keyCode === 13) {
 			if (event.shiftKey) {
 				Aloha.Log.debug(this, '... got a smoking Shift+Enter, Cowboy');
 				// when the range is expanded, we remove the selected text
