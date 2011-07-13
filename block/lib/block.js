@@ -44,11 +44,17 @@ function(BlockManager, Observable, FloatingMenu) {
 		id: null,
 
 		/**
-		 * The original block element
+		 * The wrapper element around the inner element
 		 * @type jQuery
 		 */
 		// TODO: Rename to $element
 		element: null,
+
+		/**
+		 * The inner element which is containing the actual user-provided content
+		 * @type jQuery
+		 */
+		$innerElement: null,
 
 		/**
 		 * Either "inline" or "block", will be guessed from the original block dom element
@@ -57,17 +63,38 @@ function(BlockManager, Observable, FloatingMenu) {
 		_domElementType: null,
 
 		/**
-		 * @param {jQuery} element Element that declares the block
+		 * if TRUE, the rendering is currently taking place. Used to prevent recursion
+		 * errors.
+		 * @type Boolean
+		 */
+		_currentlyRendering: false,
+
+		/**
+		 * set to TRUE once the block is fully initialized and should be rendered.
+		 *
+		 * @type Boolean
+		 */
+		_initialized: false,
+
+		/**
+		 * @param {jQuery} $innerElement Element that declares the block
 		 * @constructor
 		 */
-		_constructor: function(element) {
+		_constructor: function($innerElement) {
 			var that = this;
-			this.id = element.attr('id');
-			this.element = element;
+			this.id = GENTICS.Utils.guid();
 
-			this._domElementType = GENTICS.Utils.Dom.isBlockLevelElement(element[0]) ? 'block' : 'inline';
+			this.$innerElement = $innerElement;
+
+			this._domElementType = GENTICS.Utils.Dom.isBlockLevelElement($innerElement[0]) ? 'block' : 'inline';
+			$innerElement.wrap('<' + this._getWrapperElementType() + ' />');
+			this.element = $innerElement.parent();
+			this.element.contentEditable(false);
+
+			this.element.attr('id', this.id);
 
 			this.element.addClass('aloha-block');
+			$innerElement.addClass('aloha-block-inner');
 
 			// Register event handlers for activating an Aloha Block
 			this.element.bind('click', function(event) {
@@ -103,11 +130,12 @@ function(BlockManager, Observable, FloatingMenu) {
 			return {
 				tag: this.element[0].tagName,
 				attributes: this._getAttributes(), // contains data-properties AND about
-				classes: this.element.attr('class') // TODO: filter out aloha-block-active...
+				classes: this.$innerElement.attr('class') // TODO: filter out aloha-block-active...
 			}
 		},
 
 		_registerAsBlockified: function() {
+			this._initialized = true;
 			this.element.trigger('block-initialized');
 		},
 
@@ -246,21 +274,36 @@ function(BlockManager, Observable, FloatingMenu) {
 
 		/**
 		 * Template method to render contents of the block, must be implemented by specific block type
+		 *
+		 * The renderer must manually take care of flushing the inner element if it needs that.
+		 *
 		 * @api
 		 */
 		render: function() {},
 
 		_renderAndSetContent: function() {
-			var innerElement = $('<' + this._getWrapperElementType() + ' class="aloha-block-inner" />');
-			var result = this.render(innerElement);
+			if (this._currentlyRendering) return;
+			if (!this._initialized) return;
+
+			this._currentlyRendering = true;
+
+			var result = this.render(this.$innerElement);
+
 			// Convenience for simple string content
 			if (typeof result === 'string') {
-				innerElement.html(result);
+				this.$innerElement.html(result);
 			}
-			this.element.empty();
-			this.element.append(innerElement);
 
-			this.createEditables(innerElement);
+			this._renderSurroundingElements();
+
+			this._currentlyRendering = false;
+		},
+
+		_renderSurroundingElements: function() {
+			this.element.empty();
+			this.element.append(this.$innerElement);
+
+			this.createEditables(this.$innerElement);
 
 			this.renderToolbar();
 		},

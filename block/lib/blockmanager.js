@@ -80,6 +80,14 @@ function(FloatingMenu, Observable, Registry) {
 				}
 				BlockManager._deactivateActiveBlocks();
 			});
+
+			Aloha.bind('aloha-selection-changed', function() {
+				// TODO: the following line is needed to de-select blocks when navigating over them
+				// using the mouse cursors.
+				// However, including this line breaks behavior when clicking into an editable
+				// INSIDE a block.
+				that._deactivateActiveBlocks();
+			});
 		},
 
 		/**
@@ -97,9 +105,6 @@ function(FloatingMenu, Observable, Registry) {
 			attributes = this.getConfig(element, instanceDefaults);
 
 			element.contentEditable(false);
-			if (!element.attr('id')) {
-				element.attr('id', GENTICS.Utils.guid());
-			}
 
 			if (!this.blockTypes.has(attributes['block-type'])) {
 				Aloha.Log.error('block/blockmanager', 'Block Type ' + attributes['block-type'] + ' not found!');
@@ -113,7 +118,11 @@ function(FloatingMenu, Observable, Registry) {
 			$.each(attributes, function(k, v) {
 				if (k.indexOf('jQuery') === 0) return;
 
-				block.attr(k, v);
+				block.attr(k, v, true);
+			});
+
+			$.each(element.data(), function(k, v) {
+				element.removeAttr('data-' + k);
 			});
 
 			// Register block
