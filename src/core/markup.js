@@ -65,13 +65,14 @@ Aloha.Markup = Class.extend({
 	 * @return "Aloha.Selection"
 	 */
 	preProcessKeyStrokes: function(event) {
+		var rangeObject = Aloha.Selection.rangeObject,
+		handlers,
+		i,
+		disableEnter;
 		if (event.type != 'keydown') {
 			return false;
 		}
 
-		var rangeObject = Aloha.Selection.rangeObject,
-			handlers,
-			i;
 
 		if (this.keyHandlers[event.keyCode]) {
 			handlers = this.keyHandlers[event.keyCode];
@@ -84,7 +85,13 @@ Aloha.Markup = Class.extend({
 
 		// ENTER --
 		// 
-		if  (event.keyCode === 13 ) {
+		disableEnter = Aloha.getEditableConfig(Aloha.getActiveEditable().obj).disableEnter;
+		Aloha.Log.debug(Aloha,"disableEnter for " + Aloha.getActiveEditable().obj.attr('id') + " = " + disableEnter);
+		if (event.keyCode === 13 && disableEnter === true) {
+			event.stopImmediatePropagation();
+			event.preventDefault();
+		}
+		if  (event.keyCode === 13 && !(disableEnter)) {
 			if (event.shiftKey) {
 				Aloha.Log.debug(this, '... got a smoking Shift+Enter, Cowboy');
 				// when the range is expanded, we remove the selected text

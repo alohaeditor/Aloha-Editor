@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<title>Aloha Editor Editable Config Suite</title>
+	<!-- include jquery -->
+	<script	src="../../dep/jquery-1.5.1.js" ></script>
+	<!-- include qunit -->
+	<link rel="stylesheet" href="../dep/qunit.css" type="text/css"/>
+	<script type="text/javascript" src="../dep/qunit.js"></script>
+	<script type="text/javascript" src="../dep/jquery.simulate.js"></script>
+	<!-- include aloha -->
+	<script	src="../../aloha.js" id="aloha-script-include"></script>
+	<!-- include the testutils -->
+	<script type="text/javascript" src="testutils.js"></script>
+	<!-- include the tests -->
+	<script type="text/javascript" src="editableconfigtest.js" defer></script>
+	<!-- inject into testswarm -->
+	<script type="text/javascript" src="../dep/swarminject.js"></script>
+</head>
+<body>
+	<h1 id="qunit-header">Aloha Editor Editable Config Test Suite</h1>
+	<h2 id="qunit-banner"></h2>
+	<div id="qunit-testrunner-toolbar"></div>
+	<h2 id="qunit-userAgent"></h2>
+	<ol id="qunit-tests"></ol>
+	<div id="qunit-fixture">
+</div>
+<div id="edit_notdisabled" style="margin:20px; border:1px solid #000000;"></div>
+<div id="edit" style="margin:20px; border:1px solid #000000;"></div>
+</body>
+</html>

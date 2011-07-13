@@ -71,7 +71,15 @@
 		 * @cfg {Object} object Aloha's settings
 		 */
 		settings: {},
-
+		
+		/**
+		 * default config (used by getEditableConfig for core settings)
+		 */
+		config: {
+			'core': {
+				'processEnter': true // Process the enter handling
+			}
+		},
 		/**
 		 * This represents the name of the users OS. Could be:
 		 * 'Mac', 'Linux', 'Win', 'Unix', 'Unknown'
@@ -980,30 +988,40 @@
 		 * Utility to compute a conf object for a given editable
 		 */
 		getEditableConfig: function(obj) {
-			if (this.settings.editables) {
-				jQuery.each( this.settings.editables, function (selector, selectorConfig) {
-                    if ( obj.is(selector) ) {
-                        configSpecified = true;
-                        configObj = {};
-                        for (var k in selectorConfig) {
-                            if ( selectorConfig.hasOwnProperty(k) ) {
-                                configObj[k] = {};
-                                configObj[k] = jQuery.extend(true, configObj[k], that.config[k], selectorConfig[k]);
-                            }
-                        }
-                    }
+			var
+				configObj = {},
+				configSpecified = false;
+			try {
+				jQuery.each( this.settings.core.editables, function (selector, selectorConfig) {
+					if ( obj.is(selector) ) {
+						configSpecified = true;
+						for (var k in selectorConfig) {
+							if ( selectorConfig.hasOwnProperty(k) ) {
+								if (selectorConfig[k] instanceof Array) {
+									
+								} else if (typeof selectorConfig[k] === "object") {
+									configObj[k] = {};
+									configObj[k] = jQuery.extend(true, configObj[k], that.config[k], selectorConfig[k]);									
+								} else {
+									configObj[k] = selectorConfig[k];
+								}
+							}
+						}
+					}
 				});
+			} catch (e) {
+				// do nothing
 			}
 			if ( !configSpecified ) {
-                if ( typeof this.settings.config === 'undefined' || !this.settings.config ) {
-                    configObj = this.config;
+                if ( typeof this.settings.core !== 'undefined' && typeof this.settings.core.config !== 'undefined' ) {
+					configObj = this.settings.core.config;
                 } else {
-                    configObj = this.settings.config;
+                	configObj = this.config.core;
                 }
             }
 
             return configObj;
-		};
+		}
 	});
 
 	// Initialise Aloha Editor
