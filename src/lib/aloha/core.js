@@ -1,23 +1,29 @@
 /*!
- * This file is part of Aloha Editor
- * Author & Copyright (c) 2010 Gentics Software GmbH, aloha@gentics.com
- * Licensed unter the terms of http://www.aloha-editor.com/license.html
- */
-
-/*
- * The GENTICS global namespace object. If GENTICS is already defined, the
- * existing GENTICS object will not be overwritten so that defined
- * namespaces are preserved.
- */
+* This file is part of Aloha Editor Project http://aloha-editor.org
+* Copyright © 2010-2011 Gentics Software GmbH, aloha@gentics.com
+* Contributors http://aloha-editor.org/contribution.php 
+* Licensed unter the terms of http://www.aloha-editor.org/license.html
+*//*
+* Aloha Editor is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.*
+*
+* Aloha Editor is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
 
 define(
-['core/pluginmanager', 'core/floatingmenu', 'i18n!core/nls/i18n'],
-function(PluginManager, FloatingMenu, i18n, undefined) {
+['aloha/jquery', 'aloha/pluginmanager', 'aloha/floatingmenu'],
+function(jQuery, PluginManager, FloatingMenu, undefined) {
 	"use strict";
 
-	// Prepare
 	var
-		jQuery = window.alohaQuery || window.jQuery,
 		$ = jQuery,
 		GENTICS = window.GENTICS,
 		Aloha = window.Aloha,
@@ -172,17 +178,21 @@ function(PluginManager, FloatingMenu, i18n, undefined) {
 				 *  next <-- when everything is loaded, we continue
 				 */
 				$.each(configuredPluginsWithBundle, function(i, configuredPluginWithBundle) {
-					var tmp, bundleName, pluginName, bundlePath;
+					var tmp, bundleName, pluginName, bundlePath = '';
 
 					tmp = configuredPluginWithBundle.split('/');
 					bundleName = tmp[0];
 					pluginName = tmp[1];
 					// TODO assertion if pluginName or bundleName NULL _-> ERROR!!
 
+
+					if (Aloha.settings.basePath) {
+						bundlePath = Aloha.settings.basePath;
+					}
 					if (Aloha.settings.bundles && Aloha.settings.bundles[bundleName]) {
-						bundlePath = Aloha.settings.bundles[bundleName];
+						bundlePath += Aloha.settings.bundles[bundleName];
 					} else {
-						bundlePath = '../plugins/' + bundleName;
+						bundlePath += '../plugins/' + bundleName;
 					}
 
 					pluginNames.push(pluginName);
@@ -244,14 +254,14 @@ function(PluginManager, FloatingMenu, i18n, undefined) {
 		getLoadedPlugins: function() {
 			return this.loadedPlugins;
 		},
-		
+
 		/**
 		 * Returns true if a certain plugin is loaded, false otherwise.
 		 */
 		isPluginLoaded: function(pluginName) {
 			var found = false;
 			$.each(this.loadedPlugins, function() {
-				if (pluginName === this) {
+				if (pluginName.toString() === this.toString()) {
 					found = true;
 				}
 			});
@@ -292,9 +302,6 @@ function(PluginManager, FloatingMenu, i18n, undefined) {
 			// Initialise the base path to the aloha files
 			Aloha.settings.base =
 				Aloha.settings.base || window.Aloha_base || Aloha.getAlohaUrl();
-			// Initialise pluginDir
-			Aloha.settings.pluginDir =
-				Aloha.settings.pluginDir || window.Aloha_pluginDir || 'plugin';
 
 			// initialize the Log
 			Aloha.Log.init();
@@ -327,7 +334,7 @@ function(PluginManager, FloatingMenu, i18n, undefined) {
 		},
 
 		/**
-		 * Loads plugins Aloha need i18n to be initialized
+		 * Loads plugins Aloha
 		 * @return void
 		 */
 		initPlugins: function (next) {
@@ -337,19 +344,13 @@ function(PluginManager, FloatingMenu, i18n, undefined) {
 		},
 
 		/**
-		 * Loads GUI components that need i18n to be initialized
+		 * Loads GUI components
 		 * @return void
 		 */
 		initGui: function (next) {
+			
 			Aloha.RepositoryManager.init();
 			FloatingMenu.init();
-
-			// internationalize ext js message box buttons
-			Ext.MessageBox.buttonText.yes = i18n.t(Aloha, 'yes');
-			Ext.MessageBox.buttonText.no = i18n.t(Aloha, 'no');
-			Ext.MessageBox.buttonText.cancel = i18n.t(Aloha, 'cancel');
-			Ext.ux.AlohaAttributeField.prototype.listEmptyText = i18n.t( Aloha, 'repository.no_item_found' );
-			Ext.ux.AlohaAttributeField.prototype.loadingText = i18n.t( Aloha, 'repository.loading' ) + '...';
 
 			// activate registered editables
 			for (var i = 0, editablesLength = Aloha.editables.length; i < editablesLength; i++) {

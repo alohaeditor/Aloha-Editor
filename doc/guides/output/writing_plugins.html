@@ -56,7 +56,7 @@
           <hr style="clear:both;">
           <dl class="L">
     <dt>Plugins</dt>
-      <dd>Block</dd>
+      <dd><a href="plugin_block.html">Block</a></dd>
       <dd>Image</dd>
     <dt>Contributing to Aloha</dt>
       <dd>Development Process</dd>
@@ -150,21 +150,29 @@ function(Plugin) {
 </ul>
 <h3 id="requirejs-modules-explained">4 RequireJS modules explained</h3>
 <p>We use <a href="http://requirejs.org">RequireJS</a> to manage JavaScript dependencies, that&#8217;s why some basic understanding is very helpful. By using RequireJS, we gain some nice benefits: First, we the dependency management between JavaScript files is done for us, meaning they are included in the correct order. Second, we do not pollute the global namespace, allowing tricks like <a href="http://requirejs.org/docs/requirements.html#8">loading two different versions</a> of Aloha on a single page.</p>
-<p>The basic element of RequireJS is a so called <tt>module</tt> which is one file that defines and exports a class or other JavaScript value. This reference can be used in other modules by <strong>requiring</strong> that module.</p>
-<div class="info"><p>Roughly, a RequireJS module is the same as a JavaScript <code>Class</code>, but without a global variable.</p></div>
-<p>In the following example, we define two modules. The first module <code>foo</code> defines a class with a method <code>doSomething()</code>. The second module <code>bar</code> has a dependency to <code>foo</code>, and RequireJS injects what has been returned by <code>foo</code>.</p>
+<p>The basic element of RequireJS is a so called <tt>module</tt> which is one file that defines and exports a JavaScript object. This reference can be used in other modules by <strong>requiring</strong> that module.</p>
+<p>In the following example, we define two modules. The first module <code>editor</code> defines two classes. The second module <code>bar</code> has a dependency to <code>foo</code>, and RequireJS injects what has been returned by <code>foo</code>.</p>
 <div class="code_container">
-<div class="filename">myplugin/lib/foo.js</div>
+<div class="filename">myplugin/lib/editor.js</div>
 <pre class="brush: javascript; gutter: false; toolbar: false">
 
 define(
 [],
 function() {
-    &quot;use strict&quot;;
-    return Class.extend({
-        doSomething: function() {
-        }
-    });
+	&quot;use strict&quot;;
+	var exports = {};
+
+	exports.Foo = Class.extend({
+		doSomething: function() {
+		}
+	});
+
+	exports.Bar = Class.extend({
+		doSomethingElse: function() {
+		}
+	});
+
+	return exports;
 });
 </pre></div>
 <div class="code_container">
@@ -172,13 +180,17 @@ function() {
 <pre class="brush: javascript; gutter: false; toolbar: false">
 
 define(
-['myplugin/foo'],
-function(Foo) {
+['myplugin/editor'],
+function(editor) {
     &quot;use strict&quot;;
-    var fooInstance = new Foo();
+    var fooInstance = new editor.Foo();
     fooInstance.doSomething();
+    var barInstance = new editor.Bar();
+    barInstance.toSomethingElse();
 });
-</pre></div><p>Note that a module does not need to define its own name, it is simply named by its location on the file system.</p>
+</pre></div>
+<div class="info"><p>We often bundle multiple related JavaScript Classes into a single module, as in the above example. On the other hand, if a Singleton is defined, we <strong>directly</strong> return the singleton instance, as shown in the coding guidelines.</p></div>
+<p>Note that a module does not need to define its own name, it is simply named by its location on the file system.</p>
 <p>Modules are created using <tt>define(dependencies, callback)</tt>, where the first parameter <code>dependencies</code> is a list of other RequireJS modules this plugin needs in order to function properly. The second parameter is <code>callback</code> is a function which is executed <strong>as soon as all dependencies are loaded</strong>. The first dependency is passed to the <code>callback</code> as first parameter, the second dependency as the second, and so on.</p>
 <div class="note"><p>Circular dependencies need some special treatment. It is most often a sign of bad code, but if you need to do this, follow the <a href="http://requirejs.org/docs/api.html#circular">guide at the RequireJS website</a>.</p></div>
 <p>So, at which place does Aloha look up modules? We&#8217;ll explain this with a few examples:</p>
@@ -241,16 +253,18 @@ var greeterInstance = new GreeterForMen('Christopher');
 greeterInstance.greet(); // alerts &quot;Good Morning Mr. Chistopher&quot;
 </pre></div><p>You can use <tt>this._super()</tt> to call the superclass constructor.</p>
 <h3 id="mixin-support">6 Mixin Support</h3>
-<p>Our class definition also supports mixins, so you can specify multiple arguments to <code>Class.extend</code>. For example, in order to make your class observable, you can mix in <code>core/observable</code>:</p>
+<p>Our class definition also supports mixins, so you can specify multiple arguments to <code>Class.extend</code>. For example, in order to make your class observable, you can mix in <code>core/mixin.Observable</code>:</p>
+<div class="warning"><p>The following code is not yet correct; it is however the way we want to change Aloha core.</p></div>
+
 <div class="code_container">
 <pre class="brush: javascript; gutter: false; toolbar: false">
 
 define(
-['core/observable'],
-function(Observable) {
+['core/mixin'],
+function(mixin) {
     &quot;use strict&quot;;
 
-    return Class.extend(Observable, {
+    return Class.extend(mixin.Observable, {
     	// your methods here
     });
 });
@@ -263,8 +277,9 @@ define(
 [],
 function() {
 	&quot;use strict&quot;;
+	var exports = {};
 
-	return {
+	exports.Observable = {
 		bind: function(eventType, handler, scope) {
 			// implement method here
 		},
@@ -272,11 +287,70 @@ function() {
 			// implement method here
 		}
 	};
+
+	return exports;
 });
-</pre></div><p>For a list of current mixins, you can soon check the <span class="caps">API</span> doc. Right now, there is only <tt>core/observable</tt>.</p>
+</pre></div><p>For a list of current mixins, you can soon check the <span class="caps">API</span> doc. Right now, there is only <tt>Observable</tt>.</p>
 <h3 id="localization">7 Localization</h3>
 <p>If you have some labels in your plugin, these need to be made available in multiple languages, as Aloha is capable showing its user interface in a wide variety of languages.</p>
-<div class="warning"><p>not yet done.</p></div>
+<div class="info"><p>Localization is done using a slightly adjusted version of the <a href="http://requirejs.org/docs/api.html#i18n"><code>i18n</code> module of RequireJS</a></p></div>
+<h4 id="folder-structure-for-labels">7.1 Folder Structure for Labels</h4>
+<p>Localized strings are stored in the folder <code>nls</code> (Natural Language Support) of your plugin. The file/directory structure inside <code>nls</code> is as follows:</p>
+<ul>
+	<li><code>nls/</code>
+	<ul>
+		<li><code>i18n.js</code> &#8211; contains the English strings, used as fallback.</li>
+		<li><code>de/</code>
+		<ul>
+			<li><code>i18n.js</code> &#8211; contains the German strings</li>
+		</ul></li>
+		<li><code>fr/</code>
+		<ul>
+			<li><code>i18n.js</code> &#8211; contains the French strings</li>
+		</ul></li>
+		<li>&#8230; continue for the other languages &#8230;</li>
+	</ul></li>
+</ul>
+<p>The English i18n file has the following structure:</p>
+<div class="code_container">
+<div class="filename">myplugin/nls/i18n.js</div>
+<pre class="brush: javascript; gutter: false; toolbar: false">
+
+define({
+	&quot;root&quot;: {
+		&quot;your.key.here&quot;: &quot;Label in English&quot;,
+		&quot;your.other.key.here&quot;: &quot;Some more Text&quot;,
+		// continue here for all labels
+	},
+	&quot;de&quot;: true,
+	&quot;fr&quot;: true
+});
+</pre></div><p>Inside <code>root</code>, all the keys and labels are placed. Furthermore, when a German language file is available, the key <code>de</code> needs to be set to <code>true</code>, and this is done for all languages available.</p>
+<p>A localized language file has a simpler structure:</p>
+<div class="code_container">
+<div class="filename">myplugin/nls/de/i18n.js</div>
+<pre class="brush: javascript; gutter: false; toolbar: false">
+
+define({
+	&quot;your.key.here&quot;: &quot;Beschreibung in Deutsch&quot;,
+	&quot;your.other.key.here&quot;: &quot;Noch mehr Text&quot;,
+	// continue here for all labels
+});
+</pre></div><h4 id="using-localized-strings">7.2 Using localized strings</h4>
+<p>Now, if we want to use the &#8220;your.key.here&#8221; key inside our application, we can use RequireJS to inject the correct language version for us:</p>
+<div class="code_container">
+<div class="filename">myplugin/lib/something.js</div>
+<pre class="brush: javascript; gutter: false; toolbar: false">
+
+define(
+['i18n!myplugin/nls/i18n'],
+function(i18n) {
+
+	// your code...
+	var localizedString = i18n.t('your.key.here');
+	// your code...
+});
+</pre></div><p>By defining <tt>i18n!myplugin/nls/i18n</tt> as requirement, we get a special object injected which contains all localized strings. There exists a <tt>t('key')</tt> method on this object which returns the translation for the passed key.</p>
 <h3 id="text-files">8 Text Files</h3>
 <div class="warning"><p>not yet done</p></div>
 <h3 id="including-css-files">9 Including <span class="caps">CSS</span> files</h3>
@@ -346,7 +420,9 @@ function(Plugin) {
 </a></li><li><a href="#classes-and-extension-mechanisms"><p>Classes and Extension Mechanisms</p>
 </a></li><li><a href="#mixin-support"><p>Mixin Support</p>
 </a></li><li><a href="#localization"><p>Localization</p>
-</a></li><li><a href="#text-files"><p>Text Files</p>
+</a><ul><li><a href="#folder-structure-for-labels"><p>Folder Structure for Labels</p>
+</a></li> <li><a href="#using-localized-strings"><p>Using localized strings</p>
+</a></li></ul></li><li><a href="#text-files"><p>Text Files</p>
 </a></li><li><a href="#including-css-files"><p>Including <span class="caps">CSS</span> files</p>
 </a></li><li><a href="#lifecycle-of-plugins"><p>Lifecycle of Plugins</p>
 </a></li><li><a href="#dependencies-between-plugins"><p>Dependencies between plugins</p>

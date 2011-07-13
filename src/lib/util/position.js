@@ -4,10 +4,14 @@
  * Licensed unter the terms of http://www.aloha-editor.com/license.html
  */
 // Start Closure
-(function(window, undefined) {
+define(
+[
+	'aloha/jquery',
+],
+function($) {
 	"use strict";
 	var
-		jQuery = window.alohaQuery || window.jQuery, $ = jQuery,
+		$ = jQuery,
 		GENTICS = window.GENTICS,
 		Class = window.Class,
 		console = window.console;
@@ -137,4 +141,4 @@ GENTICS.Utils.Position.addMouseMoveCallback = function (callback) {
 	return (this.mouseMoveCallbacks.length - 1);
 };
 
-})(window);
+});

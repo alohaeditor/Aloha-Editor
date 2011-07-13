@@ -6,11 +6,12 @@
 */
 
 define([
+   	'aloha/jquery',
 	'block/block',
 	'block/blockmanager',
 	'text!blockdemo/res/vcard.html',
 	'blockdemo/vendor/underscore'
-], function(block, BlockManager, vcardTemplate) {
+], function(jQuery, block, BlockManager, vcardTemplate) {
 	"use strict";
 
 	var CompanyBlock = block.AbstractBlock.extend({
@@ -119,7 +120,7 @@ define([
 		},
 
 		render: function() {
-			return template($.extend(
+			return template(jQuery.extend(
 				{
 					url: '',
 					org: '',
@@ -133,7 +134,7 @@ define([
 	var CustomHandleBlock = block.DefaultBlock.extend({
 		renderToolbar: function() {
 			var that = this;
-			var deleteHandle = $('<span class="block-draghandle-topright"><a href="#"><span>x</span> delete</a></span>');
+			var deleteHandle = jQuery('<span class="block-draghandle-topright"><a href="#"><span>x</span> delete</a></span>');
 			this.element.prepend(deleteHandle);
 			deleteHandle.click(function() {
 				that.destroy();
@@ -163,12 +164,12 @@ define([
 		whenAllChildrenBlockified: function(next) {
 			var that = this, numberOfNotYetBlockifiedElements = 0, $containersWithDomBlocks = {};
 
-			var template = $('<div />').html(this.element.html());
+			var template = jQuery('<div />').html(this.element.html());
 
 			var findBlocksForDomElements = function() {
 				var containersWithBlocks = {};
-				$.each($containersWithDomBlocks, function(containerName, $domBlocks) {
-					containersWithBlocks[containerName] = $.map($domBlocks, function($domBlock) {
+				jQuery.each($containersWithDomBlocks, function(containerName, $domBlocks) {
+					containersWithBlocks[containerName] = jQuery.map($domBlocks, function($domBlock) {
 						return BlockManager.getBlock($domBlock);
 					})
 				});
@@ -181,13 +182,13 @@ define([
 					next(findBlocksForDomElements());
 				}
 			}
-			$.each(this.containerDefinitions, function(name, config) {
+			jQuery.each(this.containerDefinitions, function(name, config) {
 				template.find(config.selector).empty();
 
 				var $container = that.element.find(config.selector).first();
 				var $elements = $container.children(); // TODO: block container only contains other blocks as children, nothing else!
 				$elements.each(function() {
-					var $element = $(this);
+					var $element = jQuery(this);
 					if (!BlockManager.getBlock($element)) {
 						// Not blockified yet
 						numberOfNotYetBlockifiedElements++;
@@ -210,10 +211,10 @@ define([
 			this.whenAllChildrenBlockified(function(containersWithBlocks) {
 
 				// Serialize child containers / blocks
-				$.each(containersWithBlocks, function(containerName, blockList) {
+				jQuery.each(containersWithBlocks, function(containerName, blockList) {
 					var serializedBlocks = [];
 
-					$.each(blockList, function() {
+					jQuery.each(blockList, function() {
 						var block = this;
 						serializedBlocks.push(block.serialize());
 						// TODO for later -- if we have stuff between blocks - block.element.children().remove() might be helpful.
@@ -231,7 +232,7 @@ define([
 			if (this._currentlyRendering) return;
 			this._currentlyRendering = true;
 
-			var innerElement = $('<' + this._getWrapperElementType() + ' class="aloha-block-inner" />');
+			var innerElement = jQuery('<' + this._getWrapperElementType() + ' class="aloha-block-inner" />');
 			var result = this.render(innerElement);
 			// Convenience for simple string content
 			if (typeof result === 'string') {
@@ -256,15 +257,15 @@ define([
 				return;
 			}
 			innerElement.html(this.attr('template'));
-			$.each(this.containerDefinitions, function(name, config) {
+			jQuery.each(this.containerDefinitions, function(name, config) {
 				var serializedBlocks = JSON.parse(that.attr(name)); // TODO: use cross-browser version of JSON.parse.
-				$.each(serializedBlocks, function() {
+				jQuery.each(serializedBlocks, function() {
 					var serializedBlock = this;
 					// TODO: copy/paste code from BlockPasteHandler
-					var newBlock = $('<' + serializedBlock.tag + '/>');
+					var newBlock = jQuery('<' + serializedBlock.tag + '/>');
 					newBlock.attr('class', serializedBlock.classes);
 
-					$.each(serializedBlock.attributes, function(k, v) {
+					jQuery.each(serializedBlock.attributes, function(k, v) {
 						if (k === 'about') {
 							newBlock.attr('about', v);
 						} else {

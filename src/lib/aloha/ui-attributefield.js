@@ -1,17 +1,32 @@
 /*!
- * This file is part of Aloha Editor
- * Author & Copyright (c) 2010 Gentics Software GmbH, aloha@gentics.com
- * Licensed unter the terms of http://www.aloha-editor.com/license.html
- */
+* This file is part of Aloha Editor Project http://aloha-editor.org
+* Copyright © 2010-2011 Gentics Software GmbH, aloha@gentics.com
+* Contributors http://aloha-editor.org/contribution.php 
+* Licensed unter the terms of http://www.aloha-editor.org/license.html
+*//*
+* Aloha Editor is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.*
+*
+* Aloha Editor is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
+
 define(
-['core/ui'],
-function() { // TODO add parameter for UI class after refactoring UI to requirejs
+['aloha/jquery', 'aloha/Ext', 'i18n!aloha/nls/i18n', 'aloha/ui'],
+function(jQuery, Ext, i18n, _1, undefined) { // TODO add parameter for UI class after refactoring UI to requirejs
 	"use strict";
+	
 	var
-		jQuery = window.alohaQuery || window.jQuery, $ = jQuery,
+		$ = jQuery,
 		GENTICS = window.GENTICS,
-		Aloha = window.Aloha,
-		Ext = window.Ext;
+		Aloha = window.Aloha;
 
 Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 	typeAhead: false,
@@ -22,6 +37,8 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 	minChars: 3,
 	valueField: 'id',
 	displayField: 'name',
+	listEmptyText: i18n.t( Aloha, 'repository.no_item_found' ),
+	loadingText: i18n.t( Aloha, 'repository.loading' ) + '...',
 	enableKeyEvents: true,
 	store: new Ext.data.Store({
 		proxy: new Ext.data.AlohaProxy(),

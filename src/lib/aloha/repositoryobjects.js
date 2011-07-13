@@ -3,15 +3,17 @@
  * Author & Copyright (c) 2010 Gentics Software GmbH, aloha@gentics.com
  * Licensed unter the terms of http://www.aloha-editor.com/license.html
  */
-(function(window, undefined) {
+define(
+[],
+function(undefined) {
 	"use strict";
+	
 	var
-		jQuery = window.alohaQuery || window.jQuery, $ = jQuery,
 		GENTICS = window.GENTICS,
 		Aloha = window.Aloha,
 		Class = window.Class;
 
-	Aloha.Repository.Object = function() {};
+	Aloha.RepositoryObject = function() {};
 	
 	/**
 	 * @namespace Aloha.Repository
@@ -52,7 +54,7 @@
 	 * </ul></div>
 	 *
 	 */
-		Aloha.Repository.Document = Class.extend({
+	Aloha.RepositoryDocument = Class.extend({
 			_constructor: function (properties) {
 	
 				var p = properties;
@@ -115,7 +117,7 @@
 	 * </ul></div>
 	 *
 	 */
-	Aloha.Repository.Folder = Class.extend({
+	Aloha.RepositoryFolder = Class.extend({
 		
 		_constructor: function(properties) {
 	
@@ -144,4 +146,4 @@
 	//		assert(false, "Error, abstract type, subclass Folder and implement empty")
 	//	};
 	});
-})(window);
+});

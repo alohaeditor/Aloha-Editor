@@ -6,18 +6,13 @@
 
 /**
  * Registry base class.
- * TODO: docuiment that it also contains Observable.
+ * TODO: document that it also contains Observable.
  *
  */
 define(
-['core/observable'],
-function(Observable) {
+['aloha/jquery', 'aloha/observable'],
+function(jQuery, Observable) {
 	"use strict";
-
-	// Prepare
-	var
-		jQuery = window.alohaQuery || window.jQuery,
-		$ = jQuery;
 
 	return Class.extend(Observable, {
 
@@ -32,17 +27,15 @@ function(Observable) {
 		 * @param entry
 		 * @param id
 		 */
-
-		/**
-		 * @event unregister
-		 * @param entry
-		 * @param id
-		 */
-
 		register: function(id, entry) {
 			this._entries[id] = entry;
 			this.trigger('register', entry, id);
 		},
+
+		/**
+		 * @event unregister
+		 * @param id
+		 */
 		unregister: function(id) {
 			var oldEntry = this._entries[id];
 			delete this._entries[id];
@@ -56,7 +49,7 @@ function(Observable) {
 		},
 		getEntries: function() {
 			// clone the entries so the user does not accidentally modify our _entries object.
-			return $.extend({}, this._entries);
+			return jQuery.extend({}, this._entries);
 		}
 	});
 });

@@ -81,3 +81,8 @@ When *generating* the documentation, an additional output directory +output_dir+
 <shell>
 sc-docs generate src/plugins/common/block/lib -v -t docs.sproutcore.com -o output_dir
 </shell>
+
+
+h3. Changelog
+
+* July 6, 2011: Initial version by "Sebastian Kurfürst":credits.html#skurfuerst and "Christopher Hlubek":credits.html#hlubek

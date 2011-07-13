@@ -1,3 +1,4 @@
+
 /*
  * jQuery store - Plugin for persistent data storage using localStorage, userData (and window.name)
  *
@@ -28,20 +29,14 @@
  **********************************************************************************
  */
 
-// IE fix
-if (typeof JSON === 'undefined' || !JSON) {
-	/*
-	 * The GENTICS global namespace object. If GENTICS is already defined, the
-	 * existing GENTICS object will not be overwritten so that defined
-	 * namespaces are preserved.
-	 */
-	var JSON = function () {
-		this.stringigy = function () {};
-		this.parse = function () {};
-	};
-}
 
-(function($,undefined) {
+
+define(
+[
+ 'aloha/jquery',
+ 'vendor/jquery.json-2.2.min'
+],
+function($, _1, undefined) {
 
 /**********************************************************************************
  * $.store base and convinience accessor
@@ -49,7 +44,21 @@ if (typeof JSON === 'undefined' || !JSON) {
 
 $.store = function( driver, serializers )
 {
-	var that = this;
+	var JSON = window.JSON
+		that = this;
+	
+	// IE fix
+	if (typeof JSON === 'undefined' || !JSON) {
+		/*
+		 * The GENTICS global namespace object. If GENTICS is already defined, the
+		 * existing GENTICS object will not be overwritten so that defined
+		 * namespaces are preserved.
+		 */
+		var JSON = function () {
+			this.stringigy = function () {};
+			this.parse = function () {};
+		};
+	}
 
 	if( typeof driver == 'string' )
 	{
@@ -434,4 +443,4 @@ $.store.serializers = {
 	}
 };
 
-})(window.alohaQuery || window.jQuery);
+});

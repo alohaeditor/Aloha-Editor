@@ -6,7 +6,7 @@
 */
 
 define([
-	'core/plugin',
+	'aloha/plugin',
 	'block/blockmanager',
 	'blockdemo/block',
 	'css!blockdemo/css/block.css'

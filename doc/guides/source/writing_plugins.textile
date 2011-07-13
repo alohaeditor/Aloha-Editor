@@ -80,33 +80,46 @@ h3. RequireJS modules explained
 We use "RequireJS":http://requirejs.org to manage JavaScript dependencies, that's why some
 basic understanding is very helpful. By using RequireJS, we gain some nice benefits: First, we the dependency management between JavaScript files is done for us, meaning they are included in the correct order. Second, we do not pollute the global namespace, allowing tricks like "loading two different versions":http://requirejs.org/docs/requirements.html#8 of Aloha on a single page.
 
-The basic element of RequireJS is a so called +module+ which is one file that defines and exports a class or other JavaScript value. This reference can be used in other modules by *requiring* that module.
+The basic element of RequireJS is a so called +module+ which is one file that defines and exports a JavaScript object. This reference can be used in other modules by *requiring* that module.
 
-INFO: Roughly, a RequireJS module is the same as a JavaScript @Class@, but without a global variable.
+In the following example, we define two modules. The first module @editor@ defines two classes. The second module @bar@ has a dependency to @foo@, and RequireJS injects what has been returned by @foo@.
 
-In the following example, we define two modules. The first module @foo@ defines a class with a method @doSomething()@. The second module @bar@ has a dependency to @foo@, and RequireJS injects what has been returned by @foo@.
-
-<javascript filename="myplugin/lib/foo.js">
+<javascript filename="myplugin/lib/editor.js">
 define(
 [],
 function() {
-    "use strict";
-    return Class.extend({
-        doSomething: function() {
-        }
-    });
+	"use strict";
+	var exports = {};
+
+	exports.Foo = Class.extend({
+		doSomething: function() {
+		}
+	});
+
+	exports.Bar = Class.extend({
+		doSomethingElse: function() {
+		}
+	});
+
+	return exports;
 });
 </javascript>
 
 <javascript filename="myplugin/lib/bar.js">
 define(
-['myplugin/foo'],
-function(Foo) {
+['myplugin/editor'],
+function(editor) {
     "use strict";
-    var fooInstance = new Foo();
+    var fooInstance = new editor.Foo();
     fooInstance.doSomething();
+    var barInstance = new editor.Bar();
+    barInstance.toSomethingElse();
 });
 </javascript>
+
+
+INFO: We often bundle multiple related JavaScript Classes into a single module, as in the above example.
+On the other hand, if a Singleton is defined, we *directly* return the singleton instance, as shown in the coding guidelines.
 
 Note that a module does not need to define its own name, it is simply named by its location on the file system.
 
@@ -163,15 +176,17 @@ You can use +this._super()+ to call the superclass constructor.
 
 h3. Mixin Support
 
-Our class definition also supports mixins, so you can specify multiple arguments to @Class.extend@. For example, in order to make your class observable, you can mix in @core/observable@:
+Our class definition also supports mixins, so you can specify multiple arguments to @Class.extend@. For example, in order to make your class observable, you can mix in @core/mixin.Observable@:
+
+WARNING: The following code is not yet correct; it is however the way we want to change Aloha core.
 
 <javascript>
 define(
-['core/observable'],
-function(Observable) {
+['core/mixin'],
+function(mixin) {
     "use strict";
 
-    return Class.extend(Observable, {
+    return Class.extend(mixin.Observable, {
     	// your methods here
     });
 });
@@ -184,8 +199,9 @@ define(
 [],
 function() {
 	"use strict";
+	var exports = {};
 
-	return {
+	exports.Observable = {
 		bind: function(eventType, handler, scope) {
 			// implement method here
 		},
@@ -193,17 +209,81 @@ function() {
 			// implement method here
 		}
 	};
+
+	return exports;
 });
 </javascript>
 
-For a list of current mixins, you can soon check the API doc. Right now, there is only +core/observable+.
+For a list of current mixins, you can soon check the API doc. Right now, there is only +Observable+.
 
 h3. Localization
 
-If you have some labels in your plugin, these need to be made available in multiple languages, as Aloha is capable showing its user interface in a wide variety of languages.
+If you have some labels in your plugin, these need to be made available in multiple languages, as
+Aloha is capable showing its user interface in a wide variety of languages.
 
+INFO: Localization is done using a slightly adjusted version of the "@i18n@ module of
+RequireJS":http://requirejs.org/docs/api.html#i18n
 
-WARNING: not yet done.
+h4. Folder Structure for Labels
+
+Localized strings are stored in the folder @nls@ (Natural Language Support) of your plugin. The file/directory
+structure inside @nls@ is as follows:
+
+* @nls/@
+** @i18n.js@ - contains the English strings, used as fallback.
+** @de/@
+*** @i18n.js@ - contains the German strings
+** @fr/@
+*** @i18n.js@ - contains the French strings
+** ... continue for the other languages ...
+
+The English i18n file has the following structure:
+
+<javascript filename="myplugin/nls/i18n.js">
+define({
+	"root": {
+		"your.key.here": "Label in English",
+		"your.other.key.here": "Some more Text",
+		// continue here for all labels
+	},
+	"de": true,
+	"fr": true
+});
+</javascript>
+
+Inside @root@, all the keys and labels are placed.
+Furthermore, when a German language file is available, the key @de@ needs to be set to @true@, and this
+is done for all languages available.
+
+A localized language file has a simpler structure:
+
+<javascript filename="myplugin/nls/de/i18n.js">
+define({
+	"your.key.here": "Beschreibung in Deutsch",
+	"your.other.key.here": "Noch mehr Text",
+	// continue here for all labels
+});
+</javascript>
+
+h4. Using localized strings
+
+Now, if we want to use the "your.key.here" key inside our application, we can use RequireJS to inject the
+correct language version for us:
+
+<javascript filename="myplugin/lib/something.js">
+define(
+['i18n!myplugin/nls/i18n'],
+function(i18n) {
+
+	// your code...
+	var localizedString = i18n.t('your.key.here');
+	// your code...
+});
+</javascript>
+
+By defining +i18n!myplugin/nls/i18n+ as requirement, we get a special object injected which contains
+all localized strings. There exists a +t('key')+ method on this object which returns the translation
+for the passed key.
 
 h3. Text Files
 
