@@ -19,8 +19,8 @@
 */
 
 define(
-['aloha/jquery', 'aloha/rangy-core'],
-function(jQuery, rangy, undefined) {
+['aloha/jquery'],
+function(jQuery, undefined) {
 	"use strict";
 	
 	var
@@ -28,7 +28,8 @@ function(jQuery, rangy, undefined) {
 		GENTICS = window.GENTICS,
 		Aloha = window.Aloha,
 		Class = window.Class,
-		console = window.console;
+		console = window.console
+		rangy = window.rangy;
 
 /**
  * @namespace GENTICS.Utils
