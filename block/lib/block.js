@@ -241,6 +241,11 @@ function(BlockManager, Observable, FloatingMenu) {
 				return;
 			}
 
+			if (this.element.parents('.aloha-editable').length == 0) {
+				// If the block is not inside an editable, there is no need to select it (as it gets highlighted in an ugly way then)
+				return;
+			}
+
 			GENTICS.Utils.Dom.selectDomNode(this.element[0]);
 		},
 

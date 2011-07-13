@@ -81,11 +81,13 @@ function(FloatingMenu, Observable, Registry) {
 				BlockManager._deactivateActiveBlocks();
 			});
 
-			Aloha.bind('aloha-selection-changed', function() {
-				// TODO: the following line is needed to de-select blocks when navigating over them
-				// using the mouse cursors.
-				// However, including this line breaks behavior when clicking into an editable
-				// INSIDE a block.
+			Aloha.bind('aloha-selection-changed', function(evt, selection, originalEvent) {
+				// the following line is needed to de-select blocks when navigating over them using the mouse cursors.
+				// We only want to execute it though, if we are not inside a block, as it would otherwise
+				// directly deselect the block we just selected. This is just a hotfix and not the final solution yet.
+				if (selection && $(selection.getCommonAncestorContainer()).parents('.aloha-block').length > 0) {
+					return;
+				}
 				that._deactivateActiveBlocks();
 			});
 		},
