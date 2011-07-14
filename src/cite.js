@@ -11,14 +11,15 @@
  * Add a Multisplitbutton to format a paragraph as a blockquote.
  * Behaves like other Multisplit-buttons.
  */
-(function AlohaCitePluginClosure (window, undefined) {
+(function CiteClosure (window, undefined) {
 	
 	'use strict';
 	
 	var GENTICS = window.GENTICS,
 	      Aloha = window.Aloha,
 		 jQuery = window.alohaQuery || window.jQuery,
-	          $ = jQuery;
+	          $ = jQuery,
+		  rangy = window.rangy; 
 	
 	// Pseudo-namespace prefix for Sidebar elements
 	var ns = 'aloha-cite',
@@ -68,66 +69,100 @@
 		},
 		
 		init: function () {
-			var that = this,
+			var that = this;
 				
-				addBtn = new Aloha.ui.Button({
-					iconClass: nsClass + ' ' + nsClass('button'),
+			var addBlockQuoteBtn = new Aloha.ui.Button({
+					iconClass: nsClass + ' ' + nsClass('button', 'block-button'),
 					size: 'small',
 					onclick: function () {
-						alert(1);
+						that.addBlockQuote();
+					}
+				});
+			
+			var addInlineQuote = new Aloha.ui.Button({
+					iconClass: nsClass + ' ' + nsClass('button', 'inline-button'),
+					size: 'small',
+					onclick: function () {
+						that.addInlineQuote();
 					}
 				});
 			
 			Aloha.FloatingMenu.addButton(
 				'Aloha.continuoustext',
-				addBtn,
-				'Mark selection as quote', // TODO: Aloha.i18n(Aloha, 'citeplugin.tab.format')
+				addBlockQuoteBtn,
+				'Citation', // TODO: Aloha.i18n(Aloha, 'citeplugin.tab.format')
 				1
 			);
 		},
 		
-		addQuotes: function () {
+		addBlockQuote: function () {
+			var rangySel = rangy.getSelection(),
+				rangyRange = rangySel.getRangeAt(0);
+			
+			// Only wrap area under aloha control
+			if (jQuery(rangyRange.commonAncestorContainer).parents('.aloha-editable-active').length == 0) {
+				return;
+			};
+			
 			var that = this,
-				range = Aloha.Selection.getRangeObject(),
-				id = clss + '-' + (++uid),
-				classes = [mkclass('wrapper'), id],
-				wrapper = $('<div class="' + classes.join(' ') + '">');
+				wrapper = jQuery('<blockquote class="' + [nsClass('wrapper'), nsClass(++uid)].join(' ') + '">')[0];
+			
+			if (rangySel.isCollapsed) {
+				jQuery(rangySel.focusNode).wrap(wrapper);
+			} else {
+				;
+				
+				// Can we wrap a blockquote around this range?
+				if (rangyRange.canSurroundContents(wrapper)) {
+					rangyRange.surroundContents(wrapper);
+				} else {
+					console.warn('Cannot add a blockquote to this selection');
+				}
+			}
+		},
+		
+		addInlineQuote: function () {
+			var that = this,
+				alohaRange = Aloha.Selection.getRangeObject(),
+				rangySel = rangy.getSelection(),
+				id = ns + '-' + (++uid),
+				classes = [nsClass('wrapper'), id].join(' '),
+				wrapper = jQuery('<blockquote class="' + classes + '">');
+			
+			if (rangySel.isCollapsed) {
+				jQuery(rangySel.focusNode).wrap(wrapper);
+			} else {
+				var rangyRange = rangySel.getRangeAt(0); //rangySel.getAllRanges();
+				
+				// Can we wrap a blockquote around this range?
+				if (rangyRange.canSurroundContents(jQuery('<blockquote>')[0])) {
+					//domUtils.addMarkup(alohaRange, );
+					domUtils.doCleanup({'merge' : true, 'removeempty' : true}, alohaRange);
+				} else {
+					console.warn('Cannot add a blockquote to this selection');
+				}
+					domUtils.addMarkup(alohaRange, jQuery('<blockquote class="' + classes + '">'));
+					domUtils.doCleanup({'merge' : true, 'removeempty' : true}, alohaRange);
+			}
+			
+			// Determine whether to use <q> or <blockquote>
+			//domUtils.allowsNesting($('<q>')[0], $('<div>')[0]) //false
+			//domUtils.allowsNesting($('<q>')[0], $('<span>')[0]) //true
+			//domUtils.allowsNesting($('<blockquote>')[0], $('<div>')[0]) // true;
+		},
+		
+		getEffectiveMarkup: function () {
+			var range = Aloha.Selection.getRangeObject(),
+				elems = [],
+				i = range.markupEffectiveAtStart.length;
 			
 			console.log(range);
 			
-			// Determine whether to use <q> or <blockquote>
-			domUtils.allowsNesting($('<q>')[0], $('<div>')[0]) //false
-			domUtils.allowsNesting($('<q>')[0], $('<span>')[0]) //true
-			domUtils.allowsNesting($('<blockquote>')[0], $('<div>')[0]) // true;
-			
-			domUtil.addMarkup(range, wrapper);
-			
-			// if the wrapper element does not exist, it means that there
-			// was nothing in the selection to wrap around, indicating an
-			// empty selection
-			if (!jQuery('.' + id).length) {
-				// TODO: notify user
-				return;
+			while (i--) {
+				elems.push(range.markupEffectiveAtStart[i]);
 			}
 			
-			domUtil.doCleanup({'merge' : true, 'removeempty' : true}, range);
-			
-			
-		},
-		
-		subscribeToEvents: function () {
-			var that = this;
-			
-			Aloha.bind('aloha-selection-changed', function(event, rangeObject) {
-				var effective = [],
-					i = rangeObject.markupEffectiveAtStart.length;
-				
-				while (i--) {
-					effective.push(rangeObject.markupEffectiveAtStart[i]);
-				}
-				
-				console.log(effective);
-			});
+			return elems;
 		}
 		
 	}; // Cite
