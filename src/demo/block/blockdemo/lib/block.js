@@ -25,25 +25,25 @@ define([
 				}
 			};
 		},
-		render: function(element) {
+		render: function($innerElement) {
 
 			// Mapping Stock-Symbol -- Company Name (Fake!)
 			switch (this.attr('symbol')) {
 				case 'MSFT':
-					element.html('Microsoft');
+					$innerElement.html('Microsoft');
 					break;
 				case 'AAPL':
-					element.html('Apple Inc.');
+					$innerElement.html('Apple Inc.');
 					break;
 				default:
-					element.html(this.attr('symbol'));
+					$innerElement.html(this.attr('symbol'));
 			}
 
 			var that = this;
-			element.mouseover(function() {
+			this.element.mouseover(function() {
 				that.element.append('<span class="stock-quote-overlay company-' + that.attr('symbol') + '"></span>');
 			});
-			element.mouseout(function() {
+			this.element.mouseout(function() {
 				that.element.find('.stock-quote-overlay').remove();
 			});
 		}
@@ -134,7 +134,7 @@ define([
 	var CustomHandleBlock = block.DefaultBlock.extend({
 		renderToolbar: function() {
 			var that = this;
-			var deleteHandle = jQuery('<span class="block-draghandle-topright"><a href="#"><span>x</span> delete</a></span>');
+			var deleteHandle = jQuery('<span class="block-draghandle-topleft"><a href="#"><span>x</span> delete</a></span>');
 			this.element.prepend(deleteHandle);
 			deleteHandle.click(function() {
 				that.destroy();
@@ -164,7 +164,7 @@ define([
 		whenAllChildrenBlockified: function(next) {
 			var that = this, numberOfNotYetBlockifiedElements = 0, $containersWithDomBlocks = {};
 
-			var template = jQuery('<div />').html(this.element.html());
+			var template = jQuery('<div />').html(this.$innerElement.html());
 
 			var findBlocksForDomElements = function() {
 				var containersWithBlocks = {};
@@ -227,24 +227,6 @@ define([
 			});
 		},
 
-		_currentlyRendering: null,
-		_renderAndSetContent: function() {
-			if (this._currentlyRendering) return;
-			this._currentlyRendering = true;
-
-			var innerElement = jQuery('<' + this._getWrapperElementType() + ' class="aloha-block-inner" />');
-			var result = this.render(innerElement);
-			// Convenience for simple string content
-			if (typeof result === 'string') {
-				innerElement.html(result);
-			}
-			this.element.empty();
-			this.element.append(innerElement);
-
-			this.createEditables(innerElement);
-
-			this.renderToolbar();
-		},
 		render: function(innerElement) {
 			var that = this;
 			if (!this._initialized) {
