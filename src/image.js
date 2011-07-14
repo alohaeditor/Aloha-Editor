@@ -1,16 +1,18 @@
 /*
 * Aloha Image Plugin - Allow image manipulation in Aloha Editor
 * 
-* Copyright (C) 2010-2011 by Nicolas Karageuzian - http://nka.me/
+* Author & Copyright (c) 2010 Gentics Software GmbH
+* aloha-sales@gentics.com
 * Contributors 
-* 		Benjamin Athur Lupton - http://www.balupton.com
+* 		Nicolas karageuzian - http://nka.me/
+* 		Benjamin Athur Lupton - http://www.balupton.com/
 * 		Thomas Lete
 * 		Nils Dehl
 * 		Christopher Hlubek
 * 		Edward Tsech
 * 		Haymo Meran
-* Licensed unter the terms of AGPL http://www.gnu.org/licenses/agpl-3.0.html
 *
+* Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
 
 // Start Closure
