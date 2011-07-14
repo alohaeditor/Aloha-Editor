@@ -1,3 +1,11 @@
+/*
+!!! The ExtJS CSS files have been modified by wrapping them with
+!!! .aloha-floatingmenu {...} and processing them through SASS.
+!!! This makes sure we do not destroy the original page's
+!!! stylesheets, but we apply all ExtJS styles only on the
+!!! floating menu.
+*/
+
 @import url(dep/ext-3.2.1/resources/css/ext-all-notheme.css);
 @import url(dep/ext-3.2.1/resources/css/xtheme-gray.css);
 @import url(css/aloha.css);
