@@ -455,7 +455,7 @@ function(jQuery, Ext, Base, undefined) {
 							var pel = this.proxy.getEl();
 							this.x = pel.getLeft(true);
 							this.y = pel.getTop(true);
-							this.shadow.hide();
+							this.panel.shadow.hide();
 						},
 						endDrag : function(e) {
 							var top = (this.pinned) ? this.y - jQuery(document).scrollTop() : this.y;
@@ -463,8 +463,8 @@ function(jQuery, Ext, Base, undefined) {
 							that.left = this.x;
 							that.top = top;
 							this.panel.setPosition(this.x, top);
-							this.refreshShadow();
-							this.shadow.show();
+							that.refreshShadow();
+							this.panel.shadow.show();
 						}
 					},
 					floating: true,
@@ -504,7 +504,7 @@ function(jQuery, Ext, Base, undefined) {
 								});
 						
 								// adapt the shadow
-								that.shadow.show();
+								that.extTabPanel.shadow.show();
 								that.refreshShadow();
 							}
 						}
@@ -526,8 +526,8 @@ function(jQuery, Ext, Base, undefined) {
 			});
 
 			// add the dropshadow
-			this.shadow = jQuery('<div id="aloha-floatingmenu-shadow" class="aloha-shadow">&#160;</div>');
-			jQuery('body').append(this.shadow);
+			this.extTabPanel.shadow = jQuery('<div id="aloha-floatingmenu-shadow" class="aloha-shadow">&#160;</div>');
+			jQuery('body').append(this.extTabPanel.shadow);
 
 			// add an empty pin tab item, store reference
 			pinTab = this.extTabPanel.add({
@@ -673,7 +673,7 @@ function(jQuery, Ext, Base, undefined) {
 					props.height = this.panelBody.height() + 'px';
 				}
 
-				this.shadow.css(props);
+				this.extTabPanel.shadow.css(props);
 			}
 		},
 
@@ -698,7 +698,7 @@ function(jQuery, Ext, Base, undefined) {
 					'top': this.top
 				});
 
-				this.shadow.removeClass('fixed');
+				this.extTabPanel.shadow.removeClass('fixed');
 				this.refreshShadow();
 
 				this.pinned = false;
@@ -711,7 +711,7 @@ function(jQuery, Ext, Base, undefined) {
 				});
 
 				// do the same for the shadow
-				this.shadow.addClass('fixed');//props.start
+				this.extTabPanel.shadow.addClass('fixed');//props.start
 				this.refreshShadow();
 
 				this.pinned = true;
@@ -874,7 +874,7 @@ function(jQuery, Ext, Base, undefined) {
 				// set the remembered position
 				this.extTabPanel.show();
 				this.refreshShadow();
-				this.shadow.show();
+				this.extTabPanel.shadow.show();
 				this.extTabPanel.setPosition(this.left, this.top);
 			} else if (!floatingMenuVisible && !this.extTabPanel.hidden) {
 				// remember the current position
@@ -883,7 +883,7 @@ function(jQuery, Ext, Base, undefined) {
 				this.left = pos[0] < 0 ? 100 : pos[0];
 				this.top = pos[1] < 0 ? 100 : pos[1];
 				this.extTabPanel.hide();
-				this.shadow.hide();
+				this.extTabPanel.shadow.hide();
 			}
 
 			// let the Ext object render itself again

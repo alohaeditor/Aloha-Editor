@@ -20,7 +20,9 @@
 
 define(
 	[
-		'aloha/jquery',
+		'css!vendor/ext-3.2.1/resources/css/ext-all-notheme.css',
+		'css!vendor/ext-3.2.1/resources/css/xtheme-gray.css',
+		'order!aloha/jquery',
         'order!vendor/ext-3.2.1/adapter/jquery/ext-jquery-adapter-debug',
         'order!vendor/ext-3.2.1/ext-all'
 	],
