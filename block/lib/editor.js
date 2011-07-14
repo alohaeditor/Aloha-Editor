@@ -9,7 +9,7 @@
  * @name block.editor
  * @namespace Block attribute editors
  */
-define(['core/observable'],
+define(['aloha/observable'],
 function(Observable) {
 	"use strict";
 

@@ -5,7 +5,7 @@
  * Licensed unter the terms of http://www.aloha-editor.com/license.html
  */
  
-define(['block/blockmanager', 'core/sidebar', 'block/editormanager'],
+define(['block/blockmanager', 'aloha/sidebar', 'block/editormanager'],
 function(BlockManager, Sidebar, EditorManager) {
 	"use strict";
 

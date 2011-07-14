@@ -9,7 +9,7 @@
  * @name block.block
  * @namespace Block models
  */
-define(['block/blockmanager', 'core/observable', 'core/floatingmenu'],
+define(['block/blockmanager', 'aloha/observable', 'aloha/floatingmenu'],
 function(BlockManager, Observable, FloatingMenu) {
 	"use strict";
 

@@ -10,7 +10,7 @@
  * @namespace Block plugin
  */
 define([
-	'core/plugin',
+	'aloha/plugin',
 	'block/blockmanager',
 	'block/sidebarattributeeditor',
 	'block/block',

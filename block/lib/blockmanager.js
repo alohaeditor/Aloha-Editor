@@ -5,7 +5,7 @@
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
 
-define(['core/floatingmenu', 'core/observable', 'core/registry'],
+define(['aloha/floatingmenu', 'aloha/observable', 'aloha/registry'],
 function(FloatingMenu, Observable, Registry) {
 	"use strict";
 

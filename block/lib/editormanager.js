@@ -6,7 +6,7 @@
  */
 
 define(
-['core/registry'],
+['aloha/registry'],
 function(Registry) {
 	"use strict";
 
