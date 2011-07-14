@@ -50,6 +50,8 @@ function(FloatingMenu, Observable, Registry) {
 		 */
 		blocks: null,
 
+		activeBlocks: null,
+
 		/**
 		 * @constructor
 		 */
@@ -57,6 +59,7 @@ function(FloatingMenu, Observable, Registry) {
 			FloatingMenu.createScope('Aloha.Block');
 			this.blockTypes = new Registry();
 			this.blocks = new Registry();
+			this.activeBlocks = {};
 		},
 
 		/**
@@ -66,19 +69,25 @@ function(FloatingMenu, Observable, Registry) {
 		 */
 		registerEventHandlers: function() {
 			var that = this;
-			
+
 			// Register event handlers for deactivating an Aloha Block
 			$(document).bind('click', function(event) {
-				if ($(event.target).parents('.aloha-sidebar-bar').length > 0) {
+				if (that.activeBlocks == {}) return;
+				if ($(event.target).parents('.aloha-sidebar-bar, .aloha-block-do-not-deactivate').length > 0
+					|| $(event.target).is('.aloha-sidebar-bar, .aloha-block-do-not-deactivate')) {
 					// If we are inside the sidebar, we do not want to deactivate active blocks...
 					return;
 				}
 				BlockManager._deactivateActiveBlocks();
 			});
-			
-			
-			// Register event handler to deactivate currently active block
-			Aloha.bind('aloha-selection-changed', function () {
+
+			Aloha.bind('aloha-selection-changed', function(evt, selection, originalEvent) {
+				// the following line is needed to de-select blocks when navigating over them using the mouse cursors.
+				// We only want to execute it though, if we are not inside a block, as it would otherwise
+				// directly deselect the block we just selected. This is just a hotfix and not the final solution yet.
+				if (selection && $(selection.getCommonAncestorContainer()).parents('.aloha-block').length > 0) {
+					return;
+				}
 				that._deactivateActiveBlocks();
 			});
 		},
@@ -98,9 +107,6 @@ function(FloatingMenu, Observable, Registry) {
 			attributes = this.getConfig(element, instanceDefaults);
 
 			element.contentEditable(false);
-			if (!element.attr('id')) {
-				element.attr('id', GENTICS.Utils.guid());
-			}
 
 			if (!this.blockTypes.has(attributes['block-type'])) {
 				Aloha.Log.error('block/blockmanager', 'Block Type ' + attributes['block-type'] + ' not found!');
@@ -108,13 +114,19 @@ function(FloatingMenu, Observable, Registry) {
 			}
 
 			block = new (this.blockTypes.get(attributes['block-type']))(element);
+			block.element.addClass('aloha-block-' + attributes['block-type']);
 
 			// Save attributes on block, but ignore jquery attribute.
 			$.each(attributes, function(k, v) {
 				if (k.indexOf('jQuery') === 0) return;
-
-				block.attr(k, v);
+				block.attr(k, v, true);
 			});
+
+			// Remove the attributes from the child element, as they have been moved to the parent element.
+			$.each(element.data(), function(k, v) {
+				element.removeAttr('data-' + k);
+			});
+			element.removeAttr('about');
 
 			// Register block
 			this.blocks.register(block.getId(), block);
@@ -128,8 +140,8 @@ function(FloatingMenu, Observable, Registry) {
 		 * @private
 		 */
 		_deactivateActiveBlocks: function() {
-			$('.aloha-block-active').each(function(index, element) {
-				var block = BlockManager.getBlock(element);
+			$.each($.extend({}, this.activeBlocks), function(id) {
+				var block = BlockManager.getBlock(id);
 				if (block) {
 					block.deactivate();
 				}
@@ -144,7 +156,7 @@ function(FloatingMenu, Observable, Registry) {
 		getConfig: function(blockElement, instanceDefaults) {
 			// TODO: merge from plugin settings
 			// TODO: What about double matches / overrides / multiple selectors applying?
-			var settingsDefaults = {dummy: 'bar'};
+			var settingsDefaults = {};
 
 			return $.extend(
 				{},
@@ -214,8 +226,19 @@ function(FloatingMenu, Observable, Registry) {
 				}
 			});
 			return activeBlocks;
+		},
+
+		_setActive: function(block) {
+			this.activeBlocks[block.id] = true;
+		},
+
+		_setInactive: function(block) {
+			delete this.activeBlocks[block.id];
 		}
 	}))();
+
+	Aloha.Block = Aloha.Block || {};
+	Aloha.Block.BlockManager = BlockManager;
 
 	return BlockManager;
 });

@@ -44,11 +44,17 @@ function(BlockManager, Observable, FloatingMenu) {
 		id: null,
 
 		/**
-		 * The original block element
+		 * The wrapper element around the inner element
 		 * @type jQuery
 		 */
 		// TODO: Rename to $element
 		element: null,
+
+		/**
+		 * The inner element which is containing the actual user-provided content
+		 * @type jQuery
+		 */
+		$innerElement: null,
 
 		/**
 		 * Either "inline" or "block", will be guessed from the original block dom element
@@ -57,18 +63,38 @@ function(BlockManager, Observable, FloatingMenu) {
 		_domElementType: null,
 
 		/**
-		 * @param {jQuery} element Element that declares the block
+		 * if TRUE, the rendering is currently taking place. Used to prevent recursion
+		 * errors.
+		 * @type Boolean
+		 */
+		_currentlyRendering: false,
+
+		/**
+		 * set to TRUE once the block is fully initialized and should be rendered.
+		 *
+		 * @type Boolean
+		 */
+		_initialized: false,
+
+		/**
+		 * @param {jQuery} $innerElement Element that declares the block
 		 * @constructor
 		 */
-		_constructor: function(element) {
+		_constructor: function($innerElement) {
 			var that = this;
-			this.id = element.attr('id');
-			this.element = element;
+			this.id = GENTICS.Utils.guid();
 
-			this._domElementType = GENTICS.Utils.Dom.isBlockLevelElement(element[0]) ? 'block' : 'inline';
+			this.$innerElement = $innerElement;
+
+			this._domElementType = GENTICS.Utils.Dom.isBlockLevelElement($innerElement[0]) ? 'block' : 'inline';
+			$innerElement.wrap('<' + this._getWrapperElementType() + ' />');
+			this.element = $innerElement.parent();
+			this.element.contentEditable(false);
+
+			this.element.attr('id', this.id);
 
 			this.element.addClass('aloha-block');
-			this.element.addClass('aloha-block-' + this.attr('block-type'));
+			$innerElement.addClass('aloha-block-inner');
 
 			// Register event handlers for activating an Aloha Block
 			this.element.bind('click', function(event) {
@@ -104,11 +130,12 @@ function(BlockManager, Observable, FloatingMenu) {
 			return {
 				tag: this.element[0].tagName,
 				attributes: this._getAttributes(), // contains data-properties AND about
-				classes: this.element.attr('class') // TODO: filter out aloha-block-active...
+				classes: this.$innerElement.attr('class') // TODO: filter out aloha-block-active...
 			}
 		},
 
 		_registerAsBlockified: function() {
+			this._initialized = true;
 			this.element.trigger('block-initialized');
 		},
 
@@ -197,11 +224,13 @@ function(BlockManager, Observable, FloatingMenu) {
 		 * Activated when the block is clicked
 		 */
 		_highlight: function() {
+			BlockManager._setActive(this);
 			this.element.addClass('aloha-block-active');
 		},
 
 
 		_unhighlight: function() {
+			BlockManager._setInactive(this);
 			this.element.removeClass('aloha-block-active');
 		},
 
@@ -209,6 +238,11 @@ function(BlockManager, Observable, FloatingMenu) {
 			if (!domNode || $(domNode).is('.aloha-editable') || $(domNode).parents('.aloha-block, .aloha-editable').first().is('.aloha-editable')) {
 				// It was clicked on a Aloha-Editable inside a block; so we do not
 				// want to select the whole block and do an early return.
+				return;
+			}
+
+			if (this.element.parents('.aloha-editable').length == 0) {
+				// If the block is not inside an editable, there is no need to select it (as it gets highlighted in an ugly way then)
 				return;
 			}
 
@@ -225,7 +259,6 @@ function(BlockManager, Observable, FloatingMenu) {
 				that._unhighlight();
 			});
 			BlockManager.trigger('block-selection-change', []);
-			this.element.removeClass('aloha-block-active');
 			// TODO: remove the current selection here
 		},
 
@@ -246,21 +279,36 @@ function(BlockManager, Observable, FloatingMenu) {
 
 		/**
 		 * Template method to render contents of the block, must be implemented by specific block type
+		 *
+		 * The renderer must manually take care of flushing the inner element if it needs that.
+		 *
 		 * @api
 		 */
 		render: function() {},
 
 		_renderAndSetContent: function() {
-			var innerElement = $('<' + this._getWrapperElementType() + ' class="aloha-block-inner" />');
-			var result = this.render(innerElement);
+			if (this._currentlyRendering) return;
+			if (!this._initialized) return;
+
+			this._currentlyRendering = true;
+
+			var result = this.render(this.$innerElement);
+
 			// Convenience for simple string content
 			if (typeof result === 'string') {
-				innerElement.html(result);
+				this.$innerElement.html(result);
 			}
-			this.element.empty();
-			this.element.append(innerElement);
 
-			this.createEditables(innerElement);
+			this._renderSurroundingElements();
+
+			this._currentlyRendering = false;
+		},
+
+		_renderSurroundingElements: function() {
+			this.element.empty();
+			this.element.append(this.$innerElement);
+
+			this.createEditables(this.$innerElement);
 
 			this.renderToolbar();
 		},
@@ -297,11 +345,12 @@ function(BlockManager, Observable, FloatingMenu) {
 		 * @api
 		 * @param {String|Object} attributeNameOrObject
 		 * @param {String} attributeValue
+		 * @param {Boolean} Optional. If true, we do not fire change events.
 		 */
-		attr: function(attributeNameOrObject, attributeValue) {
+		attr: function(attributeNameOrObject, attributeValue, suppressEvents) {
 			var that = this, attributeChanged = false;
 
-			if (arguments.length === 2) {
+			if (arguments.length >= 2) {
 				if (this._getAttribute(attributeNameOrObject) !== attributeValue) {
 					attributeChanged = true;
 				}
@@ -318,7 +367,7 @@ function(BlockManager, Observable, FloatingMenu) {
 			} else {
 				return this._getAttributes();
 			}
-			if (attributeChanged) {
+			if (attributeChanged && !suppressEvents) {
 				this._renderAndSetContent();
 				this.trigger('change');
 			}
