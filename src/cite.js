@@ -60,6 +60,14 @@
 		return strBldr.join(' ').trim();
 	};
 	
+	function isWithinActiveEditable (range) {
+		return (
+			jQuery(range.commonAncestorContainer).is('.aloha-editable-active')
+				||
+			jQuery(range.commonAncestorContainer).parents('.aloha-editable-active').length > 0
+		);
+	};
+	
 	// ------------------------------------------------------------------------
 	// Plugin
 	// ------------------------------------------------------------------------
@@ -71,7 +79,7 @@
 		init: function () {
 			var that = this;
 				
-			var addBlockQuoteBtn = new Aloha.ui.Button({
+			var blockQuoteBtn = new Aloha.ui.Button({
 					iconClass: nsClass + ' ' + nsClass('button', 'block-button'),
 					size: 'small',
 					onclick: function () {
@@ -79,7 +87,14 @@
 					}
 				});
 			
-			var addInlineQuote = new Aloha.ui.Button({
+			Aloha.FloatingMenu.addButton(
+				'Aloha.continuoustext',
+				blockQuoteBtn,
+				'Citation', // TODO: Aloha.i18n(Aloha, 'cite.tab.citation')
+				1
+			);
+			
+			var inlineQuoteBtn = new Aloha.ui.Button({
 					iconClass: nsClass + ' ' + nsClass('button', 'inline-button'),
 					size: 'small',
 					onclick: function () {
@@ -89,80 +104,72 @@
 			
 			Aloha.FloatingMenu.addButton(
 				'Aloha.continuoustext',
-				addBlockQuoteBtn,
-				'Citation', // TODO: Aloha.i18n(Aloha, 'citeplugin.tab.format')
+				inlineQuoteBtn,
+				'Citation', // TODO: Aloha.i18n(Aloha, 'cite.tab.citation')
 				1
 			);
 		},
 		
 		addBlockQuote: function () {
-			var rangySel = rangy.getSelection(),
-				rangyRange = rangySel.getRangeAt(0);
+			var sel = rangy.getSelection();
 			
-			// Only wrap area under aloha control
-			if (jQuery(rangyRange.commonAncestorContainer).parents('.aloha-editable-active').length == 0) {
+			// Only add quotes to areas which are under active aloha-editables
+			if (!isWithinActiveEditable(sel.getRangeAt(0))) {
 				return;
 			};
 			
-			var that = this,
-				wrapper = jQuery('<blockquote class="' + [nsClass('wrapper'), nsClass(++uid)].join(' ') + '">')[0];
+			var classes = [nsClass('wrapper'), nsClass(++uid)].join(' '),
+				flowWrapper = jQuery('<q class="' + classes + '">'),
+				blockWrapper = jQuery('<blockquote class="' + classes + '">');
 			
-			if (rangySel.isCollapsed) {
-				jQuery(rangySel.focusNode).wrap(wrapper);
-			} else {
-				;
+			if (sel.isCollapsed) {
+				var parent = jQuery(sel.focusNode).parent();
+				var isFlow =  domUtils.allowsNesting(flowWrapper[0], parent[0]);
 				
-				// Can we wrap a blockquote around this range?
-				if (rangyRange.canSurroundContents(wrapper)) {
-					rangyRange.surroundContents(wrapper);
+				jQuery(sel.focusNode).wrap(isFlow ? flowWrapper : blockWrapper);
+			} else {
+				var rangeObject = Aloha.Selection.getRangeObject();
+				
+				var isPartial = false;
+				
+				if (rangeObject.startContainer.nodeType === 3
+						&& rangeObject.startOffset > 0
+							&& rangeObject.startOffset < rangeObject.startContainer.data.length) {
+					isPartial = true;
+				}
+				
+				if (rangeObject.endContainer.nodeType === 3
+						&& rangeObject.endOffset > 0
+							&& rangeObject.endOffset < rangeObject.endContainer.data.length) {
+					isPartial = true;
+				}
+				
+				if (isPartial) {
+					domUtils.addMarkup(rangeObject, flowWrapper, false);
 				} else {
-					console.warn('Cannot add a blockquote to this selection');
+					var parent = jQuery(rangeObject.startContainer).parent();
+					var isFlow =  domUtils.allowsNesting(flowWrapper[0], parent[0]);
+					domUtils.addMarkup(rangeObject, isFlow ? flowWrapper : blockWrapper, false);
 				}
 			}
 		},
 		
 		addInlineQuote: function () {
-			var that = this,
-				alohaRange = Aloha.Selection.getRangeObject(),
-				rangySel = rangy.getSelection(),
-				id = ns + '-' + (++uid),
-				classes = [nsClass('wrapper'), id].join(' '),
-				wrapper = jQuery('<blockquote class="' + classes + '">');
+			var sel = rangy.getSelection();
 			
-			if (rangySel.isCollapsed) {
-				jQuery(rangySel.focusNode).wrap(wrapper);
+			// Only add quotes to areas which are under active aloha-editables
+			if (!isWithinActiveEditable(sel.getRangeAt(0))) {
+				return;
+			};
+			
+			var classes = [nsClass('wrapper'), nsClass(++uid)].join(' '),
+				flowWrapper = jQuery('<q class="' + classes + '">');
+			
+			if (sel.isCollapsed) {
+				jQuery(sel.focusNode).wrap(flowWrapper);
 			} else {
-				var rangyRange = rangySel.getRangeAt(0); //rangySel.getAllRanges();
-				
-				// Can we wrap a blockquote around this range?
-				if (rangyRange.canSurroundContents(jQuery('<blockquote>')[0])) {
-					//domUtils.addMarkup(alohaRange, );
-					domUtils.doCleanup({'merge' : true, 'removeempty' : true}, alohaRange);
-				} else {
-					console.warn('Cannot add a blockquote to this selection');
-				}
-					domUtils.addMarkup(alohaRange, jQuery('<blockquote class="' + classes + '">'));
-					domUtils.doCleanup({'merge' : true, 'removeempty' : true}, alohaRange);
+				domUtils.addMarkup(Aloha.Selection.getRangeObject(), flowWrapper, false);
 			}
-			
-			// Determine whether to use <q> or <blockquote>
-			//domUtils.allowsNesting($('<q>')[0], $('<div>')[0]) //false
-			//domUtils.allowsNesting($('<q>')[0], $('<span>')[0]) //true
-			//domUtils.allowsNesting($('<blockquote>')[0], $('<div>')[0]) // true;
-		},
-		
-		getEffectiveMarkup: function () {
-			var range = Aloha.Selection.getRangeObject(),
-				elems = [],
-				i = range.markupEffectiveAtStart.length;
-			
-			console.log(range);
-			
-			while (i--) {
-				elems.push(range.markupEffectiveAtStart[i]);
-			}
-			
-			return elems;
 		}
 		
 	}; // Cite

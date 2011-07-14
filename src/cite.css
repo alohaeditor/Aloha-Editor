@@ -1,3 +1,7 @@
-.aloha-cite-wrapper {
+q.aloha-cite-wrapper {
 	background: red;
+}
+
+blockquote.aloha-cite-wrapper {
+	background: green;
 }
