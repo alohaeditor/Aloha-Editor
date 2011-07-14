@@ -58,3 +58,6 @@
 [submodule "src/plugin/metaview"]
 	path = src/plugin/metaview
 	url = git@github.com:alohaeditor/Aloha-Plugin-MetaView.git
+[submodule "src/plugin/cite"]
+	path = src/plugin/cite
+	url = git@github.com:alohaeditor/Aloha-Plugin-Cite.git
