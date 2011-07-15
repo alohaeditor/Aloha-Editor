@@ -27,7 +27,10 @@
 		// namespaced classnames
 		nsClasses = {
 			quote: nsClass('quote'),
-			blockquote: nsClass('blockquote')
+			blockquote: nsClass('blockquote'),
+			'panel-label': nsClass('panel-label'),
+			'panel-field': nsClass('panel-field'),
+			'panel-btns': nsClass('panel-btns')
 		},
 		domUtils = GENTICS.Utils.Dom;
 	
@@ -114,6 +117,40 @@
 				'Citation',
 				1
 			);
+			
+			// Add another panel after sidebar has been initialized
+			jQuery('body').bind('aloha-sidebar-initialized', function (ev, sidebar) {
+			
+				sidebar.addPanel({
+					id		 : 'aloha-sidebar-panel-elements',
+					title	 : 'Citation',
+					content	 : '',
+					expanded : true,
+					activeOn : '.aloha-cite-wrapper',
+					onInit	 : function () {
+						var content = this.setContent(renderTemplate(
+							'<div>														\
+								<div class="{panel-label}">Reference (Link):</div>		\
+								<div class="{panel-field}"><input type="text" /></div>	\
+								<div class="{panel-label}">About this citation:</div>	\
+								<div class="{panel-field}"><textarea></textarea></div>	\
+								<div class="{panel-btns}"><button>Save</button></div>	\
+							</div>'
+						)).content;
+						
+						var that = this;
+						
+						content.find('button').click(function () {
+							if (that.effectiveElement) {
+								
+							}
+						});
+					},
+					onActivate: function (effective) {
+						console.log(effective);
+					}
+				});
+			});
 			
 			// add the event handler for selection change
 			Aloha.bind('aloha-selection-changed', function(event, rangeObject){

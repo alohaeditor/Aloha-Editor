@@ -17,3 +17,18 @@ q.aloha-cite-wrapper {
 blockquote.aloha-cite-wrapper {
 	background: #dfd25d;
 }
+
+
+.aloha-cite-panel-label {
+	padding: 5px;
+}
+.aloha-cite-panel-field {
+}
+.aloha-cite-panel-btns {
+	padding: 5px;
+}
+
+.aloha-cite-panel-field input,
+.aloha-cite-panel-field textarea {
+	width: 100%;
+}
