@@ -42,19 +42,14 @@ Aloha.settings = {
  */
 
 
-function doEnterTest(editable, container, offset, shift, twice, reference) {
+function doKeyStrokeTest(editable, container, offset, keycode, shiftkey, reference) {
 	Aloha.Log.error(Aloha,"editable : " + editable.attr('id'));
 	Aloha.activateEditable(Aloha.getEditableById(editable.attr('id')));
 	// set cursor
 	TestUtils.setCursor(editable, container, offset);
-	// press enter
-	TestUtils.pressEnter(editable, shift);
-	// possibly again
-	if (twice) {
-		TestUtils.pressEnter(editable, shift);
-	}
-	// get the result
-	 var result = Aloha.getEditableById(editable.attr('id')).getContents(true);
+	editable.simulate('keydown', {keyCode: keycode});
+	editable.simulate('keyup', {keyCode: keycode});
+	 var result = Aloha.getEditableById(editable.attr('id')).getContents(true);	// get the result
 
 	var expected = $(reference).contents();
 
@@ -96,6 +91,23 @@ $(document).ready(function() {
 		});
 	});
 	$('body').bind('alohaTestReadyForLaunch', function(){
-		
+		module('Filtered input test', {
+			setup: function() {
+				// get the editable area and the reference
+				this.edit = $('#edit');
+				this.edit2 = $('#edit2');
+				this.ref = $('#ref-plaintext');
+				// fill the editable area with the reference
+				this.edit.html(this.ref.html());
+				this.edit2.html(this.ref.html());
+				
+			},
+			teardown: function() {
+				
+			}
+		});
+		test('Insert authorized char at beginning', function() {
+			doKeyStrokeTest(this.edit2, this.edit2.contents().get(0), 0, 51, false, '#ref-plaintext-start-autorized');
+		});
 	});
 });

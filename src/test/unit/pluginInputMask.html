@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<title>Aloha Editor Editable Test Suite</title>
+	<!-- include qunit -->
+	<link rel="stylesheet" href="../dep/qunit.css" type="text/css"/>
+	<script type="text/javascript" src="../dep/qunit.js"></script>
+	<!-- include jquery -->
+	<script	src="../../dep/jquery-1.5.1.js" ></script>
+	<script type="text/javascript" src="../dep/jquery.simulate.js"></script>
+	<!-- include aloha -->
+	<script	src="../../aloha.js" id="aloha-script-include" data-plugins="inputmask"></script>
+	<!-- include the testutils -->
+	<script type="text/javascript" src="testutils.js"></script>
+	<!-- include the tests -->
+	<script type="text/javascript" src="plugin-InputMasktests.js" defer></script>
+	<!-- inject into testswarm -->
+	<script type="text/javascript" src="../dep/swarminject.js"></script>
+</head>
+<body>
+	<h1 id="qunit-header">Aloha Editor Editable Test Suite</h1>
+	<h2 id="qunit-banner"></h2>
+	<div id="qunit-testrunner-toolbar"></div>
+	<h2 id="qunit-userAgent"></h2>
+	<ol id="qunit-tests"></ol>
+	<div id="qunit-fixture">
+<!-- References for plaintext tests -->
+<div id="ref-plaintext">This is plain text</div>
+<div id="ref-plaintext-unfiltered">This is plain text</div>
+<div id="ref-plaintext-start-autorized">3This is plain text</div>
+
+</div>
+<div id="edit" style="margin:20px; border:1px solid #000000;">aaa</div>
+<div id="edit2" style="margin:20px; border:1px solid #000000;">bbb</div>
+</body>
+</html>
+
