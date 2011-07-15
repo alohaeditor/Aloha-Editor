@@ -6,10 +6,7 @@
 */
 .aloha-editable {
 	min-height: 1.2em;
-}
-
-.aloha-editable-active .aloha-block {
-	background-color: #B7D6FA !important;
+	outline: none;
 }
 
 .aloha-editable-zerowidthfix {
@@ -27,18 +24,6 @@
 	height: 18px;
 }
 
-.aloha-block .aloha-block .aloha-editicon {
-	margin-top: 15px;
-}
-
-.aloha-block .aloha-block .aloha-block .aloha-editicon {
-	margin-top: 30px;
-}
-
-.aloha-block .aloha-block .aloha-block .aloha-block .aloha-editicon {
-	margin-top: 45px;
-}
-
 /*
  * Ext JS fixes
  */
@@ -50,8 +35,15 @@
 	border: 0;
 	padding: 0;
 	margin: 0;
-	background-color: transparent;
+	background-color: transparent !important;
 }
+
+.ext-root ol, .ext-root ul, .x-menu ul, .x-menu ol {
+	list-style:none;
+	margin:0;
+	padding:0;
+}
+
 .aloha-floatingmenu table, .aloha-floatingmenu tr, .aloha-floatingmenu td {
 	width: 0;
 	height: 0;
@@ -89,19 +81,19 @@ table.x-toolbar-ct table {
 }
 
 .aloha-floatingmenu .x-tab-panel-header {
-	border-width: 0px 0px 1px 0px;
-	background: none;
+	border-width: 0px 0px 1px 0px !important;
+	background: none !important;
 }
 
 .aloha-floatingmenu .x-tab-panel-header .x-tab-strip-wrap, .aloha-floatingmenu ul.x-tab-strip-top {
-	background: none;
+	background: none !important;
 }
 .x-tab-strip-wrap ul li a:hover {
 	border: none;
 	text-decoration:none;
 }
 .aloha-floatingmenu .x-tab-panel-header {
-	padding-bottom: 0px;
+	padding-bottom: 0px !important;
 }
 
 .aloha-floatingmenu:hover {
@@ -503,4 +495,232 @@ ul.aloha-multisplit button.aloha-button-removeFormat {
 	border:1px solid #ccc;
 	padding:6px;
 	overflow:auto;
+}
+
+/*
+ * Core styles for Aloha.Sidebar and Aloha.Panel
+ * Pseudo-namespace prefix: aloha-sidebar
+ */
+.aloha-sidebar-bar {
+	z-index: 999999999;
+	position: fixed;
+/*	position: absolute; */
+	top: 0;
+	left: 0;
+	text-align: left;
+	font-family: Arial, sans-serif;
+	font-size: 12px;
+	border-right: 1px solid #888;
+	-moz-box-shadow:	0px 0px 10px rgba(0, 0, 0, .5);
+	-webkit-box-shadow:	0px 0px 10px rgba(0, 0, 0, .5);
+	box-shadow:			0px 0px 10px rgba(0, 0, 0, .5);
+
+}
+.aloha-sidebar-bar.aloha-sidebar-right {
+	left: auto;
+	right: 0;
+	border-right-width: 0;
+	border-left: 1px solid #888;
+}
+
+.aloha-sidebar-inner {
+	position: relative;
+	background-color: #ccc;
+	background-image: -webkit-radial-gradient(
+		rgba(0, 0, 0, 0.0) 20%,
+		rgba(0, 0, 0, 0.2) 80%,
+		rgba(0, 0, 0, 0.3) 100%
+	);
+	background-image: -moz-radial-gradient(
+		rgba(0, 0, 0, 0.0) 20%,
+		rgba(0, 0, 0, 0.2) 80%,
+		rgba(0, 0, 0, 0.3) 100%
+	);
+}
+.aloha-sidebar-panels {
+	padding: 15px 0;
+}
+.aloha-sidebar-panels li {
+	overflow: hidden;
+	margin: 0;
+	padding: 0 15px;
+}
+.aloha-sidebar-panel-top {
+	-webkit-border-top-left-radius:	 5px;
+	-webkit-border-top-right-radius: 5px;
+	-moz-border-radius-topleft:		 5px;
+	-moz-border-radius-topright:	 5px;
+}
+.aloha-sidebar-panel-content.aloha-sidebar-panel-bottom {
+	padding-bottom: 0;
+	-webkit-border-bottom-left-radius:	5px;
+	-webkit-border-bottom-right-radius:	5px;
+	-moz-border-radius-bottomleft:		5px;
+	-moz-border-radius-bottomright:		5px;
+	border-bottom-width: 1px;
+}
+.aloha-sidebar-panel-title {
+	position: relative;
+	overflow: hidden;
+	padding: 8px 8px 4px;
+	border: 1px solid rgba(0, 0, 0, 0.3);
+	border-bottom-width: 0;
+	background-color: #303539;
+	background-image: -webkit-gradient(
+    	linear,
+    	center top,
+    	center bottom,
+    	color-stop(0.00, #6c6f74),
+    	color-stop(0.05, #4c4f54),
+    	color-stop(0.10, #3f4448),
+    	color-stop(0.45, #383d41),
+    	color-stop(0.50, #303539),
+    	color-stop(0.95, #33363b)
+	);
+	background-image: -moz-linear-gradient(
+    	center top,
+		#6c6f74 0%,
+		#4c4f54 5%,
+		#3f4448 10%,
+    	#383d41 45%,
+    	#303539 50%,
+    	#33363b 95%
+	);
+	filter: progid:DXImageTransform.Microsoft.Gradient(
+		startColorstr='#383d41',
+		endColorstr='#303539',
+		gradientType='0'
+	);
+	color: #ccc;
+	cursor: pointer;
+	font-size: 13px;
+	font-weight: bold;
+	line-height: 1em;
+	text-shadow: 0 0 6px #23262b;
+}
+.aloha-sidebar-panel-title:hover {
+	color: #fff;
+}
+.aloha-sidebar-panel-title-arrow {
+	position: absolute;
+	top: 6px;
+	left: 8px;
+	width: 16px;
+	height: 16px;
+	background: url(../img/arrow.png) no-repeat center center;
+	opacity: 0.3;
+	filter: alpha(opacity=30);
+}
+.aloha-sidebar-panel-title:hover .aloha-sidebar-panel-title-arrow {
+	opacity: 0.9;
+	filter: alpha(opacity=90);
+}
+.aloha-sidebar-panel-title-text {
+	margin-left: 24px;
+	white-space: nowrap;
+}
+.aloha-sidebar-panel-content {
+	overflow: hidden;
+	height: 5px;
+	background: #303539;
+}
+.aloha-sidebar-panel-content-inner {
+	margin: 5px 0 0;
+	padding: 2px 5px;
+	color: #888;
+
+	border: 1px solid rgb(175, 175, 175);
+	border-top-width: 0;
+
+	background: #fff;
+	background-image: -webkit-radial-gradient(
+		rgba(0, 0, 0, 0.0) 50%,
+		rgba(0, 0, 0, 0.1) 90%,
+		rgba(0, 0, 0, 0.2) 100%
+	);
+	background-image: -moz-radial-gradient(
+		rgba(0, 0, 0, 0.0) 50%,
+		rgba(0, 0, 0, 0.1) 90%,
+		rgba(0, 0, 0, 0.2) 100%
+	);
+}
+
+.aloha-sidebar-handle {
+	position: absolute;
+	top: 30px;
+	right: -30px;
+	width: 40px;
+	height: 30px;
+	overflow: hidden;
+
+	background-color: #303539;
+	background-image: -webkit-gradient(
+    	linear,
+    	center top,
+    	center bottom,
+    	color-stop(0.00, #6c6f74),
+    	color-stop(0.05, #4c4f54),
+    	color-stop(0.10, #3f4448),
+    	color-stop(0.45, #383d41),
+    	color-stop(0.50, #303539),
+    	color-stop(0.95, #33363b)
+	);
+	background-image: -moz-linear-gradient(
+    	center top,
+		#6c6f74 0%,
+		#4c4f54 5%,
+		#3f4448 10%,
+    	#383d41 45%,
+    	#303539 50%,
+    	#33363b 95%
+	);
+	filter: progid:DXImageTransform.Microsoft.Gradient(
+		startColorstr='#383d41',
+		endColorstr='#303539',
+		gradientType='0'
+	);
+
+	cursor: pointer;
+
+	-moz-box-shadow:	0px 0px 10px rgba(0, 0, 0, .5);
+	-webkit-box-shadow:	0px 0px 10px rgba(0, 0, 0, .5);
+	box-shadow:			0px 0px 10px rgba(0, 0, 0, .5);
+
+	border-top-right-radius:	 		5px;
+	border-bottom-right-radius:	 		5px;
+	-moz-border-radius-topright: 		5px;
+	-moz-border-radius-bottomright: 	5px;
+	-webkit-border-top-right-radius: 	5px;
+	-webkit-border-bottom-right-radius: 5px;
+}
+.aloha-sidebar-right .aloha-sidebar-handle {
+	left: -30px;
+	border-top-right-radius:	 		0px;
+	border-bottom-right-radius:	 		0px;
+	-moz-border-radius-topright: 		0px;
+	-moz-border-radius-bottomright: 	0px;
+	-webkit-border-top-right-radius: 	0px;
+	-webkit-border-bottom-right-radius: 0px;
+
+	border-top-left-radius:	 			5px;
+	border-bottom-left-radius:	 		5px;
+	-moz-border-radius-topleft: 		5px;
+	-moz-border-radius-bottomleft: 		5px;
+	-webkit-border-top-left-radius: 	5px;
+	-webkit-border-bottom-left-radius:	5px;
+}
+.aloha-sidebar-handle-icon {
+	display: block;
+	position: absolute;
+	top: 5px;
+	right: 5px;
+	background: url(../img/arrow.png) no-repeat center center;
+	width: 20px;
+	height: 20px;
+	opacity: 0.5;
+	filter: alpha(opacity=50);
+}
+.aloha-sidebar-right .aloha-sidebar-handle-icon {
+	left: 5px;
+	right: auto;
 }

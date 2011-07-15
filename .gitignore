@@ -7,3 +7,6 @@ out
 /npm-debug.log
 node_modules
 /setalohabase.js
+src/plugin/gcn
+nbproject
+doc/guides/staging
