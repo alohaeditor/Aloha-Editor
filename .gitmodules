@@ -61,6 +61,6 @@
 [submodule "src/plugin/cite"]
 	path = src/plugin/cite
 	url = git@github.com:alohaeditor/Aloha-Plugin-Cite.git
-[submodule "src/plugin/inputmask"]
-	path = src/plugin/inputmask
-	url = https://github.com/alohaeditor/Aloha-Plugin-InputMask.git
+[submodule "src/plugin/inputcontrol"]
+	path = src/plugin/inputcontrol
+	url = https://github.com/alohaeditor/Aloha-Plugin-InputControl.git
