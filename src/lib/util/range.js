@@ -1,7 +1,7 @@
 /*!
 * This file is part of Aloha Editor Project http://aloha-editor.org
-* Copyright © 2010-2011 Gentics Software GmbH, aloha@gentics.com
-* Contributors http://aloha-editor.org/contribution.php 
+* Copyright ï¿½ 2010-2011 Gentics Software GmbH, aloha@gentics.com
+* Contributors http://aloha-editor.org/contribution.php
 * Licensed unter the terms of http://www.aloha-editor.org/license.html
 *//*
 * Aloha Editor is free software: you can redistribute it and/or modify
@@ -19,10 +19,10 @@
 */
 
 define(
-['aloha/jquery'],
-function(jQuery, undefined) {
+['aloha/jquery', 'aloha/rangy-core'],
+function(jQuery, x, undefined) {
 	"use strict";
-	
+
 	var
 		$ = jQuery,
 		GENTICS = window.GENTICS,
@@ -115,9 +115,9 @@ GENTICS.Utils.RangeObject = Class.extend({
 	deleteContents: function () {
 
 		// TODO Fix bug that causes wrong range in paste getContents
-		
+
 		var cac, rt, i, children;
-		
+
 		// split range at the beginning and start, so deletion is easier
 
 		// the split process will leave the tree in a state, where it
@@ -130,7 +130,7 @@ GENTICS.Utils.RangeObject = Class.extend({
 		GENTICS.Utils.Dom.split(this, cac, false);
 		GENTICS.Utils.Dom.split(this, cac, true);
 		this.clearCaches();
-		
+
 		// iterate over range tree to perform deletion
 		rt = this.getRangeTree();
 		for (i = 0; i < rt.length; i++) {
@@ -139,7 +139,7 @@ GENTICS.Utils.RangeObject = Class.extend({
 				jQuery(rt[i].domobj).remove();
 			}
 		}
-		
+
 		// special handling if all contents of the cac have been deleted
 		// this case can be detected, if the cac contains just a single br,
 		// or no children at all. if this occurs the range will be collapsed
@@ -493,7 +493,7 @@ GENTICS.Utils.RangeObject = Class.extend({
 		var
 			selection = rangy.getSelection(),
 			browserRange;
-		
+
 		if (!selection) {
 			return false;
 		}

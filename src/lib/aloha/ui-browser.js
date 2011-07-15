@@ -1,7 +1,7 @@
 /*!
 * This file is part of Aloha Editor Project http://aloha-editor.org
-* Copyright © 2010-2011 Gentics Software GmbH, aloha@gentics.com
-* Contributors http://aloha-editor.org/contribution.php 
+* Copyright ï¿½ 2010-2011 Gentics Software GmbH, aloha@gentics.com
+* Contributors http://aloha-editor.org/contribution.php
 * Licensed unter the terms of http://www.aloha-editor.org/license.html
 *//*
 * Aloha Editor is free software: you can redistribute it and/or modify
@@ -19,10 +19,10 @@
 */
 
 define(
-['aloha/jquery', 'aloha/Ext'],
+['aloha/jquery', 'aloha/ext'],
 function(jQuery, undefined) {
 	"use strict";
-	
+
 	var
 		$ = jQuery,
 		GENTICS = window.GENTICS,

@@ -1,6 +1,6 @@
 /*!
 * This file is part of Aloha Editor Project http://aloha-editor.org
-* Copyright © 2010-2011 Gentics Software GmbH, aloha@gentics.com
+* Copyright ï¿½ 2010-2011 Gentics Software GmbH, aloha@gentics.com
 * Contributors http://aloha-editor.org/contribution.php 
 * Licensed unter the terms of http://www.aloha-editor.org/license.html
 *//*
@@ -19,10 +19,10 @@
 */
 
 define(
-['aloha/jquery', 'aloha/Ext', 'i18n!aloha/nls/i18n', 'aloha/ui'],
+['aloha/jquery', 'aloha/ext', 'i18n!aloha/nls/i18n', 'aloha/ui'],
 function(jQuery, Ext, i18n, _1, undefined) { // TODO add parameter for UI class after refactoring UI to requirejs
 	"use strict";
-	
+
 	var
 		$ = jQuery,
 		GENTICS = window.GENTICS,
@@ -127,7 +127,7 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 			var
 				target = jQuery(this.getTargetObject()),
 				s = target.css('background-color');
-			
+
 			if (this.getValue() === this.placeholder) {
 				this.setValue("");
 				jQuery(this.wrap.dom.children[0]).css("color", "black");
