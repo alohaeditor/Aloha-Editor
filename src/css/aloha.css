@@ -35,7 +35,7 @@
 	border: 0;
 	padding: 0;
 	margin: 0;
-	background-color: transparent;
+	background-color: transparent !important;
 }
 
 .ext-root ol, .ext-root ul, .x-menu ul, .x-menu ol {
@@ -81,19 +81,19 @@ table.x-toolbar-ct table {
 }
 
 .aloha-floatingmenu .x-tab-panel-header {
-	border-width: 0px 0px 1px 0px;
-	background: none;
+	border-width: 0px 0px 1px 0px !important;
+	background: none !important;
 }
 
 .aloha-floatingmenu .x-tab-panel-header .x-tab-strip-wrap, .aloha-floatingmenu ul.x-tab-strip-top {
-	background: none;
+	background: none !important;
 }
 .x-tab-strip-wrap ul li a:hover {
 	border: none;
 	text-decoration:none;
 }
 .aloha-floatingmenu .x-tab-panel-header {
-	padding-bottom: 0px;
+	padding-bottom: 0px !important;
 }
 
 .aloha-floatingmenu:hover {
@@ -514,7 +514,7 @@ ul.aloha-multisplit button.aloha-button-removeFormat {
 	-moz-box-shadow:	0px 0px 10px rgba(0, 0, 0, .5);
 	-webkit-box-shadow:	0px 0px 10px rgba(0, 0, 0, .5);
 	box-shadow:			0px 0px 10px rgba(0, 0, 0, .5);
-	
+
 }
 .aloha-sidebar-bar.aloha-sidebar-right {
 	left: auto;
@@ -628,10 +628,10 @@ ul.aloha-multisplit button.aloha-button-removeFormat {
 	margin: 5px 0 0;
 	padding: 2px 5px;
 	color: #888;
-	
+
 	border: 1px solid rgb(175, 175, 175);
 	border-top-width: 0;
-	
+
 	background: #fff;
 	background-image: -webkit-radial-gradient(
 		rgba(0, 0, 0, 0.0) 50%,
@@ -652,7 +652,7 @@ ul.aloha-multisplit button.aloha-button-removeFormat {
 	width: 40px;
 	height: 30px;
 	overflow: hidden;
-	
+
 	background-color: #303539;
 	background-image: -webkit-gradient(
     	linear,
@@ -679,13 +679,13 @@ ul.aloha-multisplit button.aloha-button-removeFormat {
 		endColorstr='#303539',
 		gradientType='0'
 	);
-	
+
 	cursor: pointer;
-	
+
 	-moz-box-shadow:	0px 0px 10px rgba(0, 0, 0, .5);
 	-webkit-box-shadow:	0px 0px 10px rgba(0, 0, 0, .5);
 	box-shadow:			0px 0px 10px rgba(0, 0, 0, .5);
-	
+
 	border-top-right-radius:	 		5px;
 	border-bottom-right-radius:	 		5px;
 	-moz-border-radius-topright: 		5px;
@@ -701,7 +701,7 @@ ul.aloha-multisplit button.aloha-button-removeFormat {
 	-moz-border-radius-bottomright: 	0px;
 	-webkit-border-top-right-radius: 	0px;
 	-webkit-border-bottom-right-radius: 0px;
-	
+
 	border-top-left-radius:	 			5px;
 	border-bottom-left-radius:	 		5px;
 	-moz-border-radius-topleft: 		5px;
