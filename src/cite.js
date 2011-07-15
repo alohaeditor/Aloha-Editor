@@ -18,8 +18,8 @@
 	var GENTICS = window.GENTICS,
 	      Aloha = window.Aloha,
 		 jQuery = window.alohaQuery || window.jQuery,
-	          $ = jQuery,
-		  rangy = window.rangy; 
+		  rangy = window.rangy,
+	          $ = jQuery; 
 	
 	// Pseudo-namespace prefix for Sidebar elements
 	var ns = 'aloha-cite',
@@ -49,14 +49,14 @@
 	// Creates a selector string with this component's namepsace prefixed the each classname
 	function nsSel () {
 		var strBldr = [], prx = ns;
-		$.each(arguments, function () { strBldr.push('.' + prx + '-' + this); });
+		$.each(arguments, function () { strBldr.push('.' + (this == '' ? prx : prx + '-' + this)); });
 		return strBldr.join(' ').trim();
 	};
 	
 	// Creates string with this component's namepsace prefixed the each classname
 	function nsClass () {
 		var strBldr = [], prx = ns;
-		$.each(arguments, function () { strBldr.push(prx + '-' + this); });
+		$.each(arguments, function () { strBldr.push(this == '' ? prx : prx + '-' + this); });
 		return strBldr.join(' ').trim();
 	};
 	
@@ -78,36 +78,74 @@
 		
 		init: function () {
 			var that = this;
-				
-			var blockQuoteBtn = new Aloha.ui.Button({
-					iconClass: nsClass + ' ' + nsClass('button', 'block-button'),
-					size: 'small',
-					onclick: function () {
-						that.addBlockQuote();
-					}
-				});
+			
+			this.buttons = [];
+			
+			this.buttons[0] = new Aloha.ui.Button({
+				name	  : 'quote',
+				text	  : 'Quote',					// that.i18n('button.' + button + '.text'),
+				tooltip	  : 'Add quote on selection',	// that.i18n('button.' + button + '.tooltip'),
+				iconClass : nsClass('button', 'inline-button'),
+				onclick	  : function() {
+					that.addInlineQuote();
+				}
+			});
+			
+			this.buttons[1] = new Aloha.ui.Button({
+				name	  : 'blockquote',
+				text	  : 'Blockquote',					// that.i18n('button.' + button + '.text'),
+				tooltip	  : 'Add blockquote on selection',	// that.i18n('button.' + button + '.tooltip'),
+				iconClass : nsClass('button', 'block-button'),
+				onclick	  : function() {
+					that.addBlockQuote();
+				}
+			});
 			
 			Aloha.FloatingMenu.addButton(
 				'Aloha.continuoustext',
-				blockQuoteBtn,
-				'Citation', // TODO: Aloha.i18n(Aloha, 'cite.tab.citation')
+				this.buttons[0],
+				'Citation',
 				1
 			);
-			
-			var inlineQuoteBtn = new Aloha.ui.Button({
-					iconClass: nsClass + ' ' + nsClass('button', 'inline-button'),
-					size: 'small',
-					onclick: function () {
-						that.addInlineQuote();
-					}
-				});
 			
 			Aloha.FloatingMenu.addButton(
 				'Aloha.continuoustext',
-				inlineQuoteBtn,
-				'Citation', // TODO: Aloha.i18n(Aloha, 'cite.tab.citation')
+				this.buttons[1],
+				'Citation',
 				1
 			);
+			
+			// add the event handler for selection change
+			Aloha.bind('aloha-selection-changed', function(event, rangeObject){
+				var buttons = jQuery('button' + nsSel('button'));
+			
+				jQuery.each(that.buttons, function(index, button) {
+					// set to false to prevent multiple buttons to be active when they should not
+					var statusWasSet = false,
+						tagName,
+						effective = rangeObject.markupEffectiveAtStart,
+						i  = effective.length;
+					
+					// check whether any of the effective items are citation tags
+					while (i--) {
+						tagName = effective[i].tagName.toLowerCase();
+						if ('q' == tagName || 'blockquote' == tagName) {
+							statusWasSet = true;
+							break;
+						}
+					}
+					
+					// Remove pressed class from both button
+					buttons.removeClass(nsClass('pressed'));
+					
+					// Add pressed class to the button that matches and break loop
+					if (statusWasSet) {
+						buttons.filter(nsSel(tagName == 'q' ? 'inline-button' : 'block-button'))
+							.addClass(nsClass('pressed'));
+						return false;
+					}
+				});
+			});
 		},
 		
 		addBlockQuote: function () {
@@ -170,6 +208,10 @@
 			} else {
 				domUtils.addMarkup(Aloha.Selection.getRangeObject(), flowWrapper, false);
 			}
+		},
+		
+		toString: function () {
+			return 'cite';
 		}
 		
 	}; // Cite

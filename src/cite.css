@@ -1,7 +1,19 @@
-q.aloha-cite-wrapper {
-	background: red;
+.aloha-cite-button {
+	background: yellow !important;
+	border-radius: 3px 3px 3px 3px;
+    height: 44px !important;
+    width: 54px !important;
+}
+.aloha-cite-pressed {
+	background: red !important;
 }
 
+.aloha-cite-wrapper {
+	background: #efd25d;
+}
+q.aloha-cite-wrapper {
+	background: #ffd25d;
+}
 blockquote.aloha-cite-wrapper {
-	background: green;
+	background: #dfd25d;
 }
