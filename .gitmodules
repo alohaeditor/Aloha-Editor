@@ -3,25 +3,25 @@
 	url = https://github.com/alohaeditor/Aloha-Plugin-Format
 [submodule "highlighteditables"]
 	path = highlighteditables
-	url = git@github.com:alohaeditor/Aloha-Plugin-HighlightEditables.git
+	url = https://github.com/alohaeditor/Aloha-Plugin-HighlightEditables.git
 [submodule "link"]
 	path = link
-	url = git@github.com:alohaeditor/Aloha-Plugin-Link.git
+	url = https://github.com/alohaeditor/Aloha-Plugin-Link.git
 [submodule "table"]
 	path = table
-	url = git@github.com:alohaeditor/Aloha-Plugin-Table.git
+	url = https://github.com/alohaeditor/Aloha-Plugin-Table.git
 [submodule "abbr"]
 	path = abbr
 	url = https://github.com/alohaeditor/Aloha-Plugin-Abbreviation
 [submodule "paste"]
 	path = paste
-	url = git@github.com:alohaeditor/Aloha-Plugin-Paste.git
+	url = https://github.com/alohaeditor/Aloha-Plugin-Paste.git
 [submodule "undo"]
 	path = undo
-	url = git@github.com:alohaeditor/Aloha-Plugin-Undo.git
+	url = https://github.com/alohaeditor/Aloha-Plugin-Undo.git
 [submodule "list"]
 	path = list
-	url = git@github.com:alohaeditor/Aloha-Plugin-List.git
+	url = https://github.com/alohaeditor/Aloha-Plugin-List.git
 [submodule "align"]
 	path = align
-	url = git@github.com:alohaeditor/Aloha-Plugin-Align.git
+	url = https://github.com/alohaeditor/Aloha-Plugin-Align.git
