@@ -6,8 +6,8 @@
 */
 
 define(
-['paste/abstractpastehandler', 'block/blockmanager'],
-function(AbstractPasteHandler, BlockManager) {
+['aloha/jquery', 'paste/abstractpastehandler', 'block/blockmanager'],
+function(jQuery, AbstractPasteHandler, BlockManager) {
 
 	/**
 	 * @name block.BlockPasteHandler
@@ -25,17 +25,17 @@ function(AbstractPasteHandler, BlockManager) {
 		 */
 		handlePaste: function(jqPasteDiv) {
 			jqPasteDiv.find('.aloha-block').each(function() {
-				var oldBlock = $(this);
+				var oldBlock = jQuery(this);
 
 				// TODO: use block.serialize();
 
 				var dataAttributes = {};
-				$.each(oldBlock.data(), function(k, v) {
+				jQuery.each(oldBlock.data(), function(k, v) {
 					dataAttributes['data-' + k] = v;
 				})
 
-				var newBlock = $('<' + this.tagName + '/>')
-					.attr($.extend({
+				var newBlock = jQuery('<' + this.tagName + '/>')
+					.attr(jQuery.extend({
 							about: oldBlock.attr('about'),
 							'class': oldBlock.attr('class')
 						}, dataAttributes))
