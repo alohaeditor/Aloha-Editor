@@ -4,6 +4,7 @@
 * Author & Copyright (c) 2010 Gentics Software GmbH
 * aloha-sales@gentics.com
 * Contributors 
+*       Johannes Schüth - http://jotschi.de
 * 		Nicolas karageuzian - http://nka.me/
 * 		Benjamin Athur Lupton - http://www.balupton.com/
 * 		Thomas Lete
@@ -12,7 +13,7 @@
 * 		Edward Tsech
 * 		Haymo Meran
 *
-* Licensed unter the terms of http://www.aloha-editor.com/license.html
+* Licensed under the terms of http://www.aloha-editor.com/license.html
 */
 
 // Start Closure
@@ -96,12 +97,14 @@
 					'resizable': true,   //resizable ui-drag image
 					'aspectRatio': true
 				},
+				
 				/**
 				 * crop callback is triggered after the user clicked accept to accept his crop
 				 * @param image jquery image object reference
 				 * @param props cropping properties
 				 */
-				'onCropped':function (image, props) {},
+				'onCropped': function (image, props) {},
+				
 				/**
 				 * reset callback is triggered before the internal reset procedure is applied
 				 * if this function returns true, then the reset has been handled by the callback
@@ -110,7 +113,13 @@
 				 * @param image jquery image object reference
 				 * @return true if a reset has been applied, false otherwise
 				 */
-				'onReset': function (image) { return false; }
+				'onReset': function (image) { return false; },
+				
+				/**
+				 * resize callback is triggered after the internal resize procedure is applied.  
+				 */
+				'onResized': function(image) {}
+				
 			}
 		},
 		/**
@@ -531,13 +540,13 @@
 			if (config.img.onReset && typeof config.img.onReset === "function") {
 				this.onReset = config.img.onReset;
 			}
+			if (config.img.onResized && typeof config.img.onResized === "function") {
+				this.onResized = config.img.onResized;
+			}
 			if (config.img.aspectRatio && typeof config.img.aspectRatio !== "boolean") {
 				this.settings.aspectRatio = true;
-			} // */
+			}
 		},
-		/**
-		 *
-		 */
 		applyButtonConfig: function(editable) {
 			var
 				config;
