@@ -88,7 +88,7 @@
 		stage: 'loadingCore',
 
 		/**
-		 * Initialise the Initialisation Process
+		 * Initialize the initialization process
 		 */
 		init: function () {
 			$(function(){
