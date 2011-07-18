@@ -476,7 +476,7 @@
 		
 		open: function (duration, callback) {
 			if (this.isOpen) {
-				return;
+				return this;
 			}
 
 			var isRight = (this.position == 'right'),
@@ -496,11 +496,13 @@
 			500, 'easeOutExpo');
 
 			this.isOpen = true;
+
+			return this;
 		},
 		
 		close: function (duration, callback) {
-			if (this.isOpen) {
-				return;
+			if (!this.isOpen) {
+				return this;
 			}
 
 			var isRight = (this.position == 'right'),
@@ -520,10 +522,26 @@
 			500, 'easeOutExpo');
 
 			this.isOpen = false;
+
+			return this;
+		},
+		
+		activatePanel: function (panel, element) {
+			if (typeof panel === 'string') {
+				panel = this.getPanelById(panel);
+			}
+			
+			if (panel){
+				panel.activate(element);
+			}
+
+			this.roundCorners();
+
+			return this;
 		},
 		
 		expandPanel: function (panel, callback) {
-			if (typeof panel == 'string') {
+			if (typeof panel === 'string') {
 				panel = this.getPanelById(panel);
 			}
 			
@@ -636,7 +654,7 @@
 				.css('-moz-user-select', 'none')
 				.each(function() {this.onselectstart = function() {return false;};});
 			
-			if (typeof this.onInit == 'function') {
+			if (typeof this.onInit === 'function') {
 				this.onInit.apply(this);
 			}
 		},
