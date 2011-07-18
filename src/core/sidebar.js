@@ -320,18 +320,12 @@
 			}
 			
 			if (count > 0) {
-				li.removeClass(nsClass('deactivated'));
-			} else  {
-				li.addClass(nsClass('deactivated'));
-			}
-			
-			this.roundCorners();
-			
-			if (count > 0) {
 				panel.activate(effective);
 			} else {
 				panel.deactivate();
 			}
+			
+			this.roundCorners();
 		},
 		
 		initToggler: function () {
@@ -413,7 +407,7 @@
 			bar.find(nsSel('panel-top,', 'panel-bottom'))
 			   .removeClass(topClass)
 			   .removeClass(bottomClass);
-			 
+			
 			lis.first().find(nsSel('panel-title')).addClass(topClass);
 			lis.last().find(nsSel('panel-content')).addClass(bottomClass);
 		},
@@ -534,9 +528,9 @@
 			if (panel){
 				panel.activate(element);
 			}
-
+			
 			this.roundCorners();
-
+			
 			return this;
 		},
 		
@@ -661,7 +655,7 @@
 		
 		activate: function (effective) {
 			this.isActive = true;
-			this.content.parent('li').show();
+			this.content.parent('li').show().removeClass(nsClass('deactivated'));
 			this.effectiveElement = effective;
 			if (typeof this.onActivate === 'function') {
 				this.onActivate.call(this, effective);
@@ -670,7 +664,7 @@
 		
 		deactivate: function () {
 			this.isActive = false;
-			this.content.parent('li').hide();
+			this.content.parent('li').hide().addClass(nsClass('deactivated'));
 			this.effectiveElement = null;
 		},
 		
