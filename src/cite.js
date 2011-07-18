@@ -6,8 +6,6 @@
 */
 
 /**
- * TODO: How should we insert a footer at the bottom of the document
- *
  * Add a Multisplitbutton to format a paragraph as a blockquote.
  * Behaves like other Multisplit-buttons.
  */
@@ -212,17 +210,21 @@
 				i = l >> 1,
 				cuid;
 			
-			while (i) {
+			while (true) {
 				if ((cuid = c[i].uid) == uid) {
 					return i;
-				} else if (cuid > uid) {
+				} else if (uid < cuid) {
+					if (i == 0) {
+						return -1;
+					}
 					i >>= 1;
-				} else if (cuid < uid) {
-					i = (i + l) >> 1;
+				} else if (uid > cuid) {
+					if (i == l) {
+						return -1;
+					}
+					i = (i + 1 + l) >> 1;
 				}
 			}
-			
-			return -1;
 		},
 		
 		addBlockQuote: function () {
@@ -290,8 +292,8 @@
 			
 			this.addCiteToFooter(uid);
 			
-			console.log(this.sidebar.open());
-			console.log(this.sidebar.activatePanel(nsClass('sidebar-panel'), wrapper));
+			this.sidebar.open()
+				.activatePanel(nsClass('sidebar-panel'), wrapper));
 		},
 		
 		addCiteToFooter: function (uid) {
