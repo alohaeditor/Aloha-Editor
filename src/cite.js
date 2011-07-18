@@ -136,12 +136,12 @@
 						var plugin = Aloha.Cite,
 							that = this,
 							content = this.setContent(renderTemplate(
-						   '<div class="{panel-label}">Link:</div>\
-							<div class="{panel-field} {link-field}"><input type="text" /></div>\
-							<div class="{panel-label}">Note:</div>\
-							<div class="{panel-field} {note-field}"><textarea></textarea></div>\
-							<div class="{panel-btns}"><button>Save</button></div>'
-						)).content;
+							   '<div class="{panel-label}">Link:</div>\
+								<div class="{panel-field} {link-field}"><input type="text" /></div>\
+								<div class="{panel-label}">Note:</div>\
+								<div class="{panel-field} {note-field}"><textarea></textarea></div>\
+								<div class="{panel-btns}"><button>Done</button></div>'
+							)).content;
 						
 						content.find('button').click(function () {
 							var content = that.content;
@@ -160,9 +160,29 @@
 							var citation = that.citations[idx],
 								content = this.content;
 							content.attr('data-cite-id', id);
-							content.find(nsSel('link-field intput')).val(citation.link);
+							content.find(nsSel('link-field input')).val(citation.link).focus();
 							content.find(nsSel('note-field textarea')).val(citation.note);
+							
 						}
+					}
+				});
+				
+				sidebar.addPanel({
+					id		 : nsClass('sidebar-panel-2'),
+					title	 : 'Test',
+					content	 : '',
+					expanded : true,
+					activeOn : 'a,p,div',
+					onInit	 : function () {},
+					onActivate : function (effective) {
+						var el = effective;
+						
+						while (el.length > 0 && !el.is('.aloha-editable-active')) {
+							//console.log(el[0].tagName);
+							el = el.parent(); //this.activeOn);
+						}
+						
+						//console.log(el);
 					}
 				});
 			});
@@ -233,12 +253,14 @@
 			
 			var classes = [nsClass('wrapper'), nsClass(++uid)].join(' '),
 				flowWrapper = jQuery('<q class="{classes}" data-cite-id="{uid}">'.supplant({uid:uid, classes:classes})),
-				blockWrapper = jQuery('<blockquote class="{classes}" data-cite-id="{uid}">'.supplant({uid:uid, classes:classes}));
+				blockWrapper = jQuery('<blockquote class="{classes}" data-cite-id="{uid}">'.supplant({uid:uid, classes:classes})),
+				wrapper;
 			
 			if (sel.isCollapsed) {
 				var parent = jQuery(sel.focusNode).parent();
 				var isFlow =  domUtils.allowsNesting(flowWrapper[0], parent[0]);
-				jQuery(sel.focusNode).wrap(isFlow ? flowWrapper : blockWrapper);
+				wrapper = isFlow ? flowWrapper : blockWrapper;
+				jQuery(sel.focusNode).wrap(wrapper);
 			} else {
 				var rangeObject = Aloha.Selection.getRangeObject();
 				
@@ -257,16 +279,19 @@
 				}
 				
 				if (isPartial) {
+					wrapper = flowWrapper;
 					domUtils.addMarkup(rangeObject, flowWrapper, false);
 				} else {
 					var parent = jQuery(rangeObject.startContainer).parent();
 					var isFlow =  domUtils.allowsNesting(flowWrapper[0], parent[0]);
-					domUtils.addMarkup(rangeObject, isFlow ? flowWrapper : blockWrapper, false);
+					wrapper = isFlow ? flowWrapper : blockWrapper
+					domUtils.addMarkup(rangeObject, wrapper, false);
 				}
 			}
 			
 			this.addCiteToFooter(uid);
-			this.sidebar.open();
+			this.sidebar.open()
+				.activatePanel(nsClass('sidebar-panel'), wrapper);
 		},
 		
 		addInlineQuote: function () {
@@ -307,7 +332,9 @@
 			);
 			
 			if (jQuery('.aloha-editable-active').siblings('ol.references').length == 0) {
-				jQuery('.aloha-editable-active').after(renderTemplate('<ol class="references">'));
+				jQuery('.aloha-editable-active')
+					.after(renderTemplate('<ol class="references">'))
+					.after('<h2>References</h2>');
 			}
 			
 			jQuery('.aloha-editable-active').siblings('ol.references').append(
@@ -319,6 +346,12 @@
 		},
 		
 		addCiteDetails: function (uid, link, note) {
+			this.citations[this.indexOfCitation(uid)] = {
+				uid : uid,
+				link: link,
+				note: note,
+			};
+			
 			jQuery('li#cite-note-' + uid + ' span').html(
 				(link == ''
 					? '' : '<a class="external" target="_blank" href="{url}">{url}</a>.'.supplant({url:link}))
