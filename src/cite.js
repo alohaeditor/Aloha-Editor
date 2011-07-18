@@ -221,8 +221,6 @@
 					min = mid + 1;
 				}
 			}
-			
-			return -1;
 		},
 		
 		addBlockQuote: function () {
