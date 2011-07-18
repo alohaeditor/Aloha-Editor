@@ -150,7 +150,8 @@ Aloha.RepositoryManager = Class.extend({
 
 				that.queryCallback(callback, allitems, timer);
 			},
-			notImplemented;
+			notImplemented,
+			repo;
 
 		// reset callback queue
 		this.openCallbacks = [];
@@ -171,9 +172,28 @@ Aloha.RepositoryManager = Class.extend({
 
 		// iterate through all registered repositories
 		for ( i = 0; i < repositories.length; i++) {
+			repo = repositories[i];
+			this.openCallbacks.push(repo.repositoryId);
 
-			this.openCallbacks.push(repositories[i].repositoryId);
+			notImplemented = typeof repo.query !== 'function';
+			
+			if (notImplemented) {
+				// remove this repository from the callback stack
+				id = that.openCallbacks.indexOf( repo.repositoryId );
+				if (id != -1) {
+					this.openCallbacks.splice(id, 1);
+					if ( i == repositories.length - 1 ) {
+						this.queryCallback(callback, allitems, timer);
+					}
+				}
+				// this.fireEvent('exception', this, 'response', action, arg, null, e);
+				// return false;
+			} else {
+				repo.query(params, notImplFunc);
+			}
 
+
+		/*
 		    try {
 					notImplemented = repositories[i].query(params,notImplFunc);
 		    } catch (e) {
@@ -181,17 +201,8 @@ Aloha.RepositoryManager = Class.extend({
 					// return false;
 					notImplemented = true;
 		    }
+		*/
 
-			// remove this repository from the callback stack
-			if ( notImplemented ) {
-				id = that.openCallbacks.indexOf( repositories[i].repositoryId );
-				if (id != -1) {
-					this.openCallbacks.splice(id, 1);
-					if ( i == repositories.length - 1 ) {
-						this.queryCallback(callback, allitems, timer);
-					}
-				}
-			}
 		}
 	},
 
