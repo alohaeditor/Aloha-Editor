@@ -6,8 +6,6 @@
 */
 
 /**
- * TODO: How should we insert a footer at the bottom of the document
- *
  * Add a Multisplitbutton to format a paragraph as a blockquote.
  * Behaves like other Multisplit-buttons.
  */
@@ -205,20 +203,22 @@
 		// Do a binary search through all citations for a given uid in O(log N) time
 		// The bit shifting may be a *bit* of an overkill (pun intended),
 		// but if were are working through a big list this will be significantly more performant
-		// Math.floor(l) / 2 == l >> 1 == ~~(l / 2)
+		// Math.floor(i) / 2 == i >> 1 == ~~(i / 2)
 		indexOfCitation: function (uid) {
 			var c = this.citations,
-				l = c.length,
-				i = l >> 1,
+				max = c.length,
+				min = 0,
+				mid,
 				cuid;
 			
-			while (i) {
-				if ((cuid = c[i].uid) == uid) {
-					return i;
+			while (min < max) {
+				mid = (min + max) >> 1;
+				if ((cuid = c[mid].uid) == uid) {
+					return mid;
 				} else if (cuid > uid) {
-					i >>= 1;
+					max = mid;
 				} else if (cuid < uid) {
-					i = (i + l) >> 1;
+					min = mid + 1;
 				}
 			}
 			
@@ -290,8 +290,8 @@
 			
 			this.addCiteToFooter(uid);
 			
-			console.log(this.sidebar.open());
-			console.log(this.sidebar.activatePanel(nsClass('sidebar-panel'), wrapper));
+			this.sidebar.open()
+				.activatePanel(nsClass('sidebar-panel'), wrapper);
 		},
 		
 		addCiteToFooter: function (uid) {
