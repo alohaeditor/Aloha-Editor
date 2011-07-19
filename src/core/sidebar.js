@@ -565,6 +565,7 @@
 				if (!panel.width) {
 					panel.width = this.width;
 				}
+				panel.sidebar = this;
 				panel = new Panel(panel);
 			}
 			
@@ -760,14 +761,15 @@
 			
 			while (el.length > 0 && !el.is('.aloha-editable-active')) {
 				if (el.is(this.activeOn)) {
-					path.push(el[0].tagName);
+					path.push('<span>' + el[0].tagName.toLowerCase() + '</span>');
 					content.push(
-						('<div class="aloha-sidebar-panel-parent-path">{path}</div>\
-						  <div class="aloha-sidebar-panel-parent-content">{content}</div>')
-						  .supplant({
-								path	: path.join('>'),
-								content	: (typeof renderer === 'function') ? renderer(el) : '----'
-							})
+						'<div class="aloha-sidebar-panel-parent">\
+							<div class="aloha-sidebar-panel-parent-path">{path}</div>\
+							<div class="aloha-sidebar-panel-parent-content aloha-sidebar-opened">{content}</div>\
+						 </div>'.supplant({
+							path	: path.join(''),
+							content	: (typeof renderer === 'function') ? renderer(el) : '----'
+						})
 					);
 				}
 				
@@ -775,10 +777,20 @@
 			}
 			
 			this.setContent(content.join(''));
-		},
-		
-		renderEffective: function (el) {
-			return '-- ';
+			
+			jQuery('.aloha-sidebar-panel-parent-path').click(function () {
+				var c = jQuery(this).parent().find('.aloha-sidebar-panel-parent-content');
+				
+				if (c.hasClass('aloha-sidebar-opened')) {
+					c.hide().removeClass('aloha-sidebar-opened');
+				} else {
+					c.show().addClass('aloha-sidebar-opened');
+				}
+			});
+			
+			console.log(this.content);
+			this.content.height('auto').find('.aloha-sidebar-panel-content-inner').height('auto');
+			//this.sidebar.updateHeight();
 		}
 		
 	});

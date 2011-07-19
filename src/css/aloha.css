@@ -634,11 +634,7 @@ ul.aloha-multisplit button.aloha-button-removeFormat {
 }
 .aloha-sidebar-panel-content-inner {
 	margin: 5px 0 0;
-	padding: 2px 5px;
 	color: #888;
-	
-	border: 1px solid rgb(175, 175, 175);
-	border-top-width: 0;
 	
 	background: #fff;
 	background-image: -webkit-radial-gradient(
@@ -734,8 +730,7 @@ ul.aloha-multisplit button.aloha-button-removeFormat {
 }
 
 .aloha-sidebar-panel-parent-path {
-	margin-top: 2px;
-	padding: 5px 10px;
+	padding: 0;
 	background-color: #303539;
 	background-image: -webkit-gradient(
     	linear,
@@ -762,21 +757,42 @@ ul.aloha-multisplit button.aloha-button-removeFormat {
 		endColorstr='#303539',
 		gradientType='0'
 	);
-	color: #ccc;
+	color: #fff;
 	cursor: pointer;
-	font-size: 13px;
-	font-weight: bold;
-	line-height: 1em;
+	font-size: 12px;
 	text-shadow: 0 0 6px #23262b;
 	white-space: nowrap;
-	
-	border-radius:	 		2px;
-	border-radius:	 		2px;
-	-moz-border-radius: 	2px;
-	-moz-border-radius: 	2px;
-	-webkit-border-radius: 	2px;
-	-webkit-border-radius:	2px;
+}
+.aloha-sidebar-panel-parent-path:hover {
+	opacity: 0.9;
+	filter: alpha(opacity=90);
+}
+.aloha-sidebar-panel-parent-path span {
+	display: inline-block;
+	padding: 0 15px 0 10px;
+	background: url(../img/breadcrumb-divider.png) no-repeat right center;
+	opacity: 0.25;
+	filter: alpha(opacity=25);
+	line-height: 1.3em;
+}
+.aloha-sidebar-panel-parent-path span:last-child {
+	font-weight: bold;
+	opacity: 0.5;
+	filter: alpha(opacity=50);
 }
 .aloha-sidebar-panel-parent-content {
 	padding: 4px;
+	background-image: -webkit-gradient(
+    	linear,
+    	center top,
+    	center bottom,
+    	color-stop(0.0, rgba(0, 0, 0, 0.25)),
+    	color-stop(0.05, rgba(0, 0, 0, 0.0))
+	);
+	background-image: -moz-linear-gradient(
+    	center top,
+		rgba(0, 0, 0, 0.25) 0%,
+		rgba(0, 0, 0, 0.0) 5%
+	);
 }
+
