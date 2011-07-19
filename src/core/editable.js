@@ -296,7 +296,7 @@ Aloha.Editable = Class.extend({
 	 * @return void
 	 */
 	initPlaceholder: function() {
-		if (this.isEmpty() && Aloha.settings.placeholder) {
+		if ( Aloha.settings.placeholder && this.isEmpty() ) {
 			this.addPlaceholder();
 		}
 	},
