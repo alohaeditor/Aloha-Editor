@@ -751,6 +751,34 @@
 						});
 					}
 				});
+		},
+		
+		renderEffectiveParents: function (effective, renderer) {
+			var el = effective.first();
+			var content = [];
+			var path = [];
+			
+			while (el.length > 0 && !el.is('.aloha-editable-active')) {
+				if (el.is(this.activeOn)) {
+					path.push(el[0].tagName);
+					content.push(
+						('<div class="aloha-sidebar-panel-parent-path">{path}</div>\
+						  <div class="aloha-sidebar-panel-parent-content">{content}</div>')
+						  .supplant({
+								path	: path.join('>'),
+								content	: (typeof renderer === 'function') ? renderer(el) : '----'
+							})
+					);
+				}
+				
+				el = el.first().parent();
+			}
+			
+			this.setContent(content.join(''));
+		},
+		
+		renderEffective: function (el) {
+			return '-- ';
 		}
 		
 	});

@@ -732,3 +732,51 @@ ul.aloha-multisplit button.aloha-button-removeFormat {
 	left: 5px;
 	right: auto;
 }
+
+.aloha-sidebar-panel-parent-path {
+	margin-top: 2px;
+	padding: 5px 10px;
+	background-color: #303539;
+	background-image: -webkit-gradient(
+    	linear,
+    	center top,
+    	center bottom,
+    	color-stop(0.00, #6c6f74),
+    	color-stop(0.05, #4c4f54),
+    	color-stop(0.10, #3f4448),
+    	color-stop(0.45, #383d41),
+    	color-stop(0.50, #303539),
+    	color-stop(0.95, #33363b)
+	);
+	background-image: -moz-linear-gradient(
+    	center top,
+		#6c6f74 0%,
+		#4c4f54 5%,
+		#3f4448 10%,
+    	#383d41 45%,
+    	#303539 50%,
+    	#33363b 95%
+	);
+	filter: progid:DXImageTransform.Microsoft.Gradient(
+		startColorstr='#383d41',
+		endColorstr='#303539',
+		gradientType='0'
+	);
+	color: #ccc;
+	cursor: pointer;
+	font-size: 13px;
+	font-weight: bold;
+	line-height: 1em;
+	text-shadow: 0 0 6px #23262b;
+	white-space: nowrap;
+	
+	border-radius:	 		2px;
+	border-radius:	 		2px;
+	-moz-border-radius: 	2px;
+	-moz-border-radius: 	2px;
+	-webkit-border-radius: 	2px;
+	-webkit-border-radius:	2px;
+}
+.aloha-sidebar-panel-parent-content {
+	padding: 4px;
+}
