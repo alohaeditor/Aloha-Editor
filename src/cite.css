@@ -1,11 +1,12 @@
 .aloha-cite-button {
-	background: yellow !important;
+	background: url(../img/blockquote.png) no-repeat !important;
+	border: 1px solid none !important;
 	border-radius: 3px 3px 3px 3px;
     height: 44px !important;
     width: 54px !important;
 }
 .aloha-cite-pressed {
-	background: red !important;
+	border: 2px solid #3B73D7 !important;
 }
 
 .aloha-cite-wrapper {
