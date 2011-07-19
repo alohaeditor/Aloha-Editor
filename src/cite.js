@@ -172,18 +172,15 @@
 					title	 : 'Test',
 					content	 : '',
 					expanded : true,
-					activeOn : 'a,p,div',
+					activeOn : 'q,blockquote,i,b,a,p,h2',
 					onInit	 : function () {},
 					onActivate : function (effective) {
-						var el = effective;
-						
-						while (el.length > 0 && !el.is('.aloha-editable-active')) {
-							//console.log(el[0].tagName);
-							el = el.parent(); //this.activeOn);
-						}
-						
-						//console.log(el);
-					}
+						this.renderEffectiveParents(
+							effective, function (el) {
+								return el.html();
+							}
+						);
+					} 
 				});
 			});
 			
