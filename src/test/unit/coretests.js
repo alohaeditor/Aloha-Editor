@@ -4,7 +4,10 @@
  * Licensed unter the terms of http://www.aloha-editor.com/license.html
  */
 
-Aloha.settings = {
+if (window.Aloha === undefined || window.Aloha === null) {
+		window.Aloha = {};		
+}
+window.Aloha.settings = {
 	logLevels : {
 		'error': true,
 		'warn':  true,
@@ -22,7 +25,10 @@ Aloha.settings = {
 	errorhandling : true
 };
 
-$(document).ready(function() {
+require.ready(function() {
+	// Prepare
+	var	$ = window.jQuery,
+		$body = $('body');
 
 	/* 
 	 * For this to work jquery.aloha.js needs to be loaded synchronously.

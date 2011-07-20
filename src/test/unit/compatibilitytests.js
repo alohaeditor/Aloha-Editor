@@ -3,8 +3,11 @@
  * Author & Copyright (c) 2010 Gentics Software GmbH, aloha@gentics.com
  * Licensed unter the terms of http://www.aloha-editor.com/license.html
  */
+if (window.Aloha === undefined || window.Aloha === null) {
+	window.Aloha = {};		
+}
 
-Aloha.settings = {
+window.Aloha.settings = {
 	logLevels : {
 		'error': true,
 		'warn':  true,
@@ -22,7 +25,10 @@ Aloha.settings = {
 	errorhandling : true
 };
 
-alohaQuery(document).ready(function($) {
+require.ready(function() {
+	// Prepare
+	var	$ = window.jQuery,
+		$body = $('body');
 
 	// Test whether Aloha is properly initialized
 	asyncTest('Aloha Startup Test', function() {

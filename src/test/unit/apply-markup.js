@@ -4,7 +4,11 @@
  * Licensed unter the terms of http://www.aloha-editor.com/license.html
  */
 
-Aloha.settings = {
+if (window.Aloha === undefined || window.Aloha === null) {
+	window.Aloha = {};		
+}
+
+window.Aloha.settings = {
 	logLevels : {
 		'error': true,
 		'warn':  true,
@@ -90,7 +94,11 @@ function doBlockTest(editable, startContainer, startOffset, endContainer, endOff
 	deepEqual(result.extractHTML(), expected.extractHTML(), 'Check Operation Result');
 }
 
-$(document).ready(function() {
+require.ready(function() {
+	// Prepare
+	var	$ = window.jQuery,
+		$body = $('body');
+
 
 	// Test whether Aloha is properly initialized
 	asyncTest('Aloha Startup Test', function() {

@@ -7,6 +7,7 @@
 window.TestUtils = window.TestUtils || {};
 
 (function(window, undefined) {
+	
 	/**
 	 * TestUtils class
 	 */

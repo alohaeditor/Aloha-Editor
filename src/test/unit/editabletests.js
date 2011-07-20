@@ -32,7 +32,10 @@ function doEnterTest(editable, container, offset, shift, twice, reference) {
 	deepEqual(result.extractHTML(), expected.extractHTML(), 'Check Operation Result');
 }
 
-$(document).ready(function() {
+require.ready(function() {
+	// Prepare
+	var	$ = window.jQuery,
+		$body = $('body');
 	// Test whether Aloha is properly initialized
 	/*
 	  Note: this test is currently necessary, because it will catch the initial 'aloha' Event.

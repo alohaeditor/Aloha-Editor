@@ -4,7 +4,11 @@
  * Licensed unter the terms of http://www.aloha-editor.com/license.html
  */
 
-Aloha.settings = {
+if (window.Aloha === undefined || window.Aloha === null) {
+	window.Aloha = {};		
+}
+
+window.Aloha.settings = {
 	logLevels : {
 		'error': true,
 		'warn':  true,
@@ -34,7 +38,10 @@ Aloha.settings = {
 	}
 };
 
-alohaQuery(document).ready(function($) {
+require.ready(function() {
+	var	$ = window.jQuery,
+		$body = $('body');
+	
 	var editablesCreated = 0;
 	// Test whether Aloha is properly initialized
 	asyncTest('Aloha Startup Test', function() {
@@ -52,6 +59,7 @@ alohaQuery(document).ready(function($) {
 	
 	// All other tests are done when Aloha is ready
 	$('body').bind('alohaEditableCreated', function() {
+		
 		editablesCreated++;
 		if (editablesCreated >= 2) {
 			test('Aloha Error Log Test', function() {
@@ -59,7 +67,7 @@ alohaQuery(document).ready(function($) {
 				equal(logHistory.length, 2, 'Check number of logged messages');
 			});
 			test('Aloha Plugins test', function(){
-				var plugins = Aloha.PluginRegistry.plugins,
+				var plugins = Aloha.PluginManager.plugins,
 				editable = Aloha.getEditableById('edit'),
 				editable2 = Aloha.getEditableById('edit2'),
 				editableconfig;
