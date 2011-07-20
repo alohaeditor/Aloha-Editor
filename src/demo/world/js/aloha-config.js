@@ -1,6 +1,9 @@
-if (window.Aloha === undefined || window.Aloha === null)
-		Aloha = {};
-	Aloha.settings = {
+(function(window, undefined) {
+	var jQuery = window.jQuery
+	if (window.Aloha === undefined || window.Aloha === null) {
+		window.Aloha = {};		
+	}
+	window.Aloha.settings = {
 				logLevels: {'error': true, 'warn': true, 'info': true, 'debug': false},
 				errorhandling : false,
 				ribbon: false,
@@ -111,3 +114,4 @@ if (window.Aloha === undefined || window.Aloha === null)
 					}
 					}
 			};
+})(window);
