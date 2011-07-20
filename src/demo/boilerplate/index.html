@@ -18,14 +18,10 @@
 	<link rel="stylesheet" href="css/style.css">
 	<link rel="stylesheet" href="../../css/aloha.css" id="aloha-style-include" type="text/css">
 	
-	<!--<script src="js/libs/jquery-1.5.1.js" ></script>-->
-	
-	<script src="js/aloha-config.js"></script> <!-- TODO: common/hints,common/comments,common/image are not part of common/ -->
-	
+	<script src="js/aloha-config.js"></script>
 	<script src="../../lib/require.js" data-main="../../lib/aloha.js" id="aloha-script-include" data-plugins="common/format,common/highlighteditables,common/list,common/block,common/undo,common/paste"></script>
-	
-	
 	<script src="js/aloha-boilerplate.js"></script>
+	
 </head>
 <body>
 	<div id="whole-site">
@@ -192,7 +188,6 @@
 		</div>
 	</div>
 	<script type="text/javascript">
-		
 		require.ready(function() {
 			// Prepare
 			var
@@ -200,24 +195,25 @@
 				$body = $('body');
 
 			$body.bind('aloha',function(){
-	
+				
 				// register all editable areas
 				$('#top-text').aloha();
 				$('#content').aloha();
 				$('.area-content').aloha();
-	
+				
 				// hide loading div
 				$('#aloha-loading').hide();
+				
 			});
-		
+			
 			$('.stage-area').alohaStage();
-
+			
 			// Change text after core is loaded 
 			$body.bind('alohacoreloaded',function(){
 				// hide loading div
 				$('#aloha-loading span').html('Loading Plugins');
 			});
-			
+				
 		});
 	</script>
 

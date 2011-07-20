@@ -1,4 +1,5 @@
-(function($) {
+require.ready(function() {
+	var $ = window.jQuery;
 	$.fn.alohaStage = function() {
 		var switcher = this.find('ul.stage-switcher'),
 			me = this,
@@ -66,4 +67,4 @@
 		});
 
 	};
-})(jQuery);
+});
