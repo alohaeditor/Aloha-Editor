@@ -681,7 +681,7 @@
 			if (this.settings.config.img.ui.resizable) {
 				this.endResize();
 			}
-
+			
 			thisimg = this.obj = jQuery(e.target);
 			editable = thisimg.closest('.aloha-editable');
 
@@ -691,10 +691,11 @@
 				width : this.obj.width(),
 				height : this.obj.height()
 			});
+			
 			if (this.settings.config.img.ui.resizable) {
 				this.resize();
 			}
-
+			
 			offset = GENTICS.Utils.Dom.getIndexInParent(e.target);
 			imgRange = Aloha.Selection.getRangeObject();
 
@@ -766,7 +767,7 @@
 				// TODO I would suggest to call the srcChange method. So all image src
 				// changes are on one single point.
 				imagestyle = "max-width: " + config.img.max_width + "; max-height: " + config.img.max_height;
-				imagetag = '<img style="'+imagestyle+'" src="' + imagePluginUrl + '/img/blank.jpg" title="" />';
+				imagetag = '<img style="'+imagestyle+'" src="' + imagePluginUrl + '/img/blank.jpg" title="" class="aloha-image-placeholder" />';
 				newImg = jQuery(imagetag);
 				// add the click selection handler
 				//newImg.click( Aloha.Image.clickImage ); - Using delegate now
@@ -917,27 +918,25 @@
 
 		resize: function () {
 			var me = this;
-			this.obj.data('display-beforeresizable', this.obj.css('display'));
+			this.obj.data('display-before-resizing', this.obj.css('display'));
 
 			this.obj.css({
 				'height': this.obj.height(),
-				'width': this.obj.width()
-			});
-
-			this.obj.css({
+				'width': this.obj.width(),
 				'max-height': '',
 				'max-width': ''
 			});
+			
 			this.obj.resizable({
 				stop : function (event, ui) {
 					me.onResized(me.obj);
 
 					// this is so ugly, but I could'nt figure out how to do it better...
-					if(this.enableCrop) {
+					if (this.enableCrop) {
 						setTimeout(function () {
 							Aloha.FloatingMenu.setScope(me.getUID('image'));
 							me.done(event);
-						}, 10);
+						}, 1000);
 					}
 				},
 				handles: 'ne, se, sw, nw',
@@ -951,6 +950,7 @@
 				*/
 				grid : me.settings.grid
 			});
+			
 			// this will prevent the user from resizing an image
 			// using IE's resize handles
 			// however I could not manage to hide them completely
@@ -958,10 +958,14 @@
 				.attr('contentEditable', false)
 				.addClass('Aloha_Image_Resize')
 				.addClass('aloha')
-				.css({position: 'relative'})
+				.css({
+					position : 'relative',
+					display	 : 'inline-block'
+				})
 				.bind('resizestart', function (e) {
 					e.preventDefault();
-				}).bind('mouseup', function (e) {
+				})
+				.bind('mouseup', function (e) {
 					e.originalEvent.stopSelectionUpdate = true;
 				});
 		},
@@ -973,7 +977,7 @@
 		endResize: function () {
 			if (this.obj) {
 				this.obj.resizable('destroy');
-				this.obj.css({display: this.obj.data('display-before'), top: '0', left: '0'});
+				this.obj.css({display: this.obj.data('display-before-resizing'), top: '0', left: '0'});
 			}
 		}
 
