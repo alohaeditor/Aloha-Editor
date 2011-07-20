@@ -281,7 +281,7 @@
 				});
 				this.imgSrcField = new Aloha.ui.AttributeField();
 				this.imgSrcField.setObjectTypeFilter( this.objectTypeFilter );
-
+				
 				// add the title field for images
 				imgTitleLabel = new Aloha.ui.Button({
 					'label': me.i18n('field.img.title.label'),
@@ -293,7 +293,7 @@
 				Aloha.FloatingMenu.addButton(
 						this.getUID('image'),
 						this.imgSrcField,
-						this.i18n('floatingmenu.tab.img'),
+						'Image',	//this.i18n('floatingmenu.tab.img'),
 						1
 				);
 			}
@@ -333,19 +333,19 @@
 				Aloha.FloatingMenu.addButton(
 					this.getUID('image'),
 					alignLeftButton,
-					this.i18n('floatingmenu.tab.img'),
+					'Formatting',	//this.i18n('floatingmenu.tab.img'),
 					1
 				);
 				Aloha.FloatingMenu.addButton(
-						this.getUID('image'),
-						alignRightButton,
-						this.i18n('floatingmenu.tab.img'),
-						1
+					this.getUID('image'),
+					alignRightButton,
+					'Formatting',	//this.i18n('floatingmenu.tab.img'),
+					1
 				);
 				Aloha.FloatingMenu.addButton(
 					this.getUID('image'),
 					alignNoneButton,
-					this.i18n('floatingmenu.tab.img'),
+					'Formatting',	//this.i18n('floatingmenu.tab.img'),
 					1
 				);
 			}
@@ -354,14 +354,14 @@
 			}
 			if (config.img.ui.meta) {
 				Aloha.FloatingMenu.addButton(
-						this.getUID('image'),
-						this.imgTitleField,
-						this.i18n('floatingmenu.tab.img'),
-						1
+					this.getUID('image'),
+					this.imgTitleField,
+					'Image',	//this.i18n('floatingmenu.tab.img'),
+					1
 				);
 			}
+			
 			if (config.img.ui.margin) {
-
 				incPadding = new Aloha.ui.Button({
 					iconClass: 'aloha-img aloha-image-padding-increase',
 					toggle: false,
@@ -375,7 +375,7 @@
 				Aloha.FloatingMenu.addButton(
 						this.getUID('image'),
 						incPadding,
-						this.i18n('floatingmenu.tab.img'),
+						'Formatting',	//this.i18n('floatingmenu.tab.img'),
 						2
 				);
 				decPadding = new Aloha.ui.Button({
@@ -391,10 +391,11 @@
 				Aloha.FloatingMenu.addButton(
 						this.getUID('image'),
 						decPadding,
-						this.i18n('floatingmenu.tab.img'),
+						'Formatting',	//this.i18n('floatingmenu.tab.img'),
 						2
 				);
 			}
+			
 			if(config.img.ui.crop) {
 				// create image scope
 				Aloha.FloatingMenu.createScope('Aloha.img', ['Aloha.global']);
@@ -417,7 +418,7 @@
 				Aloha.FloatingMenu.addButton(
 					this.getUID('image'),
 					this.cropButton,
-					this.i18n('floatingmenu.tab.img'),
+					'Crop &amp; Resize',	//this.i18n('floatingmenu.tab.img'),
 					3
 				);
 
@@ -435,7 +436,7 @@
 							me.reset();
 						}
 					}),
-					this.i18n('floatingmenu.tab.img'),
+					'Crop &amp; Resize',	//this.i18n('floatingmenu.tab.img'),
 					3
 				);
 			}
@@ -453,7 +454,7 @@
 				Aloha.FloatingMenu.addButton(
 						this.getUID('image'),
 						incSize,
-						this.i18n('floatingmenu.tab.img'),
+						'Crop &amp; Resize',	//this.i18n('floatingmenu.tab.img'),
 						2
 				);
 				naturalSize = new Aloha.ui.Button({
@@ -469,7 +470,7 @@
 				Aloha.FloatingMenu.addButton(
 						this.getUID('image'),
 						decSize,
-						this.i18n('floatingmenu.tab.img'),
+						'Crop &amp; Resize',	//this.i18n('floatingmenu.tab.img'),
 						2
 				);
 			}
@@ -487,11 +488,12 @@
 							me.endResize();
 						}
 						jQuery(myimage)
-							.css({'width': img.width + 'px',
-								  'height': img.height + 'px',
-								  'max-width': '',
-								  'max-height': ''
-								});
+							.css({
+								'width': img.width + 'px',
+								'height': img.height + 'px',
+								'max-width': '',
+								'max-height': ''
+							});
 						if (me.settings.config.img.ui.resizable) {
 							me.resize();
 						}
@@ -504,7 +506,7 @@
 			Aloha.FloatingMenu.addButton(
 					this.getUID('image'),
 					naturalSize,
-					this.i18n('floatingmenu.tab.img'),
+					'Crop &amp; Resize',	//this.i18n('floatingmenu.tab.img'),
 					2
 			);
 		}, // end of Buttons creation
@@ -926,8 +928,6 @@
 		resize: function () {
 			var me = this;
 			
-			//this.obj.data('display-before-resizing', this.obj.css('display'));
-
 			var obj = this.obj.css({
 				height		: this.obj.height(),
 				width		: this.obj.width(),
@@ -990,7 +990,6 @@
 				this.obj
 					.resizable('destroy')
 					.css({
-					//	display: this.obj.data('display-before-resizing'),
 						top: '0',
 						left: '0'
 					});
