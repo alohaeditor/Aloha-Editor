@@ -4,6 +4,13 @@
  * Licensed unter the terms of http://www.aloha-editor.com/license.html
  */
 
+define("applymarkup",
+['aloha/jquery'],
+function(jQuery, undefined) {
+	"use strict";
+	
+	var $ = jQuery;
+	
 if (window.Aloha === undefined || window.Aloha === null) {
 	window.Aloha = {};		
 }
@@ -257,4 +264,6 @@ require.ready(function() {
 			doBlockTest(this.edit, this.edit.find('p').eq(1).contents().get(0), 1, this.edit.find('p').eq(1).contents().get(0), 1, jQuery('<h1></h1>'), '#ref-header', '#ref-header-last-h1');
 		});
 	});
+});
+
 });

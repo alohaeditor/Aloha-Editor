@@ -4,6 +4,13 @@
  * Licensed unter the terms of http://www.aloha-editor.com/license.html
  */
 
+define("editabletest",
+['aloha/jquery'],
+function(jQuery, undefined) {
+	"use strict";
+	
+	var $ = jQuery;
+	
 /**
  * Do an enter test
  * @param editable the editable
@@ -508,4 +515,6 @@ require.ready(function() {
 			doEnterTest(this.edit, this.edit.find('li').eq(2).contents().get(0), 5, true, true, '#ref-list-lastend-shift-dblenter');
 		});
 	});
+});
+
 });

@@ -4,6 +4,13 @@
  * Licensed unter the terms of http://www.aloha-editor.com/license.html
  */
 
+define("pluginapitest",
+['aloha/jquery'],
+function(jQuery, undefined) {
+	"use strict";
+	
+	var $ = jQuery;
+
 if (window.Aloha === undefined || window.Aloha === null) {
 	window.Aloha = {};		
 }
@@ -87,5 +94,7 @@ require.ready(function() {
 		}
 		// check whether error or warn messages were logged during startup
 	});
+
+});
 
 });

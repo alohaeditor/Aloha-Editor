@@ -4,6 +4,13 @@
  * Licensed unter the terms of http://www.aloha-editor.com/license.html
  */
 
+define("coretests",
+['aloha/jquery'],
+function(jQuery, undefined) {
+	"use strict";
+	
+	var $ = jQuery;
+	
 if (window.Aloha === undefined || window.Aloha === null) {
 		window.Aloha = {};		
 }
@@ -70,4 +77,6 @@ require.ready(function() {
 			equals(editable.contentEditable(), "false", 'Check whether div is not contenteditable after .mahalo()');
 		});
 	});
+});
+
 });
