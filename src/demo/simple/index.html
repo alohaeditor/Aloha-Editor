@@ -3,9 +3,10 @@
 <head>
 	<meta http-equiv="content-type" content="text/html; charset=utf-8">
 	<title>Aloha, Documents!</title>
-	<script	src="../../dep/jquery-1.5.1.js" ></script>
-	<script	src="../../aloha.js" id="aloha-script-include" data-plugins="format"></script>
-	<link rel="stylesheet" href="../../aloha.css" id="aloha-style-include">
+	<script	src="../../lib/vendor/jquery-1.5.1.js" ></script>
+	<script src="../../lib/require.js" data-main="../../lib/aloha.js" id="aloha-script-include" data-plugins="common/format,common/highlighteditables,common/list,common/undo,common/paste"></script>
+
+	<link rel="stylesheet" href="../../css/aloha.css" id="aloha-style-include">
 	<link rel="stylesheet" href="../../demo/common/index.css" type="text/css">
 </head>
 <body>
@@ -42,18 +43,18 @@
 			</div>
 		</div>
 	</div>
-	<script type="text/javascript" defer>
-		(function(window,undefined){
+	
+	<script type="text/javascript">
+		require.ready(function() {
 			// Prepare
-			var
-				$ = window.jQuery,
+			var	$ = window.jQuery,
 				$body = $('body');
-			
-			// Aloha
+
 			$body.bind('aloha',function(){
 				$('#content').aloha();
 			});
-		})(window);
+		});
 	</script>
+	
 </body>
 </html>
