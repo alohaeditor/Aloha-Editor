@@ -1,6 +1,6 @@
 /*!
 * This file is part of Aloha Editor Project http://aloha-editor.org
-* Copyright © 2010-2011 Gentics Software GmbH, aloha@gentics.com
+* Copyright ï¿½ 2010-2011 Gentics Software GmbH, aloha@gentics.com
 * Contributors http://aloha-editor.org/contribution.php 
 * Licensed unter the terms of http://www.aloha-editor.org/license.html
 *//*
@@ -168,7 +168,8 @@ Aloha.RepositoryManager = Class.extend({
 
 				that.queryCallback(callback, allitems, timer);
 			},
-			notImplemented;
+			notImplemented,
+			repo;
 
 		// reset callback queue
 		this.openCallbacks = [];
@@ -190,8 +191,27 @@ Aloha.RepositoryManager = Class.extend({
 		// iterate through all registered repositories
 		for ( i = 0; i < repositories.length; i++) {
 
-			this.openCallbacks.push(repositories[i].repositoryId);
+			repo = repositories[i];
+			this.openCallbacks.push(repo.repositoryId);
 
+			notImplemented = typeof repo.query !== 'function';
+
+			if (notImplemented) {
+				// remove this repository from the callback stack
+				id = that.openCallbacks.indexOf( repo.repositoryId );
+				if (id != -1) {
+					this.openCallbacks.splice(id, 1);
+					if ( i == repositories.length - 1 ) {
+						this.queryCallback(callback, allitems, timer);
+					}
+				}
+				// this.fireEvent('exception', this, 'response', action, arg, null, e);
+				// return false;
+			} else {
+				repo.query(params, notImplFunc);
+			}
+			
+		/*
 		    try {
 					notImplemented = repositories[i].query(params,notImplFunc);
 		    } catch (e) {
@@ -199,17 +219,8 @@ Aloha.RepositoryManager = Class.extend({
 					// return false;
 					notImplemented = true;
 		    }
-
-			// remove this repository from the callback stack
-			if ( notImplemented ) {
-				id = that.openCallbacks.indexOf( repositories[i].repositoryId );
-				if (id != -1) {
-					this.openCallbacks.splice(id, 1);
-					if ( i == repositories.length - 1 ) {
-						this.queryCallback(callback, allitems, timer);
-					}
-				}
-			}
+		*/
+		
 		}
 	},
 

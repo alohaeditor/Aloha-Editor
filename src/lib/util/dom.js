@@ -1,6 +1,6 @@
 /*!
 * This file is part of Aloha Editor Project http://aloha-editor.org
-* Copyright © 2010-2011 Gentics Software GmbH, aloha@gentics.com
+* Copyright ï¿½ 2010-2011 Gentics Software GmbH, aloha@gentics.com
 * Contributors http://aloha-editor.org/contribution.php 
 * Licensed unter the terms of http://www.aloha-editor.org/license.html
 *//*
@@ -549,15 +549,7 @@ GENTICS.Utils.Dom = Class.extend({
 
 		// find the highest occurrence of the markup
 		highestObject = this.findHighestElement(rangeObject.getCommonAncestorContainer(), nodeName, limit);
-		root = highestObject ? highestObject.parentNode : undefined;
-
-		// if no highest object found, but the CAC is one of the limit objects, we use the CAC as root
-		if (!root && limit.filter(
-			function() {
-				return this == rangeObject.getCommonAncestorContainer();
-			}).length > 0) {
-			root = rangeObject.getCommonAncestorContainer();
-		}
+		root = highestObject ? highestObject.parentNode : rangeObject.getCommonAncestorContainer();
 
 		if (root) {
 			// construct the range tree

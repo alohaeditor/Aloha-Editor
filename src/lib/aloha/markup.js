@@ -1,6 +1,6 @@
 /*!
 * This file is part of Aloha Editor Project http://aloha-editor.org
-* Copyright © 2010-2011 Gentics Software GmbH, aloha@gentics.com
+* Copyright ï¿½ 2010-2011 Gentics Software GmbH, aloha@gentics.com
 * Contributors http://aloha-editor.org/contribution.php 
 * Licensed unter the terms of http://www.aloha-editor.org/license.html
 *//*
@@ -832,7 +832,8 @@ Aloha.Markup = Class.extend({
 			case 'h4':
 			case 'h5':
 			case 'h6':
-				lastObj = jQuery(rangeObject.splitObject).textNodes().last()[0];
+				// get the last textnode in the splitobject, but don't consider aloha-cleanme elements
+			 	lastObj = jQuery(rangeObject.splitObject).textNodes(':not(.aloha-cleanme)').last()[0];
 				// special case: when enter is hit at the end of a heading, the followUp should be a <p>
 				if (lastObj && rangeObject.startContainer === lastObj && rangeObject.startOffset === lastObj.length) {
 					returnObj = jQuery('<p></p>');

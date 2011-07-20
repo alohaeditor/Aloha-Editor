@@ -113,6 +113,20 @@ window.TestUtils = window.TestUtils || {};
 			rangeObject.select();
 			rangeObject.clearCaches();
 			rangeObject.updateMarkupEffectiveAtStart();
+		},
+
+		/**
+		 * Remove the given markup from the given range.
+		 * @param editable editable as jQuery object
+		 * @param rangeObject range object
+		 * @param markup as jQuery object
+		 */
+		removeMarkup : function (editable, rangeObject, markup) {
+			GENTICS.Utils.Dom.removeMarkup(rangeObject, markup, editable);
+			rangeObject.correctRange();
+			rangeObject.select();
+			rangeObject.clearCaches();
+			rangeObject.updateMarkupEffectiveAtStart();
 		}
 	});
 

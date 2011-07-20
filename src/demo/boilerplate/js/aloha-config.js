@@ -8,15 +8,16 @@
 				errorhandling : false,
 				ribbon: false,
 
-				"i18n": {
+		i18n: {
 					// you can either let the system detect the users language (set acceptLanguage on server)
 					// In PHP this would would be '<?=$_SERVER['HTTP_ACCEPT_LANGUAGE']?>' resulting in
 					// "acceptLanguage": 'de-de,de;q=0.8,it;q=0.6,en-us;q=0.7,en;q=0.2'
 					// or set current on server side to be in sync with your backend system
-					"current": "en"
+			current: 'en'
 				},
-				"repositories": {
-					"linklist": {
+		
+		repositories: {
+			linklist: {
 						data: [
 									{ name: 'Aloha Developers Wiki', url:'http://www.aloha-editor.com/wiki', type:'website', weight: 0.50 },
 									{ name: 'Aloha Editor - The HTML5 Editor', url:'http://aloha-editor.com', type:'website', weight: 0.90  },
@@ -26,8 +27,9 @@
 						]
 					}
 				},
-				"plugins": {
-					"format": {
+		
+		plugins: {
+			format: {
 						// all elements with no specific configuration get this configuration
 						config : [  'b', 'i', 'p', 'sub', 'sup', 'del', 'title', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'removeFormat' ],
 							editables : {
@@ -35,7 +37,7 @@
 							'#top-text'	: [  ]
 							}
 					},
-					"list": {
+			list: {
 						// all elements with no specific configuration get an UL, just for fun :)
 						config : [ 'ul', 'ol' ],
 							editables : {
@@ -43,7 +45,7 @@
 							'#top-text'	: [  ]
 							}
 					},
-					"abbr": {
+			abbr: {
 						// all elements with no specific configuration get an UL, just for fun :)
 						config : [ 'abbr' ],
 							editables : {
@@ -51,7 +53,7 @@
 							'#top-text'	: [  ]
 							}
 					},
-					"link": {
+			link: {
 						// all elements with no specific configuration may insert links
 						config : [ 'a' ],
 							editables : {
@@ -72,9 +74,9 @@
 							// handle change of href
 							onHrefChange: function( obj, href, item ) {
 								if ( item ) {
-									$(obj).attr('data-name', item.name);
+							$(obj).attr('data-name', item.name);
 								} else {
-									$(obj).removeAttr('data-name');
+							$(obj).removeAttr('data-name');
 								}
 							}
 					},
@@ -92,18 +94,18 @@
 											{name:'hor-zebra'},
 							],
 							columnConfig : [
-											{name:'bigbold', iconClass:'GENTICS_button_col_bigbold'},
-											{name:'redwhite', iconClass:'GENTICS_button_col_redwhite'}
+					{name: 'table-style-bigbold',  iconClass: 'aloha-button-col-bigbold'},
+					{name: 'table-style-redwhite', iconClass: 'aloha-button-col-redwhite'}
 							],
 						rowConfig : [
-										{name:'bigbold', iconClass:'GENTICS_button_row_bigbold'},
-										{name:'redwhite', iconClass:'GENTICS_button_row_redwhite'}
+					{name: 'table-style-bigbold',  iconClass: 'aloha-button-row-bigbold'},
+					{name: 'table-style-redwhite', iconClass: 'aloha-button-row-redwhite'}
 							]
 
 					},
 					"image": {
 	   					config : { 
-	   						'img': { 
+					img: { 
 	   							'max_width': '50px',
 								'max_height': '50px' 
 							}
