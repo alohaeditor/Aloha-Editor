@@ -302,7 +302,8 @@
 					'iconClass': 'aloha-img aloha-image-align-left',
 					'size': 'small',
 					'onclick' : function() {
-						jQuery(me.findImgMarkup()).css('float', 'left');
+						var el = jQuery(me.findImgMarkup());
+						el.add(el.parent()).css('float', 'left');
 					},
 					'tooltip': me.i18n('button.img.align.left.tooltip')
 				});
@@ -310,16 +311,22 @@
 					'iconClass': 'aloha-img aloha-image-align-right',
 					'size': 'small',
 					'onclick' : function() {
-						jQuery(me.findImgMarkup()).css('float', 'right');
+						var el = jQuery(me.findImgMarkup());
+						el.add(el.parent()).css('float', 'right');
 					},
 					'tooltip': me.i18n('button.img.align.right.tooltip')
 				});
+				
+				
 				alignNoneButton = new Aloha.ui.Button({
 					'iconClass': 'aloha-img aloha-image-align-none',
 					'size': 'small',
 					'onclick' : function() {
-						var img = me.findImgMarkup();
-						jQuery(img).css('float', '');
+						var el = jQuery(me.findImgMarkup());
+						el.add(el.parent()).css({
+							'float': 'none',
+							display: 'inline-block'
+						});
 					},
 					'tooltip': me.i18n('button.img.align.none.tooltip')
 				});
@@ -767,7 +774,7 @@
 				// TODO I would suggest to call the srcChange method. So all image src
 				// changes are on one single point.
 				imagestyle = "max-width: " + config.img.max_width + "; max-height: " + config.img.max_height;
-				imagetag = '<img style="'+imagestyle+'" src="' + imagePluginUrl + '/img/blank.jpg" title="" class="aloha-image-placeholder" />';
+				imagetag = '<img style="'+imagestyle+'" src="' + imagePluginUrl + '/img/blank.jpg" title="" />';
 				newImg = jQuery(imagetag);
 				// add the click selection handler
 				//newImg.click( Aloha.Image.clickImage ); - Using delegate now
@@ -918,16 +925,18 @@
 
 		resize: function () {
 			var me = this;
-			this.obj.data('display-before-resizing', this.obj.css('display'));
+			
+			//this.obj.data('display-before-resizing', this.obj.css('display'));
 
-			this.obj.css({
-				'height': this.obj.height(),
-				'width': this.obj.width(),
+			var obj = this.obj.css({
+				height		: this.obj.height(),
+				width		: this.obj.width(),
+				position	: 'relative',
 				'max-height': '',
-				'max-width': ''
+				'max-width'	: ''
 			});
 			
-			this.obj.resizable({
+			obj.resizable({
 				stop : function (event, ui) {
 					me.onResized(me.obj);
 
@@ -936,7 +945,7 @@
 						setTimeout(function () {
 							Aloha.FloatingMenu.setScope(me.getUID('image'));
 							me.done(event);
-						}, 1000);
+						}, 10);
 					}
 				},
 				handles: 'ne, se, sw, nw',
@@ -951,16 +960,18 @@
 				grid : me.settings.grid
 			});
 			
+			obj.css('display', 'inline-block');
+			
 			// this will prevent the user from resizing an image
 			// using IE's resize handles
 			// however I could not manage to hide them completely
 			jQuery('.ui-wrapper')
 				.attr('contentEditable', false)
-				.addClass('Aloha_Image_Resize')
-				.addClass('aloha')
+				.addClass('aloha-image-box-active Aloha_Image_Resize aloha')
 				.css({
-					position : 'relative',
-					display	 : 'inline-block'
+					position: 'relative',
+					display: 'inline-block',
+					'float': obj.css('float')
 				})
 				.bind('resizestart', function (e) {
 					e.preventDefault();
@@ -976,8 +987,13 @@
 		 */
 		endResize: function () {
 			if (this.obj) {
-				this.obj.resizable('destroy');
-				this.obj.css({display: this.obj.data('display-before-resizing'), top: '0', left: '0'});
+				this.obj
+					.resizable('destroy')
+					.css({
+					//	display: this.obj.data('display-before-resizing'),
+						top: '0',
+						left: '0'
+					});
 			}
 		}
 
