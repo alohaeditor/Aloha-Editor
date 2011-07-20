@@ -1,3 +1,12 @@
 [submodule "src/plugins/common"]
 	path = src/plugins/common
 	url = git://github.com/alohaeditor/Aloha-Bundle-Common.git
+[submodule "src/plugins/extra"]
+	path = src/plugins/extra
+	url = git://github.com/alohaeditor/Aloha-Bundle-Extra.git
+[submodule "src/plugins/collaboration"]
+	path = src/plugins/collaboration
+	url = git://github.com/alohaeditor/Aloha-Bundle-Collaboration.git
+[submodule "src/plugins/media"]
+	path = src/plugins/media
+	url = git://github.com/alohaeditor/Aloha-Bundle-Media.git
