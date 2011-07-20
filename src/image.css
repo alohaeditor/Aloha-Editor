@@ -101,3 +101,10 @@ button.cnr-reset {
 	height: 16px;
 	background-position: -80px -224px !important;
 }
+
+
+.aloha-image-placeholder {
+	-moz-box-shadow:	0px 2px 8px rgba(0, 0, 0, 0.4);
+	-webkit-box-shadow:	0px 2px 8px rgba(0, 0, 0, 0.4);
+	box-shadow:			0px 2px 8px rgba(0, 0, 0, 0.4);
+}
