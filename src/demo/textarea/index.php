@@ -29,13 +29,13 @@
 <html>
 <head>
 	<meta http-equiv="content-type" content="text/html; charset=utf-8">
-	<title>Aloha, Documents!</title>
-
-	<script	src="../../dep/jquery-1.5.1.js" ></script>
-	<script	src="../../aloha.js" id="aloha-script-include" data-plugins="format,table,list,link"></script>
+	<title>Aloha, Textarea!</title>
 	
-	<link rel="stylesheet" href="../../aloha.css" id="aloha-style-include" type="text/css">
-	<link rel="stylesheet" href="../../demo/common/index.css" type="text/css">
+	<script src="../../lib/require.js" data-main="../../lib/aloha.js" id="aloha-script-include" data-plugins="common/format,common/highlighteditables,common/list,common/undo,common/paste,common/block"></script>
+
+	
+	<link rel="stylesheet" href="../../css/aloha.css" id="aloha-style-include" type="text/css">
+	<link rel="stylesheet" href="../common/index.css" type="text/css">
 	<style>
 		textarea {
 			width:100%;
@@ -77,14 +77,16 @@
 			</form>
 		</div>
 	</div>
-	<script type="text/javascript" defer>
-		(function(window,undefined){
-			var
-				$ = window.jQuery,
-				GENTICS = window.GENTICS,
-				$body = $('body');
-
-			Aloha.settings = {
+	<script type="text/javascript">
+	require.ready(function() {
+		// Prepare
+		var	$ = window.jQuery,
+			$body = $('body');
+			
+			if (window.Aloha === undefined || window.Aloha === null) {
+				window.Aloha = {};		
+			}
+			window.Aloha.settings = {
 				logLevels: {'error': true, 'warn': true, 'info': true, 'debug': true},
 				errorhandling: false,
 				ribbon: false
@@ -111,7 +113,7 @@
 				});
 
 				$('#getContents').click(function(){
-					var e = GENTICS.Aloha.getEditableById('content');
+					var e = Aloha.getEditableById('content');
 					alert(e.getContents());
 				});
 
