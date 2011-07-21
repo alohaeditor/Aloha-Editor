@@ -93,22 +93,6 @@ GENTICS.Utils.RangeObject = Class.extend({
 	endOffset: undefined,
 
 	/**
-	 * Parents of the start container up to different limit objects
-	 */
-	startParents: [],
-
-	/**
-	 * Parents of the end container up to different limit objects
-	 */
-	endParents: [],
-
-	/**
-	 * @hide
-	 * RangeTree cache for different root objects
-	 */
-	rangeTree: [],
-
-	/**
 	 * Delete all contents selected by the current range
 	 * @param rangeTree a GENTICS.Utils.RangeTree object may be provided to start from. This parameter is optional
 	 */
@@ -212,9 +196,9 @@ GENTICS.Utils.RangeObject = Class.extend({
 	 * @method
 	 */
 	getContainerParents: function (limit, fromEnd) {
+		// TODO cache the calculated parents
 		var
 			container = fromEnd ? this.endContainer : this.startContainer,
-			parentStore = fromEnd ? this.endParents : this.startParents,
 			parents, limitIndex,
 			i;
 
@@ -226,30 +210,25 @@ GENTICS.Utils.RangeObject = Class.extend({
 			limit = jQuery('body');
 		}
 
-		if (!parentStore[limit.get(0)]) {
-			// for text nodes, get the parents
-			if (container.nodeType == 3) {
-				parents = jQuery(container).parents();
-			} else {
-				parents = jQuery(container).parents();
-				for (i = parents.length; i > 0; --i) {
-					parents[i] = parents[i - 1];
-				}
-				parents[0] = container;
+		
+		if (container.nodeType == 3) {
+			parents = jQuery(container).parents();
+		} else {
+			parents = jQuery(container).parents();
+			for (i = parents.length; i > 0; --i) {
+				parents[i] = parents[i - 1];
 			}
-
-			// now slice this array
-			limitIndex = parents.index(limit);
-
-			if (limitIndex >= 0) {
-				parents = parents.slice(0, limitIndex);
-			}
-
-			// store it (might be used again)
-			parentStore[limit.get(0)] = parents;
+			parents[0] = container;
 		}
 
-		return parentStore[limit.get(0)];
+		// now slice this array
+		limitIndex = parents.index(limit);
+
+		if (limitIndex >= 0) {
+			parents = parents.slice(0, limitIndex);
+		}
+
+		return parents;
 	},
 
 	/**
@@ -704,9 +683,6 @@ GENTICS.Utils.RangeObject = Class.extend({
 	 * @method
 	 */
 	clearCaches: function () {
-		this.rangeTree = [];
-		this.startParents = [];
-		this.endParents = [];
 		this.commonAncestorContainer = undefined;
 	},
 
@@ -718,19 +694,13 @@ GENTICS.Utils.RangeObject = Class.extend({
 	 * @method
 	 */
 	getRangeTree: function (root) {
+		// TODO cache rangeTrees
 		if (typeof root === 'undefined') {
 			root = this.getCommonAncestorContainer();
 		}
 
-		if (this.rangeTree[root]) {
-			// sometimes it's cached
-			return this.rangeTree[root];
-		}
-
 		this.inselection = false;
-		this.rangeTree[root] = this.recursiveGetRangeTree(root);
-
-		return this.rangeTree[root];
+		return this.recursiveGetRangeTree(root);
 	},
 
 	/**

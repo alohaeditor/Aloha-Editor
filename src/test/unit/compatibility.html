@@ -8,7 +8,7 @@
 	<script type="text/javascript" src="../dep/qunit.js"></script>
 
 	<!-- include jquery -->
-	<script	src="../../dep/jquery-1.5.1.js" ></script>
+	<script	src="../../lib/vendor/jquery-1.5.1.js" ></script>	
 	<script>
 		window.alohaQuery = jQuery.noConflict();
 	</script>
@@ -17,7 +17,8 @@
 	<script	src="../dep/jquery-1.2.1.js" ></script>
 
 	<!-- include aloha -->
-	<script	src="../../aloha.js" id="aloha-script-include"></script>
+	<script src="../../lib/require.js" data-main="../../lib/aloha.js" id="aloha-script-include" data-plugins=""></script>
+
 
 	<!-- include the testutils -->
 	<script type="text/javascript" src="testutils.js"></script>
