@@ -1,0 +1,10 @@
+simple=this is just a simple message
+multiline=this\nis\na\nmultiline\nvalue
+special==\\äöüß<>"'&\{0\}€
+duplicate=one
+duplicate=two
+fallback=from the aloha dictionary
+nofallback=from the aloha dictionary
+substitutions=zero:{0},one:{1},two:{2}
+substitutions2=one:{1},zero:{0},two:{2}
+manyplaceholders=eleven:{11},twelve:{12}

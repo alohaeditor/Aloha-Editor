@@ -1,0 +1,726 @@
+/*!
+* Aloha Editor
+* Author & Copyright (c) 2010 Gentics Software GmbH
+* aloha-sales@gentics.com
+* Licensed unter the terms of http://www.aloha-editor.com/license.html
+*/
+.aloha-editable {
+	min-height: 1.2em;
+	outline: none;
+}
+
+.aloha-editable-zerowidthfix {
+	padding: 0px 5px 0px 5px !important;
+}
+
+.aloha-editicon {
+	position: absolute;
+	margin-left: -34px;
+	display: none;
+}
+
+.aloha-editicon img {
+	width: 18px;
+	height: 18px;
+}
+
+/*
+ * Ext JS fixes
+ */
+.aloha-floatingmenu table, .aloha-floatingmenu tr, .aloha-floatingmenu td,
+.ext-root tr:nth-child(2n), .ext-root tr:nth-child(3n), .ext-root tr:nth-child(4n), .ext-root tr:nth-child(5n),
+.ext-root table, .ext-root tr, .ext-root td,
+.x-layer table, .x-layer tr, .x-layer td,
+.x-window table, .x-window tr, .x-window td {
+	border: 0;
+	padding: 0;
+	margin: 0;
+	background-color: transparent !important;
+}
+
+.ext-root ol, .ext-root ul, .x-menu ul, .x-menu ol {
+	list-style:none;
+	margin:0;
+	padding:0;
+}
+
+.aloha-floatingmenu table, .aloha-floatingmenu tr, .aloha-floatingmenu td {
+	width: 0;
+	height: 0;
+}
+
+table.x-table-layout, table.x-btn.x-btn-icon, table.x-toolbar-ct, .x-toolbar-left table {
+        margin: 0;
+}
+
+/* fixes modal dialog border issues in GCN backend */
+table.x-toolbar-ct {
+        border: 0px;
+        margin: 0px;
+}
+
+table.x-toolbar-ct td {
+        border: 0px;
+}
+
+table.x-toolbar-ct table {
+        border: 0px;
+        margin: 0px;
+}
+
+/*
+ * Floating Menu
+ */
+
+.aloha-floatingmenu {
+	position: absolute;
+}
+
+.aloha-floatingmenu.fixed {
+	position: fixed !important;
+}
+
+.aloha-floatingmenu .x-tab-panel-header {
+	border-width: 0px 0px 1px 0px !important;
+	background: none !important;
+}
+
+.aloha-floatingmenu .x-tab-panel-header .x-tab-strip-wrap, .aloha-floatingmenu ul.x-tab-strip-top {
+	background: none !important;
+}
+.x-tab-strip-wrap ul li a:hover {
+	border: none;
+	text-decoration:none;
+}
+.aloha-floatingmenu .x-tab-panel-header {
+	padding-bottom: 0px !important;
+}
+
+.aloha-floatingmenu:hover {
+	background-color: #E0E0E0;
+	-moz-border-radius-topleft: 3px;
+	-moz-border-radius-topright: 3px;
+	-webkit-border-top-left-radius: 3px;
+	-webkit-border-top-right-radius: 3px;
+	border-top-left-radius: 3px;
+	border-top-right-radius: 3px;
+	background: url(../img/grabhandle.png) no-repeat scroll center 5px rgba(0, 0, 0, 0.4);
+}
+
+.aloha-floatingmenu:hover .aloha-floatingmenu-pin {
+	display: block;
+}
+
+.aloha-floatingmenu-pin {
+	background: url("../img/pin.png") no-repeat scroll 0 6px transparent;
+	cursor: pointer;
+	margin-left: 5px !important;
+	width: 16px;
+	position: absolute !important;
+	right: 10px;
+	display: none;
+}
+
+.aloha-floatingmenu-pinned {
+	background-position: -16px 6px;
+}
+
+#aloha-floatingmenu-shadow {
+	position: absolute;
+	top: -1000;
+	left: -1000;
+	display: none;
+	z-index: 8800;
+}
+
+#aloha-floatingmenu-shadow.fixed {
+	position: fixed !important;
+}
+
+.x-combo-selected {
+	background-color: Highlight !important;
+}
+
+.x-tree-root-ct {
+	padding: 0px;
+}
+
+.x-tree-node {
+	list-style: none;
+}
+
+.x-tree-node-ct {
+	padding: 0px;
+}
+
+/*hide dotted browser border on focus*/
+.aloha-button a:focus {
+	outline: none;
+}
+
+button.aloha-button {
+	background: url(../img/base.png) no-repeat !important;
+}
+
+button.aloha-button-big {
+	background: url(../img/base-big.png) no-repeat !important;
+}
+
+/*buttons for format plugin*/
+button.aloha-button-b {
+	background-position: 0px 0px;
+}
+
+button.aloha-button-i {
+	background-position: -16px 0px !important;
+}
+
+button.aloha-button-u {
+	background-position: -32px 0px !important;
+}
+
+button.aloha-button-del {
+	background-position: -48px 0px !important;
+}
+
+button.aloha-button-sub {
+	background-position: -64px 0px !important;
+}
+
+button.aloha-button-sup {
+	background-position: -80px 0px !important;
+}
+
+button.aloha-button-ul {
+	background-position: -256px 0px !important;
+}
+
+button.aloha-button-ol {
+	background-position: -272px 0px !important;
+}
+
+button.aloha-button-a {
+	background-position: -288px 0px !important;
+}
+
+button.aloha-button-a-remove {
+	background-position: -304px 0px !important;
+}
+
+/**
+ * multisplit buttons
+ */
+button.aloha-button-p {
+	background-position: 0px 0 !important;
+}
+
+button.aloha-button-p-de {
+	background-position: 0px -42px !important;
+}
+
+button.aloha-button-h1 {
+	background-position: -52px 0 !important;
+}
+
+button.aloha-button-h1-de {
+	background-position: -52px -42px !important;
+}
+
+button.aloha-button-h2 {
+	background-position: -104px 0 !important;
+}
+
+button.aloha-button-h2-de {
+	background-position: -104px -42px !important;
+}
+
+button.aloha-button-h3 {
+	background-position: -156px 0 !important;
+}
+
+button.aloha-button-h3-de {
+	background-position: -156px -42px !important;
+}
+
+button.aloha-button-h4 {
+	background-position: -208px 0 !important;
+}
+
+button.aloha-button-h4-de {
+	background-position: -208px -42px !important;
+}
+
+button.aloha-button-h5 {
+	background-position: -260px 0 !important;
+}
+
+button.aloha-button-h5-de {
+	background-position: -260px -42px !important;
+}
+
+button.aloha-button-h6 {
+	background-position: -312px 0 !important;
+}
+
+button.aloha-button-h6-de {
+	background-position: -312px -42px !important;
+}
+
+button.aloha-button-pre {
+	background-position: -364px 0 !important;
+}
+
+button.aloha-button-pre-de {
+	background-position: -364px -42px !important;
+}
+
+button.aloha-button-title {
+	background-position: -416px 0 !important;
+}
+
+button.aloha-button-title-de {
+	background-position: -416px -42px !important;
+}
+
+/*buttons of the table plugin*/
+button.aloha-button-table {
+	background-position: -96px 0 !important;
+}
+
+button.aloha-button-addColumnLeft {
+	background-position: -112px 0 !important;
+}
+
+button.aloha-button-addColumnRight {
+	background-position: -128px 0 !important;
+}
+
+button.aloha-button-addRowBefore {
+	background-position: -144px 0 !important;
+}
+
+button.aloha-button-addRowAfter {
+	background-position: -160px 0 !important;
+}
+
+button.aloha-button-deleteRows {
+	background-position: -176px 0 !important;
+}
+
+button.aloha-button-deleteColumns {
+	background-position: -192px 0 !important;
+}
+/* iks test buttons */
+button.aloha-button-addPerson {
+	background-position: -224px 0 !important;
+}
+
+button.aloha-button-addEvent {
+	background-position: -208px 0 !important;
+}
+
+button.aloha-button-abbr {
+	background-position: -336px 0px !important;
+}
+button.aloha-button-row-header {
+	background-position: -352px 0px !important;
+}
+button.aloha-button-col-header {
+	background-position: -368px 0px !important;
+}
+button.aloha-button-tree {
+	background-position: -0 0 !important;
+}
+
+/*button status hover of format plugin*/
+div.aloha-button a:hover {
+	border: 1px solid #b2cbff;
+}
+
+.aloha-floatingmenu {
+	display: none;
+}
+
+/*button status active of format plugin*/
+.aloha-floatingmenu .pressed a {
+	border:1px solid #ccc;
+}
+
+.aloha-logo {
+	width:37px !important;
+	height:25px !important;
+	background-image: url('../img/gentics-logo.png') !important;
+}
+
+.aloha-maximize {
+	background-image: url('../img/gentics-logo.png') !important;
+}
+
+.aloha-fade-out {
+	background-image: url('../img/fade-out.png') !important;
+	width:20px !important;
+	height:20px !important;
+}
+
+.aloha-fade-in {
+	background-image: url('../img/fade-in.png') !important;
+	width:20px !important;
+	height:20px !important;
+}
+
+.aloha-maximize {
+	width:20px !important;
+	height:20px !important;
+	background-image: url('../img/maximize.png') !important;
+}
+
+html body #aloha-ribbon {
+	z-index:90000;
+	position:fixed;
+	top:0;
+	left:0;
+	width:100%;
+	padding-left:0;
+	padding-right:0;
+	display: none;
+}
+
+.x-menu-list-item {
+	text-align:left;
+}
+
+.aloha-shadow {
+	-moz-box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.3);
+	-webkit-box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.3);
+	box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.3);
+}
+
+/*
+ * extJs GENTICS Multisplit Button
+ */
+ul.aloha-multisplit button.aloha-button {
+	background-image: url(../img/base-multi.png) !important;
+	background-repeat: no-repeat;
+	background-position: 0 0;
+	/*
+	 * WARNING do not change the button size for multisplit buttons
+	 */
+	width: 54px !important;
+	height: 44px !important;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	border-radius: 3px;
+}
+.aloha-multisplit {
+	float: left;
+	list-style: none;
+}
+ul.aloha-multisplit, div.aloha-multisplit-wrapper {
+	width: 232px;
+	height: 46px;
+	overflow: hidden;
+	margin: 0px;
+	padding: 0px;
+}
+div.aloha-multisplit-wrapper {
+	width: 248px;
+}
+ul.aloha-multisplit li {
+	float: left;
+	padding: 0px 1px;
+	margin: 0px;
+}
+ul.aloha-multisplit button.aloha-multisplit-wide {
+	font: 11px tahoma,arial,helvetica;
+	height: 18px !important;
+	width: 234px !important;
+	border: 0;
+	border-top: 1px solid #cccccc;
+	cursor: pointer;
+	background-color: white;
+	background-repeat: no-repeat;
+	background-position: 6px 1px !important;
+	text-align: left;
+	margin-left: -2px;
+	padding-left: 26px;
+}
+button.aloha-multisplit-toggle {
+	float: right;
+	margin: 0;
+	padding: 0;
+	width: 15px;
+	height: 12px;
+	margin-top: 32px;
+	cursor: pointer;
+	border: 0;
+}
+button.aloha-multisplit-toggle-open {
+	background-image: url(../img/multisplit-open.gif);
+}
+button.aloha-multisplit-toggle-close {
+	background-image: url(../img/multisplit-close.gif);
+}
+ul.aloha-multisplit button {
+	border: 1px solid #cccccc;
+	margin: 1px;
+	cursor: pointer;
+}
+ul.aloha-multisplit button:hover {
+	border: 1px solid #666666;
+}
+ul.aloha-multisplit button.aloha-multisplit-wide:hover {
+	border: 0;
+	border-top: 1px solid #cccccc;
+}
+ul.aloha-multisplit .aloha-multisplit-activeitem button {
+	border: 2px solid #3B73D7;
+}
+ul.aloha-multisplit-expanded {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	z-index: 20000;
+	background-color: white;
+	border: 1px solid #afafaf;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	border-radius: 3px;
+}
+
+ul.aloha-multisplit button.aloha-button-removeFormat {
+	background-image: url(../img/removeformat.png) !important;
+}
+.aloha-textarea {
+	overflow: hidden;
+	border:1px solid #ccc;
+	padding:6px;
+	overflow:auto;
+}
+
+/*
+ * Core styles for Aloha.Sidebar and Aloha.Panel
+ * Pseudo-namespace prefix: aloha-sidebar
+ */
+.aloha-sidebar-bar {
+	z-index: 999999999;
+	position: fixed;
+/*	position: absolute; */
+	top: 0;
+	left: 0;
+	text-align: left;
+	font-family: Arial, sans-serif;
+	font-size: 12px;
+	border-right: 1px solid #888;
+	-moz-box-shadow:	0px 0px 10px rgba(0, 0, 0, .5);
+	-webkit-box-shadow:	0px 0px 10px rgba(0, 0, 0, .5);
+	box-shadow:			0px 0px 10px rgba(0, 0, 0, .5);
+
+}
+.aloha-sidebar-bar.aloha-sidebar-right {
+	left: auto;
+	right: 0;
+	border-right-width: 0;
+	border-left: 1px solid #888;
+}
+
+.aloha-sidebar-inner {
+	position: relative;
+	background-color: #ccc;
+	background-image: -webkit-radial-gradient(
+		rgba(0, 0, 0, 0.0) 20%,
+		rgba(0, 0, 0, 0.2) 80%,
+		rgba(0, 0, 0, 0.3) 100%
+	);
+	background-image: -moz-radial-gradient(
+		rgba(0, 0, 0, 0.0) 20%,
+		rgba(0, 0, 0, 0.2) 80%,
+		rgba(0, 0, 0, 0.3) 100%
+	);
+}
+.aloha-sidebar-panels {
+	padding: 15px 0;
+}
+.aloha-sidebar-panels li {
+	overflow: hidden;
+	margin: 0;
+	padding: 0 15px;
+}
+.aloha-sidebar-panel-top {
+	-webkit-border-top-left-radius:	 5px;
+	-webkit-border-top-right-radius: 5px;
+	-moz-border-radius-topleft:		 5px;
+	-moz-border-radius-topright:	 5px;
+}
+.aloha-sidebar-panel-content.aloha-sidebar-panel-bottom {
+	padding-bottom: 0;
+	-webkit-border-bottom-left-radius:	5px;
+	-webkit-border-bottom-right-radius:	5px;
+	-moz-border-radius-bottomleft:		5px;
+	-moz-border-radius-bottomright:		5px;
+	border-bottom-width: 1px;
+}
+.aloha-sidebar-panel-title {
+	position: relative;
+	overflow: hidden;
+	padding: 8px 8px 4px;
+	border: 1px solid rgba(0, 0, 0, 0.3);
+	border-bottom-width: 0;
+	background-color: #303539;
+	background-image: -webkit-gradient(
+    	linear,
+    	center top,
+    	center bottom,
+    	color-stop(0.00, #6c6f74),
+    	color-stop(0.05, #4c4f54),
+    	color-stop(0.10, #3f4448),
+    	color-stop(0.45, #383d41),
+    	color-stop(0.50, #303539),
+    	color-stop(0.95, #33363b)
+	);
+	background-image: -moz-linear-gradient(
+    	center top,
+		#6c6f74 0%,
+		#4c4f54 5%,
+		#3f4448 10%,
+    	#383d41 45%,
+    	#303539 50%,
+    	#33363b 95%
+	);
+	filter: progid:DXImageTransform.Microsoft.Gradient(
+		startColorstr='#383d41',
+		endColorstr='#303539',
+		gradientType='0'
+	);
+	color: #ccc;
+	cursor: pointer;
+	font-size: 13px;
+	font-weight: bold;
+	line-height: 1em;
+	text-shadow: 0 0 6px #23262b;
+}
+.aloha-sidebar-panel-title:hover {
+	color: #fff;
+}
+.aloha-sidebar-panel-title-arrow {
+	position: absolute;
+	top: 6px;
+	left: 8px;
+	width: 16px;
+	height: 16px;
+	background: url(../img/arrow.png) no-repeat center center;
+	opacity: 0.3;
+	filter: alpha(opacity=30);
+}
+.aloha-sidebar-panel-title:hover .aloha-sidebar-panel-title-arrow {
+	opacity: 0.9;
+	filter: alpha(opacity=90);
+}
+.aloha-sidebar-panel-title-text {
+	margin-left: 24px;
+	white-space: nowrap;
+}
+.aloha-sidebar-panel-content {
+	overflow: hidden;
+	height: 5px;
+	background: #303539;
+}
+.aloha-sidebar-panel-content-inner {
+	margin: 5px 0 0;
+	padding: 2px 5px;
+	color: #888;
+
+	border: 1px solid rgb(175, 175, 175);
+	border-top-width: 0;
+
+	background: #fff;
+	background-image: -webkit-radial-gradient(
+		rgba(0, 0, 0, 0.0) 50%,
+		rgba(0, 0, 0, 0.1) 90%,
+		rgba(0, 0, 0, 0.2) 100%
+	);
+	background-image: -moz-radial-gradient(
+		rgba(0, 0, 0, 0.0) 50%,
+		rgba(0, 0, 0, 0.1) 90%,
+		rgba(0, 0, 0, 0.2) 100%
+	);
+}
+
+.aloha-sidebar-handle {
+	position: absolute;
+	top: 30px;
+	right: -30px;
+	width: 40px;
+	height: 30px;
+	overflow: hidden;
+
+	background-color: #303539;
+	background-image: -webkit-gradient(
+    	linear,
+    	center top,
+    	center bottom,
+    	color-stop(0.00, #6c6f74),
+    	color-stop(0.05, #4c4f54),
+    	color-stop(0.10, #3f4448),
+    	color-stop(0.45, #383d41),
+    	color-stop(0.50, #303539),
+    	color-stop(0.95, #33363b)
+	);
+	background-image: -moz-linear-gradient(
+    	center top,
+		#6c6f74 0%,
+		#4c4f54 5%,
+		#3f4448 10%,
+    	#383d41 45%,
+    	#303539 50%,
+    	#33363b 95%
+	);
+	filter: progid:DXImageTransform.Microsoft.Gradient(
+		startColorstr='#383d41',
+		endColorstr='#303539',
+		gradientType='0'
+	);
+
+	cursor: pointer;
+
+	-moz-box-shadow:	0px 0px 10px rgba(0, 0, 0, .5);
+	-webkit-box-shadow:	0px 0px 10px rgba(0, 0, 0, .5);
+	box-shadow:			0px 0px 10px rgba(0, 0, 0, .5);
+
+	border-top-right-radius:	 		5px;
+	border-bottom-right-radius:	 		5px;
+	-moz-border-radius-topright: 		5px;
+	-moz-border-radius-bottomright: 	5px;
+	-webkit-border-top-right-radius: 	5px;
+	-webkit-border-bottom-right-radius: 5px;
+}
+.aloha-sidebar-right .aloha-sidebar-handle {
+	left: -30px;
+	border-top-right-radius:	 		0px;
+	border-bottom-right-radius:	 		0px;
+	-moz-border-radius-topright: 		0px;
+	-moz-border-radius-bottomright: 	0px;
+	-webkit-border-top-right-radius: 	0px;
+	-webkit-border-bottom-right-radius: 0px;
+
+	border-top-left-radius:	 			5px;
+	border-bottom-left-radius:	 		5px;
+	-moz-border-radius-topleft: 		5px;
+	-moz-border-radius-bottomleft: 		5px;
+	-webkit-border-top-left-radius: 	5px;
+	-webkit-border-bottom-left-radius:	5px;
+}
+.aloha-sidebar-handle-icon {
+	display: block;
+	position: absolute;
+	top: 5px;
+	right: 5px;
+	background: url(../img/arrow.png) no-repeat center center;
+	width: 20px;
+	height: 20px;
+	opacity: 0.5;
+	filter: alpha(opacity=50);
+}
+.aloha-sidebar-right .aloha-sidebar-handle-icon {
+	left: 5px;
+	right: auto;
+}

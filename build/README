@@ -1,7 +1,0 @@
-Important Note about building aloha:
-.) New Aloha core/plugin javascript files need to be added to the file 'aloha-includes.txt'
-.) New Dependency javascript files need to be added to the file 'deps-includes.txt'
-.) New CSS Files need to be added to the file 'css-includes.txt'
-
-After one of the above files is modified, run the Ant target 'build-dev-include' to recreate the file '/WebContent/core/include.js'
- 

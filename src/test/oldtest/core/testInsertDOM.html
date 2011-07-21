@@ -1,0 +1,790 @@
+<html>
+  <head>
+<!-- IMPORTANT: do not remove the next line, it will include scripts and styles necessary for the test to run -->
+<!-- #include file="${com.gentics.labs.browsertest.includedir}/head-include.inc" -->
+
+<!-- #include file="${com.gentics.aloha.src}/test/${com.gentics.aloha.loaderprefix}testloader.html" -->
+  <script type="text/javascript">
+
+GENTICS.Aloha.settings = {
+	errorhandling : false
+};
+
+	// create the testcase
+	YAHOO.com.gentics.labs.browsertest.InsertDOM = new YAHOO.tool.TestCase({
+
+	    //name of the test case - if not provided, one is auto-generated
+	    name : "Test Insert into DOM",
+
+		newText : ' Text only ',
+		newBold : '<b>Bold Text</b>',
+		newLinebreak : '<br/>',
+		newParagraph : '<p>New Paragraph</p>',
+		newTable : '<table style="border:1px solid red"><tbody><tr><td>New Table</td></tr></tbody></table>',
+		newList : '<ol><li>One</li><li>Two</li><li>Three</li></ol>',
+		newImage : '<img src="http://aloha-editor.com/images/aloha-editor-logo.png" alt="Aloha Editor Logo"/>',
+
+	    /**
+	     * Sets the reference text into the p element and initializes some helper objects.
+	     */
+	    setUp : function () {
+			this.reference = $('#reference');
+			this.content = $('#content');
+			this.content.html(this.reference.html());
+
+	    },
+
+	    tearDown : function () {
+	    },
+
+		/**
+		 * Compare the given ranges, returns true if the ranges are identical, or false if not
+		 * @param range1
+		 * @param range2
+		 * @return true or false
+		 */
+		compareRanges : function (range1, range2) {
+			return  range1.startContainer == range2.startContainer &&
+					range1.endContainer == range2.endContainer &&
+					range1.startOffset == range2.startOffset &&
+					range1.endOffset == range2.endOffset;
+		},
+
+		/**
+		 * Checks if the actual content of the editable has the same content as the given expectedContent jQuery object.
+		 * Please make sure that you don't manipulate the reference dom when creating the expectedContent jQuery object.
+		 * Use jQuery clone method for this purpose!
+		 * @param expectedContent jQuery object with the expected content.
+		 */
+		assertContent : function (expectedContent) {
+			// we need to clone the expectedContent here, because while cloning in ie, text nodes are trimmed (and Aloha also clones the editables before getting the html content)
+			var expected = expectedContent.clone(true).html();
+			var actual = this.content.html();
+
+		 	YAHOO.util.Assert.areEqual(expected, actual, "Check if the contents are the same");
+		},
+
+		/**
+		 * Create a collapsed range in normal text
+		 */
+		inText : function () {
+			this.range = new GENTICS.Utils.RangeObject({
+				startContainer : this.content.contents().get(0),
+				startOffset : 7,
+				endContainer : this.content.contents().get(0),
+				endOffset : 7
+			});
+			return this.range;
+		},
+
+		/**
+		 * Create a collapsed range in italic text
+		 */
+		inItalic : function () {
+			this.range = new GENTICS.Utils.RangeObject({
+				startContainer : this.content.find('i').eq(0).contents().get(0),
+				startOffset : 7,
+				endContainer : this.content.find('i').eq(0).contents().get(0),
+				endOffset : 7
+			});
+			return this.range;
+		},
+
+		/**
+		 * Create a collapsed range in a paragraph
+		 */
+		inParagraph : function () {
+			this.range = new GENTICS.Utils.RangeObject({
+				startContainer : this.content.find('p').eq(0).contents().get(0),
+				startOffset : 7,
+				endContainer : this.content.find('p').eq(0).contents().get(0),
+				endOffset : 7
+			});
+			return this.range;
+		},
+
+		/**
+		 * Create a collapsed range in a table cell
+		 */
+		inTableCell : function () {
+			this.range = new GENTICS.Utils.RangeObject({
+				startContainer : this.content.find('td').eq(0).contents().get(0),
+				startOffset : 7,
+				endContainer : this.content.find('td').eq(0).contents().get(0),
+				endOffset : 7
+			});
+			return this.range;
+		},
+
+		/**
+		 * Create a collapsed range in a list item
+		 */
+		inList : function () {
+			this.range = new GENTICS.Utils.RangeObject({
+				startContainer : this.content.find('li').eq(0).contents().get(0),
+				startOffset : 7,
+				endContainer : this.content.find('li').eq(0).contents().get(0),
+				endOffset : 7
+			});
+			return this.range;
+		},
+
+		/*
+		 * Create a collapsed range in the nested elements
+		 */
+		inNested : function () {
+			var place = this.content.find('table p i').contents().get(0);
+			this.range = new GENTICS.Utils.RangeObject({
+				startContainer : place,
+				startOffset : 7,
+				endContainer : place,
+				endOffset : 7
+			});
+			return this.range;
+		},
+
+		/**
+		 * Insert text
+		 */
+		insertText : function () {
+			GENTICS.Utils.Dom.insertIntoDOM(jQuery(document.createTextNode(this.newText)), this.range, this.content);
+		},
+
+		/**
+		 * Insert bold text
+		 */
+		insertBold : function () {
+			GENTICS.Utils.Dom.insertIntoDOM(jQuery(this.newBold), this.range, this.content);
+		},
+
+		/**
+		 * Insert linebreak
+		 */
+		insertLinebreak : function () {
+			GENTICS.Utils.Dom.insertIntoDOM(jQuery(this.newLinebreak), this.range, this.content);
+		},
+
+		/**
+		 * Insert paragraph
+		 */
+		insertParagraph : function () {
+			GENTICS.Utils.Dom.insertIntoDOM(jQuery(this.newParagraph), this.range, this.content);
+		},
+
+		/**
+		 * Insert table
+		 */
+		insertTable : function () {
+			GENTICS.Utils.Dom.insertIntoDOM(jQuery(this.newTable), this.range, this.content);
+		},
+
+		/**
+		 * Insert list
+		 */
+		insertList : function () {
+			GENTICS.Utils.Dom.insertIntoDOM(jQuery(this.newList), this.range, this.content);
+		},
+
+		/**
+		 * Insert image
+		 */
+		insertImage : function () {
+			GENTICS.Utils.Dom.insertIntoDOM(jQuery(this.newImage), this.range, this.content);
+		},
+
+		/**
+		 * Test inserting text into text
+		 */
+		testTextInText : function () {
+			this.inText();
+			this.insertText();
+
+			var expected = this.reference.clone();
+			expected.contents().eq(0).between(this.newText, 7);
+
+			this.assertContent(expected);
+		},
+
+		/**
+		 * Test inserting a new bold tag into the text
+		 */
+		testBoldInText : function() {
+			this.inText();
+			this.insertBold();
+
+			var expected = this.reference.clone();
+			expected.contents().eq(0).between(jQuery(this.newBold), 7);
+
+			this.assertContent(expected);
+		},
+
+		/**
+		 * Test inserting a linebreak into text
+		 */
+		testLinebreakInText : function () {
+			this.inText();
+			this.insertLinebreak();
+
+			var expected = this.reference.clone();
+			expected.contents().eq(0).between(jQuery(this.newLinebreak), 7);
+
+			this.assertContent(expected);
+		},
+
+		/**
+		 * Test inserting a paragraph into text
+		 */
+		testParagraphInText : function () {
+			this.inText();
+			this.insertParagraph();
+
+			var expected = this.reference.clone();
+			expected.contents().eq(0).between(jQuery(this.newParagraph), 7);
+
+			this.assertContent(expected);
+		},
+
+		/**
+		 * Test inserting a table into text
+		 */
+		testTableInText : function () {
+			this.inText();
+			this.insertTable();
+
+			var expected = this.reference.clone();
+			expected.contents().eq(0).between(jQuery(this.newTable), 7);
+
+			this.assertContent(expected);
+		},
+
+		/**
+		 * Test inserting a list into text
+		 */
+		testListInText : function () {
+			this.inText();
+			this.insertList();
+
+			var expected = this.reference.clone();
+			expected.contents().eq(0).between(jQuery(this.newList), 7);
+
+			this.assertContent(expected);
+		},
+
+		/**
+		 * Test inserting an image into text
+		 */
+		testImageInText : function () {
+			this.inText();
+			this.insertImage();
+
+			var expected = this.reference.clone();
+			expected.contents().eq(0).between(jQuery(this.newImage), 7);
+
+			this.assertContent(expected);
+		},
+
+		/**
+		 * Test inserting text into italic text
+		 */
+		testTextInItalic : function () {
+			this.inItalic();
+			this.insertText();
+
+			var expected = this.reference.clone();
+			expected.find('i').eq(0).contents().eq(0).between(this.newText, 7);
+
+			this.assertContent(expected);
+		},
+
+		/**
+		 * Test inserting a new bold tag into the italic text
+		 */
+		testBoldInItalic : function() {
+			this.inItalic();
+			this.insertBold();
+
+			var expected = this.reference.clone();
+			expected.find('i').eq(0).contents().eq(0).between(jQuery(this.newBold), 7);
+
+			this.assertContent(expected);
+		},
+
+		/**
+		 * Test inserting a linebreak into italic text
+		 */
+		testLinebreakInItalic : function () {
+			this.inItalic();
+			this.insertLinebreak();
+
+			var expected = this.reference.clone();
+			expected.find('i').eq(0).contents().eq(0).between(jQuery(this.newLinebreak), 7);
+
+			this.assertContent(expected);
+		},
+
+		/**
+		 * Test inserting a paragraph into italic text
+		 */
+		testParagraphInItalic : function () {
+			this.inItalic();
+			this.insertParagraph();
+
+			var expected = this.reference.clone();
+			expected.find('i').eq(0).replaceWith(jQuery('<i>kursive</i>'+this.newParagraph+'<i>m</i>'));
+
+			this.assertContent(expected);
+		},
+
+		/**
+		 * Test inserting a table into italic text
+		 */
+		testTableInItalic : function () {
+			this.inItalic();
+			this.insertTable();
+
+			var expected = this.reference.clone();
+			expected.find('i').eq(0).replaceWith(jQuery('<i>kursive</i>'+this.newTable+'<i>m</i>'));
+
+			this.assertContent(expected);
+		},
+
+		/**
+		 * Test inserting a list into italic text
+		 */
+		testListInItalic : function () {
+			this.inItalic();
+			this.insertList();
+
+			var expected = this.reference.clone();
+			expected.find('i').eq(0).replaceWith(jQuery('<i>kursive</i>'+this.newList+'<i>m</i>'));
+
+			this.assertContent(expected);
+		},
+
+		/**
+		 * Test inserting an image into italic text
+		 */
+		testImageInItalic : function () {
+			this.inItalic();
+			this.insertImage();
+
+			var expected = this.reference.clone();
+			expected.find('i').eq(0).contents().eq(0).between(jQuery(this.newImage), 7);
+
+			this.assertContent(expected);
+		},
+
+		/**
+		 * Test inserting a text into a paragraph
+		 */
+		testTextInParagraph : function () {
+			this.inParagraph();
+			this.insertText();
+
+			var expected = this.reference.clone();
+			expected.find('p').eq(0).contents().eq(0).between(this.newText, 7);
+
+			this.assertContent(expected);
+		},
+
+		/**
+		 * Test inserting a bold text into a paragraph
+		 */
+		testBoldInParagraph : function () {
+			this.inParagraph();
+			this.insertBold();
+
+			var expected = this.reference.clone();
+			expected.find('p').eq(0).contents().eq(0).between(jQuery(this.newBold), 7);
+
+			this.assertContent(expected);
+		},
+
+		/**
+		 * Test inserting a linebreak into a paragraph
+		 */
+		testLinebreakInParagraph : function () {
+			this.inParagraph();
+			this.insertLinebreak();
+
+			var expected = this.reference.clone();
+			expected.find('p').eq(0).contents().eq(0).between(jQuery(this.newLinebreak), 7);
+
+			this.assertContent(expected);
+		},
+
+		/**
+		 * Test inserting a paragraph into a paragraph
+		 */
+		testParagraphInParagraph : function () {
+			this.inParagraph();
+			this.insertParagraph();
+
+			var expected = this.reference.clone();
+			expected.find('p').eq(0).replaceWith(jQuery('<p>Dieser </p>' + this.newParagraph + '<p>Text ist in einem Absatz gefangen.</p>'));
+
+			this.assertContent(expected);
+		},
+
+		/**
+		 * Test inserting a table into a paragraph
+		 */
+		testTableInParagraph : function () {
+			this.inParagraph();
+			this.insertTable();
+
+			var expected = this.reference.clone();
+			expected.find('p').eq(0).replaceWith(jQuery('<p>Dieser </p>' + this.newTable + '<p>Text ist in einem Absatz gefangen.</p>'));
+
+			this.assertContent(expected);
+		},
+
+		/**
+		 * Test inserting a list into a paragraph
+		 */
+		testListInParagraph : function () {
+			this.inParagraph();
+			this.insertList();
+
+			var expected = this.reference.clone();
+			expected.find('p').eq(0).replaceWith(jQuery('<p>Dieser </p>' + this.newList + '<p>Text ist in einem Absatz gefangen.</p>'));
+
+			this.assertContent(expected);
+		},
+
+		/**
+		 * Test inserting an image into a paragraph
+		 */
+		testImageInParagraph : function () {
+			this.inParagraph();
+			this.insertImage();
+
+			var expected = this.reference.clone();
+			expected.find('p').eq(0).contents().eq(0).between(jQuery(this.newImage), 7);
+
+			this.assertContent(expected);
+		},
+
+		/**
+		 * Test inserting a text into a table cell
+		 */
+		testTextInTableCell : function () {
+			this.inTableCell();
+			this.insertText();
+
+			var expected = this.reference.clone();
+			expected.find('td').eq(0).contents().eq(0).between(this.newText, 7);
+
+			this.assertContent(expected);
+		},
+
+		/**
+		 * Test inserting bold text into a table cell
+		 */
+		testBoldInTableCell : function () {
+			this.inTableCell();
+			this.insertBold();
+
+			var expected = this.reference.clone();
+			expected.find('td').eq(0).contents().eq(0).between(this.newBold, 7);
+
+			this.assertContent(expected);
+		},
+
+		/**
+		 * Test inserting a linebreak into a table cell
+		 */
+		testLinebreakInTableCell : function () {
+			this.inTableCell();
+			this.insertLinebreak();
+
+			var expected = this.reference.clone();
+			expected.find('td').eq(0).contents().eq(0).between(this.newLinebreak, 7);
+
+			this.assertContent(expected);
+		},
+
+		/**
+		 * Test inserting a paragraph into a table cell
+		 */
+		testParagraphInTableCell : function () {
+			this.inTableCell();
+			this.insertParagraph();
+
+			var expected = this.reference.clone();
+			expected.find('td').eq(0).contents().eq(0).between(this.newParagraph, 7);
+
+			this.assertContent(expected);
+		},
+
+		/**
+		 * Test inserting a table into a table cell
+		 */
+		testTableInTableCell : function () {
+			this.inTableCell();
+			this.insertTable();
+
+			var expected = this.reference.clone();
+			expected.find('td').eq(0).contents().eq(0).between(this.newTable, 7);
+
+			this.assertContent(expected);
+		},
+
+		/**
+		 * Test inserting a list into a table cell
+		 */
+		testListInTableCell : function () {
+			this.inTableCell();
+			this.insertList();
+
+			var expected = this.reference.clone();
+			expected.find('td').eq(0).contents().eq(0).between(this.newList, 7);
+
+			this.assertContent(expected);
+		},
+
+		/**
+		 * Test inserting an image into a table cell
+		 */
+		testImageInTableCell : function () {
+			this.inTableCell();
+			this.insertImage();
+
+			var expected = this.reference.clone();
+			expected.find('td').eq(0).contents().eq(0).between(this.newImage, 7);
+
+			this.assertContent(expected);
+		},
+
+		/**
+		 * Test inserting a text into a list
+		 */
+		testTextInList : function () {
+			this.inList();
+			this.insertText();
+
+			var expected = this.reference.clone();
+			expected.find('li').eq(0).contents().eq(0).between(this.newText, 7);
+
+			this.assertContent(expected);
+		},
+
+		/**
+		 * Test inserting bold text into a list
+		 */
+		testBoldInList : function () {
+			this.inList();
+			this.insertBold();
+
+			var expected = this.reference.clone();
+			expected.find('li').eq(0).contents().eq(0).between(this.newBold, 7);
+
+			this.assertContent(expected);
+		},
+
+		/**
+		 * Test inserting a linebreak into a list
+		 */
+		testLinebreakInList : function () {
+			this.inList();
+			this.insertLinebreak();
+
+			var expected = this.reference.clone();
+			expected.find('li').eq(0).contents().eq(0).between(this.newLinebreak, 7);
+
+			this.assertContent(expected);
+		},
+
+		/**
+		 * Test inserting a paragraph into a list
+		 */
+		testParagraphInList : function () {
+			this.inList();
+			this.insertParagraph();
+
+			var expected = this.reference.clone();
+			expected.find('li').eq(0).contents().eq(0).between(this.newParagraph, 7);
+
+			this.assertContent(expected);
+		},
+
+		/**
+		 * Test inserting a table into a list
+		 */
+		testTableInList : function () {
+			this.inList();
+			this.insertTable();
+
+			var expected = this.reference.clone();
+			expected.find('li').eq(0).contents().eq(0).between(this.newTable, 7);
+
+			this.assertContent(expected);
+		},
+
+		/**
+		 * Test inserting a list into a list
+		 */
+		testListInList : function () {
+			this.inList();
+			this.insertList();
+
+			var expected = this.reference.clone();
+			expected.find('li').eq(0).contents().eq(0).between(this.newList, 7);
+
+			this.assertContent(expected);
+		},
+
+		/**
+		 * Test inserting an image into a list
+		 */
+		testImageInList : function () {
+			this.inList();
+			this.insertImage();
+
+			var expected = this.reference.clone();
+			expected.find('li').eq(0).contents().eq(0).between(this.newImage, 7);
+
+			this.assertContent(expected);
+		},
+
+		/**
+		 * Test inserting a text into something deeply nested
+		 */
+		testTextInNested : function () {
+			this.inNested();
+			this.insertText();
+
+			var expected = this.reference.clone();
+			expected.find('table p i').eq(0).contents().eq(0).between(this.newText, 7);
+
+			this.assertContent(expected);
+		},
+
+		/**
+		 * Test inserting bold text into something deeply nested
+		 */
+		testBoldInNested : function () {
+			this.inNested();
+			this.insertBold();
+
+			var expected = this.reference.clone();
+			expected.find('table p i').eq(0).contents().eq(0).between(this.newBold, 7);
+
+			this.assertContent(expected);
+		},
+
+		/**
+		 * Test inserting a linebreak into something deeply nested
+		 */
+		testLinebreakInNested : function () {
+			this.inNested();
+			this.insertLinebreak();
+
+			var expected = this.reference.clone();
+			expected.find('table p i').eq(0).contents().eq(0).between(this.newLinebreak, 7);
+
+			this.assertContent(expected);
+		},
+
+		/**
+		 * Test inserting a paragraph into something deeply nested
+		 */
+		testParagraphInNested : function () {
+			this.inNested();
+			this.insertParagraph();
+
+			var expected = this.reference.clone();
+			expected.find('table p').eq(0).replaceWith('<p>\n<i>Italic </i></p>' + this.newParagraph + '<p><i>in a paragraph in a list in a table</i>\n</p>');
+
+			this.assertContent(expected);
+		},
+
+		/**
+		 * Test inserting a table into something deeply nested
+		 */
+		testTableInNested : function () {
+			this.inNested();
+			this.insertTable();
+
+			var expected = this.reference.clone();
+			expected.find('table p').eq(0).replaceWith('<p>\n<i>Italic </i></p>' + this.newTable + '<p><i>in a paragraph in a list in a table</i>\n</p>');
+
+			this.assertContent(expected);
+		},
+
+		/**
+		 * Test inserting a list into something deeply nested
+		 */
+		testListInNested : function () {
+			this.inNested();
+			this.insertList();
+
+			var expected = this.reference.clone();
+			expected.find('table p').eq(0).replaceWith('<p>\n<i>Italic </i></p>' + this.newList + '<p><i>in a paragraph in a list in a table</i>\n</p>');
+
+			this.assertContent(expected);
+		},
+
+		/**
+		 * Test inserting an image into something deeply nested
+		 */
+		testImageInNested : function () {
+			this.inNested();
+			this.insertImage();
+
+			var expected = this.reference.clone();
+			expected.find('table p i').contents().eq(0).between(this.newImage, 7);
+
+			this.assertContent(expected);
+		}
+	});
+
+	// add our testcase
+	YAHOO.com.gentics.labs.browsertest.Suite.add(YAHOO.com.gentics.labs.browsertest.InsertDOM);
+</script>
+  </head>
+  <body class="yui-skin-sam" style="margin-top:30px;">
+  	<pre id="pre1"></pre><br />
+  	<pre id="pre2"></pre>
+  	<!-- reference that is never modified and copied into content div before every testcase -->
+  	<div id="reference" style="margin:20px; border:1px solid #000000;">Inhalt direkt vor allem anderen, ohne jeglichen Absatz oder ähnlichem.
+<p>Dieser Text ist in einem Absatz gefangen.</p>
+<h1>Überschrift 1 <b>Fetter Teil</b></h1>
+<table border="1">
+	<tbody>
+		<tr>
+			<td>Zeile eins/Spalte eins</td>
+			<td>Zeile eins/Spalte zwei</td>
+		</tr>
+		<tr>
+			<td>Zeile zwei/Spalte eins</td>
+			<td>Zeile zwei/Spalte zwei</td>
+		</tr>
+	</tbody>
+</table>
+Weiters wieder etwas text, außerhalb jedes Absatzes. Mit <i>kursivem</i> und <u><i>kursiv-unterstrichenem</i></u> text.
+<ul><li>First List Element</li><li>Second List Element</li><li>Third List Element</li></ul>
+<table border="1">
+<tbody>
+<tr>
+<td>
+<ul>
+<li>
+<p>
+<i>Italic in a paragraph in a list in a table</i>
+</p>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+  	
+  	<!-- content paragraph that is filled with reference content before every testcase -->
+  	<div id="content" style="margin:20px; border:1px solid #000000;"></div>
+
+<!-- IMPORTANT: do not remove the next line, it will include html fragments necessary for the test to run -->
+<!-- #include file="${com.gentics.labs.browsertest.includedir}/body-include.inc" -->
+  </body>
+</html>

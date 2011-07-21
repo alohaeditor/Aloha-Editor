@@ -1,0 +1,287 @@
+<html>
+  <head>
+<!-- IMPORTANT: do not remove the next line, it will include scripts and styles necessary for the test to run -->
+<!-- #include file="${com.gentics.labs.browsertest.includedir}/head-include.inc" -->
+
+<!-- #include file="${com.gentics.aloha.src}/test/${com.gentics.aloha.loaderprefix}testloader.html" -->
+  <script type="text/javascript">
+
+GENTICS.Aloha.settings = {
+	plugins : {
+		'com.gentics.aloha.plugins.Format' : {
+			enabled : false
+		},
+		'com.gentics.aloha.plugins.GCN' : {
+			enabled : false
+		},
+		'com.gentics.aloha.plugins.Table' : {
+			enabled : false
+		}
+	}
+};
+
+	// create the testcase
+	YAHOO.com.gentics.labs.browsertest.GetSelectedTextTest = new YAHOO.tool.TestCase({
+
+	    //name of the test case - if not provided, one is auto-generated
+	    name : "Test Get Selected Text",
+
+	    /**
+	     * Sets the reference text into the p element and initializes some helper objects.
+	     */
+	    setUp : function () {
+			this.content = $('#content');
+	    },
+
+		/**
+		 * Compare the given ranges, returns true if the ranges are identical, or false if not
+		 * @param range1
+		 * @param range2
+		 * @return true or false
+		 */
+		compareRanges : function (range1, range2) {
+			return  range1.startContainer == range2.startContainer &&
+					range1.endContainer == range2.endContainer &&
+					range1.startOffset == range2.startOffset &&
+					range1.endOffset == range2.endOffset;
+		},
+
+		/**
+		 * Compares the actual browser range to the given range object.
+		 * To get the actual range the GENTICS.Utils.RangeObject.initializeFromUserSelection() is used.
+		 * @param range The expected range object.
+		 * @return void
+		 */
+		assertActualRange : function (expectedRange) {
+			var actualRange = new GENTICS.Utils.RangeObject();
+			actualRange.initializeFromUserSelection();
+
+			if (arguments.length == 1) {
+				YAHOO.util.Assert.areEqual(expectedRange.startContainer, actualRange.startContainer, "Check if the start containers are the same");
+				YAHOO.util.Assert.areEqual(expectedRange.endContainer, actualRange.endContainer, "Check if the end containers are the same");
+				YAHOO.util.Assert.areEqual(expectedRange.startOffset, actualRange.startOffset, "Check if the start offsets are the same");
+				YAHOO.util.Assert.areEqual(expectedRange.endOffset, actualRange.endOffset, "Check if the end offsets are the same");
+			} else {
+				var foundMatchingRange = false;
+				for (var i = 0; i < arguments.length; ++i) {
+					foundMatchingRange |= this.compareRanges(expectedRange, arguments[i]);
+				}
+
+				if (!foundMatchingRange) {
+					YAHOO.util.Assert.fail('Neither of the given ranges match!');
+				}
+			}
+		},
+
+		/**
+		 * Creates a range for the given containers and offsets.
+		 * @param startContainer The start container for the range.
+		 * @param startOffset The start offset
+		 * @param endContainer The end container for the range.
+		 * @param endOffset The end offset
+		 * @return The created range object which is collapsed.
+		 */
+		createRange : function(startContainer, startOffset, endContainer, endOffset) {
+	    	var range = new GENTICS.Utils.RangeObject({
+			    startContainer : startContainer,
+			    startOffset : startOffset,
+			    endContainer : endContainer,
+			    endOffset : endOffset
+	    	});
+	    	range.correctRange();
+	    	return range;
+		},
+
+		/**
+		 * Sets the selection to the given range.
+		 * Also updates the Aloha selection and focuses the content.
+		 * Calling this method is very much like as if the user directly selected something in the editable.
+		 * @param startContainer The start container for the range.
+		 * @param startOffset The start offset
+		 * @param endContainer The end container for the range.
+		 * @param endOffset The end offset
+		 * @return the range objet used for selecting.
+		 */
+		setSelection : function(startContainer, startOffset, endContainer, endOffset) {
+			var range = this.createRange(startContainer, startOffset, endContainer, endOffset);
+	    	this.content.focus();
+	    	range.select();
+	    	GENTICS.Aloha.Selection.updateSelection();
+	    	return range;
+	    },
+
+		/**
+		 * Select a portion of the plain text and get text
+		 */
+		testSelectPlainText : function () {
+			var startContainer = this.content.contents().get(0);
+			this.setSelection(startContainer, 7, startContainer, 31);
+
+			YAHOO.util.Assert.areEqual('direkt vor allem anderen', GENTICS.Aloha.Markup.getSelectedText(), 'Check the selected text');
+		},
+
+		/**
+		 * Select a portion of the plain text and get html
+		 */
+		testSelectPlainTextAsHTML : function () {
+			var startContainer = this.content.contents().get(0);
+			this.setSelection(startContainer, 7, startContainer, 31);
+
+			YAHOO.util.Assert.areEqual('direkt vor allem anderen', GENTICS.Aloha.Markup.getSelectedMarkup(), 'Check the selected html');
+		},
+		
+		/**
+		 * Select from text into bold text and get text
+		 */
+		testSelectionIntoBold : function () {
+			var startContainer = this.content.find('h1').eq(0).contents().get(0);
+			var endContainer = this.content.find('b').eq(0).contents().get(0);
+			this.setSelection(startContainer, 4, endContainer, 6);
+
+			YAHOO.util.Assert.areEqual('schrift 1 Fetter', GENTICS.Aloha.Markup.getSelectedText(), 'Check the selected text');
+		},
+
+		/**
+		 * Select from text into bold text and get html
+		 */
+		testSelectionIntoBoldHTML : function () {
+			var startContainer = this.content.find('h1').eq(0).contents().get(0);
+			var endContainer = this.content.find('b').eq(0).contents().get(0);
+			this.setSelection(startContainer, 4, endContainer, 6);
+
+			YAHOO.util.Assert.areEqual(jQuery('<span>schrift 1 <b>Fetter</b></span>').html(), GENTICS.Aloha.Markup.getSelectedMarkup(), 'Check the selected html');
+		},
+		
+		/**
+		 * Select a whole paragraph and get text
+		 */
+		testSelectWholeParagraph : function () {
+			var startContainer = this.content.find('p').eq(0).contents().get(0);
+			this.setSelection(startContainer, 0, startContainer, startContainer.data.length);
+
+			YAHOO.util.Assert.areEqual('Dieser Text ist in einem Absatz gefangen.', GENTICS.Aloha.Markup.getSelectedText(), 'Check the selected text');
+		},
+
+		/**
+		 * Select a whole paragraph and get html
+		 */
+		testSelectWholeParagraphHTML : function () {
+			var startContainer = this.content.find('p').eq(0).contents().get(0);
+			this.setSelection(startContainer, 0, startContainer, startContainer.data.length);
+
+			YAHOO.util.Assert.areEqual('Dieser Text ist in einem Absatz gefangen.', GENTICS.Aloha.Markup.getSelectedMarkup(), 'Check the selected text');
+		},
+		
+		/**
+		 * Select text across multiple markup and get text
+		 */
+		testSelectAcrossMarkup : function () {
+			var startContainer = this.content.find('p').eq(1).contents().get(0);
+			var endContainer = this.content.find('p').eq(1).contents().get(6);
+			this.setSelection(startContainer, 37, endContainer, 10);
+
+			YAHOO.util.Assert.areEqual('Formatierungen wie Fett, Kursiv und Unterstrichen verwenden', GENTICS.Aloha.Markup.getSelectedText(), 'Check the selected text');
+		},
+
+		/**
+		 * Select text across multiple markup and get html
+		 */
+		testSelectAcrossMarkupHTML : function () {
+			var startContainer = this.content.find('p').eq(1).contents().get(0);
+			var endContainer = this.content.find('p').eq(1).contents().get(6);
+			this.setSelection(startContainer, 37, endContainer, 10);
+
+			YAHOO.util.Assert.areEqual(jQuery('<span>Formatierungen wie <b>Fett</b>, <i>Kursiv</i> und <u>Unterstrichen</u> verwenden</span>').html(), GENTICS.Aloha.Markup.getSelectedMarkup(), 'Check the selected text');
+		},
+		
+		/*
+		 * Select text from a paragraph into another paragraph and get text
+		 */
+		testSelectFromParagraphToParagraph : function () {
+			var startContainer = this.content.find('p').eq(0).contents().get(0);
+			var endContainer = this.content.find('p').eq(1).contents().get(0);
+			this.setSelection(startContainer, 7, endContainer, 19);
+
+			YAHOO.util.Assert.areEqual('Text ist in einem Absatz gefangen.Überschrift 1 Fetter TeilEin weiterer Absatz', GENTICS.Aloha.Markup.getSelectedText().replace(/\n/g, ''), 'Check the selected text');
+		},
+
+		/*
+		 * Select text from a paragraph into another paragraph and get html
+		 */
+		testSelectFromParagraphToParagraphHTML : function () {
+			var startContainer = this.content.find('p').eq(0).contents().get(0);
+			var endContainer = this.content.find('p').eq(1).contents().get(0);
+			this.setSelection(startContainer, 7, endContainer, 19);
+
+			YAHOO.util.Assert.areEqual(jQuery('<span><p>Text ist in einem Absatz gefangen.</p><h1>Überschrift 1 <b>Fetter Teil</b></h1><p>Ein weiterer Absatz</p></span>').html().replace(/\r?\n/g, ''),
+					GENTICS.Aloha.Markup.getSelectedMarkup().replace(/\r?\n/g, ''), 'Check the selected text');
+		},
+		
+		/*
+		 * Test getting text from a collapsed selection and get text
+		 */
+		testCollapsedSelection : function () {
+			var startContainer = this.content.contents().get(0);
+			this.setSelection(startContainer, 1, startContainer, 1);
+
+			YAHOO.util.Assert.isFalse(GENTICS.Aloha.Markup.getSelectedText(), 'Check the selected text');
+		},
+
+		/*
+		 * Test getting text from a collapsed selection and get html
+		 */
+		testCollapsedSelectionHTML : function () {
+			var startContainer = this.content.contents().get(0);
+			this.setSelection(startContainer, 1, startContainer, 1);
+
+			YAHOO.util.Assert.isFalse(GENTICS.Aloha.Markup.getSelectedMarkup(), 'Check the selected text');
+		}
+	});
+
+	$(function(){
+		$('#content').GENTICS_aloha();
+		GENTICS.Aloha.editables[0].activate();
+	});
+
+    function updateSelection() {
+        if (GENTICS.Aloha.Selection.rangeObject) {
+	        jQuery('#selection').html('start: ' + getNodeInfo(GENTICS.Aloha.Selection.rangeObject.startContainer) + ', ' + GENTICS.Aloha.Selection.rangeObject.startOffset + '<br/>end: ' + getNodeInfo(GENTICS.Aloha.Selection.rangeObject.endContainer) + ', ' + GENTICS.Aloha.Selection.rangeObject.endOffset);
+        } else {
+            jQuery('#selection').html('no selection found');
+        }
+    }
+
+    function getNodeInfo(node) {
+        switch(node.nodeType) {
+        case 3:
+            return '"' + node.data + '"';
+        case 1:
+            return '&lt;' + node.nodeName + '&gt;';
+		default:
+			return 'unexpected node type '+node.nodeType+'!';
+        }
+    }
+
+    window.setInterval("updateSelection()", 1000);
+	
+	// add our testcase
+	YAHOO.com.gentics.labs.browsertest.Suite.add(YAHOO.com.gentics.labs.browsertest.GetSelectedTextTest);
+</script>
+  </head>
+  <body class="yui-skin-sam" style="margin-top:30px;">
+  	<pre id="pre1"></pre><br />
+  	<pre id="pre2"></pre>
+
+  	<!-- content which is selected -->
+  	<div id="content" style="margin:20px; border:1px solid #000000;">Inhalt direkt vor allem anderen, ohne jeglichen Absatz oder ähnlichem.
+<p>Dieser Text ist in einem Absatz gefangen.</p>
+<h1>Überschrift 1 <b>Fetter Teil</b></h1>
+<p>Ein weiterer Absatz, in dem wir auch Formatierungen wie <b>Fett</b>, <i>Kursiv</i> und <u>Unterstrichen</u> verwenden.</p>
+Weiters wieder etwas text, außerhalb jedes Absatzes. Mit <u>unterstreichungen</u> und <u><i>kursiv-unterstrichenem</i></u> text.</div>
+  	
+  	<div id="selection" style="margin: 10px; border:solid red 1px;"></div>
+  	
+<!-- IMPORTANT: do not remove the next line, it will include html fragments necessary for the test to run -->
+<!-- #include file="${com.gentics.labs.browsertest.includedir}/body-include.inc" -->
+  </body>
+</html>

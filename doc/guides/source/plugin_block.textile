@@ -1,0 +1,69 @@
+h2. The Block Plugin
+
+After reading this guide, you will be able to:
+
+* Understand what Blocks are and how to use them
+* use the Block API to create, modify and
+* Extend Blocks with custom implementations
+
+endprologue.
+
+WARNING: This guide is currently work-in-progress.
+
+h3. What are Aloha Blocks?
+
+*Aloha Blocks* (Blocks) are non-editable areas of a website, which have some properties being editable
+through the Aloha user interface. Blocks can appear inside editables or outside editables, both
+inside inline elements and inside block-level elements.
+
+Blocks themselves can contain editables and other blocks.
+
+Some use cases for blocks include:
+
+* Displaying a vCard of a person from an address book.
+* Displaying product prices in continuous text. Here, the user should not be able to edit the prices.
+* Provide "templates" like a two-column block
+* TODO: add more use-cases
+
+Blocks are not fully implemented yet. See TODO LINK TO WIKI for the current roadmap.
+
+h3. Enabling the Block Plugin
+
+
+h3. Creating Blocks
+
+Aloha BLocks is implemented as a plugin called @block@, which is part of the @common@ bundle.
+
+Thus, in order to use blocks, you need to load the +common/block+ and +common/paste+ plugin (Blocks interact
+with the paste plugin).
+
+After the plugin is loaded, you can create blocks.
+
+h4. Using jQuery
+
+<javascript>
+jQuery('.some-selector').alohaBlock();
+</javascript>
+
+h4. Using Configuration
+
+h3. Interacting with Blocks
+
+* Getting "Block" instance (BlockManager.get or so...)
+* attr(...) explained
+
+h3. APIs and Extension Points
+
+* Writing custom Blocks
+* Writing custom Editors
+
+h3. Writing your own Block
+
+h3. Internals
+
+h3. Future Work
+
+h3. Changelog
+
+* July 7, 2011: Initial version by "Sebastian Kurfürst":credits.html#skurfuerst and "Christopher Hlubek":credits.html#hlubek
+

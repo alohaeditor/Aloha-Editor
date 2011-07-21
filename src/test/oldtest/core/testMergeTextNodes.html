@@ -1,0 +1,183 @@
+<html>
+  <head>
+<!-- IMPORTANT: do not remove the next line, it will include scripts and styles necessary for the test to run -->
+<!-- #include file="${com.gentics.labs.browsertest.includedir}/head-include.inc" -->
+
+<!-- TODO: include your required scripts and styles here -->
+<!-- #include file="${com.gentics.aloha.src}/test/${com.gentics.aloha.loaderprefix}testloader.html" -->
+
+<style type="text/css">
+
+</style>
+
+  <script type="text/javascript">
+
+GENTICS.Aloha.settings = {
+	plugins : {
+		'com.gentics.aloha.plugins.Format' : {
+			enabled : false
+		},
+		'com.gentics.aloha.plugins.GCN' : {
+			enabled : false
+		},
+		'com.gentics.aloha.plugins.Table' : {
+			enabled : false
+		}
+	}
+};
+
+    // create the testcase
+    YAHOO.com.gentics.labs.browsertest.MergeTextNodeTestCase = new YAHOO.tool.TestCase({
+
+        //name of the test case - if not provided, one is auto-generated
+        name : "Merge Text Nodes Test",
+
+        //---------------------------------------------------------------------
+        // setUp and tearDown methods - optional
+        //---------------------------------------------------------------------
+        
+        /*
+         * Sets up data that is needed by each test.
+         */
+        setUp : function () {
+            // TODO: implement setup code for the tests
+        },
+        
+        /*
+         * Cleans up everything that was created by setUp().
+         */
+        tearDown : function () {
+            // TODO: implement teardown code for the tests
+        },
+        
+        //---------------------------------------------------------------------
+        // Test methods - names must begin with "test"
+        //---------------------------------------------------------------------
+        
+        /*
+         * Test merging plain text nodes (without selection)
+         */
+		testMergePlainTextNodes : function () {
+			var div = jQuery('#plaintext');
+
+			// first of all, generate three separate text nodes under the div 'plaintext'
+			div.empty();
+			div.append('one ');
+			div.append('two ');
+			div.append('three');
+
+			// check whether the node has really three children now
+			YAHOO.util.Assert.areSame(3, div.contents().length, 'The Node should have three children now');
+			// and check whether the contents is correct
+			YAHOO.util.Assert.areSame('one two three', div.text(), 'Check the node contents');
+
+			// now do the magic (means: merge the text nodes)
+			GENTICS.Utils.Dom.doCleanup({'merge' : true}, new GENTICS.Utils.RangeObject({
+			    startContainer : div.contents().get(0),
+			    startOffset : 0,
+			    endContainer : div.contents().get(2),
+			    endOffset : 5
+		    }), div);
+
+			// and check the results
+			YAHOO.util.Assert.areSame(1, div.contents().length, 'The Node should have one child now');
+			YAHOO.util.Assert.areSame('one two three', div.text(), 'Check the node contents');
+		},
+
+		/*
+		 * Test merging plain text nodes with selection (across the nodes)
+		 */
+		testMergeWithSelection : function () {
+			var div = jQuery('#plaintextselection');
+
+			// first of all, generate three separate text nodes under the div 'plaintext'
+			div.empty();
+			div.append('one ');
+			div.append('two ');
+			div.append('three');
+
+			// select something
+			var range = new GENTICS.Utils.RangeObject({
+			    startContainer : div.contents().get(0),
+			    startOffset : 2,
+			    endContainer : div.contents().get(2),
+			    endOffset : 3
+		    });
+			div.focus();
+		    range.select();
+
+		    GENTICS.Aloha.Selection.updateSelection();
+
+			// now do the magic (means: merge the text nodes)
+			GENTICS.Utils.Dom.doCleanup({'merge' : true}, GENTICS.Aloha.Selection.rangeObject, div);
+
+			// we also need to update the selection
+			GENTICS.Aloha.Selection.rangeObject.update();
+			GENTICS.Aloha.Selection.rangeObject.select();
+
+			// and check the results
+			if (!jQuery.browser.msie) {
+				YAHOO.util.Assert.areSame(1, div.contents().length, 'The Node should have one child now');
+			}
+			YAHOO.util.Assert.areSame('one two three', div.text(), 'Check the node contents');
+
+			// update the selection
+		    GENTICS.Aloha.Selection.updateSelection();
+
+			// check the selection
+			YAHOO.util.Assert.areSame(div.contents().get(0), GENTICS.Aloha.Selection.rangeObject.startContainer, 'Check the start container');
+			YAHOO.util.Assert.areSame(2, GENTICS.Aloha.Selection.rangeObject.startOffset, 'Check the start offset');
+			YAHOO.util.Assert.areSame(div.contents().get(0), GENTICS.Aloha.Selection.rangeObject.endContainer, 'Check the end container');
+			YAHOO.util.Assert.areSame(11, GENTICS.Aloha.Selection.rangeObject.endOffset, 'Check the end offset');
+		}
+    });
+
+    jQuery(document).ready(function () {
+    	$('#plaintext').aloha();
+    	$('#plaintextselection').aloha();
+    });
+
+    function updateSelection() {
+        if (GENTICS.Aloha.Selection.rangeObject) {
+	        jQuery('#selection').html('start: ' + getNodeInfo(GENTICS.Aloha.Selection.rangeObject.startContainer) + ', ' + GENTICS.Aloha.Selection.rangeObject.startOffset + '<br/>end: ' + getNodeInfo(GENTICS.Aloha.Selection.rangeObject.endContainer) + ', ' + GENTICS.Aloha.Selection.rangeObject.endOffset);
+        } else {
+            jQuery('#selection').html('no selection found');
+        }
+    }
+
+    function getNodeInfo(node) {
+        switch(node.nodeType) {
+        case 3:
+            return '"' + node.data + '"';
+        case 1:
+            return '&lt;' + node.nodeName + '&gt;';
+		default:
+			return 'unexpected node type '+node.nodeType+'!';
+        }
+    }
+
+    window.setInterval("updateSelection()", 1000);
+
+
+    // add our testcase
+    // TODO add your testcase here
+    YAHOO.com.gentics.labs.browsertest.Suite.add(YAHOO.com.gentics.labs.browsertest.MergeTextNodeTestCase);
+</script>
+  </head>
+  <body class="yui-skin-sam" style="margin-top: 40px">
+
+<!-- TODO: add your html code to be tested here -->
+<h1>This is for testing the Method to merge Text Nodes</h1>
+
+Plaintext:
+<div id="plaintext" style="margin: 10px; border:solid red 1px;"></div>
+
+Plaintext with selection:
+<div id="plaintextselection" style="margin: 10px; border:solid red 1px;"></div>
+
+<div id="selection" style="margin: 10px; border:solid red 1px;"></div>
+
+<!-- IMPORTANT: do not remove the next line, it will include html fragments necessary for the test to run -->
+<!-- #include file="${com.gentics.labs.browsertest.includedir}/body-include.inc" -->
+  </body>
+</html>
