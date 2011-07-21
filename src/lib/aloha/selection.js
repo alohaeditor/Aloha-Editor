@@ -241,7 +241,7 @@ function(jQuery, FloatingMenu) {
 			this.inselection = false;
 
 			// before getting the selection tree, we do a cleanup
-			if (GENTICS.Utils.Dom.doCleanup({'mergetext' : true}, rangeObject)) {
+			if (GENTICS.Utils.Dom.doCleanup({'merge' : true}, rangeObject)) {
 				this.rangeObject.update();
 				this.rangeObject.select();
 			}
@@ -925,7 +925,7 @@ function(jQuery, FloatingMenu) {
 
 			// merge text nodes
 
-			GENTICS.Utils.Dom.doCleanup({'mergetext' : true}, this.rangeObject);
+			GENTICS.Utils.Dom.doCleanup({'merge' : true}, this.rangeObject);
 			// update the range and select it
 			this.rangeObject.update();
 			this.rangeObject.select();
