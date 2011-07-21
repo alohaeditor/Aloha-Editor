@@ -4,7 +4,18 @@
  * Licensed unter the terms of http://www.aloha-editor.com/license.html
  */
 
-Aloha.settings = {
+define("compatibilitytest",
+['aloha/jquery'],
+function(jQuery, undefined) {
+	"use strict";
+	
+	var $ = jQuery;
+
+if (window.Aloha === undefined || window.Aloha === null) {
+	window.Aloha = {};		
+}
+
+window.Aloha.settings = {
 	logLevels : {
 		'error': true,
 		'warn':  true,
@@ -22,7 +33,10 @@ Aloha.settings = {
 	errorhandling : true
 };
 
-alohaQuery(document).ready(function($) {
+require.ready(function() {
+	// Prepare
+	var	$ = window.jQuery,
+		$body = $('body');
 
 	// Test whether Aloha is properly initialized
 	asyncTest('Aloha Startup Test', function() {
@@ -33,7 +47,7 @@ alohaQuery(document).ready(function($) {
 		setTimeout(function() {
 			ok(false, 'Aloha was not initialized within 60 seconds');
 			start();
-		}, 5000);
+		}, 60000);
 	});
 
 	// All other tests are done when Aloha is ready
@@ -58,5 +72,7 @@ alohaQuery(document).ready(function($) {
 	test('jQuery compatibility test', function() {
 		equals(window.jQuery.fn.jquery, '1.2.1', 'Legacy jQuery version is correct');
 	});
+
+});
 
 });

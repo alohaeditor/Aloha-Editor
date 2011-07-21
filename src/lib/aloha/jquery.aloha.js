@@ -1,6 +1,6 @@
 /*!
 * This file is part of Aloha Editor Project http://aloha-editor.org
-* Copyright © 2010-2011 Gentics Software GmbH, aloha@gentics.com
+* Copyright ï¿½ 2010-2011 Gentics Software GmbH, aloha@gentics.com
 * Contributors http://aloha-editor.org/contribution.php 
 * Licensed unter the terms of http://www.aloha-editor.org/license.html
 *//*
@@ -356,12 +356,24 @@ function(jQuery, undefined) {
 	 * @license MIT License {@link http://creativecommons.org/licenses/MIT/}
 	 * @return {String} outerHtml
 	 */
-	$.fn.outerHtml = $.fn.outerHtml||function(){
+	$.fn.outerHtml = $.fn.outerHtml || function(){
 		var
 			$el = $(this),
-			el = $el.get(0),
-			outerHtml = el.outerHTML || new XMLSerializer().serializeToString(el);
-		return outerHtml;
+			el = $el.get(0);
+			if (typeof el.outerHTML != 'undefined') {
+				return el.outerHTML;
+			} else {
+				try {
+					// Gecko-based browsers, Safari, Opera.
+					return (new XMLSerializer()).serializeToString(el);
+				 } catch (e) {
+					try {
+					  // Internet Explorer.
+					  return el.xml;
+					} catch (e) {}
+				}
+			}
+	
 	};
 
 

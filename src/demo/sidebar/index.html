@@ -16,15 +16,13 @@
 	<link rel="shortcut icon" href="/favicon.ico">
 	<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 	<link rel="stylesheet" href="css/style.css">
-	<link rel="stylesheet" href="../../aloha.css" id="aloha-style-include" type="text/css">
+	<link rel="stylesheet" href="../../css/aloha.css" id="aloha-style-include" type="text/css">
 
 	<script src="js/libs/jquery-1.6.1.js" ></script>
-<!--
-	<script src="../../dep/jquery-1.5.1.js" ></script>
-	<script src="../../dep/jquery-1.6.js" ></script>
--->
+	<script src="js/aloha-config.js"></script>
+	<script src="../../lib/require.js" data-main="../../lib/aloha.js" id="aloha-script-include" data-plugins="common/format,common/highlighteditables,common/list,common/undo,common/paste"></script>
 	<script src="js/aloha-boilerplate.js"></script>
-
+	
 </head>
 <body>
 	<div id="whole-site">
@@ -190,41 +188,18 @@
 			</div>
 		</div>
 	</div>
-	<!--  Aloha Editor -->
-	<script defer src="js/aloha-config.js"></script>
-	<script	defer src="../../aloha.js" id="aloha-script-include" data-plugins="format,highlighteditables"></script>
-	<script type="text/javascript" defer>
-		(function(window,undefined){
-			
+	<script type="text/javascript">
+		require.ready(function() {
 			// Prepare
 			var
 				$ = window.jQuery,
 				$body = $('body');
 
-			$('.stage-area').alohaStage();
 
-			// Change text after core is loaded 
-			$body.bind('alohacoreloaded',function(){
-				// hide loading div
-				$('#aloha-loading span').html('Loading Plugins');
-			});
-			
-			// Bind to Aloha Ready Event
-			$body.bind('aloha',function(){
-				
-				// register all editable areas
-				$('#top-text').aloha();
-				$('#content').aloha();
-				$('.area-content').aloha();
-				
-				// hide loading div
-				$('#aloha-loading').hide();
-				
-				// Sidebar
 				$body.bind('aloha-sidebar-ready', function () {
-					
+				
 					new Aloha.Sidebar({
-						position: 'right',
+						position: 'left',
 						width: 250,
 						isOpen: true,
 						panels: [
@@ -301,30 +276,49 @@
 							}
 						]
 					});
-					
-				});
-
-				// Add another panel after sidebar has been initialized
-				$body.bind('aloha-sidebar-initialized', function (ev, sidebar) {
-					sidebar.addPanel({
-						title	 : 'Links',
-						content  : 'Change href:<br /><input type="text" value=""/>',
-						expanded : true,
-						activeOn : 'a',
-						onInit	 : function () {
-							var that = this;
-							this.content.find('input').change(function () {
-								that.effectiveElement.attr('href', $(this).val());
-							})
-						},
-						onActivate: function (effective) {
-							this.content.find('input').val(effective.attr('href'));
-						}
-					});
-				});
 				
 			});
-		})(window);
+
+			// Add another panel after sidebar has been initialized
+			$body.bind('aloha-sidebar-initialized', function (ev, sidebar) {
+				sidebar.addPanel({
+					title	 : 'Links',
+					content  : 'Change href:<br /><input type="text" value=""/>',
+					expanded : true,
+					activeOn : 'a',
+					onInit	 : function () {
+						var that = this;
+						this.content.find('input').change(function () {
+							that.effectiveElement.attr('href', $(this).val());
+						})
+					},
+					onActivate: function (effective) {
+						this.content.find('input').val(effective.attr('href'));
+					}
+				});
+			});
+			
+			$body.bind('aloha',function(){
+				
+				// register all editable areas
+				$('#top-text').aloha();
+				$('#content').aloha();
+				$('.area-content').aloha();
+				
+				// hide loading div
+				$('#aloha-loading').hide();
+				
+			});
+			
+			$('.stage-area').alohaStage();
+			
+			// Change text after core is loaded 
+			$body.bind('alohacoreloaded',function(){
+				// hide loading div
+				$('#aloha-loading span').html('Loading Plugins');
+			});
+				
+		});
 	</script>
 
 	<!--[if lt IE 7 ]>

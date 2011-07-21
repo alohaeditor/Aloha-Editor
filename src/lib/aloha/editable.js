@@ -1,6 +1,6 @@
 /*!
 * This file is part of Aloha Editor Project http://aloha-editor.org
-* Copyright © 2010-2011 Gentics Software GmbH, aloha@gentics.com
+* Copyright ï¿½ 2010-2011 Gentics Software GmbH, aloha@gentics.com
 * Contributors http://aloha-editor.org/contribution.php 
 * Licensed unter the terms of http://www.aloha-editor.org/license.html
 *//*
@@ -313,7 +313,7 @@ function(jQuery, PluginManager, FloatingMenu) {
 		 * @return void
 		 */
 		initPlaceholder: function() {
-			if (this.isEmpty() && Aloha.settings.placeholder) {
+			if ( Aloha.settings.placeholder && this.isEmpty() ) {
 				this.addPlaceholder();
 			}
 		},

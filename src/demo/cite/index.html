@@ -3,10 +3,11 @@
 <head>
 	<meta http-equiv="content-type" content="text/html; charset=utf-8">
 	<title>Aloha, Documents!</title>
-	<script	src="../../lib/vendor/jquery-1.5.1.js" ></script>
-	<script src="../../lib/require.js" data-main="../../lib/aloha.js" id="aloha-script-include" data-plugins="common/format,common/highlighteditables,common/list,common/undo,common/paste"></script>
 
-	<link rel="stylesheet" href="../../css/aloha.css" id="aloha-style-include">
+	<script	src="../../dep/jquery-1.6.1.js" ></script>
+	<script	src="../../aloha.js" id="aloha-script-include" data-plugins="format,highlighteditables,cite"></script>
+
+	<link rel="stylesheet" href="../../aloha.css" id="aloha-style-include" type="text/css">
 	<link rel="stylesheet" href="../../demo/common/index.css" type="text/css">
 </head>
 <body>
@@ -43,18 +44,69 @@
 			</div>
 		</div>
 	</div>
-	
-	<script type="text/javascript">
-		require.ready(function() {
+	<script type="text/javascript" defer>
+		(function(window,undefined){
 			// Prepare
-			var	$ = window.jQuery,
+			var
+				$ = window.jQuery,
+				Aloha = window.Aloha,
 				$body = $('body');
 
+			// Customise
+			Aloha.settings = {
+				logLevels: {'error': false, 'warn': false, 'info': false, 'debug': false},
+				errorhandling : false,
+				"i18n": {
+					// let the system detect the users language
+					//"acceptLanguage": '<?=$_SERVER['HTTP_ACCEPT_LANGUAGE']?>'
+					//"acceptLanguage": 'de-de,de;q=0.8,it;q=0.6,en-us;q=0.7,en;q=0.2'
+				},
+				"plugins": {
+					"link": {
+						// all links that match the targetregex will get set the target
+						// e.g. ^(?!.*aloha-editor.com).* matches all href except aloha-editor.com
+						targetregex : '^(?!.*aloha-editor.com).*',
+						// this target is set when either targetregex matches or not set
+						// e.g. _blank opens all links in new window
+						target : '_blank',
+						// the same for css class as for target
+						cssclassregex : '^(?!.*aloha-editor.com).*',
+						cssclass : 'external'
+					},
+					"table": {
+						config: ['table']
+					},
+					"ribbon": {
+						enable: true
+					}
+				}
+			};
+
+			// Bind to Aloha Ready Event
 			$body.bind('aloha',function(){
+				// Upgrade
 				$('#content').aloha();
+				
+				
+				// Sidebar
+				$body.bind('aloha-sidebar-ready', function () {
+					
+					new Aloha.Sidebar({
+						position: 'right',
+						width: 250,
+						opened: false,
+						panels: []
+					});
+					
+				});
+				
+				// Add another panel after sidebar has been initialized
+				$body.bind('aloha-sidebar-initialized', function (ev, sidebar) {});
+				
 			});
-		});
+
+			// </closure>
+		})(window);
 	</script>
-	
 </body>
 </html>
