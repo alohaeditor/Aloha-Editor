@@ -221,7 +221,7 @@ GENTICS.Aloha.Selection.prototype.getSelectionTree = function(rangeObject) {
 	this.inselection = false;
 
 	// before getting the selection tree, we do a cleanup
-	if (GENTICS.Utils.Dom.doCleanup({'mergetext' : true}, rangeObject)) {
+	if (GENTICS.Utils.Dom.doCleanup({'merge' : true}, rangeObject)) {
 		this.rangeObject.update();
 		this.rangeObject.select();
 	}
@@ -882,7 +882,7 @@ GENTICS.Aloha.Selection.prototype.changeMarkupOnSelection = function(markupObjec
 	this.changeMarkup(this.getRangeObject(), markupObject, this.getStandardTagComparator(markupObject));
 
 	// merge text nodes
-	GENTICS.Utils.Dom.doCleanup({'mergetext' : true}, this.rangeObject);
+	GENTICS.Utils.Dom.doCleanup({'merge' : true}, this.rangeObject);
 	// update the range and select it
 	this.rangeObject.update();
 	this.rangeObject.select();
