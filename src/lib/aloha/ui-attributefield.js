@@ -85,10 +85,6 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 			}
 		},
 		'afterrender': function (obj, event) {
-			var that = this;
-			jQuery(this.wrap.dom.children[0]).blur(function(e){
-				that.triggerBlur();
-			});
 			jQuery(this.wrap.dom.children[0]).css("color", "#AAA");
 			this.setValue(this.placeholder);
 		},
@@ -157,16 +153,40 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 				this.setValue(this.placeholder);
 			}
 		},
+		'hide': function(obj, event) {
+		// remove the highlighting and restore original color if was set before
+			var
+				target = jQuery(this.getTargetObject()),
+				color;
+
+			if ( target ) {
+				color = target.attr('data-original-background-color');
+				if ( color ) {
+					jQuery(target).css('background-color', color);
+				} else {
+					jQuery(target).css('background-color', '');
+				}
+				jQuery(target).removeAttr('data-original-background-color');
+			}
+			if (this.getValue() === '') {
+				jQuery(this.wrap.dom.children[0]).css("color", "#AAA");
+				this.setValue(this.placeholder);
+			}
+		},
 		'expand': function (combo ) {
 			if( this.noQuery ) {
 				this.collapse();
 			}
 			if (!this.clickAttached) {
 				var that = this;
-				// attach the missing mousedown event to be able to select autocomplete items by clicking on them
+				// attach the mousedown event to set the event handled,
+				// so that the editable will not get deactivated
 				this.mon(this.innerList, 'mousedown', function (event) {
-					this.onViewClick(true); // select the item that has been clicked
-					event.stopEvent(); // stop floating menu from closing
+					Aloha.eventHandled = true;
+				}, this);
+				// in the mouseup event, the flag will be reset
+				this.mon(this.innerList, 'mouseup', function (event) {
+					Aloha.eventHandled = false;
 				}, this);
 				this.clickAttached = true;
 			}
