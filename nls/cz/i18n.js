@@ -1,4 +1,4 @@
-{"button.addimg.tooltip":"Přidat obrázek",
+define({"button.addimg.tooltip":"Přidat obrázek",
 "floatingmenu.tab.img":"Obrázek",
 "button.uploadimg.tooltip":"Upload obrázek",
 "button.uploadimg.label":"Upload",
@@ -13,4 +13,4 @@
 "padding.increase ":" Zvětšit pole",
 "padding.decrease ":" Omezují pole",
 "size.increase ":" Zvětšit velikost",
-"size.decrease ":" Zmenšit velikost"}
+"size.decrease ":" Zmenšit velikost"});

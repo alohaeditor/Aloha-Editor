@@ -1,4 +1,4 @@
-{"button.addimg.tooltip":"Добавить изображение",
+define({"button.addimg.tooltip":"Добавить изображение",
 "floatingmenu.tab.img":"Изображение",
 "button.uploadimg.tooltip":"Загрузить изображение",
 "button.uploadimg.label":"Загрузка",
@@ -13,4 +13,4 @@
 "padding.increase ":"Увеличить поля",
 "padding.decrease ":"Уменьшить поля",
 "size.increase ":"Увеличить размер",
-"size.decrease ":"Уменьшить размер"}
+"size.decrease ":"Уменьшить размер"});
