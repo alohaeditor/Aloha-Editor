@@ -156,7 +156,7 @@ GENTICS.Aloha.Ribbon.prototype.init = function() {
 	
 	this.toolbar.render(document.body, 0);
 	
-	if (GENTICS.Aloha.settings.ribbon === true) {
+	if (GENTICS.Aloha.settings.ribbon === true || GENTICS.Aloha.settings.ribbon == "true" || GENTICS.Aloha.settings.ribbon == 1) {
 		
 		jQuery('body').css('paddingTop', '30px !important');
 		this.show();

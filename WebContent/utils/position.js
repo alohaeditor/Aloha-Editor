@@ -144,7 +144,9 @@ GENTICS.Utils.Position.addMouseMoveCallback = function (callback) {
 // to prevent issues with mousemove. too short
 // timeouts will interfere with mouse movement
 // detection
-setInterval("GENTICS.Utils.Position.update()", 500);
+jQuery(document).ready(function() {
+	setInterval("GENTICS.Utils.Position.update()", 500);
+});
 
 // listen to the mousemove event and update positions
 jQuery('html').mousemove(function (e) {

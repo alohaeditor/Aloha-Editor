@@ -53,13 +53,34 @@ abbr, acronym
 }
 
 /* A basic table styling */
-table
+.aloha_example table
 {
   padding: 0;
   margin: 0;
   border-collapse: collapse;
   border: 1px solid #333;
   color: #000;
+}
+
+.aloha_example table caption
+{
+  caption-side: bottom;
+  font-size: 0.8em;
+  font-style: italic;
+  text-align: right;
+  padding: 0.5em 0;
+}
+
+.aloha_example table th, 
+.aloha_example table td
+{
+  border: 1px solid #666;
+  padding: 0.5em;
+  text-align: left;
+}
+
+.aloha_example th {
+	background-color: #dfd;
 }
 
 table caption
@@ -69,11 +90,4 @@ table caption
   font-style: italic;
   text-align: right;
   padding: 0.5em 0;
-}
-
-table th, table td
-{
-  border: 1px solid #666;
-  padding: 0.5em;
-  text-align: left;
 }

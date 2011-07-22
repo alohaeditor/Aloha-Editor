@@ -69,6 +69,13 @@ GENTICS.Aloha.PluginRegistry.prototype.init = function() {
 		if (!actualLanguage) {
 			GENTICS.Aloha.Log.warn(this, 'Could not determine actual language, no languages available for plugin ' + plugin);
 		} else {
+			// first load the custom dictionary of the actual language
+			if (plugin.settings.customDictsPath) {
+				if (!plugin.settings.customDictsPath.match(/\/$/)) {
+					plugin.settings.customDictsPath = plugin.settings.customDictsPath + '/';
+				}
+				GENTICS.Aloha.loadI18nFile(plugin.settings.customDictsPath + actualLanguage + '.dict', plugin);
+			}
 			// load the dictionary file for the actual language
 			var fileUrl = GENTICS.Aloha.settings.base + 'plugins/' + plugin.basePath + '/i18n/' + actualLanguage + '.dict';
 			GENTICS.Aloha.loadI18nFile(fileUrl, plugin);
@@ -186,31 +193,36 @@ GENTICS.Aloha.Plugin.prototype.init = function() {};
  * @return {Array} config A Array with configuration entries 
  */
 GENTICS.Aloha.Plugin.prototype.getEditableConfig = function (obj) {
-	
-	var config = [];
+	var configObj = null;
 	var configSpecified = false;
-	
+
 	if ( this.settings.editables ) {
-	
+		var that = this;
 		// check if the editable's selector matches and if so add its configuration to object configuration
 		jQuery.each( this.settings.editables, function (selector, selectorConfig) {
 			if ( obj.is(selector) ) {
 				configSpecified = true;
-				config = jQuery.merge(config, selectorConfig);
+				if (selectorConfig.constructor == (new Array).constructor) {
+					configObj = [];
+					configObj = jQuery.merge(configObj, selectorConfig);
+				} else {
+					configObj = {};
+					configObj = jQuery.extend(true, configObj, that.config, selectorConfig);
+				}
 			}
 		});	
 	}
-	
+
 	// fall back to default configuration
 	if ( !configSpecified ) {
 		if ( typeof this.settings.config == 'undefined' || !this.settings.config ) {
-			config = this.config;
+			configObj = this.config;
 		} else {
-			config = this.settings.config;
+			configObj = this.settings.config;
 		}
 	}
-	
-	return config;
+
+	return configObj;
 };
 
 /**

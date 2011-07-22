@@ -99,7 +99,22 @@ GENTICS.Aloha.settings = {
 		  	editables : {
 				// Allow insert tables only into .article
 				'.article'	: [ 'table' ] 
-		  	}
+		  	},
+		  	// [{name:'green', text:'Green', tooltip:'Green is cool', iconClass:'GENTICS_table GENTICS_button_green', cssClass:'green'}]
+			tableConfig : [
+          	    {name:'hor-minimalist-a'},
+          	    {name:'box-table-a'},
+          	    {name:'hor-zebra'},
+		    ],
+		    columnConfig : [
+          	    {name:'bigbold', iconClass:'GENTICS_button_col_bigbold'},
+          	    {name:'redwhite', iconClass:'GENTICS_button_col_redwhite'}
+		    ],
+			rowConfig : [
+         	    {name:'bigbold', iconClass:'GENTICS_button_row_bigbold'},
+         	    {name:'redwhite', iconClass:'GENTICS_button_row_redwhite'}
+		    ]
+		            	  	
 		}
   	}
 };
@@ -110,8 +125,88 @@ $(document).ready(function() {
 	$('#content').aloha();	
 });
 
-
 </script>
+<style>
+.hor-minimalist-a
+{
+	background: #fff;
+	border-collapse: collapse;
+	text-align: left;
+}
+.hor-minimalist-a th
+{
+	font-size: 130%;
+	font-weight: normal;
+	padding: 10px 8px;
+	border-bottom: 2px solid #6678b1;
+}
+.hor-minimalist-a td
+{
+	padding: 9px 8px 0px 8px;
+}
+.hor-minimalist-a tbody tr:hover td
+{
+	color: #009;
+}
+
+.box-table-a
+{
+	text-align: left;
+	border-collapse: collapse;
+}
+.box-table-a th
+{
+	font-size: 115%;
+	font-weight: normal;
+	padding: 8px;
+	background: #b9c9fe;
+	border-top: 4px solid #aabcfe;
+	border-bottom: 1px solid #fff;
+}
+.box-table-a td
+{
+	padding: 8px;
+	background: #e8edff; 
+	border-bottom: 1px solid #fff;
+	border-top: 1px solid transparent;
+}
+.box-table-a tr:hover td
+{
+	background: #d0dafd;
+}
+
+.hor-zebra
+{
+	text-align: left;
+	border-collapse: collapse;
+}
+.hor-zebra th
+{
+	font-size: 130%;
+	font-weight: bold;
+	padding: 10px 8px;
+	border-bottom: 2px solid #6678b1;
+	
+}
+.hor-zebra td
+{
+	padding: 8px;
+}
+.hor-zebra tr:nth-child(2n+1) td
+{
+	background: #e8edff; 
+}
+
+td.bigbold {
+	font-size: 200%;
+	font-weight: bold;
+}
+td.redwhite {
+	background-color: red;
+	color: white;
+	font-weight: bold;
+}
+</style>
 </head>
 <body>
 <div id="main"> 
@@ -128,9 +223,10 @@ it is used as the above.</p>
 <p>The word <a href="http://en.wikipedia.org/wiki/Aloha-invalid" target="_blank" class="aloha">aloha</a> derives from the Proto-Polynesian root <i>*qalofa</i>. It has cognates in other Polynesian languages, such as Samoan alofa
 and Māori aroha, also meaning "love."</p>
 <table>
-<caption>with a caption.</caption>
-<tr><td>This</td><td>is</td></tr>
-<tr><td>a</td><td>table.</td></tr>
+<caption>Aloha Editor supports table captions.</caption>
+<tr><td>This</td><td>is</td><td>a</td><td>table</td></tr>
+<tr><td>with</td><td>some</td><td>dummy</td><td>data</td></tr>
+<tr><td>to</td><td>test</td><td>Aloha</td><td>tables.</td></tr>
 </table>
 <p>A folk etymology claims that it derives from a compound of the <a href="http://en.wikipedia.org/wiki/Hawaii" target="_blank" class="aloha">Hawaiian</a> words alo meaning "presence", "front", "face", or "share"; and
 ha, meaning "breath of life" or "essence of life." Although alo does indeed mean "presence" etc., the word for breath is spelled with a macron
