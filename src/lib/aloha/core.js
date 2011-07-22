@@ -19,8 +19,14 @@
 */
 
 define(
-['aloha/jquery', 'aloha/pluginmanager', 'aloha/floatingmenu'],
-function(jQuery, PluginManager, FloatingMenu, undefined) {
+
+[
+	'aloha/jquery',
+	'aloha/pluginmanager',
+	'aloha/floatingmenu'
+],
+
+function (jQuery, PluginManager, FloatingMenu, undefined) {
 	"use strict";
 
 	var
@@ -30,7 +36,17 @@ function(jQuery, PluginManager, FloatingMenu, undefined) {
 		console = window.console||false,
 		Ext = window.Ext,
 		HTMLElement = window.HTMLElement;
-
+	
+	//----------------------------------------
+	// Private variables
+	//----------------------------------------
+	
+	/**
+	 * Hash table that will be populated through the loadPlugins method.
+	 * Maps the names of plugins with their urls for easy assess in the getPluginsUrl method
+	 */
+	var pluginPaths = {};
+	
 	/**
 	 * Base Aloha Object
 	 * @namespace Aloha
@@ -156,12 +172,15 @@ function(jQuery, PluginManager, FloatingMenu, undefined) {
 		/**
 		 * Load Plugins
 		 */
-		loadPlugins: function(next){
+		loadPlugins: function (next) {
 			// contains an array like [common/format, common/block]
 			var configuredPluginsWithBundle = this.getPluginsToBeLoaded();
 
 			if (configuredPluginsWithBundle.length) {
-				var paths = {}, pluginNames = [], requiredInitializers = [];
+				var paths = {},
+				    pluginNames = [],
+				    requiredInitializers = [],
+				    pathsToPlugins = {};
 
 				// Background: We do not use CommonJS packages for our Plugins
 				// as this breaks the loading order when these modules have
@@ -177,18 +196,19 @@ function(jQuery, PluginManager, FloatingMenu, undefined) {
 				 *  ['format/format-plugin', ... for every plugin ...],
 				 *  next <-- when everything is loaded, we continue
 				 */
-				$.each(configuredPluginsWithBundle, function(i, configuredPluginWithBundle) {
+				$.each(configuredPluginsWithBundle, function (i, configuredPluginWithBundle) {
 					var tmp, bundleName, pluginName, bundlePath = '';
 
 					tmp = configuredPluginWithBundle.split('/');
 					bundleName = tmp[0];
 					pluginName = tmp[1];
-					// TODO assertion if pluginName or bundleName NULL _-> ERROR!!
 
+					// TODO assertion if pluginName or bundleName NULL _-> ERROR!!
 
 					if (Aloha.settings.basePath) {
 						bundlePath = Aloha.settings.basePath;
 					}
+
 					if (Aloha.settings.bundles && Aloha.settings.bundles[bundleName]) {
 						bundlePath += Aloha.settings.bundles[bundleName];
 					} else {
@@ -197,6 +217,8 @@ function(jQuery, PluginManager, FloatingMenu, undefined) {
 
 					pluginNames.push(pluginName);
 					paths[pluginName] = bundlePath + '/' + pluginName + '/lib';
+
+					pathsToPlugins[pluginName] = bundlePath + '/' + pluginName;
 
 					// As the "nls" path lies NOT inside /lib/, but is a sibling to /lib/, we need
 					// to register it explicitely. The same goes for the "css" folder.
@@ -217,8 +239,9 @@ function(jQuery, PluginManager, FloatingMenu, undefined) {
 					requiredInitializers,
 					next
 				);
-			}
-			else {
+
+				pluginPaths = pathsToPlugins;
+			} else {
 				next();
 			}
 		},
@@ -239,7 +262,7 @@ function(jQuery, PluginManager, FloatingMenu, undefined) {
 
 			// Determine Plugins
 			if ( typeof plugins === 'string' && plugins !== "") {
-				return plugins.split(',');
+				return plugins.replace(/ /g, '').split(',');
 			}
 
 			// Return
@@ -649,12 +672,17 @@ function(jQuery, PluginManager, FloatingMenu, undefined) {
 		/**
 		 * Gets the Plugin Url
 		 * @method
-		 * @param {String} pluginName
-		 * @return {String} pluginUrl
+		 * @param {String} name
+		 * @return {String} url
 		 */
-		getPluginUrl: function(pluginName){
-			var pluginUrl = Aloha.getAlohaUrl() + '/plugin/'+pluginName;
-			return pluginUrl;
+		getPluginUrl: function (name) {
+			var url;
+
+			if (name) {
+				url = Aloha.getAlohaUrl() + '/' + pluginPaths[name];
+			}
+
+			return url;
 		},
 
 		i18n: function(component, key, replacements) {
