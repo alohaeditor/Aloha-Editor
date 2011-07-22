@@ -3,6 +3,7 @@ deps/jquery.json-2.2.min.js
 deps/jquery.getUrlParam.js
 deps/prettyPhoto/jquery.prettyPhoto.js
 deps/jquery.cookie.js
+deps/jquery.md5.js
 deps/extjs/ext-jquery-adapter-debug.js
 deps/extjs/ext-foundation-debug.js
 deps/extjs/cmp-foundation-debug.js

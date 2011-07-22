@@ -1,0 +1,93 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.gentics</groupId>
+	<artifactId>alohaeditor-legacy</artifactId>
+	<version>0.9.3-SNAPSHOT</version>
+	<packaging>pom</packaging>
+
+	<name>Aloha Editor</name>
+	<url>http://aloha-editor.org</url>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+	<build>
+		<plugins>
+
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.2.1</version>
+				<executions>
+					<execution>
+						<id>package</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<attach>true</attach>
+							<appendAssemblyId>false</appendAssemblyId>
+							<descriptors>
+								<descriptor>${project.basedir}/src/main/assembly/package.xml</descriptor>
+							</descriptors>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.6</version>
+				<executions>
+					<execution>
+						<id>build_clean</id>
+						<phase>clean</phase>
+						<configuration>
+							<target>
+								<echo>Now calling the aloha ant file.</echo>
+								<ant antfile="build/build.xml" target="clean"
+									useNativeBasedir="true" />
+							</target>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>build_aloha</id>
+						<phase>compile</phase>
+						<configuration>
+							<target>
+								<echo>Now calling the aloha ant file.</echo>
+								<ant antfile="build/build.xml" useNativeBasedir="true" />
+							</target>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+	<distributionManagement>
+		<repository>
+			<id>archiva.com.gentics.public</id>
+			<name>Gentics Public Repository</name>
+			<url>http://archiva.gentics.com:8081/archiva/repository/com.gentics.public</url>
+		</repository>
+		<snapshotRepository>
+			<id>archiva.com.gentics.public</id>
+			<name>Gentics Public Repository</name>
+			<url>http://archiva.gentics.com:8081/archiva/repository/com.gentics.public</url>
+		</snapshotRepository>
+	</distributionManagement>
+
+
+
+</project>
+

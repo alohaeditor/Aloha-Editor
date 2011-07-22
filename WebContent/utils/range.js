@@ -102,6 +102,45 @@ GENTICS.Utils.RangeObject = function(param) {
 };
 
 /**
+ * Delete all contents selected by the current range
+ */
+GENTICS.Utils.RangeObject.prototype.deleteContents = function () {
+	// split range at the beginning and start, so deletion is easier
+
+	// the split process will leave the tree in a state, where it
+	// will only contain fully selected or unselected nodes.
+	// there may be some nodes that are partially selected which can
+	// be ignored safely, as they are only remains of the original
+	// cursor position before the split without an actual selected
+	// content. threat them as if they were not selected.
+	var cac = jQuery(this.getCommonAncestorContainer());
+	GENTICS.Utils.Dom.split(this, cac, false);
+	GENTICS.Utils.Dom.split(this, cac, true);
+	this.clearCaches();
+	
+	// iterate over range tree to perform deletion
+	var rt = this.getRangeTree();
+	for (var i = 0; i < rt.length; i++) {
+		if (rt[i].type === 'full') {
+			// delete only fully selected nodes
+			jQuery(rt[i].domobj).remove();
+		}
+	}
+	
+	// special handling if all contents of the cac have been deleted
+	// this case can be detected, if the cac contains just a single br,
+	// or no children at all. if this occurs the range will be collapsed
+	this.clearCaches();
+	rt = this.getRangeTree();
+	children = cac.children();
+	if (children.length === 0 || (children.length === 1 && children.get(0).nodeName === 'BR')) {
+		this.commonAncestorContainer = this.startContainer = this.endContainer = cac.get(0);
+		this.startOffset = 0;
+		this.endOffset = 0;
+	}
+};
+
+/**
  * Output some log
  * TODO: move this to GENTICS.Aloha.Log
  * @param message log message to output
@@ -168,7 +207,7 @@ GENTICS.Utils.RangeObject.prototype.getContainerParents = function (limit, fromE
 		return false;
 	}
 
-	if (typeof limit == 'undefined') {
+	if (typeof limit == 'undefined' || !limit) {
 		limit = jQuery('body');
 	}
 
@@ -328,7 +367,7 @@ GENTICS.Utils.RangeObject.prototype.getCollapsedIERange = function(container, of
  * otherwise in a text selection.
  * @method
  */
-GENTICS.Utils.RangeObject.prototype.select = document.createRange === undefined ? function() { // first the IE version of this method
+GENTICS.Utils.RangeObject.prototype.select = document.createRange === undefined && false ? function() { // first the IE version of this method
 	if (GENTICS.Aloha.Log.isDebugEnabled()) {
 		GENTICS.Aloha.Log.debug(this, 'Set selection to current range (IE version)');
 	}
@@ -367,15 +406,15 @@ GENTICS.Utils.RangeObject.prototype.select = document.createRange === undefined 
 	}
 
 	// create a range
-	var range = document.createRange();
+	var range = rangy.createRange();
 	
 	// set start and endContainer
 	range.setStart(this.startContainer,this.startOffset);	
 	range.setEnd(this.endContainer, this.endOffset);
 	
 	// update the selection
-	window.getSelection().removeAllRanges();
-	window.getSelection().addRange(range);
+	var sel = rangy.getSelection();
+	sel.setSingleRange(range);
 };
 
 /**
@@ -464,11 +503,16 @@ GENTICS.Utils.RangeObject.prototype.update = function(event) {
  */
 GENTICS.Utils.RangeObject.prototype.initializeFromUserSelection = function(event) {
 	// get Browser selection via IERange standardized window.getSelection()
-	var selection = window.getSelection();
+	var selection = rangy.getSelection();
 	if (!selection) {
 		return false;
 	}
 	
+	// check if a ragne exists
+	if ( selection.rangeCount == 0 ) {
+		return false;
+	}
+
 	// getBrowserRange
 	var browserRange = selection.getRangeAt(0);
 	if (!browserRange) {
@@ -873,6 +917,41 @@ GENTICS.Utils.RangeObject.prototype.findMarkup = function (comparator, limit, at
 	});
 
 	return returnValue;
+};
+
+/**
+ * Get the text enclosed by this range
+ * @return {String} the text of the range
+ * @method
+ */
+GENTICS.Utils.RangeObject.prototype.getText = function() {
+	if (this.isCollapsed()) {
+		return '';
+	} else {
+		return this.recursiveGetText(this.getRangeTree());
+	}
+};
+
+GENTICS.Utils.RangeObject.prototype.recursiveGetText = function (tree) {
+	if (!tree) {
+		return '';
+	} else {
+		var that = this;
+		var text = '';
+		jQuery.each(tree, function() {
+			if (this.type == 'full') {
+				// fully selected element/text node
+				text += jQuery(this.domobj).text();
+			} else if (this.type == 'partial' && this.domobj.nodeType == 3) {
+				// partially selected text node
+				text += jQuery(this.domobj).text().substring(this.startOffset, this.endOffset);
+			} else if (this.type == 'partial' && this.domobj.nodeType == 1 && this.children) {
+				// partially selected element node
+				text += that.recursiveGetText(this.children);
+			}
+		});
+		return text;
+	}
 };
 
 /**

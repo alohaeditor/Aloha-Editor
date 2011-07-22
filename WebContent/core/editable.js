@@ -25,7 +25,7 @@
  * @param {Object} obj jQuery object reference to the object
  */
 GENTICS.Aloha.Editable = function(obj) {
-
+	
 	// check wheter the object has an ID otherwise generate and set globally unique ID
 	if ( !obj.attr('id') ) {
 		obj.attr('id', GENTICS.Utils.guid());
@@ -33,6 +33,7 @@ GENTICS.Aloha.Editable = function(obj) {
 
 	// store object reference
 	this.obj = obj;
+	this.originalObj = obj;
 
 	// the editable is not yet ready
 	this.ready = false;
@@ -71,6 +72,8 @@ GENTICS.Aloha.Editable.prototype.range = undefined;
  */
 GENTICS.Aloha.Editable.prototype.check = function() {
 	
+	var that = this;
+	
 	/* TODO check those elements
 	'map', 'meter', 'object', 'output', 'progress', 'samp',
 	'time', 'area', 'datalist', 'figure', 'kbd', 'keygen',
@@ -105,14 +108,17 @@ GENTICS.Aloha.Editable.prototype.check = function() {
 		
 		case 'textarea':
 			// Create a div alongside the textarea
-			var div = jQuery('<div/>').insertAfter(obj);
+			var div = jQuery('<div id="'+this.getId()+'-aloha" class="GENTICS_textarea"/>').insertAfter(obj);
+			// Risize the div to the textarea
+			div.height(obj.height());
+			div.width(obj.width());
 			// Populate the div with the value of the textarea
 			div.html(obj.val());
 			// Hide the textarea
 			obj.hide();
 			// Attach a onsubmit to the form to place the HTML of the div back into the textarea
 			var updateFunction = function(){
-				var val = div.html();
+				var val = that.getContents();
 				obj.val(val);
 			};
 			obj.parents('form:first').submit(updateFunction);
@@ -159,12 +165,11 @@ GENTICS.Aloha.Editable.prototype.init = function() {
 		
 		// add focus event to the object to activate
 		this.obj.mousedown(function(e) {
-			that.activate(e);
-			e.stopPropagation();
+			return that.activate(e);
 		});
 		
 		this.obj.focus(function(e) {
-			that.activate(e);
+			return that.activate(e);
 		});
 		
 		// by catching the keydown we can prevent the browser from doing its own thing
@@ -214,13 +219,34 @@ GENTICS.Aloha.Editable.prototype.init = function() {
 /**
  * destroy the editable
  * @return void
- * @hide
  */
 GENTICS.Aloha.Editable.prototype.destroy = function() {
 	var that = this;
 	
 	// leave the element just to get sure
 	this.blur();
+	
+	// original Object
+	var	oo = this.originalObj.get(0),
+		onn = oo.nodeName.toLowerCase();
+	
+	// special handled elements
+	switch ( onn ) {
+		case 'label':
+		case 'button':
+			// TODO need some special handling.
+	    	break;
+		
+		case 'textarea':
+			// restore content to original textarea
+			var val = this.getContents();
+			this.originalObj.val(val);
+			this.obj.remove();
+			this.originalObj.show();
+			
+		default:
+			break;
+	}
 	
 	// now the editable is not ready any more
 	this.ready = false;
@@ -243,6 +269,13 @@ GENTICS.Aloha.Editable.prototype.destroy = function() {
 		return that.obj;
 	});
 	*/
+	
+	// also hide the floating menu if the current editable was active
+	if (this.isActive) {
+		GENTICS.Aloha.FloatingMenu.obj.hide();
+		GENTICS.Aloha.FloatingMenu.shadow.hide();
+	}
+	
 	
 	// throw a new event when the editable has been created
 	/**
@@ -325,14 +358,28 @@ GENTICS.Aloha.Editable.prototype.enable = function() {
  * @method
  */
 GENTICS.Aloha.Editable.prototype.activate = function(e) {
-	
-	// leave immediately if this is already the active editable
-	if (this.isActive || this.isDisabled()) {
-		return;
+	// stop event propagation for nested editables
+	if (e) {
+		e.stopPropagation();
 	}
 
 	// get active Editable before setting the new one.
 	var oldActive = GENTICS.Aloha.getActiveEditable(); 
+
+	// handle special case in which a nested editable is focused by a click
+	// in this case the "focus" event would be triggered on the parent element
+	// which actually shifts the focus away to it's parent. this if is here to
+	// prevent this situation
+	if (e && e.type == "focus" && oldActive != null && oldActive.obj.parent().get(0) == e.currentTarget) {
+		return;
+	}
+	
+	// leave immediately if this is already the active editable
+	if (this.isActive || this.isDisabled()) {
+		// we don't want parent editables to be triggered as well, so return false
+		return;
+	}
+
 	
 	// set active Editable in core
 	GENTICS.Aloha.activateEditable( this );
@@ -372,7 +419,6 @@ GENTICS.Aloha.Editable.prototype.activate = function(e) {
 			'oldActive' : GENTICS.Aloha.getActiveEditable()
 		})
 	);
-
 };
 
 /**
@@ -432,6 +478,10 @@ GENTICS.Aloha.Editable.prototype.empty = function(str) {
 GENTICS.Aloha.Editable.prototype.getContents = function() {
 	// clone the object
 	var clonedObj = this.obj.clone(true);
+
+	// do core cleanup
+	clonedObj.find('.GENTICS_cleanme').remove();
+
 	GENTICS.Aloha.PluginRegistry.makeClean(clonedObj);
 	return clonedObj.html();
 };
