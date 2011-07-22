@@ -3,6 +3,14 @@
  * Author & Copyright (c) 2010 Gentics Software GmbH, aloha@gentics.com
  * Licensed unter the terms of http://www.aloha-editor.com/license.html
  */
+
+define("compatibilitytest",
+['aloha/jquery'],
+function(jQuery, undefined) {
+	"use strict";
+	
+	var $ = jQuery;
+
 if (window.Aloha === undefined || window.Aloha === null) {
 	window.Aloha = {};		
 }
@@ -64,5 +72,7 @@ require.ready(function() {
 	test('jQuery compatibility test', function() {
 		equals(window.jQuery.fn.jquery, '1.2.1', 'Legacy jQuery version is correct');
 	});
+
+});
 
 });

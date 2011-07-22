@@ -10,3 +10,4 @@ node_modules
 src/plugin/gcn
 nbproject
 doc/guides/staging
+src/plugins/gcn

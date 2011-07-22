@@ -6,7 +6,12 @@
 
 window.TestUtils = window.TestUtils || {};
 
-(function(window, undefined) {
+define("testutils",
+		['aloha/jquery'],
+		function(jQuery, undefined) {
+			"use strict";
+			
+			var	$ = jQuery;
 	
 	/**
 	 * TestUtils class
@@ -158,4 +163,4 @@ window.TestUtils = window.TestUtils || {};
 
 		return fullResult;
 	};
-})(window);
+});

@@ -4,6 +4,13 @@
  * Licensed unter the terms of http://www.aloha-editor.com/license.html
  */
 
+define("remove-markup",
+['aloha/jquery'],
+function(jQuery, undefined) {
+	"use strict";
+	
+	var $ = jQuery;
+
 if (window.Aloha === undefined || window.Aloha === null) {
 	window.Aloha = {};		
 }
@@ -287,4 +294,6 @@ require.ready(function() {
 			doRemoveMarkupTest(this.edit, this.italic, 3, this.afterBold, 4, jQuery('<b></b>'), '#ref-remove-nested', '#ref-remove-nested-outer-out');
 		});
 	});
+});
+
 });
