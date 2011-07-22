@@ -308,7 +308,7 @@ function (jQuery, PluginManager, FloatingMenu, undefined) {
 			}
 
 			// register the body click event to blur editables
-			jQuery('html').mousedown(function() {
+			jQuery('html').mousedown(function(e) {
 				// if an Ext JS modal is visible, we don't want to loose the focus on
 				// the editable as we assume that the user must have clicked somewhere
 				// in the modal... where else could he click?
@@ -316,11 +316,13 @@ function (jQuery, PluginManager, FloatingMenu, undefined) {
 				// column/row deletion, as the table module will clean it's selection
 				// as soon as the editable is deactivated. Fusubscriberthermore you'd have to
 				// refocus the editable again, which is just strange UX
-				if (Aloha.activeEditable && !Aloha.isMessageVisible()) {
+				if (Aloha.activeEditable && !Aloha.isMessageVisible() && !Aloha.eventHandled) {
 					Aloha.activeEditable.blur();
 					FloatingMenu.setScope('Aloha.empty');
 					Aloha.activeEditable = null;
 				}
+			}).mouseup(function(e) {
+				Aloha.eventHandled = false;
 			});
 			// Initialise the base path to the aloha files
 			Aloha.settings.base =
