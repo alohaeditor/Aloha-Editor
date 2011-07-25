@@ -1,6 +1,6 @@
 /*!
 * This file is part of Aloha Editor Project http://aloha-editor.org
-* Copyright © 2010-2011 Gentics Software GmbH, aloha@gentics.com
+* Copyright (c) 2010-2011 Gentics Software GmbH, aloha@gentics.com
 * Contributors http://aloha-editor.org/contribution.php 
 * Licensed unter the terms of http://www.aloha-editor.org/license.html
 *//*
@@ -38,15 +38,15 @@ define(
 		'order!util/position',
 		'order!util/dom',
 		'order!aloha/jquery.aloha',
-		'aloha/ext',
-		'aloha/ext-alohaproxy',
-		'aloha/ext-alohareader',
-		'aloha/ext-alohatreeloader',
+		'order!aloha/ext',
+		'order!aloha/ext-alohaproxy',
+		'order!aloha/ext-alohareader',
+		'order!aloha/ext-alohatreeloader',
 		'order!aloha/core',
 		'order!aloha/ui',
 		'order!aloha/ui-attributefield',
 		'order!aloha/ui-browser',
-		'aloha/floatingmenu',
+		'order!aloha/floatingmenu',
 		'order!aloha/editable',
 		'order!aloha/log',
 		'order!aloha/markup',
