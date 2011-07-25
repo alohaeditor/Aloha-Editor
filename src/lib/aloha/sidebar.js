@@ -114,7 +114,7 @@ function(jQuery, undefined) {
 		var str = '',
 			prx = cssNS; // ... for quicker lookup
 		$.each(arguments, function () {str += ' .' + prx + '-' + this;});
-		return str.trim();
+		return $.trim(str);
 	};
 	
 	// Creates string with this component's namepsace prefixed the each classname
@@ -122,7 +122,7 @@ function(jQuery, undefined) {
 		var str = '',
 			prx = cssNS;
 		$.each(arguments, function () {str += ' ' + prx + '-' + this;});
-		return str.trim();
+		return $.trim(str);
 	};
 	
 	// ------------------------------------------------------------------------
