@@ -26,9 +26,11 @@
 // ----------------------------------------------------------------------------
 
 define(
+
 ['aloha/jquery'],
+
 function(jQuery, undefined) {
-	"use strict";
+	'use strict';
 	
 	var
 		$ = jQuery,
@@ -111,18 +113,18 @@ function(jQuery, undefined) {
 	
 	// Creates a selector string with this component's namepsace prefixed the each classname
 	function nsSel () {
-		var str = '',
+		var strBldr = [],
 			prx = cssNS; // ... for quicker lookup
-		$.each(arguments, function () {str += ' .' + prx + '-' + this;});
-		return str.trim();
+		$.each(arguments, function () {strBldr.push(prx + '-' + this);});
+		return '.' + strBldr.join(' .').trim();
 	};
 	
 	// Creates string with this component's namepsace prefixed the each classname
 	function nsClass () {
-		var str = '',
+		var strBldr = [],
 			prx = cssNS;
-		$.each(arguments, function () {str += ' ' + prx + '-' + this;});
-		return str.trim();
+		$.each(arguments, function () {strBldr.push(prx + '-' + this);});
+		return strBldr.join(' ').trim();
 	};
 	
 	// ------------------------------------------------------------------------
@@ -817,4 +819,6 @@ function(jQuery, undefined) {
 	});
 	
 	return Sidebar;
-});
+}
+
+); // require
