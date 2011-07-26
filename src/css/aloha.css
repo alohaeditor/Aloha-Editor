@@ -550,6 +550,7 @@ ul.aloha-multisplit button.aloha-button-removeFormat {
 	);
 }
 .aloha-sidebar-panels {
+	margin: 0;
 	padding: 15px 0;
 }
 .aloha-sidebar-panels li {
@@ -574,7 +575,7 @@ ul.aloha-multisplit button.aloha-button-removeFormat {
 .aloha-sidebar-panel-title {
 	position: relative;
 	overflow: hidden;
-	padding: 8px 8px 4px;
+	padding: 8px 0 2px 8px;
 	border: 1px solid rgba(0, 0, 0, 0.3);
 	border-bottom-width: 0;
 	background-color: #303539;
@@ -607,7 +608,7 @@ ul.aloha-multisplit button.aloha-button-removeFormat {
 	cursor: pointer;
 	font-size: 13px;
 	font-weight: bold;
-	line-height: 1em;
+	line-height: 1.5em;
 	text-shadow: 0 0 6px #23262b;
 }
 .aloha-sidebar-panel-title:hover {
@@ -638,12 +639,8 @@ ul.aloha-multisplit button.aloha-button-removeFormat {
 }
 .aloha-sidebar-panel-content-inner {
 	margin: 5px 0 0;
-	padding: 2px 5px;
+	padding: 0;
 	color: #888;
-
-	border: 1px solid rgb(175, 175, 175);
-	border-top-width: 0;
-
 	background: #fff;
 	background-image: -webkit-radial-gradient(
 		rgba(0, 0, 0, 0.0) 50%,
@@ -738,7 +735,6 @@ ul.aloha-multisplit button.aloha-button-removeFormat {
 }
 
 .aloha-sidebar-panel-parent-path {
-	padding: 0;
 	background-color: #303539;
 	background-image: -webkit-gradient(
     	linear,
@@ -770,6 +766,7 @@ ul.aloha-multisplit button.aloha-button-removeFormat {
 	font-size: 12px;
 	text-shadow: 0 0 6px #23262b;
 	white-space: nowrap;
+	line-height: 1em;
 }
 .aloha-sidebar-panel-parent-path:hover {
 	opacity: 0.9;
@@ -777,11 +774,11 @@ ul.aloha-multisplit button.aloha-button-removeFormat {
 }
 .aloha-sidebar-panel-parent-path span {
 	display: inline-block;
-	padding: 0 15px 0 10px;
+	padding: 0 10px;
 	background: url(../img/breadcrumb-divider.png) no-repeat right center;
 	opacity: 0.25;
 	filter: alpha(opacity=25);
-	line-height: 1.3em;
+	line-height: 1.6em;
 }
 .aloha-sidebar-panel-parent-path span:last-child {
 	font-weight: bold;

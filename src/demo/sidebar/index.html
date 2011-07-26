@@ -20,7 +20,7 @@
 
 	<script src="js/libs/jquery-1.6.1.js" ></script>
 	<script src="js/aloha-config.js"></script>
-	<script src="../../lib/require.js" data-main="../../lib/aloha.js" id="aloha-script-include" data-plugins="common/format,common/highlighteditables,common/list,common/undo,common/paste"></script>
+	<script src="../../lib/require.js" data-main="../../lib/aloha.js" id="aloha-script-include" data-plugins="common/format, common/highlighteditables"></script>
 	<script src="js/aloha-boilerplate.js"></script>
 	
 </head>
@@ -208,6 +208,7 @@
 								content	   : '',
 								expanded   : false,
 								onInit	   : function () {},
+								// activate on selector string
 								activeOn   : 'h1,h2,h3,h4,h5,h6,h7',
 								onActivate : function (effective) {
 									var domobj = effective[0],
@@ -228,51 +229,37 @@
 								title	 : 'Element',
 								content	 : '',
 								expanded : true,
+								// activate on function returning true
 								activeOn : function (elem) {
 									return true;
 								},
-								onInit	 : function () {
-									var content = this.setContent('								\
-										<div id="aloha-sidebar-panel-elements-props">			\
-											id:													\
-											<input type="text" value=""							\
-												id="aloha-sidebar-panel-elements-id" />			\
-											<br />												\
-											classname:											\
-											<input type="text" value=""							\
-												id="aloha-sidebar-panel-elements-classname" />	\
-											<br />												\
-										</div>													\
-										<div id="aloha-sidebar-panel-elements-btns">			\
-											<button>Update</button>								\
-										</div>													\
-									').content;
+								
+								onInit	 : function () {},
+								
+								onActivate: function (effective) {
+									this.renderEffectiveParents(
+										effective, function (el) {
+											return '\
+												<div id="aloha-sidebar-panel-elements-props">\
+													id: <input type="text" value=""/><br />\
+													classname: <input type="text" value=""	 /><br />\
+												</div>\
+												<div>\
+													<button>Update</button>\
+												</div>\
+											';
+										}
+									);
 									
-									var autosize = function(){ 
-										var size = parseInt($(this).attr('size')); 
-										var chars = $(this).val().length; 
-										$(this).attr('size', chars); 
+									function autosize () {
+										var size = parseInt($(this).attr('size'));
+										var chars = $(this).val().length;
+										$(this).attr('size', chars);
 									};
 									
-									content.find('input').attr('size', 'auto')
+									this.content.find('input').attr('size', 'auto')
 										.keyup(autosize).change(autosize);
-									
-									var that = this;
-									
-									content.find('button').click(function () {
-										if (that.effectiveElement) {
-											that.effectiveElement
-												.attr({id : $('#aloha-sidebar-panel-elements-id').val() || null})
-												.attr('class', $('#aloha-sidebar-panel-elements-classname').val() || null);
-										}
-									});
-								},
-								onActivate: function (effective) {
-									$('#aloha-sidebar-panel-elements-id')
-										.val(effective.attr('id'))
-									$('#aloha-sidebar-panel-elements-classname')
-										.val(effective.attr('class'))
-								}
+								} 
 							}
 						]
 					});
