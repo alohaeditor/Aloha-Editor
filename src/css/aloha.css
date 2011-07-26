@@ -774,16 +774,19 @@ ul.aloha-multisplit button.aloha-button-removeFormat {
 }
 .aloha-sidebar-panel-parent-path span {
 	display: inline-block;
-	padding: 0 10px;
+	padding: 0 10px 0 5px;
 	background: url(../img/breadcrumb-divider.png) no-repeat right center;
 	opacity: 0.25;
 	filter: alpha(opacity=25);
 	line-height: 1.6em;
 }
-.aloha-sidebar-panel-parent-path span:last-child {
+.aloha-sidebar-panel-parent-path span:first-child {
 	font-weight: bold;
 	opacity: 0.5;
 	filter: alpha(opacity=50);
+}
+.aloha-sidebar-panel-parent-path span:last-child {
+	background: none;
 }
 .aloha-sidebar-panel-parent-content {
 	padding: 4px;
