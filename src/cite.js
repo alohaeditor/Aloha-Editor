@@ -46,8 +46,25 @@
 		});
 	};
 	
+	function hex2rgb (hex) {
+		hex = hex.replace('#', '').split('');
+		
+		if (hex.length == 3) {
+			hex[5] = hex[4] = hex[2];
+			hex[3] = hex[2] = hex[1];
+			hex[1] = hex[0];
+		}
+		
+		var rgb = [];
+		for (var i = 0; i < 3; i++) {
+			rgb[i] = parseInt('0x' + hex[i * 2] + hex[i * 2 + 1]);
+		}
+		
+		return rgb;
+	};
+	
 	function renderTemplate (str) {
-		return (typeof str == 'string') ? str.supplant(nsClasses) : str;
+		return (typeof str === 'string') ? str.supplant(nsClasses) : str;
 	};
 	
 	// Creates a selector string with this component's namepsace prefixed the each classname
@@ -66,9 +83,9 @@
 	
 	function isWithinActiveEditable (range) {
 		return (
-			jQuery(range.commonAncestorContainer).is('.aloha-editable-active')
+			$(range.commonAncestorContainer).is('.aloha-editable-active')
 				||
-			jQuery(range.commonAncestorContainer).parents('.aloha-editable-active').length > 0
+			$(range.commonAncestorContainer).parents('.aloha-editable-active').length > 0
 		);
 	};
 	
@@ -125,26 +142,30 @@
 			this.sidebar = null;
 			
 			// Add another panel after sidebar has been initialized
-			jQuery('body').bind('aloha-sidebar-initialized', function (ev, sidebar) {
+			$('body').bind('aloha-sidebar-initialized', function (ev, sidebar) {
 				that.sidebar = sidebar.addPanel({
+					
 					id		 : nsClass('sidebar-panel'),
 					title	 : 'Citation',
 					content	 : '',
 					expanded : true,
 					activeOn : '.aloha-cite-wrapper',
+					
 					onInit	 : function () {
 						var plugin = Aloha.Cite,
 							that = this,
 							content = this.setContent(renderTemplate(
 							   '<div class="{panel-label}">Link:</div>\
-								<div class="{panel-field} {link-field}"><input type="text" /></div>\
-								<div class="{panel-label}">Note:</div>\
-								<div class="{panel-field} {note-field}"><textarea></textarea></div>\
+								<div class="{panel-field} {link-field}" style="margin: 5px;"><input type="text" /></div>\
 								<div class="{panel-btns}"><button>Done</button></div>'
+								
+								//<div class="{panel-label}">Note:</div>\
+								//<div class="{panel-field} {note-field}"><textarea></textarea></div>
 							)).content;
 						
 						content.find('button').click(function () {
 							var content = that.content;
+							
 							plugin.addCiteDetails(
 								content.attr('data-cite-id'),
 								content.find(nsSel('link-field input')).val(),
@@ -152,19 +173,21 @@
 							);
 						});
 					},
+					
 					onActivate: function (effective) {
 						var id = effective.attr('data-cite-id'),
-							idx = that.indexOfCitation(id);
+							idx = that.indexOfCitation(id),
+							content = this.content;
 						
-						if (idx > -1) {
-							var citation = that.citations[idx],
-								content = this.content;
-							content.attr('data-cite-id', id);
-							content.find(nsSel('link-field input')).val(citation.link).focus();
-							content.find(nsSel('note-field textarea')).val(citation.note);
-							
+						if (idx == -1) {
+							idx = that.citations.push({uid:uid, link:null, notes:null}) - 1;
 						}
+						
+						content.attr('data-cite-id', id);
+						content.find(nsSel('link-field input')).val(effective.attr('cite')).focus();
+						content.find(nsSel('note-field textarea')).val(that.citations[idx].note);
 					}
+					
 				});
 				
 				sidebar.addPanel({
@@ -186,9 +209,9 @@
 			
 			// add the event handler for selection change
 			Aloha.bind('aloha-selection-changed', function(event, rangeObject){
-				var buttons = jQuery('button' + nsSel('button'));
+				var buttons = $('button' + nsSel('button'));
 			
-				jQuery.each(that.buttons, function(index, button) {
+				$.each(that.buttons, function(index, button) {
 					// set to false to prevent multiple buttons to be active when they should not
 					var statusWasSet = false,
 						tagName,
@@ -220,7 +243,6 @@
 		// Do a binary search through all citations for a given uid in O(log N) time
 		// The bit shifting may be a *bit* of an overkill (pun intended),
 		// but if were are working through a big list this will be significantly more performant
-		// Math.floor(i) / 2 == i >> 1 == ~~(i / 2)
 		indexOfCitation: function (uid) {
 			var c = this.citations,
 				max = c.length,
@@ -229,7 +251,7 @@
 				cuid;
 			
 			while (min < max) {
-				mid = (min + max) >> 1;
+				mid = (min + max) >> 1; // Math.floor(i) / 2 == i >> 1 == ~~(i / 2)
 				if ((cuid = c[mid].uid) == uid) {
 					return mid;
 				} else if (cuid > uid) {
@@ -238,6 +260,8 @@
 					min = mid + 1;
 				}
 			}
+			
+			return -1;
 		},
 		
 		addBlockQuote: function () {
@@ -249,18 +273,17 @@
 			};
 			
 			var classes = [nsClass('wrapper'), nsClass(++uid)].join(' '),
-				flowWrapper = jQuery('<q class="{classes}" data-cite-id="{uid}">'.supplant({uid:uid, classes:classes})),
-				blockWrapper = jQuery('<blockquote class="{classes}" data-cite-id="{uid}">'.supplant({uid:uid, classes:classes})),
+				flowWrapper = $('<q class="{classes}" data-cite-id="{uid}">'.supplant({uid:uid, classes:classes})),
+				blockWrapper = $('<blockquote class="{classes}" data-cite-id="{uid}">'.supplant({uid:uid, classes:classes})),
 				wrapper;
 			
 			if (sel.isCollapsed) {
-				var parent = jQuery(sel.focusNode).parent();
+				var parent = $(sel.focusNode).parent();
 				var isFlow =  domUtils.allowsNesting(flowWrapper[0], parent[0]);
 				wrapper = isFlow ? flowWrapper : blockWrapper;
-				jQuery(sel.focusNode).wrap(wrapper);
+				$(sel.focusNode).wrap(wrapper);
 			} else {
 				var rangeObject = Aloha.Selection.getRangeObject();
-				
 				var isPartial = false;
 				
 				if (rangeObject.startContainer.nodeType === 3
@@ -279,14 +302,15 @@
 					wrapper = flowWrapper;
 					domUtils.addMarkup(rangeObject, flowWrapper, false);
 				} else {
-					var parent = jQuery(rangeObject.startContainer).parent();
+					var parent = $(rangeObject.startContainer).parent();
 					var isFlow =  domUtils.allowsNesting(flowWrapper[0], parent[0]);
 					wrapper = isFlow ? flowWrapper : blockWrapper
 					domUtils.addMarkup(rangeObject, wrapper, false);
 				}
 			}
 			
-			this.addCiteToFooter(uid);
+			//this.addCiteToFooter(uid);
+			
 			this.sidebar.open()
 				.activatePanel(nsClass('sidebar-panel'), wrapper);
 		},
@@ -300,22 +324,22 @@
 			};
 			
 			var classes = [nsClass('wrapper'), nsClass(++uid)].join(' '),
-				wrapper = jQuery('<q class="{classes}" data-cite-id="{uid}">'.supplant({uid:uid, classes:classes}));
+				wrapper = $('<q class="{classes}" data-cite-id="{uid}">'.supplant({uid:uid, classes:classes}));
 			
 			if (sel.isCollapsed) {
-				jQuery(sel.focusNode).wrap(wrapper);
+				$(sel.focusNode).wrap(wrapper);
 			} else {
 				domUtils.addMarkup(Aloha.Selection.getRangeObject(), wrapper, false);
 			}
 			
-			this.addCiteToFooter(uid);
+			//this.addCiteToFooter(uid);
 			
 			this.sidebar.open()
 				.activatePanel(nsClass('sidebar-panel'), wrapper);
 		},
 		
 		addCiteToFooter: function (uid) {
-			var wrapper = jQuery(nsSel(uid)).last(),
+			var wrapper = $(nsSel(uid)).last(),
 				count = this.citations.push({uid:uid, link:null, notes:null}),
 				note = 'cite-note-' + uid,
 				ref = 'cite-ref-' + uid;
@@ -328,13 +352,13 @@
 				})
 			);
 			
-			if (jQuery('.aloha-editable-active').siblings('ol.references').length == 0) {
-				jQuery('.aloha-editable-active')
+			if ($('.aloha-editable-active').siblings('ol.references').length == 0) {
+				$('.aloha-editable-active')
 					.after(renderTemplate('<ol class="references">'))
 					.after('<h2>References</h2>');
 			}
 			
-			jQuery('.aloha-editable-active').siblings('ol.references').append(
+			$('.aloha-editable-active').siblings('ol.references').append(
 				'<li id="{note}"><a href="#{ref}">^</a> &nbsp; <span></span></li>'.supplant({
 					ref	 : ref,
 					note : note
@@ -349,11 +373,50 @@
 				note: note,
 			};
 			
-			jQuery('li#cite-note-' + uid + ' span').html(
+			if (link) {
+				// Update link attribute
+				var el = $(nsSel(uid)).attr('cite', link);
+				
+				// Highlight animation to happy user
+				var round = Math.round;
+				var from = hex2rgb('#fdff9a');
+				var to = hex2rgb('#000');
+				
+				from.push(1);
+				to.push(0.1);
+				
+				var diff = [to[0] - from[0], to[1] - from[1], to[2] - from[2], to[3] - from[3]];
+				
+				el.css({
+					__tick: 0,
+					'background-color': 'rgba(' + from.join(',') + ')',
+					'box-shadow': '0 0 20px rgba(' + from.join(',') + ')'
+				}).animate({__tick: 1}, {
+						duration: 500,
+						easing: 'linear',
+						step: function (val, fx) {
+							var rgba = [
+								round(from[0] + diff[0] * val),
+								round(from[1] + diff[1] * val),
+								round(from[2] + diff[2] * val),
+									  from[3] + diff[3] * val
+							];
+							
+							$(this).css({
+								'background-color': 'rgba(' + rgba.join(',') + ')',
+								'box-shadow': '0 0 ' + (20 * (1 - val)) + 'px rgba(' + from.join(',') + ')'
+							});
+						}
+					});
+			}
+			
+			/* For generating reference list
+			$('li#cite-note-' + uid + ' span').html(
 				(link == ''
 					? '' : '<a class="external" target="_blank" href="{url}">{url}</a>.'.supplant({url:link}))
 				+ note
 			);
+			*/
 		},
 		
 		toString: function () {
@@ -375,8 +438,8 @@
 	} else {
 		// Load plugin once Aloha is ready.
 		// We do this until requireJS brings peace to the land.
-		jQuery(function () {
-			jQuery('body').bind('alohacoreloaded', function () {
+		$(function () {
+			$('body').bind('alohacoreloaded', function () {
 				// Paranoia...
 				if (!Aloha.Cite) {
 					Aloha.Cite = createPlugin();

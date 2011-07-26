@@ -15,10 +15,9 @@
 }
 q.aloha-cite-wrapper {
 	/* background: #ffd25d; */
-	background: rgba(0, 0, 0, 0.1);
 }
 blockquote.aloha-cite-wrapper {
-	background: #dfd25d;
+	/* background: #dfd25d; */
 }
 
 /* background: none repeat scroll 0 0 rgba(0, 0, 0, 0.3);
