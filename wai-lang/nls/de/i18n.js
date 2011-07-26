@@ -1,0 +1,1 @@
+define({ "floatingmenu.tab.wai-lang": "WAI Sprachauszeichnung" });
