@@ -51,7 +51,6 @@ function(Plugin, FloatingMenu, i18n, i18nCore) {
 			if(jQuery(Aloha.activeEditable.obj).hasClass('aloha-metaview')) {
 				jQuery(Aloha.activeEditable.obj).removeClass('aloha-metaview');
 				that.button.setPressed(false);
-				console.log(that.button);
 			} else {
 				jQuery(Aloha.activeEditable.obj).addClass('aloha-metaview');
 				that.button.setPressed(true);
