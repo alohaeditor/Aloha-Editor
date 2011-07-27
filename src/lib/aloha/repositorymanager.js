@@ -76,7 +76,7 @@ Aloha.RepositoryManager = Class.extend({
 	 */
 	register: function(repository) {
 
-		if (repository instanceof Aloha.Repository) {
+		if (repository instanceof Aloha.AbstractRepository) {
 			if ( !this.getRepository(repository.repositoryId) ) {
 				this.repositories.push(repository);
 			} else {
