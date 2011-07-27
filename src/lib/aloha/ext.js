@@ -1,6 +1,6 @@
 /*!
 * This file is part of Aloha Editor Project http://aloha-editor.org
-* Copyright © 2010-2011 Gentics Software GmbH, aloha@gentics.com
+* Copyright ï¿½ 2010-2011 Gentics Software GmbH, aloha@gentics.com
 * Contributors http://aloha-editor.org/contribution.php 
 * Licensed unter the terms of http://www.aloha-editor.org/license.html
 *//*
@@ -20,7 +20,7 @@
 
 define(
 	[
-		'css!vendor/ext-3.2.1/resources/css/ext-all-notheme.css',
+	 	'css!vendor/ext-3.2.1/resources/css/ext-all.css',
 		'css!vendor/ext-3.2.1/resources/css/xtheme-gray.css',
 		'order!aloha/jquery',
         'order!vendor/ext-3.2.1/adapter/jquery/ext-jquery-adapter-debug',
