@@ -575,7 +575,7 @@ ul.aloha-multisplit button.aloha-button-removeFormat {
 .aloha-sidebar-panel-title {
 	position: relative;
 	overflow: hidden;
-	padding: 8px 0 2px 8px;
+	padding: 8px 0 0 8px;
 	border: 1px solid rgba(0, 0, 0, 0.3);
 	border-bottom-width: 0;
 	background-color: #303539;
@@ -616,7 +616,7 @@ ul.aloha-multisplit button.aloha-button-removeFormat {
 }
 .aloha-sidebar-panel-title-arrow {
 	position: absolute;
-	top: 6px;
+	top: 8px;
 	left: 8px;
 	width: 16px;
 	height: 16px;
