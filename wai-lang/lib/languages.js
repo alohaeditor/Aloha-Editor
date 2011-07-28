@@ -21,13 +21,6 @@ function(jQuery, Repository, i18nCore) {
 		GENTICS = window.GENTICS,
 		Aloha = window.Aloha;
 
-
-	/**
-	 * Create the Repositories object. Namespace for Repositories
-	 * @hide
-	 */
-	//if ( !Aloha.Repositories ) Aloha.Repositories = {};
-	
 	/**
 	 * Register the WaiLang Plugin as Aloha.Plugin
 	 */
