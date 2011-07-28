@@ -262,7 +262,7 @@ function (jQuery, PluginManager, FloatingMenu, undefined) {
 
 			// Determine Plugins
 			if ( typeof plugins === 'string' && plugins !== "") {
-				return plugins.replace(/ /g, '').split(',');
+				return plugins.replace(/\s+/g, '').split(',');
 			}
 
 			// Return
