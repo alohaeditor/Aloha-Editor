@@ -12,10 +12,9 @@ define(
 [
  'aloha/jquery',
  'aloha/repository',
- 'i18n!format/nls/i18n', 
  'i18n!aloha/nls/i18n', 
 ],
-function(jQuery, Repository, i18n, i18nCore) {
+function(jQuery, Repository, i18nCore) {
 	"use strict";
 	
 	var jQuery = window.alohaQuery || window.jQuery, $ = jQuery,
