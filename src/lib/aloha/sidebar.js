@@ -334,7 +334,7 @@ function(jQuery, undefined) {
 			
 
 			// Activate the panel if the activeOn handler has been disabled. 
-			if( typeof panel.activeOn == undefined || panel.activeOn == "*") {
+			if( typeof panel.activeOn === 'undefined' || panel.activeOn == "*") {
 				panel.activate(effective);
 			// Activate the panel if it has at least one element that matches the specified activeOn filter.
 			} else if (count > 0) { 
