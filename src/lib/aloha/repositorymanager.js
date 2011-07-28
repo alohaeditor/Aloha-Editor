@@ -238,7 +238,9 @@ Aloha.RepositoryManager = Class.extend({
 			clearTimeout(timer);
 
 			// sort items by weight
-			items.sort(function (a,b) {return b.weight - a.weight;});
+			items.sort(function (a,b) {
+				return (b.weight || 0) - (a.weight || 0);
+			});
 
 			// prepare result data for the JSON Reader
 			var result =  {
