@@ -16,3 +16,6 @@
 [submodule "googletranslate"]
 	path = googletranslate
 	url = git@github.com:alohaeditor/Aloha-Plugin-GoogleTranslate.git
+[submodule "cite"]
+	path = cite
+	url = git@github.com:alohaeditor/Aloha-Plugin-Cite.git
