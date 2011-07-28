@@ -1,6 +1,6 @@
 /*!
 * This file is part of Aloha Editor Project http://aloha-editor.org
-* Copyright © 2010-2011 Gentics Software GmbH, aloha@gentics.com
+* Copyright (c) 2010-2011 Gentics Software GmbH, aloha@gentics.com
 * Contributors http://aloha-editor.org/contribution.php 
 * Licensed unter the terms of http://www.aloha-editor.org/license.html
 *//*
@@ -467,7 +467,7 @@ function(jQuery, Ext, Base, undefined) {
 							this.panel.shadow.show();
 						}
 					},
-					floating: true,
+					floating: {shadow: false},
 					defaults: {
 						autoScroll: true
 					},
@@ -543,6 +543,10 @@ function(jQuery, Ext, Base, undefined) {
 				.html('&#160;')
 				.mousedown(function (e) {
 					that.togglePin();
+					// Note: this event is deliberately stopped here, although normally,
+					// we would set the flag GENTICS.Aloha.eventHandled instead.
+					// But when the event bubbles up, no tab would be selected and
+					// the floatingmenu would be rather thin.
 					e.stopPropagation();
 				});
 
@@ -585,16 +589,17 @@ function(jQuery, Ext, Base, undefined) {
 			// for now, position the panel somewhere
 			this.extTabPanel.setPosition(this.left, this.top);
 
-			// disable event bubbling for mousedown, because we don't want to recognize
+			// mark the event being handled by aloha, because we don't want to recognize
 			// a click into the floatingmenu to be a click into nowhere (which would
 			// deactivate the editables)
 			this.obj.mousedown(function (e) {
 				e.originalEvent.stopSelectionUpdate = true;
-				e.stopPropagation();
+				Aloha.eventHandled = true;
 		//		e.stopSelectionUpdate = true;
 			});
 			this.obj.mouseup(function (e) {
 				e.originalEvent.stopSelectionUpdate = true;
+				Aloha.eventHandled = false;
 			});
 
 			// adjust float behaviour

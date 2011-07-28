@@ -154,7 +154,15 @@ function(jQuery, PluginManager, FloatingMenu) {
 
 				// add focus event to the object to activate
 				me.obj.mousedown(function(e) {
-					return me.activate(e);
+					// check whether the mousedown was already handled
+					if (!Aloha.eventHandled) {
+						Aloha.eventHandled = true;
+						return me.activate(e);
+					}
+				});
+
+				me.obj.mouseup(function(e) {
+					Aloha.eventHandled = false;
 				});
 
 				me.obj.focus(function(e) {
@@ -534,11 +542,6 @@ function(jQuery, PluginManager, FloatingMenu) {
 		 * @method
 		 */
 		activate: function(e) {
-			// stop event propagation for nested editables
-			if (e) {
-				e.stopPropagation();
-			}
-
 			// get active Editable before setting the new one.
 			var oldActive = Aloha.getActiveEditable();
 
@@ -559,11 +562,6 @@ function(jQuery, PluginManager, FloatingMenu) {
 
 			// set active Editable in core
 			Aloha.activateEditable( this );
-
-			// ie specific: trigger one mouseup click to update the range-object
-			if (document.selection && document.selection.createRange) {
-				this.obj.mouseup();
-			}
 
 			// Placeholder handling
 			this.removePlaceholder(this.obj, true);
