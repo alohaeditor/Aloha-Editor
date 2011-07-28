@@ -20,7 +20,7 @@
 
 	<script src="js/libs/jquery-1.6.1.js" ></script>
 	<script src="js/aloha-config.js"></script>
-	<script src="../../lib/require.js" data-main="../../lib/aloha.js" id="aloha-script-include" data-plugins="common/format,common/highlighteditables,common/list,common/undo,common/paste"></script>
+	<script src="../../lib/require.js" data-main="../../lib/aloha.js" id="aloha-script-include" data-plugins="common/format, common/highlighteditables"></script>
 	<script src="js/aloha-boilerplate.js"></script>
 	
 </head>
@@ -194,94 +194,13 @@
 			var
 				$ = window.jQuery,
 				$body = $('body');
-
-
-				$body.bind('aloha-sidebar-ready', function () {
-				
-					new Aloha.Sidebar({
-						position: 'left',
-						width: 250,
-						isOpen: true,
-						panels: [
-							{
-								title	   : 'Headers',
-								content	   : '',
-								expanded   : false,
-								onInit	   : function () {},
-								activeOn   : 'h1,h2,h3,h4,h5,h6,h7',
-								onActivate : function (effective) {
-									var domobj = effective[0],
-										str = '',
-										typeOf;
-									
-									$.each(domobj, function (k, v) {
-										if ((typeOf = typeof v) == 'string' || typeOf == 'number') {
-											str += k + ' => ' + v + '<br />';
-										}
-									});
-									
-									this.setContent(str);
-								}
-							},
-							{
-								id		 : 'aloha-sidebar-panel-elements',
-								title	 : 'Element',
-								content	 : '',
-								expanded : true,
-								activeOn : function (elem) {
-									return true;
-								},
-								onInit	 : function () {
-									var content = this.setContent('								\
-										<div id="aloha-sidebar-panel-elements-props">			\
-											id:													\
-											<input type="text" value=""							\
-												id="aloha-sidebar-panel-elements-id" />			\
-											<br />												\
-											classname:											\
-											<input type="text" value=""							\
-												id="aloha-sidebar-panel-elements-classname" />	\
-											<br />												\
-										</div>													\
-										<div id="aloha-sidebar-panel-elements-btns">			\
-											<button>Update</button>								\
-										</div>													\
-									').content;
-									
-									var autosize = function(){ 
-										var size = parseInt($(this).attr('size')); 
-										var chars = $(this).val().length; 
-										$(this).attr('size', chars); 
-									};
-									
-									content.find('input').attr('size', 'auto')
-										.keyup(autosize).change(autosize);
-									
-									var that = this;
-									
-									content.find('button').click(function () {
-										if (that.effectiveElement) {
-											that.effectiveElement
-												.attr({id : $('#aloha-sidebar-panel-elements-id').val() || null})
-												.attr('class', $('#aloha-sidebar-panel-elements-classname').val() || null);
-										}
-									});
-								},
-								onActivate: function (effective) {
-									$('#aloha-sidebar-panel-elements-id')
-										.val(effective.attr('id'))
-									$('#aloha-sidebar-panel-elements-classname')
-										.val(effective.attr('class'))
-								}
-							}
-						]
-					});
-				
-			});
-
+			
 			// Add another panel after sidebar has been initialized
-			$body.bind('aloha-sidebar-initialized', function (ev, sidebar) {
-				sidebar.addPanel({
+			$body.bind('aloha-sidebar-initialized', function (ev, sidebars) {
+				var left = sidebars.left;
+				var right = sidebars.right;
+				
+				left.addPanel({
 					title	 : 'Links',
 					content  : 'Change href:<br /><input type="text" value=""/>',
 					expanded : true,
@@ -296,6 +215,70 @@
 						this.content.find('input').val(effective.attr('href'));
 					}
 				});
+				
+				left.addPanel({
+					title	   : 'Headers',
+					content	   : '',
+					expanded   : false,
+					onInit	   : function () {},
+					// activate on selector string
+					activeOn   : 'h1,h2,h3,h4,h5,h6,h7',
+					onActivate : function (effective) {
+						var domobj = effective[0],
+							str = '',
+							typeOf;
+						
+						$.each(domobj, function (k, v) {
+							if ((typeOf = typeof v) == 'string' || typeOf == 'number') {
+								str += k + ' => ' + v + '<br />';
+							}
+						});
+						
+						this.setContent(str);
+					}
+				});
+				
+				left.show();
+				
+				right.addPanel({
+					id		 : 'aloha-sidebar-panel-elements',
+					title	 : 'Element',
+					content	 : '',
+					expanded : true,
+					// activate on function returning true
+					activeOn : function (elem) {
+						return true;
+					},
+					
+					onInit	 : function () {},
+					
+					onActivate: function (effective) {
+						this.renderEffectiveParents(
+							effective, function (el) {
+								return '\
+									<div id="aloha-sidebar-panel-elements-props">\
+										id: <input type="text" value=""/><br />\
+										classname: <input type="text" value=""	 /><br />\
+									</div>\
+									<div>\
+										<button>Update</button>\
+									</div>\
+								';
+							}
+						);
+						
+						function autosize () {
+							var size = parseInt($(this).attr('size'));
+							var chars = $(this).val().length;
+							$(this).attr('size', chars);
+						};
+						
+						this.content.find('input').attr('size', 'auto')
+							.keyup(autosize).change(autosize);
+					}
+				});
+				
+				right.show().open();
 			});
 			
 			$body.bind('aloha',function(){

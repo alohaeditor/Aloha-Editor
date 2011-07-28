@@ -26,9 +26,12 @@
 // ----------------------------------------------------------------------------
 
 define(
-['aloha/jquery'],
-function(jQuery, undefined) {
-	"use strict";
+[
+	'aloha/jquery'
+],
+function SidebarClosure (jQuery, undefined) {
+	
+	'use strict';
 	
 	var
 		$ = jQuery,
@@ -46,9 +49,8 @@ function(jQuery, undefined) {
 	// one in which Aloha-Editor operates in, with its numerous custom plugins.
 	// eg: .inner or .btn can be used in several plugins, with eaching adding
 	// to the class styles properties that we don't want.
-	var cssNS = 'aloha-sidebar';
-	
-	var uid  = +(new Date),
+	var ns = 'aloha-sidebar',
+		uid  = +(new Date),
 		// namespaced classnames
 		nsClasses = {
 			bar				: nsClass('bar'),
@@ -58,9 +60,9 @@ function(jQuery, undefined) {
 			inner			: nsClass('inner'),
 			'panel-content'	: nsClass('panel-content'),
 			'panel-content-inner'
-							:  nsClass('panel-content-inner'),
+							: nsClass('panel-content-inner'),
 			'panel-content-inner-text'
-							:  nsClass('panel-content-inner-text'),
+							: nsClass('panel-content-inner-text'),
 			panels			: nsClass('panels'),
 			'panel-title'	: nsClass('panel-title'),
 			'panel-title-arrow'
@@ -104,25 +106,23 @@ function(jQuery, undefined) {
 	// It is prefered that we render strings through this function rather than
 	// going directly to String.prototype.supplant
 	function renderTemplate (str) {
-		return (typeof str == 'string')
+		return (typeof str === 'string')
 					? str.supplant(nsClasses)
 					: str;
 	};
 	
 	// Creates a selector string with this component's namepsace prefixed the each classname
 	function nsSel () {
-		var str = '',
-			prx = cssNS; // ... for quicker lookup
-		$.each(arguments, function () {str += ' .' + prx + '-' + this;});
-		return $.trim(str);
+		var strBldr = [], prx = ns;
+		$.each(arguments, function () { strBldr.push('.' + (this == '' ? prx : prx + '-' + this)); });
+		return strBldr.join(' ').trim();
 	};
 	
 	// Creates string with this component's namepsace prefixed the each classname
 	function nsClass () {
-		var str = '',
-			prx = cssNS;
-		$.each(arguments, function () {str += ' ' + prx + '-' + this;});
-		return $.trim(str);
+		var strBldr = [], prx = ns;
+		$.each(arguments, function () { strBldr.push(this == '' ? prx : prx + '-' + this); });
+		return strBldr.join(' ').trim();
 	};
 	
 	// ------------------------------------------------------------------------
@@ -144,8 +144,8 @@ function(jQuery, undefined) {
 		'));
 		// defaults
 		this.width = 300;
-		this.isOpen = false;
 		this.opened = false;
+		this.isOpen = false;
 		
 		this.init(opts);
 	};
@@ -190,6 +190,8 @@ function(jQuery, undefined) {
 			   .click(function () {that.barClicked.apply(that, arguments);})
 			   .find(nsSel('panels')).width(this.width);
 			
+			this.width = bar.width();
+
 			$(window).resize(function () {
 				that.updateHeight();
 			});
@@ -203,20 +205,33 @@ function(jQuery, undefined) {
 			if (this.opened) {
 				this.open(0);
 			}
-			
+
 			this.subscribeToEvents();
-			
-			// Fade in nice and slow
-			bar.animate({opacity: 1}, 1000);
 			
 			$(window).resize(function () {
 				that.correctHeight();
 			});
 			
 			this.correctHeight();
+		},
+		
+		// Fade in nice and slow
+		show: function () {
+			this.container
+				.css('display', 'block')
+				.animate({opacity: 1}, 1000);
 			
-			// Announce that this Sidebar instance has arrived!
-			body.trigger(nsClass('initialized'), this);
+			return this;
+		},
+		
+		// Fade out
+		hide: function () {
+			this.container
+				.animate({opacity: 0}, 1000, function () {
+					$(this).css('display', 'block')
+				});
+			
+			return this;
 		},
 		
 		subscribeToEvents: function () {
@@ -262,7 +277,7 @@ function(jQuery, undefined) {
 				targetHeight,
 				panelInner,
 				panelText,
-				undone = [],
+				undone,
 				toadd = 0;
 			
 			while (panels.length > 0 && remainingHeight > 0) {
@@ -291,8 +306,10 @@ function(jQuery, undefined) {
 					if (panelText.height() > targetHeight) {
 						undone.push(panel);
 						toadd += targetHeight;
-						panelInner.css('overflow-x', 'hidden');
-						panelInner.css('overflow-y', 'scroll');
+						panelInner.css({
+							'overflow-x': 'hidden',
+							'overflow-y': 'scroll'
+						});
 					} else {
 						panelInner.css('overflow-y', 'hidden');
 					}
@@ -311,33 +328,17 @@ function(jQuery, undefined) {
 				j = effectiveElems.length,
 				count = 0,
 				li = panel.content.parent('li'),
+				activeOn = panel.activeOn,
 				effective = $();
 			
-			switch (typeof panel.activeOn) {
-			case 'function':
-				for (; i < j; i++) {
-					 if (panel.activeOn(effectiveElems[i])) {
-						 count++;
-						 $.merge(effective, effectiveElems[i]);
-					}
+			for (; i < j; i++) {
+				if (activeOn(effectiveElems[i])) {
+					count++;
+					$.merge(effective, effectiveElems[i]);
 				}
-				break;
-			case 'string':
-				for (; i < j; i++) {
-					if (effectiveElems[i].is(panel.activeOn)) {
-						count++;
-						$.merge(effective, effectiveElems[i]);
-					}
-				}
-				break;
 			}
 			
-
-			// Activate the panel if the activeOn handler has been disabled. 
-			if( typeof panel.activeOn === 'undefined' || panel.activeOn == "*") {
-				panel.activate(effective);
-			// Activate the panel if it has at least one element that matches the specified activeOn filter.
-			} else if (count > 0) { 
+			if (count > 0) { 
 				panel.activate(effective);
 			} else {
 				panel.deactivate();
@@ -389,8 +390,6 @@ function(jQuery, undefined) {
 							isRight ? {marginLeft: '-=' + (flag * 5)} : {marginRight: '-=' + (flag * 5)},
 							200
 						);
-						
-						var bounceAnim = 
 						
 						bounceTimer = setInterval(function () {
 							flag *= -1;
@@ -490,7 +489,7 @@ function(jQuery, undefined) {
 			if (this.isOpen) {
 				return this;
 			}
-
+			
 			var isRight = (this.position == 'right'),
 				anim = isRight ? {marginRight: 0} : {marginLeft: 0};
 			
@@ -506,9 +505,9 @@ function(jQuery, undefined) {
 			$('body').animate(
 			isRight ? {marginRight: '+=' + this.width} : {marginLeft: '+=' + this.width},
 			500, 'easeOutExpo');
-
+			
 			this.isOpen = true;
-
+			
 			return this;
 		},
 		
@@ -524,7 +523,7 @@ function(jQuery, undefined) {
 			
 			this.container.animate(
 				anim,
-				(typeof duration == 'number' || typeof duration == 'string')
+				(typeof duration === 'number' || typeof duration === 'string')
 					? duration : 500,
 				'easeOutExpo'
 			);
@@ -661,6 +660,8 @@ function(jQuery, undefined) {
 				this.rotateArrow(90, 0);
 			}
 			
+			this.coerceActiveOn();
+			
 			// Disable text selection on title element
 			this.title
 				.attr('unselectable', 'on')
@@ -669,6 +670,40 @@ function(jQuery, undefined) {
 			
 			if (typeof this.onInit === 'function') {
 				this.onInit.apply(this);
+			}
+		},
+		
+		/**
+		 * Coerce activeOn to function
+		 */
+		coerceActiveOn: function () {
+			if (typeof this.activeOn !== 'function') {
+				var activeOn = this.activeOn;
+				
+				this.activeOn = (function () {
+					var typeofActiveOn = typeof activeOn,
+						fn;
+					
+					if (typeofActiveOn === 'boolean') {
+						fn = function () {
+							return typeofActiveOn;
+						};
+					} else if (typeofActiveOn === 'undefined') {
+						fn = function () {
+							return true;
+						};
+					} else if (typeofActiveOn === 'string') {
+						fn = function (el) {
+							return el.is(activeOn);
+						};
+					} else {
+						fn = function () {
+							return false;
+						};
+					}
+					
+					return fn;
+				})();
 			}
 		},
 		
@@ -773,25 +808,34 @@ function(jQuery, undefined) {
 		},
 		
 		renderEffectiveParents: function (effective, renderer) {
-			var el = effective.first();
-			var content = [];
-			var path = [];
+			var el = effective.first(),
+				content = [],
+				path = [],
+				activeOn = this.activeOn,
+				l,
+				pathRev;
 			
-			while (el.length > 0 && !el.is('.aloha-editable-active')) {
-				if (el.is(this.activeOn)) {
+			while (el.length > 0 && !el.is('.aloha-editable')) {
+				
+				if (activeOn(el)) {
 					path.push('<span>' + el[0].tagName.toLowerCase() + '</span>');
+					l = path.length;
+					pathRev = [];
+					while (l--) {
+						pathRev.push(path[l]);
+					}
 					content.push(
 						'<div class="aloha-sidebar-panel-parent">\
 							<div class="aloha-sidebar-panel-parent-path">{path}</div>\
 							<div class="aloha-sidebar-panel-parent-content aloha-sidebar-opened">{content}</div>\
 						 </div>'.supplant({
-							path	: path.join(''),
+							path	: pathRev.join(''),
 							content	: (typeof renderer === 'function') ? renderer(el) : '----'
 						})
 					);
 				}
 				
-				el = el.first().parent();
+				el = el.parent();
 			}
 			
 			this.setContent(content.join(''));
@@ -806,7 +850,7 @@ function(jQuery, undefined) {
 				}
 			});
 			
-			console.log(this.content);
+			//console.log(this.content);
 			this.content.height('auto').find('.aloha-sidebar-panel-content-inner').height('auto');
 			//this.sidebar.updateHeight();
 		}
@@ -815,11 +859,26 @@ function(jQuery, undefined) {
 	
 	// Expose Sidebar through Aloha as soon Aloha becomes available
 	$('body').bind('aloha', function () {
-		Aloha.Sidebar = Sidebar;
+		var left = new Sidebar({
+			position : 'left',
+			width	 : 250 // TODO define in config
+		});
 		
-		// Broadcast that this Sidebar  is ready for use
-		$('body').trigger(nsClass('ready'), this);
+		var right = new Sidebar({
+			position : 'right',
+			width	 : 250 // TODO define in config
+		});
+
+		Aloha.Sidebars = {
+			left  : left,
+			right : right
+		};
+		
+		// Broadcast that this Sidebar instances have arrived!
+		$('body').trigger(nsClass('initialized'), Aloha.Sidebars);
 	});
 	
 	return Sidebar;
-});
+}
+
+); // require
