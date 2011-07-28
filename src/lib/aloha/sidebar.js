@@ -26,10 +26,11 @@
 // ----------------------------------------------------------------------------
 
 define(
-
-['aloha/jquery'],
-
+[
+	'aloha/jquery'
+],
 function SidebarClosure (jQuery, undefined) {
+	
 	'use strict';
 	
 	var
@@ -48,9 +49,8 @@ function SidebarClosure (jQuery, undefined) {
 	// one in which Aloha-Editor operates in, with its numerous custom plugins.
 	// eg: .inner or .btn can be used in several plugins, with eaching adding
 	// to the class styles properties that we don't want.
-	var ns = 'aloha-sidebar';
-	
-	var uid  = +(new Date),
+	var ns = 'aloha-sidebar',
+		uid  = +(new Date),
 		// namespaced classnames
 		nsClasses = {
 			bar				: nsClass('bar'),
