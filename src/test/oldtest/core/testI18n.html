@@ -1,0 +1,182 @@
+<html>
+  <head>
+<!-- IMPORTANT: do not remove the next line, it will include scripts and styles necessary for the test to run -->
+<!-- #include file="${com.gentics.labs.browsertest.includedir}/head-include.inc" -->
+
+<!-- #include file="${com.gentics.aloha.src}/test/${com.gentics.aloha.loaderprefix}testloader.html" -->
+<script type="text/javascript">
+
+GENTICS.Aloha.DummyPlugin = new GENTICS.Aloha.Plugin('com.example.dummyplugin');
+
+GENTICS.Aloha.settings = {
+	logLevels : {
+		error : true,
+		warn : true,
+		info : true
+	},
+	i18n : {
+		current : 'en'
+	}
+};
+</script>
+
+  <script type="text/javascript">
+
+	// create the testcase
+	// TODO: rename the testcase
+	YAHOO.com.gentics.labs.browsertest.I18nTest = new YAHOO.tool.TestCase({
+
+	    //name of the test case - if not provided, one is auto-generated
+	    // TODO: provide a proper name for the testcase
+	    name : 'I18n Test',
+
+	    //---------------------------------------------------------------------
+	    // setUp and tearDown methods - optional
+	    //---------------------------------------------------------------------
+	    
+	    /*
+	     * Sets up data that is needed by each test.
+	     */
+	    setUp : function () {
+		    // load some special test dictionaries
+		    GENTICS.Aloha.loadI18nFile('i18n/en.aloha.dict', GENTICS.Aloha);
+		    GENTICS.Aloha.loadI18nFile('i18n/en.plugin.dict', GENTICS.Aloha.DummyPlugin);
+	    },
+	    
+	    /*
+	     * Cleans up everything that was created by setUp().
+	     */
+	    tearDown : function () {
+			// TODO: implement teardown code for the tests
+	    },
+
+	    /**
+	     * Test whether the plugin could read the settings
+	     */
+	    testAlohaDictionary : function () {
+	    	YAHOO.util.Assert.areEqual('this is just a simple message', GENTICS.Aloha.i18n(GENTICS.Aloha, 'simple'), 'Check a simple i18n message');
+	    },
+
+	    /**
+	     * Test i18n of a plugin dictionary
+	     */
+	    testPluginDictionary : function () {
+			YAHOO.util.Assert.areEqual('This is the simple message from the plugin', GENTICS.Aloha.DummyPlugin.i18n('simpleplugin'), 'Check plugin dictionary');
+	    },
+
+	    /**
+	     * Test fallback to the Aloha dictionary
+	     */
+	    testFallback : function () {
+			YAHOO.util.Assert.areEqual('from the aloha dictionary', GENTICS.Aloha.DummyPlugin.i18n('fallback'), 'Check fallback');
+	    },
+
+	    /**
+	     * Test no fallback to the Aloha dictionary (key exists in both)
+	     */
+	    testNoFallback : function () {
+			YAHOO.util.Assert.areEqual('from the plugin dictionary', GENTICS.Aloha.DummyPlugin.i18n('nofallback'), 'Check no fallback');
+	    },
+	    
+	    /**
+	     * Test i18n of an illegal key
+	     */
+	    testIllegalKey : function () {
+	    	YAHOO.util.Assert.areEqual('??? makesurethisdoesnotexist ???', GENTICS.Aloha.i18n(GENTICS.Aloha, 'makesurethisdoesnotexist'), 'Check i18n of illegal key');
+	    },
+
+	    /**
+	     * Test multiline values
+	     */
+	    testMultiline : function () {
+		    YAHOO.util.Assert.areEqual('this\nis\na\nmultiline\nvalue', GENTICS.Aloha.i18n(GENTICS.Aloha, 'multiline'), 'Check multiline values');
+	    },
+
+	    /**
+	     * Test i18n with special characters in the value
+	     */
+		testSpecialCharacters : function () {
+		    YAHOO.util.Assert.areEqual('=\\äöüß<>"\'&{0}€', GENTICS.Aloha.i18n(GENTICS.Aloha, 'special'), 'Check special values');
+	    },
+
+	    /**
+	     * Test substitutions in the value
+	     */
+	    testSubstitutions : function () {
+		    YAHOO.util.Assert.areEqual('zero:none,one:first,two:second', GENTICS.Aloha.i18n(GENTICS.Aloha, 'substitutions', ['none', 'first', 'second']), 'Check substitutions');
+		    YAHOO.util.Assert.areEqual('one:first,zero:none,two:second', GENTICS.Aloha.i18n(GENTICS.Aloha, 'substitutions2', ['none', 'first', 'second']), 'Check substitutions in other order');
+	    },
+
+	    /**
+	     * Test substitutions when less variables are given than placeholders exist
+	     */
+	    testUnsatisfiedSubsitutions : function () {
+		    YAHOO.util.Assert.areEqual('zero:none,one:,two:', GENTICS.Aloha.i18n(GENTICS.Aloha, 'substitutions', ['none']), 'Check substitutions');
+	    },
+
+	    /**
+	     * Test i18n of duplicate keys
+	     */
+	    testDuplicateKeys : function () {
+		    YAHOO.util.Assert.areEqual('one', GENTICS.Aloha.i18n(GENTICS.Aloha, 'duplicate'), 'Check duplicate keys');
+	    },
+
+	    /**
+	     * Test substitutions with values that contain placeholders
+	     */
+	    testSubstitutionsWithPlaceholders : function () {
+		    YAHOO.util.Assert.areEqual('zero:{2},one:{1},two:{0}', GENTICS.Aloha.i18n(GENTICS.Aloha, 'substitutions', ['{2}', '{1}', '{0}']), 'Check substitutions');
+	    },
+
+	    /**
+	     * Test substitutions with many placeholders
+	     */
+	    testManyPlaceholders : function () {
+		    YAHOO.util.Assert.areEqual('eleven:eleven,twelve:twelve', GENTICS.Aloha.i18n(GENTICS.Aloha, 'manyplaceholders', ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve', 'thirteen']), 'Check substitutions with many placeholders');
+	    },
+
+	    /**
+	     * Test parsing performance for a large file (2793 entries)
+	     */
+	    testParsingPerformance : function () {
+			var start = new Date().getTime();
+			GENTICS.Aloha.loadI18nFile('i18n/en.large.dict', GENTICS.Aloha);
+			var duration = new Date().getTime() - start;
+			YAHOO.util.Assert.isTrue(duration <= 5000, 'Check parsing duration for dictionary with 2793 entries: must be less than 500 ms, but was ' + duration + ' ms');
+	    },
+
+	    /**
+	     * Test i18n performance
+	     */
+	    testI18nPerformance : function () {
+			var start = new Date().getTime();
+			for (var i = 0; i < 10000; ++i) {
+				GENTICS.Aloha.i18n(GENTICS.Aloha, 'substitutions', ['one', 'two', 'three']);
+			}
+			var duration = new Date().getTime() - start;
+			YAHOO.util.Assert.isTrue(duration <= 5000, 'Check i18n duration for translating 10000 entries: must be less than 500 ms, but was ' + duration + ' ms');
+	    },
+
+	    /**
+	     * Test substitutions for plugin dictionary entries
+	     */
+	    testPluginSubstitution : function () {
+	    	YAHOO.util.Assert.areEqual('this comes from plugin \'com.example.dummyplugin\'', GENTICS.Aloha.DummyPlugin.i18n('pluginsubst', [GENTICS.Aloha.DummyPlugin]), 'Check substitutions in entries for the plugin');
+	    }
+	});
+
+	// add our testcase
+	YAHOO.com.gentics.labs.browsertest.Suite.add(YAHOO.com.gentics.labs.browsertest.I18nTest);
+
+</script>
+  </head>
+  <body class="yui-skin-sam">
+
+<!-- TODO: add your html code to be tested here -->
+<h1>I18n Test</h1>
+This tests I18n
+
+<!-- IMPORTANT: do not remove the next line, it will include html fragments necessary for the test to run -->
+<!-- #include file="${com.gentics.labs.browsertest.includedir}/body-include.inc" -->
+  </body>
+</html>

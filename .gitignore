@@ -1,6 +1,13 @@
 .project
 .settings
-.gitmodules
-build/out
-build/api-docs-out
+dist
+out
 .DS_Store
+/target
+/npm-debug.log
+node_modules
+/setalohabase.js
+src/plugin/gcn
+nbproject
+doc/guides/staging
+src/plugins/gcn

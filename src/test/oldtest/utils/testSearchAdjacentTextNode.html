@@ -1,0 +1,174 @@
+<html>
+  <head>
+<!-- IMPORTANT: do not remove the next line, it will include scripts and styles necessary for the test to run -->
+<!-- #include file="${com.gentics.labs.browsertest.includedir}/head-include.inc" -->
+
+<!-- TODO: include your required scripts and styles here -->
+<!-- #include file="${com.gentics.aloha.src}/test/${com.gentics.aloha.loaderprefix}testloader.html" -->
+
+  <script type="text/javascript">
+
+    // create the testcase
+    YAHOO.com.gentics.labs.browsertest.SearchAdjacentTextNodeTestCase = new YAHOO.tool.TestCase({
+
+        //name of the test case - if not provided, one is auto-generated
+        name : "Search Adjacent Text Node Test",
+
+        //---------------------------------------------------------------------
+        // setUp and tearDown methods - optional
+        //---------------------------------------------------------------------
+        
+        /*
+         * Sets up data that is needed by each test.
+         */
+        setUp : function () {
+            // TODO: implement setup code for the tests
+        },
+        
+        /*
+         * Cleans up everything that was created by setUp().
+         */
+        tearDown : function () {
+            // TODO: implement teardown code for the tests
+        },
+        
+        //---------------------------------------------------------------------
+        // Test methods - names must begin with "test"
+        //---------------------------------------------------------------------
+        
+        /*
+         * Test finding the adjacent text node if right outside a single bold node
+         */
+        testRightFromSingleBold : function () {
+            var div = jQuery('#singlebold');
+            // start in the text node after the bold
+            var startNode = div[0];
+			var adjacentTextNode = GENTICS.Utils.Dom.searchAdjacentTextNode(startNode, 2, true);
+
+            // must find the text in bold
+			YAHOO.util.Assert.areSame(div.find('b').contents().get(0), adjacentTextNode, 'Check the adjacent text node');
+        },
+
+        /**
+         * Test finding the adjacent text node if inside a bold node (with text to the left)
+         */
+        testInsideBold : function () {
+            var div = jQuery('#singlebold');
+            // start inside the bold node
+			var adjacentTextNode = GENTICS.Utils.Dom.searchAdjacentTextNode(div.find('b').get(0), 0, true);
+
+            // must find the text left from the bold
+			YAHOO.util.Assert.areSame(div.contents().get(0), adjacentTextNode, 'Check the adjacent text node');
+        },
+
+        /*
+         * Test starting in a bold node at the start
+         */
+        testInBoldAtStart : function () {
+            var div = jQuery('#boldatleftborder');
+            // start inside the bold node
+			var adjacentTextNode = GENTICS.Utils.Dom.searchAdjacentTextNode(div.find('b').get(0), 0, true);
+
+            // must not find anything
+            YAHOO.util.Assert.isFalse(adjacentTextNode, 'Check the adjacent node');
+
+            // no search in the other direction (check if we find something here)
+			adjacentTextNode = GENTICS.Utils.Dom.searchAdjacentTextNode(div.find('b').get(0), 0, false);
+			YAHOO.util.Assert.areSame(div.find('b').contents(0).get(0), adjacentTextNode, 'Check the adjacent text node');
+        },
+
+        /*
+         * Test starting right of an empty bold
+         */
+        testRightFromEmptyBold : function () {
+            var div = jQuery('#emptybold');
+            // start right to the bold
+			var adjacentTextNode = GENTICS.Utils.Dom.searchAdjacentTextNode(div.get(0), 2, true);
+
+            // must find the text left from the (empty) bold
+			YAHOO.util.Assert.areSame(div.contents().get(0), adjacentTextNode, 'Check the adjacent text node');
+        },
+
+        /*
+         * Test starting right to a bold with nested italic
+         */
+        testNestedItalicInBold : function () {
+            var div = jQuery('#nesteditalicinbold');
+            // start right to the bold
+			var adjacentTextNode = GENTICS.Utils.Dom.searchAdjacentTextNode(div.get(0), 2, true);
+
+            // must find the text in the italic
+			YAHOO.util.Assert.areSame(div.find('i').contents().get(0), adjacentTextNode, 'Check the adjacent text node');
+        },
+
+        /*
+         * Test starting right to a bold with empty nested italic
+         */
+        testNestedEmptyItalicInBold : function () {
+            var div = jQuery('#nestedemptyitalicinbold');
+
+            // start right to the bold
+			var adjacentTextNode = GENTICS.Utils.Dom.searchAdjacentTextNode(div.get(0), 2, true);
+
+            // must find the text in the bold
+			YAHOO.util.Assert.areSame(div.find('b').contents().get(0), adjacentTextNode, 'Check the adjacent text node');
+        },
+
+        /*
+         * Test starting right to a paragraph
+         */
+        testNextToParagraph : function () {
+            var div = jQuery('#nexttoparagraph');
+
+            // start right to the paragraph
+			var adjacentTextNode = GENTICS.Utils.Dom.searchAdjacentTextNode(div.get(0), 1, true);
+
+            // must not find text
+			YAHOO.util.Assert.isFalse(adjacentTextNode, 'Check the adjacent text node');
+
+            // no search in the other direction (check if we find something here)
+			adjacentTextNode = GENTICS.Utils.Dom.searchAdjacentTextNode(div.get(0), 1, false);
+			YAHOO.util.Assert.areSame(div.contents().get(1), adjacentTextNode, 'Check the adjacent text node');
+        },
+
+        /*
+         * Test starting in bold next to a paragraph
+         */
+        testInBoldNextToParagraph : function () {
+            var div = jQuery('#inboldnexttoparagraph');
+
+            // start in bold right to the paragraph
+			var adjacentTextNode = GENTICS.Utils.Dom.searchAdjacentTextNode(div.find('b').get(0), 0, true);
+
+            // must not find text
+			YAHOO.util.Assert.isFalse(adjacentTextNode, 'Check the adjacent text node');
+
+            // no search in the other direction (check if we find something here)
+			adjacentTextNode = GENTICS.Utils.Dom.searchAdjacentTextNode(div.find('b').get(0), 0, false);
+			YAHOO.util.Assert.areSame(div.find('b').contents().get(0), adjacentTextNode, 'Check the adjacent text node');
+        }
+    });
+
+    // add our testcase
+    // TODO add your testcase here
+    YAHOO.com.gentics.labs.browsertest.Suite.add(YAHOO.com.gentics.labs.browsertest.SearchAdjacentTextNodeTestCase);
+</script>
+  </head>
+  <body class="yui-skin-sam">
+
+<!-- TODO: add your html code to be tested here -->
+<h1>Search Adjacent Text Node Test</h1>
+
+<div id="singlebold">Left from bold <b>in bold</b> right from bold</div>
+<div id="boldatleftborder"><b>Bold</b> Text after the bold</div>
+<div id="boldatrightborder">Text before the bold <b>Bold</b></div>
+<div id="emptybold">Text before bold <b></b> Text after bold</div>
+<div id="nesteditalicinbold">Text before bold <b><i>Italic</i></b> Text after bold</div>
+<div id="nestedemptyitalicinbold">Text before bold <b>Bold <i></i></b> Text after bold</div>
+<div id="nexttoparagraph"><p>In the Paragraph</p>Next to the paragraph</div>
+<div id="inboldnexttoparagraph"><p>In the Paragraph</p><b>Bold next to paragraph</b></div>
+
+<!-- IMPORTANT: do not remove the next line, it will include html fragments necessary for the test to run -->
+<!-- #include file="${com.gentics.labs.browsertest.includedir}/body-include.inc" -->
+  </body>
+</html>

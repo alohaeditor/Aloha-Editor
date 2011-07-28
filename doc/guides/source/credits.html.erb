@@ -1,0 +1,32 @@
+<% content_for :page_title do %>
+<%= Guides.meta["title"] %>: Credits
+<% end %>
+
+<% content_for :page_header do %>
+<img src="images/strobe/credits.png">
+<h2>
+	<a href="#">Credits</a></h2>
+<p>We'd like to thank the following people for their tireless efforts.</p>
+<% end %>
+
+<% content_for :sidebar do %>
+<h3>Become A Contributor</h3>
+<ul class="links">
+  <li><a href="/style_guide.html">Javascript Style Guide</a></li>
+  <li><a href="/commit_code.html">Committer Guidelines</a></li>
+  <li><a href="/documentation_guidelines.html">Documentation Guidelines</a></li>
+</ul>
+<% end %>
+
+<h3 class="group"><%= Guides.meta["team_name"] %></h3>
+
+<% Guides.meta["authors"].each do |group, authors| %>
+  <h3 class="section"><%= group %></h3>
+  <% authors.each do |author| %>
+    <% img = author["image"] || "strobe/dude.png" %>
+    <%= author(author["name"], author["nick"], img) do %>
+      <%= author["description"].html_safe %>
+    <% end %>
+  <% end %>
+<% end %>
+

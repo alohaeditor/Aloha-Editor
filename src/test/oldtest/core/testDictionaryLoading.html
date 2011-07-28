@@ -1,0 +1,103 @@
+<html>
+  <head>
+<!-- IMPORTANT: do not remove the next line, it will include scripts and styles necessary for the test to run -->
+<!-- #include file="${com.gentics.labs.browsertest.includedir}/head-include.inc" -->
+
+<!-- #include file="${com.gentics.aloha.src}/test/${com.gentics.aloha.loaderprefix}testloader.html" -->
+<script type="text/javascript" src="<!-- #echo var="${com.gentics.aloha.src.browser}" -->/plugins/com.gentics.aloha.plugins.Format/plugin.js"></script>
+<script type="text/javascript">
+GENTICS.Aloha.MyPlugin = new GENTICS.Aloha.Plugin('com.gentics.tests.MyPlugin');
+</script>
+<script type="text/javascript">
+
+GENTICS.Aloha.settings = {
+	logLevels : {
+		error : true,
+		warn : true,
+		info : true
+	},
+	plugins : {
+		'com.gentics.aloha.plugins.Format' : {
+			i18n : {
+				available : ['en', 'de']
+			}
+		},
+	    'com.gentics.aloha.plugins.GCN' : {
+			enabled : false
+		},
+		'com.gentics.aloha.plugins.Table' : {
+			enabled : false
+		}
+	},
+	i18n : {
+		current : 'en'
+	}
+};
+</script>
+
+  <script type="text/javascript">
+
+	// create the testcase
+	// TODO: rename the testcase
+	YAHOO.com.gentics.labs.browsertest.DictionaryLoadingTest = new YAHOO.tool.TestCase({
+
+	    //name of the test case - if not provided, one is auto-generated
+	    // TODO: provide a proper name for the testcase
+	    name : 'Dictionary Loading Test',
+
+	    //---------------------------------------------------------------------
+	    // setUp and tearDown methods - optional
+	    //---------------------------------------------------------------------
+	    
+	    /*
+	     * Sets up data that is needed by each test.
+	     */
+	    setUp : function () {
+	    },
+	    
+	    /*
+	     * Cleans up everything that was created by setUp().
+	     */
+	    tearDown : function () {
+			// TODO: implement teardown code for the tests
+	    },
+
+	    /**
+	     * Test whether the Aloha dictionary was loaded
+	     */
+	    testAlohaDictionary : function () {
+	    	YAHOO.util.Assert.isNotNull(GENTICS.Aloha.dictionaries[GENTICS.Aloha.toString()], 'Check whether the Aloha dictionary exists');
+	    	YAHOO.util.Assert.isNotUndefined(GENTICS.Aloha.dictionaries[GENTICS.Aloha.toString()], 'Check whether the Aloha dictionary exists');
+	    },
+
+	    /**
+	     * Test whether the Plugin dictionary was loaded
+	     */
+	    testPluginDictionary : function () {
+	    	YAHOO.util.Assert.isNotNull(GENTICS.Aloha.dictionaries[GENTICS.Aloha.Format.toString()], 'Check whether the Format-Plugin dictionary exists');
+	    	YAHOO.util.Assert.isNotUndefined(GENTICS.Aloha.dictionaries[GENTICS.Aloha.Format.toString()], 'Check whether the Format-Plugin dictionary exists');
+	    },
+
+	    /**
+	     * Test whether the Plugin dictionary of the unconfigured plugin was not loaded
+	     */
+	    testUnloadedPluginDictionary : function () {
+	    	YAHOO.util.Assert.isUndefined(GENTICS.Aloha.dictionaries[GENTICS.Aloha.MyPlugin.toString()], 'Check whether MyPlugin dictionary does not exist');
+	    },
+	});
+
+	// add our testcase
+	YAHOO.com.gentics.labs.browsertest.Suite.add(YAHOO.com.gentics.labs.browsertest.DictionaryLoadingTest);
+
+</script>
+  </head>
+  <body class="yui-skin-sam">
+
+<!-- TODO: add your html code to be tested here -->
+<h1>Dictionary Loading Test</h1>
+This tests loading of the dictionaries
+
+<!-- IMPORTANT: do not remove the next line, it will include html fragments necessary for the test to run -->
+<!-- #include file="${com.gentics.labs.browsertest.includedir}/body-include.inc" -->
+  </body>
+</html>

@@ -1,0 +1,78 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.gentics</groupId>
+	<artifactId>alohaeditor</artifactId>
+	<version>0.10-SNAPSHOT</version>
+	<packaging>pom</packaging>
+
+	<name>Aloha Editor</name>
+	<url>http://aloha-editor.org</url>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+	 <build>
+                <plugins>
+
+			 <plugin>
+                                <artifactId>maven-assembly-plugin</artifactId>
+                                <version>2.2.1</version>
+                                <executions>
+                                        <execution>
+                                                <id>packagek</id>
+                                                <phase>package</phase>
+                                                <goals>
+                                                        <goal>single</goal>
+                                                </goals>
+                                                <configuration>
+                                                        <attach>true</attach>
+                                                        <appendAssemblyId>false</appendAssemblyId>
+                                                        <descriptors>
+                                                                <descriptor>${project.basedir}/build/maven/package.xml</descriptor>
+                                                        </descriptors>
+                                                </configuration>
+                                        </execution>
+                                </executions>
+                        </plugin>
+
+
+                        <plugin>
+                                <groupId>org.codehaus.mojo</groupId>
+                                <artifactId>exec-maven-plugin</artifactId>
+                                <version>1.1</version>
+                                <executions>
+                                        <execution>
+                                                <phase>compile</phase>
+                                                <id>invoke build</id>
+                                                <goals>
+                                                        <goal>exec</goal>
+                                                </goals>
+                                        </execution>
+                                </executions>
+                                <configuration>
+                                        <executable>bin/build.sh</executable>
+                                </configuration>
+                        </plugin>
+		</plugins>
+	</build>
+
+        <distributionManagement>
+                <repository>
+                        <id>archiva.com.gentics.public</id>
+                        <name>Gentics Public Repository</name>
+                        <url>http://archiva.gentics.com:8081/archiva/repository/com.gentics.public</url>
+                </repository>
+                <snapshotRepository>
+                        <id>archiva.com.gentics.public</id>
+                        <name>Gentics Public Repository</name>
+                        <url>http://archiva.gentics.com:8081/archiva/repository/com.gentics.public</url>
+                </snapshotRepository>
+        </distributionManagement>
+
+
+
+</project>
+
