@@ -5,25 +5,25 @@
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
 
-(function(window, undefined) {
+define('linklist',
+[
+ 'aloha/jquery',
+ 'aloha/repository',
+ 'i18n!aloha/nls/i18n', 
+],
+function(jQuery, Repository, i18nCore) {
 	"use strict";
-	var
-		jQuery = window.alohaQuery || window.jQuery, $ = jQuery,
+	
+	var jQuery = window.alohaQuery || window.jQuery, $ = jQuery,
 		GENTICS = window.GENTICS,
-		Aloha = window.Aloha,
+		Aloha = window.Aloha;
 		Ext = window.Ext;
 
 	
 	/**
-	 * Create the Repositories object. Namespace for Repositories
-	 * @hide
+	 * Create the repository
 	 */
-	if ( !Aloha.Repositories ) Aloha.Repositories = {};
-	
-	/**
-	 * Register the WaiLang Plugin as Aloha.Plugin
-	 */
-	Aloha.Repositories.Linklist = new (Aloha.Repository.extend({
+	var linkListRepository = new (Aloha.AbstractRepository.extend({
 		_constructor: function(){
 			this._super('linklist');
 		},
@@ -194,4 +194,4 @@
 
 }))();
 
-})(window);
+});
