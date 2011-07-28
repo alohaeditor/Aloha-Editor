@@ -9,15 +9,16 @@ define('linklist',
 [
  'aloha/jquery',
  'aloha/repository',
- 'i18n!aloha/nls/i18n', 
+  'i18n!aloha/nls/i18n',
+  'order!aloha/repositorymanager'
 ],
 function(jQuery, Repository, i18nCore) {
 	"use strict";
 	
-	var jQuery = window.alohaQuery || window.jQuery, $ = jQuery,
-		GENTICS = window.GENTICS,
-		Aloha = window.Aloha;
-		Ext = window.Ext;
+	var jQuery = window.alohaQuery || window.jQuery, $ = jQuery;
+	var GENTICS = window.GENTICS;
+	var	Aloha = window.Aloha;
+	var Ext = window.Ext;
 
 	
 	/**
@@ -82,7 +83,7 @@ function(jQuery, Repository, i18nCore) {
 		    		}
 		    	}
 		    	e.parentId = path;
-		    	this.urlset[i] = new Aloha.Repository.Document(e);
+		    	this.urlset[i] = new Aloha.RepositoryDocument(e);
 		    }
 		
 		    // repository name
@@ -95,7 +96,7 @@ function(jQuery, Repository, i18nCore) {
 			var p = path ? path + '/' + name : name;
 		
 			if ( name && !this.folder[p] ) {
-				this.folder[p] = new Aloha.Repository.Folder({
+				this.folder[p] = new Aloha.RepositoryFolder({
 						id: p,
 						name: (name)?name:p,
 						parentId: path,
