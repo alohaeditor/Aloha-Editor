@@ -20,15 +20,15 @@
 
 define(
 	[
-	 	'css!vendor/ext-3.2.1/resources/css/ext-all.css',
-		'css!vendor/ext-3.2.1/resources/css/xtheme-gray.css',
+ 		'css!vendor/ext-3.2.1/resources/css/ext-all.css',
+ 		'css!vendor/ext-3.2.1/resources/css/xtheme-gray.css',
 		'order!aloha/jquery',
-        'order!vendor/ext-3.2.1/adapter/jquery/ext-jquery-adapter-debug',
-        'order!vendor/ext-3.2.1/ext-all'
+	 	'order!vendor/ext-3.2.1/adapter/jquery/ext-jquery-adapter-debug',
+	 	'order!vendor/ext-3.2.1/ext-all'
 	],
 	function(jQuery, _1, _2, undefined) {
 		"use strict";
-		
+
 		if ( window.alohaExt ) {
 			return window.alohaExt;
 		}
