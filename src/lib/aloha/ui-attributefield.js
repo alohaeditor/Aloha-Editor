@@ -169,7 +169,9 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 				jQuery(target).removeAttr('data-original-background-color');
 			}
 			if (this.getValue() === '') {
-				jQuery(this.wrap.dom.children[0]).css("color", "#AAA");
+				if ( this.wrap ) {
+					jQuery(this.wrap.dom.children[0]).css("color", "#AAA");
+				}
 				this.setValue(this.placeholder);
 			}
 		},
