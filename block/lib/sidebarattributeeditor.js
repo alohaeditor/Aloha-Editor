@@ -5,8 +5,13 @@
  * Licensed unter the terms of http://www.aloha-editor.com/license.html
  */
  
-define(['block/blockmanager', 'aloha/sidebar', 'block/editormanager'],
-function(BlockManager, Sidebar, EditorManager) {
+define([
+
+	'block/blockmanager',
+	'aloha/sidebar',
+	'block/editormanager'
+	
+], function (BlockManager, Sidebar, EditorManager) {
 	"use strict";
 
 	// Prepare
@@ -29,11 +34,19 @@ function(BlockManager, Sidebar, EditorManager) {
 		 */
 		init: function() {
 			var that = this;
-			that._initSidebar();
+			
+			//Obsolete: that._initSidebar();
+			this._sidebar = Aloha.Sidebars.right.show();
+			
 			BlockManager.bind('block-selection-change', this._onBlockSelectionChange, this);
 		},
-
+		
+		/* Obsolete:
+			We no longer need to initialize our own sidebar.
+			We will use those that are provided to use by Aloha
+				
 		_initSidebar: function() {
+			return;
 			this._sidebar = new Sidebar({
 				position: 'right',
 				width: 250,
@@ -41,6 +54,7 @@ function(BlockManager, Sidebar, EditorManager) {
 				panels: []
 			});
 		},
+		 */
 
 		/**
 		 * @param {Array} selectedBlocks
