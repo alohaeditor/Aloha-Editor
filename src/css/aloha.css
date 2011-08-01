@@ -654,6 +654,11 @@ ul.aloha-multisplit button.aloha-button-removeFormat {
 	);
 }
 
+.aloha-sidebar-panel-content input {
+	margin: 5px;
+	padding: 5px;
+}
+
 .aloha-sidebar-handle {
 	position: absolute;
 	top: 30px;
