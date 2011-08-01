@@ -25,3 +25,6 @@
 [submodule "align"]
 	path = align
 	url = https://github.com/alohaeditor/Aloha-Plugin-Align.git
+[submodule "characterpicker"]
+	path = characterpicker
+	url = git@github.com:alohaeditor/Aloha-Plugin-CharacterPicker.git
