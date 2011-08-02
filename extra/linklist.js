@@ -72,7 +72,7 @@ function(jQuery, Repository, i18nCore) {
 		    	var path = this.addFolder('', u.host);
 		
 		    	var pathparts = u.path.split('/');
-		    	for (j = 0; j < pathparts.length; j++) {
+		    	for (var j = 0; j < pathparts.length; j++) {
 		    		if (
 		    			pathparts[j] &&
 		    			// It's a file because it has an extension.
