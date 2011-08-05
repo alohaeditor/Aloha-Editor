@@ -5,14 +5,14 @@
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
 
-define('linklist',
+define(
 [
  'aloha/jquery',
  'aloha/repository',
   'i18n!aloha/nls/i18n',
   'order!aloha/repositorymanager'
 ],
-function(jQuery, Repository, i18nCore) {
+function(jQuery, repository, i18nCore) {
 	"use strict";
 	
 	var jQuery = window.alohaQuery || window.jQuery, $ = jQuery;
@@ -24,7 +24,7 @@ function(jQuery, Repository, i18nCore) {
 	/**
 	 * Create the repository
 	 */
-	var linkListRepository = new (Aloha.AbstractRepository.extend({
+	var linkListRepository = new (repository.AbstractRepository.extend({
 		_constructor: function(){
 			this._super('linklist');
 		},
