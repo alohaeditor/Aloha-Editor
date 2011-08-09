@@ -20,9 +20,9 @@
 
 define(
 [
- 'aloha/jquery'
+ 'require', 'exports', 'aloha/jquery'
  ],
-function(jQuery, undefined) {
+function(require, exports, jQuery, undefined) {
 	"use strict";
 	
 	var
@@ -224,4 +224,6 @@ Aloha.AbstractRepository = Class.extend({
 	getObjectById: function ( itemId, callback ) { return true; }
 });
 
+	// expose the AbstractRepository
+	exports.AbstractRepository = Aloha.AbstractRepository;
 });
