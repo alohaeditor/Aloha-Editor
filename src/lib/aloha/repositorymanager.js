@@ -460,4 +460,5 @@ Aloha.RepositoryManager.toString = function() {
 	return 'repositorymanager';
 };
 
+	return Aloha.RepositoryManager;
 });
