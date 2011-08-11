@@ -71,12 +71,13 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 		this.collapse();
 	},
 	finishEditing : function () {
+		var target = jQuery(this.getTargetObject()), color;
+
 		// when no resource item was selected, remove any marking of the target object
 		if (!this.resourceItem) {
 			Aloha.RepositoryManager.markObject(this.targetObject);
 		}
 		// remove the highlighting and restore original color if was set before
-		var target = jQuery(this.getTargetObject());
 		if ( target ) {
 			if ( color = target.attr('data-original-background-color')  ) {
 				jQuery(target).css('background-color', color);
