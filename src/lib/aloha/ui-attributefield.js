@@ -73,7 +73,7 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 	finishEditing : function () {
 		// when no resource item was selected, remove any marking of the target object
 		if (!this.resourceItem) {
-			GENTICS.Aloha.RepositoryManager.markObject(this.targetObject);
+			Aloha.RepositoryManager.markObject(this.targetObject);
 		}
 		// remove the highlighting and restore original color if was set before
 		var target = jQuery(this.getTargetObject());
@@ -81,9 +81,15 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 			if ( color = target.attr('data-original-background-color')  ) {
 				jQuery(target).css('background-color', color);
 			} else {
-				jQuery(target).removeCss('background-color');
+				jQuery(target).css('background-color', '');
 			}
 			jQuery(target).removeAttr('data-original-background-color');
+		}
+		if (this.getValue() === '') {
+			if (this.wrap) {
+				jQuery(this.wrap.dom.children[0]).css("color", "#AAA");
+			}
+			this.setValue(this.placeholder);
 		}
 	},
     listeners: {
