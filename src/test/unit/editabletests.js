@@ -5,11 +5,9 @@
  */
 
 define("editabletest",
-['aloha/jquery'],
-function(jQuery, undefined) {
+['aloha/jquery', 'testutils'],
+function(aQuery, TestUtils, undefined) {
 	"use strict";
-	
-	var $ = jQuery;
 	
 /**
  * Do an enter test
@@ -49,25 +47,24 @@ require.ready(function() {
 	  In the event handler of this event, due to a Bug Aloha will NOT YET be initialized, so if any test would fail when run then.
 	 */
 	asyncTest('Aloha Startup Test', function() {
-		var that = this;
-		$('body').bind('aloha',function() {
-			ok(true, 'Aloha Event was fired');
-			clearTimeout(that.timeout);
-			start();
-		});
-		this.timeout = setTimeout(function() {
+		var timeout = setTimeout(function() {
 			ok(false, 'Aloha was not initialized within 60 seconds');
 			start();
 		}, 60000);
+		aQuery('body').bind('aloha',function() {
+			ok(true, 'Aloha Event was fired');
+			clearTimeout(timeout);
+			start();
+		});
 	});
 
-	$('body').bind('aloha', function() {
+	aQuery('body').bind('aloha', function() {
 
 		module('Plaintext Enter Handling', {
 			setup: function() {
 				// get the editable area and the reference
-				this.edit = $('#edit');
-				this.ref = $('#ref-plaintext');
+				this.edit = aQuery('#edit');
+				this.ref = aQuery('#ref-plaintext');
 				// fill the editable area with the reference
 				this.edit.html(this.ref.html());
 				// aloha'fy the editable
@@ -112,8 +109,8 @@ require.ready(function() {
 		module('Heading Enter Handling', {
 			setup: function() {
 				// get the editable area and the reference
-				this.edit = $('#edit');
-				this.ref = $('#ref-heading');
+				this.edit = aQuery('#edit');
+				this.ref = aQuery('#ref-heading');
 				// fill the editable area with the reference
 				this.edit.html(this.ref.html());
 
@@ -161,8 +158,8 @@ require.ready(function() {
 		module('Heading Shift Enter Handling', {
 			setup: function() {
 				// get the editable area and the reference
-				this.edit = $('#edit');
-				this.ref = $('#ref-heading');
+				this.edit = aQuery('#edit');
+				this.ref = aQuery('#ref-heading');
 				// fill the editable area with the reference
 				this.edit.html(this.ref.html());
 
@@ -210,8 +207,8 @@ require.ready(function() {
 		module('Paragraph Enter Handling', {
 			setup: function() {
 				// get the editable area and the reference
-				this.edit = $('#edit');
-				this.ref = $('#ref-paragraph');
+				this.edit = aQuery('#edit');
+				this.ref = aQuery('#ref-paragraph');
 				// fill the editable area with the reference
 				this.edit.html(this.ref.html());
 
@@ -275,8 +272,8 @@ require.ready(function() {
 		module('Paragraph Shift Enter Handling', {
 			setup: function() {
 				// get the editable area and the reference
-				this.edit = $('#edit');
-				this.ref = $('#ref-paragraph');
+				this.edit = aQuery('#edit');
+				this.ref = aQuery('#ref-paragraph');
 				// fill the editable area with the reference
 				this.edit.html(this.ref.html());
 
@@ -340,8 +337,8 @@ require.ready(function() {
 		module('List Enter Handling', {
 			setup: function() {
 				// get the editable area and the reference
-				this.edit = $('#edit');
-				this.ref = $('#ref-list');
+				this.edit = aQuery('#edit');
+				this.ref = aQuery('#ref-list');
 				// fill the editable area with the reference
 				this.edit.html(this.ref.html());
 
@@ -429,8 +426,8 @@ require.ready(function() {
 		module('List Shift Enter Handling', {
 			setup: function() {
 				// get the editable area and the reference
-				this.edit = $('#edit');
-				this.ref = $('#ref-list');
+				this.edit = aQuery('#edit');
+				this.ref = aQuery('#ref-list');
 				// fill the editable area with the reference
 				this.edit.html(this.ref.html());
 
