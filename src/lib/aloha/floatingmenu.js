@@ -1067,6 +1067,18 @@ function(jQuery, Ext, Base, undefined) {
 					}
 				});
 			}
+		},
+
+		/**
+		 * Hide the floatingmenu
+		 */
+		hide: function() {
+			if (this.obj) {
+				this.obj.hide();
+			}
+			if (this.shadow) {
+				this.shadow.hide();
+			}
 		}
 	});
 	

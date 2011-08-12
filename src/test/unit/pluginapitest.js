@@ -70,22 +70,22 @@ require.ready(function() {
 		editablesCreated++;
 		if (editablesCreated >= 2) {
 			test('Aloha Error Log Test', function() {
-				var logHistory = Aloha.Log.getLogHistory();
+				var logHistory = window.Aloha.Log.getLogHistory();
 				equal(logHistory.length, 2, 'Check number of logged messages');
 			});
-			test('Aloha Plugins test', function(){
-				var plugins = Aloha.PluginManager.plugins,
-				editable = Aloha.getEditableById('edit'),
-				editable2 = Aloha.getEditableById('edit2'),
-				editableconfig;
+			test('Aloha Plugins test', function() {
+				var plugins = window.Aloha.PluginManager.plugins,
+					editable = window.Aloha.getEditableById('edit'),
+					editable2 = window.Aloha.getEditableById('edit2'),
+					editableconfig;
 				equal('format' in plugins, false, 'Check if format plugin is absent from registry');
 				equal('plugintest' in plugins, true, 'Check if plugintest plugin is present in registry');
-				equals(Aloha.PluginRegistry.plugins.plugintest.getEditableConfig($("#edit")),
+				equals(window.Aloha.PluginRegistry.plugins.plugintest.getEditableConfig($("#edit")),
 						undefined,'Check if getEditableConfig for edit returns undefined');
-				same(Aloha.PluginRegistry.plugins.plugintest.getEditableConfig($("#edit2")),
+				same(window.Aloha.PluginRegistry.plugins.plugintest.getEditableConfig($("#edit2")),
 						{foo:"bar"},
 						'Check if getEditableConfig for edit2 returns {foo:"bar"}');
-				same(Aloha.PluginRegistry.plugins.plugintest.getEditableConfig($("#edit3")),
+				same(window.Aloha.PluginRegistry.plugins.plugintest.getEditableConfig($("#edit3")),
 						{'foo': new RegExp(".")},
 						'Check if getEditableConfig for edit3 returns {foo:regexp}');
 				
