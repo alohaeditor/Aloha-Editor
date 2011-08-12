@@ -6,10 +6,8 @@
 
 define("compatibilitytest",
 ['aloha/jquery'],
-function(jQuery, undefined) {
+function(aQuery, undefined) {
 	"use strict";
-	
-	var $ = jQuery;
 
 if (window.Aloha === undefined || window.Aloha === null) {
 	window.Aloha = {};		
@@ -34,24 +32,34 @@ window.Aloha.settings = {
 };
 
 require.ready(function() {
-	// Prepare
-	var	$ = window.jQuery,
-		$body = $('body');
 
 	// Test whether Aloha is properly initialized
-	asyncTest('Aloha Startup Test', function() {
-		$('body').bind('aloha',function() {
+	asyncTest('Aloha jQuery Startup Test', function() {
+		aQuery('body').bind('aloha',function() {
+			clearTimeout(timeout);
 			ok(true, 'Aloha Event was fired');
 			start();
 		});
-		setTimeout(function() {
+		var timeout = setTimeout(function() {
 			ok(false, 'Aloha was not initialized within 60 seconds');
 			start();
 		}, 60000);
 	});
 
+	asyncTest('window.alohaQuery Startup Event Test', function() {
+		window.alohaQuery('body').bind('aloha', function() {
+			clearTimeout(timeout);
+			ok(true, 'Aloha Event for window.alohaQuery was fired');
+			start();
+		});
+		var timeout = setTimeout(function() {
+			ok(false, 'Aloha Event for window.alohaQuery was not fired within 60 seconds');
+			start();
+		}, 60000);
+	});
+	
 	// All other tests are done when Aloha is ready
-	$('body').bind('aloha', function() {
+	aQuery('body').bind('aloha', function() {
 		// check whether error or warn messages were logged during startup
 		test('Aloha Error Log Test', function() {
 			var logHistory = Aloha.Log.getLogHistory();
@@ -60,7 +68,7 @@ require.ready(function() {
 
 		// check whether alohafying of divs works
 		test('Aloha Editable Test', function() {
-			var editable = $('#edit');
+			var editable = aQuery('#edit');
 			editable.aloha();
 			equals(editable.contentEditable(), "true", 'Check whether div is contenteditable after .aloha()');
 			editable.mahalo();
@@ -71,6 +79,16 @@ require.ready(function() {
 	// Test if legacy jQuery version is correct
 	test('jQuery compatibility test', function() {
 		equals(window.jQuery.fn.jquery, '1.2.1', 'Legacy jQuery version is correct');
+	});
+
+	// Test if legacy jQuery version is correct
+	test('Aloha jQuery test', function() {
+		equals(aQuery.fn.jquery, '1.5.1', 'Legacy jQuery version is correct');
+	});
+
+	// Test if legacy jQuery version is correct
+	test('window.alohaQuery test', function() {
+		equals(window.alohaQuery.fn.jquery, '1.5.1', 'Legacy jQuery version is correct');
 	});
 
 });
