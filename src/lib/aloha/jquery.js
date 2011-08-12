@@ -1,6 +1,6 @@
 /*!
 * This file is part of Aloha Editor Project http://aloha-editor.org
-* Copyright © 2010-2011 Gentics Software GmbH, aloha@gentics.com
+* Copyright ï¿½ 2010-2011 Gentics Software GmbH, aloha@gentics.com
 * Contributors http://aloha-editor.org/contribution.php 
 * Licensed unter the terms of http://www.aloha-editor.org/license.html
 *//*
@@ -21,12 +21,13 @@
 define(
 	['order!vendor/jquery-1.6.1'],
 	function(nothing, undefined) {
-		
+		var loadedJQuery = window.$.noConflict(true);
+
 		// if user defined jQuery use that
 		if ( window.alohaQuery ) {
 			return window.alohaQuery;
 		}
 		
-		return window.alohaQuery = window.$.noConflict();;
+		return window.alohaQuery = loadedJQuery;
 	}
 );
