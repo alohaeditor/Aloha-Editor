@@ -9,15 +9,25 @@
 	<script type="text/javascript" src="../dep/qunit.js"></script>
 	
 	<script	src="../../lib/vendor/jquery-1.5.1.js" ></script>
-	
-	<!-- include the testutils -->
-	<script type="text/javascript" src="testutils.js"></script>
-	
+	<script>
+		// we want to use the same jQuery version for aloha
+		window.alohaQuery = window.jQuery;
+	</script>
 	<!-- include aloha -->
 	<script src="../../lib/require.js" data-main="../../lib/aloha.js" id="aloha-script-include" data-plugins=""></script>
-	
+
 	<!-- include the tests -->
-	<script type="text/javascript" src="apply-markup.js"></script>
+	<script>
+		require(
+			{
+				paths: {
+					'apply-markup': '../test/unit/apply-markup',
+					'testutils': '../test/unit/testutils'
+				}
+			},
+			['apply-markup']
+		);
+	</script>
 	<!-- inject into testswarm -->
 	<script type="text/javascript" src="../dep/swarminject.js"></script>
 </head>
