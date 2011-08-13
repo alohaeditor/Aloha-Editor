@@ -11,6 +11,7 @@
 
 	<link rel="stylesheet" href="../../../../css/aloha.css" id="aloha-style-include" type="text/css">
 	<link rel="stylesheet" href="../../../../demo/common/index.css" type="text/css">
+	
 </head>
 <body>
   <div id="main">
@@ -64,10 +65,14 @@
 	</script>
 	
 	<script type="text/javascript">
+
+	require(["aloha/jquery"],
+		function(aQuery) {
+
 		require.ready(function() {
 			// Prepare
-			var	$ = window.jQuery,
-				$body = $('body');
+			var	$ = aQuery;
+		    var $body = $('body');
 
 			// Bind to Aloha Ready Event
 			$body.bind('aloha', function(){
@@ -75,7 +80,8 @@
 				$('#teaser').aloha();
 				$('#content').aloha();
 			});
-		})(window);
+		});
+	});
   </script>
 </body>
 </html>

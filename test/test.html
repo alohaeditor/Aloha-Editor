@@ -1,27 +1,53 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
 <head>
-	<meta charset="UTF-8">
-	<title>Aloha, Images!</title>
-
+<meta charset="UTF-8">
+<title>Aloha, Images!</title>
+<script type="text/javascript"
+	src="http://code.jquery.com/jquery-1.6.2.min.js"></script>
+<!-- 
 	<script type="text/javascript" src="../../../../lib/vendor/jquery-1.6.1.js"></script>
 	<script type="text/javascript" src="../vendor/ui/jquery-ui-1.8.10.custom.min.js"></script>
-	<link rel="stylehseet" href="../vendor/ui/ui-lightness/jquery-ui-1.8.10.custom.css">
-	<link rel="stylesheet" href="../../../../demo/common/index.css" type="text/css">
+	 -->
+
+<script type="text/javascript"
+	src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.14/jquery-ui.min.js"></script>
+
+<!-- 	
+	<link rel="stylehseet" href="../vendor/ui/ui-lightness/jquery-ui-1.8.10.custom.css" rel="stylesheet" type="text/css"/>
+	 -->
+<link
+	href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css"
+	rel="stylesheet" type="text/css" />
+
+<link rel="stylesheet" href="../../../../demo/common/index.css"	type="text/css">
+
+	
+
+
 </head>
 <body>
-   <div id="main">
-		<div id="content">
-			<p><img id="myimg" src="cropnresize.jpg" width="200px" height="135px"></p>
-		</div>
-	</div>
-	<script type="text/javascript">
+<div id="dialog">Hello</div>
+<script type="text/javascript">
 		$(document).ready(function() {
-			$("#myimg").resizable();
+			
+			$("#myimg").resizable({
+				position: ['center', 'center'],	
+				handles: 'ne, se, sw, nw',
+					stop : function (event, ui) {
+						console.log("stop");
+					}
+				
+				});
+			
 		});
 	</script>
-	
-	<script type="text/javascript">
-	</script>
+
+<div id="main">
+<div id="content">
+<p><img id="myimg" src="../demo/cropnresize.jpg" width="200px"
+	height="135px"></p>
+</div>
+</div>
 </body>
 </html>
