@@ -300,6 +300,11 @@
 				// hide loading div
 				$('#aloha-loading span').html('Loading Plugins');
 			});
+
+			$body.bind('aloha-sidebar-initialized', function (ev, bars) {
+				bars.right.show().open();
+				bars.left.show();
+			});
 				
 		});
 	</script>

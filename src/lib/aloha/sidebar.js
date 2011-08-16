@@ -25,18 +25,18 @@
 //
 // ----------------------------------------------------------------------------
 
-define(
-[
-	'aloha/jquery'
-],
-function SidebarClosure (jQuery, undefined) {
+define([
+	
+	'aloha/plugin'
+	
+], function SidebarClosure (Plugin, undefined) {
 	
 	'use strict';
 	
 	var
-		$ = jQuery,
-		GENTICS = window.GENTICS || (window.GENTICS = {}),
-	    Aloha = window.Aloha;
+	     Aloha = window.Aloha,
+		jQuery = window.alohaQuery || window.jQuery,
+			 $ = jQuery
 	
 	// ------------------------------------------------------------------------
 	// Local (helper) variables
