@@ -19,8 +19,8 @@
 */
 
 define(
-['aloha/jquery', 'aloha/ext', 'i18n!aloha/nls/i18n', 'aloha/ui'],
-function(jQuery, Ext, i18n, _1, undefined) { // TODO add parameter for UI class after refactoring UI to requirejs
+['aloha/jquery', 'aloha/ext', 'i18n!aloha/nls/i18n', 'aloha/ui', 'aloha/ext-alohaproxy', 'aloha/ext-alohareader'],
+function(jQuery, Ext, i18n) { // TODO add parameter for UI class after refactoring UI to requirejs
 	"use strict";
 
 	var

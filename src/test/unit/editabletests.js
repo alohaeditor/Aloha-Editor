@@ -37,7 +37,6 @@ function doEnterTest(editable, container, offset, shift, twice, reference) {
 	deepEqual(result.extractHTML(), expected.extractHTML(), 'Check Operation Result');
 }
 
-require.ready(function() {
 	// Prepare
 	var	$ = window.jQuery,
 		$body = $('body');
@@ -512,6 +511,5 @@ require.ready(function() {
 			doEnterTest(this.edit, this.edit.find('li').eq(2).contents().get(0), 5, true, true, '#ref-list-lastend-shift-dblenter');
 		});
 	});
-});
 
 });

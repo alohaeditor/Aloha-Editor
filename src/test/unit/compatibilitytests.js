@@ -31,8 +31,6 @@ window.Aloha.settings = {
 	errorhandling : true
 };
 
-require.ready(function() {
-
 	// Test whether Aloha is properly initialized
 	asyncTest('Aloha jQuery Startup Test', function() {
 		aQuery('body').bind('aloha',function() {
@@ -101,6 +99,5 @@ require.ready(function() {
 	test('3rd party jquery plugin test', function() {
 		equals(typeof aQuery().alohaTest, 'function', 'Check whether the jQuery plugin "alohaTest" was attached to Aloha jQuery');
 	});
-});
 
 });
