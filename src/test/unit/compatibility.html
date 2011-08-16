@@ -19,11 +19,17 @@
 	<!-- include aloha -->
 	<script src="../../lib/require.js" data-main="../../lib/aloha.js" id="aloha-script-include" data-plugins=""></script>
 
-
-	<!-- include the testutils -->
-	<script type="text/javascript" src="testutils.js"></script>
 	<!-- include the tests -->
-	<script type="text/javascript" src="compatibilitytests.js"></script>
+	<script>
+		require(
+			{
+				paths: {
+					'compatibilitytests': '../test/unit/compatibilitytests',
+				}
+			},
+			['compatibilitytests']
+		);
+	</script>
 	<!-- inject into testswarm -->
 	<script type="text/javascript" src="../dep/swarminject.js"></script>
 </head>

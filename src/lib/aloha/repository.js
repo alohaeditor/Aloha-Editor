@@ -1,9 +1,9 @@
 /*!
 * This file is part of Aloha Editor Project http://aloha-editor.org
-* Copyright © 2010-2011 Gentics Software GmbH, aloha@gentics.com
+* Copyright (c) 2010-2011 Gentics Software GmbH, aloha@gentics.com
 * Contributors http://aloha-editor.org/contribution.php 
 * Licensed unter the terms of http://www.aloha-editor.org/license.html
-*//*
+*
 * Aloha Editor is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
@@ -19,8 +19,10 @@
 */
 
 define(
-['aloha/jquery'],
-function(jQuery, undefined) {
+[
+ 'require', 'exports', 'aloha/jquery'
+ ],
+function(require, exports, jQuery, undefined) {
 	"use strict";
 	
 	var
@@ -222,4 +224,6 @@ Aloha.AbstractRepository = Class.extend({
 	getObjectById: function ( itemId, callback ) { return true; }
 });
 
+	// expose the AbstractRepository
+	exports.AbstractRepository = Aloha.AbstractRepository;
 });

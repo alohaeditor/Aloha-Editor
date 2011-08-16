@@ -70,6 +70,29 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 		}
 		this.collapse();
 	},
+	finishEditing : function () {
+		var target = jQuery(this.getTargetObject()), color;
+
+		// when no resource item was selected, remove any marking of the target object
+		if (!this.resourceItem) {
+			Aloha.RepositoryManager.markObject(this.targetObject);
+		}
+		// remove the highlighting and restore original color if was set before
+		if ( target ) {
+			if ( color = target.attr('data-original-background-color')  ) {
+				jQuery(target).css('background-color', color);
+			} else {
+				jQuery(target).css('background-color', '');
+			}
+			jQuery(target).removeAttr('data-original-background-color');
+		}
+		if (this.getValue() === '') {
+			if (this.wrap) {
+				jQuery(this.wrap.dom.children[0]).css("color", "#AAA");
+			}
+			this.setValue(this.placeholder);
+		}
+	},
     listeners: {
 		// repository object types could have changed
 		'beforequery': function (event) {
@@ -89,9 +112,6 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 			this.setValue(this.placeholder);
 		},
 		'keydown': function (obj, event) {
-			// unset the currently selected object
-			this.resourceItem = null;
-
 			// on ENTER or ESC leave the editing
 			// just remember here the status and remove cursor on keyup event
 			// Otherwise cursor moves to content and no more blur event happens!!??
@@ -112,6 +132,14 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 					Aloha.Selection.getRangeObject().select();
 				},0);
 			}
+
+			// when a resource item was (initially) set, but the current value
+			// is different from the reference value, we unset the resource item
+			if (this.resourceItem && this.resourceValue !== this.wrap.dom.children[0].value) {
+				this.resourceItem = null;
+				this.resourceValue = null;
+			}
+
 			// update attribute, but only if no resource item was selected
 			if (!this.resourceItem) {
 				var v = this.wrap.dom.children[0].value;
@@ -134,44 +162,10 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 			target.css('background-color','Highlight');
 		},
 		'blur': function(obj, event) {
-		// remove the highlighting and restore original color if was set before
-			var
-				target = jQuery(this.getTargetObject()),
-				color;
-
-			if ( target ) {
-				color = target.attr('data-original-background-color');
-				if ( color ) {
-					jQuery(target).css('background-color', color);
-				} else {
-					jQuery(target).css('background-color', '');
-				}
-				jQuery(target).removeAttr('data-original-background-color');
-			}
-			if (this.getValue() === '') {
-				jQuery(this.wrap.dom.children[0]).css("color", "#AAA");
-				this.setValue(this.placeholder);
-			}
+			this.finishEditing();
 		},
 		'hide': function(obj, event) {
-		// remove the highlighting and restore original color if was set before
-			var
-				target = jQuery(this.getTargetObject()),
-				color;
-
-			if ( target ) {
-				color = target.attr('data-original-background-color');
-				if ( color ) {
-					jQuery(target).css('background-color', color);
-				} else {
-					jQuery(target).css('background-color', '');
-				}
-				jQuery(target).removeAttr('data-original-background-color');
-			}
-			if (this.getValue() === '') {
-				jQuery(this.wrap.dom.children[0]).css("color", "#AAA");
-				this.setValue(this.placeholder);
-			}
+			this.finishEditing();
 		},
 		'expand': function (combo ) {
 			if( this.noQuery ) {
@@ -191,17 +185,24 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 				this.clickAttached = true;
 			}
 		}
-  },
+	},
 	setItem: function( item, displayField ) {
 		this.resourceItem = item;
 		if ( item ) {
 			displayField = (displayField) ? displayField : this.displayField;
-		// TODO split display field by '.' and get corresponding attribute, because it could be a properties attribute.
-		var v = item[displayField];
+			// TODO split display field by '.' and get corresponding attribute, because it could be a properties attribute.
+			var v = item[displayField];
+			// set the value into the field
 			this.setValue( v );
-		this.setAttribute(this.targetAttribute, item[this.valueField]);
-		// call the repository marker
-		Aloha.RepositoryManager.markObject(this.targetObject, item);
+			// store the value to be the "reference" value for the currently selected resource item
+			this.resourceValue = v;
+			// set the attribute to the target object
+			this.setAttribute(this.targetAttribute, item[this.valueField]);
+			// call the repository marker
+			Aloha.RepositoryManager.markObject(this.targetObject, item);
+		} else {
+			// unset the reference value, since no resource item is selected
+			this.resourceValue = null;
 		}
 	},
 	getItem: function( ) {

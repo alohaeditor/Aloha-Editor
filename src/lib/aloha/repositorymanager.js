@@ -400,19 +400,32 @@ Aloha.RepositoryManager = Class.extend({
 	 * * data-GENTICS-aloha-repository: stores the repositoryId
 	 * * data-GENTICS-aloha-object-id: stores the object.id
 	 * @param obj {DOMObject} DOM object to mark
-	 * @param object {Aloha.Repository.Object} the item which is applied to obj
+	 * @param object {Aloha.Repository.Object} the item which is applied to obj,
+	 *  	if set to null, the data-GENTICS-... attributes are removed
 	 * @return void
 	 */
 	markObject: function (obj, item) {
-		var repository = this.getRepository(item.repositoryId);
-		if ( repository ) {
-			jQuery(obj).attr({
-				'data-GENTICS-aloha-repository': item.repositoryId,
-				'data-GENTICS-aloha-object-id': item.id
-			});
-			repository.markObject(obj, item);
+		var repository = undefined;
+
+		// nothing to do, if no object given
+		if (!obj) {
+			return;
+		}
+		if (item) {
+			repository = this.getRepository(item.repositoryId);
+			if ( repository ) {
+				jQuery(obj).attr({
+					'data-GENTICS-aloha-repository': item.repositoryId,
+					'data-GENTICS-aloha-object-id': item.id
+				});
+				repository.markObject(obj, item);
+			} else {
+				Aloha.Log.error(this, 'Trying to apply a repository { ' + item.name + ' } to an object, but item has no repositoryId.');
+			}
 		} else {
-			Aloha.Log.error(this, 'Trying to apply a repository { ' + item.name + ' } to an object, but item has no repositoryId.');
+			// remove the data attributes
+			jQuery(obj).removeAttr('data-GENTICS-aloha-repository');
+			jQuery(obj).removeAttr('data-GENTICS-aloha-object-id');
 		}
 	},
 
@@ -460,4 +473,5 @@ Aloha.RepositoryManager.toString = function() {
 	return 'repositorymanager';
 };
 
+	return Aloha.RepositoryManager;
 });

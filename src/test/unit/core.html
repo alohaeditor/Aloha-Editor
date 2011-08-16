@@ -6,15 +6,28 @@
 	<!-- include qunit -->
 	<link rel="stylesheet" href="../dep/qunit.css" type="text/css"/>
 	<script type="text/javascript" src="../dep/qunit.js"></script>
+
 	<!-- include jquery -->
 	<script	src="../../lib/vendor/jquery-1.5.1.js" ></script>
+	<script>
+		window.alohaQuery = jQuery.noConflict();
+	</script>
+
 	<!-- include aloha -->
 	<script src="../../lib/require.js" data-main="../../lib/aloha.js" id="aloha-script-include" data-plugins=""></script>
-	<!-- script	src="../../aloha.js" id="aloha-script-include"></script-->
-	<!-- include the testutils -->
-	<script type="text/javascript" src="testutils.js"></script>
+
 	<!-- include the tests -->
-	<script type="text/javascript" src="coretests.js"></script>
+	<script>
+		require(
+			{
+				paths: {
+					'coretests': '../test/unit/coretests',
+				}
+			},
+			['coretests']
+		);
+	</script>
+
 	<!-- inject into testswarm -->
 	<script type="text/javascript" src="../dep/swarminject.js"></script>
 </head>

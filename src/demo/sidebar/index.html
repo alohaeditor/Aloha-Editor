@@ -18,10 +18,9 @@
 	<link rel="stylesheet" href="css/style.css">
 	<link rel="stylesheet" href="../../css/aloha.css" id="aloha-style-include" type="text/css">
 
-	<script src="js/libs/jquery-1.6.1.js" ></script>
 	<script src="js/aloha-config.js"></script>
 	<script src="../../lib/require.js" data-main="../../lib/aloha.js" id="aloha-script-include" data-plugins="common/format, common/highlighteditables"></script>
-	<script src="js/aloha-boilerplate.js"></script>
+	
 	
 </head>
 <body>
@@ -186,13 +185,17 @@
 					<abbr title="Cascading Style Sheets">CSS</abbr>.
 					</p>
 			</div>
-		</div>
+		</div>x
 	</div>
 	<script type="text/javascript">
+
+	require(["aloha/jquery","jquery-plugin!../sidebar/js/aloha-boilerplate"],
+			function(aQuery) {
+	
 		require.ready(function() {
 			// Prepare
 			var
-				$ = window.jQuery,
+				$ = aQuery,
 				$body = $('body');
 			
 			// Add another panel after sidebar has been initialized
@@ -307,6 +310,8 @@
 			});
 				
 		});
+
+	});
 	</script>
 
 	<!--[if lt IE 7 ]>
