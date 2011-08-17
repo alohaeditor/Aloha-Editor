@@ -1,6 +1,6 @@
 /*!
 * This file is part of Aloha Editor Project http://aloha-editor.org
-* Copyright © 2010-2011 Gentics Software GmbH, aloha@gentics.com
+* Copyright ï¿½ 2010-2011 Gentics Software GmbH, aloha@gentics.com
 * Contributors http://aloha-editor.org/contribution.php 
 * Licensed unter the terms of http://www.aloha-editor.org/license.html
 *//*
@@ -34,9 +34,9 @@ function(jQuery, FloatingMenu, i18n, undefined) {
 	Aloha.ui = Aloha.ui || {};
 	
 	// internationalize ext js message box buttons
-	Ext.MessageBox.buttonText.yes = i18n.t(Aloha, 'yes');
-	Ext.MessageBox.buttonText.no = i18n.t(Aloha, 'no');
-	Ext.MessageBox.buttonText.cancel = i18n.t(Aloha, 'cancel');
+	Ext.MessageBox.buttonText.yes = i18n.t('yes');
+	Ext.MessageBox.buttonText.no = i18n.t('no');
+	Ext.MessageBox.buttonText.cancel = i18n.t('cancel');
 
 	/**
 	 * This is the Gentics Version of the ExtJS Menu. It is necessary to extend the
