@@ -59,7 +59,7 @@ function(Plugin, FloatingMenu, i18n, i18nCore) {
 			// mark active Editable with a css class
 			Aloha.bind("aloha-editable-activated", function(jEvent, params) { that.check(params.editable.obj); });
 			Aloha.bind("aloha-editable-deactivated", function(jEvent, params) { that.check(params.editable.obj); });
-			jQuery('body').bind('aloha-sidebar-initialized', function (ev, sidebar) { that.initSidebar(sidebar); });
+			jQuery('body').bind('aloha-sidebar-initialized', function (ev, sidebars) { that.initSidebar(sidebars.right); });
 		},
 		
 		check: function(editable) {

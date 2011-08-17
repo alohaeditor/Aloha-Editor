@@ -1,18 +1,21 @@
 [submodule "hints"]
 	path = hints
-	url = git@github.com:alohaeditor/Aloha-Plugin-Hints.git
+	url = https://github.com/alohaeditor/Aloha-Plugin-Hints.git
 [submodule "ribbon"]
 	path = ribbon
-	url = git@github.com:alohaeditor/Aloha-Plugin-Ribbon.git
+	url = https://github.com/alohaeditor/Aloha-Plugin-Ribbon.git
 [submodule "vie"]
 	path = vie
-	url = git@github.com:alohaeditor/Aloha-Plugin-VIE.git
+	url = https://github.com/alohaeditor/Aloha-Plugin-VIE.git
 [submodule "toc"]
 	path = toc
-	url = git@github.com:alohaeditor/Aloha-Plugin-TOC.git
+	url = https://github.com/alohaeditor/Aloha-Plugin-TOC.git
 [submodule "linkchecker"]
 	path = linkchecker
-	url = git@github.com:alohaeditor/Aloha-Plugin-LinkChecker.git
+	url = https://github.com/alohaeditor/Aloha-Plugin-LinkChecker.git
 [submodule "googletranslate"]
 	path = googletranslate
-	url = git@github.com:alohaeditor/Aloha-Plugin-GoogleTranslate.git
+	url = https://github.com/alohaeditor/Aloha-Plugin-GoogleTranslate.git
+[submodule "cite"]
+	path = cite
+	url = https://github.com/alohaeditor/Aloha-Plugin-Cite.git
