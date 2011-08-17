@@ -45,7 +45,6 @@ window.Aloha.settings = {
 	}
 };
 
-require.ready(function() {
 	var	$ = window.jQuery,
 		$body = $('body');
 	
@@ -94,7 +93,5 @@ require.ready(function() {
 		}
 		// check whether error or warn messages were logged during startup
 	});
-
-});
 
 });
