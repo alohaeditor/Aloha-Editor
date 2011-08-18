@@ -120,7 +120,7 @@ function(Plugin, FloatingMenu, i18n, i18nCore) {
                     }
                     
                 });
-			
+			sidebar.show().open();
 		}
 	});
 });

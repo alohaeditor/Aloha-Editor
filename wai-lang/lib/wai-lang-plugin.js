@@ -7,6 +7,7 @@
 
 define(
 [
+ 'aloha/jquery',
  'aloha/plugin', 
  'aloha/floatingmenu', 
  'i18n!wai-lang/nls/i18n', 
@@ -14,10 +15,10 @@ define(
  'wai-lang/languages',
  'css!wai-lang/css/wai-lang.css'
 ],
-function(Plugin, FloatingMenu, i18n, i18nCore) {
+function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 	"use strict";
 	
-	var jQuery = window.alohaQuery || window.jQuery, $ = jQuery,
+	var $ = jQuery,
 		GENTICS = window.GENTICS,
 		Aloha = window.Aloha;
 
