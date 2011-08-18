@@ -8,7 +8,7 @@ define(
 [
 	'aloha/jquery',
 ],
-function($) {
+function(jQuery) {
 	"use strict";
 	var
 		$ = jQuery,

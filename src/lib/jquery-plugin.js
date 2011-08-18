@@ -18,16 +18,29 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-define(
-	['order!vendor/jquery-1.6.1'],
-	function(nothing, undefined) {
-		var loadedJQuery = window.$.noConflict(true);
+(function () {
+	/**
+	 * This requirejs module loader loads jquery plugins and wraps them 
+	 */
+	define({
+		load: function (name, require, load, config) {
+			var url = require.toUrl(name + '.js');
 
-		// if user defined jQuery use that
-		if ( window.alohaQuery ) {
-			return window.alohaQuery;
+			require(['aloha/jquery'], function(value) {
+				var $ = value;
+				$.ajax({
+					type: 'GET',
+				  	url: url,
+				  	cache: true,
+				  	dataType: 'text',
+				  	success: function(plugin) {
+//						plugin = '(function(jQuery) { var $ = jQuery;\n' + plugin + '}(window.alohaQuery));';
+						plugin = 'define([\'aloha/jquery\'], function(jQuery) { var $ = jQuery;\n' + plugin + '});'
+						load.fromText(name, plugin);
+						load(null);
+					}
+				});
+			});
 		}
-		
-		return window.alohaQuery = loadedJQuery;
-	}
-);
+	});
+}());

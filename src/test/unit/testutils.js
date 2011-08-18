@@ -6,7 +6,7 @@
 
 window.TestUtils = window.TestUtils || {};
 
-define("testutils",
+define(
 		['aloha/jquery'],
 		function(jQuery, undefined) {
 			"use strict";
@@ -16,7 +16,7 @@ define("testutils",
 	/**
 	 * TestUtils class
 	 */
-	jQuery.extend(true, TestUtils, {
+	TestUtils = jQuery.extend(true, TestUtils, {
 		/**
 		 * Create a collapsed range in the given container at the given offset
 		 * @param container container DOM element
@@ -163,4 +163,6 @@ define("testutils",
 
 		return fullResult;
 	};
+
+	return TestUtils;
 });

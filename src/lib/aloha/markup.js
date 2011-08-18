@@ -320,8 +320,8 @@ Aloha.Markup = Class.extend({
 							} else {
 								// go to the parent
 								checkObj = checkObj.parentNode;
-								// found a blocklevel element, we are done
-								if (GENTICS.Utils.Dom.isBlockLevelElement(checkObj)) {
+								// found a blocklevel or list element, we are done
+								if (GENTICS.Utils.Dom.isBlockLevelElement(checkObj) || GENTICS.Utils.Dom.isListElement(checkObj)) {
 									break;
 								}
 								// reached the limit object, we are done
@@ -595,9 +595,21 @@ Aloha.Markup = Class.extend({
 			jQuery(rangeObject.splitObject).remove();
 		}
 
-		// find a possible text node in the followUpContainer and set the selection to it
-		// if no textnode is available, set the selection to the followup container itself
-		rangeObject.startContainer = followUpContainer.textNodes(true, true).first().get(0);
+		rangeObject.startContainer = null;
+		// first check whether the followUpContainer starts with a <br/>
+		// if so, place the cursor right before the <br/>
+		var followContents = followUpContainer.contents();
+		if (followContents.length > 0
+				&& followContents.get(0).nodeType == 1
+				&& followContents.get(0).nodeName.toLowerCase() === 'br') {
+			rangeObject.startContainer = followUpContainer.get(0);
+		}
+
+		if (!rangeObject.startContainer) {
+			// find a possible text node in the followUpContainer and set the selection to it
+			// if no textnode is available, set the selection to the followup container itself
+			rangeObject.startContainer = followUpContainer.textNodes(true, true).first().get(0);
+		}
 		if (!rangeObject.startContainer) { // if no text node was found, select the parent object of <br class="aloha-ephemera" />
 			rangeObject.startContainer = followUpContainer.textNodes(false).first().parent().get(0);
 		}

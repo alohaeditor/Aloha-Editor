@@ -8,12 +8,26 @@
 	<script type="text/javascript" src="../dep/qunit.js"></script>
 	<script	src="../../lib/vendor/jquery-1.5.1.js" ></script>
 	<script type="text/javascript" src="../dep/jquery.simulate.js"></script>
+		<script>
+		window.alohaQuery = jQuery.noConflict();
+	</script>
+
 	<!-- include aloha -->
 	<script src="../../lib/require.js" data-main="../../lib/aloha.js" id="aloha-script-include" data-plugins=""></script>
-	<!-- include the testutils -->
-	<script type="text/javascript" src="testutils.js"></script>
+
 	<!-- include the tests -->
-	<script type="text/javascript" src="pluginapitest.js" defer></script>
+		<!-- include the tests -->
+	<script>
+		require(
+			{
+				paths: {
+					'pluginapitest': '../test/unit/pluginapitest'
+				}
+			},
+			['pluginapitest']
+		);
+	</script>
+
 	<!-- inject into testswarm -->
 	<script type="text/javascript" src="../dep/swarminject.js"></script>
 </head>

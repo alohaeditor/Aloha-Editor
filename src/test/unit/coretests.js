@@ -6,10 +6,8 @@
 
 define("coretests",
 ['aloha/jquery'],
-function(jQuery, undefined) {
+function(aQuery, undefined) {
 	"use strict";
-	
-	var $ = jQuery;
 	
 if (window.Aloha === undefined || window.Aloha === null) {
 		window.Aloha = {};		
@@ -32,7 +30,6 @@ window.Aloha.settings = {
 	errorhandling : true
 };
 
-require.ready(function() {
 	// Prepare
 	var	$ = window.jQuery,
 		$body = $('body');
@@ -50,18 +47,19 @@ require.ready(function() {
 
 	// Test whether Aloha is properly initialized
 	asyncTest('Aloha Startup Test', function() {
-		$('body').bind('aloha',function() {
-			ok(true, 'Aloha Event was fired');
-			start();
-		});
-		setTimeout(function() {
+		var timeout = setTimeout(function() {
 			ok(false, 'Aloha was not initialized within 60 seconds');
 			start();
 		}, 60000);
+		aQuery('body').bind('aloha',function() {
+			clearTimeout(timeout);
+			ok(true, 'Aloha Event was fired');
+			start();
+		});
 	});
 
 	// All other tests are done when Aloha is ready
-	$('body').bind('aloha', function() {
+	aQuery('body').bind('aloha', function() {
 		// check whether error or warn messages were logged during startup
 		test('Aloha Error Log Test', function() {
 			var logHistory = Aloha.Log.getLogHistory();
@@ -70,13 +68,12 @@ require.ready(function() {
 
 		// check whether alohafying of divs works
 		test('Aloha Editable Test', function() {
-			var editable = $('#edit');
+			var editable = aQuery('#edit');
 			editable.aloha();
 			equals(editable.contentEditable(), "true", 'Check whether div is contenteditable after .aloha()');
 			editable.mahalo();
 			equals(editable.contentEditable(), "false", 'Check whether div is not contenteditable after .mahalo()');
 		});
 	});
-});
 
 });

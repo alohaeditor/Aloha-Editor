@@ -419,8 +419,7 @@ function(jQuery, PluginManager, FloatingMenu) {
 				this.blur();
 
 				// also hide the floating menu if the current editable was active
-				FloatingMenu.obj.hide();
-				FloatingMenu.shadow.hide();
+				FloatingMenu.hide();
 			}
 
 			// original Object

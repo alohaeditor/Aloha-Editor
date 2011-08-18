@@ -5,8 +5,8 @@
  */
 
 define("applymarkup",
-['aloha/jquery'],
-function(jQuery, undefined) {
+['aloha/jquery','testutils'],
+function(jQuery, TestUtils, undefined) {
 	"use strict";
 	
 	var $ = jQuery;
@@ -101,7 +101,6 @@ function doBlockTest(editable, startContainer, startOffset, endContainer, endOff
 	deepEqual(result.extractHTML(), expected.extractHTML(), 'Check Operation Result');
 }
 
-require.ready(function() {
 	// Prepare
 	var	$ = window.jQuery,
 		$body = $('body');
@@ -264,6 +263,5 @@ require.ready(function() {
 			doBlockTest(this.edit, this.edit.find('p').eq(1).contents().get(0), 1, this.edit.find('p').eq(1).contents().get(0), 1, jQuery('<h1></h1>'), '#ref-header', '#ref-header-last-h1');
 		});
 	});
-});
 
 });

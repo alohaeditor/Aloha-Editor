@@ -26,10 +26,11 @@
 // ----------------------------------------------------------------------------
 
 define(
-
-['aloha/jquery'],
-
+[
+	'aloha/jquery'
+],
 function SidebarClosure (jQuery, undefined) {
+	
 	'use strict';
 	
 	var
@@ -48,9 +49,8 @@ function SidebarClosure (jQuery, undefined) {
 	// one in which Aloha-Editor operates in, with its numerous custom plugins.
 	// eg: .inner or .btn can be used in several plugins, with eaching adding
 	// to the class styles properties that we don't want.
-	var ns = 'aloha-sidebar';
-	
-	var uid  = +(new Date),
+	var ns = 'aloha-sidebar',
+		uid  = +(new Date),
 		// namespaced classnames
 		nsClasses = {
 			bar				: nsClass('bar'),
@@ -115,14 +115,14 @@ function SidebarClosure (jQuery, undefined) {
 	function nsSel () {
 		var strBldr = [], prx = ns;
 		$.each(arguments, function () { strBldr.push('.' + (this == '' ? prx : prx + '-' + this)); });
-		return strBldr.join(' ').trim();
+		return jQuery.trim(strBldr.join(' '));
 	};
 	
 	// Creates string with this component's namepsace prefixed the each classname
 	function nsClass () {
 		var strBldr = [], prx = ns;
 		$.each(arguments, function () { strBldr.push(this == '' ? prx : prx + '-' + this); });
-		return strBldr.join(' ').trim();
+		return jQuery.trim(strBldr.join(' '));
 	};
 	
 	// ------------------------------------------------------------------------
@@ -144,8 +144,8 @@ function SidebarClosure (jQuery, undefined) {
 		'));
 		// defaults
 		this.width = 300;
-		this.isOpen = false;
 		this.opened = false;
+		this.isOpen = false;
 		
 		this.init(opts);
 	};
@@ -208,17 +208,30 @@ function SidebarClosure (jQuery, undefined) {
 
 			this.subscribeToEvents();
 			
-			// Fade in nice and slow
-			bar.animate({opacity: 1}, 1000);
-			
 			$(window).resize(function () {
 				that.correctHeight();
 			});
 			
 			this.correctHeight();
+		},
+		
+		// Fade in nice and slow
+		show: function () {
+			this.container
+				.css('display', 'block')
+				.animate({opacity: 1}, 1000);
 			
-			// Announce that this Sidebar instance has arrived!
-			body.trigger(nsClass('initialized'), this);
+			return this;
+		},
+		
+		// Fade out
+		hide: function () {
+			this.container
+				.animate({opacity: 0}, 1000, function () {
+					$(this).css('display', 'block')
+				});
+			
+			return this;
 		},
 		
 		subscribeToEvents: function () {
@@ -476,7 +489,7 @@ function SidebarClosure (jQuery, undefined) {
 			if (this.isOpen) {
 				return this;
 			}
-
+			
 			var isRight = (this.position == 'right'),
 				anim = isRight ? {marginRight: 0} : {marginLeft: 0};
 			
@@ -492,9 +505,9 @@ function SidebarClosure (jQuery, undefined) {
 			$('body').animate(
 			isRight ? {marginRight: '+=' + this.width} : {marginLeft: '+=' + this.width},
 			500, 'easeOutExpo');
-
+			
 			this.isOpen = true;
-
+			
 			return this;
 		},
 		
@@ -798,18 +811,25 @@ function SidebarClosure (jQuery, undefined) {
 			var el = effective.first(),
 				content = [],
 				path = [],
-				activeOn = this.activeOn;
+				activeOn = this.activeOn,
+				l,
+				pathRev;
 			
 			while (el.length > 0 && !el.is('.aloha-editable')) {
 				
 				if (activeOn(el)) {
 					path.push('<span>' + el[0].tagName.toLowerCase() + '</span>');
+					l = path.length;
+					pathRev = [];
+					while (l--) {
+						pathRev.push(path[l]);
+					}
 					content.push(
 						'<div class="aloha-sidebar-panel-parent">\
 							<div class="aloha-sidebar-panel-parent-path">{path}</div>\
 							<div class="aloha-sidebar-panel-parent-content aloha-sidebar-opened">{content}</div>\
 						 </div>'.supplant({
-							path	: path.join(''),
+							path	: pathRev.join(''),
 							content	: (typeof renderer === 'function') ? renderer(el) : '----'
 						})
 					);
@@ -839,10 +859,23 @@ function SidebarClosure (jQuery, undefined) {
 	
 	// Expose Sidebar through Aloha as soon Aloha becomes available
 	$('body').bind('aloha', function () {
-		Aloha.Sidebar = Sidebar;
+		var left = new Sidebar({
+			position : 'left',
+			width	 : 250 // TODO define in config
+		});
 		
-		// Broadcast that this Sidebar  is ready for use
-		$('body').trigger(nsClass('ready'), this);
+		var right = new Sidebar({
+			position : 'right',
+			width	 : 250 // TODO define in config
+		});
+
+		Aloha.Sidebars = {
+			left  : left,
+			right : right
+		};
+		
+		// Broadcast that this Sidebar instances have arrived!
+		$('body').trigger(nsClass('initialized'), Aloha.Sidebars);
 	});
 	
 	return Sidebar;

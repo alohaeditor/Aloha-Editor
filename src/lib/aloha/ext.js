@@ -1,6 +1,6 @@
 /*!
 * This file is part of Aloha Editor Project http://aloha-editor.org
-* Copyright © 2010-2011 Gentics Software GmbH, aloha@gentics.com
+* Copyright (c) 2010-2011 Gentics Software GmbH, aloha@gentics.com
 * Contributors http://aloha-editor.org/contribution.php 
 * Licensed unter the terms of http://www.aloha-editor.org/license.html
 *//*
@@ -20,15 +20,31 @@
 
 define(
 	[
-		'css!vendor/ext-3.2.1/resources/css/ext-all-notheme.css',
-		'css!vendor/ext-3.2.1/resources/css/xtheme-gray.css',
-		'order!aloha/jquery',
-        'order!vendor/ext-3.2.1/adapter/jquery/ext-jquery-adapter-debug',
-        'order!vendor/ext-3.2.1/ext-all'
+ 		'css!vendor/ext-3.2.1/resources/css/ext-all.css',
+ 		'css!vendor/ext-3.2.1/resources/css/xtheme-gray.css',
+	 	'vendor/ext-3.2.1/ext-all'  // TODO for now, we use ext-all (because it is converted to a proper require module, with dependencies)
+/*
+	 	'order!vendor/ext-3.2.1/pkgs/ext-foundation-debug',
+	 	'order!vendor/ext-3.2.1/pkgs/cmp-foundation-debug',
+	 	'order!vendor/ext-3.2.1/pkgs/data-foundation-debug',
+	 	'order!vendor/ext-3.2.1/pkgs/data-json-debug',
+	 	'order!vendor/ext-3.2.1/pkgs/data-list-views-debug',
+	 	'order!vendor/ext-3.2.1/pkgs/ext-dd-debug',
+	 	'order!vendor/ext-3.2.1/pkgs/window-debug',
+	 	'order!vendor/ext-3.2.1/pkgs/resizable-debug',
+	 	'order!vendor/ext-3.2.1/pkgs/pkg-buttons-debug',
+	 	'order!vendor/ext-3.2.1/pkgs/pkg-tabs-debug',
+	 	'order!vendor/ext-3.2.1/pkgs/pkg-tips-debug',
+	 	'order!vendor/ext-3.2.1/pkgs/pkg-tree-debug',
+	 	'order!vendor/ext-3.2.1/pkgs/pkg-grid-foundation-debug',
+	 	'order!vendor/ext-3.2.1/pkgs/pkg-toolbars-debug',
+	 	'order!vendor/ext-3.2.1/pkgs/pkg-menu-debug',
+	 	'order!vendor/ext-3.2.1/pkgs/pkg-forms-debug'
+*/
 	],
-	function(jQuery, _1, _2, undefined) {
+	function() {
 		"use strict";
-		
+
 		if ( window.alohaExt ) {
 			return window.alohaExt;
 		}

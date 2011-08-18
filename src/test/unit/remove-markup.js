@@ -5,8 +5,8 @@
  */
 
 define("remove-markup",
-['aloha/jquery'],
-function(jQuery, undefined) {
+['aloha/jquery', 'testutils'],
+function(jQuery, TestUtils, undefined) {
 	"use strict";
 	
 	var $ = jQuery;
@@ -61,7 +61,6 @@ function doRemoveMarkupTest(editable, startContainer, startOffset, endContainer,
 	deepEqual(result.extractHTML(), expected.extractHTML(), 'Check Operation Result');
 }
 
-require.ready(function() {
 	// Prepare
 	var	$ = window.jQuery,
 		$body = $('body');
@@ -294,6 +293,5 @@ require.ready(function() {
 			doRemoveMarkupTest(this.edit, this.italic, 3, this.afterBold, 4, jQuery('<b></b>'), '#ref-remove-nested', '#ref-remove-nested-outer-out');
 		});
 	});
-});
 
 });

@@ -575,7 +575,7 @@ ul.aloha-multisplit button.aloha-button-removeFormat {
 .aloha-sidebar-panel-title {
 	position: relative;
 	overflow: hidden;
-	padding: 8px 0 2px 8px;
+	padding: 8px 0 0 8px;
 	border: 1px solid rgba(0, 0, 0, 0.3);
 	border-bottom-width: 0;
 	background-color: #303539;
@@ -616,7 +616,7 @@ ul.aloha-multisplit button.aloha-button-removeFormat {
 }
 .aloha-sidebar-panel-title-arrow {
 	position: absolute;
-	top: 6px;
+	top: 8px;
 	left: 8px;
 	width: 16px;
 	height: 16px;
@@ -774,16 +774,19 @@ ul.aloha-multisplit button.aloha-button-removeFormat {
 }
 .aloha-sidebar-panel-parent-path span {
 	display: inline-block;
-	padding: 0 10px;
+	padding: 0 10px 0 5px;
 	background: url(../img/breadcrumb-divider.png) no-repeat right center;
 	opacity: 0.25;
 	filter: alpha(opacity=25);
 	line-height: 1.6em;
 }
-.aloha-sidebar-panel-parent-path span:last-child {
+.aloha-sidebar-panel-parent-path span:first-child {
 	font-weight: bold;
-	opacity: 0.5;
-	filter: alpha(opacity=50);
+	opacity: 0.8;
+	filter: alpha(opacity=80);
+}
+.aloha-sidebar-panel-parent-path span:last-child {
+	background: none;
 }
 .aloha-sidebar-panel-parent-content {
 	padding: 4px;
