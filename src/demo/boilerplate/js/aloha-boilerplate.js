@@ -1,5 +1,5 @@
 require.ready(function() {
-	var $ = window.jQuery;
+	var $ = window.alohaQuery;
 	$.fn.alohaStage = function() {
 		var switcher = this.find('ul.stage-switcher'),
 			me = this,

@@ -787,8 +787,8 @@ ul.aloha-multisplit button.aloha-button-removeFormat {
 }
 .aloha-sidebar-panel-parent-path span:first-child {
 	font-weight: bold;
-	opacity: 0.5;
-	filter: alpha(opacity=50);
+	opacity: 0.8;
+	filter: alpha(opacity=80);
 }
 .aloha-sidebar-panel-parent-path span:last-child {
 	background: none;

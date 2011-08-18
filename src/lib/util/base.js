@@ -7,8 +7,11 @@
  * MODIFICATIONS: 
  * * The name of the "constructor" method was changed from "init" to "_constructor"
  * * Mixin Support using https://gist.github.com/1006243
+ * * Modified to be a require.js module
  */
-(function(){
+define(
+[],
+function(){
   var initializing = false, fnTest = /xyz/.test(function(){xyz;}) ? /\b_super\b/ : /.*/;
   // The base Class implementation (does nothing)
   this.Class = function(){};
@@ -68,23 +71,4 @@
 
     return Class;
   };
-})();
-
-
-
-
-/**
- * reimplementation of indexOf for current Microsoft Browsers
- * IE does not support indexOf() for Arrays
- * @param object to look for
- * @return index of obj in Array or -1 if not found
- * @hide
- */
-//Array.prototype.indexOf = Array.indexOf||function(obj){
-//	for(var i=0; i<this.length; i++){
-//			if(this[i]===obj){
-//			 return i;
-//			}
-//		}
-//		return -1;
-//};
+});

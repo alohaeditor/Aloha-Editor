@@ -4,8 +4,8 @@
  * Licensed unter the terms of http://www.aloha-editor.com/license.html
  */
 define(
-[],
-function(undefined) {
+['util/base'],
+function() {
 	"use strict";
 	
 	var
