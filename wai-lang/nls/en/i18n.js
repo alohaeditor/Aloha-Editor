@@ -1,1 +1,1 @@
-define({ "floatingmenu.tab.wai-lang": "WAI Lang" });
+define({ "floatingmenu.tab.wai-lang": "Language annotation" });

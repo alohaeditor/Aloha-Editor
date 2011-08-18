@@ -12,19 +12,20 @@ define(
 [
  'aloha/jquery',
  'aloha/repository',
- 'i18n!aloha/nls/i18n', 
+ 'i18n!aloha/nls/i18n',
+ 'wai-lang/wai-lang-plugin' 
 ],
-function(jQuery, Repository, i18nCore) {
+function(jQuery, Repository, i18nCore, WaiLang) {
 	"use strict";
 	
-	var jQuery = window.alohaQuery || window.jQuery, $ = jQuery,
+	var $ = jQuery,
 		GENTICS = window.GENTICS,
 		Aloha = window.Aloha;
 
 	/**
 	 * Register the WaiLang Plugin as Aloha.Plugin
 	 */
-	var languageRepository = new (Aloha.AbstractRepository.extend({
+	return new (Aloha.AbstractRepository.extend({
 		_constructor: function(){
 			this._super('wai-languages');
 		},
@@ -41,7 +42,6 @@ function(jQuery, Repository, i18nCore) {
 		init: function() {
 		
 			var that = this;
-
 			// Load the language codes
 			jQuery.ajax({
 				url: Aloha.getPluginUrl('wai-lang') + '/lib/language-codes.json',
@@ -56,7 +56,8 @@ function(jQuery, Repository, i18nCore) {
 		
 	
 		markObject: function (obj, item)  {
-			Aloha.WaiLang.makeVisible(obj);
+			var wlPlugin = require('wai-lang/wai-lang-plugin');
+			wlPlugin.makeVisible(obj);
 		},
 		
 		

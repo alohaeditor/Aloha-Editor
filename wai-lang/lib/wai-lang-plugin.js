@@ -11,7 +11,8 @@ define(
  'aloha/floatingmenu', 
  'i18n!wai-lang/nls/i18n', 
  'i18n!aloha/nls/i18n',
- 'wai-lang/languages'
+ 'wai-lang/languages',
+ 'css!wai-lang/css/wai-lang.css'
 ],
 function(Plugin, FloatingMenu, i18n, i18nCore) {
 	"use strict";
@@ -48,8 +49,7 @@ function(Plugin, FloatingMenu, i18n, i18nCore) {
 
 			this.createButtons();
 			this.subscribeEvents();
-			this.bindInteractions();
-	
+			this.bindInteractions();	
 		},
 		
 		/**
@@ -108,12 +108,12 @@ function(Plugin, FloatingMenu, i18n, i18nCore) {
 			FloatingMenu.addButton(
 				'Aloha.continuoustext',
 				this.addMarkupToSelectionButton,
-				i18n.t('floatingmenu.tab.wai-lang'),
+				i18nCore.t('floatingmenu.tab.format'),
 				1
 			);
 	
 			// Add the new scope for the wai languages plugin tab
-			FloatingMenu.createScope(this.getUID('wai-lang'), 'Aloha.empty'); //'Aloha.continuoustext');
+			FloatingMenu.createScope(this.getUID('wai-lang'), 'Aloha.continuoustext'); //'Aloha.continuoustext');
 	
 			this.langField = new Aloha.ui.AttributeField({
 				'width':320,
@@ -199,7 +199,8 @@ function(Plugin, FloatingMenu, i18n, i18nCore) {
 		makeVisible: function(element) {
 			
 			// Make existing spans with language attribute visible
-			jQuery(element).css('background-image', 'url('+Aloha.getPluginUrl('wai-lang')+'/img/flags/'+ jQuery(element).attr('lang') + '.png)');
+			// Flags can be added via the metaview plugin
+			//jQuery(element).css('background-image', 'url('+Aloha.getPluginUrl('wai-lang')+'/img/flags/'+ jQuery(element).attr('lang') + '.png)');
 			jQuery(element).addClass('wai-lang');
 			
 		},
@@ -294,7 +295,7 @@ function(Plugin, FloatingMenu, i18n, i18nCore) {
 
 			// find all lang spans
 			obj.find('span[lang]').each(function() {
-				jQuery(this).css({'background-image' : ''})
+				//jQuery(this).css({'background-image' : ''})
 				jQuery(this).removeClass('wai-lang');
 			});
 		}

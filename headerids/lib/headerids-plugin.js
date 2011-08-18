@@ -87,7 +87,6 @@ function(Plugin, FloatingMenu, i18n, i18nCore) {
 		//ns = headerids
 		initSidebar: function(sidebar) {
 			var pl = this;
-			debugger;
 			pl.sidebar = sidebar.addPanel({
                     
                     id         : nsClass('sidebar-panel'),

@@ -1,1 +1,1 @@
-define({ "floatingmenu.tab.wai-lang": "WAI Sprachauszeichnung" });
+define({ "floatingmenu.tab.wai-lang": "Sprachauszeichnung" });

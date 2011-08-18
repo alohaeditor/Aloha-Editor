@@ -68,7 +68,7 @@ button.aloha-button-metaview { background: url(../img/button.png) no-repeat 0px 
 .aloha-metaview [lang] { padding-left: 20px; border: 1px dotted #ddd; background-color: #ccc; background-repeat: no-repeat; background-position: left center;}
 
 /* LANGUAGE FLAGS */
-.aloha-metaview [lang="de"] { background-image:url(../img/lang/at.png); }
+.aloha-metaview [lang="de"] { background-image:url(../img/lang/de.png); }
 .aloha-metaview [lang="en"] { background-image:url(../img/lang/us.png); }
 .aloha-metaview [lang="fr"] { background-image:url(../img/lang/fr.png); }
 .aloha-metaview [lang="es"] { background-image:url(../img/lang/es.png); }
