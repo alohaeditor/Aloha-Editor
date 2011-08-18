@@ -119,7 +119,7 @@ function(Plugin, FloatingMenu, i18n, i18nCore) {
 				'width':320,
 				'valueField': 'id'
 			});
-			this.langField.setTemplate('<a><b>{name}</b></p></p><img src="' + Aloha.settings.base + '/plugin/wai-lang/{url}"/></a>');
+			this.langField.setTemplate('<a><b>{name}</b></p></p><img src="' + Aloha.getPluginUrl('wai-lang') + '/{url}"/></a>');
 			this.langField.setObjectTypeFilter(this.objectTypeFilter);
 			// add the input field for links
 			FloatingMenu.addButton(
@@ -158,7 +158,7 @@ function(Plugin, FloatingMenu, i18n, i18nCore) {
 			jQuery.each(Aloha.editables, function(key, editable){
 				
 				// Hotkey for adding new language annotations: CTRL+I
-				editable.obj.keydown(Aloha.WaiLang.handleKeyDown);			
+				editable.obj.keydown(that.handleKeyDown);			
 
 				
 			});
@@ -166,7 +166,7 @@ function(Plugin, FloatingMenu, i18n, i18nCore) {
 			jQuery.each(Aloha.editables, function(key, editable){
 				// Find all spans with lang attributes and add some css and event handlers
 				editable.obj.find('span[lang]').each(function( i ) {
-					Aloha.WaiLang.makeVisible(this);
+					that.makeVisible(this);
 				});
 			});
 			
@@ -199,7 +199,7 @@ function(Plugin, FloatingMenu, i18n, i18nCore) {
 		makeVisible: function(element) {
 			
 			// Make existing spans with language attribute visible
-			jQuery(element).css('background-image', 'url(../img/flags/'+ jQuery(element).attr('lang') + '.png)');
+			jQuery(element).css('background-image', 'url('+Aloha.getPluginUrl('wai-lang')+'/img/flags/'+ jQuery(element).attr('lang') + '.png)');
 			jQuery(element).addClass('wai-lang');
 			
 		},
