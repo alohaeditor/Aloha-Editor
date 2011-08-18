@@ -26,17 +26,20 @@
 // ----------------------------------------------------------------------------
 
 define([
-	
+		
+	'aloha/jQuery',
 	'aloha/plugin'
-	
-], function SidebarClosure (Plugin, undefined) {
+
+], function SidebarClosure ($, Plugin) {
 	
 	'use strict';
 	
+	alert(2);
+	console.log($);
+
 	var
-	     Aloha = window.Aloha,
-		jQuery = window.alohaQuery || window.jQuery,
-			 $ = jQuery
+		Aloha = window.Aloha,
+		undefined = void 0;
 	
 	// ------------------------------------------------------------------------
 	// Local (helper) variables
@@ -874,7 +877,7 @@ define([
 			right : right
 		};
 		
-		// Broadcast that this Sidebar instances have arrived!
+		// Broadcast that Sidebars have arrived!
 		$('body').trigger(nsClass('initialized'), Aloha.Sidebars);
 	});
 	
