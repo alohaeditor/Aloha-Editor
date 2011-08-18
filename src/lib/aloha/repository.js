@@ -20,17 +20,16 @@
 
 define(
 [
- 'require', 'exports', 'aloha/jquery'
+ 'require', 'exports', 'aloha/jquery', 'aloha/ext'
  ],
-function(require, exports, jQuery, undefined) {
+function(require, exports, jQuery, Ext, undefined) {
 	"use strict";
 	
 	var
 		$ = jQuery,
 		GENTICS = window.GENTICS,
 		Aloha = window.Aloha,
-		Class = window.Class,
-		Ext = window.Ext;
+		Class = window.Class;
 
 /**
  * Abstract Repository Class. Implement that class for your own repository.

@@ -30,7 +30,6 @@ window.Aloha.settings = {
 	errorhandling : true
 };
 
-require.ready(function() {
 	// Prepare
 	var	$ = window.jQuery,
 		$body = $('body');
@@ -76,6 +75,5 @@ require.ready(function() {
 			equals(editable.contentEditable(), "false", 'Check whether div is not contenteditable after .mahalo()');
 		});
 	});
-});
 
 });

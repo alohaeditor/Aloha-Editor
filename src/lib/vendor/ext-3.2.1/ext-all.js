@@ -1,7 +1,6 @@
-
 define(
-['aloha/jquery'],
-function(jQuery, undefined) {
+['vendor/ext-3.2.1/adapter/jquery/ext-jquery-adapter-debug'],
+function(x, undefined) {
 
 /*
  * Ext JS Library 3.2.1
