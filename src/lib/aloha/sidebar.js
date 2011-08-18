@@ -27,16 +27,13 @@
 
 define([
 		
-	'aloha/jQuery',
+	'aloha/jquery',
 	'aloha/plugin'
 
 ], function SidebarClosure ($, Plugin) {
 	
 	'use strict';
 	
-	alert(2);
-	console.log($);
-
 	var
 		Aloha = window.Aloha,
 		undefined = void 0;
@@ -118,14 +115,14 @@ define([
 	function nsSel () {
 		var strBldr = [], prx = ns;
 		$.each(arguments, function () { strBldr.push('.' + (this == '' ? prx : prx + '-' + this)); });
-		return jQuery.trim(strBldr.join(' '));
+		return $.trim(strBldr.join(' '));
 	};
 	
 	// Creates string with this component's namepsace prefixed the each classname
 	function nsClass () {
 		var strBldr = [], prx = ns;
 		$.each(arguments, function () { strBldr.push(this == '' ? prx : prx + '-' + this); });
-		return jQuery.trim(strBldr.join(' '));
+		return $.trim(strBldr.join(' '));
 	};
 	
 	// ------------------------------------------------------------------------
@@ -843,8 +840,8 @@ define([
 			
 			this.setContent(content.join(''));
 			
-			jQuery('.aloha-sidebar-panel-parent-path').click(function () {
-				var c = jQuery(this).parent().find('.aloha-sidebar-panel-parent-content');
+			$('.aloha-sidebar-panel-parent-path').click(function () {
+				var c = $(this).parent().find('.aloha-sidebar-panel-parent-content');
 				
 				if (c.hasClass('aloha-sidebar-opened')) {
 					c.hide().removeClass('aloha-sidebar-opened');
