@@ -11,6 +11,9 @@
 	<script>
 		// we want to use the same jQuery version for aloha
 		window.alohaQuery = window.jQuery;
+		var require = {
+			waitSeconds : 15
+		};
 	</script>
 
 	<!-- include aloha -->
@@ -30,7 +33,7 @@
 	</script>
 
 	<!-- inject into testswarm -->
-	<script type="text/javascript" src="../dep/swarminject.js"></script>
+	<!-- script type="text/javascript" src="../dep/swarminject.js"></script -->
 </head>
 <body>
 	<h1 id="qunit-header">Aloha Editor Editable Test Suite</h1>

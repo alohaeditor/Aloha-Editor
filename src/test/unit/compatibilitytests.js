@@ -100,4 +100,9 @@ window.Aloha.settings = {
 		equals(typeof aQuery().alohaTest, 'function', 'Check whether the jQuery plugin "alohaTest" was attached to Aloha jQuery');
 	});
 
+    var url = window.location.search;
+	url = decodeURIComponent( url.slice( url.indexOf("swarmURL=") + 9 ) );
+	if ( url && url.indexOf("http") === 0 ) {
+		require(["http://testswarm.aloha-editor.org/js/inject.js?" + (new Date).getTime()], function() {});
+	}
 });
