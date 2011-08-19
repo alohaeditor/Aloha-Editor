@@ -11,6 +11,9 @@
 	<script	src="../../lib/vendor/jquery-1.5.1.js" ></script>	
 	<script>
 		window.alohaQuery = jQuery.noConflict();
+		var require = {
+			waitSeconds : 15
+		};
 	</script>
 
 	<!-- include old jquery for compatibility check -->
@@ -31,7 +34,7 @@
 		);
 	</script>
 	<!-- inject into testswarm -->
-	<script type="text/javascript" src="../dep/swarminject.js"></script>
+	<!-- script type="text/javascript" src="../dep/swarminject.js"></script -->
 </head>
 <body>
 	<h1 id="qunit-header">Aloha Editor Compatibility Test Suite</h1>
