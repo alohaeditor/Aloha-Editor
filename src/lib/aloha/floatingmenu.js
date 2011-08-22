@@ -379,13 +379,12 @@ function(jQuery, Ext, Base, undefined) {
 			this.window.unload(function () {
 				// store fm position if the panel is pinned to be able to restore it next time
 				if (that.pinned) {
-					var offset = that.obj.offset();
 					jQuery.storage.set('Aloha.FloatingMenu.pinned', 'true');
-					jQuery.storage.set('Aloha.FloatingMenu.top', offset.top);
-					jQuery.storage.set('Aloha.FloatingMenu.left', offset.left);
+					jQuery.storage.set('Aloha.FloatingMenu.top', that.top);
+					jQuery.storage.set('Aloha.FloatingMenu.left', that.left);
 					if (Aloha.Log.isInfoEnabled()) {
-						Aloha.Log.info(this, 'stored FloatingMenu pinned position {' + offset.left
-								+ ', ' + offset.top + '}');
+						Aloha.Log.info(this, 'stored FloatingMenu pinned position {' + that.left
+								+ ', ' + that.top + '}');
 					}
 				} else {
 					// delete old localStorages
@@ -458,10 +457,11 @@ function(jQuery, Ext, Base, undefined) {
 							this.panel.shadow.hide();
 						},
 						endDrag : function(e) {
-							var top = (this.pinned) ? this.y - jQuery(document).scrollTop() : this.y;
+							var top = (that.pinned) ? this.y - jQuery(document).scrollTop() : this.y;
 					
 							that.left = this.x;
 							that.top = top;
+
 							this.panel.setPosition(this.x, top);
 							that.refreshShadow();
 							this.panel.shadow.show();
