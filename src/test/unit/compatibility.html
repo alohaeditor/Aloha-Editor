@@ -22,21 +22,20 @@
 	<!-- include aloha -->
 	<script src="../../lib/require.js" data-main="../../lib/aloha.js" id="aloha-script-include" data-plugins=""></script>
 
-	<!-- include the tests -->
-	<script>
-		require(
-			{
-				paths: {
-					'compatibilitytests': '../test/unit/compatibilitytests'
-				}
-			},
-			['compatibilitytests']
-		);
-	</script>
-	<!-- inject into testswarm -->
-	<!-- script type="text/javascript" src="../dep/swarminject.js"></script -->
 </head>
 <body>
+	<!-- include the tests -->
+	<script>
+	require(
+		{
+			paths: {
+				'compatibilitytests': '../test/unit/compatibilitytests'
+			}
+		},
+		['compatibilitytests']
+	);
+	</script>
+
 	<h1 id="qunit-header">Aloha Editor Compatibility Test Suite</h1>
 	<h2 id="qunit-banner"></h2>
 	<div id="qunit-testrunner-toolbar"></div>
