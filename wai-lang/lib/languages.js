@@ -47,7 +47,7 @@ function(jQuery, Repository, i18nCore, WaiLang) {
 				url: Aloha.getPluginUrl('wai-lang') + '/lib/language-codes.json',
 				dataType: 'json',
 				success: jQuery.proxy(that.storeLanguageCodes,that),
-				error: that.errorHandler,
+				error: that.errorHandler
 			});
 			
 		    // repository name
