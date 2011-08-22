@@ -75,10 +75,4 @@ window.Aloha.settings = {
 			equals(editable.contentEditable(), "false", 'Check whether div is not contenteditable after .mahalo()');
 		});
 	});
-
-    var url = window.location.search;
-	url = decodeURIComponent( url.slice( url.indexOf("swarmURL=") + 9 ) );
-	if ( url && url.indexOf("http") === 0 ) {
-		require(["http://testswarm.aloha-editor.org/js/inject.js?" + (new Date).getTime()], function() {});
-	}
 });
