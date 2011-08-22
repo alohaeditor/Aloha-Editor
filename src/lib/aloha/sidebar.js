@@ -28,7 +28,7 @@
 define([
 		
 	'aloha/jquery',
-	'aloha/plugin'
+	'aloha/plugin' // For when we plugify sidebar
 
 ], function SidebarClosure ($, Plugin) {
 	
@@ -507,6 +507,8 @@ define([
 			500, 'easeOutExpo');
 			
 			this.isOpen = true;
+
+			$('body').trigger(nsClass('opened'), this);
 			
 			return this;
 		},
