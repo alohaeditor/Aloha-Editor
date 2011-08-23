@@ -9,6 +9,13 @@
 	<script	src="../../lib/vendor/jquery-1.5.1.js" ></script>
 	<script type="text/javascript" src="../dep/jquery.simulate.js"></script>
 	<script>
+		// currently, we need to manually set the path to aloha
+		window.Aloha = {
+			settings : {
+				base : '../../lib/'
+			}
+		};
+
 		// we want to use the same jQuery version for aloha
 		window.alohaQuery = window.jQuery;
 		var require = {

@@ -8,6 +8,13 @@
 	<script type="text/javascript" src="../dep/qunit.js"></script>
 	<script	src="../../lib/vendor/jquery-1.5.1.js" ></script>
 	<script>
+		// currently, we need to manually set the path to aloha
+		window.Aloha = {
+			settings : {
+				base : '../../lib/'
+			}
+		};
+
 		window.alohaQuery = jQuery.noConflict();
 		var require = {
 			waitSeconds : 15
