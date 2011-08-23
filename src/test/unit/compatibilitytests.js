@@ -9,28 +9,6 @@ define("compatibilitytest",
 function(aQuery) {
 	"use strict";
 
-if (window.Aloha === undefined || window.Aloha === null) {
-	window.Aloha = {};		
-}
-
-window.Aloha.settings = {
-	logLevels : {
-		'error': true,
-		'warn':  true,
-		'info':  false,
-		'debug': false
-	},
-	logHistory : {
-		levels : {
-			'error' : true,
-			'warn' : true,
-			'info' : false,
-			'debug' : false
-		}
-	},
-	errorhandling : true
-};
-
 	// Start the tests, when Aloha is ready
 	aQuery('body').bind('aloha', function() {
 		// for IE, it is necessary to have this setTimeout. Otherwise, the
@@ -78,12 +56,6 @@ window.Aloha.settings = {
 			test('3rd party jquery plugin test', function() {
 				equals(typeof aQuery().alohaTest, 'function', 'Check whether the jQuery plugin "alohaTest" was attached to Aloha jQuery');
 			});
-		
-		    var url = window.location.search;
-			url = decodeURIComponent( url.slice( url.indexOf("swarmURL=") + 9 ) );
-			if ( url && url.indexOf("http") === 0 ) {
-				require(["http://testswarm.aloha-editor.org/js/inject.js?" + (new Date).getTime()], function() {});
-			}
 		}, 1);
 	});
 });
