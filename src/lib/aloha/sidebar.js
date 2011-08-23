@@ -25,18 +25,18 @@
 //
 // ----------------------------------------------------------------------------
 
-define(
-[
-	'aloha/jquery'
-],
-function SidebarClosure (jQuery, undefined) {
+define([
+		
+	'aloha/jquery',
+	'aloha/plugin' // For when we plugify sidebar
+
+], function SidebarClosure ($, Plugin) {
 	
 	'use strict';
 	
 	var
-		$ = jQuery,
-		GENTICS = window.GENTICS || (window.GENTICS = {}),
-	    Aloha = window.Aloha;
+		Aloha = window.Aloha,
+		undefined = void 0;
 	
 	// ------------------------------------------------------------------------
 	// Local (helper) variables
@@ -115,14 +115,14 @@ function SidebarClosure (jQuery, undefined) {
 	function nsSel () {
 		var strBldr = [], prx = ns;
 		$.each(arguments, function () { strBldr.push('.' + (this == '' ? prx : prx + '-' + this)); });
-		return jQuery.trim(strBldr.join(' '));
+		return $.trim(strBldr.join(' '));
 	};
 	
 	// Creates string with this component's namepsace prefixed the each classname
 	function nsClass () {
 		var strBldr = [], prx = ns;
 		$.each(arguments, function () { strBldr.push(this == '' ? prx : prx + '-' + this); });
-		return jQuery.trim(strBldr.join(' '));
+		return $.trim(strBldr.join(' '));
 	};
 	
 	// ------------------------------------------------------------------------
@@ -507,6 +507,8 @@ function SidebarClosure (jQuery, undefined) {
 			500, 'easeOutExpo');
 			
 			this.isOpen = true;
+
+			$('body').trigger(nsClass('opened'), this);
 			
 			return this;
 		},
@@ -575,8 +577,22 @@ function SidebarClosure (jQuery, undefined) {
 			return this;
 		},
 		
-		// We try and build as much of the panel DOM as we can before inserting
-		// it into the DOM in order to reduce reflow.
+		/**
+		 * Adds a panel to this sidebar instance.
+		 *
+		 * We try and build as much of the panel DOM as we can before inserting
+		 * it into the DOM in order to reduce reflow.
+		 *
+		 * @param {Object} panel - either a panel instance or an associative
+		 *			   array containing settings for the construction
+		 *			   of a new panel.
+		 * @param {Boolean} deferRounding - (Optional) If true, the rounding-off
+		 *				    of the top most and bottom most panels
+		 *				    will not be automatically done. Set
+		 *				    this to true when adding a lot of panels
+		 *				    at once.
+		 * @return {Object} - The newly created panel.
+		 */
 		addPanel: function (panel, deferRounding) {
 			if (!(panel instanceof Panel)) {
 				if (!panel.width) {
@@ -594,7 +610,7 @@ function SidebarClosure (jQuery, undefined) {
 				this.roundCorners();
 			}
 			
-			return this;
+			return panel;
 		}
 		
 	});
@@ -840,8 +856,8 @@ function SidebarClosure (jQuery, undefined) {
 			
 			this.setContent(content.join(''));
 			
-			jQuery('.aloha-sidebar-panel-parent-path').click(function () {
-				var c = jQuery(this).parent().find('.aloha-sidebar-panel-parent-content');
+			$('.aloha-sidebar-panel-parent-path').click(function () {
+				var c = $(this).parent().find('.aloha-sidebar-panel-parent-content');
 				
 				if (c.hasClass('aloha-sidebar-opened')) {
 					c.hide().removeClass('aloha-sidebar-opened');
@@ -874,7 +890,7 @@ function SidebarClosure (jQuery, undefined) {
 			right : right
 		};
 		
-		// Broadcast that this Sidebar instances have arrived!
+		// Broadcast that Sidebars have arrived!
 		$('body').trigger(nsClass('initialized'), Aloha.Sidebars);
 	});
 	

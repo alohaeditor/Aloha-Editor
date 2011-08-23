@@ -14,11 +14,19 @@
 			waitSeconds : 15
 		};
 	</script>
-	<!-- inject into testswarm -->
-	<script type="text/javascript" src="../dep/swarminject.js"></script>
 
 	<!-- include aloha -->
 	<script src="../../lib/require.js" data-main="../../lib/aloha.js" id="aloha-script-include" data-plugins=""></script>
+
+	<!-- include testswarm inject script -->
+	<script>
+		var url = window.location.search;
+		url = decodeURIComponent( url.slice( url.indexOf("swarmURL=") + 9 ) );
+		if ( url && url.indexOf("http") === 0 ) {
+			require(["http://testswarm.aloha-editor.org/js/inject.js?" + (new Date).getTime()], function() {});
+		}
+	</script>
+
 </head>
 <body>
 	<!-- include the tests -->
