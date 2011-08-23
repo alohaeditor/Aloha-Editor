@@ -198,6 +198,9 @@
 				$ = aQuery,
 				$body = $('body');
 			
+			$body.bind('aloha-sidebar-opened', function (ev, sidebar) {
+				//console.log(sidebar.position, 'sidebar just opened');
+			});
 			// Add another panel after sidebar has been initialized
 			$body.bind('aloha-sidebar-initialized', function (ev, sidebars) {
 				var left = sidebars.left;
@@ -302,6 +305,11 @@
 			$body.bind('alohacoreloaded',function(){
 				// hide loading div
 				$('#aloha-loading span').html('Loading Plugins');
+			});
+
+			$body.bind('aloha-sidebar-initialized', function (ev, bars) {
+				bars.right.show().open();
+				bars.left.show();
 			});
 				
 		});
