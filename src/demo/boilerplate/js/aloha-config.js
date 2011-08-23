@@ -15,6 +15,9 @@
 					// or set current on server side to be in sync with your backend system
 					"current": "en"
 				},
+				"floatingmenu": {
+					"width" : 800
+				},
 				"repositories": {
 					"linklist": {
 						data: [

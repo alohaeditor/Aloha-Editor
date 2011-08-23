@@ -115,26 +115,36 @@ GENTICS.Utils.RangeObject = Class.extend({
 		GENTICS.Utils.Dom.split(this, cac, true);
 		this.clearCaches();
 
-		// iterate over range tree to perform deletion
-		rt = this.getRangeTree();
-		for (i = 0; i < rt.length; i++) {
-			if (rt[i].type === 'full') {
-				// delete only fully selected nodes
-				jQuery(rt[i].domobj).remove();
-			}
-		}
+        // iterate over range tree to perform deletion
+        rt = this.getRangeTree();
+        for (i = 0; i < rt.length; i++) {
+                // delete only fully selected nodes
+                if (rt[i].type === 'full') {
+                        // if startConatiner will be removed move start container one node before
+                        if (rt[i].domobj == this.startContainer) {
+                                this.startOffset = GENTICS.Utils.Dom.getIndexInParent(this.startContainer)
+                                this.startContainer = this.startContainer.parentNode;
+                        }
+                        jQuery(rt[i].domobj).remove();
+                }
+        }
 
-		// special handling if all contents of the cac have been deleted
-		// this case can be detected, if the cac contains just a single br,
-		// or no children at all. if this occurs the range will be collapsed
-		this.clearCaches();
-		rt = this.getRangeTree();
-		children = cac.children();
-		if (children.length === 0 || (children.length === 1 && children.get(0).nodeName === 'BR')) {
-			this.commonAncestorContainer = this.startContainer = this.endContainer = cac.get(0);
-			this.startOffset = 0;
-			this.endOffset = 0;
-		}
+        // always collapse selection to the startContainer
+        this.endContainer = this.startContainer;
+        this.endOffset = this.startOffset;
+
+        // special handling if all contents of the cac have been deleted
+        // this case can be detected, if the cac contains just a single br,
+        // or no children at all. if this occurs the range will be collapsed
+        this.clearCaches();
+        rt = this.getRangeTree();
+        children = cac.contents();
+        if (children.length === 0 || (children.length === 1 && children.get(0).nodeName === 'BR')) {
+                this.commonAncestorContainer = this.startContainer = this.endContainer = cac.get(0);
+                this.startOffset = 0;
+                this.endOffset = 0;
+        }
+
 	},
 
 	/**
