@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<title>Aloha Editor Backspace Test Suite</title>
+	<!-- include qunit -->
+	<link rel="stylesheet" href="../dep/qunit.css" type="text/css"/>
+
+	<script type="text/javascript" src="../dep/dojo/util/doh/runner.js"></script>
+	<script type="text/javascript" src="../dep/dojo/util/doh/robot.js"></script>
+
+	<script type="text/javascript" src="../dep/qunit.js"></script>
+
+	<!-- include jquery -->
+	<script	src="../../lib/vendor/jquery-1.5.1.js" ></script>
+	<script type="text/javascript" src="../dep/jquery.simulate.js"></script>
+	<script>
+		window.alohaQuery = jQuery.noConflict();
+	</script>
+
+	<!-- include aloha -->
+	<script src="../../lib/require.js" data-main="../../lib/aloha.js" id="aloha-script-include" data-plugins=""></script>
+
+	<!-- inject into testswarm -->
+	<script type="text/javascript" src="../dep/swarminject.js"></script>
+</head>
+<body>
+	<!-- include the tests -->
+	<script>
+doh.register("group",[
+{
+	name:"bla",
+	timeout:6900,
+	setUp : function() {
+		if (window.console && console.log) { console.log('setUp'); }
+	},
+	runTest: function() {
+		if (window.console && console.log) { console.log('runTest'); }
+		var d=new doh.Deferred();
+		// doh.robot.mouseMove(300, 300, 500);
+		// doh.robot.sequence(function() {
+			
+		// }, 100);
+		d.callback(true);
+/*
+		require(
+			{
+				paths: {
+					'backspace': '../test/unit/backspace',
+					'testutils': '../test/unit/testutils'
+				}
+			},
+			['backspace']
+		);
+*/
+		return d;
+	}
+}]);
+if (window.console && console.log) { console.log('Running doh now'); }
+doh.run();
+
+	</script>
+	<h1 id="qunit-header">Aloha Editor Backspace Test Suite</h1>
+	<h2 id="qunit-banner"></h2>
+	<div id="qunit-testrunner-toolbar"></div>
+	<h2 id="qunit-userAgent"></h2>
+	<ol id="qunit-tests"></ol>
+	<div id="qunit-fixture">
+
+<div class="test">
+	<div class="desc">Test 1</div>
+	<div class="input">foo[]bar</div>
+	<div class="ref">fo[]bar</div>
+</div>
+
+</div>
+<div id="edit" style="margin:20px; border:1px solid #000000;"></div>
+<div id="logBody"></div>
+	</div>
+</body>
+</html>

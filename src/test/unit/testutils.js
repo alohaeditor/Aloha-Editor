@@ -90,6 +90,15 @@ define(
 		},
 
 		/**
+		 * Simulate pressing backspace in the given editable
+		 * @param editable jQuery object
+		 */
+		pressBackspace : function(editable) {
+			editable.simulate('keydown', {keyCode: 8});
+			editable.simulate('keyup', {keyCode: 8});
+		},
+
+		/**
 		 * Apply the given markup to the given range. This will either
 		 * add or remove the markup (depending on whether the markup is
 		 * currently active at the start of the range)
@@ -133,6 +142,53 @@ define(
 			rangeObject.select();
 			rangeObject.clearCaches();
 			rangeObject.updateMarkupEffectiveAtStart();
+		},
+
+		/**
+		 * Transform the selection marker into a range and remove the marker.
+		 * @param editable editable, which should contain selection markers []
+		 * @return range
+		 */
+		rangeFromMarker : function (editable) {
+			var foundStart = false, foundEnd = false;
+			var rangeObject = new Aloha.Selection.SelectionRange();
+			var markerRange = new Aloha.Selection.SelectionRange();
+
+			editable.contents().filter(function() {
+				return this.nodeType == 3 && this.nodeValue.indexOf('[') >= 0;
+			}).each(function() {
+				markerRange.startContainer = markerRange.endContainer = this;
+				markerRange.startOffset = this.nodeValue.indexOf('[');
+				markerRange.endOffset = markerRange.startOffset + 1;
+				foundStart = true;
+			});
+
+			if (!foundStart) {
+				return;
+			}
+
+			GENTICS.Utils.Dom.removeRange(markerRange);
+			rangeObject.startContainer = markerRange.startContainer;
+			rangeObject.startOffset = markerRange.startOffset;
+
+			editable.contents().filter(function() {
+				return this.nodeType == 3 && this.nodeValue.indexOf(']') >= 0;
+			}).each(function() {
+				markerRange.startContainer = markerRange.endContainer = this;
+				markerRange.startOffset = this.nodeValue.indexOf(']');
+				markerRange.endOffset = markerRange.startOffset + 1;
+				foundEnd = true;
+			});
+
+			if (!foundEnd) {
+				return;
+			}
+
+			GENTICS.Utils.Dom.removeRange(markerRange);
+			rangeObject.endContainer = markerRange.endContainer;
+			rangeObject.endOffset = markerRange.endOffset;
+
+			return rangeObject;
 		}
 	});
 
