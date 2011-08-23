@@ -10,28 +10,6 @@ function(jQuery, TestUtils, undefined) {
 	"use strict";
 	
 	var $ = jQuery;
-	
-if (window.Aloha === undefined || window.Aloha === null) {
-	window.Aloha = {};		
-}
-
-window.Aloha.settings = {
-	logLevels : {
-		'error': true,
-		'warn':  true,
-		'info':  false,
-		'debug': false
-	},
-	logHistory : {
-		levels : {
-			'error' : true,
-			'warn' : true,
-			'info' : false,
-			'debug' : false
-		}
-	},
-	errorhandling : true
-};
 
 /**
  * Do an markup test
