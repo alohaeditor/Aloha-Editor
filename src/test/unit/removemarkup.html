@@ -11,7 +11,22 @@
 		// currently, we need to manually set the path to aloha
 		window.Aloha = {
 			settings : {
-				base : '../../lib/'
+				base : '../../lib/',
+				logLevels : {
+					'error': true,
+					'warn':  true,
+					'info':  false,
+					'debug': false
+				},
+				logHistory : {
+					levels : {
+						'error' : true,
+						'warn' : true,
+						'info' : false,
+						'debug' : false
+					}
+				},
+				errorhandling : true
 			}
 		};
 
