@@ -22,23 +22,23 @@ function(Aloha, jQuery, Commands) {
 			 * If inserting fails (because the object is not allowed to be inserted), unwrap the contents and try with that.
 			 * @param object object to be pasted
 			 */
-			function pasteElement(object, editableNode) {
+			function pasteElement(object, $editable) {
 				var jqObject = jQuery(object),
 					contents;
 
 				// try to insert the element into the DOM
-				if (!GENTICS.Utils.Dom.insertIntoDOM(jqObject, range, editableNode, false)) {
+				if (!GENTICS.Utils.Dom.insertIntoDOM(jqObject, range, $editable, false)) {
 					// if that is not possible, we unwrap the content and insert every child element
 					 contents = jqObject.contents();
 
 					// when a block level element was unwrapped, we at least insert a break
 					if (GENTICS.Utils.Dom.isBlockLevelElement(object) || GENTICS.Utils.Dom.isListElement(object)) {
-						pasteElement(jQuery('<br/>').get(0));
+						pasteElement(jQuery('<br/>').get(0), $editable);
 					}
 
 					// and now all children (starting from the back)
 					for ( i = contents.length - 1; i >= 0; --i) {
-						pasteElement(contents[i]);
+						pasteElement(contents[i], $editable);
 					}
 				}
 			};
@@ -63,9 +63,9 @@ function(Aloha, jQuery, Commands) {
 			
 			for ( i = domNodes.length - 1; i >= 0; --i) {
 				// insert the elements
-				pasteElement(domNodes[i], GENTICS.Utils.Dom.getEditingHostOf(range.startContainer));
+				pasteElement(domNodes[i], jQuery(GENTICS.Utils.Dom.getEditingHostOf(range.startContainer)));
 			}
-
+			
 			// Call collapse() on the context object's Selection,
 			// with last child's parent as the first argument and one plus its index as the second.
 			if (domNodes.length > 0) {
@@ -74,6 +74,10 @@ function(Aloha, jQuery, Commands) {
 				// if nothing was pasted, just reselect the old range
 				range.select();
 			}
+			
+			var r = window.Aloha.Selection.getRangeObject();
+	        GENTICS.Utils.Dom.doCleanup({merge:true}, r, range.commonAncestorContainer);
+
 		}
 	};
 

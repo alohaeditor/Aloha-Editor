@@ -144,7 +144,8 @@ GENTICS.Utils.RangeObject = Class.extend({
                 this.startOffset = 0;
                 this.endOffset = 0;
         }
-
+        
+        GENTICS.Utils.Dom.doCleanup({merge:true}, this, this.commonAncestorContainer);
 	},
 
 	/**

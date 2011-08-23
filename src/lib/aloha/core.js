@@ -24,10 +24,11 @@ define(
 	'aloha/jquery',
 	'aloha/pluginmanager',
 	'aloha/floatingmenu',
-	'aloha/commands'
+	'aloha/commands',
+	'aloha/selection'
 ],
 
-function (jQuery, PluginManager, FloatingMenu, Commands) {
+function (jQuery, PluginManager, FloatingMenu, Commands, Selection) {
 	"use strict";
 
 	var
@@ -710,6 +711,11 @@ function (jQuery, PluginManager, FloatingMenu, Commands) {
 				throw "INVALID_ACCESS_ERR";
 			}
 
+			// Take current selection if not passed
+			if ( !range ) {
+				range = Selection.getRangeObject();
+			}
+			
 			Commands[command].action(value, range);
 
 		},

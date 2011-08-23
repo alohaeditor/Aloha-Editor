@@ -189,6 +189,28 @@ define(
 			rangeObject.endOffset = markerRange.endOffset;
 
 			return rangeObject;
+		},
+		/**
+		 * Transform the selection into a selection marker.
+		 * @void
+		 */
+		markerFromSelection : function () {
+			var 
+				range = Aloha.Selection.getRangeObject(),
+				insertMarker = 	function (node,offset,marker) {
+					var
+						text;
+					if (node.nodeType == 3) {
+						text = node.nodeValue;
+						range.endContainer.nodeValue = text.substring(0,offset)+marker+text.substring(offset);
+					} else {
+						// insert text node before endNode
+						//jQuery(node).contents()[offset]).appendTo(']');
+					}
+				};
+			
+			insertMarker(range.endContainer, range.endOffset, ']');
+			insertMarker(range.startContainer, range.startOffset, '[');
 		}
 	});
 
