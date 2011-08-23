@@ -325,8 +325,7 @@ function (jQuery, PluginManager, FloatingMenu, undefined) {
 				Aloha.eventHandled = false;
 			});
 			// Initialise the base path to the aloha files
-			Aloha.settings.base =
-				Aloha.settings.base || window.Aloha_base || Aloha.getAlohaUrl();
+			Aloha.settings.base = Aloha.getAlohaUrl();
 
 			// initialize the Log
 			Aloha.Log.init();
@@ -667,8 +666,7 @@ function (jQuery, PluginManager, FloatingMenu, undefined) {
 		 * @return {String} alohaUrl
 		 */
 		getAlohaUrl: function(suffix){
-			window.Aloha_base = window.Aloha_base || document.getElementById('aloha-script-include').src.replace(/require.js$/,'').replace(/\/+$/,'');
-			return window.Aloha_base;
+			return window.Aloha.settings.base || document.getElementById('aloha-script-include').src.replace(/require.js$/,'').replace(/\/+$/,'');
 		},
 
 		/**
