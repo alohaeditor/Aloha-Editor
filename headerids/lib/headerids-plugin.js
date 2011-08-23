@@ -119,7 +119,7 @@ function(Plugin, FloatingMenu, i18n, i18nCore) {
 						that.content.find(nsSel('input')).val(effective.attr('id'));
                     }
                     
-                });
+                }).sidebar;
 			sidebar.show().open();
 		}
 	});
