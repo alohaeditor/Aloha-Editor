@@ -1696,7 +1696,7 @@ var requirejs, require, define;
         //Using currentTarget instead of target for Firefox 2.0's sake. Not
         //all old browsers will be supported, but this one was easy enough
         //to support and still makes sense.
-        var node = evt.currentTarget || evt.srcElement, contextName, moduleName,
+        var node = evt.currentTarget || evt.srcElement || currentlyAddingScript, contextName, moduleName,
             context;
 
         if (evt.type === "load" || readyRegExp.test(node.readyState)) {
