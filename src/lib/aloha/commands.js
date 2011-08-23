@@ -19,7 +19,8 @@
 */
 
 define(
-	['require', 'exports'],
+	['require', 'exports',
+	 'commands/inserthtml'],
 	function(require, exports) {
 		"use strict";
 
