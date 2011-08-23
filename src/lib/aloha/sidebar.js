@@ -577,8 +577,22 @@ define([
 			return this;
 		},
 		
-		// We try and build as much of the panel DOM as we can before inserting
-		// it into the DOM in order to reduce reflow.
+		/**
+		 * Adds a panel to this sidebar instance.
+		 *
+		 * We try and build as much of the panel DOM as we can before inserting
+		 * it into the DOM in order to reduce reflow.
+		 *
+		 * @param {Object} panel - either a panel instance or an associative
+		 *			   array containing settings for the construction
+		 *			   of a new panel.
+		 * @param {Boolean} deferRounding - (Optional) If true, the rounding-off
+		 *				    of the top most and bottom most panels
+		 *				    will not be automatically done. Set
+		 *				    this to true when adding a lot of panels
+		 *				    at once.
+		 * @return {Object} - The newly created panel.
+		 */
 		addPanel: function (panel, deferRounding) {
 			if (!(panel instanceof Panel)) {
 				if (!panel.width) {
@@ -596,7 +610,7 @@ define([
 				this.roundCorners();
 			}
 			
-			return this;
+			return panel;
 		}
 		
 	});
