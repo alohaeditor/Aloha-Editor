@@ -124,7 +124,6 @@ GENTICS.Utils.RangeObject = Class.extend({
                         if (rt[i].domobj == this.startContainer) {
                                 this.startOffset = GENTICS.Utils.Dom.getIndexInParent(this.startContainer)
                                 this.startContainer = this.startContainer.parentNode;
-                                console.log('here I am');
                         }
                         jQuery(rt[i].domobj).remove();
                 }
