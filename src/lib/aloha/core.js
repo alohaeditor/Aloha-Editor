@@ -23,10 +23,11 @@ define(
 [
 	'aloha/jquery',
 	'aloha/pluginmanager',
-	'aloha/floatingmenu'
+	'aloha/floatingmenu',
+	'aloha/commands'
 ],
 
-function (jQuery, PluginManager, FloatingMenu, undefined) {
+function (jQuery, PluginManager, FloatingMenu, Commands) {
 	"use strict";
 
 	var
@@ -687,6 +688,32 @@ function (jQuery, PluginManager, FloatingMenu, undefined) {
 			return url;
 		},
 
+		/**
+		 * Executes a registered command
+		 * @method
+		 * range is not in editing API. Must be a range obejct which will be affected by the command.
+		 */
+		execCommand: function(command, showUi, value, range){
+			
+			// "All of these methods must treat their command argument ASCII
+			// case-insensitively."
+			command = command.toLowerCase();
+			
+			// "If command is not supported, raise a NOT_SUPPORTED_ERR exception."
+			// We can't throw a real one, but a string will do for our purposes.
+			if (!(command in Commands)) {
+				throw "NOT_SUPPORTED_ERR";
+			}
+
+			// "If command has no action, raise an INVALID_ACCESS_ERR exception."
+			if (!('action' in Commands[command])) {
+				throw "INVALID_ACCESS_ERR";
+			}
+
+			Commands[command].action(value, range);
+
+		},
+
 		i18n: function(component, key, replacements) {
 			window.console && window.console.log && console.log("Called deprecated i18n function!!", component, key);
 			return key;
@@ -695,4 +722,6 @@ function (jQuery, PluginManager, FloatingMenu, undefined) {
 
 	// Initialise Aloha Editor
 	Aloha.init();
+	
+	return Aloha;
 });
