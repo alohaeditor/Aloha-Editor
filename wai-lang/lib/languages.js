@@ -99,13 +99,17 @@ function(jQuery, Repository, i18nCore, WaiLang) {
 		query: function( p, callback) {
 			// Not supported; filter, orderBy, maxItems, skipcount, renditionFilter
 			var that = this;
+			var query = new RegExp(p.queryString, 'i'), i, d = [], matchesName, matchesType, currentElement;
 
-			var d = this.languageCodes.filter(function(currentElement, i, a) {
-				var query = new RegExp(p.queryString, 'i');
-				var matchesName = ( !p.queryString || currentElement.name.match(query)  || currentElement.nativeName.match(query));
-				var matchesType = ( !p.objectTypeFilter || ( !p.objectTypeFilter.length ) || jQuery.inArray(currentElement.type, p.objectTypeFilter) > -1);
-				return ( matchesName && matchesType	);
-			});
+			for (i = 0; i < this.languageCodes.length; ++i) {
+				currentElement = this.languageCodes[i];
+				matchesName = ( !p.queryString || currentElement.name.match(query)  || currentElement.nativeName.match(query));
+				matchesType = ( !p.objectTypeFilter || ( !p.objectTypeFilter.length ) || jQuery.inArray(currentElement.type, p.objectTypeFilter) > -1);
+
+				if (matchesName && matchesType) {
+					d.push(currentElement);
+				}
+			}
 			
 			callback.call( this, d);
 		}
