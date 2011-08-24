@@ -1086,7 +1086,7 @@ function(jQuery, FloatingMenu) {
 				}
 
 				// skip empty text nodes
-				if (el.domobj && el.domobj.nodeType === 3 && jQuery.trim(jQuery(el.domobj).outerHtml()).length === 0) {
+				if (el.domobj && el.domobj.nodeType === 3 && jQuery.trim(el.domobj.nodeValue).length === 0) {
 					continue;
 				}
 
