@@ -43,18 +43,25 @@ function(Aloha, jQuery, Commands) {
 				}
 			};
 			
-			// if value string convert to jQuery
+			// allowed values are string or jQuery objects
+			// add value to a container div
 			if ( typeof value === 'string' ){
-				value = jQuery(value);
+				value = jQuery( '<div>' + value + '</div>' );
+			} else if ( value instanceof jQuery ) {
+				value = jQuery( '<div>' ).appendTo(value);
+			} else {
+				throw "INVALID_VALUE_ERR";
+				return;
 			}
+
+			// get contents of container div
+			domNodes = value.contents();
 			
 			// check if range starts an ends in same editable host
 			if ( !(GENTICS.Utils.Dom.inSameEditingHost(range.startContainer, range.endContainer)) ) {
 				throw "INVALID_RANGE_ERR";
 				return;
 			}
-			
-			domNodes = value.contents()
 			
 			// delete currently selected contents
 			if (range.deleteContents) {
@@ -75,8 +82,9 @@ function(Aloha, jQuery, Commands) {
 				range.select();
 			}
 			
-			var r = window.Aloha.Selection.getRangeObject();
-	        GENTICS.Utils.Dom.doCleanup({merge:true}, r, range.commonAncestorContainer);
+			window.Aloha.Selection.updateSelection()
+			var selectedRange = window.Aloha.Selection.getRangeObject();
+	        GENTICS.Utils.Dom.doCleanup({merge:true}, selectedRange, range.commonAncestorContainer);
 
 		}
 	};

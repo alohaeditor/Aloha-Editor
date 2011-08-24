@@ -1380,9 +1380,27 @@ GENTICS.Utils.Dom = Class.extend({
 	 * @method
 	 */
 	setCursorAfter: function (domObject) {
-		var newRange = new GENTICS.Utils.RangeObject();
-		newRange.startContainer = newRange.endContainer = domObject.parentNode;
-		newRange.startOffset = newRange.endOffset = this.getIndexInParent(domObject) + 1;
+		var 
+			newRange = new GENTICS.Utils.RangeObject(),
+			index = this.getIndexInParent(domObject),
+			targetNode,
+			offset;
+		
+		// selection cannot be set between to TEXT_NODEs
+		// if domOject is a Text node set selection at last position in that node
+		if ( domObject.nodeType === Node.TEXT_NODE) {
+			targetNode = domObject;
+			offset = targetNode.nodeValue.length;
+
+		// if domOject is a Text node set selection at last position in that node
+		// TODO find proper algorithm to identify next node
+		} else if ( domObject.nextSibling.nodeType === Node.TEXT_NODE) {
+			targetNode = domObject.nextSibling;
+			offset = 0;
+		}
+		
+		newRange.startContainer = newRange.endContainer = targetNode;
+		newRange.startOffset = newRange.endOffset = offset;
 
 		// select the range
 		newRange.select();
