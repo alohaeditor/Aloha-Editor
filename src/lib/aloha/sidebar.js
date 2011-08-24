@@ -53,22 +53,23 @@ define([
 		uid  = +(new Date),
 		// namespaced classnames
 		nsClasses = {
-			bar				: nsClass('bar'),
-			'config-btn'	: nsClass('config-btn'),
-			handle			: nsClass('handle'),
-			'handle-icon'	: nsClass('handle-icon'),
-			inner			: nsClass('inner'),
-			'panel-content'	: nsClass('panel-content'),
+			bar           : nsClass('bar'),
+			'config-btn'  : nsClass('config-btn'),
+			handle        : nsClass('handle'),
+			'handle-icon' : nsClass('handle-icon'),
+			inner         : nsClass('inner'),
+			'panel-content'
+			              : nsClass('panel-content'),
 			'panel-content-inner'
-							: nsClass('panel-content-inner'),
+			              : nsClass('panel-content-inner'),
 			'panel-content-inner-text'
-							: nsClass('panel-content-inner-text'),
-			panels			: nsClass('panels'),
-			'panel-title'	: nsClass('panel-title'),
+			              : nsClass('panel-content-inner-text'),
+			panels        : nsClass('panels'),
+			'panel-title' : nsClass('panel-title'),
 			'panel-title-arrow'
-							: nsClass('panel-title-arrow'),
+			              : nsClass('panel-title-arrow'),
 			'panel-title-text'
-							: nsClass('panel-title-text')
+			              : nsClass('panel-title-text')
 		};
 	
 	// ------------------------------------------------------------------------
@@ -93,13 +94,12 @@ define([
 	
 	// TODO: This suffices for now. But we are to consider a more robust
 	//		 templating engine.
-	// TODO: Offer parameter to define left and right delimiters in case the
-	//		 default "{", and "}" are problematic
-	String.prototype.supplant = function (/*'lDelim, rDelim,'*/ obj) {
-		return this.replace(/\{([a-z0-9\-\_]+)\}/ig, function (str, p1, offset, s) {
+	function supplant (str, obj) {
+		return str.replace(/\{([a-z0-9\-\_]+)\}/ig, function (str, p1, offset, s) {
 			var replacement = obj[p1] || str;
-			return (typeof replacement == 'function')
-						? replacement() : replacement;
+			return (typeof replacement === 'function')
+						? replacement()
+						: replacement;
 		});
 	};
 	
@@ -107,7 +107,7 @@ define([
 	// going directly to String.prototype.supplant
 	function renderTemplate (str) {
 		return (typeof str === 'string')
-					? str.supplant(nsClasses)
+					? supplant(str, nsClasses)
 					: str;
 	};
 	
@@ -840,15 +840,16 @@ define([
 					while (l--) {
 						pathRev.push(path[l]);
 					}
-					content.push(
+					content.push(supplant(
 						'<div class="aloha-sidebar-panel-parent">\
 							<div class="aloha-sidebar-panel-parent-path">{path}</div>\
 							<div class="aloha-sidebar-panel-parent-content aloha-sidebar-opened">{content}</div>\
-						 </div>'.supplant({
+						 </div>',
+						{
 							path	: pathRev.join(''),
 							content	: (typeof renderer === 'function') ? renderer(el) : '----'
-						})
-					);
+						}
+					));
 				}
 				
 				el = el.parent();
