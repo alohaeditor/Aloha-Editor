@@ -1446,7 +1446,7 @@ GENTICS.Utils.Dom = Class.extend({
 	isEditingHost: function (node) {
 		return node
 			&& node.nodeType == Node.ELEMENT_NODE
-			&& (node.contentEditable == "true" // TODO do proper editable check with jQuery
+			&& (node.contentEditable == "true"
 			|| (node.parentNode
 			&& node.parentNode.nodeType == Node.DOCUMENT_NODE
 			&& node.parentNode.designMode == "on"));
@@ -1509,5 +1509,7 @@ GENTICS.Utils.Dom = Class.extend({
  * @hide
  */
 GENTICS.Utils.Dom = new GENTICS.Utils.Dom();
+
+return GENTICS.Utils.Dom;
 
 });
