@@ -87,7 +87,8 @@ function(Plugin, FloatingMenu, i18n, i18nCore) {
 		//ns = headerids
 		initSidebar: function(sidebar) {
 			var pl = this;
-			pl.sidebar = sidebar.addPanel({
+			pl.sidebar = sidebar;
+			sidebar.addPanel({
                     
                     id         : nsClass('sidebar-panel'),
                     title     : 'Sprungmarken',
@@ -119,7 +120,7 @@ function(Plugin, FloatingMenu, i18n, i18nCore) {
 						that.content.find(nsSel('input')).val(effective.attr('id'));
                     }
                     
-                }).sidebar;
+                });
 			sidebar.show().open();
 		}
 	});
