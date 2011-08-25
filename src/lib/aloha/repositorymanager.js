@@ -299,7 +299,7 @@ Aloha.RepositoryManager = Class.extend({
 		if ( params.inFolderId == 'aloha' && this.repositories.length > 0 ) {
 			repos = [];
 			for ( i = 0; i < this.repositories.length; i++) {
-				repos.push( new Aloha.Repository.Folder ({
+				repos.push( new Aloha.RepositoryFolder ({
 					id: this.repositories[i].repositoryId,
 					name: this.repositories[i].repositoryName,
 					repositoryId: this.repositories[i].repositoryId,
