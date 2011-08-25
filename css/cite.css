@@ -1,5 +1,5 @@
 .aloha-cite-button {
-	background-color: red !important;
+	background: url(../img/button.png) no-repeat !important;
 }
 .aloha-cite-block-button {
 	background: url(../img/blockquote.png) no-repeat !important;
@@ -40,7 +40,7 @@ box-shadow: 0 1px 0 rgba(255, 255, 255, 0.1), 0 1px 7px 0 rgba(0, 0, 0, 0.8) ins
 
 .aloha-cite-panel-field input,
 .aloha-cite-panel-field textarea {
-	width: 192px;
+	width: 190px;
 	padding: 5px;
 	color: #555;
 	font-family: Arial, sans-serif;
