@@ -20,14 +20,40 @@
 
 define(
 ['aloha/jquery'],
-function(jQuery, undefined) {
+function(jQuery) {
 	"use strict";
 	
 	var
-		$ = jQuery,
 		GENTICS = window.GENTICS,
 		Class = window.Class,
-		console = window.console;
+		// http://www.w3.org/TR/DOM-Level-3-Core/core.html#ID-1841493061
+		Node = {
+    		'ELEMENT_NODE' : 1,
+    		'ATTRIBUTE_NODE': 2,
+    		'TEXT_NODE': 3,
+    		'CDATA_SECTION_NODE': 4,
+    		'ENTITY_REFERENCE_NODE': 5,
+    		'ENTITY_NODE': 6,
+    		'PROCESSING_INSTRUCTION_NODE': 7,
+    		'COMMENT_NODE': 8,
+    		'DOCUMENT_NODE': 9,
+    		'DOCUMENT_TYPE_NODE': 10,
+    		'DOCUMENT_FRAGMENT_NODE': 11,
+    		'NOTATION_NODE': 12,
+    		//The two nodes are disconnected. Order between disconnected nodes is always implementation-specific.
+    		'DOCUMENT_POSITION_DISCONNECTED': 0x01,
+    		//The second node precedes the reference node.
+    		'DOCUMENT_POSITION_PRECEDING': 0x02, 
+    		//The node follows the reference node.
+    		'DOCUMENT_POSITION_FOLLOWING': 0x04,
+    		//The node contains the reference node. A node which contains is always preceding, too.
+    		'DOCUMENT_POSITION_CONTAINS': 0x08,
+    		//The node is contained by the reference node. A node which is contained is always following, too.
+    		'DOCUMENT_POSITION_CONTAINED_BY': 0x10,
+    		//The determination of preceding versus following is implementation-specific.
+    		'DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC': 0x20
+    	};
+
 
 /**
  * @namespace GENTICS.Utils
@@ -1354,9 +1380,27 @@ GENTICS.Utils.Dom = Class.extend({
 	 * @method
 	 */
 	setCursorAfter: function (domObject) {
-		var newRange = new GENTICS.Utils.RangeObject();
-		newRange.startContainer = newRange.endContainer = domObject.parentNode;
-		newRange.startOffset = newRange.endOffset = this.getIndexInParent(domObject) + 1;
+		var 
+			newRange = new GENTICS.Utils.RangeObject(),
+			index = this.getIndexInParent(domObject),
+			targetNode,
+			offset;
+		
+		// selection cannot be set between to TEXT_NODEs
+		// if domOject is a Text node set selection at last position in that node
+		if ( domObject.nodeType === Node.TEXT_NODE) {
+			targetNode = domObject;
+			offset = targetNode.nodeValue.length;
+
+		// if domOject is a Text node set selection at last position in that node
+		// TODO find proper algorithm to identify next node
+		} else if ( domObject.nextSibling.nodeType === Node.TEXT_NODE) {
+			targetNode = domObject.nextSibling;
+			offset = 0;
+		}
+		
+		newRange.startContainer = newRange.endContainer = targetNode;
+		newRange.startOffset = newRange.endOffset = offset;
 
 		// select the range
 		newRange.select();
@@ -1389,7 +1433,75 @@ GENTICS.Utils.Dom = Class.extend({
 
 		// select the range
 		newRange.select();
+	},
+	
+
+	/**
+	 * "An editing host is a node that is either an Element with a contenteditable
+	 * attribute set to the true state, or the Element child of a Document whose
+	 * designMode is enabled."
+	 * @param domObject DOM object
+	 * @method
+	 */
+	isEditingHost: function (node) {
+		return node
+			&& node.nodeType == Node.ELEMENT_NODE
+			&& (node.contentEditable == "true"
+			|| (node.parentNode
+			&& node.parentNode.nodeType == Node.DOCUMENT_NODE
+			&& node.parentNode.designMode == "on"));
+	},
+
+	/**
+	 * "Something is editable if it is a node which is not an editing host, does
+	 * not have a contenteditable attribute set to the false state, and whose
+	 * parent is an editing host or editable."
+	 * @param domObject DOM object
+	 * @method
+	 */
+	isEditable: function (node) {
+		// This is slightly a lie, because we're excluding non-HTML elements with
+		// contentEditable attributes.
+		return node
+			&& !this.isEditingHost(node)
+			&& (node.nodeType != Node.ELEMENT_NODE || node.contentEditable != "false")
+			&& (this.isEditingHost(node.parentNode) || this.isEditable(node.parentNode));
+	},
+
+	/**
+	 * "The editing host of node is null if node is neither editable nor an editing
+	 * host; node itself, if node is an editing host; or the nearest ancestor of
+	 * node that is an editing host, if node is editable."
+	 * @param domObject DOM object
+	 * @method
+	 */
+	getEditingHostOf: function(node) {
+		if (this.isEditingHost(node)) {
+			return node;
+		} else if (this.isEditable(node)) {
+			var ancestor = node.parentNode;
+			while (!this.isEditingHost(ancestor)) {
+				ancestor = ancestor.parentNode;
+			}
+			return ancestor;
+		} else {
+			return null;
+		}
+	},
+
+	/**
+	 * 
+	 * "Two nodes are in the same editing host if the editing host of the first is
+	 * non-null and the same as the editing host of the second."
+	 * @param node1 DOM object
+	 * @param node2 DOM object
+	 * @method
+	 */
+	inSameEditingHost: function (node1, node2) {
+		return this.getEditingHostOf(node1)
+			&& this.getEditingHostOf(node1) == this.getEditingHostOf(node2);
 	}
+	
 });
 
 /**
@@ -1397,5 +1509,7 @@ GENTICS.Utils.Dom = Class.extend({
  * @hide
  */
 GENTICS.Utils.Dom = new GENTICS.Utils.Dom();
+
+return GENTICS.Utils.Dom;
 
 });
