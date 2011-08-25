@@ -371,8 +371,15 @@ function(jQuery, Ext, Base, undefined) {
 				if (typeof Aloha.settings.floatingmenu.marginTop === 'number') {
 				    this.marginTop = Aloha.settings.floatingmenu.marginTop;
 				}
-				if (typeof Aloha.settings.floatingmenu.width === 'number') {
-				    this.width = Aloha.settings.floatingmenu.width;
+				//We just check for undefined
+				if (typeof Aloha.settings.floatingmenu.width !== 'undefined') {
+					//Try to pars it
+					try {
+						var parsed = parseInt(Aloha.settings.floatingmenu.width);
+						this.width = Aloha.settings.floatingmenu.width;
+					} catch(e) {
+						//do nothing.
+					}
 				}
 		    }
 
