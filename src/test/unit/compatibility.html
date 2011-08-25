@@ -10,13 +10,33 @@
 	<!-- include jquery -->
 	<script	src="../../lib/vendor/jquery-1.5.1.js" ></script>	
 	<script>
+		// currently, we need to manually set the path to aloha
+		window.Aloha = {
+			settings : {
+				base : '../../lib/',
+				logLevels : {
+					'error': true,
+					'warn':  true,
+					'info':  false,
+					'debug': false
+				},
+				logHistory : {
+					levels : {
+						'error' : true,
+						'warn' : true,
+						'info' : false,
+						'debug' : false
+					}
+				},
+				errorhandling : true
+			}
+		};
+
 		window.alohaQuery = jQuery.noConflict();
 		var require = {
 			waitSeconds : 15
 		};
 	</script>
-	<!-- inject into testswarm -->
-	<script type="text/javascript" src="../dep/swarminject.js"></script>
 
 	<!-- include old jquery for compatibility check -->
 	<script	src="../dep/jquery-1.2.1.js" ></script>
@@ -24,6 +44,14 @@
 	<!-- include aloha -->
 	<script src="../../lib/require.js" data-main="../../lib/aloha.js" id="aloha-script-include" data-plugins=""></script>
 
+	<!-- include testswarm inject script -->
+	<script>
+		var url = window.location.search;
+		url = decodeURIComponent( url.slice( url.indexOf("swarmURL=") + 9 ) );
+		if ( url && url.indexOf("http") === 0 ) {
+			require(["http://testswarm.aloha-editor.org/js/inject.js?" + (new Date).getTime()], function() {});
+		}
+	</script>
 </head>
 <body>
 	<!-- include the tests -->

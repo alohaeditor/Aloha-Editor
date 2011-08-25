@@ -11,28 +11,6 @@ function(jQuery, TestUtils, undefined) {
 	
 	var $ = jQuery;
 
-if (window.Aloha === undefined || window.Aloha === null) {
-	window.Aloha = {};		
-}
-
-window.Aloha.settings = {
-	logLevels : {
-		'error': true,
-		'warn':  true,
-		'info':  false,
-		'debug': false
-	},
-	logHistory : {
-		levels : {
-			'error' : true,
-			'warn' : true,
-			'info' : false,
-			'debug' : false
-		}
-	},
-	errorhandling : true
-};
-
 /**
  * Do a "remove markup" test
  * @param editable the editable

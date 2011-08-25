@@ -9,28 +9,6 @@ define("compatibilitytest",
 function(aQuery) {
 	"use strict";
 
-if (window.Aloha === undefined || window.Aloha === null) {
-	window.Aloha = {};		
-}
-
-window.Aloha.settings = {
-	logLevels : {
-		'error': true,
-		'warn':  true,
-		'info':  false,
-		'debug': false
-	},
-	logHistory : {
-		levels : {
-			'error' : true,
-			'warn' : true,
-			'info' : false,
-			'debug' : false
-		}
-	},
-	errorhandling : true
-};
-
 	// Start the tests, when Aloha is ready
 	aQuery('body').bind('aloha', function() {
 		// for IE, it is necessary to have this setTimeout. Otherwise, the

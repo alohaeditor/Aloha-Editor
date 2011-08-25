@@ -37,8 +37,8 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 	minChars: 3,
 	valueField: 'id',
 	displayField: 'name',
-	listEmptyText: i18n.t( Aloha, 'repository.no_item_found' ),
-	loadingText: i18n.t( Aloha, 'repository.loading' ) + '...',
+	listEmptyText: i18n.t( 'repository.no_item_found' ),
+	loadingText: i18n.t( 'repository.loading' ) + '...',
 	enableKeyEvents: true,
 	store: new Ext.data.Store({
 		proxy: new Ext.data.AlohaProxy(),

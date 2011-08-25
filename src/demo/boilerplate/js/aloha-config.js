@@ -1,7 +1,5 @@
 (function(window, undefined) {
-	
-	var jQuery = window.jQuery;
-	
+
 	if (window.Aloha === undefined || window.Aloha === null) {
 		var Aloha = window.Aloha = {};		
 	}
@@ -78,9 +76,9 @@
 							// handle change of href
 							onHrefChange: function( obj, href, item ) {
 								if ( item ) {
-									//jQuery(obj).attr('data-name', item.name);
+									window.alohaQuery(obj).attr('data-name', item.name);
 								} else {
-									//jQuery(obj).removeAttr('data-name');
+									window.alohaQuery(obj).removeAttr('data-name');
 								}
 							}
 					},

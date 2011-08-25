@@ -24,7 +24,6 @@ window.GENTICS.Utils = window.GENTICS.Utils || {};
 window.Aloha = window.Aloha || {};
 window.Aloha.settings = window.Aloha.settings || {};
 window.Aloha.ui = window.Aloha.ui || {};
-window.Aloha_base = window.Aloha_base || false;
 
 define(
 	'aloha',
