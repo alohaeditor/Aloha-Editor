@@ -7,8 +7,8 @@
 window.TestUtils = window.TestUtils || {};
 
 define(
-		['aloha/jquery'],
-		function(jQuery, undefined) {
+		['aloha/jquery', 'aloha/selection', 'util/range'],
+		function(jQuery, Selection, Range) {
 			"use strict";
 			
 			var	$ = jQuery;
@@ -150,43 +150,30 @@ define(
 		 * @return range
 		 */
 		rangeFromMarker : function (editable) {
-			var foundStart = false, foundEnd = false;
-			var rangeObject = new Aloha.Selection.SelectionRange();
-			var markerRange = new Aloha.Selection.SelectionRange();
+			var 
+				text,
+				offset,
+				rangeObject = new Selection.SelectionRange();
 
-			editable.contents().filter(function() {
+			editable.textNodes().filter(function() {
 				return this.nodeType == 3 && this.nodeValue.indexOf('[') >= 0;
 			}).each(function() {
-				markerRange.startContainer = markerRange.endContainer = this;
-				markerRange.startOffset = this.nodeValue.indexOf('[');
-				markerRange.endOffset = markerRange.startOffset + 1;
-				foundStart = true;
+				text = this.nodeValue;
+				offset = text.indexOf('[');
+				this.nodeValue = text.substring( 0, offset ) + text.substring( offset + 1 );
+				rangeObject.startContainer = this;
+				rangeObject.startOffset = offset;
 			});
 
-			if (!foundStart) {
-				return;
-			}
-
-			GENTICS.Utils.Dom.removeRange(markerRange);
-			rangeObject.startContainer = markerRange.startContainer;
-			rangeObject.startOffset = markerRange.startOffset;
-
-			editable.contents().filter(function() {
+			editable.textNodes().filter(function() {
 				return this.nodeType == 3 && this.nodeValue.indexOf(']') >= 0;
 			}).each(function() {
-				markerRange.startContainer = markerRange.endContainer = this;
-				markerRange.startOffset = this.nodeValue.indexOf(']');
-				markerRange.endOffset = markerRange.startOffset + 1;
-				foundEnd = true;
+				text = this.nodeValue;
+				offset = text.indexOf(']');
+				this.nodeValue = text.substring( 0, offset ) + text.substring( offset + 1 );
+				rangeObject.endContainer = this;
+				rangeObject.endOffset = offset;
 			});
-
-			if (!foundEnd) {
-				return;
-			}
-
-			GENTICS.Utils.Dom.removeRange(markerRange);
-			rangeObject.endContainer = markerRange.endContainer;
-			rangeObject.endOffset = markerRange.endOffset;
 
 			return rangeObject;
 		},
@@ -196,7 +183,7 @@ define(
 		 */
 		markerFromSelection : function () {
 			var 
-				range = Aloha.Selection.getRangeObject(),
+				range = new Range(),
 				insertMarker = 	function (node,offset,marker) {
 					var
 						text;
@@ -205,9 +192,11 @@ define(
 						range.endContainer.nodeValue = text.substring(0,offset)+marker+text.substring(offset);
 					} else {
 						// insert text node before endNode
-						//jQuery(node).contents()[offset]).appendTo(']');
+						jQuery(node).contents()[offset].append(']');
 					}
 				};
+			
+			range.initializeFromUserSelection();
 			
 			insertMarker(range.endContainer, range.endOffset, ']');
 			insertMarker(range.startContainer, range.startOffset, '[');
