@@ -733,7 +733,19 @@ GENTICS.Utils.Dom = Class.extend({
 						rangeObject.startContainer = prevNode;
 
 						// update the start offset
-						rangeObject.startOffset += prevNode.length;
+						rangeObject.startOffset += prevNode.nodeValue.length;
+
+						// set the flag for range modification
+						modifiedRange = true;
+					} else if (rangeObject.startContainer === prevNode.parentNode
+							&& rangeObject.startOffset === that.getIndexInParent(prevNode) + 1) {
+						// selection starts right between the previous and current text nodes (which will be merged)
+
+						// update the start container to the previous node
+						rangeObject.startContainer = prevNode;
+
+						// set the start offset
+						rangeObject.startOffset = prevNode.nodeValue.length;
 
 						// set the flag for range modification
 						modifiedRange = true;
@@ -746,7 +758,19 @@ GENTICS.Utils.Dom = Class.extend({
 						rangeObject.endContainer = prevNode;
 
 						// update the end offset
-						rangeObject.endOffset += prevNode.length;
+						rangeObject.endOffset += prevNode.nodeValue.length;
+
+						// set the flag for range modification
+						modifiedRange = true;
+					} else if (rangeObject.endContainer === prevNode.parentNode
+							&& rangeObject.endOffset === that.getIndexInParent(prevNode) + 1) {
+						// selection ends right between the previous and current text nodes (which will be merged)
+
+						// update the end container to the previous node
+						rangeObject.endContainer = prevNode;
+
+						// set the end offset
+						rangeObject.endOffset = prevNode.nodeValue.length;
 
 						// set the flag for range modification
 						modifiedRange = true;
