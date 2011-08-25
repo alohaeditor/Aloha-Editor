@@ -733,7 +733,19 @@ GENTICS.Utils.Dom = Class.extend({
 						rangeObject.startContainer = prevNode;
 
 						// update the start offset
-						rangeObject.startOffset += prevNode.length;
+						rangeObject.startOffset += prevNode.nodeValue.length;
+
+						// set the flag for range modification
+						modifiedRange = true;
+					} else if (rangeObject.startContainer === prevNode.parentNode
+							&& rangeObject.startOffset === that.getIndexInParent(prevNode) + 1) {
+						// selection starts right between the previous and current text nodes (which will be merged)
+
+						// update the start container to the previous node
+						rangeObject.startContainer = prevNode;
+
+						// set the start offset
+						rangeObject.startOffset = prevNode.nodeValue.length;
 
 						// set the flag for range modification
 						modifiedRange = true;
@@ -746,7 +758,19 @@ GENTICS.Utils.Dom = Class.extend({
 						rangeObject.endContainer = prevNode;
 
 						// update the end offset
-						rangeObject.endOffset += prevNode.length;
+						rangeObject.endOffset += prevNode.nodeValue.length;
+
+						// set the flag for range modification
+						modifiedRange = true;
+					} else if (rangeObject.endContainer === prevNode.parentNode
+							&& rangeObject.endOffset === that.getIndexInParent(prevNode) + 1) {
+						// selection ends right between the previous and current text nodes (which will be merged)
+
+						// update the end container to the previous node
+						rangeObject.endContainer = prevNode;
+
+						// set the end offset
+						rangeObject.endOffset = prevNode.nodeValue.length;
 
 						// set the flag for range modification
 						modifiedRange = true;
@@ -1172,8 +1196,8 @@ GENTICS.Utils.Dom = Class.extend({
 		for (var i = 0; i < rangeTree.length; ++i) {
 			// check for nodes fully in the range
 			if (rangeTree[i].type == 'full') {
-				// if the domobj is the startcontainer, we need to update the rangeObject
-				if (rangeObject.startContainer == rangeTree[i].domobj) {
+				// if the domobj is the startcontainer, or the startcontainer is inside the domobj, we need to update the rangeObject
+				if (jQuery(rangeObject.startContainer).parents().andSelf().filter(rangeTree[i].domobj).length > 0) {
 					rangeObject.startContainer = rangeObject.endContainer = rangeTree[i].domobj.parentNode;
 					rangeObject.startOffset = rangeObject.endOffset = this.getIndexInParent(rangeTree[i].domobj);
 				}
@@ -1182,7 +1206,7 @@ GENTICS.Utils.Dom = Class.extend({
 				jQuery(rangeTree[i].domobj).remove();
 			} else if (rangeTree[i].type == 'partial' && rangeTree[i].children) {
 				// node partially selected and has children, so do recursion
-				this.recursiveRemoveRange(rangeTree[i].children);
+				this.recursiveRemoveRange(rangeTree[i].children, rangeObject);
 			}
 		}
 	},
