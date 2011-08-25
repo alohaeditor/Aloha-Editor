@@ -622,6 +622,7 @@ GENTICS.Utils.Dom = Class.extend({
 
 	/**
 	 * Cleanup the DOM, starting with the given startobject (or the common ancestor container of the given range)
+	 * ATTENTION: If range is a selection you need to update the selection after doCleanup
 	 * Cleanup modes (given as properties in 'cleanup'):
 	 * <pre>
 	 * - merge: merges multiple successive nodes of same type, if this is allowed, starting at the children of the given node (defaults to false)
@@ -639,7 +640,13 @@ GENTICS.Utils.Dom = Class.extend({
 		var that = this, prevNode, modifiedRange, startObject;
 
 		if (typeof cleanup === 'undefined') {
-			cleanup = {'merge' : true, 'removeempty' : true};
+			cleanup = {};
+		}
+		if (typeof cleanup.merge === 'undefined') {
+			cleanup.merge = false;
+		}
+		if (typeof cleanup.removeempty === 'undefined') {
+			cleanup.removeempty = false;
 		}
 
 		if (typeof start === 'undefined' && rangeObject) {
@@ -763,6 +770,10 @@ GENTICS.Utils.Dom = Class.extend({
 					prevNode.data += this.data;
 
 					// remove this text node
+					jQuery(this).remove();
+					
+				// remove empty text nodes	
+				} else if ( this.nodeValue === '' && cleanup.removeempty ) {
 					jQuery(this).remove();
 				} else {
 					// remember it as the last text node

@@ -20,7 +20,7 @@
 
 define(
 ['aloha/jquery', 'aloha/rangy-core'],
-function(jQuery, x, undefined) {
+function(jQuery, x) {
 	"use strict";
 
 	var
@@ -976,4 +976,5 @@ GENTICS.Utils.RangeTree = Class.extend({
 	children: []
 });
 
+	return GENTICS.Utils.RangeObject;
 });

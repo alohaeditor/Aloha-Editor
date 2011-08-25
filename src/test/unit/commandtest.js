@@ -29,14 +29,17 @@ function(aQuery, TestUtils, undefined) {
 	// All other tests are done when Aloha is ready
 	aQuery( 'body' ).bind( 'aloha', function() {
 
-		var editable = aQuery( '#edit' );
+		var 
+			editable = aQuery( '#edit' ),
+			converter = aQuery('<div>');
+		
 		// aloha'fy the editable
 		editable.aloha();
 		
 		for ( var i = 0; i < tests.tests.length; i++ ) {
 			var 
 				check = tests.tests[i],
-				desc = check.start + ' -> ' + check.expected;
+				desc = converter.text(check.start).html() + ' -> ' + converter.text(check.expected).html();
 			
 			module( 'Commmand ' + tests.defaultCommand, {
 				setup: function() {
@@ -59,7 +62,6 @@ function(aQuery, TestUtils, undefined) {
 					range = TestUtils.rangeFromMarker( editable ),
 					result;
 				
-				ok( range, 'Check for selection' );
 				range.select();
 				Aloha.Selection.updateSelection();
 

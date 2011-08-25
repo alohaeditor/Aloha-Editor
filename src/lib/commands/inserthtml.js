@@ -14,6 +14,7 @@ function(Aloha, jQuery, Commands, Selection, Dom) {
 	Commands['inserthtml'] = {
 		action: function(value, range) {
 			var 
+				$editable = jQuery(Dom.getEditingHostOf(range.startContainer)),
 				i,
 				domNodes = [];
 			
@@ -22,23 +23,25 @@ function(Aloha, jQuery, Commands, Selection, Dom) {
 			 * If inserting fails (because the object is not allowed to be inserted), unwrap the contents and try with that.
 			 * @param object object to be pasted
 			 */
-			function pasteElement(object, $editable) {
-				var jqObject = jQuery(object),
+			function pasteElement(object) {
+				var $object = jQuery(object),
 					contents;
 
-				// try to insert the element into the DOM
-				if (!Dom.insertIntoDOM(jqObject, range, $editable, false)) {
+				// try to insert the element into the DOM with limit the editable host
+				// this fails when an element is not allowed to be inserted
+				if (!Dom.insertIntoDOM($object, range, $editable, false)) {
+					
 					// if that is not possible, we unwrap the content and insert every child element
-					 contents = jqObject.contents();
+					 contents = $object.contents();
 
 					// when a block level element was unwrapped, we at least insert a break
 					if (Dom.isBlockLevelElement(object) || Dom.isListElement(object)) {
-						pasteElement(jQuery('<br/>').get(0), $editable);
+						pasteElement(jQuery('<br/>').get(0));
 					}
 
 					// and now all children (starting from the back)
 					for ( i = contents.length - 1; i >= 0; --i) {
-						pasteElement(contents[i], $editable);
+						pasteElement(contents[i]);
 					}
 				}
 			};
@@ -70,7 +73,7 @@ function(Aloha, jQuery, Commands, Selection, Dom) {
 			
 			for ( i = domNodes.length - 1; i >= 0; --i) {
 				// insert the elements
-				pasteElement(domNodes[i], jQuery(Dom.getEditingHostOf(range.startContainer)));
+				pasteElement(domNodes[i]);
 			}
 			
 			// Call collapse() on the context object's Selection,
@@ -85,7 +88,7 @@ function(Aloha, jQuery, Commands, Selection, Dom) {
 
 			Selection.updateSelection();
 			var selectedRange = Selection.getRangeObject();
-	        Dom.doCleanup({merge:true}, selectedRange, range.commonAncestorContainer);
+	        Dom.doCleanup({merge:true, removeempty: true}, selectedRange, range.commonAncestorContainer);
 	        selectedRange.select();
 
 		}
