@@ -63,7 +63,7 @@ function(aQuery, TestUtils, undefined) {
 					result;
 				
 				range.select();
-				Aloha.Selection.updateSelection();
+//				Aloha.Selection.updateSelection();
 
 				// execute the command
 				Aloha.execCommand( command, false, value );

@@ -15,6 +15,7 @@ function(Aloha, jQuery, Commands, Selection, Dom) {
 		action: function(value, range) {
 			var 
 				$editable = jQuery(Dom.getEditingHostOf(range.startContainer)),
+				cac = range.commonAncestorContainer,
 				i,
 				domNodes = [];
 			
@@ -67,15 +68,13 @@ function(Aloha, jQuery, Commands, Selection, Dom) {
 			}
 			
 			// delete currently selected contents
-			if (range.deleteContents) {
-				range.deleteContents();
-			}
+			Dom.removeRange(range);
 			
 			for ( i = domNodes.length - 1; i >= 0; --i) {
 				// insert the elements
 				pasteElement(domNodes[i]);
 			}
-			
+
 			// Call collapse() on the context object's Selection,
 			// with last child's parent as the first argument and one plus its index as the second.
 			if (domNodes.length > 0) {
@@ -84,11 +83,10 @@ function(Aloha, jQuery, Commands, Selection, Dom) {
 				// if nothing was pasted, just reselect the old range
 				range.select();
 			}
-			
 
 			Selection.updateSelection();
 			var selectedRange = Selection.getRangeObject();
-	        Dom.doCleanup({merge:true, removeempty: true}, selectedRange, range.commonAncestorContainer);
+	        Dom.doCleanup({merge:true, removeempty: true}, selectedRange, cac);
 	        selectedRange.select();
 
 		}

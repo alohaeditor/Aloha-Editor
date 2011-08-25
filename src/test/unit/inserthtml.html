@@ -59,7 +59,7 @@
 			        {  	start: '[foo]',
 				       	expected: 'bam[]' 
 				    },
-			        {  	start: 'f[o]o',
+/**/			        {  	start: 'f[o]o',
 				       	expected: 'fbam[]o' 
 				    },
 			        {  	start: 'f[]oo',
@@ -72,8 +72,29 @@
 				       	expected: 'foo<span>bam[]</span>baz' 
 				    },
 					{  	start: '[foo<span>bar]</span>baz',
-				       	expected: 'bam[]<span></span>baz' 
+				       	expected: 'bam[]baz' 
 				    },
+					{  	start: '[foo<span>]bar</span>baz',
+				       	expected: 'bam[]<span>bar</span>baz' 
+				    },
+/* Not working 				    
+					{  	start: '[foo<span>b]ar</span>baz',
+				       	expected: 'bam[]<span>ar</span>baz' 
+				    },
+					{  	start: 'foo<span>[bar</span>baz]',
+				       	expected: 'foo<span>bam[]</span>' 
+				    },
+					{  	start: 'foo<span>bar[</span>baz]',
+				       	expected: 'foo<span>barbam[]</span>' 
+				    },
+					{  	start: 'foo<span>ba[r</span>baz]',
+				       	expected: 'foo<span>babam[]</span>' 
+				    },
+    				{  	start: 'foo<span>[bar</span><span>baz]</span>quz',
+				       	expected: 'foo<span>bam[]</span>baz' 
+				    },
+/**/				    
+				    
 				    {  	start: 'foo<p>[bar]</p>baz',
 				       	expected: 'foo<p>bam[]</p>baz' 
 				    },
@@ -83,14 +104,6 @@
 					{  	start: '[foo<p>bar]</p>baz',
 				       	expected: 'bam[]baz' 
 				    },
-/* Not working				    
-					{  	start: 'foo<span>[bar</span>baz]',
-				       	expected: 'foo<span>bam[]</span>' 
-				    },
-    				{  	start: 'foo<span>[bar</span><span>baz]</span>quz',
-				       	expected: 'foo<span>bam[]</span>baz' 
-				    }
-*/				    
 				    
 					{  	start: '[]foo',
 				       	expected: '<span>bam[]</span>foo',
