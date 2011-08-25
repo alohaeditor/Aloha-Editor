@@ -196,6 +196,10 @@
 
 			$body.bind('aloha',function(){
 				
+				Aloha.bind('aloha-link-href-change', function( e, a ){
+					console.log('link change: ' + a.href);
+				});
+
 				// register all editable areas
 				$('#top-text').aloha();
 				$('#content').aloha();

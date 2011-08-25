@@ -1,9 +1,12 @@
 (function(window, undefined) {
-	var jQuery = window.jQuery
+	
+	var jQuery = window.jQuery;
+	
 	if (window.Aloha === undefined || window.Aloha === null) {
-		window.Aloha = {};		
+		var Aloha = window.Aloha = {};		
 	}
-	window.Aloha.settings = {
+	
+	Aloha.settings = {
 				logLevels: {'error': true, 'warn': true, 'info': true, 'debug': false},
 				errorhandling : false,
 				ribbon: false,
@@ -75,9 +78,9 @@
 							// handle change of href
 							onHrefChange: function( obj, href, item ) {
 								if ( item ) {
-									$(obj).attr('data-name', item.name);
+									//jQuery(obj).attr('data-name', item.name);
 								} else {
-									$(obj).removeAttr('data-name');
+									//jQuery(obj).removeAttr('data-name');
 								}
 							}
 					},
