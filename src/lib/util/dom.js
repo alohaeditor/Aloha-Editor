@@ -622,6 +622,7 @@ GENTICS.Utils.Dom = Class.extend({
 
 	/**
 	 * Cleanup the DOM, starting with the given startobject (or the common ancestor container of the given range)
+	 * ATTENTION: If range is a selection you need to update the selection after doCleanup
 	 * Cleanup modes (given as properties in 'cleanup'):
 	 * <pre>
 	 * - merge: merges multiple successive nodes of same type, if this is allowed, starting at the children of the given node (defaults to false)
@@ -639,7 +640,13 @@ GENTICS.Utils.Dom = Class.extend({
 		var that = this, prevNode, modifiedRange, startObject;
 
 		if (typeof cleanup === 'undefined') {
-			cleanup = {'merge' : true, 'removeempty' : true};
+			cleanup = {};
+		}
+		if (typeof cleanup.merge === 'undefined') {
+			cleanup.merge = false;
+		}
+		if (typeof cleanup.removeempty === 'undefined') {
+			cleanup.removeempty = false;
 		}
 
 		if (typeof start === 'undefined' && rangeObject) {
@@ -763,6 +770,10 @@ GENTICS.Utils.Dom = Class.extend({
 					prevNode.data += this.data;
 
 					// remove this text node
+					jQuery(this).remove();
+					
+				// remove empty text nodes	
+				} else if ( this.nodeValue === '' && cleanup.removeempty ) {
 					jQuery(this).remove();
 				} else {
 					// remember it as the last text node
@@ -1150,6 +1161,7 @@ GENTICS.Utils.Dom = Class.extend({
 
 		// do some cleanup
 		this.doCleanup({'merge' : true}, rangeObject);
+//		this.doCleanup({'merge' : true, 'removeempty' : true}, rangeObject);
 
 		// clear the caches of the range object
 		rangeObject.clearCaches();
@@ -1393,10 +1405,12 @@ GENTICS.Utils.Dom = Class.extend({
 			offset = targetNode.nodeValue.length;
 
 		// if domOject is a Text node set selection at last position in that node
-		// TODO find proper algorithm to identify next node
-		} else if ( domObject.nextSibling.nodeType === Node.TEXT_NODE) {
+		} else if ( domObject.nextSibling && domObject.nextSibling.nodeType === Node.TEXT_NODE) {
 			targetNode = domObject.nextSibling;
 			offset = 0;
+		} else {
+			targetNode = domObject.parentNode;
+			offset = this.getIndexInParent(domObject) + 1;
 		}
 		
 		newRange.startContainer = newRange.endContainer = targetNode;
