@@ -1182,7 +1182,7 @@ GENTICS.Utils.Dom = Class.extend({
 				jQuery(rangeTree[i].domobj).remove();
 			} else if (rangeTree[i].type == 'partial' && rangeTree[i].children) {
 				// node partially selected and has children, so do recursion
-				this.recursiveRemoveRange(rangeTree[i].children);
+				this.recursiveRemoveRange(rangeTree[i].children, rangeObject);
 			}
 		}
 	},
