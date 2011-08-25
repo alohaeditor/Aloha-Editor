@@ -1172,8 +1172,8 @@ GENTICS.Utils.Dom = Class.extend({
 		for (var i = 0; i < rangeTree.length; ++i) {
 			// check for nodes fully in the range
 			if (rangeTree[i].type == 'full') {
-				// if the domobj is the startcontainer, we need to update the rangeObject
-				if (rangeObject.startContainer == rangeTree[i].domobj) {
+				// if the domobj is the startcontainer, or the startcontainer is inside the domobj, we need to update the rangeObject
+				if (jQuery(rangeObject.startContainer).parents().andSelf().filter(rangeTree[i].domobj).length > 0) {
 					rangeObject.startContainer = rangeObject.endContainer = rangeTree[i].domobj.parentNode;
 					rangeObject.startOffset = rangeObject.endOffset = this.getIndexInParent(rangeTree[i].domobj);
 				}
