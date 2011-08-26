@@ -25,10 +25,11 @@ define(
 	'aloha/pluginmanager',
 	'aloha/floatingmenu',
 	'aloha/commands',
-	'aloha/selection'
+	'aloha/selection',
+	'aloha/rangy-core'
 ],
 
-function (jQuery, PluginManager, FloatingMenu, Commands, Selection) {
+function (jQuery, PluginManager, FloatingMenu, Commands, Selection, rangyUndef) {
 	"use strict";
 
 	var
@@ -721,6 +722,33 @@ function (jQuery, PluginManager, FloatingMenu, Commands, Selection) {
 		i18n: function(component, key, replacements) {
 			window.console && window.console.log && console.log("Called deprecated i18n function!!", component, key);
 			return key;
+		},
+
+		/**
+		 * A wrapper for the function of the same name in the rangy core-depdency.
+		 * This function should be preferred as it hides the global rangy object.
+		 * For more information look at the following sites:
+		 * @param givenWindow optional - specifices the window to get the selection of
+		 * http://html5.org/specs/dom-range.html
+		 * http://code.google.com/p/rangy/wiki/RangyObject
+		 */
+		'getSelection': function(givenWindow){
+			return window.rangy.getSelection(givenWindow);
+		},
+
+		/**
+		 * A wrapper for the function of the same name in the rangy core-depdency.
+		 * This function should be preferred as it hides the global rangy object.
+		 * Please note: when the range object is not needed anymore,
+		 *   invoke the detach method on it. It is currently unknown to me why
+		 *   this is required, but that's what it says in the rangy specification.
+		 * For more information look at the following sites:
+		 * @param document optional - specifies which document to create the range for
+		 * http://www.w3.org/TR/DOM-Level-2-Traversal-Range/ranges.html
+		 * http://code.google.com/p/rangy/wiki/RangyObject
+		 */
+		'createRange': function(document) {
+			return window.rangy.createRange(document);
 		}
 	});
 
