@@ -535,7 +535,7 @@ define([
 			if (!this.isOpen) {
 				return this;
 			}
-
+			
 			var isRight = (this.position == 'right'),
 				anim = isRight ? {marginRight: -this.width} : {marginLeft: -this.width};
 			
@@ -548,16 +548,15 @@ define([
 				'easeOutExpo'
 			);
 			
-			
 			if (this.settings.overlayPage) {
 				$('body').animate(
 					isRight ? {marginRight: '-=' + this.width} : {marginLeft: '-=' + this.width},
 					500, 'easeOutExpo'
 				);
 			}
-
+			
 			this.isOpen = false;
-
+			
 			return this;
 		},
 		
