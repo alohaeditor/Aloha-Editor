@@ -190,7 +190,7 @@ define([
 			}
 			
 			// Place the bar into the DOM
-			bar.css('opacity', 0)
+			bar.hide()
 			   .appendTo(body)
 			   .click(function () {that.barClicked.apply(that, arguments);})
 			   .find(nsSel('panels')).width(this.width);
@@ -220,21 +220,21 @@ define([
 			this.correctHeight();
 		},
 		
-		// Fade in nice and slow
+		
 		show: function () {
 			this.container
-				.css('display', 'block')
-				.animate({opacity: 1}, 1000);
+				.css('display', 'block');
+				//.animate({opacity: 1}, 1000);
 			
 			return this;
 		},
 		
-		// Fade out
+		
 		hide: function () {
-			this.container
-				.animate({opacity: 0}, 1000, function () {
+			this.container.css('display','none');
+				/*.animate({opacity: 0}, 1000, function () {
 					$(this).css('display', 'block')
-				});
+				});*/
 			
 			return this;
 		},
@@ -510,8 +510,8 @@ define([
 						arr.css({
 							'-webkit-transform'	: 'rotate(' + val + 'deg)',
 							'-moz-transform'	: 'rotate(' + val + 'deg)',
-							'-ms-transform'		: 'rotate(' + val + 'deg)',
-							filter				: 'progid:DXImageTransform.Microsoft.BasicImage(rotation=' + ieAngle + ')'
+							'-ms-transform'		: 'rotate(' + val + 'deg)'//,
+							//filter				: 'progid:DXImageTransform.Microsoft.BasicImage(rotation=' + ieAngle + ')'
 						});
 					}
 				});
@@ -856,8 +856,8 @@ define([
 							arr.css({
 								'-webkit-transform'	: 'rotate(' + val + 'deg)',
 								'-moz-transform'	: 'rotate(' + val + 'deg)',
-								'-ms-transform'		: 'rotate(' + val + 'deg)',
-								filter				: 'progid:DXImageTransform.Microsoft.BasicImage(rotation=' + ieAngle + ')'
+								'-ms-transform'		: 'rotate(' + val + 'deg)'//,
+								//filter				: 'progid:DXImageTransform.Microsoft.BasicImage(rotation=' + ieAngle + ')'
 							});
 						}
 					});
