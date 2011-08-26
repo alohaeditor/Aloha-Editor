@@ -26,12 +26,10 @@ define(
 	'aloha/floatingmenu',
 	'aloha/commands',
 	'aloha/selection',
-	'aloha/rangy-core',
-	// TODO move core commands to a plugin
-//	'commands/inserthtml'
+	'util/range',
 ],
 
-function (jQuery, PluginManager, FloatingMenu, Commands, Selection, rangyUndef) {
+function (jQuery, PluginManager, FloatingMenu, Commands, Selection, Range) {
 	"use strict";
 
 	var
@@ -691,24 +689,72 @@ function (jQuery, PluginManager, FloatingMenu, Commands, Selection, rangyUndef) 
 		},
 
 		/**
-		 * Executes a registered command
+		 * Executes a registered command.
+		 * http://aryeh.name/spec/editing/editing.html#methods-of-the-htmldocument-interface
 		 * @method
-		 * range is not in editing API. Must be a range obejct which will be affected by the command.
+		 * @param command name of the command
+		 * @param showUI has no effect for Aloha Editor and is only here because in spec...
+		 * @param value depends on the used command and it impementation 
+		 * @range optional a range on which the command will be executed if not specified 
+		 * 		  the current selection will be used as range
 		 */
-		execCommand: function(a, b, c, d) {
-			Commands.execCommand(a, b, c, d);
-		},
+		execCommand: Commands.execCommand,
 		
+		/**
+		 * Check wheater the command in enabled.
+		 * If command is not supported, raise a NOT_SUPPORTED_ERR exception.
+		 * @param command name of the command
+		 * @return true if command is enabled, false otherwise.
+		 */
 		queryCommandEnabled: Commands.queryCommandEnabled,
 		
+		/**
+		 * Check if the command has an indetermed state. 
+		 * If command is not supported, a NOT_SUPPORTED_ERR exception is thrown
+		 * If command has no indeterminacy, INVALID_ACCESS_ERR exception is thrown
+		 * If command is not enabled, return false.
+		 * @param command name of the command
+		 * @range optional a range on which the command will be executed if not specified 
+		 * 		  the current selection will be used as range
+		 * @return true if command is indeterminate, otherwise false.
+		 */
 		queryCommandIndeterm: Commands.queryCommandIndeterm,
 		
+		/**
+		 * Returns the state of a given command
+		 * If command is not supported, a NOT_SUPPORTED_ERR exception is thrown
+		 * If command has no state, an INVALID_ACCESS_ERR exception is thrown
+		 * If command is not enabled, return false
+		 * If the state override for command is set, return it
+		 * @param command name of the command
+		 * @return state override or true if command's state is true, otherwise false.
+		 */
 		queryCommandState:  Commands.queryCommandState,
 
+		/**
+		 * Check if a given command is supported
+		 * @return true if command is supported, and false otherwise.
+		 */
 		queryCommandSupported:  Commands.queryCommandSupported,
 
+		/**
+		 * Returns the Value of a given Command
+		 * If command is not supported, a NOT_SUPPORTED_ERR exception is thrown
+		 * If command has no value, an INVALID_ACCESS_ERR exception is thrown
+		 * If command is not enabled, return the empty string
+		 * If command is "fontSize" and its value override is set, convert the 
+		 * value override to an integer number of pixels and return the legacy
+		 * font size for the result.
+		 * If the value override for command is set, return it.
+		 * @return command's value.
+		 */
 		queryCommandValue: Commands.queryCommandValue,
 
+		/**
+		 * Method to access translations
+		 * @deprecated
+		 * This will be removed in one of the next version
+		 */
 		i18n: function(component, key, replacements) {
 			window.console && window.console.log && console.log("Called deprecated i18n function!!", component, key);
 			return key;
@@ -718,12 +764,11 @@ function (jQuery, PluginManager, FloatingMenu, Commands, Selection, rangyUndef) 
 		 * A wrapper for the function of the same name in the rangy core-depdency.
 		 * This function should be preferred as it hides the global rangy object.
 		 * For more information look at the following sites:
-		 * @param givenWindow optional - specifices the window to get the selection of
 		 * http://html5.org/specs/dom-range.html
-		 * http://code.google.com/p/rangy/wiki/RangyObject
+		 * @param window optional - specifices the window to get the selection of
 		 */
-		'getSelection': function(givenWindow){
-			return window.rangy.getSelection(givenWindow);
+		getSelection: function(document){
+			return Selection.getRangeObject();
 		},
 
 		/**
@@ -733,12 +778,11 @@ function (jQuery, PluginManager, FloatingMenu, Commands, Selection, rangyUndef) 
 		 *   invoke the detach method on it. It is currently unknown to me why
 		 *   this is required, but that's what it says in the rangy specification.
 		 * For more information look at the following sites:
-		 * @param document optional - specifies which document to create the range for
 		 * http://www.w3.org/TR/DOM-Level-2-Traversal-Range/ranges.html
-		 * http://code.google.com/p/rangy/wiki/RangyObject
+		 * @param document optional - specifies which document to create the range for
 		 */
-		'createRange': function(document) {
-			return window.rangy.createRange(document);
+		createRange: function(window) {
+			return new Range();
 		}
 	});
 
