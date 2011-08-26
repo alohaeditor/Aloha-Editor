@@ -207,7 +207,7 @@ define([
 			if (this.opened) {
 				this.open(0);
 			}
-
+			
 			this.subscribeToEvents();
 			
 			$(window).resize(function () {
