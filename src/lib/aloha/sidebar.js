@@ -147,6 +147,11 @@ define([
 		this.opened = false;
 		this.isOpen = false;
 		
+		this.settings = {
+			rotateArrows : true,
+			overlayPage  : true
+		};
+		
 		this.init(opts);
 	};
 	
@@ -156,8 +161,6 @@ define([
 	// the prototype object
 	// ------------------------------------------------------------------------
 	$.extend(Sidebar.prototype, {
-		
-		fx: true,
 		
 		// Build as much of the sidebar as we can before appending it to DOM to
 		// minimize reflow.
@@ -264,19 +267,8 @@ define([
 				that.checkActivePanels(rangeObject);
 			});
 			Aloha.bind("aloha-editable-deactivated", function(event, params) { 
-				that.checkActivePanels(); 
+				//that.checkActivePanels(); 
 			});
-		},
-		
-		/**
-		 * Will toggle whether or not the rotation arrow effect should animate
-		 *
-		 * @param {Boolean} enable - (optional)
-		 */
-		toggleEffects: function (enable) {
-			this.fx = (enable == undefined)
-						? !this.fx
-						:(enable === true);
 		},
 		
 		// Perfoms an algorithm to dynamically fix appropriate heights for panels
@@ -525,9 +517,12 @@ define([
 				'easeOutExpo'
 			);
 			
-			$('body').animate(
-			isRight ? {marginRight: '+=' + this.width} : {marginLeft: '+=' + this.width},
-			500, 'easeOutExpo');
+			if (this.settings.overlayPage) {
+				$('body').animate(
+					isRight ? {marginRight: '+=' + this.width} : {marginLeft: '+=' + this.width},
+					500, 'easeOutExpo'
+				);
+			}
 			
 			this.isOpen = true;
 
@@ -553,9 +548,13 @@ define([
 				'easeOutExpo'
 			);
 			
-			$('body').animate(
-			isRight ? {marginRight: '-=' + this.width} : {marginLeft: '-=' + this.width},
-			500, 'easeOutExpo');
+			
+			if (this.settings.overlayPage) {
+				$('body').animate(
+					isRight ? {marginRight: '-=' + this.width} : {marginLeft: '-=' + this.width},
+					500, 'easeOutExpo'
+				);
+			}
 
 			this.isOpen = false;
 
@@ -830,7 +829,7 @@ define([
 		},
 		
 		rotateArrow: function (angle, duration) {
-			if (this.fx) {
+			if (this.sidebar.settings.rotateArrows) {
 				var arr = this.title.find(nsSel('panel-title-arrow'));
 				arr.animate({angle: angle}, {
 						duration: (typeof duration == 'number') ? duration : 500,
