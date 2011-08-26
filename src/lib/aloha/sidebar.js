@@ -526,7 +526,7 @@ define([
 				'easeOutExpo'
 			);
 			
-			if (this.settings.overlayPage) {
+			if (!this.settings.overlayPage) {
 				$('body').animate(
 					isRight ? {marginRight: '+=' + this.width} : {marginLeft: '+=' + this.width},
 					500, 'easeOutExpo'
@@ -558,7 +558,7 @@ define([
 			);
 			
 			
-			if (this.settings.overlayPage) {
+			if (!this.settings.overlayPage) {
 				$('body').animate(
 					isRight ? {marginRight: '-=' + this.width} : {marginLeft: '-=' + this.width},
 					500, 'easeOutExpo'
