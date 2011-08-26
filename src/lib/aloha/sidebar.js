@@ -208,7 +208,7 @@ define([
 				this.open(0);
 			}
 
-			this.bindToAlohaEvents();
+			this.subscribeToEvents();
 			
 			$(window).resize(function () {
 				that.correctHeight();
