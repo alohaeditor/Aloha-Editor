@@ -26,7 +26,7 @@
 // ----------------------------------------------------------------------------
 
 define([
-		
+
 	'aloha/jquery',
 	'aloha/plugin' // For when we plugify sidebar
 
@@ -157,6 +157,8 @@ define([
 	// ------------------------------------------------------------------------
 	$.extend(Sidebar.prototype, {
 		
+		fx: true,
+		
 		// Build as much of the sidebar as we can before appending it to DOM to
 		// minimize reflow.
 		init: function (opts) {
@@ -206,7 +208,7 @@ define([
 				this.open(0);
 			}
 
-			this.subscribeToEvents();
+			this.bindToAlohaEvents();
 			
 			$(window).resize(function () {
 				that.correctHeight();
@@ -234,7 +236,11 @@ define([
 			return this;
 		},
 		
-		subscribeToEvents: function () {
+		/**
+		 * Attaches a listener to aloha-select-changed in order to detect which
+		 * panels should be activated
+		 */
+		bindToAlohaEvents: function () {
 			var that = this;
 			
 			Aloha.bind('aloha-selection-changed', function(event, rangeObject) {
@@ -243,7 +249,7 @@ define([
 					i = 0,
 					obj;
 				
-				for (; i < rangeObject.markupEffectiveAtStart.length; i++) {
+				for (; i < rangeObject.markupEffectiveAtStart.length; ++i) {
 					obj = $(rangeObject.markupEffectiveAtStart[i]);
 					effective.push(obj);
 				}
@@ -254,6 +260,17 @@ define([
 			
 				that.correctHeight();
 			});
+		},
+		
+		/**
+		 * Will toggle whether or not the rotation arrow effect should animate
+		 *
+		 * @param {Boolean} enable - (optional)
+		 */
+		toggleEffects: function (enable) {
+			this.fx = (enable == undefined)
+						? !this.fx
+						:(enable === true);
 		},
 		
 		// Perfoms an algorithm to dynamically fix appropriate heights for panels
@@ -445,11 +462,11 @@ define([
 			if (el.hasClass(nsClass('panel-title'))) {
 				this.togglePanel(el);
 			} else if (el.hasClass(nsClass('panel-content'))) {
-				// console.log('Content clicked');
+				// Aloha.log('Content clicked');
 			} else if (el.hasClass(nsClass('handle'))) {
-				// console.log('Handle clicked');
+				// Aloha.log('Handle clicked');
 			} else if (el.hasClass(nsClass('bar'))) {
-				// console.log('Sidebar clicked');
+				// Aloha.log('Sidebar clicked');
 			} else {
 				this.handleBarclick(el.parent());
 			}
@@ -807,20 +824,22 @@ define([
 		},
 		
 		rotateArrow: function (angle, duration) {
-			var arr = this.title.find(nsSel('panel-title-arrow'));
-			arr.animate({angle: angle}, {
-					duration: (typeof duration == 'number') ? duration : 500,
-					easing: 'easeOutExpo',
-					step: function (val, fx) {
-						var ieAngle = angle / 90;
-						arr.css({
-							'-webkit-transform'	: 'rotate(' + val + 'deg)',
-							'-moz-transform'	: 'rotate(' + val + 'deg)',
-							'-ms-transform'		: 'rotate(' + val + 'deg)',
-							filter				: 'progid:DXImageTransform.Microsoft.BasicImage(rotation=' + ieAngle + ')'
-						});
-					}
-				});
+			if (this.fx) {
+				var arr = this.title.find(nsSel('panel-title-arrow'));
+				arr.animate({angle: angle}, {
+						duration: (typeof duration == 'number') ? duration : 500,
+						easing: 'easeOutExpo',
+						step: function (val, fx) {
+							var ieAngle = angle / 90;
+							arr.css({
+								'-webkit-transform'	: 'rotate(' + val + 'deg)',
+								'-moz-transform'	: 'rotate(' + val + 'deg)',
+								'-ms-transform'		: 'rotate(' + val + 'deg)',
+								filter				: 'progid:DXImageTransform.Microsoft.BasicImage(rotation=' + ieAngle + ')'
+							});
+						}
+					});
+			}
 		},
 		
 		renderEffectiveParents: function (effective, renderer) {
@@ -867,35 +886,37 @@ define([
 				}
 			});
 			
-			//console.log(this.content);
+			//Aloha.log(this.content);
 			this.content.height('auto').find('.aloha-sidebar-panel-content-inner').height('auto');
 			//this.sidebar.updateHeight();
 		}
 		
 	});
 	
-	// Expose Sidebar through Aloha as soon Aloha becomes available
-	$('body').bind('aloha', function () {
-		var left = new Sidebar({
-			position : 'left',
-			width	 : 250 // TODO define in config
+	// Expose Sidebar through Aloha once both the DOM is ready and Aloha are
+	// are ready
+	$(function () {
+		$('body').bind('alohacoreloaded', function () {
+			var left = new Sidebar({
+				position : 'left',
+				width	 : 250 // TODO define in config
+			});
+			
+			var right = new Sidebar({
+				position : 'right',
+				width	 : 250 // TODO define in config
+			});
+			
+			Aloha.Sidebars = {
+				left  : left,
+				right : right
+			};
+			
+			// Broadcast that Sidebars have arrived!
+			//$('body').trigger(nsClass('initialized'), Aloha.Sidebars);
+			$('body').trigger('aloha-sidebar-initialized', Aloha.Sidebars);
 		});
-		
-		var right = new Sidebar({
-			position : 'right',
-			width	 : 250 // TODO define in config
-		});
-
-		Aloha.Sidebars = {
-			left  : left,
-			right : right
-		};
-		
-		// Broadcast that Sidebars have arrived!
-		$('body').trigger(nsClass('initialized'), Aloha.Sidebars);
 	});
 	
 	return Sidebar;
-}
-
-); // require
+});
