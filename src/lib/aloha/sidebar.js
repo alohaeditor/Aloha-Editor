@@ -262,7 +262,7 @@ define([
 		
 		subscribeToEvents: function () {
 			var that = this;
-			var $container = $(this.container);
+			var $container = this.container;
 			Aloha.bind('aloha-selection-changed', function(event, rangeObject) {
 				that.checkActivePanels(rangeObject);
 			});
