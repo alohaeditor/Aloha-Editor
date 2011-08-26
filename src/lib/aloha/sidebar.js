@@ -733,7 +733,7 @@ define([
 					
 					if (typeofActiveOn === 'boolean') {
 						fn = function () {
-							return typeofActiveOn;
+							return activeOn;
 						};
 					} else if (typeofActiveOn === 'undefined') {
 						fn = function () {
