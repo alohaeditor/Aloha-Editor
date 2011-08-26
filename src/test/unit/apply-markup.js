@@ -10,28 +10,6 @@ function(jQuery, TestUtils, undefined) {
 	"use strict";
 	
 	var $ = jQuery;
-	
-if (window.Aloha === undefined || window.Aloha === null) {
-	window.Aloha = {};		
-}
-
-window.Aloha.settings = {
-	logLevels : {
-		'error': true,
-		'warn':  true,
-		'info':  false,
-		'debug': false
-	},
-	logHistory : {
-		levels : {
-			'error' : true,
-			'warn' : true,
-			'info' : false,
-			'debug' : false
-		}
-	},
-	errorhandling : true
-};
 
 /**
  * Do an markup test
@@ -263,10 +241,4 @@ function doBlockTest(editable, startContainer, startOffset, endContainer, endOff
 			doBlockTest(this.edit, this.edit.find('p').eq(1).contents().get(0), 1, this.edit.find('p').eq(1).contents().get(0), 1, jQuery('<h1></h1>'), '#ref-header', '#ref-header-last-h1');
 		});
 	});
-
-    var url = window.location.search;
-	url = decodeURIComponent( url.slice( url.indexOf("swarmURL=") + 9 ) );
-	if ( url && url.indexOf("http") === 0 ) {
-		require(["http://testswarm.aloha-editor.org/js/inject.js?" + (new Date).getTime()], function() {});
-	}
 });

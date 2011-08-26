@@ -365,12 +365,22 @@ function(jQuery, Ext, Base, undefined) {
 
 			// check for behaviour setting of the floating menu
 		    if (Aloha.settings.floatingmenu) {
-			if (typeof Aloha.settings.floatingmenu.behaviour === 'string') {
-			    this.behaviour = Aloha.settings.floatingmenu.behaviour;
-			}
-			if (typeof Aloha.settings.floatingmenu.marginTop === 'number') {
-			    this.marginTop = Aloha.settings.floatingmenu.marginTop;
-			}
+				if (typeof Aloha.settings.floatingmenu.behaviour === 'string') {
+				    this.behaviour = Aloha.settings.floatingmenu.behaviour;
+				}
+				if (typeof Aloha.settings.floatingmenu.marginTop === 'number') {
+				    this.marginTop = Aloha.settings.floatingmenu.marginTop;
+				}
+				//We just check for undefined
+				if (typeof Aloha.settings.floatingmenu.width !== 'undefined') {
+					//Try to pars it
+					try {
+						var parsed = parseInt(Aloha.settings.floatingmenu.width);
+						this.width = Aloha.settings.floatingmenu.width;
+					} catch(e) {
+						//do nothing.
+					}
+				}
 		    }
 
 			jQuery.storage = new jQuery.store();
@@ -426,6 +436,12 @@ function(jQuery, Ext, Base, undefined) {
 		panelBody: null,
 
 		/**
+		 * The panels width
+		 * @hide
+		 */
+		width: 400,
+
+		/**
 		 * Generate the rendered component for the floatingmenu
 		 * @hide
 		 */
@@ -446,7 +462,7 @@ function(jQuery, Ext, Base, undefined) {
 				// generate the tabpanel object
 				this.extTabPanel = new Ext.TabPanel({
 					activeTab: 0,
-					width: 400, // 336px this fits the multisplit button and 6 small buttons placed in 3 cols
+					width: that.width, // 336px this fits the multisplit button and 6 small buttons placed in 3 cols
 					plain: false,
 					draggable: {
 						insertProxy: false,

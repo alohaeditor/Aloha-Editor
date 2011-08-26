@@ -11,28 +11,6 @@ function(jQuery, TestUtils, undefined) {
 	
 	var $ = jQuery;
 
-if (window.Aloha === undefined || window.Aloha === null) {
-	window.Aloha = {};		
-}
-
-window.Aloha.settings = {
-	logLevels : {
-		'error': true,
-		'warn':  true,
-		'info':  false,
-		'debug': false
-	},
-	logHistory : {
-		levels : {
-			'error' : true,
-			'warn' : true,
-			'info' : false,
-			'debug' : false
-		}
-	},
-	errorhandling : true
-};
-
 /**
  * Do a "remove markup" test
  * @param editable the editable
@@ -293,10 +271,4 @@ function doRemoveMarkupTest(editable, startContainer, startOffset, endContainer,
 			doRemoveMarkupTest(this.edit, this.italic, 3, this.afterBold, 4, jQuery('<b></b>'), '#ref-remove-nested', '#ref-remove-nested-outer-out');
 		});
 	});
-
-    var url = window.location.search;
-	url = decodeURIComponent( url.slice( url.indexOf("swarmURL=") + 9 ) );
-	if ( url && url.indexOf("http") === 0 ) {
-		require(["http://testswarm.aloha-editor.org/js/inject.js?" + (new Date).getTime()], function() {});
-	}
 });

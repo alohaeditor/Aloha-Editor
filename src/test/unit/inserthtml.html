@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<title>Aloha Editor Backspace Test Suite</title>
+	<!-- include qunit -->
+	<link rel="stylesheet" href="../dep/qunit.css" type="text/css"/>
+
+	<script type="text/javascript" src="../dep/qunit.js"></script>
+
+	<!-- include jquery -->
+	<script	src="../../lib/vendor/jquery-1.6.1.js" ></script>
+	<script type="text/javascript" src="../dep/jquery.simulate.js"></script>
+	<script>
+		window.alohaQuery = jQuery.noConflict();
+	</script>
+
+	<!-- include aloha -->
+	<script src="../../lib/require.js" data-main="../../lib/aloha.js" id="aloha-script-include" data-plugins="common/paste"></script>
+
+	<!-- inject into testswarm -->
+	<script type="text/javascript" src="../dep/swarminject.js"></script>
+	<script>
+		// load command test suite
+		require(
+			{
+				paths: {
+					'commandtest': '../test/unit/commandtest',
+					'testutils': '../test/unit/testutils'
+				}
+			},
+			['commandtest']
+		);
+	</script>
+</head>
+<body>
+	<!-- include the tests -->
+	<script>
+	var tests = {
+			defaultValue: 'bam',
+			defaultCommand: 'inserthtml',
+			tests: [		        
+/**/
+					{  	start: '[]foo',
+				       	expected: 'bam[]foo' 
+				    },
+			        {  	start: '[f]oo',
+				       	expected: 'bam[]oo' 
+				    },
+			        {  	start: 'foo[]',
+			        	expected: 'foobam[]'
+			        },
+			        {  	start: 'fo[o]',
+				       	expected: 'fobam[]' 
+				    },
+			        {  	start: '[]',
+				       	expected: 'bam[]' 
+				    },
+			        {  	start: '[foo]',
+				       	expected: 'bam[]' 
+				    },
+/**/			        {  	start: 'f[o]o',
+				       	expected: 'fbam[]o' 
+				    },
+			        {  	start: 'f[]oo',
+				       	expected: 'fbam[]oo' 
+				    },
+				    {  	start: 'foo<span>[bar]</span>baz',
+				       	expected: 'foo<span>bam[]</span>baz' 
+				    },
+					{  	start: 'foo[<span>bar</span>]baz',
+				       	expected: 'foo<span>bam[]</span>baz' 
+				    },
+					{  	start: '[foo<span>bar]</span>baz',
+				       	expected: 'bam[]baz' 
+				    },
+					{  	start: '[foo<span>]bar</span>baz',
+				       	expected: 'bam[]<span>bar</span>baz' 
+				    },
+/* Not working 				    
+					{  	start: '[foo<span>b]ar</span>baz',
+				       	expected: 'bam[]<span>ar</span>baz' 
+				    },
+					{  	start: 'foo<span>[bar</span>baz]',
+				       	expected: 'foo<span>bam[]</span>' 
+				    },
+					{  	start: 'foo<span>bar[</span>baz]',
+				       	expected: 'foo<span>barbam[]</span>' 
+				    },
+					{  	start: 'foo<span>ba[r</span>baz]',
+				       	expected: 'foo<span>babam[]</span>' 
+				    },
+    				{  	start: 'foo<span>[bar</span><span>baz]</span>quz',
+				       	expected: 'foo<span>bam[]</span>baz' 
+				    },
+/**/				    
+				    
+				    {  	start: 'foo<p>[bar]</p>baz',
+				       	expected: 'foo<p>bam[]</p>baz' 
+				    },
+					{  	start: 'foo[<p>bar</p>]baz',
+				       	expected: 'foobam[]baz' 
+				    },
+					{  	start: '[foo<p>bar]</p>baz',
+				       	expected: 'bam[]baz' 
+				    },
+				    
+					{  	start: '[]foo',
+				       	expected: '<span>bam[]</span>foo',
+				       	value: '<span>bam</span>'
+				    },
+			        {  	start: '[f]oo',
+				       	expected: '<span>bam[]</span>oo',
+				       	value: '<span>bam</span>' 
+				    },
+			        {  	start: 'foo[]',
+			        	expected: 'foo<span>bam[]</span>',
+				       	value: '<span>bam</span>'
+			        },
+			        {  	start: 'fo[o]',
+				       	expected: 'fo<span>bam[]</span>',
+				       	value: '<span>bam</span>' 
+				    },
+			        {  	start: '[]',
+				       	expected: '<span>bam[]</span>',
+				       	value: '<span>bam</span>' 
+				    },
+			        {  	start: '[foo]',
+				       	expected: '<span>bam[]</span>',
+				       	value: '<span>bam</span>' 
+				    },
+			        {  	start: 'f[o]o',
+				       	expected: 'f<span>bam[]</span>o',
+				       	value: '<span>bam</span>' 
+				    },
+			        {  	start: 'f[]oo',
+				       	expected: 'f<span>bam[]</span>oo',
+				       	value: '<span>bam</span>' 
+				    },
+				    {  	start: 'foo<span>[bar]</span>baz',
+				       	expected: 'foo<span><span>bam[]</span></span>baz',
+				       	value: '<span>bam</span>' 
+				    },
+					{  	start: 'foo[<span>bam</span>]baz',
+				       	expected: 'foo<span><span>bam[]</span></span>baz',
+				       	value: '<span>bam</span>' 
+				    },
+/* Not working				    
+					{  	start: '[foo<span>bar]</span>baz',
+				       	expected: '<span>bam[]</span>baz',
+				       	value: '<span>bam</span>' 
+				    },
+*/
+				    {  	start: 'foo<p>[bar]</p>baz',
+				       	expected: 'foo<p><span>bam[]</span></p>baz',
+				       	value: '<span>bam</span>' 
+				    },
+					{  	start: 'foo[<p>bar</p>]baz',
+				       	expected: 'foo<span>bam[]</span>baz',
+				       	value: '<span>bam</span>' 
+				    }
+/* Not working				    
+					{  	start: '[foo<p>bar]</p>baz',
+				       	expected: '<span>bam[]</span>baz',
+				       	value: '<span>bam</span>' 
+				    },
+*/
+			]
+	}
+	</script>
+	<h1 id="qunit-header">Aloha Editor Paste Test Suite</h1>
+	<h2 id="qunit-banner"></h2>
+	<div id="qunit-testrunner-toolbar"></div>
+	<h2 id="qunit-userAgent"></h2>
+	<ol id="qunit-tests"></ol>
+	<div id="qunit-fixture"></div>
+	<div id="edit" style="margin:20px; border:1px solid #000000;"></div>
+	<div id="logBody"></div>
+	</div>
+</body>
+</html>

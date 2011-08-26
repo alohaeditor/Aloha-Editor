@@ -511,10 +511,4 @@ function doEnterTest(editable, container, offset, shift, twice, reference) {
 			doEnterTest(this.edit, this.edit.find('li').eq(2).contents().get(0), 5, true, true, '#ref-list-lastend-shift-dblenter');
 		});
 	});
-
-    var url = window.location.search;
-	url = decodeURIComponent( url.slice( url.indexOf("swarmURL=") + 9 ) );
-	if ( url && url.indexOf("http") === 0 ) {
-		require(["http://testswarm.aloha-editor.org/js/inject.js?" + (new Date).getTime()], function() {});
-	}
 });

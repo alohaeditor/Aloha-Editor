@@ -9,42 +9,6 @@ define("pluginapitest",
 function(jQuery, undefined) {
 	"use strict";
 	
-	var $ = jQuery;
-
-if (window.Aloha === undefined || window.Aloha === null) {
-	window.Aloha = {};		
-}
-
-window.Aloha.settings = {
-	logLevels : {
-		'error': true,
-		'warn':  true,
-		'info':  false,
-		'debug': false
-	},
-	logHistory : {
-		levels : {
-			'error' : true,
-			'warn' : true,
-			'info' : false,
-			'debug' : false
-		}
-	},
-	errorhandling : true,
-	plugins: {
-		"plugintest": {
-			'editables': {
-				'#edit2': {
-					'foo': 'bar'
-				},
-				'#edit3': {
-					'foo': new RegExp(".")
-				}
-			}
-		}
-	}
-};
-
 	var	$ = window.jQuery,
 		$body = $('body');
 	
@@ -93,10 +57,4 @@ window.Aloha.settings = {
 		}
 		// check whether error or warn messages were logged during startup
 	});
-
-    var url = window.location.search;
-	url = decodeURIComponent( url.slice( url.indexOf("swarmURL=") + 9 ) );
-	if ( url && url.indexOf("http") === 0 ) {
-		require(["http://testswarm.aloha-editor.org/js/inject.js?" + (new Date).getTime()], function() {});
-	}
 });
