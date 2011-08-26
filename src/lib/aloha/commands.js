@@ -18,15 +18,14 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 "use strict";
-define(
-	['require', 'exports', 'aloha/core'],
-	function(require, exports, Aloha) {
+define( ['require', 'exports', 'aloha/selection'],
+function( require, exports, Selection ) {
 
-		// Implementation initially done by Aryeh Gregor.
-		// http://aryeh.name/spec/editing/editing.html#commands
-		var 
-			commands = [],
-			
+	// Implementation initially done by Aryeh Gregor.
+	// http://aryeh.name/spec/editing/editing.html#commands
+	var 
+		commands = [],
+		
 //			Action: What the command does when executed via execCommand(). Every command defined
 //			in this specification has an action defined for it in the relevant section. For example, 
 //			the bold command's action generally makes the current selection bold, or removes bold if 
@@ -68,93 +67,131 @@ define(
 //			is not exposed to authors. If a command does not have a relevant CSS property 
 //			specified, it defaults to null.
 
-			registerCommand = function( name, command ) {
-				
-				commands[name.LowerCase()] = command;
-			},
-		
-			execCommand = function( command, showUi, value, range ) {
-				
-				// "All of these methods must treat their command argument ASCII
-				// case-insensitively."
-				command = command.toLowerCase();
+		registerCommand = function( name, command ) {
+			
+			commands[name.toLowerCase()] = command;
+		},
 	
-				// "If only one argument was provided, let show UI be false."
-				// If range was passed, I can't actually detect how many args were passed
-				if ( arguments.length == 1
-				|| ( arguments.length >=4 && typeof showUi === 'undefined' )) {
-					showUi = false;
-				}
-				
-				// "If only one or two arguments were provided, let value be the empty
-				// string."
-				if (arguments.length <= 2
-				|| (arguments.length >=4 && typeof value === 'undefined' )) {
-					value = "";
-				}
-				
-				// "If command is not supported, raise a NOT_SUPPORTED_ERR exception."
-				// We can't throw a real one, but a string will do for our purposes.
-				if (!(command in commands)) {
-					throw "NOT_SUPPORTED_ERR";
-				}
-	
-				// "If command has no action, raise an INVALID_ACCESS_ERR exception."
-				if (!('action' in commands[command])) {
-					throw "INVALID_ACCESS_ERR";
-				}
-	
-				if (!queryCommandEnabled(command)) {
-					return false;
-				}
-				
-				// Take current selection if not passed
-				if ( !range ) {
-					range = Aloha.getSelection().rangeAt(0);
-				}
-				
-				commands[command].action(value, range);
-			},
+		execCommand = function( command, showUi, value, range ) {
+			
+			// "All of these methods must treat their command argument ASCII
+			// case-insensitively."
+			command = command.toLowerCase();
 
+			// "If only one argument was provided, let show UI be false."
+			// If range was passed, I can't actually detect how many args were passed
+			if ( arguments.length == 1
+			|| ( arguments.length >=4 && typeof showUi === 'undefined' )) {
+				showUi = false;
+			}
 			
-			queryCommandEnabled = function( command ) {
-				
-			},
+			// "If only one or two arguments were provided, let value be the empty
+			// string."
+			if (arguments.length <= 2
+			|| (arguments.length >=4 && typeof value === 'undefined' )) {
+				value = "";
+			}
 			
+			// "If command is not supported, raise a NOT_SUPPORTED_ERR exception."
+			// We can't throw a real one, but a string will do for our purposes.
+			if (!(command in commands)) {
+				throw "NOT_SUPPORTED_ERR";
+			}
+
+			// "If command has no action, raise an INVALID_ACCESS_ERR exception."
+			if (!('action' in commands[command])) {
+				throw "INVALID_ACCESS_ERR";
+			}
+
+			if (!queryCommandEnabled(command)) {
+				return false;
+			}
 			
-			queryCommandIndeterm =  = function( command ) {
-				
-				throw "NOT_IMPLEMENTED_ERR";
-			},
+			// Take current selection if not passed
+			if ( !range ) {
+				range = Selection.getRangeObject();
+			}
 			
-			
-			queryCommandState = function( command ) {
-				
-				throw "NOT_IMPLEMENTED_ERR";
-			},
-			
-			
-			queryCommandSupported = function( command ) {
-				
-				throw "NOT_IMPLEMENTED_ERR";
-			},
-			
-			
-			queryCommandValue  = function( command ) {
-				
-				throw "NOT_IMPLEMENTED_ERR";
-			};
+			commands[command].action(value, range);
+		},
 
 		
-		// export defined API
-		exports = {
-				registerCommand: registerCommand,
-				execCommand: execCommand,
-				queryCommandEnabled: queryCommandEnabled,
-				queryCommandIndeterm: queryCommandIndeterm,
-				queryCommandState:  queryCommandState,
-				queryCommandSupported:  queryCommandSupported,
-				queryCommandValue: queryCommandValue
-		}
+		// If command is available and not dissables or the active range is not null 
+		// the command is enables
+		queryCommandEnabled = function( command, range ) {
+
+			// "All of these methods must treat their command argument ASCII
+			// case-insensitively."
+			command = command.toLowerCase();
+
+			// Take current selection if not passed
+			if ( !range ) {
+				range = Selection.getRangeObject();
+			}
+			
+			return ( 'enabled' in commands[command] && commands[command].enabled !== false )
+			|| range !== null;
+		},
 		
-);
+
+		// "Return true if command is indeterminate, otherwise false."
+		queryCommandIndeterm = function( command ) {
+			
+			// "All of these methods must treat their command argument ASCII
+			// case-insensitively."
+			command = command.toLowerCase();
+
+			// Take current selection if not passed
+			if ( !range ) {
+				range = Selection.getRangeObject();
+			}
+
+			// "If command is not enabled, return false."
+			if (!queryCommandEnabled(command)) {
+				return false;
+			}
+			
+			if (!('indeterm' in commands[command])) {
+				throw "INVALID_ACCESS_ERR";
+			}
+
+			// "Return true if command is indeterminate, otherwise false."
+			return commands[command].indeterm();
+		},
+		
+		
+		queryCommandState = function( command ) {
+
+			throw "NOT_IMPLEMENTED_ERR";
+		},
+		
+		// "When the queryCommandSupported(command) method on the HTMLDocument
+		// interface is invoked, the user agent must return true if command is
+		// supported, and false otherwise."
+		queryCommandSupported = function( command ) {
+			
+			// "All of these methods must treat their command argument ASCII
+			// case-insensitively."
+			command = command.toLowerCase();
+
+			return command in commands;		
+		},
+		
+		
+		queryCommandValue  = function( command ) {
+			
+			throw "NOT_IMPLEMENTED_ERR";
+		};
+	
+	// export defined API
+	return {
+			registerCommand: registerCommand,
+			execCommand: execCommand,
+			queryCommandEnabled: queryCommandEnabled,
+			queryCommandIndeterm: queryCommandIndeterm,
+			queryCommandState: queryCommandState,
+			queryCommandSupported: queryCommandSupported,
+			queryCommandValue: queryCommandValue
+	};
+	
+});
