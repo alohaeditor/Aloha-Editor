@@ -26,7 +26,7 @@
 // ----------------------------------------------------------------------------
 
 define([
-		
+
 	'aloha/jquery',
 	'aloha/plugin' // For when we plugify sidebar
 
@@ -53,22 +53,23 @@ define([
 		uid  = +(new Date),
 		// namespaced classnames
 		nsClasses = {
-			bar				: nsClass('bar'),
-			'config-btn'	: nsClass('config-btn'),
-			handle			: nsClass('handle'),
-			'handle-icon'	: nsClass('handle-icon'),
-			inner			: nsClass('inner'),
-			'panel-content'	: nsClass('panel-content'),
+			bar           : nsClass('bar'),
+			'config-btn'  : nsClass('config-btn'),
+			handle        : nsClass('handle'),
+			'handle-icon' : nsClass('handle-icon'),
+			inner         : nsClass('inner'),
+			'panel-content'
+			              : nsClass('panel-content'),
 			'panel-content-inner'
-							: nsClass('panel-content-inner'),
+			              : nsClass('panel-content-inner'),
 			'panel-content-inner-text'
-							: nsClass('panel-content-inner-text'),
-			panels			: nsClass('panels'),
-			'panel-title'	: nsClass('panel-title'),
+			              : nsClass('panel-content-inner-text'),
+			panels        : nsClass('panels'),
+			'panel-title' : nsClass('panel-title'),
 			'panel-title-arrow'
-							: nsClass('panel-title-arrow'),
+			              : nsClass('panel-title-arrow'),
 			'panel-title-text'
-							: nsClass('panel-title-text')
+			              : nsClass('panel-title-text')
 		};
 	
 	// ------------------------------------------------------------------------
@@ -93,13 +94,12 @@ define([
 	
 	// TODO: This suffices for now. But we are to consider a more robust
 	//		 templating engine.
-	// TODO: Offer parameter to define left and right delimiters in case the
-	//		 default "{", and "}" are problematic
-	String.prototype.supplant = function (/*'lDelim, rDelim,'*/ obj) {
-		return this.replace(/\{([a-z0-9\-\_]+)\}/ig, function (str, p1, offset, s) {
+	function supplant (str, obj) {
+		return str.replace(/\{([a-z0-9\-\_]+)\}/ig, function (str, p1, offset, s) {
 			var replacement = obj[p1] || str;
-			return (typeof replacement == 'function')
-						? replacement() : replacement;
+			return (typeof replacement === 'function')
+						? replacement()
+						: replacement;
 		});
 	};
 	
@@ -107,7 +107,7 @@ define([
 	// going directly to String.prototype.supplant
 	function renderTemplate (str) {
 		return (typeof str === 'string')
-					? str.supplant(nsClasses)
+					? supplant(str, nsClasses)
 					: str;
 	};
 	
@@ -146,6 +146,11 @@ define([
 		this.width = 300;
 		this.opened = false;
 		this.isOpen = false;
+		
+		this.settings = {
+			rotateArrows : true,
+			overlayPage  : true
+		};
 		
 		this.init(opts);
 	};
@@ -205,7 +210,7 @@ define([
 			if (this.opened) {
 				this.open(0);
 			}
-
+			
 			this.subscribeToEvents();
 			
 			$(window).resize(function () {
@@ -237,22 +242,22 @@ define([
 		checkActivePanels: function(rangeObject) {
 			var that = this;
 			
-			var panels = that.panels,
+				var panels = that.panels,
 					effective = [],
 					i = 0,
 					obj;
 			if (typeof rangeObject != 'undefined' && typeof rangeObject.markupEffectiveAtStart != 'undefined') {
-				for (; i < rangeObject.markupEffectiveAtStart.length; i++) {
+				for (; i < rangeObject.markupEffectiveAtStart.length; ++i) {
 					obj = $(rangeObject.markupEffectiveAtStart[i]);
 					effective.push(obj);
 				}
 			}
+				
+				$.each(panels, function () {
+					that.showActivePanel(this, effective);
+				});
 			
-			$.each(panels, function () {
-				that.showActivePanel(this, effective);
-			});
-		
-			that.correctHeight();
+				that.correctHeight();
 		},
 		
 		subscribeToEvents: function () {
@@ -464,11 +469,11 @@ define([
 			if (el.hasClass(nsClass('panel-title'))) {
 				this.togglePanel(el);
 			} else if (el.hasClass(nsClass('panel-content'))) {
-				// console.log('Content clicked');
+				// Aloha.log('Content clicked');
 			} else if (el.hasClass(nsClass('handle'))) {
-				// console.log('Handle clicked');
+				// Aloha.log('Handle clicked');
 			} else if (el.hasClass(nsClass('bar'))) {
-				// console.log('Sidebar clicked');
+				// Aloha.log('Sidebar clicked');
 			} else {
 				this.handleBarclick(el.parent());
 			}
@@ -521,9 +526,12 @@ define([
 				'easeOutExpo'
 			);
 			
-			$('body').animate(
-			isRight ? {marginRight: '+=' + this.width} : {marginLeft: '+=' + this.width},
-			500, 'easeOutExpo');
+			if (this.settings.overlayPage) {
+				$('body').animate(
+					isRight ? {marginRight: '+=' + this.width} : {marginLeft: '+=' + this.width},
+					500, 'easeOutExpo'
+				);
+			}
 			
 			this.isOpen = true;
 
@@ -549,9 +557,13 @@ define([
 				'easeOutExpo'
 			);
 			
-			$('body').animate(
-			isRight ? {marginRight: '-=' + this.width} : {marginLeft: '-=' + this.width},
-			500, 'easeOutExpo');
+			
+			if (this.settings.overlayPage) {
+				$('body').animate(
+					isRight ? {marginRight: '-=' + this.width} : {marginLeft: '-=' + this.width},
+					500, 'easeOutExpo'
+				);
+			}
 
 			this.isOpen = false;
 
@@ -826,20 +838,22 @@ define([
 		},
 		
 		rotateArrow: function (angle, duration) {
-			var arr = this.title.find(nsSel('panel-title-arrow'));
-			arr.animate({angle: angle}, {
-					duration: (typeof duration == 'number') ? duration : 500,
-					easing: 'easeOutExpo',
-					step: function (val, fx) {
-						var ieAngle = angle / 90;
-						arr.css({
-							'-webkit-transform'	: 'rotate(' + val + 'deg)',
-							'-moz-transform'	: 'rotate(' + val + 'deg)',
-							'-ms-transform'		: 'rotate(' + val + 'deg)',
-							filter				: 'progid:DXImageTransform.Microsoft.BasicImage(rotation=' + ieAngle + ')'
-						});
-					}
-				});
+			if (this.sidebar.settings.rotateArrows) {
+				var arr = this.title.find(nsSel('panel-title-arrow'));
+				arr.animate({angle: angle}, {
+						duration: (typeof duration == 'number') ? duration : 500,
+						easing: 'easeOutExpo',
+						step: function (val, fx) {
+							var ieAngle = angle / 90;
+							arr.css({
+								'-webkit-transform'	: 'rotate(' + val + 'deg)',
+								'-moz-transform'	: 'rotate(' + val + 'deg)',
+								'-ms-transform'		: 'rotate(' + val + 'deg)',
+								filter				: 'progid:DXImageTransform.Microsoft.BasicImage(rotation=' + ieAngle + ')'
+							});
+						}
+					});
+			}
 		},
 		
 		renderEffectiveParents: function (effective, renderer) {
@@ -859,15 +873,16 @@ define([
 					while (l--) {
 						pathRev.push(path[l]);
 					}
-					content.push(
+					content.push(supplant(
 						'<div class="aloha-sidebar-panel-parent">\
 							<div class="aloha-sidebar-panel-parent-path">{path}</div>\
 							<div class="aloha-sidebar-panel-parent-content aloha-sidebar-opened">{content}</div>\
-						 </div>'.supplant({
+						 </div>',
+						{
 							path	: pathRev.join(''),
 							content	: (typeof renderer === 'function') ? renderer(el) : '----'
-						})
-					);
+						}
+					));
 				}
 				
 				el = el.parent();
@@ -885,35 +900,37 @@ define([
 				}
 			});
 			
-			//console.log(this.content);
+			//Aloha.log(this.content);
 			this.content.height('auto').find('.aloha-sidebar-panel-content-inner').height('auto');
 			//this.sidebar.updateHeight();
 		}
 		
 	});
 	
-	// Expose Sidebar through Aloha as soon Aloha becomes available
-	$('body').bind('aloha', function () {
-		var left = new Sidebar({
-			position : 'left',
-			width	 : 250 // TODO define in config
+	// Expose Sidebar through Aloha once both the DOM is ready and Aloha are
+	// are ready
+	$(function () {
+		$('body').bind('alohacoreloaded', function () {
+			var left = new Sidebar({
+				position : 'left',
+				width	 : 250 // TODO define in config
+			});
+			
+			var right = new Sidebar({
+				position : 'right',
+				width	 : 250 // TODO define in config
+			});
+			
+			Aloha.Sidebars = {
+				left  : left,
+				right : right
+			};
+			
+			// Broadcast that Sidebars have arrived!
+			//$('body').trigger(nsClass('initialized'), Aloha.Sidebars);
+			$('body').trigger('aloha-sidebar-initialized', Aloha.Sidebars);
 		});
-		
-		var right = new Sidebar({
-			position : 'right',
-			width	 : 250 // TODO define in config
-		});
-
-		Aloha.Sidebars = {
-			left  : left,
-			right : right
-		};
-		
-		// Broadcast that Sidebars have arrived!
-		$('body').trigger(nsClass('initialized'), Aloha.Sidebars);
 	});
 	
 	return Sidebar;
-}
-
-); // require
+});
