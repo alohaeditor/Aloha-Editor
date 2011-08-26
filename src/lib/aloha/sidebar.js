@@ -236,29 +236,35 @@ define([
 			return this;
 		},
 		
-		/**
-		 * Attaches a listener to aloha-select-changed in order to detect which
-		 * panels should be activated
-		 */
-		bindToAlohaEvents: function () {
+		checkActivePanels: function(rangeObject) {
 			var that = this;
 			
-			Aloha.bind('aloha-selection-changed', function(event, rangeObject) {
 				var panels = that.panels,
 					effective = [],
 					i = 0,
 					obj;
-				
+			if (typeof rangeObject != 'undefined' && typeof rangeObject.markupEffectiveAtStart != 'undefined') {
 				for (; i < rangeObject.markupEffectiveAtStart.length; ++i) {
 					obj = $(rangeObject.markupEffectiveAtStart[i]);
 					effective.push(obj);
 				}
+			}
 				
 				$.each(panels, function () {
 					that.showActivePanel(this, effective);
 				});
 			
 				that.correctHeight();
+		},
+		
+		subscribeToEvents: function () {
+			var that = this;
+			
+			Aloha.bind('aloha-selection-changed', function(event, rangeObject) {
+				that.checkActivePanels(rangeObject);
+			});
+			Aloha.bind("aloha-editable-deactivated", function(event, params) { 
+				that.checkActivePanels(); 
 			});
 		},
 		
@@ -626,7 +632,7 @@ define([
 			if (deferRounding !== true) {
 				this.roundCorners();
 			}
-			
+			this.checkActivePanels(Aloha.Selection.getRangeObject());
 			return panel;
 		}
 		
