@@ -348,17 +348,25 @@ define([
 		},
 		
 		showActivePanel: function (panel, effectiveElems) {
-			var i = 0,
+				//we have to add null to check whether panels should be visible
+				//when we have no effective element
+				effectiveElems.push(null);
+				
+				var i = 0,
 				j = effectiveElems.length,
 				count = 0,
 				li = panel.content.parent('li'),
 				activeOn = panel.activeOn,
 				effective = $();
+				
+				
 			
 			for (; i < j; i++) {
 				if (activeOn(effectiveElems[i])) {
 					count++;
-					$.merge(effective, effectiveElems[i]);
+					if (effectiveElems[i]) {
+						$.merge(effective, effectiveElems[i]);
+					}
 				}
 			}
 			
@@ -741,7 +749,7 @@ define([
 						};
 					} else if (typeofActiveOn === 'string') {
 						fn = function (el) {
-							return el.is(activeOn);
+							return el ? el.is(activeOn) : false;
 						};
 					} else {
 						fn = function () {
