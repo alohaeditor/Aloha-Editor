@@ -190,7 +190,7 @@ define([
 			}
 			
 			// Place the bar into the DOM
-			bar.css('opacity', 0)
+			bar.hide()
 			   .appendTo(body)
 			   .click(function () {that.barClicked.apply(that, arguments);})
 			   .find(nsSel('panels')).width(this.width);
@@ -220,21 +220,21 @@ define([
 			this.correctHeight();
 		},
 		
-		// Fade in nice and slow
+		
 		show: function () {
 			this.container
-				.css('display', 'block')
-				.animate({opacity: 1}, 1000);
+				.css('display', 'block');
+				//.animate({opacity: 1}, 1000);
 			
 			return this;
 		},
 		
-		// Fade out
+		
 		hide: function () {
-			this.container
-				.animate({opacity: 0}, 1000, function () {
+			this.container.css('display','none');
+				/*.animate({opacity: 0}, 1000, function () {
 					$(this).css('display', 'block')
-				});
+				});*/
 			
 			return this;
 		},
@@ -348,17 +348,25 @@ define([
 		},
 		
 		showActivePanel: function (panel, effectiveElems) {
-			var i = 0,
+				//we have to add null to check whether panels should be visible
+				//when we have no effective element
+				effectiveElems.push(null);
+				
+				var i = 0,
 				j = effectiveElems.length,
 				count = 0,
 				li = panel.content.parent('li'),
 				activeOn = panel.activeOn,
 				effective = $();
+				
+				
 			
 			for (; i < j; i++) {
 				if (activeOn(effectiveElems[i])) {
 					count++;
-					$.merge(effective, effectiveElems[i]);
+					if (effectiveElems[i]) {
+						$.merge(effective, effectiveElems[i]);
+					}
 				}
 			}
 			
@@ -502,8 +510,8 @@ define([
 						arr.css({
 							'-webkit-transform'	: 'rotate(' + val + 'deg)',
 							'-moz-transform'	: 'rotate(' + val + 'deg)',
-							'-ms-transform'		: 'rotate(' + val + 'deg)',
-							filter				: 'progid:DXImageTransform.Microsoft.BasicImage(rotation=' + ieAngle + ')'
+							'-ms-transform'		: 'rotate(' + val + 'deg)'//,
+							//filter				: 'progid:DXImageTransform.Microsoft.BasicImage(rotation=' + ieAngle + ')'
 						});
 					}
 				});
@@ -733,7 +741,7 @@ define([
 					
 					if (typeofActiveOn === 'boolean') {
 						fn = function () {
-							return typeofActiveOn;
+							return activeOn;
 						};
 					} else if (typeofActiveOn === 'undefined') {
 						fn = function () {
@@ -741,7 +749,7 @@ define([
 						};
 					} else if (typeofActiveOn === 'string') {
 						fn = function (el) {
-							return el.is(activeOn);
+							return el ? el.is(activeOn) : false;
 						};
 					} else {
 						fn = function () {
@@ -848,8 +856,8 @@ define([
 							arr.css({
 								'-webkit-transform'	: 'rotate(' + val + 'deg)',
 								'-moz-transform'	: 'rotate(' + val + 'deg)',
-								'-ms-transform'		: 'rotate(' + val + 'deg)',
-								filter				: 'progid:DXImageTransform.Microsoft.BasicImage(rotation=' + ieAngle + ')'
+								'-ms-transform'		: 'rotate(' + val + 'deg)'//,
+								//filter				: 'progid:DXImageTransform.Microsoft.BasicImage(rotation=' + ieAngle + ')'
 							});
 						}
 					});
