@@ -262,12 +262,21 @@ define([
 		
 		subscribeToEvents: function () {
 			var that = this;
-			
+			var $container = this.container;
 			Aloha.bind('aloha-selection-changed', function(event, rangeObject) {
 				that.checkActivePanels(rangeObject);
 			});
+			$container.mousedown(function(e) {
+				e.originalEvent.stopSelectionUpdate = true;
+				Aloha.eventHandled = true;
+				//e.stopSelectionUpdate = true;
+			});
+			$container.mouseup(function (e) {
+				e.originalEvent.stopSelectionUpdate = true;
+				Aloha.eventHandled = false;
+			});
 			Aloha.bind("aloha-editable-deactivated", function(event, params) { 
-				//that.checkActivePanels(); 
+				that.checkActivePanels();
 			});
 		},
 		
@@ -517,7 +526,7 @@ define([
 				'easeOutExpo'
 			);
 			
-			if (this.settings.overlayPage) {
+			if (!this.settings.overlayPage) {
 				$('body').animate(
 					isRight ? {marginRight: '+=' + this.width} : {marginLeft: '+=' + this.width},
 					500, 'easeOutExpo'
@@ -535,7 +544,7 @@ define([
 			if (!this.isOpen) {
 				return this;
 			}
-			
+
 			var isRight = (this.position == 'right'),
 				anim = isRight ? {marginRight: -this.width} : {marginLeft: -this.width};
 			
@@ -548,15 +557,16 @@ define([
 				'easeOutExpo'
 			);
 			
-			if (this.settings.overlayPage) {
+			
+			if (!this.settings.overlayPage) {
 				$('body').animate(
 					isRight ? {marginRight: '-=' + this.width} : {marginLeft: '-=' + this.width},
 					500, 'easeOutExpo'
 				);
 			}
-			
+
 			this.isOpen = false;
-			
+
 			return this;
 		},
 		
