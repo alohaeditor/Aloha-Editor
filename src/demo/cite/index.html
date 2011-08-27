@@ -4,10 +4,8 @@
 	<meta http-equiv="content-type" content="text/html; charset=utf-8">
 	<title>Aloha, Documents!</title>
 
-	<script	src="../../dep/jquery-1.6.1.js" ></script>
-	<script	src="../../aloha.js" id="aloha-script-include" data-plugins="format,highlighteditables,cite"></script>
-
-	<link rel="stylesheet" href="../../aloha.css" id="aloha-style-include" type="text/css">
+	<script src="../../lib/require.js" data-main="../../lib/aloha.js" id="aloha-script-include" data-plugins="common/format,common/highlighteditables,common/list,common/undo,common/paste,common/block"></script>
+	<link rel="stylesheet" href="../../css/aloha.css" id="aloha-style-include" type="text/css">
 	<link rel="stylesheet" href="../../demo/common/index.css" type="text/css">
 </head>
 <body>
@@ -45,21 +43,19 @@
 		</div>
 	</div>
 	<script type="text/javascript" defer>
-		(function(window,undefined){
-			// Prepare
-			var
-				$ = window.alohaQuery,
-				Aloha = window.Aloha,
-				$body = $('body');
+	require.ready(function() {
+		// Prepare
+		var	$ = window.alohaQuery,
+			$body = $('body');
 
-			// Customise
-			Aloha.settings = {
+		// Customise
+		Aloha.settings = {
 				logLevels: {'error': false, 'warn': false, 'info': false, 'debug': false},
 				errorhandling : false,
 				"i18n": {
 					// let the system detect the users language
 					//"acceptLanguage": '<?=$_SERVER['HTTP_ACCEPT_LANGUAGE']?>'
-					//"acceptLanguage": 'de-de,de;q=0.8,it;q=0.6,en-us;q=0.7,en;q=0.2'
+					"acceptLanguage": 'de-de,de;q=0.8,it;q=0.6,en-us;q=0.7,en;q=0.2'
 				},
 				"plugins": {
 					"link": {
@@ -104,9 +100,7 @@
 				$body.bind('aloha-sidebar-initialized', function (ev, sidebar) {});
 				
 			});
-
-			// </closure>
-		})(window);
+	});
 	</script>
 </body>
 </html>
