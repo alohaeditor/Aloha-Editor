@@ -48,7 +48,7 @@
 		<div id="bodyContent">
 			<form id="form" method="POST" action="">
 				<textarea id="content" class="article" name="content">
-					<? if ( !empty($_POST['content']) ) :
+					<?php if ( !empty($_POST['content']) ) :
 						 echo $_POST['content'];
 					else: ?>
 						<h1>Aloha</h1>
@@ -67,20 +67,20 @@
 							<li>In Hawaii someone can be said to have or show aloha in the way they treat others; whether family, friend, neighbor or stranger.
 							</li>
 						</ul>
-					<? endif; ?>
+					<?php endif; ?>
 				</textarea>
 				<hr />
-				<input type="submit" value="Send to backend"/>
 				<button id="aloha" type="button">aloha</button>
 				<button id="mahalo" type="button">mahalo</button>
 				<button id="getContents" type="button">getContents</button>
+				<input type="submit" value="Send to backend"/>
 			</form>
 		</div>
 	</div>
 	<script type="text/javascript">
 	require.ready(function() {
 		// Prepare
-		var	$ = window.jQuery,
+		var	$ = window.alohaQuery,
 			$body = $('body');
 			
 			if (window.Aloha === undefined || window.Aloha === null) {
@@ -94,9 +94,10 @@
 
 			// Bind to Aloha Ready Event
 			$body.bind('aloha',function(){
-
+				
 				$('#mahalo').hide();
 				$('#getContents').hide();
+				//$('#aloha').show();
 
 				$('#aloha').click(function(){
 					$('#content').aloha();
