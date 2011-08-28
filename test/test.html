@@ -1,38 +1,26 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>Aloha, Images!</title>
-<script type="text/javascript"
-	src="http://code.jquery.com/jquery-1.6.2.min.js"></script>
-<!-- 
+	<meta charset="UTF-8">
+	<title>Aloha, Images!</title>
+
 	<script type="text/javascript" src="../../../../lib/vendor/jquery-1.6.1.js"></script>
 	<script type="text/javascript" src="../vendor/ui/jquery-ui-1.8.10.custom.min.js"></script>
-	 -->
-
-<script type="text/javascript"
-	src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.14/jquery-ui.min.js"></script>
-
-<!-- 	
-	<link rel="stylehseet" href="../vendor/ui/ui-lightness/jquery-ui-1.8.10.custom.css" rel="stylesheet" type="text/css"/>
-	 -->
-<link
-	href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css"
-	rel="stylesheet" type="text/css" />
-
-<link rel="stylesheet" href="../../../../demo/common/index.css"	type="text/css">
-
-	
-
+	<link href="../vendor/ui/ui-lightness/jquery-ui-1.8.10.cropnresize.css" rel="stylesheet" type="text/css" />
+	<link rel="stylesheet" href="../../../../demo/common/index.css"	type="text/css">
+	<link rel="stylesheet" href="test.css"	type="text/css">
 
 </head>
 <body>
-<div id="dialog">Hello</div>
 <script type="text/javascript">
 		$(document).ready(function() {
 			
 			$("#myimg").resizable({
-				position: ['center', 'center'],	
+				grid: 10,
+				minHeight: 10,
+				minWidth: 10,
+				maxHeight: 800,
+				maxWidth: 900, 
 				handles: 'ne, se, sw, nw',
 					stop : function (event, ui) {
 						console.log("stop");
@@ -45,8 +33,7 @@
 
 <div id="main">
 <div id="content">
-<p><img id="myimg" src="../demo/cropnresize.jpg" width="200px"
-	height="135px"></p>
+<img id="myimg" src="../demo/cropnresize.jpg" width="200px"	height="135px">
 </div>
 </div>
 </body>
