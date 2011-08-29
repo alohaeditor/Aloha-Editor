@@ -5,12 +5,12 @@
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
 define(
-['aloha/plugin', 'aloha/floatingmenu', 'i18n!headerids/nls/i18n', 'i18n!aloha/nls/i18n', 'css!headerids/css/headerids.css'],
-function(Plugin, FloatingMenu, i18n, i18nCore) {
+['aloha/jquery','aloha/plugin', 'aloha/floatingmenu', 'i18n!headerids/nls/i18n', 'i18n!aloha/nls/i18n', 'css!headerids/css/headerids.css'],
+function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 	"use strict";
 
 	var
-		jQuery = window.alohaQuery || window.jQuery, $ = jQuery,
+		$ = jQuery,
 		GENTICS = window.GENTICS,
 		Aloha = window.Aloha;
 	
@@ -59,7 +59,7 @@ function(Plugin, FloatingMenu, i18n, i18nCore) {
 			// mark active Editable with a css class
 			Aloha.bind("aloha-editable-activated", function(jEvent, params) { that.check(params.editable.obj); });
 			Aloha.bind("aloha-editable-deactivated", function(jEvent, params) { that.check(params.editable.obj); });
-			jQuery('body').bind('aloha-sidebar-initialized', function (ev, sidebars) { that.initSidebar(sidebars.right); });
+			jQuery('body').bind('aloha', function (ev) { that.initSidebar(Aloha.Sidebars.right.show()); });
 		},
 		
 		check: function(editable) {
