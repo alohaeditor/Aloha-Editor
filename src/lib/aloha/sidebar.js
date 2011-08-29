@@ -799,7 +799,7 @@ define([
 					}
 				}
 			);
-			
+			this.element.removeClass('collapsed');
 			this.rotateArrow(90);
 			
 			this.expanded = true;
@@ -809,7 +809,7 @@ define([
 		
 		collapse: function (duration, callback) {
 			var that = this;
-			
+			this.element.addClass('collapsed');
 			this.content.stop().animate(
 				{height: 5}, 250, 'easeOutExpo',
 				function () {
