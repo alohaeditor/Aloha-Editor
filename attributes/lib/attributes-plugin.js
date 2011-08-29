@@ -100,6 +100,7 @@ function(Plugin, FloatingMenu, i18n, i18nCore) {
 				attribcontainer	: this.nsClass('attribcontainer'),
 				newattribute	: this.nsClass('newattribute'),
 				item	: this.nsClass('item'),
+				element	: this.nsClass('element'),
 				iteminput	: this.nsClass('iteminput')
 			};
 			if ( typeof this.settings.activeOn !== 'undefined') {
@@ -111,13 +112,14 @@ function(Plugin, FloatingMenu, i18n, i18nCore) {
 		getSidebarContent: function() {
 			return this.renderTemplate(
 					'<div class="{container}">\
-						\
+						<h2 id="{element}">Element:</h2>\
+						<h2>Vorhandene Attribute</h2>\
 						<div class="{attribcontainer}">\
 							attribcontainer\
 						</div>\
 						\
 						<div class="{newattribute}">\
-						Neues Attribut<br\>\
+						<h2>Neues Attribut</h2>\
 						<label for="{newattributename}">Name:</label><input type="text" id="{newattributename}"/>\
 						<label for="{newattributewert}">Wert:</label><input type="text" id="{newattributewert}"/>\
 						<button id="{newattributebutton}">Hinzuf&uuml;gen</button>\
@@ -128,16 +130,32 @@ function(Plugin, FloatingMenu, i18n, i18nCore) {
 		},
 		
 		updateSidebarWithAttributes: function() {
+			var that = this;
 			var el = this.effective[0];
 			var $container = this.content.find(this.nsSel('attribcontainer'));
 			$container.html('');
 			for (var attr, i=0, attrs=el.attributes, l=attrs.length; i<l; i++){
 				attr = attrs.item(i)
-				console.log(attr.nodeName);
-				console.log(attr.nodeValue);
 				var item = jQuery(this.renderTemplate('<div class="{item}"><label for="{iteminput}'+attr.nodeName+'">'+attr.nodeName+'</label><input id="{iteminput}'+attr.nodeName+'" class="{iteminput}" data-attrname="'+attr.nodeName+'" type="text" value="'+attr.nodeValue+'"/></div>'));
 				$container.append(item);
 			}
+			$container.find(this.nsSel('iteminput')).blur(function(){
+				var value = jQuery(this).val();
+				var name = jQuery(this).attr('data-attrname');
+				
+				if (typeof value == 'undefined' || value == '') {
+					jQuery(this).parents(that.nsSel('item')).remove();
+					pl.correchtHeight();
+				} else {
+					jQuery(el).attr(name,value);
+				}
+			});
+			var elemheader = this.content.find('#' + this.nsClass('element'));
+			elemheader.html("Element: " + el.tagName);
+		},
+		
+		correctHeight: function() {
+			this.sidebar.correctHeight();
 		},
 		
 		initSidebar: function(sidebar) {
@@ -163,6 +181,7 @@ function(Plugin, FloatingMenu, i18n, i18nCore) {
 							jQuery('#'+pl.nsClass('newattributewert')).val('');
 							jQuery(pl.effective).attr(name, wert);
 							pl.updateSidebarWithAttributes();
+							pl.correchtHeight();
                         });
 						/*
 						content.find(nsSel('reset-button')).click(function () {
@@ -179,6 +198,7 @@ function(Plugin, FloatingMenu, i18n, i18nCore) {
 						//DO STUFF HERE
 						pl.effective = effective;
 						pl.updateSidebarWithAttributes();
+						pl.correctHeight();
                     }
                     
                 });
