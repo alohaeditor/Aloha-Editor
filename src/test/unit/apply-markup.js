@@ -10,28 +10,6 @@ function(jQuery, TestUtils, undefined) {
 	"use strict";
 	
 	var $ = jQuery;
-	
-if (window.Aloha === undefined || window.Aloha === null) {
-	window.Aloha = {};		
-}
-
-window.Aloha.settings = {
-	logLevels : {
-		'error': true,
-		'warn':  true,
-		'info':  false,
-		'debug': false
-	},
-	logHistory : {
-		levels : {
-			'error' : true,
-			'warn' : true,
-			'info' : false,
-			'debug' : false
-		}
-	},
-	errorhandling : true
-};
 
 /**
  * Do an markup test
@@ -101,7 +79,6 @@ function doBlockTest(editable, startContainer, startOffset, endContainer, endOff
 	deepEqual(result.extractHTML(), expected.extractHTML(), 'Check Operation Result');
 }
 
-require.ready(function() {
 	// Prepare
 	var	$ = window.jQuery,
 		$body = $('body');
@@ -264,6 +241,4 @@ require.ready(function() {
 			doBlockTest(this.edit, this.edit.find('p').eq(1).contents().get(0), 1, this.edit.find('p').eq(1).contents().get(0), 1, jQuery('<h1></h1>'), '#ref-header', '#ref-header-last-h1');
 		});
 	});
-});
-
 });

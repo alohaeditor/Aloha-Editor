@@ -365,12 +365,22 @@ function(jQuery, Ext, Base, undefined) {
 
 			// check for behaviour setting of the floating menu
 		    if (Aloha.settings.floatingmenu) {
-			if (typeof Aloha.settings.floatingmenu.behaviour === 'string') {
-			    this.behaviour = Aloha.settings.floatingmenu.behaviour;
-			}
-			if (typeof Aloha.settings.floatingmenu.marginTop === 'number') {
-			    this.marginTop = Aloha.settings.floatingmenu.marginTop;
-			}
+				if (typeof Aloha.settings.floatingmenu.behaviour === 'string') {
+				    this.behaviour = Aloha.settings.floatingmenu.behaviour;
+				}
+				if (typeof Aloha.settings.floatingmenu.marginTop === 'number') {
+				    this.marginTop = Aloha.settings.floatingmenu.marginTop;
+				}
+				//We just check for undefined
+				if (typeof Aloha.settings.floatingmenu.width !== 'undefined') {
+					//Try to pars it
+					try {
+						var parsed = parseInt(Aloha.settings.floatingmenu.width);
+						this.width = Aloha.settings.floatingmenu.width;
+					} catch(e) {
+						//do nothing.
+					}
+				}
 		    }
 
 			jQuery.storage = new jQuery.store();
@@ -379,13 +389,12 @@ function(jQuery, Ext, Base, undefined) {
 			this.window.unload(function () {
 				// store fm position if the panel is pinned to be able to restore it next time
 				if (that.pinned) {
-					var offset = that.obj.offset();
 					jQuery.storage.set('Aloha.FloatingMenu.pinned', 'true');
-					jQuery.storage.set('Aloha.FloatingMenu.top', offset.top);
-					jQuery.storage.set('Aloha.FloatingMenu.left', offset.left);
+					jQuery.storage.set('Aloha.FloatingMenu.top', that.top);
+					jQuery.storage.set('Aloha.FloatingMenu.left', that.left);
 					if (Aloha.Log.isInfoEnabled()) {
-						Aloha.Log.info(this, 'stored FloatingMenu pinned position {' + offset.left
-								+ ', ' + offset.top + '}');
+						Aloha.Log.info(this, 'stored FloatingMenu pinned position {' + that.left
+								+ ', ' + that.top + '}');
 					}
 				} else {
 					// delete old localStorages
@@ -427,6 +436,12 @@ function(jQuery, Ext, Base, undefined) {
 		panelBody: null,
 
 		/**
+		 * The panels width
+		 * @hide
+		 */
+		width: 400,
+
+		/**
 		 * Generate the rendered component for the floatingmenu
 		 * @hide
 		 */
@@ -447,7 +462,7 @@ function(jQuery, Ext, Base, undefined) {
 				// generate the tabpanel object
 				this.extTabPanel = new Ext.TabPanel({
 					activeTab: 0,
-					width: 400, // 336px this fits the multisplit button and 6 small buttons placed in 3 cols
+					width: that.width, // 336px this fits the multisplit button and 6 small buttons placed in 3 cols
 					plain: false,
 					draggable: {
 						insertProxy: false,
@@ -458,10 +473,11 @@ function(jQuery, Ext, Base, undefined) {
 							this.panel.shadow.hide();
 						},
 						endDrag : function(e) {
-							var top = (this.pinned) ? this.y - jQuery(document).scrollTop() : this.y;
+							var top = (that.pinned) ? this.y - jQuery(document).scrollTop() : this.y;
 					
 							that.left = this.x;
 							that.top = top;
+
 							this.panel.setPosition(this.x, top);
 							that.refreshShadow();
 							this.panel.shadow.show();

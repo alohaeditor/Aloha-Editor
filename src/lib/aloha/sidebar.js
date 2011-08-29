@@ -25,18 +25,18 @@
 //
 // ----------------------------------------------------------------------------
 
-define(
-[
-	'aloha/jquery'
-],
-function SidebarClosure (jQuery, undefined) {
+define([
+
+	'aloha/jquery',
+	'aloha/plugin' // For when we plugify sidebar
+
+], function SidebarClosure ($, Plugin) {
 	
 	'use strict';
 	
 	var
-		$ = jQuery,
-		GENTICS = window.GENTICS || (window.GENTICS = {}),
-	    Aloha = window.Aloha;
+		Aloha = window.Aloha,
+		undefined = void 0;
 	
 	// ------------------------------------------------------------------------
 	// Local (helper) variables
@@ -53,22 +53,23 @@ function SidebarClosure (jQuery, undefined) {
 		uid  = +(new Date),
 		// namespaced classnames
 		nsClasses = {
-			bar				: nsClass('bar'),
-			'config-btn'	: nsClass('config-btn'),
-			handle			: nsClass('handle'),
-			'handle-icon'	: nsClass('handle-icon'),
-			inner			: nsClass('inner'),
-			'panel-content'	: nsClass('panel-content'),
+			bar           : nsClass('bar'),
+			'config-btn'  : nsClass('config-btn'),
+			handle        : nsClass('handle'),
+			'handle-icon' : nsClass('handle-icon'),
+			inner         : nsClass('inner'),
+			'panel-content'
+			              : nsClass('panel-content'),
 			'panel-content-inner'
-							: nsClass('panel-content-inner'),
+			              : nsClass('panel-content-inner'),
 			'panel-content-inner-text'
-							: nsClass('panel-content-inner-text'),
-			panels			: nsClass('panels'),
-			'panel-title'	: nsClass('panel-title'),
+			              : nsClass('panel-content-inner-text'),
+			panels        : nsClass('panels'),
+			'panel-title' : nsClass('panel-title'),
 			'panel-title-arrow'
-							: nsClass('panel-title-arrow'),
+			              : nsClass('panel-title-arrow'),
 			'panel-title-text'
-							: nsClass('panel-title-text')
+			              : nsClass('panel-title-text')
 		};
 	
 	// ------------------------------------------------------------------------
@@ -93,13 +94,12 @@ function SidebarClosure (jQuery, undefined) {
 	
 	// TODO: This suffices for now. But we are to consider a more robust
 	//		 templating engine.
-	// TODO: Offer parameter to define left and right delimiters in case the
-	//		 default "{", and "}" are problematic
-	String.prototype.supplant = function (/*'lDelim, rDelim,'*/ obj) {
-		return this.replace(/\{([a-z0-9\-\_]+)\}/ig, function (str, p1, offset, s) {
+	function supplant (str, obj) {
+		return str.replace(/\{([a-z0-9\-\_]+)\}/ig, function (str, p1, offset, s) {
 			var replacement = obj[p1] || str;
-			return (typeof replacement == 'function')
-						? replacement() : replacement;
+			return (typeof replacement === 'function')
+						? replacement()
+						: replacement;
 		});
 	};
 	
@@ -107,7 +107,7 @@ function SidebarClosure (jQuery, undefined) {
 	// going directly to String.prototype.supplant
 	function renderTemplate (str) {
 		return (typeof str === 'string')
-					? str.supplant(nsClasses)
+					? supplant(str, nsClasses)
 					: str;
 	};
 	
@@ -115,14 +115,14 @@ function SidebarClosure (jQuery, undefined) {
 	function nsSel () {
 		var strBldr = [], prx = ns;
 		$.each(arguments, function () { strBldr.push('.' + (this == '' ? prx : prx + '-' + this)); });
-		return jQuery.trim(strBldr.join(' '));
+		return $.trim(strBldr.join(' '));
 	};
 	
 	// Creates string with this component's namepsace prefixed the each classname
 	function nsClass () {
 		var strBldr = [], prx = ns;
 		$.each(arguments, function () { strBldr.push(this == '' ? prx : prx + '-' + this); });
-		return jQuery.trim(strBldr.join(' '));
+		return $.trim(strBldr.join(' '));
 	};
 	
 	// ------------------------------------------------------------------------
@@ -146,6 +146,11 @@ function SidebarClosure (jQuery, undefined) {
 		this.width = 300;
 		this.opened = false;
 		this.isOpen = false;
+		
+		this.settings = {
+			rotateArrows : true,
+			overlayPage  : true
+		};
 		
 		this.init(opts);
 	};
@@ -185,7 +190,7 @@ function SidebarClosure (jQuery, undefined) {
 			}
 			
 			// Place the bar into the DOM
-			bar.css('opacity', 0)
+			bar.hide()
 			   .appendTo(body)
 			   .click(function () {that.barClicked.apply(that, arguments);})
 			   .find(nsSel('panels')).width(this.width);
@@ -205,7 +210,7 @@ function SidebarClosure (jQuery, undefined) {
 			if (this.opened) {
 				this.open(0);
 			}
-
+			
 			this.subscribeToEvents();
 			
 			$(window).resize(function () {
@@ -215,44 +220,63 @@ function SidebarClosure (jQuery, undefined) {
 			this.correctHeight();
 		},
 		
-		// Fade in nice and slow
+		
 		show: function () {
 			this.container
-				.css('display', 'block')
-				.animate({opacity: 1}, 1000);
+				.css('display', 'block');
+				//.animate({opacity: 1}, 1000);
 			
 			return this;
 		},
 		
-		// Fade out
+		
 		hide: function () {
-			this.container
-				.animate({opacity: 0}, 1000, function () {
+			this.container.css('display','none');
+				/*.animate({opacity: 0}, 1000, function () {
 					$(this).css('display', 'block')
-				});
+				});*/
 			
 			return this;
 		},
 		
-		subscribeToEvents: function () {
+		checkActivePanels: function(rangeObject) {
 			var that = this;
 			
-			Aloha.bind('aloha-selection-changed', function(event, rangeObject) {
 				var panels = that.panels,
 					effective = [],
 					i = 0,
 					obj;
-				
-				for (; i < rangeObject.markupEffectiveAtStart.length; i++) {
+			if (typeof rangeObject != 'undefined' && typeof rangeObject.markupEffectiveAtStart != 'undefined') {
+				for (; i < rangeObject.markupEffectiveAtStart.length; ++i) {
 					obj = $(rangeObject.markupEffectiveAtStart[i]);
 					effective.push(obj);
 				}
+			}
 				
 				$.each(panels, function () {
 					that.showActivePanel(this, effective);
 				});
 			
 				that.correctHeight();
+		},
+		
+		subscribeToEvents: function () {
+			var that = this;
+			var $container = this.container;
+			Aloha.bind('aloha-selection-changed', function(event, rangeObject) {
+				that.checkActivePanels(rangeObject);
+			});
+			$container.mousedown(function(e) {
+				e.originalEvent.stopSelectionUpdate = true;
+				Aloha.eventHandled = true;
+				//e.stopSelectionUpdate = true;
+			});
+			$container.mouseup(function (e) {
+				e.originalEvent.stopSelectionUpdate = true;
+				Aloha.eventHandled = false;
+			});
+			Aloha.bind("aloha-editable-deactivated", function(event, params) { 
+				that.checkActivePanels();
 			});
 		},
 		
@@ -324,17 +348,25 @@ function SidebarClosure (jQuery, undefined) {
 		},
 		
 		showActivePanel: function (panel, effectiveElems) {
-			var i = 0,
+				//we have to add null to check whether panels should be visible
+				//when we have no effective element
+				effectiveElems.push(null);
+				
+				var i = 0,
 				j = effectiveElems.length,
 				count = 0,
 				li = panel.content.parent('li'),
 				activeOn = panel.activeOn,
 				effective = $();
+				
+				
 			
 			for (; i < j; i++) {
 				if (activeOn(effectiveElems[i])) {
 					count++;
-					$.merge(effective, effectiveElems[i]);
+					if (effectiveElems[i]) {
+						$.merge(effective, effectiveElems[i]);
+					}
 				}
 			}
 			
@@ -445,11 +477,11 @@ function SidebarClosure (jQuery, undefined) {
 			if (el.hasClass(nsClass('panel-title'))) {
 				this.togglePanel(el);
 			} else if (el.hasClass(nsClass('panel-content'))) {
-				// console.log('Content clicked');
+				// Aloha.log('Content clicked');
 			} else if (el.hasClass(nsClass('handle'))) {
-				// console.log('Handle clicked');
+				// Aloha.log('Handle clicked');
 			} else if (el.hasClass(nsClass('bar'))) {
-				// console.log('Sidebar clicked');
+				// Aloha.log('Sidebar clicked');
 			} else {
 				this.handleBarclick(el.parent());
 			}
@@ -478,8 +510,8 @@ function SidebarClosure (jQuery, undefined) {
 						arr.css({
 							'-webkit-transform'	: 'rotate(' + val + 'deg)',
 							'-moz-transform'	: 'rotate(' + val + 'deg)',
-							'-ms-transform'		: 'rotate(' + val + 'deg)',
-							filter				: 'progid:DXImageTransform.Microsoft.BasicImage(rotation=' + ieAngle + ')'
+							'-ms-transform'		: 'rotate(' + val + 'deg)'//,
+							//filter				: 'progid:DXImageTransform.Microsoft.BasicImage(rotation=' + ieAngle + ')'
 						});
 					}
 				});
@@ -502,11 +534,16 @@ function SidebarClosure (jQuery, undefined) {
 				'easeOutExpo'
 			);
 			
-			$('body').animate(
-			isRight ? {marginRight: '+=' + this.width} : {marginLeft: '+=' + this.width},
-			500, 'easeOutExpo');
+			if (!this.settings.overlayPage) {
+				$('body').animate(
+					isRight ? {marginRight: '+=' + this.width} : {marginLeft: '+=' + this.width},
+					500, 'easeOutExpo'
+				);
+			}
 			
 			this.isOpen = true;
+
+			$('body').trigger(nsClass('opened'), this);
 			
 			return this;
 		},
@@ -528,9 +565,13 @@ function SidebarClosure (jQuery, undefined) {
 				'easeOutExpo'
 			);
 			
-			$('body').animate(
-			isRight ? {marginRight: '-=' + this.width} : {marginLeft: '-=' + this.width},
-			500, 'easeOutExpo');
+			
+			if (!this.settings.overlayPage) {
+				$('body').animate(
+					isRight ? {marginRight: '-=' + this.width} : {marginLeft: '-=' + this.width},
+					500, 'easeOutExpo'
+				);
+			}
 
 			this.isOpen = false;
 
@@ -575,8 +616,22 @@ function SidebarClosure (jQuery, undefined) {
 			return this;
 		},
 		
-		// We try and build as much of the panel DOM as we can before inserting
-		// it into the DOM in order to reduce reflow.
+		/**
+		 * Adds a panel to this sidebar instance.
+		 *
+		 * We try and build as much of the panel DOM as we can before inserting
+		 * it into the DOM in order to reduce reflow.
+		 *
+		 * @param {Object} panel - either a panel instance or an associative
+		 *			   array containing settings for the construction
+		 *			   of a new panel.
+		 * @param {Boolean} deferRounding - (Optional) If true, the rounding-off
+		 *				    of the top most and bottom most panels
+		 *				    will not be automatically done. Set
+		 *				    this to true when adding a lot of panels
+		 *				    at once.
+		 * @return {Object} - The newly created panel.
+		 */
 		addPanel: function (panel, deferRounding) {
 			if (!(panel instanceof Panel)) {
 				if (!panel.width) {
@@ -593,8 +648,8 @@ function SidebarClosure (jQuery, undefined) {
 			if (deferRounding !== true) {
 				this.roundCorners();
 			}
-			
-			return this;
+			this.checkActivePanels(Aloha.Selection.getRangeObject());
+			return panel;
 		}
 		
 	});
@@ -686,7 +741,7 @@ function SidebarClosure (jQuery, undefined) {
 					
 					if (typeofActiveOn === 'boolean') {
 						fn = function () {
-							return typeofActiveOn;
+							return activeOn;
 						};
 					} else if (typeofActiveOn === 'undefined') {
 						fn = function () {
@@ -694,7 +749,7 @@ function SidebarClosure (jQuery, undefined) {
 						};
 					} else if (typeofActiveOn === 'string') {
 						fn = function (el) {
-							return el.is(activeOn);
+							return el ? el.is(activeOn) : false;
 						};
 					} else {
 						fn = function () {
@@ -791,20 +846,22 @@ function SidebarClosure (jQuery, undefined) {
 		},
 		
 		rotateArrow: function (angle, duration) {
-			var arr = this.title.find(nsSel('panel-title-arrow'));
-			arr.animate({angle: angle}, {
-					duration: (typeof duration == 'number') ? duration : 500,
-					easing: 'easeOutExpo',
-					step: function (val, fx) {
-						var ieAngle = angle / 90;
-						arr.css({
-							'-webkit-transform'	: 'rotate(' + val + 'deg)',
-							'-moz-transform'	: 'rotate(' + val + 'deg)',
-							'-ms-transform'		: 'rotate(' + val + 'deg)',
-							filter				: 'progid:DXImageTransform.Microsoft.BasicImage(rotation=' + ieAngle + ')'
-						});
-					}
-				});
+			if (this.sidebar.settings.rotateArrows) {
+				var arr = this.title.find(nsSel('panel-title-arrow'));
+				arr.animate({angle: angle}, {
+						duration: (typeof duration == 'number') ? duration : 500,
+						easing: 'easeOutExpo',
+						step: function (val, fx) {
+							var ieAngle = angle / 90;
+							arr.css({
+								'-webkit-transform'	: 'rotate(' + val + 'deg)',
+								'-moz-transform'	: 'rotate(' + val + 'deg)',
+								'-ms-transform'		: 'rotate(' + val + 'deg)'//,
+								//filter				: 'progid:DXImageTransform.Microsoft.BasicImage(rotation=' + ieAngle + ')'
+							});
+						}
+					});
+			}
 		},
 		
 		renderEffectiveParents: function (effective, renderer) {
@@ -824,15 +881,16 @@ function SidebarClosure (jQuery, undefined) {
 					while (l--) {
 						pathRev.push(path[l]);
 					}
-					content.push(
+					content.push(supplant(
 						'<div class="aloha-sidebar-panel-parent">\
 							<div class="aloha-sidebar-panel-parent-path">{path}</div>\
 							<div class="aloha-sidebar-panel-parent-content aloha-sidebar-opened">{content}</div>\
-						 </div>'.supplant({
+						 </div>',
+						{
 							path	: pathRev.join(''),
 							content	: (typeof renderer === 'function') ? renderer(el) : '----'
-						})
-					);
+						}
+					));
 				}
 				
 				el = el.parent();
@@ -840,8 +898,8 @@ function SidebarClosure (jQuery, undefined) {
 			
 			this.setContent(content.join(''));
 			
-			jQuery('.aloha-sidebar-panel-parent-path').click(function () {
-				var c = jQuery(this).parent().find('.aloha-sidebar-panel-parent-content');
+			$('.aloha-sidebar-panel-parent-path').click(function () {
+				var c = $(this).parent().find('.aloha-sidebar-panel-parent-content');
 				
 				if (c.hasClass('aloha-sidebar-opened')) {
 					c.hide().removeClass('aloha-sidebar-opened');
@@ -850,35 +908,37 @@ function SidebarClosure (jQuery, undefined) {
 				}
 			});
 			
-			//console.log(this.content);
+			//Aloha.log(this.content);
 			this.content.height('auto').find('.aloha-sidebar-panel-content-inner').height('auto');
 			//this.sidebar.updateHeight();
 		}
 		
 	});
 	
-	// Expose Sidebar through Aloha as soon Aloha becomes available
-	$('body').bind('aloha', function () {
-		var left = new Sidebar({
-			position : 'left',
-			width	 : 250 // TODO define in config
+	// Expose Sidebar through Aloha once both the DOM is ready and Aloha are
+	// are ready
+	$(function () {
+		$('body').bind('alohacoreloaded', function () {
+			var left = new Sidebar({
+				position : 'left',
+				width	 : 250 // TODO define in config
+			});
+			
+			var right = new Sidebar({
+				position : 'right',
+				width	 : 250 // TODO define in config
+			});
+			
+			Aloha.Sidebars = {
+				left  : left,
+				right : right
+			};
+			
+			// Broadcast that Sidebars have arrived!
+			//$('body').trigger(nsClass('initialized'), Aloha.Sidebars);
+			$('body').trigger('aloha-sidebar-initialized', Aloha.Sidebars);
 		});
-		
-		var right = new Sidebar({
-			position : 'right',
-			width	 : 250 // TODO define in config
-		});
-
-		Aloha.Sidebars = {
-			left  : left,
-			right : right
-		};
-		
-		// Broadcast that this Sidebar instances have arrived!
-		$('body').trigger(nsClass('initialized'), Aloha.Sidebars);
 	});
 	
 	return Sidebar;
-}
-
-); // require
+});

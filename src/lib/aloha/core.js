@@ -23,10 +23,13 @@ define(
 [
 	'aloha/jquery',
 	'aloha/pluginmanager',
-	'aloha/floatingmenu'
+	'aloha/floatingmenu',
+	'aloha/commands',
+	'aloha/selection',
+	'aloha/rangy-core'
 ],
 
-function (jQuery, PluginManager, FloatingMenu, undefined) {
+function (jQuery, PluginManager, FloatingMenu, Commands, Selection, rangyUndef) {
 	"use strict";
 
 	var
@@ -325,8 +328,7 @@ function (jQuery, PluginManager, FloatingMenu, undefined) {
 				Aloha.eventHandled = false;
 			});
 			// Initialise the base path to the aloha files
-			Aloha.settings.base =
-				Aloha.settings.base || window.Aloha_base || Aloha.getAlohaUrl();
+			Aloha.settings.base = Aloha.getAlohaUrl();
 
 			// initialize the Log
 			Aloha.Log.init();
@@ -667,8 +669,7 @@ function (jQuery, PluginManager, FloatingMenu, undefined) {
 		 * @return {String} alohaUrl
 		 */
 		getAlohaUrl: function(suffix){
-			window.Aloha_base = window.Aloha_base || document.getElementById('aloha-script-include').src.replace(/require.js$/,'').replace(/\/+$/,'');
-			return window.Aloha_base;
+			return window.Aloha.settings.base || document.getElementById('aloha-script-include').src.replace(/require.js$/,'').replace(/\/+$/,'');
 		},
 
 		/**
@@ -687,12 +688,72 @@ function (jQuery, PluginManager, FloatingMenu, undefined) {
 			return url;
 		},
 
+		/**
+		 * Executes a registered command
+		 * @method
+		 * range is not in editing API. Must be a range obejct which will be affected by the command.
+		 */
+		execCommand: function(command, showUi, value, range){
+			
+			// "All of these methods must treat their command argument ASCII
+			// case-insensitively."
+			command = command.toLowerCase();
+			
+			// "If command is not supported, raise a NOT_SUPPORTED_ERR exception."
+			// We can't throw a real one, but a string will do for our purposes.
+			if (!(command in Commands)) {
+				throw "NOT_SUPPORTED_ERR";
+			}
+
+			// "If command has no action, raise an INVALID_ACCESS_ERR exception."
+			if (!('action' in Commands[command])) {
+				throw "INVALID_ACCESS_ERR";
+			}
+
+			// Take current selection if not passed
+			if ( !range ) {
+				range = Selection.getRangeObject();
+			}
+			
+			Commands[command].action(value, range);
+
+		},
+
 		i18n: function(component, key, replacements) {
 			window.console && window.console.log && console.log("Called deprecated i18n function!!", component, key);
 			return key;
+		},
+
+		/**
+		 * A wrapper for the function of the same name in the rangy core-depdency.
+		 * This function should be preferred as it hides the global rangy object.
+		 * For more information look at the following sites:
+		 * @param givenWindow optional - specifices the window to get the selection of
+		 * http://html5.org/specs/dom-range.html
+		 * http://code.google.com/p/rangy/wiki/RangyObject
+		 */
+		'getSelection': function(givenWindow){
+			return window.rangy.getSelection(givenWindow);
+		},
+
+		/**
+		 * A wrapper for the function of the same name in the rangy core-depdency.
+		 * This function should be preferred as it hides the global rangy object.
+		 * Please note: when the range object is not needed anymore,
+		 *   invoke the detach method on it. It is currently unknown to me why
+		 *   this is required, but that's what it says in the rangy specification.
+		 * For more information look at the following sites:
+		 * @param document optional - specifies which document to create the range for
+		 * http://www.w3.org/TR/DOM-Level-2-Traversal-Range/ranges.html
+		 * http://code.google.com/p/rangy/wiki/RangyObject
+		 */
+		'createRange': function(document) {
+			return window.rangy.createRange(document);
 		}
 	});
 
 	// Initialise Aloha Editor
 	Aloha.init();
+	
+	return Aloha;
 });

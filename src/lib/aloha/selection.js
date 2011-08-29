@@ -1,6 +1,6 @@
 /*!
 * This file is part of Aloha Editor Project http://aloha-editor.org
-* Copyright © 2010-2011 Gentics Software GmbH, aloha@gentics.com
+* Copyright (c) 2010-2011 Gentics Software GmbH, aloha@gentics.com
 * Contributors http://aloha-editor.org/contribution.php 
 * Licensed unter the terms of http://www.aloha-editor.org/license.html
 *//*
@@ -19,7 +19,7 @@
 */
 
 define(
-['aloha/jquery', 'aloha/floatingmenu'],
+['aloha/jquery', 'aloha/floatingmenu', 'util/base', 'util/range'],
 function(jQuery, FloatingMenu) {
 	"use strict";
 	var
@@ -1086,7 +1086,7 @@ function(jQuery, FloatingMenu) {
 				}
 
 				// skip empty text nodes
-				if (el.domobj && el.domobj.nodeType === 3 && jQuery.trim(jQuery(el.domobj).outerHtml()).length === 0) {
+				if (el.domobj && el.domobj.nodeType === 3 && jQuery.trim(el.domobj.nodeValue).length === 0) {
 					continue;
 				}
 

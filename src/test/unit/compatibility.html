@@ -10,7 +10,32 @@
 	<!-- include jquery -->
 	<script	src="../../lib/vendor/jquery-1.5.1.js" ></script>	
 	<script>
+		// currently, we need to manually set the path to aloha
+		window.Aloha = {
+			settings : {
+				base : '../../lib/',
+				logLevels : {
+					'error': true,
+					'warn':  true,
+					'info':  false,
+					'debug': false
+				},
+				logHistory : {
+					levels : {
+						'error' : true,
+						'warn' : true,
+						'info' : false,
+						'debug' : false
+					}
+				},
+				errorhandling : true
+			}
+		};
+
 		window.alohaQuery = jQuery.noConflict();
+		var require = {
+			waitSeconds : 15
+		};
 	</script>
 
 	<!-- include old jquery for compatibility check -->
@@ -19,21 +44,28 @@
 	<!-- include aloha -->
 	<script src="../../lib/require.js" data-main="../../lib/aloha.js" id="aloha-script-include" data-plugins=""></script>
 
-	<!-- include the tests -->
+	<!-- include testswarm inject script -->
 	<script>
-		require(
-			{
-				paths: {
-					'compatibilitytests': '../test/unit/compatibilitytests',
-				}
-			},
-			['compatibilitytests']
-		);
+		var url = window.location.search;
+		url = decodeURIComponent( url.slice( url.indexOf("swarmURL=") + 9 ) );
+		if ( url && url.indexOf("http") === 0 ) {
+			require(["http://testswarm.aloha-editor.org/js/inject.js?" + (new Date).getTime()], function() {});
+		}
 	</script>
-	<!-- inject into testswarm -->
-	<script type="text/javascript" src="../dep/swarminject.js"></script>
 </head>
 <body>
+	<!-- include the tests -->
+	<script>
+	require(
+		{
+			paths: {
+				'compatibilitytests': '../test/unit/compatibilitytests'
+			}
+		},
+		['compatibilitytests']
+	);
+	</script>
+
 	<h1 id="qunit-header">Aloha Editor Compatibility Test Suite</h1>
 	<h2 id="qunit-banner"></h2>
 	<div id="qunit-testrunner-toolbar"></div>

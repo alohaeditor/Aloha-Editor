@@ -1,5 +1,4 @@
 (function(window, undefined) {
-	var jQuery = window.jQuery
 	if (window.Aloha === undefined || window.Aloha === null) {
 		window.Aloha = {};		
 	}
@@ -14,6 +13,9 @@
 					// "acceptLanguage": 'de-de,de;q=0.8,it;q=0.6,en-us;q=0.7,en;q=0.2'
 					// or set current on server side to be in sync with your backend system
 					"current": "en"
+				},
+				"floatingmenu": {
+					"width" : 800
 				},
 				"repositories": {
 					"linklist": {
@@ -72,9 +74,9 @@
 							// handle change of href
 							onHrefChange: function( obj, href, item ) {
 								if ( item ) {
-									$(obj).attr('data-name', item.name);
+									window.alohaQuery(obj).attr('data-name', item.name);
 								} else {
-									$(obj).removeAttr('data-name');
+									window.alohaQuery(obj).removeAttr('data-name');
 								}
 							}
 					},

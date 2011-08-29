@@ -9,28 +9,6 @@ define("coretests",
 function(aQuery, undefined) {
 	"use strict";
 	
-if (window.Aloha === undefined || window.Aloha === null) {
-		window.Aloha = {};		
-}
-window.Aloha.settings = {
-	logLevels : {
-		'error': true,
-		'warn':  true,
-		'info':  false,
-		'debug': false
-	},
-	logHistory : {
-		levels : {
-			'error' : true,
-			'warn' : true,
-			'info' : false,
-			'debug' : false
-		}
-	},
-	errorhandling : true
-};
-
-require.ready(function() {
 	// Prepare
 	var	$ = window.jQuery,
 		$body = $('body');
@@ -76,6 +54,4 @@ require.ready(function() {
 			equals(editable.contentEditable(), "false", 'Check whether div is not contenteditable after .mahalo()');
 		});
 	});
-});
-
 });

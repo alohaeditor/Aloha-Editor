@@ -7,8 +7,8 @@
 window.TestUtils = window.TestUtils || {};
 
 define(
-		['aloha/jquery'],
-		function(jQuery, undefined) {
+		['aloha/jquery', 'aloha/selection', 'util/range'],
+		function(jQuery, Selection, Range) {
 			"use strict";
 			
 			var	$ = jQuery;
@@ -90,6 +90,15 @@ define(
 		},
 
 		/**
+		 * Simulate pressing backspace in the given editable
+		 * @param editable jQuery object
+		 */
+		pressBackspace : function(editable) {
+			editable.simulate('keydown', {keyCode: 8});
+			editable.simulate('keyup', {keyCode: 8});
+		},
+
+		/**
 		 * Apply the given markup to the given range. This will either
 		 * add or remove the markup (depending on whether the markup is
 		 * currently active at the start of the range)
@@ -133,6 +142,64 @@ define(
 			rangeObject.select();
 			rangeObject.clearCaches();
 			rangeObject.updateMarkupEffectiveAtStart();
+		},
+
+		/**
+		 * Transform the selection marker into a range and remove the marker.
+		 * @param editable editable, which should contain selection markers []
+		 * @return range
+		 */
+		rangeFromMarker : function (editable) {
+			var 
+				text,
+				offset,
+				rangeObject = new Selection.SelectionRange();
+
+			editable.textNodes().filter(function() {
+				return this.nodeType == 3 && this.nodeValue.indexOf('[') >= 0;
+			}).each(function() {
+				text = this.nodeValue;
+				offset = text.indexOf('[');
+				this.nodeValue = text.substring( 0, offset ) + text.substring( offset + 1 );
+				rangeObject.startContainer = this;
+				rangeObject.startOffset = offset;
+			});
+
+			editable.textNodes().filter(function() {
+				return this.nodeType == 3 && this.nodeValue.indexOf(']') >= 0;
+			}).each(function() {
+				text = this.nodeValue;
+				offset = text.indexOf(']');
+				this.nodeValue = text.substring( 0, offset ) + text.substring( offset + 1 );
+				rangeObject.endContainer = this;
+				rangeObject.endOffset = offset;
+			});
+
+			return rangeObject;
+		},
+		/**
+		 * Transform the selection into a selection marker.
+		 * @void
+		 */
+		markerFromSelection : function () {
+			var 
+				range = new Range(),
+				insertMarker = 	function (node,offset,marker) {
+					var
+						text;
+					if (node.nodeType == 3) {
+						text = node.nodeValue;
+						range.endContainer.nodeValue = text.substring(0,offset)+marker+text.substring(offset);
+					} else {
+						// insert text node before endNode
+						jQuery(node).contents()[offset].append(']');
+					}
+				};
+			
+			range.initializeFromUserSelection();
+			
+			insertMarker(range.endContainer, range.endOffset, ']');
+			insertMarker(range.startContainer, range.startOffset, '[');
 		}
 	});
 
