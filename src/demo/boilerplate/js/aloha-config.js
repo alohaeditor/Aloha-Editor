@@ -1,8 +1,10 @@
 (function(window, undefined) {
+
 	if (window.Aloha === undefined || window.Aloha === null) {
-		window.Aloha = {};		
+		var Aloha = window.Aloha = {};		
 	}
-	window.Aloha.settings = {
+	
+	Aloha.settings = {
 				logLevels: {'error': true, 'warn': true, 'info': true, 'debug': false},
 				errorhandling : false,
 				ribbon: false,
