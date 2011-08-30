@@ -599,11 +599,13 @@ ul.aloha-multisplit button.aloha-button-removeFormat {
     	#303539 50%,
     	#33363b 95%
 	);
+	/*
 	filter: progid:DXImageTransform.Microsoft.Gradient(
 		startColorstr='#383d41',
 		endColorstr='#303539',
 		gradientType='0'
 	);
+	*/
 	color: #ccc;
 	cursor: pointer;
 	font-size: 13px;
@@ -622,11 +624,11 @@ ul.aloha-multisplit button.aloha-button-removeFormat {
 	height: 16px;
 	background: url(../img/arrow.png) no-repeat center center;
 	opacity: 0.3;
-	filter: alpha(opacity=30);
+	/* filter: alpha(opacity=30); */
 }
 .aloha-sidebar-panel-title:hover .aloha-sidebar-panel-title-arrow {
 	opacity: 0.9;
-	filter: alpha(opacity=90);
+	/* filter: alpha(opacity=90); */
 }
 .aloha-sidebar-panel-title-text {
 	margin-left: 24px;
@@ -688,11 +690,13 @@ ul.aloha-multisplit button.aloha-button-removeFormat {
     	#303539 50%,
     	#33363b 95%
 	);
+	/*
 	filter: progid:DXImageTransform.Microsoft.Gradient(
 		startColorstr='#383d41',
 		endColorstr='#303539',
 		gradientType='0'
 	);
+	*/
 	
 	cursor: pointer;
 	
@@ -732,7 +736,7 @@ ul.aloha-multisplit button.aloha-button-removeFormat {
 	width: 20px;
 	height: 20px;
 	opacity: 0.5;
-	filter: alpha(opacity=50);
+	/* filter: alpha(opacity=50); */
 }
 .aloha-sidebar-right .aloha-sidebar-handle-icon {
 	left: 5px;
@@ -761,11 +765,13 @@ ul.aloha-multisplit button.aloha-button-removeFormat {
     	#303539 50%,
     	#33363b 95%
 	);
+	/*
 	filter: progid:DXImageTransform.Microsoft.Gradient(
 		startColorstr='#383d41',
 		endColorstr='#303539',
 		gradientType='0'
 	);
+	*/
 	color: #fff;
 	cursor: pointer;
 	font-size: 12px;
@@ -775,20 +781,20 @@ ul.aloha-multisplit button.aloha-button-removeFormat {
 }
 .aloha-sidebar-panel-parent-path:hover {
 	opacity: 0.9;
-	filter: alpha(opacity=90);
+	/* filter: alpha(opacity=90); */
 }
 .aloha-sidebar-panel-parent-path span {
 	display: inline-block;
 	padding: 0 10px 0 5px;
 	background: url(../img/breadcrumb-divider.png) no-repeat right center;
 	opacity: 0.25;
-	filter: alpha(opacity=25);
+	/* filter: alpha(opacity=25); */
 	line-height: 1.6em;
 }
 .aloha-sidebar-panel-parent-path span:first-child {
 	font-weight: bold;
 	opacity: 0.8;
-	filter: alpha(opacity=80);
+	/* filter: alpha(opacity=80); */
 }
 .aloha-sidebar-panel-parent-path span:last-child {
 	background: none;
