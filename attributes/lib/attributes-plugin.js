@@ -175,7 +175,7 @@ function(Plugin, FloatingMenu, i18n, i18nCore) {
 			sidebar.addPanel({
                     
                     id         : pl.nsClass('sidebar-panel'),
-                    title     : 'Attributes',
+                    title     : 'Attribute',
                     content     : '',
                     expanded : true,
                     activeOn : function(ef){return pl.activeOn(ef);},
