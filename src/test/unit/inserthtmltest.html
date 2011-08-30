@@ -38,8 +38,9 @@
 	<script>
 	var tests = {
 			defaultValue: 'bam',
-			defaultCommand: 'inserthtml',
+			defaultCommand: 'inserthtmltest',
 			tests: [		        
+/**/
 					{  	start: '[]foo',
 				       	expected: 'bam[]foo' 
 				    },
@@ -55,7 +56,7 @@
 			        {  	start: '[]',
 				       	expected: 'bam[]' 
 				    },
-			        {  	start: '[foo]',
+/**/		        {  	start: '[foo]',
 				       	expected: 'bam[]' 
 				    },
 			        {  	start: 'f[o]o',
@@ -64,7 +65,7 @@
 			        {  	start: 'f[]oo',
 				       	expected: 'fbam[]oo' 
 				    },
-				    {  	start: 'foo<span>[bar]</span>baz',
+					{  	start: 'foo<span>[bar]</span>baz',
 				       	expected: 'foo<span>bam[]</span>baz' 
 				    },
 					{  	start: 'foo[<span>bar</span>]baz',
@@ -79,16 +80,16 @@
 					{  	start: '[foo<span>b]ar</span>baz',
 				       	expected: 'bam[]<span>ar</span>baz' 
 				    },
-/* Not working *	{  	start: 'foo<span>[bar</span>baz]',
+/* Not working */	{  	start: 'foo<span>[bar</span>baz]',
 				       	expected: 'foo<span>bam[]</span>' 
 				    },
 					{  	start: 'foo<span>bar[</span>baz]',
 				       	expected: 'foo<span>barbam[]</span>' 
 				    },
-/**/				{  	start: 'foo<span>ba[r</span>baz]',
+					{  	start: 'foo<span>ba[r</span>baz]',
 				       	expected: 'foo<span>babam[]</span>' 
 				    },
-/* Not working *	{  	start: 'foo<span>[bar</span><span>baz]</span>baz',
+    				{  	start: 'foo<span>[bar</span><span>baz]</span>baz',
 				       	expected: 'foo<span>bam[]</span>baz' 
 				    },				    
 /**/			    {  	start: 'foo<p>[bar]</p>baz',
@@ -162,34 +163,25 @@
 				       	value: '' 
 					},
 				    {  	start: 'foo[bar]baz',
-				       	expected: 'foo&ouml;[]baz',
-				       	value: '&ouml;',
-				       	name: '"&amp;ouml;" -> foo[bar]baz -> foo&amp;ouml;[]baz //special char &ouml;'
-					},
-				    {  	start: 'foo[bar]baz',
-				       	expected: 'foo&#x308;[]baz',
-				       	value: '&#x308;',
-				       	name: '"&amp;#x308;" -> foo[bar]baz -> foo&amp;#x308;[]baz //special char  &nbsp;&#x308;'
-					},
-				    {  	start: 'foo[bar]baz',
 				       	expected: 'foo\0[]baz',
-				       	value: '\0',
-				       	name: '"&amp;#00;" -> foo[bar]baz -> foo&amp;#00;[]baz //null'
+				       	value: '\0' //null 
 					},
 				    {  	start: 'foo[bar]baz',
 				       	expected: 'foo\x07[]baz',
-				       	value: '\x07',
-				       	name: '"&amp;#07;" -> foo[bar]baz -> foo&amp;#07;[]baz //bell ;)'
+				       	value: '\x07' //bell :)
 					},
 				    {  	start: 'foo[bar]baz',
-				       	expected: 'foo\ud000[]baz',
-				       	value: '\ud000', 
-				       	name: '"U+D000" -> foo[bar]baz -> fooU+D000[]baz //spechial char o\ud000'
+				       	expected: 'foo\ud799[]baz',
+				       	value: '\ud799' 
 					},
-					{  	start: 'foo[bar]baz',
+/* not working */	{  	start: 'foo[bar]baz',
 				       	expected: 'foo\ud800[]baz',
-				       	value: '\ud800',
-				       	name: '"U+D800" -> foo[bar]baz -> fooU+D800[]baz //High surrogate area http://unicode.org/charts/PDF/UD800.pdf'
+				       	value: '\ud800', //High surrogate area http://unicode.org/charts/PDF/UD800.pdf
+				       	name: 'inserthtml "U+D800" -> foo[bar]baz -> fooU+D800[]baz'
+					},
+/**/				    {  	start: 'foo[bar]baz',
+				       	expected: 'foo[]baz',
+				       	value: '' 
 					},
 					{  	start: 'foo[bar]baz',
 				       	expected: 'foo[]baz',
@@ -199,11 +191,11 @@
 				       	expected: 'foo<b>bam[]</b>baz',
 				       	value: '<b>bam</b>' 
 					},
-/* not working *	{  	start: '<b>foo[bar]baz</b>',
+/* not working */	{  	start: '<b>foo[bar]baz</b>',
 				       	expected: '<b>foobam[]baz</b>',
 				       	value: '<b>bam</b>' 
 					},
-/**/				{  	start: 'foo[bar]baz',
+/**					{  	start: 'foo[bar]baz',
 				       	expected: 'foo[]baz',
 				       	value: '<p>' 
 					},
@@ -219,7 +211,7 @@
 				       	expected: '<p>foo</p><p>bam</p><p>[]baz',
 				       	value: '<p>bam</p>' 
 					},
-/* not working *	{  	start: '<p>foo[bar]baz</p>',
+/* not working */	{  	start: '<p>foo[bar]baz</p>',
 				       	expected: '<p>foo</p><ol><li>bam</li></ol><p>[]baz</p>',
 				       	value: '<ol><li>bam</li></ol>' 
 					},
@@ -232,7 +224,7 @@
 					  	expected: '<ol><li><ol><li>bam[]</li></ol></li></ol>',
 				       	value: '<ol><li>bam</li></ol>' 
 					},
-/* not working *	{  	start: '<ol>[<li>bar</li>]</ol>',
+/* not working */	{  	start: '<ol>[<li>bar</li>]</ol>',
 					  	expected: '<ol><li><ol><li>bam[]</li></ol></li></ol>',
 				       	value: '<ol><li>bam</li></ol>' 
 					},
@@ -255,7 +247,7 @@
 					  	expected: '<ol><li><p>bam[]</p></li></ol>',
 				       	value: '<p>bam</p>' 
 					},
-/* not working *	{  	start: '<ol><li>foo</li>[<li>bar</li>]<li>baz</li></ol>',
+/* not working */	{  	start: '<ol><li>foo</li>[<li>bar</li>]<li>baz</li></ol>',
 					  	expected: '<ol><li>foo</li><li><p>bam[]</p></li><li>baz</li></ol>',
 				       	value: '<p>bam</p>' 
 					},
@@ -267,7 +259,7 @@
 					  	expected: '<ol><li>foo<p>bam[]</p></li></ol>',
 				       	value: '<p>bam</p>' 
 					},
-/* not working *	{  	start: '<a>foo[bar]baz</a>',
+/* not working */	{  	start: '<a>foo[bar]baz</a>',
 					  	expected: '<a>foobam[]baz</a>',
 				       	value: '<a>bam</a>' 
 					},
@@ -276,11 +268,11 @@
 				       	value: '<a href=/>bam</a>' 
 					},
 					{  	start: '[<a>foo]</a>bar',
-					  	expected: '<a href=/>bam[]</a>bar',
+					  	expected: '<a href=/>bam[]</a>baz',
 				       	value: '<a href=/>bam</a>' 
 					},
-					{  	start: '<a>[foo</a>]bar',
-					  	expected: '<a>bam[]</a>bar',
+					{  	start: '<a>[foo</a>]bar</a>',
+					  	expected: '<a>bam[]bar</a>',
 				       	value: '<a href=/>bam</a>' 
 					},
 					{  	start: '<span>foo[bar]baz</span>',
@@ -295,7 +287,7 @@
 					  	expected: '<h1>foo</h1><h2>bam</h2><h1>[]baz</h1>',
 				       	value: '<h2>bam</h2>' 
 					},
-/* not working *	{  	start: '<table><tr><td>f[o]o</table>',
+/* not working */	{  	start: '<table><tr><td>f[o]o</table>',
 					  	expected: '<table><tr><td>foo[bar]baz</table>',
 				       	value: '<td>bam</td>' 
 					},
