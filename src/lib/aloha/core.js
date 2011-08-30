@@ -776,7 +776,7 @@ function (jQuery, PluginManager, FloatingMenu, Commands, Selection, Range) {
 		 * @param window optional - specifices the window to get the selection of
 		 */
 		getSelection: function(document){
-			return Selection.getRangeObject();
+			return window.rangy.getSelection(document);
 		},
 
 		/**
@@ -789,8 +789,8 @@ function (jQuery, PluginManager, FloatingMenu, Commands, Selection, Range) {
 		 * http://www.w3.org/TR/DOM-Level-2-Traversal-Range/ranges.html
 		 * @param document optional - specifies which document to create the range for
 		 */
-		createRange: function(window) {
-			return new Range();
+		createRange: function(givenWindow) {
+			return window.rangy.createRange(givenWindow);
 		}
 	});
 
