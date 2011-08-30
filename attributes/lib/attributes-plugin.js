@@ -85,7 +85,17 @@ function(Plugin, FloatingMenu, i18n, i18nCore) {
 		
 		config: ['true'],
 		
-		activeOn: 'a,span,div,p,q,blockquote,h1,h2,h3,h4,h5,h6,em,i,b',
+		//activeOn: 'a,span,div,p,q,blockquote,h1,h2,h3,h4,h5,h6,em,i,b',
+		
+		activeOn : function(effective) {
+			if (typeof this.settings.disabled === 'boolean' && this.settings.disabled) {
+				return false;
+			}
+			if (typeof effective != 'undefined' && effective != null) {
+				return true;
+			}
+			return false;
+		},
 				
 		/**
 		 * Initialize the plugin
@@ -168,7 +178,7 @@ function(Plugin, FloatingMenu, i18n, i18nCore) {
                     title     : 'Attributes',
                     content     : '',
                     expanded : true,
-                    activeOn : this.activeOn,
+                    activeOn : function(ef){return pl.activeOn(ef);},
                     
                     onInit     : function () {
                         var that = this;
