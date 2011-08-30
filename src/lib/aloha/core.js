@@ -50,6 +50,14 @@ function (jQuery, PluginManager, FloatingMenu, Commands, Selection, rangyUndef) 
 	 */
 	var pluginPaths = {};
 	
+	// Ext seems to have an onClick handler that uses
+	// QuickTips, but the handler doesn't initialize
+	// QuickTips and therefore causes an error.
+	// The bug occurred with the Gentics Content Node
+	// integration, but if it's really a bug in Ext, then
+	// it's a good idea to always initialize QuickTips here.
+	Ext.QuickTips.init();
+
 	/**
 	 * Base Aloha Object
 	 * @namespace Aloha
