@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8" />
-	<title>Aloha Editor Backspace Test Suite</title>
+	<title>Aloha Editor inserthml Test Suite</title>
 	<!-- include qunit -->
 	<link rel="stylesheet" href="../dep/qunit.css" type="text/css"/>
 
@@ -16,7 +16,7 @@
 	</script>
 
 	<!-- include aloha -->
-	<script src="../../lib/require.js" data-main="../../lib/aloha.js" id="aloha-script-include" data-plugins="common/paste"></script>
+	<script src="../../lib/require.js" data-main="../../lib/aloha.js" id="aloha-script-include" data-plugins="common/commands"></script>
 
 	<!-- inject into testswarm -->
 	<script type="text/javascript" src="../dep/swarminject.js"></script>
@@ -40,7 +40,6 @@
 			defaultValue: 'bam',
 			defaultCommand: 'inserthtml',
 			tests: [		        
-/**/
 					{  	start: '[]foo',
 				       	expected: 'bam[]foo' 
 				    },
@@ -59,7 +58,7 @@
 			        {  	start: '[foo]',
 				       	expected: 'bam[]' 
 				    },
-/**/			        {  	start: 'f[o]o',
+			        {  	start: 'f[o]o',
 				       	expected: 'fbam[]o' 
 				    },
 			        {  	start: 'f[]oo',
@@ -77,25 +76,22 @@
 					{  	start: '[foo<span>]bar</span>baz',
 				       	expected: 'bam[]<span>bar</span>baz' 
 				    },
-/* Not working 				    
 					{  	start: '[foo<span>b]ar</span>baz',
 				       	expected: 'bam[]<span>ar</span>baz' 
 				    },
-					{  	start: 'foo<span>[bar</span>baz]',
+/* Not working *	{  	start: 'foo<span>[bar</span>baz]',
 				       	expected: 'foo<span>bam[]</span>' 
 				    },
 					{  	start: 'foo<span>bar[</span>baz]',
 				       	expected: 'foo<span>barbam[]</span>' 
 				    },
-					{  	start: 'foo<span>ba[r</span>baz]',
+/**/				{  	start: 'foo<span>ba[r</span>baz]',
 				       	expected: 'foo<span>babam[]</span>' 
 				    },
-    				{  	start: 'foo<span>[bar</span><span>baz]</span>quz',
+/* Not working *	{  	start: 'foo<span>[bar</span><span>baz]</span>baz',
 				       	expected: 'foo<span>bam[]</span>baz' 
-				    },
-/**/				    
-				    
-				    {  	start: 'foo<p>[bar]</p>baz',
+				    },				    
+/**/			    {  	start: 'foo<p>[bar]</p>baz',
 				       	expected: 'foo<p>bam[]</p>baz' 
 				    },
 					{  	start: 'foo[<p>bar</p>]baz',
@@ -145,12 +141,10 @@
 				       	expected: 'foo<span><span>bam[]</span></span>baz',
 				       	value: '<span>bam</span>' 
 				    },
-/* Not working				    
 					{  	start: '[foo<span>bar]</span>baz',
 				       	expected: '<span>bam[]</span>baz',
 				       	value: '<span>bam</span>' 
 				    },
-*/
 				    {  	start: 'foo<p>[bar]</p>baz',
 				       	expected: 'foo<p><span>bam[]</span></p>baz',
 				       	value: '<span>bam</span>' 
@@ -158,13 +152,155 @@
 					{  	start: 'foo[<p>bar</p>]baz',
 				       	expected: 'foo<span>bam[]</span>baz',
 				       	value: '<span>bam</span>' 
-				    }
-/* Not working				    
+				    },
 					{  	start: '[foo<p>bar]</p>baz',
 				       	expected: '<span>bam[]</span>baz',
 				       	value: '<span>bam</span>' 
 				    },
-*/
+				    {  	start: 'foo[bar]baz',
+				       	expected: 'foo[]baz',
+				       	value: '' 
+					},
+				    {  	start: 'foo[bar]baz',
+				       	expected: 'foo&ouml;[]baz',
+				       	value: '&ouml;',
+				       	name: '"&amp;ouml;" -> foo[bar]baz -> foo&amp;ouml;[]baz //special char &ouml;'
+					},
+				    {  	start: 'foo[bar]baz',
+				       	expected: 'foo&#x308;[]baz',
+				       	value: '&#x308;',
+				       	name: '"&amp;#x308;" -> foo[bar]baz -> foo&amp;#x308;[]baz //special char  &nbsp;&#x308;'
+					},
+				    {  	start: 'foo[bar]baz',
+				       	expected: 'foo\0[]baz',
+				       	value: '\0',
+				       	name: '"&amp;#00;" -> foo[bar]baz -> foo&amp;#00;[]baz //null'
+					},
+				    {  	start: 'foo[bar]baz',
+				       	expected: 'foo\x07[]baz',
+				       	value: '\x07',
+				       	name: '"&amp;#07;" -> foo[bar]baz -> foo&amp;#07;[]baz //bell ;)'
+					},
+				    {  	start: 'foo[bar]baz',
+				       	expected: 'foo\ud000[]baz',
+				       	value: '\ud000', 
+				       	name: '"U+D000" -> foo[bar]baz -> fooU+D000[]baz //spechial char o\ud000'
+					},
+					{  	start: 'foo[bar]baz',
+				       	expected: 'foo\ud800[]baz',
+				       	value: '\ud800',
+				       	name: '"U+D800" -> foo[bar]baz -> fooU+D800[]baz //High surrogate area http://unicode.org/charts/PDF/UD800.pdf'
+					},
+					{  	start: 'foo[bar]baz',
+				       	expected: 'foo[]baz',
+				       	value: '<b>' 
+					},
+					{  	start: 'foo[bar]baz',
+				       	expected: 'foo<b>bam[]</b>baz',
+				       	value: '<b>bam</b>' 
+					},
+/* not working *	{  	start: '<b>foo[bar]baz</b>',
+				       	expected: '<b>foobam[]baz</b>',
+				       	value: '<b>bam</b>' 
+					},
+/**/				{  	start: 'foo[bar]baz',
+				       	expected: 'foo[]baz',
+				       	value: '<p>' 
+					},
+					{  	start: 'foo[bar]baz',
+				       	expected: 'foo<p>bam</p>[]baz',
+				       	value: '<p>bam</p>' 
+					},
+					{  	start: '<p>foo[bar]baz</p>',
+				       	expected: '<p>foo</p><p>bam</p><p>[]baz',
+				       	value: '<p>bam</p>' 
+					},
+					{  	start: '<p>foo[bar]baz</p>',
+				       	expected: '<p>foo</p><p>bam</p><p>[]baz',
+				       	value: '<p>bam</p>' 
+					},
+/* not working *	{  	start: '<p>foo[bar]baz</p>',
+				       	expected: '<p>foo</p><ol><li>bam</li></ol><p>[]baz</p>',
+				       	value: '<ol><li>bam</li></ol>' 
+					},
+/**/				{  	start: '<p>foo[bar]baz</p>',
+				       	expected: '<p>foo</p><ol><li>bam</li></ol><p>[]baz</p>',
+				       	value: '<ol><li>bam</li></ol>' 
+					},
+					
+					{  	start: '<ol><li>[bar]</li></ol>',
+					  	expected: '<ol><li><ol><li>bam[]</li></ol></li></ol>',
+				       	value: '<ol><li>bam</li></ol>' 
+					},
+/* not working *	{  	start: '<ol>[<li>bar</li>]</ol>',
+					  	expected: '<ol><li><ol><li>bam[]</li></ol></li></ol>',
+				       	value: '<ol><li>bam</li></ol>' 
+					},
+					{  	start: '<ol><li>foo</li>[<li>bar</li>]<li>baz</li></ol>',
+					  	expected: '<ol><li>foo<ol><li>bam[]</li></ol></li><li>baz</li></ol>',
+				       	value: '<ol><li>bam</li></ol>' 
+					},
+/**/				{  	start: '<ol><li>foo[bar]</li></ol>',
+					  	expected: '<ol><li>foo<ol><li>bam[]</li></ol></li></ol>',
+				       	value: '<ol><li>bam</li></ol>' 
+					},
+					{  	start: '<ol><li>foo[bar]baz</li></ol>',
+					  	expected: '<ol><li>foo<ol><li>bam</li></ol>[]baz</li></ol>',
+				       	value: '<ol><li>bam</li></ol>' 
+					},
+					// TODO: Flow elements are allowed in li elements.
+					// Is this useable with contenteditable?
+					// How should the UI look for this?
+					{  	start: '<ol><li>[bar]</li></ol>',
+					  	expected: '<ol><li><p>bam[]</p></li></ol>',
+				       	value: '<p>bam</p>' 
+					},
+/* not working *	{  	start: '<ol><li>foo</li>[<li>bar</li>]<li>baz</li></ol>',
+					  	expected: '<ol><li>foo</li><li><p>bam[]</p></li><li>baz</li></ol>',
+				       	value: '<p>bam</p>' 
+					},
+/**/				{  	start: '<ol><li>foo[bar]baz</li></ol>',
+					  	expected: '<ol><li>foo<p>bam</p>[]baz</li></ol>',
+				       	value: '<p>bam</p>' 
+					},
+					{  	start: '<ol><li>foo[bar]</li></ol>',
+					  	expected: '<ol><li>foo<p>bam[]</p></li></ol>',
+				       	value: '<p>bam</p>' 
+					},
+/* not working *	{  	start: '<a>foo[bar]baz</a>',
+					  	expected: '<a>foobam[]baz</a>',
+				       	value: '<a>bam</a>' 
+					},
+					{  	start: '<a>foo[bar]baz</a>',
+					  	expected: '<a>foobam[]baz</a>',
+				       	value: '<a href=/>bam</a>' 
+					},
+					{  	start: '[<a>foo]</a>bar',
+					  	expected: '<a href=/>bam[]</a>bar',
+				       	value: '<a href=/>bam</a>' 
+					},
+					{  	start: '<a>[foo</a>]bar',
+					  	expected: '<a>bam[]</a>bar',
+				       	value: '<a href=/>bam</a>' 
+					},
+					{  	start: '<span>foo[bar]baz</span>',
+				       	expected: '<span>foo</span><hr><span>[]baz</span>',
+				       	value: '<hr>' 
+					},
+/**/				{  	start: '<p>foo[bar]baz</p>',
+				       	expected: '<p>foo</p><hr><p>[]baz</p>',
+				       	value: '<hr>' 
+					},
+					{  	start: '<h1>foo[bar]baz</h1>',
+					  	expected: '<h1>foo</h1><h2>bam</h2><h1>[]baz</h1>',
+				       	value: '<h2>bam</h2>' 
+					},
+/* not working *	{  	start: '<table><tr><td>f[o]o</table>',
+					  	expected: '<table><tr><td>foo[bar]baz</table>',
+				       	value: '<td>bam</td>' 
+					},
+/**/
+			    
 			]
 	}
 	</script>

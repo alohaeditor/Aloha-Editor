@@ -200,8 +200,61 @@ define(
 			
 			insertMarker(range.endContainer, range.endOffset, ']');
 			insertMarker(range.startContainer, range.startOffset, '[');
-		}
+		},
+		
+		addBrackets: function (range) {
+			//@{
+				// Handle the collapsed case specially, to avoid confusingly getting the
+				// markers backwards in some cases
+				if (range.startContainer.nodeType == Node.TEXT_NODE
+				|| range.startContainer.nodeType == Node.COMMENT_NODE) {
+					if (range.collapsed) {
+						range.startContainer.insertData(range.startOffset, "[]");
+					} else {
+						range.startContainer.insertData(range.startOffset, "[");
+					}
+				} else {
+					var marker = range.collapsed ? "{}" : "{";
+					if (range.startOffset != range.startContainer.childNodes.length
+					&& range.startContainer.childNodes[range.startOffset].nodeType == Node.TEXT_NODE) {
+						range.startContainer.childNodes[range.startOffset].insertData(0, marker);
+					} else if (range.startOffset != 0
+					&& range.startContainer.childNodes[range.startOffset - 1].nodeType == Node.TEXT_NODE) {
+						range.startContainer.childNodes[range.startOffset - 1].appendData(marker);
+					} else {
+						// Seems to serialize as I'd want even for tables . . . IE doesn't
+						// allow undefined to be passed as the second argument (it throws
+						// an exception), so we have to explicitly check the number of
+						// children and pass null.
+						range.startContainer.insertBefore(document.createTextNode(marker),
+							range.startContainer.childNodes.length == range.startOffset
+							? null
+							: range.startContainer.childNodes[range.startOffset]);
+					}
+				}
+				if (range.collapsed) {
+					return;
+				}
+				if (range.endContainer.nodeType == Node.TEXT_NODE
+				|| range.endContainer.nodeType == Node.COMMENT_NODE) {
+					range.endContainer.insertData(range.endOffset, "]");
+				} else {
+					if (range.endOffset != range.endContainer.childNodes.length
+					&& range.endContainer.childNodes[range.endOffset].nodeType == Node.TEXT_NODE) {
+						range.endContainer.childNodes[range.endOffset].insertData(0, "}");
+					} else if (range.endOffset != 0
+					&& range.endContainer.childNodes[range.endOffset - 1].nodeType == Node.TEXT_NODE) {
+						range.endContainer.childNodes[range.endOffset - 1].appendData("}");
+					} else {
+						range.endContainer.insertBefore(document.createTextNode("}"),
+							range.endContainer.childNodes.length == range.endOffset
+							? null
+							: range.endContainer.childNodes[range.endOffset]);
+					}
+				}
+			}
 	});
+	
 
 	/**
 	 * Create a jQuery plugin to extract the HTML of a given jQuery object

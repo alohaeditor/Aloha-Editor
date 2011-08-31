@@ -382,7 +382,7 @@ Aloha.RepositoryManager = Class.extend({
 			repository = {};
 
 		// find all repository tags
-		obj.find('[data-GENTICS-aloha-repository=' + this.prefix + ']').each(function() {
+		obj.find('[data-gentics-aloha-repository=' + this.prefix + ']').each(function() {
 			for ( var i = 0; i < that.repositories.length; i++) {
 				repository.makeClean(obj);
 			}
@@ -397,8 +397,8 @@ Aloha.RepositoryManager = Class.extend({
 	 * special objects such as aloha-aloha_block elements.
 	 * This method marks the target obj with two private attributes:
 	 * (see http://dev.w3.org/html5/spec/elements.html#embedding-custom-non-visible-data)
-	 * * data-GENTICS-aloha-repository: stores the repositoryId
-	 * * data-GENTICS-aloha-object-id: stores the object.id
+	 * * data-gentics-aloha-repository: stores the repositoryId
+	 * * data-gentics-aloha-object-id: stores the object.id
 	 * @param obj {DOMObject} DOM object to mark
 	 * @param object {Aloha.Repository.Object} the item which is applied to obj,
 	 *  	if set to null, the data-GENTICS-... attributes are removed
@@ -415,8 +415,8 @@ Aloha.RepositoryManager = Class.extend({
 			repository = this.getRepository(item.repositoryId);
 			if ( repository ) {
 				jQuery(obj).attr({
-					'data-GENTICS-aloha-repository': item.repositoryId,
-					'data-GENTICS-aloha-object-id': item.id
+					'data-gentics-aloha-repository': item.repositoryId,
+					'data-gentics-aloha-object-id': item.id
 				});
 				repository.markObject(obj, item);
 			} else {
@@ -424,8 +424,8 @@ Aloha.RepositoryManager = Class.extend({
 			}
 		} else {
 			// remove the data attributes
-			jQuery(obj).removeAttr('data-GENTICS-aloha-repository');
-			jQuery(obj).removeAttr('data-GENTICS-aloha-object-id');
+			jQuery(obj).removeAttr('data-gentics-aloha-repository');
+			jQuery(obj).removeAttr('data-gentics-aloha-object-id');
 		}
 	},
 
@@ -437,8 +437,8 @@ Aloha.RepositoryManager = Class.extend({
 	getObject: function (obj, callback) {
 		var that = this,
 			jqObj = jQuery(obj),
-			repository = this.getRepository(jqObj.attr('data-GENTICS-aloha-repository')),
-			itemId = jqObj.attr('data-GENTICS-aloha-object-id');
+			repository = this.getRepository(jqObj.attr('data-gentics-aloha-repository')),
+			itemId = jqObj.attr('data-gentics-aloha-object-id');
 		if (repository && itemId) {
 			// initialize the item cache (per repository) if not already done
 			this.itemCache = this.itemCache || [];
