@@ -7,8 +7,8 @@
 
 
 define(
-['aloha/commands', 'commands/inserthtml'],
-function(Commands) {
+['aloha/command', './inserthtml'],
+function(command) {
 	"use strict";
 	
 	// do some config here

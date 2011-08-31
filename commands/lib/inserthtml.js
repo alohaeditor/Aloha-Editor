@@ -6,15 +6,15 @@
 */
 
 define(
-['aloha/core', 'aloha/jquery', 'aloha/commands', 'aloha/selection', 'util/dom'],
-function(Aloha, jQuery, Commands, Selection, Dom) {
+['aloha/core', 'aloha/jquery', 'aloha/command', 'aloha/selection', 'util/dom'],
+function(Aloha, jQuery, command, selection, dom) {
 	"use strict";
 
 	// Exported commands
-	Commands.registerCommand( 'inserthtml', {
+	command.registerCommand( 'inserthtml', {
 		action: function(value, range) {
 			var 
-				$editable = jQuery(Dom.getEditingHostOf(range.startContainer)),
+				$editable = jQuery(dom.getEditingHostOf(range.startContainer)),
 				cac = range.commonAncestorContainer,
 				i,
 				selectedRange,
@@ -31,13 +31,13 @@ function(Aloha, jQuery, Commands, Selection, Dom) {
 
 				// try to insert the element into the DOM with limit the editable host
 				// this fails when an element is not allowed to be inserted
-				if (!Dom.insertIntoDOM($object, range, $editable, false)) {
+				if (!dom.insertIntoDOM($object, range, $editable, false)) {
 					
 					// if that is not possible, we unwrap the content and insert every child element
 					 contents = $object.contents();
 
 					// when a block level element was unwrapped, we at least insert a break
-					if (Dom.isBlockLevelElement(object) || Dom.isListElement(object)) {
+					if (dom.isBlockLevelElement(object) || dom.isListElement(object)) {
 						pasteElement(jQuery('<br/>').get(0));
 					}
 
@@ -62,12 +62,12 @@ function(Aloha, jQuery, Commands, Selection, Dom) {
 			domNodes = value.contents();
 			
 			// check if range starts an ends in same editable host
-			if ( !(Dom.inSameEditingHost(range.startContainer, range.endContainer)) ) {
+			if ( !(dom.inSameEditingHost(range.startContainer, range.endContainer)) ) {
 				throw "INVALID_RANGE_ERR";
 			}
 			
 			// delete currently selected contents
-			Dom.removeRange(range);
+			dom.removeRange(range);
 			
 			for ( i = domNodes.length - 1; i >= 0; --i) {
 				// insert the elements
@@ -77,15 +77,15 @@ function(Aloha, jQuery, Commands, Selection, Dom) {
 			// Call collapse() on the context object's Selection,
 			// with last child's parent as the first argument and one plus its index as the second.
 			if (domNodes.length > 0) {
-				Dom.setCursorAfter(domNodes.get(domNodes.length - 1));
+				dom.setCursorAfter(domNodes.get(domNodes.length - 1));
 			} else {
 				// if nothing was pasted, just reselect the old range
 				range.select();
 			}
 
-			Selection.updateSelection();
-			selectedRange = Selection.getRangeObject();
-	        Dom.doCleanup({merge:true, removeempty: true}, selectedRange, cac);
+			selection.updateSelection();
+			selectedRange = selection.getRangeObject();
+	        dom.doCleanup({merge:true, removeempty: true}, selectedRange, cac);
 	        selectedRange.select();
 
 		}
