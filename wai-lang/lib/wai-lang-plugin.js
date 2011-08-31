@@ -129,7 +129,49 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 				i18n.t('floatingmenu.tab.wai-lang'),
 				1
 			);
+			
+			this.removeButton = new Aloha.ui.Button({
+				'iconClass' : 'aloha-button aloha-button-wai-lang-remove',
+				'size' : 'small',
+				'onclick' : function () { that.removeLangMarkup(); },
+				'tooltip' : i18n.t('button.add-wai-lang-remove.tooltip'),
+				'toggle' : false
+			});
+			
+			FloatingMenu.addButton(
+				this.getUID('wai-lang'),
+				this.removeButton,
+				i18n.t('floatingmenu.tab.wai-lang'),
+				1
+			);
 	
+		},
+		
+		findLangMarkup: function(range) {
+			if ( typeof range == 'undefined' ) {
+		        var range = Aloha.Selection.getRangeObject();
+		    }
+			if ( Aloha.activeEditable ) {
+			    return range.findMarkup(function() {
+					return this.nodeName.toLowerCase() == 'span' && jQuery(this).hasClass('wai-lang');
+			    }, Aloha.activeEditable.obj);
+			} else {
+				return null;
+			}
+		},
+		
+		removeLangMarkup: function() {
+			var range = Aloha.Selection.getRangeObject();
+		    var foundMarkup = this.findLangMarkup(range);
+		    if ( foundMarkup ) {
+		        // remove the abbr
+		        GENTICS.Utils.Dom.removeFromDOM(foundMarkup, range, true);
+		        // set focus back to editable
+		        Aloha.activeEditable.obj[0].focus();
+		        // select the (possibly modified) range
+		        range.select();
+				FloatingMenu.setScope('Aloha.continousText');
+		    }
 		},
 		
 		/**
