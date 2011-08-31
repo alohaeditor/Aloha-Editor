@@ -24,12 +24,12 @@ define(
 	'aloha/jquery',
 	'aloha/pluginmanager',
 	'aloha/floatingmenu',
-	'aloha/commands',
+	'aloha/command',
 	'aloha/selection',
 	'util/range',
 ],
 
-function (jQuery, PluginManager, FloatingMenu, Commands, Selection, Range) {
+function (jQuery, PluginManager, FloatingMenu, Command, Selection, Range) {
 	"use strict";
 
 	var
@@ -706,7 +706,7 @@ function (jQuery, PluginManager, FloatingMenu, Commands, Selection, Range) {
 		 * @range optional a range on which the command will be executed if not specified 
 		 * 		  the current selection will be used as range
 		 */
-		execCommand: Commands.execCommand,
+		execCommand: Command.execCommand,
 		
 		/**
 		 * Check wheater the command in enabled.
@@ -714,7 +714,7 @@ function (jQuery, PluginManager, FloatingMenu, Commands, Selection, Range) {
 		 * @param command name of the command
 		 * @return true if command is enabled, false otherwise.
 		 */
-		queryCommandEnabled: Commands.queryCommandEnabled,
+		queryCommandEnabled: Command.queryCommandEnabled,
 		
 		/**
 		 * Check if the command has an indetermed state. 
@@ -726,7 +726,7 @@ function (jQuery, PluginManager, FloatingMenu, Commands, Selection, Range) {
 		 * 		  the current selection will be used as range
 		 * @return true if command is indeterminate, otherwise false.
 		 */
-		queryCommandIndeterm: Commands.queryCommandIndeterm,
+		queryCommandIndeterm: Command.queryCommandIndeterm,
 		
 		/**
 		 * Returns the state of a given command
@@ -737,13 +737,13 @@ function (jQuery, PluginManager, FloatingMenu, Commands, Selection, Range) {
 		 * @param command name of the command
 		 * @return state override or true if command's state is true, otherwise false.
 		 */
-		queryCommandState:  Commands.queryCommandState,
+		queryCommandState:  Command.queryCommandState,
 
 		/**
 		 * Check if a given command is supported
 		 * @return true if command is supported, and false otherwise.
 		 */
-		queryCommandSupported:  Commands.queryCommandSupported,
+		queryCommandSupported:  Command.queryCommandSupported,
 
 		/**
 		 * Returns the Value of a given Command
@@ -756,7 +756,7 @@ function (jQuery, PluginManager, FloatingMenu, Commands, Selection, Range) {
 		 * If the value override for command is set, return it.
 		 * @return command's value.
 		 */
-		queryCommandValue: Commands.queryCommandValue,
+		queryCommandValue: Command.queryCommandValue,
 
 		/**
 		 * Method to access translations
