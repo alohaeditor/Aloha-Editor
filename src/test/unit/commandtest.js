@@ -39,9 +39,11 @@ function(aQuery, TestUtils, undefined) {
 		for ( var i = 0; i < tests.tests.length; i++ ) {
 			var 
 				check = tests.tests[i],
-				desc = converter.text(check.start).html() + ' -> ' + converter.text(check.expected).html();
+				desc = converter.text(check.start).html() + ' -> ' + converter.text(check.expected).html(),
+				value = ( typeof check.value !== 'undefined') ? check.value : tests.defaultValue,
+				name = check.name || '"' + converter.text(value).html() + '": ' + desc;
 			
-			module( 'Commmand ' + tests.defaultCommand, {
+			module( 'Commmand ' + (i+1) + ' ' + tests.defaultCommand, {
 				setup: function() {
 					// fill the editable area with the start value
 					editable.html(this.check.start);
@@ -51,25 +53,32 @@ function(aQuery, TestUtils, undefined) {
 					// goodbye
 				}
 			});
-
-			test('"' + (check.value || tests.defaultValue) + '": ' + desc, {check:check}, function() {
+			
+			test( name, {check:check}, function() {
 				var 
 					check = this.check,
 					command = check.command || tests.defaultCommand,
-					value = check.value || tests.defaultValue,
+					value = typeof check.value !== 'undefined' ? check.value : tests.defaultValue,
 					expected = aQuery( '<div>' + check.expected + '</div>' ).contents(),
 					// place the selection (and remove the selection marker)
 					range = TestUtils.rangeFromMarker( editable ),
 					result;
 				
 				range.select();
+//				var r = Aloha.createRange();
+//				r.setStart( range.startContainer, range.startOffset) ;
+//				r.setEnd( range.endContainer, range.endOffset);
+//				Aloha.getSelection().removeAllRanges();
+//				Aloha.getSelection().addRange(r);
 //				Aloha.Selection.updateSelection();
 
 				// execute the command
 				Aloha.execCommand( command, false, value );
 				
 				// place the marker at the selection
-				TestUtils.markerFromSelection();
+				range = rangy.getSelection().getRangeAt(0);
+				TestUtils.addBrackets(range);
+//				TestUtils.markerFromSelection();
 				
 				// TODO deactivate the editable 
 				result = Aloha.editables[0].getContents( true );			

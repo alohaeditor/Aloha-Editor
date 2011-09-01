@@ -737,6 +737,7 @@ GENTICS.Utils.Dom = Class.extend({
 
 						// set the flag for range modification
 						modifiedRange = true;
+						
 					} else if (rangeObject.startContainer === prevNode.parentNode
 							&& rangeObject.startOffset === that.getIndexInParent(prevNode) + 1) {
 						// selection starts right between the previous and current text nodes (which will be merged)
@@ -762,6 +763,7 @@ GENTICS.Utils.Dom = Class.extend({
 
 						// set the flag for range modification
 						modifiedRange = true;
+						
 					} else if (rangeObject.endContainer === prevNode.parentNode
 							&& rangeObject.endOffset === that.getIndexInParent(prevNode) + 1) {
 						// selection ends right between the previous and current text nodes (which will be merged)
@@ -776,33 +778,37 @@ GENTICS.Utils.Dom = Class.extend({
 						modifiedRange = true;
 					}
 
-					// now we check whether the selection starts or ends in the mother node after the current node
-					if (rangeObject.startContainer === startObject && rangeObject.startOffset > index) {
-						// there will be one less object, so reduce the startOffset by one
-						rangeObject.startOffset -= 1;
-						// set the flag for range modification
-						modifiedRange = true;
-					}
-					if (rangeObject.endContainer === startObject && rangeObject.endOffset > index) {
-						// there will be one less object, so reduce the endOffset by one
-						rangeObject.endOffset -= 1;
-						// set the flag for range modification
-						modifiedRange = true;
-					}
-
 					// now append the contents of the current text node into the previous
 					prevNode.data += this.data;
 
-					// remove this text node
-					jQuery(this).remove();
-					
 				// remove empty text nodes	
 				} else if ( this.nodeValue === '' && cleanup.removeempty ) {
-					jQuery(this).remove();
-				} else {
-					// remember it as the last text node
+					// do nothing here.
+					
+				// remember it as the last text node if not empty
+				} else if ( !(this.nodeValue === '' && cleanup.removeempty) ) {
 					prevNode = this;
+					// we are finish here don't delete this node
+					break;
 				}
+
+				// now we check whether the selection starts or ends in the mother node of this
+				if (rangeObject.startContainer === this.parentNode && rangeObject.startOffset > index) {
+					// there will be one less object, so reduce the startOffset by one
+					rangeObject.startOffset = rangeObject.startOffset - 1;
+					// set the flag for range modification
+					modifiedRange = true;
+				}
+				if (rangeObject.endContainer === this.parentNode && rangeObject.endOffset > index) {
+					// there will be one less object, so reduce the endOffset by one
+					rangeObject.endOffset = rangeObject.endOffset - 1;
+					// set the flag for range modification
+					modifiedRange = true;
+				}
+				
+				// remove this text node
+				jQuery(this).remove();
+
 				break;
 			}
 		});
@@ -970,8 +976,11 @@ GENTICS.Utils.Dom = Class.extend({
 		if (!searchleft && index < parent.childNodes.length) {
 			nextNode = parent.childNodes[index];
 		}
-
-		while (typeof currentParent !== 'undefined') {
+		
+		//currentParent is not a number therefore it is sufficient to directly test for it with while(currentParent)
+		//otherwise there would be an error if the object is null
+		while (currentParent) {
+		//while (typeof currentParent !== 'undefined') {
 			if (!nextNode) {
 				// no next node found, check whether the parent is a blocklevel element
 				if (stopat.blocklevel && this.isBlockLevelElement(currentParent)) {
