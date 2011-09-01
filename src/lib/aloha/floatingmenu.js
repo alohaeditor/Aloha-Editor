@@ -779,7 +779,8 @@ function(jQuery, Ext, Base, undefined) {
 				buttonInfo, tabObject, groupObject;
 	
 			if (typeof scopeObject === 'undefined') {
-				// TODO log an error and exit
+				Aloha.Log.error("Can't add button to given scope since the scope has not yet been initialized.", scope);
+				return false;
 			}
 
 			// generate a buttonInfo object
