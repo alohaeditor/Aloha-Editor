@@ -86,7 +86,14 @@ function(Aloha, jQuery, command, selection, dom) {
 			selection.updateSelection();
 			selectedRange = selection.getRangeObject();
 	        dom.doCleanup({merge:true, removeempty: true}, selectedRange, cac);
-	        selectedRange.select();
+			//In some cases selecting the range does not work properly 
+			//e.g. when pasting from word in an h2 after the first character in IE
+			//in these cases we should fail gracefully.
+			//TODO check why the selection is failing
+			try {
+				selectedRange.select();
+			} catch (e) {
+			}
 
 		}
 	});
