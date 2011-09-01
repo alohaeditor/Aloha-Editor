@@ -28,6 +28,7 @@ define(
 			return window.alohaQuery;
 		}
 		//PATCH FOR A JQUERY BUG IN 1.6.1 & 1.6.2
+		//An additional sanity check was introduced to prevent IE from crashing when cache[id] does not exist
 		loadedJQuery.data = (function(jQuery){
 		return function( elem, name, data, pvt /* Internal Use Only */ ) {
 			if ( !jQuery.acceptData( elem ) ) {
