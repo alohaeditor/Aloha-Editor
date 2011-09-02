@@ -421,6 +421,29 @@ function doEnterTest(editable, container, offset, shift, twice, reference) {
 		test('Double Enter at last end', function() {
 			doEnterTest(this.edit, this.edit.find('li').eq(2).contents().get(0), 5, false, true, '#ref-list-lastend-dblenter');
 		});
+		
+		module('Special List Enter Handling Tests', {
+			setup: function() {
+				// get the editable area and the reference
+				this.edit = aQuery('#edit');
+				this.ref = aQuery('#ref-list-special1');
+				// fill the editable area with the reference
+				this.edit.html(this.ref.html());
+
+				// aloha'fy the editable
+				this.edit.aloha();
+			},
+			teardown: function() {
+				// de-aloha'fy the editable
+				this.edit.mahalo();
+			}
+		});
+
+		test('Enter after empty b', function() {
+			// function doEnterTest(editable, container, offset, shift, twice, reference) {
+			doEnterTest(this.edit, this.edit.find('li').eq(0).contents().get(1), 0, false, false, '#ref-list-enter-emptyb');
+		});
+
 
 		module('List Shift Enter Handling', {
 			setup: function() {

@@ -134,7 +134,7 @@ GENTICS.Utils.Dom = Class.extend({
 		'b' : 'phrasing',
 		'base' : 'empty',
 		'bdo' : 'phrasing',
-		'blockquote' : 'flow',
+		'blockquote' : 'phrasing',
 		'body' : 'flow',
 		'br' : 'empty',
 		'button' : 'phrasing',
@@ -976,8 +976,11 @@ GENTICS.Utils.Dom = Class.extend({
 		if (!searchleft && index < parent.childNodes.length) {
 			nextNode = parent.childNodes[index];
 		}
-
-		while (typeof currentParent !== 'undefined') {
+		
+		//currentParent is not a number therefore it is sufficient to directly test for it with while(currentParent)
+		//otherwise there would be an error if the object is null
+		while (currentParent) {
+		//while (typeof currentParent !== 'undefined') {
 			if (!nextNode) {
 				// no next node found, check whether the parent is a blocklevel element
 				if (stopat.blocklevel && this.isBlockLevelElement(currentParent)) {

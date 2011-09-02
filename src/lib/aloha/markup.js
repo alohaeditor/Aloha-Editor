@@ -459,6 +459,7 @@ Aloha.Markup = Class.extend({
 
 	/**
 	 * Remove the currently selected markup
+
 	 */
 	removeSelectedMarkup: function () {
 		var rangeObject = Aloha.Selection.rangeObject, newRange;
@@ -722,7 +723,6 @@ Aloha.Markup = Class.extend({
 				this.removeElementContentWhitespaceObj(mirrorLevel);
 			}
 
-			// var originalLevel = jQuery(rangeObject.commonAncestorContainer).contents();
 			for (i = 0, treeLength = selectionTree.length; i < treeLength; i++) {
 				el = selectionTree[i];
 				// remove all objects in the mirrorLevel, which are BEFORE the cursor
@@ -734,7 +734,11 @@ Aloha.Markup = Class.extend({
 					// iteration is before cursor, leave this part inside the splitObject, remove from followUpContainer
 					// however if the object to remove is the last existing textNode within the followUpContainer, insert a BR instead
 					// otherwise the followUpContainer is invalid and takes up no vertical space
-					if (followUpContainer.textNodes().length > 1) {
+
+					if (followUpContainer.textNodes().length > 1 || (el.domobj.nodeType === 1 && el.children.length === 0)) {
+						// note: the second part of the if (el.domobj.nodeType === 1 && el.children.length === 0) covers a very special condition,
+						// where an empty tag is located right before the cursor when pressing enter. In this case the empty tag would not be
+						// removed correctly otherwise
 						mirrorLevel.eq(i).remove();
 					} else if (GENTICS.Utils.Dom.isSplitObject(followUpContainer[0])) {
 						if (fillUpElement) {
@@ -747,15 +751,14 @@ Aloha.Markup = Class.extend({
 						followUpContainer.addClass('preparedForRemoval');
 					}
 					continue;
-				} else
-
+				} else {
 					// split objects, which are AT the cursor Position or directly above
 					if (el.selection !== 'none') { // before cursor, leave this part inside the splitObject
 						// TODO better check for selection == 'partial' here?
 						if (el.domobj && el.domobj.nodeType === 3 && el.startOffset !== undefined) {
 							completeText = el.domobj.data;
 							if (el.startOffset > 0) {// first check, if there will be some text left in the splitObject
-								el.domobj.data = completeText.substr(0,el.startOffset);
+								el.domobj.data = completeText.substr(0, el.startOffset);
 							} else if (selectionTree.length > 1) { // if not, check if the splitObject contains more than one node, because then it can be removed. this happens, when ENTER is pressed inside of a textnode, but not at the borders
 								jQuery(el.domobj).remove();
 							} else { // if the "empty" textnode is the last node left in the splitObject, replace it with a ephemera break
@@ -795,13 +798,15 @@ Aloha.Markup = Class.extend({
 						if (el.children.length > 0) {
 							this.splitRangeObjectHelper(el.children, rangeObject, mirrorLevel.eq(i), inBetweenMarkup);
 						}
-					} else
+					} else {
 
-						// remove all objects in the origien, which are AFTER the cursor
+						// remove all objects in the origin, which are AFTER the cursor
 						if (el.selection === 'none' && startMoving === true) {
 							// iteration is after cursor, remove from splitObject and leave this part inside the followUpContainer
 							jqObj = jQuery(el.domobj).remove();
 						}
+					}
+				}
 			}
 		} else {
 			Aloha.Log.error(this, 'can not split splitObject due to an empty selection tree');
@@ -819,6 +824,7 @@ Aloha.Markup = Class.extend({
 		if (splitObject.contents().length === 0 && GENTICS.Utils.Dom.isSplitObject(splitObject[0]) && fillUpElement) {
 			splitObject.html(fillUpElement);
 		}
+		
 		if (followUpContainer.contents().length === 0 && GENTICS.Utils.Dom.isSplitObject(followUpContainer[0]) && fillUpElement) {
 			followUpContainer.html(fillUpElement);
 		}
