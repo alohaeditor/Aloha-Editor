@@ -484,6 +484,27 @@ function(jQuery, FloatingMenu) {
 		},
 
 		/**
+		 * standard method, to compare a domobj and a jquery object for their tagName (aka span elements, e.g. b, i, sup, span, ...).
+		 * is always used when no other tag comparator is passed as parameter
+		 * @param domobj domobject to compare with markup
+		 * @param markupObject jQuery object of the markup to compare with domobj
+		 * @return true if objects are equal and false if not
+		 * @hide
+		 */
+		standardTagNameComparator : function(domobj, markupObject) {
+			if  (domobj.nodeType === 1) {
+				if (domobj.tagName.toLowerCase() != markupObject[0].tagName.toLowerCase()) {
+					//			Aloha.Log.debug(this, 'tag comparison for <' + domobj.tagName.toLowerCase() + '> and <' + markupObject[0].tagName.toLowerCase() + '> failed because tags are different');
+					return false;
+				}
+				return true;//domobj.attributes.length
+			} else {
+				Aloha.Log.debug(this,'only element nodes (nodeType == 1) can be compared');
+			}
+			return false;
+		},
+		
+		/**
 		 * standard method, to compare a domobj and a jquery object for text level semantics (aka span elements, e.g. b, i, sup, span, ...).
 		 * is always used when no other tag comparator is passed as parameter
 		 * @param domobj domobject to compare with markup
