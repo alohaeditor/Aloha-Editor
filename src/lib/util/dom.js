@@ -134,7 +134,7 @@ GENTICS.Utils.Dom = Class.extend({
 		'b' : 'phrasing',
 		'base' : 'empty',
 		'bdo' : 'phrasing',
-		'blockquote' : 'flow',
+		'blockquote' : 'phrasing',
 		'body' : 'flow',
 		'br' : 'empty',
 		'button' : 'phrasing',
