@@ -97,8 +97,7 @@ function(jQuery, FloatingMenu) {
 
 			// When applying this elements to selection they will replace the assigned elements
 			this.replacingElements = {
-				'h1' : ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6','pre'],
-				'blockquote' : ['blockquote']
+				'h1' : ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6','pre', 'blockquote']
 			};
 			this.replacingElements = {
 					'h1' : this.replacingElements.h1,
@@ -109,7 +108,7 @@ function(jQuery, FloatingMenu) {
 					'h6' : this.replacingElements.h1,
 					'pre' : this.replacingElements.h1,
 					'p' : this.replacingElements.h1,
-					'blockquote' : this.replacingElements.blockquote
+					'blockquote' : this.replacingElements.h1
 			};
 			this.allowedToStealElements = {
 					'h1' : ['textNode']
