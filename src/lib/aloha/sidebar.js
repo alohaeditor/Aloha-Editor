@@ -170,16 +170,15 @@ define([
 		this.isOpen = false;
 		
 		this.settings = {
-			rotateArrows : true,
+			// We automatically set this to true when we are in IE, where rotating
+			// elements using filters causes undesirable rendering ugliness.
+			// Our solution is to fallback to swapping icon images.
+			// We set this as a sidebar property so that it can overridden by
+			// whoever thinks they are smarter than we are.
+			rotateArrows : $.browser.msie,
 			overlayPage  : true
 		};
 		
-		// We automatically set this to true when we are in IE, where rotating
-		// elements using filters causes undesirable rendering ugliness.
-		// Our solution is to fallback to swapping icon images.
-		// We set this as a sidebar property so that it can overridden by
-		// whoever thinks they are smarter than we are.
-		this.usingIcons = $.browser.msie;
 		
 		this.init(opts);
 	};
@@ -605,9 +604,9 @@ define([
 		 * on whether the sidebar is on the left or right, and whether it is
 		 * in an opened state or not.
 		 *
-		 *	Question:
-		 *		Arrow icon is by default pointing right. Should we make it
-		 *		point left?
+		 *	Task:
+		 *		Given that the arrow icon is by default pointing right, should
+		 *		we make it point left?
 		 *		
 		 *	Truth table:
 		 *		isRight & isOpen   : no
@@ -630,7 +629,7 @@ define([
 		toggleHandleIcon: function (isOpened) {
 			var isPointingLeft = (this.position == 'right') ^ isOpened;
 			
-			if (this.usingIcons) {
+			if (this.settings.rotateArrows) {
 				var icon = this.container.find(nsSel('handle-icon'));
 				
 				if (isPointingLeft) {
