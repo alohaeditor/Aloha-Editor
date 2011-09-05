@@ -742,6 +742,12 @@ ul.aloha-multisplit button.aloha-button-removeFormat {
 	left: 5px;
 	right: auto;
 }
+.aloha-sidebar-handle-icon.aloha-sidebar-handle-icon-left {
+	background-image: url(../img/arrow-left.png);
+}
+.aloha-sidebar-handle-icon.aloha-sidebar-handle-icon-down {
+	background-image: url(../img/arrow-down.png);
+}
 
 .aloha-sidebar-panel-parent-path {
 	background-color: #303539;

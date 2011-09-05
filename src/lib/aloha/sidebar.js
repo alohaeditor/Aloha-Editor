@@ -174,6 +174,13 @@ define([
 			overlayPage  : true
 		};
 		
+		// We automatically set this to true when we are in IE, where rotating
+		// elements using filters causes undesirable rendering ugliness.
+		// Our solution is to fallback to swapping icon images.
+		// We set this as a sidebar property so that it can overridden by
+		// whoever thinks they are smarter than we are.
+		this.usingIcons = $.browser.msie;
+		
 		this.init(opts);
 	};
 	
@@ -237,6 +244,8 @@ define([
 				this.open(0);
 			}
 			
+			this.toggleHandleIcon(this.isOpen);
+			
 			this.subscribeToEvents();
 			
 			$(window).resize(function () {
@@ -272,7 +281,7 @@ define([
 		checkActivePanels: function(range) {
 			var effective = [];
 			
-			if (typeof range != 'undefined' && typeof range.markupEffectiveAtStart != 'undefined') {
+			if (typeof range !== 'undefined' && typeof range.markupEffectiveAtStart !== 'undefined') {
 				var l = range.markupEffectiveAtStart.length;
 				for (var i = 0; i < l; ++i) {
 					effective.push($(range.markupEffectiveAtStart[i]));
@@ -580,14 +589,58 @@ define([
 							'-webkit-transform'	: 'rotate(' + val + 'deg)',
 							'-moz-transform'	: 'rotate(' + val + 'deg)',
 							'-ms-transform'		: 'rotate(' + val + 'deg)'//,
-							// We cannot use Microsoft Internet Explorer
-							// filters because Microsoft Internet Explore 8
-							// does not support Microsoft Internet Explorer
-							// filters correctly. It breaks the layout.
-							// filter			: 'progid:DXImageTransform.Microsoft.BasicImage(rotation=' + ieAngle + ')'
+						  // We cannot use Microsoft Internet Explorer
+						  // filters because Microsoft Internet Explore 8
+						  // does not support Microsoft Internet Explorer
+						  // filters correctly. It breaks the layout.
+						  // filter				: 'progid:DXImageTransform.Microsoft.BasicImage(rotation=' + ieAngle + ')'
 						});
 					}
 				});
+		},
+		
+		/**
+		 * Sets the handle icon to the "i am opened, click me to close the
+		 * sidebar" state, or vice versa. The direction of the arrow depends
+		 * on whether the sidebar is on the left or right, and whether it is
+		 * in an opened state or not.
+		 *
+		 *	Question:
+		 *		Arrow icon is by default pointing right. Should we make it
+		 *		point left?
+		 *		
+		 *	Truth table:
+		 *		isRight & isOpen   : no
+		 *		isRight & isClosed : yes
+		 *		isLeft  & isOpen   : yes
+		 *		isLeft  & isClosed : no
+		 *		
+		 *	Boolean logic:
+		 *		1 ^ 1 : 0
+		 *		1 ^ 0 : 1
+		 *		0 ^ 1 : 1
+		 *		0 ^ 0 : 0
+		 *
+		 * Therefore:
+		 *		isRight XOR isOpened = isPointingLeft
+		 *
+		 * @param {Boolean} isOpened - Whether or not the sidebar is in the
+		 *							   opened state
+		 */
+		toggleHandleIcon: function (isOpened) {
+			var isPointingLeft = (this.position == 'right') ^ isOpened;
+			
+			if (this.usingIcons) {
+				var icon = this.container.find(nsSel('handle-icon'));
+				
+				if (isPointingLeft) {
+					icon.addClass(nsClass('handle-icon-left'));
+				} else {
+					icon.removeClass(nsClass('handle-icon-left'));
+				}
+			} else {
+				this.rotateArrow(isPointingLeft ? 180 : 0, 0);
+			}
 		},
 		
 		/**
@@ -601,7 +654,7 @@ define([
 			var isRight = (this.position == 'right');
 			var anim = isRight ? {marginRight: 0} : {marginLeft: 0};
 			
-			this.rotateArrow(isRight ? 0 : 180, 0);
+			this.toggleHandleIcon(true);
 			
 			this.container.animate(
 				anim,
@@ -635,7 +688,7 @@ define([
 			var isRight = (this.position == 'right');
 			var anim = isRight ? {marginRight: -this.width} : {marginLeft: -this.width};
 			
-			this.rotateArrow(isRight ? 180 : 0, 0);
+			this.toggleHandleIcon(false);
 			
 			this.container.animate(
 				anim,
@@ -643,7 +696,6 @@ define([
 					? duration : 500,
 				'easeOutExpo'
 			);
-			
 			
 			if (!this.settings.overlayPage) {
 				$('body').animate(
@@ -966,7 +1018,7 @@ define([
 			if (this.sidebar.settings.rotateArrows) {
 				var arr = this.title.find(nsSel('panel-title-arrow'));
 				arr.animate({angle: angle}, {
-						duration : (typeof duration == 'number') ? duration : 500,
+						duration : (typeof duration === 'number') ? duration : 500,
 						easing   : 'easeOutExpo',
 						step     : function (val, fx) {
 							var ieAngle = angle / 90;
@@ -974,7 +1026,7 @@ define([
 								'-webkit-transform'	: 'rotate(' + val + 'deg)',
 								'-moz-transform'	: 'rotate(' + val + 'deg)',
 								'-ms-transform'		: 'rotate(' + val + 'deg)'//,
-								//filter			: 'progid:DXImageTransform.Microsoft.BasicImage(rotation=' + ieAngle + ')'
+							 // filter				: 'progid:DXImageTransform.Microsoft.BasicImage(rotation=' + ieAngle + ')'
 							});
 						}
 					});
