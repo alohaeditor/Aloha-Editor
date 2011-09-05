@@ -175,10 +175,9 @@ define([
 			// Our solution is to fallback to swapping icon images.
 			// We set this as a sidebar property so that it can overridden by
 			// whoever thinks they are smarter than we are.
-			rotateArrows : $.browser.msie,
-			overlayPage  : true
+			rotateIcons : !$.browser.msie,
+			overlayPage : true
 		};
-		
 		
 		this.init(opts);
 	};
@@ -442,7 +441,7 @@ define([
 			var isRight = (this.position == 'right');
 			
 			if (this.opened) {
-				this.rotateArrow(isRight ? 0 : 180, 0);
+				this.rotateHandleArrow(isRight ? 0 : 180, 0);
 			}
 			
 			bar.find(nsSel('handle'))
@@ -570,32 +569,32 @@ define([
 		},
 		
 		/**
-		 * Animation to rotate the panel arrow
+		 * Animation to rotate the sidebar arrow
 		 *
 		 * @param {Number} angle - The angle two which the arrow should rotate
 		 *						   (0 or 180)
 		 * @param {Number|String} duration - (Optional) How long the animation
 		 *									 should play for
 		 */
-		rotateArrow: function (angle, duration) {
+		rotateHandleIcon: function (angle, duration) {
 			var arr = this.container.find(nsSel('handle-icon'));
 			arr.animate({angle: angle}, {
-					duration : (typeof duration === 'number' || typeof duration === 'string') ? duration : 500,
-					easing   : 'easeOutExpo',
-					step     : function (val, fx) {
-						var ieAngle = angle / 90;
-						arr.css({
-							'-webkit-transform'	: 'rotate(' + val + 'deg)',
-							'-moz-transform'	: 'rotate(' + val + 'deg)',
-							'-ms-transform'		: 'rotate(' + val + 'deg)'//,
-						  // We cannot use Microsoft Internet Explorer
-						  // filters because Microsoft Internet Explore 8
-						  // does not support Microsoft Internet Explorer
-						  // filters correctly. It breaks the layout.
-						  // filter				: 'progid:DXImageTransform.Microsoft.BasicImage(rotation=' + ieAngle + ')'
-						});
-					}
-				});
+				duration : (typeof duration === 'number' || typeof duration === 'string') ? duration : 500,
+				easing   : 'easeOutExpo',
+				step     : function (val, fx) {
+					// var ieAngle = angle / 90;
+					arr.css({
+						'-webkit-transform'	: 'rotate(' + val + 'deg)',
+						'-moz-transform'	: 'rotate(' + val + 'deg)',
+						'-ms-transform'		: 'rotate(' + val + 'deg)'//,
+					  // We cannot use Microsoft Internet Explorer
+					  // filters because Microsoft Internet Explore 8
+					  // does not support Microsoft Internet Explorer
+					  // filters correctly. It breaks the layout.
+					  // filter				: 'progid:DXImageTransform.Microsoft.BasicImage(rotation=' + ieAngle + ')'
+					});
+				}
+			});
 		},
 		
 		/**
@@ -629,7 +628,9 @@ define([
 		toggleHandleIcon: function (isOpened) {
 			var isPointingLeft = (this.position == 'right') ^ isOpened;
 			
-			if (this.settings.rotateArrows) {
+			if (this.settings.rotateIcons) {
+				this.rotateHandleIcon(isPointingLeft ? 180 : 0, 0);
+			} else {
 				var icon = this.container.find(nsSel('handle-icon'));
 				
 				if (isPointingLeft) {
@@ -637,8 +638,6 @@ define([
 				} else {
 					icon.removeClass(nsClass('handle-icon-left'));
 				}
-			} else {
-				this.rotateArrow(isPointingLeft ? 180 : 0, 0);
 			}
 		},
 		
@@ -861,8 +860,9 @@ define([
 			
 			if (this.expanded){
 				this.content.height('auto');
-				this.rotateArrow(90, 0);
 			}
+			
+			this.toggleTitleIcon(this.expanded);
 			
 			this.coerceActiveOn();
 			
@@ -874,6 +874,24 @@ define([
 			
 			if (typeof this.onInit === 'function') {
 				this.onInit.apply(this);
+			}
+		},
+		
+		/**
+		 * @param {Boolean} isExpanded - Whether or not the panel is in an
+		 *								 expanded state
+		 */
+		toggleTitleIcon: function (isExpanded) {
+			if (this.sidebar.settings.rotateIcons) {
+				this.rotateTitleIcon(isExpanded ? 90 : 0);
+			} else {
+				var icon = this.title.find(nsSel('panel-title-arrow'));
+				
+				if (isExpanded) {
+					icon.addClass(nsClass('panel-title-arrow-down'));
+				} else {
+					icon.removeClass(nsClass('panel-title-arrow-down'));
+				}
 			}
 		},
 		
@@ -959,7 +977,7 @@ define([
 			);
 			
 			this.element.removeClass('collapsed');
-			this.rotateArrow(90);
+			this.toggleTitleIcon(true);
 			
 			this.expanded = true;
 			
@@ -975,13 +993,13 @@ define([
 			this.content.stop().animate(
 				{height: 5}, 250, 'easeOutExpo',
 				function () {
-					if (typeof callback == 'function') {
+					if (typeof callback === 'function') {
 						callback.call(that);
 					}
 				}
 			);
 			
-			this.rotateArrow(0);
+			this.toggleTitleIcon(false);
 			
 			this.expanded = false;
 			
@@ -1013,23 +1031,21 @@ define([
 			return this;
 		},
 		
-		rotateArrow: function (angle, duration) {
-			if (this.sidebar.settings.rotateArrows) {
-				var arr = this.title.find(nsSel('panel-title-arrow'));
-				arr.animate({angle: angle}, {
-						duration : (typeof duration === 'number') ? duration : 500,
-						easing   : 'easeOutExpo',
-						step     : function (val, fx) {
-							var ieAngle = angle / 90;
-							arr.css({
-								'-webkit-transform'	: 'rotate(' + val + 'deg)',
-								'-moz-transform'	: 'rotate(' + val + 'deg)',
-								'-ms-transform'		: 'rotate(' + val + 'deg)'//,
-							 // filter				: 'progid:DXImageTransform.Microsoft.BasicImage(rotation=' + ieAngle + ')'
-							});
-						}
+		rotateTitleIcon: function (angle, duration) {
+			var arr = this.title.find(nsSel('panel-title-arrow'));
+			arr.animate({angle: angle}, {
+				duration : (typeof duration === 'number') ? duration : 500,
+				easing   : 'easeOutExpo',
+				step     : function (val, fx) {
+					// var ieAngle = angle / 90;
+					arr.css({
+						'-webkit-transform'	: 'rotate(' + val + 'deg)',
+						'-moz-transform'	: 'rotate(' + val + 'deg)',
+						'-ms-transform'		: 'rotate(' + val + 'deg)'//,
+					 // filter				: 'progid:DXImageTransform.Microsoft.BasicImage(rotation=' + ieAngle + ')'
 					});
-			}
+				}
+			});
 		},
 		
 		/**
