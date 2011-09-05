@@ -637,7 +637,7 @@ GENTICS.Utils.Dom = Class.extend({
 	 * @method
 	 */
 	doCleanup: function(cleanup, rangeObject, start) {
-		var that = this, prevNode, modifiedRange, startObject;
+		var that = this, prevNode, modifiedRange, startObject, startOffset, endOffset;
 
 		if (typeof cleanup === 'undefined') {
 			cleanup = {};
@@ -658,6 +658,8 @@ GENTICS.Utils.Dom = Class.extend({
 		modifiedRange = false;
 		// get the start object
 		startObject = jQuery(start);
+		startOffset = rangeObject.startOffset;
+		endOffset = rangeObject.endOffset;
 
 		// iterate through all sub nodes
 		startObject.contents().each(function(index) {
@@ -669,13 +671,13 @@ GENTICS.Utils.Dom = Class.extend({
 					// found a successive node of same type
 
 					// now we check whether the selection starts or ends in the mother node after the current node
-					if (rangeObject.startContainer === startObject && rangeObject.startOffset > index) {
+					if (rangeObject.startContainer === startObject && startOffset > index) {
 						// there will be one less object, so reduce the startOffset by one
 						rangeObject.startOffset -= 1;
 						// set the flag for range modification
 						modifiedRange = true;
 					}
-					if (rangeObject.endContainer === startObject && rangeObject.endOffset > index) {
+					if (rangeObject.endContainer === startObject && endOffset > index) {
 						// there will be one less object, so reduce the endOffset by one
 						rangeObject.endOffset -= 1;
 						// set the flag for range modification
@@ -690,7 +692,9 @@ GENTICS.Utils.Dom = Class.extend({
 
 					// remove this node
 					jQuery(this).remove();
+					
 				} else {
+					
 					// do the recursion step here
 					modifiedRange |= that.doCleanup(cleanup, rangeObject, this);
 
@@ -698,12 +702,12 @@ GENTICS.Utils.Dom = Class.extend({
 					var removed = false;
 					if (cleanup.removeempty) {
 						if (GENTICS.Utils.Dom.isBlockLevelElement(this) && this.childNodes.length === 0) {
-							jQuery(this).remove();
+//							jQuery(this).remove();
 							removed = true;
 						}
 						if (jQuery.inArray(this.nodeName.toLowerCase(), that.mergeableTags) >= 0
 								&& jQuery(this).text().length === 0 && this.childNodes.length === 0) {
-							jQuery(this).remove();
+//							jQuery(this).remove();
 							removed = true;
 						}
 					}
@@ -715,6 +719,24 @@ GENTICS.Utils.Dom = Class.extend({
 						} else {
 							prevNode = false;
 						}
+					} else {					
+						// now we check whether the selection starts or ends in the mother node of this
+						if (rangeObject.startContainer === this.parentNode && startOffset > index) {
+							// there will be one less object, so reduce the startOffset by one
+							rangeObject.startOffset = rangeObject.startOffset - 1;
+							// set the flag for range modification
+							modifiedRange = true;
+						}
+						if (rangeObject.endContainer === this.parentNode && endOffset > index) {
+							// there will be one less object, so reduce the endOffset by one
+							rangeObject.endOffset = rangeObject.endOffset - 1;
+							// set the flag for range modification
+							modifiedRange = true;
+						}
+										
+						// remove this text node
+						jQuery(this).remove();
+
 					}
 				}
 
@@ -814,20 +836,20 @@ GENTICS.Utils.Dom = Class.extend({
 		});
 
 		// eventually remove the startnode itself
-		if (cleanup.removeempty
-				&& GENTICS.Utils.Dom.isBlockLevelElement(start)
-				&& (!start.childNodes || start.childNodes.length === 0)) {
-			if (rangeObject.startContainer == start) {
-				rangeObject.startContainer = start.parentNode;
-				rangeObject.startOffset = GENTICS.Utils.Dom.getIndexInParent(start);
-			}
-			if (rangeObject.endContainer == start) {
-				rangeObject.endContainer = start.parentNode;
-				rangeObject.endOffset = GENTICS.Utils.Dom.getIndexInParent(start);
-			}
-			startObject.remove();
-			modifiedRange = true;
-		}
+//		if (cleanup.removeempty
+//				&& GENTICS.Utils.Dom.isBlockLevelElement(start)
+//				&& (!start.childNodes || start.childNodes.length === 0)) {
+//			if (rangeObject.startContainer == start) {
+//				rangeObject.startContainer = start.parentNode;
+//				rangeObject.startOffset = GENTICS.Utils.Dom.getIndexInParent(start);
+//			}
+//			if (rangeObject.endContainer == start) {
+//				rangeObject.endContainer = start.parentNode;
+//				rangeObject.endOffset = GENTICS.Utils.Dom.getIndexInParent(start);
+//			}
+//			startObject.remove();
+//			modifiedRange = true;
+//		}
 
 		if (modifiedRange) {
 			rangeObject.clearCaches();
@@ -1433,12 +1455,12 @@ GENTICS.Utils.Dom = Class.extend({
 		
 		// selection cannot be set between to TEXT_NODEs
 		// if domOject is a Text node set selection at last position in that node
-		if ( domObject.nodeType === Node.TEXT_NODE) {
+		if ( domObject.nodeType == 3) {
 			targetNode = domObject;
 			offset = targetNode.nodeValue.length;
 
 		// if domOject is a Text node set selection at last position in that node
-		} else if ( domObject.nextSibling && domObject.nextSibling.nodeType === Node.TEXT_NODE) {
+		} else if ( domObject.nextSibling && domObject.nextSibling.nodeType == 3) {
 			targetNode = domObject.nextSibling;
 			offset = 0;
 		} else {
@@ -1451,6 +1473,8 @@ GENTICS.Utils.Dom = Class.extend({
 
 		// select the range
 		newRange.select();
+		
+		return newRange;
 	},
 	
 	/**
@@ -1492,10 +1516,10 @@ GENTICS.Utils.Dom = Class.extend({
 	 */
 	isEditingHost: function (node) {
 		return node
-			&& node.nodeType == Node.ELEMENT_NODE
+			&& node.nodeType == 1 //ELEMENT_NODE
 			&& (node.contentEditable == "true"
 			|| (node.parentNode
-			&& node.parentNode.nodeType == Node.DOCUMENT_NODE
+			&& node.parentNode.nodeType == 9 //DOCUEMENT_NODE
 			&& node.parentNode.designMode == "on"));
 	},
 
@@ -1511,7 +1535,7 @@ GENTICS.Utils.Dom = Class.extend({
 		// contentEditable attributes.
 		return node
 			&& !this.isEditingHost(node)
-			&& (node.nodeType != Node.ELEMENT_NODE || node.contentEditable != "false")
+			&& (node.nodeType != 1 || node.contentEditable != "false") // ELEMENT_NODE
 			&& (this.isEditingHost(node.parentNode) || this.isEditable(node.parentNode));
 	},
 
