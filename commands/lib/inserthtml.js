@@ -62,9 +62,9 @@ function(Aloha, jQuery, command, selection, dom) {
 			domNodes = value.contents();
 			
 			// check if range starts an ends in same editable host
-			if ( !(dom.inSameEditingHost(range.startContainer, range.endContainer)) ) {
-				throw "INVALID_RANGE_ERR";
-			}
+//			if ( !(dom.inSameEditingHost(range.startContainer, range.endContainer)) ) {
+//				throw "INVALID_RANGE_ERR";
+//			}
 			
 			// delete currently selected contents
 			dom.removeRange(range);
@@ -77,22 +77,21 @@ function(Aloha, jQuery, command, selection, dom) {
 			// Call collapse() on the context object's Selection,
 			// with last child's parent as the first argument and one plus its index as the second.
 			if (domNodes.length > 0) {
-				dom.setCursorAfter(domNodes.get(domNodes.length - 1));
+				range = dom.setCursorAfter(domNodes.get(domNodes.length - 1));
 			} else {
 				// if nothing was pasted, just reselect the old range
 				range.select();
 			}
 
-			selection.updateSelection();
-			selectedRange = selection.getRangeObject();
-	        dom.doCleanup({merge:true, removeempty: true}, selectedRange, cac);
+	        dom.doCleanup({merge:true, removeempty: true}, range, cac);
 			//In some cases selecting the range does not work properly 
 			//e.g. when pasting from word in an h2 after the first character in IE
 			//in these cases we should fail gracefully.
 			//TODO check why the selection is failing
 			try {
-				selectedRange.select();
+				range.select();
 			} catch (e) {
+				console.log('error.');
 			}
 
 		}
