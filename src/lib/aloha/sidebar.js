@@ -69,15 +69,15 @@ define([
 	if (!$.easing.easeOutExpo) {
 		$.extend($.easing, {
 			easeOutExpo: function (x, t, b, c, d) {
-				return (t==d) ? b+c : c * (-Math.pow(2, -10 * t/d) + 1) + b;
+				return (t==d)?b+c:c*(-Math.pow(2,-10*t/d)+1)+b;
 			},
 			easeOutElastic: function (x, t, b, c, d) {
-				var m = Math;
-				var s=1.70158;var p=0;var a=c;
-				if (t==0) return b;  if ((t/=d)==1) return b+c;  if (!p) p=d*.3;
-				if (a < m.abs(c)) { a=c; var s=p/4; }
-				else var s = p/(2*m.PI) * m.asin (c/a);
-				return a*m.pow(2,-10*t) * m.sin( (t*d-s)*(2*m.PI)/p ) + c + b;
+				var m=Math,s=1.70158,p=0,a=c;
+				if(!t)return b;
+				if((t/=d)==1)return b+c;
+				if(!p)p=d*.3;
+				if(a<m.abs(c)){a=c;var s=p/4;}else var s=p/(2*m.PI)*m.asin(c/a);
+				return a*m.pow(2,-10*t)*m.sin((t*d-s)*(2*m.PI)/p)+c+b;
 			}
 		});
 	}
@@ -127,7 +127,7 @@ define([
 	function nsSel () {
 		var strBldr = [], prx = ns;
 		$.each(arguments, function () { strBldr.push('.' + (this == '' ? prx : prx + '-' + this)); });
-		return strBldr.join(' ').trim();
+		return $.trim(strBldr.join(' '));
 	};
 	
 	/**
@@ -144,7 +144,7 @@ define([
 	function nsClass () {
 		var strBldr = [], prx = ns;
 		$.each(arguments, function () { strBldr.push(this == '' ? prx : prx + '-' + this); });
-		return strBldr.join(' ').trim();
+		return $.trim(strBldr.join(' '));
 	};
 	
 	// ------------------------------------------------------------------------
@@ -217,8 +217,12 @@ define([
 			   .click(function () {that.barClicked.apply(that, arguments);})
 			   .find(nsSel('panels')).width(this.width);
 			
+			// IE7 needs us to explicitly set the container width, since it is
+			// unable to determine it on its own
+			bar.width(this.width);
+			
 			this.width = bar.width();
-
+			
 			$(window).resize(function () {
 				that.updateHeight();
 			});
