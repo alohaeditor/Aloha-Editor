@@ -156,7 +156,7 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 				this.setValue("");
 				jQuery(this.wrap.dom.children[0]).css("color", "black");
 			}
-			if ( target && target.context.style && target.context.style['background-color'] ) {
+			if ( target && target.context && target.context.style && target.context.style['background-color'] ) {
 				target.attr('data-original-background-color', target.context.style['background-color']);
 			}
 			target.css('background-color','Highlight');
