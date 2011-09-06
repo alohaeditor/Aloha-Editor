@@ -10,17 +10,13 @@
 	<script type="text/javascript" src="../dep/jquery.simulate.js"></script>
 	<script>
 
-		// detect this path
-		// var bundleUrl = $('<a href="#">').dom.geturl;
-		bundleUrl = '/your/path';
-	
 		// currently, we need to manually set the path to aloha
 		window.Aloha = {
 			settings : {
 				bundles: {
 					// Path for custom bundle relative from require.js path
 					custom1: '../test/unit',
-					custom2: bundleUrl
+					custom2: location.href.replace(/\/?pluginapi.html$/,'')
 				}
 			}
 		};
@@ -32,7 +28,7 @@
 	</script>
 
 	<!-- include aloha -->
-	<script src="../../lib/require.js" data-main="../../lib/aloha.js" id="aloha-script-include" data-plugins="custom1/plugintest1"></script>
+	<script src="../../lib/require.js" data-main="../../lib/aloha.js" id="aloha-script-include" data-plugins="custom1/plugintest1,custom2/plugintest2"></script>
 
 	<!-- include testswarm inject script -->
 	<script>

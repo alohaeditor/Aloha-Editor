@@ -32,19 +32,42 @@ function(require, jQuery) {
 		
 	});
 	
-	asyncTest('Aloha bundle plugin resource loading', function() {
+	asyncTest('Aloha relative bundle plugin resource loading', function() {
+		var url = Aloha.getPluginUrl('plugintest1') + '/res/test.json';
 		$.ajax({
-			url: Aloha.getPluginUrl('plugintest1') + '/res/test.json',
+			url: url,
+			dataType: 'json',		
 			success: function( data ) {
-				ok(true, 'Ressource loaded');
+				ok(true, 'Ressource1 loaded from ' + url);
 				// Test if legacy jQuery version is correct
-				test('Resource data', function() {
+				test('Resource1 data', function() {
 					equals(data.data, 'ok', 'Loaded data is correct');
 				});
 				start();
 			},
 			error: function( error ) {
-				ok(false, 'Failure loading plugin resource');
+				ok(false, 'Failure loading plugin resource. URL was ' + url);
+				start();
+			}
+		});
+
+	});
+	
+	asyncTest('Aloha absolute bundle plugin resource loading', function() {
+		var url = Aloha.getPluginUrl('plugintest2') + '/res/test.json';
+		$.ajax({
+			url: url,
+			dataType: 'json',		
+			success: function( data ) {
+				ok(true, 'Ressource2 loaded from ' + url);
+				// Test if legacy jQuery version is correct
+				test('Resource2 data', function() {
+					equals(data.data, 'ok', 'Loaded data is correct');
+				});
+				start();
+			},
+			error: function( error ) {
+				ok(false, 'Failure loading plugin resource. URL was ' + url);
 				start();
 			}
 		});
