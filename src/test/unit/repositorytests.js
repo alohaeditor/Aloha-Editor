@@ -13,6 +13,10 @@ define('repositorytests', [
 	
 	'use strict';
 	
+	function str (str) {
+		return str.replace(/\s+/g, ' ');
+	};
+	
 	// Test whether Aloha is properly initialized
 	asyncTest('Aloha Startup Test', function() {
 		var timeout = setTimeout(function() {
@@ -28,7 +32,7 @@ define('repositorytests', [
 	
 	// All other tests are done when Aloha is ready
 	aQuery('body').bind('aloha', function() {
-		runSingleRepoTests(runMultipleReposTest);
+		runSingleRepoTests(/*runMultipleReposTest*/);
 	});
 	
 	var repositoryId1 = 'testRepo1';
@@ -88,23 +92,11 @@ define('repositorytests', [
 		asyncTest(
 			'Test timeouts for Aloha.RepositoryManager.query method',
 			function () {
-				// We wait until *just* before the repository manager does,
-				// once it is evident that a timeout will happen
-				var timeout = setTimeout(function () {
-					ok(
-						true,
-						'Repository manager waited 5 (4.99) seconds for ' +
-						'repositories to complete queries'
-					);
-					
-					start();
-				}, 4999);
-				
-				var delay = 6000;
+				var timeout = 5000;
 				var starttime = new Date;
 				
 				Manager.query({
-					delay : delay
+					delay : timeout + 1000, // Make the repository repsond 1 second too late
 				}, function () {
 					var elapsed = (new Date) - starttime;
 					// We will accept a slight delay in when this callback is
@@ -115,11 +107,25 @@ define('repositorytests', [
 					var grace = 10; // ... it is *amazing*
 					
 					ok(
-						(elapsed - 5000) < grace,
-						'The repository manager correctly timed-out on a ' +
-						'repository that was taking too long to fulfull the ' +
-						'query method. This callback was invoked after ' +
-						elapsed + ' seconds.'
+						(elapsed - timeout) < grace,
+						str('												  \
+							Check that the repository manager times-out on a  \
+							repository that was taking more than the allowed  \
+							' + timeout + ' +/= ' + grace + ' milliseconds to \
+							respond.\nThis callback was invoked after		  \
+							' + elapsed + ' milliseconds.					  \
+						')
+					);
+					
+					ok(
+						elapsed >= timeout,
+						str('											 \
+							Check that repository manager waited the	 \
+							expected ' + timeout + ' milliseconds for	 \
+							repositories to respond before automatically \
+							invoking the callback function.\nThe manager \
+							waited ' + elapsed + ' milliseconds.		 \
+						')
 					);
 					
 					start();
@@ -131,7 +137,7 @@ define('repositorytests', [
 					var starttime = new Date;
 					
 					Manager.query({
-						delay : 1234
+						delay : timeout / 2 // Make the repository finish on time
 					}, function () {
 						ok(
 							true,
@@ -141,7 +147,7 @@ define('repositorytests', [
 						
 						start();
 					});
-				}, delay + 100);
+				}, timeout + 1200);
 			}
 		);
 		
@@ -149,7 +155,7 @@ define('repositorytests', [
 			'Test response object for Aloha.RepositoryManager.query method',
 			function () {
 				Manager.query({
-					maxItems: 0
+					maxItems : 0
 				}, function (response) {
 					ok(
 						response && (typeof response === 'object'),
@@ -219,7 +225,7 @@ define('repositorytests', [
 		module("MULTIPLE REPOSITORIES");
 		
 		test(
-			'Test how repository manager handles 2 repositories',
+			'Test that we have 2 repositories registered',
 			function () {
 				equal(
 					Manager.repositories.length, 2,
@@ -238,8 +244,25 @@ define('repositorytests', [
 					'Check that the id of the first registered repository is still "'
 					+ repositoryId1 + '."'
 				);
-					
+				
 				start();
+			}
+		);
+		
+		asyncTest(
+			'Test queries to multiple repositories through the repository manager',
+			function () {
+				Manager.query({
+					maxItems : 2
+				}, function (response) {
+					equal(
+						response.results, 3,
+						'Check that on a total of 2 + 1 results are returned' +
+						' from the 2 registered repositories'
+					);
+					
+					start();
+				});
 			}
 		);
 	};
