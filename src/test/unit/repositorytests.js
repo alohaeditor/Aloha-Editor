@@ -36,16 +36,20 @@ define('repositorytests', [
 		},
 		init  : function () {},
 		query : function (params, callback) {
-			var timer;
+			var delay = params && (typeof params.delay === 'number') ? params.delay : 0;
 			
-			timer = setTimeout(function () {
-				clearTimeout(timer);
-				timer = undefined;
-				
+			setTimeout(function () {
 				var results = [];
 				
+				if (params && params.maxItems) {
+					var l = params.maxItems + 1;
+					while (--l) {
+						results.push({});
+					}
+				}
+				
 				callback(results);
-			}, 5234);
+			}, delay);
 		} //,
 		  // getChildren: function (params, callback) { return true; },
 		  // makeClean:   function (obj) {},
@@ -74,35 +78,92 @@ define('repositorytests', [
 		);
 		
 		asyncTest(
-			'Test Querying Aloha.RepositoryManager',
+			'Test timeouts for Aloha.RepositoryManager.query method',
 			function () {
-				var timeout;
-				var starttime;
-				var params = {};
-				
+				// We wait until *just* before the repository manager does,
+				// once it is evident that a timeout will happen
 				var timeout = setTimeout(function () {
-					ok(false, 'Repository manager did not invoke callback within 5 seconds.');
+					ok(true, 'Repository manager waited 5 (4.99) seconds for repositories to complete queries');
 					start();
-				}, 5050); // We offer 50 milliseconds grace for slow execution
+				}, 4999);
 				
-				var callback = function () {
-					ok(
-						true,
-						'Check that repository manager invoked callback.\
-						 Callback invoked after ' + ((new Date) - starttime) + ' seconds.'
-					);
-					
+				var delay = 6000;
+				var starttime = new Date;
+				
+				Manager.query({
+					delay : delay
+				}, function () {
 					if (timeout) {
 						clearTimeout(timeout);
 						timeout = undefined;
 					}
 					
+					var elapsed = (new Date) - starttime;
+					// We will accept a slight delay in when this callback is
+					// invoked to accomodate minor lag in execution.
+					// We use (elapsed - 5000) and not Math.abs(elapsed - 5000)
+					// however because of the elapsed should under no correct
+					// circumstances be under the 5 second timeout window
+					var grace = 10; // ... it is amazing
+					
+					ok(
+						(elapsed - 5000) < grace,
+						'The repository manager correctly timed-out on a ' +
+						'repository that was taking too long to fulfull the ' +
+						'query method. This callback was invoked after ' +
+						elapsed + ' seconds.'
+					);
+					
 					start();
-				};
+				});
 				
-				starttime = new Date;
+				// Wait until the previous query has timed out before invoking this one
+				setTimeout(function () {
+					starttime = new Date;
+					
+					Manager.query({
+						delay : 1234
+					}, function () {
+						ok(true, 'The repository invoked this callback after ' + ((new Date) - starttime) + ' seconds.');
+						start();
+					});
+				}, delay + 100);
+			}
+		);
+		
+		asyncTest(
+			'Test response object for Aloha.RepositoryManager.query method',
+			function () {
+				Manager.query({
+					maxItems: 0
+				}, function (response) {
+					ok(response && (typeof response === 'object'), 'Check that repository manager returns a response object.');
+					
+					equal(
+						response.results, 0,
+						'Check that the response object contains 0 results.'
+					);
+					
+					equal(
+						response.items.length, 0,
+						'Check that the response object\'s "items" property is an empty array.'
+					);
+					
+					start();
+				});
 				
-				Manager.query(params, callback);
+				Manager.query({
+					maxItems: 12
+				}, function (response) {
+					equal(response.results, 12, 'Check that response object contains 12 results.');
+					
+					equal(
+						response.results, response.items.length,
+						'Check that the "results" property matches the length of the "items" array in the response object.'
+					);
+					
+					start();
+				});
 			}
 		);
 		
