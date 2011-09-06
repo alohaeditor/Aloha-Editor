@@ -9,36 +9,18 @@
 	<script	src="../../lib/vendor/jquery-1.5.1.js" ></script>
 	<script type="text/javascript" src="../dep/jquery.simulate.js"></script>
 	<script>
+
+		// detect this path
+		// var bundleUrl = $('<a href="#">').dom.geturl;
+		bundleUrl = '/your/path';
+	
 		// currently, we need to manually set the path to aloha
 		window.Aloha = {
 			settings : {
-				base : '../../lib/',
-				logLevels : {
-					'error': true,
-					'warn':  true,
-					'info':  false,
-					'debug': false
-				},
-				logHistory : {
-					levels : {
-						'error' : true,
-						'warn' : true,
-						'info' : false,
-						'debug' : false
-					}
-				},
-				errorhandling : true,
-				plugins: {
-					"plugintest": {
-						'editables': {
-							'#edit2': {
-								'foo': 'bar'
-							},
-							'#edit3': {
-								'foo': new RegExp(".")
-							}
-						}
-					}
+				bundles: {
+					// Path for custom bundle relative from require.js path
+					custom1: '../test/unit',
+					custom2: bundleUrl
 				}
 			}
 		};
@@ -50,7 +32,7 @@
 	</script>
 
 	<!-- include aloha -->
-	<script src="../../lib/require.js" data-main="../../lib/aloha.js" id="aloha-script-include" data-plugins=""></script>
+	<script src="../../lib/require.js" data-main="../../lib/aloha.js" id="aloha-script-include" data-plugins="custom1/plugintest1"></script>
 
 	<!-- include testswarm inject script -->
 	<script>
@@ -65,6 +47,7 @@
 <body>
 	<!-- include the tests -->
 	<script>
+		// load the tests
 		require(
 			{
 				paths: {
