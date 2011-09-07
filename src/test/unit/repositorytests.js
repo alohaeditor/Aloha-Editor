@@ -96,8 +96,9 @@ define('repositorytests', [
 				var starttime = new Date;
 				
 				Manager.query({
-					delay : timeout + 1000, // Make the repository repsond 1 second too late
-				}, function () {
+					// Make the repository repsond 1 second too late
+					delay : timeout + 1000,
+				}, function (response, debug) {
 					var elapsed = (new Date) - starttime;
 					// We will accept a slight delay in when this callback is
 					// invoked to accomodate minor lag in execution. We use
@@ -105,6 +106,8 @@ define('repositorytests', [
 					// however because elapsed should under no correct
 					// circumstances ever be under the 5 second timeout window
 					var grace = 10; // ... it is *amazing*
+					
+					debugger;
 					
 					ok(
 						(elapsed - timeout) < grace,
@@ -119,16 +122,14 @@ define('repositorytests', [
 					
 					ok(
 						elapsed >= timeout,
-						str('											 \
-							Check that repository manager waited the	 \
-							expected ' + timeout + ' milliseconds for	 \
-							repositories to respond before automatically \
-							invoking the callback function.\nThe manager \
-							waited ' + elapsed + ' milliseconds.		 \
+						str('												  \
+							Check that repository manager waited at least the \
+							expected ' + timeout + ' milliseconds for		  \
+							repositories to respond before automatically	  \
+							invoking the callback function.\nThe manager	  \
+							waited ' + elapsed + ' milliseconds.			  \
 						')
 					);
-					
-					start();
 				});
 				
 				// Wait until the previous query has timed out before
@@ -137,8 +138,9 @@ define('repositorytests', [
 					var starttime = new Date;
 					
 					Manager.query({
-						delay : timeout / 2 // Make the repository finish on time
-					}, function () {
+						// Make sure the repository finish before the timeout
+						delay : timeout / 2
+					}, function (response, debug) {
 						ok(
 							true,
 							'The repository invoked this callback after ' +
@@ -177,15 +179,15 @@ define('repositorytests', [
 					start();
 				});
 				
-				var expectedItems = Math.round(Math.random() * 100);
+				var numItemsToFetch = Math.round(Math.random() * 100);
 				
 				Manager.query({
-					maxItems: expectedItems
+					maxItems: numItemsToFetch
 				}, function (response) {
 					equal(
-						response.results, expectedItems,
+						response.results, numItemsToFetch,
 						'Check that response object contains "' +
-						expectedItems + '" results.'
+						numItemsToFetch + '" results.'
 					);
 					
 					equal(
