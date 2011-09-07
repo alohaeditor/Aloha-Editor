@@ -5,8 +5,8 @@
  */
 
 define("pluginapitest",
-['require', 'aloha/jquery'],
-function(require, jQuery) {
+['aloha/jquery'],
+function( jQuery ) {
 	"use strict";
 	
 	var	$ = window.jQuery,
@@ -73,6 +73,48 @@ function(require, jQuery) {
 		});
 
 	});
+	
+	asyncTest('Aloha plugin default localization (fallback)', function() {
+		require(
+			['i18n!plugintest2/nls/i18n'],
+			function( i18n ) {
+				var key = i18n.t('plugin2.test1');
+				if ( key == 'fallback' ) {
+					ok(true, 'Default key was loaded.');
+				} else {
+					ok(false, 'Failure loading default language key. Result: ' + key);
+				}
+				start();
+			}
+		);
+		setTimeout(function() {
+			ok(false, 'Localization did not return in 5 seconds');
+			start();
+		}, 
+		5000);
+	});
+	
+	asyncTest('Aloha plugin german localization', function() {
+		require(
+			['i18n!plugintest1/nls/i18n'],
+			function( i18n ) {
+				var key = i18n.t('plugin1.test1');
+				if ( key == 'german' ) {
+					ok(true, 'German key was loaded.');
+				} else {
+					ok(false, 'Failure loading german language key. Result: ' + key);
+				}
+				start();
+			}
+		);
+		setTimeout(function() {
+			ok(false, 'Localization did not return in 5 seconds');
+			start();
+		}, 
+		5000);
+	});
+	
+	
 	
 	// All other tests are done when Aloha is ready
 //	$('body').bind('alohaEditableCreated', function() {

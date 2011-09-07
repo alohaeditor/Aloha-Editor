@@ -245,7 +245,8 @@ function (jQuery, PluginManager, FloatingMenu, Command, Selection, Range) {
 				// Main Require.js loading call, which fetches all the plugins.
 				require(
 					{
-						paths: paths
+						paths: paths,
+						locale: Aloha.settings.locale || Aloha.defaults.locale || 'en'
 					},
 					requiredInitializers,
 					next
@@ -265,19 +266,18 @@ function (jQuery, PluginManager, FloatingMenu, Command, Selection, Range) {
 		 * @return array
 		 * @internal
 		 */
-		getPluginsToBeLoaded: function(){
-			// Prepare
+		getPluginsToBeLoaded: function() {
+			// look for data-aloha-plugins attributes and load values
 			var
-				$alohaScriptInclude = $('#aloha-script-include'),
-				plugins = $.trim($alohaScriptInclude.data('plugins'));
+				plugins = $('[data-aloha-plugins]').data('aloha-plugins');
 
 			// Determine Plugins
 			if ( typeof plugins === 'string' && plugins !== "") {
 				return plugins.replace(/\s+/g, '').split(',');
 			}
-
 			// Return
 			return [];
+			
 		},
 
 		/**
@@ -676,8 +676,13 @@ function (jQuery, PluginManager, FloatingMenu, Command, Selection, Range) {
 		 * @method
 		 * @return {String} alohaUrl
 		 */
-		getAlohaUrl: function(suffix){
-			return window.Aloha.settings.base || document.getElementById('aloha-script-include').src.replace(/require.js$/,'').replace(/\/+$/,'');
+		getAlohaUrl: function( suffix ) {
+			// aloha base path is defined by a script tag with 2 data attributes
+			var requireJs = $('[data-aloha-plugins][data-main]'),
+				baseUrl = ( requireJs.length ) ? requireJs[0].src.replace( /\/?require.js$/ , '' ) : '';
+				
+			return baseUrl;
+//			return window.Aloha.settings.base || document.getElementById('aloha-script-include').src.replace(/require.js$/,'').replace(/\/+$/,'');
 		},
 
 		/**
