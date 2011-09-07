@@ -37,9 +37,10 @@ define('repositorytests', [
 	
 	var repositoryId1 = 'testRepo1';
 	var repositoryId2 = 'testRepo2';
+	var timeout = 5000;
 	
 	//-------------------------------------------------------------------------
-	// Single Repository
+	// Test for managing a single repository
 	//-------------------------------------------------------------------------
 	
 	function runSingleRepoTests (runNextBatchOfTests) {
@@ -92,13 +93,12 @@ define('repositorytests', [
 		asyncTest(
 			'Test timeouts for Aloha.RepositoryManager.query method',
 			function () {
-				var timeout = 5000;
 				var starttime = new Date;
 				
 				Manager.query({
 					// Make the repository repsond 1 second too late
 					delay : timeout + 1000,
-				}, function (response, debug) {
+				}, function (response) {
 					var elapsed = (new Date) - starttime;
 					// We will accept a slight delay in when this callback is
 					// invoked to accomodate minor lag in execution. We use
@@ -106,8 +106,6 @@ define('repositorytests', [
 					// however because elapsed should under no correct
 					// circumstances ever be under the 5 second timeout window
 					var grace = 10; // ... it is *amazing*
-					
-					debugger;
 					
 					ok(
 						(elapsed - timeout) < grace,
@@ -140,7 +138,7 @@ define('repositorytests', [
 					Manager.query({
 						// Make sure the repository finish before the timeout
 						delay : timeout / 2
-					}, function (response, debug) {
+					}, function (response) {
 						ok(
 							true,
 							'The repository invoked this callback after ' +
@@ -204,10 +202,90 @@ define('repositorytests', [
 				}
 			}
 		);
+		
+		asyncTest(
+			'Tests for overlapping queries',
+			function () {
+				var starttime = new Date;
+				var numOpenQueries = 0;
+				
+				// Check whether the results of timed-out queries leak into
+				// subsequent calls
+				stop();
+				++numOpenQueries;
+				Manager.query({
+					delay    : timeout + 2000,
+					maxItems : 3
+				}, function (response) {
+					equal(
+						response.results, 0,
+						'Check that response object contains 0 results ' +
+						'because it timed-out @ ' + ((new Date) - starttime) +
+						'.'
+					);
+					
+					--numOpenQueries;
+					equal(
+						numOpenQueries, 1,
+						'Check that there is still 1 more query open.'
+					);
+					
+					start();
+				});
+				
+				// This next query should callback just before the previous
+				// query times-out, and should finish after the previous has
+				// timed-out
+				stop();
+				++numOpenQueries;
+				setTimeout(function () {
+					Manager.query({
+						delay  : timeout - 100,
+						maxItems : 2
+					}, function (response) {
+						equal(
+							response.results, 2,
+							'Check that response object contains 2 results @ ' +
+							((new Date) - starttime) + '.'
+						);
+						
+						--numOpenQueries;
+						equal(
+							numOpenQueries, 0,
+							'Check that there is the last query to be closed' +
+							' (ie: there are 0 opened queries).'
+						);
+						
+						start();
+					});
+				}, timeout - 500); 
+				
+				// Before the previous query is complete, start another query
+				++numOpenQueries;
+				Manager.query({
+					maxItems : 4
+				}, function (response) {
+					equal(
+						response.results, 4,
+						'Check that response object returns the results for ' +
+						'the correct callback @ ' + ((new Date) - starttime) +
+						'.'
+					);
+					
+					--numOpenQueries;
+					equal(
+						numOpenQueries, 2,
+						'Check that there are 2 more queries still open.'
+					);
+					
+					start();
+				});
+			}		
+		);
 	};
 	
 	//-------------------------------------------------------------------------
-	// Multiple Repositories
+	// Tests for managing multiple repositories
 	//-------------------------------------------------------------------------
 	
 	function runMultipleReposTest () {
