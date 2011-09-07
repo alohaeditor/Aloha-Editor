@@ -19,15 +19,14 @@
 */
 
 define(
-['aloha/jquery'],
-function(jQuery, undefined) {
+['aloha/core', 'util/class', 'aloha/jquery' ],
+function( Aloha, Class, jQuery ) {
 	"use strict";
 	
 	var
-		$ = jQuery,
-		GENTICS = window.GENTICS,
-		Aloha = window.Aloha,
-		Class = window.Class;
+//		Aloha = window.Aloha,
+//		Class = window.Class,
+		GENTICS = window.GENTICS;
 
 /**
  * Repository Manager
@@ -76,15 +75,15 @@ Aloha.RepositoryManager = Class.extend({
 	 */
 	register: function(repository) {
 
-		if (repository instanceof Aloha.AbstractRepository) {
+//		if (repository instanceof Aloha.AbstractRepository) {
 			if ( !this.getRepository(repository.repositoryId) ) {
 				this.repositories.push(repository);
 			} else {
 				Aloha.Log.warn(this, 'A repository with name { ' + repository.repositoryId + ' } already registerd. Ignoring this.');
 			}
-		} else {
-			Aloha.Log.error(this, 'Trying to register a repository which is not an instance of Aloha.Repository.');
-		}
+//		} else {
+//			Aloha.Log.error(this, 'Trying to register a repository which is not an instance of Aloha.Repository.');
+//		}
 
 	},
 

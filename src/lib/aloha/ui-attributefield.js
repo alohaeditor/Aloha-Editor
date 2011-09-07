@@ -19,14 +19,14 @@
 */
 
 define(
-['aloha/jquery', 'aloha/ext', 'i18n!aloha/nls/i18n', 'aloha/ui', 'aloha/ext-alohaproxy', 'aloha/ext-alohareader'],
-function(jQuery, Ext, i18n) { // TODO add parameter for UI class after refactoring UI to requirejs
+['aloha/core', 'aloha/jquery', 'aloha/ext', 'i18n!aloha/nls/i18n', 'aloha/ui', 'aloha/repositorymanager', 'aloha/selection', 'aloha/ext-alohaproxy', 'aloha/ext-alohareader'],
+function(Aloha, jQuery, Ext, i18n, Ui, RepositoryManager, Selection) { // TODO add parameter for UI class after refactoring UI to requirejs
 	"use strict";
 
-	var
-		$ = jQuery,
-		GENTICS = window.GENTICS,
-		Aloha = window.Aloha;
+//	var
+//		$ = jQuery,
+//		Aloha = window.Aloha,
+//		GENTICS = window.GENTICS;
 
 Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 	typeAhead: false,
@@ -52,13 +52,16 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 		'</div></tpl>',
 		{
 			hasRepositoryTemplate : function(values) {
-				var rep = Aloha.RepositoryManager.getRepository(values.repositoryId);
+				var rep = RepositoryManager.getRepository(values.repositoryId);
 				return rep && rep.hasTemplate();
 			},
 			renderRepositoryTemplate : function(values) {
-				var rep = Aloha.RepositoryManager.getRepository(values.repositoryId);
+				var rep = RepositoryManager.getRepository(values.repositoryId);
 				if (rep && rep.hasTemplate()) {
-					return rep.getTemplate().apply(values);
+					if ( !rep._ExtTPL) {
+						rep._ExtTPL = new Ext.XTemplate( rep.getTemplate() ); 
+					}
+					return rep._ExtTPL.apply(values);
 				}
 			}
 		}
@@ -75,7 +78,7 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 
 		// when no resource item was selected, remove any marking of the target object
 		if (!this.resourceItem) {
-			Aloha.RepositoryManager.markObject(this.targetObject);
+			RepositoryManager.markObject(this.targetObject);
 		}
 		// remove the highlighting and restore original color if was set before
 		if ( target ) {
@@ -129,7 +132,7 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 				setTimeout(function(){
 					// Set focus to link element and select the object
 					Aloha.activeEditable.obj[0].focus();
-					Aloha.Selection.getRangeObject().select();
+					Selection.getRangeObject().select();
 				},0);
 			}
 
@@ -199,7 +202,7 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 			// set the attribute to the target object
 			this.setAttribute(this.targetAttribute, item[this.valueField]);
 			// call the repository marker
-			Aloha.RepositoryManager.markObject(this.targetObject, item);
+			RepositoryManager.markObject(this.targetObject, item);
 		} else {
 			// unset the reference value, since no resource item is selected
 			this.resourceValue = null;
@@ -241,7 +244,7 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 
 			// check whether a repository item is linked to the object
 			var that = this;
-			Aloha.RepositoryManager.getObject(obj, function (items) {
+			RepositoryManager.getObject(obj, function (items) {
 			if (items && items.length > 0) {
 				that.setItem(items[0]);
 			}
@@ -270,7 +273,7 @@ Ext.reg('alohaattributefield', Ext.ux.AlohaAttributeField);
  * @namespace Aloha.ui
  * @class AttributeField
  */
-Aloha.ui.AttributeField = Aloha.ui.Button.extend({
+Ui.AttributeField = Ui.Button.extend({
 	_constructor: function (properties) {
 
 		/**
@@ -485,11 +488,11 @@ Aloha.ui.AttributeField = Aloha.ui.Button.extend({
 			'</div></tpl>',
 			{
 				hasRepositoryTemplate : function(values) {
-					var rep = Aloha.RepositoryManager.getRepository(values.repositoryId);
+					var rep = RepositoryManager.getRepository(values.repositoryId);
 					return rep && rep.hasTemplate();
 				},
 				renderRepositoryTemplate : function(values) {
-					var rep = Aloha.RepositoryManager.getRepository(values.repositoryId);
+					var rep = RepositoryManager.getRepository(values.repositoryId);
 					if (rep && rep.hasTemplate()) {
 						return rep.getTemplate().apply(values);
 					}

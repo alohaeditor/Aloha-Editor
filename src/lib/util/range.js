@@ -19,15 +19,15 @@
 */
 
 define(
-['aloha/jquery', 'util/dom', 'aloha/rangy-core'],
-function(jQuery, Dom, x) {
+['aloha/jquery', 'util/dom', 'util/class', 'aloha/rangy-core'],
+function(jQuery, Dom, Class) {
 	"use strict";
 
 	var
 		GENTICS = window.GENTICS,
-		Aloha = window.Aloha,
-		Class = window.Class,
-		console = window.console
+//		Aloha = window.Aloha,
+//		Class = window.Class,
+//		console = window.console
 		rangy = window.rangy;
 
 /**
@@ -154,19 +154,21 @@ GENTICS.Utils.RangeObject = Class.extend({
 	 * TODO: move this to Aloha.Log
 	 * @param message log message to output
 	 * @return void
+	 * @deprecated
 	 * @hide
 	 */
 	log: function(message) {
-		var
-			Aloha = window.Aloha||false,
-			console = window.console||false;
-		if (Aloha && Aloha.Log) {
-			Aloha.Log.debug(this, message);
-			return false;
-		}
-		if (console) {
-			console.log(message);
-		}
+		if (console && console.log) console.log('You are using a depredated function. Utils.RangeObject.log().');
+//		var
+//			Aloha = window.Aloha||false,
+//			console = window.console||false;
+//		if (Aloha && Aloha.Log) {
+//			Aloha.Log.debug(this, message);
+//			return false;
+//		}
+//		if (console) {
+//			console.log(message);
+//		}
 	},
 
 	/**
@@ -378,9 +380,9 @@ GENTICS.Utils.RangeObject = Class.extend({
 		var ieRange, endRange, startRange, range, sel;
 
 		// now for the rest of the world
-		if (Aloha && Aloha.Log.isDebugEnabled()) {
-			Aloha.Log.debug(this, 'Set selection to current range (non IE version)');
-		}
+//		if (Aloha && Aloha.Log.isDebugEnabled()) {
+//			Aloha.Log.debug(this, 'Set selection to current range (non IE version)');
+//		}
 
 		// create a range
 		range = rangy.createRange();
@@ -976,6 +978,6 @@ GENTICS.Utils.RangeTree = Class.extend({
 	 */
 	children: []
 });
-
+	
 	return GENTICS.Utils.RangeObject;
 });

@@ -23,21 +23,18 @@ define(
 [
 	'aloha/jquery',
 	'aloha/pluginmanager',
-	'aloha/floatingmenu',
-	'aloha/command',
-	'aloha/selection',
-	'util/range',
+	'aloha/jquery.promise'
 ],
 
-function (jQuery, PluginManager, FloatingMenu, Command, Selection, Range) {
+function ( jQuery, PluginManager ) {
 	"use strict";
 
 	var
 		$ = jQuery,
 		GENTICS = window.GENTICS,
-		Aloha = window.Aloha,
-		console = window.console||false,
-		Ext = window.Ext,
+		Aloha = window.Aloha || {},
+//		console = window.console||false,
+//		Ext = window.Ext,
 		HTMLElement = window.HTMLElement;
 	
 	//----------------------------------------
@@ -49,14 +46,6 @@ function (jQuery, PluginManager, FloatingMenu, Command, Selection, Range) {
 	 * Maps the names of plugins with their urls for easy assess in the getPluginsUrl method
 	 */
 	var pluginPaths = {};
-	
-	// Ext seems to have an onClick handler that uses
-	// QuickTips, but the handler doesn't initialize
-	// QuickTips and therefore causes an error.
-	// The bug occurred with the Gentics Content Node
-	// integration, but if it's really a bug in Ext, then
-	// it's a good idea to always initialize QuickTips here.
-	Ext.QuickTips.init();
 
 	/**
 	 * Base Aloha Object
@@ -105,7 +94,18 @@ function (jQuery, PluginManager, FloatingMenu, Command, Selection, Range) {
 		 * @cfg {Object} object Aloha's settings
 		 */
 		settings: {},
-
+		
+		/**
+		 * defaults object, which will contain all Aloha defaults
+		 * @cfg {Object} object Aloha's settings
+		 */
+		defaults: {},
+		
+		/**
+		 * Namespace for ui components
+		 */
+		ui: {},
+		
 		/**
 		 * This represents the name of the users OS. Could be:
 		 * 'Mac', 'Linux', 'Win', 'Unix', 'Unknown'
@@ -137,9 +137,10 @@ function (jQuery, PluginManager, FloatingMenu, Command, Selection, Range) {
 		init: function () {
 
 			$(function(){
+				
 				// Create Promises
 				Aloha.createPromiseEvent('aloha');
-
+				
 				// Ready?
 				Aloha.bind('alohacoreloaded',function(){
 					// initialize rangy. This is probably necessary here,
@@ -246,7 +247,7 @@ function (jQuery, PluginManager, FloatingMenu, Command, Selection, Range) {
 				require(
 					{
 						paths: paths,
-						locale: Aloha.settings.locale || Aloha.defaults.locale || 'en'
+						locale: this.settings.locale || this.defaults.locale || 'en'
 					},
 					requiredInitializers,
 					next
@@ -312,10 +313,10 @@ function (jQuery, PluginManager, FloatingMenu, Command, Selection, Range) {
 				jQuery.browser.mozilla && parseFloat(jQuery.browser.version) < 1.9 || // FF 3.5
 				jQuery.browser.msie && jQuery.browser.version < 7 || // IE 7
 				jQuery.browser.opera && jQuery.browser.version < 11 ) { // right now, Opera needs some work
-				if (console && console.log) {
-					console.log('The browser you are using is not supported.');
+				if (window.console && window.console.log) {
+					throw ERR_BROWSER_NOT_SUPPORTED;
 				}
-				return;
+//				return;
 			}
 
 			// register the body click event to blur editables
@@ -329,12 +330,12 @@ function (jQuery, PluginManager, FloatingMenu, Command, Selection, Range) {
 				// refocus the editable again, which is just strange UX
 				if (Aloha.activeEditable && !Aloha.isMessageVisible() && !Aloha.eventHandled) {
 					Aloha.activeEditable.blur();
-					FloatingMenu.setScope('Aloha.empty');
 					Aloha.activeEditable = null;
 				}
 			}).mouseup(function(e) {
 				Aloha.eventHandled = false;
 			});
+			
 			// Initialise the base path to the aloha files
 			Aloha.settings.base = Aloha.getAlohaUrl();
 
@@ -375,7 +376,7 @@ function (jQuery, PluginManager, FloatingMenu, Command, Selection, Range) {
 		initPlugins: function (next) {
 			PluginManager.init(function(){
 				next();
-			});
+			}, this.getLoadedPlugins() );
 		},
 
 		/**
@@ -385,7 +386,6 @@ function (jQuery, PluginManager, FloatingMenu, Command, Selection, Range) {
 		initGui: function (next) {
 			
 			Aloha.RepositoryManager.init();
-			FloatingMenu.init();
 
 			// activate registered editables
 			for (var i = 0, editablesLength = Aloha.editables.length; i < editablesLength; i++) {
@@ -459,10 +459,6 @@ function (jQuery, PluginManager, FloatingMenu, Command, Selection, Range) {
 
 			// blur the editable
 			Aloha.activeEditable.blur();
-
-			// set scope for floating menu
-			FloatingMenu.setScope('Aloha.empty');
-
 			Aloha.activeEditable = null;
 		},
 
@@ -514,65 +510,66 @@ function (jQuery, PluginManager, FloatingMenu, Command, Selection, Range) {
 			if (typeof Aloha.Log !== "undefined")
 				Aloha.Log.log(level, component, message);
 		},
+		
+//      NEVER USED DELETE CANDIDATE.
+//		/**
+//		 * build a string representation of a jQuery or DOM object
+//		 * @param object to be identified
+//		 * @return string representation of the object
+//		 * @hide
+//		 */
+//		identStr: function (object) {
+//			if (object instanceof jQuery) {
+//				object = object[0];
+//			}
+//			if (!(object instanceof HTMLElement)) {
+//				Aloha.Log.warn(this, '{' + object.toString() + '} provided is not an HTML element');
+//				return object.toString();
+//			}
+//
+//			var out = object.tagName.toLowerCase();
+//
+//			// an id should be unique, so we're okay with that
+//			if (object.id) {
+//				return out + '#' + object.id;
+//			}
+//
+//			// as there was no id, we fall back to the objects class
+//			if (object.className) {
+//				return out + '.' + object.className;
+//			}
+//
+//			// could not identify object by id or class name - so just return the tag name
+//			return out;
+//		},
 
-		/**
-		 * build a string representation of a jQuery or DOM object
-		 * @param object to be identified
-		 * @return string representation of the object
-		 * @hide
-		 */
-		identStr: function (object) {
-			if (object instanceof jQuery) {
-				object = object[0];
-			}
-			if (!(object instanceof HTMLElement)) {
-				Aloha.Log.warn(this, '{' + object.toString() + '} provided is not an HTML element');
-				return object.toString();
-			}
-
-			var out = object.tagName.toLowerCase();
-
-			// an id should be unique, so we're okay with that
-			if (object.id) {
-				return out + '#' + object.id;
-			}
-
-			// as there was no id, we fall back to the objects class
-			if (object.className) {
-				return out + '.' + object.className;
-			}
-
-			// could not identify object by id or class name - so just return the tag name
-			return out;
-		},
-
-
-		/**
-		 * Check is language is among available languages
-		 * @method
-		 * @param {String} language language to be set
-		 * @param {Array} availableLanguages list of available languages
-		 * @return the actual language as a string
-		 */
-		getLanguage: function(language, availableLanguages) {
-
-			if (!availableLanguages instanceof Array) {
-				Aloha.Log.error(this, 'Available languages must be an Array');
-				return null;
-			}
-
-			if (typeof language === 'undefined' || !language) {
-				return availableLanguages[0];
-			}
-
-			for (var i = 0, languagesLength = availableLanguages.length; i < languagesLength; ++i) {
-				if (language == availableLanguages[i]) {
-					return language;
-				}
-			}
-
-			return availableLanguages[0];
-		},
+//      NEVER USED DELETE CANDIDATE.
+//		/**
+//		 * Check is language is among available languages
+//		 * @method
+//		 * @param {String} language language to be set
+//		 * @param {Array} availableLanguages list of available languages
+//		 * @return the actual language as a string
+//		 */
+//		getLanguage: function(language, availableLanguages) {
+//
+//			if (!availableLanguages instanceof Array) {
+//				Aloha.Log.error(this, 'Available languages must be an Array');
+//				return null;
+//			}
+//
+//			if (typeof language === 'undefined' || !language) {
+//				return availableLanguages[0];
+//			}
+//
+//			for (var i = 0, languagesLength = availableLanguages.length; i < languagesLength; ++i) {
+//				if (language == availableLanguages[i]) {
+//					return language;
+//				}
+//			}
+//
+//			return availableLanguages[0];
+//		},
 
 		/**
 		 * Register the given editable
@@ -601,56 +598,13 @@ function (jQuery, PluginManager, FloatingMenu, Command, Selection, Range) {
 		},
 
 		/**
-		 * Displays a message according to it's type
-		 * @method
-		 * @param {Aloha.Message} message the Aloha.Message object to be displayed
-		 */
-		showMessage: function (message) {
-
-			if (FloatingMenu.obj) {
-				FloatingMenu.obj.css('z-index', 8900);
-			}
-
-			switch (message.type) {
-				case Aloha.Message.Type.ALERT:
-					Ext.MessageBox.alert(message.title, message.text, message.callback);
-					break;
-				case Aloha.Message.Type.CONFIRM:
-					Ext.MessageBox.confirm(message.title, message.text, message.callback);
-					break;
-				case Aloha.Message.Type.WAIT:
-					Ext.MessageBox.wait(message.text, message.title);
-					break;
-				default:
-					Aloha.log('warn', this, 'Unknown message type for message {' + message.toString() + '}');
-					break;
-			}
-		},
-
-		/**
-		 * Hides the currently active modal, which was displayed by showMessage()
-		 * @method
-		 */
-		hideMessage: function () {
-			Ext.MessageBox.hide();
-		},
-
-		/**
-		 * checks if a modal dialog is visible right now
-		 * @method
-		 * @return true if a modal is currently displayed
-		 */
-		isMessageVisible: function () {
-			return Ext.MessageBox.isVisible();
-		},
-
-		/**
 		 * String representation
 		 * @hide
 		 */
 		toString: function () {
 			return 'Aloha';
 		},
+		
 		getName: function () {
 			return 'Aloha';
 		},
@@ -708,101 +662,17 @@ function (jQuery, PluginManager, FloatingMenu, Command, Selection, Range) {
 		},
 
 		/**
-		 * Executes a registered command.
-		 * http://aryeh.name/spec/editing/editing.html#methods-of-the-htmldocument-interface
-		 * @method
-		 * @param command name of the command
-		 * @param showUI has no effect for Aloha Editor and is only here because in spec...
-		 * @param value depends on the used command and it impementation 
-		 * @range optional a range on which the command will be executed if not specified 
-		 * 		  the current selection will be used as range
-		 */
-		execCommand: Command.execCommand,
-		
-		/**
-		 * Check wheater the command in enabled.
-		 * If command is not supported, raise a NOT_SUPPORTED_ERR exception.
-		 * @param command name of the command
-		 * @return true if command is enabled, false otherwise.
-		 */
-		queryCommandEnabled: Command.queryCommandEnabled,
-		
-		/**
-		 * Check if the command has an indetermed state. 
-		 * If command is not supported, a NOT_SUPPORTED_ERR exception is thrown
-		 * If command has no indeterminacy, INVALID_ACCESS_ERR exception is thrown
-		 * If command is not enabled, return false.
-		 * @param command name of the command
-		 * @range optional a range on which the command will be executed if not specified 
-		 * 		  the current selection will be used as range
-		 * @return true if command is indeterminate, otherwise false.
-		 */
-		queryCommandIndeterm: Command.queryCommandIndeterm,
-		
-		/**
-		 * Returns the state of a given command
-		 * If command is not supported, a NOT_SUPPORTED_ERR exception is thrown
-		 * If command has no state, an INVALID_ACCESS_ERR exception is thrown
-		 * If command is not enabled, return false
-		 * If the state override for command is set, return it
-		 * @param command name of the command
-		 * @return state override or true if command's state is true, otherwise false.
-		 */
-		queryCommandState:  Command.queryCommandState,
-
-		/**
-		 * Check if a given command is supported
-		 * @return true if command is supported, and false otherwise.
-		 */
-		queryCommandSupported:  Command.queryCommandSupported,
-
-		/**
-		 * Returns the Value of a given Command
-		 * If command is not supported, a NOT_SUPPORTED_ERR exception is thrown
-		 * If command has no value, an INVALID_ACCESS_ERR exception is thrown
-		 * If command is not enabled, return the empty string
-		 * If command is "fontSize" and its value override is set, convert the 
-		 * value override to an integer number of pixels and return the legacy
-		 * font size for the result.
-		 * If the value override for command is set, return it.
-		 * @return command's value.
-		 */
-		queryCommandValue: Command.queryCommandValue,
-
-		/**
 		 * Method to access translations
 		 * @deprecated
 		 * This will be removed in one of the next version
 		 */
 		i18n: function(component, key, replacements) {
-			window.console && window.console.log && console.log("Called deprecated i18n function!!", component, key);
-			return key;
-		},
-
-		/**
-		 * A wrapper for the function of the same name in the rangy core-depdency.
-		 * This function should be preferred as it hides the global rangy object.
-		 * For more information look at the following sites:
-		 * http://html5.org/specs/dom-range.html
-		 * @param window optional - specifices the window to get the selection of
-		 */
-		getSelection: function(document){
-			return window.rangy.getSelection(document);
-		},
-
-		/**
-		 * A wrapper for the function of the same name in the rangy core-depdency.
-		 * This function should be preferred as it hides the global rangy object.
-		 * Please note: when the range object is not needed anymore,
-		 *   invoke the detach method on it. It is currently unknown to me why
-		 *   this is required, but that's what it says in the rangy specification.
-		 * For more information look at the following sites:
-		 * http://www.w3.org/TR/DOM-Level-2-Traversal-Range/ranges.html
-		 * @param document optional - specifies which document to create the range for
-		 */
-		createRange: function(givenWindow) {
-			return window.rangy.createRange(givenWindow);
+//			window.console && window.console.log && console.log("Called deprecated i18n function!!", component, key);
+//			return key;
+			throw 'Aloha.i18n is deprecated';
 		}
+
+
 	});
 
 	// Initialise Aloha Editor

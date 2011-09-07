@@ -21,19 +21,20 @@
 // Ensure Namespace
 window.GENTICS = window.GENTICS || {};
 window.GENTICS.Utils = window.GENTICS.Utils || {};
-window.Aloha = window.Aloha || {};
-window.Aloha.settings = window.Aloha.settings || {};
-window.Aloha.ui = window.Aloha.ui || {};
+//window.Aloha = window.Aloha || {};
+//window.Aloha.settings = window.Aloha.settings || {};
+//window.Aloha.ui = window.Aloha.ui || {};
 
 define(
 	'aloha',
 	[
 		'aloha/jquery',
-		'order!util/json2',
+		'aloha/core',
+		'util/json2',
 		'vendor/jquery.json-2.2.min',
 		'vendor/jquery.store',
-		'order!util/base',
-		'order!util/lang',
+		'util/class',
+		'util/lang',
 		'util/range',
 		'util/position',
 		'util/dom',
@@ -42,7 +43,6 @@ define(
 		'aloha/ext-alohaproxy',
 		'aloha/ext-alohareader',
 		'aloha/ext-alohatreeloader',
-		'aloha/core',
 		'aloha/ui',
 		'aloha/ui-attributefield',
 		'aloha/ui-browser',
@@ -59,9 +59,10 @@ define(
 		'aloha/repositoryobjects',
 		'aloha/rangy-core'
 	],
-	function($) {
+	function($, Aloha) {
 		$('body')
 			.addClass('alohacoreloaded')
 			.trigger('alohacoreloaded');
+		return Aloha;
 	}
 );

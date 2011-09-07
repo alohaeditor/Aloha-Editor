@@ -19,14 +19,14 @@
 */
 
 define(
-['aloha/jquery'],
-function(jQuery, undefined) {
+[ 'aloha/core', 'util/class', 'aloha/jquery' ],
+function( Aloha, Class, jQuery ) {
 	"use strict";
 	
 	var
-		$ = jQuery,		GENTICS = window.GENTICS,
-		Aloha = window.Aloha,
-		Class = window.Class;
+//		Aloha = window.Aloha,
+//		Class = window.Class,
+		GENTICS = window.GENTICS;
 
 /**
  * Markup object
@@ -206,8 +206,8 @@ Aloha.Markup = Class.extend({
 		for (;i < rt.length; i++) {
 			cursorAtLastPos = range.startOffset === rt[i].domobj.length;
 			if (cursorAtLastPos) {
-				nextSiblingIsBlock = $(rt[i].domobj.nextSibling).attr('contenteditable') === 'false';
-				cursorIsWithinBlock = $(rt[i].domobj).parents('[contenteditable=false]').length > 0;
+				nextSiblingIsBlock = jQuery(rt[i].domobj.nextSibling).attr('contenteditable') === 'false';
+				cursorIsWithinBlock = jQuery(rt[i].domobj).parents('[contenteditable=false]').length > 0;
 			
 				if (cursorRight && nextSiblingIsBlock) {
 					obj = rt[i].domobj.nextSibling;
@@ -218,7 +218,7 @@ Aloha.Markup = Class.extend({
 				}
 			
 				if (cursorLeft && cursorIsWithinBlock) {
-					obj = $(rt[i].domobj).parents('[contenteditable=false]').get(0);
+					obj = jQuery(rt[i].domobj).parents('[contenteditable=false]').get(0);
 					GENTICS.Utils.Dom.selectDomNode(obj);
 					Aloha.trigger('aloha-block-selected', obj);
 					Aloha.Selection.preventSelectionChanged();
@@ -925,5 +925,7 @@ Aloha.Markup = Class.extend({
 });
 
 Aloha.Markup = new Aloha.Markup();
+
+return Aloha.Markup;
 
 });

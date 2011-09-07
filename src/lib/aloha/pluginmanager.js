@@ -1,6 +1,6 @@
 /*!
 * This file is part of Aloha Editor Project http://aloha-editor.org
-* Copyright © 2010-2011 Gentics Software GmbH, aloha@gentics.com
+* Copyright ï¿½ 2010-2011 Gentics Software GmbH, aloha@gentics.com
 * Contributors http://aloha-editor.org/contribution.php 
 * Licensed unter the terms of http://www.aloha-editor.org/license.html
 *//*
@@ -19,16 +19,16 @@
 */
 
 define(
-['aloha/jquery'],
-function(jQuery, undefined) {
+[ 'aloha/jquery', 'util/class' ],
+function( jQuery, Class ) {
 	"use strict";
 	
 	var
-		$ = jQuery,
-		GENTICS = window.GENTICS,
-		Aloha = window.Aloha,
-		Class = window.Class,
-		console = window.console||false;
+//		$ = jQuery,
+		Aloha = window.Aloha; // FIXME: plugin management should be devided in management and amd and extracted from the core
+//		Class = window.Class,
+//		console = window.console||false,
+//		GENTICS = window.GENTICS;
 
 
 	/**
@@ -46,12 +46,12 @@ function(jQuery, undefined) {
 		 * @return void
 		 * @hide
 		 */
-		init: function(next) {
+		init: function(next, userPluginIds) {
 			// Prepare
 			var
 				me = this,
-				globalSettings = Aloha.settings.plugins||{},
-				userPluginIds = Aloha.getLoadedPlugins(),
+				globalSettings = (Aloha && Aloha.settings) ? Aloha.settings.plugins||{}: {},
+//				userPluginIds = Aloha.getLoadedPlugins(),
 				i,plugin,pluginId;
 
 			// Global to local settings

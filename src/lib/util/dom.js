@@ -19,13 +19,13 @@
 */
 
 define(
-['aloha/jquery'],
-function(jQuery) {
+['aloha/jquery', 'util/class'],
+function(jQuery, Class) {
 	"use strict";
 	
 	var
 		GENTICS = window.GENTICS,
-		Class = window.Class,
+//		Class = window.Class,
 		// http://www.w3.org/TR/DOM-Level-3-Core/core.html#ID-1841493061
 		Node = {
     		'ELEMENT_NODE' : 1,
@@ -54,13 +54,14 @@ function(jQuery) {
     		'DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC': 0x20
     	};
 
+	
 
 /**
  * @namespace GENTICS.Utils
  * @class Dom provides methods to get information about the DOM and to manipulate it
  * @singleton
  */
-GENTICS.Utils.Dom = Class.extend({
+var Dom = Class.extend({
 	/**
 	 * Regex to find word characters.
 	 */
@@ -1575,11 +1576,12 @@ GENTICS.Utils.Dom = Class.extend({
 	
 });
 
+
 /**
  * Create the singleton object
  * @hide
  */
-GENTICS.Utils.Dom = new GENTICS.Utils.Dom();
+GENTICS.Utils.Dom = new Dom();
 
 return GENTICS.Utils.Dom;
 

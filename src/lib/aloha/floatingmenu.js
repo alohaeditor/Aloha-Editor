@@ -18,15 +18,15 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 define(
-['aloha/jquery', 'aloha/ext', 'util/base'],
-function(jQuery, Ext, Base, undefined) {
+['aloha/core', 'aloha/jquery', 'aloha/ext', 'util/class', 'vendor/jquery.store'],
+function(Aloha, jQuery, Ext, Class) {
 	"use strict";
 	var
-		$ = jQuery,
-		GENTICS = window.GENTICS,
-		Aloha = window.Aloha,
-		console = window.console||false,
-		Class = window.Class;
+//		$ = jQuery,
+//		Aloha = window.Aloha,
+//		console = window.console||false,
+//		Class = window.Class,
+		GENTICS = window.GENTICS;
 
 	/**
 	 * Constructor for a floatingmenu tab
@@ -413,8 +413,10 @@ function(jQuery, Ext, Base, undefined) {
 					}
 				}
 			});
-			this.generateComponent();
-			this.initialized = true;
+			Aloha.bind('aloha', function() {
+				that.generateComponent();
+				that.initialized = true;
+			})
 		},
 
 		/**
@@ -537,7 +539,6 @@ function(jQuery, Ext, Base, undefined) {
 					that.extTabPanel.add(tab.getExtComponent());
 				} catch(e) {
 					Aloha.Log.error(that,"Error while inserting tab: " + e);
-					console.log(tab.getExtComponent());
 				}
 			});
 
@@ -639,9 +640,9 @@ function(jQuery, Ext, Base, undefined) {
 					var p = data.editable.obj.offset();
 					p.top -= 90; //dirty
 
-			    if (p.top < $(document).scrollTop()) {
+			    if (p.top < jQuery(document).scrollTop()) {
 				// scrollpos is below top of editable
-				that.obj.css('top', $(document).scrollTop() + that.marginTop);
+				that.obj.css('top', jQuery(document).scrollTop() + that.marginTop);
 				that.obj.css('left', p.left);
 				that.togglePin(true);
 			    } else {
@@ -651,13 +652,13 @@ function(jQuery, Ext, Base, undefined) {
 			});
 
 				// fm scroll behaviour
-			$(window).scroll(function () {
+			jQuery(window).scroll(function () {
 			    if (!Aloha.activeEditable) {
 				return;
 			    }
 			    var pos = Aloha.activeEditable.obj.offset(),
 					    fmHeight = that.obj.height(),
-				scrollTop = $(document).scrollTop();
+				scrollTop = jQuery(document).scrollTop();
 
 					if (scrollTop > (pos.top - fmHeight - 6 - that.marginTop)) {
 				// scroll pos is lower than top of editable
@@ -1099,5 +1100,13 @@ function(jQuery, Ext, Base, undefined) {
 		}
 	});
 	
-	return new FloatingMenu();
+	var menu =  new FloatingMenu();
+	menu.init();
+	
+	// set scope to empty if deactivated
+	Aloha.bind('aloha-editable-deactivated', function() {
+		menu.setScope('Aloha.empty');
+	});
+	
+	return menu;
 });

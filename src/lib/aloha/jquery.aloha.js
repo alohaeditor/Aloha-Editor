@@ -19,14 +19,14 @@
 */
 
 define(
-['aloha/jquery'],
-function(jQuery, undefined) {
+[ 'aloha/core', 'aloha/selection', 'aloha/jquery' ],
+function( Aloha, Selection, jQuery ) {
 	"use strict";
 	
 	var
-		$ = jQuery,
-		Aloha = window.Aloha,
-		console = window.console,
+//		$ = jQuery,
+//		Aloha = window.Aloha,
+//		console = window.console,
 		XMLSerializer = window.XMLSerializer;
 
 	/**
@@ -109,16 +109,16 @@ function(jQuery, undefined) {
 	 * @return	jQuery object for the matched elements
 	 * @api
 	 */
-	$.fn.aloha = function() {
+	jQuery.fn.aloha = function() {
 		// Prepare
-		var $body = $('body'), $this = $(this);
+		var $body = jQuery('body'), $this = jQuery(this);
 
 		// Check
 		if ( $body.firedPromiseEvent('aloha') ) {
 			// Aloha Ready
 			$this.each(function() {
 				// create a new aloha editable object for each queried object
-				var $this = $(this);
+				var $this = jQuery(this);
 				if ( !Aloha.isEditable(this) ) {
 					new Aloha.Editable($this);
 				}
@@ -142,10 +142,10 @@ function(jQuery, undefined) {
 	 * @return	jQuery object for the matched elements
 	 * @api
 	 */
-	$.fn.mahalo = function() {
+	jQuery.fn.mahalo = function() {
 		return this.each(function() {
 			if (Aloha.isEditable(this)) {
-				Aloha.getEditableById($(this).attr('id')).destroy();
+				Aloha.getEditableById(jQuery(this).attr('id')).destroy();
 			}
 		});
 	};
@@ -155,12 +155,12 @@ function(jQuery, undefined) {
 	 * new Event which is triggered whenever a selection (length >= 0) is made in
 	 * an Aloha Editable element
 	 */
-	$.fn.contentEditableSelectionChange = function(callback) {
+	jQuery.fn.contentEditableSelectionChange = function(callback) {
 		var that = this;
 
 		// update selection when keys are pressed
 		this.keyup(function(event){
-			var rangeObject = Aloha.Selection.getRangeObject();
+			var rangeObject = Selection.getRangeObject();
 			callback(event);
 		});
 
@@ -174,177 +174,177 @@ function(jQuery, undefined) {
 			// remember that a selection was started
 			that.selectionStarted = true;
 		});
-		$(document).mouseup(function(event) {
-			Aloha.Selection.eventOriginalTarget = that;
+		jQuery(document).mouseup(function(event) {
+			Selection.eventOriginalTarget = that;
 			if (that.selectionStarted) {
 				callback(event);
 			}
-			Aloha.Selection.eventOriginalTarget = false;
+			Selection.eventOriginalTarget = false;
 			that.selectionStarted = false;
 		});
 
 		return this;
 	};
-
-	/**
-	 * Creates a Promise Event
-	 * For instance onDomReady is a promise event, all events bound to it after it's initial trigger are fired immediately
-	 * @version 1.0.0
-	 * @date March 08, 2011
-	 * @package jquery-sparkle {@link http://www.balupton/projects/jquery-sparkle}
-	 * @author Benjamin Arthur Lupton {@link http://balupton.com}
-	 * @copyright 2011 Benjamin Arthur Lupton {@link http://balupton.com}
-	 * @license MIT License {@link http://creativecommons.org/licenses/MIT/}
-	 * @param {String} eventName
-	 * @return {jQuery}
-	 */
-	$.fn.firedPromiseEvent = $.fn.firedPromiseEvent || function(eventName){
-		var
-			$el = $(this),
-			result = $el.data('defer-'+eventName+'-resolved') ? true : false;
-		return result;
-	};
-
-	/**
-	 * Creates a Promise Event
-	 * For instance onDomReady is a promise event, all events bound to it after it's initial trigger are fired immediately
-	 * @version 1.0.0
-	 * @date March 08, 2011
-	 * @package jquery-sparkle {@link http://www.balupton/projects/jquery-sparkle}
-	 * @author Benjamin Arthur Lupton {@link http://balupton.com}
-	 * @copyright 2011 Benjamin Arthur Lupton {@link http://balupton.com}
-	 * @license MIT License {@link http://creativecommons.org/licenses/MIT/}
-	 * @param {String} eventName
-	 * @return {jQuery}
-	 */
-	$.fn.createPromiseEvent = $.fn.createPromiseEvent || function(eventName){
-		// Prepare
-		var
-			$this = $(this),
-			events,
-			boundHandlers;
-
-		// Check
-		if ( typeof $this.data('defer-'+eventName+'-resolved') !== 'undefined' ) {
-			// Promise event already created
-			return $this;
-		}
-		$this.data('defer-'+eventName+'-resolved',false);
-
-		// Handle
-		events = $.fn.createPromiseEvent.events = $.fn.createPromiseEvent.events || {
-			// Bind the event
-			bind: function(callback){
-				var $this = $(this);
-					return $this.bind(eventName,callback);
-			},
-
-			// Trigger the event
-			trigger: function(event){
-				//console.log('trigger');
-				// Prepare
-				var
-					$this = $(this),
-					Deferred = $this.data('defer-'+eventName),
-					specialEvent;
-				
-				// setup deferred object if the event has been triggered
-				// but not been setup before
-				if ( !Deferred ) {
-					specialEvent =  $.event.special[eventName];
-					specialEvent.setup.call(this);
-					Deferred = $this.data('defer-'+eventName);
-				}
-				
-				// Update Status
-				$this.data('defer-'+eventName+'-resolved',true);
-
-				// Fire Deferred Events
-				Deferred.resolve();
-
-				// Prevent
-				event.preventDefault();
-				event.stopImmediatePropagation();
-				event.stopPropagation();
-
-				// Chain
-				return $this;
-			},
-
-			// Do something when the first event handler is bound to a particular element.
-			setup: function( data, namespaces ) {
-				//console.log('setup');
-				var $this = $(this);
-				$this.data('defer-'+eventName, new $.Deferred());
-			},
-
-			// Do something when the last event handler is unbound from a particular element.
-			teardown: function( namespaces ) {
-				//console.log('teardown');
-				var $this = $(this);
-				$this.data('defer-'+eventName, null);
-			},
-
-			// Do something each time an event handler is bound to a particular element.
-			add: function ( handleObj ) {
-				//console.log('add');
-				// Prepare
-				var
-					$this = $(this),
-					Deferred = $this.data('defer-'+eventName),
-					specialEvent =  $.event.special[eventName];
-
-				// Check
-				if ( !Deferred ) {
-					specialEvent.setup.call(this);
-					return specialEvent.add.apply(this,[handleObj]);
-				}
-
-				// Attach
-				//console.log('attach');
-				Deferred.done(handleObj.handler);
-			},
-
-			// Do something each time an event handler is unbound from a particular element.
-			remove: function ( handleObj ) {
-				//console.log('remove');
-			}
-		};
-
-		// Fetch already bound events
-		boundHandlers = [];
-		$.each(
-			($this.data('events') || {})[eventName] || [],
-			function(i,event){
-				boundHandlers.push(event.handler);
-			}
-		);
-
-		// Unbind already bound events
-		$this.unbind(eventName);
-
-		// Bind to the actual event
-		$this.bind(eventName, events.trigger);
-
-		// Create the Helper
-		$.fn[eventName] = $.fn[eventName] || events.bind;
-
-		// Create the Special Event
-		$.event.special[eventName] = $.event.special[eventName] || {
-			setup: events.setup,
-			teardown: events.teardown,
-			add: events.add,
-			remove: events.remove
-		};
-
-		// Rebind already bound events to the new custom event
-		$.each(boundHandlers,function(i,handler){
-			$this.bind(eventName,handler);
-		});
-
-		// Chain
-		return $this;
-	};
+//
+//	/**
+//	 * Creates a Promise Event
+//	 * For instance onDomReady is a promise event, all events bound to it after it's initial trigger are fired immediately
+//	 * @version 1.0.0
+//	 * @date March 08, 2011
+//	 * @package jquery-sparkle {@link http://www.balupton/projects/jquery-sparkle}
+//	 * @author Benjamin Arthur Lupton {@link http://balupton.com}
+//	 * @copyright 2011 Benjamin Arthur Lupton {@link http://balupton.com}
+//	 * @license MIT License {@link http://creativecommons.org/licenses/MIT/}
+//	 * @param {String} eventName
+//	 * @return {jQuery}
+//	 */
+//	jQuery.fn.firedPromiseEvent = jQuery.fn.firedPromiseEvent || function(eventName){
+//		var
+//			$el = jQuery(this),
+//			result = $el.data('defer-'+eventName+'-resolved') ? true : false;
+//		return result;
+//	};
+//
+//	/**
+//	 * Creates a Promise Event
+//	 * For instance onDomReady is a promise event, all events bound to it after it's initial trigger are fired immediately
+//	 * @version 1.0.0
+//	 * @date March 08, 2011
+//	 * @package jquery-sparkle {@link http://www.balupton/projects/jquery-sparkle}
+//	 * @author Benjamin Arthur Lupton {@link http://balupton.com}
+//	 * @copyright 2011 Benjamin Arthur Lupton {@link http://balupton.com}
+//	 * @license MIT License {@link http://creativecommons.org/licenses/MIT/}
+//	 * @param {String} eventName
+//	 * @return {jQuery}
+//	 */
+//	jQuery.fn.createPromiseEvent = jQuery.fn.createPromiseEvent || function(eventName){
+//		// Prepare
+//		var
+//			$this = jQuery(this),
+//			events,
+//			boundHandlers;
+//
+//		// Check
+//		if ( typeof $this.data('defer-'+eventName+'-resolved') !== 'undefined' ) {
+//			// Promise event already created
+//			return $this;
+//		}
+//		$this.data('defer-'+eventName+'-resolved',false);
+//
+//		// Handle
+//		events = jQuery.fn.createPromiseEvent.events = jQuery.fn.createPromiseEvent.events || {
+//			// Bind the event
+//			bind: function(callback){
+//				var $this = jQuery(this);
+//					return $this.bind(eventName,callback);
+//			},
+//
+//			// Trigger the event
+//			trigger: function(event){
+//				//console.log('trigger');
+//				// Prepare
+//				var
+//					$this = jQuery(this),
+//					Deferred = $this.data('defer-'+eventName),
+//					specialEvent;
+//				
+//				// setup deferred object if the event has been triggered
+//				// but not been setup before
+//				if ( !Deferred ) {
+//					specialEvent =  jQuery.event.special[eventName];
+//					specialEvent.setup.call(this);
+//					Deferred = $this.data('defer-'+eventName);
+//				}
+//				
+//				// Update Status
+//				$this.data('defer-'+eventName+'-resolved',true);
+//
+//				// Fire Deferred Events
+//				Deferred.resolve();
+//
+//				// Prevent
+//				event.preventDefault();
+//				event.stopImmediatePropagation();
+//				event.stopPropagation();
+//
+//				// Chain
+//				return $this;
+//			},
+//
+//			// Do something when the first event handler is bound to a particular element.
+//			setup: function( data, namespaces ) {
+//				//console.log('setup');
+//				var $this = jQuery(this);
+//				$this.data('defer-'+eventName, new jQuery.Deferred());
+//			},
+//
+//			// Do something when the last event handler is unbound from a particular element.
+//			teardown: function( namespaces ) {
+//				//console.log('teardown');
+//				var $this = jQuery(this);
+//				$this.data('defer-'+eventName, null);
+//			},
+//
+//			// Do something each time an event handler is bound to a particular element.
+//			add: function ( handleObj ) {
+//				//console.log('add');
+//				// Prepare
+//				var
+//					$this = jQuery(this),
+//					Deferred = $this.data('defer-'+eventName),
+//					specialEvent =  jQuery.event.special[eventName];
+//
+//				// Check
+//				if ( !Deferred ) {
+//					specialEvent.setup.call(this);
+//					return specialEvent.add.apply(this,[handleObj]);
+//				}
+//
+//				// Attach
+//				//console.log('attach');
+//				Deferred.done(handleObj.handler);
+//			},
+//
+//			// Do something each time an event handler is unbound from a particular element.
+//			remove: function ( handleObj ) {
+//				//console.log('remove');
+//			}
+//		};
+//
+//		// Fetch already bound events
+//		boundHandlers = [];
+//		jQuery.each(
+//			($this.data('events') || {})[eventName] || [],
+//			function(i,event){
+//				boundHandlers.push(event.handler);
+//			}
+//		);
+//
+//		// Unbind already bound events
+//		$this.unbind(eventName);
+//
+//		// Bind to the actual event
+//		$this.bind(eventName, events.trigger);
+//
+//		// Create the Helper
+//		jQuery.fn[eventName] = jQuery.fn[eventName] || events.bind;
+//
+//		// Create the Special Event
+//		jQuery.event.special[eventName] = jQuery.event.special[eventName] || {
+//			setup: events.setup,
+//			teardown: events.teardown,
+//			add: events.add,
+//			remove: events.remove
+//		};
+//
+//		// Rebind already bound events to the new custom event
+//		jQuery.each(boundHandlers,function(i,handler){
+//			$this.bind(eventName,handler);
+//		});
+//
+//		// Chain
+//		return $this;
+//	};
 
 	/**
 	 * Fetch the outerHTML of an Element
@@ -356,9 +356,9 @@ function(jQuery, undefined) {
 	 * @license MIT License {@link http://creativecommons.org/licenses/MIT/}
 	 * @return {String} outerHtml
 	 */
-	$.fn.outerHtml = $.fn.outerHtml || function(){
+	jQuery.fn.outerHtml = jQuery.fn.outerHtml || function(){
 		var
-			$el = $(this),
+			$el = jQuery(this),
 			el = $el.get(0);
 			if (typeof el.outerHTML != 'undefined') {
 				return el.outerHTML;

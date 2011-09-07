@@ -1,6 +1,6 @@
 /*!
 * This file is part of Aloha Editor Project http://aloha-editor.org
-* Copyright © 2010-2011 Gentics Software GmbH, aloha@gentics.com
+* Copyright ï¿½ 2010-2011 Gentics Software GmbH, aloha@gentics.com
 * Contributors http://aloha-editor.org/contribution.php 
 * Licensed unter the terms of http://www.aloha-editor.org/license.html
 *//*
@@ -19,16 +19,16 @@
 */
 
 define(
-['aloha/jquery'],
-function(jQuery, undefined) {
+['aloha/core', 'util/class', 'aloha/jquery'],
+function(Aloha, jQuery ) {
 	"use strict";
 	
 	var
-		$ = jQuery,
-		GENTICS = window.GENTICS,
-		Aloha = window.Aloha,
-		console = window.console||false,
-		Class = window.Class;
+//		$ = jQuery,
+//		Aloha = window.Aloha,
+		console = window.console,
+//		Class = window.Class
+		GENTICS = window.GENTICS;
 
 /**
  * This is the aloha Log
