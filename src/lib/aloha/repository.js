@@ -125,7 +125,14 @@ var AbstractRepository = Class.extend({
 	 * </ul></div>
 	 * @param {function} callback this method must be called with all result items</div></li>
 	 */
-	query: function( params, callback ) { return true; },
+	query: null,
+	/*
+	query: function( params, callback ) {
+		if (typeof callback === 'function') {
+			callback([]);
+		}
+	},
+	*/
 
 	/**
 	 * Returns all children of a given motherId.

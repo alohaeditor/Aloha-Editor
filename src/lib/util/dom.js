@@ -487,7 +487,7 @@ var Dom = Class.extend({
 				} else {
 					// recurse into the children (if any), but not if nesting is not
 					// allowed and the object is of the markup to be added
-					if ((nesting || rangeTree[i].domobj.nodeName !== markup.get(0).nodeName)
+					if ((nesting || (rangeTree[i].domobj && rangeTree[i].domobj.nodeName !== markup.get(0).nodeName))
 						&& rangeTree[i].children && rangeTree[i].children.length > 0) {
 						this.recursiveAddMarkup(rangeTree[i].children, markup);
 					}
