@@ -534,10 +534,7 @@ tr.ui-search-toolbar select {margin: 1px 0px 0px 0px}
 	top: 0;
 	left: 0;
 	z-index: 9999;
-}
-
-.aloha-browser {
-	font-weight: 30px;
+	font-family: Arial, sans-serif;
 }
 
 /**
