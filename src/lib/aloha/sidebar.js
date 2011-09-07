@@ -603,30 +603,32 @@ define([
 		 * on whether the sidebar is on the left or right, and whether it is
 		 * in an opened state or not.
 		 *
-		 *	Task:
+		 *	Question:
 		 *		Given that the arrow icon is by default pointing right, should
 		 *		we make it point left?
-		 *		
-		 *	Truth table:
+		 *
+		 *	Answer:
 		 *		isRight & isOpen   : no
 		 *		isRight & isClosed : yes
 		 *		isLeft  & isOpen   : yes
 		 *		isLeft  & isClosed : no
-		 *		
-		 *	Boolean logic:
-		 *		1 ^ 1 : 0
-		 *		1 ^ 0 : 1
-		 *		0 ^ 1 : 1
-		 *		0 ^ 0 : 0
+		 *
+		 *	Truth table:
+		 *		 isRight | isOpen | XOR
+		 *      ---------+--------+-----
+		 *		 T       | T      | F
+		 *		 T       | F      | T
+		 *		 F       | T      | T
+		 *		 F       | F      | F
 		 *
 		 * Therefore:
-		 *		isRight XOR isOpened = isPointingLeft
+		 *		isPointingLeft = isRight XOR isOpen
 		 *
 		 * @param {Boolean} isOpened - Whether or not the sidebar is in the
 		 *							   opened state
 		 */
-		toggleHandleIcon: function (isOpened) {
-			var isPointingLeft = (this.position == 'right') ^ isOpened;
+		toggleHandleIcon: function (isOpen) {
+			var isPointingLeft = (this.position == 'right') ^ isOpen;
 			
 			if (this.settings.rotateIcons) {
 				this.rotateHandleIcon(isPointingLeft ? 180 : 0, 0);
