@@ -108,17 +108,15 @@ function(BlockManager, Observable, FloatingMenu) {
 				}
 			});
 
-			// The "contentEditableSelectionChange" event listens on
-			// mouseDown and focus, and we need to suppress these events
-			// such that the editable does not update its selection.
+			// We need to tell Aloha that we handle the event already;
+			// else a selection of block contents will *not* select
+			// the block.
 			this.element.bind('mousedown', function() {
-				// TODO: if you right-click on a block, this does not show
-				// the context menu. So, we somehow need to handle this differently
-				return false;
+				Aloha.eventHandled = true;
 			}).bind('focus', function() {
-				return false;
+				Aloha.eventHandled = true;
 			}).bind('dblclick', function() {
-				return false;
+				Aloha.eventHandled = true;
 			});
 			this.init();
 
