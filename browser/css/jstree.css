@@ -8,9 +8,6 @@
 	display: inline-block;
 	padding: 4px;
 	border: 1px solid transparent;
-	border-radius:			3px;
-	-moz-border-radius:		3px;
-	-webkit-border-radius:	3px;
 }
 .jstree-browser li > ins {
 	cursor: pointer;
@@ -54,75 +51,11 @@
 .jstree-browser .jstree-clicked { background:#88c7ea; border:1px solid #48a3d2; }
 */
 .jstree-browser .jstree-hovered {
-	border: 1px solid #355ea0;
-	background-image: -webkit-gradient(
-    	linear,
-    	center top,
-    	center bottom,
-    	color-stop(0.00, #81add2),
-    	color-stop(0.10, #5693cc),
-    	color-stop(0.45, #5b9acf),
-    	color-stop(0.60, #508ac9),
-    	color-stop(1.00, #456eb0)
-	);
-	background-image: -moz-linear-gradient(
-    	center top,
-		#81add2 0%,
-		#5693cc 10%,
-		#5b9acf 45%,
-    	#508ac9 60%,
-    	#456eb0 100%
-	);
-	filter: progid:DXImageTransform.Microsoft.Gradient(
-		startColorstr='#81add2',
-		endColorstr='#456eb0',
-		gradientType='0'
-	);
-	
-	color: #fff;
-	
-	-moz-box-shadow:	0 2px 10px rgba(0, 0, 0, .3);
-	-webkit-box-shadow:	0 2px 10px rgba(0, 0, 0, .3);
-	box-shadow:			0 2px 10px rgba(0, 0, 0, .3);
+	color: #303539;
 }
 .jstree-browser .jstree-clicked {
-	border-top: 1px solid #303539;
-	background-color: #33363b;
-	background-image: -webkit-gradient(
-    	linear,
-    	center top,
-    	center bottom,
-    	color-stop(0.00, #6c6f74),
-    	color-stop(0.05, #4c4f54),
-    	color-stop(0.10, #3f4448),
-    	color-stop(0.45, #383d41),
-    	color-stop(0.50, #303539),
-    	color-stop(0.95, #33363b),
-    	color-stop(1.00, #4c4f54)
-	);
-	background-image: -moz-linear-gradient(
-    	center top,
-		#6c6f74 0%,
-		#4c4f54 5%,
-		#3f4448 10%,
-    	#383d41 45%,
-    	#303539 50%,
-    	#33363b 95%,
-    	#4c4f54 100%
-	);
-	filter: progid:DXImageTransform.Microsoft.Gradient(
-		startColorstr='#383d41',
-		endColorstr='#303539',
-		gradientType='0'
-	);
-	
-	color: #ddd;
-	text-shadow: 0 0 4px #23262b;
 }
 .jstree-browser .jstree-hovered.jstree-clicked {
-	border-color: #303539;
-	opacity: 0.8;
-	filter: alpha(opacity=80);
 }
 
 /* Folder */
@@ -133,20 +66,6 @@
 .jstree-browser a.jstree-loading .jstree-icon { background:url("throbber.gif") center center no-repeat !important; }
 .jstree-browser a.jstree-clicked .jstree-icon   {
 	background-image: url(../img/folder-open.png);
-}
-
-.jstree-browser.jstree-focused {
-	background-color: #fff;
-	background-image: -webkit-radial-gradient(
-		#fff 50%,
-		rgba(200, 200, 200, 0.3) 90%,
-		rgba(200, 200, 200, 0.4) 100%
-	);
-	background-image: -moz-radial-gradient(
-		#fff 50%,
-		rgba(200, 200, 200, 0.3) 90%,
-		rgba(200, 200, 200, 0.4) 100%
-	);
 }
 
 /* IE6 BEGIN */
