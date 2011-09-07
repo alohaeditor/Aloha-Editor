@@ -690,7 +690,13 @@ function (jQuery, PluginManager, FloatingMenu, Command, Selection, Range) {
 			var url;
 
 			if (name) {
-				url = Aloha.getAlohaUrl() + '/' + pluginPaths[name];
+				url = pluginPaths[name];
+				if(url) {
+					//Check if url is absolute and attach base url if it is not
+					if(!url.match("^(\/|http[s]?:).*")) {
+						url = Aloha.getAlohaUrl() + '/' + url;
+					}
+				}
 			}
 
 			return url;
