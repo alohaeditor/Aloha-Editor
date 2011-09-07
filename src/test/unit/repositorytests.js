@@ -32,7 +32,7 @@ define('repositorytests', [
 	
 	// All other tests are done when Aloha is ready
 	aQuery('body').bind('aloha', function() {
-		runSingleRepoTests(/*runMultipleReposTest*/);
+		runTests();
 	});
 	
 	var repositoryId1 = 'testRepo1';
@@ -43,7 +43,7 @@ define('repositorytests', [
 	// Test for managing a single repository
 	//-------------------------------------------------------------------------
 	
-	function runSingleRepoTests (runNextBatchOfTests) {
+	function runTests () {
 		var Manager = Aloha.RepositoryManager;
 		
 		// Create, and register a test repository
@@ -95,6 +95,7 @@ define('repositorytests', [
 			function () {
 				var starttime = new Date;
 				
+				stop();
 				Manager.query({
 					// Make the repository repsond 1 second too late
 					delay : timeout + 1000,
@@ -128,10 +129,13 @@ define('repositorytests', [
 							waited ' + elapsed + ' milliseconds.			  \
 						')
 					);
+					
+					start();
 				});
 				
 				// Wait until the previous query has timed out before
 				// performing this next query
+				stop();
 				setTimeout(function () {
 					var starttime = new Date;
 					
@@ -148,12 +152,15 @@ define('repositorytests', [
 						start();
 					});
 				}, timeout + 1200);
+				
+				start();
 			}
 		);
 		
 		asyncTest(
 			'Test response object for Aloha.RepositoryManager.query method',
 			function () {
+				stop();
 				Manager.query({
 					maxItems : 0
 				}, function (response) {
@@ -179,6 +186,7 @@ define('repositorytests', [
 				
 				var numItemsToFetch = Math.round(Math.random() * 100);
 				
+				stop();
 				Manager.query({
 					maxItems: numItemsToFetch
 				}, function (response) {
@@ -197,9 +205,7 @@ define('repositorytests', [
 					start();
 				});
 				
-				if (typeof runNextBatchOfTests === 'function') {
-					runNextBatchOfTests();
-				}
+				start();
 			}
 		);
 		
@@ -257,11 +263,17 @@ define('repositorytests', [
 						);
 						
 						start();
+						
+						//-----------------------------------------------------
+						// Starting test batch 2
+						//-----------------------------------------------------
+						runMultipleReposTest();
 					});
 				}, timeout - 500); 
 				
 				// Before the previous query is complete, start another query
 				++numOpenQueries;
+				stop();
 				Manager.query({
 					maxItems : 4
 				}, function (response) {
@@ -280,6 +292,8 @@ define('repositorytests', [
 					
 					start();
 				});
+				
+				start();
 			}		
 		);
 	};
@@ -315,14 +329,14 @@ define('repositorytests', [
 				
 				equal(
 					Manager.repositories[1].repositoryId, repositoryId2,
-					'Check that the id of the second registered repository is "'
-					+ repositoryId2 + '."'
+					'Check that the id of the second registered repository ' +
+					'is "' + repositoryId2 + '."'
 				);
 				
 				equal(
 					Manager.repositories[0].repositoryId, repositoryId1,
-					'Check that the id of the first registered repository is still "'
-					+ repositoryId1 + '."'
+					'Check that the id of the first registered repository is' +
+					' still "' + repositoryId1 + '."'
 				);
 				
 				start();
@@ -332,17 +346,41 @@ define('repositorytests', [
 		asyncTest(
 			'Test queries to multiple repositories through the repository manager',
 			function () {
+				stop();
 				Manager.query({
 					maxItems : 2
 				}, function (response) {
 					equal(
 						response.results, 3,
-						'Check that on a total of 2 + 1 results are returned' +
-						' from the 2 registered repositories'
+						'Check that a total of 2 + 1 results are returned ' +
+						'from the 2 registered repositories'
 					);
 					
 					start();
 				});
+				
+				stop();
+				Manager.query({
+					delay    : timeout + 500,
+					maxItems : 5
+				}, function (response) {
+					equal(
+						response.results, 1,
+						'Check that only 1 result is returned because 1 of ' +
+						'the 2 repos timed-out.'
+					);
+					
+					equal(
+						response.items[0].repositoryId,
+						'testRepo2',
+						'Check that only the results only include those from' +
+						' the second repository returned results.'
+					);
+					
+					start();
+				});
+				
+				start();
 			}
 		);
 	};
