@@ -153,7 +153,7 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 		    }
 			if ( Aloha.activeEditable ) {
 			    return range.findMarkup(function() {
-					return this.nodeName.toLowerCase() == 'span' && jQuery(this).hasClass('wai-lang');
+					return this.nodeName.toLowerCase() == 'span' && (jQuery(this).hasClass('wai-lang') || jQuery(this).is('span[lang]'));
 			    }, Aloha.activeEditable.obj);
 			} else {
 				return null;
