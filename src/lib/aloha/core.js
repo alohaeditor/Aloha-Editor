@@ -30,12 +30,8 @@ function ( jQuery, PluginManager ) {
 	"use strict";
 
 	var
-		$ = jQuery,
 		GENTICS = window.GENTICS,
-		Aloha = window.Aloha || {},
-//		console = window.console||false,
-//		Ext = window.Ext,
-		HTMLElement = window.HTMLElement;
+		Aloha = window.Aloha || {};
 	
 	//----------------------------------------
 	// Private variables
@@ -135,50 +131,42 @@ function ( jQuery, PluginManager ) {
 		 * Initialize the initialization process
 		 */
 		init: function () {
-
-			
 				
-				// Create Promises
-				Aloha.createPromiseEvent('aloha');
-//				
-//				// Ready?
-//				Aloha.bind('alohacoreloaded',function(){
-					// initialize rangy. This is probably necessary here,
-					// because due to the current loading mechanism, rangy
-					// doesn't initialize itself in all browsers
-					if (window.rangy) {
-						window.rangy.init();
-					}
-					// Mousemove Hooks
-					setInterval(function(){
-						GENTICS.Utils.Position.update();
-					},500);
-					$('html').mousemove(function (e) {
-						GENTICS.Utils.Position.Mouse.x = e.pageX;
-						GENTICS.Utils.Position.Mouse.y = e.pageY;
-					});
-					// Load & Initialise
-					Aloha.stage = 'loadPlugins';
-					Aloha.loadPlugins(function(){
-						Aloha.stage = 'initAloha';
-						Aloha.initAloha(function(){
-							Aloha.stage = 'initPlugins';
-							Aloha.initPlugins(function(){
-								Aloha.stage = 'initGui';
-								Aloha.initGui(function(){
-									Aloha.stage = 'aloha';
-									Aloha.trigger('aloha');
-								});
-							});
+			// Create Promises
+			Aloha.createPromiseEvent('aloha');
+
+			// initialize rangy. This is probably necessary here,
+			// because due to the current loading mechanism, rangy
+			// doesn't initialize itself in all browsers
+			if (window.rangy) {
+				window.rangy.init();
+			}
+			
+			// Mousemove Hooks
+			setInterval(function(){
+				GENTICS.Utils.Position.update();
+			},500);
+			
+			jQuery('html').mousemove(function (e) {
+				GENTICS.Utils.Position.Mouse.x = e.pageX;
+				GENTICS.Utils.Position.Mouse.y = e.pageY;
+			});
+			
+			// Load & Initialise
+			Aloha.stage = 'loadPlugins';
+			Aloha.loadPlugins(function(){
+				Aloha.stage = 'initAloha';
+				Aloha.initAloha(function(){
+					Aloha.stage = 'initPlugins';
+					Aloha.initPlugins(function(){
+						Aloha.stage = 'initGui';
+						Aloha.initGui(function(){
+							Aloha.stage = 'aloha';
+							Aloha.trigger('aloha');
 						});
 					});
-//				});
-//
-//				// Check
-//				if ( $('body').hasClass('alohacoreloaded') ) {
-//					Aloha.trigger('alohacoreloaded');
-//				}
-//			});
+				});
+			});
 		},
 
 		/**
@@ -208,7 +196,7 @@ function ( jQuery, PluginManager ) {
 				 *  ['format/format-plugin', ... for every plugin ...],
 				 *  next <-- when everything is loaded, we continue
 				 */
-				$.each(configuredPluginsWithBundle, function (i, configuredPluginWithBundle) {
+				jQuery.each(configuredPluginsWithBundle, function (i, configuredPluginWithBundle) {
 					var tmp, bundleName, pluginName, bundlePath = '';
 
 					tmp = configuredPluginWithBundle.split('/');
@@ -234,7 +222,7 @@ function ( jQuery, PluginManager ) {
 
 					// As the "nls" path lies NOT inside /lib/, but is a sibling to /lib/, we need
 					// to register it explicitely. The same goes for the "css" folder.
-					$.each(['nls', 'css', 'vendor', 'res'], function() {
+					jQuery.each(['nls', 'css', 'vendor', 'res'], function() {
 						paths[pluginName + '/' + this] = bundlePath + '/' + pluginName + '/' + this;
 					});
 
@@ -270,7 +258,7 @@ function ( jQuery, PluginManager ) {
 		getPluginsToBeLoaded: function() {
 			// look for data-aloha-plugins attributes and load values
 			var
-				plugins = $('[data-aloha-plugins]').data('aloha-plugins');
+				plugins = jQuery('[data-aloha-plugins]').data('aloha-plugins');
 
 			// Determine Plugins
 			if ( typeof plugins === 'string' && plugins !== "") {
@@ -295,7 +283,7 @@ function ( jQuery, PluginManager ) {
 		 */
 		isPluginLoaded: function(pluginName) {
 			var found = false;
-			$.each(this.loadedPlugins, function() {
+			jQuery.each(this.loadedPlugins, function() {
 				if (pluginName.toString() === this.toString()) {
 					found = true;
 				}
@@ -399,21 +387,21 @@ function ( jQuery, PluginManager ) {
 		},
 
 		createPromiseEvent: function(eventName) {
-			$('body').createPromiseEvent(eventName);
+			jQuery('body').createPromiseEvent(eventName);
 		},
 		unbind: function(eventName,eventHandler) {
 			eventName = Aloha.correctEventName(eventName);
-			$('body').unbind(eventName);
+			jQuery('body').unbind(eventName);
 		},
 		bind: function(eventName,eventHandler) {
 			eventName = Aloha.correctEventName(eventName);
-			Aloha.log('debug', this, 'Binding ['+eventName+'], has ['+(($('body').data('events')||{})[eventName]||[]).length+'] events');
-			$('body').bind(eventName,eventHandler);
+			Aloha.log('debug', this, 'Binding ['+eventName+'], has ['+((jQuery('body').data('events')||{})[eventName]||[]).length+'] events');
+			jQuery('body').bind(eventName,eventHandler);
 		},
 		trigger: function(eventName,data) {
 			eventName = Aloha.correctEventName(eventName);
-			Aloha.log('debug', this, 'Trigger ['+eventName+'], has ['+(($('body').data('events')||{})[eventName]||[]).length+'] events');
-			$('body').trigger(eventName,data);
+			Aloha.log('debug', this, 'Trigger ['+eventName+'], has ['+((jQuery('body').data('events')||{})[eventName]||[]).length+'] events');
+			jQuery('body').trigger(eventName,data);
 		},
 		correctEventName: function(eventName) {
 			var result = eventName.replace(/\-([a-z])/g,function(a,b){
@@ -511,66 +499,6 @@ function ( jQuery, PluginManager ) {
 				Aloha.Log.log(level, component, message);
 		},
 		
-//      NEVER USED DELETE CANDIDATE.
-//		/**
-//		 * build a string representation of a jQuery or DOM object
-//		 * @param object to be identified
-//		 * @return string representation of the object
-//		 * @hide
-//		 */
-//		identStr: function (object) {
-//			if (object instanceof jQuery) {
-//				object = object[0];
-//			}
-//			if (!(object instanceof HTMLElement)) {
-//				Aloha.Log.warn(this, '{' + object.toString() + '} provided is not an HTML element');
-//				return object.toString();
-//			}
-//
-//			var out = object.tagName.toLowerCase();
-//
-//			// an id should be unique, so we're okay with that
-//			if (object.id) {
-//				return out + '#' + object.id;
-//			}
-//
-//			// as there was no id, we fall back to the objects class
-//			if (object.className) {
-//				return out + '.' + object.className;
-//			}
-//
-//			// could not identify object by id or class name - so just return the tag name
-//			return out;
-//		},
-
-//      NEVER USED DELETE CANDIDATE.
-//		/**
-//		 * Check is language is among available languages
-//		 * @method
-//		 * @param {String} language language to be set
-//		 * @param {Array} availableLanguages list of available languages
-//		 * @return the actual language as a string
-//		 */
-//		getLanguage: function(language, availableLanguages) {
-//
-//			if (!availableLanguages instanceof Array) {
-//				Aloha.Log.error(this, 'Available languages must be an Array');
-//				return null;
-//			}
-//
-//			if (typeof language === 'undefined' || !language) {
-//				return availableLanguages[0];
-//			}
-//
-//			for (var i = 0, languagesLength = availableLanguages.length; i < languagesLength; ++i) {
-//				if (language == availableLanguages[i]) {
-//					return language;
-//				}
-//			}
-//
-//			return availableLanguages[0];
-//		},
-
 		/**
 		 * Register the given editable
 		 * @param editable editable to register
@@ -604,10 +532,6 @@ function ( jQuery, PluginManager ) {
 		toString: function () {
 			return 'Aloha';
 		},
-		
-		getName: function () {
-			return 'Aloha';
-		},
 
 		/**
 		 * Check whether at least one editable was modified
@@ -632,11 +556,10 @@ function ( jQuery, PluginManager ) {
 		 */
 		getAlohaUrl: function( suffix ) {
 			// aloha base path is defined by a script tag with 2 data attributes
-			var requireJs = $('[data-aloha-plugins][data-main]'),
+			var requireJs = jQuery('[data-aloha-plugins]'),
 				baseUrl = ( requireJs.length ) ? requireJs[0].src.replace( /\/?require.js$/ , '' ) : '';
 				
 			return baseUrl;
-//			return window.Aloha.settings.base || document.getElementById('aloha-script-include').src.replace(/require.js$/,'').replace(/\/+$/,'');
 		},
 
 		/**
@@ -659,26 +582,9 @@ function ( jQuery, PluginManager ) {
 			}
 
 			return url;
-		},
-
-		/**
-		 * Method to access translations
-		 * @deprecated
-		 * This will be removed in one of the next version
-		 */
-		i18n: function(component, key, replacements) {
-//			window.console && window.console.log && console.log("Called deprecated i18n function!!", component, key);
-//			return key;
-			throw 'Aloha.i18n is deprecated';
 		}
 
-
 	});
-
-	// Initialise Aloha Editor
-//	Aloha.init();
-
-			
 
 	return Aloha;
 });

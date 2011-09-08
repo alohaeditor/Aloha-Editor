@@ -54,7 +54,7 @@ define(
 		'aloha/ui-browser',
 		'aloha/floatingmenu',
 		'aloha/editable',
-		'aloha/log',
+		'aloha/console',
 		'aloha/markup',
 		'aloha/message',
 		'aloha/plugin',

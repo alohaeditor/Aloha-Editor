@@ -19,8 +19,8 @@
 */
 
 define(
-['aloha/core', 'util/class', 'aloha/jquery', 'aloha/floatingmenu', 'aloha/ext', 'i18n!aloha/nls/i18n'],
-function(Aloha, Class, jQuery, FloatingMenu, Ext, i18n) {
+['aloha/core', 'util/class', 'aloha/jquery', 'aloha/floatingmenu', 'aloha/ext', 'aloha/console', 'i18n!aloha/nls/i18n'],
+function(Aloha, Class, jQuery, FloatingMenu, Ext, console, i18n) {
 	"use strict";
 	
 	var
@@ -771,6 +771,16 @@ Aloha.ui.MultiSplitButton = Class.extend({
 		this.extButton.hideItem(name);
 	}
 });
+
+/**
+ * Method to access translations
+ * @deprecated
+ * This will be removed in one of the next version
+ */
+Aloha.i18n = function(component, key, replacements) {
+	console.deprecated ('Aloha', 'i18n() is deprecated. Use module "i18n!aloha/nls/i18n" instead.');
+	return key;
+};
 
 
 /**

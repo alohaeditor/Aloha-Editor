@@ -21,8 +21,6 @@
 define( [ 'aloha/core', 'aloha/selection' ],
 function( Aloha, Selection ) {
 
-	// Implementation initially done by Aryeh Gregor.
-	// http://aryeh.name/spec/editing/editing.html#commands
 	var 
 		commands = [],
 		

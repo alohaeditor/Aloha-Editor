@@ -5,7 +5,7 @@
  */
 
 define("pluginapitest",
-['aloha/jquery'],
+[ 'aloha/jquery', 'aloha/plugin' ],
 function( jQuery ) {
 	"use strict";
 	
