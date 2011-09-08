@@ -21,7 +21,7 @@
 define(
 [
  'require', 'exports', 'aloha/jquery', 'aloha/ext'
- ],
+],
 function(require, exports, jQuery, Ext, undefined) {
 	"use strict";
 	

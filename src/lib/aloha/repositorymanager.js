@@ -51,10 +51,10 @@ function ( jQuery ) {
 		 */
 		init: function () {
 			var repositories = this.repositories,
-				i = 0,
-				j = repositories.length,
-				repository,
-				settings;
+			    i = 0,
+			    j = repositories.length,
+			    repository,
+			    settings;
 			
 			if ( Aloha.settings && Aloha.settings.repositories ) {
 				settings = Aloha.settings.repositories;
@@ -233,22 +233,26 @@ function ( jQuery ) {
 			var i = 0,
 			    j = repositories.length;
 			
-			if ( j ) {
-				for ( ; i < j; ++i ) {
-					repo = repositories[i];
+			for ( ; i < j; ++i ) {
+				repo = repositories[i];
+				
+				if ( typeof repo.query === 'function' ) {
+					++numOpenCallbacks;
 					
-					if ( typeof repo.query === 'function' ) {
-						++numOpenCallbacks;
-						
-						repo.query(
-							params,
-							function () {
-								processResults.apply(repo, arguments);
-							}
-						);
-					};
-				}
-			} else {
+					//debugger;
+					
+					repo.query(
+						params,
+						function () {
+							processResults.apply(repo, arguments);
+						}
+					);
+				};
+			}
+			
+			// If none of the repositories implemented the query method, then
+			// don't wait for the timeout, simply report to the client
+			if (numOpenCallbacks == 0) {
 				this.queryCallback( callback, allitems, timer );
 			}
 		},
@@ -368,22 +372,22 @@ function ( jQuery ) {
 			
 			j = repositories.length;
 			
-			if ( j ) {
-				for ( i = 0; i < j; ++i ) {
-					repo = repositories[i];
+			for ( i = 0; i < j; ++i ) {
+				repo = repositories[i];
+				
+				if ( typeof repo.getChildren === 'function' ) {
+					++numOpenCallbacks;
 					
-					if ( typeof repo.getChildren === 'function' ) {
-						++numOpenCallbacks;
-						
-						repo.getChildren(
-							params,
-							function () {
-								processResults.apply(repo, arguments);
-							}
-						);
-					}
+					repo.getChildren(
+						params,
+						function () {
+							processResults.apply(repo, arguments);
+						}
+					);
 				}
-			} else {
+			}
+			
+			if (numOpenCallbacks == 0) {
 				this.getChildrenCallback( callback, allitems, timer );
 			}
 		},
