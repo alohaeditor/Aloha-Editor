@@ -7,9 +7,10 @@
 define('repositorytests', [
 
 	'aloha/jquery',
-	'aloha/repository'
+	'aloha/repository',
+	'aloha/repositorymanager'
 
-], function(aQuery, repository) {
+], function(aQuery, repository, repositorymanager) {
 	
 	'use strict';
 	
@@ -44,10 +45,9 @@ define('repositorytests', [
 	//-------------------------------------------------------------------------
 	
 	function runTests () {
-		var Manager = Aloha.RepositoryManager;
 		
 		// Create, and register a test repository
-		new (repository.AbstractRepository.extend({
+		new (repository.extend({
 			_constructor: function() {
 				this._super(repositoryId1, 'testRepository1Name');
 			},
@@ -77,13 +77,13 @@ define('repositorytests', [
 			'Test Repository registration in Aloha.RepositoryManager',
 			function () {
 				equal(
-					Manager.repositories.length, 1,
+					repositorymanager.repositories.length, 1,
 					'Check that repository manager contains 1 registered ' +
 					'repository.'
 				);
 				
 				equal(
-					Manager.repositories[0].repositoryId, repositoryId1,
+					repositorymanager.repositories[0].repositoryId, repositoryId1,
 					'Check that the id of the first registered repository is "'
 					+ repositoryId1 + '."'
 				);
@@ -96,7 +96,7 @@ define('repositorytests', [
 				var starttime = new Date;
 				
 				stop();
-				Manager.query({
+				repositorymanager.query({
 					// Make the repository repsond 1 second too late
 					delay : timeout + 1000,
 				}, function (response) {
@@ -139,7 +139,7 @@ define('repositorytests', [
 				setTimeout(function () {
 					var starttime = new Date;
 					
-					Manager.query({
+					repositorymanager.query({
 						// Make sure the repository finish before the timeout
 						delay : timeout / 2
 					}, function (response) {
@@ -161,7 +161,7 @@ define('repositorytests', [
 			'Test response object for Aloha.RepositoryManager.query method',
 			function () {
 				stop();
-				Manager.query({
+				repositorymanager.query({
 					maxItems : 0
 				}, function (response) {
 					ok(
@@ -187,7 +187,7 @@ define('repositorytests', [
 				var numItemsToFetch = Math.round(Math.random() * 100);
 				
 				stop();
-				Manager.query({
+				repositorymanager.query({
 					maxItems: numItemsToFetch
 				}, function (response) {
 					equal(
@@ -219,7 +219,7 @@ define('repositorytests', [
 				// subsequent calls
 				stop();
 				++numOpenQueries;
-				Manager.query({
+				repositorymanager.query({
 					delay    : timeout + 2000,
 					maxItems : 3
 				}, function (response) {
@@ -245,7 +245,7 @@ define('repositorytests', [
 				stop();
 				++numOpenQueries;
 				setTimeout(function () {
-					Manager.query({
+					repositorymanager.query({
 						delay  : timeout - 100,
 						maxItems : 2
 					}, function (response) {
@@ -274,7 +274,7 @@ define('repositorytests', [
 				// Before the previous query is complete, start another query
 				++numOpenQueries;
 				stop();
-				Manager.query({
+				repositorymanager.query({
 					maxItems : 4
 				}, function (response) {
 					equal(
@@ -303,10 +303,9 @@ define('repositorytests', [
 	//-------------------------------------------------------------------------
 	
 	function runMultipleReposTest () {
-		var Manager = Aloha.RepositoryManager;
 		
 		// Create, a second repository
-		new (repository.AbstractRepository.extend({
+		new (repository.extend({
 			_constructor: function() {
 				this._super(repositoryId2, 'testRepository2Name');
 			},
@@ -322,19 +321,19 @@ define('repositorytests', [
 			'Test that we have 2 repositories registered',
 			function () {
 				equal(
-					Manager.repositories.length, 2,
+					repositorymanager.repositories.length, 2,
 					'Check that repository manager contains 2 registered ' +
 					'repositories.'
 				);
 				
 				equal(
-					Manager.repositories[1].repositoryId, repositoryId2,
+					repositorymanager.repositories[1].repositoryId, repositoryId2,
 					'Check that the id of the second registered repository ' +
 					'is "' + repositoryId2 + '."'
 				);
 				
 				equal(
-					Manager.repositories[0].repositoryId, repositoryId1,
+					repositorymanager.repositories[0].repositoryId, repositoryId1,
 					'Check that the id of the first registered repository is' +
 					' still "' + repositoryId1 + '."'
 				);
@@ -347,7 +346,7 @@ define('repositorytests', [
 			'Test queries to multiple repositories through the repository manager',
 			function () {
 				stop();
-				Manager.query({
+				repositorymanager.query({
 					maxItems : 2
 				}, function (response) {
 					equal(
@@ -360,7 +359,7 @@ define('repositorytests', [
 				});
 				
 				stop();
-				Manager.query({
+				repositorymanager.query({
 					delay    : timeout + 500,
 					maxItems : 5
 				}, function (response) {

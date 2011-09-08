@@ -182,7 +182,7 @@ Aloha.RepositoryManager = Class.extend({
 					for (var i = 0; i < items.length; ++i) {
 						items[i].repositoryId = repoId;
 					}
-					$.merge(allitems, items);
+					jQuery.merge(allitems, items);
 				}
 				
 				if (--numOpenCallbacks == 0) {
