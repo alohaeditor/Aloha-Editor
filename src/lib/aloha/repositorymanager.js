@@ -19,57 +19,63 @@
 */
 
 define(
-['aloha/jquery'],
-function(jQuery, undefined) {
-	"use strict";
+[ 'aloha/jquery' ],
+function ( jQuery ) {
+	'use strict';
 	
 	var
-		$ = jQuery,
-		GENTICS = window.GENTICS,
 		Aloha = window.Aloha,
 		Class = window.Class;
 
 /**
  * Repository Manager
- * @namespace Aloha.Repository
+ * @namespace Aloha
  * @class RepositoryManager
  * @singleton
  */
 Aloha.RepositoryManager = Class.extend({
-	repositories: [],
-
-	openCallbacks: [],
+	repositories  : [],
+	openCallbacks : [],
 
 	/**
 	 * Initialize all registered repositories
+	 * Before we invoke each repositories init method, we merge the global
+	 * repository settings into each repository's custom settings
+	 *
 	 * @return void
 	 * @hide
 	 */
 	init: function() {
-		var i, repository;
-
-		// get the repository settings
-		if (typeof Aloha.settings.repositories === 'undefined') {
-			Aloha.settings.repositories = {};
+		var repositories = this.repositories,
+		    j = repositories.length,
+			i,
+		    repository,
+			settings;
+		
+		if ( Aloha.settings && Aloha.settings.repositories ) {
+			settings = Aloha.settings.repositories;
+		} else {
+			settings = {};
 		}
-
-		// iterate through all registered repositories
-		for ( i = 0; i < this.repositories.length; i++) {
-			repository = this.repositories[i];
-
-			if (typeof repository.settings === 'undefined') {
+		
+		for ( i = 0; i < j; ++i ) {
+			repository = repositories[i];
+			
+			if (!repository.settings) {
 				repository.settings = {};
 			}
-
-			// merge the specific settings with the repository default settings
-			if ( Aloha.settings.repositories[repository.repositoryId] ) {
-				jQuery.extend(repository.settings, Aloha.settings.repositories[repository.repositoryId]);
+			
+			if ( settings[ repository.repositoryId ] ) {
+				jQuery.extend(
+					repository.settings,
+					settings[ repository.repositoryId ]
+				);
 			}
-
+			
 			repository.init();
 		}
 	},
-
+	
 	/**
 	 * Register a Repository
 	 * @param {Aloha.Repository} repository Repository to register
@@ -183,7 +189,7 @@ Aloha.RepositoryManager = Class.extend({
 					for (var i = 0; i < items.length; ++i) {
 						items[i].repositoryId = repoId;
 					}
-					$.merge(allitems, items);
+					jQuery.merge(allitems, items);
 				}
 				
 				if (--numOpenCallbacks == 0) {
