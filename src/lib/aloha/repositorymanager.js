@@ -49,7 +49,7 @@ function ( jQuery ) {
 		 * @return void
 		 * @hide
 		 */
-		init: function() {
+		init: function () {
 			var repositories = this.repositories,
 				i = 0,
 				j = repositories.length,
@@ -85,7 +85,7 @@ function ( jQuery ) {
 		 * Register a Repository
 		 * @param {Aloha.Repository} repository Repository to register
 		 */
-		register: function( repository ) {
+		register: function ( repository ) {
 			if ( repository instanceof Aloha.AbstractRepository ) {
 				if ( !this.getRepository(repository.repositoryId) ) {
 					this.repositories.push(repository);
@@ -103,7 +103,7 @@ function ( jQuery ) {
 		 * @param {String} repositoryId the name of the repository
 		 * @return {Aloha.Repository} a repository or null if name not found
 		 */
-		getRepository: function( repositoryId ) {
+		getRepository: function ( repositoryId ) {
 			var repositories = this.repositories,
 			    i = 0,
 			    j = repositories.length;
@@ -154,7 +154,7 @@ function ( jQuery ) {
 		 * "items" is an Array of objects construced with Document/Folder.
 		 * @void
 		 */
-		query: function(params, callback) {
+		query: function (params, callback) {
 			var that = this,
 				repo,
 				// The marged results, collected from repository responses
@@ -222,8 +222,8 @@ function ( jQuery ) {
 				that.queryCallback( callback, allitems, timer );
 			}, timeout);
 			
-			// If no repositryId is specified in the params argument, then we will
-			// query all registered repositories
+			// If no repositoryId is specified in the params argument, then we
+			// will query all registered repositories
 			if ( params.repositoryId ) {
 				repositories.push( this.getRepository( params.repositoryId ) );
 			} else {
@@ -304,125 +304,134 @@ function ( jQuery ) {
 		 * @void
 		 */
 		getChildren: function ( params, callback ) {
-
 			var that = this,
+				repo,
+				// The marged results, collected from repository responses
 				allitems = [],
+				// The set of repositories towhich we want to delegate work
 				repositories = [],
-				i,
+				// A counting semaphore (working in reverse, ie: 0 means free)
+				numOpenCallbacks = 0,
+				// When this timer times-out, whatever has been collected in
+				// allitems will be returned to the calling client, and
+				// numOpenCallbacks will be reset to 0
 				timer,
-				repos = [],
-				id,
-				notImplFunc = function (items) {
-					// remove the repository from the callback stack
-					var id = that.openChildrenCallbacks.indexOf( this.repositoryId );
-					if (id != -1) {
-						that.openChildrenCallbacks.splice(id, 1);
+				processResults = function ( items ) {
+					if (numOpenCallbacks == 0) {
+						return;
 					}
-
-					// merge new items with the rest
+					
 					jQuery.merge( allitems, items );
-
-					that.getChildrenCallback(callback, allitems, timer);
-				},
-				notImplemented;
-
-			// reset callback queue
-			this.openChildrenCallbacks = [];
-
-			// return repositories
-			if ( params.inFolderId == 'aloha' && this.repositories.length > 0 ) {
-				repos = [];
-				for ( i = 0; i < this.repositories.length; i++) {
-					repos.push( new Aloha.RepositoryFolder ({
-						id: this.repositories[i].repositoryId,
-						name: this.repositories[i].repositoryName,
-						repositoryId: this.repositories[i].repositoryId,
-						type: 'repository',
-						hasMoreItems: true
-					}));
+					
+					if ( --numOpenCallbacks == 0 ) {
+						that.getChildrenCallback( callback, allitems, timer );
+					}
+				};
+			
+			// If the inFolderId is the default id of 'aloha', then return all
+			// registered repositories
+			var i = 0,
+			    j = this.repositories.length;
+			
+			if ( params.inFolderId == 'aloha' && j ) {
+				for ( ; i < j; ++i ) {
+					var repo = this.repositories[i];
+					repositories.push(
+						new Aloha.RepositoryFolder({
+							id            : repo.repositoryId,
+							name          : repo.repositoryName,
+							repositoryId  : repo.repositoryId,
+							type          : 'repository',
+							hasMoreItems  : true
+						})
+					);
 				}
-				that.getChildrenCallback(callback, repos, null);
+				
+				that.getChildrenCallback( callback, repositories, null );
+				
 				return;
 			}
-
-			// start timer in case a repository does not deliver in time
-			timer = setTimeout( function() {
-				// reset callback stack
-				that.openChildrenCallbacks = [];
-				that.getChildrenCallback(callback, allitems, timer);
-			}, 5000);
-
-			// only query the repositoryId for Children Elements
+			
+			var timeout = parseInt(params.timeout, 10) || 5000;
+			timer = setTimeout(function() {
+				numOpenCallbacks = 0;
+				that.getChildrenCallback( callback, allitems, timer );
+			}, timeout);
+			
+			// If no repositoryId is specified in the params argument, then we
+			// will query all registered repositories
 			if ( params.repositoryId ) {
-				repositories.push(this.getRepository(params.repositoryId));
+				repositories.push( this.getRepository( params.repositoryId ) );
 			} else {
 				repositories = this.repositories;
 			}
-
-			// iterate through all registered repositories
-			for ( i = 0; i < repositories.length; i++) {
-
-				this.openChildrenCallbacks.push(repositories[i].repositoryId);
-
-				try {
-						notImplemented = repositories[i].getChildren( params, notImplFunc);
-				} catch (e) {
-						// this.fireEvent('exception', this, 'response', action, arg, null, e);
-						// return false;
-						notImplemented = true;
-				}
-
-				// remove this repository from the callback stack
-				if ( notImplemented ) {
-					id = that.openChildrenCallbacks.indexOf( repositories[i].repositoryId );
-					if (id != -1) {
-						this.openChildrenCallbacks.splice(id, 1);
-						if ( i == repositories.length - 1 ) {
-							this.getChildrenCallback(callback, allitems, timer);
-						}
+			
+			j = repositories.length;
+			
+			if ( j ) {
+				for ( i = 0; i < j; ++i ) {
+					repo = repositories[i];
+					
+					if ( typeof repo.getChildren === 'function' ) {
+						++numOpenCallbacks;
+						
+						repo.getChildren(
+							params,
+							function () {
+								processResults.apply(repo, arguments);
+							}
+						);
 					}
 				}
-
+			} else {
+				this.getChildrenCallback( callback, allitems, timer );
 			}
 		},
-
+		
 		/**
-		* checks if all repositories returned  and calls the callback
-		* @return void
-		* @hide
-		*/
-		getChildrenCallback: function ( cb, items, timer ) {
-
-			// if we all callbacks came back we are done!
-			if (this.openChildrenCallbacks.length === 0) {
-
-				// unset the timer...
-				if (timer) clearTimeout(timer);
-
-				// Give data back.
-				cb.call( this, items);
+		 * Returns results for getChildren to calling client
+		 * @return void
+		 * @hide
+		 */
+		getChildrenCallback: function ( callback, items, timer ) {
+			if ( timer ) {
+				clearTimeout( timer );
+				timer = undefined;
 			}
+			
+			callback.call( this, items );
 		},
-
+		
 		/**
+		 * FIXME: Not tested, but the code for this function does not seem to
+		 *        compute repository.makeClean will be undefined
+		 *
+		 * TODO: Rewrite this function header comment so that is clearer
+		 *
 		 * Pass an object, which represents an marked repository to corresponding repository,
 		 * so that it can make the content clean (prepare for saving)
+		 *
 		 * @param obj jQuery object representing an editable
 		 * @return void
 		 */
-		makeClean: function(obj) {
+		makeClean: function ( obj ) {
 			// iterate through all registered repositories
 			var that = this,
-				repository = {};
-
+			    repository = {},
+			    i = 0,
+			    j = that.repositories.length;
+			
 			// find all repository tags
-			obj.find('[data-gentics-aloha-repository=' + this.prefix + ']').each(function() {
-				for ( var i = 0; i < that.repositories.length; i++) {
-					repository.makeClean(obj);
-				}
-				Aloha.Log.debug(that, 'Passing contents of HTML Element with id { ' + this.attr('id') + ' } for cleaning to repository { ' + repository.repositoryId + ' }');
-				repository.makeClean(this);
-			});
+			obj.find( '[data-gentics-aloha-repository=' + this.prefix + ']' )
+				.each(function() {
+					for ( ; i < j; ++i ) {
+						repository.makeClean( obj );
+					}
+					
+					Aloha.Log.debug(that, 'Passing contents of HTML Element with id { ' + this.attr('id') + ' } for cleaning to repository { ' + repository.repositoryId + ' }');
+					
+					repository.makeClean( this );
+				});
 		},
 
 		/**
@@ -438,55 +447,56 @@ function ( jQuery ) {
 		 *  	if set to null, the data-GENTICS-... attributes are removed
 		 * @return void
 		 */
-		markObject: function (obj, item) {
-			var repository = undefined;
-
-			// nothing to do, if no object given
-			if (!obj) {
+		markObject: function ( obj, item ) {
+			if ( !obj ) {
 				return;
 			}
-			if (item) {
-				repository = this.getRepository(item.repositoryId);
+			
+			if ( item ) {
+				var repository = this.getRepository( item.repositoryId );
+				
 				if ( repository ) {
-					jQuery(obj).attr({
-						'data-gentics-aloha-repository': item.repositoryId,
-						'data-gentics-aloha-object-id': item.id
+					jQuery( obj ).attr({
+						'data-gentics-aloha-repository' : item.repositoryId,
+						'data-gentics-aloha-object-id'  : item.id
 					});
-					repository.markObject(obj, item);
+					
+					repository.markObject( obj, item );
 				} else {
 					Aloha.Log.error(this, 'Trying to apply a repository { ' + item.name + ' } to an object, but item has no repositoryId.');
 				}
 			} else {
 				// remove the data attributes
-				jQuery(obj).removeAttr('data-gentics-aloha-repository');
-				jQuery(obj).removeAttr('data-gentics-aloha-object-id');
+				jQuery( obj ).removeAttr('data-gentics-aloha-repository');
+				jQuery( obj ).removeAttr('data-gentics-aloha-object-id');
 			}
 		},
-
+		
 		/**
 		 * Get the object for which the given DOM object is marked from the repository.
 		 * @param obj {DOMObject} DOM object which probably is marked
 		 * @param callback {function} callback function
 		 */
-		getObject: function (obj, callback) {
+		getObject: function ( obj, callback ) {
 			var that = this,
-				jqObj = jQuery(obj),
-				repository = this.getRepository(jqObj.attr('data-gentics-aloha-repository')),
-				itemId = jqObj.attr('data-gentics-aloha-object-id');
-			if (repository && itemId) {
+			    $obj = jQuery( obj ),
+			    repository = this.getRepository( $obj.attr( 'data-gentics-aloha-repository' ) ),
+			    itemId = $obj.attr( 'data-gentics-aloha-object-id' );
+			
+			if ( repository && itemId ) {
 				// initialize the item cache (per repository) if not already done
 				this.itemCache = this.itemCache || [];
-				this.itemCache[repository.repositoryId] = this.itemCache[repository.repositoryId] || [];
+				this.itemCache[ repository.repositoryId ] = this.itemCache[ repository.repositoryId ] || [];
 
 				// when the item is cached, we just call the callback method
-				if (this.itemCache[repository.repositoryId][itemId]) {
-					callback.call(this, [this.itemCache[repository.repositoryId][itemId]]);
+				if ( this.itemCache[ repository.repositoryId ][ itemId ] ) {
+					callback.call( this, [ this.itemCache[ repository.repositoryId ][ itemId ] ] );
 				} else {
 					// otherwise we get the object from the repository
-					repository.getObjectById(itemId, function (items) {
+					repository.getObjectById( itemId, function ( items ) {
 						// make sure the item is in the cache (for subsequent calls)
-						that.itemCache[repository.repositoryId][itemId] = items[0];
-						callback.call(this, items);
+						that.itemCache[ repository.repositoryId ][ itemId ] = items[ 0 ];
+						callback.call( this, items );
 					});
 				}
 			}

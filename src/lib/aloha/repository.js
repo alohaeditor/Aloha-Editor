@@ -151,8 +151,14 @@ Aloha.AbstractRepository = Class.extend({
 	 * </ul></div>
 	 * @param {function} callback this method must be called with all result items
 	 */
-	getChildren: function( params, callback ) { return true; },
-
+	getChildren: null,
+	/*
+	getChildren: function( params, callback ) {
+		if (typeof callback === 'function') {
+			callback([]);
+		}
+	},
+	*/
 
 	/**
 	 * Make the given jQuery object (representing an object marked as object of this type)
