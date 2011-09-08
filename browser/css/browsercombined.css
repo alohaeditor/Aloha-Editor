@@ -160,8 +160,6 @@ tr.ui-search-toolbar select {margin: 1px 0px 0px 0px}
 	-moz-border-radius-topright:	 2px;
 	-webkit-border-top-right-radius: 2px;
 	
-	padding: 5px;
-	
 	background-color: #303539;
 	background-image: -webkit-gradient(
     	linear,
@@ -202,7 +200,6 @@ tr.ui-search-toolbar select {margin: 1px 0px 0px 0px}
 .ui-jqgrid .ui-jqgrid-title {
 	float: none;
 	display: block;
-	padding: 2px;
 }
 .ui-jqgrid .ui-jqgrid-titlebar-close {display: none;}
 /* header */
@@ -318,6 +315,7 @@ tr.ui-search-toolbar select {margin: 1px 0px 0px 0px}
 .ui-th-column, .ui-jqgrid .ui-jqgrid-htable th.ui-th-column {
 	text-align: left;
 	text-indent: 10px;
+	line-height: 1.5em;
 }
 /* body */
 .ui-jqgrid .ui-jqgrid-btable  {
@@ -621,6 +619,8 @@ tr.ui-search-toolbar select {margin: 1px 0px 0px 0px}
 	width: 1000px;
 	height: 400px;
 	border: 1px solid #53565b;
+	text-align: left;
+	line-height: 1.5em;
 }
 .aloha-browser-clear {
 	float: none;
@@ -720,7 +720,8 @@ tr.ui-search-toolbar select {margin: 1px 0px 0px 0px}
 		float: left;
 		
 		width: 200px;
-		height: 22px;
+		/* height: 22px; */
+		height: 15px;
 		padding: 4px 2px;
 		
 		border: 1px solid #ccc;
@@ -749,6 +750,8 @@ tr.ui-search-toolbar select {margin: 1px 0px 0px 0px}
 		
 		color: #555;
 		font-size: 13px;
+		
+		line-height: 1.5em;
 	}
 
 .aloha-browser-search-btn {
@@ -820,6 +823,7 @@ tr.ui-search-toolbar select {margin: 1px 0px 0px 0px}
 	text-shadow: 0 0 4px #23262b;
 	font-weight: bold;
 	font-size: 13px;
+	line-height: 1.5em;
 	
 	white-space: nowrap;
 }
