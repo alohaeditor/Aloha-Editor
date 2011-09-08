@@ -25,6 +25,12 @@ window.GENTICS.Utils = window.GENTICS.Utils || {};
 //window.Aloha.settings = window.Aloha.settings || {};
 //window.Aloha.ui = window.Aloha.ui || {};
 
+/*
+require.config({
+    locale: "de"
+});
+*/
+
 define(
 	'aloha',
 	[
@@ -59,10 +65,13 @@ define(
 		'aloha/repositoryobjects',
 		'aloha/rangy-core'
 	],
-	function($, Aloha) {
-		$('body')
-			.addClass('alohacoreloaded')
-			.trigger('alohacoreloaded');
+	function(jQuery, Aloha) {
+
+		Aloha.trigger('aloha-core-loaded');
+
+		// jQuery calls the init methode when the dom is ready
+		jQuery(Aloha.init);
+
 		return Aloha;
 	}
 );

@@ -136,13 +136,13 @@ function ( jQuery, PluginManager ) {
 		 */
 		init: function () {
 
-			$(function(){
+			
 				
 				// Create Promises
 				Aloha.createPromiseEvent('aloha');
-				
-				// Ready?
-				Aloha.bind('alohacoreloaded',function(){
+//				
+//				// Ready?
+//				Aloha.bind('alohacoreloaded',function(){
 					// initialize rangy. This is probably necessary here,
 					// because due to the current loading mechanism, rangy
 					// doesn't initialize itself in all browsers
@@ -172,13 +172,13 @@ function ( jQuery, PluginManager ) {
 							});
 						});
 					});
-				});
-
-				// Check
-				if ( $('body').hasClass('alohacoreloaded') ) {
-					Aloha.trigger('alohacoreloaded');
-				}
-			});
+//				});
+//
+//				// Check
+//				if ( $('body').hasClass('alohacoreloaded') ) {
+//					Aloha.trigger('alohacoreloaded');
+//				}
+//			});
 		},
 
 		/**
@@ -676,7 +676,9 @@ function ( jQuery, PluginManager ) {
 	});
 
 	// Initialise Aloha Editor
-	Aloha.init();
-	
+//	Aloha.init();
+
+			
+
 	return Aloha;
 });

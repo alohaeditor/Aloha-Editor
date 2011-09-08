@@ -28,9 +28,10 @@ define([
 
     'aloha/core',
 	'aloha/jquery',
+	'aloha/selection',
 	'aloha/plugin' // For when we plugify sidebar
 
-], function (Aloha, $, Plugin) {
+], function (Aloha, $, Selection, Plugin) {
 	
 	'use strict';
 	
@@ -804,7 +805,7 @@ define([
 			if (deferRounding !== true) {
 				this.roundCorners();
 			}
-			this.checkActivePanels(Aloha.Selection.getRangeObject());
+			this.checkActivePanels(Selection.getRangeObject());
 			return panel;
 		}
 		
@@ -1110,28 +1111,20 @@ define([
 		
 	});
 	
-	// Expose Sidebars once both the DOM and Aloha are ready
-//	$(function () {
-//		$('body').bind('alohacoreloaded', function () {
-			var left = new Sidebar({
-				position : 'left',
-				width	 : 250 // TODO define in config
-			});
-			
-			var right = new Sidebar({
-				position : 'right',
-				width	 : 250 // TODO define in config
-			});
-			
-			Aloha.Sidebars = {
-				left  : left,
-				right : right
-			};
-//debugger;			
-//			// Broadcast that Sidebars have arrived
-//			$('body').trigger(nsClass('initialized'), Aloha.Sidebars);
-//		});
-//	});
+	var left = new Sidebar({
+		position : 'left',
+		width	 : 250 // TODO define in config
+	});
+	
+	var right = new Sidebar({
+		position : 'right',
+		width	 : 250 // TODO define in config
+	});
+	
+	Aloha.Sidebars = {
+		left  : left,
+		right : right
+	};
 	
 	return Sidebar;
 	
