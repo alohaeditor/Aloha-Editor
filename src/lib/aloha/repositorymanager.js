@@ -51,8 +51,8 @@ function ( jQuery ) {
 		 */
 		init: function() {
 			var repositories = this.repositories,
+				i = 0,
 				j = repositories.length,
-				i,
 				repository,
 				settings;
 			
@@ -62,7 +62,7 @@ function ( jQuery ) {
 				settings = {};
 			}
 			
-			for ( i = 0; i < j; ++i ) {
+			for ( ; i < j; ++i ) {
 				repository = repositories[i];
 				
 				if (!repository.settings) {
@@ -81,6 +81,7 @@ function ( jQuery ) {
 		},
 		
 		/**
+		 * FIXME: repository instanceof Aloha.AbstractRepository check should be removed
 		 * Register a Repository
 		 * @param {Aloha.Repository} repository Repository to register
 		 */
@@ -95,19 +96,24 @@ function ( jQuery ) {
 				Aloha.Log.error(this, 'Trying to register a repository which is not an instance of Aloha.Repository.');
 			}
 		},
-
+		
 		/**
-		 * Returns a repository object identified by repositoryId.
+		 * Returns the repository object identified by repositoryId.
+		 *
 		 * @param {String} repositoryId the name of the repository
 		 * @return {Aloha.Repository} a repository or null if name not found
 		 */
-		getRepository: function(repositoryId) {
-
-			for ( var i = 0; i < this.repositories.length; i++) {
-				if ( this.repositories[i].repositoryId == repositoryId ) {
-					return this.repositories[i];
+		getRepository: function( repositoryId ) {
+			var repositories = this.repositories,
+			    i = 0,
+			    j = repositories.length;
+			
+			for ( ; i < j; ++i ) {
+				if ( repositories[i].repositoryId == repositoryId ) {
+					return repositories[i];
 				}
 			}
+			
 			return null;
 		},
 
@@ -151,87 +157,99 @@ function ( jQuery ) {
 		query: function(params, callback) {
 			var that = this,
 				repo,
-				// The marged results collected from repository responses
+				// The marged results, collected from repository responses
 				allitems = [],
-				// The set of repositories which we want to delegate work to
+				// The set of repositories towhich we want to delegate work
 				repositories = [],
-				// When this timer times-out, whatever has been collected in
-				// allitems will be returned, and numOpenCallbacks is reset to 0
-				timer,
 				// A counting semaphore (working in reverse, ie: 0 means free)
 				numOpenCallbacks = 0,
+				// When this timer times-out, whatever has been collected in
+				// allitems will be returned to the calling client, and
+				// numOpenCallbacks will be reset to 0
+				timer,
 				/**
-				 * Collects the results from each repository, and decrements the
-				 * numOpenCallbacks semaphore.
+				 * Invoked by each repository when it wants to present its
+				 * results to the manager.
 				 *
-				 * Invoked by each repository when it wants to present its results
-				 * to the manager.
+				 * Collects the results from each repository, and decrements
+				 * the numOpenCallbacks semaphore to indicate that there is one
+				 * less repository for which we are waiting a reponse.
+				 *
+				 * If a repository invokes this callback after all
+				 * openCallbacks have been closed (ie: numOpenCallbacks == 0),
+				 * then the repository was too late ("missed the ship"), and
+				 * will be ignored.
+				 *
+				 * If numOpenCallbacks decrements to 0 during this call, it
+				 * means that the the manager is ready to report the results
+				 * back to the client through the queryCallback method.
 				 *
 				 * nb: "this" is reference to the calling repository
 				 *
-				 * If a repository invokes this callback after all openCallbacks
-				 * have been closed (ie: numOpenCallbacks == 0) this repository is
-				 * too late--has "missed the ship," and we will ignore it.
-				 *
-				 * If numOpenCallbacks decrements to 0 during this call, it means
-				 * that the the manager is ready to report to the client which is
-				 * done through queryCallback.
-				 *
-				 * @param {Array} items - Query results returned by the repository 
+				 * @param {Array} items - Results returned by the repository
 				 */
-				processResults = function (items) {
+				processResults = function ( items ) {
 					if (numOpenCallbacks == 0) {
 						return;
 					}
 					
-					// Add the repositoryId for each item if it has not already
-					// been done by a negligent repositories
-					var repoId = this.repositoryId;
-					if (items && items.length && !items[0].repositoryId ) {
-						for (var i = 0; i < items.length; ++i) {
+					// Add the repositoryId for each item if a negligent
+					// repository forgot to do so
+					var repoId = this.repositoryId,
+					    i = 0,
+					    j = items.length;
+					
+					if ( items && items.length && !items[0].repositoryId ) {
+						for ( ; i < j; ++i ) {
 							items[i].repositoryId = repoId;
 						}
-						jQuery.merge(allitems, items);
+						jQuery.merge( allitems, items );
 					}
 					
-					if (--numOpenCallbacks == 0) {
-						that.queryCallback(callback, allitems, timer);
+					if ( --numOpenCallbacks == 0 ) {
+						that.queryCallback( callback, allitems, timer );
 					}
 				};
 			
 			// Unless the calling client specifies otherwise, we will wait a
-			// maximum of 5 seconds for all repositories to be queried and respond.
-			// 5 seconds is deemed to be the reasonable time to wait when querying
-			// the repository manager in the context of something like autocomplete
+			// maximum of 5 seconds for all repositories to be queried and
+			// respond. 5 seconds is deemed to be the reasonable time to wait
+			// when querying the repository manager in the context of something
+			// like autocomplete
 			var timeout = parseInt(params.timeout, 10) || 5000;
 			timer = setTimeout(function() {
 				numOpenCallbacks = 0;
-				that.queryCallback(callback, allitems, timer);
+				that.queryCallback( callback, allitems, timer );
 			}, timeout);
 			
 			// If no repositryId is specified in the params argument, then we will
 			// query all registered repositories
-			if (params.repositoryId) {
-				repositories.push(this.getRepository(params.repositoryId));
+			if ( params.repositoryId ) {
+				repositories.push( this.getRepository( params.repositoryId ) );
 			} else {
 				repositories = this.repositories;
 			}
 			
-			if (repositories.length) {
-				for (var i = 0; i < repositories.length; ++i) {
+			var i = 0,
+			    j = repositories.length;
+			
+			if ( j ) {
+				for ( ; i < j; ++i ) {
 					repo = repositories[i];
 					
-					if (typeof repo.query === 'function') {
+					if ( typeof repo.query === 'function' ) {
 						++numOpenCallbacks;
 						
 						repo.query(
 							params,
-							function () { processResults.apply(repo, arguments); }
+							function () {
+								processResults.apply(repo, arguments);
+							}
 						);
 					};
 				}
 			} else {
-				this.queryCallback(callback, allitems, timer);
+				this.queryCallback( callback, allitems, timer );
 			}
 		},
 
@@ -239,16 +257,16 @@ function ( jQuery ) {
 		 * Passes all the results we have collected to the client through the
 		 * callback it specified
 		 *
-		 * @param {Function} callback - Callback specified by client when invoking
-		 *								the query method
+		 * @param {Function} callback - Callback specified by client when
+		 *								invoking the query method
 		 * @param {Array} items - Results, collected from all repositories
 		 * @param {Timer} timer - We need to clear this timer
 		 * @return void
 		 * @hide
 		 */
-		queryCallback: function (callback, items, timer) {
-			if (timer) {
-				clearTimeout(timer);
+		queryCallback: function ( callback, items, timer ) {
+			if ( timer ) {
+				clearTimeout( timer );
 				timer = undefined;
 			}
 			
@@ -264,10 +282,12 @@ function ( jQuery ) {
 				results : items.length
 			};
 			
-			callback.call(this, result);
+			callback.call( this, result );
 		},
 		
 		/**
+		 * TODO: This method needs to be covered with some unit tests
+		 *
 		 * Returns children items. (see query for an example)
 		 * @param {object} params object with properties
 		 * <div class="mdetail-params"><ul>
@@ -371,7 +391,7 @@ function ( jQuery ) {
 		* @return void
 		* @hide
 		*/
-		getChildrenCallback: function (cb, items, timer) {
+		getChildrenCallback: function ( cb, items, timer ) {
 
 			// if we all callbacks came back we are done!
 			if (this.openChildrenCallbacks.length === 0) {
