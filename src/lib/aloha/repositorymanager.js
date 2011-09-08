@@ -203,6 +203,9 @@ function ( jQuery ) {
 						for ( ; i < j; ++i ) {
 							items[i].repositoryId = repoId;
 						}
+					}
+					
+					if ( j ) {
 						jQuery.merge( allitems, items );
 					}
 					
@@ -238,8 +241,6 @@ function ( jQuery ) {
 				
 				if ( typeof repo.query === 'function' ) {
 					++numOpenCallbacks;
-					
-					//debugger;
 					
 					repo.query(
 						params,
