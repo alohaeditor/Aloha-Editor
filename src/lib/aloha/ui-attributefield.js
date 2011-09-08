@@ -58,8 +58,10 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 			renderRepositoryTemplate : function(values) {
 				var rep = RepositoryManager.getRepository(values.repositoryId);
 				if (rep && rep.hasTemplate()) {
-					if ( !rep._ExtTPL) {
-						rep._ExtTPL = new Ext.XTemplate( rep.getTemplate() ); 
+					// create extTemplate if template changed
+					if ( !rep._ExtTPL || rep.template !== rep._ExtTPLcache ) {
+						rep._ExtTPL = new Ext.XTemplate( rep.template );
+						rep._ExtTPLcache = rep.template;
 					}
 					return rep._ExtTPL.apply(values);
 				}

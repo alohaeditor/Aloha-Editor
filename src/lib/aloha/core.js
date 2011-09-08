@@ -302,9 +302,8 @@ function ( jQuery, PluginManager ) {
 				jQuery.browser.msie && jQuery.browser.version < 7 || // IE 7
 				jQuery.browser.opera && jQuery.browser.version < 11 ) { // right now, Opera needs some work
 				if (window.console && window.console.log) {
-					throw ERR_BROWSER_NOT_SUPPORTED;
+					window.console.log( 'Your browser is not supported.' );
 				}
-//				return;
 			}
 
 			// register the body click event to blur editables

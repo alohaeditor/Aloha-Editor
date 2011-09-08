@@ -20,7 +20,7 @@
 
 define(
 ['aloha/core', 'util/class', 'aloha/jquery'],
-function( Aloha, jQuery ) {
+function( Aloha, Class, jQuery ) {
 	"use strict";
 	
 	var
