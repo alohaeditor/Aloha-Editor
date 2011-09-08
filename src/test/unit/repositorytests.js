@@ -133,7 +133,7 @@ function(Aloha, aQuery, repository) {
 	};
 	
 	function runGetChildrenTests () {
-		module("Query tests (single repository)");
+		module("getChildren tests (single repository)");
 		
 		asyncTest(
 			'Test timeouts for getChildren method',
