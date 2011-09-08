@@ -38,16 +38,16 @@ define([
 	var Aloha = window.Aloha;
 	
 	var config = {
-		rootFolderId	 : 1,
-		objectTypeFilter : ['website', 'files', 'images' /*, '*' */],
-		renditionFilter	 : ['*'],
-		filter			 : ['language', 'iconCls'],
+	 //	rootFolderId	 : 1,
+		objectTypeFilter : [ 'website', 'files', 'images', 'language' /*, '*' */ ],
+		renditionFilter	 : [ '*' ],
+		filter			 : [ 'language' ],
 		
 		columns : {
-			icon         : {title: '',     width: 30,  sortable: false, resizable: false},
-			name         : {title: 'Name', width: 320, sorttype: 'text'},
-			language     : {title: '',     width: 30,  sorttype: 'text'},
-			translations : {title: '',     width: 350, sorttype: 'text'}
+			icon         : { title: '',     width: 30,  sortable: false, resizable: false },
+			name         : { title: 'Name', width: 320, sorttype: 'text' },
+			language     : { title: '',     width: 30,  sorttype: 'text' },
+			translations : { title: '',     width: 350, sorttype: 'text' }
 		}
 	};
 	
