@@ -12,6 +12,7 @@
  */
 define([
 
+	'aloha/core',
 	'aloha/jquery',
 	'aloha/plugin',
 	// i18n
@@ -26,15 +27,14 @@ define([
 	'jquery-plugin!browser/vendor/jquery.jqGrid',
 	'jquery-plugin!browser/vendor/jquery.jstree'
 
-], function ($, Plugin, i18n, i18nCore) {
+], function (Aloha, jQuery, Plugin, i18n, i18nCore) {
 	
 	'use strict';
 	
-	var GENTICS   = window.GENTICS;
-	var Aloha     = window.Aloha;
-	var uid       = +new Date;
-	var ns        = 'aloha-browser';
-	var nsClasses = {
+	var
+	    uid = +(new Date),
+	    ns  = 'aloha-browser',
+	    nsClasses = {
 			tree              : nsClass('tree'),
 			'tree-header'     : nsClass('tree-header'),
 			'grab-handle'     : nsClass('grab-handle'),
@@ -103,8 +103,8 @@ define([
 	 */
 	function nsSel () {
 		var strBldr = [], prx = ns;
-		$.each(arguments, function () { strBldr.push('.' + (this == '' ? prx : prx + '-' + this)); });
-		return $.trim(strBldr.join(' '));
+		jQuery.each(arguments, function () { strBldr.push('.' + (this == '' ? prx : prx + '-' + this)); });
+		return jQuery.trim(strBldr.join(' '));
 	};
 	
 	/**
@@ -120,8 +120,8 @@ define([
 	 */
 	function nsClass () {
 		var strBldr = [], prx = ns;
-		$.each(arguments, function () { strBldr.push(this == '' ? prx : prx + '-' + this); });
-		return $.trim(strBldr.join(' '));
+		jQuery.each(arguments, function () { strBldr.push(this == '' ? prx : prx + '-' + this); });
+		return jQuery.trim(strBldr.join(' '));
 	};
 	
 	/** 
@@ -129,7 +129,7 @@ define([
 	 */
 	function disableSelection (el) {
 		el.each(function() {           
-			$(this)
+			jQuery(this)
 				.attr('unselectable', 'on')
 				.css({
 				   '-moz-user-select':'none',
@@ -150,7 +150,7 @@ define([
 		
 		init: function(opts) {
 			// Extend defaults
-			var options = $.extend({
+			var options = jQuery.extend({
 				// Set to true for development and debugging
 				verbose : false,
 				// The repository manager which this browser will interface with
@@ -161,7 +161,7 @@ define([
 				// DOMObject to which this instance of browser is bound to
 				element : undefined,
 				// root folder id
-				rootFolderId : 1,
+				rootFolderId : 'aloha',
 				// root path to where Browser resources are located
 				rootPath  : Aloha.getPluginUrl('browser'),
 				treeWidth : 300,
@@ -207,7 +207,7 @@ define([
 			// them from the options object
 			// TODO: Consider deprecating this altogether
 			if (typeof options.implement === 'object') {
-				$.each(options.implement, function (k, v) {
+				jQuery.each(options.implement, function (k, v) {
 					that[k] = v;
 				});
 				
@@ -216,7 +216,7 @@ define([
 			
 			// TODO: Consider deprecating this too
 			if (typeof options.callbacks === 'object') {
-				$.each(options.callbacks, function () {
+				jQuery.each(options.callbacks, function () {
 					that.callback(this[0], this[1]);
 				});
 				
@@ -224,7 +224,7 @@ define([
 			}
 			
 			// Insert the remaining options as properties of this object
-			$.extend(this, options);
+			jQuery.extend(this, options);
 			
 			var that = this;
 			var tree_width = this.treeWidth;
@@ -257,9 +257,10 @@ define([
 			disableSelection(this.grid);
 			
 			// Not working
-			$('body').bind('aloha-repository-error', function (error) {
+			jQuery('body').bind('aloha-repository-error', function (error) {
 				console && console.warn(
-					'Error occured on request to repository: ', error.repository.repositoryId +
+					'Error occured on request to repository: ',
+					error.repository.repositoryId +
 					'\nMessage: "' + error.message + '"'
 				);
 			});
@@ -281,7 +282,7 @@ define([
 		preloadImages: function () {
 			var that = this;
 			
-			$.each([
+			jQuery.each([
 				'arrow-000-medium.png',
 				'arrow-180.png',
 				'arrow-315-medium.png',
@@ -334,7 +335,7 @@ define([
 		 */
 		callback: function (fn, cb) {
 			if (typeof this[fn] != 'function') {
-				this.warn(
+				console && console.warn(
 					'Unable to add a callback to "' + fn +
 					'" because it is not a method in Aloha.Browser.'
 				);
@@ -343,7 +344,7 @@ define([
 			}
 			
 			if (typeof cb !== 'function') {
-				this.warn(
+				console && console.warn(
 					'Unable to add a callback to "' + fn + '" because '	+
 					'the callback object that was given is of type "'	+
 					(typeof cb) + '". '									+
@@ -380,7 +381,7 @@ define([
 				
 				return true;
 			} else {
-				this.warn(
+				console && console.warn(
 					'Cannot enable callbacks for function "' + fn +
 					'" because no such method was found in Aloha.Browser.'
 				);
@@ -412,7 +413,7 @@ define([
 			var that = this;
 			var data = [];
 			
-			$.each(items, function () {
+			jQuery.each(items, function () {
 				data.push(that.harvestRepoObject(this));
 			});
 			
@@ -431,7 +432,7 @@ define([
 		harvestRepoObject: function (obj) {
 			++uid;
 			
-			var repo_obj = this._objs[uid] = $.extend(obj, {
+			var repo_obj = this._objs[uid] = jQuery.extend(obj, {
 				uid    : uid,
 				loaded : false
 			});
@@ -469,9 +470,6 @@ define([
 			this.getRepoChildren(
 				{inFolderId: this.rootFolderId},
 				function (data) {
-					if (data.length == 0) {
-						// debugger; //FIXME
-					}
 					if (typeof callback === 'function') {
 						callback(data);
 					}
@@ -486,7 +484,7 @@ define([
 		renderRowCols: function (item) {
 			var row = {};
 			
-			$.each(this.columns, function (colName, v) {
+			jQuery.each(this.columns, function (colName, v) {
 				switch (colName) {
 					case 'icon':
 						row.icon = '<div class="aloha-browser-icon aloha-browser-icon-' + item.type + '"></div>';
@@ -543,7 +541,7 @@ define([
 		},
 		
 		rowClicked: function (event) {
-			var row = $(event.target).parent('tr');
+			var row = jQuery(event.target).parent('tr');
 			var item = null;
 			
 			if (row.length > 0) {
@@ -558,8 +556,8 @@ define([
 		
 		createTree: function (container) {
 			var that = this;
-			var tree = $(renderTemplate('<div class="{tree}">'));
-			var header = $(renderTemplate(
+			var tree = jQuery(renderTemplate('<div class="{tree}">'));
+			var header = jQuery(renderTemplate(
 					'<div class="{tree-header} {grab-handle}">\
 						Repository Browser\
 					</div>'
@@ -572,7 +570,7 @@ define([
 					//console && console.log(data.func);
 				})
 				.bind('loaded.jstree', function (event, data) {
-					$('>ul>li', this).first().css('padding-top', 5);
+					jQuery('>ul>li', this).first().css('padding-top', 5);
 				})
 				.bind('select_node.jstree', function (event, data) {
 					// Suppresses a bug in jsTree
@@ -613,7 +611,7 @@ define([
 		},
 		
 		createGrid: function (container) {
-			var grid = $(renderTemplate(
+			var grid = jQuery(renderTemplate(
 					'<div class="{grid} {shadow} {rounded-top}"> \
 						<div class="ui-layout-west"></div>		 \
 						<div class="ui-layout-center"></div>	 \
@@ -627,7 +625,7 @@ define([
 		
 		createList: function (container) {
 			var that = this;
-			var list = $(renderTemplate(
+			var list = jQuery(renderTemplate(
 					'<table id="jqgrid_needs_something_anything_here"\
 						class="{list}"></table>'
 				));
@@ -640,7 +638,7 @@ define([
 					hidden	 : true
 				}];
 			
-			$.each(this.columns, function (k, v) {
+			jQuery.each(this.columns, function (k, v) {
 				colNames.push((v.title && v.title) ? v.title : '&nbsp;');
 				colModel.push({
 					name	  : k,
@@ -652,7 +650,7 @@ define([
 			});
 			
 			container.append(list,
-				$(renderTemplate('<div id="{list-pager}">'))
+				jQuery(renderTemplate('<div id="{list-pager}">'))
 			);
 			
 			list.jqGrid({
@@ -671,7 +669,7 @@ define([
 				// Event handlers: http://www.trirand.com/jqgridwiki/doku.php?id=wiki:events
 				// fires after click on [page button] and before populating the data
 				onPaging     : function (button) {},
-				// called if the request fails
+				// Called if the request fails
 				loadError    : function (xhr, status, error) {},
 				// Raised immediately after row was double clicked. 
 				ondblClickRow: function (rowid, iRow, iCol, e) {},
@@ -699,10 +697,10 @@ define([
 			container.find('.ui-pg-button').unbind().find('>span.ui-icon').each(function () {
 				var dir = this.className.match(/ui\-icon\-seek\-([a-z]+)/)[1];
 				
-				that._pagingBtns[dir] = $(this).parent()
+				that._pagingBtns[dir] = jQuery(this).parent()
 					.addClass('ui-state-disabled')
 					.click(function () {
-						if (!$(this).hasClass('ui-state-disabled')) {
+						if (!jQuery(this).hasClass('ui-state-disabled')) {
 							that.doPaging(dir);
 						}
 					});
@@ -720,7 +718,7 @@ define([
 			// Override jqGrid sorting
 			var listProps = list[0].p;
 			container.find('.ui-jqgrid-view tr:first th div').each(function(i) {
-				$(this).unbind().click(function (event) {
+				jQuery(this).unbind().click(function (event) {
 					event.stopPropagation();
 					that.sortList(listProps.colModel[i], this);
 				});
@@ -732,7 +730,7 @@ define([
 		createTitlebar: function (container) {
 			var that = this;
 			var bar  = container.find('.ui-jqgrid-titlebar');
-			var btns = $(renderTemplate(
+			var btns = jQuery(renderTemplate(
 					'<div class="{btns}">							 \
 						<input type="text" class="{search-field}" /> \
 						<span class="{btn} {search-btn}">			 \
@@ -756,9 +754,9 @@ define([
 				that.close();
 			});
 			bar.find(nsSel('btn')).mousedown(function () {
-				$(this).addClass(nsClass('pressed'));
+				jQuery(this).addClass(nsClass('pressed'));
 			}).mouseup(function () {
-				$(this).removeClass(nsClass('pressed'));
+				jQuery(this).removeClass(nsClass('pressed'));
 			});
 		},
 		
@@ -777,11 +775,11 @@ define([
 		 */
 		sortList: function(colModel, el){
 			// reset sort properties in all column headers
-			$('span.ui-grid-ico-sort').addClass('ui-state-disabled');
+			jQuery('span.ui-grid-ico-sort').addClass('ui-state-disabled');
 			
 			colModel.sortorder = (colModel.sortorder == 'asc') ? 'desc' : 'asc';
 			
-			$(el).find('span.s-ico').show()
+			jQuery(el).find('span.s-ico').show()
 			     .find('.ui-icon-' + colModel.sortorder)
 			     .removeClass('ui-state-disabled');
 			
@@ -905,11 +903,11 @@ define([
 			var that = this;		
 			var list = this.list.clearGridData();
 			
-			$.each(items, function () {
+			jQuery.each(items, function () {
 				var obj = this.resource;
 				list.addRowData(
 					obj.uid,
-					$.extend({id: obj.id}, that.renderRowCols(obj))
+					jQuery.extend({id: obj.id}, that.renderRowCols(obj))
 				);
 			});
 		},
@@ -960,16 +958,16 @@ define([
 		createOverlay: function () {
 			var that = this;
 			
-			$('body').append(renderTemplate(
+			jQuery('body').append(renderTemplate(
 				'<div class="{modal-overlay}" style="top: -99999px; z-index: 99999;"></div>' +
 				'<div class="{modal-window}"  style="top: -99999px; z-index: 99999;"></div>'
 			));
 			
-			$(nsSel('modal-overlay')).click(function () {
+			jQuery(nsSel('modal-overlay')).click(function () {
 				that.close();
 			});
 			
-			return $(nsSel('modal-window'));
+			return jQuery(nsSel('modal-window'));
 		},
 		
 		setObjectTypeFilter: function (otf) {
@@ -987,11 +985,11 @@ define([
 			
 			var el = this.element;
 			
-			$(nsSel('modal-overlay'))
+			jQuery(nsSel('modal-overlay'))
 				.css({top: 0, left: 0})
 				.add(el).stop().show();
 			
-			var win	= $(window);
+			var win	= jQuery(window);
 			
 			el.css({
 				left : (win.width()  - el.width())  / 2,
@@ -1015,30 +1013,12 @@ define([
 			
 			this.element.fadeOut(
 				250, function () {
-					$(this).css('top', 0).hide();
-					$(nsSel('modal-overlay')).hide();
+					jQuery(this).css('top', 0).hide();
+					jQuery(nsSel('modal-overlay')).hide();
 				}
 			);
-		},
-		
-		log: function (msg) {
-			if (this.verbose == true) {
-				console && console.log('%s LOG: ', this.instanceOf, msg);
-			}
-		},
-		
-		warn: function (msg, force) {
-			if (this.verbose == true || force == true) {
-				console && console.warn('%s WARNING: ', this.instanceOf, msg);
-			}
-		},
-		
-		error: function (msg, force) {
-			if (this.verbose == true || force == true) {
-				console && console.error('%s ERROR: ', this.instanceOf, msg);
-			}
 		}
-	
+		
 	});
 	
 	return BrowserPlugin;
