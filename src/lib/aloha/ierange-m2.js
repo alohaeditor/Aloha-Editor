@@ -7,8 +7,8 @@
 	"use strict";
 	var
 		jQuery = window.alohaQuery || window.jQuery, $ = jQuery,
-		GENTICS = window.GENTICS,
-		Aloha = window.Aloha,
+//		GENTICS = window.GENTICS,
+//		Aloha = window.Aloha,
 		DOMUtils, TextRangeUtils, selection, DOMRange, RangeIterator, DOMSelection;
 
 /*

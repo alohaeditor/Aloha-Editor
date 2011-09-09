@@ -18,11 +18,9 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 "use strict";
-define( ['require', 'exports', 'aloha/selection'],
-function( require, exports, Selection ) {
+define( [ 'aloha/core', 'aloha/selection' ],
+function( Aloha, Selection ) {
 
-	// Implementation initially done by Aryeh Gregor.
-	// http://aryeh.name/spec/editing/editing.html#commands
 	var 
 		commands = [],
 		
@@ -182,6 +180,68 @@ function( require, exports, Selection ) {
 			
 			throw "NOT_IMPLEMENTED_ERR";
 		};
+	
+	/**
+	 * Executes a registered command.
+	 * http://aryeh.name/spec/editing/editing.html#methods-of-the-htmldocument-interface
+	 * @method
+	 * @param command name of the command
+	 * @param showUI has no effect for Aloha Editor and is only here because in spec...
+	 * @param value depends on the used command and it impementation 
+	 * @range optional a range on which the command will be executed if not specified 
+	 * 		  the current selection will be used as range
+	 */
+	Aloha.execCommand = execCommand;
+	
+	/**
+	 * Check wheater the command in enabled.
+	 * If command is not supported, raise a NOT_SUPPORTED_ERR exception.
+	 * @param command name of the command
+	 * @return true if command is enabled, false otherwise.
+	 */
+	Aloha.queryCommandEnabled = queryCommandEnabled;
+	
+	/**
+	 * Check if the command has an indetermed state. 
+	 * If command is not supported, a NOT_SUPPORTED_ERR exception is thrown
+	 * If command has no indeterminacy, INVALID_ACCESS_ERR exception is thrown
+	 * If command is not enabled, return false.
+	 * @param command name of the command
+	 * @range optional a range on which the command will be executed if not specified 
+	 * 		  the current selection will be used as range
+	 * @return true if command is indeterminate, otherwise false.
+	 */
+	Aloha.queryCommandIndeterm = queryCommandIndeterm;
+	
+	/**
+	 * Returns the state of a given command
+	 * If command is not supported, a NOT_SUPPORTED_ERR exception is thrown
+	 * If command has no state, an INVALID_ACCESS_ERR exception is thrown
+	 * If command is not enabled, return false
+	 * If the state override for command is set, return it
+	 * @param command name of the command
+	 * @return state override or true if command's state is true, otherwise false.
+	 */
+	Aloha.queryCommandState = queryCommandState;
+
+	/**
+	 * Check if a given command is supported
+	 * @return true if command is supported, and false otherwise.
+	 */
+	Aloha.queryCommandSupported = queryCommandSupported;
+
+	/**
+	 * Returns the Value of a given Command
+	 * If command is not supported, a NOT_SUPPORTED_ERR exception is thrown
+	 * If command has no value, an INVALID_ACCESS_ERR exception is thrown
+	 * If command is not enabled, return the empty string
+	 * If command is "fontSize" and its value override is set, convert the 
+	 * value override to an integer number of pixels and return the legacy
+	 * font size for the result.
+	 * If the value override for command is set, return it.
+	 * @return command's value.
+	 */
+	Aloha.queryCommandValue = queryCommandValue;
 	
 	// export defined API
 	return {

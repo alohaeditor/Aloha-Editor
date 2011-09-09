@@ -21,19 +21,26 @@
 // Ensure Namespace
 window.GENTICS = window.GENTICS || {};
 window.GENTICS.Utils = window.GENTICS.Utils || {};
-window.Aloha = window.Aloha || {};
-window.Aloha.settings = window.Aloha.settings || {};
-window.Aloha.ui = window.Aloha.ui || {};
+//window.Aloha = window.Aloha || {};
+//window.Aloha.settings = window.Aloha.settings || {};
+//window.Aloha.ui = window.Aloha.ui || {};
+
+/*
+require.config({
+    locale: "de"
+});
+*/
 
 define(
 	'aloha',
 	[
 		'aloha/jquery',
-		'order!util/json2',
+		'aloha/core',
+		'util/json2',
 		'vendor/jquery.json-2.2.min',
 		'vendor/jquery.store',
-		'order!util/base',
-		'order!util/lang',
+		'util/class',
+		'util/lang',
 		'util/range',
 		'util/position',
 		'util/dom',
@@ -42,13 +49,12 @@ define(
 		'aloha/ext-alohaproxy',
 		'aloha/ext-alohareader',
 		'aloha/ext-alohatreeloader',
-		'aloha/core',
 		'aloha/ui',
 		'aloha/ui-attributefield',
 		'aloha/ui-browser',
 		'aloha/floatingmenu',
 		'aloha/editable',
-		'aloha/log',
+		'aloha/console',
 		'aloha/markup',
 		'aloha/message',
 		'aloha/plugin',
@@ -59,9 +65,13 @@ define(
 		'aloha/repositoryobjects',
 		'aloha/rangy-core'
 	],
-	function($) {
-		$('body')
-			.addClass('alohacoreloaded')
-			.trigger('alohacoreloaded');
+	function(jQuery, Aloha) {
+
+		Aloha.trigger('aloha-core-loaded');
+
+		// jQuery calls the init methode when the dom is ready
+		jQuery(Aloha.init);
+
+		return Aloha;
 	}
 );

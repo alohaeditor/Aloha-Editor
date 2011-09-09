@@ -1,6 +1,6 @@
 /*!
 * This file is part of Aloha Editor Project http://aloha-editor.org
-* Copyright © 2010-2011 Gentics Software GmbH, aloha@gentics.com
+* Copyright ï¿½ 2010-2011 Gentics Software GmbH, aloha@gentics.com
 * Contributors http://aloha-editor.org/contribution.php 
 * Licensed unter the terms of http://www.aloha-editor.org/license.html
 *//*
@@ -19,16 +19,16 @@
 */
 
 define(
-['aloha/jquery'],
-function(jQuery, undefined) {
+['aloha/core', 'util/class', 'aloha/jquery'],
+function(Aloha, Class, jQuery ) {
 	"use strict";
 	
 	var
-		$ = jQuery,
-		GENTICS = window.GENTICS,
-		Aloha = window.Aloha,
-		console = window.console||false,
-		Class = window.Class;
+//		$ = jQuery,
+//		Aloha = window.Aloha,
+		console = window.console;
+//		Class = window.Class
+//		GENTICS = window.GENTICS;
 
 /**
  * This is the aloha Log
@@ -36,12 +36,13 @@ function(jQuery, undefined) {
  * @class Log
  * @singleton
  */
-Aloha.Log = Class.extend({
+var alohaConsole = Class.extend({
 	/**
 	 * Initialize the logging
 	 * @hide
 	 */
 	init: function() {
+		
 		// initialize the logging settings (if not present)
 		if (typeof Aloha.settings.logLevels === 'undefined' || !Aloha.settings.logLevels) {
 			Aloha.settings.logLevels = {'error' : true, 'warn' : true};
@@ -62,6 +63,7 @@ Aloha.Log = Class.extend({
 			Aloha.settings.logHistory.levels = {'error' : true, 'warn' : true};
 		}
 		this.flushLogHistory();
+		
 		Aloha.trigger('aloha-logger-ready');
 	},
 
@@ -89,45 +91,65 @@ Aloha.Log = Class.extend({
 	 * @param {String} message log message
 	 */
 	log: function(level, component, message) {
-		if (typeof level === 'undefined' || !level) {
-			level = 'error';
+		
+
+		// log ('Logging message');
+		if ( typeof component === 'undefined' ) {
+			message = level;
 		}
+		if ( typeof component !== 'string' && component && component.toString ) {
+			component = component.toString();
+		}
+		
+		// log ('warn', 'Warning message');
+		if ( typeof message === 'undefined' ) {
+			message = component;
+			component = undefined;
+		}
+
+		if (typeof level === 'undefined' || !level) {
+			level = 'log';
+		}
+		
 		level = level.toLowerCase();
 		
-		if (typeof Aloha.settings.logLevels === "undefined") {
+		if ( typeof Aloha.settings.logLevels === "undefined" ) {
 			return;
 		}
+		
 		// now check whether the log level is activated
-		if (!Aloha.settings.logLevels[level]) {
+		if ( !Aloha.settings.logLevels[ level ] ) {
 			return;
 		}
-		component = component||"undefined";
+		
+		component = component || "Unkown Aloha Component";
 
-		this.addToLogHistory({'level' : level, 'component' : component.toString(), 'message' : message, 'date' : new Date()});
+		this.addToLogHistory({'level' : level, 'component' : component, 'message' : message, 'date' : new Date()});
+		
 		switch (level) {
 		case 'error':
 			if (window.console && console.error) {
-				console.error(component.toString() + ': ' + message);
+				console.error(component + ': ' + message);
 			}
 			break;
 		case 'warn':
 			if (window.console && console.warn) {
-				console.warn(component.toString() + ': ' + message);
+				console.warn(component + ': ' + message);
 			}
 			break;
 		case 'info':
 			if (window.console && console.info) {
-				console.info(component.toString() + ': ' + message);
+				console.info(component + ': ' + message);
 			}
 			break;
 		case 'debug':
 			if (window.console && console.log) {
-				console.log(component.toString() + ' [' + level + ']: ' + message);
+				console.log(component + ' [' + level + ']: ' + message);
 			}
 			break;
 		default:
 			if (window.console && console.log) {
-				console.log(component.toString() + ' [' + level + ']: ' + message);
+				console.log(component + ' [' + level + ']: ' + message);
 			}
 			break;
 		}
@@ -172,6 +194,19 @@ Aloha.Log = Class.extend({
 		this.log('debug', component, message);
 	},
 
+	/**
+	 * Methods to mark function as deprecated for developers.
+	 * @param {String} component String that calls the log
+	 * @param {String} message log message
+	 */
+	deprecated: function(component, message) {
+		this.log( 'warn', component, message );
+		// help the developer to locate the call.
+		 if ( Aloha.settings.logLevels[ 'deprecated' ] ) {
+			 throw new Error ( message );
+		 }
+	},
+	
 	/**
 	 * Check whether the given log level is currently enabled
 	 * @param {String} level
@@ -223,21 +258,23 @@ Aloha.Log = Class.extend({
 			this.init();
 		}
 
-		if (
-			// when maxEntries is set to something illegal, we do nothing (log history is disabled)
-			Aloha.settings.logHistory.maxEntries <= 0
-			// check whether the level is one we like to have logged
-			|| !Aloha.settings.logHistory.levels[entry.level]
-		) {
+		// when maxEntries is set to something illegal, we do nothing (log history is disabled)
+		// check whether the level is one we like to have logged
+		if ( Aloha.settings.logHistory.maxEntries <= 0
+				|| !Aloha.settings.logHistory.levels[ entry.level ]
+			) {
+			
 			return;
 		}
 
 		// first add the entry as last element to the history array
-		this.logHistory.push(entry);
+		this.logHistory.push( entry );
 
 		// check whether the highWaterMark was reached, if so, fire an event
-		if (!this.highWaterMarkReached) {
-			if (this.logHistory.length >= Aloha.settings.logHistory.maxEntries * Aloha.settings.logHistory.highWaterMark / 100) {
+		if ( !this.highWaterMarkReached ) {
+			
+			if ( this.logHistory.length >= Aloha.settings.logHistory.maxEntries * Aloha.settings.logHistory.highWaterMark / 100 ) {
+				
 				// fire the event
 				Aloha.trigger('aloha-log-full');
 				// set the flag (so we will not fire the event again until the logHistory is flushed)
@@ -246,7 +283,7 @@ Aloha.Log = Class.extend({
 		}
 
 		// check whether the log is full and eventually remove the oldest entries
-		while (this.logHistory.length > Aloha.settings.logHistory.maxEntries) {
+		while ( this.logHistory.length > Aloha.settings.logHistory.maxEntries ) {
 			this.logHistory.shift();
 		}
 	},
@@ -275,6 +312,9 @@ Aloha.Log = Class.extend({
  * Create the Log object
  * @hide
  */
-Aloha.Log = new Aloha.Log();
+alohaConsole = new alohaConsole();
+
+// add to log namespace for compatiblility.
+return Aloha.Log = Aloha.Console = alohaConsole;
 
 });

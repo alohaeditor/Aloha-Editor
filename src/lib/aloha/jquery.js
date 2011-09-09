@@ -19,8 +19,8 @@
 */
 
 define(
-	['order!vendor/jquery-1.6.1'],
-	function(nothing, undefined) {
+	['vendor/jquery-1.6.1'],
+	function() {
 		var loadedJQuery = window.$.noConflict(true);
 
 		// if user defined jQuery use that

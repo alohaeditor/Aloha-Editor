@@ -13,7 +13,9 @@ define(
 [],
 function(){
   var initializing = false, fnTest = /xyz/.test(function(){xyz;}) ? /\b_super\b/ : /.*/;
+ 
   // The base Class implementation (does nothing)
+  // with doing that Class is available in the global namespace.
   this.Class = function(){};
 
   // Create a new Class that inherits from this class
@@ -70,5 +72,9 @@ function(){
     Class.extend = arguments.callee;
 
     return Class;
+  
   };
+
+  	return this.Class;
+  	
 });

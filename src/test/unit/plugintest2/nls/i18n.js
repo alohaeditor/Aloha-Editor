@@ -1,5 +1,4 @@
 define({
-	root: { "button.switch-metaview.tooltip": "Switch between meta and normal view" },
-	"de":true,
+	root: { "plugin2.test1": "fallback" },
 	"en":true
 });

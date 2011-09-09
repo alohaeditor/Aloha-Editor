@@ -1,6 +1,6 @@
 /*!
 * This file is part of Aloha Editor Project http://aloha-editor.org
-* Copyright © 2010-2011 Gentics Software GmbH, aloha@gentics.com
+* Copyright ï¿½ 2010-2011 Gentics Software GmbH, aloha@gentics.com
 * Contributors http://aloha-editor.org/contribution.php 
 * Licensed unter the terms of http://www.aloha-editor.org/license.html
 *//*
@@ -18,18 +18,16 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+// Do not add dependencies that require depend on aloha/core
 define(
-['aloha/jquery'],
-function(jQuery, undefined) {
+[ 'aloha/jquery', 'util/class' ],
+function( jQuery, Class ) {
 	"use strict";
 	
+	// FIXME: plugin management should be devided in management and amd and extracted from the core
+	
 	var
-		$ = jQuery,
-		GENTICS = window.GENTICS,
-		Aloha = window.Aloha,
-		Class = window.Class,
-		console = window.console||false;
-
+		Aloha = window.Aloha; 
 
 	/**
 	 * The Plugin Manager controls the lifecycle of all Aloha Plugins.
@@ -46,48 +44,61 @@ function(jQuery, undefined) {
 		 * @return void
 		 * @hide
 		 */
-		init: function(next) {
-			// Prepare
+		init: function(next, userPlugins) {
+
 			var
 				me = this,
-				globalSettings = Aloha.settings.plugins||{},
-				userPluginIds = Aloha.getLoadedPlugins(),
-				i,plugin,pluginId;
+				globalSettings = ( Aloha && Aloha.settings ) ? Aloha.settings.plugins||{}: {},
+				i,
+				plugin,
+				pluginName;
 
 			// Global to local settings
-			for ( pluginId in globalSettings ) {
-				if ( globalSettings.hasOwnProperty(pluginId) ) {
-					plugin = this.plugins[pluginId]||false;
+			for ( pluginName in globalSettings ) {
+				
+				if ( globalSettings.hasOwnProperty( pluginName ) ) {
+					
+					plugin = this.plugins[pluginName] || false;
+					
 					if ( plugin ) {
-						plugin.settings = globalSettings[pluginId]||{};
+						plugin.settings = globalSettings[ pluginName ] || {};
 					}
 				}
 			}
 
 			// Default: All loaded plugins are enabled
-			if ( !userPluginIds.length ) {
-				for ( pluginId in this.plugins ) {
-					if ( this.plugins.hasOwnProperty(pluginId) ) {
-						userPluginIds.push(pluginId);
+			if ( !userPlugins.length ) {
+				
+				for ( pluginName in this.plugins ) {
+					
+					if ( this.plugins.hasOwnProperty( pluginName ) ) {
+						userPlugins.push( pluginName );
 					}
 				}
 			}
+			
 			// Enable Plugins specified by User
-			for ( i=0; i < userPluginIds.length; ++i ) {
-				pluginId = userPluginIds[i];
-				plugin = this.plugins[pluginId]||false;
+			for ( i=0; i < userPlugins.length; ++i ) {
+				
+				pluginName = userPlugins[ i ];
+				plugin = this.plugins[ pluginName ]||false;
+				
 				if ( plugin ) {
+					
 					plugin.settings = plugin.settings || {};
+					
 					if ( typeof plugin.settings.enabled === 'undefined' ) {
 						plugin.settings.enabled = true;
 					}
-					if (plugin.settings.enabled) {
-						if (plugin.checkDependencies()) {
+					
+					if ( plugin.settings.enabled ) {
+						if ( plugin.checkDependencies() ) {
 							plugin.init();
 						}
 					}
 				}
 			}
+			
 			next();
 		},
 
@@ -95,14 +106,17 @@ function(jQuery, undefined) {
 		 * Register a plugin
 		 * @param {Plugin} plugin plugin to register
 		 */
-		register: function(plugin) {
-			if (!plugin.id) {
-				throw new Error('Plugin does not have an id');
+		register: function( plugin ) {
+			
+			if ( !plugin.name ) {
+				throw new Error( 'Plugin does not have an name.' );
 			}
-			if (this.plugins[plugin.id]) {
-				throw new Error('Already registered the plugin "' + plugin.id  + '"!');
+			
+			if ( this.plugins[ plugin.name ]) {
+				throw new Error( 'Already registered the plugin "' + plugin.name  + '"!' );
 			}
-			this.plugins[plugin.id] = plugin;
+			
+			this.plugins[ plugin.name ] = plugin;
 		},
 
 		/**
@@ -130,5 +144,6 @@ function(jQuery, undefined) {
 		toString: function() {
 			return 'pluginmanager';
 		}
+		
 	}))();
 });

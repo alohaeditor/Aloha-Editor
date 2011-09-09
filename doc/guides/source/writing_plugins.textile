@@ -2,7 +2,7 @@ h2. Writing Plugins
 
 After reading this guide, you will be able to:
 
-* Create plugins to adjust Aloha to your needs.
+* Create plugins to adjust Aloha Editor to your needs.
 * Load and define dependencies with RequireJS.
 * Include other resources from your plugins
 
@@ -10,7 +10,7 @@ endprologue.
 
 h3. What's a plugin?
 
-A plugin extends Aloha with new behavior and can be loaded by the user. It should be self-contained, so that it can be used for other Aloha installations.
+A plugin extends Aloha Editor with new behavior and can be loaded by the user asynchronously. It should be self-contained, so that it can be used for other Aloha installations.
 
 A full-blown plugin has the following file structure:
 
@@ -19,7 +19,7 @@ A full-blown plugin has the following file structure:
 ** @doc@ - Documentation, if exists
 ** @img@ - Image assets
 ** @lib@ - RequireJS modules
-** @nls@ - Localization files, see "Localization and I18N":#localization
+** @nls@ - Localization files, see "Localization and I18N": #Localization
 ** @res@ - other resources which do not fit into other directories, like JavaScript templates
 ** @test@ - Unit tests
 ** @vendor@ - Legacy JavaScript dependencies, not managed by RequireJS
@@ -32,13 +32,13 @@ h3. A basic Aloha plugin
 For a very basic plugin, nothing else than a plugin module in @lib/@ has to be
 created. The module is named as +pluginname-plugin.js+.
 
-<javascript filename="aloha/plugins/custom/helloworld/lib/helloworld-plugin.js">
+<javascript filename="/custom/helloworld/lib/helloworld-plugin.js">
 define(
-['core/plugin'],
-function(Plugin) {
+[ 'aloha/plugin' ],
+function( plugin ) {
     "use strict";
 
-    return Plugin.create('helloworld', {
+    return plugin.create( 'helloworld', {
         init: function() {
             // Executed on plugin initialization
         },
@@ -49,31 +49,73 @@ function(Plugin) {
 });
 </javascript>
 
-This code requires the core plugin module (which defines the @Plugin@ class) and creates a plugin with the name @myplugin@.
+This code requires the core plugin module (which defines the @plugin@ class) and creates a plugin with the name @helloworld@.
 
 Loading the new plugin is easy, just add it to the list of plugins in the main
 script tag loading Aloha:
 
 <html>
 <head>
-	<script src="javascripts/aloha/require.js"
-			data-main="javascripts/aloha/aloha.js"
-			id="aloha-script-include"
-			data-plugins="common/format,custom/helloworld">
+	<link rel="stylesheet" href="css/aloha.css" type="text/css">
+	<script 
+		src="scripts/require.js" 
+		data-main="scripts/aloha.js"
+		data-aloha-plugins="common/format,custom/helloworld" >
 	</script>
-	<link rel="stylesheet" href="javascripts/aloha/aloha.css" type="text/css">
 </head>
 </html>
 
-NOTE: If your plugin should be published to the public you should consider writing a @package.json@ file with metadata about the plugin. Furthermore, the name of your plugin shoulf be globally unique.
+NOTE: If your plugin should be published to the public you should consider writing a @package.json@ file with metadata about the plugin. Furthermore, the name of your plugin name should be globally unique.
 
 h3. Plugin bundles
 
-WARNING: not yet done.
+Aloha Editor comes with 4 bundles:
 
-TODO
-* Preexisting bundles
-* Naming implications
+* common
+* extra
+* media
+* collaboration
+
+You can use plugins from those bundles by adding the +bundlename/pluginname+ 
+to the +data-aloha-plugins+ attribute of the script tag. See the example above. 
+Additionally you may add your own bundle, which can be located in a complete 
+different path. You can specify the path like this.
+
+<javascript>
+Aloha = window.Aloha || {};
+Aloha.settings = {
+	bundles: {
+		// Path for custom bundle relative from require.js and aloha.js path
+		custom1: '../mybundle',
+		// Path for custom bundle with an absolute path at the server
+		custom2: '/yourbundle',
+		// Path for a custom bundle located at another server 
+		//(NOTE: cross site scritping issues with that configuration)
+		custom3: 'http://theserver.com/their/bundle'
+	}
+};
+</javascript>
+
+You can now easily load plugins from that bundles as follows
+
+<html>
+<head>
+	<link rel="stylesheet" href="css/aloha.css" type="text/css">
+	<script 
+		src="scripts/aloha/require.js"
+		data-main="scripts/aloha/aloha.js" 
+		data-aloha-plugins="common/link,custom1/plugin1,custom2/plugin2,custom3/plugin3" >
+	</script>
+</head>
+</html>
+
+INFO: This example will try to load following plugins:
+
+* +scripts/aloha/lib/../plugins/common/link/lib/link-plugin.js+
+* +scripts/aloha/lib/../../mybundle/plugin1/lib/plugin1-plugin.js+
+* +/yourbundle/plugin2/lib/plugin2-plugin.js+
+* +http://theserver.com/their/bundle/plugin3/lib/plugin3-plugin.js+
+
 
 h3. RequireJS modules explained
 
@@ -82,44 +124,52 @@ basic understanding is very helpful. By using RequireJS, we gain some nice benef
 
 The basic element of RequireJS is a so called +module+ which is one file that defines and exports a JavaScript object. This reference can be used in other modules by *requiring* that module.
 
-In the following example, we define two modules. The first module @editor@ defines two classes. The second module @bar@ has a dependency to @foo@, and RequireJS injects what has been returned by @foo@.
+In the following example, we define a components plugin with two modules. The first module @componenttype@ defines two classes. The second module @component@ has a dependency to @componenttype@, and RequireJS injects what has been returned by @componenttype@.
 
-<javascript filename="myplugin/lib/editor.js">
+<javascript filename="myplugin/lib/components-plugin.js">
 define(
-[],
+[ 'aloha/plugin' ],
+function( plugin ) {
+    "use strict";
+	// we do nothing but provide component modules...
+    return plugin.create( 'components', {});
+});
+</javascript>
+<javascript filename="myplugin/lib/componenttype.js">
+define(
+[], // no dependency
 function() {
 	"use strict";
-	var exports = {};
 
-	exports.Foo = Class.extend({
-		doSomething: function() {
+	var componenttype = Class.extend({
+		doSome: function() {
+			// huhu
 		}
 	});
 
-	exports.Bar = Class.extend({
-		doSomethingElse: function() {
-		}
-	});
+	return componenttype;
 
-	return exports;
 });
 </javascript>
 
-<javascript filename="myplugin/lib/bar.js">
+<javascript filename="myplugin/lib/component.js">
 define(
-['myplugin/editor'],
-function(editor) {
+['./componenttype'], // dependency in the same path
+function( componenttype ) {
     "use strict";
-    var fooInstance = new editor.Foo();
-    fooInstance.doSomething();
-    var barInstance = new editor.Bar();
-    barInstance.toSomethingElse();
+
+    var component = new componenttype.extend({
+    	doOther: function() {
+    		// haha
+    	}
+    });
+    return component;
+
 });
 </javascript>
 
 
-INFO: We often bundle multiple related JavaScript Classes into a single module, as in the above example.
-On the other hand, if a Singleton is defined, we *directly* return the singleton instance, as shown in the coding guidelines.
+INFO: You should implement your module with as few dependencies as necessary. That could mean that you deliver a plugin with some modules but the modules are not loaded on plugin loading as in the example above.
 
 Note that a module does not need to define its own name, it is simply named by its location on the file system.
 
@@ -132,9 +182,9 @@ So, at which place does Aloha look up modules? We'll explain this with a few exa
 |_. Definition in RequireJS |_. File Name |
 | @myplugin/foo@ | @path_to_bundle/myplugin/lib/foo.js@ <br /> Including other RequireJS modules is the most common case |
 | @myplugin/vendor/legacy_lib@ | @path_to_bundle/myplugin/vendor/legacy_lib.js@ <br /> Include a legacy library |
-| @css!myplugin/css/cssfile.css@ | @path_to_bundle/myplugin/css/cssfile.css@ <br /> Includes the CSS file in the document @<head>@. Explained "here":#including-css-files |
-| @i18n!myplugin/nls/i18n.js@ | depends on current language, see "Localization":#localization for details. |
-| @text!myplugin/res/template.html@ | Load a text file (e.g. templates). See "Text file loading":#text-files for details. |
+| @css!myplugin/css/cssfile.css@ | @path_to_bundle/myplugin/css/cssfile.css@ <br /> Includes the CSS file in the document @<head>@. Explained "here": including-ccs-files |
+| @i18n!myplugin/nls/i18n.js@ | depends on current language, see "Localization":#Localization for details. |
+| @text!myplugin/res/template.html@ | Load a text file (e.g. templates). See "Text file loading": text-files for details. |
 
 The bundle name is not part of the RequireJS definition, as this is installation-specific. You as plugin developer should not care about where other plugins are located on disk.
 

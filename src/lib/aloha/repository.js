@@ -19,17 +19,15 @@
 */
 
 define(
-[
- 'require', 'exports', 'aloha/jquery', 'aloha/ext'
- ],
-function(require, exports, jQuery, Ext, undefined) {
+[ 'aloha/core', 'util/class', 'aloha/repositorymanager' ],
+function( Aloha, jQuery, RepositoryManager ) {
 	"use strict";
 	
-	var
-		$ = jQuery,
-		GENTICS = window.GENTICS,
-		Aloha = window.Aloha,
-		Class = window.Class;
+//	var
+//		$ = jQuery,
+//		GENTICS = window.GENTICS,
+//		Aloha = window.Aloha,
+//		Class = window.Class;
 
 /**
  * Abstract Repository Class. Implement that class for your own repository.
@@ -39,7 +37,7 @@ function(require, exports, jQuery, Ext, undefined) {
  * @param {String} repositoryId unique repository identifier
  * @param {String} repositoryName (optional) is the displyed name for this Repository instance
  */
-Aloha.AbstractRepository = Class.extend({
+var AbstractRepository = Class.extend({
 	_constructor: function(repositoryId, repositoryName) {
 		/**
 		 * @property repositoryId is the unique Id for this Repository instance
@@ -57,7 +55,7 @@ Aloha.AbstractRepository = Class.extend({
 		 */
 		this.repositoryName = (repositoryName) ? repositoryName : repositoryId;
 
-		Aloha.RepositoryManager.register(this);
+		RepositoryManager.register(this);
 	},
 
 	/**
@@ -151,8 +149,14 @@ Aloha.AbstractRepository = Class.extend({
 	 * </ul></div>
 	 * @param {function} callback this method must be called with all result items
 	 */
-	getChildren: function( params, callback ) { return true; },
-
+	getChildren: null,
+	/*
+	getChildren: function( params, callback ) {
+		if (typeof callback === 'function') {
+			callback([]);
+		}
+	},
+	*/
 
 	/**
 	 * Make the given jQuery object (representing an object marked as object of this type)
@@ -197,9 +201,9 @@ Aloha.AbstractRepository = Class.extend({
 	 */
 	setTemplate: function (template) {
 		if (template) {
-			this.extTpl = new Ext.XTemplate(template);
+			this.template = template;
 		} else {
-			this.extTpl = null;
+			this.template = null;
 		}
 	},
 
@@ -209,7 +213,7 @@ Aloha.AbstractRepository = Class.extend({
 	 * @method
 	 */
 	hasTemplate: function () {
-		return this.extTpl ? true : false;
+		return this.template ? true : false;
 	},
 
 	/**
@@ -218,7 +222,7 @@ Aloha.AbstractRepository = Class.extend({
 	 * @method
 	 */
 	getTemplate: function () {
-		return this.extTpl;
+		return this.template;
 	},
 
 	/**
@@ -231,5 +235,7 @@ Aloha.AbstractRepository = Class.extend({
 });
 
 	// expose the AbstractRepository
-	exports.AbstractRepository = Aloha.AbstractRepository;
+	Aloha.AbstractRepository = AbstractRepository;
+	
+	return AbstractRepository;
 });
