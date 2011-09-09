@@ -9,6 +9,10 @@ define(
 function(Aloha ,Plugin, jQuery, i18n ) {
 	"use strict";
 
-     return Plugin.create('plugintest1', {} );
+     return Plugin.create('plugintest1', {
+    	 init: function() {
+    		 window.AlohaPlugin1 = true;
+    	 }
+     } );
      
 });

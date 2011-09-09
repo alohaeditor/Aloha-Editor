@@ -5,10 +5,8 @@
 	<title>Aloha Editor Core Test Suite</title>
 	<!-- include qunit -->
 	<link rel="stylesheet" href="../dep/qunit.css" type="text/css"/>
+	<script type="text/javascript" src="../dep/jquery-1.6.1.js"></script>
 	<script type="text/javascript" src="../dep/qunit.js"></script>
-
-	<!-- include jquery -->
-	<script	src="../../lib/vendor/jquery-1.5.1.js" ></script>
 	<script>
 		// currently, we need to manually set the path to aloha
 		window.Aloha = {
@@ -33,13 +31,11 @@
 		};
 
 		window.alohaQuery = jQuery.noConflict();
-		var require = {
-			waitSeconds : 15
-		};
 	</script>
 
 	<!-- include aloha -->
-	<script src="../../lib/require.js" data-main="../../lib/aloha.js" data-aloha-plugins=""></script>
+	<script src="../../lib/require.js"></script>
+	<script src="../../lib/aloha.js" data-aloha-plugins=""></script>
 
 	<!-- include testswarm inject script -->
 	<script>
@@ -54,13 +50,17 @@
 <body>
 	<!-- include the tests -->
 	<script>
-		require(
-			{
+		// define realtive baseUrl path to requireJS
+		// and paths back to aloha path
+		require({
+				baseUrl: '../../test/unit',
 				paths: {
-					'coretests': '../test/unit/coretests',
+					'aloha': Aloha.settings.baseUrl + '/aloha',
+					'vendor': Aloha.settings.baseUrl + '/vendor',
+					'util': Aloha.settings.baseUrl + '/util'
 				}
 			},
-			['coretests']
+			[ 'coretests' ]
 		);
 	</script>
 	<h1 id="qunit-header">Aloha Editor Core Test Suite</h1>

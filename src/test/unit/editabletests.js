@@ -6,41 +6,40 @@
 
 define("editabletest",
 ['aloha/jquery', 'testutils'],
-function(aQuery, TestUtils, undefined) {
+function(aQuery, TestUtils) {
 	"use strict";
 	
-/**
- * Do an enter test
- * @param editable the editable
- * @param container cursor container
- * @param offset offset of the cursor position
- * @param shift true for shift enter, false for normal enter
- * @param twice true for pressing enter twice, false for once
- * @param reference result selector
- */
-function doEnterTest(editable, container, offset, shift, twice, reference) {
-	// set cursor
-	TestUtils.setCursor(editable, container, offset);
-	// press enter
-	TestUtils.pressEnter(editable, shift);
-	// possibly again
-	if (twice) {
+	/**
+	 * Do an enter test
+	 * @param editable the editable
+	 * @param container cursor container
+	 * @param offset offset of the cursor position
+	 * @param shift true for shift enter, false for normal enter
+	 * @param twice true for pressing enter twice, false for once
+	 * @param reference result selector
+	 */
+	function doEnterTest(editable, container, offset, shift, twice, reference) {
+		// set cursor
+		TestUtils.setCursor(editable, container, offset);
+		// press enter
 		TestUtils.pressEnter(editable, shift);
-	}
-	// get the result
+		// possibly again
+		if (twice) {
+			TestUtils.pressEnter(editable, shift);
+		}
+		// get the result	
+		var result = Aloha.editables[0].getContents(true);
+		var expected = $(reference).contents();
 	
-	 var result = Aloha.editables[0].getContents(true);
-
-	var expected = $(reference).contents();
-
-	// compare the result with the expected result
-	deepEqual(result.extractHTML(), expected.extractHTML(), 'Check Operation Result');
-}
+		// compare the result with the expected result
+		deepEqual(result.extractHTML(), expected.extractHTML(), 'Check Operation Result');
+	}
 
 	// Prepare
 	var	$ = window.jQuery,
 		$body = $('body');
 	// Test whether Aloha is properly initialized
+	
 	/*
 	  Note: this test is currently necessary, because it will catch the initial 'aloha' Event.
 	  In the event handler of this event, due to a Bug Aloha will NOT YET be initialized, so if any test would fail when run then.

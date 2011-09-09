@@ -41,9 +41,6 @@ function( plugin ) {
     return plugin.create( 'helloworld', {
         init: function() {
             // Executed on plugin initialization
-        },
-        destroy: function() {
-            // Executed when this plugin is unloaded
         }
     });
 });
@@ -60,7 +57,7 @@ script tag loading Aloha:
 	<script 
 		src="scripts/require.js" 
 		data-main="scripts/aloha.js"
-		data-aloha-plugins="common/format,custom/helloworld" >
+		data-aloha-plugins="common/format,common/list,common/table" >
 	</script>
 </head>
 </html>
@@ -69,14 +66,9 @@ NOTE: If your plugin should be published to the public you should consider writi
 
 h3. Plugin bundles
 
-Aloha Editor comes with 4 bundles:
+Aloha Editor comes with a bundle of common plugins:
 
-* common
-* extra
-* media
-* collaboration
-
-You can use plugins from those bundles by adding the +bundlename/pluginname+ 
+You can use plugins from this bundle by adding the +common/pluginname+ 
 to the +data-aloha-plugins+ attribute of the script tag. See the example above. 
 Additionally you may add your own bundle, which can be located in a complete 
 different path. You can specify the path like this.
@@ -109,7 +101,7 @@ You can now easily load plugins from that bundles as follows
 </head>
 </html>
 
-INFO: This example will try to load following plugins:
+This example will try to load following plugins:
 
 * +scripts/aloha/lib/../plugins/common/link/lib/link-plugin.js+
 * +scripts/aloha/lib/../../mybundle/plugin1/lib/plugin1-plugin.js+
@@ -142,10 +134,9 @@ function() {
 	"use strict";
 
 	var componenttype = Class.extend({
-		doSome: function() {
-			// huhu
-		}
-	});
+    	doOther: function() {
+    		return 'didOther';
+    	}	});
 
 	return componenttype;
 
@@ -159,9 +150,9 @@ function( componenttype ) {
     "use strict";
 
     var component = new componenttype.extend({
-    	doOther: function() {
-    		// haha
-    	}
+		doSome: function() {
+			return 'didSome';
+		}
     });
     return component;
 
@@ -169,11 +160,11 @@ function( componenttype ) {
 </javascript>
 
 
-INFO: You should implement your module with as few dependencies as necessary. That could mean that you deliver a plugin with some modules but the modules are not loaded on plugin loading as in the example above.
+INFO: You should implement your module with as few dependencies as necessary. That could mean that you deliver a plugin with some modules but the modules are not loaded on plugin loading as in the example above. This allows other to use modules of your plugin on demand.
 
-Note that a module does not need to define its own name, it is simply named by its location on the file system.
+NOTE: A module does not need to define its own name, it is simply named by its location on the file system.
 
-Modules are created using +define(dependencies, callback)+, where the first parameter @dependencies@ is a list of other RequireJS modules this plugin needs in order to function properly. The second parameter is @callback@ is a function which is executed *as soon as all dependencies are loaded*. The first dependency is passed to the @callback@ as first parameter, the second dependency as the second, and so on.
+Modules are created using +define(dependencies, callback)+, where the first parameter @dependencies@ is an array of other RequireJS modules this plugin needs in order to function properly. The second parameter is @callback@ is a function which is executed *as soon as all dependencies are loaded*. The first dependency is passed to the @callback@ as first parameter, the second dependency as the second, and so on.
 
 NOTE: Circular dependencies need some special treatment. It is most often a sign of bad code, but if you need to do this, follow the "guide at the RequireJS website":http://requirejs.org/docs/api.html#circular.
 
@@ -186,7 +177,7 @@ So, at which place does Aloha look up modules? We'll explain this with a few exa
 | @i18n!myplugin/nls/i18n.js@ | depends on current language, see "Localization":#Localization for details. |
 | @text!myplugin/res/template.html@ | Load a text file (e.g. templates). See "Text file loading": text-files for details. |
 
-The bundle name is not part of the RequireJS definition, as this is installation-specific. You as plugin developer should not care about where other plugins are located on disk.
+NOTE: The bundle name is not part of the RequireJS definition, as this is installation-specific. You as plugin developer should not care about where other plugins are located on disk.
 
 h3. Classes and Extension Mechanisms
 

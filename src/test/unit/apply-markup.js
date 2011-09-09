@@ -6,7 +6,7 @@
 
 define("applymarkup",
 ['aloha/jquery','testutils'],
-function(jQuery, TestUtils, undefined) {
+function(jQuery, TestUtils) {
 	"use strict";
 	
 	var $ = jQuery;

@@ -141,4 +141,15 @@ GENTICS.Utils.Position.addMouseMoveCallback = function (callback) {
 	return (this.mouseMoveCallbacks.length - 1);
 };
 
+
+// Mousemove Hooks
+setInterval(function(){
+	GENTICS.Utils.Position.update();
+},500);
+
+jQuery('html').mousemove(function (e) {
+	GENTICS.Utils.Position.Mouse.x = e.pageX;
+	GENTICS.Utils.Position.Mouse.y = e.pageY;
+});
+
 });

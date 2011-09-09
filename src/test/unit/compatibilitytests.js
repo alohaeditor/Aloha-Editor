@@ -5,7 +5,7 @@
  */
 
 define("compatibilitytest",
-['aloha/jquery', 'jquery-plugin!../test/unit/jquery.alohaTest'],
+['aloha/jquery', 'jquery.alohaTest'],
 function(aQuery) {
 	"use strict";
 

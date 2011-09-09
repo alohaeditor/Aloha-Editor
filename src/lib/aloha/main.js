@@ -18,38 +18,56 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-// Ensure Aloha settings namespace and default
+// Ensure GENTICS Namespace
+GENTICS = window.GENTICS || {};
+GENTICS.Utils = GENTICS.Utils || {};
+
+// Ensure Aloha settings namespace 
 Aloha = window.Aloha || {};
 Aloha.settings = Aloha.settings || {};
 
-(function(){
-	
-	// Determs the base path of Aloha Editor which is supposed to be the path of aloha.js (this file)
-	Aloha.settings.baseUrl = Aloha.settings.baseUrl || getBaseUrl();
-	
-	// aloha base path is defined by a script tag with the data attribute 
-	// data-aloha-plugins and the filename aloha.js
-	function getBaseUrl() {
+define( 
+	'aloha',
+	[
+		'aloha/jquery',
+		'aloha/core',
+		'util/json2',
+		'vendor/jquery.json-2.2.min',
+		'vendor/jquery.store',
+		'util/class',
+		'util/lang',
+		'util/range',
+		'util/position',
+		'util/dom',
+		'aloha/jquery.aloha',
+	 	'aloha/ext',
+		'aloha/ext-alohaproxy',
+		'aloha/ext-alohareader',
+		'aloha/ext-alohatreeloader',
+		'aloha/ui',
+		'aloha/ui-attributefield',
+		'aloha/ui-browser',
+		'aloha/floatingmenu',
+		'aloha/editable',
+		'aloha/console',
+		'aloha/markup',
+		'aloha/message',
+		'aloha/plugin',
+		'aloha/selection',
+		'aloha/sidebar',
+		'aloha/repositorymanager',
+		'aloha/repository',
+		'aloha/repositoryobjects',
+		'aloha/rangy-core'
+	],
+	function( jQuery, Aloha ) {
 		
-		var alohaJs = jQuery('[data-aloha-plugins]'),
-			baseUrl = ( alohaJs.length ) ? alohaJs[0].src.replace( /\/?aloha.js$/ , '' ) : '';
-			
-		return baseUrl;
-	};
-	
-})();
+		Aloha.trigger('aloha-core-loaded');
 
-Aloha.settings.requireConfig = {
-	context: 'aloha',
-	baseUrl: Aloha.settings.baseUrl,
-	locale: Aloha.settings.locale || 'en'
-};
-
-// require Aloha main with correct namespace and locale settings
-require( 
-	Aloha.settings.requireConfig,
-	[ 'aloha/main' ]
+		// jQuery calls the init methode when the dom is ready
+		jQuery(Aloha.init);
+		
+		return Aloha;
+		
+	}
 );
-
-//require Aloha main with correct namespace and locale settings
-var requireAloha = require.config( Aloha.settings.requireConfig );

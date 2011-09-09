@@ -127,6 +127,7 @@ function ( jQuery, PluginManager ) {
 		 */
 		loadedPlugins: [],
 
+		requirePaths: [],
 		/**
 		 * Initialize the initialization process
 		 */
@@ -142,16 +143,6 @@ function ( jQuery, PluginManager ) {
 				window.rangy.init();
 			}
 			
-			// Mousemove Hooks
-			setInterval(function(){
-				GENTICS.Utils.Position.update();
-			},500);
-			
-			jQuery('html').mousemove(function (e) {
-				GENTICS.Utils.Position.Mouse.x = e.pageX;
-				GENTICS.Utils.Position.Mouse.y = e.pageY;
-			});
-			
 			// Load & Initialise
 			Aloha.stage = 'loadPlugins';
 			Aloha.loadPlugins(function(){
@@ -162,7 +153,7 @@ function ( jQuery, PluginManager ) {
 						Aloha.stage = 'initGui';
 						Aloha.initGui(function(){
 							Aloha.stage = 'aloha';
-							Aloha.trigger('aloha');
+							Aloha.trigger('aloha', Aloha);
 						});
 					});
 				});
@@ -230,10 +221,13 @@ function ( jQuery, PluginManager ) {
 				});
 
 				this.loadedPlugins = pluginNames;
-
+				this.requirePaths = paths;
+				console.log('plugins');
+				
 				// Main Require.js loading call, which fetches all the plugins.
 				require(
 					{
+						context: 'aloha',
 						paths: paths,
 						locale: this.settings.locale || this.defaults.locale || 'en'
 					},
@@ -385,24 +379,28 @@ function ( jQuery, PluginManager ) {
 			next();
 		},
 
-		createPromiseEvent: function(eventName) {
-			jQuery('body').createPromiseEvent(eventName);
+		createPromiseEvent: function( eventName ) {
+			jQuery('body').createPromiseEvent( eventName );
 		},
-		unbind: function(eventName,eventHandler) {
-			eventName = Aloha.correctEventName(eventName);
+		
+		unbind: function( eventName, eventHandler ) {
+			eventName = Aloha.correctEventName( eventName );
 			jQuery('body').unbind(eventName);
 		},
-		bind: function(eventName,eventHandler) {
-			eventName = Aloha.correctEventName(eventName);
+		
+		bind: function( eventName, eventHandler ) {
+			eventName = Aloha.correctEventName( eventName );
 			Aloha.log('debug', this, 'Binding ['+eventName+'], has ['+((jQuery('body').data('events')||{})[eventName]||[]).length+'] events');
 			jQuery('body').bind(eventName,eventHandler);
 		},
-		trigger: function(eventName,data) {
-			eventName = Aloha.correctEventName(eventName);
+		
+		trigger: function( eventName, data) {
+			eventName = Aloha.correctEventName( eventName );
 			Aloha.log('debug', this, 'Trigger ['+eventName+'], has ['+((jQuery('body').data('events')||{})[eventName]||[]).length+'] events');
-			jQuery('body').trigger(eventName,data);
+			jQuery('body').trigger( eventName, data );
 		},
-		correctEventName: function(eventName) {
+		
+		correctEventName: function( eventName ) {
 			var result = eventName.replace(/\-([a-z])/g,function(a,b){
 				return b.toUpperCase();
 			});

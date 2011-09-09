@@ -7,41 +7,12 @@
 	<!-- include qunit -->
 	<link rel="stylesheet" href="../dep/qunit.css" type="text/css"/>
 	<script type="text/javascript" src="../dep/qunit.js"></script>
-	
-	<script	src="../../lib/vendor/jquery-1.5.1.js" ></script>
-	<script>
-		// currently, we need to manually set the path to aloha
-		window.Aloha = {
-			settings : {
-				base : '../../lib/',
-				logLevels : {
-					'error': true,
-					'warn':  true,
-					'info':  false,
-					'debug': false
-				},
-				logHistory : {
-					levels : {
-						'error' : true,
-						'warn' : true,
-						'info' : false,
-						'debug' : false
-					}
-				},
-				errorhandling : true
-			}
-		};
-
-		// we want to use the same jQuery version for aloha
-		window.alohaQuery = window.jQuery;
-		var require = {
-			waitSeconds : 15
-		};
-	</script>
+	<script	src="../../lib/vendor/jquery-1.6.1.js" ></script>
 
 	<!-- include aloha -->
-	<script src="../../lib/require.js" data-main="../../lib/aloha.js" data-aloha-plugins=""></script>
-
+	<script src="../../lib/require.js"></script>
+	<script src="../../lib/aloha.js" data-aloha-plugins=""></script>
+	
 	<!-- include testswarm inject script -->
 	<script>
 		var url = window.location.search;
@@ -55,13 +26,13 @@
 <body>
 	<!-- include the tests -->
 	<script>
-		require(
-			{
-				paths: {
-					'apply-markup': '../test/unit/apply-markup',
-					'testutils': '../test/unit/testutils'
-				}
-			},
+		require({
+			paths: {
+				'aloha': Aloha.settings.baseUrl + '/aloha',
+				'vendor': Aloha.settings.baseUrl + '/vendor',
+				'util': Aloha.settings.baseUrl + '/util'
+			}
+		},
 			['apply-markup']
 		);
 	</script>

@@ -5,8 +5,8 @@
  */
 
 define("coretests",
-['aloha/jquery'],
-function(aQuery, undefined) {
+[ 'aloha/jquery' ],
+function( aQuery ) {
 	"use strict";
 	
 	// Prepare
