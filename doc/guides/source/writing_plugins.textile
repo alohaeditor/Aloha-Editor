@@ -46,216 +46,38 @@ function( plugin ) {
 });
 </javascript>
 
-This code requires the core plugin module (which defines the @plugin@ class) and creates a plugin with the name @helloworld@.
-
-Loading the new plugin is easy, just add it to the list of plugins in the main
-script tag loading Aloha:
-
-<html>
-<head>
-	<link rel="stylesheet" href="css/aloha.css" type="text/css">
-	<script 
-		src="scripts/require.js" 
-		data-main="scripts/aloha.js"
-		data-aloha-plugins="common/format,common/list,common/table" >
-	</script>
-</head>
-</html>
-
 NOTE: If your plugin should be published to the public you should consider writing a @package.json@ file with metadata about the plugin. Furthermore, the name of your plugin name should be globally unique.
 
-h3. Plugin bundles
+This code requires the core plugin module (which defines the @plugin@ class) and creates a plugin with the name @pluginA@.
 
-Aloha Editor comes with a bundle of common plugins:
-
-You can use plugins from this bundle by adding the +common/pluginname+ 
-to the +data-aloha-plugins+ attribute of the script tag. See the example above. 
-Additionally you may add your own bundle, which can be located in a complete 
-different path. You can specify the path like this.
-
-<javascript>
-Aloha = window.Aloha || {};
-Aloha.settings = {
-	bundles: {
-		// Path for custom bundle relative from require.js and aloha.js path
-		custom1: '../mybundle',
-		// Path for custom bundle with an absolute path at the server
-		custom2: '/yourbundle',
-		// Path for a custom bundle located at another server 
-		//(NOTE: cross site scritping issues with that configuration)
-		custom3: 'http://theserver.com/their/bundle'
-	}
-};
-</javascript>
-
-You can now easily load plugins from that bundles as follows
-
-<html>
-<head>
-	<link rel="stylesheet" href="css/aloha.css" type="text/css">
-	<script 
-		src="scripts/aloha/require.js"
-		data-main="scripts/aloha/aloha.js" 
-		data-aloha-plugins="common/link,custom1/plugin1,custom2/plugin2,custom3/plugin3" >
-	</script>
-</head>
-</html>
-
-This example will try to load following plugins:
-
-* +scripts/aloha/lib/../plugins/common/link/lib/link-plugin.js+
-* +scripts/aloha/lib/../../mybundle/plugin1/lib/plugin1-plugin.js+
-* +/yourbundle/plugin2/lib/plugin2-plugin.js+
-* +http://theserver.com/their/bundle/plugin3/lib/plugin3-plugin.js+
-
-
-h3. RequireJS modules explained
-
-We use "RequireJS":http://requirejs.org to manage JavaScript dependencies, that's why some
-basic understanding is very helpful. By using RequireJS, we gain some nice benefits: First, we the dependency management between JavaScript files is done for us, meaning they are included in the correct order. Second, we do not pollute the global namespace, allowing tricks like "loading two different versions":http://requirejs.org/docs/requirements.html#8 of Aloha on a single page.
-
-The basic element of RequireJS is a so called +module+ which is one file that defines and exports a JavaScript object. This reference can be used in other modules by *requiring* that module.
-
-In the following example, we define a components plugin with two modules. The first module @componenttype@ defines two classes. The second module @component@ has a dependency to @componenttype@, and RequireJS injects what has been returned by @componenttype@.
-
-<javascript filename="myplugin/lib/components-plugin.js">
+<javascript filename="pluginA/lib/pluginA-plugin.js">
 define(
-[ 'aloha/plugin' ],
-function( plugin ) {
-    "use strict";
-	// we do nothing but provide component modules...
-    return plugin.create( 'components', {});
-});
-</javascript>
-<javascript filename="myplugin/lib/componenttype.js">
-define(
-[], // no dependency
-function() {
-	"use strict";
-
-	var componenttype = Class.extend({
-    	doOther: function() {
-    		return 'didOther';
-    	}	});
-
-	return componenttype;
-
-});
-</javascript>
-
-<javascript filename="myplugin/lib/component.js">
-define(
-['./componenttype'], // dependency in the same path
-function( componenttype ) {
+[ 'aloha/plugin', 'aloha/console'],
+function( plugin, console ) {
     "use strict";
 
-    var component = new componenttype.extend({
-		doSome: function() {
-			return 'didSome';
-		}
-    });
-    return component;
-
-});
-</javascript>
-
-
-INFO: You should implement your module with as few dependencies as necessary. That could mean that you deliver a plugin with some modules but the modules are not loaded on plugin loading as in the example above. This allows other to use modules of your plugin on demand.
-
-NOTE: A module does not need to define its own name, it is simply named by its location on the file system.
-
-Modules are created using +define(dependencies, callback)+, where the first parameter @dependencies@ is an array of other RequireJS modules this plugin needs in order to function properly. The second parameter is @callback@ is a function which is executed *as soon as all dependencies are loaded*. The first dependency is passed to the @callback@ as first parameter, the second dependency as the second, and so on.
-
-NOTE: Circular dependencies need some special treatment. It is most often a sign of bad code, but if you need to do this, follow the "guide at the RequireJS website":http://requirejs.org/docs/api.html#circular.
-
-So, at which place does Aloha look up modules? We'll explain this with a few examples:
-
-|_. Definition in RequireJS |_. File Name |
-| @myplugin/foo@ | @path_to_bundle/myplugin/lib/foo.js@ <br /> Including other RequireJS modules is the most common case |
-| @myplugin/vendor/legacy_lib@ | @path_to_bundle/myplugin/vendor/legacy_lib.js@ <br /> Include a legacy library |
-| @css!myplugin/css/cssfile.css@ | @path_to_bundle/myplugin/css/cssfile.css@ <br /> Includes the CSS file in the document @<head>@. Explained "here": including-ccs-files |
-| @i18n!myplugin/nls/i18n.js@ | depends on current language, see "Localization":#Localization for details. |
-| @text!myplugin/res/template.html@ | Load a text file (e.g. templates). See "Text file loading": text-files for details. |
-
-NOTE: The bundle name is not part of the RequireJS definition, as this is installation-specific. You as plugin developer should not care about where other plugins are located on disk.
-
-h3. Classes and Extension Mechanisms
-
-We use the class definition syntax of "John Resig":http://ejohn.org - slightly adjusted. This means you can create a new class with +Class.extend({ ....})+.
-
-The following example shows how to create and instanciate a class, and how the constructor (which must be named +_construct()+) is called.
-
-<javascript>
-var Greeter = Class.extend({
-    name: null,
-
-    _constructor: function(name) {
-        this.name = name;
-    },
-
-    greet: function() {
-        alert('Good Morning ' + this.name);
-    }
-});
-var greeterInstance = new Greeter('Christopher');
-greeterInstance.greet(); // alerts "Good Morning Chistopher"
-</javascript>
-
-Now, if we want to subclass @Greeter@, this is very easy: Just use @Greeter.extend@ for that:
-
-<javascript>
-var GreeterForMen = Greeter.extend({
-	_constructor: function(name) {
-		this._super('Mr. ' + name);
-	}
-});
-var greeterInstance = new GreeterForMen('Christopher');
-greeterInstance.greet(); // alerts "Good Morning Mr. Chistopher"
-</javascript>
-
-You can use +this._super()+ to call the superclass constructor.
-
-h3. Mixin Support
-
-Our class definition also supports mixins, so you can specify multiple arguments to @Class.extend@. For example, in order to make your class observable, you can mix in @core/mixin.Observable@:
-
-WARNING: The following code is not yet correct; it is however the way we want to change Aloha core.
-
-<javascript>
-define(
-['core/mixin'],
-function(mixin) {
-    "use strict";
-
-    return Class.extend(mixin.Observable, {
-    	// your methods here
+    return plugin.create( 'pluginA', {
+    	defaults: {
+    		value: 10
+    	},
+        init: function() {
+            // Executed on plugin initialization
+			console.log( this.settings.value );
+        }
     });
 });
 </javascript>
 
-A mixin itself should not use Class.extend, but instead just return a simple object. You see this in the following example:
 
-<javascript filename="core/observable.js">
-define(
-[],
-function() {
-	"use strict";
-	var exports = {};
+As developer you can define plugin default settings by specifying +Aloha.defaults.pluginA+ and these default setting will be merged with the +Aloha.setttings+. Once defined as default you can always access the settings without extensive checking its existence.  
 
-	exports.Observable = {
-		bind: function(eventType, handler, scope) {
-			// implement method here
-		},
-		trigger: function(eventType) {
-			// implement method here
-		}
-	};
 
-	return exports;
-});
+To read the settings of a specific plugin you can use 
+
+<javascript>
+	var setttings = requireAloha('pluginA/pluginA-plugin').settings;
 </javascript>
 
-For a list of current mixins, you can soon check the API doc. Right now, there is only +Observable+.
 
 h3. Localization
 
@@ -326,9 +148,11 @@ By defining +i18n!myplugin/nls/i18n+ as requirement, we get a special object inj
 all localized strings. There exists a +t('key')+ method on this object which returns the translation
 for the passed key.
 
-h3. Text Files
+h3. Loading resources
 
-WARNING: not yet done
+
+
+
 
 h3. Including CSS files
 
@@ -339,13 +163,12 @@ define(
 ['core/plugin', 'css!myplugin/css/myplugin.css'],
 function(Plugin) {
     "use strict";
-
+	
+	// Add this stage css is loaded
+	
     return Plugin.create('myplugin', {
         init: function() {
             // Executed on plugin initialization
-        },
-        destroy: function() {
-            // Executed when this plugin is unloaded
         }
     });
 });
@@ -358,39 +181,45 @@ If you for some reason depend on the fact that a CSS file is included at a parti
 
 h3. Lifecycle of Plugins
 
-WARNING: not yet done.
+Currently there are 2 different stages of Aloha plugins
+
+* aloha-plugins-loaded means that all initially defined plugins and their dependencies are loaded. 
+* aloha-plugins-ready means that all plugins init method was called.
 
 h3. Dependencies between plugins
 
-If a plugin A needs plugin B to work, you cannot just specify it as a dependency of another RequireJS module, as this will break without a meaningful error message to the user.
+If a plugin A needs plugin B to work, you should not specify it as a dependency of plugin A in the +define()+ methode, as this will break without a meaningful error message to the user.
 
 Let's see how to define a dependency to the @block@-Plugin:
 
-<javascript filename="helloworld/lib/helloworld-plugin.js">
+<javascript filename="pluginA/lib/pluginA-plugin.js">
 define(
-['core/plugin'],
-function(Plugin) {
+[ 'aloha/plugin' ],
+function( Plugin ) {
     "use strict";
 
-    return Plugin.create('helloworld', {
-    	dependencies: ['block'],
+    return Plugin.create('pluginA', {
+    	
+    	dependencies: ['pluginB'],
 
         init: function() {
-        	require('block/blockmanager', function(BlockManager) {
-        		// Use BlockManager here
+        	
+            // Executed on pluginA initialization
+        	// pluginB ist not available here 
+        
+        	requireAloha( 'pluginA/module', function( module ) {
+
+        		// Use pluginB's module here
         	});
-            // Executed on plugin initialization
-        },
-        destroy: function() {
-            // Executed when this plugin is unloaded
         }
     });
 });
 </javascript>
 
 Here, we specify a dependency to another plugin using the +dependencies+ property of our @Plugin@. Then, the plugin manager makes sure that the dependent plugin is actually loaded, and outpus an error message if not.
-When everything is loaded, we can access a module from the other plugin by using a nested require() statement, as shown for the +Blockmanager+ in the example above.
+When everything is loaded, we can access a module from the other plugin by using the requireAloha() statement, as shown for the +pluginB+ in the example above.
 
 h3. Changelog
 
 * July 3, 2011: Initial version by "Sebastian Kurfürst":credits.html#skurfuerst and "Christopher Hlubek":credits.html#hlubek
+* Sept 11, 2011: Adopted to current plugin lifecycle in sync with tests added resource loading by "Haymo Meran":credits#haymo

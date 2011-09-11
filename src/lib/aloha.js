@@ -20,6 +20,11 @@
 
 // Ensure Aloha settings namespace and default
 Aloha = window.Aloha || {};
+
+// reset defaults. Users should use settings. 
+Aloha.defaults = {};
+
+// guarantee the settings namespace even if not set by user
 Aloha.settings = Aloha.settings || {};
 
 (function(){
@@ -29,27 +34,63 @@ Aloha.settings = Aloha.settings || {};
 	
 	// aloha base path is defined by a script tag with the data attribute 
 	// data-aloha-plugins and the filename aloha.js
+	// no jQuery at this stage...
 	function getBaseUrl() {
 		
-		var alohaJs = jQuery('[data-aloha-plugins]'),
-			baseUrl = ( alohaJs.length ) ? alohaJs[0].src.replace( /\/?aloha.js$/ , '' ) : '';
-			
+		var
+			baseUrl = './',
+			i,
+			script,
+			scripts = document.getElementsByTagName("script"),
+			regexAlohaJs = /\/?aloha.js$/,
+			regexJs = /[^\/]*\.js$/;
+		
+        for ( i = 0; i < scripts.length && ( script = scripts[i] ); ++i ) {
+        	
+            // take aloha.js or first ocurrency of data-aloha-plugins 
+        	// and script ends with .js
+        	if ( regexAlohaJs.test( script.src ) ) {
+        		baseUrl = script.src.replace( regexAlohaJs , '' );
+        		break;
+        	}            
+            if ( baseUrl === './' && script.getAttribute( 'data-aloha-plugins')
+            		&& regexJs.test(script.src ) ) {
+            	baseUrl = script.src.replace( regexJs , '' );
+            }
+        }
+        
 		return baseUrl;
+	};
+	
+	// prepare the require config object and remember it
+	Aloha.settings.requireConfig = {
+			context: 'aloha',
+			baseUrl: Aloha.settings.baseUrl,
+			locale: Aloha.settings.locale
+	};
+
+	var req = require.config( Aloha.settings.requireConfig );
+	
+	// make a shorthand call for Aloha
+	window.requireAloha = function( callback ) {
+		
+		// returns the Aloha object
+		if ( arguments.length == 0 ) {
+			return req( 'aloha' );
+		}
+		
+		// passes the Aloha object to the passed callback function
+		if ( arguments.length == 1 && typeof callback === 'function' ) {
+			return req( ['aloha'], callback );
+		}
+		return req.apply( this, arguments );
 	};
 	
 })();
 
-Aloha.settings.requireConfig = {
-	context: 'aloha',
-	baseUrl: Aloha.settings.baseUrl,
-	locale: Aloha.settings.locale || 'en'
-};
 
 // require Aloha main with correct namespace and locale settings
 require( 
-	Aloha.settings.requireConfig,
-	[ 'aloha/main' ]
+		Aloha.settings.requireConfig,
+		[ 'aloha/main' ]
 );
-
-//require Aloha main with correct namespace and locale settings
-var requireAloha = require.config( Aloha.settings.requireConfig );

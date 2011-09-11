@@ -4,32 +4,40 @@
 	<meta charset="UTF-8" />
 	<title>Aloha Editor inserthml Test Suite</title>
 	<!-- include qunit -->
-	<link rel="stylesheet" href="../dep/qunit.css" type="text/css"/>
+	<link rel="stylesheet" href="../vendor/qunit.css" type="text/css"/>
 
-	<script type="text/javascript" src="../dep/qunit.js"></script>
+	<script type="text/javascript" src="../vendor/qunit.js"></script>
 
 	<!-- include jquery -->
 	<script	src="../../lib/vendor/jquery-1.6.1.js" ></script>
-	<script type="text/javascript" src="../dep/jquery.simulate.js"></script>
+	<script type="text/javascript" src="../vendor/jquery.simulate.js"></script>
 	<script>
+		var Aloha = {
+			settings: {
+				baseUrl: '../../lib'
+			}
+		};
 		window.alohaQuery = jQuery.noConflict();
 	</script>
 
 	<!-- include aloha -->
-	<script src="../../lib/require.js" data-main="../../lib/aloha.js" data-aloha-plugins="common/commands"></script>
+	<script src="../../lib/require.js"></script>
+	<script src="../../lib/aloha.js" data-aloha-plugins="common/commands"></script>
 
 	<!-- inject into testswarm -->
-	<script type="text/javascript" src="../dep/swarminject.js"></script>
+	<script type="text/javascript" src="../vendor/swarminject.js"></script>
 	<script>
-		// load command test suite
-		require(
-			{
+		// define realtive baseUrl path to requireJS
+		// and paths back to aloha path
+		require({
+				baseUrl: '../../test/unit',
 				paths: {
-					'commandtest': '../test/unit/commandtest',
-					'testutils': '../test/unit/testutils'
+					'aloha': Aloha.settings.baseUrl + '/aloha',
+					'vendor': Aloha.settings.baseUrl + '/vendor',
+					'util': Aloha.settings.baseUrl + '/util'
 				}
 			},
-			['commandtest']
+			[ 'commandtest' ]
 		);
 	</script>
 </head>

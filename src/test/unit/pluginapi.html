@@ -5,20 +5,25 @@
 	<title>Aloha Editor Plugin API Test Suite</title>
 	
 	<!-- include qunit -->
-	<link rel="stylesheet" href="../dep/qunit.css" type="text/css"/>
-	<script type="text/javascript" src="../dep/jquery-1.6.1.js"></script>
-	<script type="text/javascript" src="../dep/qunit.js"></script>
+	<link rel="stylesheet" href="../vendor/qunit.css" type="text/css"/>
+	<script type="text/javascript" src="../vendor/jquery-1.6.1.js"></script>
+	<script type="text/javascript" src="../vendor/qunit.js"></script>
 	<script>
 
-		// currently, we need to manually set the path to aloha
-		var alohaQuery = jQuery;
+	
 		var Aloha = {};
 		Aloha.settings = {
-			baseUrl: '../../lib',
+			jQuery: $,
 			bundles: {
 				// Path for custom bundle relative from require.js path
 				'custom1': '../test/unit',
 				'custom2': location.href.replace(/\/?pluginapi.html$/,'')
+			},
+			plugintest1: {
+				value1: -1,
+				value3: {
+					valueA: 'Z'
+				}
 			},
 			locale: 'de'
 		};

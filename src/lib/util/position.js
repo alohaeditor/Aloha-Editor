@@ -4,12 +4,13 @@
  * Licensed unter the terms of http://www.aloha-editor.com/license.html
  */
 // Start Closure
-define(
-[
-	'aloha/jquery',
-],
+// Ensure GENTICS Namespace
+GENTICS = window.GENTICS || {};
+GENTICS.Utils = GENTICS.Utils || {};
+define(['aloha/jquery'],
 function(jQuery) {
 	"use strict";
+	
 	var
 		$ = jQuery,
 		GENTICS = window.GENTICS,

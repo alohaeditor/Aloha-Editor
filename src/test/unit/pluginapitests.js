@@ -9,46 +9,53 @@ define(
 function( jQuery ) {
 	"use strict";
 	
-	console.log('start tests');
-	
-	// Test whether Aloha is properly initialized
-	asyncTest( 'Aloha Startup Test', function() {
-		
-		jQuery( 'body' ).bind( 'aloha', function() {
-			ok( true, 'Aloha Event was fired');
-			jQuery( '#edit' ).aloha();
-			jQuery( '#edit2' ).aloha();
-			start();
-		});
-		
-		setTimeout( function() {
-			ok(false, 'Aloha was not initialized within 60 seconds');
-			start();
-		}, 2000);
-		
-	});
-	
 	jQuery( 'body' ).bind( 'aloha', function() {
 		
 		var Aloha = requireAloha('aloha');
 		
+		asyncTest('Aloha plugin defaults and settings', function() {
+			var plugin = requireAloha('plugintest1/plugintest1-plugin');
+			equal(plugin.settings.value2, 2, 'defaults');
+			equal(plugin.settings.value1, -1, 'settings');
+			equal(plugin.settings.value3.valueB, 'B', 'nested defaults');
+			equal(plugin.settings.value3.valueA, 'Z', 'nested settings');
+			start();
+		});
+		
+		asyncTest('Aloha plugin paths [lib, vendor, nls, res, css]', function() {
+			requireAloha( ['plugintest1/test', 'plugintest1/vendor/test', 'i18n!plugintest1/nls/i18n',
+		               'plugintest1/test', 'plugintest1/css/test'],
+				function( lib, vendor, i18n, res, css ) {
+					ok(true, 'Plugin loaded with all path');
+					equal(lib.status, 'ok', 'lib ok');
+					equal(vendor.status, 'ok', 'vendor ok');
+					equal(typeof i18n.t, 'function', 'nls ok');
+					equal(res.status, 'ok', 'res ok');
+					equal(css.status, 'ok', 'css ok');
+					start();
+				}
+			);
+			setTimeout(function() {
+				ok(false, 'Aloha plugin localization did not return in 5 seconds');
+				start();
+			}, 
+			5000);
+		});
+		
 		asyncTest('Aloha relative bundle plugin resource loading', function() {
-			console.log( 'test paths' );
-				
 			var url = Aloha.getPluginUrl('plugintest1') + '/res/test.json';
 			jQuery.ajax({
 				url: url,
 				dataType: 'json',		
 				success: function( data ) {
 					ok(true, 'Ressource1 loaded from ' + url);
-					// Test if legacy jQuery version is correct
-					test('Resource1 data', function() {
+					test( 'Test loaded data', function() {
 						equals(data.data, 'ok', 'Loaded data is correct');
 					});
 					start();
 				},
 				error: function( error ) {
-					ok(false, 'Failure loading plugin resource. URL was ' + url);
+					ok(false, 'Error: '+ error.statusText + '. URL was ' + url );
 					start();
 				}
 			});
@@ -61,10 +68,7 @@ function( jQuery ) {
 				dataType: 'json',		
 				success: function( data ) {
 					ok(true, 'Ressource2 loaded from ' + url);
-					// Test if legacy jQuery version is correct
-					test('Resource2 data', function() {
-						equals(data.data, 'ok', 'Loaded data is correct');
-					});
+					equals(data.data, 'ok', 'Loaded data is correct');
 					start();
 				},
 				error: function( error ) {
@@ -76,11 +80,7 @@ function( jQuery ) {
 		});
 		
 		asyncTest('Aloha plugin default localization (fallback)', function() {
-			require({
-					context: 'aloha',
-					paths: Aloha.requirePaths
-				},
-				['i18n!plugintest2/nls/i18n'],
+			requireAloha( ['i18n!plugintest2/nls/i18n'],
 				function( i18n ) {
 					var key = i18n.t('plugin2.test1');
 					if ( key == 'fallback' ) {
@@ -92,18 +92,14 @@ function( jQuery ) {
 				}
 			);
 			setTimeout(function() {
-				ok(false, 'Localization did not return in 5 seconds');
+				ok(false, 'Aloha plugin localization did not return in 5 seconds');
 				start();
 			}, 
 			5000);
 		});
 		
 		asyncTest('Aloha plugin german localization', function() {
-			require({
-					context: 'aloha',
-					paths: Aloha.requirePaths
-				},
-				['i18n!plugintest1/nls/i18n'],
+			requireAloha( ['i18n!plugintest1/nls/i18n'],
 				function( i18n ) {
 					var key = i18n.t('plugin1.test1');
 					if ( key == 'german' ) {
@@ -115,17 +111,44 @@ function( jQuery ) {
 				}
 			);
 			setTimeout(function() {
-				ok(false, 'Localization did not return in 5 seconds');
+				ok(false, 'Aloha plugin localization did not return in 5 seconds');
 				start();
 			}, 
 			5000);
 		});
 		
-		test('Aloha Plugin invocation Test', function() {
+		test('Aloha plugin invocation Test', function() {
 			equal(window.AlohaPlugin1, true, 'Invocation of the plugin init method.');
 		});
-		test('Aloha Plugin module loading of plugins', function() {
-			equal(component.doSome(), 'didSome', 'Loaded plugin module.');
+		
+		asyncTest('Aloha plugin async dynamic module loading', function() {
+			requireAloha( ['plugintest1/component'],
+				function( component ) {
+					ok(true, 'module loaded.');
+					equal(component.doOther(), 'didOther', 'module function present.');
+					equal(component.doSome(), 'didSome', 'function from dependend module present.');
+					start();
+				}
+			);
+			setTimeout(function() {
+				ok(false, 'Aloha plugin dynamically async module loading did not return in 5 seconds');
+				start();
+			}, 
+			5000);
+		});
+		
+		asyncTest('Aloha cross plugin async dynamic module loading', function() {
+			requireAloha( ['plugintest2/component'],
+				function( component ) {
+					equal(component.doSome(), 'didSome', 'Sucessfully dynamically async loaded cross plugin module dependency.');
+					start();
+				}
+			);
+			setTimeout(function() {
+				ok(false, 'Aloha plugin dynamically async module loading did not return in 5 seconds');
+				start();
+			}, 
+			5000);
 		});
 	});
 });

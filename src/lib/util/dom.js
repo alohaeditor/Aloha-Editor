@@ -18,6 +18,10 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+// Ensure GENTICS Namespace
+GENTICS = window.GENTICS || {};
+GENTICS.Utils = GENTICS.Utils || {};
+
 define(
 ['aloha/jquery', 'util/class'],
 function(jQuery, Class) {

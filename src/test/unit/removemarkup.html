@@ -4,29 +4,14 @@
 	<meta charset="UTF-8" />
 	<title>Aloha Editor Remove Markup Test Suite</title>
 	<!-- include qunit -->
-	<link rel="stylesheet" href="../dep/qunit.css" type="text/css"/>
-	<script type="text/javascript" src="../dep/qunit.js"></script>
+	<link rel="stylesheet" href="../vendor/qunit.css" type="text/css"/>
+	<script type="text/javascript" src="../vendor/qunit.js"></script>
 	<script	src="../../lib/vendor/jquery-1.5.1.js" ></script>
 	<script>
 		// currently, we need to manually set the path to aloha
 		window.Aloha = {
 			settings : {
-				base : '../../lib/',
-				logLevels : {
-					'error': true,
-					'warn':  true,
-					'info':  false,
-					'debug': false
-				},
-				logHistory : {
-					levels : {
-						'error' : true,
-						'warn' : true,
-						'info' : false,
-						'debug' : false
-					}
-				},
-				errorhandling : true
+				baseUrl : '../../lib/'
 			}
 		};
 
@@ -37,7 +22,8 @@
 	</script>
 
 	<!-- include aloha -->
-	<script src="../../lib/require.js" data-main="../../lib/aloha.js" data-aloha-plugins=""></script>
+	<script src="../../lib/require.js"></script>
+	<script src="../../lib/aloha.js" data-aloha-plugins=""></script>
 
 	<!-- include testswarm inject script -->
 	<script>
@@ -52,14 +38,17 @@
 <body>
 	<!-- include the tests -->
 	<script>
-		require(
-			{
+		// define realtive baseUrl path to requireJS
+		// and paths back to aloha path
+		require({
+				baseUrl: '../../test/unit',
 				paths: {
-					'remove-markup': '../test/unit/remove-markup',
-					'testutils': '../test/unit/testutils'
+					'aloha': Aloha.settings.baseUrl + '/aloha',
+					'vendor': Aloha.settings.baseUrl + '/vendor',
+					'util': Aloha.settings.baseUrl + '/util',
 				}
 			},
-			['remove-markup']
+			[ 'remove-markup' ]
 		);
 	</script>
 	<h1 id="qunit-header">Aloha Editor Remove Markup Test Suite</h1>

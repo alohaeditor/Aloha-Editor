@@ -47,6 +47,84 @@ function(Dependency) {
 });
 </javascript>
 
+h3. Classes and Extension Mechanisms
+
+We use the class definition syntax of "John Resig":http://ejohn.org - slightly adjusted. This means you can create a new class with +Class.extend({ ....})+.
+
+The following example shows how to create and instanciate a class, and how the constructor (which must be named +_construct()+) is called.
+
+<javascript>
+var Greeter = Class.extend({
+    name: null,
+
+    _constructor: function(name) {
+        this.name = name;
+    },
+
+    greet: function() {
+        alert('Good Morning ' + this.name);
+    }
+});
+var greeterInstance = new Greeter('Christopher');
+greeterInstance.greet(); // alerts "Good Morning Chistopher"
+</javascript>
+
+Now, if we want to subclass @Greeter@, this is very easy: Just use @Greeter.extend@ for that:
+
+<javascript>
+var GreeterForMen = Greeter.extend({
+	_constructor: function(name) {
+		this._super('Mr. ' + name);
+	}
+});
+var greeterInstance = new GreeterForMen('Christopher');
+greeterInstance.greet(); // alerts "Good Morning Mr. Chistopher"
+</javascript>
+
+You can use +this._super()+ to call the superclass constructor.
+
+h3. Mixin Support
+
+Our class definition also supports mixins, so you can specify multiple arguments to @Class.extend@. For example, in order to make your class observable, you can mix in @core/mixin.Observable@:
+
+WARNING: The following code is not yet correct; it is however the way we want to change Aloha core.
+
+<javascript>
+define(
+['core/mixin'],
+function(mixin) {
+    "use strict";
+
+    return Class.extend(mixin.Observable, {
+    	// your methods here
+    });
+});
+</javascript>
+
+A mixin itself should not use Class.extend, but instead just return a simple object. You see this in the following example:
+
+<javascript filename="core/observable.js">
+define(
+[],
+function() {
+	"use strict";
+	var exports = {};
+
+	exports.Observable = {
+		bind: function(eventType, handler, scope) {
+			// implement method here
+		},
+		trigger: function(eventType) {
+			// implement method here
+		}
+	};
+
+	return exports;
+});
+</javascript>
+
+For a list of current mixins, you can soon check the API doc. Right now, there is only +Observable+.
+
 h3. Classes
 
 WARNING: Not current anymore, we strive for a more JS - style.
@@ -108,10 +186,12 @@ All singletons should follow this structure:
 define([],
 function() {
 	"use strict";
-
-	return new (Class.extend({
+	
+	var component = Class.extend({
 		// Class definition here
-	}))();
+	});
+	
+	return new component();
 });
 </javascript>
 

@@ -4,20 +4,15 @@
 	<meta charset="UTF-8" />
 	<title>Aloha Editor Editable Test Suite</title>
 	<!-- include qunit -->
-	<link rel="stylesheet" href="../dep/qunit.css" type="text/css"/>
-	<script type="text/javascript" src="../dep/qunit.js"></script>
+	<link rel="stylesheet" href="../vendor/qunit.css" type="text/css"/>
+	<script type="text/javascript" src="../vendor/qunit.js"></script>
 	<script	src="../../lib/vendor/jquery-1.6.1.js" ></script>
-	<script type="text/javascript" src="../dep/jquery.simulate.js"></script>
-	<script>
-		// currently, we need to manually set the path to aloha
-		window.Aloha = {
-			settings : {
-				baseUrl : '../../lib/'
-			}
-		};
-	</script>
+	<script type="text/javascript" src="../vendor/jquery.simulate.js"></script>
 
 	<!-- include aloha -->
+	<script>
+		var alohaQuery = $;
+	</script>
 	<script src="../../lib/require.js"></script>
 	<script src="../../lib/aloha.js" data-aloha-plugins=""></script>
 

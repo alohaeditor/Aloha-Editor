@@ -4,36 +4,18 @@
 	<meta charset="UTF-8" />
 	<title>Aloha Editor Core Test Suite</title>
 	<!-- include qunit -->
-	<link rel="stylesheet" href="../dep/qunit.css" type="text/css"/>
-	<script type="text/javascript" src="../dep/jquery-1.6.1.js"></script>
-	<script type="text/javascript" src="../dep/qunit.js"></script>
-	<script>
-		// currently, we need to manually set the path to aloha
-		window.Aloha = {
-			settings : {
-				base : '../../lib/',
-				logLevels : {
-					'error': true,
-					'warn':  true,
-					'info':  false,
-					'debug': false
-				},
-				logHistory : {
-					levels : {
-						'error' : true,
-						'warn' : true,
-						'info' : false,
-						'debug' : false
-					}
-				},
-				errorhandling : true
-			}
-		};
-
-		window.alohaQuery = jQuery.noConflict();
-	</script>
+	<link rel="stylesheet" href="../vendor/qunit.css" type="text/css"/>
+	<script type="text/javascript" src="../vendor/jquery-1.5.1.js"></script>
+	<script type="text/javascript" src="../vendor/qunit.js"></script>
 
 	<!-- include aloha -->
+	<script>
+		// set defined jQuery version and test later if alohaQuery is exported properly 
+		var Aloha = {};
+		Aloha.settings = {
+			jQuery: jQuery
+		};
+	</script>
 	<script src="../../lib/require.js"></script>
 	<script src="../../lib/aloha.js" data-aloha-plugins=""></script>
 
@@ -50,18 +32,11 @@
 <body>
 	<!-- include the tests -->
 	<script>
-		// define realtive baseUrl path to requireJS
+		
+	// define realtive baseUrl path to requireJS
 		// and paths back to aloha path
-		require({
-				baseUrl: '../../test/unit',
-				paths: {
-					'aloha': Aloha.settings.baseUrl + '/aloha',
-					'vendor': Aloha.settings.baseUrl + '/vendor',
-					'util': Aloha.settings.baseUrl + '/util'
-				}
-			},
-			[ 'coretests' ]
-		);
+		require( ['coretests'] );
+		
 	</script>
 	<h1 id="qunit-header">Aloha Editor Core Test Suite</h1>
 	<h2 id="qunit-banner"></h2>
@@ -71,3 +46,4 @@
 	<div id="qunit-fixture"><div id="edit"></div><div id="edit2"></div></div>
 </body>
 </html>
+git commit -a -m 'load Aloha now in require context aloha. Added language settings mapping. Cahgned jquery loading. Migrated all tests.'

@@ -5,14 +5,12 @@
  */
 
 define("command.inserthtml",
-['aloha/jquery', 'testutils'],
-function(aQuery, TestUtils, undefined) {
+['testutils'],
+function( TestUtils ) {
 	"use strict";
 	
-	if (window.Aloha === undefined || window.Aloha === null) {
-			window.Aloha = {};		
-	}
-
+	var aQuery = window.alohaQuery;
+	
 	// Test whether Aloha is properly initialized
 	asyncTest( 'Aloha Startup Test', function() {
 		var timeout = setTimeout(function() {
@@ -63,7 +61,7 @@ function(aQuery, TestUtils, undefined) {
 					// place the selection (and remove the selection marker)
 					range = TestUtils.rangeFromMarker( editable ),
 					result,
-					Aloha = require('aloha');
+					Aloha = requireAloha('aloha');
 				
 				range.select();
 //				var r = Aloha.createRange();

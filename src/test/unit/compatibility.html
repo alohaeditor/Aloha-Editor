@@ -4,29 +4,37 @@
 	<meta charset="UTF-8" />
 	<title>Aloha Editor Core Test Suite</title>
 	<!-- include qunit -->
-	<link rel="stylesheet" href="../dep/qunit.css" type="text/css"/>
-	<script type="text/javascript" src="../dep/qunit.js"></script>
+	<link rel="stylesheet" href="../vendor/qunit.css" type="text/css"/>
+	<script type="text/javascript" src="../vendor/qunit.js"></script>
 
 	<!-- include jquery for testing-->
 	<script	src="../../lib/vendor/jquery-1.5.1.js" ></script>
 		
 	<script>
-		// currently, we need to manually set the path to aloha
-		var Aloha = {
-				settings: {
-					baseUrl: '../../lib/'
-				}
+		
+		var beforeNoConflict = $;
+		
+		// assigning alohaQuery to jQuery 1.5.1 and remove jQuery from global scope
+		alohaQuery = jQuery.noConflict();
+
+		var afterNoConflict = $;
+
+		var Aloha = {};
+		Aloha.settings = {
+			bundles: {
+				// Path for custom bundle relative from require.js path
+				'test': '../test/unit'
 			},
-			// assigning alohaQuery to jQuery 1.5.1 and remove jQuery from global scope
-			alohaQuery = jQuery.noConflict();
+			locale: 'de'
+		};
 	</script>
 
 	<!-- include old jQuery version for compatibility checks -->
-	<script	src="../dep/jquery-1.2.1.js" ></script>
+	<script	src="../vendor/jquery-1.2.1.js" ></script>
 
 	<!-- include aloha after loading old jQuery version -->
 	<script src="../../lib/require.js"></script>
-	<script src="../../lib/aloha.js" data-aloha-plugins=""></script>
+	<script src="../../lib/aloha.js" data-aloha-plugins="test/plugintest2"></script>
 
 	<!-- include testswarm inject script -->
 	<script>
@@ -40,18 +48,11 @@
 <body>
 	<!-- include the tests -->
 	<script>
+		
 		// define realtive baseUrl path to requireJS
 		// and paths back to aloha path
-		require({
-				//baseUrl: '../../test/unit',
-				paths: {
-					'aloha': Aloha.settings.baseUrl + '/aloha',
-					'vendor': Aloha.settings.baseUrl + '/vendor',
-					'util': Aloha.settings.baseUrl + '/util'
-				}
-			},
-			[ '../../test/unit/compatibilitytests' ]
-		);
+		require( ['compatibilitytests']	);
+		
 	</script>
 	<h1 id="qunit-header">Aloha Editor Compatibility Test Suite</h1>
 	<h2 id="qunit-banner"></h2>

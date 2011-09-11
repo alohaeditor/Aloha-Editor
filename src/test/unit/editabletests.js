@@ -4,9 +4,7 @@
  * Licensed unter the terms of http://www.aloha-editor.com/license.html
  */
 
-define("editabletest",
-['aloha/jquery', 'testutils'],
-function(aQuery, TestUtils) {
+define( ['testutils'], function( TestUtils ) {
 	"use strict";
 	
 	/**
@@ -29,40 +27,19 @@ function(aQuery, TestUtils) {
 		}
 		// get the result	
 		var result = Aloha.editables[0].getContents(true);
-		var expected = $(reference).contents();
+		var expected = alohaQuery(reference).contents();
 	
 		// compare the result with the expected result
 		deepEqual(result.extractHTML(), expected.extractHTML(), 'Check Operation Result');
 	}
 
-	// Prepare
-	var	$ = window.jQuery,
-		$body = $('body');
-	// Test whether Aloha is properly initialized
-	
-	/*
-	  Note: this test is currently necessary, because it will catch the initial 'aloha' Event.
-	  In the event handler of this event, due to a Bug Aloha will NOT YET be initialized, so if any test would fail when run then.
-	 */
-	asyncTest('Aloha Startup Test', function() {
-		var timeout = setTimeout(function() {
-			ok(false, 'Aloha was not initialized within 60 seconds');
-			start();
-		}, 60000);
-		aQuery('body').bind('aloha',function() {
-			ok(true, 'Aloha Event was fired');
-			clearTimeout(timeout);
-			start();
-		});
-	});
-
-	aQuery('body').bind('aloha', function() {
+	alohaQuery('body').bind('aloha', function() {
 
 		module('Plaintext Enter Handling', {
 			setup: function() {
 				// get the editable area and the reference
-				this.edit = aQuery('#edit');
-				this.ref = aQuery('#ref-plaintext');
+				this.edit = alohaQuery('#edit');
+				this.ref = alohaQuery('#ref-plaintext');
 				// fill the editable area with the reference
 				this.edit.html(this.ref.html());
 				// aloha'fy the editable
@@ -107,8 +84,8 @@ function(aQuery, TestUtils) {
 		module('Heading Enter Handling', {
 			setup: function() {
 				// get the editable area and the reference
-				this.edit = aQuery('#edit');
-				this.ref = aQuery('#ref-heading');
+				this.edit = alohaQuery('#edit');
+				this.ref = alohaQuery('#ref-heading');
 				// fill the editable area with the reference
 				this.edit.html(this.ref.html());
 
@@ -156,8 +133,8 @@ function(aQuery, TestUtils) {
 		module('Heading Shift Enter Handling', {
 			setup: function() {
 				// get the editable area and the reference
-				this.edit = aQuery('#edit');
-				this.ref = aQuery('#ref-heading');
+				this.edit = alohaQuery('#edit');
+				this.ref = alohaQuery('#ref-heading');
 				// fill the editable area with the reference
 				this.edit.html(this.ref.html());
 
@@ -205,8 +182,8 @@ function(aQuery, TestUtils) {
 		module('Paragraph Enter Handling', {
 			setup: function() {
 				// get the editable area and the reference
-				this.edit = aQuery('#edit');
-				this.ref = aQuery('#ref-paragraph');
+				this.edit = alohaQuery('#edit');
+				this.ref = alohaQuery('#ref-paragraph');
 				// fill the editable area with the reference
 				this.edit.html(this.ref.html());
 
@@ -270,8 +247,8 @@ function(aQuery, TestUtils) {
 		module('Paragraph Shift Enter Handling', {
 			setup: function() {
 				// get the editable area and the reference
-				this.edit = aQuery('#edit');
-				this.ref = aQuery('#ref-paragraph');
+				this.edit = alohaQuery('#edit');
+				this.ref = alohaQuery('#ref-paragraph');
 				// fill the editable area with the reference
 				this.edit.html(this.ref.html());
 
@@ -335,8 +312,8 @@ function(aQuery, TestUtils) {
 		module('List Enter Handling', {
 			setup: function() {
 				// get the editable area and the reference
-				this.edit = aQuery('#edit');
-				this.ref = aQuery('#ref-list');
+				this.edit = alohaQuery('#edit');
+				this.ref = alohaQuery('#ref-list');
 				// fill the editable area with the reference
 				this.edit.html(this.ref.html());
 
@@ -424,8 +401,8 @@ function(aQuery, TestUtils) {
 		module('Special List Enter Handling Tests', {
 			setup: function() {
 				// get the editable area and the reference
-				this.edit = aQuery('#edit');
-				this.ref = aQuery('#ref-list-special1');
+				this.edit = alohaQuery('#edit');
+				this.ref = alohaQuery('#ref-list-special1');
 				// fill the editable area with the reference
 				this.edit.html(this.ref.html());
 
@@ -447,8 +424,8 @@ function(aQuery, TestUtils) {
 		module('List Shift Enter Handling', {
 			setup: function() {
 				// get the editable area and the reference
-				this.edit = aQuery('#edit');
-				this.ref = aQuery('#ref-list');
+				this.edit = alohaQuery('#edit');
+				this.ref = alohaQuery('#ref-list');
 				// fill the editable area with the reference
 				this.edit.html(this.ref.html());
 

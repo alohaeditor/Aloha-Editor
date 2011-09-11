@@ -31,7 +31,16 @@
 	<meta http-equiv="content-type" content="text/html; charset=utf-8">
 	<title>Aloha, Textarea!</title>
 	
-	<script src="../../lib/require.js" data-main="../../lib/aloha.js" data-aloha-plugins="common/format,common/highlighteditables,common/list,common/undo,common/paste,common/block"></script>
+	<script src="../../lib/require.js"></script>
+	<script>
+		var Aloha = {};
+		Aloha.settings = {
+			logLevels: {'error': true, 'warn': true, 'info': true, 'debug': true},
+			errorhandling: false,
+			ribbon: false
+		};
+	</script>
+	<script src="../../lib/aloha.js" data-aloha-plugins="common/format,common/highlighteditables,common/list,common/undo,common/paste,common/block"></script>
 
 	
 	<link rel="stylesheet" href="../../css/aloha.css" id="aloha-style-include" type="text/css">
@@ -78,20 +87,11 @@
 		</div>
 	</div>
 	<script type="text/javascript">
-	require.ready(function() {
+	requireAloha(function( Aloha ) {
 		// Prepare
 		var	$ = window.alohaQuery,
 			$body = $('body');
 			
-			if (window.Aloha === undefined || window.Aloha === null) {
-				window.Aloha = {};		
-			}
-			window.Aloha.settings = {
-				logLevels: {'error': true, 'warn': true, 'info': true, 'debug': true},
-				errorhandling: false,
-				ribbon: false
-			};
-
 			// Bind to Aloha Ready Event
 			$body.bind('aloha',function(){
 				

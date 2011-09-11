@@ -1121,11 +1121,11 @@ define([
 		width	 : 250 // TODO define in config
 	});
 	
-	Aloha.Sidebars = {
+	Aloha.Sidebar = {
 		left  : left,
 		right : right
 	};
 	
-	return Sidebar;
+	return Aloha.Sidebar;
 	
 });

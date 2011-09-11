@@ -1,5 +1,5 @@
 define(
-['./componenttype'], // dependency in the same path
+['plugintest1/componenttype'],
 function( componenttype ) {
     "use strict";
  
@@ -8,6 +8,7 @@ function( componenttype ) {
             return 'didOther';
         }
     });
+	
     return new component();
  
 });

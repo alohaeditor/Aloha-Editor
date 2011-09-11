@@ -135,6 +135,9 @@ function ( jQuery, PluginManager ) {
 				
 			// Create Promises
 			Aloha.createPromiseEvent('aloha');
+			
+			// merge deafults and settings and provide all in settings
+			jQuery.extend( Aloha.settings, Aloha.defaults );
 
 			// initialize rangy. This is probably necessary here,
 			// because due to the current loading mechanism, rangy
@@ -222,7 +225,6 @@ function ( jQuery, PluginManager ) {
 
 				this.loadedPlugins = pluginNames;
 				this.requirePaths = paths;
-				console.log('plugins');
 				
 				// Main Require.js loading call, which fetches all the plugins.
 				require(
@@ -554,7 +556,7 @@ function ( jQuery, PluginManager ) {
 		getAlohaUrl: function( suffix ) {
 			// aloha base path is defined by a script tag with 2 data attributes
 			var requireJs = jQuery('[data-aloha-plugins]'),
-				baseUrl = ( requireJs.length ) ? requireJs[0].src.replace( /\/?require.js$/ , '' ) : '';
+				baseUrl = ( requireJs.length ) ? requireJs[0].src.replace( /\/?aloha.js$/ , '' ) : '';
 				
 			return baseUrl;
 		},

@@ -18,14 +18,6 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-// Ensure GENTICS Namespace
-GENTICS = window.GENTICS || {};
-GENTICS.Utils = GENTICS.Utils || {};
-
-// Ensure Aloha settings namespace 
-Aloha = window.Aloha || {};
-Aloha.settings = Aloha.settings || {};
-
 define( 
 	'aloha',
 	[
@@ -40,10 +32,6 @@ define(
 		'util/position',
 		'util/dom',
 		'aloha/jquery.aloha',
-	 	'aloha/ext',
-		'aloha/ext-alohaproxy',
-		'aloha/ext-alohareader',
-		'aloha/ext-alohatreeloader',
 		'aloha/ui',
 		'aloha/ui-attributefield',
 		'aloha/ui-browser',
@@ -58,15 +46,23 @@ define(
 		'aloha/repositorymanager',
 		'aloha/repository',
 		'aloha/repositoryobjects',
-		'aloha/rangy-core'
+		'aloha/rangy-core',
+	 	'aloha/ext',
+		'aloha/ext-alohaproxy',
+		'aloha/ext-alohareader',
+		'aloha/ext-alohatreeloader'
 	],
 	function( jQuery, Aloha ) {
+		
+		// loading css is not a dependency
+		requireAloha(['css!../css/aloha.css']);
 		
 		Aloha.trigger('aloha-core-loaded');
 
 		// jQuery calls the init methode when the dom is ready
-		jQuery(Aloha.init);
+		jQuery( Aloha.init );
 		
+		// The Aloha abject is now available but ready after the aloha-ready event
 		return Aloha;
 		
 	}

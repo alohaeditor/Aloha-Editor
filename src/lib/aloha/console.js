@@ -74,7 +74,7 @@ var alohaConsole = Class.extend({
 	 * @type Array
 	 * @hide
 	 */
-	logHistory: null,
+	logHistory: [],
 
 	/**
 	 * Flag, which is set as soon as the highWaterMark for the log history is reached.
@@ -254,6 +254,7 @@ var alohaConsole = Class.extend({
 	 * @hide
 	 */
 	addToLogHistory: function(entry) {
+		
 		if ( !Aloha.settings.logHistory ) {
 			this.init();
 		}

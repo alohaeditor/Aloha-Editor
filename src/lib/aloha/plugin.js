@@ -35,6 +35,12 @@ function(Aloha, jQuery, Class, PluginManager, console ) {
 		name: null,
 
 		/**
+		 * contains the plugin's default settings object
+		 * @cfg {Object} default settings for the plugin
+		 */
+		defaults: {},
+
+		/**
 		 * contains the plugin's settings object
 		 * @cfg {Object} settings the plugins settings stored in an object
 		 */
@@ -229,13 +235,12 @@ function(Aloha, jQuery, Class, PluginManager, console ) {
 
 		/**
 		 * Return string representation of the plugin, which is the prefix
-		 * @return prefix
+		 * @return name
 		 * @hide
 		 * @deprecated
 		 */
 		toString: function() {
-			console.deprecated ('plugin', 'toString() is deprecated.');
-			return this.prefix;
+			return this.name;
 		},
 		
 		/**
@@ -260,8 +265,9 @@ function(Aloha, jQuery, Class, PluginManager, console ) {
 	 */
 	Plugin.create = function(pluginName, definition) {
 		
-		var pluginInstance = new (Plugin.extend(definition))(pluginName);
-		PluginManager.register(pluginInstance);
+		var pluginInstance = new ( Plugin.extend( definition ) )( pluginName );
+		pluginInstance.settings = jQuery.extend( true, pluginInstance.defaults, Aloha.settings[pluginName] );
+		PluginManager.register( pluginInstance );
 		
 		return pluginInstance;
 	};

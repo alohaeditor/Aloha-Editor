@@ -22,7 +22,9 @@ define(
 	[
  		'css!vendor/ext-3.2.1/resources/css/ext-all.css',
  		'css!vendor/ext-3.2.1/resources/css/xtheme-gray.css',
-	 	'vendor/ext-3.2.1/ext-all'  // TODO for now, we use ext-all (because it is converted to a proper require module, with dependencies)
+		'order!vendor/ext-3.2.1/adapter/jquery/ext-jquery-adapter-debug',
+		'order!vendor/ext-3.2.1/ext-all-debug',
+//	 	'order!vendor/ext-3.2.1/ext-all-debug'  // TODO for now, we use ext-all (because it is converted to a proper require module, with dependencies)
 /*
 	 	'order!vendor/ext-3.2.1/pkgs/ext-foundation-debug',
 	 	'order!vendor/ext-3.2.1/pkgs/cmp-foundation-debug',

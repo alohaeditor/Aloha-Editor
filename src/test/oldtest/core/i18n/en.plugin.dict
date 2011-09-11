@@ -1,3 +1,0 @@
-simpleplugin=This is the simple message from the plugin
-nofallback=from the plugin dictionary
-pluginsubst = this comes from plugin '{0}'

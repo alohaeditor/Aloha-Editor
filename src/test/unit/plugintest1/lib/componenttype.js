@@ -5,7 +5,7 @@ function() {
  
     var componenttype = Class.extend({
         doSome: function() {
-            // huhu
+            return 'didSome';
         }
     });
  

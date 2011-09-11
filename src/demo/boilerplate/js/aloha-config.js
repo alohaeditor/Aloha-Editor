@@ -75,10 +75,11 @@
 							objectTypeFilter: ['website'],
 							// handle change of href
 							onHrefChange: function( obj, href, item ) {
+								var jQuery = requireAloha('aloha/jquery');
 								if ( item ) {
-									window.alohaQuery(obj).attr('data-name', item.name);
+									jQuery(obj).attr('data-name', item.name);
 								} else {
-									window.alohaQuery(obj).removeAttr('data-name');
+									jQuery(obj).removeAttr('data-name');
 								}
 							}
 					},
