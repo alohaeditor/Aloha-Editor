@@ -140,119 +140,125 @@ Aloha.RepositoryManager = Class.extend({
 	 * "items" is an Array of objects construced with Document/Folder.
 	 * @void
 	 */
-	query: function( params, callback ) {
-
+	query: function(params, callback) {
 		var that = this,
+			repo,
+			// The marged results collected from repository responses
 			allitems = [],
+			// The set of repositories which we want to delegate work to
 			repositories = [],
+			// When this timer times-out, whatever has been collected in
+			// allitems will be returned, and numOpenCallbacks is reset to 0
 			timer,
-			i,id,
-			notImplFunc = function (items) {
-				var id, j;
-
-				// remove the repository from the callback stack
-				id = that.openCallbacks.indexOf( this.repositoryId );
-				if (id != -1) {
-					that.openCallbacks.splice(id, 1);
+			// A counting semaphore (working in reverse, ie: 0 means free)
+			numOpenCallbacks = 0,
+			/**
+			 * Collects the results from each repository, and decrements the
+			 * numOpenCallbacks semaphore.
+			 *
+			 * Invoked by each repository when it wants to present its results
+			 * to the manager.
+			 *
+			 * nb: "this" is reference to the calling repository
+			 *
+			 * If a repository invokes this callback after all openCallbacks
+			 * have been closed (ie: numOpenCallbacks == 0) this repository is
+			 * too late--has "missed the ship," and we will ignore it.
+			 *
+			 * If numOpenCallbacks decrements to 0 during this call, it means
+			 * that the the manager is ready to report to the client which is
+			 * done through queryCallback.
+			 *
+			 * @param {Array} items - Query results returned by the repository 
+			 */
+			processResults = function (items) {
+				if (numOpenCallbacks == 0) {
+					return;
 				}
-
-				// mark with repositoryId if not done by repository plugin
-				if ( items.length && !items[0].repositoryId ) {
-					for ( j = 0; j < items.length; j++) {
-						items[j].repositoryId = this.repositoryId;
+				
+				// Add the repositoryId for each item if it has not already
+				// been done by a negligent repositories
+				var repoId = this.repositoryId;
+				if (items && items.length && !items[0].repositoryId ) {
+					for (var i = 0; i < items.length; ++i) {
+						items[i].repositoryId = repoId;
 					}
+					$.merge(allitems, items);
 				}
-
-				// merge new items with the rest
-				jQuery.merge( allitems, items );
-
-				that.queryCallback(callback, allitems, timer);
-			},
-			notImplemented,
-			repo;
-
-		// reset callback queue
-		this.openCallbacks = [];
-
-		// start timer in case a repository does not deliver in time
-		timer = setTimeout( function() {
-			// reset callback stack
-			that.openCallbacks = [];
+				
+				if (--numOpenCallbacks == 0) {
+					that.queryCallback(callback, allitems, timer);
+				}
+			};
+		
+		// Unless the calling client specifies otherwise, we will wait a
+		// maximum of 5 seconds for all repositories to be queried and respond.
+		// 5 seconds is deemed to be the reasonable time to wait when querying
+		// the repository manager in the context of something like autocomplete
+		var timeout = parseInt(params.timeout, 10) || 5000;
+		timer = setTimeout(function() {
+			numOpenCallbacks = 0;
 			that.queryCallback(callback, allitems, timer);
-		}, 5000);
-
-		// only query the repositoryId for Children Elements
-		if ( params.repositoryId ) {
+		}, timeout);
+		
+		// If no repositryId is specified in the params argument, then we will
+		// query all registered repositories
+		if (params.repositoryId) {
 			repositories.push(this.getRepository(params.repositoryId));
 		} else {
 			repositories = this.repositories;
 		}
-
-		// iterate through all registered repositories
-		for ( i = 0; i < repositories.length; i++) {
-
-			repo = repositories[i];
-			this.openCallbacks.push(repo.repositoryId);
-
-			notImplemented = typeof repo.query !== 'function';
-
-			if (notImplemented) {
-				// remove this repository from the callback stack
-				id = that.openCallbacks.indexOf( repo.repositoryId );
-				if (id != -1) {
-					this.openCallbacks.splice(id, 1);
-					if ( i == repositories.length - 1 ) {
-						this.queryCallback(callback, allitems, timer);
-					}
-				}
-				// this.fireEvent('exception', this, 'response', action, arg, null, e);
-				// return false;
-			} else {
-				repo.query(params, notImplFunc);
-			}
-			
-		/*
-		    try {
-					notImplemented = repositories[i].query(params,notImplFunc);
-		    } catch (e) {
-					// this.fireEvent('exception', this, 'response', action, arg, null, e);
-					// return false;
-					notImplemented = true;
-		    }
-		*/
 		
+		if (repositories.length) {
+			for (var i = 0; i < repositories.length; ++i) {
+				repo = repositories[i];
+				
+				if (typeof repo.query === 'function') {
+					++numOpenCallbacks;
+					
+					repo.query(
+						params,
+						function () { processResults.apply(repo, arguments); }
+					);
+				};
+			}
+		} else {
+			this.queryCallback(callback, allitems, timer);
 		}
 	},
 
 	/**
-	 * checks if all repositories returned  and calls the callback
+	 * Passes all the results we have collected to the client through the
+	 * callback it specified
+	 *
+	 * @param {Function} callback - Callback specified by client when invoking
+	 *								the query method
+	 * @param {Array} items - Results, collected from all repositories
+	 * @param {Timer} timer - We need to clear this timer
 	 * @return void
 	 * @hide
 	 */
-	queryCallback: function (cb, items, timer) {
-
-		// if we all callbacks came back we are done!
-		if (this.openCallbacks.length === 0) {
-
-			// unset the timer...
+	queryCallback: function (callback, items, timer) {
+		if (timer) {
 			clearTimeout(timer);
-
-			// sort items by weight
-			items.sort(function (a,b) {
-				return (b.weight || 0) - (a.weight || 0);
-			});
-
-			// prepare result data for the JSON Reader
-			var result =  {
-				results: items.length,
-				items: items
-			};
-
-			// Give data back.
-			cb.call( this, result);
+			timer = undefined;
 		}
+		
+		// TODO: Implement sorting based on repository specification
+		// sort items by weight
+		//items.sort(function (a,b) {
+		//	return (b.weight || 0) - (a.weight || 0);
+		//});
+		
+		// prepare result data for the JSON Reader
+		var result = {
+			items   : items,
+			results : items.length
+		};
+		
+		callback.call(this, result);
 	},
-
+	
 	/**
 	 * Returns children items. (see query for an example)
 	 * @param {object} params object with properties

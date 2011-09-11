@@ -2,22 +2,34 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8" />
-	<title>Aloha Editor Editable Test Suite</title>
+	<title>Aloha Editor Core Test Suite</title>
+	
 	<!-- include qunit -->
 	<link rel="stylesheet" href="../dep/qunit.css" type="text/css"/>
 	<script type="text/javascript" src="../dep/qunit.js"></script>
-	<script	src="../../lib/vendor/jquery-1.5.1.js" ></script>
-	<script type="text/javascript" src="../dep/jquery.simulate.js"></script>
-	<script>
 
+	<!-- include jquery -->
+	<script	src="../../lib/vendor/jquery-1.5.1.js" ></script>
+	<script>
 		// currently, we need to manually set the path to aloha
 		window.Aloha = {
 			settings : {
-				bundles: {
-					// Path for custom bundle relative from require.js path
-					custom1: '../test/unit',
-					custom2: location.href.replace(/\/?pluginapi.html$/,'')
-				}
+				base : '../../lib/',
+				logLevels : {
+					'error': true,
+					'warn':  true,
+					'info':  false,
+					'debug': false
+				},
+				logHistory : {
+					levels : {
+						'error' : true,
+						'warn' : true,
+						'info' : false,
+						'debug' : false
+					}
+				},
+				errorhandling : true
 			}
 		};
 
@@ -28,40 +40,36 @@
 	</script>
 
 	<!-- include aloha -->
-	<script src="../../lib/require.js" data-main="../../lib/aloha.js" id="aloha-script-include" data-plugins="custom1/plugintest1,custom2/plugintest2"></script>
+	<script src="../../lib/require.js" data-main="../../lib/aloha.js" id="aloha-script-include" data-plugins=""></script>
 
 	<!-- include testswarm inject script -->
-	<script>
+	<!-- script>
 		var url = window.location.search;
 		url = decodeURIComponent( url.slice( url.indexOf("swarmURL=") + 9 ) );
 		if ( url && url.indexOf("http") === 0 ) {
 			require(["http://testswarm.aloha-editor.org/js/inject.js?" + (new Date).getTime()], function() {});
 		}
-	</script>
+	</script -->
 
 </head>
 <body>
 	<!-- include the tests -->
 	<script>
-		// load the tests
 		require(
 			{
 				paths: {
-					'pluginapitest': '../test/unit/pluginapitest'
+					'repositorytests': '../test/unit/repositorytests',
 				}
 			},
-			['pluginapitest']
+			['repositorytests']
 		);
 	</script>
-	<h1 id="qunit-header">Aloha Editor Plugin API Test Suite</h1>
+	
+	<h1 id="qunit-header">Aloha Editor Repository Test Suite</h1>
 	<h2 id="qunit-banner"></h2>
 	<div id="qunit-testrunner-toolbar"></div>
 	<h2 id="qunit-userAgent"></h2>
 	<ol id="qunit-tests"></ol>
-	<div id="qunit-fixture">
-</div>
-<div id="edit" style="margin:20px; border:1px solid #000000;"></div>
-<div id="edit2" style="margin:20px; border:1px solid #000000;"></div>
-<div id="edit3" style="margin:20px; border:1px solid #000000;"></div>
+	<div id="qunit-fixture"><div id="edit"></div><div id="edit2"></div></div>
 </body>
 </html>
