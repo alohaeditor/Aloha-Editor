@@ -45,7 +45,7 @@ tr.ui-search-toolbar select {margin: 1px 0px 0px 0px}
 .ui-jqgrid tr.footrow-ltr td {text-align:left;border-right-width: 1px; border-right-color: inherit; border-right-style: solid;}
 .ui-jqgrid tr.footrow-rtl td {text-align:right;border-left-width: 1px; border-left-color: inherit; border-left-style: solid;}
 /* Pager*/
-.ui-jqgrid .ui-jqgrid-pager { border-left: 0px none;border-right: 0px none; border-bottom: 0px none; margin: 0px; padding: 0px; position: relative; height: 25px;white-space: nowrap;overflow: hidden;}
+.ui-jqgrid .ui-jqgrid-pager { border-left: 0px none;border-right: 0px none; border-bottom: 0px none; margin: 0px; padding: 0px; position: relative; height: 40px;white-space: nowrap;overflow: hidden;}
 .ui-jqgrid .ui-pager-control {position: relative;}
 .ui-jqgrid .ui-pg-table {position: relative; padding-bottom:2px; width:auto; margin: 0em;}
 .ui-jqgrid .ui-pg-table td {font-weight:normal; vertical-align:middle; padding:1px;}
@@ -160,8 +160,6 @@ tr.ui-search-toolbar select {margin: 1px 0px 0px 0px}
 	-moz-border-radius-topright:	 2px;
 	-webkit-border-top-right-radius: 2px;
 	
-	padding: 5px;
-	
 	background-color: #303539;
 	background-image: -webkit-gradient(
     	linear,
@@ -196,13 +194,13 @@ tr.ui-search-toolbar select {margin: 1px 0px 0px 0px}
 	text-shadow: 0 0 4px #23262b;
 	font-weight: bold;
 	font-size: 13px;
+	line-height: 2em;
 	
 	white-space: nowrap;
 }
 .ui-jqgrid .ui-jqgrid-title {
 	float: none;
 	display: block;
-	padding: 2px;
 }
 .ui-jqgrid .ui-jqgrid-titlebar-close {display: none;}
 /* header */
@@ -318,6 +316,7 @@ tr.ui-search-toolbar select {margin: 1px 0px 0px 0px}
 .ui-th-column, .ui-jqgrid .ui-jqgrid-htable th.ui-th-column {
 	text-align: left;
 	text-indent: 10px;
+	line-height: 1.5em;
 }
 /* body */
 .ui-jqgrid .ui-jqgrid-btable  {
@@ -391,7 +390,6 @@ tr.ui-search-toolbar select {margin: 1px 0px 0px 0px}
 	filter: alpha(opacity=100);
 }
 .ui-jqgrid .ui-jqgrid-pager {
-	top: -20px;
 	border: 0;
 	border-top: 1px solid #33363b;
 	color: #ddd;
@@ -621,6 +619,8 @@ tr.ui-search-toolbar select {margin: 1px 0px 0px 0px}
 	width: 1000px;
 	height: 400px;
 	border: 1px solid #53565b;
+	text-align: left;
+	line-height: 1.5em;
 }
 .aloha-browser-clear {
 	float: none;
@@ -720,7 +720,8 @@ tr.ui-search-toolbar select {margin: 1px 0px 0px 0px}
 		float: left;
 		
 		width: 200px;
-		height: 22px;
+		/* height: 22px; */
+		height: 15px;
 		padding: 4px 2px;
 		
 		border: 1px solid #ccc;
@@ -749,6 +750,8 @@ tr.ui-search-toolbar select {margin: 1px 0px 0px 0px}
 		
 		color: #555;
 		font-size: 13px;
+		
+		line-height: 1.5em;
 	}
 
 .aloha-browser-search-btn {
@@ -820,6 +823,7 @@ tr.ui-search-toolbar select {margin: 1px 0px 0px 0px}
 	text-shadow: 0 0 4px #23262b;
 	font-weight: bold;
 	font-size: 13px;
+	line-height: 1.5em;
 	
 	white-space: nowrap;
 }
