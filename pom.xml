@@ -14,6 +14,13 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
+	<scm>
+                <connection>scm:git:git://github.com/gentics/Aloha-Editor.git</connection>
+                <developerConnection>scm:git:ssh://git@github.com:gentics/Aloha-Editor.git</developerConnection>
+                <url>https://github.com/gentics/Aloha-Editor</url>
+        </scm>
+
+
 	 <build>
                 <plugins>
 
