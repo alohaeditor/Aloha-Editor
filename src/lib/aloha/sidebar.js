@@ -26,14 +26,16 @@
 
 define([
 
+    'aloha/core',
 	'aloha/jquery',
+	'aloha/selection',
 	'aloha/plugin' // For when we plugify sidebar
 
-], function SidebarClosure ($, Plugin) {
+], function (Aloha, $, Selection, Plugin) {
 	
 	'use strict';
 	
-	var Aloha = window.Aloha;
+//	var Aloha = window.Aloha;
 	var undefined = void 0;
 	
 	// ------------------------------------------------------------------------
@@ -51,7 +53,7 @@ define([
 	var uid  = +new Date;
 	// namespaced classnames
 	var nsClasses = {
-			bar    : nsClass('bar'),
+			bar    : nsClass( 'bar' ),
 			handle : nsClass('handle'),
 			inner  : nsClass('inner'),
 			panels : nsClass('panels'),
@@ -803,7 +805,7 @@ define([
 			if (deferRounding !== true) {
 				this.roundCorners();
 			}
-			this.checkActivePanels(Aloha.Selection.getRangeObject());
+			this.checkActivePanels(Selection.getRangeObject());
 			return panel;
 		}
 		
@@ -1109,28 +1111,20 @@ define([
 		
 	});
 	
-	// Expose Sidebars once both the DOM and Aloha are ready
-	$(function () {
-		$('body').bind('alohacoreloaded', function () {
-			var left = new Sidebar({
-				position : 'left',
-				width	 : 250 // TODO define in config
-			});
-			
-			var right = new Sidebar({
-				position : 'right',
-				width	 : 250 // TODO define in config
-			});
-			
-			Aloha.Sidebars = {
-				left  : left,
-				right : right
-			};
-			
-			// Broadcast that Sidebars have arrived
-			$('body').trigger(nsClass('initialized'), Aloha.Sidebars);
-		});
+	var left = new Sidebar({
+		position : 'left',
+		width	 : 250 // TODO define in config
 	});
+	
+	var right = new Sidebar({
+		position : 'right',
+		width	 : 250 // TODO define in config
+	});
+	
+	Aloha.Sidebars = {
+		left  : left,
+		right : right
+	};
 	
 	return Sidebar;
 	

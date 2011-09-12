@@ -1,1 +1,3 @@
-{ "button.switch-metaview.tooltip": "Switch between meta and normal view" }
+{ 
+	"plugin1.test1": "englishJSON"
+}

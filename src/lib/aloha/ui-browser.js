@@ -19,14 +19,14 @@
 */
 
 define(
-['aloha/jquery', 'aloha/ext'],
-function(jQuery, undefined) {
+['aloha/ext', 'aloha/ui'],
+function(Ext, ui) {
 	"use strict";
 
 	var
-		$ = jQuery,
-		GENTICS = window.GENTICS,
-		Aloha = window.Aloha,
+//		$ = jQuery,
+//		GENTICS = window.GENTICS,
+//		Aloha = window.Aloha,
 		Class = window.Class;
 
 /**
@@ -39,7 +39,7 @@ function(jQuery, undefined) {
  * - query of subtree
  * - icon representation
  */
-Aloha.ui.Browser = Class.extend({
+ui.Browser = Class.extend({
 	_constructor: function () {
 
 		/**

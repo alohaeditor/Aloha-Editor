@@ -1,1 +1,3 @@
-define({ "button.switch-metaview.tooltip": "Zwischen Metaansicht und normaler Ansicht umschalten" });
+define({ 
+	"plugin1.test1": "german" 
+});

@@ -19,16 +19,15 @@
 */
 
 define(
-['aloha/jquery', 'aloha/pluginmanager', 'aloha/floatingmenu'],
-function(jQuery, PluginManager, FloatingMenu) {
+['aloha/core', 'util/class', 'aloha/jquery', 'aloha/pluginmanager', 'aloha/floatingmenu', 'aloha/selection', 'aloha/markup'],
+function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup) {
 	"use strict";
 	
 	var
-		$ = jQuery,
-		GENTICS = window.GENTICS,
-		Aloha = window.Aloha,
-		Class = window.Class,
-		unescape = window.unescape;
+//		Aloha = window.Aloha,
+//		Class = window.Class,
+		unescape = window.unescape,
+		GENTICS = window.GENTICS;
 
 	/**
 	 * Editable object
@@ -174,7 +173,7 @@ function(jQuery, PluginManager, FloatingMenu) {
 				// events (incl. browser's) continue
 				me.obj.keydown(function(event) {
 					me.keyCode = event.which;
-					return Aloha.Markup.preProcessKeyStrokes(event);
+					return Markup.preProcessKeyStrokes(event);
 				});
 
 				// handle keypress
@@ -194,7 +193,7 @@ function(jQuery, PluginManager, FloatingMenu) {
 
 				// register the onSelectionChange Event with the Editable field
 				me.obj.contentEditableSelectionChange(function (event) {
-					Aloha.Selection.onChange(me.obj, event);
+					Selection.onChange(me.obj, event);
 					return me.obj;
 				});
 
@@ -394,7 +393,7 @@ function(jQuery, PluginManager, FloatingMenu) {
 
 			// set the cursor // remove placeholder
 			if (setCursor === true) {
-				range = Aloha.Selection.getRangeObject();
+				range = Selection.getRangeObject();
 				if ( !range.select ) {return;}
 				range.startContainer = range.endContainer = obj.get(0);
 				range.startOffset = range.endOffset = 0;
@@ -757,8 +756,6 @@ function(jQuery, PluginManager, FloatingMenu) {
 						'snapshotContent' : me.getSnapshotContent()
 					});
 
-					Aloha.Log.debug(this, 'smartContentChanged: event type timer triggered');
-
 				},this.sccIdle);
 
 			}
@@ -773,7 +770,6 @@ function(jQuery, PluginManager, FloatingMenu) {
 					'snapshotContent' : me.getSnapshotContent()
 				});
 
-				Aloha.Log.debug(this, 'smartContentChanged: event type paste triggered');
 			}
 
 			else if (event && event.type === 'blur') {
@@ -786,7 +782,6 @@ function(jQuery, PluginManager, FloatingMenu) {
 					'snapshotContent' : me.getSnapshotContent()
 				});
 
-				Aloha.Log.debug(this, 'smartContentChanged: event type blur triggered');
 			}
 
 		},

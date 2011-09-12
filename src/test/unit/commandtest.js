@@ -62,7 +62,8 @@ function(aQuery, TestUtils, undefined) {
 					expected = aQuery( '<div>' + check.expected + '</div>' ).contents(),
 					// place the selection (and remove the selection marker)
 					range = TestUtils.rangeFromMarker( editable ),
-					result;
+					result,
+					Aloha = require('aloha');
 				
 				range.select();
 //				var r = Aloha.createRange();

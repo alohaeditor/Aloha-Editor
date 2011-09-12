@@ -19,15 +19,12 @@
 */
 
 define(
-['aloha/jquery', 'util/dom', 'aloha/rangy-core'],
-function(jQuery, Dom, x) {
+['aloha/jquery', 'util/dom', 'util/class', 'aloha/console', 'aloha/rangy-core'],
+function(jQuery, Dom, Class, console) {
 	"use strict";
 
 	var
 		GENTICS = window.GENTICS,
-		Aloha = window.Aloha,
-		Class = window.Class,
-		console = window.console
 		rangy = window.rangy;
 
 /**
@@ -98,55 +95,7 @@ GENTICS.Utils.RangeObject = Class.extend({
 	deleteContents: function () {
 
 		Dom.removeRange(this);
-		
-//		// TODO Fix bug that causes wrong range in paste getContents
-//
-//		var cac, rt, i, children;
-//
-//		// split range at the beginning and start, so deletion is easier
-//
-//		// the split process will leave the tree in a state, where it
-//		// will only contain fully selected or unselected nodes.
-//		// there may be some nodes that are partially selected which can
-//		// be ignored safely, as they are only remains of the original
-//		// cursor position before the split without an actual selected
-//		// content. threat them as if they were not selected.
-//		cac = jQuery(this.getCommonAncestorContainer());
-//		GENTICS.Utils.Dom.split(this, cac, false);
-//		GENTICS.Utils.Dom.split(this, cac, true);
-//		this.clearCaches();
-//
-//        // iterate over range tree to perform deletion
-//        rt = this.getRangeTree();
-//        for (i = 0; i < rt.length; i++) {
-//                // delete only fully selected nodes
-//                if (rt[i].type === 'full') {
-//                        // if startConatiner will be removed move start container one node before
-//                        if (rt[i].domobj == this.startContainer) {
-//                                this.startOffset = GENTICS.Utils.Dom.getIndexInParent(this.startContainer)
-//                                this.startContainer = this.startContainer.parentNode;
-//                        }
-//                        jQuery(rt[i].domobj).remove();
-//                }
-//        }
-//
-//        // always collapse selection to the startContainer
-//        this.endContainer = this.startContainer;
-//        this.endOffset = this.startOffset;
-//
-//        // special handling if all contents of the cac have been deleted
-//        // this case can be detected, if the cac contains just a single br,
-//        // or no children at all. if this occurs the range will be collapsed
-//        this.clearCaches();
-//        rt = this.getRangeTree();
-//        children = cac.contents();
-//        if (children.length === 0 || (children.length === 1 && children.get(0).nodeName === 'BR')) {
-//                this.commonAncestorContainer = this.startContainer = this.endContainer = cac.get(0);
-//                this.startOffset = 0;
-//                this.endOffset = 0;
-//        }
-//        
-//        GENTICS.Utils.Dom.doCleanup({merge:true}, this, this.commonAncestorContainer);
+
 	},
 
 	/**
@@ -154,19 +103,11 @@ GENTICS.Utils.RangeObject = Class.extend({
 	 * TODO: move this to Aloha.Log
 	 * @param message log message to output
 	 * @return void
+	 * @deprecated
 	 * @hide
 	 */
 	log: function(message) {
-		var
-			Aloha = window.Aloha||false,
-			console = window.console||false;
-		if (Aloha && Aloha.Log) {
-			Aloha.Log.debug(this, message);
-			return false;
-		}
-		if (console) {
-			console.log(message);
-		}
+		console.deprecated( 'Utils.RangeObject', 'log() is deprecated. use console.log() from module "aloha/console" instead.');
 	},
 
 	/**
@@ -378,9 +319,9 @@ GENTICS.Utils.RangeObject = Class.extend({
 		var ieRange, endRange, startRange, range, sel;
 
 		// now for the rest of the world
-		if (Aloha && Aloha.Log.isDebugEnabled()) {
-			Aloha.Log.debug(this, 'Set selection to current range (non IE version)');
-		}
+//		if (Aloha && Aloha.Log.isDebugEnabled()) {
+//			Aloha.Log.debug(this, 'Set selection to current range (non IE version)');
+//		}
 
 		// create a range
 		range = rangy.createRange();
@@ -976,6 +917,6 @@ GENTICS.Utils.RangeTree = Class.extend({
 	 */
 	children: []
 });
-
+	
 	return GENTICS.Utils.RangeObject;
 });

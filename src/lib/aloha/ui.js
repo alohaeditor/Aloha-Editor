@@ -19,16 +19,16 @@
 */
 
 define(
-['aloha/jquery', 'aloha/floatingmenu', 'i18n!aloha/nls/i18n'],
-function(jQuery, FloatingMenu, i18n, undefined) {
+['aloha/core', 'util/class', 'aloha/jquery', 'aloha/floatingmenu', 'aloha/ext', 'aloha/console', 'i18n!aloha/nls/i18n'],
+function(Aloha, Class, jQuery, FloatingMenu, Ext, console, i18n) {
 	"use strict";
 	
 	var
-		$ = jQuery,
-		GENTICS = window.GENTICS,
-		Aloha = window.Aloha,
-		Ext = window.Ext,
-		Class = window.Class;
+//		$ = jQuery,
+//		Aloha = window.Aloha,
+//		Ext = window.Ext,
+//		Class = window.Class;
+	GENTICS = window.GENTICS;
 
 	// Ensure Namespace
 	Aloha.ui = Aloha.ui || {};
@@ -772,11 +772,67 @@ Aloha.ui.MultiSplitButton = Class.extend({
 	}
 });
 
+/**
+ * Method to access translations
+ * @deprecated
+ * This will be removed in one of the next version
+ */
+Aloha.i18n = function(component, key, replacements) {
+	console.deprecated ('Aloha', 'i18n() is deprecated. Use module "i18n!aloha/nls/i18n" instead.');
+	return key;
+};
+
+
+/**
+ * Displays a message according to it's type
+ * @method
+ * @param {Aloha.Message} message the Aloha.Message object to be displayed
+ */
+Aloha.showMessage = function (message) {
+
+	if (FloatingMenu.obj) {
+		FloatingMenu.obj.css('z-index', 8900);
+	}
+
+	switch (message.type) {
+		case Aloha.Message.Type.ALERT:
+			Ext.MessageBox.alert(message.title, message.text, message.callback);
+			break;
+		case Aloha.Message.Type.CONFIRM:
+			Ext.MessageBox.confirm(message.title, message.text, message.callback);
+			break;
+		case Aloha.Message.Type.WAIT:
+			Ext.MessageBox.wait(message.text, message.title);
+			break;
+		default:
+			Aloha.log('warn', this, 'Unknown message type for message {' + message.toString() + '}');
+			break;
+	}
+};
+
+/**
+ * Hides the currently active modal, which was displayed by showMessage()
+ * @method
+ */
+Aloha.hideMessage = function () {
+	Ext.MessageBox.hide();
+};
+
+/**
+ * checks if a modal dialog is visible right now
+ * @method
+ * @return true if a modal is currently displayed
+ */
+Aloha.isMessageVisible = function () {
+	return Ext.MessageBox.isVisible();
+};
 
 /**
  * id counter, for generation of unique id's for the buttons
  * @hide
  */
 Aloha.ui.MultiSplitButton.idCounter = 0;
+
+return Aloha.ui;
 
 });

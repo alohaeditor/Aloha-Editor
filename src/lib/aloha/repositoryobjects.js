@@ -4,14 +4,14 @@
  * Licensed unter the terms of http://www.aloha-editor.com/license.html
  */
 define(
-['util/base'],
-function() {
+[ 'aloha/core', 'util/class'],
+function( Aloha, Class ) {
 	"use strict";
 	
 	var
-		GENTICS = window.GENTICS,
-		Aloha = window.Aloha,
-		Class = window.Class;
+//		Aloha = window.Aloha,
+//		Class = window.Class,
+	GENTICS = window.GENTICS;
 
 	Aloha.RepositoryObject = function() {};
 	
@@ -77,9 +77,7 @@ function() {
 	//		/**
 	//		 * Not implemented method to generate this JS API doc correctly.
 	//		 */
-	//		,empty = function() {
-	//			assert(false, "Error, abstract type, subclass Document and implement empty")
-	//		};
+	//		,empty = function() }
 	
 		});
 	
@@ -142,8 +140,7 @@ function() {
 	//	/**
 	//	* Not implemented method to generate this JS API doc correctly.
 	//	*/
-	//	,empty = function() {
-	//		assert(false, "Error, abstract type, subclass Folder and implement empty")
-	//	};
+	//	,empty = function() {};
+	
 	});
 });
