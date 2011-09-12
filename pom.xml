@@ -14,7 +14,13 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
-	 <build>
+	<scm>
+              <connection>scm:git:git@github.com:alohaeditor/Aloha-Editor.git</connection>
+              <developerConnection>scm:git:ssh://git@github.com:alohaeditor/Aloha-Editor.git</developerConnection>
+              <url>https://github.com/alohaeditor/Aloha-Editor</url>
+        </scm>
+
+	<build>
                 <plugins>
 
 			 <plugin>
