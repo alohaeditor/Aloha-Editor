@@ -35,28 +35,28 @@ define([
 	    uid = +(new Date),
 	    ns  = 'aloha-browser',
 	    nsClasses = {
-			tree              : nsClass('tree'),
-			'tree-header'     : nsClass('tree-header'),
-			'grab-handle'     : nsClass('grab-handle'),
-			shadow            : nsClass('shadow'),
-			'rounded-top'     : nsClass('rounded-top'),
-			list              : nsClass('list'),
-			'list-altrow'     : nsClass('list-altrow'),
-			'list-resizable'  : nsClass('list-resizable'),
-			'list-pager'      : nsClass('list-pager'),
-			'list-pager-left' : nsClass('list-pager-left'),
-			'list-btns'       : nsClass('list-btns'),
-			'search-btn'      : nsClass('search-btn'),
-			'search-field'    : nsClass('search-field'),
-			'search-icon'     : nsClass('search-icon'),
-			'close-btn'       : nsClass('close-btn'),
-			btn               : nsClass('btn'),
-			btns              : nsClass('btns'),
-			grid              : nsClass('grid'),
-			clear             : nsClass('clear'),
-			inner             : nsClass('inner'),
-			'modal-overlay'   : nsClass('modal-overlay'),
-			'modal-window'    : nsClass('modal-window')
+			tree              : 'aloha-browser-tree',
+			'tree-header'     : 'aloha-browser-tree-header',
+			'grab-handle'     : 'aloha-browser-grab-handle',
+			shadow            : 'aloha-browser-shadow',
+			'rounded-top'     : 'aloha-browser-rounded-top',
+			list              : 'aloha-browser-list',
+			'list-altrow'     : 'aloha-browser-list-altrow',
+			'list-resizable'  : 'aloha-browser-list-resizable',
+			'list-pager'      : 'aloha-browser-list-pager',
+			'list-pager-left' : 'aloha-browser-list-pager-left',
+			'list-btns'       : 'aloha-browser-list-btns',
+			'search-btn'      : 'aloha-browser-search-btn',
+			'search-field'    : 'aloha-browser-search-field',
+			'search-icon'     : 'aloha-browser-search-icon',
+			'close-btn'       : 'aloha-browser-close-btn',
+			btn               : 'aloha-browser-btn',
+			btns              : 'aloha-browser-btns',
+			grid              : 'aloha-browser-grid',
+			clear             : 'aloha-browser-clear',
+			inner             : 'aloha-browser-inner',
+			'modal-overlay'   : 'aloha-browser-modal-overlay',
+			'modal-window'    : 'aloha-browser-modal-window'
 		};
 	
 	// ------------------------------------------------------------------------
@@ -155,6 +155,7 @@ define([
 				verbose : false,
 				// The repository manager which this browser will interface with
 				repositoryManager : Aloha.RepositoryManager,
+				repositoryFilter  : [],
 				objectTypeFilter  : [],
 				renditionFilter   : ['cmis:none'], // ['*']
 				filter : ['url'],
@@ -234,7 +235,7 @@ define([
 			
 			this.element.attr('data-aloha-browser', ++uid).html('');
 			
-			this.grid = this.createGrid(this.element);
+			this.grid = this.createGrid(this.element).resize();
 			this.tree = this.createTree(this.grid.find('.ui-layout-west'));
 			this.list = this.createList(this.grid.find('.ui-layout-center'));
 			
@@ -468,7 +469,10 @@ define([
 		
 		fetchRepoRoot: function (callback) {
 			this.getRepoChildren(
-				{inFolderId: this.rootFolderId},
+				{
+					inFolderId       : this.rootFolderId,
+					repositoryFilter : this.repositoryFilter
+				},
 				function (data) {
 					if (typeof callback === 'function') {
 						callback(data);
@@ -600,6 +604,7 @@ define([
 					},
 					json_data: {
 						data: function (node, callback) {
+							that.jstree_callback = callback;
 							that.fetchSubnodes.call(that, node, callback);
 						},
 						correct_state: true
@@ -661,9 +666,9 @@ define([
 				colModel     : colModel,
 				caption      : '&nbsp;',
 				altRows      : true,
-				altclass     : nsClass('list-altrow'),
-				resizeclass  : nsClass('list-resizable'),
-				pager        : '#' + nsClass('list-pager'), // http://www.trirand.com/jqgridwiki/doku.php?id=wiki:pager&s[]=pager
+				altclass     : 'aloha-browser-list-altrow',
+				resizeclass  : 'aloha-browser-list-resizable',
+				pager        : '#aloha-browser-list-pager', // http://www.trirand.com/jqgridwiki/doku.php?id=wiki:pager&s[]=pager
 			//	rowNum       : this.pageSize,	  // # of records to view in the grid. Passed as parameter to url when retrieving data from server
 				viewrecords  : true,
 				// Event handlers: http://www.trirand.com/jqgridwiki/doku.php?id=wiki:events
@@ -681,35 +686,39 @@ define([
 			
 			container.find('.ui-jqgrid-bdiv').height(
 				this.grid.height() - (
-					container.find('.ui-jqgrid-titlebar').outerHeight(true) +
-					container.find('.ui-jqgrid-hdiv').outerHeight(true) + 
-					container.find('.ui-jqgrid-pager').outerHeight(true)
-				) + 10
+					container.find('.ui-jqgrid-titlebar').height() +
+					container.find('.ui-jqgrid-hdiv').height() + 
+					container.find('.ui-jqgrid-pager').height()
+				)
 			);
-			
-			container.find('.ui-jqgrid-pager').height(40);
 			
 			list.dblclick(function () {
 				that.rowClicked.apply(that, arguments);
 			});
 			
 			// Override jqGrid paging
-			container.find('.ui-pg-button').unbind().find('>span.ui-icon').each(function () {
-				var dir = this.className.match(/ui\-icon\-seek\-([a-z]+)/)[1];
-				
-				that._pagingBtns[dir] = jQuery(this).parent()
-					.addClass('ui-state-disabled')
-					.click(function () {
-						if (!jQuery(this).hasClass('ui-state-disabled')) {
-							that.doPaging(dir);
-						}
+			container
+				.find('.ui-pg-button').unbind()
+				.find('>span.ui-icon').each(function () {
+					var dir = this.className
+								  .match(/ui\-icon\-seek\-([a-z]+)/)[1];
+						
+						that._pagingBtns[dir] =
+							jQuery(this)
+								.parent()
+								.addClass('ui-state-disabled')
+								.click(function () {
+									if (!jQuery(this)
+											.hasClass('ui-state-disabled')) {
+												that.doPaging(dir);
+											}
+								});
 					});
-			});
 			
 			// TODO: implement this once repositories can handle it, hidding it for now
 			container.find('.ui-pg-input').parent().hide()
 			container.find('.ui-separator').parent().css('opacity', 0).first().hide();
-			container.find('#' + nsClass('list-pager-left')).hide();
+			container.find('#aloha-browser-list-pager-left').hide();
 			
 			this.createTitlebar(container);
 			
@@ -741,27 +750,27 @@ define([
 					</div>'
 				));
 			
-			bar.addClass(nsClass('grab-handle')).append(btns);
-			bar.find(nsSel('search-btn')).click(function () {
+			bar.addClass('aloha-browser-grab-handle').append(btns);
+			bar.find('.aloha-browser-search-btn').click(function () {
 				that.triggerSearch();
 			});
-			bar.find(nsSel('search-field')).keypress(function (event) {
+			bar.find('.aloha-browser-search-field').keypress(function (event) {
 				if (event.keyCode == 13) { // on Enter
 					that.triggerSearch();
 				}
 			});
-			bar.find(nsSel('close-btn')).click(function () {
+			bar.find('.aloha-browser-close-btn').click(function () {
 				that.close();
 			});
-			bar.find(nsSel('btn')).mousedown(function () {
-				jQuery(this).addClass(nsClass('pressed'));
+			bar.find('.aloha-browser-btn').mousedown(function () {
+				jQuery(this).addClass('aloha-browser-pressed');
 			}).mouseup(function () {
-				jQuery(this).removeClass(nsClass('pressed'));
+				jQuery(this).removeClass('aloha-browser-pressed');
 			});
 		},
 		
 		triggerSearch: function () {
-			var search = this.grid.find('input' + nsSel('search-field'));
+			var search = this.grid.find('input.aloha-browser-search-field');
 			
 			this._pagingOffset = 0;
 			this._searchQuery  = search.val();
@@ -870,15 +879,15 @@ define([
 			
 			this.queryRepository(
 				{
-					queryString      : this._searchQuery,
+					repositoryId     : folder.repositoryId,
 					inFolderId       : folder.id,
+					queryString      : this._searchQuery,
+					orderBy          : this._orderBy,
 					skipCount        : this._pagingOffset,
 					maxItems         : this.pageSize,
 					objectTypeFilter : this.objectTypeFilter,
 					renditionFilter  : this.renditionFilter,
-					filter           : this.filter,
-					orderBy          : this._orderBy
-				//	repositoryId     : obj.repositoryId
+					filter           : this.filter
 				},
 				function (data) {
 					if (typeof callback === 'function') {
@@ -963,11 +972,11 @@ define([
 				'<div class="{modal-window}"  style="top: -99999px; z-index: 99999;"></div>'
 			));
 			
-			jQuery(nsSel('modal-overlay')).click(function () {
+			jQuery('.aloha-browser-modal-overlay').click(function () {
 				that.close();
 			});
 			
-			return jQuery(nsSel('modal-window'));
+			return jQuery('.aloha-browser-modal-window');
 		},
 		
 		setObjectTypeFilter: function (otf) {
@@ -981,11 +990,11 @@ define([
 		show: function () {
 			this.opened = true;
 			
-			this.fetchRepoRoot();
+			this.fetchRepoRoot(this.jstree_callback);
 			
 			var el = this.element;
 			
-			jQuery(nsSel('modal-overlay'))
+			jQuery('.aloha-browser-modal-overlay')
 				.css({top: 0, left: 0})
 				.add(el).stop().show();
 			
@@ -995,7 +1004,7 @@ define([
 				left : (win.width()  - el.width())  / 2,
 				top  : (win.height() - el.height()) / 3
 			}).draggable({
-				handle: el.find(nsSel('grab-handle'))
+				handle: el.find('.aloha-browser-grab-handle')
 			}).resizable();
 			
 			// Do wake-up animation
@@ -1014,7 +1023,7 @@ define([
 			this.element.fadeOut(
 				250, function () {
 					jQuery(this).css('top', 0).hide();
-					jQuery(nsSel('modal-overlay')).hide();
+					jQuery('.aloha-browser-modal-overlay').hide();
 				}
 			);
 		}

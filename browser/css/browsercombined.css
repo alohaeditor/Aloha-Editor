@@ -433,6 +433,10 @@ tr.ui-search-toolbar select {margin: 1px 0px 0px 0px}
 	font-family: Arial, sans-serif;
 }
 
+.aloha-browser-modal-window .ui-widget {
+	font-family: Arial, sans-serif;
+}
+
 /**
  *
  * ui-layout
@@ -519,7 +523,6 @@ tr.ui-search-toolbar select {margin: 1px 0px 0px 0px}
 	border: 1px solid #53565b;
 	text-align: left;
 	line-height: 1.5em;
-	font-family: Arial, sans-serif;
 }
 .aloha-browser-clear {
 	float: none;

@@ -38,7 +38,7 @@ define([
 	var Aloha = window.Aloha;
 	
 	var config = {
-	 //	rootFolderId	 : 1,
+		repositoryFilter : [ 'wai-languages' ],
 		objectTypeFilter : [ 'website', 'files', 'images', 'language' /*, '*' */ ],
 		renditionFilter	 : [ '*' ],
 		filter			 : [ 'language' ],
