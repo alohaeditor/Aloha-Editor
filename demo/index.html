@@ -7,7 +7,7 @@
 	<script src="../../../../lib/require.js"
 			id="aloha-script-include"
 			data-main="../../../../lib/aloha.js"
-			data-plugins="common/format, common/highlighteditables, media/image"></script>
+			data-aloha-plugins="common/format, common/highlighteditables, media/image"></script>
 
 	<link rel="stylesheet" href="../../../../css/aloha.css" id="aloha-style-include" type="text/css">
 	<link rel="stylesheet" href="../../../../demo/common/index.css" type="text/css">
@@ -36,7 +36,7 @@
   </div>
 	<script type="text/javascript">
 	
-    require.ready(function() {
+	(function(window, undefined) {
 
 		function _onCropped(image, props) {
 
@@ -81,7 +81,7 @@
 		}
     	
 		if (window.Aloha === undefined || window.Aloha === null) {
-			Aloha = {};
+			var Aloha = window.Aloha = {};		
 		}
 		
 		Aloha.settings = {
@@ -101,7 +101,8 @@
 				}
 			}
 		};
-    });
+    
+    })(window);
 	</script>
 	
 	<script type="text/javascript">
