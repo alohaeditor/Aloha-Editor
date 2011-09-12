@@ -15,7 +15,7 @@
 
 	<scm>
                 <connection>scm:git:git://github.com/gentics/Aloha-Editor.git</connection>
-                <developerConnection>scm:git:ssh://git@github.com/gentics/Aloha-Editor.git</developerConnection>
+                <developerConnection>scm:git:ssh://git@github.com:22/gentics/Aloha-Editor.git</developerConnection>
                 <url>https://github.com/gentics/Aloha-Editor</url>
         </scm>
 
