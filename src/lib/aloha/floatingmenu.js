@@ -356,6 +356,12 @@ function(Aloha, jQuery, Ext, Class) {
 		 * so the floating menu is not directly attached to the top of the page
 		 */
 		marginTop: 0,
+		
+		/**
+		 * Define whether the floating menu shall be draggable or not via Aloha.settings.floatingmanu.draggable
+		 * Default is: true 
+		 */
+		draggable: true,
 
 		/**
 		 * Initialize the floatingmenu
@@ -365,8 +371,12 @@ function(Aloha, jQuery, Ext, Class) {
 
 			// check for behaviour setting of the floating menu
 		    if (Aloha.settings.floatingmenu) {
+		    	
+		    	if (typeof Aloha.settings.floatingmenu.draggable === 'boolean') {
+		    		this.draggable = Aloha.settings.floatingmenu.draggable;
+		    	}
 				if (typeof Aloha.settings.floatingmenu.behaviour === 'string') {
-				    this.behaviour = Aloha.settings.floatingmenu.behaviour;
+					this.behaviour = Aloha.settings.floatingmenu.behaviour;
 				}
 				if (typeof Aloha.settings.floatingmenu.marginTop === 'number') {
 				    this.marginTop = Aloha.settings.floatingmenu.marginTop;
@@ -436,7 +446,7 @@ function(Aloha, jQuery, Ext, Class) {
 		 * @hide
 		 */
 		panelBody: null,
-
+		
 		/**
 		 * The panels width
 		 * @hide
@@ -457,16 +467,18 @@ function(Aloha, jQuery, Ext, Class) {
 				minWidth : 10
 			});
 
+			
+			
 			if (this.extTabPanel) {
 				// TODO dispose of the ext component
 			}
 			else {
-				// generate the tabpanel object
-				this.extTabPanel = new Ext.TabPanel({
-					activeTab: 0,
-					width: that.width, // 336px this fits the multisplit button and 6 small buttons placed in 3 cols
-					plain: false,
-					draggable: {
+				
+				// Enable or disable the drag functionality
+				var dragConfiguration = false;
+
+				if ( that.draggable ) {
+					dragConfiguration = {
 						insertProxy: false,
 						onDrag : function(e) {
 							var pel = this.proxy.getEl();
@@ -484,7 +496,14 @@ function(Aloha, jQuery, Ext, Class) {
 							that.refreshShadow();
 							this.panel.shadow.show();
 						}
-					},
+					};
+				}
+				// generate the tabpanel object
+				this.extTabPanel = new Ext.TabPanel({
+					activeTab: 0,
+					width: that.width, // 336px this fits the multisplit button and 6 small buttons placed in 3 cols
+					plain: false,
+					draggable: dragConfiguration,
 					floating: {shadow: false},
 					defaults: {
 						autoScroll: true
