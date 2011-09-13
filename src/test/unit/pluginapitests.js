@@ -5,16 +5,14 @@
  */
 
 define(
-[ 'aloha/jquery'  ],
-function( jQuery ) {
+[],
+function() {
 	"use strict";
 	
-	jQuery( 'body' ).bind( 'aloha', function() {
-		
-		var Aloha = requireAloha('aloha');
+	Aloha.ready( function() {
 		
 		asyncTest('Aloha plugin defaults and settings', function() {
-			var plugin = requireAloha('plugintest1/plugintest1-plugin');
+			var plugin = Aloha.require('plugintest1/plugintest1-plugin');
 			equal(plugin.settings.value2, 2, 'defaults');
 			equal(plugin.settings.value1, -1, 'settings');
 			equal(plugin.settings.value3.valueB, 'B', 'nested defaults');
@@ -23,7 +21,7 @@ function( jQuery ) {
 		});
 		
 		asyncTest('Aloha plugin paths [lib, vendor, nls, res, css]', function() {
-			requireAloha( ['plugintest1/test', 'plugintest1/vendor/test', 'i18n!plugintest1/nls/i18n',
+			Aloha.require( ['plugintest1/test', 'plugintest1/vendor/test', 'i18n!plugintest1/nls/i18n',
 		               'plugintest1/test', 'plugintest1/css/test'],
 				function( lib, vendor, i18n, res, css ) {
 					ok(true, 'Plugin loaded with all path');
@@ -33,9 +31,10 @@ function( jQuery ) {
 					equal(res.status, 'ok', 'res ok');
 					equal(css.status, 'ok', 'css ok');
 					start();
+					clearTimeout( t );
 				}
 			);
-			setTimeout(function() {
+			var t = setTimeout(function() {
 				ok(false, 'Aloha plugin localization did not return in 5 seconds');
 				start();
 			}, 
@@ -80,7 +79,7 @@ function( jQuery ) {
 		});
 		
 		asyncTest('Aloha plugin default localization (fallback)', function() {
-			requireAloha( ['i18n!plugintest2/nls/i18n'],
+			Aloha.require( ['i18n!plugintest2/nls/i18n'],
 				function( i18n ) {
 					var key = i18n.t('plugin2.test1');
 					if ( key == 'fallback' ) {
@@ -89,9 +88,10 @@ function( jQuery ) {
 						ok(false, 'Failure loading default language key. Result: ' + key);
 					}
 					start();
+					clearTimeout( t );
 				}
 			);
-			setTimeout(function() {
+			var t = setTimeout(function() {
 				ok(false, 'Aloha plugin localization did not return in 5 seconds');
 				start();
 			}, 
@@ -99,7 +99,7 @@ function( jQuery ) {
 		});
 		
 		asyncTest('Aloha plugin german localization', function() {
-			requireAloha( ['i18n!plugintest1/nls/i18n'],
+			Aloha.require( ['i18n!plugintest1/nls/i18n'],
 				function( i18n ) {
 					var key = i18n.t('plugin1.test1');
 					if ( key == 'german' ) {
@@ -108,9 +108,10 @@ function( jQuery ) {
 						ok(false, 'Failure loading german language key. Result: ' + key);
 					}
 					start();
+					clearTimeout( t );
 				}
 			);
-			setTimeout(function() {
+			var t = setTimeout(function() {
 				ok(false, 'Aloha plugin localization did not return in 5 seconds');
 				start();
 			}, 
@@ -122,15 +123,16 @@ function( jQuery ) {
 		});
 		
 		asyncTest('Aloha plugin async dynamic module loading', function() {
-			requireAloha( ['plugintest1/component'],
+			Aloha.require( ['plugintest1/component'],
 				function( component ) {
 					ok(true, 'module loaded.');
 					equal(component.doOther(), 'didOther', 'module function present.');
 					equal(component.doSome(), 'didSome', 'function from dependend module present.');
 					start();
+					clearTimeout( t );
 				}
 			);
-			setTimeout(function() {
+			var t = setTimeout(function() {
 				ok(false, 'Aloha plugin dynamically async module loading did not return in 5 seconds');
 				start();
 			}, 
@@ -138,13 +140,14 @@ function( jQuery ) {
 		});
 		
 		asyncTest('Aloha cross plugin async dynamic module loading', function() {
-			requireAloha( ['plugintest2/component'],
+			Aloha.require( ['plugintest2/component'],
 				function( component ) {
 					equal(component.doSome(), 'didSome', 'Sucessfully dynamically async loaded cross plugin module dependency.');
 					start();
+					clearTimeout( t );
 				}
 			);
-			setTimeout(function() {
+			var t = setTimeout(function() {
 				ok(false, 'Aloha plugin dynamically async module loading did not return in 5 seconds');
 				start();
 			}, 

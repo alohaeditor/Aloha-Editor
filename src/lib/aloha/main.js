@@ -21,7 +21,6 @@
 define( 
 	'aloha',
 	[
-		'aloha/jquery',
 		'aloha/core',
 		'util/json2',
 		'vendor/jquery.json-2.2.min',
@@ -31,6 +30,7 @@ define(
 		'util/range',
 		'util/position',
 		'util/dom',
+		'aloha/jquery.patch',
 		'aloha/jquery.aloha',
 		'aloha/ui',
 		'aloha/ui-attributefield',
@@ -52,15 +52,13 @@ define(
 		'aloha/ext-alohareader',
 		'aloha/ext-alohatreeloader'
 	],
-	function( jQuery, Aloha ) {
+	function( Aloha ) {
 		
 		// loading css is not a dependency
-		requireAloha(['css!../css/aloha.css']);
+		Aloha.require(['css!../css/aloha.css']);
 		
-		Aloha.trigger('aloha-core-loaded');
-
-		// jQuery calls the init methode when the dom is ready
-		jQuery( Aloha.init );
+		// jQuery calls the init method when the dom is ready
+		Aloha.jQuery( Aloha.init );
 		
 		// The Aloha abject is now available but ready after the aloha-ready event
 		return Aloha;

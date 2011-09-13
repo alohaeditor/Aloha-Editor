@@ -56,7 +56,7 @@ function( dependendmodule1, dependendmodule2 ) {
 });
 </javascript>
 
-You do not need to define all parameter of the callback function but +require+ the module as needed. In order to not interfere with other modules we require all Aloha Editor modules in the +aloha+ context. The configuration is available in +Aloha.settings.requireConf+. The method +requireAloha()+ is a shorthand to require with the Aloha Editor configuration and additionally gives you the +Aloha+ object an argument if you pass only a callback function or as return if you pass no argument at all. 
+You do not need to define all parameter of the callback function but +require+ the module as needed. In order to not interfere with other modules we require all Aloha Editor modules in the +aloha+ context. The configuration is available in +Aloha.settings.requireConf+. The method +Aloha.require()+ is a shorthand to require with the Aloha Editor configuration and additionally gives you the +Aloha+ object an argument if you pass only a callback function or as return if you pass no argument at all. 
 
 <javascript filename="myplugin/lib/module.js">
 define(
@@ -65,11 +65,11 @@ function() {
 	"use strict";
 
 	var 
-		Aloha = requireAloha(),
+		Aloha = Aloha.require(),
 		dependendmodule1 = require( Aloha.settings.requireConf, 'dependendmodule1' ),
-		dependendmodule2 = requireAloha( 'dependendmodule2' ); // shorthand to the above
+		dependendmodule2 = Aloha.require( 'dependendmodule2' ); // shorthand to the above
 		
-	requireAloha( function( localAloha ) {
+	Aloha.require( function( localAloha ) {
 		// localAloha is available here  
 	};
 	
@@ -83,7 +83,7 @@ You may also require module or Aloha itself on demand
 ( function() {
 	"use strict";
 
-	requireAloha( function( Aloha ) {
+	Aloha.require( function( Aloha ) {
 		// localAloha is available here
 		// but not neccessarily fully initialized
 		Aloha.jQuery('body').bind('aloha', function() {
@@ -91,7 +91,7 @@ You may also require module or Aloha itself on demand
 		});  
 	});
 	
-	requireAloha( ['dependendmodule1'], function( dependendmodule1 ) {
+	Aloha.require( ['dependendmodule1'], function( dependendmodule1 ) {
 		// dependendmodule1 is available here  
 	};
 	
@@ -105,53 +105,70 @@ h3. Aloha plugins and their dependencies
 In the following example, we define a components plugin with two modules. The first module @componenttype@ defines two classes. The second module @component@ has a dependency to @componenttype@, and RequireJS injects what has been returned by @componenttype@.
 
 The plugin requires the module +aloha/plugin+ which gives you the plugin factory method +create()+
-<javascript filename="myplugin/lib/components-plugin.js">
+<javascript filename="plugin1/lib/plugin1-plugin.js">
 define(
 [ 'aloha/plugin' ],
 function( plugin ) {
     "use strict";
 	// we do nothing but provide component modules...
-    return plugin.create( 'components', {});
+    return plugin.create( 'plugin1', {});
 });
 </javascript>
 
 The +componenttye+ has no dependency thus the dependency array is empty.
-<javascript filename="myplugin/lib/componenttype.js">
+<javascript filename="plugin1/lib/abstractmodule.js">
 define(
 [], // no dependency
 function() {
 	"use strict";
 
-	var componenttype = Class.extend({
+	var abstractModule = Class.extend({
     	doOther: function() {
     		return 'didOther';
-    	}	});
+    	}
+    });
 
-	return componenttype;
+	return abstractModule;
 
 });
 </javascript>
 
 The +component+ depends on the local module +componenttype+ and defines its dependency.
-<javascript filename="myplugin/lib/component.js">
+<javascript filename="plugin1/lib/module.js">
 define(
-['./componenttype'], // dependency in the same path
-function( componenttype ) {
+['./abstractmodule'], // dependency in the same path
+function( abstractModule ) {
     "use strict";
 
-    var component = componenttype.extend({
+    var module = abstractModule.extend({
 		doSome: function() {
 			return 'didSome';
 		}
     });
-    return new component();
+    return new module();
 
 });
 </javascript>
 
 
-INFO: You should implement your module with as few dependencies as necessary. That could mean that you deliver a plugin with some modules but the modules are not loaded on plugin loading as in the example above. This allows other to use modules of your plugin on demand.
+h4. Cross plugin dependencies
 
+Now in plugin2 you can define a dependency on +plugin1/module+ from plugin1 and extend the module with our own function when plugin2 is loaded. If another plugin would require +plugin1/module+ it would have our extended funcitonality. 
+
+<javascript filename="plugin2/lib/plugin2-plugin.js">
+define(
+[ 'aloha/plugin', 'plugin1/module' ],
+function( plugin, module ) {
+    "use strict";
+    
+    // module is available here
+    module.doThis = function() {
+    	return 'didThis';
+    };
+    
+	// we do nothing but provide component modules...
+    return plugin.create( 'plugin2', {});
+});
 h3. Aloha require path mapping for plugins
 
 So, at which place does Aloha look up modules? We'll explain this with a few examples:

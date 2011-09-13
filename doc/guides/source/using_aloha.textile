@@ -66,7 +66,7 @@ after the inclusion of @require.js@.
 
 <html>
 <script type="text/javascript">
-	requireAloha( function( Aloha ) {
+	Aloha.require( function( Aloha ) {
 		
 		// Make #content editable once Aloha is loaded.
 		// .aloha() will wait until Aloha is ready and then fire
@@ -185,9 +185,8 @@ h3. jQuery compatibility
 
 Aloha Editor currently puts 3 objects in the global namespace:
 
-* +Aloha+ the core Aloha Editor object which gives you access to the main functionallity
+* +Aloha+ the core Aloha Editor object which gives you access to the main functionality
 * +GENTICS+ the utilities to manipulate the DOM in a proper way
-* +alohaQuery+  the Aloha Editor enabled jQuery which provides commodity access to Aloha Editor features
 
 Aloha Editor will not interfere with any jQuery version you use on your site. Anyway if you want to use the jQuery version of your site you may specify the jQuery to use for Aloha editor. All Aloha Editor jQuery plugins will then be attached to the specified jQuery version. 
 

@@ -14,6 +14,7 @@
 	<script>
 		var Aloha = {
 			settings: {
+				jQuery: $,
 				baseUrl: '../../lib'
 			}
 		};
@@ -21,7 +22,6 @@
 	</script>
 
 	<!-- include aloha -->
-	<script src="../../lib/require.js"></script>
 	<script src="../../lib/aloha.js" data-aloha-plugins="common/commands"></script>
 
 	<!-- inject into testswarm -->
@@ -29,16 +29,7 @@
 	<script>
 		// define realtive baseUrl path to requireJS
 		// and paths back to aloha path
-		require({
-				baseUrl: '../../test/unit',
-				paths: {
-					'aloha': Aloha.settings.baseUrl + '/aloha',
-					'vendor': Aloha.settings.baseUrl + '/vendor',
-					'util': Aloha.settings.baseUrl + '/util'
-				}
-			},
-			[ 'commandtest' ]
-		);
+		require( [ 'commandtest' ] );
 	</script>
 </head>
 <body>

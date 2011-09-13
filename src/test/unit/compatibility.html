@@ -14,31 +14,32 @@
 		
 		var beforeNoConflict = $;
 		
-		// assigning alohaQuery to jQuery 1.5.1 and remove jQuery from global scope
-		alohaQuery = jQuery.noConflict();
-
-		var afterNoConflict = $;
-
 		var Aloha = {};
 		Aloha.settings = {
+			jQuery: $.noConflict(),
 			bundles: {
 				// Path for custom bundle relative from require.js path
 				'test': '../test/unit'
 			},
 			locale: 'de'
 		};
+
+		var afterNoConflict = $;
+	
 	</script>
 
 	<!-- include old jQuery version for compatibility checks -->
 	<script	src="../vendor/jquery-1.2.1.js" ></script>
 
 	<!-- include aloha after loading old jQuery version -->
-	<script src="../../lib/require.js"></script>
 	<script src="../../lib/aloha.js" data-aloha-plugins="test/plugintest2"></script>
 
 	<!-- include testswarm inject script -->
 	<script>
-		var url = window.location.search;
+		var 
+			require = Aloha._require,
+			define = Aloha.define,
+			url = window.location.search;
 		url = decodeURIComponent( url.slice( url.indexOf("swarmURL=") + 9 ) );
 		if ( url && url.indexOf("http") === 0 ) {
 			require(["http://testswarm.aloha-editor.org/js/inject.js?" + (new Date).getTime()], function() {});

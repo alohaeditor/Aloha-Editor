@@ -22,16 +22,14 @@ define(
 
 [
 	'aloha/jquery',
-	'aloha/pluginmanager',
-	'aloha/jquery.promise'
+	'aloha/pluginmanager'
 ],
 
 function ( jQuery, PluginManager ) {
 	"use strict";
 
 	var
-		GENTICS = window.GENTICS,
-		Aloha = window.Aloha || {};
+		GENTICS = window.GENTICS;
 	
 	//----------------------------------------
 	// Private variables
@@ -71,19 +69,6 @@ function ( jQuery, PluginManager ) {
 		 * @type Aloha.Editable
 		 */
 		activeEditable: null,
-
-		/**
-		 * Flag to mark whether Aloha is ready for use. Will be set at the end of the init() Function.
-		 * @property
-		 * @type boolean
-		 */
-		ready: false,
-
-		/**
-		 * The aloha dictionaries
-		 * @hide
-		 */
-		dictionaries: {},
 
 		/**
 		 * settings object, which will contain all Aloha settings
@@ -133,10 +118,7 @@ function ( jQuery, PluginManager ) {
 		 */
 		init: function () {
 				
-			// Create Promises
-			Aloha.createPromiseEvent('aloha');
-			
-			// merge deafults and settings and provide all in settings
+			// merge defaults and settings and provide all in settings
 			jQuery.extend( Aloha.settings, Aloha.defaults );
 
 			// initialize rangy. This is probably necessary here,
@@ -155,8 +137,8 @@ function ( jQuery, PluginManager ) {
 					Aloha.initPlugins(function(){
 						Aloha.stage = 'initGui';
 						Aloha.initGui(function(){
-							Aloha.stage = 'aloha';
-							Aloha.trigger('aloha', Aloha);
+							Aloha.stage = 'alohaReady';
+							Aloha.trigger('aloha-ready');
 						});
 					});
 				});
@@ -379,34 +361,6 @@ function ( jQuery, PluginManager ) {
 
 			// Forward
 			next();
-		},
-
-		createPromiseEvent: function( eventName ) {
-			jQuery('body').createPromiseEvent( eventName );
-		},
-		
-		unbind: function( eventName, eventHandler ) {
-			eventName = Aloha.correctEventName( eventName );
-			jQuery('body').unbind(eventName);
-		},
-		
-		bind: function( eventName, eventHandler ) {
-			eventName = Aloha.correctEventName( eventName );
-			Aloha.log('debug', this, 'Binding ['+eventName+'], has ['+((jQuery('body').data('events')||{})[eventName]||[]).length+'] events');
-			jQuery('body').bind(eventName,eventHandler);
-		},
-		
-		trigger: function( eventName, data) {
-			eventName = Aloha.correctEventName( eventName );
-			Aloha.log('debug', this, 'Trigger ['+eventName+'], has ['+((jQuery('body').data('events')||{})[eventName]||[]).length+'] events');
-			jQuery('body').trigger( eventName, data );
-		},
-		
-		correctEventName: function( eventName ) {
-			var result = eventName.replace(/\-([a-z])/g,function(a,b){
-				return b.toUpperCase();
-			});
-			return result;
 		},
 
 		/**

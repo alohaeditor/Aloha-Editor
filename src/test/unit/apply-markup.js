@@ -30,7 +30,7 @@ define( ['testutils'], function( TestUtils ) {
 		var result = Aloha.editables[0].getContents(true);
 	
 		// get the expected results
-		var expected = alohaQuery(reference).contents();
+		var expected = Aloha.jQuery(reference).contents();
 	
 		// compare the result with the expected result
 		deepEqual(result.extractHTML(), expected.extractHTML(), 'Check Operation Result');
@@ -40,7 +40,7 @@ define( ['testutils'], function( TestUtils ) {
 		TestUtils.applyMarkup(editable, range, markup, nesting);
 	
 		// get the expected results
-		expected = alohaQuery(original).contents();
+		expected = Aloha.jQuery(original).contents();
 	
 		// compare the result with the expected result
 		deepEqual(result.extractHTML(), expected.extractHTML(), 'Check Double Operation Result');
@@ -69,19 +69,19 @@ define( ['testutils'], function( TestUtils ) {
 		var result = Aloha.editables[0].getContents(true);
 	
 		// get the expected results
-		var expected = alohaQuery(reference).contents();
+		var expected = Aloha.jQuery(reference).contents();
 	
 		// compare the result with the expected result
 		deepEqual(result.extractHTML(), expected.extractHTML(), 'Check Operation Result');
 	};
 
 	// All other tests are done when Aloha is ready
-	alohaQuery('body').bind('aloha', function() {
+	Aloha.ready( function() {
 		module('Plaintext Markup Handling', {
 			setup: function() {
 				// get the editable area and the reference
-				this.edit = alohaQuery('#edit');
-				this.ref = alohaQuery('#ref-plaintext');
+				this.edit = Aloha.jQuery('#edit');
+				this.ref = Aloha.jQuery('#ref-plaintext');
 				// fill the editable area with the reference
 				this.edit.html(this.ref.html());
 				// aloha'fy the editable
@@ -111,8 +111,8 @@ define( ['testutils'], function( TestUtils ) {
         module('Cross Markup Handling', {
 			setup: function() {
 				// get the editable area and the reference
-				this.edit = alohaQuery('#edit');
-				this.ref = alohaQuery('#ref-crossmarkup');
+				this.edit = Aloha.jQuery('#edit');
+				this.ref = Aloha.jQuery('#ref-crossmarkup');
 				// fill the editable area with the reference
 				this.edit.html(this.ref.html());
 				// aloha'fy the editable
@@ -187,8 +187,8 @@ define( ['testutils'], function( TestUtils ) {
 		module('Header Handling', {
 			setup: function() {
 				// get the editable area and the reference
-				this.edit = alohaQuery('#edit');
-				this.ref = alohaQuery('#ref-header');
+				this.edit = Aloha.jQuery('#edit');
+				this.ref = Aloha.jQuery('#ref-header');
 				// fill the editable area with the reference
 				this.edit.html(this.ref.html());
 				// aloha'fy the editable

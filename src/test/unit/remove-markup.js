@@ -4,12 +4,11 @@
  * Licensed unter the terms of http://www.aloha-editor.com/license.html
  */
 
-define("remove-markup",
-['aloha/jquery', 'testutils'],
-function(jQuery, TestUtils, undefined) {
+define(
+['testutils'],
+function( TestUtils, undefined) {
 	"use strict";
-	
-	var $ = jQuery;
+
 
 /**
  * Do a "remove markup" test
@@ -45,7 +44,7 @@ function doRemoveMarkupTest(editable, startContainer, startOffset, endContainer,
 
 	// Test whether Aloha is properly initialized
 	asyncTest('Aloha Startup Test', function() {
-		$('body').bind('aloha',function() {
+		Aloha.ready( function() {
 			ok(true, 'Aloha Event was fired');
 			start();
 		});
@@ -56,12 +55,12 @@ function doRemoveMarkupTest(editable, startContainer, startOffset, endContainer,
 	});
 
 	// All other tests are done when Aloha is ready
-	$('body').bind('aloha', function() {
+	Aloha.ready( function() {
 		module('Remove Simple Markup', {
 			setup: function() {
 				// get the editable area and the reference
-				this.edit = $('#edit');
-				this.ref = $('#ref-remove-simple');
+				this.edit = Aloha.jQuery('#edit');
+				this.ref = Aloha.jQuery('#ref-remove-simple');
 				// fill the editable area with the reference
 				this.edit.html(this.ref.html());
 				// aloha'fy the editable
@@ -114,8 +113,8 @@ function doRemoveMarkupTest(editable, startContainer, startOffset, endContainer,
         module('Remove Markup in Paragraph', {
 			setup: function() {
 				// get the editable area and the reference
-				this.edit = $('#edit');
-				this.ref = $('#ref-remove-para');
+				this.edit = Aloha.jQuery('#edit');
+				this.ref = Aloha.jQuery('#ref-remove-para');
 				// fill the editable area with the reference
 				this.edit.html(this.ref.html());
 				// aloha'fy the editable
@@ -168,8 +167,8 @@ function doRemoveMarkupTest(editable, startContainer, startOffset, endContainer,
         module('Remove Multiple Markup', {
 			setup: function() {
 				// get the editable area and the reference
-				this.edit = $('#edit');
-				this.ref = $('#ref-remove-multi');
+				this.edit = Aloha.jQuery('#edit');
+				this.ref = Aloha.jQuery('#ref-remove-multi');
 				// fill the editable area with the reference
 				this.edit.html(this.ref.html());
 				// aloha'fy the editable
@@ -206,8 +205,8 @@ function doRemoveMarkupTest(editable, startContainer, startOffset, endContainer,
         module('Remove Nested Markup', {
 			setup: function() {
 				// get the editable area and the reference
-				this.edit = $('#edit');
-				this.ref = $('#ref-remove-nested');
+				this.edit = Aloha.jQuery('#edit');
+				this.ref = Aloha.jQuery('#ref-remove-nested');
 				// fill the editable area with the reference
 				this.edit.html(this.ref.html());
 				// aloha'fy the editable

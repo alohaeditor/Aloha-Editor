@@ -13,45 +13,30 @@
 	<script>
 		// currently, we need to manually set the path to aloha
 		var Aloha = {
+			jQuery: $,
 			settings : {
 				baseUrl : '../../lib/'
 			}
 		};
-
-		window.alohaQuery = jQuery.noConflict();
-		var require = {
-			waitSeconds : 15
-		};
 	</script>
 
 	<!-- include aloha -->
-	<script src="../../lib/require.js"></script>
 	<script src="../../lib/aloha.js" data-aloha-plugins=""></script>
 
 	<!-- include testswarm inject script -->
-	<!-- script>
+	<script>
 		var url = window.location.search;
 		url = decodeURIComponent( url.slice( url.indexOf("swarmURL=") + 9 ) );
 		if ( url && url.indexOf("http") === 0 ) {
 			require(["http://testswarm.aloha-editor.org/js/inject.js?" + (new Date).getTime()], function() {});
 		}
-	</script -->
+	</script>
 
 </head>
 <body>
 	<!-- include the tests -->
 	<script>
-		require(
-			{
-				baseUrl: '../../test/unit',
-				paths: {
-					'aloha': Aloha.settings.baseUrl + '/aloha',
-					'vendor': Aloha.settings.baseUrl + '/vendor',
-					'util': Aloha.settings.baseUrl + '/util'
-				}
-			},
-			[ 'repositorytests' ]
-		);
+		require( [ 'repositorytests' ] );
 	</script>
 	
 	<h1 id="qunit-header">Aloha Editor Repository Test Suite</h1>

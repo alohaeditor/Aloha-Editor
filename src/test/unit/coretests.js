@@ -8,23 +8,36 @@ define( [], function() {
 	"use strict";
 	
 	// Test whether Aloha is properly initialized
-	asyncTest('Aloha Startup Test', function() {
+	asyncTest('Aloha trigger event "aloha-ready".', function() {
 		var timeout = setTimeout(function() {
-			ok(false, 'Aloha was not initialized within 60 seconds');
+			ok(false, 'Aloha did not trigger event "aloha-ready" within 60 seconds');
 			start();
 		}, 60000);
-		jQuery('body').bind('aloha',function() {
+		Aloha.bind('aloha-ready',function() {
 			clearTimeout(timeout);
-			ok(true, 'Aloha Event was fired');
+			ok(true, 'Event "aloha-ready" was fired');
+			start();
+		});
+	});
+
+	// Test whether Aloha is properly initialized
+	asyncTest('Aloha.ready( callback ).', function() {
+		var timeout = setTimeout(function() {
+			ok(false, 'Aloha did not callback Aloha.ready() within 60 seconds');
+			start();
+		}, 60000);
+		Aloha.ready( function() {
+			clearTimeout(timeout);
+			ok(true, 'Aloha.ready() was called');
 			start();
 		});
 	});
 
 	// All other tests are done when Aloha is ready
-	jQuery('body').bind('aloha', function() {
+	Aloha.bind('aloha-ready', function() {
 		
 		var 
-			editable = jQuery('#edit'),
+			editable = Aloha.jQuery('#edit'),
 			logHistory = Aloha.Log.getLogHistory();
 		
 		// check whether error or warn messages were logged during startup		
@@ -33,8 +46,8 @@ define( [], function() {
 		});
 		
 		// Test if legacy jQuery version is correct
-		test( 'alohaQuery test', function() {
-			equals( alohaQuery.fn.jquery, '1.5.1', 'Legacy jQuery version is correct' );
+		test( 'Aloha.jQuery test', function() {
+			equals( Aloha.jQuery.fn.jquery, '1.6.1', 'Delivered jQuery version is correct' );
 		});
 	
 		// check whether alohafying of divs works

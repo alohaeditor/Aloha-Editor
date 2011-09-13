@@ -10,18 +10,16 @@
 
 	<!-- include aloha -->
 	<script>
-		// set defined jQuery version and test later if alohaQuery is exported properly 
 		var Aloha = {};
-		Aloha.settings = {
-			jQuery: jQuery
-		};
 	</script>
-	<script src="../../lib/require.js"></script>
 	<script src="../../lib/aloha.js" data-aloha-plugins=""></script>
 
 	<!-- include testswarm inject script -->
 	<script>
-		var url = window.location.search;
+		var 
+			require = Aloha._require,
+			define = Aloha.define,
+			url = window.location.search;
 		url = decodeURIComponent( url.slice( url.indexOf("swarmURL=") + 9 ) );
 		if ( url && url.indexOf("http") === 0 ) {
 			require(["http://testswarm.aloha-editor.org/js/inject.js?" + (new Date).getTime()], function() {});
@@ -46,4 +44,3 @@
 	<div id="qunit-fixture"><div id="edit"></div><div id="edit2"></div></div>
 </body>
 </html>
-git commit -a -m 'load Aloha now in require context aloha. Added language settings mapping. Cahgned jquery loading. Migrated all tests.'

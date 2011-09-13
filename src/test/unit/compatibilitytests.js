@@ -8,7 +8,7 @@ define( [], function() {
 	"use strict";
 
 	// Start the tests, when Aloha is ready
-	alohaQuery('body').bind('aloha', function() {
+	Aloha.bind('aloha-ready', function() {
 		
 		// for IE, it is necessary to have this setTimeout. Otherwise, the
 		// editable would not be recognized as having contentEditable turned on
@@ -31,25 +31,25 @@ define( [], function() {
 			});
 		
 			// Test if legacy jQuery version is correct
-			test( 'alohaQuery test', function() {
-				equals( alohaQuery.fn.jquery, '1.5.1', 'Legacy jQuery version is correct' );
+			test( 'Aloha.jQuery test', function() {
+				equals( Aloha.jQuery.fn.jquery, '1.5.1', 'Loaded jQuery version is correct' );
 			});
 		
 			// Test if legacy jQuery version is correct
-			test( 'Aloha requireAloha("aloha/jquery") test', function() {
-				equals( requireAloha("aloha/jquery").fn.jquery, '1.5.1', 'Legacy jQuery version is correct' );
+			test( 'Aloha.require("aloha/jquery") test', function() {
+				equals( Aloha.require("aloha/jquery").fn.jquery, '1.5.1', 'Required jQuery version is correct' );
 			});
 			
 			// Test if the jquery plugins necessary for aloha core are attached to the Aloha jQuery object
 			test( 'jquery core plugin test', function() {
-				equals( typeof alohaQuery.store, 'function', 'Check whether the jQuery plugin "store" was attached to Aloha jQuery' );
-				equals( typeof alohaQuery.toJSON, 'function', 'Check whether the jQuery plugin "json" was attached to Aloha jQuery' );
+				equals( typeof Aloha.jQuery.store, 'function', 'Check whether the jQuery plugin "store" was attached to Aloha jQuery' );
+				equals( typeof Aloha.jQuery.toJSON, 'function', 'Check whether the jQuery plugin "json" was attached to Aloha jQuery' );
 			});
 		
 			// Test if third party jquery plugins, loaded with the 'jquery-plugin' loader are attached to the Aloha jQuery object
 			test( '3rd party jquery plugin test', function() {
 				// plugintest2 tries to load a jquery plugin with require in 'aloha' context. 
-				equals( typeof alohaQuery().alohaTest, 'function', 'Check whether the jQuery plugin "alohaTest" was attached to Aloha jQuery' );
+				equals( typeof Aloha.jQuery().alohaTest, 'function', 'Check whether the jQuery plugin "alohaTest" was attached to Aloha jQuery' );
 			});
 		}, 1);
 	});

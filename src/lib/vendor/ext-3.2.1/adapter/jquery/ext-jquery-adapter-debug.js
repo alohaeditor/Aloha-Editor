@@ -1,6 +1,6 @@
 /*!
 * This file is part of Aloha Editor Project http://aloha-editor.org
-* Copyright © 2010-2011 Gentics Software GmbH, aloha@gentics.com
+* Copyright ï¿½ 2010-2011 Gentics Software GmbH, aloha@gentics.com
 * Contributors http://aloha-editor.org/contribution.php 
 * Licensed unter the terms of http://www.aloha-editor.org/license.html
 *//*
@@ -17,10 +17,6 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
-define(
-['aloha/jquery'],
-function(jQuery, undefined) {
 
 /*!
  * Ext JS Library 3.2.1
@@ -2472,7 +2468,3 @@ if(Ext.isIE) {
     window.attachEvent("onunload", fnCleanUp);
 }
 })();
-
-// export Ext
-window.Ext = Ext;
-}); // require

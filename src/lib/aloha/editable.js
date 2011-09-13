@@ -146,7 +146,7 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup) {
 			}
 
 			// only initialize the editable when Aloha is fully ready (including plugins)
-			Aloha.bind('aloha',function(){
+			Aloha.bind('aloha-ready',function(){
 				// initialize the object
 				me.obj.addClass('aloha-editable')
 					.contentEditable(true);

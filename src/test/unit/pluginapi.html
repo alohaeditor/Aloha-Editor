@@ -38,7 +38,6 @@
 	</script>
 	
 	<!-- include aloha -->
-	<script src="../../lib/require.js"></script>
 	<script src="../../lib/aloha.js" data-aloha-plugins="custom1/plugintest1, custom2/plugintest2"></script>
 
 </head>
@@ -47,16 +46,7 @@
 	<script>
 		// define realtive baseUrl path to requireJS
 		// and paths back to aloha path
-		require({
-				baseUrl: '../../test/unit',
-				paths: {
-					'aloha': Aloha.settings.baseUrl + '/aloha',
-					'vendor': Aloha.settings.baseUrl + '/vendor',
-					'util': Aloha.settings.baseUrl + '/util'
-				}
-			},
-			[ 'pluginapitests' ]
-		);
+		require( [ 'pluginapitests' ] );
 	</script>
 
 	<h1 id="qunit-header">Aloha Editor Plugin API Test Suite</h1>
