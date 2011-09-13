@@ -10,19 +10,19 @@
  * @namespace Block plugin
  */
 define([
+    'aloha',
 	'aloha/plugin',
+	'aloha/jquery',
 	'block/blockmanager',
 	'block/sidebarattributeeditor',
 	'block/block',
 	'block/editormanager',
+	'block/blockpastehandler',
 	'block/editor',
+	'paste/paste-plugin',
 	'css!block/css/block.css'
-], function(Plugin, BlockManager, SidebarAttributeEditor, block, EditorManager, editor) {
+], function(Aloha, Plugin, jQuery, BlockManager, SidebarAttributeEditor, block, EditorManager, BlockPasteHandler, editor, PastePlugin) {
 	"use strict";
-
-	var
-		jQuery = window.alohaQuery || window.jQuery, $ = jQuery,
-		Aloha = window.Aloha;
 
 	/**
 	 * Register the plugin with unique name
@@ -43,11 +43,7 @@ define([
 			EditorManager.register('url', editor.UrlEditor);
 			EditorManager.register('email', editor.EmailEditor);
 
-			require(
-				['block/blockpastehandler', 'paste/paste-plugin'],
-				function(BlockPasteHandler, PastePlugin) {
-					PastePlugin.register(new BlockPasteHandler());
-				});
+			PastePlugin.register(new BlockPasteHandler());
 
 			BlockManager.registerEventHandlers();
 
@@ -65,8 +61,8 @@ define([
 			if (!this.settings.defaults) {
 				this.settings.defaults = {};
 			}
-			$.each(this.settings.defaults, function(selector, instanceDefaults) {
-				$(selector).alohaBlock(instanceDefaults);
+			jQuery.each(this.settings.defaults, function(selector, instanceDefaults) {
+				jQuery(selector).alohaBlock(instanceDefaults);
 			});
 		}
 	});
@@ -94,7 +90,7 @@ define([
 	 */
 	jQuery.fn.alohaBlock = function(instanceDefaults) {
 		instanceDefaults = instanceDefaults || {};
-		$(this).each(function(index, element) {
+		jQuery(this).each(function(index, element) {
 			BlockManager._blockify(element, instanceDefaults);
 		});
 
@@ -102,6 +98,6 @@ define([
 		return jQuery(this);
 	};
 
-	// $.fn.mahaloBlock = TODO
+	// jQuery.fn.mahaloBlock = TODO
 	return BlockPlugin;
 });

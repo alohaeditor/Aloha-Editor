@@ -9,13 +9,9 @@
  * @name block.editor
  * @namespace Block attribute editors
  */
-define(['aloha/observable'],
-function(Observable) {
+define(['aloha/jquery', 'aloha/observable'],
+function(jQuery, Observable) {
 	"use strict";
-
-	var
-		jQuery = window.alohaQuery || window.jQuery, $ = jQuery,
-		Aloha = window.Aloha;
 
 	/**
 	 * @name block.editor.AbstractEditor
@@ -102,7 +98,7 @@ function(Observable) {
 		 * @return {jQuery}
 		 */
 		render: function() {
-			var $wrapper = $('<div class="aloha-block-editor" />');
+			var $wrapper = jQuery('<div class="aloha-block-editor" />');
 			var guid = GENTICS.Utils.guid();
 			$wrapper.append(this.renderLabel().attr('id', guid));
 			$wrapper.append(this.renderFormElement().attr('id', guid));
@@ -114,7 +110,7 @@ function(Observable) {
 		 * @return {jQuery}
 		 */
 		renderLabel: function() {
-			var element = $('<label />');
+			var element = jQuery('<label />');
 			element.html(this.schema.label);
 			return element;
 		},
@@ -125,7 +121,7 @@ function(Observable) {
 		 */
 		renderFormElement: function() {
 			var that = this;
-			this._$formInputElement = $(this.formInputElementDefinition);
+			this._$formInputElement = jQuery(this.formInputElementDefinition);
 
 			this._$formInputElement.change(function() {
 				that.trigger('change', that.getValue());

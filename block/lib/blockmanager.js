@@ -5,14 +5,12 @@
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
 
-define(['aloha/floatingmenu', 'aloha/observable', 'aloha/registry'],
-function(FloatingMenu, Observable, Registry) {
+define(['aloha', 'aloha/jquery', 'aloha/floatingmenu', 'aloha/observable', 'aloha/registry'],
+function(Aloha, jQuery, FloatingMenu, Observable, Registry) {
 	"use strict";
 
 	var
-		jQuery = window.alohaQuery || window.jQuery, $ = jQuery,
-		GENTICS = window.GENTICS,
-		Aloha = window.Aloha;
+		GENTICS = window.GENTICS;
 
 	/**
 	 * @name block.blockmanager
@@ -71,10 +69,10 @@ function(FloatingMenu, Observable, Registry) {
 			var that = this;
 
 			// Register event handlers for deactivating an Aloha Block
-			$(document).bind('click', function(event) {
+			jQuery(document).bind('click', function(event) {
 				if (that.activeBlocks == {}) return;
-				if ($(event.target).parents('.aloha-sidebar-bar, .aloha-block-do-not-deactivate').length > 0
-					|| $(event.target).is('.aloha-sidebar-bar, .aloha-block-do-not-deactivate')) {
+				if (jQuery(event.target).parents('.aloha-sidebar-bar, .aloha-block-do-not-deactivate').length > 0
+					|| jQuery(event.target).is('.aloha-sidebar-bar, .aloha-block-do-not-deactivate')) {
 					// If we are inside the sidebar, we do not want to deactivate active blocks...
 					return;
 				}
@@ -85,7 +83,7 @@ function(FloatingMenu, Observable, Registry) {
 				// the following line is needed to de-select blocks when navigating over them using the mouse cursors.
 				// We only want to execute it though, if we are not inside a block, as it would otherwise
 				// directly deselect the block we just selected. This is just a hotfix and not the final solution yet.
-				if (selection && $(selection.getCommonAncestorContainer()).parents('.aloha-block').length > 0) {
+				if (selection && jQuery(selection.getCommonAncestorContainer()).parents('.aloha-block').length > 0) {
 					return;
 				}
 				that._deactivateActiveBlocks();
@@ -94,13 +92,13 @@ function(FloatingMenu, Observable, Registry) {
 
 		/**
 		 * Blockify a given element with the instance defaults
-		 * Directly called when one does $.alohaBlock(instanceDefaults)
+		 * Directly called when one does jQuery.alohaBlock(instanceDefaults)
 		 *
 		 * @private
 		 */
 		_blockify: function(element, instanceDefaults) {
 			var attributes, block;
-			element = $(element);
+			element = jQuery(element);
 
 			// TODO: check if object is already Block-ified
 
@@ -117,13 +115,13 @@ function(FloatingMenu, Observable, Registry) {
 			block.element.addClass('aloha-block-' + attributes['block-type']);
 
 			// Save attributes on block, but ignore jquery attribute.
-			$.each(attributes, function(k, v) {
+			jQuery.each(attributes, function(k, v) {
 				if (k.indexOf('jQuery') === 0) return;
 				block.attr(k, v, true);
 			});
 
 			// Remove the attributes from the child element, as they have been moved to the parent element.
-			$.each(element.data(), function(k, v) {
+			jQuery.each(element.data(), function(k, v) {
 				element.removeAttr('data-' + k);
 			});
 			element.removeAttr('about');
@@ -140,7 +138,7 @@ function(FloatingMenu, Observable, Registry) {
 		 * @private
 		 */
 		_deactivateActiveBlocks: function() {
-			$.each($.extend({}, this.activeBlocks), function(id) {
+			jQuery.each(jQuery.extend({}, this.activeBlocks), function(id) {
 				var block = BlockManager.getBlock(id);
 				if (block) {
 					block.deactivate();
@@ -158,7 +156,7 @@ function(FloatingMenu, Observable, Registry) {
 			// TODO: What about double matches / overrides / multiple selectors applying?
 			var settingsDefaults = {};
 
-			return $.extend(
+			return jQuery.extend(
 				{},
 				this.defaults,
 				settingsDefaults,
@@ -220,7 +218,7 @@ function(FloatingMenu, Observable, Registry) {
 		 */
 		getActiveBlocks: function() {
 			var activeBlocks = {};
-			$.each(this.blocks.getEntries(), function(blockId, block) {
+			jQuery.each(this.blocks.getEntries(), function(blockId, block) {
 				if (block.isActive()) {
 					activeBlocks[blockId] = block;
 				}

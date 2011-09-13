@@ -5,16 +5,12 @@
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
 define(
-['aloha/plugin', 'aloha/floatingmenu', 'i18n!horizontalruler/nls/i18n', 'i18n!aloha/nls/i18n', 'css!horizontalruler/css/horizontalruler.css'],
-function(Plugin, FloatingMenu, i18n, i18nCore) {
+['aloha', 'aloha/jquery', 'aloha/plugin', 'aloha/floatingmenu', 'i18n!horizontalruler/nls/i18n', 'i18n!aloha/nls/i18n', 'css!horizontalruler/css/horizontalruler.css'],
+function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 	"use strict";
 
 	var
-		jQuery = window.alohaQuery, $ = jQuery,
-		GENTICS = window.GENTICS,
-		Aloha = window.Aloha;
-
-	
+		GENTICS = window.GENTICS;
 
 	return Plugin.create('horizontalruler', {
 		_constructor: function(){

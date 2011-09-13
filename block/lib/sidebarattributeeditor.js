@@ -5,19 +5,9 @@
  * Licensed unter the terms of http://www.aloha-editor.com/license.html
  */
  
-define([
-
-	'block/blockmanager',
-	'aloha/sidebar',
-	'block/editormanager'
-	
-], function (BlockManager, Sidebar, EditorManager) {
+define([ 'aloha/jquery', 'block/blockmanager', 'aloha/sidebar', 'block/editormanager'],
+	function (jQuery, BlockManager, Sidebar, EditorManager) {
 	"use strict";
-
-	// Prepare
-	var
-		jQuery = window.alohaQuery || window.jQuery,
-		$ = jQuery;
 
 	/**
 	 * @name block.sidebarattributeeditor
@@ -36,7 +26,7 @@ define([
 			var that = this;
 			
 			//Obsolete: that._initSidebar();
-			this._sidebar = Aloha.Sidebars.right.show();
+			this._sidebar = Sidebar.right.show();
 			
 			BlockManager.bind('block-selection-change', this._onBlockSelectionChange, this);
 		},
@@ -69,7 +59,7 @@ define([
 			that._sidebar.container.find('.aloha-sidebar-panels').children().remove();
 			that._sidebar.panels = {};
 
-			$.each(selectedBlocks, function() {
+			jQuery.each(selectedBlocks, function() {
 				var schema = this.getSchema(),
 					block = this,
 					editors = [];
@@ -82,12 +72,12 @@ define([
 					title: block.getTitle(),
 					expanded: true,
 					onInit: function() {
-						var $form = $('<form />');
+						var $form = jQuery('<form />');
 						$form.submit(function() {
 							// Disable form submission
 							return false;
 						});
-						$.each(schema, function(attributeName, definition) {
+						jQuery.each(schema, function(attributeName, definition) {
 							var editor = EditorManager.createEditor(definition);
 
 							// Editor -> Block binding
@@ -113,7 +103,7 @@ define([
 					deactivate: function() {
 						// On deactivating the panel, we need to tell each editor to deactivate itself,
 						// so it can throw another change event.
-						$.each(editors, function(index, editor) {
+						jQuery.each(editors, function(index, editor) {
 							editor._deactivate();
 						});
 

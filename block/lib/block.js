@@ -9,13 +9,9 @@
  * @name block.block
  * @namespace Block models
  */
-define(['block/blockmanager', 'aloha/observable', 'aloha/floatingmenu'],
-function(BlockManager, Observable, FloatingMenu) {
+define(['aloha', 'aloha/jquery', 'block/blockmanager', 'aloha/observable', 'aloha/floatingmenu'],
+function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 	"use strict";
-
-	var
-		jQuery = window.alohaQuery || window.jQuery, $ = jQuery,
-		Aloha = window.Aloha;
 
 	/**
 	 * @name block.block.AbstractBlock
@@ -191,7 +187,7 @@ function(BlockManager, Observable, FloatingMenu) {
 				block._highlight();
 				activeBlocks.push(block);
 			});
-			$.each(previouslyActiveBlocks, function() {
+			jQuery.each(previouslyActiveBlocks, function() {
 				this.deactivate();
 			});
 
@@ -235,7 +231,7 @@ function(BlockManager, Observable, FloatingMenu) {
 		},
 
 		_selectBlock: function(domNode) {
-			if (!domNode || $(domNode).is('.aloha-editable') || $(domNode).parents('.aloha-block, .aloha-editable').first().is('.aloha-editable')) {
+			if (!domNode || jQuery(domNode).is('.aloha-editable') || jQuery(domNode).parents('.aloha-block, .aloha-editable').first().is('.aloha-editable')) {
 				// It was clicked on a Aloha-Editable inside a block; so we do not
 				// want to select the whole block and do an early return.
 				return;
@@ -356,7 +352,7 @@ function(BlockManager, Observable, FloatingMenu) {
 				}
 				this._setAttribute(attributeNameOrObject, attributeValue);
 			} else if (typeof attributeNameOrObject === 'object') {
-				$.each(attributeNameOrObject, function(key, value) {
+				jQuery.each(attributeNameOrObject, function(key, value) {
 					if (that._getAttribute(key) !== value) {
 						attributeChanged = true;
 					}
@@ -390,7 +386,7 @@ function(BlockManager, Observable, FloatingMenu) {
 			var attributes = {};
 
 			// element.data() not always up-to-date, that's why we iterate over the attributes directly.
-			$.each(this.element[0].attributes, function(i, attribute) {
+			jQuery.each(this.element[0].attributes, function(i, attribute) {
 				if (attribute.name === 'about') {
 					attributes['about'] = attribute.value;
 				} else if (attribute.name.substr(0, 5) === 'data-') {
@@ -430,7 +426,7 @@ function(BlockManager, Observable, FloatingMenu) {
 		render: function() {
 			this.element.css({display: 'block'});
 			var renderedAttributes = '<table class="debug-block">';
-			$.each(this.attr(), function(k, v) {
+			jQuery.each(this.attr(), function(k, v) {
 				renderedAttributes += '<tr><th>' + k + '</th><td>' + v + '</td></tr>';
 			});
 
