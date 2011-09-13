@@ -19,14 +19,14 @@
 */
 
 define(
-['aloha/jquery', 'aloha/floatingmenu', 'util/base', 'util/range'],
-function(jQuery, FloatingMenu) {
+[ 'aloha/core', 'aloha/jquery', 'aloha/floatingmenu', 'util/class', 'util/range', 'aloha/rangy-core' ],
+function(Aloha, jQuery, FloatingMenu, Class, Range) {
 	"use strict";
 	var
-		$ = jQuery,
-		GENTICS = window.GENTICS,
-		Aloha = window.Aloha,
-		Class = window.Class;
+//		$ = jQuery,
+//		Aloha = window.Aloha,
+//		Class = window.Class,
+		GENTICS = window.GENTICS;
 
 	/**
 	 * @namespace Aloha
@@ -34,7 +34,7 @@ function(jQuery, FloatingMenu) {
 	 * This singleton class always represents the current user selection
 	 * @singleton
 	 */
-	Aloha.Selection = Class.extend({
+	var Selection = Class.extend({
 		_constructor: function(){
 			// Pseudo Range Clone being cleaned up for better HTML wrapping support
 			this.rangeObject = {};
@@ -1709,7 +1709,32 @@ function(jQuery, FloatingMenu) {
 
 	}); // Selection
 
-	Aloha.Selection = new Aloha.Selection();
+	var selection = new Selection();
+	/**
+	 * A wrapper for the function of the same name in the rangy core-depdency.
+	 * This function should be preferred as it hides the global rangy object.
+	 * For more information look at the following sites:
+	 * http://html5.org/specs/dom-range.html
+	 * @param window optional - specifices the window to get the selection of
+	 */
+	Aloha.getSelection = function(document){
+		return window.rangy.getSelection(document);
+	};
+	/**
+	 * A wrapper for the function of the same name in the rangy core-depdency.
+	 * This function should be preferred as it hides the global rangy object.
+	 * Please note: when the range object is not needed anymore,
+	 *   invoke the detach method on it. It is currently unknown to me why
+	 *   this is required, but that's what it says in the rangy specification.
+	 * For more information look at the following sites:
+	 * http://www.w3.org/TR/DOM-Level-2-Traversal-Range/ranges.html
+	 * @param document optional - specifies which document to create the range for
+	 */
+	Aloha.createRange = function(givenWindow) {
+		return window.rangy.createRange(givenWindow);
+	};
+	
+	Aloha.Selection = selection;
 
-	return Aloha.Selection;
+	return selection;
 });

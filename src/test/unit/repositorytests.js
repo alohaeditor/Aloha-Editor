@@ -5,8 +5,8 @@
  */
 
 define('repositorytests',
-[ 'aloha/core', 'aloha/jquery', 'aloha/repository' ],
-function(Aloha, aQuery, repository) {
+[ 'aloha/core', 'aloha/jquery', 'aloha/repository', 'aloha/repositorymanager'],
+function(Aloha, aQuery, repository, Manager) {
 	
 	'use strict';
 	
@@ -27,7 +27,6 @@ function(Aloha, aQuery, repository) {
 		});
 	});
 	
-	var Manager;
 	var repositoryId1 = 'testRepo1';
 	var repositoryId2 = 'testRepo2';
 	var timeout = 5000;
@@ -41,7 +40,6 @@ function(Aloha, aQuery, repository) {
 	
 	// All other tests are done when Aloha is ready
 	aQuery('body').bind('aloha', function () {
-		Manager = Aloha.RepositoryManager;
 		runNextTest()
 	});
 	
@@ -68,7 +66,7 @@ function(Aloha, aQuery, repository) {
 				
 				// Create, and register a test repository only after we have
 				// Done our first check
-				new (repository.AbstractRepository.extend({
+				new (repository.extend({
 					_constructor: function () {
 						this._super(repositoryId1, 'testRepository1Name');
 					},
@@ -403,10 +401,9 @@ function(Aloha, aQuery, repository) {
 	//-------------------------------------------------------------------------
 	
 	function runQueryTestMultipleRepos () {
-		var Manager = Aloha.RepositoryManager;
 		
 		// Create, a second repository
-		new (repository.AbstractRepository.extend({
+		new (repository.extend({
 			_constructor: function() {
 				this._super(repositoryId2, 'testRepository2Name');
 			},

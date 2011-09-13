@@ -19,17 +19,10 @@
 */
 
 define(
-['aloha/jquery', 'aloha/pluginmanager'],
-function(jQuery, PluginManager, undefined) {
+['aloha/core', 'aloha/jquery', 'util/class', 'aloha/pluginmanager', 'aloha/console'],
+function(Aloha, jQuery, Class, PluginManager, console ) {
 	"use strict";
 	
-	var
-		$ = jQuery,
-		GENTICS = window.GENTICS,
-		Aloha = window.Aloha,
-		Class = window.Class,
-		console = window.console||false;
-
 	/**
 	 * Abstract Plugin Object
 	 * @namespace Aloha
@@ -38,8 +31,8 @@ function(jQuery, PluginManager, undefined) {
 	 * @param {String} pluginPrefix unique plugin prefix
 	 */
 	var Plugin = Class.extend({
-		id: null,
-		prefix: null,
+		
+		name: null,
 
 		/**
 		 * contains the plugin's settings object
@@ -54,16 +47,14 @@ function(jQuery, PluginManager, undefined) {
 		 */
 		dependencies: [],
 
-		_constructor: function(pluginPrefix) {
+		_constructor: function( name ) {
 			/**
 			 * Settings of the plugin
 			 */
-			if (typeof pluginPrefix !== "string") {
-				if ( console && console.error ) {
-					console.error('Cannot initialise unnamed plugin, skipping');
-				}
+			if (typeof name !== "string") {
+				console.error('Cannot initialise unnamed plugin, skipping');
 			} else {
-				this.id = this.prefix = pluginPrefix;
+				this.name = name;
 			}
 		},
 
@@ -71,13 +62,18 @@ function(jQuery, PluginManager, undefined) {
 		 * @return true if dependencies satisfied, false otherwise
 		 */
 		checkDependencies: function() {
-			var dependenciesSatisfied = true, that = this;
-			$.each(this.dependencies, function() {
+			var 
+				dependenciesSatisfied = true, 
+				that = this;
+			
+			jQuery.each(this.dependencies, function() {
+				
 				if (!Aloha.isPluginLoaded(this)) {
 					dependenciesSatisfied = false;
-					Aloha.Log.error('plugin.' + that.id, 'Required plugin "' + this + '" not found.');
+					console.error('plugin.' + that.name, 'Required plugin "' + this + '" not found.');
 				}
 			});
+			
 			return dependenciesSatisfied;
 		},
 
@@ -203,18 +199,19 @@ function(jQuery, PluginManager, undefined) {
 		 * Make the given jQuery object (representing an editable) clean for saving
 		 * @param obj jQuery object to make clean
 		 * @return void
-		 * @hide
 		 */
-		makeClean: function (obj) {},
+		makeClean: function ( obj ) {},
 
 		/**
 		 * Make a system-wide unique id out of a plugin-wide unique id by prefixing it with the plugin prefix
 		 * @param id plugin-wide unique id
 		 * @return system-wide unique id
 		 * @hide
+		 * @deprecated
 		 */
 		getUID: function(id) {
-			return this.prefix + '.' + id;
+			console.deprecated ('plugin', 'getUID() is deprecated. Use plugin.name instead.');
+			return this.name;
 		},
 
 		/**
@@ -223,8 +220,10 @@ function(jQuery, PluginManager, undefined) {
 		 * @param replacements array of replacement strings
 		 * @return localized string
 		 * @hide
+		 * @deprecated
 		 */
 		i18n: function(key, replacements) {
+			console.deprecated ('plugin', 'i18n() is deprecated. Use plugin.t() instead.');
 			return Aloha.i18n(this, key, replacements);
 		},
 
@@ -232,23 +231,24 @@ function(jQuery, PluginManager, undefined) {
 		 * Return string representation of the plugin, which is the prefix
 		 * @return prefix
 		 * @hide
+		 * @deprecated
 		 */
 		toString: function() {
+			console.deprecated ('plugin', 'toString() is deprecated.');
 			return this.prefix;
 		},
-		getName: function() {
-			return this.prefix;
-		},
-
+		
 		/**
 		 * Log a plugin message to the logger
 		 * @param level log level
 		 * @param message log message
 		 * @return void
 		 * @hide
+		 * @deprecated
 		 */
 		log: function (level, message) {
-			Aloha.Log.log(level, this, message);
+			console.deprecated ('plugin', 'log() is deprecated. Use Aloha.console instead.');
+			console.log(level, this, message);
 		}
 	});
 	
@@ -259,9 +259,10 @@ function(jQuery, PluginManager, undefined) {
 	 * @param {Object} definition definition of the plugin, should have at least an "init" and "destroy" method.
 	 */
 	Plugin.create = function(pluginName, definition) {
+		
 		var pluginInstance = new (Plugin.extend(definition))(pluginName);
 		PluginManager.register(pluginInstance);
-
+		
 		return pluginInstance;
 	};
 

@@ -18,15 +18,15 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 define(
-['aloha/jquery', 'aloha/ext', 'util/base'],
-function(jQuery, Ext, Base, undefined) {
+['aloha/core', 'aloha/jquery', 'aloha/ext', 'util/class', 'vendor/jquery.store'],
+function(Aloha, jQuery, Ext, Class) {
 	"use strict";
 	var
-		$ = jQuery,
-		GENTICS = window.GENTICS,
-		Aloha = window.Aloha,
-		console = window.console||false,
-		Class = window.Class;
+//		$ = jQuery,
+//		Aloha = window.Aloha,
+//		console = window.console||false,
+//		Class = window.Class,
+		GENTICS = window.GENTICS;
 
 	/**
 	 * Constructor for a floatingmenu tab
@@ -356,6 +356,12 @@ function(jQuery, Ext, Base, undefined) {
 		 * so the floating menu is not directly attached to the top of the page
 		 */
 		marginTop: 0,
+		
+		/**
+		 * Define whether the floating menu shall be draggable or not via Aloha.settings.floatingmanu.draggable
+		 * Default is: true 
+		 */
+		draggable: true,
 
 		/**
 		 * Initialize the floatingmenu
@@ -365,8 +371,12 @@ function(jQuery, Ext, Base, undefined) {
 
 			// check for behaviour setting of the floating menu
 		    if (Aloha.settings.floatingmenu) {
+		    	
+		    	if (typeof Aloha.settings.floatingmenu.draggable === 'boolean') {
+		    		this.draggable = Aloha.settings.floatingmenu.draggable;
+		    	}
 				if (typeof Aloha.settings.floatingmenu.behaviour === 'string') {
-				    this.behaviour = Aloha.settings.floatingmenu.behaviour;
+					this.behaviour = Aloha.settings.floatingmenu.behaviour;
 				}
 				if (typeof Aloha.settings.floatingmenu.marginTop === 'number') {
 				    this.marginTop = Aloha.settings.floatingmenu.marginTop;
@@ -413,8 +423,10 @@ function(jQuery, Ext, Base, undefined) {
 					}
 				}
 			});
-			this.generateComponent();
-			this.initialized = true;
+			Aloha.bind('aloha', function() {
+				that.generateComponent();
+				that.initialized = true;
+			})
 		},
 
 		/**
@@ -434,7 +446,7 @@ function(jQuery, Ext, Base, undefined) {
 		 * @hide
 		 */
 		panelBody: null,
-
+		
 		/**
 		 * The panels width
 		 * @hide
@@ -455,16 +467,18 @@ function(jQuery, Ext, Base, undefined) {
 				minWidth : 10
 			});
 
+			
+			
 			if (this.extTabPanel) {
 				// TODO dispose of the ext component
 			}
 			else {
-				// generate the tabpanel object
-				this.extTabPanel = new Ext.TabPanel({
-					activeTab: 0,
-					width: that.width, // 336px this fits the multisplit button and 6 small buttons placed in 3 cols
-					plain: false,
-					draggable: {
+				
+				// Enable or disable the drag functionality
+				var dragConfiguration = false;
+
+				if ( that.draggable ) {
+					dragConfiguration = {
 						insertProxy: false,
 						onDrag : function(e) {
 							var pel = this.proxy.getEl();
@@ -482,7 +496,14 @@ function(jQuery, Ext, Base, undefined) {
 							that.refreshShadow();
 							this.panel.shadow.show();
 						}
-					},
+					};
+				}
+				// generate the tabpanel object
+				this.extTabPanel = new Ext.TabPanel({
+					activeTab: 0,
+					width: that.width, // 336px this fits the multisplit button and 6 small buttons placed in 3 cols
+					plain: false,
+					draggable: dragConfiguration,
 					floating: {shadow: false},
 					defaults: {
 						autoScroll: true
@@ -537,7 +558,6 @@ function(jQuery, Ext, Base, undefined) {
 					that.extTabPanel.add(tab.getExtComponent());
 				} catch(e) {
 					Aloha.Log.error(that,"Error while inserting tab: " + e);
-					console.log(tab.getExtComponent());
 				}
 			});
 
@@ -639,9 +659,9 @@ function(jQuery, Ext, Base, undefined) {
 					var p = data.editable.obj.offset();
 					p.top -= 90; //dirty
 
-			    if (p.top < $(document).scrollTop()) {
+			    if (p.top < jQuery(document).scrollTop()) {
 				// scrollpos is below top of editable
-				that.obj.css('top', $(document).scrollTop() + that.marginTop);
+				that.obj.css('top', jQuery(document).scrollTop() + that.marginTop);
 				that.obj.css('left', p.left);
 				that.togglePin(true);
 			    } else {
@@ -651,13 +671,13 @@ function(jQuery, Ext, Base, undefined) {
 			});
 
 				// fm scroll behaviour
-			$(window).scroll(function () {
+			jQuery(window).scroll(function () {
 			    if (!Aloha.activeEditable) {
 				return;
 			    }
 			    var pos = Aloha.activeEditable.obj.offset(),
 					    fmHeight = that.obj.height(),
-				scrollTop = $(document).scrollTop();
+				scrollTop = jQuery(document).scrollTop();
 
 					if (scrollTop > (pos.top - fmHeight - 6 - that.marginTop)) {
 				// scroll pos is lower than top of editable
@@ -1099,5 +1119,13 @@ function(jQuery, Ext, Base, undefined) {
 		}
 	});
 	
-	return new FloatingMenu();
+	var menu =  new FloatingMenu();
+	menu.init();
+	
+	// set scope to empty if deactivated
+	Aloha.bind('aloha-editable-deactivated', function() {
+		menu.setScope('Aloha.empty');
+	});
+	
+	return menu;
 });

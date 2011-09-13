@@ -1,6 +1,6 @@
 /*!
 * This file is part of Aloha Editor Project http://aloha-editor.org
-* Copyright � 2010-2011 Gentics Software GmbH, aloha@gentics.com
+* Copyright (c) 2010-2011 Gentics Software GmbH, aloha@gentics.com
 * Contributors http://aloha-editor.org/contribution.php 
 * Licensed unter the terms of http://www.aloha-editor.org/license.html
 *//*
@@ -19,14 +19,9 @@
 */
 
 define(
-[ 'aloha/jquery' ],
-function ( jQuery ) {
-	
+['aloha/core', 'util/class', 'aloha/jquery' ],
+function( Aloha, Class, jQuery ) {
 	'use strict';
-	
-	var
-		Aloha = window.Aloha,
-		Class = window.Class;
 
 	/**
 	 * Repository Manager
@@ -36,7 +31,6 @@ function ( jQuery ) {
 	 */
 	Aloha.RepositoryManager = Class.extend({
 		repositories  : [],
-		openCallbacks : [],
 
 		/**
 		 * Initialize all registered repositories
@@ -81,19 +75,14 @@ function ( jQuery ) {
 		},
 		
 		/**
-		 * FIXME: repository instanceof Aloha.AbstractRepository check should be removed
 		 * Register a Repository
 		 * @param {Aloha.Repository} repository Repository to register
 		 */
 		register: function ( repository ) {
-			if ( repository instanceof Aloha.AbstractRepository ) {
-				if ( !this.getRepository(repository.repositoryId) ) {
-					this.repositories.push(repository);
-				} else {
-					Aloha.Log.warn(this, 'A repository with name { ' + repository.repositoryId + ' } already registerd. Ignoring this.');
-				}
+			if ( !this.getRepository(repository.repositoryId) ) {
+				this.repositories.push(repository);
 			} else {
-				Aloha.Log.error(this, 'Trying to register a repository which is not an instance of Aloha.Repository.');
+				Aloha.Log.warn(this, 'A repository with name { ' + repository.repositoryId + ' } already registerd. Ignoring this.');
 			}
 		},
 		
