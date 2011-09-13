@@ -66,10 +66,9 @@ after the inclusion of @require.js@.
 
 <html>
 <script type="text/javascript">
-	Aloha.require( function( Aloha ) {
+	Aloha.ready( function() {
 		
-		// Make #content editable once Aloha is loaded.
-		// .aloha() will wait until Aloha is ready and then fire
+		// Make #content editable once Aloha is loaded and ready.
 		Aloha.jQuery('#content').aloha();
 		
 	});
@@ -191,12 +190,6 @@ Aloha Editor currently puts 3 objects in the global namespace:
 Aloha Editor will not interfere with any jQuery version you use on your site. Anyway if you want to use the jQuery version of your site you may specify the jQuery to use for Aloha editor. All Aloha Editor jQuery plugins will then be attached to the specified jQuery version. 
 
 <javascript>
-	var alohaQuery = $;
-</javascript>
-
-As an alternative you may specify jQuery in the settings
-
-<javascript>
 	var Aloha = {};
 	Aloha.settings: {
 		jQuery: $
@@ -205,8 +198,8 @@ As an alternative you may specify jQuery in the settings
 
 The order Aloha Editor looks for a specified jQuery is:
 
-* alohaQuery
 * Aloha.settings.jQuery
+* Aloha.jQuery
 * buildin jQuery
 
 

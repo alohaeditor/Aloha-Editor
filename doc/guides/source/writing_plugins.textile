@@ -75,7 +75,7 @@ As developer you can define plugin default settings by specifying +Aloha.default
 To read the settings of a specific plugin you can use 
 
 <javascript>
-	var setttings = requireAloha('pluginA/pluginA-plugin').settings;
+	var settings = Aloha.require('pluginA/pluginA-plugin').settings;
 </javascript>
 
 
@@ -207,7 +207,7 @@ function( Plugin ) {
             // Executed on pluginA initialization
         	// pluginB ist not available here 
         
-        	requireAloha( 'pluginA/module', function( module ) {
+        	Aloha.require( 'pluginA/module', function( module ) {
 
         		// Use pluginB's module here
         	});

@@ -153,22 +153,27 @@ function( abstractModule ) {
 
 h4. Cross plugin dependencies
 
-Now in plugin2 you can define a dependency on +plugin1/module+ from plugin1 and extend the module with our own function when plugin2 is loaded. If another plugin would require +plugin1/module+ it would have our extended funcitonality. 
+If we want to use cross plugin modules you should not define a dependency on +plugin1/module+ from plugin1 because that would hinder your plugin from working, because of the unfullfilled dependency. Instead require the module in your code with a +Aloha.require()+ and extend the module with our own function when plugin2 is loaded. If another plugin would require +plugin1/module+ it would have our extended functionality. 
 
 <javascript filename="plugin2/lib/plugin2-plugin.js">
 define(
-[ 'aloha/plugin', 'plugin1/module' ],
+[ 'aloha/plugin' ],
 function( plugin, module ) {
     "use strict";
     
-    // module is available here
-    module.doThis = function() {
-    	return 'didThis';
-    };
+    // now we require the the modue of plugin1
+    Aloha.require( [ 'plugin1/module' ], function( module ) }
+ 	   // module is available here
+    	module.doThis = function() {
+    		return 'didThis';
+    	};
+    });
     
 	// we do nothing but provide component modules...
     return plugin.create( 'plugin2', {});
 });
+</javascript>
+
 h3. Aloha require path mapping for plugins
 
 So, at which place does Aloha look up modules? We'll explain this with a few examples:
