@@ -20,8 +20,9 @@ MYDIR=`cd \`dirname "$0"\`; pwd`
 LIB=$MYDIR/../../src/lib
 VENDOR=$LIB/vendor
 
-echo "$VENDOR/$REQUIRE $VENDOR/$JQUERY $VENDOR/$EXT_ADAPT $VENDOR/$EXT_ALL $LIB/aloha-settings.js $LIB/define-jquery-ext.js > $LIB/aloha.js"
-
-cat $VENDOR/$JQUERY $VENDOR/$EXT_ADAPT $VENDOR/$EXT_ALL $VENDOR/$REQUIRE $LIB/aloha-settings.js $LIB/aloha-deps.js > $LIB/aloha.js
-
-# $VENDOR/require/i18n.js $VENDOR/require/css.js $VENDOR/require/order.js $VENDOR/require/text.js
+cat $VENDOR/$JQUERY > $LIB/aloha.js
+echo "(function( jQuery ) {" >> $LIB/aloha.js
+cat $VENDOR/$EXT_ADAPT $VENDOR/$EXT_ALL >> $LIB/aloha.js 
+echo "})( jQuery );" >> $LIB/aloha.js
+cat $VENDOR/$REQUIRE >> $LIB/aloha.js
+cat $LIB/aloha-settings.js $LIB/aloha-bootstrap.js >> $LIB/aloha.js

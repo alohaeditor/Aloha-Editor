@@ -27,7 +27,7 @@ function() {
 	};
 	
 	// Test whether Aloha can load modules
-	asyncTest('Aloha Startup Test', function() {
+	asyncTest('Aloha.require repository modules.', function() {
 		var timeout = setTimeout(function() {
 			ok(false, 'Aloha was not initialized within 60 seconds');
 			start();
@@ -37,7 +37,7 @@ function() {
 				function ( Repository, Manager ) {
 			manager = Manager;
 			repository = Repository;
-			runNextTest()
+			Aloha.ready( runNextTest );
 			clearTimeout(timeout);
 			ok(true, 'Aloha Event was fired');
 			start();

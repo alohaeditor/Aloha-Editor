@@ -1,4 +1,4 @@
-requireAloha( ['aloha', 'aloha/jquery'], function( Aloha, $) {
+Aloha.require( ['aloha', 'aloha/jquery'], function( Aloha, $) {
 
 //	var $ = window.alohaQuery;
 	$.fn.alohaStage = function() {
@@ -65,6 +65,5 @@ requireAloha( ['aloha', 'aloha/jquery'], function( Aloha, $) {
 			autoplay = setTimeout(showNext, 6000);
 		});
 	};
-	
-	$('.stage-area').trigger('demo-stage-ready');
+	$('.stage-area').alohaStage();
 });

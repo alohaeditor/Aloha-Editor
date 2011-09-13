@@ -77,7 +77,7 @@ Aloha.define = define;
 	};
 	
 	var req = require.config( Aloha.settings.requireConfig );
-	window.Aloha.require = function( callback ) {
+	Aloha.require = function( callback ) {
 		
 		// passes the Aloha object to the passed callback function
 		if ( arguments.length == 1 && typeof callback === 'function' ) {
@@ -86,10 +86,10 @@ Aloha.define = define;
 		return req.apply( this, arguments );
 	};
 	
+	// cleanup require vars
+	delete window.require;
+	delete window.requireJS;
+	delete window.define;
+	
 })();
-
-// cleanup require vars
-delete require;
-delete requireJS;
-delete define;
 

@@ -8933,7 +8933,8 @@ jQuery.each([ "Height", "Width" ], function( i, name ) {
 
 
 window.jQuery = window.$ = jQuery;
-})(window);/*!
+})(window);(function( jQuery ) {
+/*!
 * This file is part of Aloha Editor Project http://aloha-editor.org
 * Copyright � 2010-2011 Gentics Software GmbH, aloha@gentics.com
 * Contributors http://aloha-editor.org/contribution.php 
@@ -59087,6 +59088,7 @@ Ext.grid.GroupingView = Ext.extend(Ext.grid.GridView, {
 });
 
 Ext.grid.GroupingView.GROUP_ID = 1000;
+})( jQuery );
 /** vim: et:ts=4:sw=4:sts=4
  * @license RequireJS 0.26.0+ Copyright (c) 2010-2011, The Dojo Foundation All Rights Reserved.
  * Available via the MIT or new BSD license.
@@ -61179,7 +61181,7 @@ Aloha.define = define;
 	};
 	
 	var req = require.config( Aloha.settings.requireConfig );
-	window.Aloha.require = function( callback ) {
+	Aloha.require = function( callback ) {
 		
 		// passes the Aloha object to the passed callback function
 		if ( arguments.length == 1 && typeof callback === 'function' ) {
@@ -61188,12 +61190,12 @@ Aloha.define = define;
 		return req.apply( this, arguments );
 	};
 	
+	// cleanup require vars
+	delete window.require;
+	delete window.requireJS;
+	delete window.define;
+	
 })();
-
-// cleanup require vars
-delete require;
-delete requireJS;
-delete define;
 
 (function(){
 	
@@ -61214,15 +61216,28 @@ delete define;
 	Aloha.define('aloha/jquery',[], function() { 
 		return Aloha.jQuery;
 	});
-    Aloha.define('aloha/ext',[], function() { 
+    Aloha.define('aloha/ext',[], function() {
+ 		Aloha.require([
+	        'css!vendor/ext-3.2.1/resources/css/ext-all.css',
+	        'css!vendor/ext-3.2.1/resources/css/xtheme-gray.css'
+ 		]);
+
+ 		// Ext seems to have an onClick handler that uses
+		// QuickTips, but the handler doesn't initialize
+		// QuickTips and therefore causes an error.
+		// The bug occurred with the Gentics Content Node
+		// integration, but if it's really a bug in Ext, then
+		// it's a good idea to always initialize QuickTips here.
+ 		Ext.QuickTips.init();
+ 		
     	return Ext; 
     });
     
 	// create promise for 'aloha-ready' when Aloha is not yet ready
     // and fire later when 'aloha-ready' is triggered all other events bind
     Aloha.bind = function( type, fn ) {
-    	if ( type === 'aloha-ready' ) {
-    		if ( Aloha.stage !== 'alohaReady' ) {
+    	if ( type == 'aloha-ready' ) {
+    		if ( Aloha.stage != 'alohaReady' ) {
     			deferredReady.done( fn );
     		} else {
     			fn();
@@ -61233,10 +61248,9 @@ delete define;
     };
 	
     Aloha.trigger = function( type, data ) {
-    	if ( type === 'aloha-ready' ) {
+    	if ( type == 'aloha-ready' ) {
     		// resolve all deferred events on dom ready and delete local var
     		Aloha.jQuery( deferredReady.resolve );
-    		delete deferredReady;
     	}
     	Aloha.jQuery( Aloha ).trigger( type, data );
     };

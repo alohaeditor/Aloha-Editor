@@ -17,15 +17,28 @@
 	Aloha.define('aloha/jquery',[], function() { 
 		return Aloha.jQuery;
 	});
-    Aloha.define('aloha/ext',[], function() { 
+    Aloha.define('aloha/ext',[], function() {
+ 		Aloha.require([
+	        'css!vendor/ext-3.2.1/resources/css/ext-all.css',
+	        'css!vendor/ext-3.2.1/resources/css/xtheme-gray.css'
+ 		]);
+
+ 		// Ext seems to have an onClick handler that uses
+		// QuickTips, but the handler doesn't initialize
+		// QuickTips and therefore causes an error.
+		// The bug occurred with the Gentics Content Node
+		// integration, but if it's really a bug in Ext, then
+		// it's a good idea to always initialize QuickTips here.
+ 		Ext.QuickTips.init();
+ 		
     	return Ext; 
     });
     
 	// create promise for 'aloha-ready' when Aloha is not yet ready
     // and fire later when 'aloha-ready' is triggered all other events bind
     Aloha.bind = function( type, fn ) {
-    	if ( type === 'aloha-ready' ) {
-    		if ( Aloha.stage !== 'alohaReady' ) {
+    	if ( type == 'aloha-ready' ) {
+    		if ( Aloha.stage != 'alohaReady' ) {
     			deferredReady.done( fn );
     		} else {
     			fn();
@@ -36,10 +49,9 @@
     };
 	
     Aloha.trigger = function( type, data ) {
-    	if ( type === 'aloha-ready' ) {
+    	if ( type == 'aloha-ready' ) {
     		// resolve all deferred events on dom ready and delete local var
     		Aloha.jQuery( deferredReady.resolve );
-    		delete deferredReady;
     	}
     	Aloha.jQuery( Aloha ).trigger( type, data );
     };

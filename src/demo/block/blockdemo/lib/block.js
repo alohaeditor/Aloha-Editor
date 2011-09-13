@@ -88,7 +88,7 @@ define([
 
 	var VCardBlock;
 	
-	require( ['text!blockdemo/res/vcard.html'] , function ( vcardTemplate ) {
+	Aloha.require( ['text!blockdemo/res/vcard.html'] , function ( vcardTemplate ) {
 
 		// Compile the template through underscore
 		var template = _.template( vcardTemplate );

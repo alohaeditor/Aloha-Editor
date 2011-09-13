@@ -98,7 +98,6 @@
 		}
 	</style>
 	<script src="js/aloha-config.js" language="javascript"></script>
-	<script src="../../lib/require.js"></script>
 	<script src="../../lib/aloha.js" data-aloha-plugins="common/format,common/highlighteditables,common/list,common/link,common/undo,common/paste,common/block"></script>
 </head>
 <body>
@@ -169,19 +168,15 @@
 	// http://requirejs.org/docs/errors.html#mismatch
 	// ../../plugins/common/link/extra/linklist.js
 
-	requireAloha( function( Aloha ) {
-	
+	// Bind to Aloha Ready Event
+	Aloha.ready( function() {
 		var $ = Aloha.jQuery;
+		$('#typo3').aloha();
+		$('#typo3span').aloha();
+		$('#title').aloha();
+		$('#teaser').aloha();
+		$('#content').aloha();
 			
-		// Bind to Aloha Ready Event
-		$('body').bind('aloha',function() {
-			$('#typo3').aloha();
-			$('#typo3span').aloha();
-			$('#title').aloha();
-			$('#teaser').aloha();
-			$('#content').aloha();
-				
-		});
 	});
 	</script>
 </body>
