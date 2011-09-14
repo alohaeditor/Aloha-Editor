@@ -23,10 +23,28 @@ define(
 function(Aloha, jQuery, Ext, i18n, Ui, RepositoryManager, Selection) { // TODO add parameter for UI class after refactoring UI to requirejs
 	"use strict";
 
-//	var
-//		$ = jQuery,
-//		Aloha = window.Aloha,
-//		GENTICS = window.GENTICS;
+var extTemplate = new Ext.XTemplate(
+	'<tpl for="."><div class="x-combo-list-item">',
+	'<tpl if="this.hasRepositoryTemplate(values)">{[ this.renderRepositoryTemplate(values) ]}</tpl>',
+	'<tpl if="!this.hasRepositoryTemplate(values)"><span><b>{name}</b></span></tpl>',
+	'</div></tpl>',
+	{
+		hasRepositoryTemplate : function (values) {
+			var rep = RepositoryManager.getRepository(values.repositoryId);
+			return rep && rep.hasTemplate();
+		},
+		renderRepositoryTemplate : function (values) {
+			var rep = RepositoryManager.getRepository(values.repositoryId);
+			if (rep && rep.hasTemplate()) {
+			// create extTemplate if template changed
+			if ( !rep._ExtTPL || rep.template !== rep._ExtTPLcache ) {
+				rep._ExtTPL = new Ext.XTemplate( rep.template );
+				rep._ExtTPLcache = rep.template;
+			}
+			return rep._ExtTPL.apply(values);
+		}
+	}
+});
 
 Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 	typeAhead: false,
@@ -45,29 +63,7 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 		reader: new Ext.data.AlohaObjectReader()
 	}),
     clickAttached: false, // remember that the click event has been attached to the innerList, as this is not implemented in the combobox
-    tpl: new Ext.XTemplate(
-			'<tpl for="."><div class="x-combo-list-item">',
-			'<tpl if="this.hasRepositoryTemplate(values)">{[ this.renderRepositoryTemplate(values) ]}</tpl>',
-			'<tpl if="!this.hasRepositoryTemplate(values)"><span><b>{name}</b></span></tpl>',
-		'</div></tpl>',
-		{
-			hasRepositoryTemplate : function(values) {
-				var rep = RepositoryManager.getRepository(values.repositoryId);
-				return rep && rep.hasTemplate();
-			},
-			renderRepositoryTemplate : function(values) {
-				var rep = RepositoryManager.getRepository(values.repositoryId);
-				if (rep && rep.hasTemplate()) {
-					// create extTemplate if template changed
-					if ( !rep._ExtTPL || rep.template !== rep._ExtTPLcache ) {
-						rep._ExtTPL = new Ext.XTemplate( rep.template );
-						rep._ExtTPLcache = rep.template;
-					}
-					return rep._ExtTPL.apply(values);
-				}
-			}
-		}
-	),
+    tpl: extTemplate,
     onSelect: function (item) {
 		this.setItem(item.data);
 		if ( typeof this.alohaButton.onSelect === 'function' ) {
@@ -482,29 +478,11 @@ Ui.AttributeField = Ui.Button.extend({
 	 */
 	setTemplate: function (tpl) {
 		var
-			result,
-			template = new Ext.XTemplate(
-				'<tpl for="."><div class="x-combo-list-item">',
-				'<tpl if="this.hasRepositoryTemplate(values)">{[ this.renderRepositoryTemplate(values) ]}</tpl>',
-				'<tpl if="!this.hasRepositoryTemplate(values)">' + tpl + '</tpl>',
-			'</div></tpl>',
-			{
-				hasRepositoryTemplate : function(values) {
-					var rep = RepositoryManager.getRepository(values.repositoryId);
-					return rep && rep.hasTemplate();
-				},
-				renderRepositoryTemplate : function(values) {
-					var rep = RepositoryManager.getRepository(values.repositoryId);
-					if (rep && rep.hasTemplate()) {
-						return rep.getTemplate().apply(values);
-					}
-				}
-			}
-		);
+			result;
 		if (this.extButton) {
-			result = this.extButton.tpl = template;
+			result = this.extButton.tpl = extTemplate;
 		} else {
-			result = this.tpl = template;
+			result = this.tpl = extTemplate;
 		}
 		return result;
 	}
