@@ -47,7 +47,7 @@ define([
 
 			BlockManager.registerEventHandlers();
 
-			Aloha.bind('aloha', function() {
+			Aloha.bind('aloha-ready', function() {
 				// When Aloha is fully loaded, we initialize the blocks.
 				that._createBlocks();
 				if (that.settings['sidebarAttributeEditor'] !== false) {
