@@ -18,6 +18,7 @@
 		return Aloha.jQuery;
 	});
     Aloha.define('aloha/ext',[], function() {
+    	
  		Aloha.require([
 	        'css!vendor/ext-3.2.1/resources/css/ext-all.css',
 	        'css!vendor/ext-3.2.1/resources/css/xtheme-gray.css'
@@ -44,7 +45,7 @@
     			fn();
     		}
     	} else {
-    		Aloha.jQuery( Aloha ).bind( type, fn );
+    		Aloha.jQuery( Aloha, document.body ).bind( type, fn );
     	}
     };
 	
@@ -53,7 +54,7 @@
     		// resolve all deferred events on dom ready and delete local var
     		Aloha.jQuery( deferredReady.resolve );
     	}
-    	Aloha.jQuery( Aloha ).trigger( type, data );
+    	Aloha.jQuery( Aloha, document.body ).trigger( type, data );
     };
     
 	Aloha.ready = function( fn ) {

@@ -11,29 +11,33 @@ function() {
 	
 	Aloha.ready( function() {
 		
+		
+		module('Plugin API test', {});
+		
 		asyncTest('Aloha plugin defaults and settings', function() {
 			var plugin = Aloha.require('plugintest1/plugintest1-plugin');
-			equal(plugin.settings.value2, 2, 'defaults');
-			equal(plugin.settings.value1, -1, 'settings');
-			equal(plugin.settings.value3.valueB, 'B', 'nested defaults');
-			equal(plugin.settings.value3.valueA, 'Z', 'nested settings');
+			ok(plugin.settings.value2 == 2, 'defaults');
+			ok(plugin.settings.value1 == -1, 'settings');
+			ok(plugin.settings.value3.valueB == 'B', 'nested defaults');
+			ok(plugin.settings.value3.valueA == 'Z', 'nested settings');
 			start();
 		});
 		
 		asyncTest('Aloha plugin paths [lib, vendor, nls, res, css]', function() {
+			var test_func = 	function( lib, vendor, i18n, res, css ) {
+				ok(true, 'Plugin loaded with all path');
+				ok(lib.status == 'ok', 'lib ok');
+				ok(vendor.status == 'ok', 'vendor ok');
+				ok(typeof i18n.t == 'function', 'nls ok');
+				ok(res.status == 'ok', 'res ok');
+				ok(css.status == 'ok', 'css ok');
+				start();
+				clearTimeout( t );
+			};
+			
 			Aloha.require( ['plugintest1/test', 'plugintest1/vendor/test', 'i18n!plugintest1/nls/i18n',
-		               'plugintest1/test', 'plugintest1/css/test'],
-				function( lib, vendor, i18n, res, css ) {
-					ok(true, 'Plugin loaded with all path');
-					equal(lib.status, 'ok', 'lib ok');
-					equal(vendor.status, 'ok', 'vendor ok');
-					equal(typeof i18n.t, 'function', 'nls ok');
-					equal(res.status, 'ok', 'res ok');
-					equal(css.status, 'ok', 'css ok');
-					start();
-					clearTimeout( t );
-				}
-			);
+		               'plugintest1/test', 'plugintest1/css/test'],	test_func);
+
 			var t = setTimeout(function() {
 				ok(false, 'Aloha plugin localization did not return in 5 seconds');
 				start();
@@ -67,7 +71,7 @@ function() {
 				dataType: 'json',		
 				success: function( data ) {
 					ok(true, 'Ressource2 loaded from ' + url);
-					equals(data.data, 'ok', 'Loaded data is correct');
+					ok(data.data == 'ok', 'Loaded data is correct');
 					start();
 				},
 				error: function( error ) {
@@ -126,8 +130,8 @@ function() {
 			Aloha.require( ['plugintest1/component'],
 				function( component ) {
 					ok(true, 'module loaded.');
-					equal(component.doOther(), 'didOther', 'module function present.');
-					equal(component.doSome(), 'didSome', 'function from dependend module present.');
+					ok(component.doOther() == 'didOther', 'module function present.');
+					ok(component.doSome() == 'didSome', 'function from dependend module present.');
 					start();
 					clearTimeout( t );
 				}
@@ -142,7 +146,7 @@ function() {
 		asyncTest('Aloha cross plugin async dynamic module loading', function() {
 			Aloha.require( ['plugintest2/component'],
 				function( component ) {
-					equal(component.doSome(), 'didSome', 'Sucessfully dynamically async loaded cross plugin module dependency.');
+					ok(component.doSome() == 'didSome', 'Sucessfully dynamically async loaded cross plugin module dependency.');
 					start();
 					clearTimeout( t );
 				}
