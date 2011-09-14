@@ -57,7 +57,7 @@ function( Aloha, Class, jQuery ) {
 			}
 			
 			for ( ; i < j; ++i ) {
-				repository = repositories[i];
+				repository = repositories[ i ];
 				
 				if (!repository.settings) {
 					repository.settings = {};
@@ -98,8 +98,8 @@ function( Aloha, Class, jQuery ) {
 			    j = repositories.length;
 			
 			for ( ; i < j; ++i ) {
-				if ( repositories[i].repositoryId == repositoryId ) {
-					return repositories[i];
+				if ( repositories[ i ].repositoryId == repositoryId ) {
+					return repositories[ i ];
 				}
 			}
 			
@@ -143,7 +143,7 @@ function( Aloha, Class, jQuery ) {
 		 * "items" is an Array of objects construced with Document/Folder.
 		 * @void
 		 */
-		query: function (params, callback) {
+		query: function ( params, callback ) {
 			var that = this,
 				repo,
 				// The marged results, collected from repository responses
@@ -156,6 +156,7 @@ function( Aloha, Class, jQuery ) {
 				// allitems will be returned to the calling client, and
 				// numOpenCallbacks will be reset to 0
 				timer,
+				i, j,
 				/**
 				 * Invoked by each repository when it wants to present its
 				 * results to the manager.
@@ -190,8 +191,11 @@ function( Aloha, Class, jQuery ) {
 					
 					if ( items && items.length && !items[0].repositoryId ) {
 						for ( ; i < j; ++i ) {
-							items[i].repositoryId = repoId;
+							items[ i ].repositoryId = repoId;
 						}
+					}
+					
+					if ( j ) {
 						jQuery.merge( allitems, items );
 					}
 					
@@ -205,30 +209,28 @@ function( Aloha, Class, jQuery ) {
 			// respond. 5 seconds is deemed to be the reasonable time to wait
 			// when querying the repository manager in the context of something
 			// like autocomplete
-			var timeout = parseInt(params.timeout, 10) || 5000;
+			var timeout = parseInt( params.timeout, 10 ) || 5000;
 			timer = setTimeout(function() {
 				numOpenCallbacks = 0;
 				that.queryCallback( callback, allitems, timer );
 			}, timeout);
 			
-			// If no repositoryId is specified in the params argument, then we
-			// will query all registered repositories
+			// If repositoryId or a list of repository ids, is not specified in
+			// the params object, then we will query all registered
+			// repositories
 			if ( params.repositoryId ) {
 				repositories.push( this.getRepository( params.repositoryId ) );
 			} else {
 				repositories = this.repositories;
 			}
 			
-			var i = 0,
-			    j = repositories.length;
+			j = repositories.length;
 			
-			for ( ; i < j; ++i ) {
-				repo = repositories[i];
+			for ( i = 0; i < j; ++i ) {
+				repo = repositories[ i ];
 				
 				if ( typeof repo.query === 'function' ) {
 					++numOpenCallbacks;
-					
-					//debugger;
 					
 					repo.query(
 						params,
@@ -309,8 +311,9 @@ function( Aloha, Class, jQuery ) {
 				// allitems will be returned to the calling client, and
 				// numOpenCallbacks will be reset to 0
 				timer,
+				i, j,
 				processResults = function ( items ) {
-					if (numOpenCallbacks == 0) {
+					if ( numOpenCallbacks == 0 ) {
 						return;
 					}
 					
@@ -323,46 +326,44 @@ function( Aloha, Class, jQuery ) {
 			
 			// If the inFolderId is the default id of 'aloha', then return all
 			// registered repositories
-			var i = 0,
-			    j = this.repositories.length;
-			
-			if ( params.inFolderId == 'aloha' && j ) {
-				for ( ; i < j; ++i ) {
-					var repo = this.repositories[i];
-					repositories.push(
-						new Aloha.RepositoryFolder({
-							id            : repo.repositoryId,
-							name          : repo.repositoryName,
-							repositoryId  : repo.repositoryId,
-							type          : 'repository',
-							hasMoreItems  : true
-						})
-					);
+			if ( params.inFolderId == 'aloha' ) {
+				var repoFilter = params.repositoryFilter;
+				var hasRepoFilter = ( repoFilter.length > 0 );
+				
+				j = this.repositories.length;
+				
+				for ( i = 0; i < j; ++i ) {
+					var repo = this.repositories[ i ];
+					if ( !hasRepoFilter || jQuery.inArray( repo.repositoryId, repoFilter ) > -1 ) {
+						repositories.push(
+							new Aloha.RepositoryFolder({
+								id            : repo.repositoryId,
+								name          : repo.repositoryName,
+								repositoryId  : repo.repositoryId,
+								type          : 'repository',
+								hasMoreItems  : true
+							})
+						);
+					}
 				}
 				
 				that.getChildrenCallback( callback, repositories, null );
 				
 				return;
+			} else {
+				repositories = this.repositories;
 			}
 			
-			var timeout = parseInt(params.timeout, 10) || 5000;
+			var timeout = parseInt( params.timeout, 10 ) || 5000;
 			timer = setTimeout(function() {
 				numOpenCallbacks = 0;
 				that.getChildrenCallback( callback, allitems, timer );
 			}, timeout);
 			
-			// If no repositoryId is specified in the params argument, then we
-			// will query all registered repositories
-			if ( params.repositoryId ) {
-				repositories.push( this.getRepository( params.repositoryId ) );
-			} else {
-				repositories = this.repositories;
-			}
-			
 			j = repositories.length;
 			
 			for ( i = 0; i < j; ++i ) {
-				repo = repositories[i];
+				repo = repositories[ i ];
 				
 				if ( typeof repo.getChildren === 'function' ) {
 					++numOpenCallbacks;
