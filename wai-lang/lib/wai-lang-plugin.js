@@ -15,7 +15,7 @@ define(
  'wai-lang/languages',
  'css!wai-lang/css/wai-lang.css'
 ],
-function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
+function( jQuery, Plugin, FloatingMenu, i18n, i18nCore ) {
 	"use strict";
 	
 	var $ = jQuery,
@@ -187,7 +187,7 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 				}
 			});
 			
-			Aloha.bind('aloha', that.handleExistingSpans);
+			Aloha.ready( this.handleExistingSpans );
 	
 		},
 		

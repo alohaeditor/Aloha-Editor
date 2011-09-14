@@ -202,7 +202,7 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 			this.preventSelection();
 			
 			// Not working
-			$('body').bind('aloha-repository-error', function (error) {
+			Aloha.bind('aloha-repository-error', function (error) {
 				console.warn(
 					'Error occured on request to repository: ', error.repository.repositoryId +
 					'\nMessage: "' + error.message + '"'
