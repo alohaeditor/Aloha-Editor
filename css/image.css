@@ -62,6 +62,11 @@ button.cnr-reset {
 	background-position: -42px -2px !important;
 }
 
+.cnr-ratio {
+	background-image: url(../img/cropnresize.png) !important;
+	background-position: -60px -2px !important;
+}
+
 #aloha-CropNResize-btns {
 	z-index: 10000;
 	width: 70px;
