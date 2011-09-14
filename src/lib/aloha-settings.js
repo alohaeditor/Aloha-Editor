@@ -86,10 +86,5 @@ Aloha.define = define;
 		return req.apply( this, arguments );
 	};
 	
-	// cleanup require vars
-	delete window.require;
-	delete window.requireJS;
-	delete window.define;
-	
 })();
 
