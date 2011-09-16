@@ -24,11 +24,6 @@ define(
 function( jQuery, Class ) {
 	"use strict";
 	
-	// FIXME: plugin management should be devided in management and amd and extracted from the core
-	
-	var
-		Aloha = window.Aloha; 
-
 	/**
 	 * The Plugin Manager controls the lifecycle of all Aloha Plugins.
 	 *

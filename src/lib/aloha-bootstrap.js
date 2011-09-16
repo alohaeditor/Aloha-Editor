@@ -45,8 +45,9 @@
     			fn();
     		}
     	} else {
-    		Aloha.jQuery( Aloha, document.body ).bind( type, fn );
+    		Aloha.jQuery( Aloha, 'body' ).bind( type, fn );
     	}
+    	return this;
     };
 	
     Aloha.trigger = function( type, data ) {
@@ -54,12 +55,14 @@
     		// resolve all deferred events on dom ready and delete local var
     		Aloha.jQuery( deferredReady.resolve );
     	}
-    	Aloha.jQuery( Aloha, document.body ).trigger( type, data );
+    	Aloha.jQuery( Aloha, 'body' ).trigger( type, data );
+    	return this;
     };
     
 	Aloha.ready = function( fn ) {
     	this.bind('aloha-ready', fn);
-	};
+    	return this;
+};
     
     
 })();

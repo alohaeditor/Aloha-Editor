@@ -19,7 +19,7 @@ function(Aloha ,Plugin, jQuery, i18n ) {
     		 }
     	 },
     	 init: function() {
-    		 window.AlohaPlugin1 = true;
+    		 window.AlohaPlugin1 = 'called';
     	 }
      } );
      

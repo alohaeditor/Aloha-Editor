@@ -28,9 +28,7 @@ define(
 function ( jQuery, PluginManager ) {
 	"use strict";
 
-	var
-		GENTICS = window.GENTICS;
-	
+
 	//----------------------------------------
 	// Private variables
 	//----------------------------------------
@@ -100,7 +98,7 @@ function ( jQuery, PluginManager ) {
 		 * @property
 		 * @type string
 		 */
-		stage: 'loadingCore',
+		stage: 'loadingAloha',
 
 		/**
 		 * A list of loaded plugin names. Available after the

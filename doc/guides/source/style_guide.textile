@@ -10,14 +10,31 @@ endprologue.
 
 h3. Code Conventions
 
-WARNING: The current codebase does not yet follow all of these principles.
+WARNING: The current codebase does not yet follow all of these principles. 
+
+INFO: If you checkout Aloha Editor from github you can use +bin/lint.sh+ to check the code with jslint 
+
+We follow all suggestions in the "jQuery coding style guide":http://docs.jquery.com/JQuery_Core_Style_Guidelines
 
 * We use only the +TAB+ character for indentation.
 * We use +UpperCamelCase+ for class names, and +lowerCamelCase+ for method and property names.
 * Methods and properties that begin with an underscore (+_+) are @private@.
-* Variables which contain *jQuery* elements should be named like +$element+, starting with a @$@.
-* We use +that+ as a name for a closure reference to +this+, but try to avoid it if there's the possibility of scope binding.
-  Unfortunately jQuery's event handlers do not allow easy scope binding.
+* We use variable names that indicate the content of a variable.  
+<javascript>
+
+	var MyObject = Class.extend({
+		// GOOD
+		var myObject = this;
+		setTimeout( function() {
+			console.log( myObject.name + ' done.' );
+		};
+		// BAD
+		var that = this;
+		setTimeout( function() {
+			console.log( that.name + ' done.' );
+		};
+	});
+</javascript>
 
 h3. Code Documentation
 
