@@ -1,11 +1,3 @@
-/*!--------------------------------------*
-  | Gentics Software GmbH                |
-  +--------------------------------------+
-  | Aloha.Browser                        |
-  +--------------------------------------+
-  | browser.js                           |
-  *--------------------------------------*/
-
 /**
  * Aloha.Browser
  *
@@ -18,108 +10,175 @@
  *		www.trirand.com/blog/ (jqGrid)
  *		layout.jquery-dev.net/
  */
-define(
-[
- 'aloha/jquery',
- 'aloha/plugin', 
- 'aloha/floatingmenu', 
- 'i18n!browser/nls/i18n', 
- 'i18n!aloha/nls/i18n',
- 'css!browser/css/browsercombined.css',
- 'jquery-plugin!browser/jquery.ui',
- 'jquery-plugin!browser/ui-layout',
- 'jquery-plugin!browser/grid.locale.en',
- 'jquery-plugin!browser/jquery.jqGrid',
- 'jquery-plugin!browser/jquery.jstree'
-],
-function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
-	"use strict";
-	
-	var $ = jQuery,
-		GENTICS = window.GENTICS,
-		Aloha = window.Aloha;
+define([
 
+	'aloha/core',
+	'aloha/jquery',
+	'aloha/plugin',
+	// i18n
+	'i18n!browser/nls/i18n', 
+	'i18n!aloha/nls/i18n',
+	// css
+	'css!browser/css/browsercombined.css',
+	// non-aloha js dependencies
+	'jquery-plugin!browser/vendor/jquery.ui',
+	'jquery-plugin!browser/vendor/ui-layout',
+	'jquery-plugin!browser/vendor/grid.locale.en',
+	'jquery-plugin!browser/vendor/jquery.jqGrid',
+	'jquery-plugin!browser/vendor/jquery.jstree'
+
+], function (Aloha, jQuery, Plugin, i18n, i18nCore) {
 	
+	'use strict';
 	
-	// Create local reference for quicker look-up
-	var console = window.console;
-	if (typeof console == typeof undefined) {
-		console = {
-			log   : function () {},
-			warn  : function () {},
-			error : function () {}
+	var
+	    uid = +(new Date),
+	    ns  = 'aloha-browser',
+	    nsClasses = {
+			tree              : 'aloha-browser-tree',
+			'tree-header'     : 'aloha-browser-tree-header',
+			'grab-handle'     : 'aloha-browser-grab-handle',
+			shadow            : 'aloha-browser-shadow',
+			'rounded-top'     : 'aloha-browser-rounded-top',
+			list              : 'aloha-browser-list',
+			'list-altrow'     : 'aloha-browser-list-altrow',
+			'list-resizable'  : 'aloha-browser-list-resizable',
+			'list-pager'      : 'aloha-browser-list-pager',
+			'list-pager-left' : 'aloha-browser-list-pager-left',
+			'list-btns'       : 'aloha-browser-list-btns',
+			'search-btn'      : 'aloha-browser-search-btn',
+			'search-field'    : 'aloha-browser-search-field',
+			'search-icon'     : 'aloha-browser-search-icon',
+			'close-btn'       : 'aloha-browser-close-btn',
+			btn               : 'aloha-browser-btn',
+			btns              : 'aloha-browser-btns',
+			grid              : 'aloha-browser-grid',
+			clear             : 'aloha-browser-clear',
+			inner             : 'aloha-browser-inner',
+			'modal-overlay'   : 'aloha-browser-modal-overlay',
+			'modal-window'    : 'aloha-browser-modal-window'
 		};
-	}
 	
-	return Plugin.create('browser', {
+	// ------------------------------------------------------------------------
+	// Local (helper) functions
+	// ------------------------------------------------------------------------
 	
-		// ------------------------------------------------------------------------
-		// Local (helper) variables
-		// ------------------------------------------------------------------------
+	/**
+	 * Simple templating
+	 *
+	 * @param {String} str - The string containing placeholder keys in curly
+	 *                       brackets
+	 * @param {Object} obj - Associative array of replacing placeholder keys
+	 *                       with corresponding values
+	 */
+	function supplant (str, obj) {
+		 return str.replace(/\{([a-z0-9\-\_]+)\}/ig, function (str, p1, offset, s) {
+			 var replacement = obj[p1] || str;
+			 return (typeof replacement === 'function') ? replacement() : replacement;
+		 });
+	};
+	
+	/**
+	 * Wrapper to call the supplant method on a given string, taking the
+	 * nsClasses object as the associative array containing the replacement
+	 * pairs
+	 *
+	 * @param {String} str
+	 * @return {String}
+	 */
+	function renderTemplate (str) {
+		return (typeof str === 'string') ? supplant(str, nsClasses) : str;
+	};
+	
+	/**
+	 * Generates a selector string with this plugins's namespace prefixed the
+	 * each classname
+	 *
+	 * Usage:
+	 * 		nsSel('header,', 'main,', 'foooter ul')
+	 * 		will return
+	 * 		".aloha-myplugin-header, .aloha-myplugin-main, .aloha-mypluzgin-footer ul"
+	 *
+	 * @return {String}
+	 */
+	function nsSel () {
+		var strBldr = [], prx = ns;
+		jQuery.each(arguments, function () { strBldr.push('.' + (this == '' ? prx : prx + '-' + this)); });
+		return jQuery.trim(strBldr.join(' '));
+	};
+	
+	/**
+	 * Generates a string with this plugins's namespace prefixed the each
+	 * classname
+	 *
+	 * Usage:
+	 *		nsClass('header', 'innerheaderdiv')
+	 *		will return
+	 *		"aloha-myplugin-header aloha-myplugin-innerheaderdiv"
+	 *
+	 * @return {String}
+	 */
+	function nsClass () {
+		var strBldr = [], prx = ns;
+		jQuery.each(arguments, function () { strBldr.push(this == '' ? prx : prx + '-' + this); });
+		return jQuery.trim(strBldr.join(' '));
+	};
+	
+	/** 
+	 * @param {jQuery} el
+	 */
+	function disableSelection (el) {
+		el.each(function() {           
+			jQuery(this)
+				.attr('unselectable', 'on')
+				.css({
+				   '-moz-user-select':'none',
+				   '-webkit-user-select':'none',
+				   'user-select':'none'
+				})
+				.each(function() {
+				   this.onselectstart = function() { return false; };
+				});
+		});
+	};
+	
+	// ------------------------------------------------------------------------
+	// Browser Class
+	// ------------------------------------------------------------------------
+	
+	var BrowserPlugin = Plugin.extend({
 		
-		ns : 'aloha-browser',
-		uid : +(new Date),
-		// namespaced classnames
-		nsClasses : {},
-				
-		init: function() {
-			this.nsClasses = {
-				tree              : this.nsClass('tree'),
-				'tree-header'     : this.nsClass('tree-header'),
-				'grab-handle'     : this.nsClass('grab-handle'),
-				shadow            : this.nsClass('shadow'),
-				'rounded-top'     : this.nsClass('rounded-top'),
-				list              : this.nsClass('list'),
-				'list-altrow'     : this.nsClass('list-altrow'),
-				'list-resizable'  : this.nsClass('list-resizable'),
-				'list-pager'      : this.nsClass('list-pager'),
-				'list-pager-left' : this.nsClass('list-pager-left'),
-				'list-btns'       : this.nsClass('list-btns'),
-				'search-btn'      : this.nsClass('search-btn'),
-				'search-field'    : this.nsClass('search-field'),
-				'search-icon'     : this.nsClass('search-icon'),
-				'close-btn'       : this.nsClass('close-btn'),
-				btn               : this.nsClass('btn'),
-				btns              : this.nsClass('btns'),
-				grid              : this.nsClass('grid'),
-				clear             : this.nsClass('clear'),
-				inner             : this.nsClass('inner'),
-				'modal-overlay'   : this.nsClass('modal-overlay'),
-				'modal-window'    : this.nsClass('modal-window'),
-				'grap-handle'     : this.nsClass('grap-handle')
-			};
-			
-			//TODO load options from configuration
-			var opts = {};
-			// Defaults
-			var options = $.extend({
+		init: function(opts) {
+			// Extend defaults
+			var options = jQuery.extend({
 				// Set to true for development and debugging
-				verbose: false,
+				verbose : false,
 				// The repository manager which this browser will interface with
-				repositoryManager: Aloha.RepositoryManager,
-				objectTypeFilter: [],
-				renditionFilter: ['cmis:none'], // ['*']
-				filter: ['url'],
+				repositoryManager : Aloha.RepositoryManager,
+				repositoryFilter  : [],
+				objectTypeFilter  : [],
+				renditionFilter   : ['cmis:none'], // ['*']
+				filter : ['url'],
 				// DOMObject to which this instance of browser is bound to
-				element: undefined,
+				element : undefined,
 				// root folder id
-				rootFolderId: 'aloha',
+				rootFolderId : 'aloha',
 				// root path to where Browser resources are located
-				rootPath: Aloha.getPluginUrl('browser'),
-				treeWidth: 300,
-				listWidth: 'auto',
-				pageSize: 10,
-				columns: {
-					icon:    {title: '',        width: 30,  sortable: false, resizable: false},
-					name:    {title: 'Name',    width: 250, sorttype: 'text'},
-					url:     {title: 'URL',     width: 250, sorttype: 'text'},
-					preview: {title: 'Preview', width: 200, sorttype: 'text'}
+				rootPath  : Aloha.getPluginUrl('browser'),
+				treeWidth : 300,
+				listWidth : 'auto',
+				pageSize  : 10,
+				columns : {
+					icon    : {title: '',        width: 30,  sortable: false, resizable: false},
+					name    : {title: 'Name',    width: 250, sorttype: 'text'},
+					url     : {title: 'URL',     width: 250, sorttype: 'text'},
+					preview : {title: 'Preview', width: 200, sorttype: 'text'}
 				}
 			}, opts || {});
 			
 			// If no element, the we will an overlay element onto which we will bind
 			// our browser
-			if (typeof options.element != 'object') {
+			if (typeof options.element !== 'object') {
 				options.element = this.createOverlay();
 			}
 			
@@ -149,7 +208,7 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 			// them from the options object
 			// TODO: Consider deprecating this altogether
 			if (typeof options.implement === 'object') {
-				$.each(options.implement, function (k, v) {
+				jQuery.each(options.implement, function (k, v) {
 					that[k] = v;
 				});
 				
@@ -158,7 +217,7 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 			
 			// TODO: Consider deprecating this too
 			if (typeof options.callbacks === 'object') {
-				$.each(options.callbacks, function () {
+				jQuery.each(options.callbacks, function () {
 					that.callback(this[0], this[1]);
 				});
 				
@@ -166,18 +225,17 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 			}
 			
 			// Insert the remaining options as properties of this object
-			$.extend(this, options);
-			var that = this,
-				tree_width = this.treeWidth,
-				give = tree_width / 5;
+			jQuery.extend(this, options);
+			
+			var that = this;
+			var tree_width = this.treeWidth;
+			var give = tree_width / 5;
 			
 			this.preloadImages();
 			
-			this.uid = ++this.uid;
+			this.element.attr('data-aloha-browser', ++uid).html('');
 			
-			this.element.attr('data-aloha-browser', this.uid).html('');
-			
-			this.grid = this.createGrid(this.element);
+			this.grid = this.createGrid(this.element).resize();
 			this.tree = this.createTree(this.grid.find('.ui-layout-west'));
 			this.list = this.createList(this.grid.find('.ui-layout-center'));
 			
@@ -195,16 +253,15 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 					}
 				}
 				// , applyDefaultStyles: true // debugging
-			})
-			// *** Fix for a ui-layout bug in chrome ***
-			.sizePane('west', tree_width);
+			}).sizePane('west', tree_width); // *** Fix for a ui-layout bug in chrome ***
 			
-			this.preventSelection();
+			disableSelection(this.grid);
 			
 			// Not working
-			Aloha.bind('aloha-repository-error', function (error) {
-				console.warn(
-					'Error occured on request to repository: ', error.repository.repositoryId +
+			jQuery('body').bind('aloha-repository-error', function (error) {
+				console && console.warn && console.warn(
+					'Error occured on request to repository: ',
+					error.repository.repositoryId +
 					'\nMessage: "' + error.message + '"'
 				);
 			});
@@ -212,70 +269,10 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 			this.close();
 		},
 		
-		// ------------------------------------------------------------------------
-		// Local (helper) functions
-		// ------------------------------------------------------------------------
+		destroy: function () {
 		
-		// TODO: This suffices for now. But we are to consider a more robust
-		//		 templating engine.
-		// TODO: Offer parameter to define left and right delimiters in case the
-		//		 default "{", and "}" are problematic
-		supplant : function(str, obj) {
-			return str.replace(/\{([a-z0-9\-\_]+)\}/ig, function (str, p1, offset, s) {
-				var replacement = obj[p1] || str;
-				return (typeof replacement == 'function') ? replacement() : replacement;
-			});
 		},
 		
-		/**
-		 * Wrapper to all the supplant method on a given string, taking the
-		 * nsClasses object as the associative array containing the replacement
-		 * pairs
-		 *
-		 * @param {String} str
-		 * @return {String}
-		 */
-		renderTemplate : function(str) {
-			return (typeof str === 'string') ? this.supplant(str, this.nsClasses) : str;
-		},
-		
-		/**
-		 * Generates a selector string with this component's namepsace prefixed the
-		 * each classname
-		 *
-		 * Usage:
-		 *		nsSel('header,', 'main,', 'foooter ul')
-		 *		will return
-		 *		".aloha-myplugin-header, .aloha-myplugin-main, .aloha-mypluzgin-footer ul"
-		 *
-		 * @return {String}
-		 */
-		nsSel : function() {
-			var strBldr = [], prx = this.ns;
-			$.each(arguments, function () { strBldr.push('.' + (this == '' ? prx : prx + '-' + this)); });
-			return strBldr.join(' ').trim();
-		},
-		
-		/**
-		 * Generates s string with this component's namepsace prefixed the each
-		 * classname
-		 *
-		 * Usage:
-		 *		nsClass('header', 'innerheaderdiv')
-		 *		will return
-		 *		"aloha-myplugin-header aloha-myplugin-innerheaderdiv"
-		 *
-		 * @return {String}
-		 */
-		nsClass : function (){
-			var strBldr = [], prx = this.ns;
-			$.each(arguments, function () { strBldr.push(this == '' ? prx : prx + '-' + this); });
-			return strBldr.join(' ').trim();
-		},
-		
-		
-		
-			
 		instanceOf: 'Aloha.Browser',
 		
 		// ui components
@@ -283,21 +280,10 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 		tree: null,
 		list: null,
 		
-					
-		preventSelection: function () {
-			this.grid
-				.attr('unselectable', 'on')
-				.css('-moz-user-select', 'none')
-				.each(function() {
-					this.onselectstart = function() {
-						return false;
-					};
-				});
-		},
-		
 		preloadImages: function () {
 			var that = this;
-			$.each([
+			
+			jQuery.each([
 				'arrow-000-medium.png',
 				'arrow-180.png',
 				'arrow-315-medium.png',
@@ -312,22 +298,20 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 				'picture.png',
 				'sort-alphabet-descending.png',
 				'sort-alphabet.png'
-			], function () {(new Image()).src = that.rootPath + '/img/' + this;});
+			], function () { (new Image()).src = that.rootPath + '/img/' + this; });
 		},
 		
 		/**
-		 * TODO: Is there a way we can prevent potential infinite loops caused
-		 * by programmer error?
+		 * TODO: Is there a way we can guard against potential infinite loops?
 		 *
-		 * @param String fn - Name of any Browser method
+		 * @param {Associative Array Object} fn - Name of any Browser method
 		 */
 		trigger: function (fn, returned) {
-			var cb = this._callbacks,
-				i, l,
-				func = cb[fn];
+			var cb = this._callbacks;
+			var func = cb[fn];
 			
 			if (typeof func === 'object') {
-				for (i = 0, l = func.length; i < l; i++) {
+				for (var i = 0, l = func.length; i < l; ++i) {
 					if (typeof func[i] === 'function') {
 						func[i].call(this, returned);
 					}
@@ -347,12 +331,12 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 		 *
 		 * this.enableCallbacks actually does most of the heavy lifting.
 		 *
-		 * @param String fn - Name of any browser method
-		 * @param Object cb - Callback function to invoke
+		 * @param {String} fn - Name of any browser method
+		 * @param {Function} cb - Callback function to invoke
 		 */
 		callback: function (fn, cb) {
 			if (typeof this[fn] != 'function') {
-				this.warn(
+				console && console.warn(
 					'Unable to add a callback to "' + fn +
 					'" because it is not a method in Aloha.Browser.'
 				);
@@ -360,8 +344,8 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 				return this;
 			}
 			
-			if (typeof cb != 'function') {
-				this.warn(
+			if (typeof cb !== 'function') {
+				console && console.warn(
 					'Unable to add a callback to "' + fn + '" because '	+
 					'the callback object that was given is of type "'	+
 					(typeof cb) + '". '									+
@@ -386,8 +370,9 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 		 * Work-horse for this.callback method
 		 */
 		enableCallbacks: function (fn) {
-			var browser_inst = this,
-				func = this[fn];
+			var browser_inst = this;
+			var func = this[fn];
+			
 			if (typeof func === 'function') {
 				this[fn] = function () {
 					var returned = func.apply(browser_inst, arguments);
@@ -397,7 +382,7 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 				
 				return true;
 			} else {
-				this.warn(
+				console && console.warn(
 					'Cannot enable callbacks for function "' + fn +
 					'" because no such method was found in Aloha.Browser.'
 				);
@@ -408,6 +393,7 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 		
 		getRepoChildren: function (params, callback) {
 			var that = this;
+			
 			this.repositoryManager.getChildren(params, function (items) {
 				that.processRepoResponse(items, callback);
 			});
@@ -425,10 +411,10 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 		},
 		
 		processRepoResponse: function (items, callback) {
-			var that = this,
-				data = [];
+			var that = this;
+			var data = [];
 			
-			$.each(items, function () {
+			jQuery.each(items, function () {
 				data.push(that.harvestRepoObject(this));
 			});
 			
@@ -445,11 +431,11 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 		 * and all other attributes are optional.
 		 */
 		harvestRepoObject: function (obj) {
-			this.uid++;
+			++uid;
 			
-			var repo_obj = this._objs[this.uid] = $.extend(obj, {
-				uid: this.uid,
-				loaded: false
+			var repo_obj = this._objs[uid] = jQuery.extend(obj, {
+				uid    : uid,
+				loaded : false
 			});
 			
 			return this.processRepoObject(repo_obj);
@@ -483,7 +469,10 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 		
 		fetchRepoRoot: function (callback) {
 			this.getRepoChildren(
-				{inFolderId: this.rootFolderId},
+				{
+					inFolderId       : this.rootFolderId,
+					repositoryFilter : this.repositoryFilter
+				},
 				function (data) {
 					if (typeof callback === 'function') {
 						callback(data);
@@ -499,13 +488,13 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 		renderRowCols: function (item) {
 			var row = {};
 			
-			$.each(this.columns, function (colName, v) {
+			jQuery.each(this.columns, function (colName, v) {
 				switch (colName) {
-				case 'icon':
-					row.icon = '<div class="aloha-browser-icon aloha-browser-icon-' + item.type + '"></div>';
-					break;
-				default:
-					row[colName] = item[colName] || '--';
+					case 'icon':
+						row.icon = '<div class="aloha-browser-icon aloha-browser-icon-' + item.type + '"></div>';
+						break;
+					default:
+						row[colName] = item[colName] || '--';
 				}
 			});
 			
@@ -514,7 +503,8 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 		
 		/**
 		 * User should implement this according to their needs
-		 * @param Object item - Repository resource for a row
+		 *
+		 * @param {Object} item - Repository resource for a row
 		 */
 		onSelect: function (item) {},
 		
@@ -544,11 +534,10 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 		},
 		
 		getObjectFromCache: function (node) {
-			var uid,
-				obj;
+			var obj;
 			
 			if (typeof node === 'object') {
-				uid = node.find('a:first').attr('data-rep-oobj');
+				var uid = node.find('a:first').attr('data-rep-oobj');
 				obj = this._objs[uid];
 			}
 			
@@ -556,12 +545,11 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 		},
 		
 		rowClicked: function (event) {
-			var row = $(event.target).parent('tr'),
-				item = null,
-				uid;
+			var row = jQuery(event.target).parent('tr');
+			var item = null;
 			
 			if (row.length > 0) {
-				uid = row.attr('id');
+				var uid = row.attr('id');
 				item = this._objs[uid];
 				this.onSelect(item);
 				this.close();
@@ -571,9 +559,9 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 		},
 		
 		createTree: function (container) {
-			var that = this,
-				tree = $(that.renderTemplate('<div class="{tree}">')),
-				header = $(that.renderTemplate(
+			var that = this;
+			var tree = jQuery(renderTemplate('<div class="{tree}">'));
+			var header = jQuery(renderTemplate(
 					'<div class="{tree-header} {grab-handle}">\
 						Repository Browser\
 					</div>'
@@ -583,19 +571,19 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 			
 			tree.height(this.grid.height() - header.outerHeight(true))
 				.bind('before.jstree', function (event, data) {
-					//console.log(data.func);
+					//console && console.log(data.func);
 				})
 				.bind('loaded.jstree', function (event, data) {
-					$('>ul>li', this).first().css('padding-top', 5);
+					jQuery('>ul>li', this).first().css('padding-top', 5);
 				})
 				.bind('select_node.jstree', function (event, data) {
-					// This fixes a bug in jsTree
+					// Suppresses a bug in jsTree
 					if (data.args[0].context) {
 						return;
 					}
 					
-					var node = data.rslt.obj,
-						folder = that.getObjectFromCache(node);
+					var node = data.rslt.obj;
+					var folder = that.getObjectFromCache(node);
 					
 					if (typeof folder === 'object') {
 						that._pagingOffset = 0;
@@ -605,14 +593,9 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 					}
 				})
 				.jstree({
-					rootFolderId: '3',
+					rootFolderId: this.rootFolderId,
 					plugins: ['themes', 'json_data', 'ui'],
-					core: {
-						// TODO: Override the standard animation by
-						// setting this to 0, hiding the child node and
-						// re-animating it in our own way
-						animation: 250
-					},
+					core: {animation: 250},
 					themes: {
 						theme : 'browser',
 						url   : that.rootPath + '/css/jstree.css',
@@ -620,8 +603,9 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 						icons : true
 					},
 					json_data: {
-						data: function (/* node, callback */) {
-							that.fetchSubnodes.apply(that, arguments);
+						data: function (node, callback) {
+							that.jstree_callback = callback;
+							that.fetchSubnodes.call(that, node, callback);
 						},
 						correct_state: true
 					},
@@ -632,12 +616,12 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 		},
 		
 		createGrid: function (container) {
-			var grid = $(this.renderTemplate(
-				'<div class="{grid} {shadow} {rounded-top}"> \
-					<div class="ui-layout-west"></div>		 \
-					<div class="ui-layout-center"></div>	 \
-				</div>'
-			));
+			var grid = jQuery(renderTemplate(
+					'<div class="{grid} {shadow} {rounded-top}"> \
+						<div class="ui-layout-west"></div>		 \
+						<div class="ui-layout-center"></div>	 \
+					</div>'
+				));
 			
 			container.append(grid);
 			
@@ -645,21 +629,22 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 		},
 		
 		createList: function (container) {
-			var that = this,
-				list = $(that.renderTemplate(
-						'<table id="jqgrid_needs_something_anything_here"\
-							class="{list}"></table>'
-					)),
-				colNames = [''],
-				colModel = [{ // This is a hidden utility column to help us with auto sorting
+			var that = this;
+			var list = jQuery(renderTemplate(
+					'<table id="jqgrid_needs_something_anything_here"\
+						class="{list}"></table>'
+				));
+			var colNames = [''];
+			// This is a hidden utility column to help us with auto sorting
+			var colModel = [{
 					name	 : 'id',
 					sorttype : 'int',
-					firstsortorder: 'asc',
+					firstsortorder : 'asc',
 					hidden	 : true
 				}];
 			
-			$.each(this.columns, function (k, v) {
-				colNames.push(v.title);
+			jQuery.each(this.columns, function (k, v) {
+				colNames.push((v.title && v.title) ? v.title : '&nbsp;');
 				colModel.push({
 					name	  : k,
 					width	  : v.width,
@@ -669,29 +654,28 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 				});
 			});
 			
-			container.append(
-				list,
-				$(this.renderTemplate('<div id="{list-pager}">'))
+			container.append(list,
+				jQuery(renderTemplate('<div id="{list-pager}">'))
 			);
 			
 			list.jqGrid({
-				datatype	: 'local',
-				width		: container.width(),
-				shrinkToFit	: true,
-				colNames	: colNames,
-				colModel	: colModel,
-				caption		: '&nbsp;',
-				altRows		: true,
-				altclass	: that.nsClass('list-altrow'),
-				resizeclass : that.nsClass('list-resizable'),
-				pager		: '#' + that.nsClass('list-pager'), // http://www.trirand.com/jqgridwiki/doku.php?id=wiki:pager&s[]=pager
-			//	rowNum		: this.pageSize,	  // # of records to view in the grid. Passed as parameter to url when retrieving data from server
-				viewrecords	: true,
+				datatype     : 'local',
+				width        : container.width(),
+				shrinkToFit  : true,
+				colNames     : colNames,
+				colModel     : colModel,
+				caption      : '&nbsp;',
+				altRows      : true,
+				altclass     : 'aloha-browser-list-altrow',
+				resizeclass  : 'aloha-browser-list-resizable',
+				pager        : '#aloha-browser-list-pager', // http://www.trirand.com/jqgridwiki/doku.php?id=wiki:pager&s[]=pager
+			//	rowNum       : this.pageSize,	  // # of records to view in the grid. Passed as parameter to url when retrieving data from server
+				viewrecords  : true,
 				// Event handlers: http://www.trirand.com/jqgridwiki/doku.php?id=wiki:events
 				// fires after click on [page button] and before populating the data
-				onPaging	: function (button) {},
-				// called if the request fails
-				loadError	: function (xhr, status, error) {},
+				onPaging     : function (button) {},
+				// Called if the request fails
+				loadError    : function (xhr, status, error) {},
 				// Raised immediately after row was double clicked. 
 				ondblClickRow: function (rowid, iRow, iCol, e) {},
 				// fires after all the data is loaded into the grid and all other processes are complete
@@ -700,12 +684,11 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 				loadComplete : function (data) {}
 			});
 			
-			container.find('.ui-jqgrid-bdiv').css(
-				'height',
+			container.find('.ui-jqgrid-bdiv').height(
 				this.grid.height() - (
-					container.find('.ui-jqgrid-titlebar').outerHeight(true) +
-					container.find('.ui-jqgrid-hdiv').outerHeight(true) + 
-					container.find('.ui-jqgrid-pager').outerHeight(true)
+					container.find('.ui-jqgrid-titlebar').height() +
+					container.find('.ui-jqgrid-hdiv').height() + 
+					container.find('.ui-jqgrid-pager').height()
 				)
 			);
 			
@@ -713,23 +696,29 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 				that.rowClicked.apply(that, arguments);
 			});
 			
-			// Override jqGrid pageing
-			container.find('.ui-pg-button').unbind().find('>span.ui-icon').each(function () {
-				var dir = this.className.match(/ui\-icon\-seek\-([a-z]+)/)[1];
-				
-				that._pagingBtns[dir] = $(this).parent()
-					.addClass('ui-state-disabled')
-					.click(function () {
-						if (!$(this).hasClass('ui-state-disabled')) {
-							that.doPaging(dir);
-						}
+			// Override jqGrid paging
+			container
+				.find('.ui-pg-button').unbind()
+				.find('>span.ui-icon').each(function () {
+					var dir = this.className
+								  .match(/ui\-icon\-seek\-([a-z]+)/)[1];
+						
+						that._pagingBtns[dir] =
+							jQuery(this)
+								.parent()
+								.addClass('ui-state-disabled')
+								.click(function () {
+									if (!jQuery(this)
+											.hasClass('ui-state-disabled')) {
+												that.doPaging(dir);
+											}
+								});
 					});
-			});
 			
 			// TODO: implement this once repositories can handle it, hidding it for now
 			container.find('.ui-pg-input').parent().hide()
 			container.find('.ui-separator').parent().css('opacity', 0).first().hide();
-			container.find('#' + that.nsClass('list-pager-left')).hide();
+			container.find('#aloha-browser-list-pager-left').hide();
 			
 			this.createTitlebar(container);
 			
@@ -738,7 +727,7 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 			// Override jqGrid sorting
 			var listProps = list[0].p;
 			container.find('.ui-jqgrid-view tr:first th div').each(function(i) {
-				$(this).unbind().click(function (event) {
+				jQuery(this).unbind().click(function (event) {
 					event.stopPropagation();
 					that.sortList(listProps.colModel[i], this);
 				});
@@ -748,10 +737,9 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 		},
 		
 		createTitlebar: function (container) {
-			var that = this,
-				search,
-				bar = container.find('.ui-jqgrid-titlebar'),
-				btns = $(that.renderTemplate(
+			var that = this;
+			var bar  = container.find('.ui-jqgrid-titlebar');
+			var btns = jQuery(renderTemplate(
 					'<div class="{btns}">							 \
 						<input type="text" class="{search-field}" /> \
 						<span class="{btn} {search-btn}">			 \
@@ -762,30 +750,30 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 					</div>'
 				));
 			
-			bar.addClass(that.nsClass('grab-handle')).append(btns);
-			bar.find(that.nsSel('search-btn')).click(function () {
+			bar.addClass('aloha-browser-grab-handle').append(btns);
+			bar.find('.aloha-browser-search-btn').click(function () {
 				that.triggerSearch();
 			});
-			bar.find(that.nsSel('search-field')).keypress(function (event) {
+			bar.find('.aloha-browser-search-field').keypress(function (event) {
 				if (event.keyCode == 13) { // on Enter
 					that.triggerSearch();
 				}
 			});
-			bar.find(that.nsSel('close-btn')).click(function () {
+			bar.find('.aloha-browser-close-btn').click(function () {
 				that.close();
 			});
-			bar.find(that.nsSel('btn')).mousedown(function () {
-				$(this).addClass(that.nsClass('pressed'));
+			bar.find('.aloha-browser-btn').mousedown(function () {
+				jQuery(this).addClass('aloha-browser-pressed');
 			}).mouseup(function () {
-				$(this).removeClass(that.nsClass('pressed'));
+				jQuery(this).removeClass('aloha-browser-pressed');
 			});
 		},
 		
 		triggerSearch: function () {
-			var search = this.grid.find('input' + this.nsSel('search-field'));
+			var search = this.grid.find('input.aloha-browser-search-field');
 			
 			this._pagingOffset = 0;
-			this._searchQuery = search.val();
+			this._searchQuery  = search.val();
 			
 			this.fetchItems(this._currentFolder, this.processItems);
 		},
@@ -796,17 +784,16 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 		 */
 		sortList: function(colModel, el){
 			// reset sort properties in all column headers
-			$('span.ui-grid-ico-sort').addClass('ui-state-disabled');
+			jQuery('span.ui-grid-ico-sort').addClass('ui-state-disabled');
 			
 			colModel.sortorder = (colModel.sortorder == 'asc') ? 'desc' : 'asc';
 			
-			$(el)
-				.find('span.s-ico').show()
-					.find('.ui-icon-' + colModel.sortorder)
-						.removeClass('ui-state-disabled');
+			jQuery(el).find('span.s-ico').show()
+			     .find('.ui-icon-' + colModel.sortorder)
+			     .removeClass('ui-state-disabled');
 			
 			this.setSortOrder(colModel.name, colModel.sortorder)
-				.fetchItems(this._currentFolder, this.processItems);
+			    .fetchItems(this._currentFolder, this.processItems);
 		},
 		
 		/**
@@ -823,7 +810,7 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 			var orderItem;
 			var found = false;
 			
-			for (var i = 0, j = orderBy.length; i < j; i++) {
+			for (var i = 0, j = orderBy.length; i < j; ++i) {
 				orderItem = orderBy[i];
 				
 				for (field in orderItem) {
@@ -853,18 +840,18 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 		
 		doPaging: function (dir) {
 			switch (dir) {
-			case 'first':
-				this._pagingOffset = 0;
-				break;
-			case 'end':
-				this._pagingOffset = this._pagingCount - this.pageSize;
-				break;
-			case 'next':
-				this._pagingOffset += this.pageSize;
-				break;
-			case 'prev':
-				this._pagingOffset -= this.pageSize;
-				break;
+				case 'first':
+					this._pagingOffset = 0;
+					break;
+				case 'end':
+					this._pagingOffset = this._pagingCount - this.pageSize;
+					break;
+				case 'next':
+					this._pagingOffset += this.pageSize;
+					break;
+				case 'prev':
+					this._pagingOffset -= this.pageSize;
+					break;
 			}
 			
 			// TODO: animate
@@ -875,6 +862,10 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 		},
 		
 		fetchItems: function (folder, callback) {
+			if (!folder) {
+				return;
+			}
+			
 			this.list.setCaption(
 				(typeof this._searchQuery === 'string')
 					? 'Searching for "' + this._searchQuery + '" in ' + folder.name
@@ -888,15 +879,15 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 			
 			this.queryRepository(
 				{
-					queryString		 : this._searchQuery,
-					inFolderId		 : folder.id,
-					skipCount		 : this._pagingOffset,
-					maxItems		 : this.pageSize,
+					repositoryId     : folder.repositoryId,
+					inFolderId       : folder.id,
+					queryString      : this._searchQuery,
+					orderBy          : this._orderBy,
+					skipCount        : this._pagingOffset,
+					maxItems         : this.pageSize,
 					objectTypeFilter : this.objectTypeFilter,
-					renditionFilter	 : this.renditionFilter,
-					filter			 : this.filter,
-					orderBy			 : this._orderBy
-				//	repositoryId	 : obj.repositoryId
+					renditionFilter  : this.renditionFilter,
+					filter           : this.filter
 				},
 				function (data) {
 					if (typeof callback === 'function') {
@@ -918,23 +909,21 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 		},
 		
 		listItems: function (items) {
-			var that = this,
-				data = [],			
-				list = this.list.clearGridData(),
-				obj;
+			var that = this;		
+			var list = this.list.clearGridData();
 			
-			$.each(items, function () {
-				obj = this.resource;
+			jQuery.each(items, function () {
+				var obj = this.resource;
 				list.addRowData(
 					obj.uid,
-					$.extend({id: obj.id}, that.renderRowCols(obj))
+					jQuery.extend({id: obj.id}, that.renderRowCols(obj))
 				);
 			});
 		},
 		
 		processItems: function (data) {
-			var btns = this._pagingBtns,
-				disabled = 'ui-state-disabled';
+			var btns = this._pagingBtns;
+			var disabled = 'ui-state-disabled';
 			
 			this.grid.find('.loading').hide();
 			this.list.show();
@@ -948,7 +937,8 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 			
 			if (isNaN(this._pagingCount)) {
 				btns.end.addClass(disabled);
-				if (data.length == 0) {
+				
+				if (data.length < this.pageSize) {
 					btns.next.addClass(disabled);
 				} else {
 					btns.next.removeClass(disabled);
@@ -959,9 +949,17 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 				btns.end.add(btns.next).removeClass(disabled);
 			}
 			
+			var from;
+			
+			if (data.length == 0 && this._pagingOffset == 0) {
+				from = 0;
+			} else {
+				from = this._pagingOffset + 1;
+			}
+			
 			this.grid.find('.ui-paging-info').html(
-				'Viewing ' +		  (data.length == 0 ? 0 : this._pagingOffset + 1)
-						   + ' - '  + (data.length == 0 ? 0 : this._pagingOffset + data.length)
+				'Viewing ' +		  (from)
+						   + ' - '  + (from + data.length)
 						   + ' of ' + (this._pagingCount || 'numerous')
 			);
 		},
@@ -969,16 +967,16 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 		createOverlay: function () {
 			var that = this;
 			
-			$('body').append(that.renderTemplate(
+			jQuery('body').append(renderTemplate(
 				'<div class="{modal-overlay}" style="top: -99999px; z-index: 99999;"></div>' +
 				'<div class="{modal-window}"  style="top: -99999px; z-index: 99999;"></div>'
 			));
 			
-			$(that.nsSel('modal-overlay')).click(function () {
+			jQuery('.aloha-browser-modal-overlay').click(function () {
 				that.close();
 			});
 			
-			return $(that.nsSel('modal-window'));
+			return jQuery('.aloha-browser-modal-window');
 		},
 		
 		setObjectTypeFilter: function (otf) {
@@ -990,62 +988,48 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 		},
 		
 		show: function () {
-			this.fetchRepoRoot();
+			this.opened = true;
+			
+			this.fetchRepoRoot(this.jstree_callback);
 			
 			var el = this.element;
 			
-			$(this.nsSel('modal-overlay'))
+			jQuery('.aloha-browser-modal-overlay')
 				.css({top: 0, left: 0})
 				.add(el).stop().show();
 			
-			var	w = el.width(),
-				h = el.height(),
-				win	= $(window);
+			var win	= jQuery(window);
 			
 			el.css({
-				left : (win.width() - w) / 2,
-				top  : (win.height() - h) / 3
+				left : (win.width()  - el.width())  / 2,
+				top  : (win.height() - el.height()) / 3
 			}).draggable({
-				handle: el.find(this.nsSel('grab-handle'))
+				handle: el.find('.aloha-browser-grab-handle')
 			}).resizable();
 			
 			// Do wake-up animation
 			this.grid.css({
-				marginTop: 30,
-				opacity: 0
+				marginTop : 30,
+				opacity   : 0
 			}).animate({
-				marginTop: 0,
-				opacity: 1
+				marginTop : 0,
+				opacity   : 1
 			}, 1500, 'easeOutExpo');
 		},
 		
 		close: function () {
-			var that = this;
+			this.opened = true;
+			
 			this.element.fadeOut(
 				250, function () {
-					$(this).css('top', 0).hide();
-					$(that.nsSel('modal-overlay')).hide();
+					jQuery(this).css('top', 0).hide();
+					jQuery('.aloha-browser-modal-overlay').hide();
 				}
 			);
-		},
-		
-		log: function (msg) {
-			if (this.verbose == true) {
-				console.log('%s LOG: ', this.instanceOf, msg);
-			}
-		},
-		
-		warn: function (msg, force) {
-			if (this.verbose == true || force == true) {
-				console.warn('%s WARNING: ', this.instanceOf, msg);
-			}
-		},
-		
-		error: function (msg, force) {
-			if (this.verbose == true || force == true) {
-				console.error('%s ERROR: ', this.instanceOf, msg);
-			}
 		}
-	
+		
 	});
+	
+	return BrowserPlugin;
+	
 });
