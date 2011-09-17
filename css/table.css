@@ -115,3 +115,11 @@ div.aloha-table-cell-editable {
 button.aloha-button-table-caption {
 	background-position: -320px 0px !important;
 }
+
+.aloha-button.aloha-button-merge-cells {
+	background-position: -384px 0px !important;
+}
+
+.aloha-button.aloha-button-split-cells {
+	background-position: -400px 0px !important;
+}
