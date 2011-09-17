@@ -30,4 +30,3 @@ define('aloha/ext',[], function() {
 	
 	return Ext; 
 });
-    
