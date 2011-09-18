@@ -1,13 +1,6 @@
 .project
 .settings
-dist
-out
 .DS_Store
-/target
-/npm-debug.log
-node_modules
-/setalohabase.js
-src/plugin/gcn
-nbproject
+tmp
+out
 doc/guides/staging
-src/plugins/gcn
