@@ -25,20 +25,23 @@ if [ "$1" != "" ]; then
 fi
 
 LIB="$SCRIPTDIR/../$TARGET/lib"
+echo "Generating aloha.js in $LIB"
 cat /dev/null > "$LIB/aloha.js"
 
-echo "$LIB/$REQUIRE"
+echo "$REQUIRE"
 cat "$LIB/$REQUIRE" >> "$LIB/aloha.js"
 
-echo "$LIB/$JQUERY"
+echo "$JQUERY"
 cat "$LIB/$JQUERY" >> "$LIB/aloha.js"
 
-echo "$LIB/$EXT_ADAPT + $LIB/$EXT_ALL"
+echo "$EXT_ADAPT"
+echo "$EXT_ALL"
 echo "(function( jQuery ) {" >> "$LIB/aloha.js"
 cat "$LIB/$EXT_ADAPT" "$LIB/$EXT_ALL" >> "$LIB/aloha.js" 
 echo "})( jQuery );" >> "$LIB/aloha.js"
 
-echo "$LIB/aloha-bootstrap.js"
+echo "aloha-bootstrap.js"
 cat "$LIB/aloha-bootstrap.js" >> "$LIB/aloha.js"
 
-echo "Updated $LIB/aloha.js."
+echo "Updated aloha.js."
+echo

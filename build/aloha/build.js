@@ -6,7 +6,7 @@
     //then all the files from the app directory will be copied to the dir:
     //output area, and baseUrl will assume to be a relative path under
     //this directory.
-    appDir: "../src/",
+    appDir: "../../src/",
 
     //By default, all modules are located relative to this path. If baseUrl
     //is not explicitly set, then all modules are loaded relative to
@@ -33,7 +33,7 @@
     //The directory path to save the output. If not specified, then
     //the path will default to be a directory called "build" as a sibling
     //to the build file. All relative paths are relative to the build file.
-    dir: "../tmp",
+    dir: "../../tmp/aloha",
 
     //Used to inline i18n resources into the built file. If no locale
     //is specified, i18n resources will not be inlined. Only one locale
