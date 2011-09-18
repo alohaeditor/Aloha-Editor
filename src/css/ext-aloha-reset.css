@@ -1,0 +1,29 @@
+.aloha-floatingmenu table, .aloha-floatingmenu tr, .aloha-floatingmenu td,
+.ext-root table, .ext-root tr, .ext-root td,
+table.x-layer, .x-layer tr, .x-layer td,
+table.x-window, .x-window tr, .x-window td,
+table.x-toolbar-ct, .x-toolbar-ct tr, .x-toolbar-ct td,
+table.x-toolbar-left, .x-toolbar-left tr, .x-toolbar-left td, 
+table.x-table-layout, .x-table-layout tr, .x-table-layout td,
+table.x-toolbar-ct table, .x-toolbar-cell td, .x-table-layout-cell td {
+	width: 0;
+	height: 0;
+	border: 0;
+	padding: 0;
+	margin: 0;
+	background-color: transparent !important;
+}
+/* more specific for browsers that support nth-child. */
+.ext-root tr:nth-child(2n), .ext-root tr:nth-child(3n), .ext-root tr:nth-child(4n), .ext-root tr:nth-child(5n) {
+	width: 0;
+	height: 0;
+	border: 0;
+	padding: 0;
+	margin: 0;
+	background-color: transparent !important;
+}
+.ext-root ol, .ext-root ul, .x-menu ul, .x-menu ol {
+	list-style:none;
+	margin:0;
+	padding:0;
+}
