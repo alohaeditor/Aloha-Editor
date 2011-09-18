@@ -187,7 +187,7 @@ function( Aloha, Class, jQuery ) {
 					// repository forgot to do so
 					var repoId = this.repositoryId,
 					    i = 0,
-					    j = items.length;
+					    j = items ? items.length : 0;
 					
 					if ( items && items.length && !items[0].repositoryId ) {
 						for ( ; i < j; ++i ) {
