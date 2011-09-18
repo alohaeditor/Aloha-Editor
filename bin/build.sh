@@ -7,7 +7,7 @@ if [ "$1" != "" ]; then
 	TARGET="$1"
 	TMP="$SCRIPT/../tmp/$TARGET"
 	OUT="$SCRIPT/../out/$TARGET"
-	if [ "$SCRIPT/../build/$TARGET" ]; then
+	if [ -d "$SCRIPT/../build/$TARGET" ]; then
 		# Clean existing dirs
 		if [ -d "$TMP" ]; then
 			echo "Cleaning existing temporary dir tmp/$TARGET"

@@ -6,20 +6,20 @@ table.x-toolbar-ct, .x-toolbar-ct tr, .x-toolbar-ct td,
 table.x-toolbar-left, .x-toolbar-left tr, .x-toolbar-left td, 
 table.x-table-layout, .x-table-layout tr, .x-table-layout td,
 table.x-toolbar-ct table, .x-toolbar-cell td, .x-table-layout-cell td {
-	width: 0;
-	height: 0;
-	border: 0;
-	padding: 0;
-	margin: 0;
+	width: 0 !important;
+	height: 0 !important;
+	border: 0 !important;
+	padding: 0 !important;
+	margin: 0 !important;
 	background-color: transparent !important;
 }
 /* more specific for browsers that support nth-child. */
 .ext-root tr:nth-child(2n), .ext-root tr:nth-child(3n), .ext-root tr:nth-child(4n), .ext-root tr:nth-child(5n) {
-	width: 0;
-	height: 0;
-	border: 0;
-	padding: 0;
-	margin: 0;
+	width: 0 !important;
+	height: 0 !important;
+	border: 0 !important;
+	padding: 0 !important;
+	margin: 0 !important;
 	background-color: transparent !important;
 }
 .ext-root ol, .ext-root ul, .x-menu ul, .x-menu ol {
