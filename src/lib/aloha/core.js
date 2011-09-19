@@ -328,6 +328,18 @@ function ( jQuery, PluginManager ) {
 				Aloha.OSName = 'Linux';
 			}
 
+			try {
+				// this will disable browsers image resizing facilities
+				// disable resize handles
+				if ( document.queryCommandSupported('enableObjectResizing') ) {
+					document.execCommand('enableObjectResizing', false, 'false');
+				} else {
+					Aloha.Log.log('enableObjectResizing is not supported.');
+				}
+			} catch (e) {
+				Aloha.Log.error(e, 'Could not disable enableObjectResizing');
+				// this is just for others, who will not support disabling enableObjectResizing
+			}
 			// Forward
 			next();
 		},
