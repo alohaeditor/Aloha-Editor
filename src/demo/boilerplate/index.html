@@ -22,7 +22,7 @@
 	<script src="../../lib/aloha.js" data-aloha-plugins="common/link,common/table,common/format,common/highlighteditables,common/list,common/block,common/undo,common/paste,extra/metaview,extra/wai-lang,extra/headerids,common/characterpicker,common/abbr,common/commands,extra/cite,media/image"></script>
 
 	<script src="js/aloha-boilerplate.js"></script>
-	
+
 </head>
 <body>
 	<div id="whole-site">
@@ -131,23 +131,24 @@
 					<p>Here we test, a <a title="" href="http://aloha-editor.org">link</a> and other
 					formattings such as <b>bold</b>, <i>italic</i> or <del>deleted text</del>. You may 
 					also use formattings for maths 2<sup>2</sup> = 4 or chemical formulas like CO<sub>2</sub>.
-					</p>
+					Or you may edit tables as used in office products.</p>
+					<p>&nbsp;</p>
+					<div>
+					<table summary="demo content for aloha tables">
+						<tbody>
+							<tr><td >This</td><td >is</td><td>a</td></tr>
+							<tr><td>demo</td><td>table</td><td>for</td></tr>
+							<tr><td>Aloha</td><td>Editor</td><td>!</td></tr>
+						</tbody>
+						<caption>describe the table</caption>
+					</table>
+					</div>
 					<p>To describe code you would use fixed style <i>pre</i></p>
 					<pre>
-&lt;script type="text/javascript" defer&gt;
-(function(window,undefined){
-	// Prepare
-	var
-		$ = window.alohaQuery,
-		$body = $('body');
-
-	// Bind to Aloha Ready Event
-	$body.bind('aloha',function(){
-		$('#content').aloha();
-		$('.top-text').aloha();
-
-	});
-})(window);
+&lt;script&gt;
+	// make content editable
+	$('#content').aloha();
+	$('.top-text').aloha();
 &lt;/script&gt;</pre>
 					<p>
 						<ul>

@@ -117,6 +117,32 @@ a:active {
 	text-decoration: none;
 	border-bottom: 1px solid #0C53A4;
 }
+table {
+	border: 1px solid black;
+	border-collapse: collapse;
+	border-spacing: 0px;
+}
+table td, th {
+	padding: 10px;
+	border: 1px solid black;
+}
+table tr:nth-child(even) {
+	background: #eee;
+}
+table th {
+	padding: 10px;
+	font-weight: bold;
+	font-size: 120%;
+	background: #333;
+	color: #fff;
+}
+caption {
+	caption-side: bottom;
+	font-size: 0.8em;
+	font-style: italic;
+	text-align: right;
+	padding: 0.5em 0;
+}
 h1,
 #content h1 {
 	margin: 1.6em 0 0.8em 0;
@@ -463,6 +489,7 @@ footer {
 	position: relative;
 	top:5px;
 }
+
 /* ========================================= */
 /* ========================================= */
 
@@ -489,7 +516,6 @@ footer {
 
   /* html { -webkit-text-size-adjust:none; -ms-text-size-adjust:none; } */
 }
-
 
 @media print {
   * { background: transparent !important; color: black !important; text-shadow: none !important; filter:none !important;

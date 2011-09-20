@@ -333,6 +333,7 @@ function ( jQuery, PluginManager ) {
 				// disable resize handles
 				if ( document.queryCommandSupported('enableObjectResizing') ) {
 					document.execCommand('enableObjectResizing', false, 'false');
+					Aloha.Log.log('enableObjectResizing disabled.');
 				} else {
 					Aloha.Log.log('enableObjectResizing is not supported.');
 				}
