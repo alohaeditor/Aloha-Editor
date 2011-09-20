@@ -1,27 +1,4 @@
-/**
- * Hide the border for contenteditables
- */
-.aloha-table-cell-editable,
-.aloha-table-wrapper {
-	outline: 0px solid transparent;
-}
-
-/* :tODO: make custom cursors visible in IE */
-.aloha-table tr.aloha-table-selectcolumn td.aloha-table-leftuppercorner,
-.aloha-table tr.aloha-table-selectcolumn td.aloha-table-leftuppercorner:hover {
-	cursor: default;
-	background-color: transparent;
-}
-
-tr.aloha-table-selectcolumn td,
-td.aloha-table-selectrow {
-	visibility: hidden;
-}
-
-.aloha-editable-active tr.aloha-table-selectcolumn td,
-.aloha-editable-active td.aloha-table-selectrow {
-	visibility: visible;
-}
+/* reset */
 .aloha-table tr.aloha-table-selectcolumn {
 	line-height: 0.01em;
 	height: 12px !important;
@@ -29,25 +6,67 @@ td.aloha-table-selectrow {
 .aloha-table td.aloha-table-selectrow {
 	width: 25px !important;
 }
+.aloha-editable div.aloha-table-wrapper, .aloha-table-wrapper div.aloha-table-cell-editable, 
+.aloha-table-wrapper .aloha-table-leftuppercorner div, .aloha-table-wrapper tr.aloha-table-selectcolumn td,
+.aloha-table-wrapper td.aloha-table-selectrow , .aloha-table-wrapper div.aloha-editable-caption { 
+	margin:0; 
+	padding:0;
+	border:none; 
+	background:none;
+	outline: 0px solid transparent;
+}
 
+/* editable wrappers in cells */
+div.aloha-table-cell-editable {
+	height: 100%;
+	min-height: 100%;
+	width: 100%;
+	z-index: 99999;
+}
+
+/* only show controls when in active state */
+tr.aloha-table-selectcolumn td,
+td.aloha-table-selectrow {
+	visibility: hidden;
+}
+.aloha-editable-active tr.aloha-table-selectcolumn td,
+.aloha-editable-active td.aloha-table-selectrow {
+	visibility: visible;
+}
+
+/* selection and hover */
+.aloha-cell-selected {
+	background-color: #80B5F2 !important;
+	color: #FFF;
+}
+.aloha-table td.aloha-table-selectrow,
+.aloha-table tr.aloha-table-selectcolumn td {
+	background-color: #D0D0D0;
+}
+.aloha-table td.aloha-table-selectrow:hover,
+.aloha-table tr.aloha-table-selectcolumn td:hover {
+	background-color: #FFE767;
+}
+
+
+/* TODO make custom cursors visible in IE */
+.aloha-table tr.aloha-table-selectcolumn td.aloha-table-leftuppercorner,
+.aloha-table tr.aloha-table-selectcolumn td.aloha-table-leftuppercorner:hover {
+	cursor: default;
+	background-color: transparent;
+}
 .aloha-table td .aloha-table-cell-editable {
 	cursor: text !important;
 }
-
 .aloha-table tr.aloha-table-selectcolumn td {
 	cursor: url(../img/down.cur),default;
 }
-
 /* :tODO: make custom cursors visible in IE */
 .aloha-table td.aloha-table-selectrow {
 	cursor: url(../img/left.cur),default;
 }
-.aloha-editable div.aloha-table-wrapper, .aloha-table-wrapper div.aloha-table-cell-editable, 
-.aloha-table-wrapper .aloha-table-leftuppercorner div, .aloha-table-wrapper tr.aloha-table-selectcolumn td,
-.aloha-table-wrapper td.aloha-table-selectrow , .aloha-table-wrapper div.aloha-editable-caption
-{ margin:0; border:none; background:none; padding:0; }
 
-
+/* wai indicator */
 .aloha-table-wrapper div.aloha-wai-red {
 	background-image: url(../img/wai-red.png);
 }
@@ -60,19 +79,7 @@ td.aloha-table-selectrow {
 	cursor: pointer !important;
 }
 
-.aloha-table td.aloha-table-selectrow,
-.aloha-table tr.aloha-table-selectcolumn td {
-	background-color: #D0D0D0;
-}
-
-.aloha-table td.aloha-table-selectrow:hover,
-.aloha-table tr.aloha-table-selectcolumn td:hover {
-	background-color: #c0c0c0;
-}
-
-/**
- * create dialog
-*/
+/* create dialog */
 .aloha-table-createdialog {
 	z-index: 99999;
 	position: absolute;
@@ -101,24 +108,41 @@ td.aloha-table-selectrow {
 	text-align: center;
 	font-size: 0.8em;
 }
-.aloha-cell-selected {
-	background-color: #3399FF !important;
-	color: #FFF;
+
+/* ui buttons */
+button.aloha-button-table {
+	background-position: -96px 0 !important;
 }
-div.aloha-table-cell-editable {
-	height: 100%;
-	min-height: 100%;
-	width: 100%;
-	z-index: 99999;
+button.aloha-button-addColumnLeft {
+	background-position: -112px 0 !important;
+}
+button.aloha-button-addColumnRight {
+	background-position: -128px 0 !important;
+}
+button.aloha-button-addRowBefore {
+	background-position: -144px 0 !important;
+}
+button.aloha-button-addRowAfter {
+	background-position: -160px 0 !important;
+}
+button.aloha-button-deleteRows {
+	background-position: -176px 0 !important;
+}
+button.aloha-button-deleteColumns {
+	background-position: -192px 0 !important;
+}
+button.aloha-button-row-header {
+	background-position: -352px 0px !important;
+}
+button.aloha-button-col-header {
+	background-position: -368px 0px !important;
 }
 button.aloha-button-table-caption {
 	background-position: -320px 0px !important;
 }
-
 .aloha-button.aloha-button-merge-cells {
 	background-position: -384px 0px !important;
 }
-
 .aloha-button.aloha-button-split-cells {
 	background-position: -400px 0px !important;
 }
