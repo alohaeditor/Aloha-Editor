@@ -10,7 +10,7 @@
 		ribbon: false,
 		locale: 'en',
 		floatingmenu: {
-			width: 800
+			width: 430
 		},
 		repositories: {
 			linklist: {

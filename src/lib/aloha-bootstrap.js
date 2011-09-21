@@ -56,7 +56,7 @@
 			i,
 			script,
 			scripts = document.getElementsByTagName("script"),
-			regexAlohaJs = /\/?aloha.js$/,
+			regexAlohaJs = /\/aloha.js$/,
 			regexJs = /[^\/]*\.js$/;
 		
         for ( i = 0; i < scripts.length && ( script = scripts[i] ); ++i ) {
@@ -129,15 +129,6 @@
 define( 'aloha', [], function(){
 	return Aloha;
 });
-
-// define vendor dependencies as we load them and 
-// combine them on building
-// TODO move files to vendor!
-define( 'vendor/jquery.json-2.2.min', [], function(){} );
-define( 'vendor/jquery.store', [], function(){} );
-define( 'aloha/rangy-core', [], function(){} );
-define( 'util/json2', [], function(){} );
-define( 'util/lang', [], function(){} );
 
 //load Aloha dependencies
 require( 
