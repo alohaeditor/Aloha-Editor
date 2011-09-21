@@ -7,6 +7,8 @@
 GENTICS = window.GENTICS || {};
 GENTICS.Utils = GENTICS.Utils || {};
 
+define( 'util/lang', [], function(){} );
+
 // Start Closure
 (function(window, undefined) {
 	"use strict";
