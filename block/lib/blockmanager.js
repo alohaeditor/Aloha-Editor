@@ -73,9 +73,9 @@ function(FloatingMenu, Observable, Registry) {
 			// Register event handlers for deactivating an Aloha Block
 			$(document).bind('click', function(event) {
 				if (that.activeBlocks == {}) return;
-				if ($(event.target).parents('.aloha-sidebar-bar, .aloha-block-do-not-deactivate').length > 0
-					|| $(event.target).is('.aloha-sidebar-bar, .aloha-block-do-not-deactivate')) {
-					// If we are inside the sidebar, we do not want to deactivate active blocks...
+				if ($(event.target).parents('.aloha-sidebar-bar, .aloha-block-do-not-deactivate, .aloha-floatingmenu').length > 0
+					|| $(event.target).is('.aloha-sidebar-bar, .aloha-block-do-not-deactivate, .aloha-floatingmenu')) {
+					// If we are inside the sidebar, the floating menu or other elements which should not trigger the block deactivation, we do an early return.
 					return;
 				}
 				BlockManager._deactivateActiveBlocks();
