@@ -57,7 +57,7 @@ tr.ui-search-toolbar select {margin: 1px 0px 0px 0px}
 .ui-jqgrid .ui-pg-input { height:13px;font-size:.8em; margin: 0em;}
 .ui-jqgrid .ui-pg-selbox {font-size:.8em; line-height:18px; display:block; height:18px; margin: 0em;}
 .ui-jqgrid .ui-separator {display: none; height: 18px; border-left: 1px solid #ccc ; border-right: 1px solid #ccc ; margin: 1px; float: right;}
-.ui-jqgrid .ui-paging-info {font-weight: normal;height:19px; margin-top:3px;margin-right:4px;}
+.ui-jqgrid .ui-paging-info {font-weight: normal; height: 19px; margin: 0; line-height: 1em;}
 .ui-jqgrid .ui-jqgrid-pager .ui-pg-div {padding:1px 0;float:left;list-style-image:none;list-style-position:outside;list-style-type:none;position:relative;}
 .ui-jqgrid .ui-jqgrid-pager .ui-pg-button { cursor:pointer; }
 .ui-jqgrid .ui-jqgrid-pager .ui-pg-div  span.ui-icon {float:left;margin:0 2px;}
@@ -395,7 +395,7 @@ tr.ui-search-toolbar select {margin: 1px 0px 0px 0px}
 	font-weight: normal;
 	color: #777;
 	
-	background: url(../css/throbber.gif) no-repeat left center;
+	background: url(../img/throbber.gif) no-repeat left center;
 }
 .ui-jqgrid .jqgrid-overlay {display:none; z-index:100;}
 
@@ -518,7 +518,7 @@ tr.ui-search-toolbar select {margin: 1px 0px 0px 0px}
 	-webkit-border-top-right-radius: 2px;
 }
 .aloha-browser-grid {
-	width: 1000px;
+	width: 950px;
 	height: 400px;
 	border: 1px solid #53565b;
 	text-align: left;
@@ -740,3 +740,9 @@ tr.ui-search-toolbar select {margin: 1px 0px 0px 0px}
 	background-repeat: no-repeat;
 	background-position: center center
 }
+
+/**
+ *
+ * CUSTOMIZE FROM HERE:
+ *
+ *****************************************************************************/

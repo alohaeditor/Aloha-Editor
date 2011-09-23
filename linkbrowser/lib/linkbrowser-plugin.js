@@ -1,18 +1,7 @@
-/**
- * Aloha.Browser
- *
- * The browser is an interface to interact with a Repository Managers.
- *
- * Reference:
- *		www.aloha-editor.org/wiki/Repository
- * 3rd party tools:
- *		www.jstree.com/documentation/core
- *		www.trirand.com/blog/ (jqGrid)
- *		layout.jquery-dev.net/
- */
 define([
 
 	// js
+	'aloha',
 	'aloha/jquery',
 	'aloha/plugin',
 	'aloha/pluginmanager',
@@ -23,41 +12,41 @@ define([
 	'i18n!linkbrowser/nls/i18n',
 	'i18n!aloha/nls/i18n'
 
-], function($,
-			Plugin,
-			PluginManager,
-			FloatingMenu,
-			Links,
-			Browser, // Browser "super class". Needs to be extended. 
-			i18n,
-			i18nCore) {
+], function( Aloha,
+			 jQuery,
+			 Plugin,
+			 PluginManager,
+			 FloatingMenu,
+			 Links,
+			 Browser,
+			 i18n,
+			 i18nCore ) {
 	
 	'use strict';
 	
-	// FIXME: user aloha/core to get aloha, not window
-	var Aloha = window.Aloha;
-	
 	var config = {
-		repositoryFilter : [ 'wai-languages' ],
-		objectTypeFilter : [ 'website', 'files', 'images', 'language' /*, '*' */ ],
-		renditionFilter	 : [ '*' ],
-		filter			 : [ 'language' ],
+		repositoryManager : Aloha.RepositoryManager,
+		repositoryFilter  : [ 'wai-languages' ],
+		objectTypeFilter  : [ 'website', 'files', 'images', 'language' /*, '*' */ ],
+		renditionFilter	  : [ '*' ],
+		filter			  : [ 'language' ],
 		
 		columns : {
 			icon         : { title: '',     width: 30,  sortable: false, resizable: false },
 			name         : { title: 'Name', width: 320, sorttype: 'text' },
 			language     : { title: '',     width: 30,  sorttype: 'text' },
 			translations : { title: '',     width: 350, sorttype: 'text' }
-		}
+		},
+		
+		rootPath : Aloha.getPluginUrl('browser') + '/'
 	};
 	
-	return new (Browser.extend({
+	var originalInit = Browser.prototype.init;
+	
+	var LinkBrowser = jQuery.extend(Browser.prototype, {
 		
-		_constructor: function (pluginPrefix) {
-			this.id = this.prefix = pluginPrefix;
-			PluginManager.register(this);
-			
-			this.init(config);
+		init: function () {
+			originalInit.call(this, config);
 			
 			this.url = Aloha.getAlohaUrl() + '/../plugins/extra/linkbrowser/';
 			
@@ -68,6 +57,8 @@ define([
 			// not guarantee that the required plugin's init method is invoked
 			// before our constructor is
 			var that = this;
+			
+			/*
 			Links.init = (function(orig) {
 				return function () {
 					// Invoke the LinkPlugin's original init method first
@@ -91,6 +82,22 @@ define([
 					Links.init = orig;
 				};
 			})(Links.init);
+			*/
+			
+			var repositoryButton = new Aloha.ui.Button({
+				iconClass : 'aloha-button-big aloha-button-tree',
+				size      : 'large',
+				onclick   : function () { that.show(); },
+				tooltip   : i18n.t('button.addlink.tooltip'),
+				toggle    : false
+			});
+			
+			FloatingMenu.addButton(
+				Links.getUID('link'),
+				repositoryButton,
+				i18n.t('floatingmenu.tab.link'),
+				1
+			);	
 		},
 		
 		onSelect: function (item) {
@@ -99,11 +106,11 @@ define([
 		},
 		
 		renderRowCols: function (item) {
-			var row  = {};
-			var host = this.host;
-			var pluginUrl = this.url;
-			var icon = 'page';
-			var idMatch = item.id.match(/(\d+)\./);
+			var row  = {},
+			    host = this.host,
+			    pluginUrl = this.url,
+			    icon = 'page',
+			    idMatch = item.id.match(/(\d+)\./);
 			
 			if (idMatch) {
 				var objTypeId = idMatch[1];
@@ -122,18 +129,18 @@ define([
 				}
 			}
 			
-			$.each(this.columns, function (colName, v) {
+			jQuery.each(this.columns, function (colName, v) {
 				switch (colName) {
 				case 'icon':
 					row.icon = '<div class="aloha-browser-icon aloha-browser-icon-' + icon + '"></div>';
 					break;
 				case 'translations':
-					var rends = item.renditions;
-					var j;
+					var j,
+						rends = item.renditions;
 					
 					if (rends && (j = rends.length)) {
-						var strBldr = [];
-						var r;
+						var r,
+							strBldr = [];
 						
 						while (--j >= 0) {
 							r = rends[j];
@@ -162,6 +169,8 @@ define([
 			return row;
 		}
 	
-	}))('LinkBrowser');
+	});
+	
+	var LinkBrowserPlugin = Plugin.create('linkbrowser', LinkBrowser);
 	
 });

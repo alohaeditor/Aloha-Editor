@@ -63,7 +63,7 @@
 	background: url(../img/folder-horizontal-open.png) no-repeat center center;
 	cursor: pointer;
 }
-.jstree-browser a.jstree-loading .jstree-icon { background:url("throbber.gif") center center no-repeat !important; }
+.jstree-browser a.jstree-loading .jstree-icon { background:url(../img/throbber.gif) center center no-repeat !important; }
 .jstree-browser a.jstree-clicked .jstree-icon   {
 	background-image: url(../img/folder-open.png);
 }
