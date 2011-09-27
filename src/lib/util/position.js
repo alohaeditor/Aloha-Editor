@@ -144,9 +144,11 @@ GENTICS.Utils.Position.addMouseMoveCallback = function (callback) {
 
 
 // Mousemove Hooks
-setInterval(function(){
-	GENTICS.Utils.Position.update();
-},500);
+jQuery(function () {
+	setInterval(function (){
+		GENTICS.Utils.Position.update();
+	}, 500);
+});
 
 jQuery('html').mousemove(function (e) {
 	GENTICS.Utils.Position.Mouse.x = e.pageX;
