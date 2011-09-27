@@ -113,7 +113,7 @@ Aloha.Markup = Class.extend({
 					this.removeSelectedMarkup();
 				}
 
-				Aloha.Selection.updateSelection(false, true);
+				Aloha.Selection.updateSelection(false);
 				this.processShiftEnter(rangeObject);
 
 //				this.insertBreak();
@@ -125,7 +125,7 @@ Aloha.Markup = Class.extend({
 				if (!rangeObject.isCollapsed()) {
 					this.removeSelectedMarkup();
 				}
-				Aloha.Selection.updateSelection(false, true);
+				Aloha.Selection.updateSelection(false);
 				this.processEnter(rangeObject);
 
 /*

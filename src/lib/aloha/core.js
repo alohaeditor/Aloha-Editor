@@ -22,17 +22,13 @@ define(
 
 [
 	'aloha/jquery',
-	'aloha/pluginmanager',
-	'aloha/jquery.promise'
+	'aloha/pluginmanager'
 ],
 
 function ( jQuery, PluginManager ) {
 	"use strict";
 
-	var
-		GENTICS = window.GENTICS,
-		Aloha = window.Aloha || {};
-	
+
 	//----------------------------------------
 	// Private variables
 	//----------------------------------------
@@ -73,19 +69,6 @@ function ( jQuery, PluginManager ) {
 		activeEditable: null,
 
 		/**
-		 * Flag to mark whether Aloha is ready for use. Will be set at the end of the init() Function.
-		 * @property
-		 * @type boolean
-		 */
-		ready: false,
-
-		/**
-		 * The aloha dictionaries
-		 * @hide
-		 */
-		dictionaries: {},
-
-		/**
 		 * settings object, which will contain all Aloha settings
 		 * @cfg {Object} object Aloha's settings
 		 */
@@ -115,7 +98,7 @@ function ( jQuery, PluginManager ) {
 		 * @property
 		 * @type string
 		 */
-		stage: 'loadingCore',
+		stage: 'loadingAloha',
 
 		/**
 		 * A list of loaded plugin names. Available after the
@@ -127,13 +110,14 @@ function ( jQuery, PluginManager ) {
 		 */
 		loadedPlugins: [],
 
+		requirePaths: [],
 		/**
 		 * Initialize the initialization process
 		 */
 		init: function () {
 				
-			// Create Promises
-			Aloha.createPromiseEvent('aloha');
+			// merge defaults and settings and provide all in settings
+			jQuery.extend( Aloha.settings, Aloha.defaults );
 
 			// initialize rangy. This is probably necessary here,
 			// because due to the current loading mechanism, rangy
@@ -141,16 +125,6 @@ function ( jQuery, PluginManager ) {
 			if (window.rangy) {
 				window.rangy.init();
 			}
-			
-			// Mousemove Hooks
-			setInterval(function(){
-				GENTICS.Utils.Position.update();
-			},500);
-			
-			jQuery('html').mousemove(function (e) {
-				GENTICS.Utils.Position.Mouse.x = e.pageX;
-				GENTICS.Utils.Position.Mouse.y = e.pageY;
-			});
 			
 			// Load & Initialise
 			Aloha.stage = 'loadPlugins';
@@ -161,8 +135,8 @@ function ( jQuery, PluginManager ) {
 					Aloha.initPlugins(function(){
 						Aloha.stage = 'initGui';
 						Aloha.initGui(function(){
-							Aloha.stage = 'aloha';
-							Aloha.trigger('aloha');
+							Aloha.stage = 'alohaReady';
+							Aloha.trigger('aloha-ready');
 						});
 					});
 				});
@@ -230,10 +204,12 @@ function ( jQuery, PluginManager ) {
 				});
 
 				this.loadedPlugins = pluginNames;
-
+				this.requirePaths = paths;
+				
 				// Main Require.js loading call, which fetches all the plugins.
 				require(
 					{
+						context: 'aloha',
 						paths: paths,
 						locale: this.settings.locale || this.defaults.locale || 'en'
 					},
@@ -352,6 +328,19 @@ function ( jQuery, PluginManager ) {
 				Aloha.OSName = 'Linux';
 			}
 
+			try {
+				// this will disable browsers image resizing facilities
+				// disable resize handles
+				if ( document.queryCommandSupported('enableObjectResizing') ) {
+					document.execCommand('enableObjectResizing', false, 'false');
+					Aloha.Log.log('enableObjectResizing disabled.');
+				} else {
+					Aloha.Log.log('enableObjectResizing is not supported.');
+				}
+			} catch (e) {
+				Aloha.Log.error(e, 'Could not disable enableObjectResizing');
+				// this is just for others, who will not support disabling enableObjectResizing
+			}
 			// Forward
 			next();
 		},
@@ -383,30 +372,6 @@ function ( jQuery, PluginManager ) {
 
 			// Forward
 			next();
-		},
-
-		createPromiseEvent: function(eventName) {
-			jQuery('body').createPromiseEvent(eventName);
-		},
-		unbind: function(eventName,eventHandler) {
-			eventName = Aloha.correctEventName(eventName);
-			jQuery('body').unbind(eventName);
-		},
-		bind: function(eventName,eventHandler) {
-			eventName = Aloha.correctEventName(eventName);
-			Aloha.log('debug', this, 'Binding ['+eventName+'], has ['+((jQuery('body').data('events')||{})[eventName]||[]).length+'] events');
-			jQuery('body').bind(eventName,eventHandler);
-		},
-		trigger: function(eventName,data) {
-			eventName = Aloha.correctEventName(eventName);
-			Aloha.log('debug', this, 'Trigger ['+eventName+'], has ['+((jQuery('body').data('events')||{})[eventName]||[]).length+'] events');
-			jQuery('body').trigger(eventName,data);
-		},
-		correctEventName: function(eventName) {
-			var result = eventName.replace(/\-([a-z])/g,function(a,b){
-				return b.toUpperCase();
-			});
-			return result;
 		},
 
 		/**
@@ -556,7 +521,7 @@ function ( jQuery, PluginManager ) {
 		getAlohaUrl: function( suffix ) {
 			// aloha base path is defined by a script tag with 2 data attributes
 			var requireJs = jQuery('[data-aloha-plugins]'),
-				baseUrl = ( requireJs.length ) ? requireJs[0].src.replace( /\/?require.js$/ , '' ) : '';
+				baseUrl = ( requireJs.length ) ? requireJs[0].src.replace( /\/?aloha.js$/ , '' ) : '';
 				
 			return baseUrl;
 		},

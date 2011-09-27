@@ -4,22 +4,20 @@
  * Licensed unter the terms of http://www.aloha-editor.com/license.html
  */
 
-define("command.inserthtml",
-['aloha/jquery', 'testutils'],
-function(aQuery, TestUtils, undefined) {
+define(
+['testutils'],
+function( TestUtils ) {
 	"use strict";
 	
-	if (window.Aloha === undefined || window.Aloha === null) {
-			window.Aloha = {};		
-	}
-
+	var aQuery = Aloha.jQuery;
+	
 	// Test whether Aloha is properly initialized
 	asyncTest( 'Aloha Startup Test', function() {
 		var timeout = setTimeout(function() {
 			ok(false, 'Aloha was not initialized within 60 seconds');
 			start();
 		}, 60000);
-		aQuery( 'body' ).bind( 'aloha',function() {
+		Aloha.ready( function() {
 			clearTimeout( timeout );
 			ok( true, 'Aloha Event was fired' );
 			start();
@@ -27,7 +25,7 @@ function(aQuery, TestUtils, undefined) {
 	});
 
 	// All other tests are done when Aloha is ready
-	aQuery( 'body' ).bind( 'aloha', function() {
+	Aloha.ready( function() {
 
 		var 
 			editable = aQuery( '#edit' ),
@@ -62,8 +60,7 @@ function(aQuery, TestUtils, undefined) {
 					expected = aQuery( '<div>' + check.expected + '</div>' ).contents(),
 					// place the selection (and remove the selection marker)
 					range = TestUtils.rangeFromMarker( editable ),
-					result,
-					Aloha = require('aloha');
+					result;
 				
 				range.select();
 //				var r = Aloha.createRange();

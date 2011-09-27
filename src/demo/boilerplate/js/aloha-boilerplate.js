@@ -1,4 +1,5 @@
-require(['aloha', 'aloha/jquery'], function(Aloha, $) {
+Aloha.require( ['aloha', 'aloha/jquery'], function( Aloha, $) {
+
 //	var $ = window.alohaQuery;
 	$.fn.alohaStage = function() {
 		var switcher = this.find('ul.stage-switcher'),
@@ -55,16 +56,14 @@ require(['aloha', 'aloha/jquery'], function(Aloha, $) {
 		});
 		
 
-		$('body').bind('aloha',function(){
-			Aloha.bind('aloha-editable-activated', function(e,a){
-				if ( a.editable.obj[0].tab ) {
-					a.editable.obj[0].tab.click();
-				}
-			});
-			Aloha.bind('aloha-editable-deactivated', function(e,a){
-				autoplay = setTimeout(showNext, 6000);
-			});
+		Aloha.bind('aloha-editable-activated', function(e,a){
+			if ( a.editable.obj[0].tab ) {
+				a.editable.obj[0].tab.click();
+			}
 		});
-
+		Aloha.bind('aloha-editable-deactivated', function(e,a){
+			autoplay = setTimeout(showNext, 6000);
+		});
 	};
+	$('.stage-area').alohaStage();
 });

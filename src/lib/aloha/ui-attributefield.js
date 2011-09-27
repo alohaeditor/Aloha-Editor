@@ -170,7 +170,7 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 			if ( target && target.context && target.context.style && target.context.style['background-color'] ) {
 				target.attr('data-original-background-color', target.context.style['background-color']);
 			}
-			target.css('background-color','Highlight');
+			target.css('background-color','#80B5F2');
 		},
 		'blur': function(obj, event) {
 			this.finishEditing();

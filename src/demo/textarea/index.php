@@ -31,7 +31,15 @@
 	<meta http-equiv="content-type" content="text/html; charset=utf-8">
 	<title>Aloha, Textarea!</title>
 	
-	<script src="../../lib/require.js" data-main="../../lib/aloha.js" data-aloha-plugins="common/format,common/highlighteditables,common/list,common/undo,common/paste,common/block"></script>
+	<script>
+		var Aloha = {};
+		Aloha.settings = {
+			logLevels: {'error': true, 'warn': true, 'info': true, 'debug': true},
+			errorhandling: false,
+			ribbon: false
+		};
+	</script>
+	<script src="../../lib/aloha.js" data-aloha-plugins="common/format,common/highlighteditables,common/list,common/undo,common/paste,common/block"></script>
 
 	
 	<link rel="stylesheet" href="../../css/aloha.css" id="aloha-style-include" type="text/css">
@@ -78,49 +86,37 @@
 		</div>
 	</div>
 	<script type="text/javascript">
-	require.ready(function() {
+	Aloha.ready( function( ) {
 		// Prepare
-		var	$ = window.alohaQuery,
+		var	$ = Aloha.jQuery,
 			$body = $('body');
 			
-			if (window.Aloha === undefined || window.Aloha === null) {
-				window.Aloha = {};		
-			}
-			window.Aloha.settings = {
-				logLevels: {'error': true, 'warn': true, 'info': true, 'debug': true},
-				errorhandling: false,
-				ribbon: false
-			};
-
 			// Bind to Aloha Ready Event
-			$body.bind('aloha',function(){
-				
-				$('#mahalo').hide();
-				$('#getContents').hide();
-				//$('#aloha').show();
+			$('#mahalo').hide();
+			$('#getContents').hide();
+			//$('#aloha').show();
 
-				$('#aloha').click(function(){
-					$('#content').aloha();
-					$('#mahalo').show();
-					$('#getContents').show();
-					$(this).hide();
-				});
-
-				$('#mahalo').click(function(){
-					$('#content').mahalo();
-					$('#aloha').show();
-					$('#getContents').hide();
-					$(this).hide();
-				});
-
-				$('#getContents').click(function(){
-					var e = Aloha.getEditableById('content');
-					alert(e.getContents());
-				});
-
+			$('#aloha').click(function(){
+				$('#content').aloha();
+				$('#mahalo').show();
+				$('#getContents').show();
+				$(this).hide();
 			});
 
-		})(window);
+			$('#mahalo').click(function(){
+				$('#content').mahalo();
+				$('#aloha').show();
+				$('#getContents').hide();
+				$(this).hide();
+			});
+
+			$('#getContents').click(function(){
+				var e = Aloha.getEditableById('content');
+				alert(e.getContents());
+			});
+
+		});
+	})(window);
 	</script>
 </body>
 </html>

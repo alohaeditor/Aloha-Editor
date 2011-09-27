@@ -17,6 +17,9 @@
 * You should have received a copy of the GNU Affero General Public License
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
+// Ensure GENTICS Namespace
+GENTICS = window.GENTICS || {};
+GENTICS.Utils = GENTICS.Utils || {};
 
 define(
 ['aloha/jquery', 'util/dom', 'util/class', 'aloha/console', 'aloha/rangy-core'],
@@ -107,7 +110,8 @@ GENTICS.Utils.RangeObject = Class.extend({
 	 * @hide
 	 */
 	log: function(message) {
-		console.deprecated( 'Utils.RangeObject', 'log() is deprecated. use console.log() from module "aloha/console" instead.');
+		console.deprecated( 'Utils.RangeObject', 'log() is deprecated. use ' +
+				'console.log() from module "aloha/console" instead: ' + message);
 	},
 
 	/**
@@ -117,7 +121,10 @@ GENTICS.Utils.RangeObject = Class.extend({
 	 * @method
 	 */
 	isCollapsed: function() {
-		return (!this.endContainer || (this.startContainer === this.endContainer && this.startOffset === this.endOffset));
+		return (
+			!this.endContainer || 
+			(this.startContainer === this.endContainer && this.startOffset === this.endOffset)
+		);
 	},
 
 	/**
@@ -227,7 +234,7 @@ GENTICS.Utils.RangeObject = Class.extend({
 		if (!commonAncestorContainer) {
 			// find the crossing between startContainer and endContainer parents (=commonAncestorContainer)
 			if (!(parentsStartContainer.length > 0 && parentsEndContainer.length > 0)) {
-				GENTICS.Utils.RangeObject.prototype.log('could not find commonAncestorContainer');
+				console.warn('could not find commonAncestorContainer');
 				return false;
 			}
 
@@ -242,7 +249,7 @@ GENTICS.Utils.RangeObject = Class.extend({
 		}
 
 		// if everything went well, return true :-)
-		GENTICS.Utils.RangeObject.prototype.log(commonAncestorContainer? 'commonAncestorContainer was set successfully' : 'commonAncestorContainer was calculated successfully');
+		console.debug(commonAncestorContainer? 'commonAncestorContainer was set successfully' : 'commonAncestorContainer was calculated successfully');
 		return true;
 	},
 
@@ -317,11 +324,6 @@ GENTICS.Utils.RangeObject = Class.extend({
 	 */
 	select: function() {
 		var ieRange, endRange, startRange, range, sel;
-
-		// now for the rest of the world
-//		if (Aloha && Aloha.Log.isDebugEnabled()) {
-//			Aloha.Log.debug(this, 'Set selection to current range (non IE version)');
-//		}
 
 		// create a range
 		range = rangy.createRange();
@@ -409,8 +411,7 @@ GENTICS.Utils.RangeObject = Class.extend({
 	 * @hide
 	 */
 	update: function(event) {
-		GENTICS.Utils.RangeObject.prototype.log('==========');
-		GENTICS.Utils.RangeObject.prototype.log('now updating rangeObject');
+		console.debug('now updating rangeObject');
 		this.initializeFromUserSelection(event);
 		this.updateCommonAncestorContainer();
 	},

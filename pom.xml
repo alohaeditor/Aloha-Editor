@@ -37,7 +37,7 @@
                                                         <attach>true</attach>
                                                         <appendAssemblyId>false</appendAssemblyId>
                                                         <descriptors>
-                                                                <descriptor>${project.basedir}/build/maven/package.xml</descriptor>
+                                                                <descriptor>${project.basedir}/build/package.xml</descriptor>
                                                         </descriptors>
                                                 </configuration>
                                         </execution>
@@ -59,7 +59,7 @@
                                         </execution>
                                 </executions>
                                 <configuration>
-                                        <executable>build/bin/update.sh</executable>
+                                        <executable>bin/update-from-git.sh</executable>
                                 </configuration>
                         </plugin>
 

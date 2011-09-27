@@ -10,14 +10,31 @@ endprologue.
 
 h3. Code Conventions
 
-WARNING: The current codebase does not yet follow all of these principles.
+WARNING: The current codebase does not yet follow all of these principles. 
+
+INFO: If you checkout Aloha Editor from github you can use +bin/lint.sh+ to check the code with jslint 
+
+We follow all suggestions in the "jQuery coding style guide":http://docs.jquery.com/JQuery_Core_Style_Guidelines
 
 * We use only the +TAB+ character for indentation.
 * We use +UpperCamelCase+ for class names, and +lowerCamelCase+ for method and property names.
 * Methods and properties that begin with an underscore (+_+) are @private@.
-* Variables which contain *jQuery* elements should be named like +$element+, starting with a @$@.
-* We use +that+ as a name for a closure reference to +this+, but try to avoid it if there's the possibility of scope binding.
-  Unfortunately jQuery's event handlers do not allow easy scope binding.
+* We use variable names that indicate the content of a variable.  
+<javascript>
+
+	var MyObject = Class.extend({
+		// GOOD
+		var myObject = this;
+		setTimeout( function() {
+			console.log( myObject.name + ' done.' );
+		};
+		// BAD
+		var that = this;
+		setTimeout( function() {
+			console.log( that.name + ' done.' );
+		};
+	});
+</javascript>
 
 h3. Code Documentation
 
@@ -46,6 +63,84 @@ function(Dependency) {
 	return exports;
 });
 </javascript>
+
+h3. Classes and Extension Mechanisms
+
+We use the class definition syntax of "John Resig":http://ejohn.org - slightly adjusted. This means you can create a new class with +Class.extend({ ....})+.
+
+The following example shows how to create and instanciate a class, and how the constructor (which must be named +_construct()+) is called.
+
+<javascript>
+var Greeter = Class.extend({
+    name: null,
+
+    _constructor: function(name) {
+        this.name = name;
+    },
+
+    greet: function() {
+        alert('Good Morning ' + this.name);
+    }
+});
+var greeterInstance = new Greeter('Christopher');
+greeterInstance.greet(); // alerts "Good Morning Chistopher"
+</javascript>
+
+Now, if we want to subclass @Greeter@, this is very easy: Just use @Greeter.extend@ for that:
+
+<javascript>
+var GreeterForMen = Greeter.extend({
+	_constructor: function(name) {
+		this._super('Mr. ' + name);
+	}
+});
+var greeterInstance = new GreeterForMen('Christopher');
+greeterInstance.greet(); // alerts "Good Morning Mr. Chistopher"
+</javascript>
+
+You can use +this._super()+ to call the superclass constructor.
+
+h3. Mixin Support
+
+Our class definition also supports mixins, so you can specify multiple arguments to @Class.extend@. For example, in order to make your class observable, you can mix in @core/mixin.Observable@:
+
+WARNING: The following code is not yet correct; it is however the way we want to change Aloha core.
+
+<javascript>
+define(
+['core/mixin'],
+function(mixin) {
+    "use strict";
+
+    return Class.extend(mixin.Observable, {
+    	// your methods here
+    });
+});
+</javascript>
+
+A mixin itself should not use Class.extend, but instead just return a simple object. You see this in the following example:
+
+<javascript filename="core/observable.js">
+define(
+[],
+function() {
+	"use strict";
+	var exports = {};
+
+	exports.Observable = {
+		bind: function(eventType, handler, scope) {
+			// implement method here
+		},
+		trigger: function(eventType) {
+			// implement method here
+		}
+	};
+
+	return exports;
+});
+</javascript>
+
+For a list of current mixins, you can soon check the API doc. Right now, there is only +Observable+.
 
 h3. Classes
 
@@ -108,10 +203,12 @@ All singletons should follow this structure:
 define([],
 function() {
 	"use strict";
-
-	return new (Class.extend({
+	
+	var component = Class.extend({
 		// Class definition here
-	}))();
+	});
+	
+	return new component();
 });
 </javascript>
 

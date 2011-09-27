@@ -423,10 +423,10 @@ function(Aloha, jQuery, Ext, Class) {
 					}
 				}
 			});
-			Aloha.bind('aloha', function() {
+			Aloha.bind('aloha-ready', function() {
 				that.generateComponent();
 				that.initialized = true;
-			})
+			});
 		},
 
 		/**

@@ -4,7 +4,6 @@
 	<meta http-equiv="content-type" content="text/html; charset=utf-8">
 	<title>Aloha, World!</title>
 	
-	<link rel="stylesheet" href="../../css/aloha.css" type="text/css">
 	<link rel="stylesheet" href="index.css" type="text/css">
 
 	<style>
@@ -98,9 +97,8 @@
 			display: block;
 		}
 	</style>
-	<script type="text/javascript" src="js/aloha-config.js" language="javascript"></script>
-	<script type="text/javascript" src="../../lib/require.js" data-main="../../lib/aloha.js" data-aloha-plugins="common/format,common/highlighteditables,common/list,common/link,common/undo,common/paste,common/block"></script>
-	<!-- script type="text/javascript" src="../../plugins/common/link/extra/linklist.js"></script -->
+	<script src="js/aloha-config.js" language="javascript"></script>
+	<script src="../../lib/aloha.js" data-aloha-plugins="common/format,common/highlighteditables,common/list,common/link,common/undo,common/paste,common/block"></script>
 </head>
 <body>
 	<div id="main">
@@ -170,25 +168,15 @@
 	// http://requirejs.org/docs/errors.html#mismatch
 	// ../../plugins/common/link/extra/linklist.js
 
-	require(["aloha/jquery"],
-			function(aQuery) {
-	
-		require.ready(function() {
-			// Prepare
-			var $ = aQuery,
-			$body = $('body');
-		// Bind to Aloha Ready Event
-		$body.bind('aloha',function() {
-			$('#typo3').aloha();
-			$('#typo3span').aloha();
-			$('#title').aloha();
-			$('#teaser').aloha();
-			$('#content').aloha();
-
-		});
-				
-		});
-
+	// Bind to Aloha Ready Event
+	Aloha.ready( function() {
+		var $ = Aloha.jQuery;
+		$('#typo3').aloha();
+		$('#typo3span').aloha();
+		$('#title').aloha();
+		$('#teaser').aloha();
+		$('#content').aloha();
+			
 	});
 	</script>
 </body>

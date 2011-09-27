@@ -4,12 +4,13 @@
  * Licensed unter the terms of http://www.aloha-editor.com/license.html
  */
 // Start Closure
-define(
-[
-	'aloha/jquery',
-],
+// Ensure GENTICS Namespace
+GENTICS = window.GENTICS || {};
+GENTICS.Utils = GENTICS.Utils || {};
+define(['aloha/jquery'],
 function(jQuery) {
 	"use strict";
+	
 	var
 		$ = jQuery,
 		GENTICS = window.GENTICS,
@@ -140,5 +141,18 @@ GENTICS.Utils.Position.addMouseMoveCallback = function (callback) {
 	this.mouseMoveCallbacks.push(callback);
 	return (this.mouseMoveCallbacks.length - 1);
 };
+
+
+// Mousemove Hooks
+jQuery(function () {
+	setInterval(function (){
+		GENTICS.Utils.Position.update();
+	}, 500);
+});
+
+jQuery('html').mousemove(function (e) {
+	GENTICS.Utils.Position.Mouse.x = e.pageX;
+	GENTICS.Utils.Position.Mouse.y = e.pageY;
+});
 
 });

@@ -153,8 +153,19 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 				window.clearTimeout(this.updateSelectionTimeout);
 				this.updateSelectionTimeout = undefined;
 			}
+			//we have to work around an IE bug that causes the user
+			//selection to be incorrectly set on the body element when
+			//the updateSelectionTimeout triggers. We remember the range
+			//from the time when this onChange is triggered and provide
+			//it instead of the current user selection when the timout
+			//is triggered. The bug is caused by selecting some text and
+			//then clicking once inside the selection (which collapses
+			//the selection). Interesting fact: when the timeout is
+			//increased to 500 milliseconds, the bug will not cause any
+			//problems since the selection will correct itself somehow.
+			var range = new Aloha.Selection.SelectionRange(true);
 			this.updateSelectionTimeout = window.setTimeout(function () {
-					Aloha.Selection.updateSelection(event);
+				Aloha.Selection._updateSelection(event, range);
 			}, 5);
 		},
 
@@ -184,16 +195,27 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		 * @hide
 		 */
 		updateSelection: function(event) {
-			// get the rangeObject
+			return this._updateSelection(event, null);
+		},
 
+		/**
+		 * Internal version of updateSelection that adds the range parameter to be
+		 * able to work around an IE bug that caused the current user selection
+		 * sometimes to be on the body element.
+		 * @param range a substitute for the current user selection. if not provided,
+		 *   the current user selection will be used.
+		 * @hide
+		 */
+		_updateSelection: function(event, range) {
 			if (event !== undefined && event.originalEvent !== undefined &&
 					event.originalEvent.stopSelectionUpdate === true) {
 				return false;
 			}
-			var rangeObject = this.rangeObject = new Aloha.Selection.SelectionRange(true);
+
+			this.rangeObject = range || new Aloha.Selection.SelectionRange(true);
 
 			// find the CAC (Common Ancestor Container) and update the selection Tree
-			rangeObject.update();
+			this.rangeObject.update();
 
 			// check if aloha-selection-changed event has been prevented
 			if (this.isSelectionChangedPrevented()) {
@@ -210,7 +232,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 
 			// throw the event that the selection has changed. Plugins now have the
 			// chance to react on the chancurrentElements[childCount].children.lengthged selection
-			Aloha.trigger('aloha-selection-changed', [ rangeObject, event ]);
+			Aloha.trigger('aloha-selection-changed', [ this.rangeObject, event ]);
 
 			return true;
 		},

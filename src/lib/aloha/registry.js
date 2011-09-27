@@ -41,12 +41,15 @@ function(jQuery, Observable) {
 			delete this._entries[id];
 			this.trigger('unregister', oldEntry, id);
 		},
+		
 		get: function(id) {
 			return this._entries[id];
 		},
+		
 		has: function(id) {
 			return (this._entries[id] ? true : false);
 		},
+		
 		getEntries: function() {
 			// clone the entries so the user does not accidentally modify our _entries object.
 			return jQuery.extend({}, this._entries);

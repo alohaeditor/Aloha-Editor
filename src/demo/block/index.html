@@ -43,9 +43,8 @@
 		};
 	</script>
 
-	<script src="../../lib/require.js" data-main="../../lib/aloha.js" data-aloha-plugins="common/format,common/block,user/blockdemo,common/paste"></script>
+	<script src="../../lib/aloha.js" data-aloha-plugins="common/format,common/block,user/blockdemo,common/paste"></script>
 
-	<link rel="stylesheet" href="../../css/aloha.css" type="text/css">
 	<link rel="stylesheet" href="index.css" type="text/css">
 
 	<style>
@@ -153,12 +152,12 @@
 		</div>
 	</div>
 	<script type="text/javascript">
-		require(['aloha', 'aloha/jquery'], function(Aloha, $) {
-			$('#title').aloha();
-			$('#teaser').aloha();
-			$('#content').aloha();
-			$('.textcontent').aloha();
-		});
+	Aloha.ready( function() {
+		Aloha.jQuery('#title').aloha();
+		Aloha.jQuery('#teaser').aloha();
+		Aloha.jQuery('#content').aloha();
+		Aloha.jQuery('.textcontent').aloha();
+	});
 	</script>
 </body>
 </html>

@@ -22,14 +22,20 @@ index:
   order:
     - "Start Here"
     - "Plugins"
-    - "Contributing to Aloha"
+    - "Contributing to Aloha Editor"
   Start Here:
     - title: "Using Aloha Editor"
       url: using_aloha
-      text: "Learn how to embed Aloha Editor and make your content editable and how to use and configure Aloha plugins."
+      text: "Learn how to embed Aloha Editor and make your content editable and how to use and configure Aloha Editor plugins."
+    - title: "Developing and building Aloha Editor"
+      url: develop_aloha
+      text: "Learn how to develop or make a custom build of Aloha Editor."
+    - title: "Aloha dependency management with requireJS"
+      url: require
+      text: "In this guide, we will explain how dependencies are managed with Aloha Editor."
     - title: "Writing Plugins"
       url: writing_plugins
-      text: "In this guide, we will explain the plugin structure, the usage of requireJS and the plugin lifecylce in Aloha."
+      text: "In this guide, we will explain the plugin structure, the usage of requireJS and the plugin lifecylce in Aloha Editor."
   Plugins:
     - title: "Block"
       url: plugin_block
@@ -37,7 +43,7 @@ index:
     - title: "Image"
       url: plugin_image
       text: "Learn how to use and extend the block plugin for advanced content editing."
-  Contributing to Aloha:
+  Contributing to Aloha Editor:
     - title: Development Process
       url: development_process
       text: "Everything about the Aloha Editor development process and being a good contributor."

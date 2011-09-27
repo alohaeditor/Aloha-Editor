@@ -1,0 +1,29 @@
+h2. Using Aloha Editor
+
+After reading this guide, you will be able to:
+
+* Prepare your development envireonment 
+* build your custom Aloha Editor
+
+endprologue.
+
+h3. Clone from Github
+
+NOTE: You should know how to work with git before continuing.
+
+First of all you have to get your copy of the Aloha Editor. Just clone our "Github repository":http://github.com/alohaeditor/Aloha-Editor:
+WARNING: fork Aloha Editor before doing anything ;-)
+
+<shell>
+git clone git@github.com:YOURNAME/Aloha-Editor.git alohaeditor
+cd alohaeditor
+git checkout dev
+git submodule init
+git submodule update
+git submodule foreach --recursive git submodule update --init
+</shell>
+
+
+h3. Changelog
+
+* July 3, 2011: Initial version by "Sebastian Kurfürst":credits.html#skurfuerst and "Christopher Hlubek":credits.html#hlubek

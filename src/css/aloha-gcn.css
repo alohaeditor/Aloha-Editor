@@ -1,0 +1,18 @@
+.aloha-editicon {
+	position: absolute;
+	margin-left: -34px;
+	display: none;
+}
+.aloha-editicon img {
+	width: 18px;
+	height: 18px;
+}
+.aloha-block .aloha-block .aloha-editicon {
+	margin-top: 15px;
+}
+.aloha-block .aloha-block .aloha-block .aloha-editicon {
+	margin-top: 30px;
+}
+.aloha-block .aloha-block .aloha-block .aloha-block .aloha-editicon {
+	margin-top: 45px;
+}

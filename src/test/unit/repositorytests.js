@@ -4,44 +4,47 @@
  * Licensed unter the terms of http://www.aloha-editor.com/license.html
  */
 
-define('repositorytests',
-[ 'aloha/core', 'aloha/jquery', 'aloha/repository', 'aloha/repositorymanager'],
-function(Aloha, aQuery, repository, Manager) {
-	
+define(
+[],
+function() {
 	'use strict';
 	
-	function str (str) {
-		return str.replace(/\s+/g, ' ');
-	};
-	
-	// Test whether Aloha is properly initialized
-	asyncTest('Aloha Startup Test', function() {
-		var timeout = setTimeout(function() {
-			ok(false, 'Aloha was not initialized within 60 seconds');
-			start();
-		}, 60000);
-		aQuery('body').bind('aloha', function() {
-			clearTimeout(timeout);
-			ok(true, 'Aloha Event was fired');
-			start();
-		});
-	});
-	
-	var repositoryId1 = 'testRepo1';
-	var repositoryId2 = 'testRepo2';
-	var timeout = 5000;
-	var testOrder = [
+	var repositoryId1 = 'testRepo1',
+		repositoryId2 = 'testRepo2',
+		timeout = 5000,
+		manager,
+		repository,
+		testOrder = [
 		runBasicTests,
 		runGetChildrenTests,
 		runQueryTests,
 		runQueryResponseTests,
 		runOverlappingQueryTests
 	];
+		
+	function str (str) {
+		return str.replace(/\s+/g, ' ');
+	};
 	
-	// All other tests are done when Aloha is ready
-	aQuery('body').bind('aloha', function () {
-		runNextTest()
+	// Test whether Aloha can load modules
+	asyncTest('Aloha.require repository modules.', function() {
+		var timeout = setTimeout(function() {
+			ok(false, 'Aloha was not initialized within 60 seconds');
+			start();
+		}, 10000);
+		// All other tests are done when Aloha is ready
+		Aloha.require( ['aloha/repository', 'aloha/repositorymanager'],
+				function ( Repository, Manager ) {
+			manager = Manager;
+			repository = Repository;
+			Aloha.ready( runNextTest );
+			clearTimeout(timeout);
+			ok(true, 'Aloha Event was fired');
+			start();
+		});
 	});
+	
+
 	
 	function runNextTest () {
 		if ( testOrder.length ) {
@@ -59,7 +62,7 @@ function(Aloha, aQuery, repository, Manager) {
 			'Test Aloha.RepositoryManager startup state',
 			function () {
 				equal(
-					Manager.repositories.length, 0,
+					manager.repositories.length, 0,
 					'Check that repository manager contains 0 registered ' +
 					'repository.'
 				);
@@ -114,13 +117,13 @@ function(Aloha, aQuery, repository, Manager) {
 			'Test registering of repository',
 			function () {
 				equal(
-					Manager.repositories.length, 1,
+					manager.repositories.length, 1,
 					'Check that repository manager contains 1 registered ' +
 					'repository.'
 				);
 				
 				equal(
-					Manager.repositories[0] && Manager.repositories[0].repositoryId, repositoryId1,
+					manager.repositories[0] && manager.repositories[0].repositoryId, repositoryId1,
 					'Check that the id of the first registered repository is "'
 					+ repositoryId1 + '."'
 				);
@@ -138,7 +141,7 @@ function(Aloha, aQuery, repository, Manager) {
 			function () {
 				var starttime = new Date;
 				
-				Manager.getChildren({
+				manager.getChildren({
 					// Make the repository repsond 1 second too late
 					delay : timeout + 1000,
 				}, function (response) {
@@ -174,7 +177,7 @@ function(Aloha, aQuery, repository, Manager) {
 					
 					starttime = new Date;
 					
-					Manager.getChildren({
+					manager.getChildren({
 						// Make sure the repository finish before the timeout
 						delay : timeout / 2
 					}, function (response) {
@@ -206,7 +209,7 @@ function(Aloha, aQuery, repository, Manager) {
 			function () {
 				var starttime = new Date;
 				
-				Manager.query({
+				manager.query({
 					delay : timeout + 1000,
 				}, function (response) {
 					var elapsed = (new Date) - starttime;
@@ -236,7 +239,7 @@ function(Aloha, aQuery, repository, Manager) {
 					
 					starttime = new Date;
 					
-					Manager.query({
+					manager.query({
 						delay : timeout / 2
 					}, function (response) {
 						var elapsed = ((new Date ) - starttime);
@@ -265,7 +268,7 @@ function(Aloha, aQuery, repository, Manager) {
 		asyncTest(
 			'Test response object for Aloha.RepositoryManager.query method',
 			function () {
-				Manager.query({
+				manager.query({
 					maxItems : 0
 				}, function (response) {
 					ok(
@@ -287,7 +290,7 @@ function(Aloha, aQuery, repository, Manager) {
 					
 					var numItemsToFetch = Math.round(Math.random() * 100);
 					
-					Manager.query({
+					manager.query({
 						maxItems: numItemsToFetch
 					}, function (response) {
 						equal(
@@ -320,7 +323,7 @@ function(Aloha, aQuery, repository, Manager) {
 				
 				++numOpenQueries;
 				stop();
-				Manager.query({
+				manager.query({
 					delay    : timeout + 2000,
 					maxItems : 3
 				}, function (response) {
@@ -346,7 +349,7 @@ function(Aloha, aQuery, repository, Manager) {
 				++numOpenQueries;
 				stop();
 				setTimeout(function () {
-					Manager.query({
+					manager.query({
 						delay  : timeout - 100,
 						maxItems : 2
 					}, function (response) {
@@ -372,7 +375,7 @@ function(Aloha, aQuery, repository, Manager) {
 				// Before the previous query is complete, start another query
 				++numOpenQueries;
 				stop();
-				Manager.query({
+				manager.query({
 					maxItems : 4
 				}, function (response) {
 					equal(
@@ -419,19 +422,19 @@ function(Aloha, aQuery, repository, Manager) {
 			'Test that we have 2 repositories registered',
 			function () {
 				equal(
-					Manager.repositories.length, 2,
+					manager.repositories.length, 2,
 					'Check that repository manager contains 2 registered ' +
 					'repositories.'
 				);
 				
 				equal(
-					Manager.repositories[1] && Manager.repositories[1].repositoryId, repositoryId2,
+					manager.repositories[1] && manager.repositories[1].repositoryId, repositoryId2,
 					'Check that the id of the second registered repository ' +
 					'is "' + repositoryId2 + '."'
 				);
 				
 				equal(
-					Manager.repositories[0] && Manager.repositories[0].repositoryId, repositoryId1,
+					manager.repositories[0] && manager.repositories[0].repositoryId, repositoryId1,
 					'Check that the id of the first registered repository is' +
 					' still "' + repositoryId1 + '."'
 				);
@@ -444,7 +447,7 @@ function(Aloha, aQuery, repository, Manager) {
 			'Test queries to multiple repositories through the repository manager',
 			function () {
 				stop();
-				Manager.query({
+				manager.query({
 					maxItems : 2
 				}, function (response) {
 					equal(
@@ -457,7 +460,7 @@ function(Aloha, aQuery, repository, Manager) {
 				});
 				
 				stop();
-				Manager.query({
+				manager.query({
 					delay    : timeout + 500,
 					maxItems : 5
 				}, function (response) {

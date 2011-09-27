@@ -154,6 +154,8 @@ define([
 	// Only instance properties are to be defined here
 	// ------------------------------------------------------------------------
 	var Sidebar = function Sidebar (opts) {
+		var sidebar = this;
+		
 		this.id = nsClass(++uid);
 		this.panels = {};
 		this.container = $(renderTemplate('				\
@@ -181,7 +183,10 @@ define([
 			overlayPage : true
 		};
 		
-		this.init(opts);
+		// Initialize after dom is ready
+		$(function() { 
+			sidebar.init(opts);
+		});
 	};
 	
 	// ------------------------------------------------------------------------
@@ -1121,11 +1126,11 @@ define([
 		width	 : 250 // TODO define in config
 	});
 	
-	Aloha.Sidebars = {
+	Aloha.Sidebar = {
 		left  : left,
 		right : right
 	};
 	
-	return Sidebar;
+	return Aloha.Sidebar;
 	
 });

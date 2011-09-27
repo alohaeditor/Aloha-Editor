@@ -7,12 +7,12 @@
 window.TestUtils = window.TestUtils || {};
 
 define(
-		['aloha/jquery', 'aloha/selection', 'util/range'],
-		function(jQuery, Selection, Range) {
+		[],
+		function() {
 			"use strict";
 			
+			// load Aloha objects from require context 'aloha'
 			var	
-				$ = jQuery,
 				Node = {
 			    		'ELEMENT_NODE' : 1,
 			    		'ATTRIBUTE_NODE': 2,
@@ -183,7 +183,7 @@ define(
 			var 
 				text,
 				offset,
-				rangeObject = new Selection.SelectionRange();
+				rangeObject = new Aloha.Selection.SelectionRange();
 
 			editable.textNodes().filter(function() {
 				return this.nodeType == 3 && this.nodeValue.indexOf('[') >= 0;
@@ -213,7 +213,7 @@ define(
 		 */
 		markerFromSelection : function () {
 			var 
-				range = new Range(),
+				range = new GENTICS.Utils.RangeObject(),
 				insertMarker = 	function (node,offset,marker) {
 					var
 						text;

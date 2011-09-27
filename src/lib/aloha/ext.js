@@ -18,32 +18,15 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-define(
-	[
-	 	'vendor/ext-3.2.1/ext-all'  // TODO for now, we use ext-all (because it is converted to a proper require module, with dependencies)
-	],
-	function() {
-		"use strict";
-
-		// using require instead of define will prevent loading errors
-		require([
-	        'css!vendor/ext-3.2.1/resources/css/ext-all.css',
-	 		'css!vendor/ext-3.2.1/resources/css/xtheme-gray.css'
-        ]);
-		
-		// Ext seems to have an onClick handler that uses
-		// QuickTips, but the handler doesn't initialize
-		// QuickTips and therefore causes an error.
-		// The bug occurred with the Gentics Content Node
-		// integration, but if it's really a bug in Ext, then
-		// it's a good idea to always initialize QuickTips here.
-		Ext.QuickTips.init();
-		
-		if ( window.alohaExt ) {
-			return window.alohaExt;
-		}
-
-		// set alohaExt to Ext
-		return window.alohaExt = window.Ext;
-	}
-);
+define('aloha/ext',[], function() {
+	
+	// Ext seems to have an onClick handler that uses
+	// QuickTips, but the handler doesn't initialize
+	// QuickTips and therefore causes an error.
+	// The bug occurred with the Gentics Content Node
+	// integration, but if it's really a bug in Ext, then
+	// it's a good idea to always initialize QuickTips here.
+	Ext.QuickTips.init();
+	
+	return Ext; 
+});

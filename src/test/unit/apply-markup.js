@@ -4,105 +4,84 @@
  * Licensed unter the terms of http://www.aloha-editor.com/license.html
  */
 
-define("applymarkup",
-['aloha/jquery','testutils'],
-function(jQuery, TestUtils, undefined) {
+define( ['testutils'], function( TestUtils ) {
 	"use strict";
+
+	/**
+	 * Do an markup test
+	 * @param editable the editable
+	 * @param startContainer
+	 * @param startOffset
+	 * @param endContainer
+	 * @param endOffset
+	 * @param markup markup to be applied
+	 * @param original reference
+	 * @param reference result selector
+	 * @param nesting true if nesting of markup shall be allowed
+	 */
+	function doMarkupTest(editable, startContainer, startOffset, endContainer, endOffset, markup, original, reference, nesting) {
+		// generate the range
+		var range = TestUtils.generateRange(startContainer, startOffset, endContainer, endOffset);
 	
-	var $ = jQuery;
-
-/**
- * Do an markup test
- * @param editable the editable
- * @param startContainer
- * @param startOffset
- * @param endContainer
- * @param endOffset
- * @param markup markup to be applied
- * @param original reference
- * @param reference result selector
- * @param nesting true if nesting of markup shall be allowed
- */
-function doMarkupTest(editable, startContainer, startOffset, endContainer, endOffset, markup, original, reference, nesting) {
-	// generate the range
-	var range = TestUtils.generateRange(startContainer, startOffset, endContainer, endOffset);
-
-	// apply the markup
-	TestUtils.applyMarkup(editable, range, markup, nesting);
-
-	// get the result
-	var result = Aloha.editables[0].getContents(true);
-
-	// get the expected results
-	var expected = $(reference).contents();
-
-	// compare the result with the expected result
-	deepEqual(result.extractHTML(), expected.extractHTML(), 'Check Operation Result');
-
-/*
-	// now apply the markup a second time
-	TestUtils.applyMarkup(editable, range, markup, nesting);
-
-	// get the expected results
-	expected = $(original).contents();
-
-	// compare the result with the expected result
-	deepEqual(result.extractHTML(), expected.extractHTML(), 'Check Double Operation Result');
-*/
-}
-
-/**
- * Do a block markup test
- * @param editable the editable
- * @param startContainer
- * @param startOffset
- * @param endContainer
- * @param endOffset
- * @param markup markup to be applied
- * @param original reference
- * @param reference result selector
- */
-function doBlockTest(editable, startContainer, startOffset, endContainer, endOffset, markup, original, reference) {
-	// generate the range
-	var range = TestUtils.generateRange(startContainer, startOffset, endContainer, endOffset);
-
-	// change the block markup
-    Aloha.Selection.changeMarkupOnSelection(markup);
-
-	// get the result
-	var result = Aloha.editables[0].getContents(true);
-
-	// get the expected results
-	var expected = $(reference).contents();
-
-	// compare the result with the expected result
-	deepEqual(result.extractHTML(), expected.extractHTML(), 'Check Operation Result');
-}
-
-	// Prepare
-	var	$ = window.jQuery,
-		$body = $('body');
-
-
-	// Test whether Aloha is properly initialized
-	asyncTest('Aloha Startup Test', function() {
-		$('body').bind('aloha',function() {
-			ok(true, 'Aloha Event was fired');
-			start();
-		});
-		setTimeout(function() {
-			ok(false, 'Aloha was not initialized within 60 seconds');
-			start();
-		}, 60000);
-	});
+		// apply the markup
+		TestUtils.applyMarkup(editable, range, markup, nesting);
+	
+		// get the result
+		var result = Aloha.editables[0].getContents(true);
+	
+		// get the expected results
+		var expected = Aloha.jQuery(reference).contents();
+	
+		// compare the result with the expected result
+		deepEqual(result.extractHTML(), expected.extractHTML(), 'Check Operation Result');
+	
+	/*
+		// now apply the markup a second time
+		TestUtils.applyMarkup(editable, range, markup, nesting);
+	
+		// get the expected results
+		expected = Aloha.jQuery(original).contents();
+	
+		// compare the result with the expected result
+		deepEqual(result.extractHTML(), expected.extractHTML(), 'Check Double Operation Result');
+	*/
+	};
+	
+	/**
+	 * Do a block markup test
+	 * @param editable the editable
+	 * @param startContainer
+	 * @param startOffset
+	 * @param endContainer
+	 * @param endOffset
+	 * @param markup markup to be applied
+	 * @param original reference
+	 * @param reference result selector
+	 */
+	function doBlockTest(editable, startContainer, startOffset, endContainer, endOffset, markup, original, reference) {
+		// generate the range
+		var range = TestUtils.generateRange(startContainer, startOffset, endContainer, endOffset);
+	
+		// change the block markup
+	    Aloha.Selection.changeMarkupOnSelection(markup);
+	
+		// get the result
+		var result = Aloha.editables[0].getContents(true);
+	
+		// get the expected results
+		var expected = Aloha.jQuery(reference).contents();
+	
+		// compare the result with the expected result
+		deepEqual(result.extractHTML(), expected.extractHTML(), 'Check Operation Result');
+	};
 
 	// All other tests are done when Aloha is ready
-	$('body').bind('aloha', function() {
+	Aloha.ready( function() {
 		module('Plaintext Markup Handling', {
 			setup: function() {
 				// get the editable area and the reference
-				this.edit = $('#edit');
-				this.ref = $('#ref-plaintext');
+				this.edit = Aloha.jQuery('#edit');
+				this.ref = Aloha.jQuery('#ref-plaintext');
 				// fill the editable area with the reference
 				this.edit.html(this.ref.html());
 				// aloha'fy the editable
@@ -132,8 +111,8 @@ function doBlockTest(editable, startContainer, startOffset, endContainer, endOff
         module('Cross Markup Handling', {
 			setup: function() {
 				// get the editable area and the reference
-				this.edit = $('#edit');
-				this.ref = $('#ref-crossmarkup');
+				this.edit = Aloha.jQuery('#edit');
+				this.ref = Aloha.jQuery('#ref-crossmarkup');
 				// fill the editable area with the reference
 				this.edit.html(this.ref.html());
 				// aloha'fy the editable
@@ -208,8 +187,8 @@ function doBlockTest(editable, startContainer, startOffset, endContainer, endOff
 		module('Header Handling', {
 			setup: function() {
 				// get the editable area and the reference
-				this.edit = $('#edit');
-				this.ref = $('#ref-header');
+				this.edit = Aloha.jQuery('#edit');
+				this.ref = Aloha.jQuery('#ref-header');
 				// fill the editable area with the reference
 				this.edit.html(this.ref.html());
 				// aloha'fy the editable

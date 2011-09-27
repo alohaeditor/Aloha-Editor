@@ -110,26 +110,16 @@ function( Aloha, Selection, jQuery ) {
 	 * @api
 	 */
 	jQuery.fn.aloha = function() {
-		// Prepare
-		var $body = jQuery('body'), $this = jQuery(this);
+		var $this = jQuery( this );
 
-		// Check
-		if ( $body.firedPromiseEvent('aloha') ) {
-			// Aloha Ready
-			$this.each(function() {
-				// create a new aloha editable object for each queried object
-				var $this = jQuery(this);
-				if ( !Aloha.isEditable(this) ) {
-					new Aloha.Editable($this);
+		Aloha.bind( 'aloha-ready', function() {
+			$this.each( function() {
+				// create a new aloha editable object for each passed object
+				if ( !Aloha.isEditable( this ) ) {
+					new Aloha.Editable( jQuery( this ) );
 				}
 			});
-		}
-		else {
-			// Aloha Not Ready
-			$body.bind('aloha',function(){
-				$this.aloha();
-			});
-		}
+		});
 
 		// Chain
 		return $this;
