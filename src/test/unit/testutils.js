@@ -6,7 +6,7 @@
 
 window.TestUtils = window.TestUtils || {};
 
-define(	['ecma5'],	function() {
+define(	['./ecma5'],	function() {
 			"use strict";
 			
 			var	
