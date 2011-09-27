@@ -7,6 +7,12 @@ if [ "$1" != "" ]; then
 	TARGET="$1"
 	TMP="$SCRIPT/../tmp/$TARGET"
 	OUT="$SCRIPT/../out/$TARGET"
+	
+	#check if out dir exists
+	if [ ! -d "$SCRIPT/../out" ]; then
+		mkdir "$SCRIPT/../out"
+	fi
+	
 	if [ -d "$SCRIPT/../build/$TARGET" ]; then
 		# Clean existing dirs
 		if [ -d "$TMP" ]; then
