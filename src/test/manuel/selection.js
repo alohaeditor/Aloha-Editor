@@ -1,0 +1,1 @@
+Aloha.require( [ 'aloha', 'aloha/jquery' ], function ( Aloha, jQuery ) {var testArea = jQuery( '#aloha-selection-area' );var viewArea = jQuery( '#aloha-selection-view' );testArea.mouseup( handleMouseUp );});function handleMouseUp ( ev ) {	console.log( ev );};
