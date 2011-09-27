@@ -1,15 +1,17 @@
 <!DOCTYPE html>
+
 <html lang="en">
+
 <head>
 	<meta charset="UTF-8" />
+	
 	<title>Aloha Editor Manuel Selection Tests</title>
-	<script type="text/javascript" src="../vendor/jquery-1.5.1.js"></script>
-	<!-- include aloha -->
-	<script>
-		var Aloha = {};
-	</script>
+	
+	<script>var Aloha = {};</script>
+	<script src="../vendor/jquery-1.5.1.js"></script>
 	<script src="../../lib/aloha.js" data-aloha-plugins=""></script>
 	<script src="selection.js"></script>
+	
 	<style>
 		body {
 			background: #f0f0f0;
@@ -22,6 +24,7 @@
 			float: left;
 			width: 45%;
 			height: 400px;
+			padding: 10px;
 			background: #fff;
 			border: 1px solid #ccc;
 		}
@@ -30,11 +33,11 @@
 		}
 	</style>
 </head>
+
 <body>
 	<h1>Aloha Editor Manuel Selection Tests</h1>
-	<div id="aloha-selection-area">
-	</div>
-	<div id="aloha-selection-view">
-	</div>
+	<div id="aloha-selection-area" contenteditable="true"></div>
+	<div id="aloha-selection-view"></div>
 </body>
+
 </html>
