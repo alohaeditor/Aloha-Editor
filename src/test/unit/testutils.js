@@ -6,43 +6,37 @@
 
 window.TestUtils = window.TestUtils || {};
 
-define(
-		[],
-		function() {
+define(	['ecma5'],	function() {
 			"use strict";
 			
-			// load Aloha objects from require context 'aloha'
 			var	
-				Node = {
-			    		'ELEMENT_NODE' : 1,
-			    		'ATTRIBUTE_NODE': 2,
-			    		'TEXT_NODE': 3,
-			    		'CDATA_SECTION_NODE': 4,
-			    		'ENTITY_REFERENCE_NODE': 5,
-			    		'ENTITY_NODE': 6,
-			    		'PROCESSING_INSTRUCTION_NODE': 7,
-			    		'COMMENT_NODE': 8,
-			    		'DOCUMENT_NODE': 9,
-			    		'DOCUMENT_TYPE_NODE': 10,
-			    		'DOCUMENT_FRAGMENT_NODE': 11,
-			    		'NOTATION_NODE': 12,
-			    		//The two nodes are disconnected. Order between disconnected nodes is always implementation-specific.
-			    		'DOCUMENT_POSITION_DISCONNECTED': 0x01,
-			    		//The second node precedes the reference node.
-			    		'DOCUMENT_POSITION_PRECEDING': 0x02, 
-			    		//The node follows the reference node.
-			    		'DOCUMENT_POSITION_FOLLOWING': 0x04,
-			    		//The node contains the reference node. A node which contains is always preceding, too.
-			    		'DOCUMENT_POSITION_CONTAINS': 0x08,
-			    		//The node is contained by the reference node. A node which is contained is always following, too.
-			    		'DOCUMENT_POSITION_CONTAINED_BY': 0x10,
-			    		//The determination of preceding versus following is implementation-specific.
-			    		'DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC': 0x20
-			    	};
-
-			
-			
-	
+				jQuery = Aloha.jQuery,
+		    	Node = {
+		    		'ELEMENT_NODE' : 1,
+		    		'ATTRIBUTE_NODE': 2,
+		    		'TEXT_NODE': 3,
+		    		'CDATA_SECTION_NODE': 4,
+		    		'ENTITY_REFERENCE_NODE': 5,
+		    		'ENTITY_NODE': 6,
+		    		'PROCESSING_INSTRUCTION_NODE': 7,
+		    		'COMMENT_NODE': 8,
+		    		'DOCUMENT_NODE': 9,
+		    		'DOCUMENT_TYPE_NODE': 10,
+		    		'DOCUMENT_FRAGMENT_NODE': 11,
+		    		'NOTATION_NODE': 12,
+		    		//The two nodes are disconnected. Order between disconnected nodes is always implementation-specific.
+		    		'DOCUMENT_POSITION_DISCONNECTED': 0x01,
+		    		//The second node precedes the reference node.
+		    		'DOCUMENT_POSITION_PRECEDING': 0x02, 
+		    		//The node follows the reference node.
+		    		'DOCUMENT_POSITION_FOLLOWING': 0x04,
+		    		//The node contains the reference node. A node which contains is always preceding, too.
+		    		'DOCUMENT_POSITION_CONTAINS': 0x08,
+		    		//The node is contained by the reference node. A node which is contained is always following, too.
+		    		'DOCUMENT_POSITION_CONTAINED_BY': 0x10,
+		    		//The determination of preceding versus following is implementation-specific.
+		    		'DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC': 0x20
+		    };
 	/**
 	 * TestUtils class
 	 */
@@ -213,7 +207,7 @@ define(
 		 */
 		markerFromSelection : function () {
 			var 
-				range = new GENTICS.Utils.RangeObject(),
+				range = new Aloha.RangeObject(),
 				insertMarker = 	function (node,offset,marker) {
 					var
 						text;
@@ -232,17 +226,179 @@ define(
 			insertMarker(range.startContainer, range.startOffset, '[');
 		},
 		
+		addRange: function ( editable ) {
+				function nextNode(node) {
+					if (node.hasChildNodes()) {
+						return node.firstChild;
+					}
+					return nextNodeDescendants(node);
+				};
+				function nextNodeDescendants(node) {
+					while (node && !node.nextSibling) {
+						node = node.parentNode;
+					}
+					if (!node) {
+						return null;
+					}
+					return node.nextSibling;
+				};
+				function getNodeIndex(node) {
+					var ret = 0;
+					while (node.previousSibling) {
+						ret++;
+						node = node.previousSibling;
+					}
+					return ret;
+				};
+				var html = editable.html();
+				// A variety of checks to avoid simple errors.  Not foolproof, of course.
+				var re = /\{|\[|data-start/g;
+				var markers = [];
+				var marker;
+				while (marker = re.exec(html)) {
+					markers.push(marker);
+				}
+				if (markers.length != 1) {
+					throw "Need exactly one start marker ([ or { or data-start), found " + markers.length;
+				}
+
+				var re = /\}|\]|data-end/g;
+				var markers = [];
+				var marker;
+				while (marker = re.exec(html)) {
+					markers.push(marker);
+				}
+				if (markers.length != 1) {
+					throw "Need exactly one end marker (] or } or data-end), found " + markers.length;
+				}
+
+				var node = editable[0];
+
+				var startNode, startOffset, endNode, endOffset;
+
+				// For braces that don't lie inside text nodes, we can't just set
+				// innerHTML, because that might disturb the DOM.  For instance, if the
+				// brace is right before a <tr>, it could get moved outside the table
+				// entirely, which messes everything up pretty badly.  So we instead
+				// allow using data attributes: data-start and data-end on the start and
+				// end nodes, with a numeric value indicating the offset.  This format
+				// doesn't allow the parent div to be a start or end node, but in that case
+				// you can always use the curly braces.
+				if (node.querySelector("[data-start]")) {
+					startNode = node.querySelector("[data-start]");
+					startOffset = startNode.getAttribute("data-start");
+					startNode.removeAttribute("data-start");
+				}
+				if (node.querySelector("[data-end]")) {
+					endNode = node.querySelector("[data-end]");
+					endOffset = endNode.getAttribute("data-end");
+					endNode.removeAttribute("data-end");
+				}
+
+				var cur = node;
+				while (true) {
+					if (!cur || (cur != node && !(compareDocumentPosition(cur, node) & Node.DOCUMENT_POSITION_CONTAINS))) {
+						break;
+					}
+
+					if (cur.nodeType != Node.TEXT_NODE) {
+						cur = nextNode(cur);
+						continue;
+					}
+
+					var data = cur.data.replace(/\]/g, "");
+					var startIdx = data.indexOf("[");
+
+					data = cur.data.replace(/\[/g, "");
+					var endIdx = data.indexOf("]");
+
+					cur.data = cur.data.replace(/[\[\]]/g, "");
+
+					if (startIdx != -1) {
+						startNode = cur;
+						startOffset = startIdx;
+					}
+
+					if (endIdx != -1) {
+						endNode = cur;
+						endOffset = endIdx;
+					}
+
+					// These are only legal as the first or last
+					data = cur.data.replace(/\}/g, "");
+					var elStartIdx = data.indexOf("{");
+
+					data = cur.data.replace(/\{/g, "");
+					var elEndIdx = data.indexOf("}");
+
+					if (elStartIdx == 0) {
+						startNode = cur.parentNode;
+						startOffset = getNodeIndex(cur);
+					} else if (elStartIdx != -1) {
+						startNode = cur.parentNode;
+						startOffset = getNodeIndex(cur) + 1;
+					}
+					if (elEndIdx == 0) {
+						endNode = cur.parentNode;
+						endOffset = getNodeIndex(cur);
+					} else if (elEndIdx != -1) {
+						endNode = cur.parentNode;
+						endOffset = getNodeIndex(cur) + 1;
+					}
+
+					cur.data = cur.data.replace(/[{}]/g, "");
+					if (!cur.data.length) {
+						if (cur == startNode || cur == endNode) {
+							throw "You put a square bracket where there was no text node . . .";
+						}
+						var oldCur = cur;
+						cur = nextNode(cur);
+						oldCur.parentNode.removeChild(oldCur);
+					} else {
+						cur = nextNode(cur);
+					}
+				}
+
+				return {
+					startContainer:startNode,
+					startOffset:startOffset,
+					endContainer:endNode,
+					endOffset:endOffset
+				};
+			},
+
+		
 		addBrackets: function (range) {
 			//@{
 				// Handle the collapsed case specially, to avoid confusingly getting the
 				// markers backwards in some cases
+			if (range.endContainer.nodeType == Node.TEXT_NODE
+				|| range.endContainer.nodeType == Node.COMMENT_NODE) {
+					if (range.collapsed) {
+						range.endContainer.insertData(range.endOffset, "[]");
+					} else {
+						range.endContainer.insertData(range.endOffset, "]");
+					}
+				} else {
+					if (range.endOffset != range.endContainer.childNodes.length
+					&& range.endContainer.childNodes[range.endOffset].nodeType == Node.TEXT_NODE) {
+						range.endContainer.childNodes[range.endOffset].insertData(0, "}");
+					} else if (range.endOffset != 0
+					&& range.endContainer.childNodes[range.endOffset - 1].nodeType == Node.TEXT_NODE) {
+						range.endContainer.childNodes[range.endOffset - 1].appendData("}");
+					} else {
+						range.endContainer.insertBefore(document.createTextNode("}"),
+							range.endContainer.childNodes.length == range.endOffset
+							? null
+							: range.endContainer.childNodes[range.endOffset]);
+					}
+				}
+				if (range.collapsed) {
+					return;
+				}
 				if (range.startContainer.nodeType == Node.TEXT_NODE
 				|| range.startContainer.nodeType == Node.COMMENT_NODE) {
-					if (range.collapsed) {
-						range.startContainer.insertData(range.startOffset, "[]");
-					} else {
-						range.startContainer.insertData(range.startOffset, "[");
-					}
+					range.startContainer.insertData(range.startOffset, "[");
 				} else {
 					var marker = range.collapsed ? "{}" : "{";
 					if (range.startOffset != range.startContainer.childNodes.length
@@ -262,26 +418,6 @@ define(
 							: range.startContainer.childNodes[range.startOffset]);
 					}
 				}
-				if (range.collapsed) {
-					return;
-				}
-				if (range.endContainer.nodeType == Node.TEXT_NODE
-				|| range.endContainer.nodeType == Node.COMMENT_NODE) {
-					range.endContainer.insertData(range.endOffset, "]");
-				} else {
-					if (range.endOffset != range.endContainer.childNodes.length
-					&& range.endContainer.childNodes[range.endOffset].nodeType == Node.TEXT_NODE) {
-						range.endContainer.childNodes[range.endOffset].insertData(0, "}");
-					} else if (range.endOffset != 0
-					&& range.endContainer.childNodes[range.endOffset - 1].nodeType == Node.TEXT_NODE) {
-						range.endContainer.childNodes[range.endOffset - 1].appendData("}");
-					} else {
-						range.endContainer.insertBefore(document.createTextNode("}"),
-							range.endContainer.childNodes.length == range.endOffset
-							? null
-							: range.endContainer.childNodes[range.endOffset]);
-					}
-				}
 			}
 	});
 	
@@ -289,24 +425,28 @@ define(
 	/**
 	 * Create a jQuery plugin to extract the HTML of a given jQuery object
 	 */
-	jQuery.fn.extractHTML = function() {
-		var attributes = ['class', 'id'];
+	jQuery.fn.extractHTML = function( attributes ) {
+		attributes = typeof attributes === 'undefined' ? ['class', 'id'] : attributes;
 		var fullResult = [];
-
+		if ( typeof attr !== 'undefined' ) {
+			attributes.push(attr);
+		}
+		
 		jQuery.each(this, function() {
-			var $that = jQuery(this);
+			var that = jQuery(this);
 			var result = {};
+			debugger;
+			result.nodeName = that[0].nodeName.toLowerCase();
 			fullResult.push(result);
-			result.nodeName = $that[0].nodeName;
-			if ($that[0].nodeType == 3) {
-				result.text = $that.text();
-			} else if ($that[0].nodeType == 1) {
+			if (that[0].nodeType == 3) {
+				result.text = that.text();
+			} else if (that[0].nodeType == 1) {
 				jQuery.each(attributes, function(index, attr) {
-					result[attr] = $that.attr(attr);
+					result[attr] = that.attr(attr);
 				});
-				var contents = $that.contents();
+				var contents = that.contents();
 				if (contents.length) {
-					result.contents = contents.extractHTML();
+					result.contents = contents.extractHTML(attributes);
 				}
 			}
 		});
