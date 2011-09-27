@@ -1,1 +1,108 @@
-require( [ '../unit/testutils' ], function ( TestUtils ) {'use strict';Aloha.ready( function() {	var		jQuery = Aloha.jQuery,	    testArea = jQuery( '#aloha-selection-area' ),	    viewArea = jQuery( '#aloha-selection-view' );			jQuery( document, testArea ).bind('mouseup keyup', function ( ev ) {				var el = jQuery( ev.target );				if ( !el.is( '#aloha-selection-area' ) && el.parents( '#aloha-selection-area' ).length == 0 ) {			return;		}				var		    range = Aloha.getSelection().getRangeAt( 0 ),			cached = testArea.html();		TestUtils.addBrackets( range );		viewArea.html( testArea.html() );				//testArea.html( cached ).focus();		TestUtils.addRange( testArea );			});});});
+require( [ '../unit/testutils' ], function ( TestUtils ) {
+
+'use strict';
+
+Aloha.ready( function() {
+
+	var jQuery = Aloha.jQuery,
+	    fillArea = jQuery( '#aloha-selection-fill' ),
+	    testArea = jQuery( '#aloha-selection-test' ),
+	    viewArea = jQuery( '#aloha-selection-view' );
+
+	fillArea.change( function () {
+		testArea[ 0 ].innerHTML = fillArea.val();
+		applySelection( testArea );
+	} );
+
+	jQuery( document ).bind( 'mouseup keyup', function ( ev ) {
+		var range = getRange();
+		
+		if ( range ) {
+			// Check that atleast one of either of the end or start containers
+			// is within the "selectable" testArea
+			var containers = jQuery( [ range.startContainer,
+				range.endContainer ] );
+			
+			if ( containers.length == 0 ) {
+				return;
+			}
+			
+			if ( !containers.is( testArea ) ) {
+				var parent = containers.parent();
+				if ( !parent.is( testArea ) &&
+					 parent.parent( '#' + testArea.attr( 'id' ) )
+						.length == 0 ) {
+					return;
+				}
+			}
+			
+			TestUtils.addBrackets( range );
+			
+			var html = jQuery( '<div>' ).text( testArea.html() ).html();
+			html = html.replace( /([\[\]\{\}])/g, '<b>$1</b>' );
+			
+			viewArea.html( html );
+			
+			applySelection( testArea );
+		}
+	} );
+	
+	/**
+	 * Catches exceptions caused when invoking getRangeAt, without any ranges
+	 * available.
+	 * Unfortunately Aloha.getSelection().ranges is always empty, even if there
+	 * is a range object. This means that we cannot do any useful bound checks
+	 * before invoking the getRangeAt method.
+	 *
+	 * @return {Object:range}
+	 */
+	function getRange () {
+		try {
+			return Aloha.getSelection().getRangeAt( 0 );
+		} catch ( ex ) {
+			return null;
+		}
+	};
+	
+	/**
+	 * If we find one start selection marker and one end selection marker, then
+	 * we will attempt to applythe selection
+	 */
+	 function applySelection ( elem ) {
+		var html = elem.html(),
+		    startMarkers = html.match( /\{|\[|data-start/g ),
+		    endMarkers = html.match( /\}|\]|data-end/g ),
+			numMarkers = 0;
+		
+		if ( startMarkers && startMarkers.length ) {
+			numMarkers += startMarkers.length;
+		}
+		
+		if ( endMarkers && endMarkers.length ) {
+			numMarkers += endMarkers.length;
+		}
+		
+		if ( numMarkers == 2 ) {
+			var range = TestUtils.addRange( elem ),
+			    selection = Aloha.getSelection();
+			
+			selection.removeAllRanges();
+			selection.addRange( range );
+		} else if ( numMarkers == 1 ) {
+			if ( typeof console !== 'undefined' &&
+				 typeof console.warn === 'function' ) {
+				console.warn( 'Collapsed selection at end of node: ', getRange() );
+			}
+			
+			elem.html(
+				html.replace( /\{|\[|data-start|\}|\]|data-end/g, '' )
+			);
+		} else {
+			
+		}
+	 };
+
+} ); // Aloha.ready
+
+} ); // require
+

@@ -14,34 +14,66 @@
 	
 	<style>
 		body {
-			background: #f0f0f0;
+			background: #eee;
 			margin: 0;
 			padding: 0 30px;
 			font-family: Arial, sans-serif;
+			color: #333;
 		}
-		#aloha-selection-area,
-		#aloha-selection-view {
-			float: left;
-			width: 45%;
-			height: 400px;
-			padding: 10px;
-			background: #fff;
+		.aloha-left,
+		.aloha-right {
+			width: 49%;
+			margin-bottom: 10px;
+			background: #ddd;
 			border: 1px solid #ccc;
+			border-bottom: 0;
 		}
-		#aloha-selection-view {
+		.aloha-left>b,
+		.aloha-right>b {
+			display: block;
+			padding: 10px;
+			border-bottom: 1px solid #ccc;
+		}
+		.aloha-left {
+			float: left;
+		}
+		.aloha-right {
 			float: right;
+		}
+		.aloha-area {
+			width: 100%;
+			height: 190px;
+			margin: 0px;
+			padding: 0px;
+			background: #fff;
+			border: 0px;
+			border-bottom: 1px solid #ccc;
+			font-family: Arial, sans-serif;
+			font-size: 14px;
+		}
+		.aloha-area-big {
+			height: 420px;
+		}
+		.aloha-area b {
+			font-size: 2em;
+			vertical-align; middle;
 		}
 	</style>
 </head>
 
 <body>
 	<h1>Aloha Editor Manuel Selection Tests</h1>
-	<div id="aloha-selection-area" contenteditable="true">
-	
-	<p>foo</p><p>bar</p><p>baz</p>
-	
+	<div class="aloha-left">
+		<b>Insert selection markup (eg: "test"  or "&lt;i&gt;[test]&lt;/i&gt;"):</b>
+		<textarea id="aloha-selection-fill" class="aloha-area"></textarea>
+		
+		<b>Browser selection:</b>
+		<div id="aloha-selection-view" class="aloha-area" readonly="true"></div>
 	</div>
-	<textarea id="aloha-selection-view"></textarea>
+	<div class="aloha-right">
+		<b>Manually modifiy selection:</b>
+		<div id="aloha-selection-test" class="aloha-area aloha-area-big" contenteditable="true"></div>
+	</div>
 </body>
 
 </html>
