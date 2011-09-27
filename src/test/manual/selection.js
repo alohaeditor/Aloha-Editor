@@ -89,10 +89,7 @@ Aloha.ready( function() {
 			selection.removeAllRanges();
 			selection.addRange( range );
 		} else if ( numMarkers == 1 ) {
-			if ( typeof console !== 'undefined' &&
-				 typeof console.warn === 'function' ) {
-				console.warn( 'Collapsed selection at end of node: ', getRange() );
-			}
+			Aloha.Console.warn( 'Collapsed selection at end of node: ', getRange() );
 			
 			elem.html(
 				html.replace( /\{|\[|data-start|\}|\]|data-end/g, '' )
