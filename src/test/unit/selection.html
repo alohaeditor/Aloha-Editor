@@ -112,7 +112,8 @@
 				    [ '<p>foo{</p><hr><p>]baz</p>', '<p>foo[</p><hr><p>]baz</p>' ],
 				    [ '<p>foo</p>{<hr><p>]baz</p>', '<p>foo[</p><hr><p>]baz</p>' ],
 				    [ '<p>foo</p><hr>{<p>]baz</p>', '<p>foo[</p><hr><p>]baz</p>' ],
-
+				    
+/* tables are handled differently in Aloha Editor				    
 					'foo[<table><tbody><tr><td>bar]baz</td></tr></tbody></table>',
 					['foo<table data-start=0 data-end=1><tbody><tr><td>barbaz</td></tr></tbody></table>', 'foo{<table><tbody><tr><td>barbaz</td></tr></tbody></table>}' ],
 					['foo<table><tbody data-start=0 data-end=1><tr><td>barbaz</td></tr></tbody></table>', 'foo<table><tbody><tr><td>[barbaz</td></tr></tbody></table>}' ],
@@ -120,7 +121,7 @@
 					['foo<table><tbody><tr><td>{barbaz}</td></tr></tbody></table>', 'foo<table><tbody><tr><td>[barbaz]</td></tr></tbody></table>' ],
 					['foo<table><tbody><tr><td>{barbaz}</td><td>bamboo</td></tr></tbody></table>', 'foo<table><tbody><tr><td>[barbaz]</td><td>bamboo</td></tr></tbody></table>' ],
 					['foo<table><tbody><tr><td>{barbaz</td><td>}bamboo</td></tr></tbody></table>', 'foo<table><tbody><tr><td>[barbaz</td><td>}bamboo</td></tr></tbody></table>' ],
-/**/
+*/
 			  ];
 	</script>
 	<h1 id="qunit-header">Aloha Editor Paste Test Suite</h1>
