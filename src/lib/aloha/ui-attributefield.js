@@ -132,6 +132,7 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 				} else {
 					this.ALOHAwasExpanded = false;
 				}
+				event.preventDefault();
 			}
 		},
 		'keyup': function (obj, event) {
