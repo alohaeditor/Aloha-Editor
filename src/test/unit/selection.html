@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<title>Aloha Editor Selection Test Suite</title>
+	<!-- include qunit -->
+	<link rel="stylesheet" href="../vendor/qunit.css" type="text/css"/>
+
+	<script type="text/javascript" src="../vendor/qunit.js"></script>
+
+	<!-- include jquery -->
+	<script	src="../vendor/jquery-1.6.1.js" ></script>
+	<script type="text/javascript" src="../vendor/jquery.simulate.js"></script>
+	<script>
+		window.alohaQuery = jQuery.noConflict();
+	</script>
+
+	<!-- include aloha -->
+	<script src="../../lib/aloha.js"></script>
+
+	<!-- inject into testswarm -->
+	<script type="text/javascript" src="../vendor/swarminject.js"></script>
+	<script>
+		// load command test suite
+		require( ['selectiontest'] );
+	</script>
+</head>
+<body>
+	<!-- include the tests -->
+	<script>
+	var tests = [
+		        	// 'start[and]expected'
+		        	// [ '[st]art', '[ex]pected' ]
+					'{}',
+				    [ 'foo[&#x308;]baz', 'foo&#x308;[]baz' ], 
+				    [ 'foo[\0]baz', 'foo[]baz' ],
+				    [ 'foo[\x07]baz', 'foo[]baz'] ,
+// qunit URIError	'foo[\ud800]baz',
+					
+					[ '{}foo', '[]foo' ],
+			        'foo[]',
+					[ 'foo{}', 'foo[]' ],
+			        '[foo]',
+					[ '{foo}', '[foo]' ],
+				    '[bam]foo', 
+				    // This does not seem right !!
+					[ '{bam]foo', '[bam]foo' ],
+				    'bam[foo]', 
+					[ 'bam[foo}', 'bam[foo]' ],
+				    'bam[]foo', 
+			        'foo[bar]baz',
+
+			        'foo<span>[bar]</span>baz',
+			        [ 'foo[<span>bar</span>]baz', 'foo<span>[bar]</span>baz' ],
+			        [ 'foo<span>{bar}</span>baz', 'foo<span>[bar]</span>baz' ],
+			        [ 'foo{<span>bar</span>}baz', 'foo<span>[bar]</span>baz' ],
+// INDEX ERR        [ 'foo<span>{bar]</span>baz', 'foo<span>[bar]</span>baz' ],
+			        [ 'foo<span>{bar</span>]baz', 'foo<span>[bar]</span>baz' ],
+			        [ 'foo<span>[bar}</span>baz', 'foo<span>[bar]</span>baz' ],
+			        [ 'foo[<span>bar}</span>baz', 'foo<span>[bar]</span>baz' ],
+
+			        '[foo<span>bar]</span>baz', 
+				    [ '[foo<span>]bar</span>baz', '[foo]<span>bar</span>baz' ],
+				    [ 'foo[<span>bar]</span>baz', 'foo<span>[bar]</span>baz' ],
+				    [ 'foo[<span>]bar</span>baz', 'foo[]<span>bar</span>baz' ],
+				    [ '{foo<span>bar}</span>baz', '[foo<span>bar]</span>baz' ],
+				    [ '{foo<span>}bar</span>baz', '[foo]<span>bar</span>baz' ],
+				    [ 'foo{<span>bar}</span>baz', 'foo<span>[bar]</span>baz' ],
+				    [ 'foo{<span>}bar</span>baz', 'foo[]<span>bar</span>baz' ],
+				    
+				    [ 'foo<span>[bar</span>baz]', 'foo<span>[bar</span>baz]' ],
+				    [ 'foo<span>bar[</span>baz]',  'foo<span>bar</span>[baz]' ],
+				    [ 'foo<span>[bar</span>]baz', 'foo<span>[bar]</span>baz' ],
+				    [ 'foo<span>bar[</span>]baz', 'foo<span>bar[]</span>baz' ],
+				    [ 'foo<span>{bar</span>baz}', 'foo<span>[bar</span>baz]' ],
+				    [ 'foo<span>bar{</span>baz}', 'foo<span>bar</span>[baz]' ],
+				    [ 'foo<span>{bar</span>}baz', 'foo<span>[bar]</span>baz' ],
+				    [ 'foo<span>bar{</span>}baz', 'foo<span>bar[]</span>baz' ],
+
+				    'foo<span>[bar</span><span>baz]</span>bam',
+					[ 'foo<span>bar[</span><span>]baz</span>bam', 'foo<span>bar[]</span><span>baz</span>bam' ],
+				    
+				    'foo[<hr>]baz',
+				    [ 'foo{<hr>]baz', 'foo[<hr>]baz' ],
+				    [ 'foo{<hr>}baz', 'foo[<hr>]baz' ],
+				    [ 'foo[<hr>}baz', 'foo[<hr>]baz' ],
+
+				    [ 'foo[<br>]baz', 'foo{<br>}baz' ],
+				    [ '[foo<br>]baz', '[foo<br>}baz' ],
+				    [ 'foo[<br>baz]', 'foo{<br>baz]' ],
+				    [ 'foo[<br>}<br>baz', 'foo{<br>}<br>baz' ],
+				    [ 'foo{<br>]baz', 'foo{<br>}baz' ],
+				    [ 'foo{<br>}<br>baz', 'foo{<br>}<br>baz' ],
+				    [ 'foo<br>{<br>]baz', 'foo<br>{<br>}baz' ],
+				    [ 'foo<br>{<br>}baz', 'foo<br>{<br>}baz' ],
+				      
+				    [ '<p>[foo</p><p>bar]</p><p>baz</p>', '<p>[foo</p><p>bar]</p><p>baz</p>' ],
+				    [ '<p>[foo</p><p>]bar</p><p>baz</p>', '<p>foo[]</p><p>bar</p><p>baz</p>' ],
+				    [ '<p>foo[</p><p>bar]</p><p>baz</p>', '<p>foo</p><p>[bar]</p><p>baz</p>' ],
+				    [ '<p>foo[</p><p>]bar</p><p>baz</p>', '<p>foo[]</p><p>bar</p><p>baz</p>' ],
+				    [ '<p>foo</p>{<p>bar</p>}<p>baz</p>', '<p>foo</p><p>[bar]</p><p>baz</p>' ],
+				    [ '<p>foo{</p><p>bar}</p><p>baz</p>', '<p>foo</p><p>[bar]</p><p>baz</p>' ],
+				    [ '<p>foo</p>{<p>bar}</p><p>baz</p>', '<p>foo</p><p>[bar]</p><p>baz</p>' ],
+				    [ '<p>foo</p><p>{bar}</p><p>baz</p>', '<p>foo</p><p>[bar]</p><p>baz</p>' ],
+				    [ '<p>foo</p><p>{bar</p>}<p>baz</p>', '<p>foo</p><p>[bar]</p><p>baz</p>' ],
+				    [ '<p>foo</p><p>{bar</p><p>}baz</p>', '<p>foo</p><p>[bar]</p><p>baz</p>' ],
+
+				    '<p>foo[</p><hr><p>]baz</p>',
+				    [ '<p>foo[</p><hr><p>}baz</p>', '<p>foo[</p><hr><p>}baz</p>' ],
+				    [ '<p>foo[</p><hr>}<p>baz</p>', '<p>foo[</p><hr><p>}baz</p>' ],
+				    [ '<p>foo[</p>}<hr><p>baz</p>', '<p>foo[</p><hr><p>}baz</p>' ],
+				    [ '<p>foo{</p><hr><p>]baz</p>', '<p>foo[</p><hr><p>]baz</p>' ],
+				    [ '<p>foo</p>{<hr><p>]baz</p>', '<p>foo[</p><hr><p>]baz</p>' ],
+				    [ '<p>foo</p><hr>{<p>]baz</p>', '<p>foo[</p><hr><p>]baz</p>' ],
+
+					'foo[<table><tbody><tr><td>bar]baz</td></tr></tbody></table>',
+					['foo<table data-start=0 data-end=1><tbody><tr><td>barbaz</td></tr></tbody></table>', 'foo{<table><tbody><tr><td>barbaz</td></tr></tbody></table>}' ],
+					['foo<table><tbody data-start=0 data-end=1><tr><td>barbaz</td></tr></tbody></table>', 'foo<table><tbody><tr><td>[barbaz</td></tr></tbody></table>}' ],
+					['foo<table><tbody><tr data-start=0 data-end=1><td>barbaz</td></tr></tbody></table>', 'foo<table><tbody><tr><td>[barbaz</td></tr></tbody></table>}' ],
+					['foo<table><tbody><tr><td>{barbaz}</td></tr></tbody></table>', 'foo<table><tbody><tr><td>[barbaz]</td></tr></tbody></table>' ],
+					['foo<table><tbody><tr><td>{barbaz}</td><td>bamboo</td></tr></tbody></table>', 'foo<table><tbody><tr><td>[barbaz]</td><td>bamboo</td></tr></tbody></table>' ],
+					['foo<table><tbody><tr><td>{barbaz</td><td>}bamboo</td></tr></tbody></table>', 'foo<table><tbody><tr><td>[barbaz</td><td>}bamboo</td></tr></tbody></table>' ],
+/**/
+			  ];
+	</script>
+	<h1 id="qunit-header">Aloha Editor Paste Test Suite</h1>
+	<h2 id="qunit-banner"></h2>
+	<div id="qunit-testrunner-toolbar"></div>
+	<h2 id="qunit-userAgent"></h2>
+	<ol id="qunit-tests"></ol>
+	<div id="qunit-fixture"></div>
+	<div id="edit" style="margin:20px; border:1px solid #000000;"></div>
+	<div id="logBody"></div>
+	</div>
+</body>
+</html>
