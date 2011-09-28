@@ -15,7 +15,9 @@ Aloha.ready( function() {
 		applySelection( testArea );
 	} );
 
-	jQuery( document ).bind( 'mouseup keyup', function ( ev ) {
+	jQuery( document ).bind( 'mouseup keyup', onSelectionChanged );
+	
+	function onSelectionChanged ( ev ) {
 		var range = getRange();
 		
 		if ( range ) {
@@ -30,8 +32,11 @@ Aloha.ready( function() {
 			
 			if ( !containers.is( testArea ) ) {
 				var parent = containers.parent();
+				
+				console.log( parent );
+				
 				if ( !parent.is( testArea ) &&
-					 parent.parent( '#' + testArea.attr( 'id' ) )
+					 parent.parents( '#' + testArea.attr( 'id' ) )
 						.length == 0 ) {
 					return;
 				}
@@ -46,7 +51,7 @@ Aloha.ready( function() {
 			
 			applySelection( testArea );
 		}
-	} );
+	};
 	
 	/**
 	 * Catches exceptions caused when invoking getRangeAt, without any ranges
@@ -73,8 +78,7 @@ Aloha.ready( function() {
 	 */
 	function stripMarkers ( elem ) {
 		if ( elem && elem.length ) {
-			var html = elem.html();
-			elem.html( html.replace(
+			elem.html( elem.html().replace(
 				/\{|\[|(data\-(start|end)\s*=\s*[\"\'][^\"\']*[\"\'])|\}|\]/g,
 				''
 			) );
