@@ -3,7 +3,7 @@
 
 	<groupId>com.gentics</groupId>
 	<artifactId>alohaeditor</artifactId>
-	<version>0.17-buildtest-SNAPSHOT</version>
+	<version>0.17-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Aloha Editor</name>
