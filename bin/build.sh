@@ -48,7 +48,7 @@ r.js -o cssIn=aloha.css out=aloha.css
 cd "$SCRIPT"
 ./update-aloha.js.sh "tmp/$TARGET"
 
-# Coping builded files to out
+# Coping built files to out
 echo "Coping tmp/$TARGET out/$TARGET"
 echo
 cp -r "$TMP" "$OUT"
@@ -56,4 +56,4 @@ cp -r "$TMP" "$OUT"
 ## Change back from where we started
 cd "$PWD"
 
-echo "Builded Aloha Editor for $TARGET"
+echo "Built Aloha Editor for $TARGET"
