@@ -63,8 +63,8 @@
                                 </configuration>
                         </plugin>
 
-<!-- TODO: after building is fixed, comment this in to build before packaging -->
-                        <!-- plugin>
+						<!-- build before packaging -->
+                        <plugin>
                                 <groupId>org.codehaus.mojo</groupId>
                                 <artifactId>exec-maven-plugin</artifactId>
                                 <version>1.1</version>
@@ -79,8 +79,12 @@
                                 </executions>
                                 <configuration>
                                         <executable>bin/build.sh</executable>
+                                        <arguments>
+                                        	<!-- gentics build target -->
+											<argument>gentics</argument>
+										  </arguments>
                                 </configuration>
-                        </plugin -->
+                        </plugin>
 		</plugins>
 	</build>
 

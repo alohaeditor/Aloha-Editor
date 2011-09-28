@@ -8,13 +8,9 @@
 	</formats>
 	<fileSets>
 		<fileSet>
-			<!-- TODO: after building is fixed, get the built output from ${project.basedir}/out -->
-			<directory>${project.basedir}/src</directory>
+			<directory>${project.basedir}/out/gentics</directory>
 			<outputDirectory>/</outputDirectory>
 			<excludes>
-				<exclude>demo/**</exclude>
-				<exclude>test/**</exclude>
-				<exclude>plugins/gcn/**</exclude>
 				<exclude>**/.gitmodules</exclude>
 			</excludes>
 		</fileSet>
