@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8" />
+	
+	<title>Aloha Editor Manuel Selection Tests</title>
+	
+	<script>var Aloha = {};</script>
+	<script src="../vendor/jquery-1.5.1.js"></script>
+	<script src="../../lib/aloha.js" data-aloha-plugins=""></script>
+	<script src="selection.js"></script>
+	
+	<style>
+		body {
+			background: #eee;
+			margin: 0;
+			padding: 0 30px;
+			font-family: Arial, sans-serif;
+			color: #333;
+		}
+		.aloha-left,
+		.aloha-right {
+			width: 49%;
+			margin-bottom: 10px;
+			background: #ddd;
+			border: 1px solid #ccc;
+			border-bottom: 0;
+		}
+		.aloha-left>b,
+		.aloha-right>b {
+			display: block;
+			padding: 10px;
+			border-bottom: 1px solid #ccc;
+		}
+		.aloha-left {
+			float: left;
+		}
+		.aloha-right {
+			float: right;
+		}
+		.aloha-area {
+			width: 100%;
+			height: 190px;
+			margin: 0px;
+			padding: 0px;
+			background: #fff;
+			border: 0px;
+			border-bottom: 1px solid #ccc;
+			font-family: Arial, sans-serif;
+			font-size: 14px;
+		}
+		.aloha-area-big {
+			height: 420px;
+		}
+		.aloha-area b {
+			font-size: 2em;
+			vertical-align; middle;
+		}
+	</style>
+</head>
+
+<body>
+	<h1>Aloha Editor Manuel Selection Tests</h1>
+	<div class="aloha-left">
+		<b>Insert selection markup (eg: "test"  or "&lt;i&gt;[test]&lt;/i&gt;"):</b>
+		<textarea id="aloha-selection-fill" class="aloha-area"></textarea>
+		
+		<b>Browser selection:</b>
+		<div id="aloha-selection-view" class="aloha-area" readonly="true"></div>
+	</div>
+	<div class="aloha-right">
+		<b>Manually modifiy selection:</b>
+		<div id="aloha-selection-test" class="aloha-area aloha-area-big" contenteditable="true"></div>
+	</div>
+</body>
+
+</html>

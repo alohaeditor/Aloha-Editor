@@ -226,6 +226,22 @@ define(	['./ecma5'],	function() {
 			insertMarker(range.startContainer, range.startOffset, '[');
 		},
 		
+		
+		
+		/**
+		 * FIXME: Needs to handle collapsed selection in an empty content
+		 * Parses selection markers in the innerHTML of the given element and 
+		 * creates a range object whose start and end determined from these
+		 * selection markers.
+		 *
+		 * @param {editable} - DOM Node element containing two selection
+		 *					   markers. Exactly one of these two markers should
+		 *					   be a start marker string (ie: "[", "{", or
+		 *					   "data-start"), and one should be an end marker
+		 *					   string (ie: "]", "}", "data-end").
+		 *					   
+		 * @param {Object:range} Range object
+		 */
 		addRange: function ( editable ) {
 				function nextNode(node) {
 					if (node.hasChildNodes()) {
@@ -345,7 +361,7 @@ define(	['./ecma5'],	function() {
 						endNode = cur.parentNode;
 						endOffset = getNodeIndex(cur) + 1;
 					}
-
+					
 					cur.data = cur.data.replace(/[{}]/g, "");
 					if (!cur.data.length) {
 						if (cur == startNode || cur == endNode) {
@@ -358,13 +374,12 @@ define(	['./ecma5'],	function() {
 						cur = nextNode(cur);
 					}
 				}
-
-				return {
-					startContainer:startNode,
-					startOffset:startOffset,
-					endContainer:endNode,
-					endOffset:endOffset
-				};
+				
+				var range = Aloha.createRange();
+				range.setStart( startNode, startOffset );
+				range.setEnd( endNode, endOffset );
+				
+				return range;
 			},
 
 		
