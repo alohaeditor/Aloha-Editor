@@ -7,17 +7,32 @@ Aloha.ready( function() {
 	var jQuery = Aloha.jQuery,
 	    fillArea = jQuery( '#aloha-selection-fill' ),
 	    testArea = jQuery( '#aloha-selection-test' ),
-	    viewArea = jQuery( '#aloha-selection-view' );
-
+	    viewArea = jQuery( '#aloha-selection-view' ),
+		applyMarkupOnNextSelection = false;
+	
 	fillArea.change( function () {
-		testArea[ 0 ].innerHTML = fillArea.val();
-		testArea.trigger( 'keyup' );
-		applySelection( testArea );
+		applyMarkupOnNextSelection = true;
 	} );
 
 	jQuery( document ).bind( 'mouseup keyup', onSelectionChanged );
 	
-	function onSelectionChanged ( ev ) {
+	/**
+	 * If applyMarkupOnNextSelection is true: we will copy the value in
+	 * fillArea into the testArea, and applySelection on it.
+	 *
+	 * Otherwise we will check to see if one of either the start of end
+	 * container is within testArea. If so we will add markers on the current
+	 * range object, 
+	 */
+	function onSelectionChanged () {
+		if ( applyMarkupOnNextSelection ) {
+			testArea[ 0 ].innerHTML = fillArea.val();
+			applySelection( testArea );
+			applyMarkupOnNextSelection = false;
+			
+			return;
+		}
+		
 		var range = getRange();
 		
 		if ( range ) {
@@ -33,8 +48,6 @@ Aloha.ready( function() {
 			if ( !containers.is( testArea ) ) {
 				var parent = containers.parent();
 				
-				console.log( parent );
-				
 				if ( !parent.is( testArea ) &&
 					 parent.parents( '#' + testArea.attr( 'id' ) )
 						.length == 0 ) {
@@ -43,11 +56,6 @@ Aloha.ready( function() {
 			}
 			
 			TestUtils.addBrackets( range );
-			
-			var html = jQuery( '<div>' ).text( testArea.html() ).html();
-			html = html.replace( /([\[\]\{\}])/g, '<b>$1</b>' );
-			
-			viewArea.html( html );
 			
 			applySelection( testArea );
 		}
@@ -86,12 +94,22 @@ Aloha.ready( function() {
 	};
 	
 	/**
-	 * If we find one start selection marker and one end selection marker, then
-	 * we will attempt to applythe selection
+	 * If the given element contains one start selection marker and one end
+	 * selection marker, then we will attempt to apply the selection on the
+	 * element.
+	 *
+	 * @param {DOMElement} elem - DOM Element whose innerHTML contains
+	 *							  selection markers defining the selection that
+	 *							  should be applied to it.
 	 */
 	 function applySelection ( elem ) {
-		var html = elem.html(),
-		    startMarkers = html.match( /\{|\[|data\-start/g ),
+		// Display the current selection in the viewArea
+		var html = jQuery( '<div>' ).text( testArea.html() ).html();
+		viewArea.html( html.replace( /([\[\]\{\}])/g, '<b>$1</b>' ) );
+		
+		html = elem.html();
+		
+		var startMarkers = html.match( /\{|\[|data\-start/g ),
 		    endMarkers = html.match( /\}|\]|data\-end/g ),
 			numMarkers = 0;
 		
