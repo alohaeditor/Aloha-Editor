@@ -11,6 +11,7 @@ Aloha.ready( function() {
 
 	fillArea.change( function () {
 		testArea[ 0 ].innerHTML = fillArea.val();
+		testArea.trigger( 'keyup' );
 		applySelection( testArea );
 	} );
 
@@ -65,13 +66,29 @@ Aloha.ready( function() {
 	};
 	
 	/**
+	 * Remove all occurances of the following selection marker delimiters from
+	 * the given element: {, }, [, ], data-start, data-end
+	 *
+	 * @param {DOMElement}
+	 */
+	function stripMarkers ( elem ) {
+		if ( elem && elem.length ) {
+			var html = elem.html();
+			elem.html( html.replace(
+				/\{|\[|(data\-(start|end)\s*=\s*[\"\'][^\"\']*[\"\'])|\}|\]/g,
+				''
+			) );
+		}
+	};
+	
+	/**
 	 * If we find one start selection marker and one end selection marker, then
 	 * we will attempt to applythe selection
 	 */
 	 function applySelection ( elem ) {
 		var html = elem.html(),
-		    startMarkers = html.match( /\{|\[|data-start/g ),
-		    endMarkers = html.match( /\}|\]|data-end/g ),
+		    startMarkers = html.match( /\{|\[|data\-start/g ),
+		    endMarkers = html.match( /\}|\]|data\-end/g ),
 			numMarkers = 0;
 		
 		if ( startMarkers && startMarkers.length ) {
@@ -82,23 +99,20 @@ Aloha.ready( function() {
 			numMarkers += endMarkers.length;
 		}
 		
-		if ( numMarkers == 2 ) {
+		if ( numMarkers == 1 ) {
+			Aloha.Console.warn( 'Collapsed selection at end of node: ' );
+			Aloha.Console.warn( getRange() );
+			stripMarkers( elem );
+		} else if ( numMarkers == 2 ) {
 			var range = TestUtils.addRange( elem ),
 			    selection = Aloha.getSelection();
 			
 			selection.removeAllRanges();
 			selection.addRange( range );
-		} else if ( numMarkers == 1 ) {
-			if ( typeof console !== 'undefined' &&
-				 typeof console.warn === 'function' ) {
-				console.warn( 'Collapsed selection at end of node: ', getRange() );
-			}
-			
-			elem.html(
-				html.replace( /\{|\[|data-start|\}|\]|data-end/g, '' )
-			);
 		} else {
-			
+			// if numMarkers is > 2 then we have a problem, and we will remove
+			// all markers to create a "clean-sheet"
+			stripMarkers( elem );
 		}
 	 };
 
