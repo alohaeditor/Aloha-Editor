@@ -71,7 +71,8 @@ function( TestUtils ) {
 		    [ 'foo[<p>}<br></p>baz', 'foo[<p>}<br></p>baz' ],
 		    [ 'foo<p><br>{</p>]baz', 'foo<p>{<br></p>]baz' ],
 		    [ 'foo{<p><br></p>}baz', 'foo[<p><br></p>]baz' ],
-		    [ 'foo[<p><br></p>]baz', 'foo[<p><br></p>]baz' ],	    ],
+		    [ 'foo[<p><br></p>]baz', 'foo[<p><br></p>]baz' ],
+		],
 	    phrasingTests = [
 	        'foo<span>[bar]</span>baz',
 	        [ 'foo[<span>bar</span>]baz', 'foo<span>[bar]</span>baz' ],
@@ -100,6 +101,15 @@ function( TestUtils ) {
 		    [ 'foo<span>{bar</span>}baz', 'foo<span>[bar]</span>baz' ],
 		    [ 'foo<span>bar{</span>}baz', 'foo<span>bar[]</span>baz' ],
 
+		    [ 'foo{<span><span><span><span>bar}</span></span></span></span>baz', 'foo<span><span><span><span>[bar]</span></span></span></span>baz' ],
+		    [ 'foo<span><span>{<span><span>bar}</span></span></span></span>baz', 'foo<span><span><span><span>[bar]</span></span></span></span>baz' ],
+		    [ 'foo{<span><span><span><span>}bar</span></span></span></span>baz', 'foo[]<span><span><span><span>bar</span></span></span></span>baz' ],
+		    [ 'foo<span><span>{<span><span>}bar</span></span></span></span>baz', 'foo[]<span><span><span><span>bar</span></span></span></span>baz' ],
+		    [ 'foo{<span><span><span><span>]bar</span></span></span></span>baz', 'foo[]<span><span><span><span>bar</span></span></span></span>baz' ],
+		    [ 'foo<span><span>{<span><span>]bar</span></span></span></span>baz', 'foo[]<span><span><span><span>bar</span></span></span></span>baz' ],
+		    [ 'foo{<span><span><br><span><span>bar}</span></span></span></span>baz', 'foo<span><span>{<br><span><span>bar]</span></span></span></span>baz' ],
+		    [ 'foo{<span><i><u><b>bar}</b></u></i></span>baz', 'foo<span><i><u><b>[bar]</b></u></i></span>baz' ],
+
 		    'foo<span>[bar</span><span>baz]</span>bam',
 			[ 'foo<span>bar[</span><span>]baz</span>bam', 'foo<span>bar[]</span><span>baz</span>bam' ]
 		],
@@ -122,6 +132,15 @@ function( TestUtils ) {
 		    [ '<p>foo{</p><hr><p>]baz</p>', '<p>foo[</p><hr><p>}baz</p>' ],
 		    [ '<p>foo</p>{<hr><p>]baz</p>', '<p>foo</p>{<hr><p>}baz</p>' ],
 		    [ '<p>foo</p><hr>{<p>]baz</p>', '<p>foo</p><hr><p>[]baz</p>' ],
+		    
+		    [ 'foo{<p><p><p><p>bar}</p></p></p></p>baz', 'foo<p><p><p><p>[bar]</p></p></p></p>baz' ],
+		    [ 'foo<p><p>{<p><p>bar}</p></p></p></p>baz', 'foo<p><p><p><p>[bar]</p></p></p></p>baz' ],
+		    [ 'foo{<p><p><p><p>}bar</p></p></p></p>baz', 'foo[]<p><p><p><p>bar</p></p></p></p>baz' ],
+		    [ 'foo<p><p>{<p><p>}bar</p></p></p></p>baz', 'foo[]<p><p><p><p>bar</p></p></p></p>baz' ],
+		    [ 'foo{<p><p><p><p>]bar</p></p></p></p>baz', 'foo[]<p><p><p><p>bar</p></p></p></p>baz' ],
+		    [ 'foo<p><p>{<p><p>]bar</p></p></p></p>baz', 'foo[]<p><p><p><p>bar</p></p></p></p>baz' ],
+		    [ 'foo{<p><p><br><p><p>bar}</p></p></p></p>baz', 'foo<p><p>{<br><p><p>bar]</p></p></p></p>baz' ],
+		    [ 'foo{<p><i><u><b>bar}</b></u></i></p>baz', 'foo<p><i><u><b>[bar]</b></u></i></p>baz' ],
 		],
 		// dl, dd, dt not covered by tests
 		// http://www.w3.org/wiki/HTML_lists#Nesting_lists
