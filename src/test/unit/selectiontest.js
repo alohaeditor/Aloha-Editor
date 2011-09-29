@@ -220,7 +220,7 @@ function( TestUtils ) {
 			for ( var i = 0; i < tests.length; i++ ) {
 				// ie hack :/
 				if ( !tests[i] ) {
-					break;
+					continue;
 				}
 				if ( jQuery.isArray ( tests[i]) ) {
 					newTest = [];
@@ -245,22 +245,26 @@ function( TestUtils ) {
 		// full void tests
 		// lists
 		tests = tests.concat( listTests );
-//		for ( var i = 0; i < voidElements.length; i++ ) {
-//			tests = tests.concat( convertTests ( /br/g, voidElements[i], voidTests ) );
-//		}		
-//		// full phrasing tests
-//		for ( var i = 0; i < phrasingElements.length; i++ ) {
-//			tests = tests.concat( convertTests ( /span/g, phrasingElements[i], phrasingTests ) );
-//		}
-//		// full flow tests
-//		for ( var i = 0; i < flowElements.length; i++ ) {
-//			tests = tests.concat( convertTests ( /span/g, flowElements[i], flowTests ) );
-//		}
+		for ( var i = 0; i < voidElements.length; i++ ) {
+			tests = tests.concat( convertTests ( /br/g, voidElements[i], voidTests ) );
+		}		
+		// full phrasing tests
+		for ( var i = 0; i < phrasingElements.length; i++ ) {
+			tests = tests.concat( convertTests ( /span/g, phrasingElements[i], phrasingTests ) );
+		}
+		// full flow tests
+		for ( var i = 0; i < flowElements.length; i++ ) {
+			tests = tests.concat( convertTests ( /span/g, flowElements[i], flowTests ) );
+		}
 		
 		// aloha'fy the editable
 		editable.aloha();
 		
 		for ( var i = 0; i < tests.length; i++ ) {
+			// ie hack :/
+			if ( !tests[i] ) {
+				continue;
+			}
 			var 
 				start = typeof tests[i] === 'string' ? tests[i] : tests[i][0],
 				expected = typeof tests[i] === 'string' ? tests[i] : tests[i][1],
