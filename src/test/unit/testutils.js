@@ -324,10 +324,10 @@ define(	['./ecma5'],	function() {
 						continue;
 					}
 
-					var data = cur.data.replace(/\]/g, "");
+					var data = cur.data.replace(/[\]\}]/g, "");
 					var startIdx = data.indexOf("[");
 
-					data = cur.data.replace(/\[/g, "");
+					data = cur.data.replace(/[\[\{]/g, "");
 					var endIdx = data.indexOf("]");
 
 					cur.data = cur.data.replace(/[\[\]]/g, "");
@@ -386,16 +386,18 @@ define(	['./ecma5'],	function() {
 
 		
 		addBrackets: function (range) {
+			var marker;
 			//@{
 				// Handle the collapsed case specially, to avoid confusingly getting the
 				// markers backwards in some cases
 			if (range.endContainer.nodeType == Node.TEXT_NODE
 				|| range.endContainer.nodeType == Node.COMMENT_NODE) {
 					if (range.collapsed) {
-						range.endContainer.insertData(range.endOffset, "[]");
+						marker = '[]'
 					} else {
-						range.endContainer.insertData(range.endOffset, "]");
+						marker = ']'
 					}
+					range.endContainer.insertData(range.endOffset, marker);
 				} else {
 					if (range.endOffset != range.endContainer.childNodes.length
 					&& range.endContainer.childNodes[range.endOffset].nodeType == Node.TEXT_NODE) {
@@ -404,7 +406,12 @@ define(	['./ecma5'],	function() {
 					&& range.endContainer.childNodes[range.endOffset - 1].nodeType == Node.TEXT_NODE) {
 						range.endContainer.childNodes[range.endOffset - 1].appendData("}");
 					} else {
-						range.endContainer.insertBefore(document.createTextNode("}"),
+						if (range.collapsed) {
+							marker = '{}'
+						} else {
+							marker = '}'
+						}
+						range.endContainer.insertBefore(document.createTextNode( marker ),
 							range.endContainer.childNodes.length == range.endOffset
 							? null
 							: range.endContainer.childNodes[range.endOffset]);
@@ -417,7 +424,7 @@ define(	['./ecma5'],	function() {
 				|| range.startContainer.nodeType == Node.COMMENT_NODE) {
 					range.startContainer.insertData(range.startOffset, "[");
 				} else {
-					var marker = range.collapsed ? "{}" : "{";
+					marker = '{';
 					if (range.startOffset != range.startContainer.childNodes.length
 					&& range.startContainer.childNodes[range.startOffset].nodeType == Node.TEXT_NODE) {
 						range.startContainer.childNodes[range.startOffset].insertData(0, marker);

@@ -64,8 +64,8 @@ function( TestUtils ) {
 		    [ 'foo{<span><br></span>}baz', 'foo<span>{<br>}</span>baz' ],
 		    [ 'foo[<span><br></span>]baz', 'foo<span>{<br>}</span>baz' ],
 		    // br wrapped in flow
-		    [ 'foo<p>{}<br></p>baz', 'foo[]<p><br></p>baz' ],
-		    [ 'foo<p><br>{}</p>baz', 'foo<p><br></p>[]baz' ],
+		    [ 'foo<p>{}<br></p>baz', 'foo<p>{}<br></p>baz' ],
+		    [ 'foo<p><br>{}</p>baz', 'foo<p>{}<br></p>baz' ],
 		    [ 'foo{<p>}<br></p>baz', 'foo[<p>}<br></p>baz' ],
 		    [ 'foo<p><br>{</p>}baz', 'foo<p>{<br></p>]baz' ],
 		    [ 'foo[<p>}<br></p>baz', 'foo[<p>}<br></p>baz' ],
@@ -133,13 +133,13 @@ function( TestUtils ) {
 		    [ '<p>foo</p>{<hr><p>]baz</p>', '<p>foo</p>{<hr><p>}baz</p>' ],
 		    [ '<p>foo</p><hr>{<p>]baz</p>', '<p>foo</p><hr><p>[]baz</p>' ],
 		    
-		    [ 'foo{<p><p><p><p>bar}</p></p></p></p>baz', 'foo<p><p><p><p>[bar]</p></p></p></p>baz' ],
+		    [ 'foo{<p><p><p><p>bar}</p></p></p></p>baz', 'foo[<p><p><p><p>bar]</p></p></p></p>baz' ],
 		    [ 'foo<p><p>{<p><p>bar}</p></p></p></p>baz', 'foo<p><p><p><p>[bar]</p></p></p></p>baz' ],
 		    [ 'foo{<p><p><p><p>}bar</p></p></p></p>baz', 'foo[]<p><p><p><p>bar</p></p></p></p>baz' ],
-		    [ 'foo<p><p>{<p><p>}bar</p></p></p></p>baz', 'foo[]<p><p><p><p>bar</p></p></p></p>baz' ],
+		    [ 'foo<p><p>{<p><p>}bar</p></p></p></p>baz', 'foo<p><p><p><p>[]bar</p></p></p></p>baz' ],
 		    [ 'foo{<p><p><p><p>]bar</p></p></p></p>baz', 'foo[]<p><p><p><p>bar</p></p></p></p>baz' ],
 		    [ 'foo<p><p>{<p><p>]bar</p></p></p></p>baz', 'foo[]<p><p><p><p>bar</p></p></p></p>baz' ],
-		    [ 'foo{<p><p><br><p><p>bar}</p></p></p></p>baz', 'foo<p><p>{<br><p><p>bar]</p></p></p></p>baz' ],
+		    [ 'foo{<p><p><br><p><p>bar}</p></p></p></p>baz', 'foo<p><p>{		<br><p><p>bar]</p></p></p></p>baz' ],
 		    [ 'foo{<p><i><u><b>bar}</b></u></i></p>baz', 'foo<p><i><u><b>[bar]</b></u></i></p>baz' ],
 		],
 		// dl, dd, dt not covered by tests
@@ -273,7 +273,7 @@ function( TestUtils ) {
 		}
 		// full flow tests
 		for ( var i = 0; i < flowElements.length; i++ ) {
-			tests = tests.concat( convertTests ( /span/g, flowElements[i], flowTests ) );
+			tests = tests.concat( convertTests ( /p/g, flowElements[i], flowTests ) );
 		}
 		
 		// aloha'fy the editable
