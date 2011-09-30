@@ -107,6 +107,7 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 					case 'sub':
 					case 'sup':
 						that.buttons[button] = {'button' : new Aloha.ui.Button({
+							'name' : button,
 							'iconClass' : 'aloha-button aloha-button-' + button,
 							'size' : 'small',
 							'onclick' : function () {

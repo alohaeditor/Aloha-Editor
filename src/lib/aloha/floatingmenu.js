@@ -453,13 +453,49 @@ function(Aloha, jQuery, Ext, Class) {
 		 */
 		width: 400,
 
+		initTabsAndGroups: function () {
+			var that = this;
+
+			// TODO default settings fallback
+			
+			jQuery.each(Aloha.settings.toolbar.tabs, function (tab, groups) {
+				// generate or retrieve tab
+				var tabObject = that.tabMap[tab];
+				if (typeof tabObject === 'undefined') {
+					// the tab object does not yet exist, so create a new tab and add it to the list
+					tabObject = new Tab(tab);
+					that.tabs.push(tabObject);
+					that.tabMap[tab] = tabObject;
+				}
+				
+				jQuery.each(groups, function (group, buttons) {
+					var groupObject = tabObject.getGroup(group),
+						i;
+					
+					// now get all the buttons for that group
+					jQuery.each(buttons, function (button) {
+						// now add the button to the group
+						for (i = 0; i < buttons.length; i++) {
+							if (button === that.allButtons[i].button.name) {
+								groupObject.addButton(that.allButtons[i]);
+							}
+						}
+					});
+
+				});
+			});
+		},
+
 		/**
 		 * Generate the rendered component for the floatingmenu
 		 * @hide
 		 */
 		generateComponent: function () {
-			//debugger;
 			var that = this, pinTab;
+
+			// generating components is only called once on init
+			// so we can also init our tabs and groups here
+			this.initTabsAndGroups();
 
 			// Initialize and configure the tooltips
 			Ext.QuickTips.init();
@@ -798,13 +834,13 @@ function(Aloha, jQuery, Ext, Class) {
 				scopeObject = this.scopes[scope],
 				buttonInfo, tabObject, groupObject;
 	
-			if (typeof scopeObject === 'undefined') {
+			/*if (typeof scopeObject === 'undefined') {
 				Aloha.Log.error("Can't add button to given scope since the scope has not yet been initialized.", scope);
 				return false;
-			}
+			}*/
 
 			// generate a buttonInfo object
-			buttonInfo = {'button' : button, 'scopeVisible' : false};
+			buttonInfo = { 'button' : button, 'scopeVisible' : false };
 
 			// add the button to the list of all buttons
 			this.allButtons.push(buttonInfo);
@@ -813,7 +849,7 @@ function(Aloha, jQuery, Ext, Class) {
 			scopeObject.buttons.push(buttonInfo);
 
 			// get the tab object
-			tabObject = this.tabMap[tab];
+			/*tabObject = this.tabMap[tab];
 			if (typeof tabObject === 'undefined') {
 				// the tab object does not yet exist, so create a new tab and add it to the list
 				tabObject = new Tab(tab);
@@ -826,7 +862,7 @@ function(Aloha, jQuery, Ext, Class) {
 
 			// now add the button to the group
 			groupObject.addButton(buttonInfo);
-
+*/
 			// finally, when the floatingmenu is already initialized, we need to create the ext component now
 			if (this.initialized) {
 				this.generateComponent();
