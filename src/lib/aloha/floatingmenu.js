@@ -467,17 +467,19 @@ function(Aloha, jQuery, Ext, Class) {
 					that.tabs.push(tabObject);
 					that.tabMap[tab] = tabObject;
 				}
-				
+
 				jQuery.each(groups, function (group, buttons) {
 					var groupObject = tabObject.getGroup(group),
 						i;
-					
+
 					// now get all the buttons for that group
-					jQuery.each(buttons, function (button) {
+					jQuery.each(buttons, function (j, button) {
 						// now add the button to the group
-						for (i = 0; i < buttons.length; i++) {
+						for (i = 0; i < that.allButtons.length; i++) {
+							console.info(' - vs.' + that.allButtons[i].button.name);
 							if (button === that.allButtons[i].button.name) {
 								groupObject.addButton(that.allButtons[i]);
+								break;
 							}
 						}
 					});
@@ -507,8 +509,7 @@ function(Aloha, jQuery, Ext, Class) {
 			
 			if (this.extTabPanel) {
 				// TODO dispose of the ext component
-			}
-			else {
+			} else {
 				
 				// Enable or disable the drag functionality
 				var dragConfiguration = false;
@@ -569,7 +570,8 @@ function(Aloha, jQuery, Ext, Class) {
 								jQuery.each(that.allButtons, function(index, buttonInfo) {
 									if (typeof buttonInfo.button !== 'undefined'
 										&& typeof buttonInfo.button.extButton !== 'undefined'
-											&& typeof buttonInfo.button.extButton.setActiveDOMElement === 'function') {
+										&& buttonInfo.button.extButton !== null
+										&& typeof buttonInfo.button.extButton.setActiveDOMElement === 'function') {
 										if (typeof buttonInfo.button.extButton.activeDOMElement !== 'undefined') {
 											buttonInfo.button.extButton.setActiveDOMElement(buttonInfo.button.extButton.activeDOMElement);
 										}
@@ -834,10 +836,10 @@ function(Aloha, jQuery, Ext, Class) {
 				scopeObject = this.scopes[scope],
 				buttonInfo, tabObject, groupObject;
 	
-			/*if (typeof scopeObject === 'undefined') {
+			if (typeof scopeObject === 'undefined') {
 				Aloha.Log.error("Can't add button to given scope since the scope has not yet been initialized.", scope);
 				return false;
-			}*/
+			}
 
 			// generate a buttonInfo object
 			buttonInfo = { 'button' : button, 'scopeVisible' : false };
@@ -877,7 +879,7 @@ function(Aloha, jQuery, Ext, Class) {
 			if (Aloha.Log.isDebugEnabled()) {
 				Aloha.Log.debug(this, 'doLayout called for FloatingMenu, scope is ' + this.currentScope);
 			}
-			//debugger;
+
 			var that = this,
 				firstVisibleTab = false,
 				activeExtTab = this.extTabPanel.getActiveTab(),
