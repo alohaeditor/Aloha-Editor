@@ -226,7 +226,10 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 
 			// on blur check if href is empty. If so remove the a tag
 			this.hrefField.addListener('blur', function(obj, event) {
-				if ( !this.getValue() ) {
+				//checks for either a literal value in the href field
+				//(that is not the pre-filled "http://") or a resource
+				//(e.g. in the case of a repository link)
+				if ( ( ! this.getValue() || this.getValue() === "http://" ) && ! this.getItem() ) {
 					that.removeLink();
 				}
 			});
