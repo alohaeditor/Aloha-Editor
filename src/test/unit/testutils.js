@@ -399,18 +399,18 @@ define(	['./ecma5'],	function() {
 					}
 					range.endContainer.insertData(range.endOffset, marker);
 				} else {
+					if (range.collapsed) {
+						marker = '{}'
+					} else {
+						marker = '}'
+					}
 					if (range.endOffset != range.endContainer.childNodes.length
 					&& range.endContainer.childNodes[range.endOffset].nodeType == Node.TEXT_NODE) {
-						range.endContainer.childNodes[range.endOffset].insertData(0, "}");
+						range.endContainer.childNodes[range.endOffset].insertData(0, marker);
 					} else if (range.endOffset != 0
 					&& range.endContainer.childNodes[range.endOffset - 1].nodeType == Node.TEXT_NODE) {
-						range.endContainer.childNodes[range.endOffset - 1].appendData("}");
+						range.endContainer.childNodes[range.endOffset - 1].appendData( marker );
 					} else {
-						if (range.collapsed) {
-							marker = '{}'
-						} else {
-							marker = '}'
-						}
 						range.endContainer.insertBefore(document.createTextNode( marker ),
 							range.endContainer.childNodes.length == range.endOffset
 							? null

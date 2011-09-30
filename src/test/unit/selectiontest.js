@@ -64,14 +64,14 @@ function( TestUtils ) {
 		    [ 'foo{<span><br></span>}baz', 'foo<span>{<br>}</span>baz' ],
 		    [ 'foo[<span><br></span>]baz', 'foo<span>{<br>}</span>baz' ],
 		    // br wrapped in flow
-		    [ 'foo<p>{}<br></p>baz', 'foo<p>{}<br></p>baz' ],
-		    [ 'foo<p><br>{}</p>baz', 'foo<p>{}<br></p>baz' ],
-		    [ 'foo{<p>}<br></p>baz', 'foo[<p>}<br></p>baz' ],
-		    [ 'foo<p><br>{</p>}baz', 'foo<p>{<br></p>]baz' ],
-		    [ 'foo[<p>}<br></p>baz', 'foo[<p>}<br></p>baz' ],
-		    [ 'foo<p><br>{</p>]baz', 'foo<p>{<br></p>]baz' ],
-		    [ 'foo{<p><br></p>}baz', 'foo[<p><br></p>]baz' ],
-		    [ 'foo[<p><br></p>]baz', 'foo[<p><br></p>]baz' ],
+		    [ 'foo<div>{}<br></div>baz', 'foo<div>{}<br></div>baz' ],
+		    [ 'foo<div><br>{}</div>baz', 'foo<div>{}<br></div>baz' ],
+		    [ 'foo{<div>}<br></div>baz', 'foo[<div>}<br></div>baz' ],
+		    [ 'foo<div><br>{</div>}baz', 'foo<div>{<br></div>]baz' ],
+		    [ 'foo[<div>}<br></div>baz', 'foo[<div>}<br></div>baz' ],
+		    [ 'foo<div><br>{</div>]baz', 'foo<div>{<br></div>]baz' ],
+		    [ 'foo{<div><br></div>}baz', 'foo[<div><br></div>]baz' ],
+		    [ 'foo[<div><br></div>]baz', 'foo[<div><br></div>]baz' ],
 		],
 	    phrasingTests = [
 	        'foo<span>[bar]</span>baz',
@@ -101,6 +101,19 @@ function( TestUtils ) {
 		    [ 'foo<span>{bar</span>}baz', 'foo<span>[bar]</span>baz' ],
 		    [ 'foo<span>bar{</span>}baz', 'foo<span>bar[]</span>baz' ],
 
+		    [ 'foo{<span><b><b><b>bar}</b></b></b></span>baz', 'foo<span><b><b><b>[bar]</b></b></b></span>baz' ],
+		    [ 'foo<span><b>{<b><b>bar}</b></b></b></span>baz', 'foo<span><b><b><b>[bar]</b></b></b></span>baz' ],
+		    [ 'foo{<span><b><b><b>}bar</b></b></b></span>baz', 'foo[]<span><b><b><b>bar</b></b></b></span>baz' ],
+		    [ 'foo<span><b>{<b><b>}bar</b></b></b></span>baz', 'foo[]<span><b><b><b>bar</b></b></b></span>baz' ],
+		    [ 'foo{<span><b><b><b>]bar</b></b></b></span>baz', 'foo[]<span><b><b><b>bar</b></b></b></span>baz' ],
+		    [ 'foo<span><b>{<b><b>]bar</b></b></b></span>baz', 'foo[]<span><b><b><b>bar</b></b></b></span>baz' ],
+		    [ 'foo{<span><b><br><b><b>bar}</b></b></b></span>baz', 'foo<span><b>{<br><b><b>bar]</b></b></b></span>baz' ],
+		    [ 'foo{<span><i><u><b>bar}</b></u></i></span>baz', 'foo<span><i><u><b>[bar]</b></u></i></span>baz' ],
+
+		    'foo<span>[bar</span><span>baz]</span>bam',
+			[ 'foo<span>bar[</span><span>]baz</span>bam', 'foo<span>bar[]</span><span>baz</span>bam' ]
+		],
+		nestedPhrasingTests = [
 		    [ 'foo{<span><span><span><span>bar}</span></span></span></span>baz', 'foo<span><span><span><span>[bar]</span></span></span></span>baz' ],
 		    [ 'foo<span><span>{<span><span>bar}</span></span></span></span>baz', 'foo<span><span><span><span>[bar]</span></span></span></span>baz' ],
 		    [ 'foo{<span><span><span><span>}bar</span></span></span></span>baz', 'foo[]<span><span><span><span>bar</span></span></span></span>baz' ],
@@ -286,6 +299,13 @@ function( TestUtils ) {
 		// full phrasing tests
 		for ( var i = 0; i < phrasingElements.length; i++ ) {
 			tests = tests.concat( convertTests ( /span/g, phrasingElements[i], phrasingTests ) );
+		}
+		for ( var i = 0; i < phrasingElements.length; i++ ) {
+			// even if specified in HTML5 a cannot nest all phrasing (itself)
+			if ( phrasingElements[i] == 'a' ) {
+				continue;
+			}
+			tests = tests.concat( convertTests ( /span/g, phrasingElements[i], nestedPhrasingTests ) );
 		}
 		// full flow tests
 		for ( var i = 0; i < flowElements.length; i++ ) {
