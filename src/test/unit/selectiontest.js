@@ -125,6 +125,10 @@ function( TestUtils ) {
 		    [ '<p>foo</p><p>{bar</p>}<p>baz</p>', '<p>foo</p><p>[bar</p><p>}baz</p>' ],
 		    [ '<p>foo</p><p>{bar</p><p>}baz</p>', '<p>foo</p><p>[bar</p><p>}baz</p>' ],
 
+		    [ 'foo<p>{<i><u><b>bar}</b></u></i></p>baz', 'foo<p><i><u><b>[bar]</b></u></i></p>baz' ],
+		    [ 'foo<p>{<i></i><u><b>bar}</b></u></p>baz', 'foo<p><i></i><u><b>[bar]</b></u></p>baz' ],
+		    [ 'foo<p>{<i><br><b>bar}</b></i></p>baz', 'foo<p><i>{<br><b>bar]</b></i></p>baz' ],
+
 		    [ '<p>foo[</p><hr><p>]baz</p>', '<p>foo[</p><hr><p>}baz</p>' ],
 		    [ '<p>foo[</p><hr><p>}baz</p>', '<p>foo[</p><hr><p>}baz</p>' ],
 		    [ '<p>foo[</p><hr>}<p>baz</p>', '<p>foo[</p><hr><p>}baz</p>' ],
@@ -132,15 +136,24 @@ function( TestUtils ) {
 		    [ '<p>foo{</p><hr><p>]baz</p>', '<p>foo[</p><hr><p>}baz</p>' ],
 		    [ '<p>foo</p>{<hr><p>]baz</p>', '<p>foo</p>{<hr><p>}baz</p>' ],
 		    [ '<p>foo</p><hr>{<p>]baz</p>', '<p>foo</p><hr><p>[]baz</p>' ],
+		],
+		flowHostTests = [	      
+
+		    [ '<div>foo[</div><hr><div>]baz</div>', '<div>foo[</div><hr><div>}baz</div>' ],
+		    [ '<div>foo[</div><hr><div>}baz</div>', '<div>foo[</div><hr><div>}baz</div>' ],
+		    [ '<div>foo[</div><hr>}<div>baz</div>', '<div>foo[</div><hr><div>}baz</div>' ],
+		    [ '<div>foo[</div>}<hr><div>baz</div>', '<div>foo[</div>}<hr><div>baz</div>' ],
+		    [ '<div>foo{</div><hr><div>]baz</div>', '<div>foo[</div><hr><div>}baz</div>' ],
+		    [ '<div>foo</div>{<hr><div>]baz</div>', '<div>foo</div>{<hr><div>}baz</div>' ],
+		    [ '<div>foo</div><hr>{<div>]baz</div>', '<div>foo</div><hr><div>[]baz</div>' ],
 		    
-		    [ 'foo{<p><p><p><p>bar}</p></p></p></p>baz', 'foo[<p><p><p><p>bar]</p></p></p></p>baz' ],
-		    [ 'foo<p><p>{<p><p>bar}</p></p></p></p>baz', 'foo<p><p><p><p>[bar]</p></p></p></p>baz' ],
-		    [ 'foo{<p><p><p><p>}bar</p></p></p></p>baz', 'foo[]<p><p><p><p>bar</p></p></p></p>baz' ],
-		    [ 'foo<p><p>{<p><p>}bar</p></p></p></p>baz', 'foo<p><p><p><p>[]bar</p></p></p></p>baz' ],
-		    [ 'foo{<p><p><p><p>]bar</p></p></p></p>baz', 'foo[]<p><p><p><p>bar</p></p></p></p>baz' ],
-		    [ 'foo<p><p>{<p><p>]bar</p></p></p></p>baz', 'foo[]<p><p><p><p>bar</p></p></p></p>baz' ],
-		    [ 'foo{<p><p><br><p><p>bar}</p></p></p></p>baz', 'foo<p><p>{		<br><p><p>bar]</p></p></p></p>baz' ],
-		    [ 'foo{<p><i><u><b>bar}</b></u></i></p>baz', 'foo<p><i><u><b>[bar]</b></u></i></p>baz' ],
+		    [ 'foo{<div><div><div><div>bar}</div></div></div></div>baz', 'foo[<div><div><div><div>bar]</div></div></div></div>baz' ],
+		    [ 'foo<div><div>{<div><div>bar}</div></div></div></div>baz', 'foo<div><div><div><div>[bar]</div></div></div></div>baz' ],
+		    [ 'foo{<div><div><div><div>}bar</div></div></div></div>baz', 'foo[<div><div><div><div>}bar</div></div></div></div>baz' ],
+		    [ 'foo<div><div>{<div><div>}bar</div></div></div></div>baz', 'foo<div><div><div><div>[]bar</div></div></div></div>baz' ],
+		    [ 'foo{<div><div><div><div>]bar</div></div></div></div>baz', 'foo[<div><div><div><div>}bar</div></div></div></div>baz' ],
+		    [ 'foo<div><div>{<div><div>]bar</div></div></div></div>baz', 'foo<div><div><div><div>[]bar</div></div></div></div>baz' ],
+		    [ 'foo<div>{<div><br><div><div>bar}</div></div></div></div>baz', 'foo<div><div>{<br><div><div>bar]</div></div></div></div>baz' ],
 		],
 		// dl, dd, dt not covered by tests
 		// http://www.w3.org/wiki/HTML_lists#Nesting_lists
@@ -229,8 +242,9 @@ function( TestUtils ) {
 			 *   menu, canvas, details are not covered by tests
 			 * 
 			 */ 
-			flowElements = [ 'pre', 'div', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hgroup',
+			flowElements = [ 'pre', 'div', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
 			         'address', 'blockquote' ],
+			flowHostElements = [ 'address', 'blockquote' ],
 			newTests,
 			newTest;
 		
@@ -261,9 +275,11 @@ function( TestUtils ) {
 		tests = tests.concat( phrasingTests );
 		// p (flow)
 		tests = tests.concat( flowTests );
-		// full void tests
+		// flow elements hosts
+		tests = tests.concat( flowHostTests );
 		// lists
 		tests = tests.concat( listTests );
+		// full void tests
 		for ( var i = 0; i < voidElements.length; i++ ) {
 			tests = tests.concat( convertTests ( /br/g, voidElements[i], voidTests ) );
 		}		
@@ -274,6 +290,10 @@ function( TestUtils ) {
 		// full flow tests
 		for ( var i = 0; i < flowElements.length; i++ ) {
 			tests = tests.concat( convertTests ( /p/g, flowElements[i], flowTests ) );
+		}
+		// full flow host tests
+		for ( var i = 0; i < flowHostElements.length; i++ ) {
+			tests = tests.concat( convertTests ( /div/g, flowHostElements[i], flowHostTests ) );
 		}
 		
 		// aloha'fy the editable
