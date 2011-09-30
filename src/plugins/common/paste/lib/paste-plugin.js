@@ -89,7 +89,11 @@ function(Aloha, Plugin, jQuery, Commands, console,
 
 			pasteDivContents = $pasteDiv.html();
 
-			Aloha.execCommand('inserthtml', false, pasteDivContents, pasteRange);
+			if ( Aloha.queryCommandSupported('insertHTML') ) {
+				Aloha.execCommand('insertHTML', false, pasteDivContents, pasteRange);
+			} else {
+				Aloha.Log.error('common/paste', 'Command "insertHTML" not available. Enable the plugin "common/commands".');
+			}
 
 			// finally scroll back to the original scroll position, plus eventually difference in height
 //			if (scrollTop !== false && scrollLeft !== false && this.height !== false) {
