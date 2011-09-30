@@ -68,10 +68,8 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 					// show/hide the button according to the configuration
 					config = that.getEditableConfig(Aloha.activeEditable.obj);
 					if ( jQuery.inArray('span', config) != -1) {
-						//that.addMarkupToSelectionButton.show();
 						that.addMarkupToSelectionButton.setPressed(false);
 					} else {
-						//that.addMarkupToSelectionButton.hide();
 						that.addMarkupToSelectionButton.setPressed(true);
 						// leave if a is not allowed
 						return;
@@ -79,7 +77,6 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 	
 					foundMarkup = that.findLanguageMarkup( rangeObject );
 					if ( foundMarkup ) {
-						//that.addMarkupToSelectionButton.hide();
 						that.addMarkupToSelectionButton.setPressed(true);
 						FloatingMenu.setScope(that.getUID('wai-lang'));
 						that.langField.setTargetObject(foundMarkup, 'lang');
@@ -142,14 +139,6 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 				'tooltip' : i18n.t('button.add-wai-lang-remove.tooltip'),
 				'toggle' : false
 			});
-			
-			//FloatingMenu.addButton(
-			//	this.getUID('wai-lang'),
-			//	this.removeButton,
-			//	i18n.t('floatingmenu.tab.wai-lang'),
-			//	1
-			//);
-	
 		},
 		
 		findLangMarkup: function(range) {
