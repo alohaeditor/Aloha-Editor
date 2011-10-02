@@ -294,13 +294,19 @@ function( TestUtils ) {
 		tests = tests.concat( listTests );
 		// full void tests
 		for ( var i = 0; i < voidElements.length; i++ ) {
+			// ie hack :/
+			if ( !tests[i] ) {	continue; }
 			tests = tests.concat( convertTests ( /br/g, voidElements[i], voidTests ) );
 		}		
 		// full phrasing tests
 		for ( var i = 0; i < phrasingElements.length; i++ ) {
+			// ie hack :/
+			if ( !tests[i] ) {	continue; }
 			tests = tests.concat( convertTests ( /span/g, phrasingElements[i], phrasingTests ) );
 		}
 		for ( var i = 0; i < phrasingElements.length; i++ ) {
+			// ie hack :/
+			if ( !tests[i] ) {	continue; }
 			// even if specified in HTML5 a cannot nest all phrasing (itself)
 			if ( phrasingElements[i] == 'a' ) {
 				continue;
@@ -309,10 +315,14 @@ function( TestUtils ) {
 		}
 		// full flow tests
 		for ( var i = 0; i < flowElements.length; i++ ) {
+			// ie hack :/
+			if ( !tests[i] ) {	continue; }
 			tests = tests.concat( convertTests ( /p/g, flowElements[i], flowTests ) );
 		}
 		// full flow host tests
 		for ( var i = 0; i < flowHostElements.length; i++ ) {
+			// ie hack :/
+			if ( !tests[i] ) {	continue; }
 			tests = tests.concat( convertTests ( /div/g, flowHostElements[i], flowHostTests ) );
 		}
 		
@@ -321,9 +331,7 @@ function( TestUtils ) {
 		
 		for ( var i = 0; i < tests.length; i++ ) {
 			// ie hack :/
-			if ( !tests[i] ) {
-				continue;
-			}
+			if ( !tests[i] ) {	continue; }
 			var 
 				start = typeof tests[i] === 'string' ? tests[i] : tests[i][0],
 				expected = typeof tests[i] === 'string' ? tests[i] : tests[i][1],

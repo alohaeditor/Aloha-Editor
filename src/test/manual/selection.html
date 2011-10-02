@@ -9,7 +9,7 @@
 	
 	<script>var Aloha = {};</script>
 	<script src="../vendor/jquery-1.5.1.js"></script>
-	<script src="../../lib/aloha.js" data-aloha-plugins=""></script>
+	<script src="../../lib/aloha.js" data-aloha-plugins="common/commands"></script>
 	<script src="selection.js"></script>
 	
 	<style>
@@ -20,19 +20,20 @@
 			font-family: Arial, sans-serif;
 			color: #333;
 		}
+		.aloha-area {
+			width: 100%;
+			margin: 0px;
+			padding: 0px;
+			background: #fff;
+			border: 0px;
+			font-family: Arial, sans-serif;
+			font-size: 14px;
+		}
 		.aloha-left,
 		.aloha-right {
 			width: 49%;
-			margin-bottom: 10px;
 			background: #ddd;
 			border: 1px solid #ccc;
-			border-bottom: 0;
-		}
-		.aloha-left>b,
-		.aloha-right>b {
-			display: block;
-			padding: 10px;
-			border-bottom: 1px solid #ccc;
 		}
 		.aloha-left {
 			float: left;
@@ -40,23 +41,41 @@
 		.aloha-right {
 			float: right;
 		}
-		.aloha-area {
+		#aloha-markup,
+		#aloha-test,
+		#aloha-command,
+		#aloha-view {
+			height: 200px;
+		}
+		#aloha-command > p,
+		#aloha-command > div {
+			padding: 5px;
+		}
+		.header {
+			display: block;
+			margin: 5px;
+/*			border-bottom: 1px solid #ccc; */
+			height: 20px;
+		}
+		.header b {
+			display: block;
+			float: left;
+		}
+		.header a {
+			display: block;
+			float: right;
+		}
+		.aloha-result {
 			width: 100%;
-			height: 190px;
-			margin: 0px;
-			padding: 0px;
-			background: #fff;
-			border: 0px;
-			border-bottom: 1px solid #ccc;
-			font-family: Arial, sans-serif;
-			font-size: 14px;
-		}
-		.aloha-area-big {
-			height: 420px;
-		}
-		.aloha-area b {
-			font-size: 2em;
-			vertical-align; middle;
+		},
+		.aloha-result  b{
+			width: 200px;
+		},
+		.aloha-result > div {
+			float: left;
+		},
+		.aloha-usage {
+			float: left;
 		}
 		.aloha-example {
 			background: #fff;
@@ -66,20 +85,50 @@
 </head>
 
 <body>
-	<h1>Aloha Editor Manuel Selection Tests</h1>
-	<div class="aloha-left">
-		<b>Insert selection markup (eg:
-			<span class="aloha-example">test</span> or
-			<span class="aloha-example">&lt;i&gt;[test]&lt;/i&gt;</span> or
-			<span class="aloha-example">outside&lt;div&gt;&lt;p&gt;[paragraph &lt;i&gt;italic&lt;/i&gt;}&lt;/p&gt;&lt;/div&gt;</span>):</b>
-		<textarea id="aloha-selection-fill" class="aloha-area"></textarea>
-		
-		<b>Browser selection:</b>
-		<div id="aloha-selection-view" class="aloha-area"></div>
-	</div>
-	<div class="aloha-right">
-		<b>Manually modifiy selection:</b>
-		<div id="aloha-selection-test" class="aloha-area aloha-area-big" contenteditable="true"></div>
+	<h1>Aloha Editor developers testbox</h1>
+	<div>
+		<div id="usage">
+			Add the markup you want to test and hit <span class="aloha-example">Strg+ENTER</span>. Selection markers are not allowed as text.
+			If you want to test a certain selection use following syntax to mark selection begin and end.<br> 
+			<span class="aloha-example">[{ data-start</span> only one occurrence allowed. Defines <b>begin</b> of the selection.<br>
+			<span class="aloha-example">]} data-end</span> only one occurrence allowed. Defines <b>end</b> of the selection.<br>
+			<br>
+		</div>
+		<div class="aloha-left">
+			<div class="header">
+				<b>Testmarkup</b>
+				<a>Usage</a>
+			</div>
+			<textarea id="aloha-markup" class="aloha-area"><h1>Try me</h1><p>Select text.</p><ol><li>This is <b>bold</b></li><li><i>italic</i> <u>underline</u><ol><li>Either <sup>super</sup></li><li>or <sub>duper</sub></li></ol></li></ol></textarea>
+			<div class="header">
+				<b>Source view</b>
+			</div>
+			<textarea id="aloha-view" class="aloha-area"></textarea>
+		</div>
+		<div class="aloha-right">
+			<div class="header">
+				<b>Command</b>
+				<a><input type="radio" name="engine" value="aloha" checked>Aloha Editor <input type="radio" name="engine" value="native">Native</a>
+			</div>
+			<div id="aloha-command" class="aloha-area">
+				<p>
+				<select id="command">
+					<option value="">Choose a command</option>
+				</select>
+				<textarea id="command-value"></textarea>
+				<button id="command-execute">Execute</button>
+				</p>
+				<div id="aloha-query">
+					<div id="aloha-indeterm" class="aloha-result"><b>Indeterminancy:</b><div id="aloha-indeterm-result">&nbsp;</div></div>
+					<div id="aloha-state" class="aloha-result"><b>State:</b><div id="aloha-state-result">&nbsp;</div></div>
+					<div id="aloha-value" class="aloha-result"><b>Value:</b><div id="aloha-value-result">&nbsp;</div></div>
+				</div>
+			</div>
+			<div class="header">
+				<b>Testbox</b>
+			</div>
+			<div id="aloha-test" class="aloha-area"></div>
+		</div>
 	</div>
 </body>
 

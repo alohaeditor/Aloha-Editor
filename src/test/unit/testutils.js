@@ -459,7 +459,6 @@ define(	['./ecma5'],	function() {
 		jQuery.each(this, function() {
 			var that = jQuery(this);
 			var result = {};
-			debugger;
 			result.nodeName = that[0].nodeName.toLowerCase();
 			fullResult.push(result);
 			if (that[0].nodeType == 3) {

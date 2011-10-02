@@ -1,5 +1,5 @@
 /*!
-* This file is part of Aloha Editor Project http://aloha-editor.org
+* CommandManager file is part of Aloha Editor Project http://aloha-editor.org
 * Copyright (c) 2010-2011 Gentics Software GmbH, aloha@gentics.com
 * Contributors http://aloha-editor.org/contribution.php 
 * Licensed unter the terms of http://www.aloha-editor.org/license.html
@@ -15,17 +15,14 @@
 * GNU Affero General Public License for more details.
 *
 * You should have received a copy of the GNU Affero General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
+* along with CommandManager program. If not, see <http://www.gnu.org/licenses/>.
 */
 "use strict";
-define( [ 'aloha/core', 'aloha/selection' ],
-function( Aloha, Selection ) {
+define( [ 'aloha', 'aloha/registry', 'aloha/engine' ],
+function( Aloha, Registry, Engine ) {
 
-	var 
-		commands = [],
-		
 //			Action: What the command does when executed via execCommand(). Every command defined
-//			in this specification has an action defined for it in the relevant section. For example, 
+//			in CommandManager specification has an action defined for it in the relevant section. For example, 
 //			the bold command's action generally makes the current selection bold, or removes bold if 
 //			the selection is already bold. An editing toolbar might provide buttons that execute the
 //			action for a command if clicked, or a script might run an action without user interaction
@@ -60,126 +57,91 @@ function( Aloha, Selection ) {
 //			value of a command as selected in a drop-down or filled in in a text box, if the command
 //			isn't indeterminate.
 //			
-//			Relevant CSS property: This is defined for certain inline formatting commands, and 
+//			Relevant CSS property: CommandManager is defined for certain inline formatting commands, and 
 //			is used in algorithms specific to those commands. It is an implementation detail, and 
 //			is not exposed to authors. If a command does not have a relevant CSS property 
 //			specified, it defaults to null.
 
-		registerCommand = function( name, command ) {
+	var CommandManager = {
 			
-			commands[name.toLowerCase()] = command;
-		},
-	
-		execCommand = function( command, showUi, value, range ) {
-			
-			// "All of these methods must treat their command argument ASCII
-			// case-insensitively."
-			command = command.toLowerCase();
-
-			// "If only one argument was provided, let show UI be false."
-			// If range was passed, I can't actually detect how many args were passed
-			if ( arguments.length == 1
-			|| ( arguments.length >=4 && typeof showUi === 'undefined' )) {
-				showUi = false;
-			}
-			
-			// "If only one or two arguments were provided, let value be the empty
-			// string."
-			if (arguments.length <= 2
-			|| (arguments.length >=4 && typeof value === 'undefined' )) {
-				value = "";
-			}
-			
-			// "If command is not supported, raise a NOT_SUPPORTED_ERR exception."
-			// We can't throw a real one, but a string will do for our purposes.
-			if (!(command in commands)) {
-				throw "NOT_SUPPORTED_ERR";
-			}
-
-			// "If command has no action, raise an INVALID_ACCESS_ERR exception."
-			if (!('action' in commands[command])) {
-				throw "INVALID_ACCESS_ERR";
-			}
-
-			if (!queryCommandEnabled(command)) {
-				return false;
-			}
+		execCommand: function( commandId, showUi, value, range ) {
 			
 			// Take current selection if not passed
 			if ( !range ) {
-				range = Selection.getRangeObject();
+				range = Aloha.getSelection().getRangeAt( 0 );
 			}
-			
-			commands[command].action(value, range);
+			Engine.execCommand( commandId, showUi, value, range );
 		},
-
 		
-		// If command is available and not dissables or the active range is not null 
-		// the command is enables
-		queryCommandEnabled = function( command, range ) {
-
-			// "All of these methods must treat their command argument ASCII
-			// case-insensitively."
-			command = command.toLowerCase();
+		// If command is available and not disabled or the active range is not null 
+		// the command is enabled
+		queryCommandEnabled: function( commandId, range ) {
 
 			// Take current selection if not passed
 			if ( !range ) {
-				range = Selection.getRangeObject();
+				range = Aloha.getSelection().getRangeAt(0);
 			}
-			
-			return ( 'enabled' in commands[command] && commands[command].enabled !== false )
-			|| range !== null;
+			return Engine.queryCommandEnabled( commandId, range );
 		},
-		
 
 		// "Return true if command is indeterminate, otherwise false."
-		queryCommandIndeterm = function( command ) {
-			
-			// "All of these methods must treat their command argument ASCII
-			// case-insensitively."
-			command = command.toLowerCase();
+		queryCommandIndeterm: function( commandId, range ) {
 
 			// Take current selection if not passed
 			if ( !range ) {
-				range = Selection.getRangeObject();
+				range = Aloha.getSelection().getRangeAt(0);
 			}
+			return Engine.queryCommandIndeterm( commandId, range );
 
-			// "If command is not enabled, return false."
-			if (!queryCommandEnabled(command)) {
-				return false;
-			}
-			
-			if (!('indeterm' in commands[command])) {
-				throw "INVALID_ACCESS_ERR";
-			}
-
-			// "Return true if command is indeterminate, otherwise false."
-			return commands[command].indeterm();
 		},
 		
-		
-		queryCommandState = function( command ) {
+		queryCommandState: function( commandId, range ) {
 
-			throw "NOT_IMPLEMENTED_ERR";
+			// Take current selection if not passed
+			if ( !range ) {
+				range = Aloha.getSelection().getRangeAt(0);
+			}
+			return Engine.queryCommandState( commandId, range );
+
 		},
 		
 		// "When the queryCommandSupported(command) method on the HTMLDocument
 		// interface is invoked, the user agent must return true if command is
 		// supported, and false otherwise."
-		queryCommandSupported = function( command ) {
-			
-			// "All of these methods must treat their command argument ASCII
-			// case-insensitively."
-			command = command.toLowerCase();
+		queryCommandSupported: function( commandId, range ) {
 
-			return command in commands;		
+			// Take current selection if not passed
+			if ( !range ) {
+				range = Aloha.getSelection().getRangeAt(0);
+			}
+			return Engine.queryCommandSupported( commandId, range );		
 		},
 		
-		
-		queryCommandValue  = function( command ) {
+		queryCommandValue: function( commandId, range ) {
+
+			// Take current selection if not passed
+			if ( !range ) {
+				range = Aloha.getSelection().getRangeAt(0);
+			}
+
+			// "Return command's value."
+			return Engine.queryCommandValue( commandId, range );
+		},
+		querySupportedCommands: function() {
+
+			var 
+				commands = [],
+				command;
 			
-			throw "NOT_IMPLEMENTED_ERR";
-		};
+			for ( command in Engine.commands ) {
+				commands.push( command );
+			}
+			return commands;
+		}
+	};
+	
+	// create an instance
+	CommandManager = new ( Registry.extend( CommandManager ) )();
 	
 	/**
 	 * Executes a registered command.
@@ -191,7 +153,7 @@ function( Aloha, Selection ) {
 	 * @range optional a range on which the command will be executed if not specified 
 	 * 		  the current selection will be used as range
 	 */
-	Aloha.execCommand = execCommand;
+	Aloha.execCommand = CommandManager.execCommand;
 	
 	/**
 	 * Check wheater the command in enabled.
@@ -199,7 +161,7 @@ function( Aloha, Selection ) {
 	 * @param command name of the command
 	 * @return true if command is enabled, false otherwise.
 	 */
-	Aloha.queryCommandEnabled = queryCommandEnabled;
+	Aloha.queryCommandEnabled = CommandManager.queryCommandEnabled;
 	
 	/**
 	 * Check if the command has an indetermed state. 
@@ -211,47 +173,37 @@ function( Aloha, Selection ) {
 	 * 		  the current selection will be used as range
 	 * @return true if command is indeterminate, otherwise false.
 	 */
-	Aloha.queryCommandIndeterm = queryCommandIndeterm;
+	Aloha.queryCommandIndeterm = CommandManager.queryCommandIndeterm;
 	
 	/**
 	 * Returns the state of a given command
 	 * If command is not supported, a NOT_SUPPORTED_ERR exception is thrown
 	 * If command has no state, an INVALID_ACCESS_ERR exception is thrown
 	 * If command is not enabled, return false
-	 * If the state override for command is set, return it
+	 * If the state override for command is set, it returns the state
 	 * @param command name of the command
 	 * @return state override or true if command's state is true, otherwise false.
 	 */
-	Aloha.queryCommandState = queryCommandState;
+	Aloha.queryCommandState = CommandManager.queryCommandState;
 
 	/**
 	 * Check if a given command is supported
 	 * @return true if command is supported, and false otherwise.
 	 */
-	Aloha.queryCommandSupported = queryCommandSupported;
+	Aloha.queryCommandSupported = CommandManager.queryCommandSupported;
 
 	/**
 	 * Returns the Value of a given Command
 	 * If command is not supported, a NOT_SUPPORTED_ERR exception is thrown
-	 * If command has no value, an INVALID_ACCESS_ERR exception is thrown
-	 * If command is not enabled, return the empty string
-	 * If command is "fontSize" and its value override is set, convert the 
-	 * value override to an integer number of pixels and return the legacy
-	 * font size for the result.
-	 * If the value override for command is set, return it.
+	 * If command is not enabled, returns an empty string
+	 * If command is "fontSize" and its value override is set, an integer 
+	 * number of pixels is returned as font size for the result.
+	 * If the value override for command is set, it returns that.
 	 * @return command's value.
 	 */
-	Aloha.queryCommandValue = queryCommandValue;
+	Aloha.queryCommandValue = CommandManager.queryCommandValue;
 	
-	// export defined API
-	return {
-			registerCommand: registerCommand,
-			execCommand: execCommand,
-			queryCommandEnabled: queryCommandEnabled,
-			queryCommandIndeterm: queryCommandIndeterm,
-			queryCommandState: queryCommandState,
-			queryCommandSupported: queryCommandSupported,
-			queryCommandValue: queryCommandValue
-	};
+	Aloha.querySupportedCommands = CommandManager.querySupportedCommands;
 	
+	return CommandManager;
 });
