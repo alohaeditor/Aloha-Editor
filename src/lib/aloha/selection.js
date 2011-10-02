@@ -1730,16 +1730,56 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		}) // SelectionRange
 
 	}); // Selection
-
+	
+	function getSelectionEnd ( node, condition ) {
+		if ( typeof condition !== 'function' ) {
+			return node;
+		}
+		
+		if ( !node ) {
+			return null;
+		}
+		
+		if ( condition( node ) ) {
+			return node;
+		}
+		
+		if ( node.children && node.children.length ) {
+			return getSelectionEnd( node.children[ node.children.length - 1 ], condition );
+		}
+		
+		if ( node.childNodes.length ) {
+			return getSelectionEnd( node.childNodes[ node.childNodes.length - 1 ], condition );
+		}
+		
+		if ( node.previousSibling ) {
+			return getSelectionEnd( node.previousSibling, condition );
+		}
+		
+		return node;
+	};
+	
+	function isSelectionStopNode ( node ) {
+		return ( node.nodeType == 3 );
+	}
+	
 	/**
 	 * This method corrects the native ranges from the browser
 	 * to standardizes Aloha Editor ranges.  
 	 */
 	function correctRange( range ) {
+		var endContainer = range.endContainer,
+			endOffset = range.endOffset,
+			endNode;
 		
-		// range.startContainer, range.endContainer
-		// range.startOffset, range.endOffset 
-		// correct start and end container and offsets of a range
+		if ( endContainer.childNodes.length == endOffset ) {
+			endNode = getSelectionEnd( endContainer, isSelectionStopNode );
+			if ( endNode ) {
+				range.endContainer = endNode;
+				range.endOffset = endNode.length;
+			}
+		}
+		
 		return range;
 	};
 	
