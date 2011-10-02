@@ -1927,9 +1927,12 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore) {
 			cells,
 			cellInfo;
 		
+		var grid = makeGrid(rows);
+		var selectColWidth = 1; //width of the select-row column
+
 		// if all columns should be deleted, remove the WHOLE table
 		// delete the whole table
-		if ( TableSelection.selectedColumnIdxs.length == this.numCols ) {
+		if ( TableSelection.selectedColumnIdxs.length == grid[0].length - selectColWidth ) {
 			
 			Aloha.showMessage(new Aloha.Message({
 				title : i18n.t('Table'),
@@ -1952,65 +1955,36 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore) {
 //				focusColID --;
 //			}
 
-			// build the array with the row-ids of th rows which should be deleted
-			for (var i = 0; i < rows.length; i++) {
-				for (var j = 0; j < TableSelection.selectedColumnIdxs.length; j++) {
+			//TODO there is a bug that that occurs if a column is
+			//selected and deleted, and then a column with a greater
+			//x-index is selected and deleted.
 
-					// returns an array [containsCell , cellIdx, homeRow] if cell exists
-					if ( cellInfo = gridColumnToCellIndex(rows, i, TableSelection.selectedColumnIdxs[j]) ) {
-						// contains cell a real cell?
-						if ( !cellInfo[0] ) {
-							// is virtual cell in same row as the real cell
-							if (cellInfo[2] ) {
-								// rember cell to change colspan
-								changeColspan.push({
-									row: i,
-									cell: cellInfo[1]
-								});
-							}
-						} else {
-							// handle the case we want to delete a colspan cell
-							// get cell info for the next cell ( idx + 1 )
-							var nextcellInfo = gridColumnToCellIndex(rows, i, TableSelection.selectedColumnIdxs[j] + 1);
-							// if nextCell is virtual and in same row then adjust colspan
-							if ( nextcellInfo && !nextcellInfo[0] && nextcellInfo[2] ) {
-								changeColspan.push({
-									row: i,
-									cell: cellInfo[1]
-								});
-							} else {
-								cellToDelete.push( rows[i].cells[ cellInfo[1] ] );
-							}
+			//sorted so we delete from right to left to minimize interfernce of deleted rows
+			var gridColumns = TableSelection.selectedColumnIdxs.sort(function(a,b){ return b - a; });
+			for (var i = 0; i < gridColumns.length; i++) {
+				var gridColumn = gridColumns[i];
+				for (var j = 0; j < rows.length; j++) {
+					var cellInfo = grid[j][gridColumn];
+					if ( ! cellInfo ) {
+						//TODO this case occurred because of a bug somewhere which should be fixed
+						continue;
+					}
+					if ( 0 === cellInfo.spannedX ) {
+						if (1 < cellInfo.colspan) {
+							var nCell = newCell().obj;
+							jQuery( cellInfo.cell ).after(nCell);
+							nCell.attr('rowspan', cellInfo.rowspan);
+							nCell.attr('colspan', cellInfo.colspan - 1);
 						}
+						jQuery( cellInfo.cell ).remove();
+					} else {
+						jQuery( cellInfo.cell ).attr('colspan', cellInfo.colspan - 1);
 					}
+					//ensures that always 0 === cellInfo.spannedY
+					j += cellInfo.rowspan - 1;
 				}
-			}
-			
-			// adjust colspan -1 for each cell we remembered
-			// and if colspan should be 0 we delete it
-			for ( var i = 0; i < changeColspan.length; i++ ) {
-				var cell =  rows[ changeColspan[i].row ].cells[ changeColspan[i].cell ];
-				var colspan = parseInt( cell.colSpan ) - 1;
-				if ( colspan <= 0 ) {
-					cellToDelete.push( cell );
-				} else {
-					cell.colSpan = colspan;
-				}
-			}
-
-			// delete cells from cells-array
-			for (var i = 0; i < cellToDelete.length; i ++) {
-				for (var j = 0; j < this.cells.length; j++) {
-					if ( cellToDelete[i] == this.cells[j].obj.get(0) ) {
-						this.cells.splice(j, 1);
-						j = this.cells.length;
-					}
-				}
-			}
-
-			// remove the cells from dom
-			for (var i = 0; i < cellToDelete.length; i++) {
-				jQuery( cellToDelete[i] ).remove();
+				//rebuild the grid to reflect the table structure change
+				grid = makeGrid(rows);
 			}
 
 			// reduce the attribute storing the number of rows in the table
@@ -2154,39 +2128,25 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore) {
 			this.attachRowSelectionEventsToCell(selectionColumn);
 			insertionRow.append(selectionColumn);
 
-			var insertedAt = [];
-			var prevContainsCell = [];
-			var prevCi = [];
-
-			function insertCell(ri, walkedGridColumn) {
-				$rows.eq(ri).children().eq(prevCi[walkedGridColumn]).after(newCell().obj);
-			}
-
-			walkCells($rows, function (ri, ci, walkedGridColumn, containsCell, homeRow) {
-				if ( ri >= newRowIndex && ci >= 1 ) {
-					if ( ! insertedAt[walkedGridColumn] && (containsCell || homeRow) ) {
-						if ( ri == newRowIndex ) {
-							insertionRow.append(newCell().obj);
-						} else if ( ! prevContainsCell[walkedGridColumn] ) {
-							insertCell(ri - 1, walkedGridColumn);
-						}
-						insertedAt[walkedGridColumn] = true;
-					}
-					prevContainsCell[walkedGridColumn] = containsCell;
-					prevCi[walkedGridColumn] = (containsCell || homeRow ? ci : ci - 1);
+			var grid = makeGrid($rows);
+			var selectColOffset = 1;
+			if ( newRowIndex >= grid.length ) {
+				for (var i = selectColOffset; i < grid[0].length; i++) {
+					insertionRow.append(newCell().obj);
 				}
-			});
-			var lastRowIdx = $rows.length - 1;
-			var $lastRow = $rows.eq(lastRowIdx);
-			for (var i = 1; i < numCols + 1; i++) {
-				if ( ! insertedAt[i] ) {
-					if ( lastRowIdx + 1 == newRowIndex) {
-						console.log("append to insert row");
-						insertionRow.append(newCell().obj);
+			} else {
+				for (var i = selectColOffset; i < grid[newRowIndex].length; ) {
+					var cellInfo = grid[newRowIndex][i];
+					if (containsDomCell(cellInfo)) {
+						var colspan = cellInfo.colspan;
+						while (colspan--) {
+							var nCell = newCell();
+							insertionRow.append(nCell.obj);
+						}
 					} else {
-						console.log("append to last row");
-						insertCell(lastRowIdx, i);
+						jQuery( cellInfo.cell ).attr('rowspan', cellInfo.rowspan + 1);
 					}
+					i += cellInfo.colspan;
 				}
 			}
 
@@ -2267,6 +2227,7 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore) {
 				selectedColumnIdxs.sort( function (a,b) { return b - a; } );
 			}
 			
+			var grid = makeGrid(rows);
 			for (var i = 0; i < rows.length; i++) {
 				for (var j = 0; j < selectedColumnIdxs.length; j++) {
 					
@@ -2312,39 +2273,18 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore) {
 						cell = cellObj.obj;
 					}
 
-					// returns an array [containsCell , cellIdx, homeRow]
-					var cellInfo = gridColumnToCellIndex( rows, i, currentColIdx );
-
-					switch ( position ) {
-					case 'left':
-						// cell is in homeRow
-						if ( cellInfo[2] ) {
-							jQuery( rows[i].cells[ cellInfo[1] ] ).before(cell);
-						} else {
-							// real cell is first cell of the table 
-							if ( cellInfo[1] == 0 ) {
-								jQuery( rows[i] ).prepend( cell );
-							} else {
-								jQuery( rows[i].cells[ cellInfo[1] - 1 ] ).before( cell );
-							}
-						}
-						break;
-						
-					case 'right':
-						// Should we increase colspan instead adding cells?
-						// cell is in homeRow
-						if ( cellInfo[2] ) {
-							jQuery( rows[i].cells[ cellInfo[1] ] ).after(cell);
-						} else {
-							if ( cellInfo[1] == 0 ) {
-								jQuery( rows[i] ).prepend( cell );
-							} else {
-								jQuery( rows[i].cells[ cellInfo[1] - 1 ] ).after( cell );
-							}
-						}
-						break;
-					}
 					
+					var leftCell = leftDomCell( grid, i, currentColIdx );
+					if ( null == leftCell ) {
+						jQuery( rows[i] ).prepend( cell );
+					} else {
+						if ( 'left' === position ) {
+							jQuery( leftCell ).before( cell );
+						} else {//right
+							jQuery( leftCell ).after( cell );
+						}
+					}
+
 					this.numCols++;
 				}
 			}
@@ -2860,48 +2800,50 @@ Table.prototype.selectRows = function () {
     }
   };
 
-  /**
-   * Toggles selection of cell.
-   * This works only when cell selection mode is active. 
-   */
-  Table.Cell.prototype.selectCellRange = function(){
-      if(!TableSelection.cellSelectionMode) {
-		  return;
-	  }
+	/**
+	 * Toggles selection of cell.
+	 * This works only when cell selection mode is active. 
+	 */
+	Table.Cell.prototype.selectCellRange = function(){
+		if(!TableSelection.cellSelectionMode) {
+			return;
+		}
 
-	  var cX = this.virtualX();
-	  var cY = this.virtualY();
-	  var basePos = TableSelection.baseCellPosition;
-	  var bX = basePos[1];
-	  if (cX < basePos[1]) {
-		  bX = cX;
-		  cX = basePos[1];
-	  }
-	  var bY = basePos[0];
-	  if (cY < bY) {
-		  bY = cY;
-		  cY = basePos[0];
-	  }
+		var cX = this.virtualX();
+		var cY = this.virtualY();
+		var basePos = TableSelection.baseCellPosition;
+		var bX = basePos[1];
+		if (cX < basePos[1]) {
+			bX = cX;
+			cX = basePos[1];
+		}
+		var bY = basePos[0];
+		if (cY < bY) {
+			bY = cY;
+			cY = basePos[0];
+		}
 
-      TableSelection.selectedCells = [];
-      var selectClass = this.tableObj.get('classCellSelected');
-	  var $rows = this.tableObj.obj.children().children('tr');
-	  walkCells($rows, function(ri, ci, walkedGridColumn, containsCell, homeRow) {
-		  if (containsCell) {
-			  var $cell = jQuery($rows[ri].cells[ci]);
-			  if (   ri >= bY && ri <= cY
-			      && walkedGridColumn >= bX && walkedGridColumn <= cX ) {
-				  $cell.addClass(selectClass);
-				  TableSelection.selectedCells.push($cell.get(0));
-			  } else {
-				  $cell.removeClass(selectClass);
-			  }
-		  }
-	  });
+		var $rows = this.tableObj.obj.children().children('tr');
+		var grid = makeGrid($rows);
+		
+		TableSelection.selectedCells = [];
+		var selectClass = this.tableObj.get('classCellSelected');
+		for (var i = 0; i < grid.length; i++) {
+			for (var j = 0; j < grid[i].length; j++) {
+				var cellInfo = grid[i][j];
+				if ( containsDomCell(cellInfo) ) {
+					if (i >= bY && i <= cY && j >= bX && j <= cX) {
+						jQuery( cellInfo.cell ).addClass(selectClass);
+						TableSelection.selectedCells.push(cellInfo.cell);
+					} else {
+						jQuery( cellInfo.cell ).removeClass(selectClass);
+					}
+				}
+			}
+		}
 
-	  Aloha.trigger( 'aloha-table-selection-changed' );
-  };
-
+		Aloha.trigger( 'aloha-table-selection-changed' );
+	};
 
 	/**
 	 * Native toString-method
@@ -3381,39 +3323,28 @@ Table.prototype.selectRows = function () {
 	 * @return void
 	 */
 	TableSelection.prototype.selectColumns = function ( columnsToSelect ) {
-
-		var 
-			rows,
-			cellInfo;
-
         if ( typeof TablePlugin.activeTable == 'undefined' || !TablePlugin.activeTable ) {
         	return;
         }
 
 		this.unselectCells();
 
-		rows = TablePlugin.activeTable.obj.find("tr").toArray()
+		var rows = TablePlugin.activeTable.obj.find("tr").toArray()
 		// first row is the selection row (dump it, it's not needed)
 		rows.shift();
 			
-		for (var i = 0; i < rows.length; i++) {
-			for (var j = 0; j < columnsToSelect.length; j++) {
-				if ( i == 0 ) {
-					// check if this column is already selected.
-					for ( var z = 0; z < this.selectedColumnIdxs.length; z++ ) {
-						if ( columnsToSelect[j] == this.selectedColumnIdxs[z] ) {
-							return;
-						}
-					}
-					this.selectedColumnIdxs.push( columnsToSelect[j] );
-				}
-				cellInfo = gridColumnToCellIndex( rows, i, columnsToSelect[j] );
-				if ( cellInfo[0] ) {
-					if( rows[i].cells[ cellInfo[1] ] ){
-						this.selectedCells.push( rows[i].cells[ cellInfo[1] ] );
-						// TODO make proper cell selection method
-						jQuery( rows[i].cells[ cellInfo[1] ] ).addClass( TablePlugin.activeTable.get('classCellSelected') );
-					}
+		var grid = makeGrid(rows);
+		for (var j = 0; j < columnsToSelect.length; j++) {
+			// check if this column is already selected.
+			if ( -1 !== jQuery.inArray(columnsToSelect[j], this.selectedColumnIdxs) ) {
+				continue;
+			}
+			this.selectedColumnIdxs.push( columnsToSelect[j] );
+			for (var i = 0; i < grid.length; i++) {
+				var cellInfo = grid[i][columnsToSelect[j]];
+				if ( containsDomCell(cellInfo) ) {
+					jQuery(cellInfo.cell).addClass(TablePlugin.activeTable.get('classCellSelected'));
+					this.selectedCells.push( cellInfo.cell );
 				}
 			}
 		}
@@ -3421,7 +3352,6 @@ Table.prototype.selectRows = function () {
 		this.selectionType = 'column';
 		Aloha.trigger( 'aloha-table-selection-changed' );
 	};
-
 	
 	/**
 	 * Marks all cells of the specified row or rows as selected
@@ -3653,41 +3583,18 @@ Table.prototype.selectRows = function () {
 				var $rows = $row.parent().children();
 				var rowIdx = $row.index();
 				var colIdx = $cell.index();
+				var grid = makeGrid($rows);
 				var gridColumn = cellIndexToGridColumn($rows, rowIdx, colIdx);
-				walkCells($rows, function(ri, ci, walkedGridColumn, containsCell, homeRow) {
-					//we test whether we are within a coordinate spanned by the cell-to-split
-					//and we make sure we only insert a cell if there isn't already one present
-					if (ri >= rowIdx && ri < rowIdx + rowspan && gridColumn <= walkedGridColumn && ! containsCell ) {
-						if (ri == 0) {
-							prepend.push($rows[ri]);
-						} else if ( ! homeRow ) {
-							//the ci will not point to an actual cell unless this is the homerow
-							after.push($rows[ri].cells[ci - 1]);
+				for (var i = 0; i < rowspan; i++) {
+					for (var j = (0 === i ? 1 : 0); j < colspan; j++) {
+						var leftCell = leftDomCell(grid, rowIdx + i, gridColumn);
+						if (null == leftCell) {
+							$rows.eq(rowIdx + i).prepend(newCell().obj);
 						} else {
-							after.push($rows[ri].cells[ci]);
+							jQuery( leftCell ).after(newCell().obj);
 						}
 					}
-				});
-			});
-
-			//we use prepend and after arrays to perform table
-			//manipulation after walking all cells_to_split with
-			//walkCells since the walkCells function will use the table
-			//structure to calculate offsets and we mustn't modify the
-			//table while we walk it. the same reasoning applies to
-			//removing the 'colspan' and 'rowspan' attributes below.
-
-			for (var i = 0; i < prepend.length; i++) {
-				jQuery(prepend[i]).prepend(newCell().obj);
-			}
-
-			for (i = 0; i < after.length; i++) {
-				jQuery(after[i]).after(newCell().obj);
-			}
-
-			jQuery(cells_to_split).each(function(){
-				var $cell = jQuery(this);
-
+				}
 				$cell.removeAttr('colspan');
 				$cell.removeAttr('rowspan');
 			});
@@ -3720,19 +3627,20 @@ Table.prototype.selectRows = function () {
 		return new_cell;
 	}
 	/**
-	 * Translates the coordinates of a table cell (in dom coordinates)
-	 * to the gridColumn of the cell, which is the column index adjusted
+	 * Translates the DOM-Element column offset of a table-cell to the
+	 * column offset of a grid-cell, which is the column index adjusted
 	 * by other cells' rowspan and colspan values.
 	 *
 	 * @param rows the rows of a table as an array or jQuery object
-	 * @param rowIdx the index in rows of the cell to get the grid column of
-	 * @param colIdx the index in rows[row].cells of the cell to get the grid column of
-	 * @return the grid column of the cell at the given rowIdx and colIdx
+	 * @param rowIdx the index in rows of the cell to get the grid column index of
+	 * @param colIdx the index in rows[row].cells of the cell to get the grid column index of
+	 * @return the grid column index of the cell at the given rowIdx and colIdx, or null
+	 *   if the given rowIdx and colIdx coordinates point to a cell outside of the table.
 	 */
 	function cellIndexToGridColumn(rows, rowIdx, colIdx) {
 		var gridColumn = null;
-		walkCells(rows, function(ri, ci, walkedGridColumn, containsCell) {
-			if (ri === rowIdx && ci === colIdx && containsCell) {
+		walkCells(rows, function(ri, ci, walkedGridColumn, rowspan, colspan) {
+			if (ri === rowIdx && ci === colIdx) {
 				gridColumn = walkedGridColumn;
 				return false;
 			}
@@ -3740,49 +3648,15 @@ Table.prototype.selectRows = function () {
 		return gridColumn;
 	}
 	/**
-	 * @param rows the rows of the table
-	 * @param rowIdx the index of the row in "rows" that contains the
-	 *   cell for which the index will be returned.
-	 * @param gridColumn the grid column index of the cell for which the
-	 *   the index will be returned. grid column index means that
-	 *   the table is divided into squares of equal size before taking
-	 *   the column index. the grid column index doesn't contain any
-	 *   adjustments for colspans.
-	 */
-	function gridColumnToCellIndex(rows, rowIdx, gridColumn) {
-		var cellInfo = null;
-		walkCells(rows, function(ri, ci, walkedGridColumn, containsCell, homeRow){
-			if (ri === rowIdx && walkedGridColumn === gridColumn) {
-				cellInfo = [containsCell, ci, homeRow];
-				return false;
-			}
-	    });
-		return cellInfo;
-	}
-	/**
-	 * Walks the cells in the given rows calling the given callback with
-	 * the row index, the cell index, and the grid column index. The
-	 * grid column index is the cell index adjusted by the rowspans and
-	 * colspans of preceding cells.
-	 *
-	 * The callback is invoked once for each grid-cell, meaning it can
-	 * be invoked multiple times for a cell if the cell has rowspan or
-	 * colspan attributes greater than 1.
-	 *
-	 * The order in which the cells are walked is left-to-right and
-	 * top-to-bottom.
-	 *
-	 * @param rows the rows of the table
-	 * @param callback accepts
-	 * 1. ri the row index (rows)
-	 * 2. ci the cell index (rows[row].cells)
-	 * 3. gridColumn the adjusted grid column index; may vary for the same row
-	 *    index and cell index if a cell spans multiple rows or columns.
-	 * 4. containsCell a boolan indicating whether there is a real
-	 *    cell at the provided grid column index and row index or
-	 *    whether it is another cell that spans to the provided grid
-	 *    column index.
-	 * Returning false from the callback will terminate the walk early.
+	 * Walks the table-cells of the table represented by the given rows,
+	 * invoking the given callback for each.
+	 * @param callback will receive the following arguments
+	 *   o ri the row index of the table-cell
+	 *   o ci the column index of the table-cell as the offset of the DOM-Element
+	 *   o gridCi the column index of the table-cell in a virtual grid that overlays the table (see makeGrid())
+	 *   o colspan the colspan attribute of the table-cell (as a number)
+	 *   o rowspan the rowspan attribute of the table-cell (as a number)
+	 *   returning false from the callback will terminate the walk early.
 	 * @return void
 	 */
 	function walkCells(rows, callback) {
@@ -3796,37 +3670,103 @@ Table.prototype.selectRows = function () {
 				var rowspan = parseInt(jQuery(cell).attr('rowspan')) || 1;
 				
 				while (adjust[ci + skip]) {
-					if (false === callback(ri, ci, ci + skip, false, false)) {
-						return;
-					}
 					adjust[ci + skip] -= 1;
 					skip += 1;
 				}
 
-				for (var j = 0; j < colspan; j++) {
-					//the cell is understood to begin in the first grid position it spans
-					var containsCell = (j == 0);
-					if (false === callback(ri, ci, ci + skip + j, containsCell, true)) {
-						return;
-					}
+				if (false === callback(ri, ci, ci + skip, colspan, rowspan)) {
+					return;
 				}
 				
 				for (var i = 0; i < colspan; i++) {
 					if (adjust[ci + skip + i] ) {
-						Aloha.Log.error("an impossible case has occurred");
+						throw "an impossible case has occurred";
 					}
 					adjust[ci + skip + i] = rowspan - 1;
 				}
 				skip += colspan - 1;
 			}
 			for (; ci + skip < adjust.length; skip++) {
-				if (false === callback(ri, ci, ci + skip, false, false)) {
-					return;
-				}
 				if (adjust[ci + skip]) {
 					adjust[ci + skip] -= 1;
 				}
 			}
 		}
     }
+	/**
+	 * Makes a grid out of the table represented by the given rows.  A
+	 * grid will contain one or multiple grid-cells for each table-cell.
+	 * A table-cell that has a colspan or rowspan greater than one will
+	 * be represented by multiple cells (colspan*rowspan) in the
+	 * grid.
+	 * @parm rows either an array or an jQuery object holding the DOM
+	 *   rows of the table.
+	 * @return the table translated to a grid of the form
+	 *   [ [cell11, cell12, cell13, ...],
+	 *     [cell21, cell22, cell23, ...],
+	 *     ... ]
+	 *  where each grid-cell is an object containing the following members:
+	 *  cell: the DOM object in the table that is rendered into the grid-cell
+	 *  colspan: the colspan attribute of the DOM object (as a number)
+	 *  rowspan: the rowspan attribute of the DOM object (as a number)
+	 *  spannedX: the row offset of the grid-cell in the table-cell (0 based)
+	 *  spannedY: the column offset of the grid-cll in the table-cell (0 based)
+	 */
+	function makeGrid(rows) {
+		var grid = [];
+		walkCells(rows, function(ri, ci, gridCi, colspan, rowspan) {
+			var cell = rows[ri].cells[ci];
+			for (var spannedY = 0; spannedY < rowspan; spannedY++) {
+				grid[ri + spannedY] = grid[ri + spannedY] || [];
+				for (var spannedX = 0; spannedX < colspan; spannedX++) {
+					grid[ri + spannedY][gridCi + spannedX] = {
+						'cell'    : cell,
+						'colspan' : colspan,
+						'rowspan' : rowspan,
+						'spannedX': spannedX,
+						'spannedY': spannedY
+					};
+				}
+			}
+		});
+		return grid;
+	}
+	/**
+	 * A grid-cell is said to contain a dom-cell if it is located in the
+	 * upper-left corner of a table-cell. A table-cell may have a
+	 * rowspan and colspan, and as such may be comprised of several
+	 * grid-cells, of which only one (the upper-left corner one)
+	 * contains a dom-cell.
+	 * @param cellInfo a cell in the grid returned by makeGrid()
+	 * @return whether the given grid-cell maps to a dom-cell
+	 */
+	function containsDomCell(cellInfo) {
+		return 0 === cellInfo.spannedX && 0 === cellInfo.spannedY;
+	}
+	/**
+	 * A grid-cell may not contain a dom-cell (due to rowspand and
+	 * colspan). If this function is given the coordinates of such a
+	 * grid-cell, it will look to the left of the grid-cell, until it
+	 * finds a grid-cell that contains a dom-cell and returns the
+	 * DOM-Element of it.
+	 *
+	 * This function is useful to insert something into the DOM next to
+	 * or in place of the grid-cell.
+	 *
+	 * @param grid the grid of the table (see makeGrid())
+	 * @param ri the row index into the grid
+	 * @param ci the column index into the grid
+	 * @return the DOM-Element either at or to the left of the grid-cell
+	 *   a the given coordinates.
+	 */
+	function leftDomCell(grid, ri, gridCi) {
+		do {
+			var cellInfo = grid[ri][gridCi];
+			if ( 0 === cellInfo.spannedY ) {
+				return cellInfo.cell;
+			} 
+			gridCi -= cellInfo.spannedX + 1;
+		} while (gridCi >= 0);
+		return null;
+	}
 });
