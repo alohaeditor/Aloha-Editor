@@ -3276,7 +3276,7 @@ Table.prototype.selectRows = function () {
 	/**
 	 * Initialize a new Object from the same object to get access to the prototype methods
 	 */
-	TableSelection = new (TableSelectionModuleConstructor(TablePlugin))();
+	var TableSelection = new (TableSelectionModuleConstructor(TablePlugin))();
 	Aloha.TableSelection = TableSelection;
 
 	PluginManager.register(TablePlugin);
