@@ -2548,9 +2548,6 @@ Table.prototype.selectRows = function () {
 		if (null == originalTd) {
 			originalTd = '<td>&nbsp;</td>';
 		}
-		if (null == tableObj) {
-			tableObj = TablePlugin.activeTable;
-		}
 
 		this.obj = jQuery(originalTd);
 		this.tableObj = tableObj;
