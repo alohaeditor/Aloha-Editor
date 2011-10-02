@@ -1257,7 +1257,6 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore) {
 			for (var j = 0; j < cols.length; j++) {
 				var col = cols[j];
 				var Cell = new Table.Cell(col, this);
-				this.cells.push(Cell);
 			}
 		}
 	};
@@ -1971,7 +1970,7 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore) {
 					}
 					if ( 0 === cellInfo.spannedX ) {
 						if (1 < cellInfo.colspan) {
-							var nCell = Utils.newCell().obj;
+							var nCell = new Table.Cell(null, null, true).obj;
 							jQuery( cellInfo.cell ).after(nCell);
 							nCell.attr('rowspan', cellInfo.rowspan);
 							nCell.attr('colspan', cellInfo.colspan - 1);
@@ -2132,7 +2131,7 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore) {
 			var selectColOffset = 1;
 			if ( newRowIndex >= grid.length ) {
 				for (var i = selectColOffset; i < grid[0].length; i++) {
-					insertionRow.append(Utils.newCell().obj);
+					insertionRow.append(new Table.Cell(null, null, true).obj);
 				}
 			} else {
 				for (var i = selectColOffset; i < grid[newRowIndex].length; ) {
@@ -2140,8 +2139,7 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore) {
 					if (Utils.containsDomCell(cellInfo)) {
 						var colspan = cellInfo.colspan;
 						while (colspan--) {
-							var nCell = Utils.newCell();
-							insertionRow.append(nCell.obj);
+							insertionRow.append(new Table.Cell(null, null, true).obj);
 						}
 					} else {
 						jQuery( cellInfo.cell ).attr('rowspan', cellInfo.rowspan + 1);
@@ -2267,9 +2265,7 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore) {
 
 					} else {
 						// activate the cell for this table
-						cellObj = new Table.Cell( cell.get(0), TablePlugin.activeTable );
-						this.cells.push( cellObj );
-						cellObj.activate();
+						cellObj = new Table.Cell( cell.get(0), TablePlugin.activeTable, true);
 						cell = cellObj.obj;
 					}
 
@@ -2530,18 +2526,29 @@ Table.prototype.selectRows = function () {
 	 *
 	 * @param originalTd
 	 *            The original td-field which should will be transformed
-	 * @param colId
-	 *            the internal id of the corresponding col (begin with 0)
-	 * @param rowId
-	 *            the internal id of the corresponding row (begin with 0)
 	 * @param tableObj
 	 *            Table-Object which contains the cell
+	 * @param activate
+	 *            Whether the table cell should be activated
 	 *
 	 * @return the created table-data field as DOM-representation
 	 */
-	Table.Cell = function(originalTd, tableObj) {
+	Table.Cell = function(originalTd, tableObj, activate) {
+		if (null == originalTd) {
+			originalTd = '<td>&nbsp;</td>';
+		}
+		if (null == tableObj) {
+			tableObj = TablePlugin.activeTable;
+		}
+
 		this.obj = jQuery(originalTd);
 		this.tableObj = tableObj;
+
+		if (activate) {
+			new_cell.activate();
+		}
+
+		tableObj.activeTable.cells.push(new_cell);
 	};
 	/* -- ATTRIBUTES -- */
 	/**
@@ -3588,9 +3595,9 @@ Table.prototype.selectRows = function () {
 					for (var j = (0 === i ? 1 : 0); j < colspan; j++) {
 						var leftCell = Utils.leftDomCell(grid, rowIdx + i, gridColumn);
 						if (null == leftCell) {
-							$rows.eq(rowIdx + i).prepend(Utils.newCell().obj);
+							$rows.eq(rowIdx + i).prepend(new Table.Cell(null, null, true).obj);
 						} else {
-							jQuery( leftCell ).after(Utils.newCell().obj);
+							jQuery( leftCell ).after(new Table.Cell(null, null, true).obj);
 						}
 					}
 				}
@@ -3619,13 +3626,6 @@ Table.prototype.selectRows = function () {
 	//return TablePlugin;
 
 	var Utils = {
-		'newCell': function () {
-			var $cell = jQuery('<td>&nbsp;</td>');
-			var new_cell = new Table.Cell($cell.get(0), TablePlugin.activeTable);
-			new_cell.activate();
-			TablePlugin.activeTable.cells.push(new_cell);
-			return new_cell;
-		},
 		/**
 		 * Translates the DOM-Element column offset of a table-cell to the
 		 * column offset of a grid-cell, which is the column index adjusted
