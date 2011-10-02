@@ -1,17 +1,19 @@
 define(
 ['aloha/jquery', 'table/table-plugin-utils'],
 function ($, Utils) {
+/*
+ * TODO giving the TablePlugin to the TableSelection as argument is
+ *   a hack to provide the dependency without resorting to advanced
+ *   requirejs code. this dependency should be resolved somehow
+ *   without resorting to requirejs (we only want to use the
+ *   define() functionality in Aloha).
+ */
+return function (TablePlugin) {
+
 	/**
 	 * The TableSelection object is a helper-object which consists of static/global attributes and functions
-	 * TODO giving the TablePlugin to the TableSelection as argument is
-	 *   a hack to provide the dependency without resorting to advanced
-	 *   requirejs code. this dependency should be resolved somehow
-	 *   without resorting to requirejs (we only want to use the
-	 *   define() functionality in Aloha).
 	 */
-	var TableSelection = function(TablePlugin){
-		this._TablePlugin = TablePlugin;
-	};
+	var TableSelection = function(){};
 
 	/**
 	 * Gives the type of the cell-selection
@@ -61,13 +63,13 @@ function ($, Utils) {
 	 * @return void
 	 */
 	TableSelection.prototype.selectColumns = function ( columnsToSelect ) {
-        if ( typeof this._TablePlugin.activeTable == 'undefined' || !this._TablePlugin.activeTable ) {
+        if ( typeof TablePlugin.activeTable == 'undefined' || !TablePlugin.activeTable ) {
         	return;
         }
 
 		this.unselectCells();
 
-		var rows = this._TablePlugin.activeTable.obj.find("tr").toArray()
+		var rows = TablePlugin.activeTable.obj.find("tr").toArray()
 		// first row is the selection row (dump it, it's not needed)
 		rows.shift();
 		
@@ -81,7 +83,7 @@ function ($, Utils) {
 			for (var i = 0; i < grid.length; i++) {
 				var cellInfo = grid[i][columnsToSelect[j]];
 				if ( Utils.containsDomCell(cellInfo) ) {
-					$(cellInfo.cell).addClass(this._TablePlugin.activeTable.get('classCellSelected'));
+					$(cellInfo.cell).addClass(TablePlugin.activeTable.get('classCellSelected'));
 					this.selectedCells.push( cellInfo.cell );
 				}
 			}
@@ -97,13 +99,13 @@ function ($, Utils) {
 	 * @return void
 	 */
 	TableSelection.prototype.selectRows = function ( rowsToSelect ) {
-        if ( typeof this._TablePlugin.activeTable == 'undefined' || !this._TablePlugin.activeTable ) {
+        if ( typeof TablePlugin.activeTable == 'undefined' || !TablePlugin.activeTable ) {
         	return;
         }
 
 		this.unselectCells();
 
-		var rows = this._TablePlugin.activeTable.obj.find("tr").toArray();
+		var rows = TablePlugin.activeTable.obj.find("tr").toArray();
 		
  	    rowsToSelect.sort( function ( a, b ) { return a - b; } );
 
@@ -120,7 +122,7 @@ function ($, Utils) {
 			    for ( var j = 1; j < rows[ rowsToSelect[i] ].cells.length; j++ ) {  
 					this.selectedCells.push( rows[ rowsToSelect[i] ].cells[j] );
 					// TODO make proper cell selection method
-					$( rows[ rowsToSelect[i] ].cells[j] ).addClass( this._TablePlugin.activeTable.get('classCellSelected') );
+					$( rows[ rowsToSelect[i] ].cells[j] ).addClass( TablePlugin.activeTable.get('classCellSelected') );
 			    }
 			}
 		}
@@ -136,7 +138,7 @@ function ($, Utils) {
 	 */
 	TableSelection.prototype.isHeader = function ( ) {
 		
-        if ( typeof this._TablePlugin.activeTable == 'undefined' || !this._TablePlugin.activeTable ) {
+        if ( typeof TablePlugin.activeTable == 'undefined' || !TablePlugin.activeTable ) {
         	return;
         }
         
@@ -162,7 +164,7 @@ function ($, Utils) {
 		var 
 		rows;
 
-		if ( typeof this._TablePlugin.activeTable == 'undefined' || !this._TablePlugin.activeTable ) {
+		if ( typeof TablePlugin.activeTable == 'undefined' || !TablePlugin.activeTable ) {
     		return;
 		}
 		
@@ -173,12 +175,12 @@ function ($, Utils) {
 
 		if (this.selectedCells.length > 0) {
 			
-			rows = this._TablePlugin.activeTable.obj.find("tr").toArray();
+			rows = TablePlugin.activeTable.obj.find("tr").toArray();
 			
 			for (var i = 0; i < rows.length; i++) {
 			    for ( var j = 1; j < rows[i].cells.length; j++ ) {  
 					// TODO make proper cell selection method
-					$( rows[i].cells[j] ).removeClass( this._TablePlugin.activeTable.get('classCellSelected') );
+					$( rows[i].cells[j] ).removeClass( TablePlugin.activeTable.get('classCellSelected') );
 			    }
 			}
 
@@ -297,7 +299,6 @@ function ($, Utils) {
 	 * @return void
 	 */
 	TableSelection.prototype.splitCells = function(){
-		TablePlugin = this._TablePlugin;
 		// split the selected cells or currently active cell
 		var cells_to_split = this.selectedCells;
 		if (cells_to_split.length > 0) {
@@ -340,6 +341,6 @@ function ($, Utils) {
 			TableSelection.selectionType = 'cell';
 		}
 	};
-
 	return TableSelection;
+};
 });

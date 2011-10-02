@@ -7,7 +7,7 @@
 
 define(
 ['aloha', 'aloha/jquery', 'aloha/plugin', 'aloha/pluginmanager', 'aloha/floatingmenu', 'i18n!table/nls/i18n', 'i18n!aloha/nls/i18n', 'table/table-selection', 'table/table-plugin-utils', 'css!table/css/table.css'],
-function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, TableSelection, Utils) {
+function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, TableSelectionModuleConstructor, Utils) {
 
 	var
 		GENTICS = window.GENTICS;
@@ -3276,7 +3276,7 @@ Table.prototype.selectRows = function () {
 	/**
 	 * Initialize a new Object from the same object to get access to the prototype methods
 	 */
-	TableSelection = new TableSelection(TablePlugin);
+	TableSelection = new (TableSelectionModuleConstructor(TablePlugin))();
 	Aloha.TableSelection = TableSelection;
 
 	PluginManager.register(TablePlugin);
