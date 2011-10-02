@@ -3566,7 +3566,7 @@ Table.prototype.selectRows = function () {
 	 */
 	TableSelection.prototype.splitCells = function(){
 		// split the selected cells or currently active cell
-		var cells_to_split = (this.selectedCells.length > 0 ? this.selectedCells : [Table.Cell.lastActiveCell.obj[0]]);
+		var cells_to_split = this.selectedCells;
 		if (cells_to_split.length > 0) {
 
 			//will be populated with rows that will get a new cell prepended
