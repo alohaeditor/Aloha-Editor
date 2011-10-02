@@ -3281,7 +3281,9 @@ Table.prototype.selectRows = function () {
 	/**
 	 * The TableSelection object is a helper-object which consists of static/global attributes and functions
 	 */
-	var TableSelection = function(){};
+	var TableSelection = function(TablePlugin){
+		this._TablePlugin = TablePlugin;
+	};
 
 	/* -- ATTRIBUTES -- */
 	/**
@@ -3337,13 +3339,13 @@ Table.prototype.selectRows = function () {
 	 * @return void
 	 */
 	TableSelection.prototype.selectColumns = function ( columnsToSelect ) {
-        if ( typeof TablePlugin.activeTable == 'undefined' || !TablePlugin.activeTable ) {
+        if ( typeof this._TablePlugin.activeTable == 'undefined' || !this._TablePlugin.activeTable ) {
         	return;
         }
 
 		this.unselectCells();
 
-		var rows = TablePlugin.activeTable.obj.find("tr").toArray()
+		var rows = this._TablePlugin.activeTable.obj.find("tr").toArray()
 		// first row is the selection row (dump it, it's not needed)
 		rows.shift();
 			
@@ -3357,7 +3359,7 @@ Table.prototype.selectRows = function () {
 			for (var i = 0; i < grid.length; i++) {
 				var cellInfo = grid[i][columnsToSelect[j]];
 				if ( Utils.containsDomCell(cellInfo) ) {
-					jQuery(cellInfo.cell).addClass(TablePlugin.activeTable.get('classCellSelected'));
+					jQuery(cellInfo.cell).addClass(this._TablePlugin.activeTable.get('classCellSelected'));
 					this.selectedCells.push( cellInfo.cell );
 				}
 			}
@@ -3377,13 +3379,13 @@ Table.prototype.selectRows = function () {
 		var 
 			rows;
 
-        if ( typeof TablePlugin.activeTable == 'undefined' || !TablePlugin.activeTable ) {
+        if ( typeof this._TablePlugin.activeTable == 'undefined' || !this._TablePlugin.activeTable ) {
         	return;
         }
 
 		this.unselectCells();
 
-		rows = TablePlugin.activeTable.obj.find("tr").toArray();
+		rows = this._TablePlugin.activeTable.obj.find("tr").toArray();
 		
  	    rowsToSelect.sort( function ( a, b ) { return a - b; } );
 
@@ -3400,7 +3402,7 @@ Table.prototype.selectRows = function () {
 			    for ( var j = 1; j < rows[ rowsToSelect[i] ].cells.length; j++ ) {  
 					this.selectedCells.push( rows[ rowsToSelect[i] ].cells[j] );
 					// TODO make proper cell selection method
-					jQuery( rows[ rowsToSelect[i] ].cells[j] ).addClass( TablePlugin.activeTable.get('classCellSelected') );
+					jQuery( rows[ rowsToSelect[i] ].cells[j] ).addClass( this._TablePlugin.activeTable.get('classCellSelected') );
 			    }
 			}
 		}
@@ -3417,7 +3419,7 @@ Table.prototype.selectRows = function () {
 	 */
 	TableSelection.prototype.isHeader = function ( ) {
 		
-        if ( typeof TablePlugin.activeTable == 'undefined' || !TablePlugin.activeTable ) {
+        if ( typeof this._TablePlugin.activeTable == 'undefined' || !this._TablePlugin.activeTable ) {
         	return;
         }
         
@@ -3443,7 +3445,7 @@ Table.prototype.selectRows = function () {
 		var 
 		rows;
 
-    if ( typeof TablePlugin.activeTable == 'undefined' || !TablePlugin.activeTable ) {
+    if ( typeof this._TablePlugin.activeTable == 'undefined' || !this._TablePlugin.activeTable ) {
     	return;
     }
     
@@ -3454,12 +3456,12 @@ Table.prototype.selectRows = function () {
 
 	if (this.selectedCells.length > 0) {
 			
-			rows = TablePlugin.activeTable.obj.find("tr").toArray();
+			rows = this._TablePlugin.activeTable.obj.find("tr").toArray();
 			
 			for (var i = 0; i < rows.length; i++) {
 			    for ( var j = 1; j < rows[i].cells.length; j++ ) {  
 					// TODO make proper cell selection method
-					jQuery( rows[i].cells[j] ).removeClass( TablePlugin.activeTable.get('classCellSelected') );
+					jQuery( rows[i].cells[j] ).removeClass( this._TablePlugin.activeTable.get('classCellSelected') );
 			    }
 			}
 
@@ -3578,6 +3580,7 @@ Table.prototype.selectRows = function () {
 	 * @return void
 	 */
 	TableSelection.prototype.splitCells = function(){
+		TablePlugin = this._TablePlugin;
 		// split the selected cells or currently active cell
 		var cells_to_split = this.selectedCells;
 		if (cells_to_split.length > 0) {
@@ -3626,7 +3629,7 @@ Table.prototype.selectRows = function () {
 	/**
 	 * Initialize a new Object from the same object to get access to the prototype methods
 	 */
-	TableSelection = new TableSelection();
+	TableSelection = new TableSelection(TablePlugin);
 	Aloha.TableSelection = TableSelection;
 
 	PluginManager.register(TablePlugin);
