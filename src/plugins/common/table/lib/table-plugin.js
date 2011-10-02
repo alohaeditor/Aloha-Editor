@@ -3522,7 +3522,6 @@ Table.prototype.selectRows = function () {
         var curCell = jQuery(this.selectedCells[i]);
 
         var curRowId = curCell.parent().prevAll('tr').length;
-        var curColId = curCell.parent().prevAll('tr').length;
 
         //if current cell is in the same row as the first cell,
         //increase colspan
