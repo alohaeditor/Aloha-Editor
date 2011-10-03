@@ -18,8 +18,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 define(
-['aloha/core', 'aloha/jquery', 'aloha/ext', 'util/class', 'i18n!aloha/nls/i18n', 'vendor/jquery.store'],
-function(Aloha, jQuery, Ext, Class, i18n) {
+['aloha/core', 'aloha/jquery', 'aloha/ext', 'util/class', 'vendor/jquery.store'],
+function(Aloha, jQuery, Ext, Class) {
 	"use strict";
 	var GENTICS = window.GENTICS;
 
@@ -464,7 +464,6 @@ function(Aloha, jQuery, Ext, Class, i18n) {
 			
 			jQuery.each(Aloha.settings.toolbar.tabs, function (tab, groups) {
 				// generate or retrieve tab
-				tab = i18n.t(tab);
 				var tabObject = that.tabMap[tab];
 				if (typeof tabObject === 'undefined') {
 					// the tab object does not yet exist, so create a new tab and add it to the list
