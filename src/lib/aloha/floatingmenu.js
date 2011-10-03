@@ -21,12 +21,7 @@ define(
 ['aloha/core', 'aloha/jquery', 'aloha/ext', 'util/class', 'vendor/jquery.store'],
 function(Aloha, jQuery, Ext, Class) {
 	"use strict";
-	var
-//		$ = jQuery,
-//		Aloha = window.Aloha,
-//		console = window.console||false,
-//		Class = window.Class,
-		GENTICS = window.GENTICS;
+	var GENTICS = window.GENTICS;
 
 	/**
 	 * Constructor for a floatingmenu tab
@@ -142,7 +137,6 @@ function(Aloha, jQuery, Ext, Class) {
 				// to avoid Aloha to block at startup even
 				// if a plugin is badly designed
 				if (typeof buttonInfo.button !== "undefined"){
-					console.log('Group pushing button ' + buttonInfo.button.name );
 					this.buttons.push(buttonInfo);
 				}
 			}
@@ -483,7 +477,6 @@ function(Aloha, jQuery, Ext, Class) {
 						for (i = 0; i < that.allButtons.length; i++) {
 							if (button === that.allButtons[i].button.name) {
 								groupObject.addButton(that.allButtons[i]);
-								console.info('button ' + button + ' into group ' + group);
 								break;
 							}
 						}
