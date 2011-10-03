@@ -206,6 +206,7 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 
 			if (this.multiSplitItems.length > 0) {
 				this.multiSplitButton = new Aloha.ui.MultiSplitButton({
+					'name' : 'phrasing',
 					'items' : this.multiSplitItems
 				});
 				FloatingMenu.addButton(

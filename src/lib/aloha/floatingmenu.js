@@ -142,6 +142,7 @@ function(Aloha, jQuery, Ext, Class) {
 				// to avoid Aloha to block at startup even
 				// if a plugin is badly designed
 				if (typeof buttonInfo.button !== "undefined"){
+					console.log('Group pushing button ' + buttonInfo.button.name );
 					this.buttons.push(buttonInfo);
 				}
 			}
@@ -453,6 +454,9 @@ function(Aloha, jQuery, Ext, Class) {
 		 */
 		width: 400,
 
+		/**
+		 * initialize tabs and groups according to the current configuration
+		 */
 		initTabsAndGroups: function () {
 			var that = this;
 
@@ -467,7 +471,8 @@ function(Aloha, jQuery, Ext, Class) {
 					that.tabs.push(tabObject);
 					that.tabMap[tab] = tabObject;
 				}
-
+				
+				// generate groups for current tab
 				jQuery.each(groups, function (group, buttons) {
 					var groupObject = tabObject.getGroup(group),
 						i;
@@ -476,14 +481,13 @@ function(Aloha, jQuery, Ext, Class) {
 					jQuery.each(buttons, function (j, button) {
 						// now add the button to the group
 						for (i = 0; i < that.allButtons.length; i++) {
-							console.info(' - vs.' + that.allButtons[i].button.name);
 							if (button === that.allButtons[i].button.name) {
 								groupObject.addButton(that.allButtons[i]);
+								console.info('button ' + button + ' into group ' + group);
 								break;
 							}
 						}
 					});
-
 				});
 			});
 		},
@@ -495,8 +499,7 @@ function(Aloha, jQuery, Ext, Class) {
 		generateComponent: function () {
 			var that = this, pinTab;
 
-			// generating components is only called once on init
-			// so we can also init our tabs and groups here
+			// initialize tabs and groups first
 			this.initTabsAndGroups();
 
 			// Initialize and configure the tooltips
@@ -850,21 +853,6 @@ function(Aloha, jQuery, Ext, Class) {
 			// add the button to the scope
 			scopeObject.buttons.push(buttonInfo);
 
-			// get the tab object
-			/*tabObject = this.tabMap[tab];
-			if (typeof tabObject === 'undefined') {
-				// the tab object does not yet exist, so create a new tab and add it to the list
-				tabObject = new Tab(tab);
-				this.tabs.push(tabObject);
-				this.tabMap[tab] = tabObject;
-			}
-
-			// get the group
-			groupObject = tabObject.getGroup(group);
-
-			// now add the button to the group
-			groupObject.addButton(buttonInfo);
-*/
 			// finally, when the floatingmenu is already initialized, we need to create the ext component now
 			if (this.initialized) {
 				this.generateComponent();

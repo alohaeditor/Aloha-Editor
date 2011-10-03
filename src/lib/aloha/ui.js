@@ -190,7 +190,7 @@ Aloha.ui.Button = Class.extend({
 	setPressed: function(pressed) {
 		if (this.toggle) {
 			this.pressed = pressed;
-			if (typeof this.extButton === 'object' && this.extButton.pressed != pressed) {
+			if (typeof this.extButton === 'object' && this.extButton != null && this.extButton.pressed != pressed) {
 				this.extButton.toggle(this.pressed);
 			}
 		}
@@ -422,6 +422,9 @@ Ext.ux.MultiSplitButton = Ext.extend(Ext.Component, {
 			i,
 			item,
 			html = '<ul class="aloha-multisplit">';
+
+		// if there is a config, apply it. Otherwise all multisplit items will be shown
+		
 
 		// add a new button to the list for each configured item
 		for (i=0; i<this.items.length; i++) {
@@ -760,6 +763,9 @@ Aloha.ui.MultiSplitButton = Class.extend({
 	 * @param {String} name the item's name
 	 */
 	showItem: function(name) {
+		if (typeof this.extButton === 'undefined') {
+			return;
+		}
 		this.extButton.showItem(name);
 	},
 
@@ -768,6 +774,9 @@ Aloha.ui.MultiSplitButton = Class.extend({
 	 * @param {String} name the item's name
 	 */
 	hideItem: function(name) {
+		if (typeof this.extButton === 'undefined') {
+			return;
+		}
 		this.extButton.hideItem(name);
 	}
 });
