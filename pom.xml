@@ -11,6 +11,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<ALOHABUILDCONF>aloha</ALOHABUILDCONF>
 	</properties>
 
 	<scm>
@@ -44,7 +45,7 @@
                                 </executions>
                         </plugin>
 
-			 <!-- This is a workaround to get submodules working with the maven release plugin -->
+			 <!-- This is a workaround to get submodules working with the maven release plugin
 			 <plugin>
                                 <groupId>org.codehaus.mojo</groupId>
                                 <artifactId>exec-maven-plugin</artifactId>
@@ -62,8 +63,9 @@
                                         <executable>bin/update-from-git.sh</executable>
                                 </configuration>
                         </plugin>
+			-->
 
-						<!-- build before packaging -->
+			<!-- build before packaging -->
                         <plugin>
                                 <groupId>org.codehaus.mojo</groupId>
                                 <artifactId>exec-maven-plugin</artifactId>
@@ -81,8 +83,8 @@
                                         <executable>bin/build.sh</executable>
                                         <arguments>
                                         	<!-- gentics build target -->
-											<argument>gentics</argument>
-										  </arguments>
+						<argument>${ALOHABUILDCONF}</argument>
+  		                       </arguments>
                                 </configuration>
                         </plugin>
 		</plugins>
