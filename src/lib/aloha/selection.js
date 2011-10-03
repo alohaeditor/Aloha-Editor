@@ -1736,12 +1736,12 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 			return node;
 		}
 		
-		if ( node.children.length ) {
-			return getSelectionStopNode( node.children[0], condition );
+		if ( node.childNodes.length ) {
+			return getSelectionEndNode( node.childNodes[ 0 ], condition );
 		}
 		
 		if ( node.nextSibling ) {
-			return getSelectionStopNode( node.nextSibling, condition );
+			return getSelectionStartNode( node.nextSibling, condition );
 		}
 		
 		return node;
@@ -1752,12 +1752,8 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 			return node;
 		}
 		
-		//if ( node.children && node.children.length ) {
-		//	return getSelectionEndNode( node.children[ node.children.length - 1 ], condition );
-		//}
-		
 		if ( node.childNodes.length ) {
-			return getSelectionEndNode( node.childNodes[ node.childNodes.length - 1 ], condition );
+			return getSelectionStartNode( node.childNodes[ node.childNodes.length - 1 ], condition );
 		}
 		
 		if ( node.previousSibling ) {
@@ -1785,31 +1781,38 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 			startNode,
 		    endNode;
 		
-		//debugger;
-		
-		startNode = ( startContainer.children &&
-					  startContainer.children[ startOffset ] ) ||
-					  startContainer.firstChild;
-		
-		if ( startNode ) {
-			startNode = getSelectionStartNode( startNode, isSelectionStopNode );
-			if ( startNode ) {
-				range.startContainer = startNode;
-				range.startOffset = 0;
-			}
-		}
-		
-		if ( endOffset && isSelectionStopNode( endContainer ) ) {
-		
-		} else if ( endOffset && endOffset == endContainer.childNodes.length ) {
+		if ( endOffset &&
+			 isSelectionStopNode( endContainer ) ) {
+			// The end position is somewhere in the middle, or at the end of a
+			// node on which we can position the end of the selection. We
+			// therefore don't need to move it
+			// Corrects:
+		} else if ( endOffset &&
+					endOffset == endContainer.childNodes.length ) {
+			// The endOffset is at the end of a node on which we cannot stop
+			// at. We will therefore search for an appropriate node nested
+			// inside this node at which to stop at
+			// Corrects:
 			endNode = endContainer; 
-		} else if ( endOffset && endContainer.children && endContainer.children.length ) {
+		} else if ( endOffset &&
+					endContainer.children &&
+					endContainer.children.length ) {
+			// We are in a node in which containers children nodes. This node
+			// is not one in which we want to stop so we will take the last
+			// node in the children list (node childNodes), and try and find a
+			// position to stop at
+			// Corrects:
 			endNode = endContainer.children[ endContainer.children.length - 1 ];
 		} else if ( endContainer.previousSibling ) {
+			// None of the above are true, so try and traverse the
+			// previousSibling to find a stop position
+			// Corrects:
 			endNode = endContainer.previousSibling;
 		} else if ( endOffset == 0 &&
 					endContainer != startContainer &&
 					endContainer.parentNode.previousSibling ) {
+			// Corrects this: 'foo<span>{bar</span>}baz'
+			// to: 'foo<span>[bar]</span>baz'
 			endNode = endContainer.parentNode.previousSibling;
 		}
 		
@@ -1818,6 +1821,55 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 			if ( endNode ) {
 				range.endContainer = endNode;
 				range.endOffset = endNode.length;
+			}
+		}
+		
+		//debugger;
+		
+		 /* if ( endNode ) {
+			// When we have a selection like this: foo[<span>]bar</span>baz'
+			// then endNode will already have been moved to this position:
+			// 'foo[]<span>bar</span>baz' by this point.
+			// The general rule is that, if the startContainer is the same as
+			// the corrected endContainer, then we can infere that the
+			// endContainer was the most suitable container to place the end
+			// selection position, and is therefore the nearest container for
+			// the start position. The only thing that differ are the start and
+			// end positions
+		} else */
+		if ( endOffset == 0 &&
+			 startContainer.childNodes.length &&
+			 startContainer.childNodes[ startOffset ] == endContainer &&
+			 startContainer.childNodes[ startOffset ].previousSibling ) {
+			// Corrects 'foo{<span>}bar</span>baz' to 'foo[]<span>bar</span>baz'
+			// by jumping the the previousSibling and traversing to the end of it
+			startNode = getSelectionEndNode( startContainer.childNodes[ startOffset ].previousSibling, isSelectionStopNode );
+			if ( startNode ) {
+				range.startContainer = startNode;
+				range.startOffset = startNode.length;
+				startNode = null; // Prevent getSelectionStartNode from being invoked
+			}
+		} else if ( startOffset == startContainer.length &&
+			 startContainer.nextSibling ) {
+			// Corrects 'foo{<span>bar</span>}baz' to 'foo<span>[bar]</span>baz'
+			startNode = startContainer.nextSibling;
+		} else if ( startOffset == startContainer.length &&
+					startContainer.parentNode.nextSibling ) {
+			// Corrects: 'foo<span>bar[</span>baz]' to 'foo<span>bar</span>[baz]'
+			startNode = startContainer.parentNode.nextSibling;
+		} else if ( startContainer.childNodes.length ) {
+			startNode = startContainer.childNodes[ startOffset ];
+		} else if ( startContainer.children &&
+					startContainer.children.length ) {
+			console.log( 'children reached' );
+			startNode = startContainer.children[ startOffset ? startOffset - 1 : 0 ];
+		}
+		
+		if ( startNode ) {
+			startNode = getSelectionStartNode( startNode, isSelectionStopNode );
+			if ( startNode ) {
+				range.startContainer = startNode;
+				range.startOffset = 0;
 			}
 		}
 		

@@ -73,27 +73,27 @@ function( TestUtils ) {
 		    [ 'foo{<p><br></p>}baz', 'foo[<p><br></p>]baz' ],
 		    [ 'foo[<p><br></p>]baz', 'foo[<p><br></p>]baz' ],	    ],
 	    phrasingTests = [
-	        'foo<span>[bar]</span>baz',
-	        [ 'foo[<span>bar</span>]baz', 'foo<span>[bar]</span>baz' ],
-	        [ 'foo<span>{bar}</span>baz', 'foo<span>[bar]</span>baz' ],
-	        [ 'foo{<span>bar</span>}baz', 'foo<span>[bar]</span>baz' ],
-// INDEX ERR        [ 'foo<span>{bar]</span>baz', 'foo<span>[bar]</span>baz' ],
-	        [ 'foo<span>{bar</span>]baz', 'foo<span>[bar]</span>baz' ],
-	        [ 'foo<span>[bar}</span>baz', 'foo<span>[bar]</span>baz' ],
-	        [ 'foo[<span>bar}</span>baz', 'foo<span>[bar]</span>baz' ],
+	        // 'foo<span>[bar]</span>baz',
+	        // [ 'foo[<span>bar</span>]baz', 'foo<span>[bar]</span>baz' ],
+	        // [ 'foo<span>{bar}</span>baz', 'foo<span>[bar]</span>baz' ],
+	        // [ 'foo{<span>bar</span>}baz', 'foo<span>[bar]</span>baz' ],
+			/* [ 'foo<span>{bar]</span>baz', 'foo<span>[bar]</span>baz' ], INDEX ERR */
+	        // [ 'foo<span>{bar</span>]baz', 'foo<span>[bar]</span>baz' ],
+	        // [ 'foo<span>[bar}</span>baz', 'foo<span>[bar]</span>baz' ],
+	        // [ 'foo[<span>bar}</span>baz', 'foo<span>[bar]</span>baz' ],
 
-	        '[foo<span>bar]</span>baz', 
-		    [ '[foo<span>]bar</span>baz', '[foo]<span>bar</span>baz' ],
-		    [ 'foo[<span>bar]</span>baz', 'foo<span>[bar]</span>baz' ],
-		    [ 'foo[<span>]bar</span>baz', 'foo[]<span>bar</span>baz' ],
-		    [ '{foo<span>bar}</span>baz', '[foo<span>bar]</span>baz' ],
-		    [ '{foo<span>}bar</span>baz', '[foo]<span>bar</span>baz' ],
-		    [ 'foo{<span>bar}</span>baz', 'foo<span>[bar]</span>baz' ],
-		    [ 'foo{<span>}bar</span>baz', 'foo[]<span>bar</span>baz' ],
+	        // '[foo<span>bar]</span>baz', 
+		    // [ '[foo<span>]bar</span>baz', '[foo]<span>bar</span>baz' ],
+		    // [ 'foo[<span>bar]</span>baz', 'foo<span>[bar]</span>baz' ],
+		    // [ 'foo[<span>]bar</span>baz', 'foo[]<span>bar</span>baz' ],
+		    // [ '{foo<span>bar}</span>baz', '[foo<span>bar]</span>baz' ],
+		    // [ '{foo<span>}bar</span>baz', '[foo]<span>bar</span>baz' ],
+		    // [ 'foo{<span>bar}</span>baz', 'foo<span>[bar]</span>baz' ],
+		    // [ 'foo{<span>}bar</span>baz', 'foo[]<span>bar</span>baz' ],
 		    
-		    [ 'foo<span>[bar</span>baz]', 'foo<span>[bar</span>baz]' ],
-		    [ 'foo<span>bar[</span>baz]',  'foo<span>bar</span>[baz]' ],
-		    [ 'foo<span>[bar</span>]baz', 'foo<span>[bar]</span>baz' ],
+		    // [ 'foo<span>[bar</span>baz]', 'foo<span>[bar</span>baz]' ],
+		    // [ 'foo<span>bar[</span>baz]',  'foo<span>bar</span>[baz]' ],
+		    // [ 'foo<span>[bar</span>]baz', 'foo<span>[bar]</span>baz' ],
 		    [ 'foo<span>bar[</span>]baz', 'foo<span>bar[]</span>baz' ],
 		    [ 'foo<span>{bar</span>baz}', 'foo<span>[bar</span>baz]' ],
 		    [ 'foo<span>bar{</span>baz}', 'foo<span>bar</span>[baz]' ],
@@ -235,7 +235,7 @@ function( TestUtils ) {
 		};
 		
 		// special tests
-		tests = tests.concat( specialTests );
+		//tests = tests.concat( specialTests );
 		// br (void)
 		//tests = tests.concat( voidTests );
 		// span (phrasing)
