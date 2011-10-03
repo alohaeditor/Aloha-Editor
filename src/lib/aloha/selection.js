@@ -1768,12 +1768,14 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 	};
 	
 	function isAdjacentToVoidElement ( node ) {
+		var voidNodes = {
+			BR  : true,
+			HR  : true,
+			IMG : true
+		};
 		return (
-			( node.previousSibling &&
-			  node.previousSibling.nodeType == Node.ELEMENT_NODE )
-				||
-			( node.nextSibling &&
-			  node.nextSibling.nodeType == Node.ELEMENT_NODE )
+			( node.nextSibling && voidNodes[ node.nextSibling.nodeName ] ) ||
+			( node.previousSibling && voidNodes[ node.previousSibling.nodeName ] )
 		);
 	}
 	
@@ -1808,7 +1810,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 			newEndOffset;
 		
 		if ( false && isAdjacentToVoidElement( endContainer ) ) {
-			//debugger;
+			// debugger;
 		} else if ( endOffset && isSelectionStopNode( endContainer ) ) {
 			// The end position is somewhere in the middle, or at the end of a
 			// node on which we can position the end of the selection. We
@@ -1845,8 +1847,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 				range.newEndContainer = newStartContainer;
 				range.endOffset = newEndOffset;
 				
-				if ( false &&
-					 isAdjacentToVoidElement( newEndContainer ) &&
+				if ( isAdjacentToVoidElement( newEndContainer ) &&
 					 newEndContainer.previousSibling ) {
 					newEndOffset = getIndexOfChildNode( newEndContainer.parentNode, newEndContainer.previousSibling );
 					
@@ -1866,7 +1867,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		}
 		
 		if ( false && isAdjacentToVoidElement( startContainer ) ) {
-			debugger;
+			// debugger;
 		} else if ( startContainer == newEndContainer ) {
 			// Ensures that 'foo<span>bar[</span>]baz' is corrected to 'foo<span>bar[]</span>baz'
 			// The general rule is that, if the startContainer is the same as
@@ -1915,7 +1916,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 			newStartContainer = getSelectionStartNode( newStartContainer, isSelectionStopNode );
 			
 			if ( newStartContainer ) {
-				if ( false && isAdjacentToVoidElement( newStartContainer ) &&
+				if ( isAdjacentToVoidElement( newStartContainer ) &&
 					 newStartContainer.previousSibling ) {
 					newStartOffset = getIndexOfChildNode( newStartContainer.parentNode, newStartContainer.previousSibling );
 					

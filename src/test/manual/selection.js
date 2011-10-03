@@ -30,7 +30,7 @@ Aloha.ready( function() {
 			applySelection( testArea );
 			applyMarkupOnNextSelection = false;
 			
-			return;
+			// return;
 		}
 		
 		var range = getRange();
@@ -103,12 +103,13 @@ Aloha.ready( function() {
 	 *							  should be applied to it.
 	 */
 	 function applySelection ( elem ) {
+		// convert html for processing
+		var html = elem.html();
+		var content = jQuery( '<div>' ).text( html ).html();
+		
 		// Display the current selection in the viewArea
-		var html = jQuery( '<div>' ).text( testArea.html() ).html();
-		viewArea.html( html.replace( /([\[\]\{\}])/g, '<b>$1</b>' ) );
-		
-		html = elem.html();
-		
+		viewArea.html( content.replace( /([\[\]\{\}])/g, '<b>$1</b>' ) );
+
 		var startMarkers = html.match( /\{|\[|data\-start/g ),
 		    endMarkers = html.match( /\}|\]|data\-end/g ),
 			numMarkers = 0;
