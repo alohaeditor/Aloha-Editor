@@ -1744,9 +1744,9 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 			return node;
 		}
 		
-		if ( node.children && node.children.length ) {
-			return getSelectionEnd( node.children[ node.children.length - 1 ], condition );
-		}
+		//if ( node.children && node.children.length ) {
+		//	return getSelectionEnd( node.children[ node.children.length - 1 ], condition );
+		//}
 		
 		if ( node.childNodes.length ) {
 			return getSelectionEnd( node.childNodes[ node.childNodes.length - 1 ], condition );
@@ -1775,8 +1775,12 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		
 		//debugger;
 		
-		if ( endOffset && endContainer.childNodes.length ) {
-			endNode = endContainer;
+		if ( endOffset && isSelectionStopNode( endContainer ) ) {
+		
+		} else if ( endOffset && endOffset == endContainer.childNodes.length ) {
+			endNode = endContainer; 
+		} else if ( endOffset && endContainer.children && endContainer.children.length ) {
+			endNode = endContainer.children[ endContainer.children.length - 1 ];
 		} else if ( endContainer.previousSibling ) {
 			endNode = endContainer.previousSibling;
 		} else if ( endOffset == 0 &&
