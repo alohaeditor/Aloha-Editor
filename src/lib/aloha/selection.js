@@ -1767,6 +1767,30 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		return node.nodeType == Node.TEXT_NODE;
 	};
 	
+	function isAdjacentToVoidElement ( node ) {
+		return (
+			( node.previousSibling &&
+			  node.previousSibling.nodeType == Node.ELEMENT_NODE )
+				||
+			( node.nextSibling &&
+			  node.nextSibling.nodeType == Node.ELEMENT_NODE )
+		);
+	}
+	
+	function getIndexOfChildNode ( parent, child ) {
+		var n = parent.childNodes,
+			i = 0,
+			l = n.length;
+		
+		for ( ; i < l; ++i ) {
+			if ( n[ i ] == child ) {
+				return i;
+			}
+		}
+		
+		return -1;
+	};
+	
 	/**
 	 * This method corrects the native ranges from the browser
 	 * to standardizes Aloha Editor ranges.  
@@ -1778,10 +1802,14 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		    endContainer = range.endContainer,
 			startOffset = range.startOffset,
 		    endOffset = range.endOffset,
-			startNode,
-		    endNode;
+			newStartContainer,
+		    newEndContainer,
+			newStartOffset,
+			newEndOffset;
 		
-		if ( endOffset && isSelectionStopNode( endContainer ) ) {
+		if ( false && isAdjacentToVoidElement( endContainer ) ) {
+			//debugger;
+		} else if ( endOffset && isSelectionStopNode( endContainer ) ) {
 			// The end position is somewhere in the middle, or at the end of a
 			// node on which we can position the end of the selection. We
 			// therefore don't need to move it
@@ -1790,7 +1818,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 			// The endOffset is at the end of a node on which we cannot stop
 			// at. We will therefore search for an appropriate node nested
 			// inside this node at which to stop at
-			endNode = endContainer; 
+			newEndContainer = endContainer; 
 		} else if ( endOffset &&
 					endContainer.children &&
 					endContainer.children.length ) {
@@ -1798,41 +1826,60 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 			// is not one in which we want to stop so we will take the last
 			// node in the children list (node childNodes), and try and find a
 			// position to stop at
-			endNode = endContainer.children[ endContainer.children.length - 1 ];
+			newEndContainer = endContainer.children[ endContainer.children.length - 1 ];
 		} else if ( endContainer.previousSibling ) {
 			// None of the above are true, so try and traverse the
 			// previousSibling to find a stop position
-			endNode = endContainer.previousSibling;
+			newEndContainer = endContainer.previousSibling;
 		} else if ( endOffset == 0 &&
 					endContainer != startContainer &&
 					endContainer.parentNode.previousSibling ) {
 			// Corrects 'foo<span>{bar</span>}baz' to 'foo<span>[bar]</span>baz'
-			endNode = endContainer.parentNode.previousSibling;
+			newEndContainer = endContainer.parentNode.previousSibling;
 		}
 		
-		if ( endNode ) {
-			endNode = getSelectionEndNode( endNode, isSelectionStopNode );
-			if ( endNode ) {
-				range.endContainer = endNode;
-				range.endOffset = endNode.length;
+		if ( newEndContainer ) {
+			newEndContainer = getSelectionEndNode( newEndContainer, isSelectionStopNode );
+			
+			if ( newEndContainer ) {
+				range.newEndContainer = newStartContainer;
+				range.endOffset = newEndOffset;
+				
+				if ( false &&
+					 isAdjacentToVoidElement( newEndContainer ) &&
+					 newEndContainer.previousSibling ) {
+					newEndOffset = getIndexOfChildNode( newEndContainer.parentNode, newEndContainer.previousSibling );
+					
+					if ( newEndOffset > -1 ) {
+						++newEndOffset;
+						newEndContainer = newEndContainer.parentNode;
+					} else {
+						newEndOffset = newEndContainer.length;
+					}
+				} else {
+					newEndOffset = newEndContainer.length;
+				}
+				
+				range.endContainer = newEndContainer;
+				range.endOffset = newEndOffset;
 			}
 		}
 		
-		debugger;
-		
-		 if ( startContainer == endNode ) {
+		if ( false && isAdjacentToVoidElement( startContainer ) ) {
+			debugger;
+		} else if ( startContainer == newEndContainer ) {
 			// Ensures that 'foo<span>bar[</span>]baz' is corrected to 'foo<span>bar[]</span>baz'
 			// The general rule is that, if the startContainer is the same as
-			// the *corrected* endContainer (endNode), then we can infere that
+			// the *corrected* endContainer (newEndContainer), then we can infere that
 			// the corrected endContainer was the most suitable container to
 			// place the end selection position, and it is therefore also the
 			// nearest best container for the start position. The only things
 			// that differ are the start and end positions
-		} else if ( endNode &&
+		} else if ( newEndContainer &&
 					startOffset == startContainer.childNodes.length &&
-					startContainer.childNodes[ 0 ] == endNode ) {
-			range.startContainer = endNode;
-			range.startOffset = endNode.length;
+					startContainer.childNodes[ 0 ] == newEndContainer ) {
+			range.startContainer = newEndContainer;
+			range.startOffset = newEndContainer.length;
 		} else if ( endOffset == 0 &&
 					startContainer.childNodes.length &&
 					startContainer.childNodes[ startOffset ] == endContainer &&
@@ -1841,38 +1888,48 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 			// by trying to find the nearest position to the original start
 			// node. We do this by jumping to the previousSibling and
 			// traversing to the end of it
-			startNode = getSelectionEndNode( startContainer.childNodes[ startOffset ].previousSibling, isSelectionStopNode );
-			if ( startNode ) {
-				range.startContainer = startNode;
-				range.startOffset = startNode.length;
-				startNode = null; // Prevent getSelectionStartNode from being invoked
+			newStartContainer = getSelectionEndNode( startContainer.childNodes[ startOffset ].previousSibling, isSelectionStopNode );
+			if ( newStartContainer ) {
+				range.startContainer = newStartContainer;
+				range.startOffset = newStartContainer.length;
+				newStartContainer = null; // Prevent going into getSelectionStartNode. Should we just return here?
 			}
-		} else if ( startOffset == startContainer.length &&
-					startContainer.nextSibling ) {
+		} else if ( startContainer.nextSibling &&
+					startOffset == startContainer.length ) {
 			// Corrects 'foo{<span>bar</span>}baz' to 'foo<span>[bar]</span>baz'
-			startNode = startContainer.nextSibling;
+			newStartContainer = startContainer.nextSibling;
 		} else if ( startOffset == startContainer.length &&
 					startContainer.parentNode.nextSibling ) {
 			// Corrects 'foo<span>bar[</span>baz]' to 'foo<span>bar</span>[baz]'
-			startNode = startContainer.parentNode.nextSibling;
+			newStartContainer = startContainer.parentNode.nextSibling;
 		} else if ( startOffset &&
-					startContainer.childNodes.length == startOffset &&
-					startContainer.nextSibling ) {
+					startContainer.nextSibling &&
+					startContainer.childNodes.length == startOffset ) {
 			// Corrects 'foo<span>bar{</span>baz}' to 'foo<span>bar</span>[baz]'
-			startNode = startContainer.nextSibling;
+			newStartContainer = startContainer.nextSibling;
 		} else if ( startContainer.childNodes.length ) {
-			startNode = startContainer.childNodes[ startOffset ];
-		} else if ( startContainer.children &&
-					startContainer.children.length ) {
-			console.warn( 'startContainer.children reached' );
-			startNode = startContainer.children[ startOffset ? startOffset - 1 : 0 ];
+			newStartContainer = startContainer.childNodes[ startOffset ];
 		}
 		
-		if ( startNode ) {
-			startNode = getSelectionStartNode( startNode, isSelectionStopNode );
-			if ( startNode ) {
-				range.startContainer = startNode;
-				range.startOffset = 0;
+		if ( newStartContainer ) {
+			newStartContainer = getSelectionStartNode( newStartContainer, isSelectionStopNode );
+			
+			if ( newStartContainer ) {
+				if ( false && isAdjacentToVoidElement( newStartContainer ) &&
+					 newStartContainer.previousSibling ) {
+					newStartOffset = getIndexOfChildNode( newStartContainer.parentNode, newStartContainer.previousSibling );
+					
+					if ( newStartOffset > -1 ) {
+						newStartContainer = newStartContainer.parentNode;
+					} else {
+						newStartOffset = newStartContainer.length;
+					}
+				} else {
+					newStartOffset = 0;
+				}
+				
+				range.startContainer = newStartContainer;
+				range.startOffset = newStartOffset;
 			}
 		}
 		
