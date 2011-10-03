@@ -1818,7 +1818,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 			}
 		}
 		
-		//debugger;
+		debugger;
 		
 		 if ( startContainer == endNode ) {
 			// Ensures that 'foo<span>bar[</span>]baz' is corrected to 'foo<span>bar[]</span>baz'
@@ -1828,10 +1828,12 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 			// place the end selection position, and it is therefore also the
 			// nearest best container for the start position. The only things
 			// that differ are the start and end positions
-		} /* else if ( endNode && startContainer.firstChild == endNode ) {
+		} else if ( endNode &&
+					startOffset == startContainer.childNodes.length &&
+					startContainer.childNodes[ 0 ] == endNode ) {
 			range.startContainer = endNode;
 			range.startOffset = endNode.length;
-		} */ else if ( endOffset == 0 &&
+		} else if ( endOffset == 0 &&
 					startContainer.childNodes.length &&
 					startContainer.childNodes[ startOffset ] == endContainer &&
 					startContainer.childNodes[ startOffset ].previousSibling ) {
@@ -1853,7 +1855,8 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 					startContainer.parentNode.nextSibling ) {
 			// Corrects 'foo<span>bar[</span>baz]' to 'foo<span>bar</span>[baz]'
 			startNode = startContainer.parentNode.nextSibling;
-		} else if ( startContainer.childNodes.length == startOffset &&
+		} else if ( startOffset &&
+					startContainer.childNodes.length == startOffset &&
 					startContainer.nextSibling ) {
 			// Corrects 'foo<span>bar{</span>baz}' to 'foo<span>bar</span>[baz]'
 			startNode = startContainer.nextSibling;
