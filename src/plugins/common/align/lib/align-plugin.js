@@ -161,6 +161,7 @@ function(Aloha, Plugin, FloatingMenu, i18n, i18nCore, jQuery) {
 
 		    // create a new button
 		    this.alignLeftButton = new Aloha.ui.Button({
+			  'name' : 'alignLeft',
 		      'iconClass' : 'aloha-button-align aloha-button-align-left',
 		      'size' : 'small',
 		      'onclick' : function () { that.align('left'); },
@@ -178,6 +179,7 @@ function(Aloha, Plugin, FloatingMenu, i18n, i18nCore, jQuery) {
 
 		    // create a new button
 		    this.alignCenterButton = new Aloha.ui.Button({
+		      'name' : 'alignCenter',
 		      'iconClass' : 'aloha-button-align aloha-button-align-center',
 		      'size' : 'small',
 		      'onclick' : function () { that.align('center'); },
@@ -195,6 +197,7 @@ function(Aloha, Plugin, FloatingMenu, i18n, i18nCore, jQuery) {
 
 		    // create a new button
 		    this.alignRightButton = new Aloha.ui.Button({
+		      'name' : 'alignRight',
 		      'iconClass' : 'aloha-button-align aloha-button-align-right',
 		      'size' : 'small',
 		      'onclick' : function () { that.align('right'); },
@@ -212,6 +215,7 @@ function(Aloha, Plugin, FloatingMenu, i18n, i18nCore, jQuery) {
 
 		    // create a new button
 		    this.alignJustifyButton = new Aloha.ui.Button({
+		      'name' : 'alignJustify',
 		      'iconClass' : 'aloha-button-align aloha-button-align-justify',
 		      'size' : 'small',
 		      'onclick' : function () { that.align('justify'); },
