@@ -1781,18 +1781,15 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 			startNode,
 		    endNode;
 		
-		if ( endOffset &&
-			 isSelectionStopNode( endContainer ) ) {
+		if ( endOffset && isSelectionStopNode( endContainer ) ) {
 			// The end position is somewhere in the middle, or at the end of a
 			// node on which we can position the end of the selection. We
 			// therefore don't need to move it
-			// Corrects:
 		} else if ( endOffset &&
 					endOffset == endContainer.childNodes.length ) {
 			// The endOffset is at the end of a node on which we cannot stop
 			// at. We will therefore search for an appropriate node nested
 			// inside this node at which to stop at
-			// Corrects:
 			endNode = endContainer; 
 		} else if ( endOffset &&
 					endContainer.children &&
@@ -1801,18 +1798,15 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 			// is not one in which we want to stop so we will take the last
 			// node in the children list (node childNodes), and try and find a
 			// position to stop at
-			// Corrects:
 			endNode = endContainer.children[ endContainer.children.length - 1 ];
 		} else if ( endContainer.previousSibling ) {
 			// None of the above are true, so try and traverse the
 			// previousSibling to find a stop position
-			// Corrects:
 			endNode = endContainer.previousSibling;
 		} else if ( endOffset == 0 &&
 					endContainer != startContainer &&
 					endContainer.parentNode.previousSibling ) {
-			// Corrects this: 'foo<span>{bar</span>}baz'
-			// to: 'foo<span>[bar]</span>baz'
+			// Corrects 'foo<span>{bar</span>}baz' to 'foo<span>[bar]</span>baz'
 			endNode = endContainer.parentNode.previousSibling;
 		}
 		
@@ -1826,23 +1820,25 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		
 		//debugger;
 		
-		 /* if ( endNode ) {
-			// When we have a selection like this: foo[<span>]bar</span>baz'
-			// then endNode will already have been moved to this position:
-			// 'foo[]<span>bar</span>baz' by this point.
+		 if ( startContainer == endNode ) {
+			// Ensures that 'foo<span>bar[</span>]baz' is corrected to 'foo<span>bar[]</span>baz'
 			// The general rule is that, if the startContainer is the same as
-			// the corrected endContainer, then we can infere that the
-			// endContainer was the most suitable container to place the end
-			// selection position, and is therefore the nearest container for
-			// the start position. The only thing that differ are the start and
-			// end positions
-		} else */
-		if ( endOffset == 0 &&
-			 startContainer.childNodes.length &&
-			 startContainer.childNodes[ startOffset ] == endContainer &&
-			 startContainer.childNodes[ startOffset ].previousSibling ) {
+			// the *corrected* endContainer (endNode), then we can infere that
+			// the corrected endContainer was the most suitable container to
+			// place the end selection position, and it is therefore also the
+			// nearest best container for the start position. The only things
+			// that differ are the start and end positions
+		} /* else if ( endNode && startContainer.firstChild == endNode ) {
+			range.startContainer = endNode;
+			range.startOffset = endNode.length;
+		} */ else if ( endOffset == 0 &&
+					startContainer.childNodes.length &&
+					startContainer.childNodes[ startOffset ] == endContainer &&
+					startContainer.childNodes[ startOffset ].previousSibling ) {
 			// Corrects 'foo{<span>}bar</span>baz' to 'foo[]<span>bar</span>baz'
-			// by jumping the the previousSibling and traversing to the end of it
+			// by trying to find the nearest position to the original start
+			// node. We do this by jumping to the previousSibling and
+			// traversing to the end of it
 			startNode = getSelectionEndNode( startContainer.childNodes[ startOffset ].previousSibling, isSelectionStopNode );
 			if ( startNode ) {
 				range.startContainer = startNode;
@@ -1850,18 +1846,22 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 				startNode = null; // Prevent getSelectionStartNode from being invoked
 			}
 		} else if ( startOffset == startContainer.length &&
-			 startContainer.nextSibling ) {
+					startContainer.nextSibling ) {
 			// Corrects 'foo{<span>bar</span>}baz' to 'foo<span>[bar]</span>baz'
 			startNode = startContainer.nextSibling;
 		} else if ( startOffset == startContainer.length &&
 					startContainer.parentNode.nextSibling ) {
-			// Corrects: 'foo<span>bar[</span>baz]' to 'foo<span>bar</span>[baz]'
+			// Corrects 'foo<span>bar[</span>baz]' to 'foo<span>bar</span>[baz]'
 			startNode = startContainer.parentNode.nextSibling;
+		} else if ( startContainer.childNodes.length == startOffset &&
+					startContainer.nextSibling ) {
+			// Corrects 'foo<span>bar{</span>baz}' to 'foo<span>bar</span>[baz]'
+			startNode = startContainer.nextSibling;
 		} else if ( startContainer.childNodes.length ) {
 			startNode = startContainer.childNodes[ startOffset ];
 		} else if ( startContainer.children &&
 					startContainer.children.length ) {
-			console.log( 'children reached' );
+			console.warn( 'startContainer.children reached' );
 			startNode = startContainer.children[ startOffset ? startOffset - 1 : 0 ];
 		}
 		
