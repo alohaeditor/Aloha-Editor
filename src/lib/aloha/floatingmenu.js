@@ -18,8 +18,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 define(
-['aloha/core', 'aloha/jquery', 'aloha/ext', 'util/class', 'vendor/jquery.store'],
-function(Aloha, jQuery, Ext, Class) {
+['aloha/core', 'aloha/jquery', 'aloha/ext', 'util/class', 'i18n!aloha/nls/i18n', 'vendor/jquery.store'],
+function(Aloha, jQuery, Ext, Class, i18n) {
 	"use strict";
 	var GENTICS = window.GENTICS;
 
@@ -357,6 +357,12 @@ function(Aloha, jQuery, Ext, Class) {
 		 * Default is: true 
 		 */
 		draggable: true,
+		
+		/**
+		 * A list of all buttons that have been added to the floatingmenu
+		 * This needs to be tracked, as adding buttons twice will break the fm
+		 */
+		buttonsAdded: [],
 
 		/**
 		 * Initialize the floatingmenu
@@ -458,6 +464,7 @@ function(Aloha, jQuery, Ext, Class) {
 			
 			jQuery.each(Aloha.settings.toolbar.tabs, function (tab, groups) {
 				// generate or retrieve tab
+				tab = i18n.t(tab);
 				var tabObject = that.tabMap[tab];
 				if (typeof tabObject === 'undefined') {
 					// the tab object does not yet exist, so create a new tab and add it to the list
@@ -473,10 +480,20 @@ function(Aloha, jQuery, Ext, Class) {
 
 					// now get all the buttons for that group
 					jQuery.each(buttons, function (j, button) {
+						if (jQuery.inArray(button, that.buttonsAdded) !== -1) {
+							// buttons must not be added twice
+							console.warn('Skipping button {' + button + '}. A button can\'t be added ' + 
+								'to the floating menu twice. Config key: {Aloha.settings.toolbar.' + 
+									tab + '.' + group + '}');
+									return;
+						}
+						
 						// now add the button to the group
 						for (i = 0; i < that.allButtons.length; i++) {
 							if (button === that.allButtons[i].button.name) {
 								groupObject.addButton(that.allButtons[i]);
+								// remember that we've added the button
+								that.buttonsAdded.push(that.allButtons[i].button.name);
 								break;
 							}
 						}
