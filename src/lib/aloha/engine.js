@@ -117,7 +117,7 @@ function convertProperty(property) {
 		"fontSize": "font-size",
 		"fontStyle": "font-style",
 		"fontWeight": "font-weight",
-		"textDecoration": "text-decoration",
+		"textDecoration": "text-decoration"
 	};
 	if (typeof map[property] != "undefined") {
 		return map[property];
@@ -149,7 +149,7 @@ function legacySizeToCss(legacyVal) {
 		4: "large",
 		5: "x-large",
 		6: "xx-large",
-		7: "xxx-large",
+		7: "xxx-large"
 	}[legacyVal];
 }
 
@@ -3088,7 +3088,7 @@ commands.backcolor = {
 		// green, blue, and alpha components, or neither string is a valid CSS
 		// color."
 		return normalizeColor(val1) === normalizeColor(val2);
-	},
+	}
 };
 
 //@}
@@ -3099,7 +3099,7 @@ commands.bold = {
 		// "If queryCommandState("bold") returns true, set the selection's
 		// value to "normal". Otherwise set the selection's value to "bold"."
 		if (myQueryCommandState("bold", range)) {
-			setSelectionValue("bold", "normal");
+			setSelectionValue("bold", "normal", range);
 		} else {
 			setSelectionValue("bold", "bold", range);
 		}
@@ -3117,7 +3117,7 @@ commands.bold = {
 			|| (val1 == "700" && val2 == "bold")
 			|| (val1 == "normal" && val2 == "400")
 			|| (val1 == "400" && val2 == "normal");
-	},
+	}
 };
 
 //@}
@@ -3376,7 +3376,7 @@ commands.forecolor = {
 		// green, blue, and alpha components, or neither string is a valid CSS
 		// color."
 		return normalizeColor(val1) === normalizeColor(val2);
-	},
+	}
 };
 
 //@}
@@ -3421,20 +3421,20 @@ commands.hilitecolor = {
 		// green, blue, and alpha components, or neither string is a valid CSS
 		// color."
 		return normalizeColor(val1) === normalizeColor(val2);
-	},
+	}
 };
 
 //@}
 ///// The italic command /////
 //@{
 commands.italic = {
-	action: function() {
+	action: function( value, range ) {
 		// "If queryCommandState("italic") returns true, set the selection's
 		// value to "normal". Otherwise set the selection's value to "italic"."
-		if (myQueryCommandState("italic")) {
-			setSelectionValue("italic", "normal");
+		if (myQueryCommandState("italic", range)) {
+			setSelectionValue("italic", "normal", range);
 		} else {
-			setSelectionValue("italic", "italic");
+			setSelectionValue("italic", "italic", range);
 		}
 	}, inlineCommandActivatedValues: ["italic", "oblique"],
 	relevantCssProperty: "fontStyle"
@@ -3591,7 +3591,7 @@ commands.subscript = {
 		return (nodes.some(function(node) { return getEffectiveCommandValue(node, "subscript") == "subscript" })
 			&& nodes.some(function(node) { return getEffectiveCommandValue(node, "subscript") != "subscript" }))
 			|| nodes.some(function(node) { return getEffectiveCommandValue(node, "subscript") == "mixed" });
-	}, inlineCommandActivatedValues: ["subscript"],
+	}, inlineCommandActivatedValues: ["subscript"]
 };
 
 //@}
@@ -3624,7 +3624,7 @@ commands.superscript = {
 		return (nodes.some(function(node) { return getEffectiveCommandValue(node, "superscript") == "superscript" })
 			&& nodes.some(function(node) { return getEffectiveCommandValue(node, "superscript") != "superscript" }))
 			|| nodes.some(function(node) { return getEffectiveCommandValue(node, "superscript") == "mixed" });
-	}, inlineCommandActivatedValues: ["superscript"],
+	}, inlineCommandActivatedValues: ["superscript"]
 };
 
 //@}
@@ -7024,7 +7024,7 @@ commands.insertorderedlist = {
 	// otherwise."
 	indeterm: function() { return /^mixed( ol)?$/.test(getSelectionListState()) },
 	// "True if the selection's list state is "ol", false otherwise."
-	state: function() { return getSelectionListState() == "ol" },
+	state: function() { return getSelectionListState() == "ol" }
 };
 
 //@}
@@ -7480,7 +7480,7 @@ commands.insertunorderedlist = {
 	// otherwise."
 	indeterm: function() { return /^mixed( ul)?$/.test(getSelectionListState()) },
 	// "True if the selection's list state is "ul", false otherwise."
-	state: function() { return getSelectionListState() == "ul" },
+	state: function() { return getSelectionListState() == "ul" }
 };
 
 //@}
@@ -7521,7 +7521,7 @@ commands.justifycenter = {
 		} else {
 			return "left";
 		}
-	},
+	}
 };
 
 //@}
@@ -7562,7 +7562,7 @@ commands.justifyfull = {
 		} else {
 			return "left";
 		}
-	},
+	}
 };
 
 //@}
@@ -7603,7 +7603,7 @@ commands.justifyleft = {
 		} else {
 			return "left";
 		}
-	},
+	}
 };
 
 //@}
@@ -7644,7 +7644,7 @@ commands.justifyright = {
 		} else {
 			return "left";
 		}
-	},
+	}
 };
 
 //@}

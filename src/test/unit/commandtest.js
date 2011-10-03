@@ -41,7 +41,7 @@ function( TestUtils ) {
 			check.attributes = ( typeof check.attributes !== 'undefined') ? check.attributes : tests.defaultAttributes;
 			converter.text(check.start);
 			var desc = converter.html();
-			converter.text(check.value)
+			converter.text(check.value);
 			var	name = check.name || '"' + converter.html() + '": ' + desc;
 			
 			module( 'Commmand ' + (i+1) + ' ' + tests.defaultCommand, {

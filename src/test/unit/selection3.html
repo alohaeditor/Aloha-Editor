@@ -21,6 +21,9 @@
 	<!-- inject into testswarm -->
 	<script type="text/javascript" src="../vendor/swarminject.js"></script>
 	<script>
+		// tests run to long for IE. So split them.
+		var tests_start = 1000;
+		var tests_stop = 1600;
 		// load command test suite
 		require( ['selectiontest'] );
 	</script>

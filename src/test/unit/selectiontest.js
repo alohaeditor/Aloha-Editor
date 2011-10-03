@@ -329,7 +329,7 @@ function( TestUtils ) {
 		// aloha'fy the editable
 		editable.aloha();
 		
-		for ( var i = 0; i < tests.length; i++ ) {
+		for ( var i = tests_start; i < tests_stop && i < tests.length ; i++ ) {
 			// ie hack :/
 			if ( !tests[i] ) {	continue; }
 			var 
