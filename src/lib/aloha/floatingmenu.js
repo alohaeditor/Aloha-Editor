@@ -847,6 +847,10 @@ function(Aloha, jQuery, Ext, Class) {
 			var
 				scopeObject = this.scopes[scope],
 				buttonInfo, tabObject, groupObject;
+		
+			if (!button.name) {
+				console.warn('Added button with iconClass {' + button.iconClass + '} which has no property "name"');
+			}
 	
 			if (typeof scopeObject === 'undefined') {
 				Aloha.Log.error("Can't add button to given scope since the scope has not yet been initialized.", scope);

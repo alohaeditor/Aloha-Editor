@@ -97,6 +97,11 @@ Aloha.ui.Button = Class.extend({
 		this.label = false;
 
 		/**
+		 * Name for the button
+		 */
+		this.name = false;
+		
+		/**
 		 * CSS class for an icon on the button
 		 * @hide
 		 */
@@ -165,6 +170,11 @@ Aloha.ui.Button = Class.extend({
 		this.listenerQueue = [];
 
 		GENTICS.Utils.applyProperties(this, properties);
+
+		// use icon class as a fallback for name		
+		if (this.name === false) {
+			this.name = this.iconClass;
+		}
 
 		/**
 		 * Unique Id of the button

@@ -449,7 +449,8 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore) {
     }
     
     this.rowMSButton = new Aloha.ui.MultiSplitButton({
-      items : this.rowMSItems
+      items : this.rowMSItems,
+      name : 'tableRowActions'
     });
     
     if (this.rowMSItems.length > 0) {
@@ -668,7 +669,8 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore) {
     }
     
     this.columnMSButton = new Aloha.ui.MultiSplitButton({
-      items : this.columnMSItems
+      items : this.columnMSItems,
+      name : 'tableColumnActions'
     });
     
     if (this.columnMSItems.length > 0) {
@@ -766,7 +768,8 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore) {
     }
     
     this.tableMSButton = new Aloha.ui.MultiSplitButton({
-      items : this.tableMSItems
+      items : this.tableMSItems,
+      name : 'tableActions'
     });
     
     if(this.tableMSItems.length > 0) {
@@ -858,7 +861,8 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore) {
 		// for cells
 		// add summary field
 		this.summary = new Aloha.ui.AttributeField({
-			'width': 275
+			'width': 275,
+			name : 'tableSummary'
 		});
 		this.summary.addListener('keyup', function(obj, event) {
 			that.activeTable.checkWai();
@@ -1010,12 +1014,13 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore) {
 		}
 		TablePlugin.activeTable = focusTable;
 
-    // show configured formatting classes
-    for (var i = 0; i < this.tableMSItems.length; i++) {
-      this.tableMSButton.extButton.showItem(this.tableMSItems[i].name);
+	if (this.tableMSButton.extButton) {
+		// show configured formatting classes
+		for (var i = 0; i < this.tableMSItems.length; i++) {
+		  this.tableMSButton.extButton.showItem(this.tableMSItems[i].name);
+		}
+		this.tableMSButton.setActiveItem();
     }
-    
-    this.tableMSButton.setActiveItem();
     
     if (this.activeTable) {
       for (var i = 0; i < this.tableConfig.length; i++) {
