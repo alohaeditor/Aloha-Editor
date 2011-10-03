@@ -1768,12 +1768,25 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 	 * to standardizes Aloha Editor ranges.  
 	 */
 	function correctRange( range ) {
-		var endContainer = range.endContainer,
-			endOffset = range.endOffset,
-			endNode;
+		var startContainer = range.startContainer,
+		    endContainer = range.endContainer,
+		    endOffset = range.endOffset,
+		    endNode;
 		
-		if ( endContainer.childNodes.length == endOffset ) {
-			endNode = getSelectionEnd( endContainer, isSelectionStopNode );
+		//debugger;
+		
+		if ( endOffset && endContainer.childNodes.length ) {
+			endNode = endContainer;
+		} else if ( endContainer.previousSibling ) {
+			endNode = endContainer.previousSibling;
+		} else if ( endOffset == 0 &&
+					endContainer != startContainer &&
+					endContainer.parentNode.previousSibling ) {
+			endNode = endContainer.parentNode.previousSibling;
+		}
+		
+		if ( endNode ) {
+			endNode = getSelectionEnd( endNode, isSelectionStopNode );
 			if ( endNode ) {
 				range.endContainer = endNode;
 				range.endOffset = endNode.length;
