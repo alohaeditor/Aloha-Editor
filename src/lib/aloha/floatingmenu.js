@@ -18,8 +18,8 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 define(
-['aloha/core', 'aloha/jquery', 'aloha/ext', 'util/class', 'vendor/jquery.store'],
-function(Aloha, jQuery, Ext, Class) {
+['aloha/core', 'aloha/jquery', 'aloha/ext', 'util/class', 'aloha/console', 'vendor/jquery.store'],
+function(Aloha, jQuery, Ext, Class, console) {
 	"use strict";
 	var GENTICS = window.GENTICS;
 
@@ -363,6 +363,12 @@ function(Aloha, jQuery, Ext, Class) {
 		 * This needs to be tracked, as adding buttons twice will break the fm
 		 */
 		buttonsAdded: [],
+		
+		/**
+		 * Will be initialized by checking Aloha.settings.toolbar, which will contain the config for
+		 * the floating menu. If there is no config, tabs and groups will be generated programmatically
+		 */
+		fromConfig: false,
 
 		/**
 		 * Initialize the floatingmenu
@@ -428,6 +434,10 @@ function(Aloha, jQuery, Ext, Class) {
 				that.generateComponent();
 				that.initialized = true;
 			});
+			
+			if (typeof Aloha.settings.toolbar === 'object') {
+				this.fromConfig = true;				
+			}
 		},
 
 		/**
@@ -459,8 +469,11 @@ function(Aloha, jQuery, Ext, Class) {
 		 */
 		initTabsAndGroups: function () {
 			var that = this;
-
-			// TODO default settings fallback
+			
+			// if there is no toolbar config tabs and groups have been initialized before
+			if (!this.fromConfig) {
+				return;
+			}
 			
 			jQuery.each(Aloha.settings.toolbar.tabs, function (tab, groups) {
 				// generate or retrieve tab
@@ -865,6 +878,24 @@ function(Aloha, jQuery, Ext, Class) {
 
 			// add the button to the scope
 			scopeObject.buttons.push(buttonInfo);
+
+			// if there is no toolbar config tabs and groups will be generated right away
+			if (!this.fromConfig) {
+				// get the tab object
+				tabObject = this.tabMap[tab];
+				if (typeof tabObject === 'undefined') {
+					// the tab object does not yet exist, so create a new tab and add it to the list
+					tabObject = new Tab(tab);
+					this.tabs.push(tabObject);
+					this.tabMap[tab] = tabObject;
+				}
+
+				// get the group
+				groupObject = tabObject.getGroup(group);
+
+				// now add the button to the group
+				groupObject.addButton(buttonInfo);
+			}
 
 			// finally, when the floatingmenu is already initialized, we need to create the ext component now
 			if (this.initialized) {
