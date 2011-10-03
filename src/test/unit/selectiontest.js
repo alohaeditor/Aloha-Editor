@@ -237,14 +237,14 @@ function( TestUtils ) {
 		// special tests
 		tests = tests.concat( specialTests );
 		// br (void)
-		tests = tests.concat( voidTests );
+		//tests = tests.concat( voidTests );
 		// span (phrasing)
 		tests = tests.concat( phrasingTests );
 		// p (flow)
-		tests = tests.concat( flowTests );
+		//tests = tests.concat( flowTests );
 		// full void tests
 		// lists
-		tests = tests.concat( listTests );
+		//tests = tests.concat( listTests );
 //		for ( var i = 0; i < voidElements.length; i++ ) {
 //			tests = tests.concat( convertTests ( /br/g, voidElements[i], voidTests ) );
 //		}		

@@ -1731,49 +1731,73 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 
 	}); // Selection
 	
-	function getSelectionEnd ( node, condition ) {
-		if ( typeof condition !== 'function' ) {
+	function getSelectionStartNode ( node, condition ) {
+		if ( !node || typeof condition !== 'function' || condition( node ) ) {
 			return node;
 		}
 		
-		if ( !node ) {
-			return null;
+		if ( node.children.length ) {
+			return getSelectionStopNode( node.children[0], condition );
 		}
 		
-		if ( condition( node ) ) {
+		if ( node.nextSibling ) {
+			return getSelectionStopNode( node.nextSibling, condition );
+		}
+		
+		return node;
+	};
+	
+	function getSelectionEndNode ( node, condition ) {
+		if ( !node || typeof condition !== 'function' || condition( node ) ) {
 			return node;
 		}
 		
 		//if ( node.children && node.children.length ) {
-		//	return getSelectionEnd( node.children[ node.children.length - 1 ], condition );
+		//	return getSelectionEndNode( node.children[ node.children.length - 1 ], condition );
 		//}
 		
 		if ( node.childNodes.length ) {
-			return getSelectionEnd( node.childNodes[ node.childNodes.length - 1 ], condition );
+			return getSelectionEndNode( node.childNodes[ node.childNodes.length - 1 ], condition );
 		}
 		
 		if ( node.previousSibling ) {
-			return getSelectionEnd( node.previousSibling, condition );
+			return getSelectionEndNode( node.previousSibling, condition );
 		}
 		
 		return node;
 	};
 	
 	function isSelectionStopNode ( node ) {
-		return ( node.nodeType == 3 );
-	}
+		return node.nodeType == Node.TEXT_NODE;
+	};
 	
 	/**
 	 * This method corrects the native ranges from the browser
 	 * to standardizes Aloha Editor ranges.  
 	 */
 	function correctRange( range ) {
+		//return range;
+		
 		var startContainer = range.startContainer,
 		    endContainer = range.endContainer,
+			startOffset = range.startOffset,
 		    endOffset = range.endOffset,
+			startNode,
 		    endNode;
 		
 		//debugger;
+		
+		startNode = ( startContainer.children &&
+					  startContainer.children[ startOffset ] ) ||
+					  startContainer.firstChild;
+		
+		if ( startNode ) {
+			startNode = getSelectionStartNode( startNode, isSelectionStopNode );
+			if ( startNode ) {
+				range.startContainer = startNode;
+				range.startOffset = 0;
+			}
+		}
 		
 		if ( endOffset && isSelectionStopNode( endContainer ) ) {
 		
@@ -1790,7 +1814,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		}
 		
 		if ( endNode ) {
-			endNode = getSelectionEnd( endNode, isSelectionStopNode );
+			endNode = getSelectionEndNode( endNode, isSelectionStopNode );
 			if ( endNode ) {
 				range.endContainer = endNode;
 				range.endOffset = endNode.length;
