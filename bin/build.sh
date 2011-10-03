@@ -5,16 +5,22 @@ PWD=`pwd`
 SCRIPT=`cd \`dirname "$0"\`; pwd`
 if [ "$1" != "" ]; then
 	TARGET="$1"
-	TMP="$SCRIPT/../tmp/$TARGET"
-	OUT="$SCRIPT/../out/$TARGET"
+	TMP="$SCRIPT/../target/tmp/aloha"
+	OUT="$SCRIPT/../target/out/aloha"
+	
+	#check if out dir exists
+	if [ ! -d "$SCRIPT/../target/out" ]; then
+		mkdir -p "$SCRIPT/../target/out"
+	fi
+	
 	if [ -d "$SCRIPT/../build/$TARGET" ]; then
 		# Clean existing dirs
 		if [ -d "$TMP" ]; then
-			echo "Cleaning existing temporary dir tmp/$TARGET"
+			echo "Cleaning existing temporary dir tmp/aloha"
 			rm -R "$TMP"
 		fi
 		if [ -d "$OUT" ]; then
-			echo "Cleaning existing output dir out/$TARGET"
+			echo "Cleaning existing output dir out/aloha"
 			rm -R "$OUT"
 		fi
 	else
@@ -30,24 +36,28 @@ else
 	exit;
 fi
 
-# build core JS files
+echo "Build core JS files"
 cd "$SCRIPT/../build/$TARGET"
 r.js -o build.js
 
-# combine css files for core
+echo "Combine css files for core"
 cd "$TMP/css"
 r.js -o cssIn=aloha.css out=aloha.css
 
-# merge require and aloha-bootstrap
+echo "Merge require and aloha-bootstrap"
 cd "$SCRIPT"
-./update-aloha.js.sh "tmp/$TARGET"
+./update-aloha.js.sh "target/tmp/aloha"
 
-# Coping builded files to out
-echo "Coping tmp/$TARGET out/$TARGET"
-echo
+echo "Coping built files to out"
+echo "Coping target/tmp/aloha target/out/aloha"
 cp -r "$TMP" "$OUT"
+
+echo "Adding build information"
+echo "build-date: `date`" >> $OUT/build.txt
+echo "build-target: $TARGET" >> $OUT/build.txt
+
 
 ## Change back from where we started
 cd "$PWD"
 
-echo "Builded Aloha Editor for $TARGET"
+echo "Built Aloha Editor for $TARGET"

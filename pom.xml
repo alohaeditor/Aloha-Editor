@@ -3,7 +3,7 @@
 
 	<groupId>com.gentics</groupId>
 	<artifactId>alohaeditor</artifactId>
-	<version>0.17-SNAPSHOT</version>
+	<version>0.20-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Aloha Editor</name>
@@ -11,6 +11,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<ALOHABUILDCONF>aloha</ALOHABUILDCONF>
 	</properties>
 
 	<scm>
@@ -44,7 +45,7 @@
                                 </executions>
                         </plugin>
 
-			 <!-- This is a workaround to get submodules working with the maven release plugin -->
+			 <!-- This is a workaround to get submodules working with the maven release plugin
 			 <plugin>
                                 <groupId>org.codehaus.mojo</groupId>
                                 <artifactId>exec-maven-plugin</artifactId>
@@ -62,9 +63,10 @@
                                         <executable>bin/update-from-git.sh</executable>
                                 </configuration>
                         </plugin>
+			-->
 
-<!-- TODO: after building is fixed, comment this in to build before packaging -->
-                        <!-- plugin>
+			<!-- build before packaging -->
+                        <plugin>
                                 <groupId>org.codehaus.mojo</groupId>
                                 <artifactId>exec-maven-plugin</artifactId>
                                 <version>1.1</version>
@@ -79,8 +81,12 @@
                                 </executions>
                                 <configuration>
                                         <executable>bin/build.sh</executable>
+                                        <arguments>
+                                        	<!-- gentics build target -->
+						<argument>${ALOHABUILDCONF}</argument>
+  		                       </arguments>
                                 </configuration>
-                        </plugin -->
+                        </plugin>
 		</plugins>
 	</build>
 
