@@ -116,7 +116,7 @@ function(Plugin, FloatingMenu, i18n, i18nCore) {
 			if ( typeof this.settings.activeOn !== 'undefined') {
 				this.activeOn = this.settings.activeOn;
 			}
-			Aloha.ready( function (ev, sidebars) { that.initSidebar(Aloha.Sidebars.right); });
+			Aloha.ready( function (ev, sidebars) { that.initSidebar(Aloha.Sidebar.right); });
 		},
 				
 		getSidebarContent: function() {
