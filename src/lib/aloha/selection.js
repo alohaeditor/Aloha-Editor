@@ -1791,8 +1791,26 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		return -1;
 	};
 	
-	function moveLeft ( node ) {
-		return node.previousNode || node.parentNode.previousNode;
+	// Retrieves the nearest cousion in the DOM tree that preceeds the given
+	// node. We do this by backtracking up the tree to find the nearest element
+	// that is a sibling to the given node or one of its ancestors
+	function moveBackwards ( node ) {
+		if ( node ) {
+			return node.previousSibling || moveBackwards( node.parentNode );
+		} else {
+			return null;
+		}
+	};
+	
+	// Retrieves the nearest cousion in the DOM tree that comes after the given
+	// node. We do this by travers foward over the tree until we find a sibling
+	// of the given node or one of the given node's ancestors
+	function moveForwards ( node ) {
+		if ( node ) {
+			return node.nextSibling || moveForwards( node.parentNode );
+		} else {
+			return null;
+		}
 	};
 	
 	/**
@@ -1800,7 +1818,6 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 	 * to standardizes Aloha Editor ranges.  
 	 */
 	function correctRange( range ) {
-		//return range;
 		
 		var startContainer = range.startContainer,
 		    endContainer = range.endContainer,
@@ -1873,46 +1890,64 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 			// container for the start position. The only things that differ
 			// are the start and end positions
 		} else if ( startOffset == startContainer.childNodes.length &&
-					startContainer.childNodes[ 0 ] == newEndContainer ) {
+					startContainer.firstChild == newEndContainer ) {
+			
 			range.startContainer = newEndContainer;
 			range.startOffset = newEndContainer.length;
+			
 		} else if ( endOffset == 0 &&
 					startContainer.childNodes.length &&
 					startContainer.childNodes[ startOffset ] == endContainer &&
 					startContainer.childNodes[ startOffset ].previousSibling ) {
+			
 			// Corrects 'foo{<span>}bar</span>baz' to 'foo[]<span>bar</span>baz'
 			// by trying to find the nearest position to the original start
 			// node. We do this by jumping to the previousSibling and
 			// traversing to the end of it
-			newStartContainer = getSelectionEndNode( startContainer.childNodes[ startOffset ].previousSibling, isSelectionStopNode );
+			newStartContainer = getSelectionEndNode(
+				startContainer.childNodes[ startOffset ].previousSibling,
+				isSelectionStopNode
+			);
+			
 			if ( newStartContainer ) {
 				range.startContainer = newStartContainer;
 				newStartOffset = newStartContainer.length;
 				newStartContainer = null; // Prevent going into getSelectionStartNode. Should we just return here?
 			}
+			
 		} else if ( startContainer.nextSibling &&
 					startOffset == startContainer.length &&
 					!isVoidNode( startContainer.nextSibling ) ) {
+			
 			// Corrects 'foo{<span>bar</span>}baz' to 'foo<span>[bar]</span>baz'
 			newStartContainer = startContainer.nextSibling;
+			
 		} else if ( startOffset == startContainer.length &&
 					isVoidNode( startContainer.nextSibling ) ) {
 			//debugger;
 		} else if ( startOffset == startContainer.length &&
 					startContainer.parentNode.nextSibling ) {
+			
 			// Corrects 'foo<span>bar[</span>baz]' to 'foo<span>bar</span>[baz]'
 			newStartContainer = startContainer.parentNode.nextSibling;
+			
 		} else if ( startOffset &&
 					startContainer.nextSibling &&
 					startContainer.childNodes.length == startOffset ) {
+			
 			// Corrects 'foo<span>bar{</span>baz}' to 'foo<span>bar</span>[baz]'
 			newStartContainer = startContainer.nextSibling;
+			
 		} else if ( startContainer.childNodes.length &&
 					!isVoidNode( startContainer.childNodes[ startOffset ] ) ) {
+			
 			newStartContainer = startContainer.childNodes[ startOffset ];
+			
 		}
 		
-		newStartContainer = getSelectionStartNode( newStartContainer, isSelectionStopNode );
+		newStartContainer = getSelectionStartNode(
+			newStartContainer, isSelectionStopNode
+		);
 		
 		if ( newStartContainer && !isVoidNode( newEndContainer ) ) {
 			newStartOffset = 0;
@@ -1922,63 +1957,72 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		
 		// Fix position around void elements
 		
-		if ( newStartContainer != newEndContainer ||
-			 newStartOffset != newEndOffset ) {
-			if ( newEndOffset == 0 &&
-				 isVoidNode( newEndContainer.previousSibling ) ) {
-				var index = getIndexOfChildNode( newEndContainer.parentNode, newEndContainer.previousSibling  );
+		if ( newStartContainer != newEndContainer || newStartOffset != newEndOffset ) {
+			
+			if ( newEndOffset == 0 && isVoidNode( newEndContainer.previousSibling ) ) {
+				 
+				var index = getIndexOfChildNode(
+					newEndContainer.parentNode, newEndContainer.previousSibling
+				);
 				
 				if ( index != -1 ) {
 					newEndContainer = newEndContainer.parentNode;
 					newEndOffset = index + 1;
 				}
+				
 			}
 			
 			if ( newStartContainer.length &&
 				 newStartContainer.length == newStartOffset &&
 				 isVoidNode( newStartContainer.nextSibling ) ) {
-				var index = getIndexOfChildNode( newStartContainer.parentNode, newStartContainer.nextSibling  );
+				
+				var index = getIndexOfChildNode(
+					newStartContainer.parentNode, newStartContainer.nextSibling
+				);
 				
 				if ( index != -1 ) {
 					newStartContainer = newStartContainer.parentNode;
 					newStartOffset = index;
 				}
+				
 			}
 		} else {
 			//
 		}
 		
-		debugger;
-		
+		// <a><b><c></c></b></a>
 		// 'foo<span>{}<br></span>baz', 'foo[]<span><br></span>baz'
 		// 'foo<span><br>{}</span>baz', 'foo<span><br></span>[]baz'
-		if ( newStartOffset == 0 &&
-			 isVoidNode( newStartContainer.firstChild ) )
-			 //newStartContainer.previousSibling &&
-			 //newStartContainer.childNodes.length &&
-			 //isVoidNode( newStartContainer.childNodes[ 0 ] ) ) {
-			newStartContainer = getSelectionEndNode( moveBack( newStartContainer ) );
+		if ( newStartOffset == 0 && 
+			 isVoidNode( newStartContainer.firstChild ) ) {
+			
+			newStartContainer = getSelectionEndNode(
+				moveBackwards( newStartContainer ), isSelectionStopNode
+			);
 			newStartOffset = newStartContainer.length;
-		} else if ( newStartContainer.nextSibling &&
-					newStartContainer.childNodes.length &&
-					newStartOffset == newStartContainer.childNodes.length &&
-					isVoidNode( newStartContainer.childNodes[ newStartContainer.childNodes.length - 1 ] ) ) {
-			newStartContainer = newStartContainer.nextSibling;
+		
+		} else if ( newStartOffset == newStartContainer.childNodes.length &&
+					isVoidNode( newStartContainer.lastChild ) ) {
+			
+			newStartContainer = moveForwards( newStartContainer );
 			newStartOffset = 0;
+			
 		}
 		
 		if ( newEndOffset == 0 &&
 			 newEndContainer.previousSibling &&
-			 newEndContainer.childNodes.length &&
-			 isVoidNode( newEndContainer.childNodes[ 0 ] ) ) {
+			 isVoidNode( newEndContainer.firstChild ) ) {
+			
 			newEndContainer = newEndContainer.previousSibling;
 			newEndOffset = newEndContainer.length;
+			
 		} else if ( newEndContainer.nextSibling &&
-					newEndContainer.childNodes.length &&
 					newEndOffset == newEndContainer.childNodes.length &&
-					isVoidNode( newEndContainer.childNodes[ newEndContainer.childNodes.length - 1 ] ) ) {
+					isVoidNode( newEndContainer.lastChild ) ) {
+			
 			newEndContainer = newEndContainer.nextSibling;
 			newEndOffset = 0;
+			
 		}
 		
 		if ( newEndContainer ) {
