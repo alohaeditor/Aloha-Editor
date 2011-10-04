@@ -1808,8 +1808,8 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		    endOffset = range.endOffset,
 			newStartContainer,
 		    newEndContainer,
-			newStartOffset,
-			newEndOffset;
+			newStartOffset = startOffset,
+			newEndOffset = endOffset;
 		
 		if ( endContainer.childNodes.length &&
 			 isVoidNode( endContainer.childNodes[ endOffset ? endOffset - 1 : 0 ] ) ) {
@@ -1854,22 +1854,6 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		} else {
 			newEndContainer = range.endContainer;
 			newEndOffset = range.endOffset;
-		}
-		
-		// Fix position around void elements
-		if ( newEndOffset == 0 &&
-			 isVoidNode( newEndContainer.previousSibling ) ) {
-			var index = getIndexOfChildNode( newEndContainer.parentNode, newEndContainer.previousSibling  );
-			
-			if ( index != -1 ) {
-				newEndContainer = newEndContainer.parentNode;
-				newEndOffset = index + 1;
-			}
-		}
-		
-		if ( newEndContainer && newEndOffset ) {
-			range.endContainer = newEndContainer;
-			range.endOffset = newEndOffset;
 		}
 		
 		if ( false && isAdjacentToVoidElement( startContainer ) ) {
@@ -1918,7 +1902,8 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 					startContainer.childNodes.length == startOffset ) {
 			// Corrects 'foo<span>bar{</span>baz}' to 'foo<span>bar</span>[baz]'
 			newStartContainer = startContainer.nextSibling;
-		} else if ( startContainer.childNodes.length ) {
+		} else if ( startContainer.childNodes.length &&
+					!isVoidNode( startContainer.childNodes[ startOffset ] ) ) {
 			newStartContainer = startContainer.childNodes[ startOffset ];
 		}
 		
@@ -1934,18 +1919,37 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		//debugger;
 		
 		// Fix position around void elements
-		if ( newStartContainer.length &&
-			 newStartContainer.length == newStartOffset &&
-			 isVoidNode( newStartContainer.nextSibling ) ) {
-			var index = getIndexOfChildNode( newStartContainer.parentNode, newStartContainer.nextSibling  );
+		
+		if ( newStartContainer != newEndContainer ||
+			 newStartOffset != newEndOffset ) {
+			if ( newEndOffset == 0 &&
+				 isVoidNode( newEndContainer.previousSibling ) ) {
+				var index = getIndexOfChildNode( newEndContainer.parentNode, newEndContainer.previousSibling  );
+				
+				if ( index != -1 ) {
+					newEndContainer = newEndContainer.parentNode;
+					newEndOffset = index + 1;
+				}
+			}
 			
-			if ( index != -1 ) {
-				newStartContainer = newStartContainer.parentNode;
-				newStartOffset = index;
+			if ( newStartContainer.length &&
+				 newStartContainer.length == newStartOffset &&
+				 isVoidNode( newStartContainer.nextSibling ) ) {
+				var index = getIndexOfChildNode( newStartContainer.parentNode, newStartContainer.nextSibling  );
+				
+				if ( index != -1 ) {
+					newStartContainer = newStartContainer.parentNode;
+					newStartOffset = index;
+				}
 			}
 		}
 		
-		if ( newStartContainer && newStartOffset ) {
+		if ( newEndContainer ) {
+			range.endContainer = newEndContainer;
+			range.endOffset = newEndOffset;
+		}
+		
+		if ( newStartContainer ) {
 			range.startContainer = newStartContainer;
 			range.startOffset = newStartOffset;
 		}
