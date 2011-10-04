@@ -43,8 +43,7 @@ define([
 			EditorManager.register('url', editor.UrlEditor);
 			EditorManager.register('email', editor.EmailEditor);
 			
-			// @todo contenthandler --> use ContentHandlerManager
-			//PastePlugin.register(new BlockPasteHandler());
+			// register content handler for block plugin
 			ContentHandlerManager.register('block', BlockContentHandler);
 
 			BlockManager.registerEventHandlers();

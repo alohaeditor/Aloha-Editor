@@ -70,17 +70,6 @@ function(Aloha, Plugin, jQuery, Commands, console,
 			heightDiff = 0, 
 			pasteDivContents;
 
-		// call all paste handlers
-		/* will be in contenthandler
-		for ( i = 0; i < pasteHandlers.length; ++i) {
-			if ( typeof pasteHandlers[i].handlePaste === 'function' ) {
-				pasteHandlers[i].handlePaste($pasteDiv);
-			} else {
-				console.error( 'A pastehandler has no method handlePaste.' );
-			}
-		}
-		*/
-
 		// insert the content into the editable at the current range
 		if (pasteRange && pasteEditable) {
 			
@@ -121,11 +110,6 @@ function(Aloha, Plugin, jQuery, Commands, console,
 	return Plugin.create( 'paste', {
 		settings: {},
 		dependencies: [ 'contenthandler' ],
-
-		/**
-		 * All registered paste handlers
-		 */
-		//pasteHandlers: pasteHandlers,
 
 		/**
 		 * Initialize the PastePlugin
