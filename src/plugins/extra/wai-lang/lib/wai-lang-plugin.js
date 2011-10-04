@@ -183,7 +183,7 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 				}
 			});
 			
-			Aloha.bind('aloha', that.handleExistingSpans);
+			Aloha.ready(that.handleExistingSpans);
 	
 		},
 		
