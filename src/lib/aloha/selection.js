@@ -1828,28 +1828,34 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 			newStartOffset = startOffset,
 			newEndOffset = endOffset;
 		
-		if ( endContainer.childNodes.length &&
-			 isVoidNode( endContainer.childNodes[ endOffset ? endOffset - 1 : 0 ] ) ) {
-			// 'foo[<br>]baz', 'foo{<br>}baz'
-			// debugger;
-		} else if ( endOffset && isSelectionStopNode( endContainer ) ) {
-			// The end position is somewhere in the middle, or at the end of a
-			// node on which we can position the end of the selection. We
-			// therefore don't need to move it
-		} else if ( endOffset &&
+		//debugger;
+		
+		if ( /* endOffset && */ isSelectionStopNode( endContainer ) ) {
+			//
+		} else if ( isVoidNode( endContainer.childNodes[
+						endOffset ? endOffset - 1 : 0 ] ) ) {
+			if ( endOffset == 0 ) {
+				newEndContainer = getSelectionEndNode(
+					moveBackwards( endContainer ), isSelectionStopNode
+				);
+				newEndOffset = newEndContainer.length;
+			}
+		} else if ( //endOffset &&
 					endOffset == endContainer.childNodes.length ) {
 			// The endOffset is at the end of a node on which we cannot stop
 			// at. We will therefore search for an appropriate node nested
 			// inside this node at which to stop at
 			newEndContainer = endContainer; 
-		} else if ( endOffset &&
+		} else if ( //endOffset &&
 					endContainer.children &&
 					endContainer.children.length ) {
 			// We are in a node in which containers children nodes. This node
 			// is not one in which we want to stop so we will take the last
 			// node in the children list (node childNodes), and try and find a
 			// position to stop at
-			newEndContainer = endContainer.children[ endContainer.children.length - 1 ];
+			newEndContainer = endContainer.children[
+				endContainer.children.length - 1
+			];
 		} else if ( endContainer.previousSibling &&
 					!isVoidNode( endContainer.previousSibling ) ) {
 			// None of the above are true, so try and traverse the
@@ -1858,24 +1864,31 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 			newEndContainer = endContainer.previousSibling;
 		} else if ( endOffset == 0 &&
 					endContainer != startContainer &&
-					endContainer.parentNode.previousSibling &&
-					!isVoidNode( endContainer.previousSibling ) ) {
+					endContainer.parentNode.previousSibling
+					// !isVoidNode( endContainer.previousSibling )
+					) {
 			// Corrects 'foo<span>{bar</span>}baz' to 'foo<span>[bar]</span>baz'
 			newEndContainer = endContainer.parentNode.previousSibling;
 		}
 		
-		newEndContainer = getSelectionEndNode( newEndContainer, isSelectionStopNode );
+		newEndContainer = getSelectionEndNode(
+			newEndContainer, isSelectionStopNode
+		);
 		
 		if ( !newEndContainer ) {
 			newEndContainer = range.endContainer;
 		} else if ( isVoidNode( newEndContainer ) && endOffset ) {
 			// newEndContainer is the last node in its parent and a void node
 			// therefore jump to the very next possible element
-			newEndContainer = newEndContainer.parentNode.nextSibling;
+			newEndContainer = moveForwards( newEndContainer );
 			newEndOffset = 0;
 		} else if ( isVoidNode( newEndContainer ) ) {
-			newEndContainer = getSelectionEndNode( newEndContainer.parentNode.previousSibling, isSelectionStopNode );
+			
+			newEndContainer = getSelectionEndNode(
+				moveBackwards( newEndContainer ), isSelectionStopNode
+			);
 			newEndOffset = newEndContainer.length;
+			
 		} else {
 			newEndOffset = newEndContainer.length;
 		}
