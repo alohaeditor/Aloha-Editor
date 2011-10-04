@@ -1767,16 +1767,18 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		return node.nodeType == Node.TEXT_NODE;
 	};
 	
-	function isAdjacentToVoidElement ( node ) {
+	function isVoidNode ( node ) {
 		var voidNodes = {
 			BR  : true,
 			HR  : true,
 			IMG : true
 		};
-		return (
-			( node.nextSibling && voidNodes[ node.nextSibling.nodeName ] ) ||
-			( node.previousSibling && voidNodes[ node.previousSibling.nodeName ] )
-		);
+		return node ? voidNodes[ node.nodeName ] : false;
+	};
+	
+	function isAdjacentToVoidElement ( node ) {
+		return isVoidNode( node.nextSibling ) ||
+			   isVoidNode( node.previousSibling );
 	}
 	
 	function getIndexOfChildNode ( parent, child ) {
@@ -1785,7 +1787,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 			l = n.length;
 		
 		for ( ; i < l; ++i ) {
-			if ( n[ i ] == child ) {
+			if ( n[ i ] === child ) {
 				return i;
 			}
 		}
@@ -1809,7 +1811,9 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 			newStartOffset,
 			newEndOffset;
 		
-		if ( false && isAdjacentToVoidElement( endContainer ) ) {
+		if ( endContainer.childNodes.length &&
+			 isVoidNode( endContainer.childNodes[ endOffset ? endOffset - 1 : 0 ] ) ) {
+			// 'foo[<br>]baz', 'foo{<br>}baz'
 			// debugger;
 		} else if ( endOffset && isSelectionStopNode( endContainer ) ) {
 			// The end position is somewhere in the middle, or at the end of a
@@ -1829,41 +1833,44 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 			// node in the children list (node childNodes), and try and find a
 			// position to stop at
 			newEndContainer = endContainer.children[ endContainer.children.length - 1 ];
-		} else if ( endContainer.previousSibling ) {
+		} else if ( endContainer.previousSibling &&
+					!isVoidNode( endContainer.previousSibling ) ) {
 			// None of the above are true, so try and traverse the
 			// previousSibling to find a stop position
+			// '<br class="test">foo<br>[]baz', 'foo<br>[]baz'
 			newEndContainer = endContainer.previousSibling;
 		} else if ( endOffset == 0 &&
 					endContainer != startContainer &&
+					!isVoidNode( endContainer.previousSibling ) &&
 					endContainer.parentNode.previousSibling ) {
 			// Corrects 'foo<span>{bar</span>}baz' to 'foo<span>[bar]</span>baz'
 			newEndContainer = endContainer.parentNode.previousSibling;
 		}
 		
+		//debugger;
+		
+		newEndContainer = getSelectionEndNode( newEndContainer, isSelectionStopNode );
+		
 		if ( newEndContainer ) {
-			newEndContainer = getSelectionEndNode( newEndContainer, isSelectionStopNode );
+			newEndOffset = newEndContainer.length;
+		} else {
+			newEndContainer = range.endContainer;
+			newEndOffset = range.endOffset;
+		}
+		
+		if ( newEndOffset == 0 &&
+			 isVoidNode( newEndContainer.previousSibling ) ) {
+			var index = getIndexOfChildNode( newEndContainer.parentNode, newEndContainer.previousSibling  );
 			
-			if ( newEndContainer ) {
-				range.newEndContainer = newStartContainer;
-				range.endOffset = newEndOffset;
-				
-				if ( isAdjacentToVoidElement( newEndContainer ) &&
-					 newEndContainer.previousSibling ) {
-					newEndOffset = getIndexOfChildNode( newEndContainer.parentNode, newEndContainer.previousSibling );
-					
-					if ( newEndOffset > -1 ) {
-						++newEndOffset;
-						newEndContainer = newEndContainer.parentNode;
-					} else {
-						newEndOffset = newEndContainer.length;
-					}
-				} else {
-					newEndOffset = newEndContainer.length;
-				}
-				
-				range.endContainer = newEndContainer;
-				range.endOffset = newEndOffset;
+			if ( index != -1 ) {
+				newEndContainer = newEndContainer.parentNode;
+				newEndOffset = index + 1;
 			}
+		}
+		
+		if ( newEndContainer && newEndOffset ) {
+			range.endContainer = newEndContainer;
+			range.endOffset = newEndOffset;
 		}
 		
 		if ( false && isAdjacentToVoidElement( startContainer ) ) {
