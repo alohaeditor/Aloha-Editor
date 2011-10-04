@@ -49,6 +49,7 @@ function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 
 			// the 'create unordered list' button
 			this.createUnorderedListButton = new Aloha.ui.Button({
+				'name' : 'ul',
 				'iconClass' : 'aloha-button aloha-button-ul',
 				'size' : 'small',
 				'tooltip' : i18n.t('button.createulist.tooltip'),
@@ -67,6 +68,7 @@ function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 
 			// the 'create ordered list' button
 			this.createOrderedListButton = new Aloha.ui.Button({
+				'name' : 'ol',
 				'iconClass' : 'aloha-button aloha-button-ol',
 				'size' : 'small',
 				'tooltip' : i18n.t('button.createolist.tooltip'),

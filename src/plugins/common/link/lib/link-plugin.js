@@ -130,6 +130,7 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 			// format Link Button
 			// this button behaves like a formatting button like (bold, italics, etc)
 			this.formatLinkButton = new Aloha.ui.Button({
+				'name' : 'a',
 				'iconClass' : 'aloha-button aloha-button-a',
 				'size' : 'small',
 				'onclick' : function () { that.formatLink(); },
@@ -146,6 +147,7 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 			// insert Link
 			// always inserts a new link
 			this.insertLinkButton = new Aloha.ui.Button({
+				'name': 'insertLink',
 				'iconClass' : 'aloha-button aloha-button-a',
 				'size' : 'small',
 				'onclick' : function () { that.insertLink( false ); },
@@ -166,6 +168,7 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 
 
 			this.hrefField = new Aloha.ui.AttributeField({
+				'name': 'href',
 				'width':320,
 				'valueField': 'url'
 			});
@@ -181,6 +184,7 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 
 			this.removeLinkButton = new Aloha.ui.Button({
 				// TODO use another icon here
+				'name' : 'removeLink',
 				'iconClass' : 'aloha-button aloha-button-a-remove',
 				'size' : 'small',
 				'onclick' : function () { that.removeLink(); },
@@ -226,7 +230,10 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 
 			// on blur check if href is empty. If so remove the a tag
 			this.hrefField.addListener('blur', function(obj, event) {
-				if ( !this.getValue() ) {
+				//checks for either a literal value in the href field
+				//(that is not the pre-filled "http://") or a resource
+				//(e.g. in the case of a repository link)
+				if ( ( ! this.getValue() || this.getValue() === "http://" ) && ! this.getItem() ) {
 					that.removeLink();
 				}
 			});

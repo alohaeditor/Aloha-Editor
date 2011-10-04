@@ -18,15 +18,10 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 define(
-['aloha/core', 'aloha/jquery', 'aloha/ext', 'util/class', 'vendor/jquery.store'],
-function(Aloha, jQuery, Ext, Class) {
+['aloha/core', 'aloha/jquery', 'aloha/ext', 'util/class', 'aloha/console', 'vendor/jquery.store'],
+function(Aloha, jQuery, Ext, Class, console) {
 	"use strict";
-	var
-//		$ = jQuery,
-//		Aloha = window.Aloha,
-//		console = window.console||false,
-//		Class = window.Class,
-		GENTICS = window.GENTICS;
+	var GENTICS = window.GENTICS;
 
 	/**
 	 * Constructor for a floatingmenu tab
@@ -362,6 +357,18 @@ function(Aloha, jQuery, Ext, Class) {
 		 * Default is: true 
 		 */
 		draggable: true,
+		
+		/**
+		 * A list of all buttons that have been added to the floatingmenu
+		 * This needs to be tracked, as adding buttons twice will break the fm
+		 */
+		buttonsAdded: [],
+		
+		/**
+		 * Will be initialized by checking Aloha.settings.toolbar, which will contain the config for
+		 * the floating menu. If there is no config, tabs and groups will be generated programmatically
+		 */
+		fromConfig: false,
 
 		/**
 		 * Initialize the floatingmenu
@@ -427,6 +434,10 @@ function(Aloha, jQuery, Ext, Class) {
 				that.generateComponent();
 				that.initialized = true;
 			});
+			
+			if (typeof Aloha.settings.toolbar === 'object') {
+				this.fromConfig = true;				
+			}
 		},
 
 		/**
@@ -454,12 +465,64 @@ function(Aloha, jQuery, Ext, Class) {
 		width: 400,
 
 		/**
+		 * initialize tabs and groups according to the current configuration
+		 */
+		initTabsAndGroups: function () {
+			var that = this;
+			
+			// if there is no toolbar config tabs and groups have been initialized before
+			if (!this.fromConfig) {
+				return;
+			}
+			
+			jQuery.each(Aloha.settings.toolbar.tabs, function (tab, groups) {
+				// generate or retrieve tab
+				var tabObject = that.tabMap[tab];
+				if (typeof tabObject === 'undefined') {
+					// the tab object does not yet exist, so create a new tab and add it to the list
+					tabObject = new Tab(tab);
+					that.tabs.push(tabObject);
+					that.tabMap[tab] = tabObject;
+				}
+				
+				// generate groups for current tab
+				jQuery.each(groups, function (group, buttons) {
+					var groupObject = tabObject.getGroup(group),
+						i;
+
+					// now get all the buttons for that group
+					jQuery.each(buttons, function (j, button) {
+						if (jQuery.inArray(button, that.buttonsAdded) !== -1) {
+							// buttons must not be added twice
+							console.warn('Skipping button {' + button + '}. A button can\'t be added ' + 
+								'to the floating menu twice. Config key: {Aloha.settings.toolbar.' + 
+									tab + '.' + group + '}');
+									return;
+						}
+						
+						// now add the button to the group
+						for (i = 0; i < that.allButtons.length; i++) {
+							if (button === that.allButtons[i].button.name) {
+								groupObject.addButton(that.allButtons[i]);
+								// remember that we've added the button
+								that.buttonsAdded.push(that.allButtons[i].button.name);
+								break;
+							}
+						}
+					});
+				});
+			});
+		},
+
+		/**
 		 * Generate the rendered component for the floatingmenu
 		 * @hide
 		 */
 		generateComponent: function () {
-			//debugger;
 			var that = this, pinTab;
+
+			// initialize tabs and groups first
+			this.initTabsAndGroups();
 
 			// Initialize and configure the tooltips
 			Ext.QuickTips.init();
@@ -471,8 +534,7 @@ function(Aloha, jQuery, Ext, Class) {
 			
 			if (this.extTabPanel) {
 				// TODO dispose of the ext component
-			}
-			else {
+			} else {
 				
 				// Enable or disable the drag functionality
 				var dragConfiguration = false;
@@ -533,7 +595,8 @@ function(Aloha, jQuery, Ext, Class) {
 								jQuery.each(that.allButtons, function(index, buttonInfo) {
 									if (typeof buttonInfo.button !== 'undefined'
 										&& typeof buttonInfo.button.extButton !== 'undefined'
-											&& typeof buttonInfo.button.extButton.setActiveDOMElement === 'function') {
+										&& buttonInfo.button.extButton !== null
+										&& typeof buttonInfo.button.extButton.setActiveDOMElement === 'function') {
 										if (typeof buttonInfo.button.extButton.activeDOMElement !== 'undefined') {
 											buttonInfo.button.extButton.setActiveDOMElement(buttonInfo.button.extButton.activeDOMElement);
 										}
@@ -797,6 +860,10 @@ function(Aloha, jQuery, Ext, Class) {
 			var
 				scopeObject = this.scopes[scope],
 				buttonInfo, tabObject, groupObject;
+		
+			if (!button.name) {
+				console.warn('Added button with iconClass {' + button.iconClass + '} which has no property "name"');
+			}
 	
 			if (typeof scopeObject === 'undefined') {
 				Aloha.Log.error("Can't add button to given scope since the scope has not yet been initialized.", scope);
@@ -804,7 +871,7 @@ function(Aloha, jQuery, Ext, Class) {
 			}
 
 			// generate a buttonInfo object
-			buttonInfo = {'button' : button, 'scopeVisible' : false};
+			buttonInfo = { 'button' : button, 'scopeVisible' : false };
 
 			// add the button to the list of all buttons
 			this.allButtons.push(buttonInfo);
@@ -812,20 +879,23 @@ function(Aloha, jQuery, Ext, Class) {
 			// add the button to the scope
 			scopeObject.buttons.push(buttonInfo);
 
-			// get the tab object
-			tabObject = this.tabMap[tab];
-			if (typeof tabObject === 'undefined') {
-				// the tab object does not yet exist, so create a new tab and add it to the list
-				tabObject = new Tab(tab);
-				this.tabs.push(tabObject);
-				this.tabMap[tab] = tabObject;
+			// if there is no toolbar config tabs and groups will be generated right away
+			if (!this.fromConfig) {
+				// get the tab object
+				tabObject = this.tabMap[tab];
+				if (typeof tabObject === 'undefined') {
+					// the tab object does not yet exist, so create a new tab and add it to the list
+					tabObject = new Tab(tab);
+					this.tabs.push(tabObject);
+					this.tabMap[tab] = tabObject;
+				}
+
+				// get the group
+				groupObject = tabObject.getGroup(group);
+
+				// now add the button to the group
+				groupObject.addButton(buttonInfo);
 			}
-
-			// get the group
-			groupObject = tabObject.getGroup(group);
-
-			// now add the button to the group
-			groupObject.addButton(buttonInfo);
 
 			// finally, when the floatingmenu is already initialized, we need to create the ext component now
 			if (this.initialized) {
@@ -841,7 +911,7 @@ function(Aloha, jQuery, Ext, Class) {
 			if (Aloha.Log.isDebugEnabled()) {
 				Aloha.Log.debug(this, 'doLayout called for FloatingMenu, scope is ' + this.currentScope);
 			}
-			//debugger;
+
 			var that = this,
 				firstVisibleTab = false,
 				activeExtTab = this.extTabPanel.getActiveTab(),
