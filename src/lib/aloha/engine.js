@@ -5309,7 +5309,7 @@ function outdentNode(node, range) {
 	// "If node is a simple indentation element, remove node, preserving its
 	// descendants.  Then abort these steps."
 	if (isSimpleIndentationElement(node)) {
-		removePreservingDescendants(node);
+		removePreservingDescendants(node, range);
 		return;
 	}
 
@@ -5399,7 +5399,7 @@ function outdentNode(node, range) {
 			var values = recordValues([].slice.call(node.childNodes));
 
 			// "Remove node, preserving its descendants."
-			removePreservingDescendants(node);
+			removePreservingDescendants(node, range);
 
 			// "Restore the values from values."
 			restoreValues(values, range);
@@ -5461,7 +5461,7 @@ function outdentNode(node, range) {
 	}
 
 	// "Outdent original ancestor."
-	outdentNode(originalAncestor);
+	outdentNode(originalAncestor, range);
 }
 
 
@@ -5593,7 +5593,7 @@ function toggleLists(tagName, range) {
 			// name tag name, outdent it and continue this loop from the
 			// beginning."
 			if (isHtmlElement(sublist[0], tagName)) {
-				outdentNode(sublist[0]);
+				outdentNode(sublist[0], range);
 				continue;
 			}
 
@@ -6087,7 +6087,7 @@ commands["delete"] = {
 
 			// "Outdent each node in node list."
 			for (var i = 0; i < nodeList.length; i++) {
-				outdentNode(nodeList[i]);
+				outdentNode(nodeList[i], range);
 			}
 
 			// "Abort these steps."
@@ -7707,7 +7707,7 @@ commands.outdent = {
 			while (nodeList.length
 			&& (isHtmlElement(nodeList[0], ["OL", "UL"])
 			|| !isHtmlElement(nodeList[0].parentNode, ["OL", "UL"]))) {
-				outdentNode(nodeList.shift());
+				outdentNode(nodeList.shift(), range);
 			}
 
 			// "If node list is empty, break from these substeps."
