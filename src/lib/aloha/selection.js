@@ -1753,18 +1753,22 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		}
 		
 		if ( node.childNodes.length ) {
-			return getSelectionStartNode( node.childNodes[ node.childNodes.length - 1 ], condition );
+			return (
+				getSelectionStartNode( node.childNodes[ node.childNodes.length - 1 ], condition ) || node
+			);
 		}
 		
 		if ( node.previousSibling ) {
-			return getSelectionEndNode( node.previousSibling, condition );
+			return (
+				getSelectionEndNode( node.previousSibling, condition ) || node
+			);
 		}
 		
-		return node;
+		return null;
 	};
 	
 	function isSelectionStopNode ( node ) {
-		return node.nodeType == Node.TEXT_NODE;
+		return node.nodeType == Node.TEXT_NODE && !isVoidNode( node );
 	};
 	
 	function isVoidNode ( node ) {
@@ -1828,12 +1832,10 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 			newStartOffset = startOffset,
 			newEndOffset = endOffset;
 		
-		//debugger;
-		
-		if ( /* endOffset && */ isSelectionStopNode( endContainer ) ) {
+		if ( isSelectionStopNode( endContainer ) ) {
 			if ( endOffset == 0 ) {
 				var prev = endContainer.previousSibling || endContainer.parentNode.previousSibling;
-				if ( !isVoidNode( prev ) ) {
+				if ( !isVoidNode( prev ) && !isVoidNode( prev.lastChild ) ) {
 					newEndContainer = prev;
 				}
 			}
@@ -1880,10 +1882,6 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 			newEndContainer, isSelectionStopNode
 		);
 		
-		if ( isVoidNode( moveBackwards( newEndContainer ) ) ) {
-			debugger;
-		}
-		
 		if ( !newEndContainer ) {
 			newEndContainer = range.endContainer;
 		} else if ( isVoidNode( newEndContainer ) && endOffset ) {
@@ -1912,8 +1910,8 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		} else if ( startOffset == startContainer.childNodes.length &&
 					startContainer.firstChild == newEndContainer ) {
 			
-			//range.startContainer = newEndContainer;
-			//range.startOffset = newEndContainer.length;
+			range.startContainer = newEndContainer;
+			newStartOffset = newEndContainer.length;
 			
 		} else if ( endOffset == 0 &&
 					startContainer.childNodes.length &&
@@ -1980,7 +1978,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		if ( newStartContainer != newEndContainer || newStartOffset != newEndOffset ) {
 			
 			if ( newEndOffset == 0 && isVoidNode( newEndContainer.previousSibling ) ) {
-				 
+				
 				var index = getIndexOfChildNode(
 					newEndContainer.parentNode, newEndContainer.previousSibling
 				);
@@ -2006,11 +2004,8 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 				}
 				
 			}
-		} else {
-			//
 		}
 		
-		// <a><b><c></c></b></a>
 		// 'foo<span>{}<br></span>baz', 'foo[]<span><br></span>baz'
 		// 'foo<span><br>{}</span>baz', 'foo<span><br></span>[]baz'
 		if ( newStartOffset == 0 && 
@@ -2043,6 +2038,36 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 			newEndContainer = newEndContainer.nextSibling;
 			newEndOffset = 0;
 			
+		}
+		
+		
+		// TODO: check for errors of jumping out of editables
+		//debugger;
+		
+		if ( newStartContainer != newEndContainer ) {
+			if ( newStartContainer.length == newStartOffset ) {
+				var next = moveForwards( newStartContainer );
+			} else {
+				var next = newStartContainer.childNodes[ newStartOffset ];
+			}
+			
+			if ( next ) {
+				if ( next.firstChild == next.lastChild && isVoidNode( next.firstChild ) ) {
+					newStartContainer = next;
+					newStartOffset = 0;
+				}
+			}
+			
+			if ( newEndOffset == 0 ) {
+				var prev = moveBackwards( newEndContainer );
+				
+				if ( prev ) {
+					if ( prev.firstChild == prev.lastChild && isVoidNode( prev.firstChild ) ) {
+						newEndContainer = prev;
+						newEndOffset = 1;
+					}
+				}
+			}
 		}
 		
 		if ( newEndContainer ) {
