@@ -540,7 +540,7 @@ var tests = {
 		},
 		{  	start: '<p>foo<p><span style="background-color:tan">[]bar</font>',
 			execResult: '<p>foo[]<span style="background-color:tan">bar</span></p>'
-		},*/
+		},
 	
 		{  	start: '<p style="text-decoration:underline">foo<p>[]bar',
 			execResult: '<p style="text-decoration:underline">foo[]bar</p>'
@@ -570,281 +570,281 @@ var tests = {
 		{  	start: '<div style="color:blue"><p style="color:green>foo</div>[]bar', // very broken doesnt even run in the testbox
 			execResult: '<div style="color:blue"><p style="color:green>foo</div>[]bar'
 		},
-		{  	start: '<div style="color:blue"><p style="color:green>foo</div><p style="color:brown">[]bar',
+		{  	start: '<div style="color:blue"><p style="color:green>foo</div><p style="color:brown">[]bar', // very broken doesnt even run in the testbox
 			execResult: '<div style="color:blue"><p style="color:green>foo</div><p style="color:brown">[]bar'
 		},
-		{  	start: '<p style="color:blue">foo<div style="color:brown"><p style="color:green>[]bar',
+		{  	start: '<p style="color:blue">foo<div style="color:brown"><p style="color:green>[]bar', // very broken doesnt even run in the testbox
 			execResult: '<p style="color:blue">foo<div style="color:brown"><p style="color:green">[]bar'
 		},
-	
+	*/
 //		// Uncollapsed selection
-//		{  	start: 'foo[bar]baz',
-//			execResult: 'foo[bar]baz'
-//		},
-//		{  	start: '<p>foo<span style=color:#aBcDeF>[bar]</span>baz',
-//			execResult: '<p>foo<span style=color:#aBcDeF>[bar]</span>baz'
-//		},
-//		{  	start: '<p>foo<span style=color:#aBcDeF>{bar}</span>baz',
-//			execResult: '<p>foo<span style=color:#aBcDeF>{bar}</span>baz'
-//		},
-//		{  	start: '<p>foo{<span style=color:#aBcDeF>bar</span>}baz',
-//			execResult: '<p>foo{<span style=color:#aBcDeF>bar</span>}baz'
-//		},
-//		{  	start: '<p>[foo<span style=color:#aBcDeF>bar]</span>baz',
-//			execResult: '<p>[foo<span style=color:#aBcDeF>bar]</span>baz'
-//		},
-//		{  	start: '<p>{foo<span style=color:#aBcDeF>bar}</span>baz',
-//			execResult: '<p>{foo<span style=color:#aBcDeF>bar}</span>baz'
-//		},
-//		{  	start: '<p>foo<span style=color:#aBcDeF>[bar</span>baz]',
-//			execResult: '<p>foo<span style=color:#aBcDeF>[bar</span>baz]'
-//		},
-//		{  	start: '<p>foo<span style=color:#aBcDeF>{bar</span>baz}',
-//			execResult: '<p>foo<span style=color:#aBcDeF>{bar</span>baz}'
-//		},
-//		{  	start: '<p>foo<span style=color:#aBcDeF>[bar</span><span style=color:#fEdCbA>baz]</span>quz',
-//			execResult: '<p>foo<span style=color:#aBcDeF>[bar</span><span style=color:#fEdCbA>baz]</span>quz'
-//		},
-//	
-//		{  	start: 'foo<b>[bar]</b>baz',
-//			execResult: 'foo<b>[bar]</b>baz'
-//		},
-//		{  	start: 'foo<b>{bar}</b>baz',
-//			execResult: 'foo<b>{bar}</b>baz'
-//		},
-//		{  	start: 'foo{<b>bar</b>}baz',
-//			execResult: 'foo{<b>bar</b>}baz'
-//		},
-//		{  	start: 'foo<span>[bar]</span>baz',
-//			execResult: 'foo<span>[bar]</span>baz'
-//		},
-//		{  	start: 'foo<span>{bar}</span>baz',
-//			execResult: 'foo<span>{bar}</span>baz'
-//		},
-//		{  	start: 'foo{<span>bar</span>}baz',
-//			execResult: 'foo{<span>bar</span>}baz'
-//		},
-//		{  	start: '<b>foo[bar</b><i>baz]quz</i>',
-//			execResult: '<b>foo[bar</b><i>baz]quz</i>'
-//		},
-//		{  	start: '<p>foo</p><p>[bar]</p><p>baz</p>',
-//			execResult: '<p>foo</p><p>[bar]</p><p>baz</p>'
-//		},
-//		{  	start: '<p>foo</p><p>{bar}</p><p>baz</p>',
-//			execResult: '<p>foo</p><p>{bar}</p><p>baz</p>'
-//		},
-//		{  	start: '<p>foo</p><p>{bar</p>}<p>baz</p>',
-//			execResult: '<p>foo</p><p>{bar</p>}<p>baz</p>'
-//		},
-//		{  	start: '<p>foo</p>{<p>bar}</p><p>baz</p>',
-//			execResult: '<p>foo</p>{<p>bar}</p><p>baz</p>'
-//		},
-//		{  	start: '<p>foo</p>{<p>bar</p>}<p>baz</p>',
-//			execResult: '<p>foo</p>{<p>bar</p>}<p>baz</p>'
-//		},
-//	
-//		{  	start: '<p>foo[bar<p>baz]quz',
-//			execResult: '<p>foo[bar<p>baz]quz'
-//		},
-//		{  	start: '<p>foo[bar<div>baz]quz</div>',
-//			execResult: '<p>foo[bar<div>baz]quz</div>'
-//		},
-//		{  	start: '<p>foo[bar<h1>baz]quz</h1>',
-//			execResult: '<p>foo[bar<h1>baz]quz</h1>'
-//		},
-//		{  	start: '<div>foo[bar</div><p>baz]quz',
-//			execResult: '<div>foo[bar</div><p>baz]quz'
-//		},
-//		{  	start: '<blockquote>foo[bar</blockquote><pre>baz]quz</pre>',
-//			execResult: '<blockquote>foo[bar</blockquote><pre>baz]quz</pre>'
-//		},
-//	
-//		{  	start: '<p><b>foo[bar</b><p>baz]quz',
-//			execResult: '<p><b>foo[bar</b><p>baz]quz'
-//		},
-//		{  	start: '<div><p>foo[bar</div><p>baz]quz',
-//			execResult: '<div><p>foo[bar</div><p>baz]quz'
-//		},
-//		{  	start: '<p>foo[bar<blockquote><p>baz]quz<p>qoz</blockquote',
-//			execResult: '<p>foo[bar<blockquote><p>baz]quz<p>qoz</blockquote'
-//		},
-//		{  	start: '<p>foo[bar<p style=color:blue>baz]quz',
-//			execResult: '<p>foo[bar<p style=color:blue>baz]quz'
-//		},
-//		{  	start: '<p>foo[bar<p><b>baz]quz</b>',
-//			execResult: '<p>foo[bar<p><b>baz]quz</b>'
-//		},
-//	
-//		{  	start: '<div><p>foo<p>[bar<p>baz]</div>',
-//			execResult: '<div><p>foo<p>[bar<p>baz]</div>'
-//		},
-//	
-//		{  	start: 'foo[<br>]bar',
-//			execResult: 'foo[<br>]bar'
-//		},
-//		{  	start: '<p>foo[</p><p>]bar</p>',
-//			execResult: '<p>foo[</p><p>]bar</p>'
-//		},
-//		{  	start: '<p>foo[</p><p>]bar<br>baz</p>',
-//			execResult: '<p>foo[</p><p>]bar<br>baz</p>'
-//		},
-//		{  	start: 'foo[<p>]bar</p>',
-//			execResult: 'foo[<p>]bar</p>'
-//		},
-//		{  	start: 'foo{<p>}bar</p>',
-//			execResult: 'foo{<p>}bar</p>'
-//		},
-//		{  	start: 'foo[<p>]bar<br>baz</p>',
-//			execResult: 'foo[<p>]bar<br>baz</p>'
-//		},
-//		{  	start: 'foo[<p>]bar</p>baz',
-//			execResult: 'foo[<p>]bar</p>baz'
-//		},
-//		{  	start: 'foo{<p>bar</p>}baz',
-//			execResult: 'foo{<p>bar</p>}baz'
-//		},
-//		{  	start: 'foo<p>{bar</p>}baz',
-//			execResult: 'foo<p>{bar</p>}baz'
-//		},
-//		{  	start: 'foo{<p>bar}</p>baz',
-//			execResult: 'foo{<p>bar}</p>baz'
-//		},
-//		{  	start: '<p>foo[</p>]bar',
-//			execResult: '<p>foo[</p>]bar'
-//		},
-//		{  	start: '<p>foo{</p>}bar',
-//			execResult: '<p>foo{</p>}bar'
-//		},
-//		{  	start: '<p>foo[</p>]bar<br>baz',
-//			execResult: '<p>foo[</p>]bar<br>baz'
-//		},
-//		{  	start: '<p>foo[</p>]bar<p>baz</p>',
-//			execResult: '<p>foo[</p>]bar<p>baz</p>'
-//		},
-//		{  	start: 'foo[<div><p>]bar</div>',
-//			execResult: 'foo[<div><p>]bar</div>'
-//		},
-//		{  	start: '<div><p>foo[</p></div>]bar',
-//			execResult: '<div><p>foo[</p></div>]bar'
-//		},
-//		{  	start: 'foo[<div><p>]bar</p>baz</div>',
-//			execResult: 'foo[<div><p>]bar</p>baz</div>'
-//		},
-//		{  	start: 'foo[<div>]bar<p>baz</p></div>',
-//			execResult: 'foo[<div>]bar<p>baz</p></div>'
-//		},
-//		{  	start: '<div><p>foo</p>bar[</div>]baz',
-//			execResult: '<div><p>foo</p>bar[</div>]baz'
-//		},
-//		{  	start: '<div>foo<p>bar[</p></div>]baz',
-//			execResult: '<div>foo<p>bar[</p></div>]baz'
-//		},
-//	
-//		{  	start: '<p>foo<br>{</p>]bar',
-//			execResult: '<p>foo<br>{</p>]bar'
-//		},
-//		{  	start: '<p>foo<br><br>{</p>]bar',
-//			execResult: '<p>foo<br><br>{</p>]bar'
-//		},
-//		{  	start: 'foo<br>{<p>]bar</p>',
-//			execResult: 'foo<br>{<p>]bar</p>'
-//		},
-//		{  	start: 'foo<br><br>{<p>]bar</p>',
-//			execResult: 'foo<br><br>{<p>]bar</p>'
-//		},
-//		{  	start: '<p>foo<br>{</p><p>}bar</p>',
-//			execResult: '<p>foo<br>{</p><p>}bar</p>'
-//		},
-//		{  	start: '<p>foo<br><br>{</p><p>}bar</p>',
-//			execResult: '<p>foo<br><br>{</p><p>}bar</p>'
-//		},
-//	
-//		{  	start: '<table><tbody><tr><th>foo<th>[bar]<th>baz<tr><td>quz<td>qoz<td>qiz</table>',
-//			execResult: '<table><tbody><tr><th>foo<th>[bar]<th>baz<tr><td>quz<td>qoz<td>qiz</table>'
-//		},
-//		{  	start: '<table><tbody><tr><th>foo<th>ba[r<th>b]az<tr><td>quz<td>qoz<td>qiz</table>',
-//			execResult: '<table><tbody><tr><th>foo<th>ba[r<th>b]az<tr><td>quz<td>qoz<td>qiz</table>'
-//		},
-//		{  	start: '<table><tbody><tr><th>fo[o<th>bar<th>b]az<tr><td>quz<td>qoz<td>qiz</table>',
-//			execResult: '<table><tbody><tr><th>fo[o<th>bar<th>b]az<tr><td>quz<td>qoz<td>qiz</table>'
-//		},
-//		{  	start: '<table><tbody><tr><th>foo<th>bar<th>ba[z<tr><td>q]uz<td>qoz<td>qiz</table>',
-//			execResult: '<table><tbody><tr><th>foo<th>bar<th>ba[z<tr><td>q]uz<td>qoz<td>qiz</table>'
-//		},
-//		{  	start: '<table><tbody><tr><th>[foo<th>bar<th>baz]<tr><td>quz<td>qoz<td>qiz</table>',
-//			execResult: '<table><tbody><tr><th>[foo<th>bar<th>baz]<tr><td>quz<td>qoz<td>qiz</table>'
-//		},
-//		{  	start: '<table><tbody><tr><th>[foo<th>bar<th>baz<tr><td>quz<td>qoz<td>qiz]</table>',
-//			execResult: '<table><tbody><tr><th>[foo<th>bar<th>baz<tr><td>quz<td>qoz<td>qiz]</table>'
-//		},
-//		{  	start: '{<table><tbody><tr><th>foo<th>bar<th>baz<tr><td>quz<td>qoz<td>qiz</table>}',
-//			execResult: '{<table><tbody><tr><th>foo<th>bar<th>baz<tr><td>quz<td>qoz<td>qiz</table>}'
-//		},
-//		{  	start: '<table><tbody><tr><td>foo<td>ba[r<tr><td>baz<td>quz<tr><td>q]oz<td>qiz</table>',
-//			execResult: '<table><tbody><tr><td>foo<td>ba[r<tr><td>baz<td>quz<tr><td>q]oz<td>qiz</table>'
-//		},
-//		{  	start: '<p>fo[o<table><tr><td>b]ar</table><p>baz',
-//			execResult: '<p>fo[o<table><tr><td>b]ar</table><p>baz'
-//		},
-//		{  	start: '<p>foo<table><tr><td>ba[r</table><p>b]az',
-//			execResult: '<p>foo<table><tr><td>ba[r</table><p>b]az'
-//		},
-//		{  	start: '<p>fo[o<table><tr><td>bar</table><p>b]az',
-//			execResult: '<p>fo[o<table><tr><td>bar</table><p>b]az'
-//		},
-//	
-//		{  	start: '<p>foo<ol><li>ba[r<li>b]az</ol><p>quz',
-//			execResult: '<p>foo<ol><li>ba[r<li>b]az</ol><p>quz'
-//		},
-//		{  	start: '<p>foo<ol><li>bar<li>[baz]</ol><p>quz',
-//			execResult: '<p>foo<ol><li>bar<li>[baz]</ol><p>quz'
-//		},
-//		{  	start: '<p>fo[o<ol><li>b]ar<li>baz</ol><p>quz',
-//			execResult: '<p>fo[o<ol><li>b]ar<li>baz</ol><p>quz'
-//		},
-//		{  	start: '<p>foo<ol><li>bar<li>ba[z</ol><p>q]uz',
-//			execResult: '<p>foo<ol><li>bar<li>ba[z</ol><p>q]uz'
-//		},
-//		{  	start: '<p>fo[o<ol><li>bar<li>b]az</ol><p>quz',
-//			execResult: '<p>fo[o<ol><li>bar<li>b]az</ol><p>quz'
-//		},
-//		{  	start: '<p>fo[o<ol><li>bar<li>baz</ol><p>q]uz',
-//			execResult: '<p>fo[o<ol><li>bar<li>baz</ol><p>q]uz'
-//		},
-//	
-//		{  	start: '<ol><li>fo[o</ol><ol><li>b]ar</ol>',
-//			execResult: '<ol><li>fo[o</ol><ol><li>b]ar</ol>'
-//		},
-//		{  	start: '<ol><li>fo[o</ol><ul><li>b]ar</ul>',
-//			execResult: '<ol><li>fo[o</ol><ul><li>b]ar</ul>'
-//		},
-//	
-//		{  	start: 'foo[<ol><li>]bar</ol>',
-//			execResult: 'foo[<ol><li>]bar</ol>'
-//		},
-//		{  	start: '<ol><li>foo[<li>]bar</ol>',
-//			execResult: '<ol><li>foo[<li>]bar</ol>'
-//		},
-//		{  	start: 'foo[<dl><dt>]bar<dd>baz</dl>',
-//			execResult: 'foo[<dl><dt>]bar<dd>baz</dl>'
-//		},
-//		{  	start: 'foo[<dl><dd>]bar</dl>',
-//			execResult: 'foo[<dl><dd>]bar</dl>'
-//		},
-//		{  	start: '<dl><dt>foo[<dd>]bar</dl>',
-//			execResult: '<dl><dt>foo[<dd>]bar</dl>'
-//		},
-//		{  	start: '<dl><dt>foo[<dt>]bar<dd>baz</dl>',
-//			execResult: '<dl><dt>foo[<dt>]bar<dd>baz</dl>'
-//		},
-//		{  	start: '<dl><dt>foo<dd>bar[<dd>]baz</dl>',
-//			execResult: '<dl><dt>foo<dd>bar[<dd>]baz</dl>'
-//		},
-//	
-//		{  	start: '<b>foo [&nbsp;</b>bar]',
-//			execResult: '<b>foo [&nbsp;</b>bar]'
-//		},
-//	
+		{  	start: 'foo[bar]baz',
+			execResult: 'foo[]baz'
+		},
+		{  	start: '<p>foo<span style="color:#aBcDeF">[bar]</span>baz', // broken
+			execResult: '<p>foo[]baz</p>'
+		},
+		{  	start: '<p>foo<span style=color:#aBcDeF>{bar}</span>baz',
+			execResult: '<p>foo[]baz</p>'
+		},
+		{  	start: '<p>foo{<span style=color:#aBcDeF>bar</span>}baz',
+			execResult: '<p>foo[]baz</p>'
+		},
+		{  	start: '<p>[foo<span style=color:#aBcDeF>bar]</span>baz',
+			execResult: '<p>[]baz</p>'
+		},
+		{  	start: '<p>{foo<span style=color:#aBcDeF>bar}</span>baz',
+			execResult: '<p>[]baz</p>'
+		},
+		{  	start: '<p>foo<span style=color:#aBcDeF>[bar</span>baz]',
+			execResult: '<p>foo[]</p>'
+		},
+/*		{  	start: '<p>foo<span style=color:#aBcDeF>{bar</span>baz}',
+			execResult: '<p>foo<span style=color:#aBcDeF>{bar</span>baz}'
+		},
+		{  	start: '<p>foo<span style=color:#aBcDeF>[bar</span><span style=color:#fEdCbA>baz]</span>quz',
+			execResult: '<p>foo<span style=color:#aBcDeF>[bar</span><span style=color:#fEdCbA>baz]</span>quz'
+		},
+	
+		{  	start: 'foo<b>[bar]</b>baz',
+			execResult: 'foo<b>[bar]</b>baz'
+		},
+		{  	start: 'foo<b>{bar}</b>baz',
+			execResult: 'foo<b>{bar}</b>baz'
+		},
+		{  	start: 'foo{<b>bar</b>}baz',
+			execResult: 'foo{<b>bar</b>}baz'
+		},
+		{  	start: 'foo<span>[bar]</span>baz',
+			execResult: 'foo<span>[bar]</span>baz'
+		},
+		{  	start: 'foo<span>{bar}</span>baz',
+			execResult: 'foo<span>{bar}</span>baz'
+		},
+		{  	start: 'foo{<span>bar</span>}baz',
+			execResult: 'foo{<span>bar</span>}baz'
+		},
+		{  	start: '<b>foo[bar</b><i>baz]quz</i>',
+			execResult: '<b>foo[bar</b><i>baz]quz</i>'
+		},
+		{  	start: '<p>foo</p><p>[bar]</p><p>baz</p>',
+			execResult: '<p>foo</p><p>[bar]</p><p>baz</p>'
+		},
+		{  	start: '<p>foo</p><p>{bar}</p><p>baz</p>',
+			execResult: '<p>foo</p><p>{bar}</p><p>baz</p>'
+		},
+		{  	start: '<p>foo</p><p>{bar</p>}<p>baz</p>',
+			execResult: '<p>foo</p><p>{bar</p>}<p>baz</p>'
+		},
+		{  	start: '<p>foo</p>{<p>bar}</p><p>baz</p>',
+			execResult: '<p>foo</p>{<p>bar}</p><p>baz</p>'
+		},
+		{  	start: '<p>foo</p>{<p>bar</p>}<p>baz</p>',
+			execResult: '<p>foo</p>{<p>bar</p>}<p>baz</p>'
+		},
+	
+		{  	start: '<p>foo[bar<p>baz]quz',
+			execResult: '<p>foo[bar<p>baz]quz'
+		},
+		{  	start: '<p>foo[bar<div>baz]quz</div>',
+			execResult: '<p>foo[bar<div>baz]quz</div>'
+		},
+		{  	start: '<p>foo[bar<h1>baz]quz</h1>',
+			execResult: '<p>foo[bar<h1>baz]quz</h1>'
+		},
+		{  	start: '<div>foo[bar</div><p>baz]quz',
+			execResult: '<div>foo[bar</div><p>baz]quz'
+		},
+		{  	start: '<blockquote>foo[bar</blockquote><pre>baz]quz</pre>',
+			execResult: '<blockquote>foo[bar</blockquote><pre>baz]quz</pre>'
+		},
+	
+		{  	start: '<p><b>foo[bar</b><p>baz]quz',
+			execResult: '<p><b>foo[bar</b><p>baz]quz'
+		},
+		{  	start: '<div><p>foo[bar</div><p>baz]quz',
+			execResult: '<div><p>foo[bar</div><p>baz]quz'
+		},
+		{  	start: '<p>foo[bar<blockquote><p>baz]quz<p>qoz</blockquote',
+			execResult: '<p>foo[bar<blockquote><p>baz]quz<p>qoz</blockquote'
+		},
+		{  	start: '<p>foo[bar<p style=color:blue>baz]quz',
+			execResult: '<p>foo[bar<p style=color:blue>baz]quz'
+		},
+		{  	start: '<p>foo[bar<p><b>baz]quz</b>',
+			execResult: '<p>foo[bar<p><b>baz]quz</b>'
+		},
+	
+		{  	start: '<div><p>foo<p>[bar<p>baz]</div>',
+			execResult: '<div><p>foo<p>[bar<p>baz]</div>'
+		},
+	
+		{  	start: 'foo[<br>]bar',
+			execResult: 'foo[<br>]bar'
+		},
+		{  	start: '<p>foo[</p><p>]bar</p>',
+			execResult: '<p>foo[</p><p>]bar</p>'
+		},
+		{  	start: '<p>foo[</p><p>]bar<br>baz</p>',
+			execResult: '<p>foo[</p><p>]bar<br>baz</p>'
+		},
+		{  	start: 'foo[<p>]bar</p>',
+			execResult: 'foo[<p>]bar</p>'
+		},
+		{  	start: 'foo{<p>}bar</p>',
+			execResult: 'foo{<p>}bar</p>'
+		},
+		{  	start: 'foo[<p>]bar<br>baz</p>',
+			execResult: 'foo[<p>]bar<br>baz</p>'
+		},
+		{  	start: 'foo[<p>]bar</p>baz',
+			execResult: 'foo[<p>]bar</p>baz'
+		},
+		{  	start: 'foo{<p>bar</p>}baz',
+			execResult: 'foo{<p>bar</p>}baz'
+		},
+		{  	start: 'foo<p>{bar</p>}baz',
+			execResult: 'foo<p>{bar</p>}baz'
+		},
+		{  	start: 'foo{<p>bar}</p>baz',
+			execResult: 'foo{<p>bar}</p>baz'
+		},
+		{  	start: '<p>foo[</p>]bar',
+			execResult: '<p>foo[</p>]bar'
+		},
+		{  	start: '<p>foo{</p>}bar',
+			execResult: '<p>foo{</p>}bar'
+		},
+		{  	start: '<p>foo[</p>]bar<br>baz',
+			execResult: '<p>foo[</p>]bar<br>baz'
+		},
+		{  	start: '<p>foo[</p>]bar<p>baz</p>',
+			execResult: '<p>foo[</p>]bar<p>baz</p>'
+		},
+		{  	start: 'foo[<div><p>]bar</div>',
+			execResult: 'foo[<div><p>]bar</div>'
+		},
+		{  	start: '<div><p>foo[</p></div>]bar',
+			execResult: '<div><p>foo[</p></div>]bar'
+		},
+		{  	start: 'foo[<div><p>]bar</p>baz</div>',
+			execResult: 'foo[<div><p>]bar</p>baz</div>'
+		},
+		{  	start: 'foo[<div>]bar<p>baz</p></div>',
+			execResult: 'foo[<div>]bar<p>baz</p></div>'
+		},
+		{  	start: '<div><p>foo</p>bar[</div>]baz',
+			execResult: '<div><p>foo</p>bar[</div>]baz'
+		},
+		{  	start: '<div>foo<p>bar[</p></div>]baz',
+			execResult: '<div>foo<p>bar[</p></div>]baz'
+		},
+	
+		{  	start: '<p>foo<br>{</p>]bar',
+			execResult: '<p>foo<br>{</p>]bar'
+		},
+		{  	start: '<p>foo<br><br>{</p>]bar',
+			execResult: '<p>foo<br><br>{</p>]bar'
+		},
+		{  	start: 'foo<br>{<p>]bar</p>',
+			execResult: 'foo<br>{<p>]bar</p>'
+		},
+		{  	start: 'foo<br><br>{<p>]bar</p>',
+			execResult: 'foo<br><br>{<p>]bar</p>'
+		},
+		{  	start: '<p>foo<br>{</p><p>}bar</p>',
+			execResult: '<p>foo<br>{</p><p>}bar</p>'
+		},
+		{  	start: '<p>foo<br><br>{</p><p>}bar</p>',
+			execResult: '<p>foo<br><br>{</p><p>}bar</p>'
+		},
+	
+		{  	start: '<table><tbody><tr><th>foo<th>[bar]<th>baz<tr><td>quz<td>qoz<td>qiz</table>',
+			execResult: '<table><tbody><tr><th>foo<th>[bar]<th>baz<tr><td>quz<td>qoz<td>qiz</table>'
+		},
+		{  	start: '<table><tbody><tr><th>foo<th>ba[r<th>b]az<tr><td>quz<td>qoz<td>qiz</table>',
+			execResult: '<table><tbody><tr><th>foo<th>ba[r<th>b]az<tr><td>quz<td>qoz<td>qiz</table>'
+		},
+		{  	start: '<table><tbody><tr><th>fo[o<th>bar<th>b]az<tr><td>quz<td>qoz<td>qiz</table>',
+			execResult: '<table><tbody><tr><th>fo[o<th>bar<th>b]az<tr><td>quz<td>qoz<td>qiz</table>'
+		},
+		{  	start: '<table><tbody><tr><th>foo<th>bar<th>ba[z<tr><td>q]uz<td>qoz<td>qiz</table>',
+			execResult: '<table><tbody><tr><th>foo<th>bar<th>ba[z<tr><td>q]uz<td>qoz<td>qiz</table>'
+		},
+		{  	start: '<table><tbody><tr><th>[foo<th>bar<th>baz]<tr><td>quz<td>qoz<td>qiz</table>',
+			execResult: '<table><tbody><tr><th>[foo<th>bar<th>baz]<tr><td>quz<td>qoz<td>qiz</table>'
+		},
+		{  	start: '<table><tbody><tr><th>[foo<th>bar<th>baz<tr><td>quz<td>qoz<td>qiz]</table>',
+			execResult: '<table><tbody><tr><th>[foo<th>bar<th>baz<tr><td>quz<td>qoz<td>qiz]</table>'
+		},
+		{  	start: '{<table><tbody><tr><th>foo<th>bar<th>baz<tr><td>quz<td>qoz<td>qiz</table>}',
+			execResult: '{<table><tbody><tr><th>foo<th>bar<th>baz<tr><td>quz<td>qoz<td>qiz</table>}'
+		},
+		{  	start: '<table><tbody><tr><td>foo<td>ba[r<tr><td>baz<td>quz<tr><td>q]oz<td>qiz</table>',
+			execResult: '<table><tbody><tr><td>foo<td>ba[r<tr><td>baz<td>quz<tr><td>q]oz<td>qiz</table>'
+		},
+		{  	start: '<p>fo[o<table><tr><td>b]ar</table><p>baz',
+			execResult: '<p>fo[o<table><tr><td>b]ar</table><p>baz'
+		},
+		{  	start: '<p>foo<table><tr><td>ba[r</table><p>b]az',
+			execResult: '<p>foo<table><tr><td>ba[r</table><p>b]az'
+		},
+		{  	start: '<p>fo[o<table><tr><td>bar</table><p>b]az',
+			execResult: '<p>fo[o<table><tr><td>bar</table><p>b]az'
+		},
+	
+		{  	start: '<p>foo<ol><li>ba[r<li>b]az</ol><p>quz',
+			execResult: '<p>foo<ol><li>ba[r<li>b]az</ol><p>quz'
+		},
+		{  	start: '<p>foo<ol><li>bar<li>[baz]</ol><p>quz',
+			execResult: '<p>foo<ol><li>bar<li>[baz]</ol><p>quz'
+		},
+		{  	start: '<p>fo[o<ol><li>b]ar<li>baz</ol><p>quz',
+			execResult: '<p>fo[o<ol><li>b]ar<li>baz</ol><p>quz'
+		},
+		{  	start: '<p>foo<ol><li>bar<li>ba[z</ol><p>q]uz',
+			execResult: '<p>foo<ol><li>bar<li>ba[z</ol><p>q]uz'
+		},
+		{  	start: '<p>fo[o<ol><li>bar<li>b]az</ol><p>quz',
+			execResult: '<p>fo[o<ol><li>bar<li>b]az</ol><p>quz'
+		},
+		{  	start: '<p>fo[o<ol><li>bar<li>baz</ol><p>q]uz',
+			execResult: '<p>fo[o<ol><li>bar<li>baz</ol><p>q]uz'
+		},
+	
+		{  	start: '<ol><li>fo[o</ol><ol><li>b]ar</ol>',
+			execResult: '<ol><li>fo[o</ol><ol><li>b]ar</ol>'
+		},
+		{  	start: '<ol><li>fo[o</ol><ul><li>b]ar</ul>',
+			execResult: '<ol><li>fo[o</ol><ul><li>b]ar</ul>'
+		},
+	
+		{  	start: 'foo[<ol><li>]bar</ol>',
+			execResult: 'foo[<ol><li>]bar</ol>'
+		},
+		{  	start: '<ol><li>foo[<li>]bar</ol>',
+			execResult: '<ol><li>foo[<li>]bar</ol>'
+		},
+		{  	start: 'foo[<dl><dt>]bar<dd>baz</dl>',
+			execResult: 'foo[<dl><dt>]bar<dd>baz</dl>'
+		},
+		{  	start: 'foo[<dl><dd>]bar</dl>',
+			execResult: 'foo[<dl><dd>]bar</dl>'
+		},
+		{  	start: '<dl><dt>foo[<dd>]bar</dl>',
+			execResult: '<dl><dt>foo[<dd>]bar</dl>'
+		},
+		{  	start: '<dl><dt>foo[<dt>]bar<dd>baz</dl>',
+			execResult: '<dl><dt>foo[<dt>]bar<dd>baz</dl>'
+		},
+		{  	start: '<dl><dt>foo<dd>bar[<dd>]baz</dl>',
+			execResult: '<dl><dt>foo<dd>bar[<dd>]baz</dl>'
+		},
+	
+		{  	start: '<b>foo [&nbsp;</b>bar]',
+			execResult: '<b>foo [&nbsp;</b>bar]'
+		},
+*/	
 //		// Do we merge based on element names or the display property?
 //		{  	start: '<p style=display:inline>fo[o<p style=display:inline>b]ar',
 //			execResult: '<p style=display:inline>fo[o<p style=display:inline>b]ar'
