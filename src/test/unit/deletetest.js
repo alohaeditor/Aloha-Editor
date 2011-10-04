@@ -412,81 +412,81 @@ var tests = {
 		},
 		{  	start: 'foo<blockquote><ol><li>bar</li><ol><li>[]baz</ol><li>quz</ol></blockquote><p>extra', // broken
 			execResult: 'foo<blockquote><ol><li>bar[]baz</li><li>quz</li></ol></blockquote><p>extra</p>'
-		},*/
+		},
 	
 		// Invisible stuff with collapsed selection
-		{  	start: 'foo<span></span>[]bar',
-			execResult: 'foo<span></span>[]bar'
+		{  	start: 'foo<span></span>[]bar', // broken
+			execResult: 'fo[]bar'
 		},
-		{  	start: 'foo<span><span></span></span>[]bar',
-			execResult: 'foo<span><span></span></span>[]bar'
+		{  	start: 'foo<span><span></span></span>[]bar', // broken
+			execResult: 'fo[]bar'
 		},
-		{  	start: 'foo<quasit></quasit>[]bar',
-			execResult: 'foo<quasit></quasit>[]bar'
+		{  	start: 'foo<quasit></quasit>[]bar', // broken
+			execResult: 'fo[]bar'
 		},
 		{  	start: 'foo<br><span></span>[]bar',
-			execResult: 'foo<br><span></span>[]bar'
+			execResult: 'foo[]bar'
 		},
-		{  	start: '<span>foo<span></span></span>[]bar',
-			execResult: '<span>foo<span></span></span>[]bar'
+		{  	start: '<span>foo<span></span></span>[]bar', // broken
+			execResult: '<span>fo[]</span>bar' // TODO check
 		},
-		{  	start: 'foo<span></span><span>[]bar</span>',
-			execResult: 'foo<span></span><span>[]bar</span>'
+		{  	start: 'foo<span></span><span>[]bar</span>', // broken
+			execResult: 'fo[]<span>bar</span>'
 		},
 		{  	start: 'foo<div><div><p>[]bar</div></div>',
-			execResult: 'foo<div><div><p>[]bar</div></div>'
+			execResult: 'foo[]bar'
 		},
 		{  	start: 'foo<div><div><p><!--abc-->[]bar</div></div>',
-			execResult: 'foo<div><div><p><!--abc-->[]bar</div></div>'
+			execResult: 'foo[]bar'
 		},
 		{  	start: 'foo<div><div><!--abc--><p>[]bar</div></div>',
-			execResult: 'foo<div><div><!--abc--><p>[]bar</div></div>'
+			execResult: 'foo[]bar'
 		},
 		{  	start: 'foo<div><!--abc--><div><p>[]bar</div></div>',
-			execResult: 'foo<div><!--abc--><div><p>[]bar</div></div>'
+			execResult: 'foo[]bar'
 		},
 		{  	start: 'foo<!--abc--><div><div><p>[]bar</div></div>',
-			execResult: 'foo<!--abc--><div><div><p>[]bar</div></div>'
+			execResult: 'foo[]bar'
 		},
 		{  	start: '<div><div><p>foo</div></div>[]bar',
-			execResult: '<div><div><p>foo</div></div>[]bar'
+			execResult: '<div><div><p>foo[]bar</p></div></div>' // TODO check
 		},
 		{  	start: '<div><div><p>foo</div></div><!--abc-->[]bar',
-			execResult: '<div><div><p>foo</div></div><!--abc-->[]bar'
+			execResult: '<div><div><p>foo[]bar</p></div></div>'
 		},
 		{  	start: '<div><div><p>foo</div><!--abc--></div>[]bar',
-			execResult: '<div><div><p>foo</div><!--abc--></div>[]bar'
+			execResult: '<div><div><p>foo[]bar</p></div></div>'
 		},
 		{  	start: '<div><div><p>foo</p><!--abc--></div></div>[]bar',
-			execResult: '<div><div><p>foo</p><!--abc--></div></div>[]bar'
+			execResult: '<div><div><p>foo[]bar</p></div></div>'
 		},
 		{  	start: '<div><div><p>foo<!--abc--></div></div>[]bar',
-			execResult: '<div><div><p>foo<!--abc--></div></div>[]bar'
+			execResult: '<div><div><p>foo[]bar</p></div></div>'
 		},
 		{  	start: '<div><div><p>foo</p></div></div><div><div><div>[]bar</div></div></div>',
-			execResult: '<div><div><p>foo</p></div></div><div><div><div>[]bar</div></div></div>'
+			execResult: '<div><div><p>foo[]bar</p></div></div>'
 		},
 		{  	start: '<div><div><p>foo<!--abc--></p></div></div><div><div><div>[]bar</div></div></div>',
-			execResult: '<div><div><p>foo<!--abc--></p></div></div><div><div><div>[]bar</div></div></div>'
+			execResult: '<div><div><p>foo[]bar</p></div></div>'
 		},
 		{  	start: '<div><div><p>foo</p><!--abc--></div></div><div><div><div>[]bar</div></div></div>',
-			execResult: '<div><div><p>foo</p><!--abc--></div></div><div><div><div>[]bar</div></div></div>'
+			execResult: '<div><div><p>foo[]bar</p></div></div>'
 		},
 		{  	start: '<div><div><p>foo</p></div><!--abc--></div><div><div><div>[]bar</div></div></div>',
-			execResult: '<div><div><p>foo</p></div><!--abc--></div><div><div><div>[]bar</div></div></div>'
+			execResult: '<div><div><p>foo[]bar</p></div></div>'
 		},
 		{  	start: '<div><div><p>foo</p></div></div><!--abc--><div><div><div>[]bar</div></div></div>',
-			execResult: '<div><div><p>foo</p></div></div><!--abc--><div><div><div>[]bar</div></div></div>'
+			execResult: '<div><div><p>foo[]bar</p></div></div>'
 		},
 		{  	start: '<div><div><p>foo</p></div></div><div><!--abc--><div><div>[]bar</div></div></div>',
-			execResult: '<div><div><p>foo</p></div></div><div><!--abc--><div><div>[]bar</div></div></div>'
+			execResult: '<div><div><p>foo[]bar</p></div></div>'
 		},
 		{  	start: '<div><div><p>foo</p></div></div><div><div><!--abc--><div>[]bar</div></div></div>',
-			execResult: '<div><div><p>foo</p></div></div><div><div><!--abc--><div>[]bar</div></div></div>'
+			execResult: '<div><div><p>foo[]bar</p></div></div>'
 		},
 		{  	start: '<div><div><p>foo</p></div></div><div><div><div><!--abc-->[]bar</div></div></div>',
-			execResult: '<div><div><p>foo</p></div></div><div><div><div><!--abc-->[]bar</div></div></div>'
-		},
+			execResult: '<div><div><p>foo[]bar</p></div></div>'
+		},*/
 	
 //		// Styled stuff with collapsed selection
 //		{  	start: '<p style=color:blue>foo<p>[]bar',
