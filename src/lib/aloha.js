@@ -61277,7 +61277,8 @@ define( 'aloha', [], function(){
 					'aloha/floatingmenu',
 					'aloha/repositorymanager',
 					'aloha/repository',
-					'aloha/repositoryobjects'
+					'aloha/repositoryobjects',
+					'aloha/contenthandlermanager'
 				],
 				function() {
 					

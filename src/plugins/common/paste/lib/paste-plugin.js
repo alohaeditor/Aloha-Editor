@@ -71,6 +71,7 @@ function(Aloha, Plugin, jQuery, Commands, console,
 			pasteDivContents;
 
 		// call all paste handlers
+		/* will be in contenthandler
 		for ( i = 0; i < pasteHandlers.length; ++i) {
 			if ( typeof pasteHandlers[i].handlePaste === 'function' ) {
 				pasteHandlers[i].handlePaste($pasteDiv);
@@ -78,6 +79,7 @@ function(Aloha, Plugin, jQuery, Commands, console,
 				console.error( 'A pastehandler has no method handlePaste.' );
 			}
 		}
+		*/
 
 		// insert the content into the editable at the current range
 		if (pasteRange && pasteEditable) {
@@ -92,7 +94,7 @@ function(Aloha, Plugin, jQuery, Commands, console,
 			if ( Aloha.queryCommandSupported('insertHTML') ) {
 				Aloha.execCommand('insertHTML', false, pasteDivContents, pasteRange);
 			} else {
-				Aloha.Log.error('common/paste', 'Command "insertHTML" not available. Enable the plugin "common/commands".');
+				Aloha.Log.error('Common.Paste', 'Command "insertHTML" not available. Enable the plugin "common/commands".');
 			}
 
 			// finally scroll back to the original scroll position, plus eventually difference in height
@@ -116,12 +118,14 @@ function(Aloha, Plugin, jQuery, Commands, console,
 
 
 	// Public Methods
-	return Plugin.create('paste', {
-		
+	return Plugin.create( 'paste', {
+		settings: {},
+		dependencies: [ 'contenthandler' ],
+
 		/**
 		 * All registered paste handlers
 		 */
-		pasteHandlers: pasteHandlers,
+		//pasteHandlers: pasteHandlers,
 
 		/**
 		 * Initialize the PastePlugin
@@ -131,13 +135,6 @@ function(Aloha, Plugin, jQuery, Commands, console,
 
 			// append the div into which we past to the document
 			jQuery('body').append($pasteDiv);
-
-			// register default handler
-			// TODO They should be configured!
-			this.register( new WordPasteHandler() );
-			this.register( new OEmbedPasteHandler() );
-			this.register( new GenericPasteHandler() );
-
 
 			// subscribe to the event editableCreated to redirect paste events into our pasteDiv
 			// TODO: move to paste command
@@ -201,7 +198,7 @@ function(Aloha, Plugin, jQuery, Commands, console,
 		 * @param pasteHandler paste handler to be registered
 		 */
 		register: function(pasteHandler) {
-			pasteHandlers.push(pasteHandler);
+			console.deprecated( 'Plugins.Paste', 'register() is deprecated. use ContentHandler Plugin.' );
 		}
 	});
 });

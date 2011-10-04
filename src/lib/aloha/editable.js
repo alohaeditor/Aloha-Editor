@@ -28,6 +28,8 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup) {
 //		Class = window.Class,
 		unescape = window.unescape,
 		GENTICS = window.GENTICS;
+		
+	Aloha.defaults.supports = {};
 
 	/**
 	 * Editable object
@@ -198,7 +200,6 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup) {
 				});
 
 
-
 				// mark the editable as unmodified
 				me.setUnmodified();
 
@@ -209,6 +210,9 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup) {
 					me.initEmptyEditable();
 				}
 
+				// sanitize content already in the editable
+				me.sanitizeContent();
+				
 				// init placeholder
 				me.initPlaceholder();
 
@@ -317,6 +321,28 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup) {
 			'svg', 'table', 'ul', 'video', 'ol', 'form', 'noscript',
 			 */
 			return false;
+		},
+
+		/**
+		 * Initial sanitization of the content
+		 *
+		 * @return void
+		*/
+		sanitizeContent: function() {
+			// are here all plugins loaded?
+			// use content handler plugin logic? 
+			var sanitize,
+				obj = this.obj;
+				//config = Aloha.defaults.sanitize;
+
+			// use content handler plugin here
+			/*if ( Aloha.settings.sanitize ) {
+				config = Aloha.settings.sanitize;
+			}
+
+			sanitize = new Sanitize( config ); 
+			jQuery(obj).html( sanitize.clean_node(obj.get(0)) );
+			*/
 		},
 
 		/**

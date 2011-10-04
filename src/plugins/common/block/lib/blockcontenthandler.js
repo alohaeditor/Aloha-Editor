@@ -6,24 +6,24 @@
 */
 
 define(
-['aloha/jquery', 'paste/abstractpastehandler', 'block/blockmanager'],
-function(jQuery, AbstractPasteHandler, BlockManager) {
+['aloha/jquery', 'aloha/contenthandlermanager', 'block/blockmanager'],
+function(jQuery, ContentHandlerManager, BlockManager) {
 
 	/**
-	 * @name block.BlockPasteHandler
-	 * @class Special block paste handler
+	 * @name block.BlockContentHandler
+	 * @class Special block content handler
 	 *
-	 * The blog paste handler handles pasting of blocks in editables. Pasted
+	 * The blog content handler handles pasting of blocks in editables. Pasted
 	 * block markup will be replaced by a freshly rendered block instance.
 	 */
-	var BlockPasteHandler = AbstractPasteHandler.extend(
-	/** @lends block.BlockPasteHandler */
+	var BlockContentHandler = ContentHandlerManager.createHandler(
+	/** @lends block.BlockContentHandler */
 	{
 		/**
 		 * Handle the pasting. Remove all unwanted stuff.
 		 * @param {jQuery} jqPasteDiv
 		 */
-		handlePaste: function(jqPasteDiv) {
+		handleContent: function( jqPasteDiv ) {
 			jqPasteDiv.find('.aloha-block').each(function() {
 				var oldBlock = jQuery(this);
 
@@ -46,5 +46,5 @@ function(jQuery, AbstractPasteHandler, BlockManager) {
 			});
 		}
 	});
-	return BlockPasteHandler;
+	return BlockContentHandler;
 });

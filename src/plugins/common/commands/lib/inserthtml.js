@@ -6,8 +6,8 @@
 */
 
 define(
-['aloha/core', 'aloha/jquery', 'aloha/command', 'aloha/selection', 'util/dom'],
-function(Aloha, jQuery, command, selection, dom) {
+['aloha/core', 'aloha/jquery', 'aloha/command', 'aloha/selection', 'util/dom', 'aloha/contenthandlermanager'],
+function(Aloha, jQuery, command, selection, dom, ContentHandlerManager) {
 	"use strict";
 
 	// Exported commands
@@ -18,7 +18,8 @@ function(Aloha, jQuery, command, selection, dom) {
 				cac = range.commonAncestorContainer,
 				i,
 				selectedRange,
-				domNodes = [];
+				domNodes = [],
+				handler;
 			
 			/**
 			 * Paste the given object into the current selection.
@@ -47,7 +48,7 @@ function(Aloha, jQuery, command, selection, dom) {
 					}
 				}
 			};
-			
+
 			// allowed values are string or jQuery objects
 			// add value to a container div
 			if ( typeof value === 'string' ){
@@ -56,6 +57,15 @@ function(Aloha, jQuery, command, selection, dom) {
 				value = jQuery( '<div>' ).append(value);
 			} else {
 				throw "INVALID_VALUE_ERR";
+			}
+
+			var handlers = ContentHandlerManager.getEntries();
+			for ( handler in handlers) {
+				if ( typeof handlers[handler].handleContent === 'function' ) {
+					handlers[handler].handleContent( value );
+				} else {
+					console.error( 'A valid content handler needs the method handleContent.' );
+				}
 			}
 
 			// get contents of container div
@@ -83,7 +93,7 @@ function(Aloha, jQuery, command, selection, dom) {
 				range.select();
 			}
 
-	        dom.doCleanup({merge:true, removeempty: true}, range, cac);
+			dom.doCleanup({merge:true, removeempty: true}, range, cac);
 			//In some cases selecting the range does not work properly 
 			//e.g. when pasting from word in an h2 after the first character in IE
 			//in these cases we should fail gracefully.
