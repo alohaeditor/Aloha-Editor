@@ -5883,21 +5883,21 @@ function justifySelection(alignment, range) {
 ///// The delete command /////
 //@{
 commands["delete"] = {
-	action: function() {
+	action: function(value, range) {
 		// "If the active range is not collapsed, delete the contents of the
 		// active range and abort these steps."
-		if (!getActiveRange().collapsed) {
-			deleteContents(getActiveRange());
+		if (!range.collapsed) {
+			deleteContents(range);
 			return;
 		}
 
 		// "Canonicalize whitespace at (active range's start node, active
 		// range's start offset)."
-		canonicalizeWhitespace(getActiveRange().startContainer, getActiveRange().startOffset);
+		canonicalizeWhitespace(range.startContainer, range.startOffset);
 
 		// "Let node and offset be the active range's start node and offset."
-		var node = getActiveRange().startContainer;
-		var offset = getActiveRange().startOffset;
+		var node = range.startContainer;
+		var offset = range.startOffset;
 
 		// "Repeat the following steps:"
 		while (true) {
@@ -5959,8 +5959,8 @@ commands["delete"] = {
 		// steps."
 		if (node.nodeType == Node.TEXT_NODE
 		&& offset != 0) {
-			getActiveRange().setStart(node, offset);
-			getActiveRange().setEnd(node, offset);
+			range.setStart(node, offset);
+			range.setEnd(node, offset);
 			deleteContents(node, offset - 1, node, offset);
 			return;
 		}
@@ -5977,8 +5977,8 @@ commands["delete"] = {
 		if (0 <= offset - 1
 		&& offset - 1 < node.childNodes.length
 		&& isHtmlElement(node.childNodes[offset - 1], ["br", "hr", "img"])) {
-			getActiveRange().setStart(node, offset);
-			getActiveRange().setEnd(node, offset);
+			range.setStart(node, offset);
+			range.setEnd(node, offset);
 			deleteContents(node, offset - 1, node, offset);
 			return;
 		}
@@ -6026,7 +6026,7 @@ commands["delete"] = {
 			}
 
 			// "Fix disallowed ancestors of node."
-			fixDisallowedAncestors(node);
+			fixDisallowedAncestors(node, range);
 
 			// "Abort these steps."
 			return;
@@ -6107,11 +6107,11 @@ commands["delete"] = {
 		&& isHtmlElement(startNode.childNodes[startOffset - 1], "table")) {
 			// "Call collapse(start node, start offset − 1) on the context
 			// object's Selection."
-			getActiveRange().setStart(startNode, startOffset - 1);
+			range.setStart(startNode, startOffset - 1);
 
 			// "Call extend(start node, start offset) on the context object's
 			// Selection."
-			getActiveRange().setEnd(startNode, startOffset);
+			range.setEnd(startNode, startOffset);
 
 			// "Abort these steps."
 			return;
@@ -6131,8 +6131,8 @@ commands["delete"] = {
 			)
 		)) {
 			// "Call collapse(node, offset) on the Selection."
-			getActiveRange().setStart(node, offset);
-			getActiveRange().setEnd(node, offset);
+			range.setStart(node, offset);
+			range.setEnd(node, offset);
 
 			// "Delete the contents of the range with start (start node, start
 			// offset − 1) and end (start node, start offset)."
