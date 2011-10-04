@@ -1841,13 +1841,11 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 			newEndContainer = endContainer.previousSibling;
 		} else if ( endOffset == 0 &&
 					endContainer != startContainer &&
-					!isVoidNode( endContainer.previousSibling ) &&
-					endContainer.parentNode.previousSibling ) {
+					endContainer.parentNode.previousSibling &&
+					!isVoidNode( endContainer.previousSibling ) ) {
 			// Corrects 'foo<span>{bar</span>}baz' to 'foo<span>[bar]</span>baz'
 			newEndContainer = endContainer.parentNode.previousSibling;
 		}
-		
-		//debugger;
 		
 		newEndContainer = getSelectionEndNode( newEndContainer, isSelectionStopNode );
 		
@@ -1858,6 +1856,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 			newEndOffset = range.endOffset;
 		}
 		
+		// Fix position around void elements
 		if ( newEndOffset == 0 &&
 			 isVoidNode( newEndContainer.previousSibling ) ) {
 			var index = getIndexOfChildNode( newEndContainer.parentNode, newEndContainer.previousSibling  );
@@ -1903,9 +1902,13 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 				newStartContainer = null; // Prevent going into getSelectionStartNode. Should we just return here?
 			}
 		} else if ( startContainer.nextSibling &&
-					startOffset == startContainer.length ) {
+					startOffset == startContainer.length &&
+					!isVoidNode( startContainer.nextSibling ) ) {
 			// Corrects 'foo{<span>bar</span>}baz' to 'foo<span>[bar]</span>baz'
 			newStartContainer = startContainer.nextSibling;
+		} else if ( startOffset == startContainer.length &&
+					isVoidNode( startContainer.nextSibling ) ) {
+			//debugger;
 		} else if ( startOffset == startContainer.length &&
 					startContainer.parentNode.nextSibling ) {
 			// Corrects 'foo<span>bar[</span>baz]' to 'foo<span>bar</span>[baz]'
@@ -1919,26 +1922,32 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 			newStartContainer = startContainer.childNodes[ startOffset ];
 		}
 		
+		newStartContainer = getSelectionStartNode( newStartContainer, isSelectionStopNode );
+		
 		if ( newStartContainer ) {
-			newStartContainer = getSelectionStartNode( newStartContainer, isSelectionStopNode );
+			newStartOffset = 0;
+		} else {
+			newStartContainer = range.startContainer;
+			newStartOffset = range.startOffset;
+		}
+		
+		//debugger;
+		
+		// Fix position around void elements
+		if ( newStartContainer.length &&
+			 newStartContainer.length == newStartOffset &&
+			 isVoidNode( newStartContainer.nextSibling ) ) {
+			var index = getIndexOfChildNode( newStartContainer.parentNode, newStartContainer.nextSibling  );
 			
-			if ( newStartContainer ) {
-				if ( isAdjacentToVoidElement( newStartContainer ) &&
-					 newStartContainer.previousSibling ) {
-					newStartOffset = getIndexOfChildNode( newStartContainer.parentNode, newStartContainer.previousSibling );
-					
-					if ( newStartOffset > -1 ) {
-						newStartContainer = newStartContainer.parentNode;
-					} else {
-						newStartOffset = newStartContainer.length;
-					}
-				} else {
-					newStartOffset = 0;
-				}
-				
-				range.startContainer = newStartContainer;
-				range.startOffset = newStartOffset;
+			if ( index != -1 ) {
+				newStartContainer = newStartContainer.parentNode;
+				newStartOffset = index;
 			}
+		}
+		
+		if ( newStartContainer && newStartOffset ) {
+			range.startContainer = newStartContainer;
+			range.startOffset = newStartOffset;
 		}
 		
 		return range;
