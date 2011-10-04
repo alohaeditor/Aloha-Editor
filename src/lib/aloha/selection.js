@@ -1831,7 +1831,12 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		//debugger;
 		
 		if ( /* endOffset && */ isSelectionStopNode( endContainer ) ) {
-			//
+			if ( endOffset == 0 ) {
+				var prev = endContainer.previousSibling || endContainer.parentNode.previousSibling;
+				if ( !isVoidNode( prev ) ) {
+					newEndContainer = prev;
+				}
+			}
 		} else if ( isVoidNode( endContainer.childNodes[
 						endOffset ? endOffset - 1 : 0 ] ) ) {
 			if ( endOffset == 0 ) {
@@ -1875,6 +1880,10 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 			newEndContainer, isSelectionStopNode
 		);
 		
+		if ( isVoidNode( moveBackwards( newEndContainer ) ) ) {
+			debugger;
+		}
+		
 		if ( !newEndContainer ) {
 			newEndContainer = range.endContainer;
 		} else if ( isVoidNode( newEndContainer ) && endOffset ) {
@@ -1883,12 +1892,10 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 			newEndContainer = moveForwards( newEndContainer );
 			newEndOffset = 0;
 		} else if ( isVoidNode( newEndContainer ) ) {
-			
 			newEndContainer = getSelectionEndNode(
 				moveBackwards( newEndContainer ), isSelectionStopNode
 			);
 			newEndOffset = newEndContainer.length;
-			
 		} else {
 			newEndOffset = newEndContainer.length;
 		}
@@ -1905,8 +1912,8 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		} else if ( startOffset == startContainer.childNodes.length &&
 					startContainer.firstChild == newEndContainer ) {
 			
-			range.startContainer = newEndContainer;
-			range.startOffset = newEndContainer.length;
+			//range.startContainer = newEndContainer;
+			//range.startOffset = newEndContainer.length;
 			
 		} else if ( endOffset == 0 &&
 					startContainer.childNodes.length &&
