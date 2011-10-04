@@ -11,8 +11,6 @@ return function (TableSelection) {
 	 *            The original td-field which should will be transformed
 	 * @param tableObj
 	 *            Table-Object which contains the cell
-	 * @param activate
-	 *            Whether the table cell should be activated
 	 *
 	 * @return the created table-data field as DOM-representation
 	 */
@@ -20,6 +18,10 @@ return function (TableSelection) {
 		if (null == originalTd) {
 			originalTd = '<td>&nbsp;</td>';
 		}
+
+		//original Td must be a DOM node so that the this.obj.context property is available
+		//this transformation will properly handle jQuery objects as well as DOM nodes
+	    originalTd = jQuery( originalTd ).get( 0 );
 
 		this.obj = jQuery(originalTd);
 		this.tableObj = tableObj;
