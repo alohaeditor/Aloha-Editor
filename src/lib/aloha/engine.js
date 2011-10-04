@@ -1082,8 +1082,6 @@ function setActiveRange( range ) {
 	rangeObject.startOffset = range.startOffset;
 	rangeObject.endContainer = range.endContainer;
 	rangeObject.endOffset = range.endOffset;
-
-	window.GENTICS.Utils.Dom.doCleanup({merge:true, removeempty: true}, rangeObject, startnode);
 	
 	rangeObject.select();
 }
@@ -4830,7 +4828,7 @@ function deleteContents() {
 		// "For each node in nodes to move, append node as the last child of
 		// start block, preserving ranges."
 		nodesToMove.forEach(function(node) {
-			movePreservingRanges(node, startBlock, -1);
+			movePreservingRanges(node, startBlock, -1, range);
 		});
 
 		// "If the nextSibling of reference node is a br, remove it from its

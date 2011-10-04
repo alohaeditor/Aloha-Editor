@@ -91,7 +91,7 @@ function( TestUtils ) {
 				// ExecCommand
 				if ( typeof check.execResult !== 'undefined' ) {
 					// execute the command
-					result = Aloha.execCommand( command, false, check.value );
+					Aloha.execCommand( command, false, check.value );
 					// place the marker at the selection and add brackets
 					range = rangy.getSelection().getRangeAt(0);
 					TestUtils.addBrackets(range);

@@ -313,9 +313,7 @@ define(	['./ecma5'],	function() {
 
 				var cur = node;
 				while (true) {
-					var huhu = window.compareDocumentPosition(cur, node);
-					var hoho = Node.DOCUMENT_POSITION_CONTAINS;
-					if (!cur || (cur != node && !(huhu & hoho))) {
+					if (!cur || (cur != node && !(window.compareDocumentPosition(cur, node) & Node.DOCUMENT_POSITION_CONTAINS))) {
 						break;
 					}
 

@@ -18,8 +18,8 @@
 * along with CommandManager program. If not, see <http://www.gnu.org/licenses/>.
 */
 "use strict";
-define( [ 'aloha', 'aloha/registry', 'aloha/engine' ],
-function( Aloha, Registry, Engine ) {
+define( [ 'aloha', 'aloha/registry', 'aloha/engine', 'util/dom' ],
+function( Aloha, Registry, Engine, Dom ) {
 
 //			Action: What the command does when executed via execCommand(). Every command defined
 //			in CommandManager specification has an action defined for it in the relevant section. For example, 
@@ -66,11 +66,25 @@ function( Aloha, Registry, Engine ) {
 			
 		execCommand: function( commandId, showUi, value, range ) {
 			
-			// Take current selection if not passed
+			// Read current selection if not passed
 			if ( !range ) {
 				range = Aloha.getSelection().getRangeAt( 0 );
 			}
 			Engine.execCommand( commandId, showUi, value, range );
+			
+			// Read range after engine modifiaction
+			range = Aloha.getSelection().getRangeAt( 0 );
+
+			// FIX: doCleanup should work with W3C range
+			var startnode = range.commonAncestorContainer.parentNode;
+			var rangeObject = new window.GENTICS.Utils.RangeObject();
+			rangeObject.startContainer = range.startContainer;
+			rangeObject.startOffset = range.startOffset;
+			rangeObject.endContainer = range.endContainer;
+			rangeObject.endOffset = range.endOffset;
+			Dom.doCleanup({merge:true, removeempty: false}, rangeObject, startnode);
+			rangeObject.select();
+			
 		},
 		
 		// If command is available and not disabled or the active range is not null 
