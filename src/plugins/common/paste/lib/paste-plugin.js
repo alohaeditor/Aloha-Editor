@@ -6,10 +6,8 @@
 */
 
 define(
-['aloha/core', 'aloha/plugin', 'aloha/jquery', 'aloha/command', 'aloha/console', 
- 'paste/wordpastehandler', 'paste/genericpastehandler', 'paste/oembedpastehandler' ],
-function(Aloha, Plugin, jQuery, Commands, console, 
-		WordPasteHandler, GenericPasteHandler, OEmbedPasteHandler) {
+['aloha/core', 'aloha/plugin', 'aloha/jquery', 'aloha/command', 'aloha/console'],
+function(Aloha, Plugin, jQuery, Commands, console) {
 	"use strict";
 
 	// Private Vars and Methods
