@@ -336,7 +336,7 @@ var tests = {
 		},
 		{  	start: 'foo<div><ol><li>[]bar</ol></div>', // broken
 			execResult: 'foo[]bar' // TODO not sure if this is correct
-		},*/
+		},
 
 //		{  	start: 'foo<dl><dt>[]bar<dd>baz</dl>',
 //			execResult: 'foo<dl><dt>[]bar<dd>baz</dl>'
@@ -370,124 +370,124 @@ var tests = {
 			execResult: '<ol><li>foo</li><li>[]bar</li></ol>'
 		},
 	
-//		// Indented stuff with collapsed selection
-//		{  	start: 'foo<blockquote>[]bar</blockquote>',
-//			execResult: 'foo<blockquote>[]bar</blockquote>'
-//		},
-//		{  	start: 'foo<blockquote><blockquote>[]bar</blockquote></blockquote>',
-//			execResult: 'foo<blockquote><blockquote>[]bar</blockquote></blockquote>'
-//		},
-//		{  	start: 'foo<blockquote><div>[]bar</div></blockquote>',
-//			execResult: 'foo<blockquote><div>[]bar</div></blockquote>'
-//		},
-//		{  	start: 'foo<blockquote style="color: blue">[]bar</blockquote>',
-//			execResult: 'foo<blockquote style="color: blue">[]bar</blockquote>'
-//		},
-//	
-//		{  	start: 'foo<blockquote><blockquote><p>[]bar<p>baz</blockquote></blockquote>',
-//			execResult: 'foo<blockquote><blockquote><p>[]bar<p>baz</blockquote></blockquote>'
-//		},
-//		{  	start: 'foo<blockquote><div><p>[]bar<p>baz</div></blockquote>',
-//			execResult: 'foo<blockquote><div><p>[]bar<p>baz</div></blockquote>'
-//		},
-//		{  	start: 'foo<blockquote style="color: blue"><p>[]bar<p>baz</blockquote>',
-//			execResult: 'foo<blockquote style="color: blue"><p>[]bar<p>baz</blockquote>'
-//		},
-//	
-//		{  	start: 'foo<blockquote><p><b>[]bar</b><p>baz</blockquote>',
-//			execResult: 'foo<blockquote><p><b>[]bar</b><p>baz</blockquote>'
-//		},
-//		{  	start: 'foo<blockquote><p><strong>[]bar</strong><p>baz</blockquote>',
-//			execResult: 'foo<blockquote><p><strong>[]bar</strong><p>baz</blockquote>'
-//		},
-//		{  	start: 'foo<blockquote><p><span>[]bar</span><p>baz</blockquote>',
-//			execResult: 'foo<blockquote><p><span>[]bar</span><p>baz</blockquote>'
-//		},
-//	
-//		{  	start: 'foo<blockquote><ol><li>[]bar</ol></blockquote><p>extra',
-//			execResult: 'foo<blockquote><ol><li>[]bar</ol></blockquote><p>extra'
-//		},
-//		{  	start: 'foo<blockquote>bar<ol><li>[]baz</ol>quz</blockquote><p>extra',
-//			execResult: 'foo<blockquote>bar<ol><li>[]baz</ol>quz</blockquote><p>extra'
-//		},
-//		{  	start: 'foo<blockquote><ol><li>bar</li><ol><li>[]baz</ol><li>quz</ol></blockquote><p>extra',
-//			execResult: 'foo<blockquote><ol><li>bar</li><ol><li>[]baz</ol><li>quz</ol></blockquote><p>extra'
-//		},
-//	
-//		// Invisible stuff with collapsed selection
-//		{  	start: 'foo<span></span>[]bar',
-//			execResult: 'foo<span></span>[]bar'
-//		},
-//		{  	start: 'foo<span><span></span></span>[]bar',
-//			execResult: 'foo<span><span></span></span>[]bar'
-//		},
-//		{  	start: 'foo<quasit></quasit>[]bar',
-//			execResult: 'foo<quasit></quasit>[]bar'
-//		},
-//		{  	start: 'foo<br><span></span>[]bar',
-//			execResult: 'foo<br><span></span>[]bar'
-//		},
-//		{  	start: '<span>foo<span></span></span>[]bar',
-//			execResult: '<span>foo<span></span></span>[]bar'
-//		},
-//		{  	start: 'foo<span></span><span>[]bar</span>',
-//			execResult: 'foo<span></span><span>[]bar</span>'
-//		},
-//		{  	start: 'foo<div><div><p>[]bar</div></div>',
-//			execResult: 'foo<div><div><p>[]bar</div></div>'
-//		},
-//		{  	start: 'foo<div><div><p><!--abc-->[]bar</div></div>',
-//			execResult: 'foo<div><div><p><!--abc-->[]bar</div></div>'
-//		},
-//		{  	start: 'foo<div><div><!--abc--><p>[]bar</div></div>',
-//			execResult: 'foo<div><div><!--abc--><p>[]bar</div></div>'
-//		},
-//		{  	start: 'foo<div><!--abc--><div><p>[]bar</div></div>',
-//			execResult: 'foo<div><!--abc--><div><p>[]bar</div></div>'
-//		},
-//		{  	start: 'foo<!--abc--><div><div><p>[]bar</div></div>',
-//			execResult: 'foo<!--abc--><div><div><p>[]bar</div></div>'
-//		},
-//		{  	start: '<div><div><p>foo</div></div>[]bar',
-//			execResult: '<div><div><p>foo</div></div>[]bar'
-//		},
-//		{  	start: '<div><div><p>foo</div></div><!--abc-->[]bar',
-//			execResult: '<div><div><p>foo</div></div><!--abc-->[]bar'
-//		},
-//		{  	start: '<div><div><p>foo</div><!--abc--></div>[]bar',
-//			execResult: '<div><div><p>foo</div><!--abc--></div>[]bar'
-//		},
-//		{  	start: '<div><div><p>foo</p><!--abc--></div></div>[]bar',
-//			execResult: '<div><div><p>foo</p><!--abc--></div></div>[]bar'
-//		},
-//		{  	start: '<div><div><p>foo<!--abc--></div></div>[]bar',
-//			execResult: '<div><div><p>foo<!--abc--></div></div>[]bar'
-//		},
-//		{  	start: '<div><div><p>foo</p></div></div><div><div><div>[]bar</div></div></div>',
-//			execResult: '<div><div><p>foo</p></div></div><div><div><div>[]bar</div></div></div>'
-//		},
-//		{  	start: '<div><div><p>foo<!--abc--></p></div></div><div><div><div>[]bar</div></div></div>',
-//			execResult: '<div><div><p>foo<!--abc--></p></div></div><div><div><div>[]bar</div></div></div>'
-//		},
-//		{  	start: '<div><div><p>foo</p><!--abc--></div></div><div><div><div>[]bar</div></div></div>',
-//			execResult: '<div><div><p>foo</p><!--abc--></div></div><div><div><div>[]bar</div></div></div>'
-//		},
-//		{  	start: '<div><div><p>foo</p></div><!--abc--></div><div><div><div>[]bar</div></div></div>',
-//			execResult: '<div><div><p>foo</p></div><!--abc--></div><div><div><div>[]bar</div></div></div>'
-//		},
-//		{  	start: '<div><div><p>foo</p></div></div><!--abc--><div><div><div>[]bar</div></div></div>',
-//			execResult: '<div><div><p>foo</p></div></div><!--abc--><div><div><div>[]bar</div></div></div>'
-//		},
-//		{  	start: '<div><div><p>foo</p></div></div><div><!--abc--><div><div>[]bar</div></div></div>',
-//			execResult: '<div><div><p>foo</p></div></div><div><!--abc--><div><div>[]bar</div></div></div>'
-//		},
-//		{  	start: '<div><div><p>foo</p></div></div><div><div><!--abc--><div>[]bar</div></div></div>',
-//			execResult: '<div><div><p>foo</p></div></div><div><div><!--abc--><div>[]bar</div></div></div>'
-//		},
-//		{  	start: '<div><div><p>foo</p></div></div><div><div><div><!--abc-->[]bar</div></div></div>',
-//			execResult: '<div><div><p>foo</p></div></div><div><div><div><!--abc-->[]bar</div></div></div>'
-//		},
-//	
+		// Indented stuff with collapsed selection
+		{  	start: 'foo<blockquote>[]bar</blockquote>', // broken
+			execResult: 'foo[]bar'
+		},
+		{  	start: 'foo<blockquote><blockquote>[]bar</blockquote></blockquote>', // broken
+			execResult: 'foo[]bar'
+		},
+		{  	start: 'foo<blockquote><div>[]bar</div></blockquote>', // broken
+			execResult: 'foo[]bar'
+		},
+		{  	start: 'foo<blockquote style="color: blue">[]bar</blockquote>', // broken
+			execResult: 'foo<span style="color: blue">[]bar</span>'
+		},
+	
+		{  	start: 'foo<blockquote><blockquote><p>[]bar<p>baz</blockquote></blockquote>', // broken
+			execResult: 'foo[]bar<blockquote><blockquote><p>baz</p></blockquote></blockquote>'
+		},
+		{  	start: 'foo<blockquote><div><p>[]bar<p>baz</div></blockquote>', // broken
+			execResult: 'foo[]bar<blockquote><div><p>baz</p></div></blockquote>'
+		},
+		{  	start: 'foo<blockquote style="color: blue"><p>[]bar<p>baz</blockquote>', // broken
+			execResult: 'foo[]<span style="color: blue">bar</span><blockquote style="color: blue"><p>baz</p></blockquote>'
+		},
+	
+		{  	start: 'foo<blockquote><p><b>[]bar</b><p>baz</blockquote>', // broken
+			execResult: 'foo[]<b>bar</b><blockquote><p>baz</p></blockquote>'
+		},
+		{  	start: 'foo<blockquote><p><strong>[]bar</strong><p>baz</blockquote>', // broken
+			execResult: 'foo[]<strong>bar</strong><blockquote><p>baz</p></blockquote>'
+		},
+		{  	start: 'foo<blockquote><p><span>[]bar</span><p>baz</blockquote>', // broken
+			execResult: 'foo[]bar<blockquote><p>baz</p></blockquote>'
+		},
+	
+		{  	start: 'foo<blockquote><ol><li>[]bar</ol></blockquote><p>extra', // broken
+			execResult: 'foo[]bar<p>extra</p>'
+		},
+		{  	start: 'foo<blockquote>bar<ol><li>[]baz</ol>quz</blockquote><p>extra', // broken
+			execResult: 'foo<blockquote>bar[]baz<br>quz</blockquote><p>extra</p>'
+		},
+		{  	start: 'foo<blockquote><ol><li>bar</li><ol><li>[]baz</ol><li>quz</ol></blockquote><p>extra', // broken
+			execResult: 'foo<blockquote><ol><li>bar[]baz</li><li>quz</li></ol></blockquote><p>extra</p>'
+		},*/
+	
+		// Invisible stuff with collapsed selection
+		{  	start: 'foo<span></span>[]bar',
+			execResult: 'foo<span></span>[]bar'
+		},
+		{  	start: 'foo<span><span></span></span>[]bar',
+			execResult: 'foo<span><span></span></span>[]bar'
+		},
+		{  	start: 'foo<quasit></quasit>[]bar',
+			execResult: 'foo<quasit></quasit>[]bar'
+		},
+		{  	start: 'foo<br><span></span>[]bar',
+			execResult: 'foo<br><span></span>[]bar'
+		},
+		{  	start: '<span>foo<span></span></span>[]bar',
+			execResult: '<span>foo<span></span></span>[]bar'
+		},
+		{  	start: 'foo<span></span><span>[]bar</span>',
+			execResult: 'foo<span></span><span>[]bar</span>'
+		},
+		{  	start: 'foo<div><div><p>[]bar</div></div>',
+			execResult: 'foo<div><div><p>[]bar</div></div>'
+		},
+		{  	start: 'foo<div><div><p><!--abc-->[]bar</div></div>',
+			execResult: 'foo<div><div><p><!--abc-->[]bar</div></div>'
+		},
+		{  	start: 'foo<div><div><!--abc--><p>[]bar</div></div>',
+			execResult: 'foo<div><div><!--abc--><p>[]bar</div></div>'
+		},
+		{  	start: 'foo<div><!--abc--><div><p>[]bar</div></div>',
+			execResult: 'foo<div><!--abc--><div><p>[]bar</div></div>'
+		},
+		{  	start: 'foo<!--abc--><div><div><p>[]bar</div></div>',
+			execResult: 'foo<!--abc--><div><div><p>[]bar</div></div>'
+		},
+		{  	start: '<div><div><p>foo</div></div>[]bar',
+			execResult: '<div><div><p>foo</div></div>[]bar'
+		},
+		{  	start: '<div><div><p>foo</div></div><!--abc-->[]bar',
+			execResult: '<div><div><p>foo</div></div><!--abc-->[]bar'
+		},
+		{  	start: '<div><div><p>foo</div><!--abc--></div>[]bar',
+			execResult: '<div><div><p>foo</div><!--abc--></div>[]bar'
+		},
+		{  	start: '<div><div><p>foo</p><!--abc--></div></div>[]bar',
+			execResult: '<div><div><p>foo</p><!--abc--></div></div>[]bar'
+		},
+		{  	start: '<div><div><p>foo<!--abc--></div></div>[]bar',
+			execResult: '<div><div><p>foo<!--abc--></div></div>[]bar'
+		},
+		{  	start: '<div><div><p>foo</p></div></div><div><div><div>[]bar</div></div></div>',
+			execResult: '<div><div><p>foo</p></div></div><div><div><div>[]bar</div></div></div>'
+		},
+		{  	start: '<div><div><p>foo<!--abc--></p></div></div><div><div><div>[]bar</div></div></div>',
+			execResult: '<div><div><p>foo<!--abc--></p></div></div><div><div><div>[]bar</div></div></div>'
+		},
+		{  	start: '<div><div><p>foo</p><!--abc--></div></div><div><div><div>[]bar</div></div></div>',
+			execResult: '<div><div><p>foo</p><!--abc--></div></div><div><div><div>[]bar</div></div></div>'
+		},
+		{  	start: '<div><div><p>foo</p></div><!--abc--></div><div><div><div>[]bar</div></div></div>',
+			execResult: '<div><div><p>foo</p></div><!--abc--></div><div><div><div>[]bar</div></div></div>'
+		},
+		{  	start: '<div><div><p>foo</p></div></div><!--abc--><div><div><div>[]bar</div></div></div>',
+			execResult: '<div><div><p>foo</p></div></div><!--abc--><div><div><div>[]bar</div></div></div>'
+		},
+		{  	start: '<div><div><p>foo</p></div></div><div><!--abc--><div><div>[]bar</div></div></div>',
+			execResult: '<div><div><p>foo</p></div></div><div><!--abc--><div><div>[]bar</div></div></div>'
+		},
+		{  	start: '<div><div><p>foo</p></div></div><div><div><!--abc--><div>[]bar</div></div></div>',
+			execResult: '<div><div><p>foo</p></div></div><div><div><!--abc--><div>[]bar</div></div></div>'
+		},
+		{  	start: '<div><div><p>foo</p></div></div><div><div><div><!--abc-->[]bar</div></div></div>',
+			execResult: '<div><div><p>foo</p></div></div><div><div><div><!--abc-->[]bar</div></div></div>'
+		},
+	
 //		// Styled stuff with collapsed selection
 //		{  	start: '<p style=color:blue>foo<p>[]bar',
 //			execResult: '<p style=color:blue>foo<p>[]bar'

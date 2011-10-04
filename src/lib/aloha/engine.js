@@ -5454,10 +5454,10 @@ function outdentNode(node, range) {
 		var followingSiblings = [].slice.call(currentAncestor.childNodes, 1 + getNodeIndex(target));
 
 		// "Indent preceding siblings."
-		indentNodes(precedingSiblings);
+		indentNodes(precedingSiblings, range);
 
 		// "Indent following siblings."
-		indentNodes(followingSiblings);
+		indentNodes(followingSiblings, range);
 	}
 
 	// "Outdent original ancestor."
@@ -6709,7 +6709,7 @@ commands.indent = {
 			}
 
 			// "Indent sublist."
-			indentNodes(sublist);
+			indentNodes(sublist, range);
 		}
 	}
 };
