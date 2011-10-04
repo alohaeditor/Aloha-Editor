@@ -1773,18 +1773,14 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 			HR  : true,
 			IMG : true
 		};
+		
 		return node ? voidNodes[ node.nodeName ] : false;
 	};
 	
-	function isAdjacentToVoidElement ( node ) {
-		return isVoidNode( node.nextSibling ) ||
-			   isVoidNode( node.previousSibling );
-	}
-	
 	function getIndexOfChildNode ( parent, child ) {
 		var n = parent.childNodes,
-			i = 0,
-			l = n.length;
+			l = n.length,
+			i = 0;
 		
 		for ( ; i < l; ++i ) {
 			if ( n[ i ] === child ) {
@@ -1793,6 +1789,10 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		}
 		
 		return -1;
+	};
+	
+	function moveLeft ( node ) {
+		return node.previousNode || node.parentNode.previousNode;
 	};
 	
 	/**
@@ -1849,25 +1849,30 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		
 		newEndContainer = getSelectionEndNode( newEndContainer, isSelectionStopNode );
 		
-		if ( newEndContainer ) {
+		if ( !newEndContainer ) {
+			newEndContainer = range.endContainer;
+		} else if ( isVoidNode( newEndContainer ) && endOffset ) {
+			// newEndContainer is the last node in its parent and a void node
+			// therefore jump to the very next possible element
+			newEndContainer = newEndContainer.parentNode.nextSibling;
+			newEndOffset = 0;
+		} else if ( isVoidNode( newEndContainer ) ) {
+			newEndContainer = getSelectionEndNode( newEndContainer.parentNode.previousSibling, isSelectionStopNode );
 			newEndOffset = newEndContainer.length;
 		} else {
-			newEndContainer = range.endContainer;
-			newEndOffset = range.endOffset;
+			newEndOffset = newEndContainer.length;
 		}
 		
-		if ( false && isAdjacentToVoidElement( startContainer ) ) {
-			// debugger;
-		} else if ( startContainer == newEndContainer ) {
-			// Ensures that 'foo<span>bar[</span>]baz' is corrected to 'foo<span>bar[]</span>baz'
-			// The general rule is that, if the startContainer is the same as
-			// the *corrected* endContainer (newEndContainer), then we can infere that
-			// the corrected endContainer was the most suitable container to
-			// place the end selection position, and it is therefore also the
-			// nearest best container for the start position. The only things
-			// that differ are the start and end positions
-		} else if ( newEndContainer &&
-					startOffset == startContainer.childNodes.length &&
+		if ( startContainer == newEndContainer ) {
+			// Ensures that 'foo<span>bar[</span>]baz' is corrected to
+			// 'foo<span>bar[]</span>baz'. The general rule is that, if the
+			// startContainer is the same as the *corrected* endContainer
+			// (newEndContainer), then we can infere that the corrected
+			// endContainer was the most suitable container to place the end
+			// selection position, and it is therefore also the nearest best
+			// container for the start position. The only things that differ
+			// are the start and end positions
+		} else if ( startOffset == startContainer.childNodes.length &&
 					startContainer.childNodes[ 0 ] == newEndContainer ) {
 			range.startContainer = newEndContainer;
 			range.startOffset = newEndContainer.length;
@@ -1882,7 +1887,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 			newStartContainer = getSelectionEndNode( startContainer.childNodes[ startOffset ].previousSibling, isSelectionStopNode );
 			if ( newStartContainer ) {
 				range.startContainer = newStartContainer;
-				range.startOffset = newStartContainer.length;
+				newStartOffset = newStartContainer.length;
 				newStartContainer = null; // Prevent going into getSelectionStartNode. Should we just return here?
 			}
 		} else if ( startContainer.nextSibling &&
@@ -1909,14 +1914,11 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		
 		newStartContainer = getSelectionStartNode( newStartContainer, isSelectionStopNode );
 		
-		if ( newStartContainer ) {
+		if ( newStartContainer && !isVoidNode( newEndContainer ) ) {
 			newStartOffset = 0;
 		} else {
 			newStartContainer = range.startContainer;
-			newStartOffset = range.startOffset;
 		}
-		
-		//debugger;
 		
 		// Fix position around void elements
 		
@@ -1942,6 +1944,41 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 					newStartOffset = index;
 				}
 			}
+		} else {
+			//
+		}
+		
+		debugger;
+		
+		// 'foo<span>{}<br></span>baz', 'foo[]<span><br></span>baz'
+		// 'foo<span><br>{}</span>baz', 'foo<span><br></span>[]baz'
+		if ( newStartOffset == 0 &&
+			 isVoidNode( newStartContainer.firstChild ) )
+			 //newStartContainer.previousSibling &&
+			 //newStartContainer.childNodes.length &&
+			 //isVoidNode( newStartContainer.childNodes[ 0 ] ) ) {
+			newStartContainer = getSelectionEndNode( moveBack( newStartContainer ) );
+			newStartOffset = newStartContainer.length;
+		} else if ( newStartContainer.nextSibling &&
+					newStartContainer.childNodes.length &&
+					newStartOffset == newStartContainer.childNodes.length &&
+					isVoidNode( newStartContainer.childNodes[ newStartContainer.childNodes.length - 1 ] ) ) {
+			newStartContainer = newStartContainer.nextSibling;
+			newStartOffset = 0;
+		}
+		
+		if ( newEndOffset == 0 &&
+			 newEndContainer.previousSibling &&
+			 newEndContainer.childNodes.length &&
+			 isVoidNode( newEndContainer.childNodes[ 0 ] ) ) {
+			newEndContainer = newEndContainer.previousSibling;
+			newEndOffset = newEndContainer.length;
+		} else if ( newEndContainer.nextSibling &&
+					newEndContainer.childNodes.length &&
+					newEndOffset == newEndContainer.childNodes.length &&
+					isVoidNode( newEndContainer.childNodes[ newEndContainer.childNodes.length - 1 ] ) ) {
+			newEndContainer = newEndContainer.nextSibling;
+			newEndOffset = 0;
 		}
 		
 		if ( newEndContainer ) {
