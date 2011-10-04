@@ -8,7 +8,7 @@ Aloha.defaults.sanitize.relaxed = {
 		'colgroup', 'dd', 'dl', 'dt', 'em', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
 		'i', 'img', 'li', 'ol', 'p', 'pre', 'q', 'small', 'strike', 'strong',
 		'sub', 'sup', 'table', 'tbody', 'td', 'tfoot', 'th', 'thead', 'tr', 'u',
-		'ul', 'span'
+		'ul', 'span', 'hr'
 	],
 
 	attributes: {
