@@ -11,7 +11,7 @@ function(Aloha, jQuery, command, selection, dom) {
 	"use strict";
 
 	// Exported commands
-	command.registerCommand( 'inserthtml', {
+	command.register( 'inserthtml', {
 		action: function(value, range) {
 			var 
 				$editable = jQuery(dom.getEditingHostOf(range.startContainer)),
