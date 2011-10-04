@@ -5,19 +5,13 @@
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
 define(
-['aloha/plugin', 'aloha/floatingmenu', 'i18n!attributes/nls/i18n', 'i18n!aloha/nls/i18n', 'css!attributes/css/attributes.css'],
-function(Plugin, FloatingMenu, i18n, i18nCore) {
+['aloha', 'aloha/jquery', 'aloha/plugin', 'aloha/floatingmenu', 'i18n!attributes/nls/i18n', 'i18n!aloha/nls/i18n', 'css!attributes/css/attributes.css'],
+function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 	"use strict";
 
-	var
-		jQuery = window.alohaQuery || window.jQuery, $ = jQuery,
-		GENTICS = window.GENTICS,
-		Aloha = window.Aloha;
+	var $ = jQuery;
 	
-	
-	
-	
-     return Plugin.create('attributes', {
+    return Plugin.create('attributes', {
 		_constructor: function(){
 			this._super('attributes');
 		},
@@ -212,7 +206,6 @@ function(Plugin, FloatingMenu, i18n, i18nCore) {
                     }
                     
                 });
-			sidebar.show().open();
 		}
 	});
 });
