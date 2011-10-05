@@ -1272,13 +1272,14 @@ function movePreservingRanges(node, newParent, newIndex, range) {
 	range.setStart(boundaryPoints[0][0], boundaryPoints[0][1]);
 	range.setEnd(boundaryPoints[1][0], boundaryPoints[1][1]);
 
-	getSelection().removeAllRanges();
+	Aloha.getSelection().removeAllRanges();
 	for (var i = 1; i < ranges.length; i++) {
-		var newRange = document.createRange();
+		var newRange = Aloha.createRange();
 		newRange.setStart(boundaryPoints[2*i][0], boundaryPoints[2*i][1]);
 		newRange.setEnd(boundaryPoints[2*i + 1][0], boundaryPoints[2*i + 1][1]);
-		getSelection().addRange(newRange);
+		Aloha.getSelection().addRange(newRange);
 	}
+	range = newRange;
 }
 
 function setTagName(element, newName, range) {
@@ -1454,6 +1455,15 @@ function wrap(nodeList, siblingCriteria, newParentInstructions, range) {
 		if (globalRange.endContainer == newParent.parentNode
 		&& globalRange.endOffset == getNodeIndex(newParent)) {
 			globalRange.setEnd(globalRange.endContainer, globalRange.endOffset + 1);
+		}
+		// Try to fix range
+		if (range.startContainer == newParent.parentNode
+		&& range.startOffset == getNodeIndex(newParent)) {
+			range.setStart(range.startContainer, range.startOffset + 1);
+		}
+		if (range.endContainer == newParent.parentNode
+		&& range.endOffset == getNodeIndex(newParent)) {
+			range.setEnd(range.endContainer, range.endOffset + 1);
 		}
 	}
 
