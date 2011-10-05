@@ -1737,31 +1737,39 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		}
 		
 		if ( node.childNodes.length ) {
-			return getSelectionEndNode( node.childNodes[ 0 ], condition );
+			return getSelectionStartNode( node.firstChild, condition );
 		}
 		
 		if ( node.nextSibling ) {
 			return getSelectionStartNode( node.nextSibling, condition );
 		}
 		
-		return node;
+		return null;
 	};
 	
-	function getSelectionEndNode ( node, condition ) {
-		if ( !node || typeof condition !== 'function' || condition( node ) ) {
+	function getSelectionEndNode ( node ) {
+		if ( !node ) {
+			return null;
+		}
+		
+		if ( isSelectionStopNode( node ) ) {
 			return node;
 		}
 		
 		if ( node.childNodes.length ) {
-			return (
-				getSelectionStartNode( node.childNodes[ node.childNodes.length - 1 ], condition ) || node
-			);
+			var l = node.childNodes.length;
+			
+			while ( l ) {
+				var end = getSelectionEndNode( node.childNodes[ --l ] );
+				
+				if ( end ) {
+					return end;
+				}
+			}
 		}
 		
 		if ( node.previousSibling ) {
-			return (
-				getSelectionEndNode( node.previousSibling, condition ) || node
-			);
+			return getSelectionEndNode( node.previousSibling ); // || node
 		}
 		
 		return null;
@@ -1771,6 +1779,11 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		return node.nodeType == Node.TEXT_NODE && !isVoidNode( node );
 	};
 	
+	/**
+	 * We treat void elements all the same
+	 * @param {DOMNode} node
+	 * @return {Boolean}
+	 */
 	function isVoidNode ( node ) {
 		var voidNodes = {
 			BR  : true,
@@ -1778,7 +1791,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 			IMG : true
 		};
 		
-		return node ? voidNodes[ node.nodeName ] : false;
+		return node ? !!voidNodes[ node.nodeName ] : false;
 	};
 	
 	function getIndexOfChildNode ( parent, child ) {
@@ -1821,7 +1834,8 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 	 * This method corrects the native ranges from the browser
 	 * to standardizes Aloha Editor ranges.  
 	 */
-	function correctRange( range ) {
+	function correctRange ( range ) {
+		//return range;
 		
 		var startContainer = range.startContainer,
 		    endContainer = range.endContainer,
@@ -1835,15 +1849,15 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		if ( isSelectionStopNode( endContainer ) ) {
 			if ( endOffset == 0 ) {
 				var prev = endContainer.previousSibling || endContainer.parentNode.previousSibling;
-				if ( !isVoidNode( prev ) && !isVoidNode( prev.lastChild ) ) {
+				if ( prev && !isVoidNode( prev ) && !isVoidNode( prev.lastChild ) ) {
 					newEndContainer = prev;
 				}
 			}
-		} else if ( isVoidNode( endContainer.childNodes[
-						endOffset ? endOffset - 1 : 0 ] ) ) {
+		} else if ( isVoidNode(
+			endContainer.childNodes[ endOffset ? endOffset - 1 : 0 ] ) ) {
 			if ( endOffset == 0 ) {
 				newEndContainer = getSelectionEndNode(
-					moveBackwards( endContainer ), isSelectionStopNode
+					moveBackwards( endContainer )
 				);
 				newEndOffset = newEndContainer.length;
 			}
@@ -1878,9 +1892,9 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 			newEndContainer = endContainer.parentNode.previousSibling;
 		}
 		
-		newEndContainer = getSelectionEndNode(
-			newEndContainer, isSelectionStopNode
-		);
+		// debugger;
+		
+		newEndContainer = getSelectionEndNode( newEndContainer );
 		
 		if ( !newEndContainer ) {
 			newEndContainer = range.endContainer;
@@ -1891,11 +1905,47 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 			newEndOffset = 0;
 		} else if ( isVoidNode( newEndContainer ) ) {
 			newEndContainer = getSelectionEndNode(
-				moveBackwards( newEndContainer ), isSelectionStopNode
+				moveBackwards( newEndContainer )
 			);
 			newEndOffset = newEndContainer.length;
 		} else {
 			newEndOffset = newEndContainer.length;
+		}
+		
+		// rule #1:
+		//		IF the end position is at the start of the end container
+		//		THEN look for its previous relative node that is a phrase element
+		//		WHICH would enable us to have an end positon that is greater than zero.
+		//		IF we cannot find such a cousin node to be our new end container
+		//		THEN leave the end position where it was.
+		//
+		// ie:
+		//		[ '[foo<span>]bar</span>baz', '[foo]<span>bar</span>baz' ]
+		//		[ '{foo<span>}bar</span>baz', '[foo]<span>bar</span>baz' ]
+		//		[ 'foo{<span>}bar</span>baz', 'foo[]<span>bar</span>baz' ]
+		//		[ 'foo<span><b>{<b><b>]bar</b></b></b></span>baz', 'foo[]<span><b><b><b>bar</b></b></b></span>baz' ]
+		//		[ 'foo<i></i>{<span><b><b>}bar</b></b></span>baz', 'foo[]<i></i><span><b><b>bar</b></b></span>baz' ]
+		//		[ 'foo<i>a</i>{<span><b><b>}bar</b></b></span>baz', 'foo<i>a[]</i><span><b><b>bar</b></b></span>baz' ]
+		//		[ 'test<span>{<span><b><b>}bar</b></b></span>baz</span>', 'test[]<span><span><b><b>bar</b></b></span>baz</span>' ]
+		//
+		// nb:
+		// 		Notice that in all cases below, we cannot get a start position that is greater than zero
+		// 		and therefore we leave the end position where it was
+		//
+		//		[ '{<span><b><b>}bar</b></b></span>baz', '<span><b><b>[]bar</b></b></span>baz' ]
+		//		[ '<i></i>{<span><b><b>}bar</b></b></span>baz', '<i></i><span><b><b>[]bar</b></b></span>baz' ]
+		//		[ '<span>{<span><b><b>}bar</b></b></span>baz</span>', '<span><span><b><b>[]bar</b></b></span>baz</span>' ]
+		//
+		// FIXME: We need to handle the above
+		if ( newEndOffset == 0 ) {
+			var prev = getSelectionEndNode( moveBackwards( newEndContainer ) );
+			
+			if ( prev ) {
+				newEndContainer = prev;
+				newEndOffset = prev.length;
+			}
+			
+			// TODO: !isVoidNode && !isFlowNode
 		}
 		
 		if ( startContainer == newEndContainer ) {
@@ -1923,8 +1973,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 			// node. We do this by jumping to the previousSibling and
 			// traversing to the end of it
 			newStartContainer = getSelectionEndNode(
-				startContainer.childNodes[ startOffset ].previousSibling,
-				isSelectionStopNode
+				startContainer.childNodes[ startOffset ].previousSibling
 			);
 			
 			if ( newStartContainer ) {
@@ -1973,6 +2022,28 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 			newStartContainer = range.startContainer;
 		}
 		
+		// Bits		Number	Meaning
+		// ------   ------  -------
+		// 000000	0		Elements are identical.
+		// 000001	1		The nodes are in different documents (or one is outside of a document).
+		// 000010	2		Node B precedes Node A.
+		// 000100	4		Node A precedes Node B.
+		// 001000	8		Node B contains Node A.
+		// 010000	16		Node A contains Node B.
+		// 100000	32		For private use by the browser.
+		var posbits = compareDocumentPosition( newStartContainer, newEndContainer );
+		
+		if ( !!( posbits & 2 ) ) {
+			// newEndContainer preceeds newStartContainer. Therefore collapse
+			// the selecton
+			range.startOffset = newEndOffset;
+			range.startContainer = newEndContainer;
+			range.endOffset = newEndOffset;
+			range.endContainer = newEndContainer;
+			
+			return range;
+		}
+		
 		// Fix position around void elements
 		
 		if ( newStartContainer != newEndContainer || newStartOffset != newEndOffset ) {
@@ -2012,7 +2083,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 			 isVoidNode( newStartContainer.firstChild ) ) {
 			
 			newStartContainer = getSelectionEndNode(
-				moveBackwards( newStartContainer ), isSelectionStopNode
+				moveBackwards( newStartContainer )
 			);
 			newStartOffset = newStartContainer.length;
 		
@@ -2039,10 +2110,6 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 			newEndOffset = 0;
 			
 		}
-		
-		
-		// TODO: check for errors of jumping out of editables
-		//debugger;
 		
 		if ( newStartContainer != newEndContainer ) {
 			if ( newStartContainer.length == newStartOffset ) {
