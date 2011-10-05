@@ -18,8 +18,7 @@ function(Aloha, jQuery, command, selection, dom, ContentHandlerManager) {
 				cac = range.commonAncestorContainer,
 				i,
 				selectedRange,
-				domNodes = [],
-				handler;
+				domNodes = [];
 			
 			/**
 			 * Paste the given object into the current selection.
@@ -49,6 +48,12 @@ function(Aloha, jQuery, command, selection, dom, ContentHandlerManager) {
 				}
 			};
 
+			// apply content handler to cleanup inserted data
+			if (typeof Aloha.settings.contentHandler.insertHtml === 'undefined') {
+				Aloha.settings.contentHandler.insertHtml = Aloha.defaults.contentHandler.insertHtml;
+			}
+			value = ContentHandlerManager.handleContent( value, { contenthandler: Aloha.settings.contentHandler.insertHtml } );
+
 			// allowed values are string or jQuery objects
 			// add value to a container div
 			if ( typeof value === 'string' ){
@@ -58,16 +63,7 @@ function(Aloha, jQuery, command, selection, dom, ContentHandlerManager) {
 			} else {
 				throw "INVALID_VALUE_ERR";
 			}
-
-			var handlers = ContentHandlerManager.getEntries();
-			for ( handler in handlers) {
-				if ( typeof handlers[handler].handleContent === 'function' ) {
-					handlers[handler].handleContent( value );
-				} else {
-					console.error( 'A valid content handler needs the method handleContent.' );
-				}
-			}
-
+			
 			// get contents of container div
 			domNodes = value.contents();
 			

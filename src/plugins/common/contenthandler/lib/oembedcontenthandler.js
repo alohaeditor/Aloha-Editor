@@ -168,7 +168,7 @@ function(Aloha, jQuery, ContentHandlerManager) {
 	jQuery.fn.oembed.defaults = {
 		maxWidth: null,
 		maxHeight: null,
-		embedMethod: "replace" // "auto", "append", "fill"
+		embedMethod: "fill" // "auto", "append", "fill"
 	};
 	
 	jQuery.fn.oembed.insertCode = function(container, embedMethod, oembed) {
@@ -244,22 +244,30 @@ function(Aloha, jQuery, ContentHandlerManager) {
 	var OEmbedContentHandler = ContentHandlerManager.createHandler({
 		/**
 		 * Handle the pasting. Try to detect content pasted from word and transform to clean html
-		 * @param jqPasteDiv
+		 * @param content
 		 */
-		handleContent: function(jqPasteDiv) {
-			this.replaceoEmbedContent(jqPasteDiv);
+		handleContent: function( content ) {
+			if ( typeof content === 'string' ){
+				content = jQuery( '<div>' + content + '</div>' );
+			} else if ( content instanceof jQuery ) {
+				content = jQuery( '<div>' ).append(content);
+			}
+
+			this.replaceoEmbedContent( content );
+
+			return content.html();
 		},
 
 		/**
 		 * Check whether the content of the given jQuery object is assumed to be pasted from word.
-		 * @param jqPasteDiv
+		 * @param content
 		 * @return true for content pasted from word, false for other content
 		 */
-		replaceoEmbedContent: function(jqPasteDiv) {
+		replaceoEmbedContent: function( content ) {
 			// check every element which was pasted.
-			jqPasteDiv.contents().each(function() {
+			content.contents().each(function() {
 				var container = jQuery(this);
-				container.oembed(container.text());
+				container.oembed( container.text() );
 			});
 		}
 	});

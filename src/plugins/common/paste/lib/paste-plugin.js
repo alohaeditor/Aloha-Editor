@@ -179,8 +179,8 @@ function(Aloha, Plugin, jQuery, Commands, console) {
 		 * Register the given paste handler
 		 * @param pasteHandler paste handler to be registered
 		 */
-		register: function(pasteHandler) {
-			console.deprecated( 'Plugins.Paste', 'register() is deprecated. use ContentHandler Plugin.' );
+		register: function( pasteHandler ) {
+			console.deprecated( 'Plugins.Paste', 'register() for pasteHandler is deprecated. Use the ContentHandler Plugin instead.' );
 		}
 	});
 });

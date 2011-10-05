@@ -30,27 +30,14 @@ define([
 
 		init: function () {
 			var that = this,
-				contenthandler = [ 'generic', 'word', 'oembed', 'sanitize' ],
-				handler,
-				enabled,
-				handlercc,
-				cc,
-				i;
-			
-			if ( jQuery.isArray( Aloha.settings.contenthandler ) ) {
-				enabled = Aloha.settings.contenthandler;
-			} else {
-				enabled = contenthandler;
-			}
-			
+				handler, cc, i,
+				contentHandler = [ 'generic', 'word', 'oembed', 'sanitize' ];
+
 			// Register configured content handler
-			for ( i = 0; i < enabled.length; i++ ) {
-				handler = enabled[ i ];
-				if ( jQuery.inArray( handler, contenthandler ) > -1) {
-					cc = handler.charAt(0).toUpperCase() + handler.slice(1);
-					handlercc = eval( cc + 'ContentHandler' );
-					ContentHandlerManager.register( handler, handlercc );
-				}
+			for ( i = 0; i < contentHandler.length; i++ ) {
+				handler = contentHandler[ i ];
+				cc = handler.charAt(0).toUpperCase() + handler.slice(1);
+				ContentHandlerManager.register( handler, eval(cc + 'ContentHandler') );
 			}
 		},
 	});

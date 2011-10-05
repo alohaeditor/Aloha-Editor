@@ -12,26 +12,32 @@ function( Aloha, jQuery, ContentHandlerManager ) {
 	var WordContentHandler = ContentHandlerManager.createHandler({
 		/**
 		 * Handle the pasting. Try to detect content pasted from word and transform to clean html
-		 * @param jqPasteDiv
+		 * @param content
 		 */
-		handleContent: function( jqPasteDiv ) {
-			jqPasteDiv = jQuery( jqPasteDiv );
-			
-			if (this.detectWordContent(jqPasteDiv)) {
-				this.transformWordContent(jqPasteDiv);
+		handleContent: function( content ) {
+			if ( typeof content === 'string' ){
+				content = jQuery( '<div>' + content + '</div>' );
+			} else if ( content instanceof jQuery ) {
+				content = jQuery( '<div>' ).append(content);
 			}
+
+			if (this.detectWordContent(content)) {
+				this.transformWordContent(content);
+			}
+
+			return content.html();
 		},
 
 		/**
 		 * Check whether the content of the given jQuery object is assumed to be pasted from word.
-		 * @param jqPasteDiv
+		 * @param content
 		 * @return true for content pasted from word, false for other content
 		 */
-		detectWordContent: function (jqPasteDiv) {
+		detectWordContent: function (content) {
 			var wordDetected = false;
 			// check every element which was pasted.
 
-			jqPasteDiv.find('*').each(function() {
+			content.find('*').each(function() {
 				// get the element style
 				var style = jQuery(this).attr('style'),
 					clazz;
@@ -72,9 +78,9 @@ function( Aloha, jQuery, ContentHandlerManager ) {
 
 		/**
 		 * Transform lists pasted from word
-		 * @param jqPasteDiv
+		 * @param content
 		 */
-		transformListsFromWord: function (jqPasteDiv) {
+		transformListsFromWord: function (content) {
 			var that = this,
 				negateDetectionFilter, detectionFilter, spans,
 				paragraphs, bulletClass, listElementClass;
@@ -85,7 +91,7 @@ function( Aloha, jQuery, ContentHandlerManager ) {
 
 			// first step is to find all paragraphs which will be converted into list elements and mark them by adding the class 'aloha-list-element'
 			detectionFilter = 'p.MsoListParagraphCxSpFirst,p.MsoListParagraph,p span';
-			paragraphs = jqPasteDiv.find(detectionFilter);
+			paragraphs = content.find(detectionFilter);
 			paragraphs.each(function() {
 				var jqElem = jQuery(this),
 					fontFamily = jqElem.css('font-family') || '',
@@ -108,7 +114,7 @@ function( Aloha, jQuery, ContentHandlerManager ) {
 
 			// now we search for paragraphs with three levels of nested spans, where the innermost span contains nothing but &nbsp;
 			detectionFilter = 'p span span span';
-			spans = jqPasteDiv.find(detectionFilter);
+			spans = content.find(detectionFilter);
 			spans.each(function() {
 				var jqElem = jQuery(this),
 					innerText = jqElem.text().trim().replace(/&nbsp;/g, ''),
@@ -137,7 +143,7 @@ function( Aloha, jQuery, ContentHandlerManager ) {
 			// no detect all marked paragraphs and transform into lists
 			detectionFilter = 'p.' + listElementClass;
 			negateDetectionFilter = ':not('+detectionFilter+')';
-			paragraphs = jqPasteDiv.find(detectionFilter);
+			paragraphs = content.find(detectionFilter);
 
 			if (paragraphs.length > 0) {
 				paragraphs.each(function() {
@@ -240,14 +246,14 @@ function( Aloha, jQuery, ContentHandlerManager ) {
 
 		/**
 		 * Transform Title and Subtitle pasted from word
-		 * @param jqPasteDiv
+		 * @param content
 		 */
-		transformTitles: function(jqPasteDiv) {
-			jqPasteDiv.find('p.MsoTitle').each(function() {
+		transformTitles: function(content) {
+			content.find('p.MsoTitle').each(function() {
 				// titles will be transformed to h1
 				Aloha.Markup.transformDomObject(jQuery(this), 'h1');
 			});
-			jqPasteDiv.find('p.MsoSubtitle').each(function() {
+			content.find('p.MsoSubtitle').each(function() {
 				// titles will be transformed to h1
 				Aloha.Markup.transformDomObject(jQuery(this), 'h2');
 			});
@@ -255,14 +261,14 @@ function( Aloha, jQuery, ContentHandlerManager ) {
 
 		/**
 		 * This is the main transformation method
-		 * @param jqPasteDiv
+		 * @param content
 		 */
-		transformWordContent: function (jqPasteDiv) {
+		transformWordContent: function (content) {
 			// transform lists
-			this.transformListsFromWord(jqPasteDiv);
+			this.transformListsFromWord(content);
 
 			// transform titles
-			this.transformTitles(jqPasteDiv);
+			this.transformTitles(content);
 		}
 	});
 	

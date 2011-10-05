@@ -4,10 +4,9 @@
  * aloha-sales@gentics.com
  * Licensed unter the terms of http://www.aloha-editor.com/license.html
  */
-
 define(
-['aloha/registry'],
-function(Registry) {
+['aloha/jquery', 'aloha/registry'],
+function( jQuery, Registry ) {
 	"use strict";
 
 	/**
@@ -31,6 +30,32 @@ function(Registry) {
 			}, definition);
 			
 			return new AbstractContentHandler();
+		},
+		
+		handleContent: function ( content, options ) {
+			var handler,
+				handlers = this.getEntries();
+			
+			if ( typeof options.contenthandler === 'undefined' || options.contenthandler.length == 0) {
+				options.contenthandler = [];
+				for (handler in handlers) {
+					options.contenthandler.push(handler);
+				}
+			}
+
+			for ( handler in handlers) {
+				if (jQuery.inArray( handler, options.contenthandler ) < 0 ) {
+					continue;
+				}
+				
+				if ( typeof handlers[handler].handleContent === 'function') {
+					content = handlers[handler].handleContent( content, options );
+				} else {
+					console.error( 'A valid content handler needs the method handleContent.' );
+				}
+			}
+
+			return content;
 		}
 	}))();
 });

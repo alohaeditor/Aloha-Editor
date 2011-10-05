@@ -20,56 +20,86 @@ function(Aloha, jQuery, ContentHandlerManager) {
 		 * Handle the pasting. Remove all unwanted stuff.
 		 * @param jqPasteDiv
 		 */
-		handleContent: function(jqPasteDiv) {
+		handleContent: function(content) {
+			if ( typeof content === 'string' ){
+				content = jQuery( '<div>' + content + '</div>' );
+			} else if ( content instanceof jQuery ) {
+				content = jQuery( '<div>' ).append(content);
+			}
+			
 			// If we find an aloha-block inside the pasted content,
 			// we do not modify the pasted stuff, as it most probably
 			// comes from Aloha and not from other sources, and does
 			// not need to be cleaned up.
-			if (jqPasteDiv.find('.aloha-block').length > 0) {
+			if (content.find('.aloha-block').length > 0) {
 				return;
 			}
 
 			// transform tables
-			this.transformTables(jqPasteDiv);
+			this.transformTables(content);
 
 			// remove comments
-			this.removeComments(jqPasteDiv);
+			this.removeComments(content);
 
 			// unwrap font and span tags
-			this.unwrapTags(jqPasteDiv);
+			this.unwrapTags(content);
 
 			// remove styles
-			this.removeStyles(jqPasteDiv);
+			this.removeStyles(content);
 
 			// remove namespaced elements
-			this.removeNamespacedElements(jqPasteDiv);
+			this.removeNamespacedElements(content);
 
 			// transform formattings
-			this.transformFormattings(jqPasteDiv);
+			this.transformFormattings(content);
+
+			return content.html();
 		},
 
 		/**
 		 * Transform tables which were pasted
-		 * @param jqPasteDiv
+		 * @param content
 		 */
-		transformTables: function(jqPasteDiv) {
+		transformTables: function(content) {
 			// remove border, cellspacing, cellpadding from all tables
-			jqPasteDiv.find('table').each(function() {
+			// @todo what about width, height?
+			content.find('table').each(function() {
 				jQuery(this).removeAttr('border').removeAttr('cellspacing').removeAttr('cellpadding');
 			});
-			// remove width, height and valign from all table cells
-			jqPasteDiv.find('td').each(function() {
+			
+			// remove unwanted attributes and cleanup single empty p-tags
+			content.find('td').each(function() {
+				// remove width, height and valign from all table cells
+				jQuery(this).removeAttr('width').removeAttr('height').removeAttr('valign');
+				
+				if ( this.innerHTML.replace(/[\s\xA0]+/g,'') === '<p><br></p>' ) {
+					this.innerHTML = '&nbsp;';
+				}
+				
+				if ( jQuery(this).find('p').length == 1) {
+					jQuery(this).find('p').contents().unwrap();
+				}
+			});
+			
+			// remove unwanted attributes from tr also? (tested with paste from open/libre office)
+			// @todo or do this all via sanitize.js 
+			content.find('tr').each(function() {
+				// remove width, height and valign from all table cells
 				jQuery(this).removeAttr('width').removeAttr('height').removeAttr('valign');
 			});
+			
+			// completely colgroup tags
+			// @TODO should we remove colgroup? use sanitize for that?
+			content.find('colgroup').remove();
 		},
 
 		/**
 		 * Transform formattings
-		 * @param jqPasteDiv
+		 * @param content
 		 */
-		transformFormattings: function(jqPasteDiv) {
+		transformFormattings: function( content ) {
 			// find all formattings we will transform
-			jqPasteDiv.find('strong,em,s,u').each(function() {
+			content.find('strong,em,s,u').each(function() {
 				if (this.nodeName.toLowerCase() == 'strong') {
 					// transform strong to b
 					Aloha.Markup.transformDomObject(jQuery(this), 'b');
@@ -88,13 +118,13 @@ function(Aloha, jQuery, ContentHandlerManager) {
 
 		/**
 		 * Remove all comments
-		 * @param jqPasteDiv
+		 * @param content
 		 */
-		removeComments: function(jqPasteDiv) {
+		removeComments: function( content ) {
 			var that = this;
 
 			// ok, remove all comments
-			jqPasteDiv.contents().each(function() {
+			content.contents().each(function() {
 				if (this.nodeType == 8) {
 					jQuery(this).remove();
 				} else {
@@ -106,11 +136,11 @@ function(Aloha, jQuery, ContentHandlerManager) {
 
 		/**
 		 * Remove some unwanted tags from content pasted
-		 * @param jqPasteDiv
+		 * @param content
 		 */
-		unwrapTags: function(jqPasteDiv) {
+		unwrapTags: function( content ) {
 			// safari and chrome cleanup for plain text paste with working linebreaks
-			jqPasteDiv.find('div').each(function() {
+			content.find('div').each(function() {
 				if (this.innerHTML == '<br>') {
 					jQuery(this).contents().unwrap();
 				} else {
@@ -119,33 +149,33 @@ function(Aloha, jQuery, ContentHandlerManager) {
 			});
 
 			// unwrap contents of span,font and div tags
-			//jqPasteDiv.find('span,font,div').each(function() {
-			jqPasteDiv.find('span,font').each(function() {
+			//content.find('span,font,div').each(function() {
+			content.find('span,font').each(function() {
 				jQuery(this).contents().unwrap();
 			});
 		},
 
 		/**
 		 * Remove styles
-		 * @param jqPasteDiv
+		 * @param content
 		 */
-		removeStyles: function(jqPasteDiv) {
+		removeStyles: function( content ) {
 			// completely remove style tags
-			jqPasteDiv.find('style').remove();
+			content.find('style').remove();
 
 			// remove style attributes and classes
-			jqPasteDiv.find('*').each(function() {
+			content.find('*').each(function() {
 				jQuery(this).removeAttr('style').removeClass();
 			});
 		},
 
 		/**
 		 * Remove all elements which are in different namespaces
-		 * @param jqPasteDiv
+		 * @param content
 		 */
-		removeNamespacedElements: function(jqPasteDiv) {
+		removeNamespacedElements: function( content ) {
 			// get all elements
-			jqPasteDiv.find('*').each(function() {
+			content.find('*').each(function() {
 				// try to determine the namespace prefix ('prefix' works for W3C
 				// compliant browsers, 'scopeName' for IE)
 

@@ -21,10 +21,16 @@ function(jQuery, ContentHandlerManager, BlockManager) {
 	{
 		/**
 		 * Handle the pasting. Remove all unwanted stuff.
-		 * @param {jQuery} jqPasteDiv
+		 * @param {jQuery} content
 		 */
-		handleContent: function( jqPasteDiv ) {
-			jqPasteDiv.find('.aloha-block').each(function() {
+		handleContent: function( content ) {
+			if ( typeof content === 'string' ){
+				content = jQuery( '<div>' + content + '</div>' );
+			} else if ( content instanceof jQuery ) {
+				content = jQuery( '<div>' ).append(content);
+			}
+
+			content.find('.aloha-block').each(function() {
 				var oldBlock = jQuery(this);
 
 				// TODO: use block.serialize();
@@ -44,6 +50,8 @@ function(jQuery, ContentHandlerManager, BlockManager) {
 				oldBlock.replaceWith(newBlock);
 				BlockManager._blockify(newBlock);
 			});
+			
+			return content.html();
 		}
 	});
 	return BlockContentHandler;
