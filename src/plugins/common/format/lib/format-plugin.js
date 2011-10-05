@@ -6,7 +6,8 @@
 */
 
 define(
-['aloha', 'aloha/plugin', 'aloha/jquery', 'aloha/floatingmenu', 'i18n!format/nls/i18n', 'i18n!aloha/nls/i18n', 'css!format/css/format.css'],
+['aloha', 'aloha/plugin', 'aloha/jquery', 'aloha/floatingmenu', 'i18n!format/nls/i18n', 'i18n!aloha/nls/i18n', 'aloha/console',
+ 		'css!format/css/format.css'],
 function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 	"use strict";
 	var
@@ -115,10 +116,9 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 									rangeObject = Aloha.Selection.rangeObject,
 									foundMarkup;
 
-
-								// now focus back to the active element
+								// now re enable the editable
 								if (Aloha.activeEditable) {
-									Aloha.activeEditable.obj[0].focus();
+									jQuery(Aloha.activeEditable.obj[0]).click();
 								}
 
 								// check whether the markup is found in the range (at the start of the range)
@@ -174,9 +174,9 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 							'iconClass' : 'aloha-button ' + i18n.t('aloha-button-' + button),
 							'markup' : jQuery('<'+button+'></'+button+'>'),
 							'click' : function() {
-								// now focus back to the active element
+								// now re enable the editable 
 								if (Aloha.activeEditable) {
-									Aloha.activeEditable.obj[0].focus();
+									jQuery(Aloha.activeEditable.obj[0]).click();
 								}
 								Aloha.Selection.changeMarkupOnSelection(jQuery('<' + button + '></' + button + '>'));
 							}
