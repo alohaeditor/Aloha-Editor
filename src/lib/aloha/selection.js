@@ -1760,6 +1760,11 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 			return node;
 		}
 		
+		// The reason we do this: <a>foo<b></b></a>
+		// In the above case, we don't want <b>, even though it is the
+		// lastChild. We want the "foo" textnode instead. We will therefore
+		// traverse backwards in <a>'s childNodes, looking for the earliest
+		// appropriate child that we can stop at
 		if ( node.childNodes.length ) {
 			var l = node.childNodes.length;
 			
