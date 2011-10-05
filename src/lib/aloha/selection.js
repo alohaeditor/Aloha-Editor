@@ -1732,7 +1732,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 	}); // Selection
 	
 	function getSelectionStartNode ( node ) {
-		if ( !node ) {
+		if ( !node || isVoidNode( node ) ) {
 			return null;
 		}
 		
@@ -1741,11 +1741,11 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		}
 		
 		if ( node.childNodes.length ) {
-			return getSelectionStartNode( node.firstChild );
+			return getSelectionStartNode( node.firstChild ) || node;
 		}
 		
 		if ( node.nextSibling ) {
-			return getSelectionStartNode( node.nextSibling );
+			return getSelectionStartNode( node.nextSibling ) || node;
 		}
 		
 		return null;
@@ -1762,9 +1762,10 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		
 		// The reason we do this: <a>foo<b></b></a>
 		// In the above case, we don't want <b>, even though it is the
-		// lastChild. We want the "foo" textnode instead. We will therefore
-		// traverse backwards in <a>'s childNodes, looking for the earliest
-		// appropriate child that we can stop at
+		// lastChild. We don't want <b> because it has no childNodes in which
+		// we can use as an end node. We want the "foo" textnode instead. We
+		// will therefore traverse backwards in <a>'s childNodes, looking for
+		// the earliest appropriate child that we can stop at
 		if ( node.childNodes.length ) {
 			var l = node.childNodes.length;
 			
@@ -1788,18 +1789,18 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		return node.nodeType == Node.TEXT_NODE && !isVoidNode( node );
 	};
 	
+	var voidNodes = {
+		BR  : true,
+		HR  : true,
+		IMG : true
+	};
+	
 	/**
 	 * We treat void elements all the same
 	 * @param {DOMNode} node
 	 * @return {Boolean}
 	 */
 	function isVoidNode ( node ) {
-		var voidNodes = {
-			BR  : true,
-			HR  : true,
-			IMG : true
-		};
-		
 		return node ? !!voidNodes[ node.nodeName ] : false;
 	};
 	
@@ -1822,7 +1823,13 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 	// that is a sibling to the given node or one of its ancestors
 	function moveBackwards ( node ) {
 		if ( node ) {
-			return node.previousSibling || moveBackwards( node.parentNode );
+			if ( node.previousSibling ) {
+				return node.previousSibling
+			} else if ( !GENTICS.Utils.Dom.isEditingHost( node ) ) {
+				return moveBackwards( node.parentNode );
+			} else {
+				debugger;
+			}
 		} else {
 			return null;
 		}
@@ -1833,7 +1840,13 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 	// of the given node or one of the given node's ancestors
 	function moveForwards ( node ) {
 		if ( node ) {
-			return node.nextSibling || moveForwards( node.parentNode );
+			if ( node.nextSibling ) {
+				return node.nextSibling;
+			} else if ( !GENTICS.Utils.Dom.isEditingHost( node ) ) {
+				return moveForwards( node.parentNode );
+			} else {
+				debugger;
+			}
 		} else {
 			return null;
 		}
@@ -1921,7 +1934,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 			newEndOffset = newEndContainer.length;
 		}
 		
-		// rule #1:
+		// rule:
 		//		IF the end position is at the start of the end container
 		//		THEN look for its previous relative node that is a phrase element
 		//		WHICH would enable us to have an end positon that is greater than zero.
@@ -1956,6 +1969,8 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 			
 			// TODO: !isVoidNode && !isFlowNode
 		}
+		
+		//debugger;
 		
 		if ( startContainer == newEndContainer ) {
 			// Ensures that 'foo<span>bar[</span>]baz' is corrected to
@@ -2021,6 +2036,8 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 			
 		}
 		
+		//debugger;
+		
 		newStartContainer = getSelectionStartNode( newStartContainer );
 		
 		if ( newStartContainer && !isVoidNode( newEndContainer ) ) {
@@ -2030,19 +2047,21 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		}
 		
 		// rule:
-		// The end position cannot preceed the start position.
-		// If we detect this, then we collapse the selection round the end
-		// position
+		//		The end position cannot preceed the start position.
+		//		If we detect such a case, then we collapse the selection round
+		//		the end position
 		//
-		// Bits		Number	Meaning
-		// ------   ------  -------
-		// 000000	0		Elements are identical.
-		// 000001	1		The nodes are in different documents (or one is outside of a document).
-		// 000010	2		Node B precedes Node A.
-		// 000100	4		Node A precedes Node B.
-		// 001000	8		Node B contains Node A.
-		// 010000	16		Node A contains Node B.
-		// 100000	32		For private use by the browser.
+		// reference:
+		//		http://www.w3.org/TR/DOM-Level-3-Core/core.html#Node3-compareDocumentPosition
+		//		Bits	Number	Meaning
+		//		------  ------  -------
+		//		000000	0		Elements are identical.
+		//		000001	1		The nodes are in different documents (or one is outside of a document).
+		//		000010	2		Node B precedes Node A.
+		//		000100	4		Node A precedes Node B.
+		//		001000	8		Node B contains Node A.
+		//		010000	16		Node A contains Node B.
+		//		100000	32		For private use by the browser.
 		var posbits = compareDocumentPosition( newStartContainer, newEndContainer );
 		
 		if ( posbits & 2 ) {
@@ -2089,7 +2108,8 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		
 		// 'foo<span>{}<br></span>baz', 'foo[]<span><br></span>baz'
 		// 'foo<span><br>{}</span>baz', 'foo<span><br></span>[]baz'
-		if ( newStartOffset == 0 && 
+		if ( newStartOffset == 0 &&
+			 newStartContainer == newEndContainer &&
 			 isVoidNode( newStartContainer.firstChild ) ) {
 			
 			newStartContainer = getSelectionEndNode(
