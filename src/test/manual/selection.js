@@ -5,16 +5,130 @@ require( [ '../unit/testutils' ], function ( TestUtils ) {
 Aloha.ready( function() {
 
 	var jQuery = Aloha.jQuery,
-	    fillArea = jQuery( '#aloha-selection-fill' ),
-	    testArea = jQuery( '#aloha-selection-test' ),
-	    viewArea = jQuery( '#aloha-selection-view' ),
-		applyMarkupOnNextSelection = false;
+	    fillArea = jQuery( '#aloha-markup' ),
+	    testArea = jQuery( '#aloha-test' ),
+	    viewArea = jQuery( '#aloha-view' ),
+	    command = jQuery('#command'),
+		applyMarkupOnNextSelection = true,
+		engine = Aloha,
+		selectionRange,
+		supportedCommands = Aloha.querySupportedCommands();
 	
+	for ( var i=0; i < supportedCommands.length; i++ ) {
+		command.append('<option	value="' + supportedCommands[i] +'">' + supportedCommands[i] + '</option>');
+	}
+	
+	jQuery('#aloha-test').aloha();
+	
+	// mark markup as changed
 	fillArea.change( function () {
 		applyMarkupOnNextSelection = true;
-	} );
+	});
 
-	jQuery( document ).bind( 'mouseup keyup', onSelectionChanged );
+//	jQuery( document ).bind( 'mouseup keyup', onSelectionChanged );
+	jQuery( onSelectionChanged );
+	jQuery( document ).bind( 'keyup', onSelectionChanged );
+	testArea.bind( 'mouseup', onSelectionChanged );
+	command.change( queryCommand );
+
+	fillArea.keypress( function( e ) {
+		// linux will use key char code 10 if ctrl+enter is pressed
+		if ( e.metaKey && (e.which === 13 || e.which === 10)) {
+			applyMarkupOnNextSelection = true;
+		}
+	});
+	
+	jQuery( '[name=engine]').change( function() {
+		if ( jQuery(this).val() == 'aloha' ) {
+			testArea.aloha();
+			engine = Aloha;
+		} else {
+			testArea
+				.mahalo()
+				.contentEditable(true);
+			engine = document;
+		}
+		queryCommand();
+	});
+		
+	jQuery('#command-execute').click( function() {
+		var 
+			execCommand,
+			range;
+		
+		execCommand = command.val();
+		// "If command has no action, raise an INVALID_ACCESS_ERR exception."
+		// exception."
+		engine.execCommand( execCommand, false, jQuery('#command-value').val() );
+		range = Aloha.getSelection().getRangeAt( 0 );
+		TestUtils.addBrackets( range );
+		applySelection( testArea );
+	});
+	
+	function queryCommand( ) {
+		
+		var 
+			execCommand = command.val(),
+			result;
+		
+		if ( !selectionRange ) {
+			return;
+		}
+		
+		if ( !execCommand ) {
+			jQuery('#aloha-query').hide();
+			return;
+		}
+
+		jQuery('#aloha-query').show();
+		jQuery('#aloha-indeterm').show();
+		jQuery('#aloha-state').show();
+		jQuery('#aloha-value').show();
+		
+		// select the last range before applying a command
+		var range = Aloha.createRange();
+		range.setStart( selectionRange.startContainer, selectionRange.startOffset) ;
+		range.setEnd( selectionRange.endContainer, selectionRange.endOffset);
+		Aloha.getSelection().removeAllRanges();
+		Aloha.getSelection().addRange(range);
+		
+		// "If command has no indeterminacy, raise an INVALID_ACCESS_ERR
+		try {
+			result = engine.queryCommandIndeterm( execCommand );
+		} catch (e)	{
+			if ( e === "INVALID_ACCESS_ERR" ) {
+				jQuery('#aloha-indeterm').hide();
+			} else {
+				throw(e);
+			}
+		}
+		jQuery('#aloha-indeterm-result').html( (result ? 'true' : 'false') );
+
+		// "If command has no state, raise an INVALID_ACCESS_ERR exception."
+		try {
+			result = engine.queryCommandState( execCommand );
+		} catch (e)	{
+			if ( e === "INVALID_ACCESS_ERR" ) {
+				jQuery('#aloha-state').hide();
+			} else {
+				throw(e);
+			}
+		}
+		jQuery('#aloha-state-result').html( (result ? 'true' : 'false') );
+		
+		// "If command has no value, raise an INVALID_ACCESS_ERR exception."
+		try {
+			result = engine.queryCommandValue( execCommand );
+		} catch (e)	{
+			if ( e === "INVALID_ACCESS_ERR" ) {
+				jQuery('#aloha-value').hide();
+			} else {
+				throw(e);
+			}
+		}
+		jQuery('#aloha-value-result').html( result );
+		
+	};
 	
 	/**
 	 * If applyMarkupOnNextSelection is true: we will copy the value in
@@ -24,7 +138,8 @@ Aloha.ready( function() {
 	 * container is within testArea. If so we will add markers on the current
 	 * range object, 
 	 */
-	function onSelectionChanged () {
+	function onSelectionChanged ( e ) {
+		
 		if ( applyMarkupOnNextSelection ) {
 			testArea[ 0 ].innerHTML = fillArea.val();
 			applySelection( testArea );
@@ -33,10 +148,10 @@ Aloha.ready( function() {
 			// return;
 		}
 		
-		var range = getRange();
+		var range = getSelectionRange();
 		
 		if ( range ) {
-			// Check that atleast one of either of the end or start containers
+			// Check that at least one of either of the end or start containers
 			// is within the "selectable" testArea
 			var containers = jQuery( [ range.startContainer,
 				range.endContainer ] );
@@ -56,7 +171,6 @@ Aloha.ready( function() {
 			}
 			
 			TestUtils.addBrackets( range );
-			
 			applySelection( testArea );
 		}
 	};
@@ -64,13 +178,10 @@ Aloha.ready( function() {
 	/**
 	 * Catches exceptions caused when invoking getRangeAt, without any ranges
 	 * available.
-	 * Unfortunately Aloha.getSelection().ranges is always empty, even if there
-	 * is a range object. This means that we cannot do any useful bound checks
-	 * before invoking the getRangeAt method.
 	 *
 	 * @return {Object:range}
 	 */
-	function getRange () {
+	function getSelectionRange () {
 		try {
 			return Aloha.getSelection().getRangeAt( 0 );
 		} catch ( ex ) {
@@ -103,13 +214,14 @@ Aloha.ready( function() {
 	 *							  should be applied to it.
 	 */
 	 function applySelection ( elem ) {
-		// convert html for processing
-		var html = elem.html();
-		var content = jQuery( '<div>' ).text( html ).html();
 		
 		// Display the current selection in the viewArea
-		viewArea.html( content.replace( /([\[\]\{\}])/g, '<b>$1</b>' ) );
-
+		viewArea.val( testArea.html() );
+		// convert html for processing
+		var html = jQuery( '<div>' ).text( testArea.html() ).html();
+		
+		html = elem.html();
+		
 		var startMarkers = html.match( /\{|\[|data\-start/g ),
 		    endMarkers = html.match( /\}|\]|data\-end/g ),
 			numMarkers = 0;
@@ -132,6 +244,9 @@ Aloha.ready( function() {
 			
 			selection.removeAllRanges();
 			selection.addRange( range );
+			selectionRange = range;
+			queryCommand();
+
 		} else {
 			// if numMarkers is > 2 then we have a problem, and we will remove
 			// all markers to create a "clean-sheet"

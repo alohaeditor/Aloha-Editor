@@ -478,7 +478,7 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup) {
 
 			// unbind all events
 			// TODO should only unbind the specific handlers.
-						.unbind('mousedown click dblclick focus keydown keyup');
+						.unbind('mousedown click dblclick focus keydown keypress keyup');
 
 			/* TODO remove this event, it should implemented as bind and unbind
 			// register the onSelectionChange Event with the Editable field

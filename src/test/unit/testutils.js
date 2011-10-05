@@ -313,7 +313,7 @@ define(	['./ecma5'],	function() {
 
 				var cur = node;
 				while (true) {
-					if (!cur || (cur != node && !(compareDocumentPosition(cur, node) & Node.DOCUMENT_POSITION_CONTAINS))) {
+					if (!cur || (cur != node && !(window.compareDocumentPosition(cur, node) & Node.DOCUMENT_POSITION_CONTAINS))) {
 						break;
 					}
 
@@ -322,10 +322,10 @@ define(	['./ecma5'],	function() {
 						continue;
 					}
 
-					var data = cur.data.replace(/\]/g, "");
+					var data = cur.data.replace(/[\]\}]/g, "");
 					var startIdx = data.indexOf("[");
 
-					data = cur.data.replace(/\[/g, "");
+					data = cur.data.replace(/[\[\{]/g, "");
 					var endIdx = data.indexOf("]");
 
 					cur.data = cur.data.replace(/[\[\]]/g, "");
@@ -384,25 +384,32 @@ define(	['./ecma5'],	function() {
 
 		
 		addBrackets: function (range) {
+			var marker;
 			//@{
 				// Handle the collapsed case specially, to avoid confusingly getting the
 				// markers backwards in some cases
 			if (range.endContainer.nodeType == Node.TEXT_NODE
 				|| range.endContainer.nodeType == Node.COMMENT_NODE) {
 					if (range.collapsed) {
-						range.endContainer.insertData(range.endOffset, "[]");
+						marker = '[]'
 					} else {
-						range.endContainer.insertData(range.endOffset, "]");
+						marker = ']'
 					}
+					range.endContainer.insertData(range.endOffset, marker);
 				} else {
+					if (range.collapsed) {
+						marker = '{}'
+					} else {
+						marker = '}'
+					}
 					if (range.endOffset != range.endContainer.childNodes.length
 					&& range.endContainer.childNodes[range.endOffset].nodeType == Node.TEXT_NODE) {
-						range.endContainer.childNodes[range.endOffset].insertData(0, "}");
+						range.endContainer.childNodes[range.endOffset].insertData(0, marker);
 					} else if (range.endOffset != 0
 					&& range.endContainer.childNodes[range.endOffset - 1].nodeType == Node.TEXT_NODE) {
-						range.endContainer.childNodes[range.endOffset - 1].appendData("}");
+						range.endContainer.childNodes[range.endOffset - 1].appendData( marker );
 					} else {
-						range.endContainer.insertBefore(document.createTextNode("}"),
+						range.endContainer.insertBefore(document.createTextNode( marker ),
 							range.endContainer.childNodes.length == range.endOffset
 							? null
 							: range.endContainer.childNodes[range.endOffset]);
@@ -415,7 +422,7 @@ define(	['./ecma5'],	function() {
 				|| range.startContainer.nodeType == Node.COMMENT_NODE) {
 					range.startContainer.insertData(range.startOffset, "[");
 				} else {
-					var marker = range.collapsed ? "{}" : "{";
+					marker = '{';
 					if (range.startOffset != range.startContainer.childNodes.length
 					&& range.startContainer.childNodes[range.startOffset].nodeType == Node.TEXT_NODE) {
 						range.startContainer.childNodes[range.startOffset].insertData(0, marker);
@@ -450,7 +457,6 @@ define(	['./ecma5'],	function() {
 		jQuery.each(this, function() {
 			var that = jQuery(this);
 			var result = {};
-			debugger;
 			result.nodeName = that[0].nodeName.toLowerCase();
 			fullResult.push(result);
 			if (that[0].nodeType == 3) {
