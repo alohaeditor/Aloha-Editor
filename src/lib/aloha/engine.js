@@ -7070,7 +7070,7 @@ commands.insertparagraph = {
 		}
 
 		// "Call collapse(node, offset) on the context object's Selection."
-		getSelection().collapse(node, offset);
+		Aloha.getSelection().collapse(node, offset);
 		range.setStart(node, offset);
 		range.setEnd(node, offset);
 
@@ -7127,7 +7127,7 @@ commands.insertparagraph = {
 				// "Call collapse(container, 0) on the context object's
 				// Selection."
 				// TODO: remove selection from command
-				getSelection().collapse(container, 0); 
+				Aloha.getSelection().collapse(container, 0); 
 				range.setStart(container, 0);
 				range.setEnd(container, 0);
 
@@ -7162,13 +7162,13 @@ commands.insertparagraph = {
 			var br = document.createElement("br");
 
 			// "Call insertNode(br) on the active range."
-			getActiveRange().insertNode(br);
+			range.insertNode(br);
 
 			// "Call collapse(node, offset + 1) on the context object's
 			// Selection."
-			getSelection().collapse(node, offset + 1);
-			getActiveRange().setStart(node, offset + 1);
-			getActiveRange().setEnd(node, offset + 1);
+			Aloha.getSelection().collapse(node, offset + 1);
+			range.setStart(node, offset + 1);
+			range.setEnd(node, offset + 1);
 
 			// "If br is the last descendant of container, let br be the result
 			// of calling createElement("br") on the context object, then call
@@ -7177,9 +7177,9 @@ commands.insertparagraph = {
 			// Work around browser bugs: some browsers select the
 			// newly-inserted node, not per spec.
 			if (!isDescendant(nextNode(br), container)) {
-				getActiveRange().insertNode(document.createElement("br"));
-				getSelection().collapse(node, offset + 1);
-				getActiveRange().setEnd(node, offset + 1);
+				range.insertNode(document.createElement("br"));
+				Aloha.getSelection().collapse(node, offset + 1);
+				range.setEnd(node, offset + 1);
 			}
 
 			// "Abort these steps."
@@ -7224,8 +7224,8 @@ commands.insertparagraph = {
 		// "Let new line range be a new range whose start is the same as
 		// the active range's, and whose end is (container, length of
 		// container)."
-		var newLineRange = document.createRange();
-		newLineRange.setStart(getActiveRange().startContainer, getActiveRange().startOffset);
+		var newLineRange = Aloha.createRange();
+		newLineRange.setStart(range.startContainer, range.startOffset);
 		newLineRange.setEnd(container, getNodeLength(container));
 
 		// "While new line range's start offset is zero and its start node is
@@ -7327,9 +7327,9 @@ commands.insertparagraph = {
 		}
 
 		// "Call collapse(new container, 0) on the context object's Selection."
-		getSelection().collapse(newContainer, 0);
-		getActiveRange().setStart(newContainer, 0);
-		getActiveRange().setEnd(newContainer, 0);
+		Aloha.getSelection().collapse(newContainer, 0);
+		range.setStart(newContainer, 0);
+		range.setEnd(newContainer, 0);
 	}
 };
 
@@ -7344,8 +7344,8 @@ commands.inserttext = {
 
 		// "If the active range's start node is neither editable nor an editing
 		// host, abort these steps."
-		if (!isEditable(getActiveRange().startContainer)
-		&& !isEditingHost(getActiveRange().startContainer)) {
+		if (!isEditable(range.startContainer)
+		&& !isEditingHost(range.startContainer)) {
 			return;
 		}
 
@@ -7354,7 +7354,7 @@ commands.inserttext = {
 			// "For each element el in value, take the action for the
 			// insertText command, with value equal to el."
 			for (var i = 0; i < value.length; i++) {
-				commands.inserttext.action(value[i]);
+				commands.inserttext.action( value[i], range );
 			}
 
 			// "Abort these steps."
@@ -7369,7 +7369,7 @@ commands.inserttext = {
 		// "If value is a newline (U+00A0), take the action for the
 		// insertParagraph command and abort these steps."
 		if (value == "\n") {
-			commands.insertparagraph.action();
+			commands.insertparagraph.action( '', range );
 			return;
 		}
 
@@ -7417,12 +7417,12 @@ commands.inserttext = {
 			node.insertData(offset, value);
 
 			// "Call collapse(node, offset) on the context object's Selection."
-			getSelection().collapse(node, offset);
+			Aloha.getSelection().collapse(node, offset);
 			range.setStart(node, offset);
 
 			// "Call extend(node, offset + 1) on the context object's
 			// Selection."
-			getSelection().extend(node, offset + 1);
+			Aloha.getSelection().extend(node, offset + 1);
 			range.setEnd(node, offset + 1);
 
 		// "Otherwise:"
@@ -7445,11 +7445,11 @@ commands.inserttext = {
 			range.insertNode(text);
 
 			// "Call collapse(text, 0) on the context object's Selection."
-			getSelection().collapse(text, 0);
+			Aloha.getSelection().collapse(text, 0);
 			range.setStart(text, 0);
 
 			// "Call extend(text, 1) on the context object's Selection."
-			getSelection().extend(text, 1);
+			Aloha.getSelection().extend(text, 1);
 			range.setEnd(text, 1);
 		}
 
@@ -7463,7 +7463,7 @@ commands.inserttext = {
 		canonicalizeWhitespace(range.endContainer, range.endOffset);
 
 		// "Call collapseToEnd() on the context object's Selection."
-		getSelection().collapseToEnd();
+		Aloha.getSelection().collapseToEnd();
 		range.collapse(false);
 	}
 };
