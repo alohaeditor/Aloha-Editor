@@ -576,7 +576,7 @@ var tests = {
 		{  	start: '<p style="color:blue">foo<div style="color:brown"><p style="color:green>[]bar', // very broken doesnt even run in the testbox
 			execResult: '<p style="color:blue">foo<div style="color:brown"><p style="color:green">[]bar'
 		},
-	*/
+	
 //		// Uncollapsed selection
 		{  	start: 'foo[bar]baz',
 			execResult: 'foo[]baz'
@@ -593,71 +593,71 @@ var tests = {
 		{  	start: '<p>[foo<span style=color:#aBcDeF>bar]</span>baz',
 			execResult: '<p>[]baz</p>'
 		},
-		{  	start: '<p>{foo<span style=color:#aBcDeF>bar}</span>baz',
+		{  	start: '<p>[foo<span style="color:#aBcDeF">bar]</span>baz',
 			execResult: '<p>[]baz</p>'
 		},
-		{  	start: '<p>foo<span style=color:#aBcDeF>[bar</span>baz]',
+		{  	start: '<p>foo<span style="color:#aBcDeF">[bar</span>baz]',
 			execResult: '<p>foo[]</p>'
 		},
-/*		{  	start: '<p>foo<span style=color:#aBcDeF>{bar</span>baz}',
-			execResult: '<p>foo<span style=color:#aBcDeF>{bar</span>baz}'
+		{  	start: '<p>foo<span style="color:#aBcDeF">{bar</span>baz}',
+			execResult: '<p>foo[]</p>'
 		},
-		{  	start: '<p>foo<span style=color:#aBcDeF>[bar</span><span style=color:#fEdCbA>baz]</span>quz',
-			execResult: '<p>foo<span style=color:#aBcDeF>[bar</span><span style=color:#fEdCbA>baz]</span>quz'
+		{  	start: '<p>foo<span style="color:#aBcDeF">[bar</span><span style="color:#fEdCbA">baz]</span>quz',
+			execResult: '<p>foo[]quz</p>'
 		},
 	
 		{  	start: 'foo<b>[bar]</b>baz',
-			execResult: 'foo<b>[bar]</b>baz'
+			execResult: 'foo[]baz'
 		},
 		{  	start: 'foo<b>{bar}</b>baz',
-			execResult: 'foo<b>{bar}</b>baz'
+			execResult: 'foo[]baz'
 		},
 		{  	start: 'foo{<b>bar</b>}baz',
-			execResult: 'foo{<b>bar</b>}baz'
+			execResult: 'foo[]baz'
 		},
 		{  	start: 'foo<span>[bar]</span>baz',
-			execResult: 'foo<span>[bar]</span>baz'
+			execResult: 'foo[]baz'
 		},
 		{  	start: 'foo<span>{bar}</span>baz',
-			execResult: 'foo<span>{bar}</span>baz'
+			execResult: 'foo[]baz'
 		},
 		{  	start: 'foo{<span>bar</span>}baz',
-			execResult: 'foo{<span>bar</span>}baz'
+			execResult: 'foo[]baz'
 		},
 		{  	start: '<b>foo[bar</b><i>baz]quz</i>',
-			execResult: '<b>foo[bar</b><i>baz]quz</i>'
+			execResult: '<b>foo[]</b><i>quz</i>'
 		},
 		{  	start: '<p>foo</p><p>[bar]</p><p>baz</p>',
-			execResult: '<p>foo</p><p>[bar]</p><p>baz</p>'
+			execResult: '<p>foo</p><p>{}<br></p><p>baz</p>'
 		},
 		{  	start: '<p>foo</p><p>{bar}</p><p>baz</p>',
-			execResult: '<p>foo</p><p>{bar}</p><p>baz</p>'
+			execResult: '<p>foo</p><p>{}<br></p><p>baz</p>'
 		},
 		{  	start: '<p>foo</p><p>{bar</p>}<p>baz</p>',
-			execResult: '<p>foo</p><p>{bar</p>}<p>baz</p>'
+			execResult: '<p>foo</p><p>[]baz<br></p>'
 		},
 		{  	start: '<p>foo</p>{<p>bar}</p><p>baz</p>',
-			execResult: '<p>foo</p>{<p>bar}</p><p>baz</p>'
+			execResult: '<p>foo</p><p>{}<br></p><p>baz</p>'
 		},
 		{  	start: '<p>foo</p>{<p>bar</p>}<p>baz</p>',
-			execResult: '<p>foo</p>{<p>bar</p>}<p>baz</p>'
+			execResult: '<p>foo</p><p>[]baz<br></p>'
 		},
 	
 		{  	start: '<p>foo[bar<p>baz]quz',
-			execResult: '<p>foo[bar<p>baz]quz'
+			execResult: '<p>foo[]quz</p>'
 		},
 		{  	start: '<p>foo[bar<div>baz]quz</div>',
-			execResult: '<p>foo[bar<div>baz]quz</div>'
+			execResult: '<p>foo[]quz</p>'
 		},
 		{  	start: '<p>foo[bar<h1>baz]quz</h1>',
-			execResult: '<p>foo[bar<h1>baz]quz</h1>'
+			execResult: '<p>foo[]quz</p>'
 		},
 		{  	start: '<div>foo[bar</div><p>baz]quz',
-			execResult: '<div>foo[bar</div><p>baz]quz'
+			execResult: '<div>foo[]quz</div>'
 		},
 		{  	start: '<blockquote>foo[bar</blockquote><pre>baz]quz</pre>',
-			execResult: '<blockquote>foo[bar</blockquote><pre>baz]quz</pre>'
-		},
+			execResult: '<blockquote>foo[]quz</blockquote>'
+		},*/
 	
 		{  	start: '<p><b>foo[bar</b><p>baz]quz',
 			execResult: '<p><b>foo[bar</b><p>baz]quz'
@@ -679,7 +679,7 @@ var tests = {
 			execResult: '<div><p>foo<p>[bar<p>baz]</div>'
 		},
 	
-		{  	start: 'foo[<br>]bar',
+/*		{  	start: 'foo[<br>]bar',
 			execResult: 'foo[<br>]bar'
 		},
 		{  	start: '<p>foo[</p><p>]bar</p>',
