@@ -394,7 +394,7 @@ function AlohaImagePlugin (aQuery, Plugin, FloatingMenu, i18nCore, i18n) {
 		 * Adds the insert button to the floating menu
 		 */
 		_addUIInsertButton: function(tabId) {
-			
+			var that = this;
 			this.insertImgButton = new Aloha.ui.Button({
 				'iconClass': 'aloha-button aloha-image-insert',
 				'size' : 'small',
