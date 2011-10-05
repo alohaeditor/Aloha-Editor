@@ -5309,7 +5309,7 @@ function outdentNode(node, range) {
 	// "If node is a simple indentation element, remove node, preserving its
 	// descendants.  Then abort these steps."
 	if (isSimpleIndentationElement(node)) {
-		removePreservingDescendants(node);
+		removePreservingDescendants(node, range);
 		return;
 	}
 
@@ -5399,7 +5399,7 @@ function outdentNode(node, range) {
 			var values = recordValues([].slice.call(node.childNodes));
 
 			// "Remove node, preserving its descendants."
-			removePreservingDescendants(node);
+			removePreservingDescendants(node, range);
 
 			// "Restore the values from values."
 			restoreValues(values, range);
@@ -5454,14 +5454,14 @@ function outdentNode(node, range) {
 		var followingSiblings = [].slice.call(currentAncestor.childNodes, 1 + getNodeIndex(target));
 
 		// "Indent preceding siblings."
-		indentNodes(precedingSiblings);
+		indentNodes(precedingSiblings, range);
 
 		// "Indent following siblings."
-		indentNodes(followingSiblings);
+		indentNodes(followingSiblings, range);
 	}
 
 	// "Outdent original ancestor."
-	outdentNode(originalAncestor);
+	outdentNode(originalAncestor, range);
 }
 
 
@@ -5593,7 +5593,7 @@ function toggleLists(tagName, range) {
 			// name tag name, outdent it and continue this loop from the
 			// beginning."
 			if (isHtmlElement(sublist[0], tagName)) {
-				outdentNode(sublist[0]);
+				outdentNode(sublist[0], range);
 				continue;
 			}
 
@@ -5883,21 +5883,21 @@ function justifySelection(alignment, range) {
 ///// The delete command /////
 //@{
 commands["delete"] = {
-	action: function() {
+	action: function(value, range) {
 		// "If the active range is not collapsed, delete the contents of the
 		// active range and abort these steps."
-		if (!getActiveRange().collapsed) {
-			deleteContents(getActiveRange());
+		if (!range.collapsed) {
+			deleteContents(range);
 			return;
 		}
 
 		// "Canonicalize whitespace at (active range's start node, active
 		// range's start offset)."
-		canonicalizeWhitespace(getActiveRange().startContainer, getActiveRange().startOffset);
+		canonicalizeWhitespace(range.startContainer, range.startOffset);
 
 		// "Let node and offset be the active range's start node and offset."
-		var node = getActiveRange().startContainer;
-		var offset = getActiveRange().startOffset;
+		var node = range.startContainer;
+		var offset = range.startOffset;
 
 		// "Repeat the following steps:"
 		while (true) {
@@ -5959,8 +5959,8 @@ commands["delete"] = {
 		// steps."
 		if (node.nodeType == Node.TEXT_NODE
 		&& offset != 0) {
-			getActiveRange().setStart(node, offset);
-			getActiveRange().setEnd(node, offset);
+			range.setStart(node, offset);
+			range.setEnd(node, offset);
 			deleteContents(node, offset - 1, node, offset);
 			return;
 		}
@@ -5977,8 +5977,8 @@ commands["delete"] = {
 		if (0 <= offset - 1
 		&& offset - 1 < node.childNodes.length
 		&& isHtmlElement(node.childNodes[offset - 1], ["br", "hr", "img"])) {
-			getActiveRange().setStart(node, offset);
-			getActiveRange().setEnd(node, offset);
+			range.setStart(node, offset);
+			range.setEnd(node, offset);
 			deleteContents(node, offset - 1, node, offset);
 			return;
 		}
@@ -6026,7 +6026,7 @@ commands["delete"] = {
 			}
 
 			// "Fix disallowed ancestors of node."
-			fixDisallowedAncestors(node);
+			fixDisallowedAncestors(node, range);
 
 			// "Abort these steps."
 			return;
@@ -6087,7 +6087,7 @@ commands["delete"] = {
 
 			// "Outdent each node in node list."
 			for (var i = 0; i < nodeList.length; i++) {
-				outdentNode(nodeList[i]);
+				outdentNode(nodeList[i], range);
 			}
 
 			// "Abort these steps."
@@ -6107,11 +6107,11 @@ commands["delete"] = {
 		&& isHtmlElement(startNode.childNodes[startOffset - 1], "table")) {
 			// "Call collapse(start node, start offset − 1) on the context
 			// object's Selection."
-			getActiveRange().setStart(startNode, startOffset - 1);
+			range.setStart(startNode, startOffset - 1);
 
 			// "Call extend(start node, start offset) on the context object's
 			// Selection."
-			getActiveRange().setEnd(startNode, startOffset);
+			range.setEnd(startNode, startOffset);
 
 			// "Abort these steps."
 			return;
@@ -6131,8 +6131,8 @@ commands["delete"] = {
 			)
 		)) {
 			// "Call collapse(node, offset) on the Selection."
-			getActiveRange().setStart(node, offset);
-			getActiveRange().setEnd(node, offset);
+			range.setStart(node, offset);
+			range.setEnd(node, offset);
 
 			// "Delete the contents of the range with start (start node, start
 			// offset − 1) and end (start node, start offset)."
@@ -6709,7 +6709,7 @@ commands.indent = {
 			}
 
 			// "Indent sublist."
-			indentNodes(sublist);
+			indentNodes(sublist, range);
 		}
 	}
 };
@@ -7707,7 +7707,7 @@ commands.outdent = {
 			while (nodeList.length
 			&& (isHtmlElement(nodeList[0], ["OL", "UL"])
 			|| !isHtmlElement(nodeList[0].parentNode, ["OL", "UL"]))) {
-				outdentNode(nodeList.shift());
+				outdentNode(nodeList.shift(), range);
 			}
 
 			// "If node list is empty, break from these substeps."

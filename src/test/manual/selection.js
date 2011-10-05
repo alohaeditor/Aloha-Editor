@@ -32,7 +32,8 @@ Aloha.ready( function() {
 	command.change( queryCommand );
 
 	fillArea.keypress( function( e ) {
-		if ( e.metaKey && e.which == 13 ) {
+		// linux will use key char code 10 if ctrl+enter is pressed
+		if ( e.metaKey && (e.which === 13 || e.which === 10)) {
 			applyMarkupOnNextSelection = true;
 		}
 	});
