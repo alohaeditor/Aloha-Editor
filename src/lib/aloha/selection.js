@@ -1731,17 +1731,21 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 
 	}); // Selection
 	
-	function getSelectionStartNode ( node, condition ) {
-		if ( !node || typeof condition !== 'function' || condition( node ) ) {
+	function getSelectionStartNode ( node ) {
+		if ( !node ) {
+			return null;
+		}
+		
+		if ( isSelectionStopNode( node ) ) {
 			return node;
 		}
 		
 		if ( node.childNodes.length ) {
-			return getSelectionStartNode( node.firstChild, condition );
+			return getSelectionStartNode( node.firstChild );
 		}
 		
 		if ( node.nextSibling ) {
-			return getSelectionStartNode( node.nextSibling, condition );
+			return getSelectionStartNode( node.nextSibling );
 		}
 		
 		return null;
@@ -2012,9 +2016,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 			
 		}
 		
-		newStartContainer = getSelectionStartNode(
-			newStartContainer, isSelectionStopNode
-		);
+		newStartContainer = getSelectionStartNode( newStartContainer );
 		
 		if ( newStartContainer && !isVoidNode( newEndContainer ) ) {
 			newStartOffset = 0;
@@ -2022,6 +2024,11 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 			newStartContainer = range.startContainer;
 		}
 		
+		// rule:
+		// The end position cannot preceed the start position.
+		// If we detect this, then we collapse the selection round the end
+		// position
+		//
 		// Bits		Number	Meaning
 		// ------   ------  -------
 		// 000000	0		Elements are identical.
@@ -2033,9 +2040,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		// 100000	32		For private use by the browser.
 		var posbits = compareDocumentPosition( newStartContainer, newEndContainer );
 		
-		if ( !!( posbits & 2 ) ) {
-			// newEndContainer preceeds newStartContainer. Therefore collapse
-			// the selecton
+		if ( posbits & 2 ) {
 			range.startOffset = newEndOffset;
 			range.startContainer = newEndContainer;
 			range.endOffset = newEndOffset;
