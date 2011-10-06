@@ -18,9 +18,9 @@ function(Aloha, jQuery, ContentHandlerManager) {
 	var GenericContentHandler = ContentHandlerManager.createHandler({
 		/**
 		 * Handle the pasting. Remove all unwanted stuff.
-		 * @param jqPasteDiv
+		 * @param content
 		 */
-		handleContent: function(content) {
+		handleContent: function( content ) {
 			if ( typeof content === 'string' ){
 				content = jQuery( '<div>' + content + '</div>' );
 			} else if ( content instanceof jQuery ) {
