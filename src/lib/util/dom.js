@@ -724,7 +724,7 @@ var Dom = Class.extend({
 						} else {
 							prevNode = false;
 						}
-					} else {					
+					} else {
 						// now we check whether the selection starts or ends in the mother node of this
 						if (rangeObject.startContainer === this.parentNode && startOffset > index) {
 							// there will be one less object, so reduce the startOffset by one
@@ -790,7 +790,7 @@ var Dom = Class.extend({
 
 						// set the flag for range modification
 						modifiedRange = true;
-						
+
 					} else if (rangeObject.endContainer === prevNode.parentNode
 							&& rangeObject.endOffset === that.getIndexInParent(prevNode) + 1) {
 						// selection ends right between the previous and current text nodes (which will be merged)
@@ -832,7 +832,7 @@ var Dom = Class.extend({
 					// set the flag for range modification
 					modifiedRange = true;
 				}
-				
+
 				// remove this text node
 				jQuery(this).remove();
 
