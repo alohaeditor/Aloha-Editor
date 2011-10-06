@@ -1732,7 +1732,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 	}); // Selection
 	
 	function getSelectionStartNode ( node ) {
-		if ( !node || isVoidNode( node ) || GENTICS.Utils.Dom.isEditingHost( node ) ) {
+		if ( !node || isVoidNode( node ) ) {
 			return null;
 		}
 		
@@ -1741,18 +1741,23 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		}
 		
 		if ( node.childNodes.length ) {
-			return getSelectionStartNode( node.firstChild ) || node;
+			if ( isVoidNode( node.firstChild ) ) {
+				return node;
+			}
+			
+			return getSelectionStartNode( node.firstChild );
 		}
 		
-		if ( node.nextSibling ) {
-			return getSelectionStartNode( node.nextSibling ) || node;
+		if ( node.nextSibling &&
+			 !GENTICS.Utils.Dom.isEditingHost( node ) ) {
+			return getSelectionStartNode( node.nextSibling );
 		}
 		
 		return null;
 	};
 	
 	function getSelectionEndNode ( node ) {
-		if ( !node || isVoidNode( node ) || GENTICS.Utils.Dom.isEditingHost( node ) ) {
+		if ( !node || isVoidNode( node ) ) {
 			return null;
 		}
 		
@@ -1778,8 +1783,9 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 			}
 		}
 		
-		if ( node.previousSibling ) {
-			return getSelectionEndNode( node.previousSibling ); // || node
+		if ( node.previousSibling &&
+			 !GENTICS.Utils.Dom.isEditingHost( node ) ) {
+			return getSelectionEndNode( node.previousSibling );
 		}
 		
 		return null;
@@ -1808,7 +1814,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 	// node. We do this by travers foward over the tree until we find a sibling
 	// of the given node or one of the given node's ancestors
 	function moveForwards ( node ) {
-		if ( !node || isVoidNode( node ) || GENTICS.Utils.Dom.isEditingHost( node ) ) {
+		if ( !node || isVoidNode( node ) ) {
 			return null;
 		}
 		
@@ -1834,7 +1840,8 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 	};
 	
 	/**
-	 * We treat void elements all the same
+	 * We treat all void elements the same.
+	 * Should we have any exceptions?
 	 * @param {DOMNode} node
 	 * @return {Boolean}
 	 */
@@ -1896,7 +1903,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 				);
 				newEndOffset = newEndContainer.length;
 			}
-		} else if ( endOffset == endContainer.childNodes.length ) {
+		} else if ( isPositionAtNodeEnd ( endContainer, endOffset ) ) {
 			// The endOffset is at the end of a node on which we cannot stop
 			// at. We will therefore search for an appropriate node nested
 			// inside this node at which to stop at
@@ -1912,11 +1919,6 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 			];
 		} else if ( moveBackwards( endContainer ) ) {
 			newEndContainer = moveBackwards( endContainer );
-		} else if ( endOffset == 0 &&
-					endContainer != startContainer &&
-					endContainer.parentNode.previousSibling ) {
-			// Corrects 'foo<span>{bar</span>}baz' to 'foo<span>[bar]</span>baz'
-			newEndContainer = endContainer.parentNode.previousSibling;
 		}
 		
 		newEndContainer = getSelectionEndNode( newEndContainer );
@@ -1991,6 +1993,12 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 			// ie:
 			// 		Ensures that 'foo<span>bar[</span>]baz' is corrected to
 			//		'foo<span>bar[]</span>baz'
+			if ( newEndOffset == 0 ) {
+				newStartContainer = getSelectionStartNode( newEndContainer );
+				if ( newStartContainer ) {
+					newEndContainer = newStartContainer;
+				}
+			}
 		} else if ( isPositionAtNodeEnd( startContainer, startOffset ) &&
 					startContainer.firstChild == newEndContainer ) {
 			range.startContainer = newEndContainer;
@@ -2090,6 +2098,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 				
 			}
 		} else {
+			//debugger;
 			//newStartContainer = getSelectionStartNode( newStartContainer );
 			//if ( newStartContainer ) {
 			//	newEndContainer = newStartContainer;
