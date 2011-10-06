@@ -1825,10 +1825,10 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		if ( node ) {
 			if ( node.previousSibling ) {
 				return node.previousSibling
-			} else if ( !GENTICS.Utils.Dom.isEditingHost( node ) ) {
+			} else if ( !GENTICS.Utils.Dom.isEditingHost( node.parentNode ) ) {
 				return moveBackwards( node.parentNode );
 			} else {
-				debugger;
+				return null;
 			}
 		} else {
 			return null;
@@ -1842,7 +1842,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		if ( node ) {
 			if ( node.nextSibling ) {
 				return node.nextSibling;
-			} else if ( !GENTICS.Utils.Dom.isEditingHost( node ) ) {
+			} else if ( !GENTICS.Utils.Dom.isEditingHost( node.parentNode ) ) {
 				return moveForwards( node.parentNode );
 			} else {
 				debugger;
@@ -1883,8 +1883,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 				);
 				newEndOffset = newEndContainer.length;
 			}
-		} else if ( //endOffset &&
-					endOffset == endContainer.childNodes.length ) {
+		} else if ( endOffset == endContainer.childNodes.length ) {
 			// The endOffset is at the end of a node on which we cannot stop
 			// at. We will therefore search for an appropriate node nested
 			// inside this node at which to stop at
@@ -1907,14 +1906,10 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 			newEndContainer = endContainer.previousSibling;
 		} else if ( endOffset == 0 &&
 					endContainer != startContainer &&
-					endContainer.parentNode.previousSibling
-					// !isVoidNode( endContainer.previousSibling )
-					) {
+					endContainer.parentNode.previousSibling ) {
 			// Corrects 'foo<span>{bar</span>}baz' to 'foo<span>[bar]</span>baz'
 			newEndContainer = endContainer.parentNode.previousSibling;
 		}
-		
-		// debugger;
 		
 		newEndContainer = getSelectionEndNode( newEndContainer );
 		
