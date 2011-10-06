@@ -1,7 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>org.alohaeditor</groupId>
+	<groupId>com.gentics</groupId>
 	<artifactId>alohaeditor</artifactId>
 	<version>0.20-SNAPSHOT</version>
 	<packaging>pom</packaging>
@@ -11,7 +11,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<ALOHABUILDCONF>aloha</ALOHABUILDCONF>
+		<ALOHABUILDCONF>gentics</ALOHABUILDCONF>
 		<ALOHADEPLOYMENTURL>NA</ALOHADEPLOYMENTURL>
 		<ALOHADEPLOYMENTPATH>NA</ALOHADEPLOYMENTPATH>
 	</properties>
@@ -52,6 +52,7 @@
                                 <artifactId>exec-maven-plugin</artifactId>
                                 <version>1.1</version>
                                 <executions>
+					<!-- Deployment disabled for gentics fork
                                         <execution>
                                                 <phase>deploy</phase>
                                                 <id>deploy</id>
@@ -66,6 +67,7 @@
                 	                       </arguments>
                         	              </configuration>
                                         </execution>
+					-->
 			                <execution>
                                                 <phase>compile</phase>
                                                 <id>invoke build</id>
@@ -87,16 +89,18 @@
 
         <distributionManagement>
                 <repository>
-                        <id>archiva.com.gentics.public</id>
-                        <name>Gentics Public Repository</name>
-                        <url>http://archiva.gentics.com:8081/archiva/repository/com.gentics.public</url>
+                        <id>archiva.com.gentics.internal</id>
+                        <name>Gentics Internal Repository</name>
+                        <url>http://archiva.gentics.com:8081/archiva/repository/com.gentics.internal</url>
                 </repository>
                 <snapshotRepository>
-                        <id>archiva.com.gentics.public</id>
-                        <name>Gentics Public Repository</name>
-                        <url>http://archiva.gentics.com:8081/archiva/repository/com.gentics.public</url>
+                        <id>archiva.com.gentics.internal</id>
+                        <name>Gentics Internal Repository</name>
+                        <url>http://archiva.gentics.com:8081/archiva/repository/com.gentics.internal</url>
                 </snapshotRepository>
         </distributionManagement>
+
+
 
 </project>
 
