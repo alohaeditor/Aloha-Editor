@@ -107,7 +107,7 @@ function(Aloha, Plugin, jQuery, Commands, console) {
 	// Public Methods
 	return Plugin.create( 'paste', {
 		settings: {},
-		dependencies: [ 'contenthandler' ],
+//		dependencies: [ 'contenthandler' ],
 
 		/**
 		 * Initialize the PastePlugin
