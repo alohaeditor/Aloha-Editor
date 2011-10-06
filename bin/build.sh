@@ -1,63 +1,80 @@
-#!/bin/sh
+#!/bin/bash
+# $Id: build, v 1.0 2011/10/3 15:50:00 jotschi Exp $
+# 2011 - written by Johannes Schüth <j.schueth@gentics.com>
 
-echo
-PWD=`pwd`
-SCRIPT=`cd \`dirname "$0"\`; pwd`
+
+BASEDIR="$( cd "$( dirname "$0" )" && pwd )"
+
+function displayUsage() { 
+     echo "Please add a build target configuration in $SCRIPT/../build/"
+        echo "Example:"
+        echo "        $SCRIPT/../build/aloha-custom"
+        echo "Usage:"
+        echo "        $0 aloha-custom"
+        exit 1
+}
+
+function cleanup() {
+
+        # check if out dir exists
+        if [ -d "$1" ]; then
+		echo -e "\n * Removing $1"
+                  rm -rf $1
+  		echo "Done."
+        fi
+
+        echo -e "\n * Creating $1 directory"
+          mkdir -p "$1"
+        echo "Done."
+
+}
+
 if [ "$1" != "" ]; then
 	TARGET="$1"
-	TMP="$SCRIPT/../target/tmp/aloha"
-	OUT="$SCRIPT/../target/out/aloha"
+	CONFDIR="$BASEDIR/../build/$TARGET"
 	
-	#check if out dir exists
-	if [ ! -d "$SCRIPT/../target/out" ]; then
-		mkdir -p "$SCRIPT/../target/out"
-	fi
-	
-	if [ -d "$SCRIPT/../build/$TARGET" ]; then
-		# Clean existing dirs
-		if [ -d "$TMP" ]; then
-			echo "Cleaning existing temporary dir tmp/aloha"
-			rm -R "$TMP"
-		fi
-		if [ -d "$OUT" ]; then
-			echo "Cleaning existing output dir out/aloha"
-			rm -R "$OUT"
-		fi
-	else
-		echo "Build configuration not found. $SCRIPT/../build/$TARGET"
-		exit;
+	# check if build configuration can be found
+	if [ ! -d "$CONFDIR" ]; then
+	   echo "Build configuration not found. $CONFDIR. Aborting"
+	   exit 10
 	fi
 else
-	echo "Please add a build target configuration in $SCRIPT/../build/"
-	echo "Example:"
-	echo "        $SCRIPT/../build/aloha-custom"
-	echo "Usage:"
-	echo "        $0 aloha-custom"
-	exit;
+	displayUsage
 fi
 
-echo "Build core JS files"
-cd "$SCRIPT/../build/$TARGET"
-r.js -o build.js
 
-echo "Combine css files for core"
-cd "$TMP/css"
-r.js -o cssIn=aloha.css out=aloha.css
+TMP="$BASEDIR/../target/tmp/"
+OUT="$BASEDIR/../target/out/"
 
-echo "Merge require and aloha-bootstrap"
-cd "$SCRIPT"
-./update-aloha.js.sh "target/tmp/aloha"
+cleanup $OUT
+cleanup $TMP
 
-echo "Coping built files to out"
-echo "Coping target/tmp/aloha target/out/aloha"
-cp -r "$TMP" "$OUT"
+echo -e "\n * Build core JS files"
+  cd "$CONFDIR"
+  r.js -o build.js
+echo "Done."
 
-echo "Adding build information"
-echo "build-date: `date`" >> $OUT/build.txt
-echo "build-target: $TARGET" >> $OUT/build.txt
+echo -e "\n * Combine css files for core"
+  cd "$TMP/aloha/css"
+  r.js -o cssIn=aloha.css out=aloha.css
+echo "Done."
+
+echo -e "\n * Merge require and aloha-bootstrap"
+  $BASEDIR/update-aloha.js.sh 
+echo "Done."
+
+echo -e "\n * Coping $TMP/aloha to $OUT"
+  cp -r "$TMP/aloha" "$OUT"
+echo "Done."
+ 
+echo -e "\n * Building guide"
+  $BASEDIR/build-guide.sh
+echo "Done."
+
+echo -e "\n * Adding build information"
+  echo "build-date: `date`" >> $OUT/aloha/build.txt
+  echo "build-target: $TARGET" >> $OUT/aloha/build.txt
+echo "Done."
 
 
-## Change back from where we started
-cd "$PWD"
-
-echo "Built Aloha Editor for $TARGET"
+echo -e "\n\nAll Done. Built Aloha Editor for $TARGET"

@@ -259,7 +259,7 @@ function AlohaImagePlugin (aQuery, Plugin, FloatingMenu, i18nCore, i18n) {
 		 * Plugin initialization method
 		 */
 		init: function() {
-			
+
 			var that = this;
 			var	imagePluginUrl = Aloha.getPluginUrl('image');
 			
