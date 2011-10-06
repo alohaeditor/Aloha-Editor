@@ -228,14 +228,6 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cel
 			that.initSidebar(Aloha.Sidebar.right.show());  
 		});
 	}
-    
-	/*
-    if(this.settings.summaryinsidebar) {
-	    jQuery('body').bind('aloha', function () { 
-	    	that.initSidebar(Aloha.Sidebars.right); 
-	    });
-	}
-	*/
 };
 
 //namespace prefix for this plugin
@@ -269,7 +261,7 @@ TablePlugin.initSidebar = function(sidebar) {
 	sidebar.addPanel({
             
             id         : nsClass('sidebar-panel'),
-            title     : 'Summary',
+            title     : i18n.t('table.sidebar.title'),
             content     : '',
             expanded : true,
             activeOn : 'table',
@@ -277,14 +269,12 @@ TablePlugin.initSidebar = function(sidebar) {
             onInit     : function () {
             	 var that = this,
 	                 content = this.setContent(
-	                		 '<label class="'+nsClass('label')+'" for="'+nsClass('textarea')+'" style="margin-left:5px;">'+i18n.t('table.label.target')+'</label>' +
-	                		 '<textarea id="' + nsClass('textarea') + '" class="' + nsClass('textarea') + '" style="width:90%;margin-left:5px;margin-right:5px"/>').content;
+	                		 '<label class="' + nsClass('label') + '" for="' + nsClass('textarea') + '" style="margin-left:5px;">' + i18n.t('table.label.target') + '</label>' +
+	                		 '<textarea id="' + nsClass('textarea') + '" class="' + nsClass('textarea') + '" style="width:90%;height:100px;margin-left:5px;margin-right:5px"/>').content;
 	             
             	 jQuery(nsSel('textarea')).live('keyup', function() { 
  					jQuery(that.effective).attr('summary', jQuery(nsSel('textarea')).val());
- 					
  					var waiDiv = jQuery('div[class*="wai"]', 'table#' + jQuery(that.effective).attr('id'));
- 					
  					waiDiv.removeClass(pl.get('waiGreen'));
  					waiDiv.removeClass(pl.get('waiRed'));
  				    
@@ -299,7 +289,6 @@ TablePlugin.initSidebar = function(sidebar) {
             onActivate: function (effective) {
             	var that = this;
 				that.effective = effective;
-//				that.content.find(nsSel('textarea')).val(effective.attr('id'));
             }
             
         });
