@@ -38,7 +38,7 @@ echo "Done."
 
 echo -e "\n * Coping output files to $TARGETDIR"
   cp -ra output $TARGETDIR
-  cp -ra assets $TARGETDIR
+  cp -ra assets/* $TARGETDIR
 echo "Done."
 
 echo -e "\n * Coping README to out"
