@@ -1206,9 +1206,9 @@ function AlohaImagePlugin (aQuery, Plugin, FloatingMenu, i18nCore, i18n) {
 			// 2. start a request to get the image
 			// 3a. the image is ok change the src
 			// 3b. the image is not availbable show an error.
-			// this.imgSrcField.getTargetObject(), (the img tag)
-			// this.imgSrcField.getQueryValue(), (the query value in the inputfield)
-			// this.imgSrcField.getItem() (optinal a selected resource item)
+			 this.imageObj.attr('src', this.imgSrcField.getQueryValue() ); // (the img tag)
+//			 jQuery(img).attr('src', this.imgSrcField.getQueryValue() ); // (the query value in the inputfield)
+//			 this.imgSrcField.getItem(); // (optinal a selected resource item)
 			// TODO additionally implement an srcChange Handler to let implementer
 			// customize
 		},

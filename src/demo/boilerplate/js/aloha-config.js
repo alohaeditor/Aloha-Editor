@@ -10,7 +10,7 @@
 		ribbon: false,
 		locale: 'en',
 		floatingmenu: {
-			width: 430
+			width: 630
 		},
 		repositories: {
 			linklist: {
@@ -100,15 +100,26 @@
 
 			},
 			image: {
-				config : { 
-					'img': { 
-						'max_width': '50px',
-						'max_height': '50px' 
-					}
-				},
-			  	editables : {
-					'#top-text'	: {}
-			  	}
+				config :{
+				'fixedAspectRatio': false,
+				'maxWidth': 600,
+				'minWidth': 20,
+				'maxHeight': 600,
+				'minHeight': 20,
+				'globalselector': '.global',
+				'ui': {
+					'oneTab': true
+				}
+			},
+				'fixedAspectRatio': false,
+				'maxWidth': 600,
+				'minWidth': 20,
+				'maxHeight': 600,
+				'minHeight': 20,
+				'globalselector': '.global',
+				'ui': {
+					'oneTab': true
+				}
 			},
 			cite: {
 				referenceContainer: '#references'
