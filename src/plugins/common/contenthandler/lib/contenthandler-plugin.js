@@ -31,7 +31,7 @@ define([
 		init: function () {
 			var that = this,
 				handler, cc, i,
-				contentHandler = [ 'word', 'generic', 'oembed' ];
+				contentHandler = [ 'word', 'generic', 'oembed', 'sanitize' ];
 
 			// Register available content handler
 			for ( i = 0; i < contentHandler.length; i++ ) {
