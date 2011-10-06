@@ -9,6 +9,11 @@ BASEDIR="`dirname "$SCRIPT"`"
 DURL=$1
 DPATH=$2
 
+if [ "$DURL" == "NA" ] || [ "$DURL" == "SKIP" ] ; then
+  echo "No valid deployment url specified. I'll silently omitt deployment via ssh"
+  exit 0 
+fi
+
 echo -e "\n * Removing old archives from $DPATH"
   ssh $DURL "cd $DPATH ; rm -rf *"
 echo "Done."
