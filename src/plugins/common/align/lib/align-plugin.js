@@ -335,9 +335,6 @@ function(Aloha, Plugin, FloatingMenu, i18n, i18nCore, jQuery) {
 		            jQuery(this).css('text-align', '');
 		        }, Aloha.activeEditable.obj);
 
-		        // reenable the editable plugin
-		    	jQuery(Aloha.activeEditable.obj[0]).click();
-
 		        // select the (possibly modified) range
 		        range.select();
 		    }

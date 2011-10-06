@@ -418,9 +418,7 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, console) {
 			if ( foundMarkup ) {
 				// remove the link
 				GENTICS.Utils.Dom.removeFromDOM(foundMarkup, range, true);
-				if (!Aloha.activeEditable) {
-					console.log('Editable was not active. This was not anticipated.');
-				}
+
 				// select the (possibly modified) range
 				range.select();
 			}

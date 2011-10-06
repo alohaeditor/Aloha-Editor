@@ -19,7 +19,7 @@ Use it like a supersonic textarea. You can edit any DOM element with this supers
 but you need to care about configuration and storage.
 
 <shell>
-cd aloha-0.10
+cd aloha
 cp -r aloha-minified path_to_your_webapp/javascripts/aloha
 </shell>
 
