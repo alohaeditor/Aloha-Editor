@@ -11,6 +11,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+                <maven.build.timestamp.format>yyyyMMdd-HHmmss</maven.build.timestamp.format>
 		<ALOHABUILDCONF>aloha</ALOHABUILDCONF>
 		<ALOHADEPLOYMENTURL>NA</ALOHADEPLOYMENTURL>
 		<ALOHADEPLOYMENTPATH>NA</ALOHADEPLOYMENTPATH>
@@ -63,6 +64,7 @@
                                         	<arguments>
 	                                           <argument>${ALOHADEPLOYMENTURL}</argument>
         	                                   <argument>${ALOHADEPLOYMENTPATH}</argument>
+                                                   <argument>${maven.build.timestamp}</argument>
                 	                       </arguments>
                         	              </configuration>
                                         </execution>
