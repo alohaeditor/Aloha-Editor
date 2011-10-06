@@ -477,7 +477,7 @@ function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 		 */
 		refreshSelection: function () {
 			if (Aloha.activeEditable) {
-				Aloha.activeEditable.obj[0].focus();
+				jQuery(Aloha.activeEditable.obj[0]).click();
 			}
 			Aloha.Selection.rangeObject.update();
 			Aloha.Selection.rangeObject.select();

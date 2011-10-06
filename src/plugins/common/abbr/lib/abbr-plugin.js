@@ -274,8 +274,7 @@ function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 		    if ( foundMarkup ) {
 		        // remove the abbr
 		        GENTICS.Utils.Dom.removeFromDOM(foundMarkup, range, true);
-		        // set focus back to editable
-		        Aloha.activeEditable.obj[0].focus();
+
 		        // select the (possibly modified) range
 		        range.select();
 		    }

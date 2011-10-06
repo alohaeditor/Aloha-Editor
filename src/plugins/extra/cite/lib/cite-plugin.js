@@ -340,9 +340,9 @@ define([
 					{uid:uid, classes:classes}
 				));
 			
-			// now focus back to the active element
+			// now re enable the editable
 			if (Aloha.activeEditable) {
-				Aloha.activeEditable.obj[0].focus();
+				jQuery(Aloha.activeEditable.obj[0]).click();
 			}
 			
 			Aloha.Selection.changeMarkupOnSelection(markup);
@@ -364,9 +364,9 @@ define([
 			var rangeObject = Aloha.Selection.rangeObject;
 			var foundMarkup;
 
-			// now focus back to the active element
+			// now re enable the editable
 			if (Aloha.activeEditable) {
-				Aloha.activeEditable.obj[0].focus();
+				jQuery(Aloha.activeEditable.obj[0]).click();
 			}
 
 			// check whether the markup is found in the range (at the start of the range)

@@ -11,13 +11,15 @@ function(Aloha, Plugin, jQuery, Commands, console) {
 	"use strict";
 
 	// Private Vars and Methods
-	var
-		GENTICS = window.GENTICS,
+	var	GENTICS = window.GENTICS,
 		$window = jQuery(window),
-		$document = jQuery(document),
-		$pasteDiv = jQuery('<div style="position:absolute; top:-100000px; left:-100000px"></div>')
-			.contentEditable(true),
-		pasteHandlers = [],
+		$document = jQuery(document);
+		
+	// We need to hide the editable div. We'll use clip:rect for chrome and IE, and width/height for FF
+	var	$pasteDiv = jQuery('<div id="pasteContainer" style="position:absolute; clip:rect(0px, 0px, 0px, 0px);  width: 1px; height: 1px;"></div>')
+			.contentEditable(true);
+	
+	var	pasteHandlers = [],
 		pasteRange = null,
 		pasteEditable = null,
 		scrollTop = 0,
@@ -41,6 +43,10 @@ function(Aloha, Plugin, jQuery, Commands, console) {
 		scrollLeft = $window.scrollLeft();
 		height = $document.height();
 
+		// Reposition paste container to avoid scrolling
+		jQuery('#pasteContainer').css('top',scrollTop);
+		jQuery('#pasteContainer').css('left',scrollLeft-200);
+		
 		// empty the pasteDiv
 		$pasteDiv.text('');
 
@@ -74,7 +80,7 @@ function(Aloha, Plugin, jQuery, Commands, console) {
 			// activate and focus the editable
 			// @todo test in IE
 			//pasteEditable.activate();
-			pasteEditable.obj.focus();
+			jQuery(pasteEditable.obj).click();
 
 			pasteDivContents = $pasteDiv.html();
 
@@ -84,12 +90,6 @@ function(Aloha, Plugin, jQuery, Commands, console) {
 				Aloha.Log.error('Common.Paste', 'Command "insertHTML" not available. Enable the plugin "common/commands".');
 			}
 
-			// finally scroll back to the original scroll position, plus eventually difference in height
-//			if (scrollTop !== false && scrollLeft !== false && this.height !== false) {
-				heightDiff = jQuery(document).height() - height;
-				$window.scrollTop(scrollTop + heightDiff);
-				$window.scrollLeft(scrollLeft);
-//			}
 		}
 		
 		// unset temporary values
