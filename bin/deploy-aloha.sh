@@ -5,7 +5,11 @@
 BASEDIR="$( cd "$( dirname "$0" )" && pwd )"
 
 # Deployment url
+# eg: somebody@www.somewhere.com
 DURL=$1
+
+# Deployment path
+# eg: /var/www/builds/development
 DPATH=$2
 
 if [ "$DURL" == "NA" ] || [ "$DURL" == "SKIP" ] ; then
@@ -13,16 +17,28 @@ if [ "$DURL" == "NA" ] || [ "$DURL" == "SKIP" ] ; then
   exit 0 
 fi
 
-echo -e "\n * Removing old archives from $DPATH"
-  ssh $DURL "cd $DPATH ; rm -rf *"
+SOURCEFILENAME=`basename target/alohaeditor*.zip`
+
+FILENAME=`echo $SOURCEFILENAME | sed 's/-aloha-package//'`
+FOLDERNAME=${FILENAME%.*}
+
+echo -e "\n * Removing old archive from $DPATH"
+  ssh $DURL "cd $DPATH ; rm -rf $FILENAME ; rm -rf $FOLDERNAME"
+echo "Done."
+
+echo -e "\n * Removing old builds"
+  ssh $DURL "find "$DPATH/" -mtime +90"
+#-exec rm -f {} \;
 echo "Done."
 
 echo -e "\n * Transfering aloha archive to to target server."
-  scp $BASEDIR/../target/*.zip $DURL:$DPATH
+  scp $BASEDIR/../target/$SOURCEFILENAME $DURL:$DPATH/$FILENAME
+  ssh $DURL "cd $DPATH ; unlink latest.zip ; ln -s $FILENAME latest.zip"
 echo "Done."
 
 echo -e "\n * Extracting aloha archive at target location $DPATH"
-  ssh $DURL "cd $DPATH ; unzip *.zip"
+  ssh $DURL "cd $DPATH ; unzip -o -d $DPATH/$FOLDERNAME $FILENAME"
+  ssh $DURL "cd $DPATH ; unlink latest ; ln -s $FOLDERNAME latest"
 echo "Done."
 
 
