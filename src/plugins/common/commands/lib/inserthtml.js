@@ -6,8 +6,8 @@
 */
 
 define(
-['aloha/core', 'aloha/jquery', 'aloha/command', 'aloha/selection', 'util/dom'],
-function(Aloha, jQuery, command, selection, dom) {
+['aloha/core', 'aloha/jquery', 'aloha/command', 'aloha/selection', 'util/dom', 'aloha/contenthandlermanager'],
+function(Aloha, jQuery, command, selection, dom, ContentHandlerManager) {
 	"use strict";
 
 	// Exported commands
@@ -47,7 +47,13 @@ function(Aloha, jQuery, command, selection, dom) {
 					}
 				}
 			};
-			
+
+			// apply content handler to cleanup inserted data
+			if (typeof Aloha.settings.contentHandler.insertHtml === 'undefined') {
+				Aloha.settings.contentHandler.insertHtml = Aloha.defaults.contentHandler.insertHtml;
+			}
+			value = ContentHandlerManager.handleContent( value, { contenthandler: Aloha.settings.contentHandler.insertHtml } );
+
 			// allowed values are string or jQuery objects
 			// add value to a container div
 			if ( typeof value === 'string' ){
@@ -57,7 +63,7 @@ function(Aloha, jQuery, command, selection, dom) {
 			} else {
 				throw "INVALID_VALUE_ERR";
 			}
-
+			
 			// get contents of container div
 			domNodes = value.contents();
 			
@@ -83,7 +89,7 @@ function(Aloha, jQuery, command, selection, dom) {
 				range.select();
 			}
 
-	        dom.doCleanup({merge:true, removeempty: true}, range, cac);
+			dom.doCleanup({merge:true, removeempty: true}, range, cac);
 			//In some cases selecting the range does not work properly 
 			//e.g. when pasting from word in an h2 after the first character in IE
 			//in these cases we should fail gracefully.
