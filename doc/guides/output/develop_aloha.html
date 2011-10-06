@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Aloha Guides: Documentation guidelines</title>
+  <title>Aloha Guides: Using Aloha Editor</title>
 
   <!-- guides styles -->
   <link rel="stylesheet" type="text/css" href="stylesheets/style.css" />
@@ -81,78 +81,39 @@
     <div class="wrapper">
       <div id="mainCol">
           <div class="headerSection">
-            <h2>Documentation guidelines</h2>
+            <h2>Using Aloha Editor</h2>
 <p>After reading this guide, you will be able to:</p>
 <ul>
-	<li>Write and modify guides</li>
-	<li>Annote your code for the <span class="caps">API</span> documentation.</li>
-	<li>Generate <span class="caps">API</span> documentation using jsdoc.</li>
+	<li>Prepare your development envireonment</li>
+	<li>build your custom Aloha Editor</li>
 </ul>
 
           </div>
-        <h3 id="write-and-modify-guides">1 Write and modify guides</h3>
-<p>Guides are written using a ruby gem called <code>guides</code>. You need the following tools to get started:</p>
+        <h3 id="clone-from-github">1 Clone from Github</h3>
+<div class="note"><p>You should know how to work with git before continuing.</p></div>
+<p>First of all you have to get your copy of the Aloha Editor. Just clone our <a href="http://github.com/alohaeditor/Aloha-Editor">Github repository</a>:</p>
+<div class="warning"><p>fork Aloha Editor before doing anything ;-)</p></div>
+
+<div class="code_container">
+<pre class="brush: plain; gutter: false; toolbar: false">
+
+git clone git@github.com:YOURNAME/Aloha-Editor.git alohaeditor
+cd alohaeditor
+git checkout dev
+git submodule init
+git submodule update
+git submodule foreach --recursive git submodule update --init
+</pre></div><h3 id="changelog">2 Changelog</h3>
 <ul>
-	<li>Ruby and Rubygems (If you have the <code>gem</code> command available, chances are good that everything works flawlessly)</li>
-</ul>
-<div class="code_container">
-<pre class="brush: plain; gutter: false; toolbar: false">
-
-gem install guides
-</pre></div><p>The guides are stored in the directory <code>doc/guides</code> in the Aloha Editor Distribution.</p>
-<p>In order to preview the guides, you can use the just installed <code>guides</code> command:</p>
-<div class="code_container">
-<pre class="brush: plain; gutter: false; toolbar: false">
-
-cd doc/guides
-guides preview
-# now browse to http://localhost:9292
-</pre></div><p>The guides are stored in <tt>source/*.textile</tt> files. They should be pretty self-explanatory, just open them up and browse around. All changes you do to the guide source files can be previewed immediately using your browser.</p>
-<div class="note"><p>If you create new files or change <code>guides.yml</code>, make sure to delete the <ins>staging</ins> folder and restart the guides server.</p></div>
-<h3 id="annotating-code-for-api-documentation">2 Annotating code for <span class="caps">API</span> Documentation</h3>
-<p>We use JSDoc 2.4.0 for rendering JavaScript <span class="caps">API</span> Documentation. Please see <code>src/plugins/common/block/lib</code> for well-documented code.</p>
-<div class="note"><p>We are waiting for JSDoc 3 that will offer support for RequireJS modules, for now we use the <a href="https://github.com/sproutcore/docs">SproutCore Documentation Generator</a> that understands most of our annotations.</p></div>
-<h3 id="rendering-api-documentation">3 Rendering <span class="caps">API</span> documentation</h3>
-<p>We use JSDoc syntax for the <span class="caps">API</span> documentation. This documentation is meant for programmers and implementors as a reference of the code. General explanations and high-level overviews should go into the guides.</p>
-<p>The actual documentation is rendered using the &#8220;SproutCore Documentation Generator&#8221;, in short <code>sc-docs</code>.</p>
-<div class="note"><p><code>SC-Docs</code> is not as easy to set up as the <code>guides</code> package. We will investigate how we can make installation easier.</p></div>
-<h4 id="installation-of-sc-docs">3.1 Installation of sc-docs</h4>
-<p>Requirements:</p>
-<ul>
-	<li>Ruby 1.9 and Rubygems</li>
-	<li>node.js (for a special jsdoc-toolkit that is bundled with sc-docs)</li>
-</ul>
-<div class="code_container">
-<pre class="brush: plain; gutter: false; toolbar: false">
-
-gem install sc-docs
-</pre></div><h4 id="generating-the-documentation">3.2 Generating the documentation</h4>
-<p>A <strong>preview</strong> with an embedded server can be used to preview the <span class="caps">API</span> documentation. Run this in the Aloha root directory:</p>
-<div class="code_container">
-<pre class="brush: plain; gutter: false; toolbar: false">
-
-sc-docs preview src/plugins/common/block/lib -v -t docs.sproutcore.com
-</pre></div><p>This will render the <span class="caps">API</span> documentation of the block plugin (from <tt>src/plugins/common/block/lib</tt>).</p>
-<p>When <strong>generating</strong> the documentation, an additional output directory <tt>output_dir</tt> must be specified:</p>
-<div class="code_container">
-<pre class="brush: plain; gutter: false; toolbar: false">
-
-sc-docs generate src/plugins/common/block/lib -v -t docs.sproutcore.com -o output_dir
-</pre></div><h3 id="changelog">4 Changelog</h3>
-<ul>
-	<li>July 6, 2011: Initial version by <a href="credits.html#skurfuerst">Sebastian Kurfürst</a> and <a href="credits.html#hlubek">Christopher Hlubek</a></li>
+	<li>July 3, 2011: Initial version by <a href="credits.html#skurfuerst">Sebastian Kurfürst</a> and <a href="credits.html#hlubek">Christopher Hlubek</a></li>
 </ul>
 
       </div>
         <div id="subCol">
           <h3 class="chapter"><img src="images/strobe/chapters.png" alt="" />Chapters</h3>
           <ol class="chapters">
-            <li><a href="#write-and-modify-guides"><p>Write and modify guides</p>
-</a></li><li><a href="#annotating-code-for-api-documentation"><p>Annotating code for <span class="caps">API</span> Documentation</p>
-</a></li><li><a href="#rendering-api-documentation"><p>Rendering <span class="caps">API</span> documentation</p>
-</a><ul><li><a href="#installation-of-sc-docs"><p>Installation of sc-docs</p>
-</a></li> <li><a href="#generating-the-documentation"><p>Generating the documentation</p>
-</a></li></ul></li><li><a href="#changelog"><p>Changelog</p>
+            <li><a href="#clone-from-github"><p>Clone from Github</p>
+</a></li><li><a href="#changelog"><p>Changelog</p>
 </a></li>
           </ol>
         </div>
