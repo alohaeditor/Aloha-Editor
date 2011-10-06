@@ -91,7 +91,7 @@ function(Aloha, jQuery, command, selection, dom, console) {
 			try {
 				range.select();
 			} catch (e) {
-				console.warn('error.',e);
+				console.warn('Error:',e);
 			}
 
 		}
