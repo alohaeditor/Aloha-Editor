@@ -5919,10 +5919,12 @@ commands["delete"] = {
 		var node = range.startContainer;
 		var offset = range.startOffset;
 		var isBr = false;
+		var isHr = false;
 
 		// "Repeat the following steps:"
 		while (true) {
 			isBr = isHtmlElement(node.childNodes[offset - 1], "br");
+			isHr = isHtmlElement(node.childNodes[offset - 1], "hr");
 			
 			// "If offset is zero and node's previousSibling is an editable
 			// invisible node, remove node's previousSibling from its parent."
@@ -5937,10 +5939,10 @@ commands["delete"] = {
 			} else if (0 <= offset - 1
 			&& offset - 1 < node.childNodes.length
 			&& isEditable(node.childNodes[offset - 1])
-			&& (isInvisible(node.childNodes[offset - 1]) || isBr)) {
+			&& (isInvisible(node.childNodes[offset - 1]) || isBr || isHr )) {
 				node.removeChild(node.childNodes[offset - 1]);
 				offset--;
-				if (isBr) {
+				if (isBr || isHr) {
 					break;
 				}
 
