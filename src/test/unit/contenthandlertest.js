@@ -37,21 +37,17 @@ function( TestUtils ) {
 		
 		for ( var i = 0; i < tests.tests.length; i++ ) {
 			var 
-				check = tests.tests[i],
-				desc = '',
-				value = '',
-				name = '';
+				check = tests.tests[i];
 			
-			/* // IE8 problem -- start is null or no object
-				// + or JSON is undefined in jquery.store.js
-				// + crashes IE sometimes
-				// + works sometimes with out crash / json error message
-			var 
-				check = tests.tests[i],
+			if (!check) {
+				continue;
+			}
+			
+			var
 				desc = converter.text(check.start).html() + ' -> ' + converter.text(check.expected).html(),
 				value = ( typeof check.value !== 'undefined') ? check.value : tests.defaultValue,
 				name = check.name || '"' + converter.text(value).html() + '": ' + desc;
-			*/
+			
 			
 			module( 'Commmand ' + (i+1) + ' ' + tests.defaultCommand, {
 				setup: function() {
