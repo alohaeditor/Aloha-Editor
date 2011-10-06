@@ -1742,7 +1742,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		
 		if ( node.childNodes.length ) {
 			if ( isVoidNode( node.firstChild ) ) {
-				return node;
+				return node; // FIXME: Should be null
 			}
 			
 			return getSelectionStartNode( node.firstChild );
@@ -1765,22 +1765,12 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 			return node;
 		}
 		
-		// The reason we do this: <a>foo<b></b></a>
-		// In the above case, we don't want <b>, even though it is the
-		// lastChild. We don't want <b> because it has no childNodes in which
-		// we can use as an end node. We want the "foo" textnode instead. We
-		// will therefore traverse backwards in <a>'s childNodes, looking for
-		// the earliest appropriate child that we can stop at
 		if ( node.childNodes.length ) {
-			var l = node.childNodes.length;
-			
-			while ( l ) {
-				var end = getSelectionEndNode( node.childNodes[ --l ] );
-				
-				if ( end ) {
-					return end;
-				}
+			if ( isVoidNode( node.lastChild ) ) {
+				return null;
 			}
+			
+			return getSelectionEndNode( node.lastChild );
 		}
 		
 		if ( node.previousSibling &&
@@ -1922,14 +1912,14 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		newEndContainer = getSelectionEndNode( newEndContainer );
 		
 		if ( !newEndContainer ) {
-			newEndContainer = range.endContainer;
-		} else if ( isVoidNode( newEndContainer ) && endOffset ) {
+			newEndContainer = endContainer;
+		} /* else if ( isVoidNode( newEndContainer ) && endOffset ) {
 			debugger;
 			// newEndContainer is the last node in its parent and a void node
 			// therefore jump to the very next possible element
 			newEndContainer = moveForwards( newEndContainer );
 			newEndOffset = 0;
-		} else if ( isVoidNode( newEndContainer ) ) {
+		} */ else if ( isVoidNode( newEndContainer ) ) {
 			newEndContainer = getSelectionEndNode(
 				moveBackwards( newEndContainer )
 			);
@@ -1978,8 +1968,6 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 			
 			// TODO: !isVoidNode && !isFlowNode
 		}
-		
-		//debugger;
 		
 		if ( startContainer == newEndContainer ) {
 			// logic:
@@ -2182,6 +2170,13 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 			}
 			
 			newEndContainer = newStartContainer;
+		}
+		
+		if ( !isSelectionStopNode( newEndContainer ) &&
+			 isPositionAtNodeEnd( newEndContainer, newEndOffset + 1 ) &&
+			 !isVoidNode( newEndContainer.childNodes[ newEndOffset ].previousSibling ) ) {
+			newEndContainer = newEndContainer.childNodes[ newEndOffset ];
+			newEndOffset = 0;
 		}
 		
 		if ( newEndContainer ) {
