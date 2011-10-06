@@ -16,8 +16,8 @@ var tests = {
 		{  	start: '<span><br>{}</span>',
 			execResult: '<span>{}<br></span>'
 		},
-		{  	start: '<span data-start="1" data-end="1"><br><br></span>',
-			execResult: '<span data-start="0" data-end="0"><br></span>'
+		{  	start: '<span><br>{}<br></span>',
+			execResult: '<span>{}<br></span>'
 		},
 		{  	start: '<p>[]foo</p>',
 			execResult: '<p>[]foo</p>'
@@ -590,9 +590,13 @@ var tests = {
 		{  	start: '<p>foo{<span style=color:#aBcDeF>bar</span>}baz',
 			execResult: '<p>foo[]baz</p>'
 		},
-		{  	start: '<p>[foo<span style=color:#aBcDeF>bar]</span>baz',
+//		{  	start: '<p>[foo<span style=color:#aBcDeF>bar]</span>baz',
+//			execResult: '<p>[]baz</p>'
+//		},
+		{  	start: '<p>[foo<span style="color:#aBcDeF">bar]</span>baz</p>',
 			execResult: '<p>[]baz</p>'
 		},
+		
 		{  	start: '<p>[foo<span style="color:#aBcDeF">bar]</span>baz',
 			execResult: '<p>[]baz</p>'
 		},
@@ -760,31 +764,31 @@ var tests = {
 		},
 
 // no table tests for us as our tables are augmented with divs	
-/*		{  	start: '<table><tbody><tr><th>foo<th>[bar]<th>baz<tr><td>quz<td>qoz<td>qiz</table>',
-			execResult: '<table><tbody><tr><th>foo<th>[bar]<th>baz<tr><td>quz<td>qoz<td>qiz</table>'
-		},
-		{  	start: '<table><tbody><tr><th>foo<th>ba[r<th>b]az<tr><td>quz<td>qoz<td>qiz</table>',
-			execResult: '<table><tbody><tr><th>foo<th>ba[r<th>b]az<tr><td>quz<td>qoz<td>qiz</table>'
-		},
-		{  	start: '<table><tbody><tr><th>fo[o<th>bar<th>b]az<tr><td>quz<td>qoz<td>qiz</table>',
-			execResult: '<table><tbody><tr><th>fo[o<th>bar<th>b]az<tr><td>quz<td>qoz<td>qiz</table>'
-		},
-		{  	start: '<table><tbody><tr><th>foo<th>bar<th>ba[z<tr><td>q]uz<td>qoz<td>qiz</table>',
-			execResult: '<table><tbody><tr><th>foo<th>bar<th>ba[z<tr><td>q]uz<td>qoz<td>qiz</table>'
-		},
-		{  	start: '<table><tbody><tr><th>[foo<th>bar<th>baz]<tr><td>quz<td>qoz<td>qiz</table>',
-			execResult: '<table><tbody><tr><th>[foo<th>bar<th>baz]<tr><td>quz<td>qoz<td>qiz</table>'
-		},
-		{  	start: '<table><tbody><tr><th>[foo<th>bar<th>baz<tr><td>quz<td>qoz<td>qiz]</table>',
-			execResult: '<table><tbody><tr><th>[foo<th>bar<th>baz<tr><td>quz<td>qoz<td>qiz]</table>'
-		},
-		{  	start: '{<table><tbody><tr><th>foo<th>bar<th>baz<tr><td>quz<td>qoz<td>qiz</table>}',
-			execResult: '{<table><tbody><tr><th>foo<th>bar<th>baz<tr><td>quz<td>qoz<td>qiz</table>}'
-		},
-		{  	start: '<table><tbody><tr><td>foo<td>ba[r<tr><td>baz<td>quz<tr><td>q]oz<td>qiz</table>',
-			execResult: '<table><tbody><tr><td>foo<td>ba[r<tr><td>baz<td>quz<tr><td>q]oz<td>qiz</table>'
-		},
-*/
+//		{  	start: '<table><tbody><tr><th>foo<th>[bar]<th>baz<tr><td>quz<td>qoz<td>qiz</table>',
+//			execResult: '<table><tbody><tr><th>foo<th>[bar]<th>baz<tr><td>quz<td>qoz<td>qiz</table>'
+//		},
+//		{  	start: '<table><tbody><tr><th>foo<th>ba[r<th>b]az<tr><td>quz<td>qoz<td>qiz</table>',
+//			execResult: '<table><tbody><tr><th>foo<th>ba[r<th>b]az<tr><td>quz<td>qoz<td>qiz</table>'
+//		},
+//		{  	start: '<table><tbody><tr><th>fo[o<th>bar<th>b]az<tr><td>quz<td>qoz<td>qiz</table>',
+//			execResult: '<table><tbody><tr><th>fo[o<th>bar<th>b]az<tr><td>quz<td>qoz<td>qiz</table>'
+//		},
+//		{  	start: '<table><tbody><tr><th>foo<th>bar<th>ba[z<tr><td>q]uz<td>qoz<td>qiz</table>',
+//			execResult: '<table><tbody><tr><th>foo<th>bar<th>ba[z<tr><td>q]uz<td>qoz<td>qiz</table>'
+//		},
+//		{  	start: '<table><tbody><tr><th>[foo<th>bar<th>baz]<tr><td>quz<td>qoz<td>qiz</table>',
+//			execResult: '<table><tbody><tr><th>[foo<th>bar<th>baz]<tr><td>quz<td>qoz<td>qiz</table>'
+//		},
+//		{  	start: '<table><tbody><tr><th>[foo<th>bar<th>baz<tr><td>quz<td>qoz<td>qiz]</table>',
+//			execResult: '<table><tbody><tr><th>[foo<th>bar<th>baz<tr><td>quz<td>qoz<td>qiz]</table>'
+//		},
+//		{  	start: '{<table><tbody><tr><th>foo<th>bar<th>baz<tr><td>quz<td>qoz<td>qiz</table>}',
+//			execResult: '{<table><tbody><tr><th>foo<th>bar<th>baz<tr><td>quz<td>qoz<td>qiz</table>}'
+//		},
+//		{  	start: '<table><tbody><tr><td>foo<td>ba[r<tr><td>baz<td>quz<tr><td>q]oz<td>qiz</table>',
+//			execResult: '<table><tbody><tr><td>foo<td>ba[r<tr><td>baz<td>quz<tr><td>q]oz<td>qiz</table>'
+//		},
+
 		{  	start: '<p>fo[o<table><tr><td>b]ar</table><p>baz',
 			execResult: '<p>fo[]</p><table><tbody><tr><td>ar</td></tr></tbody></table><p>baz</p>'
 		},
@@ -828,22 +832,22 @@ var tests = {
 			execResult: '<ol><li>foo[]bar</li></ol>'
 		},
 // no definition list tests for us at this point of aloha
-/*		{  	start: 'foo[<dl><dt>]bar<dd>baz</dl>',
-			execResult: 'foo[<dl><dt>]bar<dd>baz</dl>'
-		},
-		{  	start: 'foo[<dl><dd>]bar</dl>',
-			execResult: 'foo[<dl><dd>]bar</dl>'
-		},
-		{  	start: '<dl><dt>foo[<dd>]bar</dl>',
-			execResult: '<dl><dt>foo[<dd>]bar</dl>'
-		},
-		{  	start: '<dl><dt>foo[<dt>]bar<dd>baz</dl>',
-			execResult: '<dl><dt>foo[<dt>]bar<dd>baz</dl>'
-		},
-		{  	start: '<dl><dt>foo<dd>bar[<dd>]baz</dl>',
-			execResult: '<dl><dt>foo<dd>bar[<dd>]baz</dl>'
-		},
-*/	
+//		{  	start: 'foo[<dl><dt>]bar<dd>baz</dl>',
+//			execResult: 'foo[<dl><dt>]bar<dd>baz</dl>'
+//		},
+//		{  	start: 'foo[<dl><dd>]bar</dl>',
+//			execResult: 'foo[<dl><dd>]bar</dl>'
+//		},
+//		{  	start: '<dl><dt>foo[<dd>]bar</dl>',
+//			execResult: '<dl><dt>foo[<dd>]bar</dl>'
+//		},
+//		{  	start: '<dl><dt>foo[<dt>]bar<dd>baz</dl>',
+//			execResult: '<dl><dt>foo[<dt>]bar<dd>baz</dl>'
+//		},
+//		{  	start: '<dl><dt>foo<dd>bar[<dd>]baz</dl>',
+//			execResult: '<dl><dt>foo<dd>bar[<dd>]baz</dl>'
+//		},
+	
 		{  	start: '<b>foo [&nbsp;</b>bar]',
 			execResult: '<b>foo&nbsp;[]</b>'
 		},
