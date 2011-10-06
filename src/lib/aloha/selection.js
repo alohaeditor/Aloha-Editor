@@ -1853,8 +1853,12 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 	};
 	
 	/**
-	 * This method corrects the native ranges from the browser
-	 * to standardizes Aloha Editor ranges.  
+	 * Normalizes the native ranges from the browser to standardizes Aloha-
+	 * Editor ranges. FYI: Aloha-Editor ranges conform, for the most part with
+	 * Webkit, and Internet Explorer ranges.
+	 *
+	 * @param {Object:Range} range
+	 * @return {Object:Range} normalized range
 	 */
 	function correctRange ( range ) {
 		//return range;
@@ -1953,19 +1957,24 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		//		[ '<i></i>{<span><b><b>}bar</b></b></span>baz', '<i></i><span><b><b>[]bar</b></b></span>baz' ]
 		//		[ '<span>{<span><b><b>}bar</b></b></span>baz</span>', '<span><span><b><b>[]bar</b></b></span>baz</span>' ]
 		//
-		// FIXME: We need to handle the above
 		if ( newEndOffset == 0 ) {
 			var prev = getSelectionEndNode( moveBackwards( newEndContainer ) );
 			
 			if ( prev ) {
 				newEndContainer = prev;
 				newEndOffset = prev.length;
+			} else {
+				var next = getSelectionStartNode( newEndContainer );
+				if ( next ) {
+					newEndContainer = next;
+					newEndOffset = 0;
+				}
 			}
 			
 			// TODO: !isVoidNode && !isFlowNode
 		}
 		
-		//debugger;
+		// debugger;
 		
 		if ( startContainer == newEndContainer ) {
 			// Ensures that 'foo<span>bar[</span>]baz' is corrected to
@@ -2099,6 +2108,14 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 				}
 				
 			}
+		} else {
+			//debugger;
+			
+			//newStartContainer = getSelectionStartNode( newStartContainer );
+			//if ( newStartContainer ) {
+			//	newEndContainer = newStartContainer;
+			//	newEndOffset = newStartOffset = 0;
+			//}
 		}
 		
 		// 'foo<span>{}<br></span>baz', 'foo[]<span><br></span>baz'
