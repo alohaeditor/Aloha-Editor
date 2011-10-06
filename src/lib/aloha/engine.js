@@ -5918,9 +5918,12 @@ commands["delete"] = {
 		// "Let node and offset be the active range's start node and offset."
 		var node = range.startContainer;
 		var offset = range.startOffset;
+		var isBr = false;
 
 		// "Repeat the following steps:"
 		while (true) {
+			isBr = isHtmlElement(node.childNodes[offset - 1], "br");
+			
 			// "If offset is zero and node's previousSibling is an editable
 			// invisible node, remove node's previousSibling from its parent."
 			if (offset == 0
@@ -5934,9 +5937,12 @@ commands["delete"] = {
 			} else if (0 <= offset - 1
 			&& offset - 1 < node.childNodes.length
 			&& isEditable(node.childNodes[offset - 1])
-			&& (isInvisible(node.childNodes[offset - 1]) || isHtmlElement(node.childNodes[offset - 1], "br"))) {
+			&& (isInvisible(node.childNodes[offset - 1]) || isBr)) {
 				node.removeChild(node.childNodes[offset - 1]);
 				offset--;
+				if (isBr) {
+					break;
+				}
 
 			// "Otherwise, if offset is zero and node is an inline node, or if
 			// node is an invisible node, set offset to the index of node, then
