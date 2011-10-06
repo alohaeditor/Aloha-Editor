@@ -223,6 +223,87 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore) {
         tr[i].deactivate();
       }
     });
+	if(this.settings.summaryinsidebar) {
+		Aloha.ready(function () { 
+			that.initSidebar(Aloha.Sidebar.right.show());  
+		});
+	}
+    
+	/*
+    if(this.settings.summaryinsidebar) {
+	    jQuery('body').bind('aloha', function () { 
+	    	that.initSidebar(Aloha.Sidebars.right); 
+	    });
+	}
+	*/
+};
+
+//namespace prefix for this plugin
+var ns = 'aloha-table';
+
+function nsSel () {
+    var strBldr = [], prx = ns;
+    jQuery.each(arguments, function () { strBldr.push('.' + (this == '' ? prx : prx + '-' + this)); });
+    return strBldr.join(' ').trim();
+};
+
+//Creates string with this component's namepsace prefixed the each classname
+function nsClass () {
+    var strBldr = [], prx = ns;
+    jQuery.each(arguments, function () { strBldr.push(this == '' ? prx : prx + '-' + this); });
+    return strBldr.join(' ').trim();
+};
+
+TablePlugin.processH = function(h) {
+	var that = this;
+	jQuery(h).attr('id',that.sanitize(jQuery(h).text()));
+};
+		
+TablePlugin.sanitize = function(str) {
+	return (str.replace(/[^a-z0-9]+/gi,'_'));
+};
+
+TablePlugin.initSidebar = function(sidebar) {
+	var pl = this;
+	pl.sidebar = sidebar;
+	sidebar.addPanel({
+            
+            id         : nsClass('sidebar-panel'),
+            title     : 'Summary',
+            content     : '',
+            expanded : true,
+            activeOn : 'table',
+            
+            onInit     : function () {
+            	 var that = this,
+	                 content = this.setContent(
+	                		 '<label class="'+nsClass('label')+'" for="'+nsClass('textarea')+'" style="margin-left:5px;">'+i18n.t('table.label.target')+'</label>' +
+	                		 '<textarea id="' + nsClass('textarea') + '" class="' + nsClass('textarea') + '" style="width:90%;margin-left:5px;margin-right:5px"/>').content;
+	             
+            	 jQuery(nsSel('textarea')).live('keyup', function() { 
+ 					jQuery(that.effective).attr('summary', jQuery(nsSel('textarea')).val());
+ 					
+ 					var waiDiv = jQuery('div[class*="wai"]', 'table#' + jQuery(that.effective).attr('id'));
+ 					
+ 					waiDiv.removeClass(pl.get('waiGreen'));
+ 					waiDiv.removeClass(pl.get('waiRed'));
+ 				    
+ 					if (jQuery(nsSel('textarea')).val().trim() != '') {
+ 						waiDiv.addClass(pl.get('waiGreen'));
+				    } else {
+				    	waiDiv.addClass(pl.get('waiRed'));
+				    }
+ 				});
+            },
+            
+            onActivate: function (effective) {
+            	var that = this;
+				that.effective = effective;
+//				that.content.find(nsSel('textarea')).val(effective.attr('id'));
+            }
+            
+        });
+	sidebar.show().open();
 };
 
   /**
@@ -863,14 +944,14 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore) {
 		this.summary.addListener('keyup', function(obj, event) {
 			that.activeTable.checkWai();
 		});
-
-		FloatingMenu.addButton(
-			this.name + '.cell',
-			this.summary,
-			i18n.t('floatingmenu.tab.table'),
-			1
-		);
-
+		if(!this.settings.summaryinsidebar) {
+			FloatingMenu.addButton(
+				this.name + '.cell',
+				this.summary,
+				i18n.t('floatingmenu.tab.table'),
+				1
+			);
+		}
 	};
 
 	/**
