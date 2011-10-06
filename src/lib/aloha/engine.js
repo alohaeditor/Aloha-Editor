@@ -5934,7 +5934,7 @@ commands["delete"] = {
 			} else if (0 <= offset - 1
 			&& offset - 1 < node.childNodes.length
 			&& isEditable(node.childNodes[offset - 1])
-			&& isInvisible(node.childNodes[offset - 1])) {
+			&& (isInvisible(node.childNodes[offset - 1]) || isHtmlElement(node.childNodes[offset - 1], "br"))) {
 				node.removeChild(node.childNodes[offset - 1]);
 				offset--;
 
