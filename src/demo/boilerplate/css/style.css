@@ -186,7 +186,7 @@ h6,
 }
 #content ul { 
 	padding-left: 1.15em;
-		list-style-type: circle;
+	list-style-type: circle;
 }
 
 #whole-site {
@@ -255,6 +255,7 @@ h6,
 	filter:alpha(opacity=90);
 	-moz-opacity:.90;
 	opacity:.90;
+	list-style: none;
 }
 #navigation li {
 	margin: 0 1em 0 0;
