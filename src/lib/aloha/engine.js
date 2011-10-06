@@ -576,6 +576,9 @@ function myExecCommand(command, showUi, value, range) {
 		// argument."
 		commands[command].action(value, range);
 
+		// always fix the range after the command is complete
+		setActiveRange(range);
+		
 		// "Return true."
 		return true;
 	}})(command, showUi, value));
@@ -3101,9 +3104,6 @@ commands.bold = {
 		} else {
 			setSelectionValue("bold", "bold", range);
 		}
-		
-		setActiveRange( range);
-		
 	}, 
 	inlineCommandActivatedValues: ["bold", "600", "700", "800", "900"],
 	relevantCssProperty: "fontWeight",
@@ -5961,7 +5961,11 @@ commands["delete"] = {
 		&& offset != 0) {
 			range.setStart(node, offset);
 			range.setEnd(node, offset);
-			deleteContents(node, offset - 1, node, offset);
+			// fix range start container offset according to old code
+			// so we can still pass our range and have it modified, but
+			// also conform with the previous implementation
+			range.startOffset -= 1;
+			deleteContents(range);
 			return;
 		}
 
