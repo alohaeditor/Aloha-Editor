@@ -1,0 +1,22 @@
+h2. Advanced Aloha Editor configuration
+
+After reading this guide, you will be able to:
+
+* Understand what Advanced Aloha configuration is available
+* Use the ...
+
+endprologue.
+
+WARNING: This guide is currently work-in-progress.
+
+h3. Intro
+
+
+h3. What can you do
+
+
+h4. Smart Content Change
+
+h4. Content Handler
+
+h4. XY
