@@ -5,8 +5,9 @@
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
 
-define(['aloha', 'aloha/plugin', 'aloha/jquery', 'aloha/floatingmenu', 'i18n!link/nls/i18n', 'i18n!aloha/nls/i18n', 'css!link/css/link.css'],
-function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
+define(['aloha', 'aloha/plugin', 'aloha/jquery', 'aloha/floatingmenu', 'i18n!link/nls/i18n', 'i18n!aloha/nls/i18n', 'aloha/console',
+        'css!link/css/link.css'],
+function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, console) {
 	"use strict";
 
 	var
@@ -417,8 +418,9 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 			if ( foundMarkup ) {
 				// remove the link
 				GENTICS.Utils.Dom.removeFromDOM(foundMarkup, range, true);
-				// set focus back to editable
-				Aloha.activeEditable.obj[0].focus();
+				if (!Aloha.activeEditable) {
+					console.log('Editable was not active. This was not anticipated.');
+				}
 				// select the (possibly modified) range
 				range.select();
 			}
