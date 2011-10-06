@@ -30,6 +30,9 @@ index:
     - title: "Developing and building Aloha Editor"
       url: develop_aloha
       text: "Learn how to develop or make a custom build of Aloha Editor."
+    - title: "Configuring Aloha Editor"
+      url: configure_aloha
+      text: "Learn how to configure Aloha Editor."
     - title: "Aloha dependency management with requireJS"
       url: require
       text: "In this guide, we will explain how dependencies are managed with Aloha Editor."
