@@ -2,8 +2,8 @@
 # $Id: build, v 1.0 2011/10/3 15:50:00 jotschi Exp $
 # 2011 - written by Johannes Schüth <j.schueth@gentics.com>
 
-SCRIPT="`readlink -f $0`"
-BASEDIR="`dirname "$SCRIPT"`"
+
+BASEDIR="$( cd "$( dirname "$0" )" && pwd )"
 
 TMP="$BASEDIR/../target/tmp/aloha"
 OUT="$BASEDIR/../target/out/aloha"
