@@ -1830,9 +1830,10 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 	};
 	
 	var voidNodes = {
-		BR  : true,
-		HR  : true,
-		IMG : true
+		BR    : true,
+		HR    : true,
+		IMG   : true,
+		INPUT : true
 	};
 	
 	/**

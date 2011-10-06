@@ -229,7 +229,7 @@ function( TestUtils ) {
              *   source, track, wbr are not covered by tests
              * 
              */
-            voidElements = [ /* 'hr', 'img', */ 'input' ],
+            voidElements = [ 'hr' /* , 'img', 'input' */ ],
             /*
              * All phrasing elements http://dev.w3.org/html5/markup/common-models.html#common.elem.phrasing
              * 
@@ -294,11 +294,11 @@ function( TestUtils ) {
         };
         
         tests = tests.concat(
-            // specialTests,
+            specialTests,
             
             voidTests, // <br>
             
-            // phrasingTests,
+            phrasingTests,
             
             // flowTests, // <p>
             
@@ -312,13 +312,14 @@ function( TestUtils ) {
         for ( var i = 0; i < voidElements.length; i++ ) {
             // ie hack :/
             if ( !tests[i] ) {  continue; }
-            tests = tests.concat( convertTests ( /br/g, voidElements[i], voidTests ) );
+			tests = tests.concat( convertTests ( /br/g, voidElements[i], voidTests ) );
+			//tests = convertTests ( /br/g, voidElements[i], voidTests );
         }       
         // full phrasing tests
         for ( var i = 0; i < phrasingElements.length; i++ ) {
             // ie hack :/
             if ( !tests[i] ) {  continue; }
-            //tests = tests.concat( convertTests ( /span/g, phrasingElements[i], phrasingTests ) );
+            tests = tests.concat( convertTests ( /span/g, phrasingElements[i], phrasingTests ) );
         }
         for ( var i = 0; i < phrasingElements.length; i++ ) {
             // ie hack :/
@@ -327,7 +328,7 @@ function( TestUtils ) {
             if ( phrasingElements[i] == 'a' ) {
                 continue;
             }
-            //tests = tests.concat( convertTests ( /span/g, phrasingElements[i], nestedPhrasingTests ) );
+           tests = tests.concat( convertTests ( /span/g, phrasingElements[i], nestedPhrasingTests ) );
         }
         // full flow tests
         for ( var i = 0; i < flowElements.length; i++ ) {
