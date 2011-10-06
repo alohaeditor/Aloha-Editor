@@ -14,11 +14,11 @@ define([
 	'aloha/plugin',
 	'aloha/jquery',
 	'aloha/contenthandlermanager',
-	'contenthandler/genericcontenthandler',
 	'contenthandler/wordcontenthandler',
+	'contenthandler/genericcontenthandler',
 	'contenthandler/oembedcontenthandler',
 	'contenthandler/sanitizecontenthandler'
-], function( Aloha, Plugin, jQuery, ContentHandlerManager, GenericContentHandler, WordContentHandler, OembedContentHandler, SanitizeContentHandler ) {
+], function( Aloha, Plugin, jQuery, ContentHandlerManager, WordContentHandler, GenericContentHandler, OembedContentHandler, SanitizeContentHandler ) {
 	"use strict";
 
 	/**
@@ -31,15 +31,15 @@ define([
 		init: function () {
 			var that = this,
 				handler, cc, i,
-				contentHandler = [ 'generic', 'word', 'oembed', 'sanitize' ];
+				contentHandler = [ 'word', 'generic', 'oembed', 'sanitize' ];
 
-			// Register configured content handler
+			// Register available content handler
 			for ( i = 0; i < contentHandler.length; i++ ) {
 				handler = contentHandler[ i ];
 				cc = handler.charAt(0).toUpperCase() + handler.slice(1);
 				ContentHandlerManager.register( handler, eval(cc + 'ContentHandler') );
 			}
-		},
+		}
 	});
 
 	return ContentHandlerPlugin;

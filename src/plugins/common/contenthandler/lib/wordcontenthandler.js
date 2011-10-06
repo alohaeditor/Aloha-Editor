@@ -41,6 +41,7 @@ function( Aloha, jQuery, ContentHandlerManager ) {
 				// get the element style
 				var style = jQuery(this).attr('style'),
 					clazz;
+
 				if (style) {
 					// if 'mso' is found somewhere in the style, we found word content
 					if (style.toLowerCase().indexOf('mso') >= 0) {

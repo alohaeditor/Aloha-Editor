@@ -29,7 +29,7 @@ define([
 	 */
 	var BlockPlugin = Plugin.create( 'block', {
 		settings: {},
-		dependencies: [ 'contenthandler' ],
+//		dependencies: [ 'contenthandler' ],
 
 		init: function () {
 			var that = this;

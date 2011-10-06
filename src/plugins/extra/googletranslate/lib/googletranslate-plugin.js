@@ -7,46 +7,42 @@
 /**
  * register the plugin with unique name
  */
- 
-define([
-	'aloha',
-	'aloha/plugin',
-	'aloha/floatingmenu'
-],
-function AlohaImagePlugin ( Aloha, Plugin, FloatingMenu ) {
 
-	var 
-		jQuery = Aloha.jQuery;
+define([
+    'aloha',
+	'aloha/plugin',
+	'aloha/floatingmenu',
+], function CiteClosure (Aloha, Plugin, FloatingMenu ) {
+	'use strict';
+
+	var jQuery = Aloha.jQuery;
 	
-	
-	/**
-	 * Initialize the plugin
-	 */
+
 	return Plugin.create('googletranslate', {
 		
 		/**
 		 * Configure the available languages to translate to. A complete list of supported languages can be found here:
 		 * http://code.google.com/apis/language/translate/v2/using_rest.html
 		 */
-		translateLangs: [ 'en', 'de', 'fr' ],
+		translateLangs: [ 'en', 'de', 'fr', 'it' ],
 		
 		/**
 		 * Google translate API key
 		 */
 		apiKey: "AIzaSyBgsTE6JQ5wsgERpi6m2xBY-9pCn2I5zcA",
 		
+		/**
+		 * Initialize the plugin
+		 */
 		init: function () {
 			var that = this;
-		
-			Aloha.require(['css!googletranslate/css/googletranslate.css']);
 			
+			Aloha.require( ['css!googletranslate/css/googletranslate.css']);
+		
 			// use configured api key
 			if (this.settings.apiKey) {
 				this.apiKey = this.settings.apiKey;
 			}
-		
-			// import our styles
-			jQuery("head").append('<link rel="stylesheet" href="../plugins/googletranslate/src/googletranslate.css" />');
 		
 			// create buttons for all translation langs
 			for (var i=0; i<this.translateLangs.length; i++) {
@@ -132,7 +128,9 @@ function AlohaImagePlugin ( Aloha, Plugin, FloatingMenu ) {
 		applyTranslation: function (translations, tree, lang) {
 			var key = 0;
 			for (var i=0; i<tree.length; i++) {
-				c = tree[i];
+
+				var c = tree[i];
+
 				if (c.selection != "none") {
 					if (c.selection == "full") {
 						this.replaceText(c, translations[key].translatedText, lang);

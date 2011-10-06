@@ -78,7 +78,7 @@ function( jQuery, Plugin, FloatingMenu, i18n, i18nCore ) {
 					foundMarkup = that.findLangMarkup( rangeObject );
 					if ( foundMarkup ) {
 						that.addMarkupToSelectionButton.hide();
-						FloatingMenu.setScope(that.getUID('wai-lang'));
+						FloatingMenu.setScope('wai-lang');
 						that.langField.setTargetObject(foundMarkup, 'lang');
 					} else {
 						that.langField.setTargetObject(null);
@@ -114,7 +114,7 @@ function( jQuery, Plugin, FloatingMenu, i18n, i18nCore ) {
 			);
 	
 			// Add the new scope for the wai languages plugin tab
-			FloatingMenu.createScope(this.getUID('wai-lang'), 'Aloha.continuoustext'); //'Aloha.continuoustext');
+			FloatingMenu.createScope('wai-lang', 'Aloha.continuoustext'); //'Aloha.continuoustext');
 	
 			this.langField = new Aloha.ui.AttributeField({
 				'width':320,
@@ -124,7 +124,7 @@ function( jQuery, Plugin, FloatingMenu, i18n, i18nCore ) {
 			this.langField.setObjectTypeFilter(this.objectTypeFilter);
 			// add the input field for links
 			FloatingMenu.addButton(
-				this.getUID('wai-lang'),
+				'wai-lang',
 				this.langField,
 				i18n.t('floatingmenu.tab.wai-lang'),
 				1
@@ -139,7 +139,7 @@ function( jQuery, Plugin, FloatingMenu, i18n, i18nCore ) {
 			});
 			
 			FloatingMenu.addButton(
-				this.getUID('wai-lang'),
+				'wai-lang',
 				this.removeButton,
 				i18n.t('floatingmenu.tab.wai-lang'),
 				1
