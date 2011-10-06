@@ -6,8 +6,8 @@
 */
 
 define(
-['aloha/core', 'aloha/jquery', 'aloha/command', 'aloha/selection', 'util/dom'],
-function(Aloha, jQuery, command, selection, dom) {
+['aloha/core', 'aloha/jquery', 'aloha/command', 'aloha/selection', 'util/dom', 'aloha/console'],
+function(Aloha, jQuery, command, selection, dom, console) {
 	"use strict";
 
 	// Exported commands
@@ -91,7 +91,7 @@ function(Aloha, jQuery, command, selection, dom) {
 			try {
 				range.select();
 			} catch (e) {
-				console.log('error.');
+				console.warn('error.',e);
 			}
 
 		}
