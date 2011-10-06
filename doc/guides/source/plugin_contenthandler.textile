@@ -35,7 +35,7 @@ h4. Using Configuration
 
 <javascript>
 	Aloha.settings.contentHandler: {
-		insertHtml: [ 'generic', 'oembed', 'word', 'sanitize' ],
+		insertHtml: [ 'word', 'generic', 'oembed', 'sanitize' ],
 		initEditable: [ 'sanitize' ],
 		sanitize: 'relaxed' // relaxed, restricted, basic,
 		allows: {
@@ -63,6 +63,8 @@ For the sanitize Content Handler you can use a predefined set of allowed HTML-ta
 The configuration option for "insertHtml" and "initEditable" defines which Content Handler should be used at that hook points.
 "initEditable" uses the "sanitize" Content Handler by default.
 "insertHtml" uses all registered Content Handler by default (including the Content Handler from other Plugins)
+
+WARNING: The order how the handlers are loaded and executed is important. If you first load the "sanitize" or "generic" handler the "word" handler will not be able to detect a MS Word document.
 
 
 h3. APIs and Extension Points

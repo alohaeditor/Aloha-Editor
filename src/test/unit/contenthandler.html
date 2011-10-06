@@ -15,9 +15,7 @@
 		var Aloha = {
 			settings: {
 				jQuery: $,
-				baseUrl: '../../lib',
-				//sanitize: 'basic',
-				//contenthandler: [],
+					baseUrl: '../../lib'
 			}
 		};
 		window.alohaQuery = jQuery.noConflict();
@@ -31,7 +29,7 @@
 	<script>
 		// define realtive baseUrl path to requireJS
 		// and paths back to aloha path
-		require( [ 'commandtest' ] );
+		require( [ 'contenthandlertest' ] );
 	</script>
 </head>
 <body>
