@@ -11,21 +11,21 @@ function(Aloha, Plugin, jQuery, Commands, console) {
 	"use strict";
 
 	// Private Vars and Methods
-	var	GENTICS = window.GENTICS,
+	var
+		GENTICS = window.GENTICS,
 		$window = jQuery(window),
 		$document = jQuery(document);
 		
 	// We need to hide the editable div. We'll use clip:rect for chrome and IE, and width/height for FF
-	var	$pasteDiv = jQuery('<div id="pasteContainer" style="position:absolute; clip:rect(0px, 0px, 0px, 0px);  width: 1px; height: 1px;"></div>')
-			.contentEditable(true);
+	var $pasteDiv = jQuery('<div id="pasteContainer" style="position:absolute; clip:rect(0px, 0px, 0px, 0px);  width: 1px; height: 1px;""></div>').contentEditable(true),
 	
-	var	pasteHandlers = [],
+	var
+		pasteHandlers = [],
 		pasteRange = null,
 		pasteEditable = null,
 		scrollTop = 0,
 		scrollLeft = 0,
 		height = 0;
-	
 
 	/**
 	 * This method redirects the paste into the pasteDiv. After the paste occurred,
@@ -80,6 +80,7 @@ function(Aloha, Plugin, jQuery, Commands, console) {
 			// activate and focus the editable
 			// @todo test in IE
 			//pasteEditable.activate();
+			//pasteEditable.obj.focus();
 			jQuery(pasteEditable.obj).click();
 
 			pasteDivContents = $pasteDiv.html();
