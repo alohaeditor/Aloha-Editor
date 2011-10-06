@@ -1272,17 +1272,27 @@ function movePreservingRanges(node, newParent, newIndex, range) {
 		newParent.insertBefore(node, newParent.childNodes[newIndex]);
 	}
 
-	range.setStart(boundaryPoints[0][0], boundaryPoints[0][1]);
-	range.setEnd(boundaryPoints[1][0], boundaryPoints[1][1]);
+	// if we're off actual node boundaries this implies that the move was
+	// part of a deletion process (backspace). If that's the case we 
+	// attempt to fix this by restoring the range to the first index of
+	// the node that has been moved
+	if (boundaryPoints[0][1] > boundaryPoints[0][0].childNodes.length
+	&& boundaryPoints[1][1] > boundaryPoints[1][0].childNodes.length) {
+		range.setStart(node, 0);
+		range.setEnd(node, 0);
+	} else {
+		range.setStart(boundaryPoints[0][0], boundaryPoints[0][1]);
+		range.setEnd(boundaryPoints[1][0], boundaryPoints[1][1]);
 
-	Aloha.getSelection().removeAllRanges();
-	for (var i = 1; i < ranges.length; i++) {
-		var newRange = Aloha.createRange();
-		newRange.setStart(boundaryPoints[2*i][0], boundaryPoints[2*i][1]);
-		newRange.setEnd(boundaryPoints[2*i + 1][0], boundaryPoints[2*i + 1][1]);
-		Aloha.getSelection().addRange(newRange);
+		Aloha.getSelection().removeAllRanges();
+		for (var i = 1; i < ranges.length; i++) {
+			var newRange = Aloha.createRange();
+			newRange.setStart(boundaryPoints[2*i][0], boundaryPoints[2*i][1]);
+			newRange.setEnd(boundaryPoints[2*i + 1][0], boundaryPoints[2*i + 1][1]);
+			Aloha.getSelection().addRange(newRange);
+		}
+		range = newRange;
 	}
-	range = newRange;
 }
 
 function setTagName(element, newName, range) {
