@@ -1791,7 +1791,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		return null;
 	};
 	
-	// Retrieves the nearest cousion in the DOM tree that preceeds the given
+	// Retrieves the nearest cousin in the DOM tree that preceeds the given
 	// node. We do this by backtracking up the tree to find the nearest element
 	// that is a sibling to the given node or one of its ancestors
 	function moveBackwards ( node ) {
@@ -1810,7 +1810,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		return null;
 	};
 	
-	// Retrieves the nearest cousion in the DOM tree that comes after the given
+	// Retrieves the nearest cousin in the DOM tree that comes after the given
 	// node. We do this by travers foward over the tree until we find a sibling
 	// of the given node or one of the given node's ancestors
 	function moveForwards ( node ) {
@@ -1831,6 +1831,12 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 	
 	function isSelectionStopNode ( node ) {
 		return node.nodeType == Node.TEXT_NODE && !isVoidNode( node );
+	};
+	
+	function isPositionAtNodeEnd ( node, pos ) {
+		return ( pos &&
+				 ( node.length === pos ||
+					( node.childNodes && node.childNodes.length === pos ) ) );
 	};
 	
 	var voidNodes = {
@@ -1862,14 +1868,6 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		
 		return -1;
 	};
-	
-	function isPositionAtNodeEnd ( node, pos ) {
-		return (
-			pos &&
-			( node.length === pos ||
-				( node.childNodes && node.childNodes.length === pos ) )
-		);
-	}
 	
 	/**
 	 * Normalizes the native ranges from the browser to standardizes Aloha-
@@ -1981,6 +1979,8 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 			// TODO: !isVoidNode && !isFlowNode
 		}
 		
+		//debugger;
+		
 		if ( startContainer == newEndContainer ) {
 			// logic:
 			//		If the startContainer is the same as the *corrected*
@@ -1993,6 +1993,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 			// ie:
 			// 		Ensures that 'foo<span>bar[</span>]baz' is corrected to
 			//		'foo<span>bar[]</span>baz'
+			
 			if ( newEndOffset == 0 ) {
 				newStartContainer = getSelectionStartNode( newEndContainer );
 				if ( newStartContainer ) {
@@ -2165,6 +2166,22 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 					}
 				}
 			}
+		}
+		
+		// [ 'foo[}<br>baz', 'foo[]<br>baz' ],
+		// [ 'foo<br>{]baz', 'foo<br>[]baz' ],
+		if ( newStartContainer == newEndContainer &&
+			 newStartOffset == newEndOffset &&
+			 !isSelectionStopNode( newStartContainer ) ) {
+			newStartContainer = newStartContainer.childNodes[ newStartOffset ];
+			if ( isVoidNode( newStartContainer ) ) {
+				newStartContainer = newStartContainer.previousSibling;
+				newStartOffset = newEndOffset = newStartContainer.length;
+			} else {
+				newStartOffset = newEndOffset = 0;
+			}
+			
+			newEndContainer = newStartContainer;
 		}
 		
 		if ( newEndContainer ) {
