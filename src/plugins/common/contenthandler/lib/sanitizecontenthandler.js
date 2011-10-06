@@ -95,9 +95,9 @@ function( Aloha, jQuery, ContentHandlerManager, console ) {
 			config = Aloha.defaults.sanitize.relaxed;
 		}
 		
-		// @TODO
-		if ( Aloha.settings.allows ) {
-			config = Aloha.settings.allows;
+		// @TODO move to Aloha.settings.contentHandler.sanitize.allows ?
+		if ( Aloha.settings.contentHandler.allows ) {
+			config = Aloha.settings.contentHandler.allows;
 		}
 
 		sanitize = new Sanitize( config );
@@ -120,8 +120,7 @@ function( Aloha, jQuery, ContentHandlerManager, console ) {
 			}
 
 			return jQuery('<div>').append(sanitize.clean_node(content)).html();
-		},
-		
+		}
 	});
 	
 	return SanitizeContentHandler;
