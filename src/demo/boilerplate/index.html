@@ -19,7 +19,9 @@
 	
 	<link rel="stylesheet" href="../../css/aloha.css" id="aloha-style-include" type="text/css">
 	<script src="js/aloha-config.js"></script>
-	<script src="../../lib/aloha.js" data-aloha-plugins="common/link,common/table,common/format,common/highlighteditables,common/list,common/block,common/undo,common/paste,extra/metaview,extra/wai-lang,extra/headerids,common/characterpicker,common/abbr,common/commands,extra/cite,media/image"></script>
+
+	<!--  extra/attributes,extra/googletranslate,extra/metaview,extra/wai-lang,extra/headerids,extra/cite  -->
+	<script src="../../lib/aloha.js" data-aloha-plugins="common/link,common/table,common/format,common/highlighteditables,common/list,common/block,common/undo,common/paste,common/characterpicker,common/abbr,common/commands,common/image,extra/attributes,extra/googletranslate,extra/metaview,extra/wai-lang,extra/headerids,extra/cite"></script>
 
 	<script src="js/aloha-boilerplate.js"></script>
 
@@ -32,7 +34,7 @@
 				<a id="editor-logo" href="#"><img src="img/aloha-editor-logo.png" alt="Aloha Editor" /></a>
 				<p id="top-text">The Aloha Boilerplate.</p>
 			</div>
-			<div id="navigation">	
+			<div id="navigation">
 				<ul>
 					<li><a href="#">formatting</a></li>
 					<li><a href="#">images</a></li>
@@ -40,7 +42,7 @@
 					<li><a href="#">boxes</a></li>
 					<li><a href="#">comments</a></li>
 				</ul>
-			</div>			
+			</div>
 			<div id="main" role="main">
 			<!-- Stage area start -->
 				<div class="stage-area">
@@ -128,21 +130,19 @@
 					<h4>Headline 4</h4>
 					<h5>Headline 5</h5>
 					<h6>Headline 6</h6>
-					<p>Here we test, a <a title="" href="http://aloha-editor.org">link</a> and other
-					formattings such as <b>bold</b>, <i>italic</i> or <del>deleted text</del>. You may 
-					also use formattings for maths 2<sup>2</sup> = 4 or chemical formulas like CO<sub>2</sub>.
-					Or you may edit tables as used in office products.</p>
-					<p>&nbsp;</p>
-					<div>
+					<p>Here we test, a <a title="" href="http://aloha-editor.org">link</a> and other formattings such as 
+					<b>bold</b>, <i>italic</i> or <del>deleted text</del>. You may also use formattings for maths 2
+					<sup>2</sup> = 4 or chemical formulas like CO<sub>2</sub>.
+					Or you may edit tables as you do in office products.</p>
 					<table summary="demo content for aloha tables">
 						<tbody>
-							<tr><td >This</td><td >is</td><td>a</td></tr>
-							<tr><td>demo</td><td>table</td><td>for</td></tr>
-							<tr><td>Aloha</td><td>Editor</td><td>!</td></tr>
+							<tr><td >This</td><td >is</td><td>a</td><td>demo</td></tr>
+							<tr><td>table</td><td colspan=2 rowspan=2>with</td><td>an</td></tr>
+							<tr><td>awesome</td><td>column</td></tr>
+							<tr><td>and</td><td>row</td><td>span</td><td>!</td></tr>
 						</tbody>
 						<caption>describe the table</caption>
 					</table>
-					</div>
 					<p>To describe code you would use fixed style <i>pre</i></p>
 					<pre>
 &lt;script&gt;
@@ -186,7 +186,7 @@
 							<li>List entry</li>
 						</ol>
 					</p>					
-					<p>For better sematical understanding and WAI compatibility you can describe abbreviations
+					<p>For better sematical understanding and <abbr title="Web Accessibility Initiative">WAI</abbr> compatibility you can describe abbreviations
 					like <abbr title="Hyper Text Markup Language">HTML</abbr> and 
 					<abbr title="Cascading Style Sheets">CSS</abbr>.
 					</p>

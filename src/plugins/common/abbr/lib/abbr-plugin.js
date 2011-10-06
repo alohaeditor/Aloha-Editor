@@ -79,7 +79,7 @@ function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 		    );
 
 		    // add the new scope for abbr
-		    FloatingMenu.createScope(this.getUID('abbr'), 'Aloha.continuoustext');
+		    FloatingMenu.createScope('abbr', 'Aloha.continuoustext');
 
 		    this.abbrField = new Aloha.ui.AttributeField({
 		    	'width': 320,
@@ -87,7 +87,7 @@ function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 		    });
 		    // add the input field for abbr
 		    FloatingMenu.addButton(
-		        this.getUID('abbr'),
+		        'abbr',
 		        this.abbrField,
 		        i18n.t('floatingmenu.tab.abbr'),
 		        1
@@ -175,7 +175,7 @@ function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 		        		// abbr found
 		        		me.insertAbbrButton.hide();
 		        		me.formatAbbrButton.setPressed(true);
-		        		FloatingMenu.setScope(me.getUID('abbr'));
+		        		FloatingMenu.setScope('abbr');
 		        		me.abbrField.setTargetObject(foundMarkup, 'title');
 		        	} else {
 		        		// no abbr found
@@ -277,8 +277,7 @@ function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 		    if ( foundMarkup ) {
 		        // remove the abbr
 		        GENTICS.Utils.Dom.removeFromDOM(foundMarkup, range, true);
-		        // set focus back to editable
-		        Aloha.activeEditable.obj[0].focus();
+
 		        // select the (possibly modified) range
 		        range.select();
 		    }

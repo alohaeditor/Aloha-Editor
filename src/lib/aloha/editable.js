@@ -19,8 +19,8 @@
 */
 
 define(
-['aloha/core', 'util/class', 'aloha/jquery', 'aloha/pluginmanager', 'aloha/floatingmenu', 'aloha/selection', 'aloha/markup'],
-function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup) {
+['aloha/core', 'util/class', 'aloha/jquery', 'aloha/pluginmanager', 'aloha/floatingmenu', 'aloha/selection', 'aloha/markup', 'aloha/contenthandlermanager'],
+function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, ContentHandlerManager) {
 	"use strict";
 	
 	var
@@ -28,6 +28,14 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup) {
 //		Class = window.Class,
 		unescape = window.unescape,
 		GENTICS = window.GENTICS;
+
+	// default supported and custom content handler settings
+	Aloha.defaults.contentHandler = {};
+	Aloha.defaults.contentHandler.initEditable = [ 'generic', 'sanitize' ];
+	
+	if (typeof Aloha.settings.contentHandler === 'undefined') {
+		Aloha.settings.contentHandler = {};
+	}
 
 	/**
 	 * Editable object
@@ -197,14 +205,20 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup) {
 					return me.obj;
 				});
 
-
-
 				// mark the editable as unmodified
 				me.setUnmodified();
 
+				// apply content handler to clean up content
+				var content = me.obj.html();
+				if (Aloha.settings.contentHandler && Aloha.settings.contentHandler.initEditable === 'undefined') {
+					Aloha.settings.contentHandler.initEditable = Aloha.defaults.contentHandler.initEditable;
+				}
+				content = ContentHandlerManager.handleContent( content, { contenthandler: Aloha.settings.contentHandler.initEditable } );
+				me.obj.html( content );
+
 				me.snapshotContent = me.getContents();
 
-				// FF bug: check for empty editable contents (no <br>; no whitespace) see: 
+				// FF bug: check for empty editable contents (no <br>; no whitespace)
 				if (jQuery.browser.mozilla) {
 					me.initEmptyEditable();
 				}

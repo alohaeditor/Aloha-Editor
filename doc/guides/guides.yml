@@ -17,6 +17,10 @@ authors:
       nick: skurfuerst
       image: credits/skurfuerst.jpg
       description: Sebastian Kurfürst is a proud contributor of the Aloha project.
+    - name: Rene Kapusta
+      nick: rene_kapusta
+      image: credits/rene_kapusta.jpg
+      description: Rene Kapusta is a proud contributor of the Aloha project.
 
 index:
   order:
@@ -30,6 +34,9 @@ index:
     - title: "Developing and building Aloha Editor"
       url: develop_aloha
       text: "Learn how to develop or make a custom build of Aloha Editor."
+    - title: "Configuring Aloha Editor"
+      url: configure_aloha
+      text: "Learn how to configure Aloha Editor."
     - title: "Aloha dependency management with requireJS"
       url: require
       text: "In this guide, we will explain how dependencies are managed with Aloha Editor."
@@ -43,6 +50,10 @@ index:
     - title: "Image"
       url: plugin_image
       text: "Learn how to use and extend the block plugin for advanced content editing."
+    - title: "Content Handler"
+      url: plugin_contenthandler
+      text: "Learn how to use and extend the contenthandler plugin for advanced content editing."
+
   Contributing to Aloha Editor:
     - title: Development Process
       url: development_process

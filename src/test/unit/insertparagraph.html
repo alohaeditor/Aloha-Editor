@@ -20,6 +20,7 @@
 
 	<!-- inject into testswarm -->
 	<script type="text/javascript" src="../vendor/swarminject.js"></script>
+	<script type="text/javascript" src="./insertparagraphtest.js"></script>
 	<script>
 		// load command test suite
 		require( ['commandtest'] );
@@ -31,19 +32,6 @@
 </head>
 <body>
 	<!-- include the tests -->
-	<script>
-	var tests = {
-			defaultCommand: 'insertparagraph',
-			tests: [		        
-					{  	start: 'foo[]bar',
-						execResult: '<p>foo</p><p>[]bar</p>'
-					},
-					{  	start: 'fo[o<b>b]ar</b>baz',
-						execResult: '<p>fo</p><p><b>[]ar</b>baz</p>'
-					},
-			]
-	}
-	</script>
 	<h1 id="qunit-header">Aloha Editor insertParagraph tests</h1>
 	<h2 id="qunit-banner"></h2>
 	<div id="qunit-testrunner-toolbar"></div>

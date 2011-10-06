@@ -72,7 +72,7 @@ function( Aloha, Registry, Engine, Dom ) {
 			}
 			Engine.execCommand( commandId, showUi, value, range );
 			
-			// Read range after engine modifiaction
+			// Read range after engine modification
 			range = Aloha.getSelection().getRangeAt( 0 );
 
 			// FIX: doCleanup should work with W3C range
