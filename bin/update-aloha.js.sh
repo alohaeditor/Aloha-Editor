@@ -15,18 +15,17 @@ EXT_ALL='vendor/ext-3.2.1/ext-all-debug.js'
 
 SCRIPTDIR=`cd \`dirname "$0"\`; pwd`
 TARGET="src"
-if [ "$1" != "" ]; then
-	if [ -d "$SCRIPTDIR/../$1" ]; then
-		TARGET="$1"
-	else
-		echo "Cannot update aloha.js in $SCRIPTDIR/../$1/lib."
-		exit;
-	fi
+TMPDIR="target/tmp/aloha"
+if [ -d "$SCRIPTDIR/../$TMPDIR" ]; then
+	TARGET="$TMPDIR"
+else
+	echo "Cannot update aloha.js in $SCRIPTDIR/../$TMPDIR/lib."
+	exit;
 fi
 
 LIB="$SCRIPTDIR/../$TARGET/lib"
 echo "Generating aloha.js in $LIB"
-cat /dev/null > "$LIB/aloha.js"
+touch "$LIB/aloha.js"
 
 echo "$REQUIRE"
 cat "$LIB/$REQUIRE" >> "$LIB/aloha.js"
@@ -43,5 +42,5 @@ echo "})( jQuery );" >> "$LIB/aloha.js"
 echo "aloha-bootstrap.js"
 cat "$LIB/aloha-bootstrap.js" >> "$LIB/aloha.js"
 
-echo "Updated aloha.js."
+echo "Updated $LIB/aloha.js."
 echo

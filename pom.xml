@@ -38,9 +38,9 @@
                                                 </goals>
                                                 <configuration>
                                                         <attach>true</attach>
-                                                        <appendAssemblyId>false</appendAssemblyId>
+                                                        <appendAssemblyId>true</appendAssemblyId>
                                                         <descriptors>
-                                                                <descriptor>${project.basedir}/build/package.xml</descriptor>
+                                                                <descriptor>${project.basedir}/build/${ALOHABUILDCONF}/package.xml</descriptor>
                                                         </descriptors>
                                                 </configuration>
                                         </execution>
