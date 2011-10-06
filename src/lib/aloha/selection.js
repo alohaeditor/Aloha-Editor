@@ -1732,7 +1732,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 	}); // Selection
 	
 	function getSelectionStartNode ( node ) {
-		if ( !node || isVoidNode( node ) ) {
+		if ( !node || isVoidNode( node ) || GENTICS.Utils.Dom.isEditingHost( node ) ) {
 			return null;
 		}
 		
@@ -1752,7 +1752,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 	};
 	
 	function getSelectionEndNode ( node ) {
-		if ( !node ) {
+		if ( !node || isVoidNode( node ) || GENTICS.Utils.Dom.isEditingHost( node ) ) {
 			return null;
 		}
 		
@@ -1780,6 +1780,44 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		
 		if ( node.previousSibling ) {
 			return getSelectionEndNode( node.previousSibling ); // || node
+		}
+		
+		return null;
+	};
+	
+	// Retrieves the nearest cousion in the DOM tree that preceeds the given
+	// node. We do this by backtracking up the tree to find the nearest element
+	// that is a sibling to the given node or one of its ancestors
+	function moveBackwards ( node ) {
+		if ( !node || isVoidNode( node ) || GENTICS.Utils.Dom.isEditingHost( node ) ) {
+			return null;
+		}
+		
+		if ( node.previousSibling ) {
+			return node.previousSibling;
+		}
+			
+		if ( node.parentNode ) {
+			return moveBackwards( node.parentNode );
+		}
+		
+		return null;
+	};
+	
+	// Retrieves the nearest cousion in the DOM tree that comes after the given
+	// node. We do this by travers foward over the tree until we find a sibling
+	// of the given node or one of the given node's ancestors
+	function moveForwards ( node ) {
+		if ( !node || isVoidNode( node ) || GENTICS.Utils.Dom.isEditingHost( node ) ) {
+			return null;
+		}
+		
+		if ( node.nextSibling ) {
+			return node.nextSibling;
+		}
+		
+		if ( node.parentNode ) {
+			return moveForwards( node.parentNode );
 		}
 		
 		return null;
@@ -1818,39 +1856,13 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		return -1;
 	};
 	
-	// Retrieves the nearest cousion in the DOM tree that preceeds the given
-	// node. We do this by backtracking up the tree to find the nearest element
-	// that is a sibling to the given node or one of its ancestors
-	function moveBackwards ( node ) {
-		if ( node ) {
-			if ( node.previousSibling ) {
-				return node.previousSibling
-			} else if ( !GENTICS.Utils.Dom.isEditingHost( node.parentNode ) ) {
-				return moveBackwards( node.parentNode );
-			} else {
-				return null;
-			}
-		} else {
-			return null;
-		}
-	};
-	
-	// Retrieves the nearest cousion in the DOM tree that comes after the given
-	// node. We do this by travers foward over the tree until we find a sibling
-	// of the given node or one of the given node's ancestors
-	function moveForwards ( node ) {
-		if ( node ) {
-			if ( node.nextSibling ) {
-				return node.nextSibling;
-			} else if ( !GENTICS.Utils.Dom.isEditingHost( node.parentNode ) ) {
-				return moveForwards( node.parentNode );
-			} else {
-				debugger;
-			}
-		} else {
-			return null;
-		}
-	};
+	function isPositionAtNodeEnd ( node, pos ) {
+		return (
+			pos &&
+			( node.length === pos ||
+				( node.childNodes && node.childNodes.length === pos ) )
+		);
+	}
 	
 	/**
 	 * Normalizes the native ranges from the browser to standardizes Aloha-
@@ -1874,10 +1886,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		
 		if ( isSelectionStopNode( endContainer ) ) {
 			if ( endOffset == 0 ) {
-				var prev = endContainer.previousSibling || endContainer.parentNode.previousSibling;
-				if ( prev && !isVoidNode( prev ) && !isVoidNode( prev.lastChild ) ) {
-					newEndContainer = prev;
-				}
+				newEndContainer = moveBackwards( endContainer );
 			}
 		} else if ( isVoidNode(
 			endContainer.childNodes[ endOffset ? endOffset - 1 : 0 ] ) ) {
@@ -1892,22 +1901,17 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 			// at. We will therefore search for an appropriate node nested
 			// inside this node at which to stop at
 			newEndContainer = endContainer; 
-		} else if ( //endOffset &&
-					endContainer.children &&
+		} else if ( endContainer.children &&
 					endContainer.children.length ) {
 			// We are in a node in which containers children nodes. This node
 			// is not one in which we want to stop so we will take the last
-			// node in the children list (node childNodes), and try and find a
+			// node in the children list (not childNodes), and try and find a
 			// position to stop at
 			newEndContainer = endContainer.children[
 				endContainer.children.length - 1
 			];
-		} else if ( endContainer.previousSibling &&
-					!isVoidNode( endContainer.previousSibling ) ) {
-			// None of the above are true, so try and traverse the
-			// previousSibling to find a stop position
-			// '<br class="test">foo<br>[]baz', 'foo<br>[]baz'
-			newEndContainer = endContainer.previousSibling;
+		} else if ( moveBackwards( endContainer ) ) {
+			newEndContainer = moveBackwards( endContainer );
 		} else if ( endOffset == 0 &&
 					endContainer != startContainer &&
 					endContainer.parentNode.previousSibling ) {
@@ -1920,6 +1924,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		if ( !newEndContainer ) {
 			newEndContainer = range.endContainer;
 		} else if ( isVoidNode( newEndContainer ) && endOffset ) {
+			debugger;
 			// newEndContainer is the last node in its parent and a void node
 			// therefore jump to the very next possible element
 			newEndContainer = moveForwards( newEndContainer );
@@ -1974,34 +1979,32 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 			// TODO: !isVoidNode && !isFlowNode
 		}
 		
-		// debugger;
-		
 		if ( startContainer == newEndContainer ) {
-			// Ensures that 'foo<span>bar[</span>]baz' is corrected to
-			// 'foo<span>bar[]</span>baz'. The general rule is that, if the
-			// startContainer is the same as the *corrected* endContainer
-			// (newEndContainer), then we can infere that the corrected
-			// endContainer was the most suitable container to place the end
-			// selection position, and it is therefore also the nearest best
-			// container for the start position. The only things that differ
-			// are the start and end positions
-		} else if ( startOffset == startContainer.childNodes.length &&
+			// logic:
+			//		If the startContainer is the same as the *corrected*
+			//		endContainer (newEndContainer), then we can infere that the
+			//		corrected endContainer was the most suitable container to
+			//		place the end selection position, and it is therefore also
+			//		the nearest best container for the start position. The only
+			//		things that differ are the start and end positions.
+			//		Therefore do nothing.
+			// ie:
+			// 		Ensures that 'foo<span>bar[</span>]baz' is corrected to
+			//		'foo<span>bar[]</span>baz'
+		} else if ( isPositionAtNodeEnd( startContainer, startOffset ) &&
 					startContainer.firstChild == newEndContainer ) {
-			
 			range.startContainer = newEndContainer;
-			newStartOffset = newEndContainer.length;
-			
+			newStartOffset = newEndOffset;
 		} else if ( endOffset == 0 &&
-					startContainer.childNodes.length &&
+					//startContainer.childNodes.length &&
 					startContainer.childNodes[ startOffset ] == endContainer &&
-					startContainer.childNodes[ startOffset ].previousSibling ) {
-			
+					moveBackwards( startContainer.childNodes[ startOffset ] ) ) {
 			// Corrects 'foo{<span>}bar</span>baz' to 'foo[]<span>bar</span>baz'
 			// by trying to find the nearest position to the original start
 			// node. We do this by jumping to the previousSibling and
 			// traversing to the end of it
 			newStartContainer = getSelectionEndNode(
-				startContainer.childNodes[ startOffset ].previousSibling
+				moveBackwards( startContainer.childNodes[ startOffset ] )
 			);
 			
 			if ( newStartContainer ) {
@@ -2009,42 +2012,20 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 				newStartOffset = newStartContainer.length;
 				newStartContainer = null; // Prevent going into getSelectionStartNode. Should we just return here?
 			}
-			
-		} else if ( startContainer.nextSibling &&
-					startOffset == startContainer.length &&
-					!isVoidNode( startContainer.nextSibling ) ) {
-			
-			// Corrects 'foo{<span>bar</span>}baz' to 'foo<span>[bar]</span>baz'
-			newStartContainer = startContainer.nextSibling;
-			
 		} else if ( startOffset == startContainer.length &&
 					isVoidNode( startContainer.nextSibling ) ) {
 			//debugger;
-		} else if ( startOffset == startContainer.length &&
-					startContainer.parentNode.nextSibling ) {
-			
-			// Corrects 'foo<span>bar[</span>baz]' to 'foo<span>bar</span>[baz]'
-			newStartContainer = startContainer.parentNode.nextSibling;
-			
-		} else if ( startOffset &&
-					startContainer.nextSibling &&
-					startContainer.childNodes.length == startOffset ) {
-			
-			// Corrects 'foo<span>bar{</span>baz}' to 'foo<span>bar</span>[baz]'
-			newStartContainer = startContainer.nextSibling;
-			
+		} else if ( isPositionAtNodeEnd( startContainer, startOffset ) &&
+					moveForwards( startContainer ) ) {
+			newStartContainer = moveForwards( startContainer );
 		} else if ( startContainer.childNodes.length &&
 					!isVoidNode( startContainer.childNodes[ startOffset ] ) ) {
-			
 			newStartContainer = startContainer.childNodes[ startOffset ];
-			
 		}
-		
-		//debugger;
 		
 		newStartContainer = getSelectionStartNode( newStartContainer );
 		
-		if ( newStartContainer && !isVoidNode( newEndContainer ) ) {
+		if ( newStartContainer ) {
 			newStartOffset = 0;
 		} else {
 			newStartContainer = range.startContainer;
@@ -2068,7 +2049,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		//		100000	32		For private use by the browser.
 		var posbits = compareDocumentPosition( newStartContainer, newEndContainer );
 		
-		if ( posbits & 2 ) {
+		if ( posbits & 2 && !( posbits & 8 ) ) {
 			range.startOffset = newEndOffset;
 			range.startContainer = newEndContainer;
 			range.endOffset = newEndOffset;
@@ -2109,8 +2090,6 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 				
 			}
 		} else {
-			//debugger;
-			
 			//newStartContainer = getSelectionStartNode( newStartContainer );
 			//if ( newStartContainer ) {
 			//	newEndContainer = newStartContainer;
