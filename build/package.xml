@@ -8,7 +8,7 @@
 	</formats>
 	<fileSets>
 		<fileSet>
-			<directory>${project.basedir}/out/gentics</directory>
+			<directory>${project.basedir}/target/out/aloha</directory>
 			<outputDirectory>/</outputDirectory>
 			<excludes>
 				<exclude>**/.gitmodules</exclude>

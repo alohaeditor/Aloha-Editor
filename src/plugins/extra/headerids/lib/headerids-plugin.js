@@ -59,7 +59,7 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 			// mark active Editable with a css class
 			Aloha.bind("aloha-editable-activated", function(jEvent, params) { that.check(params.editable.obj); });
 			Aloha.bind("aloha-editable-deactivated", function(jEvent, params) { that.check(params.editable.obj); });
-			Aloha.bind('aloha-ready', function (ev) { that.initSidebar(Aloha.Sidebar.right.show()); });
+			Aloha.bind('aloha-ready', function (ev) { that.initSidebar(Aloha.Sidebar.right); });
 		},
 		
 		check: function(editable) {
@@ -121,7 +121,7 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
                     }
                     
                 });
-			sidebar.show().open();
+			sidebar.show();
 		}
 	});
 });

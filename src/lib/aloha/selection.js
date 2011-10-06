@@ -1815,8 +1815,8 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		 * @param offest offest of new Selection in parentNode
 		 * @void
 		 */
-		collapse: function ( parentNode,offset ) {
-			throw "NOT_SUPPORTED_ERR";
+		collapse: function ( parentNode, offset ) {
+			this._nativeSelection.collapse(  parentNode, offset );
 		},
 		
 		/**
