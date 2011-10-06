@@ -903,8 +903,11 @@ Aloha.Markup = Class.extend({
 				jqNewObj.attr(jqOldObj[0].attributes[i].nodeName, jqOldObj[0].attributes[i].nodeValue);
 			}
 		}
+
 		// copy inline CSS
-		jqNewObj[0].style.cssText = jqOldObj[0].style.cssText;
+		if (jqOldObj[0].style && jqOldObj[0].style.cssText) {
+			jqNewObj[0].style.cssText = jqOldObj[0].style.cssText;
+		}
 
 		// now move the contents of the old dom object into the new dom object
 		jqOldObj.contents().appendTo(jqNewObj);

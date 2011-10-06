@@ -76,10 +76,10 @@ function( TestUtils ) {
 				// place the marker at the selection
 				range = rangy.getSelection().getRangeAt(0);
 				TestUtils.addBrackets(range);
-//				TestUtils.markerFromSelection();
+				//TestUtils.markerFromSelection();
 				
 				// TODO deactivate the editable 
-				result = Aloha.editables[0].getContents( true );			
+				result = Aloha.editables[0].getContents( true );
 
 				// compare the result with the expected result
 				deepEqual( result.extractHTML(), expected.extractHTML(), 'Check Operation Result' );

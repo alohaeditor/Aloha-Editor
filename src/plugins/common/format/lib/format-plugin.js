@@ -41,6 +41,12 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 				me.applyButtonConfig(params.editable.obj);
 			});
 
+			/*
+			Aloha.defaults.supports = jQuery.merge(Aloha.defaults.supports, {
+					elements: [ 'strong', 'em', 'b', 'i','del','sub','sup', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre' ]
+			});
+			*/
+
 		},
 
 		/**
