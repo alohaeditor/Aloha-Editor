@@ -107,7 +107,7 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, console) {
 						// link found
 						that.insertLinkButton.hide();
 						that.formatLinkButton.setPressed(true);
-						FloatingMenu.setScope(that.getUID('link'), 'Aloha.continuoustext');
+						FloatingMenu.setScope('link', 'Aloha.continuoustext');
 						that.hrefField.setTargetObject(foundMarkup, 'href');
 					} else {
 						// no link found
@@ -163,7 +163,7 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, console) {
 			);
 
 			// add the new scope for links
-			FloatingMenu.createScope(this.getUID('link'), 'Aloha.continuoustext'); //'Aloha.continuoustext');
+			FloatingMenu.createScope('link', 'Aloha.continuoustext'); //'Aloha.continuoustext');
 
 			/* moved browser integration to linkbrowser plugin */
 
@@ -177,7 +177,7 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, console) {
 			this.hrefField.setObjectTypeFilter(this.objectTypeFilter);
 			// add the input field for links
 			FloatingMenu.addButton(
-				this.getUID('link'),
+				'link',
 				this.hrefField,
 				i18n.t('floatingmenu.tab.link'),
 				1
@@ -193,7 +193,7 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, console) {
 			});
 			// add a button for removing the currently set link
 			FloatingMenu.addButton(
-				this.getUID('link'),
+				'link',
 				this.removeLinkButton,
 				i18n.t('floatingmenu.tab.link'),
 				1
