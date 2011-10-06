@@ -2044,6 +2044,20 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 			return range;
 		}
 		
+		while ( newStartContainer == newEndContainer &&
+				newStartOffset == newEndOffset - 1 &&
+				!isSelectionStopNode( newStartContainer ) &&
+				!isVoidNode( newStartContainer.childNodes[ newStartOffset ] ) ) {
+			// We have this sort of situation: 'foo{<span><br></span>}baz'
+			newStartContainer = newEndContainer = newStartContainer.childNodes[ newStartOffset ];
+			newStartOffset = 0;
+			if ( newEndContainer.childNodes ) {
+				newEndOffset = newEndContainer.childNodes.length;
+			} else {
+				newEndOffset = newEndContainer.length;
+			}
+		}
+		
 		// Fix position around void elements
 		
 		if ( newStartContainer != newEndContainer || newStartOffset != newEndOffset ) {
