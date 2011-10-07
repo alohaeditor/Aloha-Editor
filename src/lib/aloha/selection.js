@@ -1897,6 +1897,46 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 			newStartOffset = startOffset,
 			newEndOffset = endOffset;
 		
+		
+		var newPos = (function getStart ( container, offset ) {
+			debugger;
+			
+			// anatomy of a selection:
+			// markup  : '<div>|<p>foo</p>|test{<p>bar</p>}<p>baz</p>|</div>', '<div><p>foo</p>test<p>[bar</p><p>}baz</p></div>'
+			// offsets :       0          1    2          3          4
+			// startContainer = div
+			// startOffset = 2
+			// childNodes = [
+			//		0: <p>foo</p>
+			//		1: test
+			//		2: <p>bar</p>
+			//		3: <p>baz</p>
+			// ]
+			//
+			// rule:
+			//		IF the container is a flow element
+			//			THEN
+			//				IF the start position is in front of a start tag of a flow element,
+			//					THEN we try to find a suitable start position by moving down or into the tree.
+			//						 We will try and land at the nearest position to where we started, which is the the start of the first stoppable node
+			//				ELSE IF the start position is in front of an end tag of a flow element, then we move back into the tree.
+			//						 We will try and land at the nearest position to where we started, which is the the end of the first stoppable node
+			// ie:
+			//		<div>{<p>bar</p>... -> <div><p>[bar</p>...
+			//		<div><p>bar{</p>... -> <div><p>bar[</p>...
+			
+			if ( isFlowNode( container ) ) {
+				if ( offset == container.childNodes.length ) {
+					// the offset is at the end of the last node in the
+					// container if any
+				}
+			}
+			
+			// In this case we move up from <p>foo{</p> to <p>foo[</p>
+			
+		})( startContainer, startOffset );
+		
+		
 		if ( isSelectionStopNode( endContainer ) ) {
 			if ( endOffset == 0 ) {
 				//debugger;
@@ -1917,16 +1957,20 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 			newEndContainer = endContainer; 
 		} else if ( endContainer.children &&
 					endContainer.children.length ) {
-			// We are in a node in which containers children nodes. This node
-			// is not one in which we want to stop so we will take the last
-			// node in the children list (not childNodes), and try and find a
-			// position to stop at
-			newEndContainer = endContainer.children[
-				endContainer.children.length - 1
-			];
+			//debugger;
+			newEndContainer = endContainer.children[ endOffset ];
+			if ( isFlowNode( newEndContainer ) ) {
+				newEndContainer = endContainer;
+				newEndOffset = endOffset;
+			}
+			//newEndContainer = endContainer.children[
+			//	endContainer.children.length - 1
+			//];
 		} else if ( moveBackwards( endContainer ) ) {
 			newEndContainer = moveBackwards( endContainer );
 		}
+		
+		//debugger;
 		
 		newEndContainer = getSelectionEndNode( newEndContainer );
 		
@@ -1934,15 +1978,6 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 			newEndOffset = newEndContainer.length;
 		} else {
 			newEndContainer = range.endContainer;
-		}
-		
-		// Satisfies: '<p>[foo</p><p>]bar</p><p>baz</p>', '<p>[foo</p><p>}bar</p><p>baz</p>'
-		if ( isFlowNode( newEndContainer.parentNode ) &&
-			 newEndContainer.parentNode.firstChild == newEndContainer &&
-			 newEndOffset == 0 ) {
-			//debugger;
-			newEndContainer = newEndContainer.parentNode,
-			newEndOffset = 0;
 		}
 		
 		// rule:
@@ -2073,7 +2108,8 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 			return range;
 		}
 		
-		while ( newStartContainer == newEndContainer &&
+		while ( !isFlowNode( newStartContainer ) &&
+				newStartContainer == newEndContainer &&
 				newStartOffset == newEndOffset - 1 &&
 				!isSelectionStopNode( newStartContainer ) &&
 				!isVoidNode( newStartContainer.childNodes[ newStartOffset ] ) ) {
@@ -2203,6 +2239,15 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 			}
 			
 			newEndContainer = newStartContainer;
+		}
+		
+		// Satisfies: '<p>[foo</p><p>]bar</p><p>baz</p>', '<p>[foo</p><p>}bar</p><p>baz</p>'
+		if ( isFlowNode( newEndContainer.parentNode ) &&
+			 newEndContainer.parentNode.firstChild == newEndContainer &&
+			 newEndOffset == 0 ) {
+			//debugger;
+			newEndContainer = newEndContainer.parentNode,
+			newEndOffset = 0;
 		}
 		
 		if ( !isFlowNode( newEndContainer ) && // make sure we don't do correct this: </p>}foo to </p>]foo
