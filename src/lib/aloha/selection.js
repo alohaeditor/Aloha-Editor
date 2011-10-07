@@ -1820,7 +1820,8 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 	};
 	
 	function isSelectionStopNode ( node ) {
-		return node.nodeType == Node.TEXT_NODE && !isVoidNode( node );
+		return ( //isFlowNode( node ) ||
+					node.nodeType == Node.TEXT_NODE && !isVoidNode( node ) );
 	};
 	
 	function isPositionAtNodeEnd ( node, pos ) {
@@ -1935,6 +1936,15 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 			newEndContainer = range.endContainer;
 		}
 		
+		// Satisfies: '<p>[foo</p><p>]bar</p><p>baz</p>', '<p>[foo</p><p>}bar</p><p>baz</p>'
+		if ( isFlowNode( newEndContainer.parentNode ) &&
+			 newEndContainer.parentNode.firstChild == newEndContainer &&
+			 newEndOffset == 0 ) {
+			//debugger;
+			newEndContainer = newEndContainer.parentNode,
+			newEndOffset = 0;
+		}
+		
 		// rule:
 		//		IF the end position is at the start of the end container
 		//		THEN look for its previous relative node that is a phrase element
@@ -1959,7 +1969,8 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		//		[ '<i></i>{<span><b><b>}bar</b></b></span>baz', '<i></i><span><b><b>[]bar</b></b></span>baz' ]
 		//		[ '<span>{<span><b><b>}bar</b></b></span>baz</span>', '<span><span><b><b>[]bar</b></b></span>baz</span>' ]
 		//
-		if ( newEndOffset == 0 ) {
+		
+		if ( newEndOffset == 0 && !isFlowNode( newEndContainer ) ) {
 			var prev = getSelectionEndNode( moveBackwards( newEndContainer ) );
 			
 			if ( prev ) {
@@ -2194,7 +2205,8 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 			newEndContainer = newStartContainer;
 		}
 		
-		if ( !isSelectionStopNode( newEndContainer ) &&
+		if ( !isFlowNode( newEndContainer ) && // make sure we don't do correct this: </p>}foo to </p>]foo
+			 !isSelectionStopNode( newEndContainer ) &&
 			 isPositionAtNodeEnd( newEndContainer, newEndOffset + 1 ) &&
 			 !isVoidNode( newEndContainer.childNodes[ newEndOffset ].previousSibling ) ) {
 			newEndContainer = newEndContainer.childNodes[ newEndOffset ];
