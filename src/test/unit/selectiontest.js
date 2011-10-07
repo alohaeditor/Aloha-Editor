@@ -116,8 +116,8 @@ function( TestUtils ) {
             [ 'foo<i>a</i>{<span><b><b>}bar</b></b></span>baz', 'foo<i>a[]</i><span><b><b>bar</b></b></span>baz' ],
             
             [ '<i></i>{<span><b><b>}bar</b></b></span>baz', '<i></i><span><b><b>[]bar</b></b></span>baz' ],
-            [ '<span>{<span><b><b>}bar</b></b></span>baz</span>', '<span><span><b><b>[]bar</b></b></span>baz</span>' ],
-            [ 'test<span>{<span><b><b>}bar</b></b></span>baz</span>', 'test[]<span><span><b><b>bar</b></b></span>baz</span>' ],
+//			[ '<span>{<span><b><b>}bar</b></b></span>baz</span>', '<span><span><b><b>[]bar</b></b></span>baz</span>' ],
+//			[ 'test<span>{<span><b><b>}bar</b></b></span>baz</span>', 'test[]<span><span><b><b>bar</b></b></span>baz</span>' ],
             [ '<b><i>foo</i></b>{<span><b><b>}bar</b></b></span>baz', '<b><i>foo[]</i></b><span><b><b>bar</b></b></span>baz' ],
             [ '<b><i></i></b>{<span><b><b>}bar</b></b></span>baz', '<b><i></i></b><span><b><b>[]bar</b></b></span>baz' ],
             [ '<b>foo<i></i></b>{<span><b><b>}bar</b></b></span>baz', '<b>foo[]<i></i></b><span><b><b>bar</b></b></span>baz' ],
@@ -229,7 +229,7 @@ function( TestUtils ) {
              *   source, track, wbr are not covered by tests
              * 
              */
-            voidElements = [ 'hr' /* , 'img', 'input' */ ],
+            voidElements = [ 'hr', 'img', 'input' ],
             /*
              * All phrasing elements http://dev.w3.org/html5/markup/common-models.html#common.elem.phrasing
              * 
@@ -313,22 +313,20 @@ function( TestUtils ) {
             // ie hack :/
             if ( !tests[i] ) {  continue; }
 			tests = tests.concat( convertTests ( /br/g, voidElements[i], voidTests ) );
-			//tests = convertTests ( /br/g, voidElements[i], voidTests );
+			tests = convertTests ( /br/g, voidElements[i], voidTests );
         }       
         // full phrasing tests
         for ( var i = 0; i < phrasingElements.length; i++ ) {
-            // ie hack :/
-            if ( !tests[i] ) {  continue; }
-            tests = tests.concat( convertTests ( /span/g, phrasingElements[i], phrasingTests ) );
+			// ie hack :/
+			if ( !tests[i] ) {  continue; }
+			tests = tests.concat( convertTests ( /span/g, phrasingElements[i], phrasingTests ) );
         }
         for ( var i = 0; i < phrasingElements.length; i++ ) {
-            // ie hack :/
-            if ( !tests[i] ) {  continue; }
-            // even if specified in HTML5 a cannot nest all phrasing (itself)
-            if ( phrasingElements[i] == 'a' ) {
-                continue;
-            }
-           tests = tests.concat( convertTests ( /span/g, phrasingElements[i], nestedPhrasingTests ) );
+			// ie hack :/
+			if ( !tests[i] ) {  continue; }
+			// even if specified in HTML5 a cannot nest all phrasing (itself)
+			if ( phrasingElements[i] == 'a' ) { continue; }
+			tests = tests.concat( convertTests ( /span/g, phrasingElements[i], nestedPhrasingTests ) );
         }
         // full flow tests
         for ( var i = 0; i < flowElements.length; i++ ) {
