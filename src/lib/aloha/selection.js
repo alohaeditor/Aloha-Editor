@@ -1741,7 +1741,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		}
 		
 		if ( node.childNodes.length ) {
-			if ( isVoidNode( node.firstChild ) ) {
+			if ( isVoidNode( node.firstChild ) || isFlowNode( node.firstChild ) ) {
 				return node; // FIXME: Should be null
 			}
 			
@@ -1766,7 +1766,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		}
 		
 		if ( node.childNodes.length ) {
-			if ( isVoidNode( node.lastChild ) ) {
+			if ( isVoidNode( node.lastChild ) || isFlowNode( node.lastChild ) ) {
 				return null;
 			}
 			
@@ -1785,7 +1785,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 	// node. We do this by backtracking up the tree to find the nearest element
 	// that is a sibling to the given node or one of its ancestors
 	function moveBackwards ( node ) {
-		if ( !node || isVoidNode( node ) || GENTICS.Utils.Dom.isEditingHost( node ) ) {
+		if ( !node || isVoidNode( node ) || isFlowNode( node ) || GENTICS.Utils.Dom.isEditingHost( node ) ) {
 			return null;
 		}
 		
@@ -1804,7 +1804,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 	// node. We do this by travers foward over the tree until we find a sibling
 	// of the given node or one of the given node's ancestors
 	function moveForwards ( node ) {
-		if ( !node || isVoidNode( node ) ) {
+		if ( !node || isVoidNode( node ) || isFlowNode( node ) ) {
 			return null;
 		}
 		
@@ -1836,6 +1836,18 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		INPUT : true
 	};
 	
+	var flowNodes = {
+		P	: true,
+		PRE	: true,
+		DIV	: true,
+		H1	: true,
+		H2	: true,
+		H3	: true,
+		H4	: true,
+		H5	: true,
+		H6	: true
+	};
+	
 	/**
 	 * We treat all void elements the same.
 	 * Should we have any exceptions?
@@ -1844,6 +1856,10 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 	 */
 	function isVoidNode ( node ) {
 		return node ? !!voidNodes[ node.nodeName ] : false;
+	};
+	
+	function isFlowNode ( node ) {
+		return node ? !!flowNodes[ node.nodeName ] : false;
 	};
 	
 	function getIndexOfChildNode ( parent, child ) {
@@ -1882,6 +1898,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		
 		if ( isSelectionStopNode( endContainer ) ) {
 			if ( endOffset == 0 ) {
+				//debugger;
 				newEndContainer = moveBackwards( endContainer );
 			}
 		} else if ( isVoidNode(
