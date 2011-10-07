@@ -269,8 +269,8 @@ TablePlugin.initSidebar = function(sidebar) {
             onInit     : function () {
             	 var that = this,
 	                 content = this.setContent(
-	                		 '<label class="' + nsClass('label') + '" for="' + nsClass('textarea') + '" style="margin-left:5px;">' + i18n.t('table.label.target') + '</label>' +
-	                		 '<textarea id="' + nsClass('textarea') + '" class="' + nsClass('textarea') + '" style="width:90%;height:100px;margin-left:5px;margin-right:5px"/>').content;
+	                		 '<label class="' + nsClass('label') + '" for="' + nsClass('textarea') + '" >' + i18n.t('table.label.target') + '</label>' +
+	                		 '<textarea id="' + nsClass('textarea') + '" class="' + nsClass('textarea') + '" />').content;
 	             
             	 jQuery(nsSel('textarea')).live('keyup', function() { 
  					jQuery(that.effective).attr('summary', jQuery(nsSel('textarea')).val());
