@@ -78,7 +78,7 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 					foundMarkup = that.findLanguageMarkup( rangeObject );
 					if ( foundMarkup ) {
 						that.addMarkupToSelectionButton.setPressed(true);
-						FloatingMenu.setScope(that.getUID('wai-lang'));
+						FloatingMenu.setScope('wai-lang');
 						that.langField.setTargetObject(foundMarkup, 'lang');
 					} else {
 						that.langField.setTargetObject(null);
@@ -114,7 +114,7 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 			);
 	
 			// Add the new scope for the wai languages plugin tab
-			FloatingMenu.createScope(this.getUID('wai-lang'), 'Aloha.continuoustext'); //'Aloha.continuoustext');
+			FloatingMenu.createScope('wai-lang', 'Aloha.continuoustext'); //'Aloha.continuoustext');
 	
 			this.langField = new Aloha.ui.AttributeField({
 				'width':320,
@@ -126,7 +126,7 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 			
 			// add the input field for links
 			FloatingMenu.addButton(
-				this.getUID('wai-lang'),
+				'wai-lang',
 				this.langField,
 				i18n.t('floatingmenu.tab.wai-lang'),
 				1
@@ -139,6 +139,13 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 				'tooltip' : i18n.t('button.add-wai-lang-remove.tooltip'),
 				'toggle' : false
 			});
+
+			FloatingMenu.addButton(
+				'wai-lang',
+				this.removeButton,
+				i18n.t('floatingmenu.tab.wai-lang'),
+				1
+			);
 		},
 		
 		findLangMarkup: function(range) {
@@ -160,8 +167,7 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 		    if ( foundMarkup ) {
 		        // remove the abbr
 		        GENTICS.Utils.Dom.removeFromDOM(foundMarkup, range, true);
-		        // set focus back to editable
-		        Aloha.activeEditable.obj[0].focus();
+
 		        // select the (possibly modified) range
 		        range.select();
 				FloatingMenu.setScope('Aloha.continousText');
@@ -325,8 +331,7 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 			if ( foundMarkup ) {
 				// remove the markup
 				GENTICS.Utils.Dom.removeFromDOM(foundMarkup, range, true);
-				// set focus back to editable
-				Aloha.activeEditable.obj[0].focus();
+
 				// select the (possibly modified) range
 				range.select();
 			}

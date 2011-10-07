@@ -5,7 +5,7 @@
 	}
 	
 	Aloha.settings = {
-		logLevels: {'error': true, 'warn': true, 'info': true, 'debug': false, 'deprecated': false},
+		logLevels: {'error': true, 'warn': true, 'info': true, 'debug': false, 'deprecated': true},
 		errorhandling : false,
 		ribbon: false,
 		locale: 'en',

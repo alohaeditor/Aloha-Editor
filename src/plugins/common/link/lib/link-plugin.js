@@ -5,8 +5,9 @@
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
 
-define(['aloha', 'aloha/plugin', 'aloha/jquery', 'aloha/floatingmenu', 'i18n!link/nls/i18n', 'i18n!aloha/nls/i18n', 'css!link/css/link.css'],
-function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
+define(['aloha', 'aloha/plugin', 'aloha/jquery', 'aloha/floatingmenu', 'i18n!link/nls/i18n', 'i18n!aloha/nls/i18n', 'aloha/console',
+        'css!link/css/link.css'],
+function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, console) {
 	"use strict";
 
 	var
@@ -211,7 +212,7 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 						// link found
 						that.insertLinkButton.hide();
 						that.formatLinkButton.setPressed(true);
-						FloatingMenu.setScope(that.getUID('link'), 'Aloha.continuoustext');
+						FloatingMenu.setScope('link', 'Aloha.continuoustext');
 						that.hrefField.setTargetObject(foundMarkup, 'href');
 					} else {
 						// no link found
@@ -265,7 +266,7 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 			);
 
 			// add the new scope for links
-			FloatingMenu.createScope(this.getUID('link'), 'Aloha.continuoustext'); //'Aloha.continuoustext');
+			FloatingMenu.createScope('link', 'Aloha.continuoustext'); //'Aloha.continuoustext');
 
 			/* moved browser integration to linkbrowser plugin */
 
@@ -278,7 +279,7 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 			this.hrefField.setObjectTypeFilter(this.objectTypeFilter);
 			// add the input field for links
 			FloatingMenu.addButton(
-				this.getUID('link'),
+				'link',
 				this.hrefField,
 				i18n.t('floatingmenu.tab.link'),
 				1
@@ -293,7 +294,7 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 			});
 			// add a button for removing the currently set link
 			FloatingMenu.addButton(
-				this.getUID('link'),
+				'link',
 				this.removeLinkButton,
 				i18n.t('floatingmenu.tab.link'),
 				1
@@ -518,8 +519,7 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 			if ( foundMarkup ) {
 				// remove the link
 				GENTICS.Utils.Dom.removeFromDOM(foundMarkup, range, true);
-				// set focus back to editable
-				Aloha.activeEditable.obj[0].focus();
+
 				// select the (possibly modified) range
 				range.select();
 			}

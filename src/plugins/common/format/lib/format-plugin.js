@@ -6,7 +6,8 @@
 */
 
 define(
-['aloha', 'aloha/plugin', 'aloha/jquery', 'aloha/floatingmenu', 'i18n!format/nls/i18n', 'i18n!aloha/nls/i18n', 'css!format/css/format.css'],
+['aloha', 'aloha/plugin', 'aloha/jquery', 'aloha/floatingmenu', 'i18n!format/nls/i18n', 'i18n!aloha/nls/i18n', 'aloha/console',
+ 		'css!format/css/format.css'],
 function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 	"use strict";
 	var
@@ -40,6 +41,12 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 				//debugger;
 				me.applyButtonConfig(params.editable.obj);
 			});
+
+			/*
+			Aloha.defaults.supports = jQuery.merge(Aloha.defaults.supports, {
+					elements: [ 'strong', 'em', 'b', 'i','del','sub','sup', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre' ]
+			});
+			*/
 
 		},
 
@@ -115,12 +122,6 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 									rangeObject = Aloha.Selection.rangeObject,
 									foundMarkup;
 
-
-								// now focus back to the active element
-								if (Aloha.activeEditable) {
-									Aloha.activeEditable.obj[0].focus();
-								}
-
 								// check whether the markup is found in the range (at the start of the range)
 								foundMarkup = rangeObject.findMarkup(function() {
 									return this.nodeName.toLowerCase() == markup.get(0).nodeName.toLowerCase();
@@ -174,10 +175,6 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 							'iconClass' : 'aloha-button ' + i18n.t('aloha-button-' + button),
 							'markup' : jQuery('<'+button+'></'+button+'>'),
 							'click' : function() {
-								// now focus back to the active element
-								if (Aloha.activeEditable) {
-									Aloha.activeEditable.obj[0].focus();
-								}
 								Aloha.Selection.changeMarkupOnSelection(jQuery('<' + button + '></' + button + '>'));
 							}
 						});
