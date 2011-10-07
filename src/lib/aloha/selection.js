@@ -2339,7 +2339,8 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 // Reference: http://dev.w3.org/html5/markup/common-models.html
 //
 // Phrasing elements are a subset of flow elements.
-// The set of void elements does not intersect with the set of flow elements.
+// The set of void elements intersects with the set of phrasing elements but
+// not intersect with the set of flow elements.
 //
 // We use a hash map instead of an array so that can compute in which set a
 // given node belongs to the fastest possible time (ie: "constant" O(1)).
@@ -2410,7 +2411,29 @@ var phrasingElementsLookupTable = {
 	'LABEL'    : true,
 	'MAP'      : true,
 	'MARK'     : true,
-};
+	'METER'    : true,
+	'NOSCRIPT' : true,
+	'OBJECT'   : true,
+	'OUTPUT'   : true,
+	'PROGRESS' : true,
+	'Q'        : true,
+	'RUBY'     : true,
+	'S'        : true,
+	'SAMP'     : true,
+	'SCRIPT'   : true,
+	'SELECT'   : true,
+	'SMALL'    : true,
+	'SPAN'     : true,
+	'STRONG'   : true,
+	'SUB'      : true,
+	'SUP'      : true,
+	'TEXTAREA' : true,
+	'TIME'     : true,
+	'U'        : true,
+	'VAR'      : true,
+	'VIDEO'    : true,
+	'WBR'      : true
+}
 	
 var voidElementsLookupTable = {
 	'AREA'    : true,
@@ -2462,12 +2485,12 @@ function getLeftNeighbor ( node ) {
 	}
 	
 	// We cannot jump out of the editing host, so we will fail instead
-	if ( isEditingHost( node.parent ) ) {
+	if ( isEditingHost( node.parentNode ) ) {
 		return null;
 	}
 	
-	if ( node.parentNode.previousSibling ) {
-		return node.parentNode.previousSibling;
+	if ( node.parentNode ) {
+		return getLeftNeighbor( node.parentNode );
 	}
 	
 	return null;
@@ -2487,22 +2510,21 @@ function getRightNeighbor ( node ) {
 		return null;
 	}
 	
-	if ( node.parentNode.nextSibling ) {
-		return node.parentNode.nextSibling;
+	if ( node.parentNode ) {
+		return getRightNeighbor( node.parentNode );
 	}
 	
 	return null;
 };
 
-/*
-function getNodeIndexInParent ( node ) {
+function getIndexOfNodeInParent ( node ) {
 	if ( !node ) {
 		return -1;
 	}
 	
-	// A long as node is an existing node, with a parent, then it is a
+	// A long as node is an existing node which has a parent, then it is a
 	// logical certainty that node's parent will have 1 or more childNodes.
-	// We therefore do not need to check this.
+	// We therefore do not need to check for this.
 	var kids = node.parent.childNodes,
 		l = kids.length,
 		i = 0;
@@ -2515,7 +2537,104 @@ function getNodeIndexInParent ( node ) {
 	
 	return -1;
 };
-*/
+
+/**
+ * We walk backwards up the tree until we encounter a node which matches a
+ * predicate condition
+ */
+// function getNearestLeftNode ( node, predicate ) {
+	// var scion;
+	
+	// while ( node = getLeftNeighbor( node ) ) {
+		// scion = node;
+		
+		// while ( scion.lastChild ) {
+			// scion = scion.lastChild;
+		// }
+		
+		// if ( typeof predicate === 'function' ) {
+			// if ( predicate( scion ) ) {
+				// return scion;
+			// }
+			
+			// continue;
+		// }
+		
+		// return node;
+	// }
+	
+	// return null;
+// };
+
+function getNearestLeftNode ( node, predicate ) {
+	if ( !node ) {
+		return null;
+	}
+	
+	var scion;
+	
+	if ( node.lastChild ) {
+		scion = getNearestLeftNode( node.lastChild, predicate );
+	}
+	
+	if ( scion ) {
+		return scion;
+	}
+	
+	if ( typeof predicate !== 'function' ) {
+		return node;
+	}
+	
+	if ( predicate( node ) ) {
+		return node;
+	}
+	
+	scion = getNearestLeftNode( getLeftNeighbor( node ), predicate );
+	
+	if ( scion ) {
+		return scion;
+	}
+	
+	return scion;
+};
+
+
+/**
+ * Like getNearestRightNode, but in the other direction
+ * <b></b><b></b>{<p><b></b><b>f</b>foo]</p>
+ * <b></b><b></b><p><b></b><b>[f</b>foo]</p>
+ */
+function getNearestRightNode ( node, predicate ) {
+	if ( !node ) {
+		return null;
+	}
+	
+	var scion;
+	
+	if ( node.firstChild ) {
+		scion = getNearestRightNode( node.firstChild, predicate );
+	}
+	
+	if ( scion ) {
+		return scion;
+	}
+	
+	if ( typeof predicate !== 'function' ) {
+		return node;
+	}
+	
+	if ( predicate( node ) ) {
+		return node;
+	}
+	
+	scion = getNearestRightNode( getRightNeighbor( node ), predicate );
+	
+	if ( scion ) {
+		return scion;
+	}
+	
+	return node;
+};
 
 /**
  * anatomy of a selection:
@@ -2541,6 +2660,10 @@ function getNodeIndexInParent ( node ) {
  *				"<b>test</b>{<p>foo..." becomes "<b>test[</b><p>foo..."
  *				"test<b></b>{<p>foo..." becomes "test[<b></b><p>foo..."
  *
+ *	IF we cannot find a node inwhich we can position ourselves then we we
+ *	   contract the selection from the current start position in towards to
+ *	   nearest right child or sibling
+ *
  * 	THEN
  * 			IF the start position is in front of a start tag of a flow element,
  * 				THEN we try to find a suitable start position by moving down or into the tree.
@@ -2557,7 +2680,7 @@ function getStartPosition ( container, offset ) {
 		return null;
 	}
 	
-	if ( isFlowNode( container ) ) {
+	if ( isFlowElement( container ) ) {
 		// Out of bounds sanity check
 		if ( offset > container.childNodes.length ) {
 			return null;
@@ -2580,15 +2703,74 @@ function getStartPosition ( container, offset ) {
 			};
 		}
 		
-		// We are not at the end, therefore check if the node at index offset
-		// is a flow element
-		var node = container.childNodes[ offset ]
-		if ( isFlowNode( node ) ) {
-			debugger;
-			var leftNode = getNextLeftNeighbor( container, offset );
-			if ( leftNeighbor ) {
+		// The offset is somewhere before the end of the container, therefore
+		// check if the node at index offset is a non-phrasing flow element
+		var node = container.childNodes[ offset ];
+		var stop;
+		
+		if ( !isPhrasingElement( node ) && isFlowElement( node ) ) {
+			// Stop at the nearest text node. Or the last node before we would
+			// jump out of the editable
+			
+			stop = getNearestLeftNode( getLeftNeighbor( node ), function ( node ) {
+				if ( node.nodeType == Node.TEXT_NODE ) {
+					return true;
+				}
 				
+				if ( node == node.parentNode.firstChild &&
+						isEditingHost( node.parentNode )  ) {
+					return true;
+				}
+			} );
+			
+			// If we did not stop at a text node, then we stopped because we
+			// couldn't any suitable node, and we were about to reach
+			// We were not able to find a place to land. We will therefore
+			// backtrack looking for the closest node to our original start
+			// position. This time we don't care if it is not a text node
+			// ie:
+			// test{<b></b><p>tes}</p> corrects to test<b>{</b><p>tes]</p>
+			// {<b></b><p>tes}</p> corrects to <b></b><p>[tes]</p>
+			// test{<i><b></b></i><p>tes}</p> corrects to test<i><b>{</b></i><p>tes]</p>
+			// foo<i><b>test</b><u>test<b></b></u></i><u></u>{<p>bar]</p>
+			// corrects to
+			// foo<i><b>test</b><u>test<b></b></u></i><u>{</u><p>bar]</p>
+			if ( stop &&
+					stop.nextSibling != node &&
+					stop == stop.parentNode.firstChild  &&
+						isEditingHost( stop.parentNode ) ) {
+				stop = getNearestLeftNode( node );
 			}
+			
+			if ( stop ) {
+				return {
+					node   : stop,
+					offset : stop.nodeType == Node.TEXT_NODE ? stop.length : stop.childNodes.length
+				};
+			}
+			
+			// We cannot go any further backwards.
+			// We will therefore contract the selection by moving the selection
+			// right of the original start position instead of left
+			stop = getNearestRightNode( node, function ( node ) {
+				return node.nodeType == Node.TEXT_NODE;
+			} );
+			
+			if ( stop ) {
+				return  {
+					node   : stop,
+					offset : 0
+				};
+			}
+			
+			return {
+				node   : container,
+				offset : offset
+			};
+		}
+		
+		if ( isPhrasingElement( node ) ) {
+			// debugger;
 		}
 	}
 	
@@ -2599,7 +2781,10 @@ function correctRange ( range ) {
 	var startContainer = range.startContainer,
 		startOffset = range.startOffset;
 	
-	getStartPosition( startContainer, startOffset );
+	var newStartPos = getStartPosition( startContainer, startOffset );
+	
+	range.startContainer = newStartPos.node;
+	range.startOffset = newStartPos.offset;
 	
 	return range;
 };
