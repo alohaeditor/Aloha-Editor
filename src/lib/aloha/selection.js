@@ -1878,6 +1878,51 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 	};
 	
 	/**
+	 * anatomy of a selection:
+	 *		markup  : '<div>|<p>foo</p>|test{<p>bar</p>}<p>baz</p>|</div>', '<div><p>foo</p>test<p>[bar</p><p>}baz</p></div>'
+	 *		offsets :       0          1    2          3          4
+	 *		startContainer = div
+	 *		startOffset = 2
+	 *		childNodes = [
+	 *			0: <p>foo</p>
+	 *			1: test
+	 *			2: <p>bar</p>
+	 *			3: <p>baz</p>
+	 *		]
+	 *
+	 * rule:
+	 *		IF the container is a flow element
+	 *			THEN
+	 *				IF the start position is in front of a start tag of a flow element,
+	 *					THEN we try to find a suitable start position by moving down or into the tree.
+	 *						We will try and land at the nearest position to where we started, which is the the start of the first stoppable node
+	 *				ELSE IF the start position is in front of an end tag of a flow element, then we move back into the tree.
+	 *						We will try and land at the nearest position to where we started, which is the the end of the first stoppable node
+	 *
+	 * ie:
+	 *		<div>{<p>bar</p>... -> <div><p>[bar</p>...
+	 *		<div><p>bar{</p>... -> <div><p>bar[</p>...
+	 */
+	function getStartPosition ( container, offset ) {
+		if ( !container ) {
+			return null;
+		}
+		
+		if ( isFlowNode( container ) ) {
+			if ( offset == container.childNodes.length ) {
+				// the offset is at the end of the last node in the
+				// container if any. This can also be thought of as being
+				// in front of the closing tag of a flow node, and we will
+				// therefore try and move to the next sibling
+				var newStartPos = getStartPosition( container.nextSibling, 0 );
+			}
+		}
+		
+		// In this case we move up from <p>foo{</p> to <p>foo[</p>
+		
+	};
+	
+	/**
 	 * Normalizes the native ranges from the browser to standardizes Aloha-
 	 * Editor ranges. FYI: Aloha-Editor ranges conform, for the most part with
 	 * Webkit, and Internet Explorer ranges.
@@ -1897,45 +1942,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 			newStartOffset = startOffset,
 			newEndOffset = endOffset;
 		
-		
-		var newPos = (function getStart ( container, offset ) {
-			debugger;
-			
-			// anatomy of a selection:
-			// markup  : '<div>|<p>foo</p>|test{<p>bar</p>}<p>baz</p>|</div>', '<div><p>foo</p>test<p>[bar</p><p>}baz</p></div>'
-			// offsets :       0          1    2          3          4
-			// startContainer = div
-			// startOffset = 2
-			// childNodes = [
-			//		0: <p>foo</p>
-			//		1: test
-			//		2: <p>bar</p>
-			//		3: <p>baz</p>
-			// ]
-			//
-			// rule:
-			//		IF the container is a flow element
-			//			THEN
-			//				IF the start position is in front of a start tag of a flow element,
-			//					THEN we try to find a suitable start position by moving down or into the tree.
-			//						 We will try and land at the nearest position to where we started, which is the the start of the first stoppable node
-			//				ELSE IF the start position is in front of an end tag of a flow element, then we move back into the tree.
-			//						 We will try and land at the nearest position to where we started, which is the the end of the first stoppable node
-			// ie:
-			//		<div>{<p>bar</p>... -> <div><p>[bar</p>...
-			//		<div><p>bar{</p>... -> <div><p>bar[</p>...
-			
-			if ( isFlowNode( container ) ) {
-				if ( offset == container.childNodes.length ) {
-					// the offset is at the end of the last node in the
-					// container if any
-				}
-			}
-			
-			// In this case we move up from <p>foo{</p> to <p>foo[</p>
-			
-		})( startContainer, startOffset );
-		
+		getStartPos( startContainer, startOffset );
 		
 		if ( isSelectionStopNode( endContainer ) ) {
 			if ( endOffset == 0 ) {
@@ -2272,6 +2279,365 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 	};
 	
 	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+// Reference: http://dev.w3.org/html5/markup/common-models.html
+//
+// Phrasing elements are a subset of flow elements.
+// The set of void elements does not intersect with the set of flow elements.
+//
+// We use a hash map instead of an array so that can compute in which set a
+// given node belongs to the fastest possible time (ie: "constant" O(1)).
+var flowElementsLookupTable = {
+	'ADDRESS'    : true,
+	'ARTICLE'    : true,
+	'ASIDE'      : true,
+	'AUDIO'      : true,
+	'BLOCKQUOTE' : true,
+	'DEL'        : true,
+	'DETAILS'    : true,
+	'DIV'        : true,
+	'DL'         : true,
+	'FIELDSET'   : true,
+	'FIGURE'     : true,
+	'FOOTER'     : true,
+	'FORM'       : true,
+	'H1'         : true,
+	'H2'         : true,
+	'H3'         : true,
+	'H4'         : true,
+	'H5'         : true,
+	'H6'         : true,
+	'HEADER'     : true,
+	'HGROUP'     : true,
+	'HR'         : true,
+	'INS'        : true,
+	'MAP'        : true,
+	'MENU'       : true,
+	'NAV'        : true,
+	'NOSCRIPT'   : true,
+	'OBJECT'     : true,
+	'OL'         : true,
+	'P'          : true,
+	'PRE'        : true,
+	'SECTION'    : true,
+	'TABLE'      : true,
+	'UL'         : true,
+	'VIDEO'      : true
+};
+
+var phrasingElementsLookupTable = {
+	'A'        : true,
+	'ABBR'     : true,
+	'AREA'     : true,
+	'AUDIO'    : true,
+	'B'        : true,
+	'BDI'      : true,
+	'BDO'      : true,
+	'BR'       : true,
+	'BUTTON'   : true,
+	'CANVAS'   : true,
+	'CITE'     : true,
+	'CODE'     : true,
+	'COMMAND'  : true,
+	'DATALIST' : true,
+	'DEL'      : true,
+	'DFN'      : true,
+	'EM'       : true,
+	'EMBED'    : true,
+	'I'        : true,
+	'IFRAME'   : true,
+	'IMG'      : true,
+	'INPUT'    : true,
+	'INS'      : true,
+	'KBD'      : true,
+	'KEYGEN'   : true,
+	'LABEL'    : true,
+	'MAP'      : true,
+	'MARK'     : true,
+};
+	
+var voidElementsLookupTable = {
+	'AREA'    : true,
+	'BASE'    : true,
+	'BR'      : true,
+	'COL'     : true,
+	'COMMAND' : true,
+	'EMBED'   : true,
+	'HR'      : true,
+	'IMG'     : true,
+	'INPUT'   : true,
+	'KEYGEN'  : true,
+	'LINK'    : true,
+	'META'    : true,
+	'PARAM'   : true,
+	'SOURCE'  : true,
+	'TRACK'   : true,
+	'WBR'     : true
+};
+
+function isVoidElement ( node ) {
+	return node ? !!voidElementsLookupTable[ node.nodeName ] : false;
+};
+
+function isPhrasingElement ( node ) {
+	return node ? !!phrasingElementsLookupTable[ node.nodeName ] : false;
+};
+
+function isFlowElement ( node ) {
+	if ( !node ) {
+		return false;
+	}
+	
+	return !!( flowElementsLookupTable[ node.nodeName ] ||
+				phrasingElementsLookupTable[ node.nodeName ] );
+};
+
+function isEditingHost ( node ) {
+	return GENTICS.Utils.Dom.isEditingHost( node );
+};
+
+function getLeftNeighbor ( node ) {
+	if ( !node ) {
+		return null;
+	}
+	
+	if ( node.previousSibling ) {
+		return node.previousSibling;
+	}
+	
+	// We cannot jump out of the editing host, so we will fail instead
+	if ( isEditingHost( node.parent ) ) {
+		return null;
+	}
+	
+	if ( node.parentNode.previousSibling ) {
+		return node.parentNode.previousSibling;
+	}
+	
+	return null;
+};
+
+function getRightNeighbor ( node ) {
+	if ( !node ) {
+		return null;
+	}
+	
+	if ( node.nextSibling ) {
+		return node.nextSibling;
+	}
+	
+	// We cannot jump out of the editing host, so we will fail instead
+	if ( isEditingHost( node.parent ) ) {
+		return null;
+	}
+	
+	if ( node.parentNode.nextSibling ) {
+		return node.parentNode.nextSibling;
+	}
+	
+	return null;
+};
+
+/*
+function getNodeIndexInParent ( node ) {
+	if ( !node ) {
+		return -1;
+	}
+	
+	// A long as node is an existing node, with a parent, then it is a
+	// logical certainty that node's parent will have 1 or more childNodes.
+	// We therefore do not need to check this.
+	var kids = node.parent.childNodes,
+		l = kids.length,
+		i = 0;
+	
+	for ( ; i < l; ++i ) {
+		if ( kids[ i ] === node ) {
+			return i;
+		}
+	}
+	
+	return -1;
+};
+*/
+
+/**
+ * anatomy of a selection:
+ * markup  : '<div>|<p>foo</p>|test{<p>bar</p>}<p>baz</p>|</div>', '<div><p>foo</p>test<p>[bar</p><p>}baz</p></div>'
+ * offsets :       0          1    2          3          4
+ * startContainer: div
+ * startOffset: 2
+ * childNodes: [
+ *		0 : <p>foo</p>
+ *		1 : test
+ *		2 : <p>bar</p>
+ *		3 : <p>baz</p>
+ * ]
+ * 
+ * rule:
+ * 	IF the container is a flow element
+ *	THEN the algorithm is greedy
+ *	THEREFOR we try to expand the selection to the end of the nearest left
+ *			 neighbor from the selection point, which has a node inwhich we can
+ *			 place a new position.
+ *			 ie:
+ *				"test{<p>foo..." becomes "test[<p>foo..."
+ *				"<b>test</b>{<p>foo..." becomes "<b>test[</b><p>foo..."
+ *				"test<b></b>{<p>foo..." becomes "test[<b></b><p>foo..."
+ *
+ * 	THEN
+ * 			IF the start position is in front of a start tag of a flow element,
+ * 				THEN we try to find a suitable start position by moving down or into the tree.
+ * 					We will try and land at the nearest position to where we started, which is the the start of the first stoppable node
+ * 			ELSE IF the start position is in front of an end tag of a flow element, then we move back into the tree.
+ * 					We will try and land at the nearest position to where we started, which is the the end of the first stoppable node
+ * unit tests:
+			[ 'test{<p>foo</p><p>bar]</p>'			, 'test[<p>foo</p><p>bar]</p>'		  ],
+			[ '<b>test</b>{<p>foo</p><p>bar]</p>'	, '<b>test[</b><p>foo</p><p>bar]</p>' ],
+			[ '{<p>foo</p><p>bar]</p>'				, '<p>[foo</p><p>bar]</p>'			  ],
+ */
+function getStartPosition ( container, offset ) {
+	if ( !container ) {
+		return null;
+	}
+	
+	if ( isFlowNode( container ) ) {
+		// Out of bounds sanity check
+		if ( offset > container.childNodes.length ) {
+			return null;
+		}
+		
+		// We either have an empty container, or else the offset is
+		// positioned at the very end of the container--after the last
+		// node. We therefore have the case where we are in front the
+		// closing tag of a flow node, and we will therefore try and move
+		// b into the tree
+		if ( offset == container.childNodes.length ) {
+			var leftNeighbor = getLeftNeighbor( container );
+			if ( leftNeighbor ) {
+				//var newStartPos = getStartPosition( leftNeighbor, 0 );
+			}
+			
+			return {
+				node   : container,
+				offset : offset
+			};
+		}
+		
+		// We are not at the end, therefore check if the node at index offset
+		// is a flow element
+		var node = container.childNodes[ offset ]
+		if ( isFlowNode( node ) ) {
+			debugger;
+			var leftNode = getNextLeftNeighbor( container, offset );
+			if ( leftNeighbor ) {
+				
+			}
+		}
+	}
+	
+	// In this case we move up from <p>foo{</p> to <p>foo[</p>
+};
+
+function correctRange ( range ) {
+	var startContainer = range.startContainer,
+		startOffset = range.startOffset;
+	
+	getStartPosition( startContainer, startOffset );
+	
+	return range;
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	/**
 	 * Implements Selection http://html5.org/specs/dom-range.html#selection
 	 * @namespace Aloha
