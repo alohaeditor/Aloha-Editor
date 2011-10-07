@@ -25,7 +25,7 @@ fi
 
 LIB="$SCRIPTDIR/../$TARGET/lib"
 echo "Generating aloha.js in $LIB"
-touch "$LIB/aloha.js"
+echo > "$LIB/aloha.js"
 
 echo "$REQUIRE"
 cat "$LIB/$REQUIRE" >> "$LIB/aloha.js"

@@ -147,7 +147,7 @@ Aloha.ready( function() {
 			applySelection( testArea );
 			applyMarkupOnNextSelection = false;
 			
-			return;
+			// return;
 		}
 		
 		var range = getSelectionRange();
@@ -217,12 +217,12 @@ Aloha.ready( function() {
 	 */
 	 function applySelection ( elem ) {
 		
-		 // Display the current selection in the viewArea
-		 viewArea.val( testArea.html() );
-		 // convert html for processing
-		 var html = jQuery( '<div>' ).text( testArea.html() ).html();
+		// Display the current selection in the viewArea
+		viewArea.val( testArea.html() );
+		// convert html for processing
+		var html = jQuery( '<div>' ).text( testArea.html() ).html();
 		
-		 html = elem.html();
+		html = elem.html();
 		
 		var startMarkers = html.match( /\{|\[|data\-start/g ),
 		    endMarkers = html.match( /\}|\]|data\-end/g ),
