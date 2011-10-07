@@ -87,14 +87,14 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 
 		nsSel: function () {
 			var strBldr = [], prx = ns;
-			$.each(arguments, function () { strBldr.push('.' + (this == '' ? prx : prx + '-' + this)); });
+			jQuery.each(arguments, function () { strBldr.push('.' + (this == '' ? prx : prx + '-' + this)); });
 			return strBldr.join(' ').trim();
 		},
 
 		//Creates string with this component's namepsace prefixed the each classname
 		nsClass: function () {
 			var strBldr = [], prx = ns;
-			$.each(arguments, function () { strBldr.push(this == '' ? prx : prx + '-' + this); });
+			jQuery.each(arguments, function () { strBldr.push(this == '' ? prx : prx + '-' + this); });
 			return strBldr.join(' ').trim();
 		},
 

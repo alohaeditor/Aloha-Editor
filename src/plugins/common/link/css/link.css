@@ -25,6 +25,10 @@
 	padding:5px 5px;
 }
 
+.aloha-link-target-container li{
+	padding:0 !important;
+}
+
 .aloha-link-target-container fieldset {
 	border: 2px groove threedface !important;
 	padding-bottom: 5px;
@@ -36,9 +40,11 @@
 }
 
 .aloha-link-title-container fieldset  input[type=text]{
-	width:210px !important;
+	width:auto !important;
+	min-width:180px;
 }
 
 .aloha-link-target-container fieldset  input[type=text]{
-	width:210px !important;
+	width:auto !important;
+	min-width:180px;
 }
