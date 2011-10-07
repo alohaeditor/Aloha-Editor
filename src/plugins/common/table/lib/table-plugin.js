@@ -273,7 +273,7 @@ TablePlugin.initSidebar = function(sidebar) {
 	                		 '<textarea id="' + nsClass('textarea') + '" class="' + nsClass('textarea') + '" />').content;
 	             
             	 jQuery(nsSel('textarea')).live('keyup', function() { 
- 					jQuery(that.effective).attr('summary', jQuery(nsSel('textarea')).val());
+ 					jQuery(that.effective).attr('summary', jQuery(nsSel('textarea')).val().replace("\"", '&quot;').replace("'", "&#39;"));
  					var waiDiv = jQuery('div[class*="wai"]', 'table#' + jQuery(that.effective).attr('id'));
  					waiDiv.removeClass(pl.get('waiGreen'));
  					waiDiv.removeClass(pl.get('waiRed'));
@@ -289,6 +289,7 @@ TablePlugin.initSidebar = function(sidebar) {
             onActivate: function (effective) {
             	var that = this;
 				that.effective = effective;
+				jQuery(nsSel('textarea')).val(jQuery(that.effective).attr('summary'));
             }
             
         });
