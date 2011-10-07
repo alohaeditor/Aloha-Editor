@@ -122,13 +122,9 @@ function( Aloha, Registry, Engine, Dom ) {
 		// "When the queryCommandSupported(command) method on the HTMLDocument
 		// interface is invoked, the user agent must return true if command is
 		// supported, and false otherwise."
-		queryCommandSupported: function( commandId, range ) {
+		queryCommandSupported: function( commandId ) {
 
-			// Take current selection if not passed
-			if ( !range ) {
-				range = Aloha.getSelection().getRangeAt(0);
-			}
-			return Engine.queryCommandSupported( commandId, range );		
+			return Engine.queryCommandSupported( commandId );		
 		},
 		
 		queryCommandValue: function( commandId, range ) {
