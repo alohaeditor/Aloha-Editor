@@ -34,8 +34,8 @@ h3. Creating Blocks
 
 Aloha BLocks is implemented as a plugin called @block@, which is part of the @common@ bundle.
 
-Thus, in order to use blocks, you need to load the +common/block+ and +common/paste+ plugin (Blocks interact
-with the paste plugin).
+Thus, in order to use blocks, you need to load the +common/block+ and +common/contenthandler+ plugin (Blocks interact
+with the contenthandler plugin).
 
 After the plugin is loaded, you can create blocks.
 

@@ -331,9 +331,6 @@ function(Aloha, Plugin, FloatingMenu, i18n, i18nCore, jQuery) {
 		            jQuery(this).css('text-align', '');
 		        }, Aloha.activeEditable.obj);
 
-		        // set focus back to editable
-		        Aloha.activeEditable.obj[0].focus();
-
 		        // select the (possibly modified) range
 		        range.select();
 		    }

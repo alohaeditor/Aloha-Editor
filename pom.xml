@@ -1,9 +1,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.gentics</groupId>
+	<groupId>org.alohaeditor</groupId>
 	<artifactId>alohaeditor</artifactId>
-	<version>0.17-SNAPSHOT</version>
+	<version>0.20-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Aloha Editor</name>
@@ -11,6 +11,10 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+                <maven.build.timestamp.format>yyyyMMdd-HHmmss</maven.build.timestamp.format>
+		<ALOHABUILDCONF>aloha</ALOHABUILDCONF>
+		<ALOHADEPLOYMENTURL>NA</ALOHADEPLOYMENTURL>
+		<ALOHADEPLOYMENTPATH>NA</ALOHADEPLOYMENTPATH>
 	</properties>
 
 	<scm>
@@ -37,50 +41,49 @@
                                                         <attach>true</attach>
                                                         <appendAssemblyId>false</appendAssemblyId>
                                                         <descriptors>
-                                                                <descriptor>${project.basedir}/build/package.xml</descriptor>
+                                                                <descriptor>${project.basedir}/build/${ALOHABUILDCONF}/package.xml</descriptor>
                                                         </descriptors>
                                                 </configuration>
                                         </execution>
                                 </executions>
                         </plugin>
 
-			 <!-- This is a workaround to get submodules working with the maven release plugin -->
 			 <plugin>
                                 <groupId>org.codehaus.mojo</groupId>
                                 <artifactId>exec-maven-plugin</artifactId>
                                 <version>1.1</version>
                                 <executions>
                                         <execution>
-                                                <phase>initialize</phase>
-                                                <id>invoke build</id>
+                                                <phase>deploy</phase>
+                                                <id>deploy</id>
                                                 <goals>
-                                                        <goal>exec</goal>
+                                                     <goal>exec</goal>
                                                 </goals>
+				              <configuration>
+                                	        <executable>bin/deploy-aloha.sh</executable>
+                                        	<arguments>
+	                                           <argument>${ALOHADEPLOYMENTURL}</argument>
+        	                                   <argument>${ALOHADEPLOYMENTPATH}</argument>
+                                                   <argument>${maven.build.timestamp}</argument>
+                	                       </arguments>
+                        	              </configuration>
                                         </execution>
-                                </executions>
-                                <configuration>
-                                        <executable>bin/update-from-git.sh</executable>
-                                </configuration>
-                        </plugin>
-
-<!-- TODO: after building is fixed, comment this in to build before packaging -->
-                        <!-- plugin>
-                                <groupId>org.codehaus.mojo</groupId>
-                                <artifactId>exec-maven-plugin</artifactId>
-                                <version>1.1</version>
-                                <executions>
-                                        <execution>
+			                <execution>
                                                 <phase>compile</phase>
                                                 <id>invoke build</id>
                                                 <goals>
                                                         <goal>exec</goal>
                                                 </goals>
+					        <configuration>
+                                        	    <executable>bin/build.sh</executable>
+	                                            <arguments>
+            	 	                                    <argument>${ALOHABUILDCONF}</argument>
+                        	                   </arguments>
+                               			</configuration>
                                         </execution>
+
                                 </executions>
-                                <configuration>
-                                        <executable>bin/build.sh</executable>
-                                </configuration>
-                        </plugin -->
+                        </plugin>
 		</plugins>
 	</build>
 
@@ -96,8 +99,6 @@
                         <url>http://archiva.gentics.com:8081/archiva/repository/com.gentics.public</url>
                 </snapshotRepository>
         </distributionManagement>
-
-
 
 </project>
 

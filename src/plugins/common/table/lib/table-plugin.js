@@ -1449,7 +1449,7 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cel
 			rowIndex, columnToInsert, rowObj, that = this, rows, i;
 
 		// set the unicode '&nbsp;' code
-		emptyCell.html('<div>\u00a0</div>');
+		emptyCell.html('\u00a0');
 
 		that = this;
 		rows = this.obj.context.rows;
@@ -1621,7 +1621,7 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cel
     // create an empty td
     var emptyCell = jQuery('<td>');
 //    emptyCell.html('\u00a0');
-	emptyCell.html('<div>\u00a0</div>');
+	emptyCell.html('\u00a0');
     
     // get the number of columns in the table
     // iterate through all rows and find the maximum number of columns to add
