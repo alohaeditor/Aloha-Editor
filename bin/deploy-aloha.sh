@@ -12,6 +12,11 @@ DURL=$1
 # eg: /var/www/builds/development
 DPATH=$2
 
+# Buildtimestamp
+BUILDDATE=$3
+
+echo "Using Builddate: $BUILDDATE"
+
 if [ "$DURL" == "NA" ] || [ "$DURL" == "SKIP" ] ; then
   echo "No valid deployment url specified. I'll silently omitt deployment via ssh"
   exit 0 
@@ -20,7 +25,12 @@ fi
 SOURCEFILENAME=`basename target/alohaeditor*.zip`
 
 FILENAME=`echo $SOURCEFILENAME | sed 's/-aloha-package//'`
-FOLDERNAME=${FILENAME%.*}
+EXTENSION=${FILENAME##*.}
+NAME=${FILENAME%.*}
+
+FOLDERNAME=$NAME-$BUILDDATE
+FILENAME=$FOLDERNAME.$EXTENSION
+
 
 echo -e "\n * Removing old archive from $DPATH"
   ssh $DURL "cd $DPATH ; rm -rf $FILENAME ; rm -rf $FOLDERNAME"

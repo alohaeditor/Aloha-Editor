@@ -12,6 +12,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<ALOHABUILDCONF>gentics</ALOHABUILDCONF>
+        <maven.build.timestamp.format>yyyyMMdd-HHmmss</maven.build.timestamp.format>
 		<ALOHADEPLOYMENTURL>NA</ALOHADEPLOYMENTURL>
 		<ALOHADEPLOYMENTPATH>NA</ALOHADEPLOYMENTPATH>
 	</properties>
@@ -52,22 +53,21 @@
                                 <artifactId>exec-maven-plugin</artifactId>
                                 <version>1.1</version>
                                 <executions>
-					<!-- Deployment disabled for gentics fork
                                         <execution>
                                                 <phase>deploy</phase>
                                                 <id>deploy</id>
                                                 <goals>
                                                      <goal>exec</goal>
                                                 </goals>
-				              <configuration>
+				              			   <configuration>
                                 	        <executable>bin/deploy-aloha.sh</executable>
                                         	<arguments>
 	                                           <argument>${ALOHADEPLOYMENTURL}</argument>
         	                                   <argument>${ALOHADEPLOYMENTPATH}</argument>
+                                               <argument>${maven.build.timestamp}</argument>
                 	                       </arguments>
                         	              </configuration>
                                         </execution>
-					-->
 			                <execution>
                                                 <phase>compile</phase>
                                                 <id>invoke build</id>
@@ -99,8 +99,5 @@
                         <url>http://archiva.gentics.com:8081/archiva/repository/com.gentics.internal</url>
                 </snapshotRepository>
         </distributionManagement>
-
-
-
 </project>
 
