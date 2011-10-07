@@ -1741,7 +1741,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		}
 		
 		if ( node.childNodes.length ) {
-			if ( isVoidNode( node.firstChild ) ) {
+			if ( isVoidNode( node.firstChild ) || isFlowNode( node.firstChild ) ) {
 				return node; // FIXME: Should be null
 			}
 			
@@ -1766,7 +1766,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		}
 		
 		if ( node.childNodes.length ) {
-			if ( isVoidNode( node.lastChild ) ) {
+			if ( isVoidNode( node.lastChild ) || isFlowNode( node.lastChild ) ) {
 				return null;
 			}
 			
@@ -1785,7 +1785,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 	// node. We do this by backtracking up the tree to find the nearest element
 	// that is a sibling to the given node or one of its ancestors
 	function moveBackwards ( node ) {
-		if ( !node || isVoidNode( node ) || GENTICS.Utils.Dom.isEditingHost( node ) ) {
+		if ( !node || isVoidNode( node ) || isFlowNode( node ) || GENTICS.Utils.Dom.isEditingHost( node ) ) {
 			return null;
 		}
 		
@@ -1804,7 +1804,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 	// node. We do this by travers foward over the tree until we find a sibling
 	// of the given node or one of the given node's ancestors
 	function moveForwards ( node ) {
-		if ( !node || isVoidNode( node ) ) {
+		if ( !node || isVoidNode( node ) || isFlowNode( node ) ) {
 			return null;
 		}
 		
@@ -1820,7 +1820,8 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 	};
 	
 	function isSelectionStopNode ( node ) {
-		return node.nodeType == Node.TEXT_NODE && !isVoidNode( node );
+		return ( //isFlowNode( node ) ||
+					node.nodeType == Node.TEXT_NODE && !isVoidNode( node ) );
 	};
 	
 	function isPositionAtNodeEnd ( node, pos ) {
@@ -1836,6 +1837,18 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		INPUT : true
 	};
 	
+	var flowNodes = {
+		P	: true,
+		PRE	: true,
+		DIV	: true,
+		H1	: true,
+		H2	: true,
+		H3	: true,
+		H4	: true,
+		H5	: true,
+		H6	: true
+	};
+	
 	/**
 	 * We treat all void elements the same.
 	 * Should we have any exceptions?
@@ -1844,6 +1857,10 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 	 */
 	function isVoidNode ( node ) {
 		return node ? !!voidNodes[ node.nodeName ] : false;
+	};
+	
+	function isFlowNode ( node ) {
+		return node ? !!flowNodes[ node.nodeName ] : false;
 	};
 	
 	function getIndexOfChildNode ( parent, child ) {
@@ -1882,6 +1899,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		
 		if ( isSelectionStopNode( endContainer ) ) {
 			if ( endOffset == 0 ) {
+				//debugger;
 				newEndContainer = moveBackwards( endContainer );
 			}
 		} else if ( isVoidNode(
@@ -1918,6 +1936,15 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 			newEndContainer = range.endContainer;
 		}
 		
+		// Satisfies: '<p>[foo</p><p>]bar</p><p>baz</p>', '<p>[foo</p><p>}bar</p><p>baz</p>'
+		if ( isFlowNode( newEndContainer.parentNode ) &&
+			 newEndContainer.parentNode.firstChild == newEndContainer &&
+			 newEndOffset == 0 ) {
+			//debugger;
+			newEndContainer = newEndContainer.parentNode,
+			newEndOffset = 0;
+		}
+		
 		// rule:
 		//		IF the end position is at the start of the end container
 		//		THEN look for its previous relative node that is a phrase element
@@ -1942,7 +1969,8 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		//		[ '<i></i>{<span><b><b>}bar</b></b></span>baz', '<i></i><span><b><b>[]bar</b></b></span>baz' ]
 		//		[ '<span>{<span><b><b>}bar</b></b></span>baz</span>', '<span><span><b><b>[]bar</b></b></span>baz</span>' ]
 		//
-		if ( newEndOffset == 0 ) {
+		
+		if ( newEndOffset == 0 && !isFlowNode( newEndContainer ) ) {
 			var prev = getSelectionEndNode( moveBackwards( newEndContainer ) );
 			
 			if ( prev ) {
@@ -2177,7 +2205,8 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 			newEndContainer = newStartContainer;
 		}
 		
-		if ( !isSelectionStopNode( newEndContainer ) &&
+		if ( !isFlowNode( newEndContainer ) && // make sure we don't do correct this: </p>}foo to </p>]foo
+			 !isSelectionStopNode( newEndContainer ) &&
 			 isPositionAtNodeEnd( newEndContainer, newEndOffset + 1 ) &&
 			 !isVoidNode( newEndContainer.childNodes[ newEndOffset ].previousSibling ) ) {
 			newEndContainer = newEndContainer.childNodes[ newEndOffset ];
