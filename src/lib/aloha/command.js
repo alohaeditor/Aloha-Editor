@@ -68,6 +68,9 @@ function( Aloha, Registry, Engine, Dom ) {
 			
 			// Read current selection if not passed
 			if ( !range ) {
+				if ( !Aloha.getSelection().getRangeCount() ) {
+					return;
+				}
 				range = Aloha.getSelection().getRangeAt( 0 );
 			}
 			Engine.execCommand( commandId, showUi, value, range );
@@ -93,6 +96,9 @@ function( Aloha, Registry, Engine, Dom ) {
 
 			// Take current selection if not passed
 			if ( !range ) {
+				if ( !Aloha.getSelection().getRangeCount() ) {
+					return;
+				}
 				range = Aloha.getSelection().getRangeAt(0);
 			}
 			return Engine.queryCommandEnabled( commandId, range );
@@ -103,6 +109,9 @@ function( Aloha, Registry, Engine, Dom ) {
 
 			// Take current selection if not passed
 			if ( !range ) {
+				if ( !Aloha.getSelection().getRangeCount() ) {
+					return;
+				}
 				range = Aloha.getSelection().getRangeAt(0);
 			}
 			return Engine.queryCommandIndeterm( commandId, range );
@@ -113,6 +122,9 @@ function( Aloha, Registry, Engine, Dom ) {
 
 			// Take current selection if not passed
 			if ( !range ) {
+				if ( !Aloha.getSelection().getRangeCount() ) {
+					return;
+				}
 				range = Aloha.getSelection().getRangeAt(0);
 			}
 			return Engine.queryCommandState( commandId, range );
@@ -131,6 +143,9 @@ function( Aloha, Registry, Engine, Dom ) {
 
 			// Take current selection if not passed
 			if ( !range ) {
+				if ( !Aloha.getSelection().getRangeCount() ) {
+					return;
+				}
 				range = Aloha.getSelection().getRangeAt(0);
 			}
 

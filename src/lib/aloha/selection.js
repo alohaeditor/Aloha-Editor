@@ -2452,6 +2452,10 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		 */
 		toString : function() {
 			return 'Aloha.Selection';
+		},
+		
+		getRangeCount: function() {
+			return this._nativeSelection.rangeCount;
 		}
 
 	});

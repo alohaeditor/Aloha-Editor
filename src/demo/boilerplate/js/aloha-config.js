@@ -118,7 +118,9 @@
 				'minHeight': 20,
 				'globalselector': '.global',
 				'ui': {
-					'oneTab': true
+					'oneTab': true,
+					'align': false,
+					'margin': false
 				}
 			},
 			cite: {
