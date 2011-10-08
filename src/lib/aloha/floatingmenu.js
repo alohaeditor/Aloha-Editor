@@ -240,6 +240,10 @@ function(Aloha, jQuery, Ext, Class, console) {
 				if (typeof button.button !== "undefined") {
 					var extButton = that.extButtonGroup.findById(button.button.id),
 					buttonVisible = button.button.isVisible() && button.scopeVisible;
+					
+					if (!extButton) {
+						return;
+					}
 				
 					if (buttonVisible && extButton.hidden) {
 						extButton.show();
