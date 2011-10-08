@@ -490,6 +490,11 @@ footer {
 	position: relative;
 	top:5px;
 }
+#references {
+	float:left;
+	padding-left: 30px;
+	font-size: 70%;
+}
 
 /* ========================================= */
 /* ========================================= */
