@@ -220,16 +220,16 @@ function( jQuery, Plugin, FloatingMenu, i18n, i18nCore ) {
 		handleKeyDown: function( e ) {
 			if ( e.metaKey && e.which == 73 ) {
 				
-				if ( that.findLangMarkup() ) {
+				if ( this.findLangMarkup() ) {
 					FloatingMenu.userActivatedTab = i18n.t('floatingmenu.tab.wai-lang');
 
 					// TODO this should not be necessary here!
 					FloatingMenu.doLayout();
 
-					that.langField.focus();
+					this.langField.focus();
 
 				} else {
-					that.addMarkupToSelection();
+					this.addMarkupToSelection();
 				}
 				// prevent from further handling
 				// on a MAC Safari cursor would jump to location bar. Use ESC then META+I
@@ -296,7 +296,8 @@ function( jQuery, Plugin, FloatingMenu, i18n, i18nCore ) {
 	
 			// activate floating menu tab
 			FloatingMenu.userActivatedTab = i18n.t('floatingmenu.tab.wai-lang');
-	
+            FloatingMenu.setScope('wai-lang');
+
 			// current selection or cursor position
 			range = Aloha.Selection.getRangeObject();
 	
@@ -309,7 +310,7 @@ function( jQuery, Plugin, FloatingMenu, i18n, i18nCore ) {
 				GENTICS.Utils.Dom.addMarkup(range, newSpan, false);
 			}
 			range.select();
-			this.langField.focus();
+//			this.langField.focus();
 		},
 		
 		/**
