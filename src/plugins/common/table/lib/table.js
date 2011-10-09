@@ -1,7 +1,7 @@
 define(
-['aloha', 'aloha/jquery', 'aloha/floatingmenu', 'i18n!table/nls/i18n', 'table/table-plugin-utils'],
-function (Aloha, jQuery, FloatingMenu, i18n, Utils) {
-return function (TablePlugin, TableSelection) {
+['aloha', 'aloha/jquery', 'aloha/floatingmenu', 'i18n!table/nls/i18n', 'table/table-cell', 'table/table-selection', 'table/table-plugin-utils'],
+function (Aloha, jQuery, FloatingMenu, i18n, TableCell, TableSelection, Utils) {
+return function (TablePlugin) {
 	var
 		GENTICS = window.GENTICS;
 
@@ -20,6 +20,8 @@ return function (TablePlugin, TableSelection) {
 			this.obj.attr('id', GENTICS.Utils.guid());
 		}
 
+		this.selection = new TableSelection(this);
+
 		this.refresh();
 	};
 
@@ -28,6 +30,7 @@ return function (TablePlugin, TableSelection) {
 		 * Attribute holding the jQuery-table-represenation
 		 */
 		obj: undefined,
+
 		/**
 		 * The DOM-element of the outest div-container wrapped around the cell
 		 */
@@ -36,7 +39,7 @@ return function (TablePlugin, TableSelection) {
 		/**
 		 * An array of all Cells contained in the Table
 		 *
-		 * @see Aloha.Table.Cell
+		 * @see TableCell
 		 */
 		cells: undefined,
 
@@ -157,7 +160,7 @@ return function (TablePlugin, TableSelection) {
 
 	/**
 	 * Transforms the existing dom-table into an editable aloha-table. In fact it
-	 * replaces the td-elements with equivalent Table.Cell-elements
+	 * replaces the td-elements with equivalent TableCell-elements
 	 * with attached events.
 	 * Furthermore it creates wrapping divs to realize a click-area for row- and
 	 * column selection and also attaches events.
@@ -182,12 +185,12 @@ return function (TablePlugin, TableSelection) {
 		}
 
 		// unset the selection type
-		TableSelection.selectionType = undefined;
+		this.selection.selectionType = undefined;
 
 		this.obj.bind('keydown', function(jqEvent){
 			if (!jqEvent.ctrlKey && !jqEvent.shiftKey) {
-				if (TableSelection.selectedCells.length > 0 && TableSelection.selectedCells[0].length > 0) {
-					TableSelection.selectedCells[0][0].firstChild.focus();
+				if (that.selection.selectedCells.length > 0 && that.selection.selectedCells[0].length > 0) {
+					that.selection.selectedCells[0][0].firstChild.focus();
 				}
 			}
 		});
@@ -379,7 +382,7 @@ return function (TablePlugin, TableSelection) {
 		this.focus();
 
 		// if no cells are selected, reset the selection-array
-		if (TableSelection.selectedCells.length == 0) {
+		if (this.selection.selectedCells.length == 0) {
 			this.rowsToSelect = new Array();
 		}
 
@@ -688,14 +691,14 @@ return function (TablePlugin, TableSelection) {
 		var deleteTable = false;
 
 		// if a selection was made, delete the selected cells
-		if (TableSelection.selectedCells.length > 0) {
-			for (var i = 0; i < TableSelection.selectedCells.length; i++) {
-				rowsToDelete[TableSelection.selectedCells[i].parentNode.rowIndex] = true;
+		if (this.selection.selectedCells.length > 0) {
+			for (var i = 0; i < this.selection.selectedCells.length; i++) {
+				rowsToDelete[this.selection.selectedCells[i].parentNode.rowIndex] = true;
 			}
 
 		// if no rows were selected, delete the row, where the cursor is placed in
-		}else if (typeof Table.Cell.lastActiveCell != 'undefined') {
-			rowsToDelete[Table.Cell.lastActiveCell.obj.context.parentNode.rowIndex] = true;
+		}else if (typeof TableCell.lastActiveCell != 'undefined') {
+			rowsToDelete[TableCell.lastActiveCell.obj.context.parentNode.rowIndex] = true;
 		}
 		
 	    for (rowId in rowsToDelete) {
@@ -765,7 +768,7 @@ return function (TablePlugin, TableSelection) {
 			}, 5);
 
 			// finally unselect the marked cells
-			TableSelection.unselectCells();
+			this.selection.unselectCells();
 		}
 	};
 
@@ -793,7 +796,7 @@ return function (TablePlugin, TableSelection) {
 
 		// if all columns should be deleted, remove the WHOLE table
 		// delete the whole table
-		if ( TableSelection.selectedColumnIdxs.length == grid[0].length - selectColWidth ) {
+		if ( this.selection.selectedColumnIdxs.length == grid[0].length - selectColWidth ) {
 			
 			Aloha.showMessage(new Aloha.Message({
 				title : i18n.t('Table'),
@@ -821,7 +824,7 @@ return function (TablePlugin, TableSelection) {
 			//x-index is selected and deleted.
 
 			//sorted so we delete from right to left to minimize interfernce of deleted rows
-			var gridColumns = TableSelection.selectedColumnIdxs.sort(function(a,b){ return b - a; });
+			var gridColumns = this.selection.selectedColumnIdxs.sort(function(a,b){ return b - a; });
 			for (var i = 0; i < gridColumns.length; i++) {
 				var gridColumn = gridColumns[i];
 				for (var j = 0; j < rows.length; j++) {
@@ -857,7 +860,7 @@ return function (TablePlugin, TableSelection) {
 				lastCell.focus()
 			}, 5);
 
-			TableSelection.unselectCells();
+			this.selection.unselectCells();
 		}
 	};
 
@@ -878,7 +881,7 @@ return function (TablePlugin, TableSelection) {
 			// before deleting the table, deactivate it
 			this.deactivate();
 
-			TableSelection.selectionType = undefined;
+			this.selection.selectionType = undefined;
 			TablePlugin.TableRegistry.splice(i, 1);
 
 			// we will set the cursor right before the removed table
@@ -944,18 +947,18 @@ return function (TablePlugin, TableSelection) {
 		// quotient of all the number of selected cells / by the number of
 		// columns. If no rows were selected, we insert 1 new row before/after
 		// the row of the last active cell
-		if (TableSelection.selectedCells.length > 0) {
+		if (this.selection.selectedCells.length > 0) {
 			
 			var cellOfInterest = null;
 			
 			// get the index where the new rows should be inserted
 			switch (position) {
 				case 'before':
-					cellOfInterest = TableSelection.selectedCells[0];
+					cellOfInterest = this.selection.selectedCells[0];
 					break;
 				case 'after':
-					cellOfInterest = TableSelection.selectedCells[
-						TableSelection.selectedCells.length - 1
+					cellOfInterest = this.selection.selectedCells[
+						this.selection.selectedCells.length - 1
 					];
 					break;
 			}
@@ -963,8 +966,8 @@ return function (TablePlugin, TableSelection) {
 			if (cellOfInterest && cellOfInterest.nodeType == 1) {
 				newRowIndex = cellOfInterest.parentNode.rowIndex;
 			}
-		} else if (typeof Table.Cell.lastActiveCell !== 'undefined') {
-			newRowIndex = Table.Cell.lastActiveCell.obj.context.parentNode.rowIndex;
+		} else if (typeof TableCell.lastActiveCell !== 'undefined') {
+			newRowIndex = TableCell.lastActiveCell.obj.context.parentNode.rowIndex;
 		}
 
 		// save a copy of the new row index for the created row
@@ -1026,7 +1029,7 @@ return function (TablePlugin, TableSelection) {
 		
 		this.numRows += rowsToInsert;
 		
-		TableSelection.unselectCells();
+		this.selection.unselectCells();
 
 		this.rowsToSelect = rowIdArray;
 		
@@ -1075,7 +1078,7 @@ return function (TablePlugin, TableSelection) {
 			cell,
 			currentColIdx,
 			columnsToSelect = [],
-			selectedColumnIdxs = TableSelection.selectedColumnIdxs;
+			selectedColumnIdxs = this.selection.selectedColumnIdxs;
 		
 		
 		if ( typeof TablePlugin.activeTable != 'undefined' ) {
@@ -1147,7 +1150,7 @@ return function (TablePlugin, TableSelection) {
 				}
 			}
 			
-			TableSelection.unselectCells();
+			this.selection.unselectCells();
 			this.selectColumns( columnsToSelect );
 		}
 	};
@@ -1187,7 +1190,7 @@ return function (TablePlugin, TableSelection) {
 	Table.prototype.focusOut = function() {
 		if (this.hasFocus) {
 			TablePlugin.setFocusedTable(undefined);
-			TableSelection.selectionType = undefined;
+			this.selection.selectionType = undefined;
 		}
 	};
 
@@ -1214,7 +1217,7 @@ return function (TablePlugin, TableSelection) {
 		
 		FloatingMenu.setScope(TablePlugin.name + '.column');
 		
-		TablePlugin.columnHeader.setPressed( TableSelection.isHeader() );
+		TablePlugin.columnHeader.setPressed( this.selection.isHeader() );
 		
 		var rows = this.obj.find("tr").toArray();
 
@@ -1232,7 +1235,7 @@ return function (TablePlugin, TableSelection) {
 		// blur all editables within the table
 		this.obj.find('div.aloha-ui-table-cell-editable').blur();
 
-		TableSelection.selectColumns( columnsToSelect );
+		this.selection.selectColumns( columnsToSelect );
 
 	};
 
@@ -1312,8 +1315,8 @@ Table.prototype.selectRows = function () {
 //    TableSelection.selectionType = 'row';
     FloatingMenu.setScope(TablePlugin.name + '.row');
     
-    TableSelection.selectRows( this.rowsToSelect );
-	TablePlugin.columnHeader.setPressed( TableSelection.isHeader() );
+    this.selection.selectRows( this.rowsToSelect );
+	TablePlugin.columnHeader.setPressed( this.selection.isHeader() );
 
     // blur all editables within the table
     this.obj.find('div.aloha-ui-table-cell-editable').blur();
@@ -1375,11 +1378,11 @@ Table.prototype.selectRows = function () {
 	};
 
 	Table.prototype.newCell = function(domElement) {
-		return new Table.Cell(domElement, this);
+		return new TableCell(domElement, this);
 	};
 
 	Table.prototype.newActiveCell = function(domElement) {
-		var cell = new Table.Cell(domElement, this);
+		var cell = new TableCell(domElement, this);
 		cell.activate();
 		return cell;
 	};
