@@ -7,7 +7,7 @@
 
 define(
 ['aloha', 'aloha/jquery', 'aloha/plugin', 'aloha/pluginmanager', 'aloha/floatingmenu', 'i18n!table/nls/i18n', 'i18n!aloha/nls/i18n', 'table/table-cell', 'table/table-create-layer', 'table/table-selection', 'table/table', 'table/table-plugin-utils', 'css!table/css/table.css'],
-function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, CellModuleConstructor, CreateLayerModuleConstructor, TableSelectionModuleConstructor, TableModuleConstructor, Utils) {
+function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, CellModuleConstructor, CreateLayer, TableSelectionModuleConstructor, TableModuleConstructor, Utils) {
 
 	var
 		GENTICS = window.GENTICS;
@@ -109,7 +109,7 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cel
     this.rowConfig = this.checkConfig(this.rowConfig||this.settings.rowConfig);
     
 		// add reference to the create layer object
-		this.createLayer = new Table.CreateLayer();
+		this.createLayer = new CreateLayer(this);
 
 		var that = this;
 
@@ -1143,7 +1143,6 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cel
 	var Table = TableModuleConstructor(TablePlugin, TableSelection);
 
 	Table.Cell = CellModuleConstructor(TableSelection);
-	Table.CreateLayer = CreateLayerModuleConstructor(TablePlugin);
 
 	Aloha.TableSelection = TableSelection;
 
