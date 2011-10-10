@@ -3191,6 +3191,10 @@ function correctRange ( range ) {
 		 */
 		toString: function() {
 			return 'Aloha.Selection';
+		},
+		
+		getRangeCount: function() {
+			return this._nativeSelection.rangeCount;
 		}
 
 	});

@@ -6826,9 +6826,8 @@ commands.inserthorizontalrule = {
 ///// The insertHTML command /////
 //@{
 commands.inserthtml = {
-	action: function(value) {
+	action: function(value, range) {
 		
-		var range = getActiveRange();
 		
 		// "Delete the contents of the active range."
 		deleteContents(range);
@@ -7946,7 +7945,7 @@ return {
 	queryCommandState: myQueryCommandState,
 	queryCommandValue: myQueryCommandValue,
 	queryCommandEnabled: myQueryCommandEnabled,
-	queryCommanSupported: myQueryCommandSupported
+	queryCommandSupported: myQueryCommandSupported
 }
 }); // end define
 // vim: foldmarker=@{,@} foldmethod=marker

@@ -26,6 +26,7 @@ index:
   order:
     - "Start Here"
     - "Plugins"
+    - "Commands"
     - "Contributing to Aloha Editor"
   Start Here:
     - title: "Using Aloha Editor"
@@ -43,6 +44,10 @@ index:
     - title: "Writing Plugins"
       url: writing_plugins
       text: "In this guide, we will explain the plugin structure, the usage of requireJS and the plugin lifecylce in Aloha Editor."
+  Commands:
+    - title: "Using commands"
+      url: using_commands
+      text: "Learn how to use commands."
   Plugins:
     - title: "Block"
       url: plugin_block
