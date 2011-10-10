@@ -104,7 +104,7 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, console) {
 			pl.sidebar = sidebar;
 			sidebar.addPanel({
 					
-					id       linkNamespace: pl.nsClass('sidebar-panel-target'),
+					id       : pl.nsClass('sidebar-panel-target'),
 					title    : i18n.t('floatingmenu.tab.link'),
 					content  : '',
 					expanded : true,
