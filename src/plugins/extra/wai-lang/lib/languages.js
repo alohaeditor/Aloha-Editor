@@ -99,7 +99,7 @@ function(jQuery, Repository, i18nCore, WaiLang) {
 		query: function( p, callback) {
 			// Not supported; filter, orderBy, maxItems, skipcount, renditionFilter
 			var that = this;
-			var query = new RegExp(p.queryString, 'i'), i, d = [], matchesName, matchesType, currentElement;
+			var query = new RegExp("^" + p.queryString, 'i'), i, d = [], matchesName, matchesType, currentElement;
 
 			for (i = 0; i < this.languageCodes.length; ++i) {
 				currentElement = this.languageCodes[i];
