@@ -2619,34 +2619,6 @@ function getIndexOfNodeInParent ( node ) {
 	return -1;
 };
 
-/**
- * We walk backwards up the tree until we encounter a node which matches a
- * predicate condition
- */
-// function getNearestLeftNode ( node, predicate ) {
-	// var scion;
-	
-	// while ( node = getLeftNeighbor( node ) ) {
-		// scion = node;
-		
-		// while ( scion.lastChild ) {
-			// scion = scion.lastChild;
-		// }
-		
-		// if ( typeof predicate === 'function' ) {
-			// if ( predicate( scion ) ) {
-				// return scion;
-			// }
-			
-			// continue;
-		// }
-		
-		// return node;
-	// }
-	
-	// return null;
-// };
-
 function getFurthestLeftScion ( node ) {
 	if ( !node || !node.firstChild ) {
 		return null;
@@ -2673,6 +2645,17 @@ function getFurthestRightScion ( node ) {
 	return getFurthestRightScion( node.lastChild ) || node.lastChild;
 };
 
+/**
+ * We walk backwards up the tree until we encounter a node which matches a
+ * predicate condition
+ *
+ * Unit test:
+ *		given: "<div><u><i>foo</i></u><b></b><p>bar</p></div>", if node is <p>, then return <b>
+ *		given: "<div><u><i>foo</i><b>test</b></u><p>bar</p></div>", if node is <p>, then return <TextNode textContent="test">
+ *
+ * @param {Object: DOMElement} node
+ * @param {Function} predicate
+ */
 function getNearestLeftNode ( node, predicate ) {
 	if ( !node ) {
 		return null;
@@ -2691,12 +2674,17 @@ function getNearestLeftNode ( node, predicate ) {
 	var scion;
 	
 	if ( node.lastChild ) {
-		scion = getNearestLeftNode( node.lastChild, predicate );
+		scion = ( node.lastChild.nodeType == Node.TEXT_NODE )
+			  ? node.lastChild
+			  : getFurthestRightScion( node.lastChild, predicate );
 	}
 	
 	if ( scion ) {
 		return scion;
 	}
+	
+	// node has no children. check whether we should quit now or move left to
+	// the next left neighbor
 	
 	if ( typeof predicate !== 'function' ) {
 		return node;
@@ -2706,18 +2694,17 @@ function getNearestLeftNode ( node, predicate ) {
 		return node;
 	}
 	
-	scion = getNearestLeftNode( getLeftNeighbor( node ), predicate );
+	scion = getNearestLeftNode( node, predicate );
 	
 	if ( scion ) {
 		return scion;
 	}
 	
-	return scion;
+	return null;
 };
 
-
 /**
- * Like getNearestRightNode, but in the other direction
+ * Like getNearestLeftNode, but in the other direction
  * <b></b><b></b>{<p><b></b><b>f</b>foo]</p>
  * <b></b><b></b><p><b></b><b>[f</b>foo]</p>
  */
@@ -2726,10 +2713,18 @@ function getNearestRightNode ( node, predicate ) {
 		return null;
 	}
 	
+	node = getRightNeighbor( node );
+	
+	if ( !node ) {
+		return null;
+	}
+	
 	var scion;
 	
 	if ( node.firstChild ) {
-		scion = getNearestRightNode( node.firstChild, predicate );
+		scion = ( node.firstChild.nodeType == Node.TEXT_NODE )
+			  ? node.firstChild
+			  : getFurthestLeftScion( node.firstChild, predicate );
 	}
 	
 	if ( scion ) {
@@ -2744,13 +2739,13 @@ function getNearestRightNode ( node, predicate ) {
 		return node;
 	}
 	
-	scion = getNearestRightNode( getRightNeighbor( node ), predicate );
+	scion = getNearestRightNode( node, predicate );
 	
 	if ( scion ) {
 		return scion;
 	}
 	
-	return node;
+	return null;
 };
 
 /**
