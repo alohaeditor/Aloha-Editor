@@ -1078,7 +1078,6 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 	};
 
 	TablePlugin.setFocusedTable = function(focusTable) {
-		console.log("focusedTable: " + (focusTable ? "true" : "false"));
 		var that = this;
 		for (var i = 0; i < TablePlugin.TableRegistry.length; i++) {
 			TablePlugin.TableRegistry[i].hasFocus = false;
