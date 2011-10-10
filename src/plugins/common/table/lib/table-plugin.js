@@ -231,28 +231,19 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cel
 };
 
 //namespace prefix for this plugin
-var ns = 'aloha-table';
+var tableNamespace = 'aloha-table';
 
 function nsSel () {
-    var strBldr = [], prx = ns;
-    jQuery.each(arguments, function () { strBldr.push('.' + (this == '' ? prx : prx + '-' + this)); });
-    return strBldr.join(' ').trim();
+    var stringBuilder = [], prefix = tableNamespace;
+    jQuery.each(arguments, function () { stringBuilder.push('.' + (this == '' ? prefix : prefix + '-' + this)); });
+    return stringBuilder.join(' ').trim();
 };
 
 //Creates string with this component's namepsace prefixed the each classname
 function nsClass () {
-    var strBldr = [], prx = ns;
-    jQuery.each(arguments, function () { strBldr.push(this == '' ? prx : prx + '-' + this); });
-    return strBldr.join(' ').trim();
-};
-
-TablePlugin.processH = function(h) {
-	var that = this;
-	jQuery(h).attr('id',that.sanitize(jQuery(h).text()));
-};
-		
-TablePlugin.sanitize = function(str) {
-	return (str.replace(/[^a-z0-9]+/gi,'_'));
+    var stringBuilder = [], prefix = tableNamespace;
+    jQuery.each(arguments, function () { stringBuilder.push(this == '' ? prefix : prefix + '-' + this); });
+    return stringBuilder.join(' ').trim();
 };
 
 TablePlugin.initSidebar = function(sidebar) {
@@ -293,7 +284,7 @@ TablePlugin.initSidebar = function(sidebar) {
             }
             
         });
-	sidebar.show().open();
+	sidebar.show();
 };
 
   /**

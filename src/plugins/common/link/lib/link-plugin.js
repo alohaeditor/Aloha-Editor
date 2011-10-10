@@ -13,7 +13,7 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, console) {
 	var
 		GENTICS = window.GENTICS;
 	//namespace prefix for this plugin
-	var	ns = 'aloha-link';
+	var	linkNamespace = 'aloha-link';
 
 	return Plugin.create('link', {
 		/**
@@ -87,25 +87,16 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, console) {
 		},
 
 		nsSel: function () {
-			var strBldr = [], prx = ns;
-			jQuery.each(arguments, function () { strBldr.push('.' + (this == '' ? prx : prx + '-' + this)); });
-			return strBldr.join(' ').trim();
+			var stringBuilder = [], prefix = linkNamespace;
+			jQuery.each(arguments, function () { stringBuilder.push('.' + (this == '' ? prefix : prefix + '-' + this)); });
+			return stringBuilder.join(' ').trim();
 		},
 
 		//Creates string with this component's namepsace prefixed the each classname
 		nsClass: function () {
-			var strBldr = [], prx = ns;
-			jQuery.each(arguments, function () { strBldr.push(this == '' ? prx : prx + '-' + this); });
-			return strBldr.join(' ').trim();
-		},
-
-		processH: function(h) {
-			var that = this;
-			jQuery(h).attr('id',that.sanitize(jQuery(h).text()));
-		},
-				
-		sanitize: function(str) {
-			return (str.replace(/[^a-z0-9]+/gi,'_'));
+			var stringBuilder = [], prefix = linkNamespace;
+			jQuery.each(arguments, function () { stringBuilder.push(this == '' ? prefix : prefix + '-' + this); });
+			return stringBuilder.join(' ').trim();
 		},
 
 		initSidebar: function(sidebar) {
@@ -113,9 +104,9 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, console) {
 			pl.sidebar = sidebar;
 			sidebar.addPanel({
 					
-					id         : pl.nsClass('sidebar-panel-target'),
-					title     : i18n.t('floatingmenu.tab.link'),
-					content     : '',
+					id       linkNamespace: pl.nsClass('sidebar-panel-target'),
+					title    : i18n.t('floatingmenu.tab.link'),
+					content  : '',
 					expanded : true,
 					activeOn : 'a, link',
 					
@@ -180,7 +171,7 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, console) {
 					}
 					
 				});
-			sidebar.show().open();
+			sidebar.show();
 		},
 		
 		/**
