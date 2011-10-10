@@ -1942,7 +1942,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 			newStartOffset = startOffset,
 			newEndOffset = endOffset;
 		
-		getStartPos( startContainer, startOffset );
+		//getStartPos( startContainer, startOffset );
 		
 		if ( isSelectionStopNode( endContainer ) ) {
 			if ( endOffset == 0 ) {
@@ -2454,6 +2454,68 @@ var voidElementsLookupTable = {
 	'WBR'     : true
 };
 
+// https://developer.mozilla.org/en/HTML/Block-level_elements
+var blockElementsLookupTable = {
+	'ADDRESS'    : true,
+	'ARTICLE'    : true,
+	'ASIDE'      : true,
+	'AUDIO'      : true,
+	'BLOCKQUOTE' : true,
+//	'BODY'       : true,
+//	'BR'         : true,
+//	'BUTTON'     : true,
+	'CANVAS'     : true,
+//	'CAPTION'    : true,
+//	'COL'        : true,
+//	'COLGROUP'   : true,
+	'DD'         : true,
+	'DIV'        : true,
+	'DL'         : true,
+//	'DT'         : true,
+//	'EMBED'      : true,
+	'FIELDSET'   : true,
+	'FIGCAPTION' : true,
+	'FIGURE'     : true,
+	'FOOTER'     : true,
+	'FORM'       : true,
+	'H1'         : true,
+	'H2'         : true,
+	'H3'         : true,
+	'H4'         : true,
+	'H5'         : true,
+	'H6'         : true,
+	'HEADER'     : true,
+	'HGROUP'     : true,
+	'HR'         : true,
+	'NOSCRIPT'   : true,
+	'OL'         : true,
+	'OUTPUT'     : true,
+	'P'          : true,
+	'PRE'        : true,
+	'SECTION'    : true,
+	'TABLE'      : true,
+	'TFOOT'      : true,
+	'UL'         : true,
+	'VIDEO'      : true
+};
+
+// Useful functions defined in engine.js:
+// isBlockNode
+// isInlineNode
+// isEditingHost
+// isWhitespaceNode
+// isCollapsedWhitespaceNode
+// removeExtraneousLineBreaksBefore
+// removeExtraneousLineBreaksAtTheEndOf
+// removeExtraneousLineBreaksFrom
+//
+// Useful variables defined in engine.js:
+// namesOfElementsWithInlineContents
+
+function isBlockElement ( node ) {
+	return node ? !!blockElementsLookupTable[ node.nodeName ] : false;
+};
+
 function isVoidElement ( node ) {
 	return node ? !!voidElementsLookupTable[ node.nodeName ] : false;
 };
@@ -2462,6 +2524,9 @@ function isPhrasingElement ( node ) {
 	return node ? !!phrasingElementsLookupTable[ node.nodeName ] : false;
 };
 
+// Phrasing elements are a subset of flow elements, so we return true is the
+// node's name is in the flowElementsLookupTable or if it is in the phrasing-
+// ElementsLookupTable
 function isFlowElement ( node ) {
 	if ( !node ) {
 		return false;
@@ -2475,6 +2540,19 @@ function isEditingHost ( node ) {
 	return GENTICS.Utils.Dom.isEditingHost( node );
 };
 
+/**
+ * Unit tests:
+ *		given "<p><b>foo</b><i>foo</i></p>", if node is <i>, returns <b>
+ *		given "<a>foo</a><p><b>bar</b></p>", if node is <b> return <a>
+ *		given "<b>foo</b>", if node is <b> returns null
+ *		given "<div><p><b>foo</b></p><i>bar</i></div>", if node is <b> return null
+ *		given "<div><p><b>foo</b></p><i>bar</i></div>", if node is <i> return <p>
+ *
+ * Simple example test:
+ *		getLeftNeighbor(jQuery('<p><b>foo</b><i>foo</i></p>').find('i')[0])
+ *
+ * @param {Object: DOMElement} node
+ */
 function getLeftNeighbor ( node ) {
 	if ( !node ) {
 		return null;
@@ -2484,18 +2562,22 @@ function getLeftNeighbor ( node ) {
 		return node.previousSibling;
 	}
 	
-	// We cannot jump out of the editing host, so we will fail instead
+	if ( !node.parentNode ) {
+		return null;
+	}
+	
 	if ( isEditingHost( node.parentNode ) ) {
 		return null;
 	}
 	
-	if ( node.parentNode ) {
-		return getLeftNeighbor( node.parentNode );
-	}
-	
-	return null;
+	return getLeftNeighbor( node.parentNode );
 };
 
+/**
+ * Similar to getLeftNeighbor, but in the other direction
+ * 
+ * @param {Object: DOMElement} node
+ */
 function getRightNeighbor ( node ) {
 	if ( !node ) {
 		return null;
@@ -2505,16 +2587,15 @@ function getRightNeighbor ( node ) {
 		return node.nextSibling;
 	}
 	
-	// We cannot jump out of the editing host, so we will fail instead
+	if ( !node.parentNode ) {
+		return null;
+	}
+	
 	if ( isEditingHost( node.parent ) ) {
 		return null;
 	}
 	
-	if ( node.parentNode ) {
-		return getRightNeighbor( node.parentNode );
-	}
-	
-	return null;
+	return getRightNeighbor( node.parentNode );
 };
 
 function getIndexOfNodeInParent ( node ) {
@@ -2823,6 +2904,22 @@ function correctRange ( range ) {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	/**
 	 * Implements Selection http://html5.org/specs/dom-range.html#selection
 	 * @namespace Aloha
@@ -2983,7 +3080,7 @@ function correctRange ( range ) {
 		 */ 
 		addRange: function( range ) {
 			// set readonly attributes
-			this._nativeSelection.addRange(  correctRange(range) );
+			this._nativeSelection.addRange( correctRange(range) );
 		},
 		
 		/**
@@ -3010,7 +3107,7 @@ function correctRange ( range ) {
 		 * being triggered
 		 * @param flag boolean defines weather to update the selection on change or not
 		 */
-		preventedChange : function( flag ) {
+		preventedChange: function( flag ) {
 //			this.preventChange = typeof flag === 'undefined' ? false : flag;
 		},
 
@@ -3020,7 +3117,7 @@ function correctRange ( range ) {
 		 * @return boolean true if aloha-selection-change event
 		 *         was prevented
 		 */
-		isChangedPrevented : function() {
+		isChangedPrevented: function() {
 //			return this.preventSelectionChangedFlag;
 		},
 
@@ -3036,7 +3133,7 @@ function correctRange ( range ) {
 		 *         otherwise
 		 * @hide
 		 */
-		refresh : function(event) {
+		refresh: function(event) {
 
 		},
 
@@ -3046,7 +3143,7 @@ function correctRange ( range ) {
 		 * @return "Aloha.Selection"
 		 * @hide
 		 */
-		toString : function() {
+		toString: function() {
 			return 'Aloha.Selection';
 		}
 
