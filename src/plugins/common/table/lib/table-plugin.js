@@ -223,6 +223,74 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cel
         tr[i].deactivate();
       }
     });
+	if(this.settings.summaryinsidebar) {
+		Aloha.ready(function () { 
+			that.initSidebar(Aloha.Sidebar.right.show());  
+		});
+	}
+};
+
+//namespace prefix for this plugin
+var tableNamespace = 'aloha-table';
+
+function nsSel () {
+    var stringBuilder = [], prefix = tableNamespace;
+    jQuery.each(arguments, function () { stringBuilder.push('.' + (this == '' ? prefix : prefix + '-' + this)); });
+    return stringBuilder.join(' ').trim();
+};
+
+//Creates string with this component's namepsace prefixed the each classname
+function nsClass () {
+    var stringBuilder = [], prefix = tableNamespace;
+    jQuery.each(arguments, function () { stringBuilder.push(this == '' ? prefix : prefix + '-' + this); });
+    return stringBuilder.join(' ').trim();
+};
+
+TablePlugin.initSidebar = function(sidebar) {
+	var pl = this;
+	pl.sidebar = sidebar;
+	sidebar.addPanel({
+            
+            id         : nsClass('sidebar-panel'),
+            title     : i18n.t('table.sidebar.title'),
+            content     : '',
+            expanded : true,
+            activeOn : 'table',
+            
+            onInit     : function () {
+            	 var that = this,
+	                 content = this.setContent(
+	                		 '<label class="' + nsClass('label') + '" for="' + nsClass('textarea') + '" >' + i18n.t('table.label.target') + '</label>' +
+	                		 '<textarea id="' + nsClass('textarea') + '" class="' + nsClass('textarea') + '" />').content;
+	             
+            	 jQuery(nsSel('textarea')).live('keyup', function() { 
+					//The original developer thought that escaping the
+					//quote characters of the textarea value are
+					//necessary to work around a bug in IE. I could not
+					//reproduce the bug, so I commented the following
+					//out.
+					//.replace("\"", '&quot;').replace("'", "&#39;")
+ 					jQuery(that.effective).attr('summary', jQuery(nsSel('textarea')).val());
+ 					var waiDiv = jQuery('div[class*="wai"]', 'table#' + jQuery(that.effective).attr('id'));
+ 					waiDiv.removeClass(pl.get('waiGreen'));
+ 					waiDiv.removeClass(pl.get('waiRed'));
+ 				    
+ 					if (jQuery(nsSel('textarea')).val().trim() != '') {
+ 						waiDiv.addClass(pl.get('waiGreen'));
+				    } else {
+				    	waiDiv.addClass(pl.get('waiRed'));
+				    }
+ 				});
+            },
+            
+            onActivate: function (effective) {
+            	var that = this;
+				that.effective = effective;
+				jQuery(nsSel('textarea')).val(jQuery(that.effective).attr('summary'));
+            }
+            
+        });
+	sidebar.show();
 };
 
   /**
@@ -863,14 +931,14 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cel
 		this.summary.addListener('keyup', function(obj, event) {
 			that.activeTable.checkWai();
 		});
-
-		FloatingMenu.addButton(
-			this.name + '.cell',
-			this.summary,
-			i18n.t('floatingmenu.tab.table'),
-			1
-		);
-
+		if(!this.settings.summaryinsidebar) {
+			FloatingMenu.addButton(
+				this.name + '.cell',
+				this.summary,
+				i18n.t('floatingmenu.tab.table'),
+				1
+			);
+		}
 	};
 
 	/**

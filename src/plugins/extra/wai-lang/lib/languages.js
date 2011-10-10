@@ -12,10 +12,9 @@ define(
 [
  'aloha/jquery',
  'aloha/repository',
- 'i18n!aloha/nls/i18n',
- 'wai-lang/wai-lang-plugin' 
+ 'i18n!aloha/nls/i18n'
 ],
-function(jQuery, Repository, i18nCore, WaiLang) {
+function(jQuery, Repository, i18nCore) {
 	"use strict";
 	
 	var $ = jQuery,
@@ -56,8 +55,8 @@ function(jQuery, Repository, i18nCore, WaiLang) {
 		
 	
 		markObject: function (obj, item)  {
-			var wlPlugin = require('wai-lang/wai-lang-plugin');
-			wlPlugin.makeVisible(obj);
+			//copied from wai-lang-plugin makeVisible to avoid a circular dependency
+			jQuery(obj).addClass('wai-lang');
 		},
 		
 		
@@ -99,7 +98,7 @@ function(jQuery, Repository, i18nCore, WaiLang) {
 		query: function( p, callback) {
 			// Not supported; filter, orderBy, maxItems, skipcount, renditionFilter
 			var that = this;
-			var query = new RegExp(p.queryString, 'i'), i, d = [], matchesName, matchesType, currentElement;
+			var query = new RegExp("^" + p.queryString, 'i'), i, d = [], matchesName, matchesType, currentElement;
 
 			for (i = 0; i < this.languageCodes.length; ++i) {
 				currentElement = this.languageCodes[i];
