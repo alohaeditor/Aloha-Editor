@@ -15,7 +15,7 @@ define(
  'wai-lang/languages',
  'css!wai-lang/css/wai-lang.css'
 ],
-function( jQuery, Plugin, FloatingMenu, i18n, i18nCore ) {
+function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 	"use strict";
 	
 	var $ = jQuery,
@@ -68,16 +68,16 @@ function( jQuery, Plugin, FloatingMenu, i18n, i18nCore ) {
 					// show/hide the button according to the configuration
 					config = that.getEditableConfig(Aloha.activeEditable.obj);
 					if ( jQuery.inArray('span', config) != -1) {
-						that.addMarkupToSelectionButton.show();
+						that.addMarkupToSelectionButton.setPressed(false);
 					} else {
-						that.addMarkupToSelectionButton.hide();
+						that.addMarkupToSelectionButton.setPressed(true);
 						// leave if a is not allowed
 						return;
 					}
 	
-					foundMarkup = that.findLangMarkup( rangeObject );
+					foundMarkup = that.findLanguageMarkup( rangeObject );
 					if ( foundMarkup ) {
-						that.addMarkupToSelectionButton.hide();
+						that.addMarkupToSelectionButton.setPressed(true);
 						FloatingMenu.setScope('wai-lang');
 						that.langField.setTargetObject(foundMarkup, 'lang');
 					} else {
@@ -102,9 +102,9 @@ function( jQuery, Plugin, FloatingMenu, i18n, i18nCore ) {
 			this.addMarkupToSelectionButton = new Aloha.ui.Button({
 				'iconClass' : 'aloha-button aloha-button-wai-lang',
 				'size' : 'small',
-				'onclick' : function () { that.addMarkupToSelection( false ); },
+				'onclick' : function () { that.addRemoveMarkupToSelection( ); },
 				'tooltip' : i18n.t('button.add-wai-lang.tooltip'),
-				'toggle' : false
+				'toggle' : true
 			});
 			FloatingMenu.addButton(
 				'Aloha.continuoustext',
@@ -118,10 +118,12 @@ function( jQuery, Plugin, FloatingMenu, i18n, i18nCore ) {
 	
 			this.langField = new Aloha.ui.AttributeField({
 				'width':320,
-				'valueField': 'id'
+				'valueField': 'id',
+				'minChars':1
 			});
 			this.langField.setTemplate('<a><b>{name}</b></p></p><img src="' + Aloha.getPluginUrl('wai-lang') + '/{url}"/></a>');
 			this.langField.setObjectTypeFilter(this.objectTypeFilter);
+			
 			// add the input field for links
 			FloatingMenu.addButton(
 				'wai-lang',
@@ -137,14 +139,13 @@ function( jQuery, Plugin, FloatingMenu, i18n, i18nCore ) {
 				'tooltip' : i18n.t('button.add-wai-lang-remove.tooltip'),
 				'toggle' : false
 			});
-			
+
 			FloatingMenu.addButton(
 				'wai-lang',
 				this.removeButton,
 				i18n.t('floatingmenu.tab.wai-lang'),
 				1
 			);
-	
 		},
 		
 		findLangMarkup: function(range) {
@@ -153,14 +154,13 @@ function( jQuery, Plugin, FloatingMenu, i18n, i18nCore ) {
 		    }
 			if ( Aloha.activeEditable ) {
 			    return range.findMarkup(function() {
-			    	var  ret = (jQuery(this).hasClass('wai-lang') || jQuery(this).is('[lang]'));
-					return ret;
+					return this.nodeName.toLowerCase() == 'span' && (jQuery(this).hasClass('wai-lang') || jQuery(this).is('span[lang]'));
 			    }, Aloha.activeEditable.obj);
 			} else {
 				return null;
 			}
 		},
-		
+
 		removeLangMarkup: function() {
 			var range = Aloha.Selection.getRangeObject();
 		    var foundMarkup = this.findLangMarkup(range);
@@ -171,7 +171,9 @@ function( jQuery, Plugin, FloatingMenu, i18n, i18nCore ) {
 		        // select the (possibly modified) range
 		        range.select();
 				FloatingMenu.setScope('Aloha.continousText');
-		    }
+				this.langField.setTargetObject(null);
+				FloatingMenu.doLayout();
+		    } 	
 		},
 		
 		/**
@@ -187,9 +189,7 @@ function( jQuery, Plugin, FloatingMenu, i18n, i18nCore ) {
 				}
 			});
 			
-			Aloha.ready( function() {
-				that.handleExistingSpans(that) ;
-			});
+			Aloha.ready(that.handleExistingSpans);
 	
 		},
 		
@@ -197,12 +197,13 @@ function( jQuery, Plugin, FloatingMenu, i18n, i18nCore ) {
 		 * Find all existing spans and register hotkey hotkeys and make 
 		 * annotations of languages visible.
 		 */
-		handleExistingSpans: function( that ) {
+		handleExistingSpans: function() {
+			var that = this;
 			// add to all editables the Link shortcut
 			jQuery.each(Aloha.editables, function(key, editable){
 				
 				// Hotkey for adding new language annotations: CTRL+I
-				editable.obj.keydown( that.handleKeyDown );			
+				editable.obj.keydown(that.handleKeyDown);			
 
 				
 			});
@@ -217,10 +218,10 @@ function( jQuery, Plugin, FloatingMenu, i18n, i18nCore ) {
 		},
 		
 		
-		handleKeyDown: function( e ) {
+		handleKeyDown: function(e) {
 			if ( e.metaKey && e.which == 73 ) {
 				
-				if ( that.findLangMarkup() ) {
+				if ( that.findLanguageMarkup() ) {
 					FloatingMenu.userActivatedTab = i18n.t('floatingmenu.tab.wai-lang');
 
 					// TODO this should not be necessary here!
@@ -285,12 +286,20 @@ function( jQuery, Plugin, FloatingMenu, i18n, i18nCore ) {
 			}
 		},
 		
+		addRemoveMarkupToSelection: function () {
+			var that = this;
+			if(that.addMarkupToSelectionButton.pressed) {
+				that.removeLangMarkup();
+			} else {
+				that.addMarkupToSelection(false);
+			}
+		},
 		
 		addMarkupToSelection: function () {
 			var range, newSpan;
 
 			// do not add markup to a area that already contains a markup
-			if ( this.findLangMarkup( range ) ) {
+			if ( this.findLanguageMarkup( range ) ) {
 				return;
 			}
 	
@@ -318,7 +327,7 @@ function( jQuery, Plugin, FloatingMenu, i18n, i18nCore ) {
 		removeMarkup: function () {
 	
 			var	range = Aloha.Selection.getRangeObject(),
-				foundMarkup = this.findLangMarkup();
+				foundMarkup = this.findLanguageMarkup();
 			if ( foundMarkup ) {
 				// remove the markup
 				GENTICS.Utils.Dom.removeFromDOM(foundMarkup, range, true);

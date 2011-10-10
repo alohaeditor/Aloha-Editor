@@ -243,10 +243,6 @@
 	       "name" : "Hungarian ",
 	        "nativeName" : "Magyar "
 	    },
-	    "ia" : {
-	       "name" : "Interlingua ",
-	        "nativeName" : "Interlingua "
-	    },
 	    "id" : {
 	       "name" : "Indonesian ",
 	        "nativeName" : "Bahasa Indonesia "
@@ -259,14 +255,6 @@
 	       "name" : "Irish ",
 	        "nativeName" : "Gaeilge "
 	    },
-	    "ig" : {
-	       "name" : "Igbo ",
-	        "nativeName" : "Asụsụ Igbo "
-	    },
-	    "ik" : {
-	       "name" : "Inupiaq ",
-	        "nativeName" : "Iñupiaq, Iñupiatun "
-	    },
 	    "io" : {
 	       "name" : "Ido ",
 	        "nativeName" : "Ido "
@@ -278,10 +266,6 @@
 	    "it" : {
 	       "name" : "Italian ",
 	        "nativeName" : "Italiano "
-	    },
-	    "iu" : {
-	       "name" : "Inuktitut ",
-	        "nativeName" : "ᐃᓄᒃᑎᑐᑦ "
 	    },
 	    "ja" : {
 	       "name" : "Japanese ",
@@ -315,10 +299,6 @@
 	       "name" : "Khmer ",
 	        "nativeName" : "NA"
 	    },
-	    "ki" : {
-	       "name" : "Kikuyu, Gikuyu ",
-	        "nativeName" : "Gĩkũyũ "
-	    },
 	    "rw" : {
 	       "name" : "Kinyarwanda ",
 	        "nativeName" : "Ikinyarwanda "
@@ -342,10 +322,6 @@
 	    "ku" : {
 	       "name" : "Kurdish ",
 	        "nativeName" : "Kurdî, كوردی‎ "
-	    },
-	    "kj" : {
-	       "name" : "Kwanyama, Kuanyama ",
-	        "nativeName" : "Kuanyama "
 	    },
 	    "la" : {
 	       "name" : "Latin ",
@@ -467,10 +443,6 @@
 	       "name" : "Occitan ",
 	        "nativeName" : "Occitan "
 	    },
-	    "oj" : {
-	       "name" : "Ojibwe, Ojibwa ",
-	        "nativeName" : "ᐊᓂᔑᓈᐯᒧᐎᓐ "
-	    },
 	    "cu" : {
 	       "name" : "Old Church Slavonic, Church Slavic, Church Slavonic, Old Bulgarian, Old Slavonic ",
 	        "nativeName" : "ѩзыкъ словѣньскъ "
@@ -491,10 +463,6 @@
 	       "name" : "Panjabi, Punjabi ",
 	        "nativeName" : "ਪੰਜਾਬੀ, پنجابی‎ "
 	    },
-	    "pi" : {
-	       "name" : "Pāli ",
-	        "nativeName" : "पाऴि "
-	    },
 	    "fa" : {
 	       "name" : "Persian ",
 	        "nativeName" : "فارسی "
@@ -510,10 +478,6 @@
 	    "pt" : {
 	       "name" : "Portuguese ",
 	        "nativeName" : "Português "
-	    },
-	    "qu" : {
-	       "name" : "Quechua ",
-	        "nativeName" : "Runa Simi, Kichwa "
 	    },
 	    "rm" : {
 	       "name" : "Romansh ",
@@ -651,10 +615,6 @@
 	       "name" : "Turkish ",
 	        "nativeName" : "Türkçe "
 	    },
-	    "ts" : {
-	       "name" : "Tsonga ",
-	        "nativeName" : "Xitsonga "
-	    },
 	    "tt" : {
 	       "name" : "Tatar ",
 	        "nativeName" : "татарча, tatarça, تاتارچا‎ "
@@ -714,14 +674,6 @@
 	    "xh" : {
 	       "name" : "Xhosa ",
 	        "nativeName" : "isiXhosa "
-	    },
-	    "yi" : {
-	       "name" : "Yiddish ",
-	        "nativeName" : "ייִדיש "
-	    },
-	    "yo" : {
-	       "name" : "Yoruba ",
-	        "nativeName" : "Yorùbá "
 	    },
 	    "za" : {
 	       "name" : "Zhuang, Chuang ",
