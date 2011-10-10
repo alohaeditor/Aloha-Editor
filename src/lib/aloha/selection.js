@@ -2541,6 +2541,16 @@ function isEditingHost ( node ) {
 	return GENTICS.Utils.Dom.isEditingHost( node );
 };
 
+function getNodeLength ( node ) {
+	if ( !node ) {
+		return 0;
+	}
+	
+	return node.nodeType == Node.TEXT_NODE
+		? node.length
+		: node.childNodes.length;
+};
+
 /**
  * Unit tests:
  *		given "<p><b>foo</b><i>foo</i></p>", if node is <i>, returns <b>
@@ -2621,11 +2631,9 @@ function getIndexOfNodeInParent ( node ) {
 };
 
 function getFurthestLeftScion ( node ) {
-	if ( !node || !node.firstChild ) {
-		return null;
-	}
-	
-	return getFurthestLeftScion( node.firstChild ) || node.firstChild;
+	return ( !node || !node.firstChild )
+		? null
+		: getFurthestLeftScion( node.firstChild ) || node.firstChild;
 };
 
 /**
@@ -2639,11 +2647,9 @@ function getFurthestLeftScion ( node ) {
  * @param {Object: DOMElement} node
  */
 function getFurthestRightScion ( node ) {
-	if ( !node || !node.lastChild ) {
-		return null;
-	}
-	
-	return getFurthestRightScion( node.lastChild ) || node.lastChild;
+	return ( !node || !node.lastChild )
+		? null
+		: getFurthestRightScion( node.lastChild ) || node.lastChild;
 };
 
 /**
@@ -2672,20 +2678,18 @@ function getNearestLeftNode ( node, predicate ) {
 	
 	// ... then find the very right most container of this left neighbor
 	
-	var scion = getFurthestRightScion( node, predicate );
+	var scion = getFurthestRightScion( node );
 	
 	if ( scion ) {
-		return scion;
+		if ( typeof predicate !== 'function' || predicate ( scion ) ) {
+			return scion;
+		}
 	}
 	
 	// node has no children. check whether we should quit now or move left to
 	// the next left neighbor
 	
-	if ( typeof predicate !== 'function' ) {
-		return node;
-	}
-	
-	if ( predicate( node ) ) {
+	if ( typeof predicate !== 'function' || predicate( node ) ) {
 		return node;
 	}
 	
@@ -2735,12 +2739,6 @@ function getNearestRightNode ( node, predicate ) {
 	}
 	
 	return null;
-};
-
-function getNodeLength ( node ) {
-	return node.nodeType == Node.TEXT_NODE
-		? node.length
-		: node.childNodes.length;
 };
 
 /**
@@ -2815,69 +2813,39 @@ function getStartPosition ( container, offset ) {
 		var stop;
 		
 		if ( isBlockElement( node ) ) {
-			// Stop at the nearest text node. Or the left-most node before we
+			// get the nearest text node to the left of the start position. Or the left-most node before we
 			// would jump out of the editable.
 			stop = getNearestLeftNode( node, function ( node ) {
 				if ( node.nodeType == Node.TEXT_NODE ) {
 					return true;
 				}
-				
-				if ( node == node.parentNode.firstChild &&
-						isEditingHost( node.parentNode ) ) {
-					return true;
-				}
 			} );
 			
-			// debugger;
-			
-			// If we did not stop at a text node, then we stopped because we
-			// couldn't find any suitable node, and inside the editing host.
-			// We will therefore backtrack looking for the closest node to our
-			// original start position. This time we don't care if it is not a text node
-			// ie:
-			// test{<b></b><p>tes}</p> corrects to test<b>{</b><p>tes]</p>
-			// {<b></b><p>tes}</p> corrects to <b></b><p>[tes]</p>
-			// test{<i><b></b></i><p>tes}</p> corrects to test<i><b>{</b></i><p>tes]</p>
-			// foo<i><b>test</b><u>test<b></b></u></i><u></u>{<p>bar]</p>
-			// corrects to
-			// foo<i><b>test</b><u>test<b></b></u></i><u>{</u><p>bar]</p>
-			
-			if ( stop &&
-					stop.nextSibling == node &&
-						stop.nodeType != Node.TEXT_NODE ) {
-				stop = getFurthestLeftScion( node );
-				
-				if ( stop ) {
-					return {
-						node   : stop,
-						offset : 0
-					};
+			// We found a text node.
+			// We therefore have one of the following situations (where "foo"
+			// represents out text node:
+			// foo<b>bar</b>	    correct to foo[<b>bar</b>
+			// <i>foo</i><b>bar</b> correct to <i>foo[</i><b>bar</b>
+			// foo<i></i><b>bar</b> correct to foo<i>{</i><b>bar</b>
+			if ( stop && stop.nodeType == Node.TEXT_NODE ) {
+				// case: foo<i></i><b>bar</b>
+				if ( getRightNeighbor( stop ) != node ) {
+					stop = getNearestLeftNode( node );
 				}
-			} else if ( stop &&
-							stop.nextSibling != node &&
-								stop == stop.parentNode.firstChild &&
-									isEditingHost( stop.parentNode ) ) {
-				stop = getNearestLeftNode( node );
-			}
-			
-			if ( stop ) {
+				
 				return {
 					node   : stop,
 					offset : getNodeLength( stop )
 				};
 			}
 			
-			// We cannot expand the selection be moving the start position any
-			// further left, we will therefore contract the selection by,
-			// moving the start position right from its original position
-			stop = getNearestRightNode( node, function ( node ) {
-				return node.nodeType == Node.TEXT_NODE;
-			} );
-			
-			stop = stop || getFurthestLeftScion( node );
-			
+			// We never found a text node.
+			// Without a text node to land on, we cannot expand the selection
+			// to the left, so we will collapse the collection instead by
+			// moving the start position to the nearest text node to the right
 			// {<p><b></b>foo]</p> => <p><b></b>[foo]</p>
-			while ( stop && stop.nodeType != Node.TEXT_NODE) {
+			stop = getFurthestLeftScion( node);
+			while ( stop && stop.nodeType != Node.TEXT_NODE ) {
 				stop = getNearestRightNode( stop );
 			}
 			

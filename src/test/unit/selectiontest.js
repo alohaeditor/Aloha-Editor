@@ -143,8 +143,9 @@ function( TestUtils ) {
 			
 			// Greedly expand selection by moving start position towards the
 			// left
-//			[ 'foo{<p>bar]</p>', 'foo[<p>bar]</p>' ],
-//			[ '<b>foo</b>{<p>bar]</p>', '<b>foo[</b><p>bar]</p>' ],
+			[ 'foo{<p>bar]</p>', 'foo[<p>bar]</p>' ],
+			[ '<b>foo</b>{<p>bar]</p>', '<b>foo[</b><p>bar]</p>' ],
+			[ '<b>foo<u>foo1<i>foo2</i></u></b>{<p>bar]</p>', '<b>[foo<u>foo1<i>foo2</i></u></b><p>bar]</p>' ],
 			// No left neighbors. Can't go left, so contract selection by
 			// moving start position towards the right
 			[ '{<p>foo]</p>', '<p>[foo]</p>' ],
@@ -162,7 +163,6 @@ function( TestUtils ) {
 			// left because we found left neighbor who can host our start
 			// position
 			[ 'foo<b><b></b></b>{<p>bar]</p>', 'foo<b><b>{</b></b><p>bar]</p>'	], // wierd. should be like previous
-
 
 			// We have left neighbors, even though they are nested
 			[ '<i>foo</i><b></b>{<p>bar]</p>', '<i>foo</i><b>{</b><p>bar]</p>' ], // wierd
