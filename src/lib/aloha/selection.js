@@ -1919,7 +1919,6 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		}
 		
 		// In this case we move up from <p>foo{</p> to <p>foo[</p>
-		
 	};
 	
 	/**
@@ -2454,7 +2453,9 @@ var voidElementsLookupTable = {
 	'WBR'     : true
 };
 
-// https://developer.mozilla.org/en/HTML/Block-level_elements
+// It appears to me that block level elements are generally non-phrasing
+// flow elements
+// Reference: https://developer.mozilla.org/en/HTML/Block-level_elements
 var blockElementsLookupTable = {
 	'ADDRESS'    : true,
 	'ARTICLE'    : true,
@@ -2591,7 +2592,7 @@ function getRightNeighbor ( node ) {
 		return null;
 	}
 	
-	if ( isEditingHost( node.parent ) ) {
+	if ( isEditingHost( node.parentNode ) ) {
 		return null;
 	}
 	
@@ -2671,13 +2672,7 @@ function getNearestLeftNode ( node, predicate ) {
 	
 	// ... then find the very right most container of this left neighbor
 	
-	var scion;
-	
-	if ( node.lastChild ) {
-		scion = ( node.lastChild.nodeType == Node.TEXT_NODE )
-			  ? node.lastChild
-			  : getFurthestRightScion( node.lastChild, predicate );
-	}
+	var scion = getFurthestRightScion( node, predicate );
 	
 	if ( scion ) {
 		return scion;
@@ -2719,13 +2714,7 @@ function getNearestRightNode ( node, predicate ) {
 		return null;
 	}
 	
-	var scion;
-	
-	if ( node.firstChild ) {
-		scion = ( node.firstChild.nodeType == Node.TEXT_NODE )
-			  ? node.firstChild
-			  : getFurthestLeftScion( node.firstChild, predicate );
-	}
+	var scion = getFurthestLeftScion( node, predicate );
 	
 	if ( scion ) {
 		return scion;
@@ -2746,6 +2735,12 @@ function getNearestRightNode ( node, predicate ) {
 	}
 	
 	return null;
+};
+
+function getNodeLength ( node ) {
+	return node.nodeType == Node.TEXT_NODE
+		? node.length
+		: node.childNodes.length;
 };
 
 /**
@@ -2833,11 +2828,12 @@ function getStartPosition ( container, offset ) {
 				}
 			} );
 			
+			// debugger;
+			
 			// If we did not stop at a text node, then we stopped because we
-			// couldn't any suitable node, and we were about to reach
-			// We were not able to find a place to land. We will therefore
-			// backtrack looking for the closest node to our original start
-			// position. This time we don't care if it is not a text node
+			// couldn't find any suitable node, and inside the editing host.
+			// We will therefore backtrack looking for the closest node to our
+			// original start position. This time we don't care if it is not a text node
 			// ie:
 			// test{<b></b><p>tes}</p> corrects to test<b>{</b><p>tes]</p>
 			// {<b></b><p>tes}</p> corrects to <b></b><p>[tes]</p>
@@ -2845,26 +2841,45 @@ function getStartPosition ( container, offset ) {
 			// foo<i><b>test</b><u>test<b></b></u></i><u></u>{<p>bar]</p>
 			// corrects to
 			// foo<i><b>test</b><u>test<b></b></u></i><u>{</u><p>bar]</p>
+			
 			if ( stop &&
-					stop.nextSibling != node &&
-					stop == stop.parentNode.firstChild  &&
-						isEditingHost( stop.parentNode ) ) {
+					stop.nextSibling == node &&
+						stop.nodeType != Node.TEXT_NODE ) {
+				stop = getFurthestLeftScion( node );
+				
+				if ( stop ) {
+					return {
+						node   : stop,
+						offset : 0
+					};
+				}
+			} else if ( stop &&
+							stop.nextSibling != node &&
+								stop == stop.parentNode.firstChild &&
+									isEditingHost( stop.parentNode ) ) {
 				stop = getNearestLeftNode( node );
 			}
 			
 			if ( stop ) {
 				return {
 					node   : stop,
-					offset : stop.nodeType == Node.TEXT_NODE ? stop.length : stop.childNodes.length
+					offset : getNodeLength( stop )
 				};
 			}
 			
-			// We cannot go any further backwards.
-			// We will therefore contract the selection by moving the selection
-			// right of the original start position instead of left
+			// We cannot expand the selection be moving the start position any
+			// further left, we will therefore contract the selection by,
+			// moving the start position right from its original position
 			stop = getNearestRightNode( node, function ( node ) {
 				return node.nodeType == Node.TEXT_NODE;
 			} );
+			
+			stop = stop || getFurthestLeftScion( node );
+			
+			// {<p><b></b>foo]</p> => <p><b></b>[foo]</p>
+			while ( stop && stop.nodeType != Node.TEXT_NODE) {
+				stop = getNearestRightNode( stop );
+			}
 			
 			if ( stop ) {
 				return  {
@@ -2888,6 +2903,8 @@ function getStartPosition ( container, offset ) {
 };
 
 function correctRange ( range ) {
+	// return range;
+	
 	var startContainer = range.startContainer,
 		startOffset = range.startOffset;
 	

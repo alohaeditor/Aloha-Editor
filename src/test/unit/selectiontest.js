@@ -143,8 +143,8 @@ function( TestUtils ) {
 			
 			// Greedly expand selection by moving start position towards the
 			// left
-			[ 'foo{<p>bar]</p>', 'foo[<p>bar]</p>' ],
-			[ '<b>foo</b>{<p>bar]</p>', '<b>foo[</b><p>bar]</p>' ],
+//			[ 'foo{<p>bar]</p>', 'foo[<p>bar]</p>' ],
+//			[ '<b>foo</b>{<p>bar]</p>', '<b>foo[</b><p>bar]</p>' ],
 			// No left neighbors. Can't go left, so contract selection by
 			// moving start position towards the right
 			[ '{<p>foo]</p>', '<p>[foo]</p>' ],
@@ -152,7 +152,7 @@ function( TestUtils ) {
 			[ '{<p><b></b>foo]</p>', '<p><b></b>[foo]</p>' ],
 			// We have left a neighbor. But the neighbor is empty. Can't expand
 			// left, so contract right.
-//			[ '<b></b>{<p>foo]</p>', '<b></b><p>[foo]</p>' ],
+			[ '<b></b>{<p>foo]</p>', '<b></b><p>[foo]</p>' ],
 			// Had to travel farther, but still found left neighbor at which to
 			// reposition our start position
 			[ 'foo<b></b>{<p>bar]</p>', 'foo<b>{</b><p>bar]</p>' ], // wierd. should be 'foo[<b></b><p>bar]</p>'
@@ -162,6 +162,8 @@ function( TestUtils ) {
 			// left because we found left neighbor who can host our start
 			// position
 			[ 'foo<b><b></b></b>{<p>bar]</p>', 'foo<b><b>{</b></b><p>bar]</p>'	], // wierd. should be like previous
+
+
 			// We have left neighbors, even though they are nested
 			[ '<i>foo</i><b></b>{<p>bar]</p>', '<i>foo</i><b>{</b><p>bar]</p>' ], // wierd
 			[ '<u><i>foo</i></u><b></b>{<p>bar]</p>', '<u><i>foo</i></u><b>{</b><p>bar]</p>' ], // wierd
@@ -230,7 +232,7 @@ function( TestUtils ) {
             [ 'foo{<ol><li>}bar</li></ol>baz', 'foo[<ol><li>}bar</li></ol>baz' ],
             [ 'foo<ol><li>bar[</li><li>]bar</li></ol>baz', 'foo<ol><li>bar[</li><li>}bar</li></ol>baz' ],
             [ 'foo<ol><li>bar{</li><li>}bar</li></ol>baz', 'foo<ol><li>bar[</li><li>}bar</li></ol>baz' ],
-            [ 'foo<ol><li>[bar<ol><li>]bam</li></ol></li></ol>baz', 'foo<ol><li>[bar<ol><li>}bam</li></ol></li></ol>baz' ],
+            [ 'foo<ol><li>[bar<ol><li>]bam</li></ol></li></ol>baz', 'foo<ol><li>[bar<ol><li>}bam</li></ol></li></ol>baz' ]
         ];
 /* tables are handled differently in Aloha Editor as every td, th's content is wrapped in a div.
         tableTests = [
