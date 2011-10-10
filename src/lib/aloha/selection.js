@@ -2647,10 +2647,46 @@ function getIndexOfNodeInParent ( node ) {
 	// return null;
 // };
 
+function getFurthestLeftScion ( node ) {
+	if ( !node || !node.firstChild ) {
+		return null;
+	}
+	
+	return getFurthestLeftScion( node.firstChild ) || node.firstChild;
+};
+
+/**
+ * Unit tests:
+ *		given "<div><u><i>foo</i></u><b></b><p>bar</p></div>", if node is <div>, return <TextNode textContent="bar">
+ *		given "<div><u><i>foo</i>test</u><b></b><p>bar</p></div>", if node is <u>, return <TextNode textContent="test">
+ *		given "<div><u><i>foo<p>bar<b></b></p></i></u></div>" if node is <div>, return <b>
+ *		given "<div><u><i>foo<p>bar</p><b>test</b></i></u></div>" if node is <div>, return <TextNode textContent="test">
+ *		given "<div></div>", if node is <div>, return null
+ *
+ * @param {Object: DOMElement} node
+ */
+function getFurthestRightScion ( node ) {
+	if ( !node || !node.lastChild ) {
+		return null;
+	}
+	
+	return getFurthestRightScion( node.lastChild ) || node.lastChild;
+};
+
 function getNearestLeftNode ( node, predicate ) {
 	if ( !node ) {
 		return null;
 	}
+	
+	// First, get the next left neighbor...
+	
+	node = getLeftNeighbor( node );
+	
+	if ( !node ) {
+		return null;
+	}
+	
+	// ... then find the very right most container of this left neighbor
 	
 	var scion;
 	
@@ -2767,11 +2803,10 @@ function getStartPosition ( container, offset ) {
 			return null;
 		}
 		
-		// We either have an empty container, or else the offset is
-		// positioned at the very end of the container--after the last
-		// node. We therefore have the case where we are in front the
-		// closing tag of a flow node, and we will therefore try and move
-		// b into the tree
+		// We either have an empty container, or else the offset is positioned
+		// at the very end of the container--after the last node. We therefore
+		// have the case where we are in front the closing tag of a flow node,
+		// and we will therefore try and move backwards into the tree
 		if ( offset == container.childNodes.length ) {
 			var leftNeighbor = getLeftNeighbor( container );
 			if ( leftNeighbor ) {
@@ -2785,21 +2820,20 @@ function getStartPosition ( container, offset ) {
 		}
 		
 		// The offset is somewhere before the end of the container, therefore
-		// check if the node at index offset is a non-phrasing flow element
+		// check if the node at index offset is a block element.
 		var node = container.childNodes[ offset ];
 		var stop;
 		
-		if ( !isPhrasingElement( node ) && isFlowElement( node ) ) {
-			// Stop at the nearest text node. Or the last node before we would
-			// jump out of the editable
-			
-			stop = getNearestLeftNode( getLeftNeighbor( node ), function ( node ) {
+		if ( isBlockElement( node ) ) {
+			// Stop at the nearest text node. Or the left-most node before we
+			// would jump out of the editable.
+			stop = getNearestLeftNode( node, function ( node ) {
 				if ( node.nodeType == Node.TEXT_NODE ) {
 					return true;
 				}
 				
 				if ( node == node.parentNode.firstChild &&
-						isEditingHost( node.parentNode )  ) {
+						isEditingHost( node.parentNode ) ) {
 					return true;
 				}
 			} );
