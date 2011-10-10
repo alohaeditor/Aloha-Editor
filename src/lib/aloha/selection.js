@@ -2796,6 +2796,7 @@ function getStartPosition ( container, offset ) {
 		// have the case where we are in front the closing tag of a flow node,
 		// and we will therefore try and move backwards into the tree
 		if ( offset == container.childNodes.length ) {
+			debugger;
 			var leftNeighbor = getLeftNeighbor( container );
 			if ( leftNeighbor ) {
 				//var newStartPos = getStartPosition( leftNeighbor, 0 );
@@ -2813,17 +2814,15 @@ function getStartPosition ( container, offset ) {
 		var stop;
 		
 		if ( isBlockElement( node ) ) {
-			// get the nearest text node to the left of the start position. Or the left-most node before we
-			// would jump out of the editable.
+			// Get the nearest text node to the left of the start position
 			stop = getNearestLeftNode( node, function ( node ) {
 				if ( node.nodeType == Node.TEXT_NODE ) {
 					return true;
 				}
 			} );
 			
-			// We found a text node.
-			// We therefore have one of the following situations (where "foo"
-			// represents out text node:
+			// We found a text node. We therefore have one of the following
+			// situations (where "foo" represents out text node):
 			// foo<b>bar</b>	    correct to foo[<b>bar</b>
 			// <i>foo</i><b>bar</b> correct to <i>foo[</i><b>bar</b>
 			// foo<i></i><b>bar</b> correct to foo<i>{</i><b>bar</b>
@@ -2841,7 +2840,7 @@ function getStartPosition ( container, offset ) {
 			
 			// We never found a text node.
 			// Without a text node to land on, we cannot expand the selection
-			// to the left, so we will collapse the collection instead by
+			// to the left, so we will collapse the collection instead, by
 			// moving the start position to the nearest text node to the right
 			// {<p><b></b>foo]</p> => <p><b></b>[foo]</p>
 			stop = getFurthestLeftScion( node);
@@ -2856,6 +2855,8 @@ function getStartPosition ( container, offset ) {
 				};
 			}
 			
+			// We found to text node to land on, return the original start
+			// position
 			return {
 				node   : container,
 				offset : offset
@@ -2878,8 +2879,10 @@ function correctRange ( range ) {
 	
 	var newStartPos = getStartPosition( startContainer, startOffset );
 	
-	range.startContainer = newStartPos.node;
-	range.startOffset = newStartPos.offset;
+	if ( newStartPos ) {
+		range.startContainer = newStartPos.node;
+		range.startOffset = newStartPos.offset;
+	}
 	
 	return range;
 };
