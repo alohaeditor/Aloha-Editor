@@ -264,7 +264,13 @@ TablePlugin.initSidebar = function(sidebar) {
 	                		 '<textarea id="' + nsClass('textarea') + '" class="' + nsClass('textarea') + '" />').content;
 	             
             	 jQuery(nsSel('textarea')).live('keyup', function() { 
- 					jQuery(that.effective).attr('summary', jQuery(nsSel('textarea')).val().replace("\"", '&quot;').replace("'", "&#39;"));
+					//The original developer thought that escaping the
+					//quote characters of the textarea value are
+					//necessary to work around a bug in IE. I could not
+					//reproduce the bug, so I commented the following
+					//out.
+					//.replace("\"", '&quot;').replace("'", "&#39;")
+ 					jQuery(that.effective).attr('summary', jQuery(nsSel('textarea')).val());
  					var waiDiv = jQuery('div[class*="wai"]', 'table#' + jQuery(that.effective).attr('id'));
  					waiDiv.removeClass(pl.get('waiGreen'));
  					waiDiv.removeClass(pl.get('waiRed'));
