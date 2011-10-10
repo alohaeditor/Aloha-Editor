@@ -109,6 +109,18 @@ td.aloha-table-selectrow {
 	font-size: 0.8em;
 }
 
+.aloha-table-textarea {
+	width:90%;
+	height:100px;
+	margin-left:5px;
+	margin-right:5px;
+}
+
+.aloha-table-label {
+	margin-left:5px;
+}
+
+
 /* ui buttons */
 button.aloha-button-table {
 	background-position: -96px 0 !important;
