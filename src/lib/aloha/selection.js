@@ -3004,6 +3004,8 @@ function correctRange ( range ) {
 		range.startOffset = startPos.offset;
 	}
 	
+	// debugger;
+	
 	var endContainer = range.endContainer,
 	    endOffset = range.endOffset,
 	    endPos = getEndPosition( endContainer, endOffset );

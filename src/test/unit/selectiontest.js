@@ -140,46 +140,46 @@ function( TestUtils ) {
             [ 'foo<span>bar[</span><span>]baz</span>bam', 'foo<span>bar[]</span><span>baz</span>bam' ]
         ],
         flowTests = [
-			
+/*
 			//
 			//		Tests for start position
 			//		In front of block elements
 			//
 			
 			// Greedly expand selection by moving start position towards the
-//			// left
-//			[ 'foo{<p>bar]</p>', 'foo[<p>bar]</p>' ],
-//			[ '<b>foo</b>{<p>bar]</p>', '<b>foo[</b><p>bar]</p>' ],
-//			[ '<b>foo<u>foo1<i>foo2</i></u></b>{<p>bar]</p>', '<b>[foo<u>foo1<i>foo2</i></u></b><p>bar]</p>' ],
-//			// No left neighbors. Can't go left, so contract selection by
-//			// moving start position towards the right
-//			[ '{<p>foo]</p>', '<p>[foo]</p>' ],
-//			[ '{<p><b>foo</b>bar]</p>', '<p><b>[foo</b>bar]</p>' ],
-//			[ '{<p><b></b>foo]</p>', '<p><b></b>[foo]</p>' ],
-//			// We have left a neighbor. But the neighbor is empty. Can't expand
-//			// left, so contract right.
-//			[ '<b></b>{<p>foo]</p>', '<b></b><p>[foo]</p>' ],
-//			// Had to travel farther, but still found left neighbor at which to
-//			// reposition our start position
-//			[ 'foo<b></b>{<p>bar]</p>', 'foo<b>{</b><p>bar]</p>' ], // wierd. should be 'foo[<b></b><p>bar]</p>'
-//			// Useless empty left neighbors, so we contract selection
-//			[ '<b><b></b></b>{<p>bar]</p>', '<b><b></b></b><p>[bar]</p>' ],
-//			// Had to travel even farther left, but can expand selection to the
-//			// left because we found left neighbor who can host our start
-//			// position
-//			[ 'foo<b><b></b></b>{<p>bar]</p>', 'foo<b><b>{</b></b><p>bar]</p>'	], // wierd. should be like previous
-//			// We have left neighbors, even though they are nested
-//			[ '<i>foo</i><b></b>{<p>bar]</p>', '<i>foo</i><b>{</b><p>bar]</p>' ], // wierd
-//			[ '<u><i>foo</i></u><b></b>{<p>bar]</p>', '<u><i>foo</i></u><b>{</b><p>bar]</p>' ], // wierd
-//			// Looking for left neighbors even if we are nested
-//			[ 'foo{<div><p>bar]</p></div>', 'foo[<div><p>bar]</p></div>' ],
-//			[ '<i>foo</i>{<div><p>bar]</p></div>', '<i>foo[</i><div><p>bar]</p></div>' ]
-//
-//			// We have a block element to the left of our start position, we
-//			// therefore move the start position to the right instead
-//			[ '<p>foo</p>{<p>bar]</p>', '<p>foo</p><p>[bar]</p>' ],
-
-//			[ '<p>foo</p><p>{bar]</p>', '<p>foo</p><p>[bar]</p>' ]
+			// left
+			[ 'foo{<p>bar]</p>', 'foo[<p>bar]</p>' ],
+			[ '<b>foo</b>{<p>bar]</p>', '<b>foo[</b><p>bar]</p>' ],
+			[ '<b>foo<u>foo1<i>foo2</i></u></b>{<p>bar]</p>', '<b>foo<u>foo1<i>foo2[</i></u></b><p>bar]</p>' ],
+			// No left neighbors. Can't go left, so contract selection by
+			// moving start position towards the right
+			[ '{<p>foo]</p>', '<p>[foo]</p>' ],
+			[ '{<p><b>foo</b>bar]</p>', '<p><b>[foo</b>bar]</p>' ],
+			[ '{<p><b></b>foo]</p>', '<p><b></b>[foo]</p>' ],
+			// We have left a neighbor. But the neighbor is empty. Can't expand
+			// left, so contract right.
+			[ '<b></b>{<p>foo]</p>', '<b></b><p>[foo]</p>' ],
+			// Had to travel farther, but still found left neighbor at which to
+			// reposition our start position
+			[ 'foo<b></b>{<p>bar]</p>', 'foo<b>{</b><p>bar]</p>' ], // wierd. should be 'foo[<b></b><p>bar]</p>'
+			// Useless empty left neighbors, so we contract selection
+			[ '<b><b></b></b>{<p>bar]</p>', '<b><b></b></b><p>[bar]</p>' ],
+			// Had to travel even farther left, but can expand selection to the
+			// left because we found left neighbor who can host our start
+			// position
+			[ 'foo<b><b></b></b>{<p>bar]</p>', 'foo<b><b>{</b></b><p>bar]</p>'	], // wierd. should be like previous
+			// We have left neighbors, even though they are nested
+			[ '<i>foo</i><b></b>{<p>bar]</p>', '<i>foo</i><b>{</b><p>bar]</p>' ], // wierd
+			[ '<u><i>foo</i></u><b></b>{<p>bar]</p>', '<u><i>foo</i></u><b>{</b><p>bar]</p>' ], // wierd
+			// Looking for left neighbors even if we are nested
+			[ 'foo{<div><p>bar]</p></div>', 'foo[<div><p>bar]</p></div>' ],
+			[ '<i>foo</i>{<div><p>bar]</p></div>', '<i>foo[</i><div><p>bar]</p></div>' ]
+			
+			// We have a block element to the left of our start position, we
+			// therefore move the start position to the right instead
+			[ '<p>foo</p>{<p>bar]</p>', '<p>foo</p><p>[bar]</p>' ],
+			
+			[ '<p>foo</p><p>{bar]</p>', '<p>foo</p><p>[bar]</p>' ]
 			
 			//
 			//		Tests for start position
@@ -192,15 +192,13 @@ function( TestUtils ) {
 			[ 'foo<p>{</p><p>bar]</p>', 'foo<p></p><p>[bar]</p>' ],
 			[ '<div><p>{</p></div><p>bar]</p>', '<div><p></p></div><p>[bar]</p>' ],
 			[ '<div><p><b>foo</b>{</p></div><p>bar]</p>', '<div><p><b>foo[</b></p></div><p>bar]</p>' ],
-	
-//			[ '[foo<div>}<p>bar</p></div>', '[foo<div><p>}bar</p></div>' ],
-			
+*/
 			//
 			//		Tests for end position
 			//		In front of block elements start node
 			//		With non-block element to left of position
 			//
-			
+/*
 			[ '[foo}<p>bar</p>', '[foo]<p>bar</p>' ],
 			[ '<b>[foo</b>}<p>bar</p>', '<b>[foo]</b><p>bar</p>' ],
 			[ '<b>[foo</b>}<p></p>bar', '<b>[foo]</b><p></p>bar' ],
@@ -211,48 +209,55 @@ function( TestUtils ) {
 			
 			[ '<b>[foo</b>}<p></p>', '<b>[foo]</b><p></p>' ],
 			[ '<b>[foo</b>}<p></p><p>bar</p>', '<b>[foo]</b><p></p><p>bar</p>' ],
-			
-			[ '{}<p>foo</p><p>bar</p>', '<p>[]foo</p><p>bar</p>' ],
-			[ '<b>test</b>{}<p>foo</p><p>bar</p>', '<b>test[]</b><p>foo</p><p>bar</p>' ],
+*/
 
+			[ '{}<p>foo</p>', '<p>[]foo</p>' ],
+			[ '<b>foo</b>{}<p>bar</p>', '<b>foo[]</b><p>bar</p>' ],
+			[ '<p>foo</p>{}<p>bar</p>', '<p>foo</p><p>[]bar</p>' ],
+			
+			
+			[ '[foo<div>}<p>bar</p></div>', '[foo<div><p>}bar</p></div>' ],
+			[ '<div><p>[foo</p></div><div>}<p>bar</p></div>', '<div><p>[foo</p></div><div><p>}bar</p></div>' ],
+			
 			//
 			//		Tests for end position
 			//		In front of block elements start node
 			//		With block element to left of position
 			//
 			
-			[ '<p>[foo</p>}<p>bar</p>', '<p>[foo</p><p>}bar</p>' ],
-			[ '<p>[foo</p>}<p></p>bar', '<p>[foo</p><p></p>]bar' ],
-			[ '<p>[foo</p>}<p><b></b>bar</p>', '<p>[foo</p><p>}<b></b>bar</p>' ],
-			
-			[ '<p>[foo</p>}<p></p>', '<p>[foo]</p><p></p>' ],
-			[ '<div><p>[foo</p>}<p></p></div>bar', '<div><p>[foo]</p><p></p></div>bar' ],
-			
-			[ '<p>[foo</p>}<p></p>', '<p>[foo]</p><p></p>' ],
-			[ '<p>[foo</p>}<p></p><p>bar</p>', '<p>[foo</p><p></p><p>}bar</p>' ],
-			[ '<p>[foo</p>}<p><b>bar</b></p>', '<p>[foo</p><p>}<b>bar</b></p>' ],
+//			[ '<p>[foo</p>}<p>bar</p>', '<p>[foo</p><p>}bar</p>' ],
+//			[ '<p>[foo</p>}<p></p>bar', '<p>[foo</p><p></p>]bar' ],
+//			[ '<p>[foo</p>}<p><b></b>bar</p>', '<p>[foo</p><p>}<b></b>bar</p>' ],
+//			
+//			[ '<p>[foo</p>}<p></p>', '<p>[foo]</p><p></p>' ],
+//			[ '<div><p>[foo</p>}<p></p></div>bar', '<div><p>[foo]</p><p></p></div>bar' ],
+//			
+//			[ '<p>[foo</p>}<p></p>', '<p>[foo]</p><p></p>' ],
+//			[ '<p>[foo</p>}<p></p><p>bar</p>', '<p>[foo</p><p></p><p>}bar</p>' ],
+//			[ '<p>[foo</p>}<p><b>bar</b></p>', '<p>[foo</p><p>}<b>bar</b></p>' ],
 			
 			//
 			//		Tests for end position
 			//		In front of block elements end node
 			//
 			
-			[ '<p>[foo}</p>', '<p>[foo]</p>' ],
-			[ '[foo<p>}</p>', '[foo]<p></p>' ],
-			[ '[foo<div><p>}</p></div>', '[foo]<div><p></p></div>' ],
-			[ '<p>[foo<b>bar</b>}</p>', '<p>[foo<b>bar]</b></p>' ],
-			[ '<p>[foo<b>bar</b>test}</p>', '<p>[foo<b>bar</b>test]</p>' ],
-			[ '<p>[foo<b>bar</b>}</p>test', '<p>[foo<b>bar]</b></p>test' ]
+//			[ '<p>[foo}</p>', '<p>[foo]</p>' ],
+//			[ '[foo<p>}</p>', '[foo]<p></p>' ],
+//			[ '[foo<div><p>}</p></div>', '[foo]<div><p></p></div>' ],
+//			[ '<p>[foo<b>bar</b>}</p>', '<p>[foo<b>bar]</b></p>' ],
+//			[ '<p>[foo<b>bar</b>test}</p>', '<p>[foo<b>bar</b>test]</p>' ],
+//			[ '<p>[foo<b>bar</b>}</p>test', '<p>[foo<b>bar]</b></p>test' ],
 
-
+			[ '[foo<div><p><u>bar</u></p>}</div>', '[foo<div><p><u>bar]</u></p></div>' ],
+			[ '[foo<div><p><u></u></p>}</div>', '[foo]<div><p><u></u></p></div>' ],
+			[ '[foo<div><p>bar<u></u></p>}</div>', '[foo<div><p>bar]<u></u></p></div>' ]
+			
 //			[ '{<p></p>}', '{}<p></p>' ],
 //			[ '[foo<p></p>}', '[foo]<p></p>' ],
 //			[ '[foo<p></p>}', '[foo]<p></p>' ],
 //			[ '[foo<div><p></p></div>}', '[foo]<div><p></p></div>' ],
 //			[ '[foo<div><p><u></u></p></div>}', '[foo]<div><p><u></u></p></div>' ],
-//			[ '[foo<div><p><u></u></p>}</div>', '[foo]<div><p><u></u></p></div>' ],
-//			[ '[foo<div><p><u>bar</u></p>}</div>', '[foo<div><p><u>bar]</u></p></div>' ]
-			
+
 //			[ '<p>[foo</p><p>bar]</p><p>baz</p>', '<p>[foo</p><p>bar]</p><p>baz</p>' ],
 //			[ '<p>[foo</p><p>]bar</p><p>baz</p>', '<p>[foo</p><p>}bar</p><p>baz</p>' ],
 //			[ '<p>foo[</p><p>]bar</p><p>baz</p>', '<p>foo[</p><p>}bar</p><p>baz</p>' ],
@@ -415,9 +420,9 @@ function( TestUtils ) {
             
             flowTests, // <p>
             
-            // flowHostTests, // flow elements host
+            //flowHostTests, // flow elements host
             
-            // listTests,
+            //listTests,
             
             [] // I am here to prevent trailing commas and make your life easier :D
         );
