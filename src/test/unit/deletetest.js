@@ -207,11 +207,11 @@ var tests = {
 		{  	start: '<b>foo </b>&nbsp;[]bar',
 			execResult: '<b>foo []</b>bar'
 		},
-		{  	start: '<b>foo&nbsp;</b> []bar', // broken
-			execResult: '<b>foo&nbsp;[]</b>bar'
+		{  	start: '<b>foo&nbsp;</b> []bar',
+			execResult: '<b>foo []</b>bar'
 		},
-		{  	start: '<b>foo&nbsp;</b>&nbsp;[]bar', // broken
-			execResult: '<b>foo&nbsp;[]</b>bar'
+		{  	start: '<b>foo&nbsp;</b>&nbsp;[]bar',
+			execResult: '<b>foo []</b>bar'
 		},
 		{  	start: '<b>foo </b> []bar',
 			execResult: '<b>foo[]</b>bar'
