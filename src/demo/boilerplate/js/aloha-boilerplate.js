@@ -1,3 +1,4 @@
+//$(document).ready(function() {
 Aloha.require( ['aloha', 'aloha/jquery'], function( Aloha, $) {
 
 //	var $ = window.alohaQuery;
