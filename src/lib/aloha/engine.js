@@ -5929,8 +5929,8 @@ commands["delete"] = {
 
 		// "Repeat the following steps:"
 		while (true) {
-			isBr = isHtmlElement(node.childNodes[offset - 1], "br");
-			isHr = isHtmlElement(node.childNodes[offset - 1], "hr");
+			isBr = isHtmlElement(node.childNodes[offset - 1], "br") || false;
+			isHr = isHtmlElement(node.childNodes[offset - 1], "hr") || false;
 			
 			// "If offset is zero and node's previousSibling is an editable
 			// invisible node, remove node's previousSibling from its parent."
