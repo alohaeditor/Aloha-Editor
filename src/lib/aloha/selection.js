@@ -2787,7 +2787,7 @@ function getStartPosition ( container, offset ) {
 		var node = container.childNodes[ offset ];
 		
 		if ( isBlockElement( node ) ) {
-			// We can only move the start position to the right, if there left
+			// We can only move the start position to the left, if there left
 			// neighbor is not a block node
 			if ( !isBlockElement( getLeftNeighbor( node ) ) ) {
 				// Get the nearest text node to the left of the start position
@@ -2813,7 +2813,7 @@ function getStartPosition ( container, offset ) {
 				}
 			}
 			
-			// We never found a text node.
+			// We found no text node to the left of our start position.
 			// Without a text node to land on, we cannot expand the selection
 			// to the left, so we will collapse the collection instead, by
 			// moving the start position to the nearest text node to the right
@@ -2867,7 +2867,6 @@ function getEndPosition ( container, offset ) {
 		// have the case where we are in front the closing tag of a flow node,
 		// and we will therefore try and move backwards into the tree
 		if ( offset == container.childNodes.length ) {
-			debugger;
 			stop = getFurthestRightScion( container );
 			if ( stop ) {
 				return {
@@ -2876,13 +2875,15 @@ function getEndPosition ( container, offset ) {
 				};
 			}
 			
-			// There is no child nodes inside of container, so contract the
-			// selection rightwards
-			stop = getNearestRightNode( container );
+			// There is no child nodes inside of container, so look left
+			stop = getNearestLeftNode( container, function ( node ) {
+				return node.nodeType == Node.TEXT_NODE;
+			} );
+			
 			if ( stop ) {
 				return {
 					node   : stop,
-					offset : 0
+					offset : getNodeLength( stop )
 				};
 			}
 			
@@ -2935,16 +2936,33 @@ function getEndPosition ( container, offset ) {
 			// [ '<div><p>[foo</p>}<p></p></div>bar', '<div><p>[foo]</p><p></p></div>bar' ],
 			// [ '<p>[foo</p>}<p></p>', '<p>[foo]</p><p></p>' ],
 			// [ '<p>[foo</p>}<p></p><p>bar</p>', '<p>[foo</p><p></p><p>}bar</p>' ],
-			stop = getLeftNeighbor( node );
+			
+			//stop = getLeftNeighbor( node );
+			//if ( stop && stop.nodeType != Node.TEXT_NODE ) {
+			//	stop = getFurthestRightScion( stop );
+			//}
+			
+			stop = getNearestLeftNode( node, function ( node ) {
+				return node.nodeType == Node.TEXT_NODE;
+			} );
+			
 			if ( stop ) {
-				stop = getFurthestRightScion( stop );
-				if ( stop ) {
-					return {
-						node   : stop,
-						offset : getNodeLength( stop )
-					};
-				}
-			}	
+				return {
+					node   : stop,
+					offset : getNodeLength( stop )
+				};
+			}
+			
+			// We found no text node left of our start position, so look for
+			// the for the nearest node on the right
+			stop = getFurthestLeftScion( node );
+			
+			if ( stop ) {
+				return {
+					node   : stop,
+					offset : 0
+				};
+			}
 		}
 		
 		return {
@@ -2958,20 +2976,17 @@ function correctRange ( range ) {
 	//return range;
 	
 	var startContainer = range.startContainer,
-		startOffset = range.startOffset,
-		startPos = getStartPosition( startContainer, startOffset );
+	    startOffset = range.startOffset,
+	    startPos = getStartPosition( startContainer, startOffset );
 	
 	if ( startPos ) {
 		range.startContainer = startPos.node;
 		range.startOffset = startPos.offset;
 	}
 	
-	
-	// TODO: documentCompare
-	
 	var endContainer = range.endContainer,
-		endOffset = range.endOffset,
-		endPos = getEndPosition( endContainer, endOffset );
+	    endOffset = range.endOffset,
+	    endPos = getEndPosition( endContainer, endOffset );
 	
 	if ( endPos ) {
 		range.endContainer = endPos.node;

@@ -186,19 +186,22 @@ function( TestUtils ) {
 			//		At the end of block elements
 			//
 			
-//			[ '<p>foo{</p><p>bar]</p>', '<p>foo[</p><p>bar]</p>' ],
-//			[ '<p>foo[</p><p>bar]</p>', '<p>foo[</p><p>bar]</p>' ],
-//			[ '<p>{</p><p>foo]</p>', '<p></p><p>[foo]</p>' ],
-//			[ 'foo<p>{</p><p>bar]</p>', 'foo<p></p><p>[bar]</p>' ],
-//			[ '<div><p>{</p></div><p>bar]</p>', '<div><p></p></div><p>[bar]</p>' ],
-//			[ '<div><p><b>foo</b>{</p></div><p>bar]</p>', '<div><p><b>foo[</b></p></div><p>bar]</p>' ]
+			[ '<p>foo{</p><p>bar]</p>', '<p>foo[</p><p>bar]</p>' ],
+			[ '<p>foo[</p><p>bar]</p>', '<p>foo[</p><p>bar]</p>' ],
+			[ '<p>{</p><p>foo]</p>', '<p></p><p>[foo]</p>' ],
+			[ 'foo<p>{</p><p>bar]</p>', 'foo<p></p><p>[bar]</p>' ],
+			[ '<div><p>{</p></div><p>bar]</p>', '<div><p></p></div><p>[bar]</p>' ],
+			[ '<div><p><b>foo</b>{</p></div><p>bar]</p>', '<div><p><b>foo[</b></p></div><p>bar]</p>' ],
+	
+//			[ '[foo<div>}<p>bar</p></div>', '[foo<div><p>}bar</p></div>' ],
 			
 			//
 			//		Tests for end position
-			//		In front of block elements
+			//		In front of block elements start node
 			//		With non-block element to left of position
 			//
 			
+			[ '[foo}<p>bar</p>', '[foo]<p>bar</p>' ],
 			[ '<b>[foo</b>}<p>bar</p>', '<b>[foo]</b><p>bar</p>' ],
 			[ '<b>[foo</b>}<p></p>bar', '<b>[foo]</b><p></p>bar' ],
 			[ '<b>[foo</b>}<p><b></b>bar</p>', '<b>[foo]</b><p><b></b>bar</p>' ],
@@ -209,9 +212,12 @@ function( TestUtils ) {
 			[ '<b>[foo</b>}<p></p>', '<b>[foo]</b><p></p>' ],
 			[ '<b>[foo</b>}<p></p><p>bar</p>', '<b>[foo]</b><p></p><p>bar</p>' ],
 			
+			[ '{}<p>foo</p><p>bar</p>', '<p>[]foo</p><p>bar</p>' ],
+			[ '<b>test</b>{}<p>foo</p><p>bar</p>', '<b>test[]</b><p>foo</p><p>bar</p>' ],
+
 			//
 			//		Tests for end position
-			//		In front of block elements
+			//		In front of block elements start node
 			//		With block element to left of position
 			//
 			
@@ -223,50 +229,22 @@ function( TestUtils ) {
 			[ '<div><p>[foo</p>}<p></p></div>bar', '<div><p>[foo]</p><p></p></div>bar' ],
 			
 			[ '<p>[foo</p>}<p></p>', '<p>[foo]</p><p></p>' ],
-			[ '<p>[foo</p>}<p></p><p>bar</p>', '<p>[foo</p><p></p><p>}bar</p>' ]
+			[ '<p>[foo</p>}<p></p><p>bar</p>', '<p>[foo</p><p></p><p>}bar</p>' ],
+			[ '<p>[foo</p>}<p><b>bar</b></p>', '<p>[foo</p><p>}<b>bar</b></p>' ],
 			
+			//
+			//		Tests for end position
+			//		In front of block elements end node
+			//
 			
-//			[ '<p>[foo</p>}bar', '<p>[foo</p>]bar' ],
-//			[ '<p>[foo</p>}<b>bar</b>', '<p>[foo</p><b>}bar</b>' ],
-//			[ '<p>[foo</p><p>bar</p>}', '<p>[foo</p><p>bar]</p>' ],
-//			[ '<p>[foo</p><p>bar}</p>', '<p>[foo</p><p>bar]</p>' ],
-//			[ '<p>[foo</p><p>}bar</p>', '<p>[foo</p><p>}bar</p>' ],
-			
-//			[ '<p>[foo}</p><p>bar</p>', '<p>[foo]</p><p>bar</p>' ]
-			//    0   1
-			//	  foo <p>foo</p>
-			
-//			[ '{<p>}foo</p><p>bar</p>', '<p>[]foo</p><p>bar</p>' ],
-//			[ '{}<p>foo</p><p>bar</p>', '<p>[]foo</p><p>bar</p>' ],
-			
-//			[ '<p>[foo</p>}<p><b>bar</b></p>', '<p>[foo</p><p>}<b>bar</b></p>' ],
-			
-//			[ '<p>[foo</p>}', '<p>[foo]</p>' ],
-//			[ '<p>[foo}</p>', '<p>[foo]</p>' ],
-//			
-//			
-//			[ '[foo<p>}</p>', '[foo]<p></p>' ],
-//			[ '[foo<p>}<b></b></p>', '[foo]<p><b></b></p>' ],
-//			[ '[foo<p>}<b></b></p>bar', '[foo<p><b></b></p>]bar' ],
-//			[ '[foo<p>}<b>bar</b></p>', '[foo<p>}<b>bar</b></p>' ],
-//			
-//			[ '[foo}<p>bar</p>', '[foo]<p>bar</p>' ],
-//			
-//			[ '[foo<div>}<p>bar</p></div>', '[foo<div><p>}bar</p></div>' ],
-//			
-//			[ '[foo<div><p>}bar</p></div>', '[foo<div><p>}bar</p></div>' ],
-//			[ '[foo<div><p>}</p></div>', '[foo]<div><p></p></div>' ],
-//			
-//			[ '{<b></b><p>}<b>bar</b></p>', '<b></b><p><b>[]bar</b></p>' ],
-//			
-//			[ '[foo<p>}bar</p>', '[foo<p>}bar</p>' ],
-//			
-//			[ '<p>[foo<b>bar</b></p>}', '<p>[foo<b>bar]</b></p>' ],
-//			[ '<p>[foo<b>bar</b>}</p>', '<p>[foo<b>bar]</b></p>' ],
-//			
-//			[ '<p>[foo<b>bar</b>test</p>}', '<p>[foo<b>bar</b>test]</p>' ],
-//			[ '<p>[foo<b>bar</b>test}</p>', '<p>[foo<b>bar</b>test]</p>' ],
-//			
+			[ '<p>[foo}</p>', '<p>[foo]</p>' ],
+			[ '[foo<p>}</p>', '[foo]<p></p>' ],
+			[ '[foo<div><p>}</p></div>', '[foo]<div><p></p></div>' ],
+			[ '<p>[foo<b>bar</b>}</p>', '<p>[foo<b>bar]</b></p>' ],
+			[ '<p>[foo<b>bar</b>test}</p>', '<p>[foo<b>bar</b>test]</p>' ],
+			[ '<p>[foo<b>bar</b>}</p>test', '<p>[foo<b>bar]</b></p>test' ]
+
+
 //			[ '{<p></p>}', '{}<p></p>' ],
 //			[ '[foo<p></p>}', '[foo]<p></p>' ],
 //			[ '[foo<p></p>}', '[foo]<p></p>' ],
