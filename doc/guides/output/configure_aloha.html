@@ -2,8 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Aloha GuidesAloha Guides: Credits
-</title>
+  <title>Aloha Guides: Configure Aloha Editor</title>
 
   <!-- guides styles -->
   <link rel="stylesheet" type="text/css" href="stylesheets/style.css" />
@@ -42,11 +41,9 @@
   <div id="feature">
     <div class="wrapper">
       <div class="feature_header">
-        <img src="images/strobe/credits.png">
-<h2>
-	<a href="#">Credits</a></h2>
-<p>We'd like to thank the following people for their tireless efforts.</p>
-
+        <a href="/"><img src="images/strobe/guides.png"></a>
+        <h2><a href="/">Aloha Guides</a></h2>
+        <p>These guides help you to make your content editable and to develop Aloha.</p>
       </div>
       <div class="feature_sidebar">
         <a href="index.html" id="guidesMenu">
@@ -87,33 +84,63 @@
   <div id="container">
     <div class="wrapper">
       <div id="mainCol">
-        
-
-
-<h3 class="group">The People That Make It Happen</h3>
-
-  <h3 class="section">Contributors</h3>
-    <div class="author clearfix" id="hlubek"><img alt="Christopher Hlubek" class="left pic" src="images/credits/hlubek.jpg"></img><h3>Christopher Hlubek</h3><p>
-      Christopher Hlubek is a proud contributor of the Aloha project.
-</p></div>    <div class="author clearfix" id="skurfuerst"><img alt="Sebastian Kurfürst" class="left pic" src="images/credits/skurfuerst.jpg"></img><h3>Sebastian Kurfürst</h3><p>
-      Sebastian Kurfürst is a proud contributor of the Aloha project.
-</p></div>    <div class="author clearfix" id="rene_kapusta"><img alt="Rene Kapusta" class="left pic" src="images/credits/rene_kapusta.jpg"></img><h3>Rene Kapusta</h3><p>
-      Rene Kapusta is a proud contributor of the Aloha project.
-</p></div>  <h3 class="section">Documentation Team</h3>
-    <div class="author clearfix" id="haymo"><img alt="Haymo Meran" class="left pic" src="images/credits/haymo.jpg"></img><h3>Haymo Meran</h3><p>
-      Haymo is one of the founders of the Aloha project.
-</p></div>
-
-      </div>
-      <div id="subCol">
-        <h3>Become A Contributor</h3>
-<ul class="links">
-  <li><a href="/style_guide.html">Javascript Style Guide</a></li>
-  <li><a href="/commit_code.html">Committer Guidelines</a></li>
-  <li><a href="/documentation_guidelines.html">Documentation Guidelines</a></li>
+          <div class="headerSection">
+            <h2>Configure Aloha Editor</h2>
+<p>After reading this guide, you will be able to:</p>
+<ul>
+	<li>Add configuration settings to you page and</li>
+	<li>Adapt Aloha Editor to your needs by means of configuration</li>
 </ul>
 
+          </div>
+        <h3 id="basic-configuration">1 Basic Configuration</h3>
+<div class="warning"><p>Please write sth.!</p></div>
+<h3 id="configuring-the-floatingmenu">2 Configuring the FloatingMenu</h3>
+<p>The floating menu can be adapted to your needs by configuring tabs, groups and buttons. You may reassemble all of the existing buttons provided by plugins in any combination you want.</p>
+<div class="info"><p>A button may only be added once to the configuration. Adding the same button twice will yield no results exept raising a warning message.</p></div>
+<p>The following simple example should help to understand how to configure the FloatingMenu. Basically, all you have to do is define an array of button names (those are provided by plugins). As you might have noticed, groups may be named in our example (&#8220;flow&#8221;, &#8220;phrasing&#8221; or &#8220;first&#8221;). However, at this time naming groups yields no visual result in the current FloatingMenu. It will just help you structure your configuration.</p>
+<div class="code_container">
+<pre class="brush: xml; gutter: false; toolbar: false">
+
+&lt;head&gt;
+&lt;script type=&quot;text/javascript&quot;&gt;
+Aloha.settings.toolbar = {
+	tabs : {
+		// will generate a tab labeled &quot;formatting&quot;
+		formatting : {
+			// group &quot;flow&quot;
+			flow : [ 'b', 'em', 'u' ],
+			// group &quot;phrasing&quot;
+			phrasing : [ 'phrasing' ] // &quot;phrasing&quot; is the name of a 
+			// MultiSplitButton from the format plugin, which contains 
+			// elements like h1 ...
+		},
+		// will generate another tab labeled &quot;insert&quot;
+		insert : {
+			// as mentioned group names are not displayed anywhere,
+			// so you might pick an arbitrary name
+			first : [ 'image', 'insertLink' ]
+		}
+	},
+	components : {
+		// the phrasing MultiSplitButton is configured the same way 
+		// as groups are
+		phrasing : [ 'h1', 'h2', 'h3' ]
+	}
+};
+&lt;/script&gt;
+&lt;/head&gt;
+</pre></div>
+
       </div>
+        <div id="subCol">
+          <h3 class="chapter"><img src="images/strobe/chapters.png" alt="" />Chapters</h3>
+          <ol class="chapters">
+            <li><a href="#basic-configuration"><p>Basic Configuration</p>
+</a></li><li><a href="#configuring-the-floatingmenu"><p>Configuring the FloatingMenu</p>
+</a></li>
+          </ol>
+        </div>
     </div>
   </div>
 
