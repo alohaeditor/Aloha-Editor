@@ -12,7 +12,7 @@ Aloha.ready( function() {
 		applyMarkupOnNextSelection = true,
 		engine = Aloha,
 		selectionRange,
-		supportedCommands = Aloha.querySupportedCommands();
+		supportedCommands = Aloha.querySupportedCommands().sort();
 	
 	for ( var i=0; i < supportedCommands.length; i++ ) {
 		command.append('<option	value="' + supportedCommands[i] +'">' + supportedCommands[i] + '</option>');

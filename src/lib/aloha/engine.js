@@ -1,6 +1,6 @@
 define(
-['aloha/ecma5'],
-function( ) {
+['aloha/contenthandlermanager', 'aloha/ecma5'],
+function( ContentHandlerManager ) {
 	"use strict";
 
 var htmlNamespace = "http://www.w3.org/1999/xhtml";
@@ -571,6 +571,12 @@ function myExecCommand(command, showUi, value, range) {
 		if (!myQueryCommandEnabled(command)) {
 			return false;
 		}
+
+		//if (typeof Aloha.settings.contentHandler.insertHtml === 'undefined') {
+		// just use all registerd content handler or specity Aloha.defaults.contentHandler.insertHtml manually?
+		//	Aloha.settings.contentHandler.insertHtml = Aloha.defaults.contentHandler.insertHtml;
+		//}
+		value = ContentHandlerManager.handleContent( value, { contenthandler: Aloha.settings.contentHandler.insertHtml } );
 
 		// "Take the action for command, passing value to the instructions as an
 		// argument."
@@ -5923,8 +5929,8 @@ commands["delete"] = {
 
 		// "Repeat the following steps:"
 		while (true) {
-			isBr = isHtmlElement(node.childNodes[offset - 1], "br");
-			isHr = isHtmlElement(node.childNodes[offset - 1], "hr");
+			isBr = isHtmlElement(node.childNodes[offset - 1], "br") || false;
+			isHr = isHtmlElement(node.childNodes[offset - 1], "hr") || false;
 			
 			// "If offset is zero and node's previousSibling is an editable
 			// invisible node, remove node's previousSibling from its parent."

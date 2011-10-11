@@ -2366,10 +2366,10 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		getRangeAt: function (index) {
 			
 			return correctRange( this._nativeSelection.getRangeAt( index ) );
-//			if ( index < 0 || this.rangeCount ) {
-//				throw "INDEX_SIZE_ERR DOM";
-//			}
-//			return this._ranges[index];
+			//if ( index < 0 || this.rangeCount ) {
+			//	throw "INDEX_SIZE_ERR DOM";
+			//}
+			//return this._ranges[index];
 		},
 		
 		/**
