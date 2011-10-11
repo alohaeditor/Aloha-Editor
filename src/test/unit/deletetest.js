@@ -289,53 +289,50 @@ var tests = {
 //		},
 //	
 		// Lists with collapsed selection
-		{  	start: 'foo<ol><li>[]bar<li>baz</ol>', // broken
-			execResult: 'foo[]bar<ol><li>baz</li></ol>'
+		{  	start: 'foo<ol><li>[]bar<li>baz</ol>',
+			execResult: 'foo<p>[]bar</p><ol><li>baz</li></ol>'
 		},
-		{  	start: 'foo<br><ol><li>[]bar<li>baz</ol>', // broken
-			execResult: 'foo[]bar<ol><li>baz</li></ol>'
+		{  	start: 'foo<br><ol><li>[]bar<li>baz</ol>',
+			execResult: 'foo<p>[]bar</p><ol><li>baz</li></ol>'
 		},
-		{  	start: 'foo<br><br><ol><li>[]bar<li>baz</ol>', // broken
-			execResult: 'foo<br>[]bar<br><ol><li>baz</li></ol>'
+		{  	start: 'foo<br><br><ol><li>[]bar<li>baz</ol>',
+			execResult: 'foo<br><br><p>[]bar</p><ol><li>baz</li></ol>'
 		},
-		{  	start: '<ol><li>foo<li>[]bar</ol>', // broken
-			execResult: '<ol><li>foo[]bar</li></ol>'
+		{  	start: '<ol><li>foo<li>[]bar</ol>',
+			execResult: '<ol><li>foo<br>[]bar</li></ol>'
 		},
-		{  	start: '<ol><li>foo<br><li>[]bar</ol>', // broken
-			execResult: '<ol><li>foo[]bar</li></ol>'
+		{  	start: '<ol><li>foo<br><li>[]bar</ol>',
+			execResult: '<ol><li>foo<br>[]bar</li></ol>'
 		},
-		{  	start: '<ol><li>foo<br><br><li>[]bar</ol>', // boken
-			execResult: '<<ol><li>foo<br>[]bar<br></li></ol>'
+		{  	start: '<ol><li>foo<br><br><li>[]bar</ol>',
+			execResult: '<ol><li>foo<br><br>[]bar</li></ol>'
 		},
-		{  	start: '<ol><li>foo<li>[]bar<br>baz</ol>', // broken
-			execResult: '<ol><li>foo[]bar</li><li>baz</li></ol>'
+		{  	start: '<ol><li>foo<li>[]bar<br>baz</ol>',
+			execResult: '<ol><li>foo<br>[]bar<br>baz</li></ol>'
 		},
-		{  	start: '<ol><li>foo<br>bar<li>[]baz</ol>', // broken
-			execResult: '<ol><li>foo<br>bar[]baz</li></ol>'
+		{  	start: '<ol><li>foo<br>bar<li>[]baz</ol>',
+			execResult: '<ol><li>foo<br>bar<br>[]baz</li></ol>'
 		},
-	
 		{  	start: '<ol><li><p>foo</p>{}bar</ol>',
 			execResult: '<ol><li><p>foo[]bar</p></li></ol>'
 		},
-	
-		{  	start: '<ol><li><p>foo<li>[]bar</ol>', // broken
-			execResult: '<ol><li><p>foo[]bar</p></li></ol>'
+		{  	start: '<ol><li><p>foo<li>[]bar</ol>',
+			execResult: '<ol><li><p>foo</p>[]bar</li></ol>'
 		},
-		{  	start: '<ol><li>foo<li><p>[]bar</ol>', // broken
-			execResult: '<ol><li>foo[]bar</li></ol>'
+		{  	start: '<ol><li>foo<li><p>[]bar</ol>',
+			execResult: '<ol><li>foo<p>[]bar</p></li></ol>'
 		},
-		{  	start: '<ol><li><p>foo<li><p>[]bar</ol>', // broken
-			execResult: '<ol><li><p>foo[]bar</p></li></ol>'
+		{  	start: '<ol><li><p>foo<li><p>[]bar</ol>',
+			execResult: '<ol><li><p>foo</p><p>[]bar</p></li></ol>'
 		},
-	
-		{  	start: '<ol><li>foo<ul><li>[]bar</ul></ol>', // broken
-			execResult: '<ol><li>foo[]bar</li></ol>'
+		{  	start: '<ol><li>foo<ul><li>[]bar</ul></ol>',
+			execResult: '<ol><li>foo</li><li>[]bar</li></ol>'
 		},
-		{  	start: 'foo<ol><ol><li>[]bar</ol></ol>', // broken
-			execResult: 'foo[]bar'
+		{  	start: 'foo<ol><ol><li>[]bar</ol></ol>',
+			execResult: 'foo<ol><li>[]bar</li></ol>'
 		},
-		{  	start: 'foo<div><ol><li>[]bar</ol></div>', // broken
-			execResult: 'foo[]bar' // TODO not sure if this is correct
+		{  	start: 'foo<div><ol><li>[]bar</ol></div>',
+			execResult: 'foo<div><p>[]bar</p></div>'
 		},
 
 //		{  	start: 'foo<dl><dt>[]bar<dd>baz</dl>',
