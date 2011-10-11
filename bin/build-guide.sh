@@ -36,8 +36,9 @@ echo -e "\n * Building guides"
 echo "Done."
 
 echo -e "\n * Coping output files to $TARGETDIR"
-  cp -ra output $TARGETDIR
+  cp -ra output $TARGETDIR/guides
   cp -ra assets/* $TARGETDIR
+  echo '<meta http-equiv="refresh" content="1;url=guides/index.html">' > $TARGETDIR/index.html
 echo "Done."
 
 echo -e "\n * Coping README to out"
