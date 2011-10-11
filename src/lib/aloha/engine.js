@@ -5923,8 +5923,8 @@ commands["delete"] = {
 
 		// "Repeat the following steps:"
 		while (true) {
-			isBr = isHtmlElement(node.childNodes[offset - 1], "br");
-			isHr = isHtmlElement(node.childNodes[offset - 1], "hr");
+			isBr = isHtmlElement(node.childNodes[offset - 1], "br") || false;
+			isHr = isHtmlElement(node.childNodes[offset - 1], "hr") || false;
 			
 			// "If offset is zero and node's previousSibling is an editable
 			// invisible node, remove node's previousSibling from its parent."
@@ -6059,6 +6059,14 @@ commands["delete"] = {
 
 			// "Fix disallowed ancestors of node."
 			fixDisallowedAncestors(node, range);
+
+			// Fixes 2 test cases: deleting from offset 0 within the first
+			// li must not create an additional p element before the list
+			if (isHtmlElement(node, ["li"]) 
+				&& isHtmlElement(range.startContainer.parentElement, ["p"])
+				&& range.startOffset === 0) {
+				jQuery(range.startContainer).unwrap();
+			}
 
 			// "Abort these steps."
 			return;
