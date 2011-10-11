@@ -141,7 +141,12 @@ Aloha.ready( function() {
 	 * range object, 
 	 */
 	function onSelectionChanged ( e ) {
-
+		
+		// don't read selection if shift is pressed
+		if ( e.shiftKey ) {
+			return
+		}
+		
 		if ( applyMarkupOnNextSelection ) {
 			testArea[ 0 ].innerHTML = fillArea.val();
 			applySelection( testArea );
