@@ -141,6 +141,10 @@ function( TestUtils ) {
         ],
         flowTests = [
 			
+			//									//
+			//		Tests for start position	//
+			//									//
+			
 			// Greedly expand selection by moving start position towards the
 			// left
 //			[ 'foo{<p>bar]</p>', 'foo[<p>bar]</p>' ],
@@ -171,10 +175,14 @@ function( TestUtils ) {
 //			[ '<i>foo</i>{<div><p>bar]</p></div>', '<i>foo[</i><div><p>bar]</p></div>' ]
 
 			[ '<p>foo{</p><p>bar]</p>', '<p>foo[</p><p>bar]</p>' ],
+			[ '<p>foo[</p><p>bar]</p>', '<p>foo[</p><p>bar]</p>' ],
+			[ '<p>{</p><p>foo]</p>', '<p></p><p>[foo]</p>' ],
+			[ 'foo<p>{</p><p>bar]</p>', 'foo<p></p><p>[bar]</p>' ],
+			[ '<div><p>{</p></div><p>bar]</p>', '<div><p></p></div><p>[bar]</p>' ],
+			[ '<div><p><b>foo</b>{</p></div><p>bar]</p>', '<div><p><b>foo[</b></p></div><p>bar]</p>' ],
 			
 			[ '<p>[foo</p><p>bar]</p><p>baz</p>', '<p>[foo</p><p>bar]</p><p>baz</p>' ],
 			[ '<p>[foo</p><p>]bar</p><p>baz</p>', '<p>[foo</p><p>}bar</p><p>baz</p>' ],
-			[ '<p>foo[</p><p>bar]</p><p>baz</p>', '<p>foo[</p><p>bar]</p><p>baz</p>' ],
 			[ '<p>foo[</p><p>]bar</p><p>baz</p>', '<p>foo[</p><p>}bar</p><p>baz</p>' ],
             [ '<p>foo</p>test{<p>bar</p>}<p>baz</p>', '<p>foo</p>test<p>[bar</p><p>}baz</p>' ],
             [ '<p>foo{</p><p>bar}</p><p>baz</p>', '<p>foo[</p><p>bar]</p><p>baz</p>' ],

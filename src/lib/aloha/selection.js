@@ -2743,16 +2743,18 @@ function getNearestRightNode ( node, predicate ) {
 
 /**
  * anatomy of a selection:
- * markup  : '<div>|<p>foo</p>|test{<p>bar</p>}<p>baz</p>|</div>', '<div><p>foo</p>test<p>[bar</p><p>}baz</p></div>'
- * offsets :       0          1    2          3          4
- * startContainer: div
- * startOffset: 2
- * childNodes: [
+ * markup  : '<div>|<p>foo</p>|test{<p>bar</p><p>baz]</p>|</div>', '<div><p>foo</p>test<p>[bar</p><p>}baz</p></div>'
+ * offsets :       0          1    2                3   4
+ * startContainer : <div>
+ * startOffset    : 2
+ * endContainer   : <p>
+ * endOffset      : 3
+ * childNodes : [
  *		0 : <p>foo</p>
  *		1 : test
  *		2 : <p>bar</p>
  *		3 : <p>baz</p>
- * ]
+ *	]
  * 
  * rule:
  * 	IF the container is a flow element
@@ -2765,16 +2767,14 @@ function getNearestRightNode ( node, predicate ) {
  *				"<b>test</b>{<p>foo..." becomes "<b>test[</b><p>foo..."
  *				"test<b></b>{<p>foo..." becomes "test[<b></b><p>foo..."
  *
- *	IF we cannot find a node inwhich we can position ourselves then we we
- *	   contract the selection from the current start position in towards to
- *	   nearest right child or sibling
- *
+ *	IF we cannot find a node inwhich we can position ourselves then we contract
+ *	   the selection from the current start position in towards to nearest
+ *	   right child or sibling
  * 	THEN
- * 			IF the start position is in front of a start tag of a flow element,
- * 				THEN we try to find a suitable start position by moving down or into the tree.
- * 					We will try and land at the nearest position to where we started, which is the the start of the first stoppable node
- * 			ELSE IF the start position is in front of an end tag of a flow element, then we move back into the tree.
- * 					We will try and land at the nearest position to where we started, which is the the end of the first stoppable node
+ * 		IF the start position is in front of a start tag of a flow element,
+ * 			THEN we try to find a suitable start position by moving down or into the tree.
+ * 				 We will try and land at the nearest position to where we started, which is the the start of the first stoppable node
+ * 		ELSE IF the start position is in front of an end tag of a flow element, then we will try and land at the nearest position to where we started, which is the the end of the first stoppable node
  * unit tests:
 			[ 'test{<p>foo</p><p>bar]</p>'			, 'test[<p>foo</p><p>bar]</p>'		  ],
 			[ '<b>test</b>{<p>foo</p><p>bar]</p>'	, '<b>test[</b><p>foo</p><p>bar]</p>' ],
@@ -2791,15 +2791,28 @@ function getStartPosition ( container, offset ) {
 			return null;
 		}
 		
+		var stop;
+		
 		// We either have an empty container, or else the offset is positioned
 		// at the very end of the container--after the last node. We therefore
 		// have the case where we are in front the closing tag of a flow node,
 		// and we will therefore try and move backwards into the tree
 		if ( offset == container.childNodes.length ) {
-			debugger;
-			var leftNeighbor = getLeftNeighbor( container );
-			if ( leftNeighbor ) {
-				//var newStartPos = getStartPosition( leftNeighbor, 0 );
+			stop = getFurthestRightScion( container );
+			if ( stop ) {
+				return {
+					node   : stop,
+					offset : getNodeLength( stop )
+				};
+			}
+			
+			// There no nodes inside of container 
+			stop = getNearestRightNode( container );
+			if ( stop ) {
+				return {
+					node   : stop,
+					offset : 0
+				};
 			}
 			
 			return {
@@ -2811,7 +2824,6 @@ function getStartPosition ( container, offset ) {
 		// The offset is somewhere before the end of the container, therefore
 		// check if the node at index offset is a block element.
 		var node = container.childNodes[ offset ];
-		var stop;
 		
 		if ( isBlockElement( node ) ) {
 			// Get the nearest text node to the left of the start position
@@ -2872,7 +2884,7 @@ function getStartPosition ( container, offset ) {
 };
 
 function correctRange ( range ) {
-	// return range;
+	//return range;
 	
 	var startContainer = range.startContainer,
 		startOffset = range.startOffset;
