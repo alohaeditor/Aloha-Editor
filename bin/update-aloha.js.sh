@@ -22,15 +22,15 @@ function handleError() {
 function displayUsage() { 
         echo "Please add a target directory argument."
         echo "Example:"
-        echo "        src"
+        echo "        src/lib"
+ 	echo "        target/tmp/aloha/lib"
         echo "Usage:"
         echo "        $0 [TARGET_DIRECTORY]"
         exit 1
 }
 
 SCRIPTDIR=`cd \`dirname "$0"\`; pwd`
-SOURCE="$SCRIPTDIR/../src/lib"
-TARGET="$SCRIPTDIR/../src"
+TARGET="$SCRIPTDIR/../src/lib/"
 
 if [ "$1" != "" ]; then
 	TARGET="$SCRIPTDIR/../$1"
@@ -43,27 +43,28 @@ else
         displayUsage
 fi 
 
-
-echo "Generating aloha.js in $TARGET"
+echo "Generating aloha.js in $TARGET:"
 echo > "$TARGET/aloha.js"
 
-echo "Adding $REQUIRE"
-cat "$SOURCE/$REQUIRE" >> "$TARGET/aloha.js"
+echo -e "\n * 1. Adding $REQUIRE"
+cat "$TARGET/$REQUIRE" >> "$TARGET/aloha.js"
 handleError $? "Could not add file to aloha.js"
 
-echo "Adding $JQUERY"
-cat "$SOURCE/$JQUERY" >> "$TARGET/aloha.js"
+echo -e "\n * 2. Adding $JQUERY"
+cat "$TARGET/$JQUERY" >> "$TARGET/aloha.js"
 handleError $? "Could not add file to aloha.js"
 
-echo "Adding $EXT_ADAPT"
-echo "Adding $EXT_ALL"
+echo -e "\n * 3. Adding $EXT_ADAPT"
+echo -e "\n * 4. Adding $EXT_ALL"
 echo "(function( jQuery ) {" >> "$TARGET/aloha.js"
-cat "$SOURCE/$EXT_ADAPT" "$SOURCE/$EXT_ALL" >> "$TARGET/aloha.js" 
+cat "$TARGET/$EXT_ADAPT" "$TARGET/$EXT_ALL" >> "$TARGET/aloha.js" 
 handleError $? "Could not add file to aloha.js"
 echo "})( jQuery );" >> "$TARGET/aloha.js"
 
-echo "Adding aloha-bootstrap.js"
-cat "$SOURCE/aloha-bootstrap.js" >> "$TARGET/aloha.js"
+echo -e "\n * 5. Adding previously generated $TARGET/aloha-bootstrap.js"
+cat "$TARGET/aloha-bootstrap.js" >> "$TARGET/aloha.js"
 handleError $? "Could not add file to aloha.js"
 
-echo "Updated $TARGET/aloha.js."
+echo -e "\n\nGenerated $TARGET/aloha.js."
+echo
+

@@ -93,7 +93,7 @@ echo -e "\n * Merge require and aloha-bootstrap"
 echo "Done."
 
 echo -e "\n * Checking filesize of final aloha.js"
-  checkFilesize "$TMP/aloha/lib/aloha.js" 1740 1600
+  checkFilesize "$TMP/aloha/lib/aloha.js" 2300 2000
 echo "Done."
 
 echo -e "\n * Coping $TMP/aloha to $OUT"
