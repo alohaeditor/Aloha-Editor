@@ -1,7 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>org.alohaeditor</groupId>
+	<groupId>com.gentics</groupId>
 	<artifactId>alohaeditor</artifactId>
 	<version>0.20-SNAPSHOT</version>
 	<packaging>pom</packaging>
@@ -11,8 +11,8 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-                <maven.build.timestamp.format>yyyyMMdd-HHmmss</maven.build.timestamp.format>
-		<ALOHABUILDCONF>aloha</ALOHABUILDCONF>
+		<ALOHABUILDCONF>gentics</ALOHABUILDCONF>
+        <maven.build.timestamp.format>yyyyMMdd-HHmmss</maven.build.timestamp.format>
 		<ALOHADEPLOYMENTURL>NA</ALOHADEPLOYMENTURL>
 		<ALOHADEPLOYMENTPATH>NA</ALOHADEPLOYMENTPATH>
 	</properties>
@@ -59,12 +59,12 @@
                                                 <goals>
                                                      <goal>exec</goal>
                                                 </goals>
-				              <configuration>
+				              			   <configuration>
                                 	        <executable>bin/deploy-aloha.sh</executable>
                                         	<arguments>
 	                                           <argument>${ALOHADEPLOYMENTURL}</argument>
         	                                   <argument>${ALOHADEPLOYMENTPATH}</argument>
-                                                   <argument>${maven.build.timestamp}</argument>
+                                               <argument>${maven.build.timestamp}</argument>
                 	                       </arguments>
                         	              </configuration>
                                         </execution>
@@ -89,16 +89,15 @@
 
         <distributionManagement>
                 <repository>
-                        <id>archiva.com.gentics.public</id>
-                        <name>Gentics Public Repository</name>
-                        <url>http://archiva.gentics.com:8081/archiva/repository/com.gentics.public</url>
+                        <id>archiva.com.gentics.internal</id>
+                        <name>Gentics Internal Repository</name>
+                        <url>http://archiva.gentics.com:8081/archiva/repository/com.gentics.internal</url>
                 </repository>
                 <snapshotRepository>
-                        <id>archiva.com.gentics.public</id>
-                        <name>Gentics Public Repository</name>
-                        <url>http://archiva.gentics.com:8081/archiva/repository/com.gentics.public</url>
+                        <id>archiva.com.gentics.internal</id>
+                        <name>Gentics Internal Repository</name>
+                        <url>http://archiva.gentics.com:8081/archiva/repository/com.gentics.internal</url>
                 </snapshotRepository>
         </distributionManagement>
-
 </project>
 
