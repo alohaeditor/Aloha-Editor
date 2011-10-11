@@ -488,16 +488,16 @@ var tests = {
 	
 		// Styled stuff with collapsed selection
 		{  	start: '<p style="color:blue;">foo<p>[]bar',
-			execResult: '<p style="color:blue;">foo[]bar</p>' // TODO check
+			execResult: '<p><span style="color: blue; ">foo[]</span>bar</p>'
 		},
 		{  	start: '<p style="color:blue;">foo<p style="color:brown;">[]bar',
 			execResult: '<p style="color:blue;">foo[]<span style="color:brown;">bar</span></p>'
 		},
 		{  	start: '<p style="color:blue">foo<p style="color:rgba(0,0,255,1)">[]bar',
-			execResult: '<p style="color:blue">foo[]<span style="color:rgba(0,0,255,1)">bar</span></p>'
+			execResult: '<p style="color:blue">foo[]bar</p>'
 		},
 		{  	start: '<p style="color:transparent">foo<p style="color:rgba(0,0,0,0)">[]bar',
-			execResult: '<p style="color:transparent">foo[]<span style="color:rgba(0,0,0,0)">bar</span></p>'
+			execResult: '<p style="color:transparent">foo[]bar</p>'
 		},
 		{  	start: '<p>foo<p style="color:brown">[]bar',
 			execResult: '<p>foo[]<span style="color:brown">bar</span></p>'
@@ -506,10 +506,10 @@ var tests = {
 			execResult: '<p><font color="blue">foo[]</font>bar</p>'
 		},
 		{  	start: '<p><font color="blue">foo</font><p><font color="brown">[]bar</font>',
-			execResult: '<p><font color="blue">foo[]</font><span style="color:brown">bar</span></p>'
+			execResult: '<p><font color="blue">foo[]</font><font color="brown">bar</font></p>'
 		},
 		{  	start: '<p>foo<p><font color="brown">[]bar</font>',
-			execResult: '<p>foo[]<span style="color:brown">bar</span></p>'
+			execResult: '<p>foo[]<font color="brown">bar</font></p>'
 		},
 		{  	start: '<p><span style="color:blue">foo</font><p>[]bar',
 			execResult: '<p><span style="color:blue">foo[]</span>bar</p>'
@@ -521,8 +521,8 @@ var tests = {
 			execResult: '<p>foo[]<span style="color:brown">bar</span></p>'
 		},
 	
-		{  	start: '<p style="background-color:aqua">foo<p>[]bar', // broken
-			execResult: '<p style="background-color:aqua">foo[]<span style="background-color:white">bar</span></p>'
+		{  	start: '<p style="background-color:aqua">foo<p>[]bar',
+			execResult: '<p style="background-color:aqua">foo<p>[]bar'
 		},
 		{  	start: '<p style="background-color:aqua">foo<p style="background-color:tan">[]bar', // broken
 			execResult: '<p style="background-color:aqua">foo[]<span style="background-color:tan">bar</span></p>'
@@ -541,13 +541,13 @@ var tests = {
 		},
 	
 		{  	start: '<p style="text-decoration:underline">foo<p>[]bar',
-			execResult: '<p style="text-decoration:underline">foo[]bar</p>'
+			execResult: '<p><u>foo[]</u>bar</p>'
 		},
 		{  	start: '<p style="text-decoration:underline">foo<p style="text-decoration:line-through">[]bar',
-			execResult: '<p style="text-decoration:underline">foo[]<span style="text-decoration:line-through">bar</span></p>'
+			execResult: '<p><u>foo[]</u><s>bar</s></p>'
 		},
 		{  	start: '<p>foo<p style="text-decoration:line-through">[]bar',
-			execResult: '<p>foo[]<span style="text-decoration:line-through">bar</span></p>'
+			execResult: '<p>foo[]<s>bar</s></p>'
 		},
 		{  	start: '<p><u>foo</u><p>[]bar',
 			execResult: '<p><u>foo[]</u>bar</p>'
@@ -560,7 +560,7 @@ var tests = {
 		},
 	
 		{  	start: '<p style="color:blue">foo</p>[]bar',
-			execResult: '<p style="color:blue">foo[]<span style="color:black">bar</span></p>'
+			execResult: '<p><span style="color: blue; ">foo[]</span>bar</p>'
 		},
 		{  	start: 'foo<p style="color:brown">[]bar',
 			execResult: 'foo[]<span style="brown">bar</span>'
