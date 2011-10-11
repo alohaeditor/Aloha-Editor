@@ -101,7 +101,7 @@ Aloha.ready( function() {
 			if ( e === "INVALID_ACCESS_ERR" ) {
 				jQuery('#aloha-indeterm').hide();
 			} else {
-				throw(e);
+//				throw(e);
 			}
 		}
 		jQuery('#aloha-indeterm-result').html( (result ? 'true' : 'false') );
@@ -113,7 +113,7 @@ Aloha.ready( function() {
 			if ( e === "INVALID_ACCESS_ERR" ) {
 				jQuery('#aloha-state').hide();
 			} else {
-				throw(e);
+//				throw(e);
 			}
 		}
 		jQuery('#aloha-state-result').html( (result ? 'true' : 'false') );
@@ -125,7 +125,7 @@ Aloha.ready( function() {
 			if ( e === "INVALID_ACCESS_ERR" ) {
 				jQuery('#aloha-value').hide();
 			} else {
-				throw(e);
+//				throw(e);
 			}
 		}
 		jQuery('#aloha-value-result').html( result );

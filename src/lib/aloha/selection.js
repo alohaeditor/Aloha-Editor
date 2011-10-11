@@ -1886,7 +1886,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 	 * @return {Object:Range} normalized range
 	 */
 	function correctRange ( range ) {
-		//return range;
+		return range;
 		
 		var startContainer = range.startContainer,
 		    endContainer = range.endContainer,
