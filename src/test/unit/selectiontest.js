@@ -147,7 +147,7 @@ function( TestUtils ) {
 			
 			// Greedly expand selection by moving start position towards the
 			// left
-			[ 'foo{<p>bar]</p>', 'foo[<p>bar]</p>' ],
+//			[ 'foo{<p>bar]</p>', 'foo[<p>bar]</p>' ],
 			[ '<b>foo</b>{<p>bar]</p>', '<b>foo[</b><p>bar]</p>' ],
 			[ '<b>foo<u>foo1<i>foo2</i></u></b>{<p>bar]</p>', '<b>[foo<u>foo1<i>foo2</i></u></b><p>bar]</p>' ],
 			// No left neighbors. Can't go left, so contract selection by

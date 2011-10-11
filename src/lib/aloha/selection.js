@@ -2609,7 +2609,7 @@ function getRightNeighbor ( node ) {
 	return getRightNeighbor( node.parentNode );
 };
 
-function getIndexOfNodeInParent ( node ) {
+function getNodeIndex ( node ) {
 	if ( !node ) {
 		return -1;
 	}
@@ -2785,10 +2785,18 @@ function getStartPosition ( container, offset ) {
 		return null;
 	}
 	
-	if ( isFlowElement( container ) ) {
-		// Out of bounds sanity check
+	// Why doesn't isFlowElement work in Chrome even though it returns true
+	// just like isBlockElement
+	// if ( isFlowElement( container ) ) {
+	
+	if ( isBlockElement( container ) ) {
+		// Out of bounds sanity check.
+		// Should we throw an error?
 		if ( offset > container.childNodes.length ) {
-			return null;
+			return {
+				node   : container,
+				offset : offset
+			};
 		}
 		
 		var stop;
@@ -2806,7 +2814,8 @@ function getStartPosition ( container, offset ) {
 				};
 			}
 			
-			// There no nodes inside of container 
+			// There is no child nodes inside of container, so contract the
+			// selection rightwards
 			stop = getNearestRightNode( container );
 			if ( stop ) {
 				return {
@@ -2826,28 +2835,30 @@ function getStartPosition ( container, offset ) {
 		var node = container.childNodes[ offset ];
 		
 		if ( isBlockElement( node ) ) {
-			// Get the nearest text node to the left of the start position
-			stop = getNearestLeftNode( node, function ( node ) {
-				if ( node.nodeType == Node.TEXT_NODE ) {
-					return true;
-				}
-			} );
-			
-			// We found a text node. We therefore have one of the following
-			// situations (where "foo" represents out text node):
-			// foo<b>bar</b>	    correct to foo[<b>bar</b>
-			// <i>foo</i><b>bar</b> correct to <i>foo[</i><b>bar</b>
-			// foo<i></i><b>bar</b> correct to foo<i>{</i><b>bar</b>
-			if ( stop && stop.nodeType == Node.TEXT_NODE ) {
-				// case: foo<i></i><b>bar</b>
-				if ( getRightNeighbor( stop ) != node ) {
-					stop = getNearestLeftNode( node );
-				}
+			// We can only move the start position to the right, if there left
+			// neighbor is not a block node
+			if ( !isBlockElement( getLeftNeighbor( node ) ) ) {
+				// Get the nearest text node to the left of the start position
+				stop = getNearestLeftNode( node, function ( node ) {
+					return node.nodeType == Node.TEXT_NODE;
+				} );
 				
-				return {
-					node   : stop,
-					offset : getNodeLength( stop )
-				};
+				// We found a text node. We therefore have one of the following
+				// situations (where "foo" represents out text node):
+				// foo<b>bar</b>	    correct to foo[<b>bar</b>
+				// <i>foo</i><b>bar</b> correct to <i>foo[</i><b>bar</b>
+				// foo<i></i><b>bar</b> correct to foo<i>{</i><b>bar</b>
+				if ( stop && stop.nodeType == Node.TEXT_NODE ) {
+					// case: foo<i></i><b>bar</b>
+					if ( getRightNeighbor( stop ) != node ) {
+						stop = getNearestLeftNode( node );
+					}
+					
+					return {
+						node   : stop,
+						offset : getNodeLength( stop )
+					};
+				}
 			}
 			
 			// We never found a text node.
@@ -2855,7 +2866,7 @@ function getStartPosition ( container, offset ) {
 			// to the left, so we will collapse the collection instead, by
 			// moving the start position to the nearest text node to the right
 			// {<p><b></b>foo]</p> => <p><b></b>[foo]</p>
-			stop = getFurthestLeftScion( node);
+			stop = getFurthestLeftScion( node );
 			while ( stop && stop.nodeType != Node.TEXT_NODE ) {
 				stop = getNearestRightNode( stop );
 			}
@@ -2873,10 +2884,8 @@ function getStartPosition ( container, offset ) {
 				node   : container,
 				offset : offset
 			};
-		}
-		
-		if ( isPhrasingElement( node ) ) {
-			// debugger;
+		} else {
+			debugger;
 		}
 	}
 	
@@ -3099,7 +3108,7 @@ function correctRange ( range ) {
 		 * The addRange(range) method adds the given range Range object to the list of
 		 * selections, at the end (so the newly added range is the new last range). 
 		 * NOTE: Aloha Editor only support 1 range! The added range will replace the 
-		 * range at with index 0
+		 * range at index 0
 		 * see http://html5.org/specs/dom-range.html#selection note about addRange
 		 * @throws an INVALID_NODE_TYPE_ERR exception if the given Range has a boundary point
 		 * node that's not a Text or Element node, and an INVALID_MODIFICATION_ERR exception 
@@ -3109,7 +3118,11 @@ function correctRange ( range ) {
 		 */ 
 		addRange: function( range ) {
 			// set readonly attributes
-			this._nativeSelection.addRange( correctRange(range) );
+			this._nativeSelection.addRange( range );
+			// We will correct the range after rangy has processed the native
+			// selection range, so that our correct will be the final fix on
+			// the range according to the guarentee's that Aloha wants
+			this._nativeSelection._ranges[ 0 ] = correctRange( range );
 		},
 		
 		/**
