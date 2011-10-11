@@ -2470,15 +2470,15 @@ var blockElementsLookupTable = {
 // namesOfElementsWithInlineContents
 
 function isBlockElement ( node ) {
-	return node ? !!blockElementsLookupTable[ node.nodeName ] : false;
+	return !!( node && blockElementsLookupTable[ node.nodeName ] );
 };
 
 function isVoidElement ( node ) {
-	return node ? !!voidElementsLookupTable[ node.nodeName ] : false;
+	return !!( node && voidElementsLookupTable[ node.nodeName ] );
 };
 
 function isPhrasingElement ( node ) {
-	return node ? !!phrasingElementsLookupTable[ node.nodeName ] : false;
+	return !!( node && phrasingElementsLookupTable[ node.nodeName ] );
 };
 
 // Phrasing elements are a subset of flow elements, so we return true is the
@@ -2493,8 +2493,12 @@ function isFlowElement ( node ) {
 				phrasingElementsLookupTable[ node.nodeName ] );
 };
 
+function isTextNode ( node ) {
+	return !!( node && node.nodeType == Node.TEXT_NODE );
+};
+
 function isEditingHost ( node ) {
-	return GENTICS.Utils.Dom.isEditingHost( node );
+	return !!( node && GENTICS.Utils.Dom.isEditingHost( node ) );
 };
 
 function getNodeLength ( node ) {
@@ -2502,7 +2506,7 @@ function getNodeLength ( node ) {
 		return 0;
 	}
 	
-	return node.nodeType == Node.TEXT_NODE
+	return isTextNode( node )
 		? node.length
 		: node.childNodes.length;
 };
@@ -2586,10 +2590,27 @@ function getNodeIndex ( node ) {
 	return -1;
 };
 
-function getFurthestLeftScion ( node ) {
-	return ( !node || !node.firstChild )
-		? null
-		: getFurthestLeftScion( node.firstChild ) || node.firstChild;
+/**
+ * @param {Object: DOMElement} node
+ * @param {Function} predicate
+ */
+function getFurthestLeftScion ( node, predicate ) {
+	if ( !node || !node.firstChild ) {
+		return null;
+	}
+	
+	var scion = getFurthestLeftScion( node.firstChild, predicate ) || node.firstChild;
+	
+	if ( typeof predicate !== 'function' || predicate( scion ) ) {
+		return scion;
+	}
+	
+	scion = getNearestRightNode( scion );
+	if ( scion ) {
+		return getFurthestLeftScion( scion, predicate ) || scion;
+	}
+	
+	return null;
 };
 
 /**
@@ -2601,11 +2622,25 @@ function getFurthestLeftScion ( node ) {
  *		given "<div></div>", if node is <div>, return null
  *
  * @param {Object: DOMElement} node
+ * @param {Function} predicate
  */
-function getFurthestRightScion ( node ) {
-	return ( !node || !node.lastChild )
-		? null
-		: getFurthestRightScion( node.lastChild ) || node.lastChild;
+function getFurthestRightScion ( node, predicate ) {
+	if ( !node || !node.lastChild ) {
+		return null;
+	}
+	
+	var scion = getFurthestRightScion( node.lastChild, predicate ) || node.lastChild;
+	
+	if ( typeof predicate !== 'function' || predicate( scion ) ) {
+		return scion;
+	}
+	
+	scion = getNearestLeftNode( scion );
+	if ( scion ) {
+		return getFurthestRightScion( scion, predicate ) || scion;
+	}
+	
+	return null;
 };
 
 /**
@@ -2680,11 +2715,7 @@ function getNearestRightNode ( node, predicate ) {
 		return scion;
 	}
 	
-	if ( typeof predicate !== 'function' ) {
-		return node;
-	}
-	
-	if ( predicate( node ) ) {
+	if ( typeof predicate !== 'function' || predicate( node ) ) {
 		return node;
 	}
 	
@@ -2791,16 +2822,14 @@ function getStartPosition ( container, offset ) {
 			// neighbor is not a block node
 			if ( !isBlockElement( getLeftNeighbor( node ) ) ) {
 				// Get the nearest text node to the left of the start position
-				stop = getNearestLeftNode( node, function ( node ) {
-					return node.nodeType == Node.TEXT_NODE;
-				} );
+				stop = getNearestLeftNode( node, isTextNode );
 				
 				// We found a text node. We therefore have one of the following
 				// situations (where "foo" represents out text node):
 				// foo<b>bar</b>	    correct to foo[<b>bar</b>
 				// <i>foo</i><b>bar</b> correct to <i>foo[</i><b>bar</b>
 				// foo<i></i><b>bar</b> correct to foo<i>{</i><b>bar</b>
-				if ( stop && stop.nodeType == Node.TEXT_NODE ) {
+				if ( stop && isTextNode( stop ) ) {
 					// case: foo<i></i><b>bar</b>
 					if ( getRightNeighbor( stop ) != node ) {
 						stop = getNearestLeftNode( node );
@@ -2831,11 +2860,7 @@ function getStartPosition ( container, offset ) {
 			}
 			
 			// We found to text node to land on, return the original start
-			// position
-			return {
-				node   : container,
-				offset : offset
-			};
+			// position ...
 		}
 		
 		return {
@@ -2867,7 +2892,10 @@ function getEndPosition ( container, offset ) {
 		// have the case where we are in front the closing tag of a flow node,
 		// and we will therefore try and move backwards into the tree
 		if ( offset == container.childNodes.length ) {
-			stop = getFurthestRightScion( container );
+			
+			// debugger;
+			
+			stop = getFurthestRightScion( container, isTextNode );
 			if ( stop ) {
 				return {
 					node   : stop,
@@ -2876,10 +2904,7 @@ function getEndPosition ( container, offset ) {
 			}
 			
 			// There is no child nodes inside of container, so look left
-			stop = getNearestLeftNode( container, function ( node ) {
-				return node.nodeType == Node.TEXT_NODE;
-			} );
-			
+			stop = getNearestLeftNode( container, isTextNode );
 			if ( stop ) {
 				return {
 					node   : stop,
@@ -2904,9 +2929,13 @@ function getEndPosition ( container, offset ) {
 			// right of node which has children
 			// We satisfy:
 			// [ '<p>[foo</p>}<p>bar</p>', '<p>[foo</p><p>}bar</p>' ],
-			// [ '<p>[foo</p>}<p></p>bar', '<p>[foo</p><p></p>]bar' ],
+			// [ '<p>[foo</p>}<p></p>bar',  ],
 			// [ '<p>[foo</p>}<p><b></b>bar</p>', '<p>[foo</p><p>}<b></b>bar</p>' ],
-			if ( isBlockElement( getLeftNeighbor( node ) ) ) {
+			
+			// We check if there is no previousSibling in order to handle this:
+			// '[foo<div>}<p>bar</p></div>', '[foo<div><p>}bar</p></div>'
+			
+			if ( isBlockElement( getLeftNeighbor( node ) ) || !node.previousSibling ) {
 				stop = node;
 				while ( stop && getNodeLength( stop ) == 0 ) {
 					stop = stop.nextSibling;
@@ -2921,12 +2950,12 @@ function getEndPosition ( container, offset ) {
 			}
 			
 			// The left neighbor was not a block element so we can contract the
-			// selection by moving the end position to the right.
+			// selection by moving the end position to the left.
 			//
-			// Otherwise we reach here becuase there are no right-hande
-			// siblings of container which have children in so that we can
-			// place the end position in them. We will therefore contract the
-			// selection to the left.
+			// Otherwise we reach here becuase there are no right-hand siblings
+			// of container which have children in which we can place the end
+			// position in them. We will therefore contract the selection to
+			// the left.
 			// We statisfy:
 			//	[ '<b>[foo</b>}<p>bar</p>', '<b>[foo]</b><p>bar</p>' ],
 			//	
@@ -2937,15 +2966,7 @@ function getEndPosition ( container, offset ) {
 			// [ '<p>[foo</p>}<p></p>', '<p>[foo]</p><p></p>' ],
 			// [ '<p>[foo</p>}<p></p><p>bar</p>', '<p>[foo</p><p></p><p>}bar</p>' ],
 			
-			//stop = getLeftNeighbor( node );
-			//if ( stop && stop.nodeType != Node.TEXT_NODE ) {
-			//	stop = getFurthestRightScion( stop );
-			//}
-			
-			stop = getNearestLeftNode( node, function ( node ) {
-				return node.nodeType == Node.TEXT_NODE;
-			} );
-			
+			stop = getNearestLeftNode( node, isTextNode );
 			if ( stop ) {
 				return {
 					node   : stop,
@@ -2956,7 +2977,6 @@ function getEndPosition ( container, offset ) {
 			// We found no text node left of our start position, so look for
 			// the for the nearest node on the right
 			stop = getFurthestLeftScion( node );
-			
 			if ( stop ) {
 				return {
 					node   : stop,
