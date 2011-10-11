@@ -18,7 +18,7 @@
 * along with CommandManager program. If not, see <http://www.gnu.org/licenses/>.
 */
 "use strict";
-define( [ 'aloha', 'aloha/registry', 'aloha/engine', 'util/dom' ],
+define( [ 'aloha/core', 'aloha/registry', 'aloha/engine', 'util/dom' ],
 function( Aloha, Registry, Engine, Dom ) {
 
 //			Action: What the command does when executed via execCommand(). Every command defined
