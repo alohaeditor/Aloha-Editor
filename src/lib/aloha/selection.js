@@ -1878,50 +1878,6 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 	};
 	
 	/**
-	 * anatomy of a selection:
-	 *		markup  : '<div>|<p>foo</p>|test{<p>bar</p>}<p>baz</p>|</div>', '<div><p>foo</p>test<p>[bar</p><p>}baz</p></div>'
-	 *		offsets :       0          1    2          3          4
-	 *		startContainer = div
-	 *		startOffset = 2
-	 *		childNodes = [
-	 *			0: <p>foo</p>
-	 *			1: test
-	 *			2: <p>bar</p>
-	 *			3: <p>baz</p>
-	 *		]
-	 *
-	 * rule:
-	 *		IF the container is a flow element
-	 *			THEN
-	 *				IF the start position is in front of a start tag of a flow element,
-	 *					THEN we try to find a suitable start position by moving down or into the tree.
-	 *						We will try and land at the nearest position to where we started, which is the the start of the first stoppable node
-	 *				ELSE IF the start position is in front of an end tag of a flow element, then we move back into the tree.
-	 *						We will try and land at the nearest position to where we started, which is the the end of the first stoppable node
-	 *
-	 * ie:
-	 *		<div>{<p>bar</p>... -> <div><p>[bar</p>...
-	 *		<div><p>bar{</p>... -> <div><p>bar[</p>...
-	 */
-	function getStartPosition ( container, offset ) {
-		if ( !container ) {
-			return null;
-		}
-		
-		if ( isFlowNode( container ) ) {
-			if ( offset == container.childNodes.length ) {
-				// the offset is at the end of the last node in the
-				// container if any. This can also be thought of as being
-				// in front of the closing tag of a flow node, and we will
-				// therefore try and move to the next sibling
-				var newStartPos = getStartPosition( container.nextSibling, 0 );
-			}
-		}
-		
-		// In this case we move up from <p>foo{</p> to <p>foo[</p>
-	};
-	
-	/**
 	 * Normalizes the native ranges from the browser to standardizes Aloha-
 	 * Editor ranges. FYI: Aloha-Editor ranges conform, for the most part with
 	 * Webkit, and Internet Explorer ranges.
@@ -2785,10 +2741,6 @@ function getStartPosition ( container, offset ) {
 		return null;
 	}
 	
-	// Why doesn't isFlowElement work in Chrome even though it returns true
-	// just like isBlockElement
-	// if ( isFlowElement( container ) ) {
-	
 	if ( isBlockElement( container ) ) {
 		// Out of bounds sanity check.
 		// Should we throw an error?
@@ -2884,25 +2836,146 @@ function getStartPosition ( container, offset ) {
 				node   : container,
 				offset : offset
 			};
-		} else {
-			debugger;
 		}
+		
+		return {
+			node   : container,
+			offset : offset
+		};
+	}
+};
+
+function getEndPosition ( container, offset ) {
+	if ( !container ) {
+		return null;
 	}
 	
-	// In this case we move up from <p>foo{</p> to <p>foo[</p>
+	if ( isBlockElement( container ) ) {
+		// Out of bounds sanity check.
+		// Should we throw an error?
+		if ( offset > container.childNodes.length ) {
+			return {
+				node   : container,
+				offset : offset
+			};
+		}
+		
+		var stop;
+		
+		// We either have an empty container, or else the offset is positioned
+		// at the very end of the container--after the last node. We therefore
+		// have the case where we are in front the closing tag of a flow node,
+		// and we will therefore try and move backwards into the tree
+		if ( offset == container.childNodes.length ) {
+			debugger;
+			stop = getFurthestRightScion( container );
+			if ( stop ) {
+				return {
+					node   : stop,
+					offset : getNodeLength( stop )
+				};
+			}
+			
+			// There is no child nodes inside of container, so contract the
+			// selection rightwards
+			stop = getNearestRightNode( container );
+			if ( stop ) {
+				return {
+					node   : stop,
+					offset : 0
+				};
+			}
+			
+			return {
+				node   : container,
+				offset : offset
+			};
+		}
+		
+		// The offset is somewhere after the start of the container, therefore
+		// check if the node at index offset is a block element.
+		var node = container.childNodes[ offset ];
+		
+		if ( isBlockElement( node ) ) {
+			// We cannot move the start position to the left, if the left
+			// neighbor is a block element, so go right, expanding the
+			// selection by moving the end position to the first sibling on the
+			// right of node which has children
+			// We satisfy:
+			// [ '<p>[foo</p>}<p>bar</p>', '<p>[foo</p><p>}bar</p>' ],
+			// [ '<p>[foo</p>}<p></p>bar', '<p>[foo</p><p></p>]bar' ],
+			// [ '<p>[foo</p>}<p><b></b>bar</p>', '<p>[foo</p><p>}<b></b>bar</p>' ],
+			if ( isBlockElement( getLeftNeighbor( node ) ) ) {
+				stop = node;
+				while ( stop && getNodeLength( stop ) == 0 ) {
+					stop = stop.nextSibling;
+				}
+				
+				if ( stop ) {
+					return {
+						node   : stop,
+						offset : 0
+					};
+				}
+			}
+			
+			// The left neighbor was not a block element so we can contract the
+			// selection by moving the end position to the right.
+			//
+			// Otherwise we reach here becuase there are no right-hande
+			// siblings of container which have children in so that we can
+			// place the end position in them. We will therefore contract the
+			// selection to the left.
+			// We statisfy:
+			//	[ '<b>[foo</b>}<p>bar</p>', '<b>[foo]</b><p>bar</p>' ],
+			//	
+			//	or
+			//	
+			// [ '<p>[foo</p>}<p></p>', '<p>[foo]</p><p></p>' ],
+			// [ '<div><p>[foo</p>}<p></p></div>bar', '<div><p>[foo]</p><p></p></div>bar' ],
+			// [ '<p>[foo</p>}<p></p>', '<p>[foo]</p><p></p>' ],
+			// [ '<p>[foo</p>}<p></p><p>bar</p>', '<p>[foo</p><p></p><p>}bar</p>' ],
+			stop = getLeftNeighbor( node );
+			if ( stop ) {
+				stop = getFurthestRightScion( stop );
+				if ( stop ) {
+					return {
+						node   : stop,
+						offset : getNodeLength( stop )
+					};
+				}
+			}	
+		}
+		
+		return {
+			node   : container,
+			offset : offset
+		};
+	}
 };
 
 function correctRange ( range ) {
 	//return range;
 	
 	var startContainer = range.startContainer,
-		startOffset = range.startOffset;
+		startOffset = range.startOffset,
+		startPos = getStartPosition( startContainer, startOffset );
 	
-	var newStartPos = getStartPosition( startContainer, startOffset );
+	if ( startPos ) {
+		range.startContainer = startPos.node;
+		range.startOffset = startPos.offset;
+	}
 	
-	if ( newStartPos ) {
-		range.startContainer = newStartPos.node;
-		range.startOffset = newStartPos.offset;
+	
+	// TODO: documentCompare
+	
+	var endContainer = range.endContainer,
+		endOffset = range.endOffset,
+		endPos = getEndPosition( endContainer, endOffset );
+	
+	if ( endPos ) {
+		range.endContainer = endPos.node;
+		range.endOffset = endPos.offset;
 	}
 	
 	return range;
@@ -3086,6 +3159,13 @@ function correctRange ( range ) {
 		},
 		
 		/**
+		 * NB!
+		 * We have serious problem in IE.
+		 * The range that we get in IE is not the same as the range we had set,
+		 * so even if we normalize it during getRangeAt, in IE, we will be
+		 * correcting the range to the "correct" place, but still not the place
+		 * where it was originally set.
+		 * 
 		 * Returns the given range.
 		 * The getRangeAt(index) method returns the indexth range in the list. 
 		 * NOTE: Aloha Editor only support 1 range! index can only be 0
@@ -3095,8 +3175,8 @@ function correctRange ( range ) {
 		 * @return Range return the selected range from index
 		 */
 		getRangeAt: function (index) {
-			
 			return correctRange( this._nativeSelection.getRangeAt( index ) );
+			
 //			if ( index < 0 || this.rangeCount ) {
 //				throw "INDEX_SIZE_ERR DOM";
 //			}
