@@ -316,6 +316,9 @@ Ui.AttributeField = Ui.Button.extend({
 		if (this.displayField) {
 			props.displayField = this.displayField;
 		}
+		if (this.minChars) {
+			props.minChars = this.minChars;
+		}
 			return props;
 	},
 
