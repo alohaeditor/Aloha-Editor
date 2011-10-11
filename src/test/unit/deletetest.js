@@ -368,50 +368,51 @@ var tests = {
 		},
 	
 		// Indented stuff with collapsed selection
-		{  	start: 'foo<blockquote>[]bar</blockquote>', // broken
-			execResult: 'foo[]bar'
+		{  	start: 'foo<blockquote>[]bar</blockquote>',
+			execResult: 'foo<br>[]bar'
 		},
-		{  	start: 'foo<blockquote><blockquote>[]bar</blockquote></blockquote>', // broken
-			execResult: 'foo[]bar'
+		{  	start: 'foo<blockquote><blockquote>[]bar</blockquote></blockquote>',
+			execResult: 'foo<blockquote>[]bar</blockquote>'
 		},
-		{  	start: 'foo<blockquote><div>[]bar</div></blockquote>', // broken
-			execResult: 'foo[]bar'
+		{  	start: 'foo<blockquote><div>[]bar</div></blockquote>',
+			execResult: 'foo<div>[]bar</div>' // not entirely sure if this is correct
 		},
-		{  	start: 'foo<blockquote style="color: blue">[]bar</blockquote>', // broken
-			execResult: 'foo<span style="color: blue">[]bar</span>'
-		},
-	
-		{  	start: 'foo<blockquote><blockquote><p>[]bar<p>baz</blockquote></blockquote>', // broken
-			execResult: 'foo[]bar<blockquote><blockquote><p>baz</p></blockquote></blockquote>'
-		},
-		{  	start: 'foo<blockquote><div><p>[]bar<p>baz</div></blockquote>', // broken
-			execResult: 'foo[]bar<blockquote><div><p>baz</p></div></blockquote>'
-		},
-		{  	start: 'foo<blockquote style="color: blue"><p>[]bar<p>baz</blockquote>', // broken
-			execResult: 'foo[]<span style="color: blue">bar</span><blockquote style="color: blue"><p>baz</p></blockquote>'
+		{  	start: 'foo<blockquote style="color: blue">[]bar</blockquote>',
+			execResult: 'foo<div style="color: blue">[]bar</div>'
 		},
 	
-		{  	start: 'foo<blockquote><p><b>[]bar</b><p>baz</blockquote>', // broken
-			execResult: 'foo[]<b>bar</b><blockquote><p>baz</p></blockquote>'
+		{  	start: 'foo<blockquote><blockquote><p>[]bar<p>baz</blockquote></blockquote>',
+			execResult: 'foo<blockquote><p>[]bar</p><blockquote><p>baz</p></blockquote></blockquote>'
 		},
-		{  	start: 'foo<blockquote><p><strong>[]bar</strong><p>baz</blockquote>', // broken
-			execResult: 'foo[]<strong>bar</strong><blockquote><p>baz</p></blockquote>'
+		{  	start: 'foo<blockquote><div><p>[]bar<p>baz</div></blockquote>',
+			execResult: 'foo<div><p>[]bar</p><blockquote><p>baz</p></blockquote></div>'
 		},
-		{  	start: 'foo<blockquote><p><span>[]bar</span><p>baz</blockquote>', // broken
-			execResult: 'foo[]bar<blockquote><p>baz</p></blockquote>'
+		{  	start: 'foo<blockquote style="color: blue"><p>[]bar<p>baz</blockquote>',
+			execResult: 'foo<div style="color: blue"><p>[]bar</p><blockquote><p>baz</p></blockquote></div>'
 		},
 	
-		{  	start: 'foo<blockquote><ol><li>[]bar</ol></blockquote><p>extra', // broken
-			execResult: 'foo[]bar<p>extra</p>'
+		{  	start: 'foo<blockquote><p><b>[]bar</b><p>baz</blockquote>',
+			execResult: 'foo<p><b>[]bar</b></p><blockquote><p>baz</p></blockquote>'
 		},
-		{  	start: 'foo<blockquote>bar<ol><li>[]baz</ol>quz</blockquote><p>extra', // broken
-			execResult: 'foo<blockquote>bar[]baz<br>quz</blockquote><p>extra</p>'
+		{  	start: 'foo<blockquote><p><strong>[]bar</strong><p>baz</blockquote>',
+			execResult: 'foo<p><strong>[]bar</strong></p><blockquote><p>baz</p></blockquote>'
 		},
-		{  	start: 'foo<blockquote><ol><li>bar</li><ol><li>[]baz</ol><li>quz</ol></blockquote><p>extra', // broken
-			execResult: 'foo<blockquote><ol><li>bar[]baz</li><li>quz</li></ol></blockquote><p>extra</p>'
+		{  	start: 'foo<blockquote><p><span>[]bar</span><p>baz</blockquote>',
+			execResult: 'foo<p><span>[]bar</span></p><blockquote><p>baz</p></blockquote>'
+		},
+	
+		{  	start: 'foo<blockquote><ol><li>[]bar</ol></blockquote><p>extra',
+			execResult: 'foo<blockquote><p>[]bar</p></blockquote><p>extra</p>'
+		},
+		{  	start: 'foo<blockquote>bar<ol><li>[]baz</ol>quz</blockquote><p>extra',
+			execResult: 'foo<blockquote>bar<p>[]baz</p>quz</blockquote><p>extra</p>'
+		},
+		{  	start: 'foo<blockquote><ol><li>bar</li><ol><li>[]baz</ol><li>quz</ol></blockquote><p>extra',
+			execResult: 'foo<blockquote><ol><li>bar</li><li>[]baz</li><li>quz</li></ol></blockquote><p>extra</p>'
 		},
 	
 		// Invisible stuff with collapsed selection
+		// NOTE on these broken tests setting the cursor after deletion is broken
 		{  	start: 'foo<span></span>[]bar', // broken
 			execResult: 'fo[]bar'
 		},
@@ -424,8 +425,8 @@ var tests = {
 		{  	start: 'foo<br><span></span>[]bar',
 			execResult: 'foo[]bar'
 		},
-		{  	start: '<span>foo<span></span></span>[]bar', // broken
-			execResult: '<span>fo[]</span>bar' // TODO check
+		{  	start: '<span>foo<span></span></span>[]bar',
+			execResult: '<span>fo[]<span></span></span>bar'
 		},
 		{  	start: 'foo<span></span><span>[]bar</span>', // broken
 			execResult: 'fo[]<span>bar</span>'
@@ -446,7 +447,7 @@ var tests = {
 			execResult: 'foo[]bar'
 		},
 		{  	start: '<div><div><p>foo</div></div>[]bar',
-			execResult: '<div><div><p>foo[]bar</p></div></div>' // TODO check
+			execResult: '<div><div><p>foo[]bar</p></div></div>'
 		},
 		{  	start: '<div><div><p>foo</div></div><!--abc-->[]bar',
 			execResult: '<div><div><p>foo[]bar</p></div></div>'
