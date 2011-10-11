@@ -141,7 +141,7 @@ Aloha.ready( function() {
 	 * range object, 
 	 */
 	function onSelectionChanged ( e ) {
-		
+
 		if ( applyMarkupOnNextSelection ) {
 			testArea[ 0 ].innerHTML = fillArea.val();
 			applySelection( testArea );
@@ -171,9 +171,11 @@ Aloha.ready( function() {
 					return;
 				}
 			}
-			
-			TestUtils.addBrackets( range );
-			applySelection( testArea );
+			// wait for double and triple clicks
+			setTimeout( function() {
+				TestUtils.addBrackets( range );
+				applySelection( testArea );
+ 			}, 200 );
 		}
 	};
 	
@@ -221,7 +223,7 @@ Aloha.ready( function() {
 		viewArea.val( testArea.html() );
 		// convert html for processing
 		var html = jQuery( '<div>' ).text( testArea.html() ).html();
-		
+
 		html = elem.html();
 		
 		var startMarkers = html.match( /\{|\[|data\-start/g ),
