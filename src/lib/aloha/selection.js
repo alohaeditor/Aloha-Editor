@@ -2463,7 +2463,8 @@ var blockElementsLookupTable = {
 // namesOfElementsWithInlineContents
 
 function isBlockElement ( node ) {
-	return !!( node && blockElementsLookupTable[ node.nodeName ] );
+	return !!( node && flowElementsLookupTable[ node.nodeName ] );
+	//return !!( node && blockElementsLookupTable[ node.nodeName ] );
 };
 
 function isVoidElement ( node ) {
@@ -2779,6 +2780,11 @@ function getStartPosition ( container, offset ) {
 			);
 		}
 		
+		// We have a non-block level element
+		return getStartPositionFromFrontOfInlineNode (
+			container.childNodes[ offset ], offset
+		);
+		
 		return {
 			node   : container,
 			offset : offset
@@ -2812,14 +2818,41 @@ function getEndPosition ( container, offset ) {
 				container.childNodes[ offset ], offset
 			);
 		}
-		
-		return {
-			node   : container,
-			offset : offset
-		};
 	}
 	
-	// TODO: Handle non-block level elements
+	// We have a non-block level element
+	return getEndPositionFromFrontOfInlineNode (
+		container.childNodes[ offset ], offset
+	);
+};
+
+/**
+ * Won't offset always be 0?
+ */
+function getStartPositionFromFrontOfInlineNode ( node, offset ) {
+	return {
+		node   : node,
+		offset : offset
+	};
+};
+
+function getEndPositionFromFrontOfInlineNode ( node, offset ) {
+	var stop = node;
+	
+	while ( ( stop = stop.parentNode ) && !isEditingHost( stop ) ) {
+		if ( isBlockElement( stop ) &&
+				getNearestLeftNode( stop, isTextNode ) ) {
+			return {
+				node   : stop,
+				offset : 0
+			};
+		}
+	}
+	
+	return {
+		node   : node,
+		offset : offset
+	};
 };
 
 function getStartPositionFromFrontOfBlockNode ( node, offset ) {
@@ -2996,7 +3029,19 @@ function getEndPositionFromFrontOfBlockNode ( node, offset ) {
 			stop = stop.nextSibling;
 		}
 		
-		if ( stop ) {
+		if ( stop  ) {
+			if ( isBlockElement( stop ) ) {
+				// [ '{}<p>foo</p>', '<p>[]foo</p>' ],
+				// [ '{}<div><p>bar</p></div>', '<div><p>[]bar</p></div>' ],
+				var textNode = getLeftmostScion( stop, isTextNode );
+				if ( textNode ) {
+					return {
+						node   : textNode,
+						offset : 0
+					};
+				}
+			}
+			
 			return {
 				node   : stop,
 				offset : 0
