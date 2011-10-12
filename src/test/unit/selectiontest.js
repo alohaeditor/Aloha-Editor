@@ -140,7 +140,9 @@ function( TestUtils ) {
             [ 'foo<span>bar[</span><span>]baz</span>bam', 'foo<span>bar[]</span><span>baz</span>bam' ]
         ],
         flowTests = [
-
+			
+			/*
+			
 			//
 			//		Tests for start position
 			//		In front of block elements
@@ -218,24 +220,35 @@ function( TestUtils ) {
 			[ '[foo<div>}<p>bar</p></div>', '[foo<div><p>}bar</p></div>' ],
 			[ '<div><p>[foo</p></div><div>}<p>bar</p></div>', '<div><p>[foo</p></div><div><p>}bar</p></div>' ],
 			
+			*/
+			
 			//
 			//		Tests for end position
 			//		In front of block elements start node
 			//		With block element to left of position
 			//
-			//		Problematic in IE
+			//		Our implementation will diviate from WebKit, which is
+			//		otherwise our standard
 			//
 			
-			[ '<p>[foo</p>}<p>bar</p>', '<p>[foo</p><p>}bar</p>' ],
-			[ '<p>[foo</p>}<p></p>bar', '<p>[foo</p><p></p>]bar' ],
-			[ '<p>[foo</p>}<p><b></b>bar</p>', '<p>[foo</p><p>}<b></b>bar</p>' ],
+			// START Deviance from WebKit:
+			// For the following tests, our range normalization algorithm will
+			// diviate from WebKit conformance). We feel that it is safe to do
+			// this for a minority of tests cases because some of them are very
+			// hypothetical. In other words, we don't expect to get such
+			// ambigious ranges from the browser. Such ranges will, in almost
+			// all cases, come from implementors programmatically manipulating
+			// the range. We therefore feel free to correct the range in the
+			// way that we feel would best reflect a user's expectation:
+			[ '<p>[foo</p>}<p>bar</p>', '<p>[foo]</p><p>bar</p>' ],					// WebKit corrects to: '<p>[foo</p><p>}bar</p>' 
+			[ '<p>[foo</p>}<p></p>bar', '<p>[foo]</p><p></p>bar' ],					// WebKit corrects to: '<p>[foo</p><p></p>]bar'
+			[ '<p>[foo</p>}<p><b></b>bar</p>', '<p>[foo]</p><p><b></b>bar</p>' ],	// WebKit corrects to: '<p>[foo</p><p>}<b></b>bar</p>'
+			[ '<p>[foo</p>}<p></p><p>bar</p>', '<p>[foo]</p><p></p><p>bar</p>' ],	// WebKit corrects to: '<p>[foo</p><p></p><p>}bar</p>'
+			[ '<p>[foo</p>}<p><b>bar</b></p>', '<p>[foo]</p><p><b>bar</b></p>' ],	// WebKit corrects to: '<p>[foo</p><p>}<b>bar</b></p>'
+			// END Deviance from Webkit
 			
-			[ '<p>[foo</p>}<p></p>', '<p>[foo]</p><p></p>' ],
 			[ '<div><p>[foo</p>}<p></p></div>bar', '<div><p>[foo]</p><p></p></div>bar' ],
-			
 			[ '<p>[foo</p>}<p></p>', '<p>[foo]</p><p></p>' ],
-			[ '<p>[foo</p>}<p></p><p>bar</p>', '<p>[foo</p><p></p><p>}bar</p>' ],
-			[ '<p>[foo</p>}<p><b>bar</b></p>', '<p>[foo</p><p>}<b>bar</b></p>' ],
 			
 			//
 			//		Tests for end position
@@ -508,10 +521,10 @@ function( TestUtils ) {
                 TestUtils.addBrackets(endRange);
 
                 // get the content of the editable
-                result = Aloha.editables[0].getContents();
+                result = Aloha.editables[ 0 ].getContents();
 
 				// IE creates benign new lines, which cause false failures.
-				// We therefore remove them in unit tests 
+				// We therefore remove them for our unit tests 
 				result = result.replace( /[\n\r]/g, '' );
 
                 // compare the result with the expected result

@@ -2986,7 +2986,7 @@ function getEndPosition ( container, offset ) {
 };
 
 function correctRange ( range ) {
-	//return range;
+	// return range;
 	
 	var startContainer = range.startContainer,
 	    startOffset = range.startOffset,
@@ -3204,7 +3204,7 @@ function correctRange ( range ) {
 		 * @param index int 
 		 * @return Range return the selected range from index
 		 */
-		getRangeAt: function (index) {
+		getRangeAt: function ( index ) {
 			return correctRange( this._nativeSelection.getRangeAt( index ) );
 
 			//if ( index < 0 || this.rangeCount ) {
@@ -3230,8 +3230,8 @@ function correctRange ( range ) {
 			// set readonly attributes
 			this._nativeSelection.addRange( range );
 			// We will correct the range after rangy has processed the native
-			// selection range, so that our correct will be the final fix on
-			// the range according to the guarentee's that Aloha wants
+			// selection range, so that our correction will be the final fix on
+			// the range according to the guarentee's that Aloha wants to make
 			this._nativeSelection._ranges[ 0 ] = correctRange( range );
 		},
 		
