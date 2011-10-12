@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Aloha Guides: Advanced Aloha Editor configuration</title>
+  <title>Aloha Guides: Configure Aloha Editor</title>
 
   <!-- guides styles -->
   <link rel="stylesheet" type="text/css" href="stylesheets/style.css" />
@@ -55,21 +55,24 @@
           </a>
           <hr style="clear:both;">
           <dl class="L">
-    <dt>Start Here</dt>
-      <dd><a href="using_aloha.html">Using Aloha Editor</a></dd>
-      <dd><a href="develop_aloha.html">Developing and building Aloha Editor</a></dd>
-      <dd><a href="require.html">Aloha dependency management with requireJS</a></dd>
-      <dd><a href="writing_plugins.html">Writing Plugins</a></dd>
-</dl>
-<dl class="R">
-    <dt>Plugins</dt>
-      <dd><a href="plugin_block.html">Block</a></dd>
-      <dd>Image</dd>
-      <dd><a href="plugin_contenthandler.html">Content Handler</a></dd>
     <dt>Contributing to Aloha Editor</dt>
       <dd>Development Process</dd>
       <dd><a href="style_guide.html">Javascript Style Guide</a></dd>
       <dd><a href="documentation_guidelines.html">Documentation Guidelines</a></dd>
+    <dt>Plugins</dt>
+      <dd><a href="plugin_block.html">Block</a></dd>
+      <dd>Image</dd>
+      <dd><a href="plugin_contenthandler.html">Content Handler</a></dd>
+    <dt>Start Here</dt>
+      <dd><a href="using_aloha.html">Using Aloha Editor</a></dd>
+      <dd><a href="develop_aloha.html">Developing and building Aloha Editor</a></dd>
+      <dd><a href="configure_aloha.html">Configuring Aloha Editor</a></dd>
+      <dd><a href="require.html">Aloha dependency management with requireJS</a></dd>
+      <dd><a href="writing_plugins.html">Writing Plugins</a></dd>
+</dl>
+<dl class="R">
+    <dt>Commands</dt>
+      <dd><a href="using_commands.html">Using commands</a></dd>
 </dl>
 
 
@@ -82,32 +85,60 @@
     <div class="wrapper">
       <div id="mainCol">
           <div class="headerSection">
-            <h2>Advanced Aloha Editor configuration</h2>
+            <h2>Configure Aloha Editor</h2>
 <p>After reading this guide, you will be able to:</p>
 <ul>
-	<li>Understand what Advanced Aloha configuration is available</li>
-	<li>Use the &#8230;</li>
+	<li>Add configuration settings to you page and</li>
+	<li>Adapt Aloha Editor to your needs by means of configuration</li>
 </ul>
 
           </div>
-        
-<div class="warning"><p>This guide is currently work-in-progress.</p></div>
-<h3 id="intro">1 Intro</h3>
-<h3 id="what-can-you-do">2 What can you do</h3>
-<h4 id="smart-content-change">2.1 Smart Content Change</h4>
-<h4 id="content-handler">2.2 Content Handler</h4>
-<h4 id="xy">2.3 XY</h4>
+        <h3 id="basic-configuration">1 Basic Configuration</h3>
+<div class="warning"><p>Please write sth.!</p></div>
+<h3 id="configuring-the-floatingmenu">2 Configuring the FloatingMenu</h3>
+<p>The floating menu can be adapted to your needs by configuring tabs, groups and buttons. You may reassemble all of the existing buttons provided by plugins in any combination you want.</p>
+<div class="info"><p>A button may only be added once to the configuration. Adding the same button twice will yield no results exept raising a warning message.</p></div>
+<p>The following simple example should help to understand how to configure the FloatingMenu. Basically, all you have to do is define an array of button names (those are provided by plugins). As you might have noticed, groups may be named in our example (&#8220;flow&#8221;, &#8220;phrasing&#8221; or &#8220;first&#8221;). However, at this time naming groups yields no visual result in the current FloatingMenu. It will just help you structure your configuration.</p>
+<div class="code_container">
+<pre class="brush: xml; gutter: false; toolbar: false">
+
+&lt;head&gt;
+&lt;script type=&quot;text/javascript&quot;&gt;
+Aloha.settings.toolbar = {
+	tabs : {
+		// will generate a tab labeled &quot;formatting&quot;
+		formatting : {
+			// group &quot;flow&quot;
+			flow : [ 'b', 'em', 'u' ],
+			// group &quot;phrasing&quot;
+			phrasing : [ 'phrasing' ] // &quot;phrasing&quot; is the name of a 
+			// MultiSplitButton from the format plugin, which contains 
+			// elements like h1 ...
+		},
+		// will generate another tab labeled &quot;insert&quot;
+		insert : {
+			// as mentioned group names are not displayed anywhere,
+			// so you might pick an arbitrary name
+			first : [ 'image', 'insertLink' ]
+		}
+	},
+	components : {
+		// the phrasing MultiSplitButton is configured the same way 
+		// as groups are
+		phrasing : [ 'h1', 'h2', 'h3' ]
+	}
+};
+&lt;/script&gt;
+&lt;/head&gt;
+</pre></div>
 
       </div>
         <div id="subCol">
           <h3 class="chapter"><img src="images/strobe/chapters.png" alt="" />Chapters</h3>
           <ol class="chapters">
-            <li><a href="#intro"><p>Intro</p>
-</a></li><li><a href="#what-can-you-do"><p>What can you do</p>
-</a><ul><li><a href="#smart-content-change"><p>Smart Content Change</p>
-</a></li> <li><a href="#content-handler"><p>Content Handler</p>
-</a></li> <li><a href="#xy"><p>XY</p>
-</a></li></ul></li>
+            <li><a href="#basic-configuration"><p>Basic Configuration</p>
+</a></li><li><a href="#configuring-the-floatingmenu"><p>Configuring the FloatingMenu</p>
+</a></li>
           </ol>
         </div>
     </div>

@@ -20,7 +20,7 @@
 
 define(
 [ 'aloha/core', 'util/class', 'aloha/repositorymanager' ],
-function( Aloha, jQuery, RepositoryManager ) {
+function( Aloha, Class, RepositoryManager ) {
 	"use strict";
 	
 //	var

@@ -1,6 +1,6 @@
 define(
-['aloha/ecma5'],
-function( ) {
+['aloha/contenthandlermanager', 'aloha/ecma5'],
+function( ContentHandlerManager ) {
 	"use strict";
 
 var htmlNamespace = "http://www.w3.org/1999/xhtml";
@@ -56,7 +56,7 @@ function nextNodeDescendants(node) {
 function isAncestor(ancestor, descendant) {
 	return ancestor
 		&& descendant
-		&& Boolean(ancestor.compareDocumentPosition(descendant) & Node.DOCUMENT_POSITION_CONTAINED_BY);
+		&& Boolean(compareDocumentPosition(ancestor, descendant) & Node.DOCUMENT_POSITION_CONTAINED_BY);
 }
 
 /**
@@ -74,21 +74,21 @@ function isAncestorContainer(ancestor, descendant) {
 function isDescendant(descendant, ancestor) {
 	return ancestor
 		&& descendant
-		&& Boolean(ancestor.compareDocumentPosition(descendant) & Node.DOCUMENT_POSITION_CONTAINED_BY);
+		&& Boolean(compareDocumentPosition(ancestor, descendant) & Node.DOCUMENT_POSITION_CONTAINED_BY);
 }
 
 /**
  * Returns true if node1 is before node2 in tree order, false otherwise.
  */
 function isBefore(node1, node2) {
-	return Boolean(node1.compareDocumentPosition(node2) & Node.DOCUMENT_POSITION_FOLLOWING);
+	return Boolean(compareDocumentPosition(node1,node2) & Node.DOCUMENT_POSITION_FOLLOWING);
 }
 
 /**
  * Returns true if node1 is after node2 in tree order, false otherwise.
  */
 function isAfter(node1, node2) {
-	return Boolean(node1.compareDocumentPosition(node2) & Node.DOCUMENT_POSITION_PRECEDING);
+	return Boolean(compareDocumentPosition(node1,node2) & Node.DOCUMENT_POSITION_PRECEDING);
 }
 
 function getAncestors(node) {
@@ -263,7 +263,7 @@ function getPosition(nodeA, offsetA, nodeB, offsetB) {
 	// "If node A is after node B in tree order, compute the position of (node
 	// B, offset B) relative to (node A, offset A). If it is before, return
 	// after. If it is after, return before."
-	if (nodeB.compareDocumentPosition(nodeA) & Node.DOCUMENT_POSITION_FOLLOWING) {
+	if (compareDocumentPosition(nodeB, nodeA) & Node.DOCUMENT_POSITION_FOLLOWING) {
 		var pos = getPosition(nodeB, offsetB, nodeA, offsetA);
 		if (pos == "before") {
 			return "after";
@@ -274,7 +274,7 @@ function getPosition(nodeA, offsetA, nodeB, offsetB) {
 	}
 
 	// "If node A is an ancestor of node B:"
-	if (nodeB.compareDocumentPosition(nodeA) & Node.DOCUMENT_POSITION_CONTAINS) {
+	if (compareDocumentPosition(nodeB, nodeA) & Node.DOCUMENT_POSITION_CONTAINS) {
 		// "Let child equal node B."
 		var child = nodeB;
 
@@ -511,7 +511,7 @@ function editCommandMethod(command, prop, range, callback) {
 		globalRange = range;
 	} else if (executionStackDepth == 0) {
 		globalRange = null;
-		globalRange = getActiveRange();
+		globalRange = range;
 	}
 
 	// "If command is not supported, raise a NOT_SUPPORTED_ERR exception."
@@ -572,6 +572,12 @@ function myExecCommand(command, showUi, value, range) {
 			return false;
 		}
 
+		//if (typeof Aloha.settings.contentHandler.insertHtml === 'undefined') {
+		// just use all registerd content handler or specity Aloha.defaults.contentHandler.insertHtml manually?
+		//	Aloha.settings.contentHandler.insertHtml = Aloha.defaults.contentHandler.insertHtml;
+		//}
+		value = ContentHandlerManager.handleContent( value, { contenthandler: Aloha.settings.contentHandler.insertHtml } );
+
 		// "Take the action for command, passing value to the instructions as an
 		// argument."
 		commands[command].action(value, range);
@@ -596,7 +602,7 @@ function myQueryCommandEnabled(command, range) {
 		// here are enabled if the active range is not null, and disabled
 		// otherwise."
 		return ["copy", "cut", "paste", "selectall", "stylewithcss", "usecss"].indexOf(command) != -1
-			|| getActiveRange() !== null;
+			|| range !== null;
 	}})(command));
 }
 
@@ -611,7 +617,7 @@ function myQueryCommandIndeterm(command, range) {
 	// exception."
 	return editCommandMethod(command, "indeterm", range, (function(command) { return function() {
 		// "If command is not enabled, return false."
-		if (!myQueryCommandEnabled(command)) {
+		if (!myQueryCommandEnabled(command, range)) {
 			return false;
 		}
 
@@ -630,7 +636,7 @@ function myQueryCommandState(command, range) {
 	// "If command has no state, raise an INVALID_ACCESS_ERR exception."
 	return editCommandMethod(command, "state", range, (function(command) { return function() {
 		// "If command is not enabled, return false."
-		if (!myQueryCommandEnabled(command)) {
+		if (!myQueryCommandEnabled(command, range)) {
 			return false;
 		}
 
@@ -665,7 +671,7 @@ function myQueryCommandValue(command, range) {
 	// "If command has no value, raise an INVALID_ACCESS_ERR exception."
 	return editCommandMethod(command, "value", range, function() {
 		// "If command is not enabled, return the empty string."
-		if (!myQueryCommandEnabled(command)) {
+		if (!myQueryCommandEnabled(command, range)) {
 			return "";
 		}
 
@@ -2197,7 +2203,7 @@ function getEffectiveCommandValue(node, command) {
 
 	// "Return the resolved value for node of the relevant CSS property for
 	// command."
-	return getComputedStyle(node)[commands[command].relevantCssProperty];
+	return getComputedStyle(node)[commands[command].relevantCssProperty].toString();
 }
 
 function getSpecifiedCommandValue(element, command) {
@@ -7895,6 +7901,7 @@ commandNames.forEach(function(command) {
 			if (nodes.length == 0) {
 				return commands[command].inlineCommandActivatedValues
 					.indexOf(getEffectiveCommandValue(range.startContainer, command)) != -1;
+				return ret;
 			} else {
 				return nodes.every(function(node) {
 					return commands[command].inlineCommandActivatedValues
