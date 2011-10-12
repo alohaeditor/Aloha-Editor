@@ -2,293 +2,293 @@ var tests = {
 		defaultValue: '',
 		defaultCommand: 'forwarddelete',
 		tests: [
-			{  	start: 'fo[o<b>b]ar</b>baz',
+/*			{  	start: 'fo[o<b>b]ar</b>baz',
 				execResult: 'fo[]<b>ar</b>baz'
 			},
 			// Collapsed selection
 			{  	start: 'foo[]',
-				execResult: ''
+				execResult: 'foo[]'
 			},
 			{  	start: '<span>foo[]</span>',
 				execResult: ''
 			},
 			{  	start: '<p>foo[]</p>',
-				execResult: ''
+				execResult: '<p>foo[]</p>'
 			},
 			{  	start: 'foo[]bar',
-				execResult: ''
+				execResult: 'foo[]ar'
 			},
 			{  	start: '<span>foo</span>{}<span>bar</span>',
-				execResult: ''
+				execResult: '<span>foo[]</span><span>ar</span>'
 			},
 			{  	start: '<span>foo[</span><span>]bar</span>',
-				execResult: ''
+				execResult: '<span>foo[]</span><span>ar</span>'
 			},
 			{  	start: 'foo[]<span style=display:none>bar</span>baz',
-				execResult: ''
+				execResult: 'foo[]az'
 			},
-			{  	start: 'foo[]<script>bar</script>baz',
-				execResult: ''
-			},
+//			{  	start: 'foo[]<script>bar</script>baz', /// dont care bout that case
+//				execResult: 'foo[]<script>bar</script>baz'
+//			},
 			{  	start: 'fo[]&ouml;bar',
-				execResult: ''
+				execResult: 'fo[]bar'
 			},
-			{  	start: 'fo[]o&#x308;bar',
-				execResult: ''
+			{  	start: 'fo[]bar',
+				execResult: 'fo[]&#x308;bar'
 			},
 			{  	start: 'fo[]o&#x308;&#x327;bar',
-				execResult: ''
+				execResult: 'fo[]bar'
 			},
 			{  	start: '[]&ouml;bar',
-				execResult: ''
+				execResult: '[]bar'
 			},
 			{  	start: '[]o&#x308;bar',
-				execResult: ''
+				execResult: '[]bar'
 			},
 			{  	start: '[]o&#x308;&#x327;bar',
-				execResult: ''
+				execResult: '[]bar'
 			},
-			{  	start: '[]&#x5e9;&#x5c1;&#x5b8;&#x5dc;&#x5d5;&#x5b9;&#x5dd;',
-				execResult: ''
-			},
-			{  	start: '&#x5e9;&#x5c1;&#x5b8;&#x5dc;[]&#x5d5;&#x5b9;&#x5dd;',
-				execResult: ''
-			},
+//			{  	start: '[]&#x5e9;&#x5c1;&#x5b8;&#x5dc;&#x5d5;&#x5b9;&#x5dd;', // yeah well I dunno
+//				execResult: '[]&#x5e9;&#x5c1;&#x5b8;&#x5dc;&#x5d5;&#x5b9;&#x5dd;'
+//			},
+//			{  	start: '&#x5e9;&#x5c1;&#x5b8;&#x5dc;[]&#x5d5;&#x5b9;&#x5dd;',
+//				execResult: ''
+//			},
 			{  	start: '<p>foo[]</p><p>bar</p>',
-				execResult: ''
+				execResult: '<p>foo[]bar</p>'
 			},
 			{  	start: '<p>foo[]</p>bar',
-				execResult: ''
+				execResult: '<p>foo[]bar</p>'
 			},
 			{  	start: 'foo[]<p>bar</p>',
-				execResult: ''
+				execResult: 'foo[]bar'
 			},
 			{  	start: '<p>foo[]<br></p><p>bar</p>',
-				execResult: ''
+				execResult: '<p>foo[]bar</p>'
 			},
 			{  	start: '<p>foo[]<br></p>bar',
-				execResult: ''
+				execResult: '<p>foo[]bar</p>'
 			},
 			{  	start: 'foo[]<br><p>bar</p>',
-				execResult: ''
+				execResult: 'foo[]bar'
 			},
 			{  	start: '<p>{}<br></p>foo',
-				execResult: ''
+				execResult: '<p>[]foo</p>'
 			},
 			{  	start: '<p>{}<span><br></span></p>foo',
-				execResult: ''
+				execResult: '<p>foo[]</p>'
 			},
 			{	start: 'foo{}<p><br>',
-				execResult: ''
+				execResult: 'foo[]'
 			},
 			{	start: 'foo{}<p><span><br></span>',
-				execResult: ''
+				execResult: 'foo[]'
 			},
 			{	start: 'foo{}<br><p><br>',
-				execResult: ''
+				execResult: 'foo[]'
 			},
 			{	start: 'foo{}<span><br></span><p><br>',
-				execResult: ''
+				execResult: 'foo[]'
 			},
 			{	start: 'foo{}<br><p><span><br></span>',
-				execResult: ''
+				execResult: 'foo[]'
 			},
 			{	start: 'foo{}<span><br></span><p><span><br></span>',
-				execResult: ''
+				execResult: 'foo[]'
 			},
 			{	start: 'foo{}<p>',
-				execResult: ''
+				execResult: 'foo[]'
 			},
-			{	start: '<table><tr><td>{}</table>foo',
-				execResult: ''
-			},
-			{	start: '<table><tr><td>{}<br></table>foo',
-				execResult: ''
-			},
-			{	start: '<table><tr><td>{}<span><br></span></table>foo',
-				execResult: ''
-			},
+//			{	start: '<table><tr><td>{}</table>foo', // no td specific tests for us.
+//				execResult: ''
+//			},
+//			{	start: '<table><tr><td>{}<br></table>foo',
+//				execResult: ''
+//			},
+//			{	start: '<table><tr><td>{}<span><br></span></table>foo',
+//				execResult: ''
+//			},
 			{	start: '<div><p>foo[]</p></div><p>bar</p>',
-				execResult: ''
+				execResult: '<div><p>foo[]bar</p></div>'
 			},
 			{	start: '<p>foo[]</p><div><p>bar</p></div>',
-				execResult: ''
+				execResult: '<p>foo[]bar</p>'
 			},
 			{	start: '<div><p>foo[]</p></div><div><p>bar</p></div>',
-				execResult: ''
+				execResult: '<div><p>foo[]bar</p></div>'
 			},
 			{	start: '<div><p>foo[]</p></div>bar',
-				execResult: ''
+				execResult: '<div><p>foo[]bar</p></div>'
 			},
 			{	start: 'foo[]<div><p>bar</p></div>',
-				execResult: ''
+				execResult: 'foo[]bar'
 			},
 			{	start: '<div>foo[]</div><div>bar</div>',
-				execResult: ''
+				execResult: '<div>foo[]bar</div>'
 			},
 			{	start: '<pre>foo[]</pre>bar',
-				execResult: ''
+				execResult: '<pre>foo[]bar</pre>'
 			},
 			{	start: 'foo[]<br>bar',
-				execResult: ''
+				execResult: 'foo[]bar'
 			},
 			{	start: '<b>foo[]</b><br>bar',
-				execResult: ''
+				execResult: '<b>foo[]</b>bar'
 			},
 			{	start: 'foo[]<hr>bar',
-				execResult: ''
+				execResult: 'foo[]bar'
 			},
 			{	start: '<p>foo[]<hr><p>bar',
-				execResult: ''
+				execResult: '<p>foo[]</p><p>bar</p>'
 			},
 			{	start: '<p>foo[]</p><br><p>bar</p>',
-				execResult: ''
+				execResult: '<p>foo[]</p><p>bar</p>'
 			},
 			{	start: '<p>foo[]</p><br><br><p>bar</p>',
-				execResult: ''
+				execResult: '<p>foo[]</p><br><p>bar</p>'
 			},
 			{	start: '<p>foo[]</p><img src=/img/lion.svg><p>bar',
-				execResult: ''
+				execResult: '<p>foo[]<img src="/img/lion.svg"></p><p>bar</p>'
 			},
 			{	start: 'foo[]<img src=/img/lion.svg>bar',
-				execResult: ''
+				execResult: 'foo[]bar'
 			},
 			{	start: 'foo[]<a>bar</a>',
-				execResult: ''
+				execResult: 'foo[]<a>ar</a>'
 			},
 			{	start: 'foo[]<a href=/>bar</a>',
-				execResult: ''
+				execResult: 'foo[]<a href="/">ar</a>'
 			},
 			{	start: 'foo[]<a name=abc>bar</a>',
-				execResult: ''
+				execResult: 'foo[]<a name=abc>ar</a>'
 			},
 			{	start: 'foo[]<a href=/ name=abc>bar</a>',
-				execResult: ''
+				execResult: 'foo[]<a href=/ name=abc>ar</a>'
 			},
 			{	start: 'foo[]<span><a>bar</a></span>',
-				execResult: ''
+				execResult: 'foo[]<span><a>ar</a></span>'
 			},
 			{	start: 'foo[]<span><a href=/>bar</a></span>',
-				execResult: ''
+				execResult: 'foo[]<span><a href=/>ar</a></span>'
 			},
 			{	start: 'foo[]<span><a name=abc>bar</a></span>',
-				execResult: ''
+				execResult: 'foo[]<span><a name=abc>ar</a></span>'
 			},
 			{	start: 'foo[]<span><a href=/ name=abc>bar</a></span>',
-				execResult: ''
+				execResult: 'foo[]<span><a href=/ name=abc>ar</a></span>'
 			},
 			{	start: '<a>foo[]</a>bar',
-				execResult: ''
+				execResult: '<a>foo[]</a>ar'
 			},
 			{	start: '<a href=/>foo[]</a>bar',
-				execResult: ''
+				execResult: '<a href=/>foo[]</a>ar'
 			},
 			{	start: '<a name=abc>foo[]</a>bar',
-				execResult: ''
+				execResult: '<a name=abc>foo[]</a>ar'
 			},
 			{	start: '<a href=/ name=abc>foo[]</a>bar',
-				execResult: ''
+				execResult: '<a href=/ name=abc>foo[]</a>ar'
 			},
 			{	start: 'foo []&nbsp;',
-				execResult: ''
+				execResult: 'foo[]'
 			},
 			{	start: '[]&nbsp; foo',
-				execResult: ''
+				execResult: '[]&nbsp;foo'
 			},
 			{	start: 'foo[] &nbsp;bar',
-				execResult: ''
+				execResult: 'foo[]bar'
 			},
 			{	start: 'foo[]&nbsp; bar',
-				execResult: ''
+				execResult: 'foo[] bar'
 			},
 			{	start: 'foo[]&nbsp;&nbsp;bar',
-				execResult: ''
+				execResult: 'foo[] bar'
 			},
 			{	start: 'foo[]  bar',
-				execResult: ''
+				execResult: 'foo[]bar'
 			},
 			{	start: 'foo[] &nbsp; bar',
-				execResult: ''
+				execResult: 'foo[]&nbsp; bar'
 			},
 			{	start: 'foo []&nbsp; bar',
-				execResult: ''
+				execResult: 'foo []bar'
 			},
 			{	start: 'foo &nbsp;[] bar',
-				execResult: ''
+				execResult: 'foo &nbsp;[]bar'
 			},
 			{	start: 'foo[] <span>&nbsp;</span> bar',
-				execResult: ''
+				execResult: 'foo[]<span>&nbsp;</span> bar'
 			},
 			{	start: 'foo []<span>&nbsp;</span> bar',
-				execResult: ''
+				execResult: 'foo []<span></span> bar'
 			},
 			{	start: 'foo <span>&nbsp;</span>[] bar',
-				execResult: ''
+				execResult: 'foo <span>&nbsp;</span>[]bar'
 			},
 			{	start: '<b>foo[] </b>&nbsp;bar',
-				execResult: ''
+				execResult: '<b>foo[]</b> bar'
 			},
 			{	start: '<b>foo[]&nbsp;</b> bar',
-				execResult: ''
+				execResult: '<b>foo[]</b> bar'
 			},
 			{	start: '<b>foo[]&nbsp;</b>&nbsp;bar',
-				execResult: ''
+				execResult: '<b>foo[]</b> bar'
 			},
 			{	start: '<b>foo[] </b> bar',
-				execResult: ''
+				execResult: '<b>foo[]</b>bar'
 			},
 			{	start: '<pre>foo []&nbsp;</pre>',
-				execResult: ''
+				execResult: '<pre>foo []</pre>'
 			},
 			{	start: '<pre>[]&nbsp; foo</pre>',
-				execResult: ''
+				execResult: '<pre>[] foo</pre>'
 			},
 			{	start: '<pre>foo[] &nbsp;bar</pre>',
-				execResult: ''
+				execResult: '<pre>foo[] bar</pre>'
 			},
 			{	start: '<pre>foo[]&nbsp; bar</pre>',
-				execResult: ''
+				execResult: '<pre>foo[] bar</pre>'
 			},
 			{	start: '<pre>foo[]  bar</pre>',
-				execResult: ''
+				execResult: '<pre>foo[]bar</pre>'
 			},
 			{	start: '<div style=white-space:pre>foo []&nbsp;</div>',
-				execResult: ''
+				execResult: '<div style=white-space:pre>foo []</div>'
 			},
 			{	start: '<div style=white-space:pre>[]&nbsp; foo</div>',
-				execResult: ''
+				execResult: '<div style=white-space:pre>[] foo</div>'
 			},
 			{	start: '<div style=white-space:pre>foo[] &nbsp;bar</div>',
-				execResult: ''
+				execResult: '<div style=white-space:pre>foo[] bar</div>'
 			},
 			{	start: '<div style=white-space:pre>foo[]&nbsp; bar</div>',
-				execResult: ''
+				execResult: '<div style=white-space:pre>foo[] bar</div>'
 			},
 			{	start: '<div style=white-space:pre>foo[]  bar</div>',
-				execResult: ''
+				execResult: '<div style=white-space:pre>foo[]bar</div>'
 			},
 			{	start: '<div style=white-space:pre-wrap>foo []&nbsp;</div>',
-				execResult: ''
+				execResult: '<div style=white-space:pre-wrap>foo []</div>'
 			},
 			{	start: '<div style=white-space:pre-wrap>[]&nbsp; foo</div>',
-				execResult: ''
+				execResult: '<div style=white-space:pre-wrap>[] foo</div>'
 			},
 			{	start: '<div style=white-space:pre-wrap>foo[] &nbsp;bar</div>',
-				execResult: ''
+				execResult: '<div style=white-space:pre-wrap>foo[] bar</div>'
 			},
 			{	start: '<div style=white-space:pre-wrap>foo[]&nbsp; bar</div>',
-				execResult: ''
+				execResult: '<div style=white-space:pre-wrap>foo[] bar</div>'
 			},
 			{	start: '<div style=white-space:pre-wrap>foo[]  bar</div>',
-				execResult: ''
+				execResult: '<div style=white-space:pre-wrap>foo[]bar</div>'
 			},
 			{	start: '<div style=white-space:pre-line>foo []&nbsp;</div>',
-				execResult: ''
+				execResult: '<div style=white-space:pre-line>foo []</div>'
 			},
 			{	start: '<div style=white-space:pre-line>[]&nbsp; foo</div>',
-				execResult: ''
+				execResult: '<div style=white-space:pre-line>[] foo</div>'
 			},
-			{	start: '<div style=white-space:pre-line>foo[] &nbsp;bar</div>',
+*/			{	start: '<div style=white-space:pre-line>foo[] &nbsp;bar</div>',
 				execResult: ''
 			},
 			{	start: '<div style=white-space:pre-line>foo[]&nbsp; bar</div>',
@@ -390,7 +390,7 @@ var tests = {
 			{	start: 'foo[]<div><ol><li>bar</ol></div>',
 				execResult: ''
 			},
-			{	start: 'foo[]<dl><dt>bar<dd>baz</dl>',
+/*			{	start: 'foo[]<dl><dt>bar<dd>baz</dl>',
 				execResult: ''
 			},
 			{	start: 'foo[]<dl><dd>bar</dl>',
@@ -893,6 +893,6 @@ var tests = {
 			},
 			{	start: '<dl><dt>foo<dd>bar[<dd>]baz</dl>',
 				execResult: ''
-			}
+			}*/
 		]
 }
