@@ -7,7 +7,7 @@
 
 
 define(
-['aloha', 'aloha/jquery', 'aloha/plugin', 'aloha/floatingmenu', 'i18n!abbr/nls/i18n', 'i18n!aloha/nls/i18n'],
+['aloha', 'aloha/jquery', 'aloha/plugin', 'aloha/floatingmenu', 'i18n!abbr/nls/i18n', 'i18n!aloha/nls/i18n', 'css!abbr/css/abbr.css'],
 function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 	"use strict";
 	var
@@ -94,7 +94,7 @@ function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 			// remove Abbr
 			//TODO: Set suitable icon for remove abbr. Maybe a new icon should be added into base.png sprite
 		    this.removeButton = new Aloha.ui.Button({
-		        'iconClass' : 'aloha-button aloha-button-abbr',
+		        'iconClass' : 'aloha-button-abbr-remove',
 		        'size' : 'small',
 		        'onclick' : function () { me.removeAbbr( false ); },
 		        'tooltip' : i18n.t('button.removeabbr.tooltip'),

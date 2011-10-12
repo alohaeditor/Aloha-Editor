@@ -70,7 +70,7 @@
 	outline: none;
 }
 button.aloha-button {
-	background: url('../img/base.png') no-repeat !important;
+	background: url('../img/base.png') no-repeat;
 }
 button.aloha-button-big {
 	background: url('../img/base-big.png') no-repeat !important;
