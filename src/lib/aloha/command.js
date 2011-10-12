@@ -74,13 +74,15 @@ function( Aloha, Registry, Engine, Dom, ContentHandlerManager ) {
 				range = Aloha.getSelection().getRangeAt( 0 );
 			}
 			
-			// at insertHTML we provide contenthandler
+			// For the insertHTML command we provide contenthandler API
 			if ( commandId == 'insertHTML' ) {
 				//if (typeof Aloha.settings.contentHandler.insertHtml === 'undefined') {
-				//	write log message
+				//	use all registered content handler; used for copy & paste atm (or write log message)
 				//	Aloha.settings.contentHandler.insertHtml = Aloha.defaults.contentHandler.insertHtml;
 				//}
-				value = ContentHandlerManager.handleContent( value, { contenthandler: Aloha.settings.contentHandler.insertHtml } );
+				value = ContentHandlerManager.handleContent( value, {
+					contenthandler: Aloha.settings.contentHandler.insertHtml
+				});
 			}
 
 			Engine.execCommand( commandId, showUi, value, range );
