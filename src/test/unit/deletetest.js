@@ -413,13 +413,13 @@ var tests = {
 	
 		// Invisible stuff with collapsed selection
 		// NOTE on these broken tests setting the cursor after deletion is broken
-		{  	start: 'foo<span></span>[]bar', // broken
+		{  	start: 'foo<span></span>[]bar', // broken - doCleanup should fix this
 			execResult: 'fo[]bar'
 		},
-		{  	start: 'foo<span><span></span></span>[]bar', // broken
+		{  	start: 'foo<span><span></span></span>[]bar', // broken - doCleanup should fix this
 			execResult: 'fo[]bar'
 		},
-		{  	start: 'foo<quasit></quasit>[]bar', // broken
+		{  	start: 'foo<quasit></quasit>[]bar', // broken - doCleanup should fix this
 			execResult: 'fo[]bar'
 		},
 		{  	start: 'foo<br><span></span>[]bar',
@@ -428,7 +428,7 @@ var tests = {
 		{  	start: '<span>foo<span></span></span>[]bar',
 			execResult: '<span>fo[]<span></span></span>bar'
 		},
-		{  	start: 'foo<span></span><span>[]bar</span>', // broken
+		{  	start: 'foo<span></span><span>[]bar</span>', // broken - doCleanup should fix this
 			execResult: 'fo[]<span>bar</span>'
 		},
 		{  	start: 'foo<div><div><p>[]bar</div></div>',
@@ -488,16 +488,16 @@ var tests = {
 	
 		// Styled stuff with collapsed selection
 		{  	start: '<p style="color:blue;">foo<p>[]bar',
-			execResult: '<p style="color:blue;">foo[]bar</p>' // TODO check
+			execResult: '<p><span style="color: blue; ">foo[]</span>bar</p>'
 		},
 		{  	start: '<p style="color:blue;">foo<p style="color:brown;">[]bar',
 			execResult: '<p style="color:blue;">foo[]<span style="color:brown;">bar</span></p>'
 		},
 		{  	start: '<p style="color:blue">foo<p style="color:rgba(0,0,255,1)">[]bar',
-			execResult: '<p style="color:blue">foo[]<span style="color:rgba(0,0,255,1)">bar</span></p>'
+			execResult: '<p style="color:blue">foo[]bar</p>'
 		},
 		{  	start: '<p style="color:transparent">foo<p style="color:rgba(0,0,0,0)">[]bar',
-			execResult: '<p style="color:transparent">foo[]<span style="color:rgba(0,0,0,0)">bar</span></p>'
+			execResult: '<p style="color:transparent">foo[]bar</p>'
 		},
 		{  	start: '<p>foo<p style="color:brown">[]bar',
 			execResult: '<p>foo[]<span style="color:brown">bar</span></p>'
@@ -506,10 +506,10 @@ var tests = {
 			execResult: '<p><font color="blue">foo[]</font>bar</p>'
 		},
 		{  	start: '<p><font color="blue">foo</font><p><font color="brown">[]bar</font>',
-			execResult: '<p><font color="blue">foo[]</font><span style="color:brown">bar</span></p>'
+			execResult: '<p><font color="blue">foo[]</font><font color="brown">bar</font></p>'
 		},
 		{  	start: '<p>foo<p><font color="brown">[]bar</font>',
-			execResult: '<p>foo[]<span style="color:brown">bar</span></p>'
+			execResult: '<p>foo[]<font color="brown">bar</font></p>'
 		},
 		{  	start: '<p><span style="color:blue">foo</font><p>[]bar',
 			execResult: '<p><span style="color:blue">foo[]</span>bar</p>'
@@ -521,8 +521,8 @@ var tests = {
 			execResult: '<p>foo[]<span style="color:brown">bar</span></p>'
 		},
 	
-		{  	start: '<p style="background-color:aqua">foo<p>[]bar', // broken
-			execResult: '<p style="background-color:aqua">foo[]<span style="background-color:white">bar</span></p>'
+		{  	start: '<p style="background-color:aqua">foo<p>[]bar',
+			execResult: '<p style="background-color:aqua">foo[]bar</p>'
 		},
 		{  	start: '<p style="background-color:aqua">foo<p style="background-color:tan">[]bar', // broken
 			execResult: '<p style="background-color:aqua">foo[]<span style="background-color:tan">bar</span></p>'
@@ -541,13 +541,13 @@ var tests = {
 		},
 	
 		{  	start: '<p style="text-decoration:underline">foo<p>[]bar',
-			execResult: '<p style="text-decoration:underline">foo[]bar</p>'
+			execResult: '<p><u>foo[]</u>bar</p>'
 		},
 		{  	start: '<p style="text-decoration:underline">foo<p style="text-decoration:line-through">[]bar',
-			execResult: '<p style="text-decoration:underline">foo[]<span style="text-decoration:line-through">bar</span></p>'
+			execResult: '<p><u>foo[]</u><s>bar</s></p>'
 		},
 		{  	start: '<p>foo<p style="text-decoration:line-through">[]bar',
-			execResult: '<p>foo[]<span style="text-decoration:line-through">bar</span></p>'
+			execResult: '<p>foo[]<s>bar</s></p>'
 		},
 		{  	start: '<p><u>foo</u><p>[]bar',
 			execResult: '<p><u>foo[]</u>bar</p>'
@@ -560,7 +560,7 @@ var tests = {
 		},
 	
 		{  	start: '<p style="color:blue">foo</p>[]bar',
-			execResult: '<p style="color:blue">foo[]<span style="color:black">bar</span></p>'
+			execResult: '<p><span style="color: blue; ">foo[]</span>bar</p>'
 		},
 		{  	start: 'foo<p style="color:brown">[]bar',
 			execResult: 'foo[]<span style="brown">bar</span>'
@@ -585,7 +585,7 @@ var tests = {
 		{  	start: '<p>foo<span style=color:#aBcDeF>{bar}</span>baz',
 			execResult: '<p>foo[]<span style="color:#aBcDeF"></span>baz</p>' // this one actually works, but the true test result will contain an empty text node within the span
 		},
-		{  	start: '<p>foo{<span style=color:#aBcDeF>bar</span>}baz', // broken
+		{  	start: '<p>foo{<span style=color:#aBcDeF>bar</span>}baz', // broken - doCleanup should fix this
 			execResult: '<p>foo[]baz</p>'
 		},
 		{  	start: '<p>[foo<span style=color:#aBcDeF>bar]</span>baz',
@@ -598,32 +598,32 @@ var tests = {
 		{  	start: '<p>[foo<span style="color:#aBcDeF">bar]</span>baz',
 			execResult: '<p>[]baz</p>'
 		},
-		{  	start: '<p>foo<span style="color:#aBcDeF">[bar</span>baz]',
-			execResult: '<p>foo[]<span style="color:#aBcDeF"></span></p>'
+		{  	start: '<p>foo<span style="color:#aBcDeF">[bar</span>baz]', // broken - doCleanup should fix this
+			execResult: '<p>foo[]</p>'
 		},
-		{  	start: '<p>foo<span style="color:#aBcDeF">{bar</span>baz}',
-			execResult: '<p>foo[]<span style="color:#aBcDeF"></span></p>'
+		{  	start: '<p>foo<span style="color:#aBcDeF">{bar</span>baz}', // broken - doCleanup should fix this
+			execResult: '<p>foo[]</p>'
 		},
-		{  	start: '<p>foo<span style="color:#aBcDeF">[bar</span><span style="color:#fEdCbA">baz]</span>quz',
-			execResult: '<p>foo[]<span style="color:#aBcDeF"></span>quz</p>'
+		{  	start: '<p>foo<span style="color:#aBcDeF">[bar</span><span style="color:#fEdCbA">baz]</span>quz', // broken - doCleanup should fix this
+			execResult: '<p>foo[]quz</p>'
 		},
 	
-		{  	start: 'foo<b>[bar]</b>baz',
-			execResult: 'foo[]<b></b>baz'
-		},
-		{  	start: 'foo<b>{bar}</b>baz',
-			execResult: 'foo[]<b></b>baz'
-		},
-		{  	start: 'foo{<b>bar</b>}baz', // broken
+		{  	start: 'foo<b>[bar]</b>baz', // broken - doCleanup should fix this
 			execResult: 'foo[]baz'
 		},
-		{  	start: 'foo<span>[bar]</span>baz', // broken
-			execResult: 'foo[]<span></span>baz'
-		},
-		{  	start: 'foo<span>{bar}</span>baz',
+		{  	start: 'foo<b>{bar}</b>baz', // broken - doCleanup should fix this
 			execResult: 'foo[]baz'
 		},
-		{  	start: 'foo{<span>bar</span>}baz',
+		{  	start: 'foo{<b>bar</b>}baz', // broken - doCleanup should fix this
+			execResult: 'foo[]baz'
+		},
+		{  	start: 'foo<span>[bar]</span>baz', // broken - doCleanup should fix this
+			execResult: 'foo[]baz'
+		},
+		{  	start: 'foo<span>{bar}</span>baz', // broken - doCleanup should fix this
+			execResult: 'foo[]baz'
+		},
+		{  	start: 'foo{<span>bar</span>}baz', // broken - doCleanup should fix this
 			execResult: 'foo[]baz'
 		},
 
@@ -671,14 +671,14 @@ var tests = {
 		{  	start: '<p>foo[bar<blockquote><p>baz]quz<p>qoz</blockquote>',
 			execResult: '<p>foo[]quz</p><blockquote><p>qoz</p></blockquote>'
 		},
-		{  	start: '<p>foo[bar<p style="color:blue">baz]quz', // broken
+		{  	start: '<p>foo[bar<p style="color:blue">baz]quz', // broken - doCleanup should fix this
 			execResult: '<p>foo[]<span style="color:blue">quz</span></p>'
 		},
 		{  	start: '<p>foo[bar<p><b>baz]quz</b>',
 			execResult: '<p>foo[]<b>quz</b></p>'
 		},
 	
-		{  	start: '<div><p>foo<p>[bar<p>baz]</div>', // broken - empty text node
+		{  	start: '<div><p>foo<p>[bar<p>baz]</div>', // broken - doCleanup should fix this
 			execResult: '<div><p>foo[]</p><p></p></div>'
 		},
 

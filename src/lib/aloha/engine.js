@@ -1,6 +1,6 @@
 define(
-['aloha/contenthandlermanager', 'aloha/ecma5'],
-function( ContentHandlerManager ) {
+['aloha/ecma5'],
+function() {
 	"use strict";
 
 var htmlNamespace = "http://www.w3.org/1999/xhtml";
@@ -571,12 +571,6 @@ function myExecCommand(command, showUi, value, range) {
 		if (!myQueryCommandEnabled(command)) {
 			return false;
 		}
-
-		//if (typeof Aloha.settings.contentHandler.insertHtml === 'undefined') {
-		// just use all registerd content handler or specity Aloha.defaults.contentHandler.insertHtml manually?
-		//	Aloha.settings.contentHandler.insertHtml = Aloha.defaults.contentHandler.insertHtml;
-		//}
-		value = ContentHandlerManager.handleContent( value, { contenthandler: Aloha.settings.contentHandler.insertHtml } );
 
 		// "Take the action for command, passing value to the instructions as an
 		// argument."
@@ -2811,9 +2805,11 @@ function forceValue(node, command, newValue, range) {
 		// "If command is "foreColor", and new value is fully opaque with red,
 		// green, and blue components in the range 0 to 255:"
 		if (command == "forecolor" && parseSimpleColor(newValue)) {
-			// "Let new parent be the result of calling createElement("font")
+			// "Let new parent be the result of calling createElement("span")
 			// on the ownerDocument of node."
-			newParent = node.ownerDocument.createElement("font");
+			// NOTE: modified this process to create span elements with style attributes
+			// instead of oldschool font tags with color attributes
+			newParent = node.ownerDocument.createElement("span");
 
 			// "If new value is an extended color keyword, set the color
 			// attribute of new parent to new value."
@@ -2821,7 +2817,7 @@ function forceValue(node, command, newValue, range) {
 			// "Otherwise, set the color attribute of new parent to the result
 			// of applying the rules for serializing simple color values to new
 			// value (interpreted as a simple color)."
-			newParent.setAttribute("color", parseSimpleColor(newValue));
+			jQuery(newParent).css('color', parseSimpleColor(newValue));
 		}
 
 		// "If command is "fontName", let new parent be the result of calling
