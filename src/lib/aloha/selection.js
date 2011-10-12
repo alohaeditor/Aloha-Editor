@@ -1731,6 +1731,8 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 
 	}); // Selection
 	
+	
+	/*
 	function getSelectionStartNode ( node ) {
 		if ( !node || isVoidNode( node ) ) {
 			return null;
@@ -1849,12 +1851,15 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		H6	: true
 	};
 	
+	*/
+	
 	/**
 	 * We treat all void elements the same.
 	 * Should we have any exceptions?
 	 * @param {DOMNode} node
 	 * @return {Boolean}
 	 */
+	/*
 	function isVoidNode ( node ) {
 		return node ? !!voidNodes[ node.nodeName ] : false;
 	};
@@ -1862,20 +1867,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 	function isFlowNode ( node ) {
 		return node ? !!flowNodes[ node.nodeName ] : false;
 	};
-	
-	function getIndexOfChildNode ( parent, child ) {
-		var n = parent.childNodes,
-			l = n.length,
-			i = 0;
-		
-		for ( ; i < l; ++i ) {
-			if ( n[ i ] === child ) {
-				return i;
-			}
-		}
-		
-		return -1;
-	};
+	*/
 	
 	/**
 	 * Normalizes the native ranges from the browser to standardizes Aloha-
@@ -1885,6 +1877,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 	 * @param {Object:Range} range
 	 * @return {Object:Range} normalized range
 	 */
+	/*
 	function correctRange ( range ) {
 		return range;
 		
@@ -2233,7 +2226,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		return range;
 	};
 	
-	
+	*/
 	
 	
 	
