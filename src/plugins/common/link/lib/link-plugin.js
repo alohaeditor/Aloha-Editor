@@ -16,43 +16,58 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, console) {
 	var	linkNamespace = 'aloha-link';
 
 	return Plugin.create('link', {
+		
 		/**
 		 * Configure the available languages
 		 */
 		languages: ['en', 'de', 'fr', 'ru', 'pl'],
+		
 		/**
 		 * Default configuration allows links everywhere
 		 */
 		config: ['a'],
+		
 		/**
 		 * all links that match the targetregex will get set the target
 		 * e.g. ^(?!.*aloha-editor.com).* matches all href except aloha-editor.com
 		 */
 		targetregex: '',
+		
 		/**
 		  * this target is set when either targetregex matches or not set
 		  * e.g. _blank opens all links in new window
 		  */
 		target: '',
+		
 		/**
 		 * all links that match the cssclassregex will get set the css class
 		 * e.g. ^(?!.*aloha-editor.com).* matches all href except aloha-editor.com
 		 */
 		cssclassregex: '',
+		
 		/**
 		  * this target is set when either cssclassregex matches or not set
 		  */
 		cssclass: '',
+		
 		/**
 		 * the defined object types to be used for this instance
 		 */
 		objectTypeFilter: [],
+		
 		/**
 		 * handle change on href change
 		 * called function( obj, href, item );
 		 */
 		onHrefChange: null,
 
+		
+		/**
+		 * This variable is used to ignore one selection changed event. We need
+		 * to ignore one selectionchanged event when we set our own selection.
+		 */
+		ignoreNextSelectionChangedEvent: false,
+		
 		/**
 		 * Initialize the plugin
 		 */
@@ -185,7 +200,9 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, console) {
 			Aloha.bind('aloha-selection-changed', function(event, rangeObject) {
 				var config, foundMarkup;
 
-				if ( Aloha.Selection.isSelectionEditable() ) {
+				if ( ! that.ignoreNextSelectionChangedEvent && Aloha.Selection.isSelectionEditable() ) {
+					that.ignoreNextSelectionChangedEvent = false;
+					
 					// show/hide the button according to the configuration
 					config = that.getEditableConfig(Aloha.activeEditable.obj);
 					if ( jQuery.inArray('a', config) != -1) {
@@ -224,8 +241,8 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, console) {
 		createButtons: function () {
 			var that = this;
 
-			// format Link Button
-			// this button behaves like a formatting button like (bold, italics, etc)
+			// format Link Button - this button behaves like 
+			// a formatting button like (bold, italics, etc)
 			this.formatLinkButton = new Aloha.ui.Button({
 				'name' : 'a',
 				'iconClass' : 'aloha-button aloha-button-a',
@@ -306,7 +323,7 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, console) {
 
 			// update link object when src changes
 			this.hrefField.addListener('keyup', function(obj, event) {
-				// TODO this event is never fired. Why?
+				
 				// if the user presses ESC we do a rough check if he has entered a link or searched for something
 				if (event.keyCode == 27) {
 					var curval = that.hrefField.getQueryValue();
@@ -319,10 +336,24 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, console) {
 						// could be a link better leave it as it is
 					} else {
 						// the user searched for something and aborted restore original value
-	//					that.hrefField.setValue(that.hrefField.getValue());
+						// that.hrefField.setValue(that.hrefField.getValue());
 					}
 				}
+
 				that.hrefChange();
+				
+				// Handle the enter key. Terminate the link scope and show the final link.
+				if (event.keyCode == 13) {
+					// Update the selection and place the cursor at the end of the link.
+					var	range = Aloha.Selection.getRangeObject();
+					that.ignoreNextSelectionChangedEvent = true;
+					range.startContainer = range.endContainer;
+					range.startOffset = range.endOffset;
+					range.select();
+					
+					FloatingMenu.setScope('Aloha.continuoustext');
+				}
+				
 			});
 
 			// on blur check if href is empty. If so remove the a tag
