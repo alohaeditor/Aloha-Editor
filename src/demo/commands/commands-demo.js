@@ -15,7 +15,7 @@ button.click( function() {
     updateBoldColor();
 });
  
-Aloha.bind('aloha-selection-changed', function() {
+Aloha.bind('aloha-selection-changed aloha-command-executed', function() {
 	updateBoldColor();
 });
 
@@ -31,19 +31,19 @@ function updateBoldColor() {
 // update the color on startup
 updateBoldColor();
 
-//var 
-//range = Aloha.createRange(),
-//begin = jQuery( 'p' ),
-//end = jQuery( 'i' );
-//
-////setStart and setEnd take dom node and the offset as parameters
-//range.setStart( begin.get(0), 0);
-//range.setEnd( end.get(0), 1);
-//
-////add the range to the selection
-//Aloha.getSelection().removeAllRanges();
-//Aloha.getSelection().addRange( range );
-//
-//Aloha.execCommand( 'bold', false, '' );
+var 
+range = Aloha.createRange(),
+begin = jQuery( 'p' ),
+end = jQuery( 'i' );
+
+//setStart and setEnd take dom node and the offset as parameters
+range.setStart( begin.get(0), 0);
+range.setEnd( end.get(0), 1);
+
+//add the range to the selection
+Aloha.getSelection().removeAllRanges();
+Aloha.getSelection().addRange( range );
+
+Aloha.execCommand( 'bold', false, '' );
 });
 

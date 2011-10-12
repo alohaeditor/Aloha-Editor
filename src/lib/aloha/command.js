@@ -87,7 +87,7 @@ function( Aloha, Registry, Engine, Dom ) {
 			rangeObject.endOffset = range.endOffset;
 			Dom.doCleanup({merge:true, removeempty: false}, rangeObject, startnode);
 			rangeObject.select();
-			
+			Aloha.trigger('aloha-command-executed', commandId);
 		},
 		
 		// If command is available and not disabled or the active range is not null 
