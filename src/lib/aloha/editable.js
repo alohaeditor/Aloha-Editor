@@ -219,7 +219,9 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, C
 				if ( typeof Aloha.settings.contentHandler.initEditable === 'undefined') {
 					Aloha.settings.contentHandler.initEditable = Aloha.defaults.contentHandler.initEditable;
 				}
-				content = ContentHandlerManager.handleContent( content, { contenthandler: Aloha.settings.contentHandler.initEditable } );
+				content = ContentHandlerManager.handleContent( content, {
+					contenthandler: Aloha.settings.contentHandler.initEditable 
+				});
 				me.obj.html( content );
 
 				me.snapshotContent = me.getContents();
@@ -684,12 +686,14 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, C
 
 			PluginManager.makeClean(clonedObj);
 
+			var content = clonedObj.html()
 			if (typeof Aloha.settings.contentHandler.getContents === 'undefined') {
 				Aloha.settings.contentHandler.getContents = Aloha.defaults.contentHandler.getContents;
 			}
-			var value = ContentHandlerManager.handleContent( clonedObj.html(), { contenthandler: Aloha.settings.contentHandler.getContents } );
-			//clonedObj = jQuery( '<div>' + value + '</div>' );
-			clonedObj = jQuery( value );
+			content = ContentHandlerManager.handleContent( content, { 
+				contenthandler: Aloha.settings.contentHandler.getContents 
+			});
+			clonedObj.html( content );
 
 			return asObject ? clonedObj.contents() : clonedObj.html();
 		},
@@ -719,7 +723,7 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, C
 
 			if (event && event.originalEvent) {
 
-				// regex to stripp unicode
+				// regex to strip unicode
 				re = new RegExp("U\\+(\\w{4})");
 				match = re.exec(event.originalEvent.keyIdentifier);
 
