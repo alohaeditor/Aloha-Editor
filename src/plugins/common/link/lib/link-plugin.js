@@ -12,6 +12,8 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, console) {
 
 	var
 		GENTICS = window.GENTICS;
+	//namespace prefix for this plugin
+	var	linkNamespace = 'aloha-link';
 
 	return Plugin.create('link', {
 		/**
@@ -55,6 +57,7 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, console) {
 		 * Initialize the plugin
 		 */
 		init: function () {
+			var that = this;
 			if ( typeof this.settings.targetregex !== 'undefined') {
 				this.targetregex = this.settings.targetregex;
 			}
@@ -77,7 +80,100 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, console) {
 			this.createButtons();
 			this.subscribeEvents();
 			this.bindInteractions();
+	
+			Aloha.ready(function () { 
+				that.initSidebar(Aloha.Sidebar.right); 
+			});
 		},
+
+		nsSel: function () {
+			var stringBuilder = [], prefix = linkNamespace;
+			jQuery.each(arguments, function () { stringBuilder.push('.' + (this == '' ? prefix : prefix + '-' + this)); });
+			return stringBuilder.join(' ').trim();
+		},
+
+		//Creates string with this component's namepsace prefixed the each classname
+		nsClass: function () {
+			var stringBuilder = [], prefix = linkNamespace;
+			jQuery.each(arguments, function () { stringBuilder.push(this == '' ? prefix : prefix + '-' + this); });
+			return stringBuilder.join(' ').trim();
+		},
+
+		initSidebar: function(sidebar) {
+			var pl = this;
+			pl.sidebar = sidebar;
+			sidebar.addPanel({
+					
+					id       : pl.nsClass('sidebar-panel-target'),
+					title    : i18n.t('floatingmenu.tab.link'),
+					content  : '',
+					expanded : true,
+					activeOn : 'a, link',
+					
+					onInit     : function () {
+						 var that = this,
+							 content = this.setContent(
+								'<div class="' + pl.nsClass('target-container') + '"><fieldset><legend>' + i18n.t('link.target.legend') + '</legend><ul><li><input type="radio" name="targetGroup" class="' + pl.nsClass('radioTarget') + '" value="_self" /><span>' + i18n.t('link.target.self') + '</span></li>' + 
+								'<li><input type="radio" name="targetGroup" class="' + pl.nsClass('radioTarget') + '" value="_blank" /><span>' + i18n.t('link.target.blank') + '</span></li>' + 
+								'<li><input type="radio" name="targetGroup" class="' + pl.nsClass('radioTarget') + '" value="_parent" /><span>' + i18n.t('link.target.parent') + '</span></li>' + 
+								'<li><input type="radio" name="targetGroup" class="' + pl.nsClass('radioTarget') + '" value="_top" /><span>' + i18n.t('link.target.top') + '</span></li>' + 
+								'<li><input type="radio" name="targetGroup" class="' + pl.nsClass('radioTarget') + '" value="framename" /><span>' + i18n.t('link.target.framename') + '</span></li>' + 
+								'<li><input type="text" class="' + pl.nsClass('framename') + '" /></li></ul></fieldset></div>' + 
+								'<div class="' + pl.nsClass('title-container') + '" ><fieldset><legend>' + i18n.t('link.title.legend') + '</legend><input type="text" class="' + pl.nsClass('linkTitle') + '" /></fieldset></div>').content; 
+						 
+						 jQuery( pl.nsSel('framename') ).live( 'keyup', function() {
+							jQuery( that.effective ).attr( "target", jQuery(this).val().replace("\"", '&quot;').replace("'", "&#39;") );
+						 });
+						 
+						 jQuery( pl.nsSel('radioTarget') ).live( 'change', function() {
+							if ( jQuery(this).val() === "framename" ) {
+								jQuery( pl.nsSel('framename') ).slideDown();
+							}
+							else {
+								jQuery( pl.nsSel('framename') ).slideUp();
+								jQuery( pl.nsSel('framename') ).val("");
+								jQuery( that.effective ).attr( "target", jQuery(this).val() );
+							}
+						 });
+						 
+						 jQuery( pl.nsSel('linkTitle') ).live( 'keyup', function() {
+							jQuery( that.effective ).attr( "title", jQuery(this).val().replace("\"", '&quot;').replace("'", "&#39;") );
+						 });
+					},
+					
+					onActivate: function (effective) {
+						var that = this;
+						that.effective = effective;
+						if( jQuery(that.effective).attr('target') != null ) {
+							var isFramename = true;
+							jQuery( pl.nsSel('framename') ).hide();
+							jQuery( pl.nsSel('framename') ).val("");
+							jQuery( pl.nsSel('radioTarget') ).each( function () {
+								jQuery(this).removeAttr('checked');
+								if ( jQuery(this).val() === jQuery(that.effective).attr('target')) {
+									isFramename = false;
+									jQuery(this).attr('checked', 'checked');
+								}
+							});
+							if ( isFramename ) {
+								jQuery( pl.nsSel('radioTarget[value="framename"]') ).attr('checked', 'checked');
+								jQuery( pl.nsSel('framename') ).val( jQuery(that.effective).attr('target') );
+								jQuery( pl.nsSel('framename') ).show();
+							}
+						}else {
+							jQuery( pl.nsSel('radioTarget') ).first().attr('checked', 'checked');
+							jQuery( that.effective ).attr( 'target', jQuery(pl.nsSel('radioTarget')).first().val() );
+						}
+						
+						var that = this;
+						that.effective = effective;
+						jQuery( pl.nsSel('linkTitle') ).val( jQuery(that.effective).attr('title') );
+					}
+					
+				});
+			sidebar.show();
+		},
+		
 		/**
 		 * Subscribe for events
 		 */

@@ -1731,6 +1731,8 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 
 	}); // Selection
 	
+	
+	/*
 	function getSelectionStartNode ( node ) {
 		if ( !node || isVoidNode( node ) ) {
 			return null;
@@ -1849,12 +1851,15 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		H6	: true
 	};
 	
+	*/
+	
 	/**
 	 * We treat all void elements the same.
 	 * Should we have any exceptions?
 	 * @param {DOMNode} node
 	 * @return {Boolean}
 	 */
+	/*
 	function isVoidNode ( node ) {
 		return node ? !!voidNodes[ node.nodeName ] : false;
 	};
@@ -1862,20 +1867,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 	function isFlowNode ( node ) {
 		return node ? !!flowNodes[ node.nodeName ] : false;
 	};
-	
-	function getIndexOfChildNode ( parent, child ) {
-		var n = parent.childNodes,
-			l = n.length,
-			i = 0;
-		
-		for ( ; i < l; ++i ) {
-			if ( n[ i ] === child ) {
-				return i;
-			}
-		}
-		
-		return -1;
-	};
+	*/
 	
 	/**
 	 * Normalizes the native ranges from the browser to standardizes Aloha-
@@ -1885,8 +1877,9 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 	 * @param {Object:Range} range
 	 * @return {Object:Range} normalized range
 	 */
+	/*
 	function correctRange ( range ) {
-		//return range;
+		return range;
 		
 		var startContainer = range.startContainer,
 		    endContainer = range.endContainer,
@@ -1896,6 +1889,8 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		    newEndContainer,
 			newStartOffset = startOffset,
 			newEndOffset = endOffset;
+		
+		//getStartPos( startContainer, startOffset );
 		
 		if ( isSelectionStopNode( endContainer ) ) {
 			if ( endOffset == 0 ) {
@@ -1917,16 +1912,20 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 			newEndContainer = endContainer; 
 		} else if ( endContainer.children &&
 					endContainer.children.length ) {
-			// We are in a node in which containers children nodes. This node
-			// is not one in which we want to stop so we will take the last
-			// node in the children list (not childNodes), and try and find a
-			// position to stop at
-			newEndContainer = endContainer.children[
-				endContainer.children.length - 1
-			];
+			//debugger;
+			newEndContainer = endContainer.children[ endOffset ];
+			if ( isFlowNode( newEndContainer ) ) {
+				newEndContainer = endContainer;
+				newEndOffset = endOffset;
+			}
+			//newEndContainer = endContainer.children[
+			//	endContainer.children.length - 1
+			//];
 		} else if ( moveBackwards( endContainer ) ) {
 			newEndContainer = moveBackwards( endContainer );
 		}
+		
+		//debugger;
 		
 		newEndContainer = getSelectionEndNode( newEndContainer );
 		
@@ -1934,15 +1933,6 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 			newEndOffset = newEndContainer.length;
 		} else {
 			newEndContainer = range.endContainer;
-		}
-		
-		// Satisfies: '<p>[foo</p><p>]bar</p><p>baz</p>', '<p>[foo</p><p>}bar</p><p>baz</p>'
-		if ( isFlowNode( newEndContainer.parentNode ) &&
-			 newEndContainer.parentNode.firstChild == newEndContainer &&
-			 newEndOffset == 0 ) {
-			//debugger;
-			newEndContainer = newEndContainer.parentNode,
-			newEndOffset = 0;
 		}
 		
 		// rule:
@@ -2073,7 +2063,8 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 			return range;
 		}
 		
-		while ( newStartContainer == newEndContainer &&
+		while ( !isFlowNode( newStartContainer ) &&
+				newStartContainer == newEndContainer &&
 				newStartOffset == newEndOffset - 1 &&
 				!isSelectionStopNode( newStartContainer ) &&
 				!isVoidNode( newStartContainer.childNodes[ newStartOffset ] ) ) {
@@ -2205,6 +2196,15 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 			newEndContainer = newStartContainer;
 		}
 		
+		// Satisfies: '<p>[foo</p><p>]bar</p><p>baz</p>', '<p>[foo</p><p>}bar</p><p>baz</p>'
+		if ( isFlowNode( newEndContainer.parentNode ) &&
+			 newEndContainer.parentNode.firstChild == newEndContainer &&
+			 newEndOffset == 0 ) {
+			//debugger;
+			newEndContainer = newEndContainer.parentNode,
+			newEndOffset = 0;
+		}
+		
 		if ( !isFlowNode( newEndContainer ) && // make sure we don't do correct this: </p>}foo to </p>]foo
 			 !isSelectionStopNode( newEndContainer ) &&
 			 isPositionAtNodeEnd( newEndContainer, newEndOffset + 1 ) &&
@@ -2226,7 +2226,841 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		return range;
 	};
 	
+	*/
 	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+// Reference: http://dev.w3.org/html5/markup/common-models.html
+//
+// Phrasing elements are a subset of flow elements.
+// The set of void elements intersects with the set of phrasing elements but
+// not intersect with the set of flow elements.
+//
+// We use a hash map instead of an array so that can compute in which set a
+// given node belongs to the fastest possible time (ie: "constant" O(1)).
+var flowElementsLookupTable = {
+	'ADDRESS'    : true,
+	'ARTICLE'    : true,
+	'ASIDE'      : true,
+	'AUDIO'      : true,
+	'BLOCKQUOTE' : true,
+	'DEL'        : true,
+	'DETAILS'    : true,
+	'DIV'        : true,
+	'DL'         : true,
+	'FIELDSET'   : true,
+	'FIGURE'     : true,
+	'FOOTER'     : true,
+	'FORM'       : true,
+	'H1'         : true,
+	'H2'         : true,
+	'H3'         : true,
+	'H4'         : true,
+	'H5'         : true,
+	'H6'         : true,
+	'HEADER'     : true,
+	'HGROUP'     : true,
+	'HR'         : true,
+	'INS'        : true,
+	'MAP'        : true,
+	'MENU'       : true,
+	'NAV'        : true,
+	'NOSCRIPT'   : true,
+	'OBJECT'     : true,
+	'OL'         : true,
+	'P'          : true,
+	'PRE'        : true,
+	'SECTION'    : true,
+	'TABLE'      : true,
+	'UL'         : true,
+	'VIDEO'      : true
+};
+
+var phrasingElementsLookupTable = {
+	'A'        : true,
+	'ABBR'     : true,
+	'AREA'     : true,
+	'AUDIO'    : true,
+	'B'        : true,
+	'BDI'      : true,
+	'BDO'      : true,
+	'BR'       : true,
+	'BUTTON'   : true,
+	'CANVAS'   : true,
+	'CITE'     : true,
+	'CODE'     : true,
+	'COMMAND'  : true,
+	'DATALIST' : true,
+	'DEL'      : true,
+	'DFN'      : true,
+	'EM'       : true,
+	'EMBED'    : true,
+	'I'        : true,
+	'IFRAME'   : true,
+	'IMG'      : true,
+	'INPUT'    : true,
+	'INS'      : true,
+	'KBD'      : true,
+	'KEYGEN'   : true,
+	'LABEL'    : true,
+	'MAP'      : true,
+	'MARK'     : true,
+	'METER'    : true,
+	'NOSCRIPT' : true,
+	'OBJECT'   : true,
+	'OUTPUT'   : true,
+	'PROGRESS' : true,
+	'Q'        : true,
+	'RUBY'     : true,
+	'S'        : true,
+	'SAMP'     : true,
+	'SCRIPT'   : true,
+	'SELECT'   : true,
+	'SMALL'    : true,
+	'SPAN'     : true,
+	'STRONG'   : true,
+	'SUB'      : true,
+	'SUP'      : true,
+	'TEXTAREA' : true,
+	'TIME'     : true,
+	'U'        : true,
+	'VAR'      : true,
+	'VIDEO'    : true,
+	'WBR'      : true
+}
+	
+var voidElementsLookupTable = {
+	'AREA'    : true,
+	'BASE'    : true,
+	'BR'      : true,
+	'COL'     : true,
+	'COMMAND' : true,
+	'EMBED'   : true,
+	'HR'      : true,
+	'IMG'     : true,
+	'INPUT'   : true,
+	'KEYGEN'  : true,
+	'LINK'    : true,
+	'META'    : true,
+	'PARAM'   : true,
+	'SOURCE'  : true,
+	'TRACK'   : true,
+	'WBR'     : true
+};
+
+// It appears to me that block level elements are generally non-phrasing
+// flow elements
+// Reference: https://developer.mozilla.org/en/HTML/Block-level_elements
+var blockElementsLookupTable = {
+	'ADDRESS'    : true,
+	'ARTICLE'    : true,
+	'ASIDE'      : true,
+	'AUDIO'      : true,
+	'BLOCKQUOTE' : true,
+//	'BODY'       : true,
+//	'BR'         : true,
+//	'BUTTON'     : true,
+	'CANVAS'     : true,
+//	'CAPTION'    : true,
+//	'COL'        : true,
+//	'COLGROUP'   : true,
+	'DD'         : true,
+	'DIV'        : true,
+	'DL'         : true,
+//	'DT'         : true,
+//	'EMBED'      : true,
+	'FIELDSET'   : true,
+	'FIGCAPTION' : true,
+	'FIGURE'     : true,
+	'FOOTER'     : true,
+	'FORM'       : true,
+	'H1'         : true,
+	'H2'         : true,
+	'H3'         : true,
+	'H4'         : true,
+	'H5'         : true,
+	'H6'         : true,
+	'HEADER'     : true,
+	'HGROUP'     : true,
+	'HR'         : true,
+	'NOSCRIPT'   : true,
+	'OL'         : true,
+	'OUTPUT'     : true,
+	'P'          : true,
+	'PRE'        : true,
+	'SECTION'    : true,
+	'TABLE'      : true,
+	'TFOOT'      : true,
+	'UL'         : true,
+	'VIDEO'      : true
+};
+
+// Useful functions defined in engine.js:
+// isBlockNode
+// isInlineNode
+// isEditingHost
+// isWhitespaceNode
+// isCollapsedWhitespaceNode
+// removeExtraneousLineBreaksBefore
+// removeExtraneousLineBreaksAtTheEndOf
+// removeExtraneousLineBreaksFrom
+//
+// Useful variables defined in engine.js:
+// namesOfElementsWithInlineContents
+
+function isBlockElement ( node ) {
+	return !!( node && blockElementsLookupTable[ node.nodeName ] );
+};
+
+function isVoidElement ( node ) {
+	return !!( node && voidElementsLookupTable[ node.nodeName ] );
+};
+
+function isPhrasingElement ( node ) {
+	return !!( node && phrasingElementsLookupTable[ node.nodeName ] );
+};
+
+// Phrasing elements are a subset of flow elements, so we return true is the
+// node's name is in the flowElementsLookupTable or if it is in the phrasing-
+// ElementsLookupTable
+function isFlowElement ( node ) {
+	if ( !node ) {
+		return false;
+	}
+	
+	return !!( flowElementsLookupTable[ node.nodeName ] ||
+				phrasingElementsLookupTable[ node.nodeName ] );
+};
+
+function isTextNode ( node ) {
+	return !!( node && node.nodeType == Node.TEXT_NODE );
+};
+
+function isEditingHost ( node ) {
+	return !!( node && GENTICS.Utils.Dom.isEditingHost( node ) );
+};
+
+function getNodeLength ( node ) {
+	if ( !node ) {
+		return 0;
+	}
+	
+	return isTextNode( node )
+		? node.length
+		: node.childNodes.length;
+};
+
+/**
+ * Unit tests:
+ *		given "<p><b>foo</b><i>foo</i></p>", if node is <i>, returns <b>
+ *		given "<a>foo</a><p><b>bar</b></p>", if node is <b> return <a>
+ *		given "<b>foo</b>", if node is <b> returns null
+ *		given "<div><p><b>foo</b></p><i>bar</i></div>", if node is <b> return null
+ *		given "<div><p><b>foo</b></p><i>bar</i></div>", if node is <i> return <p>
+ *
+ * Simple example test:
+ *		getLeftNeighbor(jQuery('<p><b>foo</b><i>foo</i></p>').find('i')[0])
+ *
+ * @param {Object: DOMElement} node
+ */
+function getLeftNeighbor ( node ) {
+	if ( !node ) {
+		return null;
+	}
+	
+	if ( node.previousSibling ) {
+		return node.previousSibling;
+	}
+	
+	if ( !node.parentNode ) {
+		return null;
+	}
+	
+	if ( isEditingHost( node.parentNode ) ) {
+		return null;
+	}
+	
+	return getLeftNeighbor( node.parentNode );
+};
+
+/**
+ * Similar to getLeftNeighbor, but in the other direction
+ * 
+ * @param {Object: DOMElement} node
+ */
+function getRightNeighbor ( node ) {
+	if ( !node ) {
+		return null;
+	}
+	
+	if ( node.nextSibling ) {
+		return node.nextSibling;
+	}
+	
+	if ( !node.parentNode ) {
+		return null;
+	}
+	
+	if ( isEditingHost( node.parentNode ) ) {
+		return null;
+	}
+	
+	return getRightNeighbor( node.parentNode );
+};
+
+function getNodeIndex ( node ) {
+	if ( !node ) {
+		return -1;
+	}
+	
+	// A long as node is an existing node which has a parent, then it is a
+	// logical certainty that node's parent will have 1 or more childNodes.
+	// We therefore do not need to check for this.
+	var kids = node.parent.childNodes,
+		l = kids.length,
+		i = 0;
+	
+	for ( ; i < l; ++i ) {
+		if ( kids[ i ] === node ) {
+			return i;
+		}
+	}
+	
+	return -1;
+};
+
+/**
+ * @param {Object: DOMElement} node
+ * @param {Function} predicate
+ */
+function getFurthestLeftScion ( node, predicate ) {
+	if ( !node || !node.firstChild ) {
+		return null;
+	}
+	
+	var scion = getFurthestLeftScion( node.firstChild, predicate ) || node.firstChild;
+	
+	if ( typeof predicate !== 'function' || predicate( scion ) ) {
+		return scion;
+	}
+	
+	scion = getNearestRightNode( scion );
+	if ( scion ) {
+		return getFurthestLeftScion( scion, predicate ) || scion;
+	}
+	
+	return null;
+};
+
+/**
+ * Unit tests:
+ *		given "<div><u><i>foo</i></u><b></b><p>bar</p></div>", if node is <div>, return <TextNode textContent="bar">
+ *		given "<div><u><i>foo</i>test</u><b></b><p>bar</p></div>", if node is <u>, return <TextNode textContent="test">
+ *		given "<div><u><i>foo<p>bar<b></b></p></i></u></div>" if node is <div>, return <b>
+ *		given "<div><u><i>foo<p>bar</p><b>test</b></i></u></div>" if node is <div>, return <TextNode textContent="test">
+ *		given "<div></div>", if node is <div>, return null
+ *
+ * @param {Object: DOMElement} node
+ * @param {Function} predicate
+ */
+function getFurthestRightScion ( node, predicate ) {
+	if ( !node || !node.lastChild ) {
+		return null;
+	}
+	
+	var scion = getFurthestRightScion( node.lastChild, predicate ) || node.lastChild;
+	
+	if ( typeof predicate !== 'function' || predicate( scion ) ) {
+		return scion;
+	}
+	
+	scion = getNearestLeftNode( scion );
+	if ( scion ) {
+		return getFurthestRightScion( scion, predicate ) || scion;
+	}
+	
+	return null;
+};
+
+/**
+ * We walk backwards up the tree until we encounter a node which matches a
+ * predicate condition
+ *
+ * Unit test:
+ *		given: "<div><u><i>foo</i></u><b></b><p>bar</p></div>", if node is <p>, then return <b>
+ *		given: "<div><u><i>foo</i><b>test</b></u><p>bar</p></div>", if node is <p>, then return <TextNode textContent="test">
+ *
+ * @param {Object: DOMElement} node
+ * @param {Function} predicate
+ */
+function getNearestLeftNode ( node, predicate ) {
+	if ( !node ) {
+		return null;
+	}
+	
+	// First, get the next left neighbor...
+	
+	node = getLeftNeighbor( node );
+	
+	if ( !node ) {
+		return null;
+	}
+	
+	// ... then find the very right most container of this left neighbor
+	
+	var scion = getFurthestRightScion( node );
+	
+	if ( scion ) {
+		if ( typeof predicate !== 'function' || predicate ( scion ) ) {
+			return scion;
+		}
+	}
+	
+	// node has no children. check whether we should quit now or move left to
+	// the next left neighbor
+	
+	if ( typeof predicate !== 'function' || predicate( node ) ) {
+		return node;
+	}
+	
+	scion = getNearestLeftNode( node, predicate );
+	
+	if ( scion ) {
+		return scion;
+	}
+	
+	return null;
+};
+
+/**
+ * Like getNearestLeftNode, but in the other direction
+ * <b></b><b></b>{<p><b></b><b>f</b>foo]</p>
+ * <b></b><b></b><p><b></b><b>[f</b>foo]</p>
+ */
+function getNearestRightNode ( node, predicate ) {
+	if ( !node ) {
+		return null;
+	}
+	
+	node = getRightNeighbor( node );
+	
+	if ( !node ) {
+		return null;
+	}
+	
+	var scion = getFurthestLeftScion( node, predicate );
+	
+	if ( scion ) {
+		return scion;
+	}
+	
+	if ( typeof predicate !== 'function' || predicate( node ) ) {
+		return node;
+	}
+	
+	scion = getNearestRightNode( node, predicate );
+	
+	if ( scion ) {
+		return scion;
+	}
+	
+	return null;
+};
+
+/**
+ * anatomy of a selection:
+ * markup  : '<div>|<p>foo</p>|test{<p>bar</p><p>baz]</p>|</div>', '<div><p>foo</p>test<p>[bar</p><p>}baz</p></div>'
+ * offsets :       0          1    2                3   4
+ * startContainer : <div>
+ * startOffset    : 2
+ * endContainer   : <p>
+ * endOffset      : 3
+ * childNodes : [
+ *		0 : <p>foo</p>
+ *		1 : test
+ *		2 : <p>bar</p>
+ *		3 : <p>baz</p>
+ *	]
+ * 
+ * rule:
+ * 	IF the container is a flow element
+ *	THEN the algorithm is greedy
+ *	THEREFOR we try to expand the selection to the end of the nearest left
+ *			 neighbor from the selection point, which has a node inwhich we can
+ *			 place a new position.
+ *			 ie:
+ *				"test{<p>foo..." becomes "test[<p>foo..."
+ *				"<b>test</b>{<p>foo..." becomes "<b>test[</b><p>foo..."
+ *				"test<b></b>{<p>foo..." becomes "test[<b></b><p>foo..."
+ *
+ *	IF we cannot find a node inwhich we can position ourselves then we contract
+ *	   the selection from the current start position in towards to nearest
+ *	   right child or sibling
+ * 	THEN
+ * 		IF the start position is in front of a start tag of a flow element,
+ * 			THEN we try to find a suitable start position by moving down or into the tree.
+ * 				 We will try and land at the nearest position to where we started, which is the the start of the first stoppable node
+ * 		ELSE IF the start position is in front of an end tag of a flow element, then we will try and land at the nearest position to where we started, which is the the end of the first stoppable node
+ * unit tests:
+			[ 'test{<p>foo</p><p>bar]</p>'			, 'test[<p>foo</p><p>bar]</p>'		  ],
+			[ '<b>test</b>{<p>foo</p><p>bar]</p>'	, '<b>test[</b><p>foo</p><p>bar]</p>' ],
+			[ '{<p>foo</p><p>bar]</p>'				, '<p>[foo</p><p>bar]</p>'			  ],
+ */
+function getStartPosition ( container, offset ) {
+	if ( !container ) {
+		return null;
+	}
+	
+	if ( isBlockElement( container ) ) {
+		// Out of bounds sanity check.
+		// Should we throw an error?
+		if ( offset > container.childNodes.length ) {
+			return {
+				node   : container,
+				offset : offset
+			};
+		}
+		
+		var stop;
+		
+		// We either have an empty container, or else the offset is positioned
+		// at the very end of the container--after the last node. We therefore
+		// have the case where we are in front the closing tag of a flow node,
+		// and we will therefore try and move backwards into the tree
+		if ( offset == container.childNodes.length ) {
+			stop = getFurthestRightScion( container );
+			if ( stop ) {
+				return {
+					node   : stop,
+					offset : getNodeLength( stop )
+				};
+			}
+			
+			// There is no child nodes inside of container, so contract the
+			// selection rightwards
+			stop = getNearestRightNode( container );
+			if ( stop ) {
+				return {
+					node   : stop,
+					offset : 0
+				};
+			}
+			
+			return {
+				node   : container,
+				offset : offset
+			};
+		}
+		
+		// The offset is somewhere before the end of the container, therefore
+		// check if the node at index offset is a block element.
+		var node = container.childNodes[ offset ];
+		
+		if ( isBlockElement( node ) ) {
+			// We can only move the start position to the left, if there left
+			// neighbor is not a block node
+			if ( !isBlockElement( getLeftNeighbor( node ) ) ) {
+				// Get the nearest text node to the left of the start position
+				stop = getNearestLeftNode( node, isTextNode );
+				
+				// We found a text node. We therefore have one of the following
+				// situations (where "foo" represents out text node):
+				// foo<b>bar</b>	    correct to foo[<b>bar</b>
+				// <i>foo</i><b>bar</b> correct to <i>foo[</i><b>bar</b>
+				// foo<i></i><b>bar</b> correct to foo<i>{</i><b>bar</b>
+				if ( stop && isTextNode( stop ) ) {
+					// case: foo<i></i><b>bar</b>
+					if ( getRightNeighbor( stop ) != node ) {
+						stop = getNearestLeftNode( node );
+					}
+					
+					return {
+						node   : stop,
+						offset : getNodeLength( stop )
+					};
+				}
+			}
+			
+			// We found no text node to the left of our start position.
+			// Without a text node to land on, we cannot expand the selection
+			// to the left, so we will collapse the collection instead, by
+			// moving the start position to the nearest text node to the right
+			// {<p><b></b>foo]</p> => <p><b></b>[foo]</p>
+			stop = getFurthestLeftScion( node );
+			while ( stop && stop.nodeType != Node.TEXT_NODE ) {
+				stop = getNearestRightNode( stop );
+			}
+			
+			if ( stop ) {
+				return  {
+					node   : stop,
+					offset : 0
+				};
+			}
+			
+			// We found to text node to land on, return the original start
+			// position ...
+		}
+		
+		return {
+			node   : container,
+			offset : offset
+		};
+	}
+};
+
+function getEndPosition ( container, offset ) {
+	if ( !container ) {
+		return null;
+	}
+	
+	if ( isBlockElement( container ) ) {
+		// Out of bounds sanity check.
+		// Should we throw an error?
+		if ( offset > container.childNodes.length ) {
+			return {
+				node   : container,
+				offset : offset
+			};
+		}
+		
+		var stop;
+		
+		// We either have an empty container, or else the offset is positioned
+		// at the very end of the container--after the last node. We therefore
+		// have the case where we are in front the closing tag of a flow node,
+		// and we will therefore try and move backwards into the tree
+		if ( offset == container.childNodes.length ) {
+			
+			// debugger;
+			
+			stop = getFurthestRightScion( container, isTextNode );
+			if ( stop ) {
+				return {
+					node   : stop,
+					offset : getNodeLength( stop )
+				};
+			}
+			
+			// There is no child nodes inside of container, so look left
+			stop = getNearestLeftNode( container, isTextNode );
+			if ( stop ) {
+				return {
+					node   : stop,
+					offset : getNodeLength( stop )
+				};
+			}
+			
+			return {
+				node   : container,
+				offset : offset
+			};
+		}
+		
+		// The offset is somewhere after the start of the container, therefore
+		// check if the node at index offset is a block element.
+		var node = container.childNodes[ offset ];
+		
+		if ( isBlockElement( node ) ) {
+			// We cannot move the start position to the left, if the left
+			// neighbor is a block element, so go right, expanding the
+			// selection by moving the end position to the first sibling on the
+			// right of node which has children
+			// We satisfy:
+			// [ '<p>[foo</p>}<p>bar</p>', '<p>[foo</p><p>}bar</p>' ],
+			// [ '<p>[foo</p>}<p></p>bar',  ],
+			// [ '<p>[foo</p>}<p><b></b>bar</p>', '<p>[foo</p><p>}<b></b>bar</p>' ],
+			
+			// We check if there is no previousSibling in order to handle this:
+			// '[foo<div>}<p>bar</p></div>', '[foo<div><p>}bar</p></div>'
+			
+			if ( isBlockElement( getLeftNeighbor( node ) ) || !node.previousSibling ) {
+				stop = node;
+				while ( stop && getNodeLength( stop ) == 0 ) {
+					stop = stop.nextSibling;
+				}
+				
+				if ( stop ) {
+					return {
+						node   : stop,
+						offset : 0
+					};
+				}
+			}
+			
+			// The left neighbor was not a block element so we can contract the
+			// selection by moving the end position to the left.
+			//
+			// Otherwise we reach here becuase there are no right-hand siblings
+			// of container which have children in which we can place the end
+			// position in them. We will therefore contract the selection to
+			// the left.
+			// We statisfy:
+			//	[ '<b>[foo</b>}<p>bar</p>', '<b>[foo]</b><p>bar</p>' ],
+			//	
+			//	or
+			//	
+			// [ '<p>[foo</p>}<p></p>', '<p>[foo]</p><p></p>' ],
+			// [ '<div><p>[foo</p>}<p></p></div>bar', '<div><p>[foo]</p><p></p></div>bar' ],
+			// [ '<p>[foo</p>}<p></p>', '<p>[foo]</p><p></p>' ],
+			// [ '<p>[foo</p>}<p></p><p>bar</p>', '<p>[foo</p><p></p><p>}bar</p>' ],
+			
+			stop = getNearestLeftNode( node, isTextNode );
+			if ( stop ) {
+				return {
+					node   : stop,
+					offset : getNodeLength( stop )
+				};
+			}
+			
+			// We found no text node left of our start position, so look for
+			// the for the nearest node on the right
+			stop = getFurthestLeftScion( node );
+			if ( stop ) {
+				return {
+					node   : stop,
+					offset : 0
+				};
+			}
+		}
+		
+		return {
+			node   : container,
+			offset : offset
+		};
+	}
+};
+
+function correctRange ( range ) {
+	//return range;
+	
+	var startContainer = range.startContainer,
+	    startOffset = range.startOffset,
+	    startPos = getStartPosition( startContainer, startOffset );
+	
+	if ( startPos ) {
+		range.startContainer = startPos.node;
+		range.startOffset = startPos.offset;
+	}
+	
+	// debugger;
+	
+	var endContainer = range.endContainer,
+	    endOffset = range.endOffset,
+	    endPos = getEndPosition( endContainer, endOffset );
+	
+	if ( endPos ) {
+		range.endContainer = endPos.node;
+		range.endOffset = endPos.offset;
+	}
+	
+	return range;
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	/**
 	 * Implements Selection http://html5.org/specs/dom-range.html#selection
 	 * @namespace Aloha
@@ -2355,6 +3189,13 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		},
 		
 		/**
+		 * NB!
+		 * We have serious problem in IE.
+		 * The range that we get in IE is not the same as the range we had set,
+		 * so even if we normalize it during getRangeAt, in IE, we will be
+		 * correcting the range to the "correct" place, but still not the place
+		 * where it was originally set.
+		 * 
 		 * Returns the given range.
 		 * The getRangeAt(index) method returns the indexth range in the list. 
 		 * NOTE: Aloha Editor only support 1 range! index can only be 0
@@ -2364,12 +3205,12 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		 * @return Range return the selected range from index
 		 */
 		getRangeAt: function (index) {
-			
 			return correctRange( this._nativeSelection.getRangeAt( index ) );
-//			if ( index < 0 || this.rangeCount ) {
-//				throw "INDEX_SIZE_ERR DOM";
-//			}
-//			return this._ranges[index];
+
+			//if ( index < 0 || this.rangeCount ) {
+			//	throw "INDEX_SIZE_ERR DOM";
+			//}
+			//return this._ranges[index];
 		},
 		
 		/**
@@ -2377,7 +3218,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		 * The addRange(range) method adds the given range Range object to the list of
 		 * selections, at the end (so the newly added range is the new last range). 
 		 * NOTE: Aloha Editor only support 1 range! The added range will replace the 
-		 * range at with index 0
+		 * range at index 0
 		 * see http://html5.org/specs/dom-range.html#selection note about addRange
 		 * @throws an INVALID_NODE_TYPE_ERR exception if the given Range has a boundary point
 		 * node that's not a Text or Element node, and an INVALID_MODIFICATION_ERR exception 
@@ -2387,7 +3228,11 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		 */ 
 		addRange: function( range ) {
 			// set readonly attributes
-			this._nativeSelection.addRange(  correctRange(range) );
+			this._nativeSelection.addRange( range );
+			// We will correct the range after rangy has processed the native
+			// selection range, so that our correct will be the final fix on
+			// the range according to the guarentee's that Aloha wants
+			this._nativeSelection._ranges[ 0 ] = correctRange( range );
 		},
 		
 		/**
@@ -2414,7 +3259,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		 * being triggered
 		 * @param flag boolean defines weather to update the selection on change or not
 		 */
-		preventedChange : function( flag ) {
+		preventedChange: function( flag ) {
 //			this.preventChange = typeof flag === 'undefined' ? false : flag;
 		},
 
@@ -2424,7 +3269,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		 * @return boolean true if aloha-selection-change event
 		 *         was prevented
 		 */
-		isChangedPrevented : function() {
+		isChangedPrevented: function() {
 //			return this.preventSelectionChangedFlag;
 		},
 
@@ -2440,7 +3285,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		 *         otherwise
 		 * @hide
 		 */
-		refresh : function(event) {
+		refresh: function(event) {
 
 		},
 
@@ -2450,7 +3295,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		 * @return "Aloha.Selection"
 		 * @hide
 		 */
-		toString : function() {
+		toString: function() {
 			return 'Aloha.Selection';
 		},
 		

@@ -55,14 +55,6 @@
           </a>
           <hr style="clear:both;">
           <dl class="L">
-    <dt>Contributing to Aloha Editor</dt>
-      <dd>Development Process</dd>
-      <dd><a href="style_guide.html">Javascript Style Guide</a></dd>
-      <dd><a href="documentation_guidelines.html">Documentation Guidelines</a></dd>
-    <dt>Plugins</dt>
-      <dd><a href="plugin_block.html">Block</a></dd>
-      <dd>Image</dd>
-      <dd><a href="plugin_contenthandler.html">Content Handler</a></dd>
     <dt>Start Here</dt>
       <dd><a href="using_aloha.html">Using Aloha Editor</a></dd>
       <dd><a href="develop_aloha.html">Developing and building Aloha Editor</a></dd>
@@ -70,6 +62,14 @@
       <dd><a href="writing_plugins.html">Writing Plugins</a></dd>
 </dl>
 <dl class="R">
+    <dt>Plugins</dt>
+      <dd><a href="plugin_block.html">Block</a></dd>
+      <dd>Image</dd>
+      <dd><a href="plugin_contenthandler.html">Content Handler</a></dd>
+    <dt>Contributing to Aloha Editor</dt>
+      <dd>Development Process</dd>
+      <dd><a href="style_guide.html">Javascript Style Guide</a></dd>
+      <dd><a href="documentation_guidelines.html">Documentation Guidelines</a></dd>
 </dl>
 
 
@@ -117,7 +117,7 @@
 <pre class="brush: javascript; gutter: false; toolbar: false">
 
 	Aloha.settings.contentHandler: {
-		insertHtml: [ 'generic', 'oembed', 'word', 'sanitize' ],
+		insertHtml: [ 'word', 'generic', 'oembed', 'sanitize' ],
 		initEditable: [ 'sanitize' ],
 		sanitize: 'relaxed' // relaxed, restricted, basic,
 		allows: {
@@ -140,6 +140,7 @@
 		}
 	}
 </pre></div><p>For the sanitize Content Handler you can use a predefined set of allowed <span class="caps">HTML</span>-tags and attributes (&#8220;sanitize&#8221; option) or your own set defined as &#8220;allows&#8221; option. The configuration option for &#8220;insertHtml&#8221; and &#8220;initEditable&#8221; defines which Content Handler should be used at that hook points. &#8220;initEditable&#8221; uses the &#8220;sanitize&#8221; Content Handler by default. &#8220;insertHtml&#8221; uses all registered Content Handler by default (including the Content Handler from other Plugins)</p>
+<div class="warning"><p>The order how the handlers are loaded and executed is important. If you first load the &#8220;sanitize&#8221; or &#8220;generic&#8221; handler the &#8220;word&#8221; handler will not be able to detect a MS Word document.</p></div>
 <h3 id="apis-and-extension-points">3 APIs and Extension Points</h3>
 <p>There is the Content Handler Manager in Aloha Core available where Content Handler can register themself.</p>
 <h4 id="writing-your-own-content-handler">3.1 Writing your own Content Handler</h4>

@@ -124,7 +124,10 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, C
 		 */
 		init: function(){
 			var me = this;
-
+			
+			// TODO make editables their own settings.
+			this.settings = Aloha.settings; 
+				
 			// smartContentChange settings
 			if (Aloha.settings && Aloha.settings.smartContentChange) {
 				if (Aloha.settings.smartContentChange.delimiters) {
