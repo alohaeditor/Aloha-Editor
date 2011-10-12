@@ -200,6 +200,9 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, console) {
 			Aloha.bind('aloha-selection-changed', function(event, rangeObject) {
 				var config, foundMarkup;
 
+				// Check if we need to ignore this selection changed event for
+				// now and check whether the selection was placed within a
+				// editable area.
 				if ( ! that.ignoreNextSelectionChangedEvent && Aloha.Selection.isSelectionEditable() ) {
 					
 					// show/hide the button according to the configuration
