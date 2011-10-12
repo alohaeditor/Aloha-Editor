@@ -1,6 +1,6 @@
 /*!
 * This file is part of Aloha Editor Project http://aloha-editor.org
-* Copyright � 2010-2011 Gentics Software GmbH, aloha@gentics.com
+* Copyright © 2010-2011 Gentics Software GmbH, aloha@gentics.com
 * Contributors http://aloha-editor.org/contribution.php 
 * Licensed unter the terms of http://www.aloha-editor.org/license.html
 *//*
@@ -213,7 +213,7 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, C
 
 				// apply content handler to clean up content
 				var content = me.obj.html();
-				if (Aloha.settings.contentHandler && Aloha.settings.contentHandler.initEditable === 'undefined') {
+				if ( typeof Aloha.settings.contentHandler.initEditable === 'undefined') {
 					Aloha.settings.contentHandler.initEditable = Aloha.defaults.contentHandler.initEditable;
 				}
 				content = ContentHandlerManager.handleContent( content, { contenthandler: Aloha.settings.contentHandler.initEditable } );
