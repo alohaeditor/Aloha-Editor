@@ -82,6 +82,7 @@ function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 		    this.abbrField = new Aloha.ui.AttributeField({
 		    	'width':320
 		    });
+			
 		    // add the input field for abbr
 		    FloatingMenu.addButton(
 		        'abbr',
@@ -89,7 +90,23 @@ function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 		        i18n.t('floatingmenu.tab.abbr'),
 		        1
 		    );
-
+			
+			// remove Abbr
+			//TODO: Set suitable icon for remove abbr. Maybe a new icon should be added into base.png sprite
+		    this.removeButton = new Aloha.ui.Button({
+		        'iconClass' : 'aloha-button aloha-button-abbr',
+		        'size' : 'small',
+		        'onclick' : function () { me.removeAbbr( false ); },
+		        'tooltip' : i18n.t('button.removeabbr.tooltip'),
+		        'toggle' : false
+		    });
+			
+			FloatingMenu.addButton(
+		        'abbr',
+		        this.removeButton,
+		        i18n.t('floatingmenu.tab.abbr'),
+		        1
+		    );
 		},
 
 		/**
