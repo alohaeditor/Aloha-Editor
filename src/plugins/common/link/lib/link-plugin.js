@@ -515,8 +515,13 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, console) {
 				// remove the link
 				GENTICS.Utils.Dom.removeFromDOM(foundMarkup, range, true);
 
+				range.startContainer = range.endContainer;
+				range.startOffset = range.endOffset;
+
 				// select the (possibly modified) range
 				range.select();
+				FloatingMenu.setScope('Aloha.continuoustext');
+
 			}
 		},
 
