@@ -18,8 +18,8 @@
 * along with CommandManager program. If not, see <http://www.gnu.org/licenses/>.
 */
 "use strict";
-define( [ 'aloha/core', 'aloha/registry', 'aloha/engine', 'util/dom' ],
-function( Aloha, Registry, Engine, Dom ) {
+define( [ 'aloha/core', 'aloha/registry', 'aloha/engine', 'util/dom', 'aloha/contenthandlermanager' ],
+function( Aloha, Registry, Engine, Dom, ContentHandlerManager ) {
 
 //			Action: What the command does when executed via execCommand(). Every command defined
 //			in CommandManager specification has an action defined for it in the relevant section. For example, 
@@ -73,6 +73,16 @@ function( Aloha, Registry, Engine, Dom ) {
 				}
 				range = Aloha.getSelection().getRangeAt( 0 );
 			}
+			
+			// at insertHTML we provide contenthandler
+			if ( commandId == 'insertHTML' ) {
+				if (typeof Aloha.settings.contentHandler.insertHtml === 'undefined') {
+				//	write log message
+				//	Aloha.settings.contentHandler.insertHtml = Aloha.defaults.contentHandler.insertHtml;
+				}
+				value = ContentHandlerManager.handleContent( value, { contenthandler: Aloha.settings.contentHandler.insertHtml } );
+			}
+
 			Engine.execCommand( commandId, showUi, value, range );
 			
 			// Read range after engine modification
