@@ -76,10 +76,10 @@ function( Aloha, Registry, Engine, Dom, ContentHandlerManager ) {
 			
 			// at insertHTML we provide contenthandler
 			if ( commandId == 'insertHTML' ) {
-				if (typeof Aloha.settings.contentHandler.insertHtml === 'undefined') {
+				//if (typeof Aloha.settings.contentHandler.insertHtml === 'undefined') {
 				//	write log message
 				//	Aloha.settings.contentHandler.insertHtml = Aloha.defaults.contentHandler.insertHtml;
-				}
+				//}
 				value = ContentHandlerManager.handleContent( value, { contenthandler: Aloha.settings.contentHandler.insertHtml } );
 			}
 

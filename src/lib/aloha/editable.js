@@ -213,7 +213,7 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, C
 
 				// apply content handler to clean up content
 				var content = me.obj.html();
-				if (Aloha.settings.contentHandler && Aloha.settings.contentHandler.initEditable === 'undefined') {
+				if ( typeof Aloha.settings.contentHandler.initEditable === 'undefined') {
 					Aloha.settings.contentHandler.initEditable = Aloha.defaults.contentHandler.initEditable;
 				}
 				content = ContentHandlerManager.handleContent( content, { contenthandler: Aloha.settings.contentHandler.initEditable } );
