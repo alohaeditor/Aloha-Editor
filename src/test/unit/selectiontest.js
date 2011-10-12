@@ -301,9 +301,9 @@ function( TestUtils ) {
 			
 */
 			
-			[ '<p>{foo}</p>', '<p>[foo]</p>' ],
-			[ '<p>foo{}</p>', '<p>foo[]</p>' ],
-			[ '<p>foo{</p>}', '<p>foo[]</p>' ],
+			// [ '<p>{foo}</p>', '<p>[foo]</p>' ],
+			// [ '<p>foo{}</p>', '<p>foo[]</p>' ],
+			// [ '<p>foo{</p>}', '<p>foo[]</p>' ],
 			[ '{<b></b><p>}foo</p>', '<b></b><p>[]foo</p>' ],
 			[ '{<p><b></b></p><p>}foo</p>', '<p><b></b></p><p>[]foo</p>' ],
 			[ '<p>{}foo</p>', '<p>[]foo</p>' ],

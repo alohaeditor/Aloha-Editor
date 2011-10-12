@@ -2779,17 +2779,21 @@ function getStartPosition ( container, offset ) {
 				container.childNodes[ offset ], offset
 			);
 		}
-		
-		// We have a non-block level element
-		return getStartPositionFromFrontOfInlineNode (
-			container.childNodes[ offset ], offset
-		);
-		
+	}
+	
+	debugger;
+	
+	if ( isTextNode( container ) ) {
 		return {
 			node   : container,
 			offset : offset
 		};
 	}
+	
+	// We have a non-block level element
+	return getStartPositionFromFrontOfInlineNode (
+		container.childNodes[ offset ], offset
+	);
 };
 
 function getEndPosition ( container, offset ) {
@@ -2818,6 +2822,13 @@ function getEndPosition ( container, offset ) {
 				container.childNodes[ offset ], offset
 			);
 		}
+	}
+	
+	if ( isTextNode( container ) ) {
+		return {
+			node   : container,
+			offset : offset
+		};
 	}
 	
 	// We have a non-block level element
