@@ -2768,20 +2768,16 @@ function getStartPosition ( container, offset ) {
 		// block element, and we will therefore try and place our end position
 		// somewhere backwards.
 		if ( offset == getNodeLength( container ) ) {
-			console.log( 1 );
 			return getStartPositionFromEndOfBlockNode( container, offset );
 		}
 		
 		// The offset is somewhere before the end of the container, therefore
 		// check if the node at offset index is a block element.
 		if ( isBlockElement( container.childNodes[ offset ] ) ) {
-			console.log( 2 );
 			return getStartPositionFromFrontOfBlockNode(
 				container.childNodes[ offset ], offset
 			);
 		}
-		
-		console.log( 3 );
 		
 		return {
 			node   : container,
@@ -2832,7 +2828,7 @@ function getStartPositionFromFrontOfBlockNode ( node, offset ) {
 	// If the left neighbor of this node is a block element, we are not
 	// permitted to explorer anywhere left of our current position to
 	// find a new landing position. Our only option in to go right.
-	if ( isBlockElement( getLeftNeighbor( node ) ) || !node.previousSibling ) {
+	if ( !node.previousSibling || isBlockElement( getLeftNeighbor( node ) ) ) {
 		stop = getLeftmostScion( node );
 		
 		while ( stop && stop.nodeType != Node.TEXT_NODE ) {
@@ -2993,7 +2989,7 @@ function getEndPositionFromFrontOfBlockNode ( node, offset ) {
 	//
 	// We check if there is no previousSibling in order to satisfy this:
 	// '[foo<div>}<p>bar</p></div>', '[foo<div><p>}bar</p></div>'
-	if ( isBlockElement( getLeftNeighbor( node ) ) || !node.previousSibling ) {
+	if ( !node.previousSibling || isBlockElement( getLeftNeighbor( node ) ) ) {
 		stop = node;
 		
 		while ( stop && getNodeLength( stop ) == 0 ) {
