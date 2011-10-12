@@ -2757,95 +2757,64 @@ function getStartPosition ( container, offset ) {
 		return null;
 	}
 	
+	// Should we just throw an INDEX_SIZE_ERR exception
+	offset = sanitizeOffset( container, offset );
+	
 	if ( isBlockElement( container ) ) {
-		// Out of bounds sanity check.
-		// Should we throw an error?
-		if ( offset > container.childNodes.length ) {
-			return {
-				node   : container,
-				offset : offset
-			};
-		}
-		
-		var stop;
-		
-		// We either have an empty container, or else the offset is positioned
-		// at the very end of the container--after the last node. We therefore
-		// have the case where we are in front the closing tag of a flow node,
-		// and we will therefore try and move backwards into the tree
-		if ( offset == container.childNodes.length ) {
-			stop = getRightmostScion( container );
-			if ( stop ) {
-				return {
-					node   : stop,
-					offset : getNodeLength( stop )
-				};
-			}
-			
-			// There is no child nodes inside of container, so contract the
-			// selection rightwards
-			stop = getNearestRightNode( container );
-			if ( stop ) {
-				return {
-					node   : stop,
-					offset : 0
-				};
-			}
-			
-			return {
-				node   : container,
-				offset : offset
-			};
+		// If the offset is equal to the container's length, then either we
+		// are positioned in an empty container, or else the offset is
+		// positioned at the very end of the container--after the last node
+		// child node. In either case, we are in front of the closing tag of a
+		// block element, and we will therefore try and place our end position
+		// somewhere backwards.
+		if ( offset == getNodeLength( container ) ) {
+			console.log( 1 );
+			return getStartPositionFromEndOfBlockNode( container, offset );
 		}
 		
 		// The offset is somewhere before the end of the container, therefore
-		// check if the node at index offset is a block element.
-		var node = container.childNodes[ offset ];
+		// check if the node at offset index is a block element.
+		if ( isBlockElement( container.childNodes[ offset ] ) ) {
+			console.log( 2 );
+			return getStartPositionFromFrontOfBlockNode(
+				container.childNodes[ offset ], offset
+			);
+		}
 		
-		if ( isBlockElement( node ) ) {
-			// We can only move the start position to the left, if there left
-			// neighbor is not a block node
-			if ( !isBlockElement( getLeftNeighbor( node ) ) ) {
-				// Get the nearest text node to the left of the start position
-				stop = getNearestLeftNode( node, isTextNode );
-				
-				// We found a text node. We therefore have one of the following
-				// situations (where "foo" represents out text node):
-				// foo<b>bar</b>	    correct to foo[<b>bar</b>
-				// <i>foo</i><b>bar</b> correct to <i>foo[</i><b>bar</b>
-				// foo<i></i><b>bar</b> correct to foo<i>{</i><b>bar</b>
-				if ( stop && isTextNode( stop ) ) {
-					// case: foo<i></i><b>bar</b>
-					if ( getRightNeighbor( stop ) != node ) {
-						stop = getNearestLeftNode( node );
-					}
-					
-					return {
-						node   : stop,
-						offset : getNodeLength( stop )
-					};
-				}
-			}
-			
-			// We found no text node to the left of our start position.
-			// Without a text node to land on, we cannot expand the selection
-			// to the left, so we will collapse the collection instead, by
-			// moving the start position to the nearest text node to the right
-			// {<p><b></b>foo]</p> => <p><b></b>[foo]</p>
-			stop = getLeftmostScion( node );
-			while ( stop && stop.nodeType != Node.TEXT_NODE ) {
-				stop = getNearestRightNode( stop );
-			}
-			
-			if ( stop ) {
-				return  {
-					node   : stop,
-					offset : 0
-				};
-			}
-			
-			// We found to text node to land on, return the original start
-			// position ...
+		console.log( 3 );
+		
+		return {
+			node   : container,
+			offset : offset
+		};
+	}
+};
+
+function getEndPosition ( container, offset ) {
+	if ( !container ) {
+		return null;
+	}
+	
+	// Should we just throw an INDEX_SIZE_ERR exception
+	offset = sanitizeOffset( container, offset );
+	
+	if ( isBlockElement( container ) ) {
+		// If the offset is equal to the container's length, then either we
+		// are positioned in an empty container, or else the offset is
+		// positioned at the very end of the container--after the last node
+		// child node. In either case, we are in front of the closing tag of a
+		// block element, and we will therefore try and place our end position
+		// somewhere backwards.
+		if ( offset == getNodeLength( container ) ) {
+			return getEndPositionFromEndOfBlockNode( container, offset );
+		}
+		
+		// The offset is somewhere after the start of the container, therefore
+		// check if the node at offset index is a block element.
+		if ( isBlockElement( container.childNodes[ offset ] ) ) {
+			return getEndPositionFromFrontOfBlockNode(
+				container.childNodes[ offset ], offset
+			);
 		}
 		
 		return {
@@ -2853,6 +2822,98 @@ function getStartPosition ( container, offset ) {
 			offset : offset
 		};
 	}
+	
+	// TODO: Handle non-block level elements
+};
+
+function getStartPositionFromFrontOfBlockNode ( node, offset ) {
+	var stop;
+	
+	// If the left neighbor of this node is a block element, we are not
+	// permitted to explorer anywhere left of our current position to
+	// find a new landing position. Our only option in to go right.
+	if ( isBlockElement( getLeftNeighbor( node ) ) || !node.previousSibling ) {
+		stop = getLeftmostScion( node );
+		
+		while ( stop && stop.nodeType != Node.TEXT_NODE ) {
+			stop = getNearestRightNode( stop );
+		}
+		
+		if ( stop ) {
+			return  {
+				node   : stop,
+				offset : 0
+			};
+		}
+	}
+	
+	// Get the nearest text node to the left of the start position. If we find
+	// a text node. We therefore had one of the following start positions (where
+	// "foo" represents out text node):
+	// foo{<p>bar]</p> corrects to foo[<p>bar]</p>
+	// <b>foo</b>{<p>bar]</p> corrects to <b>foo[</b><p>bar]</p>
+	// foo<b></b>{<p>bar</p> correct to foo<b>{</b><p>bar]</p>
+	stop = getNearestLeftNode( node, isTextNode );
+	if ( stop ) {
+		// Satisfies:
+		// [ 'foo<b></b>{<p>bar]</p>', 'foo<b>{</b><p>bar]</p>' ]
+		if ( getRightNeighbor( stop ) != node ) {
+			stop = getNearestLeftNode( node );
+		}
+		
+		return {
+			node   : stop,
+			offset : getNodeLength( stop )
+		};
+	}
+	
+	// We found no text node to the left of our start position.
+	// Without a text node to land on, we cannot expand the selection to the
+	// left, so we will contract the selection instead, by moving the start
+	// position to the nearest text node to the right.
+	// Satisfies:
+	// [ '<p><b></b>foo]</p>', '<p><b></b>[foo]</p>' ]
+	stop = getLeftmostScion( node, isTextNode );
+	if ( stop ) {
+		return  {
+			node   : stop,
+			offset : 0
+		};
+	}
+	
+	// We found to text node to land on, return the original start
+	// position ...
+	return {
+		node   : stop,
+		offset : offset
+	};
+};
+
+function getStartPositionFromEndOfBlockNode ( node , offset ) {
+	var stop;
+	
+	stop = getRightmostScion( node );
+	if ( stop ) {
+		return {
+			node   : stop,
+			offset : getNodeLength( stop )
+		};
+	}
+	
+	// There is no child nodes inside of the container node, so contract the
+	// selection rightwards
+	stop = getNearestRightNode( node );
+	if ( stop ) {
+		return {
+			node   : stop,
+			offset : 0
+		};
+	}
+	
+	return {
+		node   : node,
+		offset : offset
+	};
 };
 
 /**
@@ -2867,7 +2928,7 @@ function getStartPosition ( container, offset ) {
  *   [ '[foo<div><p><u></u></p>}</div>', '[foo]<div><p><u></u></p></div>' ],
  *   [ '[foo<div><p>bar<u></u></p>}</div>', '[foo<div><p>bar]<u></u></p></div>' ]
  */
-function getPositionFromEndOfBlockNode ( node, offset ) {
+function getEndPositionFromEndOfBlockNode ( node, offset ) {
 	var stop;
 	
 	// Satisfies
@@ -2919,7 +2980,7 @@ function getPositionFromEndOfBlockNode ( node, offset ) {
  * '<p>[foo</p><p>}bar</p>' and Internet Explorer will always convert this to
  * '<p>[foo]</p><p>bar</p>'
  */
-function getPositionFromFrontOfBlockNode ( node, offset ) {
+function getEndPositionFromFrontOfBlockNode ( node, offset ) {
 	var stop;
 	
 	// If the left neighbor of this node is a block element, we are not
@@ -2991,42 +3052,8 @@ function sanitizeOffset ( node, offset ) {
 	return offset;
 };
 
-function getEndPosition ( container, offset ) {
-	if ( !container ) {
-		return null;
-	}
-	
-	// Should we just throw an INDEX_SIZE_ERR exception
-	offset = sanitizeOffset( container, offset );
-	
-	if ( isBlockElement( container ) ) {
-		// If the offset is equal to the container's length, then either we
-		// are positioned in an empty container, or else the offset is
-		// positioned at the very end of the container--after the last node
-		// child node. In either case, we are in front of the closing tag of a
-		// block element, and we will therefore try and place our end position
-		// somewhere backwards.
-		if ( offset == getNodeLength( container ) ) {
-			return getPositionFromEndOfBlockNode( container, offset );
-		}
-		
-		// The offset is somewhere after the start of the container, therefore
-		// check if the node at offset index is a block element.
-		if ( isBlockElement( container.childNodes[ offset ] ) ) {
-			return getPositionFromFrontOfBlockNode(
-				container.childNodes[ offset ], offset
-			);
-		}
-		
-		return {
-			node   : container,
-			offset : offset
-		};
-	}
-};
-
 function correctRange ( range ) {
-	// return range;
+	//return range;
 	
 	var startContainer = range.startContainer,
 	    startOffset = range.startOffset,
@@ -3036,8 +3063,6 @@ function correctRange ( range ) {
 		range.startContainer = startPos.node;
 		range.startOffset = startPos.offset;
 	}
-	
-	//debugger;
 	
 	var endContainer = range.endContainer,
 	    endOffset = range.endOffset,

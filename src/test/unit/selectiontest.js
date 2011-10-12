@@ -141,7 +141,7 @@ function( TestUtils ) {
         ],
         flowTests = [
 			
-/*
+//*
 
 			//
 			//		Tests for start position
@@ -163,7 +163,7 @@ function( TestUtils ) {
 			[ '<b></b>{<p>foo]</p>', '<b></b><p>[foo]</p>' ],
 			// Had to travel farther, but still found left neighbor at which to
 			// reposition our start position
-			[ 'foo<b></b>{<p>bar]</p>', 'foo<b>{</b><p>bar]</p>' ], // wierd. should be 'foo[<b></b><p>bar]</p>'
+			[ 'foo<b></b>{<p>bar]</p>', 'foo<b>{</b><p>bar]</p>' ], // weird. should be 'foo[<b></b><p>bar]</p>'
 			// Useless empty left neighbors, so we contract selection
 			[ '<b><b></b></b>{<p>bar]</p>', '<b><b></b></b><p>[bar]</p>' ],
 			// Had to travel even farther left, but can expand selection to the
@@ -175,7 +175,7 @@ function( TestUtils ) {
 			[ '<u><i>foo</i></u><b></b>{<p>bar]</p>', '<u><i>foo</i></u><b>{</b><p>bar]</p>' ], // wierd
 			// Looking for left neighbors even if we are nested
 			[ 'foo{<div><p>bar]</p></div>', 'foo[<div><p>bar]</p></div>' ],
-			[ '<i>foo</i>{<div><p>bar]</p></div>', '<i>foo[</i><div><p>bar]</p></div>' ]
+			[ '<i>foo</i>{<div><p>bar]</p></div>', '<i>foo[</i><div><p>bar]</p></div>' ],
 			
 			// We have a block element to the left of our start position, we
 			// therefore move the start position to the right instead
@@ -193,9 +193,9 @@ function( TestUtils ) {
 			[ '<p>{</p><p>foo]</p>', '<p></p><p>[foo]</p>' ],
 			[ 'foo<p>{</p><p>bar]</p>', 'foo<p></p><p>[bar]</p>' ],
 			[ '<div><p>{</p></div><p>bar]</p>', '<div><p></p></div><p>[bar]</p>' ],
-			[ '<div><p><b>foo</b>{</p></div><p>bar]</p>', '<div><p><b>foo[</b></p></div><p>bar]</p>' ],
-
-*/
+			[ '<div><p><b>foo</b>{</p></div><p>bar]</p>', '<div><p><b>foo[</b></p></div><p>bar]</p>' ]
+			
+//*/
 
 /*
 
@@ -226,15 +226,15 @@ function( TestUtils ) {
 
 */
 
-//*
+/*
 			
 			//
 			//		Tests for end position
 			//		In front of block elements start node
 			//		With block element to left of position
-			//
-			//		Our implementation will diviate from WebKit, which is
-			//		otherwise our standard
+			//		Functions:
+			//			getEndPosition
+			//			getPositionFromFrontOfBlockNode
 			//
 
 			// WE CHANGED OUT MIND WE ARE GOING WITH WEBKIT STYLE:
@@ -271,7 +271,7 @@ function( TestUtils ) {
 			[ '<div><p>[foo</p>}<p></p></div>bar', '<div><p>[foo]</p><p></p></div>bar' ],
 			[ '<p>[foo</p>}<p></p>', '<p>[foo]</p><p></p>' ]
 
-//*/
+*/
 
 /*
 
@@ -300,23 +300,23 @@ function( TestUtils ) {
 
 */
 			
-//			[ '{<p></p>}', '{}<p></p>' ],
-//			[ '[foo<p></p>}', '[foo]<p></p>' ],
-//			[ '[foo<p></p>}', '[foo]<p></p>' ],
-//			[ '[foo<div><p></p></div>}', '[foo]<div><p></p></div>' ],
-//			[ '[foo<div><p><u></u></p></div>}', '[foo]<div><p><u></u></p></div>' ],
-
-//			[ '<p>[foo</p><p>bar]</p><p>baz</p>', '<p>[foo</p><p>bar]</p><p>baz</p>' ],
-//			[ '<p>[foo</p><p>]bar</p><p>baz</p>', '<p>[foo</p><p>}bar</p><p>baz</p>' ],
-//			[ '<p>foo[</p><p>]bar</p><p>baz</p>', '<p>foo[</p><p>}bar</p><p>baz</p>' ],
-			
-//			[ '<p>foo</p>test{<p>bar</p>}<p>baz</p>', '<p>foo</p>test<p>[bar</p><p>}baz</p>' ],
-//			[ '<p>foo{</p><p>bar}</p><p>baz</p>', '<p>foo[</p><p>bar]</p><p>baz</p>' ],
-//			[ '<p>foo</p>{<p>bar}</p><p>baz</p>', '<p>foo</p><p>[bar]</p><p>baz</p>' ],
-//			[ '<p>foo</p><p>{bar}</p><p>baz</p>', '<p>foo</p><p>[bar]</p><p>baz</p>' ],
-//			[ '<p>foo</p><p>{bar</p>}<p>baz</p>', '<p>foo</p><p>[bar</p><p>}baz</p>' ],
-//			[ '<p>foo</p><p>{bar</p><p>}baz</p>', '<p>foo</p><p>[bar</p><p>}baz</p>' ]
+			// [ '{<p></p>}', '{}<p></p>' ],
+			// [ '[foo<p></p>}', '[foo]<p></p>' ],
+			// [ '[foo<div><p></p></div>}', '[foo]<div><p></p></div>' ],
+			// [ '[foo<div><p><u></u></p></div>}', '[foo]<div><p><u></u></p></div>' ],
             // 
+			// [ '<p>[foo</p><p>bar]</p><p>baz</p>', '<p>[foo</p><p>bar]</p><p>baz</p>' ],
+			// [ '<p>[foo</p><p>]bar</p><p>baz</p>', '<p>[foo</p><p>}bar</p><p>baz</p>' ],
+			// [ '<p>foo[</p><p>]bar</p><p>baz</p>', '<p>foo[</p><p>}bar</p><p>baz</p>' ],
+		    // 
+			// [ '<p>foo</p>test{<p>bar</p>}<p>baz</p>', '<p>foo</p>test<p>[bar</p><p>}baz</p>' ],
+			// [ '<p>foo{</p><p>bar}</p><p>baz</p>', '<p>foo[</p><p>bar]</p><p>baz</p>' ],
+			// [ '<p>foo</p>{<p>bar}</p><p>baz</p>', '<p>foo</p><p>[bar]</p><p>baz</p>' ],
+			// [ '<p>foo</p><p>{bar}</p><p>baz</p>', '<p>foo</p><p>[bar]</p><p>baz</p>' ],
+			// [ '<p>foo</p><p>{bar</p>}<p>baz</p>', '<p>foo</p><p>[bar</p><p>}baz</p>' ],
+			//
+			//[ '<p>foo</p><p>{bar</p><p>}baz</p>', '<p>foo</p><p>[bar</p><p>}baz</p>' ]
+			//
             // [ 'foo<p>{<i><u><b>bar}</b></u></i></p>baz', 'foo<p><i><u><b>[bar]</b></u></i></p>baz' ],
             // [ 'foo<p>{<i></i><u><b>bar}</b></u></p>baz', 'foo<p><i></i><u><b>[bar]</b></u></p>baz' ],
             // [ 'foo<p>{<i><br><b>bar}</b></i></p>baz', 'foo<p><i>{<br><b>bar]</b></i></p>baz' ],
@@ -331,6 +331,8 @@ function( TestUtils ) {
         ],
         flowHostTests = [         
 
+/*
+
             [ '<div>foo[</div><hr><div>]baz</div>', '<div>foo[</div><hr><div>}baz</div>' ],
             [ '<div>foo[</div><hr><div>}baz</div>', '<div>foo[</div><hr><div>}baz</div>' ],
             [ '<div>foo[</div><hr>}<div>baz</div>', '<div>foo[</div><hr><div>}baz</div>' ],
@@ -338,14 +340,20 @@ function( TestUtils ) {
             [ '<div>foo{</div><hr><div>]baz</div>', '<div>foo[</div><hr><div>}baz</div>' ],
             [ '<div>foo</div>{<hr><div>]baz</div>', '<div>foo</div>{<hr><div>}baz</div>' ],
             [ '<div>foo</div><hr>{<div>]baz</div>', '<div>foo</div><hr><div>[]baz</div>' ],
-            
-            [ 'foo{<div><div><div><div>bar}</div></div></div></div>baz', 'foo[<div><div><div><div>bar]</div></div></div></div>baz' ],
-            [ 'foo<div><div>{<div><div>bar}</div></div></div></div>baz', 'foo<div><div><div><div>[bar]</div></div></div></div>baz' ],
-            [ 'foo{<div><div><div><div>}bar</div></div></div></div>baz', 'foo[<div><div><div><div>}bar</div></div></div></div>baz' ],
-            [ 'foo<div><div>{<div><div>}bar</div></div></div></div>baz', 'foo<div><div><div><div>[]bar</div></div></div></div>baz' ],
-            [ 'foo{<div><div><div><div>]bar</div></div></div></div>baz', 'foo[<div><div><div><div>}bar</div></div></div></div>baz' ],
-            [ 'foo<div><div>{<div><div>]bar</div></div></div></div>baz', 'foo<div><div><div><div>[]bar</div></div></div></div>baz' ],
-            [ 'foo<div>{<div><br><div><div>bar}</div></div></div></div>baz', 'foo<div><div>{<br><div><div>bar]</div></div></div></div>baz' ],
+
+*/
+			
+			[ 'foo{<div><div>bar]</div></div>', 'foo[<div><div>bar]</div></div>' ],
+			[ 'foo<div>{<div>bar]</div></div>', 'foo<div><div>[bar]</div></div>' ]
+			
+            // [ 'foo{<div><div><div><div>bar}</div></div></div></div>baz', 'foo[<div><div><div><div>bar]</div></div></div></div>baz' ],
+            // [ 'foo<div><div>{<div><div>bar}</div></div></div></div>baz', 'foo<div><div><div><div>[bar]</div></div></div></div>baz' ],
+            // [ 'foo{<div><div><div><div>}bar</div></div></div></div>baz', 'foo[<div><div><div><div>}bar</div></div></div></div>baz' ],
+            // [ 'foo<div><div>{<div><div>}bar</div></div></div></div>baz', 'foo<div><div><div><div>[]bar</div></div></div></div>baz' ],
+            // [ 'foo{<div><div><div><div>]bar</div></div></div></div>baz', 'foo[<div><div><div><div>}bar</div></div></div></div>baz' ],
+            // [ 'foo<div><div>{<div><div>]bar</div></div></div></div>baz', 'foo<div><div><div><div>[]bar</div></div></div></div>baz' ],
+            // [ 'foo<div>{<div><br><div><div>bar}</div></div></div></div>baz', 'foo<div><div>{<br><div><div>bar]</div></div></div></div>baz' ]
+			
         ],
         // dl, dd, dt not covered by tests
         // http://www.w3.org/wiki/HTML_lists#Nesting_lists
@@ -468,9 +476,9 @@ function( TestUtils ) {
             
             flowTests, // <p>
             
-            //flowHostTests, // flow elements host
+            // flowHostTests, // flow elements host
             
-            //listTests,
+            // listTests,
             
             [] // I am here to prevent trailing commas and make your life easier :D
         );
