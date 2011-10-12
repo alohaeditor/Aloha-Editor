@@ -10,7 +10,6 @@ define(
 function( Aloha, jQuery, Plugin) {
 	"use strict";
 	var
-		GENTICS = window.GENTICS,
 	    dmp = new diff_match_patch,
 	    resetFlag = false;
 
@@ -28,12 +27,6 @@ function( Aloha, jQuery, Plugin) {
 	 * register the plugin with unique name
      */
 	return Plugin.create('undo', {
-
-		/**
-		 * Configure the available languages
-		 */
-//		languages: ['en', 'de'],
-
 		/**
 		 * Initialize the plugin and set initialize flag on true
 		 */
@@ -115,7 +108,7 @@ function( Aloha, jQuery, Plugin) {
 				}
 			});
 
-			Aloha.bind('alohaSmartContentChanged', function(jevent, aevent) {
+			Aloha.bind('aloha-smart-content-changed', function(jevent, aevent) {
 				if (resetFlag) {
 					return;
 				}
