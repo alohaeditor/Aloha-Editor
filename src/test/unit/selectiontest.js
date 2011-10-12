@@ -141,8 +141,8 @@ function( TestUtils ) {
         ],
         flowTests = [
 			
-			/*
-			
+/*
+
 			//
 			//		Tests for start position
 			//		In front of block elements
@@ -187,13 +187,17 @@ function( TestUtils ) {
 			//		Tests for start position
 			//		At the end of block elements
 			//
-			
+
 			[ '<p>foo{</p><p>bar]</p>', '<p>foo[</p><p>bar]</p>' ],
 			[ '<p>foo[</p><p>bar]</p>', '<p>foo[</p><p>bar]</p>' ],
 			[ '<p>{</p><p>foo]</p>', '<p></p><p>[foo]</p>' ],
 			[ 'foo<p>{</p><p>bar]</p>', 'foo<p></p><p>[bar]</p>' ],
 			[ '<div><p>{</p></div><p>bar]</p>', '<div><p></p></div><p>[bar]</p>' ],
 			[ '<div><p><b>foo</b>{</p></div><p>bar]</p>', '<div><p><b>foo[</b></p></div><p>bar]</p>' ],
+
+*/
+
+/*
 
 			//
 			//		Tests for end position
@@ -218,9 +222,11 @@ function( TestUtils ) {
 			
 			
 			[ '[foo<div>}<p>bar</p></div>', '[foo<div><p>}bar</p></div>' ],
-			[ '<div><p>[foo</p></div><div>}<p>bar</p></div>', '<div><p>[foo</p></div><div><p>}bar</p></div>' ],
-			
-			*/
+			[ '<div><p>[foo</p></div><div>}<p>bar</p></div>', '<div><p>[foo</p></div><div><p>}bar</p></div>' ]
+
+*/
+
+//*
 			
 			//
 			//		Tests for end position
@@ -230,7 +236,8 @@ function( TestUtils ) {
 			//		Our implementation will diviate from WebKit, which is
 			//		otherwise our standard
 			//
-			
+
+			// WE CHANGED OUT MIND WE ARE GOING WITH WEBKIT STYLE:
 			// START Deviance from WebKit:
 			// For the following tests, our range normalization algorithm will
 			// diviate from WebKit conformance). We feel that it is safe to do
@@ -240,23 +247,48 @@ function( TestUtils ) {
 			// all cases, come from implementors programmatically manipulating
 			// the range. We therefore feel free to correct the range in the
 			// way that we feel would best reflect a user's expectation:
-			[ '<p>[foo</p>}<p>bar</p>', '<p>[foo]</p><p>bar</p>' ],					// WebKit corrects to: '<p>[foo</p><p>}bar</p>' 
-			[ '<p>[foo</p>}<p></p>bar', '<p>[foo]</p><p></p>bar' ],					// WebKit corrects to: '<p>[foo</p><p></p>]bar'
-			[ '<p>[foo</p>}<p><b></b>bar</p>', '<p>[foo]</p><p><b></b>bar</p>' ],	// WebKit corrects to: '<p>[foo</p><p>}<b></b>bar</p>'
-			[ '<p>[foo</p>}<p></p><p>bar</p>', '<p>[foo]</p><p></p><p>bar</p>' ],	// WebKit corrects to: '<p>[foo</p><p></p><p>}bar</p>'
-			[ '<p>[foo</p>}<p><b>bar</b></p>', '<p>[foo]</p><p><b>bar</b></p>' ],	// WebKit corrects to: '<p>[foo</p><p>}<b>bar</b></p>'
+//			[ '<p>[foo</p>}<p>bar</p>', '<p>[foo]</p><p>bar</p>' ],					// WebKit corrects to: '<p>[foo</p><p>}bar</p>' 
+//			[ '<p>[foo</p>}<p></p>bar', '<p>[foo]</p><p></p>bar' ],					// WebKit corrects to: '<p>[foo</p><p></p>]bar'
+//			[ '<p>[foo</p>}<p><b></b>bar</p>', '<p>[foo]</p><p><b></b>bar</p>' ],	// WebKit corrects to: '<p>[foo</p><p>}<b></b>bar</p>'
+//			[ '<p>[foo</p>}<p></p><p>bar</p>', '<p>[foo]</p><p></p><p>bar</p>' ],	// WebKit corrects to: '<p>[foo</p><p></p><p>}bar</p>'
+//			[ '<p>[foo</p>}<p><b>bar</b></p>', '<p>[foo]</p><p><b>bar</b></p>' ],	// WebKit corrects to: '<p>[foo</p><p>}<b>bar</b></p>'
+//			[ '[foo<p></p>}<p>bar</p>', '[foo]<p></p><p>bar</p>' ],					// WebKit corrects to: '[foo<p></p><p>}bar</p>'
+//			[ '[foo<p>bar<b>test</b></p>}<p>test</p>', '[foo<p>bar<b>test]</b></p><p>test</p>' ], // WebKit corrects to: '[foo<p>bar<b>test</b></p><p>}test</p>'
+//			[ '{<p></p>}<p>bar</p>', '{}<p></p><p>bar</p>' ],						// WebKit corrects to: '<p></p><p>[]bar</p>'
+//			[ '<b>[foo</b></p><div>}<p>bar</p></div>', '<b>[foo]</b><p></p><div><p>bar</p></div>' ] // WebKit corrects to: '<b>[foo</b><p></p><div>}<p>bar</p></div>'
 			// END Deviance from Webkit
 			
-			[ '<div><p>[foo</p>}<p></p></div>bar', '<div><p>[foo]</p><p></p></div>bar' ],
-			[ '<p>[foo</p>}<p></p>', '<p>[foo]</p><p></p>' ],
+			[ '<p>[foo</p>}<p>bar</p>', '<p>[foo</p><p>}bar</p>' ],
+			[ '<p>[foo</p>}<p></p>bar', '<p>[foo</p><p></p>]bar' ],
+			[ '<p>[foo</p>}<p><b></b>bar</p>', '<p>[foo</p><p>}<b></b>bar</p>' ],
+			[ '<p>[foo</p>}<p></p><p>bar</p>', '<p>[foo</p><p></p><p>}bar</p>' ],
+			[ '<p>[foo</p>}<p><b>bar</b></p>', '<p>[foo</p><p>}<b>bar</b></p>' ],
+			[ '[foo<p></p>}<p>bar</p>', '[foo<p></p><p>}bar</p>' ],
+			[ '[foo<p>bar<b>test</b></p>}<p>test</p>', '[foo<p>bar<b>test</b></p><p>}test</p>' ],
+			[ '{<p></p>}<p>bar</p>', '<p></p><p>[]bar</p>' ],
+			[ '<b>[foo</b></p><div>}<p>bar</p></div>', '<b>[foo</b><p></p><div><p>}bar</p></div>' ],
 			
+			[ '<div><p>[foo</p>}<p></p></div>bar', '<div><p>[foo]</p><p></p></div>bar' ],
+			[ '<p>[foo</p>}<p></p>', '<p>[foo]</p><p></p>' ]
+
+//*/
+
+/*
+
 			//
 			//		Tests for end position
-			//		In front of block elements end node
+			//		In front of block element's end node
+			//		Functions:
+			//			getEndPosition
+			//			getPositionFromEndOfBlockNode
 			//
 			
 			[ '<p>[foo}</p>', '<p>[foo]</p>' ],
 			[ '[foo<p>}</p>', '[foo]<p></p>' ],
+			[ '{<b></b><p>}</p>', '{}<b></b><p></p>' ],
+			[ '<b></b><p><b></b></p>{<b></b><p>}</p>', '{}<b></b><p><b></b></p><b></b><p></p>' ],
+			[ '<div>test<b></b><p><b></b></p>{<b></b><p>}</p></div>', '<div>test[]<b></b><p><b></b></p><b></b><p></p></div>' ],
+			
 			[ '[foo<div><p>}</p></div>', '[foo]<div><p></p></div>' ],
 			[ '<p>[foo<b>bar</b>}</p>', '<p>[foo<b>bar]</b></p>' ],
 			[ '<p>[foo<b>bar</b>test}</p>', '<p>[foo<b>bar</b>test]</p>' ],
@@ -265,6 +297,8 @@ function( TestUtils ) {
 			[ '[foo<div><p><u>bar</u></p>}</div>', '[foo<div><p><u>bar]</u></p></div>' ],
 			[ '[foo<div><p><u></u></p>}</div>', '[foo]<div><p><u></u></p></div>' ],
 			[ '[foo<div><p>bar<u></u></p>}</div>', '[foo<div><p>bar]<u></u></p></div>' ]
+
+*/
 			
 //			[ '{<p></p>}', '{}<p></p>' ],
 //			[ '[foo<p></p>}', '[foo]<p></p>' ],
@@ -519,7 +553,7 @@ function( TestUtils ) {
                 
                 // add markers to selection
                 TestUtils.addBrackets(endRange);
-
+				
                 // get the content of the editable
                 result = Aloha.editables[ 0 ].getContents();
 

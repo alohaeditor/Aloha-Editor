@@ -2515,7 +2515,7 @@ function getNodeLength ( node ) {
  * Simple example test:
  *		getLeftNeighbor(jQuery('<p><b>foo</b><i>foo</i></p>').find('i')[0])
  *
- * @param {Object: DOMElement} node
+ * @param {DOMElement} node
  */
 function getLeftNeighbor ( node ) {
 	if ( !node ) {
@@ -2526,11 +2526,7 @@ function getLeftNeighbor ( node ) {
 		return node.previousSibling;
 	}
 	
-	if ( !node.parentNode ) {
-		return null;
-	}
-	
-	if ( isEditingHost( node.parentNode ) ) {
+	if ( !node.parentNode || isEditingHost( node.parentNode ) ) {
 		return null;
 	}
 	
@@ -2540,7 +2536,7 @@ function getLeftNeighbor ( node ) {
 /**
  * Similar to getLeftNeighbor, but in the other direction
  * 
- * @param {Object: DOMElement} node
+ * @param {DOMElement} node
  */
 function getRightNeighbor ( node ) {
 	if ( !node ) {
@@ -2551,11 +2547,7 @@ function getRightNeighbor ( node ) {
 		return node.nextSibling;
 	}
 	
-	if ( !node.parentNode ) {
-		return null;
-	}
-	
-	if ( isEditingHost( node.parentNode ) ) {
+	if ( !node.parentNode || isEditingHost( node.parentNode ) ) {
 		return null;
 	}
 	
@@ -2584,15 +2576,15 @@ function getNodeIndex ( node ) {
 };
 
 /**
- * @param {Object: DOMElement} node
+ * @param {DOMElement} node
  * @param {Function} predicate
  */
-function getFurthestLeftScion ( node, predicate ) {
+function getLeftmostScion ( node, predicate ) {
 	if ( !node || !node.firstChild ) {
 		return null;
 	}
 	
-	var scion = getFurthestLeftScion( node.firstChild, predicate ) || node.firstChild;
+	var scion = getLeftmostScion( node.firstChild, predicate ) || node.firstChild;
 	
 	if ( typeof predicate !== 'function' || predicate( scion ) ) {
 		return scion;
@@ -2600,7 +2592,7 @@ function getFurthestLeftScion ( node, predicate ) {
 	
 	scion = getNearestRightNode( scion );
 	if ( scion ) {
-		return getFurthestLeftScion( scion, predicate ) || scion;
+		return getLeftmostScion( scion, predicate ) || scion;
 	}
 	
 	return null;
@@ -2614,15 +2606,15 @@ function getFurthestLeftScion ( node, predicate ) {
  *		given "<div><u><i>foo<p>bar</p><b>test</b></i></u></div>" if node is <div>, return <TextNode textContent="test">
  *		given "<div></div>", if node is <div>, return null
  *
- * @param {Object: DOMElement} node
+ * @param {DOMElement} node
  * @param {Function} predicate
  */
-function getFurthestRightScion ( node, predicate ) {
+function getRightmostScion ( node, predicate ) {
 	if ( !node || !node.lastChild ) {
 		return null;
 	}
 	
-	var scion = getFurthestRightScion( node.lastChild, predicate ) || node.lastChild;
+	var scion = getRightmostScion( node.lastChild, predicate ) || node.lastChild;
 	
 	if ( typeof predicate !== 'function' || predicate( scion ) ) {
 		return scion;
@@ -2630,7 +2622,7 @@ function getFurthestRightScion ( node, predicate ) {
 	
 	scion = getNearestLeftNode( scion );
 	if ( scion ) {
-		return getFurthestRightScion( scion, predicate ) || scion;
+		return getRightmostScion( scion, predicate ) || scion;
 	}
 	
 	return null;
@@ -2662,7 +2654,7 @@ function getNearestLeftNode ( node, predicate ) {
 	
 	// ... then find the very right most container of this left neighbor
 	
-	var scion = getFurthestRightScion( node );
+	var scion = getRightmostScion( node );
 	
 	if ( scion ) {
 		if ( typeof predicate !== 'function' || predicate ( scion ) ) {
@@ -2702,7 +2694,7 @@ function getNearestRightNode ( node, predicate ) {
 		return null;
 	}
 	
-	var scion = getFurthestLeftScion( node, predicate );
+	var scion = getLeftmostScion( node, predicate );
 	
 	if ( scion ) {
 		return scion;
@@ -2782,7 +2774,7 @@ function getStartPosition ( container, offset ) {
 		// have the case where we are in front the closing tag of a flow node,
 		// and we will therefore try and move backwards into the tree
 		if ( offset == container.childNodes.length ) {
-			stop = getFurthestRightScion( container );
+			stop = getRightmostScion( container );
 			if ( stop ) {
 				return {
 					node   : stop,
@@ -2840,7 +2832,7 @@ function getStartPosition ( container, offset ) {
 			// to the left, so we will collapse the collection instead, by
 			// moving the start position to the nearest text node to the right
 			// {<p><b></b>foo]</p> => <p><b></b>[foo]</p>
-			stop = getFurthestLeftScion( node );
+			stop = getLeftmostScion( node );
 			while ( stop && stop.nodeType != Node.TEXT_NODE ) {
 				stop = getNearestRightNode( stop );
 			}
@@ -2863,119 +2855,167 @@ function getStartPosition ( container, offset ) {
 	}
 };
 
+/**
+ * Satisfies:
+ *   [ '<p>[foo}</p>', '<p>[foo]</p>' ],
+ *   [ '[foo<p>}</p>', '[foo]<p></p>' ],
+ *   [ '[foo<div><p>}</p></div>', '[foo]<div><p></p></div>' ],
+ *   [ '<p>[foo<b>bar</b>}</p>', '<p>[foo<b>bar]</b></p>' ],
+ *   [ '<p>[foo<b>bar</b>test}</p>', '<p>[foo<b>bar</b>test]</p>' ],
+ *   [ '<p>[foo<b>bar</b>}</p>test', '<p>[foo<b>bar]</b></p>test' ],
+ *   [ '[foo<div><p><u>bar</u></p>}</div>', '[foo<div><p><u>bar]</u></p></div>' ],
+ *   [ '[foo<div><p><u></u></p>}</div>', '[foo]<div><p><u></u></p></div>' ],
+ *   [ '[foo<div><p>bar<u></u></p>}</div>', '[foo<div><p>bar]<u></u></p></div>' ]
+ */
+function getPositionFromEndOfBlockNode ( node, offset ) {
+	var stop;
+	
+	// Satisfies
+	// [ '<p>[foo}</p>', '<p>[foo]</p>' ],
+	stop = getRightmostScion( node, isTextNode );
+	if ( stop ) {
+		return {
+			node   : stop,
+			offset : getNodeLength( stop )
+		};
+	}
+	
+	// There is no child nodes inside of our container node which have a text
+	// node for us to stop in. We will therefor look left for a landing
+	// position
+	// Satisfies:
+	// [ '[foo<p>}</p>', '[foo]<p></p>' ],
+	stop = getNearestLeftNode( node, isTextNode );
+	if ( stop ) {
+		return {
+			node   : stop,
+			offset : getNodeLength( stop )
+		};
+	}
+	
+	// There is nowhere to land left of the end position either
+	// Satisfies:
+	// [ '{<b></b><p>}</p>', '{}<b></b><p></p>' ]
+	stop = getLeftNeighbor( node );
+	if ( stop ) {
+		return {
+			node   : stop.parentNode,
+			offset : 0
+		};
+	}
+	
+	return {
+		node   : node,
+		offset : offset
+	};
+};
+
+/**
+ * Normalize the end position to conform with how WebKit works with ranges.
+ * We have a big problem however: Internet Explorer will refuse to accept where
+ * we want to position the range with this algorithm, many of the cases.
+ *
+ * This is because WebKit corrects '<p>[foo</p>}<p>bar</p>' to
+ * '<p>[foo</p><p>}bar</p>' and Internet Explorer will always convert this to
+ * '<p>[foo]</p><p>bar</p>'
+ */
+function getPositionFromFrontOfBlockNode ( node, offset ) {
+	var stop;
+	
+	// If the left neighbor of this node is a block element, we are not
+	// permitted to explorer anywhere left of our current position to
+	// find a new landing position. Our only option in to go right.
+	// We satisfy:
+	// [ '<p>[foo</p>}<p>bar</p>', '<p>[foo</p><p>}bar</p>' ],
+	// [ '<p>[foo</p>}<p></p>bar', '<p>[foo</p><p></p>]bar' ],
+	// [ '<p>[foo</p>}<p><b></b>bar</p>', '<p>[foo</p><p>}<b></b>bar</p>' ]
+	//
+	// We check if there is no previousSibling in order to satisfy this:
+	// '[foo<div>}<p>bar</p></div>', '[foo<div><p>}bar</p></div>'
+	if ( isBlockElement( getLeftNeighbor( node ) ) || !node.previousSibling ) {
+		stop = node;
+		
+		while ( stop && getNodeLength( stop ) == 0 ) {
+			stop = stop.nextSibling;
+		}
+		
+		if ( stop ) {
+			return {
+				node   : stop,
+				offset : 0
+			};
+		}
+	}
+	
+	// We cannot go right, then go left
+	// Satisfies:
+	// [ '<p>[foo</p>}<p></p>', '<p>[foo]</p><p</p>' ]
+	stop = getNearestLeftNode( node, isTextNode );
+	if ( stop ) {
+		return {
+			node   : stop,
+			offset : getNodeLength( stop )
+		};
+	}
+	
+	// We cannot find a landing position on the left, then jump to the very
+	// front.
+	// Satisfies:
+	// [ '{<p></p>}<p></p>', '{}<p></p><p></p>' ]
+	stop = getLeftNeighbor( node );
+	if ( stop ) {
+		return {
+			stop   : stop.parentNode,
+			offset : 0
+		};
+	}
+	
+	return {
+		stop   : node,
+		offset : offset
+	};
+};
+
+
+/**
+ * Sanitize the offset if it is out of bounds
+ * Snap it to the front or end position of the container node
+ */
+function sanitizeOffset ( node, offset ) {
+	if ( offset < 0 ) {
+		offset = 0;
+	} else if ( offset > getNodeLength( node ) ) {
+		offset = getNodeLength( node );
+	}
+	
+	return offset;
+};
+
 function getEndPosition ( container, offset ) {
 	if ( !container ) {
 		return null;
 	}
 	
+	// Should we just throw an INDEX_SIZE_ERR exception
+	offset = sanitizeOffset( container, offset );
+	
 	if ( isBlockElement( container ) ) {
-		// Out of bounds sanity check.
-		// Should we throw an error?
-		if ( offset > container.childNodes.length ) {
-			return {
-				node   : container,
-				offset : offset
-			};
-		}
-		
-		var stop;
-		
-		// We either have an empty container, or else the offset is positioned
-		// at the very end of the container--after the last node. We therefore
-		// have the case where we are in front the closing tag of a flow node,
-		// and we will therefore try and move backwards into the tree
-		if ( offset == container.childNodes.length ) {
-			
-			// debugger;
-			
-			stop = getFurthestRightScion( container, isTextNode );
-			if ( stop ) {
-				return {
-					node   : stop,
-					offset : getNodeLength( stop )
-				};
-			}
-			
-			// There is no child nodes inside of container, so look left
-			stop = getNearestLeftNode( container, isTextNode );
-			if ( stop ) {
-				return {
-					node   : stop,
-					offset : getNodeLength( stop )
-				};
-			}
-			
-			return {
-				node   : container,
-				offset : offset
-			};
+		// If the offset is equal to the container's length, then either we
+		// are positioned in an empty container, or else the offset is
+		// positioned at the very end of the container--after the last node
+		// child node. In either case, we are in front of the closing tag of a
+		// block element, and we will therefore try and place our end position
+		// somewhere backwards.
+		if ( offset == getNodeLength( container ) ) {
+			return getPositionFromEndOfBlockNode( container, offset );
 		}
 		
 		// The offset is somewhere after the start of the container, therefore
-		// check if the node at index offset is a block element.
-		var node = container.childNodes[ offset ];
-		
-		if ( isBlockElement( node ) ) {
-			// We cannot move the start position to the left, if the left
-			// neighbor is a block element, so go right, expanding the
-			// selection by moving the end position to the first sibling on the
-			// right of node which has children
-			// We satisfy:
-			// [ '<p>[foo</p>}<p>bar</p>', '<p>[foo</p><p>}bar</p>' ],
-			// [ '<p>[foo</p>}<p></p>bar',  ],
-			// [ '<p>[foo</p>}<p><b></b>bar</p>', '<p>[foo</p><p>}<b></b>bar</p>' ],
-			
-			// We check if there is no previousSibling in order to handle this:
-			// '[foo<div>}<p>bar</p></div>', '[foo<div><p>}bar</p></div>'
-			
-			if ( isBlockElement( getLeftNeighbor( node ) ) || !node.previousSibling ) {
-				stop = node;
-				while ( stop && getNodeLength( stop ) == 0 ) {
-					stop = stop.nextSibling;
-				}
-				
-				if ( stop ) {
-					return {
-						node   : stop,
-						offset : 0
-					};
-				}
-			}
-			
-			// The left neighbor was not a block element so we can contract the
-			// selection by moving the end position to the left.
-			//
-			// Otherwise we reach here becuase there are no right-hand siblings
-			// of container which have children in which we can place the end
-			// position in them. We will therefore contract the selection to
-			// the left.
-			// We statisfy:
-			//	[ '<b>[foo</b>}<p>bar</p>', '<b>[foo]</b><p>bar</p>' ],
-			//	
-			//	or
-			//	
-			// [ '<p>[foo</p>}<p></p>', '<p>[foo]</p><p></p>' ],
-			// [ '<div><p>[foo</p>}<p></p></div>bar', '<div><p>[foo]</p><p></p></div>bar' ],
-			// [ '<p>[foo</p>}<p></p>', '<p>[foo]</p><p></p>' ],
-			// [ '<p>[foo</p>}<p></p><p>bar</p>', '<p>[foo</p><p></p><p>}bar</p>' ],
-			
-			stop = getNearestLeftNode( node, isTextNode );
-			if ( stop ) {
-				return {
-					node   : stop,
-					offset : getNodeLength( stop )
-				};
-			}
-			
-			// We found no text node left of our start position, so look for
-			// the for the nearest node on the right
-			stop = getFurthestLeftScion( node );
-			if ( stop ) {
-				return {
-					node   : stop,
-					offset : 0
-				};
-			}
+		// check if the node at offset index is a block element.
+		if ( isBlockElement( container.childNodes[ offset ] ) ) {
+			return getPositionFromFrontOfBlockNode(
+				container.childNodes[ offset ], offset
+			);
 		}
 		
 		return {
@@ -2997,7 +3037,7 @@ function correctRange ( range ) {
 		range.startOffset = startPos.offset;
 	}
 	
-	// debugger;
+	//debugger;
 	
 	var endContainer = range.endContainer,
 	    endOffset = range.endOffset,
