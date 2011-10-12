@@ -12,6 +12,7 @@ Aloha.ready( function() {
 		applyMarkupOnNextSelection = true,
 		engine = Aloha,
 		selectionRange,
+		selectionTimeout,
 		supportedCommands = Aloha.querySupportedCommands().sort();
 	
 	for ( var i=0; i < supportedCommands.length; i++ ) {
@@ -100,8 +101,6 @@ Aloha.ready( function() {
 		} catch (e)	{
 			if ( e === "INVALID_ACCESS_ERR" ) {
 				jQuery('#aloha-indeterm').hide();
-			} else {
-//				throw(e);
 			}
 		}
 		jQuery('#aloha-indeterm-result').html( (result ? 'true' : 'false') );
@@ -112,8 +111,6 @@ Aloha.ready( function() {
 		} catch (e)	{
 			if ( e === "INVALID_ACCESS_ERR" ) {
 				jQuery('#aloha-state').hide();
-			} else {
-//				throw(e);
 			}
 		}
 		jQuery('#aloha-state-result').html( (result ? 'true' : 'false') );
@@ -124,8 +121,6 @@ Aloha.ready( function() {
 		} catch (e)	{
 			if ( e === "INVALID_ACCESS_ERR" ) {
 				jQuery('#aloha-value').hide();
-			} else {
-//				throw(e);
 			}
 		}
 		jQuery('#aloha-value-result').html( result );
@@ -142,9 +137,11 @@ Aloha.ready( function() {
 	 */
 	function onSelectionChanged ( e ) {
 		
+		clearTimeout( selectionTimeout );
+
 		// don't read selection if shift is pressed
 		if ( e.shiftKey ) {
-			return
+			return;
 		}
 		
 		if ( applyMarkupOnNextSelection ) {
@@ -177,10 +174,10 @@ Aloha.ready( function() {
 				}
 			}
 			// wait for double and triple clicks
-			setTimeout( function() {
+			selectionTimeout = setTimeout( function() {
 				TestUtils.addBrackets( range );
 				applySelection( testArea );
- 			}, 200 );
+ 			}, 300 );
 		}
 	};
 	
