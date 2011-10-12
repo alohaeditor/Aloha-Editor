@@ -1,7 +1,6 @@
 define(
 ['aloha/jquery', 'table/table-plugin-utils'],
 function (jQuery, Utils) {
-return function (TableSelection) {
 	/**
 	 * The constructor for the Cell-Objects takes a DOM td-object, attaches
 	 * events, adds an wrapper into the cell and returns the modified td-object as
@@ -93,7 +92,7 @@ return function (TableSelection) {
 			this.selectAll(this.wrapper.get(0));
 
 			// unset the selection type
-			TableSelection.selectionType = 'cell';
+			this.tableObj.selection.selectionType = 'cell';
 
 		}
 	};
@@ -171,7 +170,7 @@ return function (TableSelection) {
 				that.wrapper.trigger('focus');
 			}, 1);
 			// unselect cells
-			TableSelection.unselectCells();
+			that.tableObj.selection.unselectCells();
 	        //start cell selection
 	        that.startCellSelection();       
 			jqEvent.stopPropagation();
@@ -245,16 +244,16 @@ return function (TableSelection) {
 	 * Starts the cell selection mode
 	 */
 	Cell.prototype.startCellSelection = function(){
-		if(!TableSelection.cellSelectionMode){
+		if(!this.tableObj.selection.cellSelectionMode){
 
 			//deactivate keepCellsSelected flag
-			TableSelection.keepCellsSelected = false;
+			this.tableObj.selection.keepCellsSelected = false;
 
 			//unselect currently selected cells
-			TableSelection.unselectCells();
+			this.tableObj.selection.unselectCells();
 
 			// activate cell selection mode
-			TableSelection.cellSelectionMode = true; 
+			this.tableObj.selection.cellSelectionMode = true; 
 
 			//bind a global mouseup event handler to stop cell selection
 			var that = this;
@@ -262,7 +261,7 @@ return function (TableSelection) {
 				that.endCellSelection();
 			});
 
-			TableSelection.baseCellPosition = [this.virtualY(), this.virtualX()];
+			this.tableObj.selection.baseCellPosition = [this.virtualY(), this.virtualX()];
 		}
 	};
 
@@ -270,13 +269,13 @@ return function (TableSelection) {
 	 * Ends the cell selection mode
 	 */
 	Cell.prototype.endCellSelection = function(){
-		if(TableSelection.cellSelectionMode){
-			TableSelection.cellSelectionMode = false; 
-			TableSelection.keepCellsSelected = true;
-			TableSelection.baseCellPosition = null;
-			TableSelection.lastSelectionRange = null; 
+		if(this.tableObj.selection.cellSelectionMode){
+			this.tableObj.selection.cellSelectionMode = false; 
+			this.tableObj.selection.keepCellsSelected = true;
+			this.tableObj.selection.baseCellPosition = null;
+			this.tableObj.selection.lastSelectionRange = null; 
 
-			TableSelection.selectionType = 'cell';
+			this.tableObj.selection.selectionType = 'cell';
 
 			//unbind the global cell selection event
 			jQuery('body').unbind('mouseup.cellselection');
@@ -288,13 +287,13 @@ return function (TableSelection) {
 	 * This works only when cell selection mode is active. 
 	 */
 	Cell.prototype.selectCellRange = function(){
-		if(!TableSelection.cellSelectionMode) {
+		if(!this.tableObj.selection.cellSelectionMode) {
 			return;
 		}
 
 		var cX = this.virtualX();
 		var cY = this.virtualY();
-		var basePos = TableSelection.baseCellPosition;
+		var basePos = this.tableObj.selection.baseCellPosition;
 		var bX = basePos[1];
 		if (cX < basePos[1]) {
 			bX = cX;
@@ -309,7 +308,7 @@ return function (TableSelection) {
 		var $rows = this.tableObj.obj.children().children('tr');
 		var grid = Utils.makeGrid($rows);
 		
-		TableSelection.selectedCells = [];
+		this.tableObj.selection.selectedCells = [];
 		var selectClass = this.tableObj.get('classCellSelected');
 		for (var i = 0; i < grid.length; i++) {
 			for (var j = 0; j < grid[i].length; j++) {
@@ -317,7 +316,7 @@ return function (TableSelection) {
 				if ( Utils.containsDomCell(cellInfo) ) {
 					if (i >= bY && i <= cY && j >= bX && j <= cX) {
 						jQuery( cellInfo.cell ).addClass(selectClass);
-						TableSelection.selectedCells.push(cellInfo.cell);
+						this.tableObj.selection.selectedCells.push(cellInfo.cell);
 					} else {
 						jQuery( cellInfo.cell ).removeClass(selectClass);
 					}
@@ -334,7 +333,7 @@ return function (TableSelection) {
 	 * @return string name of the namespace
 	 */
 	Cell.prototype.toString = function() {
-		return 'Table.Cell';
+		return 'TableCell';
 	};
 
 	/**
@@ -394,8 +393,8 @@ return function (TableSelection) {
 	 * @return void
 	 */
 	Cell.prototype.editableMouseDown = function(jqEvent) {
-		// deselect all highlighted cells registered in the TableSelection object
-		TableSelection.unselectCells();
+		// deselect all highlighted cells registered in the this.tableObj.selection object
+		this.tableObj.selection.unselectCells();
 
 		if (this.tableObj.hasFocus) {
 			jqEvent.stopPropagation();
@@ -448,25 +447,25 @@ return function (TableSelection) {
 			}
 		}
 		if (!jqEvent.ctrlKey && !jqEvent.shiftKey) {
-			if (TableSelection.selectedCells.length > 0 && TableSelection.selectedCells[0].length > 0) {
-				TableSelection.selectedCells[0][0].firstChild.focus();
-				TableSelection.unselectCells();
+			if (this.tableObj.selection.selectedCells.length > 0 && this.tableObj.selection.selectedCells[0].length > 0) {
+				this.tableObj.selection.selectedCells[0][0].firstChild.focus();
+				this.tableObj.selection.unselectCells();
 				jqEvent.stopPropagation();
 			}
-		}else if(jqEvent.shiftKey && TableSelection.selectedCells.length > 0){
+		}else if(jqEvent.shiftKey && this.tableObj.selection.selectedCells.length > 0){
 
-			switch (TableSelection.selectionType) {
+			switch (this.tableObj.selection.selectionType) {
 			case 'row':
 				switch(jqEvent.keyCode) {
 				case KEYCODE_ARROWUP:
-					var firstSelectedRow = TableSelection.selectedCells[0][0].parentNode.rowIndex;
+					var firstSelectedRow = this.tableObj.selection.selectedCells[0][0].parentNode.rowIndex;
 					if (firstSelectedRow > 1) {
 						this.tableObj.rowsToSelect.push(firstSelectedRow - 1);
 					}
 					break;
 				case KEYCODE_ARROWDOWN:
-					var lastRowIndex = TableSelection.selectedCells.length - 1;
-					var lastSelectedRow = TableSelection.selectedCells[lastRowIndex][0].parentNode.rowIndex;
+					var lastRowIndex = this.tableObj.selection.selectedCells.length - 1;
+					var lastSelectedRow = this.tableObj.selection.selectedCells[lastRowIndex][0].parentNode.rowIndex;
 					if (lastSelectedRow < this.tableObj.numRows) {
 						this.tableObj.rowsToSelect.push(lastSelectedRow + 1);
 					}
@@ -478,14 +477,14 @@ return function (TableSelection) {
 			case 'column':
 				switch(jqEvent.keyCode) {
 				case KEYCODE_ARROWLEFT:
-					var firstColSelected = TableSelection.selectedCells[0][0].cellIndex;
+					var firstColSelected = this.tableObj.selection.selectedCells[0][0].cellIndex;
 					if (firstColSelected > 1) {
 						this.tableObj.columnsToSelect.push(firstColSelected - 1);
 					}
 					break;
 				case KEYCODE_ARROWRIGHT:
-					var lastColIndex = TableSelection.selectedCells[0].length - 1;
-					var lastColSelected = TableSelection.selectedCells[0][lastColIndex].cellIndex;
+					var lastColIndex = this.tableObj.selection.selectedCells[0].length - 1;
+					var lastColSelected = this.tableObj.selection.selectedCells[0][lastColIndex].cellIndex;
 					if (lastColSelected < this.tableObj.numCols) {
 						this.tableObj.columnsToSelect.push(lastColSelected + 1);
 					}
@@ -526,5 +525,4 @@ return function (TableSelection) {
 	};
 
 	return Cell;
-};
 });

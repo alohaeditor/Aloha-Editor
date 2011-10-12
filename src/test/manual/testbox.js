@@ -101,7 +101,7 @@ Aloha.ready( function() {
 			if ( e === "INVALID_ACCESS_ERR" ) {
 				jQuery('#aloha-indeterm').hide();
 			} else {
-				throw(e);
+//				throw(e);
 			}
 		}
 		jQuery('#aloha-indeterm-result').html( (result ? 'true' : 'false') );
@@ -113,7 +113,7 @@ Aloha.ready( function() {
 			if ( e === "INVALID_ACCESS_ERR" ) {
 				jQuery('#aloha-state').hide();
 			} else {
-				throw(e);
+//				throw(e);
 			}
 		}
 		jQuery('#aloha-state-result').html( (result ? 'true' : 'false') );
@@ -125,7 +125,7 @@ Aloha.ready( function() {
 			if ( e === "INVALID_ACCESS_ERR" ) {
 				jQuery('#aloha-value').hide();
 			} else {
-				throw(e);
+//				throw(e);
 			}
 		}
 		jQuery('#aloha-value-result').html( result );
@@ -141,6 +141,11 @@ Aloha.ready( function() {
 	 * range object, 
 	 */
 	function onSelectionChanged ( e ) {
+		
+		// don't read selection if shift is pressed
+		if ( e.shiftKey ) {
+			return
+		}
 		
 		if ( applyMarkupOnNextSelection ) {
 			testArea[ 0 ].innerHTML = fillArea.val();
@@ -171,9 +176,11 @@ Aloha.ready( function() {
 					return;
 				}
 			}
-			
-			TestUtils.addBrackets( range );
-			applySelection( testArea );
+			// wait for double and triple clicks
+			setTimeout( function() {
+				TestUtils.addBrackets( range );
+				applySelection( testArea );
+ 			}, 200 );
 		}
 	};
 	
@@ -221,7 +228,7 @@ Aloha.ready( function() {
 		viewArea.val( testArea.html() );
 		// convert html for processing
 		var html = jQuery( '<div>' ).text( testArea.html() ).html();
-		
+
 		html = elem.html();
 		
 		var startMarkers = html.match( /\{|\[|data\-start/g ),

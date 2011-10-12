@@ -9,7 +9,7 @@ define([
     'aloha/plugin',
 	'aloha/floatingmenu',
 	'i18n!aloha/nls/i18n'
-], function CiteClosure ( Plugin, FloatingMenu, i18nCore ) {
+], function ( Plugin, FloatingMenu, i18nCore ) {
 	'use strict';
 	
 	return Plugin.create('speak', {

@@ -1,19 +1,12 @@
 define(
 ['aloha/jquery', 'table/table-plugin-utils'],
 function ($, Utils) {
-/*
- * TODO giving the TablePlugin to the TableSelection as argument is
- *   a hack to provide the dependency without resorting to advanced
- *   requirejs code. this dependency should be resolved somehow
- *   without resorting to requirejs (we only want to use the
- *   define() functionality in Aloha).
- */
-return function (TablePlugin) {
-
 	/**
-	 * The TableSelection object is a helper-object which consists of static/global attributes and functions
+	 * The TableSelection object is a helper-object
 	 */
-	var TableSelection = function(){};
+	var TableSelection = function (table) {
+		this.table = table;
+	};
 
 	/**
 	 * Gives the type of the cell-selection
@@ -63,13 +56,13 @@ return function (TablePlugin) {
 	 * @return void
 	 */
 	TableSelection.prototype.selectColumns = function ( columnsToSelect ) {
-        if ( typeof TablePlugin.activeTable == 'undefined' || !TablePlugin.activeTable ) {
+        if ( typeof this.table == 'undefined' || !this.table ) {
         	return;
         }
 
 		this.unselectCells();
 
-		var rows = TablePlugin.activeTable.obj.find("tr").toArray()
+		var rows = this.table.obj.find("tr").toArray()
 		// first row is the selection row (dump it, it's not needed)
 		rows.shift();
 		
@@ -83,7 +76,7 @@ return function (TablePlugin) {
 			for (var i = 0; i < grid.length; i++) {
 				var cellInfo = grid[i][columnsToSelect[j]];
 				if ( Utils.containsDomCell(cellInfo) ) {
-					$(cellInfo.cell).addClass(TablePlugin.activeTable.get('classCellSelected'));
+					$(cellInfo.cell).addClass(this.table.get('classCellSelected'));
 					this.selectedCells.push( cellInfo.cell );
 				}
 			}
@@ -99,13 +92,13 @@ return function (TablePlugin) {
 	 * @return void
 	 */
 	TableSelection.prototype.selectRows = function ( rowsToSelect ) {
-        if ( typeof TablePlugin.activeTable == 'undefined' || !TablePlugin.activeTable ) {
+        if ( typeof this.table == 'undefined' || !this.table ) {
         	return;
         }
 
 		this.unselectCells();
 
-		var rows = TablePlugin.activeTable.obj.find("tr").toArray();
+		var rows = this.table.obj.find("tr").toArray();
 		
  	    rowsToSelect.sort( function ( a, b ) { return a - b; } );
 
@@ -122,7 +115,7 @@ return function (TablePlugin) {
 			    for ( var j = 1; j < rows[ rowsToSelect[i] ].cells.length; j++ ) {  
 					this.selectedCells.push( rows[ rowsToSelect[i] ].cells[j] );
 					// TODO make proper cell selection method
-					$( rows[ rowsToSelect[i] ].cells[j] ).addClass( TablePlugin.activeTable.get('classCellSelected') );
+					$( rows[ rowsToSelect[i] ].cells[j] ).addClass( this.table.get('classCellSelected') );
 			    }
 			}
 		}
@@ -138,7 +131,7 @@ return function (TablePlugin) {
 	 */
 	TableSelection.prototype.isHeader = function ( ) {
 		
-        if ( typeof TablePlugin.activeTable == 'undefined' || !TablePlugin.activeTable ) {
+        if ( typeof this.table == 'undefined' || !this.table ) {
         	return;
         }
         
@@ -164,7 +157,7 @@ return function (TablePlugin) {
 		var 
 		rows;
 
-		if ( typeof TablePlugin.activeTable == 'undefined' || !TablePlugin.activeTable ) {
+		if ( typeof this.table == 'undefined' || !this.table ) {
     		return;
 		}
 		
@@ -175,12 +168,12 @@ return function (TablePlugin) {
 
 		if (this.selectedCells.length > 0) {
 			
-			rows = TablePlugin.activeTable.obj.find("tr").toArray();
+			rows = this.table.obj.find("tr").toArray();
 			
 			for (var i = 0; i < rows.length; i++) {
 			    for ( var j = 1; j < rows[i].cells.length; j++ ) {  
 					// TODO make proper cell selection method
-					$( rows[i].cells[j] ).removeClass( TablePlugin.activeTable.get('classCellSelected') );
+					$( rows[i].cells[j] ).removeClass( this.table.get('classCellSelected') );
 			    }
 			}
 
@@ -282,14 +275,14 @@ return function (TablePlugin) {
 			firstCell.attr({ 'rowspan': rowspan, 'colspan': colspan });
 
 			//select the merged cell
-			TableSelection.selectedCells = [firstCell];
+			this.selectedCells = [firstCell];
 
 			//reset flags
-			TableSelection.cellSelectionMode = false; 
-			TableSelection.keepCellsSelected = false;
-			TableSelection.baseCellPosition = null;
-			TableSelection.lastSelectionRange = null; 
-			TableSelection.selectionType = 'cell';
+			this.cellSelectionMode = false; 
+			this.keepCellsSelected = false;
+			this.baseCellPosition = null;
+			this.lastSelectionRange = null; 
+			this.selectionType = 'cell';
 		}
 	};
 
@@ -299,6 +292,8 @@ return function (TablePlugin) {
 	 * @return void
 	 */
 	TableSelection.prototype.splitCells = function(){
+		var selection = this;
+
 		// split the selected cells or currently active cell
 		var cells_to_split = this.selectedCells;
 		if (cells_to_split.length > 0) {
@@ -323,9 +318,9 @@ return function (TablePlugin) {
 					for (var j = (0 === i ? 1 : 0); j < colspan; j++) {
 						var leftCell = Utils.leftDomCell(grid, rowIdx + i, gridColumn);
 						if (null == leftCell) {
-							$rows.eq(rowIdx + i).prepend(TablePlugin.activeTable.newActiveCell().obj);
+							$rows.eq(rowIdx + i).prepend(selection.table.newActiveCell().obj);
 						} else {
-							$( leftCell ).after(TablePlugin.activeTable.newActiveCell().obj);
+							$( leftCell ).after(selection.table.newActiveCell().obj);
 						}
 					}
 				}
@@ -334,13 +329,13 @@ return function (TablePlugin) {
 			});
 
 			//reset flags
-			TableSelection.cellSelectionMode = false; 
-			TableSelection.keepCellsSelected = false;
-			TableSelection.baseCellPosition = null;
-			TableSelection.lastSelectionRange = null; 
-			TableSelection.selectionType = 'cell';
+			this.cellSelectionMode = false; 
+			this.keepCellsSelected = false;
+			this.baseCellPosition = null;
+			this.lastSelectionRange = null; 
+			this.selectionType = 'cell';
 		}
 	};
+
 	return TableSelection;
-};
 });

@@ -75,7 +75,7 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 						return;
 					}
 	
-					foundMarkup = that.findLangMarkup( rangeObject );
+					foundMarkup = that.findLanguageMarkup( rangeObject );
 					if ( foundMarkup ) {
 						that.addMarkupToSelectionButton.setPressed(true);
 						FloatingMenu.setScope('wai-lang');
@@ -154,8 +154,7 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 		    }
 			if ( Aloha.activeEditable ) {
 			    return range.findMarkup(function() {
-			    	var  ret = (jQuery(this).hasClass('wai-lang') || jQuery(this).is('[lang]'));
-					return ret;
+					return this.nodeName.toLowerCase() == 'span' && (jQuery(this).hasClass('wai-lang') || jQuery(this).is('span[lang]'));
 			    }, Aloha.activeEditable.obj);
 			} else {
 				return null;
@@ -190,9 +189,7 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 				}
 			});
 			
-			Aloha.ready( function() {
-				that.handleExistingSpans(that) ;
-			});
+			Aloha.ready(that.handleExistingSpans);
 	
 		},
 		
@@ -200,12 +197,13 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 		 * Find all existing spans and register hotkey hotkeys and make 
 		 * annotations of languages visible.
 		 */
-		handleExistingSpans: function( that ) {
+		handleExistingSpans: function() {
+			var that = this;
 			// add to all editables the Link shortcut
 			jQuery.each(Aloha.editables, function(key, editable){
 				
 				// Hotkey for adding new language annotations: CTRL+I
-				editable.obj.keydown( that.handleKeyDown );			
+				editable.obj.keydown(that.handleKeyDown);			
 
 				
 			});
@@ -220,10 +218,14 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 		},
 		
 		
-		handleKeyDown: function( e ) {
+		handleKeyDown: function(e) {
 			if ( e.metaKey && e.which == 73 ) {
 				
+<<<<<<< HEAD
+				if ( that.findLanguageMarkup() ) {
+=======
 				if ( this.findLangMarkup() ) {
+>>>>>>> d8b7496b0251b7ee9754f794bcc3e4ce209e2929
 					FloatingMenu.userActivatedTab = i18n.t('floatingmenu.tab.wai-lang');
 
 					// TODO this should not be necessary here!
@@ -301,7 +303,7 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 			var range, newSpan;
 
 			// do not add markup to a area that already contains a markup
-			if ( this.findLangMarkup( range ) ) {
+			if ( this.findLanguageMarkup( range ) ) {
 				return;
 			}
 	
@@ -330,7 +332,7 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 		removeMarkup: function () {
 	
 			var	range = Aloha.Selection.getRangeObject(),
-				foundMarkup = this.findLangMarkup();
+				foundMarkup = this.findLanguageMarkup();
 			if ( foundMarkup ) {
 				// remove the markup
 				GENTICS.Utils.Dom.removeFromDOM(foundMarkup, range, true);
