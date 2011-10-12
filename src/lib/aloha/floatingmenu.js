@@ -1201,5 +1201,12 @@ function(Aloha, jQuery, Ext, Class, console) {
 		menu.setScope('Aloha.empty');
 	});
 	
+	// set scope to empty if the user selectes a non contenteditable area
+	Aloha.bind('aloha-selection-changed', function() {
+		if ( ! Aloha.Selection.isSelectionEditable() ) {
+			menu.setScope('Aloha.empty');
+		}
+	});
+	
 	return menu;
 });

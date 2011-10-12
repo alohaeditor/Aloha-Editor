@@ -185,6 +185,13 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 			this.preventSelectionChangedFlag = false;
 			return prevented;
 		},
+		
+		/**
+		 * This method will check if the current rangeObject common ancector container is edtiable. 
+		 */
+		isSelectionEditable: function() {
+			return jQuery(this.rangeObject.commonAncestorContainer).contentEditable();
+		},
 
 		/**
 		 * INFO: Method is used for integration with Gentics Aloha, has no use otherwise

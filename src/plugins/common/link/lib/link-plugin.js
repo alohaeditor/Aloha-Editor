@@ -185,7 +185,7 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, console) {
 			Aloha.bind('aloha-selection-changed', function(event, rangeObject) {
 				var config, foundMarkup;
 
-				if (Aloha.activeEditable) {
+				if ( Aloha.Selection.isSelectionEditable() ) {
 					// show/hide the button according to the configuration
 					config = that.getEditableConfig(Aloha.activeEditable.obj);
 					if ( jQuery.inArray('a', config) != -1) {
@@ -203,7 +203,7 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, console) {
 						// link found
 						that.insertLinkButton.hide();
 						that.formatLinkButton.setPressed(true);
-						FloatingMenu.setScope('link', 'Aloha.continuoustext');
+						FloatingMenu.setScope('link');
 						that.hrefField.setTargetObject(foundMarkup, 'href');
 					} else {
 						// no link found
