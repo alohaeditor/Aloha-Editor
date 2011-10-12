@@ -30,8 +30,10 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, C
 		GENTICS = window.GENTICS;
 
 	// default supported and custom content handler settings
+	// @TODO move to new config when implemented in Aloha
 	Aloha.defaults.contentHandler = {};
 	Aloha.defaults.contentHandler.initEditable = [ 'generic', 'sanitize' ];
+	Aloha.defaults.contentHandler.getContents = [ 'generic', 'sanitize' ];
 	
 	if (typeof Aloha.settings.contentHandler === 'undefined') {
 		Aloha.settings.contentHandler = {};
@@ -129,6 +131,7 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, C
 			this.settings = Aloha.settings; 
 				
 			// smartContentChange settings
+			// @TODO move to new config when implemented in Aloha
 			if (Aloha.settings && Aloha.settings.smartContentChange) {
 				if (Aloha.settings.smartContentChange.delimiters) {
 					this.sccDelimiters = Aloha.settings.smartContentChange.delimiters;
@@ -680,6 +683,14 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, C
 			this.removePlaceholder(clonedObj);
 
 			PluginManager.makeClean(clonedObj);
+
+			if (typeof Aloha.settings.contentHandler.getContents === 'undefined') {
+				Aloha.settings.contentHandler.getContents = Aloha.defaults.contentHandler.getContents;
+			}
+			var value = ContentHandlerManager.handleContent( clonedObj.html(), { contenthandler: Aloha.settings.contentHandler.getContents } );
+			//clonedObj = jQuery( '<div>' + value + '</div>' );
+			clonedObj = jQuery( value );
+
 			return asObject ? clonedObj.contents() : clonedObj.html();
 		},
 
