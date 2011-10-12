@@ -201,7 +201,6 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, console) {
 				var config, foundMarkup;
 
 				if ( ! that.ignoreNextSelectionChangedEvent && Aloha.Selection.isSelectionEditable() ) {
-					that.ignoreNextSelectionChangedEvent = false;
 					
 					// show/hide the button according to the configuration
 					config = that.getEditableConfig(Aloha.activeEditable.obj);
@@ -231,6 +230,8 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, console) {
 					// TODO this should not be necessary here!
 					FloatingMenu.doLayout();
 				}
+				that.ignoreNextSelectionChangedEvent = false;
+
 
 			});
 
@@ -350,7 +351,7 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, console) {
 					range.startContainer = range.endContainer;
 					range.startOffset = range.endOffset;
 					range.select();
-					
+
 					FloatingMenu.setScope('Aloha.continuoustext');
 				}
 				
@@ -362,7 +363,7 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, console) {
 				//(that is not the pre-filled "http://") or a resource
 				//(e.g. in the case of a repository link)
 				if ( ( ! this.getValue() || this.getValue() === "http://" ) && ! this.getItem() ) {
-					that.removeLink();
+					that.removeLink(false);
 				}
 			});
 
@@ -539,7 +540,7 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, console) {
 		/**
 		 * Remove an a tag.
 		 */
-		removeLink: function () {
+		removeLink: function (terminateLinkScope) {
 			var	range = Aloha.Selection.getRangeObject(),
 				foundMarkup = this.findLinkMarkup();
 			if ( foundMarkup ) {
@@ -551,7 +552,10 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, console) {
 
 				// select the (possibly modified) range
 				range.select();
-				FloatingMenu.setScope('Aloha.continuoustext');
+				
+				if (typeof terminateLinkScope === 'undefined' || terminateLinkScope === true) {
+					FloatingMenu.setScope('Aloha.continuoustext');
+				}
 
 			}
 		},
