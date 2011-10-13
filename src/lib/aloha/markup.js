@@ -104,6 +104,12 @@ Aloha.Markup = Class.extend({
 			return this.processCursor(rangeObject, event.keyCode);
 		}
 
+		// BACKSPACE
+		if (event.keyCode === 8) {
+			Aloha.execCommand( 'delete', false );
+			return false;
+		}
+
 		// ENTER
 		if  (event.keyCode === 13 ) {
 			if (event.shiftKey) {
