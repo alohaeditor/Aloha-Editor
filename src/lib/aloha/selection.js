@@ -2591,7 +2591,7 @@ function getLeftmostScion ( node, predicate ) {
 		return scion;
 	}
 	
-	// scion = getNearestRightNode( scion );
+	//scion = getNearestRightNode( scion );
 	scion = getRightNeighbor( scion );
 	if ( scion ) {
 		return getLeftmostScion( scion, predicate ) || scion;
@@ -2776,9 +2776,7 @@ function getStartPosition ( container, offset ) {
 		// The offset is somewhere before the end of the container, therefore
 		// check if the node at offset index is a block element.
 		if ( isBlockElement( container.childNodes[ offset ] ) ) {
-			return getStartPositionFromFrontOfBlockNode(
-				container.childNodes[ offset ], offset
-			);
+			return getStartPositionFromFrontOfBlockNode( container, offset );
 		}
 	}
 	
@@ -2789,7 +2787,6 @@ function getStartPosition ( container, offset ) {
 		};
 	}
 	
-	// We have a non-block level element
 	return getStartPositionFromFrontOfInlineNode( container, offset );
 };
 
@@ -2844,49 +2841,46 @@ function getStartPositionFromFrontOfInlineNode ( node, offset ) {
 	var child = node.childNodes[ offset ];
 	var stop;
 	
-	//debugger;
-	
-	// Satisfies:
-	// [ '{<b>foo]</b>', '<b>[foo]</b>' ]
-	stop = getLeftmostScion( child, isTextNode );
-	if ( stop ) {
+	if ( isTextNode( child ) ) {
 		return {
-			node   : stop,
+			node   : child,
 			offset : 0
-		}
+		};
 	}
 	
-	// Satisfies:
-	// [ 'foo{<b><i></i></b>bar]', 'foo<b><i></i></b>[bar]' ],
-	// [ 'foo{<b><i></i></b><b>bar]</b>', 'foo<b><i></i></b><b>[bar]</b>' ],
-	stop = getNearestRightNode( child, isTextNode );
-	if ( stop ) {
-		if ( isBlockElement( getRightNeighbor( node ) ) ) {
-			//debugger;
+	// Handle situation where a block tag comes between our original start
+	// position, and where we just landed
+	if ( isBlockElement( getRightNeighbor( child ) ) ) {
+		// [ 'foo{<b></b><p>bar]</p>', 'foo<b>{</b><p>bar]</p>' ],
+		if ( getNodeLength( child ) == 0 ) {
+			return {
+				node   : child,
+				offset : 0
+			};
 		}
 		
-		return {
-			node   : stop,
-			offset : 0
-		};
+		// [ 'foo{<b><i></i></b><p>bar]</p>', 'foo<b><i>{</i></b><p>bar]</p>' ],
+		stop = getLeftmostScion( child );
+		if ( stop ) {
+			return {
+				node   : stop,
+				offset : 0
+			};
+		}
 	}
 	
-	return {
-		node   : node,
-		offset : offset
-	};
+	// Satisfies:
+	// [ '{<b>foo]</b>', '<b>[foo]</b>' ],
+	stop = getLeftmostScion( child, isTextNode );
 	
-	stop = getLeftNeighbor( node, isTextNode );
-	if ( stop ) {
-		return {
-			node   : stop,
-			offset : getNodeLength( stop )
-		};
+	// Satisfies:
+	// [ 'foo{<b></b><b>bar]</b>', 'foo<b></b><b>[bar]</b>' ],
+	// [ 'foo{<b><i></i></b>bar]', 'foo<b><i></i></b>[bar]' ],
+	// [ 'foo{<b><i></i></b><b>bar]</b>', 'foo<b><i></i></b><b>[bar]</b>' ],
+	if ( !stop ) {
+		stop = getNearestRightNode( child );
 	}
 	
-	
-	
-	stop = getEditingHost( node );
 	if ( stop ) {
 		return {
 			node   : stop,
@@ -2926,13 +2920,14 @@ function getEndPositionFromFrontOfInlineNode ( node, offset ) {
 };
 
 function getStartPositionFromFrontOfBlockNode ( node, offset ) {
+	var child = node.childNodes[ offset ];
 	var stop;
 	
 	// If the left neighbor of this node is a block element, we are not
 	// permitted to explorer anywhere left of our current position to
 	// find a new landing position. Our only option in to go right.
-	if ( !node.previousSibling || isBlockElement( getLeftNeighbor( node ) ) ) {
-		stop = getLeftmostScion( node );
+	if ( !child.previousSibling || isBlockElement( getLeftNeighbor( child ) ) ) {
+		stop = getLeftmostScion( child );
 		
 		while ( stop && stop.nodeType != Node.TEXT_NODE ) {
 			stop = getNearestRightNode( stop );
@@ -2952,12 +2947,12 @@ function getStartPositionFromFrontOfBlockNode ( node, offset ) {
 	// foo{<p>bar]</p> corrects to foo[<p>bar]</p>
 	// <b>foo</b>{<p>bar]</p> corrects to <b>foo[</b><p>bar]</p>
 	// foo<b></b>{<p>bar</p> correct to foo<b>{</b><p>bar]</p>
-	stop = getNearestLeftNode( node, isTextNode );
+	stop = getNearestLeftNode( child, isTextNode );
 	if ( stop ) {
 		// Satisfies:
 		// [ 'foo<b></b>{<p>bar]</p>', 'foo<b>{</b><p>bar]</p>' ]
-		if ( getRightNeighbor( stop ) != node ) {
-			stop = getNearestLeftNode( node );
+		if ( getRightNeighbor( stop ) != child ) {
+			stop = getNearestLeftNode( child );
 		}
 		
 		return {
@@ -2972,7 +2967,7 @@ function getStartPositionFromFrontOfBlockNode ( node, offset ) {
 	// position to the nearest text node to the right.
 	// Satisfies:
 	// [ '<p><b></b>foo]</p>', '<p><b></b>[foo]</p>' ]
-	stop = getLeftmostScion( node, isTextNode );
+	stop = getLeftmostScion( child, isTextNode );
 	if ( stop ) {
 		return  {
 			node   : stop,
@@ -2983,7 +2978,7 @@ function getStartPositionFromFrontOfBlockNode ( node, offset ) {
 	// We found to text node to land on, return the original start
 	// position ...
 	return {
-		node   : stop,
+		node   : node,
 		offset : offset
 	};
 };
@@ -3101,17 +3096,19 @@ function getEndPositionFromFrontOfBlockNode ( node, offset ) {
 		}
 		
 		if ( stop  ) {
+			/*
 			if ( isBlockElement( stop ) ) {
 				// [ '{}<p>foo</p>', '<p>[]foo</p>' ],
 				// [ '{}<div><p>bar</p></div>', '<div><p>[]bar</p></div>' ],
 				// var textNode = getLeftmostScion( stop, isTextNode );
-				// if ( textNode ) {
-				// 	return {
-				// 		node   : textNode,
-				// 		offset : 0
-				// 	};
-				// }
+				if ( textNode ) {
+					return {
+						node   : textNode,
+						offset : 0
+					};
+				}
 			}
+			*/
 			
 			return {
 				node   : stop,

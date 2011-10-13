@@ -300,43 +300,39 @@ function( TestUtils ) {
 			
 //*/
 			
-			// [ '<p>foo{}</p>', '<p>foo[]</p>' ],
-			// [ '<p>foo{</p>}', '<p>foo[]</p>' ],
-			
 			//
 			//		Start position in front of textNode
 			//
-			
-			// [ '<p>{foo]</p>', '<p>[foo]</p>' ],
-			// [ '<b>{foo]</b>', '<b>[foo]</b>' ],
-			
+			[ '<p>{foo]</p>', '<p>[foo]</p>' ],
+			[ '<b>{foo]</b>', '<b>[foo]</b>' ],
+			[ 'foo<p>{bar]</p>', 'foo<p>[bar]</p>' ],
+			[ 'foo<b>{bar]</b>', 'foo<b>[bar]</b>' ],
 			//
 			//		Start position in front of inline node
 			//
+			[ '{<b>foo]</b>', '<b>[foo]</b>' ],
+			[ 'foo{<b><i>bar]</i></b>', 'foo<b><i>[bar]</i></b>' ],
+			[ 'foo{<b></b><b>bar]</b>', 'foo<b></b><b>[bar]</b>' ],
+			[ 'foo{<b><i></i></b>bar]', 'foo<b><i></i></b>[bar]' ],
+			[ 'foo{<b><i></i></b><b>bar]</b>', 'foo<b><i></i></b><b>[bar]</b>' ],
+			//
+			//		Start position in front of inline node
+			//		w/block interception
+			//
+			[ 'foo{<b></b><p>bar]</p>', 'foo<b>{</b><p>bar]</p>' ],
+			[ 'foo{<b><i></i></b><p><b>bar]</b></p>', 'foo<b><i>{</i></b><p><b>bar]</b></p>' ],
+			[ 'foo{<b><i></i></b><p></p><p><b>bar]</b></p>', 'foo<b><i>{</i></b><p></p><p><b>bar]</b></p>' ], // IE will not accept this
 			
-//			[ '{<b>foo]</b>', '<b>[foo]</b>' ],
-//			[ 'foo{<b><i>bar]</i></b>', 'foo<b><i>[bar]</i></b>' ],
-//			[ 'foo{<b><i></i></b>bar]', 'foo<b><i></i></b>[bar]' ],
-//			[ 'foo{<b><i></i></b><b>bar]</b>', 'foo<b><i></i></b><b>[bar]</b>' ],
-			[ 'foo{<b><i></i></b><p><b>bar]</b></p>', 'foo<b><i>{</i></b><p><b>bar]</b></p>' ]
-//			[ 'foo{<b><i></i></b><p></p><p><b>bar]</b></p>', 'foo<b><i>{</i></b><p></p><p><b>bar]</b></p>' ],
-//			
-//			[ 'foo{<b><i></i></b>}', 'foo{}<b><i></i></b>' ],
-//			[ 'foo{<b></b>}', 'foo{}<b></b>' ],
-//			[ '{<b></b>}', '{}<b></b>' ],
-			
-//			[ '<p>foo</p><p>{bar}</p><p>baz</p>', '<p>foo</p><p>[bar]</p><p>baz</p>' ],
-//			[ '<p>foo</p><p>{bar</p>}<p>baz</p>', '<p>foo</p><p>[bar</p><p>}baz</p>' ]
-			
-			// [ '<p>{<b>foo]</b></p>', '<p><b>[foo]</b></p>' ],
-			// [ '<p>foo{<b>bar]</b></p>', '<p>foo<b>[bar]</b></p>' ],
-			// [ '<p>foo</p>{<b>bar]</b>', '<p>foo</p><b>[bar]</b>' ],
-			// [ '<b>foo</b>{<b>bar]</b>', '<b>foo</b><b>[bar]</b>' ]
-			
-			
-			
+			[ '<p>{<b>foo]</b></p>', '<p><b>[foo]</b></p>' ],
+			[ '<p>foo{<b>bar]</b></p>', '<p>foo<b>[bar]</b></p>' ],
+			[ '<p>foo</p>{<b>bar]</b>', '<p>foo</p><b>[bar]</b>' ],
+			[ '<b>foo</b>{<b>bar]</b>', '<b>foo</b><b>[bar]</b>' ]
 			
 			/*
+			
+			[ 'foo{<b><i></i></b>}', 'foo{}<b><i></i></b>' ],
+			[ 'foo{<b></b>}', 'foo{}<b></b>' ],
+			[ '{<b></b>}', '{}<b></b>' ],
 			
 			[ '<p>{<b></b>}</p>', '{}<p><b></b></p>' ],
 			[ '<p>{<b></b>}</p>', '{}<p><b></b></p>' ],
@@ -624,7 +620,7 @@ function( TestUtils ) {
 
 				// IE creates benign new lines, which cause false failures.
 				// We therefore remove them for our unit tests 
-				result = result.replace( /[\n\r]/g, '' );
+				result = result.replace( /[\s\n\r]/g, '' );
 
                 // compare the result with the expected result
                 deepEqual( result.toLowerCase(), this.expected, 'Check Operation Result' );
