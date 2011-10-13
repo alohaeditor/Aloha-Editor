@@ -298,11 +298,6 @@ function ($, Utils) {
 		var cells_to_split = this.selectedCells;
 		if (cells_to_split.length > 0) {
 
-			//will be populated with rows that will get a new cell prepended
-			var prepend = [];
-			//will be populated with cells that will get a new cell inserted after
-			var after = [];
-
 			$(cells_to_split).each(function(){
 				var $cell = $(this);
 				var colspan = parseInt($cell.attr('colspan')) || 1;
