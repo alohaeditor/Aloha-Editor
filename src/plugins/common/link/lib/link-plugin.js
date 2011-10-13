@@ -350,11 +350,24 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, console) {
 				if (event.keyCode == 13) {
 					// Update the selection and place the cursor at the end of the link.
 					var	range = Aloha.Selection.getRangeObject();
+					
+					// workaround to keep the found markup otherwise removelink won't work
+					var foundMarkup = that.findLinkMarkup( range );
+					that.hrefField.setTargetObject(foundMarkup, 'href');
+					
 					that.ignoreNextSelectionChangedEvent = true;
 					range.startContainer = range.endContainer;
 					range.startOffset = range.endOffset;
 					range.select();
+					that.ignoreNextSelectionChangedEvent = true;
+					
+					var hrefValue = jQuery(that.hrefField.extButton.el.dom).attr('value');
+					if (hrefValue ==="http://" || hrefValue === "") {
+						that.removeLink(false);
+					}
 
+					// Call it twice to work around a stuck part of the ui attributefield
+					FloatingMenu.setScope('Aloha.continuoustext');
 					FloatingMenu.setScope('Aloha.continuoustext');
 				}
 				
@@ -362,10 +375,17 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, console) {
 
 			// on blur check if href is empty. If so remove the a tag
 			this.hrefField.addListener('blur', function(obj, event) {
+
+				
+				var hrefValue = jQuery(that.hrefField.extButton.el.dom).attr('value');
+				
+				window.console.log('blur fired, Value:' + hrefValue);
 				//checks for either a literal value in the href field
 				//(that is not the pre-filled "http://") or a resource
 				//(e.g. in the case of a repository link)
 				if ( ( ! this.getValue() || this.getValue() === "http://" ) && ! this.getItem() ) {
+					window.console.log(this.getValue());
+					window.console.log(this.getItem());
 					that.removeLink(false);
 				}
 			});
