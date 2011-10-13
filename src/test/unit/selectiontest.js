@@ -140,7 +140,7 @@ function( TestUtils ) {
             [ 'foo<span>bar[</span><span>]baz</span>bam', 'foo<span>bar[]</span><span>baz</span>bam' ]
         ],
         flowTests = [
-
+/*
 			//
 			//		Tests for start position
 			//		In front of block elements
@@ -161,7 +161,7 @@ function( TestUtils ) {
 			[ '<b></b>{<p>foo]</p>', '<b></b><p>[foo]</p>' ],
 			// Had to travel farther, but still found left neighbor at which to
 			// reposition our start position
-			[ 'foo<b></b>{<p>bar]</p>', 'foo<b>{</b><p>bar]</p>' ], // wierd. should be 'foo[<b></b><p>bar]</p>'
+			[ 'foo<b></b>{<p>bar]</p>', 'foo<b>{</b><p>bar]</p>' ], // weird. should be 'foo[<b></b><p>bar]</p>'
 			// Useless empty left neighbors, so we contract selection
 			[ '<b><b></b></b>{<p>bar]</p>', '<b><b></b></b><p>[bar]</p>' ],
 			// Had to travel even farther left, but can expand selection to the
@@ -173,19 +173,17 @@ function( TestUtils ) {
 			[ '<u><i>foo</i></u><b></b>{<p>bar]</p>', '<u><i>foo</i></u><b>{</b><p>bar]</p>' ], // wierd
 			// Looking for left neighbors even if we are nested
 			[ 'foo{<div><p>bar]</p></div>', 'foo[<div><p>bar]</p></div>' ],
-			[ '<i>foo</i>{<div><p>bar]</p></div>', '<i>foo[</i><div><p>bar]</p></div>' ]
+			[ '<i>foo</i>{<div><p>bar]</p></div>', '<i>foo[</i><div><p>bar]</p></div>' ],
 			
 			// We have a block element to the left of our start position, we
 			// therefore move the start position to the right instead
 			[ '<p>foo</p>{<p>bar]</p>', '<p>foo</p><p>[bar]</p>' ],
 			
-			[ '<p>foo</p><p>{bar]</p>', '<p>foo</p><p>[bar]</p>' ]
-			
 			//
 			//		Tests for start position
 			//		At the end of block elements
 			//
-			
+
 			[ '<p>foo{</p><p>bar]</p>', '<p>foo[</p><p>bar]</p>' ],
 			[ '<p>foo[</p><p>bar]</p>', '<p>foo[</p><p>bar]</p>' ],
 			[ '<p>{</p><p>foo]</p>', '<p></p><p>[foo]</p>' ],
@@ -211,39 +209,76 @@ function( TestUtils ) {
 			[ '<b>[foo</b>}<p></p><p>bar</p>', '<b>[foo]</b><p></p><p>bar</p>' ],
 
 			[ '{}<p>foo</p>', '<p>[]foo</p>' ],
-			[ '<b>foo</b>{}<p>bar</p>', '<b>foo[]</b><p>bar</p>' ],
+			[ '<b>foo</b>{}<p>bar</p>', '<b>foo[]</b><p>bar</p>' ], // !!! IE Will not accept our expected range
 			[ '<p>foo</p>{}<p>bar</p>', '<p>foo</p><p>[]bar</p>' ],
-			
 			
 			[ '[foo<div>}<p>bar</p></div>', '[foo<div><p>}bar</p></div>' ],
 			[ '<div><p>[foo</p></div><div>}<p>bar</p></div>', '<div><p>[foo</p></div><div><p>}bar</p></div>' ],
-			
+
 			//
 			//		Tests for end position
 			//		In front of block elements start node
 			//		With block element to left of position
 			//
-			//		Problematic in IE
+			//		All these tests will fail in IE because IE will not accept
+			//		our expected range
 			//
+			//		Functions:
+			//			getEndPosition
+			//			getPositionFromFrontOfBlockNode
+			//
+
+			// WE CHANGED OUT MIND WE ARE GOING WITH WEBKIT STYLE:
+			// START Deviance from WebKit:
+			// For the following tests, our range normalization algorithm will
+			// diviate from WebKit conformance). We feel that it is safe to do
+			// this for a minority of tests cases because some of them are very
+			// hypothetical. In other words, we don't expect to get such
+			// ambigious ranges from the browser. Such ranges will, in almost
+			// all cases, come from implementors programmatically manipulating
+			// the range. We therefore feel free to correct the range in the
+			// way that we feel would best reflect a user's expectation:
+//			[ '<p>[foo</p>}<p>bar</p>', '<p>[foo]</p><p>bar</p>' ],					// WebKit corrects to: '<p>[foo</p><p>}bar</p>' 
+//			[ '<p>[foo</p>}<p></p>bar', '<p>[foo]</p><p></p>bar' ],					// WebKit corrects to: '<p>[foo</p><p></p>]bar'
+//			[ '<p>[foo</p>}<p><b></b>bar</p>', '<p>[foo]</p><p><b></b>bar</p>' ],	// WebKit corrects to: '<p>[foo</p><p>}<b></b>bar</p>'
+//			[ '<p>[foo</p>}<p></p><p>bar</p>', '<p>[foo]</p><p></p><p>bar</p>' ],	// WebKit corrects to: '<p>[foo</p><p></p><p>}bar</p>'
+//			[ '<p>[foo</p>}<p><b>bar</b></p>', '<p>[foo]</p><p><b>bar</b></p>' ],	// WebKit corrects to: '<p>[foo</p><p>}<b>bar</b></p>'
+//			[ '[foo<p></p>}<p>bar</p>', '[foo]<p></p><p>bar</p>' ],					// WebKit corrects to: '[foo<p></p><p>}bar</p>'
+//			[ '[foo<p>bar<b>test</b></p>}<p>test</p>', '[foo<p>bar<b>test]</b></p><p>test</p>' ], // WebKit corrects to: '[foo<p>bar<b>test</b></p><p>}test</p>'
+//			[ '{<p></p>}<p>bar</p>', '{}<p></p><p>bar</p>' ],						// WebKit corrects to: '<p></p><p>[]bar</p>'
+//			[ '<b>[foo</b></p><div>}<p>bar</p></div>', '<b>[foo]</b><p></p><div><p>bar</p></div>' ] // WebKit corrects to: '<b>[foo</b><p></p><div>}<p>bar</p></div>'
+			// END Deviance from Webkit
 			
 			[ '<p>[foo</p>}<p>bar</p>', '<p>[foo</p><p>}bar</p>' ],
 			[ '<p>[foo</p>}<p></p>bar', '<p>[foo</p><p></p>]bar' ],
 			[ '<p>[foo</p>}<p><b></b>bar</p>', '<p>[foo</p><p>}<b></b>bar</p>' ],
-			
-			[ '<p>[foo</p>}<p></p>', '<p>[foo]</p><p></p>' ],
-			[ '<div><p>[foo</p>}<p></p></div>bar', '<div><p>[foo]</p><p></p></div>bar' ],
-			
-			[ '<p>[foo</p>}<p></p>', '<p>[foo]</p><p></p>' ],
 			[ '<p>[foo</p>}<p></p><p>bar</p>', '<p>[foo</p><p></p><p>}bar</p>' ],
 			[ '<p>[foo</p>}<p><b>bar</b></p>', '<p>[foo</p><p>}<b>bar</b></p>' ],
+			[ '[foo<p></p>}<p>bar</p>', '[foo<p></p><p>}bar</p>' ],
+			[ '[foo<p>bar<b>test</b></p>}<p>test</p>', '[foo<p>bar<b>test</b></p><p>}test</p>' ],
+// weird	[ '{<p></p>}<p>bar</p>', '<p></p><p>[]bar</p>' ],
+			[ '<b>[foo</b></p><div>}<p>bar</p></div>', '<b>[foo</b><p></p><div><p>}bar</p></div>' ],
 			
+			[ '<div><p>[foo</p>}<p></p></div>bar', '<div><p>[foo]</p><p></p></div>bar' ],
+			[ '<p>[foo</p>}<p></p>', '<p>[foo]</p><p></p>' ],
+
 			//
 			//		Tests for end position
-			//		In front of block elements end node
+			//		In front of block element's end node
+			//		Functions:
+			//			getEndPosition
+			//			getPositionFromEndOfBlockNode
 			//
 			
 			[ '<p>[foo}</p>', '<p>[foo]</p>' ],
 			[ '[foo<p>}</p>', '[foo]<p></p>' ],
+			[ '{<b></b><p>}</p>', '{}<b></b><p></p>' ],
+			
+			
+// not a flow element fixes
+//			[ '<b></b><p><b></b></p>{<b></b><p>}</p>', '{}<b></b><p><b></b></p><b></b><p></p>' ],
+//			[ '<div>test<b></b><p><b></b></p>{<b></b><p>}</p></div>', '<div>test[]<b></b><p><b></b></p><b></b><p></p></div>' ],
+			
 			[ '[foo<div><p>}</p></div>', '[foo]<div><p></p></div>' ],
 			[ '<p>[foo<b>bar</b>}</p>', '<p>[foo<b>bar]</b></p>' ],
 			[ '<p>[foo<b>bar</b>test}</p>', '<p>[foo<b>bar</b>test]</p>' ],
@@ -252,24 +287,40 @@ function( TestUtils ) {
 			[ '[foo<div><p><u>bar</u></p>}</div>', '[foo<div><p><u>bar]</u></p></div>' ],
 			[ '[foo<div><p><u></u></p>}</div>', '[foo]<div><p><u></u></p></div>' ],
 			[ '[foo<div><p>bar<u></u></p>}</div>', '[foo<div><p>bar]<u></u></p></div>' ]
-			
-//			[ '{<p></p>}', '{}<p></p>' ],
-//			[ '[foo<p></p>}', '[foo]<p></p>' ],
-//			[ '[foo<p></p>}', '[foo]<p></p>' ],
-//			[ '[foo<div><p></p></div>}', '[foo]<div><p></p></div>' ],
-//			[ '[foo<div><p><u></u></p></div>}', '[foo]<div><p><u></u></p></div>' ],
 
-//			[ '<p>[foo</p><p>bar]</p><p>baz</p>', '<p>[foo</p><p>bar]</p><p>baz</p>' ],
-//			[ '<p>[foo</p><p>]bar</p><p>baz</p>', '<p>[foo</p><p>}bar</p><p>baz</p>' ],
-//			[ '<p>foo[</p><p>]bar</p><p>baz</p>', '<p>foo[</p><p>}bar</p><p>baz</p>' ],
+			[ '[foo<p></p>}', '[foo]<p></p>' ],
+			[ '[foo<div><p></p></div>}', '[foo]<div><p></p></div>' ],
+			[ '[foo<div><p><u></u></p></div>}', '[foo]<div><p><u></u></p></div>' ],
 			
-//			[ '<p>foo</p>test{<p>bar</p>}<p>baz</p>', '<p>foo</p>test<p>[bar</p><p>}baz</p>' ],
-//			[ '<p>foo{</p><p>bar}</p><p>baz</p>', '<p>foo[</p><p>bar]</p><p>baz</p>' ],
-//			[ '<p>foo</p>{<p>bar}</p><p>baz</p>', '<p>foo</p><p>[bar]</p><p>baz</p>' ],
-//			[ '<p>foo</p><p>{bar}</p><p>baz</p>', '<p>foo</p><p>[bar]</p><p>baz</p>' ],
-//			[ '<p>foo</p><p>{bar</p>}<p>baz</p>', '<p>foo</p><p>[bar</p><p>}baz</p>' ],
-//			[ '<p>foo</p><p>{bar</p><p>}baz</p>', '<p>foo</p><p>[bar</p><p>}baz</p>' ]
-            // 
+			[ '<p>foo</p>test{<p>bar</p>}<p>baz</p>', '<p>foo</p>test[<p>bar</p><p>}baz</p>' ],
+			[ '<p>foo{</p><p>bar}</p><p>baz</p>', '<p>foo[</p><p>bar]</p><p>baz</p>' ],
+			[ '<p>foo</p>{<p>bar}</p><p>baz</p>', '<p>foo</p><p>[bar]</p><p>baz</p>' ],
+			
+			[ '<p>foo</p><p>{bar}</p><p>baz</p>', '<p>foo</p><p>[bar]</p><p>baz</p>' ],
+			[ '<p>foo</p><p>{bar</p>}<p>baz</p>', '<p>foo</p><p>[bar</p><p>}baz</p>' ],
+			
+*/
+			
+			[ '<p>{foo}</p>', '<p>[foo]</p>' ],
+			[ '<p>foo{}</p>', '<p>foo[]</p>' ],
+			[ '<p>foo{</p>}', '<p>foo[]</p>' ],
+			[ '{<b></b><p>}foo</p>', '<b></b><p>[]foo</p>' ],
+			[ '{<p><b></b></p><p>}foo</p>', '<p><b></b></p><p>[]foo</p>' ],
+			[ '<p>{}foo</p>', '<p>[]foo</p>' ],
+			[ '{<p>}foo</p>', '<p>[]foo</p>' ],
+			[ '{}<p>foo</p>', '<p>[]foo</p>' ],
+			[ '{}<div><p>bar</p></div>', '<div><p>[]bar</p></div>' ],
+// no end container [ '[foo<p>}bar</p>', '[foo<p>}bar</p>' ],
+			[ '[foo<p><b>}bar</b></p>', '[foo<p>}<b>bar</b></p>' ],
+			[ '<span><b>[foo</b></span><p>}bar</p>', '<span><b>[foo</b></span><p>}bar</p>' ],
+			
+// no end container [ '{<p></p>}', '{}<p></p>' ],
+			// [ '<p>[foo</p><p>bar]</p><p>baz</p>', '<p>[foo</p><p>bar]</p><p>baz</p>' ],
+			// [ '<p>[foo</p><p>]bar</p><p>baz</p>', '<p>[foo</p><p>}bar</p><p>baz</p>' ],
+			// [ '<p>foo[</p><p>]bar</p><p>baz</p>', '<p>foo[</p><p>}bar</p><p>baz</p>' ],
+			
+			//[ '<p>foo</p><p>{bar</p><p>}baz</p>', '<p>foo</p><p>[bar</p><p>}baz</p>' ]
+			//
             // [ 'foo<p>{<i><u><b>bar}</b></u></i></p>baz', 'foo<p><i><u><b>[bar]</b></u></i></p>baz' ],
             // [ 'foo<p>{<i></i><u><b>bar}</b></u></p>baz', 'foo<p><i></i><u><b>[bar]</b></u></p>baz' ],
             // [ 'foo<p>{<i><br><b>bar}</b></i></p>baz', 'foo<p><i>{<br><b>bar]</b></i></p>baz' ],
@@ -284,6 +335,8 @@ function( TestUtils ) {
         ],
         flowHostTests = [         
 
+/*
+
             [ '<div>foo[</div><hr><div>]baz</div>', '<div>foo[</div><hr><div>}baz</div>' ],
             [ '<div>foo[</div><hr><div>}baz</div>', '<div>foo[</div><hr><div>}baz</div>' ],
             [ '<div>foo[</div><hr>}<div>baz</div>', '<div>foo[</div><hr><div>}baz</div>' ],
@@ -291,14 +344,20 @@ function( TestUtils ) {
             [ '<div>foo{</div><hr><div>]baz</div>', '<div>foo[</div><hr><div>}baz</div>' ],
             [ '<div>foo</div>{<hr><div>]baz</div>', '<div>foo</div>{<hr><div>}baz</div>' ],
             [ '<div>foo</div><hr>{<div>]baz</div>', '<div>foo</div><hr><div>[]baz</div>' ],
-            
-            [ 'foo{<div><div><div><div>bar}</div></div></div></div>baz', 'foo[<div><div><div><div>bar]</div></div></div></div>baz' ],
-            [ 'foo<div><div>{<div><div>bar}</div></div></div></div>baz', 'foo<div><div><div><div>[bar]</div></div></div></div>baz' ],
-            [ 'foo{<div><div><div><div>}bar</div></div></div></div>baz', 'foo[<div><div><div><div>}bar</div></div></div></div>baz' ],
-            [ 'foo<div><div>{<div><div>}bar</div></div></div></div>baz', 'foo<div><div><div><div>[]bar</div></div></div></div>baz' ],
-            [ 'foo{<div><div><div><div>]bar</div></div></div></div>baz', 'foo[<div><div><div><div>}bar</div></div></div></div>baz' ],
-            [ 'foo<div><div>{<div><div>]bar</div></div></div></div>baz', 'foo<div><div><div><div>[]bar</div></div></div></div>baz' ],
-            [ 'foo<div>{<div><br><div><div>bar}</div></div></div></div>baz', 'foo<div><div>{<br><div><div>bar]</div></div></div></div>baz' ],
+
+*/
+			
+			[ 'foo{<div><div>bar]</div></div>', 'foo[<div><div>bar]</div></div>' ],
+			[ 'foo<div>{<div>bar]</div></div>', 'foo<div><div>[bar]</div></div>' ],
+			[ 'foo<div>{<div>bar}</div></div>', 'foo<div><div>[bar]</div></div>' ],
+			[ 'foo<div>{<div>bar</div>}</div>', 'foo<div><div>[bar]</div></div>' ]
+			
+            // not a different flow test [ 'foo{<div><div><div><div>}bar</div></div></div></div>baz', 'foo[<div><div><div><div>}bar</div></div></div></div>baz' ],
+            // [ 'foo<div><div>{<div><div>}bar</div></div></div></div>baz', 'foo<div><div><div><div>[]bar</div></div></div></div>baz' ],
+            // [ 'foo{<div><div><div><div>]bar</div></div></div></div>baz', 'foo[<div><div><div><div>}bar</div></div></div></div>baz' ],
+            // [ 'foo<div><div>{<div><div>]bar</div></div></div></div>baz', 'foo<div><div><div><div>[]bar</div></div></div></div>baz' ],
+            // [ 'foo<div>{<div><br><div><div>bar}</div></div></div></div>baz', 'foo<div><div>{<br><div><div>bar]</div></div></div></div>baz' ]
+			
         ],
         // dl, dd, dt not covered by tests
         // http://www.w3.org/wiki/HTML_lists#Nesting_lists
@@ -419,11 +478,11 @@ function( TestUtils ) {
             
             // phrasingTests,
             
-            flowTests, // <p>
+			flowTests, // <p>
             
-            //flowHostTests, // flow elements host
+            // flowHostTests, // flow elements host
             
-            //listTests,
+            // listTests,
             
             [] // I am here to prevent trailing commas and make your life easier :D
         );
@@ -506,12 +565,12 @@ function( TestUtils ) {
                 
                 // add markers to selection
                 TestUtils.addBrackets(endRange);
-
+				
                 // get the content of the editable
-                result = Aloha.editables[0].getContents();
+                result = Aloha.editables[ 0 ].getContents();
 
 				// IE creates benign new lines, which cause false failures.
-				// We therefore remove them in unit tests 
+				// We therefore remove them for our unit tests 
 				result = result.replace( /[\n\r]/g, '' );
 
                 // compare the result with the expected result
