@@ -141,6 +141,7 @@ function( TestUtils ) {
         ],
         flowTests = [
 /*
+
 			//
 			//		Tests for start position
 			//		In front of block elements
@@ -179,6 +180,40 @@ function( TestUtils ) {
 			// therefore move the start position to the right instead
 			[ '<p>foo</p>{<p>bar]</p>', '<p>foo</p><p>[bar]</p>' ],
 			
+*/
+
+			//
+			//		Start position at start of editing host
+			//
+//			[ '{<p>}foo</p>', '<p>[]foo</p>' ],
+//			[ '{<p>}</p>', '{}<p></p>' ],
+//			
+//			[ '{<p></p><p>}</p>', '{}<p></p><p></p>' ],
+//			[ '{<p></p><p>}foo</p>', '<p></p><p>[]foo</p>' ],
+//			
+//			[ '{<p></p><div><p>}foo</p></div>', '<p></p><div><p>[]foo</p></div>' ],
+//			[ '{<p></p><div><p>}</p></div>', '{}<p></p><div><p></p></div>' ],
+//			
+//			[ '{<p></p><div></div><p>}foo</p>', '<p></p><div></div><p>[]foo</p>' ],
+//			[ '{<p></p><div></div><p>}</p>', '{}<p></p><div></div><p></p>' ],
+//			
+//			[ '<b></b>{<p></p><p>}foo</p>', '<b></b><p></p><p>[]foo</p>' ],
+//			[ '<b></b>{<p></p><p>}</p>', '{}<b></b><p></p><p></p>' ],
+//			
+//			[ '<p></p>{<div>}foo</div>', '<p></p><div>[]foo</div>' ],
+//			[ '<p></p>{<div>}</div>', '{}<p></p><div></div>' ],
+//			
+//			[ '<div><p></p>{<p>}foo</p></div>', '<div><p></p><p>[]foo</p></div>' ],
+//			[ '<div><p></p>{<p>}</p></div>', '{}<div><p></p><p></p></div>' ],
+			
+			[ 'bar<div>{<p>}foo</p></div>', 'bar<div><p>[]foo</p></div>' ],
+			[ 'bar<div>{<p>}</p></div>', 'bar[]<div><p></p></div>' ],
+			
+			[ 'bar<b></b>{<p></p><p>}foo</p>', 'bar<b>{</b><p></p><p>}foo</p>' ],
+			[ 'bar<b></b>{<p></p><p>}</p>', 'bar[]<b></b><p></p><p></p>' ] // TODO after positioning, check for overlap
+		
+/*
+		
 			//
 			//		Tests for start position
 			//		At the end of block elements
@@ -207,14 +242,14 @@ function( TestUtils ) {
 			
 			[ '<b>[foo</b>}<p></p>', '<b>[foo]</b><p></p>' ],
 			[ '<b>[foo</b>}<p></p><p>bar</p>', '<b>[foo]</b><p></p><p>bar</p>' ],
-			
+
 			[ '{}<p>foo</p>', '<p>[]foo</p>' ],
 			[ '<b>foo</b>{}<p>bar</p>', '<b>foo[]</b><p>bar</p>' ], // !!! IE Will not accept our expected range
 			[ '<p>foo</p>{}<p>bar</p>', '<p>foo</p><p>[]bar</p>' ],
 			
 			[ '[foo<div>}<p>bar</p></div>', '[foo<div><p>}bar</p></div>' ],
-			[ '<div><p>[foo</p></div><div>}<p>bar</p></div>', '<div><p>[foo</p></div><div><p>}bar</p></div>' ],
-			
+			[ '<div><p>[foo</p></div><div>}<p>bar</p></div>', '<div><p>[foo</p></div><div><p>}bar</p></div>' ]
+
 			//
 			//		Tests for end position
 			//		In front of block elements start node
@@ -256,12 +291,15 @@ function( TestUtils ) {
 			[ '<p>[foo</p>}<p><b>bar</b></p>', '<p>[foo</p><p>}<b>bar</b></p>' ],
 			[ '[foo<p></p>}<p>bar</p>', '[foo<p></p><p>}bar</p>' ],
 			[ '[foo<p>bar<b>test</b></p>}<p>test</p>', '[foo<p>bar<b>test</b></p><p>}test</p>' ],
-// weird	[ '{<p></p>}<p>bar</p>', '<p></p><p>[]bar</p>' ],
+			[ '{<p></p>}<p>bar</p>', '<p></p><p>[]bar</p>' ],
 			[ '<b>[foo</b></p><div>}<p>bar</p></div>', '<b>[foo</b><p></p><div><p>}bar</p></div>' ],
 			
 			[ '<div><p>[foo</p>}<p></p></div>bar', '<div><p>[foo]</p><p></p></div>bar' ],
-			[ '<p>[foo</p>}<p></p>', '<p>[foo]</p><p></p>' ],
+			[ '<p>[foo</p>}<p></p>', '<p>[foo]</p><p></p>' ]
 
+*/
+
+/*
 			//
 			//		Tests for end position
 			//		In front of block element's end node
@@ -272,12 +310,6 @@ function( TestUtils ) {
 			
 			[ '<p>[foo}</p>', '<p>[foo]</p>' ],
 			[ '[foo<p>}</p>', '[foo]<p></p>' ],
-			[ '{<b></b><p>}</p>', '{}<b></b><p></p>' ],
-			
-			
-// not a flow element fixes
-//			[ '<b></b><p><b></b></p>{<b></b><p>}</p>', '{}<b></b><p><b></b></p><b></b><p></p>' ],
-//			[ '<div>test<b></b><p><b></b></p>{<b></b><p>}</p></div>', '<div>test[]<b></b><p><b></b></p><b></b><p></p></div>' ],
 			
 			[ '[foo<div><p>}</p></div>', '[foo]<div><p></p></div>' ],
 			[ '<p>[foo<b>bar</b>}</p>', '<p>[foo<b>bar]</b></p>' ],
@@ -297,9 +329,9 @@ function( TestUtils ) {
 			[ '<p>foo</p>{<p>bar}</p><p>baz</p>', '<p>foo</p><p>[bar]</p><p>baz</p>' ]
 
 */
-			
-//*/
-			
+
+/*
+
 			//
 			//		Start position in front of textNode
 			//
@@ -327,8 +359,35 @@ function( TestUtils ) {
 			[ '<p>foo{<b>bar]</b></p>', '<p>foo<b>[bar]</b></p>' ],
 			[ '<p>foo</p>{<b>bar]</b>', '<p>foo</p><b>[bar]</b>' ],
 			[ '<b>foo</b>{<b>bar]</b>', '<b>foo</b><b>[bar]</b>' ]
+
+*/
+
+/*
+
+			//
+			//		End position in front of textNode
+			//
+			// [ '<b>[foo}</b>', '<b>[foo]</b>' ],
+			// [ '<b>[foo<i>bar</i>}</b>', '<b>[foo<i>bar]</i></b>' ],
+			// [ '<b>[foo<i></i>}</b>', '<b>[foo]<i></i></b>' ],
+//			[ '<b>[foo<u></u><i></i>}</b>', '<b>[foo]<u></u><i></i></b>' ],
+//			[ '<b>[foo<u><i></i></u>}</b>', '<b>[foo]<u><i></i></u></b>' ],
+//			[ '<p>[foo</p><b><i></i>}</b>', '<p>[foo]</p><b><i></i></b>' ],
+//			[ '<b>[foo</b><p></p><i>}</i>', '<b>[foo]</b><p></p><i></i>' ],
+//			[ '<b>[foo</b><p><i>}</i></p>', '<b>[foo]</b><p><i></i></p>' ],
+//			[ '<b>[foo</b><p>bar<i>}</i></p>', '<b>[foo</b><p>bar]<i></i></p>' ]
+
+*/
+
+/*
+
+			//
+			// IE does not accept our expected selection for the next 3 tests
+			//
+			[ '<div></div>{<b></b><p>}</p>', '{}<div></div><b></b><p></p>' ],
+			[ '<div>{<b></b></div><p>}</p>', '{}<div><b></b></div><p></p>' ],
+			[ '<b></b><div>{<b></b></div><p>}</p>', '{}<b></b><div><b></b></div><p></p>' ]
 			
-			/*
 			
 			[ 'foo{<b><i></i></b>}', 'foo{}<b><i></i></b>' ],
 			[ 'foo{<b></b>}', 'foo{}<b></b>' ],
@@ -357,13 +416,11 @@ function( TestUtils ) {
 			[ '{<p>}foo</p>', '<p>[]foo</p>' ],
 			[ '{}<p>foo</p>', '<p>[]foo</p>' ],
 			[ '{}<div><p>bar</p></div>', '<div><p>[]bar</p></div>' ],
-// no end container [ '[foo<p>}bar</p>', '[foo<p>}bar</p>' ],
 			[ '[foo<p><b>}bar</b></p>', '[foo<p>}<b>bar</b></p>' ],
 			[ '<span><b>[foo</b></span><p>}bar</p>', '<span><b>[foo</b></span><p>}bar</p>' ],
-			
-			*/
-			
-// no end container [ '{<p></p>}', '{}<p></p>' ],
+
+*/
+
 			// [ '<p>[foo</p><p>bar]</p><p>baz</p>', '<p>[foo</p><p>bar]</p><p>baz</p>' ],
 			// [ '<p>[foo</p><p>]bar</p><p>baz</p>', '<p>[foo</p><p>}bar</p><p>baz</p>' ],
 			// [ '<p>foo[</p><p>]bar</p><p>baz</p>', '<p>foo[</p><p>}bar</p><p>baz</p>' ],
