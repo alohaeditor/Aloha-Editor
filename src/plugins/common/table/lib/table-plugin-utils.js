@@ -42,8 +42,8 @@ function ($) {
 				var skip = 0;
 				for (var ci = 0; ci < cells.length; ci++) {
 					var cell = cells[ci];
-					var colspan = parseInt($(cell).attr('colspan')) || 1;
-					var rowspan = parseInt($(cell).attr('rowspan')) || 1;
+					var colspan = Utils.colspan(cell);
+					var rowspan = Utils.rowspan(cell);
 					
 					while (adjust[ci + skip]) {
 						adjust[ci + skip] -= 1;
@@ -161,8 +161,8 @@ function ($) {
 		 */
 		'splitCell': function (cell, createCell) {
 			var $cell = $(cell);
-			var colspan = parseInt($cell.attr('colspan')) || 1;
-			var rowspan = parseInt($cell.attr('rowspan')) || 1;
+			var colspan = Utils.rowspan( cell );
+			var rowspan = Utils.colspan( cell );
 
 			var $row  = $cell.parent();
 			var $rows = $row.parent().children();
@@ -182,6 +182,24 @@ function ($) {
 			}
 			$cell.removeAttr('colspan');
 			$cell.removeAttr('rowspan');
+		},
+		/**
+		 * @param cell
+		 *        the DOM node for a table cell (td/th)
+		 * @return
+		 *        a numeric value indicating the number of rows the cell spans
+		 */
+		'rowspan': function (cell) {
+			return parseInt( $( cell ).attr('rowspan') ) || 1;
+		},
+		/**
+		 * @param cell
+		 *        the DOM node for a table cell (td/th)
+		 * @return
+		 *        a numeric value indicating the number of columns the cell spans
+		 */
+		'colspan': function (cell) {
+			return parseInt( $( cell ).attr('colspan') ) || 1;
 		}
 	};
 	return Utils;
