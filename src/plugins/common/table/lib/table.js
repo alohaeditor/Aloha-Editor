@@ -685,7 +685,7 @@ return function (TablePlugin) {
 		var 
 			rowIDs = [],
 			rowsToDelete = {},
-			Table = this;
+			table = this;
 
 		// flag if the table should be deleted
 		var deleteTable = false;
@@ -733,37 +733,39 @@ return function (TablePlugin) {
 
 			// get all rows
 			var rows = this.obj.find('tr');
-			var rows2delete = new Array();
 
-			// build the array with the row-ids of th rows which should be deleted
-			for (var i = 0; i < rowIDs.length; i++) {
-				rows2delete.push(jQuery(rows[rowIDs[i]]));
-			}
-
-			// delete cells from cells-array
-			for (var i = 0; i < rows2delete.length; i ++) {
-				var cols = rows2delete[i].children("td").toArray();
-				for (var j = 0; j < cols.length; j++) {
-					for (var m = 0; m < this.cells.length; m ++) {
-						if (cols[j] == this.cells[m].obj.get(0)) {
-							this.cells.splice(m, 1);
-							m = this.cells.length;
-						}
-					}
+			//splits all cells on the rows to be deleted
+			jQuery.each( rowIDs, function ( unused, rowId ) {
+				var row = rows[ rowId ];
+				for (var i = 0; i < row.cells.length; i++) {
+					Utils.splitCell( row.cells[i], function () {
+						return table.newActiveCell().obj;
+					});
 				}
-			}
+			});
 
-			// remove the rows
-			for (var i = 0; i < rows2delete.length; i++) {
-				rows2delete[i].remove();
-			}
+			//decreses rowspans of cells that span the row to be deleted
+			//and removes the row
+			var grid = Utils.makeGrid( rows );
+			jQuery.each( rowIDs, function ( unused, rowId ) {
+				var row = grid[ rowId ];
+				for ( var j = 0; j < row.length; ) {
+					var cell = row[ j ];
+					var rowspan = Utils.rowspan( cell.cell );
+					if ( 1 < rowspan ) {
+						jQuery( cell.cell ).attr( 'rowspan', rowspan - 1);
+					}
+					j += cell.colspan;
+				}
+				jQuery( rows[ rowId ] ).remove();
+			});
 
 			// reduce the attribute storing the number of rows in the table
-			this.numRows -= rows2delete.length;
+			this.numRows -= rowIDs.length;
 
 			// IE needs a timeout to work properly
 			setTimeout( function() {
-				var lastCell = jQuery( rows[1].cells[ focusColID +1 ] );
+				var lastCell = jQuery( rows[1].cells[ focusRowId +1 ] );
 				lastCell.focus()
 			}, 5);
 
