@@ -185,33 +185,37 @@ function( TestUtils ) {
 			//
 			//		Start position at start of editing host
 			//
-//			[ '{<p>}foo</p>', '<p>[]foo</p>' ],
+//			[ '{}<p></p>', '{}<p></p>' ],
 //			[ '{<p>}</p>', '{}<p></p>' ],
-//			
-//			[ '{<p></p><p>}</p>', '{}<p></p><p></p>' ],
-//			[ '{<p></p><p>}foo</p>', '<p></p><p>[]foo</p>' ],
-//			
-//			[ '{<p></p><div><p>}foo</p></div>', '<p></p><div><p>[]foo</p></div>' ],
-//			[ '{<p></p><div><p>}</p></div>', '{}<p></p><div><p></p></div>' ],
-//			
-//			[ '{<p></p><div></div><p>}foo</p>', '<p></p><div></div><p>[]foo</p>' ],
-//			[ '{<p></p><div></div><p>}</p>', '{}<p></p><div></div><p></p>' ],
-//			
-//			[ '<b></b>{<p></p><p>}foo</p>', '<b></b><p></p><p>[]foo</p>' ],
-//			[ '<b></b>{<p></p><p>}</p>', '{}<b></b><p></p><p></p>' ],
-//			
-//			[ '<p></p>{<div>}foo</div>', '<p></p><div>[]foo</div>' ],
-//			[ '<p></p>{<div>}</div>', '{}<p></p><div></div>' ],
-//			
-//			[ '<div><p></p>{<p>}foo</p></div>', '<div><p></p><p>[]foo</p></div>' ],
-//			[ '<div><p></p>{<p>}</p></div>', '{}<div><p></p><p></p></div>' ],
+//			[ '{<p></p>}', '{}<p></p>' ],
+//			[ '{<p></p><p></p>}', '{}<p></p><p></p>' ],
+//			[ '{<p>}foo</p>', '<p>[]foo</p>' ],
+//			[ '{<p>}</p>', '{}<p></p>' ]
+			
+			[ '{<p></p><p>}</p>', '{}<p></p><p></p>' ],
+			[ '{<p></p><p>}foo</p>', '<p></p><p>[]foo</p>' ],
+			
+			[ '{<p></p><div><p>}foo</p></div>', '<p></p><div><p>[]foo</p></div>' ],
+			[ '{<p></p><div><p>}</p></div>', '{}<p></p><div><p></p></div>' ],
+			
+			[ '{<p></p><div></div><p>}foo</p>', '<p></p><div></div><p>[]foo</p>' ],
+			[ '{<p></p><div></div><p>}</p>', '{}<p></p><div></div><p></p>' ],
+			
+			[ '<b></b>{<p></p><p>}foo</p>', '<b></b><p></p><p>[]foo</p>' ],
+			[ '<b></b>{<p></p><p>}</p>', '{}<b></b><p></p><p></p>' ],
+			
+			[ '<p></p>{<div>}foo</div>', '<p></p><div>[]foo</div>' ],
+			[ '<p></p>{<div>}</div>', '{}<p></p><div></div>' ],
+			
+			[ '<div><p></p>{<p>}foo</p></div>', '<div><p></p><p>[]foo</p></div>' ],
+			[ '<div><p></p>{<p>}</p></div>', '{}<div><p></p><p></p></div>' ],
 			
 			[ 'bar<div>{<p>}foo</p></div>', 'bar<div><p>[]foo</p></div>' ],
 			[ 'bar<div>{<p>}</p></div>', 'bar[]<div><p></p></div>' ],
 			
 			[ 'bar<b></b>{<p></p><p>}foo</p>', 'bar<b>{</b><p></p><p>}foo</p>' ],
-			[ 'bar<b></b>{<p></p><p>}</p>', 'bar[]<b></b><p></p><p></p>' ] // TODO after positioning, check for overlap
-		
+			[ 'bar<b></b>{<p></p><p>}</p>', 'bar[]<b></b><p></p><p></p>' ]
+
 /*
 		
 			//

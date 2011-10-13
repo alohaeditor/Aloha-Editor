@@ -2594,7 +2594,15 @@ function getLeftmostScion ( node, predicate ) {
 	//scion = getNearestRightNode( scion );
 	scion = getRightNeighbor( scion );
 	if ( scion ) {
-		return getLeftmostScion( scion, predicate ) || scion;
+		var grandScion = getLeftmostScion( scion, predicate );
+		
+		if ( grandScion ) {
+			return grandScion;
+		}
+		
+		if ( predicate( scion ) ) {
+			return scion;
+		}
 	}
 	
 	return null;
@@ -2625,7 +2633,15 @@ function getRightmostScion ( node, predicate ) {
 	// scion = getNearestLeftNode( scion );
 	scion = getLeftNeighbor( scion );
 	if ( scion ) {
-		return getRightmostScion( scion, predicate ) || scion;
+		var grandScion = getRightmostScion( scion, predicate );
+		
+		if ( grandScion ) {
+			return grandScion;
+		}
+		
+		if ( predicate( scion ) ) {
+			return scion;
+		}
 	}
 	
 	return null;
@@ -2643,7 +2659,7 @@ function getRightmostScion ( node, predicate ) {
  * @param {Function} predicate
  */
 function getNearestLeftNode ( node, predicate ) {
-	if ( !node ) {
+	if ( !node || isEditingHost( node ) ) {
 		return null;
 	}
 	
@@ -2687,7 +2703,7 @@ function getNearestLeftNode ( node, predicate ) {
  * <b></b><b></b><p><b></b><b>[f</b>foo]</p>
  */
 function getNearestRightNode ( node, predicate ) {
-	if ( !node ) {
+	if ( !node || isEditingHost( node ) ) {
 		return null;
 	}
 	
@@ -2837,15 +2853,20 @@ function getEndPosition ( container, offset ) {
 };
 
 function getEditingHost ( node ) {
-	while ( ( node = node.parentNode ) && !isEditingHost( node ) );
+	while ( !isEditingHost( node ) && ( node = node.parentNode ) );
 	return node;
 };
 
 function getStartPositionFromEndOfInlineNode ( node, offset ) {
-	debugger;
+	//debugger;
+	// Chrome gets here
+	return {
+		node   : node,
+		offset : offset
+	};
 };
 
-function getStartPositionFromFrontOfInlineNode ( node, offset ) {debugger;
+function getStartPositionFromFrontOfInlineNode ( node, offset ) {
 	var child = node.childNodes[ offset ];
 	var stop;
 	
@@ -2915,8 +2936,6 @@ function getStartPositionFromFrontOfInlineNode ( node, offset ) {debugger;
 
 function getEndPositionFromEndOfInlineNode ( node, offset ) {
 	var stop;
-	
-	//debugger;
 	
 	// Satisfies
 	// [ '<b>[foo}</b>', '<b>[foo]</b>' ],
@@ -3183,6 +3202,7 @@ function getEndPositionFromFrontOfBlockNode ( node, offset ) {
 	
 	// We cannot go left or right.. jump to the front of the editing host
 	// Satisfies:
+	// [ '{}<p></p>', '{}<p></p>' ]
 	// [ '{<p>}</p>', '{}<p></p>' ]
 	// [ '{<p></p>}', '{<p></p>}' ]
 	// [ '{<p></p>}<p></p>', '{}<p></p><p></p>' ]
