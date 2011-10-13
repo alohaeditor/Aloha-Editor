@@ -6964,29 +6964,29 @@ commands.insertimage = {
 ///// The insertLineBreak command /////
 //@{
 commands.insertlinebreak = {
-	action: function(value) {
+	action: function(value, range) {
 		// "Delete the contents of the active range, with strip wrappers false."
-		deleteContents(getActiveRange(), {stripWrappers: false});
+		deleteContents(range, {stripWrappers: false});
 
 		// "If the active range's start node is neither editable nor an editing
 		// host, abort these steps."
-		if (!isEditable(getActiveRange().startContainer)
-		&& !isEditingHost(getActiveRange().startContainer)) {
+		if (!isEditable(range.startContainer)
+		&& !isEditingHost(range.startContainer)) {
 			return;
 		}
 
 		// "If the active range's start node is an Element, and "br" is not an
 		// allowed child of it, abort these steps."
-		if (getActiveRange().startContainer.nodeType == Node.ELEMENT_NODE
-		&& !isAllowedChild("br", getActiveRange().startContainer)) {
+		if (range.startContainer.nodeType == Node.ELEMENT_NODE
+		&& !isAllowedChild("br", range.startContainer)) {
 			return;
 		}
 
 		// "If the active range's start node is not an Element, and "br" is not
 		// an allowed child of the active range's start node's parent, abort
 		// these steps."
-		if (getActiveRange().startContainer.nodeType != Node.ELEMENT_NODE
-		&& !isAllowedChild("br", getActiveRange().startContainer.parentNode)) {
+		if (range.startContainer.nodeType != Node.ELEMENT_NODE
+		&& !isAllowedChild("br", range.startContainer.parentNode)) {
 			return;
 		}
 
@@ -6994,13 +6994,13 @@ commands.insertlinebreak = {
 		// offset is zero, call collapse() on the context object's Selection,
 		// with first argument equal to the active range's start node's parent
 		// and second argument equal to the active range's start node's index."
-		if (getActiveRange().startContainer.nodeType == Node.TEXT_NODE
-		&& getActiveRange().startOffset == 0) {
-			var newNode = getActiveRange().startContainer.parentNode;
-			var newOffset = getNodeIndex(getActiveRange().startContainer);
-			getSelection().collapse(newNode, newOffset);
-			getActiveRange().setStart(newNode, newOffset);
-			getActiveRange().setEnd(newNode, newOffset);
+		if (range.startContainer.nodeType == Node.TEXT_NODE
+		&& range.startOffset == 0) {
+			var newNode = range.startContainer.parentNode;
+			var newOffset = getNodeIndex(range.startContainer);
+			Aloha.getSelection().collapse(newNode, newOffset);
+			range.setStart(newNode, newOffset);
+			range.setEnd(newNode, newOffset);
 		}
 
 		// "If the active range's start node is a Text node and its start
@@ -7008,13 +7008,13 @@ commands.insertlinebreak = {
 		// context object's Selection, with first argument equal to the active
 		// range's start node's parent and second argument equal to one plus
 		// the active range's start node's index."
-		if (getActiveRange().startContainer.nodeType == Node.TEXT_NODE
-		&& getActiveRange().startOffset == getNodeLength(getActiveRange().startContainer)) {
-			var newNode = getActiveRange().startContainer.parentNode;
-			var newOffset = 1 + getNodeIndex(getActiveRange().startContainer);
-			getSelection().collapse(newNode, newOffset);
-			getActiveRange().setStart(newNode, newOffset);
-			getActiveRange().setEnd(newNode, newOffset);
+		if (range.startContainer.nodeType == Node.TEXT_NODE
+		&& range.startOffset == getNodeLength(range.startContainer)) {
+			var newNode = range.startContainer.parentNode;
+			var newOffset = 1 + getNodeIndex(range.startContainer);
+			Aloha.getSelection().collapse(newNode, newOffset);
+			range.setStart(newNode, newOffset);
+			range.setEnd(newNode, newOffset);
 		}
 
 		// "Let br be the result of calling createElement("br") on the context
@@ -7022,25 +7022,27 @@ commands.insertlinebreak = {
 		var br = document.createElement("br");
 
 		// "Call insertNode(br) on the active range."
-		getActiveRange().insertNode(br);
+		range.insertNode(br);
 
 		// "Call collapse() on the context object's Selection, with br's parent
 		// as the first argument and one plus br's index as the second
 		// argument."
-		getSelection().collapse(br.parentNode, 1 + getNodeIndex(br));
-		getActiveRange().setStart(br.parentNode, 1 + getNodeIndex(br));
-		getActiveRange().setEnd(br.parentNode, 1 + getNodeIndex(br));
+		Aloha.getSelection().collapse(br.parentNode, 1 + getNodeIndex(br));
+		range.setStart(br.parentNode, 1 + getNodeIndex(br));
+		range.setEnd(br.parentNode, 1 + getNodeIndex(br));
 
 		// "If br is a collapsed line break, call createElement("br") on the
 		// context object and let extra br be the result, then call
 		// insertNode(extra br) on the active range."
 		if (isCollapsedLineBreak(br)) {
-			getActiveRange().insertNode(document.createElement("br"));
+			var endBr = document.createElement("br");
+			endBr.setAttribute("class", "aloha-end-br");
+			range.insertNode(endBr);
 
 			// Compensate for nonstandard implementations of insertNode
-			getSelection().collapse(br.parentNode, 1 + getNodeIndex(br));
-			getActiveRange().setStart(br.parentNode, 1 + getNodeIndex(br));
-			getActiveRange().setEnd(br.parentNode, 1 + getNodeIndex(br));
+			Aloha.getSelection().collapse(br.parentNode, 1 + getNodeIndex(br));
+			range.setStart(br.parentNode, 1 + getNodeIndex(br));
+			range.setEnd(br.parentNode, 1 + getNodeIndex(br));
 		}
 	}
 };
