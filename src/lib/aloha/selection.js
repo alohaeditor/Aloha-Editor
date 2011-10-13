@@ -2814,7 +2814,7 @@ function getEndPosition ( container, offset ) {
 			return getEndPositionFromEndOfBlockNode( container, offset );
 		}
 		
-		// The offset is somewhere after the start of the container, therefore
+		// The offset is somewhere before the end of the container, therefore
 		// check if the node at offset index is a block element.
 		if ( isBlockElement( container.childNodes[ offset ] ) ) {
 			return getEndPositionFromFrontOfBlockNode( container, offset );
@@ -2999,7 +2999,11 @@ function getStartPositionFromFrontOfBlockNode ( node, offset ) {
 	if ( stop ) {
 		// Satisfies:
 		// [ 'foo<b></b>{<p>bar]</p>', 'foo<b>{</b><p>bar]</p>' ]
-		if ( getRightNeighbor( stop ) != child ) {
+		// [ 'bar<b></b>{<p></p><p>}foo</p>', 'bar<b>{</b><p></p><p>}foo</p>' ],
+		// [ 'bar<b></b>{<p></p><p>}</p>', 'bar[]<b></b><p></p><p></p>' ]
+		if ( getRightNeighbor( stop ) != child &&
+				!getLeftmostScion( child, isTextNode ) &&
+					getNearestRightNode( child, isTextNode ) ) {
 			stop = getNearestLeftNode( child );
 		}
 		
@@ -3106,17 +3110,10 @@ function getEndPositionFromEndOfBlockNode ( node, offset ) {
 	// There is nowhere to land left of the end position either
 	// Satisfies:
 	// [ '{<b></b><p>}</p>', '{}<b></b><p></p>' ]
-	stop = getLeftNeighbor( node );
-	if ( stop ) {
-		return {
-			node   : stop.parentNode,
-			offset : 0
-		};
-	}
-	
+	// [ '{<p>}</p>', '{}<p></p>' ]
 	return {
-		node   : node,
-		offset : offset
+		node   : getEditingHost( node ),
+		offset : 0
 	};
 };
 
@@ -3133,7 +3130,8 @@ function getEndPositionFromFrontOfBlockNode ( node, offset ) {
 	var child = node.childNodes[ offset ];
 	var stop;
 	
-	// If the left neighbor of this node is a block element, we are not
+	// If there are no preceeding sibling (nodes to the left of our child node)
+	// if the left neighbor of this node is a block element, we are not
 	// permitted to explorer anywhere left of our current position to
 	// find a new landing position. Our only option in to go right.
 	// We satisfy:
@@ -3183,21 +3181,14 @@ function getEndPositionFromFrontOfBlockNode ( node, offset ) {
 		};
 	}
 	
-	// We cannot find a landing position on the left, then jump to the very
-	// front.
+	// We cannot go left or right.. jump to the front of the editing host
 	// Satisfies:
+	// [ '{<p>}</p>', '{}<p></p>' ]
+	// [ '{<p></p>}', '{<p></p>}' ]
 	// [ '{<p></p>}<p></p>', '{}<p></p><p></p>' ]
-	stop = getLeftNeighbor( child );
-	if ( stop ) {
-		return {
-			stop   : stop.parentNode,
-			offset : 0
-		};
-	}
-	
 	return {
-		stop   : node,
-		offset : offset
+		node   : getEditingHost( child ),
+		offset : 0
 	};
 };
 
