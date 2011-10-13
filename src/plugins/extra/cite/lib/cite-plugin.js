@@ -17,7 +17,7 @@ define([
 	'i18n!aloha/nls/i18n',
 	// css
 	'css!cite/css/cite.css'
-], function CiteClosure ($, Plugin, FloatingMenu, Format, i18n, i18nCore) {
+], function CiteClosure (jQuery, Plugin, FloatingMenu, Format, i18n, i18nCore) {
 	
 	'use strict';
 	
@@ -84,8 +84,8 @@ define([
 	 */
 	function nsSel () {
 		var strBldr = [], prx = ns;
-		$.each(arguments, function () { strBldr.push('.' + (this == '' ? prx : prx + '-' + this)); });
-		return $.trim(strBldr.join(' '));
+		jQuery.each(arguments, function () { strBldr.push('.' + (this == '' ? prx : prx + '-' + this)); });
+		return jQuery.trim(strBldr.join(' '));
 	};
 	
 	/**
@@ -101,8 +101,8 @@ define([
 	 */
 	function nsClass () {
 		var strBldr = [], prx = ns;
-		$.each(arguments, function () { strBldr.push(this == '' ? prx : prx + '-' + this); });
-		return $.trim(strBldr.join(' '));
+		jQuery.each(arguments, function () { strBldr.push(this == '' ? prx : prx + '-' + this); });
+		return jQuery.trim(strBldr.join(' '));
 	};
 	
 	/**
@@ -148,7 +148,7 @@ define([
 				Aloha.settings.plugins		&&
 				Aloha.settings.plugins.cite &&
 				Aloha.settings.plugins.cite) {
-				var referenceContainer = $(Aloha.settings.plugins.cite.referenceContainer);
+				var referenceContainer = jQuery(Aloha.settings.plugins.cite.referenceContainer);
 				
 				if (referenceContainer.length > 0) {
 					this.referenceContainer = referenceContainer;
@@ -265,9 +265,9 @@ define([
 			Aloha.bind('aloha-selection-changed', function(event, rangeObject){
 				Format.multiSplitButton.showItem('blockquote');
 				
-				var buttons = $('button' + nsSel('button'));
+				var buttons = jQuery('button' + nsSel('button'));
 				
-				$.each(that.buttons, function(index, button) {
+				jQuery.each(that.buttons, function(index, button) {
 					// set to false to prevent multiple buttons being active when they should not
 					var statusWasSet = false;
 					var tagName;
@@ -335,7 +335,7 @@ define([
 		
 		addBlockQuote: function () {
 			var classes = [nsClass('wrapper'), nsClass(++uid)].join(' ');
-			var markup = $(supplant(
+			var markup = jQuery(supplant(
 					'<blockquote class="{classes}" data-cite-id="{uid}"></blockquote>',
 					{uid:uid, classes:classes}
 				));
@@ -357,7 +357,7 @@ define([
 		
 		addInlineQuote: function () {
 			var classes = [nsClass('wrapper'), nsClass(++uid)].join(' ');
-			var markup = $(supplant(
+			var markup = jQuery(supplant(
 					'<q class="{classes}" data-cite-id="{uid}"></q>',
 					{uid:uid, classes:classes}
 				));
@@ -427,7 +427,7 @@ define([
 				return;
 			}
 			
-			var wrapper = $('.aloha-editable-active ' + nsSel(uid));
+			var wrapper = jQuery('.aloha-editable-active ' + nsSel(uid));
 			var note    = 'cite-note-' + uid;
 			var ref     = 'cite-ref-'  + uid;
 			
@@ -477,7 +477,7 @@ define([
 			
 			if (link) {
 				// Update link attribute
-				var el = $(nsSel(uid)).attr('cite', link);
+				var el = jQuery(nsSel(uid)).attr('cite', link);
 				
 				// Highlight animation for happy user
 				var round = Math.round;
@@ -505,7 +505,7 @@ define([
 										 round(from[2] + diff[2] * val),
 										       from[3] + diff[3] * val   ];
 							
-							$(this).css({
+							jQuery(this).css({
 								'background-color': 'rgba(' + rgba.join(',') + ')',
 								'box-shadow': '0 0 ' + (20 * (1 - val)) + 'px rgba(' + from.join(',') + ')'
 							});
@@ -515,7 +515,7 @@ define([
 			
 			// Update information in references list for this citation
 			if (this.referenceContainer) {
-				$('li#cite-note-' + uid + ' span').html(
+				jQuery('li#cite-note-' + uid + ' span').html(
 					supplant(
 						link ? '<a class="external" target="_blank" href="{url}">{url}</a>' : '',
 						{url:link}

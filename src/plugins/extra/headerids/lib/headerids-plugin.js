@@ -98,19 +98,20 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
                     
                     onInit     : function () {
                         var that = this,
-                            content = this.setContent('<label class="'+nsClass('label')+'" for="'+nsClass('input')+'">'+i18n.t('headerids.label.target')+'</label><input id="'+nsClass('input')+'" class="'+nsClass('input')+'" type="text" name="value"/> <button class="'+nsClass('reset-button')+'">'+i18n.t('headerids.button.reset')+'</button><button class="'+nsClass('set-button')+'">'+i18n.t('headerids.button.set')+'</button>').content;
+                            content = this.setContent('<label class="'+nsClass('label')+'" for="'+nsClass('input')+'">'+i18n.t('headerids.label.target')+'</label>' + 
+                            							'<input id="'+nsClass('input')+'" class="'+nsClass('input')+'" type="text" name="value"/>').content;
                         
-                        content.find(nsSel('set-button')).click(function () {
-                            var content = that.content;
-							jQuery(that.effective).attr('id',jQuery(nsSel('input')).val());
-							jQuery(that.effective).addClass('aloha-customized');
-                        });
-						
-						content.find(nsSel('reset-button')).click(function () {
-                            var content = that.content;
-                            pl.processH(that.effective);
-							jQuery(that.effective).removeClass('aloha-customized');
-							that.content.find(nsSel('input')).val(that.effective.attr('id'));
+                        jQuery(nsSel('input')).live( 'keyup', function() {
+                        	jQuery(that.effective).attr('id',jQuery(nsSel('input')).val());
+                        	jQuery(that.effective).addClass('aloha-customized');
+						 });
+                        
+                        content.find(nsSel('input')).change( function() {
+                        	if(content.find(nsSel('input')).val() == "") {
+                        		pl.processH(that.effective);
+    							jQuery(that.effective).removeClass('aloha-customized');
+    							that.content.find(nsSel('input')).val(that.effective.attr('id'));
+                        	}
                         });
                     },
                     
