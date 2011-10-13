@@ -207,14 +207,14 @@ function( TestUtils ) {
 			
 			[ '<b>[foo</b>}<p></p>', '<b>[foo]</b><p></p>' ],
 			[ '<b>[foo</b>}<p></p><p>bar</p>', '<b>[foo]</b><p></p><p>bar</p>' ],
-
+			
 			[ '{}<p>foo</p>', '<p>[]foo</p>' ],
 			[ '<b>foo</b>{}<p>bar</p>', '<b>foo[]</b><p>bar</p>' ], // !!! IE Will not accept our expected range
 			[ '<p>foo</p>{}<p>bar</p>', '<p>foo</p><p>[]bar</p>' ],
 			
 			[ '[foo<div>}<p>bar</p></div>', '[foo<div><p>}bar</p></div>' ],
 			[ '<div><p>[foo</p></div><div>}<p>bar</p></div>', '<div><p>[foo</p></div><div><p>}bar</p></div>' ],
-
+			
 			//
 			//		Tests for end position
 			//		In front of block elements start node
@@ -294,18 +294,69 @@ function( TestUtils ) {
 			
 			[ '<p>foo</p>test{<p>bar</p>}<p>baz</p>', '<p>foo</p>test[<p>bar</p><p>}baz</p>' ],
 			[ '<p>foo{</p><p>bar}</p><p>baz</p>', '<p>foo[</p><p>bar]</p><p>baz</p>' ],
-			[ '<p>foo</p>{<p>bar}</p><p>baz</p>', '<p>foo</p><p>[bar]</p><p>baz</p>' ],
-			
-			[ '<p>foo</p><p>{bar}</p><p>baz</p>', '<p>foo</p><p>[bar]</p><p>baz</p>' ],
-			[ '<p>foo</p><p>{bar</p>}<p>baz</p>', '<p>foo</p><p>[bar</p><p>}baz</p>' ],
-			
+			[ '<p>foo</p>{<p>bar}</p><p>baz</p>', '<p>foo</p><p>[bar]</p><p>baz</p>' ]
+
 */
 			
-			// [ '<p>{foo}</p>', '<p>[foo]</p>' ],
+//*/
+			
 			// [ '<p>foo{}</p>', '<p>foo[]</p>' ],
 			// [ '<p>foo{</p>}', '<p>foo[]</p>' ],
+			
+			//
+			//		Start position in front of textNode
+			//
+			
+			// [ '<p>{foo]</p>', '<p>[foo]</p>' ],
+			// [ '<b>{foo]</b>', '<b>[foo]</b>' ],
+			
+			//
+			//		Start position in front of inline node
+			//
+			
+//			[ '{<b>foo]</b>', '<b>[foo]</b>' ],
+//			[ 'foo{<b><i>bar]</i></b>', 'foo<b><i>[bar]</i></b>' ],
+//			[ 'foo{<b><i></i></b>bar]', 'foo<b><i></i></b>[bar]' ],
+//			[ 'foo{<b><i></i></b><b>bar]</b>', 'foo<b><i></i></b><b>[bar]</b>' ],
+			[ 'foo{<b><i></i></b><p><b>bar]</b></p>', 'foo<b><i>{</i></b><p><b>bar]</b></p>' ]
+//			[ 'foo{<b><i></i></b><p></p><p><b>bar]</b></p>', 'foo<b><i>{</i></b><p></p><p><b>bar]</b></p>' ],
+//			
+//			[ 'foo{<b><i></i></b>}', 'foo{}<b><i></i></b>' ],
+//			[ 'foo{<b></b>}', 'foo{}<b></b>' ],
+//			[ '{<b></b>}', '{}<b></b>' ],
+			
+//			[ '<p>foo</p><p>{bar}</p><p>baz</p>', '<p>foo</p><p>[bar]</p><p>baz</p>' ],
+//			[ '<p>foo</p><p>{bar</p>}<p>baz</p>', '<p>foo</p><p>[bar</p><p>}baz</p>' ]
+			
+			// [ '<p>{<b>foo]</b></p>', '<p><b>[foo]</b></p>' ],
+			// [ '<p>foo{<b>bar]</b></p>', '<p>foo<b>[bar]</b></p>' ],
+			// [ '<p>foo</p>{<b>bar]</b>', '<p>foo</p><b>[bar]</b>' ],
+			// [ '<b>foo</b>{<b>bar]</b>', '<b>foo</b><b>[bar]</b>' ]
+			
+			
+			
+			
+			/*
+			
+			[ '<p>{<b></b>}</p>', '{}<p><b></b></p>' ],
+			[ '<p>{<b></b>}</p>', '{}<p><b></b></p>' ],
+			[ '<i>{<b></b>}</i>', '{}<i><b></b></i>' ],
+			[ '<p><i>{<b></b>}</i></p>', '{}<p><i><b></b></i></p>' ],
+			[ '<i></i>{<b></b>}', '{}<i></i><b></b>' ],
+			[ '<p></p>{<b></b>}', '{}<p></p><b></b>' ],
+			[ '<p><i></i></p>{<b></b>}', '{}<p><i></i></p><b></b>' ],
+			
+			[ '{<b>foo</b><p>}bar</p>', '<b>[foo</b><p>}bar</p>' ],
 			[ '{<b></b><p>}foo</p>', '<b></b><p>[]foo</p>' ],
+			[ '{<b></b><p></p>}', '{}<b></b><p></p>' ],
+			[ '<div><p>{<b></b></p></div><p></p>}', '{}<div><p><b></b></p></div><p></p>' ],
+			[ 'foo<div><p>{<b></b></p></div><p></p>}', 'foo[]<div><p><b></b></p></div><p></p>' ],
+			
+			// [ '{<p>foo</p><p>}bar</p>', '<p>[foo</p><p>}bar</p>' ],
+			[ '{<p></p><p>}foo</p>', '<p></p><p>[]foo</p>' ],
 			[ '{<p><b></b></p><p>}foo</p>', '<p><b></b></p><p>[]foo</p>' ],
+			
+			[ '<p>[}foo</p>', '<p>[]foo</p>' ],
 			[ '<p>{}foo</p>', '<p>[]foo</p>' ],
 			[ '{<p>}foo</p>', '<p>[]foo</p>' ],
 			[ '{}<p>foo</p>', '<p>[]foo</p>' ],
@@ -313,6 +364,8 @@ function( TestUtils ) {
 // no end container [ '[foo<p>}bar</p>', '[foo<p>}bar</p>' ],
 			[ '[foo<p><b>}bar</b></p>', '[foo<p>}<b>bar</b></p>' ],
 			[ '<span><b>[foo</b></span><p>}bar</p>', '<span><b>[foo</b></span><p>}bar</p>' ],
+			
+			*/
 			
 // no end container [ '{<p></p>}', '{}<p></p>' ],
 			// [ '<p>[foo</p><p>bar]</p><p>baz</p>', '<p>[foo</p><p>bar]</p><p>baz</p>' ],
@@ -347,10 +400,10 @@ function( TestUtils ) {
 
 */
 			
-			[ 'foo{<div><div>bar]</div></div>', 'foo[<div><div>bar]</div></div>' ],
-			[ 'foo<div>{<div>bar]</div></div>', 'foo<div><div>[bar]</div></div>' ],
-			[ 'foo<div>{<div>bar}</div></div>', 'foo<div><div>[bar]</div></div>' ],
-			[ 'foo<div>{<div>bar</div>}</div>', 'foo<div><div>[bar]</div></div>' ]
+//			[ 'foo{<div><div>bar]</div></div>', 'foo[<div><div>bar]</div></div>' ],
+//			[ 'foo<div>{<div>bar]</div></div>', 'foo<div><div>[bar]</div></div>' ],
+//			[ 'foo<div>{<div>bar}</div></div>', 'foo<div><div>[bar]</div></div>' ],
+//			[ 'foo<div>{<div>bar</div>}</div>', 'foo<div><div>[bar]</div></div>' ]
 			
             // not a different flow test [ 'foo{<div><div><div><div>}bar</div></div></div></div>baz', 'foo[<div><div><div><div>}bar</div></div></div></div>baz' ],
             // [ 'foo<div><div>{<div><div>}bar</div></div></div></div>baz', 'foo<div><div><div><div>[]bar</div></div></div></div>baz' ],
