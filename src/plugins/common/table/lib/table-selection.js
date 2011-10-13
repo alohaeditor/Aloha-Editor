@@ -299,28 +299,9 @@ function ($, Utils) {
 		if (cells_to_split.length > 0) {
 
 			$(cells_to_split).each(function(){
-				var $cell = $(this);
-				var colspan = parseInt($cell.attr('colspan')) || 1;
-				var rowspan = parseInt($cell.attr('rowspan')) || 1;
-
-				var $row  = $cell.parent();
-				var $rows = $row.parent().children();
-				var rowIdx = $row.index();
-				var colIdx = $cell.index();
-				var grid = Utils.makeGrid($rows);
-				var gridColumn = Utils.cellIndexToGridColumn($rows, rowIdx, colIdx);
-				for (var i = 0; i < rowspan; i++) {
-					for (var j = (0 === i ? 1 : 0); j < colspan; j++) {
-						var leftCell = Utils.leftDomCell(grid, rowIdx + i, gridColumn);
-						if (null == leftCell) {
-							$rows.eq(rowIdx + i).prepend(selection.table.newActiveCell().obj);
-						} else {
-							$( leftCell ).after(selection.table.newActiveCell().obj);
-						}
-					}
-				}
-				$cell.removeAttr('colspan');
-				$cell.removeAttr('rowspan');
+				Utils.splitCell(this, function () {
+					return selection.table.newActiveCell().obj;
+				});
 			});
 
 			//reset flags
