@@ -99,9 +99,6 @@ return function (TablePlugin) {
 		fmPluginId: undefined
 	});
 
-	/* -- END ATTRIBUTES -- */
-
-	/* -- METHODS -- */
 	/**
 	 * @hide
 	 */
@@ -131,7 +128,6 @@ return function (TablePlugin) {
 		return $firstRow.length - $firstRow.filter('.' + this.get('classLeftUpperCorner')).length;
 	};
 
-	/* -- METHODS -- */
 	/**
 	 * Wrapper-Mehotd to return a property of TablePlugin.get
 	 *
