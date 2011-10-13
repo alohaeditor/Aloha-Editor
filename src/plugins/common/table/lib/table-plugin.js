@@ -19,7 +19,6 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 
 	var Table = TableModuleConstructor(TablePlugin);
 
-	/* -- ATTRIBUTES -- */
 	/**
 	 * The Create-Layer Object of the TablePlugin
 	 *
@@ -65,10 +64,6 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 		waiGreen			 : 'aloha-wai-green',                   // class that shows wai of div
 		selectionArea        : 10                                     // width/height of the selection rows (in pixel)
 	};
-
-	/* -- END ATTRIBUTES -- */
-
-	/* -- METHODS -- */
 
   /**
    * @hide
@@ -1220,7 +1215,6 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 	TablePlugin.toString = function() {
 		return this.prefix;
 	};
-	/* -- END METHODS -- */
 
 	PluginManager.register(TablePlugin);
 	//return TablePlugin;
