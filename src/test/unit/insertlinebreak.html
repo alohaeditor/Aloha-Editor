@@ -175,9 +175,6 @@
 					{  	start: '<pre>foo&#10;[]&#10;</pre>',
 						execResult: '<pre>foo&#10;<br/>[]&#10;</pre>'
 					},
-					{  	start: '<div style=display:none>foo[]bar</div>baz',
-						execResult: '<div style=display:none>foobar</div><br/>[]baz'
-					},
 					{  	start: '<ol><li>{}<br></li></ol>',
 						execResult: '<ol><li><br/>{}<br></li></ol>'
 					},
@@ -187,10 +184,10 @@
 					{  	start: '<ol><li>{}<br></li></ol>foo',
 						execResult: '<ol><li><br/>{}<br></li></ol>foo'
 					},
-					// command 50
 					{  	start: '<ol><li>foo</li><li>{}<br></li></ol>',
 						execResult: '<ol><li>foo</li><li><br/>{}<br></li></ol>'
 					},
+					// command 50
 					{  	start: '<ol><li>{}<br/></li><li>bar</li></ol>',
 						execResult: '<ol><li><br/>{}<br/></li><li>bar</li></ol>'
 					},
@@ -218,10 +215,10 @@
 					{  	start: '<p>foo[bar</p><h1>baz]quz</h1>',
 						execResult: '<p>foo<br/>[]quz</p>'
 					},
-					// command 60
 					{  	start: '<p>foo</p>{}<br>',
 						execResult: '<p>foo</p><br/>{}<br>'
 					},
+					// command 60
 					{  	start: '{}<br><p>foo</p>',
 						execResult: '<br/>{}<br><p>foo</p>'
 					},
@@ -249,10 +246,10 @@
 					{  	start: '<blockquote>foo[]<br></blockquote>',
 						execResult: '<blockquote>foo<br/>{}<br></blockquote>'
 					},
-					// command 70
 					{  	start: '<blockquote>foo[]bar</blockquote>',
 						execResult: '<blockquote>foo<br/>[]bar</blockquote>'
 					},
+					// command 70
 					{  	start: '<blockquote><p>[]foo</p></blockquote>',
 						execResult: '<blockquote><p><br/>[]foo</p></blockquote>'
 					},
@@ -280,10 +277,10 @@
 					{  	start: '<b>foo[]bar</b>baz',
 						execResult: '<b>foo<br/>[]bar</b>baz'
 					},
-					// command 80
 					{  	start: '<b>foo[]</b>bar',
 						execResult: '<b>foo<br/></b>[]bar'
 					},
+					// command 80
 					{  	start: 'foo<b>[]bar</b>',
 						execResult: 'foo<br/><b>[]bar</b>'
 					},
@@ -311,10 +308,10 @@
 					{  	start: '<a href=foo>foo[]bar</a>',
 						execResult: '<a href=foo>foo<br/>[]bar</a>'
 					},
-					// command 90
 					{  	start: '<a href=foo>foo[]bar</a>baz',
 						execResult: '<a href=foo>foo<br/>[]bar</a>baz'
 					},
+					// command 90
 					{  	start: '<a href=foo>foo[]</a>bar',
 						execResult: '<a href=foo>foo<br/></a>[]bar'
 					},
@@ -342,10 +339,10 @@
 					{  	start: '<p>{foo<span style=color:#aBcDeF>bar}</span>baz</p>',
 						execResult: '<p><br>[]baz</p>'
 					},
-					// command 100
 					{  	start: '<p>foo<span style=color:#aBcDeF>[bar</span>baz]</p>',
 						execResult: '<p>foo<span style=color:#aBcDeF><br/>{}</span></p>'
 					},
+					// command 100
 					{  	start: '<p>foo<span style=color:#aBcDeF>{bar</span>baz}</p>',
 						execResult: '<p>foo<span style=color:#aBcDeF><br/>{}</span></p>'
 					},

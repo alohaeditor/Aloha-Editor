@@ -41,22 +41,22 @@
 						execResult: '<p>foo</p><p>[]baz</p>'
 					},
 					{  	start: '<ol><li>[foo]<li>bar</ol>',
-						execResult: '<ol><li></li><li>{}</li><li>bar</li></ol>'	// TODO endbreak
+						execResult: '<ol><li></li><li>{}</li><li>bar</li></ol>'
 					},
 					{  	start: '<ol><li>f[o]o<li>bar</ol>',
 						execResult: '<ol><li>f</li><li>[]o</li><li>bar</li></ol>'
 					},
 					{  	start: '[]foo',
-						execResult: '<p></p><p>[]foo</p>'					// TODO endbreak
+						execResult: '<p></p><p>[]foo</p>'
 					},
 					{  	start: 'foo[]',
-						execResult: '<p>foo</p><p>{}</p>'					// TODO endbreak
+						execResult: '<p>foo</p><p>{}</p>'
 					},
 					{  	start: '<span>foo[]</span>',
-						execResult: '<p><span>foo</span></p><p>{}</p>'				// TODO endbreak
+						execResult: '<p><span>foo</span></p><p>{}</p>'
 					},
 					{  	start: 'foo[]<br>',
-						execResult: '<p>foo</p><p>{}<br></p>'						// TODO endbreak
+						execResult: '<p>foo</p><p>{}</p>'
 					},
 					{  	start: 'foo[]bar',
 						execResult: '<p>foo</p><p>[]bar</p>'
@@ -66,7 +66,7 @@
 					},
 					// command 10
 					{  	start: '<address>foo[]</address>',
-						execResult: '<address>foo<br/>{}</address>'			// TODO endbreak
+						execResult: '<address>foo<br/>{}</address>'
 					},
 					{  	start: '<address>foo[]<br></address>',
 						execResult: '<address>foo<br/>{}<br/></address>'
@@ -75,9 +75,9 @@
 						execResult: '<address>foo<br/>[]bar</address>'
 					},
 					{  	start: '<div>[]foo</div>',
-						execResult: '<div></div><div>[]foo</div>'			// TODO endbreak
+						execResult: '<div></div><div>[]foo</div>'
 					},
-					{  	start: '<div>foo[]</div>',							// TODO endbreak
+					{  	start: '<div>foo[]</div>',
 						execResult: '<div>foo</div><div>{}</div>'
 					},
 					{  	start: '<div>foo[]<br></div>',
@@ -87,10 +87,10 @@
 						execResult: '<div>foo</div><div>[]bar</div>'
 					},
 					{  	start: '<dl><dt>[]foo</dt><dd>bar</dd></dl>',
-						execResult: '<dl><dt></dt><dt>[]foo</dt><dd>bar</dd></dl>'	// TODO endbreak
+						execResult: '<dl><dt></dt><dt>[]foo</dt><dd>bar</dd></dl>'
 					},
 					{  	start: '<dl><dt>foo[]</dt><dd>bar</dd></dl>',
-						execResult: '<dl><dt>foo</dt><dd>{}</dd><dd>bar</dd></dl>'	// TODO endbreak
+						execResult: '<dl><dt>foo</dt><dd>{}</dd><dd>bar</dd></dl>'
 					},
 					{  	start: '<dl><dt>foo[]<br></dt><dd>bar</dd></dl>',
 						execResult: '<dl><dt>foo</dt><dd>{}<br></dd><dd>bar</dd></dl>'
@@ -100,10 +100,10 @@
 						execResult: '<dl><dt>foo</dt><dt>[]bar</dt><dd>baz</dd></dl>'
 					},
 					{  	start: '<dl><dt>foo</dt><dd>[]bar</dd></dl>',
-						execResult: '<dl><dt>foo</dt><dd></dd><dd>[]bar</dd></dl>'		// TODO endbreak
+						execResult: '<dl><dt>foo</dt><dd></dd><dd>[]bar</dd></dl>'
 					},
 					{  	start: '<dl><dt>foo</dt><dd>bar[]</dd></dl>',
-						execResult: '<dl><dt>foo</dt><dd>bar</dd><dt>{}</dt></dl>'	// TODO endbreak
+						execResult: '<dl><dt>foo</dt><dd>bar</dd><dt>{}</dt></dl>'
 					},
 					{  	start: '<dl><dt>foo</dt><dd>bar[]<br></dd></dl>',
 						execResult: '<dl><dt>foo</dt><dd>bar</dd><dt>{}<br></dt></dl>'
@@ -112,10 +112,10 @@
 						execResult: '<dl><dt>foo</dt><dd>bar</dd><dd>[]baz</dd></dl>'
 					},
 					{  	start: '<h1>[]foo</h1>',
-						execResult: '<h1></h1><h1>[]foo</h1>'					// TODO endbreak
+						execResult: '<h1></h1><h1>[]foo</h1>'
 					},
 					{  	start: '<h1>foo[]</h1>',
-						execResult: '<h1>foo</h1><p>{}</p>'						// TODO endbreak
+						execResult: '<h1>foo</h1><p>{}</p>'
 					},
 					{  	start: '<h1>foo[]<br></h1>',
 						execResult: '<h1>foo</h1><p>{}<br></p>'
@@ -124,11 +124,11 @@
 						execResult: '<h1>foo</h1><h1>[]bar</h1>'
 					},
 					{  	start: '<ol><li>[]foo</li></ol>',
-						execResult: '<ol><li></li><li>[]foo</li></ol>'			// TODO endbreak
+						execResult: '<ol><li></li><li>[]foo</li></ol>'
 					},
 					// command 30
 					{  	start: '<ol><li>foo[]</li></ol>',
-						execResult: '<ol><li>foo</li><li>{}</li></ol>'				// TODO endbreak
+						execResult: '<ol><li>foo</li><li>{}</li></ol>'
 					},
 					{  	start: '<ol><li>foo[]<br></li></ol>',
 						execResult: '<ol><li>foo</li><li>{}<br></li></ol>'
@@ -137,10 +137,10 @@
 						execResult: '<ol><li>foo</li><li>[]bar</li></ol>'
 					},
 					{  	start: '<p>[]foo</p>',
-						execResult: '<p></p><p>[]foo</p>'						// TODO endbreak
+						execResult: '<p></p><p>[]foo</p>'
 					},
 					{  	start: '<p>foo[]</p>',
-						execResult: '<p>foo</p><p>{}</p>'							// TODO endbreak
+						execResult: '<p>foo</p><p>{}</p>'
 					},
 					{  	start: '<p>foo[]<br></p>',
 						execResult: '<p>foo</p><p>{}<br></p>'
@@ -152,7 +152,7 @@
 						execResult: '<pre><br/>[]foo</pre>'
 					},
 					{  	start: '<pre>foo[]</pre>',
-						execResult: '<pre>foo<br/>[]</pre>'						// TODO endbreak
+						execResult: '<pre>foo<br/>{}</pre>'
 					},
 					{  	start: '<pre>foo[]<br></pre>',
 						execResult: '<pre>foo<br/>{}<br></pre>'
@@ -176,24 +176,21 @@
 					{  	start: '<pre>foo&#10;[]&#10;</pre>',
 						execResult: '<pre>foo&#10;<br/>[]&#10;</pre>'
 					},
-					{  	start: '<div style=display:none>foo[]bar</div>baz',
-						execResult: '<div style=display:none>foobar</div><br/>[]baz'	// TODO define result
-					},
 					{  	start: '<ol><li>{}<br></li></ol>',
-						execResult: '<p>{}</p>'											// TODO endbreak
+						execResult: '<p>{}<br/></p>'
 					},
 					{  	start: 'foo<ol><li>{}<br></li></ol>',
-						execResult: '<p>foo</p><p>{}</p>'								// TODO endbreak
+						execResult: 'foo<p>{}<br/></p>'
 					},
 					{  	start: '<ol><li>{}<br></li></ol>foo',
-						execResult: '<p>{}</p><p>foo</p>'								// TODO endbreak
+						execResult: '<p>{}<br/></p>foo'
+					},
+					{  	start: '<ol><li>foo</li><li>{}<br></li></ol>',
+						execResult: '<ol><li>foo</li></ol><p>{}<br/></p>'
 					},
 					// command 50
-					{  	start: '<ol><li>foo</li><li>{}<br></li></ol>',
-						execResult: '<ol><li>foo</li></ol><p>{}</p>'					// TODO endbreak
-					},
 					{  	start: '<ol><li>{}<br/></li><li>bar</li></ol>',
-						execResult: '<p>{}</p><ol><li>bar</li></ol>'					// TODO endbreak
+						execResult: '<p>{}<br/></p><ol><li>bar</li></ol>'
 					},
 					{  	start: '<ol><li>foo</li><ul><li>{}<br></ul></ol>',
 						execResult: '<ol><li>foo</li><li>{}<br></li></ol>'
@@ -208,63 +205,63 @@
 						execResult: '<p>{}<br></p><dl><dd>bar</dd></dl>'
 					},
 					{  	start: '<dl><dt>foo</dt><dd>bar<dl><dt>{}<br></dt><dd>baz</dd></dl></dd></dl>',
-						execResult: '?'	// TODO define result
+						execResult: '<dl><dt>foo</dt><dd>bar</dd><dt>{}<br></dt><dd><dl><dd>baz</dd></dl></dd></dl>'
 					},
 					{  	start: '<dl><dt>foo</dt><dd>bar<dl><dt>baz</dt><dd>{}<br></dd></dl></dd></dl>',
-						execResult: '?'	// TODO define result
+						execResult: '<dl><dt>foo</dt><dd>bar<dl><dt>baz</dt></dl></dd><dd>{}<br></dd></dl>'
 					},
 					{  	start: '<h1>foo[bar</h1><p>baz]quz</p>',
-						execResult: '<h1>foo</h1><p>[]quz</p>'
+						execResult: '<h1>foo</h1><h1>[]quz</h1>'
 					},
 					{  	start: '<p>foo[bar</p><h1>baz]quz</h1>',
 						execResult: '<p>foo</p><p>[]quz</p>'
 					},
-					// command 60
 					{  	start: '<p>foo</p>{}<br>',
-						execResult: '<p>foo</p><p></p><p>{}<br></p>'					// TODO endbreak
+						execResult: '<p>foo</p><p></p><p>{}<br></p>'
 					},
+					// command 60
 					{  	start: '{}<br><p>foo</p>',
-						execResult: '<p></p><p>{}<br></p><p>foo</p>'					// TODO endbreak
+						execResult: '<p></p><p>{}<br></p><p>foo</p>'
 					},
 					{  	start: '<p>foo</p>{}<br><h1>bar</h1>',
-						execResult: '<p>foo</p><p></p><p>{}<br></p><h1>bar</h1>'		// TODO endbreak
+						execResult: '<p>foo</p><p></p><p>{}<br></p><h1>bar</h1>'
 					},
 					{  	start: '<h1>foo</h1>{}<br><p>bar</p>',
-						execResult: '<h1>foo</h1><p></p><p>{}<br></p><p>bar</p>'		// TODO endbreak
+						execResult: '<h1>foo</h1><p></p><p>{}<br></p><p>bar</p>'
 					},
 					{  	start: '<h1>foo</h1>{}<br><h2>bar</h2>',
-						execResult: '<h1>foo</h1><p></p><p>{}<br></p><h2>bar</h2>'		// TODO endbreak
+						execResult: '<h1>foo</h1><p></p><p>{}<br></p><h2>bar</h2>'
 					},
 					{  	start: '<p>foo</p><h1>[bar]</h1><p>baz</p>',
-						execResult: '<p>foo</p><h1></h1><p>{}</p><p>baz</p>'					// TODO endbreak
+						execResult: '<p>foo</p><h1></h1><p>{}</p><p>baz</p>'
 					},
 					{  	start: '<p>foo</p>{<h1>bar</h1>}<p>baz</p>',
-						execResult: '<p>foo</p><h1></h1><h1>[]baz</h1>'							// TODO fix merging, endbreak
+						execResult: '<p>foo</p><h1></h1><h1>[]baz</h1>'
 					},
 					{  	start: '<blockquote>[]foo</blockquote>',
-						execResult: '<blockquote><p></p><p>[]foo</p></blockquote>'			// TODO endbreak
+						execResult: '<blockquote><p></p><p>[]foo</p></blockquote>'
 					},
 					{  	start: '<blockquote>foo[]</blockquote>',
-						execResult: '<blockquote><p></p><p>foo[]</p></blockquote>'					// TODO endbreak
+						execResult: '<blockquote><p>foo</p><p>{}</p></blockquote>'
 					},
 					{  	start: '<blockquote>foo[]<br></blockquote>',
-						execResult: '<blockquote><p>foo</p><p>[]<br/></p></blockquote>'
+						execResult: '<blockquote><p>foo</p><p>{}</p></blockquote>'
 					},
-					// command 70
 					{  	start: '<blockquote>foo[]bar</blockquote>',
 						execResult: '<blockquote><p>foo</p><p>[]bar</p></blockquote>'
 					},
+					// command 70
 					{  	start: '<blockquote><p>[]foo</p></blockquote>',
-						execResult: '<blockquote><p></p><p>[]foo</p></blockquote>'			// TODO endbreak
+						execResult: '<blockquote><p></p><p>[]foo</p></blockquote>'
 					},
 					{  	start: '<blockquote><p>foo[]</blockquote>',
-						execResult: '<blockquote><p>foo</p><p>{}</p></blockquote>'			// TODO endbreak
+						execResult: '<blockquote><p>foo</p><p>{}</p></blockquote>'
 					},
 					{  	start: '<blockquote><p>foo[]bar</blockquote>',
 						execResult: '<blockquote><p>foo</p><p>[]bar</p></blockquote>'
 					},
 					{  	start: '<blockquote><p>foo[]</p><p>bar</p></blockquote>',
-						execResult: '<blockquote><p>foo</p><p>{}</p><p>bar</p></blockquote>'	// TODO endbreak
+						execResult: '<blockquote><p>foo</p><p>{}</p><p>bar</p></blockquote>'
 					},
 					{  	start: '<blockquote><p>foo[]bar</p><p>baz</p></blockquote>',
 						execResult: '<blockquote><p>foo</p><p>[]bar</p><p>baz</p></blockquote>'
@@ -281,10 +278,10 @@
 					{  	start: '<b>foo[]bar</b>baz',
 						execResult: '<p><b>foo</b></p><p><b>[]bar</b>baz</p>'
 					},
-					// command 80
 					{  	start: '<b>foo[]</b>bar',
 						execResult: '<p><b>foo</b></p><p>[]bar</p>'
 					},
+					// command 80
 					{  	start: 'foo<b>[]bar</b>',
 						execResult: '<p>foo</p><p><b>[]bar</b></p>'
 					},
@@ -301,7 +298,7 @@
 						execResult: '<p><b>foo</b></p><p><b>[]bar</b></p>'
 					},
 					{  	start: '<p><b>[]foo</b></p>',
-						execResult: '<p></p><p><b>[]foo</b></p>'						// TODO endbreak
+						execResult: '<p></p><p><b>[]foo</b></p>'
 					},
 					{  	start: '<p><b id=x class=y>foo[]bar</b></p>',
 						execResult: '<p><b id="x" class="y">foo</b></p><p><b class="y">[]bar</b></p>'
@@ -312,10 +309,10 @@
 					{  	start: '<a href=foo>foo[]bar</a>',
 						execResult: '<p><a href="foo">foo</a></p><p><a href="foo">[]bar</a></p>'
 					},
-					// command 90
 					{  	start: '<a href=foo>foo[]bar</a>baz',
 						execResult: '<p><a href="foo">foo</a></p><p><a href="foo">[]bar</a>baz</p>'
 					},
+					// command 90
 					{  	start: '<a href=foo>foo[]</a>bar',
 						execResult: '<p><a href="foo">foo</a></p><p>[]bar</p>'
 					},
@@ -323,10 +320,10 @@
 						execResult: '<p>foo</p><p><a href=foo>[]bar</a></p>'
 					},
 					{  	start: '<p>foo[]<!--bar--></p>',
-						execResult: '<p>foo</p><p><!--bar-->{}</p>'						// TODO endbreak
+						execResult: '<p>foo</p><p><!--bar-->{}</p>'
 					},
 					{  	start: '<p><!--foo-->[]bar</p>',
-						execResult: '<p><!--foo--></p><p>[]bar</p>'						// TODO endbreak
+						execResult: '<p><!--foo--></p><p>[]bar</p>'
 					},
 					{  	start: '<p>foo<span style=color:#aBcDeF>[bar]</span>baz</p>',
 						execResult: '<p>foo<span style="color:#aBcDeF"></span></p><p>[]baz</p>'
@@ -338,17 +335,17 @@
 						execResult: '<p>foo<span style="color:#aBcDeF"></span></p><p>[]baz</p>'
 					},
 					{  	start: '<p>[foo<span style=color:#aBcDeF>bar]</span>baz</p>',
-						execResult: '<p></p><p>[]baz</p>'								// TODO endbreak
+						execResult: '<p></p><p>[]baz</p>'
 					},
 					{  	start: '<p>{foo<span style=color:#aBcDeF>bar}</span>baz</p>',
-						execResult: '<p></p><p>[]baz</p>'								// TODO endbreak
+						execResult: '<p></p><p>[]baz</p>'
+					},
+					{  	start: '<p>foo<span style=color:#aBcDeF>[bar</span>baz]</p>',
+						execResult: '<p>foo<span style="color:#aBcDeF"></span></p><p>{}</p>'
 					},
 					// command 100
-					{  	start: '<p>foo<span style=color:#aBcDeF>[bar</span>baz]</p>',
-						execResult: '<p>foo<span style="color:#aBcDeF"></span></p><p>{}</p>'		// TODO endbreak
-					},
 					{  	start: '<p>foo<span style=color:#aBcDeF>{bar</span>baz}</p>',
-						execResult: '<p>foo<span style="color:#aBcDeF"></span></p><p>{}</p>'		// TODO endbreak
+						execResult: '<p>foo<span style="color:#aBcDeF"></span></p><p>{}</p>'
 					},
 					{  	start: '<p>foo<span style=color:#aBcDeF>[bar</span><span style=color:#fEdCbA>baz]</span>quz</p>',
 						execResult: '<p>foo<span style="color:#aBcDeF"></span></p><p>[]quz</p>'
