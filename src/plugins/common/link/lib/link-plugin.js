@@ -379,13 +379,10 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, console) {
 				
 				var hrefValue = jQuery(that.hrefField.extButton.el.dom).attr('value');
 				
-				window.console.log('blur fired, Value:' + hrefValue);
 				//checks for either a literal value in the href field
 				//(that is not the pre-filled "http://") or a resource
 				//(e.g. in the case of a repository link)
 				if ( ( ! this.getValue() || this.getValue() === "http://" ) && ! this.getItem() ) {
-					window.console.log(this.getValue());
-					window.console.log(this.getItem());
 					that.removeLink(false);
 				}
 			});
