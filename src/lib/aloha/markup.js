@@ -110,6 +110,12 @@ Aloha.Markup = Class.extend({
 			return false;
 		}
 
+		// DELETE
+		if (event.keyCode === 46) {
+			Aloha.execCommand( 'forwarddelete', false );
+			return false;
+		}
+		
 		// ENTER
 		if  (event.keyCode === 13 ) {
 			if (event.shiftKey) {
