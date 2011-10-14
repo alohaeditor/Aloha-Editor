@@ -720,7 +720,9 @@ return function (TablePlugin) {
 				}
 			}));
 		} else {
+
 			rowIDs.sort(function(a,b){return a - b;});
+
 			// check which cell should be focused after the deletion
 			var focusRowId = rowIDs[0];
 			if (focusRowId > (this.numRows - rowIDs.length)) {
@@ -740,7 +742,7 @@ return function (TablePlugin) {
 				}
 			});
 
-			//decreses rowspans of cells that span the row to be deleted
+			//decreases rowspans of cells that span the row to be deleted
 			//and removes the row
 			var grid = Utils.makeGrid( rows );
 			jQuery.each( rowIDs, function ( unused, rowId ) {

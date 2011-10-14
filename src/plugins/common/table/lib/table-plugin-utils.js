@@ -161,8 +161,8 @@ function ($) {
 		 */
 		'splitCell': function (cell, createCell) {
 			var $cell = $(cell);
-			var colspan = Utils.rowspan( cell );
-			var rowspan = Utils.colspan( cell );
+			var colspan = Utils.colspan( cell );
+			var rowspan = Utils.rowspan( cell );
 
 			var $row  = $cell.parent();
 			var $rows = $row.parent().children();
