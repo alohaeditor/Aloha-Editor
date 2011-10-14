@@ -42,8 +42,8 @@ function ($) {
 				var skip = 0;
 				for (var ci = 0; ci < cells.length; ci++) {
 					var cell = cells[ci];
-					var colspan = parseInt($(cell).attr('colspan')) || 1;
-					var rowspan = parseInt($(cell).attr('rowspan')) || 1;
+					var colspan = Utils.colspan(cell);
+					var rowspan = Utils.rowspan(cell);
 					
 					while (adjust[ci + skip]) {
 						adjust[ci + skip] -= 1;
@@ -144,6 +144,67 @@ function ($) {
 				gridCi -= cellInfo.spannedX + 1;
 			} while (gridCi >= 0);
 			return null;
+		},
+		/**
+		 * Given a cell of a table (td/th) with a colspan or rowspan
+		 * greater than one, will set the rowspan and colspan of the
+		 * cell to one and insert empty cells where the original cell
+		 * spanned (the number of cells allocated with createCell will
+		 * be rowspan * colspan - 1).
+		 *
+		 * @param cell
+		 *        the cell to split
+		 * @param createCell
+ 		 *        a callback that will be invoked rowspan * colspan - 1
+		 *        times, and which must return a table cell (td/th) that
+		 *        will be inserted into the table
+		 */
+		'splitCell': function (cell, createCell) {
+			var $cell = $(cell);
+			var colspan = Utils.colspan( cell );
+			var rowspan = Utils.rowspan( cell );
+
+			//catch the most common case early
+			if (1 === colspan && 1 === rowspan) {
+				return;
+			}
+
+			var $row  = $cell.parent();
+			var $rows = $row.parent().children();
+			var rowIdx = $row.index();
+			var colIdx = $cell.index();
+			var grid = Utils.makeGrid($rows);
+			var gridColumn = Utils.cellIndexToGridColumn($rows, rowIdx, colIdx);
+			for (var i = 0; i < rowspan; i++) {
+				for (var j = (0 === i ? 1 : 0); j < colspan; j++) {
+					var leftCell = Utils.leftDomCell(grid, rowIdx + i, gridColumn);
+					if (null == leftCell) {
+						$rows.eq(rowIdx + i).prepend(createCell());
+					} else {
+						$( leftCell ).after(createCell());
+					}
+				}
+			}
+			$cell.removeAttr('colspan');
+			$cell.removeAttr('rowspan');
+		},
+		/**
+		 * @param cell
+		 *        the DOM node for a table cell (td/th)
+		 * @return
+		 *        a numeric value indicating the number of rows the cell spans
+		 */
+		'rowspan': function (cell) {
+			return parseInt( $( cell ).attr('rowspan') ) || 1;
+		},
+		/**
+		 * @param cell
+		 *        the DOM node for a table cell (td/th)
+		 * @return
+		 *        a numeric value indicating the number of columns the cell spans
+		 */
+		'colspan': function (cell) {
+			return parseInt( $( cell ).attr('colspan') ) || 1;
 		}
 	};
 	return Utils;
