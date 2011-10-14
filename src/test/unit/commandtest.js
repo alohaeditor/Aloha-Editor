@@ -95,7 +95,9 @@ function( TestUtils ) {
 					// place the marker at the selection and add brackets
 					range = rangy.getSelection().getRangeAt(0);
 					TestUtils.addBrackets(range);
-					result = Aloha.editables[0].getContents( true );			
+					// remove all additional end-breaks
+					Aloha.editables[0].obj.find('br.aloha-end-br').remove();
+					result = Aloha.editables[0].getContents( true );
 					execResult = aQuery( '<div>' + check.execResult + '</div>' ).contents();
 					deepEqual( result.extractHTML( check.attributes ), execResult.extractHTML( check.attributes ), 'execCommand result' );
 				}

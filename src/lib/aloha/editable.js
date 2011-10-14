@@ -1,6 +1,6 @@
 /*!
 * This file is part of Aloha Editor Project http://aloha-editor.org
-* Copyright � 2010-2011 Gentics Software GmbH, aloha@gentics.com
+* Copyright © 2010-2011 Gentics Software GmbH, aloha@gentics.com
 * Contributors http://aloha-editor.org/contribution.php 
 * Licensed unter the terms of http://www.aloha-editor.org/license.html
 *//*
@@ -30,8 +30,10 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, C
 		GENTICS = window.GENTICS;
 
 	// default supported and custom content handler settings
+	// @TODO move to new config when implemented in Aloha
 	Aloha.defaults.contentHandler = {};
 	Aloha.defaults.contentHandler.initEditable = [ 'generic', 'sanitize' ];
+	Aloha.defaults.contentHandler.getContents = [ 'generic', 'sanitize' ];
 	
 	if (typeof Aloha.settings.contentHandler === 'undefined') {
 		Aloha.settings.contentHandler = {};
@@ -129,6 +131,7 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, C
 			this.settings = Aloha.settings; 
 				
 			// smartContentChange settings
+			// @TODO move to new config when implemented in Aloha
 			if (Aloha.settings && Aloha.settings.smartContentChange) {
 				if (Aloha.settings.smartContentChange.delimiters) {
 					this.sccDelimiters = Aloha.settings.smartContentChange.delimiters;
@@ -213,10 +216,12 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, C
 
 				// apply content handler to clean up content
 				var content = me.obj.html();
-				if (Aloha.settings.contentHandler && Aloha.settings.contentHandler.initEditable === 'undefined') {
+				if ( typeof Aloha.settings.contentHandler.initEditable === 'undefined') {
 					Aloha.settings.contentHandler.initEditable = Aloha.defaults.contentHandler.initEditable;
 				}
-				content = ContentHandlerManager.handleContent( content, { contenthandler: Aloha.settings.contentHandler.initEditable } );
+				content = ContentHandlerManager.handleContent( content, {
+					contenthandler: Aloha.settings.contentHandler.initEditable 
+				});
 				me.obj.html( content );
 
 				me.snapshotContent = me.getContents();
@@ -680,6 +685,16 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, C
 			this.removePlaceholder(clonedObj);
 
 			PluginManager.makeClean(clonedObj);
+
+			var content = clonedObj.html()
+			if (typeof Aloha.settings.contentHandler.getContents === 'undefined') {
+				Aloha.settings.contentHandler.getContents = Aloha.defaults.contentHandler.getContents;
+			}
+			content = ContentHandlerManager.handleContent( content, { 
+				contenthandler: Aloha.settings.contentHandler.getContents 
+			});
+			clonedObj.html( content );
+
 			return asObject ? clonedObj.contents() : clonedObj.html();
 		},
 
@@ -708,7 +723,7 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, C
 
 			if (event && event.originalEvent) {
 
-				// regex to stripp unicode
+				// regex to strip unicode
 				re = new RegExp("U\\+(\\w{4})");
 				match = re.exec(event.originalEvent.keyIdentifier);
 

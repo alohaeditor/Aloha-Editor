@@ -1,6 +1,6 @@
 /*!
 * This file is part of Aloha Editor Project http://aloha-editor.org
-* Copyright � 2010-2011 Gentics Software GmbH, aloha@gentics.com
+* Copyright © 2010-2011 Gentics Software GmbH, aloha@gentics.com
 * Contributors http://aloha-editor.org/contribution.php 
 * Licensed unter the terms of http://www.aloha-editor.org/license.html
 *//*
@@ -102,6 +102,12 @@ Aloha.Markup = Class.extend({
 		// handle left (37) and right (39) keys for block detection
 		if (event.keyCode === 37 || event.keyCode === 39) {
 			return this.processCursor(rangeObject, event.keyCode);
+		}
+
+		// BACKSPACE
+		if (event.keyCode === 8) {
+			Aloha.execCommand( 'delete', false );
+			return false;
 		}
 
 		// ENTER

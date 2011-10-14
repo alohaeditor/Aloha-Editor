@@ -1,6 +1,6 @@
 define(
-['aloha/contenthandlermanager', 'aloha/ecma5'],
-function( ContentHandlerManager ) {
+['aloha/ecma5'],
+function() {
 	"use strict";
 
 var htmlNamespace = "http://www.w3.org/1999/xhtml";
@@ -571,12 +571,6 @@ function myExecCommand(command, showUi, value, range) {
 		if (!myQueryCommandEnabled(command)) {
 			return false;
 		}
-
-		//if (typeof Aloha.settings.contentHandler.insertHtml === 'undefined') {
-		// just use all registerd content handler or specity Aloha.defaults.contentHandler.insertHtml manually?
-		//	Aloha.settings.contentHandler.insertHtml = Aloha.defaults.contentHandler.insertHtml;
-		//}
-		value = ContentHandlerManager.handleContent( value, { contenthandler: Aloha.settings.contentHandler.insertHtml } );
 
 		// "Take the action for command, passing value to the instructions as an
 		// argument."
@@ -1466,23 +1460,30 @@ function wrap(nodeList, siblingCriteria, newParentInstructions, range) {
 		// new parent and offset equal to the index of new parent, add one to
 		// that boundary point's offset."
 		//
-		// Only try to fix the global range.
-		if (globalRange.startContainer == newParent.parentNode
-		&& globalRange.startOffset == getNodeIndex(newParent)) {
-			globalRange.setStart(globalRange.startContainer, globalRange.startOffset + 1);
-		}
-		if (globalRange.endContainer == newParent.parentNode
-		&& globalRange.endOffset == getNodeIndex(newParent)) {
-			globalRange.setEnd(globalRange.endContainer, globalRange.endOffset + 1);
-		}
 		// Try to fix range
-		if (range.startContainer == newParent.parentNode
-		&& range.startOffset == getNodeIndex(newParent)) {
-			range.setStart(range.startContainer, range.startOffset + 1);
+		var startContainer = range.startContainer, startOffset = range.startOffset,
+			endContainer = range.endContainer, endOffset = range.endOffset;
+		if (startContainer == newParent.parentNode
+		&& startOffset >= getNodeIndex(newParent)) {
+			range.setStart(startContainer, startOffset + 1);
 		}
-		if (range.endContainer == newParent.parentNode
-		&& range.endOffset == getNodeIndex(newParent)) {
-			range.setEnd(range.endContainer, range.endOffset + 1);
+		if (endContainer == newParent.parentNode
+		&& endOffset >= getNodeIndex(newParent)) {
+			range.setEnd(endContainer, endOffset + 1);
+		}
+
+		// Only try to fix the global range. TODO remove globalRange here
+		if (globalRange && globalRange !== range) {
+			startContainer = globalRange.startContainer, startOffset = globalRange.startOffset,
+				endContainer = globalRange.endContainer, endOffset = globalRange.endOffset;
+			if (startContainer == newParent.parentNode
+			&& startOffset >= getNodeIndex(newParent)) {
+				globalRange.setStart(startContainer, startOffset + 1);
+			}
+			if (endContainer == newParent.parentNode
+			&& endOffset >= getNodeIndex(newParent)) {
+				globalRange.setEnd(endContainer, endOffset + 1);
+			}
 		}
 	}
 
@@ -2811,9 +2812,11 @@ function forceValue(node, command, newValue, range) {
 		// "If command is "foreColor", and new value is fully opaque with red,
 		// green, and blue components in the range 0 to 255:"
 		if (command == "forecolor" && parseSimpleColor(newValue)) {
-			// "Let new parent be the result of calling createElement("font")
+			// "Let new parent be the result of calling createElement("span")
 			// on the ownerDocument of node."
-			newParent = node.ownerDocument.createElement("font");
+			// NOTE: modified this process to create span elements with style attributes
+			// instead of oldschool font tags with color attributes
+			newParent = node.ownerDocument.createElement("span");
 
 			// "If new value is an extended color keyword, set the color
 			// attribute of new parent to new value."
@@ -2821,7 +2824,7 @@ function forceValue(node, command, newValue, range) {
 			// "Otherwise, set the color attribute of new parent to the result
 			// of applying the rules for serializing simple color values to new
 			// value (interpreted as a simple color)."
-			newParent.setAttribute("color", parseSimpleColor(newValue));
+			jQuery(newParent).css('color', parseSimpleColor(newValue));
 		}
 
 		// "If command is "fontName", let new parent be the result of calling
@@ -4665,7 +4668,7 @@ function deleteContents() {
 		if ((isEditable(parent_) || isEditingHost(parent_))
 		&& !isInlineNode(parent_)
 		&& !parent_.hasChildNodes()) {
-			parent_.appendChild(document.createElement("br"));
+			parent_.appendChild(createEndBreak());
 		}
 	}
 
@@ -4903,7 +4906,7 @@ function deleteContents() {
 	// "If start block has no children, call createElement("br") on the context
 	// object and append the result as the last child of start block."
 	if (!startBlock.hasChildNodes()) {
-		startBlock.appendChild(document.createElement("br"));
+		startBlock.appendChild(createEndBreak());
 	}
 
 	// "Restore states and values from overrides."
@@ -5323,7 +5326,7 @@ function indentNodes(nodeList, range) {
 	);
 
 	// "Fix disallowed ancestors of new parent."
-	fixDisallowedAncestors(newParent);
+	fixDisallowedAncestors(newParent, range);
 }
 
 function outdentNode(node, range) {
@@ -5433,7 +5436,7 @@ function outdentNode(node, range) {
 
 		// "Fix disallowed ancestors of each member of children."
 		for (var i = 0; i < children.length; i++) {
-			fixDisallowedAncestors(children[i]);
+			fixDisallowedAncestors(children[i], range);
 		}
 
 		// "Abort these steps."
@@ -5641,7 +5644,7 @@ function toggleLists(tagName, range) {
 
 			// "Fix disallowed ancestors of each member of sublist."
 			for (var i = 0; i < sublist.length; i++) {
-				fixDisallowedAncestors(sublist[i]);
+				fixDisallowedAncestors(sublist[i], range);
 			}
 
 			// "Restore the values from values."
@@ -5781,6 +5784,7 @@ function toggleLists(tagName, range) {
 					},
 					range
 				)
+				, range
 			);
 		}
 	}
@@ -5902,6 +5906,16 @@ function justifySelection(alignment, range) {
 			range
 		);
 	}
+}
+
+
+//@}
+///// Create an end break /////
+//@{
+function createEndBreak() {
+	var endBr = document.createElement("br");
+	endBr.setAttribute("class", "aloha-end-br");
+	return endBr;
 }
 
 
@@ -6374,7 +6388,8 @@ commands.formatblock = {
 						: function() { return false },
 					function() { return document.createElement(value) },
 					range
-				)
+				),
+				range
 			);
 		}
 	}, indeterm: function() {
@@ -6812,7 +6827,7 @@ commands.inserthorizontalrule = {
 		range.insertNode(hr);
 
 		// "Fix disallowed ancestors of hr."
-		fixDisallowedAncestors(hr);
+		fixDisallowedAncestors(hr, range);
 
 		// "Run collapse() on the Selection, with first argument equal to the
 		// parent of hr and the second argument equal to one plus the index of
@@ -6885,7 +6900,7 @@ commands.inserthtml = {
 		// the result as the last child of the active range's start node."
 		if (isBlockNode(range.startContainer)
 		&& ![].some.call(range.startContainer.childNodes, isVisible)) {
-			range.startContainer.appendChild(document.createElement("br"));
+			range.startContainer.appendChild(createEndBreak());
 		}
 
 		// "Call collapse() on the context object's Selection, with last
@@ -6968,29 +6983,29 @@ commands.insertimage = {
 ///// The insertLineBreak command /////
 //@{
 commands.insertlinebreak = {
-	action: function(value) {
+	action: function(value, range) {
 		// "Delete the contents of the active range, with strip wrappers false."
-		deleteContents(getActiveRange(), {stripWrappers: false});
+		deleteContents(range, {stripWrappers: false});
 
 		// "If the active range's start node is neither editable nor an editing
 		// host, abort these steps."
-		if (!isEditable(getActiveRange().startContainer)
-		&& !isEditingHost(getActiveRange().startContainer)) {
+		if (!isEditable(range.startContainer)
+		&& !isEditingHost(range.startContainer)) {
 			return;
 		}
 
 		// "If the active range's start node is an Element, and "br" is not an
 		// allowed child of it, abort these steps."
-		if (getActiveRange().startContainer.nodeType == Node.ELEMENT_NODE
-		&& !isAllowedChild("br", getActiveRange().startContainer)) {
+		if (range.startContainer.nodeType == Node.ELEMENT_NODE
+		&& !isAllowedChild("br", range.startContainer)) {
 			return;
 		}
 
 		// "If the active range's start node is not an Element, and "br" is not
 		// an allowed child of the active range's start node's parent, abort
 		// these steps."
-		if (getActiveRange().startContainer.nodeType != Node.ELEMENT_NODE
-		&& !isAllowedChild("br", getActiveRange().startContainer.parentNode)) {
+		if (range.startContainer.nodeType != Node.ELEMENT_NODE
+		&& !isAllowedChild("br", range.startContainer.parentNode)) {
 			return;
 		}
 
@@ -6998,13 +7013,13 @@ commands.insertlinebreak = {
 		// offset is zero, call collapse() on the context object's Selection,
 		// with first argument equal to the active range's start node's parent
 		// and second argument equal to the active range's start node's index."
-		if (getActiveRange().startContainer.nodeType == Node.TEXT_NODE
-		&& getActiveRange().startOffset == 0) {
-			var newNode = getActiveRange().startContainer.parentNode;
-			var newOffset = getNodeIndex(getActiveRange().startContainer);
-			getSelection().collapse(newNode, newOffset);
-			getActiveRange().setStart(newNode, newOffset);
-			getActiveRange().setEnd(newNode, newOffset);
+		if (range.startContainer.nodeType == Node.TEXT_NODE
+		&& range.startOffset == 0) {
+			var newNode = range.startContainer.parentNode;
+			var newOffset = getNodeIndex(range.startContainer);
+			Aloha.getSelection().collapse(newNode, newOffset);
+			range.setStart(newNode, newOffset);
+			range.setEnd(newNode, newOffset);
 		}
 
 		// "If the active range's start node is a Text node and its start
@@ -7012,13 +7027,13 @@ commands.insertlinebreak = {
 		// context object's Selection, with first argument equal to the active
 		// range's start node's parent and second argument equal to one plus
 		// the active range's start node's index."
-		if (getActiveRange().startContainer.nodeType == Node.TEXT_NODE
-		&& getActiveRange().startOffset == getNodeLength(getActiveRange().startContainer)) {
-			var newNode = getActiveRange().startContainer.parentNode;
-			var newOffset = 1 + getNodeIndex(getActiveRange().startContainer);
-			getSelection().collapse(newNode, newOffset);
-			getActiveRange().setStart(newNode, newOffset);
-			getActiveRange().setEnd(newNode, newOffset);
+		if (range.startContainer.nodeType == Node.TEXT_NODE
+		&& range.startOffset == getNodeLength(range.startContainer)) {
+			var newNode = range.startContainer.parentNode;
+			var newOffset = 1 + getNodeIndex(range.startContainer);
+			Aloha.getSelection().collapse(newNode, newOffset);
+			range.setStart(newNode, newOffset);
+			range.setEnd(newNode, newOffset);
 		}
 
 		// "Let br be the result of calling createElement("br") on the context
@@ -7026,25 +7041,25 @@ commands.insertlinebreak = {
 		var br = document.createElement("br");
 
 		// "Call insertNode(br) on the active range."
-		getActiveRange().insertNode(br);
+		range.insertNode(br);
 
 		// "Call collapse() on the context object's Selection, with br's parent
 		// as the first argument and one plus br's index as the second
 		// argument."
-		getSelection().collapse(br.parentNode, 1 + getNodeIndex(br));
-		getActiveRange().setStart(br.parentNode, 1 + getNodeIndex(br));
-		getActiveRange().setEnd(br.parentNode, 1 + getNodeIndex(br));
+		Aloha.getSelection().collapse(br.parentNode, 1 + getNodeIndex(br));
+		range.setStart(br.parentNode, 1 + getNodeIndex(br));
+		range.setEnd(br.parentNode, 1 + getNodeIndex(br));
 
 		// "If br is a collapsed line break, call createElement("br") on the
 		// context object and let extra br be the result, then call
 		// insertNode(extra br) on the active range."
 		if (isCollapsedLineBreak(br)) {
-			getActiveRange().insertNode(document.createElement("br"));
+			range.insertNode(createEndBreak());
 
 			// Compensate for nonstandard implementations of insertNode
-			getSelection().collapse(br.parentNode, 1 + getNodeIndex(br));
-			getActiveRange().setStart(br.parentNode, 1 + getNodeIndex(br));
-			getActiveRange().setEnd(br.parentNode, 1 + getNodeIndex(br));
+			Aloha.getSelection().collapse(br.parentNode, 1 + getNodeIndex(br));
+			range.setStart(br.parentNode, 1 + getNodeIndex(br));
+			range.setEnd(br.parentNode, 1 + getNodeIndex(br));
 		}
 	}
 };
@@ -7159,7 +7174,7 @@ commands.insertparagraph = {
 
 				// "Call createElement("br") on the context object, and append
 				// the result as the last child of container."
-				container.appendChild(document.createElement("br"));
+				container.appendChild(createEndBreak());
 
 				// "Call collapse(container, 0) on the context object's
 				// Selection."
@@ -7214,7 +7229,7 @@ commands.insertparagraph = {
 			// Work around browser bugs: some browsers select the
 			// newly-inserted node, not per spec.
 			if (!isDescendant(nextNode(br), container)) {
-				range.insertNode(document.createElement("br"));
+				range.insertNode(createEndBreak());
 				Aloha.getSelection().collapse(node, offset + 1);
 				range.setEnd(node, offset + 1);
 			}
@@ -7236,7 +7251,7 @@ commands.insertparagraph = {
 			// context object and append the result as the last child of
 			// container."
 			if (!container.hasChildNodes()) {
-				container.appendChild(document.createElement("br"));
+				container.appendChild(createEndBreak());
 			}
 
 			// "If container is a dd or dt, and it is not an allowed child of
@@ -7252,7 +7267,7 @@ commands.insertparagraph = {
 			}
 
 			// "Fix disallowed ancestors of container."
-			fixDisallowedAncestors(container);
+			fixDisallowedAncestors(container, range);
 
 			// "Abort these steps."
 			return;
@@ -7353,14 +7368,14 @@ commands.insertparagraph = {
 		// the context object, and append the result as the last child of
 		// container."
 		if (![].some.call(container.childNodes, isVisible)) {
-			container.appendChild(document.createElement("br"));
+			container.appendChild(createEndBreak());
 		}
 
 		// "If new container has no visible children, call createElement("br")
 		// on the context object, and append the result as the last child of
 		// new container."
 		if (![].some.call(newContainer.childNodes, isVisible)) {
-			newContainer.appendChild(document.createElement("br"));
+			newContainer.appendChild(createEndBreak());
 		}
 
 		// "Call collapse(new container, 0) on the context object's Selection."
