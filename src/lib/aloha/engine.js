@@ -18,6 +18,18 @@ var commands = {};
 ///////////////////////////////////////////////////////////////////////////////
 //@{
 
+function toArray(obj) {
+	if (!obj) {
+		return null;
+	}
+	var array = [], i, l = obj.length;
+	// iterate backwards ensuring that length is an UInt32
+	for (i = l >>> 0; i--;) {
+		array[i] = obj[i];
+	}
+	return array;
+}
+
 function nextNode(node) {
 	if (node.hasChildNodes()) {
 		return node.firstChild;
@@ -156,6 +168,7 @@ function legacySizeToCss(legacyVal) {
 // Opera 11 puts HTML elements in the null namespace, it seems.
 function isHtmlNamespace(ns) {
 	return ns === null
+		|| !ns
 		|| ns === htmlNamespace;
 }
 
@@ -920,6 +933,10 @@ function isWhitespaceNode(node) {
 			&& node.parentNode
 			&& node.parentNode.nodeType == Node.ELEMENT_NODE
 			&& getComputedStyle(node.parentNode).whiteSpace == "pre-line"
+		) || (
+			/^[\t\n\r ]+$/.test(node.data)
+			&& node.parentNode
+			&& node.parentNode.nodeType == Node.DOCUMENT_FRAGMENT_NODE
 		));
 }
 
@@ -1100,8 +1117,8 @@ function getActiveRange() {
 	var ret;
 	if (globalRange) {
 		ret = globalRange;
-	} else if (getSelection().rangeCount) {
-		ret = getSelection().getRangeAt(0);
+	} else if (Aloha.getSelection().rangeCount) {
+		ret = Aloha.getSelection().getRangeAt(0);
 	} else {
 		return null;
 	}
@@ -1225,8 +1242,8 @@ function movePreservingRanges(node, newParent, newIndex, range) {
 	// in the selection, not every range out there (the latter is probably
 	// impossible).
 	var ranges = [range];
-	for (var i = 0; i < getSelection().rangeCount; i++) {
-		ranges.push(getSelection().getRangeAt(i));
+	for (var i = 0; i < Aloha.getSelection().rangeCount; i++) {
+		ranges.push(Aloha.getSelection().getRangeAt(i));
 	}
 	var boundaryPoints = [];
 	ranges.forEach(function(range) {
@@ -1732,7 +1749,7 @@ function isAllowedChild(child, parent_) {
 		[["li"], ["li"]],
 		[["nobr"], ["nobr"]],
 		[namesOfElementsWithInlineContents, prohibitedParagraphChildNames],
-		[["td", "th"], ["caption", "col", "colgroup", "tbody", "td", "tfoot", "th", "thead", "tr"]],
+		[["td", "th"], ["caption", "col", "colgroup", "tbody", "td", "tfoot", "th", "thead", "tr"]]
 	];
 	for (var i = 0; i < table.length; i++) {
 		if (table[i][0].indexOf(parent_) != -1
@@ -2497,7 +2514,7 @@ function clearValue(element, command, range) {
 	// "If element is a simple modifiable element:"
 	if (isSimpleModifiableElement(element)) {
 		// "Let children be the children of element."
-		var children = Array.prototype.slice.call(element.childNodes);
+		var children = Array.prototype.slice.call(toArray(element.childNodes));
 
 		// "For each child in children, insert child into element's parent
 		// immediately before element, preserving ranges."
@@ -2658,7 +2675,7 @@ function pushDownValues(node, command, newValue, range) {
 		}
 
 		// "Let children be the children of current ancestor."
-		var children = Array.prototype.slice.call(currentAncestor.childNodes);
+		var children = Array.prototype.slice.call(toArray(currentAncestor.childNodes));
 
 		// "If the specified command value of current ancestor for command is
 		// not null, clear the value of current ancestor."
@@ -3026,15 +3043,15 @@ function setSelectionValue(command, newValue, range) {
 	&& range.startOffset != getNodeLength(range.startContainer)) {
 		// Account for browsers not following range mutation rules
 		var newNode = range.startContainer.splitText(range.startOffset);
-		var newActiveRange = document.createRange();
+		var newActiveRange = Aloha.createRange();
 		if (range.startContainer == range.endContainer) {
 			var newEndOffset = range.endOffset - range.startOffset;
 			newActiveRange.setEnd(newNode, newEndOffset);
 			range.setEnd(newNode, newEndOffset);
 		}
 		newActiveRange.setStart(newNode, 0);
-		getSelection().removeAllRanges();
-		getSelection().addRange(newActiveRange);
+		Aloha.getSelection().removeAllRanges();
+		Aloha.getSelection().addRange(newActiveRange);
 
 		range.setStart(newNode, 0);
 	}
@@ -3059,8 +3076,8 @@ function setSelectionValue(command, newValue, range) {
 		activeRange.setStart(newStart[0], newStart[1]);
 		activeRange.setEnd(newEnd[0], newEnd[1]);
 
-		getSelection().removeAllRanges();
-		getSelection().addRange(activeRange);
+		Aloha.getSelection().removeAllRanges();
+		Aloha.getSelection().addRange(activeRange);
 	}
 
 	// "Let element list be all editable Elements effectively contained in the
@@ -4157,7 +4174,7 @@ function blockExtend(range) {
 
 	// "Let new range be a new range whose start and end nodes and offsets
 	// are start node, start offset, end node, and end offset."
-	var newRange = startNode.ownerDocument.createRange();
+	var newRange = Aloha.createRange();
 	newRange.setStart(startNode, startOffset);
 	newRange.setEnd(endNode, endOffset);
 
@@ -4421,7 +4438,7 @@ function deleteContents() {
 	if (arguments.length < 3) {
 		range = arguments[0];
 	} else {
-		range = document.createRange();
+		range = Aloha.createRange();
 		range.setStart(arguments[0], arguments[1]);
 		range.setEnd(arguments[2], arguments[3]);
 	}
@@ -4882,7 +4899,7 @@ function deleteContents() {
 
 		// "Record the values of end block's children, and let values be the
 		// result."
-		var values = recordValues([].slice.call(endBlock.childNodes));
+		var values = recordValues([].slice.call(toArray(endBlock.childNodes)));
 
 		// "While end block has children, append the first child of end block
 		// to start block, preserving ranges."
@@ -5053,7 +5070,7 @@ function splitParent(nodeList, range) {
 // its parent."
 function removePreservingDescendants(node, range) {
 	if (node.hasChildNodes()) {
-		splitParent([].slice.call(node.childNodes), range);
+		splitParent([].slice.call(toArray(node.childNodes)), range);
 	} else {
 		node.parentNode.removeChild(node);
 	}
@@ -5413,7 +5430,7 @@ function outdentNode(node, range) {
 		node.removeAttribute("type");
 
 		// "Let children be the children of node."
-		var children = [].slice.call(node.childNodes);
+		var children = [].slice.call(toArray(node.childNodes));
 
 		// "If node has attributes, and its parent is not an ol or ul, set the
 		// tag name of node to "div"."
@@ -5425,7 +5442,7 @@ function outdentNode(node, range) {
 		} else {
 			// "Record the values of node's children, and let values be the
 			// result."
-			var values = recordValues([].slice.call(node.childNodes));
+			var values = recordValues([].slice.call(toArray(node.childNodes)));
 
 			// "Remove node, preserving its descendants."
 			removePreservingDescendants(node, range);
@@ -5479,8 +5496,8 @@ function outdentNode(node, range) {
 
 		// "Let preceding siblings be the preceding siblings of target, and let
 		// following siblings be the following siblings of target."
-		var precedingSiblings = [].slice.call(currentAncestor.childNodes, 0, getNodeIndex(target));
-		var followingSiblings = [].slice.call(currentAncestor.childNodes, 1 + getNodeIndex(target));
+		var precedingSiblings = [].slice.call(toArray(currentAncestor.childNodes), 0, getNodeIndex(target));
+		var followingSiblings = [].slice.call(toArray(currentAncestor.childNodes), 1 + getNodeIndex(target));
 
 		// "Indent preceding siblings."
 		indentNodes(precedingSiblings, range);
@@ -5557,7 +5574,7 @@ function toggleLists(tagName, range) {
 			if ((isEditable(list.previousSibling) && isHtmlElement(list.previousSibling, tagName))
 			|| (isEditable(list.nextSibling) && isHtmlElement(list.nextSibling, tagName))) {
 				// "Let children be list's children."
-				var children = [].slice.call(list.childNodes);
+				var children = [].slice.call(toArray(list.childNodes));
 
 				// "Record the values of children, and let values be the
 				// result."
@@ -6122,7 +6139,7 @@ commands["delete"] = {
 		}).length) {
 			// "Block-extend the range whose start and end are both (node, 0),
 			// and let new range be the result."
-			var newRange = document.createRange();
+			var newRange = Aloha.createRange();
 			newRange.setStart(node, 0);
 			newRange = blockExtend(newRange);
 
@@ -6336,7 +6353,7 @@ commands.formatblock = {
 			if (isSingleLineContainer(nodeList[0])) {
 				// "Let sublist be the children of the first member of node
 				// list."
-				sublist = [].slice.call(nodeList[0].childNodes);
+				sublist = [].slice.call(toArray(nodeList[0].childNodes));
 
 				// "Record the values of sublist, and let values be the
 				// result."
@@ -6838,8 +6855,8 @@ commands.inserthorizontalrule = {
 		// well, for the sake of autoimplementation.html's range-filling-in.
 		range.setStart(hr.parentNode, 1 + getNodeIndex(hr));
 		range.setEnd(hr.parentNode, 1 + getNodeIndex(hr));
-		getSelection().removeAllRanges();
-		getSelection().addRange(range);
+		Aloha.getSelection().removeAllRanges();
+		Aloha.getSelection().addRange(range);
 	}
 };
 
@@ -6969,8 +6986,8 @@ commands.insertimage = {
 		// well, for the sake of autoimplementation.html's range-filling-in.
 		range.setStart(img.parentNode, 1 + getNodeIndex(img));
 		range.setEnd(img.parentNode, 1 + getNodeIndex(img));
-		getSelection().removeAllRanges();
-		getSelection().addRange(range);
+		Aloha.getSelection().removeAllRanges();
+		Aloha.getSelection().addRange(range);
 
 		// IE adds width and height attributes for some reason, so remove those
 		// to actually do what the spec says.
@@ -7359,6 +7376,20 @@ commands.insertparagraph = {
 			&& containedNodes.indexOf(descendants[i]) == -1) {
 				descendants[i].removeAttribute("id");
 			}
+		}
+
+		var fragChildren = [], fragChild = frag.firstChild;
+		if (fragChild) {
+			do {
+				if (!isWhitespaceNode(fragChild)) {
+					fragChildren.push(fragChild);
+				}
+			} while(fragChild = fragChild.nextSibling);
+		}
+
+		// if newContainer is a li and frag contains only a list, we add a br in the li
+		if (isHtmlElement(newContainer, "li") && fragChildren.length && isHtmlElement(fragChildren[0], ["ul", "ol"])) {
+			newContainer.appendChild(createEndBreak());
 		}
 
 		// "Call appendChild(frag) on new container."
@@ -7822,12 +7853,12 @@ commands.selectall = {
 		// "If target is null, call getSelection() on the context object, and
 		// call removeAllRanges() on the result."
 		if (!target) {
-			getSelection().removeAllRanges();
+			Aloha.getSelection().removeAllRanges();
 
 		// "Otherwise, call getSelection() on the context object, and call
 		// selectAllChildren(target) on the result."
 		} else {
-			getSelection().selectAllChildren(target);
+			Aloha.getSelection().selectAllChildren(target);
 		}
 	}
 };
