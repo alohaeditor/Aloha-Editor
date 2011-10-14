@@ -140,7 +140,7 @@ Aloha.ready( function() {
 		clearTimeout( selectionTimeout );
 
 		// don't read selection if shift is pressed
-		if ( e.shiftKey ) {
+		if ( e && e.shiftKey ) {
 			return;
 		}
 		
