@@ -2462,6 +2462,10 @@ var blockElementsLookupTable = {
 // Useful variables defined in engine.js:
 // namesOfElementsWithInlineContents
 
+/**
+ * @param {DOMElement} node
+ * @return {Boolean} returns true of node is a canonical block element
+ */
 function isBlockElement ( node ) {
 	return !!( node && flowElementsLookupTable[ node.nodeName ] );
 	//return !!( node && blockElementsLookupTable[ node.nodeName ] );
@@ -2805,7 +2809,7 @@ function getStartPosition ( container, offset ) {
 	}
 	
 	if ( offset == getNodeLength( container ) ) {	
-		return getStartPositionFromEndOfInlineNode( container, offset );
+		return getStartPositionFromEndOfInlineNode( container );
 	}
 	
 	return getStartPositionFromFrontOfInlineNode( container, offset );
@@ -2857,20 +2861,11 @@ function getEditingHost ( node ) {
 	return node;
 };
 
-function getStartPositionFromEndOfInlineNode ( node, offset ) {
-	//debugger;
-	// Chrome gets here
-	return {
-		node   : node,
-		offset : offset
-	};
-};
-
 /**
  * Given that we are in front of an inline node...
  *
- * If we do have a text node to the left, and to the right of our selection
- * Where we can reposition our start point, we have to then check to see if
+ * If we have a text node to the left, and to the right of our selection
+ * where we can reposition our start point, we have to then check to see if
  * we have a situation where the original start position had one
  * or more inline nodes followed by a block node between the start position
  * and the text node on which we want reposition the range start point.
@@ -2941,11 +2936,10 @@ function getStartPositionFromFrontOfInlineNode ( node, offset ) {
 	
 	// In order to determine where we will reposition the start position, we
 	// will need to know whether or not we have a text node to the left of our
-	// current position
+	// start position
 	leftTextNode = getNearestLeftNode( origNode, isTextNode );
 	
 	// Try to find a text node to the right of the start position...
-	
 	// First look for the nearest text node inside startNode.
 	// Satisfies:
 	// [ '{<b>foo]</b>', '<b>[foo]</b>' ],
@@ -2994,7 +2988,9 @@ function getStartPositionFromFrontOfInlineNode ( node, offset ) {
 	
 	// At this point, ancestor is either null, or it is the child of the first
 	// block ancestor from rightTextNode. If it is neither of these things, then
-	// it is the immediate child of the editing host
+	// it is the immediate child of the editing host. Regardless of whether the
+	// parent node of ancestor is the editing host or not, we just need to make
+	// sure that it is a block element
 	if ( ancestor && isBlockElement( ancestor.parentNode ) ) {
 		var blockNode = ancestor.parentNode;
 		var posbits = compareDocumentPosition( origNode, blockNode );
@@ -3015,6 +3011,7 @@ function getStartPositionFromFrontOfInlineNode ( node, offset ) {
 				if ( !isBlockElement( left )
 						|| jQuery( left ).find( leftTextNode ).length ) {
 					left = getRightmostScion( left ) || left;
+					
 					return {
 						node   : left,
 						offset : getNodeLength( left ) 
@@ -3031,8 +3028,32 @@ function getStartPositionFromFrontOfInlineNode ( node, offset ) {
 	};
 };
 
+/**
+ * Given that we are in front of the end tag of an inline node (eg:
+ * "...{</b>..."), an offset arguments is redundant since the offset must be
+ * equal to the number of childNodes of the given node.
+ *
+ * @param {DOMElement} node - an inline node
+ */
+function getStartPositionFromEndOfInlineNode ( node ) {
+	var offset = getNodeLength( node );
+	
+	return {
+		node   : node,
+		offset : offset
+	};
+};
 
+/**
+ * We are at the end tag of an inline node.
+ *
+ * @param {DOMElement} node - an inline node
+ * @param {Number} offset - an integer that should be equal to the number of
+ *							childNodes of node. This argument is therefore
+ *							redundant.
+ */
 function getEndPositionFromEndOfInlineNode ( node, offset ) {
+	/*
 	var child,
 	    leftNode,
 	    rightNode;
@@ -3041,8 +3062,8 @@ function getEndPositionFromEndOfInlineNode ( node, offset ) {
 		node   : node,
 		offset : offset
 	};
+	*/
 	
-	/*
 	// Satisfies
 	// [ '<b>[foo}</b>', '<b>[foo]</b>' ],
 	stop = getRightmostScion( node, isTextNode );
@@ -3057,7 +3078,6 @@ function getEndPositionFromEndOfInlineNode ( node, offset ) {
 		node   : node,
 		offset : offset
 	};
-	*/
 };
 
 function getEndPositionFromFrontOfInlineNode ( node, offset ) {

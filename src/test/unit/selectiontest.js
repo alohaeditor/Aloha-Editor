@@ -201,7 +201,7 @@ function( TestUtils ) {
 //			[ '{<p></p><div></div><p>}foo</p>', '<p></p><div></div><p>[]foo</p>' ], // IE won't accept
 //			[ '{<p></p><div></div><p>}</p>', '{}<p></p><div></div><p></p>' ],
 
-//*
+/*
 			//
 			// getStartPositionFromFrontOfInlineNode
 			//
@@ -241,32 +241,75 @@ function( TestUtils ) {
 			[ '{<b></b><div><u></u></div><p>}</p>', '{}<b></b><div><u></u></div><p></p>' ],
 			[ '<p>{<b></b></p><div><u></u></div><p>}</p>', '{}<p><b></b></p><div><u></u></div><p></p>' ]
 
-//*/			
+*/			
 
 
-/*
+//*
 			//
 			// getStartPositionFromEndOfInlineNode
 			//
-			// With a text node left, and right of start position
-			[ '<p>foo{<b></b></p><div><u></u></div><p>bar]</p>', '<p>foo<b>{</b></p><div><u></u></div><p>bar]</p>' ],
+			// With text node inside container node and right text node
+			// '<b>foo{</b>bar]', 'foo<b>foo</b>[bar]'
+			// '<b>foo{</b><b></b>bar]', '<b>foo</b><b></b>[bar]'
+			// '<b>foo{</b><b>bar]</b>', '<b>foo</b><b>[bar]</b>'
+			// '<b><u>foo</u>{</b>bar]', '<b><u>foo</u></b>[bar]'
+			// ... With block node between start container and right text node
+			// '<b>foo{</b><p></p>bar]', '<b>foo[</b><p></p>bar]'
+			// '<b>foo{</b><p>bar]</p>', '<b>foo[</b><p>bar]</p>'
+			
+			// With text node left and right of container node, and none inside
+			// 'foo<b>{</b>bar]', 'foo<b></b>[bar]'
+			// 'foo<b>{</b><b></b>bar]', 'foo<b></b><b></b>[bar]'
+			// 'foo<b>{</b><b>bar]</b>', 'foo<b></b><b>[bar]</b>'
+			// ... With block node between start container and right text node
+			// 'foo<b>{</b><p>bar]</p>', 'foo<b>{</b><p>bar]</p>'
+			// 'foo<b>{</b><p></p>bar]', 'foo<b>{</b><p></p>bar]'
+			
+			// With text node left of container, none right and none inside
+			// 'foo<b>{</b>}', 'foo[]<b></b>'
+			// With text node inside of container, none to right
+			// '<b><u>foo</u>{</b>}', '<b><u>foo[]</u></b>'
+			// '<b>foo<u></u>{</b>}', '<b>foo[]<u></u></b>'
+			// '<b><u>foo</u>{</b><p></p>}', '<b><u>foo[]</u></b><p></p>'
+			
+			// '<b>foo{</b>}', '<b>foo[]</b>'
+	
+			
+			
+			
+			
+			
+			
+			
+			// With a text node left, and right of start container
 			[ 'foo<b>{</b><p>bar]</p>', 'foo<b>{</b><p>bar]</p>' ],
 			[ 'foo<b>{</b><u></u><p>bar]</p>', 'foo<b></b><u>{</u><p>bar]</p>' ],
 			[ 'foo<b>{</b><div></div><p>bar]</p>', 'foo<b>{</b><div></div><p>bar]</p>' ],
 			[ '<b>foo<u>{</u></b><p>bar]</p>', '<b>foo<u>{</u></b><p>bar]</p>' ],
 			[ 'foo<b>{</b><div><u></u></div><p>bar]</p>', 'foo<b>{</b><div><u></u></div><p>bar]</p>' ],
-			
+			[ '<p>foo<b>{</b></p><div><u></u></div><p>bar]</p>', '<p>foo<b>{</b></p><div><u></u></div><p>bar]</p>' ],
+			// With a text node inside start container
 			[ '<b>foo{</b><p>bar]</p>', '<b>foo[</b><p>bar]</p>' ],
 			[ '<b>foo{</b><u></u><p>bar]</p>', '<b>foo</b><u>{</u><p>bar]</p>' ],
 			[ '<b>foo{</b><div></div><p>bar]</p>', '<b>foo[</b><div></div><p>bar]</p>' ],
-			// With no text node left of start position, but with one on right
+			[ '<p><b>foo{</b></p><div><u></u></div><p>bar]</p>', '<p><b>foo[</b></p><div><u></u></div><p>bar]</p>' ],
+			// With no text node left of start container, but with one on right
 			[ '<b>{</b><p>foo]</p>', '<b></b><p>[foo]</p>' ],
 			[ '<b>{</b><u></u><p>foo]</p>', '<b></b><u></u><p>[foo]</p>' ],
 			[ '<b>{</b><div></div><p>foo]</p>', '<b></b><div></div><p>[foo]</p>' ],
 			[ '<b><u>{</u></b><p>foo]</p>', '<b><u></u></b><p>[foo]</p>' ],
 			[ '<b>{</b><div><u></u></div><p>foo]</p>', '<b></b><div><u></u></div><p>[foo]</p>' ],
+			[ '<p><b>{</b></p><div><u></u></div><p>bar]</p>', '<p><b></b></p><div><u></u></div><p>[bar]</p>' ],
+			// With text node left of start container, but none on the right
+			[ 'foo<b>{</b><p>}</p>', 'foo[]<b></b><p></p>' ],
+			[ 'foo<b>{</b><u></u><p>}</p>', 'foo[]<b></b><u></u><p></p>' ],
+			[ 'foo<b>{</b><div></div><p>}</p>', 'foo[]<b></b><div></div><p></p>' ],
+			[ '<b>foo<u>{</u></b><p>}</p>', '<b>foo[]<u></u></b><p></p>' ],
+			[ 'foo<b>{</b><div><u></u></div><p>}</p>', 'foo[]<b></b><div><u></u></div><p></p>' ],
+			[ '<p>foo<b>{</b></p><div><u></u></div><p>}</p>', '<p>foo[]<b></b></p><div><u></u></div><p></p>' ],
 			
-*/
+			
+/*/
 
 /*
 		
