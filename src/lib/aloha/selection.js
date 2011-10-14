@@ -2779,6 +2779,13 @@ function getStartPosition ( container, offset ) {
 	// Should we just throw an INDEX_SIZE_ERR exception
 	offset = sanitizeOffset( container, offset );
 	
+	if ( isTextNode( container ) ) {
+		return {
+			node   : container,
+			offset : offset
+		};
+	}
+	
 	if ( isBlockElement( container ) ) {
 		// If the offset is equal to the container's length, then either we
 		// are positioned in an empty container, or else the offset is
@@ -2797,13 +2804,6 @@ function getStartPosition ( container, offset ) {
 		}
 	}
 	
-	if ( isTextNode( container ) ) {
-		return {
-			node   : container,
-			offset : offset
-		};
-	}
-	
 	if ( offset == getNodeLength( container ) ) {	
 		return getStartPositionFromEndOfInlineNode( container, offset );
 	}
@@ -2818,6 +2818,13 @@ function getEndPosition ( container, offset ) {
 	
 	// Should we just throw an INDEX_SIZE_ERR exception
 	offset = sanitizeOffset( container, offset );
+	
+	if ( isTextNode( container ) ) {
+		return {
+			node   : container,
+			offset : offset
+		};
+	}
 	
 	if ( isBlockElement( container ) ) {
 		// If the offset is equal to the container's length, then either we
@@ -2835,13 +2842,6 @@ function getEndPosition ( container, offset ) {
 		if ( isBlockElement( container.childNodes[ offset ] ) ) {
 			return getEndPositionFromFrontOfBlockNode( container, offset );
 		}
-	}
-	
-	if ( isTextNode( container ) ) {
-		return {
-			node   : container,
-			offset : offset
-		};
 	}
 	
 	if ( offset == getNodeLength( container ) ) {
@@ -2866,7 +2866,157 @@ function getStartPositionFromEndOfInlineNode ( node, offset ) {
 	};
 };
 
+/**
+			// IF our start position is in front of the end or start of an
+			// inline node (ie: "{<b>..." or "{</b>..."),
+			// AND there is a text node to the left and to the right of our
+			// start position,
+			// AND if there are inline nodes inbetween those two text nodes,
+			// THEN jump into one of these inline nodes that is closest to the
+			// intercepting block node. Go into the deepest node inside that
+			// inline node which will bring us as close to the block node as
+			// possible
+			
+ * @param {DOMElement} node
+ * @param {Number} offset - integer
+ * @return {Object} position object with properties node and offset
+ */
 function getStartPositionFromFrontOfInlineNode ( node, offset ) {
+	var origNode,
+	    correctNode;
+	
+	origNode = node.childNodes[ offset ];
+	
+	if ( isTextNode( origNode ) ) {
+		return {
+			node   : origNode,
+			offset : 0
+		};
+	}
+	
+	// Try to find a text node to the right of the start position, described
+	// by node, offset.
+	
+	// First look for the nearest text node inside startNode.
+	// Satisfies:
+	// [ '{<b>foo]</b>', '<b>[foo]</b>' ],
+	correctNode = getLeftmostScion( origNode, isTextNode );
+	
+	// There are no text nodes inside origNode, so look for the nearest text
+	// node to outside of, and to the right of origNode.
+	// Satisfies:
+	// [ 'foo{<b></b><b>bar]</b>', 'foo<b></b><b>[bar]</b>' ],
+	// [ 'foo{<b><i></i></b>bar]', 'foo<b><i></i></b>[bar]' ],
+	// [ 'foo{<b><i></i></b><b>bar]</b>', 'foo<b><i></i></b><b>[bar]</b>' ],
+	if ( !correctNode ) {
+		correctNode = getNearestRightNode( origNode, isTextNode );
+	}
+	
+	debugger;
+	
+	// If we found a text node to reposition our start point, we then have to
+	// check if we have a situation where the original start position had one
+	// or more inline nodes followed by a block node between the start position
+	// and the text node on which we want reposition the range start point.
+	// This will be the case in 2 different cases, which we have to handle
+	// differently.
+	// The first case is where we have a text node to the right of the original
+	// start position, but none to the left.
+	// eg: "{<b></b><p>bar]</p>"
+	// In this case we simply accept the text node that we found as our new#
+	// start position.
+	// therefore:
+	// "{<b></b><p>bar]</p>" corrects to "<b></b><p>[bar]</p>"
+	// The other, second, case is where there is a text node to the right AND
+	// to the left of our original start position.
+	// eg: "foo{<b></b><p>bar]</p>"
+	// In this case we will not take the text node we found as our new start
+	// position. Instead, we will look for the nearest inline element to the
+	// intercepting block node. We will also look for a position inside that
+	// inline node that will place us as close as possible to the intercepting
+	// block node.
+	// therefore:
+	// "foo{<b></b><p>bar]</p>" corrects to "foo<b>{</b><p>bar]</p>"
+	// "foo<b><i>{</i></b><p>bar]</p>" corrects to "foo<b><i>{</i></b><p>bar]</p>"
+	// "foo{<b></b><u></u><p>bar]</p>" corrects to "foo<b></b><u>{</u><p>bar]</p>"
+	// "foo{<b></b><u><i></i><i></i></u><p>bar]</p>" corrects to "foo<b></b><u><i></i><i>{</i></u><p>bar]</p>"
+	
+	// How to determine if we have a block node start tag between the original
+	// start position, and the text node on which we want to reposition the
+	// start position:
+	// Remember that no inline node can container a block node. This means that
+	// with each inline node, we can infer that all its children and its
+	// children will not be block nodes.
+	// With this in mind, check if any of the text node's ancestors (within the
+	// editing host) is a block element. If we encounter one, then use
+	// documentComparePosition to determine if this element succeeds the
+	// original start node.
+	// If it does, then look for the nearest inline element to the left of this
+	// block element, and find the inline node's deepest rightmost node as our
+	// new start position.
+	// If the block element does not succeed the original start position, then,
+	// the original start position must be contained somewhere in side this
+	// ancestor block element.
+	// Therefore, to find the nearest inline element starting from the last
+	// inline element before we hit his block ancestor, and walk along it's
+	// left neighbors until we encounter a inline node. When we find one, look
+	// for its deepest, rightmost node that will put our start position as
+	// close as possible to that intercepting block node.
+	
+	var hasSucceedingInlineNodes = false;
+	var succeedingBlockNeighbor = origNode;
+	
+	while ( succeedingBlockNeighbor = getRightNeighbor( succeedingBlockNeighbor ) ) {
+		if ( isBlockElement( succeedingBlockNeighbor ) ) {
+			break;
+		}
+		hasSucceedingInlineNodes = true;
+	}
+	
+	// At this point
+	if ( hasSucceedingInlineNodes && succeedingBlockNeighbor ) {
+		stop = getNearestLeftNode( stop )
+	}
+	
+	if ( stop &&
+			isBlockElement( getRightNeighbor( child ) ) ) {
+		if ( getNodeLength( child ) == 0 ) {
+			// Satisfies:
+			// [ 'foo{<b></b><p>bar]</p>', 'foo<b>{</b><p>bar]</p>' ],
+			stop = child;
+		} else {
+			// Satisfies:
+			// [ 'foo{<b><i></i></b><p>bar]</p>', 'foo<b><i>{</i></b><p>bar]</p>' ],
+			stop = getLeftmostScion( child );
+		}
+	}
+	
+	if ( stop ) {
+		return {
+			node   : stop,
+			offset : 0
+		};
+	}
+	
+	// There are no text nodes to the right, so look to the left
+	stop = getNearestRightNode( child, isTextNode );
+	if ( stop ) {
+		return {
+			node   : stop,
+			offset : getNodeLength( stop )
+		};
+	}
+	
+	// There is no text nodes whatsoever to land on, jump the start of the
+	// editing host
+	return {
+		node   : getEditingHost( child ),
+		offset : 0
+	};
+};
+
+
+function __getStartPositionFromFrontOfInlineNode ( node, offset ) {
 	var child = node.childNodes[ offset ];
 	var stop;
 	
@@ -2955,15 +3105,63 @@ function getEndPositionFromEndOfInlineNode ( node, offset ) {
 
 function getEndPositionFromFrontOfInlineNode ( node, offset ) {
 	var child = node.childNodes[ offset ];
+	var stop;
 	
 	if ( isTextNode( child ) ) {
 		return {
 			node   : child,
-			offset : offset
+			offset : 0
 		};
 	}
 	
-	var stop = child;
+	// Try to go right...
+	
+	// Satisfies:
+	// [ '{<b>foo]</b>', '<b>[foo]</b>' ],
+	stop = getLeftmostScion( child, isTextNode );
+	
+	// Satisfies:
+	// [ 'foo{<b></b><b>bar]</b>', 'foo<b></b><b>[bar]</b>' ],
+	// [ 'foo{<b><i></i></b>bar]', 'foo<b><i></i></b>[bar]' ],
+	// [ 'foo{<b><i></i></b><b>bar]</b>', 'foo<b><i></i></b><b>[bar]</b>' ],
+	if ( !stop ) {
+		stop = getNearestRightNode( child, isTextNode );
+	}
+	
+	if ( stop ) {
+		return {
+			node   : stop,
+			offset : 0
+		};
+	}
+	
+	return {
+		node   : node,
+		offset : offset
+	};
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	// Satisfies:
+	// [ '{<b></b><p></p>}', '{}<b></b><p></p>' ]
+	if ( !getNearestLeftNode( child, isTextNode ) ) {
+		return {
+			node   : getEditingHost( child ),
+			offset : 0
+		};
+	}
+	
+	debugger;
 	
 	while ( ( stop = stop.parentNode ) && !isEditingHost( stop ) ) {
 		if ( isBlockElement( stop ) &&
@@ -2976,7 +3174,7 @@ function getEndPositionFromFrontOfInlineNode ( node, offset ) {
 	}
 	
 	return {
-		node   : child,
+		node   : node,
 		offset : offset
 	};
 };
@@ -3161,11 +3359,14 @@ function getEndPositionFromFrontOfBlockNode ( node, offset ) {
 	// We check if there is no previousSibling in order to satisfy this:
 	// '[foo<div>}<p>bar</p></div>', '[foo<div><p>}bar</p></div>'
 	if ( !child.previousSibling || isBlockElement( getLeftNeighbor( child ) ) ) {
+		/*
 		stop = child;
-		
 		while ( stop && getNodeLength( stop ) == 0 ) {
 			stop = stop.nextSibling;
 		}
+		*/
+		
+		stop = getNearestRightNode( child, isTextNode );
 		
 		if ( stop  ) {
 			/*
@@ -3228,7 +3429,7 @@ function sanitizeOffset ( node, offset ) {
 };
 
 function correctRange ( range ) {
-	//return range;
+	// return range;
 	
 	var startContainer = range.startContainer,
 	    startOffset = range.startOffset,
