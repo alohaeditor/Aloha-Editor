@@ -164,6 +164,11 @@ function ($) {
 			var colspan = Utils.colspan( cell );
 			var rowspan = Utils.rowspan( cell );
 
+			//catch the most common case early
+			if (1 === colspan && 1 === rowspan) {
+				return;
+			}
+
 			var $row  = $cell.parent();
 			var $rows = $row.parent().children();
 			var rowIdx = $row.index();
