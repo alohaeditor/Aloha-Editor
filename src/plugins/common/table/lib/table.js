@@ -748,12 +748,12 @@ return function (TablePlugin) {
 			jQuery.each( rowIDs, function ( unused, rowId ) {
 				var row = grid[ rowId ];
 				for ( var j = 0; j < row.length; ) {
-					var cell = row[ j ];
-					var rowspan = Utils.rowspan( cell.cell );
+					var cellInfo = row[ j ];
+					var rowspan = Utils.rowspan( cellInfo.cell );
 					if ( 1 < rowspan ) {
-						jQuery( cell.cell ).attr( 'rowspan', rowspan - 1);
+						jQuery( cellInfo.cell ).attr( 'rowspan', rowspan - 1);
 					}
-					j += cell.colspan;
+					j += cellInfo.colspan;
 				}
 				jQuery( rows[ rowId ] ).remove();
 			});
