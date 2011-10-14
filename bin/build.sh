@@ -1,5 +1,5 @@
 #!/bin/bash
-# $Id: build, v 1.0 2011/10/3 15:50:00 jotschi Exp $
+# $Id: build, v 1.1 2011/10/3 15:50:00 jotschi Exp $
 # 2011 - written by Johannes Schüth <j.schueth@gentics.com>
 
 
