@@ -203,48 +203,32 @@ function( TestUtils ) {
 //
 //
 			//
-			// IF our start position is in front of the end or start of an
-			// inline node (ie: "{<b>..." or "{</b>..."),
-			// AND there is a text node to the left and to the right of our
-			// start position,
-			// AND if there are inline nodes inbetween those two text nodes,
-			// THEN jump into one of these inline nodes that is closest to the
-			// intercepting block node. Go into the deepest node inside that
-			// inline node which will bring us as close to the block node as
-			// possible
+			// getStartPositionFromFrontOfInlineNode
 			//
-			// Functions:
-			//		getStartPositionFromFrontOfInlineNode
-			//		getStartPositionFromEndOfInlineNode
-			//
-			[ 'foo{<b></b><b></b><p>bar]</p>', 'foo<b>{</b><p>bar]</p>' ],
-			[ 'foo{<b></b><b></b><p>bar]</p>', 'foo<b></b><b>{</b><p>bar]</p>' ],
-			[ 'foo<b></b>{<p></p><p>bar]</p>', 'foo<b>{</b><p></p><p>bar]</p>' ],
-			[ 'foo<b><i></i></b>{<p></p><p>bar]</p>', 'foo<b><i>{</i></b><p></p><p>bar]</p>' ],
-			[ 'foo<b><i></i><u></u></b>{<p></p><p>bar]</p>', 'foo<b><i></i><u></u></b>{<p></p><p>bar]</p>' ],
-			[ 'foo<b><i>{</i><u></u></b><p></p><p>bar]</p>', 'foo<b><i>{</i><u></u></b><p></p><p>bar]</p>' ],
-			//
-			//	No right text node from position
-			//
-			[ 'foo{<b></b><b></b><p>}</p>', 'foo[]<b></b><b></b><p></p>' ],
-			[ 'foo<b></b>{<p></p><p>}</p>', 'foo[]<b></b><p></p><p></p>' ],
-			
-			
-			[ '<b></b>{<p></p><p>}foo</p>', '<b></b><p></p><p>[]foo</p>' ],
-			// IE does not accept "{}<b></b><p></p><p></p>" will always "correct" it to <b>{}</b><p></p><p></p>
-			[ '<b></b>{<p></p><p>}</p>', '{}<b></b><p></p><p></p>' ]
-			
-//			[ '<p></p>{<div>}foo</div>', '<p></p><div>[]foo</div>' ],
-//			[ '<p></p>{<div>}</div>', '{}<p></p><div></div>' ],
-//			
-//			[ '<div><p></p>{<p>}foo</p></div>', '<div><p></p><p>[]foo</p></div>' ],
-//			[ '<div><p></p>{<p>}</p></div>', '{}<div><p></p><p></p></div>' ],
-//			
-//			[ 'bar<div>{<p>}foo</p></div>', 'bar<div><p>[]foo</p></div>' ],
-//			[ 'bar<div>{<p>}</p></div>', 'bar[]<div><p></p></div>' ],
-//			
-//			[ 'bar<b></b>{<p></p><p>}foo</p>', 'bar<b>{</b><p></p><p>}foo</p>' ],
-//			[ 'bar<b></b>{<p></p><p>}</p>', 'bar[]<b></b><p></p><p></p>' ]
+			// With a text node left, and right of start position
+			[ 'foo{<b></b><p>bar]</p>', 'foo<b>{</b><p>bar]</p>' ],
+			[ 'foo{<b></b><u></u><p>bar]</p>', 'foo<b></b><u>{</u><p>bar]</p>' ],
+			[ 'foo{<b></b><div></div><p>bar]</p>', 'foo<b>{</b><div></div><p>bar]</p>' ],
+			[ '<b>foo{<u></u></b><p>bar]</p>', '<b>foo<u>{</u></b><p>bar]</p>' ],
+			[ 'foo{<b></b><div><u></u></div><p>bar]</p>', 'foo<b>{</b><div><u></u></div><p>bar]</p>' ],
+			// With no text node left of start position, but with one on right
+			[ '{<b></b><p>foo]</p>', '<b></b><p>[foo]</p>' ],
+			[ '{<b></b><u></u><p>foo]</p>', '<b></b><u></u><p>[foo]</p>' ],
+			[ '{<b></b><div></div><p>foo]</p>', '<b></b><div></div><p>[foo]</p>' ],
+			[ '<b>{<u></u></b><p>foo]</p>', '<b><u></u></b><p>[foo]</p>' ],
+			[ '{<b></b><div><u></u></div><p>foo]</p>', '<b></b><div><u></u></div><p>[foo]</p>' ],
+			// With text node left of start position, none on right
+			[ 'foo{<b></b><p>}</p>', 'foo[]<b></b><p></p>' ],
+			[ 'foo{<b></b><u></u><p>}</p>', 'foo[]<b></b><u></u><p></p>' ],
+			[ 'foo{<b></b><div></div><p>}</p>', 'foo[]<b></b><div></div><p></p>' ],
+			[ '<b>foo{<u></u></b><p>}</p>', '<b>foo[]<u></u></b><p></p>' ],
+			[ 'foo{<b></b><div><u></u></div><p>}</p>', 'foo[]<b></b><div><u></u></div><p></p>' ],
+			// With no text node left or right of start position
+			[ '{<b></b><p>}</p>', '{}<b></b><p></p>' ],
+			[ '{<b></b><u></u><p>}</p>', '{}<b></b><u></u><p></p>' ],
+			[ '{<b></b><div></div><p>}</p>', '{}<b></b><div></div><p></p>' ],
+			[ '<b>{<u></u></b><p>}</p>', '{}<b><u></u></b><p></p>' ],
+			[ '{<b></b><div><u></u></div><p>}</p>', '{}<b></b><div><u></u></div><p></p>' ]
 
 /*
 		
