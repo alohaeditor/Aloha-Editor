@@ -349,6 +349,9 @@
 					},
 					{  	start: '<p>foo<span style=color:#aBcDeF>[bar</span><span style=color:#fEdCbA>baz]</span>quz</p>',
 						execResult: '<p>foo<span style="color:#aBcDeF"></span></p><p>[]quz</p>'
+					},
+					{  	start: '<ol><li>foo[]<ul><li>bar</li></ul></ol>',
+						execResult: '<ol><li>foo</li><li>{}<ul><li>bar</li></ul></ol>'
 					}
 			]
 	}
