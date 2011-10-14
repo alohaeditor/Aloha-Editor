@@ -211,19 +211,38 @@ function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 		 * @return markup
 		 * @hide
 		 */
+		
 		findAbbrMarkup: function ( range ) {
-
-			if ( typeof range == 'undefined' ) {
-		        var range = Aloha.Selection.getRangeObject();
-		    }
-			if ( Aloha.activeEditable ) {
-			    return range.findMarkup(function() {
-			        return this.nodeName.toLowerCase() == 'abbr';
-			    }, Aloha.activeEditable.obj);
-			} else {
-				return null;
-			}
-		},
+			var 
+		    startLink,
+		    endLink;
+		   
+		   if ( typeof range == 'undefined' ) {
+		    range = Aloha.Selection.getRangeObject();
+		   }
+		   if ( Aloha.activeEditable ) {
+		    
+		    var startInLink = range.findMarkup( function() {
+		     if ( this.nodeName.toLowerCase() == 'abbr' ) {
+		      startLink = this;
+		      return true;
+		     }
+		     return false;
+		    }, Aloha.activeEditable.obj);
+		    
+		    var endInLink = range.findMarkup( function() {
+		     if ( this.nodeName.toLowerCase() == 'abbr' ) {
+		      endLink = this;
+		      return true;
+		     }
+		     return false;
+		    }, Aloha.activeEditable.obj, true );
+		    
+		    return (startInLink && endInLink && startLink === endLink) ? startLink : false;
+		   } else {
+		    return null;
+		   }
+	  },
 
 		/**
 		 * Format the current selection or if collapsed the current word as abbr.

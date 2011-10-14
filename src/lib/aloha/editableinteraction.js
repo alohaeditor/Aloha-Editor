@@ -11,7 +11,7 @@ function(jQuery) {
 	
 	function highlight ( obj ) {
 		setTimeout( function() {
-			if ( obj && obj.context && obj.context.style && obj.context.style['background-color'] ) {
+			if ( obj && obj.context && obj.context.style && obj.context.style['background-color']) {
 				obj.attr('data-original-background-color', obj.context.style['background-color']);
 			}
 			obj.css('background-color','#80B5F2');
@@ -20,9 +20,9 @@ function(jQuery) {
 	};
 	
 	function unhighlight ( obj ) {
-		var color;
 		if ( obj ) {
-			if ( color = obj.attr('data-original-background-color')  ) {
+			var color;
+			if ( color = jQuery(obj).attr('data-original-background-color')  ) {
 				jQuery(obj).css('background-color', color);
 			} else {
 				jQuery(obj).css('background-color', '');
@@ -31,16 +31,14 @@ function(jQuery) {
 		}
 	};
 	
-	function makeClean ( obj ) {
-		if ( obj ) {
-			jQuery( "[data-original-background-color]" , obj).each( function () {
-				var color;
-				if( color = jQuery( this ).attr( "data-original-background-color" )) {
-					jQuery( this ).css('background-color', color);
-				} else {
-					jQuery( this ).css('background-color', '');
-				}
-				jQuery( this ).removeAttr( "data-original-background-color" );
+	/**
+	 * Cleaning highlighted elements in the editable
+	 * @param {Editable} top editable object
+	 */
+	function makeClean ( editable ) {
+		if ( editable ) {
+			jQuery( "[data-original-background-color]" , editable).each( function () {
+				unhighlight(this);
 			});
 		}
 	};
