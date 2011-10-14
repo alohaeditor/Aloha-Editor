@@ -192,10 +192,10 @@ function( TestUtils ) {
 //			[ '{<p>}foo</p>', '<p>[]foo</p>' ],
 //			[ '{<p>}</p>', '{}<p></p>' ]
 			
-			[ '{<p></p><p>}</p>', '{}<p></p><p></p>' ],
-			[ '{<p></p><p>}foo</p>', '<p></p><p>[]foo</p>' ],
+//			[ '{<p></p><p>}</p>', '{}<p></p><p></p>' ],
+//			[ '{<p></p><p>}foo</p>', '<p></p><p>[]foo</p>' ],
 			
-			[ '{<p></p><div><p>}foo</p></div>', '<p></p><div><p>[]foo</p></div>' ],
+//			[ '{<p></p><div><p>}foo</p></div>', '<p></p><div><p>[]foo</p></div>' ],
 			[ '{<p></p><div><p>}</p></div>', '{}<p></p><div><p></p></div>' ],
 			
 			[ '{<p></p><div></div><p>}foo</p>', '<p></p><div></div><p>[]foo</p>' ],
