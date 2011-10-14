@@ -291,18 +291,18 @@ function (jQuery, Utils) {
 			return;
 		}
 
-		var cX = this.virtualX();
-		var cY = this.virtualY();
-		var basePos = this.tableObj.selection.baseCellPosition;
-		var bX = basePos[1];
-		if (cX < basePos[1]) {
-			bX = cX;
-			cX = basePos[1];
+		var right = this.virtualX();
+		var bottom = this.virtualY();
+		var topLeft = this.tableObj.selection.baseCellPosition;
+		var left = topLeft[1];
+		if (left > right) {
+			left = right;
+			right = topLeft[1];
 		}
-		var bY = basePos[0];
-		if (cY < bY) {
-			bY = cY;
-			cY = basePos[0];
+		var top = topLeft[0];
+		if (top > bottom) {
+			top = bottom;
+			bottom = topLeft[0];
 		}
 
 		var $rows = this.tableObj.obj.children().children('tr');
@@ -314,7 +314,7 @@ function (jQuery, Utils) {
 			for (var j = 0; j < grid[i].length; j++) {
 				var cellInfo = grid[i][j];
 				if ( Utils.containsDomCell(cellInfo) ) {
-					if (i >= bY && i <= cY && j >= bX && j <= cX) {
+					if (i >= top && i <= bottom && j >= left && j <= right) {
 						jQuery( cellInfo.cell ).addClass(selectClass);
 						this.tableObj.selection.selectedCells.push(cellInfo.cell);
 					} else {
