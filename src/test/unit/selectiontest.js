@@ -200,35 +200,73 @@ function( TestUtils ) {
 //
 //			[ '{<p></p><div></div><p>}foo</p>', '<p></p><div></div><p>[]foo</p>' ], // IE won't accept
 //			[ '{<p></p><div></div><p>}</p>', '{}<p></p><div></div><p></p>' ],
-//
-//
+
+//*
 			//
 			// getStartPositionFromFrontOfInlineNode
 			//
 			// With a text node left, and right of start position
+			// NB: These will fail in IE because IE does not accept our
+			//     expected range as valid
 			[ 'foo{<b></b><p>bar]</p>', 'foo<b>{</b><p>bar]</p>' ],
 			[ 'foo{<b></b><u></u><p>bar]</p>', 'foo<b></b><u>{</u><p>bar]</p>' ],
 			[ 'foo{<b></b><div></div><p>bar]</p>', 'foo<b>{</b><div></div><p>bar]</p>' ],
 			[ '<b>foo{<u></u></b><p>bar]</p>', '<b>foo<u>{</u></b><p>bar]</p>' ],
 			[ 'foo{<b></b><div><u></u></div><p>bar]</p>', 'foo<b>{</b><div><u></u></div><p>bar]</p>' ],
+			[ '<p>foo{<b></b></p><div><u></u></div><p>bar]</p>', '<p>foo<b>{</b></p><div><u></u></div><p>bar]</p>' ],
 			// With no text node left of start position, but with one on right
 			[ '{<b></b><p>foo]</p>', '<b></b><p>[foo]</p>' ],
 			[ '{<b></b><u></u><p>foo]</p>', '<b></b><u></u><p>[foo]</p>' ],
 			[ '{<b></b><div></div><p>foo]</p>', '<b></b><div></div><p>[foo]</p>' ],
 			[ '<b>{<u></u></b><p>foo]</p>', '<b><u></u></b><p>[foo]</p>' ],
 			[ '{<b></b><div><u></u></div><p>foo]</p>', '<b></b><div><u></u></div><p>[foo]</p>' ],
+			[ '<p>{<b></b></p><div><u></u></div><p>bar]</p>', '<p><b></b></p><div><u></u></div><p>[bar]</p>' ],
 			// With text node left of start position, none on right
+			// NB: These will fail in IE because IE does not accept our
+			//     expected range as valid with the exceptio of
+			//     "<b>foo[]<u></u></b><p></p>"
 			[ 'foo{<b></b><p>}</p>', 'foo[]<b></b><p></p>' ],
 			[ 'foo{<b></b><u></u><p>}</p>', 'foo[]<b></b><u></u><p></p>' ],
 			[ 'foo{<b></b><div></div><p>}</p>', 'foo[]<b></b><div></div><p></p>' ],
 			[ '<b>foo{<u></u></b><p>}</p>', '<b>foo[]<u></u></b><p></p>' ],
 			[ 'foo{<b></b><div><u></u></div><p>}</p>', 'foo[]<b></b><div><u></u></div><p></p>' ],
+			[ '<p>foo{<b></b></p><div><u></u></div><p>}</p>', '<p>foo[]<b></b></p><div><u></u></div><p></p>' ],
 			// With no text node left or right of start position
+			// NB: The last two on this collection will fail in IE because IE
+			//     will not take our correct range as a valid range
 			[ '{<b></b><p>}</p>', '{}<b></b><p></p>' ],
 			[ '{<b></b><u></u><p>}</p>', '{}<b></b><u></u><p></p>' ],
 			[ '{<b></b><div></div><p>}</p>', '{}<b></b><div></div><p></p>' ],
 			[ '<b>{<u></u></b><p>}</p>', '{}<b><u></u></b><p></p>' ],
-			[ '{<b></b><div><u></u></div><p>}</p>', '{}<b></b><div><u></u></div><p></p>' ]
+			[ '{<b></b><div><u></u></div><p>}</p>', '{}<b></b><div><u></u></div><p></p>' ],
+			[ '<p>{<b></b></p><div><u></u></div><p>}</p>', '{}<p><b></b></p><div><u></u></div><p></p>' ]
+
+//*/			
+
+
+/*
+			//
+			// getStartPositionFromEndOfInlineNode
+			//
+			// With a text node left, and right of start position
+			[ '<p>foo{<b></b></p><div><u></u></div><p>bar]</p>', '<p>foo<b>{</b></p><div><u></u></div><p>bar]</p>' ],
+			[ 'foo<b>{</b><p>bar]</p>', 'foo<b>{</b><p>bar]</p>' ],
+			[ 'foo<b>{</b><u></u><p>bar]</p>', 'foo<b></b><u>{</u><p>bar]</p>' ],
+			[ 'foo<b>{</b><div></div><p>bar]</p>', 'foo<b>{</b><div></div><p>bar]</p>' ],
+			[ '<b>foo<u>{</u></b><p>bar]</p>', '<b>foo<u>{</u></b><p>bar]</p>' ],
+			[ 'foo<b>{</b><div><u></u></div><p>bar]</p>', 'foo<b>{</b><div><u></u></div><p>bar]</p>' ],
+			
+			[ '<b>foo{</b><p>bar]</p>', '<b>foo[</b><p>bar]</p>' ],
+			[ '<b>foo{</b><u></u><p>bar]</p>', '<b>foo</b><u>{</u><p>bar]</p>' ],
+			[ '<b>foo{</b><div></div><p>bar]</p>', '<b>foo[</b><div></div><p>bar]</p>' ],
+			// With no text node left of start position, but with one on right
+			[ '<b>{</b><p>foo]</p>', '<b></b><p>[foo]</p>' ],
+			[ '<b>{</b><u></u><p>foo]</p>', '<b></b><u></u><p>[foo]</p>' ],
+			[ '<b>{</b><div></div><p>foo]</p>', '<b></b><div></div><p>[foo]</p>' ],
+			[ '<b><u>{</u></b><p>foo]</p>', '<b><u></u></b><p>[foo]</p>' ],
+			[ '<b>{</b><div><u></u></div><p>foo]</p>', '<b></b><div><u></u></div><p>[foo]</p>' ],
+			
+*/
 
 /*
 		

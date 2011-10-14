@@ -3008,96 +3008,41 @@ function getStartPositionFromFrontOfInlineNode ( node, offset ) {
 		// [ 'foo{<b></b><p></p><p>bar]</p>', 'foo<b>{</b><p></p><p>bar]</p>' ],
 		// [ '<b>foo{<u></u></b><p>bar]</p>', '<b>foo<u>{</u></b><p>bar]</p>' ],
 		// [ 'foo{<b></b><p><u></u></p><p>bar]</p>', 'foo<b>{</b><p><u></u></p><p>bar]</p>' ],
+		// [ '<p>foo{<b></b></p><div><u></u></div><p>bar]</p>', '<p>foo<b>{</b></p><div><u></u></div><p>bar]</p>' ],
 		if ( posbits & 4 ) {
 			var left = blockNode;
-			var correctNode;
 			while ( left = getLeftNeighbor( left ) ) {
-				if ( !isBlockElement( left ) ) {
-					correctNode = getRightmostScion( left ) || left;
-					break;
+				if ( !isBlockElement( left )
+						|| jQuery( left ).find( leftTextNode ).length ) {
+					left = getRightmostScion( left ) || left;
+					return {
+						node   : left,
+						offset : getNodeLength( left ) 
+					};
 				}
 			}
-			
-			return {
-				node   : correctNode,
-				offset : getNodeLength( correctNode ) 
-			};
-		}
-	}
-};
-
-
-function __getStartPositionFromFrontOfInlineNode ( node, offset ) {
-	var child = node.childNodes[ offset ];
-	var stop;
-	
-	if ( isTextNode( child ) ) {
-		return {
-			node   : child,
-			offset : 0
-		};
-	}
-	
-	// Satisfies:
-	// [ '<div></div>{<b></b><p>}</p>', '{}<div></div><b></b><p></p>' ],
-	// [ '<div>{<b></b></div><p>}</p>', '{}<div><b></b></div><p></p>' ],
-	// [ '<b></b><div>{<b></b></div><p>}</p>', '{}<b></b><div><b></b></div><p></p>' ]
-	if ( !getNearestLeftNode( child, isTextNode ) ) {
-		return {
-			node   : getEditingHost( child ),
-			offset : 0
-		};
-	}
-	
-	// Handle situation where a block tag comes between our original start
-	// position, and where we just landed
-	if ( isBlockElement( getRightNeighbor( child ) ) ) {
-		// [ 'foo{<b></b><p>bar]</p>', 'foo<b>{</b><p>bar]</p>' ],
-		if ( getNodeLength( child ) == 0 ) {
-			return {
-				node   : child,
-				offset : 0
-			};
-		}
-		
-		// [ 'foo{<b><i></i></b><p>bar]</p>', 'foo<b><i>{</i></b><p>bar]</p>' ],
-		stop = getLeftmostScion( child );
-		if ( stop ) {
-			return {
-				node   : stop,
-				offset : 0
-			};
 		}
 	}
 	
-	// Satisfies:
-	// [ '{<b>foo]</b>', '<b>[foo]</b>' ],
-	stop = getLeftmostScion( child, isTextNode );
-	
-	// Satisfies:
-	// [ 'foo{<b></b><b>bar]</b>', 'foo<b></b><b>[bar]</b>' ],
-	// [ 'foo{<b><i></i></b>bar]', 'foo<b><i></i></b>[bar]' ],
-	// [ 'foo{<b><i></i></b><b>bar]</b>', 'foo<b><i></i></b><b>[bar]</b>' ],
-	if ( !stop ) {
-		stop = getNearestRightNode( child );
-	}
-	
-	if ( stop ) {
-		return {
-			node   : stop,
-			offset : 0
-		};
-	}
-	
+	// TODO: Check that we never get here
 	return {
 		node   : node,
 		offset : offset
 	};
 };
 
+
 function getEndPositionFromEndOfInlineNode ( node, offset ) {
-	var stop;
+	var child,
+	    leftNode,
+	    rightNode;
 	
+	return {
+		node   : node,
+		offset : offset
+	};
+	
+	/*
 	// Satisfies
 	// [ '<b>[foo}</b>', '<b>[foo]</b>' ],
 	stop = getRightmostScion( node, isTextNode );
@@ -3112,6 +3057,7 @@ function getEndPositionFromEndOfInlineNode ( node, offset ) {
 		node   : node,
 		offset : offset
 	};
+	*/
 };
 
 function getEndPositionFromFrontOfInlineNode ( node, offset ) {
