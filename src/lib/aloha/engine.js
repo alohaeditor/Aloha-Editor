@@ -7398,14 +7398,14 @@ commands.insertparagraph = {
 		// "If container has no visible children, call createElement("br") on
 		// the context object, and append the result as the last child of
 		// container."
-		if (![].some.call(container.childNodes, isVisible)) {
+		if (container.offsetHeight == 0 && ![].some.call(container.childNodes, isVisible)) {
 			container.appendChild(createEndBreak());
 		}
 
 		// "If new container has no visible children, call createElement("br")
 		// on the context object, and append the result as the last child of
 		// new container."
-		if (![].some.call(newContainer.childNodes, isVisible)) {
+		if (newContainer.offsetHeight == 0 && ![].some.call(newContainer.childNodes, isVisible)) {
 			newContainer.appendChild(createEndBreak());
 		}
 
