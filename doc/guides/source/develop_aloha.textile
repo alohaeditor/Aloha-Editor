@@ -18,12 +18,77 @@ WARNING: fork Aloha Editor before doing anything ;-)
 git clone git@github.com:YOURNAME/Aloha-Editor.git alohaeditor
 cd alohaeditor
 git checkout dev
-git submodule init
-git submodule update
-git submodule foreach --recursive git submodule update --init
 </shell>
+
+h3. Building  - Aloha Building
+
+h4. Debian Linux
+
+* Install nodejs
+http://nodejs.org/
+
+* Install npm
+<shell>
+curl http://npmjs.org/install.sh | sh
+</shell>
+
+* Install r.js
+<shell>
+npm install requirejs 
+Note: Please use r.js 26.0
+ln -s /root/node_modules/requirejs/bin/r.js /usr/local/bin/
+</shell>
+Manually from "github":https://github.com/jrburke/r.js
+
+* Invoke Building:
+<shell>
+cd alohaeditor
+./bin/build.sh aloha
+</shell>
+
+h4. Other OS: 
+* Microsoft Windows: Not yet supported
+* Mac OSX: TBD
+
+
+h3. Guide 
+
+* "Textile manual":http://redcloth.org/hobix.com/textile/
+
+<shell>
+apt-get install build-essential
+apt-get install ruby1.9.1-full
+gem install guides
+ln -s ruby1.9.1  ruby
+ln -s gem1.9.1  gem
+ln -s /var/lib/gems/1.9.1/gems/guides-0.7.1/bin/guides /usr/bin/guides
+guides preview 
+</shell>
+
+h5. Microsoft Windows
+
+* "Download Guides.exe":http://guides-pkg.strobeapp.com/Guides.exe
+
+h5. Mac OSX
+<shell>
+gem install guides
+</shell>
+
+* Building Guides:
+<shell>
+guides build
+</shell>
+
+* Preview Guides:
+<shell>
+cd alohaeditor/doc/guides
+guides preview
+</shell>
+
+* Preview URL: http://localhost:9292/
 
 
 h3. Changelog
 
+* October 11, 2011: Added building information
 * July 3, 2011: Initial version by "Sebastian Kurfürst":credits.html#skurfuerst and "Christopher Hlubek":credits.html#hlubek

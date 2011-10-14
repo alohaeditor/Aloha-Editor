@@ -6,27 +6,28 @@
 */
 
 define([
-
-	// js
-	'aloha/jquery',	
+    'aloha',
+	'aloha/jquery',
 	'aloha/plugin',
 	'aloha/floatingmenu',
-	'format/format-plugin',
-	// i18n
+	'format/format-plugin', 
+	'util/dom',
+	'aloha/editableinteraction',
 	'i18n!cite/nls/i18n',
-	'i18n!aloha/nls/i18n',
-	// css
-	'css!cite/css/cite.css'
-], function CiteClosure (jQuery, Plugin, FloatingMenu, Format, i18n, i18nCore) {
+	'i18n!aloha/nls/i18n'
+], function CiteClosure (Aloha, jQuery, Plugin, FloatingMenu, Format, domUtils, EditableInteraction, i18n, i18nCore) {
 	
 	'use strict';
 	
-	var GENTICS = window.GENTICS;
-	var Aloha = window.Aloha;
-	var rangy = window.rangy;	
-	// Pseudo-namespace prefix
-	var ns  = 'aloha-cite';
-	var uid = +new Date;
+	Aloha.require( ['css!cite/css/cite.css'] );
+	
+	var 
+		GENTICS = window.GENTICS,
+		$ = jQuery,
+		ns  = 'aloha-cite',
+		uid = +new Date,
+		animating = false;
+	
 	// namespaced classnames
 	var nsClasses = {
 		quote         : nsClass('quote'),
@@ -38,7 +39,6 @@ define([
 		'note-field'  : nsClass('note-field'),
 		references    : nsClass('references')
 	};
-	var domUtils = GENTICS.Utils.Dom;
 	
 	// ------------------------------------------------------------------------
 	// Local (helper) functions
@@ -222,7 +222,7 @@ define([
 									: '')
 							)).content;
 						
-						content.find('input, textarea').change(function () {
+						content.find('input, textarea').bind('keypress change', function () {
 							var content = that.content;
 							
 							citePlugin.addCiteDetails(
@@ -230,6 +230,26 @@ define([
 								content.find(nsSel('link-field input')).val(),
 								content.find(nsSel('note-field textarea')).val()
 							);
+						});
+						jQuery(nsSel('link-field input')).live( 'focus', function () {
+							var target = jQuery(citePlugin.effective);
+							EditableInteraction.highlight( target );
+							
+						});
+						jQuery(nsSel('link-field input')).live( 'blur', function () {
+							var target = jQuery(citePlugin.effective);
+							EditableInteraction.unhighlight( target );
+							
+						});
+						jQuery(nsSel('note-field textarea')).live( 'focus', function () {
+							var target = jQuery(citePlugin.effective);
+							EditableInteraction.highlight( target );
+							
+						});
+						jQuery(nsSel('note-field textarea')).live( 'blur', function () {
+							var target = jQuery(citePlugin.effective);
+							EditableInteraction.unhighlight( target );
+							
 						});
 					},
 					
@@ -257,6 +277,7 @@ define([
 						content.attr('data-cite-id', uid);
 						content.find(nsSel('link-field input')).val(effective.attr('cite')); //.focus();
 						content.find(nsSel('note-field textarea')).val(that.citations[index].note);
+						that.effective = effective;
 					}
 					
 				});
@@ -496,21 +517,28 @@ define([
 					__tick: 0,
 					'background-color': 'rgba(' + from.join(',') + ')',
 					'box-shadow': '0 0 20px rgba(' + from.join(',') + ')'
-				}).animate({__tick: 1}, {
+				})
+				if ( !animating ) {
+					animating = true;
+					el.animate({__tick: 1}, {
 						duration: 500,
 						easing: 'linear',
 						step: function (val, fx) {
 							var rgba = [ round(from[0] + diff[0] * val),
-										 round(from[1] + diff[1] * val),
-										 round(from[2] + diff[2] * val),
-										       from[3] + diff[3] * val   ];
+							             round(from[1] + diff[1] * val),
+							             round(from[2] + diff[2] * val),
+							             from[3] + diff[3] * val   ];
 							
 							jQuery(this).css({
 								'background-color': 'rgba(' + rgba.join(',') + ')',
 								'box-shadow': '0 0 ' + (20 * (1 - val)) + 'px rgba(' + from.join(',') + ')'
 							});
+						},
+						complete: function() {
+							animating = false;
 						}
 					});
+				}
 			}
 			
 			// Update information in references list for this citation

@@ -136,15 +136,12 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, console, EditableI
 						 jQuery( pl.nsSel('radioTarget') ).live( 'click', function() {
 							 var
 								target = jQuery(that.effective);	
-							 	setTimeout( function() {
-						 				EditableInteraction.highlight( target );
-							 		}, 
-							 		50);
+							 	EditableInteraction.highlight( target );
 						 });
 						 //remove background color of selected link
 						 jQuery( pl.nsSel('radioTarget') ).live( 'blur', function() {
 							 var 
-							 	target = jQuery(that.effective), color;
+							 	target = jQuery(that.effective);
 							 EditableInteraction.unhighlight( target );
 						 });
 						 //set title attribute of the selected link while user typing in linkTitle textfield
@@ -155,15 +152,12 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, console, EditableI
 						 jQuery( pl.nsSel('linkTitle') ).live('focus', function () {
 							 var
 								target = jQuery(that.effective);	
-							 	setTimeout( function() {
-						 				EditableInteraction.highlight( target );
-							 		}, 
-							 		50);
+							 	EditableInteraction.highlight( target );
 						 });
 						 //remove background color of selected link
 						 jQuery( pl.nsSel('linkTitle') ).live('blur', function () {
 							 var 
-							 	target = jQuery(that.effective), color;
+							 	target = jQuery(that.effective);
 							 EditableInteraction.unhighlight( target );
 						 });
 						 //set target attribut of selected link while user typing in framename textfield
@@ -174,16 +168,13 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, console, EditableI
 						 jQuery( pl.nsSel('framename') ).live('focus', function () {
 							 var 
 							 	target = jQuery(that.effective);	
-							 	setTimeout( function() {
-						 				EditableInteraction.highlight( target );
-							 		},
-							 		50);
+							 	EditableInteraction.highlight( target );
 						 });
 						 //remove background color of selected link
 						 jQuery( pl.nsSel('framename') ).live('blur', function () {
 							 var 
-							 	target = jQuery(that.effective), color;
-						 	EditableInteraction.unhighlight( target );
+							 	target = jQuery(that.effective);
+						 		EditableInteraction.unhighlight( target );
 						 });
 						 
 					},
@@ -212,8 +203,6 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, console, EditableI
 							jQuery( that.effective ).attr( 'target', jQuery(pl.nsSel('radioTarget')).first().val() );
 						}
 						
-						var that = this;
-						that.effective = effective;
 						jQuery( pl.nsSel('linkTitle') ).val( jQuery(that.effective).attr('title') );
 					}
 					

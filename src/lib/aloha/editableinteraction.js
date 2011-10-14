@@ -10,11 +10,13 @@ function(jQuery) {
 	"use strict";
 	
 	function highlight ( obj ) {
-		
-		if ( obj && obj.context && obj.context.style && obj.context.style['background-color'] ) {
-			obj.attr('data-original-background-color', obj.context.style['background-color']);
-		}
-		obj.css('background-color','#80B5F2'); 
+		setTimeout( function() {
+			if ( obj && obj.context && obj.context.style && obj.context.style['background-color'] ) {
+				obj.attr('data-original-background-color', obj.context.style['background-color']);
+			}
+			obj.css('background-color','#80B5F2');
+		},
+		50);
 	};
 	
 	function unhighlight ( obj ) {
@@ -29,9 +31,24 @@ function(jQuery) {
 		}
 	};
 	
+	function makeClean ( obj ) {
+		if ( obj ) {
+			jQuery( "[data-original-background-color]" , obj).each( function () {
+				var color;
+				if( color = jQuery( this ).attr( "data-original-background-color" )) {
+					jQuery( this ).css('background-color', color);
+				} else {
+					jQuery( this ).css('background-color', '');
+				}
+				jQuery( this ).removeAttr( "data-original-background-color" );
+			});
+		}
+	};
+	
 	return {
 		highlight: highlight,
-		unhighlight: unhighlight
+		unhighlight: unhighlight,
+		makeClean: makeClean
 	}
 });
 	
