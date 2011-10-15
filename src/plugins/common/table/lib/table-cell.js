@@ -282,15 +282,7 @@ function (jQuery, Utils) {
 		}
 	};
 
-	/**
-	 * Toggles selection of cell.
-	 * This works only when cell selection mode is active. 
-	 */
-	Cell.prototype.selectCellRange = function(){
-		if(!this.tableObj.selection.cellSelectionMode) {
-			return;
-		}
-
+	Cell.prototype._getSelectedRect = function () {
 		var right = this.virtualX();
 		var bottom = this.virtualY();
 		var topLeft = this.tableObj.selection.baseCellPosition;
@@ -304,6 +296,19 @@ function (jQuery, Utils) {
 			top = bottom;
 			bottom = topLeft[0];
 		}
+		return {"top": top, "right": right, "bottom": bottom, "left": left};
+	};
+
+	/**
+	 * Toggles selection of cell.
+	 * This works only when cell selection mode is active. 
+	 */
+	Cell.prototype.selectCellRange = function(){
+		if(!this.tableObj.selection.cellSelectionMode) {
+			return;
+		}
+
+		var rect = this._getSelectedRect();
 
 		var $rows = this.tableObj.obj.children().children('tr');
 		var grid = Utils.makeGrid($rows);
@@ -314,7 +319,7 @@ function (jQuery, Utils) {
 			for (var j = 0; j < grid[i].length; j++) {
 				var cellInfo = grid[i][j];
 				if ( Utils.containsDomCell(cellInfo) ) {
-					if (i >= top && i <= bottom && j >= left && j <= right) {
+					if (i >= rect.top && i <= rect.bottom && j >= rect.left && j <= rect.right) {
 						jQuery( cellInfo.cell ).addClass(selectClass);
 						this.tableObj.selection.selectedCells.push(cellInfo.cell);
 					} else {
