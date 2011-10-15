@@ -213,9 +213,9 @@ function ($) {
 		 * @param grid
 		 *        a two-dimensional array
 		 * @param callback
-		 *        invoked with each element in the given two dimensional array.
+		 *        invoked with each item in the given two dimensional array.
 		 *        accepts the following parameters:
-		 *        o element an element in the given two-dimensional array
+		 *        o item an item in the given two-dimensional array
 		 *        o x the offset in the nested array (horizontal axis)
 		 *        o y the offset in the outer array (veritcal axis)
 		 *        if the callback returns a value identical to false,
@@ -229,6 +229,90 @@ function ($) {
 					}
 				}
 			}
+		},
+		/**
+		 * Slices leading null or undefined items off of an array
+		 *
+		 * @param array
+		 *        the array to slice null or undefined items off from
+		 * @return
+		 *        a new array with the remaining items
+		 */
+		'leftTrimArray': function ( array ) {
+			for (var i = 0; i < array.length; i++) {
+				if ( null != array[i] ) {
+					return array.slice( i, array.length );
+				}
+			}
+			return [];
+		},
+		/**
+		 * Given a two-dimensional array, will determine the smallest
+		 * possible contour, that contains all items for which
+		 * hasCountour returns true.
+		 *
+		 * @param grid
+		 *        A two-dimensional array
+		 * @param hasContour
+		 *        Invoked with each item in the given two dimensional array.
+		 *        Accepts the following parameters:
+		 *        o item an item in the given two-dimensional array
+		 *        o x the offset in the nested array (horizontal axis)
+		 *        o y the offset in the outer array (veritcal axis)
+		 *        Returns a boolean value indicating whether the item is
+		 *        considered to have a contour.
+		 * @return
+		 *        An set of arrays that indicate a contour
+		 *        top:    an array of the smallest vertical offsets
+		 *        right:  an array of the greatest horizontal offsets
+		 *        bottom: an array of the gratest vertical offsets
+		 *        left:   an array of the smallest horizontal offsets
+		 */
+		'makeContour': function ( grid, hasContour ) {
+			var left = [];
+			var right = [];
+			var top = [];
+			var bottom = [];
+			Utils.walkGrid( grid, function ( item, x, y ) {
+				if ( hasContour( item, x, y ) ) {
+					if ( null == left[ y ] || x < left[ y ] ) {
+						left[ y ] = x;
+					}
+					if ( null == right[ y ] || x > right[ y ] ) {
+						right[ y ] = x;
+					}
+					if ( null == top[ x ] || y < top[ x ] ) {
+						top[ x ] = y;
+					}
+					if ( null == bottom[ x ] || y > bottom[ x ] ) {
+						bottom[ x ] = y;
+					}
+				}
+			});
+			left   = Utils.leftTrimArray(left);
+			right  = Utils.leftTrimArray(right);
+			top    = Utils.leftTrimArray(top);
+			bottom = Utils.leftTrimArray(bottom);
+			return {'left': left, 'right': right, 'top': top, 'bottom': bottom};
+		},
+		/**
+		 * Returns the index of the first item that doesn't match the given value
+		 *
+		 * @param array
+		 *        An array that contains arbitrary items
+		 * @param but
+		 *        A value to ignore while searching in the given array
+		 * @return
+		 *        The offset of the first item in the given array that doesn't match the given value.
+		 *        If no such item was found, -1 is returned.
+		 */
+		'indexOfAnyBut': function ( array, but ) {
+			for ( var i = 0; i < array.length; i++ ) {
+				if ( but !== array[ i ] ) {
+					return i;
+				}
+			}
+			return -1;
 		}
 	};
 	return Utils;
