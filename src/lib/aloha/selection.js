@@ -3047,67 +3047,111 @@ function getStartPositionFromEndOfInlineNode ( node ) {
 	    rightTextNode,
 	    rightNode;
 	
-	// We can only move the start position forward into a text node, to the
-	// right of our end position if there is no start or end block tag node in
-	// between
+	// Try to move our start position to the right without crossing over any
+	// block nodes
 	rightNode = node;
+	
+	var succeedingBlockNode = false;
+	
 	while ( true ) {
-		while ( rightNode.nextSibling ) {
+		if ( rightNode.nextSibling ) {
 			rightNode = rightNode.nextSibling;
-			
-			// [ '<b>foo{</b><p></p>bar]', '<b>foo[</b><p></p>bar]' ],
 			if ( isBlockElement( rightNode ) ) {
-				break;
+				succeedingBlockNode = true;
 			}
-			
-			rightTextNode = isTextNode( rightNode )
-				? rightNode
-				: getLeftmostScion( rightNode, isTextNode );
-			
-			if ( rightTextNode ) {
-				break;
-			}
+		} else if ( isEditingHost( rightNode.parentNode )  ) {
+			// game over
+			break;
+			//succeedingBlockNode = true;
+			//continue;
+		} else if ( isBlockElement( rightNode.parentNode ) ) {
+			rightNode = rightNode.parentNode;
+			succeedingBlockNode = true;
+		} else {
+			rightNode = rightNode.parentNode;
+			continue;
 		}
 		
-		// [ '<b>foo{</b><p></p>bar]', '<b>foo[</b><p></p>bar]' ],
-		if ( isBlockElement( rightNode ) ) {
+		// Hint: If rightNode is not a block element, then we know that none of
+		// its children are block elements either.
+		// If we find a text node somewhere inside of rightNode, then take it
+		// stop here
+		rightTextNode = isTextNode( rightNode )
+			? rightNode
+			: getLeftmostScion( rightNode, isTextNode );
+		
+		if ( rightTextNode ) {
 			break;
 		}
-		
-		if ( !rightTextNode && rightNode.parentNode ) {
-			if ( isEditingHost( rightNode.parentNode ) ||
-					!isBlockElement( rightNode.parentNode ) ) {
-				rightNode = rightNode.parentNode;
-				continue;
-			}
-			
-			if ( isBlockElement( rightNode.parentNode ) ) {
-				break;
-			}
-		}
-		
-		break;
 	}
 	
-	if ( rightTextNode ) {
+	// We have found a text node on the right side, and there is no block node
+	// that is getting in our way. Therefore we will take this text node as our
+	// new start position
+	if ( rightTextNode && !succeedingBlockNode ) {
 		return {
 			node   : rightTextNode,
 			offset : 0
 		};
 	}
 	
-	// We cannot go right, therefore try to go left
-	leftTextNode = getRightmostScion( node );
-	if ( leftTextNode ) {
+	// If there is no text node to the right, or if there is a block node
+	// between that text node and our original start position, then we cannot
+	// move our start position anywhere in that direction. We must somehow go
+	// left. The first thig we will try to do is to find a text node inside the
+	// start container, because that will keep up closest to our original start
+	// position
+	if ( !rightTextNode || succeedingBlockNode ) {
+		// [ 'foo<b>{</b>}', 'foo[]<b></b>' ]
+		// [ '<b>foo{</b><p>bar]</p>', '<b>foo[</b><p>bar]</p>' ],
+		leftTextNode = getRightmostScion( node, isTextNode );
+		if ( leftTextNode ) {
+			return {
+				node   : leftTextNode,
+				offset : getNodeLength( leftTextNode )
+			};
+		}
+	}
+	
+	// At this point we know that we cannot go right, and that we have not text
+	// node inside the node that our start position is in. We therefore will
+	// look to find a text node on the left of our start node. If we find one
+	// ...
+	// If we do not find a text node, then we determine that there are no text
+	// nodes inside this editable, and we will move our start position to the
+	// very start of the editing host
+	
+	leftTextNode = getNearestLeftNode( node, isTextNode );
+	
+	// [ 'foo<b>{</b>}', 'foo[]<b></b>' ]
+	if ( leftTextNode && !rightTextNode ) {
 		return {
 			node   : leftTextNode,
 			offset : getNodeLength( leftTextNode )
 		};
 	}
 	
+	// The only reason we would have text node to the left and right of our
+	// start position and not have already returned is that we have an
+	// succeeding block node. We will reposition our start position to the
+	// nearest node between our start position and the intercepting block node
+	// [ 'foo<b>{</b><p>bar]</p>', 'foo<b>{</b><p>bar]</p>' ],
+	if ( leftTextNode && rightTextNode ) {
+		var correctNode = getNearestRightNode( node, isBlockElement );
+		if ( correctNode ) {
+			correctNode = getNearestLeftNode( correctNode );
+			return {
+				node   : correctNode,
+				offset : getNodeLength( correctNode )
+			};
+		}
+	}
+	
+	// [ '<b>{</b>}', '{}<b></b>' ]
+	// if ( !leftTextNode && !rightTextNode )
 	return {
-		node   : node,
-		offset : getNodeLength( node )
+		node   : getEditingHost( node ),
+		offset : 0
 	};
 };
 

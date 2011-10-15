@@ -262,19 +262,21 @@ function( TestUtils ) {
 			// With text node left and right of container node, and none inside
 			[ 'foo<b>{</b>bar]', 'foo<b></b>[bar]' ],
 			[ 'foo<b>{</b><b></b>bar]', 'foo<b></b><b></b>[bar]' ],
-			[ 'foo<b>{</b><b>bar]</b>', 'foo<b></b><b>[bar]</b>' ]
+			[ 'foo<b>{</b><b>bar]</b>', 'foo<b></b><b>[bar]</b>' ],
 			// ... With block node between start container and right text node
-			// 'foo<b>{</b><p>bar]</p>', 'foo<b>{</b><p>bar]</p>'
-			// 'foo<b>{</b><p></p>bar]', 'foo<b>{</b><p></p>bar]'
+			[ 'foo<b>{</b><p>bar]</p>', 'foo<b>{</b><p>bar]</p>' ],
+			[ 'foo<b>{</b><p></p>bar]', 'foo<b>{</b><p></p>bar]' ],
+			[ 'foo<b>{</b><p></p>}', 'foo[]<b></b><p></p>' ],
 			
 			// With text node left of container, none right and none inside
-			// 'foo<b>{</b>}', 'foo[]<b></b>'
+			[ 'foo<b>{</b>}', 'foo[]<b></b>' ],
+			[ 'foo<p><b>{</b>}</p>', 'foo[]<p><b></b></p>' ],
 			// With text node inside of container, none to right
-			// '<b><u>foo</u>{</b>}', '<b><u>foo[]</u></b>'
-			// '<b>foo<u></u>{</b>}', '<b>foo[]<u></u></b>'
-			// '<b><u>foo</u>{</b><p></p>}', '<b><u>foo[]</u></b><p></p>'
+			[ '<b><u>foo</u>{</b>}', '<b><u>foo[]</u></b>' ],
+			[ '<b>foo<u></u>{</b>}', '<b>foo[]<u></u></b>' ],
+			[ '<b><u>foo</u>{</b><p></p>}', '<b><u>foo[]</u></b><p></p>' ],
 			
-			// '<b>foo{</b>}', '<b>foo[]</b>'
+			[ '<b>foo{</b>}', '<b>foo[]</b>' ]
 
 //*/
 			
