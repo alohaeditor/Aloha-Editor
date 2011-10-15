@@ -310,24 +310,22 @@ function (jQuery, Utils) {
 
 		var rect = this._getSelectedRect();
 
-		var $rows = this.tableObj.obj.children().children('tr');
+		var table = this.tableObj;
+		var $rows = table.obj.children().children('tr');
 		var grid = Utils.makeGrid($rows);
 		
-		this.tableObj.selection.selectedCells = [];
-		var selectClass = this.tableObj.get('classCellSelected');
-		for (var i = 0; i < grid.length; i++) {
-			for (var j = 0; j < grid[i].length; j++) {
-				var cellInfo = grid[i][j];
-				if ( Utils.containsDomCell(cellInfo) ) {
-					if (i >= rect.top && i <= rect.bottom && j >= rect.left && j <= rect.right) {
-						jQuery( cellInfo.cell ).addClass(selectClass);
-						this.tableObj.selection.selectedCells.push(cellInfo.cell);
-					} else {
-						jQuery( cellInfo.cell ).removeClass(selectClass);
-					}
+		table.selection.selectedCells = [];
+		var selectClass = table.get('classCellSelected');
+		Utils.walkGrid(grid, function (cellInfo, j, i) {
+			if ( Utils.containsDomCell(cellInfo) ) {
+				if (i >= rect.top && i <= rect.bottom && j >= rect.left && j <= rect.right) {
+					jQuery( cellInfo.cell ).addClass(selectClass);
+					table.selection.selectedCells.push(cellInfo.cell);
+				} else {
+					jQuery( cellInfo.cell ).removeClass(selectClass);
 				}
 			}
-		}
+		});
 
 		Aloha.trigger( 'aloha-table-selection-changed' );
 	};

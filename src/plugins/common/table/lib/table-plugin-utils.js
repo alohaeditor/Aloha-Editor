@@ -205,6 +205,30 @@ function ($) {
 		 */
 		'colspan': function (cell) {
 			return parseInt( $( cell ).attr('colspan') ) || 1;
+		},
+		/**
+		 * Calls the given callback with each object in the given
+		 * two-dimensional array.
+		 *
+		 * @param grid
+		 *        a two-dimensional array
+		 * @param callback
+		 *        invoked with each element in the given two dimensional array.
+		 *        accepts the following parameters:
+		 *        o element an element in the given two-dimensional array
+		 *        o x the offset in the nested array (horizontal axis)
+		 *        o y the offset in the outer array (veritcal axis)
+		 *        if the callback returns a value identical to false,
+		 *        the walk will be aborted early.
+		 */
+		'walkGrid': function (grid, callback) {
+			for ( var i = 0; i < grid.length; i++ ) {
+				for ( var j = 0; j < grid[i].length; j++ ) {
+					if ( false === callback( grid[ i ][ j ], j, i ) ) {
+						return;
+					}
+				}
+			}
 		}
 	};
 	return Utils;
