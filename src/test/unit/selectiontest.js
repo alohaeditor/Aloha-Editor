@@ -249,18 +249,20 @@ function( TestUtils ) {
 			// getStartPositionFromEndOfInlineNode
 			//
 			// With text node inside container node and right text node
-			// '<b>foo{</b>bar]', 'foo<b>foo</b>[bar]'
-			// '<b>foo{</b><b></b>bar]', '<b>foo</b><b></b>[bar]'
-			// '<b>foo{</b><b>bar]</b>', '<b>foo</b><b>[bar]</b>'
-			// '<b><u>foo</u>{</b>bar]', '<b><u>foo</u></b>[bar]'
+			[ '<b>foo{</b>bar]', '<b>foo</b>[bar]' ],
+			[ '<b>foo{</b><b></b>bar]', '<b>foo</b><b></b>[bar]' ],
+			[ '<b>foo{</b><b>bar]</b>', '<b>foo</b><b>[bar]</b>' ],
+			[ '<b><u>foo</u>{</b>bar]', '<b><u>foo</u></b>[bar]' ],
+			[ '<b>foo<u>{</u></b>bar]', '<b>foo<u></u></b>[bar]' ],
+																	//[ '<b>foo{<u></u></b>bar]', '<b>foo<u></u></b>[bar]' ],
 			// ... With block node between start container and right text node
-			// '<b>foo{</b><p></p>bar]', '<b>foo[</b><p></p>bar]'
-			// '<b>foo{</b><p>bar]</p>', '<b>foo[</b><p>bar]</p>'
-			
+			[ '<b>foo{</b><p></p>bar]', '<b>foo[</b><p></p>bar]' ],
+			[ '<b>foo{</b><p>bar]</p>', '<b>foo[</b><p>bar]</p>' ],
+			[ '<p><b>foo{</b></p>bar]', '<p><b>foo[</b></p>bar]' ],
 			// With text node left and right of container node, and none inside
-			// 'foo<b>{</b>bar]', 'foo<b></b>[bar]'
-			// 'foo<b>{</b><b></b>bar]', 'foo<b></b><b></b>[bar]'
-			// 'foo<b>{</b><b>bar]</b>', 'foo<b></b><b>[bar]</b>'
+			[ 'foo<b>{</b>bar]', 'foo<b></b>[bar]' ],
+			[ 'foo<b>{</b><b></b>bar]', 'foo<b></b><b></b>[bar]' ],
+			[ 'foo<b>{</b><b>bar]</b>', 'foo<b></b><b>[bar]</b>' ]
 			// ... With block node between start container and right text node
 			// 'foo<b>{</b><p>bar]</p>', 'foo<b>{</b><p>bar]</p>'
 			// 'foo<b>{</b><p></p>bar]', 'foo<b>{</b><p></p>bar]'
@@ -273,14 +275,10 @@ function( TestUtils ) {
 			// '<b><u>foo</u>{</b><p></p>}', '<b><u>foo[]</u></b><p></p>'
 			
 			// '<b>foo{</b>}', '<b>foo[]</b>'
-	
+
+//*/
 			
-			
-			
-			
-			
-			
-			
+/*
 			// With a text node left, and right of start container
 			[ 'foo<b>{</b><p>bar]</p>', 'foo<b>{</b><p>bar]</p>' ],
 			[ 'foo<b>{</b><u></u><p>bar]</p>', 'foo<b></b><u>{</u><p>bar]</p>' ],
@@ -308,8 +306,7 @@ function( TestUtils ) {
 			[ 'foo<b>{</b><div><u></u></div><p>}</p>', 'foo[]<b></b><div><u></u></div><p></p>' ],
 			[ '<p>foo<b>{</b></p><div><u></u></div><p>}</p>', '<p>foo[]<b></b></p><div><u></u></div><p></p>' ],
 			
-			
-/*/
+*/
 
 /*
 		

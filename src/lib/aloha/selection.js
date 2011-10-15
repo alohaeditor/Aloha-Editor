@@ -2543,17 +2543,24 @@ function getLeftNeighbor ( node ) {
  * 
  * @param {DOMElement} node
  */
-function getRightNeighbor ( node ) {
+function getRightNeighbor ( node, predicate ) {
 	if ( !node ) {
 		return null;
 	}
 	
 	if ( node.nextSibling ) {
-		return node.nextSibling;
+		if ( typeof predicate !== 'function' ||
+				predicate( node.nextSibling ) ) {
+			return node.nextSibling;
+		}
 	}
 	
 	if ( !node.parentNode || isEditingHost( node.parentNode ) ) {
 		return null;
+	}
+	
+	if ( typeof predicate === 'function' && predicate( node.parentNode ) ) {
+		return node.parentNode;
 	}
 	
 	return getRightNeighbor( node.parentNode );
@@ -3036,11 +3043,71 @@ function getStartPositionFromFrontOfInlineNode ( node, offset ) {
  * @param {DOMElement} node - an inline node
  */
 function getStartPositionFromEndOfInlineNode ( node ) {
-	var offset = getNodeLength( node );
+	var leftTextNode,
+	    rightTextNode,
+	    rightNode;
+	
+	// We can only move the start position forward into a text node, to the
+	// right of our end position if there is no start or end block tag node in
+	// between
+	rightNode = node;
+	while ( true ) {
+		while ( rightNode.nextSibling ) {
+			rightNode = rightNode.nextSibling;
+			
+			// [ '<b>foo{</b><p></p>bar]', '<b>foo[</b><p></p>bar]' ],
+			if ( isBlockElement( rightNode ) ) {
+				break;
+			}
+			
+			rightTextNode = isTextNode( rightNode )
+				? rightNode
+				: getLeftmostScion( rightNode, isTextNode );
+			
+			if ( rightTextNode ) {
+				break;
+			}
+		}
+		
+		// [ '<b>foo{</b><p></p>bar]', '<b>foo[</b><p></p>bar]' ],
+		if ( isBlockElement( rightNode ) ) {
+			break;
+		}
+		
+		if ( !rightTextNode && rightNode.parentNode ) {
+			if ( isEditingHost( rightNode.parentNode ) ||
+					!isBlockElement( rightNode.parentNode ) ) {
+				rightNode = rightNode.parentNode;
+				continue;
+			}
+			
+			if ( isBlockElement( rightNode.parentNode ) ) {
+				break;
+			}
+		}
+		
+		break;
+	}
+	
+	if ( rightTextNode ) {
+		return {
+			node   : rightTextNode,
+			offset : 0
+		};
+	}
+	
+	// We cannot go right, therefore try to go left
+	leftTextNode = getRightmostScion( node );
+	if ( leftTextNode ) {
+		return {
+			node   : leftTextNode,
+			offset : getNodeLength( leftTextNode )
+		};
+	}
 	
 	return {
 		node   : node,
-		offset : offset
+		offset : getNodeLength( node )
 	};
 };
 
