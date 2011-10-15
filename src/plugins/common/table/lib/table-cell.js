@@ -207,7 +207,6 @@ function (jQuery, Utils) {
 			var innerHtml = wrapper.html();
 
 			// remove the contenteditable div and its attached events
-			wrapper.unbind();
 			wrapper.remove();
 
 			// remove the click event of the
