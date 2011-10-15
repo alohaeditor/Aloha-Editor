@@ -69,7 +69,7 @@ function (jQuery, Utils) {
 	 *            the jquery event object
 	 * @return void
 	 */
-	Cell.prototype.editableFocus = function(e) {
+	Cell.prototype._editableFocus = function(e) {
 		// only do activation stuff if the cell don't has the focus
 		if (!this.hasFocus) {
 			// set an internal flag to focus the table
@@ -89,7 +89,7 @@ function (jQuery, Utils) {
 			this.hasFocus = true;
 
 			// select the whole content in the table-data field
-			this.selectAll(this.wrapper.get(0));
+			this._selectAll(this.wrapper.get(0));
 
 			// unset the selection type
 			this.tableObj.selection.selectionType = 'cell';
@@ -107,7 +107,7 @@ function (jQuery, Utils) {
 	 *            the jquery event object
 	 * @return void
 	 */
-	Cell.prototype.editableBlur = function(jqEvent){
+	Cell.prototype._editableBlur = function(jqEvent){
 		// no active cell
 		Cell.activeCell = undefined;
 
@@ -138,7 +138,7 @@ function (jQuery, Utils) {
 					return -1;
 				};
 			}
-			that.editableFocus(jqEvent);
+			that._editableFocus(jqEvent);
 		});
 		wrapper.bind('mousedown', function(jqEvent) {
 			// ugly workaround for ext-js-adapter problem in ext-jquery-adapter-debug.js:1020
@@ -148,16 +148,16 @@ function (jQuery, Utils) {
 				};
 			}
 			
-			that.editableMouseDown(jqEvent);
+			that._editableMouseDown(jqEvent);
 
 			//start cell selection
-			that.startCellSelection();       
+			that._startCellSelection();       
 			
 		});
-		wrapper.bind('blur',      function(jqEvent) { that.editableBlur(jqEvent);      });
-		wrapper.bind('keyup',     function(jqEvent) { that.editableKeyUp(jqEvent);     });
-		wrapper.bind('keydown',   function(jqEvent) { that.editableKeyDown(jqEvent);   });
-		wrapper.bind('mouseover', function(jqEvent) { that.selectCellRange(); });
+		wrapper.bind('blur',      function(jqEvent) { that._editableBlur(jqEvent);      });
+		wrapper.bind('keyup',     function(jqEvent) { that._editableKeyUp(jqEvent);     });
+		wrapper.bind('keydown',   function(jqEvent) { that._editableKeyDown(jqEvent);   });
+		wrapper.bind('mouseover', function(jqEvent) { that._selectCellRange(); });
 
 		// we will treat the wrapper just like an editable
 		wrapper.contentEditableSelectionChange(function (event) {
@@ -172,7 +172,7 @@ function (jQuery, Utils) {
 			// unselect cells
 			that.tableObj.selection.unselectCells();
 	        //start cell selection
-	        that.startCellSelection();       
+	        that._startCellSelection();       
 			jqEvent.stopPropagation();
 		});
 
@@ -225,7 +225,7 @@ function (jQuery, Utils) {
 	/**
 	 * Gives the X (column no) for a cell, after adding colspans 
 	 */
-	Cell.prototype.virtualX = function(){
+	Cell.prototype._virtualX = function(){
 		var $rows = this.tableObj.obj.children().children('tr');
 		var rowIdx = this.obj.parent().index();
 		var colIdx = this.obj.index();
@@ -235,14 +235,14 @@ function (jQuery, Utils) {
 	/**
 	 * Gives the Y (row no) for a cell, after adding colspans 
 	 */
-	Cell.prototype.virtualY = function(){
+	Cell.prototype._virtualY = function(){
 		return this.obj.parent('tr').index();
 	};
 
 	/**
 	 * Starts the cell selection mode
 	 */
-	Cell.prototype.startCellSelection = function(){
+	Cell.prototype._startCellSelection = function(){
 		if(!this.tableObj.selection.cellSelectionMode){
 
 			//deactivate keepCellsSelected flag
@@ -257,17 +257,17 @@ function (jQuery, Utils) {
 			//bind a global mouseup event handler to stop cell selection
 			var that = this;
 			jQuery('body').bind('mouseup.cellselection', function(){
-				that.endCellSelection();
+				that._endCellSelection();
 			});
 
-			this.tableObj.selection.baseCellPosition = [this.virtualY(), this.virtualX()];
+			this.tableObj.selection.baseCellPosition = [this._virtualY(), this._virtualX()];
 		}
 	};
 
 	/**
 	 * Ends the cell selection mode
 	 */
-	Cell.prototype.endCellSelection = function(){
+	Cell.prototype._endCellSelection = function(){
 		if(this.tableObj.selection.cellSelectionMode){
 			this.tableObj.selection.cellSelectionMode = false; 
 			this.tableObj.selection.keepCellsSelected = true;
@@ -282,8 +282,8 @@ function (jQuery, Utils) {
 	};
 
 	Cell.prototype._getSelectedRect = function () {
-		var right = this.virtualX();
-		var bottom = this.virtualY();
+		var right = this._virtualX();
+		var bottom = this._virtualY();
 		var topLeft = this.tableObj.selection.baseCellPosition;
 		var left = topLeft[1];
 		if (left > right) {
@@ -302,7 +302,7 @@ function (jQuery, Utils) {
 	 * Toggles selection of cell.
 	 * This works only when cell selection mode is active. 
 	 */
-	Cell.prototype.selectCellRange = function(){
+	Cell.prototype._selectCellRange = function(){
 		if(!this.tableObj.selection.cellSelectionMode) {
 			return;
 		}
@@ -344,7 +344,7 @@ function (jQuery, Utils) {
 	 * @param editableNode dom-representation of the editable node (div-element)
 	 * @return void
 	 */
-	Cell.prototype.selectAll = function(editableNode) {
+	Cell.prototype._selectAll = function(editableNode) {
 		var e = (editableNode.jquery) ? editableNode.get(0) : editableNode;
 
 		// Not IE
@@ -394,7 +394,7 @@ function (jQuery, Utils) {
 	 *            the jquery-event object
 	 * @return void
 	 */
-	Cell.prototype.editableMouseDown = function(jqEvent) {
+	Cell.prototype._editableMouseDown = function(jqEvent) {
 		// deselect all highlighted cells registered in the this.tableObj.selection object
 		this.tableObj.selection.unselectCells();
 
@@ -403,19 +403,18 @@ function (jQuery, Utils) {
 		}
 	};
 
-	//	/**
-	//	 * The key-up event for the editable-div in the td-field. Just check if the div
-	//	 * is empty and insert an &nbsp;
-	//	 *
-	//	 * @param jqEvent
-	//	 *            the jquery-event object
-	//	 * @return void
-	//	 */
-	//	Cell.prototype.editableKeyUp = function(jqEvent) {
-	//	    
-	//		this.checkForEmptyEvent(jqEvent);
-	//		
-	//	};
+	/**
+	 * The key-up event for the editable-div in the td-field. Just check if the div
+	 * is empty and insert an &nbsp;
+	 *
+	 * @param jqEvent
+	 *            the jquery-event object
+	 * @return void
+	 */
+	Cell.prototype._editableKeyUp = function(jqEvent) {
+		//TODO do we need to check for empty cells and insert a space?
+		//this._checkForEmptyEvent(jqEvent);
+	};
 
 	/**
 	 * The key-down event for the ediable-div in the td-field. Check if the the div
@@ -426,7 +425,7 @@ function (jQuery, Utils) {
 	 *            the jquery-event object
 	 * @return void
 	 */
-	Cell.prototype.editableKeyDown = function(jqEvent) {
+	Cell.prototype._editableKeyDown = function(jqEvent) {
 		
 		var 
 		KEYCODE_TAB = 9,
@@ -435,7 +434,7 @@ function (jQuery, Utils) {
 		KEYCODE_ARROWRIGHT = 39
 		KEYCODE_ARROWDOWN = 40;
 
-		this.checkForEmptyEvent(jqEvent);
+		this._checkForEmptyEvent(jqEvent);
 		
 		if ( this.obj[0] == this.tableObj.obj.find('tr:last td:last')[0] ) {
 			// only add a row on a single key-press of tab (so check if alt-, shift- or
@@ -510,7 +509,7 @@ function (jQuery, Utils) {
 	 *            the event object which is given by jquery
 	 * @return void
 	 */
-	Cell.prototype.checkForEmptyEvent = function(jqEvent) {
+	Cell.prototype._checkForEmptyEvent = function(jqEvent) {
 		var $wrapper = jQuery(this.wrapper),
 		    text = $wrapper.text();
 
