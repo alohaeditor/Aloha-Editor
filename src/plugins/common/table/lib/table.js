@@ -683,25 +683,21 @@ return function (TablePlugin) {
 			rowsToDelete = {},
 			table = this;
 
-		// flag if the table should be deleted
-		var deleteTable = false;
-
 		// if a selection was made, delete the selected cells
-		if (this.selection.selectedCells.length > 0) {
-			for (var i = 0; i < this.selection.selectedCells.length; i++) {
-				rowsToDelete[this.selection.selectedCells[i].parentNode.rowIndex] = true;
-			}
-
-		// if no rows were selected, delete the row, where the cursor is placed in
-		}else if (typeof TableCell.lastActiveCell != 'undefined') {
-			rowsToDelete[TableCell.lastActiveCell.obj.context.parentNode.rowIndex] = true;
+		if (0 === this.selection.selectedCells.length) {
+			return;
 		}
-		
+
+		for (var i = 0; i < this.selection.selectedCells.length; i++) {
+			rowsToDelete[this.selection.selectedCells[i].parentNode.rowIndex] = true;
+		}
+
 	    for (rowId in rowsToDelete) {
 	       rowIDs.push(rowId);
 	    }
 	    
-		// if all rows should be deleted, set flag to remove the WHOLE table
+		// if all rows should be deleted, set a flag to remove the WHOLE table
+		var deleteTable = false;
 		if (rowIDs.length == this.numRows) {
 			deleteTable = true;
 		}
@@ -939,35 +935,29 @@ return function (TablePlugin) {
 			return;
 		}
 
+		if (0 === this.selection.selectedCells.length) {
+			return;
+		}
+
 		var that = this;
 		var rowsToInsert = 1;
 		var newRowIndex = 0;
 		
-		// If rows were selected, then the selected number of rows will be the
-		// quotient of all the number of selected cells / by the number of
-		// columns. If no rows were selected, we insert 1 new row before/after
-		// the row of the last active cell
-		if (this.selection.selectedCells.length > 0) {
-			
-			var cellOfInterest = null;
-			
-			// get the index where the new rows should be inserted
-			switch (position) {
-				case 'before':
-					cellOfInterest = this.selection.selectedCells[0];
-					break;
-				case 'after':
-					cellOfInterest = this.selection.selectedCells[
-						this.selection.selectedCells.length - 1
-					];
-					break;
-			}
-			
-			if (cellOfInterest && cellOfInterest.nodeType == 1) {
-				newRowIndex = cellOfInterest.parentNode.rowIndex;
-			}
-		} else if (typeof TableCell.lastActiveCell !== 'undefined') {
-			newRowIndex = TableCell.lastActiveCell.obj.context.parentNode.rowIndex;
+		// get the index where the new rows should be inserted
+		var cellOfInterest = null;
+		switch (position) {
+		case 'before':
+			cellOfInterest = this.selection.selectedCells[0];
+			break;
+		case 'after':
+			cellOfInterest = this.selection.selectedCells[
+				this.selection.selectedCells.length - 1
+			];
+			break;
+		}
+		
+		if (cellOfInterest && cellOfInterest.nodeType == 1) {
+			newRowIndex = cellOfInterest.parentNode.rowIndex;
 		}
 
 		// save a copy of the new row index for the created row

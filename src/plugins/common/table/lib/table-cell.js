@@ -51,16 +51,6 @@ function (jQuery, Utils) {
 	Cell.prototype.hasFocus = false;
 
 	/**
-	 * The jQuery wrapper of the cell
-	 */
-	Cell.activeCell = undefined;
-
-	/**
-	 * The jQuery wrapper of the cell
-	 */
-	Cell.lastActiveCell = undefined;
-
-	/**
 	 * Focus method for the contentediable div within a table data-field. The method
 	 * requires the event-property Cell as a Cell object. If the
 	 * Cell wasn't activated yet it does all relevant actions to activate the cell.
@@ -74,13 +64,6 @@ function (jQuery, Utils) {
 		if (!this.hasFocus) {
 			// set an internal flag to focus the table
 			this.tableObj.focus();
-
-			// set the clicked cell active as the active cell
-			Cell.activeCell = this;
-
-			// set the clicked cell active as the last active cell (the difference
-			// to activeCell is that lastActiveCell won't be reset on blur)
-			Cell.lastActiveCell = this;
 
 			// add an active-class
 			this.obj.addClass('aloha-table-cell_active');
@@ -108,8 +91,6 @@ function (jQuery, Utils) {
 	 * @return void
 	 */
 	Cell.prototype._editableBlur = function(jqEvent){
-		// no active cell
-		Cell.activeCell = undefined;
 
 		// reset the focus of the cell
 		this.hasFocus = false;
