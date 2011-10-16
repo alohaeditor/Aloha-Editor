@@ -136,7 +136,20 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 		// initialize the table buttons
 		this.initTableButtons();
 
-		Aloha.bind('aloha-selection-changed', function (event, rangeObject) {
+		function updateFloatingMenuScope() {
+			if ( null != TablePlugin.activeTable ) {
+				FloatingMenu.setScope(TablePlugin.name + '.' + TablePlugin.activeTable.selection.selectionType);
+			}
+		}
+
+		Aloha.bind( 'aloha-table-selection-changed', function () {
+			if (   null != TablePlugin.activeTable
+				&& 0 !== TablePlugin.activeTable.selection.selectedCells.length ) {
+				updateFloatingMenuScope();
+			}
+		});
+
+		Aloha.bind( 'aloha-selection-changed', function (event, rangeObject) {
 			// this case probably occurs when the selection is empty?
 			if ( null == rangeObject.startContainer ) {
 				return;
@@ -160,8 +173,7 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 				if ( that.activeTable ) {
 					// check wheater we are inside a table
 					if ( table ) {
-						// set the scope if either columns or rows are selected
-						FloatingMenu.setScope(that.name + '.' + that.activeTable.selection.selectionType);
+						updateFloatingMenuScope();
 					} else {
 						//reset cell selection flags
 						that.activeTable.selection.cellSelectionMode = false; 
@@ -178,7 +190,7 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 		});
 
 		// subscribe for the 'editableActivated' event to activate all tables in the editable
-		Aloha.bind('aloha-editable-activated', function (event, props) {
+		Aloha.bind( 'aloha-editable-activated', function (event, props) {
 			props.editable.obj.find('table').each(function () {
 				// shortcut for TableRegistry
 				var tr = TablePlugin.TableRegistry;
@@ -209,7 +221,7 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 		});
 
 		// subscribe for the 'editableDeactivated' event to deactivate all tables in the editable
-		Aloha.bind('aloha-editable-deactivated', function (event, properties) {
+		Aloha.bind( 'aloha-editable-deactivated', function (event, properties) {
 			if (TablePlugin.activeTable) {
 				TablePlugin.activeTable.selection.unselectCells();
 			}

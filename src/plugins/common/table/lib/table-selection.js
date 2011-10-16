@@ -112,16 +112,26 @@ function (Aloha, $, Utils, i18n) {
 	/**
 	 * To be called when cells of the table were selected
 	 * @see selectRows, selectColumns, selectCellRange
+	 * TODO this should be private
 	 */
 	TableSelection.prototype.notifyCellsSelected = function () {
 		Aloha.trigger( 'aloha-table-selection-changed' );
-		//the UI feels more consisten when we remove the non-table
-		//selection when cells are selected
-		//TODO this code doesn't work right in IE as it causes the table
+
+		// the UI feels more consisten when we remove the non-table
+		// selection when cells are selected
+		// TODO this code doesn't work right in IE as it causes the table
 		//  scope of the floating menu to be lost. Maybe this can be
 		//  handled by testing for an empty selection in the
 		//  aloha-selection-changed event.
 		//Aloha.getSelection().removeAllRanges();
+	};
+
+	/**
+	 * To be called when a cell-selection is entirely removed
+	 * @see unselectCells
+	 */
+	TableSelection.prototype._notifyCellsUnselected = function () {
+		Aloha.trigger( 'aloha-table-selection-changed' );
 	};
 
 	/**
@@ -171,7 +181,16 @@ function (Aloha, $, Utils, i18n) {
 			this.selectedCells = new Array();
 			this.selectedColumnIdxs = new Array();
 			this.selectedRowIdxs = new Array();
-			this.selectionType = undefined;
+
+			//we keep 'cell' as the default selection type instead of
+			//unsetting the selectionType to avoid an edge-case where a
+			//click into a cell doesn't trigger a call to
+			//TableCell.editableFocs (which would set the 'cell'
+			//selection type) which would result in the FloatingMenu
+			//losing the table scope.
+			this.selectionType = 'cell';
+
+			this._notifyCellsUnselected();
 		}
 	};
 
