@@ -213,12 +213,10 @@ function ($, Utils, i18n) {
 		}
 
 		var grid = Utils.makeGrid( this.table.obj.find("tr") );
-		var contour = Utils.makeContour(
-			grid,
-			function ( cellInfo ) {
-				return -1 != $.inArray( cellInfo.cell, selectedCells );
-			});
-
+		var isSelected = function ( cellInfo ) {
+			return -1 != $.inArray( cellInfo.cell, selectedCells );
+		};
+		var contour = Utils.makeContour( grid, isSelected );
 		if (   -1 !== Utils.indexOfAnyBut( contour.top   , contour.top[0]    )
 			|| -1 !== Utils.indexOfAnyBut( contour.right , contour.right[0]  )
 			|| -1 !== Utils.indexOfAnyBut( contour.bottom, contour.bottom[0] )
