@@ -2946,7 +2946,8 @@ function getStartPositionFromFrontOfInlineNode ( node ) {
 	// First look for the nearest text node inside startNode.
 	// Satisfies:
 	// [ '{<b>foo]</b>', '<b>[foo]</b>' ],
-	rightTextNode = getLeftmostScion( node, isTextNode );
+	
+	//rightTextNode = getLeftmostScion( node, isTextNode );
 	
 	// If there are no text nodes inside node, look for the nearest text
 	// node outside of, and to the right of node.
@@ -2954,8 +2955,60 @@ function getStartPositionFromFrontOfInlineNode ( node ) {
 	// [ 'foo{<b></b><b>bar]</b>', 'foo<b></b><b>[bar]</b>' ],
 	// [ 'foo{<b><i></i></b>bar]', 'foo<b><i></i></b>[bar]' ],
 	// [ 'foo{<b><i></i></b><b>bar]</b>', 'foo<b><i></i></b><b>[bar]</b>' ],
-	if ( !rightTextNode ) {
-		rightTextNode = getNearestRightNode( node, isTextNode );
+	
+	//if ( !rightTextNode ) {
+	//	rightTextNode = getNearestRightNode( node, isTextNode );
+	//}
+	
+	
+	
+	
+	
+	// Try to move our start position to the right without crossing over any
+	// block nodes
+	var rightNode = node;
+	
+	var succeedingBlockNode = false;
+	
+	while ( true ) {
+		if ( rightNode.nextSibling ) {
+			rightNode = rightNode.nextSibling;
+			if ( isBlockElement( rightNode ) ) {
+				if ( !succeedingBlockNode ) {
+					succeedingBlockNode = rightNode;
+				}
+			}
+		} else if ( isEditingHost( rightNode.parentNode )  ) {
+			// game over
+			break;
+		} else if ( isBlockElement( rightNode.parentNode ) ) {
+			rightNode = rightNode.parentNode;
+			if ( !succeedingBlockNode ) {
+				succeedingBlockNode = rightNode;
+			}
+		} else {
+			rightNode = rightNode.parentNode;
+			continue;
+		}
+		
+		// If rightNode is not a block element, then we know that none of its
+		// children are block elements either.
+		// If we find a text node somewhere inside of rightNode, then take it
+		// stop here
+		rightTextNode = isTextNode( rightNode )
+			? rightNode
+			: getLeftmostScion( rightNode, isTextNode );
+		
+		if ( rightTextNode ) {
+			break;
+		}
+	}
+	
+	if ( !leftTextNode && !rightTextNode ) {
+		return {
+			node   : getEditingHost( node ),
+			offset : 0
+		}
 	}
 	
 	if ( !leftTextNode && rightTextNode ) {
@@ -2972,30 +3025,23 @@ function getStartPositionFromFrontOfInlineNode ( node ) {
 		};
 	}
 	
-	if ( !leftTextNode && !rightTextNode ) {
-		return {
-			node   : getEditingHost( node ),
-			offset : 0
-		}
-	}
-	
 	// We have both a left and right text node... we have to do some more work
 	// before we know where to reposition our start position
 	
 	// Get child of block element ancestor of rightTextNode
-	var ancestor = rightTextNode;
-	while ( ancestor.parentNode &&
-				!isBlockElement( ancestor.parentNode ) &&
-					!isEditingHost( ancestor.parentNode ) &&
-						( ancestor = ancestor.parentNode ) );
+	// var ancestor = rightTextNode;
+	// while ( ancestor.parentNode &&
+	// 			!isBlockElement( ancestor.parentNode ) &&
+	// 				!isEditingHost( ancestor.parentNode ) &&
+	// 					( ancestor = ancestor.parentNode ) );
 	
 	// At this point, ancestor is either null, or it is the child of the first
 	// block ancestor from rightTextNode. If it is neither of these things, then
 	// it is the immediate child of the editing host. Regardless of whether the
 	// parent node of ancestor is the editing host or not, we just need to make
 	// sure that it is a block element
-	if ( ancestor && isBlockElement( ancestor.parentNode ) ) {
-		var blockNode = ancestor.parentNode;
+	//if ( ancestor && isBlockElement( ancestor.parentNode ) ) {
+	//	var blockNode = ancestor.parentNode;
 		// reference:
 		//		http://www.w3.org/TR/DOM-Level-3-Core/core.html#Node3-compareDocumentPosition
 		//		Bits	Number	Meaning
@@ -3007,7 +3053,9 @@ function getStartPositionFromFrontOfInlineNode ( node ) {
 		//		001000	8		Node B contains Node A.
 		//		010000	16		Node A contains Node B.
 		//		100000	32		For private use by the browser.
-		var posbits = compareDocumentPosition( node, blockNode );
+		var posbits = compareDocumentPosition( node, succeedingBlockNode );
+		var correctNode;
+		
 		// If node precedes ancestor then we have a block node between the
 		// original start position and our text node.
 		// Because we know that we have a text node to the left of our start
@@ -3019,20 +3067,36 @@ function getStartPositionFromFrontOfInlineNode ( node ) {
 		// [ 'foo{<b></b><p><u></u></p><p>bar]</p>', 'foo<b>{</b><p><u></u></p><p>bar]</p>' ],
 		// [ '<p>foo{<b></b></p><div><u></u></div><p>bar]</p>', '<p>foo<b>{</b></p><div><u></u></div><p>bar]</p>' ],
 		if ( posbits & 4 ) {
-			var left = blockNode;
-			while ( left = getLeftNeighbor( left ) ) {
-				if ( !isBlockElement( left ) ||
-						jQuery( left ).find( leftTextNode ).length ) {
-					left = getRightmostScion( left ) || left;
-					
-					return {
-						node   : left,
-						offset : getNodeLength( left ) 
-					};
+			correctNode = succeedingBlockNode;
+			
+			while ( correctNode = getLeftNeighbor( correctNode ) ) {
+				if ( !isBlockElement( correctNode ) ||
+						jQuery( correctNode ).find( leftTextNode ).length ) {
+					correctNode = getRightmostScion( correctNode ) || correctNode;
+					break
 				}
 			}
 		}
-	}
+		
+		// Satisfies:
+		// [ '<p>foo{<b></b></p><div><u></u></div><p>bar]</p>', '<p>foo<b>{</b></p><div><u></u></div><p>bar]</p>' ],
+		// [ '<div>foo{<b></b><i></i></div><div><u></u></div><p>bar]</p>', '<div>foo<b></b><i>{</i></div><div><u></u></div><p>bar]</p>' ],
+		// [ '<div>foo{<b></b><p></p></div><div><u></u></div><p>bar]</p>', '<div>foo<b>{</b><p></p></div><div><u></u></div><p>bar]</p>' ],
+		// [ '<div>foo<p>test{<b></b></p></div><div><u></u></div><p>bar]</p>', '<div>foo<p>test<b>{</b></p></div><div><u></u></div><p>bar]</p>' ],
+		if ( posbits & 8 ) {
+			correctNode = getRightmostScion( succeedingBlockNode, isBlockElement );
+			correctNode = correctNode
+				? getLeftNeighbor( correctNode )
+				: getRightmostScion( succeedingBlockNode );
+		}
+		
+		if ( correctNode ) {
+			return {
+				node   : correctNode,
+				offset : getNodeLength( correctNode ) 
+			};
+		}
+	//}
 	
 	// We do not have an intercepting block to the right of our start position,
 	// so use the right text node
@@ -3058,29 +3122,31 @@ function getStartPositionFromEndOfInlineNode ( node ) {
 	// block nodes
 	rightNode = node;
 	
-	var succeedingBlockNode = false;
+	var succeedingBlockNode;
 	
 	while ( true ) {
 		if ( rightNode.nextSibling ) {
 			rightNode = rightNode.nextSibling;
 			if ( isBlockElement( rightNode ) ) {
-				succeedingBlockNode = true;
+				if ( !succeedingBlockNode ) {
+					succeedingBlockNode = rightNode;
+				}
 			}
 		} else if ( isEditingHost( rightNode.parentNode )  ) {
 			// game over
 			break;
-			//succeedingBlockNode = true;
-			//continue;
 		} else if ( isBlockElement( rightNode.parentNode ) ) {
 			rightNode = rightNode.parentNode;
-			succeedingBlockNode = true;
+			if ( !succeedingBlockNode ) {
+				succeedingBlockNode = rightNode;
+			}
 		} else {
 			rightNode = rightNode.parentNode;
 			continue;
 		}
 		
-		// Hint: If rightNode is not a block element, then we know that none of
-		// its children are block elements either.
+		// If rightNode is not a block element, then we know that none of its
+		// children are block elements either.
 		// If we find a text node somewhere inside of rightNode, then take it
 		// stop here
 		rightTextNode = isTextNode( rightNode )
@@ -3144,14 +3210,27 @@ function getStartPositionFromEndOfInlineNode ( node ) {
 	// nearest node between our start position and the intercepting block node
 	// [ 'foo<b>{</b><p>bar]</p>', 'foo<b>{</b><p>bar]</p>' ],
 	if ( leftTextNode && rightTextNode ) {
-		var correctNode = getNearestRightNode( node, isBlockElement );
-		if ( correctNode ) {
-			correctNode = getNearestLeftNode( correctNode );
-			return {
-				node   : correctNode,
-				offset : getNodeLength( correctNode )
-			};
+		var pos = getStartPositionBetweenSucceedingBlockNode(
+			node, leftTextNode, succeedingBlockNode
+		);
+		
+		if ( pos ) {
+			return pos;
 		}
+		
+		// debugger;
+		// var correctNode = isBlockElement( node.nextSibling )
+			// ? node.nextSibling
+			// : getNearestRightNode( node, isBlockElement );
+		
+		// if ( correctNode ) {
+			// correctNode = getNearestLeftNode( correctNode );
+			
+			// return {
+				// node   : correctNode,
+				// offset : getNodeLength( correctNode )
+			// };
+		// }
 	}
 	
 	// [ '<b>{</b>}', '{}<b></b>' ]
@@ -3161,6 +3240,53 @@ function getStartPositionFromEndOfInlineNode ( node ) {
 		offset : 0
 	};
 };
+
+function getStartPositionBetweenSucceedingBlockNode ( startNode, leftTextNode, succeedingBlockNode ) {
+	var posbits = compareDocumentPosition( node, succeedingBlockNode );
+	var correctNode;
+	
+	// If node precedes ancestor then we have a block node between the
+	// original start position and our text node.
+	// Because we know that we have a text node to the left of our start
+	// position, we infere that we are in a situation that will resemble
+	// the following:
+	// [ 'foo{<b></b><p>bar]</p>', 'foo<b>{</b><p>bar]</p>' ],
+	// [ 'foo{<b></b><p></p><p>bar]</p>', 'foo<b>{</b><p></p><p>bar]</p>' ],
+	// [ '<b>foo{<u></u></b><p>bar]</p>', '<b>foo<u>{</u></b><p>bar]</p>' ],
+	// [ 'foo{<b></b><p><u></u></p><p>bar]</p>', 'foo<b>{</b><p><u></u></p><p>bar]</p>' ],
+	// [ '<p>foo{<b></b></p><div><u></u></div><p>bar]</p>', '<p>foo<b>{</b></p><div><u></u></div><p>bar]</p>' ],
+	if ( posbits & 4 ) {
+		correctNode = succeedingBlockNode;
+		
+		while ( correctNode = getLeftNeighbor( correctNode ) ) {
+			if ( !isBlockElement( correctNode ) ||
+					jQuery( correctNode ).find( leftTextNode ).length ) {
+				correctNode = getRightmostScion( correctNode ) || correctNode;
+				break
+			}
+		}
+	}
+	
+	// Satisfies:
+	// [ '<p>foo{<b></b></p><div><u></u></div><p>bar]</p>', '<p>foo<b>{</b></p><div><u></u></div><p>bar]</p>' ],
+	// [ '<div>foo{<b></b><i></i></div><div><u></u></div><p>bar]</p>', '<div>foo<b></b><i>{</i></div><div><u></u></div><p>bar]</p>' ],
+	// [ '<div>foo{<b></b><p></p></div><div><u></u></div><p>bar]</p>', '<div>foo<b>{</b><p></p></div><div><u></u></div><p>bar]</p>' ],
+	// [ '<div>foo<p>test{<b></b></p></div><div><u></u></div><p>bar]</p>', '<div>foo<p>test<b>{</b></p></div><div><u></u></div><p>bar]</p>' ],
+	if ( posbits & 8 ) {
+		correctNode = getRightmostScion( succeedingBlockNode, isBlockElement );
+		correctNode = correctNode
+			? getLeftNeighbor( correctNode )
+			: getRightmostScion( succeedingBlockNode );
+	}
+	
+	if ( correctNode ) {
+		return {
+			node  : correctNode,
+			offset : getNodeLength( correctNode )
+		};
+	}
+};
+
 
 /**
  * We are at the end tag of an inline node.
