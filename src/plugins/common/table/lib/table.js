@@ -475,77 +475,73 @@ function (Aloha, jQuery, FloatingMenu, i18n, TableCell, TableSelection, Utils) {
    *            The jquery object of the table-data field
    * @return void
    */
-  Table.prototype.attachSelectionRow = function () {
-    var that = this;
+	Table.prototype.attachSelectionRow = function () {
+		var that = this;
 
-    // create an empty td
-    var emptyCell = jQuery('<td>');
-//    emptyCell.html('\u00a0');
-	emptyCell.html('\u00a0');
-    
-    // get the number of columns in the table
-    // iterate through all rows and find the maximum number of columns to add
-    var numColumns = 0;
-    for(var i = 0; i < this.obj.context.rows.length; i++){
-      var curNumColumns = this.obj.context.rows[i].cells.length;
-      if(numColumns < curNumColumns)
-        numColumns = curNumColumns;
-    }
-    
-    var selectionRow = jQuery('<tr>');
-    selectionRow.addClass(this.get('classSelectionRow'));
-    selectionRow.css('height', this.get('selectionArea') + 'px');
-    for (var i = 0; i < numColumns; i++) {
+		// create an empty td
+		var emptyCell = jQuery('<td>');
+		//    emptyCell.html('\u00a0');
+		emptyCell.html('\u00a0');
+		
+		// get the number of columns in the table
+		// iterate through all rows and find the maximum number of columns to add
+		var numColumns = 0;
+		for(var i = 0; i < this.obj.context.rows.length; i++){
+			var curNumColumns = this.obj.context.rows[i].cells.length;
+			if(numColumns < curNumColumns)
+				numColumns = curNumColumns;
+		}
+		
+		var selectionRow = jQuery('<tr>');
+		selectionRow.addClass(this.get('classSelectionRow'));
+		selectionRow.css('height', this.get('selectionArea') + 'px');
+		for (var i = 0; i < numColumns; i++) {
 
-      var columnToInsert = emptyCell.clone();
-      // the first cell should have no function, so only attach the events for
-      // the rest
-      if (i > 0) {
-        // bind all mouse-events to the cell
-        this.attachColumnSelectEventsToCell(columnToInsert);
-        //set the colspan of selection column to match the colspan of first row columns
-      } else {
-        var columnToInsert = jQuery('<td>').clone();
-        columnToInsert.addClass(this.get('classLeftUpperCorner'));
-        this.wai =
-          jQuery('<div/>')
-            .width(25)
-            .height(12)
-            .click(function (e) {
-              // select the Table 
-              that.focus();
-             
-              FloatingMenu.userActivatedTab = i18n.t('floatingmenu.tab.table');
-              FloatingMenu.doLayout();
-              
-              // jump in Summary field
-              // attempting to focus on summary input field will occasionally result in the
-              // following exception:
-              //uncaught exception: [Exception... "Component returned failure code: 0x80004005 (NS_ERROR_FAILURE) [nsIDOMHTMLInputElement.setSelectionRange]" nsresult: "0x80004005 (NS_ERROR_FAILURE)" location: "JS frame :: src/dep/ext-3.2.1/ext-all.js :: <TOP_LEVEL> :: line 11" data: no]
-              // this occurs when the tab in which the summary field is contained is not visible
-              // TODO: I'm adding a try catch clause here for the time being, but a proper solution, which addresses the problem of how to handle invisible fields ought to be persued.
+			var columnToInsert = emptyCell.clone();
+			// the first cell should have no function, so only attach the events for
+			// the rest
+			if (i > 0) {
+				// bind all mouse-events to the cell
+				this.attachColumnSelectEventsToCell(columnToInsert);
+				//set the colspan of selection column to match the colspan of first row columns
+			} else {
+				var columnToInsert = jQuery('<td>').clone();
+				columnToInsert.addClass(this.get('classLeftUpperCorner'));
+				var clickHandler = function (e) {
+					// select the Table 
+					that.focus();
 
-              try {
-                that.tablePlugin.summary.focus();
-                e.stopPropagation();
-                e.preventDefault();
-              } catch (e) {}
+					FloatingMenu.userActivatedTab = i18n.t('floatingmenu.tab.table');
+					FloatingMenu.doLayout();
+					
+					// jump in Summary field
+					// attempting to focus on summary input field will occasionally result in the
+					// following exception:
+					//uncaught exception: [Exception... "Component returned failure code: 0x80004005 (NS_ERROR_FAILURE) [nsIDOMHTMLInputElement.setSelectionRange]" nsresult: "0x80004005 (NS_ERROR_FAILURE)" location: "JS frame :: src/dep/ext-3.2.1/ext-all.js :: <TOP_LEVEL> :: line 11" data: no]
+					// this occurs when the tab in which the summary field is contained is not visible
+					// TODO: I'm adding a try catch clause here for the time being, but a proper solution, which addresses the problem of how to handle invisible fields ought to be persued.
 
-              return false;
-            });
-        
-        columnToInsert.append(this.wai);
-      }
-      
-      // add the cell to the row
-      selectionRow.append(columnToInsert);
-    }
-    
-    // global mouseup event to reset the selection properties
-    jQuery(document).bind('mouseup', function(e) { that.columnSelectionMouseUp(e) } );
-    
-    this.obj.find('tr:first').before( selectionRow );
-  };
+					try {
+						that.tablePlugin.summary.focus();
+						e.stopPropagation();
+						e.preventDefault();
+					} catch (e) {}
+
+					return false;
+				};
+				this.wai = jQuery('<div/>').width(25).height(12).click(clickHandler);
+				columnToInsert.append(this.wai);
+			}
+			
+			// add the cell to the row
+			selectionRow.append(columnToInsert);
+		}
+		
+		// global mouseup event to reset the selection properties
+		jQuery(document).bind('mouseup', function(e) { that.columnSelectionMouseUp(e) } );
+		
+		this.obj.find('tr:first').before( selectionRow );
+	};
 
 	/**
 	 * Binds the events for the column selection to the given cell.
@@ -1362,14 +1358,9 @@ function (Aloha, jQuery, FloatingMenu, i18n, TableCell, TableSelection, Utils) {
 	 */
 	Table.prototype.getRows = function () {
 		//W3C DOM property .rows supported by all modern browsers
-		var htmlRows = this.obj.get( 0 ).rows;
+		var rows = this.obj.get( 0 ).rows;
 		//converts the HTMLCollection to a real array
-		var length = htmlRows.length;
-		var rows = new Array( length );
-		while ( length-- ) {
-			rows[ length ] = htmlRows[ length ];
-		}
-		return rows;
+		return jQuery.makeArray( rows );
 	};
 
 	return Table;
