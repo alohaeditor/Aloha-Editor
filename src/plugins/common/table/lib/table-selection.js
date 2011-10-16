@@ -56,10 +56,6 @@ function ($, Utils, i18n) {
 	 * @return void
 	 */
 	TableSelection.prototype.selectColumns = function ( columnsToSelect ) {
-        if ( typeof this.table == 'undefined' || !this.table ) {
-        	return;
-        }
-
 		this.unselectCells();
 
 		var rows = this.table.obj.find("tr").toArray()
@@ -92,10 +88,6 @@ function ($, Utils, i18n) {
 	 * @return void
 	 */
 	TableSelection.prototype.selectRows = function ( rowsToSelect ) {
-        if ( typeof this.table == 'undefined' || !this.table ) {
-        	return;
-        }
-
 		this.unselectCells();
 
 		var rows = this.table.obj.find("tr").toArray();
@@ -131,10 +123,6 @@ function ($, Utils, i18n) {
 	 */
 	TableSelection.prototype.isHeader = function ( ) {
 		
-        if ( typeof this.table == 'undefined' || !this.table ) {
-        	return;
-        }
-        
         if ( this.selectedCells.length == 0 ) {
         	return false;
         }
@@ -156,10 +144,6 @@ function ($, Utils, i18n) {
 	TableSelection.prototype.unselectCells = function(){
 		var rows;
 
-		if ( typeof this.table == 'undefined' || !this.table ) {
-    		return;
-		}
-		
 		//don't unselect cells if cellSelectionMode is active
 		if ( this.cellSelectionMode || this.keepCellsSelected ) {
     		return;
