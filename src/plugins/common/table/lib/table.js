@@ -894,12 +894,14 @@ function (Aloha, jQuery, FloatingMenu, i18n, TableCell, TableSelection, Utils) {
 		}
 	};
 
+	/**
+	 * @param {string} position
+	 *            could be 'after' or 'before'. defines the position where the new
+	 *            rows should be inserted
+	 */
 	function rowIndexFromSelection( position, selection ) {
-		if (0 === selection.selectedCells.length) {
-			return -1;
-		}
 
-		var newRowIndex = 0;
+		var newRowIndex = -1;
 		
 		// get the index where the new rows should be inserted
 		var cellOfInterest = null;
@@ -920,71 +922,44 @@ function (Aloha, jQuery, FloatingMenu, i18n, TableCell, TableSelection, Utils) {
 	/**
 	 * Wrapper function for this.addRow to add a row before the active row
 	 *
-	 * @param highlightNewRows flag if the newly created rows should be marked as selected
 	 * @see Table.prototype.addRow
-	 * @return
 	 */
-	Table.prototype.addRowsBeforeSelection = function(highlightNewRows) {
-		this._addRows('before', highlightNewRows, rowIndexFromSelection( 'before', this.selection ) );
+	Table.prototype.addRowBeforeSelection = function(highlightNewRows) {
+		var newRowIndex = rowIndexFromSelection( 'before', this.selection );
+		if ( -1 !== newRowIndex ) {
+			this.addRow( newRowIndex );
+		}
 	};
 
 	/**
 	 * Wrapper function for this.addRow to add a row after the active row
 	 *
-	 * @param highlightNewRows flag if the newly created rows should be marked as selected
 	 * @see Table.prototype.addRow
-	 * @return
 	 */
-	Table.prototype.addRowsAfterSelection = function(highlightNewRows) {
-		this._addRows('after', highlightNewRows, rowIndexFromSelection( 'after', this.selection ) );
+	Table.prototype.addRowAfterSelection = function() {
+		var newRowIndex = rowIndexFromSelection( 'after', this.selection );
+		if ( -1 !== newRowIndex ) {
+			this.addRow( newRowIndex + 1 );
+		}
 	};
 
 	/**
-	 * Adds a row after a specified row index.
+	 * Adds a new row to the table.
 	 *
-	 * @param highlightNewRows
-	 *        true if the newly created rows should be marked as selected, false otherwise.
-	 * @param newRowIndex
-	 *        the index of the row (tr) after which a new row should be inserted
-	 */
-	Table.prototype.addRowAfter = function (highlightNewRows, newRowIndex) {
-		this._addRows('after', highlightNewRows, newRowIndex);
-	};
-
-	/**
-	 * Adds new rows to the table.
-	 *
-	 * @param {string} position
-	 *            could be 'after' or 'before'. defines the position where the new
-	 *            rows should be inserted
-	 * @param {boolean} highlightNewRows
-	 *            flag if the newly created rows should be marked as selected
 	 * @param {int} rowIndex
-	 *            the index after or before which the rows shall be inserted
-	 * @return void
+	 *        the index at which the new row shall be inserted
 	 */
-	Table.prototype._addRows = function(position, highlightNewRows, newRowIndex) {
-		if ( 0 > newRowIndex || ! this.tablePlugin.activeTable ) {
+	Table.prototype.addRow = function(newRowIndex) {
+		if ( ! this.tablePlugin.activeTable ) {
 			return;
 		}
 
 		var that = this;
 		var rowsToInsert = 1;
 
-		// save a copy of the new row index for the created row
-		var currentRowIndex = newRowIndex;
-		
-		// If we are inserting the news rows 'after' the current row, then the
-		// newRowIndex will be the 1 more than the actual row
-		if (position == 'after') {
-			++newRowIndex;
-		}
-
 		var numCols = this.countVirtualCols();
 		var $rows = this.obj.children().children('tr');
-		var rowIdArray = [];
 		for (var j = 0; j < rowsToInsert; j++) {
-			rowIdArray.push(newRowIndex);
 			var insertionRow = jQuery('<tr>');
 
 			// create the first column, the "select row" column
@@ -1014,29 +989,14 @@ function (Aloha, jQuery, FloatingMenu, i18n, TableCell, TableSelection, Utils) {
 				}
 			}
 
-			switch (position) {
-				case 'before':
-				    $rows.eq(currentRowIndex).before(insertionRow);
-					break;
-				case 'after':
-				    $rows.eq(currentRowIndex).after(insertionRow);
-					break;
-				default:
-					this.warn(this, 'Wrong call of Table.prototype.addRow!');
+			if ( newRowIndex >= $rows.length ) {
+				$rows.eq( $rows.length - 1 ).after( insertionRow );
+			} else {
+				$rows.eq( newRowIndex ).before( insertionRow );
 			}
-
-			++newRowIndex;
 		}
 		
 		this.numRows += rowsToInsert;
-		
-		this.selection.unselectCells();
-
-		this.rowsToSelect = rowIdArray;
-		
-		if (highlightNewRows) {
-			this.selectRows();
-		}
 	};
 
 	/**
