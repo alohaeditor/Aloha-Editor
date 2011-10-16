@@ -1035,12 +1035,11 @@ function (Aloha, jQuery, FloatingMenu, i18n, TableCell, TableSelection, Utils) {
 			columnsToSelect = [],
 			selectedColumnIdxs = this.selection.selectedColumnIdxs;
 		
-		// sort the columns because next algorithm needs that
-		if ( position == 'left' ) {
-			selectedColumnIdxs.sort( function (a,b) { return a - b; } );
-		} else {
-			selectedColumnIdxs.sort( function (a,b) { return b - a; } );
+		if ( 0 === selectedColumnIdxs.length ) {
+			return;
 		}
+
+		selectedColumnIdxs.sort( function (a,b) { return a - b; } );
 		
 		// refuse to insert a column unless a consecutive range has been selected
 		if ( ! Utils.isConsecutive( selectedColumnIdxs ) ) {
@@ -1052,68 +1051,50 @@ function (Aloha, jQuery, FloatingMenu, i18n, TableCell, TableSelection, Utils) {
 			return;
 		}
 		
+		if ( "left" === position ) {
+			currentColIdx = selectedColumnIdxs[0];
+			// inserting a row before the selected column indicies moves
+			// all selected columns one to the right
+			for ( var i = 0; i < this.selection.selectedColumnIdxs.length; i++ ) {
+				this.selection.selectedColumnIdxs[i] += 1;
+			}
+		} else {//"right" == position
+			currentColIdx = selectedColumnIdxs[ selectedColumnIdxs.length - 1 ];
+		}
+
 		var grid = Utils.makeGrid(rows);
 		for (var i = 0; i < rows.length; i++) {
-			for (var j = 0; j < selectedColumnIdxs.length; j++) {
 				
-				// prepare the cell to be inserted
-				cell = emptyCell.clone();
-				cell.html('\u00a0');
+			// prepare the cell to be inserted
+			cell = emptyCell.clone();
+			cell.html('\u00a0');
 
-				currentColIdx = selectedColumnIdxs[j];
+			// on first row correct the position of the selected columns
+			if ( i == 0 ) {
 
-				// on first row correct the position of the selected columns
-				if ( i == 0 ) {
-					switch ( position ) {
-					case 'left':
-						for ( var c = 0; c < columnsToSelect.length; ++c ) {
-							// if we insert before an already processed 
-							// column move the selection 1 position right
-							if ( columnsToSelect[c] >= currentColIdx ) {
-								columnsToSelect[c]++;
-							}
-						}
-						columnsToSelect.push( currentColIdx + j + 1 );
-						break;
-					case 'right':
-						for ( var c = 0; c < columnsToSelect.length; ++c ) {
-							// if we insert after an already processed 
-							// column move the selection 1 position right
-							if ( columnsToSelect[c] >= currentColIdx ) {
-								columnsToSelect[c]++;
-							}
-						}
-						columnsToSelect.push( currentColIdx );
-						break;
-					}
+				// this is the first row, so make a column-selection cell
+				this.attachColumnSelectEventsToCell( cell );
 
-					// this is the first row, so make a column-selection cell
-					this.attachColumnSelectEventsToCell( cell );
-
-				} else {
-					// activate the cell for this table
-					cellObj = this.newActiveCell( cell.get(0) );
-					cell = cellObj.obj;
-				}
-
-				
-				var leftCell = Utils.leftDomCell( grid, i, currentColIdx );
-				if ( null == leftCell ) {
-					jQuery( rows[i] ).prepend( cell );
-				} else {
-					if ( 'left' === position ) {
-						jQuery( leftCell ).before( cell );
-					} else {//right
-						jQuery( leftCell ).after( cell );
-					}
-				}
-
-				this.numCols++;
+			} else {
+				// activate the cell for this table
+				cellObj = this.newActiveCell( cell.get(0) );
+				cell = cellObj.obj;
 			}
+
+			
+			var leftCell = Utils.leftDomCell( grid, i, currentColIdx );
+			if ( null == leftCell ) {
+				jQuery( rows[i] ).prepend( cell );
+			} else {
+				if ( 'left' === position ) {
+					jQuery( leftCell ).before( cell );
+				} else {//right
+					jQuery( leftCell ).after( cell );
+				}
+			}
+
+			this.numCols++;
 		}
-		
-		this.selection.unselectCells();
-		this.selectColumns( columnsToSelect );
 	};
 
 	/**
