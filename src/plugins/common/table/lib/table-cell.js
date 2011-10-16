@@ -50,55 +50,6 @@ function (jQuery, Utils) {
 	 */
 	Cell.prototype.hasFocus = false;
 
-	/**
-	 * Focus method for the contentediable div within a table data-field. The method
-	 * requires the event-property Cell as a Cell object. If the
-	 * Cell wasn't activated yet it does all relevant actions to activate the cell.
-	 *
-	 * @param e
-	 *            the jquery event object
-	 * @return void
-	 */
-	Cell.prototype._editableFocus = function(e) {
-		// only do activation stuff if the cell don't has the focus
-		if (!this.hasFocus) {
-			// set an internal flag to focus the table
-			this.tableObj.focus();
-
-			// add an active-class
-			this.obj.addClass('aloha-table-cell_active');
-
-			// set the focus flag
-			this.hasFocus = true;
-
-			// select the whole content in the table-data field
-			this._selectAll(this.wrapper.get(0));
-
-			// unset the selection type
-			this.tableObj.selection.selectionType = 'cell';
-
-		}
-	};
-
-	/**
-	 * Blur event for the contenteditable div within a table-data field. The method
-	 * requires the event-property Cell as a Cell object. It
-	 * sets the hasFocus flag of the cell to false and removes the "active"
-	 * css-class.
-	 *
-	 * @param jqEvent
-	 *            the jquery event object
-	 * @return void
-	 */
-	Cell.prototype._editableBlur = function(jqEvent){
-
-		// reset the focus of the cell
-		this.hasFocus = false;
-
-		// remove "active class"
-		this.obj.removeClass('aloha-table-cell-active');
-	};
-
 	Cell.prototype.activate = function() {
 		// wrap the created div into the contents of the cell
 		this.obj.wrapInner('<div/>');
@@ -202,6 +153,64 @@ function (jQuery, Utils) {
 			this.obj.html(innerHtml);
 		}
 	}
+
+	/**
+	 * Native toString-method
+	 *
+	 * @return string name of the namespace
+	 */
+	Cell.prototype.toString = function() {
+		return 'TableCell';
+	};
+
+	/**
+	 * Focus method for the contentediable div within a table data-field. The method
+	 * requires the event-property Cell as a Cell object. If the
+	 * Cell wasn't activated yet it does all relevant actions to activate the cell.
+	 *
+	 * @param e
+	 *            the jquery event object
+	 * @return void
+	 */
+	Cell.prototype._editableFocus = function(e) {
+		// only do activation stuff if the cell don't has the focus
+		if (!this.hasFocus) {
+			// set an internal flag to focus the table
+			this.tableObj.focus();
+
+			// add an active-class
+			this.obj.addClass('aloha-table-cell_active');
+
+			// set the focus flag
+			this.hasFocus = true;
+
+			// select the whole content in the table-data field
+			this._selectAll(this.wrapper.get(0));
+
+			// unset the selection type
+			this.tableObj.selection.selectionType = 'cell';
+
+		}
+	};
+
+	/**
+	 * Blur event for the contenteditable div within a table-data field. The method
+	 * requires the event-property Cell as a Cell object. It
+	 * sets the hasFocus flag of the cell to false and removes the "active"
+	 * css-class.
+	 *
+	 * @param jqEvent
+	 *            the jquery event object
+	 * @return void
+	 */
+	Cell.prototype._editableBlur = function(jqEvent){
+
+		// reset the focus of the cell
+		this.hasFocus = false;
+
+		// remove "active class"
+		this.obj.removeClass('aloha-table-cell-active');
+	};
 
 	/**
 	 * Gives the X (column no) for a cell, after adding colspans 
@@ -308,15 +317,6 @@ function (jQuery, Utils) {
 		});
 
 		Aloha.trigger( 'aloha-table-selection-changed' );
-	};
-
-	/**
-	 * Native toString-method
-	 *
-	 * @return string name of the namespace
-	 */
-	Cell.prototype.toString = function() {
-		return 'TableCell';
 	};
 
 	/**
