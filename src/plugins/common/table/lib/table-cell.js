@@ -312,7 +312,7 @@ function (jQuery, Utils) {
 			}
 		});
 
-		Aloha.trigger( 'aloha-table-selection-changed' );
+		table.selection.notifyCellsSelected();
 	};
 
 	/**

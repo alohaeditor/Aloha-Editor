@@ -1,6 +1,6 @@
 define(
-['aloha/jquery', 'table/table-plugin-utils', 'i18n!table/nls/i18n'],
-function ($, Utils, i18n) {
+['aloha', 'aloha/jquery', 'table/table-plugin-utils', 'i18n!table/nls/i18n'],
+function (Aloha, $, Utils, i18n) {
 	/**
 	 * The TableSelection object is a helper-object
 	 */
@@ -74,7 +74,6 @@ function ($, Utils, i18n) {
 		}
 
 		this.selectionType = 'column';
-		Aloha.trigger( 'aloha-table-selection-changed' );
 	};
 	
 	/**
@@ -108,9 +107,19 @@ function ($, Utils, i18n) {
 		}
 		
 	    this.selectionType = 'row';
-		Aloha.trigger( 'aloha-table-selection-changed' );
 	};
 	
+	/**
+	 * To be called when cells of the table were selected
+	 * @see selectRows, selectColumns, selectCellRange
+	 */
+	TableSelection.prototype.notifyCellsSelected = function () {
+		Aloha.trigger( 'aloha-table-selection-changed' );
+		//the UI feels more consisten when we remove the non-table
+		//selection when cells are selected
+		Aloha.getSelection().removeAllRanges();
+	};
+
 	/**
 	 * This method return true if all sellected cells are TH cells.
 	 *
