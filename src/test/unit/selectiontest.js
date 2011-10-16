@@ -254,7 +254,7 @@ function( TestUtils ) {
 			[ '<b>foo{</b><b>bar]</b>', '<b>foo</b><b>[bar]</b>' ],
 			[ '<b><u>foo</u>{</b>bar]', '<b><u>foo</u></b>[bar]' ],
 			[ '<b>foo<u>{</u></b>bar]', '<b>foo<u></u></b>[bar]' ],
-																	//[ '<b>foo{<u></u></b>bar]', '<b>foo<u></u></b>[bar]' ],
+																	[ '<b>foo{<u></u></b>bar]', '<b>foo<u></u></b>[bar]' ],
 			// ... With block node between start container and right text node
 			[ '<b>foo{</b><p></p>bar]', '<b>foo[</b><p></p>bar]' ],
 			[ '<b>foo{</b><p>bar]</p>', '<b>foo[</b><p>bar]</p>' ],

@@ -2819,7 +2819,7 @@ function getStartPosition ( container, offset ) {
 		return getStartPositionFromEndOfInlineNode( container );
 	}
 	
-	return getStartPositionFromFrontOfInlineNode( container, offset );
+	return getStartPositionFromFrontOfInlineNode( container.childNodes[ offset ] );
 };
 
 function getEndPosition ( container, offset ) {
@@ -2924,19 +2924,15 @@ function getEditingHost ( node ) {
  * close as possible to that intercepting block node.
  *
  * @param {DOMElement} node
- * @param {Number} offset - integer
  * @return {Object} position object with properties node and offset
  */
-function getStartPositionFromFrontOfInlineNode ( node, offset ) {
-	var origNode,
-		leftTextNode,
+function getStartPositionFromFrontOfInlineNode ( node ) {
+	var leftTextNode,
 	    rightTextNode;
 	
-	origNode = node.childNodes[ offset ];
-	
-	if ( isTextNode( origNode ) ) {
+	if ( isTextNode( node ) ) {
 		return {
-			node   : origNode,
+			node   : node,
 			offset : 0
 		};
 	}
@@ -2944,22 +2940,22 @@ function getStartPositionFromFrontOfInlineNode ( node, offset ) {
 	// In order to determine where we will reposition the start position, we
 	// will need to know whether or not we have a text node to the left of our
 	// start position
-	leftTextNode = getNearestLeftNode( origNode, isTextNode );
+	leftTextNode = getNearestLeftNode( node, isTextNode );
 	
 	// Try to find a text node to the right of the start position...
 	// First look for the nearest text node inside startNode.
 	// Satisfies:
 	// [ '{<b>foo]</b>', '<b>[foo]</b>' ],
-	rightTextNode = getLeftmostScion( origNode, isTextNode );
+	rightTextNode = getLeftmostScion( node, isTextNode );
 	
-	// If there are no text nodes inside origNode, look for the nearest text
-	// node outside of, and to the right of origNode.
+	// If there are no text nodes inside node, look for the nearest text
+	// node outside of, and to the right of node.
 	// Satisfies:
 	// [ 'foo{<b></b><b>bar]</b>', 'foo<b></b><b>[bar]</b>' ],
 	// [ 'foo{<b><i></i></b>bar]', 'foo<b><i></i></b>[bar]' ],
 	// [ 'foo{<b><i></i></b><b>bar]</b>', 'foo<b><i></i></b><b>[bar]</b>' ],
 	if ( !rightTextNode ) {
-		rightTextNode = getNearestRightNode( origNode, isTextNode );
+		rightTextNode = getNearestRightNode( node, isTextNode );
 	}
 	
 	if ( !leftTextNode && rightTextNode ) {
@@ -3000,9 +2996,19 @@ function getStartPositionFromFrontOfInlineNode ( node, offset ) {
 	// sure that it is a block element
 	if ( ancestor && isBlockElement( ancestor.parentNode ) ) {
 		var blockNode = ancestor.parentNode;
-		var posbits = compareDocumentPosition( origNode, blockNode );
-		// 000100 => 4 => Node A precedes Node B.
-		// If origNode precedes ancestor then we have a block node between the
+		// reference:
+		//		http://www.w3.org/TR/DOM-Level-3-Core/core.html#Node3-compareDocumentPosition
+		//		Bits	Number	Meaning
+		//		------  ------  -------
+		//		000000	0		Elements are identical.
+		//		000001	1		The nodes are in different documents (or one is outside of a document).
+		//		000010	2		Node B precedes Node A.
+		//		000100	4		Node A precedes Node B.
+		//		001000	8		Node B contains Node A.
+		//		010000	16		Node A contains Node B.
+		//		100000	32		For private use by the browser.
+		var posbits = compareDocumentPosition( node, blockNode );
+		// If node precedes ancestor then we have a block node between the
 		// original start position and our text node.
 		// Because we know that we have a text node to the left of our start
 		// position, we infere that we are in a situation that will resemble
@@ -3015,8 +3021,8 @@ function getStartPositionFromFrontOfInlineNode ( node, offset ) {
 		if ( posbits & 4 ) {
 			var left = blockNode;
 			while ( left = getLeftNeighbor( left ) ) {
-				if ( !isBlockElement( left )
-						|| jQuery( left ).find( leftTextNode ).length ) {
+				if ( !isBlockElement( left ) ||
+						jQuery( left ).find( leftTextNode ).length ) {
 					left = getRightmostScion( left ) || left;
 					
 					return {
@@ -3028,10 +3034,11 @@ function getStartPositionFromFrontOfInlineNode ( node, offset ) {
 		}
 	}
 	
-	// TODO: Check that we never get here
+	// We do not have an intercepting block to the right of our start position,
+	// so use the right text node
 	return {
-		node   : node,
-		offset : offset
+		node   : rightTextNode,
+		offset : 0
 	};
 };
 
