@@ -245,7 +245,7 @@ function (Aloha, $, Utils, i18n) {
 			|| -1 !== Utils.indexOfAnyBut( contour.left  , contour.left[0]   ) ) {
 			Aloha.showMessage(new Aloha.Message({
 				title : i18n.t('Table'),
-				text : i18n.t('mergeCells.notRectangular'),
+				text : i18n.t('table.mergeCells.notRectangular'),
 				type : Aloha.Message.Type.ALERT
 			}));
 			return;

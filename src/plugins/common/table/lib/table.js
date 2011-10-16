@@ -1035,12 +1035,21 @@ function (Aloha, jQuery, FloatingMenu, i18n, TableCell, TableSelection, Utils) {
 			columnsToSelect = [],
 			selectedColumnIdxs = this.selection.selectedColumnIdxs;
 		
-		
 		// sort the columns because next algorithm needs that
 		if ( position == 'left' ) {
 			selectedColumnIdxs.sort( function (a,b) { return a - b; } );
 		} else {
 			selectedColumnIdxs.sort( function (a,b) { return b - a; } );
+		}
+		
+		// refuse to insert a column unless a consecutive range has been selected
+		if ( ! Utils.isConsecutive( selectedColumnIdxs ) ) {
+			Aloha.showMessage(new Aloha.Message({
+				title : i18n.t('Table'),
+				text : i18n.t('table.addColumns.nonConsecutive'),
+				type : Aloha.Message.Type.ALERT
+			}));
+			return;
 		}
 		
 		var grid = Utils.makeGrid(rows);

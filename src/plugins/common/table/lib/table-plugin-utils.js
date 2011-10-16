@@ -313,6 +313,21 @@ function ($) {
 				}
 			}
 			return -1;
+		},
+		/**
+		 * @param array
+		 *        an array of integers
+		 * @return
+		 *        true if each item in the given array has a
+		 *        difference to its neighbor of exactly 1
+		 */
+		'isConsecutive': function ( array ) {
+			for ( var i = 1; i < array.length; i++ ) {
+				if ( 1 !== Math.abs( array[ i ] - array[ i - 1 ] ) ) {
+					return false;
+				}
+			}
+			return true;
 		}
 	};
 	return Utils;
