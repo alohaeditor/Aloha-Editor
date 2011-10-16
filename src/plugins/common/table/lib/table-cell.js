@@ -422,7 +422,7 @@ function (jQuery, Utils) {
 			// ctrl-key are NOT pressed)
 			if (KEYCODE_TAB == jqEvent.keyCode && !jqEvent.altKey && !jqEvent.shiftKey && !jqEvent.ctrlKey) {
 				// add a row after the current row (false stands for not highlighting the new row)
-				this.tableObj.addRowsAfter(false);
+				this.tableObj.addRowAfter(false, this.obj.parent().index());
 				// stop propagation because this should overwrite all other events
 				jqEvent.stopPropagation();
 				return;

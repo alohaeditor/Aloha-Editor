@@ -894,6 +894,29 @@ function (Aloha, jQuery, FloatingMenu, i18n, TableCell, TableSelection, Utils) {
 		}
 	};
 
+	function rowIndexFromSelection( position, selection ) {
+		if (0 === selection.selectedCells.length) {
+			return -1;
+		}
+
+		var newRowIndex = 0;
+		
+		// get the index where the new rows should be inserted
+		var cellOfInterest = null;
+		if ( 'before' === position ) {
+			cellOfInterest = selection.selectedCells[ 0 ];
+		} else if ( 'after' === position ) {
+			var offset = selection.selectedCells.length - 1;
+			cellOfInterest = selection.selectedCells[ offset ];
+		}
+		
+		if (cellOfInterest && cellOfInterest.nodeType == 1) {
+			newRowIndex = cellOfInterest.parentNode.rowIndex;
+		}
+
+		return newRowIndex;
+	}
+
 	/**
 	 * Wrapper function for this.addRow to add a row before the active row
 	 *
@@ -901,8 +924,8 @@ function (Aloha, jQuery, FloatingMenu, i18n, TableCell, TableSelection, Utils) {
 	 * @see Table.prototype.addRow
 	 * @return
 	 */
-	Table.prototype.addRowsBefore = function(highlightNewRows) {
-		this.addRows('before', highlightNewRows);
+	Table.prototype.addRowsBeforeSelection = function(highlightNewRows) {
+		this._addRows('before', highlightNewRows, rowIndexFromSelection( 'before', this.selection ) );
 	};
 
 	/**
@@ -912,52 +935,41 @@ function (Aloha, jQuery, FloatingMenu, i18n, TableCell, TableSelection, Utils) {
 	 * @see Table.prototype.addRow
 	 * @return
 	 */
-	Table.prototype.addRowsAfter = function(highlightNewRows) {
-		this.addRows('after', highlightNewRows);
+	Table.prototype.addRowsAfterSelection = function(highlightNewRows) {
+		this._addRows('after', highlightNewRows, rowIndexFromSelection( 'after', this.selection ) );
 	};
 
 	/**
-	 * Adds new rows to the table. If rows were selected, the new rows will be
-	 * inserted before/after the first/last selected row. If no rows are selected, a
-	 * new row will be inserted before/after the row of the currently selected cell.
-	 * As well the row-selection events have to be bound again.
+	 * Adds a row after a specified row index.
+	 *
+	 * @param highlightNewRows
+	 *        true if the newly created rows should be marked as selected, false otherwise.
+	 * @param newRowIndex
+	 *        the index of the row (tr) after which a new row should be inserted
+	 */
+	Table.prototype.addRowAfter = function (highlightNewRows, newRowIndex) {
+		this._addRows('after', highlightNewRows, newRowIndex);
+	};
+
+	/**
+	 * Adds new rows to the table.
 	 *
 	 * @param {string} position
 	 *            could be 'after' or 'before'. defines the position where the new
 	 *            rows should be inserted
 	 * @param {boolean} highlightNewRows
 	 *            flag if the newly created rows should be marked as selected
+	 * @param {int} rowIndex
+	 *            the index after or before which the rows shall be inserted
 	 * @return void
 	 */
-	Table.prototype.addRows = function(position, highlightNewRows) {
-		if (!this.tablePlugin.activeTable) {
-			return;
-		}
-
-		if (0 === this.selection.selectedCells.length) {
+	Table.prototype._addRows = function(position, highlightNewRows, newRowIndex) {
+		if ( 0 > newRowIndex || ! this.tablePlugin.activeTable ) {
 			return;
 		}
 
 		var that = this;
 		var rowsToInsert = 1;
-		var newRowIndex = 0;
-		
-		// get the index where the new rows should be inserted
-		var cellOfInterest = null;
-		switch (position) {
-		case 'before':
-			cellOfInterest = this.selection.selectedCells[0];
-			break;
-		case 'after':
-			cellOfInterest = this.selection.selectedCells[
-				this.selection.selectedCells.length - 1
-			];
-			break;
-		}
-		
-		if (cellOfInterest && cellOfInterest.nodeType == 1) {
-			newRowIndex = cellOfInterest.parentNode.rowIndex;
-		}
 
 		// save a copy of the new row index for the created row
 		var currentRowIndex = newRowIndex;

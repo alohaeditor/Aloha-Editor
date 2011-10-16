@@ -154,8 +154,7 @@ function ($, Utils, i18n) {
 	 * @return void
 	 */
 	TableSelection.prototype.unselectCells = function(){
-		var 
-		rows;
+		var rows;
 
 		if ( typeof this.table == 'undefined' || !this.table ) {
     		return;

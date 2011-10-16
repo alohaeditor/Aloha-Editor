@@ -315,7 +315,7 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 				'tooltip' : i18n.t('button.addrowbefore.tooltip'),
 				'onclick' : function () {
 					if (that.activeTable) {
-						that.activeTable.addRowsBefore(true);
+						that.activeTable.addRowsBeforeSelection(true);
 					}
 				}
 			}),
@@ -332,7 +332,7 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 				'tooltip' : i18n.t('button.addrowafter.tooltip'),
 				'onclick' : function () {
 					if (that.activeTable) {
-						that.activeTable.addRowsAfter(true);
+						that.activeTable.addRowsAfterSelection(true);
 					}
 				}
 			}),
