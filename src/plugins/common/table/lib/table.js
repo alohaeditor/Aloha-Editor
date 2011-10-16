@@ -105,7 +105,7 @@ function (Aloha, jQuery, FloatingMenu, i18n, TableCell, TableSelection, Utils) {
 		// find the dimensions of the table
 		this.numCols = this.countVirtualCols();
 
-		var rows = this.obj.find("tr");
+		var rows = this.getRows();
 		this.numRows = rows.length;
 
 		// init the cell-attribute with an empty array
@@ -725,7 +725,7 @@ function (Aloha, jQuery, FloatingMenu, i18n, TableCell, TableSelection, Utils) {
 			}
 
 			// get all rows
-			var rows = this.obj.find('tr');
+			var rows = this.getRows();
 
 			//splits all cells on the rows to be deleted
 			jQuery.each( rowIDs, function ( unused, rowId ) {
@@ -779,7 +779,7 @@ function (Aloha, jQuery, FloatingMenu, i18n, TableCell, TableSelection, Utils) {
 			colIDs = [],
 			cellToDelete = [],
 			// get all rows to iterate
-			rows = this.obj.find('tr'),
+		    rows = this.getRows(),
 			that = this,
 			changeColspan = [],
 			focusColID,
@@ -1075,7 +1075,7 @@ function (Aloha, jQuery, FloatingMenu, i18n, TableCell, TableSelection, Utils) {
 		var 
 			that = this,
 			emptyCell = jQuery('<td>'),
-			rows = this.obj.find('tr'),
+		    rows = this.getRows(),
 			cell,
 			currentColIdx,
 			columnsToSelect = [],
@@ -1220,7 +1220,7 @@ function (Aloha, jQuery, FloatingMenu, i18n, TableCell, TableSelection, Utils) {
 		
 		this.tablePlugin.columnHeader.setPressed( this.selection.isHeader() );
 		
-		var rows = this.obj.find("tr").toArray();
+		var rows = this.getRows();
 
 		// set the first class found as active item in the multisplit button
 		this.tablePlugin.columnMSButton.setActiveItem();
@@ -1282,7 +1282,7 @@ Table.prototype.selectRows = function () {
 // 
 	for (var i = 0; i < this.rowsToSelect.length; i++) {
       var rowId = this.rowsToSelect[i];
-      var rowCells = jQuery(this.obj.find('tr').get(rowId).cells).toArray();
+		var rowCells = jQuery(this.getRows()[rowId].cells).toArray();
       
       if (i == 0) {
         // set the status of the table header button to the status of the first 2 selected
@@ -1386,6 +1386,16 @@ Table.prototype.selectRows = function () {
 		var cell = new TableCell(domElement, this);
 		cell.activate();
 		return cell;
+	};
+
+	/**
+	 * @return the rows of the table as an array of DOM nodes
+	 */
+	Table.prototype.getRows = function () {
+		//W3C DOM property .rows supported by all modern browsers
+		var rows = this.obj.get( 0 ).rows;
+		//we convert the HTMLCollection to a real array for consistency
+		return Array.prototype.slice.call( rows );
 	};
 
 	return Table;

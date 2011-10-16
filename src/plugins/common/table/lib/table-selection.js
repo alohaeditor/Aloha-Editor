@@ -58,7 +58,7 @@ function ($, Utils, i18n) {
 	TableSelection.prototype.selectColumns = function ( columnsToSelect ) {
 		this.unselectCells();
 
-		var rows = this.table.obj.find("tr").toArray()
+		var rows = this.table.getRows();
 		// first row is the selection row (dump it, it's not needed)
 		rows.shift();
 		
@@ -90,7 +90,7 @@ function ($, Utils, i18n) {
 	TableSelection.prototype.selectRows = function ( rowsToSelect ) {
 		this.unselectCells();
 
-		var rows = this.table.obj.find("tr").toArray();
+		var rows = this.table.getRows();
 		
  	    rowsToSelect.sort( function ( a, b ) { return a - b; } );
 
@@ -151,7 +151,7 @@ function ($, Utils, i18n) {
 
 		if (this.selectedCells.length > 0) {
 			
-			rows = this.table.obj.find("tr").toArray();
+			rows = this.table.getRows();
 			
 			for (var i = 0; i < rows.length; i++) {
 			    for ( var j = 1; j < rows[i].cells.length; j++ ) {  
@@ -196,7 +196,7 @@ function ($, Utils, i18n) {
 			return;
 		}
 
-		var grid = Utils.makeGrid( this.table.obj.find("tr") );
+		var grid = Utils.makeGrid( this.table.getRows() );
 		var isSelected = function ( cellInfo ) {
 			return -1 != $.inArray( cellInfo.cell, selectedCells );
 		};
