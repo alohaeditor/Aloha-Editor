@@ -237,8 +237,8 @@ function ($, Utils, i18n) {
 		var firstCell = $(this.selectedCells.shift());
 
 		//set the initial rowspan and colspan
-		var rowspan = parseInt(firstCell.attr('rowspan')) || 1;
-		var colspan = parseInt(firstCell.attr('colspan')) || 1;;
+		var rowspan = Utils.rowspan( firstCell );
+		var colspan = Utils.colspan( firstCell );
 
 		var firstRowId = prevRowId = firstCell.parent().prevAll('tr').length;
 		var firstColId = firstCell.parent().prevAll('tr').length;
@@ -253,12 +253,12 @@ function ($, Utils, i18n) {
 			//if current cell is in the same row as the first cell,
 			//increase colspan
 			if(curRowId == firstRowId){
-				colspan += (parseInt(curCell.attr('colspan')) || 1); 
+				colspan += Utils.colspan( curCell );
 			}
 			//if they are in different rows increase the rowspan
 			else {
 				if(curRowId != prevRowId)
-					rowspan += (parseInt(curCell.attr('rowspan')) || 1);      
+					rowspan += Utils.rowspan( curCell );
 			}
 
 			//set the current row id to previous row id
