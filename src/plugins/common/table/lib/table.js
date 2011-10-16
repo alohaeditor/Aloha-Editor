@@ -1346,9 +1346,14 @@ function (Aloha, jQuery, FloatingMenu, i18n, TableCell, TableSelection, Utils) {
 	 */
 	Table.prototype.getRows = function () {
 		//W3C DOM property .rows supported by all modern browsers
-		var rows = this.obj.get( 0 ).rows;
-		//we convert the HTMLCollection to a real array for consistency
-		return Array.prototype.slice.call( rows );
+		var htmlRows = this.obj.get( 0 ).rows;
+		//converts the HTMLCollection to a real array
+		var length = htmlRows.length;
+		var rows = new Array( length );
+		while ( length-- ) {
+			rows[ length ] = htmlRows[ length ];
+		}
+		return rows;
 	};
 
 	return Table;
