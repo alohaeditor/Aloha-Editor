@@ -7,7 +7,7 @@
 
 define(
 ['aloha', 'aloha/jquery', 'aloha/plugin', 'aloha/pluginmanager', 'aloha/floatingmenu', 'i18n!table/nls/i18n', 'i18n!aloha/nls/i18n', 'table/table-create-layer', 'table/table', 'table/table-plugin-utils', 'css!table/css/table.css'],
-function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, CreateLayer, TableModuleConstructor, Utils) {
+function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, CreateLayer, Table, Utils) {
 
 	var
 		GENTICS = window.GENTICS;
@@ -16,8 +16,6 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 	 * Register the TablePlugin as Aloha.Plugin
 	 */
 	var TablePlugin = new Plugin('table');
-
-	var Table = TableModuleConstructor(TablePlugin);
 
 	/**
 	 * The Create-Layer Object of the TablePlugin
@@ -122,7 +120,7 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 				// only convert tables which are editable
 				if (that.isEditableTable(this)) {
 					// instantiate a new table-object
-					var table = new Table(this);
+					var table = new Table(this, TablePlugin);
 
 					table.parentEditable = editable;
 
@@ -196,7 +194,7 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 				// only convert tables which are editable
 				if (that.isEditableTable(this)) {
 					// instantiate a new table-object
-					var table = new Table(this);
+					var table = new Table(this, TablePlugin);
 
 					table.parentEditable = props.editable;
 
@@ -1047,7 +1045,7 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 			// if the table is inserted
 			var tableReloadedFromDOM = document.getElementById(tableId);
 
-			var tableObj = new Table(tableReloadedFromDOM);
+			var tableObj = new Table(tableReloadedFromDOM, TablePlugin);
 
 			tableObj.parentEditable = Aloha.activeEditable;
 
@@ -1201,7 +1199,7 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 		// find all table tags
 		obj.find('table').each(function() {
 			// instantiate a new table-object
-			var table = new Table(this);
+			var table = new Table(this, TablePlugin);
 			// deactivate the table
 			table.deactivate();
 		});

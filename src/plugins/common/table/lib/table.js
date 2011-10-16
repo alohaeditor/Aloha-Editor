@@ -1,7 +1,6 @@
 define(
 ['aloha', 'aloha/jquery', 'aloha/floatingmenu', 'i18n!table/nls/i18n', 'table/table-cell', 'table/table-selection', 'table/table-plugin-utils'],
 function (Aloha, jQuery, FloatingMenu, i18n, TableCell, TableSelection, Utils) {
-return function (TablePlugin) {
 	var
 		GENTICS = window.GENTICS;
 
@@ -12,7 +11,7 @@ return function (TablePlugin) {
 	 *            the dom-representation of the held table
 	 * @return void
 	 */
-	var Table = function(table) {
+	var Table = function(table, tablePlugin) {
 		// set the table attribut "obj" as a jquery represenation of the dom-table
 		this.obj = jQuery(table);
 
@@ -20,8 +19,8 @@ return function (TablePlugin) {
 			this.obj.attr('id', GENTICS.Utils.guid());
 		}
 
+		this.tablePlugin = tablePlugin;
 		this.selection = new TableSelection(this);
-
 		this.refresh();
 	};
 
@@ -137,7 +136,7 @@ return function (TablePlugin) {
 	 * @return the value associated with the property
 	 */
 	Table.prototype.get = function(property) {
-		return TablePlugin.get(property);
+		return this.tablePlugin.get(property);
 	};
 
 	/**
@@ -151,7 +150,7 @@ return function (TablePlugin) {
 	 * @return void
 	 */
 	Table.prototype.set = function(key, value) {
-		TablePlugin.set(key, value);
+		this.tablePlugin.set(key, value);
 	};
 
 	/**
@@ -275,7 +274,7 @@ return function (TablePlugin) {
 	Table.prototype.makeCaptionEditable = function() {
 		var caption = this.obj.find('caption').eq(0);
 		if (caption) {
-			TablePlugin.makeCaptionEditable(caption);
+			this.tablePlugin.makeCaptionEditable(caption);
 		}
 	};
 
@@ -527,7 +526,7 @@ return function (TablePlugin) {
               // TODO: I'm adding a try catch clause here for the time being, but a proper solution, which addresses the problem of how to handle invisible fields ought to be persued.
 
               try {
-                TablePlugin.summary.focus();
+                that.tablePlugin.summary.focus();
                 e.stopPropagation();
                 e.preventDefault();
               } catch (e) {}
@@ -619,7 +618,7 @@ return function (TablePlugin) {
 
 		// this does actually the column-selection.
 		// it reads the columns which should be selected from "columnsToSelect"
-		TablePlugin.activeTable.selectColumns( columnsToSelect );
+		this.tablePlugin.activeTable.selectColumns( columnsToSelect );
 
 		// prevent browser from selecting the table
 		jqEvent.preventDefault();
@@ -831,7 +830,7 @@ return function (TablePlugin) {
 					}
 					if ( 0 === cellInfo.spannedX ) {
 						if (1 < cellInfo.colspan) {
-							var nCell = TablePlugin.activeTable.newActiveCell().obj;
+							var nCell = this.tablePlugin.activeTable.newActiveCell().obj;
 							jQuery( cellInfo.cell ).after(nCell);
 							nCell.attr('rowspan', cellInfo.rowspan);
 							nCell.attr('colspan', cellInfo.colspan - 1);
@@ -867,8 +866,8 @@ return function (TablePlugin) {
 	 */
 	Table.prototype.deleteTable = function() {
 		var deleteIndex = -1;
-		for (var i = 0; i < TablePlugin.TableRegistry.length; i++){
-			if (TablePlugin.TableRegistry[i].obj.attr('id') == this.obj.attr('id')) {
+		for (var i = 0; i < this.tablePlugin.TableRegistry.length; i++){
+			if (this.tablePlugin.TableRegistry[i].obj.attr('id') == this.obj.attr('id')) {
 				deleteIndex = i;
 				break;
 			}
@@ -878,7 +877,7 @@ return function (TablePlugin) {
 			this.deactivate();
 
 			this.selection.selectionType = undefined;
-			TablePlugin.TableRegistry.splice(i, 1);
+			this.tablePlugin.TableRegistry.splice(i, 1);
 
 			// we will set the cursor right before the removed table
 			var newRange = Aloha.Selection.rangeObject;
@@ -931,7 +930,7 @@ return function (TablePlugin) {
 	 * @return void
 	 */
 	Table.prototype.addRows = function(position, highlightNewRows) {
-		if (!TablePlugin.activeTable) {
+		if (!this.tablePlugin.activeTable) {
 			return;
 		}
 
@@ -986,7 +985,7 @@ return function (TablePlugin) {
 			var selectColOffset = 1;
 			if ( newRowIndex >= grid.length ) {
 				for (var i = selectColOffset; i < grid[0].length; i++) {
-					insertionRow.append(TablePlugin.activeTable.newActiveCell().obj);
+					insertionRow.append(this.tablePlugin.activeTable.newActiveCell().obj);
 				}
 			} else {
 				for (var i = selectColOffset; i < grid[newRowIndex].length; ) {
@@ -994,7 +993,7 @@ return function (TablePlugin) {
 					if (Utils.containsDomCell(cellInfo)) {
 						var colspan = cellInfo.colspan;
 						while (colspan--) {
-							insertionRow.append(TablePlugin.activeTable.newActiveCell().obj);
+							insertionRow.append(this.tablePlugin.activeTable.newActiveCell().obj);
 						}
 					} else {
 						jQuery( cellInfo.cell ).attr('rowspan', cellInfo.rowspan + 1);
@@ -1071,7 +1070,7 @@ return function (TablePlugin) {
 			selectedColumnIdxs = this.selection.selectedColumnIdxs;
 		
 		
-		if ( typeof TablePlugin.activeTable != 'undefined' ) {
+		if ( typeof this.tablePlugin.activeTable != 'undefined' ) {
 
 			// sort the columns because next algorithm needs that
 			if ( position == 'left' ) {
@@ -1120,7 +1119,7 @@ return function (TablePlugin) {
 
 					} else {
 						// activate the cell for this table
-						cellObj = TablePlugin.activeTable.newActiveCell( cell.get(0) );
+						cellObj = this.tablePlugin.activeTable.newActiveCell( cell.get(0) );
 						cell = cellObj.obj;
 					}
 
@@ -1156,7 +1155,7 @@ return function (TablePlugin) {
 				this.parentEditable.obj.focus();
 			}
 
-			TablePlugin.setFocusedTable(this);
+			this.tablePlugin.setFocusedTable(this);
 
 			// select first cell
 			// TODO put cursor in first cell without selecting
@@ -1179,7 +1178,7 @@ return function (TablePlugin) {
 	 */
 	Table.prototype.focusOut = function() {
 		if (this.hasFocus) {
-			TablePlugin.setFocusedTable(undefined);
+			this.tablePlugin.setFocusedTable(undefined);
 			this.selection.selectionType = undefined;
 		}
 	};
@@ -1201,22 +1200,22 @@ return function (TablePlugin) {
 
 		// ====== BEGIN UI specific code - should be handled on event aloha-table-selection-changed by UI =======
 		// activate all column formatting button
-		for ( var i = 0; i < TablePlugin.columnMSItems.length; i++ ) {
-			TablePlugin.columnMSButton.extButton.showItem(TablePlugin.columnMSItems[i].name);
+		for ( var i = 0; i < this.tablePlugin.columnMSItems.length; i++ ) {
+			this.tablePlugin.columnMSButton.extButton.showItem(this.tablePlugin.columnMSItems[i].name);
 		}
 		
-		FloatingMenu.setScope(TablePlugin.name + '.column');
+		FloatingMenu.setScope(this.tablePlugin.name + '.column');
 		
-		TablePlugin.columnHeader.setPressed( this.selection.isHeader() );
+		this.tablePlugin.columnHeader.setPressed( this.selection.isHeader() );
 		
 		var rows = this.obj.find("tr").toArray();
 
 		// set the first class found as active item in the multisplit button
-		TablePlugin.columnMSButton.setActiveItem();
-		for (var k = 0; k < TablePlugin.columnConfig.length; k++) {
-			if ( jQuery(rows[0].cells[0]).hasClass(TablePlugin.columnConfig[k].cssClass) ) {
-				TablePlugin.columnMSButton.setActiveItem(TablePlugin.columnConfig[k].name);
-				k = TablePlugin.columnConfig.length;
+		this.tablePlugin.columnMSButton.setActiveItem();
+		for (var k = 0; k < this.tablePlugin.columnConfig.length; k++) {
+			if ( jQuery(rows[0].cells[0]).hasClass(this.tablePlugin.columnConfig[k].cssClass) ) {
+				this.tablePlugin.columnMSButton.setActiveItem(this.tablePlugin.columnConfig[k].name);
+				k = this.tablePlugin.columnConfig.length;
 			}
 		}
 
@@ -1247,8 +1246,8 @@ Table.prototype.selectRows = function () {
 //    TableSelection.unselectCells();
     
     // activate all row formatting button
-    for (var i = 0; i < TablePlugin.rowMSItems.length; i++ ) {
-      TablePlugin.rowMSButton.extButton.showItem(TablePlugin.rowMSItems[i].name);
+    for (var i = 0; i < this.tablePlugin.rowMSItems.length; i++ ) {
+      this.tablePlugin.rowMSButton.extButton.showItem(this.tablePlugin.rowMSItems[i].name);
     }
     
 //    this.rowsToSelect.sort(function (a,b) {return a - b;});
@@ -1284,11 +1283,11 @@ Table.prototype.selectRows = function () {
 
         // set the first class found as active item in the multisplit button
         for (var j = 0; j < rowCells.length; j++) {
-          TablePlugin.rowMSButton.setActiveItem();
-          for ( var k = 0; k < TablePlugin.rowConfig.length; k++) {
-            if (jQuery(rowCells[j]).hasClass(TablePlugin.rowConfig[k].cssClass) ) {
-              TablePlugin.rowMSButton.setActiveItem(TablePlugin.rowConfig[k].name);
-              k = TablePlugin.rowConfig.length;
+          this.tablePlugin.rowMSButton.setActiveItem();
+          for ( var k = 0; k < this.tablePlugin.rowConfig.length; k++) {
+            if (jQuery(rowCells[j]).hasClass(this.tablePlugin.rowConfig[k].cssClass) ) {
+              this.tablePlugin.rowMSButton.setActiveItem(this.tablePlugin.rowConfig[k].name);
+              k = this.tablePlugin.rowConfig.length;
             }
           }
         }
@@ -1303,10 +1302,10 @@ Table.prototype.selectRows = function () {
     }
     
 //    TableSelection.selectionType = 'row';
-    FloatingMenu.setScope(TablePlugin.name + '.row');
+    FloatingMenu.setScope(this.tablePlugin.name + '.row');
     
     this.selection.selectRows( this.rowsToSelect );
-	TablePlugin.columnHeader.setPressed( this.selection.isHeader() );
+	this.tablePlugin.columnHeader.setPressed( this.selection.isHeader() );
 
     // blur all editables within the table
     this.obj.find('div.aloha-ui-table-cell-editable').blur();
@@ -1378,5 +1377,4 @@ Table.prototype.selectRows = function () {
 	};
 
 	return Table;
-};
 });
