@@ -1193,6 +1193,11 @@ function (Aloha, jQuery, FloatingMenu, i18n, TableCell, TableSelection, Utils) {
 		this.selection.selectColumns( columnsToSelect );
 
 		this.selection.notifyCellsSelected();
+		// undo the cursor-selection when some cells were selected
+		// TODO: the same as the TODO in selectRows: when a column is
+		// selected and afterwards another column is selected the
+		// browser window scrolls to the top of the page.
+		//Aloha.getSelection().removeAllRanges();
 	};
 
 	/**
@@ -1274,6 +1279,11 @@ function (Aloha, jQuery, FloatingMenu, i18n, TableCell, TableSelection, Utils) {
 		this.obj.find('div.aloha-ui-table-cell-editable').blur();
 
 		this.selection.notifyCellsSelected();
+		// undo the cursor-selection when some cells were selected
+		// TODO this code doesn't work on IE: whenever a row is already
+		// selected, and another row is selected, the browser window
+		// scrolls to the top of the page.
+		//Aloha.getSelection().removeAllRanges();
 	};
 
 	/**
