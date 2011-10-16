@@ -108,6 +108,17 @@ function (Aloha, $, Utils, i18n) {
 		
 	    this.selectionType = 'row';
 	};
+
+	TableSelection.prototype.selectAll = function () {
+		var rowIndices = $.map( this.table.getRows(), function ( item, i ) {
+			return i;
+		});
+
+		//getRows() returns all rows, even the header row which we must not select
+		rowIndices.shift();
+
+		this.selectRows( rowIndices );
+	};
 	
 	/**
 	 * To be called when cells of the table were selected

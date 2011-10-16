@@ -510,6 +510,7 @@ function (Aloha, jQuery, FloatingMenu, i18n, TableCell, TableSelection, Utils) {
 				var clickHandler = function (e) {
 					// select the Table 
 					that.focus();
+					that.selection.selectAll();
 
 					FloatingMenu.userActivatedTab = i18n.t('floatingmenu.tab.table');
 					FloatingMenu.doLayout();
