@@ -248,7 +248,7 @@ function ($) {
 		},
 		/**
 		 * Given a two-dimensional array, will determine the smallest
-		 * possible contour, that contains all items for which
+		 * possible contour that contains all items for which
 		 * hasCountour returns true.
 		 *
 		 * @param grid
@@ -262,10 +262,10 @@ function ($) {
 		 *        Returns a boolean value indicating whether the item is
 		 *        considered to have a contour.
 		 * @return
-		 *        An set of arrays that indicate a contour
+		 *        A set of arrays that indicate a contour
 		 *        top:    an array of the smallest vertical offsets
 		 *        right:  an array of the greatest horizontal offsets
-		 *        bottom: an array of the gratest vertical offsets
+		 *        bottom: an array of the greatest vertical offsets
 		 *        left:   an array of the smallest horizontal offsets
 		 */
 		'makeContour': function ( grid, hasContour ) {
