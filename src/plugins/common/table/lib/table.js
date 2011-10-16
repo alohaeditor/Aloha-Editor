@@ -1251,9 +1251,6 @@ Table.prototype.selectRows = function () {
 //	// get the class which selected cells should have
 //    var selectClass = this.get('classCellSelected');
 //
-//    //deactivate keepCellsSelected flag
-//    TableSelection.keepCellsSelected = false;
-//
 //    // unselect selected cells
 //    TableSelection.unselectCells();
     

@@ -163,7 +163,6 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 					} else {
 						//reset cell selection flags
 						that.activeTable.selection.cellSelectionMode = false; 
-						that.activeTable.selection.keepCellsSelected = false;
 						that.activeTable.selection.baseCellPosition = null;
 						that.activeTable.selection.lastSelectionRange = null; 
 						

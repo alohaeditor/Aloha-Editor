@@ -36,11 +36,6 @@ function ($, Utils, i18n) {
 	TableSelection.prototype.cellSelectionMode = false;
 
 	/**
-	 * Tells whether to keep the cells selected 
-	 */
-	TableSelection.prototype.keepCellsSelected = false;
-	
-	/**
 	 * Gives the position of the base cell of a selection - [row, column]
 	 */
 	TableSelection.prototype.baseCellPosition = null;
@@ -145,7 +140,7 @@ function ($, Utils, i18n) {
 		var rows;
 
 		//don't unselect cells if cellSelectionMode is active
-		if ( this.cellSelectionMode || this.keepCellsSelected ) {
+		if ( this.cellSelectionMode ) {
     		return;
 		}
 
@@ -283,7 +278,6 @@ function ($, Utils, i18n) {
 
 		//reset flags
 		this.cellSelectionMode = false; 
-		this.keepCellsSelected = false;
 		this.baseCellPosition = null;
 		this.lastSelectionRange = null; 
 		this.selectionType = 'cell';
@@ -309,7 +303,6 @@ function ($, Utils, i18n) {
 
 			//reset flags
 			this.cellSelectionMode = false; 
-			this.keepCellsSelected = false;
 			this.baseCellPosition = null;
 			this.lastSelectionRange = null; 
 			this.selectionType = 'cell';

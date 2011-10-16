@@ -235,9 +235,6 @@ function (jQuery, Utils) {
 	Cell.prototype._startCellSelection = function(){
 		if(!this.tableObj.selection.cellSelectionMode){
 
-			//deactivate keepCellsSelected flag
-			this.tableObj.selection.keepCellsSelected = false;
-
 			//unselect currently selected cells
 			this.tableObj.selection.unselectCells();
 
@@ -260,7 +257,6 @@ function (jQuery, Utils) {
 	Cell.prototype._endCellSelection = function(){
 		if(this.tableObj.selection.cellSelectionMode){
 			this.tableObj.selection.cellSelectionMode = false; 
-			this.tableObj.selection.keepCellsSelected = true;
 			this.tableObj.selection.baseCellPosition = null;
 			this.tableObj.selection.lastSelectionRange = null; 
 
