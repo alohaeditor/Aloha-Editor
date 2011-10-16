@@ -618,7 +618,7 @@ function (Aloha, jQuery, FloatingMenu, i18n, TableCell, TableSelection, Utils) {
 
 		// this does actually the column-selection.
 		// it reads the columns which should be selected from "columnsToSelect"
-		this.tablePlugin.activeTable.selectColumns( columnsToSelect );
+		this.selectColumns( columnsToSelect );
 
 		// prevent browser from selecting the table
 		jqEvent.preventDefault();
@@ -830,7 +830,7 @@ function (Aloha, jQuery, FloatingMenu, i18n, TableCell, TableSelection, Utils) {
 					}
 					if ( 0 === cellInfo.spannedX ) {
 						if (1 < cellInfo.colspan) {
-							var nCell = this.tablePlugin.activeTable.newActiveCell().obj;
+							var nCell = this.newActiveCell().obj;
 							jQuery( cellInfo.cell ).after(nCell);
 							nCell.attr('rowspan', cellInfo.rowspan);
 							nCell.attr('colspan', cellInfo.colspan - 1);
@@ -950,9 +950,6 @@ function (Aloha, jQuery, FloatingMenu, i18n, TableCell, TableSelection, Utils) {
 	 *        the index at which the new row shall be inserted
 	 */
 	Table.prototype.addRow = function(newRowIndex) {
-		if ( ! this.tablePlugin.activeTable ) {
-			return;
-		}
 
 		var that = this;
 		var rowsToInsert = 1;
@@ -972,7 +969,7 @@ function (Aloha, jQuery, FloatingMenu, i18n, TableCell, TableSelection, Utils) {
 			var selectColOffset = 1;
 			if ( newRowIndex >= grid.length ) {
 				for (var i = selectColOffset; i < grid[0].length; i++) {
-					insertionRow.append(this.tablePlugin.activeTable.newActiveCell().obj);
+					insertionRow.append(this.newActiveCell().obj);
 				}
 			} else {
 				for (var i = selectColOffset; i < grid[newRowIndex].length; ) {
@@ -980,7 +977,7 @@ function (Aloha, jQuery, FloatingMenu, i18n, TableCell, TableSelection, Utils) {
 					if (Utils.containsDomCell(cellInfo)) {
 						var colspan = cellInfo.colspan;
 						while (colspan--) {
-							insertionRow.append(this.tablePlugin.activeTable.newActiveCell().obj);
+							insertionRow.append(this.newActiveCell().obj);
 						}
 					} else {
 						jQuery( cellInfo.cell ).attr('rowspan', cellInfo.rowspan + 1);
@@ -1042,78 +1039,75 @@ function (Aloha, jQuery, FloatingMenu, i18n, TableCell, TableSelection, Utils) {
 			selectedColumnIdxs = this.selection.selectedColumnIdxs;
 		
 		
-		if ( typeof this.tablePlugin.activeTable != 'undefined' ) {
-
-			// sort the columns because next algorithm needs that
-			if ( position == 'left' ) {
-				selectedColumnIdxs.sort( function (a,b) { return a - b; } );
-			} else {
-				selectedColumnIdxs.sort( function (a,b) { return b - a; } );
-			}
-			
-			var grid = Utils.makeGrid(rows);
-			for (var i = 0; i < rows.length; i++) {
-				for (var j = 0; j < selectedColumnIdxs.length; j++) {
-					
-					// prepare the cell to be inserted
-					cell = emptyCell.clone();
-					cell.html('\u00a0');
-
-					currentColIdx = selectedColumnIdxs[j];
-
-					// on first row correct the position of the selected columns
-					if ( i == 0 ) {
-						switch ( position ) {
-						case 'left':
-							for ( var c = 0; c < columnsToSelect.length; ++c ) {
-								// if we insert before an already processed 
-								// column move the selection 1 position right
-								if ( columnsToSelect[c] >= currentColIdx ) {
-									columnsToSelect[c]++;
-								}
-							}
-							columnsToSelect.push( currentColIdx + j + 1 );
-							break;
-						case 'right':
-							for ( var c = 0; c < columnsToSelect.length; ++c ) {
-								// if we insert after an already processed 
-								// column move the selection 1 position right
-								if ( columnsToSelect[c] >= currentColIdx ) {
-									columnsToSelect[c]++;
-								}
-							}
-							columnsToSelect.push( currentColIdx );
-							break;
-						}
-
-						// this is the first row, so make a column-selection cell
-						this.attachColumnSelectEventsToCell( cell );
-
-					} else {
-						// activate the cell for this table
-						cellObj = this.tablePlugin.activeTable.newActiveCell( cell.get(0) );
-						cell = cellObj.obj;
-					}
-
-					
-					var leftCell = Utils.leftDomCell( grid, i, currentColIdx );
-					if ( null == leftCell ) {
-						jQuery( rows[i] ).prepend( cell );
-					} else {
-						if ( 'left' === position ) {
-							jQuery( leftCell ).before( cell );
-						} else {//right
-							jQuery( leftCell ).after( cell );
-						}
-					}
-
-					this.numCols++;
-				}
-			}
-			
-			this.selection.unselectCells();
-			this.selectColumns( columnsToSelect );
+		// sort the columns because next algorithm needs that
+		if ( position == 'left' ) {
+			selectedColumnIdxs.sort( function (a,b) { return a - b; } );
+		} else {
+			selectedColumnIdxs.sort( function (a,b) { return b - a; } );
 		}
+		
+		var grid = Utils.makeGrid(rows);
+		for (var i = 0; i < rows.length; i++) {
+			for (var j = 0; j < selectedColumnIdxs.length; j++) {
+				
+				// prepare the cell to be inserted
+				cell = emptyCell.clone();
+				cell.html('\u00a0');
+
+				currentColIdx = selectedColumnIdxs[j];
+
+				// on first row correct the position of the selected columns
+				if ( i == 0 ) {
+					switch ( position ) {
+					case 'left':
+						for ( var c = 0; c < columnsToSelect.length; ++c ) {
+							// if we insert before an already processed 
+							// column move the selection 1 position right
+							if ( columnsToSelect[c] >= currentColIdx ) {
+								columnsToSelect[c]++;
+							}
+						}
+						columnsToSelect.push( currentColIdx + j + 1 );
+						break;
+					case 'right':
+						for ( var c = 0; c < columnsToSelect.length; ++c ) {
+							// if we insert after an already processed 
+							// column move the selection 1 position right
+							if ( columnsToSelect[c] >= currentColIdx ) {
+								columnsToSelect[c]++;
+							}
+						}
+						columnsToSelect.push( currentColIdx );
+						break;
+					}
+
+					// this is the first row, so make a column-selection cell
+					this.attachColumnSelectEventsToCell( cell );
+
+				} else {
+					// activate the cell for this table
+					cellObj = this.newActiveCell( cell.get(0) );
+					cell = cellObj.obj;
+				}
+
+				
+				var leftCell = Utils.leftDomCell( grid, i, currentColIdx );
+				if ( null == leftCell ) {
+					jQuery( rows[i] ).prepend( cell );
+				} else {
+					if ( 'left' === position ) {
+						jQuery( leftCell ).before( cell );
+					} else {//right
+						jQuery( leftCell ).after( cell );
+					}
+				}
+
+				this.numCols++;
+			}
+		}
+		
+		this.selection.unselectCells();
+		this.selectColumns( columnsToSelect );
 	};
 
 	/**
