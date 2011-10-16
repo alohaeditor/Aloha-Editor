@@ -117,7 +117,11 @@ function (Aloha, $, Utils, i18n) {
 		Aloha.trigger( 'aloha-table-selection-changed' );
 		//the UI feels more consisten when we remove the non-table
 		//selection when cells are selected
-		Aloha.getSelection().removeAllRanges();
+		//TODO this code doesn't work right in IE as it causes the table
+		//  scope of the floating menu to be lost. Maybe this can be
+		//  handled by testing for an empty selection in the
+		//  aloha-selection-changed event.
+		//Aloha.getSelection().removeAllRanges();
 	};
 
 	/**

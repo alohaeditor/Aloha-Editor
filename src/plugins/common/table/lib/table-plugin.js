@@ -137,6 +137,10 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 		this.initTableButtons();
 
 		Aloha.bind('aloha-selection-changed', function (event, rangeObject) {
+			// this case probably occurs when the selection is empty?
+			if ( null == rangeObject.startContainer ) {
+				return;
+			}
 
 			if (Aloha.activeEditable) {
 				// get Plugin configuration
@@ -158,8 +162,6 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 					if ( table ) {
 						// set the scope if either columns or rows are selected
 						FloatingMenu.setScope(that.name + '.' + that.activeTable.selection.selectionType);
-
-						that.activeTable.selection.unselectCells();
 					} else {
 						//reset cell selection flags
 						that.activeTable.selection.cellSelectionMode = false; 
@@ -1071,6 +1073,12 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 
 	TablePlugin.setFocusedTable = function(focusTable) {
 		var that = this;
+
+		// clicking outside the table unselects the cells of the table
+		if ( null == focusTable && null != this.activeTable ) {
+			this.activeTable.selection.unselectCells();
+		}
+
 		for (var i = 0; i < TablePlugin.TableRegistry.length; i++) {
 			TablePlugin.TableRegistry[i].hasFocus = false;
 		}
