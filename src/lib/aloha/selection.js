@@ -585,7 +585,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 				Aloha.Log.debug(this, 'tag comparison for <' + domobj.tagName.toLowerCase() + '> failed because one element has classes and the other has not');
 				return false;
 			}
-			if (classes && classes2 && classes.length != classes.length) {
+			if (classes && classes2 && classes.length !== classes2.length) {
 				Aloha.Log.debug(this, 'tag comparison for <' + domobj.tagName.toLowerCase() + '> failed because of a different amount of classes');
 				return false;
 			}
@@ -2381,7 +2381,7 @@ var phrasingElementsLookupTable = {
 	'VAR'      : true,
 	'VIDEO'    : true,
 	'WBR'      : true
-}
+};
 	
 var voidElementsLookupTable = {
 	'AREA'    : true,
