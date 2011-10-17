@@ -2643,7 +2643,7 @@ function getRightmostScion ( node, predicate ) {
 	
 	// scion = getNearestLeftNode( scion );
 	scion = getLeftNeighbor( scion );
-	if ( scion ) {
+	if ( scion ) { debugger;
 		var grandScion = getRightmostScion( scion, predicate );
 		
 		if ( grandScion ) {
@@ -2684,7 +2684,7 @@ function getNearestLeftNode ( node, predicate ) {
 	
 	// ... then find the very right most container of this left neighbor
 	
-	var scion = getRightmostScion( node );
+	var scion = getRightmostScion( node, predicate );
 	
 	if ( scion ) {
 		if ( typeof predicate !== 'function' || predicate( scion ) ) {
@@ -2968,7 +2968,7 @@ function getStartPositionFromFrontOfInlineNode ( node ) {
 	// block nodes
 	var rightNode = node;
 	
-	var succeedingBlockNode = false;
+	var succeedingBlockNode;
 	
 	while ( true ) {
 		if ( rightNode.nextSibling ) {
@@ -3028,13 +3028,14 @@ function getStartPositionFromFrontOfInlineNode ( node ) {
 	
 	// We have both a left and right text node... we have to do some more work
 	// before we know where to reposition our start position
-	
-	var pos = getStartPositionBetweenSucceedingBlockNode(
-		node, leftTextNode, succeedingBlockNode
-	);
-	
-	if ( pos ) {
-		return pos;
+	if ( succeedingBlockNode ) {
+		var pos = getStartPositionBetweenSucceedingBlockNode(
+			node, leftTextNode, succeedingBlockNode
+		);
+		
+		if ( pos ) {
+			return pos;
+		}
 	}
 	
 	// We do not have an intercepting block to the right of our start position,
@@ -3157,7 +3158,7 @@ function getStartPositionFromEndOfInlineNode ( node ) {
 	// succeeding block node. We will reposition our start position to the
 	// nearest node between our start position and the intercepting block node
 	// [ 'foo<b>{</b><p>bar]</p>', 'foo<b>{</b><p>bar]</p>' ],
-	if ( leftTextNode && rightTextNode ) {
+	if ( leftTextNode && rightTextNode /* && suceedingBlockNode */ ) {
 		var pos = getStartPositionBetweenSucceedingBlockNode(
 			node, leftTextNode, succeedingBlockNode
 		);
@@ -3294,44 +3295,6 @@ function getEndPositionFromFrontOfInlineNode ( node, offset ) {
 		node   : node,
 		offset : offset
 	};
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	// Satisfies:
-	// [ '{<b></b><p></p>}', '{}<b></b><p></p>' ]
-	if ( !getNearestLeftNode( child, isTextNode ) ) {
-		return {
-			node   : getEditingHost( child ),
-			offset : 0
-		};
-	}
-	
-	debugger;
-	
-	while ( ( stop = stop.parentNode ) && !isEditingHost( stop ) ) {
-		if ( isBlockElement( stop ) &&
-				getNearestLeftNode( stop, isTextNode ) ) {
-			return {
-				node   : stop,
-				offset : 0
-			};
-		}
-	}
-	
-	return {
-		node   : node,
-		offset : offset
-	};
 };
 
 function getStartPositionFromFrontOfBlockNode ( node, offset ) {
@@ -3415,22 +3378,22 @@ function getStartPositionFromFrontOfBlockNode ( node, offset ) {
 };
 
 function getStartPositionFromEndOfBlockNode ( node , offset ) {
-	var stop;
+	var correctNode;
 	
-	stop = getRightmostScion( node );
-	if ( stop ) {
+	correctNode = getRightmostScion( node );
+	if ( correctNode ) {
 		return {
-			node   : stop,
-			offset : getNodeLength( stop )
+			node   : correctNode,
+			offset : getNodeLength( correctNode )
 		};
 	}
 	
 	// There is no child nodes inside of the container node, so contract the
 	// selection rightwards
-	stop = getNearestRightNode( node );
-	if ( stop ) {
+	correctNode = getNearestRightNode( node );
+	if ( correctNode ) {
 		return {
-			node   : stop,
+			node   : correctNode,
 			offset : 0
 		};
 	}
@@ -3454,15 +3417,15 @@ function getStartPositionFromEndOfBlockNode ( node , offset ) {
  *   [ '[foo<div><p>bar<u></u></p>}</div>', '[foo<div><p>bar]<u></u></p></div>' ]
  */
 function getEndPositionFromEndOfBlockNode ( node, offset ) {
-	var stop;
+	var endNode;
 	
 	// Satisfies
 	// [ '<p>[foo}</p>', '<p>[foo]</p>' ],
-	stop = getRightmostScion( node, isTextNode );
-	if ( stop ) {
+	endNode = getRightmostScion( node, isTextNode );
+	if ( endNode ) {
 		return {
-			node   : stop,
-			offset : getNodeLength( stop )
+			node   : endNode,
+			offset : getNodeLength( endNode )
 		};
 	}
 	
@@ -3471,11 +3434,11 @@ function getEndPositionFromEndOfBlockNode ( node, offset ) {
 	// position
 	// Satisfies:
 	// [ '[foo<p>}</p>', '[foo]<p></p>' ],
-	stop = getNearestLeftNode( node, isTextNode );
-	if ( stop ) {
+	endNode = getNearestLeftNode( node, isTextNode );
+	if ( endNode ) {
 		return {
-			node   : stop,
-			offset : getNodeLength( stop )
+			node   : endNode,
+			offset : getNodeLength( endNode )
 		};
 	}
 	
