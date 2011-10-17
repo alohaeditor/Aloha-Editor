@@ -1094,8 +1094,6 @@ function isCollapsedBlockProp(node) {
 }
 
 function setActiveRange( range ) {
-	
-	var startnode = range.commonAncestorContainer.parentNode;
 	var rangeObject = new window.GENTICS.Utils.RangeObject();
 	
 	rangeObject.startContainer = range.startContainer;
@@ -5980,6 +5978,8 @@ commands["delete"] = {
 				node.removeChild(node.childNodes[offset - 1]);
 				offset--;
 				if (isBr || isHr) {
+					range.setStart(node, offset);
+					range.setEnd(node, offset);
 					break;
 				}
 
