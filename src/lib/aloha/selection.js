@@ -1730,559 +1730,10 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		}) // SelectionRange
 
 	}); // Selection
-	
-	
-	/*
-	function getSelectionStartNode ( node ) {
-		if ( !node || isVoidNode( node ) ) {
-			return null;
-		}
-		
-		if ( isSelectionStopNode( node ) ) {
-			return node;
-		}
-		
-		if ( node.childNodes.length ) {
-			if ( isVoidNode( node.firstChild ) || isFlowNode( node.firstChild ) ) {
-				return node; // FIXME: Should be null
-			}
-			
-			return getSelectionStartNode( node.firstChild );
-		}
-		
-		if ( node.nextSibling &&
-			 !GENTICS.Utils.Dom.isEditingHost( node ) ) {
-			return getSelectionStartNode( node.nextSibling );
-		}
-		
-		return null;
-	};
-	
-	function getSelectionEndNode ( node ) {
-		if ( !node || isVoidNode( node ) ) {
-			return null;
-		}
-		
-		if ( isSelectionStopNode( node ) ) {
-			return node;
-		}
-		
-		if ( node.childNodes.length ) {
-			if ( isVoidNode( node.lastChild ) || isFlowNode( node.lastChild ) ) {
-				return null;
-			}
-			
-			return getSelectionEndNode( node.lastChild );
-		}
-		
-		if ( node.previousSibling &&
-			 !GENTICS.Utils.Dom.isEditingHost( node ) ) {
-			return getSelectionEndNode( node.previousSibling );
-		}
-		
-		return null;
-	};
-	
-	// Retrieves the nearest cousin in the DOM tree that preceeds the given
-	// node. We do this by backtracking up the tree to find the nearest element
-	// that is a sibling to the given node or one of its ancestors
-	function moveBackwards ( node ) {
-		if ( !node || isVoidNode( node ) || isFlowNode( node ) || GENTICS.Utils.Dom.isEditingHost( node ) ) {
-			return null;
-		}
-		
-		if ( node.previousSibling ) {
-			return node.previousSibling;
-		}
-			
-		if ( node.parentNode ) {
-			return moveBackwards( node.parentNode );
-		}
-		
-		return null;
-	};
-	
-	// Retrieves the nearest cousin in the DOM tree that comes after the given
-	// node. We do this by travers foward over the tree until we find a sibling
-	// of the given node or one of the given node's ancestors
-	function moveForwards ( node ) {
-		if ( !node || isVoidNode( node ) || isFlowNode( node ) ) {
-			return null;
-		}
-		
-		if ( node.nextSibling ) {
-			return node.nextSibling;
-		}
-		
-		if ( node.parentNode ) {
-			return moveForwards( node.parentNode );
-		}
-		
-		return null;
-	};
-	
-	function isSelectionStopNode ( node ) {
-		return ( //isFlowNode( node ) ||
-					node.nodeType == Node.TEXT_NODE && !isVoidNode( node ) );
-	};
-	
-	function isPositionAtNodeEnd ( node, pos ) {
-		return ( pos &&
-				 ( node.length === pos ||
-					( node.childNodes && node.childNodes.length === pos ) ) );
-	};
-	
-	var voidNodes = {
-		BR    : true,
-		HR    : true,
-		IMG   : true,
-		INPUT : true
-	};
-	
-	var flowNodes = {
-		P	: true,
-		PRE	: true,
-		DIV	: true,
-		H1	: true,
-		H2	: true,
-		H3	: true,
-		H4	: true,
-		H5	: true,
-		H6	: true
-	};
-	
-	*/
-	
-	/**
-	 * We treat all void elements the same.
-	 * Should we have any exceptions?
-	 * @param {DOMNode} node
-	 * @return {Boolean}
-	 */
-	/*
-	function isVoidNode ( node ) {
-		return node ? !!voidNodes[ node.nodeName ] : false;
-	};
-	
-	function isFlowNode ( node ) {
-		return node ? !!flowNodes[ node.nodeName ] : false;
-	};
-	*/
-	
-	/**
-	 * Normalizes the native ranges from the browser to standardizes Aloha-
-	 * Editor ranges. FYI: Aloha-Editor ranges conform, for the most part with
-	 * Webkit, and Internet Explorer ranges.
-	 *
-	 * @param {Object:Range} range
-	 * @return {Object:Range} normalized range
-	 */
-	/*
-	function correctRange ( range ) {
-		return range;
-		
-		var startContainer = range.startContainer,
-		    endContainer = range.endContainer,
-			startOffset = range.startOffset,
-		    endOffset = range.endOffset,
-			newStartContainer,
-		    newEndContainer,
-			newStartOffset = startOffset,
-			newEndOffset = endOffset;
-		
-		//getStartPos( startContainer, startOffset );
-		
-		if ( isSelectionStopNode( endContainer ) ) {
-			if ( endOffset == 0 ) {
-				//debugger;
-				newEndContainer = moveBackwards( endContainer );
-			}
-		} else if ( isVoidNode(
-			endContainer.childNodes[ endOffset ? endOffset - 1 : 0 ] ) ) {
-			if ( endOffset == 0 ) {
-				newEndContainer = getSelectionEndNode(
-					moveBackwards( endContainer )
-				);
-				newEndOffset = newEndContainer.length;
-			}
-		} else if ( isPositionAtNodeEnd ( endContainer, endOffset ) ) {
-			// The endOffset is at the end of a node on which we cannot stop
-			// at. We will therefore search for an appropriate node nested
-			// inside this node at which to stop at
-			newEndContainer = endContainer; 
-		} else if ( endContainer.children &&
-					endContainer.children.length ) {
-			//debugger;
-			newEndContainer = endContainer.children[ endOffset ];
-			if ( isFlowNode( newEndContainer ) ) {
-				newEndContainer = endContainer;
-				newEndOffset = endOffset;
-			}
-			//newEndContainer = endContainer.children[
-			//	endContainer.children.length - 1
-			//];
-		} else if ( moveBackwards( endContainer ) ) {
-			newEndContainer = moveBackwards( endContainer );
-		}
-		
-		//debugger;
-		
-		newEndContainer = getSelectionEndNode( newEndContainer );
-		
-		if ( newEndContainer ) {
-			newEndOffset = newEndContainer.length;
-		} else {
-			newEndContainer = range.endContainer;
-		}
-		
-		// rule:
-		//		IF the end position is at the start of the end container
-		//		THEN look for its previous relative node that is a phrase element
-		//		WHICH would enable us to have an end positon that is greater than zero.
-		//		IF we cannot find such a cousin node to be our new end container
-		//		THEN leave the end position where it was.
-		//
-		// ie:
-		//		[ '[foo<span>]bar</span>baz', '[foo]<span>bar</span>baz' ]
-		//		[ '{foo<span>}bar</span>baz', '[foo]<span>bar</span>baz' ]
-		//		[ 'foo{<span>}bar</span>baz', 'foo[]<span>bar</span>baz' ]
-		//		[ 'foo<span><b>{<b><b>]bar</b></b></b></span>baz', 'foo[]<span><b><b><b>bar</b></b></b></span>baz' ]
-		//		[ 'foo<i></i>{<span><b><b>}bar</b></b></span>baz', 'foo[]<i></i><span><b><b>bar</b></b></span>baz' ]
-		//		[ 'foo<i>a</i>{<span><b><b>}bar</b></b></span>baz', 'foo<i>a[]</i><span><b><b>bar</b></b></span>baz' ]
-		//		[ 'test<span>{<span><b><b>}bar</b></b></span>baz</span>', 'test[]<span><span><b><b>bar</b></b></span>baz</span>' ]
-		//
-		// nb:
-		// 		Notice that in all cases below, we cannot get a start position that is greater than zero
-		// 		and therefore we leave the end position where it was
-		//
-		//		[ '{<span><b><b>}bar</b></b></span>baz', '<span><b><b>[]bar</b></b></span>baz' ]
-		//		[ '<i></i>{<span><b><b>}bar</b></b></span>baz', '<i></i><span><b><b>[]bar</b></b></span>baz' ]
-		//		[ '<span>{<span><b><b>}bar</b></b></span>baz</span>', '<span><span><b><b>[]bar</b></b></span>baz</span>' ]
-		//
-		
-		if ( newEndOffset == 0 && !isFlowNode( newEndContainer ) ) {
-			var prev = getSelectionEndNode( moveBackwards( newEndContainer ) );
-			
-			if ( prev ) {
-				newEndContainer = prev;
-				newEndOffset = prev.length;
-			} else {
-				var next = getSelectionStartNode( newEndContainer );
-				if ( next ) {
-					newEndContainer = next;
-					newEndOffset = 0;
-				}
-			}
-			
-			// TODO: !isVoidNode && !isFlowNode
-		}
-		
-		if ( startContainer == newEndContainer ) {
-			// logic:
-			//		If the startContainer is the same as the *corrected*
-			//		endContainer (newEndContainer), then we can infere that the
-			//		corrected endContainer was the most suitable container to
-			//		place the end selection position, and it is therefore also
-			//		the nearest best container for the start position. The only
-			//		things that differ are the start and end positions.
-			//		Therefore do nothing.
-			// ie:
-			// 		Ensures that 'foo<span>bar[</span>]baz' is corrected to
-			//		'foo<span>bar[]</span>baz'
-			
-			if ( newEndOffset == 0 ) {
-				newStartContainer = getSelectionStartNode( newEndContainer );
-				if ( newStartContainer ) {
-					newEndContainer = newStartContainer;
-				}
-			}
-		} else if ( isPositionAtNodeEnd( startContainer, startOffset ) &&
-					startContainer.firstChild == newEndContainer ) {
-			range.startContainer = newEndContainer;
-			newStartOffset = newEndOffset;
-		} else if ( endOffset == 0 &&
-					//startContainer.childNodes.length &&
-					startContainer.childNodes[ startOffset ] == endContainer &&
-					moveBackwards( startContainer.childNodes[ startOffset ] ) ) {
-			// Corrects 'foo{<span>}bar</span>baz' to 'foo[]<span>bar</span>baz'
-			// by trying to find the nearest position to the original start
-			// node. We do this by jumping to the previousSibling and
-			// traversing to the end of it
-			newStartContainer = getSelectionEndNode(
-				moveBackwards( startContainer.childNodes[ startOffset ] )
-			);
-			
-			if ( newStartContainer ) {
-				range.startContainer = newStartContainer;
-				newStartOffset = newStartContainer.length;
-				newStartContainer = null; // Prevent going into getSelectionStartNode. Should we just return here?
-			}
-		} else if ( startOffset == startContainer.length &&
-					isVoidNode( startContainer.nextSibling ) ) {
-			//debugger;
-		} else if ( isPositionAtNodeEnd( startContainer, startOffset ) &&
-					moveForwards( startContainer ) ) {
-			newStartContainer = moveForwards( startContainer );
-		} else if ( startContainer.childNodes.length &&
-					!isVoidNode( startContainer.childNodes[ startOffset ] ) ) {
-			newStartContainer = startContainer.childNodes[ startOffset ];
-		}
-		
-		newStartContainer = getSelectionStartNode( newStartContainer );
-		
-		if ( newStartContainer ) {
-			newStartOffset = 0;
-		} else {
-			newStartContainer = range.startContainer;
-		}
-		
-		// rule:
-		//		The end position cannot preceed the start position.
-		//		If we detect such a case, then we collapse the selection round
-		//		the end position
-		//
-		// reference:
-		//		http://www.w3.org/TR/DOM-Level-3-Core/core.html#Node3-compareDocumentPosition
-		//		Bits	Number	Meaning
-		//		------  ------  -------
-		//		000000	0		Elements are identical.
-		//		000001	1		The nodes are in different documents (or one is outside of a document).
-		//		000010	2		Node B precedes Node A.
-		//		000100	4		Node A precedes Node B.
-		//		001000	8		Node B contains Node A.
-		//		010000	16		Node A contains Node B.
-		//		100000	32		For private use by the browser.
-		var posbits = compareDocumentPosition( newStartContainer, newEndContainer );
-		
-		if ( posbits & 2 && !( posbits & 8 ) ) {
-			range.startOffset = newEndOffset;
-			range.startContainer = newEndContainer;
-			range.endOffset = newEndOffset;
-			range.endContainer = newEndContainer;
-			
-			return range;
-		}
-		
-		while ( !isFlowNode( newStartContainer ) &&
-				newStartContainer == newEndContainer &&
-				newStartOffset == newEndOffset - 1 &&
-				!isSelectionStopNode( newStartContainer ) &&
-				!isVoidNode( newStartContainer.childNodes[ newStartOffset ] ) ) {
-			// We have this sort of situation: 'foo{<span><br></span>}baz'
-			newStartContainer = newEndContainer = newStartContainer.childNodes[ newStartOffset ];
-			newStartOffset = 0;
-			if ( newEndContainer.childNodes ) {
-				newEndOffset = newEndContainer.childNodes.length;
-			} else {
-				newEndOffset = newEndContainer.length;
-			}
-		}
-		
-		// Fix position around void elements
-		
-		if ( newStartContainer != newEndContainer || newStartOffset != newEndOffset ) {
-			
-			if ( newEndOffset == 0 && isVoidNode( newEndContainer.previousSibling ) ) {
-				
-				var index = getIndexOfChildNode(
-					newEndContainer.parentNode, newEndContainer.previousSibling
-				);
-				
-				if ( index != -1 ) {
-					newEndContainer = newEndContainer.parentNode;
-					newEndOffset = index + 1;
-				}
-				
-			}
-			
-			if ( newStartContainer.length &&
-				 newStartContainer.length == newStartOffset &&
-				 isVoidNode( newStartContainer.nextSibling ) ) {
-				
-				var index = getIndexOfChildNode(
-					newStartContainer.parentNode, newStartContainer.nextSibling
-				);
-				
-				if ( index != -1 ) {
-					newStartContainer = newStartContainer.parentNode;
-					newStartOffset = index;
-				}
-				
-			}
-		} else {
-			//debugger;
-			//newStartContainer = getSelectionStartNode( newStartContainer );
-			//if ( newStartContainer ) {
-			//	newEndContainer = newStartContainer;
-			//	newEndOffset = newStartOffset = 0;
-			//}
-		}
-		
-		// 'foo<span>{}<br></span>baz', 'foo[]<span><br></span>baz'
-		// 'foo<span><br>{}</span>baz', 'foo<span><br></span>[]baz'
-		if ( newStartOffset == 0 &&
-			 newStartContainer == newEndContainer &&
-			 isVoidNode( newStartContainer.firstChild ) ) {
-			
-			newStartContainer = getSelectionEndNode(
-				moveBackwards( newStartContainer )
-			);
-			newStartOffset = newStartContainer.length;
-		
-		} else if ( newStartOffset == newStartContainer.childNodes.length &&
-					isVoidNode( newStartContainer.lastChild ) ) {
-			
-			newStartContainer = moveForwards( newStartContainer );
-			newStartOffset = 0;
-			
-		}
-		
-		if ( newEndOffset == 0 &&
-			 newEndContainer.previousSibling &&
-			 isVoidNode( newEndContainer.firstChild ) ) {
-			
-			newEndContainer = newEndContainer.previousSibling;
-			newEndOffset = newEndContainer.length;
-			
-		} else if ( newEndContainer.nextSibling &&
-					newEndOffset == newEndContainer.childNodes.length &&
-					isVoidNode( newEndContainer.lastChild ) ) {
-			
-			newEndContainer = newEndContainer.nextSibling;
-			newEndOffset = 0;
-			
-		}
-		
-		if ( newStartContainer != newEndContainer ) {
-			if ( newStartContainer.length == newStartOffset ) {
-				var next = moveForwards( newStartContainer );
-			} else {
-				var next = newStartContainer.childNodes[ newStartOffset ];
-			}
-			
-			if ( next ) {
-				if ( next.firstChild == next.lastChild && isVoidNode( next.firstChild ) ) {
-					newStartContainer = next;
-					newStartOffset = 0;
-				}
-			}
-			
-			if ( newEndOffset == 0 ) {
-				var prev = moveBackwards( newEndContainer );
-				
-				if ( prev ) {
-					if ( prev.firstChild == prev.lastChild && isVoidNode( prev.firstChild ) ) {
-						newEndContainer = prev;
-						newEndOffset = 1;
-					}
-				}
-			}
-		}
-		
-		// [ 'foo[}<br>baz', 'foo[]<br>baz' ],
-		// [ 'foo<br>{]baz', 'foo<br>[]baz' ],
-		if ( newStartContainer == newEndContainer &&
-			 newStartOffset == newEndOffset &&
-			 newStartContainer.childNodes.length &&
-			 !isSelectionStopNode( newStartContainer ) ) {
-			newStartContainer = newStartContainer.childNodes[ newStartOffset ];
-			if ( isVoidNode( newStartContainer ) ) {
-				newStartContainer = newStartContainer.previousSibling;
-				newStartOffset = newEndOffset = newStartContainer.length;
-			} else {
-				newStartOffset = newEndOffset = 0;
-			}
-			
-			newEndContainer = newStartContainer;
-		}
-		
-		// Satisfies: '<p>[foo</p><p>]bar</p><p>baz</p>', '<p>[foo</p><p>}bar</p><p>baz</p>'
-		if ( isFlowNode( newEndContainer.parentNode ) &&
-			 newEndContainer.parentNode.firstChild == newEndContainer &&
-			 newEndOffset == 0 ) {
-			//debugger;
-			newEndContainer = newEndContainer.parentNode,
-			newEndOffset = 0;
-		}
-		
-		if ( !isFlowNode( newEndContainer ) && // make sure we don't do correct this: </p>}foo to </p>]foo
-			 !isSelectionStopNode( newEndContainer ) &&
-			 isPositionAtNodeEnd( newEndContainer, newEndOffset + 1 ) &&
-			 !isVoidNode( newEndContainer.childNodes[ newEndOffset ].previousSibling ) ) {
-			newEndContainer = newEndContainer.childNodes[ newEndOffset ];
-			newEndOffset = 0;
-		}
-		
-		if ( newEndContainer ) {
-			range.endContainer = newEndContainer;
-			range.endOffset = newEndOffset;
-		}
-		
-		if ( newStartContainer ) {
-			range.startContainer = newStartContainer;
-			range.startOffset = newStartOffset;
-		}
-		
-		return range;
-	};
-	
-	*/
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
 
 // Reference: http://dev.w3.org/html5/markup/common-models.html
 //
@@ -2449,26 +1900,12 @@ var blockElementsLookupTable = {
 	'VIDEO'      : true
 };
 
-// Useful functions defined in engine.js:
-// isBlockNode
-// isInlineNode
-// isEditingHost
-// isWhitespaceNode
-// isCollapsedWhitespaceNode
-// removeExtraneousLineBreaksBefore
-// removeExtraneousLineBreaksAtTheEndOf
-// removeExtraneousLineBreaksFrom
-//
-// Useful variables defined in engine.js:
-// namesOfElementsWithInlineContents
-
 /**
  * @param {DOMElement} node
  * @return {Boolean} returns true of node is a canonical block element
  */
 function isBlockElement ( node ) {
 	return !!( node && flowElementsLookupTable[ node.nodeName ] );
-	//return !!( node && blockElementsLookupTable[ node.nodeName ] );
 };
 
 function isVoidElement ( node ) {
@@ -2509,6 +1946,11 @@ function getNodeLength ( node ) {
 		: node.childNodes.length;
 };
 
+function getEditingHost ( node ) {
+	while ( !isEditingHost( node ) && ( node = node.parentNode ) );
+	return node;
+};
+
 /**
  * Unit tests:
  *		given "<p><b>foo</b><i>foo</i></p>", if node is <i>, returns <b>
@@ -2522,17 +1964,25 @@ function getNodeLength ( node ) {
  *
  * @param {DOMElement} node
  */
-function getLeftNeighbor ( node ) {
+function getLeftNeighbor ( node, predicate ) {
 	if ( !node ) {
 		return null;
 	}
 	
 	if ( node.previousSibling ) {
-		return node.previousSibling;
+		//return node.previousSibling;
+		if ( typeof predicate !== 'function' ||
+				predicate( node.previousSibling ) ) {
+			return node.previousSibling;
+		}
 	}
 	
 	if ( !node.parentNode || isEditingHost( node.parentNode ) ) {
 		return null;
+	}
+	
+	if ( typeof predicate === 'function' && predicate( node.parentNode ) ) {
+		return node.parentNode;
 	}
 	
 	return getLeftNeighbor( node.parentNode );
@@ -2571,9 +2021,6 @@ function getNodeIndex ( node ) {
 		return -1;
 	}
 	
-	// A long as node is an existing node which has a parent, then it is a
-	// logical certainty that node's parent will have 1 or more childNodes.
-	// We therefore do not need to check for this.
 	var kids = node.parentNode.childNodes,
 		l = kids.length,
 		i = 0;
@@ -2587,6 +2034,7 @@ function getNodeIndex ( node ) {
 	return -1;
 };
 
+/*
 function getFirstLeftScion ( node, predicate ) {
 	if ( !node || !node.firstChild ) {
 		return null;
@@ -2601,6 +2049,7 @@ function getFirstLeftScion ( node, predicate ) {
 	return getFirstLeftScion( node.firstChild, predicate ) ||
 				getFirstLeftScion( node.nextSibling, predicate );
 };
+*/
 
 /**
  * @param {DOMElement} node
@@ -2617,10 +2066,32 @@ function getLeftmostScion ( node, predicate ) {
 		return scion;
 	}
 	
-	//scion = getNearestRightNode( scion );
-	scion = getRightNeighbor( scion );
-	if ( scion ) {
-		var grandScion = getLeftmostScion( scion, predicate );
+	// scion = getRightNeighbor( scion );
+	// if ( scion ) {
+		// var grandScion = getLeftmostScion( scion, predicate );
+		
+		// if ( grandScion ) {
+			// return grandScion;
+		// }
+		
+		// if ( predicate( scion ) ) {
+			// return scion;
+		// }
+	// }
+	
+	
+	var posbits,
+	    grandScion;
+	
+	while ( scion ) {
+		posbits = compareDocumentPosition( node, scion );
+		
+		if ( !( posbits & 16 ) ) {
+			return null;
+		}
+		
+		scion = getRightNeighbor( scion );
+		grandScion = getLeftmostScion( scion, predicate );
 		
 		if ( grandScion ) {
 			return grandScion;
@@ -2656,8 +2127,9 @@ function getRightmostScion ( node, predicate ) {
 		return scion;
 	}
 	
-	var posbits;
-	var grandScion;
+	var posbits,
+	    grandScion;
+	
 	while ( scion ) {
 		posbits = compareDocumentPosition( node, scion );
 		
@@ -2809,7 +2281,7 @@ function getStartPosition ( container, offset ) {
 		return null;
 	}
 	
-	// Should we just throw an INDEX_SIZE_ERR exception
+	// Should we just throw an INDEX_SIZE_ERR exception?
 	offset = sanitizeOffset( container, offset );
 	
 	if ( isTextNode( container ) ) {
@@ -2849,7 +2321,7 @@ function getEndPosition ( container, offset ) {
 		return null;
 	}
 	
-	// Should we just throw an INDEX_SIZE_ERR exception
+	// Should we just throw an INDEX_SIZE_ERR exception?
 	offset = sanitizeOffset( container, offset );
 	
 	if ( isTextNode( container ) ) {
@@ -2885,9 +2357,68 @@ function getEndPosition ( container, offset ) {
 	return getEndPositionFromFrontOfInlineNode( container, offset );
 };
 
-function getEditingHost ( node ) {
-	while ( !isEditingHost( node ) && ( node = node.parentNode ) );
-	return node;
+// rule:
+//		The end position cannot preceed the start position.
+//		If we detect such a case, then we collapse the selection round
+//		the end position
+//
+// reference:
+//		http://www.w3.org/TR/DOM-Level-3-Core/core.html#Node3-compareDocumentPosition
+//		Bits	Number	Meaning
+//		------  ------  -------
+//		000000	0		Elements are identical.
+//		000001	1		The nodes are in different documents (or one is outside of a document).
+//		000010	2		Node B precedes Node A.
+//		000100	4		Node A precedes Node B.
+//		001000	8		Node B contains Node A.
+//		010000	16		Node A contains Node B.
+//		100000	32		For private use by the browser.
+function getStartPositionBetweenSucceedingBlockNode ( startNode,
+													  leftTextNode,
+													  succeedingBlockNode ) {
+	var posbits = compareDocumentPosition( startNode, succeedingBlockNode );
+	var correctNode;
+	
+	// If node precedes ancestor then we have a block node between the
+	// original start position and our text node.
+	// Because we know that we have a text node to the left of our start
+	// position, we infere that we are in a situation that will resemble
+	// the following:
+	// [ 'foo{<b></b><p>bar]</p>', 'foo<b>{</b><p>bar]</p>' ],
+	// [ 'foo{<b></b><p></p><p>bar]</p>', 'foo<b>{</b><p></p><p>bar]</p>' ],
+	// [ '<b>foo{<u></u></b><p>bar]</p>', '<b>foo<u>{</u></b><p>bar]</p>' ],
+	// [ 'foo{<b></b><p><u></u></p><p>bar]</p>', 'foo<b>{</b><p><u></u></p><p>bar]</p>' ],
+	// [ '<p>foo{<b></b></p><div><u></u></div><p>bar]</p>', '<p>foo<b>{</b></p><div><u></u></div><p>bar]</p>' ],
+	if ( posbits & 4 ) {
+		correctNode = succeedingBlockNode;
+		
+		while ( correctNode = getLeftNeighbor( correctNode ) ) {
+			if ( !isBlockElement( correctNode ) ||
+					jQuery( correctNode ).find( leftTextNode ).length ) {
+				correctNode = getRightmostScion( correctNode ) || correctNode;
+				break
+			}
+		}
+	}
+	
+	// Satisfies:
+	// [ '<p>foo{<b></b></p><div><u></u></div><p>bar]</p>', '<p>foo<b>{</b></p><div><u></u></div><p>bar]</p>' ],
+	// [ '<div>foo{<b></b><i></i></div><div><u></u></div><p>bar]</p>', '<div>foo<b></b><i>{</i></div><div><u></u></div><p>bar]</p>' ],
+	// [ '<div>foo{<b></b><p></p></div><div><u></u></div><p>bar]</p>', '<div>foo<b>{</b><p></p></div><div><u></u></div><p>bar]</p>' ],
+	// [ '<div>foo<p>test{<b></b></p></div><div><u></u></div><p>bar]</p>', '<div>foo<p>test<b>{</b></p></div><div><u></u></div><p>bar]</p>' ],
+	if ( posbits & 8 ) {
+		correctNode = getRightmostScion( succeedingBlockNode, isBlockElement );
+		correctNode = correctNode
+			? getLeftNeighbor( correctNode )
+			: getRightmostScion( succeedingBlockNode );
+	}
+	
+	if ( correctNode ) {
+		return {
+			node  : correctNode,
+			offset : getNodeLength( correctNode )
+		};
+	}
 };
 
 /**
@@ -2949,8 +2480,10 @@ function getEditingHost ( node ) {
  * @return {Object} position object with properties node and offset
  */
 function getStartPositionFromFrontOfInlineNode ( node ) {
-	var leftTextNode,
-	    rightTextNode;
+	var rightNode,
+	    leftTextNode,
+	    rightTextNode,
+		succeedingBlockNode;
 	
 	if ( isTextNode( node ) ) {
 		return {
@@ -2978,19 +2511,9 @@ function getStartPositionFromFrontOfInlineNode ( node ) {
 	// [ 'foo{<b><i></i></b>bar]', 'foo<b><i></i></b>[bar]' ],
 	// [ 'foo{<b><i></i></b><b>bar]</b>', 'foo<b><i></i></b><b>[bar]</b>' ],
 	
-	//if ( !rightTextNode ) {
-	//	rightTextNode = getNearestRightNode( node, isTextNode );
-	//}
-	
-	
-	
-	
-	
 	// Try to move our start position to the right without crossing over any
 	// block nodes
-	var rightNode = node;
-	
-	var succeedingBlockNode;
+	rightNode = node;
 	
 	while ( true ) {
 		if ( rightNode.nextSibling ) {
@@ -3001,7 +2524,6 @@ function getStartPositionFromFrontOfInlineNode ( node ) {
 				}
 			}
 		} else if ( isEditingHost( rightNode.parentNode )  ) {
-			// game over
 			break;
 		} else if ( isBlockElement( rightNode.parentNode ) ) {
 			rightNode = rightNode.parentNode;
@@ -3076,15 +2598,14 @@ function getStartPositionFromFrontOfInlineNode ( node ) {
  * @param {DOMElement} node - an inline node
  */
 function getStartPositionFromEndOfInlineNode ( node ) {
-	var leftTextNode,
+	var rightNode,
+	    leftTextNode,
 	    rightTextNode,
-	    rightNode;
+	    succeedingBlockNode;
 	
 	// Try to move our start position to the right without crossing over any
 	// block nodes
 	rightNode = node;
-	
-	var succeedingBlockNode;
 	
 	while ( true ) {
 		if ( rightNode.nextSibling ) {
@@ -3094,8 +2615,7 @@ function getStartPositionFromEndOfInlineNode ( node ) {
 					succeedingBlockNode = rightNode;
 				}
 			}
-		} else if ( isEditingHost( rightNode.parentNode )  ) {
-			// game over
+		} else if ( isEditingHost( rightNode.parentNode ) ) {
 			break;
 		} else if ( isBlockElement( rightNode.parentNode ) ) {
 			rightNode = rightNode.parentNode;
@@ -3198,143 +2718,6 @@ function getStartPositionFromEndOfInlineNode ( node ) {
 	};
 };
 
-// rule:
-//		The end position cannot preceed the start position.
-//		If we detect such a case, then we collapse the selection round
-//		the end position
-//
-// reference:
-//		http://www.w3.org/TR/DOM-Level-3-Core/core.html#Node3-compareDocumentPosition
-//		Bits	Number	Meaning
-//		------  ------  -------
-//		000000	0		Elements are identical.
-//		000001	1		The nodes are in different documents (or one is outside of a document).
-//		000010	2		Node B precedes Node A.
-//		000100	4		Node A precedes Node B.
-//		001000	8		Node B contains Node A.
-//		010000	16		Node A contains Node B.
-//		100000	32		For private use by the browser.
-function getStartPositionBetweenSucceedingBlockNode ( startNode, leftTextNode, succeedingBlockNode ) {
-	var posbits = compareDocumentPosition( startNode, succeedingBlockNode );
-	var correctNode;
-	
-	// If node precedes ancestor then we have a block node between the
-	// original start position and our text node.
-	// Because we know that we have a text node to the left of our start
-	// position, we infere that we are in a situation that will resemble
-	// the following:
-	// [ 'foo{<b></b><p>bar]</p>', 'foo<b>{</b><p>bar]</p>' ],
-	// [ 'foo{<b></b><p></p><p>bar]</p>', 'foo<b>{</b><p></p><p>bar]</p>' ],
-	// [ '<b>foo{<u></u></b><p>bar]</p>', '<b>foo<u>{</u></b><p>bar]</p>' ],
-	// [ 'foo{<b></b><p><u></u></p><p>bar]</p>', 'foo<b>{</b><p><u></u></p><p>bar]</p>' ],
-	// [ '<p>foo{<b></b></p><div><u></u></div><p>bar]</p>', '<p>foo<b>{</b></p><div><u></u></div><p>bar]</p>' ],
-	if ( posbits & 4 ) {
-		correctNode = succeedingBlockNode;
-		
-		while ( correctNode = getLeftNeighbor( correctNode ) ) {
-			if ( !isBlockElement( correctNode ) ||
-					jQuery( correctNode ).find( leftTextNode ).length ) {
-				correctNode = getRightmostScion( correctNode ) || correctNode;
-				break
-			}
-		}
-	}
-	
-	// Satisfies:
-	// [ '<p>foo{<b></b></p><div><u></u></div><p>bar]</p>', '<p>foo<b>{</b></p><div><u></u></div><p>bar]</p>' ],
-	// [ '<div>foo{<b></b><i></i></div><div><u></u></div><p>bar]</p>', '<div>foo<b></b><i>{</i></div><div><u></u></div><p>bar]</p>' ],
-	// [ '<div>foo{<b></b><p></p></div><div><u></u></div><p>bar]</p>', '<div>foo<b>{</b><p></p></div><div><u></u></div><p>bar]</p>' ],
-	// [ '<div>foo<p>test{<b></b></p></div><div><u></u></div><p>bar]</p>', '<div>foo<p>test<b>{</b></p></div><div><u></u></div><p>bar]</p>' ],
-	if ( posbits & 8 ) {
-		correctNode = getRightmostScion( succeedingBlockNode, isBlockElement );
-		correctNode = correctNode
-			? getLeftNeighbor( correctNode )
-			: getRightmostScion( succeedingBlockNode );
-	}
-	
-	if ( correctNode ) {
-		return {
-			node  : correctNode,
-			offset : getNodeLength( correctNode )
-		};
-	}
-};
-
-
-/**
- * We are at the end tag of an inline node.
- *
- * @param {DOMElement} node - an inline node
- * @param {Number} offset - an integer that should be equal to the number of
- *							childNodes of node. This argument is therefore
- *							redundant.
- */
-function getEndPositionFromEndOfInlineNode ( node, offset ) {
-	/*
-	var child,
-	    leftNode,
-	    rightNode;
-	
-	return {
-		node   : node,
-		offset : offset
-	};
-	*/
-	
-	// Satisfies
-	// [ '<b>[foo}</b>', '<b>[foo]</b>' ],
-	stop = getRightmostScion( node, isTextNode );
-	if ( stop ) {
-		return {
-			node   : stop,
-			offset : getNodeLength( stop )
-		};
-	}
-	
-	return {
-		node   : node,
-		offset : offset
-	};
-};
-
-function getEndPositionFromFrontOfInlineNode ( node, offset ) {
-	var child = node.childNodes[ offset ];
-	var stop;
-	
-	if ( isTextNode( child ) ) {
-		return {
-			node   : child,
-			offset : 0
-		};
-	}
-	
-	// Try to go right...
-	
-	// Satisfies:
-	// [ '{<b>foo]</b>', '<b>[foo]</b>' ],
-	stop = getLeftmostScion( child, isTextNode );
-	
-	// Satisfies:
-	// [ 'foo{<b></b><b>bar]</b>', 'foo<b></b><b>[bar]</b>' ],
-	// [ 'foo{<b><i></i></b>bar]', 'foo<b><i></i></b>[bar]' ],
-	// [ 'foo{<b><i></i></b><b>bar]</b>', 'foo<b><i></i></b><b>[bar]</b>' ],
-	if ( !stop ) {
-		stop = getNearestRightNode( child, isTextNode );
-	}
-	
-	if ( stop ) {
-		return {
-			node   : stop,
-			offset : 0
-		};
-	}
-	
-	return {
-		node   : node,
-		offset : offset
-	};
-};
-
 function getStartPositionFromFrontOfBlockNode ( node ) {
 	var child = node;
 	var stop;
@@ -3433,6 +2816,80 @@ function getStartPositionFromEndOfBlockNode ( node , offset ) {
 		return {
 			node   : correctNode,
 			offset : 0
+		};
+	}
+	
+	return {
+		node   : node,
+		offset : offset
+	};
+};
+
+function getEndPositionFromFrontOfInlineNode ( node, offset ) {
+	var child = node.childNodes[ offset ];
+	var stop;
+	
+	if ( isTextNode( child ) ) {
+		return {
+			node   : child,
+			offset : 0
+		};
+	}
+	
+	// Try to go right...
+	
+	// Satisfies:
+	// [ '{<b>foo]</b>', '<b>[foo]</b>' ],
+	stop = getLeftmostScion( child, isTextNode );
+	
+	// Satisfies:
+	// [ 'foo{<b></b><b>bar]</b>', 'foo<b></b><b>[bar]</b>' ],
+	// [ 'foo{<b><i></i></b>bar]', 'foo<b><i></i></b>[bar]' ],
+	// [ 'foo{<b><i></i></b><b>bar]</b>', 'foo<b><i></i></b><b>[bar]</b>' ],
+	if ( !stop ) {
+		stop = getNearestRightNode( child, isTextNode );
+	}
+	
+	if ( stop ) {
+		return {
+			node   : stop,
+			offset : 0
+		};
+	}
+	
+	return {
+		node   : node,
+		offset : offset
+	};
+};
+
+/**
+ * We are at the end tag of an inline node.
+ *
+ * @param {DOMElement} node - an inline node
+ * @param {Number} offset - an integer that should be equal to the number of
+ *							childNodes of node. This argument is therefore
+ *							redundant.
+ */
+function getEndPositionFromEndOfInlineNode ( node, offset ) {
+	/*
+	var child,
+	    leftNode,
+	    rightNode;
+	
+	return {
+		node   : node,
+		offset : offset
+	};
+	*/
+	
+	// Satisfies
+	// [ '<b>[foo}</b>', '<b>[foo]</b>' ],
+	stop = getRightmostScion( node, isTextNode );
+	if ( stop ) {
+		return {
+			node   : stop,
+			offset : getNodeLength( stop )
 		};
 	}
 	
