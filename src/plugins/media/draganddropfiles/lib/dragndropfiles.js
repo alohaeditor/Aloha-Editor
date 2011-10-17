@@ -13,19 +13,15 @@
 //        $ = jQuery = window.alohaQuery || window.jQuery,
 //        GENTICS = window.GENTICS,
 //        Aloha = GENTICS.Aloha;
-(function(window, undefined) {
-	var
-		jQuery = window.alohaQuery || window.jQuery, $ = jQuery,
-		GENTICS = window.GENTICS,
-		Aloha = window.Aloha;
-
-	/**
-	 * register the plugin with unique name
-	 */
-	Aloha.DragAndDropFiles = new (Aloha.Plugin.extend({
-		_constructor: function(){
-			this._super('dragndropfiles');
-		},
+define([	
+	'aloha/jquery',
+	'aloha/plugin',
+	'jquery-plugin!draganddropfiles/dropfilesrepository'],
+function($, Plugin, DropFilesRepository) {
+	"use strict";
+	var jQuery = $,
+	    GENTICS = window.GENTICS,	Aloha = window.Aloha;
+	return Plugin.create('draganddropfiles', {
 		/**
 		 * Configure the available languages
 		 */
@@ -62,9 +58,6 @@
 		 */
 		init: function() {
 			var that = this;
-			Aloha.loadJs(Aloha.getPluginUrl('dragndropfiles') + '/src/dropfilesrepository.js', function(){
-
-
 				// add the listener
 				that.setBodyDropHandler();
 	//			stylePath = GENTICS_Aloha_base + '/plugins/com.gentics.aloha.plugins.DragAndDropFiles/style.css';
@@ -77,13 +70,11 @@
 				}
 
 				try {
-						that.uploader = that.initUploader(that.settings);
-					} catch(error) {
-						Aloha.Log.warn(that,error);
-						Aloha.Log.warn(that,"Error creating uploader, no upload will be processed");
-					}
-
-			});
+					that.uploader = that.initUploader(that.settings);
+				} catch(error) {
+					Aloha.Log.warn(that,error);
+					Aloha.Log.warn(that,"Error creating uploader, no upload will be processed");
+				}
 			Aloha.bind('aloha-file-upload-prepared', function(event, data) {
 				if (that.droppedFilesCount >= that.processedFiles) {
 					Aloha.trigger('aloha-allfiles-upload-prepared');
@@ -109,8 +100,7 @@
 				}
 			});
 		},
-
-
+		
 		/**
 		 * Init a custom uploader
 		 */
@@ -127,9 +117,8 @@
 			}
 			return uploader_instance;
 		},
-		
 		/**
-		 * 
+		 * Prepare upload
 		 */
 		prepareFileUpload: function(file) {
 			var 
@@ -151,7 +140,6 @@
             };
             reader.readAsDataURL(file);
 		},
-		
 		/**
 		 * Our drop event Handler
 		 */
@@ -319,6 +307,7 @@
 			// end body events
 			//==================
 		},
+		
 		/**
 		 * TODO do we realy need a range Object? May be it makes sense to attach it to the event
 		 * for plugin developers comfort.
@@ -348,5 +337,6 @@
 			}
 			return range;
 		}
-	}))();
-})(window, document);
+		
+	});
+});
