@@ -15,12 +15,15 @@ Aloha.ready( function() {
 	// testmarkup source area
 	var viewArea = jQuery( '#aloha-view' );
 	
-	var command = jQuery('#command'),
-		applyMarkupOnNextSelection = true,
+	var command = jQuery('#command');
+	var commandValue = jQuery('#command-value');
+	
+	var	applyMarkupOnNextSelection = true,
 		engine = Aloha,
 		selectionRange,
 		supportedCommands = Aloha.querySupportedCommands().sort();
 	
+	// Populate the dropdown
 	for ( var i=0; i < supportedCommands.length; i++ ) {
 		command.append('<option	value="' + supportedCommands[i] +'">' + supportedCommands[i] + '</option>');
 	}
@@ -35,11 +38,14 @@ Aloha.ready( function() {
 	jQuery( onSelectionChanged );
 	
 	// Handle selection events within the testarea
-	testArea.contentEditableSelectionChange( onSelectionChanged );
+	testArea.contentEditableSelectionChange( function() {
+		onSelectionChanged();
+	});
 
 	command.change( queryCommand );
 
-	jQuery('#textbox-fill').click( function() {
+	// Handle click on Fill Testbox button
+	jQuery('#testbox-fill').click( function() {
            testArea[ 0 ].innerHTML = fillArea.val();
            applySelection( testArea );
 	 });
@@ -56,15 +62,19 @@ Aloha.ready( function() {
 		queryCommand();
 	});
 		
+	// Handle click on execute button
 	jQuery('#command-execute').click( function() {
-		var execCommand,
-			range;
-		
-		execCommand = command.val();
+		var range;
+		var execCommandValue = commandValue.val();
+		var execCommand = command.val();
 
-		// "If command has no action, raise an INVALID_ACCESS_ERR exception." exception."
+		// Check whether the user has selected a valid command 
+		if (!execCommand) {
+			alert('Please select one valid command and try again.');
+			return;
+		}
 	    Aloha.editables[0].obj.focus();
-        engine.execCommand( execCommand, false, jQuery('#command-value').val() );
+        engine.execCommand( execCommand, false, execCommandValue );
         range = Aloha.getSelection().getRangeAt( 0 );
         TestUtils.addBrackets( range );
         applySelection( testArea );
@@ -104,7 +114,7 @@ Aloha.ready( function() {
 			if ( e === "INVALID_ACCESS_ERR" ) {
 				jQuery('#aloha-indeterm').hide();
 			} else {
-//				throw(e);
+				//	throw(e);
 			}
 		}
 		jQuery('#aloha-indeterm-result').html( (result ? 'true' : 'false') );
@@ -116,7 +126,7 @@ Aloha.ready( function() {
 			if ( e === "INVALID_ACCESS_ERR" ) {
 				jQuery('#aloha-state').hide();
 			} else {
-//				throw(e);
+				//	throw(e);
 			}
 		}
 		jQuery('#aloha-state-result').html( (result ? 'true' : 'false') );
@@ -128,7 +138,7 @@ Aloha.ready( function() {
 			if ( e === "INVALID_ACCESS_ERR" ) {
 				jQuery('#aloha-value').hide();
 			} else {
-//				throw(e);
+				//	throw(e);
 			}
 		}
 		jQuery('#aloha-value-result').html( result );
@@ -146,10 +156,10 @@ Aloha.ready( function() {
 	function onSelectionChanged ( e ) {
 		
 		// don't read selection if shift is pressed
-		if ( e.shiftKey ) {
-			return
+		if ( e && e.shiftKey ) {
+			return;
 		}
-		
+
 		if ( applyMarkupOnNextSelection ) {
 			testArea[0].innerHTML = fillArea.val();
 			applySelection( testArea );
@@ -178,8 +188,17 @@ Aloha.ready( function() {
 				}
 			}
 			
-			TestUtils.addBrackets( range );
-			applySelection( testArea );
+			var timeout = 0;
+
+			// for ie wait for double and triple clicks
+			if( jQuery.browser.msie ) {
+				timeout = 200;
+			}
+
+			setTimeout( function() {
+				TestUtils.addBrackets( range );
+				applySelection( testArea );
+ 			}, timeout );
 		}
 	};
 	
@@ -222,9 +241,10 @@ Aloha.ready( function() {
 	 *							  should be applied to it.
 	 */
 	 function applySelection ( elem ) {
-		
+		 
 		// Display the current selection in the viewArea
 		viewArea.val( testArea.html() );
+		
 		// convert html for processing
 		var html = jQuery( '<div>' ).text( testArea.html() ).html();
 
@@ -252,8 +272,8 @@ Aloha.ready( function() {
 			
 			selection.removeAllRanges();
 			selection.addRange( range );
-			selectionRange = range;
-			queryCommand();
+//			selectionRange = range;
+//			queryCommand();
 
 		} else {
 			// if numMarkers is > 2 then we have a problem, and we will remove
