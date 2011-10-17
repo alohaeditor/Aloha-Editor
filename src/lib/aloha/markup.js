@@ -1,6 +1,6 @@
 /*!
 * This file is part of Aloha Editor Project http://aloha-editor.org
-* Copyright � 2010-2011 Gentics Software GmbH, aloha@gentics.com
+* Copyright © 2010-2011 Gentics Software GmbH, aloha@gentics.com
 * Contributors http://aloha-editor.org/contribution.php 
 * Licensed unter the terms of http://www.aloha-editor.org/license.html
 *//*
@@ -104,74 +104,25 @@ Aloha.Markup = Class.extend({
 			return this.processCursor(rangeObject, event.keyCode);
 		}
 
+		// BACKSPACE
+		if (event.keyCode === 8) {
+			Aloha.execCommand( 'delete', false );
+			return false;
+		}
+
+		// DELETE
+		if (event.keyCode === 46) {
+			Aloha.execCommand( 'forwarddelete', false );
+			return false;
+		}
+		
 		// ENTER
 		if  (event.keyCode === 13 ) {
 			if (event.shiftKey) {
-				Aloha.Log.debug(this, '... got a smoking Shift+Enter, Cowboy');
-				// when the range is expanded, we remove the selected text
-				if (!rangeObject.isCollapsed()) {
-					this.removeSelectedMarkup();
-				}
-
-				Aloha.Selection.updateSelection(false);
-				this.processShiftEnter(rangeObject);
-
-//				this.insertBreak();
-
+				Aloha.execCommand( 'insertlinebreak', false );
 				return false;
-			}
-			else {
-				Aloha.Log.debug(this, '... got a lonely Enter, Mum');
-				if (!rangeObject.isCollapsed()) {
-					this.removeSelectedMarkup();
-				}
-				Aloha.Selection.updateSelection(false);
-				this.processEnter(rangeObject);
-
-/*
-				// next find the nearest enclosing split object
-				var splitObject = rangeObject.findMarkup(function() {
-					return GENTICS.Utils.Dom.isSplitObject(this);
-				}, Aloha.activeEditable.obj);
-
-				// if one found, split it, otherwise insert a break
-				if (splitObject) {
-					var splitResult = GENTICS.Utils.Dom.split(rangeObject, jQuery([splitObject.parentNode, Aloha.activeEditable.obj.get(0)]));
-					if (splitResult) {
-						// cleanup in the second part
-						GENTICS.Utils.Dom.doCleanup({'merge' : true, 'removeempty' : true}, rangeObject, splitResult.get(1));
-
-						// get the first text node in the second part of the split
-						var nextTextNode = GENTICS.Utils.Dom.searchAdjacentTextNode(splitResult.get(1), 0, false);
-						if (nextTextNode) {
-							// trim leading whitespace
-							var nonWSIndex = nextTextNode.data.search(/\S/);
-							if (nonWSIndex > 0) {
-								nextTextNode.data = nextTextNode.data.substring(nonWSIndex);
-							}
-						}
-
-						// check whether the split created an element which is empty and needs to have an element to be visible
-						if (GENTICS.Utils.Dom.isEmpty(splitResult.get(0))) {
-							splitResult.eq(0).append(this.getFillUpElement(splitResult.get(0)));
-						}
-						if (GENTICS.Utils.Dom.isEmpty(splitResult.get(1))) {
-							splitResult.eq(1).append(this.getFillUpElement(splitResult.get(1)));
-						}
-
-						rangeObject.startContainer = rangeObject.endContainer = splitResult.get(1);
-						rangeObject.startOffset = rangeObject.endOffset = 0;
-						rangeObject.correctRange();
-						rangeObject.clearCaches();
-						rangeObject.select();
-					} else {
-						this.insertBreak();
-					}
-				} else {
-					this.insertBreak();
-				}
-*/
-
+			} else {
+				Aloha.execCommand( 'insertparagraph', false );
 				return false;
 			}
 		}

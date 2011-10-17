@@ -41,12 +41,10 @@ define([
 		rootPath : Aloha.getPluginUrl('browser') + '/'
 	};
 	
-	var originalInit = Browser.prototype.init;
-	
-	var LinkBrowser = jQuery.extend(Browser.prototype, {
-		
-		init: function () {
-			originalInit.call(this, config);
+	var LinkBrowser = Browser.extend({
+
+		init: function (config) {
+			this._super(config);
 			
 			this.url = Aloha.getAlohaUrl() + '/../plugins/extra/linkbrowser/';
 			
@@ -119,7 +117,7 @@ define([
 				case '10008':
 					icon = 'file';
 					break;
-				case '10009':
+				case '10011':
 					icon = 'image';
 					break;
 				//case '10007':
@@ -170,7 +168,16 @@ define([
 		}
 	
 	});
-	
-	var LinkBrowserPlugin = Plugin.create('linkbrowser', LinkBrowser);
-	
+
+	var LinkBrowserPlugin = Plugin.create('linkbrowser', {
+		dependencies: ['link', 'browser'],
+
+		browser: null,
+
+		init: function () {
+			this.browser = new LinkBrowser(config);
+		}
+	});
+
+	return LinkBrowserPlugin;
 });

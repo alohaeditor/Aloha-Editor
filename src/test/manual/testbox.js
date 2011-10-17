@@ -36,7 +36,7 @@ Aloha.ready( function() {
 		// linux will use key char code 10 if ctrl+enter is pressed
 		if ( e.metaKey && (e.which === 13 || e.which === 10)) {
 			applyMarkupOnNextSelection = true;
-			onSelectionChanged();
+			onSelectionChanged(e);
 			e.preventDefault();
 		}
 	});

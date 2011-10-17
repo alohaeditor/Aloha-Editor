@@ -1,6 +1,6 @@
 define(
-['aloha/contenthandlermanager', 'aloha/ecma5'],
-function( ContentHandlerManager ) {
+['aloha/ecma5'],
+function() {
 	"use strict";
 
 var htmlNamespace = "http://www.w3.org/1999/xhtml";
@@ -17,6 +17,18 @@ var commands = {};
 ////////////////////////////// Utility functions //////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 //@{
+
+function toArray(obj) {
+	if (!obj) {
+		return null;
+	}
+	var array = [], i, l = obj.length;
+	// iterate backwards ensuring that length is an UInt32
+	for (i = l >>> 0; i--;) {
+		array[i] = obj[i];
+	}
+	return array;
+}
 
 function nextNode(node) {
 	if (node.hasChildNodes()) {
@@ -156,6 +168,7 @@ function legacySizeToCss(legacyVal) {
 // Opera 11 puts HTML elements in the null namespace, it seems.
 function isHtmlNamespace(ns) {
 	return ns === null
+		|| !ns
 		|| ns === htmlNamespace;
 }
 
@@ -572,12 +585,6 @@ function myExecCommand(command, showUi, value, range) {
 			return false;
 		}
 
-		//if (typeof Aloha.settings.contentHandler.insertHtml === 'undefined') {
-		// just use all registerd content handler or specity Aloha.defaults.contentHandler.insertHtml manually?
-		//	Aloha.settings.contentHandler.insertHtml = Aloha.defaults.contentHandler.insertHtml;
-		//}
-		value = ContentHandlerManager.handleContent( value, { contenthandler: Aloha.settings.contentHandler.insertHtml } );
-
 		// "Take the action for command, passing value to the instructions as an
 		// argument."
 		commands[command].action(value, range);
@@ -926,6 +933,10 @@ function isWhitespaceNode(node) {
 			&& node.parentNode
 			&& node.parentNode.nodeType == Node.ELEMENT_NODE
 			&& getComputedStyle(node.parentNode).whiteSpace == "pre-line"
+		) || (
+			/^[\t\n\r ]+$/.test(node.data)
+			&& node.parentNode
+			&& node.parentNode.nodeType == Node.DOCUMENT_FRAGMENT_NODE
 		));
 }
 
@@ -1106,8 +1117,8 @@ function getActiveRange() {
 	var ret;
 	if (globalRange) {
 		ret = globalRange;
-	} else if (getSelection().rangeCount) {
-		ret = getSelection().getRangeAt(0);
+	} else if (Aloha.getSelection().rangeCount) {
+		ret = Aloha.getSelection().getRangeAt(0);
 	} else {
 		return null;
 	}
@@ -1231,8 +1242,8 @@ function movePreservingRanges(node, newParent, newIndex, range) {
 	// in the selection, not every range out there (the latter is probably
 	// impossible).
 	var ranges = [range];
-	for (var i = 0; i < getSelection().rangeCount; i++) {
-		ranges.push(getSelection().getRangeAt(i));
+	for (var i = 0; i < Aloha.getSelection().rangeCount; i++) {
+		ranges.push(Aloha.getSelection().getRangeAt(i));
 	}
 	var boundaryPoints = [];
 	ranges.forEach(function(range) {
@@ -1466,23 +1477,30 @@ function wrap(nodeList, siblingCriteria, newParentInstructions, range) {
 		// new parent and offset equal to the index of new parent, add one to
 		// that boundary point's offset."
 		//
-		// Only try to fix the global range.
-		if (globalRange.startContainer == newParent.parentNode
-		&& globalRange.startOffset == getNodeIndex(newParent)) {
-			globalRange.setStart(globalRange.startContainer, globalRange.startOffset + 1);
-		}
-		if (globalRange.endContainer == newParent.parentNode
-		&& globalRange.endOffset == getNodeIndex(newParent)) {
-			globalRange.setEnd(globalRange.endContainer, globalRange.endOffset + 1);
-		}
 		// Try to fix range
-		if (range.startContainer == newParent.parentNode
-		&& range.startOffset == getNodeIndex(newParent)) {
-			range.setStart(range.startContainer, range.startOffset + 1);
+		var startContainer = range.startContainer, startOffset = range.startOffset,
+			endContainer = range.endContainer, endOffset = range.endOffset;
+		if (startContainer == newParent.parentNode
+		&& startOffset >= getNodeIndex(newParent)) {
+			range.setStart(startContainer, startOffset + 1);
 		}
-		if (range.endContainer == newParent.parentNode
-		&& range.endOffset == getNodeIndex(newParent)) {
-			range.setEnd(range.endContainer, range.endOffset + 1);
+		if (endContainer == newParent.parentNode
+		&& endOffset >= getNodeIndex(newParent)) {
+			range.setEnd(endContainer, endOffset + 1);
+		}
+
+		// Only try to fix the global range. TODO remove globalRange here
+		if (globalRange && globalRange !== range) {
+			startContainer = globalRange.startContainer, startOffset = globalRange.startOffset,
+				endContainer = globalRange.endContainer, endOffset = globalRange.endOffset;
+			if (startContainer == newParent.parentNode
+			&& startOffset >= getNodeIndex(newParent)) {
+				globalRange.setStart(startContainer, startOffset + 1);
+			}
+			if (endContainer == newParent.parentNode
+			&& endOffset >= getNodeIndex(newParent)) {
+				globalRange.setEnd(endContainer, endOffset + 1);
+			}
 		}
 	}
 
@@ -1731,7 +1749,7 @@ function isAllowedChild(child, parent_) {
 		[["li"], ["li"]],
 		[["nobr"], ["nobr"]],
 		[namesOfElementsWithInlineContents, prohibitedParagraphChildNames],
-		[["td", "th"], ["caption", "col", "colgroup", "tbody", "td", "tfoot", "th", "thead", "tr"]],
+		[["td", "th"], ["caption", "col", "colgroup", "tbody", "td", "tfoot", "th", "thead", "tr"]]
 	];
 	for (var i = 0; i < table.length; i++) {
 		if (table[i][0].indexOf(parent_) != -1
@@ -2496,7 +2514,7 @@ function clearValue(element, command, range) {
 	// "If element is a simple modifiable element:"
 	if (isSimpleModifiableElement(element)) {
 		// "Let children be the children of element."
-		var children = Array.prototype.slice.call(element.childNodes);
+		var children = Array.prototype.slice.call(toArray(element.childNodes));
 
 		// "For each child in children, insert child into element's parent
 		// immediately before element, preserving ranges."
@@ -2657,7 +2675,7 @@ function pushDownValues(node, command, newValue, range) {
 		}
 
 		// "Let children be the children of current ancestor."
-		var children = Array.prototype.slice.call(currentAncestor.childNodes);
+		var children = Array.prototype.slice.call(toArray(currentAncestor.childNodes));
 
 		// "If the specified command value of current ancestor for command is
 		// not null, clear the value of current ancestor."
@@ -2811,9 +2829,11 @@ function forceValue(node, command, newValue, range) {
 		// "If command is "foreColor", and new value is fully opaque with red,
 		// green, and blue components in the range 0 to 255:"
 		if (command == "forecolor" && parseSimpleColor(newValue)) {
-			// "Let new parent be the result of calling createElement("font")
+			// "Let new parent be the result of calling createElement("span")
 			// on the ownerDocument of node."
-			newParent = node.ownerDocument.createElement("font");
+			// NOTE: modified this process to create span elements with style attributes
+			// instead of oldschool font tags with color attributes
+			newParent = node.ownerDocument.createElement("span");
 
 			// "If new value is an extended color keyword, set the color
 			// attribute of new parent to new value."
@@ -2821,7 +2841,7 @@ function forceValue(node, command, newValue, range) {
 			// "Otherwise, set the color attribute of new parent to the result
 			// of applying the rules for serializing simple color values to new
 			// value (interpreted as a simple color)."
-			newParent.setAttribute("color", parseSimpleColor(newValue));
+			jQuery(newParent).css('color', parseSimpleColor(newValue));
 		}
 
 		// "If command is "fontName", let new parent be the result of calling
@@ -3023,15 +3043,15 @@ function setSelectionValue(command, newValue, range) {
 	&& range.startOffset != getNodeLength(range.startContainer)) {
 		// Account for browsers not following range mutation rules
 		var newNode = range.startContainer.splitText(range.startOffset);
-		var newActiveRange = document.createRange();
+		var newActiveRange = Aloha.createRange();
 		if (range.startContainer == range.endContainer) {
 			var newEndOffset = range.endOffset - range.startOffset;
 			newActiveRange.setEnd(newNode, newEndOffset);
 			range.setEnd(newNode, newEndOffset);
 		}
 		newActiveRange.setStart(newNode, 0);
-		getSelection().removeAllRanges();
-		getSelection().addRange(newActiveRange);
+		Aloha.getSelection().removeAllRanges();
+		Aloha.getSelection().addRange(newActiveRange);
 
 		range.setStart(newNode, 0);
 	}
@@ -3056,8 +3076,8 @@ function setSelectionValue(command, newValue, range) {
 		activeRange.setStart(newStart[0], newStart[1]);
 		activeRange.setEnd(newEnd[0], newEnd[1]);
 
-		getSelection().removeAllRanges();
-		getSelection().addRange(activeRange);
+		Aloha.getSelection().removeAllRanges();
+		Aloha.getSelection().addRange(activeRange);
 	}
 
 	// "Let element list be all editable Elements effectively contained in the
@@ -4154,7 +4174,7 @@ function blockExtend(range) {
 
 	// "Let new range be a new range whose start and end nodes and offsets
 	// are start node, start offset, end node, and end offset."
-	var newRange = startNode.ownerDocument.createRange();
+	var newRange = Aloha.createRange();
 	newRange.setStart(startNode, startOffset);
 	newRange.setEnd(endNode, endOffset);
 
@@ -4418,7 +4438,7 @@ function deleteContents() {
 	if (arguments.length < 3) {
 		range = arguments[0];
 	} else {
-		range = document.createRange();
+		range = Aloha.createRange();
 		range.setStart(arguments[0], arguments[1]);
 		range.setEnd(arguments[2], arguments[3]);
 	}
@@ -4665,7 +4685,7 @@ function deleteContents() {
 		if ((isEditable(parent_) || isEditingHost(parent_))
 		&& !isInlineNode(parent_)
 		&& !parent_.hasChildNodes()) {
-			parent_.appendChild(document.createElement("br"));
+			parent_.appendChild(createEndBreak());
 		}
 	}
 
@@ -4879,7 +4899,7 @@ function deleteContents() {
 
 		// "Record the values of end block's children, and let values be the
 		// result."
-		var values = recordValues([].slice.call(endBlock.childNodes));
+		var values = recordValues([].slice.call(toArray(endBlock.childNodes)));
 
 		// "While end block has children, append the first child of end block
 		// to start block, preserving ranges."
@@ -4903,7 +4923,7 @@ function deleteContents() {
 	// "If start block has no children, call createElement("br") on the context
 	// object and append the result as the last child of start block."
 	if (!startBlock.hasChildNodes()) {
-		startBlock.appendChild(document.createElement("br"));
+		startBlock.appendChild(createEndBreak());
 	}
 
 	// "Restore states and values from overrides."
@@ -5050,7 +5070,7 @@ function splitParent(nodeList, range) {
 // its parent."
 function removePreservingDescendants(node, range) {
 	if (node.hasChildNodes()) {
-		splitParent([].slice.call(node.childNodes), range);
+		splitParent([].slice.call(toArray(node.childNodes)), range);
 	} else {
 		node.parentNode.removeChild(node);
 	}
@@ -5323,7 +5343,7 @@ function indentNodes(nodeList, range) {
 	);
 
 	// "Fix disallowed ancestors of new parent."
-	fixDisallowedAncestors(newParent);
+	fixDisallowedAncestors(newParent, range);
 }
 
 function outdentNode(node, range) {
@@ -5410,7 +5430,7 @@ function outdentNode(node, range) {
 		node.removeAttribute("type");
 
 		// "Let children be the children of node."
-		var children = [].slice.call(node.childNodes);
+		var children = [].slice.call(toArray(node.childNodes));
 
 		// "If node has attributes, and its parent is not an ol or ul, set the
 		// tag name of node to "div"."
@@ -5422,7 +5442,7 @@ function outdentNode(node, range) {
 		} else {
 			// "Record the values of node's children, and let values be the
 			// result."
-			var values = recordValues([].slice.call(node.childNodes));
+			var values = recordValues([].slice.call(toArray(node.childNodes)));
 
 			// "Remove node, preserving its descendants."
 			removePreservingDescendants(node, range);
@@ -5433,7 +5453,7 @@ function outdentNode(node, range) {
 
 		// "Fix disallowed ancestors of each member of children."
 		for (var i = 0; i < children.length; i++) {
-			fixDisallowedAncestors(children[i]);
+			fixDisallowedAncestors(children[i], range);
 		}
 
 		// "Abort these steps."
@@ -5476,8 +5496,8 @@ function outdentNode(node, range) {
 
 		// "Let preceding siblings be the preceding siblings of target, and let
 		// following siblings be the following siblings of target."
-		var precedingSiblings = [].slice.call(currentAncestor.childNodes, 0, getNodeIndex(target));
-		var followingSiblings = [].slice.call(currentAncestor.childNodes, 1 + getNodeIndex(target));
+		var precedingSiblings = [].slice.call(toArray(currentAncestor.childNodes), 0, getNodeIndex(target));
+		var followingSiblings = [].slice.call(toArray(currentAncestor.childNodes), 1 + getNodeIndex(target));
 
 		// "Indent preceding siblings."
 		indentNodes(precedingSiblings, range);
@@ -5554,7 +5574,7 @@ function toggleLists(tagName, range) {
 			if ((isEditable(list.previousSibling) && isHtmlElement(list.previousSibling, tagName))
 			|| (isEditable(list.nextSibling) && isHtmlElement(list.nextSibling, tagName))) {
 				// "Let children be list's children."
-				var children = [].slice.call(list.childNodes);
+				var children = [].slice.call(toArray(list.childNodes));
 
 				// "Record the values of children, and let values be the
 				// result."
@@ -5641,7 +5661,7 @@ function toggleLists(tagName, range) {
 
 			// "Fix disallowed ancestors of each member of sublist."
 			for (var i = 0; i < sublist.length; i++) {
-				fixDisallowedAncestors(sublist[i]);
+				fixDisallowedAncestors(sublist[i], range);
 			}
 
 			// "Restore the values from values."
@@ -5781,6 +5801,7 @@ function toggleLists(tagName, range) {
 					},
 					range
 				)
+				, range
 			);
 		}
 	}
@@ -5902,6 +5923,16 @@ function justifySelection(alignment, range) {
 			range
 		);
 	}
+}
+
+
+//@}
+///// Create an end break /////
+//@{
+function createEndBreak() {
+	var endBr = document.createElement("br");
+	endBr.setAttribute("class", "aloha-end-br");
+	return endBr;
 }
 
 
@@ -6108,7 +6139,7 @@ commands["delete"] = {
 		}).length) {
 			// "Block-extend the range whose start and end are both (node, 0),
 			// and let new range be the result."
-			var newRange = document.createRange();
+			var newRange = Aloha.createRange();
 			newRange.setStart(node, 0);
 			newRange = blockExtend(newRange);
 
@@ -6322,7 +6353,7 @@ commands.formatblock = {
 			if (isSingleLineContainer(nodeList[0])) {
 				// "Let sublist be the children of the first member of node
 				// list."
-				sublist = [].slice.call(nodeList[0].childNodes);
+				sublist = [].slice.call(toArray(nodeList[0].childNodes));
 
 				// "Record the values of sublist, and let values be the
 				// result."
@@ -6374,7 +6405,8 @@ commands.formatblock = {
 						: function() { return false },
 					function() { return document.createElement(value) },
 					range
-				)
+				),
+				range
 			);
 		}
 	}, indeterm: function() {
@@ -6812,7 +6844,7 @@ commands.inserthorizontalrule = {
 		range.insertNode(hr);
 
 		// "Fix disallowed ancestors of hr."
-		fixDisallowedAncestors(hr);
+		fixDisallowedAncestors(hr, range);
 
 		// "Run collapse() on the Selection, with first argument equal to the
 		// parent of hr and the second argument equal to one plus the index of
@@ -6823,8 +6855,8 @@ commands.inserthorizontalrule = {
 		// well, for the sake of autoimplementation.html's range-filling-in.
 		range.setStart(hr.parentNode, 1 + getNodeIndex(hr));
 		range.setEnd(hr.parentNode, 1 + getNodeIndex(hr));
-		getSelection().removeAllRanges();
-		getSelection().addRange(range);
+		Aloha.getSelection().removeAllRanges();
+		Aloha.getSelection().addRange(range);
 	}
 };
 
@@ -6885,7 +6917,7 @@ commands.inserthtml = {
 		// the result as the last child of the active range's start node."
 		if (isBlockNode(range.startContainer)
 		&& ![].some.call(range.startContainer.childNodes, isVisible)) {
-			range.startContainer.appendChild(document.createElement("br"));
+			range.startContainer.appendChild(createEndBreak());
 		}
 
 		// "Call collapse() on the context object's Selection, with last
@@ -6954,8 +6986,8 @@ commands.insertimage = {
 		// well, for the sake of autoimplementation.html's range-filling-in.
 		range.setStart(img.parentNode, 1 + getNodeIndex(img));
 		range.setEnd(img.parentNode, 1 + getNodeIndex(img));
-		getSelection().removeAllRanges();
-		getSelection().addRange(range);
+		Aloha.getSelection().removeAllRanges();
+		Aloha.getSelection().addRange(range);
 
 		// IE adds width and height attributes for some reason, so remove those
 		// to actually do what the spec says.
@@ -6968,29 +7000,29 @@ commands.insertimage = {
 ///// The insertLineBreak command /////
 //@{
 commands.insertlinebreak = {
-	action: function(value) {
+	action: function(value, range) {
 		// "Delete the contents of the active range, with strip wrappers false."
-		deleteContents(getActiveRange(), {stripWrappers: false});
+		deleteContents(range, {stripWrappers: false});
 
 		// "If the active range's start node is neither editable nor an editing
 		// host, abort these steps."
-		if (!isEditable(getActiveRange().startContainer)
-		&& !isEditingHost(getActiveRange().startContainer)) {
+		if (!isEditable(range.startContainer)
+		&& !isEditingHost(range.startContainer)) {
 			return;
 		}
 
 		// "If the active range's start node is an Element, and "br" is not an
 		// allowed child of it, abort these steps."
-		if (getActiveRange().startContainer.nodeType == Node.ELEMENT_NODE
-		&& !isAllowedChild("br", getActiveRange().startContainer)) {
+		if (range.startContainer.nodeType == Node.ELEMENT_NODE
+		&& !isAllowedChild("br", range.startContainer)) {
 			return;
 		}
 
 		// "If the active range's start node is not an Element, and "br" is not
 		// an allowed child of the active range's start node's parent, abort
 		// these steps."
-		if (getActiveRange().startContainer.nodeType != Node.ELEMENT_NODE
-		&& !isAllowedChild("br", getActiveRange().startContainer.parentNode)) {
+		if (range.startContainer.nodeType != Node.ELEMENT_NODE
+		&& !isAllowedChild("br", range.startContainer.parentNode)) {
 			return;
 		}
 
@@ -6998,13 +7030,13 @@ commands.insertlinebreak = {
 		// offset is zero, call collapse() on the context object's Selection,
 		// with first argument equal to the active range's start node's parent
 		// and second argument equal to the active range's start node's index."
-		if (getActiveRange().startContainer.nodeType == Node.TEXT_NODE
-		&& getActiveRange().startOffset == 0) {
-			var newNode = getActiveRange().startContainer.parentNode;
-			var newOffset = getNodeIndex(getActiveRange().startContainer);
-			getSelection().collapse(newNode, newOffset);
-			getActiveRange().setStart(newNode, newOffset);
-			getActiveRange().setEnd(newNode, newOffset);
+		if (range.startContainer.nodeType == Node.TEXT_NODE
+		&& range.startOffset == 0) {
+			var newNode = range.startContainer.parentNode;
+			var newOffset = getNodeIndex(range.startContainer);
+			Aloha.getSelection().collapse(newNode, newOffset);
+			range.setStart(newNode, newOffset);
+			range.setEnd(newNode, newOffset);
 		}
 
 		// "If the active range's start node is a Text node and its start
@@ -7012,13 +7044,13 @@ commands.insertlinebreak = {
 		// context object's Selection, with first argument equal to the active
 		// range's start node's parent and second argument equal to one plus
 		// the active range's start node's index."
-		if (getActiveRange().startContainer.nodeType == Node.TEXT_NODE
-		&& getActiveRange().startOffset == getNodeLength(getActiveRange().startContainer)) {
-			var newNode = getActiveRange().startContainer.parentNode;
-			var newOffset = 1 + getNodeIndex(getActiveRange().startContainer);
-			getSelection().collapse(newNode, newOffset);
-			getActiveRange().setStart(newNode, newOffset);
-			getActiveRange().setEnd(newNode, newOffset);
+		if (range.startContainer.nodeType == Node.TEXT_NODE
+		&& range.startOffset == getNodeLength(range.startContainer)) {
+			var newNode = range.startContainer.parentNode;
+			var newOffset = 1 + getNodeIndex(range.startContainer);
+			Aloha.getSelection().collapse(newNode, newOffset);
+			range.setStart(newNode, newOffset);
+			range.setEnd(newNode, newOffset);
 		}
 
 		// "Let br be the result of calling createElement("br") on the context
@@ -7026,25 +7058,25 @@ commands.insertlinebreak = {
 		var br = document.createElement("br");
 
 		// "Call insertNode(br) on the active range."
-		getActiveRange().insertNode(br);
+		range.insertNode(br);
 
 		// "Call collapse() on the context object's Selection, with br's parent
 		// as the first argument and one plus br's index as the second
 		// argument."
-		getSelection().collapse(br.parentNode, 1 + getNodeIndex(br));
-		getActiveRange().setStart(br.parentNode, 1 + getNodeIndex(br));
-		getActiveRange().setEnd(br.parentNode, 1 + getNodeIndex(br));
+		Aloha.getSelection().collapse(br.parentNode, 1 + getNodeIndex(br));
+		range.setStart(br.parentNode, 1 + getNodeIndex(br));
+		range.setEnd(br.parentNode, 1 + getNodeIndex(br));
 
 		// "If br is a collapsed line break, call createElement("br") on the
 		// context object and let extra br be the result, then call
 		// insertNode(extra br) on the active range."
 		if (isCollapsedLineBreak(br)) {
-			getActiveRange().insertNode(document.createElement("br"));
+			range.insertNode(createEndBreak());
 
 			// Compensate for nonstandard implementations of insertNode
-			getSelection().collapse(br.parentNode, 1 + getNodeIndex(br));
-			getActiveRange().setStart(br.parentNode, 1 + getNodeIndex(br));
-			getActiveRange().setEnd(br.parentNode, 1 + getNodeIndex(br));
+			Aloha.getSelection().collapse(br.parentNode, 1 + getNodeIndex(br));
+			range.setStart(br.parentNode, 1 + getNodeIndex(br));
+			range.setEnd(br.parentNode, 1 + getNodeIndex(br));
 		}
 	}
 };
@@ -7159,7 +7191,7 @@ commands.insertparagraph = {
 
 				// "Call createElement("br") on the context object, and append
 				// the result as the last child of container."
-				container.appendChild(document.createElement("br"));
+				container.appendChild(createEndBreak());
 
 				// "Call collapse(container, 0) on the context object's
 				// Selection."
@@ -7214,7 +7246,7 @@ commands.insertparagraph = {
 			// Work around browser bugs: some browsers select the
 			// newly-inserted node, not per spec.
 			if (!isDescendant(nextNode(br), container)) {
-				range.insertNode(document.createElement("br"));
+				range.insertNode(createEndBreak());
 				Aloha.getSelection().collapse(node, offset + 1);
 				range.setEnd(node, offset + 1);
 			}
@@ -7236,7 +7268,7 @@ commands.insertparagraph = {
 			// context object and append the result as the last child of
 			// container."
 			if (!container.hasChildNodes()) {
-				container.appendChild(document.createElement("br"));
+				container.appendChild(createEndBreak());
 			}
 
 			// "If container is a dd or dt, and it is not an allowed child of
@@ -7252,7 +7284,7 @@ commands.insertparagraph = {
 			}
 
 			// "Fix disallowed ancestors of container."
-			fixDisallowedAncestors(container);
+			fixDisallowedAncestors(container, range);
 
 			// "Abort these steps."
 			return;
@@ -7346,21 +7378,35 @@ commands.insertparagraph = {
 			}
 		}
 
+		var fragChildren = [], fragChild = frag.firstChild;
+		if (fragChild) {
+			do {
+				if (!isWhitespaceNode(fragChild)) {
+					fragChildren.push(fragChild);
+				}
+			} while(fragChild = fragChild.nextSibling);
+		}
+
+		// if newContainer is a li and frag contains only a list, we add a br in the li
+		if (isHtmlElement(newContainer, "li") && fragChildren.length && isHtmlElement(fragChildren[0], ["ul", "ol"])) {
+			newContainer.appendChild(createEndBreak());
+		}
+
 		// "Call appendChild(frag) on new container."
 		newContainer.appendChild(frag);
 
 		// "If container has no visible children, call createElement("br") on
 		// the context object, and append the result as the last child of
 		// container."
-		if (![].some.call(container.childNodes, isVisible)) {
-			container.appendChild(document.createElement("br"));
+		if (container.offsetHeight == 0 && ![].some.call(container.childNodes, isVisible)) {
+			container.appendChild(createEndBreak());
 		}
 
 		// "If new container has no visible children, call createElement("br")
 		// on the context object, and append the result as the last child of
 		// new container."
-		if (![].some.call(newContainer.childNodes, isVisible)) {
-			newContainer.appendChild(document.createElement("br"));
+		if (newContainer.offsetHeight == 0 && ![].some.call(newContainer.childNodes, isVisible)) {
+			newContainer.appendChild(createEndBreak());
 		}
 
 		// "Call collapse(new container, 0) on the context object's Selection."
@@ -7807,12 +7853,12 @@ commands.selectall = {
 		// "If target is null, call getSelection() on the context object, and
 		// call removeAllRanges() on the result."
 		if (!target) {
-			getSelection().removeAllRanges();
+			Aloha.getSelection().removeAllRanges();
 
 		// "Otherwise, call getSelection() on the context object, and call
 		// selectAllChildren(target) on the result."
 		} else {
-			getSelection().selectAllChildren(target);
+			Aloha.getSelection().selectAllChildren(target);
 		}
 	}
 };

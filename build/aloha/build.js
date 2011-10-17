@@ -156,7 +156,7 @@
         //of its dependencies includes i18n bundles, they may not be included in the
         //built file unless the locale: section is set above.
         {
-            name: "aloha",
+            name: "aloha-bootstrap",
 
             //For build profiles that contain more than one modules entry,
             //allow overrides for the properties that set for the whole build,

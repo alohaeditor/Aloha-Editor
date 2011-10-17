@@ -1,11 +1,12 @@
 define(
 ['aloha/jquery'],
 function (jQuery) {
-return function (TablePlugin) {
 	/**
-	 * Dummy initialize of the CreateLayer object
+	 * Initialize of the CreateLayer object
 	 */
-	CreateLayer = function(){};
+	CreateLayer = function(TablePlugin){
+		this.TablePlugin = TablePlugin;
+	};
 
 	/**
 	 * Internal configuration of the create-table panel
@@ -87,7 +88,7 @@ return function (TablePlugin) {
 					var rows = e.data.rowId + 1;
 					var cols = e.data.colId + 1;
 
-					TablePlugin.createTable(cols, rows);
+					that.TablePlugin.createTable(cols, rows);
 					that.hide();
 				});
 
@@ -206,5 +207,4 @@ return function (TablePlugin) {
 	};
 
 	return CreateLayer;
-};
 });
