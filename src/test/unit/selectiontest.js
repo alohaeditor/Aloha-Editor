@@ -211,18 +211,18 @@ function( TestUtils ) {
 			// With a text node left, and right of start position
 			// NB: These will fail in IE because IE does not accept our
 			//     expected range as valid
-//			[ 'foo{<b></b><p>bar]</p>', 'foo<b>{</b><p>bar]</p>' ],
-//			[ 'foo{<b></b><u></u><p>bar]</p>', 'foo<b></b><u>{</u><p>bar]</p>' ],
-//			[ 'foo{<b></b><div></div><p>bar]</p>', 'foo<b>{</b><div></div><p>bar]</p>' ],
-//			[ '<b>foo{<u></u></b><p>bar]</p>', '<b>foo<u>{</u></b><p>bar]</p>' ],
-//			[ 'foo{<b></b><div><u></u></div><p>bar]</p>', 'foo<b>{</b><div><u></u></div><p>bar]</p>' ],
+			[ 'foo{<b></b><p>bar]</p>', 'foo<b>{</b><p>bar]</p>' ],
+			[ 'foo{<b></b><u></u><p>bar]</p>', 'foo<b></b><u>{</u><p>bar]</p>' ],
+			[ 'foo{<b></b><div></div><p>bar]</p>', 'foo<b>{</b><div></div><p>bar]</p>' ],
+			[ '<b>foo{<u></u></b><p>bar]</p>', '<b>foo<u>{</u></b><p>bar]</p>' ],
+			[ 'foo{<b></b><div><u></u></div><p>bar]</p>', 'foo<b>{</b><div><u></u></div><p>bar]</p>' ],
 			[ '<p>foo{<b></b></p><div><u></u></div><p>bar]</p>', '<p>foo<b>{</b></p><div><u></u></div><p>bar]</p>' ],
 			[ '<div>foo{<b></b><i></i></div><div><u></u></div><p>bar]</p>', '<div>foo<b></b><i>{</i></div><div><u></u></div><p>bar]</p>' ],
 			[ '<div>foo{<b></b><p></p></div><div><u></u></div><p>bar]</p>', '<div>foo<b>{</b><p></p></div><div><u></u></div><p>bar]</p>' ],
 			[ '<div>foo<p>test{<b></b></p></div><div><u></u></div><p>bar]</p>', '<div>foo<p>test<b>{</b></p></div><div><u></u></div><p>bar]</p>' ],
 			
 			// With no text node left of start position, but with one on right
-/*			[ '{<b></b><p>foo]</p>', '<b></b><p>[foo]</p>' ],
+			[ '{<b></b><p>foo]</p>', '<b></b><p>[foo]</p>' ],
 			[ '{<b></b><u></u><p>foo]</p>', '<b></b><u></u><p>[foo]</p>' ],
 			[ '{<b></b><div></div><p>foo]</p>', '<b></b><div></div><p>[foo]</p>' ],
 			[ '<b>{<u></u></b><p>foo]</p>', '<b><u></u></b><p>[foo]</p>' ],
@@ -247,10 +247,11 @@ function( TestUtils ) {
 			[ '<b>{<u></u></b><p>}</p>', '{}<b><u></u></b><p></p>' ],
 			[ '{<b></b><div><u></u></div><p>}</p>', '{}<b></b><div><u></u></div><p></p>' ],
 			[ '<p>{<b></b></p><div><u></u></div><p>}</p>', '{}<p><b></b></p><div><u></u></div><p></p>' ],
+			[ '<b>foo{<u></u></b>bar]', '<b>foo<u></u></b>[bar]' ],
 
-*/			
+//*/			
 
-/*
+//*
 			//
 			// getStartPositionFromEndOfInlineNode
 			//
@@ -260,7 +261,6 @@ function( TestUtils ) {
 			[ '<b>foo{</b><b>bar]</b>', '<b>foo</b><b>[bar]</b>' ],
 			[ '<b><u>foo</u>{</b>bar]', '<b><u>foo</u></b>[bar]' ],
 			[ '<b>foo<u>{</u></b>bar]', '<b>foo<u></u></b>[bar]' ],
-																	[ '<b>foo{<u></u></b>bar]', '<b>foo<u></u></b>[bar]' ],
 			// ... With block node between start container and right text node
 			[ '<b>foo{</b><p></p>bar]', '<b>foo[</b><p></p>bar]' ],
 			[ '<b>foo{</b><p>bar]</p>', '<b>foo[</b><p>bar]</p>' ],
@@ -282,11 +282,11 @@ function( TestUtils ) {
 			[ '<b>foo<u></u>{</b>}', '<b>foo[]<u></u></b>' ],
 			[ '<b><u>foo</u>{</b><p></p>}', '<b><u>foo[]</u></b><p></p>' ],
 			
-			[ '<b>foo{</b>}', '<b>foo[]</b>' ]
+			[ '<b>foo{</b>}', '<b>foo[]</b>' ],
 
-*/
+//*/
 			
-/*
+//*
 			// With a text node left, and right of start container
 			[ 'foo<b>{</b><p>bar]</p>', 'foo<b>{</b><p>bar]</p>' ],
 			[ 'foo<b>{</b><u></u><p>bar]</p>', 'foo<b></b><u>{</u><p>bar]</p>' ],
@@ -314,7 +314,7 @@ function( TestUtils ) {
 			[ 'foo<b>{</b><div><u></u></div><p>}</p>', 'foo[]<b></b><div><u></u></div><p></p>' ],
 			[ '<p>foo<b>{</b></p><div><u></u></div><p>}</p>', '<p>foo[]<b></b></p><div><u></u></div><p></p>' ],
 			
-*/
+//*/
 
 /*
 		
