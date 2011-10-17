@@ -1,6 +1,6 @@
 define(
-['aloha/jquery', 'table/table-plugin-utils'],
-function ($, Utils) {
+['aloha', 'aloha/jquery', 'table/table-plugin-utils', 'i18n!table/nls/i18n'],
+function (Aloha, $, Utils, i18n) {
 	/**
 	 * The TableSelection object is a helper-object
 	 */
@@ -36,11 +36,6 @@ function ($, Utils) {
 	TableSelection.prototype.cellSelectionMode = false;
 
 	/**
-	 * Tells whether to keep the cells selected 
-	 */
-	TableSelection.prototype.keepCellsSelected = false;
-	
-	/**
 	 * Gives the position of the base cell of a selection - [row, column]
 	 */
 	TableSelection.prototype.baseCellPosition = null;
@@ -56,13 +51,9 @@ function ($, Utils) {
 	 * @return void
 	 */
 	TableSelection.prototype.selectColumns = function ( columnsToSelect ) {
-        if ( typeof this.table == 'undefined' || !this.table ) {
-        	return;
-        }
-
 		this.unselectCells();
 
-		var rows = this.table.obj.find("tr").toArray()
+		var rows = this.table.getRows();
 		// first row is the selection row (dump it, it's not needed)
 		rows.shift();
 		
@@ -83,7 +74,6 @@ function ($, Utils) {
 		}
 
 		this.selectionType = 'column';
-		Aloha.trigger( 'aloha-table-selection-changed' );
 	};
 	
 	/**
@@ -92,13 +82,9 @@ function ($, Utils) {
 	 * @return void
 	 */
 	TableSelection.prototype.selectRows = function ( rowsToSelect ) {
-        if ( typeof this.table == 'undefined' || !this.table ) {
-        	return;
-        }
-
 		this.unselectCells();
 
-		var rows = this.table.obj.find("tr").toArray();
+		var rows = this.table.getRows();
 		
  	    rowsToSelect.sort( function ( a, b ) { return a - b; } );
 
@@ -121,9 +107,44 @@ function ($, Utils) {
 		}
 		
 	    this.selectionType = 'row';
-		Aloha.trigger( 'aloha-table-selection-changed' );
+	};
+
+	TableSelection.prototype.selectAll = function () {
+		var rowIndices = $.map( this.table.getRows(), function ( item, i ) {
+			return i;
+		});
+
+		//getRows() returns all rows, even the header row which we must not select
+		rowIndices.shift();
+
+		this.selectRows( rowIndices );
 	};
 	
+	/**
+	 * To be called when cells of the table were selected
+	 * @see selectRows, selectColumns, selectCellRange
+	 * TODO this should be private
+	 */
+	TableSelection.prototype.notifyCellsSelected = function () {
+		Aloha.trigger( 'aloha-table-selection-changed' );
+
+		// the UI feels more consisten when we remove the non-table
+		// selection when cells are selected
+		// TODO this code doesn't work right in IE as it causes the table
+		//  scope of the floating menu to be lost. Maybe this can be
+		//  handled by testing for an empty selection in the
+		//  aloha-selection-changed event.
+		//Aloha.getSelection().removeAllRanges();
+	};
+
+	/**
+	 * To be called when a cell-selection is entirely removed
+	 * @see unselectCells
+	 */
+	TableSelection.prototype._notifyCellsUnselected = function () {
+		Aloha.trigger( 'aloha-table-selection-changed' );
+	};
+
 	/**
 	 * This method return true if all sellected cells are TH cells.
 	 *
@@ -131,10 +152,6 @@ function ($, Utils) {
 	 */
 	TableSelection.prototype.isHeader = function ( ) {
 		
-        if ( typeof this.table == 'undefined' || !this.table ) {
-        	return;
-        }
-        
         if ( this.selectedCells.length == 0 ) {
         	return false;
         }
@@ -154,21 +171,16 @@ function ($, Utils) {
 	 * @return void
 	 */
 	TableSelection.prototype.unselectCells = function(){
-		var 
-		rows;
+		var rows;
 
-		if ( typeof this.table == 'undefined' || !this.table ) {
-    		return;
-		}
-		
 		//don't unselect cells if cellSelectionMode is active
-		if ( this.cellSelectionMode || this.keepCellsSelected ) {
+		if ( this.cellSelectionMode ) {
     		return;
 		}
 
 		if (this.selectedCells.length > 0) {
 			
-			rows = this.table.obj.find("tr").toArray();
+			rows = this.table.getRows();
 			
 			for (var i = 0; i < rows.length; i++) {
 			    for ( var j = 1; j < rows[i].cells.length; j++ ) {  
@@ -180,7 +192,16 @@ function ($, Utils) {
 			this.selectedCells = new Array();
 			this.selectedColumnIdxs = new Array();
 			this.selectedRowIdxs = new Array();
-			this.selectionType = undefined;
+
+			//we keep 'cell' as the default selection type instead of
+			//unsetting the selectionType to avoid an edge-case where a
+			//click into a cell doesn't trigger a call to
+			//TableCell.editableFocs (which would set the 'cell'
+			//selection type) which would result in the FloatingMenu
+			//losing the table scope.
+			this.selectionType = 'cell';
+
+			this._notifyCellsUnselected();
 		}
 	};
 
@@ -207,83 +228,102 @@ function ($, Utils) {
 	 * @return void
 	 */
 	TableSelection.prototype.mergeCells = function(){
-		if (this.selectedCells.length > 0) {
 
-			//sorts the cells
-			this.selectedCells.sort(function(a, b){
-				var aRowId = $(a).parent().prevAll('tr').length;
-				var bRowId = $(b).parent().prevAll('tr').length;
+		var selectedCells = this.selectedCells;
+		if ( 0 === selectedCells.length ) {
+			return;
+		}
 
-				var aColId = $(a).prevAll('td, th').length;
-				var bColId = $(b).prevAll('td, th').length;
+		var grid = Utils.makeGrid( this.table.getRows() );
+		var isSelected = function ( cellInfo ) {
+			return -1 != $.inArray( cellInfo.cell, selectedCells );
+		};
+		var contour = Utils.makeContour( grid, isSelected );
+		if (   -1 !== Utils.indexOfAnyBut( contour.top   , contour.top[0]    )
+			|| -1 !== Utils.indexOfAnyBut( contour.right , contour.right[0]  )
+			|| -1 !== Utils.indexOfAnyBut( contour.bottom, contour.bottom[0] )
+			|| -1 !== Utils.indexOfAnyBut( contour.left  , contour.left[0]   ) ) {
+			Aloha.showMessage(new Aloha.Message({
+				title : i18n.t('Table'),
+				text : i18n.t('table.mergeCells.notRectangular'),
+				type : Aloha.Message.Type.ALERT
+			}));
+			return;
+		}
 
-				if(aRowId < bRowId){
+		//sorts the cells
+		this.selectedCells.sort(function(a, b){
+			var aRowId = $(a).parent().prevAll('tr').length;
+			var bRowId = $(b).parent().prevAll('tr').length;
+
+			var aColId = $(a).prevAll('td, th').length;
+			var bColId = $(b).prevAll('td, th').length;
+
+			if(aRowId < bRowId){
+				return -1; 
+			}
+			else if(aRowId > bRowId){
+				return 1; 
+			}
+			//row id is equal
+			else {
+				//sort by column id
+				if(aColId < bColId){
 					return -1; 
 				}
-				else if(aRowId > bRowId){
+				if(aColId > bColId){
 					return 1; 
 				}
-				//row id is equal
-				else {
-					//sort by column id
-					if(aColId < bColId){
-						return -1; 
-					}
-					if(aColId > bColId){
-						return 1; 
-					}
-				}
-			});
-
-			var firstCell = $(this.selectedCells.shift());
-
-			//set the initial rowspan and colspan
-			var rowspan = parseInt(firstCell.attr('rowspan')) || 1;
-			var colspan = parseInt(firstCell.attr('colspan')) || 1;;
-
-			var firstRowId = prevRowId = firstCell.parent().prevAll('tr').length;
-			var firstColId = firstCell.parent().prevAll('tr').length;
-
-			//iterate through remaining cells
-			for (var i = 0; i < this.selectedCells.length; i++) {
-				//get the current cell
-				var curCell = $(this.selectedCells[i]);
-
-				var curRowId = curCell.parent().prevAll('tr').length;
-
-				//if current cell is in the same row as the first cell,
-				//increase colspan
-				if(curRowId == firstRowId){
-					colspan += (parseInt(curCell.attr('colspan')) || 1); 
-				}
-				//if they are in different rows increase the rowspan
-				else {
-					if(curRowId != prevRowId)
-						rowspan += (parseInt(curCell.attr('rowspan')) || 1);      
-				}
-
-				//set the current row id to previous row id
-				prevRowId = curRowId;
-
-				// get the content of the current row and append it to the first cell
-				firstCell.find(":first-child").append(" " + curCell.find(":first-child").html());
-
-				// remove the cell
-				curCell.remove();
 			}
-			
-			firstCell.attr({ 'rowspan': rowspan, 'colspan': colspan });
+		});
 
-			//select the merged cell
-			this.selectedCells = [firstCell];
+		var firstCell = $(this.selectedCells.shift());
 
-			//reset flags
-			this.cellSelectionMode = false; 
-			this.keepCellsSelected = false;
-			this.baseCellPosition = null;
-			this.lastSelectionRange = null; 
-			this.selectionType = 'cell';
+		//set the initial rowspan and colspan
+		var rowspan = Utils.rowspan( firstCell );
+		var colspan = Utils.colspan( firstCell );
+
+		var firstRowId = prevRowId = firstCell.parent().prevAll('tr').length;
+		var firstColId = firstCell.parent().prevAll('tr').length;
+
+		//iterate through remaining cells
+		for (var i = 0; i < this.selectedCells.length; i++) {
+			//get the current cell
+			var curCell = $(this.selectedCells[i]);
+
+			var curRowId = curCell.parent().prevAll('tr').length;
+
+			//if current cell is in the same row as the first cell,
+			//increase colspan
+			if(curRowId == firstRowId){
+				colspan += Utils.colspan( curCell );
+			}
+			//if they are in different rows increase the rowspan
+			else {
+				if(curRowId != prevRowId)
+					rowspan += Utils.rowspan( curCell );
+			}
+
+			//set the current row id to previous row id
+			prevRowId = curRowId;
+
+			// get the content of the current row and append it to the first cell
+			firstCell.find(":first-child").append(" " + curCell.find(":first-child").html());
+
+			// remove the cell
+			curCell.remove();
 		}
+		
+		firstCell.attr({ 'rowspan': rowspan, 'colspan': colspan });
+
+		//select the merged cell
+		this.selectedCells = [firstCell];
+
+		//reset flags
+		this.cellSelectionMode = false; 
+		this.baseCellPosition = null;
+		this.lastSelectionRange = null; 
+		this.selectionType = 'cell';
 	};
 
 	/**
@@ -298,39 +338,14 @@ function ($, Utils) {
 		var cells_to_split = this.selectedCells;
 		if (cells_to_split.length > 0) {
 
-			//will be populated with rows that will get a new cell prepended
-			var prepend = [];
-			//will be populated with cells that will get a new cell inserted after
-			var after = [];
-
 			$(cells_to_split).each(function(){
-				var $cell = $(this);
-				var colspan = parseInt($cell.attr('colspan')) || 1;
-				var rowspan = parseInt($cell.attr('rowspan')) || 1;
-
-				var $row  = $cell.parent();
-				var $rows = $row.parent().children();
-				var rowIdx = $row.index();
-				var colIdx = $cell.index();
-				var grid = Utils.makeGrid($rows);
-				var gridColumn = Utils.cellIndexToGridColumn($rows, rowIdx, colIdx);
-				for (var i = 0; i < rowspan; i++) {
-					for (var j = (0 === i ? 1 : 0); j < colspan; j++) {
-						var leftCell = Utils.leftDomCell(grid, rowIdx + i, gridColumn);
-						if (null == leftCell) {
-							$rows.eq(rowIdx + i).prepend(selection.table.newActiveCell().obj);
-						} else {
-							$( leftCell ).after(selection.table.newActiveCell().obj);
-						}
-					}
-				}
-				$cell.removeAttr('colspan');
-				$cell.removeAttr('rowspan');
+				Utils.splitCell(this, function () {
+					return selection.table.newActiveCell().obj;
+				});
 			});
 
 			//reset flags
 			this.cellSelectionMode = false; 
-			this.keepCellsSelected = false;
 			this.baseCellPosition = null;
 			this.lastSelectionRange = null; 
 			this.selectionType = 'cell';
