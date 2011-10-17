@@ -251,27 +251,27 @@ function( TestUtils ) {
 
 */			
 
-//*
+/*
 			//
 			// getStartPositionFromEndOfInlineNode
 			//
 			// With text node inside container node and right text node
-//			[ '<b>foo{</b>bar]', '<b>foo</b>[bar]' ],
-//			[ '<b>foo{</b><b></b>bar]', '<b>foo</b><b></b>[bar]' ],
-//			[ '<b>foo{</b><b>bar]</b>', '<b>foo</b><b>[bar]</b>' ],
-//			[ '<b><u>foo</u>{</b>bar]', '<b><u>foo</u></b>[bar]' ],
-//			[ '<b>foo<u>{</u></b>bar]', '<b>foo<u></u></b>[bar]' ],
-//			// ... With block node between start container and right text node
-//			[ '<b>foo{</b><p></p>bar]', '<b>foo[</b><p></p>bar]' ],
-//			[ '<b>foo{</b><p>bar]</p>', '<b>foo[</b><p>bar]</p>' ],
-//			[ '<p><b>foo{</b></p>bar]', '<p><b>foo[</b></p>bar]' ],
-//			// With text node left and right of container node, and none inside
-//			[ 'foo<b>{</b>bar]', 'foo<b></b>[bar]' ],
-//			[ 'foo<b>{</b><b></b>bar]', 'foo<b></b><b></b>[bar]' ],
-//			[ 'foo<b>{</b><b>bar]</b>', 'foo<b></b><b>[bar]</b>' ],
-//			// ... With block node between start container and right text node
-//			[ 'foo<b>{</b><p>bar]</p>', 'foo<b>{</b><p>bar]</p>' ],
-//			[ 'foo<b>{</b><p></p>bar]', 'foo<b>{</b><p></p>bar]' ],
+			[ '<b>foo{</b>bar]', '<b>foo</b>[bar]' ],
+			[ '<b>foo{</b><b></b>bar]', '<b>foo</b><b></b>[bar]' ],
+			[ '<b>foo{</b><b>bar]</b>', '<b>foo</b><b>[bar]</b>' ],
+			[ '<b><u>foo</u>{</b>bar]', '<b><u>foo</u></b>[bar]' ],
+			[ '<b>foo<u>{</u></b>bar]', '<b>foo<u></u></b>[bar]' ],
+			// ... With block node between start container and right text node
+			[ '<b>foo{</b><p></p>bar]', '<b>foo[</b><p></p>bar]' ],
+			[ '<b>foo{</b><p>bar]</p>', '<b>foo[</b><p>bar]</p>' ],
+			[ '<p><b>foo{</b></p>bar]', '<p><b>foo[</b></p>bar]' ],
+			// With text node left and right of container node, and none inside
+			[ 'foo<b>{</b>bar]', 'foo<b></b>[bar]' ],
+			[ 'foo<b>{</b><b></b>bar]', 'foo<b></b><b></b>[bar]' ],
+			[ 'foo<b>{</b><b>bar]</b>', 'foo<b></b><b>[bar]</b>' ],
+			// ... With block node between start container and right text node
+			[ 'foo<b>{</b><p>bar]</p>', 'foo<b>{</b><p>bar]</p>' ],
+			[ 'foo<b>{</b><p></p>bar]', 'foo<b>{</b><p></p>bar]' ],
 			[ 'foo<b>{</b><p></p>}', 'foo[]<b></b><p></p>' ],
 			
 			// With text node left of container, none right and none inside
@@ -284,7 +284,7 @@ function( TestUtils ) {
 			
 			[ '<b>foo{</b>}', '<b>foo[]</b>' ],
 
-//*/
+*/
 			
 /*
 			// With a text node left, and right of start container
@@ -329,7 +329,7 @@ function( TestUtils ) {
 			[ 'foo<p>{</p><p>bar]</p>', 'foo<p></p><p>[bar]</p>' ],
 			[ '<div><p>{</p></div><p>bar]</p>', '<div><p></p></div><p>[bar]</p>' ],
 			[ '<div><p><b>foo</b>{</p></div><p>bar]</p>', '<div><p><b>foo[</b></p></div><p>bar]</p>' ],
-
+	
 			//
 			//		Tests for end position
 			//		In front of block elements start node
@@ -340,20 +340,22 @@ function( TestUtils ) {
 			[ '<b>[foo</b>}<p>bar</p>', '<b>[foo]</b><p>bar</p>' ],
 			[ '<b>[foo</b>}<p></p>bar', '<b>[foo]</b><p></p>bar' ],
 			[ '<b>[foo</b>}<p><b></b>bar</p>', '<b>[foo]</b><p><b></b>bar</p>' ],
-			
+		
 			[ '<b>[foo</b>}<p></p>', '<b>[foo]</b><p></p>' ],
 			[ '<div><b>[foo</b>}<p></p></div>bar', '<div><b>[foo]</b><p></p></div>bar' ],
 			
 			[ '<b>[foo</b>}<p></p>', '<b>[foo]</b><p></p>' ],
 			[ '<b>[foo</b>}<p></p><p>bar</p>', '<b>[foo]</b><p></p><p>bar</p>' ],
 
+*/
 			[ '{}<p>foo</p>', '<p>[]foo</p>' ],
 			[ '<b>foo</b>{}<p>bar</p>', '<b>foo[]</b><p>bar</p>' ], // !!! IE Will not accept our expected range
 			[ '<p>foo</p>{}<p>bar</p>', '<p>foo</p><p>[]bar</p>' ],
-			
+
 			[ '[foo<div>}<p>bar</p></div>', '[foo<div><p>}bar</p></div>' ],
 			[ '<div><p>[foo</p></div><div>}<p>bar</p></div>', '<div><p>[foo</p></div><div><p>}bar</p></div>' ]
 
+//*
 			//
 			//		Tests for end position
 			//		In front of block elements start node
@@ -388,20 +390,20 @@ function( TestUtils ) {
 //			[ '<b>[foo</b></p><div>}<p>bar</p></div>', '<b>[foo]</b><p></p><div><p>bar</p></div>' ] // WebKit corrects to: '<b>[foo</b><p></p><div>}<p>bar</p></div>'
 			// END Deviance from Webkit
 			
-			[ '<p>[foo</p>}<p>bar</p>', '<p>[foo</p><p>}bar</p>' ],
-			[ '<p>[foo</p>}<p></p>bar', '<p>[foo</p><p></p>]bar' ],
-			[ '<p>[foo</p>}<p><b></b>bar</p>', '<p>[foo</p><p>}<b></b>bar</p>' ],
-			[ '<p>[foo</p>}<p></p><p>bar</p>', '<p>[foo</p><p></p><p>}bar</p>' ],
-			[ '<p>[foo</p>}<p><b>bar</b></p>', '<p>[foo</p><p>}<b>bar</b></p>' ],
-			[ '[foo<p></p>}<p>bar</p>', '[foo<p></p><p>}bar</p>' ],
-			[ '[foo<p>bar<b>test</b></p>}<p>test</p>', '[foo<p>bar<b>test</b></p><p>}test</p>' ],
-			[ '{<p></p>}<p>bar</p>', '<p></p><p>[]bar</p>' ],
-			[ '<b>[foo</b></p><div>}<p>bar</p></div>', '<b>[foo</b><p></p><div><p>}bar</p></div>' ],
-			
-			[ '<div><p>[foo</p>}<p></p></div>bar', '<div><p>[foo]</p><p></p></div>bar' ],
-			[ '<p>[foo</p>}<p></p>', '<p>[foo]</p><p></p>' ]
+//			[ '<p>[foo</p>}<p>bar</p>', '<p>[foo</p><p>}bar</p>' ],
+//			[ '<p>[foo</p>}<p></p>bar', '<p>[foo</p><p></p>]bar' ],
+//			[ '<p>[foo</p>}<p><b></b>bar</p>', '<p>[foo</p><p>}<b></b>bar</p>' ],
+//			[ '<p>[foo</p>}<p></p><p>bar</p>', '<p>[foo</p><p></p><p>}bar</p>' ],
+//			[ '<p>[foo</p>}<p><b>bar</b></p>', '<p>[foo</p><p>}<b>bar</b></p>' ],
+//			[ '[foo<p></p>}<p>bar</p>', '[foo<p></p><p>}bar</p>' ],
+//			[ '[foo<p>bar<b>test</b></p>}<p>test</p>', '[foo<p>bar<b>test</b></p><p>}test</p>' ],
+//			[ '{<p></p>}<p>bar</p>', '<p></p><p>[]bar</p>' ],
+//			[ '<b>[foo</b></p><div>}<p>bar</p></div>', '<b>[foo</b><p></p><div><p>}bar</p></div>' ],
+//			
+//			[ '<div><p>[foo</p>}<p></p></div>bar', '<div><p>[foo]</p><p></p></div>bar' ],
+//			[ '<p>[foo</p>}<p></p>', '<p>[foo]</p><p></p>' ]
 
-*/
+//*/
 
 /*
 			//

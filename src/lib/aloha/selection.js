@@ -2642,6 +2642,28 @@ function getRightmostScion ( node, predicate ) {
 	}
 	
 	// scion = getNearestLeftNode( scion );
+	var posbits;
+	var grandScion;
+	while ( scion ) {
+		posbits = compareDocumentPosition( node, scion );
+		
+		if ( !( posbits & 16 ) ) {
+			return null
+		}
+		
+		scion = getLeftNeighbor( scion );
+		grandScion = getRightmostScion( scion, predicate );
+		
+		if ( grandScion ) {
+			return grandScion;
+		}
+		
+		if ( predicate( scion ) ) {
+			return scion;
+		}
+	}
+	
+	/*
 	scion = getLeftNeighbor( scion );
 	if ( scion ) { debugger;
 		var grandScion = getRightmostScion( scion, predicate );
@@ -2654,6 +2676,7 @@ function getRightmostScion ( node, predicate ) {
 			return scion;
 		}
 	}
+	*/
 	
 	return null;
 };
@@ -3176,6 +3199,22 @@ function getStartPositionFromEndOfInlineNode ( node ) {
 	};
 };
 
+// rule:
+//		The end position cannot preceed the start position.
+//		If we detect such a case, then we collapse the selection round
+//		the end position
+//
+// reference:
+//		http://www.w3.org/TR/DOM-Level-3-Core/core.html#Node3-compareDocumentPosition
+//		Bits	Number	Meaning
+//		------  ------  -------
+//		000000	0		Elements are identical.
+//		000001	1		The nodes are in different documents (or one is outside of a document).
+//		000010	2		Node B precedes Node A.
+//		000100	4		Node A precedes Node B.
+//		001000	8		Node B contains Node A.
+//		010000	16		Node A contains Node B.
+//		100000	32		For private use by the browser.
 function getStartPositionBetweenSucceedingBlockNode ( startNode, leftTextNode, succeedingBlockNode ) {
 	var posbits = compareDocumentPosition( startNode, succeedingBlockNode );
 	var correctNode;
