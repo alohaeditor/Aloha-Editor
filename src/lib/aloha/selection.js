@@ -2574,7 +2574,7 @@ function getNodeIndex ( node ) {
 	// A long as node is an existing node which has a parent, then it is a
 	// logical certainty that node's parent will have 1 or more childNodes.
 	// We therefore do not need to check for this.
-	var kids = node.parent.childNodes,
+	var kids = node.parentNode.childNodes,
 		l = kids.length,
 		i = 0;
 	
@@ -2585,6 +2585,21 @@ function getNodeIndex ( node ) {
 	}
 	
 	return -1;
+};
+
+function getFirstLeftScion ( node, predicate ) {
+	if ( !node || !node.firstChild ) {
+		return null;
+	}
+	
+	var scion =  node.firstChild;
+	
+	if ( typeof predicate !== 'function' || predicate( scion ) ) {
+		return scion;
+	}
+	
+	return getFirstLeftScion( node.firstChild, predicate ) ||
+				getFirstLeftScion( node.nextSibling, predicate );
 };
 
 /**
@@ -2641,14 +2656,13 @@ function getRightmostScion ( node, predicate ) {
 		return scion;
 	}
 	
-	// scion = getNearestLeftNode( scion );
 	var posbits;
 	var grandScion;
 	while ( scion ) {
 		posbits = compareDocumentPosition( node, scion );
 		
 		if ( !( posbits & 16 ) ) {
-			return null
+			return null;
 		}
 		
 		scion = getLeftNeighbor( scion );
@@ -2662,21 +2676,6 @@ function getRightmostScion ( node, predicate ) {
 			return scion;
 		}
 	}
-	
-	/*
-	scion = getLeftNeighbor( scion );
-	if ( scion ) { debugger;
-		var grandScion = getRightmostScion( scion, predicate );
-		
-		if ( grandScion ) {
-			return grandScion;
-		}
-		
-		if ( predicate( scion ) ) {
-			return scion;
-		}
-	}
-	*/
 	
 	return null;
 };
@@ -2834,7 +2833,7 @@ function getStartPosition ( container, offset ) {
 		// The offset is somewhere before the end of the container, therefore
 		// check if the node at offset index is a block element.
 		if ( isBlockElement( container.childNodes[ offset ] ) ) {
-			return getStartPositionFromFrontOfBlockNode( container, offset );
+			return getStartPositionFromFrontOfBlockNode( container.childNodes[ offset ] );
 		}
 	}
 	
@@ -2874,7 +2873,7 @@ function getEndPosition ( container, offset ) {
 		// The offset is somewhere before the end of the container, therefore
 		// check if the node at offset index is a block element.
 		if ( isBlockElement( container.childNodes[ offset ] ) ) {
-			return getEndPositionFromFrontOfBlockNode( container, offset );
+			return getEndPositionFromFrontOfBlockNode( container.childNodes[ offset ] );
 		}
 	}
 	
@@ -3336,11 +3335,9 @@ function getEndPositionFromFrontOfInlineNode ( node, offset ) {
 	};
 };
 
-function getStartPositionFromFrontOfBlockNode ( node, offset ) {
-	var child = node.childNodes[ offset ];
+function getStartPositionFromFrontOfBlockNode ( node ) {
+	var child = node;
 	var stop;
-	
-	debugger
 	
 	// If this node has no nodes to the left of it, or
 	// if the left neighbor of this node is a block element, we are not
@@ -3502,72 +3499,140 @@ function getEndPositionFromEndOfBlockNode ( node, offset ) {
  * '<p>[foo</p><p>}bar</p>' and Internet Explorer will always convert this to
  * '<p>[foo]</p><p>bar</p>'
  */
-function getEndPositionFromFrontOfBlockNode ( node, offset ) {
-	var child = node.childNodes[ offset ];
-	var stop;
+function getEndPositionFromFrontOfBlockNode ( node ) {
+	var rightNode,
+	    leftTextNode,
+		rightTextNode;
 	
-	// If there are no preceeding sibling (nodes to the left of our child node)
-	// if the left neighbor of this node is a block element, we are not
-	// permitted to explorer anywhere left of our current position to
-	// find a new landing position. Our only option in to go right.
-	// We satisfy:
-	// [ '<p>[foo</p>}<p>bar</p>', '<p>[foo</p><p>}bar</p>' ],
-	// [ '<p>[foo</p>}<p></p>bar', '<p>[foo</p><p></p>]bar' ],
-	// [ '<p>[foo</p>}<p><b></b>bar</p>', '<p>[foo</p><p>}<b></b>bar</p>' ]
-	//
-	// We check if there is no previousSibling in order to satisfy this:
-	// '[foo<div>}<p>bar</p></div>', '[foo<div><p>}bar</p></div>'
-	if ( !child.previousSibling || isBlockElement( getLeftNeighbor( child ) ) ) {
-		/*
-		stop = child;
-		while ( stop && getNodeLength( stop ) == 0 ) {
-			stop = stop.nextSibling;
-		}
-		*/
-		
-		stop = getNearestRightNode( child, isTextNode );
-		
-		if ( stop  ) {
-			/*
-			if ( isBlockElement( stop ) ) {
-				// [ '{}<p>foo</p>', '<p>[]foo</p>' ],
-				// [ '{}<div><p>bar</p></div>', '<div><p>[]bar</p></div>' ],
-				// var textNode = getLeftmostScion( stop, isTextNode );
-				if ( textNode ) {
-					return {
-						node   : textNode,
-						offset : 0
-					};
-				}
-			}
-			*/
-			
+	// [ '[foo}<p>bar</p>', '[foo]<p>bar</p>' ],
+	if ( node.previousSibling && !isBlockElement( getLeftNeighbor( node ) ) ) {
+		leftTextNode = getNearestLeftNode( node, isTextNode );
+		if ( leftTextNode ) {
 			return {
-				node   : stop,
-				offset : 0
+				node   : leftTextNode,
+				offset : getNodeLength( leftTextNode )
 			};
 		}
 	}
 	
-	// We cannot go right, then go left
-	// Satisfies:
-	// [ '<p>[foo</p>}<p></p>', '<p>[foo]</p><p</p>' ]
-	stop = getNearestLeftNode( child, isTextNode );
-	if ( stop ) {
+	// There are no inline nodes to the left of our start position. Or else
+	// there was a an inline node but there was no text node on which to land
+	// on. So try and find a place to land on the right.
+	
+	
+	// recursively look for deepest block node with children, and position end
+	// point at in front of first child.
+	// if we cannot find such a block node, then look for the very next
+	// thing and stop at its first place
+	
+	
+	var f = function ( node, predicate ) {
+		if ( !node ) {
+			return null;
+		}
+		
+		var r;
+		
+		if ( node.firstChild ) {
+			r = f( node.firstChild, predicate );
+		}
+		
+		if ( !r && node.nextSibling ) {
+			r = f( node.nextSibling, predicate );
+		}
+		
+		if ( r ) {
+			return r;
+		}
+		
+		if ( typeof predicate !== 'function' || predicate( node ) ) {
+			return node;
+		}
+		
+		return null;
+	};
+	
+	var rightNode = node;
+	
+	while ( rightNode ) {
+		if ( isBlockElement( rightNode ) ) {
+			rightTextNode = f( rightNode.firstChild, isTextNode );
+			
+			if ( rightTextNode ) {
+				break;
+			}
+		}
+		
+		rightNode = rightNode.nextSibling;
+	}
+	
+	if ( !rightTextNode ) {
+		rightNode =  node;
+		
+		while ( rightNode ) {
+			if ( isTextNode( rightNode ) ) {
+				rightTextNode = rightNode;
+				break;
+			}
+			
+			rightTextNode = f( rightNode.firstChild, isTextNode );
+			
+			if ( rightTextNode ) {
+				break;
+			}
+			
+			rightNode = rightNode.nextSibling;
+		}
+	}
+	
+	if ( rightTextNode ) {
+		while ( true ) {
+			if ( isBlockElement( rightTextNode ) ) {
+				break;
+			} else if ( !isEditingHost( rightTextNode.parentNode ) ) {
+				rightTextNode = rightTextNode.parentNode;
+			} else if ( rightTextNode.previousSibling
+							&& !isBlockElement( rightTextNode.previousSibling ) ) {
+				rightTextNode = rightTextNode.previousSibling;
+			} else {
+				break;
+			}
+			
+		}
+		
 		return {
-			node   : stop,
-			offset : getNodeLength( stop )
+			node   : rightTextNode,
+			offset : 0
 		};
 	}
 	
-	// We cannot go left or right.. jump to the front of the editing host
+	// We cannot go right, try left again, this time less discriminantly
+	leftTextNode = getNearestLeftNode( node, isTextNode );
+	if ( leftTextNode ) {
+		return {
+			node   : leftTextNode,
+			offset : getNodeLength( leftTextNode )
+		};
+	}
+	
+	// Nothing left go right again, this time less discriminantly
+	rightTextNode = getNearestRightNode( node, isTextNode );
+	if ( rightTextNode ) {
+		return {
+			node   : rightTextNode,
+			offset : 0
+		};
+	}
+	
+	// There are absolutely no text nodes, right or left is our original end
+	// position. We will therefore jump to the very start of our editing host
 	// Satisfies:
 	// [ '{}<p></p>', '{}<p></p>' ]
 	// [ '{<p>}</p>', '{}<p></p>' ]
 	// [ '{<p></p>}', '{<p></p>}' ]
 	// [ '{<p></p>}<p></p>', '{}<p></p><p></p>' ]
 	return {
-		node   : getEditingHost( child ),
+		node   : getEditingHost( node ),
 		offset : 0
 	};
 };
@@ -3588,7 +3653,7 @@ function sanitizeOffset ( node, offset ) {
 };
 
 function correctRange ( range ) {
-	return range;
+	// return range;
 	
 	var startContainer = range.startContainer,
 	    startOffset = range.startOffset,
