@@ -5849,7 +5849,7 @@ function justifySelection(alignment, range) {
 		// it, preserving its descendants."
 		if (isHtmlElement(element, ["div", "span", "center"])
 		&& !element.attributes.length) {
-			removePreservingDescendants(element);
+			removePreservingDescendants(element, range);
 		}
 
 		// "If element is a center with one or more attributes, set the tag
@@ -5999,7 +5999,7 @@ commands["delete"] = {
 			&& offset - 1 < node.childNodes.length
 			&& isEditable(node.childNodes[offset - 1])
 			&& isHtmlElement(node.childNodes[offset - 1], "a")) {
-				removePreservingDescendants(node.childNodes[offset - 1]);
+				removePreservingDescendants(node.childNodes[offset - 1], range);
 				return;
 
 			// "Otherwise, if node has a child with index offset − 1 and that
@@ -6361,7 +6361,7 @@ commands.formatblock = {
 
 				// "Remove the first member of node list from its parent,
 				// preserving its descendants."
-				removePreservingDescendants(nodeList[0]);
+				removePreservingDescendants(nodeList[0], range);
 
 				// "Restore the values from values."
 				restoreValues(values, range);
