@@ -3340,6 +3340,8 @@ function getStartPositionFromFrontOfBlockNode ( node, offset ) {
 	var child = node.childNodes[ offset ];
 	var stop;
 	
+	debugger
+	
 	// If this node has no nodes to the left of it, or
 	// if the left neighbor of this node is a block element, we are not
 	// permitted to explorer anywhere left of our current position to
@@ -3586,7 +3588,7 @@ function sanitizeOffset ( node, offset ) {
 };
 
 function correctRange ( range ) {
-	// return range;
+	return range;
 	
 	var startContainer = range.startContainer,
 	    startOffset = range.startOffset,
