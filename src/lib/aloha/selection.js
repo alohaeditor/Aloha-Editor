@@ -585,7 +585,8 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 				Aloha.Log.debug(this, 'tag comparison for <' + domobj.tagName.toLowerCase() + '> failed because one element has classes and the other has not');
 				return false;
 			}
-			if (classes && classes2 && classes.length != classes.length) {
+
+			if (classes && classes2 && classes.length !== classes2.length) {
 				Aloha.Log.debug(this, 'tag comparison for <' + domobj.tagName.toLowerCase() + '> failed because of a different amount of classes');
 				return false;
 			}
@@ -2381,7 +2382,11 @@ var phrasingElementsLookupTable = {
 	'VAR'      : true,
 	'VIDEO'    : true,
 	'WBR'      : true
+<<<<<<< HEAD
 }
+=======
+};
+>>>>>>> 0a847830c08391c3b62d6ab24b381aa751bda7ba
 	
 var voidElementsLookupTable = {
 	'AREA'    : true,
@@ -2462,10 +2467,13 @@ var blockElementsLookupTable = {
 // Useful variables defined in engine.js:
 // namesOfElementsWithInlineContents
 
+<<<<<<< HEAD
 /**
  * @param {DOMElement} node
  * @return {Boolean} returns true of node is a canonical block element
  */
+=======
+>>>>>>> 0a847830c08391c3b62d6ab24b381aa751bda7ba
 function isBlockElement ( node ) {
 	return !!( node && flowElementsLookupTable[ node.nodeName ] );
 	//return !!( node && blockElementsLookupTable[ node.nodeName ] );
@@ -2543,26 +2551,37 @@ function getLeftNeighbor ( node ) {
  * 
  * @param {DOMElement} node
  */
+<<<<<<< HEAD
 function getRightNeighbor ( node, predicate ) {
+=======
+function getRightNeighbor ( node ) {
+>>>>>>> 0a847830c08391c3b62d6ab24b381aa751bda7ba
 	if ( !node ) {
 		return null;
 	}
 	
 	if ( node.nextSibling ) {
+<<<<<<< HEAD
 		if ( typeof predicate !== 'function' ||
 				predicate( node.nextSibling ) ) {
 			return node.nextSibling;
 		}
+=======
+		return node.nextSibling;
+>>>>>>> 0a847830c08391c3b62d6ab24b381aa751bda7ba
 	}
 	
 	if ( !node.parentNode || isEditingHost( node.parentNode ) ) {
 		return null;
 	}
 	
+<<<<<<< HEAD
 	if ( typeof predicate === 'function' && predicate( node.parentNode ) ) {
 		return node.parentNode;
 	}
 	
+=======
+>>>>>>> 0a847830c08391c3b62d6ab24b381aa751bda7ba
 	return getRightNeighbor( node.parentNode );
 };
 
@@ -2602,6 +2621,7 @@ function getLeftmostScion ( node, predicate ) {
 		return scion;
 	}
 	
+<<<<<<< HEAD
 	//scion = getNearestRightNode( scion );
 	scion = getRightNeighbor( scion );
 	if ( scion ) {
@@ -2614,6 +2634,11 @@ function getLeftmostScion ( node, predicate ) {
 		if ( predicate( scion ) ) {
 			return scion;
 		}
+=======
+	scion = getNearestRightNode( scion );
+	if ( scion ) {
+		return getLeftmostScion( scion, predicate ) || scion;
+>>>>>>> 0a847830c08391c3b62d6ab24b381aa751bda7ba
 	}
 	
 	return null;
@@ -2641,6 +2666,7 @@ function getRightmostScion ( node, predicate ) {
 		return scion;
 	}
 	
+<<<<<<< HEAD
 	// scion = getNearestLeftNode( scion );
 	var posbits;
 	var grandScion;
@@ -2677,6 +2703,12 @@ function getRightmostScion ( node, predicate ) {
 		}
 	}
 	*/
+=======
+	scion = getNearestLeftNode( scion );
+	if ( scion ) {
+		return getRightmostScion( scion, predicate ) || scion;
+	}
+>>>>>>> 0a847830c08391c3b62d6ab24b381aa751bda7ba
 	
 	return null;
 };
@@ -2693,7 +2725,11 @@ function getRightmostScion ( node, predicate ) {
  * @param {Function} predicate
  */
 function getNearestLeftNode ( node, predicate ) {
+<<<<<<< HEAD
 	if ( !node || isEditingHost( node ) ) {
+=======
+	if ( !node ) {
+>>>>>>> 0a847830c08391c3b62d6ab24b381aa751bda7ba
 		return null;
 	}
 	
@@ -2707,10 +2743,17 @@ function getNearestLeftNode ( node, predicate ) {
 	
 	// ... then find the very right most container of this left neighbor
 	
+<<<<<<< HEAD
 	var scion = getRightmostScion( node, predicate );
 	
 	if ( scion ) {
 		if ( typeof predicate !== 'function' || predicate( scion ) ) {
+=======
+	var scion = getRightmostScion( node );
+	
+	if ( scion ) {
+		if ( typeof predicate !== 'function' || predicate ( scion ) ) {
+>>>>>>> 0a847830c08391c3b62d6ab24b381aa751bda7ba
 			return scion;
 		}
 	}
@@ -2737,7 +2780,11 @@ function getNearestLeftNode ( node, predicate ) {
  * <b></b><b></b><p><b></b><b>[f</b>foo]</p>
  */
 function getNearestRightNode ( node, predicate ) {
+<<<<<<< HEAD
 	if ( !node || isEditingHost( node ) ) {
+=======
+	if ( !node ) {
+>>>>>>> 0a847830c08391c3b62d6ab24b381aa751bda7ba
 		return null;
 	}
 	
@@ -2813,6 +2860,7 @@ function getStartPosition ( container, offset ) {
 	// Should we just throw an INDEX_SIZE_ERR exception
 	offset = sanitizeOffset( container, offset );
 	
+<<<<<<< HEAD
 	if ( isTextNode( container ) ) {
 		return {
 			node   : container,
@@ -2820,6 +2868,8 @@ function getStartPosition ( container, offset ) {
 		};
 	}
 	
+=======
+>>>>>>> 0a847830c08391c3b62d6ab24b381aa751bda7ba
 	if ( isBlockElement( container ) ) {
 		// If the offset is equal to the container's length, then either we
 		// are positioned in an empty container, or else the offset is
@@ -2834,6 +2884,7 @@ function getStartPosition ( container, offset ) {
 		// The offset is somewhere before the end of the container, therefore
 		// check if the node at offset index is a block element.
 		if ( isBlockElement( container.childNodes[ offset ] ) ) {
+<<<<<<< HEAD
 			return getStartPositionFromFrontOfBlockNode( container, offset );
 		}
 	}
@@ -2843,6 +2894,23 @@ function getStartPosition ( container, offset ) {
 	}
 	
 	return getStartPositionFromFrontOfInlineNode( container.childNodes[ offset ] );
+=======
+			return getStartPositionFromFrontOfBlockNode(
+				container.childNodes[ offset ], offset
+			);
+		}
+		
+		// We have a non-block level element
+		return getStartPositionFromFrontOfInlineNode (
+			container.childNodes[ offset ], offset
+		);
+		
+		return {
+			node   : container,
+			offset : offset
+		};
+	}
+>>>>>>> 0a847830c08391c3b62d6ab24b381aa751bda7ba
 };
 
 function getEndPosition ( container, offset ) {
@@ -2853,6 +2921,7 @@ function getEndPosition ( container, offset ) {
 	// Should we just throw an INDEX_SIZE_ERR exception
 	offset = sanitizeOffset( container, offset );
 	
+<<<<<<< HEAD
 	if ( isTextNode( container ) ) {
 		return {
 			node   : container,
@@ -2860,6 +2929,8 @@ function getEndPosition ( container, offset ) {
 		};
 	}
 	
+=======
+>>>>>>> 0a847830c08391c3b62d6ab24b381aa751bda7ba
 	if ( isBlockElement( container ) ) {
 		// If the offset is equal to the container's length, then either we
 		// are positioned in an empty container, or else the offset is
@@ -2871,6 +2942,7 @@ function getEndPosition ( container, offset ) {
 			return getEndPositionFromEndOfBlockNode( container, offset );
 		}
 		
+<<<<<<< HEAD
 		// The offset is somewhere before the end of the container, therefore
 		// check if the node at offset index is a block element.
 		if ( isBlockElement( container.childNodes[ offset ] ) ) {
@@ -3292,6 +3364,27 @@ function getEndPositionFromEndOfInlineNode ( node, offset ) {
 		};
 	}
 	
+=======
+		// The offset is somewhere after the start of the container, therefore
+		// check if the node at offset index is a block element.
+		if ( isBlockElement( container.childNodes[ offset ] ) ) {
+			return getEndPositionFromFrontOfBlockNode(
+				container.childNodes[ offset ], offset
+			);
+		}
+	}
+	
+	// We have a non-block level element
+	return getEndPositionFromFrontOfInlineNode (
+		container.childNodes[ offset ], offset
+	);
+};
+
+/**
+ * Won't offset always be 0?
+ */
+function getStartPositionFromFrontOfInlineNode ( node, offset ) {
+>>>>>>> 0a847830c08391c3b62d6ab24b381aa751bda7ba
 	return {
 		node   : node,
 		offset : offset
@@ -3299,6 +3392,7 @@ function getEndPositionFromEndOfInlineNode ( node, offset ) {
 };
 
 function getEndPositionFromFrontOfInlineNode ( node, offset ) {
+<<<<<<< HEAD
 	var child = node.childNodes[ offset ];
 	var stop;
 	
@@ -3328,6 +3422,18 @@ function getEndPositionFromFrontOfInlineNode ( node, offset ) {
 			node   : stop,
 			offset : 0
 		};
+=======
+	var stop = node;
+	
+	while ( ( stop = stop.parentNode ) && !isEditingHost( stop ) ) {
+		if ( isBlockElement( stop ) &&
+				getNearestLeftNode( stop, isTextNode ) ) {
+			return {
+				node   : stop,
+				offset : 0
+			};
+		}
+>>>>>>> 0a847830c08391c3b62d6ab24b381aa751bda7ba
 	}
 	
 	return {
@@ -3337,6 +3443,7 @@ function getEndPositionFromFrontOfInlineNode ( node, offset ) {
 };
 
 function getStartPositionFromFrontOfBlockNode ( node, offset ) {
+<<<<<<< HEAD
 	var child = node.childNodes[ offset ];
 	var stop;
 	
@@ -3353,6 +3460,18 @@ function getStartPositionFromFrontOfBlockNode ( node, offset ) {
 		// [ '{<p></p><p>}foo</p>', '<p></p><p>[]foo</p>' ],
 		if ( !stop ) {
 			stop = getNearestRightNode( child, isTextNode );
+=======
+	var stop;
+	
+	// If the left neighbor of this node is a block element, we are not
+	// permitted to explorer anywhere left of our current position to
+	// find a new landing position. Our only option in to go right.
+	if ( !node.previousSibling || isBlockElement( getLeftNeighbor( node ) ) ) {
+		stop = getLeftmostScion( node );
+		
+		while ( stop && stop.nodeType != Node.TEXT_NODE ) {
+			stop = getNearestRightNode( stop );
+>>>>>>> 0a847830c08391c3b62d6ab24b381aa751bda7ba
 		}
 		
 		if ( stop ) {
@@ -3369,6 +3488,7 @@ function getStartPositionFromFrontOfBlockNode ( node, offset ) {
 	// foo{<p>bar]</p> corrects to foo[<p>bar]</p>
 	// <b>foo</b>{<p>bar]</p> corrects to <b>foo[</b><p>bar]</p>
 	// foo<b></b>{<p>bar</p> correct to foo<b>{</b><p>bar]</p>
+<<<<<<< HEAD
 	stop = getNearestLeftNode( child, isTextNode );
 	if ( stop ) {
 		// Satisfies:
@@ -3379,6 +3499,14 @@ function getStartPositionFromFrontOfBlockNode ( node, offset ) {
 				!getLeftmostScion( child, isTextNode ) &&
 					getNearestRightNode( child, isTextNode ) ) {
 			stop = getNearestLeftNode( child );
+=======
+	stop = getNearestLeftNode( node, isTextNode );
+	if ( stop ) {
+		// Satisfies:
+		// [ 'foo<b></b>{<p>bar]</p>', 'foo<b>{</b><p>bar]</p>' ]
+		if ( getRightNeighbor( stop ) != node ) {
+			stop = getNearestLeftNode( node );
+>>>>>>> 0a847830c08391c3b62d6ab24b381aa751bda7ba
 		}
 		
 		return {
@@ -3392,6 +3520,7 @@ function getStartPositionFromFrontOfBlockNode ( node, offset ) {
 	// left, so we will contract the selection instead, by moving the start
 	// position to the nearest text node to the right.
 	// Satisfies:
+<<<<<<< HEAD
 	// [ '<b></b>{<p>foo]</p>', '<b></b><p>[foo]</p>' ]
 	stop = getLeftmostScion( child, isTextNode );
 	
@@ -3401,6 +3530,10 @@ function getStartPositionFromFrontOfBlockNode ( node, offset ) {
 		stop = getNearestRightNode( child, isTextNode );
 	}
 	
+=======
+	// [ '<p><b></b>foo]</p>', '<p><b></b>[foo]</p>' ]
+	stop = getLeftmostScion( node, isTextNode );
+>>>>>>> 0a847830c08391c3b62d6ab24b381aa751bda7ba
 	if ( stop ) {
 		return  {
 			node   : stop,
@@ -3408,15 +3541,24 @@ function getStartPositionFromFrontOfBlockNode ( node, offset ) {
 		};
 	}
 	
+<<<<<<< HEAD
 	// There is absolutely no textNode inwhich to place our start position, so
 	// place it at the start of the editing host
 	return {
 		node   : getEditingHost( child ),
 		offset : 0
+=======
+	// We found to text node to land on, return the original start
+	// position ...
+	return {
+		node   : stop,
+		offset : offset
+>>>>>>> 0a847830c08391c3b62d6ab24b381aa751bda7ba
 	};
 };
 
 function getStartPositionFromEndOfBlockNode ( node , offset ) {
+<<<<<<< HEAD
 	var correctNode;
 	
 	correctNode = getRightmostScion( node );
@@ -3424,15 +3566,31 @@ function getStartPositionFromEndOfBlockNode ( node , offset ) {
 		return {
 			node   : correctNode,
 			offset : getNodeLength( correctNode )
+=======
+	var stop;
+	
+	stop = getRightmostScion( node );
+	if ( stop ) {
+		return {
+			node   : stop,
+			offset : getNodeLength( stop )
+>>>>>>> 0a847830c08391c3b62d6ab24b381aa751bda7ba
 		};
 	}
 	
 	// There is no child nodes inside of the container node, so contract the
 	// selection rightwards
+<<<<<<< HEAD
 	correctNode = getNearestRightNode( node );
 	if ( correctNode ) {
 		return {
 			node   : correctNode,
+=======
+	stop = getNearestRightNode( node );
+	if ( stop ) {
+		return {
+			node   : stop,
+>>>>>>> 0a847830c08391c3b62d6ab24b381aa751bda7ba
 			offset : 0
 		};
 	}
@@ -3456,6 +3614,7 @@ function getStartPositionFromEndOfBlockNode ( node , offset ) {
  *   [ '[foo<div><p>bar<u></u></p>}</div>', '[foo<div><p>bar]<u></u></p></div>' ]
  */
 function getEndPositionFromEndOfBlockNode ( node, offset ) {
+<<<<<<< HEAD
 	var endNode;
 	
 	// Satisfies
@@ -3465,6 +3624,17 @@ function getEndPositionFromEndOfBlockNode ( node, offset ) {
 		return {
 			node   : endNode,
 			offset : getNodeLength( endNode )
+=======
+	var stop;
+	
+	// Satisfies
+	// [ '<p>[foo}</p>', '<p>[foo]</p>' ],
+	stop = getRightmostScion( node, isTextNode );
+	if ( stop ) {
+		return {
+			node   : stop,
+			offset : getNodeLength( stop )
+>>>>>>> 0a847830c08391c3b62d6ab24b381aa751bda7ba
 		};
 	}
 	
@@ -3473,21 +3643,43 @@ function getEndPositionFromEndOfBlockNode ( node, offset ) {
 	// position
 	// Satisfies:
 	// [ '[foo<p>}</p>', '[foo]<p></p>' ],
+<<<<<<< HEAD
 	endNode = getNearestLeftNode( node, isTextNode );
 	if ( endNode ) {
 		return {
 			node   : endNode,
 			offset : getNodeLength( endNode )
+=======
+	stop = getNearestLeftNode( node, isTextNode );
+	if ( stop ) {
+		return {
+			node   : stop,
+			offset : getNodeLength( stop )
+>>>>>>> 0a847830c08391c3b62d6ab24b381aa751bda7ba
 		};
 	}
 	
 	// There is nowhere to land left of the end position either
 	// Satisfies:
 	// [ '{<b></b><p>}</p>', '{}<b></b><p></p>' ]
+<<<<<<< HEAD
 	// [ '{<p>}</p>', '{}<p></p>' ]
 	return {
 		node   : getEditingHost( node ),
 		offset : 0
+=======
+	stop = getLeftNeighbor( node );
+	if ( stop ) {
+		return {
+			node   : stop.parentNode,
+			offset : 0
+		};
+	}
+	
+	return {
+		node   : node,
+		offset : offset
+>>>>>>> 0a847830c08391c3b62d6ab24b381aa751bda7ba
 	};
 };
 
@@ -3501,11 +3693,17 @@ function getEndPositionFromEndOfBlockNode ( node, offset ) {
  * '<p>[foo]</p><p>bar</p>'
  */
 function getEndPositionFromFrontOfBlockNode ( node, offset ) {
+<<<<<<< HEAD
 	var child = node.childNodes[ offset ];
 	var stop;
 	
 	// If there are no preceeding sibling (nodes to the left of our child node)
 	// if the left neighbor of this node is a block element, we are not
+=======
+	var stop;
+	
+	// If the left neighbor of this node is a block element, we are not
+>>>>>>> 0a847830c08391c3b62d6ab24b381aa751bda7ba
 	// permitted to explorer anywhere left of our current position to
 	// find a new landing position. Our only option in to go right.
 	// We satisfy:
@@ -3515,6 +3713,7 @@ function getEndPositionFromFrontOfBlockNode ( node, offset ) {
 	//
 	// We check if there is no previousSibling in order to satisfy this:
 	// '[foo<div>}<p>bar</p></div>', '[foo<div><p>}bar</p></div>'
+<<<<<<< HEAD
 	if ( !child.previousSibling || isBlockElement( getLeftNeighbor( child ) ) ) {
 		/*
 		stop = child;
@@ -3531,6 +3730,20 @@ function getEndPositionFromFrontOfBlockNode ( node, offset ) {
 				// [ '{}<p>foo</p>', '<p>[]foo</p>' ],
 				// [ '{}<div><p>bar</p></div>', '<div><p>[]bar</p></div>' ],
 				// var textNode = getLeftmostScion( stop, isTextNode );
+=======
+	if ( !node.previousSibling || isBlockElement( getLeftNeighbor( node ) ) ) {
+		stop = node;
+		
+		while ( stop && getNodeLength( stop ) == 0 ) {
+			stop = stop.nextSibling;
+		}
+		
+		if ( stop  ) {
+			if ( isBlockElement( stop ) ) {
+				// [ '{}<p>foo</p>', '<p>[]foo</p>' ],
+				// [ '{}<div><p>bar</p></div>', '<div><p>[]bar</p></div>' ],
+				var textNode = getLeftmostScion( stop, isTextNode );
+>>>>>>> 0a847830c08391c3b62d6ab24b381aa751bda7ba
 				if ( textNode ) {
 					return {
 						node   : textNode,
@@ -3538,7 +3751,10 @@ function getEndPositionFromFrontOfBlockNode ( node, offset ) {
 					};
 				}
 			}
+<<<<<<< HEAD
 			*/
+=======
+>>>>>>> 0a847830c08391c3b62d6ab24b381aa751bda7ba
 			
 			return {
 				node   : stop,
@@ -3550,7 +3766,11 @@ function getEndPositionFromFrontOfBlockNode ( node, offset ) {
 	// We cannot go right, then go left
 	// Satisfies:
 	// [ '<p>[foo</p>}<p></p>', '<p>[foo]</p><p</p>' ]
+<<<<<<< HEAD
 	stop = getNearestLeftNode( child, isTextNode );
+=======
+	stop = getNearestLeftNode( node, isTextNode );
+>>>>>>> 0a847830c08391c3b62d6ab24b381aa751bda7ba
 	if ( stop ) {
 		return {
 			node   : stop,
@@ -3558,6 +3778,7 @@ function getEndPositionFromFrontOfBlockNode ( node, offset ) {
 		};
 	}
 	
+<<<<<<< HEAD
 	// We cannot go left or right.. jump to the front of the editing host
 	// Satisfies:
 	// [ '{}<p></p>', '{}<p></p>' ]
@@ -3567,6 +3788,23 @@ function getEndPositionFromFrontOfBlockNode ( node, offset ) {
 	return {
 		node   : getEditingHost( child ),
 		offset : 0
+=======
+	// We cannot find a landing position on the left, then jump to the very
+	// front.
+	// Satisfies:
+	// [ '{<p></p>}<p></p>', '{}<p></p><p></p>' ]
+	stop = getLeftNeighbor( node );
+	if ( stop ) {
+		return {
+			stop   : stop.parentNode,
+			offset : 0
+		};
+	}
+	
+	return {
+		stop   : node,
+		offset : offset
+>>>>>>> 0a847830c08391c3b62d6ab24b381aa751bda7ba
 	};
 };
 
@@ -3586,7 +3824,11 @@ function sanitizeOffset ( node, offset ) {
 };
 
 function correctRange ( range ) {
+<<<<<<< HEAD
 	// return range;
+=======
+	//return range;
+>>>>>>> 0a847830c08391c3b62d6ab24b381aa751bda7ba
 	
 	var startContainer = range.startContainer,
 	    startOffset = range.startOffset,
@@ -3804,11 +4046,19 @@ function correctRange ( range ) {
 		 */
 		getRangeAt: function ( index ) {
 			return correctRange( this._nativeSelection.getRangeAt( index ) );
+<<<<<<< HEAD
 
 			//if ( index < 0 || this.rangeCount ) {
 			//	throw "INDEX_SIZE_ERR DOM";
 			//}
 			//return this._ranges[index];
+=======
+
+			//if ( index < 0 || this.rangeCount ) {
+			//	throw "INDEX_SIZE_ERR DOM";
+			//}
+			//return this._ranges[index];
+>>>>>>> 0a847830c08391c3b62d6ab24b381aa751bda7ba
 		},
 		
 		/**
