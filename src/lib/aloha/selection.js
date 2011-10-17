@@ -2299,7 +2299,7 @@ function getStartPosition ( container, offset ) {
 		// block element, and we will therefore try and place our end position
 		// somewhere backwards.
 		if ( offset == getNodeLength( container ) ) {
-			return getStartPositionFromEndOfBlockNode( container, offset );
+			return getStartPositionFromEndOfBlockNode( container );
 		}
 		
 		// The offset is somewhere before the end of the container, therefore
@@ -2479,11 +2479,15 @@ function getStartPositionBetweenSucceedingBlockNode ( startNode,
  * @param {DOMElement} node
  * @return {Object} position object with properties node and offset
  */
+
+ // Needs tlc
 function getStartPositionFromFrontOfInlineNode ( node ) {
 	var rightNode,
 	    leftTextNode,
 	    rightTextNode,
 		succeedingBlockNode;
+	
+	//debugger;
 	
 	if ( isTextNode( node ) ) {
 		return {
@@ -2798,30 +2802,31 @@ function getStartPositionFromFrontOfBlockNode ( node ) {
 	};
 };
 
-function getStartPositionFromEndOfBlockNode ( node , offset ) {
-	var correctNode;
+function getStartPositionFromEndOfBlockNode ( node ) {
+	var rightTextNode;
 	
-	correctNode = getRightmostScion( node );
-	if ( correctNode ) {
+	// [ '<p>foo{</p>bar]', '<p>foo[</p>bar]' ],
+	rightTextNode = getRightmostScion( node, isTextNode );
+	if ( rightTextNode ) {
 		return {
-			node   : correctNode,
-			offset : getNodeLength( correctNode )
+			node   : rightTextNode,
+			offset : getNodeLength( rightTextNode )
 		};
 	}
 	
 	// There is no child nodes inside of the container node, so contract the
 	// selection rightwards
-	correctNode = getNearestRightNode( node );
-	if ( correctNode ) {
+	rightTextNode = getNearestRightNode( node, isTextNode );
+	if ( rightTextNode ) {
 		return {
-			node   : correctNode,
+			node   : rightTextNode,
 			offset : 0
 		};
 	}
 	
 	return {
-		node   : node,
-		offset : offset
+		node   : getEditingHost( node ),
+		offset : 0
 	};
 };
 
