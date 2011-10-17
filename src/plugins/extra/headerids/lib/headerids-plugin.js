@@ -13,8 +13,7 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 		$ = jQuery,
 		GENTICS = window.GENTICS,
 		Aloha = window.Aloha;
-	
-	
+		
 	
 	// namespace prefix for this plugin
     var ns = 'aloha-headerids';
