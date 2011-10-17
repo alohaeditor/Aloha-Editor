@@ -1094,8 +1094,6 @@ function isCollapsedBlockProp(node) {
 }
 
 function setActiveRange( range ) {
-	
-	var startnode = range.commonAncestorContainer.parentNode;
 	var rangeObject = new window.GENTICS.Utils.RangeObject();
 	
 	rangeObject.startContainer = range.startContainer;
