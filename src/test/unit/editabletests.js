@@ -25,6 +25,8 @@ define( ['testutils'], function( TestUtils ) {
 		if (twice) {
 			TestUtils.pressEnter(editable, shift);
 		}
+		// remove all additional end-breaks
+		Aloha.editables[0].obj.find('br.aloha-end-br').remove();
 		// get the result	
 		var result = Aloha.editables[0].getContents(true);
 		var expected = Aloha.jQuery(reference).contents();
