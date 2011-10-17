@@ -6048,7 +6048,7 @@ commands["delete"] = {
 		&& isHtmlElement(node.childNodes[offset - 1], ["br", "hr", "img"])) {
 			range.setStart(node, offset);
 			range.setEnd(node, offset);
-			deleteContents(node, offset - 1, node, offset);
+			deleteContents(range);
 			return;
 		}
 
