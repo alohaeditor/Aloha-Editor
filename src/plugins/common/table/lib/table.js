@@ -511,6 +511,9 @@ function (Aloha, jQuery, FloatingMenu, i18n, TableCell, TableSelection, Utils) {
 					// select the Table 
 					that.focus();
 					that.selection.selectAll();
+
+					// set the selection type before updateing the scope
+					that.tablePlugin.activeTable.selection.selectionType = 'cell';
 					that.tablePlugin.updateFloatingMenuScope();
 
 					FloatingMenu.userActivatedTab = i18n.t('floatingmenu.tab.table');
