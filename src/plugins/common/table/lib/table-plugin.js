@@ -136,16 +136,10 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 		// initialize the table buttons
 		this.initTableButtons();
 
-		function updateFloatingMenuScope() {
-			if ( null != TablePlugin.activeTable ) {
-				FloatingMenu.setScope(TablePlugin.name + '.' + TablePlugin.activeTable.selection.selectionType);
-			}
-		}
-
 		Aloha.bind( 'aloha-table-selection-changed', function () {
 			if (   null != TablePlugin.activeTable
 				&& 0 !== TablePlugin.activeTable.selection.selectedCells.length ) {
-				updateFloatingMenuScope();
+				TablePlugin.updateFloatingMenuScope();
 			}
 		});
 
@@ -173,7 +167,7 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 				if ( that.activeTable ) {
 					// check wheater we are inside a table
 					if ( table ) {
-						updateFloatingMenuScope();
+						TablePlugin.updateFloatingMenuScope();
 					} else {
 						//reset cell selection flags
 						that.activeTable.selection.cellSelectionMode = false; 
@@ -1231,6 +1225,12 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 	 */
 	TablePlugin.toString = function() {
 		return this.prefix;
+	};
+
+	TablePlugin.updateFloatingMenuScope = function () {
+		if ( null != TablePlugin.activeTable && null != TablePlugin.activeTable.selection.selectionType ) {
+			FloatingMenu.setScope(TablePlugin.name + '.' + TablePlugin.activeTable.selection.selectionType);
+		}
 	};
 
 	PluginManager.register(TablePlugin);
