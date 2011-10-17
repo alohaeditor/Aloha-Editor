@@ -1094,8 +1094,6 @@ function isCollapsedBlockProp(node) {
 }
 
 function setActiveRange( range ) {
-	
-	var startnode = range.commonAncestorContainer.parentNode;
 	var rangeObject = new window.GENTICS.Utils.RangeObject();
 	
 	rangeObject.startContainer = range.startContainer;
@@ -5980,6 +5978,8 @@ commands["delete"] = {
 				node.removeChild(node.childNodes[offset - 1]);
 				offset--;
 				if (isBr || isHr) {
+					range.setStart(node, offset);
+					range.setEnd(node, offset);
 					break;
 				}
 
@@ -6048,7 +6048,7 @@ commands["delete"] = {
 		&& isHtmlElement(node.childNodes[offset - 1], ["br", "hr", "img"])) {
 			range.setStart(node, offset);
 			range.setEnd(node, offset);
-			deleteContents(node, offset - 1, node, offset);
+			deleteContents(range);
 			return;
 		}
 
@@ -7230,8 +7230,14 @@ commands.insertparagraph = {
 			// context object."
 			var br = document.createElement("br");
 
+			// remember the old height
+			var oldHeight = container.offsetHeight;
+
 			// "Call insertNode(br) on the active range."
 			range.insertNode(br);
+
+			// determine the new height
+			var newHeight = container.offsetHeight;
 
 			// "Call collapse(node, offset + 1) on the context object's
 			// Selection."
@@ -7241,11 +7247,11 @@ commands.insertparagraph = {
 
 			// "If br is the last descendant of container, let br be the result
 			// of calling createElement("br") on the context object, then call
-			// insertNode(br) on the active range."
+			// insertNode(br) on the active range." (Fix: only do this, if the container height did not change by inserting a single <br/>)
 			//
 			// Work around browser bugs: some browsers select the
 			// newly-inserted node, not per spec.
-			if (!isDescendant(nextNode(br), container)) {
+			if (oldHeight == newHeight && !isDescendant(nextNode(br), container)) {
 				range.insertNode(createEndBreak());
 				Aloha.getSelection().collapse(node, offset + 1);
 				range.setEnd(node, offset + 1);
@@ -7387,9 +7393,15 @@ commands.insertparagraph = {
 			} while(fragChild = fragChild.nextSibling);
 		}
 
-		// if newContainer is a li and frag contains only a list, we add a br in the li
+		// if newContainer is a li and frag contains only a list, we add a br in the li (but only if the height would not change)
 		if (isHtmlElement(newContainer, "li") && fragChildren.length && isHtmlElement(fragChildren[0], ["ul", "ol"])) {
-			newContainer.appendChild(createEndBreak());
+			var oldHeight = newContainer.offsetHeight;
+			var endBr = createEndBreak();
+			newContainer.appendChild(endBr);
+			var newHeight = newContainer.offsetHeight;
+			if (oldHeight !== newHeight) {
+				newContainer.removeChild(endBr);
+			}
 		}
 
 		// "Call appendChild(frag) on new container."

@@ -11,6 +11,17 @@ function( TestUtils ) {
 	
 	var aQuery = Aloha.jQuery;
 
+	var browser;
+	if (aQuery.browser.msie) {
+		browser = "msie";
+	} else if (aQuery.browser.webkit) {
+		browser = "webkit";
+	} else if (aQuery.browser.opera) {
+		browser = "opera";
+	} else if (aQuery.browser.mozilla) {
+		browser = "mozilla";
+	}
+
 	// Test whether Aloha is properly initialized
 	asyncTest( 'Aloha Startup Test', function() {
 		var timeout = setTimeout(function() {
@@ -36,7 +47,22 @@ function( TestUtils ) {
 		
 		for ( var i = 0; i < tests.tests.length; i++ ) {
 
-			var	check = tests.tests[i];
+			var	check = tests.tests[i], excluded = false;
+			if (check.exclude && typeof check.exclude === 'string') {
+				check.exclude = [check.exclude];
+			}
+			if (check.include && typeof check.include === 'string') {
+				check.include = [check.include];
+			}
+			// if exclude is set, check whether we need to exclude the test
+			if (check.exclude && check.exclude.indexOf(browser) !== -1) {
+				excluded = true;
+			}
+			// if include is set, check whether we shall include the test
+			if (check.include && check.include.indexOf(browser) === -1) {
+				excluded = true;
+			}
+
 			check.value = ( typeof check.value !== 'undefined') ? check.value : tests.defaultValue;
 			check.attributes = ( typeof check.attributes !== 'undefined') ? check.attributes : tests.defaultAttributes;
 			converter.text(check.start);
@@ -44,7 +70,7 @@ function( TestUtils ) {
 			converter.text(check.value);
 			var	name = check.name || '"' + converter.html() + '": ' + desc;
 			
-			module( 'Commmand ' + (i+1) + ' ' + tests.defaultCommand, {
+			module( 'Commmand ' + (i+1) + ' ' + tests.defaultCommand + (excluded ? ' EXCLUDED' : ''), {
 				setup: function() {
 					// fill the editable area with the start value
 					editable.html(this.check.start);
@@ -55,8 +81,12 @@ function( TestUtils ) {
 				}
 			});
 			
-			test( name, {check:check}, function() {
-				var 
+			if (excluded) {
+				test( name, {check:check}, function() {
+				});
+			} else {
+				test( name, {check:check}, function() {
+					var 
 					check = this.check,
 					command = check.command || tests.defaultCommand,
 					range = TestUtils.addRange( editable ),
@@ -64,101 +94,114 @@ function( TestUtils ) {
 					execToggle,
 					result,
 					r;
-				
-				r = Aloha.createRange();
-				r.setStart( range.startContainer, range.startOffset) ;
-				r.setEnd( range.endContainer, range.endOffset);
-				Aloha.getSelection().removeAllRanges();
-				Aloha.getSelection().addRange(r);
-				
-				// Start
-				if ( typeof check.indetermStart !== 'undefined' ) {
-					// query command indeterminacy and compare
-					result = Aloha.queryCommandIndeterm( command );
-					deepEqual( result, check.indetermStart, 'queryCommandIndeterm start' );
-				}
-				if ( typeof check.stateStart !== 'undefined' ) {
-					// query command state and compare
-					result = Aloha.queryCommandState( command );
-					deepEqual( result, check.stateStart, 'queryCommanState start' );
-				}
-				if ( typeof check.valueStart !== 'undefined' ) {
-					// query command value and compare
-					result = Aloha.queryCommandValue( command );
-					deepEqual( result, check.valueStart, 'queryCommandValue start' );
-				}
-				
-				// ExecCommand
-				if ( typeof check.execResult !== 'undefined' ) {
-					// execute the command
-					Aloha.execCommand( command, false, check.value );
-					// place the marker at the selection and add brackets
-					range = rangy.getSelection().getRangeAt(0);
-					TestUtils.addBrackets(range);
-					// remove all additional end-breaks
-					Aloha.editables[0].obj.find('br.aloha-end-br').remove();
-					result = Aloha.editables[0].getContents( true );
-					execResult = aQuery( '<div>' + check.execResult + '</div>' ).contents();
-					deepEqual( result.extractHTML( check.attributes ), execResult.extractHTML( check.attributes ), 'execCommand result' );
-				}
-				
-				// Result
-				if ( typeof check.indetermResult !== 'undefined' ) {
-					// query command indeterminacy and compare
-					result = Aloha.queryCommandIndeterm( command );
-					deepEqual( result, check.indetermResult, 'queryCommandIndeterm result' );
-				}
-				if ( typeof check.stateResult !== 'undefined' ) {
-					// query command state and compare
-					result = Aloha.queryCommandState( command );
-					deepEqual( result, check.stateResult, 'queryCommanState result' );
-				}
-				if ( typeof check.valueResult !== 'undefined' ) {
-					// query command value and compare
-					result = Aloha.queryCommandValue( command );
-					deepEqual( result, check.valueResult, 'queryCommandValue result' );
-				}
-
-				if ( check.execToggle ) {
-					range = TestUtils.addRange( editable );
-				
+					
 					r = Aloha.createRange();
 					r.setStart( range.startContainer, range.startOffset) ;
 					r.setEnd( range.endContainer, range.endOffset);
 					Aloha.getSelection().removeAllRanges();
 					Aloha.getSelection().addRange(r);
-
-					// toggle ExecCommand
-					if ( typeof check.execToggle !== 'undefined' ) {
+					
+					// Start
+					if ( typeof check.indetermStart !== 'undefined' ) {
+						// query command indeterminacy and compare
+						result = Aloha.queryCommandIndeterm( command );
+						deepEqual( result, check.indetermStart, 'queryCommandIndeterm start' );
+					}
+					if ( typeof check.stateStart !== 'undefined' ) {
+						// query command state and compare
+						result = Aloha.queryCommandState( command );
+						deepEqual( result, check.stateStart, 'queryCommanState start' );
+					}
+					if ( typeof check.valueStart !== 'undefined' ) {
+						// query command value and compare
+						result = Aloha.queryCommandValue( command );
+						deepEqual( result, check.valueStart, 'queryCommandValue start' );
+					}
+					
+					// ExecCommand
+					if ( typeof check.execResult !== 'undefined' ) {
 						// execute the command
-						result = Aloha.execCommand( command, false, check.value );
+						Aloha.execCommand( command, false, check.value );
 						// place the marker at the selection and add brackets
 						range = rangy.getSelection().getRangeAt(0);
 						TestUtils.addBrackets(range);
-						result = Aloha.editables[0].getContents( true );			
-						execToggle = aQuery( '<div>' + check.execToggle + '</div>' ).contents();
-						deepEqual( result.extractHTML( check.attributes ), execToggle.extractHTML( check.attributes ), 'execCommand toggle result' );
+						
+						// clone the editable object
+						result = Aloha.editables[0].obj.clone(false);
+						// get the content as html
+						var resultHtml = result.html();
+						// set the content back (this will merge adjacent text nodes and remove empty text nodes)
+						result.html(resultHtml);
+						// get the contents of the editable
+						result = result.contents();
+						execResult = aQuery( '<div>' + check.execResult + '</div>' );
+						
+						// remove browser specific elements from expected results
+						if (browser) {
+							execResult.find('[data-test-exclude~="'+browser+'"]').remove();
+						}
+						execResult = execResult.contents();
+						
+						deepEqual( result.extractHTML( check.attributes ), execResult.extractHTML( check.attributes ), 'execCommand result' );
 					}
 					
-					// Toggle result
-					if ( typeof check.indetermToggle !== 'undefined' ) {
+					// Result
+					if ( typeof check.indetermResult !== 'undefined' ) {
 						// query command indeterminacy and compare
 						result = Aloha.queryCommandIndeterm( command );
-						deepEqual( result, check.indetermToggle, 'queryCommandIndeterm toggle result' );
+						deepEqual( result, check.indetermResult, 'queryCommandIndeterm result' );
 					}
-					if ( typeof check.stateToggle !== 'undefined' ) {
+					if ( typeof check.stateResult !== 'undefined' ) {
 						// query command state and compare
 						result = Aloha.queryCommandState( command );
-						deepEqual( result, check.stateToggle, 'queryCommanState toggle result' );
+						deepEqual( result, check.stateResult, 'queryCommanState result' );
 					}
 					if ( typeof check.valueResult !== 'undefined' ) {
 						// query command value and compare
 						result = Aloha.queryCommandValue( command );
-						deepEqual( result, check.valueToggle, 'queryCommandValue toggle result' );
+						deepEqual( result, check.valueResult, 'queryCommandValue result' );
 					}
-				}
 					
-			});
+					if ( check.execToggle ) {
+						range = TestUtils.addRange( editable );
+						
+						r = Aloha.createRange();
+						r.setStart( range.startContainer, range.startOffset) ;
+						r.setEnd( range.endContainer, range.endOffset);
+						Aloha.getSelection().removeAllRanges();
+						Aloha.getSelection().addRange(r);
+						
+						// toggle ExecCommand
+						if ( typeof check.execToggle !== 'undefined' ) {
+							// execute the command
+							result = Aloha.execCommand( command, false, check.value );
+							// place the marker at the selection and add brackets
+							range = rangy.getSelection().getRangeAt(0);
+							TestUtils.addBrackets(range);
+							result = Aloha.editables[0].getContents( true );			
+							execToggle = aQuery( '<div>' + check.execToggle + '</div>' ).contents();
+							deepEqual( result.extractHTML( check.attributes ), execToggle.extractHTML( check.attributes ), 'execCommand toggle result' );
+						}
+						
+						// Toggle result
+						if ( typeof check.indetermToggle !== 'undefined' ) {
+							// query command indeterminacy and compare
+							result = Aloha.queryCommandIndeterm( command );
+							deepEqual( result, check.indetermToggle, 'queryCommandIndeterm toggle result' );
+						}
+						if ( typeof check.stateToggle !== 'undefined' ) {
+							// query command state and compare
+							result = Aloha.queryCommandState( command );
+							deepEqual( result, check.stateToggle, 'queryCommanState toggle result' );
+						}
+						if ( typeof check.valueResult !== 'undefined' ) {
+							// query command value and compare
+							result = Aloha.queryCommandValue( command );
+							deepEqual( result, check.valueToggle, 'queryCommandValue toggle result' );
+						}
+					}
+				});
+			}
 		}
 	});
 });
