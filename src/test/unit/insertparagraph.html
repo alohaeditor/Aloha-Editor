@@ -239,13 +239,16 @@
 					{  	start: '{}<br><p>foo</p>',
 						execResult: '<p><br class="aloha-end-br" data-test-exclude="msie"></p><p>{}<br></p><p>foo</p>'
 					},
-					{  	start: '<p>foo</p>{}<br><h1>bar</h1>',
+					{  	exclude: ['msie'],
+						start: '<p>foo</p>{}<br><h1>bar</h1>',
 						execResult: '<p>foo</p><p><br class="aloha-end-br" data-test-exclude="msie"></p><p>{}<br></p><h1>bar</h1>'
 					},
-					{  	start: '<h1>foo</h1>{}<br><p>bar</p>',
+					{  	exclude: ['msie'],
+						start: '<h1>foo</h1>{}<br><p>bar</p>',
 						execResult: '<h1>foo</h1><p><br class="aloha-end-br" data-test-exclude="msie"></p><p>{}<br></p><p>bar</p>'
 					},
-					{  	start: '<h1>foo</h1>{}<br><h2>bar</h2>',
+					{  	exclude: ['msie'],
+						start: '<h1>foo</h1>{}<br><h2>bar</h2>',
 						execResult: '<h1>foo</h1><p><br class="aloha-end-br" data-test-exclude="msie"></p><p>{}<br></p><h2>bar</h2>'
 					},
 					{  	start: '<p>foo</p><h1>[bar]</h1><p>baz</p>',
