@@ -1,19 +1,12 @@
 define(
-['aloha/jquery', 'table/table-plugin-utils'],
-function ($, Utils) {
-/*
- * TODO giving the TablePlugin to the TableSelection as argument is
- *   a hack to provide the dependency without resorting to advanced
- *   requirejs code. this dependency should be resolved somehow
- *   without resorting to requirejs (we only want to use the
- *   define() functionality in Aloha).
- */
-return function (TablePlugin) {
-
+['aloha/jquery', 'table/table-plugin-utils', 'i18n!table/nls/i18n'],
+function ($, Utils, i18n) {
 	/**
-	 * The TableSelection object is a helper-object which consists of static/global attributes and functions
+	 * The TableSelection object is a helper-object
 	 */
-	var TableSelection = function(){};
+	var TableSelection = function (table) {
+		this.table = table;
+	};
 
 	/**
 	 * Gives the type of the cell-selection
@@ -63,13 +56,13 @@ return function (TablePlugin) {
 	 * @return void
 	 */
 	TableSelection.prototype.selectColumns = function ( columnsToSelect ) {
-        if ( typeof TablePlugin.activeTable == 'undefined' || !TablePlugin.activeTable ) {
+        if ( typeof this.table == 'undefined' || !this.table ) {
         	return;
         }
 
 		this.unselectCells();
 
-		var rows = TablePlugin.activeTable.obj.find("tr").toArray()
+		var rows = this.table.obj.find("tr").toArray()
 		// first row is the selection row (dump it, it's not needed)
 		rows.shift();
 		
@@ -83,7 +76,7 @@ return function (TablePlugin) {
 			for (var i = 0; i < grid.length; i++) {
 				var cellInfo = grid[i][columnsToSelect[j]];
 				if ( Utils.containsDomCell(cellInfo) ) {
-					$(cellInfo.cell).addClass(TablePlugin.activeTable.get('classCellSelected'));
+					$(cellInfo.cell).addClass(this.table.get('classCellSelected'));
 					this.selectedCells.push( cellInfo.cell );
 				}
 			}
@@ -99,13 +92,13 @@ return function (TablePlugin) {
 	 * @return void
 	 */
 	TableSelection.prototype.selectRows = function ( rowsToSelect ) {
-        if ( typeof TablePlugin.activeTable == 'undefined' || !TablePlugin.activeTable ) {
+        if ( typeof this.table == 'undefined' || !this.table ) {
         	return;
         }
 
 		this.unselectCells();
 
-		var rows = TablePlugin.activeTable.obj.find("tr").toArray();
+		var rows = this.table.obj.find("tr").toArray();
 		
  	    rowsToSelect.sort( function ( a, b ) { return a - b; } );
 
@@ -122,7 +115,7 @@ return function (TablePlugin) {
 			    for ( var j = 1; j < rows[ rowsToSelect[i] ].cells.length; j++ ) {  
 					this.selectedCells.push( rows[ rowsToSelect[i] ].cells[j] );
 					// TODO make proper cell selection method
-					$( rows[ rowsToSelect[i] ].cells[j] ).addClass( TablePlugin.activeTable.get('classCellSelected') );
+					$( rows[ rowsToSelect[i] ].cells[j] ).addClass( this.table.get('classCellSelected') );
 			    }
 			}
 		}
@@ -138,7 +131,7 @@ return function (TablePlugin) {
 	 */
 	TableSelection.prototype.isHeader = function ( ) {
 		
-        if ( typeof TablePlugin.activeTable == 'undefined' || !TablePlugin.activeTable ) {
+        if ( typeof this.table == 'undefined' || !this.table ) {
         	return;
         }
         
@@ -164,7 +157,7 @@ return function (TablePlugin) {
 		var 
 		rows;
 
-		if ( typeof TablePlugin.activeTable == 'undefined' || !TablePlugin.activeTable ) {
+		if ( typeof this.table == 'undefined' || !this.table ) {
     		return;
 		}
 		
@@ -175,12 +168,12 @@ return function (TablePlugin) {
 
 		if (this.selectedCells.length > 0) {
 			
-			rows = TablePlugin.activeTable.obj.find("tr").toArray();
+			rows = this.table.obj.find("tr").toArray();
 			
 			for (var i = 0; i < rows.length; i++) {
 			    for ( var j = 1; j < rows[i].cells.length; j++ ) {  
 					// TODO make proper cell selection method
-					$( rows[i].cells[j] ).removeClass( TablePlugin.activeTable.get('classCellSelected') );
+					$( rows[i].cells[j] ).removeClass( this.table.get('classCellSelected') );
 			    }
 			}
 
@@ -214,83 +207,105 @@ return function (TablePlugin) {
 	 * @return void
 	 */
 	TableSelection.prototype.mergeCells = function(){
-		if (this.selectedCells.length > 0) {
 
-			//sorts the cells
-			this.selectedCells.sort(function(a, b){
-				var aRowId = $(a).parent().prevAll('tr').length;
-				var bRowId = $(b).parent().prevAll('tr').length;
+		var selectedCells = this.selectedCells;
+		if ( 0 === selectedCells.length ) {
+			return;
+		}
 
-				var aColId = $(a).prevAll('td, th').length;
-				var bColId = $(b).prevAll('td, th').length;
-
-				if(aRowId < bRowId){
-					return -1; 
-				}
-				else if(aRowId > bRowId){
-					return 1; 
-				}
-				//row id is equal
-				else {
-					//sort by column id
-					if(aColId < bColId){
-						return -1; 
-					}
-					if(aColId > bColId){
-						return 1; 
-					}
-				}
+		var grid = Utils.makeGrid( this.table.obj.find("tr") );
+		var contour = Utils.makeContour(
+			grid,
+			function ( cellInfo ) {
+				return -1 != $.inArray( cellInfo.cell, selectedCells );
 			});
 
-			var firstCell = $(this.selectedCells.shift());
-
-			//set the initial rowspan and colspan
-			var rowspan = parseInt(firstCell.attr('rowspan')) || 1;
-			var colspan = parseInt(firstCell.attr('colspan')) || 1;;
-
-			var firstRowId = prevRowId = firstCell.parent().prevAll('tr').length;
-			var firstColId = firstCell.parent().prevAll('tr').length;
-
-			//iterate through remaining cells
-			for (var i = 0; i < this.selectedCells.length; i++) {
-				//get the current cell
-				var curCell = $(this.selectedCells[i]);
-
-				var curRowId = curCell.parent().prevAll('tr').length;
-
-				//if current cell is in the same row as the first cell,
-				//increase colspan
-				if(curRowId == firstRowId){
-					colspan += (parseInt(curCell.attr('colspan')) || 1); 
-				}
-				//if they are in different rows increase the rowspan
-				else {
-					if(curRowId != prevRowId)
-						rowspan += (parseInt(curCell.attr('rowspan')) || 1);      
-				}
-
-				//set the current row id to previous row id
-				prevRowId = curRowId;
-
-				// get the content of the current row and append it to the first cell
-				firstCell.find(":first-child").append(" " + curCell.find(":first-child").html());
-
-				// remove the cell
-				curCell.remove();
-			}
-			
-			firstCell.attr({ 'rowspan': rowspan, 'colspan': colspan });
-
-			//select the merged cell
-			TableSelection.selectedCells = [firstCell];
-
-			//reset flags
-			TableSelection.cellSelectionMode = false; 
-			TableSelection.keepCellsSelected = false;
-			TableSelection.baseCellPosition = null;
-			TableSelection.lastSelectionRange = null; 
-			TableSelection.selectionType = 'cell';
+		if (   -1 !== Utils.indexOfAnyBut( contour.top   , contour.top[0]    )
+			|| -1 !== Utils.indexOfAnyBut( contour.right , contour.right[0]  )
+			|| -1 !== Utils.indexOfAnyBut( contour.bottom, contour.bottom[0] )
+			|| -1 !== Utils.indexOfAnyBut( contour.left  , contour.left[0]   ) ) {
+			Aloha.showMessage(new Aloha.Message({
+				title : i18n.t('Table'),
+				text : i18n.t('mergeCells.notRectangular'),
+				type : Aloha.Message.Type.ALERT
+			}));
+			return;
 		}
+
+		//sorts the cells
+		this.selectedCells.sort(function(a, b){
+			var aRowId = $(a).parent().prevAll('tr').length;
+			var bRowId = $(b).parent().prevAll('tr').length;
+
+			var aColId = $(a).prevAll('td, th').length;
+			var bColId = $(b).prevAll('td, th').length;
+
+			if(aRowId < bRowId){
+				return -1; 
+			}
+			else if(aRowId > bRowId){
+				return 1; 
+			}
+			//row id is equal
+			else {
+				//sort by column id
+				if(aColId < bColId){
+					return -1; 
+				}
+				if(aColId > bColId){
+					return 1; 
+				}
+			}
+		});
+
+		var firstCell = $(this.selectedCells.shift());
+
+		//set the initial rowspan and colspan
+		var rowspan = parseInt(firstCell.attr('rowspan')) || 1;
+		var colspan = parseInt(firstCell.attr('colspan')) || 1;;
+
+		var firstRowId = prevRowId = firstCell.parent().prevAll('tr').length;
+		var firstColId = firstCell.parent().prevAll('tr').length;
+
+		//iterate through remaining cells
+		for (var i = 0; i < this.selectedCells.length; i++) {
+			//get the current cell
+			var curCell = $(this.selectedCells[i]);
+
+			var curRowId = curCell.parent().prevAll('tr').length;
+
+			//if current cell is in the same row as the first cell,
+			//increase colspan
+			if(curRowId == firstRowId){
+				colspan += (parseInt(curCell.attr('colspan')) || 1); 
+			}
+			//if they are in different rows increase the rowspan
+			else {
+				if(curRowId != prevRowId)
+					rowspan += (parseInt(curCell.attr('rowspan')) || 1);      
+			}
+
+			//set the current row id to previous row id
+			prevRowId = curRowId;
+
+			// get the content of the current row and append it to the first cell
+			firstCell.find(":first-child").append(" " + curCell.find(":first-child").html());
+
+			// remove the cell
+			curCell.remove();
+		}
+		
+		firstCell.attr({ 'rowspan': rowspan, 'colspan': colspan });
+
+		//select the merged cell
+		this.selectedCells = [firstCell];
+
+		//reset flags
+		this.cellSelectionMode = false; 
+		this.keepCellsSelected = false;
+		this.baseCellPosition = null;
+		this.lastSelectionRange = null; 
+		this.selectionType = 'cell';
 	};
 
 	/**
@@ -299,48 +314,26 @@ return function (TablePlugin) {
 	 * @return void
 	 */
 	TableSelection.prototype.splitCells = function(){
+		var selection = this;
+
 		// split the selected cells or currently active cell
 		var cells_to_split = this.selectedCells;
 		if (cells_to_split.length > 0) {
 
-			//will be populated with rows that will get a new cell prepended
-			var prepend = [];
-			//will be populated with cells that will get a new cell inserted after
-			var after = [];
-
 			$(cells_to_split).each(function(){
-				var $cell = $(this);
-				var colspan = parseInt($cell.attr('colspan')) || 1;
-				var rowspan = parseInt($cell.attr('rowspan')) || 1;
-
-				var $row  = $cell.parent();
-				var $rows = $row.parent().children();
-				var rowIdx = $row.index();
-				var colIdx = $cell.index();
-				var grid = Utils.makeGrid($rows);
-				var gridColumn = Utils.cellIndexToGridColumn($rows, rowIdx, colIdx);
-				for (var i = 0; i < rowspan; i++) {
-					for (var j = (0 === i ? 1 : 0); j < colspan; j++) {
-						var leftCell = Utils.leftDomCell(grid, rowIdx + i, gridColumn);
-						if (null == leftCell) {
-							$rows.eq(rowIdx + i).prepend(TablePlugin.activeTable.newActiveCell().obj);
-						} else {
-							$( leftCell ).after(TablePlugin.activeTable.newActiveCell().obj);
-						}
-					}
-				}
-				$cell.removeAttr('colspan');
-				$cell.removeAttr('rowspan');
+				Utils.splitCell(this, function () {
+					return selection.table.newActiveCell().obj;
+				});
 			});
 
 			//reset flags
-			TableSelection.cellSelectionMode = false; 
-			TableSelection.keepCellsSelected = false;
-			TableSelection.baseCellPosition = null;
-			TableSelection.lastSelectionRange = null; 
-			TableSelection.selectionType = 'cell';
+			this.cellSelectionMode = false; 
+			this.keepCellsSelected = false;
+			this.baseCellPosition = null;
+			this.lastSelectionRange = null; 
+			this.selectionType = 'cell';
 		}
 	};
+
 	return TableSelection;
-};
 });
