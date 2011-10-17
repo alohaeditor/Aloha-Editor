@@ -5978,6 +5978,8 @@ commands["delete"] = {
 				node.removeChild(node.childNodes[offset - 1]);
 				offset--;
 				if (isBr || isHr) {
+					range.setStart(node, offset);
+					range.setEnd(node, offset);
 					break;
 				}
 
