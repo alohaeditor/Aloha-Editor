@@ -45,7 +45,7 @@
 		.aloha-right {
 			float: right;
 		}
-		#aloha-markup,
+		#aloha-fill,
 		#aloha-test,
 		#aloha-command,
 		#aloha-view {
@@ -54,6 +54,9 @@
 		#aloha-command > p,
 		#aloha-command > div {
 			padding: 5px;
+		}
+		#textbox-fill {
+			margin-bottom: 15px;
 		}
 		.header {
 			display: block;
@@ -92,7 +95,7 @@
 	<h1>Aloha Editor developers testbox</h1>
 	<div>
 		<div id="usage">
-			Add the markup you want to test and hit <span class="aloha-example">Strg+ENTER</span>. Selection markers are not allowed as text.
+			Add the markup you want to test and press the Fill Testbox button. Selection markers are not allowed as text.
 			If you want to test a certain selection use following syntax to mark selection begin and end.<br> 
 			<span class="aloha-example">[{ data-start</span> only one occurrence allowed. Defines <b>begin</b> of the selection.<br>
 			<span class="aloha-example">]} data-end</span> only one occurrence allowed. Defines <b>end</b> of the selection.<br>
@@ -101,9 +104,9 @@
 		<div class="aloha-left">
 			<div class="header">
 				<b>Testmarkup</b>
-				<a>Usage</a>
+				<a><button id="textbox-fill">Fill Testbox</button></a>
 			</div>
-			<textarea id="aloha-markup" class="aloha-area"><h1>Try me</h1><p>Select text.</p><ol><li>This is <b>[bold</b></li><li><i>italic</i> <u>underline</u><ol><li>Either <sup>super}</sup></li><li>or <sub>duper</sub></li></ol></li></ol></textarea>
+			<textarea id="aloha-fill" class="aloha-area"><h1>Try me</h1><p>Select text.</p><ol><li>This is <b>[bold</b></li><li><i>italic</i> <u>underline</u><ol><li>Either <sup>super}</sup></li><li>or <sub>duper</sub></li></ol></li></ol></textarea>
 			<div class="header">
 				<b>Source view</b>
 			</div>
