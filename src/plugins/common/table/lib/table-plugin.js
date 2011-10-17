@@ -7,7 +7,7 @@
 
 define(
 ['aloha', 'aloha/jquery', 'aloha/plugin', 'aloha/pluginmanager', 'aloha/floatingmenu', 'i18n!table/nls/i18n', 'i18n!aloha/nls/i18n', 'table/table-create-layer', 'table/table', 'table/table-plugin-utils', 'css!table/css/table.css'],
-function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, CreateLayer, TableModuleConstructor, Utils) {
+function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, CreateLayer, Table, Utils) {
 
 	var
 		GENTICS = window.GENTICS;
@@ -17,9 +17,6 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 	 */
 	var TablePlugin = new Plugin('table');
 
-	var Table = TableModuleConstructor(TablePlugin);
-
-	/* -- ATTRIBUTES -- */
 	/**
 	 * The Create-Layer Object of the TablePlugin
 	 *
@@ -65,10 +62,6 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 		waiGreen			 : 'aloha-wai-green',                   // class that shows wai of div
 		selectionArea        : 10                                     // width/height of the selection rows (in pixel)
 	};
-
-	/* -- END ATTRIBUTES -- */
-
-	/* -- METHODS -- */
 
   /**
    * @hide
@@ -127,7 +120,7 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 				// only convert tables which are editable
 				if (that.isEditableTable(this)) {
 					// instantiate a new table-object
-					var table = new Table(this);
+					var table = new Table(this, TablePlugin);
 
 					table.parentEditable = editable;
 
@@ -143,7 +136,18 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 		// initialize the table buttons
 		this.initTableButtons();
 
-		Aloha.bind('aloha-selection-changed', function (event, rangeObject) {
+		Aloha.bind( 'aloha-table-selection-changed', function () {
+			if (   null != TablePlugin.activeTable
+				&& 0 !== TablePlugin.activeTable.selection.selectedCells.length ) {
+				TablePlugin.updateFloatingMenuScope();
+			}
+		});
+
+		Aloha.bind( 'aloha-selection-changed', function (event, rangeObject) {
+			// this case probably occurs when the selection is empty?
+			if ( null == rangeObject.startContainer ) {
+				return;
+			}
 
 			if (Aloha.activeEditable) {
 				// get Plugin configuration
@@ -163,14 +167,10 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 				if ( that.activeTable ) {
 					// check wheater we are inside a table
 					if ( table ) {
-						// set the scope if either columns or rows are selected
-						FloatingMenu.setScope(that.name + '.' + that.activeTable.selection.selectionType);
-
-						that.activeTable.selection.unselectCells();
+						TablePlugin.updateFloatingMenuScope();
 					} else {
 						//reset cell selection flags
 						that.activeTable.selection.cellSelectionMode = false; 
-						that.activeTable.selection.keepCellsSelected = false;
 						that.activeTable.selection.baseCellPosition = null;
 						that.activeTable.selection.lastSelectionRange = null; 
 						
@@ -184,7 +184,7 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 		});
 
 		// subscribe for the 'editableActivated' event to activate all tables in the editable
-		Aloha.bind('aloha-editable-activated', function (event, props) {
+		Aloha.bind( 'aloha-editable-activated', function (event, props) {
 			props.editable.obj.find('table').each(function () {
 				// shortcut for TableRegistry
 				var tr = TablePlugin.TableRegistry;
@@ -201,7 +201,7 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 				// only convert tables which are editable
 				if (that.isEditableTable(this)) {
 					// instantiate a new table-object
-					var table = new Table(this);
+					var table = new Table(this, TablePlugin);
 
 					table.parentEditable = props.editable;
 
@@ -215,7 +215,7 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 		});
 
 		// subscribe for the 'editableDeactivated' event to deactivate all tables in the editable
-		Aloha.bind('aloha-editable-deactivated', function (event, properties) {
+		Aloha.bind( 'aloha-editable-deactivated', function (event, properties) {
 			if (TablePlugin.activeTable) {
 				TablePlugin.activeTable.selection.unselectCells();
 			}
@@ -322,7 +322,7 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 				'tooltip' : i18n.t('button.addrowbefore.tooltip'),
 				'onclick' : function () {
 					if (that.activeTable) {
-						that.activeTable.addRowsBefore(true);
+						that.activeTable.addRowBeforeSelection();
 					}
 				}
 			}),
@@ -339,7 +339,7 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 				'tooltip' : i18n.t('button.addrowafter.tooltip'),
 				'onclick' : function () {
 					if (that.activeTable) {
-						that.activeTable.addRowsAfter(true);
+						that.activeTable.addRowAfterSelection();
 					}
 				}
 			}),
@@ -1052,7 +1052,7 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 			// if the table is inserted
 			var tableReloadedFromDOM = document.getElementById(tableId);
 
-			var tableObj = new Table(tableReloadedFromDOM);
+			var tableObj = new Table(tableReloadedFromDOM, TablePlugin);
 
 			tableObj.parentEditable = Aloha.activeEditable;
 
@@ -1079,6 +1079,12 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 
 	TablePlugin.setFocusedTable = function(focusTable) {
 		var that = this;
+
+		// clicking outside the table unselects the cells of the table
+		if ( null == focusTable && null != this.activeTable ) {
+			this.activeTable.selection.unselectCells();
+		}
+
 		for (var i = 0; i < TablePlugin.TableRegistry.length; i++) {
 			TablePlugin.TableRegistry[i].hasFocus = false;
 		}
@@ -1206,7 +1212,7 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 		// find all table tags
 		obj.find('table').each(function() {
 			// instantiate a new table-object
-			var table = new Table(this);
+			var table = new Table(this, TablePlugin);
 			// deactivate the table
 			table.deactivate();
 		});
@@ -1220,7 +1226,12 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 	TablePlugin.toString = function() {
 		return this.prefix;
 	};
-	/* -- END METHODS -- */
+
+	TablePlugin.updateFloatingMenuScope = function () {
+		if ( null != TablePlugin.activeTable && null != TablePlugin.activeTable.selection.selectionType ) {
+			FloatingMenu.setScope(TablePlugin.name + '.' + TablePlugin.activeTable.selection.selectionType);
+		}
+	};
 
 	PluginManager.register(TablePlugin);
 	//return TablePlugin;
