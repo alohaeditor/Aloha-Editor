@@ -4,75 +4,122 @@ require( [ '../unit/testutils' ], function ( TestUtils ) {
 
 Aloha.ready( function() {
 
-	var jQuery = Aloha.jQuery,
-	    fillArea = jQuery( '#aloha-markup' ),
-	    testArea = jQuery( '#aloha-test' ),
-	    viewArea = jQuery( '#aloha-view' ),
-	    command = jQuery('#command'),
-		applyMarkupOnNextSelection = true,
-		engine = Aloha,
-		selectionRange,
-		selectionTimeout,
-		supportedCommands = Aloha.querySupportedCommands().sort();
+	var jQuery = Aloha.jQuery;
+
+	// testmarkup area 
+	var $fillArea = jQuery( '#aloha-fill' );
+
+	// contenteditable area
+	var $testArea = jQuery( '#aloha-test' );
 	
-	for ( var i=0; i < supportedCommands.length; i++ ) {
-		command.append('<option	value="' + supportedCommands[i] +'">' + supportedCommands[i] + '</option>');
+	// testmarkup source area
+	var $sourceArea = jQuery( '#aloha-source' );
+	
+	var $command = jQuery('#command');
+	var $commandValue = jQuery('#command-value');
+	
+	var $fillButton = jQuery('#testbox-fill');
+	
+	var	applyMarkupOnNextSelection = true;
+	var	engine = Aloha;
+	var	selectionRange;
+	var	selectionTimeout;
+	var	supportedCommands = Aloha.querySupportedCommands().sort();
+	var savedRange;
+	init();
+	
+	/**
+	 * Initalize the testbox
+	 */
+	function init() {
+
+		// Populate the dropdown
+		for ( var i=0; i < supportedCommands.length; i++ ) {
+			$command.append('<option value="' + supportedCommands[i] +'">' + supportedCommands[i] + '</option>');
+		}
+
+		// Enable aloha for testbox area
+		$testArea.aloha();
+		
+		registerHandlers();
 	}
 	
-	jQuery('#aloha-test').aloha();
-	
-	// mark markup as changed
-	fillArea.change( function () {
-		applyMarkupOnNextSelection = true;
-	});
-
-//	jQuery( document ).bind( 'mouseup keyup', onSelectionChanged );
-	jQuery( onSelectionChanged );
-	jQuery( document ).bind( 'keyup', onSelectionChanged );
-	testArea.bind( 'mouseup', onSelectionChanged );
-	command.change( queryCommand );
-
-	fillArea.keypress( function( e ) {
-		// linux will use key char code 10 if ctrl+enter is pressed
-		if ( e.metaKey && (e.which === 13 || e.which === 10)) {
+	/**
+	 * Registers all event handlers
+	 */
+	function registerHandlers() {
+		
+		$fillArea.change( function () {
 			applyMarkupOnNextSelection = true;
-			onSelectionChanged(e);
-			e.preventDefault();
-		}
-	});
-	
-	jQuery( '[name=engine]').change( function() {
-		if ( jQuery(this).val() == 'aloha' ) {
-			testArea.aloha();
-			engine = Aloha;
-		} else {
-			testArea
-				.mahalo()
-				.contentEditable(true);
-			engine = document;
-		}
-		queryCommand();
-	});
+		});
+
+		// Set the initial selection when the document is ready
+		jQuery( onSelectionChanged );
 		
-	jQuery('#command-execute').click( function() {
-		var 
-			execCommand,
-			range;
+		// Handle selection events within the testarea. 
+		// This also preserves the selection/ranges within aloha
+		$testArea.contentEditableSelectionChange( function() {
+			onSelectionChanged();
+			
+			// Load the current active range and store it in the savedRange property. 
+			// We need to store it since we loose the range when a blur event occurs.
+			var range = Aloha.getSelection().getRangeAt(0);
+			savedRange = Aloha.createRange();
+			savedRange.setStart( range.startContainer, range.startOffset) ;
+			savedRange.setEnd( range.endContainer, range.endOffset);
+			
+		});
+
+		// Handle click on Fill Testbox button
+		$fillButton.click( function() {
+	           $testArea[ 0 ].innerHTML = $fillArea.val();
+	           Aloha.editables[0].obj.focus();
+	           applySelection( $testArea );
+		 });
+
+		// Handle changes of engines
+		jQuery('[name=engine]').change( function() {
+			if ( jQuery(this).val() == 'aloha' ) {
+				$testArea.aloha();
+				engine = Aloha;
+			} else {
+				$testArea.mahalo().contentEditable(true);
+				engine = document;
+			}
+			queryCommand();
+		});
+
+		$command.change( queryCommand );
+			
+		// Handle click on execute button
+		jQuery('#command-execute').click( function() {
+			var execCommand = $command.val();
+			var execCommandValue = $commandValue.val();
+			
+			// Check whether the user has selected a valid command 
+			if (!execCommand) {
+				alert('Please select a valid command and try again.');
+				return;
+			}
+			Aloha.editables[0].obj.focus();
+			
+			// Place the brackets according to the user specific selection
+			TestUtils.addBrackets( selectionRange );
+			
+			// Convert the brackets and show the selection
+			applySelection( $testArea );
+			
+			// Apply the command
+			engine.execCommand( execCommand, false, execCommandValue );			
+
+		});
 		
-		execCommand = command.val();
-		// "If command has no action, raise an INVALID_ACCESS_ERR exception."
-		// exception."
-		engine.execCommand( execCommand, false, jQuery('#command-value').val() );
-		range = Aloha.getSelection().getRangeAt( 0 );
-		TestUtils.addBrackets( range );
-		applySelection( testArea );
-	});
+	}
 	
 	function queryCommand( ) {
 		
-		var 
-			execCommand = command.val(),
-			result;
+		var execCommand = $command.val();
+		var	result;
 		
 		if ( !selectionRange ) {
 			return;
@@ -88,7 +135,7 @@ Aloha.ready( function() {
 		jQuery('#aloha-state').show();
 		jQuery('#aloha-value').show();
 		
-		// select the last range before applying a command
+		// Select the last range before applying a command
 		var range = Aloha.createRange();
 		range.setStart( selectionRange.startContainer, selectionRange.startOffset) ;
 		range.setEnd( selectionRange.endContainer, selectionRange.endOffset);
@@ -139,17 +186,15 @@ Aloha.ready( function() {
 		
 		clearTimeout( selectionTimeout );
 
-		// don't read selection if shift is pressed
+		// Don't read selection if shift is pressed
 		if ( e && e.shiftKey ) {
 			return;
 		}
-		
+
 		if ( applyMarkupOnNextSelection ) {
-			testArea[ 0 ].innerHTML = fillArea.val();
-			applySelection( testArea );
+			$testArea[0].innerHTML = $fillArea.val();
+			applySelection( $testArea );
 			applyMarkupOnNextSelection = false;
-			
-			// return;
 		}
 		
 		var range = getSelectionRange();
@@ -164,20 +209,27 @@ Aloha.ready( function() {
 				return;
 			}
 			
-			if ( !containers.is( testArea ) ) {
+			if ( !containers.is( $testArea ) ) {
 				var parent = containers.parent();
 				
-				if ( !parent.is( testArea ) &&
-					 parent.parents( '#' + testArea.attr( 'id' ) )
+				if ( !parent.is( $testArea ) &&
+					 parent.parents( '#' + $testArea.attr( 'id' ) )
 						.length == 0 ) {
 					return;
 				}
 			}
-			// wait for double and triple clicks
+			
+			var timeout = 0;
+
+			// For ie wait for double and triple clicks
+			if( jQuery.browser.msie ) {
+				timeout = 200;
+			}
+
 			selectionTimeout = setTimeout( function() {
 				TestUtils.addBrackets( range );
-				applySelection( testArea );
- 			}, 300 );
+				applySelection( $testArea );
+ 			}, timeout );
 		}
 	};
 	
@@ -220,11 +272,12 @@ Aloha.ready( function() {
 	 *							  should be applied to it.
 	 */
 	 function applySelection ( elem ) {
-		
+		 
 		// Display the current selection in the viewArea
-		viewArea.val( testArea.html() );
+		$sourceArea.val( $testArea.html() );
+		
 		// convert html for processing
-		var html = jQuery( '<div>' ).text( testArea.html() ).html();
+		var html = jQuery('<div>').text( $testArea.html() ).html();
 
 		html = elem.html();
 		
@@ -241,14 +294,17 @@ Aloha.ready( function() {
 		}
 		
 		if ( numMarkers == 1 ) {
-			Aloha.Console.warn( 'Collapsed selection at end of node: ' );
+			Aloha.Console.warn('Collapsed selection at end of node: ');
 			Aloha.Console.warn( getRange() );
 			stripMarkers( elem );
 		} else if ( numMarkers == 2 ) {
-			var range = TestUtils.addRange( elem ),
-			    selection = Aloha.getSelection();
 			
+			// Identify the markers and add the new range to the element 
+			var range = TestUtils.addRange( elem );
+			var selection = Aloha.getSelection();
 			selection.removeAllRanges();
+			
+			// Add the identified range
 			selection.addRange( range );
 			selectionRange = range;
 			queryCommand();
