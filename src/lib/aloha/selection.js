@@ -2905,7 +2905,7 @@ function getEndPositionFromEndOfInlineNode ( node, offset ) {
 	var leftTextNode,
 		rightTextNode;
 	
-	debugger;
+	//debugger;
 	
 	// Satisfies
 	// [ '<b>[foo}</b>', '<b>[foo]</b>' ],
@@ -3072,7 +3072,7 @@ function getEndPositionFromFrontOfBlockNode ( node ) {
 	}
 	
 	if ( rightTextNode ) {
-		debugger;
+		//debugger;
 		while ( true ) {
 			if ( isBlockElement( rightTextNode ) ) {
 				break;
