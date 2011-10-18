@@ -313,31 +313,31 @@ define([
 		
 		findCiteMarkup: function (range) {
 			 var 
-			    startLink,
-			    endLink;
+			    startCite,
+			    endCite;
 			   
 				if ( typeof range == 'undefined' ) {
 					range = Aloha.Selection.getRangeObject();
 				}
 				if ( Aloha.activeEditable ) {
 			    
-					var startInLink = range.findMarkup( function() {
+					var startInCite = range.findMarkup( function() {
 						if ( this.nodeName.toLowerCase() == 'q' || this.nodeName.toLowerCase() == 'blockquote' ) {
-							startLink = this;
+							startCite = this;
 							return true;
 						}
 						return false;
 					}, Aloha.activeEditable.obj);
 					
-					var endInLink = range.findMarkup( function() {
+					var endInCite = range.findMarkup( function() {
 						if ( this.nodeName.toLowerCase() == 'q' || this.nodeName.toLowerCase() == 'blockquote' ) {
-							endLink = this;
+							endCite = this;
 							return true;
 						}
 						return false;
 					}, Aloha.activeEditable.obj, true );
 					
-					return (startInLink && endInLink && startLink === endLink) ? startLink : false;
+					return (startInCite && endInCite && startCite === endCite) ? startCite : false;
 				} else {
 					return null;
 				}
