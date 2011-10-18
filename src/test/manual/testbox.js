@@ -57,13 +57,14 @@ Aloha.ready( function() {
 		
 		// Handle selection events within the testarea
 		$testArea.contentEditableSelectionChange( function() {
-			//onSelectionChanged();
+			onSelectionChanged();
 		});
 
 
 		// Handle click on Fill Testbox button
 		$fillButton.click( function() {
 	           $testArea[ 0 ].innerHTML = $fillArea.val();
+	           Aloha.editables[0].obj.focus();
 	           applySelection( $testArea );
 		 });
 
@@ -80,11 +81,9 @@ Aloha.ready( function() {
 		});
 
 		$command.change( queryCommand );
-
 			
 		// Handle click on execute button
 		jQuery('#command-execute').click( function() {
-			var range;
 			var execCommand = $command.val();
 			var execCommandValue = $commandValue.val();
 			
@@ -93,10 +92,16 @@ Aloha.ready( function() {
 				alert('Please select a valid command and try again.');
 				return;
 			}
-		    Aloha.editables[0].obj.focus();
+			Aloha.editables[0].obj.focus();
+			
 	        engine.execCommand( execCommand, false, execCommandValue );
-	        range = Aloha.getSelection().getRangeAt(0);
+	        
+	        // Get the range of the active selection
+	        var range = Aloha.getSelection().getRangeAt(0);
+
+	        // Add brackets for the range
 	        TestUtils.addBrackets( range );
+	        
 	        applySelection( $testArea );
 
 		});
@@ -289,11 +294,15 @@ Aloha.ready( function() {
 			Aloha.Console.warn( getRange() );
 			stripMarkers( elem );
 		} else if ( numMarkers == 2 ) {
+			
+			// Identify the markers and add the new range to the element 
 			var range = TestUtils.addRange( elem );
 			var selection = Aloha.getSelection();
-			
 			selection.removeAllRanges();
+			
+			// Add the identified range
 			selection.addRange( range );
+			
 			selectionRange = range;
 			queryCommand();
 
