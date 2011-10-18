@@ -107,6 +107,7 @@ Aloha.Markup = Class.extend({
 		// BACKSPACE
 		if (event.keyCode === 8) {
 			Aloha.execCommand( 'delete', false );
+			event.preventDefault();
 			return false;
 		}
 
