@@ -337,8 +337,15 @@ var tests = {
 //		},
 //	
 		// Lists with collapsed selection
-		*/{  	start: 'foo<ol><li>[]bar<li>baz</ol>',
+		{  	
+			exclude: ['msie'],
+			start: 'foo<ol><li>[]bar<li>baz</ol>',
 			execResult: 'foo<p>[]bar</p><ol><li>baz</li></ol>'
+		},
+		{  	
+			include: ['msie'],
+			start: 'foo<ol><li>[]bar<li>baz</ol>',
+			execResult: 'foo <p>[]bar</p><ol><li>baz</li></ol>'
 		},
 		{  	start: 'foo<br><ol><li>[]bar<li>baz</ol>',
 			execResult: 'foo<p>[]bar</p><ol><li>baz</li></ol>'
@@ -347,7 +354,7 @@ var tests = {
 			execResult: 'foo<br><br><p>[]bar</p><ol><li>baz</li></ol>'
 		},
 		{  	start: '<ol><li>foo</li><li>[]bar</li></ol>',
-			execResult: '<ol><li>foo<br class="aloha-end-br">[]bar</li></ol>'
+			execResult: '<ol><li>foo<br>[]bar</li></ol>'
 		},
 		{  	start: '<ol><li>foo<br><li>[]bar</ol>',
 			execResult: '<ol><li>foo<br>[]bar</li></ol>'
@@ -367,21 +374,56 @@ var tests = {
 		{  	start: '<ol><li><p>foo<li>[]bar</ol>',
 			execResult: '<ol><li><p>foo</p>[]bar</li></ol>'
 		},
-		{  	start: '<ol><li>foo<li><p>[]bar</ol>',
+		{  	
+			exclude: ['msie'],
+			start: '<ol><li>foo<li><p>[]bar</ol>',
 			execResult: '<ol><li>foo<p>[]bar</p></li></ol>'
 		},
-		{  	start: '<ol><li><p>foo<li><p>[]bar</ol>',
+		{  	
+			include: ['msie'],
+			start: '<ol><li>foo<li><p>[]bar</ol>',
+			execResult: '<ol><li>foo <p>[]bar</p></li></ol>'
+		},
+		{  	
+			exclude: ['msie'],
+			start: '<ol><li><p>foo<li><p>[]bar</ol>',
 			execResult: '<ol><li><p>foo</p><p>[]bar</p></li></ol>'
 		},
-		{  	start: '<ol><li>foo<ul><li>[]bar</ul></ol>',
+		{  	
+			include: ['msie'],
+			start: '<ol><li><p>foo<li><p>[]bar</ol>',
+			execResult: '<ol><li><p>foo </p><p>[]bar</p></li></ol>'
+		},
+		{  	
+			exclude: ['msie'],
+			start: '<ol><li>foo<ul><li>[]bar</ul></ol>',
 			execResult: '<ol><li>foo</li><li>[]bar</li></ol>'
 		},
-		{  	start: 'foo<ol><ol><li>[]bar</ol></ol>',
+		{  	
+			include: ['msie'],
+			start: '<ol><li>foo<ul><li>[]bar</ul></ol>',
+			execResult: '<ol><li>foo </li><li>[]bar</li></ol>'
+		},
+		{  	
+			exclude: ['msie'],
+			start: 'foo<ol><ol><li>[]bar</ol></ol>',
 			execResult: 'foo<ol><li>[]bar</li></ol>'
 		},
-		{  	start: 'foo<div><ol><li>[]bar</ol></div>',
+		{  	
+			include: ['msie'],
+			start: 'foo<ol><ol><li>[]bar</ol></ol>',
+			execResult: 'foo <ol><li>[]bar</li></ol>'
+		},		
+		{  	
+			exclude: ['msie'],		
+			start: 'foo<div><ol><li>[]bar</ol></div>',
 			execResult: 'foo<div><p>[]bar</p></div>'
-		}/*,
+		},
+		{  	
+			include: ['msie'],		
+			start: 'foo<div><ol><li>[]bar</ol></div>',
+			execResult: 'foo <div><p>[]bar</p></div>'
+		},
 
 //		{  	start: 'foo<dl><dt>[]bar<dd>baz</dl>',
 //			execResult: 'foo<dl><dt>[]bar<dd>baz</dl>'
@@ -398,7 +440,7 @@ var tests = {
 //		{  	start: '<dl><dt>foo<dd>bar<dd>[]baz</dl>',
 //			execResult: '<dl><dt>foo<dd>bar<dd>[]baz</dl>'
 //		},
-	
+	*/
 		{  	start: '<ol><li>foo</ol>[]bar',
 			execResult: '<ol><li>foo[]bar</li></ol>'
 		},
@@ -411,9 +453,16 @@ var tests = {
 		{  	start: '<ol><li><br></ol>[]bar',
 			execResult: '<ol><li>[]bar</li></ol>'
 		},
-		{  	start: '<ol><li>foo<li><br></ol>[]bar',
+		{  	
+			exclude: ['msie'],
+			start: '<ol><li>foo<li><br></ol>[]bar',
 			execResult: '<ol><li>foo</li><li>[]bar</li></ol>'
 		},
+		{  	
+			include: ['msie'],
+			start: '<ol><li>foo<li><br></ol>[]bar',
+			execResult: '<ol><li>foo </li><li>[]bar</li></ol>'
+		}/*,
 	
 		// Indented stuff with collapsed selection
 		{  	start: 'foo<blockquote>[]bar</blockquote>',
