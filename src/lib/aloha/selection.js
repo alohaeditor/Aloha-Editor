@@ -2066,20 +2066,6 @@ function getLeftmostScion ( node, predicate ) {
 		return scion;
 	}
 	
-	// scion = getRightNeighbor( scion );
-	// if ( scion ) {
-		// var grandScion = getLeftmostScion( scion, predicate );
-		
-		// if ( grandScion ) {
-			// return grandScion;
-		// }
-		
-		// if ( predicate( scion ) ) {
-			// return scion;
-		// }
-	// }
-	
-	
 	var posbits,
 	    grandScion;
 	
@@ -2202,6 +2188,29 @@ function getNearestLeftNode ( node, predicate ) {
 	return null;
 };
 
+
+function getFirstEncounteredLeftNode ( node , predicate ) {
+	if ( !node ) {
+		return null;
+	}
+	
+	if ( typeof predicate !== 'function' || predicate( node ) ) {
+		return node;
+	}
+	
+	if ( node.previousSibling ) {
+		return getFirstEncounteredLeftNode(
+			getRightmostScion( node.previousSibling ) || node.previousSibling, predicate
+		);
+	}
+	
+	if ( node.parentNode && !isEditingHost( node.parentNode ) ) {
+		return getFirstEncounteredLeftNode( node.parentNode, predicate );
+	}
+	
+	return null;
+}
+
 /**
  * Like getNearestLeftNode, but in the other direction
  * <b></b><b></b>{<p><b></b><b>f</b>foo]</p>
@@ -2239,7 +2248,7 @@ function getNearestRightNode ( node, predicate ) {
 
 /**
  * anatomy of a selection:
- * markup  : '<div>|<p>foo</p>|test{<p>bar</p><p>baz]</p>|</div>', '<div><p>foo</p>test<p>[bar</p><p>}baz</p></div>'
+ * markup  : '<div>|<p>foo</p>|test{<p>bar</p><p>baz]</p>|</div>'
  * offsets :       0          1    2                3   4
  * startContainer : <div>
  * startOffset    : 2
@@ -2250,70 +2259,62 @@ function getNearestRightNode ( node, predicate ) {
  *		1 : test
  *		2 : <p>bar</p>
  *		3 : <p>baz</p>
- *	]
- * 
- * rule:
- * 	IF the container is a flow element
- *	THEN the algorithm is greedy
- *	THEREFOR we try to expand the selection to the end of the nearest left
- *			 neighbor from the selection point, which has a node inwhich we can
- *			 place a new position.
- *			 ie:
- *				"test{<p>foo..." becomes "test[<p>foo..."
- *				"<b>test</b>{<p>foo..." becomes "<b>test[</b><p>foo..."
- *				"test<b></b>{<p>foo..." becomes "test[<b></b><p>foo..."
- *
- *	IF we cannot find a node inwhich we can position ourselves then we contract
- *	   the selection from the current start position in towards to nearest
- *	   right child or sibling
- * 	THEN
- * 		IF the start position is in front of a start tag of a flow element,
- * 			THEN we try to find a suitable start position by moving down or into the tree.
- * 				 We will try and land at the nearest position to where we started, which is the the start of the first stoppable node
- * 		ELSE IF the start position is in front of an end tag of a flow element, then we will try and land at the nearest position to where we started, which is the the end of the first stoppable node
- * unit tests:
-			[ 'test{<p>foo</p><p>bar]</p>'			, 'test[<p>foo</p><p>bar]</p>'		  ],
-			[ '<b>test</b>{<p>foo</p><p>bar]</p>'	, '<b>test[</b><p>foo</p><p>bar]</p>' ],
-			[ '{<p>foo</p><p>bar]</p>'				, '<p>[foo</p><p>bar]</p>'			  ],
+ * ]
  */
 function getStartPosition ( container, offset ) {
 	if ( !container ) {
 		return null;
 	}
 	
+	var isAtEnd = ( offset == getNodeLength( container ) );
+	
 	// Should we just throw an INDEX_SIZE_ERR exception?
 	offset = sanitizeOffset( container, offset );
 	
+	// If the offset is equal to the container's length, then either we
+	// are positioned in an empty container, or else the offset is
+	// positioned at the very end of the container--after the last node
+	// child node. In either case, we are in front of the closing tag of a
+	// block element, and we will therefore try and place our end position
+	// somewhere backwards.
+	
+	//
+	// In front of block node
+	//
+	if ( isBlockElement( container ) && isAtEnd ) {
+		return getStartPositionFromEndOfBlockNode( container );
+	}
+	
+	if ( isBlockElement( container.childNodes[ offset ] ) ) {
+		return getStartPositionFromFrontOfBlockNode( container.childNodes[ offset ] );
+	}
+	
+	//
+	// Inside of text node
+	//
 	if ( isTextNode( container ) ) {
-		return {
-			node   : container,
-			offset : offset
-		};
+		return getStartPositionFromInsideTextNode( container, offset );
 	}
 	
-	if ( isBlockElement( container ) ) {
-		// If the offset is equal to the container's length, then either we
-		// are positioned in an empty container, or else the offset is
-		// positioned at the very end of the container--after the last node
-		// child node. In either case, we are in front of the closing tag of a
-		// block element, and we will therefore try and place our end position
-		// somewhere backwards.
-		if ( offset == getNodeLength( container ) ) {
-			return getStartPositionFromEndOfBlockNode( container );
-		}
-		
-		// The offset is somewhere before the end of the container, therefore
-		// check if the node at offset index is a block element.
-		if ( isBlockElement( container.childNodes[ offset ] ) ) {
-			return getStartPositionFromFrontOfBlockNode( container.childNodes[ offset ] );
-		}
+	// In front of text node
+	if ( isTextNode( container.childNodes[ offset ] ) ) {
+		return getStartPositionFromFrontOfTextNode( container.childNodes[ offset ] );
 	}
 	
-	if ( offset == getNodeLength( container ) ) {	
-		return getStartPositionFromEndOfInlineNode( container );
+	// In front of inline node
+	if ( isAtEnd ) {
+		getStartPositionFromEndOfInlineNode( container )
 	}
 	
-	return getStartPositionFromFrontOfInlineNode( container.childNodes[ offset ] );
+	if ( container.childNodes[ offset ] ) {
+		return getStartPositionFromFrontOfInlineNode( container.childNodes[ offset ] );
+	}
+	
+	// We should never reach this; but just in case... give back what you got
+	return {
+		node   : container,
+		offset : offset
+	};
 };
 
 function getEndPosition ( container, offset ) {
@@ -2321,58 +2322,58 @@ function getEndPosition ( container, offset ) {
 		return null;
 	}
 	
+	var isAtEnd = ( offset == getNodeLength( container ) );
+	
 	// Should we just throw an INDEX_SIZE_ERR exception?
 	offset = sanitizeOffset( container, offset );
 	
+	// In front of closing block node eg: "...}</div>"
+	if ( isBlockElement( container ) && isAtEnd ) {
+		return getEndPositionFromEndOfBlockNode( container, offset );
+	}
+	
+	if ( isBlockElement( container.childNodes[ offset ] ) ) {
+		return getEndPositionFromFrontOfBlockNode( container.childNodes[ offset ] );
+	}
+	
+	// Inside of text node eg: "...}foo"
 	if ( isTextNode( container ) ) {
-		return {
-			node   : container,
-			offset : offset
-		};
+		return getEndPositionFromInsideTextNode( container, offset );
 	}
 	
-	if ( isBlockElement( container ) ) {
-		// If the offset is equal to the container's length, then either we
-		// are positioned in an empty container, or else the offset is
-		// positioned at the very end of the container--after the last node
-		// child node. In either case, we are in front of the closing tag of a
-		// block element, and we will therefore try and place our end position
-		// somewhere backwards.
-		if ( offset == getNodeLength( container ) ) {
-			return getEndPositionFromEndOfBlockNode( container, offset );
-		}
-		
-		// The offset is somewhere before the end of the container, therefore
-		// check if the node at offset index is a block element.
-		if ( isBlockElement( container.childNodes[ offset ] ) ) {
-			return getEndPositionFromFrontOfBlockNode( container.childNodes[ offset ] );
-		}
+	// In front of text node
+	if ( isTextNode( container.childNodes[ offset ] ) ) {
+		return getEndPositionFromFrontOfTextNode( container.childNodes[ offset ] );
 	}
 	
-	if ( offset == getNodeLength( container ) ) {
+	// In front of closing inline node eg: "...}</span>"
+	if ( isAtEnd ) {
 		return getEndPositionFromEndOfInlineNode( container, offset );
 	}
 	
-	// We have a non-block level element
-	return getEndPositionFromFrontOfInlineNode( container.childNodes[ offset ] );
+	if ( container.childNodes[ offset ] ) {
+		return getEndPositionFromFrontOfInlineNode( container.childNodes[ offset ] );
+	}
+	
+	// We should never reach this.
+	return {
+		node   : container,
+		offset : offset
+	};
 };
 
-// rule:
-//		The end position cannot preceed the start position.
-//		If we detect such a case, then we collapse the selection round
-//		the end position
-//
-// reference:
-//		http://www.w3.org/TR/DOM-Level-3-Core/core.html#Node3-compareDocumentPosition
-//		Bits	Number	Meaning
-//		------  ------  -------
-//		000000	0		Elements are identical.
-//		000001	1		The nodes are in different documents (or one is outside of a document).
-//		000010	2		Node B precedes Node A.
-//		000100	4		Node A precedes Node B.
-//		001000	8		Node B contains Node A.
-//		010000	16		Node A contains Node B.
-//		100000	32		For private use by the browser.
+/**
+ * Ref: http://www.w3.org/TR/DOM-Level-3-Core/core.html#Node3-compareDocumentPosition
+ *		Bits	Number	Meaning
+ *		------  ------  -------
+ *		000000	0		Elements are identical.
+ *		000001	1		The nodes are in different documents (or one is outside of a document).
+ *		000010	2		Node B precedes Node A.
+ *		000100	4		Node A precedes Node B.
+ *		001000	8		Node B contains Node A.
+ *		010000	16		Node A contains Node B.
+ *		100000	32		For private use by the browser.
+ */
 function getStartPositionBetweenSucceedingBlockNode ( startNode,
 													  leftTextNode,
 													  succeedingBlockNode ) {
@@ -2421,6 +2422,109 @@ function getStartPositionBetweenSucceedingBlockNode ( startNode,
 	}
 };
 
+function getStartPositionFromInsideTextNode ( node, offset ) {
+	return {
+		node   : node,
+		offset : offset
+	};
+};
+
+function getStartPositionFromFrontOfTextNode ( node ) {
+	return {
+		node   : node,
+		offset : 0
+	};
+};
+
+function getEndPositionFromInsideTextNode ( node, offset ) {
+	return {
+		node   : node,
+		offset : offset
+	};
+};
+
+function getEndPositionFromFrontOfTextNode ( node ) {
+	var leftTextNode,
+		leftBlockNode,
+		posbits;
+	
+	leftTextNode = getNearestLeftNode( node, isTextNode );
+	leftBlockNode = getFirstEncounteredLeftNode( node, isBlockElement );
+	
+	debugger;
+	
+	// 000100 -- 4 -- Node A precedes Node B.
+	// leftTextNode preceeds leftBlockNode meaning, we encounter the block node
+	// before we encounter the text node if we were to walk backwards towards
+	// them.
+	// eg: [ '[foo<p>}bar</p>', '[foo<p>}bar</p>' ],
+	if ( compareDocumentPosition( leftTextNode, leftBlockNode ) & 4 ) {
+		
+		return null;
+	}
+	
+	return {
+		node   : node,
+		offset : 0
+	};
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	// [ '[foo<p>}bar</p>', '[foo<p>}bar</p>' ],
+	// [ '[foo<div><p>}bar</p></div>', '[foo<div><p>}bar</p></div>' ],
+	// [ '{<p></p><p>}foo</p>', '<p></p><p>[]foo</p>' ],
+	// [ '[foo<p><i></i><b></b>}bar</p>', '[foo<p>}<i></i><b></b>bar</p>' ],
+	// [ '<p><i>[foo</i><b></b>}bar</p>', '<p><i>[foo]</i><b></b>bar</p>' ],
+	// [ '<div><i>[foo</i><b>}bar</b></div>', '<div><i>[foo]</i><b>bar</b></div>' ],
+	// [ '<div>test<i>[foo</i><b>}bar</b></div>', '<div>test<i>[foo]</i><b>bar</b></div>' ],
+	var leftNode = node;
+	
+	while ( leftNode = leftNode.previousSibling ) {
+		leftTextNode = isTextNode( leftNode )
+			? leftNode
+			: getRightmostScion( leftNode, isTextNode );
+		
+		if ( leftTextNode ) {
+			break;
+		}
+	}
+	
+	// There are not siblings to the left which contain a text node in which we
+	// can move into
+	if ( !leftTextNode ) {
+		debugger;
+		// We nevertheless need to know if there is a text node somewhere to
+		// the left of our currest position
+		leftTextNode = getNearestLeftNode( node, isTextNode );
+		
+	}
+	
+	
+	//leftBlockNode = getNearest
+	
+	if ( leftTextNode ) {
+		return {
+			node   : leftTextNode,
+			offset : getNodeLength( leftTextNode )
+		};
+	}
+	
+	console.log( 1 );
+	
+	return {
+		node   : node,
+		offset : 0
+	};
+	
+	//|| isBlockElement( node.previousSibling ) ) {
+	
+};
 /**
  * Given that we are in front of an inline node...
  *
@@ -2842,11 +2946,105 @@ function getStartPositionFromEndOfBlockNode ( node ) {
 
 // Needs tlc
 function getEndPositionFromFrontOfInlineNode ( node ) {
-	var stop;
+	var leftTextNode,
+	    rightTextNode,
+	    firstLeftInlineNode,
+	    leftNode,
+		hasPreceedingBlockNode = false;
 	
-	if ( isTextNode( node ) ) {
-		// [ '[foo<p>}bar</p>', '[foo<p>]bar</p>' ]
+	debugger;
+	
+	// Try and find a textNode to the left of original start position
+	// Try to move to the nearest left node without crossing a block node
+	
+	leftNode = node;
+	
+	while ( leftNode ) {
+		// We found what we are looking for
+		if ( isTextNode( leftNode ) ) {
+			leftTextNode = leftNode;
+			break;
+		}
 		
+		if ( isBlockElement( leftNode ) ) {
+			hasPreceedingBlockNode = true;
+		}
+		
+		if ( !firstLeftInlineNode ) {
+			firstLeftInlineNode = leftNode;
+		}
+		
+		if ( leftNode.previousSibling ) {
+			leftNode = leftNode.previousSibling;
+			// Start with the deepest child node to the right
+			while ( leftNode.lastChild ) {
+				leftNode = leftNode.lastChild;
+			}
+			continue;
+		}
+		if ( !isEditingHost( leftNode.parentNode ) ) {
+			leftNode.parentNode;
+			
+			while ( leftNode.lastChild ) {
+				leftNode = leftNode.lastChild;
+			}
+		}
+		
+		break;
+	}
+	
+	// Everythings is clear on the left
+	if ( leftTextNode && !hasPreceedingBlockNode ) {
+		return {
+			node   : leftTextNode,
+			offset : getNodeLength( leftTextNode )
+		};
+	}
+	
+	// We have got a block node in the way... but we encountered a inline node
+	// on the way so we can use that instead
+	if ( leftTextNode /* && hasPreceedingBlockNode */ && firstLeftInlineNode ) {
+		return {
+			node   : firstLeftInlineNode,
+			offset : getNodeLength( firstLeftInlineNode )
+		}
+	}
+	
+	// We have nowhere to land on the left, try right
+	rightTextNode = getLeftmostScion( node, isTextNode );
+	if ( !rightTextNode ) {
+		rightTextNode = getNearestLeftNode( node, isTextNode );
+	}
+	
+	if ( rightTextNode ) {
+		return {
+			node   : rightTextNode,
+			offset : 0
+		};
+	}
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	var leftTextNode,
+	    rightTextNode;
+	
+	// Look for a textNode on the left without stopping over a block node
+	
+	// [ '[foo}bar', '[foobar]' ],
+	// [ '[foo<p>}bar</p>', '[foo<p>]bar</p>' ]
+	if ( isTextNode( node ) ) {
 		stop = node;
 		
 		while ( true ) {
