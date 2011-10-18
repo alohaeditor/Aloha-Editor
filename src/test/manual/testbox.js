@@ -24,7 +24,7 @@ Aloha.ready( function() {
 	var	engine = Aloha;
 	var	selectionRange;
 	var	supportedCommands = Aloha.querySupportedCommands().sort();
-	
+	var savedRange;
 	init();
 	
 	/**
@@ -55,11 +55,19 @@ Aloha.ready( function() {
 		// Set the initial selection when the document is ready
 		jQuery( onSelectionChanged );
 		
-		// Handle selection events within the testarea
+		// Handle selection events within the testarea. 
+		// This also preserves the selection/ranges within aloha
 		$testArea.contentEditableSelectionChange( function() {
 			onSelectionChanged();
+			
+			// Load the current active range and store it in the savedRange property. 
+			// We need to store it since we loose the range when a blur event occurs.
+			var range = Aloha.getSelection().getRangeAt(0);
+			savedRange = Aloha.createRange();
+			savedRange.setStart( range.startContainer, range.startOffset) ;
+			savedRange.setEnd( range.endContainer, range.endOffset);
+			
 		});
-
 
 		// Handle click on Fill Testbox button
 		$fillButton.click( function() {
@@ -69,7 +77,7 @@ Aloha.ready( function() {
 		 });
 
 		// Handle changes of engines
-		jQuery( '[name=engine]').change( function() {
+		jQuery('[name=engine]').change( function() {
 			if ( jQuery(this).val() == 'aloha' ) {
 				$testArea.aloha();
 				engine = Aloha;
@@ -94,15 +102,14 @@ Aloha.ready( function() {
 			}
 			Aloha.editables[0].obj.focus();
 			
-	        engine.execCommand( execCommand, false, execCommandValue );
-	        
-	        // Get the range of the active selection
-	        var range = Aloha.getSelection().getRangeAt(0);
-
-	        // Add brackets for the range
-	        TestUtils.addBrackets( range );
-	        
-	        applySelection( $testArea );
+			// Place the brackets according to the user specific selection
+			TestUtils.addBrackets( selectionRange );
+			
+			// Convert the brackets and show the selection
+			applySelection( $testArea );
+			
+			// Apply the command
+			engine.execCommand( execCommand, false, execCommandValue );			
 
 		});
 		
