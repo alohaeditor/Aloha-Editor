@@ -2354,7 +2354,7 @@ function getEndPosition ( container, offset ) {
 	}
 	
 	// We have a non-block level element
-	return getEndPositionFromFrontOfInlineNode( container, offset );
+	return getEndPositionFromFrontOfInlineNode( container.childNodes[ offset ] );
 };
 
 // rule:
@@ -2863,13 +2863,31 @@ function getStartPositionFromEndOfBlockNode ( node ) {
 	};
 };
 
-function getEndPositionFromFrontOfInlineNode ( node, offset ) {
-	var child = node.childNodes[ offset ];
+function getEndPositionFromFrontOfInlineNode ( node ) {
 	var stop;
 	
-	if ( isTextNode( child ) ) {
+	if ( isTextNode( node ) ) {
+		// [ '[foo<p>}bar</p>', '[foo<p>]bar</p>' ]
+		
+		stop = node;
+		
+		while ( true ) {
+			if ( isBlockElement( stop ) ) {
+				break;
+			} else if ( !isEditingHost( stop.parentNode ) ) {
+				stop = stop.parentNode;
+			} else if ( stop.previousSibling
+							&& !isBlockElement( stop.previousSibling ) ) {
+				stop = stop.previousSibling;
+			} else {
+				break;
+			}
+		}
+		
+		debugger;
+		
 		return {
-			node   : child,
+			node   : stop,
 			offset : 0
 		};
 	}
@@ -2878,14 +2896,14 @@ function getEndPositionFromFrontOfInlineNode ( node, offset ) {
 	
 	// Satisfies:
 	// [ '{<b>foo]</b>', '<b>[foo]</b>' ],
-	stop = getLeftmostScion( child, isTextNode );
+	stop = getLeftmostScion( node, isTextNode );
 	
 	// Satisfies:
 	// [ 'foo{<b></b><b>bar]</b>', 'foo<b></b><b>[bar]</b>' ],
 	// [ 'foo{<b><i></i></b>bar]', 'foo<b><i></i></b>[bar]' ],
 	// [ 'foo{<b><i></i></b><b>bar]</b>', 'foo<b><i></i></b><b>[bar]</b>' ],
 	if ( !stop ) {
-		stop = getNearestRightNode( child, isTextNode );
+		stop = getNearestRightNode( node, isTextNode );
 	}
 	
 	if ( stop ) {
@@ -2894,11 +2912,6 @@ function getEndPositionFromFrontOfInlineNode ( node, offset ) {
 			offset : 0
 		};
 	}
-	
-	return {
-		node   : node,
-		offset : offset
-	};
 };
 
 /**
@@ -3049,8 +3062,6 @@ function getEndPositionFromFrontOfBlockNode ( node ) {
 		return null;
 	};
 	
-	var rightNode = node;
-	
 	while ( rightNode ) {
 		if ( isBlockElement( rightNode ) ) {
 			rightTextNode = f( rightNode.firstChild, isTextNode );
@@ -3083,6 +3094,7 @@ function getEndPositionFromFrontOfBlockNode ( node ) {
 	}
 	
 	if ( rightTextNode ) {
+		debugger;
 		while ( true ) {
 			if ( isBlockElement( rightTextNode ) ) {
 				break;
