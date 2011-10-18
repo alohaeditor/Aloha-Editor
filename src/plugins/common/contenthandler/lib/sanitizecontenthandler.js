@@ -65,6 +65,7 @@ function( Aloha, jQuery, ContentHandlerManager, console ) {
 			'a': ['href', 'title'],
 			'abbr': ['title'],
 			'blockquote': ['cite'],
+			'br': ['class'],
 			'col': ['span', 'width'],
 			'colgroup': ['span', 'width'],
 			'img': ['align', 'alt', 'height', 'src', 'title', 'width'],

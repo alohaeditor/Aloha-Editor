@@ -261,7 +261,7 @@ function AlohaImagePlugin (aQuery, Plugin, FloatingMenu, i18nCore, i18n) {
 		init: function() {
 
 			var that = this;
-			var	imagePluginUrl = Aloha.getPluginUrl('image');
+			var imagePluginUrl = Aloha.getPluginUrl('image');
 			
 			// Extend the default settings with the custom ones
 			this.settings = jQuery.extend(true,this.defaultSettings,this.settings);

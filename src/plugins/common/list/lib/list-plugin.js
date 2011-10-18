@@ -85,25 +85,69 @@ function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 				1
 			);
 
+
+			FloatingMenu.createScope('Aloha.List', 'Aloha.continuoustext');
+			// the 'indent list' button
+			this.indentListButton = new Aloha.ui.Button({
+				'name' : 'indent-list',
+				'iconClass' : 'aloha-button aloha-button-indent-list',
+				'size' : 'small',
+				'tooltip' : i18n.t('button.indentlist.tooltip'),
+				'toggle' : false,
+				'onclick' : function (element, event) {
+					that.indentList();
+				}
+			});
+			// add to floating menu
+			FloatingMenu.addButton(
+				'Aloha.List',
+				this.indentListButton,
+				i18nCore.t('floatingmenu.tab.list'),
+				1
+			);
+
+			// the 'outdent list' button
+			this.outdentListButton = new Aloha.ui.Button({
+				'name' : 'outdent-list',
+				'iconClass' : 'aloha-button aloha-button-outdent-list',
+				'size' : 'small',
+				'tooltip' : i18n.t('button.outdentlist.tooltip'),
+				'toggle' : false,
+				'onclick' : function (element, event) {
+					that.outdentList();
+				}
+			});
+			// add to floating menu
+			FloatingMenu.addButton(
+				'Aloha.List',
+				this.outdentListButton,
+				i18nCore.t('floatingmenu.tab.list'),
+				1
+			);
+
 			// add the event handler for selection change
 			Aloha.bind('aloha-selection-changed', function(event, rangeObject) {
 				var i, effectiveMarkup;
 
 				that.createUnorderedListButton.setPressed(false);
 				that.createOrderedListButton.setPressed(false);
+
 				for ( i = 0; i < rangeObject.markupEffectiveAtStart.length; i++) {
 					effectiveMarkup = rangeObject.markupEffectiveAtStart[ i ];
 					if (Aloha.Selection.standardTagNameComparator(effectiveMarkup, jQuery('<ul></ul>'))) {
 						that.createUnorderedListButton.setPressed(true);
+						FloatingMenu.setScope('Aloha.List');
 						break;
 					}
 					if (Aloha.Selection.standardTagNameComparator(effectiveMarkup, jQuery('<ol></ol>'))) {
 						that.createOrderedListButton.setPressed(true);
+						FloatingMenu.setScope('Aloha.List');
 						break;
 					}
 				}
-				if (Aloha.activeEditable) {
-					that.applyButtonConfig(Aloha.activeEditable.obj);
+
+				if ( Aloha.activeEditable ) {
+					that.applyButtonConfig( Aloha.activeEditable.obj );
 				}
 
 				// TODO this should not be necessary here!
@@ -121,9 +165,8 @@ function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 		 * buttons not available in this configuration are hidden
 		 * @param {jQuery} obj jQuery object of the activated editable
 		 */
-		applyButtonConfig: function (obj) {
-
-			var config = this.getEditableConfig(obj);
+		applyButtonConfig: function ( obj ) {
+			var config = this.getEditableConfig( obj );
 
 			if (Aloha.Selection.rangeObject.unmodifiableMarkupAtStart[0]) {
 				// show/hide them according to the config
@@ -138,9 +181,9 @@ function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 				} else {
 					this.createOrderedListButton.hide();
 				}
+
 			}
 		},
-
 
 		/**
 		 * Process Tab and Shift-Tab pressed in lists
@@ -200,16 +243,48 @@ function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 			var domToTransform = this.getStartingDomObjectToTransform(),
 				lastLi, i, jqNewLi, jqList, selectedSiblings, jqParentList,
 				newPara, jqToTransform, nodeName;
+			
+			// visible is set to true, but the button is not visible
+			this.outdentListButton.show();
+			this.indentListButton.show();
 
-
-			if (!domToTransform) {
+			if ( !domToTransform ) {
 				// wrap a paragraph around the selection
 				Aloha.Selection.changeMarkupOnSelection(jQuery('<p></p>'));
 				domToTransform = this.getStartingDomObjectToTransform();
 
-				if (!domToTransform) {
-					Aloha.Log.error(this, 'Could not transform selection into a list');
-					return;
+				if ( !domToTransform ) {
+					if ( Aloha.Selection.rangeObject.startContainer.contentEditable ) {
+						// create a new list with an empty item
+						jqList = ordered ? jQuery('<ol></ol>') : jQuery('<ul></ul>');
+						jqNewLi = jQuery('<li></li>');
+						jqList.append(jqNewLi);
+						
+						var li = jqNewLi.get(0);
+						var editable = Aloha.getActiveEditable().obj;
+						//IE7 requires an (empty or non-empty) text node
+						//inside the li for the selection to work.
+						li.appendChild(document.createTextNode(""));
+						/* if ( jQuery.browser.mozilla ) {
+							li.appendChild(document.createElement("BR"));
+						}*/
+
+						editable.append(jqList);
+						editable.focus();
+
+						var range = Aloha.createRange();
+						var selection = Aloha.getSelection();
+						range.setStart( li.firstChild, 0 );
+						range.setEnd( li.firstChild, 0 );
+						selection.removeAllRanges();
+						selection.addRange( range );
+						Aloha.Selection.updateSelection();
+						
+						return;
+					} else {
+						Aloha.Log.error(this, 'Could not transform selection into a list');
+						return;
+					}
 				}
 			}
 
@@ -334,13 +409,13 @@ function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 				//the last li that was appended to the list
 				var li = lastAppendedLi.get(0);
 				var range = Aloha.createRange();
+				var selection = Aloha.getSelection();
 				//IE7 requires an (empty or non-empty) text node
 				//inside the li for the selection to work.
 				li.appendChild(document.createTextNode(""));
-				range.selectNodeContents(li);
-				Aloha.getSelection().setSingleRange(range);
-				range.detach();
-				//let Aloha know about the selection change we did through rangy
+				range.selectNodeContents( li.lastChild );
+				selection.removeAllRanges();
+				selection.addRange( range );
 				Aloha.Selection.updateSelection();
 			}
 
@@ -367,7 +442,6 @@ function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 
 				// get the also selected siblings of the dom object
 				selectedSiblings = Aloha.Selection.rangeObject.getSelectedSiblings(listItem);
-
 
 				// create the new list element by cloning the selected list element's parent
 				jqNewList = jQuery(listItem).parent().clone(false).empty();
@@ -479,7 +553,7 @@ function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 		 */
 		refreshSelection: function () {
 			if (Aloha.activeEditable) {
-				jQuery(Aloha.activeEditable.obj[0]).click();
+				Aloha.getActiveEditable().obj.focus();
 			}
 			Aloha.Selection.rangeObject.update();
 			Aloha.Selection.rangeObject.select();

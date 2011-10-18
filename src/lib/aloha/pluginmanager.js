@@ -124,11 +124,13 @@ function( jQuery, Class ) {
 			var i, plugin;
 			// iterate through all registered plugins
 			for ( plugin in this.plugins ) {
-				if (Aloha.Log.isDebugEnabled()) {
-					Aloha.Log.debug(this, 'Passing contents of HTML Element with id { ' + obj.attr('id') +
-						' } for cleaning to plugin { ' + plugin + ' }');
+				if ( this.plugins.hasOwnProperty( plugin ) ) {
+					if (Aloha.Log.isDebugEnabled()) {
+						Aloha.Log.debug(this, 'Passing contents of HTML Element with id { ' + obj.attr('id') +
+										' } for cleaning to plugin { ' + plugin + ' }');
+					}
+					this.plugins[plugin].makeClean(obj);
 				}
-				this.plugins[plugin].makeClean(obj);
 			}
 		},
 
