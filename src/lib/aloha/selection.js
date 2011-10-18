@@ -983,7 +983,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		/**
 		 * apply a certain markup to the selection Tree
 		 * @param selectionTree SelectionTree Object markup should be applied to
-		 * @param rangeObject Aloha rangeObject which will be modified to reflect the dom changes, after the the markup was applied (only if activated via options)
+		 * @param rangeObject Aloha rangeObject which will be modified to reflect the dom changes, after the markup was applied (only if activated via options)
 		 * @param markupObject jQuery object of the markup to be applied (e.g. created with obj = jQuery('<b></b>'); )
 		 * @param tagComparator method, which is used to compare the dom object and the jQuery markup object. the method must accept 2 parameters, the first is the domobj, the second is the jquery object. if no method is specified, the method this.standardTextLevelSemanticsComparator is used
 		 * @param options JS object, with the following boolean properties: setRangeObject2NewMarkup, setRangeObject2NextSibling, setRangeObject2PreviousSibling
@@ -3813,7 +3813,6 @@ function correctRange ( range ) {
 		 */
 		getRangeAt: function ( index ) {
 			return correctRange( this._nativeSelection.getRangeAt( index ) );
-
 			//if ( index < 0 || this.rangeCount ) {
 			//	throw "INDEX_SIZE_ERR DOM";
 			//}
