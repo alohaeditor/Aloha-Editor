@@ -2920,7 +2920,8 @@ function getEndPositionFromEndOfInlineNode ( node, offset ) {
 	leftTextNode = getNearestLeftNode( node, isTextNode );
 	if ( leftTextNode ) {
 		return {
-		
+			node   : leftTextNode,
+			offset : getNodeLength( leftTextNode )
 		};
 	}
 	
@@ -3140,7 +3141,7 @@ function sanitizeOffset ( node, offset ) {
 };
 
 function correctRange ( range ) {
-	// return range;
+	return range;
 	
 	var startContainer = range.startContainer,
 	    startOffset = range.startOffset,
