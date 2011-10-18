@@ -2299,7 +2299,7 @@ function getStartPosition ( container, offset ) {
 		// block element, and we will therefore try and place our end position
 		// somewhere backwards.
 		if ( offset == getNodeLength( container ) ) {
-			return getStartPositionFromEndOfBlockNode( container, offset );
+			return getStartPositionFromEndOfBlockNode( container );
 		}
 		
 		// The offset is somewhere before the end of the container, therefore
@@ -2479,11 +2479,15 @@ function getStartPositionBetweenSucceedingBlockNode ( startNode,
  * @param {DOMElement} node
  * @return {Object} position object with properties node and offset
  */
+
+ // Needs tlc
 function getStartPositionFromFrontOfInlineNode ( node ) {
 	var rightNode,
 	    leftTextNode,
 	    rightTextNode,
 		succeedingBlockNode;
+	
+	//debugger;
 	
 	if ( isTextNode( node ) ) {
 		return {
@@ -2717,55 +2721,88 @@ function getStartPositionFromEndOfInlineNode ( node ) {
 		offset : 0
 	};
 };
+/*
+			//
+			// getStartPositionFromFrontOfBlockNode
+			//
+			[ 'foo{<p>bar]</p>', 'foo[<p>bar]</p>' ],
+			[ '<b>foo</b>{<p>bar]</p>', '<b>foo[</b><p>bar]</p>' ],
+			[ 'foo<div>{<p>bar]</p></div>', 'foo<div><p>[bar]</p></div>' ],
+			[ '<b>foo</b><div>{<p>bar]</p></div>', '<b>foo</b><div><p>[bar]</p></div>' ],
+			[ '<b>foo<u>foo1<i>foo2</i></u></b>{<p>bar]</p>', '<b>foo<u>foo1<i>foo2[</i></u></b><p>bar]</p>' ],
+			[ 'foo<b></b>{<p>bar]</p>', 'foo<b>{</b><p>bar]</p>' ],
+			[ 'foo<b></b><u></u>{<p>bar]</p>', 'foo<b></b><u>{</u><p>bar]</p>' ],
+			[ 'foo<b><u></u></b>{<p>bar]</p>', 'foo<b><u>{</u></b><p>bar]</p>' ],
+			[ '<u><i>foo</i></u><b></b>{<p>bar]</p>', '<u><i>foo</i></u><b>{</b><p>bar]</p>' ],
+			[ '<b></b>{<p>foo]</p>', '<b></b><p>[foo]</p>' ],
+			[ '<b><b></b></b>{<p>bar]</p>', '<b><b></b></b><p>[bar]</p>' ],
+			[ '{<p>foo]</p>', '<p>[foo]</p>' ],
+			[ '{<p><b>foo</b>bar]</p>', '<p><b>[foo</b>bar]</p>' ],
+			[ '{<p><b></b>foo]</p>', '<p><b></b>[foo]</p>' ],
+			[ 'foo<p></p>{<p>bar]</p>', 'foo<p></p><p>[bar]</p>' ],
+			[ '<i>foo</i><b></b>{<p>bar]</p>', '<i>foo</i><b>{</b><p>bar]</p>' ],
+			[ 'foo{<div><p>bar]</p></div>', 'foo[<div><p>bar]</p></div>' ],
+			[ '<i>foo</i>{<div><p>bar]</p></div>', '<i>foo[</i><div><p>bar]</p></div>' ],
+			[ '<p>foo</p>{<p>bar]</p>', '<p>foo</p><p>[bar]</p>' ],
 
+*/
 function getStartPositionFromFrontOfBlockNode ( node ) {
-	var child = node;
-	var stop;
+	var leftTextNode,
+	    rightTextNode;
 	
-	// If this node has no nodes to the left of it, or
-	// if the left neighbor of this node is a block element, we are not
-	// permitted to explorer anywhere left of our current position to
-	// find a new landing position. Our only option in to go right.
-	if ( !child.previousSibling || isBlockElement( getLeftNeighbor( child ) ) ) {
-		// Satisfies:
-		// [ '{<p>}foo</p>', '<p>[]foo</p>' ],
-		stop = getLeftmostScion( child, isTextNode );
-		
-		// Satisfies:
-		// [ '{<p></p><p>}foo</p>', '<p></p><p>[]foo</p>' ],
-		if ( !stop ) {
-			stop = getNearestRightNode( child, isTextNode );
+	// Try and find a textNode to the left of original start position
+	// Try to move to the nearest left node without crossing a block node
+	
+	var firstLeftInlineNode;
+	var leftNode = node;
+	
+	while ( true ) {
+		if ( leftNode.previousSibling ) {
+			leftNode = leftNode.previousSibling;
+		} else if ( isBlockElement( leftNode.parentNode ) ||
+						isEditingHost( leftNode.parentNode ) ) {
+			break;
+		} else {
+			leftNode = leftNode.parentNode.previousSibling;
 		}
 		
-		if ( stop ) {
-			return  {
-				node   : stop,
-				offset : 0
-			};
+		// Cannot go any further left
+		if ( !leftNode ) {
+			break;
+		}
+		
+		// No use going any further left. Fail early.
+		if ( isBlockElement( leftNode ) ) {
+			break;
+		}
+		
+		// Start with child node that is nearest to the right
+		while ( leftNode.lastChild ) {
+			leftNode = leftNode.lastChild;
+		}
+				
+		// We found what we are looking for
+		if ( isTextNode( leftNode ) ) {
+			leftTextNode = leftNode;
+			break;
+		}
+
+		if ( !firstLeftInlineNode ) {
+			firstLeftInlineNode = leftNode;
 		}
 	}
 	
-	// Get the nearest text node to the left of the start position. If we find
-	// a text node. We therefore had one of the following start positions (where
-	// "foo" represents out text node):
-	// foo{<p>bar]</p> corrects to foo[<p>bar]</p>
-	// <b>foo</b>{<p>bar]</p> corrects to <b>foo[</b><p>bar]</p>
-	// foo<b></b>{<p>bar</p> correct to foo<b>{</b><p>bar]</p>
-	stop = getNearestLeftNode( child, isTextNode );
-	if ( stop ) {
-		// Satisfies:
-		// [ 'foo<b></b>{<p>bar]</p>', 'foo<b>{</b><p>bar]</p>' ]
-		// [ 'bar<b></b>{<p></p><p>}foo</p>', 'bar<b>{</b><p></p><p>}foo</p>' ],
-		// [ 'bar<b></b>{<p></p><p>}</p>', 'bar[]<b></b><p></p><p></p>' ]
-		if ( getRightNeighbor( stop ) != child &&
-				!getLeftmostScion( child, isTextNode ) &&
-					getNearestRightNode( child, isTextNode ) ) {
-			stop = getNearestLeftNode( child );
-		}
-		
+	if ( leftTextNode && firstLeftInlineNode ) {
 		return {
-			node   : stop,
-			offset : getNodeLength( stop )
+			node   : firstLeftInlineNode,
+			offset : getNodeLength( firstLeftInlineNode )
+		}
+	}
+	
+	if ( leftTextNode /* && !firstLeftInlineNode */ ) {
+		return {
+			node   : leftTextNode,
+			offset : getNodeLength( leftTextNode )
 		};
 	}
 	
@@ -2775,17 +2812,17 @@ function getStartPositionFromFrontOfBlockNode ( node ) {
 	// position to the nearest text node to the right.
 	// Satisfies:
 	// [ '<b></b>{<p>foo]</p>', '<b></b><p>[foo]</p>' ]
-	stop = getLeftmostScion( child, isTextNode );
+	rightTextNode = getLeftmostScion( node, isTextNode );
 	
 	// Satisfies:
 	// [ '<b></b>{<p></p><p>foo]</p>', '<b></b><p></p><p>[foo]</p>' ]
-	if ( !stop ) {
-		stop = getNearestRightNode( child, isTextNode );
+	if ( !rightTextNode ) {
+		rightTextNode = getNearestRightNode( node, isTextNode );
 	}
 	
-	if ( stop ) {
+	if ( rightTextNode ) {
 		return  {
-			node   : stop,
+			node   : rightTextNode,
 			offset : 0
 		};
 	}
@@ -2793,35 +2830,36 @@ function getStartPositionFromFrontOfBlockNode ( node ) {
 	// There is absolutely no textNode inwhich to place our start position, so
 	// place it at the start of the editing host
 	return {
-		node   : getEditingHost( child ),
+		node   : getEditingHost( node ),
 		offset : 0
 	};
 };
 
-function getStartPositionFromEndOfBlockNode ( node , offset ) {
-	var correctNode;
+function getStartPositionFromEndOfBlockNode ( node ) {
+	var rightTextNode;
 	
-	correctNode = getRightmostScion( node );
-	if ( correctNode ) {
+	// [ '<p>foo{</p>bar]', '<p>foo[</p>bar]' ],
+	rightTextNode = getRightmostScion( node, isTextNode );
+	if ( rightTextNode ) {
 		return {
-			node   : correctNode,
-			offset : getNodeLength( correctNode )
+			node   : rightTextNode,
+			offset : getNodeLength( rightTextNode )
 		};
 	}
 	
 	// There is no child nodes inside of the container node, so contract the
 	// selection rightwards
-	correctNode = getNearestRightNode( node );
-	if ( correctNode ) {
+	rightTextNode = getNearestRightNode( node, isTextNode );
+	if ( rightTextNode ) {
 		return {
-			node   : correctNode,
+			node   : rightTextNode,
 			offset : 0
 		};
 	}
 	
 	return {
-		node   : node,
-		offset : offset
+		node   : getEditingHost( node ),
+		offset : 0
 	};
 };
 
