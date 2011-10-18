@@ -2721,40 +2721,17 @@ function getStartPositionFromEndOfInlineNode ( node ) {
 		offset : 0
 	};
 };
-/*
-			//
-			// getStartPositionFromFrontOfBlockNode
-			//
-			[ 'foo{<p>bar]</p>', 'foo[<p>bar]</p>' ],
-			[ '<b>foo</b>{<p>bar]</p>', '<b>foo[</b><p>bar]</p>' ],
-			[ 'foo<div>{<p>bar]</p></div>', 'foo<div><p>[bar]</p></div>' ],
-			[ '<b>foo</b><div>{<p>bar]</p></div>', '<b>foo</b><div><p>[bar]</p></div>' ],
-			[ '<b>foo<u>foo1<i>foo2</i></u></b>{<p>bar]</p>', '<b>foo<u>foo1<i>foo2[</i></u></b><p>bar]</p>' ],
-			[ 'foo<b></b>{<p>bar]</p>', 'foo<b>{</b><p>bar]</p>' ],
-			[ 'foo<b></b><u></u>{<p>bar]</p>', 'foo<b></b><u>{</u><p>bar]</p>' ],
-			[ 'foo<b><u></u></b>{<p>bar]</p>', 'foo<b><u>{</u></b><p>bar]</p>' ],
-			[ '<u><i>foo</i></u><b></b>{<p>bar]</p>', '<u><i>foo</i></u><b>{</b><p>bar]</p>' ],
-			[ '<b></b>{<p>foo]</p>', '<b></b><p>[foo]</p>' ],
-			[ '<b><b></b></b>{<p>bar]</p>', '<b><b></b></b><p>[bar]</p>' ],
-			[ '{<p>foo]</p>', '<p>[foo]</p>' ],
-			[ '{<p><b>foo</b>bar]</p>', '<p><b>[foo</b>bar]</p>' ],
-			[ '{<p><b></b>foo]</p>', '<p><b></b>[foo]</p>' ],
-			[ 'foo<p></p>{<p>bar]</p>', 'foo<p></p><p>[bar]</p>' ],
-			[ '<i>foo</i><b></b>{<p>bar]</p>', '<i>foo</i><b>{</b><p>bar]</p>' ],
-			[ 'foo{<div><p>bar]</p></div>', 'foo[<div><p>bar]</p></div>' ],
-			[ '<i>foo</i>{<div><p>bar]</p></div>', '<i>foo[</i><div><p>bar]</p></div>' ],
-			[ '<p>foo</p>{<p>bar]</p>', '<p>foo</p><p>[bar]</p>' ],
 
-*/
 function getStartPositionFromFrontOfBlockNode ( node ) {
 	var leftTextNode,
-	    rightTextNode;
+	    rightTextNode,
+	    firstLeftInlineNode,
+	    leftNode;
 	
 	// Try and find a textNode to the left of original start position
 	// Try to move to the nearest left node without crossing a block node
 	
-	var firstLeftInlineNode;
-	var leftNode = node;
+	leftNode = node;
 	
 	while ( true ) {
 		if ( leftNode.previousSibling ) {
@@ -2863,6 +2840,7 @@ function getStartPositionFromEndOfBlockNode ( node ) {
 	};
 };
 
+// Needs tlc
 function getEndPositionFromFrontOfInlineNode ( node ) {
 	var stop;
 	
@@ -2884,7 +2862,7 @@ function getEndPositionFromFrontOfInlineNode ( node ) {
 			}
 		}
 		
-		debugger;
+		//debugger;
 		
 		return {
 			node   : stop,
@@ -2922,7 +2900,7 @@ function getEndPositionFromFrontOfInlineNode ( node ) {
  *							childNodes of node. This argument is therefore
  *							redundant.
  */
- // needs tlc
+ // Needs tlc
 function getEndPositionFromEndOfInlineNode ( node, offset ) {
 	var leftTextNode,
 		rightTextNode;
