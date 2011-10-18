@@ -2909,31 +2909,33 @@ function getEndPositionFromFrontOfInlineNode ( node, offset ) {
  *							childNodes of node. This argument is therefore
  *							redundant.
  */
+ // needs tlc
 function getEndPositionFromEndOfInlineNode ( node, offset ) {
-	/*
-	var child,
-	    leftNode,
-	    rightNode;
+	var leftTextNode,
+		rightTextNode;
 	
-	return {
-		node   : node,
-		offset : offset
-	};
-	*/
+	debugger;
 	
 	// Satisfies
 	// [ '<b>[foo}</b>', '<b>[foo]</b>' ],
-	stop = getRightmostScion( node, isTextNode );
-	if ( stop ) {
+	leftTextNode = getRightmostScion( node, isTextNode );
+	if ( leftTextNode ) {
 		return {
-			node   : stop,
-			offset : getNodeLength( stop )
+			node   : leftTextNode,
+			offset : getNodeLength( leftTextNode )
+		};
+	}
+	
+	leftTextNode = getNearestLeftNode( node, isTextNode );
+	if ( leftTextNode ) {
+		return {
+		
 		};
 	}
 	
 	return {
-		node   : node,
-		offset : offset
+		node   : getEditingHost( node ),
+		offset : 0
 	};
 };
 
