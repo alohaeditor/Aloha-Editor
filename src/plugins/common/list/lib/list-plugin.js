@@ -102,7 +102,7 @@ function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 			FloatingMenu.addButton(
 				'Aloha.List',
 				this.indentListButton,
-				i18nCore.t('floatingmenu.tab.list'),
+				i18n.t('floatingmenu.tab.list'),
 				1
 			);
 
@@ -121,7 +121,7 @@ function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 			FloatingMenu.addButton(
 				'Aloha.List',
 				this.outdentListButton,
-				i18nCore.t('floatingmenu.tab.list'),
+				i18n.t('floatingmenu.tab.list'),
 				1
 			);
 
