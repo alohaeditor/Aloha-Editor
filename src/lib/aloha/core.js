@@ -504,7 +504,7 @@ function ( jQuery, PluginManager ) {
 		 */
 		isModified: function () {
 			// check if something needs top be saved
-			for (var i in Aloha.editables) {
+			for (var i = 0; i < Aloha.editables.length; i++) {
 				if (Aloha.editables[i].isModified && Aloha.editables[i].isModified()) {
 					return true;
 				}
