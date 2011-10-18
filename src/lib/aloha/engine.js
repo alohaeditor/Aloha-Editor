@@ -6141,6 +6141,7 @@ commands["delete"] = {
 			// and let new range be the result."
 			var newRange = Aloha.createRange();
 			newRange.setStart(node, 0);
+			newRange.setEnd(node, 0);
 			newRange = blockExtend(newRange);
 
 			// "Let node list be a list of nodes, initially empty."
