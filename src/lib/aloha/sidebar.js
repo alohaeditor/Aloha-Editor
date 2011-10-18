@@ -286,10 +286,45 @@ define([
 		checkActivePanels: function(range) {
 			var effective = [];
 			
-			if (typeof range !== 'undefined' && typeof range.markupEffectiveAtStart !== 'undefined') {
-				var l = range.markupEffectiveAtStart.length;
-				for (var i = 0; i < l; ++i) {
-					effective.push($(range.markupEffectiveAtStart[i]));
+//			if (typeof range !== 'undefined' && typeof range.markupEffectiveAtStart !== 'undefined') {
+//				var l = range.markupEffectiveAtStart.length;
+//				for (var i = 0; i < l; ++i) {
+//					effective.push($(range.markupEffectiveAtStart[i]));
+//				}
+//			}
+			
+			var
+				startContainer,
+				endContainer;
+			if( range ) {
+				startContainer = range.startContainer;
+				endContainer = range.endContainer;
+			}
+			if( startContainer && endContainer ) {
+				if (startContainer === endContainer ) {
+					if (typeof range !== 'undefined' && typeof range.markupEffectiveAtStart !== 'undefined') {
+						var l = range.markupEffectiveAtStart.length;
+						for (var i = 0; i < l; ++i) {
+							effective.push($(range.markupEffectiveAtStart[i]));
+						}
+					}
+				}
+				else {
+					var commonAncestor = range.commonAncestorContainer;
+					if( commonAncestor ) {
+						effective.push( $(commonAncestor) );
+						$.each( $(commonAncestor).parents(), 
+								function () { 
+									if( $(this).get(0) == $(Aloha.getActiveEditable().obj).get(0)) {
+										return false;
+									}
+									else {
+										effective.push($(commonAncestor));
+									}
+										 
+								});
+					}
+					
 				}
 			}
 			

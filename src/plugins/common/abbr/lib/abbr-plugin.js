@@ -214,31 +214,31 @@ function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 		
 		findAbbrMarkup: function ( range ) {
 			var 
-		    startLink,
-		    endLink;
+		    startAbbr,
+		    endAbbr;
 		   
 		   if ( typeof range == 'undefined' ) {
 		    range = Aloha.Selection.getRangeObject();
 		   }
 		   if ( Aloha.activeEditable ) {
 		    
-		    var startInLink = range.findMarkup( function() {
+		    var startInAbbr = range.findMarkup( function() {
 		     if ( this.nodeName.toLowerCase() == 'abbr' ) {
-		      startLink = this;
+		      startAbbr = this;
 		      return true;
 		     }
 		     return false;
 		    }, Aloha.activeEditable.obj);
 		    
-		    var endInLink = range.findMarkup( function() {
+		    var endInAbbr = range.findMarkup( function() {
 		     if ( this.nodeName.toLowerCase() == 'abbr' ) {
-		      endLink = this;
+		      endAbbr = this;
 		      return true;
 		     }
 		     return false;
 		    }, Aloha.activeEditable.obj, true );
 		    
-		    return (startInLink && endInLink && startLink === endLink) ? startLink : false;
+		    return (startInAbbr && endInAbbr && startAbbr === endAbbr) ? startAbbr : false;
 		   } else {
 		    return null;
 		   }

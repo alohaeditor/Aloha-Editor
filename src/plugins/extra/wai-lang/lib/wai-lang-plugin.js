@@ -257,14 +257,32 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 		 * @hide
 		 */
 		findLanguageMarkup: function ( range ) {
-	
+			var 
+			    startLang,
+			    endLang;
+			   
 			if ( typeof range == 'undefined' ) {
 				range = Aloha.Selection.getRangeObject();
 			}
 			if ( Aloha.activeEditable ) {
-				return range.findMarkup(function() {
-					return this.nodeName.toLowerCase() == 'span';
+			
+				var startInLang = range.findMarkup( function() {
+					if ( this.nodeName.toLowerCase() == 'span' ) {
+						startLang = this;
+						return true;
+					}
+					return false;
 				}, Aloha.activeEditable.obj);
+				
+				var endInLang = range.findMarkup( function() {
+					if ( this.nodeName.toLowerCase() == 'span' ) {
+						endLang = this;
+						return true;
+					}
+					return false;
+				}, Aloha.activeEditable.obj, true );
+				
+				return (startInLang && endInLang && startLang === endLang) ? startLang : false;
 			} else {
 				return null;
 			}
