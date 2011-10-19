@@ -1,7 +1,6 @@
 Aloha.ready(function() {
 	Aloha.require( ['aloha', 'aloha/jquery'], function( Aloha, $) {
 
-		//var $ = window.alohaQuery;
 		$.fn.alohaStage = function() {
 			var switcher = this.find('ul.stage-switcher'),
 				me = this,
@@ -18,7 +17,8 @@ Aloha.ready(function() {
 						}
 					}
 					nextTab.click();
-					autoplay = setTimeout(showNext, 6000);
+					clearTimeout( autoplay );
+					autoplay = setTimeout( showNext, 6000 );
 				};
 			switcher.children('li').each(function() {
 				var $this = $(this),
@@ -28,7 +28,6 @@ Aloha.ready(function() {
 				item.hide();
 				item.appendTo(switcher.parent());
 				$this.click(function(event) {
-					clearTimeout( autoplay );
 					if (me.currentTab) me.currentTab.removeClass('active');
 					me.currentTab = $this;
 					$this.addClass('active');
@@ -37,15 +36,13 @@ Aloha.ready(function() {
 					}
 					item.fadeIn(500);
 					current = item;
+					clearTimeout( autoplay );
 				});
 				$this.mouseover(function() {
 					$this.addClass('hover');
-					clearTimeout( autoplay );
 				});
 				$this.mouseout(function() {
 					$this.removeClass('hover');
-					clearTimeout( autoplay );
-					autoplay = setTimeout(showNext, 6000);
 				});
 			});
 			showNext();
@@ -62,9 +59,11 @@ Aloha.ready(function() {
 				if ( a.editable.obj[0].tab ) {
 					a.editable.obj[0].tab.click();
 				}
+				clearTimeout( autoplay );
 			});
 			Aloha.bind('aloha-editable-deactivated', function(e,a){
-				autoplay = setTimeout(showNext, 6000);
+				clearTimeout( autoplay );
+				autoplay = setTimeout( showNext, 6000 );
 			});
 		};
 		$('.stage-area').alohaStage();

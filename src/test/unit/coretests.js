@@ -123,9 +123,9 @@ define( [], function() {
 		// check whether alohafying of divs works
 		test('Aloha Editable Test', function() {
 			editable.aloha();
-			equals(editable.contentEditable(), "true", 'Check whether div is contenteditable after .aloha()');
+			equals(editable.contentEditable(), true, 'Check whether div is contenteditable after .aloha()');
 			editable.mahalo();
-			equals(editable.contentEditable(), "false", 'Check whether div is not contenteditable after .mahalo()');
+			equals(editable.contentEditable(), false, 'Check whether div is not contenteditable after .mahalo()');
 		});
 		
 	});

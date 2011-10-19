@@ -833,7 +833,13 @@ function isCollapsedLineBreak(br) {
 	while (getComputedStyle(ref).display == "inline") {
 		ref = ref.parentNode;
 	}
-	var refStyle = ref.hasAttribute("style") ? ref.getAttribute("style") : null;
+	
+	if ( jQuery.browser.msie ) {
+		var refStyle = null;
+	} else {
+		var refStyle = ref.hasAttribute("style") ? ref.getAttribute("style") : null;
+	}
+	
 	ref.style.height = "auto";
 	ref.style.maxHeight = "none";
 	ref.style.minHeight = "0";
@@ -5961,9 +5967,14 @@ commands["delete"] = {
 		var isHr = false;
 
 		// "Repeat the following steps:"
-		while (true) {
-			isBr = isHtmlElement(node.childNodes[offset - 1], "br") || false;
-			isHr = isHtmlElement(node.childNodes[offset - 1], "hr") || false;
+		while ( true ) {
+			if ( offset - 1 >= node.childNodes.length ) {
+				isBr = isHtmlElement(node.childNodes[offset - 1], "br") || false;
+				isHr = isHtmlElement(node.childNodes[offset - 1], "hr") || false;
+			} else {
+				isBr = false;
+				isHr = false;
+			}
 			
 			// "If offset is zero and node's previousSibling is an editable
 			// invisible node, remove node's previousSibling from its parent."

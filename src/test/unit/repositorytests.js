@@ -143,7 +143,7 @@ function() {
 				
 				manager.getChildren({
 					// Make the repository repsond 1 second too late
-					delay : timeout + 1000,
+					delay : timeout + 1000
 				}, function (response) {
 					var elapsed = (new Date) - starttime;
 					// We accept a slight delay to accomodate minor lags in
@@ -210,7 +210,7 @@ function() {
 				var starttime = new Date;
 				
 				manager.query({
-					delay : timeout + 1000,
+					delay : timeout + 1000
 				}, function (response) {
 					var elapsed = (new Date) - starttime;
 					var grace = 20;
