@@ -72,11 +72,20 @@ Aloha.ready(function() {
 		require( [ '../../test/unit/testutils' ], function ( TestUtils ) {
 			
 			Aloha.Sidebar.right.addPanel( {
-				id       : 'aloha-dev-selection-inspector',
-				title    : 'Aloha DevTool: Source Viewer',
+				id       : 'aloha-devtool-source-viewer-panel',
+				title    : 'Source Viewer\
+							<span style="float:right; padding-right:10px;">\
+								<input type="checkbox"\
+									   id="aloha-devtool-source-viewer-ckbx"\
+									   class="aloha-devtool-source-viewer-ckbx"\
+									   style="vertical-align:middle;" />\
+								<label for="aloha-devtool-source-viewer-ckbx"\
+									   class="aloha-devtool-source-viewer-ckbx"\
+									> Widen</label>\
+							</span><span style="float:clear"></span>',
 				expanded : true,
 				activeOn : true,
-				content  : '<div id="aloha-devtool-source-viewer"></div>',
+				content  : '<div id="aloha-devtool-source-viewer-content"></div>',
 				onInit   : function () {
 					function getNodeIndex ( node ) {
 						if ( !node ) {
@@ -96,18 +105,28 @@ Aloha.ready(function() {
 						return -1;
 					};
 				
+					var that = this;
 					var jQuery = Aloha.jQuery;
+					var sidebar = this.sidebar;
+					var originalWidth = sidebar.width;
+					var viewArea = this.content.find( '#aloha-devtool-source-viewer-content' );
 					
 					// A hack to make the sidebar wider
-					var sidebar = this.sidebar;
-					sidebar.width = 600;
-					sidebar.container.width( sidebar.width )
-						   .find( '.aloha-sidebar-panels' ).width( sidebar.width );
-					sidebar.open( 0 ).close( 0 ).open( 0 );
+					this.title.find( '#aloha-devtool-source-viewer-ckbx' )
+						.change( function () {
+							sidebar.width = jQuery( this ).attr( 'checked' )
+								? 600
+								: originalWidth;
+							
+							sidebar.container.width( sidebar.width )
+								.find( '.aloha-sidebar-panels' ).width( sidebar.width );
+							sidebar.open( 0 ); //.close( 0 );
+						} );
 					
-					var that = this;
-					
-					var viewArea = that.content.find( '#aloha-devtool-source-viewer' );
+					this.title.find( '.aloha-devtool-source-viewer-ckbx' )
+						.click( function ( ev ) {
+							ev.stopPropagation();
+						} );
 					
 					viewArea.css( {
 						background    : '#fff',
@@ -115,49 +134,72 @@ Aloha.ready(function() {
 						margin        : 0,
 						padding       : 10,
 						border        : 0,
+						color		  : '#aaa',
 						'line-height' : '1.5em',
-						'font-size'   : '16px',
+						'font-size'   : '12px',
 						'font-family' : 'monospace',
 						overflow      : 'scroll',
 						'white-space' : 'pre',
 					} );
 					
-					Aloha.bind(
-						'aloha-selection-changed',
-						function( event, range ) {
-							var date = +( new Date );
-							var sNode = range.startContainer;
-							var eNode = range.endContainer;
-							var sClass = 'aloha-tmp-start-' + date;
-							var eClass = 'aloha-tmp-end-' + date;
-							
-							jQuery( sNode.parentNode ).addClass( sClass );
-							jQuery( eNode.parentNode ).addClass( eClass );
-							
-							var clone = jQuery( jQuery( range.commonAncestorContainer ).clone() );
-							
-							jQuery( sNode.parentNode ).removeClass( sClass );
-							jQuery( eNode.parentNode ).removeClass( eClass );
-							
-							range.commonAncestorContainer = clone[ 0 ];
-							
-							console.log( clone, range.commonAncestorContainer );
-							console.log( sNode.parentNode, clone.find( '.' + sClass ) );
-							console.log( eNode.parentNode, clone.find( '.' + eClass ) );
-							
-							range.startContainer = clone.find( '.' + sClass )[ 0 ].childNodes[ getNodeIndex( sNode ) ];
-							range.endContainer = clone.find( '.' + eClass )[ 0 ].childNodes[ getNodeIndex( eNode ) ];
-							
-							jQuery( range.startContainer ).parent( '.' + sClass ).removeClass( sClass );
-							jQuery( range.endContainer ).parent( '.' + eClass ).removeClass( eClass );
-							
-							TestUtils.addBrackets( range );
-							
-							viewArea.html(
-								Aloha.jQuery('<div>').text( clone.html().replace( /\t/g, '  ' ) ).html()
-							);
-						}
-					);
+					// false to deactivate source viewer
+					if ( true ) {
+						Aloha.bind(
+							'aloha-selection-changed',
+							function ( event, range ) {
+								var id = +( new Date );
+								var sNode = range.startContainer;
+								var eNode = range.endContainer;
+								var sClass = 'aloha-tmp-start-' + id;
+								var eClass = 'aloha-tmp-end-' + id;
+								
+								jQuery( sNode.parentNode ).addClass( sClass );
+								jQuery( eNode.parentNode ).addClass( eClass );
+								
+								jQuery( sNode.parentNode ).removeClass( sClass );
+								jQuery( eNode.parentNode ).removeClass( eClass );
+								
+								var clonedContainer = jQuery( jQuery( range.commonAncestorContainer ).clone() );
+								
+								var clonedStartContainer = clonedContainer.is( '.' + sClass )
+									? clonedContainer
+									: clonedContainer.find( '.' + sClass );
+								
+								var clonedEndContainer = clonedContainer.is( '.' + eClass )
+									? clonedContainer
+									: clonedContainer.find( '.' + eClass );
+								
+								clonedStartContainer.removeClass( sClass );
+								clonedEndContainer.removeClass( eClass );
+								
+								// FIXME
+								if ( clonedStartContainer.length +
+										clonedEndContainer.length < 2 ) {
+									clonedStartContainer =
+										clonedEndContainer = clonedContainer;
+								}
+								
+								var fakeRange = {
+									startContainer : clonedStartContainer[ 0 ].childNodes[ getNodeIndex( sNode ) ],
+									endContainer   : clonedEndContainer[ 0 ].childNodes[ getNodeIndex( eNode ) ],
+									startOffset    : range.startOffset,
+									endOffset      : range.endOffset
+								};
+								
+								TestUtils.addBrackets( fakeRange );
+								
+								var source =
+									Aloha.jQuery('<div>')
+										 .text( clonedContainer.html() )
+										 .html()
+										 .replace( /\t/g, '  ' )
+										 .replace( /([\[\]\{\}])/g,
+											'<b style="color:#333">$1</b>' );
+								
+								viewArea.html( source );
+							}
+						); // Aloha.bind
+					}
 				}
 			} );
 			
