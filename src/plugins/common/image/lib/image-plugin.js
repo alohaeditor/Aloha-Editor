@@ -293,7 +293,6 @@ function AlohaImagePlugin ( aQuery, Plugin, FloatingMenu, i18nCore, i18n ) {
 			}
 			
 			if (this.settings.ui.meta) {
-				//
 				var tabId = this.settings.ui.oneTab ? tabImage : tabImage;
 				that._addUIMetaButtons(tabId);
 			}
@@ -684,8 +683,9 @@ function AlohaImagePlugin ( aQuery, Plugin, FloatingMenu, i18nCore, i18n ) {
 			if (this.settings.ui.resizable) {
 				try {
 					// this will disable mozillas image resizing facilities
-					document.execCommand('enableObjectResizing', false, 'false');
+					document.execCommand( 'enableObjectResizing', false, false );
 				} catch (e) {
+					Aloha.Log.error( e, 'Could not disable enableObjectResizing' );
 					// this is just for internet explorer, who will not support disabling enableObjectResizing
 				}
 			}

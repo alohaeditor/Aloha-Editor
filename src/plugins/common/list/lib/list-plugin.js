@@ -39,13 +39,13 @@ function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore, Engine) {
 
 			var that = this;
 
-			//register the workaround-handler keypress handler on every editable
-			Aloha.bind('aloha-editable-created', function(event, editable) {
-				editable.obj.keyup(function(event){
-					deleteWorkaroundHandler(event);
-					return true;
-				});
-			});
+//			//register the workaround-handler keypress handler on every editable
+//			Aloha.bind('aloha-editable-created', function(event, editable) {
+//				editable.obj.keyup(function(event){
+//					deleteWorkaroundHandler(event);
+//					return true;
+//				});
+//			});
 
 			// the 'create unordered list' button
 			this.createUnorderedListButton = new Aloha.ui.Button({
@@ -578,11 +578,26 @@ function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore, Engine) {
 		 * Refresh the current selection and set to focus to the current editable again
 		 */
 		refreshSelection: function () {
-			if (Aloha.activeEditable) {
-				Aloha.getActiveEditable().obj.focus();
+			var range = Aloha.Selection.rangeObject;
+			// this is an ugly workaround for a selection problem in ie:
+			// when the cursor shall be placed at the end of a text node in a li element, that is followed by a nested list,
+			// the selection would always snap into the first li of the nested list
+			// therefore, we make sure that the text node ends with a space and place the cursor right before it
+
+			if (jQuery.browser.msie
+				&& range.isCollapsed()
+				&& range.startContainer.nodeType == 3
+				&& range.startOffset == range.startContainer.data.length
+				&& GENTICS.Utils.Dom.isListElement(range.startContainer.nextSibling)) {
+				if (range.startContainer.data[range.startContainer.data.length-1] == ' ') {
+					range.startOffset = range.endOffset = range.startOffset-1;
+				} else {
+					range.startContainer.data = range.startContainer.data + ' ';
+				}
 			}
-			Aloha.Selection.rangeObject.update();
-			Aloha.Selection.rangeObject.select();
+
+			range.update();
+			range.select();
 			Aloha.Selection.updateSelection();
 		},
 

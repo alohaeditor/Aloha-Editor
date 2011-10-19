@@ -150,31 +150,33 @@ Aloha.Markup = Class.extend({
 			cursorIsWithinBlock = false, // check whether the cursor is positioned within a block (contenteditable = false)
 			cursorAtLastPos = false, // check if the cursor is within the last position of the currently active dom element
 			obj; // will contain references to dom objects
-		
-		if (!range.isCollapsed()) {
+
+		if ( !range.isCollapsed() ) {
 			return true;
 		}
-		
+
 		for (;i < rt.length; i++) {
-			cursorAtLastPos = range.startOffset === rt[i].domobj.length;
-			if (cursorAtLastPos) {
-				nextSiblingIsBlock = jQuery(rt[i].domobj.nextSibling).attr('contenteditable') === 'false';
-				cursorIsWithinBlock = jQuery(rt[i].domobj).parents('[contenteditable=false]').length > 0;
+			if ( typeof rt[i].domobj !== 'undefined' ) {
+				cursorAtLastPos = range.startOffset === rt[i].domobj.length;
+				if (cursorAtLastPos) {
+					nextSiblingIsBlock = jQuery( rt[i].domobj.nextSibling ).attr('contenteditable') === 'false';
+					cursorIsWithinBlock = jQuery( rt[i].domobj ).parents('[contenteditable=false]').length > 0;
 			
-				if (cursorRight && nextSiblingIsBlock) {
-					obj = rt[i].domobj.nextSibling;
-					GENTICS.Utils.Dom.selectDomNode(obj);
-					Aloha.trigger('aloha-block-selected', obj);
-					Aloha.Selection.preventSelectionChanged();
-					return false;
-				}
-			
-				if (cursorLeft && cursorIsWithinBlock) {
-					obj = jQuery(rt[i].domobj).parents('[contenteditable=false]').get(0);
-					GENTICS.Utils.Dom.selectDomNode(obj);
-					Aloha.trigger('aloha-block-selected', obj);
-					Aloha.Selection.preventSelectionChanged();
-					return false;
+					if ( cursorRight && nextSiblingIsBlock ) {
+						obj = rt[i].domobj.nextSibling;
+						GENTICS.Utils.Dom.selectDomNode( obj );
+						Aloha.trigger( 'aloha-block-selected', obj );
+						Aloha.Selection.preventSelectionChanged();
+						return false;
+					}
+
+					if ( cursorLeft && cursorIsWithinBlock ) {
+						obj = jQuery( rt[i].domobj ).parents('[contenteditable=false]').get(0);
+						GENTICS.Utils.Dom.selectDomNode( obj );
+						Aloha.trigger( 'aloha-block-selected', obj );
+						Aloha.Selection.preventSelectionChanged();
+						return false;
+					}
 				}
 			}
 		}

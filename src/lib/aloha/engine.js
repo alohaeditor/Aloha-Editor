@@ -833,7 +833,13 @@ function isCollapsedLineBreak(br) {
 	while (getComputedStyle(ref).display == "inline") {
 		ref = ref.parentNode;
 	}
-	var refStyle = ref.hasAttribute("style") ? ref.getAttribute("style") : null;
+	
+	if ( jQuery.browser.msie ) {
+		var refStyle = null;
+	} else {
+		var refStyle = ref.hasAttribute("style") ? ref.getAttribute("style") : null;
+	}
+	
 	ref.style.height = "auto";
 	ref.style.maxHeight = "none";
 	ref.style.minHeight = "0";
@@ -1332,7 +1338,11 @@ function setTagName(element, newName, range) {
 
 	// "Copy all attributes of element to replacement element, in order."
 	for (var i = 0; i < element.attributes.length; i++) {
-		replacementElement.setAttributeNS(element.attributes[i].namespaceURI, element.attributes[i].name, element.attributes[i].value);
+		if (typeof replacementElement.setAttributeNS === 'function') {
+			replacementElement.setAttributeNS(element.attributes[i].namespaceURI, element.attributes[i].name, element.attributes[i].value);
+		} else {
+			replacementElement.setAttribute(element.attributes[i].name, element.attributes[i].value);
+		}
 	}
 
 	// "While element has children, append the first child of element as the
@@ -5957,9 +5967,14 @@ commands["delete"] = {
 		var isHr = false;
 
 		// "Repeat the following steps:"
-		while (true) {
-			isBr = isHtmlElement(node.childNodes[offset - 1], "br") || false;
-			isHr = isHtmlElement(node.childNodes[offset - 1], "hr") || false;
+		while ( true ) {
+			if ( offset - 1 >= node.childNodes.length ) {
+				isBr = isHtmlElement(node.childNodes[offset - 1], "br") || false;
+				isHr = isHtmlElement(node.childNodes[offset - 1], "hr") || false;
+			} else {
+				isBr = false;
+				isHr = false;
+			}
 			
 			// "If offset is zero and node's previousSibling is an editable
 			// invisible node, remove node's previousSibling from its parent."
@@ -7274,8 +7289,13 @@ commands.insertparagraph = {
 			// "If container has no children, call createElement("br") on the
 			// context object and append the result as the last child of
 			// container."
+			// only do this, if inserting the br does NOT modify the offset height of the container
 			if (!container.hasChildNodes()) {
-				container.appendChild(createEndBreak());
+				var oldHeight = container.offsetHeight, endBr = createEndBreak();
+				container.appendChild(endBr);
+				if (container.offsetHeight !== oldHeight) {
+					container.removeChild(endBr);
+				}
 			}
 
 			// "If container is a dd or dt, and it is not an allowed child of
@@ -7292,6 +7312,18 @@ commands.insertparagraph = {
 
 			// "Fix disallowed ancestors of container."
 			fixDisallowedAncestors(container, range);
+
+			// fix invalid nested lists
+			if (isHtmlElement(container, "li")
+			&& isHtmlElement(container.nextSibling, "li")
+			&& isHtmlElement(container.nextSibling.firstChild, ["ol", "ul"])) {
+				// we found a li containing only a br followed by a li containing a list as first element: merge the two li's
+				var listParent = container.nextSibling, length = container.nextSibling.childNodes.length;
+				for (var i = 0; i < length; i++) {
+					container.appendChild(listParent.childNodes[i]);
+				}
+				listParent.parentNode.removeChild(listParent);
+			}
 
 			// "Abort these steps."
 			return;
@@ -7358,7 +7390,11 @@ commands.insertparagraph = {
 
 		// "Copy all attributes of container to new container."
 		for (var i = 0; i < container.attributes.length; i++) {
-			newContainer.setAttributeNS(container.attributes[i].namespaceURI, container.attributes[i].name, container.attributes[i].value);
+			if (typeof newContainer.setAttributeNS === 'function') {
+				newContainer.setAttributeNS(container.attributes[i].namespaceURI, container.attributes[i].name, container.attributes[i].value);
+			} else {
+				newContainer.setAttribute(container.attributes[i].name, container.attributes[i].value);
+			}
 		}
 
 		// "If new container has an id attribute, unset it."
