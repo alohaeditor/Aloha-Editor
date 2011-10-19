@@ -332,7 +332,7 @@ function ( jQuery, PluginManager ) {
 				// this will disable browsers image resizing facilities
 				// disable resize handles
 				if ( document.queryCommandSupported('enableObjectResizing') ) {
-					document.execCommand('enableObjectResizing', false, 'false');
+					document.execCommand('enableObjectResizing', false, false);
 					Aloha.Log.log('enableObjectResizing disabled.');
 				} else {
 					Aloha.Log.log('enableObjectResizing is not supported.');
@@ -504,7 +504,7 @@ function ( jQuery, PluginManager ) {
 		 */
 		isModified: function () {
 			// check if something needs top be saved
-			for (var i in Aloha.editables) {
+			for (var i = 0; i < Aloha.editables.length; i++) {
 				if (Aloha.editables[i].isModified && Aloha.editables[i].isModified()) {
 					return true;
 				}

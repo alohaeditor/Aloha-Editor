@@ -747,9 +747,11 @@ var Browser = Class.extend({
 				that.triggerSearch();
 			}
 		});
-		searchField.val("Input search text...").addClass("aloha-browser-search-field-empty")
+		
+		var prefilledValue = "Input search text...";
+		searchField.val(prefilledValue).addClass("aloha-browser-search-field-empty")
 		.focus(function() {
-			if (jQuery(this).css("font-style") == "italic") {
+			if (jQuery(this).val() == prefilledValue) {
 				jQuery(this)
 					.val("")
 					.removeClass("aloha-browser-search-field-empty");
@@ -757,7 +759,7 @@ var Browser = Class.extend({
 		}) .blur(function() {
 			if (jQuery(this).val() == "") {
 				jQuery(this)
-					.val("Input search text...")
+					.val(prefilledValue)
 					.addClass("aloha-browser-search-field-empty");
 			}
 		});

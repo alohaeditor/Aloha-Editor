@@ -106,6 +106,7 @@ Aloha.Markup = Class.extend({
 
 		// BACKSPACE
 		if (event.keyCode === 8) {
+			event.preventDefault(); // prevent history.back() even on exception
 			Aloha.execCommand( 'delete', false );
 			return false;
 		}
