@@ -3839,6 +3839,9 @@ function correctRange ( range ) {
 			// selection range, so that our correction will be the final fix on
 			// the range according to the guarentee's that Aloha wants to make
 			this._nativeSelection._ranges[ 0 ] = correctRange( range );
+
+			// make sure, the old Aloha selection will be updated (until all implementations use the new AlohaSelection)
+			Aloha.Selection.updateSelection();
 		},
 		
 		/**
