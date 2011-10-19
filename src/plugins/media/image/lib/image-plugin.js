@@ -95,64 +95,62 @@ function AlohaImagePlugin (aQuery, Plugin, FloatingMenu, i18nCore, i18n) {
 
 		languages: ['en', 'fr', 'de', 'ru', 'cz'],
 
-		defaults: {config:
-			{
-				'maxWidth': 800,
-				'minWidth': 10,
-				'maxHeight': 800,
-				'minHeight': 10,
-				'autoCorrectManualInput': true,	 // This setting will correct manually values that are out of bounds
-				'fixedAspectRatio' : false, // This setting will define a fixed aspect ratio for all resize actions 
-				//Image manipulation options - ONLY in default config section
-				ui: {
-					oneTab		: false, //Place all ui components within one tab
-					insert      : true,
-					reset 		: true,
-					aspectRatioToggle: true, // Toggle button for the aspect ratio 
-					align		: true,	// Menu elements to show/hide in menu
-					resize		: true,	// Resize buttons
-					meta		: true,
-					margin		: true,
-					crop		: true,
-					resizable	: true,	// Resizable ui-drag image
-					handles     : 'ne, se, sw, nw'   
-				},
-				
-				/**
-				 * Crop callback is triggered after the user clicked accept to accept his crop
-				 * @param image jquery image object reference
-				 * @param props cropping properties
-				 */
-				onCropped: function ($image, props) {
-					Aloha.Log.info('Default onCropped invoked', $image, props);
-				},
-				
-				/**
-				 * Reset callback is triggered before the internal reset procedure is applied
-				 * if this function returns true, then the reset has been handled by the callback
-				 * which means that no other reset will be applied
-				 * if false is returned the internal reset procedure will be applied
-				 * @param image jquery image object reference
-				 * @return true if a reset has been applied, false otherwise
-				 */
-				onReset: function ($image) {
-					Aloha.Log.info('Default onReset invoked', $image);
-					return false;
-				},
-				
-				/**
-				 * Example callback method which gets called while the resize process is beeing executed.
-				 */
-				onResize: function ($image) {
-					Aloha.Log.info('Default onResize invoked', $image);
-				},
-				
-				/**
-				 * Resize callback is triggered after the internal resize procedure is applied.  
-				 */
-				onResized: function ($image) {
-					Aloha.Log.info('Default onResized invoked', $image);
-				}
+		defaults: {
+			'maxWidth': 800,
+			'minWidth': 10,
+			'maxHeight': 800,
+			'minHeight': 10,
+			'autoCorrectManualInput': true,	 // This setting will correct manually values that are out of bounds
+			'fixedAspectRatio' : false, // This setting will define a fixed aspect ratio for all resize actions 
+			//Image manipulation options - ONLY in default config section
+			ui: {
+				oneTab		: false, //Place all ui components within one tab
+				insert      : true,
+				reset 		: true,
+				aspectRatioToggle: true, // Toggle button for the aspect ratio 
+				align		: true,	// Menu elements to show/hide in menu
+				resize		: true,	// Resize buttons
+				meta		: true,
+				margin		: true,
+				crop		: true,
+				resizable	: true,	// Resizable ui-drag image
+				handles     : 'ne, se, sw, nw'   
+			},
+			
+			/**
+			 * Crop callback is triggered after the user clicked accept to accept his crop
+			 * @param image jquery image object reference
+			 * @param props cropping properties
+			 */
+			onCropped: function ($image, props) {
+				Aloha.Log.info('Default onCropped invoked', $image, props);
+			},
+			
+			/**
+			 * Reset callback is triggered before the internal reset procedure is applied
+			 * if this function returns true, then the reset has been handled by the callback
+			 * which means that no other reset will be applied
+			 * if false is returned the internal reset procedure will be applied
+			 * @param image jquery image object reference
+			 * @return true if a reset has been applied, false otherwise
+			 */
+			onReset: function ($image) {
+				Aloha.Log.info('Default onReset invoked', $image);
+				return false;
+			},
+			
+			/**
+			 * Example callback method which gets called while the resize process is beeing executed.
+			 */
+			onResize: function ($image) {
+				Aloha.Log.info('Default onResize invoked', $image);
+			},
+			
+			/**
+			 * Resize callback is triggered after the internal resize procedure is applied.  
+			 */
+			onResized: function ($image) {
+				Aloha.Log.info('Default onResized invoked', $image);
 			}
 		},
 		
@@ -263,12 +261,15 @@ function AlohaImagePlugin (aQuery, Plugin, FloatingMenu, i18nCore, i18n) {
 		init: function() {
 			
 			var that = this;
+
 			var	imagePluginUrl = Aloha.getPluginUrl('image');
 			
 			// Extend the default settings with the custom ones (done by default)
-			//this.settings.config = jQuery.extend(true,this.defaultSettings,this.settings.config);
+			//this.settings = jQuery.extend(true,this.defaultSettings,this.settings);
 
-			this.startAspectRatio = this.settings.config.fixedAspectRatio; 
+			this.startAspectRatio = this.settings.fixedAspectRatio; 
+			this.config = this.defaults;
+			this.settings = jQuery.extend(true, this.settings, this.defaults);
 			
 			that.initializeButtons();
 			that.bindInteractions();
@@ -283,49 +284,49 @@ function AlohaImagePlugin (aQuery, Plugin, FloatingMenu, i18nCore, i18n) {
 			var that = this;
 			FloatingMenu.createScope(this.name, 'Aloha.empty');
 			
-			if (this.settings.config.ui.insert) {
+			if (this.settings.ui.insert) {
 				//i18nCore.t('floatingmenu.tab.insert')
-				var tabId = this.settings.config.ui.oneTab ? 'Image' : 'Insert'; 
+				var tabId = this.settings.ui.oneTab ? 'Image' : 'Insert'; 
 				that._addUIInsertButton(tabId);
 			}
 			
-			if (this.settings.config.ui.meta) {
+			if (this.settings.ui.meta) {
 				//i18n.t('floatingmenu.tab.img')
-				var tabId = this.settings.config.ui.oneTab ? 'Image' : 'Image';
+				var tabId = this.settings.ui.oneTab ? 'Image' : 'Image';
 				that._addUIMetaButtons(tabId);
 			}
 			
-			if (this.settings.config.ui.reset) {
-				var tabId = this.settings.config.ui.reset ? 'Image' : 'Image';
+			if (this.settings.ui.reset) {
+				var tabId = this.settings.ui.reset ? 'Image' : 'Image';
 				that._addUIResetButton(tabId);
 			}
 			
-			if (this.settings.config.ui.align) {
+			if (this.settings.ui.align) {
 				//i18n.t('floatingmenu.tab.format')
-				var tabId = this.settings.config.ui.oneTab ? 'Image' : 'Formatting';
+				var tabId = this.settings.ui.oneTab ? 'Image' : 'Formatting';
 				that._addUIAlignButtons(tabId);
 			}
 			
-			if (this.settings.config.ui.margin) {
+			if (this.settings.ui.margin) {
 				//i18n.t('floatingmenu.tab.img'){
-				var tabId = this.settings.config.ui.oneTab ? 'Image' : 'Formatting';
+				var tabId = this.settings.ui.oneTab ? 'Image' : 'Formatting';
 				that._addUIMarginButtons(tabId);
 			}
 		
-			if (this.settings.config.ui.crop) {
+			if (this.settings.ui.crop) {
 				//i18n.t('floatingmenu.tab.img')
-				var tabId = this.settings.config.ui.oneTab ? 'Image' : 'Crop';
+				var tabId = this.settings.ui.oneTab ? 'Image' : 'Crop';
 				that._addUICropButtons(tabId);
 			}
 			
-			if (this.settings.config.ui.resize) {
+			if (this.settings.ui.resize) {
 				//i18n.t('floatingmenu.tab.img')
-				var tabId = this.settings.config.ui.oneTab ? 'Image' : 'Resize';
+				var tabId = this.settings.ui.oneTab ? 'Image' : 'Resize';
 				that._addUIResizeButtons(tabId);
 			}
 			
-			if (this.settings.config.ui.aspectRatioToggle) {
-				var tabId = this.settings.config.ui.oneTab ? 'Image' : 'Resize';
+			if (this.settings.ui.aspectRatioToggle) {
+				var tabId = this.settings.ui.oneTab ? 'Image' : 'Resize';
 				that.__addUIAspectRatioToggleButton(tabId);
 			}
 
@@ -352,7 +353,7 @@ function AlohaImagePlugin (aQuery, Plugin, FloatingMenu, i18nCore, i18n) {
 
 			// If the setting has been set to a number or false we need to activate the 
 			// toggle button to indicate that the aspect ratio will be preserved.
-			if (this.settings.config.fixedAspectRatio != false) {
+			if (this.settings.fixedAspectRatio != false) {
 				toggleButton.pressed = true;
 				this.keepAspectRatio = true;
 			}
@@ -583,12 +584,12 @@ function AlohaImagePlugin (aQuery, Plugin, FloatingMenu, i18nCore, i18n) {
 	 		
 			// Manual resize fields
 			this.imgResizeHeightField = new Aloha.ui.AttributeField();
-			this.imgResizeHeightField.maxValue = that.settings.config.maxHeight;
-			this.imgResizeHeightField.minValue = that.settings.config.minHeight;
+			this.imgResizeHeightField.maxValue = that.settings.maxHeight;
+			this.imgResizeHeightField.minValue = that.settings.minHeight;
 			
 			this.imgResizeWidthField = new Aloha.ui.AttributeField();
-			this.imgResizeWidthField.maxValue = that.settings.config.maxWidth;
-			this.imgResizeWidthField.minValue = that.settings.config.minWidth;
+			this.imgResizeWidthField.maxValue = that.settings.maxWidth;
+			this.imgResizeWidthField.minValue = that.settings.minWidth;
 
 			this.imgResizeWidthField.width = 50;
 			this.imgResizeHeightField.width = 50;
@@ -650,7 +651,7 @@ function AlohaImagePlugin (aQuery, Plugin, FloatingMenu, i18nCore, i18n) {
 					var	img = new Image();
 					img.onload = function() {
 						var myimage = that.findImgMarkup();
-						if (that.settings.config.ui.resizable) {
+						if (that.settings.ui.resizable) {
 							that.endResize();
 						}
 						jQuery(myimage).css({
@@ -659,7 +660,7 @@ function AlohaImagePlugin (aQuery, Plugin, FloatingMenu, i18nCore, i18n) {
 								'max-width': '',
 								'max-height': ''
 							});
-						if (that.settings.config.ui.resizable) {
+						if (that.settings.ui.resizable) {
 							that.resize();
 						}
 					};
@@ -682,7 +683,7 @@ function AlohaImagePlugin (aQuery, Plugin, FloatingMenu, i18nCore, i18n) {
 		bindInteractions: function () {
 			var	that = this;
 			
-			if (this.settings.config.ui.resizable) {
+			if (this.settings.ui.resizable) {
 				try {
 					// this will disable mozillas image resizing facilities
 					document.execCommand('enableObjectResizing', false, 'false');
@@ -691,7 +692,7 @@ function AlohaImagePlugin (aQuery, Plugin, FloatingMenu, i18nCore, i18n) {
 				}
 			}
 
-			if (this.settings.config.ui.meta) {
+			if (this.settings.ui.meta) {
 				// update image object when src changes
 				this.imgSrcField.addListener('keyup', function(obj, event) {
 					that.srcChange();
@@ -708,23 +709,23 @@ function AlohaImagePlugin (aQuery, Plugin, FloatingMenu, i18nCore, i18n) {
 			}
 			
 			// Override the default method by using the given one
-			if (this.settings.config.onCropped && typeof this.settings.config.onCropped === "function") {
-				this.onCropped = this.settings.config.onCropped;
+			if (this.settings.onCropped && typeof this.settings.onCropped === "function") {
+				this.onCropped = this.settings.onCropped;
 			}
 			
 			// Override the default method by using the given one
-			if (this.settings.config.onReset && typeof this.settings.config.onReset === "function") {
-				this.onReset = this.settings.config.onReset;
+			if (this.settings.onReset && typeof this.settings.onReset === "function") {
+				this.onReset = this.settings.onReset;
 			}
 
 			// Override the default method by using the given one
-			if (this.settings.config.onResized && typeof this.settings.config.onResized === "function") {
-				this.onResized = this.settings.config.onResized;
+			if (this.settings.onResized && typeof this.settings.onResized === "function") {
+				this.onResized = this.settings.onResized;
 			}
 			
 			// Override the default method by using the given one
-			if (this.settings.config.onResize && typeof this.settings.config.onResize === "function") {
-				this.onResize = this.settings.config.onResize;
+			if (this.settings.onResize && typeof this.settings.onResize === "function") {
+				this.onResize = this.settings.onResize;
 			}
 			
 		},
@@ -734,7 +735,7 @@ function AlohaImagePlugin (aQuery, Plugin, FloatingMenu, i18nCore, i18n) {
 		 */
 		subscribeEvents: function() {
 			var	that = this;
-			var config = this.settings.config;
+			var config = this.settings;
 			
 			jQuery('img').filter(config.globalselector).unbind();
 			jQuery('img').filter(config.globalselector).click(function(event) {
@@ -742,7 +743,7 @@ function AlohaImagePlugin (aQuery, Plugin, FloatingMenu, i18nCore, i18n) {
 			});
 						
 			Aloha.bind('aloha-drop-files-in-editable', function(event, data) {
-				var	that = this;
+				//var	that = this;
 				var img, len = data.filesObjs.length, fileObj, config;
 				
 				while (--len >= 0) {
@@ -774,42 +775,39 @@ function AlohaImagePlugin (aQuery, Plugin, FloatingMenu, i18nCore, i18n) {
 			 * Add the event handler for selection change
 			 */
 			Aloha.bind('aloha-selection-changed', function(event, rangeObject, originalEvent) {
-		
+				var config, foundMarkup;
 				if (originalEvent && originalEvent.target) {
 					// Check if the element is currently beeing resized
-					if (that.settings.config.ui.resizable && !jQuery(originalEvent.target).hasClass('ui-resizable-handle')) {
+					if (that.settings.ui.resizable && !jQuery(originalEvent.target).hasClass('ui-resizable-handle')) {
 						that.endResize();
 					}
 				}
 				
 
 				if(Aloha.activeEditable !== null) {
-					var foundMarkup = that.findImgMarkup( rangeObject );
+					foundMarkup = that.findImgMarkup( rangeObject );
 					//var config = that.getEditableConfig(Aloha.activeEditable.obj);
+					config = that.getEditableConfig(Aloha.activeEditable.obj);
 
-//					if (typeof config.img !== 'undefined' ) {
-//						that.insertImgButton.show();
-//						FloatingMenu.doLayout();
-//					} else {
-//						that.insertImgButton.hide();
-//						// TODO this should not be necessary here!
-//						FloatingMenu.doLayout();
-//						// leave if img is not allowed
-//						return;
-//					}
+					if (typeof config !== 'undefined' ) {
+						that.insertImgButton.show();
+					} else {
+						that.insertImgButton.hide();
+						return;
+					}
 
 					// Enable image specific ui components if the element is an image
 					if ( foundMarkup ) {
 						that.insertImgButton.hide();
 						FloatingMenu.setScope(that.name);
-						if(that.settings.config.ui.meta) {
+						if(that.settings.ui.meta) {
 							that.imgSrcField.setTargetObject(foundMarkup, 'src');
 							that.imgTitleField.setTargetObject(foundMarkup, 'title');
 						}
 						that.imgSrcField.focus();
 						FloatingMenu.userActivatedTab = i18n.t('floatingmenu.tab.img');
 					} else {
-						if(that.settings.config.ui.meta) {
+						if(that.settings.ui.meta) {
 							that.imgSrcField.setTargetObject(null);
 						}
 					}
@@ -858,11 +856,11 @@ function AlohaImagePlugin (aQuery, Plugin, FloatingMenu, i18nCore, i18n) {
 			} else {
 				// If no fixed aspect ratio was given we will calculate a new start 
 				// aspect ratio that will be used for the next starResize action.
-				if (typeof this.settings.config.fixedAspectRatio !== 'number') {
+				if (typeof this.settings.fixedAspectRatio !== 'number') {
 					var currentRatio = this.imageObj.width() / this.imageObj.height();
 					this.startAspectRatio = currentRatio;
 				} else {
-					this.startAspectRatio = this.settings.config.fixedAspectRatio;
+					this.startAspectRatio = this.settings.fixedAspectRatio;
 				}
 			}
 			this.startResize();
@@ -901,7 +899,7 @@ function AlohaImagePlugin (aQuery, Plugin, FloatingMenu, i18nCore, i18n) {
 				if (delta>=0 && newValue > maxValue) {
 					
 					// Auto correct out of bounds values
-					if (that.settings.config.autoCorrectManualInput) {
+					if (that.settings.autoCorrectManualInput) {
 						$field.val(maxValue);
 						return true;
 					} else {
@@ -912,7 +910,7 @@ function AlohaImagePlugin (aQuery, Plugin, FloatingMenu, i18nCore, i18n) {
 				} else if (delta<=0 && newValue<minValue) {
 					
 					// Auto correct out of bounds values
-					if (that.settings.config.autoCorrectManualInput) {
+					if (that.settings.autoCorrectManualInput) {
 						$field.val(minValue);
 						return true;
 					} else {
@@ -1056,24 +1054,24 @@ function AlohaImagePlugin (aQuery, Plugin, FloatingMenu, i18nCore, i18n) {
 			var that = this;
 
 			// Don't set width that is out of range
-			if ( width > this.settings.config.maxWidth ) {
-				Aloha.Log.error("Given width with is not within specified range of " + this.settings.config.minWidth + " to " + this.settings.config.maxWidth, width);
-				$('#' + that.imgResizeWidthField.id ).val(this.settings.config.maxWidth);
+			if ( width > this.settings.maxWidth ) {
+				Aloha.Log.error("Given width with is not within specified range of " + this.settings.minWidth + " to " + this.settings.maxWidth, width);
+				$('#' + that.imgResizeWidthField.id ).val(this.settings.maxWidth);
 				return false;
-			} else if( width <= 0) { //this.settings.config.minWidth
-				Aloha.Log.error("Given with is not within specified range of " + this.settings.config.minWidth + " to " + this.settings.config.maxWidth, width);
-				$('#' + that.imgResizeWidthField.id ).val(this.settings.config.minWidth);
+			} else if( width <= 0) { //this.settings.minWidth
+				Aloha.Log.error("Given with is not within specified range of " + this.settings.minWidth + " to " + this.settings.maxWidth, width);
+				$('#' + that.imgResizeWidthField.id ).val(this.settings.minWidth);
 				return false;
 			}
 			
 			// Don't set height that is out of range
-			if ( height > this.settings.config.maxHeight ) {
-				Aloha.Log.error("Given with is not within specified range of " + this.settings.config.minHeight + " to " + this.settings.config.maxHeight, height);
-				$('#' + that.imgResizeHeightField.id ).val(this.settings.config.maxHeight);
+			if ( height > this.settings.maxHeight ) {
+				Aloha.Log.error("Given with is not within specified range of " + this.settings.minHeight + " to " + this.settings.maxHeight, height);
+				$('#' + that.imgResizeHeightField.id ).val(this.settings.maxHeight);
 				return false;
-			} else if( height <= 0) { // this.settings.config.minHeight
-				Aloha.Log.error("Given with is not within specified range of " + this.settings.config.minHeight + " to " + this.settings.config.maxHeight, height);
-				$('#' + that.imgResizeHeightField.id ).val(this.settings.config.minHeight);
+			} else if( height <= 0) { // this.settings.minHeight
+				Aloha.Log.error("Given with is not within specified range of " + this.settings.minHeight + " to " + this.settings.maxHeight, height);
+				$('#' + that.imgResizeHeightField.id ).val(this.settings.minHeight);
 				return false;
 			}
 			
@@ -1117,7 +1115,7 @@ function AlohaImagePlugin (aQuery, Plugin, FloatingMenu, i18nCore, i18n) {
 			$('#' + that.imgResizeWidthField.id).val(that.imageObj.width());
 			
 			
-			if (this.settings.config.ui.resizable) {
+			if (this.settings.ui.resizable) {
 				this.startResize();
 			}
 			
@@ -1303,7 +1301,7 @@ function AlohaImagePlugin (aQuery, Plugin, FloatingMenu, i18nCore, i18n) {
 			var config = this.config;
 
 			this.initCropButtons();
-			if (this.settings.config.ui.resizable) {
+			if (this.settings.ui.resizable) {
 				this.endResize();
 			}
 			
@@ -1333,7 +1331,7 @@ function AlohaImagePlugin (aQuery, Plugin, FloatingMenu, i18nCore, i18n) {
 
 			this.destroyCropButtons();
 			this.cropButton.extButton.toggle(false);
-			if (this.settings.config.ui.resizable) {
+			if (this.settings.ui.resizable) {
 				this.startResize();
 			}
 			
@@ -1365,13 +1363,13 @@ function AlohaImagePlugin (aQuery, Plugin, FloatingMenu, i18nCore, i18n) {
 			
 			currentImageObj.resizable({
 				
-				maxHeight : that.settings.config.maxHeight,
-				minHeight : that.settings.config.minHeight,
-				maxWidth  : that.settings.config.maxWidth,
-				minWidth  : that.settings.config.minWidth,
+				maxHeight : that.settings.maxHeight,
+				minHeight : that.settings.minHeight,
+				maxWidth  : that.settings.maxWidth,
+				minWidth  : that.settings.minWidth,
 				aspectRatio : that.startAspectRatio,
-				handles: that.settings.config.handles,
-				grid : that.settings.config.grid,
+				handles: that.settings.handles,
+				grid : that.settings.grid,
   			    resize: function(event, ui) { 
 					that._onResize(that.imageObj);
 				},
@@ -1438,11 +1436,11 @@ function AlohaImagePlugin (aQuery, Plugin, FloatingMenu, i18nCore, i18n) {
 		 */
 		reset: function() {
 			
-			if (this.settings.config.ui.crop) {
+			if (this.settings.ui.crop) {
 				this.endCrop();
 			}
 			
-			if (this.settings.config.ui.resizable) {
+			if (this.settings.ui.resizable) {
 				this.endResize();
 			}
 
