@@ -332,7 +332,7 @@ function ( jQuery, PluginManager ) {
 				// this will disable browsers image resizing facilities
 				// disable resize handles
 				if ( document.queryCommandSupported('enableObjectResizing') ) {
-					document.execCommand('enableObjectResizing', false, 'false');
+					document.execCommand('enableObjectResizing', false, false);
 					Aloha.Log.log('enableObjectResizing disabled.');
 				} else {
 					Aloha.Log.log('enableObjectResizing is not supported.');
