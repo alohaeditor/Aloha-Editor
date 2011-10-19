@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<title>Aloha Editor: generate testswarm config from tests.js</title>
+
+	<!-- include jquery -->
+	<script	src="vendor/jquery-1.6.1.js" ></script>
+
+	<script>
+		var forwarddelete = [
+			// some tests from https://github.com/ayg/editing/blob/master/tests.js
+			// Lists with collapsed selection
+			'foo<ol><li>[]bar<li>baz</ol>',
+			'foo<br><ol><li>[]bar<li>baz</ol>',
+			'foo<br><br><ol><li>[]bar<li>baz</ol>',
+			'<ol><li>foo<li>[]bar</ol>',
+			'<ol><li>foo<br><li>[]bar</ol>',
+			'<ol><li>foo<br><br><li>[]bar</ol>',
+			'<ol><li>foo<li>[]bar<br>baz</ol>',
+			'<ol><li>foo<br>bar<li>[]baz</ol>',
+
+			'<ol><li><p>foo</p>{}bar</ol>',
+
+			'<ol><li><p>foo<li>[]bar</ol>',
+			'<ol><li>foo<li><p>[]bar</ol>',
+			'<ol><li><p>foo<li><p>[]bar</ol>',
+
+			'<ol><li>foo<ul><li>[]bar</ul></ol>',
+			'foo<ol><ol><li>[]bar</ol></ol>',
+			'foo<div><ol><li>[]bar</ol></div>',
+
+			'foo<dl><dt>[]bar<dd>baz</dl>',
+			'foo<dl><dd>[]bar</dl>',
+			'<dl><dt>foo<dd>[]bar</dl>',
+			'<dl><dt>foo<dt>[]bar<dd>baz</dl>',
+			'<dl><dt>foo<dd>bar<dd>[]baz</dl>',
+
+			'<ol><li>foo</ol>[]bar',
+			'<ol><li>foo<br></ol>[]bar',
+			'<ol><li>foo<br><br></ol>[]bar',
+			'<ol><li><br></ol>[]bar',
+			'<ol><li>foo<li><br></ol>[]bar',
+
+			'<ol><li>foo</ol><p>[]bar',
+			'<ol><li>foo<br></ol><p>[]bar',
+			'<ol><li>foo<br><br></ol><p>[]bar',
+			'<ol><li><br></ol><p>[]bar',
+			'<ol><li>foo<li><br></ol><p>[]bar',
+
+			'<ol><li>foo</ol>{}<br>',
+			'<ol><li>foo<br></ol>{}<br>',
+			'<ol><li>foo<br><br></ol>{}<br>',
+			'<ol><li><br></ol>{}<br>',
+			'<ol><li>foo<li><br></ol>{}<br>',
+
+			'<ol><li>foo</ol><p>{}<br>',
+			'<ol><li>foo<br></ol><p>{}<br>',
+			'<ol><li>foo<br><br></ol><p>{}<br>',
+			'<ol><li><br></ol><p>{}<br>',
+			'<ol><li>foo<li><br></ol><p>{}<br>',
+
+			// Lists!
+			'<ol><li>foo<li>[bar]<li>baz</ol>',
+			'<ol data-start=1 data-end=2><li>foo<li>bar<li>baz</ol>',
+			'<ol><li>foo</ol>[bar]',
+			'<ol><li>[foo]<br>bar<li>baz</ol>',
+			'<ol><li>foo<br>[bar]<li>baz</ol>',
+			'<ol><li><div>[foo]</div>bar<li>baz</ol>',
+			'<ol><li>foo<ol><li>[bar]<li>baz</ol><li>quz</ol>',
+			'<ol><li>foo<ol><li>bar<li>[baz]</ol><li>quz</ol>',
+			'<ol><li>foo</li><ol><li>[bar]<li>baz</ol><li>quz</ol>',
+			'<ol><li>foo</li><ol data-start=0 data-end=1><li>bar<li>baz</ol><li>quz</ol>',
+			'<ol><li>foo</li><ol><li>bar<li>[baz]</ol><li>quz</ol>',
+			'<ol><li>foo</li><ol data-start=1 data-end=2><li>bar<li>baz</ol><li>quz</ol>',
+			'<ol><li>foo<ol><li>b[a]r</ol><li>baz</ol>',
+			'<ol><li>foo</li><ol><li>b[a]r</ol><li>baz</ol>',
+			'<ol><li>foo{<ol><li>bar</ol>}<li>baz</ol>',
+			'<ol><li>foo</li>{<ol><li>bar</ol>}<li>baz</ol>',
+			'<ol><li>[foo]<ol><li>bar</ol><li>baz</ol>',
+			'<ol><li>[foo]</li><ol><li>bar</ol><li>baz</ol>',
+			'<ol><li>foo<li>[bar]<ol><li>baz</ol><li>quz</ol>',
+			'<ol><li>foo<li>[bar]</li><ol><li>baz</ol><li>quz</ol>',
+			'<ol><li>foo<ol><li>bar<li>baz</ol><li>[quz]</ol>',
+			'<ol><li>foo</li><ol><li>bar<li>baz</ol><li>[quz]</ol>',
+
+			// Lists with id's:
+			// http://lists.whatwg.org/pipermail/whatwg-whatwg.org/2009-July/020721.html
+			'<ol><ol id=u1><li id=i1>foo</ol><li id=i2>[bar]</li><ol id=u3><li id=i3>baz</ol></ol>',
+			'<ol><ol><li id=i1>foo</ol><li id=i2>[bar]</li><ol id=u3><li id=i3>baz</ol></ol>',
+			'<ol><ol id=u1><li id=i1>foo</ol><li id=i2>[bar]</li><ol><li id=i3>baz</ol></ol>',
+			'<ol><li id=i2>[bar]</li><ol id=u3><li id=i3>baz</ol></ol>',
+			'<ol><ol id=u1><li id=i1>foo</ol><li id=i2>[bar]</ol>',
+
+			// Try outdenting / indenting multiple items at once.
+			'<ol><li>foo<li>b[ar<li>baz]</ol>',
+			'<ol><li>[foo<ol><li>bar]</ol><li>baz</ol>',
+			'<ol><li>[foo</li><ol><li>bar]</ol><li>baz</ol>',
+			'<ol><li>foo<ol><li>b[ar</ol><li>b]az</ol>',
+			'<ol><li>foo</li><ol><li>b[ar</ol><li>b]az</ol>',
+			'<ol><li>[foo<ol><li>bar</ol><li>baz]</ol><p>extra',
+			'<ol><li>[foo</li><ol><li>bar</ol><li>baz]</ol><p>extra',
+
+			// We probably can't actually get this DOM . . .
+			'<ol><li>[foo]<ol><li>bar</ol>baz</ol>',
+			'<ol><li>foo<ol><li>[bar]</ol>baz</ol>',
+			'<ol><li>foo<ol><li>bar</ol>[baz]</ol>',
+			'<ol><li>[foo<ol><li>bar]</ol>baz</ol>',
+
+		];
+
+		$(document).ready(function() {
+			var output = '';
+			// generate testswarm test values
+			$(forwarddelete).each( function ( index, test ) {
+				output += "\t\t{\tstart: '" + test + "',\n\t\t\texecResult: ''\n\t\t},\n";
+			});
+
+			$('#output').val(output);
+			//console.log(output);
+		});
+	</script>
+</head>
+<body>
+	<textarea style="width:100%; height:500px" id="output"></textarea>
+</body>
+</html>
