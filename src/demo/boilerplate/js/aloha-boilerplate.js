@@ -156,9 +156,6 @@ Aloha.ready(function() {
 								jQuery( sNode.parentNode ).addClass( sClass );
 								jQuery( eNode.parentNode ).addClass( eClass );
 								
-								jQuery( sNode.parentNode ).removeClass( sClass );
-								jQuery( eNode.parentNode ).removeClass( eClass );
-								
 								var clonedContainer = jQuery( jQuery( range.commonAncestorContainer ).clone() );
 								
 								var clonedStartContainer = clonedContainer.is( '.' + sClass )
@@ -169,14 +166,15 @@ Aloha.ready(function() {
 									? clonedContainer
 									: clonedContainer.find( '.' + eClass );
 								
-								clonedStartContainer.removeClass( sClass );
-								clonedEndContainer.removeClass( eClass );
-								
-								// FIXME
-								if ( clonedStartContainer.length +
-										clonedEndContainer.length < 2 ) {
-									clonedStartContainer =
-										clonedEndContainer = clonedContainer;
+								if ( clonedStartContainer.length == 0 ||
+										clonedEndContainer.length == 0 ||
+											!clonedStartContainer[0].childNodes ||
+												!clonedEndContainer[0].childNodes ||
+													clonedStartContainer[0].childNodes.length == 0||
+														clonedEndContainer[0].childNodes.length == 0 ) {
+									clonedStartContainer = clonedEndContainer = clonedContainer;
+									//viewArea.html( '[eh!]' );
+									//return;
 								}
 								
 								var fakeRange = {
@@ -190,8 +188,14 @@ Aloha.ready(function() {
 								try {
 									TestUtils.addBrackets( fakeRange );
 								} catch ( ex ) {
+									viewArea.html( '[eh!]' + ex );
 									return;
 								}
+								
+								jQuery( sNode.parentNode ).removeClass( sClass );
+								jQuery( eNode.parentNode ).removeClass( eClass );
+								clonedStartContainer.removeClass( sClass );
+								clonedEndContainer.removeClass( eClass );
 								
 								var source =
 									Aloha.jQuery('<div>')
