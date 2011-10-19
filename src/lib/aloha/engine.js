@@ -1,5 +1,6 @@
 define(
-['aloha/ecma5'],
+//['aloha/ecma5'],
+['aloha/ecma5wrapper'],
 function() {
 	"use strict";
 
