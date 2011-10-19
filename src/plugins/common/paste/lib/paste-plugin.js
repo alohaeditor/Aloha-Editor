@@ -6,20 +6,20 @@
 */
 
 define(
-['aloha/core', 'aloha/plugin', 'aloha/jquery', 'aloha/command', 'aloha/console', 
- 'paste/wordpastehandler', 'paste/genericpastehandler', 'paste/oembedpastehandler' ],
-function(Aloha, Plugin, jQuery, Commands, console, 
-		WordPasteHandler, GenericPasteHandler, OEmbedPasteHandler) {
+['aloha/core', 'aloha/plugin', 'aloha/jquery', 'aloha/command', 'aloha/console'],
+function(Aloha, Plugin, jQuery, Commands, console) {
 	"use strict";
 
 	// Private Vars and Methods
-	var
-		GENTICS = window.GENTICS,
+	var	GENTICS = window.GENTICS,
 		$window = jQuery(window),
-		$document = jQuery(document),
-		$pasteDiv = jQuery('<div style="position:absolute; top:-100000px; left:-100000px"></div>')
-			.contentEditable(true),
-		pasteHandlers = [],
+		$document = jQuery(document);
+		
+	// We need to hide the editable div. We'll use clip:rect for chrome and IE, and width/height for FF
+	var	$pasteDiv = jQuery('<div id="pasteContainer" style="position:absolute; clip:rect(0px, 0px, 0px, 0px);  width: 1px; height: 1px;"></div>')
+			.contentEditable(true);
+	
+	var	pasteHandlers = [],
 		pasteRange = null,
 		pasteEditable = null,
 		scrollTop = 0,
@@ -43,6 +43,10 @@ function(Aloha, Plugin, jQuery, Commands, console,
 		scrollLeft = $window.scrollLeft();
 		height = $document.height();
 
+		// Reposition paste container to avoid scrolling
+		jQuery('#pasteContainer').css('top',scrollTop);
+		jQuery('#pasteContainer').css('left',scrollLeft-200);
+		
 		// empty the pasteDiv
 		$pasteDiv.text('');
 
@@ -70,33 +74,22 @@ function(Aloha, Plugin, jQuery, Commands, console,
 			heightDiff = 0, 
 			pasteDivContents;
 
-		// call all paste handlers
-		for ( i = 0; i < pasteHandlers.length; ++i) {
-			if ( typeof pasteHandlers[i].handlePaste === 'function' ) {
-				pasteHandlers[i].handlePaste($pasteDiv);
-			} else {
-				console.error( 'A pastehandler has no method handlePaste.' );
-			}
-		}
-
 		// insert the content into the editable at the current range
 		if (pasteRange && pasteEditable) {
 			
 			// activate and focus the editable
 			// @todo test in IE
 			//pasteEditable.activate();
-			pasteEditable.obj.focus();
+			jQuery(pasteEditable.obj).click();
 
 			pasteDivContents = $pasteDiv.html();
 
-			Aloha.execCommand('inserthtml', false, pasteDivContents, pasteRange);
+			if ( Aloha.queryCommandSupported('insertHTML') ) {
+				Aloha.execCommand('insertHTML', false, pasteDivContents, pasteRange);
+			} else {
+				Aloha.Log.error('Common.Paste', 'Command "insertHTML" not available. Enable the plugin "common/commands".');
+			}
 
-			// finally scroll back to the original scroll position, plus eventually difference in height
-//			if (scrollTop !== false && scrollLeft !== false && this.height !== false) {
-				heightDiff = jQuery(document).height() - height;
-				$window.scrollTop(scrollTop + heightDiff);
-				$window.scrollLeft(scrollLeft);
-//			}
 		}
 		
 		// unset temporary values
@@ -112,12 +105,9 @@ function(Aloha, Plugin, jQuery, Commands, console,
 
 
 	// Public Methods
-	return Plugin.create('paste', {
-		
-		/**
-		 * All registered paste handlers
-		 */
-		pasteHandlers: pasteHandlers,
+	return Plugin.create( 'paste', {
+		settings: {},
+//		dependencies: [ 'contenthandler' ],
 
 		/**
 		 * Initialize the PastePlugin
@@ -127,13 +117,6 @@ function(Aloha, Plugin, jQuery, Commands, console,
 
 			// append the div into which we past to the document
 			jQuery('body').append($pasteDiv);
-
-			// register default handler
-			// TODO They should be configured!
-			this.register( new WordPasteHandler() );
-			this.register( new OEmbedPasteHandler() );
-			this.register( new GenericPasteHandler() );
-
 
 			// subscribe to the event editableCreated to redirect paste events into our pasteDiv
 			// TODO: move to paste command
@@ -196,8 +179,8 @@ function(Aloha, Plugin, jQuery, Commands, console,
 		 * Register the given paste handler
 		 * @param pasteHandler paste handler to be registered
 		 */
-		register: function(pasteHandler) {
-			pasteHandlers.push(pasteHandler);
+		register: function( pasteHandler ) {
+			console.deprecated( 'Plugins.Paste', 'register() for pasteHandler is deprecated. Use the ContentHandler Plugin instead.' );
 		}
 	});
 });

@@ -13,23 +13,23 @@ define([
     'aloha',
 	'aloha/plugin',
 	'aloha/jquery',
+	'aloha/contenthandlermanager',
 	'block/blockmanager',
 	'block/sidebarattributeeditor',
 	'block/block',
 	'block/editormanager',
-	'block/blockpastehandler',
+	'block/blockcontenthandler',
 	'block/editor',
-	'paste/paste-plugin',
 	'css!block/css/block.css'
-], function(Aloha, Plugin, jQuery, BlockManager, SidebarAttributeEditor, block, EditorManager, BlockPasteHandler, editor, PastePlugin) {
+], function(Aloha, Plugin, jQuery, ContentHandlerManager, BlockManager, SidebarAttributeEditor, block, EditorManager, BlockContentHandler, editor) {
 	"use strict";
 
 	/**
 	 * Register the plugin with unique name
 	 */
-	var BlockPlugin = Plugin.create('block', {
+	var BlockPlugin = Plugin.create( 'block', {
 		settings: {},
-		dependencies: ['paste'],
+//		dependencies: [ 'contenthandler' ],
 
 		init: function () {
 			var that = this;
@@ -42,8 +42,9 @@ define([
 			EditorManager.register('number', editor.NumberEditor);
 			EditorManager.register('url', editor.UrlEditor);
 			EditorManager.register('email', editor.EmailEditor);
-
-			PastePlugin.register(new BlockPasteHandler());
+			
+			// register content handler for block plugin
+			ContentHandlerManager.register('block', BlockContentHandler);
 
 			BlockManager.registerEventHandlers();
 

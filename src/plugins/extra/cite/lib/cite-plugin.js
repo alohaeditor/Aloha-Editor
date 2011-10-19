@@ -6,27 +6,26 @@
 */
 
 define([
-
-	// js
-	'aloha/jquery',	
+    'aloha',
+	'aloha/jquery',
 	'aloha/plugin',
 	'aloha/floatingmenu',
 	'format/format-plugin',
-	// i18n
+	'util/dom',
 	'i18n!cite/nls/i18n',
-	'i18n!aloha/nls/i18n',
-	// css
-	'css!cite/css/cite.css'
-], function CiteClosure ($, Plugin, FloatingMenu, Format, i18n, i18nCore) {
-	
+	'i18n!aloha/nls/i18n'
+], function CiteClosure (Aloha, jQuery, Plugin, FloatingMenu, Format, domUtils, i18n, i18nCore) {
 	'use strict';
 	
-	var GENTICS = window.GENTICS;
-	var Aloha = window.Aloha;
-	var rangy = window.rangy;	
-	// Pseudo-namespace prefix
-	var ns  = 'aloha-cite';
-	var uid = +new Date;
+	Aloha.require( ['css!cite/css/cite.css'] );
+	
+	var 
+		GENTICS = window.GENTICS,
+		$ = jQuery,
+		ns  = 'aloha-cite',
+		uid = +new Date,
+		animating = false;
+	
 	// namespaced classnames
 	var nsClasses = {
 		quote         : nsClass('quote'),
@@ -38,7 +37,6 @@ define([
 		'note-field'  : nsClass('note-field'),
 		references    : nsClass('references')
 	};
-	var domUtils = GENTICS.Utils.Dom;
 	
 	// ------------------------------------------------------------------------
 	// Local (helper) functions
@@ -222,7 +220,7 @@ define([
 									: '')
 							)).content;
 						
-						content.find('input, textarea').change(function () {
+						content.find('input, textarea').bind('keypress change', function () {
 							var content = that.content;
 							
 							citePlugin.addCiteDetails(
@@ -340,9 +338,9 @@ define([
 					{uid:uid, classes:classes}
 				));
 			
-			// now focus back to the active element
+			// now re enable the editable
 			if (Aloha.activeEditable) {
-				Aloha.activeEditable.obj[0].focus();
+				jQuery(Aloha.activeEditable.obj[0]).click();
 			}
 			
 			Aloha.Selection.changeMarkupOnSelection(markup);
@@ -364,9 +362,9 @@ define([
 			var rangeObject = Aloha.Selection.rangeObject;
 			var foundMarkup;
 
-			// now focus back to the active element
+			// now re enable the editable
 			if (Aloha.activeEditable) {
-				Aloha.activeEditable.obj[0].focus();
+				jQuery(Aloha.activeEditable.obj[0]).click();
 			}
 
 			// check whether the markup is found in the range (at the start of the range)
@@ -496,21 +494,28 @@ define([
 					__tick: 0,
 					'background-color': 'rgba(' + from.join(',') + ')',
 					'box-shadow': '0 0 20px rgba(' + from.join(',') + ')'
-				}).animate({__tick: 1}, {
+				})
+				if ( !animating ) {
+					animating = true;
+					el.animate({__tick: 1}, {
 						duration: 500,
 						easing: 'linear',
 						step: function (val, fx) {
 							var rgba = [ round(from[0] + diff[0] * val),
-										 round(from[1] + diff[1] * val),
-										 round(from[2] + diff[2] * val),
-										       from[3] + diff[3] * val   ];
+							             round(from[1] + diff[1] * val),
+							             round(from[2] + diff[2] * val),
+							             from[3] + diff[3] * val   ];
 							
 							$(this).css({
 								'background-color': 'rgba(' + rgba.join(',') + ')',
 								'box-shadow': '0 0 ' + (20 * (1 - val)) + 'px rgba(' + from.join(',') + ')'
 							});
+						},
+						complete: function() {
+							animating = false;
 						}
 					});
+				}
 			}
 			
 			// Update information in references list for this citation

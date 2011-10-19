@@ -140,7 +140,6 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 				// work around stupid behavior when moving focus
 				setTimeout(function(){
 					// Set focus to link element and select the object
-					Aloha.activeEditable.obj[0].focus();
 					Selection.getRangeObject().select();
 				},0);
 			}
@@ -316,6 +315,9 @@ Ui.AttributeField = Ui.Button.extend({
 		}
 		if (this.displayField) {
 			props.displayField = this.displayField;
+		}
+		if (this.minChars) {
+			props.minChars = this.minChars;
 		}
 			return props;
 	},

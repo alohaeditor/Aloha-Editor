@@ -3,4 +3,5 @@
 .DS_Store
 tmp
 out
+target
 doc/guides/staging

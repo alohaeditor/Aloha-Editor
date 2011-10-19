@@ -15,7 +15,7 @@ define(
  'wai-lang/languages',
  'css!wai-lang/css/wai-lang.css'
 ],
-function( jQuery, Plugin, FloatingMenu, i18n, i18nCore ) {
+function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 	"use strict";
 	
 	var $ = jQuery,
@@ -68,17 +68,17 @@ function( jQuery, Plugin, FloatingMenu, i18n, i18nCore ) {
 					// show/hide the button according to the configuration
 					config = that.getEditableConfig(Aloha.activeEditable.obj);
 					if ( jQuery.inArray('span', config) != -1) {
-						that.addMarkupToSelectionButton.show();
+						that.addMarkupToSelectionButton.setPressed(false);
 					} else {
-						that.addMarkupToSelectionButton.hide();
+						that.addMarkupToSelectionButton.setPressed(true);
 						// leave if a is not allowed
 						return;
 					}
 	
 					foundMarkup = that.findLanguageMarkup( rangeObject );
 					if ( foundMarkup ) {
-						that.addMarkupToSelectionButton.hide();
-						FloatingMenu.setScope(that.getUID('wai-lang'));
+						that.addMarkupToSelectionButton.setPressed(true);
+						FloatingMenu.setScope('wai-lang');
 						that.langField.setTargetObject(foundMarkup, 'lang');
 					} else {
 						that.langField.setTargetObject(null);
@@ -102,9 +102,9 @@ function( jQuery, Plugin, FloatingMenu, i18n, i18nCore ) {
 			this.addMarkupToSelectionButton = new Aloha.ui.Button({
 				'iconClass' : 'aloha-button aloha-button-wai-lang',
 				'size' : 'small',
-				'onclick' : function () { that.addMarkupToSelection( false ); },
+				'onclick' : function () { that.addRemoveMarkupToSelection( ); },
 				'tooltip' : i18n.t('button.add-wai-lang.tooltip'),
-				'toggle' : false
+				'toggle' : true
 			});
 			FloatingMenu.addButton(
 				'Aloha.continuoustext',
@@ -114,17 +114,19 @@ function( jQuery, Plugin, FloatingMenu, i18n, i18nCore ) {
 			);
 	
 			// Add the new scope for the wai languages plugin tab
-			FloatingMenu.createScope(this.getUID('wai-lang'), 'Aloha.continuoustext'); //'Aloha.continuoustext');
+			FloatingMenu.createScope('wai-lang', 'Aloha.continuoustext'); //'Aloha.continuoustext');
 	
 			this.langField = new Aloha.ui.AttributeField({
 				'width':320,
-				'valueField': 'id'
+				'valueField': 'id',
+				'minChars':1
 			});
 			this.langField.setTemplate('<a><b>{name}</b></p></p><img src="' + Aloha.getPluginUrl('wai-lang') + '/{url}"/></a>');
 			this.langField.setObjectTypeFilter(this.objectTypeFilter);
+			
 			// add the input field for links
 			FloatingMenu.addButton(
-				this.getUID('wai-lang'),
+				'wai-lang',
 				this.langField,
 				i18n.t('floatingmenu.tab.wai-lang'),
 				1
@@ -137,14 +139,13 @@ function( jQuery, Plugin, FloatingMenu, i18n, i18nCore ) {
 				'tooltip' : i18n.t('button.add-wai-lang-remove.tooltip'),
 				'toggle' : false
 			});
-			
+
 			FloatingMenu.addButton(
-				this.getUID('wai-lang'),
+				'wai-lang',
 				this.removeButton,
 				i18n.t('floatingmenu.tab.wai-lang'),
 				1
 			);
-	
 		},
 		
 		findLangMarkup: function(range) {
@@ -159,19 +160,20 @@ function( jQuery, Plugin, FloatingMenu, i18n, i18nCore ) {
 				return null;
 			}
 		},
-		
+
 		removeLangMarkup: function() {
 			var range = Aloha.Selection.getRangeObject();
 		    var foundMarkup = this.findLangMarkup(range);
 		    if ( foundMarkup ) {
 		        // remove the abbr
 		        GENTICS.Utils.Dom.removeFromDOM(foundMarkup, range, true);
-		        // set focus back to editable
-		        Aloha.activeEditable.obj[0].focus();
+
 		        // select the (possibly modified) range
 		        range.select();
 				FloatingMenu.setScope('Aloha.continousText');
-		    }
+				this.langField.setTargetObject(null);
+				FloatingMenu.doLayout();
+		    } 	
 		},
 		
 		/**
@@ -187,7 +189,7 @@ function( jQuery, Plugin, FloatingMenu, i18n, i18nCore ) {
 				}
 			});
 			
-			Aloha.ready( this.handleExistingSpans );
+			Aloha.ready(that.handleExistingSpans);
 	
 		},
 		
@@ -284,6 +286,14 @@ function( jQuery, Plugin, FloatingMenu, i18n, i18nCore ) {
 			}
 		},
 		
+		addRemoveMarkupToSelection: function () {
+			var that = this;
+			if(that.addMarkupToSelectionButton.pressed) {
+				that.removeLangMarkup();
+			} else {
+				that.addMarkupToSelection(false);
+			}
+		},
 		
 		addMarkupToSelection: function () {
 			var range, newSpan;
@@ -321,8 +331,7 @@ function( jQuery, Plugin, FloatingMenu, i18n, i18nCore ) {
 			if ( foundMarkup ) {
 				// remove the markup
 				GENTICS.Utils.Dom.removeFromDOM(foundMarkup, range, true);
-				// set focus back to editable
-				Aloha.activeEditable.obj[0].focus();
+
 				// select the (possibly modified) range
 				range.select();
 			}

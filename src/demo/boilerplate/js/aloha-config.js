@@ -5,7 +5,7 @@
 	}
 	
 	Aloha.settings = {
-		logLevels: {'error': true, 'warn': true, 'info': true, 'debug': false, 'deprecated': false},
+		logLevels: {'error': true, 'warn': true, 'info': true, 'debug': false, 'deprecated': true},
 		errorhandling : false,
 		ribbon: false,
 		locale: 'en',
@@ -83,6 +83,7 @@
 					// Don't allow tables in top-text
 					'#top-text'	: [ '' ]
 					},
+					summaryinsidebar : true,
 					// [{name:'green', text:'Green', tooltip:'Green is cool', iconClass:'GENTICS_table GENTICS_button_green', cssClass:'green'}]
 				tableConfig : [
 									{name:'hor-minimalist-a'},

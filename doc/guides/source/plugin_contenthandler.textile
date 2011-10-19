@@ -1,0 +1,104 @@
+h2. The Content Handler Plugin
+
+After reading this guide, you will be able to:
+
+* Understand what Content Handler are and how to use them
+* Use the Content Handler API to create, modify and
+* Extend Content Handler with custom implementations
+
+endprologue.
+
+WARNING: This guide is currently work-in-progress.
+
+h3. What are Content Handler?
+
+*Aloha Content Handler* (Content Handler) are used to sanitize content loaded or pasted in Aloha Editor.
+
+There are some Content Handler available:
+* Generic
+* Word
+* oEmbed
+* Sanitize
+
+Plugins also provide Content Handler:
+* Block +common/block+ plugin
+
+There are two hocks available:
+* insertHtml in +common/commands+ plugin
+* initEditable in core/editable.js
+
+
+h3. Enabling the Content Handler Plugin
+
+
+h4. Using Configuration
+
+<javascript>
+	Aloha.settings.contentHandler: {
+		insertHtml: [ 'word', 'generic', 'oembed', 'sanitize' ],
+		initEditable: [ 'sanitize' ],
+		sanitize: 'relaxed' // relaxed, restricted, basic,
+		allows: {
+			elements: [
+				'strong', 'em', 'i', 'b', 'blockquote', 'br', 'cite', 'code', 'dd', 'div', 'dl', 'dt', 'em',
+				'i', 'li', 'ol', 'p', 'pre', 'q', 'small', 'strike', 'sub',
+				'sup', 'u', 'ul'],
+
+			attributes: {
+				'a'         : ['href'],
+				'blockquote': ['cite'],
+				'q'         : ['cite']
+			 },
+
+			protocols: {
+				'a'         : {'href': ['ftp', 'http', 'https', 'mailto', '__relative__']}, // Sanitize.RELATIVE
+				'blockquote': {'cite': ['http', 'https', '__relative__']},
+				'q'         : {'cite': ['http', 'https', '__relative__']}
+			}
+		}
+	}
+</javascript>
+
+For the sanitize Content Handler you can use a predefined set of allowed HTML-tags and attributes ("sanitize" option) or your own set defined as "allows" option.
+The configuration option for "insertHtml" and "initEditable" defines which Content Handler should be used at that hook points.
+"initEditable" uses the "sanitize" Content Handler by default.
+"insertHtml" uses all registered Content Handler by default (including the Content Handler from other Plugins)
+
+WARNING: The order how the handlers are loaded and executed is important. If you first load the "sanitize" or "generic" handler the "word" handler will not be able to detect a MS Word document.
+
+
+h3. APIs and Extension Points
+
+There is the Content Handler Manager in Aloha Core available where Content Handler can register themself.
+
+h4. Writing your own Content Handler
+
+<javascript>
+	define(
+	['aloha', 'aloha/jquery', 'aloha/contenthandlermanager'],
+	function(Aloha, jQuery, ContentHandlerManager) {
+		"use strict";
+	
+		var MyContentHandler = ContentHandlerManager.createHandler({
+			handleContent: function( content ) {
+				
+				// do something with the content
+				
+				return content; // return as HTML text not jQuery/DOM object
+			}
+		});
+
+		return MyContentHandler;
+	});
+</javascript>
+
+All Content Handler needs to support the "handleContent" method and will receive and return the content as HTML text.
+
+h3. Internals
+
+h3. Future Work
+
+h3. Changelog
+
+* October 06, 2011: Initial version by "Rene Kapusta":credits.html#rene_kapusta
+
