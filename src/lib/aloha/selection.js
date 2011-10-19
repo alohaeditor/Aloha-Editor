@@ -3068,7 +3068,6 @@ function getEndPositionFromFrontOfTextNode ( node ) {
 	if ( leftTextNode ) {
 		leftBlockNode = getFirstEncounteredLeftNode( node, isBlockElement );
 		
-		// [ '[foo<i><b>}bar</b></i>', '[foo]<i><b>bar</b></i>' ],
 		if ( !leftBlockNode ) {
 			return {
 				node    : leftTextNode,
@@ -3076,36 +3075,7 @@ function getEndPositionFromFrontOfTextNode ( node ) {
 			};
 		}
 		
-		// 000000	0		Elements are identical.
-		// 000001	1		The nodes are in different documents (or one is outside of a document).
-		// 000010	2		Node B precedes Node A.
-		// 000100	4		Node A precedes Node B.
-		// 001000	8		Node B contains Node A.
-		// 010000	16		Node A contains Node B.
-		// 100000	32		For private use by the browser.
-		
-		var posbitsTextNodeAndBlock = compareDocumentPosition( leftTextNode, leftBlockNode );
-		var posbitsStartNodeAndBlock = compareDocumentPosition( node, leftBlockNode )
-		
-		// Will be true in the following cases:
-		// [ '[foo<p><b>}bar</b></p>', '[foo<p>}<b>bar</b></p>' ],
-		// [ '<p>[foo</p><b></b>}bar', '<p>[foo</p><b>}</b>bar' ],
-		if ( ( posbitsTextNodeAndBlock & 4 ) ||
-				( ( posbitsTextNodeAndBlock & 8 ) &&
-					( posbitsStartNodeAndBlock & 2 ) ) ) {
-			
-			if ( posbitsStartNodeAndBlock & 8 ) {
-				return {
-					node   : leftBlockNode,
-					offset : 0
-				};
-			}
-			
-			return {
-				node   : leftBlockNode.nextSibling,
-				offset : 0
-			};
-		}
+		return getPositionBetweenLeftTextNodeAndBlockNode( node, leftTextNode, leftBlockNode );
 	}
 	
 	return {
@@ -3179,13 +3149,6 @@ function getStartPositionFromFrontOfInlineNode ( node ) {
 	    leftTextNode,
 	    rightTextNode,
 		succeedingBlockNode;
-	
-	if ( isTextNode( node ) ) {
-		return {
-			node   : node,
-			offset : 0
-		};
-	}
 	
 	// In order to determine where we will reposition the start position, we
 	// will need to know whether or not we have a text node to the left of our
@@ -3548,33 +3511,7 @@ function getEndPositionFromFrontOfInlineNode ( node ) {
 			};
 		}
 		
-		// 000000	0		Elements are identical.
-		// 000001	1		The nodes are in different documents (or one is outside of a document).
-		// 000010	2		Node B precedes Node A.
-		// 000100	4		Node A precedes Node B.
-		// 001000	8		Node B contains Node A.
-		// 010000	16		Node A contains Node B.
-		// 100000	32		For private use by the browser.
-		
-		var posbitsTextNodeAndBlock = compareDocumentPosition( leftTextNode, leftBlockNode );
-		var posbitsStartNodeAndBlock = compareDocumentPosition( node, leftBlockNode )
-		
-		if ( ( posbitsTextNodeAndBlock & 4 ) ||
-				( ( posbitsTextNodeAndBlock & 8 ) &&
-					( posbitsStartNodeAndBlock & 2 ) ) ) {
-			
-			if ( posbitsStartNodeAndBlock & 8 ) {
-				return {
-					node   : leftBlockNode,
-					offset : 0
-				};
-			}
-			
-			return {
-				node   : leftBlockNode.nextSibling,
-				offset : 0
-			};
-		}
+		return getPositionBetweenLeftTextNodeAndBlockNode( node, leftTextNode, leftBlockNode );
 	}
 	
 	rightTextNode = getLeftmostScion( node, isTextNode );
@@ -3596,20 +3533,102 @@ function getEndPositionFromFrontOfInlineNode ( node ) {
 	};
 };
 
+/**
+ * Ref: http://www.w3.org/TR/DOM-Level-3-Core/core.html#Node3-compareDocumentPosition
+ *		Bits	Number	Meaning
+ *		------  ------  -------
+ *		000000	0		Elements are identical.
+ *		000001	1		The nodes are in different documents (or one is outside of a document).
+ *		000010	2		Node B precedes Node A.
+ *		000100	4		Node A precedes Node B.
+ *		001000	8		Node B contains Node A.
+ *		010000	16		Node A contains Node B.
+ *		100000	32		For private use by the browser.
+ */		
+function getPositionBetweenLeftTextNodeAndBlockNode ( node, leftTextNode, leftBlockNode ) {
+	var posbitsTextNodeAndBlock = compareDocumentPosition( leftTextNode, leftBlockNode );
+	var posbitsStartNodeAndBlock = compareDocumentPosition( node, leftBlockNode )
+	
+	if ( ( posbitsTextNodeAndBlock & 4 ) ||
+			( ( posbitsTextNodeAndBlock & 8 ) &&
+				( posbitsStartNodeAndBlock & 2 ) ) ) {
+		if ( posbitsStartNodeAndBlock & 8 ) {
+			return {
+				node   : leftBlockNode,
+				offset : 0
+			};
+		}
+		
+		return {
+			node   : leftBlockNode.nextSibling,
+			offset : 0
+		};
+	}
+};
+
  // Needs tlc
 function getEndPositionFromEndOfInlineNode ( node ) {
 	var leftTextNode,
-		rightTextNode;
+		rightTextNode,
+		leftBlockNode;
 	
-	leftTextNode = getRightmostScion( node, isTextNode );
-	if ( !leftTextNode ) {
-		leftTextNode = getNearestLeftNode( node, isTextNode );
-	}
+	leftTextNode = getRightmostScion( node, isTextNode ) ||
+						getNearestLeftNode( node, isTextNode );
+	
+	rightTextNode = getNearestRightNode( node, isTextNode );
 	
 	if ( leftTextNode ) {
+		// If there are not text nodes to the right, then simply take the text
+		// node that we found on the left, regardless of what may be in the way
+		if ( !rightTextNode ) {
+			return {
+				node   : leftTextNode,
+				offset : getNodeLength( leftTextNode )
+			};
+		}
+		
+		leftBlockNode = getFirstEncounteredLeftNode( node, isBlockElement );
+		
+		if ( !leftBlockNode ) {
+			return {
+				node    : leftTextNode,
+				offset  : getNodeLength( leftTextNode )
+			};
+		}
+		
+		var posbitsTextNodeAndBlock = compareDocumentPosition( leftTextNode, leftBlockNode );
+		var posbitsStartNodeAndBlock = compareDocumentPosition( node, leftBlockNode )
+		
+		if ( ( posbitsTextNodeAndBlock & 4 ) ||
+				( ( posbitsTextNodeAndBlock & 8 ) &&
+					( posbitsStartNodeAndBlock & 2 ) ) ) {
+			if ( posbitsStartNodeAndBlock & 8 ) {
+				// [ '[foo<p><b>}</b></p>bar', '[foo<p><b></b></p>]bar' ],
+				// [ '[foo<p><b>}</b>bar</p>', '[foo<p>}<b></b>bar</p>' ],
+				// [ '[foo<p><b>}</b>bar</p>', '[foo<p>}<b></b>bar</p>' ],
+				if ( !( compareDocumentPosition( rightTextNode, leftBlockNode ) & 8 ) ) {
+					return {
+						node   : rightTextNode,
+						offset : 0
+					};
+				}
+				
+				return {
+					node   : leftBlockNode,
+					offset : 0
+				};
+			}
+			
+			return {
+				node   : leftBlockNode.nextSibling,
+				offset : 0
+			};
+		}
+	}
+	if ( rightTextNode ) {
 		return {
-			node   : leftTextNode,
-			offset : getNodeLength( leftTextNode )
+			node   : rightTextNode,
+			offset : 0
 		};
 	}
 	
@@ -3829,7 +3848,7 @@ function sanitizeOffset ( node, offset ) {
 };
 
 function correctRange ( range ) {
-	return range;
+	// return range;
 	
 	var startContainer = range.startContainer,
 	    startOffset = range.startOffset,
@@ -3851,15 +3870,9 @@ function correctRange ( range ) {
 	
 	// Use come deprecated methods to correct range around phrasing, until we
 	// extract the code into their own functions
-	var _range;
-	try {
-		_range = _correctRangeOld( range );
-		range = _range;
-	} catch ( ex ) {
-		_range = range;
-	}
+	// try { var _range = _correctRangeOld( range ); range = _range; } catch ( ex ) {}
 	
-	return _range;
+	return range;
 };
 
 
