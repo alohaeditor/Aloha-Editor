@@ -5,8 +5,8 @@
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
 define(
-['aloha/jquery','aloha/plugin', 'aloha/floatingmenu', 'i18n!headerids/nls/i18n', 'i18n!aloha/nls/i18n', 'css!headerids/css/headerids.css'],
-function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
+['aloha/jquery','aloha/plugin', 'aloha/floatingmenu', 'i18n!headerids/nls/i18n', 'i18n!aloha/nls/i18n', 'aloha/editableinteraction'],
+function(jQuery, Plugin, FloatingMenu, i18n, i18nCore, EditableInteraction) {
 	"use strict";
 
 	var
@@ -14,6 +14,7 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 		GENTICS = window.GENTICS,
 		Aloha = window.Aloha;
 		
+	Aloha.require( ['css!headerids/css/headerids.css'] );
 	
 	// namespace prefix for this plugin
     var ns = 'aloha-headerids';
@@ -97,27 +98,37 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
                     
                     onInit     : function () {
                         var that = this,
-                            content = this.setContent('<label class="'+nsClass('label')+'" for="'+nsClass('input')+'">'+i18n.t('headerids.label.target')+'</label>' + 
-                            							'<input id="'+nsClass('input')+'" class="'+nsClass('input')+'" type="text" name="value"/>').content;
+                            content = this.setContent('<label class="' + nsClass('label') + '" for="' + nsClass('input') + '">'+i18n.t( 'headerids.label.target' ) + '</label>' + 
+                            							'<input id="' + nsClass('input') + '" class="' + nsClass('input') + '" type="text" name="value"/>').content;
                         
-                        jQuery(nsSel('input')).live( 'keyup', function() {
-                        	jQuery(that.effective).attr('id',jQuery(nsSel('input')).val());
-                        	jQuery(that.effective).addClass('aloha-customized');
+                        jQuery( nsSel('input') ).live( 'keyup', function() {
+                        	jQuery( that.effective ).attr( 'id',jQuery( nsSel('input') ).val());
+                        	jQuery( that.effective ).addClass( 'aloha-customized' );
 						 });
                         
-                        content.find(nsSel('input')).change( function() {
-                        	if(content.find(nsSel('input')).val() == "") {
-                        		pl.processH(that.effective);
-    							jQuery(that.effective).removeClass('aloha-customized');
-    							that.content.find(nsSel('input')).val(that.effective.attr('id'));
+                        content.find( nsSel('input') ).change( function() {
+                        	if( content.find( nsSel('input') ).val() == "" ) {
+                        		pl.processH( that.effective );
+    							jQuery( that.effective ).removeClass( 'aloha-customized' );
+    							that.content.find( nsSel('input') ).val( that.effective.attr('id') );
                         	}
                         });
+                        jQuery( nsSel('input') ).live( 'focus', function () {
+							var target = jQuery(that.effective);
+							EditableInteraction.highlight( target );
+							
+						});
+						jQuery( nsSel('input') ).live( 'blur', function () {
+							var target = jQuery(that.effective);
+							EditableInteraction.unhighlight( target );
+							
+						});
                     },
                     
-                    onActivate: function (effective) {
+                    onActivate: function ( effective ) {
 						var that = this;
 						that.effective = effective;
-						that.content.find(nsSel('input')).val(effective.attr('id'));
+						that.content.find( nsSel('input') ).val( effective.attr('id') );
                     }
                     
                 });
