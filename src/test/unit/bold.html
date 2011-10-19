@@ -396,7 +396,7 @@
 					   	execResult: 'foo<b>[bar]</b>baz'
 					},
 					{  	start: 'foo<span style="font-weight: 600">[bar]</span>baz',
-					   	execResult: 'foo[bar]baz',
+					   	execResult: 'foo[bar]baz'
 					},
 					{  	start: 'foo<span style="font-weight: 700">[bar]</span>baz',
 					   	execResult: 'foo[bar]baz'
@@ -444,22 +444,22 @@
 					   	execResult: '<span style="font-weight: 400"><b>[foobar]</b>baz</span>'
 					},
 					{  	start: '{<span style="font-weight: 700">foobar]baz</span>',
-					   	execResult: '[foobar]<b>baz</b>',
+					   	execResult: '[foobar]<b>baz</b>'
 					},
 					{  	start: '{<span style="font-weight: 900">foobar]baz</span>',
-					   	execResult: '[foobar]<span style="font-weight: 900">baz</span>',
+					   	execResult: '[foobar]<span style="font-weight: 900">baz</span>'
 					},
 					{  	start: '<span style="font-weight: 100">foo[barbaz</span>}',
-					   	execResult: '<span style="font-weight: 100">foo<b>[barbaz]</b></span>',
+					   	execResult: '<span style="font-weight: 100">foo<b>[barbaz]</b></span>'
 					},
 					{  	start: '<span style="font-weight: 400">foo[barbaz</span>}',
-					   	execResult: '<span style="font-weight: 400">foo<b>[barbaz]</b></span>',
+					   	execResult: '<span style="font-weight: 400">foo<b>[barbaz]</b></span>'
 					},
 					{  	start: '<span style="font-weight: 700">foo[barbaz</span>}',
-					   	execResult: '<b>foo</b>[barbaz]',
+					   	execResult: '<b>foo</b>[barbaz]'
 					},
 					{  	start: '<span style="font-weight: 900">foo[barbaz</span>}',
-					   	execResult: '<span style="font-weight: 900">foo</span>[barbaz]',
+					   	execResult: '<span style="font-weight: 900">foo</span>[barbaz]'
 					}
 			]
 	}

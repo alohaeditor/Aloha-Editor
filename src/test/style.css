@@ -5,7 +5,7 @@
 }
 
 #logo {
-	background-image: url('http://aloha-editor.org/logo/Aloha%20Editor%20HTML5%20sticker%20transparent%20256.png');
+	background-image: url('./AlohaEditorLogo.png');
 	width: 256px;
 	height: 256px;
 	clear: both;
