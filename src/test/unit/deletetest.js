@@ -62,7 +62,7 @@ var tests = {
 		{  	
 			include: ['msie'],
 			start: 'foo<span style=display:none>bar</span>[]baz',
-			execResult: 'fo<span style=display:none>[]bar</span>baz'
+			execResult: 'fo[]baz'
 		},
 //		{  	start: 'foo<script>bar</script>[]baz',
 //			execResult: 'foo<script>bar</script>[]baz'
@@ -193,38 +193,38 @@ var tests = {
 		{  	start: '<a>foo</a>[]bar',
 			execResult: '<a>fo[]</a>bar'
 		},
-		{  	start: '<a href=/>foo</a>[]bar',
-			execResult: '<a href=/>fo[]</a>bar'
+		{  	start: '<a href="/">foo</a>[]bar',
+			execResult: '<a href="/">fo[]</a>bar'
 		},
 		{  	start: '<a name=abc>foo</a>[]bar',
 			execResult: '<a name=abc>fo[]</a>bar'
 		},
-		{  	start: '<a href=/ name=abc>foo</a>[]bar',
-			execResult: '<a href=/ name=abc>fo[]</a>bar'
+		{  	start: '<a href="/" name=abc>foo</a>[]bar',
+			execResult: '<a href="/" name=abc>fo[]</a>bar'
 		},
 		{  	start: '<span><a>foo</a></span>[]bar',
 			execResult: '<span><a>fo[]</a></span>bar'
 		},
-		{  	start: '<span><a href=/>foo</a></span>[]bar',
-			execResult: '<span><a href=/>fo[]</a></span>bar'
+		{  	start: '<span><a href="/">foo</a></span>[]bar',
+			execResult: '<span><a href="/">fo[]</a></span>bar'
 		},
 		{  	start: '<span><a name=abc>foo</a></span>[]bar',
 			execResult: '<span><a name=abc>fo[]</a></span>bar'
 		},
-		{  	start: '<span><a href=/ name=abc>foo</a></span>[]bar',
-			execResult: '<span><a href=/ name=abc>fo[]</a></span>bar'
+		{  	start: '<span><a href="/" name=abc>foo</a></span>[]bar',
+			execResult: '<span><a href="/" name=abc>fo[]</a></span>bar'
 		},
 		{  	start: 'foo<a>[]bar</a>',
 			execResult: 'fo[]<a>bar</a>'
 		},
-		{  	start: 'foo<a href=/>[]bar</a>',
-			execResult: 'fo[]<a href=/>bar</a>'
+		{  	start: 'foo<a href="/">[]bar</a>',
+			execResult: 'fo[]<a href="/">bar</a>'
 		},
 		{  	start: 'foo<a name=abc>[]bar</a>',
 			execResult: 'fo[]<a name=abc>bar</a>'
 		},
-		{  	start: 'foo<a href=/ name=abc>[]bar</a>',
-			execResult: 'fo[]<a href=/ name=abc>bar</a>'
+		{  	start: 'foo<a href="/" name=abc>[]bar</a>',
+			execResult: 'fo[]<a href="/" name=abc>bar</a>'
 		},
 		{  	start: 'foo &nbsp;[]bar',
 			execResult: 'foo []bar'
