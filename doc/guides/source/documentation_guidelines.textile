@@ -10,13 +10,7 @@ endprologue.
 
 h3. Write and modify guides
 
-Guides are written using a ruby gem called @guides@. You need the following tools to get started:
-
-* Ruby and Rubygems (If you have the @gem@ command available, chances are good that everything works flawlessly)
-
-<shell>
-gem install guides
-</shell>
+Guides are written using a ruby gem called @guides@. "Setup guides":develop_aloha.html
 
 The guides are stored in the directory @doc/guides@ in the Aloha Editor Distribution.
 
