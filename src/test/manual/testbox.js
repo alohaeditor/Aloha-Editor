@@ -38,9 +38,15 @@ Aloha.ready( function() {
 			$command.append('<option value="' + supportedCommands[i] +'">' + supportedCommands[i] + '</option>');
 		}
 
+		// we never want to see the floatingmenu here
+		var floatingMenu = Aloha.require('aloha/floatingmenu');
+		floatingMenu.doLayout = function() {
+			this.hide();
+		};
+
 		// Enable aloha for testbox area
 		$testArea.aloha();
-		
+
 		registerHandlers();
 	}
 	

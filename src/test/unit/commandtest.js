@@ -41,7 +41,13 @@ function( TestUtils ) {
 		var 
 			editable = aQuery( '#edit' ),
 			converter = aQuery('<div>');
-		
+
+		// we never want to see the floatingmenu here
+		var floatingMenu = Aloha.require('aloha/floatingmenu');
+		floatingMenu.doLayout = function() {
+			this.hide();
+		};
+
 		// aloha'fy the editable
 		editable.aloha();
 		
