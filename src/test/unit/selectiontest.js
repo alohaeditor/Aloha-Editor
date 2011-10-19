@@ -144,7 +144,7 @@ function( TestUtils ) {
 
 /*
 			//
-			// getStartPositionFromFrontOfBlockNode
+			// getStartPositionFromFrontOfBlockNode ( all pass in all browsers )
 			//
 			[ 'foo{<p>bar]</p>', 'foo[<p>bar]</p>' ],
 			[ '<b>foo</b>{<p>bar]</p>', '<b>foo[</b><p>bar]</p>' ],
@@ -169,7 +169,7 @@ function( TestUtils ) {
 
 /*
 			//
-			// getStartPositionFromEndOfBlockNode
+			// getStartPositionFromEndOfBlockNode ( a few will never work on ie )
 			//
 			[ '<p>foo{</p><p>bar]</p>', '<p>foo[</p><p>bar]</p>' ],
 			[ '<p>foo{</p>bar]', '<p>foo[</p>bar]' ],
@@ -193,14 +193,18 @@ function( TestUtils ) {
 			//
 			// getEndPositionFromFrontOfInlineNode
 			//
+			// target position "...</p>]bar" or "...</p>}]bar" will alway be moved in ie
+			//
 			[ '[foo<b>}<u></u>bar</b>', '[foo]<b><u></u>bar</b>' ],
 			[ '[foo<i>}<b><u></u>bar</b></i>', '[foo]<i><b><u></u>bar</b></i>' ],
 			[ '[foo<p></p>}<b>bar</b>', '[foo<p></p><b>}bar</b>' ],
 			[ '[foo<div><p>}<b>bar</b></p></div>', '[foo<div><p>}<b>bar</b></p></div>' ],
 			
+			[ '<p>[foo</p>}<b></b><p>bar</p>', '<p>[foo</p><b></b><p>}bar</p>' ], //dodgy
+			
 			[ '[foo<i><u></u><b>}bar</b></i>', '[foo]<i><u></u><b>bar</b></i>' ],
 			[ '[foo<u></u><b>}bar</b>', '[foo]<u></u><b>bar</b>' ],
-			[ '{<b>}bar</b>', '<b>[]bar</b>' ],
+			[ '{<b>}bar</b>', '<b>[]bar</b>' ], // dodgy
 			[ '[foo<p>}bar</p>', '[foo<p>}bar</p>' ],
 			[ '[foo<p><b>}bar</b></p>', '[foo<p>}<b>bar</b></p>' ],
 			[ '[foo<p><b></b>}bar</p>', '[foo<p>}<b></b>bar</p>' ],
@@ -212,7 +216,10 @@ function( TestUtils ) {
 
 /*
 			//
-			//	getEndPositionFromFrontOfBlockNode
+			// getEndPositionFromFrontOfBlockNode
+			//
+			// most of these will fail in ie
+			// TODO: convert "{}" to "[]"
 			//
 			[ '[foo}<p>bar</p>', '[foo]<p>bar</p>' ],
 			[ '<b>[foo</b>}<p>bar</p>', '<b>[foo]</b><p>bar</p>' ],
@@ -234,7 +241,6 @@ function( TestUtils ) {
 		
 			[ '<p>[foo</p>}<div>bar</div>', '<p>[foo</p><div>}bar</div>' ],
 			[ '<p>[foo</p>}<div><b>bar</b></div>', '<p>[foo</p><div>}<b>bar</b></div>' ],
-			[ '<p>[foo</p>}<b></b><p>bar</p>', '<p>[foo</p><b></b><p>}bar</p>' ],
 			[ '<p>[foo</p>}<p></p><div>bar</div>', '<p>[foo</p><p></p><div>}bar</div>' ],
 			[ '<p>[foo</p>}<p></p><div></div><b>bar</b>', '<p>[foo</p><p></p><div></div><b>}bar</b>' ],
 			[ '<p>[foo</p>}<p><b>bar</b></p>', '<p>[foo</p><p>}<b>bar</b></p>' ],
@@ -256,7 +262,9 @@ function( TestUtils ) {
 
 /*
 			//
-			//getEndPositionFromEndOfBlockNode
+			// getEndPositionFromEndOfBlockNode
+			//
+			// all ok, but some must fail in ie
 			//
 			[ '<p>[foo}</p>', '<p>[foo]</p>' ],
 			[ '[foo<p>}</p>', '[foo]<p></p>' ],
@@ -282,7 +290,8 @@ function( TestUtils ) {
 	
 /*
 			//
-			//		Start position at start of editing host
+			// Start position at start of editing host
+			// ie has some issues
 			//
 			[ '{}<p></p>', '{}<p></p>' ],
 			[ '{<p>}</p>', '{}<p></p>' ],
@@ -306,9 +315,8 @@ function( TestUtils ) {
 			//
 			// getStartPositionFromFrontOfInlineNode
 			//
-			// With a text node left, and right of start position
-			// NB: These will fail in IE because IE does not accept our
-			//     expected range as valid
+			// ie will fail in some
+			//
 			[ 'foo{<b></b><p>bar]</p>', 'foo<b>{</b><p>bar]</p>' ],
 			[ 'foo{<b></b><u></u><p>bar]</p>', 'foo<b></b><u>{</u><p>bar]</p>' ],
 			[ 'foo{<b></b><div></div><p>bar]</p>', 'foo<b>{</b><div></div><p>bar]</p>' ],
@@ -319,26 +327,20 @@ function( TestUtils ) {
 			[ '<div>foo{<b></b><p></p></div><div><u></u></div><p>bar]</p>', '<div>foo<b>{</b><p></p></div><div><u></u></div><p>bar]</p>' ],
 			[ '<div>foo<p>test{<b></b></p></div><div><u></u></div><p>bar]</p>', '<div>foo<p>test<b>{</b></p></div><div><u></u></div><p>bar]</p>' ],
 			
-			// With no text node left of start position, but with one on right
 			[ '{<b></b><p>foo]</p>', '<b></b><p>[foo]</p>' ],
 			[ '{<b></b><u></u><p>foo]</p>', '<b></b><u></u><p>[foo]</p>' ],
 			[ '{<b></b><div></div><p>foo]</p>', '<b></b><div></div><p>[foo]</p>' ],
 			[ '<b>{<u></u></b><p>foo]</p>', '<b><u></u></b><p>[foo]</p>' ],
 			[ '{<b></b><div><u></u></div><p>foo]</p>', '<b></b><div><u></u></div><p>[foo]</p>' ],
 			[ '<p>{<b></b></p><div><u></u></div><p>bar]</p>', '<p><b></b></p><div><u></u></div><p>[bar]</p>' ],
-			// With text node left of start position, none on right
-			// NB: These will fail in IE because IE does not accept our
-			//     expected range as valid with the exceptio of
-			//     "<b>foo[]<u></u></b><p></p>"
+			
 			[ 'foo{<b></b><p>}</p>', 'foo[]<b></b><p></p>' ],
 			[ 'foo{<b></b><u></u><p>}</p>', 'foo[]<b></b><u></u><p></p>' ],
 			[ 'foo{<b></b><div></div><p>}</p>', 'foo[]<b></b><div></div><p></p>' ],
 			[ '<b>foo{<u></u></b><p>}</p>', '<b>foo[]<u></u></b><p></p>' ],
 			[ 'foo{<b></b><div><u></u></div><p>}</p>', 'foo[]<b></b><div><u></u></div><p></p>' ],
 			[ '<p>foo{<b></b></p><div><u></u></div><p>}</p>', '<p>foo[]<b></b></p><div><u></u></div><p></p>' ],
-			// With no text node left or right of start position
-			// NB: The last two on this collection will fail in IE because IE
-			//     will not take our correct range as a valid range
+			
 			[ '{<b></b><p>}</p>', '{}<b></b><p></p>' ],
 			[ '{<b></b><u></u><p>}</p>', '{}<b></b><u></u><p></p>' ],
 			[ '{<b></b><div></div><p>}</p>', '{}<b></b><div></div><p></p>' ],
@@ -352,6 +354,8 @@ function( TestUtils ) {
 /*
 			//
 			// getStartPositionFromEndOfInlineNode
+			//
+			// many will fail in ie
 			//
 			// With text node inside container node and right text node
 			[ '<b>foo{</b>bar]', '<b>foo</b>[bar]' ],
@@ -382,9 +386,8 @@ function( TestUtils ) {
 			
 			[ '<b>foo{</b>}', '<b>foo[]</b>' ],
 
-//*/
 			
-/*
+			
 			// With a text node left, and right of start container
 			[ 'foo<b>{</b><p>bar]</p>', 'foo<b>{</b><p>bar]</p>' ],
 			[ 'foo<b>{</b><u></u><p>bar]</p>', 'foo<b></b><u>{</u><p>bar]</p>' ],
@@ -418,6 +421,8 @@ function( TestUtils ) {
 			//
 			// getStartPositionFromFrontOfTextNode
 			//
+			// ok an all browser
+			//
 			[ '<p>{foo]</p>', '<p>[foo]</p>' ],
 			[ '<b>{foo]</b>', '<b>[foo]</b>' ],
 			[ 'foo<p>{bar]</p>', 'foo<p>[bar]</p>' ],
@@ -427,6 +432,8 @@ function( TestUtils ) {
 /*
 			//
 			// getEndPositionFromFrontOfTextNode
+			//
+			// ie will fail some of these
 			//
 			[ '[foo}bar', '[foobar]' ],
 			[ '[foo<p>}bar</p>', '[foo<p>}bar</p>' ],
@@ -455,9 +462,11 @@ function( TestUtils ) {
 
 //*/
 
-//*
+/*
 			//
 			// getEndPositionFromEndOfInlineNode
+			//
+			// ie must fai on some of these
 			//
 			[ 'foo<b>{}</b>bar', 'foo[]<b></b>bar'],
 			[ 'foo[]<span></span>bar', 'foo[]<span></span>bar' ],
@@ -500,6 +509,9 @@ function( TestUtils ) {
 			//
 			// IE does not accept our expected selection for the next 3 tests
 			//
+			// TODO: convert collapsed selections "{}" to "[]"
+			// FIXME: void elements
+			//
 			[ '<div></div>{<b></b><p>}</p>', '{}<div></div><b></b><p></p>' ],
 			[ '<div>{<b></b></div><p>}</p>', '{}<div><b></b></div><p></p>' ],
 			[ '<b></b><div>{<b></b></div><p>}</p>', '{}<b></b><div><b></b></div><p></p>' ]
@@ -519,8 +531,11 @@ function( TestUtils ) {
 			[ '{<b></b><p></p>}', '{}<b></b><p></p>' ],
 			[ '<div><p>{<b></b></p></div><p></p>}', '{}<div><p><b></b></p></div><p></p>' ],
 			[ 'foo<div><p>{<b></b></p></div><p></p>}', 'foo[]<div><p><b></b></p></div><p></p>' ],
+
+//*/
 			
-//*
+/*
+			// FIXME void elements
 
 			[ '<p>[foo</p><p>bar]</p><p>baz</p>', '<p>[foo</p><p>bar]</p><p>baz</p>' ],
 			[ '<p>[foo</p><p>]bar</p><p>baz</p>', '<p>[foo</p><p>}bar</p><p>baz</p>' ],
@@ -539,14 +554,7 @@ function( TestUtils ) {
             [ '<p>foo{</p><hr><p>]baz</p>', '<p>foo[</p><hr><p>}baz</p>' ],
             [ '<p>foo</p>{<hr><p>]baz</p>', '<p>foo</p>{<hr><p>}baz</p>' ],
             [ '<p>foo</p><hr>{<p>]baz</p>', '<p>foo</p><hr><p>[]baz</p>' ]
-			
-			
-			
-			
-			
-			
-			
-			
+	
 			
 			
 			[ '{<b>foo</b><p>}bar</p>', '<b>[foo</b><p>}bar</p>' ],

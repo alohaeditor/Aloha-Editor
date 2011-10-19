@@ -3255,6 +3255,7 @@ function getStartPositionFromFrontOfInlineNode ( node ) {
  *
  * @param {DOMElement} node - an inline node
  */
+ // Needs tlc
 function getStartPositionFromEndOfInlineNode ( node ) {
 	var rightNode,
 	    leftTextNode,
@@ -3566,7 +3567,6 @@ function getPositionBetweenLeftTextNodeAndBlockNode ( node, leftTextNode, leftBl
 	}
 };
 
- // Needs tlc
 function getEndPositionFromEndOfInlineNode ( node ) {
 	var leftTextNode,
 		rightTextNode,
@@ -3870,7 +3870,7 @@ function correctRange ( range ) {
 	
 	// Use come deprecated methods to correct range around phrasing, until we
 	// extract the code into their own functions
-	// try { var _range = _correctRangeOld( range ); range = _range; } catch ( ex ) {}
+	try { var _range = _correctRangeOld( range ); range = _range; } catch ( ex ) {}
 	
 	return range;
 };
