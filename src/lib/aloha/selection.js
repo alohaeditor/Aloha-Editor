@@ -3829,7 +3829,7 @@ function sanitizeOffset ( node, offset ) {
 };
 
 function correctRange ( range ) {
-	// return range;
+	return range;
 	
 	var startContainer = range.startContainer,
 	    startOffset = range.startOffset,
@@ -3849,9 +3849,17 @@ function correctRange ( range ) {
 		range.endOffset = endPos.offset;
 	}
 	
-	range = _correctRangeOld( range );
+	// Use come deprecated methods to correct range around phrasing, until we
+	// extract the code into their own functions
+	var _range;
+	try {
+		_range = _correctRangeOld( range );
+		range = _range;
+	} catch ( ex ) {
+		_range = range;
+	}
 	
-	return range;
+	return _range;
 };
 
 
