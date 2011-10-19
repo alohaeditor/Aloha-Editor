@@ -2445,85 +2445,57 @@ function getEndPositionFromInsideTextNode ( node, offset ) {
 
 function getEndPositionFromFrontOfTextNode ( node ) {
 	var leftTextNode,
-		leftBlockNode,
-		posbits;
+		leftBlockNode;
 	
 	leftTextNode = getNearestLeftNode( node, isTextNode );
-	leftBlockNode = getFirstEncounteredLeftNode( node, isBlockElement );
 	
-	debugger;
-	
-	// 000100 -- 4 -- Node A precedes Node B.
-	// leftTextNode preceeds leftBlockNode meaning, we encounter the block node
-	// before we encounter the text node if we were to walk backwards towards
-	// them.
-	// eg: [ '[foo<p>}bar</p>', '[foo<p>}bar</p>' ],
-	if ( compareDocumentPosition( leftTextNode, leftBlockNode ) & 4 ) {
+	if ( leftTextNode ) {
+		leftBlockNode = getFirstEncounteredLeftNode( node, isBlockElement );
 		
-		return null;
-	}
-	
-	return {
-		node   : node,
-		offset : 0
-	};
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	// [ '[foo<p>}bar</p>', '[foo<p>}bar</p>' ],
-	// [ '[foo<div><p>}bar</p></div>', '[foo<div><p>}bar</p></div>' ],
-	// [ '{<p></p><p>}foo</p>', '<p></p><p>[]foo</p>' ],
-	// [ '[foo<p><i></i><b></b>}bar</p>', '[foo<p>}<i></i><b></b>bar</p>' ],
-	// [ '<p><i>[foo</i><b></b>}bar</p>', '<p><i>[foo]</i><b></b>bar</p>' ],
-	// [ '<div><i>[foo</i><b>}bar</b></div>', '<div><i>[foo]</i><b>bar</b></div>' ],
-	// [ '<div>test<i>[foo</i><b>}bar</b></div>', '<div>test<i>[foo]</i><b>bar</b></div>' ],
-	var leftNode = node;
-	
-	while ( leftNode = leftNode.previousSibling ) {
-		leftTextNode = isTextNode( leftNode )
-			? leftNode
-			: getRightmostScion( leftNode, isTextNode );
+		// [ '[foo<i><b>}bar</b></i>', '[foo]<i><b>bar</b></i>' ],
+		if ( !leftBlockNode ) {
+			return {
+				node    : leftTextNode,
+				offset  : getNodeLength( leftTextNode )
+			};
+		}
 		
-		if ( leftTextNode ) {
-			break;
+		// 000000	0		Elements are identical.
+		// 000001	1		The nodes are in different documents (or one is outside of a document).
+		// 000010	2		Node B precedes Node A.
+		// 000100	4		Node A precedes Node B.
+		// 001000	8		Node B contains Node A.
+		// 010000	16		Node A contains Node B.
+		// 100000	32		For private use by the browser.
+		
+		var posbitsTextNodeAndBlock = compareDocumentPosition( leftTextNode, leftBlockNode );
+		var posbitsStartNodeAndBlock = compareDocumentPosition( node, leftBlockNode )
+		
+		// Will be true in the following cases:
+		// [ '[foo<p><b>}bar</b></p>', '[foo<p>}<b>bar</b></p>' ],
+		// [ '<p>[foo</p><b></b>}bar', '<p>[foo</p><b>}</b>bar' ],
+		if ( ( posbitsTextNodeAndBlock & 4 ) ||
+				( ( posbitsTextNodeAndBlock & 8 ) &&
+					( posbitsStartNodeAndBlock & 2 ) ) ) {
+			
+			if ( posbitsStartNodeAndBlock & 8 ) {
+				return {
+					node   : leftBlockNode,
+					offset : 0
+				};
+			}
+			
+			return {
+				node   : leftBlockNode.nextSibling,
+				offset : 0
+			};
 		}
 	}
 	
-	// There are not siblings to the left which contain a text node in which we
-	// can move into
-	if ( !leftTextNode ) {
-		debugger;
-		// We nevertheless need to know if there is a text node somewhere to
-		// the left of our currest position
-		leftTextNode = getNearestLeftNode( node, isTextNode );
-		
-	}
-	
-	
-	//leftBlockNode = getNearest
-	
-	if ( leftTextNode ) {
-		return {
-			node   : leftTextNode,
-			offset : getNodeLength( leftTextNode )
-		};
-	}
-	
-	console.log( 1 );
-	
 	return {
 		node   : node,
 		offset : 0
 	};
-	
-	//|| isBlockElement( node.previousSibling ) ) {
-	
 };
 /**
  * Given that we are in front of an inline node...
@@ -3103,7 +3075,7 @@ function getEndPositionFromEndOfInlineNode ( node, offset ) {
 	var leftTextNode,
 		rightTextNode;
 	
-	//debugger;
+	// debugger;
 	
 	// Satisfies
 	// [ '<b>[foo}</b>', '<b>[foo]</b>' ],
@@ -3339,7 +3311,7 @@ function sanitizeOffset ( node, offset ) {
 };
 
 function correctRange ( range ) {
-	return range;
+	// return range;
 	
 	var startContainer = range.startContainer,
 	    startOffset = range.startOffset,
