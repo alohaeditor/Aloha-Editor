@@ -2497,6 +2497,7 @@ function getEndPositionFromFrontOfTextNode ( node ) {
 		offset : 0
 	};
 };
+
 /**
  * Given that we are in front of an inline node...
  *
@@ -2556,7 +2557,7 @@ function getEndPositionFromFrontOfTextNode ( node ) {
  * @return {Object} position object with properties node and offset
  */
 
- // Needs tlc
+// Needs tlc
 function getStartPositionFromFrontOfInlineNode ( node ) {
 	var rightNode,
 	    leftTextNode,
@@ -2916,150 +2917,69 @@ function getStartPositionFromEndOfBlockNode ( node ) {
 	};
 };
 
-// Needs tlc
 function getEndPositionFromFrontOfInlineNode ( node ) {
 	var leftTextNode,
 	    rightTextNode,
-	    firstLeftInlineNode,
-	    leftNode,
-		hasPreceedingBlockNode = false;
+		leftBlockNode;
 	
-	debugger;
+	leftTextNode = getNearestLeftNode( node, isTextNode );
 	
-	// Try and find a textNode to the left of original start position
-	// Try to move to the nearest left node without crossing a block node
-	
-	leftNode = node;
-	
-	while ( leftNode ) {
-		// We found what we are looking for
-		if ( isTextNode( leftNode ) ) {
-			leftTextNode = leftNode;
-			break;
+	if ( leftTextNode ) {
+		leftBlockNode = getFirstEncounteredLeftNode( node, isBlockElement );
+		
+		if ( !leftBlockNode ) {
+			return {
+				node    : leftTextNode,
+				offset  : getNodeLength( leftTextNode )
+			};
 		}
 		
-		if ( isBlockElement( leftNode ) ) {
-			hasPreceedingBlockNode = true;
-		}
+		// 000000	0		Elements are identical.
+		// 000001	1		The nodes are in different documents (or one is outside of a document).
+		// 000010	2		Node B precedes Node A.
+		// 000100	4		Node A precedes Node B.
+		// 001000	8		Node B contains Node A.
+		// 010000	16		Node A contains Node B.
+		// 100000	32		For private use by the browser.
 		
-		if ( !firstLeftInlineNode ) {
-			firstLeftInlineNode = leftNode;
-		}
+		var posbitsTextNodeAndBlock = compareDocumentPosition( leftTextNode, leftBlockNode );
+		var posbitsStartNodeAndBlock = compareDocumentPosition( node, leftBlockNode )
 		
-		if ( leftNode.previousSibling ) {
-			leftNode = leftNode.previousSibling;
-			// Start with the deepest child node to the right
-			while ( leftNode.lastChild ) {
-				leftNode = leftNode.lastChild;
-			}
-			continue;
-		}
-		if ( !isEditingHost( leftNode.parentNode ) ) {
-			leftNode.parentNode;
+		if ( ( posbitsTextNodeAndBlock & 4 ) ||
+				( ( posbitsTextNodeAndBlock & 8 ) &&
+					( posbitsStartNodeAndBlock & 2 ) ) ) {
 			
-			while ( leftNode.lastChild ) {
-				leftNode = leftNode.lastChild;
+			if ( posbitsStartNodeAndBlock & 8 ) {
+				return {
+					node   : leftBlockNode,
+					offset : 0
+				};
 			}
-		}
-		
-		break;
-	}
-	
-	// Everythings is clear on the left
-	if ( leftTextNode && !hasPreceedingBlockNode ) {
-		return {
-			node   : leftTextNode,
-			offset : getNodeLength( leftTextNode )
-		};
-	}
-	
-	// We have got a block node in the way... but we encountered a inline node
-	// on the way so we can use that instead
-	if ( leftTextNode /* && hasPreceedingBlockNode */ && firstLeftInlineNode ) {
-		return {
-			node   : firstLeftInlineNode,
-			offset : getNodeLength( firstLeftInlineNode )
+			
+			return {
+				node   : leftBlockNode.nextSibling,
+				offset : 0
+			};
 		}
 	}
 	
-	// We have nowhere to land on the left, try right
 	rightTextNode = getLeftmostScion( node, isTextNode );
+	
 	if ( !rightTextNode ) {
-		rightTextNode = getNearestLeftNode( node, isTextNode );
+		rightTextNode = getNearestRightNode( node, isTextNode );
 	}
 	
 	if ( rightTextNode ) {
 		return {
 			node   : rightTextNode,
 			offset : 0
-		};
-	}
-	
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	var leftTextNode,
-	    rightTextNode;
-	
-	// Look for a textNode on the left without stopping over a block node
-	
-	// [ '[foo}bar', '[foobar]' ],
-	// [ '[foo<p>}bar</p>', '[foo<p>]bar</p>' ]
-	if ( isTextNode( node ) ) {
-		stop = node;
-		
-		while ( true ) {
-			if ( isBlockElement( stop ) ) {
-				break;
-			} else if ( !isEditingHost( stop.parentNode ) ) {
-				stop = stop.parentNode;
-			} else if ( stop.previousSibling
-							&& !isBlockElement( stop.previousSibling ) ) {
-				stop = stop.previousSibling;
-			} else {
-				break;
-			}
 		}
-		
-		//debugger;
-		
-		return {
-			node   : stop,
-			offset : 0
-		};
 	}
 	
-	// Try to go right...
-	
-	// Satisfies:
-	// [ '{<b>foo]</b>', '<b>[foo]</b>' ],
-	stop = getLeftmostScion( node, isTextNode );
-	
-	// Satisfies:
-	// [ 'foo{<b></b><b>bar]</b>', 'foo<b></b><b>[bar]</b>' ],
-	// [ 'foo{<b><i></i></b>bar]', 'foo<b><i></i></b>[bar]' ],
-	// [ 'foo{<b><i></i></b><b>bar]</b>', 'foo<b><i></i></b><b>[bar]</b>' ],
-	if ( !stop ) {
-		stop = getNearestRightNode( node, isTextNode );
-	}
-	
-	if ( stop ) {
-		return {
-			node   : stop,
-			offset : 0
-		};
-	}
+	return {
+		node   : getEditingHost( node ),
+		offset : 0
+	};
 };
 
 /**
