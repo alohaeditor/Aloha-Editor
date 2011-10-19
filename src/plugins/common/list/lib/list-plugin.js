@@ -39,13 +39,13 @@ function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore, Engine) {
 
 			var that = this;
 
-			//register the workaround-handler keypress handler on every editable
-			Aloha.bind('aloha-editable-created', function(event, editable) {
-				editable.obj.keyup(function(event){
-					deleteWorkaroundHandler(event);
-					return true;
-				});
-			});
+//			//register the workaround-handler keypress handler on every editable
+//			Aloha.bind('aloha-editable-created', function(event, editable) {
+//				editable.obj.keyup(function(event){
+//					deleteWorkaroundHandler(event);
+//					return true;
+//				});
+//			});
 
 			// the 'create unordered list' button
 			this.createUnorderedListButton = new Aloha.ui.Button({
@@ -578,9 +578,6 @@ function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore, Engine) {
 		 * Refresh the current selection and set to focus to the current editable again
 		 */
 		refreshSelection: function () {
-			if (Aloha.activeEditable) {
-				Aloha.getActiveEditable().obj.focus();
-			}
 			Aloha.Selection.rangeObject.update();
 			Aloha.Selection.rangeObject.select();
 			Aloha.Selection.updateSelection();
