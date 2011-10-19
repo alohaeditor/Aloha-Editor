@@ -293,7 +293,6 @@ function AlohaImagePlugin ( aQuery, Plugin, FloatingMenu, i18nCore, i18n ) {
 			}
 			
 			if (this.settings.ui.meta) {
-				//
 				var tabId = this.settings.ui.oneTab ? tabImage : tabImage;
 				that._addUIMetaButtons(tabId);
 			}
