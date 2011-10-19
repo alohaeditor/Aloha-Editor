@@ -458,6 +458,7 @@ function( TestUtils ) {
 			//
 			// getEndPositionFromEndOfInlineNode
 			//
+			[ 'foo[]<span></span>bar', 'foo[]<span></span>bar' ],
 			[ '<b>[foo}</b>', '<b>[foo]</b>' ],
 			[ '[foo<b>}</b>', '[foo]<b></b>' ],
 			
