@@ -6,8 +6,8 @@
 */
 
 define(
-['aloha', 'aloha/jquery', 'aloha/plugin', 'aloha/floatingmenu', 'i18n!list/nls/i18n', 'i18n!aloha/nls/i18n'],
-function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
+['aloha', 'aloha/jquery', 'aloha/plugin', 'aloha/floatingmenu', 'i18n!list/nls/i18n', 'i18n!aloha/nls/i18n', 'aloha/engine'],
+function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore, Engine) {
 	"use strict";
 
 	var
@@ -16,7 +16,7 @@ function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 	/**
 	 * Register the ListPlugin as Aloha.Plugin
 	 */
-	return Plugin.create('list', {
+	var ListPlugin = Plugin.create('list', {
 		/**
 		 * Configure the available languages
 		 */
@@ -265,7 +265,16 @@ function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 						&& GENTICS.Utils.Dom.isListElement(jqParentList.get(0))) {
 					// when the list is nested into another, our list items will be
 					// added to the list items of the outer list
-					jqList.children().unwrap();
+
+					// find the place where to put the children of the inner list
+					if (jqParentList.get(0).nodeName.toLowerCase() === 'li') {
+						// inner table is nested in a li (this conforms to the html5 spec)
+						jqParentList.after(jqList.children());
+						jqList.remove();
+					} else {
+						// inner table is nested in the outer list directly (this violates the html5 spec)
+						jqList.children().unwrap();
+					}
 				} else {
 					// we are in an unordered list and shall transform it to paragraphs
 
@@ -338,7 +347,8 @@ function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 				//inside the li for the selection to work.
 				li.appendChild(document.createTextNode(""));
 				range.selectNodeContents(li);
-				Aloha.getSelection().setSingleRange(range);
+				Aloha.getSelection().removeAllRanges();
+				Aloha.getSelection().addRange(range);
 				range.detach();
 				//let Aloha know about the selection change we did through rangy
 				Aloha.Selection.updateSelection();
@@ -434,13 +444,11 @@ function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 					if (lastSelected.nextAll('li').length > 0) {
 						jqNewPostList = jqList.clone(false).empty();
 						jqNewPostList.append(lastSelected.nextAll());
+						lastSelected.append(jqNewPostList);
 					}
 
 					// now move all selected li's into the higher list
 					if (wrappingLi.length > 0) {
-						if (typeof jqNewPostList !== 'undefined') {
-							jqListItem.append(jqNewPostList);
-						}
 						wrappingLi.after(jqListItem);
 					} else {
 						jqList.before(jqListItem);
@@ -539,6 +547,79 @@ function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 			}
 		}
 	});
+
+	/**
+	 * 
+	 */
+	Engine.commands['insertorderedlist'] = {
+		action: function() {
+			ListPlugin.transformList(true);
+		},
+		indeterm: function() {
+			// TODO
+		},
+		state: function() {
+			for ( i = 0; i < rangeObject.markupEffectiveAtStart.length; i++) {
+				effectiveMarkup = rangeObject.markupEffectiveAtStart[ i ];
+				if (Aloha.Selection.standardTagNameComparator(effectiveMarkup, jQuery('<ul></ul>'))) {
+					return false;
+				}
+				if (Aloha.Selection.standardTagNameComparator(effectiveMarkup, jQuery('<ol></ol>'))) {
+					return true;
+				}
+			}
+
+			return false;
+		}
+	};
+
+	Engine.commands['insertunorderedlist'] = {
+		action: function() {
+			ListPlugin.transformList(false);
+		},
+		indeterm: function() {
+			// TODO
+		},
+		state: function() {
+			for ( i = 0; i < rangeObject.markupEffectiveAtStart.length; i++) {
+				effectiveMarkup = rangeObject.markupEffectiveAtStart[ i ];
+				if (Aloha.Selection.standardTagNameComparator(effectiveMarkup, jQuery('<ul></ul>'))) {
+					return true;
+				}
+				if (Aloha.Selection.standardTagNameComparator(effectiveMarkup, jQuery('<ol></ol>'))) {
+					return false;
+				}
+			}
+
+			return false;
+		}
+	};
+
+	Engine.commands['indent'] = {
+		action: function() {
+			ListPlugin.indentList();
+		},
+		indeterm: function() {
+			// TODO
+		},
+		state: function() {
+			// TODO
+			return false;
+		}
+	};
+
+	Engine.commands['outdent'] = {
+		action: function() {
+			ListPlugin.outdentList();
+		},
+		indeterm: function() {
+			// TODO
+		},
+		state: function() {
+			// TODO
+			return false;
+		}
+	};
 
 	/**
 	 * A key handler that should be run as a keyup handler for the
@@ -643,4 +724,6 @@ function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 		});
 		return actionPerformed;
 	}
+
+	return ListPlugin;
 });
