@@ -1332,7 +1332,11 @@ function setTagName(element, newName, range) {
 
 	// "Copy all attributes of element to replacement element, in order."
 	for (var i = 0; i < element.attributes.length; i++) {
-		replacementElement.setAttributeNS(element.attributes[i].namespaceURI, element.attributes[i].name, element.attributes[i].value);
+		if (typeof replacementElement.setAttributeNS === 'function') {
+			replacementElement.setAttributeNS(element.attributes[i].namespaceURI, element.attributes[i].name, element.attributes[i].value);
+		} else {
+			replacementElement.setAttribute(element.attributes[i].name, element.attributes[i].value);
+		}
 	}
 
 	// "While element has children, append the first child of element as the
@@ -7274,8 +7278,13 @@ commands.insertparagraph = {
 			// "If container has no children, call createElement("br") on the
 			// context object and append the result as the last child of
 			// container."
+			// only do this, if inserting the br does NOT modify the offset height of the container
 			if (!container.hasChildNodes()) {
-				container.appendChild(createEndBreak());
+				var oldHeight = container.offsetHeight, endBr = createEndBreak();
+				container.appendChild(endBr);
+				if (container.offsetHeight !== oldHeight) {
+					container.removeChild(endBr);
+				}
 			}
 
 			// "If container is a dd or dt, and it is not an allowed child of
@@ -7292,6 +7301,18 @@ commands.insertparagraph = {
 
 			// "Fix disallowed ancestors of container."
 			fixDisallowedAncestors(container, range);
+
+			// fix invalid nested lists
+			if (isHtmlElement(container, "li")
+			&& isHtmlElement(container.nextSibling, "li")
+			&& isHtmlElement(container.nextSibling.firstChild, ["ol", "ul"])) {
+				// we found a li containing only a br followed by a li containing a list as first element: merge the two li's
+				var listParent = container.nextSibling, length = container.nextSibling.childNodes.length;
+				for (var i = 0; i < length; i++) {
+					container.appendChild(listParent.childNodes[i]);
+				}
+				listParent.parentNode.removeChild(listParent);
+			}
 
 			// "Abort these steps."
 			return;
@@ -7358,7 +7379,11 @@ commands.insertparagraph = {
 
 		// "Copy all attributes of container to new container."
 		for (var i = 0; i < container.attributes.length; i++) {
-			newContainer.setAttributeNS(container.attributes[i].namespaceURI, container.attributes[i].name, container.attributes[i].value);
+			if (typeof newContainer.setAttributeNS === 'function') {
+				newContainer.setAttributeNS(container.attributes[i].namespaceURI, container.attributes[i].name, container.attributes[i].value);
+			} else {
+				newContainer.setAttribute(container.attributes[i].name, container.attributes[i].value);
+			}
 		}
 
 		// "If new container has an id attribute, unset it."

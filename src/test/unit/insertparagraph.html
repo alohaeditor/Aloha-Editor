@@ -381,6 +381,14 @@
 					{  	include: ['msie'],
 						start: '<ol><li>foo[] <ul><li>bar</li></ul></li></ol>',
 						execResult: '<ol><li>foo</li><li>[] <ul><li>bar</li></ul></li></ol>'
+					},
+					{	exclude: 'msie',
+						start: '<ul><li>foo<ul><li>bar</li><li>{}<br/></li><li>baz</li></ul></li></ul>',
+						execResult: '<ul><li>foo<ul><li>bar</li></ul></li><li>{}<br/><ul><li>baz</li></ul></li></ul>'
+					},
+					{	include: 'msie',
+						start: '<ul><li>foo<ul><li>bar</li><li>{}</li><li>baz</li></ul></li></ul>',
+						execResult: '<ul><li>foo <ul><li>bar</li></ul></li><li>{} <ul><li>baz</li></ul></li></ul>'
 					}
 			]
 	}
