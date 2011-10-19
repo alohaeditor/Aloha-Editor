@@ -189,28 +189,25 @@ function( TestUtils ) {
 			[ '<p>foo{</p><p>bar}</p><p>baz</p>', '<p>foo[</p><p>bar]</p><p>baz</p>' ],
 //*/
 
-//*
+/*
 			//
 			// getEndPositionFromFrontOfInlineNode
 			//
-//			[ '[foo<b>}<u></u>bar</b>', '[foo]<b><u></u>bar</b>' ],
-//			[ '[foo<i>}<b><u></u>bar</b></i>', '[foo]<i><b><u></u>bar</b></i>' ],
-//			[ '[foo<p></p>}<b>bar</b>', '[foo<p></p><b>}bar</b>' ],
-//			[ '[foo<div><p>}<b>bar</b></p></div>', '[foo<div><p>}<b>bar</b></p></div>' ],
-//			
-//			[ '[foo<i><u></u><b>}bar</b></i>', '[foo]<i><u></u><b>bar</b></i>' ],
-//			[ '[foo<u></u><b>}bar</b>', '[foo]<u></u><b>bar</b>' ],
-//			[ '{<b>}bar</b>', '<b>[]bar</b>' ],
-//			[ '[foo<p>}bar</p>', '[foo<p>}bar</p>' ],
-//			[ '[foo<p><b>}bar</b></p>', '[foo<p>}<b>bar</b></p>' ],
-//			[ '[foo<p><b></b>}bar</p>', '[foo<p>}<b></b>bar</p>' ],
-//			[ '[foo<div><p>}bar</p></div>', '[foo<div><p>}bar</p></div>' ],
-//			[ '{}foo', '[]foo' ],
-//			[ '[foo<p></p>}bar', '[foo<p></p>]bar' ],
-//			[ '<p>[foo</p>}bar', '<p>[foo</p>]bar' ],
-			[ '[foo<p></p><b></b>}bar', '[foo<p></p><b>}</b>bar' ],
-			[ '[foo<p></p><i></i><b></b>}bar', '[foo<p></p><i>}</i><b></b>bar' ],
-			[ '[foo<p><i></i></p><b></b>}bar', '[foo<p><i></i></p><b>}</b>bar' ],
+			[ '[foo<b>}<u></u>bar</b>', '[foo]<b><u></u>bar</b>' ],
+			[ '[foo<i>}<b><u></u>bar</b></i>', '[foo]<i><b><u></u>bar</b></i>' ],
+			[ '[foo<p></p>}<b>bar</b>', '[foo<p></p><b>}bar</b>' ],
+			[ '[foo<div><p>}<b>bar</b></p></div>', '[foo<div><p>}<b>bar</b></p></div>' ],
+			
+			[ '[foo<i><u></u><b>}bar</b></i>', '[foo]<i><u></u><b>bar</b></i>' ],
+			[ '[foo<u></u><b>}bar</b>', '[foo]<u></u><b>bar</b>' ],
+			[ '{<b>}bar</b>', '<b>[]bar</b>' ],
+			[ '[foo<p>}bar</p>', '[foo<p>}bar</p>' ],
+			[ '[foo<p><b>}bar</b></p>', '[foo<p>}<b>bar</b></p>' ],
+			[ '[foo<p><b></b>}bar</p>', '[foo<p>}<b></b>bar</p>' ],
+			[ '[foo<div><p>}bar</p></div>', '[foo<div><p>}bar</p></div>' ],
+			[ '{}foo', '[]foo' ],
+			[ '[foo<p></p>}bar', '[foo<p></p>]bar' ],
+			[ '<p>[foo</p>}bar', '<p>[foo</p>]bar' ],
 //*/
 
 /*
@@ -447,6 +444,9 @@ function( TestUtils ) {
 			[ '[foo<p></p>}bar', '[foo<p></p>]bar' ],
 			[ '<p>[foo</p>}bar', '<p>[foo</p>]bar' ],
 			[ '{<p>foo</p><p>}bar</p>', '<p>[foo</p><p>}bar</p>' ],
+			[ '[foo<p></p><b></b>}bar', '[foo<p></p><b>}</b>bar' ],
+			[ '[foo<p></p><i></i><b></b>}bar', '[foo<p></p><i>}</i><b></b>bar' ],
+			[ '[foo<p><i></i></p><b></b>}bar', '[foo<p><i></i></p><b>}</b>bar' ],
 			
 			[ '{<p></p><p>}foo</p>', '<p></p><p>[]foo</p>' ],
 			[ '{<p><b></b></p><p>}bar</p>', '<p><b></b></p><p>[]bar</p>' ],
@@ -454,13 +454,16 @@ function( TestUtils ) {
 
 //*/
 
-/*
-
+//*
 			//
 			// getEndPositionFromEndOfInlineNode
 			//
 			[ '<b>[foo}</b>', '<b>[foo]</b>' ],
+			[ '[foo<b>}</b>', '[foo]<b></b>' ],
+			
 			[ '<b>[foo<i>bar</i>}</b>', '<b>[foo<i>bar]</i></b>' ],
+			[ '[foo<b><i>bar</i>}</b>', '[foo<b><i>bar]</i></b>' ],
+			
 			[ '<b>[foo<i></i>}</b>', '<b>[foo]<i></i></b>' ],
 			[ '<b>[foo<u></u><i></i>}</b>', '<b>[foo]<u></u><i></i></b>' ],
 			[ '<b>[foo<u><i></i></u>}</b>', '<b>[foo]<u><i></i></u></b>' ],
@@ -468,7 +471,10 @@ function( TestUtils ) {
 			[ '<b>[foo</b><p></p><i>}</i>', '<b>[foo]</b><p></p><i></i>' ],
 			[ '<b>[foo</b><p><i>}</i></p>', '<b>[foo]</b><p><i></i></p>' ],
 			[ '<b>[foo</b><p>bar<i>}</i></p>', '<b>[foo</b><p>bar]<i></i></p>' ],
-
+			
+			[ '[foo<p></p><b>}</b>bar', '[foo<p></p><b>}</b>bar' ],
+			[ '[foo<p></p><i>}</i><b></b>bar', '[foo<p></p><i>}</i><b></b>bar' ],
+			[ '[foo<p><i></i></p><b>}</b>bar', '[foo<p><i></i></p><b>}</b>bar' ],
 //*/
 
 /*

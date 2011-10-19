@@ -2348,7 +2348,7 @@ function getEndPosition ( container, offset ) {
 	
 	// In front of closing inline node eg: "...}</span>"
 	if ( isAtEnd ) {
-		return getEndPositionFromEndOfInlineNode( container, offset );
+		return getEndPositionFromEndOfInlineNode( container );
 	}
 	
 	if ( container.childNodes[ offset ] ) {
@@ -2982,32 +2982,18 @@ function getEndPositionFromFrontOfInlineNode ( node ) {
 	};
 };
 
-/**
- * We are at the end tag of an inline node.
- *
- * @param {DOMElement} node - an inline node
- * @param {Number} offset - an integer that should be equal to the number of
- *							childNodes of node. This argument is therefore
- *							redundant.
- */
  // Needs tlc
-function getEndPositionFromEndOfInlineNode ( node, offset ) {
+function getEndPositionFromEndOfInlineNode ( node ) {
 	var leftTextNode,
 		rightTextNode;
 	
 	// debugger;
 	
-	// Satisfies
-	// [ '<b>[foo}</b>', '<b>[foo]</b>' ],
 	leftTextNode = getRightmostScion( node, isTextNode );
-	if ( leftTextNode ) {
-		return {
-			node   : leftTextNode,
-			offset : getNodeLength( leftTextNode )
-		};
+	if ( !leftTextNode ) {
+		leftTextNode = getNearestLeftNode( node, isTextNode );
 	}
 	
-	leftTextNode = getNearestLeftNode( node, isTextNode );
 	if ( leftTextNode ) {
 		return {
 			node   : leftTextNode,
