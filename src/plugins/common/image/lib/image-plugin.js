@@ -685,6 +685,7 @@ function AlohaImagePlugin ( aQuery, Plugin, FloatingMenu, i18nCore, i18n ) {
 					// this will disable mozillas image resizing facilities
 					document.execCommand( 'enableObjectResizing', false, false );
 				} catch (e) {
+					Aloha.Log.error( e, 'Could not disable enableObjectResizing' );
 					// this is just for internet explorer, who will not support disabling enableObjectResizing
 				}
 			}
