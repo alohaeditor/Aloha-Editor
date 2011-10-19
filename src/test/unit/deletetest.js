@@ -238,11 +238,25 @@ var tests = {
 		{  	start: 'foo  []bar',
 			execResult: 'foo[]bar'
 		},
-		{  	start: '<b>foo </b>&nbsp;[]bar',
+		{  	
+			exclude: ['msie'],
+			start: '<b>foo </b>&nbsp;[]bar',
 			execResult: '<b>foo []</b>bar'
 		},
-		{  	start: '<b>foo&nbsp;</b> []bar',
+		{  	
+			include: ['msie'],
+			start: '<b>foo </b>&nbsp;[]bar',
+			execResult: '<b>foo </b>[]bar'
+		},
+		{  	
+			exclude: ['msie'],
+			start: '<b>foo&nbsp;</b> []bar',
 			execResult: '<b>foo []</b>bar'
+		},
+		{  	
+			include: ['msie'],
+			start: '<b>foo&nbsp;</b> []bar',
+			execResult: '<b>foo </b>bar'
 		},
 		{  	
 			exclude: ['msie'],
@@ -339,89 +353,94 @@ var tests = {
 		// Lists with collapsed selection
 		{  	
 			exclude: ['msie'],
-			start: 'foo<ol><li>[]bar<li>baz</ol>',
+			start: 'foo<ol><li>[]bar</li><li>baz</li></ol>',
 			execResult: 'foo<p>[]bar</p><ol><li>baz</li></ol>'
 		},
 		{  	
 			include: ['msie'],
-			start: 'foo<ol><li>[]bar<li>baz</ol>',
+			start: 'foo<ol><li>[]bar</li><li>baz</li></ol>',
 			execResult: 'foo <p>[]bar</p><ol><li>baz</li></ol>'
 		},
-		{  	start: 'foo<br><ol><li>[]bar<li>baz</ol>',
+		{  	
+			exclude: ['msie'],
+			
+			start: 'foo<br><ol><li>[]bar</li><li>baz</li></ol>',
 			execResult: 'foo<p>[]bar</p><ol><li>baz</li></ol>'
 		},
-		{  	start: 'foo<br><br><ol><li>[]bar<li>baz</ol>',
+		{  	
+			include: ['msie'],
+			start: 'foo<br><ol><li>[]bar</li><li>baz</li></ol>',
+			execResult: 'foo<br><p>[]bar</p><ol><li>baz</li></ol>'
+		},
+		{  	start: 'foo<br><br><ol><li>[]bar</li><li>baz</li></ol>',
 			execResult: 'foo<br><br><p>[]bar</p><ol><li>baz</li></ol>'
 		},
 		{  	start: '<ol><li>foo</li><li>[]bar</li></ol>',
 			execResult: '<ol><li>foo<br>[]bar</li></ol>'
 		},
-		{  	start: '<ol><li>foo<br><li>[]bar</ol>',
+		{  	start: '<ol><li>foo<br></li><li>[]bar</li></ol>',
 			execResult: '<ol><li>foo<br>[]bar</li></ol>'
 		},
-		{  	start: '<ol><li>foo<br><br><li>[]bar</ol>',
+		{  	start: '<ol><li>foo<br><br></li><li>[]bar</li></ol>',
 			execResult: '<ol><li>foo<br><br>[]bar</li></ol>'
 		},
-		{  	start: '<ol><li>foo<li>[]bar<br>baz</ol>',
+		{  	start: '<ol><li>foo</li><li>[]bar<br>baz</li></ol>',
 			execResult: '<ol><li>foo<br>[]bar<br>baz</li></ol>'
 		},
-		{  	start: '<ol><li>foo<br>bar<li>[]baz</ol>',
+		{  	start: '<ol><li>foo<br>bar</li><li>[]baz</li></ol>',
 			execResult: '<ol><li>foo<br>bar<br>[]baz</li></ol>'
 		},
-		{  	start: '<ol><li><p>foo</p>{}bar</ol>',
-			execResult: '<ol><li><p>foo[]bar</p></li></ol>'
-		},
-		{  	start: '<ol><li><p>foo<li>[]bar</ol>',
-			execResult: '<ol><li><p>foo</p>[]bar</li></ol>'
-		},
+
+//		those tests have been removed as html5 allows only flow content within lists (http://dev.w3.org/html5/spec/Overview.html#the-li-element)
+//
+//		{  	start: '<ol><li><p>foo</p>{}bar</li></ol>',
+//			execResult: '<ol><li><p>foo[]bar</p></li></ol>'
+//		},
+//		{  	start: '<ol><li><p>foo</li><li>[]bar</li></ol>',
+//			execResult: '<ol><li><p>foo</p>[]bar</li></ol>'
+//		},
+//		{  	
+//			exclude: ['msie'],
+//			start: '<ol><li>foo</li><li><p>[]bar</li></ol>',
+//			execResult: '<ol><li>foo<p>[]bar</p></li></ol>'
+//		},
+//		{  	
+//			include: ['msie'],
+//			start: '<ol><li>foo</li><li><p>[]bar</p></li></ol>',
+//			execResult: '<ol><li>foo <p>[]bar</p></li></ol>'
+//		},
+//		{  	
+//			exclude: ['msie'],
+//			start: '<ol><li><p>foo</p></li><li><p>[]bar</p></li></ol>',
+//			execResult: '<ol><li><p>foo</p><p>[]bar</p></li></ol>'
+//		},
+//		{  	
+//			include: ['msie'],
+//			start: '<ol><li><p>foo</p></li><li><p>[]bar</p></li></ol>',
+//			execResult: '<ol><li><p>foo </p><p>[]bar</p></li></ol>'
+//		},
 		{  	
-			exclude: ['msie'],
-			start: '<ol><li>foo<li><p>[]bar</ol>',
-			execResult: '<ol><li>foo<p>[]bar</p></li></ol>'
-		},
-		{  	
-			include: ['msie'],
-			start: '<ol><li>foo<li><p>[]bar</ol>',
-			execResult: '<ol><li>foo <p>[]bar</p></li></ol>'
-		},
-		{  	
-			exclude: ['msie'],
-			start: '<ol><li><p>foo<li><p>[]bar</ol>',
-			execResult: '<ol><li><p>foo</p><p>[]bar</p></li></ol>'
-		},
-		{  	
-			include: ['msie'],
-			start: '<ol><li><p>foo<li><p>[]bar</ol>',
-			execResult: '<ol><li><p>foo </p><p>[]bar</p></li></ol>'
-		},
-		{  	
-			exclude: ['msie'],
-			start: '<ol><li>foo<ul><li>[]bar</ul></ol>',
+			start: '<ol><li>foo<ul><li>[]bar</li></ul></li></ol>',
 			execResult: '<ol><li>foo</li><li>[]bar</li></ol>'
 		},
 		{  	
-			include: ['msie'],
-			start: '<ol><li>foo<ul><li>[]bar</ul></ol>',
-			execResult: '<ol><li>foo </li><li>[]bar</li></ol>'
-		},
-		{  	
 			exclude: ['msie'],
-			start: 'foo<ol><ol><li>[]bar</ol></ol>',
+			start: 'foo<ol><ol><li>[]bar</li></ol></ol>',
 			execResult: 'foo<ol><li>[]bar</li></ol>'
 		},
 		{  	
 			include: ['msie'],
-			start: 'foo<ol><ol><li>[]bar</ol></ol>',
+			start: 'foo<ol><ol><li>[]bar</li></ol></ol>',
 			execResult: 'foo <ol><li>[]bar</li></ol>'
 		},		
 		{  	
 			exclude: ['msie'],		
-			start: 'foo<div><ol><li>[]bar</ol></div>',
+			start: 'foo<div><ol><li>[]bar</li></ol></div>',
 			execResult: 'foo<div><p>[]bar</p></div>'
 		},
 		{  	
 			include: ['msie'],		
-			start: 'foo<div><ol><li>[]bar</ol></div>',
+			start: 'foo<div><ol><li>[]bar</li></ol></div>',
 			execResult: 'foo <div><p>[]bar</p></div>'
 		},
 
