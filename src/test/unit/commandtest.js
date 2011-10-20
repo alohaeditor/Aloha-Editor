@@ -40,6 +40,7 @@ function( TestUtils ) {
 
 		var 
 			editable = aQuery( '#edit' ),
+			converterResult = aQuery('<div>'),
 			converter = aQuery('<div>');
 
 		// we never want to see the floatingmenu here
@@ -85,10 +86,15 @@ function( TestUtils ) {
 
 			check.value = ( typeof check.value !== 'undefined') ? check.value : tests.defaultValue;
 			check.attributes = ( typeof check.attributes !== 'undefined') ? check.attributes : tests.defaultAttributes;
+
 			converter.text(check.start);
 			var desc = converter.html();
 			converter.text(check.value);
-			var	name = check.name || '"' + converter.html() + '": ' + desc;
+
+			converterResult.text(check.execResult);
+			var descResult = converterResult.html();
+
+			var	name = check.name || '"' + converter.html() + '": ' + descResult;
 			
 			module( 'Commmand ' + (i+1) + ' ' + tests.defaultCommand + (excluded ? ' EXCLUDED' : ''), {
 				setup: function() {

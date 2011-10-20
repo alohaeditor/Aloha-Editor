@@ -7,8 +7,13 @@ var tests = {
 		{  	start: '<span>[]foo</span>',
 			execResult: '<span>[]foo</span>'
 		},
-		{  	start: '<span>{}</span>',
+		{  	exclude: 'msie',
+			start: '<span>{}</span>',
 			execResult: '{}<span></span>'
+		},
+		{  	include: 'msie',
+			start: '<span>{}</span>',
+			execResult: '<span>{}</span>'
 		},
 		{  	start: '<span>{}<br></span>',
 			execResult: '<span>{}<br></span>'
@@ -90,7 +95,8 @@ var tests = {
 		{  	start: '<p>foo</p><p>[]bar</p>',
 			execResult: '<p>foo[]bar</p>'
 		},
-		{  	start: '<p>foo</p>[]bar',
+		{  	exclude: 'msie',					// TODO this test will always fail in IE, because the selection will always snap into the p
+			start: '<p>foo</p>[]bar',
 			execResult: '<p>foo[]bar</p>'
 		},
 		{  	start: 'foo<p>[]bar</p>',
@@ -99,7 +105,8 @@ var tests = {
 		{  	start: '<p>foo<br></p><p>[]bar</p>',
 			execResult: '<p>foo[]bar</p>'
 		},
-		{  	start: '<p>foo<br></p>[]bar',
+		{  	exclude: 'msie',					// TODO this test will always fail in IE, because the selection will always snap into the p
+			start: '<p>foo<br></p>[]bar',
 			execResult: '<p>foo[]bar</p>'
 		},
 		{  	start: 'foo<br><p>[]bar</p>',
@@ -112,7 +119,8 @@ var tests = {
 		{  	start: '<p>foo<br><br></p><p>[]bar</p>',
 			execResult: '<p>foo<br>[]bar</p>'
 		},
-		{  	start: '<p>foo<br><br></p>[]bar',
+		{  	exclude: 'msie',					// TODO this test will always fail in IE, because the selection will always snap into the p
+			start: '<p>foo<br><br></p>[]bar',
 			execResult: '<p>foo<br>[]bar</p>'
 		},
 		{  	start: 'foo<br><br><p>[]bar</p>',
@@ -137,7 +145,8 @@ var tests = {
 		{  	start: '<div>foo</div><div>[]bar</div>',
 			execResult: '<div>foo[]bar</div>'
 		},
-		{  	start: '<pre>foo</pre>[]bar',
+		{  	exclude: 'msie',					// TODO this test will always fail in IE, because the selection will always snap into the p
+			start: '<pre>foo</pre>[]bar',
 			execResult: '<pre>foo[]bar</pre>'
 		},
 		{  	start: 'foo<br>[]bar',
@@ -480,8 +489,13 @@ var tests = {
 			start: 'foo<blockquote><div>[]bar</div></blockquote>',
 			execResult: 'foo <div>[]bar</div>' // not entirely sure if this is correct
 		},
-		{  	start: 'foo<blockquote style="color: blue">[]bar</blockquote>',
+		{  	exclude: 'msie',
+			start: 'foo<blockquote style="color: blue">[]bar</blockquote>',
 			execResult: 'foo<div style="color: blue">[]bar</div>'
+		},
+		{  	include: 'msie',
+			start: 'foo<blockquote style="color: blue">[]bar</blockquote>',
+			execResult: 'foo <div style="color: blue">[]bar</div>'
 		},
 	
 		{  	
@@ -1137,7 +1151,6 @@ var tests = {
 		{  	start: '<quasit style="display:block">fo[o</quasit><quasit style="display:block">b]ar</quasit>',
 			execResult: '<quasit style="display:block">fo[]ar</quasit>'
 		}
-	
 	]
 }
 
