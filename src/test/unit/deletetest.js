@@ -424,6 +424,10 @@ var tests = {
 			start: 'foo<div><ol><li>[]bar</li></ol></div>',
 			execResult: 'foo <div><p>[]bar</p></div>'
 		},
+		{
+			start: '<ul><li>foo</li><li><br>[]bar</li></ul>',
+			execResult: '<ul><li>foo</li><li><br>[]bar</li></ul>',
+		},
 
 //		{  	start: 'foo<dl><dt>[]bar<dd>baz</dl>',
 //			execResult: 'foo<dl><dt>[]bar<dd>baz</dl>'
