@@ -75,11 +75,23 @@ function( TestUtils ) {
             // [ 'foo[<div><br></div>]baz', 'foo[<div><br></div>]baz' ]
         ],
         phrasingTests = [
-            'foo<span>[bar]</span>baz',
-            [ 'foo[<span>bar</span>]baz', 'foo<span>[bar]</span>baz' ],
-            [ 'foo<span>{bar}</span>baz', 'foo<span>[bar]</span>baz' ],
+			
+			[ '{<b>foo]</b>', '<b>[foo]</b>' ],
+			[ 'foo{<b>bar]</b>', 'foo<b>[bar]</b>' ],
+			[ '{<b></b><p>foo]</p>', '<b></b><p>[foo]</p>' ],
+			[ 'foo<p>{<b></b></p>bar]', 'foo<p><b></b></p>[bar]' ],
+			[ 'foo<p></p>{<b></b><p></p>bar]', 'foo<p></p><b></b><p></p>[bar]' ],
+			[ '<p>foo</p>{<b></b>bar]', '<p>foo</p><b></b>[bar]' ],
+			[ 'foo{<b></b><p>bar]</p>', 'foo<b>{</b><p>bar]</p>' ],
+			[ '<p>foo{<b></b></p>bar]', '<p>foo<b>{</b></p>bar]' ],
+			[ 'foo{<b></b><u></u><p>bar]</p>', 'foo<b></b><u>{</u><p>bar]</p>' ],
+			[ '<p>foo{<b></b><u></u></p>bar]', '<p>foo<b></b><u>{</u></p>bar]' ],
+			
+			'foo<span>[bar]</span>baz',
+			[ 'foo[<span>bar</span>]baz', 'foo<span>[bar]</span>baz' ],
+			[ 'foo<span>{bar}</span>baz', 'foo<span>[bar]</span>baz' ],
             [ 'foo{<span>bar</span>}baz', 'foo<span>[bar]</span>baz' ],
-/*          [ 'foo<span>{bar]</span>baz', 'foo<span>[bar]</span>baz' ], INDEX ERR */
+			[ 'foo<span>{bar]</span>baz', 'foo<span>[bar]</span>baz' ],
             [ 'foo<span>{bar</span>]baz', 'foo<span>[bar]</span>baz' ],
             [ 'foo<span>[bar}</span>baz', 'foo<span>[bar]</span>baz' ],
             [ 'foo[<span>bar}</span>baz', 'foo<span>[bar]</span>baz' ],
@@ -117,8 +129,8 @@ function( TestUtils ) {
             [ 'foo<i>a</i>{<span><b><b>}bar</b></b></span>baz', 'foo<i>a[]</i><span><b><b>bar</b></b></span>baz' ],
             
             [ '<i></i>{<span><b><b>}bar</b></b></span>baz', '<i></i><span><b><b>[]bar</b></b></span>baz' ],
-//			[ '<span>{<span><b><b>}bar</b></b></span>baz</span>', '<span><span><b><b>[]bar</b></b></span>baz</span>' ],
-//			[ 'test<span>{<span><b><b>}bar</b></b></span>baz</span>', 'test[]<span><span><b><b>bar</b></b></span>baz</span>' ],
+			[ '<span>{<span><b><b>}bar</b></b></span>baz</span>', '<span><span><b><b>[]bar</b></b></span>baz</span>' ],
+			[ 'test<span>{<span><b><b>}bar</b></b></span>baz</span>', 'test[]<span><span><b><b>bar</b></b></span>baz</span>' ],
             [ '<b><i>foo</i></b>{<span><b><b>}bar</b></b></span>baz', '<b><i>foo[]</i></b><span><b><b>bar</b></b></span>baz' ],
             [ '<b><i></i></b>{<span><b><b>}bar</b></b></span>baz', '<b><i></i></b><span><b><b>[]bar</b></b></span>baz' ],
             [ '<b>foo<i></i></b>{<span><b><b>}bar</b></b></span>baz', '<b>foo[]<i></i></b><span><b><b>bar</b></b></span>baz' ],
@@ -718,9 +730,9 @@ function( TestUtils ) {
             
             // voidTests, // <br>
             
-            // phrasingTests,
+            phrasingTests,
             
-			flowTests, // <p>
+			// flowTests, // <p>
             
             // flowHostTests, // flow elements host
             

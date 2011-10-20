@@ -2804,8 +2804,7 @@ function getNearestLeftNode ( node, predicate ) {
 	return null;
 };
 
-
-function getFirstEncounteredLeftNode ( node , predicate ) {
+function getFirstEncounteredLeftNode ( node, predicate ) {
 	if ( !node ) {
 		return null;
 	}
@@ -2822,6 +2821,28 @@ function getFirstEncounteredLeftNode ( node , predicate ) {
 	
 	if ( node.parentNode && !isEditingHost( node.parentNode ) ) {
 		return getFirstEncounteredLeftNode( node.parentNode, predicate );
+	}
+	
+	return null;
+}
+
+function getFirstEncounteredRightNode ( node, predicate ) {
+	if ( !node ) {
+		return null;
+	}
+	
+	if ( typeof predicate !== 'function' || predicate( node ) ) {
+		return node;
+	}
+	
+	if ( node.nextSibling ) {
+		return getFirstEncounteredRightNode(
+			getLeftmostScion( node.nextSibling ) || node.nextSibling, predicate
+		);
+	}
+	
+	if ( node.parentNode && !isEditingHost( node.parentNode ) ) {
+		return getFirstEncounteredRightNode( node.parentNode, predicate );
 	}
 	
 	return null;
@@ -3148,20 +3169,151 @@ function getStartPositionFromFrontOfInlineNode ( node ) {
 	var rightNode,
 	    leftTextNode,
 	    rightTextNode,
-		succeedingBlockNode;
-	
-	// In order to determine where we will reposition the start position, we
-	// will need to know whether or not we have a text node to the left of our
-	// start position
-	leftTextNode = getNearestLeftNode( node, isTextNode );
+		leftBlockNode,
+		rightBlockNode;
 	
 	// Try to find a text node to the right of the start position...
 	// First look for the nearest text node inside startNode.
 	// Satisfies:
 	// [ '{<b>foo]</b>', '<b>[foo]</b>' ],
+	// [ 'foo{<b>bar]</b>', 'foo<b>[bar]</b>' ],
+	rightTextNode = getLeftmostScion( node, isTextNode );
 	
-	//rightTextNode = getLeftmostScion( node, isTextNode );
+	if ( rightTextNode ) {
+		return {
+			node   : rightTextNode,
+			offset : 0
+		};
+	}
 	
+	// [ '{<b></b><p>foo]</p>', '<b></b><p>[foo]</p>' ]
+	
+	rightTextNode = getNearestRightNode( node, isTextNode );
+	leftTextNode = getNearestLeftNode( node, isTextNode );
+	
+	if ( !leftTextNode && rightTextNode ) {
+		return {
+			node   : rightTextNode,
+			offset : 0
+		};
+	}
+	
+	if ( leftTextNode && !rightTextNode ) {
+		return {
+			node   : leftTextNode,
+			offset : getNodeLenght( leftTextNode )
+		};
+	}
+	
+	if ( !leftTextNode && !rightTextNode ) {
+		return {
+			node   : getEditingHost( node ),
+			offset : 0
+		};
+	}
+	
+	// We have both a left and right text node, we will certainly go right, but
+	// we need to check how far right we go
+	
+	// First check if we have any block node between our current position, and
+	// the leftTextNode. If we do, then we will go right, regardless of what we
+	// may find in the way
+	
+	leftBlockNode = getFirstEncounteredLeftNode( node, isBlockElement );
+	
+	if ( leftBlockNode ) {
+		var posbitsForLeftTextAndLeftBlock = compareDocumentPosition( leftTextNode, leftBlockNode );
+		
+		//debugger;
+		
+		// [ 'foo<p>{<b></b></p>bar]', 'foo<p><b></b></p>[bar]' ]
+		// [ 'foo<p></p>{<b></b><p></p>bar]', 'foo<p></p><b></b><p></p>[bar]' ]
+		if ( posbitsForLeftTextAndLeftBlock & 4 ) {
+			return {
+				node   : rightTextNode,
+				offset : 0
+			};
+		}
+		
+		// [ '<p>foo</p>{<b></b>bar]', '<p>foo</p><b></b>[bar]' ]
+		
+		// [ '<p>foo{<b></b></p>bar]', '<p>foo<b>{</b></p>bar]' ],
+		
+		var posbitsForStartAndLeftBlock = compareDocumentPosition( node, leftBlockNode );
+		
+		if ( ( posbitsForLeftTextAndLeftBlock & 8 ) &&
+				( ( posbitsForStartAndLeftBlock & 2 ) &&
+					!( posbitsForStartAndLeftBlock & 8 ) ) ) {
+			return {
+				node   : rightTextNode,
+				offset : 0
+			};
+		}
+		
+		if ( posbitsForStartAndLeftBlock & 8 ) {
+			rightNode = getRightmostScion( leftBlockNode );
+			if ( rightNode ) {
+				return {
+					node   : rightNode,
+					offset : getNodeLength( rightNode )
+				};
+			}
+		}
+	}
+	
+	// there are no block nodes between the left text node and our start
+	// position
+	
+	rightBlockNode = getFirstEncounteredRightNode( node, isBlockElement );
+	
+	if ( rightBlockNode ) {
+		var posbitsRightTextAndRightBlock = compareDocumentPosition( rightTextNode, rightBlockNode );
+		
+		// [ 'foo{<b></b><p>bar]</p>', 'foo<b>{</b><p>bar]</p>' ]
+		// [ '<p>foo{<b></b></p>bar]', '<p>foo<b>{</b></p>bar]' ]
+		// [ 'foo{<b></b><u></u><p>bar]</p>', 'foo<b></b><u>{</u><p>bar]</p>' ]
+		// [ '<p>foo{<b></b><u></u></p>bar]', '<p>foo<b></b><u>{</u></p>bar]' ]
+		
+		if ( posbitsRightTextAndRightBlock & 2 ) {
+			rightNode = getNearestLeftNode( rightBlockNode );
+			if ( rightNode ) {
+				return {
+					node   : rightNode,
+					offset : getNodeLength( rightNode )
+				};
+			}
+		}
+	}
+	
+	return {
+		node   : rightTextNode,
+		offset : 0
+	};
+	
+	
+	debugger;
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	/*
 	// If there are no text nodes inside node, look for the nearest text
 	// node outside of, and to the right of node.
 	// Satisfies:
@@ -3246,6 +3398,7 @@ function getStartPositionFromFrontOfInlineNode ( node ) {
 		node   : rightTextNode,
 		offset : 0
 	};
+	*/
 };
 
 /**
