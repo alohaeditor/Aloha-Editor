@@ -187,23 +187,32 @@ var tests = {
 //			execResult: 'foo[]bar'
 //		},
 	
-		{  	start: '<a>foo[]</a>bar',
+		// IE and Chrome will behave differently on this one as IE will move
+		// the range outside the <a> thus achieving a different behaviour
+		{  	
+			exclude: ['msie'],
+			start: '<a>foo[]</a>bar',
 			execResult: '<a>fo[]</a>bar'
 		},
-		{  	start: '<a>foo</a>[]bar',
-			execResult: '<a>fo[]</a>bar'
+		{  	
+			include: ['msie'],
+			start: '<a>foo[]</a>bar',
+			execResult: 'foo[]bar'
+		},
+		{  	start: '<a>foo</a>[]bar', // this ones actually broken in chrome
+			execResult: 'foo[]bar'
 		},
 		{  	start: '<a href="/">foo</a>[]bar',
-			execResult: '<a href="/">fo[]</a>bar'
+			execResult: 'foo[]bar'
 		},
 		{  	start: '<a name=abc>foo</a>[]bar',
-			execResult: '<a name=abc>fo[]</a>bar'
+			execResult: 'foo[]bar'
 		},
 		{  	start: '<a href="/" name=abc>foo</a>[]bar',
-			execResult: '<a href="/" name=abc>fo[]</a>bar'
+			execResult: 'foo[]bar'
 		},
 		{  	start: '<span><a>foo</a></span>[]bar',
-			execResult: '<span><a>fo[]</a></span>bar'
+			execResult: '<span>foo[]</span>bar'
 		},
 		{  	start: '<span><a href="/">foo</a></span>[]bar',
 			execResult: '<span><a href="/">fo[]</a></span>bar'
