@@ -3201,7 +3201,7 @@ function getStartPositionFromFrontOfInlineNode ( node ) {
 	if ( leftTextNode && !rightTextNode ) {
 		return {
 			node   : leftTextNode,
-			offset : getNodeLenght( leftTextNode )
+			offset : getNodeLength( leftTextNode )
 		};
 	}
 	
@@ -3224,8 +3224,6 @@ function getStartPositionFromFrontOfInlineNode ( node ) {
 	if ( leftBlockNode ) {
 		var posbitsForLeftTextAndLeftBlock = compareDocumentPosition( leftTextNode, leftBlockNode );
 		
-		//debugger;
-		
 		// [ 'foo<p>{<b></b></p>bar]', 'foo<p><b></b></p>[bar]' ]
 		// [ 'foo<p></p>{<b></b><p></p>bar]', 'foo<p></p><b></b><p></p>[bar]' ]
 		if ( posbitsForLeftTextAndLeftBlock & 4 ) {
@@ -3240,6 +3238,8 @@ function getStartPositionFromFrontOfInlineNode ( node ) {
 		// [ '<p>foo{<b></b></p>bar]', '<p>foo<b>{</b></p>bar]' ],
 		
 		var posbitsForStartAndLeftBlock = compareDocumentPosition( node, leftBlockNode );
+		
+		//debugger;
 		
 		if ( ( posbitsForLeftTextAndLeftBlock & 8 ) &&
 				( ( posbitsForStartAndLeftBlock & 2 ) &&
@@ -3289,116 +3289,6 @@ function getStartPositionFromFrontOfInlineNode ( node ) {
 		node   : rightTextNode,
 		offset : 0
 	};
-	
-	
-	debugger;
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	/*
-	// If there are no text nodes inside node, look for the nearest text
-	// node outside of, and to the right of node.
-	// Satisfies:
-	// [ 'foo{<b></b><b>bar]</b>', 'foo<b></b><b>[bar]</b>' ],
-	// [ 'foo{<b><i></i></b>bar]', 'foo<b><i></i></b>[bar]' ],
-	// [ 'foo{<b><i></i></b><b>bar]</b>', 'foo<b><i></i></b><b>[bar]</b>' ],
-	
-	// Try to move our start position to the right without crossing over any
-	// block nodes
-	rightNode = node;
-	
-	while ( true ) {
-		if ( rightNode.nextSibling ) {
-			rightNode = rightNode.nextSibling;
-			if ( isBlockElement( rightNode ) ) {
-				if ( !succeedingBlockNode ) {
-					succeedingBlockNode = rightNode;
-				}
-			}
-		} else if ( isEditingHost( rightNode.parentNode )  ) {
-			break;
-		} else if ( isBlockElement( rightNode.parentNode ) ) {
-			rightNode = rightNode.parentNode;
-			if ( !succeedingBlockNode ) {
-				succeedingBlockNode = rightNode;
-			}
-			continue;
-		} else {
-			rightNode = rightNode.parentNode;
-			continue;
-		}
-		
-		// If rightNode is not a block element, then we know that none of its
-		// children are block elements either.
-		// If we find a text node somewhere inside of rightNode, then take it
-		// stop here
-		rightTextNode = isTextNode( rightNode )
-			? rightNode
-			: getLeftmostScion( rightNode, isTextNode );
-		
-		if ( rightTextNode ) {
-			break;
-		}
-	}
-	
-	if ( !leftTextNode && !rightTextNode ) {
-		return {
-			node   : getEditingHost( node ),
-			offset : 0
-		}
-	}
-	
-	if ( !leftTextNode && rightTextNode ) {
-		return {
-			node   : rightTextNode,
-			offset : 0
-		};
-	}
-	
-	if ( leftTextNode && !rightTextNode ) {
-		return {
-			node   : leftTextNode,
-			offset : getNodeLength( leftTextNode )
-		};
-	}
-	
-	// We have both a left and right text node... we have to do some more work
-	// before we know where to reposition our start position
-	if ( succeedingBlockNode ) {
-		var pos = getStartPositionBetweenSucceedingBlockNode(
-			node, leftTextNode, succeedingBlockNode
-		);
-		
-		if ( pos ) {
-			return pos;
-		}
-	}
-	
-	// We do not have an intercepting block to the right of our start position,
-	// so use the right text node
-	return {
-		node   : rightTextNode,
-		offset : 0
-	};
-	*/
 };
 
 /**
@@ -4023,7 +3913,7 @@ function correctRange ( range ) {
 	
 	// Use come deprecated methods to correct range around phrasing, until we
 	// extract the code into their own functions
-	try { var _range = _correctRangeOld( range ); range = _range; } catch ( ex ) {}
+	//try { var _range = _correctRangeOld( range ); range = _range; } catch ( ex ) {}
 	
 	return range;
 };

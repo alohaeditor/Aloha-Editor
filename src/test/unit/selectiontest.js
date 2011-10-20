@@ -323,43 +323,43 @@ function( TestUtils ) {
 
 //*/
 
-/*
+//*
 			//
 			// getStartPositionFromFrontOfInlineNode
 			//
 			// ie will fail in some
 			//
-			[ 'foo{<b></b><p>bar]</p>', 'foo<b>{</b><p>bar]</p>' ],
-			[ 'foo{<b></b><u></u><p>bar]</p>', 'foo<b></b><u>{</u><p>bar]</p>' ],
-			[ 'foo{<b></b><div></div><p>bar]</p>', 'foo<b>{</b><div></div><p>bar]</p>' ],
-			[ '<b>foo{<u></u></b><p>bar]</p>', '<b>foo<u>{</u></b><p>bar]</p>' ],
-			[ 'foo{<b></b><div><u></u></div><p>bar]</p>', 'foo<b>{</b><div><u></u></div><p>bar]</p>' ],
-			[ '<p>foo{<b></b></p><div><u></u></div><p>bar]</p>', '<p>foo<b>{</b></p><div><u></u></div><p>bar]</p>' ],
-			[ '<div>foo{<b></b><i></i></div><div><u></u></div><p>bar]</p>', '<div>foo<b></b><i>{</i></div><div><u></u></div><p>bar]</p>' ],
+//			[ 'foo{<b></b><p>bar]</p>', 'foo<b>{</b><p>bar]</p>' ],
+//			[ 'foo{<b></b><u></u><p>bar]</p>', 'foo<b></b><u>{</u><p>bar]</p>' ],
+//			[ 'foo{<b></b><div></div><p>bar]</p>', 'foo<b>{</b><div></div><p>bar]</p>' ],
+//			[ '<b>foo{<u></u></b><p>bar]</p>', '<b>foo<u>{</u></b><p>bar]</p>' ],
+//			[ 'foo{<b></b><div><u></u></div><p>bar]</p>', 'foo<b>{</b><div><u></u></div><p>bar]</p>' ],
+//			[ '<p>foo{<b></b></p><div><u></u></div><p>bar]</p>', '<p>foo<b>{</b></p><div><u></u></div><p>bar]</p>' ],
+//			[ '<div>foo{<b></b><i></i></div><div><u></u></div><p>bar]</p>', '<div>foo<b></b><i>{</i></div><div><u></u></div><p>bar]</p>' ],
 			[ '<div>foo{<b></b><p></p></div><div><u></u></div><p>bar]</p>', '<div>foo<b>{</b><p></p></div><div><u></u></div><p>bar]</p>' ],
 			[ '<div>foo<p>test{<b></b></p></div><div><u></u></div><p>bar]</p>', '<div>foo<p>test<b>{</b></p></div><div><u></u></div><p>bar]</p>' ],
 			
-			[ '{<b></b><p>foo]</p>', '<b></b><p>[foo]</p>' ],
-			[ '{<b></b><u></u><p>foo]</p>', '<b></b><u></u><p>[foo]</p>' ],
-			[ '{<b></b><div></div><p>foo]</p>', '<b></b><div></div><p>[foo]</p>' ],
-			[ '<b>{<u></u></b><p>foo]</p>', '<b><u></u></b><p>[foo]</p>' ],
-			[ '{<b></b><div><u></u></div><p>foo]</p>', '<b></b><div><u></u></div><p>[foo]</p>' ],
-			[ '<p>{<b></b></p><div><u></u></div><p>bar]</p>', '<p><b></b></p><div><u></u></div><p>[bar]</p>' ],
-			
-			[ 'foo{<b></b><p>}</p>', 'foo[]<b></b><p></p>' ],
-			[ 'foo{<b></b><u></u><p>}</p>', 'foo[]<b></b><u></u><p></p>' ],
-			[ 'foo{<b></b><div></div><p>}</p>', 'foo[]<b></b><div></div><p></p>' ],
-			[ '<b>foo{<u></u></b><p>}</p>', '<b>foo[]<u></u></b><p></p>' ],
-			[ 'foo{<b></b><div><u></u></div><p>}</p>', 'foo[]<b></b><div><u></u></div><p></p>' ],
-			[ '<p>foo{<b></b></p><div><u></u></div><p>}</p>', '<p>foo[]<b></b></p><div><u></u></div><p></p>' ],
-			
-			[ '{<b></b><p>}</p>', '{}<b></b><p></p>' ],
-			[ '{<b></b><u></u><p>}</p>', '{}<b></b><u></u><p></p>' ],
-			[ '{<b></b><div></div><p>}</p>', '{}<b></b><div></div><p></p>' ],
-			[ '<b>{<u></u></b><p>}</p>', '{}<b><u></u></b><p></p>' ],
-			[ '{<b></b><div><u></u></div><p>}</p>', '{}<b></b><div><u></u></div><p></p>' ],
-			[ '<p>{<b></b></p><div><u></u></div><p>}</p>', '{}<p><b></b></p><div><u></u></div><p></p>' ],
-			[ '<b>foo{<u></u></b>bar]', '<b>foo<u></u></b>[bar]' ],
+//			[ '{<b></b><p>foo]</p>', '<b></b><p>[foo]</p>' ],
+//			[ '{<b></b><u></u><p>foo]</p>', '<b></b><u></u><p>[foo]</p>' ],
+//			[ '{<b></b><div></div><p>foo]</p>', '<b></b><div></div><p>[foo]</p>' ],
+//			[ '<b>{<u></u></b><p>foo]</p>', '<b><u></u></b><p>[foo]</p>' ],
+//			[ '{<b></b><div><u></u></div><p>foo]</p>', '<b></b><div><u></u></div><p>[foo]</p>' ],
+//			[ '<p>{<b></b></p><div><u></u></div><p>bar]</p>', '<p><b></b></p><div><u></u></div><p>[bar]</p>' ],
+//			
+//			[ 'foo{<b></b><p>}</p>', 'foo[]<b></b><p></p>' ],
+//			[ 'foo{<b></b><u></u><p>}</p>', 'foo[]<b></b><u></u><p></p>' ],
+//			[ 'foo{<b></b><div></div><p>}</p>', 'foo[]<b></b><div></div><p></p>' ],
+//			[ '<b>foo{<u></u></b><p>}</p>', '<b>foo[]<u></u></b><p></p>' ],
+//			[ 'foo{<b></b><div><u></u></div><p>}</p>', 'foo[]<b></b><div><u></u></div><p></p>' ],
+//			[ '<p>foo{<b></b></p><div><u></u></div><p>}</p>', '<p>foo[]<b></b></p><div><u></u></div><p></p>' ],
+//			
+//			[ '{<b></b><p>}</p>', '{}<b></b><p></p>' ],
+//			[ '{<b></b><u></u><p>}</p>', '{}<b></b><u></u><p></p>' ],
+//			[ '{<b></b><div></div><p>}</p>', '{}<b></b><div></div><p></p>' ],
+//			[ '<b>{<u></u></b><p>}</p>', '{}<b><u></u></b><p></p>' ],
+//			[ '{<b></b><div><u></u></div><p>}</p>', '{}<b></b><div><u></u></div><p></p>' ],
+//			[ '<p>{<b></b></p><div><u></u></div><p>}</p>', '{}<p><b></b></p><div><u></u></div><p></p>' ],
+//			[ '<b>foo{<u></u></b>bar]', '<b>foo<u></u></b>[bar]' ],
 
 //*/			
 
@@ -730,9 +730,9 @@ function( TestUtils ) {
             
             // voidTests, // <br>
             
-            phrasingTests,
+            //phrasingTests,
             
-			// flowTests, // <p>
+			flowTests, // <p>
             
             // flowHostTests, // flow elements host
             
