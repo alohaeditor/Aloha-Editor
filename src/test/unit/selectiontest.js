@@ -152,6 +152,18 @@ function( TestUtils ) {
             'foo<span>[bar</span><span>baz]</span>bam',
             [ 'foo<span>bar[</span><span>]baz</span>bam', 'foo<span>bar[]</span><span>baz</span>bam' ]
         ],
+        
+        /**
+         * Special new IE tests
+         */
+        newIETests = [
+                   [ 'foo{<b></b><p>bar]</p>', 'foo<b>{</b><p>bar]</p>' ],
+                   [ 'foo[]<blockquote>bar</blockquote>', 'foo[]<blockquote>bar</blockquote>' ],
+                   [ 'foo[]<div><p>bar</p></div>', 'foo[]<div><p>bar</p></div>' ],
+                   [ 'foo[] <div><p>bar</p>', 'foo []<p>bar</p>' ],
+                   [ 'foo <span>&nbsp;</span>[] bar', 'foo <span>&nbsp;</span>[] bar'] 
+        ],
+        
         flowTests = [
 
 /*
@@ -727,13 +739,16 @@ function( TestUtils ) {
         };
         
         tests = tests.concat(
-            // specialTests,
+        		
+        	newIETests,
+        	
+            //specialTests,
             
-            // voidTests, // <br>
+            //voidTests, // <br>
             
             //phrasingTests,
             
-			flowTests, // <p>
+			//flowTests, // <p>
             
             // flowHostTests, // flow elements host
             

@@ -122,6 +122,7 @@ define( [], function() {
 		
 		// check whether alohafying of divs works
 		test('Aloha Editable Test', function() {
+			// in chrome and safari this test only works with every second reload
 			editable.aloha();
 			equals(editable.contentEditable(), true, 'Check whether div is contenteditable after .aloha()');
 			editable.mahalo();
