@@ -4730,9 +4730,11 @@ function deleteContents() {
 		// "If parent is editable or an editing host, is not an inline node,
 		// and has no children, call createElement("br") on the context object
 		// and append the result as the last child of parent."
+		// only do this, if the offsetHeight is 0
 		if ((isEditable(parent_) || isEditingHost(parent_))
 		&& !isInlineNode(parent_)
-		&& !parent_.hasChildNodes()) {
+		&& !parent_.hasChildNodes()
+		&& parent_.offsetHeight === 0) {
 			parent_.appendChild(createEndBreak());
 		}
 	}
