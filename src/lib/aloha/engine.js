@@ -833,13 +833,8 @@ function isCollapsedLineBreak(br) {
 	while (getComputedStyle(ref).display == "inline") {
 		ref = ref.parentNode;
 	}
-	
-	if ( jQuery.browser.msie ) {
-		var refStyle = null;
-	} else {
-		var refStyle = ref.hasAttribute("style") ? ref.getAttribute("style") : null;
-	}
-	
+
+	var refStyle = ref.hasAttribute("style") ? ref.getAttribute("style") : null;
 	ref.style.height = "auto";
 	ref.style.maxHeight = "none";
 	ref.style.minHeight = "0";
