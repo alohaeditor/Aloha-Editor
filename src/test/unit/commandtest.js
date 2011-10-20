@@ -53,7 +53,21 @@ function( TestUtils ) {
 		
 		for ( var i = 0; i < tests.tests.length; i++ ) {
 
-			var	check = tests.tests[i], excluded = false;
+			var	check = tests.tests[i],
+				excluded = false;
+
+			if ( typeof check === 'undefined' ) {
+				check = {};
+			}
+
+			if ( typeof check.exclude === 'undefined' ) {
+				check.exclude = false;
+			}
+
+			if ( typeof check.include === 'undefined' ) {
+				check.include = false;
+			}
+
 			if (check.exclude && typeof check.exclude === 'string') {
 				check.exclude = [check.exclude];
 			}

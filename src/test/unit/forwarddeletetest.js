@@ -804,8 +804,11 @@ var tests = {
 			{	start: '<p>foo<br><br>{</p>]bar',
 				execResult: '<p>foo[]bar</p>'
 			},
-//			{	start: 'foo<br>{<p>]bar</p>', // @todo NS_ERROR_DOM_INDEX_SIZE_ERR exception in FF: rangy-core.js line 2055 at:
-//				execResult: 'foo[]bar' // "rangeProto.setStart = function(node, offset) { this.nativeRange.setStart(node, offset);"
+			// @todo NS_ERROR_DOM_INDEX_SIZE_ERR exception in FF: rangy-core.js line 2055 at:
+			// "rangeProto.setStart = function(node, offset) { this.nativeRange.setStart(node, offset);"
+			// see also deletetest.js for that problem
+//			{	start: 'foo<br>{<p>]bar</p>', 
+//				execResult: 'foo[]bar' 
 //			},
 			{	start: 'foo<br><br>{<p>]bar</p>',
 				execResult: 'foo[]bar'
