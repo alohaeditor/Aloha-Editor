@@ -3890,7 +3890,7 @@ function sanitizeOffset ( node, offset ) {
 };
 
 function correctRange ( range ) {
-	// return range;
+	return range;
 	
 	var startContainer = range.startContainer,
 	    startOffset = range.startOffset,
