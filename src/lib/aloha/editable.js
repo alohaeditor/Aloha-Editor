@@ -733,7 +733,7 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, C
 				this.sccTimerDelay = setTimeout(function() {
 
 					Aloha.trigger('aloha-smart-content-changed',{
-						'editable' : Aloha.activeEditable,
+						'editable' : me,
 						'keyIdentifier' : event.originalEvent.keyIdentifier,
 						'keyCode' : event.keyCode,
 						'char' : uniChar,
@@ -781,7 +781,7 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, C
 					clearTimeout(this.sccTimerDelay);
 
 					Aloha.trigger('aloha-smart-content-changed',{
-						'editable' : Aloha.activeEditable,
+						'editable' : me,
 						'keyIdentifier' : null,
 						'keyCode' : null,
 						'char' : null,
@@ -795,7 +795,7 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, C
 
 			else if (event && event.type === 'paste') {
 				Aloha.trigger('aloha-smart-content-changed',{
-					'editable' : Aloha.activeEditable,
+					'editable' : me,
 					'keyIdentifier' : null,
 					'keyCode' : null,
 					'char' : null,
@@ -807,7 +807,7 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, C
 
 			else if (event && event.type === 'blur') {
 				Aloha.trigger('aloha-smart-content-changed',{
-					'editable' : Aloha.activeEditable,
+					'editable' : me,
 					'keyIdentifier' : null,
 					'keyCode' : null,
 					'char' : null,
