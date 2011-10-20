@@ -24,20 +24,52 @@ function( TestUtils ) {
 		*/
 		
 		//
-		//	adding columns
+		// Column selection
 		//
 		
 		/*
-		// In this case  we are only interested that a column is inserted
-		// we ignore the fact that there is an error with addColumnsRight
-		// where it the 0 index is the selection helper columns)
 		{
 			start     : '<table><tbody><tr><td>foo</td></tr></tbody></table>',
 			expected  : '<table><tbody><tr><td>foo</td><td>&nbsp;</td></tr></tbody></table>',
 			operation : function ( table ) {
-				//table.selectColumns( [ 0 ] ); 
+				table.selectColumns( [ 0 ] ); 
+				table.addColumnsRight();
+			}
+		},
+		*/
+		
+		//
+		//	  NB:
+		//	------------------------------------------------------------------
+		//	  selectColumns HAS A BUG WHERE IT ALLOWS US TO PROGRAMMATICALLY
+		//	  SELECT THE HELPER COLUMN (AND ROW).
+		//	  ALL FOLLOWING TESTS WILL WORK AROUND THIS FAULT BY USING
+		//	  1-INDEXING with selectColumns
+		//	------------------------------------------------------------------
+		//
+		
+		//
+		// Inserting/removing cols
+		//
+		
+		/*
+		{
+			start     : '<table><tbody><tr><td>foo</td></tr></tbody></table>',
+			expected  : '<table><tbody><tr><td>foo</td><td>&nbsp;</td></tr></tbody></table>',
+			operation : function ( table ) {
 				table.selectColumns( [ 1 ] ); 
 				table.addColumnsRight();
+			}
+		},
+		*/
+		
+		/*
+		{
+			start     : '<table><tbody><tr><td>foo</td></tr></tbody></table>',
+			expected  : '<table><tbody><tr><td>&nbsp;</td><td>foo</td></tr></tbody></table>',
+			operation : function ( table ) {
+				table.selectColumns( [ 0 ] ); 
+				table.addColumnsLeft();
 			}
 		},
 		*/
@@ -50,16 +82,92 @@ function( TestUtils ) {
 				table.selectColumns( [ 0 ] ); 
 				table.addColumnsRight();
 			}
-		}
+		},
+		*/
+		
+		/*
+		{
+			start     : '<table><tbody><tr><td>foo</td></tr><tr><td>bar</td></tr></tbody></table>',
+			expected  : '<table><tbody><tr><td>&nbsp;</td><td>foo</td></tr><tr><td>&nbsp;</td><td>bar</td></tr></tbody></table>',
+			operation : function ( table ) {
+				table.selectColumns( [ 0 ] ); 
+				table.addColumnsRight();
+			}
+		},
+		*/
+		
+		/*
+		{
+			start     : '<table><tbody><tr><td>foo</td><td>bar</td></tr><tr><td>foo1</td><td>bar2</td></tr></tbody></table>',
+			expected  : '<table><tbody><tr><td>foo</td><td>&nbsp;</td><td>bar</td></tr><tr><td>foo1</td><td>&nbsp;</td><td>bar2</td></tr></tbody></table>',
+			operation : function ( table ) {
+				table.selectColumns( [ 1 ] ); 
+				table.addColumnsLeft();
+			}
+		},
 		*/
 		
 		//
 		// Inserting/removing rows
 		//
 		
-		//
-		// Inserting/removing cols
-		//
+		// In this case  we are only interested that a column is inserted we
+		// ignore the fact that there is an error with addColumnsRight where it
+		// the 0 index is the selection helper columns
+		/*
+		{
+			start     : '<table><tbody><tr><td>foo</td></tr></tbody></table>',
+			expected  : '<table><tbody><tr><td>foo</td><td>&nbsp;</td></tr></tbody></table>',
+			operation : function ( table ) {
+				table.selectColumns( [ 1 ] ); 
+				table.addColumnsRight();
+			}
+		},
+		*/
+		
+		/*
+		{
+			start     : '<table><tbody><tr><td>foo</td></tr></tbody></table>',
+			expected  : '<table><tbody><tr><td>&nbsp;</td><td>foo</td></tr></tbody></table>',
+			operation : function ( table ) {
+				table.selectColumns( [ 0 ] ); 
+				table.addColumnsLeft();
+			}
+		},
+		*/
+		
+		/*
+		{
+			start     : '<table><tbody><tr><td>foo</td><td>bar</td></tr></tbody></table>',
+			expected  : '<table><tbody><tr><td>foo</td><td>&nbsp;</td><td>bar</td></tr></tbody></table>',
+			operation : function ( table ) {
+				table.selectColumns( [ 0 ] ); 
+				table.addColumnsRight();
+			}
+		},
+		*/
+		
+		/*
+		{
+			start     : '<table><tbody><tr><td>foo</td></tr><tr><td>bar</td></tr></tbody></table>',
+			expected  : '<table><tbody><tr><td>&nbsp;</td><td>foo</td></tr><tr><td>&nbsp;</td><td>bar</td></tr></tbody></table>',
+			operation : function ( table ) {
+				table.selectColumns( [ 0 ] ); 
+				table.addColumnsRight();
+			}
+		},
+		*/
+		
+		/*
+		{
+			start     : '<table><tbody><tr><td>foo</td><td>bar</td></tr><tr><td>foo1</td><td>bar2</td></tr></tbody></table>',
+			expected  : '<table><tbody><tr><td>foo</td><td>&nbsp;</td><td>bar</td></tr><tr><td>foo1</td><td>&nbsp;</td><td>bar2</td></tr></tbody></table>',
+			operation : function ( table ) {
+				table.selectColumns( [ 2 ] ); 
+				table.addColumnsLeft();
+			}
+		},
+		*/
 		
 		//
 		// Merge rows
