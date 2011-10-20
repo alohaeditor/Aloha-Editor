@@ -220,7 +220,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 			}
 
 			this.rangeObject = range || new Aloha.Selection.SelectionRange(true);
-
+			
 			// find the CAC (Common Ancestor Container) and update the selection Tree
 			this.rangeObject.update();
 
@@ -928,7 +928,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 				objects[i] = new this.SelectionRange();
 				el = relevantMarkupObjects[i];
 				if (cropMarkupsAtEnd && !cropMarkupsAtStart) {
-					textNodes = jQuery(el).textNodes(true);
+					textNodes = jQuery(el).textNodes(true); debugger; // markger
 					objects[i].startContainer = textNodes[0];
 					objects[i].startOffset = 0;
 					// if the existing markup startContainer & startOffset are equal to the rangeObject startContainer and startOffset,
@@ -1207,7 +1207,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 				if (options.setRangeObject2NextSibling){
 					prevOrNext = true;
 					textNode2Start = newMarkup.textNodes(true).last()[0];
-					if (objects2wrap.index(rangeObject.startContainer) != -1) {
+					if (objects2wrap.index(rangeObject.startContainer) != -1) { debugger; //marker
 						rangeObject.startContainer = this.getTextNodeSibling(prevOrNext, newMarkup.parent(), textNode2Start);
 						rangeObject.startOffset = 0;
 					}
@@ -3163,7 +3163,6 @@ function getEndPositionFromFrontOfTextNode ( node ) {
  * @return {Object} position object with properties node and offset
  */
 
-// Needs tlc
 function getStartPositionFromFrontOfInlineNode ( node ) {
 	var rightNode,
 	    leftTextNode,
@@ -3236,9 +3235,9 @@ function getStartPositionFromFrontOfInlineNode ( node ) {
 		
 		// [ '<p>foo{<b></b></p>bar]', '<p>foo<b>{</b></p>bar]' ],
 		
-		var posbitsForStartAndLeftBlock = compareDocumentPosition( node, leftBlockNode );
+		// [ '<div>foo{<b></b><p></p></div><p>bar]</p>', '<div>foo<b>{</b><p></p></div><p>bar]</p>' ]
 		
-		//debugger;
+		var posbitsForStartAndLeftBlock = compareDocumentPosition( node, leftBlockNode );
 		
 		if ( ( posbitsForLeftTextAndLeftBlock & 8 ) &&
 				( ( posbitsForStartAndLeftBlock & 2 ) &&
@@ -3250,7 +3249,10 @@ function getStartPositionFromFrontOfInlineNode ( node ) {
 		}
 		
 		if ( posbitsForStartAndLeftBlock & 8 ) {
-			rightNode = getRightmostScion( leftBlockNode );
+			rightNode = getRightmostScion( leftBlockNode, function ( node ) {
+				return !isBlockElement( node );
+			} );
+			
 			if ( rightNode ) {
 				return {
 					node   : rightNode,
@@ -3890,7 +3892,7 @@ function sanitizeOffset ( node, offset ) {
 };
 
 function correctRange ( range ) {
-	return range;
+	// return range;
 	
 	var startContainer = range.startContainer,
 	    startOffset = range.startOffset,
@@ -3912,7 +3914,22 @@ function correctRange ( range ) {
 	
 	// Use come deprecated methods to correct range around phrasing, until we
 	// extract the code into their own functions
-	try { var _range = _correctRangeOld( range ); range = _range; } catch ( ex ) {}
+	// try { var _range = _correctRangeOld( range ); range = _range; } catch ( ex ) {}
+	
+	/*
+	var r = getLeftmostScion( range.startContainer, isTextNode ) ||
+				getNearestRightNode( range.startContainer, isTextNode );
+	var l = getRightmostScion( range.startContainer, isTextNode ) ||
+				getNearestLeftNode( range.startContainer, isTextNode );
+	
+	if ( !r && !l ) {
+		range.startContainer =
+			range.endContainer = getEditingHost( range.startContainer );
+		range.startOffset = range.endOffset = 0;
+	}
+	*/
+	
+	debugger;
 	
 	return range;
 };
