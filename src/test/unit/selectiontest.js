@@ -157,8 +157,11 @@ function( TestUtils ) {
          * Special new IE tests
          */
         newIETests = [
-                 [ 'foo{<b></b><p>bar]</p>', 'foo<b>{</b><p>bar]</p>' ],
-                 [ 'foo[]<blockquote>bar</blockquote>', 'foo[]<blockquote>bar</blockquote>']
+                   [ 'foo{<b></b><p>bar]</p>', 'foo<b>{</b><p>bar]</p>' ],
+                   [ 'foo[]<blockquote>bar</blockquote>', 'foo[]<blockquote>bar</blockquote>' ],
+                   [ 'foo[]<div><p>bar</p></div>', 'foo[]<div><p>bar</p></div>' ],
+                   [ 'foo[] <div><p>bar</p>', 'foo []<p>bar</p>' ],
+                   [ 'foo <span>&nbsp;</span>[] bar', 'foo <span>&nbsp;</span>[] bar'] 
         ],
         
         flowTests = [
