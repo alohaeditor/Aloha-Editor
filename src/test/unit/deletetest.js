@@ -899,12 +899,24 @@ var tests = {
 			execResult: 'foo[]baz'
 		},
 		{  	
+			exclude: ['msie'],
 			start: '<p>foo<span style="color:#aBcDeF">[bar]</span>baz',
 			execResult: '<p>foo[]<span style="color:#aBcDeF"></span>baz</p>' // this one actually works, but the true test result will contain an empty text node within the span
 		},
 		{  	
+			include: ['msie'],
+			start: '<p>foo<span style="color:#aBcDeF">[bar]</span>baz',
+			execResult: '<p>foo<span style="color:#aBcDeF"></span>[]baz</p>' // this one actually works, but the true test result will contain an empty text node within the span
+		},
+		{  	
+			exclude: ['msie'],
 			start: '<p>foo<span style=color:#aBcDeF>{bar}</span>baz',
 			execResult: '<p>foo[]<span style="color:#aBcDeF"></span>baz</p>' // this one actually works, but the true test result will contain an empty text node within the span
+		},
+		{  	
+			include: ['msie'],
+			start: '<p>foo<span style=color:#aBcDeF>{bar}</span>baz',
+			execResult: '<p>foo<span style="color:#aBcDeF"></span>[]baz</p>' // this one actually works, but the true test result will contain an empty text node within the span
 		},
 		{  	
 			start: '<p>foo{<span style=color:#aBcDeF>bar</span>}baz', // broken - doCleanup should fix this
