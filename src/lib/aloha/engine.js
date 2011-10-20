@@ -1333,7 +1333,9 @@ function movePreservingRanges(node, newParent, newIndex, range) {
 			newRange.setEnd(boundaryPoints[2*i + 1][0], boundaryPoints[2*i + 1][1]);
 			Aloha.getSelection().addRange(newRange);
 		}
-		range = newRange;
+		if (newRange) {
+			range = newRange;
+		}
 	}
 }
 
@@ -5085,6 +5087,18 @@ function splitParent(nodeList, range) {
 
 	// "If original parent has no children:"
 	if (!originalParent.hasChildNodes()) {
+		// if the current range is collapsed and at the end of the originalParent.parentNode
+		// the offset will not be available anymore after the next step (remove child)
+		// that's why we need to fix the range to prevent a bogus offset
+		if (originalParent.parentNode === range.startContainer
+		&& originalParent.parentNode === range.endContainer
+		&& range.startContainer === range.endContainer
+		&& range.startOffset === range.endOffset
+		&& originalParent.parentNode.childNodes.length === range.startOffset) {
+			range.startOffset = originalParent.parentNode.childNodes.length - 1;
+			range.endOffset = range.startOffset;
+		}
+
 		// "Remove original parent from its parent."
 		originalParent.parentNode.removeChild(originalParent);
 

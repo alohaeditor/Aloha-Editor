@@ -195,7 +195,7 @@ var tests = {
 			start: '<a>foo[]</a>bar',
 			execResult: 'foo[]bar'
 		},
-		{  	start: '<a>foo</a>[]bar', // this ones actually broken in chrome
+		{  	start: '<a>foo</a>[]bar',
 			execResult: 'foo[]bar'
 		},
 		{  	start: '<a href="/">foo</a>[]bar',
@@ -211,13 +211,13 @@ var tests = {
 			execResult: '<span>foo[]</span>bar'
 		},
 		{  	start: '<span><a href="/">foo</a></span>[]bar',
-			execResult: '<span><a href="/">fo[]</a></span>bar'
+			execResult: '<span>foo[]</span>bar'
 		},
 		{  	start: '<span><a name=abc>foo</a></span>[]bar',
-			execResult: '<span><a name=abc>fo[]</a></span>bar'
+			execResult: '<span>foo[]</span>bar'
 		},
 		{  	start: '<span><a href="/" name=abc>foo</a></span>[]bar',
-			execResult: '<span><a href="/" name=abc>fo[]</a></span>bar'
+			execResult: '<span>foo[]</span>bar'
 		},
 		{  	start: 'foo<a>[]bar</a>',
 			execResult: 'fo[]<a>bar</a>'
@@ -423,6 +423,10 @@ var tests = {
 			include: ['msie'],		
 			start: 'foo<div><ol><li>[]bar</li></ol></div>',
 			execResult: 'foo <div><p>[]bar</p></div>'
+		},
+		{
+			start: '<ul><li>foo</li><li><br>[]bar</li></ul>',
+			execResult: '<ul><li>foo</li><li><br>[]bar</li></ul>',
 		},
 
 //		{  	start: 'foo<dl><dt>[]bar<dd>baz</dl>',
