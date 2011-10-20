@@ -18,6 +18,32 @@ var commands = {};
 ///////////////////////////////////////////////////////////////////////////////
 //@{
 
+/**
+ * Method to count the number of styles in the given style
+ */
+function getStyleLength(node) {
+	if (!node) {
+		return 0;
+	} else if (!node.style) {
+		return 0;
+	}
+
+	// some browsers support .length on styles
+	if (typeof node.style.length !== 'undefined') {
+		return node.style.length;
+	} else {
+		// others don't, so we will count
+		var styleLength = 0;
+		for (var s in node.style) {
+			if (node.style[s]) {
+				styleLength++;
+			}
+		}
+
+		return styleLength;
+	}
+}
+
 function toArray(obj) {
 	if (!obj) {
 		return null;
@@ -1952,7 +1978,7 @@ function isSimpleModifiableElement(node) {
 	//
 	// Not gonna try for invalid or unrecognized.
 	if (node.hasAttribute("style")
-	&& node.style.length == 0) {
+	&& getStyleLength(node) == 0) {
 		return true;
 	}
 
@@ -1977,7 +2003,7 @@ function isSimpleModifiableElement(node) {
 	// or unrecognized properties), which is "font-weight"."
 	if ((node.tagName == "B" || node.tagName == "STRONG")
 	&& node.hasAttribute("style")
-	&& node.style.length == 1
+	&& getStyleLength(node) == 1
 	&& node.style.fontWeight != "") {
 		return true;
 	}
@@ -1987,7 +2013,7 @@ function isSimpleModifiableElement(node) {
 	// or unrecognized properties), which is "font-style"."
 	if ((node.tagName == "I" || node.tagName == "EM")
 	&& node.hasAttribute("style")
-	&& node.style.length == 1
+	&& getStyleLength(node) == 1
 	&& node.style.fontStyle != "") {
 		return true;
 	}
@@ -1998,7 +2024,7 @@ function isSimpleModifiableElement(node) {
 	// "text-decoration"."
 	if ((node.tagName == "A" || node.tagName == "FONT" || node.tagName == "SPAN")
 	&& node.hasAttribute("style")
-	&& node.style.length == 1
+	&& getStyleLength(node) == 1
 	&& node.style.textDecoration == "") {
 		return true;
 	}
@@ -2010,7 +2036,7 @@ function isSimpleModifiableElement(node) {
 	// "overline" or "none"."
 	if (["A", "FONT", "S", "SPAN", "STRIKE", "U"].indexOf(node.tagName) != -1
 	&& node.hasAttribute("style")
-	&& node.style.length == 1
+	&& getStyleLength(node) == 1
 	&& (node.style.textDecoration == "line-through"
 	|| node.style.textDecoration == "underline"
 	|| node.style.textDecoration == "overline"
@@ -3757,10 +3783,18 @@ function isIndentationElement(node) {
 		return false;
 	}
 
-	for (var i = 0; i < node.style.length; i++) {
-		// Approximate check
-		if (/^(-[a-z]+-)?margin/.test(node.style[i])) {
-			return true;
+	if (typeof node.style.length !== 'undefined') {
+		for (var i = 0; i < node.style.length; i++) {
+			// Approximate check
+			if (/^(-[a-z]+-)?margin/.test(node.style[i])) {
+				return true;
+			}
+		}
+	} else {
+		for (var s in node.style) {
+			if (/^(-[a-z]+-)?margin/.test(s) && node.style[s]) {
+				return true;
+			}
 		}
 	}
 
@@ -3790,10 +3824,19 @@ function isSimpleIndentationElement(node) {
 		}
 	}
 
-	for (var i = 0; i < node.style.length; i++) {
-		// This is approximate, but it works well enough for my purposes.
-		if (!/^(-[a-z]+-)?(margin|border|padding)/.test(node.style[i])) {
-			return false;
+	if (typeof node.style.length !== 'undefined') {
+		for (var i = 0; i < node.style.length; i++) {
+			// This is approximate, but it works well enough for my purposes.
+			if (!/^(-[a-z]+-)?(margin|border|padding)/.test(node.style[i])) {
+				return false;
+			}
+		}
+	} else {
+		for (var s in node.style) {
+			// This is approximate, but it works well enough for my purposes.
+			if (!/^(-[a-z]+-)?(margin|border|padding)/.test(s) && node.style[s]) {
+				return false;
+			}
 		}
 	}
 
@@ -5915,7 +5958,7 @@ function justifySelection(alignment, range) {
 				return isHtmlElement(node, "div")
 					&& [].every.call(node.attributes, function(attr) {
 						return (attr.name == "align" && attr.value.toLowerCase() == alignment)
-							|| (attr.name == "style" && node.style.length == 1 && node.style.textAlign == alignment);
+							|| (attr.name == "style" && getStyleLength(node) == 1 && node.style.textAlign == alignment);
 					});
 			},
 			function() {
@@ -5963,12 +6006,9 @@ commands["delete"] = {
 
 		// "Repeat the following steps:"
 		while ( true ) {
-			if ( offset - 1 >= node.childNodes.length ) {
+			if ( offset - 1 <= node.childNodes.length ) {
 				isBr = isHtmlElement(node.childNodes[offset - 1], "br") || false;
 				isHr = isHtmlElement(node.childNodes[offset - 1], "hr") || false;
-			} else {
-				isBr = false;
-				isHr = false;
 			}
 			
 			// "If offset is zero and node's previousSibling is an editable
