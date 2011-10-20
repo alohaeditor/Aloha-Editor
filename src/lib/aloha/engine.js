@@ -29,7 +29,7 @@ function getStyleLength(node) {
 	}
 
 	// some browsers support .length on styles
-	if (node.style.length) {
+	if (typeof node.style.length !== 'undefined') {
 		return node.style.length;
 	} else {
 		// others don't, so we will count
@@ -3783,7 +3783,7 @@ function isIndentationElement(node) {
 		return false;
 	}
 
-	if (node.style.length) {
+	if (typeof node.style.length !== 'undefined') {
 		for (var i = 0; i < node.style.length; i++) {
 			// Approximate check
 			if (/^(-[a-z]+-)?margin/.test(node.style[i])) {
@@ -3824,7 +3824,7 @@ function isSimpleIndentationElement(node) {
 		}
 	}
 
-	if (node.style.length) {
+	if (typeof node.style.length !== 'undefined') {
 		for (var i = 0; i < node.style.length; i++) {
 			// This is approximate, but it works well enough for my purposes.
 			if (!/^(-[a-z]+-)?(margin|border|padding)/.test(node.style[i])) {
