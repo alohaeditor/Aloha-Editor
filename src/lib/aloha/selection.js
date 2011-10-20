@@ -1942,7 +1942,6 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		
 		if ( _isSelectionStopNode( endContainer ) ) {
 			if ( endOffset == 0 ) {
-				//debugger;
 				newEndContainer = _moveBackwards( endContainer );
 			}
 		} else if ( isVoidElement(
@@ -3913,7 +3912,7 @@ function correctRange ( range ) {
 	
 	// Use come deprecated methods to correct range around phrasing, until we
 	// extract the code into their own functions
-	//try { var _range = _correctRangeOld( range ); range = _range; } catch ( ex ) {}
+	try { var _range = _correctRangeOld( range ); range = _range; } catch ( ex ) {}
 	
 	return range;
 };
