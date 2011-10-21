@@ -6022,6 +6022,9 @@ commands["delete"] = {
 
 		// "Repeat the following steps:"
 		while ( true ) {
+			// we need to reset isBr and isHr on every interation of the loop
+			isBr = false;
+			isHr = false;
 			if ( offset - 1 <= node.childNodes.length ) {
 				isBr = isHtmlElement(node.childNodes[offset - 1], "br") || false;
 				isHr = isHtmlElement(node.childNodes[offset - 1], "hr") || false;
@@ -6046,7 +6049,7 @@ commands["delete"] = {
 				if (isBr || isHr) {
 					range.setStart(node, offset);
 					range.setEnd(node, offset);
-					break;
+					return;
 				}
 
 			// "Otherwise, if offset is zero and node is an inline node, or if
