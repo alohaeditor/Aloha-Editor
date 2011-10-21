@@ -17,6 +17,7 @@ define([
 
 	var jQuery = Aloha.jQuery;
 	
+
 	return Plugin.create('googletranslate', {
 		
 		/**
@@ -127,7 +128,9 @@ define([
 		applyTranslation: function (translations, tree, lang) {
 			var key = 0;
 			for (var i=0; i<tree.length; i++) {
+
 				var c = tree[i];
+
 				if (c.selection != "none") {
 					if (c.selection == "full") {
 						this.replaceText(c, translations[key].translatedText, lang);
@@ -175,6 +178,5 @@ define([
 					.attr('lang', lang);
 			}
 		}
-
 	});
 });

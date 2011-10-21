@@ -263,9 +263,8 @@ function AlohaImagePlugin (aQuery, Plugin, FloatingMenu,imgSidebar, imgFloating,
 		init: function() {
 
 			var that = this;
-
 			var	imagePluginUrl = Aloha.getPluginUrl('image');
-			
+		
 			// Extend the default settings with the custom ones (done by default)
 			//this.settings = jQuery.extend(true,this.defaultSettings,this.settings);
 
@@ -276,9 +275,7 @@ function AlohaImagePlugin (aQuery, Plugin, FloatingMenu,imgSidebar, imgFloating,
 			imgFloating.init(this);
 			that.bindInteractions();
 			that.subscribeEvents();
-			
 		},
-		
 		/**
 		 * Bind plugin interactions
 		 */
@@ -288,8 +285,9 @@ function AlohaImagePlugin (aQuery, Plugin, FloatingMenu,imgSidebar, imgFloating,
 			if (this.settings.ui.resizable) {
 				try {
 					// this will disable mozillas image resizing facilities
-					document.execCommand('enableObjectResizing', false, 'false');
+					document.execCommand( 'enableObjectResizing', false, false );
 				} catch (e) {
+					Aloha.Log.error( e, 'Could not disable enableObjectResizing' );
 					// this is just for internet explorer, who will not support disabling enableObjectResizing
 				}
 			}
@@ -343,18 +341,18 @@ function AlohaImagePlugin (aQuery, Plugin, FloatingMenu,imgSidebar, imgFloating,
 			jQuery('img').filter(config.globalselector).click(function(event) {
 				that.clickImage(event);
 			});
+
 			Aloha.ready(function(){
 				imgSidebar.init(that, Aloha.Sidebar.right);
 			});		
+
 			Aloha.bind('aloha-drop-files-in-editable', function(event, data) {
 				//var	that = this;
 				var img, len = data.filesObjs.length, fileObj, config;
-				
+
 				while (--len >= 0) {
 					fileObj = data.filesObjs[len];
 					if (fileObj.file.type.match(/image\//)) {
-						// Prepare
-						
 						config = that.getEditableConfig(data.editable);
 						// Prepare
 						img = jQuery('<img/>');
@@ -422,31 +420,28 @@ function AlohaImagePlugin (aQuery, Plugin, FloatingMenu,imgSidebar, imgFloating,
 					// TODO this should not be necessary here!
 					FloatingMenu.doLayout();
 				}
-						
+
 			});
 			
-			Aloha.bind('aloha-editable-created', function(event, editable) {
-				
+			Aloha.bind('aloha-editable-created', function( event, editable ) {
 
 				try {
 					// this will disable mozillas image resizing facilities
-					document.execCommand('enableObjectResizing', false, 'false');
-				} catch (e) {
-					Aloha.Log.error(e, 'Could not disable enableObjectResizing');
+					document.execCommand( 'enableObjectResizing', false, false );
+				} catch ( e ) {
+					Aloha.Log.error( e, 'Could not disable enableObjectResizing' );
 					// this is just for others, who will not support disabling enableObjectResizing
 				}
 
 				// Inital click on images will be handled here
 				// editable.obj.find('img').attr('_moz_resizing', false);
 				// editable.obj.find('img').contentEditable(false);
-				editable.obj.delegate('img', 'mouseup', function (event) {
+				editable.obj.delegate( 'img', 'mouseup', function (event) {
 					that.clickImage(event);
 					event.stopPropagation();
 				});
-				
 			});
 
-			
 			that._subscribeToResizeFieldEvents();
 
 		},
@@ -455,16 +450,16 @@ function AlohaImagePlugin (aQuery, Plugin, FloatingMenu,imgSidebar, imgFloating,
 		 * Toggle the keep aspect ratio functionallity
 		 */
 		toggleKeepAspectRatio: function() {
-			
+
 			this.keepAspectRatio = !this.keepAspectRatio;
 
 			this.endResize();
-			if(!this.keepAspectRatio) {
+			if( !this.keepAspectRatio ) {
 				this.startAspectRatio = false;
 			} else {
 				// If no fixed aspect ratio was given we will calculate a new start 
 				// aspect ratio that will be used for the next starResize action.
-				if (typeof this.settings.fixedAspectRatio !== 'number') {
+				if ( typeof this.settings.fixedAspectRatio !== 'number' ) {
 					var currentRatio = this.imageObj.width() / this.imageObj.height();
 					this.startAspectRatio = currentRatio;
 				} else {
@@ -472,33 +467,31 @@ function AlohaImagePlugin (aQuery, Plugin, FloatingMenu,imgSidebar, imgFloating,
 				}
 			}
 			this.startResize();
-			
 		},
-		
+
 		/**
 		 * Bind interaction events that are invoked on the resize fields
 		 */
 		_subscribeToResizeFieldEvents: function() {
-			
 			var that = this;
-			
+
 			/**
 			 * Helper function that will update the fields
 			 */
-			function updateField($field, delta, maxValue, minValue) {
-				
+			function updateField( $field, delta, maxValue, minValue ) {
+
 				if ( typeof minValue === 'undefined' ) {
-					minValue = 0;	
+					minValue = 0;
 				}
-				
+
 				if ( typeof maxValue === 'undefined' ) {
-					maxValue = 8000;	
+					maxValue = 8000;
 				}
 
 				// If the current value of the field can't be parsed we don't update it
-				var oldValue = parseInt($field.val());
-				if (isNaN(oldValue)) {
-					$field.css('background-color','red');
+				var oldValue = parseInt( $field.val() );
+				if ( isNaN(oldValue) ) {
+					$field.css( 'background-color', 'red' );
 					return false;
 				}
 
@@ -575,7 +568,7 @@ function AlohaImagePlugin (aQuery, Plugin, FloatingMenu,imgSidebar, imgFloating,
 				e.preventDefault();
 				return false;
 			};
-			
+
 			/**
 			 * Handle the mouse wheel event on the field
 			 */
@@ -596,8 +589,8 @@ function AlohaImagePlugin (aQuery, Plugin, FloatingMenu,imgSidebar, imgFloating,
 				}
 		        return false;
 			};
-			
-			
+
+
 			/**
 			 * This helper function will keep the aspect ratio for the width field
 			 */
@@ -629,7 +622,7 @@ function AlohaImagePlugin (aQuery, Plugin, FloatingMenu,imgSidebar, imgFloating,
 				}
 				
 			};
-			
+
 			/**
 			 * Helper function that will set the new image size using the field values
 			 */
@@ -638,7 +631,7 @@ function AlohaImagePlugin (aQuery, Plugin, FloatingMenu,imgSidebar, imgFloating,
 				var height = $('#' + that.floatingMenuControl.imgResizeHeightField.id ).val();
 				that.setSize(width, height);
 			};
-			
+
 			/**
 			 * Handle mousewheel,keyup actions on both fields
 			 */
@@ -653,8 +646,8 @@ function AlohaImagePlugin (aQuery, Plugin, FloatingMenu,imgSidebar, imgFloating,
 			$widthField.live('mousewheel', widthEventData, handleMouseWheelEventOnField);
 			
 		},
-		 
-		
+
+
 		/**
 		 * Manually set the given size for the current image
 		 */
@@ -671,7 +664,7 @@ function AlohaImagePlugin (aQuery, Plugin, FloatingMenu,imgSidebar, imgFloating,
 				$('#' + that.floatingMenuControl.imgResizeWidthField.id ).val(this.settings.minWidth);
 				return false;
 			}
-			
+
 			// Don't set height that is out of range
 			if ( height > this.settings.maxHeight ) {
 				Aloha.Log.error("Given with is not within specified range of " + this.settings.minHeight + " to " + this.settings.maxHeight, height);
@@ -682,13 +675,13 @@ function AlohaImagePlugin (aQuery, Plugin, FloatingMenu,imgSidebar, imgFloating,
 				$('#' + that.floatingMenuControl.imgResizeHeightField.id ).val(this.settings.minHeight);
 				return false;
 			}
-			
+
 			this.imageObj.width(width);
 			this.imageObj.height(height);
 			var $wrapper = this.imageObj.closest('.Aloha_Image_Resize');
 			$wrapper.height(height);
 			$wrapper.width(width);
-			
+
 			this._onResize(this.imageObj);
 			this._onResized(this.imageObj);
 		},
@@ -715,7 +708,7 @@ function AlohaImagePlugin (aQuery, Plugin, FloatingMenu,imgSidebar, imgFloating,
 				width : that.imageObj.width(),
 				height : that.imageObj.height()
 			});
-			
+
 			// Update the resize input fields with the new width and height
 			$('#' + that.floatingMenuControl.imgResizeHeightField.id).val(that.imageObj.height());
 			$('#' + that.floatingMenuControl.imgResizeWidthField.id).val(that.imageObj.width());
@@ -725,13 +718,12 @@ function AlohaImagePlugin (aQuery, Plugin, FloatingMenu,imgSidebar, imgFloating,
 				this.startResize();
 			}
 			//shows FloatingMenu
-			FloatingMenu.setScope(that.name);
-			that.floatingMenuControl.imgSrcField.focus();
-			// Update sidebar
 			imgSidebar.update();
-			//sets markup effective fir sidebar
+			FloatingMenu.setScope(that.name);
+			//that.floatingMenuControl.imgSrcField.focus();
+			// Update sidebar
 		},
-		
+
 		/**
 		 * This method extracts determins if the range selection contains an image
 		 */
@@ -744,9 +736,9 @@ function AlohaImagePlugin (aQuery, Plugin, FloatingMenu,imgSidebar, imgFloating,
 			if ( typeof range === 'undefined' ) {
 				range = Aloha.Selection.getRangeObject();
 			}
-			
+
 			targetObj = jQuery(range.startContainer);
-			
+
 			try {
 				if ( Aloha.activeEditable ) {
 					if ((  typeof range.startContainer !== 'undefined'
@@ -820,10 +812,13 @@ function AlohaImagePlugin (aQuery, Plugin, FloatingMenu,imgSidebar, imgFloating,
 			// this.floatingMenuControl.imgSrcField.getTargetObject(), (the img tag)
 			// this.floatingMenuControl.imgSrcField.getQueryValue(), (the query value in the inputfield)
 			// this.floatingMenuControl.imgSrcField.getItem() (optinal a selected resource item)
+			 this.imageObj.attr('src', this.imgSrcField.getQueryValue() ); // (the img tag)
+//			 jQuery(img).attr('src', this.imgSrcField.getQueryValue() ); // (the query value in the inputfield)
+//			 this.imgSrcField.getItem(); // (optinal a selected resource item)
 			// TODO additionally implement an srcChange Handler to let implementer
 			// customize
 		},
-			
+
 		/**
 		 * Code imported from CropnResize Plugin
 		 *
@@ -833,14 +828,14 @@ function AlohaImagePlugin (aQuery, Plugin, FloatingMenu,imgSidebar, imgFloating,
 				btns,
 				oldLeft = 0,
 				oldTop = 0;
-			
+
 			jQuery('body').append(
 				'<div id="aloha-CropNResize-btns">\
 					<button class="cnr-crop-apply" title="' + i18n.t('Accept') + '">&#10004;</button>\
 					<button class="cnr-crop-cancel" title="' + i18n.t('Cancel') + '">&#10006;</button>\
 				</div>'
 			);
-			
+
 			btns = jQuery('#aloha-CropNResize-btns')
 			
 			btns.find('.cnr-crop-apply').click(function () {
@@ -850,7 +845,7 @@ function AlohaImagePlugin (aQuery, Plugin, FloatingMenu,imgSidebar, imgFloating,
 			btns.find('.cnr-crop-cancel').click(function () {
 				that.endCrop();
 			});
-			
+
 			this.interval = setInterval(function () {
 				var jt = jQuery('.jcrop-tracker:first'),
 					off = jt.offset(),
@@ -858,20 +853,20 @@ function AlohaImagePlugin (aQuery, Plugin, FloatingMenu,imgSidebar, imgFloating,
 					jtl = off.left,
 					jth = jt.height(),
 					jtw = jt.width();
-				
+
 				if (jth && jtw) {
 					btns.fadeIn('slow');
 				}
-				
+
 				// move the icons to the bottom right side
 				jtt = parseInt(jtt + jth + 3, 10);
 				jtl = parseInt(jtl + jtw - 55, 10);
-		
+
 				// comparison to old values hinders flickering bug in FF
 				if (oldLeft != jtl || oldTop != jtt) {
 					btns.offset({top: jtt, left: jtl});
 				}
-				
+
 				oldLeft = jtl;
 				oldTop = jtt;
 			}, 10);
@@ -884,7 +879,7 @@ function AlohaImagePlugin (aQuery, Plugin, FloatingMenu,imgSidebar, imgFloating,
 			jQuery('#aloha-CropNResize-btns').remove();
 			clearInterval(this.interval);
 		},
-		
+
 		/**
 		 * Helper function that will disable selectability of elements
 		 */
@@ -903,7 +898,6 @@ function AlohaImagePlugin (aQuery, Plugin, FloatingMenu,imgSidebar, imgFloating,
 			  
 		},
 
-		
 		/**
 		 * Initiate a crop action
 		 */
@@ -945,10 +939,10 @@ function AlohaImagePlugin (aQuery, Plugin, FloatingMenu,imgSidebar, imgFloating,
 			if (this.settings.ui.resizable) {
 				this.startResize();
 			}
-			
+
 			$('body').trigger('aloha-image-crop-stop', [this.imageObj]);
 		},
-		
+
 		/**
 		 * Accept the current cropping area and apply the crop
 		 */
@@ -956,14 +950,14 @@ function AlohaImagePlugin (aQuery, Plugin, FloatingMenu,imgSidebar, imgFloating,
 			this._onCropped(this.imageObj, this.jcAPI.tellSelect());
 			this.endCrop();
 		},
-		
+
 		/**
 		 * This method will activate the jquery-ui resize functionality for the current image
 		 */
 		startResize: function () {
 			var that = this;
 			var currentImageObj = this.imageObj;
-			
+
 			currentImageObj = this.imageObj.css({
 				height		: this.imageObj.height(),
 				width		: this.imageObj.width(),
@@ -971,7 +965,7 @@ function AlohaImagePlugin (aQuery, Plugin, FloatingMenu,imgSidebar, imgFloating,
 				'max-height': '',
 				'max-width'	: ''
 			});
-			
+
 			currentImageObj.resizable({
 				
 				maxHeight : that.settings.maxHeight,
@@ -997,11 +991,9 @@ function AlohaImagePlugin (aQuery, Plugin, FloatingMenu,imgSidebar, imgFloating,
 				}
 
 			});
-			
-			
-			
+
 			currentImageObj.css('display', 'inline-block');
-		
+
 			// this will prevent the user from resizing an image
 			// using IE's resize handles
 			// however I could not manage to hide them completely
@@ -1020,12 +1012,11 @@ function AlohaImagePlugin (aQuery, Plugin, FloatingMenu,imgSidebar, imgFloating,
 					e.originalEvent.stopSelectionUpdate = true;
 				});
 		},
-		
+
 		/**
 		 * This method will end resizing and toggle buttons accordingly and remove all markup that has been added for cropping
 		 */
 		endResize: function () {
-
 			// Find the nearest contenteditable and reenable it since resizing is finished
 			if (this.imageObj) {
 				var editable = this.imageObj.closest('.aloha-editable');
@@ -1041,12 +1032,11 @@ function AlohaImagePlugin (aQuery, Plugin, FloatingMenu,imgSidebar, imgFloating,
 					});
 			}
 		},
-		
+
 		/**
 		 * Reset the image to it's original properties
 		 */
 		reset: function() {
-			
 			if (this.settings.ui.crop) {
 				this.endCrop();
 			}
@@ -1070,8 +1060,6 @@ function AlohaImagePlugin (aQuery, Plugin, FloatingMenu,imgSidebar, imgFloating,
 				}
 			}
 		}
-		
-
 	});
 
 });

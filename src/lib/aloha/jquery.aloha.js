@@ -1,6 +1,6 @@
 /*!
 * This file is part of Aloha Editor Project http://aloha-editor.org
-* Copyright � 2010-2011 Gentics Software GmbH, aloha@gentics.com
+* Copyright © 2010-2011 Gentics Software GmbH, aloha@gentics.com
 * Contributors http://aloha-editor.org/contribution.php 
 * Licensed unter the terms of http://www.aloha-editor.org/license.html
 *//*
@@ -19,8 +19,8 @@
 */
 
 define(
-[ 'aloha/core', 'aloha/selection', 'aloha/jquery' ],
-function( Aloha, Selection, jQuery ) {
+[ 'aloha/core', 'aloha/selection', 'aloha/jquery', 'aloha/console' ],
+function( Aloha, Selection, jQuery, console ) {
 	"use strict";
 	
 	var
@@ -75,30 +75,40 @@ function( Aloha, Selection, jQuery ) {
 	jQuery.fn.contentEditable = function( b ) {
 		// ie does not understand contenteditable but contentEditable
 		// contentEditable is not xhtml compatible.
-		var
-			$el = jQuery(this),
-			ce = 'contenteditable';
+		var	$el = jQuery(this);
+		var	ce = 'contenteditable';
 
 		// Check
 		if (jQuery.browser.msie && parseInt(jQuery.browser.version,10) == 7 ) {
 			ce = 'contentEditable';
 		}
+		
 		if (typeof b === 'undefined' ) {
-			return $el.attr(ce);
-		}
-		else if (b === '') {
+			
+			// For chrome use this specific attribute. The old ce will only
+			// return 'inherit' for nested elements of a contenteditable.
+			// The isContentEditable is a w3c standard compliant property which works in IE7,8,FF36+, Chrome 12+
+			if (typeof $el[0] === 'undefined' ) {
+				console.error('The jquery object did not contain any valid elements.');
+				return undefined;
+			}
+			if (typeof $el[0].isContentEditable === 'undefined') {
+				console.warn('Could not determine whether the is editable or not. I assume it is.');
+				return true;
+			} else { 
+				return $el[0].isContentEditable;
+			}
+		} else if (b === '') {
 			$el.removeAttr(ce);
-		}
-		else {
+		} else {
 			if (b && b !== 'false') {
-				b='true';
+				b = 'true';
 			} else {
-				b='false';
+				b = 'false';
 			}
 			$el.attr(ce, b);
 		}
 
-		// Return
 		return $el;
 	};
 

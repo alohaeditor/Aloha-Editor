@@ -35,7 +35,8 @@ function(Aloha, Plugin, jQuery, Commands, console) {
 	function redirectPaste() {
 
 		// store the current range
-		pasteRange = new GENTICS.Utils.RangeObject(true);
+		//pasteRange = new GENTICS.Utils.RangeObject(true);
+		pasteRange = Aloha.getSelection().getRangeAt( 0 );
 		pasteEditable = Aloha.activeEditable;
 
 		// store the current scroll position

@@ -1,206 +1,7 @@
-//Add ECMA262-5 method binding if not supported natively
-//
-if (!('bind' in Function.prototype)) {
-    Function.prototype.bind= function(owner) {
-        var that= this;
-        if (arguments.length<=1) {
-            return function() {
-                return that.apply(owner, arguments);
-            };
-        } else {
-            var args= Array.prototype.slice.call(arguments, 1);
-            return function() {
-                return that.apply(owner, arguments.length===0? args : args.concat(Array.prototype.slice.call(arguments)));
-            };
-        }
-    };
-}
-
-// Add ECMA262-5 string trim if not supported natively
-//
-if (!('trim' in String.prototype)) {
-    String.prototype.trim= function() {
-        return this.replace(/^\s+/, '').replace(/\s+$/, '');
-    };
-}
-
-// Add ECMA262-5 Array methods if not supported natively
-//
-if (!('indexOf' in Array.prototype)) {
-    Array.prototype.indexOf= function(find, i /*opt*/) {
-        if (i===undefined) i= 0;
-        if (i<0) i+= this.length;
-        if (i<0) i= 0;
-        for (var n= this.length; i<n; i++)
-            if (i in this && this[i]===find)
-                return i;
-        return -1;
-    };
-}
-if (!('lastIndexOf' in Array.prototype)) {
-    Array.prototype.lastIndexOf= function(find, i /*opt*/) {
-        if (i===undefined) i= this.length-1;
-        if (i<0) i+= this.length;
-        if (i>this.length-1) i= this.length-1;
-        for (i++; i-->0;) /* i++ because from-argument is sadly inclusive */
-            if (i in this && this[i]===find)
-                return i;
-        return -1;
-    };
-}
-if (!('forEach' in Array.prototype)) {
-    Array.prototype.forEach= function(action, that /*opt*/) {
-        for (var i= 0, n= this.length; i<n; i++)
-            if (i in this)
-                action.call(that, this[i], i, this);
-    };
-}
-if (!('map' in Array.prototype)) {
-    Array.prototype.map= function(mapper, that /*opt*/) {
-        var other= new Array(this.length);
-        for (var i= 0, n= this.length; i<n; i++)
-            if (i in this)
-                other[i]= mapper.call(that, this[i], i, this);
-        return other;
-    };
-}
-if (!('filter' in Array.prototype)) {
-    Array.prototype.filter= function(filter, that /*opt*/) {
-        var other= [], v;
-        for (var i=0, n= this.length; i<n; i++)
-            if (i in this && filter.call(that, v= this[i], i, this))
-                other.push(v);
-        return other;
-    };
-}
-if (!('every' in Array.prototype)) {
-    Array.prototype.every= function(tester, that /*opt*/) {
-        for (var i= 0, n= this.length; i<n; i++)
-            if (i in this && !tester.call(that, this[i], i, this))
-                return false;
-        return true;
-    };
-}
-if (!('some' in Array.prototype)) {
-    Array.prototype.some= function(tester, that /*opt*/) {
-        for (var i= 0, n= this.length; i<n; i++)
-            if (i in this && tester.call(that, this[i], i, this))
-                return true;
-        return false;
-    };
-}
-if (!Node) {
-	// http://www.w3.org/TR/DOM-Level-3-Core/core.html#ID-1841493061
-    var Node = {
-    		'ELEMENT_NODE' : 1,
-    		'ATTRIBUTE_NODE': 2,
-    		'TEXT_NODE': 3,
-    		'CDATA_SECTION_NODE': 4,
-    		'ENTITY_REFERENCE_NODE': 5,
-    		'ENTITY_NODE': 6,
-    		'PROCESSING_INSTRUCTION_NODE': 7,
-    		'COMMENT_NODE': 8,
-    		'DOCUMENT_NODE': 9,
-    		'DOCUMENT_TYPE_NODE': 10,
-    		'DOCUMENT_FRAGMENT_NODE': 11,
-    		'NOTATION_NODE': 12,
-    		//The two nodes are disconnected. Order between disconnected nodes is always implementation-specific.
-    		'DOCUMENT_POSITION_DISCONNECTED': 0x01,
-    		//The second node precedes the reference node.
-    		'DOCUMENT_POSITION_PRECEDING': 0x02, 
-    		//The node follows the reference node.
-    		'DOCUMENT_POSITION_FOLLOWING': 0x04,
-    		//The node contains the reference node. A node which contains is always preceding, too.
-    		'DOCUMENT_POSITION_CONTAINS': 0x08,
-    		//The node is contained by the reference node. A node which is contained is always following, too.
-    		'DOCUMENT_POSITION_CONTAINED_BY': 0x10,
-    		//The determination of preceding versus following is implementation-specific.
-    		'DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC': 0x20
-    };
-}
-
-// http://www.w3.org/TR/DOM-Level-3-Core/core.html#Node3-compareDocumentPosition
-// FIXME: Check if the DOMNode prototype can be set.
-window.compareDocumentPosition = function(node1, node2) {
-	
-	if ('compareDocumentPosition' in document.documentElement ) {
-		return node1.compareDocumentPosition(node2);
-	} 
-	
-	if (!("contains" in document.documentElement)) {
-		throw 'compareDocumentPosition nor contains is not supported by this browser.';
-	}
-	
-	if (node1 == node2) return 0;
-	
-	//if they don't have the same parent, there's a disconnect
-	if (getRootParent(node1) != getRootParent(node2)) return 1;
-	
-	//use this if both nodes have a sourceIndex (text nodes don't)
-	if ("sourceIndex" in node1 && "sourceIndex" in node2) {
-		return comparePosition(node1, node2);
-	}
-	
-	//document will definitely contain the other node
-	if (node1 == document) return 20;
-	else if (node2 == document) return 10;
-	
-	//get sourceIndexes to use for both nodes
-	var useNode1 = getUseNode(node1), useNode2 = getUseNode(node2);
-	
-	//call this function again to get the result
-	var result = comparePosition(useNode1, useNode2);
-	
-	//clean up if needed
-	if (node1 != useNode1) useNode1.parentNode.removeChild(useNode1);
-	if (node2 != useNode2) useNode2.parentNode.removeChild(useNode2);
-	return result;
-
-
-	//node.ownerDocument gives the document object, which isn't the right info for a disconnect
-	function getRootParent(node) {
-		do { var parent = node; }
-		while (node = node.parentNode);
-		return parent;
-	}
-
-	//Compare Position - MIT Licensed, John Resig; http://ejohn.org/blog/comparing-document-position/
-	//Already checked for equality and disconnect
-	function comparePosition(node1, node2) {
-		return (node1.contains(node2) && 16) +
-			(node2.contains(node1) && 8) +
-				(node1.sourceIndex >= 0 && node2.sourceIndex >= 0 ?
-					(node1.sourceIndex < node2.sourceIndex && 4) +
-						(node1.sourceIndex > node2.sourceIndex && 2) :
-					1);
-	}
-
-	//get a node with a sourceIndex to use
-	function getUseNode(node) {
-		//if the node already has a sourceIndex, use that node
-		if ("sourceIndex" in node) return node;
-		//otherwise, insert a comment (which has a sourceIndex but minimal DOM impact) before the node and use that
-		return node.parentNode.insertBefore(document.createComment(""), node);
-	}
-};
-
-if (!('getComputedStyle' in window)) {
-	window.getComputedStyle = function (node, style) {
-		if( node.currentStyle ) {
-			return node.currentStyle;
-		}
-		return null;
-	}
-}
-
-rangy.createMissingNativeApi();
-
 define(
-['aloha/core', 'aloha/jquery', 'aloha/commands', 'aloha/selection', 'util/dom'],
-function(Aloha, jQuery, Commands, Selection, Dom) {
+['aloha/ecma5'],
+function() {
 	"use strict";
-
-var editor = (function() {
 
 var htmlNamespace = "http://www.w3.org/1999/xhtml";
 
@@ -216,6 +17,44 @@ var commands = {};
 ////////////////////////////// Utility functions //////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 //@{
+
+/**
+ * Method to count the number of styles in the given style
+ */
+function getStyleLength(node) {
+	if (!node) {
+		return 0;
+	} else if (!node.style) {
+		return 0;
+	}
+
+	// some browsers support .length on styles
+	if (typeof node.style.length !== 'undefined') {
+		return node.style.length;
+	} else {
+		// others don't, so we will count
+		var styleLength = 0;
+		for (var s in node.style) {
+			if (node.style[s] && node.style[s] !== 0 && node.style[s] !== 'false') {
+				styleLength++;
+			}
+		}
+
+		return styleLength;
+	}
+}
+
+function toArray(obj) {
+	if (!obj) {
+		return null;
+	}
+	var array = [], i, l = obj.length;
+	// iterate backwards ensuring that length is an UInt32
+	for (i = l >>> 0; i--;) {
+		array[i] = obj[i];
+	}
+	return array;
+}
 
 function nextNode(node) {
 	if (node.hasChildNodes()) {
@@ -255,7 +94,6 @@ function nextNodeDescendants(node) {
 function isAncestor(ancestor, descendant) {
 	return ancestor
 		&& descendant
-//		&& Boolean(ancestor.compareDocumentPosition(descendant) & Node.DOCUMENT_POSITION_CONTAINED_BY);
 		&& Boolean(compareDocumentPosition(ancestor, descendant) & Node.DOCUMENT_POSITION_CONTAINED_BY);
 }
 
@@ -274,7 +112,6 @@ function isAncestorContainer(ancestor, descendant) {
 function isDescendant(descendant, ancestor) {
 	return ancestor
 		&& descendant
-//		&& Boolean(ancestor.compareDocumentPosition(descendant) & Node.DOCUMENT_POSITION_CONTAINED_BY);
 		&& Boolean(compareDocumentPosition(ancestor, descendant) & Node.DOCUMENT_POSITION_CONTAINED_BY);
 }
 
@@ -282,16 +119,14 @@ function isDescendant(descendant, ancestor) {
  * Returns true if node1 is before node2 in tree order, false otherwise.
  */
 function isBefore(node1, node2) {
-//	return Boolean(node1.compareDocumentPosition(node2) & Node.DOCUMENT_POSITION_FOLLOWING);
-	return Boolean(compareDocumentPosition(node1, node2) & Node.DOCUMENT_POSITION_FOLLOWING);
+	return Boolean(compareDocumentPosition(node1,node2) & Node.DOCUMENT_POSITION_FOLLOWING);
 }
 
 /**
  * Returns true if node1 is after node2 in tree order, false otherwise.
  */
 function isAfter(node1, node2) {
-//	return Boolean(node1.compareDocumentPosition(node2) & Node.DOCUMENT_POSITION_PRECEDING);
-	return Boolean(compareDocumentPosition(node1, node2) & Node.DOCUMENT_POSITION_PRECEDING);
+	return Boolean(compareDocumentPosition(node1,node2) & Node.DOCUMENT_POSITION_PRECEDING);
 }
 
 function getAncestors(node) {
@@ -320,7 +155,7 @@ function convertProperty(property) {
 		"fontSize": "font-size",
 		"fontStyle": "font-style",
 		"fontWeight": "font-weight",
-		"textDecoration": "text-decoration",
+		"textDecoration": "text-decoration"
 	};
 	if (typeof map[property] != "undefined") {
 		return map[property];
@@ -352,13 +187,14 @@ function legacySizeToCss(legacyVal) {
 		4: "large",
 		5: "x-large",
 		6: "xx-large",
-		7: "xxx-large",
+		7: "xxx-large"
 	}[legacyVal];
 }
 
 // Opera 11 puts HTML elements in the null namespace, it seems.
 function isHtmlNamespace(ns) {
 	return ns === null
+		|| !ns
 		|| ns === htmlNamespace;
 }
 
@@ -466,7 +302,6 @@ function getPosition(nodeA, offsetA, nodeB, offsetB) {
 	// "If node A is after node B in tree order, compute the position of (node
 	// B, offset B) relative to (node A, offset A). If it is before, return
 	// after. If it is after, return before."
-//	if (nodeB.compareDocumentPosition(nodeA) & Node.DOCUMENT_POSITION_FOLLOWING) {
 	if (compareDocumentPosition(nodeB, nodeA) & Node.DOCUMENT_POSITION_FOLLOWING) {
 		var pos = getPosition(nodeB, offsetB, nodeA, offsetA);
 		if (pos == "before") {
@@ -478,7 +313,6 @@ function getPosition(nodeA, offsetA, nodeB, offsetB) {
 	}
 
 	// "If node A is an ancestor of node B:"
-//	if (nodeB.compareDocumentPosition(nodeA) & Node.DOCUMENT_POSITION_CONTAINS) {
 	if (compareDocumentPosition(nodeB, nodeA) & Node.DOCUMENT_POSITION_CONTAINS) {
 		// "Let child equal node B."
 		var child = nodeB;
@@ -716,7 +550,7 @@ function editCommandMethod(command, prop, range, callback) {
 		globalRange = range;
 	} else if (executionStackDepth == 0) {
 		globalRange = null;
-		globalRange = getActiveRange();
+		globalRange = range;
 	}
 
 	// "If command is not supported, raise a NOT_SUPPORTED_ERR exception."
@@ -737,12 +571,9 @@ function editCommandMethod(command, prop, range, callback) {
 	}
 
 	executionStackDepth++;
-
-	var ret = callback();
-
 	try {
-//		var ret = callback();
-	} catch (e) {
+		var ret = callback();
+	} catch(e) {
 		executionStackDepth--;
 		throw e;
 	}
@@ -782,8 +613,11 @@ function myExecCommand(command, showUi, value, range) {
 
 		// "Take the action for command, passing value to the instructions as an
 		// argument."
-		commands[command].action(value);
+		commands[command].action(value, range);
 
+		// always fix the range after the command is complete
+		setActiveRange(range);
+		
 		// "Return true."
 		return true;
 	}})(command, showUi, value));
@@ -801,7 +635,7 @@ function myQueryCommandEnabled(command, range) {
 		// here are enabled if the active range is not null, and disabled
 		// otherwise."
 		return ["copy", "cut", "paste", "selectall", "stylewithcss", "usecss"].indexOf(command) != -1
-			|| getActiveRange() !== null;
+			|| range !== null;
 	}})(command));
 }
 
@@ -816,12 +650,12 @@ function myQueryCommandIndeterm(command, range) {
 	// exception."
 	return editCommandMethod(command, "indeterm", range, (function(command) { return function() {
 		// "If command is not enabled, return false."
-		if (!myQueryCommandEnabled(command)) {
+		if (!myQueryCommandEnabled(command, range)) {
 			return false;
 		}
 
 		// "Return true if command is indeterminate, otherwise false."
-		return commands[command].indeterm();
+		return commands[command].indeterm( range );
 	}})(command));
 }
 
@@ -835,17 +669,17 @@ function myQueryCommandState(command, range) {
 	// "If command has no state, raise an INVALID_ACCESS_ERR exception."
 	return editCommandMethod(command, "state", range, (function(command) { return function() {
 		// "If command is not enabled, return false."
-		if (!myQueryCommandEnabled(command)) {
+		if (!myQueryCommandEnabled(command, range)) {
 			return false;
 		}
 
 		// "If the state override for command is set, return it."
-		if (typeof getStateOverride(command) != "undefined") {
-			return getStateOverride(command);
+		if (typeof getStateOverride(command, range) != "undefined") {
+			return getStateOverride(command, range);
 		}
 
 		// "Return true if command's state is true, otherwise false."
-		return commands[command].state();
+		return commands[command].state( range );
 	}})(command));
 }
 
@@ -870,7 +704,7 @@ function myQueryCommandValue(command, range) {
 	// "If command has no value, raise an INVALID_ACCESS_ERR exception."
 	return editCommandMethod(command, "value", range, function() {
 		// "If command is not enabled, return the empty string."
-		if (!myQueryCommandEnabled(command)) {
+		if (!myQueryCommandEnabled(command, range)) {
 			return "";
 		}
 
@@ -878,13 +712,13 @@ function myQueryCommandValue(command, range) {
 		// value override to an integer number of pixels and return the legacy
 		// font size for the result."
 		if (command == "fontsize"
-		&& getValueOverride("fontsize") !== undefined) {
-			return getLegacyFontSize(getValueOverride("fontsize"));
+		&& getValueOverride("fontsize", range) !== undefined) {
+			return getLegacyFontSize(getValueOverride("fontsize", range));
 		}
 
 		// "If the value override for command is set, return it."
-		if (typeof getValueOverride(command) != "undefined") {
-			return getValueOverride(command);
+		if (typeof getValueOverride(command, range) != "undefined") {
+			return getValueOverride(command, range);
 		}
 
 		// "Return command's value."
@@ -941,8 +775,6 @@ function isProhibitedParagraphChild(node) {
 // resolved value "inline" or "inline-block" or "inline-table" or "none", or a
 // Document, or a DocumentFragment."
 function isBlockNode(node) {
-	var d = getComputedStyle(node);
-	var test = ["inline", "inline-block", "inline-table", "none"].indexOf(d);
 	return node
 		&& ((node.nodeType == Node.ELEMENT_NODE && ["inline", "inline-block", "inline-table", "none"].indexOf(getComputedStyle(node).display) == -1)
 		|| node.nodeType == Node.DOCUMENT_NODE
@@ -1027,6 +859,7 @@ function isCollapsedLineBreak(br) {
 	while (getComputedStyle(ref).display == "inline") {
 		ref = ref.parentNode;
 	}
+
 	var refStyle = ref.hasAttribute("style") ? ref.getAttribute("style") : null;
 	ref.style.height = "auto";
 	ref.style.maxHeight = "none";
@@ -1127,6 +960,10 @@ function isWhitespaceNode(node) {
 			&& node.parentNode
 			&& node.parentNode.nodeType == Node.ELEMENT_NODE
 			&& getComputedStyle(node.parentNode).whiteSpace == "pre-line"
+		) || (
+			/^[\t\n\r ]+$/.test(node.data)
+			&& node.parentNode
+			&& node.parentNode.nodeType == Node.DOCUMENT_FRAGMENT_NODE
 		));
 }
 
@@ -1283,6 +1120,17 @@ function isCollapsedBlockProp(node) {
 	return hasCollapsedBlockPropChild;
 }
 
+function setActiveRange( range ) {
+	var rangeObject = new window.GENTICS.Utils.RangeObject();
+	
+	rangeObject.startContainer = range.startContainer;
+	rangeObject.startOffset = range.startOffset;
+	rangeObject.endContainer = range.endContainer;
+	rangeObject.endOffset = range.endOffset;
+	
+	rangeObject.select();
+}
+
 // "The active range is the first range in the Selection given by calling
 // getSelection() on the context object, or null if there is no such range."
 //
@@ -1294,9 +1142,9 @@ function getActiveRange() {
 	var ret;
 	if (globalRange) {
 		ret = globalRange;
-	} else if (getSelection().rangeCount) {
-		ret = getSelection().getRangeAt(0);
-    } else {
+	} else if (Aloha.getSelection().rangeCount) {
+		ret = Aloha.getSelection().getRangeAt(0);
+	} else {
 		return null;
 	}
 	if ([Node.TEXT_NODE, Node.ELEMENT_NODE].indexOf(ret.startContainer.nodeType) == -1
@@ -1333,43 +1181,43 @@ var getStateOverride, setStateOverride, unsetStateOverride,
 	var valueOverrides = {};
 	var storedRange = null;
 
-	function resetOverrides() {
+	function resetOverrides(range) {
 		if (!storedRange
-		|| storedRange.startContainer != getActiveRange().startContainer
-		|| storedRange.endContainer != getActiveRange().endContainer
-		|| storedRange.startOffset != getActiveRange().startOffset
-		|| storedRange.endOffset != getActiveRange().endOffset) {
+		|| storedRange.startContainer != range.startContainer
+		|| storedRange.endContainer != range.endContainer
+		|| storedRange.startOffset != range.startOffset
+		|| storedRange.endOffset != range.endOffset) {
 			stateOverrides = {};
 			valueOverrides = {};
-			storedRange = getActiveRange().cloneRange();
+			storedRange = range.cloneRange();
 		}
 	}
 
-	getStateOverride = function(command) {
-		resetOverrides();
+	getStateOverride = function(command, range) {
+		resetOverrides(range);
 		return stateOverrides[command];
 	};
 
-	setStateOverride = function(command, newState) {
-		resetOverrides();
+	setStateOverride = function(command, newState, range) {
+		resetOverrides(range);
 		stateOverrides[command] = newState;
 	};
 
-	unsetStateOverride = function(command) {
-		resetOverrides();
+	unsetStateOverride = function(command, range) {
+		resetOverrides(range);
 		delete stateOverrides[command];
 	}
 
-	getValueOverride = function(command) {
-		resetOverrides();
+	getValueOverride = function(command, range) {
+		resetOverrides(range);
 		return valueOverrides[command];
 	}
 
 	// "The value override for the backColor command must be the same as the
 	// value override for the hiliteColor command, such that setting one sets
 	// the other to the same thing and unsetting one unsets the other."
-	setValueOverride = function(command, newValue) {
-		resetOverrides();
+	setValueOverride = function(command, newValue, range) {
+		resetOverrides(range);
 		valueOverrides[command] = newValue;
 		if (command == "backcolor") {
 			valueOverrides.hilitecolor = newValue;
@@ -1378,8 +1226,8 @@ var getStateOverride, setStateOverride, unsetStateOverride,
 		}
 	}
 
-	unsetValueOverride = function(command) {
-		resetOverrides();
+	unsetValueOverride = function(command, range) {
+		resetOverrides(range);
 		delete valueOverrides[command];
 		if (command == "backcolor") {
 			delete valueOverrides.hilitecolor;
@@ -1398,7 +1246,7 @@ var getStateOverride, setStateOverride, unsetStateOverride,
 ///// Assorted common algorithms /////
 //@{
 
-function movePreservingRanges(node, newParent, newIndex) {
+function movePreservingRanges(node, newParent, newIndex, range) {
 	// For convenience, I allow newIndex to be -1 to mean "insert at the end".
 	if (newIndex == -1) {
 		newIndex = newParent.childNodes.length;
@@ -1418,9 +1266,9 @@ function movePreservingRanges(node, newParent, newIndex) {
 	// We only even attempt to preserve the global range object and the ranges
 	// in the selection, not every range out there (the latter is probably
 	// impossible).
-	var ranges = [globalRange];
-	for (var i = 0; i < getSelection().rangeCount; i++) {
-		ranges.push(getSelection().getRangeAt(i));
+	var ranges = [range];
+	for (var i = 0; i < Aloha.getSelection().rangeCount; i++) {
+		ranges.push(Aloha.getSelection().getRangeAt(i));
 	}
 	var boundaryPoints = [];
 	ranges.forEach(function(range) {
@@ -1466,19 +1314,32 @@ function movePreservingRanges(node, newParent, newIndex) {
 		newParent.insertBefore(node, newParent.childNodes[newIndex]);
 	}
 
-	globalRange.setStart(boundaryPoints[0][0], boundaryPoints[0][1]);
-	globalRange.setEnd(boundaryPoints[1][0], boundaryPoints[1][1]);
+	// if we're off actual node boundaries this implies that the move was
+	// part of a deletion process (backspace). If that's the case we 
+	// attempt to fix this by restoring the range to the first index of
+	// the node that has been moved
+	if (boundaryPoints[0][1] > boundaryPoints[0][0].childNodes.length
+	&& boundaryPoints[1][1] > boundaryPoints[1][0].childNodes.length) {
+		range.setStart(node, 0);
+		range.setEnd(node, 0);
+	} else {
+		range.setStart(boundaryPoints[0][0], boundaryPoints[0][1]);
+		range.setEnd(boundaryPoints[1][0], boundaryPoints[1][1]);
 
-	getSelection().removeAllRanges();
-	for (var i = 1; i < ranges.length; i++) {
-		var newRange = document.createRange();
-		newRange.setStart(boundaryPoints[2*i][0], boundaryPoints[2*i][1]);
-		newRange.setEnd(boundaryPoints[2*i + 1][0], boundaryPoints[2*i + 1][1]);
-		getSelection().addRange(newRange);
+		Aloha.getSelection().removeAllRanges();
+		for (var i = 1; i < ranges.length; i++) {
+			var newRange = Aloha.createRange();
+			newRange.setStart(boundaryPoints[2*i][0], boundaryPoints[2*i][1]);
+			newRange.setEnd(boundaryPoints[2*i + 1][0], boundaryPoints[2*i + 1][1]);
+			Aloha.getSelection().addRange(newRange);
+		}
+		if (newRange) {
+			range = newRange;
+		}
 	}
 }
 
-function setTagName(element, newName) {
+function setTagName(element, newName, range) {
 	// "If element is an HTML element with local name equal to new name, return
 	// element."
 	if (isHtmlElement(element, newName.toUpperCase())) {
@@ -1500,13 +1361,17 @@ function setTagName(element, newName) {
 
 	// "Copy all attributes of element to replacement element, in order."
 	for (var i = 0; i < element.attributes.length; i++) {
-		replacementElement.setAttributeNS(element.attributes[i].namespaceURI, element.attributes[i].name, element.attributes[i].value);
+		if (typeof replacementElement.setAttributeNS === 'function') {
+			replacementElement.setAttributeNS(element.attributes[i].namespaceURI, element.attributes[i].name, element.attributes[i].value);
+		} else {
+			replacementElement.setAttribute(element.attributes[i].name, element.attributes[i].value);
+		}
 	}
 
 	// "While element has children, append the first child of element as the
 	// last child of replacement element, preserving ranges."
 	while (element.childNodes.length) {
-		movePreservingRanges(element.firstChild, replacementElement, replacementElement.childNodes.length);
+		movePreservingRanges(element.firstChild, replacementElement, replacementElement.childNodes.length, range);
 	}
 
 	// "Remove element from its parent."
@@ -1582,7 +1447,7 @@ function removeExtraneousLineBreaksFrom(node) {
 ///// Wrapping a list of nodes /////
 //@{
 
-function wrap(nodeList, siblingCriteria, newParentInstructions) {
+function wrap(nodeList, siblingCriteria, newParentInstructions, range) {
 	// "If not provided, sibling criteria returns false and new parent
 	// instructions returns null."
 	if (typeof siblingCriteria == "undefined") {
@@ -1643,14 +1508,30 @@ function wrap(nodeList, siblingCriteria, newParentInstructions) {
 		// new parent and offset equal to the index of new parent, add one to
 		// that boundary point's offset."
 		//
-		// Only try to fix the global range.
-		if (globalRange.startContainer == newParent.parentNode
-		&& globalRange.startOffset == getNodeIndex(newParent)) {
-			globalRange.setStart(globalRange.startContainer, globalRange.startOffset + 1);
+		// Try to fix range
+		var startContainer = range.startContainer, startOffset = range.startOffset,
+			endContainer = range.endContainer, endOffset = range.endOffset;
+		if (startContainer == newParent.parentNode
+		&& startOffset >= getNodeIndex(newParent)) {
+			range.setStart(startContainer, startOffset + 1);
 		}
-		if (globalRange.endContainer == newParent.parentNode
-		&& globalRange.endOffset == getNodeIndex(newParent)) {
-			globalRange.setEnd(globalRange.endContainer, globalRange.endOffset + 1);
+		if (endContainer == newParent.parentNode
+		&& endOffset >= getNodeIndex(newParent)) {
+			range.setEnd(endContainer, endOffset + 1);
+		}
+
+		// Only try to fix the global range. TODO remove globalRange here
+		if (globalRange && globalRange !== range) {
+			startContainer = globalRange.startContainer, startOffset = globalRange.startOffset,
+				endContainer = globalRange.endContainer, endOffset = globalRange.endOffset;
+			if (startContainer == newParent.parentNode
+			&& startOffset >= getNodeIndex(newParent)) {
+				globalRange.setStart(startContainer, startOffset + 1);
+			}
+			if (endContainer == newParent.parentNode
+			&& endOffset >= getNodeIndex(newParent)) {
+				globalRange.setEnd(endContainer, endOffset + 1);
+			}
 		}
 	}
 
@@ -1674,7 +1555,7 @@ function wrap(nodeList, siblingCriteria, newParentInstructions) {
 		// "For each node in node list, append node as the last child of new
 		// parent, preserving ranges."
 		for (var i = 0; i < nodeList.length; i++) {
-			movePreservingRanges(nodeList[i], newParent, -1);
+			movePreservingRanges(nodeList[i], newParent, -1, range);
 		}
 
 	// "Otherwise:"
@@ -1694,7 +1575,7 @@ function wrap(nodeList, siblingCriteria, newParentInstructions) {
 		// "For each node in node list, in reverse order, insert node as the
 		// first child of new parent, preserving ranges."
 		for (var i = nodeList.length - 1; i >= 0; i--) {
-			movePreservingRanges(nodeList[i], newParent, 0);
+			movePreservingRanges(nodeList[i], newParent, 0, range);
 		}
 	}
 
@@ -1723,7 +1604,7 @@ function wrap(nodeList, siblingCriteria, newParentInstructions) {
 		// "While new parent's nextSibling has children, append its first child
 		// as the last child of new parent, preserving ranges."
 		while (newParent.nextSibling.hasChildNodes()) {
-			movePreservingRanges(newParent.nextSibling.firstChild, newParent, -1);
+			movePreservingRanges(newParent.nextSibling.firstChild, newParent, -1, range);
 		}
 
 		// "Remove new parent's nextSibling from its parent."
@@ -1899,7 +1780,7 @@ function isAllowedChild(child, parent_) {
 		[["li"], ["li"]],
 		[["nobr"], ["nobr"]],
 		[namesOfElementsWithInlineContents, prohibitedParagraphChildNames],
-		[["td", "th"], ["caption", "col", "colgroup", "tbody", "td", "tfoot", "th", "thead", "tr"]],
+		[["td", "th"], ["caption", "col", "colgroup", "tbody", "td", "tfoot", "th", "thead", "tr"]]
 	];
 	for (var i = 0; i < table.length; i++) {
 		if (table[i][0].indexOf(parent_) != -1
@@ -2099,7 +1980,7 @@ function isSimpleModifiableElement(node) {
 	//
 	// Not gonna try for invalid or unrecognized.
 	if (node.hasAttribute("style")
-	&& node.style.length == 0) {
+	&& getStyleLength(node) == 0) {
 		return true;
 	}
 
@@ -2124,7 +2005,7 @@ function isSimpleModifiableElement(node) {
 	// or unrecognized properties), which is "font-weight"."
 	if ((node.tagName == "B" || node.tagName == "STRONG")
 	&& node.hasAttribute("style")
-	&& node.style.length == 1
+	&& getStyleLength(node) == 1
 	&& node.style.fontWeight != "") {
 		return true;
 	}
@@ -2134,7 +2015,7 @@ function isSimpleModifiableElement(node) {
 	// or unrecognized properties), which is "font-style"."
 	if ((node.tagName == "I" || node.tagName == "EM")
 	&& node.hasAttribute("style")
-	&& node.style.length == 1
+	&& getStyleLength(node) == 1
 	&& node.style.fontStyle != "") {
 		return true;
 	}
@@ -2145,7 +2026,7 @@ function isSimpleModifiableElement(node) {
 	// "text-decoration"."
 	if ((node.tagName == "A" || node.tagName == "FONT" || node.tagName == "SPAN")
 	&& node.hasAttribute("style")
-	&& node.style.length == 1
+	&& getStyleLength(node) == 1
 	&& node.style.textDecoration == "") {
 		return true;
 	}
@@ -2157,7 +2038,7 @@ function isSimpleModifiableElement(node) {
 	// "overline" or "none"."
 	if (["A", "FONT", "S", "SPAN", "STRIKE", "U"].indexOf(node.tagName) != -1
 	&& node.hasAttribute("style")
-	&& node.style.length == 1
+	&& getStyleLength(node) == 1
 	&& (node.style.textDecoration == "line-through"
 	|| node.style.textDecoration == "underline"
 	|| node.style.textDecoration == "overline"
@@ -2371,7 +2252,7 @@ function getEffectiveCommandValue(node, command) {
 
 	// "Return the resolved value for node of the relevant CSS property for
 	// command."
-	return getComputedStyle(node)[commands[command].relevantCssProperty];
+	return getComputedStyle(node)[commands[command].relevantCssProperty].toString();
 }
 
 function getSpecifiedCommandValue(element, command) {
@@ -2518,7 +2399,7 @@ function getSpecifiedCommandValue(element, command) {
 	return null;
 }
 
-function reorderModifiableDescendants(node, command, newValue) {
+function reorderModifiableDescendants(node, command, newValue, range) {
 	// "Let candidate equal node."
 	var candidate = node;
 
@@ -2548,14 +2429,14 @@ function reorderModifiableDescendants(node, command, newValue) {
 	// "While candidate has children, insert the first child of candidate into
 	// candidate's parent immediately before candidate, preserving ranges."
 	while (candidate.hasChildNodes()) {
-		movePreservingRanges(candidate.firstChild, candidate.parentNode, getNodeIndex(candidate));
+		movePreservingRanges(candidate.firstChild, candidate.parentNode, getNodeIndex(candidate), range);
 	}
 
 	// "Insert candidate into node's parent immediately after node."
 	node.parentNode.insertBefore(candidate, node.nextSibling);
 
 	// "Append the node as the last child of candidate, preserving ranges."
-	movePreservingRanges(node, candidate, -1);
+	movePreservingRanges(node, candidate, -1, range);
 }
 
 function recordValues(nodeList) {
@@ -2600,7 +2481,7 @@ function recordValues(nodeList) {
 	return values;
 }
 
-function restoreValues(values) {
+function restoreValues(values, range) {
 	// "For each (node, command, value) triple in values:"
 	values.forEach(function(triple) {
 		var node = triple[0];
@@ -2628,7 +2509,7 @@ function restoreValues(values) {
 		if (value === null
 		&& ancestor
 		&& ancestor.nodeType == Node.ELEMENT_NODE) {
-			pushDownValues(node, command, null);
+			pushDownValues(node, command, null, range);
 
 		// "Otherwise, if ancestor is an Element and its specified command
 		// value for command is not equivalent to value, or if ancestor is not
@@ -2639,7 +2520,7 @@ function restoreValues(values) {
 		&& !areEquivalentValues(command, getSpecifiedCommandValue(ancestor, command), value))
 		|| ((!ancestor || ancestor.nodeType != Node.ELEMENT_NODE)
 		&& value !== null)) {
-			forceValue(node, command, value);
+			forceValue(node, command, value, range);
 		}
 	});
 }
@@ -2649,7 +2530,7 @@ function restoreValues(values) {
 ///// Clearing an element's value /////
 //@{
 
-function clearValue(element, command) {
+function clearValue(element, command, range) {
 	// "If element is not editable, return the empty list."
 	if (!isEditable(element)) {
 		return [];
@@ -2664,12 +2545,12 @@ function clearValue(element, command) {
 	// "If element is a simple modifiable element:"
 	if (isSimpleModifiableElement(element)) {
 		// "Let children be the children of element."
-		var children = Array.prototype.slice.call(element.childNodes);
+		var children = Array.prototype.slice.call(toArray(element.childNodes));
 
 		// "For each child in children, insert child into element's parent
 		// immediately before element, preserving ranges."
 		for (var i = 0; i < children.length; i++) {
-			movePreservingRanges(children[i], element.parentNode, getNodeIndex(element));
+			movePreservingRanges(children[i], element.parentNode, getNodeIndex(element), range);
 		}
 
 		// "Remove element from its parent."
@@ -2751,7 +2632,7 @@ function clearValue(element, command) {
 
 	// "Set the tag name of element to "span", and return the one-node list
 	// consisting of the result."
-	return [setTagName(element, "span")];
+	return [setTagName(element, "span", range)];
 }
 
 
@@ -2759,7 +2640,7 @@ function clearValue(element, command) {
 ///// Pushing down values /////
 //@{
 
-function pushDownValues(node, command, newValue) {
+function pushDownValues(node, command, newValue, range) {
 	// "If node's parent is not an Element, abort this algorithm."
 	if (!node.parentNode
 	|| node.parentNode.nodeType != Node.ELEMENT_NODE) {
@@ -2825,12 +2706,12 @@ function pushDownValues(node, command, newValue) {
 		}
 
 		// "Let children be the children of current ancestor."
-		var children = Array.prototype.slice.call(currentAncestor.childNodes);
+		var children = Array.prototype.slice.call(toArray(currentAncestor.childNodes));
 
 		// "If the specified command value of current ancestor for command is
 		// not null, clear the value of current ancestor."
 		if (getSpecifiedCommandValue(currentAncestor, command) !== null) {
-			clearValue(currentAncestor, command);
+			clearValue(currentAncestor, command, range);
 		}
 
 		// "For every child in children:"
@@ -2859,7 +2740,7 @@ function pushDownValues(node, command, newValue) {
 
 			// "Force the value of child, with command as in this algorithm
 			// and new value equal to propagated value."
-			forceValue(child, command, propagatedValue);
+			forceValue(child, command, propagatedValue, range);
 		}
 	}
 }
@@ -2869,7 +2750,7 @@ function pushDownValues(node, command, newValue) {
 ///// Forcing the value of a node /////
 //@{
 
-function forceValue(node, command, newValue) {
+function forceValue(node, command, newValue, range) {
 	// "If node's parent is null, abort this algorithm."
 	if (!node.parentNode) {
 		return;
@@ -2883,10 +2764,10 @@ function forceValue(node, command, newValue) {
 	// "If node is an allowed child of "span":"
 	if (isAllowedChild(node, "span")) {
 		// "Reorder modifiable descendants of node's previousSibling."
-		reorderModifiableDescendants(node.previousSibling, command, newValue);
+		reorderModifiableDescendants(node.previousSibling, command, newValue, range);
 
 		// "Reorder modifiable descendants of node's nextSibling."
-		reorderModifiableDescendants(node.nextSibling, command, newValue);
+		reorderModifiableDescendants(node.nextSibling, command, newValue, range);
 
 		// "Wrap the one-node list consisting of node, with sibling criteria
 		// returning true for a simple modifiable element whose specified
@@ -2899,7 +2780,8 @@ function forceValue(node, command, newValue) {
 					&& areEquivalentValues(command, getSpecifiedCommandValue(node, command), newValue)
 					&& areLooselyEquivalentValues(command, getEffectiveCommandValue(node, command), newValue);
 			},
-			function() { return null }
+			function() { return null },
+			range
 		);
 	}
 
@@ -2930,7 +2812,7 @@ function forceValue(node, command, newValue) {
 		// "Force the value of each Node in children, with command and new
 		// value as in this invocation of the algorithm."
 		for (var i = 0; i < children.length; i++) {
-			forceValue(children[i], command, newValue);
+			forceValue(children[i], command, newValue, range);
 		}
 
 		// "Abort this algorithm."
@@ -2978,9 +2860,11 @@ function forceValue(node, command, newValue) {
 		// "If command is "foreColor", and new value is fully opaque with red,
 		// green, and blue components in the range 0 to 255:"
 		if (command == "forecolor" && parseSimpleColor(newValue)) {
-			// "Let new parent be the result of calling createElement("font")
+			// "Let new parent be the result of calling createElement("span")
 			// on the ownerDocument of node."
-			newParent = node.ownerDocument.createElement("font");
+			// NOTE: modified this process to create span elements with style attributes
+			// instead of oldschool font tags with color attributes
+			newParent = node.ownerDocument.createElement("span");
 
 			// "If new value is an extended color keyword, set the color
 			// attribute of new parent to new value."
@@ -2988,7 +2872,7 @@ function forceValue(node, command, newValue) {
 			// "Otherwise, set the color attribute of new parent to the result
 			// of applying the rules for serializing simple color values to new
 			// value (interpreted as a simple color)."
-			newParent.setAttribute("color", parseSimpleColor(newValue));
+			jQuery(newParent).css('color', parseSimpleColor(newValue));
 		}
 
 		// "If command is "fontName", let new parent be the result of calling
@@ -3017,7 +2901,7 @@ function forceValue(node, command, newValue) {
 			// "If ancestor is an a, set the tag name of ancestor to "span",
 			// and let ancestor be the result."
 			if (isHtmlElement(ancestor, "A")) {
-				ancestor = setTagName(ancestor, "span");
+				ancestor = setTagName(ancestor, "span", range);
 			}
 
 			// "Set ancestor to its parent."
@@ -3094,7 +2978,7 @@ function forceValue(node, command, newValue) {
 	}
 
 	// "Append node to new parent as its last child, preserving ranges."
-	movePreservingRanges(node, newParent, newParent.childNodes.length);
+	movePreservingRanges(node, newParent, newParent.childNodes.length, range);
 
 	// "If node is an Element and the effective command value of command for
 	// node is not loosely equivalent to new value:"
@@ -3102,7 +2986,7 @@ function forceValue(node, command, newValue) {
 	&& !areEquivalentValues(command, getEffectiveCommandValue(node, command), newValue)) {
 		// "Insert node into the parent of new parent before new parent,
 		// preserving ranges."
-		movePreservingRanges(node, newParent.parentNode, getNodeIndex(newParent));
+		movePreservingRanges(node, newParent.parentNode, getNodeIndex(newParent), range);
 
 		// "Remove new parent from its parent."
 		newParent.parentNode.removeChild(newParent);
@@ -3126,7 +3010,7 @@ function forceValue(node, command, newValue) {
 		// "Force the value of each Node in children, with command and new
 		// value as in this invocation of the algorithm."
 		for (var i = 0; i < children.length; i++) {
-			forceValue(children[i], command, newValue);
+			forceValue(children[i], command, newValue, range);
 		}
 	}
 }
@@ -3136,39 +3020,43 @@ function forceValue(node, command, newValue) {
 ///// Setting the selection's value /////
 //@{
 
-function setSelectionValue(command, newValue) {
+function setSelectionValue(command, newValue, range) {
+	
+	// Use current selected range if no range passed
+	range = range || getActiveRange();
+	
 	// "If there is no editable text node effectively contained in the active
 	// range:"
-	if (!getAllEffectivelyContainedNodes(getActiveRange())
+	if (!getAllEffectivelyContainedNodes(range)
 	.filter(function(node) { return node.nodeType == Node.TEXT_NODE})
 	.some(isEditable)) {
 		// "If command has inline command activated values, set the state
 		// override to true if new value is among them and false if it's not."
 		if ("inlineCommandActivatedValues" in commands[command]) {
 			setStateOverride(command, commands[command].inlineCommandActivatedValues
-				.indexOf(newValue) != -1);
+				.indexOf(newValue) != -1, range);
 		}
 
 		// "If command is "subscript", unset the state override for
 		// "superscript"."
 		if (command == "subscript") {
-			unsetStateOverride("superscript");
+			unsetStateOverride("superscript", range);
 		}
 
 		// "If command is "superscript", unset the state override for
 		// "subscript"."
 		if (command == "superscript") {
-			unsetStateOverride("subscript");
+			unsetStateOverride("subscript", range);
 		}
 
 		// "If new value is null, unset the value override (if any)."
 		if (newValue === null) {
-			unsetValueOverride(command);
+			unsetValueOverride(command, range);
 
 		// "Otherwise, if command has a value specified, set the value override
 		// to new value."
 		} else if ("value" in commands[command]) {
-			setValueOverride(command, newValue);
+			setValueOverride(command, newValue, range);
 		}
 
 		// "Abort these steps."
@@ -3180,46 +3068,47 @@ function setSelectionValue(command, newValue) {
 	// splitText() on the active range's start node, with argument equal to the
 	// active range's start offset. Then set the active range's start node to
 	// the result, and its start offset to zero."
-	if (isEditable(getActiveRange().startContainer)
-	&& getActiveRange().startContainer.nodeType == Node.TEXT_NODE
-	&& getActiveRange().startOffset != 0
-	&& getActiveRange().startOffset != getNodeLength(getActiveRange().startContainer)) {
+	if (isEditable(range.startContainer)
+	&& range.startContainer.nodeType == Node.TEXT_NODE
+	&& range.startOffset != 0
+	&& range.startOffset != getNodeLength(range.startContainer)) {
 		// Account for browsers not following range mutation rules
-		var newNode = getActiveRange().startContainer.splitText(getActiveRange().startOffset);
-		var newActiveRange = document.createRange();
-		if (getActiveRange().startContainer == getActiveRange().endContainer) {
-			var newEndOffset = getActiveRange().endOffset - getActiveRange().startOffset;
+		var newNode = range.startContainer.splitText(range.startOffset);
+		var newActiveRange = Aloha.createRange();
+		if (range.startContainer == range.endContainer) {
+			var newEndOffset = range.endOffset - range.startOffset;
 			newActiveRange.setEnd(newNode, newEndOffset);
-			getActiveRange().setEnd(newNode, newEndOffset);
+			range.setEnd(newNode, newEndOffset);
 		}
 		newActiveRange.setStart(newNode, 0);
-		getSelection().removeAllRanges();
-		getSelection().addRange(newActiveRange);
+		Aloha.getSelection().removeAllRanges();
+		Aloha.getSelection().addRange(newActiveRange);
 
-		getActiveRange().setStart(newNode, 0);
+		range.setStart(newNode, 0);
 	}
 
 	// "If the active range's end node is an editable Text node, and its end
 	// offset is neither zero nor its end node's length, call splitText() on
 	// the active range's end node, with argument equal to the active range's
 	// end offset."
-	if (isEditable(getActiveRange().endContainer)
-	&& getActiveRange().endContainer.nodeType == Node.TEXT_NODE
-	&& getActiveRange().endOffset != 0
-	&& getActiveRange().endOffset != getNodeLength(getActiveRange().endContainer)) {
+	if (isEditable(range.endContainer)
+	&& range.endContainer.nodeType == Node.TEXT_NODE
+	&& range.endOffset != 0
+	&& range.endOffset != getNodeLength(range.endContainer)) {
 		// IE seems to mutate the range incorrectly here, so we need correction
 		// here as well.  The active range will be temporarily in orphaned
 		// nodes, so calling getActiveRange() after splitText() but before
 		// fixing the range will throw an exception.
-		var activeRange = getActiveRange();
+		// TODO: check if this is still neccessary 
+		var activeRange = range;
 		var newStart = [activeRange.startContainer, activeRange.startOffset];
 		var newEnd = [activeRange.endContainer, activeRange.endOffset];
 		activeRange.endContainer.splitText(activeRange.endOffset);
 		activeRange.setStart(newStart[0], newStart[1]);
 		activeRange.setEnd(newEnd[0], newEnd[1]);
 
-		getSelection().removeAllRanges();
-		getSelection().addRange(activeRange);
+		Aloha.getSelection().removeAllRanges();
+		Aloha.getSelection().addRange(activeRange);
 	}
 
 	// "Let element list be all editable Elements effectively contained in the
@@ -3229,19 +3118,19 @@ function setSelectionValue(command, newValue) {
 	getAllEffectivelyContainedNodes(getActiveRange(), function(node) {
 		return isEditable(node) && node.nodeType == Node.ELEMENT_NODE;
 	}).forEach(function(element) {
-		clearValue(element, command);
+		clearValue(element, command, range);
 	});
 
 	// "Let node list be all editable nodes effectively contained in the active
 	// range.
 	//
 	// "For each node in node list:"
-	getAllEffectivelyContainedNodes(getActiveRange(), isEditable).forEach(function(node) {
+	getAllEffectivelyContainedNodes(range, isEditable).forEach(function(node) {
 		// "Push down values on node."
-		pushDownValues(node, command, newValue);
+		pushDownValues(node, command, newValue, range);
 
 		// "Force the value of node."
-		forceValue(node, command, newValue);
+		forceValue(node, command, newValue, range);
 	});
 }
 
@@ -3277,22 +3166,23 @@ commands.backcolor = {
 		// green, blue, and alpha components, or neither string is a valid CSS
 		// color."
 		return normalizeColor(val1) === normalizeColor(val2);
-	},
+	}
 };
 
 //@}
 ///// The bold command /////
 //@{
 commands.bold = {
-	action: function() {
+	action: function(value, range) {
 		// "If queryCommandState("bold") returns true, set the selection's
 		// value to "normal". Otherwise set the selection's value to "bold"."
-		if (myQueryCommandState("bold")) {
-			setSelectionValue("bold", "normal");
+		if (myQueryCommandState("bold", range)) {
+			setSelectionValue("bold", "normal", range);
 		} else {
-			setSelectionValue("bold", "bold");
+			setSelectionValue("bold", "bold", range);
 		}
-	}, inlineCommandActivatedValues: ["bold", "600", "700", "800", "900"],
+	}, 
+	inlineCommandActivatedValues: ["bold", "600", "700", "800", "900"],
 	relevantCssProperty: "fontWeight",
 	equivalentValues: function(val1, val2) {
 		// "Either the two strings are equal, or one is "bold" and the other is
@@ -3302,7 +3192,7 @@ commands.bold = {
 			|| (val1 == "700" && val2 == "bold")
 			|| (val1 == "normal" && val2 == "400")
 			|| (val1 == "400" && val2 == "normal");
-	},
+	}
 };
 
 //@}
@@ -3561,7 +3451,7 @@ commands.forecolor = {
 		// green, blue, and alpha components, or neither string is a valid CSS
 		// color."
 		return normalizeColor(val1) === normalizeColor(val2);
-	},
+	}
 };
 
 //@}
@@ -3606,20 +3496,20 @@ commands.hilitecolor = {
 		// green, blue, and alpha components, or neither string is a valid CSS
 		// color."
 		return normalizeColor(val1) === normalizeColor(val2);
-	},
+	}
 };
 
 //@}
 ///// The italic command /////
 //@{
 commands.italic = {
-	action: function() {
+	action: function( value, range ) {
 		// "If queryCommandState("italic") returns true, set the selection's
 		// value to "normal". Otherwise set the selection's value to "italic"."
-		if (myQueryCommandState("italic")) {
-			setSelectionValue("italic", "normal");
+		if (myQueryCommandState("italic", range)) {
+			setSelectionValue("italic", "normal", range);
 		} else {
-			setSelectionValue("italic", "italic");
+			setSelectionValue("italic", "italic", range);
 		}
 	}, inlineCommandActivatedValues: ["italic", "oblique"],
 	relevantCssProperty: "fontStyle"
@@ -3653,7 +3543,7 @@ commands.removeformat = {
 			// into the parent of element immediately before element,
 			// preserving ranges."
 			while (element.hasChildNodes()) {
-				movePreservingRanges(element.firstChild, element.parentNode, getNodeIndex(element));
+				movePreservingRanges(element.firstChild, element.parentNode, getNodeIndex(element), range);
 			}
 
 			// "Remove element from its parent."
@@ -3710,7 +3600,7 @@ commands.removeformat = {
 		getAllEffectivelyContainedNodes(getActiveRange(), isEditable).forEach(function(node) {
 			while (isRemoveFormatCandidate(node.parentNode)
 			&& inSameEditingHost(node.parentNode, node)) {
-				splitParent([node]);
+				splitParent([node], range);
 			}
 		});
 
@@ -3776,7 +3666,7 @@ commands.subscript = {
 		return (nodes.some(function(node) { return getEffectiveCommandValue(node, "subscript") == "subscript" })
 			&& nodes.some(function(node) { return getEffectiveCommandValue(node, "subscript") != "subscript" }))
 			|| nodes.some(function(node) { return getEffectiveCommandValue(node, "subscript") == "mixed" });
-	}, inlineCommandActivatedValues: ["subscript"],
+	}, inlineCommandActivatedValues: ["subscript"]
 };
 
 //@}
@@ -3809,7 +3699,7 @@ commands.superscript = {
 		return (nodes.some(function(node) { return getEffectiveCommandValue(node, "superscript") == "superscript" })
 			&& nodes.some(function(node) { return getEffectiveCommandValue(node, "superscript") != "superscript" }))
 			|| nodes.some(function(node) { return getEffectiveCommandValue(node, "superscript") == "mixed" });
-	}, inlineCommandActivatedValues: ["superscript"],
+	}, inlineCommandActivatedValues: ["superscript"]
 };
 
 //@}
@@ -3866,7 +3756,7 @@ commands.unlink = {
 
 		// "Clear the value of each member of hyperlinks."
 		for (var i = 0; i < hyperlinks.length; i++) {
-			clearValue(hyperlinks[i], "unlink");
+			clearValue(hyperlinks[i], "unlink", range);
 		}
 	}, standardInlineValueCommand: true
 };
@@ -3895,10 +3785,18 @@ function isIndentationElement(node) {
 		return false;
 	}
 
-	for (var i = 0; i < node.style.length; i++) {
-		// Approximate check
-		if (/^(-[a-z]+-)?margin/.test(node.style[i])) {
-			return true;
+	if (typeof node.style.length !== 'undefined') {
+		for (var i = 0; i < node.style.length; i++) {
+			// Approximate check
+			if (/^(-[a-z]+-)?margin/.test(node.style[i])) {
+				return true;
+			}
+		}
+	} else {
+		for (var s in node.style) {
+			if (/^(-[a-z]+-)?margin/.test(s) && node.style[s] && node.style[s] !== 0) {
+				return true;
+			}
 		}
 	}
 
@@ -3928,10 +3826,19 @@ function isSimpleIndentationElement(node) {
 		}
 	}
 
-	for (var i = 0; i < node.style.length; i++) {
-		// This is approximate, but it works well enough for my purposes.
-		if (!/^(-[a-z]+-)?(margin|border|padding)/.test(node.style[i])) {
-			return false;
+	if (typeof node.style.length !== 'undefined') {
+		for (var i = 0; i < node.style.length; i++) {
+			// This is approximate, but it works well enough for my purposes.
+			if (!/^(-[a-z]+-)?(margin|border|padding)/.test(node.style[i])) {
+				return false;
+			}
+		}
+	} else {
+		for (var s in node.style) {
+			// This is approximate, but it works well enough for my purposes.
+			if (!/^(-[a-z]+-)?(margin|border|padding)/.test(s) && node.style[s] && node.style[s] !== 0 && node.style[s] !== 'false') {
+				return false;
+			}
 		}
 	}
 
@@ -3961,7 +3868,7 @@ var defaultSingleLineContainerName = "p";
 ///// Assorted block formatting command algorithms /////
 //@{
 
-function fixDisallowedAncestors(node) {
+function fixDisallowedAncestors(node, range) {
 	// "If node is not editable, abort these steps."
 	if (!isEditable(node)) {
 		return;
@@ -3983,7 +3890,9 @@ function fixDisallowedAncestors(node) {
 		if (isHtmlElement(node, ["dd", "dt"])) {
 			wrap([node],
 				function(sibling) { return isHtmlElement(sibling, "dl") && !sibling.attributes.length },
-				function() { return document.createElement("dl") });
+				function() { return document.createElement("dl") },
+				range
+			);
 			return;
 		}
 
@@ -3994,17 +3903,17 @@ function fixDisallowedAncestors(node) {
 
 		// "Set the tag name of node to the default single-line container name,
 		// and let node be the result."
-		node = setTagName(node, defaultSingleLineContainerName);
+		node = setTagName(node, defaultSingleLineContainerName, range);
 
 		// "Fix disallowed ancestors of node."
-		fixDisallowedAncestors(node);
+		fixDisallowedAncestors(node, range);
 
 		// "Let descendants be all descendants of node."
 		var descendants = getDescendants(node);
 
 		// "Fix disallowed ancestors of each member of descendants."
 		for (var i = 0; i < descendants.length; i++) {
-			fixDisallowedAncestors(descendants[i]);
+			fixDisallowedAncestors(descendants[i], range);
 		}
 
 		// "Abort these steps."
@@ -4018,14 +3927,14 @@ function fixDisallowedAncestors(node) {
 	// "While node is not an allowed child of its parent, split the parent of
 	// the one-node list consisting of node."
 	while (!isAllowedChild(node, node.parentNode)) {
-		splitParent([node]);
+		splitParent([node], range);
 	}
 
 	// "Restore the values from values."
-	restoreValues(values);
+	restoreValues(values, range);
 }
 
-function normalizeSublists(item) {
+function normalizeSublists(item, range) {
 	// "If item is not an li or it is not editable or its parent is not
 	// editable, abort these steps."
 	if (!isHtmlElement(item, "LI")
@@ -4051,7 +3960,7 @@ function normalizeSublists(item) {
 
 			// "Insert child into the parent of item immediately following
 			// item, preserving ranges."
-			movePreservingRanges(child, item.parentNode, 1 + getNodeIndex(item));
+			movePreservingRanges(child, item.parentNode, 1 + getNodeIndex(item), range);
 
 		// "Otherwise:"
 		} else {
@@ -4065,7 +3974,7 @@ function normalizeSublists(item) {
 
 			// "Insert child into new item as its first child, preserving
 			// ranges."
-			movePreservingRanges(child, newItem, 0);
+			movePreservingRanges(child, newItem, 0, range);
 		}
 	}
 }
@@ -4313,7 +4222,7 @@ function blockExtend(range) {
 
 	// "Let new range be a new range whose start and end nodes and offsets
 	// are start node, start offset, end node, and end offset."
-	var newRange = startNode.ownerDocument.createRange();
+	var newRange = Aloha.createRange();
 	newRange.setStart(startNode, startOffset);
 	newRange.setEnd(endNode, endOffset);
 
@@ -4389,15 +4298,15 @@ function precedesLineBreak(node) {
 ///// Recording and restoring overrides /////
 //@{
 
-function recordCurrentOverrides() {
+function recordCurrentOverrides( range ) {
 	// "Let overrides be a list of (string, string or boolean) ordered pairs,
 	// initially empty."
 	var overrides = [];
 
 	// "If there is a value override for "createLink", add ("createLink", value
 	// override for "createLink") to overrides."
-	if (getValueOverride("createlink") !== undefined) {
-		overrides.push(["createlink", getValueOverride("createlink")]);
+	if (getValueOverride("createlink" ,range) !== undefined) {
+		overrides.push(["createlink", getValueOverride("createlink", range)]);
 	}
 
 	// "For each command in the list "bold", "italic", "strikethrough",
@@ -4406,8 +4315,8 @@ function recordCurrentOverrides() {
 	// overrides."
 	["bold", "italic", "strikethrough", "subscript", "superscript",
 	"underline"].forEach(function(command) {
-		if (getStateOverride(command) !== undefined) {
-			overrides.push([command, getStateOverride(command)]);
+		if (getStateOverride(command, range) !== undefined) {
+			overrides.push([command, getStateOverride(command, range)]);
 		}
 	});
 
@@ -4416,8 +4325,8 @@ function recordCurrentOverrides() {
 	// (command, command's value override) to overrides."
 	["fontname", "fontsize", "forecolor",
 	"hilitecolor"].forEach(function(command) {
-		if (getValueOverride(command) !== undefined) {
-			overrides.push([command, getValueOverride(command)]);
+		if (getValueOverride(command, range) !== undefined) {
+			overrides.push([command, getValueOverride(command, range)]);
 		}
 	});
 
@@ -4472,10 +4381,10 @@ function recordCurrentStatesAndValues() {
 	return overrides;
 }
 
-function restoreStatesAndValues(overrides) {
+function restoreStatesAndValues(overrides, range) {
 	// "Let node be the first editable Text node effectively contained in the
 	// active range, or null if there is none."
-	var node = getAllEffectivelyContainedNodes(getActiveRange())
+	var node = getAllEffectivelyContainedNodes(range)
 		.filter(function(node) { return isEditable(node) && node.nodeType == Node.TEXT_NODE })[0];
 
 	// "If node is not null, then for each (command, override) pair in
@@ -4511,10 +4420,10 @@ function restoreStatesAndValues(overrides) {
 			&& command == "fontsize"
 			&& (
 				(
-					getValueOverride("fontsize") !== undefined
-					&& getValueOverride("fontsize") !== override
+					getValueOverride("fontsize", range) !== undefined
+					&& getValueOverride("fontsize", range) !== override
 				) || (
-					getValueOverride("fontsize") === undefined
+					getValueOverride("fontsize", range) === undefined
 					&& !areLooselyEquivalentValues(command, getEffectiveCommandValue(node, "fontsize"), override)
 				)
 			)) {
@@ -4527,7 +4436,7 @@ function restoreStatesAndValues(overrides) {
 
 			// "Set node to the first editable Text node effectively contained
 			// in the active range, if there is one."
-			node = getAllEffectivelyContainedNodes(getActiveRange())
+			node = getAllEffectivelyContainedNodes(range)
 				.filter(function(node) { return isEditable(node) && node.nodeType == Node.TEXT_NODE })[0]
 				|| node;
 		}
@@ -4541,13 +4450,13 @@ function restoreStatesAndValues(overrides) {
 			// "If override is a boolean, set the state override for command to
 			// override."
 			if (typeof override == "boolean") {
-				setStateOverride(command, override);
+				setStateOverride(command, override, range);
 			}
 
 			// "If override is a string, set the value override for command to
 			// override."
 			if (typeof override == "string") {
-				setValueOverride(command, override);
+				setValueOverride(command, override, range);
 			}
 		}
 	}
@@ -4577,7 +4486,7 @@ function deleteContents() {
 	if (arguments.length < 3) {
 		range = arguments[0];
 	} else {
-		range = document.createRange();
+		range = Aloha.createRange();
 		range.setStart(arguments[0], arguments[1]);
 		range.setEnd(arguments[2], arguments[3]);
 	}
@@ -4690,15 +4599,17 @@ function deleteContents() {
 	// "If start node is a Text node and start offset is 0, set start offset to
 	// the index of start node, then set start node to its parent."
 	if (startNode.nodeType == Node.TEXT_NODE
-	&& startOffset == 0) {
-		startOffset = getNodeIndex(startNode);
-		startNode = startNode.parentNode;
+	&& startOffset == 0
+	&& startNode != endNode) {
+//		startOffset = getNodeIndex(startNode);
+//		startNode = startNode.parentNode;
 	}
 
 	// "If end node is a Text node and end offset is its length, set end offset
 	// to one plus the index of end node, then set end node to its parent."
 	if (endNode.nodeType == Node.TEXT_NODE
-	&& endOffset == getNodeLength(endNode)) {
+	&& endOffset == getNodeLength(endNode)
+	&& startNode != endNode) {
 		endOffset = 1 + getNodeIndex(endNode);
 		endNode = endNode.parentNode;
 	}
@@ -4765,7 +4676,7 @@ function deleteContents() {
 		range.setEnd(range.startContainer, range.startOffset);
 
 		// "Restore states and values from overrides."
-		restoreStatesAndValues(overrides);
+		restoreStatesAndValues(overrides, range);
 
 		// "Abort these steps."
 		return;
@@ -4819,10 +4730,12 @@ function deleteContents() {
 		// "If parent is editable or an editing host, is not an inline node,
 		// and has no children, call createElement("br") on the context object
 		// and append the result as the last child of parent."
+		// only do this, if the offsetHeight is 0
 		if ((isEditable(parent_) || isEditingHost(parent_))
 		&& !isInlineNode(parent_)
-		&& !parent_.hasChildNodes()) {
-			parent_.appendChild(document.createElement("br"));
+		&& !parent_.hasChildNodes()
+		&& parent_.offsetHeight === 0) {
+			parent_.appendChild(createEndBreak());
 		}
 	}
 
@@ -4851,7 +4764,7 @@ function deleteContents() {
 		range.setEnd(range.startContainer, range.startOffset);
 
 		// "Restore states and values from overrides."
-		restoreStatesAndValues(overrides);
+		restoreStatesAndValues(overrides, range);
 
 		// "Abort these steps."
 		return;
@@ -4918,7 +4831,7 @@ function deleteContents() {
 			}
 
 			// "Restore states and values from overrides."
-			restoreStatesAndValues(overrides);
+			restoreStatesAndValues(overrides, range);
 
 			// "Abort these steps."
 			return;
@@ -4927,7 +4840,7 @@ function deleteContents() {
 		// "If end block's firstChild is not an inline node, restore states and
 		// values from overrides, then abort these steps."
 		if (!isInlineNode(endBlock.firstChild)) {
-			restoreStatesAndValues(overrides);
+			restoreStatesAndValues(overrides, range);
 			return;
 		}
 
@@ -4951,7 +4864,7 @@ function deleteContents() {
 		// "While children's first member's parent is not start block, split
 		// the parent of children."
 		while (children[0].parentNode != startBlock) {
-			splitParent(children);
+			splitParent(children, range);
 		}
 
 		// "If children's first member's previousSibling is an editable br,
@@ -5011,7 +4924,7 @@ function deleteContents() {
 		// "For each node in nodes to move, append node as the last child of
 		// start block, preserving ranges."
 		nodesToMove.forEach(function(node) {
-			movePreservingRanges(node, startBlock, -1);
+			movePreservingRanges(node, startBlock, -1, range);
 		});
 
 		// "If the nextSibling of reference node is a br, remove it from its
@@ -5036,12 +4949,12 @@ function deleteContents() {
 
 		// "Record the values of end block's children, and let values be the
 		// result."
-		var values = recordValues([].slice.call(endBlock.childNodes));
+		var values = recordValues([].slice.call(toArray(endBlock.childNodes)));
 
 		// "While end block has children, append the first child of end block
 		// to start block, preserving ranges."
 		while (endBlock.hasChildNodes()) {
-			movePreservingRanges(endBlock.firstChild, startBlock, -1);
+			movePreservingRanges(endBlock.firstChild, startBlock, -1, range);
 		}
 
 		// "While end block has no children, let parent be the parent of end
@@ -5055,16 +4968,16 @@ function deleteContents() {
 	}
 
 	// "Restore the values from values."
-	restoreValues(values);
+	restoreValues(values, range);
 
 	// "If start block has no children, call createElement("br") on the context
 	// object and append the result as the last child of start block."
 	if (!startBlock.hasChildNodes()) {
-		startBlock.appendChild(document.createElement("br"));
+		startBlock.appendChild(createEndBreak());
 	}
 
 	// "Restore states and values from overrides."
-	restoreStatesAndValues(overrides);
+	restoreStatesAndValues(overrides, range);
 }
 
 
@@ -5072,7 +4985,7 @@ function deleteContents() {
 ///// Splitting a node list's parent /////
 //@{
 
-function splitParent(nodeList) {
+function splitParent(nodeList, range) {
 	// "Let original parent be the parent of the first member of node list."
 	var originalParent = nodeList[0].parentNode;
 
@@ -5109,7 +5022,7 @@ function splitParent(nodeList) {
 		// parent of original parent immediately after original parent,
 		// preserving ranges."
 		for (var i = nodeList.length - 1; i >= 0; i--) {
-			movePreservingRanges(nodeList[i], originalParent.parentNode, 1 + getNodeIndex(originalParent));
+			movePreservingRanges(nodeList[i], originalParent.parentNode, 1 + getNodeIndex(originalParent), range);
 		}
 
 		// "If precedes line break is true, and the last member of node list
@@ -5145,14 +5058,14 @@ function splitParent(nodeList) {
 		// null, append the first child of original parent as the last child of
 		// cloned parent, preserving ranges."
 		while (nodeList[0].previousSibling) {
-			movePreservingRanges(originalParent.firstChild, clonedParent, clonedParent.childNodes.length);
+			movePreservingRanges(originalParent.firstChild, clonedParent, clonedParent.childNodes.length, range);
 		}
 	}
 
 	// "For each node in node list, insert node into the parent of original
 	// parent immediately before original parent, preserving ranges."
 	for (var i = 0; i < nodeList.length; i++) {
-		movePreservingRanges(nodeList[i], originalParent.parentNode, getNodeIndex(originalParent));
+		movePreservingRanges(nodeList[i], originalParent.parentNode, getNodeIndex(originalParent), range);
 	}
 
 	// "If follows line break is true, and the first member of node list does
@@ -5176,6 +5089,18 @@ function splitParent(nodeList) {
 
 	// "If original parent has no children:"
 	if (!originalParent.hasChildNodes()) {
+		// if the current range is collapsed and at the end of the originalParent.parentNode
+		// the offset will not be available anymore after the next step (remove child)
+		// that's why we need to fix the range to prevent a bogus offset
+		if (originalParent.parentNode === range.startContainer
+		&& originalParent.parentNode === range.endContainer
+		&& range.startContainer === range.endContainer
+		&& range.startOffset === range.endOffset
+		&& originalParent.parentNode.childNodes.length === range.startOffset) {
+			range.startOffset = originalParent.parentNode.childNodes.length - 1;
+			range.endOffset = range.startOffset;
+		}
+
 		// "Remove original parent from its parent."
 		originalParent.parentNode.removeChild(originalParent);
 
@@ -5205,9 +5130,9 @@ function splitParent(nodeList) {
 // "To remove a node node while preserving its descendants, split the parent of
 // node's children if it has any. If it has no children, instead remove it from
 // its parent."
-function removePreservingDescendants(node) {
+function removePreservingDescendants(node, range) {
 	if (node.hasChildNodes()) {
-		splitParent([].slice.call(node.childNodes));
+		splitParent([].slice.call(toArray(node.childNodes)), range);
 	} else {
 		node.parentNode.removeChild(node);
 	}
@@ -5441,7 +5366,7 @@ function canonicalizeWhitespace(node, offset) {
 ///// Indenting and outdenting /////
 //@{
 
-function indentNodes(nodeList) {
+function indentNodes(nodeList, range) {
 	// "If node list is empty, do nothing and abort these steps."
 	if (!nodeList.length) {
 		return;
@@ -5461,7 +5386,9 @@ function indentNodes(nodeList) {
 		// the ownerDocument of first node."
 		wrap(nodeList,
 			function(node) { return isHtmlElement(node, tag) },
-			function() { return firstNode.ownerDocument.createElement(tag) });
+			function() { return firstNode.ownerDocument.createElement(tag) },
+			range
+		);
 
 		// "Abort these steps."
 		return;
@@ -5473,13 +5400,15 @@ function indentNodes(nodeList) {
 	// ownerDocument of first node. Let new parent be the result."
 	var newParent = wrap(nodeList,
 		function(node) { return isSimpleIndentationElement(node) },
-		function() { return firstNode.ownerDocument.createElement("blockquote") });
+		function() { return firstNode.ownerDocument.createElement("blockquote") },
+		range
+	);
 
 	// "Fix disallowed ancestors of new parent."
-	fixDisallowedAncestors(newParent);
+	fixDisallowedAncestors(newParent, range);
 }
 
-function outdentNode(node) {
+function outdentNode(node, range) {
 	// "If node is not editable, abort these steps."
 	if (!isEditable(node)) {
 		return;
@@ -5488,7 +5417,7 @@ function outdentNode(node) {
 	// "If node is a simple indentation element, remove node, preserving its
 	// descendants.  Then abort these steps."
 	if (isSimpleIndentationElement(node)) {
-		removePreservingDescendants(node);
+		removePreservingDescendants(node, range);
 		return;
 	}
 
@@ -5507,7 +5436,7 @@ function outdentNode(node) {
 		}
 
 		// "Set the tag name of node to "div"."
-		setTagName(node, "div");
+		setTagName(node, "div", range);
 
 		// "Abort these steps."
 		return;
@@ -5563,30 +5492,30 @@ function outdentNode(node) {
 		node.removeAttribute("type");
 
 		// "Let children be the children of node."
-		var children = [].slice.call(node.childNodes);
+		var children = [].slice.call(toArray(node.childNodes));
 
 		// "If node has attributes, and its parent is not an ol or ul, set the
 		// tag name of node to "div"."
 		if (node.attributes.length
 		&& !isHtmlElement(node.parentNode, ["OL", "UL"])) {
-			setTagName(node, "div");
+			setTagName(node, "div", range);
 
 		// "Otherwise:"
 		} else {
 			// "Record the values of node's children, and let values be the
 			// result."
-			var values = recordValues([].slice.call(node.childNodes));
+			var values = recordValues([].slice.call(toArray(node.childNodes)));
 
 			// "Remove node, preserving its descendants."
-			removePreservingDescendants(node);
+			removePreservingDescendants(node, range);
 
 			// "Restore the values from values."
-			restoreValues(values);
+			restoreValues(values, range);
 		}
 
 		// "Fix disallowed ancestors of each member of children."
 		for (var i = 0; i < children.length; i++) {
-			fixDisallowedAncestors(children[i]);
+			fixDisallowedAncestors(children[i], range);
 		}
 
 		// "Abort these steps."
@@ -5629,18 +5558,18 @@ function outdentNode(node) {
 
 		// "Let preceding siblings be the preceding siblings of target, and let
 		// following siblings be the following siblings of target."
-		var precedingSiblings = [].slice.call(currentAncestor.childNodes, 0, getNodeIndex(target));
-		var followingSiblings = [].slice.call(currentAncestor.childNodes, 1 + getNodeIndex(target));
+		var precedingSiblings = [].slice.call(toArray(currentAncestor.childNodes), 0, getNodeIndex(target));
+		var followingSiblings = [].slice.call(toArray(currentAncestor.childNodes), 1 + getNodeIndex(target));
 
 		// "Indent preceding siblings."
-		indentNodes(precedingSiblings);
+		indentNodes(precedingSiblings, range);
 
 		// "Indent following siblings."
-		indentNodes(followingSiblings);
+		indentNodes(followingSiblings, range);
 	}
 
 	// "Outdent original ancestor."
-	outdentNode(originalAncestor);
+	outdentNode(originalAncestor, range);
 }
 
 
@@ -5648,12 +5577,11 @@ function outdentNode(node) {
 ///// Toggling lists /////
 //@{
 
-function toggleLists(tagName) {
+function toggleLists(tagName, range) {
 	// "Let mode be "disable" if the selection's list state is tag name, and
 	// "enable" otherwise."
 	var mode = getSelectionListState() == tagName ? "disable" : "enable";
 
-	var range = getActiveRange();
 	tagName = tagName.toUpperCase();
 
 	// "Let other tag name be "ol" if tag name is "ul", and "ul" if tag name is
@@ -5688,7 +5616,9 @@ function toggleLists(tagName) {
 	})();
 
 	// "For each item in items, normalize sublists of item."
-	items.forEach(normalizeSublists);
+	items.forEach( function( thisArg ) {
+			normalizeSublists( thisArg, range);
+	});
 
 	// "Block-extend the range, and let new range be the result."
 	var newRange = blockExtend(range);
@@ -5706,25 +5636,29 @@ function toggleLists(tagName) {
 			if ((isEditable(list.previousSibling) && isHtmlElement(list.previousSibling, tagName))
 			|| (isEditable(list.nextSibling) && isHtmlElement(list.nextSibling, tagName))) {
 				// "Let children be list's children."
-				var children = [].slice.call(list.childNodes);
+				var children = [].slice.call(toArray(list.childNodes));
 
 				// "Record the values of children, and let values be the
 				// result."
 				var values = recordValues(children);
 
 				// "Split the parent of children."
-				splitParent(children);
+				splitParent(children, range);
 
 				// "Wrap children, with sibling criteria returning true for an
 				// HTML element with local name tag name and false otherwise."
-				wrap(children, function(node) { return isHtmlElement(node, tagName) });
+				wrap(children, 
+					function(node) { return isHtmlElement(node, tagName) },
+					function() {return null },
+					range
+				);
 
 				// "Restore the values from values."
-				restoreValues(values);
+				restoreValues(values, range);
 
 			// "Otherwise, set the tag name of list to tag name."
 			} else {
-				setTagName(list, tagName);
+				setTagName(list, tagName, range);
 			}
 		});
 	}
@@ -5767,7 +5701,7 @@ function toggleLists(tagName) {
 			// name tag name, outdent it and continue this loop from the
 			// beginning."
 			if (isHtmlElement(sublist[0], tagName)) {
-				outdentNode(sublist[0]);
+				outdentNode(sublist[0], range);
 				continue;
 			}
 
@@ -5785,15 +5719,15 @@ function toggleLists(tagName) {
 			var values = recordValues(sublist);
 
 			// "Split the parent of sublist."
-			splitParent(sublist);
+			splitParent(sublist, range);
 
 			// "Fix disallowed ancestors of each member of sublist."
 			for (var i = 0; i < sublist.length; i++) {
-				fixDisallowedAncestors(sublist[i]);
+				fixDisallowedAncestors(sublist[i], range);
 			}
 
 			// "Restore the values from values."
-			restoreValues(values);
+			restoreValues(values, range);
 		}
 
 	// "Otherwise, while node list is not empty:"
@@ -5811,7 +5745,7 @@ function toggleLists(tagName) {
 				// of node list's first member to "li", and append the result
 				// to sublist. Remove the first member from node list."
 				if (isHtmlElement(nodeList[0], ["p", "div"])) {
-					sublist.push(setTagName(nodeList[0], "li"));
+					sublist.push(setTagName(nodeList[0], "li", range));
 					nodeList.shift();
 
 				// "Otherwise, if the first member of node list is an li or ol
@@ -5842,9 +5776,13 @@ function toggleLists(tagName) {
 					// "Wrap nodes to wrap, with new parent instructions
 					// returning the result of calling createElement("li") on
 					// the context object. Append the result to sublist."
-					sublist.push(wrap(nodesToWrap,
-						undefined,
-						function() { return document.createElement("li") }));
+					sublist.push(
+						wrap(nodesToWrap,
+							undefined,
+							function() { return document.createElement("li") },
+							range
+						)
+					);
 				}
 			}
 
@@ -5864,7 +5802,7 @@ function toggleLists(tagName) {
 				var values = recordValues(sublist);
 
 				// "Split the parent of sublist."
-				splitParent(sublist);
+				splitParent(sublist, range);
 
 				// "Wrap sublist, with sibling criteria returning true for an
 				// HTML element with local name tag name and false otherwise,
@@ -5872,10 +5810,12 @@ function toggleLists(tagName) {
 				// createElement(tag name) on the context object."
 				wrap(sublist,
 					function(node) { return isHtmlElement(node, tagName) },
-					function() { return document.createElement(tagName) });
+					function() { return document.createElement(tagName) },
+					range
+				);
 
 				// "Restore the values from values."
-				restoreValues(values);
+				restoreValues(values, range);
 
 				// "Continue this loop from the beginning."
 				continue;
@@ -5886,41 +5826,45 @@ function toggleLists(tagName) {
 			// parent instructions being the following:"
 			// . . .
 			// "Fix disallowed ancestors of the previous step's result."
-			fixDisallowedAncestors(wrap(sublist,
-				function(node) { return isHtmlElement(node, tagName) },
-				function() {
-					// "If sublist's first member's parent is not an editable
-					// simple indentation element, or sublist's first member's
-					// parent's previousSibling is not an editable HTML element
-					// with local name tag name, call createElement(tag name)
-					// on the context object and return the result."
-					if (!isEditable(sublist[0].parentNode)
-					|| !isSimpleIndentationElement(sublist[0].parentNode)
-					|| !isEditable(sublist[0].parentNode.previousSibling)
-					|| !isHtmlElement(sublist[0].parentNode.previousSibling, tagName)) {
-						return document.createElement(tagName);
-					}
-
-					// "Let list be sublist's first member's parent's
-					// previousSibling."
-					var list = sublist[0].parentNode.previousSibling;
-
-					// "Normalize sublists of list's lastChild."
-					normalizeSublists(list.lastChild);
-
-					// "If list's lastChild is not an editable HTML element
-					// with local name tag name, call createElement(tag name)
-					// on the context object, and append the result as the last
-					// child of list."
-					if (!isEditable(list.lastChild)
-					|| !isHtmlElement(list.lastChild, tagName)) {
-						list.appendChild(document.createElement(tagName));
-					}
-
-					// "Return the last child of list."
-					return list.lastChild;
-				}
-			));
+			fixDisallowedAncestors(
+				wrap(sublist,
+					function(node) { return isHtmlElement(node, tagName) },
+					function() {
+						// "If sublist's first member's parent is not an editable
+						// simple indentation element, or sublist's first member's
+						// parent's previousSibling is not an editable HTML element
+						// with local name tag name, call createElement(tag name)
+						// on the context object and return the result."
+						if (!isEditable(sublist[0].parentNode)
+						|| !isSimpleIndentationElement(sublist[0].parentNode)
+						|| !isEditable(sublist[0].parentNode.previousSibling)
+						|| !isHtmlElement(sublist[0].parentNode.previousSibling, tagName)) {
+							return document.createElement(tagName);
+						}
+	
+						// "Let list be sublist's first member's parent's
+						// previousSibling."
+						var list = sublist[0].parentNode.previousSibling;
+	
+						// "Normalize sublists of list's lastChild."
+						normalizeSublists(list.lastChild, range);
+	
+						// "If list's lastChild is not an editable HTML element
+						// with local name tag name, call createElement(tag name)
+						// on the context object, and append the result as the last
+						// child of list."
+						if (!isEditable(list.lastChild)
+						|| !isHtmlElement(list.lastChild, tagName)) {
+							list.appendChild(document.createElement(tagName));
+						}
+	
+						// "Return the last child of list."
+						return list.lastChild;
+					},
+					range
+				)
+				, range
+			);
 		}
 	}
 }
@@ -5930,9 +5874,10 @@ function toggleLists(tagName) {
 ///// Justifying the selection /////
 //@{
 
-function justifySelection(alignment) {
+function justifySelection(alignment, range) {
+	
 	// "Block-extend the active range, and let new range be the result."
-	var newRange = blockExtend(globalRange);
+	var newRange = blockExtend(range);
 
 	// "Let element list be a list of all editable Elements contained in new
 	// range that either has an attribute in the HTML namespace whose local
@@ -5968,14 +5913,14 @@ function justifySelection(alignment) {
 		// it, preserving its descendants."
 		if (isHtmlElement(element, ["div", "span", "center"])
 		&& !element.attributes.length) {
-			removePreservingDescendants(element);
+			removePreservingDescendants(element, range);
 		}
 
 		// "If element is a center with one or more attributes, set the tag
 		// name of element to "div"."
 		if (isHtmlElement(element, "center")
 		&& element.attributes.length) {
-			setTagName(element, "div");
+			setTagName(element, "div", range);
 		}
 	}
 
@@ -6029,16 +5974,27 @@ function justifySelection(alignment) {
 				return isHtmlElement(node, "div")
 					&& [].every.call(node.attributes, function(attr) {
 						return (attr.name == "align" && attr.value.toLowerCase() == alignment)
-							|| (attr.name == "style" && node.style.length == 1 && node.style.textAlign == alignment);
+							|| (attr.name == "style" && getStyleLength(node) == 1 && node.style.textAlign == alignment);
 					});
 			},
 			function() {
 				var newParent = document.createElement("div");
 				newParent.setAttribute("style", "text-align: " + alignment);
 				return newParent;
-			}
+			},
+			range
 		);
 	}
+}
+
+
+//@}
+///// Create an end break /////
+//@{
+function createEndBreak() {
+	var endBr = document.createElement("br");
+	endBr.setAttribute("class", "aloha-end-br");
+	return endBr;
 }
 
 
@@ -6046,24 +6002,34 @@ function justifySelection(alignment) {
 ///// The delete command /////
 //@{
 commands["delete"] = {
-	action: function() {
+	action: function(value, range) {
 		// "If the active range is not collapsed, delete the contents of the
 		// active range and abort these steps."
-		if (!getActiveRange().collapsed) {
-			deleteContents(getActiveRange());
+		if (!range.collapsed) {
+			deleteContents(range);
 			return;
 		}
 
 		// "Canonicalize whitespace at (active range's start node, active
 		// range's start offset)."
-		canonicalizeWhitespace(getActiveRange().startContainer, getActiveRange().startOffset);
+		canonicalizeWhitespace(range.startContainer, range.startOffset);
 
 		// "Let node and offset be the active range's start node and offset."
-		var node = getActiveRange().startContainer;
-		var offset = getActiveRange().startOffset;
+		var node = range.startContainer;
+		var offset = range.startOffset;
+		var isBr = false;
+		var isHr = false;
 
 		// "Repeat the following steps:"
-		while (true) {
+		while ( true ) {
+			// we need to reset isBr and isHr on every interation of the loop
+			isBr = false;
+			isHr = false;
+			if ( offset - 1 <= node.childNodes.length ) {
+				isBr = isHtmlElement(node.childNodes[offset - 1], "br") || false;
+				isHr = isHtmlElement(node.childNodes[offset - 1], "hr") || false;
+			}
+			
 			// "If offset is zero and node's previousSibling is an editable
 			// invisible node, remove node's previousSibling from its parent."
 			if (offset == 0
@@ -6077,9 +6043,14 @@ commands["delete"] = {
 			} else if (0 <= offset - 1
 			&& offset - 1 < node.childNodes.length
 			&& isEditable(node.childNodes[offset - 1])
-			&& isInvisible(node.childNodes[offset - 1])) {
+			&& (isInvisible(node.childNodes[offset - 1]) || isBr || isHr )) {
 				node.removeChild(node.childNodes[offset - 1]);
 				offset--;
+				if (isBr || isHr) {
+					range.setStart(node, offset);
+					range.setEnd(node, offset);
+					return;
+				}
 
 			// "Otherwise, if offset is zero and node is an inline node, or if
 			// node is an invisible node, set offset to the index of node, then
@@ -6097,7 +6068,7 @@ commands["delete"] = {
 			&& offset - 1 < node.childNodes.length
 			&& isEditable(node.childNodes[offset - 1])
 			&& isHtmlElement(node.childNodes[offset - 1], "a")) {
-				removePreservingDescendants(node.childNodes[offset - 1]);
+				removePreservingDescendants(node.childNodes[offset - 1], range);
 				return;
 
 			// "Otherwise, if node has a child with index offset − 1 and that
@@ -6122,9 +6093,13 @@ commands["delete"] = {
 		// steps."
 		if (node.nodeType == Node.TEXT_NODE
 		&& offset != 0) {
-			getActiveRange().setStart(node, offset);
-			getActiveRange().setEnd(node, offset);
-			deleteContents(node, offset - 1, node, offset);
+			range.setStart(node, offset);
+			range.setEnd(node, offset);
+			// fix range start container offset according to old code
+			// so we can still pass our range and have it modified, but
+			// also conform with the previous implementation
+			range.startOffset -= 1;
+			deleteContents(range);
 			return;
 		}
 
@@ -6140,9 +6115,9 @@ commands["delete"] = {
 		if (0 <= offset - 1
 		&& offset - 1 < node.childNodes.length
 		&& isHtmlElement(node.childNodes[offset - 1], ["br", "hr", "img"])) {
-			getActiveRange().setStart(node, offset);
-			getActiveRange().setEnd(node, offset);
-			deleteContents(node, offset - 1, node, offset);
+			range.setStart(node, offset);
+			range.setEnd(node, offset);
+			deleteContents(range);
 			return;
 		}
 
@@ -6163,7 +6138,7 @@ commands["delete"] = {
 
 			// "Normalize sublists of each item in items."
 			for (var i = 0; i < items.length; i++) {
-				normalizeSublists(items[i]);
+				normalizeSublists(items[i], range);
 			}
 
 			// "Record the values of the one-node list consisting of node, and
@@ -6171,10 +6146,10 @@ commands["delete"] = {
 			var values = recordValues([node]);
 
 			// "Split the parent of the one-node list consisting of node."
-			splitParent([node]);
+			splitParent([node], range);
 
 			// "Restore the values from values."
-			restoreValues(values);
+			restoreValues(values, range);
 
 			// "If node is a dd or dt, and it is not an allowed child of any of
 			// its ancestors in the same editing host, set the tag name of node
@@ -6185,11 +6160,11 @@ commands["delete"] = {
 				return !inSameEditingHost(node, ancestor)
 					|| !isAllowedChild(node, ancestor)
 			})) {
-				node = setTagName(node, defaultSingleLineContainerName);
+				node = setTagName(node, defaultSingleLineContainerName, range);
 			}
 
 			// "Fix disallowed ancestors of node."
-			fixDisallowedAncestors(node);
+			fixDisallowedAncestors(node, range);
 
 			// "Abort these steps."
 			return;
@@ -6233,8 +6208,9 @@ commands["delete"] = {
 		}).length) {
 			// "Block-extend the range whose start and end are both (node, 0),
 			// and let new range be the result."
-			var newRange = document.createRange();
+			var newRange = Aloha.createRange();
 			newRange.setStart(node, 0);
+			newRange.setEnd(node, 0);
 			newRange = blockExtend(newRange);
 
 			// "Let node list be a list of nodes, initially empty."
@@ -6250,7 +6226,7 @@ commands["delete"] = {
 
 			// "Outdent each node in node list."
 			for (var i = 0; i < nodeList.length; i++) {
-				outdentNode(nodeList[i]);
+				outdentNode(nodeList[i], range);
 			}
 
 			// "Abort these steps."
@@ -6270,11 +6246,11 @@ commands["delete"] = {
 		&& isHtmlElement(startNode.childNodes[startOffset - 1], "table")) {
 			// "Call collapse(start node, start offset − 1) on the context
 			// object's Selection."
-			getActiveRange().setStart(startNode, startOffset - 1);
+			range.setStart(startNode, startOffset - 1);
 
 			// "Call extend(start node, start offset) on the context object's
 			// Selection."
-			getActiveRange().setEnd(startNode, startOffset);
+			range.setEnd(startNode, startOffset);
 
 			// "Abort these steps."
 			return;
@@ -6294,8 +6270,8 @@ commands["delete"] = {
 			)
 		)) {
 			// "Call collapse(node, offset) on the Selection."
-			getActiveRange().setStart(node, offset);
-			getActiveRange().setEnd(node, offset);
+			range.setStart(node, offset);
+			range.setEnd(node, offset);
 
 			// "Delete the contents of the range with start (start node, start
 			// offset − 1) and end (start node, start offset)."
@@ -6431,12 +6407,12 @@ commands.formatblock = {
 					&& isHtmlElement(ancestor, formattableBlockNames)
 					&& !getDescendants(ancestor).some(isProhibitedParagraphChild);
 			})) {
-				splitParent([node]);
+				splitParent([node], range);
 			}
 		}
 
 		// "Restore the values from values."
-		restoreValues(values);
+		restoreValues(values, range);
 
 		// "While node list is not empty:"
 		while (nodeList.length) {
@@ -6447,7 +6423,7 @@ commands.formatblock = {
 			if (isSingleLineContainer(nodeList[0])) {
 				// "Let sublist be the children of the first member of node
 				// list."
-				sublist = [].slice.call(nodeList[0].childNodes);
+				sublist = [].slice.call(toArray(nodeList[0].childNodes));
 
 				// "Record the values of sublist, and let values be the
 				// result."
@@ -6455,10 +6431,10 @@ commands.formatblock = {
 
 				// "Remove the first member of node list from its parent,
 				// preserving its descendants."
-				removePreservingDescendants(nodeList[0]);
+				removePreservingDescendants(nodeList[0], range);
 
 				// "Restore the values from values."
-				restoreValues(values);
+				restoreValues(values, range);
 
 				// "Remove the first member from node list."
 				nodeList.shift();
@@ -6492,11 +6468,16 @@ commands.formatblock = {
 			// New parent instructions return the result of running
 			// createElement(value) on the context object. Then fix disallowed
 			// ancestors of the result."
-			fixDisallowedAncestors(wrap(sublist,
-				["div", "p"].indexOf(value) == - 1
-					? function(node) { return isHtmlElement(node, value) && !node.attributes.length }
-					: function() { return false },
-				function() { return document.createElement(value) }));
+			fixDisallowedAncestors(
+				wrap(sublist,
+					["div", "p"].indexOf(value) == - 1
+						? function(node) { return isHtmlElement(node, value) && !node.attributes.length }
+						: function() { return false },
+					function() { return document.createElement(value) },
+					range
+				),
+				range
+			);
 		}
 	}, indeterm: function() {
 		// "Block-extend the active range, and let new range be the result."
@@ -6823,7 +6804,7 @@ commands.indent = {
 
 		// "For each item in items, normalize sublists of item."
 		for (var i = 0; i < items.length; i++) {
-			normalizeSublists(items[i]);
+			normalizeSublists(items[i, range]);
 		}
 
 		// "Block-extend the active range, and let new range be the result."
@@ -6848,7 +6829,7 @@ commands.indent = {
 		&& isHtmlElement(nodeList[0], "LI")
 		&& isHtmlElement(nodeList[0].parentNode, ["OL", "UL"])
 		&& isHtmlElement(nodeList[0].previousSibling, "LI")) {
-			normalizeSublists(nodeList[0].previousSibling);
+			normalizeSublists(nodeList[0].previousSibling, range);
 		}
 
 		// "While node list is not empty:"
@@ -6868,7 +6849,7 @@ commands.indent = {
 			}
 
 			// "Indent sublist."
-			indentNodes(sublist);
+			indentNodes(sublist, range);
 		}
 	}
 };
@@ -6933,7 +6914,7 @@ commands.inserthorizontalrule = {
 		range.insertNode(hr);
 
 		// "Fix disallowed ancestors of hr."
-		fixDisallowedAncestors(hr);
+		fixDisallowedAncestors(hr, range);
 
 		// "Run collapse() on the Selection, with first argument equal to the
 		// parent of hr and the second argument equal to one plus the index of
@@ -6944,8 +6925,8 @@ commands.inserthorizontalrule = {
 		// well, for the sake of autoimplementation.html's range-filling-in.
 		range.setStart(hr.parentNode, 1 + getNodeIndex(hr));
 		range.setEnd(hr.parentNode, 1 + getNodeIndex(hr));
-		getSelection().removeAllRanges();
-		getSelection().addRange(range);
+		Aloha.getSelection().removeAllRanges();
+		Aloha.getSelection().addRange(range);
 	}
 };
 
@@ -6953,20 +6934,22 @@ commands.inserthorizontalrule = {
 ///// The insertHTML command /////
 //@{
 commands.inserthtml = {
-	action: function(value) {
+	action: function(value, range) {
+		
+		
 		// "Delete the contents of the active range."
-		deleteContents(getActiveRange());
+		deleteContents(range);
 
 		// "If the active range's start node is neither editable nor an editing
 		// host, abort these steps."
-		if (!isEditable(getActiveRange().startContainer)
-		&& !isEditingHost(getActiveRange().startContainer)) {
+		if (!isEditable(range.startContainer)
+		&& !isEditingHost(range.startContainer)) {
 			return;
 		}
 
 		// "Let frag be the result of calling createContextualFragment(value)
 		// on the active range."
-		var frag = getActiveRange().createContextualFragment(value);
+		var frag = range.createContextualFragment(value);
 
 		// "Let last child be the lastChild of frag."
 		var lastChild = frag.lastChild;
@@ -6980,43 +6963,45 @@ commands.inserthtml = {
 		var descendants = getDescendants(frag);
 
 		// "If the active range's start node is a block node:"
-		if (isBlockNode(getActiveRange().startContainer)) {
+		if (isBlockNode(range.startContainer)) {
 			// "Let collapsed block props be all editable collapsed block prop
 			// children of the active range's start node that have index
 			// greater than or equal to the active range's start offset."
 			//
 			// "For each node in collapsed block props, remove node from its
 			// parent."
-			[].filter.call(getActiveRange().startContainer.childNodes, function(node) {
+			[].filter.call(range.startContainer.childNodes, function(node, range) {
 				return isEditable(node)
 					&& isCollapsedBlockProp(node)
-					&& getNodeIndex(node) >= getActiveRange().startOffset;
+					&& getNodeIndex(node) >= range.startOffset;
 			}).forEach(function(node) {
 				node.parentNode.removeChild(node);
 			});
 		}
 
 		// "Call insertNode(frag) on the active range."
-		getActiveRange().insertNode(frag);
+		range.insertNode(frag);
 
 		// "If the active range's start node is a block node with no visible
 		// children, call createElement("br") on the context object and append
 		// the result as the last child of the active range's start node."
-		if (isBlockNode(getActiveRange().startContainer)
-		&& ![].some.call(getActiveRange().startContainer.childNodes, isVisible)) {
-			getActiveRange().startContainer.appendChild(document.createElement("br"));
+		if (isBlockNode(range.startContainer)
+		&& ![].some.call(range.startContainer.childNodes, isVisible)) {
+			range.startContainer.appendChild(createEndBreak());
 		}
 
 		// "Call collapse() on the context object's Selection, with last
 		// child's parent as the first argument and one plus its index as the
 		// second."
-		getActiveRange().setStart(lastChild.parentNode, 1 + getNodeIndex(lastChild));
-		getActiveRange().setEnd(lastChild.parentNode, 1 + getNodeIndex(lastChild));
+		range.setStart(lastChild.parentNode, 1 + getNodeIndex(lastChild));
+		range.setEnd(lastChild.parentNode, 1 + getNodeIndex(lastChild));
 
 		// "Fix disallowed ancestors of each member of descendants."
 		for (var i = 0; i < descendants.length; i++) {
-			fixDisallowedAncestors(descendants[i]);
+			fixDisallowedAncestors(descendants[i], range);
 		}
+		
+		setActiveRange( range );
 	}
 };
 
@@ -7071,8 +7056,8 @@ commands.insertimage = {
 		// well, for the sake of autoimplementation.html's range-filling-in.
 		range.setStart(img.parentNode, 1 + getNodeIndex(img));
 		range.setEnd(img.parentNode, 1 + getNodeIndex(img));
-		getSelection().removeAllRanges();
-		getSelection().addRange(range);
+		Aloha.getSelection().removeAllRanges();
+		Aloha.getSelection().addRange(range);
 
 		// IE adds width and height attributes for some reason, so remove those
 		// to actually do what the spec says.
@@ -7085,29 +7070,29 @@ commands.insertimage = {
 ///// The insertLineBreak command /////
 //@{
 commands.insertlinebreak = {
-	action: function(value) {
+	action: function(value, range) {
 		// "Delete the contents of the active range, with strip wrappers false."
-		deleteContents(getActiveRange(), {stripWrappers: false});
+		deleteContents(range, {stripWrappers: false});
 
 		// "If the active range's start node is neither editable nor an editing
 		// host, abort these steps."
-		if (!isEditable(getActiveRange().startContainer)
-		&& !isEditingHost(getActiveRange().startContainer)) {
+		if (!isEditable(range.startContainer)
+		&& !isEditingHost(range.startContainer)) {
 			return;
 		}
 
 		// "If the active range's start node is an Element, and "br" is not an
 		// allowed child of it, abort these steps."
-		if (getActiveRange().startContainer.nodeType == Node.ELEMENT_NODE
-		&& !isAllowedChild("br", getActiveRange().startContainer)) {
+		if (range.startContainer.nodeType == Node.ELEMENT_NODE
+		&& !isAllowedChild("br", range.startContainer)) {
 			return;
 		}
 
 		// "If the active range's start node is not an Element, and "br" is not
 		// an allowed child of the active range's start node's parent, abort
 		// these steps."
-		if (getActiveRange().startContainer.nodeType != Node.ELEMENT_NODE
-		&& !isAllowedChild("br", getActiveRange().startContainer.parentNode)) {
+		if (range.startContainer.nodeType != Node.ELEMENT_NODE
+		&& !isAllowedChild("br", range.startContainer.parentNode)) {
 			return;
 		}
 
@@ -7115,13 +7100,13 @@ commands.insertlinebreak = {
 		// offset is zero, call collapse() on the context object's Selection,
 		// with first argument equal to the active range's start node's parent
 		// and second argument equal to the active range's start node's index."
-		if (getActiveRange().startContainer.nodeType == Node.TEXT_NODE
-		&& getActiveRange().startOffset == 0) {
-			var newNode = getActiveRange().startContainer.parentNode;
-			var newOffset = getNodeIndex(getActiveRange().startContainer);
-			getSelection().collapse(newNode, newOffset);
-			getActiveRange().setStart(newNode, newOffset);
-			getActiveRange().setEnd(newNode, newOffset);
+		if (range.startContainer.nodeType == Node.TEXT_NODE
+		&& range.startOffset == 0) {
+			var newNode = range.startContainer.parentNode;
+			var newOffset = getNodeIndex(range.startContainer);
+			Aloha.getSelection().collapse(newNode, newOffset);
+			range.setStart(newNode, newOffset);
+			range.setEnd(newNode, newOffset);
 		}
 
 		// "If the active range's start node is a Text node and its start
@@ -7129,13 +7114,13 @@ commands.insertlinebreak = {
 		// context object's Selection, with first argument equal to the active
 		// range's start node's parent and second argument equal to one plus
 		// the active range's start node's index."
-		if (getActiveRange().startContainer.nodeType == Node.TEXT_NODE
-		&& getActiveRange().startOffset == getNodeLength(getActiveRange().startContainer)) {
-			var newNode = getActiveRange().startContainer.parentNode;
-			var newOffset = 1 + getNodeIndex(getActiveRange().startContainer);
-			getSelection().collapse(newNode, newOffset);
-			getActiveRange().setStart(newNode, newOffset);
-			getActiveRange().setEnd(newNode, newOffset);
+		if (range.startContainer.nodeType == Node.TEXT_NODE
+		&& range.startOffset == getNodeLength(range.startContainer)) {
+			var newNode = range.startContainer.parentNode;
+			var newOffset = 1 + getNodeIndex(range.startContainer);
+			Aloha.getSelection().collapse(newNode, newOffset);
+			range.setStart(newNode, newOffset);
+			range.setEnd(newNode, newOffset);
 		}
 
 		// "Let br be the result of calling createElement("br") on the context
@@ -7143,25 +7128,25 @@ commands.insertlinebreak = {
 		var br = document.createElement("br");
 
 		// "Call insertNode(br) on the active range."
-		getActiveRange().insertNode(br);
+		range.insertNode(br);
 
 		// "Call collapse() on the context object's Selection, with br's parent
 		// as the first argument and one plus br's index as the second
 		// argument."
-		getSelection().collapse(br.parentNode, 1 + getNodeIndex(br));
-		getActiveRange().setStart(br.parentNode, 1 + getNodeIndex(br));
-		getActiveRange().setEnd(br.parentNode, 1 + getNodeIndex(br));
+		Aloha.getSelection().collapse(br.parentNode, 1 + getNodeIndex(br));
+		range.setStart(br.parentNode, 1 + getNodeIndex(br));
+		range.setEnd(br.parentNode, 1 + getNodeIndex(br));
 
 		// "If br is a collapsed line break, call createElement("br") on the
 		// context object and let extra br be the result, then call
 		// insertNode(extra br) on the active range."
 		if (isCollapsedLineBreak(br)) {
-			getActiveRange().insertNode(document.createElement("br"));
+			range.insertNode(createEndBreak());
 
 			// Compensate for nonstandard implementations of insertNode
-			getSelection().collapse(br.parentNode, 1 + getNodeIndex(br));
-			getActiveRange().setStart(br.parentNode, 1 + getNodeIndex(br));
-			getActiveRange().setEnd(br.parentNode, 1 + getNodeIndex(br));
+			Aloha.getSelection().collapse(br.parentNode, 1 + getNodeIndex(br));
+			range.setStart(br.parentNode, 1 + getNodeIndex(br));
+			range.setEnd(br.parentNode, 1 + getNodeIndex(br));
 		}
 	}
 };
@@ -7176,27 +7161,28 @@ commands.insertorderedlist = {
 	// otherwise."
 	indeterm: function() { return /^mixed( ol)?$/.test(getSelectionListState()) },
 	// "True if the selection's list state is "ol", false otherwise."
-	state: function() { return getSelectionListState() == "ol" },
+	state: function() { return getSelectionListState() == "ol" }
 };
 
 //@}
 ///// The insertParagraph command /////
 //@{
 commands.insertparagraph = {
-	action: function() {
+	action: function(value, range) {
+		
 		// "Delete the contents of the active range."
-		deleteContents(getActiveRange());
+		deleteContents(range);
 
 		// "If the active range's start node is neither editable nor an editing
 		// host, abort these steps."
-		if (!isEditable(getActiveRange().startContainer)
-		&& !isEditingHost(getActiveRange().startContainer)) {
+		if (!isEditable(range.startContainer)
+		&& !isEditingHost(range.startContainer)) {
 			return;
 		}
 
 		// "Let node and offset be the active range's start node and offset."
-		var node = getActiveRange().startContainer;
-		var offset = getActiveRange().startOffset;
+		var node = range.startContainer;
+		var offset = range.startOffset;
 
 		// "If node is a Text node, and offset is neither 0 nor the length of
 		// node, call splitText(offset) on node."
@@ -7223,9 +7209,9 @@ commands.insertparagraph = {
 		}
 
 		// "Call collapse(node, offset) on the context object's Selection."
-		getSelection().collapse(node, offset);
-		getActiveRange().setStart(node, offset);
-		getActiveRange().setEnd(node, offset);
+		Aloha.getSelection().collapse(node, offset);
+		range.setStart(node, offset);
+		range.setEnd(node, offset);
 
 		// "Let container equal node."
 		var container = node;
@@ -7249,7 +7235,7 @@ commands.insertparagraph = {
 
 			// "Block-extend the active range, and let new range be the
 			// result."
-			var newRange = blockExtend(getActiveRange());
+			var newRange = blockExtend(range);
 
 			// "Let node list be a list of nodes, initially empty."
 			//
@@ -7262,7 +7248,7 @@ commands.insertparagraph = {
 			if (!nodeList.length) {
 				// "If tag is not an allowed child of the active range's start
 				// node, abort these steps."
-				if (!isAllowedChild(tag, getActiveRange().startContainer)) {
+				if (!isAllowedChild(tag, range.startContainer)) {
 					return;
 				}
 
@@ -7271,17 +7257,18 @@ commands.insertparagraph = {
 				container = document.createElement(tag);
 
 				// "Call insertNode(container) on the active range."
-				getActiveRange().insertNode(container);
+				range.insertNode(container);
 
 				// "Call createElement("br") on the context object, and append
 				// the result as the last child of container."
-				container.appendChild(document.createElement("br"));
+				container.appendChild(createEndBreak());
 
 				// "Call collapse(container, 0) on the context object's
 				// Selection."
-				getSelection().collapse(container, 0);
-				getActiveRange().setStart(container, 0);
-				getActiveRange().setEnd(container, 0);
+				// TODO: remove selection from command
+				Aloha.getSelection().collapse(container, 0); 
+				range.setStart(container, 0);
+				range.setEnd(container, 0);
 
 				// "Abort these steps."
 				return;
@@ -7300,7 +7287,8 @@ commands.insertparagraph = {
 			// result."
 			container = wrap(nodeList,
 				function() { return false },
-				function() { return document.createElement(tag) }
+				function() { return document.createElement(tag) },
+				range
 			);
 		}
 
@@ -7312,25 +7300,31 @@ commands.insertparagraph = {
 			// context object."
 			var br = document.createElement("br");
 
+			// remember the old height
+			var oldHeight = container.offsetHeight;
+
 			// "Call insertNode(br) on the active range."
-			getActiveRange().insertNode(br);
+			range.insertNode(br);
+
+			// determine the new height
+			var newHeight = container.offsetHeight;
 
 			// "Call collapse(node, offset + 1) on the context object's
 			// Selection."
-			getSelection().collapse(node, offset + 1);
-			getActiveRange().setStart(node, offset + 1);
-			getActiveRange().setEnd(node, offset + 1);
+			Aloha.getSelection().collapse(node, offset + 1);
+			range.setStart(node, offset + 1);
+			range.setEnd(node, offset + 1);
 
 			// "If br is the last descendant of container, let br be the result
 			// of calling createElement("br") on the context object, then call
-			// insertNode(br) on the active range."
+			// insertNode(br) on the active range." (Fix: only do this, if the container height did not change by inserting a single <br/>)
 			//
 			// Work around browser bugs: some browsers select the
 			// newly-inserted node, not per spec.
-			if (!isDescendant(nextNode(br), container)) {
-				getActiveRange().insertNode(document.createElement("br"));
-				getSelection().collapse(node, offset + 1);
-				getActiveRange().setEnd(node, offset + 1);
+			if (oldHeight == newHeight && !isDescendant(nextNode(br), container)) {
+				range.insertNode(createEndBreak());
+				Aloha.getSelection().collapse(node, offset + 1);
+				range.setEnd(node, offset + 1);
 			}
 
 			// "Abort these steps."
@@ -7344,13 +7338,18 @@ commands.insertparagraph = {
 		|| (container.childNodes.length == 1
 		&& isHtmlElement(container.firstChild, "br")))) {
 			// "Split the parent of the one-node list consisting of container."
-			splitParent([container]);
+			splitParent([container], range);
 
 			// "If container has no children, call createElement("br") on the
 			// context object and append the result as the last child of
 			// container."
+			// only do this, if inserting the br does NOT modify the offset height of the container
 			if (!container.hasChildNodes()) {
-				container.appendChild(document.createElement("br"));
+				var oldHeight = container.offsetHeight, endBr = createEndBreak();
+				container.appendChild(endBr);
+				if (container.offsetHeight !== oldHeight) {
+					container.removeChild(endBr);
+				}
 			}
 
 			// "If container is a dd or dt, and it is not an allowed child of
@@ -7362,11 +7361,23 @@ commands.insertparagraph = {
 				return !inSameEditingHost(container, ancestor)
 					|| !isAllowedChild(container, ancestor)
 			})) {
-				container = setTagName(container, defaultSingleLineContainerName);
+				container = setTagName(container, defaultSingleLineContainerName, range);
 			}
 
 			// "Fix disallowed ancestors of container."
-			fixDisallowedAncestors(container);
+			fixDisallowedAncestors(container, range);
+
+			// fix invalid nested lists
+			if (isHtmlElement(container, "li")
+			&& isHtmlElement(container.nextSibling, "li")
+			&& isHtmlElement(container.nextSibling.firstChild, ["ol", "ul"])) {
+				// we found a li containing only a br followed by a li containing a list as first element: merge the two li's
+				var listParent = container.nextSibling, length = container.nextSibling.childNodes.length;
+				for (var i = 0; i < length; i++) {
+					container.appendChild(listParent.childNodes[i]);
+				}
+				listParent.parentNode.removeChild(listParent);
+			}
 
 			// "Abort these steps."
 			return;
@@ -7375,8 +7386,8 @@ commands.insertparagraph = {
 		// "Let new line range be a new range whose start is the same as
 		// the active range's, and whose end is (container, length of
 		// container)."
-		var newLineRange = document.createRange();
-		newLineRange.setStart(getActiveRange().startContainer, getActiveRange().startOffset);
+		var newLineRange = Aloha.createRange();
+		newLineRange.setStart(range.startContainer, range.startOffset);
 		newLineRange.setEnd(container, getNodeLength(container));
 
 		// "While new line range's start offset is zero and its start node is
@@ -7433,7 +7444,11 @@ commands.insertparagraph = {
 
 		// "Copy all attributes of container to new container."
 		for (var i = 0; i < container.attributes.length; i++) {
-			newContainer.setAttributeNS(container.attributes[i].namespaceURI, container.attributes[i].name, container.attributes[i].value);
+			if (typeof newContainer.setAttributeNS === 'function') {
+				newContainer.setAttributeNS(container.attributes[i].namespaceURI, container.attributes[i].name, container.attributes[i].value);
+			} else {
+				newContainer.setAttribute(container.attributes[i].name, container.attributes[i].value);
+			}
 		}
 
 		// "If new container has an id attribute, unset it."
@@ -7460,27 +7475,47 @@ commands.insertparagraph = {
 			}
 		}
 
+		var fragChildren = [], fragChild = frag.firstChild;
+		if (fragChild) {
+			do {
+				if (!isWhitespaceNode(fragChild)) {
+					fragChildren.push(fragChild);
+				}
+			} while(fragChild = fragChild.nextSibling);
+		}
+
+		// if newContainer is a li and frag contains only a list, we add a br in the li (but only if the height would not change)
+		if (isHtmlElement(newContainer, "li") && fragChildren.length && isHtmlElement(fragChildren[0], ["ul", "ol"])) {
+			var oldHeight = newContainer.offsetHeight;
+			var endBr = createEndBreak();
+			newContainer.appendChild(endBr);
+			var newHeight = newContainer.offsetHeight;
+			if (oldHeight !== newHeight) {
+				newContainer.removeChild(endBr);
+			}
+		}
+
 		// "Call appendChild(frag) on new container."
 		newContainer.appendChild(frag);
 
 		// "If container has no visible children, call createElement("br") on
 		// the context object, and append the result as the last child of
 		// container."
-		if (![].some.call(container.childNodes, isVisible)) {
-			container.appendChild(document.createElement("br"));
+		if (container.offsetHeight == 0 && ![].some.call(container.childNodes, isVisible)) {
+			container.appendChild(createEndBreak());
 		}
 
 		// "If new container has no visible children, call createElement("br")
 		// on the context object, and append the result as the last child of
 		// new container."
-		if (![].some.call(newContainer.childNodes, isVisible)) {
-			newContainer.appendChild(document.createElement("br"));
+		if (newContainer.offsetHeight == 0 && ![].some.call(newContainer.childNodes, isVisible)) {
+			newContainer.appendChild(createEndBreak());
 		}
 
 		// "Call collapse(new container, 0) on the context object's Selection."
-		getSelection().collapse(newContainer, 0);
-		getActiveRange().setStart(newContainer, 0);
-		getActiveRange().setEnd(newContainer, 0);
+		Aloha.getSelection().collapse(newContainer, 0);
+		range.setStart(newContainer, 0);
+		range.setEnd(newContainer, 0);
 	}
 };
 
@@ -7488,15 +7523,15 @@ commands.insertparagraph = {
 ///// The insertText command /////
 //@{
 commands.inserttext = {
-	action: function(value) {
+	action: function(value, range) {
 		// "Delete the contents of the active range, with strip wrappers
 		// false."
-		deleteContents(getActiveRange(), {stripWrappers: false});
+		deleteContents(range, {stripWrappers: false});
 
 		// "If the active range's start node is neither editable nor an editing
 		// host, abort these steps."
-		if (!isEditable(getActiveRange().startContainer)
-		&& !isEditingHost(getActiveRange().startContainer)) {
+		if (!isEditable(range.startContainer)
+		&& !isEditingHost(range.startContainer)) {
 			return;
 		}
 
@@ -7505,7 +7540,7 @@ commands.inserttext = {
 			// "For each element el in value, take the action for the
 			// insertText command, with value equal to el."
 			for (var i = 0; i < value.length; i++) {
-				commands.inserttext.action(value[i]);
+				commands.inserttext.action( value[i], range );
 			}
 
 			// "Abort these steps."
@@ -7520,13 +7555,13 @@ commands.inserttext = {
 		// "If value is a newline (U+00A0), take the action for the
 		// insertParagraph command and abort these steps."
 		if (value == "\n") {
-			commands.insertparagraph.action();
+			commands.insertparagraph.action( '', range );
 			return;
 		}
 
 		// "Let node and offset be the active range's start node and offset."
-		var node = getActiveRange().startContainer;
-		var offset = getActiveRange().startOffset;
+		var node = range.startContainer;
+		var offset = range.startOffset;
 
 		// "If node has a child whose index is offset − 1, and that child is a
 		// Text node, set node to that child, then set offset to node's
@@ -7560,7 +7595,7 @@ commands.inserttext = {
 		}
 
 		// "Record current overrides, and let overrides be the result."
-		var overrides = recordCurrentOverrides();
+		var overrides = recordCurrentOverrides( range );
 
 		// "If node is a Text node:"
 		if (node.nodeType == Node.TEXT_NODE) {
@@ -7568,13 +7603,13 @@ commands.inserttext = {
 			node.insertData(offset, value);
 
 			// "Call collapse(node, offset) on the context object's Selection."
-			getSelection().collapse(node, offset);
-			getActiveRange().setStart(node, offset);
+			Aloha.getSelection().collapse(node, offset);
+			range.setStart(node, offset);
 
 			// "Call extend(node, offset + 1) on the context object's
 			// Selection."
-			getSelection().extend(node, offset + 1);
-			getActiveRange().setEnd(node, offset + 1);
+			Aloha.getSelection().extend(node, offset + 1);
+			range.setEnd(node, offset + 1);
 
 		// "Otherwise:"
 		} else {
@@ -7593,30 +7628,29 @@ commands.inserttext = {
 			var text = document.createTextNode(value);
 
 			// "Call insertNode(text) on the active range."
-			getActiveRange().insertNode(text);
+			range.insertNode(text);
 
 			// "Call collapse(text, 0) on the context object's Selection."
-			getSelection().collapse(text, 0);
-			getActiveRange().setStart(text, 0);
+			Aloha.getSelection().collapse(text, 0);
+			range.setStart(text, 0);
 
 			// "Call extend(text, 1) on the context object's Selection."
-			getSelection().extend(text, 1);
-			getActiveRange().setEnd(text, 1);
+			Aloha.getSelection().extend(text, 1);
+			range.setEnd(text, 1);
 		}
 
 		// "Restore states and values from overrides."
 		restoreStatesAndValues(overrides);
 
 		// "Canonicalize whitespace at the active range's start."
-		canonicalizeWhitespace(getActiveRange().startContainer, getActiveRange().startOffset);
+		canonicalizeWhitespace(range.startContainer, range.startOffset);
 
 		// "Canonicalize whitespace at the active range's end."
-		canonicalizeWhitespace(getActiveRange().endContainer, getActiveRange().endOffset);
+		canonicalizeWhitespace(range.endContainer, range.endOffset);
 
 		// "Call collapseToEnd() on the context object's Selection."
-		getSelection().collapse(node, offset+1 ); // FIXME: .collapseToEnd() does not work in Opera.
-		//getSelection().collapseToEnd(); 
-		getActiveRange().collapse(false);
+		Aloha.getSelection().collapseToEnd();
+		range.collapse(false);
 	}
 };
 
@@ -7630,7 +7664,7 @@ commands.insertunorderedlist = {
 	// otherwise."
 	indeterm: function() { return /^mixed( ul)?$/.test(getSelectionListState()) },
 	// "True if the selection's list state is "ul", false otherwise."
-	state: function() { return getSelectionListState() == "ul" },
+	state: function() { return getSelectionListState() == "ul" }
 };
 
 //@}
@@ -7638,7 +7672,7 @@ commands.insertunorderedlist = {
 //@{
 commands.justifycenter = {
 	// "Justify the selection with alignment "center"."
-	action: function() { justifySelection("center") },
+	action: function(value, range) { justifySelection("center", range) },
 	indeterm: function() {
 		// "Block-extend the active range. Return true if among visible
 		// editable nodes that are contained in the result and have no
@@ -7671,7 +7705,7 @@ commands.justifycenter = {
 		} else {
 			return "left";
 		}
-	},
+	}
 };
 
 //@}
@@ -7679,7 +7713,7 @@ commands.justifycenter = {
 //@{
 commands.justifyfull = {
 	// "Justify the selection with alignment "justify"."
-	action: function() { justifySelection("justify") },
+	action: function(value, range) { justifySelection("justify", range) },
 	indeterm: function() {
 		// "Block-extend the active range. Return true if among visible
 		// editable nodes that are contained in the result and have no
@@ -7712,7 +7746,7 @@ commands.justifyfull = {
 		} else {
 			return "left";
 		}
-	},
+	}
 };
 
 //@}
@@ -7720,7 +7754,7 @@ commands.justifyfull = {
 //@{
 commands.justifyleft = {
 	// "Justify the selection with alignment "left"."
-	action: function() { justifySelection("left") },
+	action: function(value, range) { justifySelection("left", range) },
 	indeterm: function() {
 		// "Block-extend the active range. Return true if among visible
 		// editable nodes that are contained in the result and have no
@@ -7753,7 +7787,7 @@ commands.justifyleft = {
 		} else {
 			return "left";
 		}
-	},
+	}
 };
 
 //@}
@@ -7761,7 +7795,7 @@ commands.justifyleft = {
 //@{
 commands.justifyright = {
 	// "Justify the selection with alignment "right"."
-	action: function() { justifySelection("right") },
+	action: function(value, range) { justifySelection("right", range) },
 	indeterm: function() {
 		// "Block-extend the active range. Return true if among visible
 		// editable nodes that are contained in the result and have no
@@ -7794,7 +7828,7 @@ commands.justifyright = {
 		} else {
 			return "left";
 		}
-	},
+	}
 };
 
 //@}
@@ -7831,7 +7865,9 @@ commands.outdent = {
 		})();
 
 		// "For each item in items, normalize sublists of item."
-		items.forEach(normalizeSublists);
+		items.forEach( function( thisArg) {
+			normalizeSublists( thisArg, range);
+		});
 
 		// "Block-extend the active range, and let new range be the result."
 		var newRange = blockExtend(getActiveRange());
@@ -7857,7 +7893,7 @@ commands.outdent = {
 			while (nodeList.length
 			&& (isHtmlElement(nodeList[0], ["OL", "UL"])
 			|| !isHtmlElement(nodeList[0].parentNode, ["OL", "UL"]))) {
-				outdentNode(nodeList.shift());
+				outdentNode(nodeList.shift(), range);
 			}
 
 			// "If node list is empty, break from these substeps."
@@ -7885,13 +7921,13 @@ commands.outdent = {
 			var values = recordValues(sublist);
 
 			// "Split the parent of sublist, with new parent null."
-			splitParent(sublist);
+			splitParent(sublist, range);
 
 			// "Fix disallowed ancestors of each member of sublist."
 			sublist.forEach(fixDisallowedAncestors);
 
 			// "Restore the values from values."
-			restoreValues(values);
+			restoreValues(values, range);
 		}
 	}
 };
@@ -7920,12 +7956,12 @@ commands.selectall = {
 		// "If target is null, call getSelection() on the context object, and
 		// call removeAllRanges() on the result."
 		if (!target) {
-			getSelection().removeAllRanges();
+			Aloha.getSelection().removeAllRanges();
 
 		// "Otherwise, call getSelection() on the context object, and call
 		// selectAllChildren(target) on the result."
 		} else {
-			getSelection().selectAllChildren(target);
+			Aloha.getSelection().selectAllChildren(target);
 		}
 	}
 };
@@ -7980,8 +8016,8 @@ commandNames.forEach(function(command) {
 	// not one of the given values."
 	if ("inlineCommandActivatedValues" in commands[command]
 	&& !("indeterm" in commands[command])) {
-		commands[command].indeterm = function() {
-			var values = getAllEffectivelyContainedNodes(getActiveRange(), function(node) {
+		commands[command].indeterm = function( range ) {
+			var values = getAllEffectivelyContainedNodes(range, function(node) {
 				return isEditable(node)
 					&& node.nodeType == Node.TEXT_NODE;
 			}).map(function(node) { return getEffectiveCommandValue(node, command) });
@@ -8003,15 +8039,16 @@ commandNames.forEach(function(command) {
 	// and all of them have an effective command value equal to one of the
 	// given values."
 	if ("inlineCommandActivatedValues" in commands[command]) {
-		commands[command].state = function() {
-			var nodes = getAllEffectivelyContainedNodes(getActiveRange(), function(node) {
+		commands[command].state = function(range) {
+			var nodes = getAllEffectivelyContainedNodes(range, function(node) {
 				return isEditable(node)
 					&& node.nodeType == Node.TEXT_NODE;
 			});
 
 			if (nodes.length == 0) {
 				return commands[command].inlineCommandActivatedValues
-					.indexOf(getEffectiveCommandValue(getActiveRange().startContainer, command)) != -1;
+					.indexOf(getEffectiveCommandValue(range.startContainer, command)) != -1;
+				return ret;
 			} else {
 				return nodes.every(function(node) {
 					return commands[command].inlineCommandActivatedValues
@@ -8059,12 +8096,12 @@ commandNames.forEach(function(command) {
 //@}
 return {
 	commands: commands,
-	execCommand: myExecCommand
-};
-})();
-
-// Exported commands
-Commands['inserthtml'] = editor.commands['inserthtml'];
-
-});
+	execCommand: myExecCommand,
+	queryCommandIndeterm: myQueryCommandIndeterm,
+	queryCommandState: myQueryCommandState,
+	queryCommandValue: myQueryCommandValue,
+	queryCommandEnabled: myQueryCommandEnabled,
+	queryCommandSupported: myQueryCommandSupported
+}
+}); // end define
 // vim: foldmarker=@{,@} foldmethod=marker

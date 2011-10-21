@@ -78,6 +78,7 @@ function(aQuery, i18n, i18nCore, FloatingMenu){
 		_addUIMetaButtons: function(tabId) {
 			var that = this.pl;
 			var imgSrcLabel = new Aloha.ui.Button({
+				'name': 'src',
 				'label': i18n.t('field.img.src.label'),
 				'tooltip': i18n.t('field.img.src.tooltip'),
 				'size': 'small'
@@ -87,6 +88,7 @@ function(aQuery, i18n, i18nCore, FloatingMenu){
 			
 			// add the title field for images
 			var imgTitleLabel = new Aloha.ui.Button({
+				'name': 'title',
 				'label': i18n.t('field.img.title.label'),
 				'tooltip': i18n.t('field.img.title.tooltip'),
 				'size': 'small'

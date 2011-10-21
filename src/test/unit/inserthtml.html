@@ -18,7 +18,6 @@
 				baseUrl: '../../lib'
 			}
 		};
-		window.alohaQuery = jQuery.noConflict();
 	</script>
 
 	<!-- include aloha -->
@@ -51,7 +50,7 @@
 			        {  	start: 'fo[o]',
 				       	expected: 'fobam[]' 
 				    },
-			        {  	start: '[]',
+			        {  	start: '{}',
 				       	expected: 'bam[]' 
 				    },
 			        {  	start: '[foo]',
@@ -290,15 +289,15 @@
 				       	expected: '<p>foo</p><hr><p>[]baz</p>',
 				       	value: '<hr>' 
 					},
+					/* not working *	{  	start: '<table><tr><td>f[o]o</table>',
+										  	expected: '<table><tr><td>foo[bar]baz</table>',
+									       	value: '<td>bam</td>' 
+										},
+					/**/
 					{  	start: '<h1>foo[bar]baz</h1>',
 					  	expected: '<h1>foo</h1><h2>bam</h2><h1>[]baz</h1>',
 				       	value: '<h2>bam</h2>' 
-					},
-/* not working *	{  	start: '<table><tr><td>f[o]o</table>',
-					  	expected: '<table><tr><td>foo[bar]baz</table>',
-				       	value: '<td>bam</td>' 
-					},
-/**/
+					}
 			    
 			]
 	}

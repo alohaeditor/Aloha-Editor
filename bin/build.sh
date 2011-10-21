@@ -1,5 +1,5 @@
 #!/bin/bash
-# $Id: build, v 1.0 2011/10/3 15:50:00 jotschi Exp $
+# $Id: build, v 1.1 2011/10/3 15:50:00 jotschi Exp $
 # 2011 - written by Johannes Schüth <j.schueth@gentics.com>
 
 
@@ -93,7 +93,7 @@ echo -e "\n * Merge require and aloha-bootstrap"
 echo "Done."
 
 echo -e "\n * Checking filesize of final aloha.js"
-  checkFilesize "$TMP/aloha/lib/aloha.js" 2300 2000
+  checkFilesize "$TMP/aloha/lib/aloha.js" 2700 2500
 echo "Done."
 
 echo -e "\n * Coping $TMP/aloha to $OUT"

@@ -19,8 +19,9 @@
 	
 	<link rel="stylesheet" href="../../css/aloha.css" id="aloha-style-include" type="text/css">
 	<script src="js/aloha-config.js"></script>
+
 	<!--  extra/attributes,extra/googletranslate,extra/metaview,extra/wai-lang,extra/headerids,extra/cite  -->
-	<script src="../../lib/aloha.js" data-aloha-plugins="common/link,common/table,common/format,common/highlighteditables,common/list,common/block,common/undo,common/paste,common/characterpicker,common/abbr,common/commands,common/image,extra/attributes,extra/googletranslate,extra/metaview,extra/wai-lang,extra/headerids,extra/cite"></script>
+	<script src="../../lib/aloha.js" data-aloha-plugins="common/format,common/table,common/link,common/highlighteditables,common/list,common/block,common/undo,common/contenthandler,common/paste,common/characterpicker,common/abbr,common/commands"></script>
 
 	<script src="js/aloha-boilerplate.js"></script>
 
@@ -133,16 +134,15 @@
 					<b>bold</b>, <i>italic</i> or <del>deleted text</del>. You may also use formattings for maths 2
 					<sup>2</sup> = 4 or chemical formulas like CO<sub>2</sub>.
 					Or you may edit tables as you do in office products.</p>
-					<div>
 					<table summary="demo content for aloha tables">
 						<tbody>
-							<tr><td >This</td><td >is</td><td>a</td></tr>
-							<tr><td>demo</td><td>table</td><td>for</td></tr>
-							<tr><td>Aloha</td><td>Editor</td><td>!</td></tr>
+							<tr><td >This</td><td >is</td><td>a</td><td>demo</td></tr>
+							<tr><td>table</td><td colspan=2 rowspan=2>with</td><td>an</td></tr>
+							<tr><td>awesome</td><td>column</td></tr>
+							<tr><td>and</td><td>row</td><td>span</td><td>!</td></tr>
 						</tbody>
 						<caption>describe the table</caption>
 					</table>
-					</div>
 					<p>To describe code you would use fixed style <i>pre</i></p>
 					<pre>
 &lt;script&gt;
@@ -150,39 +150,41 @@
 	$('#content').aloha();
 	$('.top-text').aloha();
 &lt;/script&gt;</pre>
-					<p>
-						<ul>
-							<li>List entry</li>
+
+					<ul>
+						<li>List entry
 							<ul>
 								<li>List entry</li>
-								<li>List entry</li>
-								<ul>
-									<li>List entry</li>
-									<li>List entry</li>
-								</ul>
+								<li>List entry
+									<ul>
+										<li>List entry</li>
+										<li>List entry</li>
+									</ul>
+								</li>
 							</ul>
-							<li>List entry</li>
-							<li>List entry</li>
-							<li>List entry</li>
-						</ul>
-					</p>
-					<p>
-						<ol>
-							<li>List entry</li>
+						</li>
+						<li>List entry</li>
+						<li>List entry</li>
+						<li>List entry</li>
+					</ul>
+					<p><br/></p>
+					<ol>
+						<li>List entry
 							<ol>
 								<li>List entry</li>
-								<li>List entry</li>
-								<ol>
-									<li>List entry</li>
-									<li>List entry</li>
-								</ol>
+								<li>List entry
+									<ol>
+										<li>List entry</li>
+										<li>List entry</li>
+									</ol>
+								</li>
 							</ol>
-							<li>List entry</li>
-							<li>List entry</li>
-							<li>List entry</li>
-						</ol>
-					</p>					
-					<p>For better sematical understanding and WAI compatibility you can describe abbreviations
+						</li>
+						<li>List entry</li>
+						<li>List entry</li>
+						<li>List entry</li>
+					</ol>
+					<p>For better sematical understanding and <abbr title="Web Accessibility Initiative">WAI</abbr> compatibility you can describe abbreviations
 					like <abbr title="Hyper Text Markup Language">HTML</abbr> and 
 					<abbr title="Cascading Style Sheets">CSS</abbr>.
 					</p>

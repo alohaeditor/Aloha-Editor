@@ -28,32 +28,33 @@ function( Aloha, jQuery, ContentHandlerManager, console ) {
 
 	// sanitize  config allowing a bit more (no tables)
 	Aloha.defaults.sanitize.basic = {
-	  elements: [
-	     'a', 'b', 'blockquote', 'br', 'cite', 'code', 'dd', 'dl', 'dt', 'em',
-	     'i', 'li', 'ol', 'p', 'pre', 'q', 'small', 'strike', 'strong', 'sub',
-	     'sup', 'u', 'ul'],
+		elements: [
+			'a', 'abbr', 'b', 'blockquote', 'br', 'cite', 'code', 'dd', 'dl', 'dt', 'em',
+			'i', 'li', 'ol', 'p', 'pre', 'q', 'small', 'strike', 'strong', 'sub',
+			'sup', 'u', 'ul' ],
 
-	   attributes: {
-	     'a'         : ['href'],
-	     'blockquote': ['cite'],
-	     'q'         : ['cite']
-	   },
+		attributes: {
+			'a' : ['href'],
+			'blockquote' : ['cite'],
+			'q' : ['cite'],
+			'abbr': ['title']
+		},
 
-	   //add_attributes: {
-	   //  'a': {'rel': 'nofollow'}
-	   //},
+		//add_attributes: {
+			//  'a': {'rel': 'nofollow'}
+		//},
 
-	   protocols: {
-	     'a'         : {'href': ['ftp', 'http', 'https', 'mailto', '__relative__']},
-	     'blockquote': {'cite': ['http', 'https', '__relative__']},
-	     'q'         : {'cite': ['http', 'https', '__relative__']}
-	   }
+		protocols: {
+			'a' : {'href': ['ftp', 'http', 'https', 'mailto', '__relative__']},
+			'blockquote' : {'cite': ['http', 'https', '__relative__']},
+			'q' : {'cite': ['http', 'https', '__relative__']}
+		}
 	}
 
 	// relaxed sanitize config allows also tables
 	Aloha.defaults.sanitize.relaxed = {
 		elements: [
-			'a', 'b', 'blockquote', 'br', 'caption', 'cite', 'code', 'col',
+			'a', 'abbr', 'b', 'blockquote', 'br', 'caption', 'cite', 'code', 'col',
 			'colgroup', 'dd', 'dl', 'dt', 'em', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
 			'i', 'img', 'li', 'ol', 'p', 'pre', 'q', 'small', 'strike', 'strong',
 			'sub', 'sup', 'table', 'tbody', 'td', 'tfoot', 'th', 'thead', 'tr', 'u',
@@ -62,7 +63,9 @@ function( Aloha, jQuery, ContentHandlerManager, console ) {
 
 		attributes: {
 			'a': ['href', 'title'],
+			'abbr': ['title'],
 			'blockquote': ['cite'],
+			'br': ['class'],
 			'col': ['span', 'width'],
 			'colgroup': ['span', 'width'],
 			'img': ['align', 'alt', 'height', 'src', 'title', 'width'],

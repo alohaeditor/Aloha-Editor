@@ -328,7 +328,7 @@ function( Aloha, Class, jQuery ) {
 			// registered repositories
 			if ( params.inFolderId == 'aloha' ) {
 				var repoFilter = params.repositoryFilter;
-				var hasRepoFilter = ( repoFilter.length > 0 );
+				var hasRepoFilter = ( repoFilter && repoFilter.length );
 				
 				j = this.repositories.length;
 				

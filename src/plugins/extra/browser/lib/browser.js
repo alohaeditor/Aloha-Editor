@@ -13,6 +13,7 @@
 define([
 	
 	'aloha/jquery',
+	'util/class',
 	'css!browser/css/browsercombined.css',
 	'jquery-plugin!browser/vendor/jquery.ui',
 	'jquery-plugin!browser/vendor/ui-layout',
@@ -20,7 +21,7 @@ define([
 	'jquery-plugin!browser/vendor/jquery.jqGrid',
 	'jquery-plugin!browser/vendor/jquery.jstree'
 	
-], function (jQuery) {
+], function (jQuery, Class) {
 
 'use strict';
 
@@ -100,13 +101,11 @@ function disableSelection (el) {
 	});
 };
 
-var Browser = function () {
-	debugger;
-	this.init.apply(this, arguments);
-};
+var Browser = Class.extend({
+	_constructor: function() {
+		this.init.apply(this, arguments);
+	},
 
-jQuery.extend(Browser.prototype, {
-	
 	init: function(opts) {
 		// Extend defaults
 		var options = jQuery.extend({
@@ -195,7 +194,11 @@ jQuery.extend(Browser.prototype, {
 		this.preloadImages();
 		
 		this.element.attr('data-aloha-browser', ++uid).html('');
-		
+		// set the total element width (if configured)
+		if (this.totalWidth) {
+			this.element.width(this.totalWidth);
+		}
+
 		this.grid = this.createGrid(this.element).resize();
 		this.tree = this.createTree(this.grid.find('.ui-layout-west'));
 		this.list = this.createList(this.grid.find('.ui-layout-center'));
@@ -204,7 +207,7 @@ jQuery.extend(Browser.prototype, {
 			west__size    : tree_width - 1,
 			west__minSize : tree_width - give,
 			west__maxSize : tree_width + give,
-			center__size  : this.listWidth,
+			center__size  : 'auto',
 			paneClass     : 'ui-layout-pane',
 			resizerClass  : 'ui-layout-resizer',
 			togglerClass  : 'ui-layout-toggler',
@@ -412,7 +415,7 @@ jQuery.extend(Browser.prototype, {
 	 * Should return an object that is usable with your tree component
 	 */
 	processRepoObject: function (obj) {
-		var icon = '';
+		var icon = '', attr;
 		
 		switch (obj.baseType) {
 		case 'folder':
@@ -422,13 +425,19 @@ jQuery.extend(Browser.prototype, {
 			icon = 'document';
 			break;
 		}
-		
+
+		// if the object has a type set, we set it as type to the node
+		if (obj.type) {
+			attr = {rel: obj.type};
+		}
+
 		return {
 			data: {
 				title : obj.name, 
 				attr  : {'data-rep-oobj': obj.uid}, 
 				icon  : icon
 			},
+			attr : attr,
 			state: (obj.hasMoreItems || obj.baseType === 'folder') ? 'closed' : null,
 			resource: obj
 		};
@@ -521,7 +530,6 @@ jQuery.extend(Browser.prototype, {
 			var uid = row.attr('id');
 			item = this._objs[uid];
 			this.onSelect(item);
-			this.close();
 		}
 		
 		return item;
@@ -544,6 +552,7 @@ jQuery.extend(Browser.prototype, {
 			})
 			.bind('loaded.jstree', function (event, data) {
 				jQuery('>ul>li', this).first().css('padding-top', 5);
+				tree.jstree("open_node", "li[rel='repository']");
 			})
 			.bind('select_node.jstree', function (event, data) {
 				// Suppresses a bug in jsTree
@@ -562,9 +571,12 @@ jQuery.extend(Browser.prototype, {
 				}
 			})
 			.jstree({
+				types: that.types,
 				rootFolderId: this.rootFolderId,
-				plugins: ['themes', 'json_data', 'ui'],
-				core: {animation: 250},
+				plugins: ['themes', 'json_data', 'ui', 'types'],
+				core: {
+					animation: 250
+				},
 				themes: {
 					theme : 'browser',
 					url   : that.rootPath + 'css/jstree.css',
@@ -623,7 +635,8 @@ jQuery.extend(Browser.prototype, {
 				width	  : v.width,
 				sortable  : v.sortable,
 				sorttype  : v.sorttype,
-				resizable : v.resizable
+				resizable : v.resizable,
+				fixed	  : v.fixed
 			});
 		});
 		
@@ -665,7 +678,7 @@ jQuery.extend(Browser.prototype, {
 			)
 		);
 		
-		list.dblclick(function () {
+		list.click(function () {
 			that.rowClicked.apply(that, arguments);
 		});
 		
@@ -700,17 +713,19 @@ jQuery.extend(Browser.prototype, {
 		// Override jqGrid sorting
 		var listProps = list[0].p;
 		container.find('.ui-jqgrid-view tr:first th div').each(function(i) {
-			jQuery(this).unbind().click(function (event) {
-				event.stopPropagation();
-				that.sortList(listProps.colModel[i], this);
-			});
+			if (listProps.colModel[i].sortable !== false) {
+				jQuery(this).unbind().click(function (event) {
+					event.stopPropagation();
+					that.sortList(listProps.colModel[i], this);
+				});
+			}
 		});
 		
 		return list;
 	},
 	
 	createTitlebar: function (container) {
-		var that = this;
+		var that = this, searchField;
 		var bar  = container.find('.ui-jqgrid-titlebar');
 		var btns = jQuery(renderTemplate(
 				'<div class="{btns}">							 \
@@ -727,11 +742,28 @@ jQuery.extend(Browser.prototype, {
 		bar.find('.aloha-browser-search-btn').click(function () {
 			that.triggerSearch();
 		});
-		bar.find('.aloha-browser-search-field').keypress(function (event) {
+		searchField = bar.find('.aloha-browser-search-field').keypress(function (event) {
 			if (event.keyCode == 13) { // on Enter
 				that.triggerSearch();
 			}
 		});
+		
+		var prefilledValue = "Input search text...";
+		searchField.val(prefilledValue).addClass("aloha-browser-search-field-empty")
+		.focus(function() {
+			if (jQuery(this).val() == prefilledValue) {
+				jQuery(this)
+					.val("")
+					.removeClass("aloha-browser-search-field-empty");
+			}
+		}) .blur(function() {
+			if (jQuery(this).val() == "") {
+				jQuery(this)
+					.val(prefilledValue)
+					.addClass("aloha-browser-search-field-empty");
+			}
+		});
+
 		bar.find('.aloha-browser-close-btn').click(function () {
 			that.close();
 		});
@@ -743,8 +775,12 @@ jQuery.extend(Browser.prototype, {
 	},
 	
 	triggerSearch: function () {
-		var search = this.grid.find('input.aloha-browser-search-field');
-		
+		var search = this.grid.find('input.aloha-browser-search-field'), searchValue = search.val();
+
+		if (jQuery(search).css("font-style") == "italic") {
+			searchValue = "";
+		}
+
 		this._pagingOffset = 0;
 		this._searchQuery  = search.val();
 		
@@ -860,7 +896,8 @@ jQuery.extend(Browser.prototype, {
 				maxItems         : this.pageSize,
 				objectTypeFilter : this.objectTypeFilter,
 				renditionFilter  : this.renditionFilter,
-				filter           : this.filter
+				filter           : this.filter,
+				recursive		 : false
 			},
 			function (data) {
 				if (typeof callback === 'function') {
@@ -922,17 +959,19 @@ jQuery.extend(Browser.prototype, {
 			btns.end.add(btns.next).removeClass(disabled);
 		}
 		
-		var from;
+		var from, to;
 		
 		if (data.length == 0 && this._pagingOffset == 0) {
 			from = 0;
+			to = 0;
 		} else {
 			from = this._pagingOffset + 1;
+			to = from + data.length - 1;
 		}
 		
 		this.grid.find('.ui-paging-info').html(
 			'Viewing ' +		  (from)
-					   + ' - '  + (from + data.length)
+					   + ' - '  + (to)
 					   + ' of ' + (this._pagingCount || 'numerous')
 		);
 	},
@@ -963,7 +1002,7 @@ jQuery.extend(Browser.prototype, {
 	show: function () {
 		this.opened = true;
 		
-		this.fetchRepoRoot(this.jstree_callback);
+		// this.fetchRepoRoot(this.jstree_callback);
 		
 		var el = this.element;
 		
@@ -1017,8 +1056,20 @@ jQuery.extend(Browser.prototype, {
 				jQuery('.aloha-browser-modal-overlay').hide();
 			}
 		);
+	},
+
+	/**
+	 * Refresh the browser
+	 */
+	refresh: function () {
+		// TODO: refresh the tree?
+
+		// refresh the list, if we have a current folder
+		if (this._currentFolder) {
+			this.fetchItems(this._currentFolder, this.processItems);
+		}
 	}
-	
+
 });
 
 return Browser;
