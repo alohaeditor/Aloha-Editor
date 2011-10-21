@@ -146,9 +146,15 @@ Aloha.ready(function() {
 						Aloha.bind(
 							'aloha-selection-changed',
 							function ( event, range ) {
-								var id = +( new Date );
 								var sNode = range.startContainer;
 								var eNode = range.endContainer;
+								
+								// FIXME
+								if ( !( sNode && eNode ) ) {
+									return;
+								}
+								
+								var id = +( new Date );
 								var sClass = 'aloha-tmp-start-' + id;
 								var eClass = 'aloha-tmp-end-' + id;
 								
