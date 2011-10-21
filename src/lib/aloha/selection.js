@@ -928,7 +928,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 				objects[i] = new this.SelectionRange();
 				el = relevantMarkupObjects[i];
 				if (cropMarkupsAtEnd && !cropMarkupsAtStart) {
-					textNodes = jQuery(el).textNodes(true); debugger; // markger
+					textNodes = jQuery(el).textNodes(true);
 					objects[i].startContainer = textNodes[0];
 					objects[i].startOffset = 0;
 					// if the existing markup startContainer & startOffset are equal to the rangeObject startContainer and startOffset,
@@ -1207,7 +1207,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 				if (options.setRangeObject2NextSibling){
 					prevOrNext = true;
 					textNode2Start = newMarkup.textNodes(true).last()[0];
-					if (objects2wrap.index(rangeObject.startContainer) != -1) { debugger; //marker
+					if (objects2wrap.index(rangeObject.startContainer) != -1) {
 						rangeObject.startContainer = this.getTextNodeSibling(prevOrNext, newMarkup.parent(), textNode2Start);
 						rangeObject.startOffset = 0;
 					}
@@ -3928,8 +3928,6 @@ function correctRange ( range ) {
 		range.startOffset = range.endOffset = 0;
 	}
 	*/
-	
-	debugger;
 	
 	return range;
 };
