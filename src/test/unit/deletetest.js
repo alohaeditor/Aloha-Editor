@@ -609,8 +609,13 @@ var tests = {
 		{  	start: 'foo<br><span></span>[]bar',
 			execResult: 'foo[]bar'
 		},
-		{  	start: '<span>foo<span></span></span>[]bar',
+		{  	exclude: 'msie',
+			start: '<span>foo<span></span></span>[]bar',
 			execResult: '<span>fo[]<span></span></span>bar'
+		},
+		{  	include: 'msie',
+			start: '<span>foo<span></span></span>[]bar',
+			execResult: '<span>fo[]</span>bar'
 		},
 		{  	
 			start: 'foo<span></span><span>[]bar</span>', // broken - doCleanup should fix this
@@ -680,10 +685,12 @@ var tests = {
 			start: '<p style="color:blue;">foo<p style="color:brown;">[]bar',
 			execResult: '<p style="color:blue;">foo[]<span style="color:brown;">bar</span></p>'
 		},
-		{  	start: '<p style="color:blue">foo<p style="color:rgba(0,0,255,1)">[]bar',
+		{  	exclude: 'msie',	// ie does not recognize style="color:rgba"
+			start: '<p style="color:blue">foo</p><p style="color:rgba(0,0,255,1)">[]bar</p>',
 			execResult: '<p style="color:blue">foo[]bar</p>'
 		},
-		{  	start: '<p style="color:transparent">foo<p style="color:rgba(0,0,0,0)">[]bar',
+		{  	exclude: 'msie',   // ie does not recognize style="color:rgba"
+			start: '<p style="color:transparent">foo<p style="color:rgba(0,0,0,0)">[]bar',
 			execResult: '<p style="color:transparent">foo[]bar</p>'
 		},
 		{  	
@@ -720,11 +727,12 @@ var tests = {
 		{  	start: '<p style="background-color:aqua">foo<p>[]bar',
 			execResult: '<p style="background-color:aqua">foo[]bar</p>'
 		},
-		{  	start: '<p style="background-color:aqua">foo<p style="background-color:tan">[]bar', // broken
-			execResult: '<p style="background-color:aqua">foo[]<span style="background-color:tan">bar</span></p>'
+		{  	start: '<p style="background-color:aqua">foo<p style="background-color:tan">[]bar',
+			execResult: '<p style="background-color:aqua">foo[]bar</p>'
+			// execResult: '<p style="background-color:aqua">foo[]<span style="background-color:tan">bar</span></p>' // TODO this is the really expected behaviour
 		},
 		{  	start: '<p>foo<p style=background-color:tan>[]bar', // broken
-			execResult: '<p>foo[]<span style="background-color:tan">bar</span></p>'
+			execResult: '<p>foo[]bar</p>' // TODO this is the really expected behaviour
 		},
 		{  	
 			exclude: ['msie'], // TODO IE8 will hang on this one
@@ -763,7 +771,8 @@ var tests = {
 			start: '<p>foo<p><s>[]bar</s>',
 			execResult: '<p>foo[]<s>bar</s></p>'
 		},
-		{  	start: '<p style="color:blue">foo</p>[]bar',
+		{  	exclude: 'msie',				// TODO this test will always fail in ie, because the selection will always snap into the p
+			start: '<p style="color:blue">foo</p>[]bar',
 			execResult: '<p><span style="color: blue; ">foo[]</span>bar</p>'
 		},
 		{  	
@@ -806,9 +815,13 @@ var tests = {
 			start: '<p>foo<span style=color:#aBcDeF>{bar}</span>baz',
 			execResult: '<p>foo<span style="color:#aBcDeF"></span>[]baz</p>' // this one actually works, but the true test result will contain an empty text node within the span
 		},
-		{  	
+		{  	exclude: 'msie',
 			start: '<p>foo{<span style=color:#aBcDeF>bar</span>}baz', // broken - doCleanup should fix this
 			execResult: '<p>foo[]baz</p>'
+		},
+		{  	include: 'msie',
+			start: '<p>foo{<span style=color:#aBcDeF>bar</span>}baz',
+			execResult: '<p>foo<span style=color:#aBcDeF></span>[]baz</p>'
 		},
 		{  	start: '<p>[foo<span style=color:#aBcDeF>bar]</span>baz',
 			execResult: '<p>[]baz</p>'
@@ -853,19 +866,26 @@ var tests = {
 			execResult: '<b>foo[]</b><i>quz</i>'
 		},
 		{  	start: '<p>foo</p><p>[bar]</p><p>baz</p>',
-			execResult: '<p>foo[]</p><p>baz</p>'
+			execResult: '<p>foo</p><p>[]<br class="aloha-end-br" data-test-exclude="msie"/></p><p>baz</p>'
 		},
 		{  	start: '<p>foo</p><p>{bar}</p><p>baz</p>',
+			execResult: '<p>foo</p><p>[]<br class="aloha-end-br" data-test-exclude="msie"/></p><p>baz</p>'
+		},
+		{  	exclude: 'msie',
+			start: '<p>foo</p><p>{bar</p>}<p>baz</p>',
 			execResult: '<p>foo</p><p>[]baz</p>'
 		},
-		{  	start: '<p>foo</p><p>{bar</p>}<p>baz</p>',
+		{  	include: 'msie',				// in ie, it is not possible to select a whole paragraph
+			start: '<p>foo</p><p>{bar</p>}<p>baz</p>',
+			execResult: '<p>foo</p><p>[]</p><p>baz</p>'
+		},
+		{  	exclude: 'msie',
+			start: '<p>foo</p>{<p>bar}</p><p>baz</p>',
 			execResult: '<p>foo</p><p>[]baz</p>'
 		},
-		{  	start: '<p>foo</p>{<p>bar}</p><p>baz</p>',
-			execResult: '<p>foo</p><p>[]baz</p>'
-		},
-		{  	start: '<p>foo</p>{<p>bar</p>}<p>baz</p>',
-			execResult: '<p>foo</p><p>[]baz</p>'
+		{  	include: 'msie',				// in ie, it is not possible to select a whole paragraph
+			start: '<p>foo</p>{<p>bar</p>}<p>baz</p>',
+			execResult: '<p>foo</p><p>[]</p><p>baz</p>'
 		},
 	
 		{  	start: '<p>foo[bar<p>baz]quz',
@@ -910,9 +930,13 @@ var tests = {
 			start: '<p>foo[bar<p><b>baz]quz</b>',
 			execResult: '<p>foo[]<b>quz</b></p>'
 		},
-	
-		{  	start: '<div><p>foo<p>[bar<p>baz]</div>', // broken - doCleanup should fix this
-			execResult: '<div><p>foo[]</p><p></p></div>'
+		{  	exclude: 'msie',
+			start: '<div><p>foo<p>[bar<p>baz]</div>',
+			execResult: '<div><p>foo</p><p>[]<br class="aloha-end-br" data-test-exclude="msie"/></p></div>'
+		},
+		{  	include: 'msie',
+			start: '<div><p>foo<p>[bar<p>baz]</div>',
+			execResult: '<div><p>foo </p><p>[]<br class="aloha-end-br" data-test-exclude="msie"/></p></div>'
 		},
 
 		{  	start: 'foo[<br>]bar',

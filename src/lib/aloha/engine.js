@@ -35,7 +35,7 @@ function getStyleLength(node) {
 		// others don't, so we will count
 		var styleLength = 0;
 		for (var s in node.style) {
-			if (node.style[s]) {
+			if (node.style[s] && node.style[s] !== 0 && node.style[s] !== 'false') {
 				styleLength++;
 			}
 		}
@@ -3794,7 +3794,7 @@ function isIndentationElement(node) {
 		}
 	} else {
 		for (var s in node.style) {
-			if (/^(-[a-z]+-)?margin/.test(s) && node.style[s]) {
+			if (/^(-[a-z]+-)?margin/.test(s) && node.style[s] && node.style[s] !== 0) {
 				return true;
 			}
 		}
@@ -3836,7 +3836,7 @@ function isSimpleIndentationElement(node) {
 	} else {
 		for (var s in node.style) {
 			// This is approximate, but it works well enough for my purposes.
-			if (!/^(-[a-z]+-)?(margin|border|padding)/.test(s) && node.style[s]) {
+			if (!/^(-[a-z]+-)?(margin|border|padding)/.test(s) && node.style[s] && node.style[s] !== 0 && node.style[s] !== 'false') {
 				return false;
 			}
 		}
@@ -4730,9 +4730,11 @@ function deleteContents() {
 		// "If parent is editable or an editing host, is not an inline node,
 		// and has no children, call createElement("br") on the context object
 		// and append the result as the last child of parent."
+		// only do this, if the offsetHeight is 0
 		if ((isEditable(parent_) || isEditingHost(parent_))
 		&& !isInlineNode(parent_)
-		&& !parent_.hasChildNodes()) {
+		&& !parent_.hasChildNodes()
+		&& parent_.offsetHeight === 0) {
 			parent_.appendChild(createEndBreak());
 		}
 	}
