@@ -110,11 +110,13 @@
 	
 	
 	<script type="text/javascript">
-	Aloha.ready( function(){
-		var $ = Aloha.jQuery;
-			$('#title').aloha();
-			$('#teaser').aloha();
-			$('#content').aloha();
+	require.ready(function(){
+		Aloha.ready( function(){
+			var $ = Aloha.jQuery;
+				$('#title').aloha();
+				$('#teaser').aloha();
+				$('#content').aloha();
+		});
 	});
   </script>
 </body>
