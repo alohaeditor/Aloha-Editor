@@ -1131,6 +1131,9 @@ function setActiveRange( range ) {
 	rangeObject.select();
 }
 
+// Please note: This method is deprecated and will be removed. 
+// Every command should use the value and range parameter. 
+// 
 // "The active range is the first range in the Selection given by calling
 // getSelection() on the context object, or null if there is no such range."
 //
@@ -1138,25 +1141,27 @@ function setActiveRange( range ) {
 // active range meets the requirements that selection boundary points are
 // supposed to meet, i.e., that the nodes are both Text or Element nodes that
 // descend from a Document.
-function getActiveRange() {
-	var ret;
-	if (globalRange) {
-		ret = globalRange;
-	} else if (Aloha.getSelection().rangeCount) {
-		ret = Aloha.getSelection().getRangeAt(0);
-	} else {
-		return null;
-	}
-	if ([Node.TEXT_NODE, Node.ELEMENT_NODE].indexOf(ret.startContainer.nodeType) == -1
-	|| [Node.TEXT_NODE, Node.ELEMENT_NODE].indexOf(ret.endContainer.nodeType) == -1
-	|| !ret.startContainer.ownerDocument
-	|| !ret.endContainer.ownerDocument
-	|| !isDescendant(ret.startContainer, ret.startContainer.ownerDocument)
-	|| !isDescendant(ret.endContainer, ret.endContainer.ownerDocument)) {
-		throw "Invalid active range; test bug?";
-	}
-	return ret;
-}
+//
+//function getActiveRange() {
+//
+//	var ret;
+//	if (globalRange) {
+//		ret = globalRange;
+//	} else if (Aloha.getSelection().rangeCount) {
+//		ret = Aloha.getSelection().getRangeAt(0);
+//	} else {
+//		return null;
+//	}
+//	if ([Node.TEXT_NODE, Node.ELEMENT_NODE].indexOf(ret.startContainer.nodeType) == -1
+//	|| [Node.TEXT_NODE, Node.ELEMENT_NODE].indexOf(ret.endContainer.nodeType) == -1
+//	|| !ret.startContainer.ownerDocument
+//	|| !ret.endContainer.ownerDocument
+//	|| !isDescendant(ret.startContainer, ret.startContainer.ownerDocument)
+//	|| !isDescendant(ret.endContainer, ret.endContainer.ownerDocument)) {
+//		throw "Invalid active range; test bug?";
+//	}
+//	return ret;
+//}
 
 // "For some commands, each HTMLDocument must have a boolean state override
 // and/or a string value override. These do not change the command's state or
@@ -3333,7 +3338,8 @@ commands.fontsize = {
 
 		// "Set the selection's value to value."
 		setSelectionValue("fontsize", value);
-	}, indeterm: function() {
+	}, 
+	indeterm: function() {
 		// "True if among editable Text nodes that are effectively contained in
 		// the active range, there are two that have distinct effective command
 		// values.  Otherwise false."
@@ -3344,17 +3350,18 @@ commands.fontsize = {
 		}).filter(function(value, i, arr) {
 			return arr.slice(0, i).indexOf(value) == -1;
 		}).length >= 2;
-	}, value: function() {
+	}, 
+	value: function(range) {
 		// "Let pixel size be the effective command value of the first editable
 		// Text node that is effectively contained in the active range, or if
 		// there is no such node, the effective command value of the active
 		// range's start node, in either case interpreted as a number of
 		// pixels."
-		var node = getAllEffectivelyContainedNodes(getActiveRange(), function(node) {
+		var node = getAllEffectivelyContainedNodes(range, function(node) {
 			return isEditable(node) && node.nodeType == Node.TEXT_NODE;
 		})[0];
 		if (node === undefined) {
-			node = getActiveRange().startContainer;
+			node = range.startContainer;
 		}
 		var pixelSize = getEffectiveCommandValue(node, "fontsize");
 
@@ -4334,14 +4341,14 @@ function recordCurrentOverrides( range ) {
 	return overrides;
 }
 
-function recordCurrentStatesAndValues() {
+function recordCurrentStatesAndValues(range) {
 	// "Let overrides be a list of (string, string or boolean) ordered pairs,
 	// initially empty."
 	var overrides = [];
 
 	// "Let node be the first editable Text node effectively contained in the
 	// active range, or null if there is none."
-	var node = getAllEffectivelyContainedNodes(getActiveRange())
+	var node = getAllEffectivelyContainedNodes(range)
 		.filter(function(node) { return isEditable(node) && node.nodeType == Node.TEXT_NODE })[0];
 
 	// "If node is null, return overrides."
@@ -4350,7 +4357,7 @@ function recordCurrentStatesAndValues() {
 	}
 
 	// "Add ("createLink", value for "createLink") to overrides."
-	overrides.push(["createlink", commands.createlink.value()]);
+	overrides.push(["createlink", commands.createlink.value(range)]);
 
 	// "For each command in the list "bold", "italic", "strikethrough",
 	// "subscript", "superscript", "underline", in order: if node's effective
@@ -4370,7 +4377,7 @@ function recordCurrentStatesAndValues() {
 	// "For each command in the list "fontName", "foreColor", "hiliteColor", in
 	// order: add (command, command's value) to overrides."
 	["fontname", "fontsize", "forecolor", "hilitecolor"].forEach(function(command) {
-		overrides.push([command, commands[command].value()]);
+		overrides.push([command, commands[command].value(range)]);
 	});
 
 	// "Add ("fontSize", node's effective command value for "fontSize") to
@@ -4658,7 +4665,7 @@ function deleteContents() {
 	}
 
 	// "Record current states and values, and let overrides be the result."
-	var overrides = recordCurrentStatesAndValues();
+	var overrides = recordCurrentStatesAndValues(range);
 
 	// "If start node and end node are the same, and start node is an editable
 	// Text node:"
@@ -6582,22 +6589,23 @@ commands.formatblock = {
 ///// The forwardDelete command /////
 //@{
 commands.forwarddelete = {
-	action: function() {
+	action: function(value, range) {
+	
 		// "If the active range is not collapsed, delete the contents of the
 		// active range and abort these steps."
-		if (!getActiveRange().collapsed) {
-			deleteContents(getActiveRange());
+		if (!range.collapsed) {
+			deleteContents(range);
 			return;
 		}
 
 		// "Canonicalize whitespace at (active range's start node, active
 		// range's start offset)."
-		canonicalizeWhitespace(getActiveRange().startContainer, getActiveRange().startOffset);
+		canonicalizeWhitespace(range.startContainer, range.startOffset);
 
 		// "Let node and offset be the active range's start node and offset."
-		var node = getActiveRange().startContainer;
-		var offset = getActiveRange().startOffset;
-
+		var node = range.startContainer;
+		var offset = range.startOffset;
+		
 		// "Repeat the following steps:"
 		while (true) {
 			// "If offset is the length of node and node's nextSibling is an
@@ -6649,8 +6657,8 @@ commands.forwarddelete = {
 		if (node.nodeType == Node.TEXT_NODE
 		&& offset != getNodeLength(node)) {
 			// "Call collapse(node, offset) on the Selection."
-			getActiveRange().setStart(node, offset);
-			getActiveRange().setEnd(node, offset);
+			range.setStart(node, offset);
+			range.setEnd(node, offset);
 
 			// "Let end offset be offset plus one."
 			var endOffset = offset + 1;
@@ -6687,8 +6695,8 @@ commands.forwarddelete = {
 		// offset + 1) and abort these steps."
 		if (offset < node.childNodes.length
 		&& isHtmlElement(node.childNodes[offset], ["br", "hr", "img"])) {
-			getActiveRange().setStart(node, offset);
-			getActiveRange().setEnd(node, offset);
+			range.setStart(node, offset);
+			range.setEnd(node, offset);
 			deleteContents(node, offset, node, offset + 1);
 			return;
 		}
@@ -6728,11 +6736,11 @@ commands.forwarddelete = {
 		if (isHtmlElement(endNode.childNodes[endOffset], "table")) {
 			// "Call collapse(end node, end offset) on the context object's
 			// Selection."
-			getActiveRange().setStart(endNode, endOffset);
+			range.setStart(endNode, endOffset);
 
 			// "Call extend(end node, end offset + 1) on the context object's
 			// Selection."
-			getActiveRange().setEnd(endNode, endOffset + 1);
+			range.setEnd(endNode, endOffset + 1);
 
 			// "Abort these steps."
 			return;
@@ -6743,8 +6751,8 @@ commands.forwarddelete = {
 		if (offset == getNodeLength(node)
 		&& isHtmlElement(endNode.childNodes[endOffset], ["br", "hr"])) {
 			// "Call collapse(node, offset) on the Selection."
-			getActiveRange().setStart(node, offset);
-			getActiveRange().setEnd(node, offset);
+			range.setStart(node, offset);
+			range.setEnd(node, offset);
 
 			// "Delete the contents of the range with end (end node, end
 			// offset) and end (end node, end offset + 1)."
@@ -6858,10 +6866,8 @@ commands.indent = {
 ///// The insertHorizontalRule command /////
 //@{
 commands.inserthorizontalrule = {
-	action: function() {
-		// "Let range be the active range."
-		var range = getActiveRange();
-
+	action: function(value, range) {
+		
 		// "While range's start offset is 0 and its start node's parent is not
 		// null, set range's start to (parent of start node, index of start
 		// node)."
@@ -8078,14 +8084,14 @@ commandNames.forEach(function(command) {
 			return false;
 		};
 
-		commands[command].value = function() {
-			var refNode = getAllEffectivelyContainedNodes(getActiveRange(), function(node) {
+		commands[command].value = function(range) {
+			var refNode = getAllEffectivelyContainedNodes(range, function(node) {
 				return isEditable(node)
 					&& node.nodeType == Node.TEXT_NODE;
 			})[0];
 
 			if (typeof refNode == "undefined") {
-				refNode = getActiveRange().startContainer;
+				refNode = range.startContainer;
 			}
 
 			return getEffectiveCommandValue(refNode, command);
