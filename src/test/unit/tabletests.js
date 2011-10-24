@@ -121,7 +121,7 @@ function( TestUtils ) {
 							<tr><td>foo</td><td>&nbsp;</td><td>bar</td></tr>\
 						 </tbody></table>',
 			operation : function ( table ) {
-				table.selection.selectColumns( [ 2 ] ); 
+				table.selection.selectColumns( [ 2 ] );
 				table.addColumnsLeft();
 			}
 		},
@@ -155,6 +155,77 @@ function( TestUtils ) {
 			operation : function ( table ) {
 				table.selection.selectColumns( [ 2 ] ); 
 				table.addColumnsLeft();
+			}
+		},
+		
+		{
+			exclude	  : true,
+			desc      : 'Colum selection with merged cells ',
+			start     : '<table><tbody>\
+							<tr><td rowspan="1" colspan="2">foo1 bar1</td></tr>\
+							<tr><td>foo2</td><td>bar2</td></tr>\
+						 </tbody></table>',
+			expected  : '<table><tbody>\
+							<tr><td rowspan="1" colspan="2">foo1 bar1</td></tr>\
+							<tr><td>foo2</td><td>was selected</td></tr>\
+						 </tbody></table>',
+			operation : function ( table ) {
+				table.selection.selectColumns( [ 2 ] );
+				table.obj.find( '.aloha-cell-selected' )
+					 .html( 'was selected' )
+					 .removeAttr( 'class' )
+					 .removeAttr( 'style' );
+			}
+		},
+		
+		{
+			exclude	  : true,
+			desc      : 'Insert column before column 2, with merged cells (corrected to 2)',
+			start     : '<table><tbody>\
+							<tr><td rowspan="1" colspan="2">foo1 bar1</td></tr>\
+							<tr><td>foo2</td><td>bar2</td></tr>\
+						 </tbody></table>',
+			expected  : '<table><tbody>\
+							<tr><td>&nbsp;</td><td rowspan="1" colspan="2">foo1 bar1</td></tr>\
+							<tr><td>foo2</td><td>&nbsp;</td><td>bar2</td></tr>\
+						 </tbody></table>',
+			operation : function ( table ) {
+				table.selection.selectColumns( [ 2 ] );
+				table.addColumnsLeft();
+			}
+		},
+		
+		{
+			exclude	  : true,
+			desc      : 'Remove 2nd column (corrected to 2)',
+			start     : '<table><tbody>\
+							<tr><td>foo1</td><td class="aloha-cell-selected">bar1</td></tr>\
+							<tr><td>foo2</td><td class="aloha-cell-selected">bar2</td></tr>\
+						 </tbody></table>',
+			expected  : '<table><tbody>\
+							<tr><td>foo1</td></tr>\
+							<tr><td>foo2</td></tr>\
+						 </tbody></table>',
+			operation : function ( table ) {
+				table.selection.selectColumns( [ 2 ] ); 
+				table.deleteColumns();
+			}
+		},
+		
+		{
+			exclude	  : true,
+			desc      : 'Remove 2nd column (corrected to 2) of merged row',
+			start     : '<table><tbody>\
+							<tr><td rowspan="1" colspan="3">foo1 bar1 test1</td></tr>\
+							<tr><td>foo2</td><td class="aloha-cell-selected">bar2</td><td>test2</td></tr>\
+						 </tbody></table>',
+			expected  : '<table><tbody>\
+							<tr><td rowspan="1" colspan="2">foo1 bar1 test1</td></tr>\
+							<tr><td>foo2</td><td>test2</td></tr>\
+						 </tbody></table>',
+			operation : function ( table ) {
+				table.selection.selectColumns( [ 2 ] ); 
+				table.deleteColumns();
 			}
 		},
 		
@@ -481,7 +552,7 @@ function( TestUtils ) {
 		},
 		
 		{
-			exclude   : false,
+			exclude   : true,
 			desc      : 'Toggle header to td cell',
 			start     : '<table><tbody>\
 							<tr><th scope="row" class="aloha-cell-selected">foo1</th><td>bar1</td></tr>\
@@ -512,7 +583,7 @@ function( TestUtils ) {
 			testcase = tests[ i ];
 			
 			if ( testcase.exclude === true ) {
-				continue; // comment out to run all tests
+				//continue; // comment in to run all tests
 			}
 			
 			if ( testcase.module ) {
