@@ -199,7 +199,7 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, console) {
 			// add the event handler for selection change
 			Aloha.bind('aloha-selection-changed', function(event, rangeObject) {
 				var config, foundMarkup;
-
+				
 				// Check if we need to ignore this selection changed event for
 				// now and check whether the selection was placed within a
 				// editable area.
@@ -218,12 +218,15 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, console) {
 					}
 
 					foundMarkup = that.findLinkMarkup( rangeObject );
+
+					// link found
 					if ( foundMarkup ) {
-						// link found
 						that.insertLinkButton.hide();
 						that.formatLinkButton.setPressed(true);
 						FloatingMenu.setScope('link');
 						that.hrefField.setTargetObject(foundMarkup, 'href');
+					
+						
 					} else {
 						// no link found
 						that.formatLinkButton.setPressed(false);
@@ -280,10 +283,7 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, console) {
 			);
 
 			// add the new scope for links
-			FloatingMenu.createScope('link', 'Aloha.continuoustext'); //'Aloha.continuoustext');
-
-			/* moved browser integration to linkbrowser plugin */
-
+			FloatingMenu.createScope('link', 'Aloha.continuoustext');
 
 			this.hrefField = new Aloha.ui.AttributeField({
 				'name': 'href',
@@ -328,6 +328,11 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, console) {
 			// update link object when src changes
 			this.hrefField.addListener('keyup', function(obj, event) {
 				
+				// Now show all the ui-attributefield elements
+				jQuery('.x-layer x-combo-list').show(); 
+				jQuery('.x-combo-list-inner').show();
+				jQuery('.x-combo-list').show();
+				
 				// if the user presses ESC we do a rough check if he has entered a link or searched for something
 				if (event.keyCode == 27) {
 					var curval = that.hrefField.getQueryValue();
@@ -346,6 +351,7 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, console) {
 
 				that.hrefChange();
 				
+				
 				// Handle the enter key. Terminate the link scope and show the final link.
 				if (event.keyCode == 13) {
 					// Update the selection and place the cursor at the end of the link.
@@ -359,16 +365,30 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, console) {
 					range.startContainer = range.endContainer;
 					range.startOffset = range.endOffset;
 					range.select();
-					that.ignoreNextSelectionChangedEvent = true;
+					//that.ignoreNextSelectionChangedEvent = true;
 					
 					var hrefValue = jQuery(that.hrefField.extButton.el.dom).attr('value');
 					if (hrefValue ==="http://" || hrefValue === "") {
 						that.removeLink(false);
 					}
-
-					// Call it twice to work around a stuck part of the ui attributefield
-					FloatingMenu.setScope('Aloha.continuoustext');
-					FloatingMenu.setScope('Aloha.continuoustext');
+					
+					setTimeout( function() {
+						FloatingMenu.setScope('Aloha.continuoustext');
+					}, 100);
+					
+					jQuery('.x-layer').hide();
+					jQuery('.x-shadow').hide();
+					jQuery('.x-combo-list-inner').hide();
+					jQuery('.x-combo-list').hide();
+					
+					setTimeout( function() {
+						jQuery('.x-layer').hide();
+						jQuery('.x-shadow').hide();
+						jQuery('.x-combo-list-inner').hide();
+						jQuery('.x-combo-list').hide();
+							
+					},200);
+					
 				}
 				
 			});
