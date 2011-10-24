@@ -70,7 +70,7 @@ function( TestUtils ) {
 			converter.text(check.value);
 			var	name = check.name || '"' + converter.html() + '": ' + desc;
 			
-			module( 'Commmand ' + (i+1) + ' ' + tests.defaultCommand + (excluded ? ' EXCLUDED' : ''), {
+			module( 'Command ' + (i+1) + ' ' + tests.defaultCommand + (excluded ? ' EXCLUDED' : ''), {
 				setup: function() {
 					// fill the editable area with the start value
 					editable.html(this.check.start);

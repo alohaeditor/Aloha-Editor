@@ -50,6 +50,9 @@
 			        {  	start: 'fo[o]',
 				       	execResult: 'fobam[]' 
 				    },
+			        {  	start: '{}',
+				       	expected: 'bam[]' 
+				    },
 			        {  	start: '{}<br>',
 				       	execResult: 'bam[]<br>' 
 				    },
@@ -276,12 +279,12 @@
 					},
 					// TODO fix doCleanup to remove empty nodes
 					{  	start: '<a>[foo]</a>bar',
-					  	execResult: '<a></a><a href="/">bam[]</a><a></a>bar',
+					  	execResult: '<a href="/">bam[]</a>bar',
 				       	value: '<a href=/>bam</a>', 
 						attributes: ['href']
 					},
 					{  	start: '<a>[foo</a>]bar',
-					  	execResult: '<a></a><a href="/">bam[]</a><a></a>bar',
+					  	execResult: '<a href="/">bam[]</a>bar',
 				       	value: '<a href=/>bam</a>', 
 						attributes: ['href'] 
 					},
