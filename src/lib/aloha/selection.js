@@ -3889,7 +3889,30 @@ function sanitizeOffset ( node, offset ) {
 	return offset;
 };
 
+/**
+ * This method implements an ugly workaround for a selection problem in ie:
+ * when the cursor shall be placed at the end of a text node in a li element, that is followed by a nested list,
+ * the selection would always snap into the first li of the nested list
+ * therefore, we make sure that the text node ends with a space and place the cursor right before it
+ */
+function nestedListInIEWorkaround ( range ) {
+	if (jQuery.browser.msie
+		&& range.startContainer === range.endContainer
+		&& range.startOffset === range.endOffset
+		&& range.startContainer.nodeType == 3
+		&& range.startOffset == range.startContainer.data.length
+		&& range.startContainer.nextSibling
+		&& ["OL", "UL"].indexOf(range.startContainer.nextSibling.nodeName) !== -1) {
+		if (range.startContainer.data[range.startContainer.data.length-1] == ' ') {
+			range.startOffset = range.endOffset = range.startOffset-1;
+		} else {
+			range.startContainer.data = range.startContainer.data + ' ';
+		}
+	}
+}
+
 function correctRange ( range ) {
+	nestedListInIEWorkaround(range);
 	return range;
 	
 	var startContainer = range.startContainer,
