@@ -10,8 +10,8 @@ function( TestUtils ) {
 	'use strict';
 	
 	function getSelectedCells ( table ) {
-		var $cells = table.obj.find( 'td.aloha-cell-selected' );
-		var cells = [];
+		var cells = [],
+		    $cells = table.obj.find( 'td.aloha-cell-selected' );
 		$cells.each( function () { cells.push( this ); } );
 		return cells;
 	};
@@ -21,7 +21,8 @@ function( TestUtils ) {
 		{ module : 'Activation/deactivation' },
 		
 		{
-			desc	  : 'Activate and deactivate a table',
+			exclude   : true,
+			desc      : 'Activate and deactivate a table',
 			start     : '<table><tbody><tr><td>foo</td></tr></tbody></table>',
 			expected  : '<table><tbody><tr><td>foo</td></tr></tbody></table>',
 			operation : function ( table ) {}
@@ -29,37 +30,39 @@ function( TestUtils ) {
 		
 		//
 		//	  NB:
-		//	------------------------------------------------------------------
-		//	  selectRow and selectColumns has a bug where it allows us to
-		//	  programmatically select the helper column (and row).
+		//	-------------------------------------------------------------------
+		//	  selectRow and selectColumns has a bug where index 0 selects the
+		//	  helper row/column instead of the first editable row/column.
 		//	  All following tests will work around this fault by using
-		//	  1-indexing with selectcolumns rather than 0 based indexing
-		//	------------------------------------------------------------------
+		//	  1-indexing with selectcolumns rather than 0 based indexing.
+		//	-------------------------------------------------------------------
 		//
 		
 		{ module : 'Row/column selection' },
 		
 		{
-			desc	  : 'Select column by index',
+			exclude   : true,
+			desc      : 'Select column by index',
 			start     : '<table><tbody><tr><td>foo</td></tr></tbody></table>',
 			expected  : '<table><tbody><tr><td>bar</td></tr></tbody></table>',
 			operation : function ( table ) {
-				table.selectColumns( [ 0 ] );
+				table.selection.selectColumns( [ 0 ] );
 				table.obj.find( '.aloha-cell-selected' )
-					 .html( 'bar' )
+					 .html( 'foo was selected' )
 					 .removeAttr( 'class' )
 					 .removeAttr( 'style' );
 			}
 		},
 		
 		{
-			desc	  : 'Select row by index',
+			exclude   : true,
+			desc      : 'Select row by index',
 			start     : '<table><tbody><tr><td>foo</td></tr></tbody></table>',
 			expected  : '<table><tbody><tr><td>bar</td></tr></tbody></table>',
 			operation : function ( table ) {
-				table.selectRows( [ 0 ] );
+				table.selection.selectRows( [ 0 ] );
 				table.obj.find( '.aloha-cell-selected' )
-					 .html( 'bar' )
+					 .html( 'foo was selected' )
 					 .removeAttr( 'class' )
 					 .removeAttr( 'style' );
 			}
@@ -72,37 +75,53 @@ function( TestUtils ) {
 		//
 		
 		{
-			desc	  : 'Insert column right of column at index 0',
-			start     : '<table><tbody><tr><td>foo</td><td>bar</td></tr></tbody></table>',
-			expected  : '<table><tbody><tr><td>foo</td><td>&nbsp;</td><td>bar</td></tr></tbody></table>',
+			exclude	  : true,
+			desc      : 'Insert column right of column at index 0 (corrected to work with 1)',
+			start     : '<table><tbody>\
+							<tr><td>foo</td><td>bar</td></tr>\
+						 </tbody></table>',
+			expected  : '<table><tbody>\
+							<tr><td>foo</td><td>&nbsp;</td><td>bar</td></tr>\
+						 </tbody></table>',
 			operation : function ( table ) {
-				table.selectColumns( [ 0 ] ); 
+				table.selection.selectColumns( [ 1 ] ); 
 				table.addColumnsRight();
 			}
 		},
 		
 		{
-			desc	  : 'Insert column right of column at index 1',
-			start     : '<table><tbody><tr><td>foo</td></tr></tbody></table>',
-			expected  : '<table><tbody><tr><td>foo</td><td>&nbsp;</td></tr></tbody></table>',
+			exclude	  : true,
+			desc      : 'Insert column right of column at index 1',
+			start     : '<table><tbody>\
+							<tr><td>foo</td><td>bar</td></tr>\
+						 </tbody></table>',
+			expected  : '<table><tbody>\
+							<tr><td>foo</td><td>&nbsp;</td><td>bar</td></tr>\
+						 </tbody></table>',
 			operation : function ( table ) {
-				table.selectColumns( [ 1 ] ); 
-				table.addColumnsRight();
-			}
-		},
-		
-		{
-			desc	  : 'Insert column left of 1st column',
-			start     : '<table><tbody><tr><td>foo</td></tr></tbody></table>',
-			expected  : '<table><tbody><tr><td>&nbsp;</td><td>foo</td></tr></tbody></table>',
-			operation : function ( table ) {
-				table.selectColumns( [ 0 ] ); 
+				table.selection.selectColumns( [ 2 ] ); 
 				table.addColumnsLeft();
 			}
 		},
 		
 		{
-			desc	  : 'Add column left of 2nd column',
+			exclude	  : true,
+			desc      : 'Insert column left of 1st column',
+			start     : '<table><tbody>\
+							<tr><td>foo</td></tr>\
+						 </tbody></table>',
+			expected  : '<table><tbody>\
+							<tr><td>&nbsp;</td><td>foo</td></tr>\
+						 </tbody></table>',
+			operation : function ( table ) {
+				table.selection.selectColumns( [ 0 ] ); 
+				table.addColumnsLeft();
+			}
+		},
+		
+		{
+			exclude	  : true,
+			desc      : 'Add column left of 2nd column',
 			start     : '<table><tbody>\
 							<tr><td>foo</td><td>bar</td></tr>\
 							<tr><td>foo1</td><td>bar2</td></tr>\
@@ -112,7 +131,7 @@ function( TestUtils ) {
 							<tr><td>foo1</td><td>&nbsp;</td><td>bar2</td></tr>\
 						 </tbody></table>',
 			operation : function ( table ) {
-				table.selectColumns( [ 2 ] ); 
+				table.selection.selectColumns( [ 2 ] ); 
 				table.addColumnsLeft();
 			}
 		},
@@ -124,27 +143,42 @@ function( TestUtils ) {
 		//
 		
 		{
-			desc	  : 'Add row at index 0',
-			start     : '<table><tbody><tr><td>foo</td></tr></tbody></table>',
-			expected  : '<table><tbody><tr><td>foo</td></tr><tr><td>&nbsp;</td></tr></tbody></table>',
+			exclude	  : true,
+			desc      : 'Add row at index 0 (corrected to 1)',
+			start     : '<table><tbody>\
+							<tr><td>foo</td></tr>\
+						 </tbody></table>',
+			expected  : '<table><tbody>\
+							<tr><td>foo</td></tr>\
+							<tr><td>&nbsp;</td></tr>\
+						 </tbody></table>',
 			operation : function ( table ) {
-				table.addRow( 0 );
+				table.addRow( 1 );
 			}
 		},
 		
 		{
-			desc	  : 'Add row at index 1',
-			start     : '<table><tbody><tr><td>foo</td></tr><tr><td>bar</td></tr></tbody></table>',
-			expected  : '<table><tbody><tr><td>foo</td></tr><tr><td>&nbsp;</td></tr><tr><td>bar</td></tr></tbody></table>',
+			exclude   : true,
+			desc      : 'Add row at index 1 (corrected to 2)',
+			start     : '<table><tbody>\
+							<tr><td>foo</td></tr>\
+							<tr><td>bar</td></tr>\
+						 </tbody></table>',
+			expected  : '<table><tbody>\
+							<tr><td>foo</td></tr>\
+							<tr><td>&nbsp;</td></tr>\
+							<tr><td>bar</td></tr>\
+						 </tbody></table>',
 			operation : function ( table ) {
-				table.addRow( 1 );
+				table.addRow( 2 );
 			}
 		},
 		
 		{ module : 'Merging cells' },
 		
 		{
-			desc	  : 'Basic columns merging',
+			exclude   : true,
+			desc      : 'Basic columns merging',
 			start     : '<table><tbody>\
 							<tr><td class="aloha-cell-selected">foo</td></tr>\
 							<tr><td class="aloha-cell-selected">bar</td></tr>\
@@ -160,7 +194,8 @@ function( TestUtils ) {
 		},
 		
 		{
-			desc	  : 'Merging columns',
+			exclude   : true,
+			desc      : 'Merging columns with inner tags',
 			start     : '<table><tbody>\
 							<tr><td class="aloha-cell-selected"><i>foo</i></td></tr>\
 							<tr><td class="aloha-cell-selected">bar</td></tr>\
@@ -176,6 +211,8 @@ function( TestUtils ) {
 		},
 		
 		{
+			exclude   : true,
+			desc      : 'Merge a single cell',
 			start     : '<table><tbody>\
 							<tr><td class="aloha-cell-selected">foo</td></tr>\
 							<tr><td>bar</td></tr>\
@@ -191,6 +228,25 @@ function( TestUtils ) {
 		},
 		
 		{
+			exclude   : true,
+			desc      : 'Merge column',
+			start     : '<table><tbody>\
+							<tr><td class="aloha-cell-selected">foo1</td><td>bar1</td></tr>\
+							<tr><td class="aloha-cell-selected">foo2</td><td>bar2</td></tr>\
+						 </tbody></table>',
+			expected  : '<table><tbody>\
+							<tr><td rowspan="2" colspan="1">foo1 foo2</td><td>bar1</td></tr>\
+							<tr><td>bar2</td></tr>\
+						 </tbody></table>',
+			operation : function ( table ) {
+				table.selection.selectedCells = getSelectedCells( table );
+				table.selection.mergeCells();
+			}
+		},
+		
+		{
+			exclude   : true,
+			desc      : 'Merge column, with inner tags',
 			start     : '<table><tbody>\
 							<tr><td class="aloha-cell-selected"><i>foo</i></td></tr>\
 							<tr><td class="aloha-cell-selected"><i>bar</i></td></tr>\
@@ -206,6 +262,8 @@ function( TestUtils ) {
 		},
 		
 		{
+			exclude   : true,
+			desc      : 'Merge a row',
 			start     : '<table><tbody>\
 							<tr><td class="aloha-cell-selected">foo1</td>\
 								<td class="aloha-cell-selected">bar1</td></tr>\
@@ -220,8 +278,31 @@ function( TestUtils ) {
 				table.selection.mergeCells();
 			}
 		},
+
+		{
+			exclude   : true,
+			desc      : 'Merge a 2x2 rectangular selection',
+			start     : '<table><tbody>\
+							<tr><td class="aloha-cell-selected">foo1</td>\
+								<td class="aloha-cell-selected">bar1</td></tr>\
+							<tr><td class="aloha-cell-selected">foo2</td>\
+								<td class="aloha-cell-selected">bar2</td></tr>\
+						 </tbody></table>',
+			expected  : '<table><tbody>\
+							<tr><td rowspan="2" colspan="2">\
+								foo1 bar1 foo2 bar2\
+							</td></tr>\
+							<tr></tr>\
+						 </tbody></table>',
+			operation : function ( table ) {
+				table.selection.selectedCells = getSelectedCells( table );
+				table.selection.mergeCells();
+			}
+		},
 		
 		{
+			exclude   : true,
+			desc      : 'Merge a 2x2 rectangular selection, with inner tags',
 			start     : '<table><tbody>\
 							<tr><td class="aloha-cell-selected"><i>foo1</i></td>\
 								<td class="aloha-cell-selected"><i>bar1</i></td></tr>\
@@ -233,41 +314,6 @@ function( TestUtils ) {
 								<i>foo1</i> <i>bar1</i> <i>foo2</i> <i>bar2</i>\
 							</td></tr>\
 							<tr></tr>\
-						 </tbody></table>',
-			operation : function ( table ) {
-				table.selection.selectedCells = getSelectedCells( table );
-				table.selection.mergeCells();
-			}
-		},
-		
-		{
-			start     : '<table><tbody>\
-							<tr><td class="aloha-cell-selected"><i>foo1</i></td>\
-								<td class="aloha-cell-selected"><i>bar1</i></td></tr>\
-							<tr><td><i>foo2</i></td>\
-								<td><i>bar2</i></td></tr>\
-						 </tbody></table>',
-			expected  : '<table><tbody>\
-							<tr><td rowspan="1" colspan="2">\
-								<i>foo1</i> <i>bar1</i>\
-							</td></tr>\
-							<tr><td><i>foo2</i></td>\
-								<td><i>bar2</i></td></tr>\
-						 </tbody></table>',
-			operation : function ( table ) {
-				table.selection.selectedCells = getSelectedCells( table );
-				table.selection.mergeCells();
-			}
-		},
-		
-		{
-			start     : '<table><tbody>\
-							<tr><td class="aloha-cell-selected">foo1</td><td>bar1</td></tr>\
-							<tr><td class="aloha-cell-selected">foo2</td><td>bar2</td></tr>\
-						 </tbody></table>',
-			expected  : '<table><tbody>\
-							<tr><td rowspan="2" colspan="1">foo1 foo2</td><td>bar1</td></tr>\
-							<tr><td>bar2</td></tr>\
 						 </tbody></table>',
 			operation : function ( table ) {
 				table.selection.selectedCells = getSelectedCells( table );
@@ -295,7 +341,7 @@ function( TestUtils ) {
 		// Toggle header transformations
 		//
 		
-		[]
+		{ exclude : true } // ... nothing
 	];
 
 	Aloha.ready( function() {
@@ -308,6 +354,10 @@ function( TestUtils ) {
 		
 		for ( var i = 0; i < tests.length; i++ ) {
 			testcase = tests[ i ];
+			
+			if ( testcase.exclude === true ) {
+				// continue; // comment out to run all tests
+			}
 			
 			if ( testcase.module ) {
 				module( testcase.module.toUpperCase() + ' :' );
