@@ -76,9 +76,10 @@ h5. Debian Linux
 <shell>
 apt-get install build-essential
 apt-get install ruby1.9.1-full
-gem install guides
+cd /usr/bin
 ln -s ruby1.9.1  ruby
 ln -s gem1.9.1  gem
+gem install guides
 ln -s /var/lib/gems/1.9.1/gems/guides-0.7.1/bin/guides /usr/bin/guides
 guides preview 
 </shell>
