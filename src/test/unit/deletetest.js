@@ -426,7 +426,7 @@ var tests = {
 		},
 		{
 			start: '<ul><li>foo</li><li><br>[]bar</li></ul>',
-			execResult: '<ul><li>foo</li><li><br>[]bar</li></ul>',
+			execResult: '<ul><li>foo</li><li>[]bar</li></ul>',
 		},
 
 //		{  	start: 'foo<dl><dt>[]bar<dd>baz</dl>',
