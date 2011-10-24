@@ -359,8 +359,6 @@ function (jQuery, Utils) {
 			r.moveToElementText(e);
 			r.select();
 		}
-
-		Aloha.Selection.updateSelection(editableNode);
 	};
 
 	/**

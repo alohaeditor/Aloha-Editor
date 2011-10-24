@@ -150,31 +150,33 @@ Aloha.Markup = Class.extend({
 			cursorIsWithinBlock = false, // check whether the cursor is positioned within a block (contenteditable = false)
 			cursorAtLastPos = false, // check if the cursor is within the last position of the currently active dom element
 			obj; // will contain references to dom objects
-		
-		if (!range.isCollapsed()) {
+
+		if ( !range.isCollapsed() ) {
 			return true;
 		}
-		
+
 		for (;i < rt.length; i++) {
-			cursorAtLastPos = range.startOffset === rt[i].domobj.length;
-			if (cursorAtLastPos) {
-				nextSiblingIsBlock = jQuery(rt[i].domobj.nextSibling).attr('contenteditable') === 'false';
-				cursorIsWithinBlock = jQuery(rt[i].domobj).parents('[contenteditable=false]').length > 0;
+			if ( typeof rt[i].domobj !== 'undefined' ) {
+				cursorAtLastPos = range.startOffset === rt[i].domobj.length;
+				if (cursorAtLastPos) {
+					nextSiblingIsBlock = jQuery( rt[i].domobj.nextSibling ).attr('contenteditable') === 'false';
+					cursorIsWithinBlock = jQuery( rt[i].domobj ).parents('[contenteditable=false]').length > 0;
 			
-				if (cursorRight && nextSiblingIsBlock) {
-					obj = rt[i].domobj.nextSibling;
-					GENTICS.Utils.Dom.selectDomNode(obj);
-					Aloha.trigger('aloha-block-selected', obj);
-					Aloha.Selection.preventSelectionChanged();
-					return false;
-				}
-			
-				if (cursorLeft && cursorIsWithinBlock) {
-					obj = jQuery(rt[i].domobj).parents('[contenteditable=false]').get(0);
-					GENTICS.Utils.Dom.selectDomNode(obj);
-					Aloha.trigger('aloha-block-selected', obj);
-					Aloha.Selection.preventSelectionChanged();
-					return false;
+					if ( cursorRight && nextSiblingIsBlock ) {
+						obj = rt[i].domobj.nextSibling;
+						GENTICS.Utils.Dom.selectDomNode( obj );
+						Aloha.trigger( 'aloha-block-selected', obj );
+						Aloha.Selection.preventSelectionChanged();
+						return false;
+					}
+
+					if ( cursorLeft && cursorIsWithinBlock ) {
+						obj = jQuery( rt[i].domobj ).parents('[contenteditable=false]').get(0);
+						GENTICS.Utils.Dom.selectDomNode( obj );
+						Aloha.trigger( 'aloha-block-selected', obj );
+						Aloha.Selection.preventSelectionChanged();
+						return false;
+					}
 				}
 			}
 		}
@@ -834,13 +836,14 @@ Aloha.Markup = Class.extend({
 
 	/**
 	 * Transform the given domobj into an object with the given new nodeName.
-	 * Preserves the content and all attributes
+	 * Preserves the content and all attributes. If a range object is given, also the range will be preserved
 	 * @param domobj dom object to transform
-	 * @parma nodeName new node name
+	 * @param nodeName new node name
+	 * @param range range object
 	 * @api
 	 * @return new object as jQuery object
 	 */
-	transformDomObject: function (domobj, nodeName) {
+	transformDomObject: function (domobj, nodeName, range) {
 		// first create the new element
 		var
 			jqOldObj = jQuery(domobj),
@@ -867,6 +870,15 @@ Aloha.Markup = Class.extend({
 		// finally replace the old object with the new one
 		jqOldObj.replaceWith(jqNewObj);
 
+		// preserve the range
+		if (range) {
+			if (range.startContainer == domobj) {
+				range.startContainer = jqNewObj.get(0);
+			}
+			if (range.endContainer == domobj) {
+				range.endContainer = jqNewObj.get(0);
+			}
+		}
 		return jqNewObj;
 	},
 

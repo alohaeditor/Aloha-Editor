@@ -40,14 +40,35 @@ function( TestUtils ) {
 
 		var 
 			editable = aQuery( '#edit' ),
+			converterResult = aQuery('<div>'),
 			converter = aQuery('<div>');
-		
+
+		// we never want to see the floatingmenu here
+		var floatingMenu = Aloha.require('aloha/floatingmenu');
+		floatingMenu.doLayout = function() {
+			this.hide();
+		};
+
 		// aloha'fy the editable
 		editable.aloha();
 		
 		for ( var i = 0; i < tests.tests.length; i++ ) {
 
-			var	check = tests.tests[i], excluded = false;
+			var	check = tests.tests[i],
+				excluded = false;
+
+			if ( typeof check === 'undefined' ) {
+				check = {};
+			}
+
+			if ( typeof check.exclude === 'undefined' ) {
+				check.exclude = false;
+			}
+
+			if ( typeof check.include === 'undefined' ) {
+				check.include = false;
+			}
+
 			if (check.exclude && typeof check.exclude === 'string') {
 				check.exclude = [check.exclude];
 			}
@@ -65,10 +86,15 @@ function( TestUtils ) {
 
 			check.value = ( typeof check.value !== 'undefined') ? check.value : tests.defaultValue;
 			check.attributes = ( typeof check.attributes !== 'undefined') ? check.attributes : tests.defaultAttributes;
+
 			converter.text(check.start);
 			var desc = converter.html();
 			converter.text(check.value);
-			var	name = check.name || '"' + converter.html() + '": ' + desc;
+
+			converterResult.text(check.execResult);
+			var descResult = converterResult.html();
+
+			var	name = check.name || '"' + converter.html() + '": ' + descResult;
 			
 			module( 'Command ' + (i+1) + ' ' + tests.defaultCommand + (excluded ? ' EXCLUDED' : ''), {
 				setup: function() {
