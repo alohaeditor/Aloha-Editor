@@ -11,10 +11,12 @@
  *    selectRow(0) and selectColumn(0) will therefore select the selection
  *    helper cells rather than the editable cells.
  *
- * 2) The table plugin has problems handeling a table with which contains a
- *    single cell, which is a merged cell. Regardless of whatever the colspan
- *    or rowspan is, once we have a table which is filled with one big merged
- *    cell, the table breaks
+ * 2) When a colspan or a rowspan is equal to the number of respective rows
+ *    or columns, then the table will break. It will no longer be possible to
+ *    activate/deactivate the table, or to select and operate over that
+ *    selection
+ *
+ * 3) Merging columns leaves an empty row.
  */
 
 define(
@@ -400,7 +402,7 @@ function( TestUtils ) {
 		},
 		
 		{
-			exclude   : false,
+			exclude   : true,
 			desc      : 'Split a 2x2 merged cell',
 			start     : '<table><tbody>\
 							<tr><td rowspan="2" colspan="1" class="aloha-cell-selected">foo1 foo2</td>\
@@ -417,9 +419,69 @@ function( TestUtils ) {
 			}
 		},
 		
+		{
+			exclude   : true,
+			desc      : 'Split 2 merged cell, simultaneosly',
+			start     : '<table><tbody>\
+							<tr>\
+								<td rowspan="2" colspan="1" class="aloha-cell-selected">foo1 foo2</td>\
+								<td rowspan="2" colspan="1" class="aloha-cell-selected">bar1 bar2</td>\
+							</tr>\
+							<tr></tr>\
+						  </tbody></table>',
+			expected  : '<table><tbody>\
+							<tr><td>foo1 foo2</td><td>bar1 bar2</td></tr>\
+							<tr><td>&nbsp;</td><td>&nbsp;</td></tr>\
+						 </tbody></table>',
+			operation : function ( table ) {
+				table.selection.selectedCells = getSelectedCells( table );
+				table.selection.splitCells();
+			}
+		},
+		
 		//
 		// Transform to from normal cell to header
 		//
+		
+		{ module : 'Transforming cells to headers' },
+		
+		{
+			exclude   : true,
+			desc      : 'Transform row as table header',
+			start     : '<table><tbody>\
+							<tr>\
+								<td class="aloha-cell-selected">foo</td>\
+								<td class="aloha-cell-selected">bar</td>\
+							</tr>\
+						 </tbody></table>',
+			expected  : '<table><tbody>\
+							<tr>\
+								<th scope="col">foo</th>\
+								<th scope="col">bar</th>\
+							</tr>\
+						 </tbody></table>',
+			operation : function ( table ) {
+				table.selection.selectedCells = getSelectedCells( table );
+				table.tablePlugin.rowHeader.onclick();
+			}
+		},
+		
+		{
+			exclude   : true,
+			desc      : 'Transform column as table header',
+			start     : '<table><tbody>\
+							<tr><td class="aloha-cell-selected">foo1</td><td>bar1</td></tr>\
+							<tr><td class="aloha-cell-selected">foo2</td><td>bar2</td></tr>\
+						 </tbody></table>',
+			expected  : '<table><tbody>\
+							<tr><th scope="row">foo1</th><td>bar1</td></tr>\
+							<tr><th scope="row">foo2</th><td>bar2</td></tr>\
+						 </tbody></table>',
+			operation : function ( table ) {
+				table.selection.selectedCells = getSelectedCells( table );
+				table.tablePlugin.columnHeader.onclick();
+			}
+		},
 		
 		//
 		// Transform to from header to normal cell
