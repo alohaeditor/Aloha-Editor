@@ -9,6 +9,13 @@ define(
 function( TestUtils ) {
 	'use strict';
 	
+	function getSelectedCells ( table ) {
+		var $cells = table.obj.find( 'td.aloha-cell-selected' );
+		var cells = [];
+		$cells.each( function () { cells.push( this ); } );
+		return cells;
+	};
+	
 	var tests = [
 		
 		//
@@ -24,19 +31,16 @@ function( TestUtils ) {
 		// Activation/deactivation
 		//
 		
-		/*
 		{
 			start     : '<table><tbody><tr><td>foo</td></tr></tbody></table>',
 			expected  : '<table><tbody><tr><td>foo</td></tr></tbody></table>',
 			operation : function ( table ) {}
 		},
-		*/
 		
 		//
 		// Column selection
 		//
 		
-		/*
 		{
 			start     : '<table><tbody><tr><td>foo</td></tr></tbody></table>',
 			expected  : '<table><tbody><tr><td>foo</td><td>&nbsp;</td></tr></tbody></table>',
@@ -45,7 +49,6 @@ function( TestUtils ) {
 				table.addColumnsRight();
 			}
 		},
-		*/
 		
 		//
 		//	  NB:
@@ -61,7 +64,6 @@ function( TestUtils ) {
 		// Inserting/removing cols
 		//
 		
-		/*
 		{
 			start     : '<table><tbody><tr><td>foo</td></tr></tbody></table>',
 			expected  : '<table><tbody><tr><td>foo</td><td>&nbsp;</td></tr></tbody></table>',
@@ -70,9 +72,7 @@ function( TestUtils ) {
 				table.addColumnsRight();
 			}
 		},
-		*/
 		
-		/*
 		{
 			start     : '<table><tbody><tr><td>foo</td></tr></tbody></table>',
 			expected  : '<table><tbody><tr><td>&nbsp;</td><td>foo</td></tr></tbody></table>',
@@ -81,9 +81,7 @@ function( TestUtils ) {
 				table.addColumnsLeft();
 			}
 		},
-		*/
 		
-		/*
 		{
 			start     : '<table><tbody><tr><td>foo</td><td>bar</td></tr></tbody></table>',
 			expected  : '<table><tbody><tr><td>foo</td><td>&nbsp;</td><td>bar</td></tr></tbody></table>',
@@ -92,9 +90,7 @@ function( TestUtils ) {
 				table.addColumnsRight();
 			}
 		},
-		*/
 		
-		/*
 		{
 			start     : '<table><tbody><tr><td>foo</td></tr><tr><td>bar</td></tr></tbody></table>',
 			expected  : '<table><tbody><tr><td>&nbsp;</td><td>foo</td></tr><tr><td>&nbsp;</td><td>bar</td></tr></tbody></table>',
@@ -103,9 +99,7 @@ function( TestUtils ) {
 				table.addColumnsRight();
 			}
 		},
-		*/
 		
-		/*
 		{
 			start     : '<table><tbody><tr><td>foo</td><td>bar</td></tr><tr><td>foo1</td><td>bar2</td></tr></tbody></table>',
 			expected  : '<table><tbody><tr><td>foo</td><td>&nbsp;</td><td>bar</td></tr><tr><td>foo1</td><td>&nbsp;</td><td>bar2</td></tr></tbody></table>',
@@ -114,7 +108,6 @@ function( TestUtils ) {
 				table.addColumnsLeft();
 			}
 		},
-		*/
 		
 		//
 		// Inserting/removing rows
@@ -123,7 +116,6 @@ function( TestUtils ) {
 		// In this case  we are only interested that a column is inserted we
 		// ignore the fact that there is an error with addColumnsRight where it
 		// the 0 index is the selection helper columns
-		/*
 		{
 			start     : '<table><tbody><tr><td>foo</td></tr></tbody></table>',
 			expected  : '<table><tbody><tr><td>foo</td></tr><tr><td>&nbsp;</td></tr></tbody></table>',
@@ -131,9 +123,7 @@ function( TestUtils ) {
 				table.addRow( 0 );
 			}
 		},
-		*/
 		
-		/*
 		{
 			start     : '<table><tbody><tr><td>foo</td></tr><tr><td>bar</td></tr></tbody></table>',
 			expected  : '<table><tbody><tr><td>foo</td></tr><tr><td>&nbsp;</td></tr><tr><td>bar</td></tr></tbody></table>',
@@ -141,13 +131,11 @@ function( TestUtils ) {
 				table.addRow( 1 );
 			}
 		},
-		*/
 		
 		//
 		// Merging
 		//
 		
-		/*
 		{
 			start     : '<table><tbody>\
 							<tr><td class="aloha-cell-selected">foo</td></tr>\
@@ -156,144 +144,127 @@ function( TestUtils ) {
 			expected  : '<table><tbody>\
 							<tr><td rowspan="2" colspan="1">foo bar</td></tr>\
 							<tr></tr>\
-						</tbody></table>',
+						 </tbody></table>',
 			operation : function ( table ) {
-				var $cells = table.obj.find( 'td.aloha-cell-selected' );
-				var cells = [];
-				$cells.each( function () { cells.push( this ); } );
-				table.selection.selectedCells = cells;
+				table.selection.selectedCells = getSelectedCells( table );
 				table.selection.mergeCells();
 			}
 		},
-		*/
 		
-		/*
 		{
 			start     : '<table><tbody>\
 							<tr><td class="aloha-cell-selected"><i>foo</i></td></tr>\
 							<tr><td class="aloha-cell-selected">bar</td></tr>\
-						</tbody></table>',
+						 </tbody></table>',
 			expected  : '<table><tbody>\
 							<tr><td rowspan="2" colspan="1"><i>foo</i> bar</td></tr>\
 							<tr></tr>\
-						</tbody></table>',
+						 </tbody></table>',
 			operation : function ( table ) {
-				var $cells = table.obj.find( 'td.aloha-cell-selected' );
-				var cells = [];
-				$cells.each( function () { cells.push( this ); } );
-				table.selection.selectedCells = cells;
+				table.selection.selectedCells = getSelectedCells( table );
 				table.selection.mergeCells();
 			}
-		}
-		*/
+		},
 		
-		/*
 		{
 			start     : '<table><tbody>\
 							<tr><td class="aloha-cell-selected">foo</td></tr>\
 							<tr><td>bar</td></tr>\
-						</tbody></table>',
+						 </tbody></table>',
 			expected  : '<table><tbody>\
 							<tr><td rowspan="1" colspan="1">foo</td></tr>\
 							<tr><td>bar</td></tr>\
-						</tbody></table>',
+						 </tbody></table>',
 			operation : function ( table ) {
-				var $cells = table.obj.find( 'td.aloha-cell-selected' );
-				var cells = [];
-				$cells.each( function () { cells.push( this ); } );
-				table.selection.selectedCells = cells;
+				table.selection.selectedCells = getSelectedCells( table );
 				table.selection.mergeCells();
 			}
-		}
-		*/
+		},
 		
-		/*
 		{
 			start     : '<table><tbody>\
 							<tr><td class="aloha-cell-selected"><i>foo</i></td></tr>\
 							<tr><td class="aloha-cell-selected"><i>bar</i></td></tr>\
-						</tbody></table>',
+						 </tbody></table>',
 			expected  : '<table><tbody>\
 							<tr><td rowspan="2" colspan="1"><i>foo</i> <i>bar</i></td></tr>\
 							<tr></tr>\
-						</tbody></table>',
+						 </tbody></table>',
 			operation : function ( table ) {
-				var $cells = table.obj.find( 'td.aloha-cell-selected' );
-				var cells = [];
-				$cells.each( function () { cells.push( this ); } );
-				table.selection.selectedCells = cells;
+				table.selection.selectedCells = getSelectedCells( table );
 				table.selection.mergeCells();
 			}
-		}
-		*/
+		},
 		
 		{
 			start     : '<table><tbody>\
 							<tr><td class="aloha-cell-selected">foo1</td>\
 								<td class="aloha-cell-selected">bar1</td></tr>\
 							<tr><td>foo2</td><td>bar2</td></tr>\
-						</tbody></table>',
+						 </tbody></table>',
 			expected  : '<table><tbody>\
 							<tr><td rowspan="1" colspan="2">foo1 bar1</td></tr>\
 							<tr><td>foo2</td><td>bar2</td></tr>\
-						</tbody></table>',
+						 </tbody></table>',
 			operation : function ( table ) {
-				var $cells = table.obj.find( 'td.aloha-cell-selected' );
-				var cells = [];
-				$cells.each( function () { cells.push( this ); } );
-				table.selection.selectedCells = cells;
+				table.selection.selectedCells = getSelectedCells( table );
 				table.selection.mergeCells();
 			}
 		},
 		
-		/*
 		{
 			start     : '<table><tbody>\
 							<tr><td class="aloha-cell-selected"><i>foo1</i></td>\
 								<td class="aloha-cell-selected"><i>bar1</i></td></tr>\
 							<tr><td class="aloha-cell-selected"><i>foo2</i></td>\
 								<td class="aloha-cell-selected"><i>bar2</i></td></tr>\
-						</tbody></table>',
+						 </tbody></table>',
 			expected  : '<table><tbody>\
 							<tr><td rowspan="2" colspan="2">\
 								<i>foo1</i> <i>bar1</i> <i>foo2</i> <i>bar2</i>\
 							</td></tr>\
 							<tr></tr>\
-						</tbody></table>',
+						 </tbody></table>',
 			operation : function ( table ) {
-				var $cells = table.obj.find( 'td.aloha-cell-selected' );
-				var cells = [];
-				$cells.each( function () { cells.push( this ); } );
-				table.selection.selectedCells = cells;
+				table.selection.selectedCells = getSelectedCells( table );
 				table.selection.mergeCells();
 			}
-		}
-		*/
+		},
 		
-		/*
 		{
 			start     : '<table><tbody>\
 							<tr><td class="aloha-cell-selected"><i>foo1</i></td>\
 								<td class="aloha-cell-selected"><i>bar1</i></td></tr>\
 							<tr><td><i>foo2</i></td>\
 								<td><i>bar2</i></td></tr>\
-						</tbody></table>',
+						 </tbody></table>',
 			expected  : '<table><tbody>\
 							<tr><td rowspan="1" colspan="2">\
 								<i>foo1</i> <i>bar1</i>\
 							</td></tr>\
 							<tr><td><i>foo2</i></td>\
 								<td><i>bar2</i></td></tr>\
-						</tbody></table>',
+						 </tbody></table>',
 			operation : function ( table ) {
-				var $cells = table.obj.find( 'td.aloha-cell-selected' );
-				var cells = [];
-				$cells.each( function () { cells.push( this ); } );
-				table.selection.selectedCells = cells;
+				table.selection.selectedCells = getSelectedCells( table );
 				table.selection.mergeCells();
 			}
-		}
-		*/
+		},
+		
+		{
+			start     : '<table><tbody>\
+							<tr><td class="aloha-cell-selected">foo1</td><td>bar1</td></tr>\
+							<tr><td class="aloha-cell-selected">foo2</td><td>bar2</td></tr>\
+						 </tbody></table>',
+			expected  : '<table><tbody>\
+							<tr><td rowspan="2" colspan="1">foo1 foo2</td><td>bar1</td></tr>\
+							<tr><td>bar2</td></tr>\
+						 </tbody></table>',
+			operation : function ( table ) {
+				table.selection.selectedCells = getSelectedCells( table );
+				table.selection.mergeCells();
+			}
+		},
 		
 		//
 		// Prevent merging non-rectangulare selections
@@ -315,6 +286,7 @@ function( TestUtils ) {
 		// Toggle header transformations
 		//
 		
+		[]
 	];
 
 	Aloha.ready( function() {
@@ -336,7 +308,7 @@ function( TestUtils ) {
 			if ( typeof testcase.operation === 'function' ) {
 				// Click the editable to trigger the aloha-editable-activated 
 				// event Then click on the table to activate
-				editable.mousedown().find( 'table' ).mousedown();
+				editable.mousedown().mouseup().find( 'table' ).mousedown();
 				testcase.operation( TablePlugin.activeTable );
 			}
 			
