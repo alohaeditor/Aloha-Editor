@@ -4,7 +4,11 @@ var specifictests = {
 		defaultValue: '',
 		defaultCommand: 'forwarddelete',
 		tests: [
-		        
+
+				{	exclude: 'msie',
+					start: 'foo <span>&nbsp;</span>[] bar',
+					execResult: 'foo <span>&nbsp;[]</span>bar'
+				}
 		        
 				]
 }
@@ -103,8 +107,8 @@ var alltests = {
 			execResult: 'foo[]'
 		},
 		{	include: 'msie',
-			start: 'foo{}<p><br>',
-			execResult: 'foo <p>{}<br class="aloha-end-br">'
+			start: 'foo{}<p><br></p>',
+			execResult: 'foo <p>{}</p>'
 		},
 		{	exclude: 'msie',
 			start: 'foo{}<p><span><br></span>',
@@ -132,21 +136,35 @@ var alltests = {
 		},
 		{	include: 'msie',
 			start: 'foo[]<div><ol><li>bar</ol></div>',
-			execResult: 'foo[]bar'
+			execResult: 'foo <div><ol><li>[]ar</ol></div>'
 		},
 		{ 	include: 'msie',
 			start: 'foo[]<div><div><p>bar</div></div>',
-			execResult: 'foo[]bar'
+			execResult: 'foo <div><div>[]ar</div></div>'
 		},
-
-		
+		{	include: 'msie',
+			start: 'foo<blockquote><ol><li>bar[]</li><ol><li>baz</ol><li>quz</ol></blockquote><p>extra',
+			execResult: 'foo <blockquote><ol><li>bar[]baz</li><li>quz</li></ol></blockquote><p>extra</p>'
+		},
+		{	include: 'msie',
+			start: 'foo<table><tr><td>bar[]<br></table>baz',
+			execResult: 'foo <table><tr><td>bar[]</table>baz'
+		},
+		{	include: 'msie',
+			start: '<table><tr><td>foo[]<br><td>bar</table>',
+			execResult: '<table><tr><td>foo[] <td>bar</table>'
+		},
+		{	include: 'msie',
+			start: '<p>foo<ol><li>bar<li>ba[z</ol><p>q]uz',
+			execResult: '<p>foo </p><ol><li>bar </li><li>ba[]uz</li></ol>'
+		},
 		
 
 /**
  * IE Special cases
  */		
 		
-		// After deltion of the br tag the cursor will automatically be placed
+		// After deletion of the br tag the cursor will automatically be placed
 		// inside the paragraph and a additional space will be added. See 'Tests
 		// that currently can't work in ie.' for more information.
 		{  	include: 'msie',
@@ -174,6 +192,10 @@ var alltests = {
         // This test somehow creates a broken dom entry in ie
     	{	start: 'foo[]<a href=/>bar</a>',
 			execResult: 'foo<a href="/">[]ar</a>'
+		},
+		// This tests creates a broken dom node
+		{	start: 'foo[]<span><a href=/>bar</a></span>',
+			execResult: 'foo[]<span><a href=/>ar</a></span>'
 		},
 		
 		
@@ -226,8 +248,10 @@ var alltests = {
 		{	start: '<ol><li>fo[o</ol><ol><li>b]ar</ol>',
 			execResult: '<ol><li>fo[]ar</li></ol>'
 		},
-		{	start: 'foo <span>&nbsp;</span>[] bar',
-			execResult: 'foo <span>&nbsp;</span>[]bar'
+		// After deletion the cursor jumps into the span
+		{	include: 'msie',
+			start: 'foo <span>&nbsp;</span>[] bar',
+			execResult: 'foo <span>&nbsp;[]</span>bar'
 		},
 		{	start: '<b>foo[]&nbsp;</b>&nbsp;bar',
 			execResult: '<b>foo[]</b> bar'
@@ -512,16 +536,14 @@ var alltests = {
 		{	start: 'foo[]<span><a>bar</a></span>',
 			execResult: 'foo[]<span><a>ar</a></span>'
 		},
-		{	start: 'foo[]<span><a href=/>bar</a></span>',
-			execResult: 'foo[]<span><a href=/>ar</a></span>'
-		},
 		{	start: '<pre>foo[]  bar</pre>',
-			execResult: '<pre>foo[]bar</pre>'
+			execResult: '<pre>foo[] bar</pre>'
 		},
 		{	start: '<pre>foo[] &nbsp;bar</pre>',
 			execResult: '<pre>foo[] bar</pre>'
 		},
-		{	start: 'foo<blockquote><ol><li>bar[]</li><ol><li>baz</ol><li>quz</ol></blockquote><p>extra',
+		{	exclude: 'msie',
+			start: 'foo<blockquote><ol><li>bar[]</li><ol><li>baz</ol><li>quz</ol></blockquote><p>extra',
 			execResult: 'foo<blockquote><ol><li>bar[]baz</li><li>quz</li></ol></blockquote><p>extra</p>'
 		},
 		{	start: '<div><p>foo[]</p></div><p>bar</p>',
@@ -551,22 +573,34 @@ var alltests = {
 		{	start: '<a href=/>foo[]</a>bar',
 			execResult: '<a href=/>foo[]</a>ar'
 		},
-		{	start: '<a name=abc>foo[]</a>bar',
+		{	exclude: 'msie',
+			start: '<a name=abc>foo[]</a>bar',
 			execResult: '<a name=abc>foo[]</a>ar'
 		},
-		{	start: '<a href=/ name=abc>foo[]</a>bar',
+		{	include: 'msie',
+			start: '<a name=abc>foo[]</a>bar',
+			execResult: '<a name=abc>foo</a>[]ar'
+		},
+		{	exclude: 'msie',
+			start: '<a href=/ name=abc>foo[]</a>bar',
 			execResult: '<a href=/ name=abc>foo[]</a>ar'
+		},
+		{	include: 'msie',
+			start: '<a href=/ name=abc>foo[]</a>bar',
+			execResult: '<a href=/ name=abc>foo</a>[]ar'
 		},
 		{	start: '<div style=white-space:nowrap>foo[]  bar</div>',
 			execResult: '<div style=white-space:nowrap>foo[]bar</div>'
 		},
-		{	start: 'foo<table><tr><td>bar[]<br></table>baz',
+		{	exclude: 'msie',
+			start: 'foo<table><tr><td>bar[]<br></table>baz',
 			execResult: 'foo<table><tr><td>bar[]</table>baz'
 		},
 		{	start: '<p>foo<table><tr><td>bar[]<br></table><p>baz',
 			execResult: '<p>foo<table><tr><td>bar[]</table><p>baz'
 		},
-		{	start: '<table><tr><td>foo[]<br><td>bar</table>',
+		{	exclude: 'msie',
+			start: '<table><tr><td>foo[]<br><td>bar</table>',
 			execResult: '<table><tr><td>foo[]<td>bar</table>'
 		},
 		{	start: '<table><tr><td>foo[]<br><tr><td>bar</table>',
@@ -682,8 +716,13 @@ var alltests = {
 		{	start: '<p>foo[]<p style=background-color:tan>bar</p></p>',
 			execResult: '<p>foo[]bar</p>'
 		},
-		{	start: '<p>foo<span style=color:#aBcDeF>[bar</span><span style=color:#fEdCbA>baz]</span>quz</p>',
+		{	exclude: 'msie',
+			start: '<p>foo<span style=color:#aBcDeF>[bar</span><span style=color:#fEdCbA>baz]</span>quz</p>',
 			execResult: '<p>foo[]<span style="color:#aBcDeF"></span>quz</p>'
+		},
+		{	include: 'msie',
+			start: '<p>foo<span style=color:#aBcDeF>[bar</span><span style=color:#fEdCbA>baz]</span>quz</p>',
+			execResult: '<p>foo<span style="color:#aBcDeF"></span>[]quz</p>'
 		},
 		{	start: '<p>foo<ol><li>ba[r<li>b]az</ol><p>quz',
 			execResult: '<p>foo</p><ol><li>ba[]az</li></ol><p>quz</p>'
@@ -694,7 +733,8 @@ var alltests = {
 		{	start: '<p>fo[o<ol><li>b]ar<li>baz</ol><p>quz',
 			execResult: '<p>fo[]ar</p><ol><li>baz</li></ol><p>quz</p>'
 		},
-		{	start: '<p>foo<ol><li>bar<li>ba[z</ol><p>q]uz',
+		{	exclude: 'msie',
+			start: '<p>foo<ol><li>bar<li>ba[z</ol><p>q]uz',
 			execResult: '<p>foo</p><ol><li>bar</li><li>ba[]uz</li></ol>'
 		},
 		{	start: '<p>fo[o<ol><li>bar<li>b]az</ol><p>quz',
@@ -756,7 +796,7 @@ var alltests = {
 			execResult: 'foo[]bar'
 		},
 		{	start: '<dl><dt>foo[<dt>]bar<dd>baz</dl>',
-			execResult: '<dl><dt>foobar<dd>baz</dl>'
+			execResult: '<dl><dt>foo[]bar<dd>baz</dl>'
 		},
 		{	start: '<ol><li>foo[]<ul><li>bar</ul></ol>',
 			execResult: '<ol><li>foo[]bar</li></ol>'
@@ -1064,5 +1104,5 @@ var alltests = {
 			
 		]
 }
-
+//var tests = specifictests;
 var tests = alltests;
