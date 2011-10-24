@@ -68,7 +68,7 @@
 			}            
 			if ( baseUrl === './' && script.getAttribute( 'data-aloha-plugins' )
 				&& regexJs.test(script.src ) ) {
-			baseUrl = script.src.replace( regexJs , '' );
+				baseUrl = script.src.replace( regexJs , '' );
 			}
 		}
         	
@@ -96,7 +96,7 @@
 	// and fire later when 'aloha-ready' is triggered all other events bind
 	deferredReady = Aloha.jQuery.Deferred();
 	Aloha.bind = function ( type, fn ) {
-	    	if ( type == 'aloha-ready' ) {
+		if ( type == 'aloha-ready' ) {
 			if ( Aloha.stage != 'alohaReady' ) {
 				deferredReady.done( fn );
 			} else {
@@ -117,7 +117,7 @@
 		Aloha.jQuery( Aloha, 'body' ).trigger( type, data );
 		return this;
 	};
-    	
+	
 	Aloha.ready = function ( fn ) {
 		this.bind( 'aloha-ready', fn );
 		return this;
