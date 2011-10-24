@@ -33,7 +33,7 @@ function( TestUtils ) {
 	 */
 	function getSelectedCells ( table ) {
 		var cells = [],
-		    $cells = table.obj.find( 'td.aloha-cell-selected' );
+		    $cells = table.obj.find( '.aloha-cell-selected' ); // select both td, and th cells
 		$cells.each( function () { cells.push( this ); } );
 		return cells;
 	};
@@ -439,11 +439,8 @@ function( TestUtils ) {
 			}
 		},
 		
-		//
-		// Transform to from normal cell to header
-		//
-		
 		{ module : 'Transforming cells to headers' },
+		///////////////////////////////////////////////////////////////////////
 		
 		{
 			exclude   : true,
@@ -483,15 +480,24 @@ function( TestUtils ) {
 			}
 		},
 		
-		//
-		// Transform to from header to normal cell
-		//
+		{
+			exclude   : false,
+			desc      : 'Toggle header to td cell',
+			start     : '<table><tbody>\
+							<tr><th scope="row" class="aloha-cell-selected">foo1</th><td>bar1</td></tr>\
+							<tr><th scope="row" class="aloha-cell-selected">foo2</th><td>bar2</td></tr>\
+						 </tbody></table>',
+			expected  : '<table><tbody>\
+							<tr><td>foo1</td><td>bar1</td></tr>\
+							<tr><td>foo2</td><td>bar2</td></tr>\
+						 </tbody></table>',
+			operation : function ( table ) {
+				table.selection.selectedCells = getSelectedCells( table );
+				table.tablePlugin.columnHeader.onclick();
+			}
+		},
 		
-		//
-		// Toggle header transformations
-		//
-		
-		{ exclude : true } // ... nothing
+		{ exclude : true } // ... just catch trailing commas
 	];
 
 	Aloha.ready( function() {
