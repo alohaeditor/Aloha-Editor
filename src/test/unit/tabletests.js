@@ -4,11 +4,31 @@
  * Licensed unter the terms of http://www.aloha-editor.com/license.html
  */
 
+/**
+ * Known issues with table plugin
+ * ------------------------------
+ * 1) selectRow/selectColumn does not take into account the helper row/column.
+ *    selectRow(0) and selectColumn(0) will therefore select the selection
+ *    helper cells rather than the editable cells.
+ *
+ * 2) The table plugin has problems handeling a table with which contains a
+ *    single cell, which is a merged cell. Regardless of whatever the colspan
+ *    or rowspan is, once we have a table which is filled with one big merged
+ *    cell, the table breaks
+ */
+
 define(
 [ 'testutils', 'htmlbeautifier' ],
 function( TestUtils ) {
 	'use strict';
 	
+	/**
+	 * Helper function to create an array of "selected" td's, which are marked
+	 * with the class "aloha-cell-selected"
+	 *
+	 * @param {Table} table
+	 * @return {Array} set of selected td's
+	 */
 	function getSelectedCells ( table ) {
 		var cells = [],
 		    $cells = table.obj.find( 'td.aloha-cell-selected' );
@@ -19,6 +39,7 @@ function( TestUtils ) {
 	var tests = [
 		
 		{ module : 'Activation/deactivation' },
+		///////////////////////////////////////////////////////////////////////
 		
 		{
 			exclude   : true,
@@ -28,17 +49,8 @@ function( TestUtils ) {
 			operation : function ( table ) {}
 		},
 		
-		//
-		//	  NB:
-		//	-------------------------------------------------------------------
-		//	  selectRow and selectColumns has a bug where index 0 selects the
-		//	  helper row/column instead of the first editable row/column.
-		//	  All following tests will work around this fault by using
-		//	  1-indexing with selectcolumns rather than 0 based indexing.
-		//	-------------------------------------------------------------------
-		//
-		
 		{ module : 'Row/column selection' },
+		///////////////////////////////////////////////////////////////////////
 		
 		{
 			exclude   : true,
@@ -68,15 +80,23 @@ function( TestUtils ) {
 			}
 		},
 		
-		{ module : 'Inserting/removing columns' },
+		//
+		//	  NB:
+		//	-------------------------------------------------------------------
+		//	  selectRow and selectColumns has a bug where index 0 selects the
+		//	  helper row/column instead of the first editable row/column.
+		//	  All following tests will work around this fault by using
+		//	  1-indexing with selectcolumns rather than 0 based indexing.
+		//	  Where this id done, we note that we have "corrected" the index.
+		//	-------------------------------------------------------------------
+		//
 		
-		//
-		// Inserting/removing cols
-		//
+		{ module : 'Inserting/removing columns' },
+		///////////////////////////////////////////////////////////////////////
 		
 		{
 			exclude	  : true,
-			desc      : 'Insert column right of column at index 0 (corrected to work with 1)',
+			desc      : 'Insert column right of column at index 0 (corrected to 1)',
 			start     : '<table><tbody>\
 							<tr><td>foo</td><td>bar</td></tr>\
 						 </tbody></table>',
@@ -91,7 +111,7 @@ function( TestUtils ) {
 		
 		{
 			exclude	  : true,
-			desc      : 'Insert column right of column at index 1',
+			desc      : 'Insert column right of column at index 1 (corrected to 2)',
 			start     : '<table><tbody>\
 							<tr><td>foo</td><td>bar</td></tr>\
 						 </tbody></table>',
@@ -106,7 +126,7 @@ function( TestUtils ) {
 		
 		{
 			exclude	  : true,
-			desc      : 'Insert column left of 1st column',
+			desc      : 'Insert column left of 1st column (column 0, corrected to 1)',
 			start     : '<table><tbody>\
 							<tr><td>foo</td></tr>\
 						 </tbody></table>',
@@ -114,14 +134,14 @@ function( TestUtils ) {
 							<tr><td>&nbsp;</td><td>foo</td></tr>\
 						 </tbody></table>',
 			operation : function ( table ) {
-				table.selection.selectColumns( [ 0 ] ); 
+				table.selection.selectColumns( [ 1 ] ); 
 				table.addColumnsLeft();
 			}
 		},
 		
 		{
 			exclude	  : true,
-			desc      : 'Add column left of 2nd column',
+			desc      : 'Add column left of 2nd column (corrected to 2)',
 			start     : '<table><tbody>\
 							<tr><td>foo</td><td>bar</td></tr>\
 							<tr><td>foo1</td><td>bar2</td></tr>\
@@ -137,10 +157,7 @@ function( TestUtils ) {
 		},
 		
 		{ module : 'Inserting/removing rows' },
-		
-		//
-		// Inserting/removing rows
-		//
+		///////////////////////////////////////////////////////////////////////
 		
 		{
 			exclude	  : true,
@@ -175,6 +192,7 @@ function( TestUtils ) {
 		},
 		
 		{ module : 'Merging cells' },
+		///////////////////////////////////////////////////////////////////////
 		
 		{
 			exclude   : true,
@@ -278,10 +296,10 @@ function( TestUtils ) {
 				table.selection.mergeCells();
 			}
 		},
-
+		
 		{
 			exclude   : true,
-			desc      : 'Merge a 2x2 rectangular selection',
+			desc      : 'Merge a 2x2 selection',
 			start     : '<table><tbody>\
 							<tr><td class="aloha-cell-selected">foo1</td>\
 								<td class="aloha-cell-selected">bar1</td></tr>\
@@ -302,7 +320,7 @@ function( TestUtils ) {
 		
 		{
 			exclude   : true,
-			desc      : 'Merge a 2x2 rectangular selection, with inner tags',
+			desc      : 'Merge a 2x2 selection, with inner tags',
 			start     : '<table><tbody>\
 							<tr><td class="aloha-cell-selected"><i>foo1</i></td>\
 								<td class="aloha-cell-selected"><i>bar1</i></td></tr>\
@@ -321,13 +339,83 @@ function( TestUtils ) {
 			}
 		},
 		
-		//
-		// Prevent merging non-rectangulare selections
-		//
+		{
+			exclude   : true,
+			desc      : 'Prevent merging of non-rectangular selection',
+			start     : '<table><tbody>\
+							<tr><td class="aloha-cell-selected">foo1</td>\
+								<td class="aloha-cell-selected">bar1</td></tr>\
+							<tr><td class="aloha-cell-selected">foo2</td>\
+								<td>bar2</td></tr>\
+						 </tbody></table>',
+			expected  : '<table><tbody>\
+							<tr><td>foo1</td><td>bar1</td></tr>\
+							<tr><td>foo2</td><td>bar2</td></tr>\
+						 </tbody></table>',
+			operation : function ( table ) {
+				table.selection.selectedCells = getSelectedCells( table );
+				table.selection.mergeCells();
+			}
+		},
 		
-		//
-		// Split merged cells
-		//
+		{
+			exclude   : true,
+			desc      : 'Prevent attempt to merge an alreay merged cell',
+			start     : '<table><tbody>\
+							<tr><td rowspan="2" colspan="1" class="aloha-cell-selected">foo bar</td></tr>\
+							<tr></tr>\
+						 </tbody></table>',
+			expected  : '<table><tbody>\
+							<tr><td rowspan="2" colspan="1">foo bar</td></tr>\
+							<tr></tr>\
+						 </tbody></table>',
+			operation : function ( table ) {
+				try {
+					table.selection.selectedCells = getSelectedCells( table );
+					table.selection.mergeCells();
+				} catch ( ex ) {
+					console.log( 'ERROR!' );
+				}
+			}
+		},
+		
+		{ module : 'Splitting merged cells' },
+		///////////////////////////////////////////////////////////////////////
+		
+		{
+			exclude   : true,
+			desc      : 'Split a table with a single merged cell',
+			start     : '<table><tbody>\
+							<tr><td rowspan="2" colspan="1" class="aloha-cell-selected">foo bar</td></tr>\
+							<tr></tr>\
+						 </tbody></table>',
+			expected  : '<table><tbody>\
+							<tr><td class="aloha-cell-selected">foo bar</td></tr>\
+							<tr><td class="aloha-cell-selected"></td></tr>\
+						</tbody></table>',
+			operation : function ( table ) {
+				table.selection.selectedCells = getSelectedCells( table );
+				table.selection.splitCells();
+			}
+		},
+		
+		{
+			exclude   : false,
+			desc      : 'Split a 2x2 merged cell',
+			start     : '<table><tbody>\
+							<tr><td rowspan="2" colspan="1" class="aloha-cell-selected">foo1 foo2</td>\
+								<td>bar1</td></tr>\
+							<tr><td>bar2</td></tr>\
+						 </tbody></table>',
+			expected  : '<table><tbody>\
+							<tr><td>foo1 foo2</td><td>bar1</td></tr>\
+							<tr><td>&nbsp;</td><td>bar2</td></tr>\
+						</tbody></table>',
+			operation : function ( table ) {
+				table.selection.selectedCells = getSelectedCells( table );
+				table.selection.splitCells();
+			}
+		},
 		
 		//
 		// Transform to from normal cell to header
@@ -356,7 +444,7 @@ function( TestUtils ) {
 			testcase = tests[ i ];
 			
 			if ( testcase.exclude === true ) {
-				// continue; // comment out to run all tests
+				continue; // comment out to run all tests
 			}
 			
 			if ( testcase.module ) {
