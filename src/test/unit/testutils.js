@@ -304,13 +304,13 @@ define(	[ '../../lib/aloha/ecma5shims' ], function($_) {
 			// you can always use the curly braces.
       // Lakshan: changed from querySelector to use jQuery selecotrs since former
       // doesn't work on IE7
-			if (jQuery(node).find("[data-start*='']")[0]) {
-				startNode = jQuery( node ).find("[data-start*='']")[0];
+			if (jQuery(node).find("[data-start]")[0]) {
+				startNode = jQuery( node ).find("[data-start]")[0];
 				startOffset = startNode.getAttribute("data-start");
 				startNode.removeAttribute("data-start");
 			}
-			if (jQuery( node ).find("[data-end*='']")[0]) {
-				endNode = jQuery( node ).find("[data-end*='']")[0];
+			if (jQuery( node ).find("[data-end]")[0]) {
+				endNode = jQuery( node ).find("[data-end]")[0];
 				endOffset = endNode.getAttribute("data-end");
 				endNode.removeAttribute("data-end");
 			}
