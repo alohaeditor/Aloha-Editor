@@ -861,7 +861,7 @@ function isCollapsedLineBreak(br) {
 		ref = ref.parentNode;
 	}
 
-	var refStyle = ref.hasAttribute("style") ? ref.getAttribute("style") : null;
+	var refStyle = $_( ref ).hasAttribute("style") ? ref.getAttribute("style") : null;
 	ref.style.height = "auto";
 	ref.style.maxHeight = "none";
 	ref.style.minHeight = "0";
@@ -912,11 +912,11 @@ function isExtraneousLineBreak(br) {
 	while ($_.getComputedStyle(ref).display == "inline") {
 		ref = ref.parentNode;
 	}
-	var refStyle = ref.hasAttribute("style") ? ref.getAttribute("style") : null;
+	var refStyle = $_( ref ).hasAttribute("style") ? ref.getAttribute("style") : null;
 	ref.style.height = "auto";
 	ref.style.maxHeight = "none";
 	ref.style.minHeight = "0";
-	var brStyle = br.hasAttribute("style") ? br.getAttribute("style") : null;
+	var brStyle = $_( br ).hasAttribute("style") ? br.getAttribute("style") : null;
 	var origHeight = ref.offsetHeight;
 	if (origHeight == 0) {
 		throw "isExtraneousLineBreak: original height is zero, bug?";
@@ -1913,7 +1913,7 @@ function isModifiableElement(node) {
 		}
 
 		if (node.attributes.length == 1
-		&& node.hasAttribute("style")) {
+		&& $_( node ).hasAttribute("style")) {
 			return true;
 		}
 	}
@@ -1921,26 +1921,26 @@ function isModifiableElement(node) {
 	if (node.tagName == "FONT" || node.tagName == "A") {
 		var numAttrs = node.attributes.length;
 
-		if (node.hasAttribute("style")) {
+		if ($_( node ).hasAttribute("style")) {
 			numAttrs--;
 		}
 
 		if (node.tagName == "FONT") {
-			if (node.hasAttribute("color")) {
+			if ($_( node ).hasAttribute("color")) {
 				numAttrs--;
 			}
 
-			if (node.hasAttribute("face")) {
+			if ($_( node ).hasAttribute("face")) {
 				numAttrs--;
 			}
 
-			if (node.hasAttribute("size")) {
+			if ($_( node ).hasAttribute("size")) {
 				numAttrs--;
 			}
 		}
 
 		if (node.tagName == "A"
-		&& node.hasAttribute("href")) {
+		&& $_( node ).hasAttribute("href")) {
 			numAttrs--;
 		}
 
@@ -1980,23 +1980,23 @@ function isSimpleModifiableElement(node) {
 	// properties (including invalid or unrecognized properties)."
 	//
 	// Not gonna try for invalid or unrecognized.
-	if (node.hasAttribute("style")
+	if ($_( node ).hasAttribute("style")
 	&& getStyleLength(node) == 0) {
 		return true;
 	}
 
 	// "It is an a element with exactly one attribute, which is href."
 	if (node.tagName == "A"
-	&& node.hasAttribute("href")) {
+	&& $_( node ).hasAttribute("href")) {
 		return true;
 	}
 
 	// "It is a font element with exactly one attribute, which is either color,
 	// face, or size."
 	if (node.tagName == "FONT"
-	&& (node.hasAttribute("color")
-	|| node.hasAttribute("face")
-	|| node.hasAttribute("size")
+	&& ($_( node ).hasAttribute("color")
+	|| $_( node ).hasAttribute("face")
+	|| $_( node ).hasAttribute("size")
 	)) {
 		return true;
 	}
@@ -2005,7 +2005,7 @@ function isSimpleModifiableElement(node) {
 	// and the style attribute sets exactly one CSS property (including invalid
 	// or unrecognized properties), which is "font-weight"."
 	if ((node.tagName == "B" || node.tagName == "STRONG")
-	&& node.hasAttribute("style")
+	&& $_( node ).hasAttribute("style")
 	&& getStyleLength(node) == 1
 	&& node.style.fontWeight != "") {
 		return true;
@@ -2015,7 +2015,7 @@ function isSimpleModifiableElement(node) {
 	// and the style attribute sets exactly one CSS property (including invalid
 	// or unrecognized properties), which is "font-style"."
 	if ((node.tagName == "I" || node.tagName == "EM")
-	&& node.hasAttribute("style")
+	&& $_( node ).hasAttribute("style")
 	&& getStyleLength(node) == 1
 	&& node.style.fontStyle != "") {
 		return true;
@@ -2026,7 +2026,7 @@ function isSimpleModifiableElement(node) {
 	// invalid or unrecognized properties), and that property is not
 	// "text-decoration"."
 	if ((node.tagName == "A" || node.tagName == "FONT" || node.tagName == "SPAN")
-	&& node.hasAttribute("style")
+	&& $_( node ).hasAttribute("style")
 	&& getStyleLength(node) == 1
 	&& node.style.textDecoration == "") {
 		return true;
@@ -2038,7 +2038,7 @@ function isSimpleModifiableElement(node) {
 	// "text-decoration", which is set to "line-through" or "underline" or
 	// "overline" or "none"."
 	if ($_( ["A", "FONT", "S", "SPAN", "STRIKE", "U"] ).indexOf(node.tagName) != -1
-	&& node.hasAttribute("style")
+	&& $_( node ).hasAttribute("style")
 	&& getStyleLength(node) == 1
 	&& (node.style.textDecoration == "line-through"
 	|| node.style.textDecoration == "underline"
@@ -2135,7 +2135,7 @@ function getEffectiveCommandValue(node, command) {
 		while (node
 		&& (!isHtmlElement(node)
 		|| node.tagName != "A"
-		|| !node.hasAttribute("href"))) {
+		|| !$_( node ).hasAttribute("href"))) {
 			node = node.parentNode;
 		}
 
@@ -2270,7 +2270,7 @@ function getSpecifiedCommandValue(element, command) {
 		// value of that attribute."
 		if (isHtmlElement(element)
 		&& element.tagName == "A"
-		&& element.hasAttribute("href")) {
+		&& $_( element ).hasAttribute("href")) {
 			return element.getAttribute("href");
 		}
 
@@ -2356,13 +2356,13 @@ function getSpecifiedCommandValue(element, command) {
 	// "xxx-large".)"
 	if (isHtmlNamespace(element.namespaceURI)
 	&& element.tagName == "FONT") {
-		if (property == "color" && element.hasAttribute("color")) {
+		if (property == "color" && $_( element ).hasAttribute("color")) {
 			return element.color;
 		}
-		if (property == "fontFamily" && element.hasAttribute("face")) {
+		if (property == "fontFamily" && $_( element ).hasAttribute("face")) {
 			return element.face;
 		}
-		if (property == "fontSize" && element.hasAttribute("size")) {
+		if (property == "fontSize" && $_( element ).hasAttribute("size")) {
 			// This is not even close to correct in general.
 			var size = parseInt(element.size);
 			if (size < 1) {
@@ -3216,7 +3216,7 @@ commands.createlink = {
 			$_( getAncestors(node) ).forEach(function(ancestor) {
 				if (isEditable(ancestor)
 				&& isHtmlElement(ancestor, "a")
-				&& ancestor.hasAttribute("href")) {
+				&& $_( ancestor ).hasAttribute("href")) {
 					ancestor.setAttribute("href", value);
 				}
 			});
@@ -3737,7 +3737,7 @@ commands.unlink = {
 			node = node.parentNode
 		) {
 			if (isHtmlElement(node, "A")
-			&& node.hasAttribute("href")) {
+			&& $_( node ).hasAttribute("href")) {
 				hyperlinks.unshift(node);
 			}
 		}
@@ -3747,7 +3747,7 @@ commands.unlink = {
 			node = nextNode(node)
 		) {
 			if (isHtmlElement(node, "A")
-			&& node.hasAttribute("href")
+			&& $_( node ).hasAttribute("href")
 			&& (isContained(node, range)
 			|| isAncestor(node, range.endContainer)
 			|| node == range.endContainer)) {
@@ -4819,6 +4819,7 @@ function deleteContents() {
 			// previousSibling and nextSibling are both inline nodes, call
 			// createElement("br") on the context object and insert it into end
 			// block's parent immediately after end block."
+
 			if (isEditable(endBlock)
 			&& !isInlineNode(endBlock)
 			&& isInlineNode(endBlock.previousSibling)
@@ -5889,7 +5890,7 @@ function justifySelection(alignment, range) {
 			&& isEditable(node)
 			// Ignoring namespaces here
 			&& (
-				node.hasAttribute("align")
+				$_( node ).hasAttribute("align")
 				|| node.style.textAlign != ""
 				|| isHtmlElement(node, "center")
 			);

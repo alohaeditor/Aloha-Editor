@@ -5,93 +5,99 @@ function(){
   var shims = {
     // Function bind
     bind: function(owner){
+      var obj = this.obj || this;
       var native_method = Function.prototype.bind;          
       var args= Array.prototype.slice.call(arguments, 1);
 
       if(native_method){
-        return native_method.apply(this.obj, arguments); 
+        return native_method.apply(obj, arguments); 
       }
       else{
         return function() {
-          return this.obj.apply(owner, arguments.length===0? args : args.concat(Array.prototype.slice.call(arguments)));
+          return obj.apply(owner, arguments.length===0? args : args.concat(Array.prototype.slice.call(arguments)));
         }
       }
     },
 
     // String trim
     trim: function(){
+      var obj = this.obj || this;
       var native_method = String.prototype.trim;
 
       if(native_method){
-        return native_method.call(this.obj); 
+        return native_method.call(obj); 
       }
       else {
-        return this.obj.replace(/^\s+/, '').replace(/\s+$/, '');
+        return obj.replace(/^\s+/, '').replace(/\s+$/, '');
       }
     },
 
     // Array methods 
     indexOf: function(find, i /*opt*/){
+      var obj = this.obj || this;
       var native_method = Array.prototype.indexOf;     
 
       if(native_method){
-        return native_method.call(this.obj, find, i); 
+        return native_method.call(obj, find, i); 
       }
       else {
         if (i===undefined) i= 0;
-        if (i<0) i+= this.obj.length;
+        if (i<0) i+= obj.length;
         if (i<0) i= 0;
-        for (var n = this.obj.length; i<n; i++)
-            if (i in this.obj && this.obj[i]===find)
+        for (var n = obj.length; i<n; i++)
+            if (i in obj && obj[i]===find)
                 return i;
         return -1;
       }
     },
     
     forEach: function(action, that /*opt*/){
+      var obj = this.obj || this;
       var native_method = Array.prototype.forEach;          
 
       if(native_method){
-        return native_method.call(this.obj, action, that); 
+        return native_method.call(obj, action, that); 
       }
       else {
-        for (var i= 0, n = this.obj.length; i<n; i++)
-          if (i in this.obj)
-            action.call(that, this.obj[i], i, this.obj);
+        for (var i= 0, n = obj.length; i<n; i++)
+          if (i in obj)
+            action.call(that, obj[i], i, obj);
       }
     },
 
-    map: function(mapper, that /*opt*/){
+    map: function(mapper, that /*opt*/, chain /*opt */){
+      var obj = this.obj || this;
       var native_method = Array.prototype.map; 
       var returnWrapper = (typeof arguments[arguments.length - 1] == "boolean") ? Array.prototype.pop.call(arguments) : false;
       var result = [];
 
       if(native_method){
-        result = native_method.call(this.obj, mapper, that); 
+        result = native_method.call(obj, mapper, that); 
       }
       else {
-        var other= new Array(this.obj.length);
-        for (var i= 0, n= this.obj.length; i<n; i++)
-            if (i in this.obj)
-                other[i]= mapper.call(that, this.obj[i], i, this.obj);
+        var other= new Array(obj.length);
+        for (var i= 0, n= obj.length; i<n; i++)
+            if (i in obj)
+                other[i]= mapper.call(that, obj[i], i, obj);
         result = other;
       }
 
       return returnWrapper ? $_(result) : result;
     },
 
-    filter: function(filterFunc, that /*opt*/){
+    filter: function(filterFunc, that /*opt*/, chain /*opt */){
+      var obj = this.obj || this;
       var native_method = Array.prototype.filter;         
       var returnWrapper = (typeof arguments[arguments.length - 1] == "boolean") ? Array.prototype.pop.call(arguments) : false;
       var result = [];
 
       if(native_method){
-       result = native_method.call(this.obj, filterFunc, that); 
+       result = native_method.call(obj, filterFunc, that); 
       }
       else {
         var other= [], v;
-        for (var i=0, n= this.obj.length; i<n; i++)
-            if (i in this.obj && filterFunc.call(that, v= this.obj[i], i, this.obj))
+        for (var i=0, n= obj.length; i<n; i++)
+            if (i in obj && filterFunc.call(that, v= obj[i], i, obj))
                 other.push(v);
         result = other;
       }
@@ -100,32 +106,49 @@ function(){
     },
 
     every: function(tester, that /*opt*/) {
+       var obj = this.obj || this;
        var native_method = Array.prototype.every;
 
        if(native_method){
-         return native_method.call(this.obj, tester, that); 
+         return native_method.call(obj, tester, that); 
        }
        else {
-         for (var i= 0, n= this.obj.length; i<n; i++)
-            if (i in this.obj && !tester.call(that, this.obj[i], i, this.obj))
+         for (var i= 0, n= obj.length; i<n; i++)
+            if (i in obj && !tester.call(that, obj[i], i, obj))
                 return false;
          return true;
        }
     },
 
     some: function(tester, that /*opt*/){
-        var native_method = Array.prototype.some;  
+       var obj = this.obj || this;
+       var native_method = Array.prototype.some;  
 
-        if(native_method){
-          return native_method.call(this.obj, tester, that); 
-        }
-        else {
-          for (var i= 0, n= this.obj.length; i<n; i++)
-            if (i in this.obj && tester.call(that, this.obj[i], i, this.obj))
-                return true;
-          return false;
-        }
+       if(native_method){
+         return native_method.call(obj, tester, that); 
+       }
+       else {
+         for (var i= 0, n= obj.length; i<n; i++)
+           if (i in obj && tester.call(that, obj[i], i, obj))
+               return true;
+         return false;
+       }
+    },
+
+    // Since IE7 doesn't support 'hasAttribute' method on nodes
+    // TODO: raise an exception if the object is not an node
+    hasAttribute: function(attr){
+      var obj = this.obj || this;
+      var native_method = obj.hasAttribute;  
+
+      if(native_method){
+        return obj.hasAttribute(attr); 
+      }
+      else {
+        return (typeof obj.attributes[attr] != "undefined")
+      }         
     }
+
   };
 
   var $_ = function(obj) { 
@@ -136,6 +159,11 @@ function(){
     wrapper_instance.obj = obj;
     return wrapper_instance; 
   }; 
+
+  for (var shim in shims) {
+    $_[shim] = shims[shim];
+  }
+  
 
   // Node constants
   // http://www.w3.org/TR/DOM-Level-3-Core/core.html#ID-1841493061

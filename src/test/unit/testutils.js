@@ -6,7 +6,7 @@
 
 window.TestUtils = window.TestUtils || {};
 
-define(	[ '../../lib/aloha/ecma5wrapper' ], function($_) {
+define(	[ '../../lib/aloha/ecma5shims' ], function($_) {
 	"use strict";
 	
 	var	
@@ -37,7 +37,8 @@ define(	[ '../../lib/aloha/ecma5wrapper' ], function($_) {
 		// 	//The determination of preceding versus following is implementation-specific.
 		// 	'DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC': 0x20
 		// };
-	
+    //
+
 	/**
 	 * TestUtils class
 	 */
@@ -301,13 +302,15 @@ define(	[ '../../lib/aloha/ecma5wrapper' ], function($_) {
 			// end nodes, with a numeric value indicating the offset.  This format
 			// doesn't allow the parent div to be a start or end node, but in that case
 			// you can always use the curly braces.
-			if (node.querySelector("[data-start]")) {
-				startNode = node.querySelector("[data-start]");
+      // Lakshan: changed from querySelector to use jQuery selecotrs since former
+      // doesn't work on IE7
+			if (jQuery(node).find("[data-start*='']")[0]) {
+				startNode = jQuery( node ).find("[data-start*='']")[0];
 				startOffset = startNode.getAttribute("data-start");
 				startNode.removeAttribute("data-start");
 			}
-			if (node.querySelector("[data-end]")) {
-				endNode = node.querySelector("[data-end]");
+			if (jQuery( node ).find("[data-end*='']")[0]) {
+				endNode = jQuery( node ).find("[data-end*='']")[0];
 				endOffset = endNode.getAttribute("data-end");
 				endNode.removeAttribute("data-end");
 			}
