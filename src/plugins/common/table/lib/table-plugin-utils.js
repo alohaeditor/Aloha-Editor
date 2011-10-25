@@ -211,14 +211,14 @@ function ($) {
 		 * two-dimensional array.
 		 *
 		 * @param grid
-		 *        a two-dimensional array
+		 *        A two-dimensional array.
 		 * @param callback
-		 *        invoked with each item in the given two dimensional array.
-		 *        accepts the following parameters:
+		 *        Invoked with each item in the given two-dimensional array.
+		 *        Accepts the following parameters:
 		 *        o item an item in the given two-dimensional array
 		 *        o x the offset in the nested array (horizontal axis)
 		 *        o y the offset in the outer array (veritcal axis)
-		 *        if the callback returns a value identical to false,
+		 *        If the callback returns a value identical to false,
 		 *        the walk will be aborted early.
 		 */
 		'walkGrid': function (grid, callback) {
@@ -229,6 +229,27 @@ function ($) {
 					}
 				}
 			}
+		},
+		/**
+		 * Walks the cells of the given grid inside the given
+		 * coordinates.
+		 *
+		 * @param {array} grid
+		 *        A two-dimensional array.
+		 * @param {object} rect
+		 *        Must have the properties top, left, bottom, right
+		 *        each of which referring to a coordinate in the given grid.
+		 * @param {function} callback
+		 *        A callback to invoke for each item in the given
+		 *        two-dimensional array. See walkGrid() for the
+		 *        specification of this parameter.
+		 */
+		'walkGridInsideRect': function ( grid, rect, callback ) {
+			Utils.walkGrid( grid, function ( cellInfo, x, y ) {
+				if ( y >= rect.top && y < rect.bottom && x >= rect.left && x < rect.right ) {
+					return callback( cellInfo, x, y );
+				}
+			});
 		},
 		/**
 		 * Slices leading null or undefined items off of an array
