@@ -330,7 +330,7 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 	};
 
 	
-	TablePlugin.guardAgainstNestedTables = function () {
+	TablePlugin.preventNestedTables = function () {
 		if ( this.isSelectionInTable() ) {
 			Aloha.showMessage( new Aloha.Message( {
 				title : i18n.t( 'Table' ),
@@ -813,11 +813,11 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 
 		// the 'create table' button
 		this.createTableButton = new Aloha.ui.Button({
-			'iconClass' : 'aloha-button aloha-button-table',
-			'size' : 'small',
-			'tooltip' : i18n.t('button.createtable.tooltip'),
-			'onclick' : function (element, event) {
-				if ( !that.guardAgainstNestedTables() ) {
+			iconClass : 'aloha-button aloha-button-table',
+			size      : 'small',
+			tooltips  : i18n.t('button.createtable.tooltip'),
+			onclick   : function ( element, event ) {
+				if ( !that.preventNestedTables() ) {
 					TablePlugin.createDialog( element.btnEl.dom );
 				}
 			}
@@ -1068,7 +1068,7 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 	 * @return void
 	 */
 	TablePlugin.createTable = function(cols, rows) {
-		if ( this.guardAgainstNestedTables() ) {
+		if ( this.preventNestedTables() ) {
 			return;
 		}
 		
