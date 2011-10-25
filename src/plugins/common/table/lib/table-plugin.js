@@ -1240,5 +1240,6 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 	};
 
 	PluginManager.register(TablePlugin);
-	//return TablePlugin;
+	
+	return TablePlugin;
 });
