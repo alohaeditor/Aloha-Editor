@@ -289,26 +289,15 @@ define([
 				var buttons = jQuery('button' + nsSel('button'));
 				
 				jQuery.each(that.buttons, function(index, button) {
-					// set to false to prevent multiple buttons being active when they should not
-					var statusWasSet = false;
-					var tagName;
-					var effective = rangeObject.markupEffectiveAtStart;
-					var i = effective.length;
 					
 					// check whether any of the effective items are citation tags
-					while (i--) {
-						tagName = effective[i].tagName.toLowerCase();
-						if ('q' == tagName || 'blockquote' == tagName) {
-							statusWasSet = true;
-							break;
-						}
-					}
+					var foundMarkup = citePlugin.findCiteMarkup(rangeObject);
 					
 					buttons.filter(nsSel('block-button')).removeClass(nsClass('pressed'));
 					that.buttons[0].setPressed(false);
 					
-					if (statusWasSet) {
-						if(tagName == 'q') {
+					if (foundMarkup) {
+						if(foundMarkup.nodeName.toLowerCase() == 'q') {
 							that.buttons[0].setPressed(true);
 						} else {
 							buttons.filter(nsSel('block-button'))
@@ -320,6 +309,38 @@ define([
 					}
 				});
 			});
+		},
+		
+		findCiteMarkup: function (range) {
+			 var 
+			    startCite,
+			    endCite;
+			   
+				if ( typeof range == 'undefined' ) {
+					range = Aloha.Selection.getRangeObject();
+				}
+				if ( Aloha.activeEditable ) {
+			    
+					var startInCite = range.findMarkup( function() {
+						if ( this.nodeName.toLowerCase() == 'q' || this.nodeName.toLowerCase() == 'blockquote' ) {
+							startCite = this;
+							return true;
+						}
+						return false;
+					}, Aloha.activeEditable.obj);
+					
+					var endInCite = range.findMarkup( function() {
+						if ( this.nodeName.toLowerCase() == 'q' || this.nodeName.toLowerCase() == 'blockquote' ) {
+							endCite = this;
+							return true;
+						}
+						return false;
+					}, Aloha.activeEditable.obj, true );
+					
+					return (startInCite && endInCite && startCite === endCite) ? startCite : false;
+				} else {
+					return null;
+				}
 		},
 		
 		/**
@@ -389,18 +410,18 @@ define([
 			if (Aloha.activeEditable) {
 				jQuery(Aloha.activeEditable.obj[0]).click();
 			}
-
-			// check whether the markup is found in the range (at the start of the range)
-			foundMarkup = rangeObject.findMarkup(function() {
-				if (this.nodeName && markup.get(0) &&
-					(typeof this.nodeName === 'string') &&
-					(typeof markup.get(0).nodeName === 'string')) {
-					return this.nodeName.toLowerCase() == markup.get(0).nodeName.toLowerCase();
-				}
+			
+		   var foundMarkup = rangeObject.findMarkup(function() {
+			if (this.nodeName && markup.get(0) &&
+				(typeof this.nodeName === 'string') &&
+				(typeof markup.get(0).nodeName === 'string')) {
+				return this.nodeName.toLowerCase() == markup.get(0).nodeName.toLowerCase();
+			}
 				
 				return false;
 			}, Aloha.activeEditable.obj);
-
+			
+			
 			if (foundMarkup) {
 				// remove the markup
 				if (rangeObject.isCollapsed()) {

@@ -463,37 +463,36 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, console, EditableI
 		 */
 		
 		 findLinkMarkup: function ( range ) {
-
-			   var 
+			var 
 			    startLink,
 			    endLink;
 			   
-			   if ( typeof range == 'undefined' ) {
-			    range = Aloha.Selection.getRangeObject();
-			   }
-			   if ( Aloha.activeEditable ) {
+				if ( typeof range == 'undefined' ) {
+					range = Aloha.Selection.getRangeObject();
+				}
+				if ( Aloha.activeEditable ) {
 			    
-			    var startInLink = range.findMarkup( function() {
-			     if ( this.nodeName.toLowerCase() == 'a' ) {
-			      startLink = this;
-			      return true;
-			     }
-			     return false;
-			    }, Aloha.activeEditable.obj);
-			    
-			    var endInLink = range.findMarkup( function() {
-			     if ( this.nodeName.toLowerCase() == 'a' ) {
-			      endLink = this;
-			      return true;
-			     }
-			     return false;
-			    }, Aloha.activeEditable.obj, true );
-			    
-			    return (startInLink && endInLink && startLink === endLink) ? startLink : false;
-			   } else {
-			    return null;
-			   }
-			  },
+					var startInLink = range.findMarkup( function() {
+						if ( this.nodeName.toLowerCase() == 'a' ) {
+							startLink = this;
+							return true;
+						}
+						return false;
+					}, Aloha.activeEditable.obj);
+					
+					var endInLink = range.findMarkup( function() {
+						if ( this.nodeName.toLowerCase() == 'a' ) {
+							endLink = this;
+							return true;
+						}
+						return false;
+					}, Aloha.activeEditable.obj, true );
+					
+					return (startInLink && endInLink && startLink === endLink) ? startLink : false;
+				} else {
+					return null;
+				}
+		  },
 		
 		/**
 		 * Format the current selection or if collapsed the current word as link.
