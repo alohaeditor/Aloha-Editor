@@ -31,7 +31,7 @@ define([
 	// css
 	'css!image/css/image.css',
 	'css!image/vendor/ui/ui-lightness/jquery-ui-1.8.10.cropnresize.css',
-	'css!image/vendor/jcrop/jquery.jcrop.css',
+	'css!image/vendor/jcrop/jquery.jcrop.css'
 ],
 function AlohaImagePlugin (aQuery, Plugin, FloatingMenu,imgSidebar, imgFloating, i18nCore, i18n) {
 	
