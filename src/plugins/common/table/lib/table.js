@@ -321,7 +321,7 @@ function (Aloha, jQuery, FloatingMenu, i18n, TableCell, TableSelection, Utils) {
 			columnToInsert.addClass(this.get('classSelectionColumn'));
 			columnToInsert.css('width', this.get('selectionArea') + 'px');
 			//rowObj.find('td:first').before(columnToInsert);
-			rowObj.children().first().before(columnToInsert);			
+			rowObj.prepend(columnToInsert);			
 			// rowIndex + 1 because an addtional row is still added
 			rowIndex = i + 1;
 
