@@ -1,6 +1,6 @@
 define(
-['aloha', 'aloha/jquery', 'table/table-plugin-utils', 'i18n!table/nls/i18n'],
-function (Aloha, $, Utils, i18n) {
+['aloha', 'aloha/jquery', 'table/table-plugin-utils', 'table/table-cell', 'i18n!table/nls/i18n'],
+function (Aloha, $, Utils, TableCell, i18n) {
 	/**
 	 * The TableSelection object is a helper-object
 	 */
@@ -222,6 +222,64 @@ function (Aloha, $, Utils, i18n) {
 		return -1;
 	};
 
+
+	/**
+	 * Given a contour creates a object representing a rectangle.
+	 * This function only gives a useful return value if the given
+	 * contour rectangular.
+	 *
+	 * @param {object} contour
+	 *        a rectangular contour
+	 * @return {object}
+	 *        an object with the properties top, right, bottom, left, 
+	 *        representing the rectangular contour.
+	 */
+	function getRectFromContour( contour ) {
+		return {
+			'top'   : contour.top[0],
+			'right' : contour.right[0] + 1,
+			'bottom': contour.bottom[0] + 1,
+			'left'  : contour.left[0]
+		};
+	}
+
+	/**
+	 * Given a grid and contour, determines whether the contour is
+	 * rectangular, and each cell in the rectangle is selected.
+	 *
+	 * @param {array} grid
+	 *        a two-dimensional array representing a grid see Utils.makeGrid
+	 * @param {object} contour
+	 *        an object reprensenting a contour see Utils.makeContour
+	 * @param {function} isSelected
+	 *        a function that determines whether a cell in the given grid
+	 *        is selected for merging.
+	 * @return {boolean}
+	 *        true if all cells inside the contour are selected and can
+	 *        be merged.
+	 */
+	function isMergeable(grid, contour, isSelected) {
+		var mergeable = true;
+		if (   -1 !== Utils.indexOfAnyBut( contour.top   , contour.top[0]    )
+			|| -1 !== Utils.indexOfAnyBut( contour.right , contour.right[0]  )
+			|| -1 !== Utils.indexOfAnyBut( contour.bottom, contour.bottom[0] )
+			|| -1 !== Utils.indexOfAnyBut( contour.left  , contour.left[0]   ) ) {
+			// the outside of the selected area is jagged (not a rectangle)
+			mergeable = false;
+		} else {
+			// the outside of the selected area is a rectangle, but we
+			// must also ensore that there are no holes in the selection
+			var rect = getRectFromContour( contour )
+			Utils.walkGridInsideRect( grid, rect, function ( cellInfo ) {
+				if ( ! isSelected( cellInfo ) ) {
+					mergeable = false;
+					return false;
+				}
+			});
+		}
+		return mergeable;
+	}
+
 	/**
 	 * This method merges all selected cells
 	 *
@@ -234,15 +292,14 @@ function (Aloha, $, Utils, i18n) {
 			return;
 		}
 
-		var grid = Utils.makeGrid( this.table.getRows() );
 		var isSelected = function ( cellInfo ) {
 			return -1 != $.inArray( cellInfo.cell, selectedCells );
 		};
+
+		var grid = Utils.makeGrid( this.table.getRows() );
 		var contour = Utils.makeContour( grid, isSelected );
-		if (   -1 !== Utils.indexOfAnyBut( contour.top   , contour.top[0]    )
-			|| -1 !== Utils.indexOfAnyBut( contour.right , contour.right[0]  )
-			|| -1 !== Utils.indexOfAnyBut( contour.bottom, contour.bottom[0] )
-			|| -1 !== Utils.indexOfAnyBut( contour.left  , contour.left[0]   ) ) {
+
+		if ( ! isMergeable( grid, contour, isSelected ) ) {
 			Aloha.showMessage(new Aloha.Message({
 				title : i18n.t('Table'),
 				text : i18n.t('table.mergeCells.notRectangular'),
@@ -251,73 +308,34 @@ function (Aloha, $, Utils, i18n) {
 			return;
 		}
 
-		//sorts the cells
-		this.selectedCells.sort(function(a, b){
-			var aRowId = $(a).parent().prevAll('tr').length;
-			var bRowId = $(b).parent().prevAll('tr').length;
+		var selectedRect = getRectFromContour( contour );
+		var $firstCell = $( grid[ selectedRect.top ][ selectedRect.left ].cell );
+		var $firstContainer = $( TableCell.getContainer( $firstCell.get( 0 ) ) );
 
-			var aColId = $(a).prevAll('td, th').length;
-			var bColId = $(b).prevAll('td, th').length;
-
-			if(aRowId < bRowId){
-				return -1; 
+		Utils.walkGridInsideRect( grid, selectedRect, function ( cellInfo, x, y ) {
+			if (   x - cellInfo.spannedX === selectedRect.left
+				&& y - cellInfo.spannedY === selectedRect.top ) {
+				return;
 			}
-			else if(aRowId > bRowId){
-				return 1; 
-			}
-			//row id is equal
-			else {
-				//sort by column id
-				if(aColId < bColId){
-					return -1; 
-				}
-				if(aColId > bColId){
-					return 1; 
+			var cell = cellInfo.cell;
+			var contents = $( TableCell.getContainer( cell ) ).contents();
+			// only append the delimiting space if there is some non-whitespace
+			for ( var i = 0; i < contents.length; i++ ) {
+				if (   "string" !== typeof contents[i]
+				    || "" !== $.trim( contents[i] ) ) {
+					$firstContainer.append( " " );
+					$firstContainer.append( contents );
+					break;
 				}
 			}
+			$( cell ).remove();
 		});
 
-		var firstCell = $(this.selectedCells.shift());
-
-		//set the initial rowspan and colspan
-		var rowspan = Utils.rowspan( firstCell );
-		var colspan = Utils.colspan( firstCell );
-
-		var firstRowId = prevRowId = firstCell.parent().prevAll('tr').length;
-		var firstColId = firstCell.parent().prevAll('tr').length;
-
-		//iterate through remaining cells
-		for (var i = 0; i < this.selectedCells.length; i++) {
-			//get the current cell
-			var curCell = $(this.selectedCells[i]);
-
-			var curRowId = curCell.parent().prevAll('tr').length;
-
-			//if current cell is in the same row as the first cell,
-			//increase colspan
-			if(curRowId == firstRowId){
-				colspan += Utils.colspan( curCell );
-			}
-			//if they are in different rows increase the rowspan
-			else {
-				if(curRowId != prevRowId)
-					rowspan += Utils.rowspan( curCell );
-			}
-
-			//set the current row id to previous row id
-			prevRowId = curRowId;
-
-			// get the content of the current row and append it to the first cell
-			firstCell.find(":first-child").append(" " + curCell.find(":first-child").html());
-
-			// remove the cell
-			curCell.remove();
-		}
-		
-		firstCell.attr({ 'rowspan': rowspan, 'colspan': colspan });
+		$firstCell.attr({ 'rowspan': selectedRect.bottom - selectedRect.top,
+						  'colspan': selectedRect.right  - selectedRect.left });
 
 		//select the merged cell
-		this.selectedCells = [firstCell];
+		this.selectedCells = [ $firstCell.get( 0 ) ];
 
 		//reset flags
 		this.cellSelectionMode = false; 

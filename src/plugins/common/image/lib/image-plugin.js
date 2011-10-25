@@ -95,7 +95,7 @@ function AlohaImagePlugin ( aQuery, Plugin, FloatingMenu, i18nCore, i18n ) {
 
 		languages: ['en', 'fr', 'de', 'ru', 'cz'],
 
-		defaultSettings: {
+		defaults: {
 			'maxWidth': 800,
 			'minWidth': 10,
 			'maxHeight': 800,
@@ -104,10 +104,10 @@ function AlohaImagePlugin ( aQuery, Plugin, FloatingMenu, i18nCore, i18n ) {
 			'fixedAspectRatio' : false, // This setting will define a fixed aspect ratio for all resize actions 
 			//Image manipulation options - ONLY in default config section
 			ui: {
-		        oneTab		: false, //Place all ui components within one tab
-		        insert      : true,
-		        reset 		: true,
-		        aspectRatioToggle: true, // Toggle button for the aspect ratio 
+				oneTab		: false, //Place all ui components within one tab
+				insert      : true,
+				reset 		: true,
+				aspectRatioToggle: true, // Toggle button for the aspect ratio 
 				align		: true,	// Menu elements to show/hide in menu
 				resize		: true,	// Resize buttons
 				meta		: true,
@@ -261,12 +261,15 @@ function AlohaImagePlugin ( aQuery, Plugin, FloatingMenu, i18nCore, i18n ) {
 		init: function() {
 
 			var that = this;
+
 			var imagePluginUrl = Aloha.getPluginUrl('image');
-			
-			// Extend the default settings with the custom ones
-			this.settings = jQuery.extend(true,this.defaultSettings,this.settings);
+
+			// Extend the default settings with the custom ones (done by default)
+			//this.settings = jQuery.extend(true,this.defaultSettings,this.settings);
 
 			this.startAspectRatio = this.settings.fixedAspectRatio; 
+			this.config = this.defaults;
+			this.settings = jQuery.extend(true, this.settings, this.defaults);
 			
 			that.initializeButtons();
 			that.bindInteractions();
@@ -741,7 +744,7 @@ function AlohaImagePlugin ( aQuery, Plugin, FloatingMenu, i18nCore, i18n ) {
 			});
 
 			Aloha.bind('aloha-drop-files-in-editable', function(event, data) {
-				var	that = this;
+				//var	that = this;
 				var img, len = data.filesObjs.length, fileObj, config;
 
 				while (--len >= 0) {
@@ -771,7 +774,7 @@ function AlohaImagePlugin ( aQuery, Plugin, FloatingMenu, i18nCore, i18n ) {
 			 * Add the event handler for selection change
 			 */
 			Aloha.bind('aloha-selection-changed', function(event, rangeObject, originalEvent) {
-
+				var config, foundMarkup;
 				if (originalEvent && originalEvent.target) {
 					// Check if the element is currently beeing resized
 					if (that.settings.ui.resizable && !jQuery(originalEvent.target).hasClass('ui-resizable-handle')) {
@@ -781,19 +784,16 @@ function AlohaImagePlugin ( aQuery, Plugin, FloatingMenu, i18nCore, i18n ) {
 				
 
 				if(Aloha.activeEditable !== null) {
-					var foundMarkup = that.findImgMarkup( rangeObject );
+					foundMarkup = that.findImgMarkup( rangeObject );
 					//var config = that.getEditableConfig(Aloha.activeEditable.obj);
+					config = that.getEditableConfig(Aloha.activeEditable.obj);
 
-//					if (typeof config.img !== 'undefined' ) {
-//						that.insertImgButton.show();
-//						FloatingMenu.doLayout();
-//					} else {
-//						that.insertImgButton.hide();
-//						// TODO this should not be necessary here!
-//						FloatingMenu.doLayout();
-//						// leave if img is not allowed
-//						return;
-//					}
+					if (typeof config !== 'undefined' ) {
+						that.insertImgButton.show();
+					} else {
+						that.insertImgButton.hide();
+						return;
+					}
 
 					// Enable image specific ui components if the element is an image
 					if ( foundMarkup ) {

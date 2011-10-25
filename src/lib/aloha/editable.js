@@ -214,15 +214,18 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, C
 				// mark the editable as unmodified
 				me.setUnmodified();
 
-				// apply content handler to clean up content
-				var content = me.obj.html();
-				if ( typeof Aloha.settings.contentHandler.initEditable === 'undefined') {
-					Aloha.settings.contentHandler.initEditable = Aloha.defaults.contentHandler.initEditable;
-				}
-				content = ContentHandlerManager.handleContent( content, {
-					contenthandler: Aloha.settings.contentHandler.initEditable 
-				});
-				me.obj.html( content );
+				// we don't do the sanitizing on aloha ready, since some plugins add elements into the content and bind events to it.
+				// if we sanitize by replacing the html, all events would get lost. TODO: think about a better solution for the sanitizing, without
+				// destroying the events
+//				// apply content handler to clean up content
+//				var content = me.obj.html();
+//				if ( typeof Aloha.settings.contentHandler.initEditable === 'undefined') {
+//					Aloha.settings.contentHandler.initEditable = Aloha.defaults.contentHandler.initEditable;
+//				}
+//				content = ContentHandlerManager.handleContent( content, {
+//					contenthandler: Aloha.settings.contentHandler.initEditable 
+//				});
+//				me.obj.html( content );
 
 				me.snapshotContent = me.getContents();
 
@@ -751,7 +754,7 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, C
 				this.sccTimerDelay = setTimeout(function() {
 
 					Aloha.trigger('aloha-smart-content-changed',{
-						'editable' : Aloha.activeEditable,
+						'editable' : me,
 						'keyIdentifier' : event.originalEvent.keyIdentifier,
 						'keyCode' : event.keyCode,
 						'char' : uniChar,
@@ -799,7 +802,7 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, C
 					clearTimeout(this.sccTimerDelay);
 
 					Aloha.trigger('aloha-smart-content-changed',{
-						'editable' : Aloha.activeEditable,
+						'editable' : me,
 						'keyIdentifier' : null,
 						'keyCode' : null,
 						'char' : null,
@@ -813,7 +816,7 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, C
 
 			else if (event && event.type === 'paste') {
 				Aloha.trigger('aloha-smart-content-changed',{
-					'editable' : Aloha.activeEditable,
+					'editable' : me,
 					'keyIdentifier' : null,
 					'keyCode' : null,
 					'char' : null,
@@ -825,7 +828,7 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, C
 
 			else if (event && event.type === 'blur') {
 				Aloha.trigger('aloha-smart-content-changed',{
-					'editable' : Aloha.activeEditable,
+					'editable' : me,
 					'keyIdentifier' : null,
 					'keyCode' : null,
 					'char' : null,

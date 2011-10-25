@@ -4,37 +4,8 @@
 	<meta charset="UTF-8">
 	<title>Aloha, Images!</title>
 
-	<script src="../../../../lib/require.js"
-			id="aloha-script-include"
-			data-main="../../../../lib/aloha.js"
-			data-aloha-plugins="common/format, common/highlighteditables, media/image"></script>
 
-	<link rel="stylesheet" href="../../../../css/aloha.css" id="aloha-style-include" type="text/css">
-	<link rel="stylesheet" href="../../../../demo/common/index.css" type="text/css">
-	
-</head>
-<body>
-  <div id="main">
-  
-		<div id="tree-div"></div>
-		<h1 id="title">Aloha, Images!</h1>
-		<div id="bodyContent">
-			<div id="teaser" class="shorttext">
-				<p>This example will show you how to use the Image plugin found at <a href="https://github.com/alohaeditor/Aloha-Plugin-Image">https://github.com/alohaeditor/Aloha-Plugin-Image</a>.</p>
-			</div>
-			<div id="content" class="article">
-				<p>Click the image to start resizing right away, as a resize handle will appear in it's south-east corner.</p>
-				<p><img src="cropnresize.jpg"></p>
-				<p><em>Note:</em> This is a very simple example, that will not allow subsequent cropping actions, or cropping combined with resizing.</p>
-			</div>
-			
-			Outside of the editable
-			<p><img class="global" src="cropnresize.jpg"></p>
-		</div>
-		
-		
-  </div>
-	<script type="text/javascript">
+<script type="text/javascript">
 	
 	(function(window, undefined) {
 
@@ -79,7 +50,7 @@
 					props.w, props.h);
 			$('body').append(canvas);
 		}
-    	
+
 		if (window.Aloha === undefined || window.Aloha === null) {
 			var Aloha = window.Aloha = {};		
 		}
@@ -105,25 +76,45 @@
     
     })(window);
 	</script>
+
+	<script src="../../../../lib/require.js"
+			id="aloha-script-include"
+			data-main="../../../../lib/aloha.js"
+			data-aloha-plugins="common/format, common/highlighteditables, common/image"></script>
+
+	<link rel="stylesheet" href="../../../../css/aloha.css" id="aloha-style-include" type="text/css">
+	<link rel="stylesheet" href="../../../../demo/common/index.css" type="text/css">
+	
+</head>
+<body>
+  <div id="main">
+  
+		<div id="tree-div"></div>
+		<h1 id="title">Aloha, Images!</h1>
+		<div id="bodyContent">
+			<div id="teaser" class="shorttext">
+				<p>This example will show you how to use the Image plugin found at <a href="https://github.com/alohaeditor/Aloha-Plugin-Image">https://github.com/alohaeditor/Aloha-Plugin-Image</a>.</p>
+			</div>
+			<div id="content" class="article">
+				<p>Click the image to start resizing right away, as a resize handle will appear in it's south-east corner.</p>
+				<p><img src="cropnresize.jpg"></p>
+				<p><em>Note:</em> This is a very simple example, that will not allow subsequent cropping actions, or cropping combined with resizing.</p>
+			</div>
+			
+			Outside of the editable
+			<p><img class="global" src="cropnresize.jpg"></p>
+		</div>
+		
+		
+  </div>
+	
 	
 	<script type="text/javascript">
-
-	require(["aloha/jquery"],
-		function(aQuery) {
-
-		require.ready(function() {
-			// Prepare
-			var	$ = aQuery;
-		    var $body = $('body');
-
-		    
-			// Bind to Aloha Ready Event
-			$body.bind('aloha', function(){
-				$('#title').aloha();
-				$('#teaser').aloha();
-				$('#content').aloha();
-			});
-		});
+	Aloha.ready( function(){
+		var $ = Aloha.jQuery;
+			$('#title').aloha();
+			$('#teaser').aloha();
+			$('#content').aloha();
 	});
   </script>
 </body>

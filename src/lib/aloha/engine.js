@@ -776,6 +776,7 @@ function isProhibitedParagraphChild(node) {
 // resolved value "inline" or "inline-block" or "inline-table" or "none", or a
 // Document, or a DocumentFragment."
 function isBlockNode(node) {
+	
 	return node
 		&& ((node.nodeType == $_.Node.ELEMENT_NODE && $_( ["inline", "inline-block", "inline-table", "none"] ).indexOf($_.getComputedStyle(node).display) == -1)
 		|| node.nodeType == $_.Node.DOCUMENT_NODE
@@ -1132,6 +1133,9 @@ function setActiveRange( range ) {
 	rangeObject.select();
 }
 
+// Please note: This method is deprecated and will be removed. 
+// Every command should use the value and range parameter. 
+// 
 // "The active range is the first range in the Selection given by calling
 // getSelection() on the context object, or null if there is no such range."
 //
@@ -3034,8 +3038,9 @@ function setSelectionValue(command, newValue, range) {
 		// "If command has inline command activated values, set the state
 		// override to true if new value is among them and false if it's not."
 		if ("inlineCommandActivatedValues" in commands[command]) {
-			$_( setStateOverride(command, commands[command].inlineCommandActivatedValues )
-				.indexOf(newValue) != -1, range);
+			setStateOverride(command, 
+      $_(commands[command].inlineCommandActivatedValues).indexOf(newValue) != -1,
+      range);
 		}
 
 		// "If command is "subscript", unset the state override for
@@ -3334,7 +3339,8 @@ commands.fontsize = {
 
 		// "Set the selection's value to value."
 		setSelectionValue("fontsize", value);
-	}, indeterm: function() {
+	}, 
+	indeterm: function() {
 		// "True if among editable Text nodes that are effectively contained in
 		// the active range, there are two that have distinct effective command
 		// values.  Otherwise false."
@@ -3345,17 +3351,18 @@ commands.fontsize = {
 		}, true).filter(function(value, i, arr) {
 			return $_(arr.slice(0, i)).indexOf(value) == -1;
 		}).length >= 2;
-	}, value: function() {
+	}, 
+	value: function(range) {
 		// "Let pixel size be the effective command value of the first editable
 		// Text node that is effectively contained in the active range, or if
 		// there is no such node, the effective command value of the active
 		// range's start node, in either case interpreted as a number of
 		// pixels."
-		var node = getAllEffectivelyContainedNodes(getActiveRange(), function(node) {
+		var node = getAllEffectivelyContainedNodes(range, function(node) {
 			return isEditable(node) && node.nodeType == $_.Node.TEXT_NODE;
 		})[0];
 		if (node === undefined) {
-			node = getActiveRange().startContainer;
+			node = range.startContainer;
 		}
 		var pixelSize = getEffectiveCommandValue(node, "fontsize");
 
@@ -4335,14 +4342,14 @@ function recordCurrentOverrides( range ) {
 	return overrides;
 }
 
-function recordCurrentStatesAndValues() {
+function recordCurrentStatesAndValues(range) {
 	// "Let overrides be a list of (string, string or boolean) ordered pairs,
 	// initially empty."
 	var overrides = [];
 
 	// "Let node be the first editable Text node effectively contained in the
 	// active range, or null if there is none."
-	var node = $_( getAllEffectivelyContainedNodes(getActiveRange()) )
+	var node = $_( getAllEffectivelyContainedNodes(range) )
 		.filter(function(node) { return isEditable(node) && node.nodeType == $_.Node.TEXT_NODE })[0];
 
 	// "If node is null, return overrides."
@@ -4351,7 +4358,7 @@ function recordCurrentStatesAndValues() {
 	}
 
 	// "Add ("createLink", value for "createLink") to overrides."
-	overrides.push(["createlink", commands.createlink.value()]);
+	overrides.push(["createlink", commands.createlink.value(range)]);
 
 	// "For each command in the list "bold", "italic", "strikethrough",
 	// "subscript", "superscript", "underline", in order: if node's effective
@@ -4370,8 +4377,9 @@ function recordCurrentStatesAndValues() {
 
 	// "For each command in the list "fontName", "foreColor", "hiliteColor", in
 	// order: add (command, command's value) to overrides."
+
 	$_( ["fontname", "fontsize", "forecolor", "hilitecolor"] ).forEach(function(command) {
-		overrides.push([command, commands[command].value()]);
+		overrides.push([command, commands[command].value(range)]);
 	});
 
 	// "Add ("fontSize", node's effective command value for "fontSize") to
@@ -4641,14 +4649,14 @@ function deleteContents() {
 
 	// "Let end block be the end node of range."
 	var endBlock = range.endContainer;
-
+	
 	// "While end block's parent is in the same editing host and end block is
 	// an inline node, set end block to its parent."
 	while (inSameEditingHost(endBlock, endBlock.parentNode)
 	&& isInlineNode(endBlock)) {
 		endBlock = endBlock.parentNode;
 	}
-
+	
 	// "If end block is neither a block node nor an editing host, or "span" is
 	// not an allowed child of end block, or end block is a td or th, set end
 	// block to null."
@@ -4659,13 +4667,15 @@ function deleteContents() {
 	}
 
 	// "Record current states and values, and let overrides be the result."
-	var overrides = recordCurrentStatesAndValues();
-
+	var overrides = recordCurrentStatesAndValues(range);
 	// "If start node and end node are the same, and start node is an editable
 	// Text node:"
 	if (startNode == endNode
 	&& isEditable(startNode)
 	&& startNode.nodeType == $_.Node.TEXT_NODE) {
+		// "Let parent be the parent of node."
+		var parent_ = startNode.parentNode;
+
 		// "Call deleteData(start offset, end offset − start offset) on start
 		// node."
 		startNode.deleteData(startOffset, endOffset - startOffset);
@@ -4678,6 +4688,16 @@ function deleteContents() {
 
 		// "Restore states and values from overrides."
 		restoreStatesAndValues(overrides, range);
+
+		// "If parent is editable or an editing host, is not an inline node,
+		// and has no children, call createElement("br") on the context object
+		// and append the result as the last child of parent."
+		// only do this, if the offsetHeight is 0
+		if ((isEditable(parent_) || isEditingHost(parent_))
+		&& !isInlineNode(parent_)
+		&& parent_.offsetHeight === 0) {
+			parent_.appendChild(createEndBreak());
+		}
 
 		// "Abort these steps."
 		return;
@@ -4974,7 +4994,7 @@ function deleteContents() {
 
 	// "If start block has no children, call createElement("br") on the context
 	// object and append the result as the last child of start block."
-	if (!startBlock.hasChildNodes()) {
+	if (!startBlock.hasChildNodes() && startBlock.offsetHeight == 0) {
 		startBlock.appendChild(createEndBreak());
 	}
 
@@ -6025,13 +6045,11 @@ commands["delete"] = {
 		// "Repeat the following steps:"
 		while ( true ) {
 			// we need to reset isBr and isHr on every interation of the loop
-			isBr = false;
-			isHr = false;
-			if ( offset - 1 <= node.childNodes.length ) {
+			if ( offset > 0 ) {
 				isBr = isHtmlElement(node.childNodes[offset - 1], "br") || false;
 				isHr = isHtmlElement(node.childNodes[offset - 1], "hr") || false;
 			}
-			
+
 			// "If offset is zero and node's previousSibling is an editable
 			// invisible node, remove node's previousSibling from its parent."
 			if (offset == 0
@@ -6346,7 +6364,20 @@ commands["delete"] = {
 
 		// "Delete the contents of the range with start (start node, start
 		// offset) and end (node, offset)."
-		deleteContents(startNode, startOffset, node, offset);
+		var delRange = Aloha.createRange();
+		delRange.setStart(startNode, startOffset);
+		delRange.setEnd(node, offset);
+		deleteContents(delRange);
+
+		if (!isAncestorContainer(document.body, range.startContainer)) {
+			if (delRange.startContainer.hasChildNodes() || delRange.startContainer.nodeType == $_.Node.TEXT_NODE) {
+				range.setStart(delRange.startContainer, delRange.startOffset);
+				range.setEnd(delRange.startContainer, delRange.startOffset);
+			} else {
+				range.setStart(delRange.startContainer.parentNode, getNodeIndex(delRange.startContainer));
+				range.setEnd(delRange.startContainer.parentNode, getNodeIndex(delRange.startContainer));
+			}
+		}
 	}
 };
 
@@ -6584,22 +6615,23 @@ commands.formatblock = {
 ///// The forwardDelete command /////
 //@{
 commands.forwarddelete = {
-	action: function() {
+	action: function(value, range) {
+	
 		// "If the active range is not collapsed, delete the contents of the
 		// active range and abort these steps."
-		if (!getActiveRange().collapsed) {
-			deleteContents(getActiveRange());
+		if (!range.collapsed) {
+			deleteContents(range);
 			return;
 		}
 
 		// "Canonicalize whitespace at (active range's start node, active
 		// range's start offset)."
-		canonicalizeWhitespace(getActiveRange().startContainer, getActiveRange().startOffset);
+		canonicalizeWhitespace(range.startContainer, range.startOffset);
 
 		// "Let node and offset be the active range's start node and offset."
-		var node = getActiveRange().startContainer;
-		var offset = getActiveRange().startOffset;
-
+		var node = range.startContainer;
+		var offset = range.startOffset;
+		
 		// "Repeat the following steps:"
 		while (true) {
 			// "If offset is the length of node and node's nextSibling is an
@@ -6651,8 +6683,8 @@ commands.forwarddelete = {
 		if (node.nodeType == $_.Node.TEXT_NODE
 		&& offset != getNodeLength(node)) {
 			// "Call collapse(node, offset) on the Selection."
-			getActiveRange().setStart(node, offset);
-			getActiveRange().setEnd(node, offset);
+			range.setStart(node, offset);
+			range.setEnd(node, offset);
 
 			// "Let end offset be offset plus one."
 			var endOffset = offset + 1;
@@ -6689,8 +6721,8 @@ commands.forwarddelete = {
 		// offset + 1) and abort these steps."
 		if (offset < node.childNodes.length
 		&& isHtmlElement(node.childNodes[offset], ["br", "hr", "img"])) {
-			getActiveRange().setStart(node, offset);
-			getActiveRange().setEnd(node, offset);
+			range.setStart(node, offset);
+			range.setEnd(node, offset);
 			deleteContents(node, offset, node, offset + 1);
 			return;
 		}
@@ -6730,11 +6762,11 @@ commands.forwarddelete = {
 		if (isHtmlElement(endNode.childNodes[endOffset], "table")) {
 			// "Call collapse(end node, end offset) on the context object's
 			// Selection."
-			getActiveRange().setStart(endNode, endOffset);
+			range.setStart(endNode, endOffset);
 
 			// "Call extend(end node, end offset + 1) on the context object's
 			// Selection."
-			getActiveRange().setEnd(endNode, endOffset + 1);
+			range.setEnd(endNode, endOffset + 1);
 
 			// "Abort these steps."
 			return;
@@ -6745,8 +6777,8 @@ commands.forwarddelete = {
 		if (offset == getNodeLength(node)
 		&& isHtmlElement(endNode.childNodes[endOffset], ["br", "hr"])) {
 			// "Call collapse(node, offset) on the Selection."
-			getActiveRange().setStart(node, offset);
-			getActiveRange().setEnd(node, offset);
+			range.setStart(node, offset);
+			range.setEnd(node, offset);
 
 			// "Delete the contents of the range with end (end node, end
 			// offset) and end (end node, end offset + 1)."
@@ -6860,10 +6892,8 @@ commands.indent = {
 ///// The insertHorizontalRule command /////
 //@{
 commands.inserthorizontalrule = {
-	action: function() {
-		// "Let range be the active range."
-		var range = getActiveRange();
-
+	action: function(value, range) {
+		
 		// "While range's start offset is 0 and its start node's parent is not
 		// null, set range's start to (parent of start node, index of start
 		// node)."
@@ -8080,14 +8110,14 @@ $_( commandNames ).forEach(function(command) {
 			return false;
 		};
 
-		commands[command].value = function() {
-			var refNode = getAllEffectivelyContainedNodes(getActiveRange(), function(node) {
+		commands[command].value = function(range) {
+			var refNode = getAllEffectivelyContainedNodes(range, function(node) {
 				return isEditable(node)
 					&& node.nodeType == $_.Node.TEXT_NODE;
 			})[0];
 
 			if (typeof refNode == "undefined") {
-				refNode = getActiveRange().startContainer;
+				refNode = range.startContainer;
 			}
 
 			return getEffectiveCommandValue(refNode, command);

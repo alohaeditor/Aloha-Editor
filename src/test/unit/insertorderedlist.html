@@ -36,11 +36,11 @@
 		defaultCommand: 'insertorderedlist',
 		tests: [
 			// empty
-			{	exclude: 'msie',
+			{	exclude: [ 'msie', 'mozilla' ],
 				start: '{}',
-				execResult: '<ol><li>{}</li></ol>' // @todo FF: [] ; Safari {}; Chrome {}
+				execResult: '<ol><li>{}</li></ol>'
 			},
-			{	include: 'msie',
+			{	include: [ 'msie', 'mozilla' ],
 				start: '{}',
 				execResult: '<ol><li>[]</li></ol>'
 			},

@@ -88,15 +88,22 @@ function( TestUtils ) {
 			check.attributes = ( typeof check.attributes !== 'undefined') ? check.attributes : tests.defaultAttributes;
 
 			converter.text(check.start);
-			var desc = converter.html();
+			var descStart = converter.html();
+
 			converter.text(check.value);
+			var descValue = converter.html();
 
 			converterResult.text(check.execResult);
 			var descResult = converterResult.html();
 
-			var	name = check.name || '"' + converter.html() + '": ' + descResult;
-			
-			module( 'Command ' + (i+1) + ' ' + tests.defaultCommand + (excluded ? ' EXCLUDED' : ''), {
+			var descName = '"' + descStart + '" &rarr; "' + descResult + '"';
+			if (descValue !== descStart) {
+				descName += ' ("' + descValue +'")';
+			}
+
+			var name = check.name ||  descName;
+
+			module( tests.defaultCommand + ' ' + (i+1) + (excluded ? ' (EX)' : ''), {
 				setup: function() {
 					// fill the editable area with the start value
 					editable.html(this.check.start);
@@ -107,7 +114,7 @@ function( TestUtils ) {
 				}
 			});
 			
-			if (excluded) {
+			if ( excluded ) {
 				test( name, {check:check}, function() {
 				});
 			} else {
@@ -188,6 +195,12 @@ function( TestUtils ) {
 						deepEqual( result, check.valueResult, 'queryCommandValue result' );
 					}
 					
+					// log expected result + result
+					/* // not working now
+					if ( typeof execResult === 'object' && typeof result === 'object' ) {
+						window.console.log( execResult.html() + ' -- ' + result.html());
+					}*/
+					
 					if ( check.execToggle ) {
 						range = TestUtils.addRange( editable );
 						
@@ -226,6 +239,7 @@ function( TestUtils ) {
 							deepEqual( result, check.valueToggle, 'queryCommandValue toggle result' );
 						}
 					}
+					
 				});
 			}
 		}
