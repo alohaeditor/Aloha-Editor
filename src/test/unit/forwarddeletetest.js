@@ -5,10 +5,20 @@ var specifictests = {
 		defaultCommand: 'forwarddelete',
 		tests: [
 
+/*
 				{	exclude: 'msie',
 					start: 'foo <span>&nbsp;</span>[] bar',
 					execResult: 'foo <span>&nbsp;[]</span>bar'
+				},
+		       	{	start: 'foo[]<quasit></quasit>bar',
+					execResult: 'foo[]ar'
+				},
+*/
+				{	start: 'foo{<p>bar</p>}baz',
+					execResult: 'foo[]baz'
 				}
+				
+				
 		        
 				]
 }
@@ -727,11 +737,21 @@ var alltests = {
 		{	start: '<p>foo<ol><li>ba[r<li>b]az</ol><p>quz',
 			execResult: '<p>foo</p><ol><li>ba[]az</li></ol><p>quz</p>'
 		},
-		{	start: '<p>foo<ol><li>bar<li>[baz]</ol><p>quz',
+		{	exclude: 'msie',	
+			start: '<p>foo<ol><li>bar<li>[baz]</ol><p>quz',
 			execResult: '<p>foo</p><ol><li>bar</li><li>[]</li></ol><p>quz</p>'
 		},
-		{	start: '<p>fo[o<ol><li>b]ar<li>baz</ol><p>quz',
+		{	include: 'msie',	
+			start: '<p>foo<ol><li>bar<li>[baz]</ol><p>quz',
+			execResult: '<p>foo </p><ol><li>bar </li><li>[]</li></ol><p>quz</p>'
+		},
+		{	exclude: 'msie',
+			start: '<p>fo[o<ol><li>b]ar<li>baz</ol><p>quz',
 			execResult: '<p>fo[]ar</p><ol><li>baz</li></ol><p>quz</p>'
+		},
+		{	include: 'msie',	
+			start: '<p>fo[o<ol><li>b]ar<li>baz</ol><p>quz',
+			execResult: '<p>fo[]ar </p><ol><li>baz</li></ol><p>quz</p>'
 		},
 		{	exclude: 'msie',
 			start: '<p>foo<ol><li>bar<li>ba[z</ol><p>q]uz',
@@ -857,8 +877,13 @@ var alltests = {
 			execResult: 'foo[]bar<p>baz</p>'
 		},
         // TODO: This test currently fails since the selection is not correctly handled.
-		{	start: 'foo<b>[bar]</b>baz',
+		{	exclude: 'msie',
+			start: 'foo<b>[bar]</b>baz',
 			execResult: 'foo[]<b></b>baz'
+		},
+		{	include: 'msie',
+			start: 'foo<b>[bar]</b>baz',
+			execResult: 'foo<b></b>[]baz'
 		},
 		{	start: '<p>foo</p><p>[bar]</p><p>baz</p>',
 			execResult: '<p>foo[]</p><p></p><p>baz</p>'
@@ -947,8 +972,13 @@ var alltests = {
 		{	start: 'foo{<b>bar</b>}baz',
 			execResult: 'foo[]<b></b>baz'
 		},
-		{	start: 'foo<span>[bar]</span>baz',
+		{	exclude: 'msie',
+			start: 'foo<span>[bar]</span>baz',
 			execResult: 'foo[]<span></span>baz'
+		},
+		{	include: 'msie',
+			start: 'foo<span>[bar]</span>baz',
+			execResult: 'foo<span></span>[]baz'
 		},
 		{	start: 'foo<span>{bar}</span>baz',
 			execResult: 'foo[]baz'
@@ -962,9 +992,6 @@ var alltests = {
 		{	start: 'foo[]<span><span></span></span>bar',
 			execResult: 'foo[]ar'
 		},
-		{	start: 'foo[]<quasit></quasit>bar',
-			execResult: 'foo[]ar'
-		},
 		{	start: 'foo[]<span></span><br>bar',
 			execResult: 'foo[]ar'
 		},
@@ -974,14 +1001,21 @@ var alltests = {
 		{	start: '<ol><li>foo[]<li>bar<br>baz</ol>',
 			execResult: '<ol><li>foo[]<li>bar<br>baz</ol>'
 		},			
-		{	start: 'foo []<span>&nbsp;</span> bar',
+		{	exclude: 'msie',
+			start: 'foo []<span>&nbsp;</span> bar',
 			execResult: 'foo []<span></span> bar'
 		},
-		{	start: 'foo{<p>bar</p>}baz',
-			execResult: 'foo[]baz'
+		{	include: 'msie',
+			start: 'foo []<span>&nbsp;</span> bar',
+			execResult: 'foo <span></span>[]bar'
 		},
-		{	start: 'foo<p>{bar</p>}baz',
+		{	exclude: 'msie',	
+			start: 'foo<p>{bar</p>}baz',
 			execResult: 'foo<p>[]baz</p>'
+		},
+		{	include: 'msie',	
+			start: 'foo<p>{bar</p>}baz',
+			execResult: 'foo <p>[]</p>baz'
 		},
 		{	start: 'foo{<p>bar}</p>baz',
 			execResult: 'foo[]<br>baz'
@@ -989,9 +1023,23 @@ var alltests = {
 		{	start: '<p>foo[</p>]bar',
 			execResult: '<p>foo[]bar</p>'
 		},
-		{	start: 'foo[]<span></span><span>bar</span>',
+		{	exclude: 'msie',
+			start: 'foo[]<span></span><span>bar</span>',
 			execResult: 'foo[]<span>ar</span>'
 		},
+		// IE jumps into the empty span after the character of the next textnode has been deleted. Deletion of the emptyspan will be omitted
+		{	include: 'msie',
+			start: 'foo[]<span></span><span>bar</span>',
+			execResult: 'foo<span>{}</span><span>ar</span>'
+		},
+		{	include: 'msie',
+			start: 'foo[] <span></span><span>bar</span>',
+			execResult: 'foo<span>[]ar</span>'
+		},
+		{	start: 'foo<span>{}</span><span>bar</span>',
+			execResult: 'foo[]<span>ar</span>'
+		},
+		
 		// TODO This test fails since the selection is not working properly
 		{	start: 'foo[]<span></span>bar',
 			execResult: 'foo[]ar'
@@ -1104,5 +1152,5 @@ var alltests = {
 			
 		]
 }
-//var tests = specifictests;
-var tests = alltests;
+var tests = specifictests;
+//var tests = alltests;
