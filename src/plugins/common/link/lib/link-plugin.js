@@ -5,15 +5,16 @@
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
 
-define(['aloha', 'aloha/plugin', 'aloha/jquery', 'aloha/floatingmenu', 'i18n!link/nls/i18n', 'i18n!aloha/nls/i18n', 'aloha/console',
-        'css!link/css/link.css'],
-function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, console) {
+define(['aloha', 'aloha/plugin', 'aloha/jquery', 'aloha/floatingmenu', 'i18n!link/nls/i18n', 'i18n!aloha/nls/i18n', 'aloha/console', 'aloha/editableinteraction' ],
+function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, console, EditableInteraction ) {
 	"use strict";
 
 	var
 		GENTICS = window.GENTICS;
 	//namespace prefix for this plugin
 	var	linkNamespace = 'aloha-link';
+	
+	Aloha.require( [ 'css!link/css/link.css' ] );
 
 	return Plugin.create('link', {
 		/**
@@ -111,20 +112,16 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, console) {
 					activeOn : 'a, link',
 					
 					onInit     : function () {
-						 var that = this,
-							 content = this.setContent(
-								'<div class="' + pl.nsClass('target-container') + '"><fieldset><legend>' + i18n.t('link.target.legend') + '</legend><ul><li><input type="radio" name="targetGroup" class="' + pl.nsClass('radioTarget') + '" value="_self" /><span>' + i18n.t('link.target.self') + '</span></li>' + 
-								'<li><input type="radio" name="targetGroup" class="' + pl.nsClass('radioTarget') + '" value="_blank" /><span>' + i18n.t('link.target.blank') + '</span></li>' + 
-								'<li><input type="radio" name="targetGroup" class="' + pl.nsClass('radioTarget') + '" value="_parent" /><span>' + i18n.t('link.target.parent') + '</span></li>' + 
-								'<li><input type="radio" name="targetGroup" class="' + pl.nsClass('radioTarget') + '" value="_top" /><span>' + i18n.t('link.target.top') + '</span></li>' + 
-								'<li><input type="radio" name="targetGroup" class="' + pl.nsClass('radioTarget') + '" value="framename" /><span>' + i18n.t('link.target.framename') + '</span></li>' + 
-								'<li><input type="text" class="' + pl.nsClass('framename') + '" /></li></ul></fieldset></div>' + 
-								'<div class="' + pl.nsClass('title-container') + '" ><fieldset><legend>' + i18n.t('link.title.legend') + '</legend><input type="text" class="' + pl.nsClass('linkTitle') + '" /></fieldset></div>').content; 
-						 
-						 jQuery( pl.nsSel('framename') ).live( 'keyup', function() {
-							jQuery( that.effective ).attr( "target", jQuery(this).val().replace("\"", '&quot;').replace("'", "&#39;") );
-						 });
-						 
+						var that = this,
+						content = this.setContent(
+						'<div class="' + pl.nsClass('target-container') + '"><fieldset><legend>' + i18n.t('link.target.legend') + '</legend><ul><li><input type="radio" name="targetGroup" class="' + pl.nsClass('radioTarget') + '" value="_self" /><span>' + i18n.t('link.target.self') + '</span></li>' + 
+						'<li><input type="radio" name="targetGroup" class="' + pl.nsClass('radioTarget') + '" value="_blank" /><span>' + i18n.t('link.target.blank') + '</span></li>' + 
+						'<li><input type="radio" name="targetGroup" class="' + pl.nsClass('radioTarget') + '" value="_parent" /><span>' + i18n.t('link.target.parent') + '</span></li>' + 
+						'<li><input type="radio" name="targetGroup" class="' + pl.nsClass('radioTarget') + '" value="_top" /><span>' + i18n.t('link.target.top') + '</span></li>' + 
+						'<li><input type="radio" name="targetGroup" class="' + pl.nsClass('radioTarget') + '" value="framename" /><span>' + i18n.t('link.target.framename') + '</span></li>' + 
+						'<li><input type="text" class="' + pl.nsClass('framename') + '" /></li></ul></fieldset></div>' + 
+						'<div class="' + pl.nsClass('title-container') + '" ><fieldset><legend>' + i18n.t('link.title.legend') + '</legend><input type="text" class="' + pl.nsClass('linkTitle') + '" /></fieldset></div>').content; 
+							
 						 jQuery( pl.nsSel('radioTarget') ).live( 'change', function() {
 							if ( jQuery(this).val() === "framename" ) {
 								jQuery( pl.nsSel('framename') ).slideDown();
@@ -135,10 +132,51 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, console) {
 								jQuery( that.effective ).attr( "target", jQuery(this).val() );
 							}
 						 });
-						 
-						 jQuery( pl.nsSel('linkTitle') ).live( 'keyup', function() {
-							jQuery( that.effective ).attr( "title", jQuery(this).val().replace("\"", '&quot;').replace("'", "&#39;") );
+						 //change background color of selected link while user select linkTitle
+						 jQuery( pl.nsSel('radioTarget') ).live( 'click', function() {
+							 var
+								target = jQuery(that.effective);	
+							 	EditableInteraction.highlight( target );
 						 });
+						 //remove background color of selected link
+						 jQuery( pl.nsSel('radioTarget') ).live( 'blur', function() {
+							 var 
+							 	target = jQuery(that.effective);
+							 EditableInteraction.unhighlight( target );
+						 });
+						 //set title attribute of the selected link while user typing in linkTitle textfield
+						 jQuery( pl.nsSel('linkTitle') ).live( 'keyup', function() {
+								jQuery( that.effective ).attr( "title", jQuery(this).val().replace("\"", '&quot;').replace("'", "&#39;") );
+						 });
+						 //change background color of selected link while user select linkTitle textfield
+						 jQuery( pl.nsSel('linkTitle') ).live('focus', function () {
+							 var
+								target = jQuery(that.effective);	
+							 	EditableInteraction.highlight( target );
+						 });
+						 //remove background color of selected link
+						 jQuery( pl.nsSel('linkTitle') ).live('blur', function () {
+							 var 
+							 	target = jQuery(that.effective);
+							 EditableInteraction.unhighlight( target );
+						 });
+						 //set target attribut of selected link while user typing in framename textfield
+						 jQuery( pl.nsSel('framename') ).live( 'keyup', function() {
+								jQuery( that.effective ).attr( "target", jQuery(this).val().replace("\"", '&quot;').replace("'", "&#39;") );
+					 	 });
+						 //change background color of selected link while user select framename textfield
+						 jQuery( pl.nsSel('framename') ).live('focus', function () {
+							 var 
+							 	target = jQuery(that.effective);	
+							 	EditableInteraction.highlight( target );
+						 });
+						 //remove background color of selected link
+						 jQuery( pl.nsSel('framename') ).live('blur', function () {
+							 var 
+							 	target = jQuery(that.effective);
+						 		EditableInteraction.unhighlight( target );
+						 });
+						 
 					},
 					
 					onActivate: function (effective) {
@@ -165,8 +203,6 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, console) {
 							jQuery( that.effective ).attr( 'target', jQuery(pl.nsSel('radioTarget')).first().val() );
 						}
 						
-						var that = this;
-						that.effective = effective;
 						jQuery( pl.nsSel('linkTitle') ).val( jQuery(that.effective).attr('title') );
 					}
 					
@@ -425,20 +461,39 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, console) {
 		 * @return markup
 		 * @hide
 		 */
-		findLinkMarkup: function ( range ) {
-
-			if ( typeof range == 'undefined' ) {
-				range = Aloha.Selection.getRangeObject();
-			}
-			if ( Aloha.activeEditable ) {
-				return range.findMarkup(function() {
-					return this.nodeName.toLowerCase() == 'a';
-				}, Aloha.activeEditable.obj);
-			} else {
-				return null;
-			}
-		},
-
+		
+		 findLinkMarkup: function ( range ) {
+			var 
+			    startLink,
+			    endLink;
+			   
+				if ( typeof range == 'undefined' ) {
+					range = Aloha.Selection.getRangeObject();
+				}
+				if ( Aloha.activeEditable ) {
+			    
+					var startInLink = range.findMarkup( function() {
+						if ( this.nodeName.toLowerCase() == 'a' ) {
+							startLink = this;
+							return true;
+						}
+						return false;
+					}, Aloha.activeEditable.obj);
+					
+					var endInLink = range.findMarkup( function() {
+						if ( this.nodeName.toLowerCase() == 'a' ) {
+							endLink = this;
+							return true;
+						}
+						return false;
+					}, Aloha.activeEditable.obj, true );
+					
+					return (startInLink && endInLink && startLink === endLink) ? startLink : false;
+				} else {
+					return null;
+				}
+		  },
+		
 		/**
 		 * Format the current selection or if collapsed the current word as link.
 		 * If inside a link tag the link is removed.

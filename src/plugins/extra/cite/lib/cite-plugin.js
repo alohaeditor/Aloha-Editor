@@ -10,11 +10,13 @@ define([
 	'aloha/jquery',
 	'aloha/plugin',
 	'aloha/floatingmenu',
-	'format/format-plugin',
+	'format/format-plugin', 
 	'util/dom',
+	'aloha/editableinteraction',
 	'i18n!cite/nls/i18n',
 	'i18n!aloha/nls/i18n'
-], function CiteClosure (Aloha, jQuery, Plugin, FloatingMenu, Format, domUtils, i18n, i18nCore) {
+], function CiteClosure (Aloha, jQuery, Plugin, FloatingMenu, Format, domUtils, EditableInteraction, i18n, i18nCore) {
+	
 	'use strict';
 	
 	Aloha.require( ['css!cite/css/cite.css'] );
@@ -82,8 +84,8 @@ define([
 	 */
 	function nsSel () {
 		var strBldr = [], prx = ns;
-		$.each(arguments, function () { strBldr.push('.' + (this == '' ? prx : prx + '-' + this)); });
-		return $.trim(strBldr.join(' '));
+		jQuery.each(arguments, function () { strBldr.push('.' + (this == '' ? prx : prx + '-' + this)); });
+		return jQuery.trim(strBldr.join(' '));
 	};
 	
 	/**
@@ -99,8 +101,8 @@ define([
 	 */
 	function nsClass () {
 		var strBldr = [], prx = ns;
-		$.each(arguments, function () { strBldr.push(this == '' ? prx : prx + '-' + this); });
-		return $.trim(strBldr.join(' '));
+		jQuery.each(arguments, function () { strBldr.push(this == '' ? prx : prx + '-' + this); });
+		return jQuery.trim(strBldr.join(' '));
 	};
 	
 	/**
@@ -146,7 +148,7 @@ define([
 				Aloha.settings.plugins		&&
 				Aloha.settings.plugins.cite &&
 				Aloha.settings.plugins.cite) {
-				var referenceContainer = $(Aloha.settings.plugins.cite.referenceContainer);
+				var referenceContainer = jQuery(Aloha.settings.plugins.cite.referenceContainer);
 				
 				if (referenceContainer.length > 0) {
 					this.referenceContainer = referenceContainer;
@@ -229,6 +231,26 @@ define([
 								content.find(nsSel('note-field textarea')).val()
 							);
 						});
+						jQuery(nsSel('link-field input')).live( 'focus', function () {
+							var target = jQuery(citePlugin.effective);
+							EditableInteraction.highlight( target );
+							
+						});
+						jQuery(nsSel('link-field input')).live( 'blur', function () {
+							var target = jQuery(citePlugin.effective);
+							EditableInteraction.unhighlight( target );
+							
+						});
+						jQuery(nsSel('note-field textarea')).live( 'focus', function () {
+							var target = jQuery(citePlugin.effective);
+							EditableInteraction.highlight( target );
+							
+						});
+						jQuery(nsSel('note-field textarea')).live( 'blur', function () {
+							var target = jQuery(citePlugin.effective);
+							EditableInteraction.unhighlight( target );
+							
+						});
 					},
 					
 					/**
@@ -255,6 +277,7 @@ define([
 						content.attr('data-cite-id', uid);
 						content.find(nsSel('link-field input')).val(effective.attr('cite')); //.focus();
 						content.find(nsSel('note-field textarea')).val(that.citations[index].note);
+						that.effective = effective;
 					}
 					
 				});
@@ -263,29 +286,18 @@ define([
 			Aloha.bind('aloha-selection-changed', function(event, rangeObject){
 				Format.multiSplitButton.showItem('blockquote');
 				
-				var buttons = $('button' + nsSel('button'));
+				var buttons = jQuery('button' + nsSel('button'));
 				
-				$.each(that.buttons, function(index, button) {
-					// set to false to prevent multiple buttons being active when they should not
-					var statusWasSet = false;
-					var tagName;
-					var effective = rangeObject.markupEffectiveAtStart;
-					var i = effective.length;
+				jQuery.each(that.buttons, function(index, button) {
 					
 					// check whether any of the effective items are citation tags
-					while (i--) {
-						tagName = effective[i].tagName.toLowerCase();
-						if ('q' == tagName || 'blockquote' == tagName) {
-							statusWasSet = true;
-							break;
-						}
-					}
+					var foundMarkup = citePlugin.findCiteMarkup(rangeObject);
 					
 					buttons.filter(nsSel('block-button')).removeClass(nsClass('pressed'));
 					that.buttons[0].setPressed(false);
 					
-					if (statusWasSet) {
-						if(tagName == 'q') {
+					if (foundMarkup) {
+						if(foundMarkup.nodeName.toLowerCase() == 'q') {
 							that.buttons[0].setPressed(true);
 						} else {
 							buttons.filter(nsSel('block-button'))
@@ -297,6 +309,38 @@ define([
 					}
 				});
 			});
+		},
+		
+		findCiteMarkup: function (range) {
+			 var 
+			    startCite,
+			    endCite;
+			   
+				if ( typeof range == 'undefined' ) {
+					range = Aloha.Selection.getRangeObject();
+				}
+				if ( Aloha.activeEditable ) {
+			    
+					var startInCite = range.findMarkup( function() {
+						if ( this.nodeName.toLowerCase() == 'q' || this.nodeName.toLowerCase() == 'blockquote' ) {
+							startCite = this;
+							return true;
+						}
+						return false;
+					}, Aloha.activeEditable.obj);
+					
+					var endInCite = range.findMarkup( function() {
+						if ( this.nodeName.toLowerCase() == 'q' || this.nodeName.toLowerCase() == 'blockquote' ) {
+							endCite = this;
+							return true;
+						}
+						return false;
+					}, Aloha.activeEditable.obj, true );
+					
+					return (startInCite && endInCite && startCite === endCite) ? startCite : false;
+				} else {
+					return null;
+				}
 		},
 		
 		/**
@@ -333,7 +377,7 @@ define([
 		
 		addBlockQuote: function () {
 			var classes = [nsClass('wrapper'), nsClass(++uid)].join(' ');
-			var markup = $(supplant(
+			var markup = jQuery(supplant(
 					'<blockquote class="{classes}" data-cite-id="{uid}"></blockquote>',
 					{uid:uid, classes:classes}
 				));
@@ -355,7 +399,7 @@ define([
 		
 		addInlineQuote: function () {
 			var classes = [nsClass('wrapper'), nsClass(++uid)].join(' ');
-			var markup = $(supplant(
+			var markup = jQuery(supplant(
 					'<q class="{classes}" data-cite-id="{uid}"></q>',
 					{uid:uid, classes:classes}
 				));
@@ -366,18 +410,18 @@ define([
 			if (Aloha.activeEditable) {
 				jQuery(Aloha.activeEditable.obj[0]).click();
 			}
-
-			// check whether the markup is found in the range (at the start of the range)
-			foundMarkup = rangeObject.findMarkup(function() {
-				if (this.nodeName && markup.get(0) &&
-					(typeof this.nodeName === 'string') &&
-					(typeof markup.get(0).nodeName === 'string')) {
-					return this.nodeName.toLowerCase() == markup.get(0).nodeName.toLowerCase();
-				}
+			
+		   var foundMarkup = rangeObject.findMarkup(function() {
+			if (this.nodeName && markup.get(0) &&
+				(typeof this.nodeName === 'string') &&
+				(typeof markup.get(0).nodeName === 'string')) {
+				return this.nodeName.toLowerCase() == markup.get(0).nodeName.toLowerCase();
+			}
 				
 				return false;
 			}, Aloha.activeEditable.obj);
-
+			
+			
 			if (foundMarkup) {
 				// remove the markup
 				if (rangeObject.isCollapsed()) {
@@ -425,7 +469,7 @@ define([
 				return;
 			}
 			
-			var wrapper = $('.aloha-editable-active ' + nsSel(uid));
+			var wrapper = jQuery('.aloha-editable-active ' + nsSel(uid));
 			var note    = 'cite-note-' + uid;
 			var ref     = 'cite-ref-'  + uid;
 			
@@ -475,7 +519,7 @@ define([
 			
 			if (link) {
 				// Update link attribute
-				var el = $(nsSel(uid)).attr('cite', link);
+				var el = jQuery(nsSel(uid)).attr('cite', link);
 				
 				// Highlight animation for happy user
 				var round = Math.round;
@@ -506,7 +550,7 @@ define([
 							             round(from[2] + diff[2] * val),
 							             from[3] + diff[3] * val   ];
 							
-							$(this).css({
+							jQuery(this).css({
 								'background-color': 'rgba(' + rgba.join(',') + ')',
 								'box-shadow': '0 0 ' + (20 * (1 - val)) + 'px rgba(' + from.join(',') + ')'
 							});
@@ -520,7 +564,7 @@ define([
 			
 			// Update information in references list for this citation
 			if (this.referenceContainer) {
-				$('li#cite-note-' + uid + ' span').html(
+				jQuery('li#cite-note-' + uid + ' span').html(
 					supplant(
 						link ? '<a class="external" target="_blank" href="{url}">{url}</a>' : '',
 						{url:link}

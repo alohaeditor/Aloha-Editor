@@ -7,7 +7,7 @@
 
 
 define(
-['aloha', 'aloha/jquery', 'aloha/plugin', 'aloha/floatingmenu', 'i18n!abbr/nls/i18n', 'i18n!aloha/nls/i18n'],
+['aloha', 'aloha/jquery', 'aloha/plugin', 'aloha/floatingmenu', 'i18n!abbr/nls/i18n', 'i18n!aloha/nls/i18n', 'css!abbr/css/abbr.css'],
 function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 	"use strict";
 	var
@@ -82,6 +82,7 @@ function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 		    this.abbrField = new Aloha.ui.AttributeField({
 		    	'width':320
 		    });
+			
 		    // add the input field for abbr
 		    FloatingMenu.addButton(
 		        'abbr',
@@ -89,7 +90,23 @@ function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 		        i18n.t('floatingmenu.tab.abbr'),
 		        1
 		    );
-
+			
+			// remove Abbr
+			//TODO: Set suitable icon for remove abbr. Maybe a new icon should be added into base.png sprite
+		    this.removeButton = new Aloha.ui.Button({
+		        'iconClass' : 'aloha-button-abbr-remove',
+		        'size' : 'small',
+		        'onclick' : function () { me.removeAbbr( false ); },
+		        'tooltip' : i18n.t('button.removeabbr.tooltip'),
+		        'toggle' : false
+		    });
+			
+			FloatingMenu.addButton(
+		        'abbr',
+		        this.removeButton,
+		        i18n.t('floatingmenu.tab.abbr'),
+		        1
+		    );
 		},
 
 		/**
@@ -194,19 +211,38 @@ function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 		 * @return markup
 		 * @hide
 		 */
+		
 		findAbbrMarkup: function ( range ) {
-
-			if ( typeof range == 'undefined' ) {
-		        var range = Aloha.Selection.getRangeObject();
-		    }
-			if ( Aloha.activeEditable ) {
-			    return range.findMarkup(function() {
-			        return this.nodeName.toLowerCase() == 'abbr';
-			    }, Aloha.activeEditable.obj);
-			} else {
-				return null;
-			}
-		},
+			var 
+		    startAbbr,
+		    endAbbr;
+		   
+		   if ( typeof range == 'undefined' ) {
+		    range = Aloha.Selection.getRangeObject();
+		   }
+		   if ( Aloha.activeEditable ) {
+		    
+		    var startInAbbr = range.findMarkup( function() {
+		     if ( this.nodeName.toLowerCase() == 'abbr' ) {
+		      startAbbr = this;
+		      return true;
+		     }
+		     return false;
+		    }, Aloha.activeEditable.obj);
+		    
+		    var endInAbbr = range.findMarkup( function() {
+		     if ( this.nodeName.toLowerCase() == 'abbr' ) {
+		      endAbbr = this;
+		      return true;
+		     }
+		     return false;
+		    }, Aloha.activeEditable.obj, true );
+		    
+		    return (startInAbbr && endInAbbr && startAbbr === endAbbr) ? startAbbr : false;
+		   } else {
+		    return null;
+		   }
+	  },
 
 		/**
 		 * Format the current selection or if collapsed the current word as abbr.

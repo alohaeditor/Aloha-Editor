@@ -19,8 +19,8 @@
 */
 
 define(
-['aloha/core', 'util/class', 'aloha/jquery', 'aloha/pluginmanager', 'aloha/floatingmenu', 'aloha/selection', 'aloha/markup', 'aloha/contenthandlermanager'],
-function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, ContentHandlerManager) {
+['aloha/core', 'util/class', 'aloha/jquery', 'aloha/pluginmanager', 'aloha/floatingmenu', 'aloha/selection', 'aloha/markup', 'aloha/contenthandlermanager', 'aloha/editableinteraction' ],
+function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, ContentHandlerManager, EditableInteraction) {
 	"use strict";
 	
 	var
@@ -675,7 +675,7 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, C
 
 			// remove placeholder
 			this.removePlaceholder(clonedObj);
-
+			EditableInteraction.makeClean( clonedObj );
 			PluginManager.makeClean(clonedObj);
 			return asObject ? clonedObj.contents() : clonedObj.html();
 		},

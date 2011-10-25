@@ -70,13 +70,13 @@
 	outline: none;
 }
 button.aloha-button {
-	background: url('../img/base.png') no-repeat !important;
+	background: url('../img/base.png') no-repeat;
 }
 button.aloha-button-big {
 	background: url('../img/base-big.png') no-repeat !important;
 }
 button.aloha-button-b {
-	background-position: 0px 0px;
+	background-position: 0px 0px !important;
 }
 button.aloha-button-i {
 	background-position: -16px 0px !important;

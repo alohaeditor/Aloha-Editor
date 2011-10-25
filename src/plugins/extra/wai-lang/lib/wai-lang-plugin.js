@@ -149,6 +149,36 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 		},
 		
 		findLangMarkup: function(range) {
+			var 
+		    startLang,
+		    endLang;
+		   
+			if ( typeof range == 'undefined' ) {
+				range = Aloha.Selection.getRangeObject();
+			}
+			if ( Aloha.activeEditable ) {
+		    
+				var startInLang = range.findMarkup( function() {
+					if ( this.nodeName.toLowerCase() == 'span'  && (jQuery(this).hasClass('wai-lang') || jQuery(this).is('span[lang]')) {
+						startLang = this;
+						return true;
+					}
+					return false;
+				}, Aloha.activeEditable.obj);
+				
+				var endInLang = range.findMarkup( function() {
+					if ( this.nodeName.toLowerCase() == 'span'  && (jQuery(this).hasClass('wai-lang') || jQuery(this).is('span[lang]')) {
+						endLang = this;
+						return true;
+					}
+					return false;
+				}, Aloha.activeEditable.obj, true );
+				
+				return (startInLang && endInLang && startLang === endLang) ? startLang : false;
+			} else {
+				return null;
+			}
+			/*
 			if ( typeof range == 'undefined' ) {
 		        var range = Aloha.Selection.getRangeObject();
 		    }
@@ -159,8 +189,9 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 			} else {
 				return null;
 			}
+			*/
 		},
-
+		
 		removeLangMarkup: function() {
 			var range = Aloha.Selection.getRangeObject();
 		    var foundMarkup = this.findLangMarkup(range);
@@ -257,14 +288,32 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 		 * @hide
 		 */
 		findLanguageMarkup: function ( range ) {
-	
+			var 
+			    startLang,
+			    endLang;
+			   
 			if ( typeof range == 'undefined' ) {
 				range = Aloha.Selection.getRangeObject();
 			}
 			if ( Aloha.activeEditable ) {
-				return range.findMarkup(function() {
-					return this.nodeName.toLowerCase() == 'span';
+			
+				var startInLang = range.findMarkup( function() {
+					if ( this.nodeName.toLowerCase() == 'span' ) {
+						startLang = this;
+						return true;
+					}
+					return false;
 				}, Aloha.activeEditable.obj);
+				
+				var endInLang = range.findMarkup( function() {
+					if ( this.nodeName.toLowerCase() == 'span' ) {
+						endLang = this;
+						return true;
+					}
+					return false;
+				}, Aloha.activeEditable.obj, true );
+				
+				return (startInLang && endInLang && startLang === endLang) ? startLang : false;
 			} else {
 				return null;
 			}

@@ -19,8 +19,8 @@
 */
 
 define(
-['aloha/core', 'aloha/jquery', 'aloha/ext', 'i18n!aloha/nls/i18n', 'aloha/ui', 'aloha/repositorymanager', 'aloha/selection', 'aloha/ext-alohaproxy', 'aloha/ext-alohareader'],
-function(Aloha, jQuery, Ext, i18n, Ui, RepositoryManager, Selection) { // TODO add parameter for UI class after refactoring UI to requirejs
+['aloha/core', 'aloha/jquery', 'aloha/ext', 'i18n!aloha/nls/i18n', 'aloha/ui', 'aloha/repositorymanager', 'aloha/selection', 'aloha/editableinteraction', 'aloha/ext-alohaproxy', 'aloha/ext-alohareader'],
+function(Aloha, jQuery, Ext, i18n, Ui, RepositoryManager, Selection, EditableInteraction) { // TODO add parameter for UI class after refactoring UI to requirejs
 	"use strict";
 
 var extTemplate = function(tpl) {
@@ -88,7 +88,9 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 		if (!this.resourceItem) {
 			RepositoryManager.markObject(this.targetObject);
 		}
+		EditableInteraction.unhighlight( target );
 		// remove the highlighting and restore original color if was set before
+		/*
 		if ( target ) {
 			if ( color = target.attr('data-original-background-color')  ) {
 				jQuery(target).css('background-color', color);
@@ -97,6 +99,7 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 			}
 			jQuery(target).removeAttr('data-original-background-color');
 		}
+		*/
 		if (this.getValue() === '') {
 			if (this.wrap) {
 				jQuery(this.wrap.dom.children[0]).css("color", "#AAA");
@@ -167,10 +170,13 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 				this.setValue("");
 				jQuery(this.wrap.dom.children[0]).css("color", "black");
 			}
+			EditableInteraction.highlight( target );
+			/*
 			if ( target && target.context && target.context.style && target.context.style['background-color'] ) {
 				target.attr('data-original-background-color', target.context.style['background-color']);
 			}
 			target.css('background-color','#80B5F2');
+			*/
 		},
 		'blur': function(obj, event) {
 			this.finishEditing();

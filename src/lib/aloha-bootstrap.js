@@ -173,7 +173,8 @@ require(
 				'aloha/repositorymanager',
 				'aloha/repository',
 				'aloha/repositoryobjects',
-				'aloha/contenthandlermanager'
+				'aloha/contenthandlermanager',
+				'aloha/editableinteraction'
 			],
 			function() {
 				
