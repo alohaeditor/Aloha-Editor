@@ -902,9 +902,13 @@ var tests = {
 			start: '<p>foo[bar<p style="color:blue">baz]quz', // broken - doCleanup should fix this
 			execResult: '<p>foo[]<span style="color:blue">quz</span></p>'
 		},
-		{  	
+		{  	exclude: 'mozilla',
 			start: '<p>foo[bar<p><b>baz]quz</b>',
 			execResult: '<p>foo[]<b>quz</b></p>'
+		},
+		{  	include: 'mozilla',
+			start: '<p>foo[bar<p><b>baz]quz</b>',
+			execResult: '<p>foo{}<b>quz</b></p>'
 		},
 	
 		{  	start: '<div><p>foo<p>[bar<p>baz]</div>', // broken - doCleanup should fix this
@@ -938,8 +942,13 @@ var tests = {
 		{  	start: 'foo<p>{bar</p>}baz',
 			execResult: 'foo<p>[]baz</p>'
 		},
-		{  	start: 'foo{<p>bar}</p>baz',
+		{  	exclude: 'mozilla',
+			start: 'foo{<p>bar}</p>baz',
 			execResult: 'foo[]<br>baz'
+		},
+		{  	include: 'mozilla',
+			start: 'foo{<p>bar}</p>baz',
+			execResult: 'foo{}<br>baz'
 		},
 		{  	start: '<p>foo[</p>]bar',
 			execResult: '<p>foo[]bar</p>'
@@ -1054,8 +1063,13 @@ var tests = {
 			start: '<p>foo<ol><li>ba[r<li>b]az</ol><p>quz',
 			execResult: '<p>foo </p><ol><li>ba[]az</li></ol><p>quz</p>'
 		},
-		{  	start: '<p>foo<ol><li>bar<li>[baz]</ol><p>quz',
+		{  	exclude: ['mozilla'],
+			start: '<p>foo<ol><li>bar<li>[baz]</ol><p>quz',
 			execResult: '<p>foo</p><ol><li>bar</li><li>{}</li></ol><p>quz</p>'
+		},
+		{  	include: ['mozilla'],
+			start: '<p>foo<ol><li>bar<li>[baz]</ol><p>quz',
+			execResult: '<p>foo</p><ol><li>bar</li><li>[]</li></ol><p>quz</p>'
 		},
 		{  	
 			exclude: ['msie'],
