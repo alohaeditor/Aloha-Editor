@@ -228,7 +228,26 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 				tr[i].deactivate();
 			}
 		});
-
+		
+		Aloha.bind( 'aloha-smart-content-changed', function ( event ) {
+			Aloha.activeEditable.obj.find( 'table' ).each( function () {
+				if ( TablePlugin.isTableElementInRegistry( this ) ) {
+					return;
+				}
+				
+				var el = jQuery( this );
+				
+				el.id = GENTICS.Utils.guid();
+				
+				var tableObj = new Table( el, TablePlugin );
+				
+				tableObj.parentEditable = Aloha.activeEditable;
+				tableObj.activate();
+				
+				TablePlugin.TableRegistry.push( tableObj );
+			} );
+		} );
+		
 		if(this.settings.summaryinsidebar) {
 			Aloha.ready(function () { 
 				that.initSidebar(Aloha.Sidebar.right.show());  
@@ -307,7 +326,25 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 	TablePlugin.isEditableTable = function (table) {
 		return GENTICS.Utils.Dom.isEditable( table );
 	};
-
+	
+	/**
+	 * Checks if a table element in the TableRegistry array
+	 *
+	 * @param {jQuery} elem
+	 * @return {Boolean} true if table elem is in registry
+	 */
+	TablePlugin.isTableElementInRegistry = function ( elem ) {
+		var registry = TablePlugin.TableRegistry;
+		
+		for ( var i = 0; i < registry.length; i++ ) {
+			if ( registry[ i ].obj.is( elem ) ) {
+				return true;
+			}
+		}
+		
+		return false;
+	};
+	
 	/**
 	 * Checks whether the current selection is inside a table within an
 	 * editable
@@ -329,7 +366,6 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 		return false;
 	};
 
-	
 	TablePlugin.preventNestedTables = function () {
 		if ( this.isSelectionInTable() ) {
 			Aloha.showMessage( new Aloha.Message( {
