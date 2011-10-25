@@ -4981,7 +4981,7 @@ function deleteContents() {
 
 	// "If start block has no children, call createElement("br") on the context
 	// object and append the result as the last child of start block."
-	if (!startBlock.hasChildNodes()) {
+	if (!startBlock.hasChildNodes() && startBlock.offsetHeight == 0) {
 		startBlock.appendChild(createEndBreak());
 	}
 
@@ -6353,7 +6353,20 @@ commands["delete"] = {
 
 		// "Delete the contents of the range with start (start node, start
 		// offset) and end (node, offset)."
-		deleteContents(startNode, startOffset, node, offset);
+		var delRange = Aloha.createRange();
+		delRange.setStart(startNode, startOffset);
+		delRange.setEnd(node, offset);
+		deleteContents(delRange);
+
+		if (!isAncestorContainer(document.body, range.startContainer)) {
+			if (delRange.startContainer.hasChildNodes() || delRange.startContainer.nodeType == $_.Node.TEXT_NODE) {
+				range.setStart(delRange.startContainer, delRange.startOffset);
+				range.setEnd(delRange.startContainer, delRange.startOffset);
+			} else {
+				range.setStart(delRange.startContainer.parentNode, getNodeIndex(delRange.startContainer));
+				range.setEnd(delRange.startContainer.parentNode, getNodeIndex(delRange.startContainer));
+			}
+		}
 	}
 };
 

@@ -91,7 +91,6 @@ var tests = {
 		{  	start: '&#x5e9;&#x5c1;&#x5b8;&#x5dc;&#x5d5;&#x5b9;[]&#x5dd;',
 			execResult: '&#x5e9;&#x5c1;&#x5b8;&#x5dc;&#x5d5;[]&#x5dd;'
 		},
-	
 		{  	start: '<p>foo</p><p>[]bar</p>',
 			execResult: '<p>foo[]bar</p>'
 		},
@@ -104,6 +103,22 @@ var tests = {
 		},
 		{  	start: '<p>foo<br></p><p>[]bar</p>',
 			execResult: '<p>foo[]bar</p>'
+		},
+		{  	exclude: 'msie',
+			start: '<p>foo</p><p>{}<br class="aloha-end-br"></p>',
+			execResult: '<p>foo[]</p>'
+		},
+		{  	include: 'msie',
+			start: '<p>foo</p><p>{}</p>',
+			execResult: '<p>foo[]</p>'
+		},
+		{  	exclude: 'msie',
+			start: '<p>foo</p><p><br class="aloha-end-br"/></p><p>{}<br class="aloha-end-br"/></p>',
+			execResult: '<p>foo</p><p>{}<br class="aloha-end-br"/></p>'
+		},
+		{  	include: 'msie',
+			start: '<p>foo</p><p></p><p>{}</p>',
+			execResult: '<p>foo</p><p>{}</p>'
 		},
 		{  	exclude: 'msie',					// TODO this test will always fail in IE, because the selection will always snap into the p
 			start: '<p>foo<br></p>[]bar',
