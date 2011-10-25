@@ -36,71 +36,147 @@
 			defaultValue: 'bam',
 			defaultCommand: 'inserthtml',
 			defaultAttributes: [],
-			tests: [		        
-/**/
+			tests: [
 					{  	start: '[]foo',
 				       	execResult: 'bam[]foo' 
 				    },
 			        {  	start: '[f]oo',
 				       	execResult: 'bam[]oo' 
 				    },
-			        {  	start: 'foo[]',
+			        {  	exclude: ['mozilla'],
+						start: 'foo[]',
 			        	execResult: 'foobam[]'
 			        },
-			        {  	start: 'fo[o]',
+			        {  	include: ['mozilla'],
+						start: 'foo[]',
+			        	execResult: 'foobam{}'
+			        },
+			        {  	exclude: ['mozilla'],
+						start: 'fo[o]',
 				       	execResult: 'fobam[]' 
 				    },
-			        {  	start: '{}<br>',
+			        {  	start: '{}',
+				       	expected: 'bam[]' 
+				    },
+			        {  	include: ['mozilla'],
+						start: 'fo[o]',
+				       	execResult: 'fobam{}' 
+				    },
+			        {  	exclude: ['mozilla'],
+						start: '{}<br>',
 				       	execResult: 'bam[]<br>' 
 				    },
-			        {  	start: '[foo]',
+			        {  	include: ['mozilla'],
+						start: '{}<br>',
+				       	execResult: 'bam{}<br>' 
+				    },
+			        {  	exclude: ['mozilla'],
+						start: '[foo]',
 				       	execResult: 'bam[]' 
 				    },
-			        {  	start: 'f[o]o',
+			        {  	include: ['mozilla'],
+						start: '[foo]',
+				       	execResult: 'bam{}' 
+				    },
+					{  	start: 'f[o]o',
 				       	execResult: 'fbam[]o' 
 				    },
 			        {  	start: 'f[]oo',
 				       	execResult: 'fbam[]oo' 
 				    },
-				    {  	start: 'foo<span>[bar]</span>baz',
+				    {  	exclude: ['mozilla'],
+						start: 'foo<span>[bar]</span>baz',
+				       	execResult: 'foo<span>bam[]</span>baz' 
+				    },
+				    {  	include: ['mozilla'],
+						start: 'foo<span>[bar]</span>baz',
+				       	execResult: 'foo<span>bam{}</span>baz' 
+				    },
+				    {  	exclude: ['mozilla'],
+						start: 'foo<span>[bar]</span>baz',
 				       	execResult: 'foo<span>bam[]</span>baz' 
 				    },
 					{  	start: 'foo[<span>bar</span>]baz',
-				       	execResult: 'foo<span>bam[]</span>baz' 
+				       	execResult: 'foobam[]baz' 
 				    },
 					{  	start: '[foo<span>bar]</span>baz',
 				       	execResult: 'bam[]baz' 
 				    },
-					{  	start: '[foo<span>]bar</span>baz',
+					{  	exclude: ['mozilla'],
+						start: '[foo<span>]bar</span>baz',
 				       	execResult: 'bam[]<span>bar</span>baz' 
 				    },
-					{  	start: '[foo<span>b]ar</span>baz',
+					{  	include: ['mozilla'],
+						start: '[foo<span>]bar</span>baz',
+				       	execResult: 'bam{}<span>bar</span>baz' 
+				    },
+					{  	exclude: ['mozilla'],
+						start: '[foo<span>b]ar</span>baz',
 				       	execResult: 'bam[]<span>ar</span>baz' 
 				    },
-					{  	start: 'foo<span>[bar</span>baz]',
+					{  	include: ['mozilla'],
+						start: '[foo<span>b]ar</span>baz',
+				       	execResult: 'bam{}<span>ar</span>baz' 
+				    },
+					{  	exclude: ['mozilla'],
+						start: 'foo<span>[bar</span>baz]',
 				       	execResult: 'foo<span>bam[]</span>' 
 				    },
-					{  	start: 'foo<span>bar[</span>baz]',
+					{  	include: ['mozilla'],
+						start: 'foo<span>[bar</span>baz]',
+				       	execResult: 'foo<span>bam{}</span>' 
+				    },
+					{  	exclude: ['mozilla'],
+						start: 'foo<span>bar[</span>baz]',
 				       	execResult: 'foo<span>bar</span>bam[]' 
 				    },
-					{  	start: 'foo<span>ba[r</span>baz]',
+					{  	include: ['mozilla'], // correct?
+						start: 'foo<span>bar[</span>baz]',
+				       	execResult: 'foo<span>barbam{}</span>' 
+				    },
+					{  	exclude: ['mozilla'],
+						start: 'foo<span>ba[r</span>baz]',
 				       	execResult: 'foo<span>babam[]</span>' 
 				    },
-					{  	start: 'foo<span>[bar</span><span>baz]</span>baz',
+					{  	include: ['mozilla'],
+						start: 'foo<span>ba[r</span>baz]',
+				       	execResult: 'foo<span>babam{}</span>' 
+				    },
+					{  	exclude: ['mozilla'],
+						start: 'foo<span>[bar</span><span>baz]</span>baz',
 				       	execResult: 'foo<span>bam[]</span>baz' 
 				    },				    
-				    {  	start: 'foo<p>[bar]</p>baz',
+					{  	include: ['mozilla'],
+						start: 'foo<span>[bar</span><span>baz]</span>baz',
+				       	execResult: 'foo<span>bam{}</span>baz' 
+				    },				    
+				    {  	exclude: ['mozilla'],
+						start: 'foo<p>[bar]</p>baz',
 				       	execResult: 'foo<p>bam[]</p>baz' 
+				    },
+				    {  	include: ['mozilla'],
+						start: 'foo<p>[bar]</p>baz',
+				       	execResult: 'foo<p>bam{}</p>baz' 
 				    },
 					{  	start: 'foo[<p>bar</p>]baz',
 				       	execResult: 'foobam[]baz' 
 				    },
-					{  	start: '[foo<p>bar]</p>baz',
+					{  	exclude: ['mozilla'],
+						start: '[foo<p>bar]</p>baz',
 				       	execResult: 'bam[]<br>baz' 
 				    },
-				    
-					{  	start: '[]foo',
+					{  	include: ['mozilla'],
+						start: '[foo<p>bar]</p>baz',
+				       	execResult: 'bam{}<br>baz' 
+				    },
+					{  	exclude: ['mozilla'],
+						start: '[]foo',
 				       	execResult: '<span>bam[]</span>foo',
+				       	value: '<span>bam</span>'
+				    },
+					{  	include: ['mozilla'], // correct?
+						start: '[]foo',
+				       	execResult: '<span>bam</span>{}foo',
 				       	value: '<span>bam</span>'
 				    },
 			        {  	start: '[f]oo',
@@ -205,8 +281,14 @@
 				       	execResult: 'foo[]baz',
 				       	value: '<p>' 
 					},
-					{  	start: 'foo[bar]baz',
+					{  	exclude: 'mozilla',
+						start: 'foo[bar]baz',
 				       	execResult: 'foo<p>bam</p>[]baz',
+				       	value: '<p>bam</p>' 
+					},
+					{  	include: 'mozilla',
+						start: 'foo[bar]baz',
+				       	execResult: 'foo<p>bam</p>{}baz',
 				       	value: '<p>bam</p>' 
 					},
 					{  	start: '<p>foo[bar]baz</p>',
@@ -241,8 +323,14 @@
 					  	execResult: '<ol><li>foo<ol><li>bam[]</li></ol></li></ol>',
 				       	value: '<ol><li>bam</li></ol>' 
 					},
-					{  	start: '<ol><li>foo[bar]baz</li></ol>',
+					{  	exclude: 'mozilla',
+						start: '<ol><li>foo[bar]baz</li></ol>',
 					  	execResult: '<ol><li>foo<ol><li>bam</li></ol>[]baz</li></ol>',
+				       	value: '<ol><li>bam</li></ol>' 
+					},
+					{  	include: 'mozilla',
+						start: '<ol><li>foo[bar]baz</li></ol>',
+					  	execResult: '<ol><li>foo<ol><li>bam</li></ol>{}baz</li></ol>',
 				       	value: '<ol><li>bam</li></ol>' 
 					},
 					// TODO: Flow elements are allowed in li elements.
@@ -256,8 +344,14 @@
 					  	execResult: '<ol><li>foo</li><li><p>bam</p>[]baz</li></ol>',
 				       	value: '<p>bam</p>' 
 					},
-					{  	start: '<ol><li>foo[bar]baz</li></ol>',
+					{  	exclude: 'mozilla',
+						start: '<ol><li>foo[bar]baz</li></ol>',
 					  	execResult: '<ol><li>foo<p>bam</p>[]baz</li></ol>',
+				       	value: '<p>bam</p>' 
+					},				
+					{  	include: 'mozilla',
+						start: '<ol><li>foo[bar]baz</li></ol>',
+					  	execResult: '<ol><li>foo<p>bam</p>{}baz</li></ol>',
 				       	value: '<p>bam</p>' 
 					},				
 					{  	start: '<ol><li>foo[bar]</li></ol>',
@@ -276,12 +370,12 @@
 					},
 					// TODO fix doCleanup to remove empty nodes
 					{  	start: '<a>[foo]</a>bar',
-					  	execResult: '<a></a><a href="/">bam[]</a><a></a>bar',
+					  	execResult: '<a href="/">bam[]</a>bar',
 				       	value: '<a href=/>bam</a>', 
 						attributes: ['href']
 					},
 					{  	start: '<a>[foo</a>]bar',
-					  	execResult: '<a></a><a href="/">bam[]</a><a></a>bar',
+					  	execResult: '<a href="/">bam[]</a>bar',
 				       	value: '<a href=/>bam</a>', 
 						attributes: ['href'] 
 					},
@@ -306,7 +400,7 @@
 			]
 	}
 	</script>
-	<h1 id="qunit-header">Aloha Editor Paste Test Suite</h1>
+	<h1 id="qunit-header">Aloha Editor InsertHTML Test Suite</h1>
 	<h2 id="qunit-banner"></h2>
 	<div id="qunit-testrunner-toolbar"></div>
 	<h2 id="qunit-userAgent"></h2>

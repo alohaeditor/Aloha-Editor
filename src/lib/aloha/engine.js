@@ -776,6 +776,7 @@ function isProhibitedParagraphChild(node) {
 // resolved value "inline" or "inline-block" or "inline-table" or "none", or a
 // Document, or a DocumentFragment."
 function isBlockNode(node) {
+	
 	return node
 		&& ((node.nodeType == $_.Node.ELEMENT_NODE && $_( ["inline", "inline-block", "inline-table", "none"] ).indexOf($_.getComputedStyle(node).display) == -1)
 		|| node.nodeType == $_.Node.DOCUMENT_NODE
@@ -4648,14 +4649,14 @@ function deleteContents() {
 
 	// "Let end block be the end node of range."
 	var endBlock = range.endContainer;
-
+	
 	// "While end block's parent is in the same editing host and end block is
 	// an inline node, set end block to its parent."
 	while (inSameEditingHost(endBlock, endBlock.parentNode)
 	&& isInlineNode(endBlock)) {
 		endBlock = endBlock.parentNode;
 	}
-
+	
 	// "If end block is neither a block node nor an editing host, or "span" is
 	// not an allowed child of end block, or end block is a td or th, set end
 	// block to null."
@@ -4667,12 +4668,14 @@ function deleteContents() {
 
 	// "Record current states and values, and let overrides be the result."
 	var overrides = recordCurrentStatesAndValues(range);
-
 	// "If start node and end node are the same, and start node is an editable
 	// Text node:"
 	if (startNode == endNode
 	&& isEditable(startNode)
 	&& startNode.nodeType == $_.Node.TEXT_NODE) {
+		// "Let parent be the parent of node."
+		var parent_ = startNode.parentNode;
+
 		// "Call deleteData(start offset, end offset − start offset) on start
 		// node."
 		startNode.deleteData(startOffset, endOffset - startOffset);
@@ -4685,6 +4688,16 @@ function deleteContents() {
 
 		// "Restore states and values from overrides."
 		restoreStatesAndValues(overrides, range);
+
+		// "If parent is editable or an editing host, is not an inline node,
+		// and has no children, call createElement("br") on the context object
+		// and append the result as the last child of parent."
+		// only do this, if the offsetHeight is 0
+		if ((isEditable(parent_) || isEditingHost(parent_))
+		&& !isInlineNode(parent_)
+		&& parent_.offsetHeight === 0) {
+			parent_.appendChild(createEndBreak());
+		}
 
 		// "Abort these steps."
 		return;
@@ -6032,13 +6045,11 @@ commands["delete"] = {
 		// "Repeat the following steps:"
 		while ( true ) {
 			// we need to reset isBr and isHr on every interation of the loop
-			isBr = false;
-			isHr = false;
-			if ( offset - 1 <= node.childNodes.length ) {
+			if ( offset > 0 ) {
 				isBr = isHtmlElement(node.childNodes[offset - 1], "br") || false;
 				isHr = isHtmlElement(node.childNodes[offset - 1], "hr") || false;
 			}
-			
+
 			// "If offset is zero and node's previousSibling is an editable
 			// invisible node, remove node's previousSibling from its parent."
 			if (offset == 0
