@@ -17,6 +17,16 @@
  *    selection
  *
  * 3) Merging columns leaves an empty row.
+ *
+ * 4) Failing manual test:
+ *		<table><tbody>
+ *			<tr><td>foo</td></tr>
+ *			<tr><td>bar</td></tr>
+ *		</tbody></table>
+ *		 i) merge the cells
+ *		ii) w/deactivating the editable, insert a column to the left of the
+ *			merged cell. We get an error.
+ *
  */
 
 define(
@@ -239,8 +249,8 @@ function( TestUtils ) {
 							<tr><td>foo</td></tr>\
 						 </tbody></table>',
 			expected  : '<table><tbody>\
-							<tr><td>foo</td></tr>\
 							<tr><td>&nbsp;</td></tr>\
+							<tr><td>foo</td></tr>\
 						 </tbody></table>',
 			operation : function ( table ) {
 				table.addRow( 1 );
@@ -458,7 +468,7 @@ function( TestUtils ) {
 		///////////////////////////////////////////////////////////////////////
 		
 		{
-			exclude   : true,
+			exclude   : false,
 			desc      : 'Split a table with a single merged cell',
 			start     : '<table><tbody>\
 							<tr><td rowspan="2" colspan="1" class="aloha-cell-selected">foo bar</td></tr>\
@@ -469,6 +479,7 @@ function( TestUtils ) {
 							<tr><td></td></tr>\
 						</tbody></table>',
 			operation : function ( table ) {
+				debugger;
 				table.selection.selectedCells = getSelectedCells( table );
 				table.selection.splitCells();
 			}
@@ -585,7 +596,7 @@ function( TestUtils ) {
 			testcase = tests[ i ];
 			
 			if ( testcase.exclude === true ) {
-				// continue; // comment in to run all tests
+				continue; // comment in to run all tests
 			}
 			
 			if ( testcase.module ) {
