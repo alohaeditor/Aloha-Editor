@@ -5,13 +5,16 @@ var specifictests = {
 		defaultCommand: 'forwarddelete',
 		tests: [
 
+/*
 				{	exclude: 'msie',
 					start: 'foo <span>&nbsp;</span>[] bar',
 					execResult: 'foo <span>&nbsp;[]</span>bar'
 				},
 		       	{	start: 'foo[]<quasit></quasit>bar',
 					execResult: 'foo[]ar'
-				}
+				},
+*/
+				
 		        
 				]
 }
@@ -34,6 +37,35 @@ var alltests = {
 		defaultValue: '',
 		defaultCommand: 'forwarddelete',
 		tests: [
+
+/**
+ * It is impossible to get a selection like this in ie
+ */		
+		{	exclude: 'msie',
+			start: 'foo{<p>bar</p>}baz',
+			execResult: 'foo[]baz'
+		},
+		{	exclude: 'msie',	
+			start: 'foo<p>{bar</p>}baz',
+			execResult: 'foo<p>[]baz</p>'
+		},
+		{	exclude: 'msie',	
+			start: '<p>foo[</p>]bar<br>baz',
+			execResult: '<p>foo[]bar</p>baz'
+		},
+		{   exclude: 'msie',	
+			start: '<p>foo{</p>}bar',
+			execResult: '<p>foo[]bar</p>'
+		},
+		{	exclude: 'msie',
+			start: '<p>foo[</p>]bar<p>baz</p>',
+			execResult: '<p>foo[]bar</p><p>baz</p>'
+		},
+		{	exclude: 'msie',	
+			start: '<div><p>foo[</p></div>]bar',
+			execResult: '<div><p>foo[]bar</p></div>'
+		},	        
+		
 
 /**
  * Tests that had to be adapted to work for ie 
@@ -406,15 +438,6 @@ var alltests = {
         {	start: 'foo[<p>]bar</p>baz',
 			execResult: 'foo[]bar<br>baz'
 		},
-		{	start: '<p>foo{</p>}bar',
-			execResult: '<p>foo[]bar</p>'
-		},
-		{	start: '<p>foo[</p>]bar<br>baz',
-			execResult: '<p>foo[]bar</p>baz'
-		},
-		{	start: '<p>foo[</p>]bar<p>baz</p>',
-			execResult: '<p>foo[]bar</p><p>baz</p>'
-		},
 		{	start: '<p><u>foo[]</u><p>bar',
 			execResult: '<p><u>foo[]</u>bar</p>'
 		},
@@ -499,9 +522,6 @@ var alltests = {
 		{	start: '<blockquote>foo[bar</blockquote><pre>baz]quz</pre>',
 			execResult: '<blockquote>foo[]quz</blockquote>'
 		},
-		{	start: '<div><p>foo[</p></div>]bar',
-			execResult: '<div><p>foo[]bar</p></div>'
-		},	        
 		{	exclude: 'msie',
 			start: 'foo[<div><p>]bar</p>baz</div>',
 			execResult: 'foo[]bar<div>baz</div>'
@@ -1001,14 +1021,6 @@ var alltests = {
 		{	include: 'msie',
 			start: 'foo []<span>&nbsp;</span> bar',
 			execResult: 'foo <span></span>[]bar'
-		},
-		//277
-		{	start: 'foo{<p>bar</p>}baz',
-			execResult: 'foo[]baz'
-		},
-		{	exclude: 'msie',	
-			start: 'foo<p>{bar</p>}baz',
-			execResult: 'foo<p>[]baz</p>'
 		},
 		{	include: 'msie',	
 			start: 'foo<p>{bar</p>}baz',
