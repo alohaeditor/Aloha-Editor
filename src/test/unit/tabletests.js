@@ -447,7 +447,9 @@ function( TestUtils ) {
 					table.selection.selectedCells = getSelectedCells( table );
 					table.selection.mergeCells();
 				} catch ( ex ) {
-					console.log( 'ERROR!' );
+					if ( typeof console !== 'undefined' && typeof console.log === 'function' ) {
+						console.log( 'ERROR!' );
+					}
 				}
 			}
 		},
@@ -463,8 +465,8 @@ function( TestUtils ) {
 							<tr></tr>\
 						 </tbody></table>',
 			expected  : '<table><tbody>\
-							<tr><td class="aloha-cell-selected">foo bar</td></tr>\
-							<tr><td class="aloha-cell-selected"></td></tr>\
+							<tr><td>foo bar</td></tr>\
+							<tr><td></td></tr>\
 						</tbody></table>',
 			operation : function ( table ) {
 				table.selection.selectedCells = getSelectedCells( table );
@@ -583,7 +585,7 @@ function( TestUtils ) {
 			testcase = tests[ i ];
 			
 			if ( testcase.exclude === true ) {
-				//continue; // comment in to run all tests
+				// continue; // comment in to run all tests
 			}
 			
 			if ( testcase.module ) {
@@ -613,7 +615,21 @@ function( TestUtils ) {
 				{ start: start, expected: expected },
 				function() {
 					var result = editable.html().toLowerCase();
-					result = result.replace( /(<table.*?)\s*id\s*=\s*[\"\'][^\"\']*[\"\']/ig, '$1' );
+					
+					// Strip away the id added to the table tag
+					// Internet Explorer does not have quotes around attribute
+					// values, so we will add them
+					
+					result = result.replace(
+						/([\w-]+)\s*=\s*([\w-]+)([\s>])/g, function ( str, $n, $v, $e, offset, s ) {
+						return $n + '="' + $v + '"' + $e;
+					});
+					
+					result = result.replace(
+						/(<table.*?)\s*id\s*=\s*[\"\']*[^\"\']*?[\"\']*(\s|>)/ig,
+						'$1$2'
+					);
+					
 					result = style_html( result );
 					deepEqual( result, expected, 'Check Operation Result' );
 				}
