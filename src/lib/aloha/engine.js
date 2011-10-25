@@ -4673,6 +4673,9 @@ function deleteContents() {
 	if (startNode == endNode
 	&& isEditable(startNode)
 	&& startNode.nodeType == $_.Node.TEXT_NODE) {
+		// "Let parent be the parent of node."
+		var parent_ = startNode.parentNode;
+
 		// "Call deleteData(start offset, end offset − start offset) on start
 		// node."
 		startNode.deleteData(startOffset, endOffset - startOffset);
@@ -4685,6 +4688,16 @@ function deleteContents() {
 
 		// "Restore states and values from overrides."
 		restoreStatesAndValues(overrides, range);
+
+		// "If parent is editable or an editing host, is not an inline node,
+		// and has no children, call createElement("br") on the context object
+		// and append the result as the last child of parent."
+		// only do this, if the offsetHeight is 0
+		if ((isEditable(parent_) || isEditingHost(parent_))
+		&& !isInlineNode(parent_)
+		&& parent_.offsetHeight === 0) {
+			parent_.appendChild(createEndBreak());
+		}
 
 		// "Abort these steps."
 		return;
