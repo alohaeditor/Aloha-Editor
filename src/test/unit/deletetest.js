@@ -1,3 +1,13 @@
+/*
+var tests = { 
+			defaultCommand: 'delete',
+	tests: [		
+		{  	start: 'foo{<p>bar</p>}baz',
+			execResult: 'foo[]baz'
+		},
+  	] 
+  }
+  */
 var tests = {
 	defaultCommand: 'delete',
 	tests: [		        

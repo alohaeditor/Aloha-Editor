@@ -5,13 +5,20 @@ var specifictests = {
 		defaultCommand: 'forwarddelete',
 		tests: [
 
+/*
 				{	exclude: 'msie',
 					start: 'foo <span>&nbsp;</span>[] bar',
 					execResult: 'foo <span>&nbsp;[]</span>bar'
 				},
 		       	{	start: 'foo[]<quasit></quasit>bar',
 					execResult: 'foo[]ar'
+				},
+*/
+				{	start: 'foo{<p>bar</p>}baz',
+					execResult: 'foo[]baz'
 				}
+				
+				
 		        
 				]
 }
@@ -1002,10 +1009,6 @@ var alltests = {
 			start: 'foo []<span>&nbsp;</span> bar',
 			execResult: 'foo <span></span>[]bar'
 		},
-		//277
-		{	start: 'foo{<p>bar</p>}baz',
-			execResult: 'foo[]baz'
-		},
 		{	exclude: 'msie',	
 			start: 'foo<p>{bar</p>}baz',
 			execResult: 'foo<p>[]baz</p>'
@@ -1149,5 +1152,5 @@ var alltests = {
 			
 		]
 }
-//var tests = specifictests;
-var tests = alltests;
+var tests = specifictests;
+//var tests = alltests;
