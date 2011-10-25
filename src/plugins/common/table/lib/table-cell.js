@@ -2,55 +2,52 @@ define(
 ['aloha/jquery', 'table/table-plugin-utils'],
 function (jQuery, Utils) {
 	/**
-	 * The constructor for the Cell-Objects takes a DOM td-object, attaches
-	 * events, adds an wrapper into the cell and returns the modified td-object as
-	 * DOM representation
+	 * Constructs a TableCell.
 	 *
-	 * @param originalTd
-	 *            The original td-field which should will be transformed
-	 * @param tableObj
-	 *            Table-Object which contains the cell
-	 *
-	 * @return the created table-data field as DOM-representation
+	 * @param {DomNode} cell
+	 *        A td/th which will be represente by this TableCell.
+	 * @param {Table} tableObj
+	 *        The Table which contains the cell. The cell will be
+	 *        activated/dactivated with the table.
 	 */
-	var Cell = function(originalTd, tableObj) {
-		if (null == originalTd) {
-			originalTd = '<td>&nbsp;</td>';
-		}
+	var TableCell = function(originalTd, tableObj) {
+        if (null == originalTd) {
+            originalTd = '<td>&nbsp;</td>';
+        }
 
-		//original Td must be a DOM node so that the this.obj.context property is available
-		//this transformation will properly handle jQuery objects as well as DOM nodes
-	    originalTd = jQuery( originalTd ).get( 0 );
+        //original Td must be a DOM node so that the this.obj.context property is available
+        //this transformation will properly handle jQuery objects as well as DOM nodes
+        originalTd = jQuery( originalTd ).get( 0 );
 
-		this.obj = jQuery(originalTd);
-		this.tableObj = tableObj;
+        this.obj = jQuery(originalTd);
+        this.tableObj = tableObj;
 
-		tableObj.cells.push(this);
+        tableObj.cells.push(this);
 	};
 
 	/**
 	 * Reference to the jQuery-representation of the wrapping table
 	 *
-	 * @see Cell.table
+	 * @see TableCell.table
 	 */
-	Cell.prototype.tableObj = undefined;
+	TableCell.prototype.tableObj = undefined;
 
 	/**
 	 * Reference to the jQuery td-Object of the cell
 	 */
-	Cell.prototype.obj = undefined;
+	TableCell.prototype.obj = undefined;
 
 	/**
 	 * The jQuery wrapper of the cell
 	 */
-	Cell.prototype.wrapper = undefined;
+	TableCell.prototype.wrapper = undefined;
 
 	/**
 	 * Flag if the cell has focus
 	 */
-	Cell.prototype.hasFocus = false;
+	TableCell.prototype.hasFocus = false;
 
-	Cell.prototype.activate = function() {
+	TableCell.prototype.activate = function() {
 		// wrap the created div into the contents of the cell
 		this.obj.wrapInner('<div/>');
 
@@ -131,7 +128,7 @@ function (jQuery, Utils) {
 	 *
 	 * @return void
 	 */
-	Cell.prototype.deactivate = function() {
+	TableCell.prototype.deactivate = function() {
 		var wrapper = this.obj.children('.aloha-table-cell-editable');
 
 		if (wrapper.length) {
@@ -159,7 +156,7 @@ function (jQuery, Utils) {
 	 *
 	 * @return string name of the namespace
 	 */
-	Cell.prototype.toString = function() {
+	TableCell.prototype.toString = function() {
 		return 'TableCell';
 	};
 
@@ -172,7 +169,7 @@ function (jQuery, Utils) {
 	 *            the jquery event object
 	 * @return void
 	 */
-	Cell.prototype._editableFocus = function(e) {
+	TableCell.prototype._editableFocus = function(e) {
 		// only do activation stuff if the cell don't has the focus
 		if (!this.hasFocus) {
 			// set an internal flag to focus the table
@@ -195,7 +192,7 @@ function (jQuery, Utils) {
 
 	/**
 	 * Blur event for the contenteditable div within a table-data field. The method
-	 * requires the event-property Cell as a Cell object. It
+	 * requires the event-property TableCell as a TableCell object. It
 	 * sets the hasFocus flag of the cell to false and removes the "active"
 	 * css-class.
 	 *
@@ -203,7 +200,7 @@ function (jQuery, Utils) {
 	 *            the jquery event object
 	 * @return void
 	 */
-	Cell.prototype._editableBlur = function(jqEvent){
+	TableCell.prototype._editableBlur = function(jqEvent){
 
 		// reset the focus of the cell
 		this.hasFocus = false;
@@ -215,7 +212,7 @@ function (jQuery, Utils) {
 	/**
 	 * Gives the X (column no) for a cell, after adding colspans 
 	 */
-	Cell.prototype._virtualX = function(){
+	TableCell.prototype._virtualX = function(){
 		var $rows = this.tableObj.obj.children().children('tr');
 		var rowIdx = this.obj.parent().index();
 		var colIdx = this.obj.index();
@@ -225,14 +222,14 @@ function (jQuery, Utils) {
 	/**
 	 * Gives the Y (row no) for a cell, after adding colspans 
 	 */
-	Cell.prototype._virtualY = function(){
+	TableCell.prototype._virtualY = function(){
 		return this.obj.parent('tr').index();
 	};
 
 	/**
 	 * Starts the cell selection mode
 	 */
-	Cell.prototype._startCellSelection = function(){
+	TableCell.prototype._startCellSelection = function(){
 		if(!this.tableObj.selection.cellSelectionMode){
 
 			//unselect currently selected cells
@@ -254,7 +251,7 @@ function (jQuery, Utils) {
 	/**
 	 * Ends the cell selection mode
 	 */
-	Cell.prototype._endCellSelection = function(){
+	TableCell.prototype._endCellSelection = function(){
 		if(this.tableObj.selection.cellSelectionMode){
 			this.tableObj.selection.cellSelectionMode = false; 
 			this.tableObj.selection.baseCellPosition = null;
@@ -267,7 +264,7 @@ function (jQuery, Utils) {
 		}
 	};
 
-	Cell.prototype._getSelectedRect = function () {
+	TableCell.prototype._getSelectedRect = function () {
 		var right = this._virtualX();
 		var bottom = this._virtualY();
 		var topLeft = this.tableObj.selection.baseCellPosition;
@@ -288,7 +285,7 @@ function (jQuery, Utils) {
 	 * Toggles selection of cell.
 	 * This works only when cell selection mode is active. 
 	 */
-	Cell.prototype._selectCellRange = function(){
+	TableCell.prototype._selectCellRange = function(){
 		if(!this.tableObj.selection.cellSelectionMode) {
 			return;
 		}
@@ -321,7 +318,7 @@ function (jQuery, Utils) {
 	 * @param editableNode dom-representation of the editable node (div-element)
 	 * @return void
 	 */
-	Cell.prototype._selectAll = function(editableNode) {
+	TableCell.prototype._selectAll = function(editableNode) {
 		var e = (editableNode.jquery) ? editableNode.get(0) : editableNode;
 
 		// Not IE
@@ -369,7 +366,7 @@ function (jQuery, Utils) {
 	 *            the jquery-event object
 	 * @return void
 	 */
-	Cell.prototype._editableMouseDown = function(jqEvent) {
+	TableCell.prototype._editableMouseDown = function(jqEvent) {
 		// deselect all highlighted cells registered in the this.tableObj.selection object
 		this.tableObj.selection.unselectCells();
 
@@ -386,7 +383,7 @@ function (jQuery, Utils) {
 	 *            the jquery-event object
 	 * @return void
 	 */
-	Cell.prototype._editableKeyUp = function(jqEvent) {
+	TableCell.prototype._editableKeyUp = function(jqEvent) {
 		//TODO do we need to check for empty cells and insert a space?
 		//this._checkForEmptyEvent(jqEvent);
 	};
@@ -400,79 +397,26 @@ function (jQuery, Utils) {
 	 *            the jquery-event object
 	 * @return void
 	 */
-	Cell.prototype._editableKeyDown = function(jqEvent) {
-		
-		var 
-		KEYCODE_TAB = 9,
-		KEYCODE_ARROWLEFT = 37,
-		KEYCODE_ARROWUP = 38,
-		KEYCODE_ARROWRIGHT = 39
-		KEYCODE_ARROWDOWN = 40;
+	TableCell.prototype._editableKeyDown = function(jqEvent) {
+		var KEYCODE_TAB = 9;
 
 		this._checkForEmptyEvent(jqEvent);
 		
-		if ( this.obj[0] == this.tableObj.obj.find('tr:last td:last')[0] ) {
-			// only add a row on a single key-press of tab (so check if alt-, shift- or
-			// ctrl-key are NOT pressed)
+		if ( this.obj[0] === this.tableObj.obj.find('tr:last td:last')[0] ) {
+			// only add a row on a single key-press of tab (so check
+			// that alt-, shift- or ctrl-key are NOT pressed)
 			if (KEYCODE_TAB == jqEvent.keyCode && !jqEvent.altKey && !jqEvent.shiftKey && !jqEvent.ctrlKey) {
-				// add a row after the current row (false stands for not highlighting the new row)
+				// add a row after the current row
 				this.tableObj.addRow(this.obj.parent().index() + 1);
-				// stop propagation because this should overwrite all other events
+
+				// firefox needs this for the first cell of the new row
+				// to be selected (.focus() doesn't work reliably in
+				// IE7)
+				this.tableObj.cells[this.tableObj.cells.length - 1]._selectAll();
+
 				jqEvent.stopPropagation();
 				return;
 			}
-		}
-		if (!jqEvent.ctrlKey && !jqEvent.shiftKey) {
-			if (this.tableObj.selection.selectedCells.length > 0 && this.tableObj.selection.selectedCells[0].length > 0) {
-				this.tableObj.selection.selectedCells[0][0].firstChild.focus();
-				this.tableObj.selection.unselectCells();
-				jqEvent.stopPropagation();
-			}
-		}else if(jqEvent.shiftKey && this.tableObj.selection.selectedCells.length > 0){
-
-			switch (this.tableObj.selection.selectionType) {
-			case 'row':
-				switch(jqEvent.keyCode) {
-				case KEYCODE_ARROWUP:
-					var firstSelectedRow = this.tableObj.selection.selectedCells[0][0].parentNode.rowIndex;
-					if (firstSelectedRow > 1) {
-						this.tableObj.rowsToSelect.push(firstSelectedRow - 1);
-					}
-					break;
-				case KEYCODE_ARROWDOWN:
-					var lastRowIndex = this.tableObj.selection.selectedCells.length - 1;
-					var lastSelectedRow = this.tableObj.selection.selectedCells[lastRowIndex][0].parentNode.rowIndex;
-					if (lastSelectedRow < this.tableObj.numRows) {
-						this.tableObj.rowsToSelect.push(lastSelectedRow + 1);
-					}
-					break;
-				}
-				this.tableObj.selectRows();
-
-				break;
-			case 'column':
-				switch(jqEvent.keyCode) {
-				case KEYCODE_ARROWLEFT:
-					var firstColSelected = this.tableObj.selection.selectedCells[0][0].cellIndex;
-					if (firstColSelected > 1) {
-						this.tableObj.columnsToSelect.push(firstColSelected - 1);
-					}
-					break;
-				case KEYCODE_ARROWRIGHT:
-					var lastColIndex = this.tableObj.selection.selectedCells[0].length - 1;
-					var lastColSelected = this.tableObj.selection.selectedCells[0][lastColIndex].cellIndex;
-					if (lastColSelected < this.tableObj.numCols) {
-						this.tableObj.columnsToSelect.push(lastColSelected + 1);
-					}
-					break;
-				}
-				this.tableObj.selectColumns();
-
-				break;
-			}
-			jqEvent.stopPropagation();
-			jqEvent.preventDefault();
-			return false;
 		}
 	};
 
@@ -484,7 +428,7 @@ function (jQuery, Utils) {
 	 *            the event object which is given by jquery
 	 * @return void
 	 */
-	Cell.prototype._checkForEmptyEvent = function(jqEvent) {
+	TableCell.prototype._checkForEmptyEvent = function(jqEvent) {
 		var $wrapper = jQuery(this.wrapper),
 		    text = $wrapper.text();
 
@@ -500,5 +444,23 @@ function (jQuery, Utils) {
 		}
 	};
 
-	return Cell;
+	/**
+	 * Given a cell, will return the container element of the contents
+	 * of the cell. The container element may be the given cell itself,
+	 * or a wrapper element, in the case of activated cells.
+	 *
+	 * @param {DomNode} cell 
+	 *        the TH/TD of a TableCell that may or may not be actived.
+	 * @return {DomNode}
+	 *        the element that contains the contents of the given cell.
+	 */
+	TableCell.getContainer = function ( cell ) {
+		if ( jQuery( cell.firstChild ).hasClass( "aloha-table-cell-editable" ) ) {
+			return cell.firstChild;
+		} else {
+			return cell;
+		}
+	};
+
+	return TableCell;
 });

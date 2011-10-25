@@ -1,17 +1,27 @@
+/*
+var tests = { 
+			defaultCommand: 'delete',
+	tests: [		
+		{  	start: 'foo{<p>bar</p>}baz',
+			execResult: 'foo[]baz'
+		},
+  	] 
+  }
+  */
 var tests = {
 	defaultCommand: 'delete',
-	tests: [		        
+	tests: [
 		{  	start: '[]foo',
 			execResult: '[]foo'
 		},
 		{  	start: '<span>[]foo</span>',
 			execResult: '<span>[]foo</span>'
 		},
-		{  	exclude: 'msie',
+		{  	exclude: [ 'msie', 'mozilla' ],
 			start: '<span>{}</span>',
 			execResult: '{}<span></span>'
 		},
-		{  	include: 'msie',
+		{  	include: [ 'msie', 'mozilla' ],
 			start: '<span>{}</span>',
 			execResult: '<span>{}</span>'
 		},
@@ -28,7 +38,7 @@ var tests = {
 			execResult: '<p>[]foo</p>'
 		},
 		{  	
-			exclude: ['msie'],
+			//exclude: ['msie'],
 			start: '<p>{}</p>',
 			execResult: '{}<p></p>'
 		},
@@ -91,7 +101,6 @@ var tests = {
 		{  	start: '&#x5e9;&#x5c1;&#x5b8;&#x5dc;&#x5d5;&#x5b9;[]&#x5dd;',
 			execResult: '&#x5e9;&#x5c1;&#x5b8;&#x5dc;&#x5d5;[]&#x5dd;'
 		},
-	
 		{  	start: '<p>foo</p><p>[]bar</p>',
 			execResult: '<p>foo[]bar</p>'
 		},
@@ -104,6 +113,22 @@ var tests = {
 		},
 		{  	start: '<p>foo<br></p><p>[]bar</p>',
 			execResult: '<p>foo[]bar</p>'
+		},
+		{  	exclude: 'msie',
+			start: '<p>foo</p><p>{}<br class="aloha-end-br"></p>',
+			execResult: '<p>foo[]</p>'
+		},
+		{  	include: 'msie',
+			start: '<p>foo</p><p>{}</p>',
+			execResult: '<p>foo[]</p>'
+		},
+		{  	exclude: 'msie',
+			start: '<p>foo</p><p><br class="aloha-end-br"/></p><p>{}<br class="aloha-end-br"/></p>',
+			execResult: '<p>foo</p><p>{}<br class="aloha-end-br"/></p>'
+		},
+		{  	include: 'msie',
+			start: '<p>foo</p><p></p><p>{}</p>',
+			execResult: '<p>foo</p><p>{}</p>'
 		},
 		{  	exclude: 'msie',					// TODO this test will always fail in IE, because the selection will always snap into the p
 			start: '<p>foo<br></p>[]bar',
@@ -865,11 +890,21 @@ var tests = {
 			start: '<b>foo[bar</b><i>baz]quz</i>',
 			execResult: '<b>foo[]</b><i>quz</i>'
 		},
-		{  	start: '<p>foo</p><p>[bar]</p><p>baz</p>',
-			execResult: '<p>foo</p><p>[]<br class="aloha-end-br" data-test-exclude="msie"/></p><p>baz</p>'
+		{  	exclude: 'msie',
+			start: '<p>foo</p><p>[bar]</p><p>baz</p>',
+			execResult: '<p>foo</p><p>{}<br class="aloha-end-br"/></p><p>baz</p>'
 		},
-		{  	start: '<p>foo</p><p>{bar}</p><p>baz</p>',
-			execResult: '<p>foo</p><p>[]<br class="aloha-end-br" data-test-exclude="msie"/></p><p>baz</p>'
+		{	include: 'msie',
+			start: '<p>foo</p><p>[bar]</p><p>baz</p>',
+			execResult: '<p>foo</p><p>[]</p><p>baz</p>'
+		},
+		{  	exclude: 'msie',
+			start: '<p>foo</p><p>{bar}</p><p>baz</p>',
+			execResult: '<p>foo</p><p>{}<br class="aloha-end-br"/></p><p>baz</p>'
+		},
+		{  	include: 'msie',
+			start: '<p>foo</p><p>{bar}</p><p>baz</p>',
+			execResult: '<p>foo</p><p>[]</p><p>baz</p>'
 		},
 		{  	exclude: 'msie',
 			start: '<p>foo</p><p>{bar</p>}<p>baz</p>',
@@ -881,7 +916,7 @@ var tests = {
 		},
 		{  	exclude: 'msie',
 			start: '<p>foo</p>{<p>bar}</p><p>baz</p>',
-			execResult: '<p>foo</p><p>[]baz</p>'
+			execResult: '<p>foo</p><p>{}<br class="aloha-end-br"/><p>baz</p>'
 		},
 		{  	include: 'msie',				// in ie, it is not possible to select a whole paragraph
 			start: '<p>foo</p>{<p>bar</p>}<p>baz</p>',
@@ -926,9 +961,17 @@ var tests = {
 			start: '<p>foo[bar<p style="color:blue">baz]quz', // broken - doCleanup should fix this
 			execResult: '<p>foo[]<span style="color:blue">quz</span></p>'
 		},
-		{  	
+		{  	exclude: 'mozilla',
 			start: '<p>foo[bar<p><b>baz]quz</b>',
 			execResult: '<p>foo[]<b>quz</b></p>'
+		},
+		{  	include: 'mozilla',
+			start: '<p>foo[bar<p><b>baz]quz</b>',
+			execResult: '<p>foo{}<b>quz</b></p>'
+		},
+	
+		{  	start: '<div><p>foo<p>[bar<p>baz]</div>', // broken - doCleanup should fix this
+			execResult: '<div><p>foo[]</p><p></p></div>'
 		},
 		{  	exclude: 'msie',
 			start: '<div><p>foo<p>[bar<p>baz]</div>',
@@ -938,7 +981,6 @@ var tests = {
 			start: '<div><p>foo<p>[bar<p>baz]</div>',
 			execResult: '<div><p>foo </p><p>[]<br class="aloha-end-br" data-test-exclude="msie"/></p></div>'
 		},
-
 		{  	start: 'foo[<br>]bar',
 			execResult: 'foo[]bar'
 		},
@@ -954,37 +996,50 @@ var tests = {
 		{  	start: 'foo{<p>}bar</p>',
 			execResult: 'foo[]bar'
 		},
-		{  	start: 'foo[<p>]bar<br>baz</p>',
+		{  	exclude: 'msie',		// it is impossible to get a selection like this in ie
+			start: 'foo[<p>]bar<br>baz</p>',
 			execResult: 'foo[]bar<p>baz</p>'
 		},
 		{  	start: 'foo[<p>]bar</p>baz',
 			execResult: 'foo[]bar<br>baz'
 		},
-		{  	start: 'foo{<p>bar</p>}baz',
+		{  	exclude: 'msie',		// it is impossible to get a selection like this in ie
+			start: 'foo{<p>bar</p>}baz',
 			execResult: 'foo[]baz'
 		},
-		{  	start: 'foo<p>{bar</p>}baz',
+		{  	exclude: 'msie',		// it is impossible to get a selection like this in ie
+			start: 'foo<p>{bar</p>}baz',
 			execResult: 'foo<p>[]baz</p>'
 		},
-		{  	start: 'foo{<p>bar}</p>baz',
+		{  	exclude: 'mozilla',
+			start: 'foo{<p>bar}</p>baz',
 			execResult: 'foo[]<br>baz'
 		},
-		{  	start: '<p>foo[</p>]bar',
+		{  	include: 'mozilla',
+			start: 'foo{<p>bar}</p>baz',
+			execResult: 'foo{}<br>baz'
+		},
+		{  	exclude: 'msie',		// it is impossible to get a selection like this in ie
+			start: '<p>foo[</p>]bar',
 			execResult: '<p>foo[]bar</p>'
 		},
-		{  	start: '<p>foo{</p>}bar',
+		{  	exclude: 'msie',		// it is impossible to get a selection like this in ie
+			start: '<p>foo{</p>}bar',
 			execResult: '<p>foo[]bar</p>'
 		},
-		{  	start: '<p>foo[</p>]bar<br>baz',
+		{  	exclude: 'msie',		// it is impossible to get a selection like this in ie
+			start: '<p>foo[</p>]bar<br>baz',
 			execResult: '<p>foo[]bar</p>baz'
 		},
-		{  	start: '<p>foo[</p>]bar<p>baz</p>',
+		{  	exclude: 'msie',		// it is impossible to get a selection like this in ie
+			start: '<p>foo[</p>]bar<p>baz</p>',
 			execResult: '<p>foo[]bar</p><p>baz</p>'
 		},
 		{  	start: 'foo[<div><p>]bar</div>',
 			execResult: 'foo[]bar'
 		},
-		{  	start: '<div><p>foo[</p></div>]bar',
+		{  	exclude: 'msie',		// it is impossible to get a selection like this in ie
+			start: '<div><p>foo[</p></div>]bar',
 			execResult: '<div><p>foo[]bar</p></div>'
 		},
 		{  	
@@ -1007,14 +1062,28 @@ var tests = {
 			start: 'foo[<div>]bar<p>baz</p></div>',
 			execResult: 'foo[]bar <div><p>baz</p></div>'
 		},
-		{  	start: '<div><p>foo</p>bar[</div>]baz',
+		{  	exclude: 'msie',
+			start: '<div><p>foo</p>bar[</div>]baz',
 			execResult: '<div><p>foo</p>bar[]baz</div>'
 		},
-		{  	start: '<div>foo<p>bar[</p></div>]baz',
+		{  	exclude: 'msie',
+			start: '<div>foo<p>bar[</p></div>]baz',
 			execResult: '<div>foo<p>bar[]baz</p></div>'
 		},
-	
-		{  	start: '<p>foo<br>{</p>]bar',
+		{  	exclude: ['mozilla'],
+			start: '<p>foo<br>{</p>]bar',
+			execResult: '<p>foo[]bar</p>'
+		},
+		{  	exclude: ['mozilla'],
+			start: '<p>foo<br><br>{</p>]bar',
+			execResult: '<p>foo<br>[]bar<br></p>'
+		},
+		{  	exclude: ['mozilla'],
+			start: 'foo<br>{<p>]bar</p>',
+			execResult: 'foo[]bar'
+		},
+		{  	exclude: 'msie',
+			start: '<p>foo<br>{</p>]bar',
 			execResult: '<p>foo[]bar</p>'
 		},
 //		{  	start: '<p>foo<br><br>{</p>]bar', // this test seems a bit pointless to me, therefore disabled it. broken right now.
@@ -1026,14 +1095,15 @@ var tests = {
 //		{  	start: 'foo<br>{<p>]bar</p>',
 //			execResult: 'foo[]bar'
 //		},
-		{  	start: 'foo<br><br>{<p>]bar</p>',
+		{  	exclude: 'msie',
+			start: 'foo<br><br>{<p>]bar</p>',
 			execResult: 'foo<br><p>[]bar</p>'
 		},
 		{  	start: '<p>foo<br>{</p><p>}bar</p>',
 			execResult: '<p>foo[]bar</p>'
 		},
 		{  	start: '<p>foo<br><br>{</p><p>}bar</p>',
-			execResult: '<p>foo[]bar</p>' // TODO not entirely sure if this is really correct.
+			execResult: '<p>foo<br>[]bar</p>' // TODO not entirely sure if this is really correct.
 		},
 
 // no table tests for us as our tables are augmented with divs	
@@ -1082,8 +1152,21 @@ var tests = {
 			start: '<p>foo<ol><li>ba[r<li>b]az</ol><p>quz',
 			execResult: '<p>foo </p><ol><li>ba[]az</li></ol><p>quz</p>'
 		},
-		{  	start: '<p>foo<ol><li>bar<li>[baz]</ol><p>quz',
+		{  	exclude: ['mozilla'],
+			start: '<p>foo<ol><li>bar<li>[baz]</ol><p>quz',
 			execResult: '<p>foo</p><ol><li>bar</li><li>{}</li></ol><p>quz</p>'
+		},
+		{  	include: ['mozilla'],
+			start: '<p>foo<ol><li>bar<li>[baz]</ol><p>quz',
+			execResult: '<p>foo</p><ol><li>bar</li><li>[]</li></ol><p>quz</p>'
+		},
+		{  	exclude: 'msie',
+			start: '<p>foo</p><ol><li>bar<li>[baz]</ol><p>quz</p>',
+			execResult: '<p>foo</p><ol><li>bar</li><li>{}</li></ol><p>quz</p>'
+		},
+		{  	include: 'msie',
+			start: '<p>foo</p><ol><li>bar<li>[baz]</ol><p>quz</p>',
+			execResult: '<p>foo</p><ol><li>bar </li><li>[]</li></ol><p>quz</p>'
 		},
 		{  	
 			exclude: ['msie'],
@@ -1167,17 +1250,25 @@ var tests = {
 		{  	start: '<span style="display:block">fo[o</span><span style="display:block">b]ar</span>',
 			execResult: '<span style="display:block">fo[]ar</span>'
 		},
-		{  	start: '<span style="display:inline-block">fo[o</span><span style="display:inline-block">b]ar</span>',
+		{  	exclude: 'msie',
+			start: '<span style="display:inline-block">fo[o</span><span style="display:inline-block">b]ar</span>',
 			execResult: '<span style="display:inline-block">fo[]</span><span style="display:inline-block">ar</span>'
 		},
-		{  	start: '<span style="display:inline-table">fo[o</span><span style="display:inline-table">b]ar</span>', // TODO some exception in IE!
+		{  	exclude: 'msie',
+			start: '<span style="display:inline-table">fo[o</span><span style="display:inline-table">b]ar</span>', // TODO some exception in IE!
 			execResult: '<span style="display:inline-table">fo[]</span><span style="display:inline-table">ar</span>'
 		},
-		{  	start: '<span style="display:none">fo[o</span><span style="display:none">b]ar</span>', // broken
+		{  	exclude: 'msie',
+			start: '<span style="display:none">fo[o</span><span style="display:none">b]ar</span>', // broken
 			execResult: '<span style="display:none">fo[]ar</span>'
 		},
-		{  	start: '<quasit style="display:block">fo[o</quasit><quasit style="display:block">b]ar</quasit>',
+		{  	exclude: 'msie',
+			start: '<quasit style="display:block">fo[o</quasit><quasit style="display:block">b]ar</quasit>',
 			execResult: '<quasit style="display:block">fo[]ar</quasit>'
+		},
+		{  	include: 'msie',
+			start: '<quasit style="display:block">fo[o</quasit><quasit style="display:block">b]ar</quasit>',
+			execResult: 'fo[]ar</quasit>'
 		}
 	]
 }
