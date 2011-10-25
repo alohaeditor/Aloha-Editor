@@ -262,9 +262,9 @@ function AlohaImagePlugin (aQuery, Plugin, FloatingMenu,imgSidebar, imgFloating,
 		 */
 		init: function() {
 
-			var that = this;
-			var	imagePluginUrl = Aloha.getPluginUrl('image');
-		
+			var that = this,
+				imagePluginUrl = Aloha.getPluginUrl('image');
+
 			// Extend the default settings with the custom ones (done by default)
 			//this.settings = jQuery.extend(true,this.defaultSettings,this.settings);
 
