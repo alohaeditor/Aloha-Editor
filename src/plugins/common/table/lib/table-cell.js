@@ -400,78 +400,25 @@ function (jQuery, Utils) {
 	 * @return void
 	 */
 	TableCell.prototype._editableKeyDown = function(jqEvent) {
-		
-		var 
-		KEYCODE_TAB = 9,
-		KEYCODE_ARROWLEFT = 37,
-		KEYCODE_ARROWUP = 38,
-		KEYCODE_ARROWRIGHT = 39
-		KEYCODE_ARROWDOWN = 40;
+		var KEYCODE_TAB = 9;
 
 		this._checkForEmptyEvent(jqEvent);
 		
-		if ( this.obj[0] == this.tableObj.obj.find('tr:last td:last')[0] ) {
-			// only add a row on a single key-press of tab (so check if alt-, shift- or
-			// ctrl-key are NOT pressed)
+		if ( this.obj[0] === this.tableObj.obj.find('tr:last td:last')[0] ) {
+			// only add a row on a single key-press of tab (so check
+			// that alt-, shift- or ctrl-key are NOT pressed)
 			if (KEYCODE_TAB == jqEvent.keyCode && !jqEvent.altKey && !jqEvent.shiftKey && !jqEvent.ctrlKey) {
-				// add a row after the current row (false stands for not highlighting the new row)
+				// add a row after the current row
 				this.tableObj.addRow(this.obj.parent().index() + 1);
-				// stop propagation because this should overwrite all other events
+
+				// firefox needs this for the first cell of the new row
+				// to be selected (.focus() doesn't work reliably in
+				// IE7)
+				this.tableObj.cells[this.tableObj.cells.length - 1]._selectAll();
+
 				jqEvent.stopPropagation();
 				return;
 			}
-		}
-		if (!jqEvent.ctrlKey && !jqEvent.shiftKey) {
-			if (this.tableObj.selection.selectedCells.length > 0 && this.tableObj.selection.selectedCells[0].length > 0) {
-				this.tableObj.selection.selectedCells[0][0].firstChild.focus();
-				this.tableObj.selection.unselectCells();
-				jqEvent.stopPropagation();
-			}
-		}else if(jqEvent.shiftKey && this.tableObj.selection.selectedCells.length > 0){
-
-			switch (this.tableObj.selection.selectionType) {
-			case 'row':
-				switch(jqEvent.keyCode) {
-				case KEYCODE_ARROWUP:
-					var firstSelectedRow = this.tableObj.selection.selectedCells[0][0].parentNode.rowIndex;
-					if (firstSelectedRow > 1) {
-						this.tableObj.rowsToSelect.push(firstSelectedRow - 1);
-					}
-					break;
-				case KEYCODE_ARROWDOWN:
-					var lastRowIndex = this.tableObj.selection.selectedCells.length - 1;
-					var lastSelectedRow = this.tableObj.selection.selectedCells[lastRowIndex][0].parentNode.rowIndex;
-					if (lastSelectedRow < this.tableObj.numRows) {
-						this.tableObj.rowsToSelect.push(lastSelectedRow + 1);
-					}
-					break;
-				}
-				this.tableObj.selectRows();
-
-				break;
-			case 'column':
-				switch(jqEvent.keyCode) {
-				case KEYCODE_ARROWLEFT:
-					var firstColSelected = this.tableObj.selection.selectedCells[0][0].cellIndex;
-					if (firstColSelected > 1) {
-						this.tableObj.columnsToSelect.push(firstColSelected - 1);
-					}
-					break;
-				case KEYCODE_ARROWRIGHT:
-					var lastColIndex = this.tableObj.selection.selectedCells[0].length - 1;
-					var lastColSelected = this.tableObj.selection.selectedCells[0][lastColIndex].cellIndex;
-					if (lastColSelected < this.tableObj.numCols) {
-						this.tableObj.columnsToSelect.push(lastColSelected + 1);
-					}
-					break;
-				}
-				this.tableObj.selectColumns();
-
-				break;
-			}
-			jqEvent.stopPropagation();
-			jqEvent.preventDefault();
-			return false;
 		}
 	};
 
