@@ -929,12 +929,10 @@ var alltests = {
 			start: '<p>foo[bar<blockquote><p>baz]quz<p>qoz</blockquote', // interesting... is this broken by intention?
 			execResult: '<p>foo[]quz </p><blockquote><p>qoz</p></blockquote>'
 		},
-		// TODO Check why ie wants a space after foo
 		{	include: 'msie',
 			start: '<dl><dt>foo<dd>bar[<dd>]baz</dl>',
 			execResult: '<dl><dt>foo <dd>bar[]baz</dl>'
 		},			
-		// TODO Check why ie wants a space after foo
 		{	exclude: 'msie',
 			start: '<dl><dt>foo<dd>bar[<dd>]baz</dl>',
 			execResult: '<dl><dt>foo<dd>bar[]baz</dl>'
@@ -945,7 +943,6 @@ var alltests = {
 		{	start: 'foo[<p>]bar<br>baz</p>',
 			execResult: 'foo[]bar<p>baz</p>'
 		},
-        // TODO: This test currently fails since the selection is not correctly handled.
 		{	exclude: 'msie',
 			start: 'foo<b>[bar]</b>baz',
 			execResult: 'foo[]<b></b>baz'
@@ -1052,11 +1049,16 @@ var alltests = {
 		{	start: 'foo<span>{bar}</span>baz',
 			execResult: 'foo[]baz'
 		},
-		{	start: 'foo{<span>bar</span>}baz',
+		{	exclude: 'msie',
+			start: 'foo{<span>bar</span>}baz',
 			execResult: 'foo[]baz'
 		},
+		{	include: 'msie',
+			start: 'foo{<span>bar</span>}baz',
+			execResult: 'foo<span></span>[]baz'
+		},
 		{	start: '<b>foo[bar</b><i>baz]quz</i>',
-			execResult: '<b>foo[]<i>quz</i>'
+			execResult: '<b>foo[]</b><i>quz</i>'
 		},
 		{	start: 'foo[]<span><span></span></span>bar',
 			execResult: 'foo[]ar'
@@ -1064,11 +1066,16 @@ var alltests = {
 		{	start: 'foo[]<span></span><br>bar',
 			execResult: 'foo[]ar'
 		},
-		{	start: '<ol><li>foo[]<br><li>bar</ol>',
+		{	include: 'msie',
+			start: '<ol><li>foo[]<br></li><li>bar</li></ol>',
+			execResult: '<ol><li>foo[]</li><li>bar</li></ol>'
+		},
+		{	exclude: 'msie',
+			start: '<ol><li>foo[]<br></li><li>bar</li></ol>',
 			execResult: '<ol><li>foo[]bar</li></ol>'
 		},
 		{	start: '<ol><li>foo[]<li>bar<br>baz</ol>',
-			execResult: '<ol><li>foo[]<li>bar<br>baz</ol>'
+			execResult: '<ol><li>foo[]bar<br>baz</li></ol>'
 		},			
 		{	exclude: 'msie',
 			start: 'foo []<span>&nbsp;</span> bar',
@@ -1099,15 +1106,24 @@ var alltests = {
 		},
 		{	include: 'msie',
 			start: 'foo[] <span></span><span>bar</span>',
-			execResult: 'foo<span>[]ar</span>'
+			execResult: 'foo<span></span>{}<span>bar</span>'
 		},
-		{	start: 'foo<span>{}</span><span>bar</span>',
-			execResult: 'foo[]<span>ar</span>'
+		{	exclude: 'msie',
+			start: 'foo<span>{}</span><span>bar</span>',
+			execResult: 'foo[]<span></span>{}<span>ar</span>'
 		},
-		
-		// TODO This test fails since the selection is not working properly
-		{	start: 'foo[]<span></span>bar',
+		//  IE will automatically jump between both spans since there is no free space in the textnode
+		{	include: 'msie',
+			start: 'foo<span>{}</span><span>bar</span>',
+			execResult: 'foo<span></span>{}<span>ar</span>'
+		},
+		{	exclude: 'msie',	
+			start: 'foo[]<span></span>bar',
 			execResult: 'foo[]ar'
+		},
+		{	include: 'msie',	
+			start: 'foo[]<span></span>bar',
+			execResult: 'foo<span></span>[]ar'
 		}
 	
 
