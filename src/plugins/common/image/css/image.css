@@ -122,3 +122,44 @@ button.cnr-reset {
 }
 .aloha-image-box-active .ui-resizable-handle.ui-resizable-sw {
 }
+
+
+/* 
+	Sidemenu styles
+*/
+
+.aloha-image-pointer {
+	cursor: pointer;
+}
+
+.aloha-image-text {
+	cursor: text;
+}
+
+
+.aloha-image-title-container {
+	padding:5px 5px;
+}
+
+.aloha-image-title-container fieldset {
+	border: 2px groove threedface !important;
+	padding-bottom: 5px;
+}
+
+.aloha-image-title-container fieldset  input[type=text]{
+	width:auto !important;
+	min-width:180px;
+}
+
+.aloha-image-src-container {
+	padding:5px 5px;
+}
+
+.aloha-image-src-container fieldset {
+	border: 2px groove threedface !important;
+	padding-bottom: 5px;
+}
+.aloha-image-src-container fieldset  input[type=text]{
+	width:auto !important;
+	min-width:180px;
+}
