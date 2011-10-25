@@ -3037,8 +3037,9 @@ function setSelectionValue(command, newValue, range) {
 		// "If command has inline command activated values, set the state
 		// override to true if new value is among them and false if it's not."
 		if ("inlineCommandActivatedValues" in commands[command]) {
-			$_( setStateOverride(command, commands[command].inlineCommandActivatedValues )
-				.indexOf(newValue) != -1, range);
+			setStateOverride(command, 
+      $_(commands[command].inlineCommandActivatedValues).indexOf(newValue) != -1,
+      range);
 		}
 
 		// "If command is "subscript", unset the state override for
