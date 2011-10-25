@@ -776,7 +776,6 @@ function isProhibitedParagraphChild(node) {
 // resolved value "inline" or "inline-block" or "inline-table" or "none", or a
 // Document, or a DocumentFragment."
 function isBlockNode(node) {
-	//window.console.log("isBlockNode: " + node.id + " " + node.className  + " type: " +  node.nodeType);
 	
 	return node
 		&& ((node.nodeType == $_.Node.ELEMENT_NODE && $_( ["inline", "inline-block", "inline-table", "none"] ).indexOf($_.getComputedStyle(node).display) == -1)
@@ -1555,7 +1554,6 @@ function wrap(nodeList, siblingCriteria, newParentInstructions, range) {
 		&& isInlineNode(newParent.lastChild)
 		&& isInlineNode(nodeList[0])
 		&& !isHtmlElement(newParent.lastChild, "BR")) {
-			//window.console.log('6');
 			newParent.appendChild(newParent.ownerDocument.createElement("br"));
 		}
 
@@ -1576,7 +1574,6 @@ function wrap(nodeList, siblingCriteria, newParentInstructions, range) {
 		&& isInlineNode(newParent.firstChild)
 		&& isInlineNode(nodeList[nodeList.length - 1])
 		&& !isHtmlElement(nodeList[nodeList.length - 1], "BR")) {
-			//window.console.log('7');
 			newParent.insertBefore(newParent.ownerDocument.createElement("br"), newParent.firstChild);
 		}
 
@@ -1606,7 +1603,6 @@ function wrap(nodeList, siblingCriteria, newParentInstructions, range) {
 		&& isInlineNode(newParent.lastChild)
 		&& isInlineNode(newParent.nextSibling.firstChild)
 		&& !isHtmlElement(newParent.lastChild, "BR")) {
-			//window.console.log('8');
 			newParent.appendChild(newParent.ownerDocument.createElement("br"));
 		}
 
@@ -4563,7 +4559,6 @@ function deleteContents() {
 		startOffset = 0;
 	}
 
-	// window.console.log("endNodeHasChildnodes: "  + endNode.hasChildNodes());
 	// "While end node has at least one child:"
 	while (endNode.hasChildNodes()) {
 		// "If end offset is 0, and end node's parent is in the same editing
@@ -4654,22 +4649,13 @@ function deleteContents() {
 
 	// "Let end block be the end node of range."
 	var endBlock = range.endContainer;
-//	debugger;
-
 	
 	// "While end block's parent is in the same editing host and end block is
 	// an inline node, set end block to its parent."
-	//window.console.log("! check: " + inSameEditingHost(endBlock, endBlock.parentNode));
-	//window.console.log("! check: " + isInlineNode(endBlock));
-	//window.console.log("EndBlock: " + endBlock.className + " " + endBlock.id + " type:" + endBlock.type);
-	//window.console.log("Parent: " + endBlock.parentNode.id + " " + endBlock.parentNode.id.className  + " " + endBlock.parentNode.id.type); 
 	while (inSameEditingHost(endBlock, endBlock.parentNode)
 	&& isInlineNode(endBlock)) {
 		endBlock = endBlock.parentNode;
-		//window.console.log('Updateing endBlock');
 	}
-//	endBlock = endBlock.parentNode;
-	//window.console.log("EndBlock: " + endBlock.className + " " + endBlock.id);
 	
 	// "If end block is neither a block node nor an editing host, or "span" is
 	// not an allowed child of end block, or end block is a td or th, set end
@@ -4682,7 +4668,6 @@ function deleteContents() {
 
 	// "Record current states and values, and let overrides be the result."
 	var overrides = recordCurrentStatesAndValues(range);
-	//window.console.log("EndBlock: " + endBlock.className + " " + endBlock.id);
 	// "If start node and end node are the same, and start node is an editable
 	// Text node:"
 	if (startNode == endNode
@@ -4714,7 +4699,6 @@ function deleteContents() {
 			parent_.appendChild(createEndBreak());
 		}
 
-		//window.console.log('Returning early');
 		// "Abort these steps."
 		return;
 	}
@@ -4789,16 +4773,6 @@ function deleteContents() {
 	// "Canonicalize whitespace at range's end."
 	canonicalizeWhitespace(range.endContainer, range.endOffset);
 
-	//window.console.log(!blockMerging);
-	//window.console.log(!startBlock);
-	//window.console.log(!endBlock);
-	//window.console.log(!inSameEditingHost(startBlock, endBlock));
-	//window.console.log(startBlock == endBlock);
-	
-	//window.console.log("Final StartBlock: "  + startBlock.className + " " + startBlock.id);
-	//window.console.log("Final EndBlock: " + endBlock.className + " " + endBlock.id);
-	
-	
 	// "If block merging is false, or start block or end block is null, or
 	// start block is not in the same editing host as end block, or start block
 	// and end block are the same:"
@@ -4813,7 +4787,6 @@ function deleteContents() {
 		// "Restore states and values from overrides."
 		restoreStatesAndValues(overrides, range);
 
-		//window.console.log('Returning early2');
 		// "Abort these steps."
 		return;
 	}
@@ -4831,7 +4804,7 @@ function deleteContents() {
 	&& isCollapsedBlockProp(endBlock.firstChild)) {
 		endBlock.removeChild(endBlock.firstChild);
 	}
-	//window.console.log("x1");
+
 	// "If start block is an ancestor of end block:"
 	if (isAncestor(startBlock, endBlock)) {
 		// "Let reference node be end block."
@@ -4847,7 +4820,7 @@ function deleteContents() {
 		// node)."
 		range.setStart(startBlock, getNodeIndex(referenceNode));
 		range.setEnd(startBlock, getNodeIndex(referenceNode));
-		//window.console.log("HasChildNodes: " +  !endBlock.hasChildNodes());
+
 		// "If end block has no children:"
 		if (!endBlock.hasChildNodes()) {
 			// "While end block is editable and is the only child of its parent
@@ -4867,16 +4840,10 @@ function deleteContents() {
 			// createElement("br") on the context object and insert it into end
 			// block's parent immediately after end block."
 
-			//window.console.log(isEditable(endBlock));
-			//window.console.log(!isInlineNode(endBlock));
-			//window.console.log(isInlineNode(endBlock.previousSibling));
-			//window.console.log(isInlineNode(endBlock.nextSibling));
-					
 			if (isEditable(endBlock)
 			&& !isInlineNode(endBlock)
 			&& isInlineNode(endBlock.previousSibling)
 			&& isInlineNode(endBlock.nextSibling)) {
-				//window.console.log('9');
 				endBlock.parentNode.insertBefore(document.createElement("br"), endBlock.nextSibling);
 			}
 
@@ -5086,7 +5053,6 @@ function splitParent(nodeList, range) {
 		// member of node list."
 		if (precedesLineBreak_
 		&& !precedesLineBreak(nodeList[nodeList.length - 1])) {
-			//window.console.log('10');
 			nodeList[nodeList.length - 1].parentNode.insertBefore(document.createElement("br"), nodeList[nodeList.length - 1].nextSibling);
 		}
 
@@ -5129,7 +5095,6 @@ function splitParent(nodeList, range) {
 	// and insert the result immediately before the first member of node list."
 	if (followsLineBreak_
 	&& !followsLineBreak(nodeList[0])) {
-		//window.console.log('11');
 		nodeList[0].parentNode.insertBefore(document.createElement("br"), nodeList[0]);
 	}
 
@@ -5167,7 +5132,6 @@ function splitParent(nodeList, range) {
 		// member of node list."
 		if (precedesLineBreak_
 		&& !precedesLineBreak(nodeList[nodeList.length - 1])) {
-			//window.console.log('12');
 			nodeList[nodeList.length - 1].parentNode.insertBefore(document.createElement("br"), nodeList[nodeList.length - 1].nextSibling);
 		}
 
@@ -6352,7 +6316,6 @@ commands["delete"] = {
 			// result as the last child of previous item."
 			if (isInlineNode(previousItem.lastChild)
 			&& !isHtmlElement(previousItem.lastChild, "br")) {
-				//window.console.log('1');
 				previousItem.appendChild(document.createElement("br"));
 			}
 
@@ -6360,7 +6323,6 @@ commands["delete"] = {
 			// createElement("br") on the context object and append the result
 			// as the last child of previous item."
 			if (isInlineNode(previousItem.lastChild)) {
-				//window.console.log('2');
 				previousItem.appendChild(document.createElement("br"));
 			}
 		}
@@ -6655,7 +6617,6 @@ commands.formatblock = {
 commands.forwarddelete = {
 	action: function(value, range) {
 	
-//		debugger;
 		// "If the active range is not collapsed, delete the contents of the
 		// active range and abort these steps."
 		if (!range.collapsed) {
@@ -7196,7 +7157,6 @@ commands.insertlinebreak = {
 
 		// "Let br be the result of calling createElement("br") on the context
 		// object."
-		//window.console.log('3');
 		var br = document.createElement("br");
 
 		// "Call insertNode(br) on the active range."
@@ -7370,7 +7330,6 @@ commands.insertparagraph = {
 		|| container.tagName == "PRE") {
 			// "Let br be the result of calling createElement("br") on the
 			// context object."
-			//window.console.log('5');
 			var br = document.createElement("br");
 
 			// remember the old height

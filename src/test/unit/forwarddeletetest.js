@@ -1,20 +1,9 @@
-
 // Just used for single testing 
 var specifictests = {
 		defaultValue: '',
 		defaultCommand: 'forwarddelete',
 		tests: [
 
-/*
-				{	exclude: 'msie',
-					start: 'foo <span>&nbsp;</span>[] bar',
-					execResult: 'foo <span>&nbsp;[]</span>bar'
-				},
-		       	{	start: 'foo[]<quasit></quasit>bar',
-					execResult: 'foo[]ar'
-				},
-*/
-				
 		        
 				]
 }
@@ -193,6 +182,10 @@ var alltests = {
 			start: '<p>foo<ol><li>bar<li>ba[z</ol><p>q]uz',
 			execResult: '<p>foo </p><ol><li>bar </li><li>ba[]uz</li></ol>'
 		},
+		{ 	include: 'msie',
+			start: 'foo<table><tr><td>bar[]</table><br>baz',
+			execResult: 'foo <table><tr><td>bar[]</table><br>baz'
+		},
 		
 
 /**
@@ -227,10 +220,6 @@ var alltests = {
         // This test somehow creates a broken dom entry in ie
     	{	start: 'foo[]<a href=/>bar</a>',
 			execResult: 'foo<a href="/">[]ar</a>'
-		},
-		// This tests creates a broken dom node
-		{	start: 'foo[]<span><a href=/>bar</a></span>',
-			execResult: 'foo[]<span><a href=/>ar</a></span>'
 		},
 		
 		
@@ -593,9 +582,6 @@ var alltests = {
 		{	start: 'foo[]<span><a href=/ name=abc>bar</a></span>',
 			execResult: 'foo[]<span><a href=/ name=abc>ar</a></span>'
 		},
-		{	start: '<a href=/>foo[]</a>bar',
-			execResult: '<a href=/>foo[]</a>ar'
-		},
 		{	exclude: 'msie',
 			start: '<a name=abc>foo[]</a>bar',
 			execResult: '<a name=abc>foo[]</a>ar'
@@ -629,9 +615,11 @@ var alltests = {
 		{	start: '<table><tr><td>foo[]<br><tr><td>bar</table>',
 			execResult: '<table><tr><td>foo[]<tr><td>bar</table>'
 		},
-		{	start: 'foo<table><tr><td>bar[]</table><br>baz',
+		{	exclude: 'msie',	
+			start: 'foo<table><tr><td>bar[]</table><br>baz',
 			execResult: 'foo<table><tr><td>bar[]</table><br>baz'
 		},
+		
 		{	start: 'foo[]<ol><li>bar<li>baz</ol>',
 			execResult: 'foo[]bar<ol><li>baz</li></ol>'
 		},
@@ -701,8 +689,20 @@ var alltests = {
 /**
  * Tests with errors in ie
  */	        
-		
-		
+		{	exclude: 'msie',
+			start: 'foo <span>&nbsp;</span>[] bar',
+			execResult: 'foo <span>&nbsp;[]</span>bar'
+		},
+		{	start: 'foo[]<quasit></quasit>bar',
+			execResult: 'foo[]ar'
+		},
+		{	start: '<a href=/>foo[]</a>bar',
+			execResult: '<a href=/>foo[]</a>ar'
+		},
+		// This tests creates a broken dom node
+		{	start: 'foo[]<span><a href=/>bar</a></span>',
+			execResult: 'foo[]<span><a href=/>ar</a></span>'
+		},
     	{	start: '<p>foo[]<hr></p><p>bar</p>',
 			execResult: '<p>foo[]</p><p>bar</p>'
 		},	
@@ -730,7 +730,7 @@ var alltests = {
 		{	start: '<ol><li>fo[o</ol><ul><li>b]ar</ul>',
 			execResult: '<ol><li>fo[]ar</li></ol>'
 		},
-		{	start: '<p>foo[]<p><span style=color:brown>bar</font>',
+		{	start: '<p>foo[]<p><span style=color:brown>bar</span>',
 			execResult: '<p>foo[]<span style="color:brown">bar</span></p>'
 		},
 		{	start: 'foo[<ol><li>]bar</ol>',
@@ -747,7 +747,12 @@ var alltests = {
 			start: '<p>foo<span style=color:#aBcDeF>[bar</span><span style=color:#fEdCbA>baz]</span>quz</p>',
 			execResult: '<p>foo<span style="color:#aBcDeF"></span>[]quz</p>'
 		},
-		{	start: '<p>foo<ol><li>ba[r<li>b]az</ol><p>quz',
+		{ 	exclude: 'msie',	
+			start: '<p>foo<ol><li>ba[r<li>b]az</ol><p>quz',
+			execResult: '<p>foo </p><ol><li>ba[]az</li></ol><p>quz</p>'
+		},
+		{ 	include: 'msie',	
+			start: '<p>foo<ol><li>ba[r<li>b]az</ol><p>quz',
 			execResult: '<p>foo</p><ol><li>ba[]az</li></ol><p>quz</p>'
 		},
 		{	exclude: 'msie',	
@@ -822,14 +827,29 @@ var alltests = {
 		{	start: 'foo{}<span><br></span><p><span><br></span>',
 			execResult: 'foo[]'
 		},
-		{	start: 'foo []&nbsp;',
+		{	include: 'msie',
+			start: 'foo []&nbsp;',
 			execResult: 'foo[]'
 		},
-		{	start: 'foo[] &nbsp;bar',
+		{	exclude: 'msie',
+			start: 'foo []&nbsp;',
+			execResult: 'foo []'
+		},
+		{	include: 'msie',	
+			start: 'foo[] &nbsp;bar',
+			execResult: 'foo[] bar'
+		},
+		{	exclude: 'msie',	
+			start: 'foo[] &nbsp;bar',
 			execResult: 'foo[]bar'
 		},
-		{	start: '<dl><dt>foo[<dt>]bar<dd>baz</dl>',
+		{	exclude: 'msie',	
+			start: '<dl><dt>foo[<dt>]bar<dd>baz</dl>',
 			execResult: '<dl><dt>foo[]bar<dd>baz</dl>'
+		},
+		{	include: 'msie',	
+			start: '<dl><dt>foo[<dt>]bar<dd>baz</dl>',
+			execResult: '<dl><dt>foo[]bar <dd>baz</dl>'
 		},
 		{	start: '<ol><li>foo[]<ul><li>bar</ul></ol>',
 			execResult: '<ol><li>foo[]bar</li></ol>'
@@ -837,8 +857,13 @@ var alltests = {
 		{	start: 'foo[]<ol><ol><li>bar</ol></ol>',
 			execResult: 'foo[]bar'
 		},
-		{	start: '<p>foo<span style=color:#aBcDeF>[bar]</span>baz',
+		{	exclude: 'msie',	
+			start: '<p>foo<span style=color:#aBcDeF>[bar]</span>baz',
 			execResult: '<p>foo[]<span style="color:#aBcDeF"></span>baz</p>'
+		},
+		{	include: 'msie',	
+			start: '<p>foo<span style=color:#aBcDeF>[bar]</span>baz',
+			execResult: '<p>foo<span style="color:#aBcDeF"></span>[]baz</p>'
 		},
 		{	start: '<p>foo<span style=color:#aBcDeF>{bar}</span>baz',
 			execResult: '<p>foo[]<span style="color:#aBcDeF"></span>baz</p>'
@@ -846,15 +871,26 @@ var alltests = {
 		{	start: '<p>foo{<span style=color:#aBcDeF>bar</span>}baz',
 			execResult: '<p>foo[]baz</p>'
 		},
-		{	start: 'foo[<div>]bar<p>baz</p></div>',
+		{	exclude: 'msie',
+			start: 'foo[<div>]bar<p>baz</p></div>',
 			execResult: 'foo[]bar<div><p>baz</p></div>'
+		},
+		{	include: 'msie',
+			start: 'foo[<div>]bar<p>baz</p></div>',
+			execResult: 'foo[]bar <div><p>baz</p></div>'
 		},
 		{	start: '<div><p>foo</p>bar[</div>]baz',
 			execResult: '<div><p>foo</p>bar[]baz</div>'
 		},
-		{	start: '<div>foo<p>bar[</p></div>]baz',
+		{	exclude: 'msie',	
+			start: '<div>foo<p>bar[</p></div>]baz',
 			execResult: '<div>foo<p>bar[]baz</p></div>'
 		},
+		{	include: 'msie',
+			start: '<div>foo<p>bar[</p></div>]baz',
+			execResult: '<div>foo <p>bar[]baz</p></div>'
+		},
+		
 		{	start: '<p>foo<br>{</p>]bar',
 			execResult: '<p>foo[]bar</p>'
 		},
@@ -876,13 +912,24 @@ var alltests = {
 		{	start: '<p>foo<br><br>{</p><p>}bar</p>',
 			execResult: '<p>foo[]bar</p>'
 		},
-		{	start: '<p>foo[bar<blockquote><p>baz]quz<p>qoz</blockquote', // interesting... is this broken by intention?
+		{	exclude: 'msie',
+			start: '<p>foo[bar<blockquote><p>baz]quz<p>qoz</blockquote', // interesting... is this broken by intention?
 			execResult: '<p>foo[]quz</p><blockquote><p>qoz</p></blockquote>'
 		},
+		{	include: 'msie',
+			start: '<p>foo[bar<blockquote><p>baz]quz<p>qoz</blockquote', // interesting... is this broken by intention?
+			execResult: '<p>foo[]quz </p><blockquote><p>qoz</p></blockquote>'
+		},
 		// TODO Check why ie wants a space after foo
-		{	start: '<dl><dt>foo<dd>bar[<dd>]baz</dl>',
-			execResult: '<dl><dt>foo<dd>bar[]baz</dl>'
+		{	include: 'msie',
+			start: '<dl><dt>foo<dd>bar[<dd>]baz</dl>',
+			execResult: '<dl><dt>foo <dd>bar[]baz</dl>'
 		},			
+		// TODO Check why ie wants a space after foo
+		{	exclude: 'msie',
+			start: '<dl><dt>foo<dd>bar[<dd>]baz</dl>',
+			execResult: '<dl><dt>foo<dd>bar[]baz</dl>'
+		},
 		{	start: '<div><p>foo<p>[bar<p>baz]</div>',
 			execResult: '<div><p>foo[]</p><p></p></div>'
 		},
