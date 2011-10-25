@@ -315,21 +315,8 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 	 * @return {Boolean} true if we are inside a table
 	 */
 	TablePlugin.isSelectionInTable = function () {
-		var sel = Aloha.getSelection();
-		
-		// Why don't we just use getRangeAt:
-		// Aloha does not currently provide us with an easy means to check if
-		// there are any ranges in the selection. This means that for the time
-		// being, we will have to read the internal objects ourselves, rather
-		// than call getRangeAt.
-		
-		var ranges = sel._nativeSelection._ranges;
-		
-		if ( ranges.length == 0 ) {
-			return false;
-		}
-		
-		var container = jQuery( ranges[ 0 ].commonAncestorContainer );
+		var range = Aloha.Selection.getRangeObject();
+		var container = jQuery( range.commonAncestorContainer );
 		
 		if ( container.length == 0 ) {
 			return  false;
@@ -342,6 +329,21 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 		return false;
 	};
 
+	
+	TablePlugin.guardAgainstNestedTables = function () {
+		if ( this.isSelectionInTable() ) {
+			Aloha.showMessage( new Aloha.Message( {
+				title : i18n.t( 'Table' ),
+				text  : i18n.t( 'table.createTable.nestedTablesNoSupported' ),
+				type  : Aloha.Message.Type.ALERT
+			} ) );
+			
+			return true;
+		}
+		
+		return false;
+	};
+	
   /**
    * Adds default row buttons, and custom formatting buttons to floating menu
    */
@@ -815,13 +817,7 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 			'size' : 'small',
 			'tooltip' : i18n.t('button.createtable.tooltip'),
 			'onclick' : function (element, event) {
-				if ( that.isSelectionInTable() ) {
-					Aloha.showMessage( new Aloha.Message( {
-						title : i18n.t( 'Table' ),
-						text  : i18n.t( 'table.createTable.nestedTablesNoSupported' ),
-						type  : Aloha.Message.Type.ALERT
-					} ) );
-				} else {
+				if ( !that.guardAgainstNestedTables() ) {
 					TablePlugin.createDialog( element.btnEl.dom );
 				}
 			}
@@ -1072,6 +1068,10 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 	 * @return void
 	 */
 	TablePlugin.createTable = function(cols, rows) {
+		if ( this.guardAgainstNestedTables() ) {
+			return;
+		}
+		
 		// Check if there is an active Editable and that it contains an element (= .obj)
 		if (Aloha.activeEditable != null && typeof Aloha.activeEditable.obj != 'undefined') {
 			// create a dom-table object
