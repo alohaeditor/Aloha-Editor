@@ -6,38 +6,39 @@
 
 window.TestUtils = window.TestUtils || {};
 
-define(	[ './ecma5' ], function() {
+define(	[ '../../lib/aloha/ecma5shims' ], function($_) {
 	"use strict";
 	
 	var	
 		jQuery = Aloha.jQuery,
-		Node = {
-			'ELEMENT_NODE': 1,
-			'ATTRIBUTE_NODE': 2,
-			'TEXT_NODE': 3,
-			'CDATA_SECTION_NODE': 4,
-			'ENTITY_REFERENCE_NODE': 5,
-			'ENTITY_NODE': 6,
-			'PROCESSING_INSTRUCTION_NODE': 7,
-			'COMMENT_NODE': 8,
-			'DOCUMENT_NODE': 9,
-			'DOCUMENT_TYPE_NODE': 10,
-			'DOCUMENT_FRAGMENT_NODE': 11,
-			'NOTATION_NODE': 12,
-			//The two nodes are disconnected. Order between disconnected nodes is always implementation-specific.
-			'DOCUMENT_POSITION_DISCONNECTED': 0x01,
-			//The second node precedes the reference node.
-			'DOCUMENT_POSITION_PRECEDING': 0x02, 
-			//The node follows the reference node.
-			'DOCUMENT_POSITION_FOLLOWING': 0x04,
-			//The node contains the reference node. A node which contains is always preceding, too.
-			'DOCUMENT_POSITION_CONTAINS': 0x08,
-			//The node is contained by the reference node. A node which is contained is always following, too.
-			'DOCUMENT_POSITION_CONTAINED_BY': 0x10,
-			//The determination of preceding versus following is implementation-specific.
-			'DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC': 0x20
-		};
-	
+		// Node = {
+		// 	'ELEMENT_NODE': 1,
+		// 	'ATTRIBUTE_NODE': 2,
+		// 	'TEXT_NODE': 3,
+		// 	'CDATA_SECTION_NODE': 4,
+		// 	'ENTITY_REFERENCE_NODE': 5,
+		// 	'ENTITY_NODE': 6,
+		// 	'PROCESSING_INSTRUCTION_NODE': 7,
+		// 	'COMMENT_NODE': 8,
+		// 	'DOCUMENT_NODE': 9,
+		// 	'DOCUMENT_TYPE_NODE': 10,
+		// 	'DOCUMENT_FRAGMENT_NODE': 11,
+		// 	'NOTATION_NODE': 12,
+		// 	//The two nodes are disconnected. Order between disconnected nodes is always implementation-specific.
+		// 	'DOCUMENT_POSITION_DISCONNECTED': 0x01,
+		// 	//The second node precedes the reference node.
+		// 	'DOCUMENT_POSITION_PRECEDING': 0x02, 
+		// 	//The node follows the reference node.
+		// 	'DOCUMENT_POSITION_FOLLOWING': 0x04,
+		// 	//The node contains the reference node. A node which contains is always preceding, too.
+		// 	'DOCUMENT_POSITION_CONTAINS': 0x08,
+		// 	//The node is contained by the reference node. A node which is contained is always following, too.
+		// 	'DOCUMENT_POSITION_CONTAINED_BY': 0x10,
+		// 	//The determination of preceding versus following is implementation-specific.
+		// 	'DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC': 0x20
+		// };
+    //
+
 	/**
 	 * TestUtils class
 	 */
@@ -180,7 +181,7 @@ define(	[ './ecma5' ], function() {
 				offset,
 				rangeObject = new Aloha.Selection.SelectionRange();
 
-			editable.textNodes().filter(function() {
+			$_( editable.textNodes() ).filter(function() {
 				return this.nodeType == 3 && this.nodeValue.indexOf('[') >= 0;
 			}).each(function() {
 				text = this.nodeValue;
@@ -190,7 +191,7 @@ define(	[ './ecma5' ], function() {
 				rangeObject.startOffset = offset;
 			});
 
-			editable.textNodes().filter(function() {
+			$_( editable.textNodes() ).filter(function() {
 				return this.nodeType == 3 && this.nodeValue.indexOf(']') >= 0;
 			}).each(function() {
 				text = this.nodeValue;
@@ -301,24 +302,26 @@ define(	[ './ecma5' ], function() {
 			// end nodes, with a numeric value indicating the offset.  This format
 			// doesn't allow the parent div to be a start or end node, but in that case
 			// you can always use the curly braces.
-			if (node.querySelector("[data-start]")) {
-				startNode = node.querySelector("[data-start]");
+      // Lakshan: changed from querySelector to use jQuery selecotrs since former
+      // doesn't work on IE7
+			if (jQuery(node).find("[data-start]")[0]) {
+				startNode = jQuery( node ).find("[data-start]")[0];
 				startOffset = startNode.getAttribute("data-start");
 				startNode.removeAttribute("data-start");
 			}
-			if (node.querySelector("[data-end]")) {
-				endNode = node.querySelector("[data-end]");
+			if (jQuery( node ).find("[data-end]")[0]) {
+				endNode = jQuery( node ).find("[data-end]")[0];
 				endOffset = endNode.getAttribute("data-end");
 				endNode.removeAttribute("data-end");
 			}
 
 			var cur = node;
 			while (true) {
-				if (!cur || (cur != node && !(window.compareDocumentPosition(cur, node) & Node.DOCUMENT_POSITION_CONTAINS))) {
+				if (!cur || (cur != node && !($_.compareDocumentPosition(cur, node) & $_.Node.DOCUMENT_POSITION_CONTAINS))) {
 					break;
 				}
 
-				if (cur.nodeType != Node.TEXT_NODE) {
+				if (cur.nodeType != $_.Node.TEXT_NODE) {
 					cur = nextNode(cur);
 					continue;
 				}
@@ -388,8 +391,8 @@ define(	[ './ecma5' ], function() {
 			//@{
 			// Handle the collapsed case specially, to avoid confusingly getting the
 			// markers backwards in some cases
-			if (range.endContainer.nodeType == Node.TEXT_NODE
-				|| range.endContainer.nodeType == Node.COMMENT_NODE) {
+			if (range.endContainer.nodeType == $_.Node.TEXT_NODE
+				|| range.endContainer.nodeType == $_.Node.COMMENT_NODE) {
 					if (range.collapsed) {
 						marker = '[]'
 					} else {
@@ -403,10 +406,10 @@ define(	[ './ecma5' ], function() {
 						marker = '}'
 					}
 					if (range.endOffset != range.endContainer.childNodes.length
-					&& range.endContainer.childNodes[range.endOffset].nodeType == Node.TEXT_NODE) {
+					&& range.endContainer.childNodes[range.endOffset].nodeType == $_.Node.TEXT_NODE) {
 						range.endContainer.childNodes[range.endOffset].insertData(0, marker);
 					} else if (range.endOffset != 0
-					&& range.endContainer.childNodes[range.endOffset - 1].nodeType == Node.TEXT_NODE) {
+					&& range.endContainer.childNodes[range.endOffset - 1].nodeType == $_.Node.TEXT_NODE) {
 						range.endContainer.childNodes[range.endOffset - 1].appendData( marker );
 					} else {
 						range.endContainer.insertBefore(document.createTextNode( marker ),
@@ -418,16 +421,16 @@ define(	[ './ecma5' ], function() {
 				if (range.collapsed) {
 					return;
 				}
-				if (range.startContainer.nodeType == Node.TEXT_NODE
-				|| range.startContainer.nodeType == Node.COMMENT_NODE) {
+				if (range.startContainer.nodeType == $_.Node.TEXT_NODE
+				|| range.startContainer.nodeType == $_.Node.COMMENT_NODE) {
 					range.startContainer.insertData(range.startOffset, "[");
 				} else {
 					marker = '{';
 					if (range.startOffset != range.startContainer.childNodes.length
-					&& range.startContainer.childNodes[range.startOffset].nodeType == Node.TEXT_NODE) {
+					&& range.startContainer.childNodes[range.startOffset].nodeType == $_.Node.TEXT_NODE) {
 						range.startContainer.childNodes[range.startOffset].insertData(0, marker);
 					} else if (range.startOffset != 0
-					&& range.startContainer.childNodes[range.startOffset - 1].nodeType == Node.TEXT_NODE) {
+					&& range.startContainer.childNodes[range.startOffset - 1].nodeType == $_.Node.TEXT_NODE) {
 						range.startContainer.childNodes[range.startOffset - 1].appendData(marker);
 					} else {
 						// Seems to serialize as I'd want even for tables . . . IE doesn't
