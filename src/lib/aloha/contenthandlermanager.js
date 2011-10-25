@@ -38,20 +38,24 @@ function( jQuery, Registry ) {
 			
 			if ( typeof options.contenthandler === 'undefined' || options.contenthandler.length == 0) {
 				options.contenthandler = [];
-				for (handler in handlers) {
-					options.contenthandler.push(handler);
+				for ( handler in handlers ) {
+					if ( handlers.hasOwnProperty(handler) ) {
+						options.contenthandler.push(handler);
+					}
 				}
 			}
 
-			for ( handler in handlers) {
-				if (jQuery.inArray( handler, options.contenthandler ) < 0 ) {
-					continue;
-				}
-				
-				if ( typeof handlers[handler].handleContent === 'function') {
-					content = handlers[handler].handleContent( content, options );
-				} else {
-					console.error( 'A valid content handler needs the method handleContent.' );
+			for ( handler in handlers ) {
+				if ( handlers.hasOwnProperty(handler) ) {
+					if (jQuery.inArray( handler, options.contenthandler ) < 0 ) {
+						continue;
+					}
+					
+					if ( typeof handlers[handler].handleContent === 'function') {
+						content = handlers[handler].handleContent( content, options );
+					} else {
+						console.error( 'A valid content handler needs the method handleContent.' );
+					}
 				}
 			}
 

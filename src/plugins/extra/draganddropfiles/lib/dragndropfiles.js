@@ -13,19 +13,16 @@
 //        $ = jQuery = window.alohaQuery || window.jQuery,
 //        GENTICS = window.GENTICS,
 //        Aloha = GENTICS.Aloha;
-(function(window, undefined) {
-	var
-		jQuery = window.alohaQuery || window.jQuery, $ = jQuery,
-		GENTICS = window.GENTICS,
-		Aloha = window.Aloha;
-
-	/**
-	 * register the plugin with unique name
-	 */
-	Aloha.DragAndDropFiles = new (Aloha.Plugin.extend({
-		_constructor: function(){
-			this._super('dragndropfiles');
-		},
+define([	
+	'aloha/jquery',
+	'aloha/plugin',
+	'draganddropfiles/dropfilesrepository'
+	],
+function($, Plugin,DropFilesRepository) {
+	"use strict";
+	var jQuery = $,
+	    GENTICS = window.GENTICS,	Aloha = window.Aloha;
+	return Plugin.create('draganddropfiles', {
 		/**
 		 * Configure the available languages
 		 */
@@ -33,28 +30,28 @@
 		/**
 		 * Default config, each editable may have his own stuff.
 		 */
-		config: { 'drop' : {	'max_file_size': 300000,
+		config: {'max_file_size': 300000,
 			'max_file_count': 2,
 			'upload': {
-					'uploader_instance':'Aloha.Repositories.Uploader',
-					'config': {
-						'callback': function(resp) { return resp;}, // what to do with the server response, must return the new file location,
-																	//  if server return an error, throws an exception (throw "error")
-						'method':'POST',
-						'url': "",
-						'accept': 'application/json',
-						'file_name_param':"filename",
-						'file_name_header':'X-File-Name',
-						'extra_headers':{}, //Extra parameters
-						'extra_post_data': {}, //Extra parameters
-						'send_multipart_form': false, //true for html4 TODO: make browser check
-						'image': {
-							'max_width': 800,
-							'max_height': 800
-						},
-						//'additional_params': {"location":""},
-						'www_encoded': false }
-					}
+				'uploader_instance':new DropFilesRepository('draganddropfilesrepository','Dropped Files'),
+				'config': {
+					'callback': function(resp) { return resp;}, // what to do with the server response, must return the new file location,
+																//  if server return an error, throws an exception (throw "error")
+					'method':'POST',
+					'url': "",
+					'accept': 'application/json',
+					'file_name_param':"filename",
+					'file_name_header':'X-File-Name',
+					'extra_headers':{}, //Extra parameters
+					'extra_post_data': {}, //Extra parameters
+					'send_multipart_form': false, //true for html4 TODO: make browser check
+					'image': {
+						'max_width': 800,
+						'max_height': 800
+				},
+				//'additional_params': {"location":""},
+				'www_encoded': false
+				}
 			}
 		},
 		/**
@@ -62,9 +59,6 @@
 		 */
 		init: function() {
 			var that = this;
-			Aloha.loadJs(Aloha.getPluginUrl('dragndropfiles') + '/src/dropfilesrepository.js', function(){
-
-
 				// add the listener
 				that.setBodyDropHandler();
 	//			stylePath = GENTICS_Aloha_base + '/plugins/com.gentics.aloha.plugins.DragAndDropFiles/style.css';
@@ -77,13 +71,11 @@
 				}
 
 				try {
-						that.uploader = that.initUploader(that.settings);
-					} catch(error) {
-						Aloha.Log.warn(that,error);
-						Aloha.Log.warn(that,"Error creating uploader, no upload will be processed");
-					}
-
-			});
+					that.uploader = that.initUploader(that.settings);
+				} catch(error) {
+					Aloha.Log.warn(that,error);
+					Aloha.Log.warn(that,"Error creating uploader, no upload will be processed");
+				}
 			Aloha.bind('aloha-file-upload-prepared', function(event, data) {
 				if (that.droppedFilesCount >= that.processedFiles) {
 					Aloha.trigger('aloha-allfiles-upload-prepared');
@@ -99,37 +91,36 @@
 						'editable': that.targetEditable});
 					var edConfig = that.getEditableConfig(that.targetEditable);
 					while(--len >= 0) {
-						that.uploader.startFileUpload(that.filesObjs[len].id,edConfig.drop.upload.config);
+						that.uploader.startFileUpload(that.filesObjs[len].id,edConfig.upload.config);
 					}
 				} else {
 					Aloha.trigger('aloha-drop-files-in-page', that.filesObjs);
 					while(--len >= 0) {
-						that.uploader.startFileUpload(that.filesObjs[len].id,that.config.drop.upload.config);
+						that.uploader.startFileUpload(that.filesObjs[len].id,that.config.upload.config);
 					}
 				}
 			});
 		},
-
-
+		
 		/**
 		 * Init a custom uploader
 		 */
 		initUploader: function(customConfig) {
-			var uploader_instance;
+			var
+				uploader_instance;
 			try {
-				uploader_instance = eval(customConfig.drop.upload.uploader_instance);
+				uploader_instance = customConfig.upload.uploader_instance;
 			} catch(error) {
 				Aloha.Log.info(this,"Custom class loading error or not specified, using default");
-				uploader_instance = Aloha.Repositories.Uploader;
-//				if (customConfig.drop.upload.delegate) {
-//					uploader_instance.delegateUploadEvent = customConfig.drop.upload.delegate;
+				uploader_instance = new DropFilesRepository('draganddropfilesrepository','Dropped Files');
+//				if (customConfig.upload.delegate) {
+//					uploader_instance.delegateUploadEvent = customConfig.upload.delegate;
 //				}
 			}
 			return uploader_instance;
 		},
-		
 		/**
-		 * 
+		 * Prepare upload
 		 */
 		prepareFileUpload: function(file) {
 			var 
@@ -151,14 +142,13 @@
             };
             reader.readAsDataURL(file);
 		},
-		
 		/**
 		 * Our drop event Handler
 		 */
 		dropEventHandler: function(event) {
 			var 
 				that = this, edConfig, len, target,
-				files = event.dataTransfer.files;
+				files = event.dataTransfer.files, dropimg;
 			this.targetEditable = undefined;
 			this.droppedFilesCount = files.length;
 			this.processedFiles = 0;
@@ -185,7 +175,7 @@
 			} else {
 				event.cancelBubble = true;
 			}
-			if (this.droppedFilesCount > that.settings.drop.max_file_count) {
+			if (this.droppedFilesCount > that.settings.max_file_count) {
 				Aloha.Log.warn(that,"too much files dropped");
 				if (event.stopPropagation) {
 					event.stopPropagation();
@@ -215,9 +205,9 @@
 					if  ( // Set of conditions, can we resize the image, and do we have a conf to do it
 							!(!!document.createElement('canvas').getContext &&
 							  files[len].type.match(/image\//) &&
-							  edConfig.drop.upload.config.image)
+							  edConfig.upload.config.image)
 						) {
-						if (files[len].size <= that.settings.drop.max_file_size) {
+						if (files[len].size <= that.settings.max_file_size) {
 							that.prepareFileUpload(files[len]);
 						} else {
 							this.processedFiles++;
@@ -231,16 +221,21 @@
 				Aloha.getEditableById(this.targetEditable.attr('id')).activate();
 				that.targetRange = that.initializeRangeForDropEvent(event, this.targetEditable);
 				edConfig = that.getEditableConfig(this.targetEditable);
-				if (edConfig.drop) {
+				if (edConfig) {
 					that.dropInEditable = true;
 				}
 				while(--len >= 0) {
+					try {
+						dropimg = edConfig.upload.config.image;
+					} catch (e) {
+						dropimg = false;
+					}
 					if  ( // Set of conditions, can we resize the image, and do we have a conf to do it
 							!(!!document.createElement('canvas').getContext &&
 							  files[len].type.match(/image\//) &&
-							  edConfig.drop.upload.config.image)
+							  dropimg)
 						) {
-						if (files[len].size <= edConfig.drop.max_file_size) {
+						if (files[len].size <= edConfig.max_file_size) {
 							that.prepareFileUpload(files[len]);
 						} else {
 							this.processedFiles++;
@@ -319,6 +314,7 @@
 			// end body events
 			//==================
 		},
+		
 		/**
 		 * TODO do we realy need a range Object? May be it makes sense to attach it to the event
 		 * for plugin developers comfort.
@@ -348,5 +344,6 @@
 			}
 			return range;
 		}
-	}))();
-})(window, document);
+		
+	});
+});
