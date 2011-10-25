@@ -1108,7 +1108,7 @@ var alltests = {
 			start: 'foo<span>{}</span><span>bar</span>',
 			execResult: 'foo<span></span>{}<span>ar</span>'
 		},
-		{	exlcude: 'msie',	
+		{	exclude: 'msie',	
 			start: 'foo[]<span></span>bar',
 			execResult: 'foo[]ar'
 		},
