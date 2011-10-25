@@ -4668,7 +4668,6 @@ function deleteContents() {
 
 	// "Record current states and values, and let overrides be the result."
 	var overrides = recordCurrentStatesAndValues(range);
-	
 	// "If start node and end node are the same, and start node is an editable
 	// Text node:"
 	if (startNode == endNode
@@ -6046,13 +6045,11 @@ commands["delete"] = {
 		// "Repeat the following steps:"
 		while ( true ) {
 			// we need to reset isBr and isHr on every interation of the loop
-			isBr = false;
-			isHr = false;
-			if ( offset - 1 <= node.childNodes.length ) {
+			if ( offset > 0 ) {
 				isBr = isHtmlElement(node.childNodes[offset - 1], "br") || false;
 				isHr = isHtmlElement(node.childNodes[offset - 1], "hr") || false;
 			}
-			
+
 			// "If offset is zero and node's previousSibling is an editable
 			// invisible node, remove node's previousSibling from its parent."
 			if (offset == 0

@@ -10,18 +10,18 @@ var tests = {
   */
 var tests = {
 	defaultCommand: 'delete',
-	tests: [		        
+	tests: [
 		{  	start: '[]foo',
 			execResult: '[]foo'
 		},
 		{  	start: '<span>[]foo</span>',
 			execResult: '<span>[]foo</span>'
 		},
-		{  	exclude: 'msie',
+		{  	exclude: [ 'msie', 'mozilla' ],
 			start: '<span>{}</span>',
 			execResult: '{}<span></span>'
 		},
-		{  	include: 'msie',
+		{  	include: [ 'msie', 'mozilla' ],
 			start: '<span>{}</span>',
 			execResult: '<span>{}</span>'
 		},
@@ -38,7 +38,7 @@ var tests = {
 			execResult: '<p>[]foo</p>'
 		},
 		{  	
-			exclude: ['msie'],
+			//exclude: ['msie'],
 			start: '<p>{}</p>',
 			execResult: '{}<p></p>'
 		},
@@ -961,9 +961,17 @@ var tests = {
 			start: '<p>foo[bar<p style="color:blue">baz]quz', // broken - doCleanup should fix this
 			execResult: '<p>foo[]<span style="color:blue">quz</span></p>'
 		},
-		{  	
+		{  	exclude: 'mozilla',
 			start: '<p>foo[bar<p><b>baz]quz</b>',
 			execResult: '<p>foo[]<b>quz</b></p>'
+		},
+		{  	include: 'mozilla',
+			start: '<p>foo[bar<p><b>baz]quz</b>',
+			execResult: '<p>foo{}<b>quz</b></p>'
+		},
+	
+		{  	start: '<div><p>foo<p>[bar<p>baz]</div>', // broken - doCleanup should fix this
+			execResult: '<div><p>foo[]</p><p></p></div>'
 		},
 		{  	exclude: 'msie',
 			start: '<div><p>foo<p>[bar<p>baz]</div>',
@@ -973,7 +981,6 @@ var tests = {
 			start: '<div><p>foo<p>[bar<p>baz]</div>',
 			execResult: '<div><p>foo </p><p>[]<br class="aloha-end-br" data-test-exclude="msie"/></p></div>'
 		},
-
 		{  	start: 'foo[<br>]bar',
 			execResult: 'foo[]bar'
 		},
@@ -1004,8 +1011,13 @@ var tests = {
 			start: 'foo<p>{bar</p>}baz',
 			execResult: 'foo<p>[]baz</p>'
 		},
-		{  	start: 'foo{<p>bar}</p>baz',
+		{  	exclude: 'mozilla',
+			start: 'foo{<p>bar}</p>baz',
 			execResult: 'foo[]<br>baz'
+		},
+		{  	include: 'mozilla',
+			start: 'foo{<p>bar}</p>baz',
+			execResult: 'foo{}<br>baz'
 		},
 		{  	exclude: 'msie',		// it is impossible to get a selection like this in ie
 			start: '<p>foo[</p>]bar',
@@ -1058,7 +1070,18 @@ var tests = {
 			start: '<div>foo<p>bar[</p></div>]baz',
 			execResult: '<div>foo<p>bar[]baz</p></div>'
 		},
-	
+		{  	exclude: ['mozilla'],
+			start: '<p>foo<br>{</p>]bar',
+			execResult: '<p>foo[]bar</p>'
+		},
+		{  	exclude: ['mozilla'],
+			start: '<p>foo<br><br>{</p>]bar',
+			execResult: '<p>foo<br>[]bar<br></p>'
+		},
+		{  	exclude: ['mozilla'],
+			start: 'foo<br>{<p>]bar</p>',
+			execResult: 'foo[]bar'
+		},
 		{  	exclude: 'msie',
 			start: '<p>foo<br>{</p>]bar',
 			execResult: '<p>foo[]bar</p>'
@@ -1128,6 +1151,14 @@ var tests = {
 			include: ['msie'],
 			start: '<p>foo<ol><li>ba[r<li>b]az</ol><p>quz',
 			execResult: '<p>foo </p><ol><li>ba[]az</li></ol><p>quz</p>'
+		},
+		{  	exclude: ['mozilla'],
+			start: '<p>foo<ol><li>bar<li>[baz]</ol><p>quz',
+			execResult: '<p>foo</p><ol><li>bar</li><li>{}</li></ol><p>quz</p>'
+		},
+		{  	include: ['mozilla'],
+			start: '<p>foo<ol><li>bar<li>[baz]</ol><p>quz',
+			execResult: '<p>foo</p><ol><li>bar</li><li>[]</li></ol><p>quz</p>'
 		},
 		{  	exclude: 'msie',
 			start: '<p>foo</p><ol><li>bar<li>[baz]</ol><p>quz</p>',
