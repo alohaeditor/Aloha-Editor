@@ -300,13 +300,47 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 		sidebar.show();
 	};
 
-  /**
-   * test if the table is editable
-   * @return boolean true if the table's parent element is contentEditable, false otherwise
-   */
-  TablePlugin.isEditableTable = function (table) {
-	  return GENTICS.Utils.Dom.isEditable( table );
-  };
+	/**
+	 * test if the table is editable
+	 * @return boolean true if the table's parent element is contentEditable, false otherwise
+	 */
+	TablePlugin.isEditableTable = function (table) {
+		return GENTICS.Utils.Dom.isEditable( table );
+	};
+
+	/**
+	 * Checks whether the current selection is inside a table within an
+	 * editable
+	 *
+	 * @return {Boolean} true if we are inside a table
+	 */
+	TablePlugin.isSelectionInTable = function () {
+		var sel = Aloha.getSelection();
+		
+		// Why don't we just use getRangeAt:
+		// Aloha does not currently provide us with an easy means to check if
+		// there are any ranges in the selection. This means that for the time
+		// being, we will have to read the internal objects ourselves, rather
+		// than call getRangeAt.
+		
+		var ranges = sel._nativeSelection._ranges;
+		
+		if ( ranges.length == 0 ) {
+			return false;
+		}
+		
+		var container = jQuery( ranges[ 0 ].commonAncestorContainer );
+		
+		if ( container.length == 0 ) {
+			return  false;
+		}
+		
+		if ( container.parents( '.aloha-editable table' ).length ) {
+			return true;
+		}
+		
+		return false;
+	};
 
   /**
    * Adds default row buttons, and custom formatting buttons to floating menu
@@ -781,7 +815,15 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 			'size' : 'small',
 			'tooltip' : i18n.t('button.createtable.tooltip'),
 			'onclick' : function (element, event) {
-				TablePlugin.createDialog(element.btnEl.dom);
+				if ( that.isSelectionInTable() ) {
+					Aloha.showMessage( new Aloha.Message( {
+						title : i18n.t( 'Table' ),
+						text  : i18n.t( 'table.createTable.nestedTablesNoSupported' ),
+						type  : Aloha.Message.Type.ALERT
+					} ) );
+				} else {
+					TablePlugin.createDialog( element.btnEl.dom );
+				}
 			}
 		});
 
