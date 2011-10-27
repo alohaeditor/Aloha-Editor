@@ -5,87 +5,10 @@
  */
 
 /**
- * Known issues with table plugin
- * ------------------------------
- * 
- * TODO:
- * Prevention of nested tables is not implemented.
- * 
- * FIXME:
- * selectRow/selectColumn should take into account the helper row/column.
- * ie: selectRow(0) and selectColumn(0), should be zero indexed
- *
- * FIXME:
- * Attempting to activate a table containing cells with colspan or rowspans
- * will fail when we have single rows/columns. ie:
- * 
- * fails:
- * <table><tbody>
- * 	<tr><td colspan="1" rowspan="2">foo</td></tr>
- * </tbody></table>
- * 
- * works:
- * <table><tbody>
- * 	<tr><td colspan="1" rowspan="2">foo bar</td></tr>
- * 	<tr><td>foo2</td><td>bar2</td></tr>
- * </tbody></table>
- * 
- * FIXME:
- * Attempting to split a merged cell throws an exception:
- * 
- * Uncaught TypeError: Cannot read property 'spannedY' of undefined
- * Utils.leftDomCelltable-plugin-utils.js:141
- * Utils.splitCelltable-plugin-utils.js:180
- * TableSelection.splitCells.cellSelectionModetable-selection.js:360
- * jQuery.extend.eachaloha.js:2654
- * jQuery.fn.jQuery.eachaloha.js:2278
- * TableSelection.splitCellstable-selection.js:359
- *	
- * {
- *		exclude   : false,
- *		desc      : 'Split a table with a single merged cell',
- *		start     : '<table><tbody>\
- *						<tr><td rowspan="2" colspan="1" class="aloha-cell-selected">foo bar</td></tr>\
- *						<tr></tr>\
- *					 </tbody></table>',
- *		expected  : '<table><tbody>\
- *						<tr><td>foo bar</td></tr>\
- *						<tr><td>&nbsp;</td></tr>\
- *					</tbody></table>',
- *		operation : function ( table ) {
- *			table.selection.selectedCells = getSelectedCells( table );
- *			table.selection.splitCells();
- *		}
- * },
- * 
- * 	FIXME:
- * 	Attempting to merge a merged cell throws an exception.
- * 	Should do nothing, without any failure:
- * 	
- * 	Uncaught TypeError: Cannot read property 'cell' of undefined
- * 	TableSelection.mergeCells.isSelectedtable-selection.js:296
- * 	Utils.makeContour.lefttable-plugin-utils.js:298
- * 	Utils.walkGridtable-plugin-utils.js:227
- * 	Utils.makeContourtable-plugin-utils.js:297
- * 	TableSelection.mergeCellstable-selection.js:300
- * 	
- * {
- *		exclude   : false,
- *		desc      : 'Prevent attempt to merge an alreay merged cell',
- *		start     : '<table><tbody>\
- *						<tr><td rowspan="2" colspan="1" class="aloha-cell-selected">foo bar</td></tr>\
- *						<tr></tr>\
- *					 </tbody></table>',
- *		expected  : '<table><tbody>\
- *						<tr><td rowspan="2" colspan="1">foo bar</td></tr>\
- *						<tr></tr>\
- *					 </tbody></table>',
- *		operation : function ( table ) {
- *			table.selection.selectedCells = getSelectedCells( table );
- *			table.selection.mergeCells();
- *		}
- * }
- *
+ * TODOs:
+ * - Prevention of nested tables is not implemented.
+ * - selectRow/selectColumn should take into account the helper row/column.
+ *   ie: selectRow(0) and selectColumn(0), should be zero indexed
  */
 
 define(
@@ -102,7 +25,7 @@ function( TestUtils ) {
 	 */
 	function getSelectedCells ( table ) {
 		var cells = [],
-		    $cells = table.obj.find( '.aloha-cell-selected' ); // select both td, and th cells
+		    $cells = table.obj.find( '.aloha-cell-selected' );
 		$cells.each( function () { cells.push( this ); } );
 		return cells;
 	};
@@ -166,7 +89,7 @@ function( TestUtils ) {
 		///////////////////////////////////////////////////////////////////////
 		
 		{
-			exclude	  : false,
+			exclude   : false,
 			desc      : 'Insert column right of column at index 0 (corrected to 1)',
 			start     : '<table><tbody>\
 							<tr><td>foo</td><td>bar</td></tr>\
@@ -502,7 +425,7 @@ function( TestUtils ) {
 		
 		// !!! throws: "Uncaught TypeError: Cannot read property 'cell' of undefined"
 		{
-			exclude   : true,
+			exclude   : false,
 			desc      : 'Prevent attempt to merge an alreay merged cell',
 			start     : '<table><tbody>\
 							<tr><td rowspan="2" colspan="1" class="aloha-cell-selected">foo bar</td></tr>\
@@ -523,7 +446,7 @@ function( TestUtils ) {
 		
 		// !!! throws "Uncaught TypeError: Cannot read property 'spannedY' of undefined"
 		{
-			exclude   : true,
+			exclude   : false,
 			desc      : 'Split a table with a single merged cell',
 			start     : '<table><tbody>\
 							<tr><td rowspan="2" colspan="1" class="aloha-cell-selected">foo bar</td></tr>\
