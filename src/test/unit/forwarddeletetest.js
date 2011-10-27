@@ -1006,20 +1006,33 @@ var alltests = {
 		{	start: '<div style=white-space:pre>foo[] &nbsp;bar</div>',
 			execResult: '<div style=white-space:pre>foo[] bar</div>'
 		},
-		{	start: '<div style=white-space:pre-wrap>foo[] &nbsp;bar</div>',
+		{	exclude: 'msie',
+			start: '<div style=white-space:pre-wrap>foo[] &nbsp;bar</div>',
 			execResult: '<div style=white-space:pre-wrap>foo[] bar</div>'
+		},
+		{	include: 'msie',
+			start: '<div style=white-space:pre-wrap>foo[] &nbsp;bar</div>',
+			execResult: '<div style=white-space:pre-wrap>foo[]&nbsp;bar</div>'
+		},
+		{	exclude: 'msie',	
+			start: '<div style=white-space:pre-line>[]&nbsp; foo</div>',
+			execResult: '<div style=white-space:pre-line>[] foo</div>'
+		},
+		{	include: 'msie',	
+			start: '<div style=white-space:pre-line>[]&nbsp; foo</div>',
+			execResult: '<div style=white-space:pre-line>[]&nbsp;foo</div>'
 		},
 		{	start: '<div style=white-space:pre-line>foo []&nbsp;</div>',
 			execResult: '<div style=white-space:pre-line>foo []</div>'
 		},
-		{	start: '<div style=white-space:pre-line>[]&nbsp; foo</div>',
-			execResult: '<div style=white-space:pre-line>[] foo</div>'
-		},
 		{	start: '<div style=white-space:nowrap>foo []&nbsp;</div>',
 			execResult: '<div style=white-space:nowrap>foo []</div>'
 		},
-		{	start: '<div style=white-space:nowrap>[]&nbsp; foo</div>',
-			execResult: '<div style=white-space:nowrap>[] foo</div>'
+		{	start: '<div style=white-space:nowrap>[]&nbsp; feo</div>',
+			execResult: '<div style=white-space:nowrap>[]&nbsp;feo</div>'
+		},
+		{	start: '<div style=white-space:nowrap>[]&nbsp;feo</div>',
+			execResult: '<div style=white-space:nowrap>[]feo</div>'
 		},
 		{	start: '<ol><li>foo[]</li><br></ol><p>bar</p>',
 			execResult: '<ol><li>foo[]bar</li></ol>'
@@ -1031,7 +1044,7 @@ var alltests = {
 			execResult: '<ol><li>foo[]bar</li></ol>'
 		},
 		{	start: '<ol><li>{}<br></li></ol>bar',
-			execResult: '<ol><li>[]bar</li></ol>'
+			execResult: '<ol><li>{}</li></ol>bar'
 		},
 		{	start: '<ol><li>foo</li><li>{}<br></li></ol>bar',
 			execResult: '<ol><li>[]foo</li><li>bar</li></ol>'
@@ -1046,7 +1059,7 @@ var alltests = {
 			execResult: '<ol><li>foo[]</li></ol>'
 		},
 		{	start: '<ol><li>foo[]<br></li></ol><br>',
-			execResult: '<ol><li>foo[]</li></ol>'
+			execResult: '<ol><li>foo[]</li></ol><br>'
 		},
 		{	start: '<ol><li>{}<br></li></ol><br>',
 			execResult: '<ol><li>{}</li></ol><br>'
@@ -1292,5 +1305,6 @@ var alltests = {
 			
 		]
 }
+
 //var tests = specifictests;
 var tests = alltests;
