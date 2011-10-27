@@ -5,6 +5,7 @@ var specifictests = {
 		tests: [
 
 		
+		
 
 				]
 }
@@ -1081,7 +1082,12 @@ var alltests = {
 		{	start: '<ol><li>foo</li><li>{}<br></li></ol><br>',
 			execResult: '<ol><li>foo</li><li>{}</li></ol><br>'
 		},
-		{	start: '<ol><li>foo[]</li></ol><p><br></p>',
+		{	exclude: 'msie',
+			start: '<ol><li>foo[]</li></ol><p><br></p>',
+			execResult: '<ol><li>foo[]</li></ol>'
+		},
+		{	include: 'msie',
+			start: '<ol><li>foo[]</li></ol><p></p>',
 			execResult: '<ol><li>foo[]</li></ol>'
 		},
 		{	start: '<ol><li>foo[]<br></li></ol><p><br></p>',
