@@ -1066,11 +1066,21 @@ var alltests = {
 		{	start: '<ol><li>foo<li>{}<br></ol><p><br>',
 			execResult: '<ol><li>foo[]</li><li><br></li></ol>'
 		},
-		{	start: 'foo<b>{bar}</b>baz',
+		{	exclude: 'msie',	
+			start: 'foo<b>{bar}</b>baz',
 			execResult: 'foo[]baz'
 		},
-		{	start: 'foo{<b>bar</b>}baz',
+		{	include: 'msie',	
+			start: 'foo<b>{bar}</b>baz',
+			execResult: 'foo<b></b>[]baz'
+		},
+		{	exclude: 'msie',
+			start: 'foo{<b>bar</b>}baz',
 			execResult: 'foo[]<b></b>baz'
+		},
+		{	include: 'msie',
+			start: 'foo{<b>bar</b>}baz',
+			execResult: 'foo<b></b>[]baz'
 		},
 		{	exclude: 'msie',
 			start: 'foo<span>[bar]</span>baz',
@@ -1080,8 +1090,13 @@ var alltests = {
 			start: 'foo<span>[bar]</span>baz',
 			execResult: 'foo<span></span>[]baz'
 		},
-		{	start: 'foo<span>{bar}</span>baz',
+		{	exclude: 'msie',
+			start: 'foo<span>{bar}</span>baz',
 			execResult: 'foo[]baz'
+		},
+		{	include: 'msie',
+			start: 'foo<span>{bar}</span>baz',
+			execResult: 'foo<span></span>[]baz'
 		},
 		{	exclude: 'msie',
 			start: 'foo{<span>bar</span>}baz',
@@ -1094,8 +1109,13 @@ var alltests = {
 		{	start: '<b>foo[bar</b><i>baz]quz</i>',
 			execResult: '<b>foo[]</b><i>quz</i>'
 		},
-		{	start: 'foo[]<span><span></span></span>bar',
+		{	exclude: 'msie',	
+			start: 'foo[]<span><span></span></span>bar',
 			execResult: 'foo[]ar'
+		},
+		{	include: 'msie',	
+			start: 'foo[]<span><span></span></span>bar',
+			execResult: 'foo<span><span></span></span>[]ar'
 		},
 		{	exclude: 'msie',	
 			start: 'foo[]<span></span><br>bar',
@@ -1103,7 +1123,7 @@ var alltests = {
 		},
 		{	include: 'msie',	
 			start: 'foo[]<span></span><br>bar',
-			execResult: 'foo[]<span></span>bar'
+			execResult: 'foo<span></span>[]bar'
 		},
 		{	include: 'msie',
 			start: '<ol><li>foo[]<br></li><li>bar</li></ol>',
