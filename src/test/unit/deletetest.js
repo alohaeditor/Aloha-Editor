@@ -28,8 +28,13 @@ var tests = {
 		{  	start: '<span>{}<br></span>',
 			execResult: '<span>{}<br></span>'
 		},
-		{  	start: '<span><br>{}</span>',
+		{  	exclude: 'mozilla',
+			start: '<span><br>{}</span>',
 			execResult: '<span>{}<br data-test-exclude="msie"></span>'
+		},
+		{  	include: 'mozilla',
+			start: '<span><br>{}</span>',
+			execResult: '<span>{}</span>'
 		},
 		{  	start: '<span><br>{}<br></span>',
 			execResult: '<span>{}<br></span>'
@@ -38,9 +43,14 @@ var tests = {
 			execResult: '<p>[]foo</p>'
 		},
 		{  	
-			//exclude: ['msie'],
+			exclude: ['mozilla'],
 			start: '<p>{}</p>',
 			execResult: '{}<p></p>'
+		},
+		{  	
+			include: ['mozilla'],
+			start: '<p>{}</p>',
+			execResult: '<p></p>{}'
 		},
 		{  	
 			include: ['msie'],
@@ -50,8 +60,13 @@ var tests = {
 		{  	start: '<p>{}<br></p>',
 			execResult: '<p>{}<br data-test-include="msie"></p>'
 		},
-		{  	start: '<p><br>{}</p>',
+		{  	exclude: 'mozilla',
+			start: '<p><br>{}</p>',
 			execResult: '<p>{}<br data-test-exclude="msie"></p>'
+		},
+		{  	include: 'mozilla',
+			start: '<p><br>{}</p>',
+			execResult: '<p>{}</p>'
 		},
 		{  	start: '<p><br>{}<br></p>',
 			execResult: '<p>{}<br></p>'
@@ -114,9 +129,13 @@ var tests = {
 		{  	start: '<p>foo<br></p><p>[]bar</p>',
 			execResult: '<p>foo[]bar</p>'
 		},
-		{  	exclude: 'msie',
+		{  	exclude: ['msie', 'mozilla'],
 			start: '<p>foo</p><p>{}<br class="aloha-end-br"></p>',
 			execResult: '<p>foo[]</p>'
+		},
+		{  	include: ['mozilla'],
+			start: '<p>foo</p><p>{}<br class="aloha-end-br"></p>',
+			execResult: '<p>foo{}</p>'
 		},
 		{  	include: 'msie',
 			start: '<p>foo</p><p>{}</p>',
@@ -148,8 +167,13 @@ var tests = {
 			start: '<p>foo<br><br></p>[]bar',
 			execResult: '<p>foo<br>[]bar</p>'
 		},
-		{  	start: 'foo<br><br><p>[]bar</p>',
+		{  	exclude: 'mozilla',
+			start: 'foo<br><br><p>[]bar</p>',
 			execResult: 'foo<br><p>[]bar</p>'
+		},
+		{  	include: 'mozilla',
+			start: 'foo<br><br><p>[]bar</p>',
+			execResult: 'foo<br><p>{}bar</p>'
 		},
 		{  	start: '<div><p>foo</p></div><p>[]bar</p>',
 			execResult: '<div><p>foo[]bar</p>'
@@ -177,30 +201,48 @@ var tests = {
 		{  	start: 'foo<br>[]bar',
 			execResult: 'foo[]bar'
 		},
-		{  	
+		{  	exclude: 'mozilla',
 			start: 'foo<br><b>[]bar</b>',
 			execResult: 'foo[]<b>bar</b>'
+		},
+		{  	include: 'mozilla',
+			start: 'foo<br><b>[]bar</b>',
+			execResult: 'foo{}<b>bar</b>'
 		},
 		{  	start: 'foo<hr>[]bar',
 			execResult: 'foo[]bar'
 		},
-		{  	
+		{  	exclude: 'mozilla',
 			start: '<p>foo</p><hr><p>[]bar</p>',
 			execResult: '<p>foo</p><p>[]bar</p>'
 		},
-		{  	start: '<p>foo</p><br><p>[]bar</p>',
+		{  	include: 'mozilla',
+			start: '<p>foo</p><hr><p>[]bar</p>',
+			execResult: '<p>foo</p><p>{}bar</p>'
+		},
+		{  	exclude: 'mozilla',
+			start: '<p>foo</p><br><p>[]bar</p>',
 			execResult: '<p>foo</p><p>[]bar</p>'
 		},
-		{  	start: '<p>foo</p><br><br><p>[]bar</p>',
+		{  	include: 'mozilla',
+			start: '<p>foo</p><br><p>[]bar</p>',
+			execResult: '<p>foo</p><p>{}bar</p>'
+		},
+		{  	exclude: 'mozilla',
+			start: '<p>foo</p><br><br><p>[]bar</p>',
 			execResult: '<p>foo</p><br><p>[]bar</p>'
 		},
+		{  	include: 'mozilla',
+			start: '<p>foo</p><br><br><p>[]bar</p>',
+			execResult: '<p>foo</p><br><p>{}bar</p>'
+		},
 		{ 
-			exclude: ['msie'],
+			exclude: ['msie','mozilla'],
 		 	start: '<p>foo</p><img><p>[]bar</p>',
 			execResult: '<p>foo</p><img>{}bar'
 		},
 		{ 
-			include: ['msie'],
+			include: ['msie', 'mozilla'],
 		 	start: '<p>foo</p><img><p>[]bar</p>',
 			execResult: '<p>foo</p><img>[]bar'
 		},
@@ -232,17 +274,37 @@ var tests = {
 		{  	start: '<a href="/" name=abc>foo</a>[]bar',
 			execResult: 'foo[]bar'
 		},
-		{  	start: '<span><a>foo</a></span>[]bar',
+		{  	exclude: 'mozilla',
+			start: '<span><a>foo</a></span>[]bar',
 			execResult: '<span>foo[]</span>bar'
 		},
-		{  	start: '<span><a href="/">foo</a></span>[]bar',
+		{  	include: 'mozilla',
+			start: '<span><a>foo</a></span>[]bar',
+			execResult: '<span>foo</span>[]bar'
+		},
+		{  	exclude: 'mozilla',
+			start: '<span><a href="/">foo</a></span>[]bar',
 			execResult: '<span>foo[]</span>bar'
 		},
-		{  	start: '<span><a name=abc>foo</a></span>[]bar',
+		{  	include: 'mozilla',
+			start: '<span><a href="/">foo</a></span>[]bar',
+			execResult: '<span>foo</span>[]bar'
+		},
+		{  	exclude: 'mozilla',
+			start: '<span><a name=abc>foo</a></span>[]bar',
 			execResult: '<span>foo[]</span>bar'
 		},
-		{  	start: '<span><a href="/" name=abc>foo</a></span>[]bar',
+		{  	include: 'mozilla',
+			start: '<span><a name=abc>foo</a></span>[]bar',
+			execResult: '<span>foo</span>[]bar'
+		},
+		{  	exclude: 'mozilla',
+			start: '<span><a href="/" name=abc>foo</a></span>[]bar',
 			execResult: '<span>foo[]</span>bar'
+		},
+		{  	include: 'mozilla',
+			start: '<span><a href="/" name=abc>foo</a></span>[]bar',
+			execResult: '<span>foo</span>[]bar'
 		},
 		{  	start: 'foo<a>[]bar</a>',
 			execResult: 'fo[]<a>bar</a>'
