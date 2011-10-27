@@ -1203,7 +1203,7 @@ function(Aloha, jQuery, Ext, Class, console) {
 	
 	// set scope to empty if the user selectes a non contenteditable area
 	Aloha.bind('aloha-selection-changed', function() {
-		if ( ! Aloha.Selection.isSelectionEditable() ) {
+		if ( !Aloha.Selection.isSelectionEditable() && !Aloha.Selection.isFloatingMenuVisible() ) {
 			menu.setScope('Aloha.empty');
 		}
 	});

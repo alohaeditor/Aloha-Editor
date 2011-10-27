@@ -1021,7 +1021,7 @@ var alltests = {
 		{	start: '<div style=white-space:nowrap>[]&nbsp; foo</div>',
 			execResult: '<div style=white-space:nowrap>[] foo</div>'
 		},
-		{	start: '<ol><li>foo[]<br></ol><p>bar',
+		{	start: '<ol><li>foo[]</li><br></ol><p>bar</p>',
 			execResult: '<ol><li>foo[]bar</li></ol>'
 		},
 		{	start: '<ol><li>{}<br></ol><p>bar',
@@ -1030,47 +1030,57 @@ var alltests = {
 		{	start: '<ol><li>foo[]<br></ol>bar',
 			execResult: '<ol><li>foo[]bar</li></ol>'
 		},
-		{	start: '<ol><li>{}<br></ol>bar',
+		{	start: '<ol><li>{}<br></li></ol>bar',
 			execResult: '<ol><li>[]bar</li></ol>'
 		},
-		{	start: '<ol><li>foo<li>{}<br></ol>bar',
+		{	start: '<ol><li>foo</li><li>{}<br></li></ol>bar',
 			execResult: '<ol><li>[]foo</li><li>bar</li></ol>'
 		},
-		{	start: '<ol><li>foo[]</ol><p>bar',
+		{	start: '<ol><li>foo[]</li></ol><p>bar</p>',
 			execResult: '<ol><li>foo[]bar</li></ol>'
 		},
-		{	start: '<ol><li>foo<li>{}<br></ol><p>bar',
+		{	start: '<ol><li>foo</li><li>{}<br></li></ol><p>bar',
 			execResult: '<ol><li>foo</li><li>[]bar</li></ol>'
 		},
-		{	start: '<ol><li>foo[]</ol><br>',
+		{	start: '<ol><li>foo[]</li></ol><br>',
 			execResult: '<ol><li>foo[]</li></ol>'
 		},
-		{	start: '<ol><li>foo[]<br></ol><br>',
+		{	start: '<ol><li>foo[]<br></li></ol><br>',
 			execResult: '<ol><li>foo[]</li></ol>'
 		},
-		{	start: '<ol><li>{}<br></ol><br>',
-			execResult: '<ol><li>{}<br></li></ol>'
+		{	start: '<ol><li>{}<br></li></ol><br>',
+			execResult: '<ol><li>{}</li></ol><br>'
 		},
-		{	start: '<ol><li>foo<li>{}<br></ol><br>',
-			execResult: '<ol><li>foo</li><li>[]<br></li></ol>'
+		{	start: '<ol><li>foo</li><li>{}<br></li></ol><br>',
+			execResult: '<ol><li>foo</li><li>{}</li></ol><br>'
 		},
-		{	start: '<ol><li>foo[]</ol><p><br>',
+		{	start: '<ol><li>foo[]</li></ol><p><br></p>',
 			execResult: '<ol><li>foo[]</li></ol>'
 		},
-		{	start: '<ol><li>foo[]<br></ol><p><br>',
-			execResult: '<ol><li>foo[]</li></ol>'
+		{	start: '<ol><li>foo[]<br></li></ol><p><br></p>',
+			execResult: '<ol><li>foo[]</li></ol><p><br></p>'
 		},
-		{	start: '<ol><li>{}<br></ol><p><br>',
-			execResult: '<ol><li>{}<br></li></ol>'
+		{	start: '<ol><li>{}<br></li></ol><p><br></p>',
+			execResult: '<ol><li>{}</li></ol><p><br></p>'
 		},
-		{	start: '<ol><li>foo<li>{}<br></ol><p><br>',
-			execResult: '<ol><li>foo[]</li><li><br></li></ol>'
+		{	start: '<ol><li>foo</li><li>{}<br></li></ol><p><br></p>',
+			execResult: '<ol><li>foo</li><li>{}</li></ol><p><br></p>'
 		},
-		{	start: 'foo<b>{bar}</b>baz',
+		{	exclude: 'msie',	
+			start: 'foo<b>{bar}</b>baz',
 			execResult: 'foo[]baz'
 		},
-		{	start: 'foo{<b>bar</b>}baz',
+		{	include: 'msie',	
+			start: 'foo<b>{bar}</b>baz',
+			execResult: 'foo<b></b>[]baz'
+		},
+		{	exclude: 'msie',
+			start: 'foo{<b>bar</b>}baz',
 			execResult: 'foo[]<b></b>baz'
+		},
+		{	include: 'msie',
+			start: 'foo{<b>bar</b>}baz',
+			execResult: 'foo<b></b>[]baz'
 		},
 		{	exclude: 'msie',
 			start: 'foo<span>[bar]</span>baz',
@@ -1080,8 +1090,13 @@ var alltests = {
 			start: 'foo<span>[bar]</span>baz',
 			execResult: 'foo<span></span>[]baz'
 		},
-		{	start: 'foo<span>{bar}</span>baz',
+		{	exclude: 'msie',
+			start: 'foo<span>{bar}</span>baz',
 			execResult: 'foo[]baz'
+		},
+		{	include: 'msie',
+			start: 'foo<span>{bar}</span>baz',
+			execResult: 'foo<span></span>[]baz'
 		},
 		{	exclude: 'msie',
 			start: 'foo{<span>bar</span>}baz',
@@ -1094,11 +1109,21 @@ var alltests = {
 		{	start: '<b>foo[bar</b><i>baz]quz</i>',
 			execResult: '<b>foo[]</b><i>quz</i>'
 		},
-		{	start: 'foo[]<span><span></span></span>bar',
+		{	exclude: 'msie',	
+			start: 'foo[]<span><span></span></span>bar',
 			execResult: 'foo[]ar'
 		},
-		{	start: 'foo[]<span></span><br>bar',
-			execResult: 'foo[]ar'
+		{	include: 'msie',	
+			start: 'foo[]<span><span></span></span>bar',
+			execResult: 'foo<span><span></span></span>[]ar'
+		},
+		{	exclude: 'msie',	
+			start: 'foo[]<span></span><br>bar',
+			execResult: 'foo[]bar'
+		},
+		{	include: 'msie',	
+			start: 'foo[]<span></span><br>bar',
+			execResult: 'foo<span></span>[]bar'
 		},
 		{	include: 'msie',
 			start: '<ol><li>foo[]<br></li><li>bar</li></ol>',
@@ -1136,7 +1161,7 @@ var alltests = {
 		// IE jumps into the empty span after the character of the next textnode has been deleted. Deletion of the emptyspan will be omitted
 		{	include: 'msie',
 			start: 'foo[]<span></span><span>bar</span>',
-			execResult: 'foo<span>{}</span><span>ar</span>'
+			execResult: 'foo<span></span>{}<span>ar</span>'
 		},
 		{	include: 'msie',
 			start: 'foo[] <span></span><span>bar</span>',
