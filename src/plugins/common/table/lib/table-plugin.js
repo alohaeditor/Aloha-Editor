@@ -5,12 +5,30 @@
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
 
-define(
-['aloha', 'aloha/jquery', 'aloha/plugin', 'aloha/pluginmanager', 'aloha/floatingmenu', 'i18n!table/nls/i18n', 'i18n!aloha/nls/i18n', 'table/table-create-layer', 'table/table', 'table/table-plugin-utils', 'css!table/css/table.css'],
-function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, CreateLayer, Table, Utils) {
+define( [
+	'aloha',
+	'aloha/jquery',
+	'aloha/plugin',
+	'aloha/pluginmanager',
+	'aloha/floatingmenu',
+	'i18n!table/nls/i18n',
+	'i18n!aloha/nls/i18n',
+	'table/table-create-layer',
+	'table/table',
+	'table/table-plugin-utils',
+	'css!table/css/table.css'
+], function( Aloha,
+			 jQuery,
+			 Plugin,
+			 PluginManager,
+			 FloatingMenu,
+			 i18n,
+			 i18nCore,
+			 CreateLayer,
+			 Table,
+			 Utils ) {
 
-	var
-		GENTICS = window.GENTICS;
+	var GENTICS = window.GENTICS;
 
 	/**
 	 * Register the TablePlugin as Aloha.Plugin
@@ -125,6 +143,8 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 					// table.activate();
 					TablePlugin.TableRegistry.push( table );
 				}
+				
+				TablePlugin.checkForNestedTables( editable.obj );
 			} );
 		} );
 
@@ -201,6 +221,8 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 					table.activate();
 					TablePlugin.TableRegistry.push( table );
 				}
+				
+				TablePlugin.checkForNestedTables( props.editable.obj );
 			});
 		});
 
@@ -220,18 +242,22 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 		});
 		
 		Aloha.bind( 'aloha-smart-content-changed', function ( event ) {
-			Aloha.activeEditable.obj.find( 'table' ).each( function () {
-				if ( !TablePlugin.isTableElementInRegistry( this ) &&
-						!TablePlugin.isWithinTable( this ) ) {
-					var el = jQuery( this );
-					el.id = GENTICS.Utils.guid();
+			if ( Aloha.activeEditable ) {
+				Aloha.activeEditable.obj.find( 'table' ).each( function () {
+					if ( !TablePlugin.isTableElementInRegistry( this ) &&
+							!TablePlugin.isWithinTable( this ) ) {
+						var el = jQuery( this );
+						el.id = GENTICS.Utils.guid();
+						
+						var table = new Table( el, TablePlugin );
+						table.parentEditable = Aloha.activeEditable;
+						table.activate();
+						TablePlugin.TableRegistry.push( table );
+					}
 					
-					var table = new Table( el, TablePlugin );
-					table.parentEditable = Aloha.activeEditable;
-					table.activate();
-					TablePlugin.TableRegistry.push( table );
-				}
-			} );
+					TablePlugin.checkForNestedTables( Aloha.activeEditable.obj );
+				} );
+			}
 		} );
 		
 		if ( this.settings.summaryinsidebar ) {
@@ -373,19 +399,31 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 	 * @return {Boolean} true if elem is nested within a table
 	 */
 	TablePlugin.isWithinTable = function ( elem ) {
-		return  (
-			jQuery( elem )
-				.parents( '.aloha-editable table' ).length > 0
-		);
+		return  ( jQuery( elem )
+					.parents( '.aloha-editable table' )
+						.length > 0 );
 	};
 	
-  /**
-   * Adds default row buttons, and custom formatting buttons to floating menu
-   */
-  TablePlugin.initRowsBtns = function () {
-    var that = this;
+	/**
+	 * Checks for the presence of nested tables in the given editable.
+	 * @todo complete
+	 * @param {jQuery} editable
+	 */
+	TablePlugin.checkForNestedTables = function ( editable ) {
+		if ( editable.find( 'table table' ).length ) {
+			// show warning
+		} else {
+			// hide warning
+		}
+	}
+	
+	/**
+	 * Adds default row buttons, and custom formatting buttons to floating menu
+	 */
+	TablePlugin.initRowsBtns = function () {
+		var that = this;
 
-    // add row before
+		// add row before
 		FloatingMenu.addButton(
 			this.name + '.row',
 			new Aloha.ui.Button({
@@ -401,8 +439,24 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 			i18n.t('floatingmenu.tab.table'),
 			1
 		);
-
-    // add row after
+		
+		/*
+		// TODO: This would add a icon what would be toggled if the active
+		// editable contains nested tables. We show a warning to indicate to
+		// the user that we do not support nested tables
+		var tabs = FloatingMenu.tabs;
+		var j = tabs.length;
+		for ( var i = 0; i < j; i++ ) {
+			if ( tabs[ i ].label == i18n.t( 'floatingmenu.tab.table' ) ) {
+				tabs[ i ].label += '&nbsp<img\
+					src="../img/warning-icon.png"\
+					style="vertical-align:middle;"\
+					alt="" />';
+			}
+		}
+		*/
+		
+		// add row after
 		FloatingMenu.addButton(
 			this.name + '.row',
 			new Aloha.ui.Button({
@@ -419,7 +473,7 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 			1
 		);
 
-    // delete selected rows
+		// delete selected rows
 		FloatingMenu.addButton(
 			this.name + '.row',
 			new Aloha.ui.Button({
@@ -1132,9 +1186,9 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 			GENTICS.Utils.Dom.insertIntoDOM(
 				jQuery( table ),
 				Aloha.Selection.getRangeObject(),
-				jQuery( Aloha.activeEditable.obj )
+				Aloha.activeEditable.obj
 			);
-
+			
 			// if the table is inserted
 			var tableReloadedFromDOM = document.getElementById( tableId );
 
@@ -1158,6 +1212,8 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 
 				TablePlugin.TableRegistry.push( tableObj );
 			}
+			
+			TablePlugin.checkForNestedTables( Aloha.activeEditable.obj );
 		// no active editable => error
 		} else {
 			this.error( 'There is no active Editable where the table can be\
