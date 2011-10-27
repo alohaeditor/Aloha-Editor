@@ -586,6 +586,14 @@
 					{	include: 'msie',
 						start: '<ul><li>foo<ul><li>bar</li><li>{}</li><li>baz</li></ul></li></ul>',
 						execResult: '<ul><li>foo <ul><li>bar</li></ul></li><li>{} <ul><li>baz</li></ul></li></ul>'
+					},
+					{	exclude: 'msie',
+						start: '<ul><li>foo<ul><li>bar</li></ul></li><li>{}</li><li>baz</li></ul>',
+						execResult: '<ul><li>foo<ul><li>bar</li></ul></li></ul><p>{}<br class="aloha-end-br"/></p><ul><li>baz</li></ul>'
+					},
+					{	include: 'msie',
+						start: '<ul><li>foo<ul><li>bar</li></ul></li><li>{}</li><li>baz</li></ul>',
+						execResult: '<ul><li>foo <ul><li>bar</li></ul></li></ul><p>{}</p><ul><li>baz</li></ul>'
 					}
 			]
 	}
