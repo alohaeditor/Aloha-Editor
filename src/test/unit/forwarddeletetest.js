@@ -1015,8 +1015,13 @@ var alltests = {
 		{	start: '<p>foo</p>{<p>bar</p>}<p>baz</p>',
 			execResult: '<p>foo[]</p><p>baz</p>'
 		},
-       	{	start: '<span>foo[]<span></span></span>bar',
+       	{	exclude: 'msie', 
+       		start: '<span>foo[]<span></span></span>bar',
 			execResult: '<span>foo[]</span>ar'
+		},
+		{	include: 'msie', 
+       		start: '<span>foo[]<span></span></span>bar',
+			execResult: '<span>foo</span><span>{}</span>ar'
 		},
 		{	start: '<div style=white-space:pre>foo[] &nbsp;bar</div>',
 			execResult: '<div style=white-space:pre>foo[] bar</div>'
