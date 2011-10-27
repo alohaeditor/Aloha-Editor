@@ -135,42 +135,46 @@ function(Aloha, Plugin, jQuery, Commands, console) {
 						});
 					} else {
 						// this is the version using the execCommand for IE
-						editable.obj.bind('paste', function(event) {
+						editable.obj.bind( 'paste', function( event ) {
 							redirectPaste();
+							
 							var range = document.selection.createRange();
-							range.execCommand('paste');
+							range.execCommand( 'paste' );
 							getPastedContent();
-
-							// call smartContentChange after paste action
-							Aloha.activeEditable.smartContentChange(event);
+							
+							debugger;
+							
+							Aloha.activeEditable.smartContentChange( event );
 							event.stopPropagation();
+							
 							return false;
-						});
+						} );
 					}
 				} else {
-					editable.obj.bind('paste', function(event) {
+					editable.obj.bind( 'paste', function( event ) {
 						redirectPaste();
-						window.setTimeout(function() {
+						window.setTimeout( function() {
 							getPastedContent();
-							Aloha.activeEditable.smartContentChange(event);
+							
+							debugger;
+							
+							Aloha.activeEditable.smartContentChange( event );
 							event.stopPropagation();
-						}, 10);
-					});
+						}, 10 );
+					} );
 				}
 			});
 
 			// bind a handler to the paste event of the pasteDiv to get the
 			// pasted content (but do this only once, not for every editable)
-			if (jQuery.browser.msie && that.settings.noclipboardaccess) {
-				$pasteDiv.bind('paste', function(event) {
-					window.setTimeout(function() {
+			if ( jQuery.browser.msie && that.settings.noclipboardaccess ) {
+				$pasteDiv.bind( 'paste', function( event ) {
+					window.setTimeout( function() {
 						getPastedContent();
-					}, 10);
-
-					// call smartContentChange after paste action
-					Aloha.activeEditable.smartContentChange(event);
-					event.stopPropagation();
-				});
+						Aloha.activeEditable.smartContentChange( event );
+						event.stopPropagation();
+					}, 10 );
+				} );
 			}
 		},
 

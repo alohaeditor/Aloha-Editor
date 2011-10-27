@@ -182,12 +182,17 @@ Aloha.ready(function() {
 									//return;
 								}
 								
-								var fakeRange = {
-									startContainer : clonedStartContainer[ 0 ].childNodes[ getNodeIndex( sNode ) ],
-									endContainer   : clonedEndContainer[ 0 ].childNodes[ getNodeIndex( eNode ) ],
-									startOffset    : range.startOffset,
-									endOffset      : range.endOffset
-								};
+								if ( clonedStartContainer &&
+										clonedStartContainer.length &&
+											clonedStartContainer[ 0 ] &&
+												clonedStartContainer[ 0 ].childNodes ) {								
+									var fakeRange = {
+										startContainer : clonedStartContainer[ 0 ].childNodes[ getNodeIndex( sNode ) ],
+										endContainer   : clonedEndContainer[ 0 ].childNodes[ getNodeIndex( eNode ) ],
+										startOffset    : range.startOffset,
+										endOffset      : range.endOffset
+									};
+								}
 								
 								// FIXME: index out of bounds
 								try {
