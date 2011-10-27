@@ -61,12 +61,6 @@ function ( Aloha, jQuery, ContentHandlerManager ) {
 		 * @param {jQuery} content
 		 */
 		transformTables: function ( content ) {
-			var nestedTables = content.find( 'table table' );
-			
-			if ( nestedTables.length ) {
-				// TODO: Handle nested tables
-			}
-			
 			// remove border, cellspacing, cellpadding from all tables
 			// @todo what about width, height?
 			content.find( 'table' ).each( function () {
@@ -106,8 +100,6 @@ function ( Aloha, jQuery, ContentHandlerManager ) {
 			// completely colgroup tags
 			// @TODO should we remove colgroup? use sanitize for that?
 			content.find( 'colgroup' ).remove();
-			
-			
 		},
 
 		/**
