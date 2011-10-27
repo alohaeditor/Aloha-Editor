@@ -6631,9 +6631,17 @@ commands.forwarddelete = {
 		// "Let node and offset be the active range's start node and offset."
 		var node = range.startContainer;
 		var offset = range.startOffset;
-		
+		var isBr = false;
+		var isHr = false;
+
 		// "Repeat the following steps:"
 		while (true) {
+			// check whether the next element is a br or hr
+			if ( offset < node.childNodes.length ) {
+				isBr = isHtmlElement(node.childNodes[offset], "br") || false;
+				isHr = isHtmlElement(node.childNodes[offset], "hr") || false;
+			}
+
 			// "If offset is the length of node and node's nextSibling is an
 			// editable invisible node, remove node's nextSibling from its
 			// parent."
@@ -6646,8 +6654,13 @@ commands.forwarddelete = {
 			// is an editable invisible node, remove that child from node."
 			} else if (offset < node.childNodes.length
 			&& isEditable(node.childNodes[offset])
-			&& isInvisible(node.childNodes[offset])) {
+			&& (isInvisible(node.childNodes[offset]) || isBr || isHr )) {
 				node.removeChild(node.childNodes[offset]);
+				if (isBr || isHr) {
+					range.setStart(node, offset);
+					range.setEnd(node, offset);
+					return;
+				}
 
 			// "Otherwise, if node has a child with index offset and that child
 			// is a collapsed block prop, add one to offset."
