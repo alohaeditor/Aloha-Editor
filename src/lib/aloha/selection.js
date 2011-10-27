@@ -196,12 +196,12 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		/**
 		 * This method checks, if the current rangeObject common ancestor container has a 'data-aloha-floatingmenu-visible' Attribute.
 		 * Needed in Floating Menu for exceptional display of floatingmenu.
-		 * 
 		 */
 		isFloatingMenuVisible: function() {
-			var selection = jQuery(Aloha.Selection.rangeObject.commonAncestorContainer);
-			if(selection.attr('data-aloha-floatingmenu-visible') != 'undefined'){
-				if (selection.attr('data-aloha-floatingmenu-visible') == 'true'){
+			var visible = jQuery(Aloha.Selection.rangeObject
+				.commonAncestorContainer).attr('data-aloha-floatingmenu-visible');
+			if(visible !== 'undefined'){
+				if (visible === 'true'){
 					return true;
 				} else {
 					return false;
