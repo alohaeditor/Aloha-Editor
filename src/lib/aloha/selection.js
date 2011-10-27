@@ -194,6 +194,23 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		},
 
 		/**
+		 * This method checks, if the current rangeObject common ancestor container has a 'data-aloha-floatingmenu-visible' Attribute.
+		 * Needed in Floating Menu for exceptional display of floatingmenu.
+		 */
+		isFloatingMenuVisible: function() {
+			var visible = jQuery(Aloha.Selection.rangeObject
+				.commonAncestorContainer).attr('data-aloha-floatingmenu-visible');
+			if(visible !== 'undefined'){
+				if (visible === 'true'){
+					return true;
+				} else {
+					return false;
+				}
+			}
+			return false;
+		},
+
+		/**
 		 * INFO: Method is used for integration with Gentics Aloha, has no use otherwise
 		 * Updates the rangeObject according to the current user selection
 		 * Method is always called on selection change
