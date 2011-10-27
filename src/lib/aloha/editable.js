@@ -689,6 +689,8 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, C
 
 			PluginManager.makeClean(clonedObj);
 
+			/* 
+			//also deactivated for now. like initEditable. just in case ...
 			var content = clonedObj.html()
 			if (typeof Aloha.settings.contentHandler.getContents === 'undefined') {
 				Aloha.settings.contentHandler.getContents = Aloha.defaults.contentHandler.getContents;
@@ -697,6 +699,7 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, C
 				contenthandler: Aloha.settings.contentHandler.getContents 
 			});
 			clonedObj.html( content );
+			*/
 
 			return asObject ? clonedObj.contents() : clonedObj.html();
 		},
