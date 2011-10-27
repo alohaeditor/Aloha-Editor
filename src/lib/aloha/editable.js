@@ -820,7 +820,7 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, C
 					'keyIdentifier' : null,
 					'keyCode' : null,
 					'char' : null,
-					'triggerType' : 'paste', // paste
+					'triggerType' : 'paste',
 					'snapshotContent' : me.getSnapshotContent()
 				} );
 			}
