@@ -558,6 +558,28 @@ function( TestUtils ) {
 			}
 		},
 		
+		{ module : 'Nested tables' },
+		
+		{
+			exclude   : false,
+			desc      : 'Nested tables',
+			start     : '<table><tbody>\
+							<tr><td>\
+								<table><tbody>\
+									<tr><td>foo</td></tr>\
+								</tbody></table>\
+							</td></tr>\
+						 </tbody></table>',
+			expected  : '<table><tbody>\
+							<tr><td>\
+								<table><tbody>\
+									<tr><td>foo</td></tr>\
+								</tbody></table>\
+							</td></tr>\
+						 </tbody></table>',
+			operation : function () {}
+		},
+		
 		{ exclude : true } // ... just catch trailing commas
 	];
 
