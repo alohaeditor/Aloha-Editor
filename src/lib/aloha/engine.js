@@ -1,7 +1,7 @@
 define(
 //['aloha/ecma5'],
-['aloha/ecma5shims'],
-function($_) {
+['aloha/ecma5shims', 'aloha/jquery'],
+function($_, jQuery) {
 	"use strict";
 
 var htmlNamespace = "http://www.w3.org/1999/xhtml";
@@ -808,7 +808,7 @@ function isEditable(node) {
 	// contentEditable attributes.
 	return node
 		&& !isEditingHost(node)
-		&& (node.nodeType != $_.Node.ELEMENT_NODE || node.contentEditable != "false")
+		&& (node.nodeType != $_.Node.ELEMENT_NODE || node.contentEditable != "false" || jQuery(node).hasClass('aloha-table-wrapper'))
 		&& (isEditingHost(node.parentNode) || isEditable(node.parentNode));
 }
 
