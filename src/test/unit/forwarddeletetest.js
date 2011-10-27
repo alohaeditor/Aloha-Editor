@@ -1097,8 +1097,13 @@ var alltests = {
 		{	start: 'foo[]<span><span></span></span>bar',
 			execResult: 'foo[]ar'
 		},
-		{	start: 'foo[]<span></span><br>bar',
-			execResult: 'foo[]ar'
+		{	exclude: 'msie',	
+			start: 'foo[]<span></span><br>bar',
+			execResult: 'foo[]bar'
+		},
+		{	include: 'msie',	
+			start: 'foo[]<span></span><br>bar',
+			execResult: 'foo[]<span></span>bar'
 		},
 		{	include: 'msie',
 			start: '<ol><li>foo[]<br></li><li>bar</li></ol>',
@@ -1136,7 +1141,7 @@ var alltests = {
 		// IE jumps into the empty span after the character of the next textnode has been deleted. Deletion of the emptyspan will be omitted
 		{	include: 'msie',
 			start: 'foo[]<span></span><span>bar</span>',
-			execResult: 'foo<span>{}</span><span>ar</span>'
+			execResult: 'foo<span></span>{}<span>ar</span>'
 		},
 		{	include: 'msie',
 			start: 'foo[] <span></span><span>bar</span>',
