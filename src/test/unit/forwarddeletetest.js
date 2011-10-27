@@ -3,7 +3,9 @@ var specifictests = {
 		defaultValue: '',
 		defaultCommand: 'forwarddelete',
 		tests: [
-		        
+
+		
+
 				]
 }
 		      
@@ -1033,12 +1035,6 @@ var alltests = {
 		{	include: 'msie',	
 			start: '<div style=white-space:pre-line>[]&nbsp; foo</div>',
 			execResult: '<div style=white-space:pre-line>[]&nbsp;foo</div>'
-		},
-		{	start: '<div style=white-space:pre-line>foo []&nbsp;</div>',
-			execResult: '<div style=white-space:pre-line>foo []</div>'
-		},
-		{	start: '<div style=white-space:nowrap>foo []&nbsp;</div>',
-			execResult: '<div style=white-space:nowrap>foo []</div>'
 		},
 		{	start: '<div style=white-space:nowrap>[]&nbsp; feo</div>',
 			execResult: '<div style=white-space:nowrap>[]&nbsp;feo</div>'
