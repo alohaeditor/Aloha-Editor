@@ -271,11 +271,11 @@
 					{  	start: '<pre>foo<br>{}<br></pre>',
 						execResult: '<pre>foo<br><br/>{}<br></pre>'
 					},
-					{  	exclude: ['msie'],
+					{  	exclude: ['msie'], // FF error
 						start: '<pre>foo&#10;[]</pre>',
 						execResult: '<pre>foo<br/>[]&#10;</pre>'
 					},
-					{  	include: ['msie'],
+					{  	include: ['msie'], 
 						start: '<pre>foo&#10;[]</pre>',
 						execResult: '<pre>foo&#10;<br/>{}</pre>'
 					},
@@ -388,7 +388,7 @@
 						start: '<p>foo</p><h1>[bar]</h1><p>baz</p>',
 						execResult: '<p>foo</p><h1><br/>[]</h1><p>baz</p>'
 					},
-					{  	exclude: ['msie'],
+					{  	exclude: ['msie'], // FF error
 						start: '<p>foo</p>{<h1>bar</h1>}<p>baz</p>',
 						execResult: '<p>foo</p><p><br>[]baz</p>'
 					},
@@ -489,9 +489,9 @@
 						start: 'foo<b>[]bar</b>',
 						execResult: 'foo<br/><b>[]bar</b>'
 					},
-					{  	include: ['mozilla'],
+					{  	include: ['mozilla'], // FF error --> 'foo<b><br/>{}bar</b>' instead of 'foo<br/><b>{}bar</b>'
 						start: 'foo<b>[]bar</b>',
-						execResult: 'foo<br/><b>{}bar</b>'
+						execResult: 'foo<b><br/>{}bar</b>'
 					},
 					{  	exclude: ['mozilla'],
 						start: '<b>foo[]</b><i>bar</i>',
@@ -582,7 +582,7 @@
 						start: 'foo<a href=foo>[]bar</a>',
 						execResult: 'foo<br/><a href=foo>[]bar</a>'
 					},
-					{  	include: ['msie'],
+					{  	include: ['msie'], // FF error -- foo{}<a href=foo><br/>bar</a>
 						start: 'foo<a href=foo>[]bar</a>',
 						execResult: 'foo<br/>{}<a href=foo>bar</a>' // seems to be wrong
 					},
