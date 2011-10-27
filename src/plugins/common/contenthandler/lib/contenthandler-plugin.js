@@ -9,7 +9,7 @@
  * @name contenthandler
  * @namespace Content handler plugin
  */
-define([
+define( [
 	'aloha',
 	'aloha/plugin',
 	'aloha/jquery',
@@ -18,29 +18,37 @@ define([
 	'contenthandler/genericcontenthandler',
 	'contenthandler/oembedcontenthandler',
 	'contenthandler/sanitizecontenthandler'
-], function( Aloha, Plugin, jQuery, ContentHandlerManager, WordContentHandler, GenericContentHandler, OembedContentHandler, SanitizeContentHandler ) {
-	"use strict";
+], function( Aloha,
+			 Plugin,
+			 jQuery,
+			 ContentHandlerManager,
+			 WordContentHandler,
+			 GenericContentHandler, 
+			 OembedContentHandler,
+			 SanitizeContentHandler ) {
+	'use strict';
 
 	/**
 	 * Register the plugin with unique name
 	 */
 	var ContentHandlerPlugin = Plugin.create( 'contenthandler', {
-		settings: {},
-		dependencies: [],
-
-		init: function () {
+		settings : {},
+		dependencies : [],
+		init : function () {
 			var that = this,
-				handler, cc, i,
-				contentHandler = [ 'word', 'generic', 'oembed', 'sanitize' ];
+				handler, cc,
+				contentHandler = [ 'word', 'generic', 'oembed', 'sanitize' ],
+				i, j = contentHandler.length;
 
 			// Register available content handler
-			for ( i = 0; i < contentHandler.length; i++ ) {
+			for ( i = 0; i < j; i++ ) {
 				handler = contentHandler[ i ];
-				cc = handler.charAt(0).toUpperCase() + handler.slice(1);
-				ContentHandlerManager.register( handler, eval(cc + 'ContentHandler') );
+				cc = handler.charAt( 0 ).toUpperCase() + handler.slice( 1 );
+				ContentHandlerManager
+					.register( handler, eval( cc + 'ContentHandler' ) );
 			}
 		}
-	});
+	} );
 
 	return ContentHandlerPlugin;
 });

@@ -152,11 +152,9 @@ function(Aloha, Plugin, jQuery, Commands, console) {
 						redirectPaste();
 						window.setTimeout(function() {
 							getPastedContent();
+							Aloha.activeEditable.smartContentChange(event);
+							event.stopPropagation();
 						}, 10);
-
-						// call smartContentChange after paste action
-						Aloha.activeEditable.smartContentChange(event);
-						event.stopPropagation();
 					});
 				}
 			});

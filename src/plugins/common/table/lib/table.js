@@ -480,7 +480,6 @@ function (Aloha, jQuery, FloatingMenu, i18n, TableCell, TableSelection, Utils) {
 
 		// create an empty td
 		var emptyCell = jQuery('<td>');
-		//    emptyCell.html('\u00a0');
 		emptyCell.html('\u00a0');
 		
 		// get the number of columns in the table
