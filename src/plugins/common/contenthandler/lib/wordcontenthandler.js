@@ -159,7 +159,7 @@ function( Aloha, jQuery, ContentHandlerManager ) {
 
 					// initialize the nestlevel and the margin (we will try to detect nested
 					// lists by comparing the left margin)
-					nestLevel = 0;
+					nestLevel = [];
 					margin = parseFloat(jqElem.css('marginLeft'));
 					// this array will hold all ul/ol elements
 					lists = [];
@@ -222,13 +222,15 @@ function( Aloha, jQuery, ContentHandlerManager ) {
 							// store the list and increase the nest level
 							jqList = jqNewList;
 							lists.push(jqList);
-							nestLevel++;
+							nestLevel.push(newMargin);
 							margin = newMargin;
-						} else if (newMargin < margin && nestLevel > 0) {
+						} else if (newMargin < margin && nestLevel.length > 0) {
+							while(nestLevel.length > 0 && nestLevel[nestLevel.length - 1] > newMargin) {
+								nestLevel.pop();
+								lists.pop();
+							}
 							// end nested list and append element to outer list
-							lists.pop();
-							nestLevel--;
-							jqList = lists[nestLevel];
+							jqList = lists[lists.length - 1];
 							margin = newMargin;
 						}
 
