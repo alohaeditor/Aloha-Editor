@@ -97,7 +97,7 @@ function( TestUtils ) {
 			var descResult = converterResult.html();
 
 			var descName = '"' + descStart + '" &rarr; "' + descResult + '"';
-			if (descValue !== descStart) {
+			if (descValue && descValue !== descStart) {
 				descName += ' ("' + descValue +'")';
 			}
 
