@@ -1382,6 +1382,14 @@ function setTagName(element, newName, range) {
 	// "Remove element from its parent."
 	element.parentNode.removeChild(element);
 
+	// if the range still uses the old element, we modify it to the new one
+	if (range.startContainer === element) {
+		range.setStart(replacementElement, range.startOffset);
+	}
+	if (range.endContainer === element) {
+		range.setEnd(replacementElement, range.endOffset);
+	}
+
 	// "Return replacement element."
 	return replacementElement;
 }
