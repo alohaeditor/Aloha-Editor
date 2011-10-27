@@ -15,10 +15,10 @@ function ( Aloha, jQuery, ContentHandlerManager ) {
 	var GenericContentHandler = ContentHandlerManager.createHandler( {
 		/**
 		 * Handle the pasting. Remove all unwanted stuff.
-		 * @param content
+		 * @param {String|jQuery} content
 		 */
 		handleContent: function ( content ) {
-			if ( typeof content === 'string' ){
+			if ( typeof content === 'string' ) {
 				content = jQuery( '<div>' + content + '</div>' );
 			} else if ( content instanceof jQuery ) {
 				content = jQuery( '<div>' ).append( content );
@@ -28,7 +28,7 @@ function ( Aloha, jQuery, ContentHandlerManager ) {
 			// we do not modify the pasted stuff, as it most probably
 			// comes from Aloha and not from other sources, and does
 			// not need to be cleaned up.
-			if ( content.find( '.aloha-block' ).length > 0 ) {
+			if ( content.find( '.aloha-block' ).length ) {
 				return;
 			}
 
@@ -54,10 +54,19 @@ function ( Aloha, jQuery, ContentHandlerManager ) {
 		},
 
 		/**
-		 * Transform tables which were pasted
-		 * @param content
+		 * Transform tables which were pasted into editables.
+		 * Will remove unwanted attributes, ensure properly constructed tables,
+		 * and prevent nested tables.
+		 *
+		 * @param {jQuery} content
 		 */
 		transformTables: function ( content ) {
+			var nestedTables = content.find( 'table table' );
+			
+			if ( nestedTables.length ) {
+				// TODO: Handle nested tables
+			}
+			
 			// remove border, cellspacing, cellpadding from all tables
 			// @todo what about width, height?
 			content.find( 'table' ).each( function () {
@@ -69,7 +78,6 @@ function ( Aloha, jQuery, ContentHandlerManager ) {
 			
 			// remove unwanted attributes and cleanup single empty p-tags
 			content.find( 'td' ).each( function () {
-				// remove width, height and valign from all table cells
 				jQuery( this )
 					.removeAttr( 'width' )
 					.removeAttr( 'height' )
@@ -84,10 +92,11 @@ function ( Aloha, jQuery, ContentHandlerManager ) {
 				}
 			} );
 			
-			// remove unwanted attributes from tr also? (tested with paste from open/libre office)
-			// @todo or do this all via sanitize.js 
+			// @todo:
+			// Should we also remove unwanted attributes from tr elements?
+			// (tested with paste from open/libre office) or do this all via
+			// sanitize.js 
 			content.find( 'tr' ).each( function () {
-				// remove width, height and valign from all table cells
 				jQuery( this )
 					.removeAttr( 'width' )
 					.removeAttr( 'height' )
@@ -97,6 +106,8 @@ function ( Aloha, jQuery, ContentHandlerManager ) {
 			// completely colgroup tags
 			// @TODO should we remove colgroup? use sanitize for that?
 			content.find( 'colgroup' ).remove();
+			
+			
 		},
 
 		/**
@@ -186,7 +197,8 @@ function ( Aloha, jQuery, ContentHandlerManager ) {
 				// try to determine the namespace prefix ('prefix' works for W3C
 				// compliant browsers, 'scopeName' for IE)
 
-				var nsPrefix = this.prefix ? this.prefix
+				var nsPrefix = this.prefix
+						? this.prefix
 						: ( this.scopeName ? this.scopeName : undefined );
 				// when the prefix is set (and different from 'HTML'), we remove the
 				// element
