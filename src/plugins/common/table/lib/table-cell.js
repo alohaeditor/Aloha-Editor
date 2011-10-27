@@ -412,7 +412,7 @@ function (jQuery, Utils) {
 				// firefox needs this for the first cell of the new row
 				// to be selected (.focus() doesn't work reliably in
 				// IE7)
-				this.tableObj.cells[this.tableObj.cells.length - 1]._selectAll();
+				this.tableObj.cells[this.tableObj.cells.length - 1]._selectAll(this.wrapper.get(0));
 
 				jqEvent.stopPropagation();
 				return;
