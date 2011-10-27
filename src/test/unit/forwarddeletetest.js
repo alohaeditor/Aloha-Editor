@@ -139,7 +139,7 @@ var alltests = {
 		},
 		{	include: 'msie',
 			start: 'foo{}<p><span><br></span>',
-			execResult: 'foo <p><span>{}<br></span>'
+			execResult: 'foo <p><span>{}</span>'
 		},
 		{	exclude: 'msie',
 			start: 'foo[]<p style=color:brown>bar',
@@ -839,11 +839,11 @@ var alltests = {
 		},
 		{  	exclude: 'msie',
 			start: '<p>{}<span><br></span></p>foo',
-			execResult: '<p>foo[]</p>'
+			execResult: '<p><span></span></p>[]foo'
 		},
 		{  	include: 'msie',
 			start: '<p>{}<span><br></span></p>foo',
-			execResult: '<p>{}</p>foo'
+			execResult: '<p><span>{}</span></p>foo'
 		},
 		{	exclude: 'msie',
 			start: 'foo{}<br><p><br></p>',
@@ -853,8 +853,13 @@ var alltests = {
 			start: 'foo{}<br><p><br></p>',
 			execResult: 'foo <p>{}<br></p>'
 		},
-		{	start: 'foo{}<span><br></span><p><br></p>',
+		{	exclude: 'msie',
+			start: 'foo{}<span><br></span><p><br></p>',
 			execResult: 'foo[]'
+		},
+		{	include: 'msie',
+			start: 'foo{}<span><br></span><p><br></p>',
+			execResult: 'foo<span></span> <p>{}<br/></p>'
 		},
 		{	exclude: 'msie',
 			start: 'foo{}<br><p><span><br></span></p>',
@@ -864,8 +869,13 @@ var alltests = {
 			start: 'foo{}<br><p><span><br></span></p>',
 			execResult: 'foo <p><span>{}<br></span></p>'
 		},
-		{	start: 'foo{}<span><br></span><p><span><br></span>',
+		{	exclude: 'msie',
+			start: 'foo{}<span><br></span><p><span><br></span>',
 			execResult: 'foo[]'
+		},
+		{	include: 'msie',
+			start: 'foo{}<span><br></span><p><span><br></span>',
+			execResult: 'foo<span></span> <p><span>{}<br/></span></p>'
 		},
 		{	include: 'msie',
 			start: 'foo []&nbsp;',
@@ -934,10 +944,12 @@ var alltests = {
 			execResult: '<div>foo <p>bar[]baz</p></div>'
 		},
 		
-		{	start: '<p>foo<br>{</p>]bar',
+		{	exclude: 'msie',		// this is an impossible selection in IE
+			start: '<p>foo<br>{</p>]bar',
 			execResult: '<p>foo[]bar</p>'
 		},
-		{	start: '<p>foo<br><br>{</p>]bar',
+		{	exclude: 'msie',		// this is an impossible selection in IE
+			start: '<p>foo<br><br>{</p>]bar',
 			execResult: '<p>foo[]bar</p>'
 		},
 		//@todo NS_ERROR_DOM_INDEX_SIZE_ERR exception in FF: rangy-core.js line 2055 at:
