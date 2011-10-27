@@ -35,6 +35,9 @@ function(Aloha, jQuery, ContentHandlerManager) {
 				return;
 			}
 
+			// clean lists
+			this.cleanLists(content);
+
 			// transform tables
 			this.transformTables(content);
 
@@ -54,6 +57,28 @@ function(Aloha, jQuery, ContentHandlerManager) {
 			this.transformFormattings(content);
 
 			return content.html();
+		},
+
+		/**
+		 * Clean lists: The only allowed children of ol or ul elements are li's. Everything else will be removed
+		 * @param content
+		 */
+		cleanLists: function(content) {
+			content.find('ul,ol').each(function() {
+				var $list = jQuery(this);
+				$list.contents(':not(li,ul,ol)').each(function() {
+					jQuery(this).remove();
+				});
+				// for all li's, trim the text contents
+				$list.children('li').each(function() {
+					var $li = jQuery(this);
+					$li.contents().each(function() {
+						if (this.nodeType === 3) {
+							this.data = jQuery.trim(this.data);
+						}
+					});
+				});
+			});
 		},
 
 		/**
