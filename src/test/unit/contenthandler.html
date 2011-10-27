@@ -29,7 +29,8 @@
 	<script>
 		// define realtive baseUrl path to requireJS
 		// and paths back to aloha path
-		require( [ 'contenthandlertest' ] );
+		require( [ 'commandtest' ] );
+		//require( [ 'contenthandlertest' ] );
 	</script>
 </head>
 <body>
@@ -54,10 +55,6 @@
 					},
 					{	start: '<table><tr><td>foo[]</td></tr></table>',
 						expected: '<table><tr><td>foobam[]</td></tr></table>',
-						value: 'bam' 
-					},
-					{	start: '<h1>hello</h1>[]<table><tr><td>foo</td></tr></table>',
-						expected: '<h1>hello</h1>bam[]<table><tr><td>foo</td></tr></table>',
 						value: 'bam' 
 					},
 					{	start: '<h1>hello</h1><p>bar[]</p><table><tr><td>foo</td></tr></table>',
