@@ -3,7 +3,9 @@ var specifictests = {
 		defaultValue: '',
 		defaultCommand: 'forwarddelete',
 		tests: [
-		        
+
+		
+
 				]
 }
 		      
@@ -139,7 +141,7 @@ var alltests = {
 		},
 		{	include: 'msie',
 			start: 'foo{}<p><span><br></span>',
-			execResult: 'foo <p><span>{}<br></span>'
+			execResult: 'foo <p><span>{}</span>'
 		},
 		{	exclude: 'msie',
 			start: 'foo[]<p style=color:brown>bar',
@@ -839,11 +841,11 @@ var alltests = {
 		},
 		{  	exclude: 'msie',
 			start: '<p>{}<span><br></span></p>foo',
-			execResult: '<p>foo[]</p>'
+			execResult: '<p><span></span></p>[]foo'
 		},
 		{  	include: 'msie',
 			start: '<p>{}<span><br></span></p>foo',
-			execResult: '<p>{}</p>foo'
+			execResult: '<p><span>{}</span></p>foo'
 		},
 		{	exclude: 'msie',
 			start: 'foo{}<br><p><br></p>',
@@ -853,8 +855,13 @@ var alltests = {
 			start: 'foo{}<br><p><br></p>',
 			execResult: 'foo <p>{}<br></p>'
 		},
-		{	start: 'foo{}<span><br></span><p><br></p>',
+		{	exclude: 'msie',
+			start: 'foo{}<span><br></span><p><br></p>',
 			execResult: 'foo[]'
+		},
+		{	include: 'msie',
+			start: 'foo{}<span><br></span><p><br></p>',
+			execResult: 'foo<span></span> <p>{}<br/></p>'
 		},
 		{	exclude: 'msie',
 			start: 'foo{}<br><p><span><br></span></p>',
@@ -864,8 +871,13 @@ var alltests = {
 			start: 'foo{}<br><p><span><br></span></p>',
 			execResult: 'foo <p><span>{}<br></span></p>'
 		},
-		{	start: 'foo{}<span><br></span><p><span><br></span>',
+		{	exclude: 'msie',
+			start: 'foo{}<span><br></span><p><span><br></span>',
 			execResult: 'foo[]'
+		},
+		{	include: 'msie',
+			start: 'foo{}<span><br></span><p><span><br></span>',
+			execResult: 'foo<span></span> <p><span>{}<br/></span></p>'
 		},
 		{	include: 'msie',
 			start: 'foo []&nbsp;',
@@ -934,10 +946,12 @@ var alltests = {
 			execResult: '<div>foo <p>bar[]baz</p></div>'
 		},
 		
-		{	start: '<p>foo<br>{</p>]bar',
+		{	exclude: 'msie',		// this is an impossible selection in IE
+			start: '<p>foo<br>{</p>]bar',
 			execResult: '<p>foo[]bar</p>'
 		},
-		{	start: '<p>foo<br><br>{</p>]bar',
+		{	exclude: 'msie',		// this is an impossible selection in IE
+			start: '<p>foo<br><br>{</p>]bar',
 			execResult: '<p>foo[]bar</p>'
 		},
 		//@todo NS_ERROR_DOM_INDEX_SIZE_ERR exception in FF: rangy-core.js line 2055 at:
@@ -974,6 +988,7 @@ var alltests = {
 		{	start: '<div><p>foo<p>[bar<p>baz]</div>',
 			execResult: '<div><p>foo[]</p><p></p></div>'
 		},
+		// Its not possible to create a selection like this in ie and chrome
 		{	start: 'foo[<p>]bar<br>baz</p>',
 			execResult: 'foo[]bar<p>baz</p>'
 		},
@@ -1000,77 +1015,99 @@ var alltests = {
 		{	start: '<p>foo</p>{<p>bar</p>}<p>baz</p>',
 			execResult: '<p>foo[]</p><p>baz</p>'
 		},
-       	{	start: '<span>foo[]<span></span></span>bar',
+       	{	exclude: 'msie', 
+       		start: '<span>foo[]<span></span></span>bar',
 			execResult: '<span>foo[]</span>ar'
+		},
+		{	include: 'msie', 
+       		start: '<span>foo[]<span></span></span>bar',
+			execResult: '<span>foo</span><span>{}</span>ar'
 		},
 		{	start: '<div style=white-space:pre>foo[] &nbsp;bar</div>',
 			execResult: '<div style=white-space:pre>foo[] bar</div>'
 		},
-		{	start: '<div style=white-space:pre-wrap>foo[] &nbsp;bar</div>',
+		{	exclude: 'msie',
+			start: '<div style=white-space:pre-wrap>foo[] &nbsp;bar</div>',
 			execResult: '<div style=white-space:pre-wrap>foo[] bar</div>'
 		},
-		{	start: '<div style=white-space:pre-line>foo []&nbsp;</div>',
-			execResult: '<div style=white-space:pre-line>foo []</div>'
+		{	include: 'msie',
+			start: '<div style=white-space:pre-wrap>foo[] &nbsp;bar</div>',
+			execResult: '<div style=white-space:pre-wrap>foo[]&nbsp;bar</div>'
 		},
-		{	start: '<div style=white-space:pre-line>[]&nbsp; foo</div>',
+		{	exclude: 'msie',	
+			start: '<div style=white-space:pre-line>[]&nbsp; foo</div>',
 			execResult: '<div style=white-space:pre-line>[] foo</div>'
 		},
-		{	start: '<div style=white-space:nowrap>foo []&nbsp;</div>',
-			execResult: '<div style=white-space:nowrap>foo []</div>'
+		{	include: 'msie',	
+			start: '<div style=white-space:pre-line>[]&nbsp; foo</div>',
+			execResult: '<div style=white-space:pre-line>[]&nbsp;foo</div>'
 		},
-		{	start: '<div style=white-space:nowrap>[]&nbsp; foo</div>',
-			execResult: '<div style=white-space:nowrap>[] foo</div>'
+		{	start: '<div style=white-space:nowrap>[]&nbsp; feo</div>',
+			execResult: '<div style=white-space:nowrap>[]&nbsp;feo</div>'
 		},
-		{	start: '<ol><li>foo[]<br></ol><p>bar',
+		{	start: '<div style=white-space:nowrap>[]&nbsp;feo</div>',
+			execResult: '<div style=white-space:nowrap>[]feo</div>'
+		},
+		{	start: '<ol><li>foo[]</li><br></ol><p>bar</p>',
 			execResult: '<ol><li>foo[]bar</li></ol>'
 		},
-		{	start: '<ol><li>{}<br></ol><p>bar',
-			execResult: '<ol><li>[]bar</li></ol>'
+		{	start: '<ol><li>{}</li><br></ol><p>bar',
+			execResult: '<ol><li>{}</li></ol><p>bar</p>'
 		},
 		{	start: '<ol><li>foo[]<br></ol>bar',
 			execResult: '<ol><li>foo[]bar</li></ol>'
 		},
-		{	start: '<ol><li>{}<br></ol>bar',
-			execResult: '<ol><li>[]bar</li></ol>'
+		{	start: '<ol><li>{}<br></li></ol>bar',
+			execResult: '<ol><li>{}</li></ol>bar'
 		},
-		{	start: '<ol><li>foo<li>{}<br></ol>bar',
+		{	start: '<ol><li>foo</li><li>{}<br></li></ol>bar',
 			execResult: '<ol><li>[]foo</li><li>bar</li></ol>'
 		},
-		{	start: '<ol><li>foo[]</ol><p>bar',
+		{	start: '<ol><li>foo[]</li></ol><p>bar</p>',
 			execResult: '<ol><li>foo[]bar</li></ol>'
 		},
-		{	start: '<ol><li>foo<li>{}<br></ol><p>bar',
-			execResult: '<ol><li>foo</li><li>[]bar</li></ol>'
+		{	start: '<ol><li>foo</li><li>{}<br></li></ol><p>bar',
+			execResult: '<ol><li>foo</li><li>{}</li></ol><p>bar'
 		},
-		{	start: '<ol><li>foo[]</ol><br>',
+		{	start: '<ol><li>foo[]</li></ol><br>',
 			execResult: '<ol><li>foo[]</li></ol>'
 		},
-		{	start: '<ol><li>foo[]<br></ol><br>',
+		{	start: '<ol><li>foo[]<br></li></ol><br>',
+			execResult: '<ol><li>foo[]</li></ol><br>'
+		},
+		{	start: '<ol><li>{}<br></li></ol><br>',
+			execResult: '<ol><li>{}</li></ol><br>'
+		},
+		{	start: '<ol><li>foo</li><li>{}<br></li></ol><br>',
+			execResult: '<ol><li>foo</li><li>{}</li></ol><br>'
+		},
+		{	start: '<ol><li>foo[]</li></ol><p><br></p>',
 			execResult: '<ol><li>foo[]</li></ol>'
 		},
-		{	start: '<ol><li>{}<br></ol><br>',
-			execResult: '<ol><li>{}<br></li></ol>'
+		{	start: '<ol><li>foo[]<br></li></ol><p><br></p>',
+			execResult: '<ol><li>foo[]</li></ol><p><br></p>'
 		},
-		{	start: '<ol><li>foo<li>{}<br></ol><br>',
-			execResult: '<ol><li>foo</li><li>[]<br></li></ol>'
+		{	start: '<ol><li>{}<br></li></ol><p><br></p>',
+			execResult: '<ol><li>{}</li></ol><p><br></p>'
 		},
-		{	start: '<ol><li>foo[]</ol><p><br>',
-			execResult: '<ol><li>foo[]</li></ol>'
+		{	start: '<ol><li>foo</li><li>{}<br></li></ol><p><br></p>',
+			execResult: '<ol><li>foo</li><li>{}</li></ol><p><br></p>'
 		},
-		{	start: '<ol><li>foo[]<br></ol><p><br>',
-			execResult: '<ol><li>foo[]</li></ol>'
-		},
-		{	start: '<ol><li>{}<br></ol><p><br>',
-			execResult: '<ol><li>{}<br></li></ol>'
-		},
-		{	start: '<ol><li>foo<li>{}<br></ol><p><br>',
-			execResult: '<ol><li>foo[]</li><li><br></li></ol>'
-		},
-		{	start: 'foo<b>{bar}</b>baz',
+		{	exclude: 'msie',	
+			start: 'foo<b>{bar}</b>baz',
 			execResult: 'foo[]baz'
 		},
-		{	start: 'foo{<b>bar</b>}baz',
+		{	include: 'msie',	
+			start: 'foo<b>{bar}</b>baz',
+			execResult: 'foo<b></b>[]baz'
+		},
+		{	exclude: 'msie',
+			start: 'foo{<b>bar</b>}baz',
 			execResult: 'foo[]<b></b>baz'
+		},
+		{	include: 'msie',
+			start: 'foo{<b>bar</b>}baz',
+			execResult: 'foo<b></b>[]baz'
 		},
 		{	exclude: 'msie',
 			start: 'foo<span>[bar]</span>baz',
@@ -1080,8 +1117,13 @@ var alltests = {
 			start: 'foo<span>[bar]</span>baz',
 			execResult: 'foo<span></span>[]baz'
 		},
-		{	start: 'foo<span>{bar}</span>baz',
+		{	exclude: 'msie',
+			start: 'foo<span>{bar}</span>baz',
 			execResult: 'foo[]baz'
+		},
+		{	include: 'msie',
+			start: 'foo<span>{bar}</span>baz',
+			execResult: 'foo<span></span>[]baz'
 		},
 		{	exclude: 'msie',
 			start: 'foo{<span>bar</span>}baz',
@@ -1094,8 +1136,13 @@ var alltests = {
 		{	start: '<b>foo[bar</b><i>baz]quz</i>',
 			execResult: '<b>foo[]</b><i>quz</i>'
 		},
-		{	start: 'foo[]<span><span></span></span>bar',
+		{	exclude: 'msie',	
+			start: 'foo[]<span><span></span></span>bar',
 			execResult: 'foo[]ar'
+		},
+		{	include: 'msie',	
+			start: 'foo[]<span><span></span></span>bar',
+			execResult: 'foo<span><span></span></span>[]ar'
 		},
 		{	exclude: 'msie',	
 			start: 'foo[]<span></span><br>bar',
@@ -1103,7 +1150,7 @@ var alltests = {
 		},
 		{	include: 'msie',	
 			start: 'foo[]<span></span><br>bar',
-			execResult: 'foo[]<span></span>bar'
+			execResult: 'foo<span></span>[]bar'
 		},
 		{	include: 'msie',
 			start: '<ol><li>foo[]<br></li><li>bar</li></ol>',
@@ -1272,5 +1319,6 @@ var alltests = {
 			
 		]
 }
+
 //var tests = specifictests;
 var tests = alltests;

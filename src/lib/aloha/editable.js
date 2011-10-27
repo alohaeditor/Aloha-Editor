@@ -159,6 +159,16 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, C
 				return;
 			}
 
+			// apply content handler to clean up content
+			var content = me.obj.html();
+			if ( typeof Aloha.settings.contentHandler.initEditable === 'undefined') {
+				Aloha.settings.contentHandler.initEditable = Aloha.defaults.contentHandler.initEditable;
+			}
+			content = ContentHandlerManager.handleContent( content, {
+				contenthandler: Aloha.settings.contentHandler.initEditable 
+			});
+			me.obj.html( content );
+
 			// only initialize the editable when Aloha is fully ready (including plugins)
 			Aloha.bind('aloha-ready',function(){
 				// initialize the object

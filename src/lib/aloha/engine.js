@@ -1,7 +1,7 @@
 define(
 //['aloha/ecma5'],
-['aloha/ecma5shims'],
-function($_) {
+['aloha/ecma5shims', 'aloha/jquery'],
+function($_, jQuery) {
 	"use strict";
 
 var htmlNamespace = "http://www.w3.org/1999/xhtml";
@@ -808,7 +808,7 @@ function isEditable(node) {
 	// contentEditable attributes.
 	return node
 		&& !isEditingHost(node)
-		&& (node.nodeType != $_.Node.ELEMENT_NODE || node.contentEditable != "false")
+		&& (node.nodeType != $_.Node.ELEMENT_NODE || node.contentEditable != "false" || jQuery(node).hasClass('aloha-table-wrapper'))
 		&& (isEditingHost(node.parentNode) || isEditable(node.parentNode));
 }
 
@@ -1381,6 +1381,14 @@ function setTagName(element, newName, range) {
 
 	// "Remove element from its parent."
 	element.parentNode.removeChild(element);
+
+	// if the range still uses the old element, we modify it to the new one
+	if (range.startContainer === element) {
+		range.setStart(replacementElement, range.startOffset);
+	}
+	if (range.endContainer === element) {
+		range.setEnd(replacementElement, range.endOffset);
+	}
 
 	// "Return replacement element."
 	return replacementElement;
@@ -6631,9 +6639,17 @@ commands.forwarddelete = {
 		// "Let node and offset be the active range's start node and offset."
 		var node = range.startContainer;
 		var offset = range.startOffset;
-		
+		var isBr = false;
+		var isHr = false;
+
 		// "Repeat the following steps:"
 		while (true) {
+			// check whether the next element is a br or hr
+			if ( offset < node.childNodes.length ) {
+				isBr = isHtmlElement(node.childNodes[offset], "br") || false;
+				isHr = isHtmlElement(node.childNodes[offset], "hr") || false;
+			}
+
 			// "If offset is the length of node and node's nextSibling is an
 			// editable invisible node, remove node's nextSibling from its
 			// parent."
@@ -6646,8 +6662,13 @@ commands.forwarddelete = {
 			// is an editable invisible node, remove that child from node."
 			} else if (offset < node.childNodes.length
 			&& isEditable(node.childNodes[offset])
-			&& isInvisible(node.childNodes[offset])) {
+			&& (isInvisible(node.childNodes[offset]) || isBr || isHr )) {
 				node.removeChild(node.childNodes[offset]);
+				if (isBr || isHr) {
+					range.setStart(node, offset);
+					range.setEnd(node, offset);
+					return;
+				}
 
 			// "Otherwise, if node has a child with index offset and that child
 			// is a collapsed block prop, add one to offset."
