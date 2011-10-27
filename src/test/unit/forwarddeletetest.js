@@ -3,7 +3,9 @@ var specifictests = {
 		defaultValue: '',
 		defaultCommand: 'forwarddelete',
 		tests: [
-		        
+
+		
+
 				]
 }
 		      
@@ -986,6 +988,7 @@ var alltests = {
 		{	start: '<div><p>foo<p>[bar<p>baz]</div>',
 			execResult: '<div><p>foo[]</p><p></p></div>'
 		},
+		// Its not possible to create a selection like this in ie and chrome
 		{	start: 'foo[<p>]bar<br>baz</p>',
 			execResult: 'foo[]bar<p>baz</p>'
 		},
@@ -1012,8 +1015,13 @@ var alltests = {
 		{	start: '<p>foo</p>{<p>bar</p>}<p>baz</p>',
 			execResult: '<p>foo[]</p><p>baz</p>'
 		},
-       	{	start: '<span>foo[]<span></span></span>bar',
+       	{	exclude: 'msie', 
+       		start: '<span>foo[]<span></span></span>bar',
 			execResult: '<span>foo[]</span>ar'
+		},
+		{	include: 'msie', 
+       		start: '<span>foo[]<span></span></span>bar',
+			execResult: '<span>foo</span><span>{}</span>ar'
 		},
 		{	start: '<div style=white-space:pre>foo[] &nbsp;bar</div>',
 			execResult: '<div style=white-space:pre>foo[] bar</div>'
@@ -1034,12 +1042,6 @@ var alltests = {
 			start: '<div style=white-space:pre-line>[]&nbsp; foo</div>',
 			execResult: '<div style=white-space:pre-line>[]&nbsp;foo</div>'
 		},
-		{	start: '<div style=white-space:pre-line>foo []&nbsp;</div>',
-			execResult: '<div style=white-space:pre-line>foo []</div>'
-		},
-		{	start: '<div style=white-space:nowrap>foo []&nbsp;</div>',
-			execResult: '<div style=white-space:nowrap>foo []</div>'
-		},
 		{	start: '<div style=white-space:nowrap>[]&nbsp; feo</div>',
 			execResult: '<div style=white-space:nowrap>[]&nbsp;feo</div>'
 		},
@@ -1049,8 +1051,8 @@ var alltests = {
 		{	start: '<ol><li>foo[]</li><br></ol><p>bar</p>',
 			execResult: '<ol><li>foo[]bar</li></ol>'
 		},
-		{	start: '<ol><li>{}<br></ol><p>bar',
-			execResult: '<ol><li>[]bar</li></ol>'
+		{	start: '<ol><li>{}</li><br></ol><p>bar',
+			execResult: '<ol><li>{}</li></ol><p>bar</p>'
 		},
 		{	start: '<ol><li>foo[]<br></ol>bar',
 			execResult: '<ol><li>foo[]bar</li></ol>'
@@ -1065,7 +1067,7 @@ var alltests = {
 			execResult: '<ol><li>foo[]bar</li></ol>'
 		},
 		{	start: '<ol><li>foo</li><li>{}<br></li></ol><p>bar',
-			execResult: '<ol><li>foo</li><li>[]bar</li></ol>'
+			execResult: '<ol><li>foo</li><li>{}</li></ol><p>bar'
 		},
 		{	start: '<ol><li>foo[]</li></ol><br>',
 			execResult: '<ol><li>foo[]</li></ol>'
