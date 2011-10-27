@@ -1021,7 +1021,7 @@ var alltests = {
 		{	start: '<div style=white-space:nowrap>[]&nbsp; foo</div>',
 			execResult: '<div style=white-space:nowrap>[] foo</div>'
 		},
-		{	start: '<ol><li>foo[]<br></ol><p>bar',
+		{	start: '<ol><li>foo[]</li><br></ol><p>bar</p>',
 			execResult: '<ol><li>foo[]bar</li></ol>'
 		},
 		{	start: '<ol><li>{}<br></ol><p>bar',
@@ -1030,41 +1030,41 @@ var alltests = {
 		{	start: '<ol><li>foo[]<br></ol>bar',
 			execResult: '<ol><li>foo[]bar</li></ol>'
 		},
-		{	start: '<ol><li>{}<br></ol>bar',
+		{	start: '<ol><li>{}<br></li></ol>bar',
 			execResult: '<ol><li>[]bar</li></ol>'
 		},
-		{	start: '<ol><li>foo<li>{}<br></ol>bar',
+		{	start: '<ol><li>foo</li><li>{}<br></li></ol>bar',
 			execResult: '<ol><li>[]foo</li><li>bar</li></ol>'
 		},
-		{	start: '<ol><li>foo[]</ol><p>bar',
+		{	start: '<ol><li>foo[]</li></ol><p>bar</p>',
 			execResult: '<ol><li>foo[]bar</li></ol>'
 		},
-		{	start: '<ol><li>foo<li>{}<br></ol><p>bar',
+		{	start: '<ol><li>foo</li><li>{}<br></li></ol><p>bar',
 			execResult: '<ol><li>foo</li><li>[]bar</li></ol>'
 		},
-		{	start: '<ol><li>foo[]</ol><br>',
+		{	start: '<ol><li>foo[]</li></ol><br>',
 			execResult: '<ol><li>foo[]</li></ol>'
 		},
-		{	start: '<ol><li>foo[]<br></ol><br>',
+		{	start: '<ol><li>foo[]<br></li></ol><br>',
 			execResult: '<ol><li>foo[]</li></ol>'
 		},
-		{	start: '<ol><li>{}<br></ol><br>',
-			execResult: '<ol><li>{}<br></li></ol>'
+		{	start: '<ol><li>{}<br></li></ol><br>',
+			execResult: '<ol><li>{}</li></ol><br>'
 		},
-		{	start: '<ol><li>foo<li>{}<br></ol><br>',
-			execResult: '<ol><li>foo</li><li>[]<br></li></ol>'
+		{	start: '<ol><li>foo</li><li>{}<br></li></ol><br>',
+			execResult: '<ol><li>foo</li><li>{}</li></ol><br>'
 		},
-		{	start: '<ol><li>foo[]</ol><p><br>',
+		{	start: '<ol><li>foo[]</li></ol><p><br></p>',
 			execResult: '<ol><li>foo[]</li></ol>'
 		},
-		{	start: '<ol><li>foo[]<br></ol><p><br>',
-			execResult: '<ol><li>foo[]</li></ol>'
+		{	start: '<ol><li>foo[]<br></li></ol><p><br></p>',
+			execResult: '<ol><li>foo[]</li></ol><p><br></p>'
 		},
-		{	start: '<ol><li>{}<br></ol><p><br>',
-			execResult: '<ol><li>{}<br></li></ol>'
+		{	start: '<ol><li>{}<br></li></ol><p><br></p>',
+			execResult: '<ol><li>{}</li></ol><p><br></p>'
 		},
-		{	start: '<ol><li>foo<li>{}<br></ol><p><br>',
-			execResult: '<ol><li>foo[]</li><li><br></li></ol>'
+		{	start: '<ol><li>foo</li><li>{}<br></li></ol><p><br></p>',
+			execResult: '<ol><li>foo</li><li>{}</li></ol><p><br></p>'
 		},
 		{	exclude: 'msie',	
 			start: 'foo<b>{bar}</b>baz',
