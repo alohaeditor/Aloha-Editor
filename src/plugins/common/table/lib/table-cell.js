@@ -47,76 +47,73 @@ function (jQuery, Utils) {
 	 */
 	TableCell.prototype.hasFocus = false;
 
-	TableCell.prototype.activate = function() {
+	TableCell.prototype.activate = function () {
 		// wrap the created div into the contents of the cell
-		this.obj.wrapInner('<div/>');
+		this.obj.wrapInner( '<div/>' );
 
 		// create the editable wrapper for the cells
-		var wrapper = this.obj.children('div').eq(0);
+		var wrapper = this.obj.children( 'div' ).eq( 0 );
 
-		wrapper.contentEditable(true);
-		wrapper.addClass('aloha-table-cell-editable');
-
+		wrapper.contentEditable( true );
+		wrapper.addClass( 'aloha-table-cell-editable' );
 
 		var that = this;
+		
 		// attach events to the editable div-object
-		wrapper.bind('focus', function(jqEvent) {
+		wrapper.bind( 'focus', function ( jqEvent ) {
 			// ugly workaround for ext-js-adapter problem in ext-jquery-adapter-debug.js:1020
-			if (jqEvent.currentTarget) {
+			if ( jqEvent.currentTarget ) {
 				jqEvent.currentTarget.indexOf = function () {
 					return -1;
 				};
 			}
-			that._editableFocus(jqEvent);
-		});
-		wrapper.bind('mousedown', function(jqEvent) {
+			that._editableFocus( jqEvent );
+		} );
+		
+		wrapper.bind( 'mousedown', function ( jqEvent ) {
 			// ugly workaround for ext-js-adapter problem in ext-jquery-adapter-debug.js:1020
-			if (jqEvent.currentTarget) {
+			if ( jqEvent.currentTarget ) {
 				jqEvent.currentTarget.indexOf = function () {
 					return -1;
 				};
 			}
 			
-			that._editableMouseDown(jqEvent);
+			that._editableMouseDown( jqEvent );
 
-			//start cell selection
-			that._startCellSelection();       
-			
-		});
-		wrapper.bind('blur',      function(jqEvent) { that._editableBlur(jqEvent);      });
-		wrapper.bind('keyup',     function(jqEvent) { that._editableKeyUp(jqEvent);     });
-		wrapper.bind('keydown',   function(jqEvent) { that._editableKeyDown(jqEvent);   });
-		wrapper.bind('mouseover', function(jqEvent) { that._selectCellRange(); });
+			that._startCellSelection();
+		} );
+		wrapper.bind( 'blur',      function ( jqEvent ) { that._editableBlur( jqEvent );    });
+		wrapper.bind( 'keyup',     function ( jqEvent ) { that._editableKeyUp( jqEvent );   });
+		wrapper.bind( 'keydown',   function ( jqEvent ) { that._editableKeyDown( jqEvent ); });
+		wrapper.bind( 'mouseover', function ( jqEvent ) { that._selectCellRange();          });
 
 		// we will treat the wrapper just like an editable
-		wrapper.contentEditableSelectionChange(function (event) {
-			Aloha.Selection.onChange(wrapper, event);
+		wrapper.contentEditableSelectionChange( function ( event ) {
+			Aloha.Selection.onChange( wrapper, event );
 			return wrapper;
-		});
+		} );
 
-		this.obj.bind('mousedown', function(jqEvent) {
-			setTimeout(function() {
-				that.wrapper.trigger('focus');
-			}, 1);
-			// unselect cells
+		this.obj.bind( 'mousedown', function ( jqEvent ) {
+			setTimeout( function () {
+				that.wrapper.trigger( 'focus' );
+			}, 1 );
 			that.tableObj.selection.unselectCells();
-	        //start cell selection
 	        that._startCellSelection();       
 			jqEvent.stopPropagation();
-		});
+		} );
 
-		if (this.obj.get(0)) {
-			this.obj.get(0).onselectstart = function (jqEvent) { return false; };
+		if ( this.obj.get( 0 ) ) {
+			this.obj.get( 0 ).onselectstart = function ( jqEvent ) { return false; };
 		}
 
 		// set contenteditable wrapper div
 		this.wrapper = this.obj.children();
-		if (this.wrapper.get(0)) {
-			this.wrapper.get(0).onselectstart = function() {
+		if ( this.wrapper.get( 0 ) ) {
+			this.wrapper.get( 0 ).onselectstart = function () {
 				window.event.cancelBubble = true;
 			};
 			// Disabled the dragging of content, since it makes cell selection difficult
-			this.wrapper.get(0).ondragstart = function() { return false };
+			this.wrapper.get( 0 ).ondragstart = function () { return false };
 		}
 
 		return this;
@@ -383,7 +380,7 @@ function (jQuery, Utils) {
 	 *            the jquery-event object
 	 * @return void
 	 */
-	TableCell.prototype._editableKeyUp = function(jqEvent) {
+	TableCell.prototype._editableKeyUp = function( jqEvent ) {
 		//TODO do we need to check for empty cells and insert a space?
 		//this._checkForEmptyEvent(jqEvent);
 	};

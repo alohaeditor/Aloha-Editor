@@ -371,43 +371,42 @@ function (Aloha, jQuery, FloatingMenu, i18n, TableCell, TableSelection, Utils) {
 	 *            the jquery-event object
 	 * @return void
 	 */
-	Table.prototype.rowSelectionMouseDown = function (jqEvent) {
-
+	Table.prototype.rowSelectionMouseDown = function ( jqEvent ) {
 		// focus the table (if not already done)
 		this.focus();
 
 		// if no cells are selected, reset the selection-array
-		if (this.selection.selectedCells.length == 0) {
-			this.rowsToSelect = new Array();
+		if ( this.selection.selectedCells.length == 0 ) {
+			this.rowsToSelect = [];
 		}
 
 		// set the origin-rowId of the mouse-click
 		this.clickedRowId = jqEvent.currentTarget.parentNode.rowIndex;
 
 		// set single column selection
-		if (jqEvent.metaKey) {
-			var arrayIndex = jQuery.inArray(this.clickedRowId, this.rowsToSelect);
-			if (arrayIndex >= 0) {
-				this.rowsToSelect.splice(arrayIndex, 1);
-			}else{
-				this.rowsToSelect.push(this.clickedRowId);
+		if ( jqEvent.metaKey ) {
+			var arrayIndex = jQuery.inArray( this.clickedRowId, this.rowsToSelect );
+			if ( arrayIndex >= 0 ) {
+				this.rowsToSelect.splice( arrayIndex, 1 );
+			} else {
+				this.rowsToSelect.push( this.clickedRowId );
 			}
-		// block of colums selection
-		} else if (jqEvent.shiftKey) {
-			this.rowsToSelect.sort(function(a,b){return a - b;});
-			var start = this.rowsToSelect[0];
+		// block of columns selection
+		} else if ( jqEvent.shiftKey ) {
+			this.rowsToSelect.sort( function( a, b ) { return a - b; } );
+			var start = this.rowsToSelect[ 0 ];
 			var end = this.clickedRowId;
-			if (start > end) {
+			if ( start > end ) {
 				start = end;
-				end = this.rowsToSelect[0];
+				end = this.rowsToSelect[ 0 ];
 			}
-			this.rowsToSelect = new Array();
-			for (var i = start; i <= end; i++) {
-				this.rowsToSelect.push(i);
+			this.rowsToSelect = [];
+			for ( var i = start; i <= end; i++ ) {
+				this.rowsToSelect.push( i );
 			}
 		// single column
 		} else {
-			this.rowsToSelect = [this.clickedRowId];
+			this.rowsToSelect = [ this.clickedRowId ];
 		}
 
 		// mark the selection visual
@@ -486,7 +485,13 @@ function (Aloha, jQuery, FloatingMenu, i18n, TableCell, TableSelection, Utils) {
 		// iterate through all rows and find the maximum number of columns to add
 		var numColumns = 0;
 		for(var i = 0; i < this.obj.context.rows.length; i++){
-			var curNumColumns = this.obj.context.rows[i].cells.length;
+			var curNumColumns = 0;
+			
+			for(var j = 0; j < this.obj.context.rows[i].cells.length; j++){
+				var colspan = Utils.colspan( this.obj.context.rows[i].cells[j] );
+				curNumColumns += colspan;
+			}
+			
 			if(numColumns < curNumColumns)
 				numColumns = curNumColumns;
 		}
@@ -494,6 +499,7 @@ function (Aloha, jQuery, FloatingMenu, i18n, TableCell, TableSelection, Utils) {
 		var selectionRow = jQuery('<tr>');
 		selectionRow.addClass(this.get('classSelectionRow'));
 		selectionRow.css('height', this.get('selectionArea') + 'px');
+
 		for (var i = 0; i < numColumns; i++) {
 
 			var columnToInsert = emptyCell.clone();
@@ -567,58 +573,55 @@ function (Aloha, jQuery, FloatingMenu, i18n, TableCell, TableSelection, Utils) {
 		cell.bind('mousedown',  function(e) { that.columnSelectionMouseDown(e) } );
 		cell.bind('mouseover', function(e) { that.columnSelectionMouseOver(e) } );
 	};
-
+	
 	/**
-	 * Mouse-down event for a columns-selection cell. It adds the index of the
-	 * clicked column to the "columnsToSelect"-Array and calls the method which
-	 * selects the column.
+	 * Handles the mouse-down event for the selection-cells on the top of the
+	 * menu
 	 *
-	 * @param jqEvent
-	 *            the jquery event-object
+	 * @param {jQuery:Event} jqEvent - the jquery-event object
 	 * @return void
 	 */
-	Table.prototype.columnSelectionMouseDown = function (jqEvent) {
-
-		var 
-			columnsToSelect = [],
-			colIdx;
-
+	Table.prototype.columnSelectionMouseDown = function ( jqEvent ) {
+		// focus the table (if not already done)
 		this.focus();
 
 		// if no cells are selected, reset the selection-array
-//		if (TableSelection.selectedCells.length == 0) {
-//			columnsToSelect = new Array();
-//		}
-
-		// store the id of the column which has been originally clicked
-		colIdx = jqEvent.currentTarget.cellIndex;
-		this.mouseDownColIdx = colIdx;
-
+		if ( this.selection.selectedCells.length == 0 ) {
+			this.columnsToSelect = [];
+		}
+		
+		// set the origin-columnId of the mouse-click
+		this.clickedColumnId = jQuery( jqEvent.currentTarget.parentNode )
+									.children().index( jqEvent.currentTarget );
+		
+		// set single column selection
 		if ( jqEvent.metaKey ) {
-			var arrayIndex = jQuery.inArray(colIdx, columnsToSelect);
+			var arrayIndex = jQuery.inArray( this.clickedColumnId, this.columnsToSelect );
 			if ( arrayIndex >= 0 ) {
-				columnsToSelect.splice(arrayIndex, 1);
+				this.columnsToSelect.splice( arrayIndex, 1 );
 			} else {
-				columnsToSelect.push( colIdx );
+				this.columnsToSelect.push( this.clickedColumnId );
 			}
+		// block of columns selection
 		} else if ( jqEvent.shiftKey ) {
-			columnsToSelect.sort( function( a, b ){ return a - b; } );
-			var start = columnsToSelect[0];
-			var end = colIdx;
-			if (start > end) {
+			this.columnsToSelect.sort( function( a, b ) { return a - b; } );
+			var start = this.columnsToSelect[ 0 ];
+			var end = this.clickedColumnId;
+			if ( start > end ) {
 				start = end;
-				end = columnsToSelect[0];
+				end = this.columnsToSelect[ 0 ];
 			}
-			for (var i = start; i <= end; i++) {
-				columnsToSelect.push(i);
+			this.columnsToSelect = [];
+			for ( var i = start; i <= end; i++ ) {
+				this.columnsToSelect.push( i );
 			}
+		// single column
 		} else {
-			columnsToSelect = [ colIdx ];
+			this.columnsToSelect = [ this.clickedColumnId ];
 		}
 
-		// this does actually the column-selection.
-		// it reads the columns which should be selected from "columnsToSelect"
-		this.selectColumns( columnsToSelect );
+		// mark the selection visual
+		this.selectColumns();
 
 		// prevent browser from selecting the table
 		jqEvent.preventDefault();
@@ -626,9 +629,10 @@ function (Aloha, jQuery, FloatingMenu, i18n, TableCell, TableSelection, Utils) {
 		// stop bubble, otherwise the mousedown of the table is called ...
 		jqEvent.stopPropagation();
 
+		// prevent ff/chrome/safare from selecting the contents of the table
 		return false;
 	};
-
+	
 	/**
 	 * Mouseover-event for the column-selection cell. This method calcluates the
 	 * span between the clicked column and the mouse-overed cell and selects the

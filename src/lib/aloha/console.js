@@ -129,6 +129,11 @@ var alohaConsole = Class.extend({
 		switch (level) {
 		case 'error':
 			if (window.console && console.error) {
+				// FIXME:
+				// Using console.error rather than throwing an error is very
+				// problematic because we get not stack.
+				// We ought to consider doing the following:
+				// throw component + ': ' + message;
 				console.error(component + ': ' + message);
 			}
 			break;

@@ -126,53 +126,55 @@ function(Aloha, Plugin, jQuery, Commands, console) {
 			Aloha.bind('aloha-editable-created', function(event, editable) {
 				
 				// the events depend on the browser
-				if (jQuery.browser.msie) {
+				if ( jQuery.browser.msie ) {
 					// only do the ugly beforepaste hack, if we shall not access the clipboard
-					if (that.settings.noclipboardaccess) {
-						editable.obj.bind('beforepaste', function(event) {
+					if ( that.settings.noclipboardaccess ) {
+						editable.obj.bind( 'beforepaste', function( event ) {
 							redirectPaste();
 							event.stopPropagation();
-						});
+						} );
 					} else {
 						// this is the version using the execCommand for IE
-						editable.obj.bind('paste', function(event) {
+						editable.obj.bind( 'paste', function( event ) {
 							redirectPaste();
 							var range = document.selection.createRange();
-							range.execCommand('paste');
+							range.execCommand( 'paste' );
 							getPastedContent();
-
-							// call smartContentChange after paste action
-							Aloha.activeEditable.smartContentChange(event);
+							// This feels rather hackish. We manually unset
+							// the metaKey property because the
+							// smartContentChange method will not process
+							// this event if the metaKey property is set.
+							event.metaKey = void 0;
+							Aloha.activeEditable.smartContentChange( event );
 							event.stopPropagation();
 							return false;
-						});
+						} );
 					}
 				} else {
-					editable.obj.bind('paste', function(event) {
+					editable.obj.bind( 'paste', function( event ) {
 						redirectPaste();
-						window.setTimeout(function() {
+						// We need to accomodate a small amount of execution
+						// window until the pasted content is actually in
+						// inserted
+						window.setTimeout( function() {
 							getPastedContent();
-						}, 10);
-
-						// call smartContentChange after paste action
-						Aloha.activeEditable.smartContentChange(event);
-						event.stopPropagation();
-					});
+							Aloha.activeEditable.smartContentChange( event );
+							event.stopPropagation();
+						}, 10 );
+					} );
 				}
 			});
 
 			// bind a handler to the paste event of the pasteDiv to get the
 			// pasted content (but do this only once, not for every editable)
-			if (jQuery.browser.msie && that.settings.noclipboardaccess) {
-				$pasteDiv.bind('paste', function(event) {
-					window.setTimeout(function() {
+			if ( jQuery.browser.msie && that.settings.noclipboardaccess ) {
+				$pasteDiv.bind( 'paste', function( event ) {
+					window.setTimeout( function() {
 						getPastedContent();
-					}, 10);
-
-					// call smartContentChange after paste action
-					Aloha.activeEditable.smartContentChange(event);
-					event.stopPropagation();
-				});
+						Aloha.activeEditable.smartContentChange( event );
+						event.stopPropagation();
+					}, 10 );
+				} );
 			}
 		},
 
