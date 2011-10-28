@@ -560,18 +560,18 @@ function (Aloha, jQuery, FloatingMenu, i18n, TableCell, TableSelection, Utils) {
 	 *            the jquery object of the td-field
 	 * @return void
 	 */
-	Table.prototype.attachColumnSelectEventsToCell = function (cell) {
+	Table.prototype.attachColumnSelectEventsToCell = function ( cell ) {
 		var that = this;
 
 		// unbind eventually existing events of this cell
-		cell.unbind('mousedown');
-		cell.unbind('mouseover');
+		cell.unbind( 'mousedown' );
+		cell.unbind( 'mouseover' );
 
 		// prevent ie from selecting the contents of the table
-		cell.get(0).onselectstart = function() { return false; };
+		cell.get( 0 ).onselectstart = function () { return false; };
 
-		cell.bind('mousedown',  function(e) { that.columnSelectionMouseDown(e) } );
-		cell.bind('mouseover', function(e) { that.columnSelectionMouseOver(e) } );
+		cell.bind( 'mousedown',  function ( e ) { that.columnSelectionMouseDown( e ) } );
+		cell.bind( 'mouseover',  function ( e ) { that.columnSelectionMouseOver( e ) } );
 	};
 	
 	/**
@@ -1035,7 +1035,7 @@ function (Aloha, jQuery, FloatingMenu, i18n, TableCell, TableSelection, Utils) {
 	Table.prototype.addColumns = function( position ) {
 		var 
 			that = this,
-			emptyCell = jQuery('<td>'),
+			emptyCell = jQuery( '<td>' ),
 		    rows = this.getRows(),
 			cell,
 			currentColIdx,
@@ -1045,50 +1045,47 @@ function (Aloha, jQuery, FloatingMenu, i18n, TableCell, TableSelection, Utils) {
 		if ( 0 === selectedColumnIdxs.length ) {
 			return;
 		}
-
-		selectedColumnIdxs.sort( function (a,b) { return a - b; } );
+		
+		selectedColumnIdxs.sort( function ( a, b ) { return a - b; } );
 		
 		// refuse to insert a column unless a consecutive range has been selected
 		if ( ! Utils.isConsecutive( selectedColumnIdxs ) ) {
-			Aloha.showMessage(new Aloha.Message({
-				title : i18n.t('Table'),
-				text : i18n.t('table.addColumns.nonConsecutive'),
-				type : Aloha.Message.Type.ALERT
-			}));
+			Aloha.showMessage( new Aloha.Message( {
+				title : i18n.t( 'Table' ),
+				text  : i18n.t( 'table.addColumns.nonConsecutive' ),
+				type  : Aloha.Message.Type.ALERT
+			} ) );
 			return;
 		}
 		
-		if ( "left" === position ) {
-			currentColIdx = selectedColumnIdxs[0];
+		if ( 'left' === position ) {
+			currentColIdx = selectedColumnIdxs[ 0 ];
 			// inserting a row before the selected column indicies moves
 			// all selected columns one to the right
 			for ( var i = 0; i < this.selection.selectedColumnIdxs.length; i++ ) {
-				this.selection.selectedColumnIdxs[i] += 1;
+				this.selection.selectedColumnIdxs[ i ] += 1;
 			}
 		} else {//"right" == position
 			currentColIdx = selectedColumnIdxs[ selectedColumnIdxs.length - 1 ];
 		}
-
-		var grid = Utils.makeGrid(rows);
-		for (var i = 0; i < rows.length; i++) {
-				
+		
+		var grid = Utils.makeGrid( rows );
+		
+		for ( var i = 0; i < rows.length; i++ ) {
 			// prepare the cell to be inserted
 			cell = emptyCell.clone();
-			cell.html('\u00a0');
+			cell.html( '\u00a0' );
 
 			// on first row correct the position of the selected columns
 			if ( i == 0 ) {
-
 				// this is the first row, so make a column-selection cell
 				this.attachColumnSelectEventsToCell( cell );
-
 			} else {
 				// activate the cell for this table
 				cellObj = this.newActiveCell( cell.get(0) );
 				cell = cellObj.obj;
 			}
 
-			
 			var leftCell = Utils.leftDomCell( grid, i, currentColIdx );
 			if ( null == leftCell ) {
 				jQuery( rows[i] ).prepend( cell );
