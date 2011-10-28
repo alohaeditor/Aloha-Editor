@@ -39,6 +39,14 @@ var tests = {
 		{  	start: '<span><br>{}<br></span>',
 			execResult: '<span>{}<br></span>'
 		},
+		{	exclude: 'msie',
+			start: '<p>f[]</p>',
+			execResult: '<p>{}<br class="aloha-end-br"/></p>'
+		},
+		{	include: 'msie',
+			start: '<p>f[]</p>',
+			execResult: '<p>[]</p>'
+		},
 		{  	start: '<p>[]foo</p>',
 			execResult: '<p>[]foo</p>'
 		},
