@@ -126,38 +126,38 @@ function(Aloha, Plugin, jQuery, Commands, console) {
 			Aloha.bind('aloha-editable-created', function(event, editable) {
 				
 				// the events depend on the browser
-				if (jQuery.browser.msie) {
+				if ( jQuery.browser.msie ) {
 					// only do the ugly beforepaste hack, if we shall not access the clipboard
-					if (that.settings.noclipboardaccess) {
-						editable.obj.bind('beforepaste', function(event) {
+					if ( that.settings.noclipboardaccess ) {
+						editable.obj.bind( 'beforepaste', function( event ) {
 							redirectPaste();
 							event.stopPropagation();
-						});
+						} );
 					} else {
 						// this is the version using the execCommand for IE
 						editable.obj.bind( 'paste', function( event ) {
 							redirectPaste();
-							
 							var range = document.selection.createRange();
 							range.execCommand( 'paste' );
 							getPastedContent();
-							
-							debugger;
-							
+							// This feels rather hackish. We manually unset
+							// the metaKey property because the
+							// smartContentChange method will not process
+							// this event if the metaKey property is set.
+							event.metaKey = void 0;
 							Aloha.activeEditable.smartContentChange( event );
 							event.stopPropagation();
-							
 							return false;
 						} );
 					}
 				} else {
 					editable.obj.bind( 'paste', function( event ) {
 						redirectPaste();
+						// We need to accomodate a small amount of execution
+						// window until the pasted content is actually in
+						// inserted
 						window.setTimeout( function() {
 							getPastedContent();
-							
-							debugger;
-							
 							Aloha.activeEditable.smartContentChange( event );
 							event.stopPropagation();
 						}, 10 );
