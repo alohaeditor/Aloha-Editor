@@ -301,8 +301,7 @@ define( [
 	                	'<textarea id="' + nsClass('textarea') + '" class="' + nsClass('textarea') + '" />').content;
 	            
             	jQuery(nsSel('textarea')).live('keyup', function() { 
-
-            		//The original developer thought that escaping the
+					//The original developer thought that escaping the
 					//quote characters of the textarea value are
 					//necessary to work around a bug in IE. I could not
 					//reproduce the bug, so I commented the following
@@ -1072,13 +1071,15 @@ define( [
 
 		// for cells
 		// add summary field
-		this.summary = new Aloha.ui.AttributeField({
-			'width': 275,
-			name : 'tableSummary'
-		});
-		this.summary.addListener('keyup', function(obj, event) {
+		this.summary = new Aloha.ui.AttributeField( {
+			width : 275,
+			name  : 'tableSummary'
+		} );
+		
+		this.summary.addListener( 'keyup', function( obj, event ) {
 			that.activeTable.checkWai();
-		});
+		} );
+		
 		if(!this.settings.summaryinsidebar) {
 			FloatingMenu.addButton(
 				this.name + '.cell',

@@ -3950,6 +3950,12 @@ function fixDisallowedAncestors(node, range) {
 	restoreValues(values, range);
 }
 
+/**
+ * This method "normalizes" sublists of the given item (which is supposed to be a LI):
+ * If sublists are found in the LI element, they are moved directly into the outer list.
+ * @param item item
+ * @param range range, which will be modified if necessary
+ */
 function normalizeSublists(item, range) {
 	// "If item is not an li or it is not editable or its parent is not
 	// editable, abort these steps."
@@ -3993,6 +3999,29 @@ function normalizeSublists(item, range) {
 			movePreservingRanges(child, newItem, 0, range);
 		}
 	}
+}
+
+/**
+ * This method is the exact opposite of normalizeSublists.
+ * List nodes directly nested into each other are corrected to be nested in li elements (so that the resulting lists conform the html5 specification)
+ * @param item list node
+ * @param range range, which is preserved when modifying the list
+ */
+function unNormalizeSublists(item, range) {
+	// "If item is not an ol or ol or it is not editable or its parent is not
+	// editable, abort these steps."
+	if (!isHtmlElement(item, ["OL", "UL"])
+	|| !isEditable(item)) {
+		return;
+	}
+
+	var $list = jQuery(item);
+	$list.children("ol,ul").each(function(index, sublist) {
+		if (isHtmlElement(sublist.previousSibling, "LI")) {
+			// move the sublist into the LI
+			movePreservingRanges(sublist, sublist.previousSibling, sublist.previousSibling.childNodes.length, range);
+		}
+	});
 }
 
 function getSelectionListState() {
@@ -6193,6 +6222,11 @@ commands["delete"] = {
 
 			// "Fix disallowed ancestors of node."
 			fixDisallowedAncestors(node, range);
+
+			// fix the lists to be html5 conformant
+			for (var i = 0; i < items.length; i++) {
+				unNormalizeSublists(items[i].parentNode, range);
+			}
 
 			// "Abort these steps."
 			return;
