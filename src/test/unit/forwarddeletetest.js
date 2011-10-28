@@ -3,11 +3,9 @@ var specifictests = {
 		defaultValue: '',
 		defaultCommand: 'forwarddelete',
 		tests: [
-
-		
 		
 
-				]
+			   ]
 }
 		      
 
@@ -36,7 +34,7 @@ var alltests = {
 			start: 'foo{<p>bar</p>}baz',
 			execResult: 'foo[]baz'
 		},
-		{	exclude: 'msie',	
+		{	exclude: 'msie',
 			start: 'foo<p>{bar</p>}baz',
 			execResult: 'foo<p>[]baz</p>'
 		},
@@ -424,7 +422,7 @@ var alltests = {
 		},
 		{	exclude: 'msie',
 			start: 'foo &nbsp;[] bar',
-			execResult: 'foo &nbsp;[]bar'
+			execResult: 'foo&nbsp;[]bar'
 		},	        
         {	start: 'foo[<p>]bar</p>baz',
 			execResult: 'foo[]bar<br>baz'
@@ -702,8 +700,8 @@ var alltests = {
  * Tests with errors in ie
  */	        
 		{	exclude: 'msie',
-			start: 'foo <span>&nbsp;</span>[] bar',
-			execResult: 'foo <span>&nbsp;[]</span>bar'
+			start: 'foo <span>&nbsp;</span> []bar',
+			execResult: 'foo <span>&nbsp;[]</span> []ar'
 		},
 		{	exclude: 'msie',
 			start: 'foo[]<quasit></quasit>bar',
@@ -960,7 +958,7 @@ var alltests = {
 		//see also deletetest.js for that problem
 		// This selection is not possible in ie
 		{ 	exclude: 'msie',
-			start: 'foo<br>{<p>]bar</p>', 
+			start: 'foo{<br><p>}bar</p>', 
 	 		execResult: 'foo[]bar' 
 		},
 		// This selection is not possible in ie
@@ -1044,7 +1042,7 @@ var alltests = {
 			start: '<p>foo</p>{<p>bar</p>}<p>baz</p>',
 			execResult: '<p>foo[]</p><p>baz</p>'
 		},
-       	{	exclude: 'msie', 
+       	{	exclude: 'msie',
        		start: '<span>foo[]<span></span></span>bar',
 			execResult: '<span>foo[]</span>ar'
 		},
