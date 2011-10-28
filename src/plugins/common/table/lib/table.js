@@ -1090,7 +1090,7 @@ function (Aloha, jQuery, FloatingMenu, i18n, TableCell, TableSelection, Utils) {
 			if ( null == leftCell ) {
 				jQuery( rows[i] ).prepend( cell );
 			} else {
-				if ( 'left' === position ) {
+				if ( 'left' === position && Utils.containsDomCell( grid[ i ][ currentColIdx ] ) ) {
 					jQuery( leftCell ).before( cell );
 				} else {//right
 					jQuery( leftCell ).after( cell );
