@@ -178,7 +178,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 
 		/**
 		 * will return wheter selection change event was prevented or not, and reset the preventSelectionChangedFlag
-		 * @return boolean true if aloha-selection-change event was prevented
+		 * @return {Boolean} true if aloha-selection-change event was prevented
 		 */
 		isSelectionChangedPrevented: function () {
 			var prevented = this.preventSelectionChangedFlag;
@@ -187,10 +187,13 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		},
 		
 		/**
-		 * This method will check if the current rangeObject common ancector container is edtiable. 
+		 * Checks if the current rangeObject common ancector container is edtiable
+		 * @return {Boolean} true if current common ancestor is editable
 		 */
 		isSelectionEditable: function() {
-			return jQuery(this.rangeObject.commonAncestorContainer).contentEditable();
+			return ( this.rangeObject.commonAncestorContainer &&
+						jQuery( this.rangeObject.commonAncestorContainer )
+							.contentEditable() );
 		},
 
 		/**
