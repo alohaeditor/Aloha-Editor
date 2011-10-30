@@ -524,6 +524,13 @@ function (Aloha, jQuery, FloatingMenu, i18n, TableCell, TableSelection, Utils) {
 					FloatingMenu.userActivatedTab = i18n.t('floatingmenu.tab.table');
 					FloatingMenu.doLayout();
 					
+					// As side-effect of the following call the focus
+					// will be set on the first selected cell. 
+					// This will be overwritten with the summary
+					// attribute-field, if the setting summaryinsidebar
+					// is false.
+					that._removeCursorSelection();
+
 					// jump in Summary field
 					// attempting to focus on summary input field will occasionally result in the
 					// following exception:
@@ -535,7 +542,8 @@ function (Aloha, jQuery, FloatingMenu, i18n, TableCell, TableSelection, Utils) {
 						that.tablePlugin.summary.focus();
 						e.stopPropagation();
 						e.preventDefault();
-					} catch (e) {}
+					} catch (e) {
+					}
 
 					return false;
 				};
@@ -1144,17 +1152,58 @@ function (Aloha, jQuery, FloatingMenu, i18n, TableCell, TableSelection, Utils) {
 	};
 
 	/**
-	 * Undoes the cursor-selection after cells have been selected.
+	 * Undoes the cursor-selection after cells have been selected.  This
+	 * is done to be more consistent in the UI - there should either be
+	 * a cursor-selection or a cell-selection, but not both.
 	 */
-	function removeCursorSelection() {
-		// On IE, whenever a row/column is already selected, and another
-		// row/column is selected, the browser window scrolls to the top
-		// of the page (browser bug). IE removes the cursor-selection by
-		// itself and shows a frame around the table, with resize
-		// handles (the frame seems useless).
-		if ( ! jQuery.browser.msie ) {
-			Aloha.getSelection().removeAllRanges();
+	Table.prototype._removeCursorSelection = function() {
+		// We can't remove the selection on IE because whenever a
+		// row/column is selected, and then another row/column is
+		// selected, the browser windows scrolls to the top of the page
+		// (som kind of browser bug).
+
+		// This is no problem for IE because IE removes the
+		// cursor-selection by itself and shows a frame around the
+		// table, with resize handles (the frame seems useless).
+
+		// On other browsers, we can't remove the selection because the
+		// floating menu will disappear when one selects a rows/column
+		// and types a key (that's the same effect as when one clicks
+		// outside the editable).
+
+		//TODO: currently, removing the cursor selection can't be
+		//     reliably implemented.
+		//if ( ! jQuery.browser.msie ) {
+		//    Aloha.getSelection().removeAllRanges();
+		//}
+
+		// The following is a workaround for the above because we can't
+		// leave the cursor-selection outside of the table, since
+		// otherwise the floating menu scope will be incorrect when one
+		// CTRL-clicks on the rows or columns.
+		var selection = Aloha.getSelection();
+		if ( null == selection || null == selection.getRangeAt( 0 ) ) {
+			return;
 		}
+
+		var range = selection.getRangeAt( 0 );
+		if ( null == range.startContainer ) {
+			return;
+		}
+
+		// if the selection is  already in the table, do nothing
+		if ( 0 !== jQuery( range.startContainer ).closest('table').length ) {
+			return;
+		}
+		
+		// if no cells are selected, do nothing
+		if ( 0 === this.selection.selectedCells.length ) {
+			return;
+		}
+
+		// set the foces to the first selected cell
+		var container = TableCell.getContainer( this.selection.selectedCells[ 0 ] );
+		jQuery( container ).focus();
 	}
 
 	/**
@@ -1201,7 +1250,7 @@ function (Aloha, jQuery, FloatingMenu, i18n, TableCell, TableSelection, Utils) {
 		this.selection.selectColumns( columnsToSelect );
 
 		this.selection.notifyCellsSelected();
-		removeCursorSelection();
+		this._removeCursorSelection();
 	};
 
 	/**
@@ -1283,7 +1332,7 @@ function (Aloha, jQuery, FloatingMenu, i18n, TableCell, TableSelection, Utils) {
 		this.obj.find('div.aloha-ui-table-cell-editable').blur();
 
 		this.selection.notifyCellsSelected();
-		removeCursorSelection();
+		this._removeCursorSelection();
 	};
 
 	/**
