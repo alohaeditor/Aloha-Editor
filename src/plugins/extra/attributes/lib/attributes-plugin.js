@@ -5,11 +5,15 @@
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
 define(
-['aloha', 'aloha/jquery', 'aloha/plugin', 'aloha/floatingmenu', 'i18n!attributes/nls/i18n', 'i18n!aloha/nls/i18n', 'css!attributes/css/attributes.css'],
-function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
+['aloha','aloha/plugin', 'aloha/floatingmenu', 'i18n!attributes/nls/i18n', 'i18n!aloha/nls/i18n', 'css!attributes/css/attributes.css'],
+function(Aloha, Plugin, FloatingMenu, i18n, i18nCore) {
 	"use strict";
 
-	var $ = jQuery;
+	var
+		jQuery = Aloha.jQuery,
+		$ = jQuery,
+		GENTICS = window.GENTICS,
+		Aloha = window.Aloha;
 	
     return Plugin.create('attributes', {
 		_constructor: function(){
@@ -110,7 +114,9 @@ function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 			if ( typeof this.settings.activeOn !== 'undefined') {
 				this.activeOn = this.settings.activeOn;
 			}
-			Aloha.ready( function (ev, sidebars) { that.initSidebar(Aloha.Sidebar.right); });
+			Aloha.ready( function (ev, sidebars) { 
+				that.initSidebar(Aloha.Sidebar.right); 
+			});
 		},
 				
 		getSidebarContent: function() {

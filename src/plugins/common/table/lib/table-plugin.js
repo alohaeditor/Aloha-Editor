@@ -5,12 +5,30 @@
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
 
-define(
-['aloha', 'aloha/jquery', 'aloha/plugin', 'aloha/pluginmanager', 'aloha/floatingmenu', 'i18n!table/nls/i18n', 'i18n!aloha/nls/i18n', 'table/table-create-layer', 'table/table', 'table/table-plugin-utils', 'css!table/css/table.css'],
-function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, CreateLayer, Table, Utils) {
+define( [
+	'aloha',
+	'aloha/jquery',
+	'aloha/plugin',
+	'aloha/pluginmanager',
+	'aloha/floatingmenu',
+	'i18n!table/nls/i18n',
+	'i18n!aloha/nls/i18n',
+	'table/table-create-layer',
+	'table/table',
+	'table/table-plugin-utils',
+	'css!table/css/table.css'
+], function( Aloha,
+			 jQuery,
+			 Plugin,
+			 PluginManager,
+			 FloatingMenu,
+			 i18n,
+			 i18nCore,
+			 CreateLayer,
+			 Table,
+			 Utils ) {
 
-	var
-		GENTICS = window.GENTICS;
+	var GENTICS = window.GENTICS;
 
 	/**
 	 * Register the TablePlugin as Aloha.Plugin
@@ -58,9 +76,9 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 		classLeftUpperCorner : 'aloha-table-leftuppercorner', // class for the left upper corner cell
 		classTableWrapper    : 'aloha-table-wrapper',         // class of the outest table-wrapping div
 		classCellSelected    : 'aloha-cell-selected',         // class of cell which are selected (row/column selection)
-		waiRed				 : 'aloha-wai-red',                     // class that shows wai of div
-		waiGreen			 : 'aloha-wai-green',                   // class that shows wai of div
-		selectionArea        : 10                                     // width/height of the selection rows (in pixel)
+		waiRed               : 'aloha-wai-red',               // class that shows wai of div
+		waiGreen             : 'aloha-wai-green',             // class that shows wai of div
+		selectionArea        : 10                             // width/height of the selection rows (in pixel)
 	};
 
   /**
@@ -109,29 +127,26 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 		var that = this;
 
 		// subscribe for the 'editableActivated' event to activate all tables in the editable
-		Aloha.bind('aloha-editable-created', function(event, editable) {
+		Aloha.bind('aloha-editable-created', function( event, editable ) {
 
 			// add a mousedown event to all created editables to check if focus leaves a table
-			editable.obj.bind('mousedown', function(jqEvent) {
-				TablePlugin.setFocusedTable(undefined);
-			});
+			editable.obj.bind( 'mousedown', function( jqEvent ) {
+				TablePlugin.setFocusedTable( undefined );
+			} );
 
-			editable.obj.find('table').each(function () {
+			editable.obj.find( 'table' ).each( function () {
 				// only convert tables which are editable
-				if (that.isEditableTable(this)) {
-					// instantiate a new table-object
-					var table = new Table(this, TablePlugin);
-
+				if ( that.isEditableTable( this ) &&
+						!TablePlugin.isWithinTable( this ) ) {
+					var table = new Table( this, TablePlugin );
 					table.parentEditable = editable;
-
-					// activate the table
 					// table.activate();
-
-					// add the activated table to the TableRegistry
-					TablePlugin.TableRegistry.push(table);
+					TablePlugin.TableRegistry.push( table );
 				}
-			});
-		});
+				
+				TablePlugin.checkForNestedTables( editable.obj );
+			} );
+		} );
 
 		// initialize the table buttons
 		this.initTableButtons();
@@ -199,18 +214,15 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 
 				// if we come here, we did not find the table in our registry, so we need to create a new one
 				// only convert tables which are editable
-				if (that.isEditableTable(this)) {
-					// instantiate a new table-object
-					var table = new Table(this, TablePlugin);
-
+				if ( that.isEditableTable( this ) &&
+						!TablePlugin.isWithinTable( this ) ) {
+					var table = new Table( this, TablePlugin );
 					table.parentEditable = props.editable;
-
-					// activate the table
 					table.activate();
-
-					// add the activated table to the TableRegistry
-					TablePlugin.TableRegistry.push(table);
+					TablePlugin.TableRegistry.push( table );
 				}
+				
+				TablePlugin.checkForNestedTables( props.editable.obj );
 			});
 		});
 
@@ -228,11 +240,30 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 				tr[i].deactivate();
 			}
 		});
-
-		if(this.settings.summaryinsidebar) {
-			Aloha.ready(function () { 
-				that.initSidebar(Aloha.Sidebar.right.show());  
-			});
+		
+		Aloha.bind( 'aloha-smart-content-changed', function ( event ) {
+			if ( Aloha.activeEditable ) {
+				Aloha.activeEditable.obj.find( 'table' ).each( function () {
+					if ( !TablePlugin.isTableElementInRegistry( this ) &&
+							!TablePlugin.isWithinTable( this ) ) {
+						var el = jQuery( this );
+						el.id = GENTICS.Utils.guid();
+						
+						var table = new Table( el, TablePlugin );
+						table.parentEditable = Aloha.activeEditable;
+						table.activate();
+						TablePlugin.TableRegistry.push( table );
+					}
+					
+					TablePlugin.checkForNestedTables( Aloha.activeEditable.obj );
+				} );
+			}
+		} );
+		
+		if ( this.settings.summaryinsidebar ) {
+			Aloha.ready( function () { 
+				that.initSidebar( Aloha.Sidebar.right.show() );  
+			} );
 		}
 	};
 
@@ -299,21 +330,99 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 		sidebar.show();
 	};
 
-  /**
-   * test if the table is editable
-   * @return boolean true if the table's parent element is contentEditable, false otherwise
-   */
-  TablePlugin.isEditableTable = function (table) {
-	  return GENTICS.Utils.Dom.isEditable( table );
-  };
+	/**
+	 * test if the table is editable
+	 * @return boolean true if the table's parent element is contentEditable, false otherwise
+	 */
+	TablePlugin.isEditableTable = function (table) {
+		return GENTICS.Utils.Dom.isEditable( table );
+	};
+	
+	/**
+	 * Checks if a table element in the TableRegistry array
+	 *
+	 * @param {jQuery} elem
+	 * @return {Boolean} true if table elem is in registry
+	 */
+	TablePlugin.isTableElementInRegistry = function ( elem ) {
+		var registry = TablePlugin.TableRegistry;
+		
+		for ( var i = 0; i < registry.length; i++ ) {
+			if ( registry[ i ].obj.is( elem ) ) {
+				return true;
+			}
+		}
+		
+		return false;
+	};
+	
+	/**
+	 * Checks whether the current selection is inside a table within an
+	 * editable
+	 *
+	 * @return {Boolean} true if we are inside a table
+	 */
+	TablePlugin.isSelectionInTable = function () {
+		var range = Aloha.Selection.getRangeObject();
+		var container = jQuery( range.commonAncestorContainer );
+		
+		if ( container.length == 0 ) {
+			return  false;
+		}
+		
+		if ( container.parents( '.aloha-editable table' ).length ) {
+			return true;
+		}
+		
+		return false;
+	};
+	
+	TablePlugin.preventNestedTables = function () {
+		if ( this.isSelectionInTable() ) {
+			Aloha.showMessage( new Aloha.Message( {
+				title : i18n.t( 'Table' ),
+				text  : i18n.t( 'table.createTable.nestedTablesNoSupported' ),
+				type  : Aloha.Message.Type.ALERT
+			} ) );
+			
+			return true;
+		}
+		
+		return false;
+	};
+	
+	/**
+	 * Checks if the given element is within a table.
+	 *
+	 * @param {DOMElment} elem
+	 * @return {Boolean} true if elem is nested within a table
+	 */
+	TablePlugin.isWithinTable = function ( elem ) {
+		return  ( jQuery( elem )
+					.parents( '.aloha-editable table' )
+						.length > 0 );
+	};
+	
+	/**
+	 * Checks for the presence of nested tables in the given editable.
+	 * @todo complete
+	 * @param {jQuery} editable
+	 */
+	TablePlugin.checkForNestedTables = function ( editable ) {
+		if ( editable.find( 'table table' ).length ) {
+			// show warning
+		} else {
+			// hide warning
+		}
+	}
+	
+	/**
+	 * Adds default row buttons, and custom formatting buttons to floating menu
+	 */
+	TablePlugin.initRowsBtns = function () {
+		var that = this;
 
-  /**
-   * Adds default row buttons, and custom formatting buttons to floating menu
-   */
-  TablePlugin.initRowsBtns = function () {
-    var that = this;
-
-    // add row before
+		// add row before
 		FloatingMenu.addButton(
 			this.name + '.row',
 			new Aloha.ui.Button({
@@ -329,8 +438,24 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 			i18n.t('floatingmenu.tab.table'),
 			1
 		);
-
-    // add row after
+		
+		/*
+		// TODO: This would add a icon what would be toggled if the active
+		// editable contains nested tables. We show a warning to indicate to
+		// the user that we do not support nested tables
+		var tabs = FloatingMenu.tabs;
+		var j = tabs.length;
+		for ( var i = 0; i < j; i++ ) {
+			if ( tabs[ i ].label == i18n.t( 'floatingmenu.tab.table' ) ) {
+				tabs[ i ].label += '&nbsp<img\
+					src="../img/warning-icon.png"\
+					style="vertical-align:middle;"\
+					alt="" />';
+			}
+		}
+		*/
+		
+		// add row after
 		FloatingMenu.addButton(
 			this.name + '.row',
 			new Aloha.ui.Button({
@@ -347,7 +472,7 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 			1
 		);
 
-    // delete selected rows
+		// delete selected rows
 		FloatingMenu.addButton(
 			this.name + '.row',
 			new Aloha.ui.Button({
@@ -528,7 +653,8 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
       }
     
     this.rowMSButton = new Aloha.ui.MultiSplitButton({
-      items : this.rowMSItems
+      items : this.rowMSItems,
+      name : 'tableRowActions'
     });
     
     if (this.rowMSItems.length > 0) {
@@ -748,7 +874,8 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
     }
     
     this.columnMSButton = new Aloha.ui.MultiSplitButton({
-      items : this.columnMSItems
+      items : this.columnMSItems,
+      name : 'tableColumnActions'
     });
     
     if (this.columnMSItems.length > 0) {
@@ -774,11 +901,13 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 
 		// the 'create table' button
 		this.createTableButton = new Aloha.ui.Button({
-			'iconClass' : 'aloha-button aloha-button-table',
-			'size' : 'small',
-			'tooltip' : i18n.t('button.createtable.tooltip'),
-			'onclick' : function (element, event) {
-				TablePlugin.createDialog(element.btnEl.dom);
+			iconClass : 'aloha-button aloha-button-table',
+			size      : 'small',
+			tooltips  : i18n.t('button.createtable.tooltip'),
+			onclick   : function ( element, event ) {
+				if ( !that.preventNestedTables() ) {
+					TablePlugin.createDialog( element.btnEl.dom );
+				}
 			}
 		});
 
@@ -846,7 +975,8 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
     }
     
     this.tableMSButton = new Aloha.ui.MultiSplitButton({
-      items : this.tableMSItems
+      items : this.tableMSItems,
+      name : 'tableActions'
     });
     
     if(this.tableMSItems.length > 0) {
@@ -941,12 +1071,15 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 
 		// for cells
 		// add summary field
-		this.summary = new Aloha.ui.AttributeField({
-			'width': 275
-		});
-		this.summary.addListener('keyup', function(obj, event) {
+		this.summary = new Aloha.ui.AttributeField( {
+			width : 275,
+			name  : 'tableSummary'
+		} );
+		
+		this.summary.addListener( 'keyup', function( obj, event ) {
 			that.activeTable.checkWai();
-		});
+		} );
+		
 		if(!this.settings.summaryinsidebar) {
 			FloatingMenu.addButton(
 				this.name + '.cell',
@@ -1025,55 +1158,67 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 	 * @return void
 	 */
 	TablePlugin.createTable = function(cols, rows) {
+		if ( this.preventNestedTables() ) {
+			return;
+		}
+		
 		// Check if there is an active Editable and that it contains an element (= .obj)
-		if (Aloha.activeEditable != null && typeof Aloha.activeEditable.obj != 'undefined') {
+		if ( Aloha.activeEditable && typeof Aloha.activeEditable.obj !== 'undefined' ) {
 			// create a dom-table object
-			var table = document.createElement('table');
+			var table = document.createElement( 'table' );
 			var tableId = table.id = GENTICS.Utils.guid();
-			var tbody = document.createElement('tbody');
+			var tbody = document.createElement( 'tbody' );
 
 			// create "rows"-number of rows
-			for (var i = 0; i < rows; i++) {
-				var tr = document.createElement('tr');
+			for ( var i = 0; i < rows; i++ ) {
+				var tr = document.createElement( 'tr' );
 				// create "cols"-number of columns
-				for (var j = 0; j < cols; j++) {
-					var text = document.createTextNode('\u00a0');
-					var td = document.createElement('td');
-					td.appendChild(text);
-					tr.appendChild(td);
+				for ( var j = 0; j < cols; j++ ) {
+					var text = document.createTextNode( '\u00a0' );
+					var td = document.createElement( 'td' );
+					td.appendChild( text );
+					tr.appendChild( td );
 				}
-				tbody.appendChild(tr);
+				tbody.appendChild( tr );
 			}
-			table.appendChild(tbody);
+			table.appendChild( tbody );
 
 			// insert at current cursor position
-			GENTICS.Utils.Dom.insertIntoDOM(jQuery(table), Aloha.Selection.getRangeObject(), jQuery(Aloha.activeEditable.obj));
-
+			GENTICS.Utils.Dom.insertIntoDOM(
+				jQuery( table ),
+				Aloha.Selection.getRangeObject(),
+				Aloha.activeEditable.obj
+			);
+			
 			// if the table is inserted
-			var tableReloadedFromDOM = document.getElementById(tableId);
+			var tableReloadedFromDOM = document.getElementById( tableId );
 
-			var tableObj = new Table(tableReloadedFromDOM, TablePlugin);
+			if ( !TablePlugin.isWithinTable( tableReloadedFromDOM ) ) {
+				var tableObj = new Table( tableReloadedFromDOM, TablePlugin );
+				tableObj.parentEditable = Aloha.activeEditable;
+				// transform the table to be editable
+				tableObj.activate();
 
-			tableObj.parentEditable = Aloha.activeEditable;
+				// after creating the table, trigger a click into the first cell to
+				// focus the content
+				// for IE set a timeout of 10ms to focus the first cell, other wise it
+				// won't work
+				if ( jQuery.browser.msie ) {
+					window.setTimeout( function () {
+						tableObj.cells[ 0 ].wrapper.get( 0 ).focus();
+					}, 20 );
+				} else {
+					tableObj.cells[ 0 ].wrapper.get( 0 ).focus();
+				}
 
-			// transform the table to be editable
-			tableObj.activate();
-
-			// after creating the table, trigger a click into the first cell to
-			// focus the content
-			// for IE set a timeout of 10ms to focus the first cell, other wise it
-			// won't work
-			if (jQuery.browser.msie) {
-				window.setTimeout(function() { tableObj.cells[0].wrapper.get(0).focus(); }, 20);
-			} else {
-				tableObj.cells[0].wrapper.get(0).focus();
+				TablePlugin.TableRegistry.push( tableObj );
 			}
-
-			TablePlugin.TableRegistry.push(tableObj);
-
+			
+			TablePlugin.checkForNestedTables( Aloha.activeEditable.obj );
 		// no active editable => error
-		}else{
-			this.error('There is no active Editable where the table can be inserted!');
+		} else {
+			this.error( 'There is no active Editable where the table can be\
+				inserted!' );
 		}
 	};
 
@@ -1100,12 +1245,13 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 		}
 		TablePlugin.activeTable = focusTable;
 
-    // show configured formatting classes
-    for (var i = 0; i < this.tableMSItems.length; i++) {
-      this.tableMSButton.extButton.showItem(this.tableMSItems[i].name);
+	if (this.tableMSButton.extButton) {
+		// show configured formatting classes
+		for (var i = 0; i < this.tableMSItems.length; i++) {
+		  this.tableMSButton.extButton.showItem(this.tableMSItems[i].name);
+		}
+		this.tableMSButton.setActiveItem();
     }
-    
-    this.tableMSButton.setActiveItem();
     
     if (this.activeTable) {
       for (var i = 0; i < this.tableConfig.length; i++) {
@@ -1208,14 +1354,12 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 	 * @param obj jQuery object to make clean
 	 * @return void
 	 */
-	TablePlugin.makeClean = function (obj) {
-		// find all table tags
-		obj.find('table').each(function() {
-			// instantiate a new table-object
-			var table = new Table(this, TablePlugin);
-			// deactivate the table
-			table.deactivate();
-		});
+	TablePlugin.makeClean = function ( obj ) {
+		obj.find( 'table' ).each( function() {
+			if ( !TablePlugin.isWithinTable( this ) ) {
+				( new Table( this, TablePlugin ) ).deactivate();
+			}
+		} );
 	};
 
 	/**
@@ -1234,5 +1378,6 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 	};
 
 	PluginManager.register(TablePlugin);
-	//return TablePlugin;
+	
+	return TablePlugin;
 });

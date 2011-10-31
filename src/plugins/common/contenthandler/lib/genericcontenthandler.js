@@ -35,6 +35,9 @@ function(Aloha, jQuery, ContentHandlerManager) {
 				return;
 			}
 
+			// clean lists
+			this.cleanLists(content);
+
 			// transform tables
 			this.transformTables(content);
 
@@ -54,6 +57,28 @@ function(Aloha, jQuery, ContentHandlerManager) {
 			this.transformFormattings(content);
 
 			return content.html();
+		},
+
+		/**
+		 * Clean lists: The only allowed children of ol or ul elements are li's. Everything else will be removed
+		 * @param content
+		 */
+		cleanLists: function(content) {
+			content.find('ul,ol').each(function() {
+				var $list = jQuery(this);
+				$list.contents(':not(li,ul,ol)').each(function() {
+					jQuery(this).remove();
+				});
+				// for all li's, trim the text contents
+				$list.children('li').each(function() {
+					var $li = jQuery(this);
+					$li.contents().each(function() {
+						if (this.nodeType === 3) {
+							this.data = jQuery.trim(this.data);
+						}
+					});
+				});
+			});
 		},
 
 		/**
@@ -140,7 +165,10 @@ function(Aloha, jQuery, ContentHandlerManager) {
 		 */
 		unwrapTags: function( content ) {
 			// safari and chrome cleanup for plain text paste with working linebreaks
-			content.find('div').each(function() {
+			content.find('div').filter(function(index) {
+				// Only find divs that are contenteditable. keep all other divs untouched.
+				return jQuery(this).contentEditable();
+			}).each(function() {
 				if (this.innerHTML == '<br>') {
 					jQuery(this).contents().unwrap();
 				} else {

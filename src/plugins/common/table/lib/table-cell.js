@@ -47,76 +47,73 @@ function (jQuery, Utils) {
 	 */
 	TableCell.prototype.hasFocus = false;
 
-	TableCell.prototype.activate = function() {
+	TableCell.prototype.activate = function () {
 		// wrap the created div into the contents of the cell
-		this.obj.wrapInner('<div/>');
+		this.obj.wrapInner( '<div/>' );
 
 		// create the editable wrapper for the cells
-		var wrapper = this.obj.children('div').eq(0);
+		var wrapper = this.obj.children( 'div' ).eq( 0 );
 
-		wrapper.contentEditable(true);
-		wrapper.addClass('aloha-table-cell-editable');
-
+		wrapper.contentEditable( true );
+		wrapper.addClass( 'aloha-table-cell-editable' );
 
 		var that = this;
+		
 		// attach events to the editable div-object
-		wrapper.bind('focus', function(jqEvent) {
+		wrapper.bind( 'focus', function ( jqEvent ) {
 			// ugly workaround for ext-js-adapter problem in ext-jquery-adapter-debug.js:1020
-			if (jqEvent.currentTarget) {
+			if ( jqEvent.currentTarget ) {
 				jqEvent.currentTarget.indexOf = function () {
 					return -1;
 				};
 			}
-			that._editableFocus(jqEvent);
-		});
-		wrapper.bind('mousedown', function(jqEvent) {
+			that._editableFocus( jqEvent );
+		} );
+		
+		wrapper.bind( 'mousedown', function ( jqEvent ) {
 			// ugly workaround for ext-js-adapter problem in ext-jquery-adapter-debug.js:1020
-			if (jqEvent.currentTarget) {
+			if ( jqEvent.currentTarget ) {
 				jqEvent.currentTarget.indexOf = function () {
 					return -1;
 				};
 			}
 			
-			that._editableMouseDown(jqEvent);
+			that._editableMouseDown( jqEvent );
 
-			//start cell selection
-			that._startCellSelection();       
-			
-		});
-		wrapper.bind('blur',      function(jqEvent) { that._editableBlur(jqEvent);      });
-		wrapper.bind('keyup',     function(jqEvent) { that._editableKeyUp(jqEvent);     });
-		wrapper.bind('keydown',   function(jqEvent) { that._editableKeyDown(jqEvent);   });
-		wrapper.bind('mouseover', function(jqEvent) { that._selectCellRange(); });
+			that._startCellSelection();
+		} );
+		wrapper.bind( 'blur',      function ( jqEvent ) { that._editableBlur( jqEvent );    });
+		wrapper.bind( 'keyup',     function ( jqEvent ) { that._editableKeyUp( jqEvent );   });
+		wrapper.bind( 'keydown',   function ( jqEvent ) { that._editableKeyDown( jqEvent ); });
+		wrapper.bind( 'mouseover', function ( jqEvent ) { that._selectCellRange();          });
 
 		// we will treat the wrapper just like an editable
-		wrapper.contentEditableSelectionChange(function (event) {
-			Aloha.Selection.onChange(wrapper, event);
+		wrapper.contentEditableSelectionChange( function ( event ) {
+			Aloha.Selection.onChange( wrapper, event );
 			return wrapper;
-		});
+		} );
 
-		this.obj.bind('mousedown', function(jqEvent) {
-			setTimeout(function() {
-				that.wrapper.trigger('focus');
-			}, 1);
-			// unselect cells
+		this.obj.bind( 'mousedown', function ( jqEvent ) {
+			setTimeout( function () {
+				that.wrapper.trigger( 'focus' );
+			}, 1 );
 			that.tableObj.selection.unselectCells();
-	        //start cell selection
 	        that._startCellSelection();       
 			jqEvent.stopPropagation();
-		});
+		} );
 
-		if (this.obj.get(0)) {
-			this.obj.get(0).onselectstart = function (jqEvent) { return false; };
+		if ( this.obj.get( 0 ) ) {
+			this.obj.get( 0 ).onselectstart = function ( jqEvent ) { return false; };
 		}
 
 		// set contenteditable wrapper div
 		this.wrapper = this.obj.children();
-		if (this.wrapper.get(0)) {
-			this.wrapper.get(0).onselectstart = function() {
+		if ( this.wrapper.get( 0 ) ) {
+			this.wrapper.get( 0 ).onselectstart = function () {
 				window.event.cancelBubble = true;
 			};
 			// Disabled the dragging of content, since it makes cell selection difficult
-			this.wrapper.get(0).ondragstart = function() { return false };
+			this.wrapper.get( 0 ).ondragstart = function () { return false };
 		}
 
 		return this;
@@ -356,8 +353,6 @@ function (jQuery, Utils) {
 			r.moveToElementText(e);
 			r.select();
 		}
-
-		Aloha.Selection.updateSelection(editableNode);
 	};
 
 	/**
@@ -385,7 +380,7 @@ function (jQuery, Utils) {
 	 *            the jquery-event object
 	 * @return void
 	 */
-	TableCell.prototype._editableKeyUp = function(jqEvent) {
+	TableCell.prototype._editableKeyUp = function( jqEvent ) {
 		//TODO do we need to check for empty cells and insert a space?
 		//this._checkForEmptyEvent(jqEvent);
 	};
@@ -400,78 +395,25 @@ function (jQuery, Utils) {
 	 * @return void
 	 */
 	TableCell.prototype._editableKeyDown = function(jqEvent) {
-		
-		var 
-		KEYCODE_TAB = 9,
-		KEYCODE_ARROWLEFT = 37,
-		KEYCODE_ARROWUP = 38,
-		KEYCODE_ARROWRIGHT = 39
-		KEYCODE_ARROWDOWN = 40;
+		var KEYCODE_TAB = 9;
 
 		this._checkForEmptyEvent(jqEvent);
 		
-		if ( this.obj[0] == this.tableObj.obj.find('tr:last td:last')[0] ) {
-			// only add a row on a single key-press of tab (so check if alt-, shift- or
-			// ctrl-key are NOT pressed)
+		if ( this.obj[0] === this.tableObj.obj.find('tr:last td:last')[0] ) {
+			// only add a row on a single key-press of tab (so check
+			// that alt-, shift- or ctrl-key are NOT pressed)
 			if (KEYCODE_TAB == jqEvent.keyCode && !jqEvent.altKey && !jqEvent.shiftKey && !jqEvent.ctrlKey) {
-				// add a row after the current row (false stands for not highlighting the new row)
+				// add a row after the current row
 				this.tableObj.addRow(this.obj.parent().index() + 1);
-				// stop propagation because this should overwrite all other events
+
+				// firefox needs this for the first cell of the new row
+				// to be selected (.focus() doesn't work reliably in
+				// IE7)
+				this.tableObj.cells[this.tableObj.cells.length - 1]._selectAll(this.wrapper.get(0));
+
 				jqEvent.stopPropagation();
 				return;
 			}
-		}
-		if (!jqEvent.ctrlKey && !jqEvent.shiftKey) {
-			if (this.tableObj.selection.selectedCells.length > 0 && this.tableObj.selection.selectedCells[0].length > 0) {
-				this.tableObj.selection.selectedCells[0][0].firstChild.focus();
-				this.tableObj.selection.unselectCells();
-				jqEvent.stopPropagation();
-			}
-		}else if(jqEvent.shiftKey && this.tableObj.selection.selectedCells.length > 0){
-
-			switch (this.tableObj.selection.selectionType) {
-			case 'row':
-				switch(jqEvent.keyCode) {
-				case KEYCODE_ARROWUP:
-					var firstSelectedRow = this.tableObj.selection.selectedCells[0][0].parentNode.rowIndex;
-					if (firstSelectedRow > 1) {
-						this.tableObj.rowsToSelect.push(firstSelectedRow - 1);
-					}
-					break;
-				case KEYCODE_ARROWDOWN:
-					var lastRowIndex = this.tableObj.selection.selectedCells.length - 1;
-					var lastSelectedRow = this.tableObj.selection.selectedCells[lastRowIndex][0].parentNode.rowIndex;
-					if (lastSelectedRow < this.tableObj.numRows) {
-						this.tableObj.rowsToSelect.push(lastSelectedRow + 1);
-					}
-					break;
-				}
-				this.tableObj.selectRows();
-
-				break;
-			case 'column':
-				switch(jqEvent.keyCode) {
-				case KEYCODE_ARROWLEFT:
-					var firstColSelected = this.tableObj.selection.selectedCells[0][0].cellIndex;
-					if (firstColSelected > 1) {
-						this.tableObj.columnsToSelect.push(firstColSelected - 1);
-					}
-					break;
-				case KEYCODE_ARROWRIGHT:
-					var lastColIndex = this.tableObj.selection.selectedCells[0].length - 1;
-					var lastColSelected = this.tableObj.selection.selectedCells[0][lastColIndex].cellIndex;
-					if (lastColSelected < this.tableObj.numCols) {
-						this.tableObj.columnsToSelect.push(lastColSelected + 1);
-					}
-					break;
-				}
-				this.tableObj.selectColumns();
-
-				break;
-			}
-			jqEvent.stopPropagation();
-			jqEvent.preventDefault();
-			return false;
 		}
 	};
 

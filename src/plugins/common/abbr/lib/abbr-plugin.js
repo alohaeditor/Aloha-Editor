@@ -47,6 +47,7 @@ function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 		    // format Abbr Button
 		    // this button behaves like a formatting button like (bold, italics, etc)
 		    this.formatAbbrButton = new Aloha.ui.Button({
+		    	'name' : 'abbr',
 		        'iconClass' : 'aloha-button aloha-button-abbr',
 		        'size' : 'small',
 		        'onclick' : function () { me.formatAbbr(); },
@@ -63,7 +64,8 @@ function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 		    // insert Abbr
 		    // always inserts a new abbr
 		    this.insertAbbrButton = new Aloha.ui.Button({
-		        'iconClass' : 'aloha-button aloha-button-abbr',
+		    	'name' : 'insertAbbr',
+		    	'iconClass' : 'aloha-button aloha-button-abbr',
 		        'size' : 'small',
 		        'onclick' : function () { me.insertAbbr( false ); },
 		        'tooltip' : i18n.t('button.addabbr.tooltip'),
@@ -80,7 +82,8 @@ function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 		    FloatingMenu.createScope('abbr', 'Aloha.continuoustext');
 
 		    this.abbrField = new Aloha.ui.AttributeField({
-		    	'width':320
+		    	'width': 320,
+		    	'name': 'abbrText'
 		    });
 		    // add the input field for abbr
 		    FloatingMenu.addButton(

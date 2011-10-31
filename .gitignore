@@ -5,3 +5,5 @@ tmp
 out
 target
 doc/guides/staging
+*.js~
+*.orig

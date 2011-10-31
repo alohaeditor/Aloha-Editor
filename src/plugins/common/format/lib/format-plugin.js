@@ -114,6 +114,7 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 					case 'sub':
 					case 'sup':
 						that.buttons[button] = {'button' : new Aloha.ui.Button({
+							'name' : button,
 							'iconClass' : 'aloha-button aloha-button-' + button,
 							'size' : 'small',
 							'onclick' : function () {
@@ -202,6 +203,7 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 
 			if (this.multiSplitItems.length > 0) {
 				this.multiSplitButton = new Aloha.ui.MultiSplitButton({
+					'name' : 'phrasing',
 					'items' : this.multiSplitItems
 				});
 				FloatingMenu.addButton(

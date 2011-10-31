@@ -256,6 +256,8 @@ h6,
 	-moz-opacity:.90;
 	opacity:.90;
 	list-style: none;
+	padding: 0;
+	margin:0;
 }
 #navigation li {
 	margin: 0 1em 0 0;

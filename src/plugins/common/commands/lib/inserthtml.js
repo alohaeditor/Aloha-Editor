@@ -11,7 +11,7 @@ function(Aloha, jQuery, command, selection, dom, ContentHandlerManager, console)
 	"use strict";
 
 	// Exported commands
-	command.registerCommand( 'inserthtml', {
+	command.register( 'inserthtml', {
 		action: function(value, range) {
 			var 
 				$editable = jQuery(dom.getEditingHostOf(range.startContainer)),
@@ -49,9 +49,10 @@ function(Aloha, jQuery, command, selection, dom, ContentHandlerManager, console)
 			};
 
 			// apply content handler to cleanup inserted data
-			if (typeof Aloha.settings.contentHandler.insertHtml === 'undefined') {
-				Aloha.settings.contentHandler.insertHtml = Aloha.defaults.contentHandler.insertHtml;
-			}
+			//if (typeof Aloha.settings.contentHandler.insertHtml === 'undefined') {
+			// just use all registerd content handler or specity Aloha.defaults.contentHandler.insertHtml manually?
+			//	Aloha.settings.contentHandler.insertHtml = Aloha.defaults.contentHandler.insertHtml;
+			//}
 			value = ContentHandlerManager.handleContent( value, { contenthandler: Aloha.settings.contentHandler.insertHtml } );
 
 			// allowed values are string or jQuery objects

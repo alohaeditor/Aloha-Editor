@@ -1,6 +1,6 @@
 /*!
 * This file is part of Aloha Editor Project http://aloha-editor.org
-* Copyright � 2010-2011 Gentics Software GmbH, aloha@gentics.com
+* Copyright © 2010-2011 Gentics Software GmbH, aloha@gentics.com
 * Contributors http://aloha-editor.org/contribution.php 
 * Licensed unter the terms of http://www.aloha-editor.org/license.html
 *//*
@@ -97,6 +97,11 @@ Aloha.ui.Button = Class.extend({
 		this.label = false;
 
 		/**
+		 * Name for the button
+		 */
+		this.name = false;
+		
+		/**
 		 * CSS class for an icon on the button
 		 * @hide
 		 */
@@ -166,6 +171,11 @@ Aloha.ui.Button = Class.extend({
 
 		GENTICS.Utils.applyProperties(this, properties);
 
+		// use icon class as a fallback for name		
+		if (this.name === false) {
+			this.name = this.iconClass;
+		}
+
 		/**
 		 * Unique Id of the button
 		 * @hide
@@ -190,7 +200,7 @@ Aloha.ui.Button = Class.extend({
 	setPressed: function(pressed) {
 		if (this.toggle) {
 			this.pressed = pressed;
-			if (typeof this.extButton === 'object' && this.extButton.pressed != pressed) {
+			if (typeof this.extButton === 'object' && this.extButton != null && this.extButton.pressed != pressed) {
 				this.extButton.toggle(this.pressed);
 			}
 		}
@@ -408,6 +418,45 @@ Ext.ux.MultiSplitButton = Ext.extend(Ext.Component, {
 	panelOpened: false,
 
 	/**
+	 * get items for the multisplit button according to config
+	 * configuration for a multisplit button has to be stored
+	 * within an array:
+	 *
+	 *		Aloha.settings.components.[MULTISPLITBUTTON-NAME] = [ 'item1', 'item2' ];
+	 *
+	 * An example for that would be:
+	 *
+	 *		// settings for phrasing element for the format plugin
+	 *		Aloha.settings.components.phrasing = [ 'h1', 'h2', 'h3', 'removeFormat' ];
+	 *
+	 * if there is no config available, it will just use all items available
+	 * @return button items for this multisplit button
+	 */
+	_getItems: function() {
+		var that = this,
+			items = [],
+			i, length;
+		
+		if (Aloha.settings.components &&
+			Aloha.settings.components[this.name] &&
+			typeof Aloha.settings.components[this.name] === 'object') {
+			// iterate over all buttons in our config...
+			jQuery.each(Aloha.settings.components[this.name], function (idx, button) {
+				for (i = 0, length = that.items.length; i < length; i++) {
+					if (that.items[i].name === button) {
+						// ... and find the appropriate internal button
+						items.push(that.items[i]);
+						break;
+					}
+				}
+			});
+			return items;
+		} else {
+			return this.items;
+		}
+	},
+
+	/**
 	 * render the multisplit button
 	 * @return void
 	 * @hide
@@ -421,11 +470,14 @@ Ext.ux.MultiSplitButton = Ext.extend(Ext.Component, {
 			me = this,
 			i,
 			item,
+			items,
 			html = '<ul class="aloha-multisplit">';
 
+		items = this._getItems(); 
+
 		// add a new button to the list for each configured item
-		for (i=0; i<this.items.length; i++) {
-			item = this.items[i];
+		for (i=0; i<items.length; i++) {
+			item = items[i];
 			if (typeof item.visible == 'undefined') {
 				item.visible = true;
 			}
@@ -439,8 +491,8 @@ Ext.ux.MultiSplitButton = Ext.extend(Ext.Component, {
 		}
 
         // now add the wide buttons at the bottom of the list
-		for (i=0; i<this.items.length; i++) {
-			item = this.items[i];
+		for (i=0; i<items.length; i++) {
+			item = items[i];
 			// now only wide buttons will be rendered
 			if (!item.wide) {
 				continue;
@@ -511,27 +563,19 @@ Ext.ux.MultiSplitButton = Ext.extend(Ext.Component, {
 	 * @hide
 	 */
 	setActiveItem: function(name) {
-		var i, button;
+		var button;
 
 		// collapse the panel
 		this.closePanel();
 
-		// do nothing if item already set to be active
-		if (this.activeItem == name) {
-			return;
+		button = jQuery('#' + this.id + ' .aloha-button-' + name);
+		if (button.length === 1) {
+			this.setActiveDOMElement(button);
+			this.activeItem = name;
+		} else {
+			this.setActiveDOMElement(null);
+			this.activeItem = null;
 		}
-
-		for (i=0; i < this.items.length; i++) {
-			if (this.items[i].name == name) {
-				// found the item
-				button = jQuery(this.ulObj).find('[gtxmultisplititem='+i+']');
-				this.setActiveDOMElement(button);
-				this.activeItem = name;
-				return;
-			}
-        }
-		this.activeItem = null;
-		this.setActiveDOMElement(null);
     },
 
 	/**
@@ -726,6 +770,7 @@ Aloha.ui.MultiSplitButton = Class.extend({
 		return {
 			'xtype' : 'alohamultisplitbutton',
 			'items' : this.items,
+			'name' : this.name,
 			'id' : this.id
 		};
 	},
@@ -760,6 +805,9 @@ Aloha.ui.MultiSplitButton = Class.extend({
 	 * @param {String} name the item's name
 	 */
 	showItem: function(name) {
+		if (typeof this.extButton === 'undefined') {
+			return;
+		}
 		this.extButton.showItem(name);
 	},
 
@@ -768,6 +816,9 @@ Aloha.ui.MultiSplitButton = Class.extend({
 	 * @param {String} name the item's name
 	 */
 	hideItem: function(name) {
+		if (typeof this.extButton === 'undefined') {
+			return;
+		}
 		this.extButton.hideItem(name);
 	}
 });
