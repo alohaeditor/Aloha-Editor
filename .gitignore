@@ -6,3 +6,4 @@ out
 target
 doc/guides/staging
 *.js~
+src/plugins/gcn/

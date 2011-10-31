@@ -129,7 +129,9 @@ var alohaConsole = Class.extend({
 		switch (level) {
 		case 'error':
 			if (window.console && console.error) {
-				console.error(component + ': ' + message);
+				if(!component && !message) {
+					console.error(component + ': ' + message);
+				}
 			}
 			break;
 		case 'warn':

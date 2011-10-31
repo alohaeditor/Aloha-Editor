@@ -318,6 +318,7 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 		FloatingMenu.addButton(
 			this.name + '.row',
 			new Aloha.ui.Button({
+				'name' : 'addrowbefore',
 				'iconClass' : 'aloha-button aloha-button-addRowBefore',
 				'size' : 'small',
 				'tooltip' : i18n.t('button.addrowbefore.tooltip'),
@@ -335,6 +336,7 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 		FloatingMenu.addButton(
 			this.name + '.row',
 			new Aloha.ui.Button({
+				'name' : 'addrowafter',
 				'iconClass' : 'aloha-button aloha-button-addRowAfter',
 				'size' : 'small',
 				'tooltip' : i18n.t('button.addrowafter.tooltip'),
@@ -352,6 +354,7 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 		FloatingMenu.addButton(
 			this.name + '.row',
 			new Aloha.ui.Button({
+				'name' : 'deleterow',
 				'iconClass' : 'aloha-button aloha-button-deleteRows',
 				'size' : 'small',
 				'tooltip' : i18n.t('button.delrows.tooltip'),
@@ -376,6 +379,7 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 		);
 
       this.rowHeader = new Aloha.ui.Button({
+    	  name : 'rowheader',
 		  iconClass : 'aloha-button aloha-button-row-header',
 		  size	  :  'small',
 		  tooltip	  :  i18n.t('button.rowheader.tooltip'),
@@ -441,6 +445,7 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
       FloatingMenu.addButton(
 		  this.name + '.row',
 		  new Aloha.ui.Button({
+			  'name' : 'rowmergecells',
 			  'iconClass' : 'aloha-button aloha-button-merge-cells',
 			  'size' : 'small',
 			  'tooltip' : i18n.t('button.mergecells.tooltip'),
@@ -458,6 +463,7 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
       FloatingMenu.addButton(
 		  this.name + '.row',
 		  new Aloha.ui.Button({
+			  'name' : 'rowsplitcells',
 			  'iconClass' : 'aloha-button aloha-button-split-cells',
 			  'size' : 'small',
 			  'tooltip' : i18n.t('button.splitcells.tooltip'),
@@ -553,6 +559,7 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
     FloatingMenu.addButton(
 			this.name + '.column',
 			new Aloha.ui.Button({
+				'name' : 'addcolumnleft',
 				'iconClass' : 'aloha-button aloha-button-addColumnLeft',
 				'size' : 'small',
 				'tooltip' : i18n.t('button.addcolleft.tooltip'),
@@ -570,6 +577,7 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 		FloatingMenu.addButton(
 			this.name + '.column',
 			new Aloha.ui.Button({
+				'name' : 'addcolumnright',
 				'iconClass' : 'aloha-button aloha-button-addColumnRight',
 				'size' : 'small',
 				'tooltip' : i18n.t('button.addcolright.tooltip'),
@@ -587,6 +595,7 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
     FloatingMenu.addButton(
 			this.name + '.column',
 			new Aloha.ui.Button({
+				'name' : 'deletecolumns',
 				'iconClass' : 'aloha-button aloha-button-deleteColumns',
 				'size' : 'small',
 				'tooltip' : i18n.t('button.delcols.tooltip'),
@@ -611,6 +620,7 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 		);
 
     this.columnHeader = new Aloha.ui.Button({
+    	name : 'columnheader',
         iconClass : 'aloha-button aloha-button-col-header',
         size	  : 'small',
         tooltip	  : i18n.t('button.columnheader.tooltip'),
@@ -660,6 +670,7 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
     FloatingMenu.addButton(
       this.name + '.column',
       new Aloha.ui.Button({
+    	  	'name' : 'tablemergecells',
 			'iconClass' : 'aloha-button aloha-button-merge-cells',
 			'size' : 'small',
 			'tooltip' : i18n.t('button.mergecells.tooltip'),
@@ -677,6 +688,7 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
     FloatingMenu.addButton(
       this.name + '.column',
       new Aloha.ui.Button({
+    	  	'name' : 'tablesplitcells',
 			'iconClass' : 'aloha-button aloha-button-split-cells',
 			'size' : 'small',
 			'tooltip' : i18n.t('button.splitcells.tooltip'),
@@ -777,6 +789,7 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 
 		// the 'create table' button
 		this.createTableButton = new Aloha.ui.Button({
+			'name' : 'table',
 			'iconClass' : 'aloha-button aloha-button-table',
 			'size' : 'small',
 			'tooltip' : i18n.t('button.createtable.tooltip'),
@@ -866,6 +879,7 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
     FloatingMenu.addButton(
       this.name + '.cell',
       new Aloha.ui.Button({
+    	  	'name' : 'mergecells',
 			'iconClass' : 'aloha-button aloha-button-merge-cells',
 			'size' : 'small',
 			'tooltip' : i18n.t('button.mergecells.tooltip'),
@@ -883,6 +897,7 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
     FloatingMenu.addButton(
       this.name + '.cell',
       new Aloha.ui.Button({
+    	  	'name' : 'splitcells',
 			'iconClass' : 'aloha-button aloha-button-split-cells',
 			'size' : 'small',
 			'tooltip' : i18n.t('button.splitcells.tooltip'),
@@ -899,6 +914,7 @@ function(Aloha, jQuery, Plugin, PluginManager, FloatingMenu, i18n, i18nCore, Cre
 
 	// Add caption button
     this.captionButton = new Aloha.ui.Button({
+    		'name' : 'tablecaption',
 			'iconClass' : 'aloha-button aloha-button-table-caption',
 			'size' : 'small',
 			'tooltip' : i18n.t('button.caption.tooltip'),
