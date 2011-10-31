@@ -158,18 +158,18 @@ Aloha.ready(function() {
 								var sClass = 'aloha-selection-start-' + id;
 								var eClass = 'aloha-selection-end-' + id;
 								
-								jQuery( sNode.nodeName == '#text'
+								jQuery( sNode.nodeType == 3
 											? sNode.parentNode : sNode )
 												.addClass( sClass );
 								
-								jQuery( eNode.nodeName == '#text'
+								jQuery( eNode.nodeType == 3
 											? eNode.parentNode : eNode )
 												.addClass( eClass );
 								
 								var common;
 								
-								if ( ( sNode.nodeName == '#text' ||
-											eNode.nodeName == '#text' ) &&
+								if ( ( sNode.nodeType == 3 ||
+											eNode.nodeType == 3 ) &&
 												!jQuery( range.commonAncestorContainer )
 													.is( '.aloha-editable' ) ) {
 									common = range.commonAncestorContainer.parentNode;
