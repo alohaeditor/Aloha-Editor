@@ -158,66 +158,105 @@ Aloha.ready(function() {
 								var sClass = 'aloha-selection-start-' + id;
 								var eClass = 'aloha-selection-end-' + id;
 								
-								jQuery( sNode.parentNode ).addClass( sClass );
-								jQuery( eNode.parentNode ).addClass( eClass );
+								jQuery( sNode.nodeName == '#text'
+											? sNode.parentNode : sNode )
+												.addClass( sClass );
 								
-								var clonedContainer = jQuery( jQuery( range.commonAncestorContainer ).clone() );
+								jQuery( eNode.nodeName == '#text'
+											? eNode.parentNode : eNode )
+												.addClass( eClass );
+								
+								var common;
+								
+								if ( ( sNode.nodeName == '#text' ||
+											eNode.nodeName == '#text' ) &&
+												!jQuery( range.commonAncestorContainer )
+													.is( '.aloha-editable' ) ) {
+									common = range.commonAncestorContainer.parentNode;
+								} else {
+									common = range.commonAncestorContainer;
+								}
+								
+								var clonedContainer = jQuery( jQuery( common ).clone() );
 								
 								var clonedStartContainer = clonedContainer.is( '.' + sClass )
-									? clonedContainer
-									: clonedContainer.find( '.' + sClass );
+										? clonedContainer
+										: clonedContainer.find( '.' + sClass );
 								
 								var clonedEndContainer = clonedContainer.is( '.' + eClass )
-									? clonedContainer
-									: clonedContainer.find( '.' + eClass );
-								
-								if ( clonedStartContainer.length == 0 ||
-										clonedEndContainer.length == 0 ||
-											!clonedStartContainer[0].childNodes ||
-												!clonedEndContainer[0].childNodes ||
-													clonedStartContainer[0].childNodes.length == 0||
-														clonedEndContainer[0].childNodes.length == 0 ) {
-									clonedStartContainer = clonedEndContainer = clonedContainer;
-									//viewArea.html( '[eh!]' );
-									//return;
-								}
+										? clonedContainer
+										: clonedContainer.find( '.' + eClass );
 								
 								var fakeRange;
 								
-								if ( clonedStartContainer &&
-										clonedStartContainer.length &&
-											clonedStartContainer[ 0 ] &&
-												clonedStartContainer[ 0 ].childNodes ) {								
-									fakeRange = {
-										startContainer : clonedStartContainer[ 0 ].childNodes[ getNodeIndex( sNode ) ],
-										endContainer   : clonedEndContainer[ 0 ].childNodes[ getNodeIndex( eNode ) ],
-										startOffset    : range.startOffset,
-										endOffset      : range.endOffset
-									};
+								jQuery( '.' + sClass ).removeClass( sClass );
+								jQuery( '.' + eClass ).removeClass( eClass );
+								clonedStartContainer.removeClass( sClass );
+								clonedEndContainer.removeClass( eClass );
+								
+								if ( !( clonedStartContainer &&
+											clonedStartContainer.length &&
+												clonedStartContainer[ 0 ].childNodes ) ) {
+									return;
+								}
+								
+								var startNode;
+								var startNodes;
+								var startOffset;
+								
+								if ( clonedStartContainer[ 0 ].childNodes.length ) {
+									startNodes = clonedStartContainer[ 0 ].childNodes;
+									startOffset = getNodeIndex( sNode );
 									
-									// FIXME: index out of bounds
-									try {
-										TestUtils.addBrackets( fakeRange );
-									} catch ( ex ) {
-										viewArea.html( '[eh!]' + ex );
-										return;
+									if ( startNodes.length <= startOffset ) {
+										startOffset = startNodes.length - 1;
 									}
 									
-									jQuery( sNode.parentNode ).removeClass( sClass );
-									jQuery( eNode.parentNode ).removeClass( eClass );
-									clonedStartContainer.removeClass( sClass );
-									clonedEndContainer.removeClass( eClass );
-									
-									var source =
-										Aloha.jQuery('<div>')
-											 .text( clonedContainer.html() )
-											 .html()
-											 .replace( /\t/g, '  ' )
-											 .replace( /([\[\]\{\}])/g,
-												'<b style="color:#333">$1</b>' );
-									
-									viewArea.html( source );
+									startNode = startNodes[ startOffset ];
+								} else {
+									startNode = clonedStartContainer[ 0 ];
 								}
+								
+								var endNode;
+								var endNodes;
+								var endOffset;
+								
+								if ( clonedEndContainer[ 0 ].childNodes.length ) {
+									endNodes = clonedEndContainer[ 0 ].childNodes;
+									endOffset = getNodeIndex( eNode );
+									
+									if ( endNodes.length <= endOffset ) {
+										endOffset = endNodes.length - 1;
+									}
+									
+									endNode = endNodes[ endOffset ];
+								} else {
+									endNode = clonedEndContainer[ 0 ];
+								}
+								
+								fakeRange = {
+									startContainer : startNode,
+									endContainer   : endNode,
+									startOffset    : range.startOffset,
+									endOffset      : range.endOffset
+								};
+								
+								try {
+									TestUtils.addBrackets( fakeRange );
+								} catch ( ex ) {
+									viewArea.html( '[oops!]' + ex );
+									return;
+								}
+								
+								var source =
+									Aloha.jQuery('<div>')
+										 .text( clonedContainer.html() )
+										 .html()
+										 .replace( /\t/g, '  ' )
+										 .replace( /([\[\]\{\}])/g,
+											'<b style="color:#333">$1</b>' );
+								
+								viewArea.html( source );
 							}
 						);
 					}
