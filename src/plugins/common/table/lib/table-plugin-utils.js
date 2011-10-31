@@ -120,7 +120,7 @@ function ($) {
 			return 0 === cellInfo.spannedX && 0 === cellInfo.spannedY;
 		},
 		/**
-		 * A grid-cell may not contain a dom-cell (due to rowspand and
+		 * A grid-cell may not contain a dom-cell (due to rowspan and
 		 * colspan). If this function is given the coordinates of such a
 		 * grid-cell, it will look to the left of the grid-cell, until it
 		 * finds a grid-cell that contains a dom-cell and returns the

@@ -426,6 +426,7 @@ define( [
 		FloatingMenu.addButton(
 			this.name + '.row',
 			new Aloha.ui.Button({
+				'name' : 'addrowbefore',
 				'iconClass' : 'aloha-button aloha-button-addRowBefore',
 				'size' : 'small',
 				'tooltip' : i18n.t('button.addrowbefore.tooltip'),
@@ -459,6 +460,7 @@ define( [
 		FloatingMenu.addButton(
 			this.name + '.row',
 			new Aloha.ui.Button({
+				'name' : 'addrowafter',
 				'iconClass' : 'aloha-button aloha-button-addRowAfter',
 				'size' : 'small',
 				'tooltip' : i18n.t('button.addrowafter.tooltip'),
@@ -476,6 +478,7 @@ define( [
 		FloatingMenu.addButton(
 			this.name + '.row',
 			new Aloha.ui.Button({
+				'name' : 'deleterow',
 				'iconClass' : 'aloha-button aloha-button-deleteRows',
 				'size' : 'small',
 				'tooltip' : i18n.t('button.delrows.tooltip'),
@@ -500,6 +503,7 @@ define( [
 		);
 
       this.rowHeader = new Aloha.ui.Button({
+    	  name : 'rowheader',
 		  iconClass : 'aloha-button aloha-button-row-header',
 		  size	  :  'small',
 		  tooltip	  :  i18n.t('button.rowheader.tooltip'),
@@ -565,6 +569,7 @@ define( [
       FloatingMenu.addButton(
 		  this.name + '.row',
 		  new Aloha.ui.Button({
+			  'name' : 'rowmergecells',
 			  'iconClass' : 'aloha-button aloha-button-merge-cells',
 			  'size' : 'small',
 			  'tooltip' : i18n.t('button.mergecells.tooltip'),
@@ -582,6 +587,7 @@ define( [
       FloatingMenu.addButton(
 		  this.name + '.row',
 		  new Aloha.ui.Button({
+			  'name' : 'rowsplitcells',
 			  'iconClass' : 'aloha-button aloha-button-split-cells',
 			  'size' : 'small',
 			  'tooltip' : i18n.t('button.splitcells.tooltip'),
@@ -677,6 +683,7 @@ define( [
     FloatingMenu.addButton(
 			this.name + '.column',
 			new Aloha.ui.Button({
+				'name' : 'addcolumnleft',
 				'iconClass' : 'aloha-button aloha-button-addColumnLeft',
 				'size' : 'small',
 				'tooltip' : i18n.t('button.addcolleft.tooltip'),
@@ -694,6 +701,7 @@ define( [
 		FloatingMenu.addButton(
 			this.name + '.column',
 			new Aloha.ui.Button({
+				'name' : 'addcolumnright',
 				'iconClass' : 'aloha-button aloha-button-addColumnRight',
 				'size' : 'small',
 				'tooltip' : i18n.t('button.addcolright.tooltip'),
@@ -711,6 +719,7 @@ define( [
     FloatingMenu.addButton(
 			this.name + '.column',
 			new Aloha.ui.Button({
+				'name' : 'deletecolumns',
 				'iconClass' : 'aloha-button aloha-button-deleteColumns',
 				'size' : 'small',
 				'tooltip' : i18n.t('button.delcols.tooltip'),
@@ -735,6 +744,7 @@ define( [
 		);
 
     this.columnHeader = new Aloha.ui.Button({
+    	name : 'columnheader',
         iconClass : 'aloha-button aloha-button-col-header',
         size	  : 'small',
         tooltip	  : i18n.t('button.columnheader.tooltip'),
@@ -784,6 +794,7 @@ define( [
     FloatingMenu.addButton(
       this.name + '.column',
       new Aloha.ui.Button({
+    	  	'name' : 'tablemergecells',
 			'iconClass' : 'aloha-button aloha-button-merge-cells',
 			'size' : 'small',
 			'tooltip' : i18n.t('button.mergecells.tooltip'),
@@ -801,6 +812,7 @@ define( [
     FloatingMenu.addButton(
       this.name + '.column',
       new Aloha.ui.Button({
+    	  	'name' : 'tablesplitcells',
 			'iconClass' : 'aloha-button aloha-button-split-cells',
 			'size' : 'small',
 			'tooltip' : i18n.t('button.splitcells.tooltip'),
@@ -901,13 +913,12 @@ define( [
 
 		// the 'create table' button
 		this.createTableButton = new Aloha.ui.Button({
-			iconClass : 'aloha-button aloha-button-table',
-			size      : 'small',
-			tooltips  : i18n.t('button.createtable.tooltip'),
-			onclick   : function ( element, event ) {
-				if ( !that.preventNestedTables() ) {
-					TablePlugin.createDialog( element.btnEl.dom );
-				}
+			'name' : 'table',
+			'iconClass' : 'aloha-button aloha-button-table',
+			'size' : 'small',
+			'tooltip' : i18n.t('button.createtable.tooltip'),
+			'onclick' : function (element, event) {
+				TablePlugin.createDialog(element.btnEl.dom);
 			}
 		});
 
@@ -992,6 +1003,7 @@ define( [
     FloatingMenu.addButton(
       this.name + '.cell',
       new Aloha.ui.Button({
+    	  	'name' : 'mergecells',
 			'iconClass' : 'aloha-button aloha-button-merge-cells',
 			'size' : 'small',
 			'tooltip' : i18n.t('button.mergecells.tooltip'),
@@ -1009,6 +1021,7 @@ define( [
     FloatingMenu.addButton(
       this.name + '.cell',
       new Aloha.ui.Button({
+    	  	'name' : 'splitcells',
 			'iconClass' : 'aloha-button aloha-button-split-cells',
 			'size' : 'small',
 			'tooltip' : i18n.t('button.splitcells.tooltip'),
@@ -1025,6 +1038,7 @@ define( [
 
 	// Add caption button
     this.captionButton = new Aloha.ui.Button({
+    		'name' : 'tablecaption',
 			'iconClass' : 'aloha-button aloha-button-table-caption',
 			'size' : 'small',
 			'tooltip' : i18n.t('button.caption.tooltip'),

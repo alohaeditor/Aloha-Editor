@@ -3,7 +3,7 @@
 
 	<groupId>com.gentics</groupId>
 	<artifactId>alohaeditor</artifactId>
-	<version>0.20-commands-SNAPSHOT</version>
+	<version>0.21-beta-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Aloha Editor</name>
@@ -18,9 +18,9 @@
 	</properties>
 
 	<scm>
-                <connection>scm:git:git@github.com:gentics/Aloha-Editor.git</connection>
-                <developerConnection>scm:git:git@github.com:gentics/Aloha-Editor.git</developerConnection>
-                <url>https://github.com/gentics/Aloha-Editor</url>
+                <connection>scm:git:git@github.com:alohaeditor/Aloha-Editor.git</connection>
+                <developerConnection>scm:git:git@github.com:alohaeditor/Aloha-Editor.git</developerConnection>
+                <url>https://github.com/alohaeditor/Aloha-Editor</url>
         </scm>
 
 
