@@ -199,7 +199,8 @@ Aloha.ready(function() {
 								clonedEndContainer.removeClass( eClass );
 								
 								var startNode;
-								if ( sNode.nodeType == 3 ) {
+								if ( sNode.nodeType == 3 &&
+										clonedStartContainer[ 0 ].childNodes.length  ) {
 									startNode = clonedStartContainer[ 0 ]
 													.childNodes[ getNodeIndex( sNode ) ];
 								} else {
@@ -207,7 +208,8 @@ Aloha.ready(function() {
 								}
 								
 								var endNode;
-								if ( eNode.nodeType == 3 ) {
+								if ( eNode.nodeType == 3 &&
+										clonedEndContainer[ 0 ].childNodes.length ) {
 									endNode = clonedEndContainer[ 0 ]
 													.childNodes[ getNodeIndex( eNode ) ];
 								} else {
@@ -224,7 +226,7 @@ Aloha.ready(function() {
 								try {
 									TestUtils.addBrackets( fakeRange );
 								} catch ( ex ) {
-									viewArea.html( '[oops!] ' + ex );
+									viewArea.html( '[' + ex + ']' );
 									return;
 								}
 								
