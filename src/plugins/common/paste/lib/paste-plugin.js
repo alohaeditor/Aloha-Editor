@@ -71,8 +71,6 @@ function(Aloha, Plugin, jQuery, Commands, console) {
 	 */
 	function getPastedContent() {
 		var that = this,
-			i = 0,
-			heightDiff = 0, 
 			pasteDivContents;
 
 		// insert the content into the editable at the current range
@@ -87,6 +85,45 @@ function(Aloha, Plugin, jQuery, Commands, console) {
 
 			if ( Aloha.queryCommandSupported('insertHTML') ) {
 				Aloha.execCommand('insertHTML', false, pasteDivContents, pasteRange);
+				
+				
+				// Remove unwanted empty top-level child nodes in the paste
+				// range
+				var container = Aloha.activeEditable.obj[0]; //pasteRange.commonAncestorContainer;
+				if ( container.nodeType == 1 ) {
+					var kids = container.childNodes;
+					if ( kids && kids.length ) {
+						for ( var i = 0; i < kids.length; i++ ) {
+							var kid = kids[i];
+							var isEmpty = false;
+							
+							if ( kid.nodeType == 3 ) {
+								isEmpty = ( kid.data == '' );
+							} else {
+								isEmpty = ( jQuery.trim( jQuery( kid ).html() ) == '' );
+								if ( !isEmpty ) {
+									jQuery( kid ).children().each( function () {
+										isEmpty = jQuery( this ).is( ':empty' );
+										if ( !isEmpty ) {
+											// If any of the children are not
+											// empty then we then we know that
+											// the parent is also not empty
+											return false;
+										}
+									} );
+								}
+							}
+							
+							if ( isEmpty ) {
+								window.console.log('removing', kid);
+								kid.parentNode.removeChild( kid );
+								i--;
+							}
+						}
+					}
+				}
+				
+				window.console.log(container.innerHTML);
 			} else {
 				Aloha.Log.error('Common.Paste', 'Command "insertHTML" not available. Enable the plugin "common/commands".');
 			}
