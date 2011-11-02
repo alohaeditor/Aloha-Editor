@@ -101,7 +101,7 @@ function(Aloha, Plugin, jQuery, Commands, console) {
 			}[ node.tagName ] ) {
 			// Do not delete void elements, because event though they will
 			// always be empty, they are nevertheless visible
-		} else if ( jQuery.trim( node.innerHTML ) == '' ) {
+		} else if ( node.innerHTML.match( /^\s*(&nbsp;)*\s*$/ ) ) {
 			node.parentNode.removeChild( node );
 		} else {
 			var next,
