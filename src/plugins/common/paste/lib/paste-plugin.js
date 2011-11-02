@@ -65,7 +65,60 @@ function(Aloha, Plugin, jQuery, Commands, console) {
 		// focus the pasteDiv
 		$pasteDiv.focus();
 	};
-
+	
+	/**
+	 * @param {DOMElement} node
+	 */
+	function removeEmptyNodes ( node ) {
+		if ( node.nodeType == 3 ) {
+			if ( node.data == '' ) {
+				node.parentNode.removeChild( node );
+			}
+		} else if ( {
+				// http://dev.w3.org/html5/markup/syntax.html#void-element
+				// A complete list of the void elements in HTML(5)
+				//
+				// TODO: This list should be accessed from some Aloha factory
+				// setting. But this needs to be discussed. For the time being,
+				// this will provide a quick lookup table to check if a given
+				// node is a void element.
+				'AREA'    : true,
+				'BASE'    : true,
+				'BR'      : true,
+				'COL'     : true,
+				'COMMAND' : true,
+				'EMBED'   : true,
+				'HR'      : true,
+				'IMG'     : true,
+				'INPUT'   : true,
+				'KEYGEN'  : true,
+				'LINK'    : true,
+				'META'    : true,
+				'PARAM'   : true,
+				'SOURCE'  : true,
+				'TRACK'   : true,
+				'WBR'	  : true
+			}[ node.tagName ] ) {
+			// Do not delete void elements, because event though they will
+			// always be empty, they are nevertheless visible
+		} else if ( jQuery.trim( node.innerHTML ) == '' ) {
+			node.parentNode.removeChild( node );
+		} else {
+			var next,
+			    child = node.firstChild;
+			
+			while ( child ) {
+				next = child.nextSibling;
+				removeEmptyNodes( child );
+				child = next;
+			}
+			
+			if ( node.innerHTML == '' ) {
+				node.parentNode.removeChild( node );
+			}
+		}
+	};
+	
 	/**
 	 * Get the pasted content and insert into the current editable
 	 */
@@ -85,45 +138,7 @@ function(Aloha, Plugin, jQuery, Commands, console) {
 
 			if ( Aloha.queryCommandSupported('insertHTML') ) {
 				Aloha.execCommand('insertHTML', false, pasteDivContents, pasteRange);
-				
-				
-				// Remove unwanted empty top-level child nodes in the paste
-				// range
-				var container = Aloha.activeEditable.obj[0]; //pasteRange.commonAncestorContainer;
-				if ( container.nodeType == 1 ) {
-					var kids = container.childNodes;
-					if ( kids && kids.length ) {
-						for ( var i = 0; i < kids.length; i++ ) {
-							var kid = kids[i];
-							var isEmpty = false;
-							
-							if ( kid.nodeType == 3 ) {
-								isEmpty = ( kid.data == '' );
-							} else {
-								isEmpty = ( jQuery.trim( jQuery( kid ).html() ) == '' );
-								if ( !isEmpty ) {
-									jQuery( kid ).children().each( function () {
-										isEmpty = jQuery( this ).is( ':empty' );
-										if ( !isEmpty ) {
-											// If any of the children are not
-											// empty then we then we know that
-											// the parent is also not empty
-											return false;
-										}
-									} );
-								}
-							}
-							
-							if ( isEmpty ) {
-								window.console.log('removing', kid);
-								kid.parentNode.removeChild( kid );
-								i--;
-							}
-						}
-					}
-				}
-				
-				window.console.log(container.innerHTML);
+				removeEmptyNodes( pasteRange.commonAncestorContainer );
 			} else {
 				Aloha.Log.error('Common.Paste', 'Command "insertHTML" not available. Enable the plugin "common/commands".');
 			}
