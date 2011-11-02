@@ -481,19 +481,20 @@ function (Aloha, jQuery, FloatingMenu, i18n, TableCell, TableSelection, Utils) {
 		var emptyCell = jQuery('<td>');
 		emptyCell.html('\u00a0');
 		
-		// get the number of columns in the table
+		// get the number of columns in the table (first row)
 		// iterate through all rows and find the maximum number of columns to add
 		var numColumns = 0;
-		for(var i = 0; i < this.obj.context.rows.length; i++){
+		for( var i = 0; i < this.obj.context.rows.length; i++ ){
 			var curNumColumns = 0;
 			
-			for(var j = 0; j < this.obj.context.rows[i].cells.length; j++){
+			for( var j = 0; j < this.obj.context.rows[i].cells.length; j++ ){
 				var colspan = Utils.colspan( this.obj.context.rows[i].cells[j] );
 				curNumColumns += colspan;
 			}
 			
-			if(numColumns < curNumColumns)
+			if( numColumns < curNumColumns ) {
 				numColumns = curNumColumns;
+			}
 		}
 		
 		var selectionRow = jQuery('<tr>');
