@@ -224,7 +224,6 @@ Aloha.ready(function() {
 								try {
 									TestUtils.addBrackets( fakeRange );
 								} catch ( ex ) {
-									debugger;
 									viewArea.html( '[oops!] ' + ex );
 									return;
 								}
