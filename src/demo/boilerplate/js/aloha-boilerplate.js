@@ -137,8 +137,8 @@ Aloha.ready(function() {
 						'line-height' : '1.5em',
 						'font-size'   : '12px',
 						'font-family' : 'monospace',
-						overflow      : 'scroll',
-						//'white-space' : 'pre'
+						overflow      : 'scroll'
+						// 'white-space' : 'pre'
 					} );
 					
 					// false to deactivate source viewer
