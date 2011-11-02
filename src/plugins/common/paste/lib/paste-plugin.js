@@ -66,6 +66,33 @@ function(Aloha, Plugin, jQuery, Commands, console) {
 		$pasteDiv.focus();
 	};
 	
+	// http://dev.w3.org/html5/markup/syntax.html#void-element
+	// A complete list of the void elements in HTML(5)
+	//
+	// TODO: This list should be accessed from some Aloha factory setting. But
+	// this needs to be discussed. For the time being, this will provide a
+	// quick lookup table to check if a given node is a void element.
+	var voidElementsLookupTable = {
+		'AREA'    : true,
+		'BASE'    : true,
+		'BR'      : true,
+		'COL'     : true,
+		'COMMAND' : true,
+		'EMBED'   : true,
+		'HR'      : true,
+		'IMG'     : true,
+		'INPUT'   : true,
+		'KEYGEN'  : true,
+		'LINK'    : true,
+		'META'    : true,
+		'PARAM'   : true,
+		'SOURCE'  : true,
+		'TRACK'   : true,
+		'WBR'	  : true
+	};
+	
+	var whitespaceRgxp = new RegExp( '^\\s*(&nbsp;)*\\s*$', 'i' );
+	
 	/**
 	 * Recursively removes nodes that are either empty or contain nothing but
 	 * white spaces, including no-breaking white spaces.
@@ -77,34 +104,10 @@ function(Aloha, Plugin, jQuery, Commands, console) {
 			if ( node.data == '' ) {
 				node.parentNode.removeChild( node );
 			}
-		} else if ( {
-				// http://dev.w3.org/html5/markup/syntax.html#void-element
-				// A complete list of the void elements in HTML(5)
-				//
-				// TODO: This list should be accessed from some Aloha factory
-				// setting. But this needs to be discussed. For the time being,
-				// this will provide a quick lookup table to check if a given
-				// node is a void element.
-				'AREA'    : true,
-				'BASE'    : true,
-				'BR'      : true,
-				'COL'     : true,
-				'COMMAND' : true,
-				'EMBED'   : true,
-				'HR'      : true,
-				'IMG'     : true,
-				'INPUT'   : true,
-				'KEYGEN'  : true,
-				'LINK'    : true,
-				'META'    : true,
-				'PARAM'   : true,
-				'SOURCE'  : true,
-				'TRACK'   : true,
-				'WBR'	  : true
-			}[ node.tagName ] ) {
+		} else if ( voidElementsLookupTable[ node.tagName ] ) {
 			// Do not delete void elements, because event though they will
 			// always be empty, they are nevertheless visible
-		} else if ( node.innerHTML.match( /^\s*(&nbsp;)*\s*$/ ) ) {
+		} else if ( node.innerHTML.match( whitespaceRgxp ) ) {
 			node.parentNode.removeChild( node );
 		} else {
 			var next,
@@ -116,7 +119,7 @@ function(Aloha, Plugin, jQuery, Commands, console) {
 				child = next;
 			}
 			
-			if ( node.innerHTML == '' ) {
+			if ( node.innerHTML.match( whitespaceRgxp ) ) {
 				node.parentNode.removeChild( node );
 			}
 		}
