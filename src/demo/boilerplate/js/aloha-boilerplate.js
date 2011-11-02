@@ -155,8 +155,8 @@ Aloha.ready(function() {
 								}
 								
 								var id = +( new Date );
-								var sClass = 'aloha-tmp-start-' + id;
-								var eClass = 'aloha-tmp-end-' + id;
+								var sClass = 'aloha-selection-start-' + id;
+								var eClass = 'aloha-selection-end-' + id;
 								
 								jQuery( sNode.parentNode ).addClass( sClass );
 								jQuery( eNode.parentNode ).addClass( eClass );
@@ -182,37 +182,44 @@ Aloha.ready(function() {
 									//return;
 								}
 								
-								var fakeRange = {
-									startContainer : clonedStartContainer[ 0 ].childNodes[ getNodeIndex( sNode ) ],
-									endContainer   : clonedEndContainer[ 0 ].childNodes[ getNodeIndex( eNode ) ],
-									startOffset    : range.startOffset,
-									endOffset      : range.endOffset
-								};
+								var fakeRange;
 								
-								// FIXME: index out of bounds
-								try {
-									TestUtils.addBrackets( fakeRange );
-								} catch ( ex ) {
-									viewArea.html( '[eh!]' + ex );
-									return;
+								if ( clonedStartContainer &&
+										clonedStartContainer.length &&
+											clonedStartContainer[ 0 ] &&
+												clonedStartContainer[ 0 ].childNodes ) {								
+									fakeRange = {
+										startContainer : clonedStartContainer[ 0 ].childNodes[ getNodeIndex( sNode ) ],
+										endContainer   : clonedEndContainer[ 0 ].childNodes[ getNodeIndex( eNode ) ],
+										startOffset    : range.startOffset,
+										endOffset      : range.endOffset
+									};
+									
+									// FIXME: index out of bounds
+									try {
+										TestUtils.addBrackets( fakeRange );
+									} catch ( ex ) {
+										viewArea.html( '[eh!]' + ex );
+										return;
+									}
+									
+									jQuery( sNode.parentNode ).removeClass( sClass );
+									jQuery( eNode.parentNode ).removeClass( eClass );
+									clonedStartContainer.removeClass( sClass );
+									clonedEndContainer.removeClass( eClass );
+									
+									var source =
+										Aloha.jQuery('<div>')
+											 .text( clonedContainer.html() )
+											 .html()
+											 .replace( /\t/g, '  ' )
+											 .replace( /([\[\]\{\}])/g,
+												'<b style="color:#333">$1</b>' );
+									
+									viewArea.html( source );
 								}
-								
-								jQuery( sNode.parentNode ).removeClass( sClass );
-								jQuery( eNode.parentNode ).removeClass( eClass );
-								clonedStartContainer.removeClass( sClass );
-								clonedEndContainer.removeClass( eClass );
-								
-								var source =
-									Aloha.jQuery('<div>')
-										 .text( clonedContainer.html() )
-										 .html()
-										 .replace( /\t/g, '  ' )
-										 .replace( /([\[\]\{\}])/g,
-											'<b style="color:#333">$1</b>' );
-								
-								viewArea.html( source );
 							}
-						); // Aloha.bind
+						);
 					}
 				}
 			} );

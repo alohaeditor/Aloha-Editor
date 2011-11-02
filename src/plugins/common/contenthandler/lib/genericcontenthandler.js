@@ -165,7 +165,10 @@ function(Aloha, jQuery, ContentHandlerManager) {
 		 */
 		unwrapTags: function( content ) {
 			// safari and chrome cleanup for plain text paste with working linebreaks
-			content.find('div').each(function() {
+			content.find('div').filter(function(index) {
+				// Only find divs that are contenteditable. keep all other divs untouched.
+				return jQuery(this).contentEditable();
+			}).each(function() {
 				if (this.innerHTML == '<br>') {
 					jQuery(this).contents().unwrap();
 				} else {

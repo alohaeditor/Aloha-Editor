@@ -7,24 +7,20 @@
 <head>
 	<meta charset="UTF-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="description" content="The Aloha Editor Boilerplate - Just another demo page">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	
 	<title>The Aloha Editor Boilerplate - Just another demo page</title>
-	<meta name="description" content="The Aloha Editor Boilerplate - Just another demo page">
-	
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	
 	<link rel="shortcut icon" href="/favicon.ico">
 	<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 	<link rel="stylesheet" href="css/style.css">
-	
 	<link rel="stylesheet" href="../../css/aloha.css" id="aloha-style-include" type="text/css">
+	
 	<script src="js/aloha-config.js"></script>
-
 	<!--  extra/attributes,extra/googletranslate,extra/metaview,extra/wai-lang,extra/headerids,extra/cite  -->
 	<script src="../../lib/aloha.js" data-aloha-plugins="common/format,common/table,common/list,common/link,common/highlighteditables,common/block,common/undo,common/contenthandler,common/paste,common/characterpicker,common/abbr,common/commands"></script>
-
 	<script src="js/aloha-boilerplate.js"></script>
-
 </head>
 <body>
 	<div id="whole-site">
@@ -149,8 +145,8 @@
 	// make content editable
 	$('#content').aloha();
 	$('.top-text').aloha();
-&lt;/script&gt;</pre>
-
+&lt;/script&gt;
+					</pre>
 					<ul>
 						<li>List entry
 							<ul>
@@ -188,29 +184,24 @@
 					like <abbr title="Hyper Text Markup Language">HTML</abbr> and 
 					<abbr title="Cascading Style Sheets">CSS</abbr>.
 					</p>
+				</div>
+				<div id="references"></div>
 			</div>
-			<div id="references"></div>
 		</div>
+		
+		<script type="text/javascript">
+			Aloha.ready( function(){
+				var $ = Aloha.jQuery;
+				// register all editable areas
+				$('#top-text').aloha();
+				$('#content').aloha();
+				$('.area-content').aloha();
+				// hide loading div
+				$('#aloha-loading').hide();
+				$('#aloha-loading span').html('Loading Plugins');
+			});
+		</script>
 	</div>
-	
-	<script type="text/javascript">
-		Aloha.ready( function(){
-			
-			var $ = Aloha.jQuery;
-			
-			// register all editable areas
-			$('#top-text').aloha();
-			$('#content').aloha();
-			$('.area-content').aloha();
-				
-			// hide loading div
-			$('#aloha-loading').hide();
-							
-			$('#aloha-loading span').html('Loading Plugins');
-				
-		});
-	</script>
-
 	<!--[if lt IE 7 ]>
 	<script src="js/libs/dd_belatedpng.js"></script>
 	<script> DD_belatedPNG.fix('img, .png_bg');</script>

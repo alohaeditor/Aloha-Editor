@@ -740,7 +740,7 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, C
 			var me = this,
 				uniChar = null,
 				re, match;
-
+			
 			// ignore meta keys like crtl+v or crtl+l and so on
 			if ( event && ( event.metaKey || event.crtlKey || event.altKey ) ) {
 				return false;
@@ -823,7 +823,7 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, C
 					'keyIdentifier' : null,
 					'keyCode' : null,
 					'char' : null,
-					'triggerType' : 'paste', // paste
+					'triggerType' : 'paste',
 					'snapshotContent' : me.getSnapshotContent()
 				} );
 			}

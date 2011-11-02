@@ -39,6 +39,14 @@ var tests = {
 		{  	start: '<span><br>{}<br></span>',
 			execResult: '<span>{}<br></span>'
 		},
+		{	exclude: 'msie',
+			start: '<p>f[]</p>',
+			execResult: '<p>{}<br class="aloha-end-br"/></p>'
+		},
+		{	include: 'msie',
+			start: '<p>f[]</p>',
+			execResult: '<p>[]</p>'
+		},
 		{  	start: '<p>[]foo</p>',
 			execResult: '<p>[]foo</p>'
 		},
@@ -1270,7 +1278,23 @@ var tests = {
 		{  	start: '<ol><li>fo[o</ol><ul><li>b]ar</ul>',
 			execResult: '<ol><li>fo[]ar</li></ol>'
 		},
-	
+		{	exclude: 'msie',
+			start: '<ol><li>foo<ol><li>[]bar</li><li>baz</li></ol></li></ol>',
+			execResult: '<ol><li>foo</li><li>[]bar<ol><li>baz</li></ol></li></ol>'
+		},
+		{	include: 'msie',
+			start: '<ol><li>foo<ol><li>[]bar</li><li>baz</li></ol></li></ol>',
+			execResult: '<ol><li>foo</li><li>[]bar <ol><li>baz</li></ol></li></ol>'
+		},
+		{	exclude: 'msie',
+			start: '<ol><li>foo<ol><li>bar<ol><li>[]baz</li><li>quz</li></ol></li></ol></li></ol>',
+			execResult: '<ol><li>foo<ol><li>bar</li><li>[]baz<ol><li>quz</li></ol></li></li></ol>'
+		},
+		{	include: 'msie',
+			start: '<ol><li>foo<ol><li>bar<ol><li>[]baz</li><li>quz</li></ol></li></ol></li></ol>',
+			execResult: '<ol><li>foo <ol><li>bar</li><li>[]baz <ol><li>quz</li></ol></li></li></ol>'
+		},
+
 		{  	start: 'foo[<ol><li>]bar</ol>',
 			execResult: 'foo[]bar'
 		},
