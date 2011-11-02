@@ -969,6 +969,67 @@ function isWhitespaceNode(node) {
 		));
 }
 
+/**
+ * Collapse sequences of ignorable whitespace (tab (0x0009), line feed (0x000A), carriage return (0x000D), space (0x0020)) to only one space.
+ * Preserve the given range if necessary.
+ * @param node text node
+ * @param range range
+ */
+function collapseWhitespace(node, range) {
+	// "If node is neither editable nor an editing host, abort these steps."
+	if (!isEditable(node) && !isEditingHost(node)) {
+		return;
+	}
+
+	// if the given node is not a text node, return
+	if (!node || node.nodeType !== $_.Node.TEXT_NODE) {
+		return;
+	}
+
+	// if the node is in a pre or pre-wrap node, return
+	if ($_(["pre", "pre-wrap"]).indexOf($_.getComputedStyle(node.parentNode).whiteSpace) != -1) {
+		return;
+	}
+
+	// if the given node does not contain sequences of at least two consecutive ignorable whitespace characters, return
+	if (!/[\t\n\r ]{2,}/.test(node.data)) {
+		return;
+	}
+
+	var newData = '';
+	var correctStart = range.startContainer == node;
+	var correctEnd = range.endContainer == node;
+	var wsFound = false;
+
+	// iterate through the node data
+	for (var i = 0; i < node.data.length; ++i) {
+		if (/[\t\n\r ]/.test(node.data[i])) {
+			// found a whitespace
+			if (!wsFound) {
+				// this is the first whitespace in the current sequence
+				// add a whitespace to the new data sequence
+				newData += ' ';
+				// remember that we found a whitespace
+				wsFound = true;
+			} else {
+				// this is not the first whitespace in the sequence, so omit this character
+				if (correctStart && newData.length < range.startOffset) {
+					range.startOffset--;
+				}
+				if (correctEnd && newData.length < range.endOffset) {
+					range.endOffset--;
+				}
+			}
+		} else {
+			newData += node.data[i];
+			wsFound = false;
+		}
+	}
+
+	// set the new data
+	node.data = newData;
+}
+
 // "node is a collapsed whitespace node if the following algorithm returns
 // true:"
 function isCollapsedWhitespaceNode(node) {
@@ -6146,6 +6207,9 @@ commands["delete"] = {
 			}
 		}
 
+		// collapse whitespace sequences
+		collapseWhitespace(node, range);
+
 		// "If node is a Text node and offset is not zero, call collapse(node,
 		// offset) on the Selection. Then delete the contents of the range with
 		// start (node, offset − 1) and end (node, offset) and abort these
@@ -6735,6 +6799,9 @@ commands.forwarddelete = {
 				break;
 			}
 		}
+
+		// collapse whitespace in the node, if it is a text node
+		collapseWhitespace(node, range);
 
 		// "If node is a Text node and offset is not node's length:"
 		if (node.nodeType == $_.Node.TEXT_NODE
