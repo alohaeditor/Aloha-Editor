@@ -58,11 +58,12 @@ function( Aloha, jQuery, ContentHandlerManager, console ) {
 			'colgroup', 'dd', 'dl', 'dt', 'em', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
 			'i', 'img', 'li', 'ol', 'p', 'pre', 'q', 'small', 'strike', 'strong',
 			'sub', 'sup', 'table', 'tbody', 'td', 'tfoot', 'th', 'thead', 'tr', 'u',
-			'ul', 'span', 'hr', 'object'
+			'ul', 'span', 'hr', 'object', 'div'
 		],
 
 		attributes: {
-			'a': ['href', 'title'],
+			'a': ['href', 'title', 'id', 'data-gentics-aloha-repository', 'data-gentics-aloha-object-id'],
+			'div': [ 'id', 'class'],
 			'abbr': ['title'],
 			'blockquote': ['cite'],
 			'br': ['class'],

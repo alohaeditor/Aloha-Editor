@@ -119,6 +119,8 @@ function(Aloha, Plugin, jQuery, Commands, console) {
 				child = next;
 			}
 			
+			// Having removed all invisible childNodes inside node, check if
+			// node itself is now empty
 			if ( node.innerHTML.match( whitespaceRgxp ) ) {
 				node.parentNode.removeChild( node );
 			}
