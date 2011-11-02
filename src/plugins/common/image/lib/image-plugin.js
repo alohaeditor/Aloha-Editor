@@ -21,6 +21,8 @@ define([
 	'aloha/jquery',
 	'aloha/plugin',
 	'aloha/floatingmenu',
+	'image/image-sidebar',
+	'image/image-floatingmenu',
 	'i18n!aloha/nls/i18n',
 	'i18n!image/nls/i18n',
 	'jquery-plugin!image/vendor/ui/jquery-ui-1.8.10.custom.min',
@@ -31,7 +33,7 @@ define([
 	'css!image/vendor/ui/ui-lightness/jquery-ui-1.8.10.cropnresize.css',
 	'css!image/vendor/jcrop/jquery.jcrop.css'
 ],
-function AlohaImagePlugin ( aQuery, Plugin, FloatingMenu, i18nCore, i18n ) {
+function AlohaImagePlugin (aQuery, Plugin, FloatingMenu,imgSidebar, imgFloating, i18nCore, i18n) {
 	
 	'use strict';
 	
@@ -159,8 +161,8 @@ function AlohaImagePlugin ( aQuery, Plugin, FloatingMenu, i18nCore, i18n ) {
 		 */
 		_onCropped: function ($image, props) {
 			
-			$('#' + this.imgResizeHeightField.id).val($image.height());
-			$('#' + this.imgResizeWidthField.id).val($image.width());
+			$('#' + this.floatingMenuControl.imgResizeHeightField.id).val($image.height());
+			$('#' + this.floatingMenuControl.imgResizeWidthField.id).val($image.width());
 			
 			
 			$('body').trigger('aloha-image-cropped', [$image, props]);
@@ -174,8 +176,8 @@ function AlohaImagePlugin ( aQuery, Plugin, FloatingMenu, i18nCore, i18n ) {
 		 */
 		_onReset: function ($image) {
 			
-			$('#' + this.imgResizeHeightField.id).val($image.height());
-			$('#' + this.imgResizeWidthField.id).val($image.width());
+			$('#' + this.floatingMenuControl.imgResizeHeightField.id).val($image.height());
+			$('#' + this.floatingMenuControl.imgResizeWidthField.id).val($image.width());
 			
 			// No default behaviour defined besides event triggering
 			$('body').trigger('aloha-image-reset', $image);
@@ -189,8 +191,8 @@ function AlohaImagePlugin ( aQuery, Plugin, FloatingMenu, i18nCore, i18n ) {
 		 */
 		_onResize: function ($image) {
 
-			$('#' + this.imgResizeHeightField.id).val($image.height());
-			$('#' + this.imgResizeWidthField.id).val($image.width());
+			$('#' + this.floatingMenuControl.imgResizeHeightField.id).val($image.height());
+			$('#' + this.floatingMenuControl.imgResizeWidthField.id).val($image.width());
 			
 			// No default behaviour defined besides event triggering
 			$('body').trigger('aloha-image-resize', $image);
@@ -204,8 +206,8 @@ function AlohaImagePlugin ( aQuery, Plugin, FloatingMenu, i18nCore, i18n ) {
 		 */
 		_onResized: function ($image) {
 			
-			$('#' + this.imgResizeHeightField.id).val($image.height());
-			$('#' + this.imgResizeWidthField.id).val($image.width());
+			$('#' + this.floatingMenuControl.imgResizeHeightField.id).val($image.height());
+			$('#' + this.floatingMenuControl.imgResizeWidthField.id).val($image.width());
 
 			$('body').trigger('aloha-image-resized', $image);
 			
@@ -260,9 +262,8 @@ function AlohaImagePlugin ( aQuery, Plugin, FloatingMenu, i18nCore, i18n ) {
 		 */
 		init: function() {
 
-			var that = this;
-
-			var imagePluginUrl = Aloha.getPluginUrl('image');
+			var that = this,
+				imagePluginUrl = Aloha.getPluginUrl('image');
 
 			// Extend the default settings with the custom ones (done by default)
 			//this.settings = jQuery.extend(true,this.defaultSettings,this.settings);
@@ -271,412 +272,10 @@ function AlohaImagePlugin ( aQuery, Plugin, FloatingMenu, i18nCore, i18n ) {
 			this.config = this.defaults;
 			this.settings = jQuery.extend(true, this.settings, this.defaults);
 			
-			that.initializeButtons();
+			imgFloating.init(this);
 			that.bindInteractions();
 			that.subscribeEvents();
 		},
-
-		/**
-		* Create buttons
-		*/
-		initializeButtons: function() {
-			
-			var that = this,
-				tabInsert = i18nCore.t('floatingmenu.tab.insert'),
-				tabImage = i18n.t('floatingmenu.tab.img'),
-				tabFormatting = i18n.t('floatingmenu.tab.formatting'),
-				tabCrop = i18n.t('floatingmenu.tab.crop'),
-				tabResize = i18n.t('floatingmenu.tab.resize');
-
-			FloatingMenu.createScope(this.name, 'Aloha.empty');
-			
-			if (this.settings.ui.insert) {
-				var tabId = this.settings.ui.oneTab ? tabImage : tabInsert; 
-				that._addUIInsertButton(tabId);
-			}
-			
-			if (this.settings.ui.meta) {
-				var tabId = this.settings.ui.oneTab ? tabImage : tabImage;
-				that._addUIMetaButtons(tabId);
-			}
-			
-			if (this.settings.ui.reset) {
-				var tabId = this.settings.ui.reset ? tabImage : tabImage;
-				that._addUIResetButton(tabId);
-			}
-			
-			if (this.settings.ui.align) {
-				var tabId = this.settings.ui.oneTab ? tabImage : tabFormatting;
-				that._addUIAlignButtons(tabId);
-			}
-			
-			if (this.settings.ui.margin) {
-				var tabId = this.settings.ui.oneTab ? tabImage : tabFormatting;
-				that._addUIMarginButtons(tabId);
-			}
-		
-			if (this.settings.ui.crop) {
-				var tabId = this.settings.ui.oneTab ? tabImage : tabCrop;
-				that._addUICropButtons(tabId);
-			}
-			
-			if (this.settings.ui.resize) {
-				var tabId = this.settings.ui.oneTab ? tabImage : tabResize;
-				that._addUIResizeButtons(tabId);
-			}
-			
-			if (this.settings.ui.aspectRatioToggle) {
-				var tabId = this.settings.ui.oneTab ? tabImage : tabResize;
-				that.__addUIAspectRatioToggleButton(tabId);
-			}
-
-			// TODO fix the function and reenable this button 
-			//that._addNaturalSizeButton();
-		},
-		
-		
-		/**
-		 * Adds the aspect ratio toggle button to the floating menu
-		 */
-		__addUIAspectRatioToggleButton: function(tabId) {
-			var that = this;
-			var toggleButton = new Aloha.ui.Button({
-				'size' : 'small',
-				'tooltip' : i18n.t('button.toggle.tooltip'),
-				'toggle' : true,
-				'iconClass' : 'cnr-ratio',
-				'onclick' : function (btn, event) {
-					that.toggleKeepAspectRatio();
-				}
-			});
-			
-
-			// If the setting has been set to a number or false we need to activate the 
-			// toggle button to indicate that the aspect ratio will be preserved.
-			if (this.settings.fixedAspectRatio != false) {
-				toggleButton.pressed = true;
-				this.keepAspectRatio = true;
-			}
-			
-			FloatingMenu.addButton(
-				that.name,
-				toggleButton,
-				tabId,
-				20
-			);
-			
-
-		},
-		
-		
-		/**
-		 * Adds the reset button to the floating menu for the given tab 
-		 */
-		_addUIResetButton: function(tabId) {
-			var that = this;
-			// Reset button
-			var resetButton = new Aloha.ui.Button({
-				'size' : 'small',
-				'tooltip' : i18n.t('Reset'),
-				'toggle' : false,
-				'iconClass' : 'cnr-reset',
-				'onclick' : function (btn, event) {
-					that.reset();
-				}
-			});
-
-			FloatingMenu.addButton(
-				that.name,
-				resetButton,
-				tabId,
-				2
-			);
-		},
-
-		/**
-		 * Adds the insert button to the floating menu
-		 */
-		_addUIInsertButton: function(tabId) {
-			var that = this;
-			this.insertImgButton = new Aloha.ui.Button({
-				'iconClass': 'aloha-button aloha-image-insert',
-				'size' : 'small',
-				'onclick' : function () { that.insertImg(); },
-				'tooltip' : i18n.t('button.addimg.tooltip'),
-				'toggle' : false
-			});
-			
-			FloatingMenu.addButton(
-				'Aloha.continuoustext',
-				this.insertImgButton,
-				tabId,
-				1
-			);
-		},
-		
-		/**
-	 	 * Adds the ui meta fields (search, title) to the floating menu. 
-		 */
-		_addUIMetaButtons: function(tabId) {
-			var that = this;
-			var imgSrcLabel = new Aloha.ui.Button({
-				'label': i18n.t('field.img.src.label'),
-				'tooltip': i18n.t('field.img.src.tooltip'),
-				'size': 'small'
-			});
-			this.imgSrcField = new Aloha.ui.AttributeField();
-			this.imgSrcField.setObjectTypeFilter( this.objectTypeFilter );
-			
-			// add the title field for images
-			var imgTitleLabel = new Aloha.ui.Button({
-				'label': i18n.t('field.img.title.label'),
-				'tooltip': i18n.t('field.img.title.tooltip'),
-				'size': 'small'
-			});
-			
-			this.imgTitleField = new Aloha.ui.AttributeField();
-			this.imgTitleField.setObjectTypeFilter();
-			FloatingMenu.addButton(
-				this.name,
-				this.imgSrcField,
-				tabId,
-				1
-			);
-			
-		},
-		
-		/**
-		 * Adds the ui align buttons to the floating menu
-		 */
-		_addUIAlignButtons: function(tabId) {
-			var that = this;
-		
-			var	alignLeftButton = new Aloha.ui.Button({
-				'iconClass': 'aloha-img aloha-image-align-left',
-				'size': 'small',
-				'onclick' : function() {
-					var el = jQuery(that.findImgMarkup());
-					el.add(el.parent()).css('float', 'left');
-				},
-				'tooltip': i18n.t('button.img.align.left.tooltip')
-			});
-			
-			FloatingMenu.addButton(
-				that.name,
-				alignLeftButton,
-				tabId,
-				1
-			);
-			
-			var alignRightButton = new Aloha.ui.Button({
-				'iconClass': 'aloha-img aloha-image-align-right',
-				'size': 'small',
-				'onclick' : function() {
-					var el = jQuery(that.findImgMarkup());
-					el.add(el.parent()).css('float', 'right');
-				},
-				'tooltip': i18n.t('button.img.align.right.tooltip')
-			});
-			
-			FloatingMenu.addButton(
-				that.name,
-				alignRightButton,
-				tabId,
-				1
-			);
-			
-			var alignNoneButton = new Aloha.ui.Button({
-				'iconClass': 'aloha-img aloha-image-align-none',
-				'size': 'small',
-				'onclick' : function() {
-					var el = jQuery(that.findImgMarkup());
-					el.add(el.parent()).css({
-						'float': 'none',
-						display: 'inline-block'
-					});
-				},
-				'tooltip': i18n.t('button.img.align.none.tooltip')
-			});
-			
-			FloatingMenu.addButton(
-				that.name,
-				alignNoneButton,
-				tabId,
-				1
-			);
-		
-		},
-		
-		/**
-		 * Adds the ui margin buttons to the floating menu
-		 */
-		_addUIMarginButtons: function(tabId) {
-			var that = this;
-			var incPadding = new Aloha.ui.Button({
-				iconClass: 'aloha-img aloha-image-padding-increase',
-				toggle: false,
-				size: 'small',
-				onclick: function() {
-					jQuery(that.findImgMarkup()).increase('padding');
-				},
-				tooltip: i18n.t('padding.increase')
-			});
-			FloatingMenu.addButton(
-				that.name,
-				incPadding,
-				tabId,
-				2
-			);
-			
-			var decPadding = new Aloha.ui.Button({
-				iconClass: 'aloha-img aloha-image-padding-decrease',
-				toggle: false,
-				size: 'small',
-				onclick: function() {
-					jQuery(that.findImgMarkup()).decrease('padding');
-				},
-				tooltip: i18n.t('padding.decrease')
-			});
-			FloatingMenu.addButton(
-				that.name,
-				decPadding,
-				tabId,
-				2
-			);
-		},
-
-		/**
-		 * Adds the crop buttons to the floating menu
-		 */		
- 		_addUICropButtons: function (tabId) {
- 			var that = this;
- 			
- 			FloatingMenu.createScope('Aloha.img', ['Aloha.global']);
-
-			this.cropButton = new Aloha.ui.Button({
-				'size' : 'small',
-				'tooltip' : i18n.t('Crop'),
-				'toggle' : true,
-				'iconClass' : 'cnr-crop',
-				'onclick' : function (btn, event) {
-					if (btn.pressed) {
-						that.crop();
-					} else {
-						that.endCrop();
-					}
-				}
-			});
-
-			FloatingMenu.addButton(
-				this.name,
-				this.cropButton,
-				tabId,
-				3
-			);
-	
- 		},
- 	
- 		/**
- 		 * Adds the resize buttons to the floating menu
- 		 */	
- 		_addUIResizeButtons: function (tabId) {
-	 		var that = this;
-	 		
-			// Manual resize fields
-			this.imgResizeHeightField = new Aloha.ui.AttributeField();
-			this.imgResizeHeightField.maxValue = that.settings.maxHeight;
-			this.imgResizeHeightField.minValue = that.settings.minHeight;
-			
-			this.imgResizeWidthField = new Aloha.ui.AttributeField();
-			this.imgResizeWidthField.maxValue = that.settings.maxWidth;
-			this.imgResizeWidthField.minValue = that.settings.minWidth;
-
-			this.imgResizeWidthField.width = 50;
-			this.imgResizeHeightField.width = 50;
-			
-			var widthLabel = new Aloha.ui.Button({
-				'label':  i18n.t('width'),
-				'tooltip': i18n.t('width'),
-				'size': 'small'
-			});
-			
-			FloatingMenu.addButton(
-					this.name,
-					widthLabel,
-					tabId,
-					30
-			);
-			
-			FloatingMenu.addButton(
-					this.name,
-					this.imgResizeWidthField,
-					tabId,
-					40
-			);
-			
-			
-			var heightLabel = new Aloha.ui.Button({
-				'label':  i18n.t('height'),
-				'tooltip': i18n.t('height'),
-				'size': 'small'
-			});
-			
-			FloatingMenu.addButton(
-					this.name,
-					heightLabel,
-					tabId,
-					50
-			);
-			
-			FloatingMenu.addButton(
-					this.name,
-					this.imgResizeHeightField,
-					tabId,
-					60
-			);
-			
-		
- 		},
- 		
- 		/**
-		 * Adds the natural size button to the floating menu
-		 */
-		 _addNaturalSizeButton: function () {
-	    	var that = this;
-			var naturalSize = new Aloha.ui.Button({
-				iconClass: 'aloha-img aloha-image-size-natural',
-				size: 'small',
-				toggle: false,
-				onclick: function() {
-					var	img = new Image();
-					img.onload = function() {
-						var myimage = that.findImgMarkup();
-						if (that.settings.ui.resizable) {
-							that.endResize();
-						}
-						jQuery(myimage).css({
-								'width': img.width + 'px',
-								'height': img.height + 'px',
-								'max-width': '',
-								'max-height': ''
-							});
-						if (that.settings.ui.resizable) {
-							that.resize();
-						}
-					};
-					img.src = that.findImgMarkup().src;
-						
-				},
-				tooltip: i18n.t('size.natural')
-			});
-			FloatingMenu.addButton(
-				this.name,
-				naturalSize,
-				tabResize,
-				2
-			);
-		},
-
 		/**
 		 * Bind plugin interactions
 		 */
@@ -695,11 +294,11 @@ function AlohaImagePlugin ( aQuery, Plugin, FloatingMenu, i18nCore, i18n ) {
 
 			if (this.settings.ui.meta) {
 				// update image object when src changes
-				this.imgSrcField.addListener('keyup', function(obj, event) {
+				this.floatingMenuControl.imgSrcField.addListener('keyup', function(obj, event) {
 					that.srcChange();
 				});
 
-				this.imgSrcField.addListener('blur', function(obj, event) {
+				this.floatingMenuControl.imgSrcField.addListener('blur', function(obj, event) {
 					// TODO remove image or do something usefull if the user leaves the
 					// image without defining a valid image src.
 					var img = jQuery(obj.getTargetObject());
@@ -742,6 +341,10 @@ function AlohaImagePlugin ( aQuery, Plugin, FloatingMenu, i18nCore, i18n ) {
 			jQuery('img').filter(config.globalselector).click(function(event) {
 				that.clickImage(event);
 			});
+
+			Aloha.ready(function(){
+				imgSidebar.init(that, Aloha.Sidebar.right);
+			});		
 
 			Aloha.bind('aloha-drop-files-in-editable', function(event, data) {
 				//var	that = this;
@@ -789,25 +392,29 @@ function AlohaImagePlugin ( aQuery, Plugin, FloatingMenu, i18nCore, i18n ) {
 					config = that.getEditableConfig(Aloha.activeEditable.obj);
 
 					if (typeof config !== 'undefined' ) {
-						that.insertImgButton.show();
+						that.floatingMenuControl.insertImgButton.show();
 					} else {
-						that.insertImgButton.hide();
+						that.floatingMenuControl.insertImgButton.hide();
 						return;
 					}
 
 					// Enable image specific ui components if the element is an image
 					if ( foundMarkup ) {
-						that.insertImgButton.hide();
+						//activates sidebar
+						rangeObject.markupEffectiveAtStart.push(foundMarkup);
+						Aloha.Sidebar.right.checkActivePanels(rangeObject);
+						
+						that.floatingMenuControl.insertImgButton.hide();
 						FloatingMenu.setScope(that.name);
 						if(that.settings.ui.meta) {
-							that.imgSrcField.setTargetObject(foundMarkup, 'src');
-							that.imgTitleField.setTargetObject(foundMarkup, 'title');
+							that.floatingMenuControl.imgSrcField.setTargetObject(foundMarkup, 'src');
+							that.floatingMenuControl.imgTitleField.setTargetObject(foundMarkup, 'title');
 						}
-						that.imgSrcField.focus();
+						that.floatingMenuControl.imgSrcField.focus();
 						FloatingMenu.userActivatedTab = i18n.t('floatingmenu.tab.img');
 					} else {
 						if(that.settings.ui.meta) {
-							that.imgSrcField.setTargetObject(null);
+							that.floatingMenuControl.imgSrcField.setTargetObject(null);
 						}
 					}
 					// TODO this should not be necessary here!
@@ -992,12 +599,12 @@ function AlohaImagePlugin ( aQuery, Plugin, FloatingMenu, i18nCore, i18n ) {
 				if (that.keepAspectRatio) {
 					
 					// Keep track from where the event was fired 
-					var sibilingFieldId = that.imgResizeWidthField.id;
-					var myFieldId = that.imgResizeHeightField.id;
+					var sibilingFieldId = that.floatingMenuControl.imgResizeWidthField.id;
+					var myFieldId = that.floatingMenuControl.imgResizeHeightField.id;
 					
 					if (fieldName =='width') {
-						sibilingFieldId = that.imgResizeHeightField.id;
-						myFieldId = that.imgResizeWidthField.id;
+						sibilingFieldId = that.floatingMenuControl.imgResizeHeightField.id;
+						myFieldId = that.floatingMenuControl.imgResizeWidthField.id;
 					}
 				
 					var aspectRatio = 1.33333;
@@ -1020,21 +627,21 @@ function AlohaImagePlugin ( aQuery, Plugin, FloatingMenu, i18nCore, i18n ) {
 			 * Helper function that will set the new image size using the field values
 			 */
 			function setSizeByFieldValue() {
-				var width =  $('#' + that.imgResizeWidthField.id ).val();
-				var height = $('#' + that.imgResizeHeightField.id ).val();
+				var width =  $('#' + that.floatingMenuControl.imgResizeWidthField.id ).val();
+				var height = $('#' + that.floatingMenuControl.imgResizeHeightField.id ).val();
 				that.setSize(width, height);
 			};
 
 			/**
 			 * Handle mousewheel,keyup actions on both fields
 			 */
-			var $heightField = $('#' + that.imgResizeHeightField.id );
-			var heightEventData= {fieldName: 'height', maxValue: that.imgResizeHeightField.maxValue, minValue: that.imgResizeHeightField.minValue };
+			var $heightField = $('#' + that.floatingMenuControl.imgResizeHeightField.id );
+			var heightEventData= {fieldName: 'height', maxValue: that.floatingMenuControl.imgResizeHeightField.maxValue, minValue: that.floatingMenuControl.imgResizeHeightField.minValue };
 			$heightField.live('keyup', heightEventData, handleKeyUpEventOnField);
 			$heightField.live('mousewheel', heightEventData, handleMouseWheelEventOnField);
 			
-			var $widthField = $('#' + that.imgResizeWidthField.id );
-			var widthEventData= {fieldName: 'width', maxValue: that.imgResizeWidthField.maxValue , minValue: that.imgResizeWidthField.minValue };
+			var $widthField = $('#' + that.floatingMenuControl.imgResizeWidthField.id );
+			var widthEventData= {fieldName: 'width', maxValue: that.floatingMenuControl.imgResizeWidthField.maxValue , minValue: that.floatingMenuControl.imgResizeWidthField.minValue };
 			$widthField.live('keyup',widthEventData , handleKeyUpEventOnField);
 			$widthField.live('mousewheel', widthEventData, handleMouseWheelEventOnField);
 			
@@ -1050,22 +657,22 @@ function AlohaImagePlugin ( aQuery, Plugin, FloatingMenu, i18nCore, i18n ) {
 			// Don't set width that is out of range
 			if ( width > this.settings.maxWidth ) {
 				Aloha.Log.error("Given width with is not within specified range of " + this.settings.minWidth + " to " + this.settings.maxWidth, width);
-				$('#' + that.imgResizeWidthField.id ).val(this.settings.maxWidth);
+				$('#' + that.floatingMenuControl.imgResizeWidthField.id ).val(this.settings.maxWidth);
 				return false;
 			} else if( width <= 0) { //this.settings.minWidth
 				Aloha.Log.error("Given with is not within specified range of " + this.settings.minWidth + " to " + this.settings.maxWidth, width);
-				$('#' + that.imgResizeWidthField.id ).val(this.settings.minWidth);
+				$('#' + that.floatingMenuControl.imgResizeWidthField.id ).val(this.settings.minWidth);
 				return false;
 			}
 
 			// Don't set height that is out of range
 			if ( height > this.settings.maxHeight ) {
 				Aloha.Log.error("Given with is not within specified range of " + this.settings.minHeight + " to " + this.settings.maxHeight, height);
-				$('#' + that.imgResizeHeightField.id ).val(this.settings.maxHeight);
+				$('#' + that.floatingMenuControl.imgResizeHeightField.id ).val(this.settings.maxHeight);
 				return false;
 			} else if( height <= 0) { // this.settings.minHeight
 				Aloha.Log.error("Given with is not within specified range of " + this.settings.minHeight + " to " + this.settings.maxHeight, height);
-				$('#' + that.imgResizeHeightField.id ).val(this.settings.minHeight);
+				$('#' + that.floatingMenuControl.imgResizeHeightField.id ).val(this.settings.minHeight);
 				return false;
 			}
 
@@ -1085,11 +692,9 @@ function AlohaImagePlugin ( aQuery, Plugin, FloatingMenu, i18nCore, i18n ) {
 		 */
 		clickImage: function( e ) {
 
-			var that = this;
-			that.imageObj = jQuery(e.target);
-			var currentImage = that.imageObj;
-			
-			FloatingMenu.setScope(that.name);
+			var that = this,
+				currentImage =  jQuery(e.target);
+			that.imageObj = currentImage;
 			
 			var editable = currentImage.closest('.aloha-editable');
 			
@@ -1105,14 +710,18 @@ function AlohaImagePlugin ( aQuery, Plugin, FloatingMenu, i18nCore, i18n ) {
 			});
 
 			// Update the resize input fields with the new width and height
-			$('#' + that.imgResizeHeightField.id).val(that.imageObj.height());
-			$('#' + that.imgResizeWidthField.id).val(that.imageObj.width());
-
-
+			$('#' + that.floatingMenuControl.imgResizeHeightField.id).val(that.imageObj.height());
+			$('#' + that.floatingMenuControl.imgResizeWidthField.id).val(that.imageObj.width());
+			
+			
 			if (this.settings.ui.resizable) {
 				this.startResize();
 			}
-
+			//shows FloatingMenu
+			imgSidebar.update();
+			FloatingMenu.setScope(that.name);
+			//that.floatingMenuControl.imgSrcField.focus();
+			// Update sidebar
 		},
 
 		/**
@@ -1200,6 +809,9 @@ function AlohaImagePlugin ( aQuery, Plugin, FloatingMenu, i18nCore, i18n ) {
 			// 2. start a request to get the image
 			// 3a. the image is ok change the src
 			// 3b. the image is not availbable show an error.
+			// this.floatingMenuControl.imgSrcField.getTargetObject(), (the img tag)
+			// this.floatingMenuControl.imgSrcField.getQueryValue(), (the query value in the inputfield)
+			// this.floatingMenuControl.imgSrcField.getItem() (optinal a selected resource item)
 			 this.imageObj.attr('src', this.imgSrcField.getQueryValue() ); // (the img tag)
 //			 jQuery(img).attr('src', this.imgSrcField.getQueryValue() ); // (the query value in the inputfield)
 //			 this.imgSrcField.getItem(); // (optinal a selected resource item)
@@ -1323,7 +935,7 @@ function AlohaImagePlugin ( aQuery, Plugin, FloatingMenu, i18nCore, i18n ) {
 			}
 
 			this.destroyCropButtons();
-			this.cropButton.extButton.toggle(false);
+			this.floatingMenuControl.cropButton.extButton.toggle(false);
 			if (this.settings.ui.resizable) {
 				this.startResize();
 			}
