@@ -67,9 +67,12 @@ function(Aloha, Plugin, jQuery, Commands, console) {
 	};
 	
 	/**
+	 * Recursively removes nodes that are either empty or contain nothing but
+	 * white spaces, including no-breaking white spaces.
+	 *
 	 * @param {DOMElement} node
 	 */
-	function removeEmptyNodes ( node ) {
+	function removeInvisibleNodes ( node ) {
 		if ( node.nodeType == 3 ) {
 			if ( node.data == '' ) {
 				node.parentNode.removeChild( node );
@@ -109,7 +112,7 @@ function(Aloha, Plugin, jQuery, Commands, console) {
 			
 			while ( child ) {
 				next = child.nextSibling;
-				removeEmptyNodes( child );
+				removeInvisibleNodes( child );
 				child = next;
 			}
 			
@@ -138,7 +141,7 @@ function(Aloha, Plugin, jQuery, Commands, console) {
 
 			if ( Aloha.queryCommandSupported('insertHTML') ) {
 				Aloha.execCommand('insertHTML', false, pasteDivContents, pasteRange);
-				removeEmptyNodes( pasteRange.commonAncestorContainer );
+				removeInvisibleNodes( pasteRange.commonAncestorContainer );
 			} else {
 				Aloha.Log.error('Common.Paste', 'Command "insertHTML" not available. Enable the plugin "common/commands".');
 			}
