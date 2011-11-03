@@ -1,0 +1,106 @@
+h2. Release Guide
+
+This guide will describe the aloha editor release lifecyle and practical releasing example. Please read http://nvie.com/posts/a-successful-git-branching-model/ which describes in detail the branch structure and release process as seen from git. 
+
+endprologue.
+
+h3. Release Lifecycle
+
+h4. Feature Release
+
+For every feature release a new release branch will be created. This branch must be named using the targeted release version. If you want to release 0.20.0 it will be named: +release-0.20.0+. The release branch will always be created from the +dev+ branch. 
+
+
+
+h4. Hotfix Release
+
+A hotfix release can be done from an existing hotfix branch. The hotfix level of the version will be raised one leve. (eg. 0.20.0 -> 0.20.1)
+
+h4. Post Release Steps
+* After a release has been done the tagged version will be merged into the master branch.
+* A hotfix branch for the release will be created in which hotfixes can be applied.
+* The tagged version will be merged into the dev branch. Please note that the dev version should always be one level above the current major release version. (eg. current stable is 0.20.0 than the dev branch version would be 0.30.0-dev.)  
+
+h3. Practical Maven Feature Release Example For Version 0.20.0
+
+1. Switch into the dev branch.
+<shell>
+  git checkout dev
+</shell>
+
+2. Create a new release branch.
+<shell>
+  git checkout -b release-0.20.0
+</shell>
+ 
+3. Prepare the release and define the release version. 
+<shell>
+  mvn release:prepare
+</shell>
+Next development version will be 0.20.1-SNAPSHOT. We just raise the bugfix level.
+
+<shell>
+[INFO] Scanning for projects...
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building Aloha Editor 0.20.0-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-release-plugin:2.0:prepare (default-cli) @ alohaeditor ---
+[INFO] Verifying that there are no local modifications...
+[INFO] Executing: /bin/sh -c cd /home/release_prepare/alohaeditor-fork && git status
+[INFO] Working directory: /home/release_prepare/alohaeditor-fork
+[INFO] Checking dependencies and plugins for snapshots ...
+What is the release version for "Aloha Editor"? (org.alohaeditor:alohaeditor) 0.20.0: : 
+What is SCM release tag or label for "Aloha Editor"? (org.alohaeditor:alohaeditor) alohaeditor-0.20.0: : 
+What is the new development version for "Aloha Editor"? (org.alohaeditor:alohaeditor) 0.20.1-SNAPSHOT: : 
+[INFO] Transforming 'Aloha Editor'...
+[INFO] Not generating release POMs
+[INFO] Executing goals 'clean verify'...
+[WARNING] Maven will be executed in interactive mode, but no input stream has been configured for this MavenInvoker instance.
+[INFO] [INFO] Scanning for projects...
+[INFO] [INFO]                                                                         
+[INFO] [INFO] ------------------------------------------------------------------------
+[INFO] [INFO] Building Aloha Editor 0.20.0
+[INFO] [INFO] ------------------------------------------------------------------------
+[INFO] [INFO] 
+[INFO] [INFO] --- maven-clean-plugin:2.4.1:clean (default-clean) @ alohaeditor ---
+[INFO] [INFO] Deleting /home/release_prepare/alohaeditor-fork/target
+</shell>
+
+4. Test the created preview release in all supported browsers.
+
+5. Perform the maven release. This will push the artifact to archiva.
+<shell>
+  git add .
+  git commit -m "Maven release prepare"
+  git push origin release-0.20.0
+  mvn release:perform
+</shell>
+
+6. Checkout the master branch and merge the tag into that branch
+<shell>
+  git checkout master
+  git merge tags/release-0.20.0
+</shell>
+
+8. Update the dev branch
+<shell> 
+  git checkout dev
+  git pull hotfix-0.20.0
+</shell>
+
+9. Update the dev branch version to 0.21.0-dev-SNAPSHOT
+<shell>
+  mvn release:update-versions -DdevelopmentVersion=0.21-dev-SNAPSHOT -DautoVersionSubmodules=true
+</shell>
+
+h3. Practical Maven Hotfix Release Example 
+
+1. Create a new hotfix branch from master
+<shell>  
+  git checkout -b hotfix-0.20.0 master
+  git push origin hotfix-0.20.0
+</shell>
+
+2. Continue with step 3 from the feature release example
