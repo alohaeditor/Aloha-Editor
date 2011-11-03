@@ -41,15 +41,7 @@ function(Aloha, jQuery, Plugin) {
 			Aloha.bind(
 					"aloha-editable-activated",
 					function (jEvent, aEvent) {
-						aEvent.editable.obj.addClass('aloha-editable-active');
 						that.fade();
-					}
-			);
-
-			// remove active Editable ccs class
-			Aloha.bind("aloha-editable-deactivated",
-					function (jEvent, aEvent) {
-						aEvent.editable.obj.removeClass('aloha-editable-active');
 					}
 			);
 
