@@ -1,6 +1,6 @@
 /*!
 * This file is part of Aloha Editor Project http://aloha-editor.org
-* Copyright � 2010-2011 Gentics Software GmbH, aloha@gentics.com
+* Copyright © 2010-2011 Gentics Software GmbH, aloha@gentics.com
 * Contributors http://aloha-editor.org/contribution.php 
 * Licensed unter the terms of http://www.aloha-editor.org/license.html
 *//*
@@ -30,8 +30,10 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, C
 		GENTICS = window.GENTICS;
 
 	// default supported and custom content handler settings
+	// @TODO move to new config when implemented in Aloha
 	Aloha.defaults.contentHandler = {};
 	Aloha.defaults.contentHandler.initEditable = [ 'generic', 'sanitize' ];
+	Aloha.defaults.contentHandler.getContents = [ 'generic', 'sanitize' ];
 	
 	if (typeof Aloha.settings.contentHandler === 'undefined') {
 		Aloha.settings.contentHandler = {};
@@ -124,8 +126,12 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, C
 		 */
 		init: function(){
 			var me = this;
-
+			
+			// TODO make editables their own settings.
+			this.settings = Aloha.settings; 
+				
 			// smartContentChange settings
+			// @TODO move to new config when implemented in Aloha
 			if (Aloha.settings && Aloha.settings.smartContentChange) {
 				if (Aloha.settings.smartContentChange.delimiters) {
 					this.sccDelimiters = Aloha.settings.smartContentChange.delimiters;
@@ -152,6 +158,16 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, C
 				this.destroy();
 				return;
 			}
+
+			// apply content handler to clean up content
+			var content = me.obj.html();
+			if ( typeof Aloha.settings.contentHandler.initEditable === 'undefined') {
+				Aloha.settings.contentHandler.initEditable = Aloha.defaults.contentHandler.initEditable;
+			}
+			content = ContentHandlerManager.handleContent( content, {
+				contenthandler: Aloha.settings.contentHandler.initEditable 
+			});
+			me.obj.html( content );
 
 			// only initialize the editable when Aloha is fully ready (including plugins)
 			Aloha.bind('aloha-ready',function(){
@@ -208,13 +224,18 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, C
 				// mark the editable as unmodified
 				me.setUnmodified();
 
-				// apply content handler to clean up content
-				var content = me.obj.html();
-				if (Aloha.settings.contentHandler && Aloha.settings.contentHandler.initEditable === 'undefined') {
-					Aloha.settings.contentHandler.initEditable = Aloha.defaults.contentHandler.initEditable;
-				}
-				content = ContentHandlerManager.handleContent( content, { contenthandler: Aloha.settings.contentHandler.initEditable } );
-				me.obj.html( content );
+				// we don't do the sanitizing on aloha ready, since some plugins add elements into the content and bind events to it.
+				// if we sanitize by replacing the html, all events would get lost. TODO: think about a better solution for the sanitizing, without
+				// destroying the events
+//				// apply content handler to clean up content
+//				var content = me.obj.html();
+//				if ( typeof Aloha.settings.contentHandler.initEditable === 'undefined') {
+//					Aloha.settings.contentHandler.initEditable = Aloha.defaults.contentHandler.initEditable;
+//				}
+//				content = ContentHandlerManager.handleContent( content, {
+//					contenthandler: Aloha.settings.contentHandler.initEditable 
+//				});
+//				me.obj.html( content );
 
 				me.snapshotContent = me.getContents();
 
@@ -492,7 +513,7 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, C
 
 			// unbind all events
 			// TODO should only unbind the specific handlers.
-						.unbind('mousedown click dblclick focus keydown keyup');
+						.unbind('mousedown click dblclick focus keydown keypress keyup');
 
 			/* TODO remove this event, it should implemented as bind and unbind
 			// register the onSelectionChange Event with the Editable field
@@ -677,6 +698,19 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, C
 			this.removePlaceholder(clonedObj);
 
 			PluginManager.makeClean(clonedObj);
+
+			/* 
+			//also deactivated for now. like initEditable. just in case ...
+			var content = clonedObj.html()
+			if (typeof Aloha.settings.contentHandler.getContents === 'undefined') {
+				Aloha.settings.contentHandler.getContents = Aloha.defaults.contentHandler.getContents;
+			}
+			content = ContentHandlerManager.handleContent( content, { 
+				contenthandler: Aloha.settings.contentHandler.getContents 
+			});
+			clonedObj.html( content );
+			*/
+
 			return asObject ? clonedObj.contents() : clonedObj.html();
 		},
 
@@ -690,58 +724,68 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, C
 		},
 
 		/**
-		 * Handle a smartContentChange; This is used for smart actions within the content/while editing.
+		 * Generates and signals a smartContentChange event.
+		 *
+		 * A smart content change occurs when a special editing action, or a
+		 * combination of interactions are performed by the user during the
+		 * course of editing within an editable.
+		 * The smart content change event would therefore signal to any
+		 * component that is listening to this event, that content has been
+		 * inserted into the editable that may need to be prococessed in a
+		 * special way 
+		 * This is used for smart actions within the content/while editing.
 		 * @hide
 		 */
-		smartContentChange: function(event) {
+		smartContentChange: function( event ) {
 			var me = this,
 				uniChar = null,
 				re, match;
-
+			
 			// ignore meta keys like crtl+v or crtl+l and so on
-			if (event && (event.metaKey || event.crtlKey || event.altKey)) {
+			if ( event && ( event.metaKey || event.crtlKey || event.altKey ) ) {
 				return false;
 			}
 
-			if (event && event.originalEvent) {
-
-				// regex to stripp unicode
-				re = new RegExp("U\\+(\\w{4})");
-				match = re.exec(event.originalEvent.keyIdentifier);
+			if ( event && event.originalEvent ) {
+				// regex to strip unicode
+				re = new RegExp( "U\\+(\\w{4})" );
+				match = re.exec( event.originalEvent.keyIdentifier );
 
 				// Use keyIdentifier if available
-				if ( event.originalEvent.keyIdentifier && 1 == 2) {
-					if (match !== null) {
-						uniChar = unescape('%u' + match[1]);
+				if ( event.originalEvent.keyIdentifier && 1 == 2 ) {
+					if ( match !== null ) {
+						uniChar = unescape( '%u' + match[ 1 ] );
 					}
-					if (uniChar === null) {
+					if ( uniChar === null ) {
 						uniChar = event.originalEvent.keyIdentifier;
 					}
 				// FF & Opera don't support keyIdentifier
 				} else {
 					// Use among browsers reliable which http://api.jquery.com/keypress
-					uniChar = (this.keyCodeMap[this.keyCode] || String.fromCharCode(event.which) || 'unknown');
+					uniChar = ( this.keyCodeMap[ this.keyCode ] ||
+									String.fromCharCode( event.which ) || 'unknown' );
 				}
 			}
+			
 			// handle "Enter" -- it's not "U+1234" -- when returned via "event.originalEvent.keyIdentifier"
 			// reference: http://www.w3.org/TR/2007/WD-DOM-Level-3-Events-20071221/keyset.html
-			if (jQuery.inArray(uniChar, this.sccDelimiters) >= 0) {
+			if ( jQuery.inArray( uniChar, this.sccDelimiters ) >= 0 ) {
 
-				clearTimeout(this.sccTimerIdle);
-				clearTimeout(this.sccTimerDelay);
+				clearTimeout( this.sccTimerIdle );
+				clearTimeout( this.sccTimerDelay );
 
-				this.sccTimerDelay = setTimeout(function() {
+				this.sccTimerDelay = setTimeout( function() {
 
-					Aloha.trigger('aloha-smart-content-changed',{
-						'editable' : Aloha.activeEditable,
+					Aloha.trigger( 'aloha-smart-content-changed', {
+						'editable' : me,
 						'keyIdentifier' : event.originalEvent.keyIdentifier,
 						'keyCode' : event.keyCode,
 						'char' : uniChar,
 						'triggerType' : 'keypress', // keypress, timer, blur, paste
 						'snapshotContent' : me.getSnapshotContent()
-					});
+					} );
 
-					Aloha.Log.debug(this, 'smartContentChanged: event type keypress triggered');
+					Aloha.Log.debug( this, 'smartContentChanged: event type keypress triggered' );
 	/*
 					var r = Aloha.Selection.rangeObject;
 					if (r.isCollapsed()
@@ -770,51 +814,45 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, C
 
 					}
 	*/
-				},this.sccDelay);
+				}, this.sccDelay );
 			}
 
-			else if (uniChar !== null) {
-
-				this.sccTimerIdle = setTimeout(function() {
-
-					// in the rare case idle time is lower then delay time
-					clearTimeout(this.sccTimerDelay);
-
-					Aloha.trigger('aloha-smart-content-changed',{
-						'editable' : Aloha.activeEditable,
-						'keyIdentifier' : null,
-						'keyCode' : null,
-						'char' : null,
-						'triggerType' : 'idle',
-						'snapshotContent' : me.getSnapshotContent()
-					});
-
-				},this.sccIdle);
-
-			}
-
-			else if (event && event.type === 'paste') {
-				Aloha.trigger('aloha-smart-content-changed',{
-					'editable' : Aloha.activeEditable,
+			else if ( event && event.type === 'paste' ) {
+				Aloha.trigger( 'aloha-smart-content-changed', {
+					'editable' : me,
 					'keyIdentifier' : null,
 					'keyCode' : null,
 					'char' : null,
-					'triggerType' : 'paste', // paste
+					'triggerType' : 'paste',
 					'snapshotContent' : me.getSnapshotContent()
-				});
-
+				} );
 			}
 
-			else if (event && event.type === 'blur') {
-				Aloha.trigger('aloha-smart-content-changed',{
-					'editable' : Aloha.activeEditable,
+			else if ( event && event.type === 'blur' ) {
+				Aloha.trigger( 'aloha-smart-content-changed',{
+					'editable' : me,
 					'keyIdentifier' : null,
 					'keyCode' : null,
 					'char' : null,
 					'triggerType' : 'blur',
 					'snapshotContent' : me.getSnapshotContent()
-				});
+				} );
+			}
 
+			else if ( uniChar !== null ) {
+				this.sccTimerIdle = setTimeout( function() {
+					// in the rare case idle time is lower then delay time
+					clearTimeout( this.sccTimerDelay );
+
+					Aloha.trigger( 'aloha-smart-content-changed', {
+						'editable' : me,
+						'keyIdentifier' : null,
+						'keyCode' : null,
+						'char' : null,
+						'triggerType' : 'idle',
+						'snapshotContent' : me.getSnapshotContent()
+					} );
+				}, this.sccIdle );
 			}
 
 		},

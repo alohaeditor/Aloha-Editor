@@ -10,7 +10,7 @@
 		ribbon: false,
 		locale: 'en',
 		floatingmenu: {
-			width: 430
+			width: 630
 		},
 		repositories: {
 			linklist: {
@@ -83,6 +83,7 @@
 					// Don't allow tables in top-text
 					'#top-text'	: [ '' ]
 					},
+					summaryinsidebar : true,
 					// [{name:'green', text:'Green', tooltip:'Green is cool', iconClass:'GENTICS_table GENTICS_button_green', cssClass:'green'}]
 				tableConfig : [
 									{name:'hor-minimalist-a'},
@@ -100,15 +101,28 @@
 
 			},
 			image: {
-				config : { 
-					'img': { 
-						'max_width': '50px',
-						'max_height': '50px' 
-					}
-				},
-			  	editables : {
-					'#top-text'	: {}
-			  	}
+				config :{
+				'fixedAspectRatio': false,
+				'maxWidth': 600,
+				'minWidth': 20,
+				'maxHeight': 600,
+				'minHeight': 20,
+				'globalselector': '.global',
+				'ui': {
+					'oneTab': true
+				}
+			},
+				'fixedAspectRatio': false,
+				'maxWidth': 600,
+				'minWidth': 20,
+				'maxHeight': 600,
+				'minHeight': 20,
+				'globalselector': '.global',
+				'ui': {
+					'oneTab': true,
+					'align': false,
+					'margin': false
+				}
 			},
 			cite: {
 				referenceContainer: '#references'

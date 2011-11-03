@@ -20,6 +20,7 @@ function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 		init: function() {
 			var that = this;
 			var insertButton = new Aloha.ui.Button({
+				'name': 'hr',
 				'iconClass': 'aloha-button-horizontalruler',
 				'size': 'small',
 				'onclick': function(element, event) { that.insertHR(); },
@@ -38,11 +39,11 @@ function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 			var self = this;
 			var range = Aloha.Selection.getRangeObject();
 			if(Aloha.activeEditable) {
-				var hr = $('<hr>');
+				var hr = jQuery('<hr>');
 				GENTICS.Utils.Dom.insertIntoDOM(
 					hr,
 					range,
-					$(Aloha.activeEditable.obj),
+					jQuery(Aloha.activeEditable.obj),
 					true
 				);
 				range.select();

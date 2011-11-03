@@ -2035,7 +2035,7 @@ rangy.createModule("DomUtil", function(api, module) {
             nodeToInsert = document.createElement("span");
             nodeToInsert.innerHTML = "werw"
             range.insertNode(nodeToInsert);
-            alert(range)
+            //alert(range)
 */
 
 
@@ -2069,7 +2069,6 @@ rangy.createModule("DomUtil", function(api, module) {
                 };
 
             } catch(ex) {
-
 
                 canSetRangeStartAfterEnd = false;
 

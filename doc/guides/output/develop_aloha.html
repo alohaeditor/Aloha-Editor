@@ -58,13 +58,17 @@
     <dt>Start Here</dt>
       <dd><a href="using_aloha.html">Using Aloha Editor</a></dd>
       <dd><a href="develop_aloha.html">Developing and building Aloha Editor</a></dd>
+      <dd><a href="configure_aloha.html">Configuring Aloha Editor</a></dd>
       <dd><a href="require.html">Aloha dependency management with requireJS</a></dd>
       <dd><a href="writing_plugins.html">Writing Plugins</a></dd>
 </dl>
 <dl class="R">
+    <dt>Commands</dt>
+      <dd><a href="using_commands.html">Using commands</a></dd>
     <dt>Plugins</dt>
       <dd><a href="plugin_block.html">Block</a></dd>
       <dd>Image</dd>
+      <dd><a href="plugin_contenthandler.html">Content Handler</a></dd>
     <dt>Contributing to Aloha Editor</dt>
       <dd>Development Process</dd>
       <dd><a href="style_guide.html">Javascript Style Guide</a></dd>
@@ -100,11 +104,94 @@
 git clone git@github.com:YOURNAME/Aloha-Editor.git alohaeditor
 cd alohaeditor
 git checkout dev
-git submodule init
-git submodule update
-git submodule foreach --recursive git submodule update --init
-</pre></div><h3 id="changelog">2 Changelog</h3>
+</pre></div><h3 id="building-aloha-building">2 Building  &#8211; Aloha Building</h3>
+<h4 id="debian-linux-mac-os-x">2.1 Debian Linux / Mac OS X</h4>
 <ul>
+	<li>Install nodejs See: http://nodejs.org</li>
+</ul>
+<ul>
+	<li>Install npm See: http://npmjs.org</li>
+</ul>
+<div class="code_container">
+<pre class="brush: plain; gutter: false; toolbar: false">
+
+curl http://npmjs.org/install.sh | sh
+</pre></div><ul>
+	<li>Install r.js</li>
+</ul>
+<div class="code_container">
+<pre class="brush: plain; gutter: false; toolbar: false">
+
+npm install -g requirejs@0.26.0 
+Note: Please use r.js 0.26.0 for now
+</pre></div><p>Linux: Add r.js to your bin directory:</p>
+<div class="code_container">
+<pre class="brush: plain; gutter: false; toolbar: false">
+
+ln -s /root/node_modules/requirejs/bin/r.js /usr/local/bin/
+</pre></div><p>Mac: r.js should be automatically added to your bin directory. Manual linking:</p>
+<div class="code_container">
+<pre class="brush: plain; gutter: false; toolbar: false">
+
+ln -s /Users/{username}/lib/node_modules/requirejs/bin/r.js /Users/{username}/bin/r.js
+</pre></div><p>Manually from <a href="https://github.com/jrburke/r.js">github</a></p>
+<ul>
+	<li>Invoke Building:</li>
+</ul>
+<div class="code_container">
+<pre class="brush: plain; gutter: false; toolbar: false">
+
+cd alohaeditor
+./bin/build.sh aloha
+</pre></div><h4 id="other-os">2.2 Other OS:</h4>
+<ul>
+	<li>Microsoft Windows: Not yet supported</li>
+</ul>
+<h3 id="guide">3 Guide</h3>
+<ul>
+	<li><a href="http://redcloth.org/hobix.com/textile/">Textile manual</a></li>
+</ul>
+<h4 id="installation">3.1 Installation</h4>
+<h5 id="debian-linux">3.1.1 Debian Linux</h5>
+<div class="code_container">
+<pre class="brush: plain; gutter: false; toolbar: false">
+
+apt-get install build-essential
+apt-get install ruby1.9.1-full
+gem install guides
+ln -s ruby1.9.1  ruby
+ln -s gem1.9.1  gem
+ln -s /var/lib/gems/1.9.1/gems/guides-0.7.1/bin/guides /usr/bin/guides
+guides preview 
+</pre></div><h5 id="mac-osx">3.1.2 Mac <span class="caps">OSX</span></h5>
+<div class="code_container">
+<pre class="brush: plain; gutter: false; toolbar: false">
+
+gem install guides
+</pre></div><h5 id="microsoft-windows">3.1.3 Microsoft Windows</h5>
+<ul>
+	<li><a href="http://guides-pkg.strobeapp.com/Guides.exe">Download Guides.exe</a></li>
+</ul>
+<h4 id="using-the-guides">3.2 Using the Guides</h4>
+<ul>
+	<li>Preview Guides:</li>
+</ul>
+<div class="code_container">
+<pre class="brush: plain; gutter: false; toolbar: false">
+
+cd alohaeditor/doc/guides
+guides preview
+</pre></div><p>Preview <span class="caps">URL</span>: http://localhost:9292/</p>
+<ul>
+	<li>Building Guides:</li>
+</ul>
+<div class="code_container">
+<pre class="brush: plain; gutter: false; toolbar: false">
+
+guides build
+</pre></div><h3 id="changelog">4 Changelog</h3>
+<ul>
+	<li>October 11, 2011: Added building information</li>
 	<li>July 3, 2011: Initial version by <a href="credits.html#skurfuerst">Sebastian Kurfürst</a> and <a href="credits.html#hlubek">Christopher Hlubek</a></li>
 </ul>
 
@@ -113,7 +200,13 @@ git submodule foreach --recursive git submodule update --init
           <h3 class="chapter"><img src="images/strobe/chapters.png" alt="" />Chapters</h3>
           <ol class="chapters">
             <li><a href="#clone-from-github"><p>Clone from Github</p>
-</a></li><li><a href="#changelog"><p>Changelog</p>
+</a></li><li><a href="#building-aloha-building"><p>Building  &#8211; Aloha Building</p>
+</a><ul><li><a href="#debian-linux-mac-os-x"><p>Debian Linux / Mac OS X</p>
+</a></li> <li><a href="#other-os"><p>Other OS:</p>
+</a></li></ul></li><li><a href="#guide"><p>Guide</p>
+</a><ul><li><a href="#installation"><p>Installation</p>
+</a></li> <li><a href="#using-the-guides"><p>Using the Guides</p>
+</a></li></ul></li><li><a href="#changelog"><p>Changelog</p>
 </a></li>
           </ol>
         </div>

@@ -15,7 +15,7 @@ define(
  'wai-lang/languages',
  'css!wai-lang/css/wai-lang.css'
 ],
-function( jQuery, Plugin, FloatingMenu, i18n, i18nCore ) {
+function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 	"use strict";
 	
 	var $ = jQuery,
@@ -68,16 +68,16 @@ function( jQuery, Plugin, FloatingMenu, i18n, i18nCore ) {
 					// show/hide the button according to the configuration
 					config = that.getEditableConfig(Aloha.activeEditable.obj);
 					if ( jQuery.inArray('span', config) != -1) {
-						that.addMarkupToSelectionButton.show();
+						that.addMarkupToSelectionButton.setPressed(false);
 					} else {
-						that.addMarkupToSelectionButton.hide();
+						that.addMarkupToSelectionButton.setPressed(true);
 						// leave if a is not allowed
 						return;
 					}
 	
-					foundMarkup = that.findLanguageMarkup( rangeObject );
+					foundMarkup = that.findLangMarkup( rangeObject );
 					if ( foundMarkup ) {
-						that.addMarkupToSelectionButton.hide();
+						that.addMarkupToSelectionButton.setPressed(true);
 						FloatingMenu.setScope('wai-lang');
 						that.langField.setTargetObject(foundMarkup, 'lang');
 					} else {
@@ -100,11 +100,12 @@ function( jQuery, Plugin, FloatingMenu, i18n, i18nCore ) {
 			
 			// Button for adding a language markup to the current selection
 			this.addMarkupToSelectionButton = new Aloha.ui.Button({
+				'name' : 'wailang',
 				'iconClass' : 'aloha-button aloha-button-wai-lang',
 				'size' : 'small',
-				'onclick' : function () { that.addMarkupToSelection( false ); },
+				'onclick' : function () { that.addRemoveMarkupToSelection( ); },
 				'tooltip' : i18n.t('button.add-wai-lang.tooltip'),
-				'toggle' : false
+				'toggle' : true
 			});
 			FloatingMenu.addButton(
 				'Aloha.continuoustext',
@@ -117,11 +118,14 @@ function( jQuery, Plugin, FloatingMenu, i18n, i18nCore ) {
 			FloatingMenu.createScope('wai-lang', 'Aloha.continuoustext'); //'Aloha.continuoustext');
 	
 			this.langField = new Aloha.ui.AttributeField({
+				'name' : 'wailangfield',
 				'width':320,
-				'valueField': 'id'
+				'valueField': 'id',
+				'minChars':1
 			});
 			this.langField.setTemplate('<a><b>{name}</b></p></p><img src="' + Aloha.getPluginUrl('wai-lang') + '/{url}"/></a>');
 			this.langField.setObjectTypeFilter(this.objectTypeFilter);
+			
 			// add the input field for links
 			FloatingMenu.addButton(
 				'wai-lang',
@@ -131,20 +135,20 @@ function( jQuery, Plugin, FloatingMenu, i18n, i18nCore ) {
 			);
 			
 			this.removeButton = new Aloha.ui.Button({
+				'name' : 'removewailang',
 				'iconClass' : 'aloha-button aloha-button-wai-lang-remove',
 				'size' : 'small',
 				'onclick' : function () { that.removeLangMarkup(); },
 				'tooltip' : i18n.t('button.add-wai-lang-remove.tooltip'),
 				'toggle' : false
 			});
-			
+
 			FloatingMenu.addButton(
 				'wai-lang',
 				this.removeButton,
 				i18n.t('floatingmenu.tab.wai-lang'),
 				1
 			);
-	
 		},
 		
 		findLangMarkup: function(range) {
@@ -153,13 +157,14 @@ function( jQuery, Plugin, FloatingMenu, i18n, i18nCore ) {
 		    }
 			if ( Aloha.activeEditable ) {
 			    return range.findMarkup(function() {
-					return this.nodeName.toLowerCase() == 'span' && (jQuery(this).hasClass('wai-lang') || jQuery(this).is('span[lang]'));
+			    	var  ret = (jQuery(this).hasClass('wai-lang') || jQuery(this).is('[lang]'));
+					return ret;
 			    }, Aloha.activeEditable.obj);
 			} else {
 				return null;
 			}
 		},
-		
+
 		removeLangMarkup: function() {
 			var range = Aloha.Selection.getRangeObject();
 		    var foundMarkup = this.findLangMarkup(range);
@@ -170,7 +175,9 @@ function( jQuery, Plugin, FloatingMenu, i18n, i18nCore ) {
 		        // select the (possibly modified) range
 		        range.select();
 				FloatingMenu.setScope('Aloha.continousText');
-		    }
+				this.langField.setTargetObject(null);
+				FloatingMenu.doLayout();
+		    } 	
 		},
 		
 		/**
@@ -186,7 +193,9 @@ function( jQuery, Plugin, FloatingMenu, i18n, i18nCore ) {
 				}
 			});
 			
-			Aloha.ready( this.handleExistingSpans );
+			Aloha.ready( function() {
+				that.handleExistingSpans(that) ;
+			});
 	
 		},
 		
@@ -194,13 +203,12 @@ function( jQuery, Plugin, FloatingMenu, i18n, i18nCore ) {
 		 * Find all existing spans and register hotkey hotkeys and make 
 		 * annotations of languages visible.
 		 */
-		handleExistingSpans: function() {
-			var that = this;
+		handleExistingSpans: function( that ) {
 			// add to all editables the Link shortcut
 			jQuery.each(Aloha.editables, function(key, editable){
 				
 				// Hotkey for adding new language annotations: CTRL+I
-				editable.obj.keydown(that.handleKeyDown);			
+				editable.obj.keydown( that.handleKeyDown );			
 
 				
 			});
@@ -215,19 +223,19 @@ function( jQuery, Plugin, FloatingMenu, i18n, i18nCore ) {
 		},
 		
 		
-		handleKeyDown: function(e) {
+		handleKeyDown: function( e ) {
 			if ( e.metaKey && e.which == 73 ) {
 				
-				if ( that.findLanguageMarkup() ) {
+				if ( this.findLangMarkup() ) {
 					FloatingMenu.userActivatedTab = i18n.t('floatingmenu.tab.wai-lang');
 
 					// TODO this should not be necessary here!
 					FloatingMenu.doLayout();
 
-					that.langField.focus();
+					this.langField.focus();
 
 				} else {
-					that.addMarkupToSelection();
+					this.addMarkupToSelection();
 				}
 				// prevent from further handling
 				// on a MAC Safari cursor would jump to location bar. Use ESC then META+I
@@ -283,18 +291,27 @@ function( jQuery, Plugin, FloatingMenu, i18n, i18nCore ) {
 			}
 		},
 		
+		addRemoveMarkupToSelection: function () {
+			var that = this;
+			if(that.addMarkupToSelectionButton.pressed) {
+				that.removeLangMarkup();
+			} else {
+				that.addMarkupToSelection(false);
+			}
+		},
 		
 		addMarkupToSelection: function () {
 			var range, newSpan;
 
 			// do not add markup to a area that already contains a markup
-			if ( this.findLanguageMarkup( range ) ) {
+			if ( this.findLangMarkup( range ) ) {
 				return;
 			}
 	
 			// activate floating menu tab
 			FloatingMenu.userActivatedTab = i18n.t('floatingmenu.tab.wai-lang');
-	
+            FloatingMenu.setScope('wai-lang');
+
 			// current selection or cursor position
 			range = Aloha.Selection.getRangeObject();
 	
@@ -303,11 +320,11 @@ function( jQuery, Plugin, FloatingMenu, i18n, i18nCore ) {
 				GENTICS.Utils.Dom.extendToWord(range);
 			}
 			if ( !range.isCollapsed() ) {
-				newSpan = jQuery('<span></span>');
+				newSpan = jQuery('<span class="wai-lang"></span>');
 				GENTICS.Utils.Dom.addMarkup(range, newSpan, false);
 			}
 			range.select();
-			this.langField.focus();
+//			this.langField.focus();
 		},
 		
 		/**
@@ -316,7 +333,7 @@ function( jQuery, Plugin, FloatingMenu, i18n, i18nCore ) {
 		removeMarkup: function () {
 	
 			var	range = Aloha.Selection.getRangeObject(),
-				foundMarkup = this.findLanguageMarkup();
+				foundMarkup = this.findLangMarkup();
 			if ( foundMarkup ) {
 				// remove the markup
 				GENTICS.Utils.Dom.removeFromDOM(foundMarkup, range, true);

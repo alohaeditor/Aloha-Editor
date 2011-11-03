@@ -1,6 +1,6 @@
 /*!
 * This file is part of Aloha Editor Project http://aloha-editor.org
-* Copyright � 2010-2011 Gentics Software GmbH, aloha@gentics.com
+* Copyright © 2010-2011 Gentics Software GmbH, aloha@gentics.com
 * Contributors http://aloha-editor.org/contribution.php 
 * Licensed unter the terms of http://www.aloha-editor.org/license.html
 *//*
@@ -331,14 +331,20 @@ function ( jQuery, PluginManager ) {
 			try {
 				// this will disable browsers image resizing facilities
 				// disable resize handles
-				if ( document.queryCommandSupported('enableObjectResizing') ) {
-					document.execCommand('enableObjectResizing', false, 'false');
-					Aloha.Log.log('enableObjectResizing disabled.');
-				} else {
-					Aloha.Log.log('enableObjectResizing is not supported.');
+				var supported;
+				try {
+					supported = document.queryCommandSupported( 'enableObjectResizing' );
+				} catch ( e ) {
+					supported = false;
+					Aloha.Log.log( 'enableObjectResizing is not supported.' );
+				}
+				
+				if ( supported ) {
+					document.execCommand( 'enableObjectResizing', false, false);
+					Aloha.Log.log( 'enableObjectResizing disabled.' );
 				}
 			} catch (e) {
-				Aloha.Log.error(e, 'Could not disable enableObjectResizing');
+				Aloha.Log.error( e, 'Could not disable enableObjectResizing' );
 				// this is just for others, who will not support disabling enableObjectResizing
 			}
 			// Forward
@@ -504,7 +510,7 @@ function ( jQuery, PluginManager ) {
 		 */
 		isModified: function () {
 			// check if something needs top be saved
-			for (var i in Aloha.editables) {
+			for (var i = 0; i < Aloha.editables.length; i++) {
 				if (Aloha.editables[i].isModified && Aloha.editables[i].isModified()) {
 					return true;
 				}

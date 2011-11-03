@@ -99,6 +99,12 @@ button.aloha-button-ul {
 button.aloha-button-ol {
 	background-position: -272px 0px !important;
 }
+button.aloha-button-indent-list {
+	background-image: url(../img/text_indent.png) !important;
+}
+button.aloha-button-outdent-list {
+	background-image: url(../img/text_indent_remove.png) !important;
+}
 button.aloha-button-a {
 	background-position: -288px 0px !important;
 }

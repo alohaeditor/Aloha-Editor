@@ -12,49 +12,67 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, console) {
 
 	var
 		GENTICS = window.GENTICS;
+	//namespace prefix for this plugin
+	var	linkNamespace = 'aloha-link';
 
 	return Plugin.create('link', {
+		
 		/**
 		 * Configure the available languages
 		 */
 		languages: ['en', 'de', 'fr', 'ru', 'pl'],
+		
 		/**
 		 * Default configuration allows links everywhere
 		 */
 		config: ['a'],
+		
 		/**
 		 * all links that match the targetregex will get set the target
 		 * e.g. ^(?!.*aloha-editor.com).* matches all href except aloha-editor.com
 		 */
 		targetregex: '',
+		
 		/**
 		  * this target is set when either targetregex matches or not set
 		  * e.g. _blank opens all links in new window
 		  */
 		target: '',
+		
 		/**
 		 * all links that match the cssclassregex will get set the css class
 		 * e.g. ^(?!.*aloha-editor.com).* matches all href except aloha-editor.com
 		 */
 		cssclassregex: '',
+		
 		/**
 		  * this target is set when either cssclassregex matches or not set
 		  */
 		cssclass: '',
+		
 		/**
 		 * the defined object types to be used for this instance
 		 */
 		objectTypeFilter: [],
+		
 		/**
 		 * handle change on href change
 		 * called function( obj, href, item );
 		 */
 		onHrefChange: null,
 
+		
+		/**
+		 * This variable is used to ignore one selection changed event. We need
+		 * to ignore one selectionchanged event when we set our own selection.
+		 */
+		ignoreNextSelectionChangedEvent: false,
+		
 		/**
 		 * Initialize the plugin
 		 */
 		init: function () {
+			var that = this;
 			if ( typeof this.settings.targetregex !== 'undefined') {
 				this.targetregex = this.settings.targetregex;
 			}
@@ -77,7 +95,100 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, console) {
 			this.createButtons();
 			this.subscribeEvents();
 			this.bindInteractions();
+	
+			Aloha.ready(function () { 
+				that.initSidebar(Aloha.Sidebar.right); 
+			});
 		},
+
+		nsSel: function () {
+			var stringBuilder = [], prefix = linkNamespace;
+			jQuery.each(arguments, function () { stringBuilder.push('.' + (this == '' ? prefix : prefix + '-' + this)); });
+			return stringBuilder.join(' ').trim();
+		},
+
+		//Creates string with this component's namepsace prefixed the each classname
+		nsClass: function () {
+			var stringBuilder = [], prefix = linkNamespace;
+			jQuery.each(arguments, function () { stringBuilder.push(this == '' ? prefix : prefix + '-' + this); });
+			return stringBuilder.join(' ').trim();
+		},
+
+		initSidebar: function(sidebar) {
+			var pl = this;
+			pl.sidebar = sidebar;
+			sidebar.addPanel({
+					
+					id       : pl.nsClass('sidebar-panel-target'),
+					title    : i18n.t('floatingmenu.tab.link'),
+					content  : '',
+					expanded : true,
+					activeOn : 'a, link',
+					
+					onInit     : function () {
+						 var that = this,
+							 content = this.setContent(
+								'<div class="' + pl.nsClass('target-container') + '"><fieldset><legend>' + i18n.t('link.target.legend') + '</legend><ul><li><input type="radio" name="targetGroup" class="' + pl.nsClass('radioTarget') + '" value="_self" /><span>' + i18n.t('link.target.self') + '</span></li>' + 
+								'<li><input type="radio" name="targetGroup" class="' + pl.nsClass('radioTarget') + '" value="_blank" /><span>' + i18n.t('link.target.blank') + '</span></li>' + 
+								'<li><input type="radio" name="targetGroup" class="' + pl.nsClass('radioTarget') + '" value="_parent" /><span>' + i18n.t('link.target.parent') + '</span></li>' + 
+								'<li><input type="radio" name="targetGroup" class="' + pl.nsClass('radioTarget') + '" value="_top" /><span>' + i18n.t('link.target.top') + '</span></li>' + 
+								'<li><input type="radio" name="targetGroup" class="' + pl.nsClass('radioTarget') + '" value="framename" /><span>' + i18n.t('link.target.framename') + '</span></li>' + 
+								'<li><input type="text" class="' + pl.nsClass('framename') + '" /></li></ul></fieldset></div>' + 
+								'<div class="' + pl.nsClass('title-container') + '" ><fieldset><legend>' + i18n.t('link.title.legend') + '</legend><input type="text" class="' + pl.nsClass('linkTitle') + '" /></fieldset></div>').content; 
+						 
+						 jQuery( pl.nsSel('framename') ).live( 'keyup', function() {
+							jQuery( that.effective ).attr( "target", jQuery(this).val().replace("\"", '&quot;').replace("'", "&#39;") );
+						 });
+						 
+						 jQuery( pl.nsSel('radioTarget') ).live( 'change', function() {
+							if ( jQuery(this).val() === "framename" ) {
+								jQuery( pl.nsSel('framename') ).slideDown();
+							}
+							else {
+								jQuery( pl.nsSel('framename') ).slideUp();
+								jQuery( pl.nsSel('framename') ).val("");
+								jQuery( that.effective ).attr( "target", jQuery(this).val() );
+							}
+						 });
+						 
+						 jQuery( pl.nsSel('linkTitle') ).live( 'keyup', function() {
+							jQuery( that.effective ).attr( "title", jQuery(this).val().replace("\"", '&quot;').replace("'", "&#39;") );
+						 });
+					},
+					
+					onActivate: function (effective) {
+						var that = this;
+						that.effective = effective;
+						if( jQuery(that.effective).attr('target') != null ) {
+							var isFramename = true;
+							jQuery( pl.nsSel('framename') ).hide();
+							jQuery( pl.nsSel('framename') ).val("");
+							jQuery( pl.nsSel('radioTarget') ).each( function () {
+								jQuery(this).removeAttr('checked');
+								if ( jQuery(this).val() === jQuery(that.effective).attr('target')) {
+									isFramename = false;
+									jQuery(this).attr('checked', 'checked');
+								}
+							});
+							if ( isFramename ) {
+								jQuery( pl.nsSel('radioTarget[value="framename"]') ).attr('checked', 'checked');
+								jQuery( pl.nsSel('framename') ).val( jQuery(that.effective).attr('target') );
+								jQuery( pl.nsSel('framename') ).show();
+							}
+						}else {
+							jQuery( pl.nsSel('radioTarget') ).first().attr('checked', 'checked');
+							jQuery( that.effective ).attr( 'target', jQuery(pl.nsSel('radioTarget')).first().val() );
+						}
+						
+						var that = this;
+						that.effective = effective;
+						jQuery( pl.nsSel('linkTitle') ).val( jQuery(that.effective).attr('title') );
+					}
+					
+				});
+			sidebar.show();
+		},
+		
 		/**
 		 * Subscribe for events
 		 */
@@ -88,8 +199,12 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, console) {
 			// add the event handler for selection change
 			Aloha.bind('aloha-selection-changed', function(event, rangeObject) {
 				var config, foundMarkup;
-
-				if (Aloha.activeEditable) {
+				
+				// Check if we need to ignore this selection changed event for
+				// now and check whether the selection was placed within a
+				// editable area.
+				if ( ! that.ignoreNextSelectionChangedEvent && Aloha.Selection.isSelectionEditable() ) {
+					
 					// show/hide the button according to the configuration
 					config = that.getEditableConfig(Aloha.activeEditable.obj);
 					if ( jQuery.inArray('a', config) != -1) {
@@ -103,12 +218,15 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, console) {
 					}
 
 					foundMarkup = that.findLinkMarkup( rangeObject );
+
+					// link found
 					if ( foundMarkup ) {
-						// link found
 						that.insertLinkButton.hide();
 						that.formatLinkButton.setPressed(true);
-						FloatingMenu.setScope('link', 'Aloha.continuoustext');
+						FloatingMenu.setScope('link');
 						that.hrefField.setTargetObject(foundMarkup, 'href');
+					
+						
 					} else {
 						// no link found
 						that.formatLinkButton.setPressed(false);
@@ -118,6 +236,8 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, console) {
 					// TODO this should not be necessary here!
 					FloatingMenu.doLayout();
 				}
+				that.ignoreNextSelectionChangedEvent = false;
+
 
 			});
 
@@ -128,9 +248,10 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, console) {
 		createButtons: function () {
 			var that = this;
 
-			// format Link Button
-			// this button behaves like a formatting button like (bold, italics, etc)
+			// format Link Button - this button behaves like 
+			// a formatting button like (bold, italics, etc)
 			this.formatLinkButton = new Aloha.ui.Button({
+				'name' : 'a',
 				'iconClass' : 'aloha-button aloha-button-a',
 				'size' : 'small',
 				'onclick' : function () { that.formatLink(); },
@@ -147,6 +268,7 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, console) {
 			// insert Link
 			// always inserts a new link
 			this.insertLinkButton = new Aloha.ui.Button({
+				'name': 'insertLink',
 				'iconClass' : 'aloha-button aloha-button-a',
 				'size' : 'small',
 				'onclick' : function () { that.insertLink( false ); },
@@ -161,12 +283,10 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, console) {
 			);
 
 			// add the new scope for links
-			FloatingMenu.createScope('link', 'Aloha.continuoustext'); //'Aloha.continuoustext');
-
-			/* moved browser integration to linkbrowser plugin */
-
+			FloatingMenu.createScope('link', 'Aloha.continuoustext');
 
 			this.hrefField = new Aloha.ui.AttributeField({
+				'name': 'href',
 				'width':320,
 				'valueField': 'url'
 			});
@@ -182,6 +302,7 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, console) {
 
 			this.removeLinkButton = new Aloha.ui.Button({
 				// TODO use another icon here
+				'name' : 'removeLink',
 				'iconClass' : 'aloha-button aloha-button-a-remove',
 				'size' : 'small',
 				'onclick' : function () { that.removeLink(); },
@@ -206,7 +327,12 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, console) {
 
 			// update link object when src changes
 			this.hrefField.addListener('keyup', function(obj, event) {
-				// TODO this event is never fired. Why?
+				
+				// Now show all the ui-attributefield elements
+				jQuery('.x-layer x-combo-list').show(); 
+				jQuery('.x-combo-list-inner').show();
+				jQuery('.x-combo-list').show();
+				
 				// if the user presses ESC we do a rough check if he has entered a link or searched for something
 				if (event.keyCode == 27) {
 					var curval = that.hrefField.getQueryValue();
@@ -219,19 +345,65 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, console) {
 						// could be a link better leave it as it is
 					} else {
 						// the user searched for something and aborted restore original value
-	//					that.hrefField.setValue(that.hrefField.getValue());
+						// that.hrefField.setValue(that.hrefField.getValue());
 					}
 				}
+
 				that.hrefChange();
+				
+				
+				// Handle the enter key. Terminate the link scope and show the final link.
+				if (event.keyCode == 13) {
+					// Update the selection and place the cursor at the end of the link.
+					var	range = Aloha.Selection.getRangeObject();
+					
+					// workaround to keep the found markup otherwise removelink won't work
+					var foundMarkup = that.findLinkMarkup( range );
+					that.hrefField.setTargetObject(foundMarkup, 'href');
+					
+					that.ignoreNextSelectionChangedEvent = true;
+					range.startContainer = range.endContainer;
+					range.startOffset = range.endOffset;
+					range.select();
+					//that.ignoreNextSelectionChangedEvent = true;
+					
+					var hrefValue = jQuery(that.hrefField.extButton.el.dom).attr('value');
+					if (hrefValue ==="http://" || hrefValue === "") {
+						that.removeLink(false);
+					}
+					
+					setTimeout( function() {
+						FloatingMenu.setScope('Aloha.continuoustext');
+					}, 100);
+					
+					jQuery('.x-layer').hide();
+					jQuery('.x-shadow').hide();
+					jQuery('.x-combo-list-inner').hide();
+					jQuery('.x-combo-list').hide();
+					
+					setTimeout( function() {
+						jQuery('.x-layer').hide();
+						jQuery('.x-shadow').hide();
+						jQuery('.x-combo-list-inner').hide();
+						jQuery('.x-combo-list').hide();
+							
+					},200);
+					
+				}
+				
 			});
 
 			// on blur check if href is empty. If so remove the a tag
 			this.hrefField.addListener('blur', function(obj, event) {
+
+				
+				var hrefValue = jQuery(that.hrefField.extButton.el.dom).attr('value');
+				
 				//checks for either a literal value in the href field
 				//(that is not the pre-filled "http://") or a resource
 				//(e.g. in the case of a repository link)
 				if ( ( ! this.getValue() || this.getValue() === "http://" ) && ! this.getItem() ) {
-					that.removeLink();
+					that.removeLink(false);
 				}
 			});
 
@@ -408,15 +580,23 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, console) {
 		/**
 		 * Remove an a tag.
 		 */
-		removeLink: function () {
+		removeLink: function (terminateLinkScope) {
 			var	range = Aloha.Selection.getRangeObject(),
 				foundMarkup = this.findLinkMarkup();
 			if ( foundMarkup ) {
 				// remove the link
 				GENTICS.Utils.Dom.removeFromDOM(foundMarkup, range, true);
 
+				range.startContainer = range.endContainer;
+				range.startOffset = range.endOffset;
+
 				// select the (possibly modified) range
 				range.select();
+				
+				if (typeof terminateLinkScope === 'undefined' || terminateLinkScope === true) {
+					FloatingMenu.setScope('Aloha.continuoustext');
+				}
+
 			}
 		},
 

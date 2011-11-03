@@ -1,6 +1,6 @@
 /*!
 * This file is part of Aloha Editor Project http://aloha-editor.org
-* Copyright � 2010-2011 Gentics Software GmbH, aloha@gentics.com
+* Copyright © 2010-2011 Gentics Software GmbH, aloha@gentics.com
 * Contributors http://aloha-editor.org/contribution.php 
 * Licensed unter the terms of http://www.aloha-editor.org/license.html
 *//*
@@ -129,7 +129,16 @@ var alohaConsole = Class.extend({
 		switch (level) {
 		case 'error':
 			if (window.console && console.error) {
-				console.error(component + ': ' + message);
+				// FIXME:
+				// Using console.error rather than throwing an error is very
+				// problematic because we get not stack.
+				// We ought to consider doing the following:
+				// throw component + ': ' + message;
+				if(!component && !message) {
+					console.error("Error occured without message and component");
+				} else {
+					console.error(component + ': ' + message);
+				}
 			}
 			break;
 		case 'warn':

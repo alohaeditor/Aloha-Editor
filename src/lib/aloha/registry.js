@@ -34,6 +34,7 @@ function(jQuery, Observable) {
 
 		/**
 		 * @event unregister
+		 * @param odEntry
 		 * @param id
 		 */
 		unregister: function(id) {

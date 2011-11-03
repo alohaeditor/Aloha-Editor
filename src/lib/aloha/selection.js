@@ -18,10 +18,10 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+"use strict";
 define(
 [ 'aloha/core', 'aloha/jquery', 'aloha/floatingmenu', 'util/class', 'util/range', 'aloha/rangy-core' ],
 function(Aloha, jQuery, FloatingMenu, Class, Range) {
-	"use strict";
 	var
 //		$ = jQuery,
 //		Aloha = window.Aloha,
@@ -178,12 +178,39 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 
 		/**
 		 * will return wheter selection change event was prevented or not, and reset the preventSelectionChangedFlag
-		 * @return boolean true if aloha-selection-change event was prevented
+		 * @return {Boolean} true if aloha-selection-change event was prevented
 		 */
 		isSelectionChangedPrevented: function () {
 			var prevented = this.preventSelectionChangedFlag;
 			this.preventSelectionChangedFlag = false;
 			return prevented;
+		},
+		
+		/**
+		 * Checks if the current rangeObject common ancector container is edtiable
+		 * @return {Boolean} true if current common ancestor is editable
+		 */
+		isSelectionEditable: function() {
+			return ( this.rangeObject.commonAncestorContainer &&
+						jQuery( this.rangeObject.commonAncestorContainer )
+							.contentEditable() );
+		},
+
+		/**
+		 * This method checks, if the current rangeObject common ancestor container has a 'data-aloha-floatingmenu-visible' Attribute.
+		 * Needed in Floating Menu for exceptional display of floatingmenu.
+		 */
+		isFloatingMenuVisible: function() {
+			var visible = jQuery(Aloha.Selection.rangeObject
+				.commonAncestorContainer).attr('data-aloha-floatingmenu-visible');
+			if(visible !== 'undefined'){
+				if (visible === 'true'){
+					return true;
+				} else {
+					return false;
+				}
+			}
+			return false;
 		},
 
 		/**
@@ -213,7 +240,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 			}
 
 			this.rangeObject = range || new Aloha.Selection.SelectionRange(true);
-
+			
 			// find the CAC (Common Ancestor Container) and update the selection Tree
 			this.rangeObject.update();
 
@@ -585,7 +612,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 				Aloha.Log.debug(this, 'tag comparison for <' + domobj.tagName.toLowerCase() + '> failed because one element has classes and the other has not');
 				return false;
 			}
-			if (classes && classes2 && classes.length != classes.length) {
+			if (classes && classes2 && classes.length != classes2.length) {
 				Aloha.Log.debug(this, 'tag comparison for <' + domobj.tagName.toLowerCase() + '> failed because of a different amount of classes');
 				return false;
 			}
@@ -976,7 +1003,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		/**
 		 * apply a certain markup to the selection Tree
 		 * @param selectionTree SelectionTree Object markup should be applied to
-		 * @param rangeObject Aloha rangeObject which will be modified to reflect the dom changes, after the the markup was applied (only if activated via options)
+		 * @param rangeObject Aloha rangeObject which will be modified to reflect the dom changes, after the markup was applied (only if activated via options)
 		 * @param markupObject jQuery object of the markup to be applied (e.g. created with obj = jQuery('<b></b>'); )
 		 * @param tagComparator method, which is used to compare the dom object and the jQuery markup object. the method must accept 2 parameters, the first is the domobj, the second is the jquery object. if no method is specified, the method this.standardTextLevelSemanticsComparator is used
 		 * @param options JS object, with the following boolean properties: setRangeObject2NewMarkup, setRangeObject2NextSibling, setRangeObject2PreviousSibling
@@ -1731,7 +1758,280 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 
 	}); // Selection
 
-	var selection = new Selection();
+
+/**
+ * This method implements an ugly workaround for a selection problem in ie:
+ * when the cursor shall be placed at the end of a text node in a li element, that is followed by a nested list,
+ * the selection would always snap into the first li of the nested list
+ * therefore, we make sure that the text node ends with a space and place the cursor right before it
+ */
+function nestedListInIEWorkaround ( range ) {
+	if (jQuery.browser.msie
+		&& range.startContainer === range.endContainer
+		&& range.startOffset === range.endOffset
+		&& range.startContainer.nodeType == 3
+		&& range.startOffset == range.startContainer.data.length
+		&& range.startContainer.nextSibling
+		&& ["OL", "UL"].indexOf(range.startContainer.nextSibling.nodeName) !== -1) {
+		if (range.startContainer.data[range.startContainer.data.length-1] == ' ') {
+			range.startOffset = range.endOffset = range.startOffset-1;
+		} else {
+			range.startContainer.data = range.startContainer.data + ' ';
+		}
+	}
+}
+
+function correctRange ( range ) {
+	nestedListInIEWorkaround(range);
+	return range;
+}
+
+	/**
+	 * Implements Selection http://html5.org/specs/dom-range.html#selection
+	 * @namespace Aloha
+	 * @class Selection This singleton class always represents the
+	 *        current user selection
+	 * @singleton
+	 */
+	var AlohaSelection = Class.extend({
+		
+		_constructor : function( nativeSelection ) {
+			
+			this._nativeSelection = nativeSelection;
+			this.ranges = [];
+			
+			// will remember if urged to not change the selection
+			this.preventChange = false;
+			
+		},
+		
+		/**
+		 * Returns the element that contains the start of the selection. Returns null if there's no selection.
+		 * @readonly
+		 * @type Node
+		 */
+		anchorNode: null,
+		
+		/**
+		 * Returns the offset of the start of the selection relative to the element that contains the start 
+		 * of the selection. Returns 0 if there's no selection.
+		 * @readonly
+		 * @type int
+		 */
+		anchorOffset: 0,
+		
+		/**
+		 * Returns the element that contains the end of the selection.
+		 * Returns null if there's no selection.
+		 * @readonly
+		 * @type Node
+		 */
+		focusNode: null,
+		
+		/**
+		 * Returns the offset of the end of the selection relative to the element that contains the end 
+		 * of the selection. Returns 0 if there's no selection.
+		 * @readonly
+		 * @type int
+		 */
+		focusOffset: 0,
+		
+		/**
+		 * Returns true if there's no selection or if the selection is empty. Otherwise, returns false.
+		 * @readonly
+		 * @type boolean
+		 */
+		isCollapsed: false,
+		
+		/**
+		 * Returns the number of ranges in the selection.
+		 * @readonly
+		 * @type int
+		 */
+		rangeCount: 0,
+					
+		/**
+		 * Replaces the selection with an empty one at the given position.
+		 * @throws a WRONG_DOCUMENT_ERR exception if the given node is in a different document.
+		 * @param parentNode Node of new selection
+		 * @param offest offest of new Selection in parentNode
+		 * @void
+		 */
+		collapse: function ( parentNode, offset ) {
+			this._nativeSelection.collapse(  parentNode, offset );
+		},
+		
+		/**
+		 * Replaces the selection with an empty one at the position of the start of the current selection.
+		 * @throws an INVALID_STATE_ERR exception if there is no selection.
+		 * @void
+		 */
+		collapseToStart: function() {
+			throw "NOT_IMPLEMENTED";
+		},
+		
+		/** 
+		 * @void
+		 */
+		extend: function ( parentNode, offset) {
+			
+		},
+		
+		/**
+		 * @param alter DOMString 
+		 * @param direction DOMString 
+		 * @param granularity DOMString 
+		 * @void
+		 */
+		modify: function ( alter, direction, granularity ) {
+			
+		},
+
+		/**
+		 * Replaces the selection with an empty one at the position of the end of the current selection.
+		 * @throws an INVALID_STATE_ERR exception if there is no selection.
+		 * @void
+		 */
+		collapseToEnd: function() {
+			throw "NOT_IMPLEMENTED";
+		},
+		
+		/**
+		 * Replaces the selection with one that contains all the contents of the given element.
+		 * @throws a WRONG_DOCUMENT_ERR exception if the given node is in a different document.
+		 * @param parentNode Node the Node fully select
+		 * @void
+		 */
+		selectAllChildren: function( parentNode ) {
+			throw "NOT_IMPLEMENTED";
+		},
+		
+		/**
+		 * Deletes the contents of the selection
+		 */
+		deleteFromDocument: function() {
+			throw "NOT_IMPLEMENTED";
+		},
+		
+		/**
+		 * NB!
+		 * We have serious problem in IE.
+		 * The range that we get in IE is not the same as the range we had set,
+		 * so even if we normalize it during getRangeAt, in IE, we will be
+		 * correcting the range to the "correct" place, but still not the place
+		 * where it was originally set.
+		 * 
+		 * Returns the given range.
+		 * The getRangeAt(index) method returns the indexth range in the list. 
+		 * NOTE: Aloha Editor only support 1 range! index can only be 0
+		 * @throws INDEX_SIZE_ERR DOM exception if index is less than zero or 
+		 * greater or equal to the value returned by the rangeCount.
+		 * @param index int 
+		 * @return Range return the selected range from index
+		 */
+		getRangeAt: function ( index ) {
+			return correctRange( this._nativeSelection.getRangeAt( index ) );
+			//if ( index < 0 || this.rangeCount ) {
+			//	throw "INDEX_SIZE_ERR DOM";
+			//}
+			//return this._ranges[index];
+		},
+		
+		/**
+		 * Adds the given range to the selection.
+		 * The addRange(range) method adds the given range Range object to the list of
+		 * selections, at the end (so the newly added range is the new last range). 
+		 * NOTE: Aloha Editor only support 1 range! The added range will replace the 
+		 * range at index 0
+		 * see http://html5.org/specs/dom-range.html#selection note about addRange
+		 * @throws an INVALID_NODE_TYPE_ERR exception if the given Range has a boundary point
+		 * node that's not a Text or Element node, and an INVALID_MODIFICATION_ERR exception 
+		 * if it has a boundary point node that doesn't descend from a Document.
+		 * @param range Range adds the range to the selection
+		 * @void
+		 */ 
+		addRange: function( range ) {
+			// set readonly attributes
+			this._nativeSelection.addRange( range );
+			// We will correct the range after rangy has processed the native
+			// selection range, so that our correction will be the final fix on
+			// the range according to the guarentee's that Aloha wants to make
+			this._nativeSelection._ranges[ 0 ] = correctRange( range );
+
+			// make sure, the old Aloha selection will be updated (until all implementations use the new AlohaSelection)
+			Aloha.Selection.updateSelection();
+		},
+		
+		/**
+		 * Removes the given range from the selection, if the range was one of the ones in the selection.
+		 * NOTE: Aloha Editor only support 1 range! The added range will replace the 
+		 * range at with index 0
+		 * @param range Range removes the range from the selection
+		 * @void
+		 */
+		removeRange: function( range ) {
+			this._nativeSelection.removeRange();
+		},
+		
+		/**
+		 * Removes all the ranges in the selection.
+		 * @viod
+		 */
+		removeAllRanges: function() {
+			this._nativeSelection.removeAllRanges();
+		},
+				
+		/**
+		 * prevents the next aloha-selection-changed event from
+		 * being triggered
+		 * @param flag boolean defines weather to update the selection on change or not
+		 */
+		preventedChange: function( flag ) {
+//			this.preventChange = typeof flag === 'undefined' ? false : flag;
+		},
+
+		/**
+		 * will return wheter selection change event was prevented or not, and reset the
+		 * preventSelectionChangedFlag
+		 * @return boolean true if aloha-selection-change event
+		 *         was prevented
+		 */
+		isChangedPrevented: function() {
+//			return this.preventSelectionChangedFlag;
+		},
+
+		/**
+		 * INFO: Method is used for integration with Gentics
+		 * Aloha, has no use otherwise Updates the rangeObject
+		 * according to the current user selection Method is
+		 * always called on selection change
+		 * 
+		 * @param event
+		 *            jQuery browser event object
+		 * @return true when rangeObject was modified, false
+		 *         otherwise
+		 * @hide
+		 */
+		refresh: function(event) {
+
+		},
+
+		/**
+		 * String representation
+		 * 
+		 * @return "Aloha.Selection"
+		 * @hide
+		 */
+		toString: function() {
+			return 'Aloha.Selection';
+		},
+		
+		getRangeCount: function() {
+			return this._nativeSelection.rangeCount;
+		}
+
+	});
+
 	/**
 	 * A wrapper for the function of the same name in the rangy core-depdency.
 	 * This function should be preferred as it hides the global rangy object.
@@ -1739,9 +2039,14 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 	 * http://html5.org/specs/dom-range.html
 	 * @param window optional - specifices the window to get the selection of
 	 */
-	Aloha.getSelection = function(document){
-		return window.rangy.getSelection(document);
+	Aloha.getSelection = function( target ) {
+		var target = ( target !== document || target !== window ) ? window : target;
+        // Aloha.Selection.refresh()
+		// implement Aloha Selection 
+		// TODO cache
+		return new AlohaSelection( window.rangy.getSelection( target ) );
 	};
+	
 	/**
 	 * A wrapper for the function of the same name in the rangy core-depdency.
 	 * This function should be preferred as it hides the global rangy object.
@@ -1756,6 +2061,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		return window.rangy.createRange(givenWindow);
 	};
 	
+	var selection = new Selection();
 	Aloha.Selection = selection;
 
 	return selection;

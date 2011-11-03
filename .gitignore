@@ -1,7 +1,7 @@
 .project
 .settings
 .DS_Store
-tmp
-out
 target
 doc/guides/staging
+*.js~
+*.orig

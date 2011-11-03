@@ -58,13 +58,17 @@
     <dt>Start Here</dt>
       <dd><a href="using_aloha.html">Using Aloha Editor</a></dd>
       <dd><a href="develop_aloha.html">Developing and building Aloha Editor</a></dd>
+      <dd><a href="configure_aloha.html">Configuring Aloha Editor</a></dd>
       <dd><a href="require.html">Aloha dependency management with requireJS</a></dd>
       <dd><a href="writing_plugins.html">Writing Plugins</a></dd>
 </dl>
 <dl class="R">
+    <dt>Commands</dt>
+      <dd><a href="using_commands.html">Using commands</a></dd>
     <dt>Plugins</dt>
       <dd><a href="plugin_block.html">Block</a></dd>
       <dd>Image</dd>
+      <dd><a href="plugin_contenthandler.html">Content Handler</a></dd>
     <dt>Contributing to Aloha Editor</dt>
       <dd>Development Process</dd>
       <dd><a href="style_guide.html">Javascript Style Guide</a></dd>
@@ -106,7 +110,7 @@
 <h3 id="enabling-the-block-plugin">2 Enabling the Block Plugin</h3>
 <h3 id="creating-blocks">3 Creating Blocks</h3>
 <p>Aloha BLocks is implemented as a plugin called <code>block</code>, which is part of the <code>common</code> bundle.</p>
-<p>Thus, in order to use blocks, you need to load the <tt>common/block</tt> and <tt>common/paste</tt> plugin (Blocks interact with the paste plugin).</p>
+<p>Thus, in order to use blocks, you need to load the <tt>common/block</tt> and <tt>common/contenthandler</tt> plugin (Blocks interact with the contenthandler plugin).</p>
 <p>After the plugin is loaded, you can create blocks.</p>
 <h4 id="using-jquery">3.1 Using jQuery</h4>
 <div class="code_container">

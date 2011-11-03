@@ -1,19 +1,12 @@
 define(
-['aloha/jquery', 'table/table-plugin-utils'],
-function ($, Utils) {
-/*
- * TODO giving the TablePlugin to the TableSelection as argument is
- *   a hack to provide the dependency without resorting to advanced
- *   requirejs code. this dependency should be resolved somehow
- *   without resorting to requirejs (we only want to use the
- *   define() functionality in Aloha).
- */
-return function (TablePlugin) {
-
+['aloha', 'aloha/jquery', 'table/table-plugin-utils', 'table/table-cell', 'i18n!table/nls/i18n'],
+function (Aloha, $, Utils, TableCell, i18n) {
 	/**
-	 * The TableSelection object is a helper-object which consists of static/global attributes and functions
+	 * The TableSelection object is a helper-object
 	 */
-	var TableSelection = function(){};
+	var TableSelection = function (table) {
+		this.table = table;
+	};
 
 	/**
 	 * Gives the type of the cell-selection
@@ -43,11 +36,6 @@ return function (TablePlugin) {
 	TableSelection.prototype.cellSelectionMode = false;
 
 	/**
-	 * Tells whether to keep the cells selected 
-	 */
-	TableSelection.prototype.keepCellsSelected = false;
-	
-	/**
 	 * Gives the position of the base cell of a selection - [row, column]
 	 */
 	TableSelection.prototype.baseCellPosition = null;
@@ -63,13 +51,9 @@ return function (TablePlugin) {
 	 * @return void
 	 */
 	TableSelection.prototype.selectColumns = function ( columnsToSelect ) {
-        if ( typeof TablePlugin.activeTable == 'undefined' || !TablePlugin.activeTable ) {
-        	return;
-        }
-
 		this.unselectCells();
 
-		var rows = TablePlugin.activeTable.obj.find("tr").toArray()
+		var rows = this.table.getRows();
 		// first row is the selection row (dump it, it's not needed)
 		rows.shift();
 		
@@ -83,14 +67,13 @@ return function (TablePlugin) {
 			for (var i = 0; i < grid.length; i++) {
 				var cellInfo = grid[i][columnsToSelect[j]];
 				if ( Utils.containsDomCell(cellInfo) ) {
-					$(cellInfo.cell).addClass(TablePlugin.activeTable.get('classCellSelected'));
+					$(cellInfo.cell).addClass(this.table.get('classCellSelected'));
 					this.selectedCells.push( cellInfo.cell );
 				}
 			}
 		}
 
 		this.selectionType = 'column';
-		Aloha.trigger( 'aloha-table-selection-changed' );
 	};
 	
 	/**
@@ -99,13 +82,9 @@ return function (TablePlugin) {
 	 * @return void
 	 */
 	TableSelection.prototype.selectRows = function ( rowsToSelect ) {
-        if ( typeof TablePlugin.activeTable == 'undefined' || !TablePlugin.activeTable ) {
-        	return;
-        }
-
 		this.unselectCells();
 
-		var rows = TablePlugin.activeTable.obj.find("tr").toArray();
+		var rows = this.table.getRows();
 		
  	    rowsToSelect.sort( function ( a, b ) { return a - b; } );
 
@@ -122,15 +101,50 @@ return function (TablePlugin) {
 			    for ( var j = 1; j < rows[ rowsToSelect[i] ].cells.length; j++ ) {  
 					this.selectedCells.push( rows[ rowsToSelect[i] ].cells[j] );
 					// TODO make proper cell selection method
-					$( rows[ rowsToSelect[i] ].cells[j] ).addClass( TablePlugin.activeTable.get('classCellSelected') );
+					$( rows[ rowsToSelect[i] ].cells[j] ).addClass( this.table.get('classCellSelected') );
 			    }
 			}
 		}
 		
 	    this.selectionType = 'row';
-		Aloha.trigger( 'aloha-table-selection-changed' );
+	};
+
+	TableSelection.prototype.selectAll = function () {
+		var rowIndices = $.map( this.table.getRows(), function ( item, i ) {
+			return i;
+		});
+
+		//getRows() returns all rows, even the header row which we must not select
+		rowIndices.shift();
+
+		this.selectRows( rowIndices );
 	};
 	
+	/**
+	 * To be called when cells of the table were selected
+	 * @see selectRows, selectColumns, selectCellRange
+	 * TODO this should be private
+	 */
+	TableSelection.prototype.notifyCellsSelected = function () {
+		Aloha.trigger( 'aloha-table-selection-changed' );
+
+		// the UI feels more consisten when we remove the non-table
+		// selection when cells are selected
+		// TODO this code doesn't work right in IE as it causes the table
+		//  scope of the floating menu to be lost. Maybe this can be
+		//  handled by testing for an empty selection in the
+		//  aloha-selection-changed event.
+		//Aloha.getSelection().removeAllRanges();
+	};
+
+	/**
+	 * To be called when a cell-selection is entirely removed
+	 * @see unselectCells
+	 */
+	TableSelection.prototype._notifyCellsUnselected = function () {
+		Aloha.trigger( 'aloha-table-selection-changed' );
+	};
+
 	/**
 	 * This method return true if all sellected cells are TH cells.
 	 *
@@ -138,10 +152,6 @@ return function (TablePlugin) {
 	 */
 	TableSelection.prototype.isHeader = function ( ) {
 		
-        if ( typeof TablePlugin.activeTable == 'undefined' || !TablePlugin.activeTable ) {
-        	return;
-        }
-        
         if ( this.selectedCells.length == 0 ) {
         	return false;
         }
@@ -161,33 +171,37 @@ return function (TablePlugin) {
 	 * @return void
 	 */
 	TableSelection.prototype.unselectCells = function(){
-		var 
-		rows;
+		var rows;
 
-		if ( typeof TablePlugin.activeTable == 'undefined' || !TablePlugin.activeTable ) {
-    		return;
-		}
-		
 		//don't unselect cells if cellSelectionMode is active
-		if ( this.cellSelectionMode || this.keepCellsSelected ) {
+		if ( this.cellSelectionMode ) {
     		return;
 		}
 
 		if (this.selectedCells.length > 0) {
 			
-			rows = TablePlugin.activeTable.obj.find("tr").toArray();
+			rows = this.table.getRows();
 			
 			for (var i = 0; i < rows.length; i++) {
 			    for ( var j = 1; j < rows[i].cells.length; j++ ) {  
 					// TODO make proper cell selection method
-					$( rows[i].cells[j] ).removeClass( TablePlugin.activeTable.get('classCellSelected') );
+					$( rows[i].cells[j] ).removeClass( this.table.get('classCellSelected') );
 			    }
 			}
 
 			this.selectedCells = new Array();
 			this.selectedColumnIdxs = new Array();
 			this.selectedRowIdxs = new Array();
-			this.selectionType = undefined;
+
+			//we keep 'cell' as the default selection type instead of
+			//unsetting the selectionType to avoid an edge-case where a
+			//click into a cell doesn't trigger a call to
+			//TableCell.editableFocs (which would set the 'cell'
+			//selection type) which would result in the FloatingMenu
+			//losing the table scope.
+			this.selectionType = 'cell';
+
+			this._notifyCellsUnselected();
 		}
 	};
 
@@ -208,89 +222,126 @@ return function (TablePlugin) {
 		return -1;
 	};
 
+
+	/**
+	 * Given a contour creates a object representing a rectangle.
+	 * This function only gives a useful return value if the given
+	 * contour rectangular.
+	 *
+	 * @param {object} contour
+	 *        a rectangular contour
+	 * @return {object}
+	 *        an object with the properties top, right, bottom, left, 
+	 *        representing the rectangular contour.
+	 */
+	function getRectFromContour( contour ) {
+		return {
+			'top'   : contour.top[0],
+			'right' : contour.right[0] + 1,
+			'bottom': contour.bottom[0] + 1,
+			'left'  : contour.left[0]
+		};
+	}
+
+	/**
+	 * Given a grid and contour, determines whether the contour is
+	 * rectangular, and each cell in the rectangle is selected.
+	 *
+	 * @param {array} grid
+	 *        a two-dimensional array representing a grid see Utils.makeGrid
+	 * @param {object} contour
+	 *        an object reprensenting a contour see Utils.makeContour
+	 * @param {function} isSelected
+	 *        a function that determines whether a cell in the given grid
+	 *        is selected for merging.
+	 * @return {boolean}
+	 *        true if all cells inside the contour are selected and can
+	 *        be merged.
+	 */
+	function isMergeable(grid, contour, isSelected) {
+		var mergeable = true;
+		if (   -1 !== Utils.indexOfAnyBut( contour.top   , contour.top[0]    )
+			|| -1 !== Utils.indexOfAnyBut( contour.right , contour.right[0]  )
+			|| -1 !== Utils.indexOfAnyBut( contour.bottom, contour.bottom[0] )
+			|| -1 !== Utils.indexOfAnyBut( contour.left  , contour.left[0]   ) ) {
+			// the outside of the selected area is jagged (not a rectangle)
+			mergeable = false;
+		} else {
+			// the outside of the selected area is a rectangle, but we
+			// must also ensore that there are no holes in the selection
+			var rect = getRectFromContour( contour )
+			Utils.walkGridInsideRect( grid, rect, function ( cellInfo ) {
+				if ( ! isSelected( cellInfo ) ) {
+					mergeable = false;
+					return false;
+				}
+			});
+		}
+		return mergeable;
+	}
+
 	/**
 	 * This method merges all selected cells
 	 *
 	 * @return void
 	 */
 	TableSelection.prototype.mergeCells = function(){
-		if (this.selectedCells.length > 0) {
 
-			//sorts the cells
-			this.selectedCells.sort(function(a, b){
-				var aRowId = $(a).parent().prevAll('tr').length;
-				var bRowId = $(b).parent().prevAll('tr').length;
-
-				var aColId = $(a).prevAll('td, th').length;
-				var bColId = $(b).prevAll('td, th').length;
-
-				if(aRowId < bRowId){
-					return -1; 
-				}
-				else if(aRowId > bRowId){
-					return 1; 
-				}
-				//row id is equal
-				else {
-					//sort by column id
-					if(aColId < bColId){
-						return -1; 
-					}
-					if(aColId > bColId){
-						return 1; 
-					}
-				}
-			});
-
-			var firstCell = $(this.selectedCells.shift());
-
-			//set the initial rowspan and colspan
-			var rowspan = parseInt(firstCell.attr('rowspan')) || 1;
-			var colspan = parseInt(firstCell.attr('colspan')) || 1;;
-
-			var firstRowId = prevRowId = firstCell.parent().prevAll('tr').length;
-			var firstColId = firstCell.parent().prevAll('tr').length;
-
-			//iterate through remaining cells
-			for (var i = 0; i < this.selectedCells.length; i++) {
-				//get the current cell
-				var curCell = $(this.selectedCells[i]);
-
-				var curRowId = curCell.parent().prevAll('tr').length;
-
-				//if current cell is in the same row as the first cell,
-				//increase colspan
-				if(curRowId == firstRowId){
-					colspan += (parseInt(curCell.attr('colspan')) || 1); 
-				}
-				//if they are in different rows increase the rowspan
-				else {
-					if(curRowId != prevRowId)
-						rowspan += (parseInt(curCell.attr('rowspan')) || 1);      
-				}
-
-				//set the current row id to previous row id
-				prevRowId = curRowId;
-
-				// get the content of the current row and append it to the first cell
-				firstCell.find(":first-child").append(" " + curCell.find(":first-child").html());
-
-				// remove the cell
-				curCell.remove();
-			}
-			
-			firstCell.attr({ 'rowspan': rowspan, 'colspan': colspan });
-
-			//select the merged cell
-			TableSelection.selectedCells = [firstCell];
-
-			//reset flags
-			TableSelection.cellSelectionMode = false; 
-			TableSelection.keepCellsSelected = false;
-			TableSelection.baseCellPosition = null;
-			TableSelection.lastSelectionRange = null; 
-			TableSelection.selectionType = 'cell';
+		var selectedCells = this.selectedCells;
+		if ( 0 === selectedCells.length ) {
+			return;
 		}
+
+		var isSelected = function ( cellInfo ) {
+			return -1 != $.inArray( cellInfo.cell, selectedCells );
+		};
+
+		var grid = Utils.makeGrid( this.table.getRows() );
+		var contour = Utils.makeContour( grid, isSelected );
+
+		if ( ! isMergeable( grid, contour, isSelected ) ) {
+			Aloha.showMessage(new Aloha.Message({
+				title : i18n.t('Table'),
+				text : i18n.t('table.mergeCells.notRectangular'),
+				type : Aloha.Message.Type.ALERT
+			}));
+			return;
+		}
+
+		var selectedRect = getRectFromContour( contour );
+		var $firstCell = $( grid[ selectedRect.top ][ selectedRect.left ].cell );
+		var $firstContainer = $( TableCell.getContainer( $firstCell.get( 0 ) ) );
+
+		Utils.walkGridInsideRect( grid, selectedRect, function ( cellInfo, x, y ) {
+			if (   x - cellInfo.spannedX === selectedRect.left
+				&& y - cellInfo.spannedY === selectedRect.top ) {
+				return;
+			}
+			var cell = cellInfo.cell;
+			var contents = $( TableCell.getContainer( cell ) ).contents();
+			// only append the delimiting space if there is some non-whitespace
+			for ( var i = 0; i < contents.length; i++ ) {
+				if (   "string" !== typeof contents[i]
+				    || "" !== $.trim( contents[i] ) ) {
+					$firstContainer.append( " " );
+					$firstContainer.append( contents );
+					break;
+				}
+			}
+			$( cell ).remove();
+		});
+
+		$firstCell.attr({ 'rowspan': selectedRect.bottom - selectedRect.top,
+						  'colspan': selectedRect.right  - selectedRect.left });
+
+		//select the merged cell
+		this.selectedCells = [ $firstCell.get( 0 ) ];
+
+		//reset flags
+		this.cellSelectionMode = false; 
+		this.baseCellPosition = null;
+		this.lastSelectionRange = null; 
+		this.selectionType = 'cell';
 	};
 
 	/**
@@ -299,48 +350,25 @@ return function (TablePlugin) {
 	 * @return void
 	 */
 	TableSelection.prototype.splitCells = function(){
+		var selection = this;
+
 		// split the selected cells or currently active cell
 		var cells_to_split = this.selectedCells;
 		if (cells_to_split.length > 0) {
 
-			//will be populated with rows that will get a new cell prepended
-			var prepend = [];
-			//will be populated with cells that will get a new cell inserted after
-			var after = [];
-
 			$(cells_to_split).each(function(){
-				var $cell = $(this);
-				var colspan = parseInt($cell.attr('colspan')) || 1;
-				var rowspan = parseInt($cell.attr('rowspan')) || 1;
-
-				var $row  = $cell.parent();
-				var $rows = $row.parent().children();
-				var rowIdx = $row.index();
-				var colIdx = $cell.index();
-				var grid = Utils.makeGrid($rows);
-				var gridColumn = Utils.cellIndexToGridColumn($rows, rowIdx, colIdx);
-				for (var i = 0; i < rowspan; i++) {
-					for (var j = (0 === i ? 1 : 0); j < colspan; j++) {
-						var leftCell = Utils.leftDomCell(grid, rowIdx + i, gridColumn);
-						if (null == leftCell) {
-							$rows.eq(rowIdx + i).prepend(TablePlugin.activeTable.newActiveCell().obj);
-						} else {
-							$( leftCell ).after(TablePlugin.activeTable.newActiveCell().obj);
-						}
-					}
-				}
-				$cell.removeAttr('colspan');
-				$cell.removeAttr('rowspan');
+				Utils.splitCell(this, function () {
+					return selection.table.newActiveCell().obj;
+				});
 			});
 
 			//reset flags
-			TableSelection.cellSelectionMode = false; 
-			TableSelection.keepCellsSelected = false;
-			TableSelection.baseCellPosition = null;
-			TableSelection.lastSelectionRange = null; 
-			TableSelection.selectionType = 'cell';
+			this.cellSelectionMode = false; 
+			this.baseCellPosition = null;
+			this.lastSelectionRange = null; 
+			this.selectionType = 'cell';
 		}
 	};
+
 	return TableSelection;
-};
 });
