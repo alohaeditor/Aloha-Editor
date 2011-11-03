@@ -68,6 +68,14 @@ Aloha.ready(function() {
 		};
 		$('.stage-area').alohaStage();
 		
+		/**
+		 * Aloha Source Viewer
+		 * Provides a development tool that shows the source around the
+		 * selection inside an editable
+		 *
+		 * @todo support for pretty print
+		 */
+		
 		require( [ '../../test/unit/testutils' ], function ( TestUtils ) {
 			
 			Aloha.Sidebar.right.addPanel( {
