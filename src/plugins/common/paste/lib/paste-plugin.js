@@ -47,9 +47,9 @@ function(Aloha, Plugin, jQuery, Commands, console) {
 		// Reposition paste container to avoid scrolling
 		jQuery('#pasteContainer').css('top',scrollTop);
 		jQuery('#pasteContainer').css('left',scrollLeft-200);
-		
+
 		// empty the pasteDiv
-		$pasteDiv.text('');
+		$pasteDiv.contents().remove();
 
 		// blur the active editable
 		if (pasteEditable) {
@@ -65,68 +65,7 @@ function(Aloha, Plugin, jQuery, Commands, console) {
 		// focus the pasteDiv
 		$pasteDiv.focus();
 	};
-	
-	// http://dev.w3.org/html5/markup/syntax.html#void-element
-	// A complete list of the void elements in HTML(5)
-	//
-	// TODO: This list should be accessed from some Aloha factory setting. But
-	// this needs to be discussed. For the time being, this will provide a
-	// quick lookup table to check if a given node is a void element.
-	var voidElementsLookupTable = {
-		'AREA'    : true,
-		'BASE'    : true,
-		'BR'      : true,
-		'COL'     : true,
-		'COMMAND' : true,
-		'EMBED'   : true,
-		'HR'      : true,
-		'IMG'     : true,
-		'INPUT'   : true,
-		'KEYGEN'  : true,
-		'LINK'    : true,
-		'META'    : true,
-		'PARAM'   : true,
-		'SOURCE'  : true,
-		'TRACK'   : true,
-		'WBR'	  : true
-	};
-	
-	var whitespaceRgxp = new RegExp( '^\\s*(&nbsp;)*\\s*$', 'i' );
-	
-	/**
-	 * Recursively removes nodes that are either empty or contain nothing but
-	 * white spaces, including no-breaking white spaces.
-	 *
-	 * @param {DOMElement} node
-	 */
-	function removeInvisibleNodes ( node ) {
-		if ( node.nodeType == 3 ) {
-			if ( node.data == '' ) {
-				node.parentNode.removeChild( node );
-			}
-		} else if ( voidElementsLookupTable[ node.tagName ] ) {
-			// Do not delete void elements, because event though they will
-			// always be empty, they are nevertheless visible
-		} else if ( node.innerHTML.match( whitespaceRgxp ) ) {
-			node.parentNode.removeChild( node );
-		} else {
-			var next,
-			    child = node.firstChild;
-			
-			while ( child ) {
-				next = child.nextSibling;
-				removeInvisibleNodes( child );
-				child = next;
-			}
-			
-			// Having removed all invisible childNodes inside node, check if
-			// node itself is now empty
-			if ( node.innerHTML.match( whitespaceRgxp ) ) {
-				node.parentNode.removeChild( node );
-			}
-		}
-	};
-	
+
 	/**
 	 * Get the pasted content and insert into the current editable
 	 */
@@ -143,10 +82,13 @@ function(Aloha, Plugin, jQuery, Commands, console) {
 			jQuery(pasteEditable.obj).click();
 
 			pasteDivContents = $pasteDiv.html();
+			if (jQuery.browser.msie && /^&nbsp;/.test(pasteDivContents)) {
+				pasteDivContents = pasteDivContents.substring(6);
+			}
+			pasteDivContents = jQuery.trim(pasteDivContents);
 
 			if ( Aloha.queryCommandSupported('insertHTML') ) {
 				Aloha.execCommand('insertHTML', false, pasteDivContents, pasteRange);
-				removeInvisibleNodes( pasteRange.commonAncestorContainer );
 			} else {
 				Aloha.Log.error('Common.Paste', 'Command "insertHTML" not available. Enable the plugin "common/commands".');
 			}
@@ -161,7 +103,7 @@ function(Aloha, Plugin, jQuery, Commands, console) {
 		height = 0;
 
 		// empty the pasteDiv
-		$pasteDiv.text('');
+		$pasteDiv.contents().remove();
 	};
 
 
@@ -199,6 +141,7 @@ function(Aloha, Plugin, jQuery, Commands, console) {
 							redirectPaste();
 							var range = document.selection.createRange();
 							range.execCommand( 'paste' );
+
 							getPastedContent();
 							// This feels rather hackish. We manually unset
 							// the metaKey property because the
