@@ -4000,13 +4000,46 @@ function fixDisallowedAncestors(node, range) {
 	// "Record the values of the one-node list consisting of node, and let
 	// values be the result."
 	var values = recordValues([node]);
-	
-	// debugger; // PROBLEMS here
-	
+
 	// "While node is not an allowed child of its parent, split the parent of
 	// the one-node list consisting of node."
 	while (!isAllowedChild(node, node.parentNode)) {
-		splitParent([node], range);
+		// If the parent contains only this node and possibly empty text nodes, we rather want to unwrap the node, instead of splitting.
+		// With splitting, we would get empty nodes, like:
+		// split: <p><p>foo</p></p> -> <p></p><p>foo</p> (bad)
+		// unwrap: <p><p>foo</p></p> -> <p>foo</p> (good)
+
+		// First remove empty text nodes that are children of the parent and correct the range if necessary
+		// we do this to have the node being the only child of its parent, so that we can replace the parent with the node
+		for (var i = node.parentNode.childNodes.length - 1; i >= 0; --i) {
+			if (node.parentNode.childNodes[i].nodeType == 3 && node.parentNode.childNodes[i].data.length == 0) {
+				// we remove the empty text node
+				node.parentNode.removeChild(node.parentNode.childNodes[i]);
+
+				// if the range points to somewhere behind the removed text node, we reduce the offset
+				if (range.startContainer == node.parentNode && range.startOffset > i) {
+					range.startOffset--;
+				}
+				if (range.endContainer == node.parentNode && range.endOffset > i) {
+					range.endOffset--;
+				}
+			}
+		}
+
+		// now that the parent has only the node as child (because we
+		// removed any existing empty text nodes), we can safely unwrap the
+		// node, and correct the range if necessary
+		if (node.parentNode.childNodes.length == 1) {
+			if (range.startContainer === node.parentNode) {
+				range.startContainer = node;
+			}
+			if (range.endContainer === node.parentNode) {
+				range.endContainer = node;
+			}
+			jQuery(node).unwrap();
+		} else {
+			splitParent([node], range);
+		}
 	}
 
 	// "Restore the values from values."
