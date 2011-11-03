@@ -4030,13 +4030,23 @@ function fixDisallowedAncestors(node, range) {
 		// removed any existing empty text nodes), we can safely unwrap the
 		// node, and correct the range if necessary
 		if (node.parentNode.childNodes.length == 1) {
+			var correctStart = false;
+			var correctEnd = false;
 			if (range.startContainer === node.parentNode) {
-				range.startContainer = node;
+				correctStart = true;
 			}
 			if (range.endContainer === node.parentNode) {
-				range.endContainer = node;
+				correctEnd = true;
 			}
 			jQuery(node).unwrap();
+			if (correctStart) {
+				range.startContainer = node.parentNode;
+				range.startOffset = range.startOffset + getNodeIndex(node);
+			}
+			if (correctEnd) {
+				range.endContainer = node.parentNode;
+				range.endOffset = range.endOffset + getNodeIndex(node);
+			}
 		} else {
 			splitParent([node], range);
 		}
