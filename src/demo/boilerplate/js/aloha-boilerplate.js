@@ -92,7 +92,9 @@ Aloha.ready(function() {
 								<input type="checkbox"\
 									   id="aloha-devtool-source-viewer-entire-ckbx"\
 									   class="aloha-devtool-source-viewer-ckbx"\
-									   style="vertical-align:middle;" />\
+									   style="vertical-align:middle;"\
+									   checked="true"\
+									   />\
 								<label for="aloha-devtool-source-viewer-entire-ckbx"\
 									   class="aloha-devtool-source-viewer-ckbx">\
 									   Show all source</label>\
@@ -126,7 +128,8 @@ Aloha.ready(function() {
 								 .html()
 								 .replace( /\t/g, '  ' )
 								 .replace( /([\[\{])/,
-									'<span class="aloha-devtool-source-viewer-marker" style="background:#70a5e2; color:#fff">$1' )
+									'<span class="aloha-devtool-source-viewer-marker"\
+										style="background:#70a5e2; color:#fff">$1' )
 								 .replace( /([\]\}])/, '$1</span>' )
 								 .replace( /([\[\]\{\}])/g,
 									'<b style="background:#0c53a4; color:#fff;">$1</b>' );
@@ -153,18 +156,17 @@ Aloha.ready(function() {
 								.scrollTop( 0 )
 								.scrollTop( Math.max(
 									0, ( marker.offset().top -
-									viewArea.offset().top ) - 30
+											viewArea.offset().top ) - 30
 								) );
 						}
 					};
 					
-					var showEntireEditableSource = false;
+					var showEntireEditableSource = true;
 					var that = this;
 					var jQuery = Aloha.jQuery;
 					var sidebar = this.sidebar;
 					var originalWidth = sidebar.width;
 					var viewArea = this.content.find( '#aloha-devtool-source-viewer-content' );
-					var lastCommonAncestorContainer;
 					
 					this.title.find( '.aloha-devtool-source-viewer-ckbx' )
 						.click( function ( ev ) {
@@ -210,7 +212,6 @@ Aloha.ready(function() {
 							function ( event, range ) {
 								var sNode = range.startContainer;
 								var eNode = range.endContainer;
-								
 								var id = +( new Date );
 								var sClass = 'aloha-selection-start-' + id;
 								var eClass = 'aloha-selection-end-' + id;
@@ -265,21 +266,30 @@ Aloha.ready(function() {
 								clonedEndContainer.removeClass( eClass );
 								
 								var startNode;
-								if ( sNode.nodeType == 3 &&
-										clonedStartContainer[ 0 ].childNodes.length  ) {
-									startNode = clonedStartContainer[ 0 ]
-													.childNodes[ getNodeIndex( sNode ) ];
+								var cSC = clonedStartContainer[ 0 ];
+								if ( sNode.nodeType == 3 && cSC.childNodes.length ) {
+									var sNI = getNodeIndex( sNode );
+									if ( sNI >= cSC.childNodes.length ) {
+										startNode = cSC.lastChild;
+									} else {
+										startNode = cSC.childNodes[ sNI ];
+									}				
 								} else {
-									startNode = clonedStartContainer[ 0 ];
+									startNode = cSC;
 								}
 								
 								var endNode;
-								if ( eNode.nodeType == 3 &&
-										clonedEndContainer[ 0 ].childNodes.length ) {
-									endNode = clonedEndContainer[ 0 ]
-													.childNodes[ getNodeIndex( eNode ) ];
+								var cEC = clonedEndContainer[ 0 ];
+								if ( eNode.nodeType == 3 && cEC.childNodes.length ) {
+									var eNI = getNodeIndex( eNode );
+									
+									if ( eNI >= cEC.childNodes.length ) {
+										endNode = cEC.lastChild;
+									} else {
+										endNode = cEC.childNodes[ eNI ];
+									}
 								} else {
-									endNode = clonedEndContainer[ 0 ];
+									endNode = cEC;
 								}
 								
 								var fakeRange = {
