@@ -108,7 +108,9 @@ function(Aloha, Plugin, jQuery, Commands, console) {
 			// Do not delete void elements, because event though they will
 			// always be empty, they are nevertheless visible
 		} else if ( node.innerHTML.match( whitespaceRgxp ) ) {
-			node.parentNode.removeChild( node );
+			if ( !GENTICS.Utils.Dom.isEditingHost( node ) ) {
+				node.parentNode.removeChild( node );
+			}
 		} else {
 			var next,
 			    child = node.firstChild;
@@ -121,7 +123,8 @@ function(Aloha, Plugin, jQuery, Commands, console) {
 			
 			// Having removed all invisible childNodes inside node, check if
 			// node itself is now empty
-			if ( node.innerHTML.match( whitespaceRgxp ) ) {
+			if ( node.innerHTML.match( whitespaceRgxp ) &&
+					!GENTICS.Utils.Dom.isEditingHost( node ) ) {
 				node.parentNode.removeChild( node );
 			}
 		}
@@ -146,7 +149,7 @@ function(Aloha, Plugin, jQuery, Commands, console) {
 
 			if ( Aloha.queryCommandSupported('insertHTML') ) {
 				Aloha.execCommand('insertHTML', false, pasteDivContents, pasteRange);
-				removeInvisibleNodes( pasteRange.commonAncestorContainer );
+				//removeInvisibleNodes( pasteRange.commonAncestorContainer );
 			} else {
 				Aloha.Log.error('Common.Paste', 'Command "insertHTML" not available. Enable the plugin "common/commands".');
 			}

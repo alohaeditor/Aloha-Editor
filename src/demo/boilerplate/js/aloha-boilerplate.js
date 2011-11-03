@@ -80,15 +80,22 @@ Aloha.ready(function() {
 			
 			Aloha.Sidebar.right.addPanel( {
 				id       : 'aloha-devtool-source-viewer-panel',
-				title    : 'Source Viewer\
+				title    : '<span style="float:left; margin-left:20px;">Source Viewer</span>\
 							<span style="float:right; padding-right:10px;">\
 								<input type="checkbox"\
-									   id="aloha-devtool-source-viewer-ckbx"\
+									   id="aloha-devtool-source-viewer-widen-ckbx"\
 									   class="aloha-devtool-source-viewer-ckbx"\
 									   style="vertical-align:middle;" />\
-								<label for="aloha-devtool-source-viewer-ckbx"\
+								<label for="aloha-devtool-source-viewer-widen-ckbx"\
+									   class="aloha-devtool-source-viewer-ckbx">\
+									   Widen</label>\
+								<input type="checkbox"\
+									   id="aloha-devtool-source-viewer-entire-ckbx"\
 									   class="aloha-devtool-source-viewer-ckbx"\
-									> Widen</label>\
+									   style="vertical-align:middle;" />\
+								<label for="aloha-devtool-source-viewer-entire-ckbx"\
+									   class="aloha-devtool-source-viewer-ckbx">\
+									   Show all source</label>\
 							</span><span style="float:clear"></span>',
 				expanded : true,
 				activeOn : true,
@@ -100,8 +107,8 @@ Aloha.ready(function() {
 						}
 						
 						var kids = node.parentNode.childNodes,
-							l = kids.length,
-							i = 0;
+						    l = kids.length,
+						    i = 0;
 						
 						for ( ; i < l; ++i ) {
 							if ( kids[ i ] === node ) {
@@ -111,15 +118,61 @@ Aloha.ready(function() {
 						
 						return -1;
 					};
-				
+					
+					function showSource ( container ) {
+						var source =
+							Aloha.jQuery('<div>')
+								 .text( container.html() )
+								 .html()
+								 .replace( /\t/g, '  ' )
+								 .replace( /([\[\{])/,
+									'<span class="aloha-devtool-source-viewer-marker" style="background:#70a5e2; color:#fff">$1' )
+								 .replace( /([\]\}])/, '$1</span>' )
+								 .replace( /([\[\]\{\}])/g,
+									'<b style="background:#0c53a4; color:#fff;">$1</b>' );
+						
+						viewArea.html( source );
+						
+						var marker = viewArea.find( '.aloha-devtool-source-viewer-marker' );
+						
+						if ( marker.length ) {
+							// add rounding at the tip of the selection
+							var radius = 3;
+							marker.css( 'border-radius', radius );
+							marker.find( '>b' ).first().css( {
+								'border-top-left-radius'    : radius,
+								'border-bottom-left-radius' : radius
+							} );
+							marker.find( '>b' ).last().css( {
+								'border-top-right-radius'    : radius,
+								'border-bottom-right-radius' : radius
+							} );
+							
+							// scroll the view to the start of the selection
+							viewArea
+								.scrollTop( 0 )
+								.scrollTop( Math.max(
+									0, ( marker.offset().top -
+									viewArea.offset().top ) - 30
+								) );
+						}
+					};
+					
+					var showEntireEditableSource = false;
 					var that = this;
 					var jQuery = Aloha.jQuery;
 					var sidebar = this.sidebar;
 					var originalWidth = sidebar.width;
 					var viewArea = this.content.find( '#aloha-devtool-source-viewer-content' );
+					var lastCommonAncestorContainer;
+					
+					this.title.find( '.aloha-devtool-source-viewer-ckbx' )
+						.click( function ( ev ) {
+							ev.stopPropagation();
+						} );
 					
 					// A hack to make the sidebar wider
-					this.title.find( '#aloha-devtool-source-viewer-ckbx' )
+					this.title.find( '#aloha-devtool-source-viewer-widen-ckbx' )
 						.change( function () {
 							sidebar.width = jQuery( this ).attr( 'checked' )
 								? 600
@@ -127,12 +180,13 @@ Aloha.ready(function() {
 							
 							sidebar.container.width( sidebar.width )
 								.find( '.aloha-sidebar-panels' ).width( sidebar.width );
-							sidebar.open( 0 ); //.close( 0 );
+							sidebar.open( 0 );
 						} );
 					
-					this.title.find( '.aloha-devtool-source-viewer-ckbx' )
-						.click( function ( ev ) {
-							ev.stopPropagation();
+					this.title.find( '#aloha-devtool-source-viewer-entire-ckbx' )
+						.change( function () {
+							showEntireEditableSource =
+								!!jQuery( this ).attr( 'checked' );
 						} );
 					
 					viewArea.css( {
@@ -172,20 +226,24 @@ Aloha.ready(function() {
 											? eNode.parentNode : eNode )
 												.addClass( eClass );
 								
-								// We determine which element's source to
-								// show. If either the startContainer or the
-								// endContainer is a text node, we will want
-								// to show more of the source around our
-								// selection so we will use the parent node of
-								// the commonAncestorContainer
-								var common;
-								if ( ( sNode.nodeType == 3 ||
-											eNode.nodeType == 3 ) &&
-												!jQuery( range.commonAncestorContainer )
-													.is( '.aloha-editable' ) ) {
-									common = range.commonAncestorContainer.parentNode;
+								if ( showEntireEditableSource ) {
+									common = Aloha.activeEditable.obj[ 0 ];
 								} else {
-									common = range.commonAncestorContainer;
+									// We determine which element's source to
+									// show. If either the startContainer or the
+									// endContainer is a text node, we will want
+									// to show more of the source around our
+									// selection so we will use the parent node of
+									// the commonAncestorContainer
+									var common;
+									if ( ( sNode.nodeType == 3 ||
+												eNode.nodeType == 3 ) &&
+													!jQuery( range.commonAncestorContainer )
+														.is( '.aloha-editable' ) ) {
+										common = range.commonAncestorContainer.parentNode;
+									} else {
+										common = range.commonAncestorContainer;
+									}
 								}
 								
 								var clonedContainer = jQuery( jQuery( common ).clone() );
@@ -238,31 +296,7 @@ Aloha.ready(function() {
 									return;
 								}
 								
-								var source =
-									Aloha.jQuery('<div>')
-										 .text( clonedContainer.html() )
-										 .html()
-										 .replace( /\t/g, '  ' )
-										 .replace( /([\[\{])/,
-											'<span class="aloha-devtool-source-viewer-marker" style="background:#70a5e2; color:#fff">$1' )
-										 .replace( /([\]\}])/, '$1</span>' )
-										 .replace( /([\[\]\{\}])/g,
-											'<b style="background:#0c53a4; color:#fff;">$1</b>' );
-								
-								viewArea.html( source );
-								
-								window.viewArea = viewArea;
-								
-								var marker = viewArea.find( '.aloha-devtool-source-viewer-marker' );
-								
-								if ( marker.length ) {
-									viewArea
-										.scrollTop( 0 )
-										.scrollTop( Math.max(
-											0, ( marker.offset().top -
-											viewArea.offset().top ) - 30
-										) );
-								}
+								showSource( clonedContainer );
 							}
 						);
 					}
