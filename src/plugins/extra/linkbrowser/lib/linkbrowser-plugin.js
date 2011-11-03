@@ -68,15 +68,15 @@ define( [
 					break;
 				case 'translations':
 					if ( !item.renditions ) {
-						continue;
+						break;
 					}
 					
 					var rends = item.renditions,
-					    i = rends.length;
+					    i = rends.length,
 					    strBldr = [],
 					    r;
 					
-					while ( ; i > 0; --i ) {
+					for ( ; i > 0; --i ) {
 						r = rends[ i ];
 						if ( r.kind == 'translation' ) {
 							strBldr.push(

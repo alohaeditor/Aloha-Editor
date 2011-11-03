@@ -120,18 +120,21 @@ function(jQuery, repository, i18nCore) {
 		/**
 		 * returns the folder structure as parsed at init.
 		 */
-		getChildren: function( p, callback) {
-			var d = [];
+		getChildren: function ( p, callback ) {
+			var d = [],
+			    e;
+			
 			for ( e in this.folder ) {
-				var l = this.folder[e].parentId;
-				if ( typeof this.folder[e] != 'function' && ( // extjs prevention
-					this.folder[e].parentId == p.inFolderId || // all subfolders
-					(!this.folder[e].parentId && p.inFolderId == this.repositoryId) // the hostname
-				)) {
-					d.push(this.folder[e]);
+				var l = this.folder[ e ].parentId;
+				if ( typeof this.folder[ e ] != 'function' && ( // extjs prevention
+					this.folder[ e ].parentId == p.inFolderId || // all subfolders
+					( !this.folder[ e ].parentId && p.inFolderId == this.repositoryId ) // the hostname
+				) ) {
+					d.push( this.folder[ e ] );
 				}
 			}
-			callback.call( this, d);
+
+			callback.call( this, d );
 		},
 		
 		//parseUri 1.2.2
