@@ -3939,7 +3939,9 @@ function fixDisallowedAncestors(node, range) {
 	// "Record the values of the one-node list consisting of node, and let
 	// values be the result."
 	var values = recordValues([node]);
-
+	
+	// debugger; // PROBLEMS here
+	
 	// "While node is not an allowed child of its parent, split the parent of
 	// the one-node list consisting of node."
 	while (!isAllowedChild(node, node.parentNode)) {
