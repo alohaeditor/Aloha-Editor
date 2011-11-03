@@ -91,7 +91,16 @@ WARNING: Not yet done
 
 h3. Localization
 
-WARNING: Not yet done
+Use the "localization" setting to set the current language of Aloha:
+
+<html>
+<script type="text/javascript">
+// switch Aloha Editor's localization to french
+Aloha.settings.locale = 'fr';
+</script>
+</html>
+
+As Aloha Editor uses RequireJS to handle it's localization needs a powerful fallback mechanism is in place. See http://requirejs.org/docs/api.html#i18n for additional details.
 
 
 h3. Using plugins
