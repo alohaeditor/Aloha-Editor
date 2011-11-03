@@ -3,7 +3,6 @@ var specifictests = {
 		defaultValue: '',
 		defaultCommand: 'forwarddelete',
 		tests: [
-		
 
 			   ]
 }
@@ -1293,6 +1292,12 @@ var alltests = {
 		{	include: 'msie',	
 			start: 'foo[]<span></span>bar',
 			execResult: 'foo<span></span>[]ar'
+		},
+		{	start: 'foo[]\n\t\t\tbar',
+			execResult: 'foo[]bar'
+		},
+		{	start: 'foo[]     bar',
+			execResult: 'foo[]bar'
 		}
 	
 
