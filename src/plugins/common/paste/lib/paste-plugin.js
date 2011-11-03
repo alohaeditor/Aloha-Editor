@@ -65,14 +65,71 @@ function(Aloha, Plugin, jQuery, Commands, console) {
 		// focus the pasteDiv
 		$pasteDiv.focus();
 	};
-
+	
+	// http://dev.w3.org/html5/markup/syntax.html#void-element
+	// A complete list of the void elements in HTML(5)
+	//
+	// TODO: This list should be accessed from some Aloha factory setting. But
+	// this needs to be discussed. For the time being, this will provide a
+	// quick lookup table to check if a given node is a void element.
+	var voidElementsLookupTable = {
+		'AREA'    : true,
+		'BASE'    : true,
+		'BR'      : true,
+		'COL'     : true,
+		'COMMAND' : true,
+		'EMBED'   : true,
+		'HR'      : true,
+		'IMG'     : true,
+		'INPUT'   : true,
+		'KEYGEN'  : true,
+		'LINK'    : true,
+		'META'    : true,
+		'PARAM'   : true,
+		'SOURCE'  : true,
+		'TRACK'   : true,
+		'WBR'	  : true
+	};
+	
+	var whitespaceRgxp = new RegExp( '^\\s*(&nbsp;)*\\s*$', 'i' );
+	
+	/**
+	 * Recursively removes nodes that are either empty or contain nothing but
+	 * white spaces, including no-breaking white spaces.
+	 *
+	 * @param {DOMElement} node
+	 */
+	function removeInvisibleNodes ( node ) {
+		if ( node.nodeType == 3 ) {
+			if ( node.data == '' ) {
+				node.parentNode.removeChild( node );
+			}
+		} else if ( voidElementsLookupTable[ node.tagName ] ) {
+			// Do not delete void elements, because event though they will
+			// always be empty, they are nevertheless visible
+		} else if ( node.innerHTML.match( whitespaceRgxp ) ) {
+			node.parentNode.removeChild( node );
+		} else {
+			var next,
+			    child = node.firstChild;
+			
+			while ( child ) {
+				next = child.nextSibling;
+				removeInvisibleNodes( child );
+				child = next;
+			}
+			
+			if ( node.innerHTML.match( whitespaceRgxp ) ) {
+				node.parentNode.removeChild( node );
+			}
+		}
+	};
+	
 	/**
 	 * Get the pasted content and insert into the current editable
 	 */
 	function getPastedContent() {
 		var that = this,
-			i = 0,
-			heightDiff = 0, 
 			pasteDivContents;
 
 		// insert the content into the editable at the current range
@@ -87,6 +144,7 @@ function(Aloha, Plugin, jQuery, Commands, console) {
 
 			if ( Aloha.queryCommandSupported('insertHTML') ) {
 				Aloha.execCommand('insertHTML', false, pasteDivContents, pasteRange);
+				removeInvisibleNodes( pasteRange.commonAncestorContainer );
 			} else {
 				Aloha.Log.error('Common.Paste', 'Command "insertHTML" not available. Enable the plugin "common/commands".');
 			}
