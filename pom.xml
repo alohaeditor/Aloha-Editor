@@ -3,7 +3,7 @@
 
 	<groupId>com.gentics</groupId>
 	<artifactId>alohaeditor</artifactId>
-	<version>0.21-dev-SNAPSHOT</version>
+	<version>0.21.0-dev-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Aloha Editor</name>
@@ -11,8 +11,8 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<ALOHABUILDCONF>gentics</ALOHABUILDCONF>
-        <maven.build.timestamp.format>yyyyMMdd-HHmmss</maven.build.timestamp.format>
+                <maven.build.timestamp.format>yyyyMMdd-HHmmss</maven.build.timestamp.format>
+		<ALOHABUILDCONF>aloha</ALOHABUILDCONF>
 		<ALOHADEPLOYMENTURL>NA</ALOHADEPLOYMENTURL>
 		<ALOHADEPLOYMENTPATH>NA</ALOHADEPLOYMENTPATH>
 	</properties>
