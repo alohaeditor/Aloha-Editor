@@ -3008,6 +3008,9 @@ jQuery.extend({
 								callbacks.shift().apply( context, args );
 							}
 						}
+						catch(e) {
+							// damn you IE <= 7
+						}
 						finally {
 							fired = [ context, args ];
 							firing = 0;

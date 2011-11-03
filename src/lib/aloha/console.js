@@ -135,9 +135,9 @@ var alohaConsole = Class.extend({
 				// We ought to consider doing the following:
 				// throw component + ': ' + message;
 				if(!component && !message) {
-					console.error(component + ': ' + message);
-				} else {
 					console.error("Error occured without message and component");
+				} else {
+					console.error(component + ': ' + message);
 				}
 			}
 			break;
