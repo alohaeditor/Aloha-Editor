@@ -56,8 +56,7 @@ function cleanup() {
 
 # Check if the given confdir is existing
 if [ "$1" != "" ]; then
-	TARGET="$1"
-	CONFDIR="$BASEDIR/../build/$TARGET"
+	CONFDIR="$1"
 	
 	# check if build configuration can be found
 	if [ ! -d "$CONFDIR" ]; then

@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>org.alohaeditor</groupId>
@@ -11,93 +12,107 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.build.timestamp.format>yyyyMMdd-HHmmss</maven.build.timestamp.format>
-		<ALOHABUILDCONF>aloha</ALOHABUILDCONF>
+		<maven.build.timestamp.format>yyyyMMdd-HHmmss</maven.build.timestamp.format>
+		<ALOHABUILDCONF>build/aloha</ALOHABUILDCONF>
 		<ALOHADEPLOYMENTURL>NA</ALOHADEPLOYMENTURL>
 		<ALOHADEPLOYMENTPATH>NA</ALOHADEPLOYMENTPATH>
 	</properties>
 
 	<scm>
-                <connection>scm:git:git@github.com:alohaeditor/Aloha-Editor.git</connection>
-                <developerConnection>scm:git:git@github.com:alohaeditor/Aloha-Editor.git</developerConnection>
-                <url>https://github.com/alohaeditor/Aloha-Editor</url>
-        </scm>
+		<connection>scm:git:git@github.com:alohaeditor/Aloha-Editor.git</connection>
+		<developerConnection>scm:git:git@github.com:alohaeditor/Aloha-Editor.git</developerConnection>
+		<url>https://github.com/alohaeditor/Aloha-Editor</url>
+	</scm>
 
 
-	 <build>
-                <plugins>
+	<build>
+		<plugins>
 
-			 <plugin>
-                                <artifactId>maven-assembly-plugin</artifactId>
-                                <version>2.2.1</version>
-                                <executions>
-                                        <execution>
-                                                <id>package</id>
-                                                <phase>package</phase>
-                                                <goals>
-                                                        <goal>single</goal>
-                                                </goals>
-                                                <configuration>
-                                                        <attach>true</attach>
-                                                        <appendAssemblyId>false</appendAssemblyId>
-                                                        <descriptors>
-                                                                <descriptor>${project.basedir}/build/${ALOHABUILDCONF}/package.xml</descriptor>
-                                                        </descriptors>
-                                                </configuration>
-                                        </execution>
-                                </executions>
-                        </plugin>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.2.1</version>
+				<executions>
+					<execution>
+						<id>dist</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<attach>true</attach>
+							<appendAssemblyId>false</appendAssemblyId>
+							<descriptors>
+								<descriptor>${project.basedir}/build/dist-package.xml</descriptor>
+							</descriptors>
+						</configuration>
+					</execution>
+					<execution>
+						<id>source</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<attach>true</attach>
+							<appendAssemblyId>true</appendAssemblyId>
+							<descriptors>
+								<descriptor>${project.basedir}/build/source-package.xml</descriptor>
+							</descriptors>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 
-			 <plugin>
-                                <groupId>org.codehaus.mojo</groupId>
-                                <artifactId>exec-maven-plugin</artifactId>
-                                <version>1.1</version>
-                                <executions>
-                                        <execution>
-                                                <phase>deploy</phase>
-                                                <id>deploy</id>
-                                                <goals>
-                                                     <goal>exec</goal>
-                                                </goals>
-				              			   <configuration>
-                                	        <executable>bin/deploy-aloha.sh</executable>
-                                        	<arguments>
-	                                           <argument>${ALOHADEPLOYMENTURL}</argument>
-        	                                   <argument>${ALOHADEPLOYMENTPATH}</argument>
-                                               <argument>${maven.build.timestamp}</argument>
-                	                       </arguments>
-                        	              </configuration>
-                                        </execution>
-			                <execution>
-                                                <phase>compile</phase>
-                                                <id>invoke build</id>
-                                                <goals>
-                                                        <goal>exec</goal>
-                                                </goals>
-					        <configuration>
-                                        	    <executable>bin/build.sh</executable>
-	                                            <arguments>
-            	 	                                    <argument>${ALOHABUILDCONF}</argument>
-                        	                   </arguments>
-                               			</configuration>
-                                        </execution>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>1.1</version>
+				<executions>
+					<execution>
+						<phase>deploy</phase>
+						<id>deploy</id>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<executable>bin/deploy-aloha.sh</executable>
+							<arguments>
+								<argument>${ALOHADEPLOYMENTURL}</argument>
+								<argument>${ALOHADEPLOYMENTPATH}</argument>
+								<argument>${maven.build.timestamp}</argument>
+							</arguments>
+						</configuration>
+					</execution>
+					<execution>
+						<phase>compile</phase>
+						<id>invoke build</id>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<executable>bin/build.sh</executable>
+							<arguments>
+								<argument>${ALOHABUILDCONF}</argument>
+							</arguments>
+						</configuration>
+					</execution>
 
-                                </executions>
-                        </plugin>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 
-        <distributionManagement>
-                <repository>
-                        <id>archiva.com.gentics.internal</id>
-                        <name>Gentics Internal Repository</name>
-                        <url>http://archiva.gentics.com:8081/archiva/repository/com.gentics.internal</url>
-                </repository>
-                <snapshotRepository>
-                        <id>archiva.com.gentics.internal</id>
-                        <name>Gentics Internal Repository</name>
-                        <url>http://archiva.gentics.com:8081/archiva/repository/com.gentics.internal</url>
-                </snapshotRepository>
-        </distributionManagement>
+	<distributionManagement>
+		<repository>
+			<id>archiva.com.gentics.internal</id>
+			<name>Gentics Internal Repository</name>
+			<url>http://archiva.gentics.com:8081/archiva/repository/com.gentics.internal</url>
+		</repository>
+		<snapshotRepository>
+			<id>archiva.com.gentics.internal</id>
+			<name>Gentics Internal Repository</name>
+			<url>http://archiva.gentics.com:8081/archiva/repository/com.gentics.internal</url>
+		</snapshotRepository>
+	</distributionManagement>
 </project>
 
