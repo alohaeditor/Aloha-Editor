@@ -95,13 +95,16 @@ function AlohaImagePlugin ( aQuery, Plugin, FloatingMenu, i18nCore, i18n ) {
 
 		languages: ['en', 'fr', 'de', 'ru', 'cz'],
 
-		defaults: {
+		defaultSettings: {
 			'maxWidth': 800,
 			'minWidth': 10,
 			'maxHeight': 800,
 			'minHeight': 10,
-			'autoCorrectManualInput': true,	 // This setting will correct manually values that are out of bounds
-			'fixedAspectRatio' : false, // This setting will define a fixed aspect ratio for all resize actions 
+			// This setting will correct manually values that are out of bounds
+			'autoCorrectManualInput': true,	 
+			// This setting will define a fixed aspect ratio for all resize actions
+			'fixedAspectRatio' : false, 
+			
 			//Image manipulation options - ONLY in default config section
 			ui: {
 				oneTab		: false, //Place all ui components within one tab
@@ -265,11 +268,9 @@ function AlohaImagePlugin ( aQuery, Plugin, FloatingMenu, i18nCore, i18n ) {
 			var imagePluginUrl = Aloha.getPluginUrl('image');
 
 			// Extend the default settings with the custom ones (done by default)
-			//this.settings = jQuery.extend(true,this.defaultSettings,this.settings);
-
 			this.startAspectRatio = this.settings.fixedAspectRatio; 
-			this.config = this.defaults;
-			this.settings = jQuery.extend(true, this.settings, this.defaults);
+			this.config = this.defaultSettings;
+			this.settings = jQuery.extend(true, this.defaultSettings, this.settings);
 			
 			that.initializeButtons();
 			that.bindInteractions();

@@ -68,7 +68,7 @@
 					'minHeight': 20,
 					'globalselector': '.global',
 					'ui': {
-						//'oneTab': true
+						'oneTab': false
 					}
 				}
 			}
@@ -77,10 +77,7 @@
     })(window);
 	</script>
 
-	<script src="../../../../lib/require.js"
-			id="aloha-script-include"
-			data-main="../../../../lib/aloha.js"
-			data-aloha-plugins="common/format, common/highlighteditables, common/image"></script>
+	<script src="../../../../lib/aloha.js" data-aloha-plugins="common/format, common/highlighteditables, common/image"></script>
 
 	<link rel="stylesheet" href="../../../../css/aloha.css" id="aloha-style-include" type="text/css">
 	<link rel="stylesheet" href="../../../../demo/common/index.css" type="text/css">
@@ -112,9 +109,9 @@
 	<script type="text/javascript">
 	Aloha.ready( function(){
 		var $ = Aloha.jQuery;
-			$('#title').aloha();
-			$('#teaser').aloha();
-			$('#content').aloha();
+		$('#title').aloha();
+		$('#teaser').aloha();
+		$('#content').aloha();
 	});
   </script>
 </body>
