@@ -62,8 +62,16 @@
 						value: 'bam' 
 					},
 					{	start: '<h1>hello</h1><p>bar[]</p>',
-						execResult: '<h1>hello</h1><p>bar</p><table><tr><td>foo</td></tr></table>{}<p></p>',
+						execResult: '<h1>hello</h1><p>bar</p><table><tr><td>foo</td></tr></table>{}',
 						value: '<table><tr><td>foo</td></tr></table>' 
+					},
+					{	start: 'foo[]bar',
+						execResult: 'foo<div>bam</div>[]bar',
+						value: '<div style="background-color:red">bam</div>'
+					},
+					{	start: 'foo[]bar',
+						execResult: 'foo<div contentEditable="false" style="background-color:red">bam</div>[]bar',
+						value: '<div contentEditable="false" style="background-color:red">bam</div>'
 					}
 			]
 	}

@@ -104,6 +104,11 @@ function( Aloha, jQuery, ContentHandlerManager, console ) {
 			config = Aloha.settings.contentHandler.allows;
 		}
 
+		// add a filter to stop cleaning elements with contentEditable "false"
+		config.filters = [function( elem ) {
+			return elem.contentEditable != "false";
+		}];
+
 		sanitize = new Sanitize( config );
 	}
 
