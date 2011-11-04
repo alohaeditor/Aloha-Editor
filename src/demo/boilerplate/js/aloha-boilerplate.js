@@ -161,19 +161,18 @@ Aloha.ready(function() {
 						}
 					};
 					
-					var showEntireEditableSource = true;
-					var that = this;
-					var jQuery = Aloha.jQuery;
-					var sidebar = this.sidebar;
-					var originalWidth = sidebar.width;
-					var viewArea = this.content.find( '#aloha-devtool-source-viewer-content' );
+					var that = this,
+					    jQuery = Aloha.jQuery,
+					    showEntireEditableSource = true,
+					    sidebar = this.sidebar,
+					    originalWidth = sidebar.width,
+					    viewArea = this.content.find( '#aloha-devtool-source-viewer-content' );
 					
 					this.title.find( '.aloha-devtool-source-viewer-ckbx' )
 						.click( function ( ev ) {
 							ev.stopPropagation();
 						} );
 					
-					// A hack to make the sidebar wider
 					this.title.find( '#aloha-devtool-source-viewer-widen-ckbx' )
 						.change( function () {
 							sidebar.width = jQuery( this ).attr( 'checked' )
@@ -212,6 +211,11 @@ Aloha.ready(function() {
 							function ( event, range ) {
 								var sNode = range.startContainer;
 								var eNode = range.endContainer;
+								
+								if ( !sNode || !eNode ) {
+									return;
+								}
+								
 								var id = +( new Date );
 								var sClass = 'aloha-selection-start-' + id;
 								var eClass = 'aloha-selection-end-' + id;
@@ -256,6 +260,15 @@ Aloha.ready(function() {
 								var clonedEndContainer = clonedContainer.is( '.' + eClass )
 										? clonedContainer
 										: clonedContainer.find( '.' + eClass );
+								
+								// We may not find clonedStart- and clonedEnd-
+								// Containers if the selection range is outside
+								// of of the active editable (something that
+								// can happen when doing CTRL+A)
+								if ( clonedStartContainer.length == 0 &&
+										clonedEndContainer.length == 0 ) {
+									return;
+								}
 								
 								// Now that we have identified all our
 								// containers, we can remove markers anywhere
