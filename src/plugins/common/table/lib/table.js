@@ -22,7 +22,7 @@ define( [
 		// set the table attribut "obj" as a jquery represenation of the dom-table
 		this.obj = jQuery( table );
 		
-		correctTableStructure( this.obj );
+		correctTableStructure( this );
 		
 		if ( !this.obj.attr( 'id' ) ) {
 			this.obj.attr( 'id', GENTICS.Utils.guid() );
@@ -163,62 +163,56 @@ define( [
 	};
 	
 	/**
-	 * Gets the number of columns for the given tr, taking into account
-	 * colspans
+	 * Given an unbalanced table structure, pad it with the necessary cells to
+	 * make it perfectly rectangular
 	 *
-	 * http://dev.w3.org/html5/markup/td.html#td.attrs.colspan
-	 * http://www.w3.org/TR/html401/struct/tables.html#adef-colspan
-	 * colspan = positive integer
-	 * Specifies the number of adjacent columns “spanned” by its td element.
-	 * The default value of this attribute is one ("1").
-	 * The value zero ("0") means that the cell spans all columns from the current column to the last column of the column group (COLGROUP) in which the cell is defined.
-	 *
-	 * @todo Handle colspan="0"
-	 * @param {jQuery} tr
-	 * @return number of columns
+	 * @param {Aloha.Table} tableObj
 	 */
-	function getColumnCount ( tr ) {
-		var cols = jQuery( 'td', tr );
-		var colsNum = cols.length;
-		var colsCount = 0;
-		var col;
-		var colSpan;
-		
-		for ( var i = 0; i < colsNum; i++ ) {
-			col = jQuery( cols[ i ] );
-			colSpan = parseInt( col.attr( 'colspan' ), 10 );
+	function correctTableStructure ( tableObj ) {
+		var table = tableObj.obj,
 			
-			// The default value of this attribute is one ("1"), so it is
-			// superfluous
-			if ( colSpan == 1 ) {
-				col.removeAttr( 'colspan' );
-			}
+			i,
+		    row,
+		    rows = tableObj.getRows(),
+		    rowsNum = rows.length,
 			
-			if ( colSpan > 1 ) {
-				colsCount += colSpan;
-			} else {
-				colsCount++;
-			}
-		}
-		
-		return colsCount;
-	};
-	
-	/**
-	 * @param {jQuery} table
-	 */
-	function correctTableStructure ( table ) {
-		var i;
-		var rows = table.find( 'tr' );
-		var rowsNum = rows.length;
-		var maxColsCount = 0;
-		var colsCount;
-		var cachedColsCounts = [];
-		var colsCountDiff;
+			cols,
+			colsNum,
+			
+		    colsCount,
+		    maxColsCount = 0,
+		    cachedColsCounts = [],
+		    colsCountDiff,
+		    colSpan;
 		
 		for ( i = 0; i < rowsNum; i++ ) {
-			colsCount = getColumnCount( rows[ i ] );
+			row = jQuery( rows[ i ] );
+			cols = row.find( '>td' );
+			colsNum = cols.length;
+			colsCount = Utils.cellIndexToGridColumn( rows, i, colsNum - 1 ) + 1;
+			
+			// Check if the last cell in this row has a col span, to account
+			// for it in the total number of colums in this row
+			
+			colSpan = parseInt( cols.last().attr( 'colspan' ), 10 );
+			
+			if ( colSpan == 0 ) {
+				// TODO: support colspan=0
+				// http://dev.w3.org/html5/markup/td.html#td.attrs.colspan
+				// http://www.w3.org/TR/html401/struct/tables.html#adef-colspan
+				// The value zero ("0") means that the cell spans all columns from the current column to the last column of the column group (COLGROUP) in which the cel
+			} else if ( !isNaN( colSpan ) ) {
+				// The default value of this attribute is one ("1"), so where this
+				// is the case, we will remove such superfluous colspan attributes
+				if ( colSpan == 1 ) {
+					cols.last().removeAttr( 'colspan' );
+				}
+				
+				colsCount += ( colSpan - 1 );
+			}
+			
 			cachedColsCounts.push( colsCount );
+			
 			if ( colsCount > maxColsCount ) {
 				maxColsCount = colsCount;
 			}
