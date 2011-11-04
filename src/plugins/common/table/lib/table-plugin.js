@@ -152,8 +152,8 @@ define( [
 		this.initTableButtons();
 
 		Aloha.bind( 'aloha-table-selection-changed', function () {
-			if (   null != TablePlugin.activeTable
-				&& 0 !== TablePlugin.activeTable.selection.selectedCells.length ) {
+			if ( null != TablePlugin.activeTable
+					&& 0 !== TablePlugin.activeTable.selection.selectedCells.length ) {
 				TablePlugin.updateFloatingMenuScope();
 			}
 		});
@@ -288,13 +288,13 @@ define( [
 		pl.sidebar = sidebar;
 		sidebar.addPanel({
             
-            id         : nsClass('sidebar-panel'),
-            title     : i18n.t('table.sidebar.title'),
-            content     : '',
+            id       : nsClass('sidebar-panel'),
+            title    : i18n.t('table.sidebar.title'),
+            content  : '',
             expanded : true,
             activeOn : 'table',
             
-            onInit     : function () {
+            onInit   : function () {
             	var that = this,
 	            content = this.setContent(
 	                '<label class="' + nsClass('label') + '" for="' + nsClass('textarea') + '" >' + i18n.t('table.label.target') + '</label>' +

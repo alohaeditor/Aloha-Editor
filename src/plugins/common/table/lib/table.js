@@ -1,8 +1,15 @@
-define(
-['aloha', 'aloha/jquery', 'aloha/floatingmenu', 'i18n!table/nls/i18n', 'table/table-cell', 'table/table-selection', 'table/table-plugin-utils'],
-function (Aloha, jQuery, FloatingMenu, i18n, TableCell, TableSelection, Utils) {
-	var
-		GENTICS = window.GENTICS;
+define( [
+
+	'aloha',
+	'aloha/jquery',
+	'aloha/floatingmenu',
+	'i18n!table/nls/i18n',
+	'table/table-cell',
+	'table/table-selection',
+	'table/table-plugin-utils'
+
+], function ( Aloha, jQuery, FloatingMenu, i18n, TableCell, TableSelection, Utils ) {
+	var GENTICS = window.GENTICS;
 
 	/**
 	 * Constructor of the table object
@@ -11,16 +18,18 @@ function (Aloha, jQuery, FloatingMenu, i18n, TableCell, TableSelection, Utils) {
 	 *            the dom-representation of the held table
 	 * @return void
 	 */
-	var Table = function(table, tablePlugin) {
+	var Table = function( table, tablePlugin ) {
 		// set the table attribut "obj" as a jquery represenation of the dom-table
-		this.obj = jQuery(table);
-
-		if ( !this.obj.attr('id') ) {
-			this.obj.attr('id', GENTICS.Utils.guid());
+		this.obj = jQuery( table );
+		
+		correctTableStructure( this.obj );
+		
+		if ( !this.obj.attr( 'id' ) ) {
+			this.obj.attr( 'id', GENTICS.Utils.guid() );
 		}
-
+		
 		this.tablePlugin = tablePlugin;
-		this.selection = new TableSelection(this);
+		this.selection = new TableSelection( this );
 		this.refresh();
 	};
 
@@ -152,7 +161,80 @@ function (Aloha, jQuery, FloatingMenu, i18n, TableCell, TableSelection, Utils) {
 	Table.prototype.set = function(key, value) {
 		this.tablePlugin.set(key, value);
 	};
-
+	
+	/**
+	 * Gets the number of columns for the given tr, taking into account
+	 * colspans
+	 *
+	 * http://dev.w3.org/html5/markup/td.html#td.attrs.colspan
+	 * http://www.w3.org/TR/html401/struct/tables.html#adef-colspan
+	 * colspan = positive integer
+	 * Specifies the number of adjacent columns “spanned” by its td element.
+	 * The default value of this attribute is one ("1").
+	 * The value zero ("0") means that the cell spans all columns from the current column to the last column of the column group (COLGROUP) in which the cell is defined.
+	 *
+	 * @todo Handle colspan="0"
+	 * @param {jQuery} tr
+	 * @return number of columns
+	 */
+	function getColumnCount ( tr ) {
+		var cols = jQuery( 'td', tr );
+		var colsNum = cols.length;
+		var colsCount = 0;
+		var col;
+		var colSpan;
+		
+		for ( var i = 0; i < colsNum; i++ ) {
+			col = jQuery( cols[ i ] );
+			colSpan = parseInt( col.attr( 'colspan' ), 10 );
+			
+			// The default value of this attribute is one ("1"), so it is
+			// superfluous
+			if ( colSpan == 1 ) {
+				col.removeAttr( 'colspan' );
+			}
+			
+			if ( colSpan > 1 ) {
+				colsCount += colSpan;
+			} else {
+				colsCount++;
+			}
+		}
+		
+		return colsCount;
+	};
+	
+	/**
+	 * @param {jQuery} table
+	 */
+	function correctTableStructure ( table ) {
+		var i;
+		var rows = table.find( 'tr' );
+		var rowsNum = rows.length;
+		var maxColsCount = 0;
+		var colsCount;
+		var cachedColsCounts = [];
+		var colsCountDiff;
+		
+		for ( i = 0; i < rowsNum; i++ ) {
+			colsCount = getColumnCount( rows[ i ] );
+			cachedColsCounts.push( colsCount );
+			if ( colsCount > maxColsCount ) {
+				maxColsCount = colsCount;
+			}
+		}
+		
+		for ( i = 0; i < rowsNum; i++ ) {
+			colsCountDiff = maxColsCount - cachedColsCounts[ i ];
+			if ( colsCountDiff > 0 ) {
+				// Create as many td's as we need to complete the row
+				jQuery( rows[ i ] ).append(
+					( new Array( colsCountDiff + 1 ) ).join( '<td></td>' )
+				);
+			}
+		}
+	};
+	
 	/**
 	 * Transforms the existing dom-table into an editable aloha-table. In fact it
 	 * replaces the td-elements with equivalent TableCell-elements
@@ -166,13 +248,14 @@ function (Aloha, jQuery, FloatingMenu, i18n, TableCell, TableSelection, Utils) {
 		if (this.isActive) {
 			return;
 		}
+
 		var that = this,
-			htmlTableWrapper, tableWrapper;
+		    htmlTableWrapper,
+		    tableWrapper;
 
 		// alter the table attributes
 		this.obj.addClass(this.get('className'));
 		this.obj.contentEditable(false);
-
 
 		// set an id to the table if not already set
 		if (this.obj.attr('id') == '') {
@@ -242,7 +325,7 @@ function (Aloha, jQuery, FloatingMenu, i18n, TableCell, TableSelection, Utils) {
 		htmlTableWrapper.get(0).onmovestart = function(e) { return false; };
 		htmlTableWrapper.get(0).onselectstart = function(e) { return false; };
 
-		this.tableWrapper     = this.obj.parents('.' + this.get('classTableWrapper')).get(0);
+		this.tableWrapper = this.obj.parents('.' + this.get('classTableWrapper')).get(0);
 
 		jQuery(this.cells).each(function () {
 			this.activate();
