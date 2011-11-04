@@ -122,15 +122,15 @@ define( [
 		this.rowConfig = this.checkConfig(this.rowConfig||this.settings.rowConfig);
 		
 		// add reference to the create layer object
-		this.createLayer = new CreateLayer(this);
+		this.createLayer = new CreateLayer( this );
 
 		var that = this;
 
 		// subscribe for the 'editableActivated' event to activate all tables in the editable
-		Aloha.bind('aloha-editable-created', function( event, editable ) {
+		Aloha.bind( 'aloha-editable-created', function ( event, editable ) {
 
 			// add a mousedown event to all created editables to check if focus leaves a table
-			editable.obj.bind( 'mousedown', function( jqEvent ) {
+			editable.obj.bind( 'mousedown', function ( jqEvent ) {
 				TablePlugin.setFocusedTable( undefined );
 			} );
 
@@ -152,8 +152,8 @@ define( [
 		this.initTableButtons();
 
 		Aloha.bind( 'aloha-table-selection-changed', function () {
-			if ( null != TablePlugin.activeTable
-					&& 0 !== TablePlugin.activeTable.selection.selectedCells.length ) {
+			if ( null != TablePlugin.activeTable &&
+					0 !== TablePlugin.activeTable.selection.selectedCells.length ) {
 				TablePlugin.updateFloatingMenuScope();
 			}
 		});
@@ -244,7 +244,7 @@ define( [
 		Aloha.bind( 'aloha-smart-content-changed', function ( event ) {
 			if ( Aloha.activeEditable ) {
 				Aloha.activeEditable.obj.find( 'table' ).each( function () {
-					if ( !TablePlugin.isTableElementInRegistry( this ) &&
+					if ( TablePlugin.indexOfTableInRegistry( this ) > -1 &&
 							!TablePlugin.isWithinTable( this ) ) {
 						var el = jQuery( this );
 						el.id = GENTICS.Utils.guid();
@@ -339,21 +339,31 @@ define( [
 	};
 	
 	/**
-	 * Checks if a table element in the TableRegistry array
-	 *
 	 * @param {jQuery} elem
-	 * @return {Boolean} true if table elem is in registry
+	 * @return {Number}
 	 */
-	TablePlugin.isTableElementInRegistry = function ( elem ) {
-		var registry = TablePlugin.TableRegistry;
+	TablePlugin.indexOfTableInRegistry = function ( elem ) {
+		var registry = this.TableRegistry;
 		
 		for ( var i = 0; i < registry.length; i++ ) {
-			if ( registry[ i ].obj.is( elem ) ) {
-				return true;
+			if ( registry[ i ].obj.id == elem.id ) {
+				return i;
 			}
 		}
 		
-		return false;
+		return -1;
+	};
+	
+	/**
+	 * @param {jQuery} elem
+	 * @return {Table}
+	 */
+	TablePlugin.getTableFromRegistry = function ( elem ) {
+		var i = this.indexOfTableInRegistry( elem );
+		if ( i > -1 ) {
+			return this.TableRegistry[ i ];
+		}
+		return null;
 	};
 	
 	/**
@@ -1369,13 +1379,15 @@ define( [
 	 * @return void
 	 */
 	TablePlugin.makeClean = function ( obj ) {
+		var that = this;
 		obj.find( 'table' ).each( function() {
-			if ( !TablePlugin.isWithinTable( this ) ) {
-				( new Table( this, TablePlugin ) ).deactivate();
+			var table = that.getTableFromRegistry( this );
+			if ( table ) {
+				table.deactivate();
 			}
 		} );
 	};
-
+	
 	/**
 	 * String representation of the Table-object
 	 *
