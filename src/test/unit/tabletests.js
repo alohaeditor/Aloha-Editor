@@ -11,6 +11,137 @@
  *   ie: selectRow(0) and selectColumn(0), should be zero indexed
  */
 
+/*
+
+Aligning columns of unbalanced table test:
+
+<table>
+<tr><td rowspan=2></td><td></td></tr>
+<tr><td></td></tr>
+</table>
+<p><br/></p>
+
+<!-- Corrects to:
+<table class="test">
+	<tr><td rowspan=2></td><td></td></tr>
+	<tr><td></td></tr>
+</table>
+-->
+
+<table>
+<tr><td rowspan=2></td><td></td><td></td></tr>
+<tr><td></td><td></td></tr>
+</table>
+<p><br/></p>
+
+<!-- Corrects to:
+<table class="test">
+	<tr><td rowspan=2></td><td></td><td></td></tr>
+	<tr><td></td><td></td></tr>
+</table>
+-->
+
+<table>
+	<tr><td></td><td></td></tr>
+	<tr><td></td></tr>
+</table>
+<p><br/></p>
+
+<!-- Corrects to:
+<table>
+	<tr><td></td><td></td></tr>
+	<tr><td></td><td></td></tr>
+</table>
+-->
+
+<table>
+	<tr><td colspan=2></td></tr>
+	<tr><td></td></tr>
+</table>
+<p><br/></p>
+
+
+<!-- Corrects to:
+<table>
+	<tr><td colspan=2></td></tr>
+	<tr><td></td><td></td></tr>
+</table>
+-->
+
+<table>
+	<tr><td colspan=2></td></tr>
+	<tr><td></td></tr>
+	<tr><td></td><td></td></tr>
+</table>
+<p><br/></p>
+
+<!-- Corrects to:
+<table>
+	<tr><td colspan=2></td></tr>
+	<tr><td></td><td></td></tr>
+	<tr><td></td><td></td></tr>
+</table>
+-->
+
+<table>
+	<tr><td colspan=1></td></tr>
+	<tr><td></td></tr>
+</table>
+<p><br/></p>
+
+<!-- Corrects to:
+<table>
+	<tr><td></td></tr>
+	<tr><td></td></tr>
+</table>
+-->
+
+<table>
+	<tr><td colspan=0></td></tr>
+	<tr><td></td></tr>
+</table>
+<p><br/></p>
+
+<!-- Corrects to:
+<table>
+	<tr><td></td></tr>
+	<tr><td></td></tr>
+</table>
+-->
+
+<table>
+	<tr><td colspan=0></td><td></td></tr>
+	<tr><td></td><td></td></tr>
+</table>
+<p><br/></p>
+
+<!-- Corrects to:
+<table>
+	<tr><td colspan=2></td></tr>
+	<tr><td></td><td></td></tr>
+</table>
+-->
+
+<table>
+	<tr><td colspan=2></td></tr>
+	<tr><td colspan=2></td></tr>
+</table>
+<p><br/></p>
+
+<!-- Corrects to:
+<table>
+	<tr><td></td></tr>
+	<tr><td></td></tr>
+</table>
+-->
+
+*/
+
+
+
+
+
+
 define(
 [ 'testutils', 'htmlbeautifier' ],
 function( TestUtils ) {
