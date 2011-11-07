@@ -489,7 +489,37 @@ rangy.createModule("DomUtil", function(api, module) {
         return node;
     }
 
+    /**
+	 * This is a very ugly workaround for an IE9 issue Before comparing DOM
+	 * elements "normalize" them. There are cases, where anchorNode and
+	 * focusNode in a nativeselection point to DOM elements with same
+	 * parentNode, same previousSibling and same nextSibling, but the nodes
+	 * themselves are not the same
+	 * If such nodes are compared in the comparePoints method, an error occurs.
+	 * To fix this, we move to the previousSibling/nextSibling/parentNode and back, to hopefully get
+	 * the "correct" node in the DOM
+	 * @param node node to fix
+	 * @return normalized node
+	 */
+    function fixNode(node) {
+    	if (!node) {
+    		return;
+    	}
+    	if (node.previousSibling) {
+    		return node.previousSibling.nextSibling;
+    	} else if (node.nextSibling) {
+    		return node.nextSibling.previousSibling;
+    	} else if (node.parentNode) {
+    		return node.parentNode.firstChild;
+    	} else {
+    		return node;
+    	}
+    }
+
     function comparePoints(nodeA, offsetA, nodeB, offsetB) {
+    	// fix the nodes before comparing them
+    	nodeA = fixNode(nodeA);
+    	nodeB = fixNode(nodeB);
         // See http://www.w3.org/TR/DOM-Level-2-Traversal-Range/ranges.html#Level-2-Range-Comparing
         var nodeC, root, childA, childB, n;
         if (nodeA == nodeB) {
@@ -3210,6 +3240,3 @@ rangy.createModule("DomUtil", function(api, module) {
         win = null;
     });
 });
-
-// IE9 bugs workaround
-rangy.config.preferTextRange = true;
