@@ -746,3 +746,7 @@ tr.ui-search-toolbar select {margin: 1px 0px 0px 0px}
  * CUSTOMIZE FROM HERE:
  *
  *****************************************************************************/
+
+ .aloha-browser-search-field, .aloha-browser-search-btn {
+ display: none; 
+ }
