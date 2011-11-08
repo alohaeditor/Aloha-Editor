@@ -1206,31 +1206,9 @@ define( [
 			}
 			table.appendChild( tbody );
 			
-			var range = Aloha.Selection.getRangeObject(),
-			    eNode = range.endContainer,
-			    sNode = range.startContainer,
-			    endContainerLength = ( eNode.nodeType == 3 )
-					? eNode.length
-					: eNode.childNodes.length;
+			var range = Aloha.Selection.getRangeObject();
 			
-			// If the table is not allowed to be nested inside the
-			// startContainer, then it will have to be split in order to insert
-			// the table.
-			// We will therefore check if the selection touches the start
-			// and/or end of their container nodes.
-			// If they do, we will mark their container so that after they are
-			// split we can check whether or not they should be removed
-			if ( !GENTICS.Utils.Dom.allowsNesting( sNode, table ) ) {
-				if ( range.startOffset == 0 ) {
-					jQuery( sNode.nodeType == 3 ? sNode.parentNode : sNode )
-						.addClass( 'aloha-check-for-cleaning' );
-				}
-				
-				if ( range.endOffset == endContainerLength ) {
-					jQuery( eNode.nodeType == 3 ? eNode.parentNode : eNode )
-						.addClass( 'aloha-check-for-cleaning' );
-				}
-			}
+			prepareNodesForTableInsertion( range, table );
 			
 			// insert at current cursor position
 			GENTICS.Utils.Dom.insertIntoDOM(
@@ -1238,6 +1216,8 @@ define( [
 				Aloha.Selection.getRangeObject(),
 				Aloha.activeEditable.obj
 			);
+			
+			cleanupAfterTableInsertion();
 			
 			// if the table is inserted
 			var tableReloadedFromDOM = document.getElementById( tableId );
@@ -1268,6 +1248,81 @@ define( [
 		} else {
 			this.error( 'There is no active Editable where the table can be\
 				inserted!' );
+		}
+	};
+	
+	function prepareNodesForTableInsertion ( range, table ) {
+		var	eNode = range.endContainer,
+			sNode = range.startContainer,
+			endContainerLength = ( eNode.nodeType == 3 )
+				? eNode.length
+				: eNode.childNodes.length;		
+		
+		// Detects a situation where we are about to paste into a selection
+		// that looks like this: <p> [</p>...
+		// The nbsp inside the <p> node was placed there to make the empty
+		// paragraph visible in HTML5 conformant rendering engines, like
+		// WebKit. Without the white space, such browsers would correctly
+		// render an empty <p> as invisible.
+		// Note that we do not "prop up" otherwise empty paragraph nodes
+		// using a <br />, as WebKit does, because IE does display empty
+		// paragraphs which are content-editable and so a <br /> results in
+		// 2 lines instead of 1 being shown inside the paragraph.
+		// If we detect this situation, we remove the white space so that
+		// when we paste a new paragraph into the paragraph, it is not be
+		// split, leaving an empty paragraph on top of the pasted content
+		// 
+		// We use "/^(\s|%A0)$/.test( escape(" instead of
+		// "/^(\s|&nbsp;)$/.test( escape(" because it seems that IE
+		// transforms non-breaking spaces into atomic tokens
+		
+		if ( sNode.nodeType == 3 &&
+				sNode.parentNode.nodeName == 'P' &&
+					sNode.parentNode.childNodes.length == 1 &&
+						/^(\s|%A0)$/.test( escape( sNode.data ) ) ) {
+			sNode.data = '';
+			range.startOffset = 0;
+			
+			// In case ... <p> []</p>
+			if ( eNode == sNode ) {
+				range.endOffset = 0;
+			}
+		}
+		
+		// If the table is not allowed to be nested inside the
+		// startContainer, then it will have to be split in order to insert
+		// the table.
+		// We will therefore check if the selection touches the start
+		// and/or end of their container nodes.
+		// If they do, we will mark their container so that after they are
+		// split we can check whether or not they should be removed
+		if ( !GENTICS.Utils.Dom.allowsNesting( sNode, table ) ) {
+			if ( range.startOffset == 0 ) {
+				jQuery( sNode.nodeType == 3 ? sNode.parentNode : sNode )
+					.addClass( 'aloha-check-for-cleaning' );
+			}
+			
+			if ( range.endOffset == endContainerLength ) {
+				jQuery( eNode.nodeType == 3 ? eNode.parentNode : eNode )
+					.addClass( 'aloha-check-for-cleaning' );
+			}
+		}
+	};
+	
+	function cleanupAfterTableInsertion () {
+		var dirty = jQuery( '.aloha-check-for-cleaning' )
+						.removeClass( '.aloha-check-for-cleaning' );
+		
+		for ( var i = 0; i < dirty.length; i++ ) {
+			if ( jQuery.trim( jQuery( dirty[ i ] ).html() ) == '' ) {
+				jQuery( dirty[ i ] ).remove();
+				
+				// For debugging. To see what we are deleting:
+				// jQuery( dirty[ i ] ).css({
+				//		border  : '3px solid red',
+				//		display : 'block'
+				// });
+			}
 		}
 	};
 
