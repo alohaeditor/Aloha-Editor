@@ -9,9 +9,9 @@
  * Paste Plugin
  * ------------
  * The paste plugin intercepts all browser paste events that target aloha-
- * editables, and redirects the events into a hidden div. Once pasting is done,
- * the content of this hidden paste div will be processed by registered content
- * handlers before being copied into the active editable, at the current range.
+ * editables, and redirects the events into a hidden div. Once pasting is done
+ * into this div, its contents will be processed by registered content handlers
+ * before being copied into the active editable, at the current range.
  */
 
 define(
@@ -19,10 +19,9 @@ define(
 function ( Aloha, Plugin, jQuery, Commands, console ) {
 	'use strict';
 	
-	var GENTICS    = window.GENTICS,
-	    $window    = jQuery( window ),
-	    $document  = jQuery( document ),
-	    pasteRange = null,
+	var GENTICS       = window.GENTICS,
+	    $window       = jQuery( window ),
+	    pasteRange    = null,
 	    pasteEditable = null;
 	
 	// We need to hide the editable div. We'll use clip:rect for chrome and IE,
