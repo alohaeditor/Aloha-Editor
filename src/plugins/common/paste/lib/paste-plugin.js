@@ -5,6 +5,15 @@
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
 
+/**
+ * Paste Plugin
+ * ------------
+ * The paste plugin intercepts all browser paste events that target aloha-
+ * editables, and redirects the events into a hidden div. Once pasting is done,
+ * the content of this hidden paste div will be processed by registered content
+ * handlers before being copied into the active editable, at the current range.
+ */
+
 define(
 [ 'aloha/core', 'aloha/plugin', 'aloha/jquery', 'aloha/command', 'aloha/console' ],
 function ( Aloha, Plugin, jQuery, Commands, console ) {
@@ -23,9 +32,7 @@ function ( Aloha, Plugin, jQuery, Commands, console ) {
 			width: 1px; height: 1px;"></div>' ).contentEditable( true );
 	
 	/**
-	 * This method redirects the paste event into the hidden pasteDiv. After
-	 * the pasting is done, the content in the pasteDiv will be processed by
-	 * the ContentHandlers before being copied into the active editable
+	 * This method redirects the paste event into the hidden pasteDiv
 	 */
 	function redirectPaste () {
 		// store the current range
@@ -53,7 +60,8 @@ function ( Aloha, Plugin, jQuery, Commands, console ) {
 	};
 
 	/**
-	 * Get the pasted content and insert them into the current active editable
+	 * Gets the pasted content and inserts them into the current active
+	 * editable
 	 */
 	function getPastedContent () {
 		var that = this,
@@ -67,11 +75,48 @@ function ( Aloha, Plugin, jQuery, Commands, console ) {
 			pasteEditable.obj.click();
 			
 			pasteDivContents = $pasteDiv.html();
+			
+			// We need to remove an insidious nbsp that IE inserted into our
+			// paste div, otherwise it will result in an empty paragraph being
+			// created right before the pasted content, if the pasted content
+			// is a paragraph
 			if ( jQuery.browser.msie && /^&nbsp;/.test( pasteDivContents ) ) {
 				pasteDivContents = pasteDivContents.substring( 6 );
 			}
+			
 			pasteDivContents = jQuery.trim( pasteDivContents );
-
+			
+			// Detects a situation where we are about to paste into a selection
+			// that looks like this: <p> [</p>...
+			// The nbsp inside the <p> node was placed there to make the empty
+			// paragraph visible in HTML5 conformant rendering engines, like
+			// WebKit. Without the white space, such browsers would correctly
+			// render an empty <p> as invisible.
+			// Note that we do not "prop up" otherwise empty paragraph nodes
+			// using a <br />, as WebKit does, because IE does display empty
+			// paragraphs which are content-editable and so a <br /> results in
+			// 2 lines instead of 1 being shown inside the paragraph.
+			// If we detect this situation, we remove the white space so that
+			// when we paste a new paragraph into the paragraph, it is not be
+			// split, leaving an empty paragraph on top of the pasted content
+			// 
+			// We use "/^(\s|%A0)$/.test( escape(" instead of
+			// "/^(\s|&nbsp;)$/.test( escape(" because it seems that IE
+			// transforms non-breaking spaces into atomic tokens
+			var startContainer = pasteRange.startContainer;
+			if ( startContainer.nodeType == 3 &&
+					startContainer.parentNode.nodeName == 'P' &&
+						startContainer.parentNode.childNodes.length == 1 &&
+							/^(\s|%A0)$/.test( escape( startContainer.data ) ) ) {
+				startContainer.data = '';
+				pasteRange.startOffset = 0;
+				
+				// In case ... <p> []</p>
+				if ( pasteRange.endContainer == startContainer ) {
+					pasteRange.endOffset = 0;
+				}
+			}
+			
 			if ( Aloha.queryCommandSupported( 'insertHTML' ) ) {
 				Aloha.execCommand( 'insertHTML', false, pasteDivContents, pasteRange );
 			} else {
@@ -81,11 +126,9 @@ function ( Aloha, Plugin, jQuery, Commands, console ) {
 			}
 		}
 		
-		// unset temporary values
 		pasteRange = void 0;
 		pasteEditable = void 0;
 		
-		// empty the pasteDiv
 		$pasteDiv.contents().remove();
 	};
 
@@ -114,14 +157,15 @@ function ( Aloha, Plugin, jQuery, Commands, console ) {
 				if ( jQuery.browser.msie ) {
 					// only do the ugly beforepaste hack, if we shall not access the clipboard
 					if ( that.settings.noclipboardaccess ) {
-						editable.obj.bind( 'beforepaste', function( event ) {
+						editable.obj.bind( 'beforepaste', function ( event ) {
 							redirectPaste();
 							event.stopPropagation();
 						} );
 					} else {
-						// this is the version using the execCommand for IE
-						editable.obj.bind( 'paste', function( event ) {
+						// uses the execCommand for IE
+						editable.obj.bind( 'paste', function ( event ) {
 							redirectPaste();
+							
 							var range = document.selection.createRange();
 							range.execCommand( 'paste' );
 							
