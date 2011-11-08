@@ -18,15 +18,15 @@ define( [
 	'table/table-plugin-utils',
 	'css!table/css/table.css'
 ], function( Aloha,
-			 jQuery,
-			 Plugin,
-			 PluginManager,
-			 FloatingMenu,
-			 i18n,
-			 i18nCore,
-			 CreateLayer,
-			 Table,
-			 Utils ) {
+	         jQuery,
+	         Plugin,
+	         PluginManager,
+	         FloatingMenu,
+	         i18n,
+	         i18nCore,
+	         CreateLayer,
+	         Table,
+	         Utils ) {
 
 	var GENTICS = window.GENTICS;
 
@@ -1205,7 +1205,33 @@ define( [
 				tbody.appendChild( tr );
 			}
 			table.appendChild( tbody );
-
+			
+			var range = Aloha.Selection.getRangeObject(),
+			    eNode = range.endContainer,
+			    sNode = range.startContainer,
+			    endContainerLength = ( eNode.nodeType == 3 )
+					? eNode.length
+					: eNode.childNodes.length;
+			
+			// If the table is not allowed to be nested inside the
+			// startContainer, then it will have to be split in order to insert
+			// the table.
+			// We will therefore check if the selection touches the start
+			// and/or end of their container nodes.
+			// If they do, we will mark their container so that after they are
+			// split we can check whether or not they should be removed
+			if ( !GENTICS.Utils.Dom.allowsNesting( sNode, table ) ) {
+				if ( range.startOffset == 0 ) {
+					jQuery( sNode.nodeType == 3 ? sNode.parentNode : sNode )
+						.addClass( 'aloha-check-for-cleaning' );
+				}
+				
+				if ( range.endOffset == endContainerLength ) {
+					jQuery( eNode.nodeType == 3 ? eNode.parentNode : eNode )
+						.addClass( 'aloha-check-for-cleaning' );
+				}
+			}
+			
 			// insert at current cursor position
 			GENTICS.Utils.Dom.insertIntoDOM(
 				jQuery( table ),

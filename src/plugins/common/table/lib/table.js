@@ -278,6 +278,10 @@ define( [
 			}
 		});
 		
+		/*
+		We need to make sure that when the user has selected text inside a
+		table cell we do not delete the entire row, before we activate this
+		
 		this.obj.bind( 'keyup', function ( $event ) {
 			if ( $event.keyCode == 46 ) {
 				if ( that.selection.selectedColumnIdxs.length ) {
@@ -291,7 +295,8 @@ define( [
 				}
 			}
 		} );
-
+		*/
+		
 		// handle click event of the table
 	//	this.obj.bind('click', function(e){
 	//		// stop bubbling the event to the outer divs, a click in the table
@@ -1282,7 +1287,10 @@ define( [
 		// otherwise the floating menu scope will be incorrect when one
 		// CTRL-clicks on the rows or columns.
 		var selection = Aloha.getSelection();
-		if ( null == selection || null == selection.getRangeAt( 0 ) ) {
+		
+		if ( !selection ||
+				!selection._nativeSelection ||
+					selection._nativeSelection._ranges.length == 0 ) {
 			return;
 		}
 
@@ -1312,7 +1320,6 @@ define( [
 	 * @return void
 	 */
 	Table.prototype.selectColumns = function ( columns ) {
-		
 		var columnsToSelect;
 		
 		if ( columns ) {
@@ -1332,7 +1339,7 @@ define( [
 		this.tablePlugin.columnHeader.setPressed( this.selection.isHeader() );
 		
 		var rows = this.getRows();
-
+		
 		// set the first class found as active item in the multisplit button
 		this.tablePlugin.columnMSButton.setActiveItem();
 		for (var k = 0; k < this.tablePlugin.columnConfig.length; k++) {
