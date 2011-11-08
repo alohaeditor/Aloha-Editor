@@ -244,15 +244,14 @@ define( [
 		Aloha.bind( 'aloha-smart-content-changed', function ( event ) {
 			if ( Aloha.activeEditable ) {
 				Aloha.activeEditable.obj.find( 'table' ).each( function () {
-					if ( TablePlugin.indexOfTableInRegistry( this ) > -1 &&
+					if ( TablePlugin.indexOfTableInRegistry( this ) == -1 &&
 							!TablePlugin.isWithinTable( this ) ) {
-						var el = jQuery( this );
-						el.id = GENTICS.Utils.guid();
+						this.id = GENTICS.Utils.guid();
 						
-						var table = new Table( el, TablePlugin );
+						var table = new Table( this, TablePlugin );
 						table.parentEditable = Aloha.activeEditable;
-						table.activate();
 						TablePlugin.TableRegistry.push( table );
+						table.activate();
 					}
 					
 					TablePlugin.checkForNestedTables( Aloha.activeEditable.obj );
@@ -339,14 +338,14 @@ define( [
 	};
 	
 	/**
-	 * @param {jQuery} elem
+	 * @param {DOMElement} table
 	 * @return {Number}
 	 */
-	TablePlugin.indexOfTableInRegistry = function ( elem ) {
+	TablePlugin.indexOfTableInRegistry = function ( table ) {
 		var registry = this.TableRegistry;
 		
 		for ( var i = 0; i < registry.length; i++ ) {
-			if ( registry[ i ].obj.id == elem.id ) {
+			if ( registry[ i ].obj[ 0 ].id == table.id ) {
 				return i;
 			}
 		}

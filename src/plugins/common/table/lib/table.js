@@ -9,8 +9,9 @@ define( [
 	'table/table-plugin-utils'
 
 ], function ( Aloha, jQuery, FloatingMenu, i18n, TableCell, TableSelection, Utils ) {
-	var GENTICS = window.GENTICS;
-
+	var GENTICS   = window.GENTICS,
+	    undefined = void 0;
+	
 	/**
 	 * Constructor of the table object
 	 *
@@ -18,7 +19,7 @@ define( [
 	 *            the dom-representation of the held table
 	 * @return void
 	 */
-	var Table = function( table, tablePlugin ) {
+	var Table = function ( table, tablePlugin ) {
 		// set the table attribut "obj" as a jquery represenation of the dom-table
 		this.obj = jQuery( table );
 		
@@ -33,7 +34,7 @@ define( [
 		this.refresh();
 	};
 
-	jQuery.extend(Table.prototype, {
+	jQuery.extend( Table.prototype, {
 		/**
 		 * Attribute holding the jQuery-table-represenation
 		 */
@@ -105,7 +106,7 @@ define( [
 		 * contains the plugin id used for interaction with the floating menu
 		 */
 		fmPluginId: undefined
-	});
+	} );
 
 	/**
 	 * @hide
@@ -121,19 +122,19 @@ define( [
 		this.cells = [];
 
 		// iterate over table cells and create Cell-objects
-		for (var i = 0; i < rows.length; i++) {
+		for ( var i = 0; i < rows.length; i++ ) {
 			var row = jQuery(rows[i]);
 			var cols = row.children();
-			for (var j = 0; j < cols.length; j++) {
+			for ( var j = 0; j < cols.length; j++ ) {
 				var col = cols[j];
-				var Cell = this.newCell(col);
+				var Cell = this.newCell( col );
 			}
 		}
 	};
 
-	Table.prototype.countVirtualCols = function() {
-		var $firstRow = this.obj.children().children('tr:first-child').children();
-		return $firstRow.length - $firstRow.filter('.' + this.get('classLeftUpperCorner')).length;
+	Table.prototype.countVirtualCols = function () {
+		var $firstRow = this.obj.children().children( 'tr:first-child' ).children();
+		return $firstRow.length - $firstRow.filter( '.' + this.get( 'classLeftUpperCorner' ) ).length;
 	};
 
 	/**
@@ -200,7 +201,9 @@ define( [
 				// TODO: support colspan=0
 				// http://dev.w3.org/html5/markup/td.html#td.attrs.colspan
 				// http://www.w3.org/TR/html401/struct/tables.html#adef-colspan
-				// The value zero ("0") means that the cell spans all columns from the current column to the last column of the column group (COLGROUP) in which the cel
+				// The value zero ("0") means that the cell spans all columns
+				// from the current column to the last column of the column
+				// group (COLGROUP) in which the cel
 			} else if ( !isNaN( colSpan ) ) {
 				// The default value of this attribute is one ("1"), so where this
 				// is the case, we will remove such superfluous colspan attributes
