@@ -1272,7 +1272,7 @@ define( [
 	if (this.tableMSButton.extButton) {
 		// show configured formatting classes
 		for (var i = 0; i < this.tableMSItems.length; i++) {
-		  this.tableMSButton.extButton.showItem(this.tableMSItems[i].name);
+		  this.tableMSButton.showItem(this.tableMSItems[i].name);
 		}
 		this.tableMSButton.setActiveItem();
     }
