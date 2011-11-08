@@ -4,5 +4,4 @@
 * aloha-sales@gentics.com
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
-.aloha-headerids-label { margin: 5px; display:block; }
-.aloha-headerids-input { margin-right: 5px; }
+button.aloha-button-formatless-paste{ background: url(../img/button.png) no-repeat 0px 0px !important; }
