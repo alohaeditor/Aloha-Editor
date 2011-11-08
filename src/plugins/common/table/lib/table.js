@@ -1,3 +1,11 @@
+/**
+ * Place selection outside of table.
+ * Select a column and delete it.
+ * Now try and click another column.
+ * You get and index out of bounds error caused
+ * the fact that the selection is gone
+ */
+
 define( [
 
 	'aloha',
@@ -269,6 +277,20 @@ define( [
 				}
 			}
 		});
+		
+		this.obj.bind( 'keyup', function ( $event ) {
+			if ( $event.keyCode == 46 ) {
+				if ( that.selection.selectedColumnIdxs.length ) {
+					that.deleteColumns();
+					$event.stopPropagation();
+				} else if ( that.selection.selectedRowIdxs.length ) {
+					that.deleteRows();
+					$event.stopPropagation();
+				} else {
+					// Nothing to delete
+				}
+			}
+		} );
 
 		// handle click event of the table
 	//	this.obj.bind('click', function(e){
