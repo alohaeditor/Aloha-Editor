@@ -197,7 +197,7 @@ define( [
 								jQuery( pl.nsSel('framename') ).val( jQuery(that.effective).attr('target') );
 								jQuery( pl.nsSel('framename') ).show();
 							}
-						}else {
+						} else {
 							jQuery( pl.nsSel('radioTarget') ).first().attr('checked', 'checked');
 							jQuery( that.effective ).attr( 'target', jQuery(pl.nsSel('radioTarget')).first().val() );
 						}
@@ -436,12 +436,14 @@ define( [
 				
 				// Handle the enter key. Terminate the link scope and show the final link.
 				if ( event.keyCode == 13 ) {
+										
 					// Update the selection and place the cursor at the end of the link.
 					var	range = Aloha.Selection.getRangeObject();
 					
 					// workaround to keep the found markup otherwise removelink won't work
-					var foundMarkup = that.findLinkMarkup( range );
-					that.hrefField.setTargetObject( foundMarkup, 'href' );
+//					var foundMarkup = that.findLinkMarkup( range );
+//					console.dir(foundMarkup);
+//					that.hrefField.setTargetObject(foundMarkup, 'href');
 					
 					that.ignoreNextSelectionChangedEvent = true;
 					range.startContainer = range.endContainer;
@@ -449,9 +451,10 @@ define( [
 					range.select();
 					//that.ignoreNextSelectionChangedEvent = true;
 					
-					var hrefValue = jQuery( that.hrefField.extButton.el.dom ).attr( 'value' );
-					if ( hrefValue == 'http://' || hrefValue == '' ) {
-						that.removeLink( false );
+					var hrefValue = jQuery(that.hrefField.extButton.el.dom).attr('value');
+					
+					if (hrefValue === "http://" || hrefValue === "") {
+						that.removeLink(false);
 					}
 					
 					setTimeout( function () {
