@@ -3,6 +3,12 @@
 This document is to serve as a "what has been done" in terms of the [Roadmap](http://aloha-editor.org/wiki/Roadmap)
 
 
+### 0.20
+
+- 0.20.1
+       - ribbon-plugin: The ribbon will no longer be visible by default. Instead you can use the show function to make it appear.
+       - image-plugin: The plugin will now use a different method to calculate the width/height when using a fixed aspect ratio.
+
 
 ## Impementing
 
