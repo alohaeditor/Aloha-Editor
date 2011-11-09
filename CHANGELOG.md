@@ -31,6 +31,9 @@ This document is to serve as a "what has been done" in terms of the [Roadmap](ht
 
 ## Implemented
 
+### 0.20
+- fixed floatingmenu to stay visible, if pinned and window is resized.
+
 ### 0.11
 
 - 0.11-dev
