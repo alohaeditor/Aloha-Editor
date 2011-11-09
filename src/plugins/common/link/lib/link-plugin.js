@@ -290,7 +290,7 @@ define( [
 				'iconClass': 'aloha-button aloha-button-a',
 				'size': 'small',
 				'onclick': function () { that.insertLink( false ); },
-				'tooltip': i18n.t('button.addlink.tooltip'),
+				'tooltip': i18n.t( 'button.addlink.tooltip' ),
 				'toggle': false
 			} );
 			FloatingMenu.addButton(
@@ -305,8 +305,9 @@ define( [
 			
 			this.hrefField = new Aloha.ui.AttributeField( {
 				'name': 'href',
-				'width':320,
-				'valueField': 'url'
+				'width': 320,
+				'valueField': 'url',
+				'cls': 'aloha-test'
 			} );
 			this.hrefField.setTemplate( '<span><b>{name}</b><br/>{url}</span>' );
 			this.hrefField.setObjectTypeFilter( this.objectTypeFilter );
@@ -317,7 +318,7 @@ define( [
 				i18n.t( 'floatingmenu.tab.link' ),
 				1
 			);
-
+			
 			this.removeLinkButton = new Aloha.ui.Button( {
 				// TODO use another icon here
 				'name': 'removeLink',
