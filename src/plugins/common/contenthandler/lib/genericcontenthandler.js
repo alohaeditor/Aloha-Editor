@@ -56,6 +56,9 @@ function(Aloha, jQuery, ContentHandlerManager) {
 			// transform formattings
 			this.transformFormattings(content);
 
+			// transform links
+			//this.transformLinks(content);
+
 			return content.html();
 		},
 
@@ -142,6 +145,21 @@ function(Aloha, jQuery, ContentHandlerManager) {
 		},
 
 		/**
+		 * Transform links
+		 * @param content
+		 */
+		transformLinks: function( content ) {
+			// find all links and remove the links without href (will be destination anchors from word table of contents)
+			// aloha is not supporting anchors at the moment -- maybe rewrite anchors in headings to "invisible"
+			// in the test document there are anchors for whole paragraphs --> the whole P appear as link
+			content.find('a').each(function() {
+				if ( typeof jQuery(this).attr('href') === 'undefined' ) {
+					jQuery(this).contents().unwrap();
+				}
+			});
+		},
+
+		/**
 		 * Remove all comments
 		 * @param content
 		 */
@@ -164,6 +182,9 @@ function(Aloha, jQuery, ContentHandlerManager) {
 		 * @param content
 		 */
 		unwrapTags: function( content ) {
+			
+			// @todo check for plain text c&p --> all divs need to be removed!!
+			
 			// safari and chrome cleanup for plain text paste with working linebreaks
 			content.find('div').filter(function(index) {
 				// Only find divs that are contenteditable. keep all other divs untouched.
