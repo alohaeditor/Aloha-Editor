@@ -307,7 +307,7 @@ define( [
 				'name': 'href',
 				'width': 320,
 				'valueField': 'url',
-				'cls': 'aloha-test'
+				'cls': 'aloha-link-href-field'
 			} );
 			this.hrefField.setTemplate( '<span><b>{name}</b><br/>{url}</span>' );
 			this.hrefField.setObjectTypeFilter( this.objectTypeFilter );
