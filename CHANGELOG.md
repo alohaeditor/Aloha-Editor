@@ -33,6 +33,8 @@ This document is to serve as a "what has been done" in terms of the [Roadmap](ht
 
 ### 0.20
 - fixed floatingmenu to stay visible, if pinned and window is resized.
+- added new Method to FloatingMenu: activateTabOfButton(name) will activate the tab containing the button with given name (if tab is visible)
+  Fixed all plugins to not use FloatingMenu.userActivatedTab, but FloatingMenu.activateTabOfButton instead. This will ensure that switching Tabs will also work, if floatingmenu is configured individually.
 
 ### 0.11
 

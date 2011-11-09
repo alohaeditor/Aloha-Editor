@@ -599,8 +599,7 @@ define( [
 					that.tablePlugin.activeTable.selection.selectionType = 'cell';
 					that.tablePlugin.updateFloatingMenuScope();
 
-					FloatingMenu.userActivatedTab = i18n.t('floatingmenu.tab.table');
-					FloatingMenu.doLayout();
+					FloatingMenu.activateTabOfButton('rowheader');
 					
 					// As side-effect of the following call the focus
 					// will be set on the first selected cell. 

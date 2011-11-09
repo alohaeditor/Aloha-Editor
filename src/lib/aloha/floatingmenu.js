@@ -1214,6 +1214,35 @@ function(Aloha, jQuery, Ext, Class, console) {
 			if (this.shadow) {
 				this.shadow.hide();
 			}
+		},
+
+		/**
+		 * Activate the tab containing the button with given name.
+		 * If the button with given name is not found, nothing changes
+		 * @param name name of the button
+		 */
+		activateTabOfButton: function(name) {
+			var tabOfButton = null;
+
+			// find the tab containing the button
+			for (var t = 0; t < this.tabs.length && !tabOfButton; t++) {
+				var tab = this.tabs[t];
+				for (var g = 0; g < tab.groups.length && !tabOfButton; g++) {
+					var group = tab.groups[g];
+					for (var b = 0; b < group.buttons.length && !tabOfButton; b++) {
+						var button = group.buttons[b];
+						if (button.button.name == name) {
+							tabOfButton = tab;
+							break;
+						}
+					}
+				}
+			}
+
+			if (tabOfButton) {
+				this.userActivatedTab = tabOfButton.label;
+				this.doLayout();
+			}
 		}
 	});
 	

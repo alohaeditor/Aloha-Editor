@@ -424,10 +424,8 @@ define( [
 				editable.obj.keydown(function (e) {
 					if ( e.metaKey && e.which == 76 ) {
 						if ( that.findLinkMarkup() ) {
-							FloatingMenu.userActivatedTab = i18n.t('floatingmenu.tab.link');
-
-							// TODO this should not be necessary here!
-							FloatingMenu.doLayout();
+							// open the tab containing the href
+							FloatingMenu.activateTabOfButton('href');
 
 							that.hrefField.focus();
 
@@ -556,7 +554,7 @@ define( [
 			}
 
 			// activate floating menu tab
-			FloatingMenu.userActivatedTab = i18n.t('floatingmenu.tab.link');
+			FloatingMenu.activateTabOfButton('href');
 
 			// current selection or cursor position
 			range = Aloha.Selection.getRangeObject();
