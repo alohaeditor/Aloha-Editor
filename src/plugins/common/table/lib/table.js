@@ -1331,7 +1331,7 @@ define( [
 		// ====== BEGIN UI specific code - should be handled on event aloha-table-selection-changed by UI =======
 		// activate all column formatting button
 		for ( var i = 0; i < this.tablePlugin.columnMSItems.length; i++ ) {
-			this.tablePlugin.columnMSButton.extButton.showItem(this.tablePlugin.columnMSItems[i].name);
+			this.tablePlugin.columnMSButton.showItem(this.tablePlugin.columnMSItems[i].name);
 		}
 		
 		FloatingMenu.setScope(this.tablePlugin.name + '.column');
@@ -1375,7 +1375,7 @@ define( [
 		
 		// activate all row formatting button
 		for (var i = 0; i < this.tablePlugin.rowMSItems.length; i++ ) {
-			this.tablePlugin.rowMSButton.extButton.showItem(this.tablePlugin.rowMSItems[i].name);
+			this.tablePlugin.rowMSButton.showItem(this.tablePlugin.rowMSItems[i].name);
 		}
 		
 		//    this.rowsToSelect.sort(function (a,b) {return a - b;});
