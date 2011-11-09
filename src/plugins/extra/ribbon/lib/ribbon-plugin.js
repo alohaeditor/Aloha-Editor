@@ -84,7 +84,6 @@ define(
 				this.toolbar.render(document.body, 0);
 
 				jQuery('body').css('paddingTop', '30px');
-				this.show();
 			}
 		},
 		
