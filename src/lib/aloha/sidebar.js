@@ -18,11 +18,10 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-// ----------------------------------------------------------------------------
-//
-// See: http://www.aloha-editor.org/wiki/Sidebar for more information
-//
-// ----------------------------------------------------------------------------
+/**
+ * TODO:
+ *		Make the sidebars resizable using drag handles
+ */
 
 define([
 
