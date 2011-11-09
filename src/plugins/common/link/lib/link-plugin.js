@@ -206,6 +206,32 @@ define( [
 
 			var that = this;
 
+			// add the event handler for creation of editables
+			Aloha.bind('aloha-editable-created', function(event, editable) {
+
+				// CTRL+L
+				editable.obj.keydown(function (e) {
+					if ( e.metaKey && e.which == 76 ) {
+						if ( that.findLinkMarkup() ) {
+							// open the tab containing the href
+							FloatingMenu.activateTabOfButton('href');
+
+							that.hrefField.focus();
+
+						} else {
+							that.insertLink();
+						}
+						// prevent from further handling
+						// on a MAC Safari cursor would jump to location bar. Use ESC then META+L
+						return false;
+					}
+				});
+
+				editable.obj.find('a').each(function( i ) {
+					that.addLinkEventHandlers(this);
+				});
+			});
+
 			// add the event handler for selection change
 			Aloha.bind('aloha-selection-changed', function(event, rangeObject) {
 				var config, foundMarkup;
@@ -252,6 +278,47 @@ define( [
 			});
 
 		},
+
+		/**
+		 * Add event handlers to the given link object
+		 * @param link object
+		 */
+		addLinkEventHandlers: function(link) {
+			var that = this;
+
+			// show pointer on mouse over
+			jQuery(link).mouseenter( function(e) {
+				Aloha.Log.debug(that, 'mouse over link.');
+				that.mouseOverLink = link;
+				that.updateMousePointer();
+			});
+
+			// in any case on leave show text cursor
+			jQuery(link).mouseleave( function(e) {
+				Aloha.Log.debug(that, 'mouse left link.');
+				that.mouseOverLink = null;
+				that.updateMousePointer();
+			});
+
+			// follow link on ctrl or meta + click
+			jQuery(link).click( function(e) {
+				if (e.metaKey) {
+
+					// blur current editable. user is wating for the link to load
+					Aloha.activeEditable.blur();
+
+					// hack to guarantee a browser history entry
+					setTimeout( function() {
+						  location.href = e.target;
+					},0);
+
+					// stop propagation
+					e.stopPropagation();
+					return false;
+				}
+			});
+		},
+
 		/**
 		 * Initialize the buttons
 		 */
@@ -419,67 +486,6 @@ define( [
 				}
 			});
 
-			// add to all editables the Link shortcut
-			jQuery.each(Aloha.editables, function(key, editable){
-
-				// CTRL+L
-				editable.obj.keydown(function (e) {
-					if ( e.metaKey && e.which == 76 ) {
-						if ( that.findLinkMarkup() ) {
-							FloatingMenu.userActivatedTab = i18n.t('floatingmenu.tab.link');
-
-							// TODO this should not be necessary here!
-							FloatingMenu.doLayout();
-
-							that.hrefField.focus();
-
-						} else {
-							that.insertLink();
-						}
-						// prevent from further handling
-						// on a MAC Safari cursor would jump to location bar. Use ESC then META+L
-						return false;
-					}
-				});
-
-				editable.obj.find('a').each(function( i ) {
-
-					// show pointer on mouse over
-					jQuery(this).mouseenter( function(e) {
-						Aloha.Log.debug(that, 'mouse over link.');
-						that.mouseOverLink = this;
-						that.updateMousePointer();
-					});
-
-					// in any case on leave show text cursor
-					jQuery(this).mouseleave( function(e) {
-						Aloha.Log.debug(that, 'mouse left link.');
-						that.mouseOverLink = null;
-						that.updateMousePointer();
-					});
-
-
-					// follow link on ctrl or meta + click
-					jQuery(this).click( function(e) {
-						if (e.metaKey) {
-
-							// blur current editable. user is wating for the link to load
-							Aloha.activeEditable.blur();
-
-							// hack to guarantee a browser history entry
-							setTimeout( function() {
-								  location.href = e.target;
-							},0);
-
-							// stop propagation
-							e.stopPropagation();
-							return false;
-						}
-					});
-
-				});
-			});
-
 			jQuery(document)
 				.keydown(function (e) {
 					Aloha.Log.debug(that, 'Meta key down.');
@@ -550,7 +556,7 @@ define( [
 		 * the link text.
 		 */
 		insertLink: function ( extendToWord ) {
-			var range, linkText, newLink;
+			var range, linkText, newLink, that = this;
 
 			// do not insert a link in a link
 			if ( this.findLinkMarkup( range ) ) {
@@ -558,7 +564,7 @@ define( [
 			}
 
 			// activate floating menu tab
-			FloatingMenu.userActivatedTab = i18n.t('floatingmenu.tab.link');
+			FloatingMenu.activateTabOfButton('href');
 
 			// current selection or cursor position
 			range = Aloha.Selection.getRangeObject();
@@ -570,15 +576,21 @@ define( [
 			if ( range.isCollapsed() ) {
 				// insert a link with text here
 				linkText = i18n.t('newlink.defaulttext');
-				newLink = jQuery('<a href="">' + linkText + '</a>');
+				newLink = jQuery('<a href="" class="aloha-new-link">' + linkText + '</a>');
 				GENTICS.Utils.Dom.insertIntoDOM(newLink, range, jQuery(Aloha.activeEditable.obj));
 				range.startContainer = range.endContainer = newLink.contents().get(0);
 				range.startOffset = 0;
 				range.endOffset = linkText.length;
 			} else {
-				newLink = jQuery('<a href=""></a>');
+				newLink = jQuery('<a href="" class="aloha-new-link"></a>');
 				GENTICS.Utils.Dom.addMarkup(range, newLink, false);
 			}
+
+			Aloha.activeEditable.obj.find('a.aloha-new-link').each(function( i ) {
+				that.addLinkEventHandlers(this);
+				jQuery(this).removeClass('aloha-new-link');
+			});
+
 			range.select();
 
 			// focus has to become before prefilling the attribute, otherwise

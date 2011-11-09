@@ -428,7 +428,7 @@ function AlohaImagePlugin ( aQuery, Plugin, FloatingMenu, i18nCore, i18n ) {
 				'tooltip': i18n.t('field.img.src.tooltip'),
 				'size': 'small'
 			});
-			this.imgSrcField = new Aloha.ui.AttributeField();
+			this.imgSrcField = new Aloha.ui.AttributeField({'name' : 'imgsrc'});
 			this.imgSrcField.setObjectTypeFilter( this.objectTypeFilter );
 			
 			// add the title field for images
@@ -806,7 +806,7 @@ function AlohaImagePlugin ( aQuery, Plugin, FloatingMenu, i18nCore, i18n ) {
 							that.imgTitleField.setTargetObject(foundMarkup, 'title');
 						}
 						that.imgSrcField.focus();
-						FloatingMenu.userActivatedTab = i18n.t('floatingmenu.tab.img');
+						FloatingMenu.activateTabOfButton('imgsrc');
 					} else {
 						if (that.settings.ui.meta) {
 							that.imgSrcField.setTargetObject(null);

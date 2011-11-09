@@ -37,6 +37,12 @@ This document is to serve as a "what has been done" in terms of the [Roadmap](ht
 
 ## Implemented
 
+### 0.20
+- fixed floatingmenu to stay visible, if pinned and window is resized.
+- added new Method to FloatingMenu: activateTabOfButton(name) will activate the tab containing the button with given name (if tab is visible)
+  Fixed all plugins to not use FloatingMenu.userActivatedTab, but FloatingMenu.activateTabOfButton instead. This will ensure that switching Tabs will also work, if floatingmenu is configured individually.
+- Fixed link-plugin to bind events to links when editables are created. Also bind events to new created links. This ensures that Hotkey CTRL+L to create a new link works, and links can be followed by clicking on them while holding CTRL
+
 ### 0.11
 
 - 0.11-dev

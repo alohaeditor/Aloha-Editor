@@ -599,8 +599,7 @@ define( [
 					that.tablePlugin.activeTable.selection.selectionType = 'cell';
 					that.tablePlugin.updateFloatingMenuScope();
 
-					FloatingMenu.userActivatedTab = i18n.t('floatingmenu.tab.table');
-					FloatingMenu.doLayout();
+					FloatingMenu.activateTabOfButton('rowheader');
 					
 					// As side-effect of the following call the focus
 					// will be set on the first selected cell. 
@@ -1299,7 +1298,7 @@ define( [
 		// ====== BEGIN UI specific code - should be handled on event aloha-table-selection-changed by UI =======
 		// activate all column formatting button
 		for ( var i = 0; i < this.tablePlugin.columnMSItems.length; i++ ) {
-			this.tablePlugin.columnMSButton.extButton.showItem(this.tablePlugin.columnMSItems[i].name);
+			this.tablePlugin.columnMSButton.showItem(this.tablePlugin.columnMSItems[i].name);
 		}
 		
 		FloatingMenu.setScope(this.tablePlugin.name + '.column');
@@ -1343,7 +1342,7 @@ define( [
 		
 		// activate all row formatting button
 		for (var i = 0; i < this.tablePlugin.rowMSItems.length; i++ ) {
-			this.tablePlugin.rowMSButton.extButton.showItem(this.tablePlugin.rowMSItems[i].name);
+			this.tablePlugin.rowMSButton.showItem(this.tablePlugin.rowMSItems[i].name);
 		}
 		
 		//    this.rowsToSelect.sort(function (a,b) {return a - b;});

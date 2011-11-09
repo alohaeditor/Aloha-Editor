@@ -272,6 +272,11 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 			var formats = [ 'strong', 'em', 'b', 'i', 'cite', 'q', 'code', 'abbr', 'del', 'sub', 'sup'],
 				rangeObject = Aloha.Selection.rangeObject,
 				i;
+			
+			// formats to be removed by the removeFormat button may now be configured using Aloha.settings.plugins.format.removeFormats = ['b', 'strong', ...]
+			if (this.settings.removeFormats) {
+				formats = this.settings.removeFormats;
+			}
 
 			if (rangeObject.isCollapsed()) {
 				return;
