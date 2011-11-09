@@ -46,6 +46,13 @@ function() {
 				ok(plugin.settings.value1 == -1, 'settings');
 				ok(plugin.settings.value3.valueB == 'B', 'nested defaults');
 				ok(plugin.settings.value3.valueA == 'Z', 'nested settings');
+
+				equal(plugin.settings.value3.valueC.length, 1, 'nested array settings length');
+				equal(plugin.settings.value3.valueC[0], 'X', 'nested array settings');
+
+				equal(plugin.settings.value3.valueD.length, 2, 'nested array defaults length');
+				equal(plugin.settings.value3.valueD[0], 'III', 'nested array defaults');
+				equal(plugin.settings.value3.valueD[1], 'IV', 'nested array defaults');
 				start();
 				runNextTest();
 			});

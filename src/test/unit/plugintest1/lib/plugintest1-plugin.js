@@ -15,7 +15,9 @@ function(Aloha ,Plugin, jQuery, i18n ) {
     		 value2: 2,
     		 value3: {
     			 valueA: 'A',
-    			 valueB: 'B'
+    			 valueB: 'B',
+    			 valueC: ['I', 'II'],
+    			 valueD: ['III', 'IV']
     		 }
     	 },
     	 init: function() {

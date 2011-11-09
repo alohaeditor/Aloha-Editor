@@ -117,7 +117,7 @@ function ( jQuery, PluginManager ) {
 		init: function () {
 				
 			// merge defaults and settings and provide all in settings
-			jQuery.extend( Aloha.settings, Aloha.defaults );
+			Aloha.settings = jQuery.extendObjects( true, {}, Aloha.defaults, Aloha.settings );
 
 			// initialize rangy. This is probably necessary here,
 			// because due to the current loading mechanism, rangy

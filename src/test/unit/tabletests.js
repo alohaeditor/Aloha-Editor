@@ -6,7 +6,6 @@
 
 /**
  * TODOs:
- * - Prevention of nested tables is not implemented.
  * - selectRow/selectColumn should take into account the helper row/column.
  *   ie: selectRow(0) and selectColumn(0), should be zero indexed
  */
@@ -30,6 +29,17 @@ function( TestUtils ) {
 		return cells;
 	};
 	
+	//
+	//	  NB:
+	//	-----------------------------------------------------------------------
+	//	  selectRow and selectColumns has an issue where index 0 selects the
+	//	  helper row/column instead of the first editable row/column.
+	//	  All following tests will work around this fault by using 1-indexing
+	//	  with selectcolumns rather than 0 based indexing.
+	//	  Where this is done, we note that we have "corrected" the index.
+	//	-----------------------------------------------------------------------
+	//
+	
 	var tests = [
 		
 		{ module : 'Activation/deactivation' },
@@ -48,13 +58,13 @@ function( TestUtils ) {
 		
 		{
 			exclude   : false,
-			desc      : 'Select column by index',
+			desc      : 'Select column by index (corrected to 1-index)',
 			start     : '<table><tbody><tr><td>foo</td></tr></tbody></table>',
 			expected  : '<table><tbody><tr><td>bar</td></tr></tbody></table>',
 			operation : function ( table ) {
-				table.selection.selectColumns( [ 0 ] );
+				table.selection.selectColumns( [ 1 ] );
 				table.obj.find( '.aloha-cell-selected' )
-					 .html( 'foo was selected' )
+					 .html( 'bar' )
 					 .removeAttr( 'class' )
 					 .removeAttr( 'style' );
 			}
@@ -62,28 +72,17 @@ function( TestUtils ) {
 		
 		{
 			exclude   : false,
-			desc      : 'Select row by index',
+			desc      : 'Select row by index (corrected to 1-index)',
 			start     : '<table><tbody><tr><td>foo</td></tr></tbody></table>',
 			expected  : '<table><tbody><tr><td>bar</td></tr></tbody></table>',
 			operation : function ( table ) {
-				table.selection.selectRows( [ 0 ] );
+				table.selection.selectRows( [ 1 ] );
 				table.obj.find( '.aloha-cell-selected' )
-					 .html( 'foo was selected' )
+					 .html( 'bar' )
 					 .removeAttr( 'class' )
 					 .removeAttr( 'style' );
 			}
 		},
-		
-		//
-		//	  NB:
-		//	-------------------------------------------------------------------
-		//	  selectRow and selectColumns has a bug where index 0 selects the
-		//	  helper row/column instead of the first editable row/column.
-		//	  All following tests will work around this fault by using
-		//	  1-indexing with selectcolumns rather than 0 based indexing.
-		//	  Where this id done, we note that we have "corrected" the index.
-		//	-------------------------------------------------------------------
-		//
 		
 		{ module : 'Inserting/removing columns' },
 		///////////////////////////////////////////////////////////////////////
@@ -178,7 +177,7 @@ function( TestUtils ) {
 							<tr><td>foo2</td><td>bar2</td></tr>\
 						 </tbody></table>',
 			expected  : '<table><tbody>\
-							<tr><td>&nbsp;</td><td rowspan="1" colspan="2">foo1 bar1</td></tr>\
+							<tr><td rowspan="1" colspan="2">foo1 bar1</td><td>&nbsp;</td></tr>\
 							<tr><td>foo2</td><td>&nbsp;</td><td>bar2</td></tr>\
 						 </tbody></table>',
 			operation : function ( table ) {
@@ -423,7 +422,6 @@ function( TestUtils ) {
 			}
 		},
 		
-		// !!! throws: "Uncaught TypeError: Cannot read property 'cell' of undefined"
 		{
 			exclude   : false,
 			desc      : 'Prevent attempt to merge an alreay merged cell',
@@ -444,7 +442,6 @@ function( TestUtils ) {
 		{ module : 'Splitting merged cells' },
 		///////////////////////////////////////////////////////////////////////
 		
-		// !!! throws "Uncaught TypeError: Cannot read property 'spannedY' of undefined"
 		{
 			exclude   : false,
 			desc      : 'Split a table with a single merged cell',
@@ -559,6 +556,7 @@ function( TestUtils ) {
 		},
 		
 		{ module : 'Nested tables' },
+		///////////////////////////////////////////////////////////////////////
 		
 		{
 			exclude   : false,
@@ -576,6 +574,95 @@ function( TestUtils ) {
 									<tr><td>foo</td></tr>\
 								</tbody></table>\
 							</td></tr>\
+						 </tbody></table>',
+			operation : function () {}
+		},
+		
+		{ module : 'Aligning columns of unbalanced table test' },
+		///////////////////////////////////////////////////////////////////////
+		
+		{
+			exclude   : false,
+			desc      : 'With rowspan',
+			start     : '<table><tbody>\
+							<tr><td rowspan="2"></td><td></td></tr>\
+							<tr><td></td></tr>\
+						 </tbody></table>',
+			expected  : '<table><tbody>\
+							<tr><td rowspan="2"></td><td></td></tr>\
+							<tr><td></td></tr>\
+						 </tbody></table>',
+			operation : function () {}
+		},
+		
+		{
+			exclude   : false,
+			desc      : 'With rowspan',
+			start     : '<table><tbody>\
+							<tr><td rowspan="2"></td><td></td><td></td></tr>\
+							<tr><td></td><td></td></tr>\
+						 </tbody></table>',
+			expected  : '<table><tbody>\
+							<tr><td rowspan="2"></td><td></td><td></td></tr>\
+							<tr><td></td><td></td></tr>\
+						 </tbody></table>',
+			operation : function () {}
+		},
+		
+		{
+			exclude   : false,
+			desc      : 'With no rowspan and colspan',
+			start     : '<table><tbody>\
+							<tr><td></td><td></td></tr>\
+							<tr><td></td></tr>\
+						 </tbody></table>',
+			expected  : '<table><tbody>\
+							<tr><td></td><td></td></tr>\
+							<tr><td></td><td></td></tr>\
+						 </tbody></table>',
+			operation : function () {}
+		},
+		
+		{
+			exclude   : false,
+			desc      : 'With colspan',
+			start     : '<table><tbody>\
+							<tr><td colspan="2"></td></tr>\
+							<tr><td></td></tr>\
+						 </tbody></table>',
+			expected  : '<table><tbody>\
+							<tr><td colspan="2"></td></tr>\
+							<tr><td></td><td></td></tr>\
+						 </tbody></table>',
+			operation : function () {}
+		},
+		
+		{
+			exclude   : false,
+			desc      : 'With colspan',
+			start     : '<table><tbody>\
+							<tr><td colspan="2"></td></tr>\
+							<tr><td></td></tr>\
+							<tr><td></td><td></td></tr>\
+						 </tbody></table>',
+			expected  : '<table><tbody>\
+							<tr><td colspan="2"></td></tr>\
+							<tr><td></td><td></td></tr>\
+							<tr><td></td><td></td></tr>\
+						 </tbody></table>',
+			operation : function () {}
+		},
+		
+		{
+			exclude   : false,
+			desc      : 'Removing redundant colspan="1" attribute',
+			start     : '<table><tbody>\
+							<tr><td colspan="1"></td></tr>\
+							<tr><td></td></tr>\
+						 </tbody></table>',
+			expected  : '<table><tbody>\
+							<tr><td></td></tr>\
+							<tr><td></td></tr>\
 						 </tbody></table>',
 			operation : function () {}
 		},

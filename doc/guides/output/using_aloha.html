@@ -153,7 +153,15 @@ Aloha.jQuery('.content').aloha();
 </pre></div><h3 id="css-loading">4 <span class="caps">CSS</span> loading</h3>
 <div class="warning"><p>Not yet done</p></div>
 <h3 id="localization">5 Localization</h3>
-<div class="warning"><p>Not yet done</p></div>
+<p>Use the &#8220;localization&#8221; setting to set the current language of Aloha:</p>
+<div class="code_container">
+<pre class="brush: xml; gutter: false; toolbar: false">
+
+&lt;script type=&quot;text/javascript&quot;&gt;
+// switch Aloha Editor's localization to french
+Aloha.settings.locale = 'fr';
+&lt;/script&gt;
+</pre></div><p>As Aloha Editor uses RequireJS to handle it&#8217;s localization needs a powerful fallback mechanism is in place. See http://requirejs.org/docs/api.html#i18n for additional details.</p>
 <h3 id="using-plugins">6 Using plugins</h3>
 <h4 id="laoding-plugins">6.1 Laoding plugins</h4>
 <p>Loading the new plugins is easy, just add it to the list of plugins in the main script tag loading Aloha:</p>
