@@ -117,11 +117,7 @@ function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 		        Aloha.editables[i].obj.keydown(function (e) {
 		    		if ( e.metaKey && e.which == 71 ) {
 				        if ( me.findAbbrMarkup() ) {
-
-				        	FloatingMenu.userActivatedTab = i18n.t('floatingmenu.tab.abbr');
-
-				            // TODO this should not be necessary here!
-				            FloatingMenu.doLayout();
+				        	FloatingMenu.activateTabOfButton('abbrText');
 
 				            me.abbrField.focus();
 
@@ -244,7 +240,7 @@ function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 		    }
 
 		    // activate floating menu tab
-		    FloatingMenu.userActivatedTab = i18n.t('floatingmenu.tab.abbr');
+		    FloatingMenu.activateTabOfButton('abbrText');
 
 		    // if selection is collapsed then extend to the word.
 		    if (range.isCollapsed() && extendToWord != false) {
