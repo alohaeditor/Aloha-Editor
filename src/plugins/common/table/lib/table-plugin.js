@@ -29,7 +29,7 @@ define( [
 	         Utils ) {
 
 	var GENTICS = window.GENTICS;
-
+	
 	/**
 	 * Register the TablePlugin as Aloha.Plugin
 	 */
@@ -407,7 +407,7 @@ define( [
 	 * @return {Boolean} true if elem is nested within a table
 	 */
 	TablePlugin.isWithinTable = function ( elem ) {
-		return  ( jQuery( elem )
+		return ( jQuery( elem )
 					.parents( '.aloha-editable table' )
 						.length > 0 );
 	};
@@ -423,7 +423,7 @@ define( [
 		} else {
 			// hide warning
 		}
-	}
+	};
 	
 	/**
 	 * Adds default row buttons, and custom formatting buttons to floating menu
@@ -690,75 +690,75 @@ define( [
 
     // add column left btn
     FloatingMenu.addButton(
-			this.name + '.column',
-			new Aloha.ui.Button({
-				'name' : 'addcolumnleft',
-				'iconClass' : 'aloha-button aloha-button-addColumnLeft',
-				'size' : 'small',
-				'tooltip' : i18n.t('button.addcolleft.tooltip'),
-				'onclick' : function () {
-					if (that.activeTable) {
-						that.activeTable.addColumnsLeft();
-					}
+		this.name + '.column',
+		new Aloha.ui.Button({
+			'name' : 'addcolumnleft',
+			'iconClass' : 'aloha-button aloha-button-addColumnLeft',
+			'size' : 'small',
+			'tooltip' : i18n.t('button.addcolleft.tooltip'),
+			'onclick' : function () {
+				if (that.activeTable) {
+					that.activeTable.addColumnsLeft();
 				}
-			}),
-			i18n.t('floatingmenu.tab.table'),
-			1
-		);
+			}
+		}),
+		i18n.t('floatingmenu.tab.table'),
+		1
+	);
 
     // add column right btn
-		FloatingMenu.addButton(
-			this.name + '.column',
-			new Aloha.ui.Button({
-				'name' : 'addcolumnright',
-				'iconClass' : 'aloha-button aloha-button-addColumnRight',
-				'size' : 'small',
-				'tooltip' : i18n.t('button.addcolright.tooltip'),
-				'onclick' : function () {
-					if (that.activeTable) {
-						that.activeTable.addColumnsRight();
-					}
+	FloatingMenu.addButton(
+		this.name + '.column',
+		new Aloha.ui.Button({
+			'name' : 'addcolumnright',
+			'iconClass' : 'aloha-button aloha-button-addColumnRight',
+			'size' : 'small',
+			'tooltip' : i18n.t('button.addcolright.tooltip'),
+			'onclick' : function () {
+				if (that.activeTable) {
+					that.activeTable.addColumnsRight();
 				}
-			}),
-			i18n.t('floatingmenu.tab.table'),
-			1
-		);
+			}
+		}),
+		i18n.t('floatingmenu.tab.table'),
+		1
+	);
 
     // delete columns btn
     FloatingMenu.addButton(
-			this.name + '.column',
-			new Aloha.ui.Button({
-				'name' : 'deletecolumns',
-				'iconClass' : 'aloha-button aloha-button-deleteColumns',
-				'size' : 'small',
-				'tooltip' : i18n.t('button.delcols.tooltip'),
-				'onclick' : function () {
-					if (that.activeTable) {
-						var aTable = that.activeTable;
-						Aloha.showMessage(new Aloha.Message({
-							title : i18n.t('Table'),
-							text : i18n.t('deletecolumns.confirm'),
-							type : Aloha.Message.Type.CONFIRM,
-							callback : function (sel) {
-								if (sel == 'yes') {
-									aTable.deleteColumns();
-								}
+		this.name + '.column',
+		new Aloha.ui.Button({
+			'name' : 'deletecolumns',
+			'iconClass' : 'aloha-button aloha-button-deleteColumns',
+			'size' : 'small',
+			'tooltip' : i18n.t('button.delcols.tooltip'),
+			'onclick' : function () {
+				if (that.activeTable) {
+					var aTable = that.activeTable;
+					Aloha.showMessage(new Aloha.Message({
+						title : i18n.t('Table'),
+						text : i18n.t('deletecolumns.confirm'),
+						type : Aloha.Message.Type.CONFIRM,
+						callback : function (sel) {
+							if (sel == 'yes') {
+								aTable.deleteColumns();
 							}
-						}));
-					}
+						}
+					}));
 				}
-			}),
-			i18n.t('floatingmenu.tab.table'),
-			1
-		);
+			}
+		}),
+		i18n.t('floatingmenu.tab.table'),
+		1
+	);
 
     this.columnHeader = new Aloha.ui.Button({
-    	name : 'columnheader',
+    	name      : 'columnheader',
         iconClass : 'aloha-button aloha-button-col-header',
-        size	  : 'small',
-        tooltip	  : i18n.t('button.columnheader.tooltip'),
-        toggle	  : true,
-        onclick	  : function () {
+        size      : 'small',
+        tooltip   : i18n.t('button.columnheader.tooltip'),
+        toggle    : true,
+        onclick   : function () {
 			// table header
 			if (that.activeTable) {
     			var 
@@ -769,9 +769,9 @@ define( [
 			    for (var j = 0; j < that.activeTable.selection.selectedCells.length; j++) {
 			    	cell = that.activeTable.selection.selectedCells[j];
 			        if ( isHeader ) {
-			        	cell = Aloha.Markup.transformDomObject( cell, 'td').removeAttr( 'scope' ).get(0);
+			        	cell = Aloha.Markup.transformDomObject( cell, 'td' ).removeAttr( 'scope' ).get(0);
 			        } else { 
-			        	cell = Aloha.Markup.transformDomObject( cell, 'th').attr('scope', 'row').get(0);
+			        	cell = Aloha.Markup.transformDomObject( cell, 'th' ).attr( 'scope', 'row' ).get(0);
 			        }
 			      
 			        jQuery( that.activeTable.selection.selectedCells[j] ).bind( 'mousedown', function ( jqEvent ) {
@@ -799,7 +799,7 @@ define( [
       1
     );
     
-    	// Add merge/split cells buttons
+    // Add merge/split cells buttons
     FloatingMenu.addButton(
       this.name + '.column',
       new Aloha.ui.Button({
@@ -896,7 +896,7 @@ define( [
     
     this.columnMSButton = new Aloha.ui.MultiSplitButton({
       items : this.columnMSItems,
-      name : 'tableColumnActions'
+      name  : 'tableColumnActions'
     });
     
     if (this.columnMSItems.length > 0) {
@@ -941,19 +941,13 @@ define( [
 
     // now the specific table buttons
 
-    //---------------------------------------------------------------
     // generate formatting buttons for columns
-    //---------------------------------------------------------------
     this.initColumnBtns();
 
-    //---------------------------------------------------------------
     // generate formatting buttons for rows
-    //---------------------------------------------------------------
     this.initRowsBtns();
 
-    //---------------------------------------------------------------
     // generate formatting buttons for tables
-    //---------------------------------------------------------------
     this.tableMSItems = [];
     
     var tableConfig = this.tableConfig;
@@ -1120,7 +1114,6 @@ define( [
 	 */
 	TablePlugin.makeCaptionEditable = function(caption, captionText) {
 		var that = this;
-
 		var cSpan = caption.children('div').eq(0);
 		if (cSpan.length == 0) {
 			// generate a new div
@@ -1145,7 +1138,6 @@ define( [
 		// focus on click
 		cSpan.bind('mousedown', function(jqEvent) {
 			cSpan.focus();
-
 			// stop bubble, otherwise the mousedown of the table is called ...
 			jqEvent.preventDefault();
 			jqEvent.stopPropagation();
@@ -1206,20 +1198,18 @@ define( [
 			}
 			table.appendChild( tbody );
 			
-			var range = Aloha.Selection.getRangeObject();
+			prepareRangeContainersForInsertion(
+				Aloha.Selection.getRangeObject(), table );
 			
-			prepareNodesForTableInsertion( range, table );
-			
-			// insert at current cursor position
+			// insert the table at the current selection
 			GENTICS.Utils.Dom.insertIntoDOM(
 				jQuery( table ),
 				Aloha.Selection.getRangeObject(),
 				Aloha.activeEditable.obj
 			);
 			
-			cleanupAfterTableInsertion();
+			cleanupAfterInsertion();
 			
-			// if the table is inserted
 			var tableReloadedFromDOM = document.getElementById( tableId );
 
 			if ( !TablePlugin.isWithinTable( tableReloadedFromDOM ) ) {
@@ -1251,81 +1241,6 @@ define( [
 		}
 	};
 	
-	function prepareNodesForTableInsertion ( range, table ) {
-		var	eNode = range.endContainer,
-			sNode = range.startContainer,
-			endContainerLength = ( eNode.nodeType == 3 )
-				? eNode.length
-				: eNode.childNodes.length;		
-		
-		// Detects a situation where we are about to paste into a selection
-		// that looks like this: <p> [</p>...
-		// The nbsp inside the <p> node was placed there to make the empty
-		// paragraph visible in HTML5 conformant rendering engines, like
-		// WebKit. Without the white space, such browsers would correctly
-		// render an empty <p> as invisible.
-		// Note that we do not "prop up" otherwise empty paragraph nodes
-		// using a <br />, as WebKit does, because IE does display empty
-		// paragraphs which are content-editable and so a <br /> results in
-		// 2 lines instead of 1 being shown inside the paragraph.
-		// If we detect this situation, we remove the white space so that
-		// when we paste a new paragraph into the paragraph, it is not be
-		// split, leaving an empty paragraph on top of the pasted content
-		// 
-		// We use "/^(\s|%A0)$/.test( escape(" instead of
-		// "/^(\s|&nbsp;)$/.test( escape(" because it seems that IE
-		// transforms non-breaking spaces into atomic tokens
-		
-		if ( sNode.nodeType == 3 &&
-				sNode.parentNode.nodeName == 'P' &&
-					sNode.parentNode.childNodes.length == 1 &&
-						/^(\s|%A0)$/.test( escape( sNode.data ) ) ) {
-			sNode.data = '';
-			range.startOffset = 0;
-			
-			// In case ... <p> []</p>
-			if ( eNode == sNode ) {
-				range.endOffset = 0;
-			}
-		}
-		
-		// If the table is not allowed to be nested inside the
-		// startContainer, then it will have to be split in order to insert
-		// the table.
-		// We will therefore check if the selection touches the start
-		// and/or end of their container nodes.
-		// If they do, we will mark their container so that after they are
-		// split we can check whether or not they should be removed
-		if ( !GENTICS.Utils.Dom.allowsNesting( sNode, table ) ) {
-			if ( range.startOffset == 0 ) {
-				jQuery( sNode.nodeType == 3 ? sNode.parentNode : sNode )
-					.addClass( 'aloha-check-for-cleaning' );
-			}
-			
-			if ( range.endOffset == endContainerLength ) {
-				jQuery( eNode.nodeType == 3 ? eNode.parentNode : eNode )
-					.addClass( 'aloha-check-for-cleaning' );
-			}
-		}
-	};
-	
-	function cleanupAfterTableInsertion () {
-		var dirty = jQuery( '.aloha-check-for-cleaning' )
-						.removeClass( '.aloha-check-for-cleaning' );
-		
-		for ( var i = 0; i < dirty.length; i++ ) {
-			if ( jQuery.trim( jQuery( dirty[ i ] ).html() ) == '' ) {
-				jQuery( dirty[ i ] ).remove();
-				
-				// For debugging. To see what we are deleting:
-				// jQuery( dirty[ i ] ).css({
-				//		border  : '3px solid red',
-				//		display : 'block'
-				// });
-			}
-		}
-	};
-
 	TablePlugin.setFocusedTable = function(focusTable) {
 		var that = this;
 
@@ -1482,8 +1397,99 @@ define( [
 			FloatingMenu.setScope(TablePlugin.name + '.' + TablePlugin.activeTable.selection.selectionType);
 		}
 	};
-
+	
 	PluginManager.register(TablePlugin);
+	
+	/**
+	 * Detects a situation where we are about to insert content into a
+	 * selection that looks like this: <p> [</p>...
+	 * We will assume that the nbsp inside the <p> node was placed there to
+	 * "prop-up" the empty paragraph--that is--to make the empty paragraph
+	 * visible in HTML5 conformant rendering engines, like WebKit. Without the
+	 * white space, such browsers would correctly render an empty <p> as
+	 * invisible.
+	 *
+	 * If we detect this situation, we remove the white space so that when we
+	 * paste new content into the paragraph, it is not be split and leaving an
+	 * empty paragraph on top of the pasted content.
+	 *
+	 * Note that we do not use <br />'s to prop up the paragraphs, as WebKit
+	 * does, because IE, will break from the HTML5 specification and will
+	 * display empty paragraphs if they are content-editable. So a <br />
+	 * inside an empty content-editable paragraph will result in 2 lines to be
+	 * shown instead of 1 in IE.
+	 * 
+	 * @param {Object} range
+	 * @param {DOMElement} table
+	 */
+	function prepareRangeContainersForInsertion ( range, table ) {
+		var	eNode = range.endContainer,
+			sNode = range.startContainer,
+			eNodeLength = ( eNode.nodeType == 3 )
+				? eNode.length
+				: eNode.childNodes.length;		
+		
+		
+		if ( sNode.nodeType == 3 &&
+				sNode.parentNode.tagName == 'P' &&
+					sNode.parentNode.childNodes.length == 1 &&
+						/^(\s|%A0)$/.test( escape( sNode.data ) ) ) {
+			sNode.data = '';
+			range.startOffset = 0;
+			
+			// In case ... <p> []</p>
+			if ( eNode == sNode ) {
+				range.endOffset = 0;
+			}
+		}
+		
+		// If the table is not allowed to be nested inside the startContainer,
+		// then it will have to be split in order to insert the table.
+		// We will therefore check if the selection touches the start and/or
+		// end of their container nodes.
+		// If they do, we will mark their container so that after they are
+		// split we can check whether or not they should be removed
+		if ( !GENTICS.Utils.Dom.allowsNesting(
+				sNode.nodeType == 3 ? sNode.parentNode : sNode, table ) ) {
+			
+			if ( range.startOffset == 0 ) {
+				jQuery( sNode.nodeType == 3 ? sNode.parentNode : sNode )
+					.addClass( 'aloha-table-cleanme' );
+			}
+			
+			if ( range.endOffset == eNodeLength ) {
+				jQuery( eNode.nodeType == 3 ? eNode.parentNode : eNode )
+					.addClass( 'aloha-table-cleanme' );
+			}
+		}
+	};
+	
+	/**
+	 * Looks for elements marked with "aloha-table-cleanme", and removes them
+	 * if they are absolutely empty.
+	 * Note that this will leave paragraphs which contain empty nested elements
+	 * even though they are also invisible.
+	 * We can consider removing these as well at a later stage, if needed.
+	 */
+	function cleanupAfterInsertion () {
+		var dirty = jQuery( '.aloha-table-cleanme' ).removeClass(
+						'aloha-table-cleanme' );
+		
+		for ( var i = 0; i < dirty.length; i++ ) {
+			if ( jQuery.trim( jQuery( dirty[ i ] ).html() ) == '' &&
+					!GENTICS.Utils.Dom.isEditingHost( dirty[ i ] ) ) {
+				jQuery( dirty[ i ] ).remove();
+				
+				/*
+				// For debugging: to see what we are deleting
+				jQuery( dirty[ i ] ).css({
+					border: '3px solid red',
+					display: 'block'
+				});
+				*/
+			}
+		}
+	};
 	
 	return TablePlugin;
 });
