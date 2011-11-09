@@ -15,23 +15,24 @@
  */
 
 define(
-[ 'aloha/core', 'aloha/plugin', 'aloha/jquery', 'aloha/command', 'aloha/console' ],
+[ 'aloha/core', 'aloha/plugin', 'aloha/jquery', 'aloha/command',
+  'aloha/console' ],
 function ( Aloha, Plugin, jQuery, Commands, console ) {
 	'use strict';
 	
-	var GENTICS       = window.GENTICS,
-	    $window       = jQuery( window ),
-	    pasteRange    = null,
+	var GENTICS = window.GENTICS,
+	    $window = jQuery( window ),
+	    pasteRange = null,
 	    pasteEditable = null;
 	
 	// We need to hide the editable div. We'll use clip:rect for chrome and IE,
 	// and width/height for FF
-	var $pasteDiv = jQuery( '<div id="pasteContainer"\
-			style="position:absolute; clip:rect(0px, 0px, 0px, 0px);\
-			width: 1px; height: 1px;"></div>' ).contentEditable( true );
+	var $pasteDiv = jQuery( '<div id="pasteContainer" ' +
+			'style="position:absolute; clip:rect(0px, 0px, 0px, 0px); ' +
+			'width: 1px; height: 1px;"></div>' ).contentEditable( true );
 	
 	/**
-	 * This method redirects the paste event into the hidden pasteDiv
+	 * Redirects the paste event into the hidden pasteDiv
 	 */
 	function redirectPaste () {
 		// store the current range
@@ -40,8 +41,8 @@ function ( Aloha, Plugin, jQuery, Commands, console ) {
 		
 		// store the current scroll position
 		$pasteDiv.css( {
-			top  : $window.scrollTop(),
-			left : $window.scrollLeft() - 200
+			top: $window.scrollTop(),
+			left: $window.scrollLeft() - 200
 		} );
 		
 		// empty the pasteDiv
@@ -52,7 +53,6 @@ function ( Aloha, Plugin, jQuery, Commands, console ) {
 			pasteEditable.obj.blur();
 		}
 		
-		// set the cursor into the paste div
 		GENTICS.Utils.Dom.setCursorInto( $pasteDiv.get( 0 ) );
 		
 		$pasteDiv.focus();
@@ -79,7 +79,8 @@ function ( Aloha, Plugin, jQuery, Commands, console ) {
 			// paste div, otherwise it will result in an empty paragraph being
 			// created right before the pasted content, if the pasted content
 			// is a paragraph
-			if ( jQuery.browser.msie && /^&nbsp;/.test( pasteDivContents ) ) {
+			if ( jQuery.browser.msie &&
+					/^&nbsp;/.test( pasteDivContents ) ) {
 				pasteDivContents = pasteDivContents.substring( 6 );
 			}
 			
@@ -117,11 +118,11 @@ function ( Aloha, Plugin, jQuery, Commands, console ) {
 			}
 			
 			if ( Aloha.queryCommandSupported( 'insertHTML' ) ) {
-				Aloha.execCommand( 'insertHTML', false, pasteDivContents, pasteRange );
+				Aloha.execCommand( 'insertHTML', false, pasteDivContents,
+					pasteRange );
 			} else {
-				console.error( 'Common.Paste',
-					'Command "insertHTML" not available.\
-					Enable the plugin "common/commands".' );
+				console.error( 'Common.Paste', 'Command "insertHTML" not ' +
+					'available. Enable the plugin "common/commands".' );
 			}
 		}
 		
@@ -131,30 +132,26 @@ function ( Aloha, Plugin, jQuery, Commands, console ) {
 		$pasteDiv.contents().remove();
 	};
 
-
 	// Public Methods
 	return Plugin.create( 'paste', {
 		
 		settings: {},
-//		dependencies : [ 'contenthandler' ],
 		
-		/**
-		 * Initialize the PastePlugin
-		 */
 		init: function () {
 			var that = this;
 			
-			// append the div into which we past to the document
 			jQuery( 'body' ).append( $pasteDiv );
 			
-			// subscribe to the event editableCreated to redirect paste events into our pasteDiv
+			// subscribe to the event editableCreated to redirect paste events
+			// into our hidden pasteDiv
 			// TODO: move to paste command
 			// http://support.mozilla.com/en-US/kb/Granting%20JavaScript%20access%20to%20the%20clipboard
 			// https://code.google.com/p/zeroclipboard/
 			Aloha.bind( 'aloha-editable-created', function ( event, editable ) {
 				// browser-dependent events
 				if ( jQuery.browser.msie ) {
-					// only do the ugly beforepaste hack, if we shall not access the clipboard
+					// We will only us the ugly beforepaste hack if we shall
+					// not access the clipboard
 					if ( that.settings.noclipboardaccess ) {
 						editable.obj.bind( 'beforepaste', function ( event ) {
 							redirectPaste();
@@ -169,9 +166,8 @@ function ( Aloha, Plugin, jQuery, Commands, console ) {
 							range.execCommand( 'paste' );
 							
 							getPastedContent();
-							// This feels rather hackish. We manually unset
-							// the metaKey property because the
-							// smartContentChange method will not process
+							// We manually unset the metaKey property because
+							// the smartContentChange method will not process
 							// this event if the metaKey property is set
 							event.metaKey = void 0;
 							
@@ -184,8 +180,9 @@ function ( Aloha, Plugin, jQuery, Commands, console ) {
 				} else {
 					editable.obj.bind( 'paste', function ( event ) {
 						redirectPaste();
-						// We need to accomodate a small amount of execution
-						// window until the pasted content is actually inserted
+						// We need to accomodate a small amount execution
+						// window to ensure that pasted content has actually
+						// been inserted
 						window.setTimeout( function () {
 							getPastedContent();
 							Aloha.activeEditable.smartContentChange( event );
@@ -214,9 +211,9 @@ function ( Aloha, Plugin, jQuery, Commands, console ) {
 		 * @param pasteHandler paste handler to be registered
 		 */
 		register: function ( pasteHandler ) {
-			console.deprecated( 'Plugins.Paste',
-				'register() for pasteHandler is deprecated.\
-				Use the ContentHandler Plugin instead.' );
+			console.deprecated( 'Plugins.Paste', 'register() for ' +
+				'pasteHandler is deprecated. Use the ContentHandler Plugin ' +
+				'instead.' );
 		}
 		
 	} );
