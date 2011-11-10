@@ -2,7 +2,7 @@
 
 This document is to serve as a "what has been done" in terms of the [Roadmap](http://aloha-editor.org/wiki/Roadmap)
 
-## 0.20.1
+## 0.20-BETA - 2011/11
 - core: Add option for "cls" property to be added to ui-attributefields. cls will be an optional extra CSS class that will be added to this component's Element. This can be useful for adding customized styles to the component or any of its children using standard CSS rules. (http://docs.sencha.com/ext-js/4-0/#!/api/Ext.AbstractComponent-cfg-cls)
 - ribbon-plugin: The ribbon will no longer be visible by default. Instead you can use the show function to make it appear.
 - image-plugin: The plugin will now use a different method to calculate the width/height when using a fixed aspect ratio.
@@ -14,8 +14,6 @@ This document is to serve as a "what has been done" in terms of the [Roadmap](ht
 - listenforcer-plugin: fixed a bug which would cause an error when activating or deactivating an editable
 - format-plugin: tags removed by the "remove format" button may now be configured by setting Aloha.settings.plugins.format.removeFormats = ['b', 'strong', 'whatever']; The default set of formats to be removed is: 'strong', 'em', 'b', 'i', 'cite', 'q', 'code', 'abbr', 'del', 'sub', 'sup'
 - browser-plugin: The browser now supports i18n and has better paging support, if the repositories provides meta information (numItems, hasMoreItems)
-
-## 0.20-BETA - 2011/11
 - core: added +Aloha.ready( function() {} )+ 
 - core: Aloha base url is now auto-detected
 - core: Aloha plugins are now loaded in through `data-plugins="format,table"` on the aloha `script` element
