@@ -12,6 +12,7 @@ This document is to serve as a "what has been done" in terms of the [Roadmap](ht
 - link-plugin: Fixed link-plugin to bind events to links when editables are created. Also bind events to new created links. This ensures that Hotkey CTRL+L to create a new link works, and links can be followed by clicking on them while holding CTRL
 - link-plugin: Fixed handling of external links. Previously it was not possible to change a repository link to an external link.
 - listenforcer-plugin: fixed a bug which would cause an error when activating or deactivating an editable
+- listenforcer-plugins: Fixed a possible jquery error within the listforcer plugin. Previously this plugin was not requiring aloha using require.js. This was now corrected. 
 - format-plugin: tags removed by the "remove format" button may now be configured by setting Aloha.settings.plugins.format.removeFormats = ['b', 'strong', 'whatever']; The default set of formats to be removed is: 'strong', 'em', 'b', 'i', 'cite', 'q', 'code', 'abbr', 'del', 'sub', 'sup'
 - browser-plugin: The browser now supports i18n and has better paging support, if the repositories provides meta information (numItems, hasMoreItems)
 - core: added +Aloha.ready( function() {} )+ 
