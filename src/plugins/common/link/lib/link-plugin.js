@@ -13,6 +13,9 @@
  * It presents its user interface in the Floating menu, in a Sidebar panel.
  * Clicking on any links inside the editable activates the this plugin's
  * floating menu scope.
+ *
+ * @todo Consider whether it would be better to have the target options in the
+ *       sidebar panel be a selection box rather than radio buttons.
  */
 
 define( [
@@ -139,10 +142,10 @@ define( [
 		initSidebar: function(sidebar) {
 			var pl = this;
 			pl.sidebar = sidebar;
-			sidebar.addPanel({
+			sidebar.addPanel( {
 					
-					id: pl.nsClass('sidebar-panel-target'),
-					title: i18n.t('floatingmenu.tab.link'),
+					id: pl.nsClass( 'sidebar-panel-target' ),
+					title: i18n.t( 'floatingmenu.tab.link' ),
 					content: '',
 					expanded: true,
 					activeOn: 'a, link',
@@ -150,64 +153,64 @@ define( [
 					onInit: function () {
 						 var that = this,
 							 content = this.setContent(
-								'<div class="' + pl.nsClass('target-container') + '"><fieldset><legend>' + i18n.t('link.target.legend') + '</legend><ul><li><input type="radio" name="targetGroup" class="' + pl.nsClass('radioTarget') + '" value="_self" /><span>' + i18n.t('link.target.self') + '</span></li>' + 
-								'<li><input type="radio" name="targetGroup" class="' + pl.nsClass('radioTarget') + '" value="_blank" /><span>' + i18n.t('link.target.blank') + '</span></li>' + 
-								'<li><input type="radio" name="targetGroup" class="' + pl.nsClass('radioTarget') + '" value="_parent" /><span>' + i18n.t('link.target.parent') + '</span></li>' + 
-								'<li><input type="radio" name="targetGroup" class="' + pl.nsClass('radioTarget') + '" value="_top" /><span>' + i18n.t('link.target.top') + '</span></li>' + 
-								'<li><input type="radio" name="targetGroup" class="' + pl.nsClass('radioTarget') + '" value="framename" /><span>' + i18n.t('link.target.framename') + '</span></li>' + 
-								'<li><input type="text" class="' + pl.nsClass('framename') + '" /></li></ul></fieldset></div>' + 
-								'<div class="' + pl.nsClass('title-container') + '" ><fieldset><legend>' + i18n.t('link.title.legend') + '</legend><input type="text" class="' + pl.nsClass('linkTitle') + '" /></fieldset></div>').content; 
+								'<div class="' + pl.nsClass( 'target-container' ) + '"><fieldset><legend>' + i18n.t( 'link.target.legend' ) + '</legend><ul><li><input type="radio" name="targetGroup" class="' + pl.nsClass( 'radioTarget' ) + '" value="_self" /><span>' + i18n.t( 'link.target.self' ) + '</span></li>' + 
+								'<li><input type="radio" name="targetGroup" class="' + pl.nsClass( 'radioTarget' ) + '" value="_blank" /><span>' + i18n.t( 'link.target.blank' ) + '</span></li>' + 
+								'<li><input type="radio" name="targetGroup" class="' + pl.nsClass( 'radioTarget' ) + '" value="_parent" /><span>' + i18n.t( 'link.target.parent' ) + '</span></li>' + 
+								'<li><input type="radio" name="targetGroup" class="' + pl.nsClass( 'radioTarget' ) + '" value="_top" /><span>' + i18n.t( 'link.target.top' ) + '</span></li>' + 
+								'<li><input type="radio" name="targetGroup" class="' + pl.nsClass( 'radioTarget' ) + '" value="framename" /><span>' + i18n.t( 'link.target.framename' ) + '</span></li>' + 
+								'<li><input type="text" class="' + pl.nsClass( 'framename' ) + '" /></li></ul></fieldset></div>' + 
+								'<div class="' + pl.nsClass( 'title-container' ) + '" ><fieldset><legend>' + i18n.t( 'link.title.legend' ) + '</legend><input type="text" class="' + pl.nsClass( 'linkTitle' ) + '" /></fieldset></div>' ).content; 
 						 
-						 jQuery( pl.nsSel('framename') ).live( 'keyup', function() {
-							jQuery( that.effective ).attr( "target", jQuery(this).val().replace("\"", '&quot;').replace("'", "&#39;") );
-						 });
+						 jQuery( pl.nsSel( 'framename' ) ).live( 'keyup', function () {
+							jQuery( that.effective ).attr( 'target', jQuery( this ).val().replace( '\"', '&quot;' ).replace( "'", "&#39;" ) );
+						 } );
 						 
-						 jQuery( pl.nsSel('radioTarget') ).live( 'change', function() {
-							if ( jQuery(this).val() === "framename" ) {
+						 jQuery( pl.nsSel( 'radioTarget' ) ).live( 'change', function () {
+							if ( jQuery( this ).val() == 'framename' ) {
 								jQuery( pl.nsSel('framename') ).slideDown();
 							}
 							else {
-								jQuery( pl.nsSel('framename') ).slideUp();
-								jQuery( pl.nsSel('framename') ).val("");
-								jQuery( that.effective ).attr( "target", jQuery(this).val() );
+								jQuery( pl.nsSel( 'framename' ) ).slideUp();
+								jQuery( pl.nsSel( 'framename' ) ).val( '' );
+								jQuery( that.effective ).attr( 'target', jQuery( this ).val() );
 							}
-						 });
+						 } );
 						 
-						 jQuery( pl.nsSel('linkTitle') ).live( 'keyup', function() {
-							jQuery( that.effective ).attr( "title", jQuery(this).val().replace("\"", '&quot;').replace("'", "&#39;") );
-						 });
+						 jQuery( pl.nsSel( 'linkTitle' ) ).live( 'keyup', function () {
+							jQuery( that.effective ).attr( 'title', jQuery( this ).val().replace( '\"', '&quot;' ).replace( "'", "&#39;" ) );
+						 } );
 					},
 					
-					onActivate: function (effective) {
+					onActivate: function ( effective ) {
 						var that = this;
 						that.effective = effective;
-						if( jQuery(that.effective).attr('target') != null ) {
+						if( jQuery( that.effective ).attr( 'target' ) != null ) {
 							var isFramename = true;
 							jQuery( pl.nsSel( 'framename' ) ).hide();
-							jQuery( pl.nsSel( 'framename' ) ).val("");
+							jQuery( pl.nsSel( 'framename' ) ).val( '' );
 							jQuery( pl.nsSel( 'radioTarget' ) ).each( function () {
-								jQuery(this).removeAttr('checked');
+								jQuery( this ).removeAttr('checked');
 								if ( jQuery( this ).val() === jQuery( that.effective ).attr( 'target' ) ) {
 									isFramename = false;
-									jQuery( this ).attr('checked', 'checked');
+									jQuery( this ).attr( 'checked', 'checked' );
 								}
-							});
+							} );
 							if ( isFramename ) {
-								jQuery( pl.nsSel('radioTarget[value="framename"]') ).attr('checked', 'checked');
-								jQuery( pl.nsSel('framename') ).val( jQuery(that.effective).attr('target') );
-								jQuery( pl.nsSel('framename') ).show();
+								jQuery( pl.nsSel( 'radioTarget[value="framename"]' ) ).attr( 'checked', 'checked' );
+								jQuery( pl.nsSel( 'framename' ) ).val( jQuery( that.effective ).attr( 'target' ) );
+								jQuery( pl.nsSel( 'framename' ) ).show();
 							}
 						} else {
-							jQuery( pl.nsSel('radioTarget') ).first().attr('checked', 'checked');
-							jQuery( that.effective ).attr( 'target', jQuery(pl.nsSel('radioTarget')).first().val() );
+							jQuery( pl.nsSel( 'radioTarget' ) ).first().attr( 'checked', 'checked' );
+							jQuery( that.effective ).attr( 'target', jQuery( pl.nsSel( 'radioTarget' ) ).first().val() );
 						}
 						
 						var that = this;
 						that.effective = effective;
-						jQuery( pl.nsSel('linkTitle') ).val( jQuery(that.effective).attr('title') );
+						jQuery( pl.nsSel( 'linkTitle' ) ).val( jQuery( that.effective ).attr( 'title' ) );
 					}
 					
-				});
+				} );
 			sidebar.show();
 		},
 		
@@ -218,14 +221,14 @@ define( [
 			var that = this;
 
 			// add the event handler for creation of editables
-			Aloha.bind('aloha-editable-created', function(event, editable) {
+			Aloha.bind( 'aloha-editable-created', function ( event, editable ) {
 
 				// CTRL+L
-				editable.obj.keydown(function (e) {
+				editable.obj.keydown( function ( e ) {
 					if ( e.metaKey && e.which == 76 ) {
 						if ( that.findLinkMarkup() ) {
 							// open the tab containing the href
-							FloatingMenu.activateTabOfButton('href');
+							FloatingMenu.activateTabOfButton( 'href' );
 
 							that.hrefField.focus();
 
@@ -236,12 +239,12 @@ define( [
 						// on a MAC Safari cursor would jump to location bar. Use ESC then META+L
 						return false;
 					}
-				});
+				} );
 
-				editable.obj.find('a').each(function( i ) {
-					that.addLinkEventHandlers(this);
-				});
-			});
+				editable.obj.find( 'a' ).each( function ( i ) {
+					that.addLinkEventHandlers( this );
+				} );
+			} );
 
 			// add the event handler for selection change
 			Aloha.bind( 'aloha-selection-changed', function ( event, rangeObject ) {
@@ -291,40 +294,39 @@ define( [
 		 * Add event handlers to the given link object
 		 * @param link object
 		 */
-		addLinkEventHandlers: function(link) {
+		addLinkEventHandlers: function ( link ) {
 			var that = this;
 
 			// show pointer on mouse over
-			jQuery(link).mouseenter( function(e) {
-				Aloha.Log.debug(that, 'mouse over link.');
+			jQuery( link ).mouseenter( function ( e ) {
+				Aloha.Log.debug( that, 'mouse over link.' );
 				that.mouseOverLink = link;
 				that.updateMousePointer();
-			});
+			} );
 
 			// in any case on leave show text cursor
-			jQuery(link).mouseleave( function(e) {
-				Aloha.Log.debug(that, 'mouse left link.');
+			jQuery( link ).mouseleave( function ( e ) {
+				Aloha.Log.debug( that, 'mouse left link.' );
 				that.mouseOverLink = null;
 				that.updateMousePointer();
-			});
+			} );
 
 			// follow link on ctrl or meta + click
-			jQuery(link).click( function(e) {
-				if (e.metaKey) {
-
+			jQuery( link ).click( function ( e ) {
+				if ( e.metaKey ) {
 					// blur current editable. user is wating for the link to load
 					Aloha.activeEditable.blur();
 
 					// hack to guarantee a browser history entry
-					setTimeout( function() {
-						  location.href = e.target;
-					},0);
+					setTimeout( function () {
+						location.href = e.target;
+					}, 0 );
 
 					// stop propagation
 					e.stopPropagation();
 					return false;
 				}
-			});
+			} );
 		},
 
 		/**
@@ -420,9 +422,9 @@ define( [
 				// if the user presses ESC we do a rough check if he has entered a link or searched for something
 				if ( event.keyCode == 27 ) {
 					var curval = that.hrefField.getQueryValue();
-					if ( curval[ 0 ] === '/' || // local link
+					if ( curval[ 0 ] == '/' || // local link
 						 curval.match( /^.*\.([a-z]){2,4}$/i ) || // local file with extension
-						 curval[ 0 ] === '#' || // inner document link
+						 curval[ 0 ] == '#' || // inner document link
 						 curval.match( /^htt.*/i ) // external link
 					) {
 						// could be a link better leave it as it is
@@ -436,7 +438,6 @@ define( [
 				
 				// Handle the enter key. Terminate the link scope and show the final link.
 				if ( event.keyCode == 13 ) {
-										
 					// Update the selection and place the cursor at the end of the link.
 					var	range = Aloha.Selection.getRangeObject();
 					
@@ -451,10 +452,10 @@ define( [
 					range.select();
 					//that.ignoreNextSelectionChangedEvent = true;
 					
-					var hrefValue = jQuery(that.hrefField.extButton.el.dom).attr('value');
+					var hrefValue = jQuery( that.hrefField.extButton.el.dom ).attr( 'value' );
 					
-					if (hrefValue === "http://" || hrefValue === "") {
-						that.removeLink(false);
+					if ( hrefValue == 'http://' || hrefValue == '' ) {
+						that.removeLink( false );
 					}
 					
 					setTimeout( function () {
@@ -470,11 +471,10 @@ define( [
 						jQuery( '.x-layer' ).hide();
 						jQuery( '.x-shadow' ).hide();
 						jQuery( '.x-combo-list-inner' ).hide();
-						jQuery( '.x-combo-list' ).hide();
-							
+						jQuery( '.x-combo-list' ).hide();	
 					}, 200 );
 				}
-			});
+			} );
 
 			// on blur check if href is empty. If so remove the a tag
 			this.hrefField.addListener( 'blur', function ( obj, event ) {
@@ -482,11 +482,11 @@ define( [
 				//checks for either a literal value in the href field
 				//(that is not the pre-filled "http://") or a resource
 				//(e.g. in the case of a repository link)
-				if ( ( ! this.getValue() || this.getValue() === "http://" )
+				if ( ( ! this.getValue() || this.getValue() == 'http://' )
 						&& ! this.getItem() ) {
-					that.removeLink(false);
+					that.removeLink( false );
 				}
-			});
+			} );
 
 			jQuery( document )
 				.keydown( function ( e ) {
@@ -516,7 +516,8 @@ define( [
 
 		/**
 		 * Check whether inside a link tag
-		 * @param {GENTICS.Utils.RangeObject} range range where to insert the object (at start or end)
+		 * @param {GENTICS.Utils.RangeObject} range range where to insert the
+		 *			object (at start or end)
 		 * @return markup
 		 * @hide
 		 */
@@ -534,8 +535,8 @@ define( [
 		},
 
 		/**
-		 * Format the current selection or if collapsed the current word as link.
-		 * If inside a link tag the link is removed.
+		 * Format the current selection or if collapsed the current word as
+		 * link. If inside a link tag the link is removed.
 		 */
 		formatLink: function () {
 			if ( Aloha.activeEditable ) {
@@ -548,9 +549,9 @@ define( [
 		},
 
 		/**
-		 * Insert a new link at the current selection. When the selection is collapsed,
-		 * the link will have a default link text, otherwise the selected text will be
-		 * the link text.
+		 * Insert a new link at the current selection. When the selection is
+		 * collapsed, the link will have a default link text, otherwise the
+		 * selected text will be the link text.
 		 */
 		insertLink: function ( extendToWord ) {
 			var range, linkText, newLink, that = this;
@@ -572,21 +573,21 @@ define( [
 			}
 			if ( range.isCollapsed() ) {
 				// insert a link with text here
-				linkText = i18n.t('newlink.defaulttext');
-				newLink = jQuery('<a href="" class="aloha-new-link">' + linkText + '</a>');
-				GENTICS.Utils.Dom.insertIntoDOM(newLink, range, jQuery(Aloha.activeEditable.obj));
-				range.startContainer = range.endContainer = newLink.contents().get(0);
+				linkText = i18n.t( 'newlink.defaulttext' );
+				newLink = jQuery( '<a href="" class="aloha-new-link">' + linkText + '</a>' );
+				GENTICS.Utils.Dom.insertIntoDOM( newLink, range, jQuery( Aloha.activeEditable.obj ) );
+				range.startContainer = range.endContainer = newLink.contents().get( 0 );
 				range.startOffset = 0;
 				range.endOffset = linkText.length;
 			} else {
-				newLink = jQuery('<a href="" class="aloha-new-link"></a>');
-				GENTICS.Utils.Dom.addMarkup(range, newLink, false);
+				newLink = jQuery( '<a href="" class="aloha-new-link"></a>' );
+				GENTICS.Utils.Dom.addMarkup( range, newLink, false );
 			}
 
-			Aloha.activeEditable.obj.find('a.aloha-new-link').each(function( i ) {
-				that.addLinkEventHandlers(this);
-				jQuery(this).removeClass('aloha-new-link');
-			});
+			Aloha.activeEditable.obj.find( 'a.aloha-new-link' ).each( function ( i ) {
+				that.addLinkEventHandlers( this );
+				jQuery(this).removeClass( 'aloha-new-link' );
+			} );
 
 			range.select();
 
