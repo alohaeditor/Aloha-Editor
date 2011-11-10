@@ -70,6 +70,15 @@ This document is to serve as a "what has been done" in terms of the [Roadmap](ht
 	- speak
 	- googletranslate
 
+- Fixed: the genericcontenthandler caused problems when an editable was initialized
+
+  The genericcontenthandler was enabled by default for the initialization of editables. The genericcontenthandler is too brutal and does more cleanups and conversions than one would normally want. The fix was to remove the genericcontenthandler from the default setting.
+
+  In particular, the conversion from strong tags to b tags (and other tag conversions) is unwanted.
+
+  An issue was created for a replacement of the genericcontenthandler for the initialization of editables:
+  https://github.com/alohaeditor/Aloha-Editor/issues/348
+
 
 ## 0.10.-0.19.0
 The reason for not releasing this builds was the ongoing refactoring of the core engine to implement all functionallities based on execCommand.
