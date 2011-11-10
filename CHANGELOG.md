@@ -70,6 +70,8 @@ This document is to serve as a "what has been done" in terms of the [Roadmap](ht
 	- wai-lang
 	- speak
 	- googletranslate
+	- Introduced a new plugin that numerates all headers. (e.g. 1. Header1 1.1 Header2 2 Header1 ....)
+	- Introduced a new plugin that lets you paste from word without formating. It will strip formatings like bold, italic, ...
 
 - Fixed: the genericcontenthandler caused problems when an editable was initialized
 
