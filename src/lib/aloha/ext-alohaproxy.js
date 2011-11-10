@@ -63,9 +63,9 @@ function ( jQuery, Ext, RepositoryManager ) {
 						cb.call( scope, reader.readRecords( items ), arg, true );
 					} else {
 						var i18n = Aloha.require( 'i18n!aloha/nls/i18n' );
-						if ( i18n && i18n[ 'repository.no_items_found_yet' ] ) {
+						if ( i18n && i18n.t( 'repository.no_items_found_yet' ) ) {
 							jQuery( '.x-combo-list-inner .loading-indicator' )
-								.html( i18n[ 'repository.no_items_found_yet' ] );
+								.html( i18n.t( 'repository.no_items_found_yet' ) );
 						}
 					}
 				} );
