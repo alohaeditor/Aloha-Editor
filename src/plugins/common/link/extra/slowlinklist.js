@@ -13,14 +13,14 @@
  */
 
  
-define( [ 'aloha/jquery', 'aloha/repository', 'i18n!aloha/nls/i18n' ],
-function ( jQuery, repository, i18nCore ) {
+define( [ 'aloha/jquery', 'aloha/repository' ],
+function ( jQuery, repository ) {
 	'use strict';
 	
 	var linkListRepository = new ( repository.extend( {
 		
-		_constructor: function (){
-			this._super( 'linklist' );
+		_constructor: function () {
+			this._super( 'slowlinklist' );
 		},
 		
 		/**
@@ -77,7 +77,7 @@ function ( jQuery, repository, i18nCore ) {
 			var l = this.urlset.length;
 			
 			// generate folder structure
-		    for ( var i = 0; i < ; ++i ) {
+		    for ( var i = 0; i < l; ++i ) {
 		    	var e = this.urlset[ i ];
 		    	e.repositoryId = this.repositoryId;
 		    	e.id = e.id ? e.id : e.url;
@@ -95,8 +95,10 @@ function ( jQuery, repository, i18nCore ) {
 			    		path = this.addFolder( path, pathparts[ j ] );
 		    		}
 		    	}
+				
 		    	e.parentId = path;
-		    	this.urlset[ i ] = new Aloha.RepositoryDocument( e );
+		    	
+				this.urlset[ i ] = new Aloha.RepositoryDocument( e );
 		    }
 			
 		    this.repositoryName = 'Linklist';
@@ -172,7 +174,7 @@ function ( jQuery, repository, i18nCore ) {
 			var	o = {
 					strictMode: false,
 					key: [ "source","protocol","authority","userInfo","user","password","host","port","relative","path","directory","file","query","anchor"],
-					q:   {
+					q: {
 						name: "queryKey",
 						parser: /(?:^|&)([^&=]*)=?([^&]*)/g
 					},
@@ -181,9 +183,9 @@ function ( jQuery, repository, i18nCore ) {
 						loose: /^(?:(?![^:@]+:[^:@\/]*@)([^:\/?#.]+):)?(?:\/\/)?((?:(([^:@]*)(?::([^:@]*))?)?@)?([^:\/?#]*)(?::(\d*))?)(((\/(?:[^?#](?![^?#\/]*\.[^?#\/.]+(?:[?#]|$)))*\/?)?([^?#\/]*))(?:\?([^#]*))?(?:#(.*))?)/
 					}
 				},
-				m   = o.parser[o.strictMode ? "strict" : "loose"].exec(str),
+				m = o.parser[o.strictMode ? "strict" : "loose"].exec(str),
 				uri = {},
-				i   = 14;
+				i = 14;
 			
 			while (i--) uri[o.key[i]] = m[i] || "";
 			
