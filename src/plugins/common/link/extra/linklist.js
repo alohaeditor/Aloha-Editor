@@ -50,11 +50,10 @@ function ( jQuery, repository, i18nCore ) {
 		 * additional properties to the items
 		 */
 		init: function () {
-			var i = 0,
-				l = this.urlset.length,
-				j;
-			
-			// Add ECMA262-5 Array method filter if not supported natively
+			// Add ECMA262-5 Array method filter if not supported natively.
+			// But we will be very conservative and add to this single array
+			// object so that we do not tamper with the native Array prototype
+			// object
 			if ( !( 'filter' in Array.prototype ) ) {
 				this.urlset.filter = function ( filter, that /*opt*/ ) {
 					var other = [],
@@ -72,8 +71,10 @@ function ( jQuery, repository, i18nCore ) {
 				};
 			}
 			
+			var l = this.urlset.length;
+			
 			// generate folder structure
-		    for ( ; i < l; i++ ) {
+		    for ( var i = 0; i < ; ++i ) {
 		    	var e = this.urlset[ i ];
 		    	e.repositoryId = this.repositoryId;
 		    	e.id = e.id ? e.id : e.url;
@@ -83,7 +84,7 @@ function ( jQuery, repository, i18nCore ) {
 		    	    path = this.addFolder( '', u.host ),
 				    pathparts = u.path.split( '/' );
 				
-		    	for ( j = 0; j < pathparts.length; j++ ) {
+		    	for ( var j = 0; j < pathparts.length; j++ ) {
 		    		if ( pathparts[ j ] &&
 		    			 // It's a file because it has an extension.
 		    			 // Could improve this one :)
