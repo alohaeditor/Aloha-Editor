@@ -14,14 +14,15 @@ define([
 	
 	'aloha/jquery',
 	'util/class',
+	'i18n!browser/nls/i18n',
 	'css!browser/css/browsercombined.css',
 	'jquery-plugin!browser/vendor/jquery.ui',
 	'jquery-plugin!browser/vendor/ui-layout',
-	'jquery-plugin!browser/vendor/grid.locale.en',
+	'jquery-plugin!browser/vendor/grid.locale.en', // TODO how can we load the correct language here?
 	'jquery-plugin!browser/vendor/jquery.jqGrid',
 	'jquery-plugin!browser/vendor/jquery.jstree'
 	
-], function (jQuery, Class) {
+], function (jQuery, Class, i18n) {
 
 'use strict';
 
@@ -128,9 +129,9 @@ var Browser = Class.extend({
 			pageSize  : 10,
 			columns : {
 				icon    : {title: '',        width: 30,  sortable: false, resizable: false},
-				name    : {title: 'Name',    width: 250, sorttype: 'text'},
-				url     : {title: 'URL',     width: 250, sorttype: 'text'},
-				preview : {title: 'Preview', width: 200, sorttype: 'text'}
+				name    : {title: i18n.t('Name'),    width: 250, sorttype: 'text'},
+				url     : {title: i18n.t('URL'),     width: 250, sorttype: 'text'},
+				preview : {title: i18n.t('Preview'), width: 200, sorttype: 'text'}
 			},
 			isFloating : false
 		}, opts || {});
@@ -374,22 +375,28 @@ var Browser = Class.extend({
 			this.repositoryManager.query(params, function (response) {
 				that.processRepoResponse(
 					(response.results > 0) ? response.items : [],
+					{ numItems: response.numItems, hasMoreItems: response.hasMoreItems},
 					callback
 				);
 			});
 		}
 	},
 	
-	processRepoResponse: function (items, callback) {
+	processRepoResponse: function (items, metainfo, callback) {
 		var that = this;
 		var data = [];
+		// if the second parameter is a function, it is the callback
+		if (typeof metainfo === 'function') {
+			callback = metainfo;
+			metainfo = undefined;
+		}
 		
 		jQuery.each(items, function () {
 			data.push(that.harvestRepoObject(this));
 		});
 		
 		if (typeof callback === 'function') {
-			callback.call(this, data);
+			callback.call(this, data, metainfo);
 		}
 	},
 	
@@ -739,7 +746,7 @@ var Browser = Class.extend({
 			));
 		
 		bar.addClass('aloha-browser-grab-handle').append(btns);
-		bar.find('.aloha-browser-search-btn').click(function () {
+		bar.find('.aloha-browser-search-btn').html(i18n.t('Search')).click(function () {
 			that.triggerSearch();
 		});
 		searchField = bar.find('.aloha-browser-search-field').keypress(function (event) {
@@ -748,7 +755,7 @@ var Browser = Class.extend({
 			}
 		});
 		
-		var prefilledValue = "Input search text...";
+		var prefilledValue = i18n.t("Input search text...");
 		searchField.val(prefilledValue).addClass("aloha-browser-search-field-empty")
 		.focus(function() {
 			if (jQuery(this).val() == prefilledValue) {
@@ -764,7 +771,7 @@ var Browser = Class.extend({
 			}
 		});
 
-		bar.find('.aloha-browser-close-btn').click(function () {
+		bar.find('.aloha-browser-close-btn').html(i18n.t('Close')).click(function () {
 			that.close();
 		});
 		bar.find('.aloha-browser-btn').mousedown(function () {
@@ -877,8 +884,8 @@ var Browser = Class.extend({
 		
 		this.list.setCaption(
 			(typeof this._searchQuery === 'string')
-				? 'Searching for "' + this._searchQuery + '" in ' + folder.name
-				: 'Browsing: ' + folder.name
+				? i18n.t('Searching for') + ' "' + this._searchQuery + '" ' + i18n.t('in') + ' ' + folder.name
+				: i18n.t('Browsing') + ': ' + folder.name
 		);
 		
 		this.list.hide();
@@ -899,9 +906,9 @@ var Browser = Class.extend({
 				filter           : this.filter,
 				recursive		 : false
 			},
-			function (data) {
+			function (data, metainfo) {
 				if (typeof callback === 'function') {
-					callback.call(that, data);
+					callback.call(that, data, metainfo);
 				}
 			}
 		);
@@ -931,10 +938,17 @@ var Browser = Class.extend({
 		});
 	},
 	
-	processItems: function (data) {
+	processItems: function (data, metainfo) {
 		var btns = this._pagingBtns;
 		var disabled = 'ui-state-disabled';
-		
+
+		// if the total number of items is known, we can calculate the number of pages
+		if (metainfo && jQuery.isNumeric(metainfo.numItems)) {
+			this._pagingCount = metainfo.numItems;
+		} else {
+			this._pagingCount = undefined;
+		}
+
 		this.grid.find('.loading').hide();
 		this.list.show();
 		this.listItems(data);
@@ -970,9 +984,9 @@ var Browser = Class.extend({
 		}
 		
 		this.grid.find('.ui-paging-info').html(
-			'Viewing ' +		  (from)
-					   + ' - '  + (to)
-					   + ' of ' + (this._pagingCount || 'numerous')
+			i18n.t('Viewing') + ' ' +	 (from)
+					          + ' - '  + (to)
+					          + ' ' + i18n.t('of') + ' ' + (jQuery.isNumeric(this._pagingCount) ? this._pagingCount : i18n.t('numerous'))
 		);
 	},
 	
