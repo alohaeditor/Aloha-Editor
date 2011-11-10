@@ -53,3 +53,8 @@
 	color: #333 !important;
 	padding: 3px;
 }
+
+.x-combo-list .x-combo-selected {
+	color: #fff !important;
+	background-color: #80B5F2 !important;
+}
