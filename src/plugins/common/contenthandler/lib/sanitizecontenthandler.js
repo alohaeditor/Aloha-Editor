@@ -69,7 +69,7 @@ function( Aloha, jQuery, ContentHandlerManager, console ) {
 			'br': ['class'],
 			'col': ['span', 'width'],
 			'colgroup': ['span', 'width'],
-			'img': ['align', 'alt', 'height', 'src', 'title', 'width'],
+			'img': ['align', 'alt', 'height', 'src', 'title', 'width', 'class'],
 			'ol': ['start', 'type'],
 			'q': ['cite'],
 			'table': ['summary', 'width'],
