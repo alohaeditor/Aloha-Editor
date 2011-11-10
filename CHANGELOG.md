@@ -17,6 +17,7 @@ This document is to serve as a "what has been done" in terms of the [Roadmap](ht
         - link-plugin: Fixed handling of external links. Previously it was not possible to change a repository link to an external link.
 	- listenforcer-plugin: fixed a bug which would cause an error when activating or deactivating an editable
 	- format-plugin: tags removed by the "remove format" button may now be configured by setting Aloha.settings.plugins.format.removeFormats = ['b', 'strong', 'whatever']; The default set of formats to be removed is: 'strong', 'em', 'b', 'i', 'cite', 'q', 'code', 'abbr', 'del', 'sub', 'sup'
+	- browser-plugin: The browser now supports i18n and has better paging support, if the repositories provides meta information (numItems, hasMoreItems)
 
 ### 0.10
 
