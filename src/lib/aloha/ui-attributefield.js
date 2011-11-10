@@ -303,12 +303,13 @@ Ui.AttributeField = Ui.Button.extend({
 	 */
 	getExtConfigProperties: function() {
 		var props = {
-					alohaButton: this,
-						xtype : 'alohaattributefield',
-						rowspan: this.rowspan||undefined,
-						width: this.width||undefined,
-						placeholder: this.placeholder||undefined,
-						id : this.id
+			alohaButton: this,
+			xtype: 'alohaattributefield',
+			rowspan: this.rowspan || undefined,
+			width: this.width || undefined,
+			placeholder: this.placeholder || undefined,
+			id: this.id,
+			cls: this.cls || undefined
 		};
 		if (this.valueField) {
 			props.valueField = this.valueField;
@@ -319,7 +320,7 @@ Ui.AttributeField = Ui.Button.extend({
 		if (this.minChars) {
 			props.minChars = this.minChars;
 		}
-			return props;
+		return props;
 	},
 
 	/**
@@ -329,9 +330,9 @@ Ui.AttributeField = Ui.Button.extend({
 	 * @void
 	 */
 	setTargetObject: function (obj, attr) {
-			if (this.extButton) {
-					this.extButton.setTargetObject(obj, attr);
-			}
+		if (this.extButton) {
+			this.extButton.setTargetObject(obj, attr);
+		}
 	},
 
 	/**

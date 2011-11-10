@@ -1,3 +1,11 @@
+/**
+ * Place selection outside of table.
+ * Select a column and delete it.
+ * Now try and click another column.
+ * You get and index out of bounds error caused
+ * the fact that the selection is gone
+ */
+
 define( [
 
 	'aloha',
@@ -9,8 +17,9 @@ define( [
 	'table/table-plugin-utils'
 
 ], function ( Aloha, jQuery, FloatingMenu, i18n, TableCell, TableSelection, Utils ) {
-	var GENTICS = window.GENTICS;
-
+	var GENTICS   = window.GENTICS,
+	    undefined = void 0;
+	
 	/**
 	 * Constructor of the table object
 	 *
@@ -18,7 +27,7 @@ define( [
 	 *            the dom-representation of the held table
 	 * @return void
 	 */
-	var Table = function( table, tablePlugin ) {
+	var Table = function ( table, tablePlugin ) {
 		// set the table attribut "obj" as a jquery represenation of the dom-table
 		this.obj = jQuery( table );
 		
@@ -33,7 +42,7 @@ define( [
 		this.refresh();
 	};
 
-	jQuery.extend(Table.prototype, {
+	jQuery.extend( Table.prototype, {
 		/**
 		 * Attribute holding the jQuery-table-represenation
 		 */
@@ -105,7 +114,7 @@ define( [
 		 * contains the plugin id used for interaction with the floating menu
 		 */
 		fmPluginId: undefined
-	});
+	} );
 
 	/**
 	 * @hide
@@ -121,19 +130,19 @@ define( [
 		this.cells = [];
 
 		// iterate over table cells and create Cell-objects
-		for (var i = 0; i < rows.length; i++) {
+		for ( var i = 0; i < rows.length; i++ ) {
 			var row = jQuery(rows[i]);
 			var cols = row.children();
-			for (var j = 0; j < cols.length; j++) {
+			for ( var j = 0; j < cols.length; j++ ) {
 				var col = cols[j];
-				var Cell = this.newCell(col);
+				var Cell = this.newCell( col );
 			}
 		}
 	};
 
-	Table.prototype.countVirtualCols = function() {
-		var $firstRow = this.obj.children().children('tr:first-child').children();
-		return $firstRow.length - $firstRow.filter('.' + this.get('classLeftUpperCorner')).length;
+	Table.prototype.countVirtualCols = function () {
+		var $firstRow = this.obj.children().children( 'tr:first-child' ).children();
+		return $firstRow.length - $firstRow.filter( '.' + this.get( 'classLeftUpperCorner' ) ).length;
 	};
 
 	/**
@@ -200,7 +209,9 @@ define( [
 				// TODO: support colspan=0
 				// http://dev.w3.org/html5/markup/td.html#td.attrs.colspan
 				// http://www.w3.org/TR/html401/struct/tables.html#adef-colspan
-				// The value zero ("0") means that the cell spans all columns from the current column to the last column of the column group (COLGROUP) in which the cel
+				// The value zero ("0") means that the cell spans all columns
+				// from the current column to the last column of the column
+				// group (COLGROUP) in which the cel
 			} else if ( !isNaN( colSpan ) ) {
 				// The default value of this attribute is one ("1"), so where this
 				// is the case, we will remove such superfluous colspan attributes
@@ -266,7 +277,26 @@ define( [
 				}
 			}
 		});
-
+		
+		/*
+		We need to make sure that when the user has selected text inside a
+		table cell we do not delete the entire row, before we activate this
+		
+		this.obj.bind( 'keyup', function ( $event ) {
+			if ( $event.keyCode == 46 ) {
+				if ( that.selection.selectedColumnIdxs.length ) {
+					that.deleteColumns();
+					$event.stopPropagation();
+				} else if ( that.selection.selectedRowIdxs.length ) {
+					that.deleteRows();
+					$event.stopPropagation();
+				} else {
+					// Nothing to delete
+				}
+			}
+		} );
+		*/
+		
 		// handle click event of the table
 	//	this.obj.bind('click', function(e){
 	//		// stop bubbling the event to the outer divs, a click in the table
@@ -1256,7 +1286,10 @@ define( [
 		// otherwise the floating menu scope will be incorrect when one
 		// CTRL-clicks on the rows or columns.
 		var selection = Aloha.getSelection();
-		if ( null == selection || null == selection.getRangeAt( 0 ) ) {
+		
+		if ( !selection ||
+				!selection._nativeSelection ||
+					selection._nativeSelection._ranges.length == 0 ) {
 			return;
 		}
 
@@ -1286,7 +1319,6 @@ define( [
 	 * @return void
 	 */
 	Table.prototype.selectColumns = function ( columns ) {
-		
 		var columnsToSelect;
 		
 		if ( columns ) {
@@ -1306,7 +1338,7 @@ define( [
 		this.tablePlugin.columnHeader.setPressed( this.selection.isHeader() );
 		
 		var rows = this.getRows();
-
+		
 		// set the first class found as active item in the multisplit button
 		this.tablePlugin.columnMSButton.setActiveItem();
 		for (var k = 0; k < this.tablePlugin.columnConfig.length; k++) {

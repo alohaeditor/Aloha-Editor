@@ -3,52 +3,16 @@
 This document is to serve as a "what has been done" in terms of the [Roadmap](http://aloha-editor.org/wiki/Roadmap)
 
 
-
-## Impementing
-
-### 0.11
-
-- 0.11-dev
-	- Plugin architecture overhaul
-	- UI overhaul
-		- Includes jQuery UI support
-
-
-### 0.10
-
-- 0.10.1-dev
-	- Drag & Drop Plugin
-	- Support for Opera
-
-- 0.10.0-dev
-	- Buildr overhaul
-		- Cleaner
-		- Asynchronous
-		- Better CSS compression and merging
-	- Image plugin fixes
-
-
-
-## Implemented
-
 ### 0.20
-- fixed floatingmenu to stay visible, if pinned and window is resized.
-- added new Method to FloatingMenu: activateTabOfButton(name) will activate the tab containing the button with given name (if tab is visible)
-  Fixed all plugins to not use FloatingMenu.userActivatedTab, but FloatingMenu.activateTabOfButton instead. This will ensure that switching Tabs will also work, if floatingmenu is configured individually.
-- Fixed link-plugin to bind events to links when editables are created. Also bind events to new created links. This ensures that Hotkey CTRL+L to create a new link works, and links can be followed by clicking on them while holding CTRL
 
-### 0.11
-
-- 0.11-dev
-
-
-### 0.10
-
-- 0.10-dev
-
-
-
-## Released
+- 0.20.1
+       - ribbon-plugin: The ribbon will no longer be visible by default. Instead you can use the show function to make it appear.
+       - image-plugin: The plugin will now use a different method to calculate the width/height when using a fixed aspect ratio.
+       - core: Fixed floatingmenu to stay visible, if pinned and window is resized.
+       - core: Added new Method to FloatingMenu: activateTabOfButton(name) will activate the tab containing the button with given name (if tab is visible)
+ 	       Fixed all plugins to not use FloatingMenu.userActivatedTab, but FloatingMenu.activateTabOfButton instead. This will ensure that switching Tabs will also work, if floatingmenu is configured individually.
+	- link-plugin: Fixed link-plugin to bind events to links when editables are created. Also bind events to new created links. This ensures that Hotkey CTRL+L to create a new link works, and links can be followed by clicking on them while holding CTRL
+        - link-plugin: Fixed handling of external links. Previously it was not possible to change a repository link to an external link.
 
 ### 0.10
 
