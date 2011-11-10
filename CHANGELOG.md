@@ -6,6 +6,8 @@ This document is to serve as a "what has been done" in terms of the [Roadmap](ht
 ### 0.20
 
 - 0.20.1
+       - core: Adds option for "cls" property to be added to ui-attributefields.
+	       cls will be an optional extra CSS class that will be added to this component's Element. This can be useful for adding customized styles to the component or any of its children using standard CSS rules. (http://docs.sencha.com/ext-js/4-0/#!/api/Ext.AbstractComponent-cfg-cls)
        - ribbon-plugin: The ribbon will no longer be visible by default. Instead you can use the show function to make it appear.
        - image-plugin: The plugin will now use a different method to calculate the width/height when using a fixed aspect ratio.
        - core: Fixed floatingmenu to stay visible, if pinned and window is resized.
