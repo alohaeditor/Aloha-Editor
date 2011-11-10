@@ -13,10 +13,11 @@ This document is to serve as a "what has been done" in terms of the [Roadmap](ht
 		- core: Fixed floatingmenu to stay visible, if pinned and window is resized.
 		- core: Added new Method to FloatingMenu: activateTabOfButton(name) will activate the tab containing the button with given name (if tab is visible)
  	       Fixed all plugins to not use FloatingMenu.userActivatedTab, but FloatingMenu.activateTabOfButton instead. This will ensure that switching Tabs will also work, if floatingmenu is configured individually.
-	- link-plugin: Fixed link-plugin to bind events to links when editables are created. Also bind events to new created links. This ensures that Hotkey CTRL+L to create a new link works, and links can be followed by clicking on them while holding CTRL
-        - link-plugin: Fixed handling of external links. Previously it was not possible to change a repository link to an external link.
-	- listenforcer-plugin: fixed a bug which would cause an error when activating or deactivating an editable
-	- format-plugin: tags removed by the "remove format" button may now be configured by setting Aloha.settings.plugins.format.removeFormats = ['b', 'strong', 'whatever']; The default set of formats to be removed is: 'strong', 'em', 'b', 'i', 'cite', 'q', 'code', 'abbr', 'del', 'sub', 'sup'
+		- link-plugin: Fixed link-plugin to bind events to links when editables are created. Also bind events to new created links. This ensures that Hotkey CTRL+L to create a new link works, and links can be followed by clicking on them while holding CTRL
+	        - link-plugin: Fixed handling of external links. Previously it was not possible to change a repository link to an external link.
+		- listenforcer-plugin: Fixed a bug which would cause an error when activating or deactivating an editable
+		- format-plugin: Tags removed by the "remove format" button may now be configured by setting Aloha.settings.plugins.format.removeFormats = ['b', 'strong', 'whatever']; The default set of formats to be removed is: 'strong', 'em', 'b', 'i', 'cite', 'q', 'code', 'abbr', 'del', 'sub', 'sup'
+		- listenforcer-plugins: Fixed a possible jquery error within the listforcer plugin. Previously this plugin was not requiring aloha using require.js. This was now corrected. 
 
 ### 0.10
 
