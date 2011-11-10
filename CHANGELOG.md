@@ -15,6 +15,7 @@ This document is to serve as a "what has been done" in terms of the [Roadmap](ht
 - listenforcer-plugins: Fixed a possible jquery error within the listforcer plugin. Previously this plugin was not requiring aloha using require.js. This was now corrected. 
 - format-plugin: tags removed by the "remove format" button may now be configured by setting Aloha.settings.plugins.format.removeFormats = ['b', 'strong', 'whatever']; The default set of formats to be removed is: 'strong', 'em', 'b', 'i', 'cite', 'q', 'code', 'abbr', 'del', 'sub', 'sup'
 - browser-plugin: The browser now supports i18n and has better paging support, if the repositories provides meta information (numItems, hasMoreItems)
+- sidebar: The sidebar can now be disabled using the Aloha.settings.sidebar.disabled flag.
 - core: added +Aloha.ready( function() {} )+ 
 - core: Aloha base url is now auto-detected
 - core: Aloha plugins are now loaded in through `data-plugins="format,table"` on the aloha `script` element
