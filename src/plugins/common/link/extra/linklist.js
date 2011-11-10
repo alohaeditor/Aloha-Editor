@@ -54,6 +54,24 @@ function ( jQuery, repository, i18nCore ) {
 				l = this.urlset.length,
 				j;
 			
+			// Add ECMA262-5 Array method filter if not supported natively
+			if ( !( 'filter' in Array.prototype ) ) {
+				this.urlset.filter = function ( filter, that /*opt*/ ) {
+					var other = [],
+						v,
+						i = 0,
+						n = this.length;
+					
+					for ( ; i < n; i++ ) {
+						if ( i in this && filter.call( that, v = this[ i ], i, this ) ) {
+							other.push( v );
+						}
+					}
+					
+					return other;
+				};
+			}
+			
 			// generate folder structure
 		    for ( ; i < l; i++ ) {
 		    	var e = this.urlset[ i ];
