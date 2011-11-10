@@ -8,9 +8,11 @@
 /**
  * Aloha Link List Repository
  * --------------------------
- * A simple demo repository of links
+ * A simple demo repository of links, which is deliberatly slow, in order to
+ * simulate lags when querying repositories
  */
 
+ 
 define( [ 'aloha/jquery', 'aloha/repository' ],
 function ( jQuery, repository ) {
 	'use strict';
@@ -18,7 +20,7 @@ function ( jQuery, repository ) {
 	new ( repository.extend( {
 		
 		_constructor: function () {
-			this._super( 'linklist' );
+			this._super( 'slowlinklist' );
 		},
 		
 		/**
@@ -33,10 +35,11 @@ function ( jQuery, repository ) {
 		 * @cfg
 		 */
 		urlset: [
-			{ name: 'Aloha Editor - The HTML5 Editor', url: 'http://aloha-editor.com', type: 'website' },
-			{ name: 'Aloha Editor - Wiki', url: 'http://www.aloha-editor.org/wiki/Main_Page', type: 'website' },
-			{ name: 'Aloha Editor - GitHub', url: 'http://github.com/alohaeditor/Aloha-Editor', type: 'website' },
-			{ name: 'Aloha Logo', url: 'http://www.aloha-editor.com/images/aloha-editor-logo.png', type: 'image'  }
+			{ name: 'Aloha 2',   url: 'http://www.aloha-editor.com', type: 'website' },
+			{ name: 'OneLink',   url: 'http://www.one.com',          type: 'website' },
+			{ name: 'TwoLink',   url: 'http://www.two.com',          type: 'website' },
+			{ name: 'ThreeLink', url: 'http://www.three.com',        type: 'website' },
+			{ name: 'FourLink',  url: 'http://www.four.com',         type: 'image'   }
 		],
 		
 		/**
@@ -134,7 +137,10 @@ function ( jQuery, repository ) {
 				);
 			} );
 			
-			callback.call( this, d );
+			// Simulate 2 second lag
+			setTimeout( function () {
+				callback.call( this, d );
+			}, 2000 );
 		},
 		
 		/**
@@ -154,7 +160,10 @@ function ( jQuery, repository ) {
 				}
 			}
 			
-			callback.call( this, d );
+			// Simulate 2 second lag
+			setTimeout( function () {
+				callback.call( this, d );
+			}, 2000 );
 		},
 		
 		//parseUri 1.2.2
