@@ -126,6 +126,9 @@
 			},
 			cite: {
 				referenceContainer: '#references'
+			},
+			formatlesspaste :{
+				formatlessPasteOption : true
 			}
 		}
 	};
