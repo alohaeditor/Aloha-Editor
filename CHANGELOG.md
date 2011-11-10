@@ -25,6 +25,7 @@ This document is to serve as a "what has been done" in terms of the [Roadmap](ht
 		- `WebContent` is now `src`
 		- `build/out` is now `out`
 		- Plugins are now nicely named, and have dropped their ExtJS prefixes. Eg. the format plugin was renamed from 'com.gentics.aloha.plugins.Format' to 'format'. Have a look at the plugin folder for a complete overview of new plugin names.
+		- The GENTICS namespace has been completely removed from all objects in Aloha Editor's core
 	- Building overhaul
 		- Building has moved from Java + Ant to Node.js + Buildr
 		- Building now runs in seconds instead of minutes, with greater compression ratios
