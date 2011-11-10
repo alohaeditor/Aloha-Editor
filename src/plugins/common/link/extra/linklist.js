@@ -15,7 +15,7 @@ define( [ 'aloha/jquery', 'aloha/repository' ],
 function ( jQuery, repository ) {
 	'use strict';
 	
-	var linkListRepository = new ( repository.extend( {
+	new ( repository.extend( {
 		
 		_constructor: function () {
 			this._super( 'linklist' );
