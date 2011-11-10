@@ -427,10 +427,16 @@ function(Aloha, jQuery, Ext, Class, console) {
 					jQuery.storage.set('Aloha.FloatingMenu.activeTab', that.userActivatedTab);
 				}
 			}).resize(function () {
-			if (this.behaviour === 'float') {
-					var target = that.calcFloatTarget(Aloha.Selection.getRangeObject());
-					if (target) {
-						that.floatTo(target);
+				if (that.behaviour === 'float') {
+					if (that.pinned) {
+						that.fixPinnedPosition();
+						that.refreshShadow();
+						that.extTabPanel.setPosition(that.left, that.top);
+					} else {
+						var target = that.calcFloatTarget(Aloha.Selection.getRangeObject());
+						if (target) {
+							that.floatTo(target);
+						}
 					}
 				}
 			});
@@ -670,12 +676,7 @@ function(Aloha, jQuery, Ext, Class, console) {
 				this.left = parseInt(jQuery.storage.get('Aloha.FloatingMenu.left'),10);
 
 				// do some positioning fixes
-				if (this.top < 30) {
-					this.top = 30;
-				}
-				if (this.left < 0) {
-					this.left = 0;
-				}
+				this.fixPinnedPosition();
 
 				if (Aloha.Log.isInfoEnabled()) {
 					Aloha.Log.info(this, 'restored FloatingMenu pinned position {' + this.left + ', ' + this.top + '}');
@@ -761,6 +762,29 @@ function(Aloha, jQuery, Ext, Class, console) {
 			    }
 				});
 		    }
+		},
+
+		/**
+		 * Fix the position of the pinned floatingmenu to keep it visible
+		 */
+		fixPinnedPosition: function() {
+			// if not pinned, do not fix the position
+			if (!this.pinned) {
+				return;
+			}
+
+			// fix the position of the floatingmenu, to keep it visible
+			if (this.top < 30) {
+				// from top position, we want to have 30px margin
+				this.top = 30;
+			} else if (this.top > this.window.height() - this.extTabPanel.getHeight()) {
+				this.top = this.window.height() - this.extTabPanel.getHeight();
+			}
+			if (this.left < 0) {
+				this.left = 0;
+			} else if (this.left > this.window.width() - this.extTabPanel.getWidth()) {
+				this.left = this.window.width() - this.extTabPanel.getWidth();
+			}
 		},
 
 		/**
@@ -1189,6 +1213,35 @@ function(Aloha, jQuery, Ext, Class, console) {
 			}
 			if (this.shadow) {
 				this.shadow.hide();
+			}
+		},
+
+		/**
+		 * Activate the tab containing the button with given name.
+		 * If the button with given name is not found, nothing changes
+		 * @param name name of the button
+		 */
+		activateTabOfButton: function(name) {
+			var tabOfButton = null;
+
+			// find the tab containing the button
+			for (var t = 0; t < this.tabs.length && !tabOfButton; t++) {
+				var tab = this.tabs[t];
+				for (var g = 0; g < tab.groups.length && !tabOfButton; g++) {
+					var group = tab.groups[g];
+					for (var b = 0; b < group.buttons.length && !tabOfButton; b++) {
+						var button = group.buttons[b];
+						if (button.button.name == name) {
+							tabOfButton = tab;
+							break;
+						}
+					}
+				}
+			}
+
+			if (tabOfButton) {
+				this.userActivatedTab = tabOfButton.label;
+				this.doLayout();
 			}
 		}
 	});

@@ -11,7 +11,7 @@ function( TestUtils ) {
 	
 	var aQuery = Aloha.jQuery;
 
-	var browser;
+	var browser, browserversion;
 	if (aQuery.browser.msie) {
 		browser = "msie";
 	} else if (aQuery.browser.webkit) {
@@ -21,6 +21,7 @@ function( TestUtils ) {
 	} else if (aQuery.browser.mozilla) {
 		browser = "mozilla";
 	}
+	browserversion = browser + aQuery.browser.version;
 
 	// Test whether Aloha is properly initialized
 	asyncTest( 'Aloha Startup Test', function() {
@@ -76,11 +77,11 @@ function( TestUtils ) {
 				check.include = [check.include];
 			}
 			// if exclude is set, check whether we need to exclude the test
-			if (check.exclude && check.exclude.indexOf(browser) !== -1) {
+			if (check.exclude && (check.exclude.indexOf(browser) !== -1 || check.exclude.indexOf(browserversion) !== -1)) {
 				excluded = true;
 			}
 			// if include is set, check whether we shall include the test
-			if (check.include && check.include.indexOf(browser) === -1) {
+			if (check.include && check.include.indexOf(browser) === -1 && check.include.indexOf(browserversion) === -1) {
 				excluded = true;
 			}
 

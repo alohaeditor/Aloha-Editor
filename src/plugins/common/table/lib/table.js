@@ -1,9 +1,25 @@
-define(
-['aloha', 'aloha/jquery', 'aloha/floatingmenu', 'i18n!table/nls/i18n', 'table/table-cell', 'table/table-selection', 'table/table-plugin-utils'],
-function (Aloha, jQuery, FloatingMenu, i18n, TableCell, TableSelection, Utils) {
-	var
-		GENTICS = window.GENTICS;
+/**
+ * Place selection outside of table.
+ * Select a column and delete it.
+ * Now try and click another column.
+ * You get and index out of bounds error caused
+ * the fact that the selection is gone
+ */
 
+define( [
+
+	'aloha',
+	'aloha/jquery',
+	'aloha/floatingmenu',
+	'i18n!table/nls/i18n',
+	'table/table-cell',
+	'table/table-selection',
+	'table/table-plugin-utils'
+
+], function ( Aloha, jQuery, FloatingMenu, i18n, TableCell, TableSelection, Utils ) {
+	var GENTICS   = window.GENTICS,
+	    undefined = void 0;
+	
 	/**
 	 * Constructor of the table object
 	 *
@@ -11,20 +27,22 @@ function (Aloha, jQuery, FloatingMenu, i18n, TableCell, TableSelection, Utils) {
 	 *            the dom-representation of the held table
 	 * @return void
 	 */
-	var Table = function(table, tablePlugin) {
+	var Table = function ( table, tablePlugin ) {
 		// set the table attribut "obj" as a jquery represenation of the dom-table
-		this.obj = jQuery(table);
-
-		if ( !this.obj.attr('id') ) {
-			this.obj.attr('id', GENTICS.Utils.guid());
+		this.obj = jQuery( table );
+		
+		correctTableStructure( this );
+		
+		if ( !this.obj.attr( 'id' ) ) {
+			this.obj.attr( 'id', GENTICS.Utils.guid() );
 		}
-
+		
 		this.tablePlugin = tablePlugin;
-		this.selection = new TableSelection(this);
+		this.selection = new TableSelection( this );
 		this.refresh();
 	};
 
-	jQuery.extend(Table.prototype, {
+	jQuery.extend( Table.prototype, {
 		/**
 		 * Attribute holding the jQuery-table-represenation
 		 */
@@ -96,7 +114,7 @@ function (Aloha, jQuery, FloatingMenu, i18n, TableCell, TableSelection, Utils) {
 		 * contains the plugin id used for interaction with the floating menu
 		 */
 		fmPluginId: undefined
-	});
+	} );
 
 	/**
 	 * @hide
@@ -112,19 +130,19 @@ function (Aloha, jQuery, FloatingMenu, i18n, TableCell, TableSelection, Utils) {
 		this.cells = [];
 
 		// iterate over table cells and create Cell-objects
-		for (var i = 0; i < rows.length; i++) {
+		for ( var i = 0; i < rows.length; i++ ) {
 			var row = jQuery(rows[i]);
 			var cols = row.children();
-			for (var j = 0; j < cols.length; j++) {
+			for ( var j = 0; j < cols.length; j++ ) {
 				var col = cols[j];
-				var Cell = this.newCell(col);
+				var Cell = this.newCell( col );
 			}
 		}
 	};
 
-	Table.prototype.countVirtualCols = function() {
-		var $firstRow = this.obj.children().children('tr:first-child').children();
-		return $firstRow.length - $firstRow.filter('.' + this.get('classLeftUpperCorner')).length;
+	Table.prototype.countVirtualCols = function () {
+		var $firstRow = this.obj.children().children( 'tr:first-child' ).children();
+		return $firstRow.length - $firstRow.filter( '.' + this.get( 'classLeftUpperCorner' ) ).length;
 	};
 
 	/**
@@ -152,7 +170,76 @@ function (Aloha, jQuery, FloatingMenu, i18n, TableCell, TableSelection, Utils) {
 	Table.prototype.set = function(key, value) {
 		this.tablePlugin.set(key, value);
 	};
-
+	
+	/**
+	 * Given an unbalanced table structure, pad it with the necessary cells to
+	 * make it perfectly rectangular
+	 *
+	 * @param {Aloha.Table} tableObj
+	 */
+	function correctTableStructure ( tableObj ) {
+		var table = tableObj.obj,
+			
+			i,
+		    row,
+		    rows = tableObj.getRows(),
+		    rowsNum = rows.length,
+			
+			cols,
+			colsNum,
+			
+		    colsCount,
+		    maxColsCount = 0,
+		    cachedColsCounts = [],
+		    colsCountDiff,
+		    colSpan;
+		
+		for ( i = 0; i < rowsNum; i++ ) {
+			row = jQuery( rows[ i ] );
+			cols = row.find( '>td' );
+			colsNum = cols.length;
+			colsCount = Utils.cellIndexToGridColumn( rows, i, colsNum - 1 ) + 1;
+			
+			// Check if the last cell in this row has a col span, to account
+			// for it in the total number of colums in this row
+			
+			colSpan = parseInt( cols.last().attr( 'colspan' ), 10 );
+			
+			if ( colSpan == 0 ) {
+				// TODO: support colspan=0
+				// http://dev.w3.org/html5/markup/td.html#td.attrs.colspan
+				// http://www.w3.org/TR/html401/struct/tables.html#adef-colspan
+				// The value zero ("0") means that the cell spans all columns
+				// from the current column to the last column of the column
+				// group (COLGROUP) in which the cel
+			} else if ( !isNaN( colSpan ) ) {
+				// The default value of this attribute is one ("1"), so where this
+				// is the case, we will remove such superfluous colspan attributes
+				if ( colSpan == 1 ) {
+					cols.last().removeAttr( 'colspan' );
+				}
+				
+				colsCount += ( colSpan - 1 );
+			}
+			
+			cachedColsCounts.push( colsCount );
+			
+			if ( colsCount > maxColsCount ) {
+				maxColsCount = colsCount;
+			}
+		}
+		
+		for ( i = 0; i < rowsNum; i++ ) {
+			colsCountDiff = maxColsCount - cachedColsCounts[ i ];
+			if ( colsCountDiff > 0 ) {
+				// Create as many td's as we need to complete the row
+				jQuery( rows[ i ] ).append(
+					( new Array( colsCountDiff + 1 ) ).join( '<td></td>' )
+				);
+			}
+		}
+	};
+	
 	/**
 	 * Transforms the existing dom-table into an editable aloha-table. In fact it
 	 * replaces the td-elements with equivalent TableCell-elements
@@ -166,13 +253,14 @@ function (Aloha, jQuery, FloatingMenu, i18n, TableCell, TableSelection, Utils) {
 		if (this.isActive) {
 			return;
 		}
+
 		var that = this,
-			htmlTableWrapper, tableWrapper;
+		    htmlTableWrapper,
+		    tableWrapper;
 
 		// alter the table attributes
 		this.obj.addClass(this.get('className'));
 		this.obj.contentEditable(false);
-
 
 		// set an id to the table if not already set
 		if (this.obj.attr('id') == '') {
@@ -189,7 +277,26 @@ function (Aloha, jQuery, FloatingMenu, i18n, TableCell, TableSelection, Utils) {
 				}
 			}
 		});
-
+		
+		/*
+		We need to make sure that when the user has selected text inside a
+		table cell we do not delete the entire row, before we activate this
+		
+		this.obj.bind( 'keyup', function ( $event ) {
+			if ( $event.keyCode == 46 ) {
+				if ( that.selection.selectedColumnIdxs.length ) {
+					that.deleteColumns();
+					$event.stopPropagation();
+				} else if ( that.selection.selectedRowIdxs.length ) {
+					that.deleteRows();
+					$event.stopPropagation();
+				} else {
+					// Nothing to delete
+				}
+			}
+		} );
+		*/
+		
 		// handle click event of the table
 	//	this.obj.bind('click', function(e){
 	//		// stop bubbling the event to the outer divs, a click in the table
@@ -242,7 +349,7 @@ function (Aloha, jQuery, FloatingMenu, i18n, TableCell, TableSelection, Utils) {
 		htmlTableWrapper.get(0).onmovestart = function(e) { return false; };
 		htmlTableWrapper.get(0).onselectstart = function(e) { return false; };
 
-		this.tableWrapper     = this.obj.parents('.' + this.get('classTableWrapper')).get(0);
+		this.tableWrapper = this.obj.parents('.' + this.get('classTableWrapper')).get(0);
 
 		jQuery(this.cells).each(function () {
 			this.activate();
@@ -481,19 +588,20 @@ function (Aloha, jQuery, FloatingMenu, i18n, TableCell, TableSelection, Utils) {
 		var emptyCell = jQuery('<td>');
 		emptyCell.html('\u00a0');
 		
-		// get the number of columns in the table
+		// get the number of columns in the table (first row)
 		// iterate through all rows and find the maximum number of columns to add
 		var numColumns = 0;
-		for(var i = 0; i < this.obj.context.rows.length; i++){
+		for( var i = 0; i < this.obj.context.rows.length; i++ ){
 			var curNumColumns = 0;
 			
-			for(var j = 0; j < this.obj.context.rows[i].cells.length; j++){
+			for( var j = 0; j < this.obj.context.rows[i].cells.length; j++ ){
 				var colspan = Utils.colspan( this.obj.context.rows[i].cells[j] );
 				curNumColumns += colspan;
 			}
 			
-			if(numColumns < curNumColumns)
+			if( numColumns < curNumColumns ) {
 				numColumns = curNumColumns;
+			}
 		}
 		
 		var selectionRow = jQuery('<tr>');
@@ -521,8 +629,7 @@ function (Aloha, jQuery, FloatingMenu, i18n, TableCell, TableSelection, Utils) {
 					that.tablePlugin.activeTable.selection.selectionType = 'cell';
 					that.tablePlugin.updateFloatingMenuScope();
 
-					FloatingMenu.userActivatedTab = i18n.t('floatingmenu.tab.table');
-					FloatingMenu.doLayout();
+					FloatingMenu.activateTabOfButton('rowheader');
 					
 					// As side-effect of the following call the focus
 					// will be set on the first selected cell. 
@@ -1179,7 +1286,10 @@ function (Aloha, jQuery, FloatingMenu, i18n, TableCell, TableSelection, Utils) {
 		// otherwise the floating menu scope will be incorrect when one
 		// CTRL-clicks on the rows or columns.
 		var selection = Aloha.getSelection();
-		if ( null == selection || null == selection.getRangeAt( 0 ) ) {
+		
+		if ( !selection ||
+				!selection._nativeSelection ||
+					selection._nativeSelection._ranges.length == 0 ) {
 			return;
 		}
 
@@ -1209,7 +1319,6 @@ function (Aloha, jQuery, FloatingMenu, i18n, TableCell, TableSelection, Utils) {
 	 * @return void
 	 */
 	Table.prototype.selectColumns = function ( columns ) {
-		
 		var columnsToSelect;
 		
 		if ( columns ) {
@@ -1221,7 +1330,7 @@ function (Aloha, jQuery, FloatingMenu, i18n, TableCell, TableSelection, Utils) {
 		// ====== BEGIN UI specific code - should be handled on event aloha-table-selection-changed by UI =======
 		// activate all column formatting button
 		for ( var i = 0; i < this.tablePlugin.columnMSItems.length; i++ ) {
-			this.tablePlugin.columnMSButton.extButton.showItem(this.tablePlugin.columnMSItems[i].name);
+			this.tablePlugin.columnMSButton.showItem(this.tablePlugin.columnMSItems[i].name);
 		}
 		
 		FloatingMenu.setScope(this.tablePlugin.name + '.column');
@@ -1229,7 +1338,7 @@ function (Aloha, jQuery, FloatingMenu, i18n, TableCell, TableSelection, Utils) {
 		this.tablePlugin.columnHeader.setPressed( this.selection.isHeader() );
 		
 		var rows = this.getRows();
-
+		
 		// set the first class found as active item in the multisplit button
 		this.tablePlugin.columnMSButton.setActiveItem();
 		for (var k = 0; k < this.tablePlugin.columnConfig.length; k++) {
@@ -1265,7 +1374,7 @@ function (Aloha, jQuery, FloatingMenu, i18n, TableCell, TableSelection, Utils) {
 		
 		// activate all row formatting button
 		for (var i = 0; i < this.tablePlugin.rowMSItems.length; i++ ) {
-			this.tablePlugin.rowMSButton.extButton.showItem(this.tablePlugin.rowMSItems[i].name);
+			this.tablePlugin.rowMSButton.showItem(this.tablePlugin.rowMSItems[i].name);
 		}
 		
 		//    this.rowsToSelect.sort(function (a,b) {return a - b;});

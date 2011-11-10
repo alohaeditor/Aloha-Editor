@@ -611,6 +611,8 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, C
 				return;
 			}
 
+			// set the class
+			this.obj.addClass('aloha-editable-active');
 
 			// set active Editable in core
 			Aloha.activateEditable( this );
@@ -652,6 +654,9 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, C
 
 			// placeholder
 			this.initPlaceholder();
+
+			// remove the class
+			this.obj.removeClass('aloha-editable-active');
 
 			/**
 			 * @event editableDeactivated fires after the editable has been activated by clicking on it.

@@ -266,7 +266,7 @@ function(Aloha, jQuery, Class, PluginManager, console ) {
 	Plugin.create = function(pluginName, definition) {
 		
 		var pluginInstance = new ( Plugin.extend( definition ) )( pluginName );
-		pluginInstance.settings = jQuery.extend( true, pluginInstance.defaults, Aloha.settings[pluginName] );
+		pluginInstance.settings = jQuery.extendObjects( true, pluginInstance.defaults, Aloha.settings[pluginName] );
 		PluginManager.register( pluginInstance );
 		
 		return pluginInstance;

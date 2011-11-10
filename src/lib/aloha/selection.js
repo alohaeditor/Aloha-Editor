@@ -238,8 +238,22 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 					event.originalEvent.stopSelectionUpdate === true) {
 				return false;
 			}
+			
+			if (typeof range === "undefined") {
+				return false;
+			}
 
 			this.rangeObject = range || new Aloha.Selection.SelectionRange(true);
+			
+			// Only execute the workaround when a valid rangeObject was provided
+			if ( typeof this.rangeObject !== "undefined" && typeof this.rangeObject.startContainer !== "undefined" && this.rangeObject.endContainer !== "undefined") {
+				// workaround for a nasty IE bug that allows the user to select text nodes inside areas with contenteditable "false"
+				if ( (this.rangeObject.startContainer.nodeType === 3 && !jQuery(this.rangeObject.startContainer.parentNode).contentEditable())
+						|| (this.rangeObject.endContainer.nodeType === 3 && !jQuery(this.rangeObject.endContainer.parentNode).contentEditable())) {
+					Aloha.getSelection().removeAllRanges();
+					return true;
+				}
+			} 
 			
 			// find the CAC (Common Ancestor Container) and update the selection Tree
 			this.rangeObject.update();

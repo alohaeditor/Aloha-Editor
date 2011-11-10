@@ -49,6 +49,9 @@ function Sanitize(){
     }
   }
   this.transformers = options.transformers ? options.transformers : [];
+
+  // filters might let the sanitizer stop clean elements (and their children)
+  this.filters = options.filters ? options.filters : [];
 }
 
 Sanitize.REGEX_PROTOCOL = /^([A-Za-z0-9\+\-\.\&\;\*\s]*?)(?:\:|&*0*58|&*x0*3a)/i
@@ -96,6 +99,16 @@ Sanitize.prototype.clean_node = function(container) {
    */
   function _clean(elem) {
     var clone;
+
+    // check whether the elem passes all of the filters
+    for ( var i=0; i < this.filters.length; i++ ) {
+    	if (!this.filters[i](elem)) {
+    		clone = elem.cloneNode(true);
+            this.current_element.appendChild(clone);
+    		return;
+    	}
+    }
+
     switch(elem.nodeType) {
       // Element
       case 1:

@@ -26,7 +26,7 @@ function(Aloha, jQuery, ContentHandlerManager) {
 			} else if ( content instanceof jQuery ) {
 				content = jQuery( '<div>' ).append(content);
 			}
-			
+
 			// If we find an aloha-block inside the pasted content,
 			// we do not modify the pasted stuff, as it most probably
 			// comes from Aloha and not from other sources, and does
@@ -55,6 +55,9 @@ function(Aloha, jQuery, ContentHandlerManager) {
 
 			// transform formattings
 			this.transformFormattings(content);
+
+			// transform links
+			//this.transformLinks(content);
 
 			return content.html();
 		},
@@ -142,6 +145,21 @@ function(Aloha, jQuery, ContentHandlerManager) {
 		},
 
 		/**
+		 * Transform links
+		 * @param content
+		 */
+		transformLinks: function( content ) {
+			// find all links and remove the links without href (will be destination anchors from word table of contents)
+			// aloha is not supporting anchors at the moment -- maybe rewrite anchors in headings to "invisible"
+			// in the test document there are anchors for whole paragraphs --> the whole P appear as link
+			content.find('a').each(function() {
+				if ( typeof jQuery(this).attr('href') === 'undefined' ) {
+					jQuery(this).contents().unwrap();
+				}
+			});
+		},
+
+		/**
 		 * Remove all comments
 		 * @param content
 		 */
@@ -164,22 +182,23 @@ function(Aloha, jQuery, ContentHandlerManager) {
 		 * @param content
 		 */
 		unwrapTags: function( content ) {
-			// safari and chrome cleanup for plain text paste with working linebreaks
-			content.find('div').filter(function(index) {
-				// Only find divs that are contenteditable. keep all other divs untouched.
-				return jQuery(this).contentEditable();
-			}).each(function() {
-				if (this.innerHTML == '<br>') {
-					jQuery(this).contents().unwrap();
-				} else {
-					jQuery( Aloha.Markup.transformDomObject(jQuery(this), 'p').append('<br>') ).contents().unwrap();
-				}
-			});
+			var that = this;
 
-			// unwrap contents of span,font and div tags
-			//content.find('span,font,div').each(function() {
-			content.find('span,font').each(function() {
-				jQuery(this).contents().unwrap();
+			content.children('span,font,div').filter(function() {
+				return this.contentEditable != 'false';
+			}).each(function() {
+				if (this.nodeName == 'DIV') {
+					// safari and chrome cleanup for plain text paste with working linebreaks
+					if (this.innerHTML == '<br>') {
+						jQuery(this).contents().unwrap();
+					} else {
+						jQuery( Aloha.Markup.transformDomObject(jQuery(this), 'p').append('<br>') ).contents().unwrap();
+					}
+				} else {
+					jQuery(this).contents().unwrap();
+				}
+
+				that.unwrapTags(jQuery(this));
 			});
 		},
 
@@ -188,12 +207,19 @@ function(Aloha, jQuery, ContentHandlerManager) {
 		 * @param content
 		 */
 		removeStyles: function( content ) {
+			var that = this;
+
 			// completely remove style tags
-			content.find('style').remove();
+			content.children('style').filter(function() {
+				return this.contentEditable != 'false';
+			}).remove();
 
 			// remove style attributes and classes
-			content.find('*').each(function() {
+			content.children().filter(function() {
+				return this.contentEditable != 'false';
+			}).each(function() {
 				jQuery(this).removeAttr('style').removeClass();
+				that.removeStyles(jQuery(this));
 			});
 		},
 

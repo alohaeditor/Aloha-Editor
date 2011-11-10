@@ -227,10 +227,7 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 			if ( e.metaKey && e.which == 73 ) {
 				
 				if ( this.findLangMarkup() ) {
-					FloatingMenu.userActivatedTab = i18n.t('floatingmenu.tab.wai-lang');
-
-					// TODO this should not be necessary here!
-					FloatingMenu.doLayout();
+					FloatingMenu.activateTabOfButton('wailangfield');
 
 					this.langField.focus();
 
@@ -309,7 +306,7 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 			}
 	
 			// activate floating menu tab
-			FloatingMenu.userActivatedTab = i18n.t('floatingmenu.tab.wai-lang');
+			FloatingMenu.activateTabOfButton('wailangfield');
             FloatingMenu.setScope('wai-lang');
 
 			// current selection or cursor position

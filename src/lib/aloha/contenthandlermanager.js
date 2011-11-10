@@ -36,7 +36,7 @@ function( jQuery, Registry ) {
 			var handler,
 				handlers = this.getEntries();
 			
-			if ( typeof options.contenthandler === 'undefined' || options.contenthandler.length == 0) {
+			if ( typeof options.contenthandler === 'undefined') {
 				options.contenthandler = [];
 				for ( handler in handlers ) {
 					if ( handlers.hasOwnProperty(handler) ) {

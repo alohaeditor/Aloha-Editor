@@ -42,29 +42,37 @@
 			defaultCommand: 'inserthtml',
 			tests: [		        
 					{  	start: '[]foo',
-				       	expected: 'bam[]foo',
+						execResult: 'bam[]foo',
 				 		value: 'bam'
 				    },
 					{  	start: '<p>foo[bar]baz</p>',
-				       	expected: '<p>foo</p><hr><p>[]baz</p>',
+				       	execResult: '<p>foo</p><hr><p>[]baz</p>',
 				       	value: '<hr>' 
 					},
 					{  	start: '<h1>foo[bar]baz</h1>',
-					  	expected: '<h1>foo</h1><h2>bam</h2><h1>[]baz</h1>',
+					  	execResult: '<h1>foo</h1><h2>bam</h2><h1>[]baz</h1>',
 				       	value: '<h2>bam</h2>' 
 					},
 					{	start: '<table><tr><td>foo[]</td></tr></table>',
-						expected: '<table><tr><td>foobam[]</td></tr></table>',
+						execResult: '<table><tr><td>foobam[]</td></tr></table>',
 						value: 'bam' 
 					},
 					{	start: '<h1>hello</h1><p>bar[]</p><table><tr><td>foo</td></tr></table>',
-						expected: '<h1>hello</h1><p>barbam[]</p><table><tr><td>foo</td></tr></table>',
+						execResult: '<h1>hello</h1><p>barbam[]</p><table><tr><td>foo</td></tr></table>',
 						value: 'bam' 
 					},
 					{	start: '<h1>hello</h1><p>bar[]</p>',
-						expected: '<h1>hello</h1><p>bar</p><table><tr><td>foo</td></tr></table>{}<p></p>',
+						execResult: '<h1>hello</h1><p>bar</p><table><tr><td>foo</td></tr></table>{}',
 						value: '<table><tr><td>foo</td></tr></table>' 
 					},
+					{	start: 'foo[]bar',
+						execResult: 'foo<div>bam</div>[]bar',
+						value: '<div style="background-color:red">bam</div>'
+					},
+					{	start: 'foo[]bar',
+						execResult: 'foo<div contentEditable="false" style="background-color:red">bam</div>[]bar',
+						value: '<div contentEditable="false" style="background-color:red">bam</div>'
+					}
 			]
 	}
 
@@ -110,7 +118,7 @@
 		
 		tests.tests.push({
 			start: data_start,
-			expected: data_expected,
+			execResult: data_expected,
 			value: data_value
 		});
 		

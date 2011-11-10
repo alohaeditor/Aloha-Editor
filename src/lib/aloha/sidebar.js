@@ -18,11 +18,10 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-// ----------------------------------------------------------------------------
-//
-// See: http://www.aloha-editor.org/wiki/Sidebar for more information
-//
-// ----------------------------------------------------------------------------
+/**
+ * TODO:
+ *		Make the sidebars resizable using drag handles
+ */
 
 define([
 
@@ -156,9 +155,9 @@ define([
 	var Sidebar = function Sidebar (opts) {
 		var sidebar = this;
 		
-		this.id = nsClass(++uid);
+		this.id = nsClass( ++uid );
 		this.panels = {};
-		this.container = $(renderTemplate('				\
+		this.container = $( renderTemplate( '				\
 			<div class="{bar}">							\
 				<div class="{handle}">					\
 					<span class="{handle-icon}"></span>	\
@@ -167,7 +166,7 @@ define([
 					<ul class="{panels}"></ul>			\
 				</div>									\
 			</div>										\
-		'));
+		' ) );
 		// defaults
 		this.width = 300;
 		this.opened = false;
@@ -184,9 +183,9 @@ define([
 		};
 		
 		// Initialize after dom is ready
-		$(function() { 
-			sidebar.init(opts);
-		});
+		$( function () { 
+			sidebar.init( opts );
+		} );
 	};
 	
 	// ------------------------------------------------------------------------
@@ -589,16 +588,16 @@ define([
 				duration : (typeof duration === 'number' || typeof duration === 'string') ? duration : 500,
 				easing   : 'easeOutExpo',
 				step     : function (val, fx) {
-					// var ieAngle = angle / 90;
 					arr.css({
-						'-webkit-transform'	: 'rotate(' + val + 'deg)',
-						'-moz-transform'	: 'rotate(' + val + 'deg)',
-						'-ms-transform'		: 'rotate(' + val + 'deg)'//,
-					  // We cannot use Microsoft Internet Explorer
-					  // filters because Microsoft Internet Explore 8
-					  // does not support Microsoft Internet Explorer
-					  // filters correctly. It breaks the layout.
-					  // filter				: 'progid:DXImageTransform.Microsoft.BasicImage(rotation=' + ieAngle + ')'
+						'-o-transform'      : 'rotate(' + val + 'deg)',
+						'-webkit-transform' : 'rotate(' + val + 'deg)',
+						'-moz-transform'    : 'rotate(' + val + 'deg)',
+						'-ms-transform'     : 'rotate(' + val + 'deg)'
+					  // We cannot use Microsoft Internet Explorer filters
+					  // because Microsoft Internet Explore 8 does not support
+					  // Microsoft Internet Explorer filters correctly. It
+					  // breaks the layout
+					  // filter             : 'progid:DXImageTransform.Microsoft.BasicImage(rotation=' + (angle / 90) + ')'
 					});
 				}
 			});
@@ -1046,12 +1045,12 @@ define([
 				duration : (typeof duration === 'number') ? duration : 500,
 				easing   : 'easeOutExpo',
 				step     : function (val, fx) {
-					// var ieAngle = angle / 90;
 					arr.css({
-						'-webkit-transform'	: 'rotate(' + val + 'deg)',
-						'-moz-transform'	: 'rotate(' + val + 'deg)',
-						'-ms-transform'		: 'rotate(' + val + 'deg)'//,
-					 // filter				: 'progid:DXImageTransform.Microsoft.BasicImage(rotation=' + ieAngle + ')'
+						'-o-transform'      : 'rotate(' + val + 'deg)',
+						'-webkit-transform' : 'rotate(' + val + 'deg)',
+						'-moz-transform'    : 'rotate(' + val + 'deg)',
+						'-ms-transform'     : 'rotate(' + val + 'deg)'
+					 // filter              : 'progid:DXImageTransform.Microsoft.BasicImage(rotation=' + (angle / 90) + ')'
 					});
 				}
 			});

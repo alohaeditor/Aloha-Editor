@@ -66,9 +66,11 @@ input:valid, textarea:valid   {  }
 input:invalid, textarea:invalid { border-radius: 1px; -moz-box-shadow: 0px 0px 5px red; -webkit-box-shadow: 0px 0px 5px red; box-shadow: 0px 0px 5px red; }
 .no-boxshadow input:invalid, .no-boxshadow textarea:invalid { background-color: #f0dddd; }
 
+/*
 ::-moz-selection{ background: #FF5E99; color:#fff; text-shadow: none; }
 ::selection { background:#FF5E99; color:#fff; text-shadow: none; }
 a:link { -webkit-tap-highlight-color: #FF5E99; }
+*/
 
 button {  width: auto; overflow: visible; }
 .ie7 img { -ms-interpolation-mode: bicubic; }
@@ -81,10 +83,11 @@ a:hover { color: #036; }
 /* ==== Aloha Editor Boilerplate Styles ==== */
 /* ========================================= */
 
+/*
 ::-moz-selection{ background: #b7d7fc; color:#fff; text-shadow: none; }
 ::selection { background:#b7d7fc; color:#fff; text-shadow: none; }
 a:link { -webkit-tap-highlight-color: #b7d7fc; }
-
+*/
 
 html, body {
 	font-family: Georgia, serif;

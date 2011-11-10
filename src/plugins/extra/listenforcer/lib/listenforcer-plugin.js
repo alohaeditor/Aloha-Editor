@@ -33,8 +33,12 @@ function(Plugin, FloatingMenu, i18n, i18nCore) {
 			var that = this;
 	
 			// mark active Editable with a css class
-			Aloha.bind("aloha-editable-activated", function(jEvent, params) { that.enter(aEvent.editable.obj); });
-			Aloha.bind("aloha-editable-deactivated", function(jEvent, params) { that.leave(aEvent.editable.obj); });
+			Aloha.bind("aloha-editable-activated", function(jEvent, params) { 
+				that.enter(params.editable.obj); 
+			});
+			Aloha.bind("aloha-editable-deactivated", function(jEvent, params) {
+				that.leave(params.editable.obj); 
+			});
 		},
 		/**
 		 * checks the passed editable
