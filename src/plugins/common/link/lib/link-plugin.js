@@ -422,9 +422,9 @@ define( [
 				// if the user presses ESC we do a rough check if he has entered a link or searched for something
 				if ( event.keyCode == 27 ) {
 					var curval = that.hrefField.getQueryValue();
-					if ( curval[ 0 ] === '/' || // local link
+					if ( curval[ 0 ] == '/' || // local link
 						 curval.match( /^.*\.([a-z]){2,4}$/i ) || // local file with extension
-						 curval[ 0 ] === '#' || // inner document link
+						 curval[ 0 ] == '#' || // inner document link
 						 curval.match( /^htt.*/i ) // external link
 					) {
 						// could be a link better leave it as it is
@@ -438,7 +438,6 @@ define( [
 				
 				// Handle the enter key. Terminate the link scope and show the final link.
 				if ( event.keyCode == 13 ) {
-										
 					// Update the selection and place the cursor at the end of the link.
 					var	range = Aloha.Selection.getRangeObject();
 					
@@ -456,7 +455,7 @@ define( [
 					var hrefValue = jQuery( that.hrefField.extButton.el.dom ).attr( 'value' );
 					
 					if ( hrefValue == 'http://' || hrefValue == '' ) {
-						that.removeLink(false);
+						that.removeLink( false );
 					}
 					
 					setTimeout( function () {
@@ -472,11 +471,10 @@ define( [
 						jQuery( '.x-layer' ).hide();
 						jQuery( '.x-shadow' ).hide();
 						jQuery( '.x-combo-list-inner' ).hide();
-						jQuery( '.x-combo-list' ).hide();
-							
+						jQuery( '.x-combo-list' ).hide();	
 					}, 200 );
 				}
-			});
+			} );
 
 			// on blur check if href is empty. If so remove the a tag
 			this.hrefField.addListener( 'blur', function ( obj, event ) {
@@ -488,7 +486,7 @@ define( [
 						&& ! this.getItem() ) {
 					that.removeLink( false );
 				}
-			});
+			} );
 
 			jQuery( document )
 				.keydown( function ( e ) {
@@ -518,7 +516,8 @@ define( [
 
 		/**
 		 * Check whether inside a link tag
-		 * @param {GENTICS.Utils.RangeObject} range range where to insert the object (at start or end)
+		 * @param {GENTICS.Utils.RangeObject} range range where to insert the
+		 *			object (at start or end)
 		 * @return markup
 		 * @hide
 		 */
@@ -536,8 +535,8 @@ define( [
 		},
 
 		/**
-		 * Format the current selection or if collapsed the current word as link.
-		 * If inside a link tag the link is removed.
+		 * Format the current selection or if collapsed the current word as
+		 * link. If inside a link tag the link is removed.
 		 */
 		formatLink: function () {
 			if ( Aloha.activeEditable ) {
@@ -550,9 +549,9 @@ define( [
 		},
 
 		/**
-		 * Insert a new link at the current selection. When the selection is collapsed,
-		 * the link will have a default link text, otherwise the selected text will be
-		 * the link text.
+		 * Insert a new link at the current selection. When the selection is
+		 * collapsed, the link will have a default link text, otherwise the
+		 * selected text will be the link text.
 		 */
 		insertLink: function ( extendToWord ) {
 			var range, linkText, newLink, that = this;
