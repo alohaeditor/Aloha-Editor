@@ -183,8 +183,11 @@ define([
 		};
 		
 		// Initialize after dom is ready
-		$( function () { 
-			sidebar.init( opts );
+		$( function () {
+			
+			if ( ! ( (typeof Aloha.settings.sidebar !== 'undefined') && Aloha.settings.sidebar.disabled) ) {
+				sidebar.init( opts );
+			}
 		} );
 	};
 	
