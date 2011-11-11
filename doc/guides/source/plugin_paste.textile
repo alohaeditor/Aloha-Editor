@@ -1,0 +1,17 @@
+h2. The Paste Plugin
+
+
+endprologue.
+
+
+h3. Goal
+Provide a method to "copy", "copyLink", "copyMove", "link", "linkMove", “move” selected content (editable text, non editable text and blocks) 
+* inside the same HTML doc
+* from one HTML doc to another
+* from any host system app to the HTML doc
+* from the HTML doc to any application
+
+h3. Reference
+Please read carefully the bug 7721 from the HTML5 draft and the spec section the-drag-data-store
+* http://www.w3.org/Bugs/Public/show_bug.cgi?id=7721
+* http://www.whatwg.org/specs/web-apps/current-work/#the-drag-data-store
