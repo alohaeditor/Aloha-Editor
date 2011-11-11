@@ -68,8 +68,6 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 	listEmptyText: i18n.t( 'repository.no_item_found' ),
 	loadingText: i18n.t( 'repository.loading' ) + '...',
 	enableKeyEvents: true,
-	hrefUpdateInt: null,
-	hrefUpdateObj: null,
 	store: new Ext.data.Store({
 		proxy: new Ext.data.AlohaProxy(),
 		reader: new Ext.data.AlohaObjectReader()
@@ -260,25 +258,6 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 				that.setItem(items[0]);
 			}
 		});
-
-		// if the selection-changed event was raised by the first click interaction on this page
-		// the hrefField component might not be initialized. When the user switches to the link
-		// tab to edit the link the field would be empty. We check for that situation and add a
-		// special interval check to set the value once again
-		if ( jQuery('#' + this.id).length === 0 ) {
-			// there must only be one update interval running at the same time
-			if ( this.hrefUpdateInt !== null) {
-				clearInterval( this.hrefUpdateInt );
-			}
-			
-			// register a timeout that will set the value as soon as the href field was initialized
-			this.hrefUpdateInt = setInterval(function () {
-				if( jQuery('#' + that.id).length > 0 ) { // the object was finally created
-					that.setTargetObject( obj, attr );
-					clearInterval( that.hrefUpdateInt );
-				}
-			}, 200);
-		}
 	},
 	getTargetObject : function () {
 	    return this.targetObject;

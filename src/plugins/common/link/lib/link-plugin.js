@@ -37,7 +37,6 @@ define( [
 		isAutoCompleteEnabled = true;
 	
 	return Plugin.create( 'link', {
-		
 		/**
 		 * Configure the available languages
 		 */
@@ -88,6 +87,11 @@ define( [
 		 * to ignore one selectionchanged event when we set our own selection.
 		 */
 		ignoreNextSelectionChangedEvent: false,
+		
+		/**
+		 * Internal update interval reference to work around an ExtJS bug
+		 */
+		hrefUpdateInt: null,
 		
 		/**
 		 * Initialize the plugin
@@ -278,6 +282,25 @@ define( [
 						that.formatLinkButton.setPressed( true );
 						FloatingMenu.setScope( 'link' );
 						that.hrefField.setTargetObject( foundMarkup, 'href' );
+						
+						// if the selection-changed event was raised by the first click interaction on this page
+						// the hrefField component might not be initialized. When the user switches to the link
+						// tab to edit the link the field would be empty. We check for that situation and add a
+						// special interval check to set the value once again
+						if ( jQuery('#' + that.hrefField.extButton.id).length === 0 ) {
+							// there must only be one update interval running at the same time
+							if ( that.hrefUpdateInt !== null) {
+								clearInterval( that.hrefUpdateInt );
+							}
+							
+							// register a timeout that will set the value as soon as the href field was initialized
+							that.hrefUpdateInt = setInterval(function () {
+								if( jQuery('#' + that.hrefField.extButton.id).length > 0 ) { // the object was finally created
+									that.hrefField.setTargetObject( foundMarkup, 'href' );
+									clearInterval( that.hrefUpdateInt );
+								}
+							}, 200);
+						}
 					} else {
 						that.formatLinkButton.setPressed( false );
 						that.hrefField.setTargetObject( null );
