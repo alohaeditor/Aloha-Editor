@@ -101,6 +101,11 @@ function ( jQuery, repository ) {
 		    this.repositoryName = 'Linklist';
 		},
 		
+		/**
+		 * @param {String} path
+		 * @param {String} name
+		 * @return {String}
+		 */
 		addFolder: function ( path, name ) {
 			var type = path ? 'folder' : 'hostname',
 			    p = path ? path + '/' + name : name;
@@ -119,8 +124,12 @@ function ( jQuery, repository ) {
 		},
 		
 		/**
-		 * Searches a repository for object items matching query if objectTypeFilter.
-		 * If none found it returns null.
+		 * Searches a repository for object items matching query if
+		 * objectTypeFilter. If none is found it returns null.
+		 *
+		 * @param {Object} p
+		 * @param {Function} callback
+		 * @return {null|Array}
 		 */
 		query: function ( p, callback ) {
 			// Not supported; filter, orderBy, maxItems, skipcount, renditionFilter
@@ -138,7 +147,11 @@ function ( jQuery, repository ) {
 		},
 		
 		/**
-		 * returns the folder structure as parsed at init.
+		 * returns the folder structure as parsed at init
+		 *
+		 * @param {Object} p
+		 * @param {Function} callback
+		 * @return {null|Array}
 		 */
 		getChildren: function ( p, callback ) {
 			var d = [],
@@ -190,6 +203,7 @@ function ( jQuery, repository ) {
 		
 		/**
 		 * Get the repositoryItem with given id
+		 *
 		 * @param itemId {String} id of the repository item to fetch
 		 * @param callback {function} callback function
 		 * @return {GENTICS.Aloha.Repository.Object} item with given id

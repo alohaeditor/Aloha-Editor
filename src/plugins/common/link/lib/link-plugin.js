@@ -681,20 +681,18 @@ define( [
 		 * Displays all the ui-attributefield elements
 		 */
 		showComboList: function () {
-			jQuery(
-				'.x-layer x-combo-list,' +
-				'.x-combo-list-inner,' +
-				'.x-combo-list' ).show();
+			jQuery( '.x-layer x-combo-list,' +
+				    '.x-combo-list-inner,' +
+				    '.x-combo-list' ).show();
 		},
 		
 		/**
 		 * Hides all the ui-attributefield elements
 		 */
 		hideComboList: function () {
-			jQuery(
-				'.x-layer x-combo-list,' +
-				'.x-combo-list-inner,' +
-				'.x-combo-list' ).hide();
+			jQuery( '.x-layer x-combo-list,' +
+				    '.x-combo-list-inner,' +
+				    '.x-combo-list' ).hide();
 		},
 		
 		/**
