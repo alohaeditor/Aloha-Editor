@@ -75,8 +75,6 @@ function ( jQuery, Ext, RepositoryManager ) {
 					}
 				} );
 			} catch ( e ) {
-				debugger;
-				
 				this.fireEvent( 'loadexception', this, null, arg, e );
 				this.fireEvent( 'exception', this, 'response', action, arg, null, e );
 				
