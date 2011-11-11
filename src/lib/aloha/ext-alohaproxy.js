@@ -58,6 +58,11 @@ function ( jQuery, Ext, RepositoryManager ) {
 					// message) only it we have results or if there are no more
 					// repositories to query
 					++numReposQueried;
+					
+					if ( jQuery( '.aloha-link-autocomplete-disabled' ).length ) {
+						return;
+					}
+					
 					if ( items.results ||
 							numReposQueried == RepositoryManager.repositories.length ) {
 						cb.call( scope, reader.readRecords( items ), arg, true );
@@ -70,6 +75,8 @@ function ( jQuery, Ext, RepositoryManager ) {
 					}
 				} );
 			} catch ( e ) {
+				debugger;
+				
 				this.fireEvent( 'loadexception', this, null, arg, e );
 				this.fireEvent( 'exception', this, 'response', action, arg, null, e );
 				
