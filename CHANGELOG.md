@@ -81,7 +81,8 @@ This document is to serve as a "what has been done" in terms of the [Roadmap](ht
 
   An issue was created for a replacement of the genericcontenthandler for the initialization of editables:
   https://github.com/alohaeditor/Aloha-Editor/issues/348
-
+- FloatingMenu
+	The FloatingMenu now accepts the Aloha.settings.floatingmenu.topalignOffset setting, which will define the vertical offset to the editable when the "topalign" behavior is used. The default value is 90px, so if you activate the FloatingMenu's topalign behaviour the FloatingMenu will hover 90px above the currently active editable. Switch it to any meaningful integer offset you prefer.
 
 ## 0.10.-0.19.0
 The reason for not releasing this builds was the ongoing refactoring of the core engine to implement all functionallities based on execCommand.
