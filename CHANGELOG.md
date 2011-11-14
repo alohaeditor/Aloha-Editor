@@ -2,9 +2,17 @@
 
 This document is to serve as a "what has been done" in terms of the [Roadmap](http://aloha-editor.org/wiki/Roadmap)
 
+## 0.20.0-RC3 - 2011/11
+
+- link-plugin: the default behaviour for the link plugin has changed. Links with empty hrefs will not be removed automatically any longer - removing the current href has to be confirmed by pressing enter to delete the link itself. Use the unlink button to remove the link directly.
+
+## 0.20.0-RC2 - 2011/11
+
+- link-plugin: Fixed bug in link-plugin, which prevented correct selection of items from the repository browser when creating a link on a fresh page
+- browser-plugin: Fixed a bug that prevented the browser plugin to load its dependencies correctly.
+
 ## 0.20.0-RC1 - 2011/11
 
-- browser-plugin: Fixed a bug that prevented the browser plugin to load its dependencies correctly.
 - link-plugin: Fixed a bug that prevented correct selection of items from the repository browser when a new link was created on a fresh loaded page.
 
 ## 0.20-BETA - 2011/11
@@ -20,7 +28,6 @@ This document is to serve as a "what has been done" in terms of the [Roadmap](ht
 	- fixed handling of external links. Previously it was not possible to change a repository link to an external link.
 	- initially clicking on an existing link before the link tab has been rendered would leave you with an empty href field. This is actually an ExtJS issue, which has been workarounded.
 	- fixed: autosuggest sometimes left fragments on the screen when closing the autosuggest field early.
-	- <b>NOTE</b> the default behaviour for the link plugin has changed. Links with empty hrefs will not be removed automatically any longer - removing the current href has to be confirmed by pressing enter to delete the link itself. Use the unlink button to remove the link directly.
 - listenforcer-plugin: fixed a bug which would cause an error when activating or deactivating an editable
 - listenforcer-plugins: Fixed a possible jquery error within the listforcer plugin. Previously this plugin was not requiring aloha using require.js. This was now corrected. 
 - format-plugin: tags removed by the "remove format" button may now be configured by setting Aloha.settings.plugins.format.removeFormats = ['b', 'strong', 'whatever']; The default set of formats to be removed is: 'strong', 'em', 'b', 'i', 'cite', 'q', 'code', 'abbr', 'del', 'sub', 'sup'
