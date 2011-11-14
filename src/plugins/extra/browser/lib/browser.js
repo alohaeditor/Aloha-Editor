@@ -10,11 +10,12 @@
  *		www.trirand.com/blog (jqGrid)
  *		layout.jquery-dev.net
  */
-define([
+define( [
 	
 	'aloha/jquery',
 	'util/class',
 	'i18n!browser/nls/i18n',
+	'aloha/console',
 	// this will load the correct language pack needed for the browser
 	'browser/locale',
 	'css!browser/css/browsercombined.css',
@@ -24,7 +25,7 @@ define([
 	'jquery-plugin!browser/vendor/jquery.jqGrid',
 	'jquery-plugin!browser/vendor/jquery.jstree'
 	
-], function ( jQuery, Class, i18n ) {
+], function ( jQuery, Class, i18n, Console ) {
 'use strict';
 
 var
@@ -223,15 +224,6 @@ var Browser = Class.extend({
 		
 		disableSelection(this.grid);
 		
-		// Not working
-		jQuery('body').bind('aloha-repository-error', function (error) {
-			console && console.warn && console.warn(
-				'Error occured on request to repository: ',
-				error.repository.repositoryId +
-				'\nMessage: "' + error.message + '"'
-			);
-		});
-		
 		this.close();
 	},
 	
@@ -304,7 +296,7 @@ var Browser = Class.extend({
 	 */
 	callback: function (fn, cb) {
 		if (typeof this[fn] != 'function') {
-			console && console.warn(
+			Console.warn(
 				'Unable to add a callback to "' + fn +
 				'" because it is not a method in Aloha.Browser.'
 			);
@@ -313,7 +305,7 @@ var Browser = Class.extend({
 		}
 		
 		if (typeof cb !== 'function') {
-			console && console.warn(
+			Console.warn(
 				'Unable to add a callback to "' + fn + '" because '	+
 				'the callback object that was given is of type "'	+
 				(typeof cb) + '". '									+
@@ -350,7 +342,7 @@ var Browser = Class.extend({
 			
 			return true;
 		} else {
-			console && console.warn(
+			Console.warn(
 				'Cannot enable callbacks for function "' + fn +
 				'" because no such method was found in Aloha.Browser.'
 			);
@@ -555,9 +547,6 @@ var Browser = Class.extend({
 		container.append(header, tree);
 		
 		tree.height(this.grid.height() - header.outerHeight(true))
-			.bind('before.jstree', function (event, data) {
-				//console && console.log(data.func);
-			})
 			.bind('loaded.jstree', function (event, data) {
 				jQuery('>ul>li', this).first().css('padding-top', 5);
 				tree.jstree("open_node", "li[rel='repository']");
