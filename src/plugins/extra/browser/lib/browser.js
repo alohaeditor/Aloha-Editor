@@ -7,34 +7,35 @@
  *		www.aloha-editor.org/wiki/Repository
  * 3rd party tools:
  *		www.jstree.com/documentation/core
- *		www.trirand.com/blog/ (jqGrid)
- *		layout.jquery-dev.net/
+ *		www.trirand.com/blog (jqGrid)
+ *		layout.jquery-dev.net
  */
 define([
 	
 	'aloha/jquery',
 	'util/class',
 	'i18n!browser/nls/i18n',
+	// this will load the correct language pack needed for the browser
+	'browser/locale',
 	'css!browser/css/browsercombined.css',
+	// 'jquery-plugin!browser/vendor/grid.locale.en.js', // we use 'browser/locale' instead
 	'jquery-plugin!browser/vendor/jquery.ui',
 	'jquery-plugin!browser/vendor/ui-layout',
-	'jquery-plugin!browser/vendor/grid.locale.en', // TODO how can we load the correct language here?
 	'jquery-plugin!browser/vendor/jquery.jqGrid',
 	'jquery-plugin!browser/vendor/jquery.jstree'
 	
-], function (jQuery, Class, i18n) {
-
+], function ( jQuery, Class, i18n ) {
 'use strict';
 
 var
 	uid = +(new Date),
 	nsClasses = {
-		tree              : 'aloha-browser-tree',
+		'tree'            : 'aloha-browser-tree',
 		'tree-header'     : 'aloha-browser-tree-header',
 		'grab-handle'     : 'aloha-browser-grab-handle',
-		shadow            : 'aloha-browser-shadow',
+		'shadow'          : 'aloha-browser-shadow',
 		'rounded-top'     : 'aloha-browser-rounded-top',
-		list              : 'aloha-browser-list',
+		'list'            : 'aloha-browser-list',
 		'list-altrow'     : 'aloha-browser-list-altrow',
 		'list-resizable'  : 'aloha-browser-list-resizable',
 		'list-pager'      : 'aloha-browser-list-pager',
@@ -44,11 +45,11 @@ var
 		'search-field'    : 'aloha-browser-search-field',
 		'search-icon'     : 'aloha-browser-search-icon',
 		'close-btn'       : 'aloha-browser-close-btn',
-		btn               : 'aloha-browser-btn',
-		btns              : 'aloha-browser-btns',
-		grid              : 'aloha-browser-grid',
-		clear             : 'aloha-browser-clear',
-		inner             : 'aloha-browser-inner',
+		'btn'             : 'aloha-browser-btn',
+		'btns'            : 'aloha-browser-btns',
+		'grid'            : 'aloha-browser-grid',
+		'clear'           : 'aloha-browser-clear',
+		'inner'           : 'aloha-browser-inner',
 		'modal-overlay'   : 'aloha-browser-modal-overlay',
 		'modal-window'    : 'aloha-browser-modal-window'
 	};
