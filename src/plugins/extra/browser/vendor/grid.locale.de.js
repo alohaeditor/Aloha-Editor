@@ -13,7 +13,8 @@
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl.html
 **/
-$.jgrid = {
+// $.jgrid = {
+$.jgrid_de = {
 	defaults: {
 		recordtext: "Zeige {0} - {1} von {2}",
 	    emptyrecords: "Keine Datensätze vorhanden",
