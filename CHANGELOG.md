@@ -19,10 +19,13 @@ This document is to serve as a "what has been done" in terms of the [Roadmap](ht
 	- fixed handling of external links. Previously it was not possible to change a repository link to an external link.
 	- initially clicking on an existing link before the link tab has been rendered would leave you with an empty href field. This is actually an ExtJS issue, which has been workarounded.
 	- fixed: autosuggest sometimes left fragments on the screen when closing the autosuggest field early.
+	- <b>NOTE</b> the default behaviour for the link plugin has changed. Links with empty hrefs will not be removed automatically any longer - removing the current href has to be confirmed by pressing enter to delete the link itself. Use the unlink button to remove the link directly.
 - listenforcer-plugin: fixed a bug which would cause an error when activating or deactivating an editable
 - listenforcer-plugins: Fixed a possible jquery error within the listforcer plugin. Previously this plugin was not requiring aloha using require.js. This was now corrected. 
 - format-plugin: tags removed by the "remove format" button may now be configured by setting Aloha.settings.plugins.format.removeFormats = ['b', 'strong', 'whatever']; The default set of formats to be removed is: 'strong', 'em', 'b', 'i', 'cite', 'q', 'code', 'abbr', 'del', 'sub', 'sup'
-- browser-plugin: The browser now supports i18n and has better paging support, if the repositories provides meta information (numItems, hasMoreItems)
+- browser-plugin
+	- The browser now supports i18n and has better paging support, if the repositories provides meta information (numItems, hasMoreItems)
+	- fixed a bug with the paging algorithm when jumping to the last page
 - sidebar: The sidebar can now be disabled using the Aloha.settings.sidebar.disabled flag.
 - core: added +Aloha.ready( function() {} )+ 
 - core: Aloha base url is now auto-detected

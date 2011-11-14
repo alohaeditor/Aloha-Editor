@@ -490,19 +490,7 @@ define( [
 					}
 				}
 			} );
-
-			// on blur check if href is empty. If so remove the a tag
-			this.hrefField.addListener( 'blur', function ( obj, event ) {
-				var hrefValue = jQuery( that.hrefField.extButton.el.dom ).attr( 'value' );
-				//checks for either a literal value in the href field
-				//(that is not the pre-filled "http://") or a resource
-				//(e.g. in the case of a repository link)
-				if ( ( ! this.getValue() || this.getValue() == 'http://' )
-						&& ! this.getItem() ) {
-					that.removeLink( false );
-				}
-			} );
-
+			
 			jQuery( document )
 				.keydown( function ( e ) {
 					Aloha.Log.debug( that, 'Meta key down.' );
@@ -514,7 +502,7 @@ define( [
 					that.updateMousePointer();
 				} );
 		},
-
+		
 		/**
 		 * Updates the mouse pointer
 		 */
@@ -615,11 +603,14 @@ define( [
 		},
 
 		/**
-		 * Remove an a tag.
+		 * Remove an a tag and clear the current item from the hrefField
 		 */
 		removeLink: function ( terminateLinkScope ) {
 			var	range = Aloha.Selection.getRangeObject(),
 			    foundMarkup = this.findLinkMarkup();
+			
+			// clear the current item from the href field
+			this.hrefField.setItem(null);
 			if ( foundMarkup ) {
 				// remove the link
 				GENTICS.Utils.Dom.removeFromDOM( foundMarkup, range, true );
