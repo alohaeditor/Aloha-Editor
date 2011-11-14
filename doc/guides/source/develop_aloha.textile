@@ -57,7 +57,7 @@ Manually from "github":https://github.com/jrburke/r.js
 * Invoke Building:
 <shell>
 cd alohaeditor
-./bin/build.sh aloha
+./bin/build.sh build/aloha
 </shell>
 
 
