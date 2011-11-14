@@ -5,6 +5,7 @@ This document is to serve as a "what has been done" in terms of the [Roadmap](ht
 ## 0.20.0-RC1 - 2011/11
 
 - browser-plugin: Fixed a bug that prevented the browser plugin to load its dependencies correctly.
+- link-plugin: Fixed a bug that prevented correct selection of items from the repository browser when a new link was created on a fresh loaded page.
 
 ## 0.20-BETA - 2011/11
 - core: Add option for "cls" property to be added to ui-attributefields. cls will be an optional extra CSS class that will be added to this component's Element. This can be useful for adding customized styles to the component or any of its children using standard CSS rules. (http://docs.sencha.com/ext-js/4-0/#!/api/Ext.AbstractComponent-cfg-cls)

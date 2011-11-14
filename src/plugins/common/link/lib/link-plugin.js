@@ -281,6 +281,17 @@ define( [
 						that.insertLinkButton.hide();
 						that.formatLinkButton.setPressed( true );
 						FloatingMenu.setScope( 'link' );
+
+						// remember the current tab selected by the user
+						var currentTab = FloatingMenu.userActivatedTab;
+
+						// switch to the href tab (so that we make sure that the href field gets created)
+						FloatingMenu.activateTabOfButton('href');
+						if (currentTab) {
+							// switch back to the original tab
+							FloatingMenu.userActivatedTab = currentTab;
+						}
+						// now we are ready to set the target object
 						that.hrefField.setTargetObject( foundMarkup, 'href' );
 						
 						// if the selection-changed event was raised by the first click interaction on this page
