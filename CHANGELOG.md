@@ -9,8 +9,12 @@ This document is to serve as a "what has been done" in terms of the [Roadmap](ht
 - core: Fixed floatingmenu to stay visible, if pinned and window is resized.
 - core: Added new Method to FloatingMenu: activateTabOfButton(name) will activate the tab containing the button with given name (if tab is visible)
 - core: Fixed all plugins to not use FloatingMenu.userActivatedTab, but FloatingMenu.activateTabOfButton instead. This will ensure that switching Tabs will also work, if floatingmenu is configured individually.
-- link-plugin: Fixed link-plugin to bind events to links when editables are created. Also bind events to new created links. This ensures that Hotkey CTRL+L to create a new link works, and links can be followed by clicking on them while holding CTRL
-- link-plugin: Fixed handling of external links. Previously it was not possible to change a repository link to an external link.
+- link-plugin
+	- fixed link-plugin to bind events to links when editables are created. Also bind events to new created links. This ensures that Hotkey CTRL+L to create a new link works, and links can be followed by clicking on them while holding CTRL
+	- enforced correct highlighting of selection within the input field
+	- fixed handling of external links. Previously it was not possible to change a repository link to an external link.
+	- initially clicking on an existing link before the link tab has been rendered would leave you with an empty href field. This is actually an ExtJS issue, which has been workarounded.
+	- fixed: autosuggest sometimes left fragments on the screen when closing the autosuggest field early.
 - listenforcer-plugin: fixed a bug which would cause an error when activating or deactivating an editable
 - listenforcer-plugins: Fixed a possible jquery error within the listforcer plugin. Previously this plugin was not requiring aloha using require.js. This was now corrected. 
 - format-plugin: tags removed by the "remove format" button may now be configured by setting Aloha.settings.plugins.format.removeFormats = ['b', 'strong', 'whatever']; The default set of formats to be removed is: 'strong', 'em', 'b', 'i', 'cite', 'q', 'code', 'abbr', 'del', 'sub', 'sup'
@@ -84,9 +88,6 @@ This document is to serve as a "what has been done" in terms of the [Roadmap](ht
   
 - FloatingMenu
 	The FloatingMenu now accepts the Aloha.settings.floatingmenu.topalignOffset setting, which will define the vertical offset to the editable when the "topalign" behavior is used. The default value is 90px, so if you activate the FloatingMenu's topalign behaviour the FloatingMenu will hover 90px above the currently active editable. Switch it to any meaningful integer offset you prefer.
-	
-- Fixed: link-plugin
-	initially clicking on an existing link before the link tab has been rendered would leave you with an empty href field. This is actually an ExtJS issue, which has been workarounded.
 
 ## 0.10.-0.19.0
 The reason for not releasing this builds was the ongoing refactoring of the core engine to implement all functionallities based on execCommand.

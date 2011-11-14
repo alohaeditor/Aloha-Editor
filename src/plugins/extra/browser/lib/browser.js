@@ -10,7 +10,7 @@
  *		www.trirand.com/blog (jqGrid)
  *		layout.jquery-dev.net
  */
-define([
+define( [
 	
 	'aloha/jquery',
 	'util/class',
