@@ -59,10 +59,6 @@ function ( jQuery, Ext, RepositoryManager ) {
 					// repositories to query
 					++numReposQueried;
 					
-					if ( jQuery( '.aloha-link-autocomplete-disabled' ).length ) {
-						return;
-					}
-					
 					if ( items.results ||
 							numReposQueried == RepositoryManager.repositories.length ) {
 						cb.call( scope, reader.readRecords( items ), arg, true );

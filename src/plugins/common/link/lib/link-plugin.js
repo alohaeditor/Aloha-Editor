@@ -493,12 +493,7 @@ define( [
 						FloatingMenu.setScope( 'Aloha.continuoustext' );
 					}, 100 );
 					
-					that.toggleAutoCompletion( false );
-					that.hideComboList();
-				} else {
-					if ( !isAutoCompleteEnabled ) {
-						that.toggleAutoCompletion( true );
-					}
+					that.preventAutoSuggestionBoxFromExpanding();
 				}
 			} );
 			
@@ -680,26 +675,11 @@ define( [
 		},
 		
 		/**
-		 * Prevents adds an autocomplete-disabled class on the linkField
-		 * element so that when repository results are about received we know
-		 * whether or not to print them
-		 *
-		 * @param {Boolean} enabled
+		 * Prevents the combolist from expanding when
+		 * this.hrefField.extButton.expand method is invoked
 		 */
-		toggleAutoCompletion: function ( enabled ) {
-			if ( enabled === true ) {
-				isAutoCompleteEnabled = true;
-				
-				jQuery( '.' + this.hrefField.cls )
-					.removeClass( 'aloha-link-autocomplete-disabled' );
-			}
-			
-			if ( enabled === false ) {
-				isAutoCompleteEnabled = false;
-				
-				jQuery( '.' + this.hrefField.cls )
-					.addClass( 'aloha-link-autocomplete-disabled' );
-			}
+		preventAutoSuggestionBoxFromExpanding: function () {
+			this.hrefField.extButton.hasFocus = false;
 		},
 		
 		/**
@@ -709,15 +689,6 @@ define( [
 			jQuery( '.x-layer x-combo-list,' +
 				    '.x-combo-list-inner,' +
 				    '.x-combo-list' ).show();
-		},
-		
-		/**
-		 * Hides all the ui-attributefield elements
-		 */
-		hideComboList: function () {
-			jQuery( '.x-layer x-combo-list,' +
-				    '.x-combo-list-inner,' +
-				    '.x-combo-list' ).hide();
 		},
 		
 		/**
