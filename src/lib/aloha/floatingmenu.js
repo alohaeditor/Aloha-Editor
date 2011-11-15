@@ -394,7 +394,7 @@ function(Aloha, jQuery, Ext, Class, console) {
 				if (typeof Aloha.settings.floatingmenu.behaviour === 'string') {
 					this.behaviour = Aloha.settings.floatingmenu.behaviour;
 				}
-				if (typeof Aloha.settings.floatingmenu.topalignOffset === 'number') {
+				if (typeof Aloha.settings.floatingmenu.topalignOffset !== 'undefined') {
 					this.topalignOffset = Aloha.settings.floatingmenu.topalignOffset;
 				}
 				if (typeof Aloha.settings.floatingmenu.marginTop === 'number') {
