@@ -71,7 +71,7 @@
 				baseUrl = script.src.replace( regexJs , '' );
 			}
 		}
-        	
+        
 		return baseUrl;
 	};
 	
@@ -123,25 +123,46 @@
 		return this;
 	};
 	
-	// requireJs error handling
+	// Async Module Dependency error handling
 	// Aloha will intercept RequireJS errors in order to facilitate more
-	// flexible and more graceful error handeling than is currently afforded
-	// with RequireJS
-	//require.onError = function () {
-	//	var args = Array.prototype;
-	//};
-	
-	// failure detection
-	// we need to watch for onError when using RequireJS so we can shut off
-	// our setTimeouts when it encounters an error.
-	//if (require['onError']) {
-	//	require['onError'] = (function (orig) {
-	//	return function () {
-	//		failed = true;
-	//		orig.apply(this, arguments);
-	//	}
-	//	})(require['onError']);
-	//}
+	// flexible and more graceful degredation where possible
+	( function ( origOnError ) {
+		 require.onError = function ( err ) {
+			var fatalTimeouts = [];
+			var failedModules = Aloha.jQuery.trim( err.requireModules )
+									 .split( ' ' );
+			
+			for ( var i = 0; i < failedModules.length; i++ ) {
+				switch ( err.requireType ) {
+				case 'timeout':
+					// We only catch failures which do not rise from Aloha core
+					// files. If a core file fails to load properly, it is
+					// always a fatal error.
+					if ( !/^aloha\/.+/.test( failedModules[ i ] ) ) {
+						if ( window.console &&
+								typeof window.console.error === 'function' ) {
+							window.console.error( 'Aloha-Editor Error: ' +
+								'The following module failed to load: ' +
+								failedModules[ i ] );
+						}
+					} else {
+						fatalTimeouts.push( failedModules[ i ] );
+					}
+					break;
+				default:
+					// "timeout" is currently, the only defined
+					// err.requireType . But in case of any future custom
+					// err.requireType which we do not handle, we will pass it
+					// back to the original require.onError function.
+					origOnError.apply( {}, arguments );
+				}
+			}
+			
+			throw 'Aloha-Editor Exception: The following core file' +
+				( fatalTimeouts.length ? 's have' : ' has' ) +
+				' timed-out while loading: ' + fatalTimeouts.join( ', ' );
+		};
+	} )( require.onError );
 	
 } )();
 
