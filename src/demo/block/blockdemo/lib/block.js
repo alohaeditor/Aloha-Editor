@@ -87,8 +87,8 @@ define([
 	});
 
 	var VCardBlock;
-	
-	Aloha.require( ['text!blockdemo/res/vcard.html'] , function ( vcardTemplate ) {
+
+/*	Aloha.require( ['text!blockdemo/res/vcard.html'] , function ( vcardTemplate ) {
 
 		// Compile the template through underscore
 		var template = _.template( vcardTemplate );
@@ -132,7 +132,7 @@ define([
 					}, this.attr()));
 			}
 		});
-	});
+	});*/
 
 
 	var CustomHandleBlock = block.DefaultBlock.extend({
