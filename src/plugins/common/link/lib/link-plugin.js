@@ -174,8 +174,7 @@ define( [
 					 jQuery( pl.nsSel( 'radioTarget' ) ).live( 'change', function () {
 						if ( jQuery( this ).val() == 'framename' ) {
 							jQuery( pl.nsSel( 'framename' ) ).slideDown();
-						}
-						else {
+						} else {
 							jQuery( pl.nsSel( 'framename' ) ).slideUp().val( '' );
 							jQuery( that.effective ).attr( 'target', jQuery( this ).val() );
 						}
@@ -477,11 +476,18 @@ define( [
 //					console.dir(foundMarkup);
 //					that.hrefField.setTargetObject(foundMarkup, 'href');
 					
+					// We have to ignore the next 2 onselectionchange events.
+					// The first one we need to ignore is the one trigger when
+					// we reposition the selection to right at the end of the
+					// link.
+					// Not sure what the next event is yet but we need to
+					// ignore it as well, ignoring it prevents the value of
+					// hrefField from being set to the old value.
 					that.ignoreNextSelectionChangedEvent = true;
 					range.startContainer = range.endContainer;
 					range.startOffset = range.endOffset;
 					range.select();
-					//that.ignoreNextSelectionChangedEvent = true;
+					that.ignoreNextSelectionChangedEvent = true;
 					
 					var hrefValue = jQuery( that.hrefField.extButton.el.dom ).attr( 'value' );
 					
@@ -667,7 +673,8 @@ define( [
 			
 			if ( typeof this.onHrefChange === 'function' ) {
 				this.onHrefChange.call(
-					this, this.hrefField.getTargetObject(),
+					this,
+					this.hrefField.getTargetObject(),
 					this.hrefField.getQueryValue(),
 					this.hrefField.getItem()
 				);
