@@ -2,6 +2,19 @@
 
 This document is to serve as a "what has been done" in terms of the [Roadmap](http://aloha-editor.org/wiki/Roadmap)
 
+## 0.20.0-RC3 - 2011/11
+
+- link-plugin: the default behaviour for the link plugin has changed. Links with empty hrefs will not be removed automatically any longer - removing the current href has to be confirmed by pressing enter to delete the link itself. Use the unlink button to remove the link directly.
+
+## 0.20.0-RC2 - 2011/11
+
+- link-plugin: Fixed bug in link-plugin, which prevented correct selection of items from the repository browser when creating a link on a fresh page
+- browser-plugin: Fixed a bug that prevented the browser plugin to load its dependencies correctly.
+
+## 0.20.0-RC1 - 2011/11
+
+- link-plugin: Fixed a bug that prevented correct selection of items from the repository browser when a new link was created on a fresh loaded page.
+
 ## 0.20-BETA - 2011/11
 - core: Add option for "cls" property to be added to ui-attributefields. cls will be an optional extra CSS class that will be added to this component's Element. This can be useful for adding customized styles to the component or any of its children using standard CSS rules. (http://docs.sencha.com/ext-js/4-0/#!/api/Ext.AbstractComponent-cfg-cls)
 - ribbon-plugin: The ribbon will no longer be visible by default. Instead you can use the show function to make it appear.
@@ -9,12 +22,18 @@ This document is to serve as a "what has been done" in terms of the [Roadmap](ht
 - core: Fixed floatingmenu to stay visible, if pinned and window is resized.
 - core: Added new Method to FloatingMenu: activateTabOfButton(name) will activate the tab containing the button with given name (if tab is visible)
 - core: Fixed all plugins to not use FloatingMenu.userActivatedTab, but FloatingMenu.activateTabOfButton instead. This will ensure that switching Tabs will also work, if floatingmenu is configured individually.
-- link-plugin: Fixed link-plugin to bind events to links when editables are created. Also bind events to new created links. This ensures that Hotkey CTRL+L to create a new link works, and links can be followed by clicking on them while holding CTRL
-- link-plugin: Fixed handling of external links. Previously it was not possible to change a repository link to an external link.
+- link-plugin
+	- fixed link-plugin to bind events to links when editables are created. Also bind events to new created links. This ensures that Hotkey CTRL+L to create a new link works, and links can be followed by clicking on them while holding CTRL
+	- enforced correct highlighting of selection within the input field
+	- fixed handling of external links. Previously it was not possible to change a repository link to an external link.
+	- initially clicking on an existing link before the link tab has been rendered would leave you with an empty href field. This is actually an ExtJS issue, which has been workarounded.
+	- fixed: autosuggest sometimes left fragments on the screen when closing the autosuggest field early.
 - listenforcer-plugin: fixed a bug which would cause an error when activating or deactivating an editable
 - listenforcer-plugins: Fixed a possible jquery error within the listforcer plugin. Previously this plugin was not requiring aloha using require.js. This was now corrected. 
 - format-plugin: tags removed by the "remove format" button may now be configured by setting Aloha.settings.plugins.format.removeFormats = ['b', 'strong', 'whatever']; The default set of formats to be removed is: 'strong', 'em', 'b', 'i', 'cite', 'q', 'code', 'abbr', 'del', 'sub', 'sup'
-- browser-plugin: The browser now supports i18n and has better paging support, if the repositories provides meta information (numItems, hasMoreItems)
+- browser-plugin
+	- The browser now supports i18n and has better paging support, if the repositories provides meta information (numItems, hasMoreItems)
+	- fixed a bug with the paging algorithm when jumping to the last page
 - sidebar: The sidebar can now be disabled using the Aloha.settings.sidebar.disabled flag.
 - core: added +Aloha.ready( function() {} )+ 
 - core: Aloha base url is now auto-detected
@@ -84,9 +103,6 @@ This document is to serve as a "what has been done" in terms of the [Roadmap](ht
   
 - FloatingMenu
 	The FloatingMenu now accepts the Aloha.settings.floatingmenu.topalignOffset setting, which will define the vertical offset to the editable when the "topalign" behavior is used. The default value is 90px, so if you activate the FloatingMenu's topalign behaviour the FloatingMenu will hover 90px above the currently active editable. Switch it to any meaningful integer offset you prefer.
-	
-- Fixed: link-plugin
-	initially clicking on an existing link before the link tab has been rendered would leave you with an empty href field. This is actually an ExtJS issue, which has been workarounded.
 
 ## 0.10.-0.19.0
 The reason for not releasing this builds was the ongoing refactoring of the core engine to implement all functionallities based on execCommand.

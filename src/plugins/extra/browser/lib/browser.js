@@ -850,7 +850,12 @@ var Browser = Class.extend({
 				this._pagingOffset = 0;
 				break;
 			case 'end':
-				this._pagingOffset = this._pagingCount - this.pageSize;
+				if ((this._pagingCount % this.pageSize) === 0) {
+					// item count is exactly divisible by page size
+					this._pagingOffset = this._pagingCount - this.pageSize;
+				} else {
+					this._pagingOffset = this._pagingCount - (this._pagingCount % this.pageSize);
+				}
 				break;
 			case 'next':
 				this._pagingOffset += this.pageSize;

@@ -244,6 +244,7 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 	    var that = this;
 		this.targetObject = obj;
 	    this.targetAttribute = attr;
+	    this.setItem(null);
 
 			if (this.targetObject && this.targetAttribute) {
 				this.setValue(jQuery(this.targetObject).attr(this.targetAttribute));
