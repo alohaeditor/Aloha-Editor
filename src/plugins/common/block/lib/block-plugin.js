@@ -23,6 +23,7 @@ define([
 	'css!block/css/block.css'
 ], function(Aloha, Plugin, jQuery, ContentHandlerManager, BlockManager, SidebarAttributeEditor, block, EditorManager, BlockContentHandler, editor) {
 	"use strict";
+	console.log("block plugin start");
 
 	/**
 	 * Register the plugin with unique name
@@ -42,7 +43,7 @@ define([
 			EditorManager.register('number', editor.NumberEditor);
 			EditorManager.register('url', editor.UrlEditor);
 			EditorManager.register('email', editor.EmailEditor);
-			
+
 			// register content handler for block plugin
 			ContentHandlerManager.register('block', BlockContentHandler);
 
@@ -96,6 +97,7 @@ define([
 		// Chain
 		return jQuery(this);
 	};
+	console.log("alohaBlock loaded", jQuery.fn.alohaBlock);
 
 	// jQuery.fn.mahaloBlock = TODO
 	return BlockPlugin;
