@@ -95,11 +95,11 @@ define([
 	 * @param {Object} obj - Associative array of replacing placeholder keys
 	 *                       with corresponding values
 	 */
-	function supplant (str, obj) {
-		 return str.replace(/\{([a-z0-9\-\_]+)\}/ig, function (str, p1, offset, s) {
-			 var replacement = obj[p1] || str;
-			 return (typeof replacement === 'function') ? replacement() : replacement;
-		 });
+	function supplant ( str, obj ) {
+		 return str.replace( /\{([a-z0-9\-\_]+)\}/ig, function ( str, p1, offset, s ) {
+			 var replacement = obj[ p1 ] || str;
+			 return ( typeof replacement == 'function' ) ? replacement() : replacement;
+		 } );
 	};
 	
 	/**
@@ -110,8 +110,8 @@ define([
 	 * @param {String} str
 	 * @return {String}
 	 */
-	function renderTemplate (str) {
-		return (typeof str === 'string') ? supplant(str, nsClasses) : str;
+	function renderTemplate ( str ) {
+		return ( typeof str == 'string' ) ? supplant( str, nsClasses ) : str;
 	};
 	
 	/**
@@ -205,7 +205,7 @@ define([
 			var panels;
 			
 			// Pluck panels list from opts
-			if (typeof opts === 'object') {
+			if (typeof opts == 'object') {
 				panels = opts.panels;
 				delete opts.panels;
 			}
@@ -213,7 +213,7 @@ define([
 			// Copy any implements, and overrides in opts to this Sidebar instance
 			$.extend(this, opts);
 			
-			if (typeof panels === 'object') {
+			if (typeof panels == 'object') {
 				$.each(panels, function () {
 					that.addPanel(this, true);
 				});
@@ -588,7 +588,7 @@ define([
 		rotateHandleIcon: function (angle, duration) {
 			var arr = this.container.find(nsSel('handle-icon'));
 			arr.animate({angle: angle}, {
-				duration : (typeof duration === 'number' || typeof duration === 'string') ? duration : 500,
+				duration : (typeof duration == 'number' || typeof duration == 'string') ? duration : 500,
 				easing   : 'easeOutExpo',
 				step     : function (val, fx) {
 					arr.css({
@@ -667,7 +667,7 @@ define([
 			
 			this.container.animate(
 				anim,
-				(typeof duration === 'number' || typeof duration === 'string')
+				(typeof duration == 'number' || typeof duration == 'string')
 					? duration : 500,
 				'easeOutExpo'
 			);
@@ -701,7 +701,7 @@ define([
 			
 			this.container.animate(
 				anim,
-				(typeof duration === 'number' || typeof duration === 'string')
+				(typeof duration == 'number' || typeof duration == 'string')
 					? duration : 500,
 				'easeOutExpo'
 			);
@@ -728,7 +728,7 @@ define([
 		 *							 element (the element that activated it)
 		 */
 		activatePanel: function (panel, element) {
-			if (typeof panel === 'string') {
+			if (typeof panel == 'string') {
 				panel = this.getPanelById(panel);
 			}
 			
@@ -750,7 +750,7 @@ define([
 		 * @param {Funtion} callback
 		 */
 		expandPanel: function (panel, callback) {
-			if (typeof panel === 'string') {
+			if (typeof panel == 'string') {
 				panel = this.getPanelById(panel);
 			}
 			
@@ -770,7 +770,7 @@ define([
 		 * @param {Funtion} callback
 		 */
 		collapsePanel: function (panel, callback) {
-			if (typeof panel === 'string') {
+			if (typeof panel == 'string') {
 				panel = this.getPanelById(panel);
 			}
 			
@@ -883,7 +883,7 @@ define([
 				.css('-moz-user-select', 'none')
 				.each(function() {this.onselectstart = function() {return false;};});
 			
-			if (typeof this.onInit === 'function') {
+			if (typeof this.onInit == 'function') {
 				this.onInit.apply(this);
 			}
 		},
@@ -917,15 +917,15 @@ define([
 					var typeofActiveOn = typeof activeOn,
 						fn;
 					
-					if (typeofActiveOn === 'boolean') {
+					if (typeofActiveOn == 'boolean') {
 						fn = function () {
 							return activeOn;
 						};
-					} else if (typeofActiveOn === 'undefined') {
+					} else if (typeofActiveOn == 'undefined') {
 						fn = function () {
 							return true;
 						};
-					} else if (typeofActiveOn === 'string') {
+					} else if (typeofActiveOn == 'string') {
 						fn = function (el) {
 							return el ? el.is(activeOn) : false;
 						};
@@ -947,7 +947,7 @@ define([
 			this.isActive = true;
 			this.content.parent('li').show().removeClass(nsClass('deactivated'));
 			this.effectiveElement = effective;
-			if (typeof this.onActivate === 'function') {
+			if (typeof this.onActivate == 'function') {
 				this.onActivate.call(this, effective);
 			}
 		},
@@ -1004,7 +1004,7 @@ define([
 			this.content.stop().animate(
 				{height: 5}, 250, 'easeOutExpo',
 				function () {
-					if (typeof callback === 'function') {
+					if (typeof callback == 'function') {
 						callback.call(that);
 					}
 				}
@@ -1045,7 +1045,7 @@ define([
 		rotateTitleIcon: function (angle, duration) {
 			var arr = this.title.find(nsSel('panel-title-arrow'));
 			arr.animate({angle: angle}, {
-				duration : (typeof duration === 'number') ? duration : 500,
+				duration : (typeof duration == 'number') ? duration : 500,
 				easing   : 'easeOutExpo',
 				step     : function (val, fx) {
 					arr.css({
@@ -1093,7 +1093,7 @@ define([
 						 </div>',
 						{
 							path	: pathRev.join(''),
-							content	: (typeof renderer === 'function') ? renderer(el) : '----'
+							content	: (typeof renderer == 'function') ? renderer(el) : '----'
 						}
 					));
 				}
