@@ -2,6 +2,10 @@
 
 This document is to serve as a "what has been done" in terms of the [Roadmap](http://aloha-editor.org/wiki/Roadmap)
 
+## 0.20.0-RC4 - 2011/11
+
+- FloatingMenu: the FloatingMenu will now check the Aloha.settings.floatingmenu.topalignOffset parameter to be not undefined, as checking for 'number' was too strict
+
 ## 0.20.0-RC3 - 2011/11
 
 - link-plugin: the default behaviour for the link plugin has changed. Links with empty hrefs will not be removed automatically any longer - removing the current href has to be confirmed by pressing enter to delete the link itself. Use the unlink button to remove the link directly.
