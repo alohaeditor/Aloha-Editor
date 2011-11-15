@@ -57,8 +57,6 @@ define([
 			});
 		},
 		_createBlocks: function() {
-			var defaultBlockSettings;
-
 			if (!this.settings.defaults) {
 				this.settings.defaults = {};
 			}
