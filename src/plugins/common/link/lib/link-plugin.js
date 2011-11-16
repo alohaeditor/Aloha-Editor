@@ -77,7 +77,7 @@ define( [
 		
 		/**
 		 * handle change on href change
-		 * called function( obj, href, item );
+		 * called function ( obj, href, item );
 		 */
 		onHrefChange: null,
 
@@ -99,22 +99,22 @@ define( [
 		init: function () {
 			var that = this;
 			
-			if ( typeof this.settings.targetregex !== 'undefined' ) {
+			if ( typeof this.settings.targetregex != 'undefined' ) {
 				this.targetregex = this.settings.targetregex;
 			}
-			if ( typeof this.settings.target !== 'undefined' ) {
+			if ( typeof this.settings.target != 'undefined' ) {
 				this.target = this.settings.target;
 			}
-			if ( typeof this.settings.cssclassregex !== 'undefined' ) {
+			if ( typeof this.settings.cssclassregex != 'undefined' ) {
 				this.cssclassregex = this.settings.cssclassregex;
 			}
-			if ( typeof this.settings.cssclass !== 'undefined' ) {
+			if ( typeof this.settings.cssclass != 'undefined' ) {
 				this.cssclass = this.settings.cssclass;
 			}
-			if ( typeof this.settings.objectTypeFilter !== 'undefined' ) {
+			if ( typeof this.settings.objectTypeFilter != 'undefined' ) {
 				this.objectTypeFilter = this.settings.objectTypeFilter;
 			}
-			if ( typeof this.settings.onHrefChange !== 'undefined' ) {
+			if ( typeof this.settings.onHrefChange != 'undefined' ) {
 				this.onHrefChange = this.settings.onHrefChange;
 			}
 			
@@ -144,7 +144,7 @@ define( [
 			return stringBuilder.join( ' ' ).trim();
 		},
 
-		initSidebar: function( sidebar ) {
+		initSidebar: function ( sidebar ) {
 			var pl = this;
 			pl.sidebar = sidebar;
 			sidebar.addPanel( {
@@ -188,7 +188,7 @@ define( [
 				onActivate: function ( effective ) {
 					var that = this;
 					that.effective = effective;
-					if( jQuery( that.effective ).attr( 'target' ) != null ) {
+					if ( jQuery( that.effective ).attr( 'target' ) != null ) {
 						var isFramename = true;
 						jQuery( pl.nsSel( 'framename' ) ).hide().val( '' );
 						jQuery( pl.nsSel( 'radioTarget' ) ).each( function () {
@@ -285,8 +285,8 @@ define( [
 						var currentTab = FloatingMenu.userActivatedTab;
 
 						// switch to the href tab (so that we make sure that the href field gets created)
-						FloatingMenu.activateTabOfButton('href');
-						if (currentTab) {
+						FloatingMenu.activateTabOfButton( 'href' );
+						if ( currentTab ) {
 							// switch back to the original tab
 							FloatingMenu.userActivatedTab = currentTab;
 						}
@@ -297,19 +297,19 @@ define( [
 						// the hrefField component might not be initialized. When the user switches to the link
 						// tab to edit the link the field would be empty. We check for that situation and add a
 						// special interval check to set the value once again
-						if ( jQuery('#' + that.hrefField.extButton.id).length === 0 ) {
+						if ( jQuery( '#' + that.hrefField.extButton.id ).length == 0 ) {
 							// there must only be one update interval running at the same time
-							if ( that.hrefUpdateInt !== null) {
+							if ( that.hrefUpdateInt !== null ) {
 								clearInterval( that.hrefUpdateInt );
 							}
 							
 							// register a timeout that will set the value as soon as the href field was initialized
-							that.hrefUpdateInt = setInterval(function () {
-								if( jQuery('#' + that.hrefField.extButton.id).length > 0 ) { // the object was finally created
+							that.hrefUpdateInt = setInterval( function () {
+								if ( jQuery( '#' + that.hrefField.extButton.id ).length > 0 ) { // the object was finally created
 									that.hrefField.setTargetObject( foundMarkup, 'href' );
 									clearInterval( that.hrefUpdateInt );
 								}
-							}, 200);
+							}, 200 );
 						}
 					} else {
 						that.formatLinkButton.setPressed( false );
@@ -318,8 +318,7 @@ define( [
 				}
 				
 				that.ignoreNextSelectionChangedEvent = false;
-			});
-
+			} );
 		},
 
 		/**
@@ -537,7 +536,7 @@ define( [
 		 * @hide
 		 */
 		findLinkMarkup: function ( range ) {
-			if ( typeof range === 'undefined' ) {
+			if ( typeof range == 'undefined' ) {
 				range = Aloha.Selection.getRangeObject();
 			}
 			if ( Aloha.activeEditable ) {
@@ -633,7 +632,7 @@ define( [
 				// select the (possibly modified) range
 				range.select();
 				
-				if ( typeof terminateLinkScope === 'undefined' ||
+				if ( typeof terminateLinkScope == 'undefined' ||
 						terminateLinkScope === true ) {
 					FloatingMenu.setScope( 'Aloha.continuoustext' );
 				}
@@ -671,7 +670,7 @@ define( [
 				 item: that.hrefField.getItem()
 			} );
 			
-			if ( typeof this.onHrefChange === 'function' ) {
+			if ( typeof this.onHrefChange == 'function' ) {
 				this.onHrefChange.call(
 					this,
 					this.hrefField.getTargetObject(),
@@ -706,7 +705,7 @@ define( [
 		 */
 		makeClean: function ( obj ) {
 			// find all link tags
-			obj.find( 'a' ).each( function() {
+			obj.find( 'a' ).each( function () {
 				jQuery( this )
 					.removeClass( 'aloha-link-pointer' )
 					.removeClass( 'aloha-link-text' );
