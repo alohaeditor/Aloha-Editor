@@ -4,11 +4,12 @@ This document is to serve as a "what has been done" in terms of the [Roadmap](ht
 
 ## 0.20.0-RC5 - 2011/11
 
+- link-plugin: The link plugin will no longer remove repository data attributes from the link when the user clicks a link and leaves it imediately. Previously those repository data attributes where removed when the repository lookup was not finished on time (before the user left the link). For the user the repository link was transformed to a normal link. This is now fixed.
+
 
 ## 0.20.0-RC4 - 2011/11
 
 - FloatingMenu: The FloatingMenu will now check the Aloha.settings.floatingmenu.topalignOffset parameter to be not undefined, as checking for 'number' was too strict
-- link-plugin: The link plugin will no longer remove repository data attributes from the link when the user clicks a link and leaves it imediately. Previously those repository data attributes where removed when the repository lookup was not finished on time (before the user left the link). For the user the repository link was transformed to a normal link. This is now fixed.
 
 ## 0.20.0-RC3 - 2011/11
 
