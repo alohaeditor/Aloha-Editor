@@ -2,6 +2,8 @@
 
 This document is to serve as a "what has been done" in terms of the [Roadmap](http://aloha-editor.org/wiki/Roadmap)
 
+## 0.20.0-RC6 - 2011/11
+
 ## 0.20.0-RC5 - 2011/11
 
 - link-plugin: The link plugin will no longer remove repository data attributes from the link when the user clicks a link and leaves it imediately. Previously those repository data attributes where removed when the repository lookup was not finished on time (before the user left the link). For the user the repository link was transformed to a normal link. This is now fixed.
