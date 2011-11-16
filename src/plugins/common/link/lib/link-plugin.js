@@ -568,19 +568,25 @@ define( [
 		 * selected text will be the link text.
 		 */
 		insertLink: function ( extendToWord ) {
-			var range, linkText, newLink, that = this;
-
+			var that = this,
+				range = Aloha.Selection.getRangeObject(),
+			    linkText,
+				newLink;
+			
+			// There are occasions where we do not get a valid range, in such
+			// cases we should not try and add a link
+			if ( !( range.startContainer && range.endContainer ) ) {
+				return;
+			}
+			
 			// do not insert a link in a link
 			if ( this.findLinkMarkup( range ) ) {
 				return;
 			}
-
+			
 			// activate floating menu tab
 			FloatingMenu.activateTabOfButton( 'href' );
-
-			// current selection or cursor position
-			range = Aloha.Selection.getRangeObject();
-
+			
 			// if selection is collapsed then extend to the word.
 			if ( range.isCollapsed() && extendToWord !== false ) {
 				GENTICS.Utils.Dom.extendToWord( range );
@@ -609,7 +615,11 @@ define( [
 			// Chrome and Firefox will not focus the element correctly.
 			this.hrefField.focus();
 			// prefill and select the new href
-			jQuery( this.hrefField.extButton.el.dom ).attr( 'value', 'http://' ).select();
+			// We need this guard because there are time when the extButton's
+			// el element has not yet available
+			if ( this.hrefField.extButton.el ) {
+				jQuery( this.hrefField.extButton.el.dom ).attr( 'value', 'http://' ).select();
+			}
 			this.hrefChange();
 		},
 
