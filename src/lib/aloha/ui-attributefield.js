@@ -56,6 +56,11 @@ var extTemplate = function(tpl) {
 	});
 };
 
+
+// This will store the last attribute value. We need to keep track of this value
+// due to decide whether to update the value on finish editing
+var lastAttributeValue;
+
 Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 	typeAhead: false,
 	mode: 'remote',
@@ -83,6 +88,11 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 	},
 	finishEditing : function () {
 		var target = jQuery(this.getTargetObject()), color;
+		
+		// Check whether the attribute was changed since the last focus event. Return early when the attribute was not changed.
+		if(lastAttributeValue === target.attr(this.targetAttribute)) {
+			return;
+		}
 
 		// when no resource item was selected, remove any marking of the target object
 		if (!this.resourceItem) {
@@ -159,10 +169,9 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 		},
 		'focus': function(obj, event) {
 			// set background color to give visual feedback which link is modified
-			var
-				target = jQuery(this.getTargetObject()),
+			var	target = jQuery(this.getTargetObject()),
 				s = target.css('background-color');
-
+			
 			if (this.getValue() === this.placeholder) {
 				this.setValue("");
 				jQuery(this.wrap.dom.children[0]).css("color", "black");
@@ -199,6 +208,7 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 	},
 	setItem: function( item, displayField ) {
 		this.resourceItem = item;
+		
 		if ( item ) {
 			displayField = (displayField) ? displayField : this.displayField;
 			// TODO split display field by '.' and get corresponding attribute, because it could be a properties attribute.
@@ -245,6 +255,11 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 		this.targetObject = obj;
 	    this.targetAttribute = attr;
 	    this.setItem(null);
+	    
+	    if(obj && attr) {
+	    	lastAttributeValue = jQuery(obj).attr(attr);
+	    }
+
 
 			if (this.targetObject && this.targetAttribute) {
 				this.setValue(jQuery(this.targetObject).attr(this.targetAttribute));
