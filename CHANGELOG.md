@@ -2,6 +2,9 @@
 
 This document is to serve as a "what has been done" in terms of the [Roadmap](http://aloha-editor.org/wiki/Roadmap)
 
+## 0.20.0-RC5 - 2011/11
+
+
 ## 0.20.0-RC4 - 2011/11
 
 - FloatingMenu: The FloatingMenu will now check the Aloha.settings.floatingmenu.topalignOffset parameter to be not undefined, as checking for 'number' was too strict
