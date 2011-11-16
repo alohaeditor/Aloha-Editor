@@ -142,7 +142,7 @@ ln -s /Users/{username}/lib/node_modules/requirejs/bin/r.js /Users/{username}/bi
 <pre class="brush: plain; gutter: false; toolbar: false">
 
 cd alohaeditor
-./bin/build.sh aloha
+./bin/build.sh build/aloha
 </pre></div><h4 id="other-os">2.2 Other OS:</h4>
 <ul>
 	<li>Microsoft Windows: Not yet supported</li>
@@ -158,9 +158,10 @@ cd alohaeditor
 
 apt-get install build-essential
 apt-get install ruby1.9.1-full
-gem install guides
+cd /usr/bin
 ln -s ruby1.9.1  ruby
 ln -s gem1.9.1  gem
+gem install guides
 ln -s /var/lib/gems/1.9.1/gems/guides-0.7.1/bin/guides /usr/bin/guides
 guides preview 
 </pre></div><h5 id="mac-osx">3.1.2 Mac <span class="caps">OSX</span></h5>
