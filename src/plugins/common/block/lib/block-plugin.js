@@ -23,7 +23,6 @@ define([
 	'css!block/css/block.css'
 ], function(Aloha, Plugin, jQuery, ContentHandlerManager, BlockManager, SidebarAttributeEditor, block, EditorManager, BlockContentHandler, editor) {
 	"use strict";
-	console.log("block plugin start");
 
 	/**
 	 * Register the plugin with unique name
@@ -69,14 +68,6 @@ define([
 
 	/**
 	 * See (http://jquery.com/).
-	 * @name jQuery
-	 * @class
-	 * See the jQuery Library  (http://jquery.com/) for full details.  This just
-	 * documents the function and classes that are added to jQuery by this plug-in.
-	 */
-
-	/**
-	 * See (http://jquery.com/).
 	 * @name jQuery.fn
 	 * @class
 	 * See the jQuery Library  (http://jquery.com/) for full details.  This just
@@ -97,7 +88,6 @@ define([
 		// Chain
 		return jQuery(this);
 	};
-	console.log("alohaBlock loaded", jQuery.fn.alohaBlock);
 
 	// jQuery.fn.mahaloBlock = TODO
 	return BlockPlugin;

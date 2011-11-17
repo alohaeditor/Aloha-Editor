@@ -169,15 +169,22 @@ function(Aloha, jQuery, FloatingMenu, Observable, Registry) {
 		},
 
 		/**
-		 * Get a Block instance by id or DOM node
+		 * Get a Block instance by id or DOM node. The DOM node can be either
+		 * the DOM node of the wrapping element ($_element), or $_innerElement
 		 *
 		 * @param {String|DOMNode} idOrDomNode
 		 * @return {block.block.AbstractBlock} Block instance
 		 */
 		getBlock: function(idOrDomNode) {
-			var id;
+			var id, domNode;
 			if (typeof idOrDomNode === 'object') {
-				id = jQuery(idOrDomNode).attr('id');
+				domNode = jQuery(idOrDomNode);
+				if (domNode.hasClass('aloha-block-inner')) {
+					// We are at the inner block wrapper, so we have to go up one level,
+					// to find the block itself
+					domNode = domNode.parent();
+				}
+				id = domNode.attr('id');
 			} else {
 				id = idOrDomNode;
 			}

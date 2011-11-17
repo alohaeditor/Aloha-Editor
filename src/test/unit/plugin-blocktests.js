@@ -12,92 +12,131 @@
 
 define(
 [ 'testutils', '../../lib/aloha/jquery', 'htmlbeautifier' ],
-function( TestUtils ) {
+function( TestUtils) {
 	'use strict';
-	var jQuery = Aloha.jQuery;
 
-	var htmlSourceCleanup = function($domNode) {
+	Aloha.ready(function() {
 
-		var result = $domNode.html().toLowerCase();
-
-		// Internet Explorer does not have quotes around attribute
-		// values, so we will add them
-
-		result = result.replace(
-			/([\w-]+)\s*=\s*([\w-]+)([\s>])/g, function ( str, $n, $v, $e, offset, s ) {
-			return $n + '="' + $v + '"' + $e;
-		});
-		return style_html( result );
-	}
-
-	var tests = [
-
-		{ module : 'Initialization' },
-		///////////////////////////////////////////////////////////////////////
-
-		{
-			exclude   : false,
-			desc      : 'A default block is initialized correctly',
-			start     : '<div id="myDefaultBlock">Some default block content</div>',
-			assertions: 9,
-			operation : function(testContainer, testcase) {
-				jQuery('#myDefaultBlock').alohaBlock({
-					'aloha-block-type': 'DefaultBlock'
-				});
-				var $block = jQuery('.aloha-block', testContainer);
-
-				// Block Wrapper assertions
-				strictEqual($block.attr('contenteditable'), 'false', 'The block div wrapper has not set contenteditable=false.');
-				ok($block.hasClass('aloha-block'), 'The block div wrapper does not have the aloha-block CSS class.');
-				ok($block.hasClass('aloha-block-DefaultBlock'), 'The block div wrapper does not have the aloha-block-DefaultBlock CSS class.');
-				strictEqual($block.attr('data-aloha-block-type'), 'DefaultBlock', 'The block div wrapper does not have the data-aloha-block-type set correctly.');
-				equal($block.attr('data-block-type'), undefined, 'The block div wrapper has data-block-type set, although it shall not be used anymore by the framework.');
-
-				// content wrapper assertions
-				strictEqual(jQuery('#myDefaultBlock', testContainer).length, 1, 'The "default block" has been duplicated somehow...');
-				ok($block.find('#myDefaultBlock').hasClass('aloha-block-inner'), 'The inner wrapper does not have the aloha-block-inner CSS class set.');
-				strictEqual(jQuery('.aloha-block #myDefaultBlock', testContainer).length, 1, 'The given div wrapper has not been wrapped by the .aloha-block element');
-				strictEqual(jQuery('.aloha-block #myDefaultBlock', testContainer).html(), 'Some default block content', 'The block content has been modified');
-			}
-		},
-
-
-		{ exclude : true } // ... just catch trailing commas
-	];
-
-	Aloha.ready( function() {
 		var jQuery = Aloha.jQuery,
 		    testContainer = jQuery( '#block-outer-container' ),
 			testcase,
-			start,
-			expected;
+			BlockManager;
 
-		for ( var i = 0; i < tests.length; i++ ) {
-			testcase = tests[ i ];
+		var tests = [
+			{
+				async: true,
+				desc: 'Aloha Dependency Loader',
+				assertions: 1,
+				operation: function() {
+					var timeout = setTimeout(function() {
+						ok(false, 'Aloha was not initialized within 10 seconds. Aborting!');
+						start();
+					}, 10000);
+					// All other tests are done when Aloha is ready
+					Aloha.require( ['block/blockmanager'],
+							function ( AlohaBlockManager ) {
+						BlockManager = AlohaBlockManager;
+						clearTimeout(timeout);
+						ok(true, 'Alohoha Dependencies were loaded');
+						start();
+					});
+				}
+			},
 
-			if ( testcase.exclude === true ) {
-				continue; // comment in to run all tests
+			{ module : 'Initialization' },
+			///////////////////////////////////////////////////////////////////////
+
+			{
+				exclude   : false,
+				desc      : 'A default block is initialized correctly',
+				start     : '<div id="myDefaultBlock">Some default block content</div>',
+				assertions: 9,
+				operation : function(testContainer, testcase) {
+					jQuery('#myDefaultBlock').alohaBlock({
+						'aloha-block-type': 'DefaultBlock'
+					});
+					var $block = jQuery('.aloha-block', testContainer);
+
+					// Block Wrapper assertions
+					strictEqual($block.attr('contenteditable'), 'false', 'The block div wrapper has not set contenteditable=false.');
+					ok($block.hasClass('aloha-block'), 'The block div wrapper does not have the aloha-block CSS class.');
+					ok($block.hasClass('aloha-block-DefaultBlock'), 'The block div wrapper does not have the aloha-block-DefaultBlock CSS class.');
+					strictEqual($block.attr('data-aloha-block-type'), 'DefaultBlock', 'The block div wrapper does not have the data-aloha-block-type set correctly.');
+					equal($block.attr('data-block-type'), undefined, 'The block div wrapper has data-block-type set, although it shall not be used anymore by the framework.');
+
+					// content wrapper assertions
+					strictEqual(jQuery('#myDefaultBlock', testContainer).length, 1, 'The "default block" has been duplicated somehow...');
+					ok($block.find('#myDefaultBlock').hasClass('aloha-block-inner'), 'The inner wrapper does not have the aloha-block-inner CSS class set.');
+					strictEqual(jQuery('.aloha-block #myDefaultBlock', testContainer).length, 1, 'The given div wrapper has not been wrapped by the .aloha-block element');
+					strictEqual(jQuery('.aloha-block #myDefaultBlock', testContainer).html(), 'Some default block content', 'The block content has been modified');
+				}
+			},
+
+
+			{ module : 'BlockManager API' },
+			///////////////////////////////////////////////////////////////////////
+
+			{
+				exclude   : false,
+				desc      : 'getBlock returns block when passed the block ID, the inner or outer DOM element',
+				start     : '<div id="myDefaultBlock">Some default block content</div>',
+				assertions: 3,
+				operation : function(testContainer, testcase) {
+					jQuery('#myDefaultBlock').alohaBlock({
+						'aloha-block-type': 'DefaultBlock'
+					});
+
+					var block1 = BlockManager.getBlock(jQuery('.aloha-block', testContainer).attr('id'));
+					var block2 = BlockManager.getBlock(jQuery('.aloha-block', testContainer));
+					var block3 = BlockManager.getBlock(jQuery('#myDefaultBlock', testContainer));
+					// Check that the returned objects are always the same
+					ok(block1 === block2);
+					ok(block2 === block3);
+					strictEqual(typeof block1, 'object', 'Blocks were no objects');
+				}
+			},
+			{
+				exclude   : false,
+				desc      : 'getBlock returns undefined when passed a wrong ID',
+				start     : '<div id="myDefaultBlock">Some default block content</div>',
+				assertions: 1,
+				operation : function(testContainer, testcase) {
+					jQuery('#myDefaultBlock').alohaBlock({
+						'aloha-block-type': 'DefaultBlock'
+					});
+
+					strictEqual(undefined, BlockManager.getBlock('someUndefinedId'));
+				}
+			},
+			{ exclude : true } // ... just catch trailing commas
+		];
+
+
+		jQuery.each(tests, function(i, testcase) {
+			if (testcase.exclude === true) {
+				return;
 			}
 
-			if ( testcase.module ) {
+			if (testcase.module) {
 				module( testcase.module.toUpperCase() + ' :' );
-				continue;
+				return;
 			}
 
-
-			test(
-				( testcase.desc || 'Test' ).toUpperCase(),
+			asyncTest(
+				(testcase.desc || 'Test').toUpperCase(),
 				testcase.assertions,
 				function() {
 					// Place test contents into our editable, and activate the editable
-					testContainer.html(testcase.start)
+					testContainer.html(testcase.start);
 
-					if ( typeof testcase.operation === 'function' ) {
+					if (typeof testcase.operation === 'function') {
 						testcase.operation(testContainer, testcase);
 					}
-
+					if (testcase.async !== true){
+						start();
+					}
 				}
 			);
-		}
+		});
 	});
 });
