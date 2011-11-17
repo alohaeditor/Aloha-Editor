@@ -24,6 +24,7 @@ function( TestUtils) {
 
 		var tests = [
 			{
+				always: true,
 				async: true,
 				desc: 'Aloha Dependency Loader',
 				assertions: 1,
@@ -47,7 +48,6 @@ function( TestUtils) {
 			///////////////////////////////////////////////////////////////////////
 
 			{
-				exclude   : false,
 				desc      : 'A default block is initialized correctly',
 				start     : '<div id="myDefaultBlock">Some default block content</div>',
 				assertions: 9,
@@ -73,7 +73,6 @@ function( TestUtils) {
 			},
 
 			{
-				exclude   : false,
 				desc      : 'Data attributes from inside the element are available through the attr() notation',
 				start     : '<div id="myDefaultBlock" data-foo="Bar" data-somePropertyWithUppercase="test2">Some default block content2</div>',
 				assertions: 2,
@@ -84,6 +83,25 @@ function( TestUtils) {
 					var block = BlockManager.getBlock(jQuery('#myDefaultBlock', testContainer));
 					strictEqual(block.attr('foo'), 'Bar');
 					strictEqual(block.attr('somepropertywithuppercase'), 'test2', 'Uppercase properties need to be converted to lowercase.');
+				}
+			},
+
+			{
+				exclude: true, // TODO: FIX LATER
+				desc      : 'Inline JavaScript is only executed once, and not executed while blockifying an element',
+				setup     : function(testContainer) {
+					window.thisTestExecutionCount = 0;
+					testContainer[0].innerHTML = '<div id="myDefaultBlock">Some default block contesnt<script type="text/javascript">window.thisTestExecutionCount++;</script></div>';
+				},
+				assertions: 1,
+				operation : function(testContainer, testcase) {
+					jQuery('#myDefaultBlock').alohaBlock({
+						'aloha-block-type': 'DefaultBlock'
+					});
+
+					console.log(testContainer);
+					strictEqual(window.thisTestExecutionCount, 0);
+					delete window.thisTestExecutionCount;
 				}
 			},
 
@@ -178,13 +196,15 @@ function( TestUtils) {
 			{ exclude : true } // ... just catch trailing commas
 		];
 
-
-		var skipAll = false;
-		jQuery.each(tests, function(i, testcase) {
-			if (skipAll === true) return;
-			if (testcase.last === true) {
-				skipAll = true;
+		var runOnlyTestId = null;
+		for(var i=0; i<tests.length; i++) {
+			if (tests[i].only === true) {
+				runOnlyTestId = i;
 			}
+		}
+
+		jQuery.each(tests, function(i, testcase) {
+			if (runOnlyTestId !== null && runOnlyTestId !== i && !testcase.always) return;
 			if (testcase.exclude === true) {
 				return;
 			}
@@ -198,8 +218,11 @@ function( TestUtils) {
 				(testcase.desc || 'Test').toUpperCase(),
 				testcase.assertions,
 				function() {
-					// Place test contents into our editable, and activate the editable
-					testContainer.html(testcase.start);
+					if (testcase.setup) {
+						testcase.setup(testContainer);
+					} else {
+						testContainer.html(testcase.start);
+					}
 
 					if (testcase.async === true){
 						stop();
