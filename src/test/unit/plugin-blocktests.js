@@ -122,6 +122,23 @@ function( TestUtils) {
 				}
 			},
 
+			{
+				exclude   : false,
+				desc      : 'setting a key with attr() which starts with "aloha-block-" throws an error and does not save the key',
+				start     : '<div id="myDefaultBlock" data-foo="Bar">Some default block content</div>',
+				assertions: 2,
+				operation : function(testContainer, testcase) {
+					jQuery('#myDefaultBlock').alohaBlock({
+						'aloha-block-type': 'DefaultBlock'
+					});
+					var block = BlockManager.getBlock(jQuery('#myDefaultBlock', testContainer));
+					block.attr('aloha-block-test1', 'foo');
+					strictEqual(block.attr('aloha-block-test1'), undefined);
+
+					block.attr('aloha-block-type', 'foo');
+					strictEqual(block.attr('aloha-block-type'), 'DefaultBlock');
+				}
+			},
 
 			{ module : 'BlockManager API' },
 			///////////////////////////////////////////////////////////////////////

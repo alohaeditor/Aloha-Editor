@@ -117,10 +117,11 @@ function(Aloha, jQuery, FloatingMenu, Observable, Registry) {
 			// Save attributes on block, but ignore jquery attribute.
 			jQuery.each(attributes, function(k, v) {
 				if (k.indexOf('jQuery') === 0) return;
-				block.attr(k, v, true);
+				//  We use _setAttribute here, as we also want to set internal properties like aloha-block-type.
+				block._setAttribute(k, v);
 			});
 
-			// Remove the attributes from the child element, as they have been moved to the parent element.
+			// Remove the data-attributes from the child element, as they have been moved to the parent element.
 			jQuery.each(element.data(), function(k, v) {
 				element.removeAttr('data-' + k);
 			});

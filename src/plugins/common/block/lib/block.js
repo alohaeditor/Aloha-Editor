@@ -352,12 +352,20 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 			var that = this, attributeChanged = false;
 
 			if (arguments.length >= 2) {
+				if (attributeNameOrObject.substr(0, 12) === 'aloha-block-') {
+					Aloha.Log.error('block/block', 'It is not allowed to set internal block attributes (starting with aloha-block-) through Block.attr() (You tried to set ' + attributeNameOrObject + ')');
+					return;
+				}
 				if (this._getAttribute(attributeNameOrObject) !== attributeValue) {
 					attributeChanged = true;
 				}
 				this._setAttribute(attributeNameOrObject, attributeValue);
 			} else if (typeof attributeNameOrObject === 'object') {
 				jQuery.each(attributeNameOrObject, function(key, value) {
+					if (key.substr(0, 12) === 'aloha-block-') {
+						Aloha.Log.error('block/block', 'It is not allowed to set internal block attributes (starting with aloha-block-) through Block.attr() (You tried to set ' + key + ')');
+						return;
+					}
 					if (that._getAttribute(key) !== value) {
 						attributeChanged = true;
 					}
