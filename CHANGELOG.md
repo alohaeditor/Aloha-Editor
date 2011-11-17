@@ -4,6 +4,8 @@ This document is to serve as a "what has been done" in terms of the [Roadmap](ht
 
 ## 0.20.0-RC6 - 2011/11
 
+- link-plugin/linkbrowser-plugin: Previously the highlight css for a link was not removed after an item was selected by the linkbrowser. Now highlight css will be correctly removed and the cursor will be placed back into the content. Previously the selection was lost.
+
 ## 0.20.0-RC5 - 2011/11
 
 - link-plugin: The link plugin will no longer remove repository data attributes from the link when the user clicks a link and leaves it imediately. Previously those repository data attributes where removed when the repository lookup was not finished on time (before the user left the link). For the user the repository link was transformed to a normal link. This is now fixed.
