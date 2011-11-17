@@ -59,8 +59,8 @@ define([
 			}
 		},
 
-		render: function() {
-			return '<span class="aloha-editable">' + this.attr('title') + '</span> <strong class="price">(' + this.attr('price') + ')</strong>';
+		render: function($innerElement) {
+			$innerElement.html('<span class="aloha-editable">' + this.attr('title') + '</span> <strong class="price">(' + this.attr('price') + ')</strong>');
 		}
 	});
 
@@ -80,8 +80,8 @@ define([
 			}
 		},
 
-		render: function() {
-			return this.attr('title') + ' <strong class="price">(' + this.attr('price') + ' &euro;)</strong>';
+		render: function($innerElement) {
+			$innerElement.html(this.attr('title') + ' <strong class="price">(' + this.attr('price') + ' &euro;)</strong>');
 		}
 	});
 
@@ -136,13 +136,15 @@ define([
 
 	var CustomHandleBlock = block.DefaultBlock.extend({
 		renderToolbar: function() {
-			var that = this;
-			var deleteHandle = jQuery('<span class="block-draghandle-topleft"><a href="#"><span>x</span> delete</a></span>');
-			this.element.prepend(deleteHandle);
-			deleteHandle.click(function() {
-				that.destroy();
-				return false;
-			});
+			if (this._$element.find('.block-draghandle-topleft').length == 0) {
+				var that = this;
+				var deleteHandle = jQuery('<span class="block-draghandle-topleft"><a href="#"><span>x</span> delete</a></span>');
+				this._$element.prepend(deleteHandle);
+				deleteHandle.click(function() {
+					that.destroy();
+					return false;
+				});
+			}
 		}
 	});
 
@@ -188,7 +190,7 @@ define([
 			jQuery.each(this.containerDefinitions, function(name, config) {
 				template.find(config.selector).empty();
 
-				var $container = that.element.find(config.selector).first();
+				var $container = that._$element.find(config.selector).first();
 				var $elements = $container.children(); // TODO: block container only contains other blocks as children, nothing else!
 				$elements.each(function() {
 					var $element = jQuery(this);
