@@ -173,7 +173,7 @@ function(Aloha, Plugin, FloatingMenu, i18n, i18nCore, jQuery) {
 		    FloatingMenu.addButton(
 		      'Aloha.continuoustext',
 		      this.alignLeftButton,
-		      i18n.t('floatingmenu.tab.format'),
+		      i18nCore.t('floatingmenu.tab.format'),
 		      1
 		    );
 
@@ -191,7 +191,7 @@ function(Aloha, Plugin, FloatingMenu, i18n, i18nCore, jQuery) {
 		    FloatingMenu.addButton(
 		      'Aloha.continuoustext',
 		      this.alignCenterButton,
-		      i18n.t('floatingmenu.tab.format'),
+		      i18nCore.t('floatingmenu.tab.format'),
 		      1
 		    );
 
@@ -209,7 +209,7 @@ function(Aloha, Plugin, FloatingMenu, i18n, i18nCore, jQuery) {
 		    FloatingMenu.addButton(
 		      'Aloha.continuoustext',
 		      this.alignRightButton,
-		      i18n.t('floatingmenu.tab.format'),
+		      i18nCore.t('floatingmenu.tab.format'),
 		      1
 		    );
 
@@ -227,7 +227,7 @@ function(Aloha, Plugin, FloatingMenu, i18n, i18nCore, jQuery) {
 		    FloatingMenu.addButton(
 		      'Aloha.continuoustext',
 		      this.alignJustifyButton,
-		      i18n.t('floatingmenu.tab.format'),
+		      i18nCore.t('floatingmenu.tab.format'),
 		      1
 		    );
 
