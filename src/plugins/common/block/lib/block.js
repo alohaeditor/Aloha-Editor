@@ -98,7 +98,7 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 			// Register event handlers for activating an Aloha Block
 			this._$element.bind('click', function(event) {
 				that.activate(event.target);
-				return false;
+				event.stopPropagation();
 			});
 
 			Aloha.bind('aloha-block-selected', function(event,obj) {
