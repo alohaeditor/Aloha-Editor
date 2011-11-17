@@ -25,7 +25,6 @@ define([
 			};
 		},
 		render: function($innerElement) {
-
 			// Mapping Stock-Symbol -- Company Name (Fake!)
 			switch (this.attr('symbol')) {
 				case 'MSFT':
@@ -39,11 +38,11 @@ define([
 			}
 
 			var that = this;
-			this.element.mouseover(function() {
-				that.element.append('<span class="stock-quote-overlay company-' + that.attr('symbol') + '"></span>');
+			$innerElement.mouseover(function() {
+				$innerElement.append('<span class="stock-quote-overlay company-' + that.attr('symbol') + '"></span>');
 			});
-			this.element.mouseout(function() {
-				that.element.find('.stock-quote-overlay').remove();
+			$innerElement.mouseout(function() {
+				$innerElement.find('.stock-quote-overlay').remove();
 			});
 		}
 	});

@@ -105,6 +105,21 @@ function( TestUtils) {
 				}
 			},
 
+			{
+				desc      : 'Attached event handlers are not removed',
+				start     : '<div id="myDefaultBlock" data-foo="Bar" data-somePropertyWithUppercase="test2">Some default block content2</div>',
+				assertions: 1,
+				operation : function(testContainer, testcase) {
+					jQuery('#myDefaultBlock').click(function() {
+						ok(true);
+					})
+					jQuery('#myDefaultBlock').alohaBlock({
+						'aloha-block-type': 'DefaultBlock'
+					});
+					jQuery('#myDefaultBlock').click();
+				}
+			},
+
 			{ module : 'Block API' },
 			///////////////////////////////////////////////////////////////////////
 			{

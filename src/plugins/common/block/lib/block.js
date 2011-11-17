@@ -289,12 +289,8 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 
 			this._currentlyRendering = true;
 
-			var result = this.render(this.$innerElement);
-
-			// Convenience for simple string content
-			if (typeof result === 'string') {
-				this.$innerElement.html(result);
-			}
+			// TODO: rename to "update"?
+			this.render(this.$innerElement);
 
 			this._renderSurroundingElements();
 
@@ -302,9 +298,6 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 		},
 
 		_renderSurroundingElements: function() {
-			this._$element.empty();
-			this._$element.append(this.$innerElement);
-
 			this.createEditables(this.$innerElement);
 
 			this.renderToolbar();
@@ -324,6 +317,8 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 		 * @param {jQuery} innerElement
 		 */
 		createEditables: function(innerElement) {
+			// TODO: only create them if they are no aloha element yet...
+			// TODO: should only happen inside Aloha
 			innerElement.find('.aloha-editable').aloha();
 		},
 
@@ -333,7 +328,9 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 		 * Template method to render custom block UI.
 		 */
 		renderToolbar: function() {
-			this._$element.prepend('<span class="aloha-block-draghandle"></span>');
+			if (this._$element.find('.aloha-block-draghandle').length == 0) {
+				this._$element.prepend('<span class="aloha-block-draghandle"></span>');
+			}
 		},
 
 		/**
