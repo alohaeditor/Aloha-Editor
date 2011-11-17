@@ -33,7 +33,7 @@ function(Aloha, jQuery, FloatingMenu, Observable, Registry) {
 		 */
 
 		defaults: {
-			'block-type': 'DefaultBlock'
+			'aloha-block-type': 'DefaultBlock'
 		},
 
 		/**
@@ -106,13 +106,13 @@ function(Aloha, jQuery, FloatingMenu, Observable, Registry) {
 
 			element.contentEditable(false);
 
-			if (!this.blockTypes.has(attributes['block-type'])) {
-				Aloha.Log.error('block/blockmanager', 'Block Type ' + attributes['block-type'] + ' not found!');
+			if (!this.blockTypes.has(attributes['aloha-block-type'])) {
+				Aloha.Log.error('block/blockmanager', 'Block Type ' + attributes['aloha-block-type'] + ' not found!');
 				return;
 			}
 
-			block = new (this.blockTypes.get(attributes['block-type']))(element);
-			block.element.addClass('aloha-block-' + attributes['block-type']);
+			block = new (this.blockTypes.get(attributes['aloha-block-type']))(element);
+			block._$element.addClass('aloha-block-' + attributes['aloha-block-type']);
 
 			// Save attributes on block, but ignore jquery attribute.
 			jQuery.each(attributes, function(k, v) {

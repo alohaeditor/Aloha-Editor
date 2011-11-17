@@ -12,20 +12,23 @@
 
 define(
 [ 'testutils', '../../lib/aloha/jquery', 'htmlbeautifier' ],
-function( TestUtils, jQueryq ) {
+function( TestUtils ) {
 	'use strict';
+	var jQuery = Aloha.jQuery;
 
+	var htmlSourceCleanup = function($domNode) {
 
-	//
-	//	  NB:
-	//	-----------------------------------------------------------------------
-	//	  selectRow and selectColumns has an issue where index 0 selects the
-	//	  helper row/column instead of the first editable row/column.
-	//	  All following tests will work around this fault by using 1-indexing
-	//	  with selectcolumns rather than 0 based indexing.
-	//	  Where this is done, we note that we have "corrected" the index.
-	//	-----------------------------------------------------------------------
-	//
+		var result = $domNode.html().toLowerCase();
+
+		// Internet Explorer does not have quotes around attribute
+		// values, so we will add them
+
+		result = result.replace(
+			/([\w-]+)\s*=\s*([\w-]+)([\s>])/g, function ( str, $n, $v, $e, offset, s ) {
+			return $n + '="' + $v + '"' + $e;
+		});
+		return style_html( result );
+	}
 
 	var tests = [
 
@@ -34,18 +37,30 @@ function( TestUtils, jQueryq ) {
 
 		{
 			exclude   : false,
-			desc      : 'Activate a block',
+			desc      : 'A default block is initialized correctly',
 			start     : '<div id="myDefaultBlock">Some default block content</div>',
-			expected  : '<foo></foo>',
-			operation : function () {
-				console.log("Op");
-				console.log(jQuery.fn);
-				console.log(jQuery('#myDefaultBlock').alohaBlock);
+			assertions: 9,
+			operation : function(testContainer, testcase) {
 				jQuery('#myDefaultBlock').alohaBlock({
-					'block-type': 'DefaultBlock'
+					'aloha-block-type': 'DefaultBlock'
 				});
+				var $block = jQuery('.aloha-block', testContainer);
+
+				// Block Wrapper assertions
+				strictEqual($block.attr('contenteditable'), 'false', 'The block div wrapper has not set contenteditable=false.');
+				ok($block.hasClass('aloha-block'), 'The block div wrapper does not have the aloha-block CSS class.');
+				ok($block.hasClass('aloha-block-DefaultBlock'), 'The block div wrapper does not have the aloha-block-DefaultBlock CSS class.');
+				strictEqual($block.attr('data-aloha-block-type'), 'DefaultBlock', 'The block div wrapper does not have the data-aloha-block-type set correctly.');
+				equal($block.attr('data-block-type'), undefined, 'The block div wrapper has data-block-type set, although it shall not be used anymore by the framework.');
+
+				// content wrapper assertions
+				strictEqual(jQuery('#myDefaultBlock', testContainer).length, 1, 'The "default block" has been duplicated somehow...');
+				ok($block.find('#myDefaultBlock').hasClass('aloha-block-inner'), 'The inner wrapper does not have the aloha-block-inner CSS class set.');
+				strictEqual(jQuery('.aloha-block #myDefaultBlock', testContainer).length, 1, 'The given div wrapper has not been wrapped by the .aloha-block element');
+				strictEqual(jQuery('.aloha-block #myDefaultBlock', testContainer).html(), 'Some default block content', 'The block content has been modified');
 			}
 		},
+
 
 		{ exclude : true } // ... just catch trailing commas
 	];
@@ -69,32 +84,18 @@ function( TestUtils, jQueryq ) {
 				continue;
 			}
 
-			start = style_html( testcase.start );
-			expected = style_html( testcase.expected );
-
-			// Place test contents into our editable, and activate the editable
-			testContainer.html(start)
-
-			if ( typeof testcase.operation === 'function' ) {
-				testcase.operation();
-			}
 
 			test(
 				( testcase.desc || 'Test' ).toUpperCase(),
-				{ start: start, expected: expected },
+				testcase.assertions,
 				function() {
-					var result = testContainer.html().toLowerCase();
+					// Place test contents into our editable, and activate the editable
+					testContainer.html(testcase.start)
 
-					// Internet Explorer does not have quotes around attribute
-					// values, so we will add them
+					if ( typeof testcase.operation === 'function' ) {
+						testcase.operation(testContainer, testcase);
+					}
 
-					result = result.replace(
-						/([\w-]+)\s*=\s*([\w-]+)([\s>])/g, function ( str, $n, $v, $e, offset, s ) {
-						return $n + '="' + $v + '"' + $e;
-					});
-
-					result = style_html( result );
-					deepEqual( result, expected, 'Check Operation Result' );
 				}
 			);
 		}

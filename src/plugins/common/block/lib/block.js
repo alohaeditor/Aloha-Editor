@@ -14,6 +14,10 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 	"use strict";
 
 	/**
+	 * An aloha block has the following special properties, being readable through the
+	 * "attr" function:
+	 * - aloha-block-type -- TYPE of the AlohaBlock as registered by the BlockManager
+	 *
 	 * @name block.block.AbstractBlock
 	 * @class An abstract block that must be used as a base class for custom blocks
 	 */
@@ -40,11 +44,10 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 		id: null,
 
 		/**
-		 * The wrapper element around the inner element
+		 * The wrapper element of the block. Internal.
 		 * @type jQuery
 		 */
-		// TODO: Rename to $element
-		element: null,
+		_$element: null,
 
 		/**
 		 * The inner element which is containing the actual user-provided content
@@ -84,22 +87,22 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 
 			this._domElementType = GENTICS.Utils.Dom.isBlockLevelElement($innerElement[0]) ? 'block' : 'inline';
 			$innerElement.wrap('<' + this._getWrapperElementType() + ' />');
-			this.element = $innerElement.parent();
-			this.element.contentEditable(false);
+			this._$element = $innerElement.parent();
+			this._$element.contentEditable(false);
 
-			this.element.attr('id', this.id);
+			this._$element.attr('id', this.id);
 
-			this.element.addClass('aloha-block');
+			this._$element.addClass('aloha-block');
 			$innerElement.addClass('aloha-block-inner');
 
 			// Register event handlers for activating an Aloha Block
-			this.element.bind('click', function(event) {
+			this._$element.bind('click', function(event) {
 				that.activate(event.target);
 				return false;
 			});
 
 			Aloha.bind('aloha-block-selected', function(event,obj) {
-				if (that.element.get(0) === obj) {
+				if (that._$element.get(0) === obj) {
 					that.activate();
 				}
 			});
@@ -107,7 +110,7 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 			// We need to tell Aloha that we handle the event already;
 			// else a selection of block contents will *not* select
 			// the block.
-			this.element.bind('mousedown', function() {
+			this._$element.bind('mousedown', function() {
 				Aloha.eventHandled = true;
 			}).bind('focus', function() {
 				Aloha.eventHandled = true;
@@ -122,7 +125,7 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 		serialize: function() {
 			// TODO: use ALL attributes, not just data-....
 			return {
-				tag: this.element[0].tagName,
+				tag: this._$element[0].tagName,
 				attributes: this._getAttributes(), // contains data-properties AND about
 				classes: this.$innerElement.attr('class') // TODO: filter out aloha-block-active...
 			}
@@ -130,7 +133,7 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 
 		_registerAsBlockified: function() {
 			this._initialized = true;
-			this.element.trigger('block-initialized');
+			this._$element.trigger('block-initialized');
 		},
 
 		/**
@@ -173,12 +176,12 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 			this._selectBlock(clickedDomNode);
 
 			// Set scope to current block
-			FloatingMenu.setScope('Aloha.Block.' + this.attr('block-type'));
+			FloatingMenu.setScope('Aloha.Block.' + this.attr('aloha-block-type'));
 
 			this._highlight();
 			activeBlocks.push(this);
 
-			this.element.parents('.aloha-block').each(function() {
+			this._$element.parents('.aloha-block').each(function() {
 				var block = BlockManager.getBlock(this);
 				delete previouslyActiveBlocks[block.id];
 
@@ -208,8 +211,8 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 
 			this.unbindAll();
 
-			this.element.fadeOut('fast', function() {
-				that.element.remove();
+			this._$element.fadeOut('fast', function() {
+				that._$element.remove();
 				BlockManager.trigger('block-selection-change', []);
 			});
 		},
@@ -219,13 +222,13 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 		 */
 		_highlight: function() {
 			BlockManager._setActive(this);
-			this.element.addClass('aloha-block-active');
+			this._$element.addClass('aloha-block-active');
 		},
 
 
 		_unhighlight: function() {
 			BlockManager._setInactive(this);
-			this.element.removeClass('aloha-block-active');
+			this._$element.removeClass('aloha-block-active');
 		},
 
 		_selectBlock: function(domNode) {
@@ -235,12 +238,12 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 				return;
 			}
 
-			if (this.element.parents('.aloha-editable').length == 0) {
+			if (this._$element.parents('.aloha-editable').length == 0) {
 				// If the block is not inside an editable, there is no need to select it (as it gets highlighted in an ugly way then)
 				return;
 			}
 
-			GENTICS.Utils.Dom.selectDomNode(this.element[0]);
+			GENTICS.Utils.Dom.selectDomNode(this._$element[0]);
 		},
 
 		/**
@@ -249,7 +252,7 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 		deactivate: function() {
 			var that = this;
 			this._unhighlight();
-			this.element.parents('.aloha-block').each(function() {
+			this._$element.parents('.aloha-block').each(function() {
 				that._unhighlight();
 			});
 			BlockManager.trigger('block-selection-change', []);
@@ -260,7 +263,7 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 		 * @returns {Boolean} True if this block is active
 		 */
 		isActive: function() {
-			return this.element.hasClass('aloha-block-active');
+			return this._$element.hasClass('aloha-block-active');
 		},
 
 		/**
@@ -299,8 +302,8 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 		},
 
 		_renderSurroundingElements: function() {
-			this.element.empty();
-			this.element.append(this.$innerElement);
+			this._$element.empty();
+			this._$element.append(this.$innerElement);
 
 			this.createEditables(this.$innerElement);
 
@@ -330,7 +333,7 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 		 * Template method to render custom block UI.
 		 */
 		renderToolbar: function() {
-			this.element.prepend('<span class="aloha-block-draghandle"></span>');
+			this._$element.prepend('<span class="aloha-block-draghandle"></span>');
 		},
 
 		/**
@@ -370,9 +373,9 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 
 		_setAttribute: function(name, value) {
 			if (name === 'about') {
-				this.element.attr('about', value);
+				this._$element.attr('about', value);
 			} else {
-				this.element.attr('data-' + name, value);
+				this._$element.attr('data-' + name, value);
 			}
 		},
 
@@ -384,7 +387,7 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 			var attributes = {};
 
 			// element.data() not always up-to-date, that's why we iterate over the attributes directly.
-			jQuery.each(this.element[0].attributes, function(i, attribute) {
+			jQuery.each(this._$element[0].attributes, function(i, attribute) {
 				if (attribute.name === 'about') {
 					attributes['about'] = attribute.value;
 				} else if (attribute.name.substr(0, 5) === 'data-') {
@@ -405,10 +408,8 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 	/** @lends block.block.DefaultBlock */
 	{
 		init: function() {
-			this.attr('default-content', this.element.html());
 		},
 		render: function() {
-			return this.attr('default-content');
 		}
 	});
 
@@ -422,7 +423,7 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 	{
 		title: 'Debugging',
 		render: function() {
-			this.element.css({display: 'block'});
+			this._$element.css({display: 'block'});
 			var renderedAttributes = '<table class="debug-block">';
 			jQuery.each(this.attr(), function(k, v) {
 				renderedAttributes += '<tr><th>' + k + '</th><td>' + v + '</td></tr>';
