@@ -124,7 +124,6 @@ function(Aloha, jQuery, FloatingMenu, Observable, Registry) {
 			jQuery.each(element.data(), function(k, v) {
 				element.removeAttr('data-' + k);
 			});
-			element.removeAttr('about');
 
 			// Register block
 			this.blocks.register(block.getId(), block);
@@ -161,10 +160,7 @@ function(Aloha, jQuery, FloatingMenu, Observable, Registry) {
 				this.defaults,
 				settingsDefaults,
 				instanceDefaults,
-				blockElement.data(),
-				{	// Override the "about" property
-					about: blockElement.attr('about')
-				}
+				blockElement.data()
 			);
 		},
 

@@ -72,6 +72,56 @@ function( TestUtils) {
 				}
 			},
 
+			{
+				exclude   : false,
+				desc      : 'Data attributes from inside the element are available through the attr() notation',
+				start     : '<div id="myDefaultBlock" data-foo="Bar" data-somePropertyWithUppercase="test2">Some default block content2</div>',
+				assertions: 2,
+				operation : function(testContainer, testcase) {
+					jQuery('#myDefaultBlock').alohaBlock({
+						'aloha-block-type': 'DefaultBlock'
+					});
+					var block = BlockManager.getBlock(jQuery('#myDefaultBlock', testContainer));
+					strictEqual(block.attr('foo'), 'Bar');
+					strictEqual(block.attr('somepropertywithuppercase'), 'test2', 'Uppercase properties need to be converted to lowercase.');
+				}
+			},
+
+			{ module : 'Block API' },
+			///////////////////////////////////////////////////////////////////////
+			{
+				exclude   : false,
+				desc      : 'fetching attr() with uppercase key is the same as with lowercase key',
+				start     : '<div id="myDefaultBlock" data-foo="Bar">Some default block content</div>',
+				//assertions: 1,
+				operation : function(testContainer, testcase) {
+					jQuery('#myDefaultBlock').alohaBlock({
+						'aloha-block-type': 'DefaultBlock'
+					});
+					var block = BlockManager.getBlock(jQuery('#myDefaultBlock', testContainer));
+
+					strictEqual(block.attr('foo'), 'Bar');
+					strictEqual(block.attr('FoO'), 'Bar');
+				}
+			},
+
+			{
+				exclude   : false,
+				desc      : 'setting attr() with uppercase key is the same as with lowercase key',
+				start     : '<div id="myDefaultBlock" data-foo="Bar">Some default block content</div>',
+				assertions: 1,
+				operation : function(testContainer, testcase) {
+					jQuery('#myDefaultBlock').alohaBlock({
+						'aloha-block-type': 'DefaultBlock'
+					});
+					var block = BlockManager.getBlock(jQuery('#myDefaultBlock', testContainer));
+					block.attr('test', 'mytest1');
+					block.attr('TeSt', 'mytest2');
+
+					strictEqual(block.attr('test'), 'mytest2');
+				}
+			},
+
 
 			{ module : 'BlockManager API' },
 			///////////////////////////////////////////////////////////////////////
@@ -112,7 +162,12 @@ function( TestUtils) {
 		];
 
 
+		var skipAll = false;
 		jQuery.each(tests, function(i, testcase) {
+			if (skipAll === true) return;
+			if (testcase.last === true) {
+				skipAll = true;
+			}
 			if (testcase.exclude === true) {
 				return;
 			}
@@ -122,19 +177,21 @@ function( TestUtils) {
 				return;
 			}
 
-			asyncTest(
+			test(
 				(testcase.desc || 'Test').toUpperCase(),
 				testcase.assertions,
 				function() {
 					// Place test contents into our editable, and activate the editable
 					testContainer.html(testcase.start);
 
+					if (testcase.async === true){
+						stop();
+					}
+
 					if (typeof testcase.operation === 'function') {
 						testcase.operation(testContainer, testcase);
 					}
-					if (testcase.async !== true){
-						start();
-					}
+
 				}
 			);
 		});

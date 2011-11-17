@@ -126,7 +126,7 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 			// TODO: use ALL attributes, not just data-....
 			return {
 				tag: this._$element[0].tagName,
-				attributes: this._getAttributes(), // contains data-properties AND about
+				attributes: this._getAttributes(), // contains data-properties
 				classes: this.$innerElement.attr('class') // TODO: filter out aloha-block-active...
 			}
 		},
@@ -337,7 +337,11 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 		},
 
 		/**
-		 * Get or set one or many attributes
+		 * Get or set one or many attribute, similar to the jQuery attr() function.
+		 *
+		 * The attribute keys are converted internally to lowercase,
+		 * so attr('foo', 'bar') and attr('FoO', 'bar') are the same internally.
+		 * The same applies to reading.
 		 *
 		 * @api
 		 * @param {String|Object} attributeNameOrObject
@@ -372,15 +376,11 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 		},
 
 		_setAttribute: function(name, value) {
-			if (name === 'about') {
-				this._$element.attr('about', value);
-			} else {
-				this._$element.attr('data-' + name, value);
-			}
+			this._$element.attr('data-' + name.toLowerCase(), value);
 		},
 
 		_getAttribute: function(name) {
-			return this._getAttributes()[name];
+			return this._getAttributes()[name.toLowerCase()];
 		},
 
 		_getAttributes: function() {
@@ -388,10 +388,8 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 
 			// element.data() not always up-to-date, that's why we iterate over the attributes directly.
 			jQuery.each(this._$element[0].attributes, function(i, attribute) {
-				if (attribute.name === 'about') {
-					attributes['about'] = attribute.value;
-				} else if (attribute.name.substr(0, 5) === 'data-') {
-					attributes[attribute.name.substr(5)] = attribute.value;
+				if (attribute.name.substr(0, 5) === 'data-') {
+					attributes[attribute.name.substr(5).toLowerCase()] = attribute.value;
 				}
 			});
 
