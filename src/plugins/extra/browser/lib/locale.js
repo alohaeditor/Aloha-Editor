@@ -3,8 +3,6 @@ define( [
 	'i18n!browser/nls/i18n',
 	'jquery-plugin!browser/../vendor/grid.locale.en',
 	'jquery-plugin!browser/../vendor/grid.locale.de'
-	// 'browser/locale.en',
-	// 'browser/locale.de'
 ], function ( jQuery, i18n ) {
 	var locale = i18n[ 'jgrid.locale' ] || 'en';
 	if ( typeof jQuery.jgrid === 'undefined' ) {
