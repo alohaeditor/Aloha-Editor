@@ -6,8 +6,22 @@
  * the fact that the selection is gone
  */
 
-define( [
+/**
+ * Aloha Table Plugin
+ * ------------------
+ * This plugin provides advanced support for manipulating tables in Aloha
+ * Editables.
+ * Nested tables are not support. If nested tables are pasted into the
+ * editable, they will simply be left alone.
+ * Each (non-nested) table in the editable will have a corresponding Aloha
+ * Table instance created for it, which will maintain internal state, and
+ * information related to its DOM element.
+ *
+ * @todo: - selectRow/selectColumn should take into account the helper row/column.
+ *			ie: selectRow(0) and selectColumn(0), should be zero indexed
+ */
 
+define( [
 	'aloha',
 	'aloha/jquery',
 	'aloha/floatingmenu',
@@ -15,10 +29,10 @@ define( [
 	'table/table-cell',
 	'table/table-selection',
 	'table/table-plugin-utils'
-
-], function ( Aloha, jQuery, FloatingMenu, i18n, TableCell, TableSelection, Utils ) {
-	var GENTICS   = window.GENTICS,
-	    undefined = void 0;
+], function ( Aloha, jQuery, FloatingMenu, i18n, TableCell, TableSelection,
+	          Utils ) {
+	var undefined = void 0;
+	var GENTICS = window.GENTICS;
 	
 	/**
 	 * Constructor of the table object
@@ -249,34 +263,35 @@ define( [
 	 *
 	 * @return void
 	 */
-	Table.prototype.activate = function() {
-		if (this.isActive) {
+	Table.prototype.activate = function () {
+		if ( this.isActive ) {
 			return;
 		}
-
+		
 		var that = this,
 		    htmlTableWrapper,
 		    tableWrapper;
-
+		
 		// alter the table attributes
-		this.obj.addClass(this.get('className'));
-		this.obj.contentEditable(false);
-
+		this.obj.addClass( this.get( 'className' ) );
+		this.obj.contentEditable( false );
+		
 		// set an id to the table if not already set
-		if (this.obj.attr('id') == '') {
-			this.obj.attr('id', GENTICS.Utils.guid() );
+		if ( this.obj.attr( 'id' ) == '' ) {
+			this.obj.attr( 'id', GENTICS.Utils.guid() );
 		}
-
+		
 		// unset the selection type
 		this.selection.selectionType = undefined;
-
-		this.obj.bind('keydown', function(jqEvent){
-			if (!jqEvent.ctrlKey && !jqEvent.shiftKey) {
-				if (that.selection.selectedCells.length > 0 && that.selection.selectedCells[0].length > 0) {
-					that.selection.selectedCells[0][0].firstChild.focus();
+		
+		this.obj.bind( 'keydown', function ( jqEvent ) {
+			if ( !jqEvent.ctrlKey && !jqEvent.shiftKey ) {
+				if ( that.selection.selectedCells.length > 0 &&
+						that.selection.selectedCells[ 0 ].length > 0 ) {
+					that.selection.selectedCells[ 0 ][ 0 ].firstChild.focus();
 				}
 			}
-		});
+		} );
 		
 		/*
 		We need to make sure that when the user has selected text inside a
@@ -305,9 +320,9 @@ define( [
 	//		return false;
 	//	});
 
-		this.obj.bind('mousedown', function(jqEvent) {
+		this.obj.bind( 'mousedown', function ( jqEvent ) {
 			// focus the table if not already done
-			if (!that.hasFocus) {
+			if ( !that.hasFocus ) {
 				that.focus();
 			}
 
@@ -325,16 +340,18 @@ define( [
 			jqEvent.stopPropagation();
 			jqEvent.preventDefault();
 			return false;
-		});
+		} );
 
 		// ### create a wrapper for the table (@see HINT below)
 		// wrapping div for the table to suppress the display of the resize-controls of
 		// the editable divs within the cells
-		tableWrapper = jQuery('<div class="' + this.get('classTableWrapper') + '"></div>');
-		tableWrapper.contentEditable(false);
+		tableWrapper = jQuery(
+			'<div class="' + this.get( 'classTableWrapper' ) + '"></div>'
+		);
+		tableWrapper.contentEditable( false );
 
 		// wrap the tableWrapper around the table
-		this.obj.wrap(tableWrapper);
+		this.obj.wrap( tableWrapper );
 
 		// :HINT The outest div (Editable) of the table is still in an editable
 		// div. So IE will surround the the wrapper div with a resize-border
@@ -342,37 +359,29 @@ define( [
 		// Disable resize and selection of the controls (only IE)
 		// Events only can be set to elements which are loaded from the DOM (if they
 		// were created dynamically before) ;)
-		htmlTableWrapper = this.obj.parents('.' + this.get('classTableWrapper'));
-		htmlTableWrapper.get(0).onresizestart   = function(e) { return false; };
-		htmlTableWrapper.get(0).oncontrolselect = function(e) { return false; };
-		htmlTableWrapper.get(0).ondragstart = function(e) { return false; };
-		htmlTableWrapper.get(0).onmovestart = function(e) { return false; };
-		htmlTableWrapper.get(0).onselectstart = function(e) { return false; };
+		htmlTableWrapper = this.obj.parents( '.' + this.get( 'classTableWrapper' ) );
+		htmlTableWrapper.get( 0 ).onresizestart = function ( e ) { return false; };
+		htmlTableWrapper.get( 0 ).oncontrolselect = function ( e ) { return false; };
+		htmlTableWrapper.get( 0 ).ondragstart = function ( e ) { return false; };
+		htmlTableWrapper.get( 0 ).onmovestart = function ( e ) { return false; };
+		htmlTableWrapper.get( 0 ).onselectstart = function ( e ) { return false; };
 
-		this.tableWrapper = this.obj.parents('.' + this.get('classTableWrapper')).get(0);
+		this.tableWrapper = this.obj.parents( '.' + this.get( 'classTableWrapper' ) ).get( 0 );
 
-		jQuery(this.cells).each(function () {
+		jQuery( this.cells ).each( function () {
 			this.activate();
-		});
+		} );
 
 		// after the cells where replaced with contentEditables ... add selection cells
 		// first add the additional columns on the left side
 		this.attachSelectionColumn();
 		// then add the additional row at the top
 		this.attachSelectionRow();
-
-		// make the caption editable
-
 		this.makeCaptionEditable();
-
-		// check WAI status
 		this.checkWai();
-
-		// set flag, that the table is activated
 		this.isActive = true;
 
-		// throw a new event when the table has been activated
-		Aloha.trigger('aloha-table-activated');
+		Aloha.trigger( 'aloha-table-activated' );
 	};
 
 	/**
