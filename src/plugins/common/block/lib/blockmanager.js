@@ -100,6 +100,12 @@ function(Aloha, jQuery, FloatingMenu, Observable, Registry) {
 			var attributes, block;
 			element = jQuery(element);
 
+			var tagName = element[0].tagName.toLowerCase();
+			if (tagName !== 'span' && tagName !== 'div') {
+				Aloha.Log.error('block/blockmanager', 'Blocks can only be created from <div> or <span> element. You passed ' + tagName + '.');
+				return;
+			}
+
 			// TODO: check if object is already Block-ified
 
 			attributes = this.getConfig(element, instanceDefaults);

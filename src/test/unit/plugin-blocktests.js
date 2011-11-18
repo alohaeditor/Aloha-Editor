@@ -120,6 +120,19 @@ function( TestUtils) {
 				}
 			},
 
+			{
+				desc      : 'Trying to create a block from an element which is no div or span throws error',
+				start     : '<img id="myDefaultBlock" />',
+				assertions: 1,
+				operation : function(testContainer, testcase) {
+					jQuery('#myDefaultBlock').alohaBlock({
+						'aloha-block-type': 'DefaultBlock'
+					});
+
+					strictEqual(jQuery('.aloha-block', testContainer).length, 0, 'Image object has been blockified, although this should not happen.');
+				}
+			},
+
 			{ module : 'Block API' },
 			///////////////////////////////////////////////////////////////////////
 			{
