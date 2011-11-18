@@ -98,8 +98,9 @@ define([
 		init: function() {
 			this.attr('image', this.$element.find('img').attr('src'));
 		},
-		render: function($element) {
+		update: function($element, postProcessFn) {
 			$element.find('img').attr('src', this.attr('image'));
+			postProcessFn();
 		}
 	});
 

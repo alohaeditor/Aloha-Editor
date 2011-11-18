@@ -272,7 +272,7 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 
 			this._currentlyRendering = true;
 
-			this._update(this.$element, function() {
+			this.update(this.$element, function() {
 				that._postProcessElementIfNeeded();
 			});
 
