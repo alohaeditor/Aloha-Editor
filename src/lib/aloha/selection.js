@@ -1994,25 +1994,6 @@ function correctRange ( range ) {
 		removeAllRanges: function() {
 			this._nativeSelection.removeAllRanges();
 		},
-				
-		/**
-		 * prevents the next aloha-selection-changed event from
-		 * being triggered
-		 * @param flag boolean defines weather to update the selection on change or not
-		 */
-		preventedChange: function( flag ) {
-//			this.preventChange = typeof flag === 'undefined' ? false : flag;
-		},
-
-		/**
-		 * will return wheter selection change event was prevented or not, and reset the
-		 * preventSelectionChangedFlag
-		 * @return boolean true if aloha-selection-change event
-		 *         was prevented
-		 */
-		isChangedPrevented: function() {
-//			return this.preventSelectionChangedFlag;
-		},
 
 		/**
 		 * INFO: Method is used for integration with Gentics
