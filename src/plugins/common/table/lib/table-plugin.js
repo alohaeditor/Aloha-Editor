@@ -345,7 +345,9 @@ define( [
 		var registry = this.TableRegistry;
 		
 		for ( var i = 0; i < registry.length; i++ ) {
-			if ( registry[ i ].obj[ 0 ].id == table.id ) {
+			// We need to find exactly the same object from the 
+			// registry since we could also deal with cloned objects
+			if ( registry[ i ].obj[ 0 ] === table ) {
 				return i;
 			}
 		}

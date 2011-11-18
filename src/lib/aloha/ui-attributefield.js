@@ -89,6 +89,16 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 	finishEditing : function () {
 		var target = jQuery(this.getTargetObject()), color;
 		
+		// Remove the highlighting and restore original color if was set before
+		if ( target ) {
+			if ( color = target.attr('data-original-background-color')  ) {
+				jQuery(target).css('background-color', color);
+			} else {
+				jQuery(target).css('background-color', '');
+			}
+			jQuery(target).removeAttr('data-original-background-color');
+		}
+		
 		// Check whether the attribute was changed since the last focus event. Return early when the attribute was not changed.
 		if(lastAttributeValue === target.attr(this.targetAttribute)) {
 			return;
@@ -98,15 +108,7 @@ Ext.ux.AlohaAttributeField = Ext.extend(Ext.form.ComboBox, {
 		if (!this.resourceItem) {
 			RepositoryManager.markObject(this.targetObject);
 		}
-		// remove the highlighting and restore original color if was set before
-		if ( target ) {
-			if ( color = target.attr('data-original-background-color')  ) {
-				jQuery(target).css('background-color', color);
-			} else {
-				jQuery(target).css('background-color', '');
-			}
-			jQuery(target).removeAttr('data-original-background-color');
-		}
+
 		if (this.getValue() === '') {
 			if (this.wrap) {
 				jQuery(this.wrap.dom.children[0]).css("color", "#AAA");

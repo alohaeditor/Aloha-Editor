@@ -2,7 +2,13 @@
 
 This document is to serve as a "what has been done" in terms of the [Roadmap](http://aloha-editor.org/wiki/Roadmap)
 
+## 0.20.0-RC7 - 2011/11
+
+
 ## 0.20.0-RC6 - 2011/11
+
+- link-plugin/linkbrowser-plugin: Previously the highlight css for a link was not removed after an item was selected by the linkbrowser. Now highlight css will be correctly removed and the cursor will be placed back into the content. Previously the selection was lost.
+- table-plugin: Fixed a bug that deactivated tables after 5 seconds. This issue was caused by a failure within the table registry. Instead of loading the cloned object the original table was loaded and deactivated.
 
 ## 0.20.0-RC5 - 2011/11
 
