@@ -458,8 +458,12 @@ define( [
 					) {
 						// could be a link better leave it as it is
 					} else {
-						// the user searched for something and aborted restore original value
-						// that.hrefField.setValue(that.hrefField.getValue());
+						// the user searched for something and aborted
+						// restore original value
+						that.hrefField.setValue(that.hrefField.getValue());
+						// or clean the field value
+						// that.hrefField.setValue();
+						that.hideComboList();
 					}
 				}
 
@@ -705,6 +709,15 @@ define( [
 			jQuery( '.x-layer x-combo-list,' +
 				    '.x-combo-list-inner,' +
 				    '.x-combo-list' ).show();
+		},
+		
+		/**
+		 * Hide all the ui-attributefield elements
+		 */
+		hideComboList: function () {
+			jQuery( '.x-layer x-combo-list,' +
+				    '.x-combo-list-inner,' +
+				    '.x-combo-list' ).hide();
 		},
 		
 		/**
