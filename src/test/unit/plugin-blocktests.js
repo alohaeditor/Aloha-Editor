@@ -185,6 +185,39 @@ function( TestUtils) {
 				}
 			},
 
+			{
+				exclude   : false,
+				desc      : 'Selection handling works with non-nested blocks',
+				start     : '<div id="block1">Some default block content</div> <div id="block2">Some default block content</div>',
+				assertions: 8,
+				operation : function(testContainer, testcase) {
+					jQuery('#block1').alohaBlock({
+						'aloha-block-type': 'DefaultBlock'
+					});
+					jQuery('#block2').alohaBlock({
+						'aloha-block-type': 'DefaultBlock'
+					});
+
+					var block1 = BlockManager.getBlock(jQuery('#block1', testContainer));
+					var block2 = BlockManager.getBlock(jQuery('#block2', testContainer));
+
+					ok(!block1.isActive(), 'block 1 is not active');
+					ok(!block2.isActive(), 'block 2 is not active');
+
+					block1.activate();
+					ok(true, '--> activated block1');
+
+					ok(block1.isActive(), 'block 1 is active after activating it');
+					ok(!block2.isActive(), 'block 2 is not active after activating block1');
+
+					block2.activate();
+					ok(true, '--> activated block2');
+
+					ok(!block1.isActive(), 'block1 has been deactivated after activating block2');
+					ok(block2.isActive(), 'block 2 is active after activating it');
+				}
+			},
+
 			{ module : 'BlockManager API' },
 			///////////////////////////////////////////////////////////////////////
 
