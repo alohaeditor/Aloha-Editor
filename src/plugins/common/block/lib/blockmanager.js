@@ -113,6 +113,9 @@ function(Aloha, jQuery, FloatingMenu, Observable, Registry) {
 
 			block = new (this.blockTypes.get(attributes['aloha-block-type']))(element);
 			block._$element.addClass('aloha-block-' + attributes['aloha-block-type']);
+			block._$element.attr('style', element.attr('style')); // TODO: write test case which checks that styles are applied from child to container!
+			element.attr('style', '');
+			element.find('img').attr('draggable', 'false');
 
 			// Save attributes on block, but ignore jquery attribute.
 			jQuery.each(attributes, function(k, v) {
