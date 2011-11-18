@@ -3,16 +3,9 @@
  * Author & Copyright (c) 2010 Gentics Software GmbH, aloha@gentics.com
  * Licensed unter the terms of http://www.aloha-editor.com/license.html
  */
-
-/**
- * TODOs:
- * - selectRow/selectColumn should take into account the helper row/column.
- *   ie: selectRow(0) and selectColumn(0), should be zero indexed
- */
-
 define(
 [ 'testutils', 'htmlbeautifier' ],
-function( TestUtils ) {
+function ( TestUtils ) {
 	'use strict';
 	
 	/**
@@ -153,11 +146,11 @@ function( TestUtils ) {
 			exclude   : false,
 			desc      : 'Column selection with merged cells ',
 			start     : '<table><tbody>\
-							<tr><td rowspan="1" colspan="2">foo1 bar1</td></tr>\
+							<tr><td colspan="2" rowspan="1">foo1 bar1</td></tr>\
 							<tr><td>foo2</td><td>bar2</td></tr>\
 						 </tbody></table>',
 			expected  : '<table><tbody>\
-							<tr><td rowspan="1" colspan="2">foo1 bar1</td></tr>\
+							<tr><td colspan="2" rowspan="1">foo1 bar1</td></tr>\
 							<tr><td>foo2</td><td>was selected</td></tr>\
 						 </tbody></table>',
 			operation : function ( table ) {
@@ -173,11 +166,11 @@ function( TestUtils ) {
 			exclude   : false,
 			desc      : 'Insert column before column 2, with merged cells (corrected to 2)',
 			start     : '<table><tbody>\
-							<tr><td rowspan="1" colspan="2">foo1 bar1</td></tr>\
+							<tr><td colspan="2" rowspan="1">foo1 bar1</td></tr>\
 							<tr><td>foo2</td><td>bar2</td></tr>\
 						 </tbody></table>',
 			expected  : '<table><tbody>\
-							<tr><td rowspan="1" colspan="2">foo1 bar1</td><td>&nbsp;</td></tr>\
+							<tr><td colspan="2" rowspan="1">foo1 bar1</td><td>&nbsp;</td></tr>\
 							<tr><td>foo2</td><td>&nbsp;</td><td>bar2</td></tr>\
 						 </tbody></table>',
 			operation : function ( table ) {
@@ -207,11 +200,11 @@ function( TestUtils ) {
 			exclude   : false,
 			desc      : 'Remove 2nd column (corrected to 2) of merged row',
 			start     : '<table><tbody>\
-							<tr><td rowspan="1" colspan="3">foo1 bar1 test1</td></tr>\
+							<tr><td colspan="3" rowspan="1">foo1 bar1 test1</td></tr>\
 							<tr><td>foo2</td><td class="aloha-cell-selected">bar2</td><td>test2</td></tr>\
 						 </tbody></table>',
 			expected  : '<table><tbody>\
-							<tr><td rowspan="1" colspan="2">foo1 bar1 test1</td></tr>\
+							<tr><td colspan="2" rowspan="1">foo1 bar1 test1</td></tr>\
 							<tr><td>foo2</td><td>test2</td></tr>\
 						 </tbody></table>',
 			operation : function ( table ) {
@@ -266,7 +259,7 @@ function( TestUtils ) {
 							<tr><td class="aloha-cell-selected">bar</td></tr>\
 						</tbody></table>',
 			expected  : '<table><tbody>\
-							<tr><td rowspan="2" colspan="1">foo bar</td></tr>\
+							<tr><td colspan="1" rowspan="2">foo bar</td></tr>\
 							<tr></tr>\
 						 </tbody></table>',
 			operation : function ( table ) {
@@ -283,7 +276,7 @@ function( TestUtils ) {
 							<tr><td class="aloha-cell-selected">bar</td></tr>\
 						 </tbody></table>',
 			expected  : '<table><tbody>\
-							<tr><td rowspan="2" colspan="1"><i>foo</i> bar</td></tr>\
+							<tr><td colspan="1" rowspan="2"><i>foo</i> bar</td></tr>\
 							<tr></tr>\
 						 </tbody></table>',
 			operation : function ( table ) {
@@ -300,7 +293,7 @@ function( TestUtils ) {
 							<tr><td>bar</td></tr>\
 						 </tbody></table>',
 			expected  : '<table><tbody>\
-							<tr><td rowspan="1" colspan="1">foo</td></tr>\
+							<tr><td colspan="1" rowspan="1">foo</td></tr>\
 							<tr><td>bar</td></tr>\
 						 </tbody></table>',
 			operation : function ( table ) {
@@ -317,7 +310,7 @@ function( TestUtils ) {
 							<tr><td class="aloha-cell-selected">foo2</td><td>bar2</td></tr>\
 						 </tbody></table>',
 			expected  : '<table><tbody>\
-							<tr><td rowspan="2" colspan="1">foo1 foo2</td><td>bar1</td></tr>\
+							<tr><td colspan="1" rowspan="2">foo1 foo2</td><td>bar1</td></tr>\
 							<tr><td>bar2</td></tr>\
 						 </tbody></table>',
 			operation : function ( table ) {
@@ -334,7 +327,7 @@ function( TestUtils ) {
 							<tr><td class="aloha-cell-selected"><i>bar</i></td></tr>\
 						 </tbody></table>',
 			expected  : '<table><tbody>\
-							<tr><td rowspan="2" colspan="1"><i>foo</i> <i>bar</i></td></tr>\
+							<tr><td colspan="1" rowspan="2"><i>foo</i> <i>bar</i></td></tr>\
 							<tr></tr>\
 						 </tbody></table>',
 			operation : function ( table ) {
@@ -352,7 +345,7 @@ function( TestUtils ) {
 							<tr><td>foo2</td><td>bar2</td></tr>\
 						 </tbody></table>',
 			expected  : '<table><tbody>\
-							<tr><td rowspan="1" colspan="2">foo1 bar1</td></tr>\
+							<tr><td colspan="2" rowspan="1">foo1 bar1</td></tr>\
 							<tr><td>foo2</td><td>bar2</td></tr>\
 						 </tbody></table>',
 			operation : function ( table ) {
@@ -371,7 +364,7 @@ function( TestUtils ) {
 								<td class="aloha-cell-selected">bar2</td></tr>\
 						 </tbody></table>',
 			expected  : '<table><tbody>\
-							<tr><td rowspan="2" colspan="2">\
+							<tr><td colspan="2" rowspan="2">\
 								foo1 bar1 foo2 bar2\
 							</td></tr>\
 							<tr></tr>\
@@ -392,7 +385,7 @@ function( TestUtils ) {
 								<td class="aloha-cell-selected"><i>bar2</i></td></tr>\
 						 </tbody></table>',
 			expected  : '<table><tbody>\
-							<tr><td rowspan="2" colspan="2">\
+							<tr><td colspan="2" rowspan="2">\
 								<i>foo1</i> <i>bar1</i> <i>foo2</i> <i>bar2</i>\
 							</td></tr>\
 							<tr></tr>\
@@ -426,11 +419,11 @@ function( TestUtils ) {
 			exclude   : false,
 			desc      : 'Prevent attempt to merge an alreay merged cell',
 			start     : '<table><tbody>\
-							<tr><td rowspan="2" colspan="1" class="aloha-cell-selected">foo bar</td></tr>\
+							<tr><td colspan="1" rowspan="2" class="aloha-cell-selected">foo bar</td></tr>\
 							<tr></tr>\
 						 </tbody></table>',
 			expected  : '<table><tbody>\
-							<tr><td rowspan="2" colspan="1">foo bar</td></tr>\
+							<tr><td colspan="1" rowspan="2">foo bar</td></tr>\
 							<tr></tr>\
 						 </tbody></table>',
 			operation : function ( table ) {
@@ -446,7 +439,7 @@ function( TestUtils ) {
 			exclude   : false,
 			desc      : 'Split a table with a single merged cell',
 			start     : '<table><tbody>\
-							<tr><td rowspan="2" colspan="1" class="aloha-cell-selected">foo bar</td></tr>\
+							<tr><td colspan="1" rowspan="2" class="aloha-cell-selected">foo bar</td></tr>\
 							<tr></tr>\
 						 </tbody></table>',
 			expected  : '<table><tbody>\
@@ -463,7 +456,7 @@ function( TestUtils ) {
 			exclude   : false,
 			desc      : 'Split a 2x2 merged cell',
 			start     : '<table><tbody>\
-							<tr><td rowspan="2" colspan="1" class="aloha-cell-selected">foo1 foo2</td>\
+							<tr><td colspan="1" rowspan="2" class="aloha-cell-selected">foo1 foo2</td>\
 								<td>bar1</td></tr>\
 							<tr><td>bar2</td></tr>\
 						 </tbody></table>',
@@ -482,10 +475,9 @@ function( TestUtils ) {
 			desc      : 'Split 2 merged cell, simultaneosly',
 			start     : '<table><tbody>\
 							<tr>\
-								<td rowspan="2" colspan="1" class="aloha-cell-selected">foo1 foo2</td>\
-								<td rowspan="2" colspan="1" class="aloha-cell-selected">bar1 bar2</td>\
+								<td colspan="1" rowspan="2" class="aloha-cell-selected">foo1 foo2</td>\
+								<td colspan="1" rowspan="2" class="aloha-cell-selected">bar1 bar2</td>\
 							</tr>\
-							<tr></tr>\
 						  </tbody></table>',
 			expected  : '<table><tbody>\
 							<tr><td>foo1 foo2</td><td>bar1 bar2</td></tr>\
@@ -669,14 +661,14 @@ function( TestUtils ) {
 		
 		{ exclude : true } // ... just catch trailing commas
 	];
-
-	Aloha.ready( function() {
+	
+	Aloha.ready( function () {
 		var TablePlugin = Aloha.require( 'table/table-plugin' ),		
 		    jQuery = Aloha.jQuery,
 		    editable = jQuery( '#editable' ),
-			testcase,
-			start,
-			expected;
+		    testcase,
+		    start,
+		    expected;
 		
 		for ( var i = 0; i < tests.length; i++ ) {
 			testcase = tests[ i ];
@@ -696,7 +688,7 @@ function( TestUtils ) {
 			// Place test contents into our editable, and activate the editable
 			editable.html( start ).aloha();
 			
-			if ( typeof testcase.operation === 'function' ) {
+			if ( typeof testcase.operation == 'function' ) {
 				editable
 					.mousedown() // tigger the aloha-editable-activated event
 					.mouseup()	 // this is needed to get the table plugin to deactivate correctly
@@ -710,21 +702,25 @@ function( TestUtils ) {
 			test(
 				( testcase.desc || 'Test' ).toUpperCase(),
 				{ start: start, expected: expected },
-				function() {
+				function () {
 					var result = editable.html().toLowerCase();
 					
 					// Strip away the id added to the table tag
 					// Internet Explorer does not have quotes around attribute
-					// values, so we will add them
+					// values, so we need to add them
+					// Normalize the order of colspan and rowspan attributes
 					
 					result = result.replace(
-						/([\w-]+)\s*=\s*([\w-]+)([\s>])/g, function ( str, $n, $v, $e, offset, s ) {
-						return $n + '="' + $v + '"' + $e;
-					});
-					
-					result = result.replace(
+						/([\w-]+)\s*=\s*([\w-]+)([\s>])/g,
+						function ( str, $n, $v, $e, offset, s ) {
+							return $n + '="' + $v + '"' + $e;
+						}
+					).replace(
 						/(<table.*?)\s*id\s*=\s*[\"\']*[^\"\']*?[\"\']*(\s|>)/ig,
 						'$1$2'
+					).replace(
+						/(rowspan=\"[^\"]+\") (colspan=\"[^\"+]\")/ig,
+						'$2 $1'
 					);
 					
 					result = style_html( result );
@@ -732,5 +728,5 @@ function( TestUtils ) {
 				}
 			);
 		}
-	});
-});
+	} );
+} );
