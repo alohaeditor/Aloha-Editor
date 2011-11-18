@@ -34,7 +34,7 @@ define( [
 		/**
 		 * the defined object types to be used for this instance
 		 */
-		objectTypeFilter: [],
+		objectTypeFilter: [ 'language' ],
 		
 		/**
 		 * Initialize the plugin
@@ -182,6 +182,7 @@ define( [
 			
 			// on blur check if lang is empty. If so remove the a tag
 			this.langField.addListener( 'blur', function ( obj, event ) {
+				// @todo check for a valid value -- now it's also possible to insert abcd; but that's not valid
 				if ( !this.getValue() ) {
 					that.removeMarkup();
 				}
