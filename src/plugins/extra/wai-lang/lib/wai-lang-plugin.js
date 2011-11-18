@@ -116,7 +116,8 @@ define( [
 				'valueField': 'id',
 				'minChars':1
 			} );
-			this.langField.setTemplate( '<a><b>{name}</b></p></p><img src="' + Aloha.getPluginUrl( 'wai-lang' ) + '/{url}"/></a>' );
+			//this.langField.setTemplate( '<a><b>{name}</b></p></p><img src="' + Aloha.getPluginUrl( 'wai-lang' ) + '/{url}"/></a>' );
+			this.langField.setTemplate( '<div class="img-item"><img class="typeahead-image" src="' + Aloha.getPluginUrl( 'wai-lang' ) + '/{url}"/> <div class="label-item"><b>{name}</b></div></div>' );
 			this.langField.setObjectTypeFilter( this.objectTypeFilter );
 			
 			// add the input field for links

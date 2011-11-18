@@ -13,3 +13,15 @@ button.aloha-button-wai-lang-remove{ background: url(../img/remove-button.png) n
 	background-position: 0px 50%;
 	background-repeat: no-repeat no-repeat;
 }*/
+
+.x-combo-list-item .img-item {
+	height: 18px;
+}
+.x-combo-list-item img {
+	/* 16x11 */
+	margin: 7px 5px 0px 2px;
+}
+
+.x-combo-list-item .label-item {
+	display: inline;
+}
