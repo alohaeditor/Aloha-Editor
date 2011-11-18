@@ -85,6 +85,24 @@ define([
 		}
 	});
 
+	var ImageBlock = block.AbstractBlock.extend({
+		title: 'Image',
+		getSchema: function() {
+			return {
+				'image': {
+					type: 'string',
+					label: 'Image URI'
+				}
+			}
+		},
+		init: function() {
+			this.attr('image', this.$innerElement.attr('src'));
+		},
+		render: function($innerElement) {
+			$innerElement.attr('src', this.attr('image'));
+		}
+	});
+
 	var VCardBlock;
 
 /*	Aloha.require( ['text!blockdemo/res/vcard.html'] , function ( vcardTemplate ) {
@@ -285,6 +303,7 @@ define([
 		ProductTeaserBlock: ProductTeaserBlock,
 		VCardBlock: VCardBlock,
 		CustomHandleBlock: CustomHandleBlock,
-		TwoColumnBlock: TwoColumnBlock
+		TwoColumnBlock: TwoColumnBlock,
+		ImageBlock: ImageBlock
 	};
 });

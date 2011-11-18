@@ -20,6 +20,8 @@ define([
 			//BlockManager.registerBlockType('VCardBlock', block.VCardBlock);
 			BlockManager.registerBlockType('CustomHandleBlock', block.CustomHandleBlock);
 			BlockManager.registerBlockType('TwoColumnBlock', block.TwoColumnBlock);
+
+			BlockManager.registerBlockType('ImageBlock', block.ImageBlock);
 		}
 	});
 });

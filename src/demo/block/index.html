@@ -29,6 +29,10 @@
 
 						'.two-columns': {
 							'aloha-block-type': 'TwoColumnBlock'
+						},
+
+						'.imageBlock': {
+							'aloha-block-type': 'ImageBlock'
 						}
 					}
 				}
@@ -38,9 +42,10 @@
 				user: '../demo/block'
 			}
 		};
+
 	</script>
 
-	<script src="../../lib/aloha.js" data-aloha-plugins="common/format,common/block,user/blockdemo,common/paste"></script>
+	<script src="../../lib/aloha.js" data-aloha-plugins="common/format,common/block,user/blockdemo"></script>
 
 	<link rel="stylesheet" href="../../css/aloha.css" id="aloha-style-include" type="text/css">
 	<link rel="stylesheet" href="index.css" type="text/css">
@@ -60,8 +65,17 @@
 				<p><b>Stock Quote example:</b> When you hover over the name of the <span class="company" data-symbol="MSFT">Microsoft</span> company, the stock quotes are shown.</p>
 				<p>Some more content...</p>
 				<p>Here follows the <b>editable product teaser example</b>: Try our new <span class="editable-product-teaser" data-sku="2423423" data-title="Big can of fresh Aloha soup" data-price="27">Big can of fresh Aloha soup (27 €)</span> - which enables some great stuff.
+				<p><span class="imageBlock" style="float:right"><img src="blockdemo/img/stock-quote-aapl.gif" /></span>
+				Super Dodge Ball Advance, released in Japan as Bakunetsu Dodgeball Fighters (爆熱ドッジボールファイターズ?, "Bakunetsu" meaning "Burning Heat"), dodge ball game based on the Super Dodge Ball. While based on the original Super Dodge Ball series, the game does not feature the Kunio-kun characters from the original game due to copyrights issues, as developer Million did not obtain the rights to the Kunio-kun characters until the following year.[citation needed] However, the game uses a remixed version of opening and ending songs from Technos Japan Corp's Super Dodge Ball games.
+				from WikipediaSuper Dodge Ball Advance, released in Japan as Bakunetsu Dodgeball Fighters (爆熱ドッジボールファイターズ?, "Bakunetsu" meaning "Burning Heat"), dodge ball game based on the Super Dodge Ball. While based on the original Super Dodge Ball series, the game does not feature the Kunio-kun characters from the original game due to copyrights issues, as developer Million did not obtain the rights to the Kunio-kun characters until the following year.[citation needed] However, the game uses a remixed version of opening and ending songs from Technos Japan Corp's Super Dodge Ball games.
+				from Wikipedia
+				</p>
+				<p>
+					<img src="blockdemo/img/stock-quote-aapl.gif" style="float:right" class="imageBlock" />
+				Super Dodge Ball Advance, released in Japan as Bakunetsu Dodgeball Fighters (爆熱ドッジボールファイターズ?, "Bakunetsu" meaning "Burning Heat"), dodge ball game based on the Super Dodge Ball. While based on the original Super Dodge Ball series, the game does not feature the Kunio-kun characters from the original game due to copyrights issues, as developer Million did not obtain the rights to the Kunio-kun characters until the following year.[citation needed] However, the game uses a remixed version of opening and ending songs from Technos Japan Corp's Super Dodge Ball games.
+				from Wikipedia
+				</p>
 			</div>
-
 			<h2>"Block"-Element Blocks inside editable</h2>
 			<div id="content" class="article">
 				<p>
