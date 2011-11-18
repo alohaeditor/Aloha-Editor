@@ -347,7 +347,7 @@ define( [
 		for ( var i = 0; i < registry.length; i++ ) {
 			// We need to find exactly the same object from the 
 			// registry since we could also deal with cloned objects
-			if ( registry[ i ].obj[ 0 ] === table ) {
+			if ( registry[ i ].obj[ 0 ].id == table.id ) {
 				return i;
 			}
 		}
@@ -356,11 +356,11 @@ define( [
 	};
 	
 	/**
-	 * @param {jQuery} elem
+	 * @param {DOMElement} table
 	 * @return {Table}
 	 */
-	TablePlugin.getTableFromRegistry = function ( elem ) {
-		var i = this.indexOfTableInRegistry( elem );
+	TablePlugin.getTableFromRegistry = function ( table ) {
+		var i = this.indexOfTableInRegistry( table );
 		if ( i > -1 ) {
 			return this.TableRegistry[ i ];
 		}
@@ -1377,10 +1377,11 @@ define( [
 	 */
 	TablePlugin.makeClean = function ( obj ) {
 		var that = this;
-		obj.find( 'table' ).each( function() {
-			var table = that.getTableFromRegistry( this );
-			if ( table ) {
-				table.deactivate();
+		obj.find( 'table' ).each( function () {
+			// Make sure that we only deactivate tables in obj which have the
+			// same id as tables which have been activated and registered
+			if ( that.getTableFromRegistry( this ) ) {
+				( new Table( this, that ) ).deactivate();
 			}
 		} );
 	};

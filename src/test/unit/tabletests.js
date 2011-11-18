@@ -23,14 +23,14 @@ function ( TestUtils ) {
 	};
 	
 	//
-	//	  NB:
-	//	-----------------------------------------------------------------------
-	//	  selectRow and selectColumns has an issue where index 0 selects the
-	//	  helper row/column instead of the first editable row/column.
-	//	  All following tests will work around this fault by using 1-indexing
-	//	  with selectcolumns rather than 0 based indexing.
-	//	  Where this is done, we note that we have "corrected" the index.
-	//	-----------------------------------------------------------------------
+	//	 NB:
+	//	---------------------------------------------------------------------
+	//	 selectRow and selectColumns has an issue where index 0 selects the
+	//	 helper row/column instead of the first editable row/column.
+	//	 All following tests will work around this fault by using 1-indexing
+	//	 with selectcolumns rather than 0 based indexing.
+	//	 Where this is done, we note that we have "corrected" the index.
+	//	---------------------------------------------------------------------
 	//
 	
 	var tests = [
@@ -39,18 +39,50 @@ function ( TestUtils ) {
 		///////////////////////////////////////////////////////////////////////
 		
 		{
-			exclude   : false,
+			exclude   : true,
 			desc      : 'Activate and deactivate a table',
 			start     : '<table><tbody><tr><td>foo</td></tr></tbody></table>',
 			expected  : '<table><tbody><tr><td>foo</td></tr></tbody></table>',
 			operation : function ( table ) {}
 		},
 		
-		{ module : 'Row/column selection' },
+		{ module : 'makeClean' },
 		///////////////////////////////////////////////////////////////////////
 		
 		{
 			exclude   : false,
+			desc      : 'makeClean',
+			start     : '<table class="original"><tbody>\
+							<tr><td>test</td></tr>\
+						 </tbody></table>',
+			expected  : '<table class="original"><tbody>\
+							<tr><td>test</td></tr>\
+						 </tbody></table>\
+						 <!-- <table class="clone"><tbody>' +
+							'<tr><td>test</td></tr>' +
+							'</tbody></table> -->',
+			operation : function ( table ) {
+				var clone = jQuery( '#editable' ).clone( false );
+				
+				clone.find( 'table' )
+					 .addClass( 'clone' )
+					 .removeClass( 'original' );
+				
+				table.tablePlugin.makeClean( clone );
+				
+				jQuery( '#editable' ).append(
+					'<!-- ' + clone.html()
+						.replace( /[\r\n]/g, '' )
+						.replace( />\s*(.*?)\s*</g, '>$1<' ) + ' -->'
+				);
+			}
+		},
+		
+		{ module : 'Row/column selection' },
+		///////////////////////////////////////////////////////////////////////
+		
+		{
+			exclude   : true,
 			desc      : 'Select column by index (corrected to 1-index)',
 			start     : '<table><tbody><tr><td>foo</td></tr></tbody></table>',
 			expected  : '<table><tbody><tr><td>bar</td></tr></tbody></table>',
@@ -64,7 +96,7 @@ function ( TestUtils ) {
 		},
 		
 		{
-			exclude   : false,
+			exclude   : true,
 			desc      : 'Select row by index (corrected to 1-index)',
 			start     : '<table><tbody><tr><td>foo</td></tr></tbody></table>',
 			expected  : '<table><tbody><tr><td>bar</td></tr></tbody></table>',
@@ -81,7 +113,7 @@ function ( TestUtils ) {
 		///////////////////////////////////////////////////////////////////////
 		
 		{
-			exclude   : false,
+			exclude   : true,
 			desc      : 'Insert column right of column at index 0 (corrected to 1)',
 			start     : '<table><tbody>\
 							<tr><td>foo</td><td>bar</td></tr>\
@@ -96,7 +128,7 @@ function ( TestUtils ) {
 		},
 		
 		{
-			exclude   : false,
+			exclude   : true,
 			desc      : 'Insert column right of column at index 1 (corrected to 2)',
 			start     : '<table><tbody>\
 							<tr><td>foo</td><td>bar</td></tr>\
@@ -111,7 +143,7 @@ function ( TestUtils ) {
 		},
 		
 		{
-			exclude   : false,
+			exclude   : true,
 			desc      : 'Insert column left of 1st column (column 0, corrected to 1)',
 			start     : '<table><tbody>\
 							<tr><td>foo</td></tr>\
@@ -126,7 +158,7 @@ function ( TestUtils ) {
 		},
 		
 		{
-			exclude   : false,
+			exclude   : true,
 			desc      : 'Add column left of 2nd column (corrected to 2)',
 			start     : '<table><tbody>\
 							<tr><td>foo</td><td>bar</td></tr>\
@@ -143,7 +175,7 @@ function ( TestUtils ) {
 		},
 		
 		{
-			exclude   : false,
+			exclude   : true,
 			desc      : 'Column selection with merged cells ',
 			start     : '<table><tbody>\
 							<tr><td colspan="2" rowspan="1">foo1 bar1</td></tr>\
@@ -163,7 +195,7 @@ function ( TestUtils ) {
 		},
 		
 		{
-			exclude   : false,
+			exclude   : true,
 			desc      : 'Insert column before column 2, with merged cells (corrected to 2)',
 			start     : '<table><tbody>\
 							<tr><td colspan="2" rowspan="1">foo1 bar1</td></tr>\
@@ -180,7 +212,7 @@ function ( TestUtils ) {
 		},
 		
 		{
-			exclude   : false,
+			exclude   : true,
 			desc      : 'Remove 2nd column (corrected to 2)',
 			start     : '<table><tbody>\
 							<tr><td>foo1</td><td class="aloha-cell-selected">bar1</td></tr>\
@@ -197,7 +229,7 @@ function ( TestUtils ) {
 		},
 		
 		{
-			exclude   : false,
+			exclude   : true,
 			desc      : 'Remove 2nd column (corrected to 2) of merged row',
 			start     : '<table><tbody>\
 							<tr><td colspan="3" rowspan="1">foo1 bar1 test1</td></tr>\
@@ -217,7 +249,7 @@ function ( TestUtils ) {
 		///////////////////////////////////////////////////////////////////////
 		
 		{
-			exclude   : false,
+			exclude   : true,
 			desc      : 'Add row at index 0 (corrected to 1)',
 			start     : '<table><tbody>\
 							<tr><td>foo</td></tr>\
@@ -232,7 +264,7 @@ function ( TestUtils ) {
 		},
 		
 		{
-			exclude   : false,
+			exclude   : true,
 			desc      : 'Add row at index 1 (corrected to 2)',
 			start     : '<table><tbody>\
 							<tr><td>foo</td></tr>\
@@ -252,7 +284,7 @@ function ( TestUtils ) {
 		///////////////////////////////////////////////////////////////////////
 		
 		{
-			exclude   : false,
+			exclude   : true,
 			desc      : 'Basic columns merging',
 			start     : '<table><tbody>\
 							<tr><td class="aloha-cell-selected">foo</td></tr>\
@@ -269,7 +301,7 @@ function ( TestUtils ) {
 		},
 		
 		{
-			exclude   : false,
+			exclude   : true,
 			desc      : 'Merging columns with inner tags',
 			start     : '<table><tbody>\
 							<tr><td class="aloha-cell-selected"><i>foo</i></td></tr>\
@@ -286,7 +318,7 @@ function ( TestUtils ) {
 		},
 		
 		{
-			exclude   : false,
+			exclude   : true,
 			desc      : 'Merge a single cell',
 			start     : '<table><tbody>\
 							<tr><td class="aloha-cell-selected">foo</td></tr>\
@@ -303,7 +335,7 @@ function ( TestUtils ) {
 		},
 		
 		{
-			exclude   : false,
+			exclude   : true,
 			desc      : 'Merge column',
 			start     : '<table><tbody>\
 							<tr><td class="aloha-cell-selected">foo1</td><td>bar1</td></tr>\
@@ -320,7 +352,7 @@ function ( TestUtils ) {
 		},
 		
 		{
-			exclude   : false,
+			exclude   : true,
 			desc      : 'Merge column, with inner tags',
 			start     : '<table><tbody>\
 							<tr><td class="aloha-cell-selected"><i>foo</i></td></tr>\
@@ -337,7 +369,7 @@ function ( TestUtils ) {
 		},
 		
 		{
-			exclude   : false,
+			exclude   : true,
 			desc      : 'Merge a row',
 			start     : '<table><tbody>\
 							<tr><td class="aloha-cell-selected">foo1</td>\
@@ -355,7 +387,7 @@ function ( TestUtils ) {
 		},
 		
 		{
-			exclude   : false,
+			exclude   : true,
 			desc      : 'Merge a 2x2 selection',
 			start     : '<table><tbody>\
 							<tr><td class="aloha-cell-selected">foo1</td>\
@@ -376,7 +408,7 @@ function ( TestUtils ) {
 		},
 		
 		{
-			exclude   : false,
+			exclude   : true,
 			desc      : 'Merge a 2x2 selection, with inner tags',
 			start     : '<table><tbody>\
 							<tr><td class="aloha-cell-selected"><i>foo1</i></td>\
@@ -397,7 +429,7 @@ function ( TestUtils ) {
 		},
 		
 		{
-			exclude   : false,
+			exclude   : true,
 			desc      : 'Prevent merging of non-rectangular selection',
 			start     : '<table><tbody>\
 							<tr><td class="aloha-cell-selected">foo1</td>\
@@ -416,7 +448,7 @@ function ( TestUtils ) {
 		},
 		
 		{
-			exclude   : false,
+			exclude   : true,
 			desc      : 'Prevent attempt to merge an alreay merged cell',
 			start     : '<table><tbody>\
 							<tr><td colspan="1" rowspan="2" class="aloha-cell-selected">foo bar</td></tr>\
@@ -436,7 +468,7 @@ function ( TestUtils ) {
 		///////////////////////////////////////////////////////////////////////
 		
 		{
-			exclude   : false,
+			exclude   : true,
 			desc      : 'Split a table with a single merged cell',
 			start     : '<table><tbody>\
 							<tr><td colspan="1" rowspan="2" class="aloha-cell-selected">foo bar</td></tr>\
@@ -453,7 +485,7 @@ function ( TestUtils ) {
 		},
 		
 		{
-			exclude   : false,
+			exclude   : true,
 			desc      : 'Split a 2x2 merged cell',
 			start     : '<table><tbody>\
 							<tr><td colspan="1" rowspan="2" class="aloha-cell-selected">foo1 foo2</td>\
@@ -471,7 +503,7 @@ function ( TestUtils ) {
 		},
 		
 		{
-			exclude   : false,
+			exclude   : true,
 			desc      : 'Split 2 merged cell, simultaneosly',
 			start     : '<table><tbody>\
 							<tr>\
@@ -493,7 +525,7 @@ function ( TestUtils ) {
 		///////////////////////////////////////////////////////////////////////
 		
 		{
-			exclude   : false,
+			exclude   : true,
 			desc      : 'Transform row as table header',
 			start     : '<table><tbody>\
 							<tr>\
@@ -514,7 +546,7 @@ function ( TestUtils ) {
 		},
 		
 		{
-			exclude   : false,
+			exclude   : true,
 			desc      : 'Transform column as table header',
 			start     : '<table><tbody>\
 							<tr><td class="aloha-cell-selected">foo1</td><td>bar1</td></tr>\
@@ -531,7 +563,7 @@ function ( TestUtils ) {
 		},
 		
 		{
-			exclude   : false,
+			exclude   : true,
 			desc      : 'Toggle header to td cell',
 			start     : '<table><tbody>\
 							<tr><th scope="row" class="aloha-cell-selected">foo1</th><td>bar1</td></tr>\
@@ -551,7 +583,7 @@ function ( TestUtils ) {
 		///////////////////////////////////////////////////////////////////////
 		
 		{
-			exclude   : false,
+			exclude   : true,
 			desc      : 'Nested tables',
 			start     : '<table><tbody>\
 							<tr><td>\
@@ -574,7 +606,7 @@ function ( TestUtils ) {
 		///////////////////////////////////////////////////////////////////////
 		
 		{
-			exclude   : false,
+			exclude   : true,
 			desc      : 'With rowspan',
 			start     : '<table><tbody>\
 							<tr><td rowspan="2"></td><td></td></tr>\
@@ -588,7 +620,7 @@ function ( TestUtils ) {
 		},
 		
 		{
-			exclude   : false,
+			exclude   : true,
 			desc      : 'With rowspan',
 			start     : '<table><tbody>\
 							<tr><td rowspan="2"></td><td></td><td></td></tr>\
@@ -602,7 +634,7 @@ function ( TestUtils ) {
 		},
 		
 		{
-			exclude   : false,
+			exclude   : true,
 			desc      : 'With no rowspan and colspan',
 			start     : '<table><tbody>\
 							<tr><td></td><td></td></tr>\
@@ -616,7 +648,7 @@ function ( TestUtils ) {
 		},
 		
 		{
-			exclude   : false,
+			exclude   : true,
 			desc      : 'With colspan',
 			start     : '<table><tbody>\
 							<tr><td colspan="2"></td></tr>\
@@ -630,7 +662,7 @@ function ( TestUtils ) {
 		},
 		
 		{
-			exclude   : false,
+			exclude   : true,
 			desc      : 'With colspan',
 			start     : '<table><tbody>\
 							<tr><td colspan="2"></td></tr>\
@@ -646,7 +678,7 @@ function ( TestUtils ) {
 		},
 		
 		{
-			exclude   : false,
+			exclude   : true,
 			desc      : 'Removing redundant colspan="1" attribute',
 			start     : '<table><tbody>\
 							<tr><td colspan="1"></td></tr>\
@@ -659,7 +691,7 @@ function ( TestUtils ) {
 			operation : function () {}
 		},
 		
-		{ exclude : true } // ... just catch trailing commas
+		{ exclude : true } // ... just for catching trailing commas
 	];
 	
 	Aloha.ready( function () {
@@ -691,9 +723,9 @@ function ( TestUtils ) {
 			if ( typeof testcase.operation == 'function' ) {
 				editable
 					.mousedown() // tigger the aloha-editable-activated event
-					.mouseup()	 // this is needed to get the table plugin to deactivate correctly
-						.find( 'table' )
-							.mousedown();
+					.mouseup() // this is needed to get the table plugin to deactivate correctly
+					.find( 'table' )
+						.mousedown();
 				testcase.operation( TablePlugin.activeTable );
 			}
 			
