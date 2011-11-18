@@ -62,8 +62,9 @@ define([
 			}
 		},
 
-		render: function($innerElement) {
-			$innerElement.html('<span class="aloha-editable">' + this.attr('title') + '</span> <strong class="price">(' + this.attr('price') + ')</strong>');
+		update: function($element, postProcessFn) {
+			$element.html('<span class="aloha-editable">' + this.attr('title') + '</span> <strong class="price">(' + this.attr('price') + ')</strong>');
+			postProcessFn();
 		}
 	});
 
