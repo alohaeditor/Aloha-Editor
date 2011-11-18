@@ -24,26 +24,29 @@ define([
 				}
 			};
 		},
-		render: function($innerElement) {
+		init: function($element) {
+			var that = this;
+			$element.mouseover(function() {
+				$element.append('<span class="stock-quote-overlay company-' + that.attr('symbol') + '"></span>');
+			});
+			$element.mouseout(function() {
+				$element.find('.stock-quote-overlay').remove();
+			});
+		},
+		update: function($element, postProcessFn) {
 			// Mapping Stock-Symbol -- Company Name (Fake!)
 			switch (this.attr('symbol')) {
 				case 'MSFT':
-					$innerElement.html('Microsoft');
+					$element.html('Microsoft');
 					break;
 				case 'AAPL':
-					$innerElement.html('Apple Inc.');
+					$element.html('Apple Inc.');
 					break;
 				default:
-					$innerElement.html(this.attr('symbol'));
+					$element.html(this.attr('symbol'));
 			}
 
-			var that = this;
-			$innerElement.mouseover(function() {
-				$innerElement.append('<span class="stock-quote-overlay company-' + that.attr('symbol') + '"></span>');
-			});
-			$innerElement.mouseout(function() {
-				$innerElement.find('.stock-quote-overlay').remove();
-			});
+			postProcessFn();
 		}
 	});
 
@@ -80,8 +83,9 @@ define([
 			}
 		},
 
-		render: function($innerElement) {
-			$innerElement.html(this.attr('title') + ' <strong class="price">(' + this.attr('price') + ' &euro;)</strong>');
+		update: function($element, postProcessFn) {
+			$element.html(this.attr('title') + ' <span class="price">(' + this.attr('price') + ' &euro;)</span>');
+			postProcessFn();
 		}
 	});
 
@@ -95,8 +99,8 @@ define([
 				}
 			}
 		},
-		init: function() {
-			this.attr('image', this.$element.find('img').attr('src'));
+		init: function($element) {
+			this.attr('image', $element.find('img').attr('src'));
 		},
 		update: function($element, postProcessFn) {
 			$element.find('img').attr('src', this.attr('image'));

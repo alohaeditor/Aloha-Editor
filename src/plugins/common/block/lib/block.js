@@ -111,7 +111,7 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 				Aloha.Selection.preventSelectionChanged();
 			});
 
-			this.init();
+			this.init(this.$element);
 
 			this._registerAsBlockified();
 		},
@@ -216,7 +216,7 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 				highlightedBlocks.push(block);
 			});
 			jQuery.each(previouslyHighlightedBlocks, function() {
-				this._unhighlight();
+				this.deactivate();
 			});
 
 			this.$element.addClass('aloha-block-active');
