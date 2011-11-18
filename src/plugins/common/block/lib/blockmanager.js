@@ -48,7 +48,7 @@ function(Aloha, jQuery, FloatingMenu, Observable, Registry) {
 		 */
 		blocks: null,
 
-		activeBlocks: null,
+		_highlightedBlocks: null,
 
 		/**
 		 * @constructor
@@ -57,11 +57,11 @@ function(Aloha, jQuery, FloatingMenu, Observable, Registry) {
 			FloatingMenu.createScope('Aloha.Block');
 			this.blockTypes = new Registry();
 			this.blocks = new Registry();
-			this.activeBlocks = {};
+			this._highlightedBlocks = {};
 		},
 
 		/**
-		 * Register initial event handlers
+		 * Register initial event handlers. Called from block-plugin.
 		 *
 		 * @private
 		 */
@@ -70,13 +70,13 @@ function(Aloha, jQuery, FloatingMenu, Observable, Registry) {
 
 			// Register event handlers for deactivating an Aloha Block
 			jQuery(document).bind('click', function(event) {
-				if (that.activeBlocks == {}) return;
+				if (that._highlightedBlocks == {}) return;
 				if (jQuery(event.target).parents('.aloha-sidebar-bar, .aloha-block-do-not-deactivate, .aloha-floatingmenu').length > 0
 					|| jQuery(event.target).is('.aloha-sidebar-bar, .aloha-block-do-not-deactivate, .aloha-floatingmenu')) {
 					// If we are inside the sidebar, the floating menu or other elements which should not trigger the block deactivation, we do an early return.
 					return;
 				}
-				BlockManager._deactivateActiveBlocks();
+				BlockManager._deactivate_highlightedBlocks();
 			});
 
 			Aloha.bind('aloha-selection-changed', function(evt, selection, originalEvent) {
@@ -86,7 +86,7 @@ function(Aloha, jQuery, FloatingMenu, Observable, Registry) {
 				if (selection && jQuery(selection.getCommonAncestorContainer()).parents('.aloha-block').length > 0) {
 					return;
 				}
-				that._deactivateActiveBlocks();
+				that._deactivate_highlightedBlocks();
 			});
 		},
 
@@ -97,10 +97,10 @@ function(Aloha, jQuery, FloatingMenu, Observable, Registry) {
 		 * @private
 		 */
 		_blockify: function(element, instanceDefaults) {
-			var attributes, block;
-			element = jQuery(element);
+			var attributes, block, $element;
+			$element = jQuery(element);
 
-			var tagName = element[0].tagName.toLowerCase();
+			var tagName = $element[0].tagName.toLowerCase();
 			if (tagName !== 'span' && tagName !== 'div') {
 				Aloha.Log.error('block/blockmanager', 'Blocks can only be created from <div> or <span> element. You passed ' + tagName + '.');
 				return;
@@ -108,37 +108,25 @@ function(Aloha, jQuery, FloatingMenu, Observable, Registry) {
 
 			// TODO: check if object is already Block-ified
 
-			attributes = this.getConfig(element, instanceDefaults);
-
-			element.contentEditable(false);
+			attributes = this.getConfig($element, instanceDefaults);
 
 			if (!this.blockTypes.has(attributes['aloha-block-type'])) {
 				Aloha.Log.error('block/blockmanager', 'Block Type ' + attributes['aloha-block-type'] + ' not found!');
 				return;
 			}
 
-			block = new (this.blockTypes.get(attributes['aloha-block-type']))(element);
-			block._$element.addClass('aloha-block-' + attributes['aloha-block-type']);
-			block._$element.attr('style', element.attr('style')); // TODO: write test case which checks that styles are applied from child to container!
-			element.attr('style', '');
-			element.find('img').attr('draggable', 'false');
+			block = new (this.blockTypes.get(attributes['aloha-block-type']))($element);
+			block.$element.addClass('aloha-block-' + attributes['aloha-block-type']);
+			block._setAttribute('aloha-block-type', attributes['aloha-block-type']);
 
-			// Save attributes on block, but ignore jquery attribute.
-			jQuery.each(attributes, function(k, v) {
-				if (k.indexOf('jQuery') === 0) return;
-				//  We use _setAttribute here, as we also want to set internal properties like aloha-block-type.
-				block._setAttribute(k, v);
-			});
-
-			// Remove the data-attributes from the child element, as they have been moved to the parent element.
-			jQuery.each(element.data(), function(k, v) {
-				element.removeAttr('data-' + k);
-			});
+			// TODO: Drag Drop
+			//element.find('img').attr('draggable', 'false');
+			//element.find('a').attr('draggable', 'false');
 
 			// Register block
 			this.blocks.register(block.getId(), block);
 
-			block._renderAndSetContent();
+			block._postProcessElementIfNeeded();
 		},
 
 		/**
@@ -146,8 +134,8 @@ function(Aloha, jQuery, FloatingMenu, Observable, Registry) {
 		 *
 		 * @private
 		 */
-		_deactivateActiveBlocks: function() {
-			jQuery.each(jQuery.extend({}, this.activeBlocks), function(id) {
+		_deactivate_highlightedBlocks: function() {
+			jQuery.each(jQuery.extend({}, this._highlightedBlocks), function(id) {
 				var block = BlockManager.getBlock(id);
 				if (block) {
 					block.deactivate();
@@ -225,26 +213,26 @@ function(Aloha, jQuery, FloatingMenu, Observable, Registry) {
 		},
 
 		/**
-		 * Get all active blocks indexed by block id
+		 * Get all highlighted blocks indexed by block id
 		 *
 		 * @return {Object}
 		 */
-		getActiveBlocks: function() {
-			var activeBlocks = {};
+		_getHighlightedBlocks: function() {
+			var _highlightedBlocks = {};
 			jQuery.each(this.blocks.getEntries(), function(blockId, block) {
 				if (block.isActive()) {
-					activeBlocks[blockId] = block;
+					_highlightedBlocks[blockId] = block;
 				}
 			});
-			return activeBlocks;
+			return _highlightedBlocks;
 		},
 
-		_setActive: function(block) {
-			this.activeBlocks[block.id] = true;
+		_setHighlighted: function(block) {
+			this._highlightedBlocks[block.id] = true;
 		},
 
-		_setInactive: function(block) {
-			delete this.activeBlocks[block.id];
+		_setUnhighlighted: function(block) {
+			delete this._highlightedBlocks[block.id];
 		}
 	}))();
 

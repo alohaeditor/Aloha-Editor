@@ -6,18 +6,16 @@
 	padding: 4px;
 	width: 100%;
 }
-.aloha-block:hover > .aloha-block-inner {
-	background: #FFFCE2;
+.aloha-block:hover {
 	cursor: pointer;
-	outline: 1px solid #FFE98A;
+	box-shadow: 0 0 0px 1px #FFE98A; /* We use box-shadow because of a Firefox rendering bug with "outline" */
+}
+.aloha-block.aloha-block-active, .aloha-block.aloha-block-active:hover {
+	box-shadow: 0 0 0px 1px #2F7ECC; /* We use box-shadow because of a Firefox rendering bug with "outline" */
+
 }
 .aloha-block .aloha-editable {
 	cursor: auto;
-}
-.aloha-block-active > .aloha-block-inner,
-.aloha-block-active:hover > .aloha-block-inner {
-	outline: 1px solid #2F7ECC;
-	background: #B4D7F8;
 }
 
 .aloha-block {

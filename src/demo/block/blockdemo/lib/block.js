@@ -96,10 +96,10 @@ define([
 			}
 		},
 		init: function() {
-			this.attr('image', this.$innerElement.attr('src'));
+			this.attr('image', this.$element.find('img').attr('src'));
 		},
-		render: function($innerElement) {
-			$innerElement.attr('src', this.attr('image'));
+		render: function($element) {
+			$element.find('img').attr('src', this.attr('image'));
 		}
 	});
 

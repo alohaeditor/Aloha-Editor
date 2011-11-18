@@ -50,7 +50,7 @@ function( TestUtils) {
 			{
 				desc      : 'A default block is initialized correctly',
 				start     : '<div id="myDefaultBlock">Some default block content</div>',
-				assertions: 9,
+				assertions: 8,
 				operation : function(testContainer, testcase) {
 					jQuery('#myDefaultBlock').alohaBlock({
 						'aloha-block-type': 'DefaultBlock'
@@ -58,17 +58,16 @@ function( TestUtils) {
 					var $block = jQuery('.aloha-block', testContainer);
 
 					// Block Wrapper assertions
-					strictEqual($block.attr('contenteditable'), 'false', 'The block div wrapper has not set contenteditable=false.');
-					ok($block.hasClass('aloha-block'), 'The block div wrapper does not have the aloha-block CSS class.');
-					ok($block.hasClass('aloha-block-DefaultBlock'), 'The block div wrapper does not have the aloha-block-DefaultBlock CSS class.');
-					strictEqual($block.attr('data-aloha-block-type'), 'DefaultBlock', 'The block div wrapper does not have the data-aloha-block-type set correctly.');
-					equal($block.attr('data-block-type'), undefined, 'The block div wrapper has data-block-type set, although it shall not be used anymore by the framework.');
+					strictEqual($block.attr('contenteditable'), 'false', 'The block div is contenteditable=false.');
+					ok($block.hasClass('aloha-block'), 'The block div has the aloha-block CSS class.');
+					ok($block.hasClass('aloha-block-DefaultBlock'), 'The block div has the aloha-block-DefaultBlock CSS class.');
+					strictEqual($block.attr('data-aloha-block-type'), 'DefaultBlock', 'The block div wrapper has the data-aloha-block-type set correctly.');
+					equal($block.attr('data-block-type'), undefined, 'The block div wrapper does not have data-block-type set, as it shall not be used anymore by the framework.');
 
 					// content wrapper assertions
-					strictEqual(jQuery('#myDefaultBlock', testContainer).length, 1, 'The "default block" has been duplicated somehow...');
-					ok($block.find('#myDefaultBlock').hasClass('aloha-block-inner'), 'The inner wrapper does not have the aloha-block-inner CSS class set.');
-					strictEqual(jQuery('.aloha-block #myDefaultBlock', testContainer).length, 1, 'The given div wrapper has not been wrapped by the .aloha-block element');
-					strictEqual(jQuery('.aloha-block #myDefaultBlock', testContainer).html(), 'Some default block content', 'The block content has been modified');
+					ok($block.is('#myDefaultBlock'), 'The given ID is re-used.');
+					ok($block.find('.aloha-block-handle'), 'The handles are added.');
+					ok($block.html().match(/Some default block content/), 'The block content is still there.');
 				}
 			},
 
