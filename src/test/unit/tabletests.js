@@ -39,7 +39,7 @@ function ( TestUtils ) {
 		///////////////////////////////////////////////////////////////////////
 		
 		{
-			exclude   : true,
+			exclude   : false,
 			desc      : 'Activate and deactivate a table',
 			start     : '<table><tbody><tr><td>foo</td></tr></tbody></table>',
 			expected  : '<table><tbody><tr><td>foo</td></tr></tbody></table>',
@@ -82,7 +82,7 @@ function ( TestUtils ) {
 		///////////////////////////////////////////////////////////////////////
 		
 		{
-			exclude   : true,
+			exclude   : false,
 			desc      : 'Select column by index (corrected to 1-index)',
 			start     : '<table><tbody><tr><td>foo</td></tr></tbody></table>',
 			expected  : '<table><tbody><tr><td>bar</td></tr></tbody></table>',
@@ -96,7 +96,7 @@ function ( TestUtils ) {
 		},
 		
 		{
-			exclude   : true,
+			exclude   : false,
 			desc      : 'Select row by index (corrected to 1-index)',
 			start     : '<table><tbody><tr><td>foo</td></tr></tbody></table>',
 			expected  : '<table><tbody><tr><td>bar</td></tr></tbody></table>',
@@ -113,7 +113,7 @@ function ( TestUtils ) {
 		///////////////////////////////////////////////////////////////////////
 		
 		{
-			exclude   : true,
+			exclude   : false,
 			desc      : 'Insert column right of column at index 0 (corrected to 1)',
 			start     : '<table><tbody>\
 							<tr><td>foo</td><td>bar</td></tr>\
@@ -128,7 +128,7 @@ function ( TestUtils ) {
 		},
 		
 		{
-			exclude   : true,
+			exclude   : false,
 			desc      : 'Insert column right of column at index 1 (corrected to 2)',
 			start     : '<table><tbody>\
 							<tr><td>foo</td><td>bar</td></tr>\
@@ -143,7 +143,7 @@ function ( TestUtils ) {
 		},
 		
 		{
-			exclude   : true,
+			exclude   : false,
 			desc      : 'Insert column left of 1st column (column 0, corrected to 1)',
 			start     : '<table><tbody>\
 							<tr><td>foo</td></tr>\
@@ -158,7 +158,7 @@ function ( TestUtils ) {
 		},
 		
 		{
-			exclude   : true,
+			exclude   : false,
 			desc      : 'Add column left of 2nd column (corrected to 2)',
 			start     : '<table><tbody>\
 							<tr><td>foo</td><td>bar</td></tr>\
@@ -175,7 +175,7 @@ function ( TestUtils ) {
 		},
 		
 		{
-			exclude   : true,
+			exclude   : false,
 			desc      : 'Column selection with merged cells ',
 			start     : '<table><tbody>\
 							<tr><td colspan="2" rowspan="1">foo1 bar1</td></tr>\
@@ -195,7 +195,7 @@ function ( TestUtils ) {
 		},
 		
 		{
-			exclude   : true,
+			exclude   : false,
 			desc      : 'Insert column before column 2, with merged cells (corrected to 2)',
 			start     : '<table><tbody>\
 							<tr><td colspan="2" rowspan="1">foo1 bar1</td></tr>\
@@ -212,7 +212,7 @@ function ( TestUtils ) {
 		},
 		
 		{
-			exclude   : true,
+			exclude   : false,
 			desc      : 'Remove 2nd column (corrected to 2)',
 			start     : '<table><tbody>\
 							<tr><td>foo1</td><td class="aloha-cell-selected">bar1</td></tr>\
@@ -229,7 +229,7 @@ function ( TestUtils ) {
 		},
 		
 		{
-			exclude   : true,
+			exclude   : false,
 			desc      : 'Remove 2nd column (corrected to 2) of merged row',
 			start     : '<table><tbody>\
 							<tr><td colspan="3" rowspan="1">foo1 bar1 test1</td></tr>\
@@ -249,7 +249,7 @@ function ( TestUtils ) {
 		///////////////////////////////////////////////////////////////////////
 		
 		{
-			exclude   : true,
+			exclude   : false,
 			desc      : 'Add row at index 0 (corrected to 1)',
 			start     : '<table><tbody>\
 							<tr><td>foo</td></tr>\
@@ -264,7 +264,7 @@ function ( TestUtils ) {
 		},
 		
 		{
-			exclude   : true,
+			exclude   : false,
 			desc      : 'Add row at index 1 (corrected to 2)',
 			start     : '<table><tbody>\
 							<tr><td>foo</td></tr>\
@@ -284,7 +284,7 @@ function ( TestUtils ) {
 		///////////////////////////////////////////////////////////////////////
 		
 		{
-			exclude   : true,
+			exclude   : false,
 			desc      : 'Basic columns merging',
 			start     : '<table><tbody>\
 							<tr><td class="aloha-cell-selected">foo</td></tr>\
@@ -301,7 +301,7 @@ function ( TestUtils ) {
 		},
 		
 		{
-			exclude   : true,
+			exclude   : false,
 			desc      : 'Merging columns with inner tags',
 			start     : '<table><tbody>\
 							<tr><td class="aloha-cell-selected"><i>foo</i></td></tr>\
@@ -318,7 +318,7 @@ function ( TestUtils ) {
 		},
 		
 		{
-			exclude   : true,
+			exclude   : false,
 			desc      : 'Merge a single cell',
 			start     : '<table><tbody>\
 							<tr><td class="aloha-cell-selected">foo</td></tr>\
@@ -335,7 +335,7 @@ function ( TestUtils ) {
 		},
 		
 		{
-			exclude   : true,
+			exclude   : false,
 			desc      : 'Merge column',
 			start     : '<table><tbody>\
 							<tr><td class="aloha-cell-selected">foo1</td><td>bar1</td></tr>\
@@ -352,7 +352,7 @@ function ( TestUtils ) {
 		},
 		
 		{
-			exclude   : true,
+			exclude   : false,
 			desc      : 'Merge column, with inner tags',
 			start     : '<table><tbody>\
 							<tr><td class="aloha-cell-selected"><i>foo</i></td></tr>\
@@ -369,7 +369,7 @@ function ( TestUtils ) {
 		},
 		
 		{
-			exclude   : true,
+			exclude   : false,
 			desc      : 'Merge a row',
 			start     : '<table><tbody>\
 							<tr><td class="aloha-cell-selected">foo1</td>\
@@ -387,7 +387,7 @@ function ( TestUtils ) {
 		},
 		
 		{
-			exclude   : true,
+			exclude   : false,
 			desc      : 'Merge a 2x2 selection',
 			start     : '<table><tbody>\
 							<tr><td class="aloha-cell-selected">foo1</td>\
@@ -408,7 +408,7 @@ function ( TestUtils ) {
 		},
 		
 		{
-			exclude   : true,
+			exclude   : false,
 			desc      : 'Merge a 2x2 selection, with inner tags',
 			start     : '<table><tbody>\
 							<tr><td class="aloha-cell-selected"><i>foo1</i></td>\
@@ -429,7 +429,7 @@ function ( TestUtils ) {
 		},
 		
 		{
-			exclude   : true,
+			exclude   : false,
 			desc      : 'Prevent merging of non-rectangular selection',
 			start     : '<table><tbody>\
 							<tr><td class="aloha-cell-selected">foo1</td>\
@@ -448,7 +448,7 @@ function ( TestUtils ) {
 		},
 		
 		{
-			exclude   : true,
+			exclude   : false,
 			desc      : 'Prevent attempt to merge an alreay merged cell',
 			start     : '<table><tbody>\
 							<tr><td colspan="1" rowspan="2" class="aloha-cell-selected">foo bar</td></tr>\
@@ -468,7 +468,7 @@ function ( TestUtils ) {
 		///////////////////////////////////////////////////////////////////////
 		
 		{
-			exclude   : true,
+			exclude   : false,
 			desc      : 'Split a table with a single merged cell',
 			start     : '<table><tbody>\
 							<tr><td colspan="1" rowspan="2" class="aloha-cell-selected">foo bar</td></tr>\
@@ -485,7 +485,7 @@ function ( TestUtils ) {
 		},
 		
 		{
-			exclude   : true,
+			exclude   : false,
 			desc      : 'Split a 2x2 merged cell',
 			start     : '<table><tbody>\
 							<tr><td colspan="1" rowspan="2" class="aloha-cell-selected">foo1 foo2</td>\
@@ -503,7 +503,7 @@ function ( TestUtils ) {
 		},
 		
 		{
-			exclude   : true,
+			exclude   : false,
 			desc      : 'Split 2 merged cell, simultaneosly',
 			start     : '<table><tbody>\
 							<tr>\
@@ -525,7 +525,7 @@ function ( TestUtils ) {
 		///////////////////////////////////////////////////////////////////////
 		
 		{
-			exclude   : true,
+			exclude   : false,
 			desc      : 'Transform row as table header',
 			start     : '<table><tbody>\
 							<tr>\
@@ -546,7 +546,7 @@ function ( TestUtils ) {
 		},
 		
 		{
-			exclude   : true,
+			exclude   : false,
 			desc      : 'Transform column as table header',
 			start     : '<table><tbody>\
 							<tr><td class="aloha-cell-selected">foo1</td><td>bar1</td></tr>\
@@ -563,7 +563,7 @@ function ( TestUtils ) {
 		},
 		
 		{
-			exclude   : true,
+			exclude   : false,
 			desc      : 'Toggle header to td cell',
 			start     : '<table><tbody>\
 							<tr><th scope="row" class="aloha-cell-selected">foo1</th><td>bar1</td></tr>\
@@ -583,7 +583,7 @@ function ( TestUtils ) {
 		///////////////////////////////////////////////////////////////////////
 		
 		{
-			exclude   : true,
+			exclude   : false,
 			desc      : 'Nested tables',
 			start     : '<table><tbody>\
 							<tr><td>\
@@ -606,7 +606,7 @@ function ( TestUtils ) {
 		///////////////////////////////////////////////////////////////////////
 		
 		{
-			exclude   : true,
+			exclude   : false,
 			desc      : 'With rowspan',
 			start     : '<table><tbody>\
 							<tr><td rowspan="2"></td><td></td></tr>\
@@ -620,7 +620,7 @@ function ( TestUtils ) {
 		},
 		
 		{
-			exclude   : true,
+			exclude   : false,
 			desc      : 'With rowspan',
 			start     : '<table><tbody>\
 							<tr><td rowspan="2"></td><td></td><td></td></tr>\
@@ -634,7 +634,7 @@ function ( TestUtils ) {
 		},
 		
 		{
-			exclude   : true,
+			exclude   : false,
 			desc      : 'With no rowspan and colspan',
 			start     : '<table><tbody>\
 							<tr><td></td><td></td></tr>\
@@ -648,7 +648,7 @@ function ( TestUtils ) {
 		},
 		
 		{
-			exclude   : true,
+			exclude   : false,
 			desc      : 'With colspan',
 			start     : '<table><tbody>\
 							<tr><td colspan="2"></td></tr>\
@@ -662,7 +662,7 @@ function ( TestUtils ) {
 		},
 		
 		{
-			exclude   : true,
+			exclude   : false,
 			desc      : 'With colspan',
 			start     : '<table><tbody>\
 							<tr><td colspan="2"></td></tr>\
@@ -678,7 +678,7 @@ function ( TestUtils ) {
 		},
 		
 		{
-			exclude   : true,
+			exclude   : false,
 			desc      : 'Removing redundant colspan="1" attribute',
 			start     : '<table><tbody>\
 							<tr><td colspan="1"></td></tr>\
