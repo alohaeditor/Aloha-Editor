@@ -87,6 +87,12 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 
 			this.$element.addClass('aloha-block');
 
+			if (this.isDraggable()) {
+				// Remove default drag/drop behavior of the browser
+				this.$element.find('img').attr('draggable', 'false');
+				this.$element.find('a').attr('draggable', 'false');
+			}
+
 			// Register event handlers for activating an Aloha Block
 			this.$element.bind('click', function(event) {
 				that.activate(event.target);
@@ -112,6 +118,8 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 			});
 
 			this.init(this.$element);
+
+			this._postProcessElementIfNeeded();
 
 			this._registerAsBlockified();
 		},
@@ -186,6 +194,10 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 		 */
 		getTitle: function() {
 			return this.title;
+		},
+
+		isDraggable: function() {
+			return this.$element.parents('.aloha-editable').length > 0;
 		},
 
 		/**************************

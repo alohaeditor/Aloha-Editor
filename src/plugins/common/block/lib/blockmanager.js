@@ -119,14 +119,9 @@ function(Aloha, jQuery, FloatingMenu, Observable, Registry) {
 			block.$element.addClass('aloha-block-' + attributes['aloha-block-type']);
 			block._setAttribute('aloha-block-type', attributes['aloha-block-type']);
 
-			// TODO: Drag Drop
-			//element.find('img').attr('draggable', 'false');
-			//element.find('a').attr('draggable', 'false');
 
 			// Register block
 			this.blocks.register(block.getId(), block);
-
-			block._postProcessElementIfNeeded();
 		},
 
 		/**
