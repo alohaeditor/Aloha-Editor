@@ -234,6 +234,7 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 			this.$element.addClass('aloha-block-active');
 
 			BlockManager.trigger('block-selection-change', highlightedBlocks);
+			//GENTICS.Utils.Dom.selectDomNode(this.$element[0]);
 
 			return false;
 		},
@@ -317,8 +318,108 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 		 * when called once or twice.
 		 */
 		_postProcessElementIfNeeded: function() {
+			var that = this;
 			this.createEditablesIfNeeded();
 			this.renderDragHandlesIfNeeded();
+			if (this.isDraggable()) {
+				//this.$element.attr('draggable', 'true');
+
+				var insertSpans = function(el) {
+					// Use ECMA-262 Edition 3 String and RegExp features
+					if (!/[^\t\n\r ]/.test(el.textContent)) {
+						return;
+					}
+					var newNodes = document.createDocumentFragment();
+					for (var i=0; i<el.textContent.length; i++) {
+						var x = document.createElement('span');
+						x.setAttribute('data-i', i);
+						x.innerHTML = el.textContent.substr(i, 1);
+						newNodes.appendChild(x);
+					}
+					el.parentNode.replaceChild(newNodes, el);
+				}
+				var removeSpans = function($el) {
+					var content = [];
+					content.push($el[0].innerHTML);
+
+					var $nextElements = $el.nextUntil(':not(span[data-i])');
+					$nextElements.each(function() {
+						content.push(this.innerHTML);
+					});
+					$nextElements.remove();
+
+					var textNode = document.createTextNode(content.join(''));
+					var el = $el[0];
+					el.parentNode.replaceChild(textNode, el);
+				}
+				var convert, collectSpansToBeRemoved;
+				convert = function($el) {
+					jQuery.each($el.contents(), function() {
+						switch(this.nodeType) {
+							case 1:
+								if (jQuery(this).is('.aloha-block')) return;
+								if (jQuery(this).is('[data-i]')) return;
+								convert(jQuery(this));
+								break;
+							case 3:
+								insertSpans(this);
+						}
+					});
+				};
+
+				var spansToBeRemoved = [];
+				collectSpansToBeRemoved = function($el) {
+					jQuery.each($el.children(), function() {
+						if (jQuery(this).attr('data-i') === '0') {
+							spansToBeRemoved.push(jQuery(this));
+							return;
+						}
+						if (jQuery(this).is('.aloha-block')) return;
+						collectSpansToBeRemoved(jQuery(this));
+					});
+				};
+
+
+				this.$element.draggable({
+					handle: '.aloha-block-draghandle',
+					start: function() {
+						convert(that.$element.parents('.aloha-editable').first());
+						jQuery('[data-i]').droppable({
+							hoverClass: 'aloha-block-droppable',
+							tolerance: 'pointer',
+							addClasses: false, // performance optimization
+							drop: function(evt, ui) {
+								var offset = jQuery(this).attr('data-i');
+								var parent = jQuery(this).parent();
+								spansToBeRemoved = [];
+								collectSpansToBeRemoved(that.$element.parents('.aloha-editable').first());
+								jQuery.each(spansToBeRemoved, function(index, $el) {
+									removeSpans($el);
+								});
+
+								var range = new GENTICS.Utils.RangeObject({
+									startContainer: parent[0],
+									startOffset: offset,
+									endContainer: parent[0],
+									endOffset: offset
+								});
+								range.update();
+								console.log("drop", range.isCollapsed(), offset, parent[0], ui.draggable);
+								GENTICS.Utils.Dom.insertIntoDOM(jQuery('<b>Test</b>'), range);
+
+							}
+						});
+						console.log("start");
+					},
+					/*stop: function(event, ui) {
+						console.log("stop", event.srcElement, ui);
+						//ui.helper.css('display', 'none');
+						//console.log(document.elementFromPoint(ui.offset.left, ui.offset.top));
+
+					},*/
+					containment: this.$element.parents('.aloha-editable').first()
+				});
+			}
 		},
 
 		/**
@@ -348,8 +449,11 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 		 * Template method to render custom block UI.
 		 */
 		renderDragHandlesIfNeeded: function() {
-			if (this.$element.find('.aloha-block-draghandle').length == 0) {
-				this.$element.prepend('<span class="aloha-block-handle aloha-block-draghandle"></span>');
+			var that = this;
+			if (this.isDraggable()) {
+				if (this.$element.find('.aloha-block-draghandle').length == 0) {
+					this.$element.prepend('<span class="aloha-block-handle aloha-block-draghandle"></span>');
+				}
 			}
 		},
 

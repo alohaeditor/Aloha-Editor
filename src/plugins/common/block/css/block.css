@@ -14,6 +14,11 @@
 	box-shadow: 0 0 0px 1px #2F7ECC; /* We use box-shadow because of a Firefox rendering bug with "outline" */
 
 }
+
+.aloha-block-droppable {
+	border-left: 1px solid red;
+}
+
 .aloha-block .aloha-editable {
 	cursor: auto;
 }
