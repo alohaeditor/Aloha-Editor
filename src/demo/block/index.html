@@ -47,7 +47,7 @@
 
 	</script>
 
-	<script src="../../lib/aloha.js" data-aloha-plugins="common/format,common/block,user/blockdemo"></script>
+	<script src="../../lib/aloha.js" data-aloha-plugins="common/format,common/contenthandler,common/paste,common/block,user/blockdemo"></script>
 
 	<link rel="stylesheet" href="../../css/aloha.css" id="aloha-style-include" type="text/css">
 	<link rel="stylesheet" href="index.css" type="text/css">
@@ -172,6 +172,13 @@
 		Aloha.jQuery('#content').aloha();
 		Aloha.jQuery('.textcontent').aloha();
 		Aloha.jQuery('.aloha-block').aloha();
+		Aloha.jQuery('#teaser').get(0).addEventListener('dragstart', function(e) {
+			e.preventDefault();
+			return false;
+		}, false);
+		/*Aloha.jQuery('#teaser p').on('fpp', function() {
+			console.log("dstart");
+		});*/
 	});
 	</script>
 </body>
