@@ -1052,7 +1052,7 @@ function(Aloha, jQuery, Ext, Class, console) {
 			var scopeObject = this.scopes[scope];
 
 			if (typeof scopeObject === 'undefined') {
-				// TODO log an error
+				Aloha.Log.error('aloha/floatingmenu', 'Floating Menu Scope "' + scope + '" not found.');
 			} else if (this.currentScope != scope) {
 				this.currentScope = scope;
 
