@@ -8,3 +8,4 @@ TODO:
 * Marked elements must be visible to the user
 * Howto mark longer sections and make it visible to the user.
 * Similiar to abbr()
+* check for a valid value if possible -- now also abcd would be valid
