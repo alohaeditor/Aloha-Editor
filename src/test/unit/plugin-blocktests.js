@@ -84,6 +84,21 @@ function( TestUtils) {
 					strictEqual(block.attr('somepropertywithuppercase'), 'test2', 'Uppercase properties need to be converted to lowercase.');
 				}
 			},
+			{
+				desc      : 'Attributes passed to .alohaBlock() are preserved. The data-attributes take precedence, however',
+				start     : '<div id="myDefaultBlock" data-baz="original">Some default block content2</div>',
+				assertions: 2,
+				operation : function(testContainer, testcase) {
+					jQuery('#myDefaultBlock').alohaBlock({
+						'aloha-block-type': 'DefaultBlock',
+						'foo': 'someBar',
+						'baz': 'Override'
+					});
+					var block = BlockManager.getBlock(jQuery('#myDefaultBlock', testContainer));
+					strictEqual(block.attr('foo'), 'someBar');
+					strictEqual(block.attr('baz'), 'original');
+				}
+			},
 
 			{
 				exclude: true, // TODO: FIX LATER
@@ -98,12 +113,10 @@ function( TestUtils) {
 						'aloha-block-type': 'DefaultBlock'
 					});
 
-					console.log(testContainer);
 					strictEqual(window.thisTestExecutionCount, 0);
 					delete window.thisTestExecutionCount;
 				}
 			},
-
 			{
 				desc      : 'Attached event handlers are not removed',
 				start     : '<div id="myDefaultBlock" data-foo="Bar" data-somePropertyWithUppercase="test2">Some default block content2</div>',
@@ -118,7 +131,6 @@ function( TestUtils) {
 					jQuery('#myDefaultBlock').click();
 				}
 			},
-
 			{
 				desc      : 'Trying to create a block from an element which is no div or span throws error',
 				start     : '<img id="myDefaultBlock" />',

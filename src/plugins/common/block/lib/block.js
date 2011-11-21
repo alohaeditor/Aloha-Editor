@@ -234,7 +234,6 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 			this.$element.addClass('aloha-block-active');
 
 			BlockManager.trigger('block-selection-change', highlightedBlocks);
-			//GENTICS.Utils.Dom.selectDomNode(this.$element[0]);
 
 			return false;
 		},

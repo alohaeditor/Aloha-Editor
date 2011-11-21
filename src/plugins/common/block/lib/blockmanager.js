@@ -156,7 +156,10 @@ function(Aloha, jQuery, FloatingMenu, Observable, Registry) {
 
 			block = new (this.blockTypes.get(attributes['aloha-block-type']))($element);
 			block.$element.addClass('aloha-block-' + attributes['aloha-block-type']);
-			block._setAttribute('aloha-block-type', attributes['aloha-block-type']);
+			jQuery.each(attributes, function(k, v) {
+				// We use the private API here, as we need to be able to set internal properties as well
+				block._setAttribute(k, v);
+			});
 
 
 			// Register block
@@ -183,8 +186,6 @@ function(Aloha, jQuery, FloatingMenu, Observable, Registry) {
 		 * @private
 		 */
 		getConfig: function(blockElement, instanceDefaults) {
-			// TODO: merge from plugin settings
-			// TODO: What about double matches / overrides / multiple selectors applying?
 			var settingsDefaults = {};
 
 			return jQuery.extend(
