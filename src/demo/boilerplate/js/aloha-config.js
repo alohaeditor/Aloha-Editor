@@ -128,7 +128,34 @@
 				referenceContainer: '#references'
 			},
 			formatlesspaste :{
-				formatlessPasteOption : true
+				formatlessPasteOption : true,
+				strippedElements : [
+				"em",
+				"strong",
+				"small",
+				"s",
+				"cite",
+				"q",
+				"dfn",
+				"abbr",
+				"time",
+				"code",
+				"var",
+				"samp",
+				"kbd",
+				"sub",
+				"sup",
+				"i",
+				"b",
+				"u",
+				"mark",
+				"ruby",
+				"rt",
+				"rp",
+				"bdi",
+				"bdo",
+				"ins",
+				"del"]
 			}
 		}
 	};
