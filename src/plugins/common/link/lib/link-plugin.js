@@ -81,7 +81,6 @@ define( [
 		 * called function ( obj, href, item );
 		 */
 		onHrefChange: null,
-
 		
 		/**
 		 * This variable is used to ignore one selection changed event. We need
@@ -595,9 +594,9 @@ define( [
 		 */
 		insertLink: function ( extendToWord ) {
 			var that = this,
-				range = Aloha.Selection.getRangeObject(),
+			    range = Aloha.Selection.getRangeObject(),
 			    linkText,
-				newLink;
+			    newLink;
 			
 			// There are occasions where we do not get a valid range, in such
 			// cases we should not try and add a link

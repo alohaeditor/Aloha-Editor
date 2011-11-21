@@ -3,7 +3,7 @@
 This document is to serve as a "what has been done" in terms of the [Roadmap](http://aloha-editor.org/wiki/Roadmap)
 
 ## 0.20.0-RC8 - 2011/11/21
-
+- link-plugin: Fixed problem with auto-suggestion mechanism for the link input field causing the the wrong href value to be taken.
 
 ## 0.20.0-RC7 - 2011/11
 
