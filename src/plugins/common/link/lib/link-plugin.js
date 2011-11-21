@@ -260,7 +260,7 @@ define( [
 				// now and check whether the selection was placed within a
 				// editable area.
 				if ( !that.ignoreNextSelectionChangedEvent &&
-						Aloha.Selection.isSelectionEditable() ) {
+						Aloha.Selection.isSelectionEditable() && Aloha.activeEditable != null) {
 					
 					// show/hide the button according to the configuration
 					config = that.getEditableConfig( Aloha.activeEditable.obj );

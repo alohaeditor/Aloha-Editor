@@ -212,7 +212,7 @@ Aloha.ready(function() {
 								var sNode = range.startContainer;
 								var eNode = range.endContainer;
 								
-								if ( !sNode || !eNode ) {
+								if ( !sNode || !eNode || Aloha.activeEditable == null ) {
 									return;
 								}
 								
