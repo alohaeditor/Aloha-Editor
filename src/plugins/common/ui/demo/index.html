@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Aloha Editor UI Prototype</title>
+	<link rel="stylesheet" href="../vendor/jquery-ui-1.8.16.css">
+	<style>
+	.aloha-toolbar {
+		border: 1px solid black;
+	}
+	.aloha-button-on {
+		background-color: green;
+	}	
+	</style>
+	<script>
+	var Aloha = {
+			settings: {
+				toolbar: {
+					tabs: {},
+					components: [ [ 'bold', 'italic', 'fontName', 'link', 'editLink' ] ]
+				}
+			}
+	}
+	</script>
+	<script src="../../../../lib/aloha.js" data-aloha-plugins="common/ui"></script>
+	<script>
+	Aloha.ready( function() {
+		var $ = Aloha.jQuery;
+		$( "#main" ).aloha({
+			toolbar: {
+				components: [
+					[ "bold", "italic", "font" ]
+				]
+			}
+		});
+		$( "#uhoh" ).aloha({
+			font: [ "Tahoma", "Georgia" ],
+			toolbar: {
+				components: [
+					[ "font", "italic", "link", "editLink" ]
+				]
+			}
+		});
+	});
+	</script>
+</head>
+<body>
+
+<p>not editable</p>
+
+<div id="main" contenteditable>
+<p>This is just a <strong>prototype</strong>.</p>
+<p>Trying to make Aloha Editor even more awesome!</p>
+</div>
+
+<div id="uhoh" contenteditable>
+<p>More than one instance...</p>
+<p>This is gonna be trouble!</p>
+</div>
+
+</body>
+</html>
