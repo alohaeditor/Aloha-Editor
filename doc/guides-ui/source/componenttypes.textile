@@ -138,5 +138,34 @@ The +MultiSplitButton+ has to provide methods to read the currently active butto
 * +setActiveButton(button)+ will switch the current button to highlight state
 
 
+h4. Panel
+
+See the "Sidebar":sidebar.html for details.
+
+
+h4. AutocompleteRepositoryAttribute Component Type +AutocompleteRepositoryAttribute+
+
+This is a basic input field that is augmented with autocomplete (typeahead) capabilities from data repositories. When entering a value all configured repositories should be searched for it. The input field is linked to a dom element's attribute by configuration and is able to update the element when changing the value.
+
+The following methods are provided:
+
+* +getValue()+ retrieve the current value
+* +getRepositoryItem()+ retrive the currently selected repository item if any
+* +setValue(val)+ set a value
+* +setRepositoryItem(item)+ set repository item
+
+h4. Splitter (vertical pipe for visual grouping)
+
+The splitter is just an optical seperator (like a pipe symbol) to organize buttons in the toolbar.
+
+h4. Radiobutton Component Type +RadioButton+
+
+Just your standard RadioButton as known from html.
+
+* +getValue()+ currently selected value
+* +getValues()+ array of all possible values
+* +setValue(value)+ set current value
+
+
 * September 1, 2011: Initial version by "Haymo Meran":credits.html#haymo and "Scott Gonzales":credits.html#scottgonzales
 

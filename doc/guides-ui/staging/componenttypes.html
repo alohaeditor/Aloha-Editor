@@ -193,12 +193,32 @@ function ( Aloha, Ui, ToggleButton ) {
 	<li><tt>getValue()</tt> to read the currently selected value from the dropdown</li>
 </ul>
 <h4 id="multisplitbutton-component-type-multisplitbutton">1.5 MultiSplitButton Component Type <tt>MultiSplitButton</tt></h4>
-<p>The <tt>MultiSplitButton</tt> is intended to provide a group of buttons to select from which will apply interchangeable stylings to selected content. The classic use for the MultiSplitButton is a selection of standard paragraph and header stylings. In case there are more than four buttons it can be extended to reveal additional buttons. The currently applied selection is highlighted. It&#8217;s also possible to add special buttons at the bottom which are reserved for actions such as removing formatting from selected content.</p>
+<p>The <tt>MultiSplitButton</tt> is intended to provide an array of buttons to select from which will apply interchangeable stylings to selected content. The classic use for the MultiSplitButton is a selection of standard paragraph and header stylings. In case there are more than four buttons it can be extended to reveal additional buttons. The currently applied selection is highlighted. It&#8217;s also possible to add special buttons at the bottom which are reserved for actions such as removing formatting from selected content.</p>
 <p><img src="../images/MultiSplitButton.png" alt="" /></p>
 <p>The <tt>MultiSplitButton</tt> has to provide methods to read the currently active button as well as switching another button to highlight state.</p>
 <ul>
 	<li><tt>getActiveButton()</tt> will return the currently active button</li>
 	<li><tt>setActiveButton(button)</tt> will switch the current button to highlight state</li>
+</ul>
+<h4 id="panel">1.6 Panel</h4>
+<p>See the <a href="sidebar.html">Sidebar</a> for details.</p>
+<h4 id="autocompleterepositoryattribute-component-type-autocompleterepositoryattribute">1.7 AutocompleteRepositoryAttribute Component Type <tt>AutocompleteRepositoryAttribute</tt></h4>
+<p>This is a basic input field that is augmented with autocomplete (typeahead) capabilities from data repositories. When entering a value all configured repositories should be searched for it. The input field is linked to a dom element&#8217;s attribute by configuration and is able to update the element when changing the value.</p>
+<p>The following methods are provided:</p>
+<ul>
+	<li><tt>getValue()</tt> retrieve the current value</li>
+	<li><tt>getRepositoryItem()</tt> retrive the currently selected repository item if any</li>
+	<li><tt>setValue(val)</tt> set a value</li>
+	<li><tt>setRepositoryItem(item)</tt> set repository item</li>
+</ul>
+<h4 id="splitter-vertical-pipe-for-visual-grouping">1.8 Splitter (vertical pipe for visual grouping)</h4>
+<p>The splitter is just an optical seperator (like a pipe symbol) to organize buttons in the toolbar.</p>
+<h4 id="radiobutton-component-type-radiobutton">1.9 Radiobutton Component Type <tt>RadioButton</tt></h4>
+<p>Just your standard RadioButton as known from html.</p>
+<ul>
+	<li><tt>getValue()</tt> currently selected value</li>
+	<li><tt>getValues()</tt> array of all possible values</li>
+	<li><tt>setValue(value)</tt> set current value</li>
 </ul>
 <ul>
 	<li>September 1, 2011: Initial version by <a href="credits.html#haymo">Haymo Meran</a> and <a href="credits.html#scottgonzales">Scott Gonzales</a></li>
@@ -214,6 +234,10 @@ function ( Aloha, Ui, ToggleButton ) {
 </a></li> <li><a href="#toggle-command-button-type-togglecommandbutton"><p>Toggle Command Button Type <tt>ToggleCommandButton</tt></p>
 </a></li> <li><a href="#dropdown-component-type-dropdown"><p>Dropdown Component Type <tt>Dropdown</tt></p>
 </a></li> <li><a href="#multisplitbutton-component-type-multisplitbutton"><p>MultiSplitButton Component Type <tt>MultiSplitButton</tt></p>
+</a></li> <li><a href="#panel"><p>Panel</p>
+</a></li> <li><a href="#autocompleterepositoryattribute-component-type-autocompleterepositoryattribute"><p>AutocompleteRepositoryAttribute Component Type <tt>AutocompleteRepositoryAttribute</tt></p>
+</a></li> <li><a href="#splitter-vertical-pipe-for-visual-grouping"><p>Splitter (vertical pipe for visual grouping)</p>
+</a></li> <li><a href="#radiobutton-component-type-radiobutton"><p>Radiobutton Component Type <tt>RadioButton</tt></p>
 </a></li></ul></li>
           </ol>
         </div>
