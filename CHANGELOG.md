@@ -2,6 +2,9 @@
 
 This document is to serve as a "what has been done" in terms of the [Roadmap](http://aloha-editor.org/wiki/Roadmap)
 
+## 0.20.0-RC8 - 2011/11/21
+
+
 ## 0.20.0-RC7 - 2011/11
 
 - link-plugin: Fixed javascript error that occured when linking items using the repository browser in Internet Explorer 8.
