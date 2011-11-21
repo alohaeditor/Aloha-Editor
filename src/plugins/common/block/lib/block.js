@@ -420,19 +420,13 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 
 								nodesToDelete = [];
 								convertBack(that.$element.parents('.aloha-editable').first()[0]);
+
 								for (var i=0, l=nodesToDelete.length; i<l; i++) {
 									nodesToDelete[i].parentNode.removeChild(nodesToDelete[i]);
 								}
 							}
 						});
-						console.log("start");
 					},
-					/*stop: function(event, ui) {
-						console.log("stop", event.srcElement, ui);
-						//ui.helper.css('display', 'none');
-						//console.log(document.elementFromPoint(ui.offset.left, ui.offset.top));
-
-					},*/
 					containment: this.$element.parents('.aloha-editable').first()
 				});
 			}
