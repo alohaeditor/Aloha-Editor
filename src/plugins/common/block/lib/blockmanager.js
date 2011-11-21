@@ -51,6 +51,11 @@ function(Aloha, jQuery, FloatingMenu, Observable, Registry) {
 		_highlightedBlocks: null,
 
 		/**
+		 * Reference to the currently active block, if any
+		 */
+		_activeBlock: null,
+
+		/**
 		 * @constructor
 		 */
 		_constructor: function() {
@@ -88,6 +93,40 @@ function(Aloha, jQuery, FloatingMenu, Observable, Registry) {
 				}
 				that._deactivate_highlightedBlocks();
 			});
+
+			this.bind('block-selection-change', function(highlightedBlocks) {
+				if (highlightedBlocks.length > 0) {
+					that._activeBlock = highlightedBlocks[0];
+				} else {
+					that._activeBlock = null;
+				}
+			});
+
+			// Enabling copies of the active block
+			var currentlyCopying = false;
+			var selectionBeforeCopying = null;
+			jQuery(window.document).keydown(function(e) {
+				// IF: Ctrl/Command C pressed
+				if (that._activeBlock && (e.ctrlKey || e.metaKey) && e.which === 67) {
+					currentlyCopying = true;
+					//selectionBeforeCopying = new GENTICS.Utils.RangeObject(true);
+					GENTICS.Utils.Dom.selectDomNode(that._activeBlock.$element[0]);
+				}
+			});
+			jQuery(window.document).keyup(function(e) {
+				// IF: Release of ctrl / command C
+				if (currentlyCopying && (e.which === 67 || e.which === 18 || e.which === 91)) {
+					currentlyCopying = false;
+					if (selectionBeforeCopying) {
+						//selectionBeforeCopying.select();
+						selectionBeforeCopying = null;
+					}
+				}
+			});
+		},
+
+		_setActiveBlock: function() {
+
 		},
 
 		/**
