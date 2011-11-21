@@ -1,0 +1,15 @@
+h2. The Undo Plugin
+
+endprologue.
+
+h3. Goal
+* Undo changes to the content of an element.
+* Undo changes to the DOM hierarchy of nodes that are descendants of the HTMLDocument object (parentNode, childNodes).
+* Undo changes to internal state, such as a form control's value or dirty checkedness flag.
+* Undo changes to all attributes
+* Undo changes to any occurred DOM manipulation
+
+h3. Reference
+* http://www.whatwg.org/specs/web-apps/current-work/#undo
+* https://github.com/jzaefferer/undo (Undo/Redo Stack Abstraction by Jörn Zaefferer from jQuery UI)
+

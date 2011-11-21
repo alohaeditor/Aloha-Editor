@@ -5,12 +5,11 @@
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
 define(
-['aloha/plugin', 'aloha/floatingmenu'],
-function(Plugin, FloatingMenu, i18n, i18nCore) {
+['aloha/plugin', 'aloha/floatingmenu', 'aloha/jquery'],
+function(Plugin, FloatingMenu, jQuery, i18n, i18nCore) {
 	"use strict";
 
-	var
-		jQuery = window.alohaQuery || window.jQuery, $ = jQuery,
+	var $ = jQuery,
 		GENTICS = window.GENTICS,
 		Aloha = window.Aloha;
 

@@ -13,61 +13,62 @@
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl.html
 **/
-$.jgrid = {
-	defaults : {
+// $.jgrid = {
+$.jgrid_de = {
+	defaults: {
 		recordtext: "Zeige {0} - {1} von {2}",
 	    emptyrecords: "Keine Datensätze vorhanden",
 		loadtext: "Lädt...",
-		pgtext : "Seite {0} von {1}"
+		pgtext: "Seite {0} von {1}"
 	},
-	search : {
+	search: {
 		caption: "Suche...",
 		Find: "Suchen",
 		Reset: "Zurücksetzen",
-	    odata : ['gleich', 'ungleich', 'kleiner', 'kleiner gleich','größer','größer gleich', 'beginnt mit','beginnt nicht mit','ist in','ist nicht in','endet mit','endet nicht mit','enthält','enthält nicht'],
-	    groupOps: [	{ op: "AND", text: "alle" },	{ op: "OR",  text: "mindestens eine" }	],
+	    odata: [ 'gleich', 'ungleich', 'kleiner', 'kleiner gleich','größer','größer gleich', 'beginnt mit','beginnt nicht mit','ist in','ist nicht in','endet mit','endet nicht mit','enthält','enthält nicht' ],
+	    groupOps: [	{ op: "AND", text: "alle" }, { op: "OR",  text: "mindestens eine" } ],
 		matchText: " erfülle",
 		rulesText: " Bedingung(en)"
 	},
-	edit : {
+	edit: {
 		addCaption: "Datensatz hinzufügen",
 		editCaption: "Datensatz bearbeiten",
 		bSubmit: "Speichern",
 		bCancel: "Abbrechen",
 		bClose: "Schließen",
 		saveData: "Daten wurden geändert! Änderungen speichern?",
-		bYes : "ja",
-		bNo : "nein",
-		bExit : "abbrechen",
+		bYes: "ja",
+		bNo: "nein",
+		bExit: "abbrechen",
 		msg: {
-		    required:"Feld ist erforderlich",
+		    required: "Feld ist erforderlich",
 		    number: "Bitte geben Sie eine Zahl ein",
-		    minValue:"Wert muss größer oder gleich sein, als ",
-		    maxValue:"Wert muss kleiner oder gleich sein, als ",
+		    minValue: "Wert muss größer oder gleich sein, als ",
+		    maxValue: "Wert muss kleiner oder gleich sein, als ",
 		    email: "ist keine gültige E-Mail-Adresse",
 		    integer: "Bitte geben Sie eine Ganzzahl ein",
 			date: "Bitte geben Sie ein gültiges Datum ein",
 			url: "ist keine gültige URL. Präfix muss eingegeben werden ('http://' oder 'https://')",
-			nodefined : " ist nicht definiert!",
-			novalue : " Rückgabewert ist erforderlich!",
-			customarray : "Benutzerdefinierte Funktion sollte ein Array zurückgeben!",
-			customfcheck : "Benutzerdefinierte Funktion sollte im Falle der benutzerdefinierten Überprüfung vorhanden sein!"
+			nodefined: " ist nicht definiert!",
+			novalue: " Rückgabewert ist erforderlich!",
+			customarray: "Benutzerdefinierte Funktion sollte ein Array zurückgeben!",
+			customfcheck: "Benutzerdefinierte Funktion sollte im Falle der benutzerdefinierten Überprüfung vorhanden sein!"
 		}
 	},
-	view : {
+	view: {
 	    caption: "Datensatz anzeigen",
 	    bClose: "Schließen"
 	},
-	del : {
+	del: {
 		caption: "Löschen",
 		msg: "Ausgewählte Datensätze löschen?",
 		bSubmit: "Löschen",
 		bCancel: "Abbrechen"
 	},
-	nav : {
+	nav: {
 		edittext: " ",
 	    edittitle: "Ausgewählte Zeile editieren",
-		addtext:" ",
+		addtext: " ",
 	    addtitle: "Neue Zeile einfügen",
 	    deltext: " ",
 	    deltitle: "Ausgewählte Zeile löschen",
@@ -80,22 +81,22 @@ $.jgrid = {
 		viewtext: "",
 		viewtitle: "Ausgewählte Zeile anzeigen"
 	},
-	col : {
+	col: {
 		caption: "Spalten auswählen",
 		bSubmit: "Speichern",
 		bCancel: "Abbrechen"	
 	},
-	errors : {
-		errcap : "Fehler",
-		nourl : "Keine URL angegeben",
+	errors: {
+		errcap: "Fehler",
+		nourl: "Keine URL angegeben",
 		norecords: "Keine Datensätze zu bearbeiten",
-		model : "colNames und colModel sind unterschiedlich lang!"
+		model: "colNames und colModel sind unterschiedlich lang!"
 	},
-	formatter : {
-		integer : {thousandsSeparator: ".", defaultValue: '0'},
-		number : {decimalSeparator:",", thousandsSeparator: ".", decimalPlaces: 2, defaultValue: '0,00'},
-		currency : {decimalSeparator:",", thousandsSeparator: ".", decimalPlaces: 2, prefix: "", suffix:" €", defaultValue: '0,00'},
-		date : {
+	formatter: {
+		integer: {thousandsSeparator: ".", defaultValue: '0'},
+		number: {decimalSeparator: ",", thousandsSeparator: ".", decimalPlaces: 2, defaultValue: '0,00'},
+		currency: {decimalSeparator: ",", thousandsSeparator: ".", decimalPlaces: 2, prefix: "", suffix: " €", defaultValue: '0,00'},
+		date: {
 			dayNames:   [
 				"So", "Mo", "Di", "Mi", "Do", "Fr", "Sa",
 				"Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"
@@ -104,11 +105,11 @@ $.jgrid = {
 				"Jan", "Feb", "Mar", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez",
 				"Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"
 			],
-			AmPm : ["am","pm","AM","PM"],
+			AmPm: ["am","pm","AM","PM"],
 			S: function (j) {return 'ter'},
 			srcformat: 'Y-m-d',
 			newformat: 'd.m.Y',
-			masks : {
+			masks: {
 		        ISO8601Long: "Y-m-d H:i:s",
 		        ISO8601Short: "Y-m-d",
 		        ShortDate: "j.n.Y",
@@ -121,13 +122,13 @@ $.jgrid = {
 		        UniversalSortableDateTime: "Y-m-d H:i:sO",
 		        YearMonth: "F Y"
 		    },
-		    reformatAfterEdit : false
+		    reformatAfterEdit: false
 		},
 		baseLinkUrl: '',
 		showAction: '',
 	    target: '',
-	    checkbox : {disabled:true},
-		idName : 'id'
+	    checkbox: {disabled:true},
+		idName: 'id'
 	}
 };
 })(jQuery);

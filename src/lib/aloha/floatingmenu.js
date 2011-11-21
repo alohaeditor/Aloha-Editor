@@ -351,6 +351,11 @@ function(Aloha, jQuery, Ext, Class, console) {
 		behaviour: 'float',
 
 		/**
+		 * topalign offset to be used for topalign behavior
+		 */
+		topalignOffset: 90,
+		
+		/**
 		 * will only be hounoured when behaviour is set to 'topalign'. Adds a margin,
 		 * so the floating menu is not directly attached to the top of the page
 		 */
@@ -388,6 +393,9 @@ function(Aloha, jQuery, Ext, Class, console) {
 		    	}
 				if (typeof Aloha.settings.floatingmenu.behaviour === 'string') {
 					this.behaviour = Aloha.settings.floatingmenu.behaviour;
+				}
+				if (typeof Aloha.settings.floatingmenu.topalignOffset !== 'undefined') {
+					this.topalignOffset = Aloha.settings.floatingmenu.topalignOffset;
 				}
 				if (typeof Aloha.settings.floatingmenu.marginTop === 'number') {
 				    this.marginTop = Aloha.settings.floatingmenu.marginTop;
@@ -718,49 +726,53 @@ function(Aloha, jQuery, Ext, Class, console) {
 					}
 				});
 		    } else if (this.behaviour === 'topalign') {
-			// topalign will retain the user's pinned status
-			// TODO maybe the pin should be hidden in that case?
-			this.togglePin(false);
+				// topalign will retain the user's pinned status
+				// TODO maybe the pin should be hidden in that case?
+				this.togglePin(false);
 
 				// float the fm to each editable that is activated
 				Aloha.bind('aloha-editable-activated', function(event, data) {
 					var p = data.editable.obj.offset();
-					p.top -= 90; //dirty
+					p.top -= that.topalignOffset;
 
 			    if (p.top < jQuery(document).scrollTop()) {
-				// scrollpos is below top of editable
-				that.obj.css('top', jQuery(document).scrollTop() + that.marginTop);
-				that.obj.css('left', p.left);
-				that.togglePin(true);
+					// scrollpos is below top of editable
+					that.obj.css('top', jQuery(document).scrollTop() + that.marginTop);
+					that.obj.css('left', p.left);
+					that.togglePin(true);
 			    } else {
-				// scroll pos is above top of editable
-				that.floatTo(p);
+					// scroll pos is above top of editable
+					that.floatTo(p);
 			    }
 			});
 
 				// fm scroll behaviour
 			jQuery(window).scroll(function () {
 			    if (!Aloha.activeEditable) {
-				return;
+					return;
 			    }
 			    var pos = Aloha.activeEditable.obj.offset(),
-					    fmHeight = that.obj.height(),
-				scrollTop = jQuery(document).scrollTop();
+					fmHeight = that.obj.height(),
+					scrollTop = jQuery(document).scrollTop();
 
-					if (scrollTop > (pos.top - fmHeight - 6 - that.marginTop)) {
-				// scroll pos is lower than top of editable
-				that.togglePin(true);
-				that.obj.css('top', that.marginTop);
+				if (scrollTop > (pos.top - fmHeight - 6 - that.marginTop)) {
+					// scroll pos is lower than top of editable
+					that.togglePin(true);
+					that.obj.css('top', that.marginTop);
 			    } else if (scrollTop <= (pos.top - fmHeight - 6 - that.marginTop)) {
-				// scroll pos is above top of editable
-				pos.top -= fmHeight + 6;
-				that.togglePin(false);
-				that.floatTo(pos);
+					// scroll pos is above top of editable
+					if (that.behaviour === 'topalign') {
+						pos.top = Aloha.activeEditable.obj.offset().top - that.topalignOffset;
+					} else {
+						pos.top -= fmHeight + 6;
+					}
+					that.togglePin(false);
+					that.floatTo(pos);
 			    } else if (scrollTop > pos.top + Aloha.activeEditable.obj.height() - fmHeight) {
-				// scroll pos is past editable
-				that.togglePin(false);
+					// scroll pos is below editable
+					that.togglePin(false);
 			    }
-				});
+			});
 		    }
 		},
 

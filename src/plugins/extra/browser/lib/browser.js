@@ -7,34 +7,36 @@
  *		www.aloha-editor.org/wiki/Repository
  * 3rd party tools:
  *		www.jstree.com/documentation/core
- *		www.trirand.com/blog/ (jqGrid)
- *		layout.jquery-dev.net/
+ *		www.trirand.com/blog (jqGrid)
+ *		layout.jquery-dev.net
  */
-define([
+define( [
 	
 	'aloha/jquery',
 	'util/class',
 	'i18n!browser/nls/i18n',
+	'aloha/console',
+	// this will load the correct language pack needed for the browser
+	'browser/locale',
 	'css!browser/css/browsercombined.css',
+	// 'jquery-plugin!browser/vendor/grid.locale.en.js', // we use 'browser/locale' instead
 	'jquery-plugin!browser/vendor/jquery.ui',
 	'jquery-plugin!browser/vendor/ui-layout',
-	'jquery-plugin!browser/vendor/grid.locale.en', // TODO how can we load the correct language here?
 	'jquery-plugin!browser/vendor/jquery.jqGrid',
 	'jquery-plugin!browser/vendor/jquery.jstree'
 	
-], function (jQuery, Class, i18n) {
-
+], function ( jQuery, Class, i18n, Console ) {
 'use strict';
 
 var
 	uid = +(new Date),
 	nsClasses = {
-		tree              : 'aloha-browser-tree',
+		'tree'            : 'aloha-browser-tree',
 		'tree-header'     : 'aloha-browser-tree-header',
 		'grab-handle'     : 'aloha-browser-grab-handle',
-		shadow            : 'aloha-browser-shadow',
+		'shadow'          : 'aloha-browser-shadow',
 		'rounded-top'     : 'aloha-browser-rounded-top',
-		list              : 'aloha-browser-list',
+		'list'            : 'aloha-browser-list',
 		'list-altrow'     : 'aloha-browser-list-altrow',
 		'list-resizable'  : 'aloha-browser-list-resizable',
 		'list-pager'      : 'aloha-browser-list-pager',
@@ -44,11 +46,11 @@ var
 		'search-field'    : 'aloha-browser-search-field',
 		'search-icon'     : 'aloha-browser-search-icon',
 		'close-btn'       : 'aloha-browser-close-btn',
-		btn               : 'aloha-browser-btn',
-		btns              : 'aloha-browser-btns',
-		grid              : 'aloha-browser-grid',
-		clear             : 'aloha-browser-clear',
-		inner             : 'aloha-browser-inner',
+		'btn'             : 'aloha-browser-btn',
+		'btns'            : 'aloha-browser-btns',
+		'grid'            : 'aloha-browser-grid',
+		'clear'           : 'aloha-browser-clear',
+		'inner'           : 'aloha-browser-inner',
 		'modal-overlay'   : 'aloha-browser-modal-overlay',
 		'modal-window'    : 'aloha-browser-modal-window'
 	};
@@ -222,15 +224,6 @@ var Browser = Class.extend({
 		
 		disableSelection(this.grid);
 		
-		// Not working
-		jQuery('body').bind('aloha-repository-error', function (error) {
-			console && console.warn && console.warn(
-				'Error occured on request to repository: ',
-				error.repository.repositoryId +
-				'\nMessage: "' + error.message + '"'
-			);
-		});
-		
 		this.close();
 	},
 	
@@ -303,7 +296,7 @@ var Browser = Class.extend({
 	 */
 	callback: function (fn, cb) {
 		if (typeof this[fn] != 'function') {
-			console && console.warn(
+			Console.warn(
 				'Unable to add a callback to "' + fn +
 				'" because it is not a method in Aloha.Browser.'
 			);
@@ -312,7 +305,7 @@ var Browser = Class.extend({
 		}
 		
 		if (typeof cb !== 'function') {
-			console && console.warn(
+			Console.warn(
 				'Unable to add a callback to "' + fn + '" because '	+
 				'the callback object that was given is of type "'	+
 				(typeof cb) + '". '									+
@@ -349,7 +342,7 @@ var Browser = Class.extend({
 			
 			return true;
 		} else {
-			console && console.warn(
+			Console.warn(
 				'Cannot enable callbacks for function "' + fn +
 				'" because no such method was found in Aloha.Browser.'
 			);
@@ -554,9 +547,6 @@ var Browser = Class.extend({
 		container.append(header, tree);
 		
 		tree.height(this.grid.height() - header.outerHeight(true))
-			.bind('before.jstree', function (event, data) {
-				//console && console.log(data.func);
-			})
 			.bind('loaded.jstree', function (event, data) {
 				jQuery('>ul>li', this).first().css('padding-top', 5);
 				tree.jstree("open_node", "li[rel='repository']");
@@ -860,7 +850,12 @@ var Browser = Class.extend({
 				this._pagingOffset = 0;
 				break;
 			case 'end':
-				this._pagingOffset = this._pagingCount - this.pageSize;
+				if ((this._pagingCount % this.pageSize) === 0) {
+					// item count is exactly divisible by page size
+					this._pagingOffset = this._pagingCount - this.pageSize;
+				} else {
+					this._pagingOffset = this._pagingCount - (this._pagingCount % this.pageSize);
+				}
 				break;
 			case 'next':
 				this._pagingOffset += this.pageSize;

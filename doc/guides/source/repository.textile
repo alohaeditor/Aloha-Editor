@@ -1,0 +1,252 @@
+h2. The Repository API
+
+endprologue.
+
+
+For clearer rendering of the tree nodes in a browser the "has children" should be a property of the folder object, and not the "hasChildren" method return value
+
+h3. Concept: Repositories, Repository Manager, Repository Resource Items
+
+* everthing that can be done automatically should be done automatically
+* <del>should be as close to the CMIS standard as possible [http://docs.oasis-open.org/cmis/CMIS/v1.0/cd04/cmis-spec-v1.0.html http://docs.oasis-open.org/cmis/CMIS/v1.0/cd04/cmis-spec-v1.0.html]</del>
+* a repositoryManager manages all available repositories
+* a repository is a service or source which provides resource items and is registered with the repositoryManager 
+* resource items will contain the following attributes at least: id, name, url, type. Any and all other attributes are optional and depend on the item's resourceObjectType
+* a repository may provide resource items of a freely definable kind eg.: “image”, “website”, “person”
+* any plugin may make requests to the repositoryManager for resource items, and specify one or more kinds of items it wishes to have returned, such as “website” or “localanchor” (where “localanchor” could be a headline provided by a document repository implementation)
+* any repository may modify a given dom element and apply additional information to it in order to post process in the backend
+
+
+h3. Implementing your repository 
+<shell>
+/**
+ * Create the Repositories object. Namespace for Repositories
+ * @hide
+ */
+if ( !GENTICS.Aloha.Repositories ) GENTICS.Aloha.Repositories = {};
+
+/**
+ * register the plugin with unique name
+ */
+GENTICS.Aloha.Repositories.myRepository = new GENTICS.Aloha.Repository(‘com.gentics.aloha.repositories.MyRepository');
+
+/**
+ * Init method of the repository. Called from Aloha Core to initialize this repository
+ * @return void
+ * @hide
+ */
+GENTICS.Aloha.Repository.myRepository.init = function() {};
+
+/** 
+ * Searches a repository for object items matching queryString if none found returns null.
+ * The returned object items must be an array of Aloha.Repository.Object
+ * 
+ * @property {String} queryString 
+ * @property {array} objectTypeFilter OPTIONAL Object types that will be returned.
+ * @property {array} filter OPTIONAL Attributes that will be returned.
+ * @property {string} inFolderId OPTIONAL his is a predicate function that tests whether or not a candidate object is a child-object of the folder object identified by the given inFolderId (objectId).
+ * @property {string} inTreeId OPTIONAL This is a predicate function that tests whether or not a candidate object is a descendant-object of the folder object identified by the given inTreeId (objectId).
+ * @property {array} orderBy OPTIONAL ex. [{lastModificationDate:’DESC’}, {name:’ASC’}]
+ * @property {Integer} maxItems OPTIONAL number items to return as result
+ * @property {Integer} skipCount OPTIONAL This is tricky in a merged multi repository scenario
+ * @property {array} renditionFilter OPTIONAL Instead of termlist an array of kind or mimetype is expected. If null or array.length == 0 all renditions are returned. See http://docs.oasis-open.org/cmis/CMIS/v1.0/cd04/cmis-spec-v1.0.html#_Ref237323310 for renditionFilter
+ * @param {object} params object with properties
+ * @param {function} callback this method must be called with all result items
+ */
+GENTICS.Aloha.Repository.myRepository.query = function( params, callback ) { 
+// get items
+	callback.call( this, items);
+};
+
+/**
+ * Returns all children of a given motherId.
+ * @property {array} objectTypeFilter OPTIONAL Object types that will be returned.
+ * @property {array} filter OPTIONAL Attributes that will be returned.
+ * @property {string} inFolderId OPTIONAL his is a predicate function that tests whether or not a candidate object is a child-object of the folder object identified by the given inFolderId (objectId).
+ * @property {array} orderBy OPTIONAL ex. [{lastModificationDate:’DESC’}, {name:’ASC’}]
+ * @property {Integer} maxItems OPTIONAL number items to return as result
+ * @property {Integer} skipCount OPTIONAL This is tricky in a merged multi repository scenario
+ * @property {array} renditionFilter OPTIONAL Instead of termlist an array of kind or mimetype is expected. If null or array.length == 0 all renditions are returned. See http://docs.oasis-open.org/cmis/CMIS/v1.0/cd04/cmis-spec-v1.0.html#_Ref237323310 for renditionFilter
+ * @param {object} params object with properties
+ * @param {function} callback this method must be called with all result items
+ */
+GENTICS.Aloha.Repository.myRepository.getChildren = function( params, callback ) { 
+// get items
+	callback.call( this, items);
+};
+
+
+/**
+ * Make the given jQuery object (representing an object marked as object of this type)
+ * clean. All attributes needed for handling should be removed. 
+ * @param {jQuery} obj jQuery object to make clean
+ * @return void
+ */
+GENTICS.Aloha.Repository.myRepository.makeClean = function (obj) {
+	obj.removeAttr('data-myRepository-name');
+};
+
+/**
+ * Mark or modify an object as needed by that repository for handling, processing or identification.
+ * Objects can be any DOM object as A, SPAN, ABBR, etc. or
+ * special objects such as GENTICS_aloha_block elements.
+ * (see http://dev.w3.org/html5/spec/elements.html#embedding-custom-non-visible-data)
+ * @param obj jQuery object to make clean
+ * @return void
+ */
+GENTICS.Aloha.Repository.myRepository.markObject = function (obj, repositoryItem) {
+	obj.attr('data-myRepository-name').text(resourceItem.name);
+};
+
+</shell>
+
+h3. Specification
+http://docs.oasis-open.org/cmis/CMIS/v1.0/cd04/cmis-spec-v1.0.html#_Toc239416972
+
+h4. ObjectTypes
+{{Warning|The object concept from CMIS is inconsistent and to complicated for Aloha Editors needs. So we changed to a much simpler model, which allows to implement CMIS, but is easier to use for developers. See http://getsatisfaction.com/aloha_editor/topics/how_do_i_insert_images_and_youtube_videos }}
+http://docs.oasis-open.org/cmis/CMIS/v1.0/cd04/cmis-spec-v1.0.html#_Toc239416977
+
+There are 2 BaseTypes: document and folder. All other objectTypes may extend either document or folder. Extended Objects may not be extended any more.
+
+h4. Document
+* id MUST
+* name MUST
+* baseType MUST (document|folder)
+* type MUST
+<div style="color: #888;">
+* parentId OPTIONAL
+* renditions OPTIONAL
+* localName OPTIONAL
+* createdBy OPTIONAL
+* creationDate OPTIONAL
+* lastModifiedBy OPTIONAL
+* lastModificationDate OPTIONAL
+* length OPTIONAL
+* mimeType OPTIONAL
+* fileName OPTIONAL
+* url OPTIONAL
+</div>
+
+h4. Folder
+* id MUST
+* name MUST
+* baseType MUST (document|folder)
+* type MUST
+* parentId MUST
+<div style="color: #888;">
+* localName OPTIONAL
+* createdBy OPTIONAL
+* creationDate OPTIONAL
+* lastModifiedBy OPTIONAL
+* lastModificationDate OPTIONAL
+</div>
+
+h3. Rendition
+* documentId ID identfies the rendition document (baseObjectType == document)
+* url URL identifies the rendition stream.
+* mimeType String The MIME type of the rendition stream.
+* filename String The filename of the rendition stream
+* length Integer (optional)The length of the rendition stream in bytes.
+* name String (optional) Human readable information about the rendition.
+* kind String A categorization String associated with the rendition. 
+** square - an image square 75x75
+** thumbnail - a thumbnail version of the object
+** small	- 240 on longest side
+** medium-  500 on longest side
+** large - 1024 on longest side (only exists for very large original images)
+** docx - Microsoft docx Version of the content
+** lang_de - same content in german language
+** lang_fr - same content in frensh language
+** pdf - pdf version of the content
+* height Integer (optional) Typically used for ‘image’ renditions (expressed as pixels).  SHOULD be present if kind = cmis:thumbnail.
+* width Integer (optional) Typically used for ‘image’ renditions (expressed as pixels).  SHOULD be present if kind = cmis:thumbnail.
+
+
+'''What are renditions, and why are they so useful?'''
+
+A repository may implement renditions for any object that has "document" as its baseObjectType.
+A rendition is simply an alternative representation (rendering) of a given object.
+Any document may have any number of renditions.
+For example: A page document in a repositroy may be rendered in 3 different languages.
+Each of these 3 variations of that page can be served by the repository as a rendition of
+any of the other 2 translations that correspond with it.
+Each of these pages may be a stand-alone document in the repository as well.
+In fact, different renditions for a single document type will likely be different files
+which the repository will server back in response to a request for a specific rendition of a given object.
+
+h3. Example Flickr Image Object  (Document Object) 
+* id - gailenejane/5008283282
+* name - Quiet moment
+* baseType - document
+* type - image
+* url http://www.flickr.com/photos/gailenejane/5008283282/
+
+
+The JSON response could look like:
+
+<shell>
+{
+id: 'gailenejane/5008283282’,
+name: 'Quiet moment’,
+type: ‘image’,
+url: 'http://www.flickr.com/photos/gailenejane/5008283282/‘,
+renditions: [{
+  url: 'http://farm5.static.flickr.com/4128/5008283282_f3162bc6b7_s.jpg’,
+  mimeType: ‘image/jpeg’,
+  filename: '4128/5008283282_f3162bc6b7_s.jpg’,
+  kind: ’thumbnail’,
+  height: 75,
+  width: 75
+  }]
+}
+</shell>
+
+h3. Methods 
+
+[[Image:repositoryManager.png]]
+
+h4. query
+http://docs.oasis-open.org/cmis/CMIS/v1.0/cd04/cmis-spec-v1.0.html#_Toc234072402
+
+Does a fulltext search in all attributes and properties which have '''fulltextIndexed == true’’’.
+This differes to the CMIS spec because we do not support a query language and do always a fulltext search.
+
+h4. Input attributes
+* queryString [String]
+<div style="color: #888;">
+* filter [array] OPTIONAL Attributes that will be returned. 
+* orderBy [array] OPTIONAL ex. [{lastModificationDate:’DESC’, name:’ASC’}]
+* maxItems [Integer] OPTIONAL
+* in FolderId [ResourceItem] OPTIONAL his is a predicate function that tests whether or not a candidate object is a child-object of the folder object identified by the given inFolderId.
+* inTreeId [ResourceItem] OPTIONAL This is a predicate function that tests whether or not a candidate object is a descendant-object of the folder object identified by the given inTreeId.
+* skipCount [Integer]  OPTIONAL This is tricky in a merged multi repository scenario
+* renditionFilter [array] OPTIONAL
+** Instead of termlist an array of '''kind''' or '''mimetype''' is expected. If '''null''' or '''array.length == 0''' all renditions are returned. See http://docs.oasis-open.org/cmis/CMIS/v1.0/cd04/cmis-spec-v1.0.html#_Ref237323310 for renditionFilter
+</div>
+
+h4. Output attributes
+* [array] Objects Aloha objects as result of a fulltext search
+* Boolean hasMoreItems
+<div style="color: #888;">
+* Integer numItems OPTIONAL
+</div>
+
+h3. getChildren
+
+h4. Input attributes 
+<div style="color: #888;">
+* folderId [ResourceItem]  OPTIONAL If null the root folderId should be used
+* maxItems [Integer] OPTIONAL
+* skipCount [Integer] OPTIONAL This is tricky in a merged multi repository scenario
+* filter [array] OPTIONAL Attributes that will be returned
+* renditionFilter [array] OPTIONAL
+** Instead of termlist an array of '''kind''' or '''mimetype''' is expected. If '''null''' or '''array.length == 0''' all renditions are returned. See http://docs.oasis-open.org/cmis/CMIS/v1.0/cd04/cmis-spec-v1.0.html#_Ref237323310
+</div>
+
+h4.  Output attributes 
+* [array] Objects Aloha objects as result of a fulltext search
+* Boolean hasMoreItems
+<div style="color: #888;">
+* Integer numItems OPTIONAL
+</div>

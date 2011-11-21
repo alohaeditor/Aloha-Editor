@@ -32,8 +32,11 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, C
 	// default supported and custom content handler settings
 	// @TODO move to new config when implemented in Aloha
 	Aloha.defaults.contentHandler = {};
-	Aloha.defaults.contentHandler.initEditable = [ 'generic', 'sanitize' ];
-	Aloha.defaults.contentHandler.getContents = [ 'generic', 'sanitize' ];
+	Aloha.defaults.contentHandler.initEditable = [ 'sanitize' ];
+	Aloha.defaults.contentHandler.getContents = [ 'sanitize' ];
+	// The insertHtml contenthandler (paste) will, by default, use all
+	// registered content handlers.
+	//Aloha.defaults.contentHandler.insertHtml = void 0;
 	
 	if (typeof Aloha.settings.contentHandler === 'undefined') {
 		Aloha.settings.contentHandler = {};
