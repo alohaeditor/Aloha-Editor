@@ -8,9 +8,9 @@
 define( [
 	'aloha',
 	'aloha/jquery',
-	'aloha/plugin', 
-	'aloha/floatingmenu', 
-	'i18n!wai-lang/nls/i18n', 
+	'aloha/plugin',
+	'aloha/floatingmenu',
+	'i18n!wai-lang/nls/i18n',
 	'i18n!aloha/nls/i18n',
 	'wai-lang/languages',
 	'css!wai-lang/css/wai-lang.css'
@@ -78,9 +78,6 @@ define( [
 					} else {
 						that.langField.setTargetObject( null );
 					}
-					
-					// TODO this should not be necessary here!
-					// FloatingMenu.doLayout();
 				}
 			} );
 		},
@@ -93,12 +90,12 @@ define( [
 			
 			// Button for adding a language markup to the current selection
 			this.addMarkupToSelectionButton = new Aloha.ui.Button( {
-				'name' : 'wailang',
+				'name'      : 'wailang',
 				'iconClass' : 'aloha-button aloha-button-wai-lang',
-				'size' : 'small',
-				'onclick' : function () { that.addRemoveMarkupToSelection( ); },
-				'tooltip' : i18n.t('button.add-wai-lang.tooltip'),
-				'toggle' : true
+				'size'      : 'small',
+				'onclick'   : function () { that.addRemoveMarkupToSelection(); },
+				'tooltip'   : i18n.t( 'button.add-wai-lang.tooltip' ),
+				'toggle'    : true
 			} );
 			FloatingMenu.addButton(
 				'Aloha.continuoustext',
@@ -108,15 +105,16 @@ define( [
 			);
 			
 			// Add the new scope for the wai languages plugin tab
-			FloatingMenu.createScope( 'wai-lang', 'Aloha.continuoustext' ); //'Aloha.continuoustext');
+			FloatingMenu.createScope( 'wai-lang', 'Aloha.continuoustext' );
 			
 			this.langField = new Aloha.ui.AttributeField( {
-				'name' : 'wailangfield',
-				'width':320,
-				'valueField': 'id',
-				'minChars':1
+				'name'       : 'wailangfield',
+				'width'      : 320,
+				'valueField' : 'id',
+				'minChars'   : 1
 			} );
-			this.langField.setTemplate( '<a><b>{name}</b></p></p><img src="' + Aloha.getPluginUrl( 'wai-lang' ) + '/{url}"/></a>' );
+			this.langField.setTemplate( '<img src="{url}" alt="{id}" ' +
+				'style="vertical-align: middle;"/> <a><b>{name}</b></a>' );
 			this.langField.setObjectTypeFilter( this.objectTypeFilter );
 			
 			// add the input field for links
@@ -144,15 +142,14 @@ define( [
 			);
 		},
 		
-		findLangMarkup: function (range) {
+		findLangMarkup: function ( range ) {
 			if ( typeof range == 'undefined' ) {
 		        var range = Aloha.Selection.getRangeObject();
 		    }
 			
 			if ( Aloha.activeEditable ) {
 			    return range.findMarkup( function () {
-			    	var  ret = ( jQuery( this ).hasClass( 'wai-lang' ) || jQuery( this ).is( '[lang]' ) );
-					return ret;
+			    	return jQuery( this ).hasClass( 'wai-lang' ) || jQuery( this ).is( '[lang]' );
 			    }, Aloha.activeEditable.obj );
 			} else {
 				return null;

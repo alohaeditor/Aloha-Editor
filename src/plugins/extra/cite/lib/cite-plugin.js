@@ -200,7 +200,7 @@ define([
 			// sidebars
 			Aloha.ready( function (ev) {
 				citePlugin.sidebar = Aloha.Sidebar.right.show();
-				citePlugin.sidebar.settings.overlayPage = false;
+				// citePlugin.sidebar.settings.overlayPage = false;
 				citePlugin.sidebar.addPanel({
 					id       : nsClass('sidebar-panel'),
 					title    : 'Citation',
