@@ -322,9 +322,8 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 			this.createEditablesIfNeeded();
 			this.renderDragHandlesIfNeeded();
 			if (this.isDraggable()) {
-				//this.$element.attr('draggable', 'true');
-
 				var insertSpans = function(el) {
+					// If node just contains empty strings, we do not do anything.
 					// Use ECMA-262 Edition 3 String and RegExp features
 					if (!/[^\t\n\r ]/.test(el.textContent)) {
 						return;
@@ -338,75 +337,92 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 					}
 					el.parentNode.replaceChild(newNodes, el);
 				}
-				var removeSpans = function($el) {
-					var content = [];
-					content.push($el[0].innerHTML);
-
-					var $nextElements = $el.nextUntil(':not(span[data-i])');
-					$nextElements.each(function() {
-						content.push(this.innerHTML);
-					});
-					$nextElements.remove();
-
-					var textNode = document.createTextNode(content.join(''));
-					var el = $el[0];
-					el.parentNode.replaceChild(textNode, el);
-				}
-				var convert, collectSpansToBeRemoved;
-				convert = function($el) {
-					jQuery.each($el.contents(), function() {
-						switch(this.nodeType) {
-							case 1:
-								if (jQuery(this).is('.aloha-block')) return;
-								if (jQuery(this).is('[data-i]')) return;
-								convert(jQuery(this));
-								break;
-							case 3:
-								insertSpans(this);
+				var convert, convertBack;
+				convert = function(el) {
+					var child;
+					for(var i=0, l=el.childNodes.length; i < l; i++) {
+						child = el.childNodes[i];
+						if (child.nodeType === 1) {
+							if (!!~child.className.indexOf('aloha-block')) {
+								// If child has the class "aloha-block", we skip the element
+								continue;
+							}
+							if (child.attributes['data-i'] !== undefined) {
+								// if data-i is set, we don't convert again
+								continue;
+							}
+							convert(child); // Recursion
+						} else if (child.nodeType === 3) {
+							insertSpans(child);
 						}
-					});
+					}
 				};
 
-				var spansToBeRemoved = [];
-				collectSpansToBeRemoved = function($el) {
-					jQuery.each($el.children(), function() {
-						if (jQuery(this).attr('data-i') === '0') {
-							spansToBeRemoved.push(jQuery(this));
-							return;
+				var nodesToDelete = [];
+				convertBack = function(el) {
+					var currentlyTraversingExpandedText = false, currentText, lastNode;
+					var child;
+					for(var i=0, l=el.childNodes.length; i < l; i++) {
+						child = el.childNodes[i];
+						if (child.nodeType === 1) {
+							if (child.attributes['data-i'] !== undefined) {
+								if (!currentlyTraversingExpandedText) {
+									// We did not traverse expanded text before, and just entered an expanded text section
+									// thus, we reset all variables to their initial state
+									currentlyTraversingExpandedText = true;
+									currentText = '';
+									lastNode = undefined;
+								}
+								if (currentlyTraversingExpandedText) {
+									// We are currently traversing the expanded text nodes, so we collect their data
+									// together in the currentText variable
+									currentText += child.innerHTML;
+									if (lastNode) {
+										nodesToDelete.push(lastNode);
+									}
+									lastNode = child;
+								}
+							} else {
+								if (currentlyTraversingExpandedText) {
+									currentlyTraversingExpandedText = false;
+									// We just left a region with data-i elements set.
+									// so, we need to store the currentText back to the region.
+									// We do this by using the last visited node as anchor.
+									lastNode.parentNode.replaceChild(document.createTextNode(currentText), lastNode);
+								}
+								// Recursion
+								if (!~child.className.indexOf('aloha-block')) {
+									// If child does not have the class "aloha-block", we iterate into it
+									convertBack(child);
+								}
+							}
 						}
-						if (jQuery(this).is('.aloha-block')) return;
-						collectSpansToBeRemoved(jQuery(this));
-					});
+					}
+					if (currentlyTraversingExpandedText) {
+						// Special case: the last child node *is* a wrapped text node and we are at the end of the collection.
+						// In this case, we convert the text as well.
+						lastNode.parentNode.replaceChild(document.createTextNode(currentText), lastNode);
+					}
 				};
-
 
 				this.$element.draggable({
 					handle: '.aloha-block-draghandle',
 					start: function() {
-						convert(that.$element.parents('.aloha-editable').first());
+						convert(that.$element.parents('.aloha-editable').first()[0]);
 						jQuery('[data-i]').droppable({
 							hoverClass: 'aloha-block-droppable',
 							tolerance: 'pointer',
 							addClasses: false, // performance optimization
 							drop: function(evt, ui) {
-								var offset = jQuery(this).attr('data-i');
-								var parent = jQuery(this).parent();
-								spansToBeRemoved = [];
-								collectSpansToBeRemoved(that.$element.parents('.aloha-editable').first());
-								jQuery.each(spansToBeRemoved, function(index, $el) {
-									removeSpans($el);
-								});
+								var $dropReferenceNode = jQuery(this);
+								$dropReferenceNode.before(ui.draggable);
+								ui.draggable.removeClass('ui-draggable').css({'left': 0, 'top': 0}); // Remove "draggable" options... somehow "Destroy" does not work
 
-								var range = new GENTICS.Utils.RangeObject({
-									startContainer: parent[0],
-									startOffset: offset,
-									endContainer: parent[0],
-									endOffset: offset
-								});
-								range.update();
-								console.log("drop", range.isCollapsed(), offset, parent[0], ui.draggable);
-								GENTICS.Utils.Dom.insertIntoDOM(jQuery('<b>Test</b>'), range);
-
+								nodesToDelete = [];
+								convertBack(that.$element.parents('.aloha-editable').first()[0]);
+								for (var i=0, l=nodesToDelete.length; i<l; i++) {
+									nodesToDelete[i].parentNode.removeChild(nodesToDelete[i]);
+								}
 							}
 						});
 						console.log("start");

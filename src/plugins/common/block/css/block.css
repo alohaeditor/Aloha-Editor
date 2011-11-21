@@ -15,8 +15,10 @@
 
 }
 
+/* Display cursor */
 .aloha-block-droppable {
 	border-left: 1px solid red;
+	margin-left:-1px;
 }
 
 .aloha-block .aloha-editable {
