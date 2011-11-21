@@ -22,7 +22,7 @@ Component types are your starting point to generate basic components. There is a
 * Splitter (vertical pipe for visual grouping)
 * Radiobutton
 
-h4. Button Component Type +button+
+h4. Button Component Type +Button+
 
 The button component type resembles a simple button input element, that can be clicked by the user to trigger an action.
 
@@ -63,7 +63,7 @@ function ( jQuery, Ui ) {
 });
 </javascript>
 
-h4. Toggle Button Component Type +toggleButton+
+h4. Toggle Button Component Type +ToggleButton+
 
 A toggle button acts like the basic button component type, but will remain pressed when clicked. Clicking the toggle button once again will revert it back to normal state. The +setState( on )+ method has to be implemented for Aloha Editor to be able to set the button state.
 
@@ -85,11 +85,11 @@ function ( Aloha, Ui, Button ) {
 });
 </javascript>
 
-h4. Toggle Command Button Type +toggleCommandButton+
+h4. Toggle Command Button Type +ToggleCommandButton+
 
-The +toggleCommandButton+ is used to modify contents by triggering Aloha Editor's internal commands API available via +Aloha.execCommand( command )+. The command will then modify the current user selection. A very common usecase for this would be to apply bold formatting.
+The +ToggleCommandButton+ is used to modify contents by triggering Aloha Editor's internal commands API available via +Aloha.execCommand( command )+. The command will then modify the current user selection. A very common usecase for this would be to apply bold formatting.
 
-The +toggleCommandButton+ has to implement the following methods:
+The +ToggleCommandButton+ has to implement the following methods:
 
 * +click()+ which is triggered when clicking the button
 * +selectionChange()+ which will be triggered when the user updates the browser selection. This will enable the +toggleCommandButton+ to change it's current highlight state in order to reflect the current content formatting the cursor is placed within.
@@ -118,7 +118,7 @@ function ( Aloha, Ui, ToggleButton ) {
 </javascript>
 
 
-h4. Dropdown Component Type +dropdown+
+h4. Dropdown Component Type +Dropdown+
 
 The dropdown component will provide functionality as known by the html +<select>+ input field. The following methods have to be implemented:
 
@@ -126,9 +126,16 @@ The dropdown component will provide functionality as known by the html +<select>
 * +getValue()+ to read the currently selected value from the dropdown
 
 
-h4. MultiSplitButton Component Type +dropdown+
+h4. MultiSplitButton Component Type +MultiSplitButton+
 
+The +MultiSplitButton+ is intended to provide an array of buttons to select from which will apply interchangeable stylings to selected content. The classic use for the MultiSplitButton is a selection of standard paragraph and header stylings. In case there are more than four buttons it can be extended to reveal additional buttons. The currently applied selection is highlighted. It's also possible to add special buttons at the bottom which are reserved for actions such as removing formatting from selected content.
 
+!../images/MultiSplitButton.png!
+
+The +MultiSplitButton+ has to provide methods to read the currently active button as well as switching another button to highlight state.
+
+* +getActiveButton()+ will return the currently active button
+* +setActiveButton(button)+ will switch the current button to highlight state
 
 
 * September 1, 2011: Initial version by "Haymo Meran":credits.html#haymo and "Scott Gonzales":credits.html#scottgonzales

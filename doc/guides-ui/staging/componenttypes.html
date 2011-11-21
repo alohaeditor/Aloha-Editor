@@ -98,7 +98,7 @@
 	<li>Splitter (vertical pipe for visual grouping)</li>
 	<li>Radiobutton</li>
 </ul>
-<h4 id="button-component-type-button">1.1 Button Component Type <tt>button</tt></h4>
+<h4 id="button-component-type-button">1.1 Button Component Type <tt>Button</tt></h4>
 <p>The button component type resembles a simple button input element, that can be clicked by the user to trigger an action.</p>
 <p>The Button Component must provide a <tt>click</tt> method to handle user clicks. Here&#8217;s an example implementation:</p>
 <div class="code_container">
@@ -136,7 +136,7 @@ function ( jQuery, Ui ) {
 	
 	return Ui.button;
 });
-</pre></div><h4 id="toggle-button-component-type-togglebutton">1.2 Toggle Button Component Type <tt>toggleButton</tt></h4>
+</pre></div><h4 id="toggle-button-component-type-togglebutton">1.2 Toggle Button Component Type <tt>ToggleButton</tt></h4>
 <p>A toggle button acts like the basic button component type, but will remain pressed when clicked. Clicking the toggle button once again will revert it back to normal state. The <tt>setState( on )</tt> method has to be implemented for Aloha Editor to be able to set the button state.</p>
 <p>Here&#8217;s an example implementation of the toggle button</p>
 <div class="code_container">
@@ -156,9 +156,9 @@ function ( Aloha, Ui, Button ) {
 	
 	return Ui.toggleButton;
 });
-</pre></div><h4 id="toggle-command-button-type-togglecommandbutton">1.3 Toggle Command Button Type <tt>toggleCommandButton</tt></h4>
-<p>The <tt>toggleCommandButton</tt> is used to modify contents by triggering Aloha Editor&#8217;s internal commands <span class="caps">API</span> available via <tt>Aloha.execCommand( command )</tt>. The command will then modify the current user selection. A very common usecase for this would be to apply bold formatting.</p>
-<p>The <tt>toggleCommandButton</tt> has to implement the following methods:</p>
+</pre></div><h4 id="toggle-command-button-type-togglecommandbutton">1.3 Toggle Command Button Type <tt>ToggleCommandButton</tt></h4>
+<p>The <tt>ToggleCommandButton</tt> is used to modify contents by triggering Aloha Editor&#8217;s internal commands <span class="caps">API</span> available via <tt>Aloha.execCommand( command )</tt>. The command will then modify the current user selection. A very common usecase for this would be to apply bold formatting.</p>
+<p>The <tt>ToggleCommandButton</tt> has to implement the following methods:</p>
 <ul>
 	<li><tt>click()</tt> which is triggered when clicking the button</li>
 	<li><tt>selectionChange()</tt> which will be triggered when the user updates the browser selection. This will enable the <tt>toggleCommandButton</tt> to change it&#8217;s current highlight state in order to reflect the current content formatting the cursor is placed within.</li>
@@ -186,13 +186,20 @@ function ( Aloha, Ui, ToggleButton ) {
 	
 	return Ui.toggleCommandButton;
 });
-</pre></div><h4 id="dropdown-component-type-dropdown">1.4 Dropdown Component Type <tt>dropdown</tt></h4>
+</pre></div><h4 id="dropdown-component-type-dropdown">1.4 Dropdown Component Type <tt>Dropdown</tt></h4>
 <p>The dropdown component will provide functionality as known by the html <tt>&lt;select&gt;</tt> input field. The following methods have to be implemented:</p>
 <ul>
 	<li><tt>setValue()</tt> to switch the dropdown to another value</li>
 	<li><tt>getValue()</tt> to read the currently selected value from the dropdown</li>
 </ul>
-<h4 id="multisplitbutton-component-type-dropdown">1.5 MultiSplitButton Component Type <tt>dropdown</tt></h4>
+<h4 id="multisplitbutton-component-type-multisplitbutton">1.5 MultiSplitButton Component Type <tt>MultiSplitButton</tt></h4>
+<p>The <tt>MultiSplitButton</tt> is intended to provide a group of buttons to select from which will apply interchangeable stylings to selected content. The classic use for the MultiSplitButton is a selection of standard paragraph and header stylings. In case there are more than four buttons it can be extended to reveal additional buttons. The currently applied selection is highlighted. It&#8217;s also possible to add special buttons at the bottom which are reserved for actions such as removing formatting from selected content.</p>
+<p><img src="../images/MultiSplitButton.png" alt="" /></p>
+<p>The <tt>MultiSplitButton</tt> has to provide methods to read the currently active button as well as switching another button to highlight state.</p>
+<ul>
+	<li><tt>getActiveButton()</tt> will return the currently active button</li>
+	<li><tt>setActiveButton(button)</tt> will switch the current button to highlight state</li>
+</ul>
 <ul>
 	<li>September 1, 2011: Initial version by <a href="credits.html#haymo">Haymo Meran</a> and <a href="credits.html#scottgonzales">Scott Gonzales</a></li>
 </ul>
@@ -202,11 +209,11 @@ function ( Aloha, Ui, ToggleButton ) {
           <h3 class="chapter"><img src="images/strobe/chapters.png" alt="" />Chapters</h3>
           <ol class="chapters">
             <li><a href="#aloha-editor-ui-component-types"><p>Aloha Editor UI Component Types</p>
-</a><ul><li><a href="#button-component-type-button"><p>Button Component Type <tt>button</tt></p>
-</a></li> <li><a href="#toggle-button-component-type-togglebutton"><p>Toggle Button Component Type <tt>toggleButton</tt></p>
-</a></li> <li><a href="#toggle-command-button-type-togglecommandbutton"><p>Toggle Command Button Type <tt>toggleCommandButton</tt></p>
-</a></li> <li><a href="#dropdown-component-type-dropdown"><p>Dropdown Component Type <tt>dropdown</tt></p>
-</a></li> <li><a href="#multisplitbutton-component-type-dropdown"><p>MultiSplitButton Component Type <tt>dropdown</tt></p>
+</a><ul><li><a href="#button-component-type-button"><p>Button Component Type <tt>Button</tt></p>
+</a></li> <li><a href="#toggle-button-component-type-togglebutton"><p>Toggle Button Component Type <tt>ToggleButton</tt></p>
+</a></li> <li><a href="#toggle-command-button-type-togglecommandbutton"><p>Toggle Command Button Type <tt>ToggleCommandButton</tt></p>
+</a></li> <li><a href="#dropdown-component-type-dropdown"><p>Dropdown Component Type <tt>Dropdown</tt></p>
+</a></li> <li><a href="#multisplitbutton-component-type-multisplitbutton"><p>MultiSplitButton Component Type <tt>MultiSplitButton</tt></p>
 </a></li></ul></li>
           </ol>
         </div>
