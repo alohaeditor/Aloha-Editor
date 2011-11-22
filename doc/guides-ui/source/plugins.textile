@@ -1,71 +1,108 @@
-h2. Aloha Editor sidebar
+h2. Aloha Core Plugins
 
-After reading this guide, you will be able to:
+After reading this guide, you will:
 
-* Configure Aloha Editor sidebar
+* know about the core plugins of Aloha Editor
+* know which components are provided by each of them
 
 endprologue.
 
-WARNING: This guide is currently a draft for the Aloha Editor jQuery Ui, which is supposed to be the next generation Ui for Aloha Editor. Your feedback is welcome!
 
-h3. Sidebar concept
+Each plugin will provide you with components (buttons, input fields, ...) that can be added to the toolbar or sidebar. 
 
-The Sidebar provides to *bars* (left, right) and each bar may contain *tabs*. You may add ui components to tabs. There is only one instance of a the sidebar 
-and it changes its items depending on the acitvated editable.  
+h3. Format Plugin
 
-<img src=../images/toolbar.png style="width:600px">
+The Format Plugin provides basic formatting choices for your content.
 
-h3. Sidebar integration
+h4. Components
+* cite - format content as a citation
+* quote - format content as a quote
+* code - format content as a code block
+* emphasize - emphasize content
+* strong (not def command) - put strong emphasis on content
+* bold - format content bold
+* italic - format content italic
+* strikethrough - add strikethrough formatting
+* subscript - add subscript formatting
+* superscript - add superscript formatting
+* underline - add underline formatting
+* paragraph - will allow you to add paragraph formattings (address, dd, div, dt, h1, h2, h3, h4, h5, h6, p, pre)
 
-You may embed the toolbar in a given container in your site or let it float. If you don't provide a container the toolbar will append a +div+ element as last element of the documents body and position the toolbar as defined.
+h4. Configuration
 
-
-The Sidebar provides *tabs*. You may define the name of your tabs as key. 
-The following example defines a toolbar with the 2 tabs *attributes* and *comments*. The name of the tabs is passed to @i18n@ which translates them to the currently displayed language. The *attributes* tab has on component *attributepanel*. You may define the components that should be rendered by the group.
-
+The format plugin provides the following config options:
 <javascript>
-Aloha.settings.sidebar = {
-    tabs: {
-    	attributes : [ 'attributepannel'],
-		comments: [ 'comments' ]
-	}
+Aloha.plugins.format = {
+	// configure buttons available in the toolbar
+	config : [ 'b', 'i', 'p', 'sub', 'sup', 'del', 'title', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'removeFormat' ],
+	// specific configuration for each editable identified by css selectors
+	editables : {
+		// the editable with id "teaser" won't offer any formatting options
+		'#teaser'	: [  ]
+	},
+	// those are the tags that will be cleaned when clicking "remove formatting"
+	removeFormats : [ 'strong', 'em', 'b', 'i', 'cite', 'q', 'code', 'abbr', 'del', 'sub', 'sup']
 }
 </javascript>
 
+h3. Link Plugin
 
+The Link Plugin allows you to add hyperlinks to your document, either by specifying them manually or by selecting from repositories using autocompletion.
 
+h4. Components
+* formatLink - will format a given selection as a link by wrapping it in an +<a>+ tag. If the selection is collapsed +createLink+ will be executed
+* createLink - will insert a new link tag with an empty href into the dom at the current cursor position
+* editLink - allows you to edit an existing link
+* unlink - removes an existing link by unwrapping
 
+h4. Configuration
 <javascript>
-	Aloha.ui.toolbar.appendTo('#aloha-toolbar');
-</javascript> 
-
-h3. Component configuration
-
-You may define the name of your tabs and groups as key. 
-The following example defines a toolbar with the 3 tabs *format*, *insert* and *link*. The name of the tabs and groups is passed to @i18n@ which translates them to the currently displayed language. The *format* tab has the two groups *inline* and *paragraph*. You may define the components that should be rendered by the group.
-
-<javascript>
-Aloha.settings.sidebar = {
-    tabs: {
-    	format : {
-    		inline: [ 'bold', 'italic', 'striketrough',
-    			'abbreviation', 'spacer', 'metaview' ]
-			paragraph: [ 'formatparagraph' ]
-    	},
-		insert: {
-			general: [ 'insertable', 'charakterpicker', 'insertlink' ]
-    		media: [ 'image', 'video' ]
-    	},
-    	link: {
-    		link: [ 'editlink' ]
-    	} 
-    }
+Aloha.plugins.link: {
+	// all elements with no specific configuration may insert links
+	config : [ 'a' ],
+	editables : {
+	// No links in the title.
+	'#top-text'	: [  ]
+	},
+	// all links that match the targetregex will get set the target
+	// e.g. ^(?!.*aloha-editor.com).* matches all href except aloha-editor.com
+	targetregex : '^(?!.*aloha-editor.com).*',
+	// this target is set when either targetregex matches or not set
+	// e.g. _blank opens all links in new window
+	target : '_blank',
+	// the same for css class as for target
+	cssclassregex : '^(?!.*aloha-editor.com).*',
+	cssclass : 'aloha',
+	// use all resources of type website for autosuggest
+	objectTypeFilter: [ 'website' ],
+	// handle change of href
+	onHrefChange: function( obj, href, item ) {
+		var jQuery = Aloha.require('aloha/jquery');
+		if ( item ) {
+			jQuery(obj).attr('data-name', item.name);
+		} else {
+			jQuery(obj).removeAttr('data-name');
+		}
+	}
 };
 </javascript>
 
-h3. Behavior configuration
+h3. Abbr Plugin
 
-h3. Sidebar
+The Abbr Plugin will wrap selected contents within an +<abbr>+ tag. You can then specify a title text to describe the abbreviation.
+
+h4. Components
+
+* formatAbbr - format selection as an abbreviation
+* createAbbr - insert new abbreviation
+* editAbbr - edit existing abbreviation
+* abbrText - UIAttributeField for text input
+* removeAbbr - remove abbreviation from selection
+
+h4. Configuration settings
+
+Currently there is no configuration for the Abbr Plugin.
+
 
 * September 1, 2011: Initial version by "Haymo Meran":credits.html#haymo and "Scott Gonzales":credits.html#scottgonzales
 

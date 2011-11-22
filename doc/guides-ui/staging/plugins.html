@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Aloha Guides: Aloha Editor sidebar</title>
+  <title>Aloha Guides: Aloha Core Plugins</title>
 
   <!-- guides styles -->
   <link rel="stylesheet" type="text/css" href="stylesheets/style.css" />
@@ -76,59 +76,101 @@
     <div class="wrapper">
       <div id="mainCol">
           <div class="headerSection">
-            <h2>Aloha Editor sidebar</h2>
-<p>After reading this guide, you will be able to:</p>
+            <h2>Aloha Core Plugins</h2>
+<p>After reading this guide, you will:</p>
 <ul>
-	<li>Configure Aloha Editor sidebar</li>
+	<li>know about the core plugins of Aloha Editor</li>
+	<li>know which components are provided by each of them</li>
 </ul>
 
           </div>
-        
-<div class="warning"><p>This guide is currently a draft for the Aloha Editor jQuery Ui, which is supposed to be the next generation Ui for Aloha Editor. Your feedback is welcome!</p></div>
-<h3 id="sidebar-concept">1 Sidebar concept</h3>
-<p>The Sidebar provides to <strong>bars</strong> (left, right) and each bar may contain <strong>tabs</strong>. You may add ui components to tabs. There is only one instance of a the sidebar  and it changes its items depending on the acitvated editable.</p>
-<p>&lt;img src=../images/toolbar.png style=&#8220;width:600px&#8221;&gt;</p>
-<h3 id="sidebar-integration">2 Sidebar integration</h3>
-<p>You may embed the toolbar in a given container in your site or let it float. If you don&#8217;t provide a container the toolbar will append a <tt>div</tt> element as last element of the documents body and position the toolbar as defined.</p>
-<p>The Sidebar provides <strong>tabs</strong>. You may define the name of your tabs as key.  The following example defines a toolbar with the 2 tabs <strong>attributes</strong> and <strong>comments</strong>. The name of the tabs is passed to <code>i18n</code> which translates them to the currently displayed language. The <strong>attributes</strong> tab has on component <strong>attributepanel</strong>. You may define the components that should be rendered by the group.</p>
+        <p>Each plugin will provide you with components (buttons, input fields, &#8230;) that can be added to the toolbar or sidebar.</p>
+<h3 id="format-plugin">1 Format Plugin</h3>
+<p>The Format Plugin provides basic formatting choices for your content.</p>
+<h4 id="components">1.1 Components</h4>
+<ul>
+	<li>cite &#8211; format content as a citation</li>
+	<li>quote &#8211; format content as a quote</li>
+	<li>code &#8211; format content as a code block</li>
+	<li>emphasize &#8211; emphasize content</li>
+	<li>strong (not def command) &#8211; put strong emphasis on content</li>
+	<li>bold &#8211; format content bold</li>
+	<li>italic &#8211; format content italic</li>
+	<li>strikethrough &#8211; add strikethrough formatting</li>
+	<li>subscript &#8211; add subscript formatting</li>
+	<li>superscript &#8211; add superscript formatting</li>
+	<li>underline &#8211; add underline formatting</li>
+	<li>paragraph &#8211; will allow you to add paragraph formattings (address, dd, div, dt, h1, h2, h3, h4, h5, h6, p, pre)</li>
+</ul>
+<h4 id="configuration">1.2 Configuration</h4>
+<p>The format plugin provides the following config options:</p>
 <div class="code_container">
 <pre class="brush: javascript; gutter: false; toolbar: false">
 
-Aloha.settings.sidebar = {
-    tabs: {
-    	attributes : [ 'attributepannel'],
-		comments: [ 'comments' ]
-	}
+Aloha.plugins.format = {
+	// configure buttons available in the toolbar
+	config : [ 'b', 'i', 'p', 'sub', 'sup', 'del', 'title', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'removeFormat' ],
+	// specific configuration for each editable identified by css selectors
+	editables : {
+		// the editable with id &quot;teaser&quot; won't offer any formatting options
+		'#teaser'	: [  ]
+	},
+	// those are the tags that will be cleaned when clicking &quot;remove formatting&quot;
+	removeFormats : [ 'strong', 'em', 'b', 'i', 'cite', 'q', 'code', 'abbr', 'del', 'sub', 'sup']
 }
-</pre></div>
+</pre></div><h3 id="link-plugin">2 Link Plugin</h3>
+<p>The Link Plugin allows you to add hyperlinks to your document, either by specifying them manually or by selecting from repositories using autocompletion.</p>
+<h4 id="components">2.1 Components</h4>
+<ul>
+	<li>formatLink &#8211; will format a given selection as a link by wrapping it in an <tt>&lt;a&gt;</tt> tag. If the selection is collapsed <tt>createLink</tt> will be executed</li>
+	<li>createLink &#8211; will insert a new link tag with an empty href into the dom at the current cursor position</li>
+	<li>editLink &#8211; allows you to edit an existing link</li>
+	<li>unlink &#8211; removes an existing link by unwrapping</li>
+</ul>
+<h4 id="configuration">2.2 Configuration</h4>
 <div class="code_container">
 <pre class="brush: javascript; gutter: false; toolbar: false">
 
-	Aloha.ui.toolbar.appendTo('#aloha-toolbar');
-</pre></div>
-<h3 id="component-configuration">3 Component configuration</h3>
-<p>You may define the name of your tabs and groups as key.  The following example defines a toolbar with the 3 tabs <strong>format</strong>, <strong>insert</strong> and <strong>link</strong>. The name of the tabs and groups is passed to <code>i18n</code> which translates them to the currently displayed language. The <strong>format</strong> tab has the two groups <strong>inline</strong> and <strong>paragraph</strong>. You may define the components that should be rendered by the group.</p>
-<div class="code_container">
-<pre class="brush: javascript; gutter: false; toolbar: false">
-
-Aloha.settings.sidebar = {
-    tabs: {
-    	format : {
-    		inline: [ 'bold', 'italic', 'striketrough',
-    			'abbreviation', 'spacer', 'metaview' ]
-			paragraph: [ 'formatparagraph' ]
-    	},
-		insert: {
-			general: [ 'insertable', 'charakterpicker', 'insertlink' ]
-    		media: [ 'image', 'video' ]
-    	},
-    	link: {
-    		link: [ 'editlink' ]
-    	} 
-    }
+Aloha.plugins.link: {
+	// all elements with no specific configuration may insert links
+	config : [ 'a' ],
+	editables : {
+	// No links in the title.
+	'#top-text'	: [  ]
+	},
+	// all links that match the targetregex will get set the target
+	// e.g. ^(?!.*aloha-editor.com).* matches all href except aloha-editor.com
+	targetregex : '^(?!.*aloha-editor.com).*',
+	// this target is set when either targetregex matches or not set
+	// e.g. _blank opens all links in new window
+	target : '_blank',
+	// the same for css class as for target
+	cssclassregex : '^(?!.*aloha-editor.com).*',
+	cssclass : 'aloha',
+	// use all resources of type website for autosuggest
+	objectTypeFilter: [ 'website' ],
+	// handle change of href
+	onHrefChange: function( obj, href, item ) {
+		var jQuery = Aloha.require('aloha/jquery');
+		if ( item ) {
+			jQuery(obj).attr('data-name', item.name);
+		} else {
+			jQuery(obj).removeAttr('data-name');
+		}
+	}
 };
-</pre></div><h3 id="behavior-configuration">4 Behavior configuration</h3>
-<h3 id="sidebar">5 Sidebar</h3>
+</pre></div><h3 id="abbr-plugin">3 Abbr Plugin</h3>
+<p>The Abbr Plugin will wrap selected contents within an <tt>&lt;abbr&gt;</tt> tag. You can then specify a title text to describe the abbreviation.</p>
+<h4 id="components">3.1 Components</h4>
+<ul>
+	<li>formatAbbr &#8211; format selection as an abbreviation</li>
+	<li>createAbbr &#8211; insert new abbreviation</li>
+	<li>editAbbr &#8211; edit existing abbreviation</li>
+	<li>abbrText &#8211; UIAttributeField for text input</li>
+	<li>removeAbbr &#8211; remove abbreviation from selection</li>
+</ul>
+<h4 id="configuration-settings">3.2 Configuration settings</h4>
+<p>Currently there is no configuration for the Abbr Plugin.</p>
 <ul>
 	<li>September 1, 2011: Initial version by <a href="credits.html#haymo">Haymo Meran</a> and <a href="credits.html#scottgonzales">Scott Gonzales</a></li>
 </ul>
@@ -137,12 +179,16 @@ Aloha.settings.sidebar = {
         <div id="subCol">
           <h3 class="chapter"><img src="images/strobe/chapters.png" alt="" />Chapters</h3>
           <ol class="chapters">
-            <li><a href="#sidebar-concept"><p>Sidebar concept</p>
-</a></li><li><a href="#sidebar-integration"><p>Sidebar integration</p>
-</a></li><li><a href="#component-configuration"><p>Component configuration</p>
-</a></li><li><a href="#behavior-configuration"><p>Behavior configuration</p>
-</a></li><li><a href="#sidebar"><p>Sidebar</p>
-</a></li>
+            <li><a href="#format-plugin"><p>Format Plugin</p>
+</a><ul><li><a href="#components"><p>Components</p>
+</a></li> <li><a href="#configuration"><p>Configuration</p>
+</a></li></ul></li><li><a href="#link-plugin"><p>Link Plugin</p>
+</a><ul><li><a href="#components"><p>Components</p>
+</a></li> <li><a href="#configuration"><p>Configuration</p>
+</a></li></ul></li><li><a href="#abbr-plugin"><p>Abbr Plugin</p>
+</a><ul><li><a href="#components"><p>Components</p>
+</a></li> <li><a href="#configuration-settings"><p>Configuration settings</p>
+</a></li></ul></li>
           </ol>
         </div>
     </div>

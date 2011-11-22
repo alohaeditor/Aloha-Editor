@@ -106,6 +106,18 @@ h4. Browser
 
 h4. Message
 
+h4. Commands
+
+* emphasize - wrap contents in an +<em>+ tag
+* strong - wrap contents with a +<strong>+ tag
+* bold - wrap contents with a +<b>+ tag
+* italic - wrap contents with an +<i>+ tag
+* strikethrough - wrap contents with a +<s>+ tag
+* subscript - wrap contents with a +<sub>+ tag
+* superscript - wrap contents with a +<superscript>+ tag
+* underline - wrap contents with an +<u>+ tag
+* formatBlock (address, dd, div, dt, h1, h2, h3, h4, h5, h6, p, pre) - apply paragraph formatting to a block or selection
+* removeFormat - removes formatting from selection
 
 * September 1, 2011: Initial version by "Haymo Meran":credits.html#haymo and "Scott Gonzales":credits.html#scottgonzales
 
