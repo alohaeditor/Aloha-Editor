@@ -4,6 +4,7 @@ This document is to serve as a "what has been done" in terms of the [Roadmap](ht
 
 ## 0.20.0-RC8 - 2011/11/21
 
+- added Aloha.settings.nativeCommands setting which will allow you to use native browser commands rather than Aloha Editor's implementation if set to bool 'true'. Intended for development use ONLY!
 
 ## 0.20.0-RC7 - 2011/11
 
