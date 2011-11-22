@@ -18,9 +18,10 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-define(
-[ 'aloha/jquery', 'aloha/ext', 'aloha/repositorymanager', 'i18n!aloha/nls/i18n' ],
-function ( jQuery, Ext, RepositoryManager ) {
+define( [
+	'aloha/jquery', 'aloha/ext', 'aloha/repositorymanager',
+	'i18n!aloha/nls/i18n'
+], function ( jQuery, Ext, RepositoryManager ) {
 	'use strict';
 	
 	Ext.data.AlohaProxy = function () {
@@ -28,22 +29,22 @@ function ( jQuery, Ext, RepositoryManager ) {
 		// Ext.data.Api#prepare *before* calling super
 		var api = {};
 		api[ Ext.data.Api.actions.read ] = true;
-		Ext.data.AlohaProxy.superclass.constructor.call( this, {
-			api: api
-		} );
+		Ext.data.AlohaProxy.superclass.constructor.call( this, { api: api } );
 		
 		this.params = {
-			queryString: null,
-			objectTypeFilter: null,
-			filter: null,
-			inFolderId: null,
-			orderBy: null,
-			maxItems: null,
-			skipCount: null,
-			renditionFilter: null,
-			repositoryId: null
+			queryString      : null,
+			objectTypeFilter : null,
+			filter           : null,
+			inFolderId       : null,
+			orderBy          : null,
+			maxItems         : null,
+			skipCount        : null,
+			renditionFilter  : null,
+			repositoryId     : null
 		};
 	};
+	
+	var i18n = Aloha.require( 'i18n!aloha/nls/i18n' );
 	
 	Ext.extend( Ext.data.AlohaProxy, Ext.data.DataProxy, {
 		
@@ -63,7 +64,6 @@ function ( jQuery, Ext, RepositoryManager ) {
 							numReposQueried == RepositoryManager.repositories.length ) {
 						cb.call( scope, reader.readRecords( items ), arg, true );
 					} else {
-						var i18n = Aloha.require( 'i18n!aloha/nls/i18n' );
 						if ( i18n && i18n.t( 'repository.no_items_found_yet' ) ) {
 							jQuery( '.x-combo-list-inner .loading-indicator' )
 								.html( i18n.t( 'repository.no_items_found_yet' ) );
