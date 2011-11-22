@@ -309,8 +309,9 @@ function( TestUtils) {
 										message: 'the old ID should not be inside the DOM multiple after pasting'
 									},
 									{
-										actual: jQuery('.aloha-block', testContainer)[0].innerHTML,
-										expected: '<span class="aloha-block-handle aloha-block-draghandle"></span>Please click me and press <b>ctrl/cmd+c</b>',
+										 // We use lower case here because IE uses uppercase tags... argh!!
+										actual: jQuery('.aloha-block', testContainer)[0].innerHTML.toLowerCase(),
+										expected: '<span class="aloha-block-handle aloha-block-draghandle"></span>Please click me and press <b>ctrl/cmd+c</b>'.toLowerCase(),
 										message: 'The block markup is as expected'
 									},
 									{

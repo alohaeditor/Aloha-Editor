@@ -72,7 +72,7 @@ function(jQuery, ContentHandlerManager, BlockManager) {
 				});
 
 				var newBlockId = GENTICS.Utils.guid();
-				var newBlockType = elementAttributes['data-aloha-block-type'];
+
 				var newBlock = jQuery('<' + this.tagName + '/>')
 					.attr(elementAttributes)
 					.attr('id', newBlockId)
