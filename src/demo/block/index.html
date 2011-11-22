@@ -172,13 +172,11 @@
 		Aloha.jQuery('#content').aloha();
 		Aloha.jQuery('.textcontent').aloha();
 		Aloha.jQuery('.aloha-block').aloha();
-		Aloha.jQuery('#teaser').get(0).addEventListener('dragstart', function(e) {
+		// TODO: Find out why the below code crashes IE!!
+		/*Aloha.jQuery('#teaser').get(0).addEventListener('dragstart', function(e) {
 			e.preventDefault();
 			return false;
-		}, false);
-		/*Aloha.jQuery('#teaser p').on('fpp', function() {
-			console.log("dstart");
-		});*/
+		}, false);*/
 	});
 	</script>
 </body>
