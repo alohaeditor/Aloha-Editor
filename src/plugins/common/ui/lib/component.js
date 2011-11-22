@@ -1,6 +1,5 @@
 // The main UI objects are components.
 // Components can be placed inside any container, such as a toolbar or sidebar.
-// Mark this click as handled by Aloha Editor
 define([ 'aloha/core', 'util/class', 'aloha/jquery' ],
 function ( Aloha, Class, jQuery ) {
 	

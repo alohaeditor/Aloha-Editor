@@ -1,6 +1,5 @@
 // The main UI objects are components.
 // Components can be placed inside any container, such as a toolbar or sidebar.
-// Mark this click as handled by Aloha Editor
 define([ 'aloha/jquery', 'ui/ui' ],
 function ( jQuery, Ui ) {
 	Ui.createType( "dropdown", {

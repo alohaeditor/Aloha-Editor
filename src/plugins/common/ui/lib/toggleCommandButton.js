@@ -1,6 +1,5 @@
 // The main UI objects are components.
 // Components can be placed inside any container, such as a toolbar or sidebar.
-// Mark this click as handled by Aloha Editor
 define([ 'aloha/core', 'ui/ui', 'ui/togglebutton' ],
 function ( Aloha, Ui, ToggleButton ) {
 	// The toggleCommandButton extends the toggleButton component type to provide an easy
