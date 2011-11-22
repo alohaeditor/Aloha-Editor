@@ -952,18 +952,30 @@ function AlohaImagePlugin ( aQuery, Plugin, FloatingMenu, i18nCore, i18n ) {
 				// Allow backspace and delete
 				if (e.keyCode == 8 || e.keyCode == 46) {
 					if($(this).val() >= minValue) {
-						// 1. Normalize the size
-						that._setNormalizedFieldValues(fieldName);
-						// 2. Set the final size to the image
-						that.setSizeByFieldValue();	
+						
+						// Check if we are currently in cropping mode
+						if(typeof that.jcAPI !== 'undefined' && that.jcAPI != null) {
+							that.setCropAreaByFieldValue();
+						} else {
+							// 1. Normalize the size
+							that._setNormalizedFieldValues(fieldName);
+							// 2. Set the final size to the image
+							that.setSizeByFieldValue();
+						}
 					}
 				// 0-9 keys
 				} else if (e.keyCode <= 57 && e.keyCode >= 48 || e.keyCode <= 105 && e.keyCode >= 96 ) {
 					if($(this).val() >= minValue) {
-						// 1. Normalize the size
-						that._setNormalizedFieldValues(fieldName);
-						// 2. Set the final size to the image
-						that.setSizeByFieldValue();
+						
+						// Check if we are currently in cropping mode
+						if(typeof that.jcAPI !== 'undefined' && that.jcAPI != null) {
+							that.setCropAreaByFieldValue();
+						} else {
+							// 1. Normalize the size
+							that._setNormalizedFieldValues(fieldName);
+							// 2. Set the final size to the image
+							that.setSizeByFieldValue();
+						}
 					}
 				} else {
 					var delta = 0;
@@ -979,10 +991,15 @@ function AlohaImagePlugin ( aQuery, Plugin, FloatingMenu, i18nCore, i18n ) {
 					
 					// Only resize when field values are ok
 					if(updateField($(this), delta, maxValue, minValue)) {
-						// 1. Normalize the size
-						that._setNormalizedFieldValues(fieldName);
-						// 2. Set the final size to the image
-						that.setSizeByFieldValue();	
+						// Check if we are currently in cropping mode
+						if(typeof that.jcAPI !== 'undefined' && that.jcAPI != null) {
+							that.setCropAreaByFieldValue();
+						} else {
+							// 1. Normalize the size
+							that._setNormalizedFieldValues(fieldName);
+							// 2. Set the final size to the image
+							that.setSizeByFieldValue();
+						}
 					}
 				}
 				
@@ -1002,13 +1019,19 @@ function AlohaImagePlugin ( aQuery, Plugin, FloatingMenu, i18nCore, i18n ) {
 				if ( e.shiftKey || e.metaKey || e.ctrlKey ) {
 					delta = delta * 10;
 				}
-
+				
 				// Only resize when field values are ok
 				if(updateField($(this), delta, maxValue, minValue)) {
-					// 1. Normalize the size
-					that._setNormalizedFieldValues(fieldName);
-					// 2. Set the final size to the image
-					that.setSizeByFieldValue();
+					
+					// Check if we are currently in cropping mode
+					if(typeof that.jcAPI !== 'undefined' && that.jcAPI != null) {
+						that.setCropAreaByFieldValue();
+					} else {
+						// 1. Normalize the size
+						that._setNormalizedFieldValues(fieldName);
+						// 2. Set the final size to the image
+						that.setSizeByFieldValue();
+					}
 				}
 		        return false;
 			};
@@ -1265,6 +1288,21 @@ function AlohaImagePlugin ( aQuery, Plugin, FloatingMenu, i18nCore, i18n ) {
 			that.setSize(width, height);
 		},
 		
+		/**
+		 * Helper function that will set the new crop area width and height using the field values
+		 */
+		setCropAreaByFieldValue: function() {
+			var that = this;
+			var currentCropArea = that.jcAPI.tellSelect();
+			
+			var width =  $('#' + that.imgResizeWidthField.id ).val();
+			width = parseInt(width);
+			var height = $('#' + that.imgResizeHeightField.id ).val();
+			height = parseInt(height);
+			
+			var selection = [currentCropArea['x'], currentCropArea['y'], currentCropArea['x'] + width,currentCropArea['y'] + height];
+			that.jcAPI.setSelect(selection);
+		},
 
 		/**
 		* This method will insert a new image dom element into the dom tree
@@ -1401,6 +1439,7 @@ function AlohaImagePlugin ( aQuery, Plugin, FloatingMenu, i18nCore, i18n ) {
 			
 			this.jcAPI = jQuery.Jcrop(this.imageObj, {
 				onSelect : function () {
+					that._onCropSelect();
 					// ugly hack to keep scope :(
 					setTimeout(function () {
 						FloatingMenu.setScope(that.name);
@@ -1414,6 +1453,22 @@ function AlohaImagePlugin ( aQuery, Plugin, FloatingMenu, i18nCore, i18n ) {
 			$('body').trigger('aloha-image-crop-start', [this.imageObj]);
 		},
 
+		/**
+		 * Internal on crop select method
+		 */
+		_onCropSelect: function() {
+			var that = this;
+			
+			// Update the width and height field using the intiial active crop area values
+			if(typeof that.jcAPI !== 'undefined' && that.jcAPI != null) {
+				var currentCropArea = that.jcAPI.tellSelect();
+				var widthField = jQuery("#" + that.imgResizeWidthField.id).val(currentCropArea['w']);
+				var heightField = jQuery("#" + that.imgResizeHeightField.id).val(currentCropArea['h']);
+			}
+			
+		},
+		
+		
 		/**
 		 * Terminates a crop
 		 */

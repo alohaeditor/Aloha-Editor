@@ -2,8 +2,12 @@
 
 This document is to serve as a "what has been done" in terms of the [Roadmap](http://aloha-editor.org/wiki/Roadmap)
 
-## 0.20.0-RC8 - 2011/11/21
+## 0.20.0-RC9 - 2011/11
 
+- listenforcer-plugin: The listenforcer plugin was refactored. Method names were changed and the way the plugin works with lists was also changed. It will now no longer replace list dom elments. Instead it will move sibling lists into the first list element within the editable. Previously the whole element was replaced and thus the selection was lost. This caused problems with the floating menu. The user had to click two times into a list to make the floating menu appear since the selection was lost due to dom replacements. This is now fixed.- core: The aloha-editable-activated will now no longer invoked twice.
+- image-plugin: Fixed handling of width and height when the user entered the cropping mode. You can resize the crop area by entering values in the width and height field. 
+- list-plugin/link-plugin: The list plugin interfered with the link plugin behaviour. Previously it was not possible to create links within a list due to a bug within the list plugin. The list plugin will now no longer use the Aloha.List scope.
+- link-plugin: Fixed problem with auto-suggestion mechanism for the link input field causing the the wrong href value to be taken.
 - added Aloha.settings.nativeCommands setting which will allow you to use native browser commands rather than Aloha Editor's implementation if set to bool 'true'. Intended for development use ONLY!
 
 ## 0.20.0-RC7 - 2011/11
