@@ -88,16 +88,17 @@ function(Plugin, FloatingMenu, jQuery, i18n, i18nCore) {
 				}
 			});
 		    			
-			// We found no list so we add our empty dummy list that we can work with.
+			// We found no list so we add our empty dummy list that we can work
+			// with.
 			if ( !foundlist ) {
-				jQuery(editable).html( placeHolderListString );
+				jQuery( editable ).html( placeHolderListString );
 			}
 			
 			// If the editable contains more than one list, we concatinate the
 			// elements of all subsequent sibling lists into the first, before
 			// removing that list. We in effect are merging all top-level lists
 			// into one.
-			var $lists = jQuery( editable ).find( '>ul' );
+			var $lists = jQuery( editable ).find( '>ul, >ol' );
 			if ( $lists.length > 1 ) {
 				var $firstList = jQuery( $lists[ 0 ] );
 				for ( var i = 1; i < $lists.length; i++ ) {
