@@ -115,18 +115,18 @@ function( Aloha, Selection, jQuery, console ) {
 	/**
 	 * jQuery Aloha Plugin
 	 *
-	 * turn all dom elements to continous text
+	 * turn all dom elements to continuous text
 	 * @return	jQuery object for the matched elements
 	 * @api
 	 */
-	jQuery.fn.aloha = function() {
+	jQuery.fn.aloha = function( settings ) {
 		var $this = jQuery( this );
 
 		Aloha.bind( 'aloha-ready', function() {
 			$this.each( function() {
 				// create a new aloha editable object for each passed object
 				if ( !Aloha.isEditable( this ) ) {
-					new Aloha.Editable( jQuery( this ) );
+					new Aloha.Editable( jQuery( this ), settings );
 				}
 			});
 		});
