@@ -8,7 +8,7 @@ function ( Aloha, Ui ) {
 	// This functionality comes from the toggleButton which knows how to hook into
 	// the associated command.
 	Aloha.jQuery.each(
-		[ "bold", "italic", "strikethrough", "subscript", "superscript" ],
+		[ "bold", "italic", "strikethrough", "subscript", "superscript", "underline" ],
 		function( i, command ) {
 			Ui.create( command, "toggleCommandButton", {
 				command: command
