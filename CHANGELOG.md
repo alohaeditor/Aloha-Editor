@@ -4,6 +4,8 @@ This document is to serve as a "what has been done" in terms of the [Roadmap](ht
 
 ## 0.20.0-RC8 - 2011/11/21
 
+- image-plugin: Fixed handling of width and height when the user entered the cropping mode. You can resize the crop area by entering values in the width and height field. 
+- list-plugin/link-plugin: The list plugin interfered with the link plugin behaviour. Previously it was not possible to create links within a list due to a bug within the list plugin. The list plugin will now no longer use the Aloha.List scope.
 
 ## 0.20.0-RC7 - 2011/11
 
