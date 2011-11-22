@@ -100,7 +100,7 @@ function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore, Engine) {
 			});
 			// add to floating menu
 			FloatingMenu.addButton(
-				'Aloha.List',
+				'Aloha.continuoustext',
 				this.indentListButton,
 				i18n.t('floatingmenu.tab.list'),
 				1
@@ -119,29 +119,36 @@ function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore, Engine) {
 			});
 			// add to floating menu
 			FloatingMenu.addButton(
-				'Aloha.List',
+				'Aloha.continuoustext',
 				this.outdentListButton,
 				i18n.t('floatingmenu.tab.list'),
 				1
 			);
 
 			// add the event handler for selection change
-			Aloha.bind('aloha-selection-changed', function(event, rangeObject) {
+			Aloha.bind('aloha-selection-changed', function ( event, rangeObject ) {
 				var i, effectiveMarkup;
-
+				
+				// Hide all buttons in the list tab will make the list tab disappear
+				that.outdentListButton.hide();
+				that.indentListButton.hide();
 				that.createUnorderedListButton.setPressed(false);
 				that.createOrderedListButton.setPressed(false);
-
+				
 				for ( i = 0; i < rangeObject.markupEffectiveAtStart.length; i++) {
 					effectiveMarkup = rangeObject.markupEffectiveAtStart[ i ];
 					if (Aloha.Selection.standardTagNameComparator(effectiveMarkup, jQuery('<ul></ul>'))) {
 						that.createUnorderedListButton.setPressed(true);
-						FloatingMenu.setScope('Aloha.List');
+						// Show all buttons in the list tab
+						that.outdentListButton.show();
+						that.indentListButton.show();
 						break;
 					}
 					if (Aloha.Selection.standardTagNameComparator(effectiveMarkup, jQuery('<ol></ol>'))) {
 						that.createOrderedListButton.setPressed(true);
-						FloatingMenu.setScope('Aloha.List');
+						// Show all buttons in the list tab
+						that.outdentListButton.show();
+						that.indentListButton.show();
 						break;
 					}
 				}

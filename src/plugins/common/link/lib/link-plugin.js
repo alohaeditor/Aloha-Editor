@@ -34,7 +34,8 @@ define( [
 	
 	var GENTICS = window.GENTICS,
 	    pluginNamespace = 'aloha-link',
-		isAutoCompleteEnabled = true;
+	    oldValue = '',
+	    newValue;
 	
 	return Plugin.create( 'link', {
 		/**
@@ -80,7 +81,6 @@ define( [
 		 * called function ( obj, href, item );
 		 */
 		onHrefChange: null,
-
 		
 		/**
 		 * This variable is used to ignore one selection changed event. We need
@@ -149,11 +149,11 @@ define( [
 			pl.sidebar = sidebar;
 			sidebar.addPanel( {
 				
-				id: pl.nsClass( 'sidebar-panel-target' ),
-				title: i18n.t( 'floatingmenu.tab.link' ),
-				content: '',
-				expanded: true,
-				activeOn: 'a, link',
+				id       : pl.nsClass( 'sidebar-panel-target' ),
+				title    : i18n.t( 'floatingmenu.tab.link' ),
+				content  : '',
+				expanded : true,
+				activeOn : 'a, link',
 				
 				onInit: function () {
 					 var that = this,
@@ -227,16 +227,13 @@ define( [
 
 			// add the event handler for creation of editables
 			Aloha.bind( 'aloha-editable-created', function ( event, editable ) {
-
 				// CTRL+L
 				editable.obj.keydown( function ( e ) {
 					if ( e.metaKey && e.which == 76 ) {
 						if ( that.findLinkMarkup() ) {
 							// open the tab containing the href
 							FloatingMenu.activateTabOfButton( 'href' );
-
 							that.hrefField.focus();
-
 						} else {
 							that.insertLink();
 						}
@@ -260,8 +257,8 @@ define( [
 				// now and check whether the selection was placed within a
 				// editable area.
 				if ( !that.ignoreNextSelectionChangedEvent &&
-						Aloha.Selection.isSelectionEditable() ) {
-					
+						Aloha.Selection.isSelectionEditable() &&
+							Aloha.activeEditable != null ) {
 					// show/hide the button according to the configuration
 					config = that.getEditableConfig( Aloha.activeEditable.obj );
 					if ( jQuery.inArray( 'a', config ) != -1 ) {
@@ -347,12 +344,10 @@ define( [
 				if ( e.metaKey ) {
 					// blur current editable. user is waiting for the link to load
 					Aloha.activeEditable.blur();
-
 					// hack to guarantee a browser history entry
 					setTimeout( function () {
 						location.href = e.target;
 					}, 0 );
-
 					e.stopPropagation();
 					
 					return false;
@@ -448,25 +443,26 @@ define( [
 				// Now show all the ui-attributefield elements
 				that.showComboList();
 				
-				// if the user presses ESC we do a rough check if he has entered a link or searched for something
+				// Handle ESC key press: We do a rough check to see if the user
+				// has entered a link or searched for something
 				if ( event.keyCode == 27 ) {
 					var curval = that.hrefField.getQueryValue();
 					if ( curval[ 0 ] == '/' || // local link
-						 curval.match( /^.*\.([a-z]){2,4}$/i ) || // local file with extension
 						 curval[ 0 ] == '#' || // inner document link
+						 curval.match( /^.*\.([a-z]){2,4}$/i ) || // local file with extension
 						 curval.match( /^htt.*/i ) // external link
 					) {
 						// could be a link better leave it as it is
 					} else {
 						// the user searched for something and aborted
 						// restore original value
-						that.hrefField.setValue(that.hrefField.getValue());
+						that.hrefField.setValue( that.hrefField.getValue() );
 						// or clean the field value
 						// that.hrefField.setValue();
 						that.hideComboList();
 					}
 				}
-
+				
 				that.hrefChange();
 				
 				// Handle the enter key. Terminate the link scope and show the final link.
@@ -503,6 +499,31 @@ define( [
 					}, 100 );
 					
 					that.preventAutoSuggestionBoxFromExpanding();
+				} else {
+					// Check whether the value in the input field has changed
+					// because if it has, then the ui-attribute object's store
+					// needs to be cleared. The reason we need to do this
+					// clearing is because once the auto-suggeset combo box is
+					// shown and/or populated, the next enter keypress event
+					// would be handled as if the user is selecting one of the
+					// elements in the down down list.
+					newValue = jQuery( that.hrefField.extButton.el.dom ).attr( 'value' );
+					if ( oldValue != newValue ) {
+						oldValue = newValue;
+						// Drop local cache of suggestion items
+						
+						// Don't use this method because it will update the
+						// loading message to say that no items were found ...
+						// that.hrefField.extButton.store.removeAll();
+						
+						// ... instead we will manually delete the store data
+						// ourselves
+						var storeData = that.hrefField.extButton.store.data;
+						storeData.items = [];
+						storeData.key = [];
+						storeData.length = 0;
+						that.hrefField.extButton.store.lastQuery = null;
+					}
 				}
 			} );
 			
@@ -573,9 +594,9 @@ define( [
 		 */
 		insertLink: function ( extendToWord ) {
 			var that = this,
-				range = Aloha.Selection.getRangeObject(),
+			    range = Aloha.Selection.getRangeObject(),
 			    linkText,
-				newLink;
+			    newLink;
 			
 			// There are occasions where we do not get a valid range, in such
 			// cases we should not try and add a link
@@ -583,7 +604,7 @@ define( [
 				return;
 			}
 			
-			// do not insert a link in a link
+			// do not nest a link inside a link
 			if ( this.findLinkMarkup( range ) ) {
 				return;
 			}
