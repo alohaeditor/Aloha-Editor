@@ -17,6 +17,7 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
    return Plugin.create('numerated-headers', {
      
 	 numeratedactive : true,
+	 headingselector : 'h1, h2, h3, h4, h5, h6',
 	 
      /**
       * Initialize the plugin
@@ -26,6 +27,15 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 
 	   if ( typeof this.settings.numeratedactive !== 'undefined') {
 				this.numeratedactive = this.settings.numeratedactive;
+		}
+
+	   // modifyable selector for the headers, that should be numerated
+	   if ( typeof this.settings.headingselector !== 'undefined') {
+				this.headingselector = this.settings.headingselector;
+		}
+	   // modifyable selector for the baseobject. Where should be numerated
+	   if ( typeof this.settings.baseobjectSelector !== 'undefined') {
+				this.baseobjectSelector = this.settings.baseobjectSelector;
 		}
 		
        // add button to toggle format-less pasting
@@ -53,8 +63,8 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
          1
        );
 	   
-	   
-		Aloha.bind( 'aloha-smart-content-changed', function ( event ) {
+	   	// We need to bind to selection-changed event to recognize backspace and delete interactions
+		Aloha.bind( 'aloha-selection-changed', function ( event ) {
 			if(that.numeratedHeadersButton.isPressed()) {
 				that.createNumeratedHeaders();
 		   }
@@ -62,22 +72,85 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
      },
 
 	 removeNumerations : function () {
-		var active_editable_obj = Aloha.activeEditable.obj
-		var headers = active_editable_obj.find('h1, h2, h3, h4, h5, h6');
+		var active_editable_obj = this.getBaseElement();
+
+		if(!active_editable_obj){
+			return;
+		}
+
+		var headers = active_editable_obj.find(this.headingselector);
 		headers.each(function(){
 			jQuery(this).find('span[role=annotation]').each(function(){jQuery(this).remove();});
 		});
 	 },
-	 
+
+	getBaseElement: function() {
+
+		if(typeof this.baseobjectSelector !== 'undefined') {
+			if(jQuery(this.baseobjectSelector).length > 0) {
+				return jQuery(this.baseobjectSelector);
+			} else {
+				return false;
+			}
+		} else {
+			if (typeof Aloha.activeEditable == "undefined" || Aloha.activeEditable == null) {
+        			return false;
+        		} else {
+				return Aloha.activeEditable.obj;
+			}
+		}
+	},
+
+     	hasNote: function(obj) {
+	
+		if(!obj || !jQuery(obj).length > 0){	
+			return false;
+		}
+
+		obj = jQuery(obj);
+
+		if(obj.find('span[role=annotation]').length > 0) {
+			return true;
+		}
+
+		return false;
+	},
+
+	hasContent: function(obj) {
+	
+		if(!obj || !jQuery(obj).length > 0){	
+			return false;
+		}
+
+		obj = jQuery(obj);
+
+		// we have to check the content of this object without the annotation span
+		var objCleaned = obj.clone().find('span[role=annotation]').remove().end();
+
+		if(objCleaned.text().trim().length > 0){
+			return true;
+		}
+	
+		return false;
+	},
+
+
      createNumeratedHeaders: function(){
-	   if (typeof Aloha.activeEditable == "undefined" || Aloha.activeEditable == null) {
-           return;
-        }
-      var active_editable_obj = Aloha.activeEditable.obj
-      var headers = active_editable_obj.find('h1, h2, h3, h4, h5, h6');
+
+	var active_editable_obj = this.getBaseElement();
+
+	if(!active_editable_obj){
+		return;
+	}
+	
+	var that = this;
+      
+        var headers = active_editable_obj.find(this.headingselector);
+
 		if (typeof headers == "undefined" || headers.length == 0) {
            return;
       }
+
       var base_rank = parseInt(headers[0].nodeName.substr(1));
       var prev_rank = null;
       var current_annotation = [];
@@ -89,44 +162,53 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
       }
       
       headers.each(function(){
-        var current_rank = parseInt(this.nodeName.substr(1));
-        if(prev_rank == null){
-          //increment the main annotation 
-          current_annotation[annotation_pos]++;
-        }
-        //starts a sub title
-        else if(current_rank > prev_rank) {
-          current_annotation[++annotation_pos]++; 
-        }
-        //continues subtitles
-        else if(current_rank == prev_rank){
-          current_annotation[annotation_pos]++; 
-        }
-        //goes back to a main title
-        else if(current_rank < prev_rank){
-          var current_pos = current_rank - base_rank;
-          for(var j=annotation_pos; j > (current_pos); j--){
-            current_annotation[j] = 0; //reset current sub-annotation
-          }
-          annotation_pos = current_pos;
-          current_annotation[annotation_pos]++; 
-        }
+	// build and count annotation only if there is content in this header
+	if(that.hasContent(this)) {
 
-        prev_rank = current_rank;
+       		var current_rank = parseInt(this.nodeName.substr(1));
+        	if(prev_rank == null){
+          		//increment the main annotation 
+          		current_annotation[annotation_pos]++;
+        	}
+        	//starts a sub title
+        	else if(current_rank > prev_rank) {
+          		current_annotation[++annotation_pos]++; 
+        	}
+        	//continues subtitles
+        	else if(current_rank == prev_rank){
+          		current_annotation[annotation_pos]++; 
+        	}
+        	//goes back to a main title
+        	else if(current_rank < prev_rank){
+          		var current_pos = current_rank - base_rank;
+          		for(var j=annotation_pos; j > (current_pos); j--){
+            			current_annotation[j] = 0; //reset current sub-annotation
+          		}
+          		annotation_pos = current_pos;
+          		current_annotation[annotation_pos]++; 
+        	}
 
-        var annotation_result = current_annotation[0];
-        for(var i = 1; i < current_annotation.length; i++){
-          if(current_annotation[i] != 0){
-             annotation_result += ("." + current_annotation[i]); 
-          } 
-        }
+        	prev_rank = current_rank;
 
-        if(jQuery(this).find('span[role=annotation]').length > 0){
-          jQuery(this).find('span[role=annotation]').html(annotation_result); 
-        }
-        else {
-          jQuery(this).prepend("<span role='annotation'>" + annotation_result + "</span> ");
-        }
+        	var annotation_result = current_annotation[0];
+        	for(var i = 1; i < current_annotation.length; i++){
+          		if(current_annotation[i] != 0){
+             			annotation_result += ("." + current_annotation[i]); 
+          		} 
+        	}
+	
+		if(that.hasNote(this)){
+			jQuery(this).find('span[role=annotation]').html(annotation_result); 
+		} else {
+			jQuery(this).prepend("<span role='annotation'>" + annotation_result + "</span> ");
+		}
+	} else {
+		// no Content, so remove the Note, if there is one
+		if(that.hasNote(this)){
+			jQuery(this).find('span[role=annotation]').remove();
+		}
+		
+	}
 
       })
      }
