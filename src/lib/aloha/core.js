@@ -284,12 +284,12 @@ function ( jQuery, PluginManager ) {
 
 			// register the body click event to blur editables
 			jQuery('html').mousedown(function(e) {
-				// if an Ext JS modal is visible, we don't want to loose the focus on
+				// if an Ext JS modal is visible, we don't want to lose the focus on
 				// the editable as we assume that the user must have clicked somewhere
 				// in the modal... where else could he click?
-				// loosing the editable focus in this case hinders correct table
-				// column/row deletion, as the table module will clean it's selection
-				// as soon as the editable is deactivated. Fusubscriberthermore you'd have to
+				// losing the editable focus in this case hinders correct table
+				// column/row deletion, as the table module will clean its selection
+				// as soon as the editable is deactivated. Furthermore you'd have to
 				// refocus the editable again, which is just strange UX
 				if (Aloha.activeEditable && !Aloha.isMessageVisible() && !Aloha.eventHandled) {
 					Aloha.activeEditable.blur();
