@@ -232,7 +232,6 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 			});
 
 			this.$element.addClass('aloha-block-active');
-
 			BlockManager.trigger('block-selection-change', highlightedBlocks);
 
 			return false;
@@ -326,17 +325,31 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 				 * This is "numberOfSpansCreated - 1" (because one text node has been initially there)
 				 */
 				var insertSpans = function(el) {
+					var text = el.nodeValue;
+
 					// If node just contains empty strings, we do not do anything.
 					// Use ECMA-262 Edition 3 String and RegExp features
-					if (!/[^\t\n\r ]/.test(el.textContent)) {
+					if (!/[^\t\n\r ]/.test(text)) {
 						return 0;
 					}
 					var newNodes = document.createDocumentFragment();
-					var l = el.textContent.length;
+
+					var l = text.length;
+					var character, x;
 					for (var i=0; i<l; i++) {
-						var x = document.createElement('span');
+						x = document.createElement('span');
+						character = text.substr(i, 1);
+						if (!/[^\t\n\r ]/.test(character)) {
+							// character contains all-whitespace
+							// For IE, we need to render it with a &nbsp; as it seems.
+							// However, IE does not wrap newlines here...
+							x.setAttribute('data-ws', '1');
+							x.innerHTML = '&nbsp;';
+						} else {
+							x.innerHTML = character;
+						}
 						x.setAttribute('data-i', i);
-						x.innerHTML = el.textContent.substr(i, 1);
+
 						newNodes.appendChild(x);
 					}
 					el.parentNode.replaceChild(newNodes, el);
@@ -378,7 +391,13 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 								if (currentlyTraversingExpandedText) {
 									// We are currently traversing the expanded text nodes, so we collect their data
 									// together in the currentText variable
-									currentText += child.innerHTML;
+									if (child.attributes['data-ws']) {
+										console.log("data-ws");
+										currentText += ' ';
+									} else {
+										currentText += child.innerHTML;
+									}
+
 									if (lastNode) {
 										nodesToDelete.push(lastNode);
 									}
