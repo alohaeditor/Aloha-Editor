@@ -104,11 +104,20 @@ function(Aloha, jQuery, FloatingMenu, Observable, Registry) {
 
 			// Enabling copies of the active block
 			var currentlyCopying = false;
+			var currentlyCutting = false;
 			var selectionBeforeCopying = null;
 			jQuery(window.document).keydown(function(e) {
-				// IF: Ctrl/Command C pressed
+				// IF: Ctrl/Command C pressed -- COPY
 				if (that._activeBlock && (e.ctrlKey || e.metaKey) && e.which === 67) {
 					currentlyCopying = true;
+					//selectionBeforeCopying = new GENTICS.Utils.RangeObject(true);
+					that._activeBlock.$element.attr('data-aloha-block-copy-only-block', 'true');
+					GENTICS.Utils.Dom.selectDomNode(that._activeBlock.$element[0]);
+				}
+
+				// IF: Ctrl/Command X pressed -- CUT
+				if (that._activeBlock && (e.ctrlKey || e.metaKey) && e.which === 88) {
+					currentlyCutting = true;
 					//selectionBeforeCopying = new GENTICS.Utils.RangeObject(true);
 					that._activeBlock.$element.attr('data-aloha-block-copy-only-block', 'true');
 					GENTICS.Utils.Dom.selectDomNode(that._activeBlock.$element[0]);
@@ -116,13 +125,17 @@ function(Aloha, jQuery, FloatingMenu, Observable, Registry) {
 			});
 			jQuery(window.document).keyup(function(e) {
 				// IF: Release of ctrl / command C
-				if (currentlyCopying && (e.which === 67 || e.which === 18 || e.which === 91)) {
+				if (!currentlyCutting && currentlyCopying && (e.which === 67 || e.which === 18 || e.which === 91)) {
 					currentlyCopying = false;
 					that._activeBlock.$element.removeAttr('data-aloha-block-copy-only-block');
 					if (selectionBeforeCopying) {
 						//selectionBeforeCopying.select();
 						selectionBeforeCopying = null;
 					}
+				}
+				// IF: Release of ctrl / command X
+				if (currentlyCutting  && (e.which === 67 || e.which === 18 || e.which === 88)) {
+					currentlyCutting = false;
 				}
 			});
 		},
