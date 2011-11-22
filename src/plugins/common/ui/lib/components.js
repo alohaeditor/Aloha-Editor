@@ -7,13 +7,17 @@ function ( Aloha, Ui ) {
 	// and it will apply or remove the bold styling when the button is clicked.
 	// This functionality comes from the toggleButton which knows how to hook into
 	// the associated command.
-	Ui.create( "toggleCommandButton", "bold", {
-		command: "bold"
-	});
+	Aloha.jQuery.each(
+		[ "bold", "italic", "strikethrough", "subscript", "superscript" ],
+		function( i, command ) {
+			Ui.create( command, "toggleCommandButton", {
+				command: command
+			});
+		});
 	
 
 	Aloha.settings.font = [ "Arial", "Courier", "Georgia" ];
-	Ui.create( "dropdown", "fontName", {
+	Ui.create( "fontName", "dropdown", {
 		options: function( editable ) {
 			return editable.settings.font;
 		},
@@ -27,12 +31,7 @@ function ( Aloha, Ui ) {
 	});
 	
 	
-	Ui.create( "toggleCommandButton", "italic", {
-		command: "italic"
-	});
-	
-	
-	Ui.create( "toggleButton", "link", {
+	Ui.create( "link", "toggleButton", {
 		command: "createLink",
 		click: function() {
 			var state = Aloha.queryCommandValue( "createLink" );
@@ -50,7 +49,7 @@ function ( Aloha, Ui ) {
 	});
 
 	
-	Ui.create( "text", "editLink", {
+	Ui.create( "editLink", "text", {
 		selectionChange: function() {
 			var value = Aloha.queryCommandValue( "createLink" );
 			if ( value ) {

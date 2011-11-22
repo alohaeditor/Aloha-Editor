@@ -8,7 +8,7 @@ function ( Aloha, Ui, Button ) {
 	Ui.createType( "toggleButton", Button, {
 		// The `setState()` method updates the visual display of the toggleButton.
 		setState: function( on ) {
-			this.element.toggleClass( "aloha-button-on", on );
+			this.element.toggleClass( "aloha-button-on ui-state-active", on );
 		}
 	});
 	

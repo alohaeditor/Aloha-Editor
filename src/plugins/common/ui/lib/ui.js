@@ -33,13 +33,13 @@ function ( Aloha, jQuery, Component ) {
 		},
 		
 		// Next, we need to create a component.
-		// The `type` parameter may be anything that has been defined via `createType`.
 		// The `component` parameter is the name of the component.
+		// The `type` parameter may be anything that has been defined via `createType`.
 		// The properties for the `settings` parameter are dependent upon the type.
 		// Check out the [bold plugin](bold.html) to see how this is used.
-		create: function( type, component, settings ) {
-			settings.type = type;
+		create: function( component, type, settings ) {
 			settings.name = component;
+			settings.type = type;
 			this.components[ component ] = settings;
 		},
 		

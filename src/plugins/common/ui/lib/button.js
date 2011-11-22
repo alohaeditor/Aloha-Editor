@@ -17,6 +17,7 @@ function ( jQuery, Ui ) {
 			})
 			/* this should be a localized label, not the name of the button */
 			.text( this.settings.name )
+			.button()
 			.click( jQuery.proxy( function() {
 				this.click();
 			}, this ) );
