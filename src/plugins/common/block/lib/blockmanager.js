@@ -110,6 +110,7 @@ function(Aloha, jQuery, FloatingMenu, Observable, Registry) {
 				if (that._activeBlock && (e.ctrlKey || e.metaKey) && e.which === 67) {
 					currentlyCopying = true;
 					//selectionBeforeCopying = new GENTICS.Utils.RangeObject(true);
+					that._activeBlock.$element.attr('data-aloha-block-copy-only-block', 'true');
 					GENTICS.Utils.Dom.selectDomNode(that._activeBlock.$element[0]);
 				}
 			});
@@ -117,6 +118,7 @@ function(Aloha, jQuery, FloatingMenu, Observable, Registry) {
 				// IF: Release of ctrl / command C
 				if (currentlyCopying && (e.which === 67 || e.which === 18 || e.which === 91)) {
 					currentlyCopying = false;
+					that._activeBlock.$element.removeAttr('data-aloha-block-copy-only-block');
 					if (selectionBeforeCopying) {
 						//selectionBeforeCopying.select();
 						selectionBeforeCopying = null;

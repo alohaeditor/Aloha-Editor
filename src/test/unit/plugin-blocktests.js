@@ -265,6 +265,74 @@ function( TestUtils) {
 					strictEqual(undefined, BlockManager.getBlock('someUndefinedId'));
 				}
 			},
+
+			{ module : 'Copy/Paste' },
+			///////////////////////////////////////////////////////////////////////
+
+			{
+				exclude   : false,
+				desc      : 'Copy/Paste Setup',
+				start     : '<div class="alohaContent"><p><b>Some</b> text before<span id="myDefaultBlock" data-foo="Bar" data-something="Bar">Please click me and press <b>ctrl/cmd+c</b></span>Some text after</p><p class="pasteTarget"><b>Please place the</b> cursor HERE &gt;&lt; and press cmd/crtl v</p><p><b>Some</b> more text</p></div>',
+				async: true,
+				operation : function(testContainer, testcase) {
+
+					jQuery('.alohaContent').aloha();
+
+					jQuery('#myDefaultBlock').alohaBlock({
+						'aloha-block-type': 'DefaultBlock'
+					});
+
+					var testTimeout = window.setTimeout(function() {
+						test('Copy/Paste tests not run', function() {
+							ok(false, 'Manual copy/paste tests were not run');
+						});
+						start();
+					}, 10000);
+					var keyDownListener;
+					keyDownListener = function(e) {
+						if (e.which === 86) { // v pressed (ctrl-v)
+							// We wait a little to make sure the new block has been created correctly
+							window.setTimeout(function() {
+								window.clearTimeout(testTimeout);
+								var testResults = [
+									{
+										actual: (function() {
+											var numberOfIdsFound = 0;
+											jQuery('span', testContainer).each(function() {
+												if (jQuery(this).is('#myDefaultBlock')) {
+													numberOfIdsFound++;
+												}
+											});
+											return numberOfIdsFound;
+										})(),
+										expected: 1,
+										message: 'the old ID should not be inside the DOM multiple after pasting'
+									},
+									{
+										actual: jQuery('.aloha-block', testContainer)[0].innerHTML,
+										expected: '<span class="aloha-block-handle aloha-block-draghandle"></span>Please click me and press <b>ctrl/cmd+c</b>',
+										message: 'The block markup is as expected'
+									},
+									{
+										actual: jQuery('br', testContainer).length,
+										expected: 0,
+										message: 'The content should not have any superfluous <br> tags inserted'
+									},
+								];
+
+								test('Copy/Paste works with inline blocks', function() {
+									jQuery.each(testResults, function() {
+										strictEqual(this.actual, this.expected, this.message);
+									});
+								})
+								start();
+							}, 400);
+							jQuery(document).unbind('keydown', keyDownListener);
+						}
+					};
+					jQuery(document).keydown(keyDownListener);
+				}
+			},
 			{ exclude : true } // ... just catch trailing commas
 		];
 
