@@ -12,7 +12,14 @@
 }
 .aloha-block.aloha-block-active, .aloha-block.aloha-block-active:hover {
 	box-shadow: 0 0 0px 1px #2F7ECC; /* We use box-shadow because of a Firefox rendering bug with "outline" */
+}
 
+
+.ext-ie .aloha-block:hover {
+	border: 1px solid #FFE98A; /* IE does not support box-shadow, thus we need to use border */
+}
+.ext-ie .aloha-block.aloha-block-active, .ext-ie .aloha-block.aloha-block-active:hover {
+	border: 1px solid #2F7ECC; /* IE does not support box-shadow, thus we need to use border */
 }
 
 /* Display cursor */
