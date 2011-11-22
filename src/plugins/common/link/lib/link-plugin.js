@@ -34,7 +34,8 @@ define( [
 	
 	var GENTICS = window.GENTICS,
 	    pluginNamespace = 'aloha-link',
-		isAutoCompleteEnabled = true;
+	    oldValue = '',
+	    newValue;
 	
 	return Plugin.create( 'link', {
 		/**
@@ -77,10 +78,9 @@ define( [
 		
 		/**
 		 * handle change on href change
-		 * called function( obj, href, item );
+		 * called function ( obj, href, item );
 		 */
 		onHrefChange: null,
-
 		
 		/**
 		 * This variable is used to ignore one selection changed event. We need
@@ -99,22 +99,22 @@ define( [
 		init: function () {
 			var that = this;
 			
-			if ( typeof this.settings.targetregex !== 'undefined' ) {
+			if ( typeof this.settings.targetregex != 'undefined' ) {
 				this.targetregex = this.settings.targetregex;
 			}
-			if ( typeof this.settings.target !== 'undefined' ) {
+			if ( typeof this.settings.target != 'undefined' ) {
 				this.target = this.settings.target;
 			}
-			if ( typeof this.settings.cssclassregex !== 'undefined' ) {
+			if ( typeof this.settings.cssclassregex != 'undefined' ) {
 				this.cssclassregex = this.settings.cssclassregex;
 			}
-			if ( typeof this.settings.cssclass !== 'undefined' ) {
+			if ( typeof this.settings.cssclass != 'undefined' ) {
 				this.cssclass = this.settings.cssclass;
 			}
-			if ( typeof this.settings.objectTypeFilter !== 'undefined' ) {
+			if ( typeof this.settings.objectTypeFilter != 'undefined' ) {
 				this.objectTypeFilter = this.settings.objectTypeFilter;
 			}
-			if ( typeof this.settings.onHrefChange !== 'undefined' ) {
+			if ( typeof this.settings.onHrefChange != 'undefined' ) {
 				this.onHrefChange = this.settings.onHrefChange;
 			}
 			
@@ -144,16 +144,16 @@ define( [
 			return stringBuilder.join( ' ' ).trim();
 		},
 
-		initSidebar: function( sidebar ) {
+		initSidebar: function ( sidebar ) {
 			var pl = this;
 			pl.sidebar = sidebar;
 			sidebar.addPanel( {
 				
-				id: pl.nsClass( 'sidebar-panel-target' ),
-				title: i18n.t( 'floatingmenu.tab.link' ),
-				content: '',
-				expanded: true,
-				activeOn: 'a, link',
+				id       : pl.nsClass( 'sidebar-panel-target' ),
+				title    : i18n.t( 'floatingmenu.tab.link' ),
+				content  : '',
+				expanded : true,
+				activeOn : 'a, link',
 				
 				onInit: function () {
 					 var that = this,
@@ -174,8 +174,7 @@ define( [
 					 jQuery( pl.nsSel( 'radioTarget' ) ).live( 'change', function () {
 						if ( jQuery( this ).val() == 'framename' ) {
 							jQuery( pl.nsSel( 'framename' ) ).slideDown();
-						}
-						else {
+						} else {
 							jQuery( pl.nsSel( 'framename' ) ).slideUp().val( '' );
 							jQuery( that.effective ).attr( 'target', jQuery( this ).val() );
 						}
@@ -189,7 +188,7 @@ define( [
 				onActivate: function ( effective ) {
 					var that = this;
 					that.effective = effective;
-					if( jQuery( that.effective ).attr( 'target' ) != null ) {
+					if ( jQuery( that.effective ).attr( 'target' ) != null ) {
 						var isFramename = true;
 						jQuery( pl.nsSel( 'framename' ) ).hide().val( '' );
 						jQuery( pl.nsSel( 'radioTarget' ) ).each( function () {
@@ -228,16 +227,13 @@ define( [
 
 			// add the event handler for creation of editables
 			Aloha.bind( 'aloha-editable-created', function ( event, editable ) {
-
 				// CTRL+L
 				editable.obj.keydown( function ( e ) {
 					if ( e.metaKey && e.which == 76 ) {
 						if ( that.findLinkMarkup() ) {
 							// open the tab containing the href
 							FloatingMenu.activateTabOfButton( 'href' );
-
 							that.hrefField.focus();
-
 						} else {
 							that.insertLink();
 						}
@@ -261,8 +257,8 @@ define( [
 				// now and check whether the selection was placed within a
 				// editable area.
 				if ( !that.ignoreNextSelectionChangedEvent &&
-						Aloha.Selection.isSelectionEditable() ) {
-					
+						Aloha.Selection.isSelectionEditable() &&
+							Aloha.activeEditable != null ) {
 					// show/hide the button according to the configuration
 					config = that.getEditableConfig( Aloha.activeEditable.obj );
 					if ( jQuery.inArray( 'a', config ) != -1 ) {
@@ -286,8 +282,8 @@ define( [
 						var currentTab = FloatingMenu.userActivatedTab;
 
 						// switch to the href tab (so that we make sure that the href field gets created)
-						FloatingMenu.activateTabOfButton('href');
-						if (currentTab) {
+						FloatingMenu.activateTabOfButton( 'href' );
+						if ( currentTab ) {
 							// switch back to the original tab
 							FloatingMenu.userActivatedTab = currentTab;
 						}
@@ -298,19 +294,19 @@ define( [
 						// the hrefField component might not be initialized. When the user switches to the link
 						// tab to edit the link the field would be empty. We check for that situation and add a
 						// special interval check to set the value once again
-						if ( jQuery('#' + that.hrefField.extButton.id).length === 0 ) {
+						if ( jQuery( '#' + that.hrefField.extButton.id ).length == 0 ) {
 							// there must only be one update interval running at the same time
-							if ( that.hrefUpdateInt !== null) {
+							if ( that.hrefUpdateInt !== null ) {
 								clearInterval( that.hrefUpdateInt );
 							}
 							
 							// register a timeout that will set the value as soon as the href field was initialized
-							that.hrefUpdateInt = setInterval(function () {
-								if( jQuery('#' + that.hrefField.extButton.id).length > 0 ) { // the object was finally created
+							that.hrefUpdateInt = setInterval( function () {
+								if ( jQuery( '#' + that.hrefField.extButton.id ).length > 0 ) { // the object was finally created
 									that.hrefField.setTargetObject( foundMarkup, 'href' );
 									clearInterval( that.hrefUpdateInt );
 								}
-							}, 200);
+							}, 200 );
 						}
 					} else {
 						that.formatLinkButton.setPressed( false );
@@ -319,8 +315,7 @@ define( [
 				}
 				
 				that.ignoreNextSelectionChangedEvent = false;
-			});
-
+			} );
 		},
 
 		/**
@@ -349,12 +344,10 @@ define( [
 				if ( e.metaKey ) {
 					// blur current editable. user is waiting for the link to load
 					Aloha.activeEditable.blur();
-
 					// hack to guarantee a browser history entry
 					setTimeout( function () {
 						location.href = e.target;
 					}, 0 );
-
 					e.stopPropagation();
 					
 					return false;
@@ -450,21 +443,26 @@ define( [
 				// Now show all the ui-attributefield elements
 				that.showComboList();
 				
-				// if the user presses ESC we do a rough check if he has entered a link or searched for something
+				// Handle ESC key press: We do a rough check to see if the user
+				// has entered a link or searched for something
 				if ( event.keyCode == 27 ) {
 					var curval = that.hrefField.getQueryValue();
 					if ( curval[ 0 ] == '/' || // local link
-						 curval.match( /^.*\.([a-z]){2,4}$/i ) || // local file with extension
 						 curval[ 0 ] == '#' || // inner document link
+						 curval.match( /^.*\.([a-z]){2,4}$/i ) || // local file with extension
 						 curval.match( /^htt.*/i ) // external link
 					) {
 						// could be a link better leave it as it is
 					} else {
-						// the user searched for something and aborted restore original value
-						// that.hrefField.setValue(that.hrefField.getValue());
+						// the user searched for something and aborted
+						// restore original value
+						that.hrefField.setValue( that.hrefField.getValue() );
+						// or clean the field value
+						// that.hrefField.setValue();
+						that.hideComboList();
 					}
 				}
-
+				
 				that.hrefChange();
 				
 				// Handle the enter key. Terminate the link scope and show the final link.
@@ -477,11 +475,18 @@ define( [
 //					console.dir(foundMarkup);
 //					that.hrefField.setTargetObject(foundMarkup, 'href');
 					
+					// We have to ignore the next 2 onselectionchange events.
+					// The first one we need to ignore is the one trigger when
+					// we reposition the selection to right at the end of the
+					// link.
+					// Not sure what the next event is yet but we need to
+					// ignore it as well, ignoring it prevents the value of
+					// hrefField from being set to the old value.
 					that.ignoreNextSelectionChangedEvent = true;
 					range.startContainer = range.endContainer;
 					range.startOffset = range.endOffset;
 					range.select();
-					//that.ignoreNextSelectionChangedEvent = true;
+					that.ignoreNextSelectionChangedEvent = true;
 					
 					var hrefValue = jQuery( that.hrefField.extButton.el.dom ).attr( 'value' );
 					
@@ -493,11 +498,31 @@ define( [
 						FloatingMenu.setScope( 'Aloha.continuoustext' );
 					}, 100 );
 					
-					that.toggleAutoCompletion( false );
-					that.hideComboList();
+					that.preventAutoSuggestionBoxFromExpanding();
 				} else {
-					if ( !isAutoCompleteEnabled ) {
-						that.toggleAutoCompletion( true );
+					// Check whether the value in the input field has changed
+					// because if it has, then the ui-attribute object's store
+					// needs to be cleared. The reason we need to do this
+					// clearing is because once the auto-suggeset combo box is
+					// shown and/or populated, the next enter keypress event
+					// would be handled as if the user is selecting one of the
+					// elements in the down down list.
+					newValue = jQuery( that.hrefField.extButton.el.dom ).attr( 'value' );
+					if ( oldValue != newValue ) {
+						oldValue = newValue;
+						// Drop local cache of suggestion items
+						
+						// Don't use this method because it will update the
+						// loading message to say that no items were found ...
+						// that.hrefField.extButton.store.removeAll();
+						
+						// ... instead we will manually delete the store data
+						// ourselves
+						var storeData = that.hrefField.extButton.store.data;
+						storeData.items = [];
+						storeData.key = [];
+						storeData.length = 0;
+						that.hrefField.extButton.store.lastQuery = null;
 					}
 				}
 			} );
@@ -536,7 +561,7 @@ define( [
 		 * @hide
 		 */
 		findLinkMarkup: function ( range ) {
-			if ( typeof range === 'undefined' ) {
+			if ( typeof range == 'undefined' ) {
 				range = Aloha.Selection.getRangeObject();
 			}
 			if ( Aloha.activeEditable ) {
@@ -568,19 +593,25 @@ define( [
 		 * selected text will be the link text.
 		 */
 		insertLink: function ( extendToWord ) {
-			var range, linkText, newLink, that = this;
-
-			// do not insert a link in a link
+			var that = this,
+			    range = Aloha.Selection.getRangeObject(),
+			    linkText,
+			    newLink;
+			
+			// There are occasions where we do not get a valid range, in such
+			// cases we should not try and add a link
+			if ( !( range.startContainer && range.endContainer ) ) {
+				return;
+			}
+			
+			// do not nest a link inside a link
 			if ( this.findLinkMarkup( range ) ) {
 				return;
 			}
-
+			
 			// activate floating menu tab
 			FloatingMenu.activateTabOfButton( 'href' );
-
-			// current selection or cursor position
-			range = Aloha.Selection.getRangeObject();
-
+			
 			// if selection is collapsed then extend to the word.
 			if ( range.isCollapsed() && extendToWord !== false ) {
 				GENTICS.Utils.Dom.extendToWord( range );
@@ -609,7 +640,11 @@ define( [
 			// Chrome and Firefox will not focus the element correctly.
 			this.hrefField.focus();
 			// prefill and select the new href
-			jQuery( this.hrefField.extButton.el.dom ).attr( 'value', 'http://' ).select();
+			// We need this guard because there are time when the extButton's
+			// el element has not yet available
+			if ( this.hrefField.extButton.el ) {
+				jQuery( this.hrefField.extButton.el.dom ).attr( 'value', 'http://' ).select();
+			}
 			this.hrefChange();
 		},
 
@@ -632,7 +667,7 @@ define( [
 				// select the (possibly modified) range
 				range.select();
 				
-				if ( typeof terminateLinkScope === 'undefined' ||
+				if ( typeof terminateLinkScope == 'undefined' ||
 						terminateLinkScope === true ) {
 					FloatingMenu.setScope( 'Aloha.continuoustext' );
 				}
@@ -670,9 +705,10 @@ define( [
 				 item: that.hrefField.getItem()
 			} );
 			
-			if ( typeof this.onHrefChange === 'function' ) {
+			if ( typeof this.onHrefChange == 'function' ) {
 				this.onHrefChange.call(
-					this, this.hrefField.getTargetObject(),
+					this,
+					this.hrefField.getTargetObject(),
 					this.hrefField.getQueryValue(),
 					this.hrefField.getItem()
 				);
@@ -680,26 +716,11 @@ define( [
 		},
 		
 		/**
-		 * Prevents adds an autocomplete-disabled class on the linkField
-		 * element so that when repository results are about received we know
-		 * whether or not to print them
-		 *
-		 * @param {Boolean} enabled
+		 * Prevents the combolist from expanding when
+		 * this.hrefField.extButton.expand method is invoked
 		 */
-		toggleAutoCompletion: function ( enabled ) {
-			if ( enabled === true ) {
-				isAutoCompleteEnabled = true;
-				
-				jQuery( '.' + this.hrefField.cls )
-					.removeClass( 'aloha-link-autocomplete-disabled' );
-			}
-			
-			if ( enabled === false ) {
-				isAutoCompleteEnabled = false;
-				
-				jQuery( '.' + this.hrefField.cls )
-					.addClass( 'aloha-link-autocomplete-disabled' );
-			}
+		preventAutoSuggestionBoxFromExpanding: function () {
+			this.hrefField.extButton.hasFocus = false;
 		},
 		
 		/**
@@ -712,7 +733,7 @@ define( [
 		},
 		
 		/**
-		 * Hides all the ui-attributefield elements
+		 * Hide all the ui-attributefield elements
 		 */
 		hideComboList: function () {
 			jQuery( '.x-layer x-combo-list,' +
@@ -728,7 +749,7 @@ define( [
 		 */
 		makeClean: function ( obj ) {
 			// find all link tags
-			obj.find( 'a' ).each( function() {
+			obj.find( 'a' ).each( function () {
 				jQuery( this )
 					.removeClass( 'aloha-link-pointer' )
 					.removeClass( 'aloha-link-text' );

@@ -19,28 +19,20 @@
 */
 
 /**
- * TODO:
- *		Make the sidebars resizable using drag handles
+ * @todo: - Make the sidebars resizable using drag handles
+ *		  - Make overlayPage setting settable from external config
  */
 
-define([
-
+define( [
     'aloha/core',
 	'aloha/jquery',
-	'aloha/selection',
-	'aloha/plugin' // For when we plugify sidebar
-
-], function (Aloha, $, Selection, Plugin) {
-	
+	'aloha/selection'
+	// 'aloha/plugin' // For when we plugify sidebar
+], function ( Aloha, jQuery, Selection, Plugin ) {
 	'use strict';
 	
-//	var Aloha = window.Aloha;
+	var $ = jQuery;
 	var undefined = void 0;
-	
-	// ------------------------------------------------------------------------
-	// Local (helper) variables
-	// ------------------------------------------------------------------------
-	
 	// Pseudo-namespace prefix for Sidebar elements
 	// Rational:
 	// We use a prefix instead of an enclosing class or id because we need to
@@ -49,26 +41,26 @@ define([
 	// eg: .inner or .btn can be used in several plugins, with eaching adding
 	// to the class styles properties that we don't want.
 	var ns = 'aloha-sidebar';
-	var uid  = +new Date;
+	var uid  = +( new Date );
 	// namespaced classnames
 	var nsClasses = {
-			bar    : nsClass( 'bar' ),
-			handle : nsClass('handle'),
-			inner  : nsClass('inner'),
-			panels : nsClass('panels'),
-			'config-btn' : nsClass('config-btn'),
-			'handle-icon' : nsClass('handle-icon'),
-			'panel-content' : nsClass('panel-content'),
-			'panel-content-inner' : nsClass('panel-content-inner'),
-			'panel-content-inner-text' : nsClass('panel-content-inner-text'),
-			'panel-title' : nsClass('panel-title'),
-			'panel-title-arrow' : nsClass('panel-title-arrow'),
-			'panel-title-text' : nsClass('panel-title-text')
+			'bar'                      : nsClass( 'bar' ),
+			'handle'                   : nsClass( 'handle' ),
+			'inner'                    : nsClass( 'inner' ),
+			'panels'                   : nsClass( 'panels' ),
+			'config-btn'               : nsClass( 'config-btn' ),
+			'handle-icon'              : nsClass( 'handle-icon' ),
+			'panel-content'            : nsClass( 'panel-content' ),
+			'panel-content-inner'      : nsClass( 'panel-content-inner' ),
+			'panel-content-inner-text' : nsClass( 'panel-content-inner-text' ),
+			'panel-title'              : nsClass( 'panel-title' ),
+			'panel-title-arrow'        : nsClass( 'panel-title-arrow' ),
+			'panel-title-text'         : nsClass( 'panel-title-text' )
 		};
 	
 	// Extend jQuery easing animations
-	if (!$.easing.easeOutExpo) {
-		$.extend($.easing, {
+	if ( !jQuery.easing.easeOutExpo ) {
+		jQuery.extend(jQuery.easing, {
 			easeOutExpo: function (x, t, b, c, d) {
 				return (t==d)?b+c:c*(-Math.pow(2,-10*t/d)+1)+b;
 			},
@@ -95,11 +87,11 @@ define([
 	 * @param {Object} obj - Associative array of replacing placeholder keys
 	 *                       with corresponding values
 	 */
-	function supplant (str, obj) {
-		 return str.replace(/\{([a-z0-9\-\_]+)\}/ig, function (str, p1, offset, s) {
-			 var replacement = obj[p1] || str;
-			 return (typeof replacement === 'function') ? replacement() : replacement;
-		 });
+	function supplant ( str, obj ) {
+		 return str.replace( /\{([a-z0-9\-\_]+)\}/ig, function ( str, p1, offset, s ) {
+			 var replacement = obj[ p1 ] || str;
+			 return ( typeof replacement == 'function' ) ? replacement() : replacement;
+		 } );
 	};
 	
 	/**
@@ -110,8 +102,8 @@ define([
 	 * @param {String} str
 	 * @return {String}
 	 */
-	function renderTemplate (str) {
-		return (typeof str === 'string') ? supplant(str, nsClasses) : str;
+	function renderTemplate ( str ) {
+		return ( typeof str == 'string' ) ? supplant( str, nsClasses ) : str;
 	};
 	
 	/**
@@ -127,8 +119,10 @@ define([
 	 */
 	function nsSel () {
 		var strBldr = [], prx = ns;
-		$.each(arguments, function () { strBldr.push('.' + (this == '' ? prx : prx + '-' + this)); });
-		return $.trim(strBldr.join(' '));
+		jQuery.each( arguments, function () {
+			strBldr.push( '.' + ( this == '' ? prx : prx + '-' + this ) );
+		} );
+		return jQuery.trim( strBldr.join( ' ' ) );
 	};
 	
 	/**
@@ -144,29 +138,31 @@ define([
 	 */
 	function nsClass () {
 		var strBldr = [], prx = ns;
-		$.each(arguments, function () { strBldr.push(this == '' ? prx : prx + '-' + this); });
-		return $.trim(strBldr.join(' '));
+		jQuery.each( arguments, function () {
+			strBldr.push( this == '' ? prx : prx + '-' + this );
+		} );
+		return jQuery.trim( strBldr.join(' ') );
 	};
 	
 	// ------------------------------------------------------------------------
 	// Sidebar constructor
 	// Only instance properties are to be defined here
 	// ------------------------------------------------------------------------
-	var Sidebar = function Sidebar (opts) {
+	var Sidebar = function Sidebar ( opts ) {
 		var sidebar = this;
 		
 		this.id = nsClass( ++uid );
 		this.panels = {};
-		this.container = $( renderTemplate( '				\
-			<div class="{bar}">							\
-				<div class="{handle}">					\
-					<span class="{handle-icon}"></span>	\
-				</div>									\
-				<div class="{inner}">		 			\
-					<ul class="{panels}"></ul>			\
-				</div>									\
-			</div>										\
-		' ) );
+		this.container = jQuery( renderTemplate(
+			'<div class="{bar}">' +
+				'<div class="{handle}">' +
+					'<span class="{handle-icon}"></span>' +
+				'</div>' +
+				'<div class="{inner}">' +
+					'<ul class="{panels}"></ul>' +
+				'</div>' +
+			'</div>'
+		) );
 		// defaults
 		this.width = 300;
 		this.opened = false;
@@ -178,14 +174,14 @@ define([
 			// Our solution is to fallback to swapping icon images.
 			// We set this as a sidebar property so that it can overridden by
 			// whoever thinks they are smarter than we are.
-			rotateIcons : !$.browser.msie,
+			rotateIcons : !jQuery.browser.msie,
 			overlayPage : true
 		};
 		
 		// Initialize after dom is ready
-		$( function () {
-			
-			if ( ! ( (typeof Aloha.settings.sidebar !== 'undefined') && Aloha.settings.sidebar.disabled) ) {
+		jQuery( function () {
+			if ( !( ( typeof Aloha.settings.sidebar != 'undefined' ) &&
+					Aloha.settings.sidebar.disabled ) ) {
 				sidebar.init( opts );
 			}
 		} );
@@ -196,7 +192,7 @@ define([
 	// All properties to be shared across Sidebar instances can be placed in
 	// the prototype object
 	// ------------------------------------------------------------------------
-	$.extend(Sidebar.prototype, {
+	jQuery.extend(Sidebar.prototype, {
 		
 		// Build as much of the sidebar as we can before appending it to DOM to
 		// minimize reflow.
@@ -205,16 +201,16 @@ define([
 			var panels;
 			
 			// Pluck panels list from opts
-			if (typeof opts === 'object') {
+			if (typeof opts == 'object') {
 				panels = opts.panels;
 				delete opts.panels;
 			}
 			
 			// Copy any implements, and overrides in opts to this Sidebar instance
-			$.extend(this, opts);
+			jQuery.extend(this, opts);
 			
-			if (typeof panels === 'object') {
-				$.each(panels, function () {
+			if (typeof panels == 'object') {
+				jQuery.each(panels, function () {
 					that.addPanel(this, true);
 				});
 			}
@@ -227,7 +223,7 @@ define([
 			
 			// Place the bar into the DOM
 			bar.hide()
-			   .appendTo($('body'))
+			   .appendTo(jQuery('body'))
 			   .click(function () {that.barClicked.apply(that, arguments);})
 			   .find(nsSel('panels')).width(this.width);
 			
@@ -237,7 +233,7 @@ define([
 			
 			this.width = bar.width();
 			
-			$(window).resize(function () {
+			jQuery(window).resize(function () {
 				that.updateHeight();
 			});
 			
@@ -255,7 +251,7 @@ define([
 			
 			this.subscribeToEvents();
 			
-			$(window).resize(function () {
+			jQuery(window).resize(function () {
 				that.correctHeight();
 			});
 			
@@ -263,18 +259,16 @@ define([
 		},
 		
 		show: function () {
-			this.container.css('display', 'block');
+			this.container.css( 'display', 'block' );
 				//.animate({opacity: 1}, 1000);
-			
 			return this;
 		},
 		
 		hide: function () {
-			this.container.css('display','none');
+			this.container.css( 'display','none' );
 			//	.animate({opacity: 0}, 1000, function () {
-			//		$(this).css('display', 'block')
+			//		jQuery(this).css('display', 'block')
 			//	});
-			
 			return this;
 		},
 		
@@ -285,21 +279,22 @@ define([
 		 *
 		 * @param {Object} range - The Aloha.RangeObject
 		 */
-		checkActivePanels: function(range) {
+		checkActivePanels: function( range ) {
 			var effective = [];
 			
-			if (typeof range !== 'undefined' && typeof range.markupEffectiveAtStart !== 'undefined') {
+			if ( typeof range != 'undefined' &&
+					typeof range.markupEffectiveAtStart != 'undefined' ) {
 				var l = range.markupEffectiveAtStart.length;
-				for (var i = 0; i < l; ++i) {
-					effective.push($(range.markupEffectiveAtStart[i]));
+				for ( var i = 0; i < l; ++i ) {
+					effective.push( jQuery( range.markupEffectiveAtStart[ i ] ) );
 				}
 			}
 			
 			var that = this;
 			
-			$.each(this.panels, function () {
-				that.showActivePanel(this, effective);
-			});
+			jQuery.each( this.panels, function () {
+				that.showActivePanel( this, effective );
+			} );
 			
 			this.correctHeight();
 		},
@@ -308,24 +303,24 @@ define([
 			var that = this;
 			var $container = this.container;
 			
-			Aloha.bind('aloha-selection-changed', function(event, rangeObject) {
-				that.checkActivePanels(rangeObject);
-			});
+			Aloha.bind( 'aloha-selection-changed', function( event, range ) {
+				that.checkActivePanels( range );
+			} );
 			
-			$container.mousedown(function(e) {
+			$container.mousedown( function( e ) {
 				e.originalEvent.stopSelectionUpdate = true;
 				Aloha.eventHandled = true;
 				//e.stopSelectionUpdate = true;
-			});
+			} );
 			
-			$container.mouseup(function (e) {
+			$container.mouseup( function ( e ) {
 				e.originalEvent.stopSelectionUpdate = true;
 				Aloha.eventHandled = false;
-			});
+			} );
 			
-			Aloha.bind("aloha-editable-deactivated", function(event, params) { 
+			Aloha.bind( 'aloha-editable-deactivated', function ( event, params ) { 
 				that.checkActivePanels();
-			});
+			} );
 		},
 		
 		/**
@@ -338,7 +333,7 @@ define([
 			var height = this.container.find(nsSel('inner')).height() - (15 * 2);
 			var panels = [];
 			
-			$.each(this.panels, function () {
+			jQuery.each(this.panels, function () {
 				if (this.isActive) {
 					panels.push(this);
 				}
@@ -417,13 +412,13 @@ define([
 			var count = 0;
 			var li = panel.content.parent('li');
 			var activeOn = panel.activeOn;
-			var effective = $();
+			var effective = jQuery();
 			
 			for (var i = 0; i < j; ++i) {
 				if (activeOn(elements[i])) {
 					++count;
 					if (elements[i]) {
-						$.merge(effective, elements[i]);
+						jQuery.merge(effective, elements[i]);
 					}
 				}
 			}
@@ -462,11 +457,11 @@ define([
 					icon.stop().css('marginLeft', 4);
 					
 					if (that.isOpen) {
-						$(this).removeClass(toggledClass);
+						jQuery(this).removeClass(toggledClass);
 						that.close();
 						that.isOpen = false;
 					} else {
-						$(this).addClass(toggledClass);
+						jQuery(this).addClass(toggledClass);
 						that.open();
 						that.isOpen = true;
 					}
@@ -480,7 +475,7 @@ define([
 						
 						icon.stop();
 						
-						$(this).stop().animate(
+						jQuery(this).stop().animate(
 							isRight ? {marginLeft: '-=' + (flag * 5)} : {marginRight: '-=' + (flag * 5)},
 							200
 						);
@@ -501,7 +496,7 @@ define([
 						
 						icon.stop().css(isRight ? 'left' : 'right', 5);
 						
-						$(this).stop().animate(
+						jQuery(this).stop().animate(
 							isRight ? {marginLeft: 0} : {marginRight: 0},
 							600, 'easeOutElastic'
 						);
@@ -532,7 +527,7 @@ define([
 		 * whenever the viewport is resized
 		 */
 		updateHeight: function () {
-			var h = $(window).height();
+			var h = jQuery(window).height();
 			this.container.height(h).find(nsSel('inner')).height(h);
 		},
 		
@@ -542,7 +537,7 @@ define([
 		 * significant element that we can interact with
 		 */
 		barClicked: function (ev) {
-			this.handleBarclick($(ev.target));
+			this.handleBarclick(jQuery(ev.target));
 		},
 		
 		/**
@@ -588,7 +583,7 @@ define([
 		rotateHandleIcon: function (angle, duration) {
 			var arr = this.container.find(nsSel('handle-icon'));
 			arr.animate({angle: angle}, {
-				duration : (typeof duration === 'number' || typeof duration === 'string') ? duration : 500,
+				duration : (typeof duration == 'number' || typeof duration == 'string') ? duration : 500,
 				easing   : 'easeOutExpo',
 				step     : function (val, fx) {
 					arr.css({
@@ -667,13 +662,13 @@ define([
 			
 			this.container.animate(
 				anim,
-				(typeof duration === 'number' || typeof duration === 'string')
+				(typeof duration == 'number' || typeof duration == 'string')
 					? duration : 500,
 				'easeOutExpo'
 			);
 			
 			if (!this.settings.overlayPage) {
-				$('body').animate(
+				jQuery('body').animate(
 					isRight ? {marginRight: '+=' + this.width} : {marginLeft: '+=' + this.width},
 					500, 'easeOutExpo'
 				);
@@ -681,7 +676,7 @@ define([
 			
 			this.isOpen = true;
 
-			$('body').trigger(nsClass('opened'), this);
+			jQuery('body').trigger(nsClass('opened'), this);
 			
 			return this;
 		},
@@ -701,13 +696,13 @@ define([
 			
 			this.container.animate(
 				anim,
-				(typeof duration === 'number' || typeof duration === 'string')
+				(typeof duration == 'number' || typeof duration == 'string')
 					? duration : 500,
 				'easeOutExpo'
 			);
 			
 			if (!this.settings.overlayPage) {
-				$('body').animate(
+				jQuery('body').animate(
 					isRight ? {marginRight: '-=' + this.width} : {marginLeft: '-=' + this.width},
 					500, 'easeOutExpo'
 				);
@@ -728,7 +723,7 @@ define([
 		 *							 element (the element that activated it)
 		 */
 		activatePanel: function (panel, element) {
-			if (typeof panel === 'string') {
+			if (typeof panel == 'string') {
 				panel = this.getPanelById(panel);
 			}
 			
@@ -750,7 +745,7 @@ define([
 		 * @param {Funtion} callback
 		 */
 		expandPanel: function (panel, callback) {
-			if (typeof panel === 'string') {
+			if (typeof panel == 'string') {
 				panel = this.getPanelById(panel);
 			}
 			
@@ -770,7 +765,7 @@ define([
 		 * @param {Funtion} callback
 		 */
 		collapsePanel: function (panel, callback) {
-			if (typeof panel === 'string') {
+			if (typeof panel == 'string') {
 				panel = this.getPanelById(panel);
 			}
 			
@@ -825,13 +820,13 @@ define([
 		this.id		  = null;
 		this.folds	  = {};
 		this.button	  = null;
-		this.title	  = $(renderTemplate('						 \
+		this.title	  = jQuery(renderTemplate('						 \
 			<div class="{panel-title}">							 \
 				<span class="{panel-title-arrow}"></span>		 \
 				<span class="{panel-title-text}">Untitled</span> \
 			</div>												 \
 		'));
-		this.content  = $(renderTemplate('					\
+		this.content  = jQuery(renderTemplate('					\
 			<div class="{panel-content}">					\
 				<div class="{panel-content-inner}">			\
 					<div class="{panel-content-inner-text}">\
@@ -850,7 +845,7 @@ define([
 	// ------------------------------------------------------------------------
 	// Panel prototype
 	// ------------------------------------------------------------------------
-	$.extend(Panel.prototype, {
+	jQuery.extend(Panel.prototype, {
 		
 		init: function (opts) {
 			this.setTitle(opts.title)
@@ -859,14 +854,14 @@ define([
 			delete opts.title;
 			delete opts.content;
 			
-			$.extend(this, opts);
+			jQuery.extend(this, opts);
 			
 			if (!this.id) {
 				this.id = nsClass(++uid);
 			}
 			
 			var li = this.element =
-				$('<li id="' +this.id + '">')
+				jQuery('<li id="' +this.id + '">')
 					.append(this.title, this.content);
 			
 			if (this.expanded){
@@ -883,7 +878,7 @@ define([
 				.css('-moz-user-select', 'none')
 				.each(function() {this.onselectstart = function() {return false;};});
 			
-			if (typeof this.onInit === 'function') {
+			if (typeof this.onInit == 'function') {
 				this.onInit.apply(this);
 			}
 		},
@@ -910,22 +905,22 @@ define([
 		 * Normalizes the activeOn property into a predicate function
 		 */
 		coerceActiveOn: function () {
-			if (typeof this.activeOn !== 'function') {
+			if (typeof this.activeOn != 'function') {
 				var activeOn = this.activeOn;
 				
 				this.activeOn = (function () {
 					var typeofActiveOn = typeof activeOn,
 						fn;
 					
-					if (typeofActiveOn === 'boolean') {
+					if (typeofActiveOn == 'boolean') {
 						fn = function () {
 							return activeOn;
 						};
-					} else if (typeofActiveOn === 'undefined') {
+					} else if (typeofActiveOn == 'undefined') {
 						fn = function () {
 							return true;
 						};
-					} else if (typeofActiveOn === 'string') {
+					} else if (typeofActiveOn == 'string') {
 						fn = function (el) {
 							return el ? el.is(activeOn) : false;
 						};
@@ -947,7 +942,7 @@ define([
 			this.isActive = true;
 			this.content.parent('li').show().removeClass(nsClass('deactivated'));
 			this.effectiveElement = effective;
-			if (typeof this.onActivate === 'function') {
+			if (typeof this.onActivate == 'function') {
 				this.onActivate.call(this, effective);
 			}
 		},
@@ -1004,7 +999,7 @@ define([
 			this.content.stop().animate(
 				{height: 5}, 250, 'easeOutExpo',
 				function () {
-					if (typeof callback === 'function') {
+					if (typeof callback == 'function') {
 						callback.call(that);
 					}
 				}
@@ -1045,7 +1040,7 @@ define([
 		rotateTitleIcon: function (angle, duration) {
 			var arr = this.title.find(nsSel('panel-title-arrow'));
 			arr.animate({angle: angle}, {
-				duration : (typeof duration === 'number') ? duration : 500,
+				duration : (typeof duration == 'number') ? duration : 500,
 				easing   : 'easeOutExpo',
 				step     : function (val, fx) {
 					arr.css({
@@ -1087,13 +1082,13 @@ define([
 						pathRev.push(path[l]);
 					}
 					content.push(supplant(
-						'<div class="aloha-sidebar-panel-parent">\
-							<div class="aloha-sidebar-panel-parent-path">{path}</div>\
-							<div class="aloha-sidebar-panel-parent-content aloha-sidebar-opened">{content}</div>\
-						 </div>',
+						'<div class="aloha-sidebar-panel-parent">' +
+							'<div class="aloha-sidebar-panel-parent-path">{path}</div>' +
+							'<div class="aloha-sidebar-panel-parent-content aloha-sidebar-opened">{content}</div>' +
+						 '</div>',
 						{
 							path	: pathRev.join(''),
-							content	: (typeof renderer === 'function') ? renderer(el) : '----'
+							content	: (typeof renderer == 'function') ? renderer(el) : '----'
 						}
 					));
 				}
@@ -1103,8 +1098,8 @@ define([
 			
 			this.setContent(content.join(''));
 			
-			$('.aloha-sidebar-panel-parent-path').click(function () {
-				var c = $(this).parent().find('.aloha-sidebar-panel-parent-content');
+			jQuery('.aloha-sidebar-panel-parent-path').click(function () {
+				var c = jQuery(this).parent().find('.aloha-sidebar-panel-parent-content');
 				
 				if (c.hasClass('aloha-sidebar-opened')) {
 					c.hide().removeClass('aloha-sidebar-opened');

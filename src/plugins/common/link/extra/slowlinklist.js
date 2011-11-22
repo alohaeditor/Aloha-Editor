@@ -101,7 +101,7 @@ function ( jQuery, repository ) {
 				this.urlset[ i ] = new Aloha.RepositoryDocument( e );
 		    }
 			
-		    this.repositoryName = 'Linklist';
+		    this.repositoryName = 'Slow Linklist';
 		},
 		
 		/**

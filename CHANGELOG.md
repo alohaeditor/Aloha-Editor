@@ -2,9 +2,34 @@
 
 This document is to serve as a "what has been done" in terms of the [Roadmap](http://aloha-editor.org/wiki/Roadmap)
 
+## 0.20.0-RC8 - 2011/11/21
+- link-plugin: Fixed problem with auto-suggestion mechanism for the link input field causing the the wrong href value to be taken.
+
+## 0.20.0-RC7 - 2011/11
+
+- link-plugin: Fixed javascript error that occured when linking items using the repository browser in Internet Explorer 8.
+- boilerplate demo: Fixed javascript error that occured in Internet Explorer 8.
+- metaview-plugin: Fixed metaview plugin to use shared flags icon from flag-icons plugin, for consistancy between plugins.
+- wai-lang-plugin: Improved wai-lang language selection ui. Organized flags to be in a plugin their own plugin so that the icons can be shared between other components.
+- link-plugin: The autocomplete list was not closed properly when esc was pressed.
+
+## 0.20.0-RC6 - 2011/11
+
+- link-plugin/linkbrowser-plugin: Previously the highlight css for a link was not removed after an item was selected by the linkbrowser. Now highlight css will be correctly removed and the cursor will be placed back into the content. Previously the selection was lost.
+- table-plugin: Fixed a bug that deactivated tables after 5 seconds. This issue was caused by a failure within the table registry. Instead of loading the cloned object the original table was loaded and deactivated.
+
+## 0.20.0-RC5 - 2011/11
+
+- link-plugin: The link plugin will no longer remove repository data attributes from the link when the user clicks a link and leaves it imediately. Previously those repository data attributes where removed when the repository lookup was not finished on time (before the user left the link). For the user the repository link was transformed to a normal link. This is now fixed.
+
+
+## 0.20.0-RC4 - 2011/11
+
+- FloatingMenu: The FloatingMenu will now check the Aloha.settings.floatingmenu.topalignOffset parameter to be not undefined, as checking for 'number' was too strict
+
 ## 0.20.0-RC3 - 2011/11
 
-- link-plugin: the default behaviour for the link plugin has changed. Links with empty hrefs will not be removed automatically any longer - removing the current href has to be confirmed by pressing enter to delete the link itself. Use the unlink button to remove the link directly.
+- link-plugin: The default behaviour for the link plugin has changed. Links with empty hrefs will not be removed automatically any longer - removing the current href has to be confirmed by pressing enter to delete the link itself. Use the unlink button to remove the link directly.
 
 ## 0.20.0-RC2 - 2011/11
 
