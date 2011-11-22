@@ -321,20 +321,26 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 			this.createEditablesIfNeeded();
 			this.renderDragHandlesIfNeeded();
 			if (this.isDraggable()) {
+				/**
+				 * This function returns the number of additional DOM elements inserted.
+				 * This is "numberOfSpansCreated - 1" (because one text node has been initially there)
+				 */
 				var insertSpans = function(el) {
 					// If node just contains empty strings, we do not do anything.
 					// Use ECMA-262 Edition 3 String and RegExp features
 					if (!/[^\t\n\r ]/.test(el.textContent)) {
-						return;
+						return 0;
 					}
 					var newNodes = document.createDocumentFragment();
-					for (var i=0; i<el.textContent.length; i++) {
+					var l = el.textContent.length;
+					for (var i=0; i<l; i++) {
 						var x = document.createElement('span');
 						x.setAttribute('data-i', i);
 						x.innerHTML = el.textContent.substr(i, 1);
 						newNodes.appendChild(x);
 					}
 					el.parentNode.replaceChild(newNodes, el);
+					return l-1;
 				}
 				var convert, convertBack;
 				convert = function(el) {
@@ -342,17 +348,14 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 					for(var i=0, l=el.childNodes.length; i < l; i++) {
 						child = el.childNodes[i];
 						if (child.nodeType === 1) {
-							if (!!~child.className.indexOf('aloha-block')) {
-								// If child has the class "aloha-block", we skip the element
-								continue;
+							if (!~child.className.indexOf('aloha-block') && child.attributes['data-i'] === undefined) {
+								// We only recurse if child does NOT have the class "aloha-block", and is NOT data-i
+								convert(child);
 							}
-							if (child.attributes['data-i'] !== undefined) {
-								// if data-i is set, we don't convert again
-								continue;
-							}
-							convert(child); // Recursion
 						} else if (child.nodeType === 3) {
-							insertSpans(child);
+							var numberOfSpansInserted = insertSpans(child);
+							i += numberOfSpansInserted;
+							l += numberOfSpansInserted;
 						}
 					}
 				};
