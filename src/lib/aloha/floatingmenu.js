@@ -356,6 +356,11 @@ function(Aloha, jQuery, Ext, Class, console) {
 		topalignOffset: 90,
 		
 		/**
+		 * topalign offset to be used for topalign behavior
+		 */
+		horizontalOffset: 0,
+		
+		/**
 		 * will only be hounoured when behaviour is set to 'topalign'. Adds a margin,
 		 * so the floating menu is not directly attached to the top of the page
 		 */
@@ -396,6 +401,9 @@ function(Aloha, jQuery, Ext, Class, console) {
 				}
 				if (typeof Aloha.settings.floatingmenu.topalignOffset !== 'undefined') {
 					this.topalignOffset = Aloha.settings.floatingmenu.topalignOffset;
+				}
+				if (typeof Aloha.settings.floatingmenu.horizontalOffset !== 'undefined') {
+					this.horizontalOffset = Aloha.settings.floatingmenu.horizontalOffset;
 				}
 				if (typeof Aloha.settings.floatingmenu.marginTop === 'number') {
 				    this.marginTop = Aloha.settings.floatingmenu.marginTop;
@@ -734,7 +742,7 @@ function(Aloha, jQuery, Ext, Class, console) {
 				Aloha.bind('aloha-editable-activated', function(event, data) {
 					var p = data.editable.obj.offset();
 					p.top -= that.topalignOffset;
-
+					p.left += that.horizontalOffset;
 			    if (p.top < jQuery(document).scrollTop()) {
 					// scrollpos is below top of editable
 					that.obj.css('top', jQuery(document).scrollTop() + that.marginTop);
@@ -763,6 +771,7 @@ function(Aloha, jQuery, Ext, Class, console) {
 					// scroll pos is above top of editable
 					if (that.behaviour === 'topalign') {
 						pos.top = Aloha.activeEditable.obj.offset().top - that.topalignOffset;
+						pos.left = that.horizontalOffset;
 					} else {
 						pos.top -= fmHeight + 6;
 					}
