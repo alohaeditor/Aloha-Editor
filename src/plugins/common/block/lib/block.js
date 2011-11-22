@@ -339,15 +339,7 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 					for (var i=0; i<l; i++) {
 						x = document.createElement('span');
 						character = text.substr(i, 1);
-						if (!/[^\t\n\r ]/.test(character)) {
-							// character contains all-whitespace
-							// For IE, we need to render it with a &nbsp; as it seems.
-							// However, IE does not wrap newlines here...
-							x.setAttribute('data-ws', '1');
-							x.innerHTML = '&nbsp;';
-						} else {
-							x.innerHTML = character;
-						}
+						x.appendChild(document.createTextNode(character));
 						x.setAttribute('data-i', i);
 
 						newNodes.appendChild(x);
@@ -391,12 +383,7 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 								if (currentlyTraversingExpandedText) {
 									// We are currently traversing the expanded text nodes, so we collect their data
 									// together in the currentText variable
-									if (child.attributes['data-ws']) {
-										console.log("data-ws");
-										currentText += ' ';
-									} else {
-										currentText += child.innerHTML;
-									}
+									currentText += child.innerHTML;
 
 									if (lastNode) {
 										nodesToDelete.push(lastNode);
@@ -447,8 +434,7 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 								}
 							}
 						});
-					},
-					containment: this.$element.parents('.aloha-editable').first()
+					}
 				});
 			}
 		},
