@@ -77,10 +77,11 @@
       <div id="mainCol">
           <div class="headerSection">
             <h2>Aloha Core Plugins</h2>
-<p>After reading this guide, you will:</p>
+<p>After reading this guide, you will</p>
 <ul>
-	<li>know about the core plugins of Aloha Editor</li>
-	<li>know which components are provided by each of them</li>
+	<li>know which plugins are available and which functionality they provide</li>
+	<li>know which components are provided by each plugin</li>
+	<li>how to configure plugins</li>
 </ul>
 
           </div>
@@ -170,7 +171,109 @@ Aloha.plugins.link: {
 	<li>removeAbbr &#8211; remove abbreviation from selection</li>
 </ul>
 <h4 id="configuration-settings">3.2 Configuration settings</h4>
-<p>Currently there is no configuration for the Abbr Plugin.</p>
+<p>Currently there are no configuration options for the Abbr Plugin.</p>
+<h3 id="align-plugin">4 Align Plugin</h3>
+<div class="warning"><p>The Align Plugin is not working correctly right now.</p></div>
+<p>The Align Plugin allows you to align contents left, right, center, or justify the flow of text. It provides four components:</p>
+<h4 id="components">4.1 Components</h4>
+<ul>
+	<li>alignLeft &#8211; align selected text left</li>
+	<li>alignRight &#8211; align selected text right</li>
+	<li>alignCenter &#8211; center selected text</li>
+	<li>alignJustify &#8211; justify selected text</li>
+</ul>
+<h4 id="configuration-settings">4.2 Configuration settings</h4>
+<p>The align plugin allows you to configure which of it&#8217;s buttons are available:</p>
+<div class="code_container">
+<pre class="brush: javascript; gutter: false; toolbar: false">
+
+Aloha.settings.plugins.align.config = {
+	alignment: [ 'right', 'left', 'center', 'justify' ]
+};
+</pre></div><h3 id="block-plugin">5 Block Plugin</h3>
+<div class="warning"><p>The Block Plugin is still being developed. <span class="caps">TODO</span>: update.</p></div>
+<h3 id="characterpicker-plugin">6 Characterpicker Plugin</h3>
+<p>The Characterpicker Plugin allows you to insert special characters into your text. Position your cursor, click the icon and choose the character you&#8217;d like to insert from the overlay menu.</p>
+<h4 id="components">6.1 Components</h4>
+<ul>
+	<li>characterpicker &#8211; brings up the overlay to select a character</li>
+</ul>
+<h4 id="configuration-settings">6.2 Configuration settings</h4>
+<div class="code_container">
+<pre class="brush: javascript; gutter: false; toolbar: false">
+
+// specify characters for insertion in a space-separated string
+// this is the basic set of characters available for the plugin
+Aloha.settings.plugins.characterpicker.characters = '&amp;#38; &amp;#34; &amp;#162; &amp;#8364; &amp;#163; &amp;#165; &amp;#169; &amp;#174; &amp;#8482; &amp;#8240; &amp;#181; &amp;#183; &amp;#8226; &amp;#8230; &amp;#8242; &amp;#8243; &amp;#167; &amp;#182; &amp;#223; &amp;#8249; &amp;#8250; &amp;#171; &amp;#187; &amp;#8216; &amp;#8217; &amp;#8220; &amp;#8221; &amp;#8218; &amp;#8222; &amp;#60; &amp;#62; &amp;#8804; &amp;#8805; &amp;#8211; &amp;#8212; &amp;#175; &amp;#8254; &amp;#164; &amp;#166; &amp;#168; &amp;#161; &amp;#191; &amp;#710; &amp;#732; &amp;#176; &amp;#8722; &amp;#177; &amp;#247; &amp;#8260; &amp;#215; &amp;#185; &amp;#178; &amp;#179; &amp;#188; &amp;#189; &amp;#190; &amp;#402; &amp;#8747; &amp;#8721; &amp;#8734; &amp;#8730; &amp;#8764; &amp;#8773; &amp;#8776; &amp;#8800; &amp;#8801; &amp;#8712; &amp;#8713; &amp;#8715; &amp;#8719; &amp;#8743; &amp;#8744; &amp;#172; &amp;#8745; &amp;#8746; &amp;#8706; &amp;#8704; &amp;#8707; &amp;#8709; &amp;#8711; &amp;#8727; &amp;#8733; &amp;#8736; &amp;#180; &amp;#184; &amp;#170; &amp;#186; &amp;#8224; &amp;#8225; &amp;#192; &amp;#193; &amp;#194; &amp;#195; &amp;#196; &amp;#197; &amp;#198; &amp;#199; &amp;#200; &amp;#201; &amp;#202; &amp;#203; &amp;#204; &amp;#205; &amp;#206; &amp;#207; &amp;#208; &amp;#209; &amp;#210; &amp;#211; &amp;#212; &amp;#213; &amp;#214; &amp;#216; &amp;#338; &amp;#352; &amp;#217; &amp;#218; &amp;#219; &amp;#220; &amp;#221; &amp;#376; &amp;#222; &amp;#224; &amp;#225; &amp;#226; &amp;#227; &amp;#228; &amp;#229; &amp;#230; &amp;#231; &amp;#232; &amp;#233; &amp;#234; &amp;#235; &amp;#236; &amp;#237; &amp;#238; &amp;#239; &amp;#240; &amp;#241; &amp;#242; &amp;#243; &amp;#244; &amp;#245; &amp;#246; &amp;#248; &amp;#339; &amp;#353; &amp;#249; &amp;#250; &amp;#251; &amp;#252; &amp;#253; &amp;#254; &amp;#255; &amp;#913; &amp;#914; &amp;#915; &amp;#916; &amp;#917; &amp;#918; &amp;#919; &amp;#920; &amp;#921; &amp;#922; &amp;#923; &amp;#924; &amp;#925; &amp;#926; &amp;#927; &amp;#928; &amp;#929; &amp;#931; &amp;#932; &amp;#933; &amp;#934; &amp;#935; &amp;#936; &amp;#937; &amp;#945; &amp;#946; &amp;#947; &amp;#948; &amp;#949; &amp;#950; &amp;#951; &amp;#952; &amp;#953; &amp;#954; &amp;#955; &amp;#956; &amp;#957; &amp;#958; &amp;#959; &amp;#960; &amp;#961; &amp;#962; &amp;#963; &amp;#964; &amp;#965; &amp;#966; &amp;#967; &amp;#968; &amp;#969; &amp;#8501; &amp;#982; &amp;#8476; &amp;#977; &amp;#978; &amp;#8472; &amp;#8465; &amp;#8592; &amp;#8593; &amp;#8594; &amp;#8595; &amp;#8596; &amp;#8629; &amp;#8656; &amp;#8657; &amp;#8658; &amp;#8659; &amp;#8660; &amp;#8756; &amp;#8834; &amp;#8835; &amp;#8836; &amp;#8838; &amp;#8839; &amp;#8853; &amp;#8855; &amp;#8869; &amp;#8901; &amp;#8968; &amp;#8969; &amp;#8970; &amp;#8971; &amp;#9001; &amp;#9002; &amp;#9674; &amp;#9824; &amp;#9827; &amp;#9829; &amp;#9830;';
+</pre></div><h3 id="commands-plugin">7 Commands Plugin</h3>
+<p>The Commands Plugin has no user interface as it just provides the inserthtml command for use with the paste plugin.</p>
+<h3 id="contenthandler-plugin">8 Contenthandler Plugin</h3>
+<p>The Contenthandler Plugin has no user interface and is used in conjunction with the paste plugin to be able to handle pasted content from Microsoft Word and the like. Currently it provides three so called &#8220;Content Handlers&#8221; which will be used to cleanup html content on various occasions like pasting or when initializing an editable. Those contenthandlers are:</p>
+<ul>
+	<li>word</li>
+	<li>generic</li>
+	<li>sanitize</li>
+</ul>
+<h4 id="word-content-handler">8.1 Word Content Handler</h4>
+<p>The Word Content Handler will detect content pasted from Microsoft Word 2003 and newer versions. It transforms and cleans the pasted html code so that deteriorating effects on mental health by staring at bogus and totally fubar html code can be kept to an acceptable minimum. Therefore it will</p>
+<ul>
+	<li>remove all &#8220;mso-whatever&#8221; classes</li>
+	<li>remove all divs from the pasted content</li>
+	<li>remove font tags</li>
+	<li>convert bullet points to real html lists with proper nesting</li>
+	<li>transform titles to h1 and subtitles to h2 tags</li>
+</ul>
+<h4 id="generic-content-handler">8.2 Generic Content Handler</h4>
+<p>The Generic Content Handler is a bit less generic than his name might suggest as he will apply the following cleaning actions:</p>
+<ul>
+	<li>clean lists by removing any non-ul or li children</li>
+	<li>cleaning tables by removing the following attributes
+	<ul>
+		<li>border</li>
+		<li>cellpadding</li>
+		<li>cellspacing</li>
+		<li>width</li>
+		<li>height</li>
+		<li>valign</li>
+	</ul></li>
+	<li>remove comments</li>
+	<li>unwrap font and span tags</li>
+	<li>remove styles</li>
+	<li>remove namespaced elements</li>
+	<li>transform formattings by turning
+	<ul>
+		<li><tt>&lt;strong&gt;</tt> tags into <tt>&lt;b&gt;</tt> tags</li>
+		<li><tt>&lt;em&gt;</tt> to <tt>&lt;i&gt;</tt></li>
+		<li><tt>&lt;s&gt;</tt> to <tt>&lt;del&gt;</tt></li>
+		<li>and by removing <tt>&lt;u&gt;</tt> tags (as underline text decoration should solely be used for links)</li>
+	</ul></li>
+</ul>
+<h4 id="sanitize-content-handler">8.3 Sanitize Content Handler</h4>
+<p>The Sanitize Content Handler will remove all dom elements and attributes not covered by it&#8217;s configuration. You may specify your own configuration based on these default settings:</p>
+<div class="code_container">
+<pre class="brush: javascript; gutter: false; toolbar: false">
+
+Aloha.settings.contentHandler.sanitize = {
+	// elements allowed in the content
+	elements: [
+		'a', 'abbr', 'b', 'blockquote', 'br', 'cite', 'code', 'dd', 'dl', 'dt', 'em',
+		'i', 'li', 'ol', 'p', 'pre', 'q', 'small', 'strike', 'strong', 'sub',
+		'sup', 'u', 'ul' ],
+	// attributes allowed for specific elements
+	attributes: {
+		'a' : ['href'],
+		'blockquote' : ['cite'],
+		'q' : ['cite'],
+		'abbr': ['title']
+	},
+	// protocols allowed for certain attributes of elements
+	protocols: {
+		'a' : {'href': ['ftp', 'http', 'https', 'mailto', '__relative__']},
+		'blockquote' : {'cite': ['http', 'https', '__relative__']},
+		'q' : {'cite': ['http', 'https', '__relative__']}
+	}
+}
+</pre></div><h3 id="highlight-editables-plugin">9 Highlight Editables Plugin</h3>
 <ul>
 	<li>September 1, 2011: Initial version by <a href="credits.html#haymo">Haymo Meran</a> and <a href="credits.html#scottgonzales">Scott Gonzales</a></li>
 </ul>
@@ -188,7 +291,20 @@ Aloha.plugins.link: {
 </a></li></ul></li><li><a href="#abbr-plugin"><p>Abbr Plugin</p>
 </a><ul><li><a href="#components"><p>Components</p>
 </a></li> <li><a href="#configuration-settings"><p>Configuration settings</p>
-</a></li></ul></li>
+</a></li></ul></li><li><a href="#align-plugin"><p>Align Plugin</p>
+</a><ul><li><a href="#components"><p>Components</p>
+</a></li> <li><a href="#configuration-settings"><p>Configuration settings</p>
+</a></li></ul></li><li><a href="#block-plugin"><p>Block Plugin</p>
+</a></li><li><a href="#characterpicker-plugin"><p>Characterpicker Plugin</p>
+</a><ul><li><a href="#components"><p>Components</p>
+</a></li> <li><a href="#configuration-settings"><p>Configuration settings</p>
+</a></li></ul></li><li><a href="#commands-plugin"><p>Commands Plugin</p>
+</a></li><li><a href="#contenthandler-plugin"><p>Contenthandler Plugin</p>
+</a><ul><li><a href="#word-content-handler"><p>Word Content Handler</p>
+</a></li> <li><a href="#generic-content-handler"><p>Generic Content Handler</p>
+</a></li> <li><a href="#sanitize-content-handler"><p>Sanitize Content Handler</p>
+</a></li></ul></li><li><a href="#highlight-editables-plugin"><p>Highlight Editables Plugin</p>
+</a></li>
           </ol>
         </div>
     </div>

@@ -1,9 +1,10 @@
 h2. Aloha Core Plugins
 
-After reading this guide, you will:
+After reading this guide, you will
 
-* know about the core plugins of Aloha Editor
-* know which components are provided by each of them
+* know which plugins are available and which functionality they provide
+* know which components are provided by each plugin
+* how to configure plugins
 
 endprologue.
 
@@ -101,7 +102,125 @@ h4. Components
 
 h4. Configuration settings
 
-Currently there is no configuration for the Abbr Plugin.
+Currently there are no configuration options for the Abbr Plugin.
+
+h3. Align Plugin
+
+WARNING: The Align Plugin is not working correctly right now.
+
+The Align Plugin allows you to align contents left, right, center, or justify the flow of text. It provides four components:
+
+h4. Components
+
+* alignLeft - align selected text left
+* alignRight - align selected text right
+* alignCenter - center selected text
+* alignJustify - justify selected text
+
+h4. Configuration settings
+
+The align plugin allows you to configure which of it's buttons are available:
+
+<javascript>
+Aloha.settings.plugins.align.config = {
+	alignment: [ 'right', 'left', 'center', 'justify' ]
+};
+</javascript>
+
+h3. Block Plugin
+
+WARNING: The Block Plugin is still being developed.
+TODO: update.
+
+h3. Characterpicker Plugin
+
+The Characterpicker Plugin allows you to insert special characters into your text. Position your cursor, click the icon and choose the character you'd like to insert from the overlay menu.
+
+h4. Components
+
+* characterpicker - brings up the overlay to select a character
+
+h4. Configuration settings
+
+<javascript>
+// specify characters for insertion in a space-separated string
+// this is the basic set of characters available for the plugin
+Aloha.settings.plugins.characterpicker.characters = '&#38; &#34; &#162; &#8364; &#163; &#165; &#169; &#174; &#8482; &#8240; &#181; &#183; &#8226; &#8230; &#8242; &#8243; &#167; &#182; &#223; &#8249; &#8250; &#171; &#187; &#8216; &#8217; &#8220; &#8221; &#8218; &#8222; &#60; &#62; &#8804; &#8805; &#8211; &#8212; &#175; &#8254; &#164; &#166; &#168; &#161; &#191; &#710; &#732; &#176; &#8722; &#177; &#247; &#8260; &#215; &#185; &#178; &#179; &#188; &#189; &#190; &#402; &#8747; &#8721; &#8734; &#8730; &#8764; &#8773; &#8776; &#8800; &#8801; &#8712; &#8713; &#8715; &#8719; &#8743; &#8744; &#172; &#8745; &#8746; &#8706; &#8704; &#8707; &#8709; &#8711; &#8727; &#8733; &#8736; &#180; &#184; &#170; &#186; &#8224; &#8225; &#192; &#193; &#194; &#195; &#196; &#197; &#198; &#199; &#200; &#201; &#202; &#203; &#204; &#205; &#206; &#207; &#208; &#209; &#210; &#211; &#212; &#213; &#214; &#216; &#338; &#352; &#217; &#218; &#219; &#220; &#221; &#376; &#222; &#224; &#225; &#226; &#227; &#228; &#229; &#230; &#231; &#232; &#233; &#234; &#235; &#236; &#237; &#238; &#239; &#240; &#241; &#242; &#243; &#244; &#245; &#246; &#248; &#339; &#353; &#249; &#250; &#251; &#252; &#253; &#254; &#255; &#913; &#914; &#915; &#916; &#917; &#918; &#919; &#920; &#921; &#922; &#923; &#924; &#925; &#926; &#927; &#928; &#929; &#931; &#932; &#933; &#934; &#935; &#936; &#937; &#945; &#946; &#947; &#948; &#949; &#950; &#951; &#952; &#953; &#954; &#955; &#956; &#957; &#958; &#959; &#960; &#961; &#962; &#963; &#964; &#965; &#966; &#967; &#968; &#969; &#8501; &#982; &#8476; &#977; &#978; &#8472; &#8465; &#8592; &#8593; &#8594; &#8595; &#8596; &#8629; &#8656; &#8657; &#8658; &#8659; &#8660; &#8756; &#8834; &#8835; &#8836; &#8838; &#8839; &#8853; &#8855; &#8869; &#8901; &#8968; &#8969; &#8970; &#8971; &#9001; &#9002; &#9674; &#9824; &#9827; &#9829; &#9830;';
+</javascript>
+
+h3. Commands Plugin
+
+The Commands Plugin has no user interface as it just provides the inserthtml command for use with the paste plugin.
+
+h3. Contenthandler Plugin
+
+The Contenthandler Plugin has no user interface and is used in conjunction with the paste plugin to be able to handle pasted content from Microsoft Word and the like. Currently it provides three so called "Content Handlers" which will be used to cleanup html content on various occasions like pasting or when initializing an editable. Those contenthandlers are:
+
+* word
+* generic
+* sanitize
+
+h4. Word Content Handler
+
+The Word Content Handler will detect content pasted from Microsoft Word 2003 and newer versions. It transforms and cleans the pasted html code so that deteriorating effects on mental health by staring at bogus and totally fubar html code can be kept to an acceptable minimum. Therefore it will
+
+* remove all "mso-whatever" classes
+* remove all divs from the pasted content
+* remove font tags
+* convert bullet points to real html lists with proper nesting
+* transform titles to h1 and subtitles to h2 tags
+
+h4. Generic Content Handler
+
+The Generic Content Handler is a bit less generic than his name might suggest as he will apply the following cleaning actions:
+
+* clean lists by removing any non-ul or li children
+* cleaning tables by removing the following attributes
+** border
+** cellpadding
+** cellspacing
+** width
+** height
+** valign
+* remove comments
+* unwrap font and span tags
+* remove styles
+* remove namespaced elements
+* transform formattings by turning
+** +<strong>+ tags into +<b>+ tags
+** +<em>+ to +<i>+
+** +<s>+ to +<del>+
+** and by removing +<u>+ tags (as underline text decoration should solely be used for links)
+
+h4. Sanitize Content Handler
+
+The Sanitize Content Handler will remove all dom elements and attributes not covered by it's configuration. You may specify your own configuration based on these default settings:
+
+<javascript>
+Aloha.settings.contentHandler.sanitize = {
+	// elements allowed in the content
+	elements: [
+		'a', 'abbr', 'b', 'blockquote', 'br', 'cite', 'code', 'dd', 'dl', 'dt', 'em',
+		'i', 'li', 'ol', 'p', 'pre', 'q', 'small', 'strike', 'strong', 'sub',
+		'sup', 'u', 'ul' ],
+	// attributes allowed for specific elements
+	attributes: {
+		'a' : ['href'],
+		'blockquote' : ['cite'],
+		'q' : ['cite'],
+		'abbr': ['title']
+	},
+	// protocols allowed for certain attributes of elements
+	protocols: {
+		'a' : {'href': ['ftp', 'http', 'https', 'mailto', '__relative__']},
+		'blockquote' : {'cite': ['http', 'https', '__relative__']},
+		'q' : {'cite': ['http', 'https', '__relative__']}
+	}
+}
+</javascript>
+
+h3. Highlight Editables Plugin
+
 
 
 * September 1, 2011: Initial version by "Haymo Meran":credits.html#haymo and "Scott Gonzales":credits.html#scottgonzales
