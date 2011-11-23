@@ -44,7 +44,7 @@ function( TestUtils) {
 				}
 			},
 
-			{ module : 'Initialization' },
+			{module : 'Initialization'},
 			///////////////////////////////////////////////////////////////////////
 
 			{
@@ -144,7 +144,7 @@ function( TestUtils) {
 				}
 			},
 
-			{ module : 'Block API' },
+			{module : 'Block API'},
 			///////////////////////////////////////////////////////////////////////
 			{
 				exclude   : false,
@@ -230,7 +230,7 @@ function( TestUtils) {
 				}
 			},
 
-			{ module : 'BlockManager API' },
+			{module : 'BlockManager API'},
 			///////////////////////////////////////////////////////////////////////
 
 			{
@@ -266,7 +266,30 @@ function( TestUtils) {
 				}
 			},
 
-			{ module : 'Copy/Paste' },
+			{module : 'Drag/Drop helpers'},
+			///////////////////////////////////////////////////////////////////////
+			{
+				exclude   : false,
+				desc      : 'DragDrop handlers',
+				start     : '<div id="myDefaultBlock">Some default block content</div>',
+				assertions: 7,
+				operation : function(testContainer, testcase) {
+					jQuery('#myDefaultBlock').alohaBlock({
+						'aloha-block-type': 'DefaultBlock'
+					});
+
+					var block = BlockManager.getBlock(jQuery('#myDefaultBlock', testContainer));
+					deepEqual(block._dd_splitText('Hello world'), ['Hello', ' world']);
+					deepEqual(block._dd_splitText('Hello world '), ['Hello', ' world ']);
+					deepEqual(block._dd_splitText(' Hello world'), [' Hello', ' world']);
+					deepEqual(block._dd_splitText(' Hello, world'), [' Hello', ', ', 'world']);
+					deepEqual(block._dd_splitText(' Hello, world!'), [' Hello', ', ', 'world', '!']);
+					deepEqual(block._dd_splitText(' Hello, world...'), [' Hello', ', ', 'world', '...']);
+					deepEqual(block._dd_splitText(' Hello, world ...'), [' Hello', ', ', 'world', ' ...']);
+				}
+			},
+
+			{module : 'Copy/Paste'},
 			///////////////////////////////////////////////////////////////////////
 
 			{
@@ -335,7 +358,7 @@ function( TestUtils) {
 				}
 			},
 
-			{ module : 'Cut/Paste' },
+			{module : 'Cut/Paste'},
 			///////////////////////////////////////////////////////////////////////
 
 			{
@@ -410,7 +433,7 @@ function( TestUtils) {
 					jQuery(document).keydown(keyDownListener);
 				}
 			},
-			{ exclude : true } // ... just catch trailing commas
+			{exclude : true} // ... just catch trailing commas
 		];
 
 		var runOnlyTestId = null;

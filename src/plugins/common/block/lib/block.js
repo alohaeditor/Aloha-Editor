@@ -379,17 +379,17 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 								var $dropReferenceNode = jQuery(lastHoveredCharacter);
 
 								if ($dropReferenceNode.is('.aloha-block-droppable-right')) {
-
-									if ($dropReferenceNode.next('[data-i]').length > 0) {
-										// If not the last element, insert space in front of next element (i.e. after the moved block)
-										$dropReferenceNode.next('[data-i]').html(' ' + $dropReferenceNode.next('[data-i]').html());
-									}
+									$dropReferenceNode.html($dropReferenceNode.html() + ' ');
 
 									// Move draggable after drop reference node
 									$dropReferenceNode.after(ui.draggable);
 								} else {
 									// Insert space in the beginning of the drop reference node
-									$dropReferenceNode.html(' ' + $dropReferenceNode.html());
+									if ($dropReferenceNode.prev('[data-i]').length > 0) {
+										// If not the last element, insert space in front of next element (i.e. after the moved block)
+										$dropReferenceNode.prev('[data-i]').html($dropReferenceNode.prev('[data-i]').html() + ' ');
+									}
+
 									// Move draggable before drop reference node
 									$dropReferenceNode.before(ui.draggable);
 								}
@@ -429,6 +429,37 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 		},
 
 		/**
+		 * Helper which splits text on word boundaries, adding whitespaces to the following element.
+		 * Examples:
+		 * - "Hello world" -> ["Hello", " world"]
+		 * - " Hello world" -> [" Hello", " world"]
+		 * --> see the unit tests for the specification
+		 */
+		_dd_splitText: function(text) {
+			var textParts = text.split(/(?=\b)/);
+			var cleanedTextParts = [];
+
+			var isWhitespace = false;
+			for (var i=0,l=textParts.length; i<l; i++) {
+				if (!/[^\t\n\r ]/.test(textParts[i])) {
+					// if the current text part is just whitespace, we add a flag...
+					isWhitespace = true;
+				} else {
+					if (isWhitespace) {
+						// we have a whitespace to add
+						cleanedTextParts.push(' ' + textParts[i]);
+						isWhitespace = false;
+					} else {
+						cleanedTextParts.push(textParts[i]);
+					}
+				}
+			}
+			if (isWhitespace) {
+				cleanedTextParts[cleanedTextParts.length - 1] += ' ';
+			}
+			return cleanedTextParts;
+		},
+		/**
 		 * This is a helper for _dd_traverseDomTreeAndWrapCharactersWithSpans,
 		 * performing the actual conversion.
 		 *
@@ -445,7 +476,8 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 			}
 			var newNodes = document.createDocumentFragment();
 
-			var splitText = text.split(/([\t\n\r ]+)/);
+			var splitText = this._dd_splitText(text);
+
 			var l = splitText.length;
 			var x, word, leftWordPartLength, t;
 			var numberOfSpansInserted = 0;
@@ -454,21 +486,21 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 				// left half of word
 				word = splitText[i];
 				if (word.length === 0) continue;
-				leftWordPartLength = Math.ceil(word.length/2);
+				// We use "floor" here such that sentence delimiters like "!" can have a block placed afterwards
+				leftWordPartLength = Math.floor(word.length/2);
 
-				x = document.createElement('span');
-				x.appendChild(document.createTextNode(word.substr(0, leftWordPartLength)));
-				x.setAttribute('data-i', i);
+				if (leftWordPartLength > 0) {
+					x = document.createElement('span');
+					x.appendChild(document.createTextNode(word.substr(0, leftWordPartLength)));
+					x.setAttribute('data-i', i);
 
-				newNodes.appendChild(x);
-				numberOfSpansInserted++;
+					newNodes.appendChild(x);
+					numberOfSpansInserted++;
+				}
 
 				// right half of word
 				x = document.createElement('span');
 				t = word.substr(leftWordPartLength);
-				if (i < l-1) {
-					t += ' '; // add trailing space character
-				}
 				x.appendChild(document.createTextNode(t));
 				x.setAttribute('data-i', i);
 				x.setAttribute('class', 'aloha-block-droppable-right');
