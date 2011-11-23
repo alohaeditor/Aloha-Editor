@@ -21,11 +21,12 @@ button.aloha-button-wai-lang-remove { background: url(../img/remove-button.png) 
 }
 .x-combo-list-item img {
 	/* 16x11 */
-	margin: 7px 5px 0px 2px;
+	margin: 3px 5px 0px 2px;
 }
 
 .x-combo-list-item .label-item {
 	display: inline;
+	font-weight: bold;
 }
 
 .x-form-field.x-form-text.aloha-wailang-field {

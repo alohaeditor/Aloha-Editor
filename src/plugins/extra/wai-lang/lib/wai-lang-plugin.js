@@ -116,8 +116,9 @@ define( [
 				'minChars'   : 1,
 				'cls'        : 'aloha-wailang-field'
 			} );
-			this.langField.setTemplate( '<img src="{url}" alt="{id}" ' +
-				'style="vertical-align: middle;"/> <a><b>{name}</b></a>' );
+			
+			this.langField.setTemplate(
+				'<div class="img-item"><img class="typeahead-image" src="{url}" /><div class="label-item">{name}</div></div>' );
 			this.langField.setObjectTypeFilter( this.objectTypeFilter );
 			
 			// add the input field for links
