@@ -415,6 +415,8 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 
 				this.$element.draggable({
 					handle: '.aloha-block-draghandle',
+					revert: 'invalid',
+					revertDuration: 250,
 					start: function() {
 						convert(that.$element.parents('.aloha-editable').first()[0]);
 						jQuery('[data-i]').droppable({
