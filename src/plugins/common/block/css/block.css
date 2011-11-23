@@ -17,16 +17,25 @@
 
 .ext-ie8 .aloha-block:hover, .ext-ie7 .aloha-block:hover {
 	border: 1px solid #FFE98A; /* IE does not support box-shadow, thus we need to use border */
+	margin: -1px;
 }
 .ext-ie8 .aloha-block.aloha-block-active, .ext-ie8 .aloha-block.aloha-block-active:hover,
 .ext-ie7 .aloha-block.aloha-block-active, .ext-ie7 .aloha-block.aloha-block-active:hover {
 	border: 1px solid #2F7ECC; /* IE does not support box-shadow, thus we need to use border */
+	margin: -1px;
 }
 
-/* Display cursor */
+/* Display cursor for drag/drop */
 .aloha-block-droppable {
 	border-left: 1px solid red;
 	margin-left:-1px;
+}
+
+.aloha-block-droppable.aloha-block-droppable-right {
+	margin-left:0 !important;
+	border-left: none !important;
+	margin-right:-1px;
+	border-right: 1px solid red;
 }
 
 .aloha-block .aloha-editable {

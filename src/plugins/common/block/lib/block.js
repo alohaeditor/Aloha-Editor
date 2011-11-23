@@ -344,9 +344,10 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 					return (lastHoveredCharacter === null);
 				},
 				revertDuration: 250,
+				stop: function() {
+					that._dd_traverseDomTreeAndRemoveSpans(that.$element.parents('.aloha-editable').get(0));
+				},
 				start: function() {
-					that._dd_traverseDomTreeAndWrapCharactersWithSpans(that.$element[0]);
-
 					that.$element.parents('.aloha-editable').children().droppable({
 						// make block elements droppable
 						tolerance: 'pointer',
@@ -370,17 +371,30 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 						},
 						out: function() {
 							// TODO: This breaks in IE8...
-							that._dd_traverseDomTreeAndRemoveSpans(this);
+							//that._dd_traverseDomTreeAndRemoveSpans(this);
 						},
 						drop: function(event, ui) {
 							if (lastHoveredCharacter) {
 								// the user recently hovered over a character
 								var $dropReferenceNode = jQuery(lastHoveredCharacter);
-									// Move draggable before drop reference node
-								$dropReferenceNode.before(ui.draggable);
-								ui.draggable.removeClass('ui-draggable').css({'left': 0, 'top': 0}); // Remove "draggable" options... somehow "Destroy" does not work
 
-								that._dd_traverseDomTreeAndRemoveSpans(this);
+								if ($dropReferenceNode.is('.aloha-block-droppable-right')) {
+
+									if ($dropReferenceNode.next('[data-i]').length > 0) {
+										// If not the last element, insert space in front of next element (i.e. after the moved block)
+										$dropReferenceNode.next('[data-i]').html(' ' + $dropReferenceNode.next('[data-i]').html());
+									}
+
+									// Move draggable after drop reference node
+									$dropReferenceNode.after(ui.draggable);
+								} else {
+									// Insert space in the beginning of the drop reference node
+									$dropReferenceNode.html(' ' + $dropReferenceNode.html());
+									// Move draggable before drop reference node
+									$dropReferenceNode.before(ui.draggable);
+								}
+
+								ui.draggable.removeClass('ui-draggable').css({'left': 0, 'top': 0}); // Remove "draggable" options... somehow "Destroy" does not work
 							}
 						}
 					});
@@ -398,12 +412,15 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 			var child;
 			for(var i=0, l=el.childNodes.length; i < l; i++) {
 				child = el.childNodes[i];
-				if (child.nodeType === 1) {
+				if (child.nodeType === 1) { // DOM Nodes
 					if (!~child.className.indexOf('aloha-block') && child.attributes['data-i'] === undefined) {
 						// We only recurse if child does NOT have the class "aloha-block", and is NOT data-i
 						this._dd_traverseDomTreeAndWrapCharactersWithSpans(child);
+					} else if (child.attributes['data-i']) {
+						// data-i set -> we have converted this hierarchy level already --> early return!
+						return;
 					}
-				} else if (child.nodeType === 3) {
+				} else if (child.nodeType === 3) { // Text Nodes
 					var numberOfSpansInserted = this._dd_insertSpans(child);
 					i += numberOfSpansInserted;
 					l += numberOfSpansInserted;
@@ -428,18 +445,39 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 			}
 			var newNodes = document.createDocumentFragment();
 
-			var l = text.length;
-			var character, x;
+			var splitText = text.split(/([\t\n\r ]+)/);
+			var l = splitText.length;
+			var x, word, leftWordPartLength, t;
+			var numberOfSpansInserted = 0;
+
 			for (var i=0; i<l; i++) {
+				// left half of word
+				word = splitText[i];
+				if (word.length === 0) continue;
+				leftWordPartLength = Math.ceil(word.length/2);
+
 				x = document.createElement('span');
-				character = text.substr(i, 1);
-				x.appendChild(document.createTextNode(character));
+				x.appendChild(document.createTextNode(word.substr(0, leftWordPartLength)));
 				x.setAttribute('data-i', i);
 
 				newNodes.appendChild(x);
+				numberOfSpansInserted++;
+
+				// right half of word
+				x = document.createElement('span');
+				t = word.substr(leftWordPartLength);
+				if (i < l-1) {
+					t += ' '; // add trailing space character
+				}
+				x.appendChild(document.createTextNode(t));
+				x.setAttribute('data-i', i);
+				x.setAttribute('class', 'aloha-block-droppable-right');
+
+				newNodes.appendChild(x);
+				numberOfSpansInserted++;
 			}
 			el.parentNode.replaceChild(newNodes, el);
-			return l-1;
+			return numberOfSpansInserted-1;
 		},
 
 		_dd_traverseDomTreeAndRemoveSpans: function(el) {
@@ -449,7 +487,7 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 				var child;
 				for(var i=0, l=el.childNodes.length; i < l; i++) {
 					child = el.childNodes[i];
-					if (child.nodeType === 1) {
+					if (child.nodeType === 1) { // Node
 						if (child.attributes['data-i'] !== undefined) {
 							if (!currentlyTraversingExpandedText) {
 								// We did not traverse expanded text before, and just entered an expanded text section
