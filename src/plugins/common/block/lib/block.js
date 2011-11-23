@@ -320,124 +320,181 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 			this.createEditablesIfNeeded();
 			this.renderDragHandlesIfNeeded();
 			if (this.isDraggable()) {
-				/**
-				 * This function returns the number of additional DOM elements inserted.
-				 * This is "numberOfSpansCreated - 1" (because one text node has been initially there)
-				 */
-				var insertSpans = function(el) {
-					var text = el.nodeValue;
+				this._setupDragDrop();
+			}
+		},
 
-					// If node just contains empty strings, we do not do anything.
-					// Use ECMA-262 Edition 3 String and RegExp features
-					if (!/[^\t\n\r ]/.test(text)) {
-						return 0;
+		/**************************
+		 * SECTION: Drag&Drop Setup
+		 **************************/
+		_setupDragDrop: function() {
+			var that = this;
+
+			// Here, we store the character DOM element which has been hovered upon recently.
+			// This is needed as somehow, the "drop" event on the character is not fired.
+			// Furthermore, we use it to know whether we need to "revert" the draggable to the original state or not.
+			var lastHoveredCharacter = null;
+
+			this.$element.draggable({
+				handle: '.aloha-block-draghandle',
+				revert: function(isDropped) {
+					if (!isDropped) {
+						return true;
 					}
-					var newNodes = document.createDocumentFragment();
+					return (lastHoveredCharacter === null);
+				},
+				revertDuration: 250,
+				start: function() {
+					that._dd_traverseDomTreeAndWrapCharactersWithSpans(that.$element[0]);
 
-					var l = text.length;
-					var character, x;
-					for (var i=0; i<l; i++) {
-						x = document.createElement('span');
-						character = text.substr(i, 1);
-						x.appendChild(document.createTextNode(character));
-						x.setAttribute('data-i', i);
-
-						newNodes.appendChild(x);
-					}
-					el.parentNode.replaceChild(newNodes, el);
-					return l-1;
-				}
-				var convert, convertBack;
-				convert = function(el) {
-					var child;
-					for(var i=0, l=el.childNodes.length; i < l; i++) {
-						child = el.childNodes[i];
-						if (child.nodeType === 1) {
-							if (!~child.className.indexOf('aloha-block') && child.attributes['data-i'] === undefined) {
-								// We only recurse if child does NOT have the class "aloha-block", and is NOT data-i
-								convert(child);
-							}
-						} else if (child.nodeType === 3) {
-							var numberOfSpansInserted = insertSpans(child);
-							i += numberOfSpansInserted;
-							l += numberOfSpansInserted;
-						}
-					}
-				};
-
-				var nodesToDelete = [];
-				convertBack = function(el) {
-					var currentlyTraversingExpandedText = false, currentText, lastNode;
-					var child;
-					for(var i=0, l=el.childNodes.length; i < l; i++) {
-						child = el.childNodes[i];
-						if (child.nodeType === 1) {
-							if (child.attributes['data-i'] !== undefined) {
-								if (!currentlyTraversingExpandedText) {
-									// We did not traverse expanded text before, and just entered an expanded text section
-									// thus, we reset all variables to their initial state
-									currentlyTraversingExpandedText = true;
-									currentText = '';
-									lastNode = undefined;
-								}
-								if (currentlyTraversingExpandedText) {
-									// We are currently traversing the expanded text nodes, so we collect their data
-									// together in the currentText variable
-									currentText += child.innerHTML;
-
-									if (lastNode) {
-										nodesToDelete.push(lastNode);
+					that.$element.parents('.aloha-editable').children().droppable({
+						// make block elements droppable
+						tolerance: 'pointer',
+						addClasses: false, // performance optimization
+						over: function(event, ui) {
+							that._dd_traverseDomTreeAndWrapCharactersWithSpans(this);
+							jQuery('span[data-i]', this).droppable({
+								tolerance: 'pointer',
+								addClasses: false,
+								hoverClass: 'aloha-block-droppable',
+								over: function() {
+									lastHoveredCharacter = this;
+								},
+								out: function() {
+									if (lastHoveredCharacter === this) {
+										lastHoveredCharacter = null;
 									}
-									lastNode = child;
 								}
-							} else {
-								if (currentlyTraversingExpandedText) {
-									currentlyTraversingExpandedText = false;
-									// We just left a region with data-i elements set.
-									// so, we need to store the currentText back to the region.
-									// We do this by using the last visited node as anchor.
-									lastNode.parentNode.replaceChild(document.createTextNode(currentText), lastNode);
-								}
-								// Recursion
-								if (!~child.className.indexOf('aloha-block')) {
-									// If child does not have the class "aloha-block", we iterate into it
-									convertBack(child);
-								}
-							}
-						}
-					}
-					if (currentlyTraversingExpandedText) {
-						// Special case: the last child node *is* a wrapped text node and we are at the end of the collection.
-						// In this case, we convert the text as well.
-						lastNode.parentNode.replaceChild(document.createTextNode(currentText), lastNode);
-					}
-				};
-
-				this.$element.draggable({
-					handle: '.aloha-block-draghandle',
-					revert: 'invalid',
-					revertDuration: 250,
-					start: function() {
-						convert(that.$element.parents('.aloha-editable').first()[0]);
-						jQuery('[data-i]').droppable({
-							hoverClass: 'aloha-block-droppable',
-							tolerance: 'pointer',
-							addClasses: false, // performance optimization
-							drop: function(evt, ui) {
-								var $dropReferenceNode = jQuery(this);
+							});
+							jQuery.ui.ddmanager.prepareOffsets(ui.draggable.data('draggable'), event);
+						},
+						out: function() {
+							// TODO: This breaks in IE8...
+							that._dd_traverseDomTreeAndRemoveSpans(this);
+						},
+						drop: function(event, ui) {
+							if (lastHoveredCharacter) {
+								// the user recently hovered over a character
+								var $dropReferenceNode = jQuery(lastHoveredCharacter);
+									// Move draggable before drop reference node
 								$dropReferenceNode.before(ui.draggable);
 								ui.draggable.removeClass('ui-draggable').css({'left': 0, 'top': 0}); // Remove "draggable" options... somehow "Destroy" does not work
 
-								nodesToDelete = [];
-								convertBack(that.$element.parents('.aloha-editable').first()[0]);
-
-								for (var i=0, l=nodesToDelete.length; i<l; i++) {
-									nodesToDelete[i].parentNode.removeChild(nodesToDelete[i]);
-								}
+								that._dd_traverseDomTreeAndRemoveSpans(this);
 							}
-						});
+						}
+					});
+				}
+			});
+		},
+
+		/**
+		 * Helper which traverses the DOM tree starting from el and wraps all non-empty texts with spans,
+		 * such that they can act as drop target.
+		 *
+		 * @param {DomElement} el
+		 */
+		_dd_traverseDomTreeAndWrapCharactersWithSpans: function(el) {
+			var child;
+			for(var i=0, l=el.childNodes.length; i < l; i++) {
+				child = el.childNodes[i];
+				if (child.nodeType === 1) {
+					if (!~child.className.indexOf('aloha-block') && child.attributes['data-i'] === undefined) {
+						// We only recurse if child does NOT have the class "aloha-block", and is NOT data-i
+						this._dd_traverseDomTreeAndWrapCharactersWithSpans(child);
 					}
-				});
+				} else if (child.nodeType === 3) {
+					var numberOfSpansInserted = this._dd_insertSpans(child);
+					i += numberOfSpansInserted;
+					l += numberOfSpansInserted;
+				}
+			}
+		},
+
+		/**
+		 * This is a helper for _dd_traverseDomTreeAndWrapCharactersWithSpans,
+		 * performing the actual conversion.
+		 *
+		 * This function returns the number of additional DOM elements inserted.
+		 * This is "numberOfSpansCreated - 1" (because one text node has been initially there)
+		 */
+		_dd_insertSpans: function(el) {
+			var text = el.nodeValue;
+
+			// If node just contains empty strings, we do not do anything.
+			// Use ECMA-262 Edition 3 String and RegExp features
+			if (!/[^\t\n\r ]/.test(text)) {
+				return 0;
+			}
+			var newNodes = document.createDocumentFragment();
+
+			var l = text.length;
+			var character, x;
+			for (var i=0; i<l; i++) {
+				x = document.createElement('span');
+				character = text.substr(i, 1);
+				x.appendChild(document.createTextNode(character));
+				x.setAttribute('data-i', i);
+
+				newNodes.appendChild(x);
+			}
+			el.parentNode.replaceChild(newNodes, el);
+			return l-1;
+		},
+
+		_dd_traverseDomTreeAndRemoveSpans: function(el) {
+			var nodesToDelete = [], convertBack;
+			convertBack = function(el) {
+				var currentlyTraversingExpandedText = false, currentText, lastNode;
+				var child;
+				for(var i=0, l=el.childNodes.length; i < l; i++) {
+					child = el.childNodes[i];
+					if (child.nodeType === 1) {
+						if (child.attributes['data-i'] !== undefined) {
+							if (!currentlyTraversingExpandedText) {
+								// We did not traverse expanded text before, and just entered an expanded text section
+								// thus, we reset all variables to their initial state
+								currentlyTraversingExpandedText = true;
+								currentText = '';
+								lastNode = undefined;
+							}
+							if (currentlyTraversingExpandedText) {
+								// We are currently traversing the expanded text nodes, so we collect their data
+								// together in the currentText variable
+								currentText += child.innerHTML;
+
+								if (lastNode) {
+									nodesToDelete.push(lastNode);
+								}
+								lastNode = child;
+							}
+						} else {
+							if (currentlyTraversingExpandedText) {
+								currentlyTraversingExpandedText = false;
+								// We just left a region with data-i elements set.
+								// so, we need to store the currentText back to the region.
+								// We do this by using the last visited node as anchor.
+								lastNode.parentNode.replaceChild(document.createTextNode(currentText), lastNode);
+							}
+							// Recursion
+							if (!~child.className.indexOf('aloha-block')) {
+								// If child does not have the class "aloha-block", we iterate into it
+								convertBack(child);
+							}
+						}
+					}
+				}
+				if (currentlyTraversingExpandedText) {
+					// Special case: the last child node *is* a wrapped text node and we are at the end of the collection.
+					// In this case, we convert the text as well.
+					lastNode.parentNode.replaceChild(document.createTextNode(currentText), lastNode);
+				}
+			};
+
+			convertBack(el);
+
+			for (var i=0, l=nodesToDelete.length; i<l; i++) {
+				nodesToDelete[i].parentNode.removeChild(nodesToDelete[i]);
 			}
 		},
 
