@@ -64,6 +64,10 @@
 	border-top-left-radius:5px;
 	border-top-right-radius:5px;
 }
+/* Hide drag handle while dragging takes place */
+.aloha-block.ui-draggable-dragging .aloha-block-draghandle {
+	display: none;
+}
 
 .aloha-block-editor label {
 	display:block;

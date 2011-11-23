@@ -389,6 +389,7 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 										// If not the last element, insert space in front of next element (i.e. after the moved block)
 										$dropReferenceNode.prev('[data-i]').html($dropReferenceNode.prev('[data-i]').html() + ' ');
 									}
+									$dropReferenceNode.html(' ' + $dropReferenceNode.html());
 
 									// Move draggable before drop reference node
 									$dropReferenceNode.before(ui.draggable);
