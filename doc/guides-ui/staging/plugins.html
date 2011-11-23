@@ -118,7 +118,7 @@ Aloha.plugins.format = {
 	},
 	// those are the tags that will be cleaned when clicking &quot;remove formatting&quot;
 	removeFormats : [ 'strong', 'em', 'b', 'i', 'cite', 'q', 'code', 'abbr', 'del', 'sub', 'sup']
-}
+};
 </pre></div><h3 id="link-plugin">2 Link Plugin</h3>
 <p>The Link Plugin allows you to add hyperlinks to your document, either by specifying them manually or by selecting from repositories using autocompletion.</p>
 <h4 id="components">2.1 Components</h4>
@@ -274,6 +274,167 @@ Aloha.settings.contentHandler.sanitize = {
 	}
 }
 </pre></div><h3 id="highlight-editables-plugin">9 Highlight Editables Plugin</h3>
+<p>The Highlight Editables Plugin has no user interface. Once loaded it will display a strong visual hint for editors to indicate the location of editables contents &#8211; so called &#8220;editables&#8221; &#8211; on the page.</p>
+<h3 id="horizontalruler-plugin">10 Horizontalruler Plugin</h3>
+<p>The Horizontalruler Plugin allows you to insert a horizontal ruler tag aka <tt>&lt;hr&gt;</tt> at the current cursor position.</p>
+<h4 id="components">10.1 Components</h4>
+<p>The plugin only offers a single component:</p>
+<ul>
+	<li>hr &#8211; a button which will insert a horizontal ruler at the cursor position</li>
+</ul>
+<h3 id="image-plugin">11 Image Plugin</h3>
+<p>The Image Plugin will allow for basic image manipulation right within your content:</p>
+<ul>
+	<li>resize (by dragging and entering values)</li>
+	<li>resizing with fixed aspect ratio</li>
+	<li>resetting the image to it&#8217;s initial state</li>
+	<li>crop</li>
+</ul>
+<div class="note"><p>You need a server-sided script like image magick which will handle actual cropping for you.</p></div>
+<h4 id="components">11.1 Components</h4>
+<ul>
+	<li>insertimage &#8211; a button that allows you to insert an image</li>
+</ul>
+<h4 id="configuration-settings">11.2 Configuration settings</h4>
+<div class="code_container">
+<pre class="brush: javascript; gutter: false; toolbar: false">
+
+Aloha.plugins.image.settings = {
+	'maxWidth': 1600,
+	'minWidth': 3,
+	'maxHeight': 1200,
+	'minHeight': 3,
+	// This setting will correct manually values that are out of bounds
+	'autoCorrectManualInput': true,	 
+	// This setting will define a fixed aspect ratio for all resize actions
+	'fixedAspectRatio' : false, 
+	// When enabled this setting will order the plugin to automatically resize images to given bounds
+	'autoResize': false,
+	//Image manipulation options - ONLY in default config section
+	ui: {
+		oneTab		: false, //Place all ui components within one tab
+		insert      : true,
+		reset 		: true,
+		aspectRatioToggle: true, // Toggle button for the aspect ratio 
+		align		: true,	// Menu elements to show/hide in menu
+		resize		: true,	// Resize buttons
+		meta		: true,
+		margin		: true,
+		crop		: true,
+		resizable	: true,	// Resizable ui-drag image
+		handles     : 'ne, se, sw, nw'   
+	},
+	
+	/**
+	 * Crop callback is triggered after the user clicked accept to accept his crop
+	 * @param image jquery image object reference
+	 * @param props cropping properties
+	 */
+	onCropped: function ($image, props) {
+		Aloha.Log.info('Default onCropped invoked', $image, props);
+	},
+	
+	/**
+	 * Reset callback is triggered before the internal reset procedure is applied
+	 * if this function returns true, then the reset has been handled by the callback
+	 * which means that no other reset will be applied
+	 * if false is returned the internal reset procedure will be applied
+	 * @param image jquery image object reference
+	 * @return true if a reset has been applied, false otherwise
+	 */
+	onReset: function ($image) {
+		Aloha.Log.info('Default onReset invoked', $image);
+		return false;
+	},
+	
+	/**
+	 * Example callback method which gets called while the resize process is beeing executed.
+	 */
+	onResize: function ($image) {
+		Aloha.Log.info('Default onResize invoked', $image);
+	},
+	
+	/**
+	 * Resize callback is triggered after the internal resize procedure is applied.  
+	 */
+	onResized: function ($image) {
+		Aloha.Log.info('Default onResized invoked', $image);
+	}
+};
+</pre></div><h3 id="list-plugin">12 List Plugin</h3>
+<p>The List Plugin allows you to handle and create ordered and unordered lists within your contents. You either may select existing contents to be turned into a list, or just click the ordered or unordered list button to start a new one.</p>
+<div class="note"><p>The list plugin will turn existing paragraphs into list items. Single lines separated by <ins><br></ins> tags will <span class="caps">NOT</span> be turned into separate list items.</p></div>
+<p>You can remove lists by clicking the applied list type a second time, which will turn individual list items back into paragraphs.</p>
+<p>The List Plugin will indent list items when pressing the tab-key, or outdent when pressing shift-tab.</p>
+<h4 id="components">12.1 Components</h4>
+<p>The List Plugin provides two components</p>
+<ul>
+	<li>ul &#8211; for inserting unordered lists</li>
+	<li>ol &#8211; for inserting ordered lists</li>
+</ul>
+<h4 id="configuration-settings">12.2 Configuration settings</h4>
+<div class="code_container">
+<pre class="brush: javascript; gutter: false; toolbar: false">
+
+Aloha.plugins.list = {
+	// configure buttons available in the toolbar
+	config : [ 'ol', 'ul' ],
+};
+</pre></div><h3 id="paste-plugin">13 Paste Plugin</h3>
+<p>The Paste Plugin provides means to handle pasting content from the clipboard and is a prerequisite if you want to handle contents pasted from Microsoft Word. In this case you will also have to enable the Contenthandler Plugin.</p>
+<h3 id="table-plugin">14 Table Plugin</h3>
+<p>The Table Plugin will allow you to edit tables within your contents. You can do pretty much everything that you&#8217;d expect from editing tables, like adding and deleting rows and columns as well as merging and splitting cells. You can use the tab key to jump from one cell to the next.</p>
+<h4 id="components">14.1 Components</h4>
+<ul>
+	<li>table &#8211; insert a table into the content</li>
+	<li>addrowbefore &#8211; adds a row before the current row</li>
+	<li>addrowafter &#8211; adds a row after the current row</li>
+	<li>deleterow &#8211; deletes the current row</li>
+	<li>deletecolumn &#8211; deletes the current column</li>
+	<li>rowheader &#8211; turns current row into a row of headers</li>
+	<li>columnheader &#8211; turns current column into a column of headers</li>
+	<li>romergecells &#8211; merge all cells within this row</li>
+	<li>rowsplitcells &#8211; split merged cells within this row</li>
+	<li>columnmergecells &#8211; merge all cells within this column</li>
+	<li>columnsplitcells &#8211; split merged cells within this column</li>
+	<li>addcolumnleft &#8211; add a column left of the current column</li>
+	<li>addcolumnright &#8211; add a column right of the current column</li>
+	<li>tablemergecells &#8211; merge selected cells</li>
+	<li>tablesplitcells &#8211; split selected cells</li>
+	<li>mergecells &#8211; merge selected cells</li>
+	<li>splitcells &#8211; split selected cells</li>
+	<li>tablecaption &#8211; input field which allows you to add a caption to the table</li>
+</ul>
+<h4 id="configuration-settings">14.2 Configuration settings</h4>
+<p>The table configuration allows for some special settings:</p>
+<div class="code_container">
+<pre class="brush: javascript; gutter: false; toolbar: false">
+
+Aloha.settings.plugins.table: {
+	// all elements with no specific configuration are not allowed to insert tables
+	config : [ 'table' ],
+	// the table summary is editable in the sidebar
+	summaryinsidebar : true,
+	// the following settings allow the user to apply specific classes to
+	// either the whole table or a column or row. The name is used as a
+	// class attribute, while the iconClass is applied as a class attribute
+	// to style the buttons
+	tableConfig : [
+		{ name:'hor-minimalist-a' },
+		{ name:'box-table-a' },
+		{ name:'hor-zebra' },
+	],
+	columnConfig : [
+			{ name: 'table-style-bigbold',  iconClass: 'aloha-button-col-bigbold' },
+			{ name: 'table-style-redwhite', iconClass: 'aloha-button-col-redwhite' }
+	],
+	rowConfig : [
+			{ name: 'table-style-bigbold',  iconClass: 'aloha-button-row-bigbold' },
+			{ name: 'table-style-redwhite', iconClass: 'aloha-button-row-redwhite' }
+	]
+};
+</pre></div><h3 id="undo-plugin">15 Undo Plugin</h3>
+<p>The Undo Plugin allows you to undo changes when pressing Ctrl<tt>Z (or Cmd</tt>Z on Mac). You may also reapply changes made undone by pressing Ctrl<tt>Shift</tt>Z or Cmd<tt>Shift</tt>Z on Mac. The Undo Plugin has no ui and no components.</p>
 <ul>
 	<li>September 1, 2011: Initial version by <a href="credits.html#haymo">Haymo Meran</a> and <a href="credits.html#scottgonzales">Scott Gonzales</a></li>
 </ul>
@@ -304,6 +465,19 @@ Aloha.settings.contentHandler.sanitize = {
 </a></li> <li><a href="#generic-content-handler"><p>Generic Content Handler</p>
 </a></li> <li><a href="#sanitize-content-handler"><p>Sanitize Content Handler</p>
 </a></li></ul></li><li><a href="#highlight-editables-plugin"><p>Highlight Editables Plugin</p>
+</a></li><li><a href="#horizontalruler-plugin"><p>Horizontalruler Plugin</p>
+</a><ul><li><a href="#components"><p>Components</p>
+</a></li></ul></li><li><a href="#image-plugin"><p>Image Plugin</p>
+</a><ul><li><a href="#components"><p>Components</p>
+</a></li> <li><a href="#configuration-settings"><p>Configuration settings</p>
+</a></li></ul></li><li><a href="#list-plugin"><p>List Plugin</p>
+</a><ul><li><a href="#components"><p>Components</p>
+</a></li> <li><a href="#configuration-settings"><p>Configuration settings</p>
+</a></li></ul></li><li><a href="#paste-plugin"><p>Paste Plugin</p>
+</a></li><li><a href="#table-plugin"><p>Table Plugin</p>
+</a><ul><li><a href="#components"><p>Components</p>
+</a></li> <li><a href="#configuration-settings"><p>Configuration settings</p>
+</a></li></ul></li><li><a href="#undo-plugin"><p>Undo Plugin</p>
 </a></li>
           </ol>
         </div>

@@ -43,7 +43,7 @@ Aloha.plugins.format = {
 	},
 	// those are the tags that will be cleaned when clicking "remove formatting"
 	removeFormats : [ 'strong', 'em', 'b', 'i', 'cite', 'q', 'code', 'abbr', 'del', 'sub', 'sup']
-}
+};
 </javascript>
 
 h3. Link Plugin
@@ -221,7 +221,187 @@ Aloha.settings.contentHandler.sanitize = {
 
 h3. Highlight Editables Plugin
 
+The Highlight Editables Plugin has no user interface. Once loaded it will display a strong visual hint for editors to indicate the location of editables contents - so called "editables" - on the page.
 
+h3. Horizontalruler Plugin
+
+The Horizontalruler Plugin allows you to insert a horizontal ruler tag aka +<hr>+ at the current cursor position.
+
+h4. Components
+
+The plugin only offers a single component:
+
+* hr - a button which will insert a horizontal ruler at the cursor position
+
+h3. Image Plugin
+
+The Image Plugin will allow for basic image manipulation right within your content:
+
+* resize (by dragging and entering values)
+* resizing with fixed aspect ratio
+* resetting the image to it's initial state
+* crop
+
+NOTE: You need a server-sided script like image magick which will handle actual cropping for you.
+
+h4. Components
+
+* insertimage - a button that allows you to insert an image
+
+h4. Configuration settings
+
+<javascript>
+Aloha.plugins.image.settings = {
+	'maxWidth': 1600,
+	'minWidth': 3,
+	'maxHeight': 1200,
+	'minHeight': 3,
+	// This setting will correct manually values that are out of bounds
+	'autoCorrectManualInput': true,	 
+	// This setting will define a fixed aspect ratio for all resize actions
+	'fixedAspectRatio' : false, 
+	// When enabled this setting will order the plugin to automatically resize images to given bounds
+	'autoResize': false,
+	//Image manipulation options - ONLY in default config section
+	ui: {
+		oneTab		: false, //Place all ui components within one tab
+		insert      : true,
+		reset 		: true,
+		aspectRatioToggle: true, // Toggle button for the aspect ratio 
+		align		: true,	// Menu elements to show/hide in menu
+		resize		: true,	// Resize buttons
+		meta		: true,
+		margin		: true,
+		crop		: true,
+		resizable	: true,	// Resizable ui-drag image
+		handles     : 'ne, se, sw, nw'   
+	},
+	
+	/**
+	 * Crop callback is triggered after the user clicked accept to accept his crop
+	 * @param image jquery image object reference
+	 * @param props cropping properties
+	 */
+	onCropped: function ($image, props) {
+		Aloha.Log.info('Default onCropped invoked', $image, props);
+	},
+	
+	/**
+	 * Reset callback is triggered before the internal reset procedure is applied
+	 * if this function returns true, then the reset has been handled by the callback
+	 * which means that no other reset will be applied
+	 * if false is returned the internal reset procedure will be applied
+	 * @param image jquery image object reference
+	 * @return true if a reset has been applied, false otherwise
+	 */
+	onReset: function ($image) {
+		Aloha.Log.info('Default onReset invoked', $image);
+		return false;
+	},
+	
+	/**
+	 * Example callback method which gets called while the resize process is beeing executed.
+	 */
+	onResize: function ($image) {
+		Aloha.Log.info('Default onResize invoked', $image);
+	},
+	
+	/**
+	 * Resize callback is triggered after the internal resize procedure is applied.  
+	 */
+	onResized: function ($image) {
+		Aloha.Log.info('Default onResized invoked', $image);
+	}
+};
+</javascript>
+
+h3. List Plugin
+
+The List Plugin allows you to handle and create ordered and unordered lists within your contents. You either may select existing contents to be turned into a list, or just click the ordered or unordered list button to start a new one.
+
+NOTE: The list plugin will turn existing paragraphs into list items. Single lines separated by +<br>+ tags will NOT be turned into separate list items.
+
+You can remove lists by clicking the applied list type a second time, which will turn individual list items back into paragraphs.
+
+The List Plugin will indent list items when pressing the tab-key, or outdent when pressing shift-tab.
+
+h4. Components
+
+The List Plugin provides two components
+
+* ul - for inserting unordered lists
+* ol - for inserting ordered lists
+
+h4. Configuration settings
+
+<javascript>
+Aloha.plugins.list = {
+	// configure buttons available in the toolbar
+	config : [ 'ol', 'ul' ],
+};
+</javascript>
+
+h3. Paste Plugin
+
+The Paste Plugin provides means to handle pasting content from the clipboard and is a prerequisite if you want to handle contents pasted from Microsoft Word. In this case you will also have to enable the Contenthandler Plugin.
+
+h3. Table Plugin
+
+The Table Plugin will allow you to edit tables within your contents. You can do pretty much everything that you'd expect from editing tables, like adding and deleting rows and columns as well as merging and splitting cells. You can use the tab key to jump from one cell to the next.
+
+h4. Components
+
+* table - insert a table into the content
+* addrowbefore - adds a row before the current row
+* addrowafter - adds a row after the current row
+* deleterow - deletes the current row
+* deletecolumn - deletes the current column
+* rowheader - turns current row into a row of headers
+* columnheader - turns current column into a column of headers
+* romergecells - merge all cells within this row
+* rowsplitcells - split merged cells within this row
+* columnmergecells - merge all cells within this column
+* columnsplitcells - split merged cells within this column
+* addcolumnleft - add a column left of the current column
+* addcolumnright - add a column right of the current column
+* tablemergecells - merge selected cells
+* tablesplitcells - split selected cells
+* mergecells - merge selected cells
+* splitcells - split selected cells
+* tablecaption - input field which allows you to add a caption to the table
+
+h4. Configuration settings
+
+The table configuration allows for some special settings:
+<javascript>
+Aloha.settings.plugins.table: {
+	// all elements with no specific configuration are not allowed to insert tables
+	config : [ 'table' ],
+	// the table summary is editable in the sidebar
+	summaryinsidebar : true,
+	// the following settings allow the user to apply specific classes to
+	// either the whole table or a column or row. The name is used as a
+	// class attribute, while the iconClass is applied as a class attribute
+	// to style the buttons
+	tableConfig : [
+		{ name:'hor-minimalist-a' },
+		{ name:'box-table-a' },
+		{ name:'hor-zebra' },
+	],
+	columnConfig : [
+			{ name: 'table-style-bigbold',  iconClass: 'aloha-button-col-bigbold' },
+			{ name: 'table-style-redwhite', iconClass: 'aloha-button-col-redwhite' }
+	],
+	rowConfig : [
+			{ name: 'table-style-bigbold',  iconClass: 'aloha-button-row-bigbold' },
+			{ name: 'table-style-redwhite', iconClass: 'aloha-button-row-redwhite' }
+	]
+};
+</javascript>
+
+h3. Undo Plugin
+
+The Undo Plugin allows you to undo changes when pressing Ctrl+Z (or Cmd+Z on Mac). You may also reapply changes made undone by pressing Ctrl+Shift+Z or Cmd+Shift+Z on Mac. The Undo Plugin has no ui and no components.
 
 * September 1, 2011: Initial version by "Haymo Meran":credits.html#haymo and "Scott Gonzales":credits.html#scottgonzales
 
