@@ -370,32 +370,26 @@ define( [
 		},
 
 		/**
-		 * Check if the conteneditable is empty
+		 * Check if the conteneditable is empty.
 		 *
-		 * @return {bool}
+		 * @return {Boolean}
 		 */
 		isEmpty: function () {
 			var editableTrimedContent = jQuery.trim( this.getContents() ),
 				onlyBrTag = ( editableTrimedContent == '<br>' ) ? true : false;
-
-			if ( editableTrimedContent.length == 0 || onlyBrTag ) {
-				return true;
-			} else {
-				return false;
-			}
+			return ( editableTrimedContent.length == 0 || onlyBrTag );
 		},
 
 		/**
 		 * Check if the editable div is not empty. Fixes a FF browser bug
 		 * see issue: https://github.com/alohaeditor/Aloha-Editor/issues/269
 		 *
-		 * @return void
+		 * @return {undefined}
 		 */
-		initEmptyEditable: function() {
+		initEmptyEditable: function( ) {
 			var obj = this.obj;
-			
-			if (this.empty(this.getContents())) {
-				jQuery(obj).prepend('<br class="aloha-cleanme" />');
+			if ( this.empty( this.getContents() ) ) {
+				jQuery( obj ).prepend( '<br class="aloha-cleanme" />' );
 			}
 		},
 
