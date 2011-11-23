@@ -54,9 +54,6 @@
 	position: fixed !important;
 }
 
-.x-combo-selected {
-	background-color: Highlight !important;
-}
 .x-tree-root-ct {
 	padding: 0px;
 }
@@ -320,4 +317,41 @@ ul.aloha-multisplit-expanded {
 }
 ul.aloha-multisplit button.aloha-button-removeFormat {
 	background-image: url(../img/removeformat.png) !important;
+}
+
+/**
+ * combo-list box
+ */
+.x-combo-list {
+	text-align: left;
+}
+.x-combo-list-inner {
+	padding: 3px;
+}
+.x-combo-list-inner .loading-indicator {
+	margin: 0;
+}
+.x-combo-selected {
+	color: #fff !important;
+	background-color: #3B73D7 !important;
+}
+
+/**
+ * ui-attribute field
+ */
+.x-form-field.x-form-text {
+	color: #333 !important;
+	padding: 3px;
+}
+.x-form-field.x-form-text::selection {
+	color: #fff;
+	background: #3B73D7;
+}
+.x-form-field.x-form-text::-moz-selection {
+	color: #fff;
+	background: #3B73D7;
+}
+.x-form-field.x-form-text::-webkit-selection {
+	color: #fff;
+	background: #3B73D7;
 }

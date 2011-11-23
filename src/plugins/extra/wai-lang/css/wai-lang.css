@@ -28,8 +28,3 @@ button.aloha-button-wai-lang-remove { background: url(../img/remove-button.png) 
 	display: inline;
 	font-weight: bold;
 }
-
-.x-form-field.x-form-text.aloha-wailang-field {
-	color: #333 !important;
-	padding: 3px;
-}
