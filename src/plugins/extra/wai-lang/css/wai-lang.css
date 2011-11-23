@@ -4,8 +4,10 @@
 * aloha-sales@gentics.com
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
+
 button.aloha-button-wai-lang { background: url(../img/button.png) no-repeat 0px 0px !important; }
 button.aloha-button-wai-lang-remove { background: url(../img/remove-button.png) no-repeat 0px 0px !important; }
+
 /*
 .wai-lang {
 	padding: 0 0 0 1.2em;
@@ -24,4 +26,9 @@ button.aloha-button-wai-lang-remove { background: url(../img/remove-button.png) 
 
 .x-combo-list-item .label-item {
 	display: inline;
+}
+
+.x-form-field.x-form-text.aloha-wailang-field {
+	color: #333 !important;
+	padding: 3px;
 }
