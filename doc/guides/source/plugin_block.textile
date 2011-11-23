@@ -71,7 +71,7 @@ h3. Browser Compatibility
 |_. General Blocks |  ✓         |  ✓         | (✓)   | ✓     | ✓     |     ✓              |
 |_. Drag & Drop    |  ✓         |  ✓         |  ✘    | ✓slow | ✓     |     ✓              |
 |_. Copy & Paste   |  ✓         |  ✓         | (✓)   | ✓     | ✓     |     ✓              |
-|_. Cut & Paste    |  ✓         |  ✓         | (✓)   | ✓     | ✓     |                    |
+|_. Cut & Paste    |  ✓         |  ✓         | (✓)   | ✓     | ✓     |     ✓              |
 
 h3. Changelog
 
