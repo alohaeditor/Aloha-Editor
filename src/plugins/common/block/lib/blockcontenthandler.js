@@ -54,6 +54,10 @@ function(jQuery, ContentHandlerManager, BlockManager) {
 
 				// Firefox adds a <br> directly before the .aloha-block...
 				content.find('.aloha-block').prev('br').remove();
+
+				// Chrome (at least) sometimes adds an empty <br> inside an (otherwise empty) span
+				content.find('div > br:only-child').parent().remove();
+
 			}
 
 			content.find('.aloha-block').each(function() {

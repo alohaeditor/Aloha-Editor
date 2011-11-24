@@ -166,12 +166,20 @@ define([
 		}
 	});
 
+	var SortableNewsBlock = NewsBlock.extend({
+		title: 'Sortable News',
+		init: function() {
+			this.$element.sortable();
+		}
+	});
+
 	return {
 		CompanyBlock: CompanyBlock,
 		EditableProductTeaserBlock: EditableProductTeaserBlock,
 		ProductTeaserBlock: ProductTeaserBlock,
 		ImageBlock: ImageBlock,
 		EditableImageBlock: EditableImageBlock,
-		NewsBlock: NewsBlock
+		NewsBlock: NewsBlock,
+		SortableNewsBlock: SortableNewsBlock
 	};
 });

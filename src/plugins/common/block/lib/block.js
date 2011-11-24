@@ -374,10 +374,6 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 							});
 							jQuery.ui.ddmanager.prepareOffsets(ui.draggable.data('draggable'), event);
 						},
-						out: function() {
-							// TODO: This breaks in IE8...
-							//that._dd_traverseDomTreeAndRemoveSpans(this);
-						},
 						drop: function(event, ui) {
 							if (lastHoveredCharacter) {
 								// the user recently hovered over a character

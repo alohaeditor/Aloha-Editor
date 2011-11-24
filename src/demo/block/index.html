@@ -32,6 +32,10 @@
 							'aloha-block-type': 'NewsBlock'
 						},
 
+						'.sortable-news-block': {
+							'aloha-block-type': 'SortableNewsBlock'
+						},
+
 						'.editable-product-teaser': {
 							'aloha-block-type': 'EditableProductTeaserBlock'
 						},
@@ -117,19 +121,19 @@
 						<td>editable</td>
 						<td>inline</td>
 						<td>outside editable</td>
-						<td>-- not relevant -- ?</td>
+						<td>-- not relevant --</td>
 					</tr>
 					<tr>
 						<td>editable</td>
 						<td>inline</td>
 						<td>inside editable</td>
-						<td>-- not relevant -- ?</td>
+						<td>-- not relevant --</td>
 					</tr>
 				</tbody>
 			</table>
 			<ul>
 				<li>Nested blocks with editable in between - TODO</li>
-				<li>Nested blocks WITHOUT editable in between - TODO</li>
+				<li>Nested blocks WITHOUT editable in between - <a href="#sortable-news-block">Tested</a></li>
 			</ul>
 		</p>
 		<div id="bodyContent">
@@ -172,6 +176,18 @@
 
 				<h3>News Listing example</h3>
 				<div class="news-block" data-numberofarticles="2">
+					<div class="newselement">
+						<h4>News Title 1</h4>
+						<p>Drosera brevifolia (the dwarf, small or red sundew), is a carnivorous plant of the family Droseraceae and is the smallest sundew species native to the United States. This species differs considerably from the pink sundew, Drosera capillaris, by its wedge-shaped leaves, and distinctly deeper red to reddish purple color, noticeable when side by side with D. capillaris.</p>
+					</div>
+					<div class="newselement">
+						<h4>News Title 2</h4>
+						<p>Bednarz studied Slavic studies, theatre and Eastern Europe history at universities in Hamburg, Wien and Moskow. His dissertation at university was over russian author Anton Chekhov. Since 1967 Bednarz worked for German television as Correspondent in Poland (1971–1977) and in Soviet Union (1977-1982). Later he was television presenter of german tv-programme Monitor on German broadcaster Westdeutscher Rundfunk. During these years Bednarz wrote several books over Eastern Europe countries and over the south of South America.</p>
+					</div>
+				</div>
+
+				<h3><a name="sortable-news-block"></a>Sortable News Listing example</h3>
+				<div class="sortable-news-block" data-numberofarticles="2">
 					<div class="newselement">
 						<h4>News Title 1</h4>
 						<p>Drosera brevifolia (the dwarf, small or red sundew), is a carnivorous plant of the family Droseraceae and is the smallest sundew species native to the United States. This species differs considerably from the pink sundew, Drosera capillaris, by its wedge-shaped leaves, and distinctly deeper red to reddish purple color, noticeable when side by side with D. capillaris.</p>
