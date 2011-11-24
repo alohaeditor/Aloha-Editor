@@ -1,0 +1,3 @@
+h2. The Link Plugin
+
+Documentation pending

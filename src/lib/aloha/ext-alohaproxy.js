@@ -19,9 +19,12 @@
 */
 
 define( [
-	'aloha/jquery', 'aloha/ext', 'aloha/repositorymanager',
+	'aloha/jquery',
+	'aloha/ext',
+	'aloha/repositorymanager',
+	'aloha/console',
 	'i18n!aloha/nls/i18n'
-], function ( jQuery, Ext, RepositoryManager ) {
+], function ( jQuery, Ext, RepositoryManager, console ) {
 	'use strict';
 	
 	Ext.data.AlohaProxy = function () {
@@ -52,27 +55,15 @@ define( [
 			jQuery.extend( this.params, params );
 			
 			try {
-				var numReposQueried = 0;
-				
 				RepositoryManager.query( this.params, function ( items ) {
-					// Update the combo list (and thereby remove the loading
-					// message) only it we have results or if there are no more
-					// repositories to query
-					++numReposQueried;
-					
-					if ( items.results ||
-							numReposQueried == RepositoryManager.repositories.length ) {
-						cb.call( scope, reader.readRecords( items ), arg, true );
-					} else {
-						if ( i18n && i18n.t( 'repository.no_items_found_yet' ) ) {
-							jQuery( '.x-combo-list-inner .loading-indicator' )
-								.html( i18n.t( 'repository.no_items_found_yet' ) );
-						}
-					}
+					cb.call( scope, reader.readRecords( items ), arg, true );
 				} );
-			} catch ( e ) {
-				this.fireEvent( 'loadexception', this, null, arg, e );
-				this.fireEvent( 'exception', this, 'response', action, arg, null, e );
+			} catch ( ex ) {
+				console.error( 'Ext.data.AlohaProxy',
+					'An error occured while querying repositories.' );
+				
+				this.fireEvent( 'loadexception', this, null, arg, ex );
+				this.fireEvent( 'exception', this, 'response', action, arg, null, ex );
 				
 				return false;
 			}
