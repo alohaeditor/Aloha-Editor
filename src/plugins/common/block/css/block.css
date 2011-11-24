@@ -87,5 +87,3 @@
 	display:block;
 }
 
-.aloha-block ::selection { background: transparent; }
-.aloha-block ::-moz-selection { background: transparent; }
