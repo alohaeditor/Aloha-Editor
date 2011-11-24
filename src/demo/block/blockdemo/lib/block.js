@@ -120,9 +120,12 @@ define([
 		update: function($element, postProcessFn) {
 			if (this.attr('position') === 'right') {
 				$element.css('float', 'right');
-			} else {
+			} else if (this.attr('position') === 'left') {
 				$element.css('float', 'left');
+			} else {
+				$element.css('float', '');
 			}
+
 			$element.find('img').attr('src', this.attr('image'));
 			postProcessFn();
 		}
