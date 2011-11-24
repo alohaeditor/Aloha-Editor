@@ -1,43 +1,54 @@
 /*!
-* This file is part of Aloha Editor Project http://aloha-editor.org
-* Copyright © 2010-2011 Gentics Software GmbH, aloha@gentics.com
-* Contributors http://aloha-editor.org/contribution.php 
-* Licensed unter the terms of http://www.aloha-editor.org/license.html
-*//*
-* Aloha Editor is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, either version 3 of the License, or
-* (at your option) any later version.*
-*
-* Aloha Editor is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with this program. If not, see <http://www.gnu.org/licenses/>.
-*/
+ * This file is part of Aloha Editor Project http://aloha-editor.org
+ * Copyright © 2010-2011 Gentics Software GmbH, aloha@gentics.com
+ * Contributors http://aloha-editor.org/contribution.php
+ * Licensed unter the terms of http://www.aloha-editor.org/license.html
+ *
+ * Aloha Editor is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * ( at your option ) any later version.*
+ *
+ * Aloha Editor is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
 
-define(
-['aloha/core', 'util/class', 'aloha/jquery', 'aloha/pluginmanager', 'aloha/floatingmenu', 'aloha/selection', 'aloha/markup', 'aloha/contenthandlermanager'],
-function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, ContentHandlerManager) {
-	"use strict";
-	
-	var	unescape = window.unescape,
-		GENTICS = window.GENTICS,
-		// True, if the next editable activate event should not be handled
-		ignoreNextActivateEvent = false;
+define( [
+	'aloha/core',
+	'util/class',
+	'aloha/jquery',
+	'aloha/pluginmanager',
+	'aloha/floatingmenu',
+	'aloha/selection',
+	'aloha/markup',
+	'aloha/contenthandlermanager',
+	'aloha/console'
+], function( Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection,
+	         Markup, ContentHandlerManager, console ) {
+	'use strict';
+
+	var unescape = window.unescape,
+	    GENTICS = window.GENTICS,
+
+	    // True, if the next editable activate event should not be handled
+	    ignoreNextActivateEvent = false;
 
 	// default supported and custom content handler settings
 	// @TODO move to new config when implemented in Aloha
 	Aloha.defaults.contentHandler = {};
 	Aloha.defaults.contentHandler.initEditable = [ 'sanitize' ];
 	Aloha.defaults.contentHandler.getContents = [ 'sanitize' ];
-	// The insertHtml contenthandler (paste) will, by default, use all
+
+	// The insertHtml contenthandler ( paste ) will, by default, use all
 	// registered content handlers.
 	//Aloha.defaults.contentHandler.insertHtml = void 0;
-	
-	if (typeof Aloha.settings.contentHandler === 'undefined') {
+
+	if ( typeof Aloha.settings.contentHandler === 'undefined' ) {
 		Aloha.settings.contentHandler = {};
 	}
 
@@ -49,25 +60,24 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, C
 	 * @constructor
 	 * @param {Object} obj jQuery object reference to the object
 	 */
-	Aloha.Editable = Class.extend({
-		_constructor: function(obj) {
-			var me = this;
+	Aloha.Editable = Class.extend( {
 
-			// check wheter the object has an ID otherwise generate and set globally unique ID
-			if ( !obj.attr('id') ) {
-				obj.attr('id', GENTICS.Utils.guid());
+		_constructor: function( obj ) {
+			// check wheter the object has an ID otherwise generate and set
+			// globally unique ID
+			if ( !obj.attr( 'id' ) ) {
+				obj.attr( 'id', GENTICS.Utils.guid() );
 			}
 
 			// store object reference
 			this.obj = obj;
 			this.originalObj = obj;
-
-			// the editable is not yet ready
 			this.ready = false;
 
 			// delimiters, timer and idle for smartContentChange
 			// smartContentChange triggers -- tab: '\u0009' - space: '\u0020' - enter: 'Enter'
-			this.sccDelimiters = [':', ';', '.', '!', '?', ',', unescape('%u0009'), unescape('%u0020'), 'Enter'];
+			this.sccDelimiters = [ ':', ';', '.', '!', '?', ',',
+				unescape( '%u0009' ), unescape( '%u0020' ), 'Enter' ];
 			this.sccIdle = 5000;
 			this.sccDelay = 500;
 			this.sccTimerIdle = false;
@@ -75,49 +85,47 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, C
 
 			// see keyset http://www.w3.org/TR/2007/WD-DOM-Level-3-Events-20071221/keyset.html
 			this.keyCodeMap = {
-					 93 : "Apps",         // The Application key
-					 18 : "Alt",          // The Alt (Menu) key.
-					 20 : "CapsLock",     // The Caps Lock (Capital) key.
-					 17 : "Control",      // The Control (Ctrl) key.
-					 40 : "Down",         // The Down Arrow key.
-					 35 : "End",          // The End key.
-					 13 : "Enter",        // The Enter key.
-					112 : "F1",           // The F1 key.
-					113 : "F2",           // The F2 key.
-					114 : "F3",           // The F3 key.
-					115 : "F4",           // The F4 key.
-					116 : "F5",           // The F5 key.
-					117 : "F6",           // The F6 key.
-					118 : "F7",           // The F7 key.
-					119 : "F8",           // The F8 key.
-					120 : "F9",           // The F9 key.
-					121 : "F10",          // The F10 key.
-					122 : "F11",          // The F11 key.
-					123 : "F12",          // The F12 key.
-					// Anybody knows the keycode for F13-F24?
-					 36 : "Home",         // The Home key.
-					 45 : "Insert",       // The Insert (Ins) key.
-					 37 : "Left",         // The Left Arrow key.
-					224 : "Meta",         // The Meta key.
-					 34 : "PageDown",     // The Page Down (Next) key.
-					 33 : "PageUp",       // The Page Up key.
-					 19 : "Pause",        // The Pause key.
-					 44 : "PrintScreen",  // The Print Screen (PrintScrn, SnapShot) key.
-					 39 : "Right",        // The Right Arrow key.
-					145 : "Scroll",       // The scroll lock key
-					 16 : "Shift",        // The Shift key.
-					 38 : "Up",           // The Up Arrow key.
-					 91 : "Win",          // The left Windows Logo key.
-					 92 : "Win"           // The right Windows Logo key.
+				 93 : "Apps",         // The Application key
+				 18 : "Alt",          // The Alt ( Menu ) key.
+				 20 : "CapsLock",     // The Caps Lock ( Capital ) key.
+				 17 : "Control",      // The Control ( Ctrl ) key.
+				 40 : "Down",         // The Down Arrow key.
+				 35 : "End",          // The End key.
+				 13 : "Enter",        // The Enter key.
+				112 : "F1",           // The F1 key.
+				113 : "F2",           // The F2 key.
+				114 : "F3",           // The F3 key.
+				115 : "F4",           // The F4 key.
+				116 : "F5",           // The F5 key.
+				117 : "F6",           // The F6 key.
+				118 : "F7",           // The F7 key.
+				119 : "F8",           // The F8 key.
+				120 : "F9",           // The F9 key.
+				121 : "F10",          // The F10 key.
+				122 : "F11",          // The F11 key.
+				123 : "F12",          // The F12 key.
+
+				// Anybody knows the keycode for F13-F24?
+				 36 : "Home",         // The Home key.
+				 45 : "Insert",       // The Insert ( Ins ) key.
+				 37 : "Left",         // The Left Arrow key.
+				224 : "Meta",         // The Meta key.
+				 34 : "PageDown",     // The Page Down ( Next ) key.
+				 33 : "PageUp",       // The Page Up key.
+				 19 : "Pause",        // The Pause key.
+				 44 : "PrintScreen",  // The Print Screen ( PrintScrn, SnapShot ) key.
+				 39 : "Right",        // The Right Arrow key.
+				145 : "Scroll",       // The scroll lock key
+				 16 : "Shift",        // The Shift key.
+				 38 : "Up",           // The Up Arrow key.
+				 91 : "Win",          // The left Windows Logo key.
+				 92 : "Win"           // The right Windows Logo key.
 			};
 
-			// placeholder
 			this.placeholderClass = 'aloha-placeholder';
 
-			// register the editable with Aloha
-			Aloha.registerEditable(this);
+			Aloha.registerEditable( this );
 
-			// try to initialize the editable
 			this.init();
 		},
 
@@ -126,102 +134,101 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, C
 		 * @return void
 		 * @hide
 		 */
-		init: function(){
+		init: function() {
 			var me = this;
-			
+
 			// TODO make editables their own settings.
-			this.settings = Aloha.settings; 
-				
+			this.settings = Aloha.settings;
+
 			// smartContentChange settings
 			// @TODO move to new config when implemented in Aloha
-			if (Aloha.settings && Aloha.settings.smartContentChange) {
-				if (Aloha.settings.smartContentChange.delimiters) {
+			if ( Aloha.settings && Aloha.settings.smartContentChange ) {
+				if ( Aloha.settings.smartContentChange.delimiters ) {
 					this.sccDelimiters = Aloha.settings.smartContentChange.delimiters;
-				} else {
+				} /* else {
 					this.sccDelimiters = this.sccDelimiters;
-				}
+				} */
 
-				if (Aloha.settings.smartContentChange.idle) {
+				if ( Aloha.settings.smartContentChange.idle ) {
 					this.sccIdle = Aloha.settings.smartContentChange.idle;
-				} else {
+				} /* else {
 					this.sccIdle = this.sccIdle;
-				}
+				} */
 
-				if (Aloha.settings.smartContentChange.delay) {
+				if ( Aloha.settings.smartContentChange.delay ) {
 					this.sccDelay = Aloha.settings.smartContentChange.delay;
-				} else {
+				} /* else {
 					this.sccDelay = this.sccDelay;
-				}
+				} */
 			}
 
 			// check if Aloha can handle the obj as Editable
 			if ( !this.check( this.obj ) ) {
-				//Aloha.log('warn', this, 'Aloha cannot handle {' + this.obj[0].nodeName + '}');
+				//Aloha.log( 'warn', this, 'Aloha cannot handle {' + this.obj[0].nodeName + '}' );
 				this.destroy();
 				return;
 			}
 
 			// apply content handler to clean up content
 			var content = me.obj.html();
-			if ( typeof Aloha.settings.contentHandler.initEditable === 'undefined') {
+			if ( typeof Aloha.settings.contentHandler.initEditable === 'undefined' ) {
 				Aloha.settings.contentHandler.initEditable = Aloha.defaults.contentHandler.initEditable;
 			}
 			content = ContentHandlerManager.handleContent( content, {
-				contenthandler: Aloha.settings.contentHandler.initEditable 
-			});
+				contenthandler: Aloha.settings.contentHandler.initEditable
+			} );
 			me.obj.html( content );
 
-			// only initialize the editable when Aloha is fully ready (including plugins)
-			Aloha.bind('aloha-ready',function(){
+			// only initialize the editable when Aloha is fully ready ( including plugins )
+			Aloha.bind( 'aloha-ready', function() {
 				// initialize the object
-				me.obj.addClass('aloha-editable')
-					.contentEditable(true);
+				me.obj.addClass( 'aloha-editable' ).contentEditable( true );
 
 				// add focus event to the object to activate
-				me.obj.mousedown(function(e) {
+				me.obj.mousedown( function( e ) {
 					// check whether the mousedown was already handled
-					if (!Aloha.eventHandled) {
+					if ( !Aloha.eventHandled ) {
 						Aloha.eventHandled = true;
-						return me.activate(e);
+						return me.activate( e );
 					}
-				});
+				} );
 
-				me.obj.mouseup(function(e) {
+				me.obj.mouseup( function( e ) {
 					Aloha.eventHandled = false;
-				});
+				} );
 
-				me.obj.focus(function(e) {
-					return me.activate(e);
-				});
+				me.obj.focus( function( e ) {
+					return me.activate( e );
+				} );
 
 				// by catching the keydown we can prevent the browser from doing its own thing
 				// if it does not handle the keyStroke it returns true and therefore all other
-				// events (incl. browser's) continue
-				me.obj.keydown(function(event) {
+				// events ( incl. browser's ) continue
+				me.obj.keydown( function( event ) {
 					me.keyCode = event.which;
-					return Markup.preProcessKeyStrokes(event);
-				});
+					return Markup.preProcessKeyStrokes( event );
+				} );
 
 				// handle keypress
-				me.obj.keypress( function(event) {
+				me.obj.keypress( function( event ) {
 					// triggers a smartContentChange to get the right charcode
 					// To test try http://www.w3.org/2002/09/tests/keys.html
-					Aloha.activeEditable.smartContentChange(event);
-				});
+					Aloha.activeEditable.smartContentChange( event );
+				} );
 
 				// handle shortcut keys
-				me.obj.keyup(function(event) {
-					if (event.keyCode === 27 ) {
+				me.obj.keyup( function( event ) {
+					if ( event.keyCode === 27 ) {
 						Aloha.deactivateEditable();
 						return false;
 					}
-				});
+				} );
 
 				// register the onSelectionChange Event with the Editable field
-				me.obj.contentEditableSelectionChange(function (event) {
-					Selection.onChange(me.obj, event);
+				me.obj.contentEditableSelectionChange( function( event ) {
+					Selection.onChange( me.obj, event );
 					return me.obj;
-				});
+				} );
 
 				// mark the editable as unmodified
 				me.setUnmodified();
@@ -231,35 +238,34 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, C
 				// destroying the events
 //				// apply content handler to clean up content
 //				var content = me.obj.html();
-//				if ( typeof Aloha.settings.contentHandler.initEditable === 'undefined') {
+//				if ( typeof Aloha.settings.contentHandler.initEditable === 'undefined' ) {
 //					Aloha.settings.contentHandler.initEditable = Aloha.defaults.contentHandler.initEditable;
 //				}
 //				content = ContentHandlerManager.handleContent( content, {
-//					contenthandler: Aloha.settings.contentHandler.initEditable 
-//				});
+//					contenthandler: Aloha.settings.contentHandler.initEditable
+//				} );
 //				me.obj.html( content );
 
 				me.snapshotContent = me.getContents();
 
-				// FF bug: check for empty editable contents (no <br>; no whitespace)
-				if (jQuery.browser.mozilla) {
+				// FF bug: check for empty editable contents ( no <br>; no whitespace )
+				if ( jQuery.browser.mozilla ) {
 					me.initEmptyEditable();
 				}
 
-				// init placeholder
 				me.initPlaceholder();
 
-				// now the editable is ready
 				me.ready = true;
+
 				// throw a new event when the editable has been created
 				/**
-				 * @event editableCreated fires after a new editable has been created, eg. via $('#editme').aloha()
+				 * @event editableCreated fires after a new editable has been created, eg. via $( '#editme' ).aloha()
 				 * The event is triggered in Aloha's global scope Aloha
 				 * @param {Event} e the event object
 				 * @param {Array} a an array which contains a reference to the currently created editable on its first position
 				 */
-				Aloha.trigger('aloha-editable-created',[me]);
-			});
+				Aloha.trigger( 'aloha-editable-created', [ me ] );
+			} );
 		},
 
 		/**
@@ -288,7 +294,6 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, C
 		 * @hide
 		 */
 		check: function() {
-
 			/* TODO check those elements
 			'map', 'meter', 'object', 'output', 'progress', 'samp',
 			'time', 'area', 'datalist', 'figure', 'kbd', 'keygen',
@@ -297,20 +302,22 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, C
 
 			// Extract El
 			var	me = this,
-				obj = this.obj,
-				el = obj.get(0),
-				nodeName = el.nodeName.toLowerCase(),
-				// supported elements
-				textElements = [ 'a', 'abbr', 'address', 'article', 'aside',
-						'b', 'bdo', 'blockquote',  'cite', 'code', 'command',
-						'del', 'details', 'dfn', 'div', 'dl', 'em', 'footer', 'h1', 'h2',
-						'h3', 'h4', 'h5', 'h6', 'header', 'i', 'ins', 'menu',
-						'nav', 'p', 'pre', 'q', 'ruby',  'section', 'small',
-						'span', 'strong',  'sub', 'sup', 'var'],
-				i, div, updateFunction;
+			    obj = this.obj,
+			    el = obj.get( 0 ),
+			    nodeName = el.nodeName.toLowerCase(),
 
-			for (i = 0; i < textElements.length; i++) {
-				if ( nodeName == textElements[i] ) {
+				// supported elements
+			    textElements = [ 'a', 'abbr', 'address', 'article', 'aside',
+						'b', 'bdo', 'blockquote',  'cite', 'code', 'command',
+						'del', 'details', 'dfn', 'div', 'dl', 'em', 'footer',
+						'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'header', 'i',
+						'ins', 'menu', 'nav', 'p', 'pre', 'q', 'ruby',
+						'section', 'small', 'span', 'strong', 'sub', 'sup',
+						'var' ],
+			    i, div;
+
+			for ( i = 0; i < textElements.length; i++ ) {
+				if ( nodeName === textElements[ i ] ) {
 					return true;
 				}
 			}
@@ -321,28 +328,32 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, C
 				case 'button':
 					// TODO need some special handling.
 					break;
-
 				case 'textarea':
 					// Create a div alongside the textarea
-					div = jQuery('<div id="'+this.getId()+'-aloha" class="aloha-textarea"/>').insertAfter(obj);
-					// Resize the div to the textarea
-					div.height(obj.height())
-						.width(obj.width())
+					div = jQuery( '<div id="' + this.getId() +
+							'-aloha" class="aloha-textarea" />' )
+								.insertAfter( obj );
+
+					// Resize the div to the textarea and
 					// Populate the div with the value of the textarea
-						.html(obj.val());
-					// Hide the textarea
+					// Then, hide the textarea
+					div.height( obj.height() )
+					   .width( obj.width() )
+					   .html( obj.val() );
+
 					obj.hide();
-					// Attach a onsubmit to the form to place the HTML of the div back into the textarea
-					updateFunction = function(){
-						var val = me.getContents();
-						obj.val(val);
-					};
-					obj.parents('form:first').submit(updateFunction);
+
+					// Attach a onsubmit to the form to place the HTML of the
+					// div back into the textarea
+					obj.parents( 'form:first' ).submit( function() {
+						obj.val( me.getContents() );
+					} );
+
 					// Swap textarea reference with the new div
 					this.obj = div;
+
 					// Supported
 					return true;
-
 				default:
 					break;
 			}
@@ -368,32 +379,26 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, C
 		},
 
 		/**
-		 * Check if the conteneditable is empty
+		 * Check if the conteneditable is empty.
 		 *
-		 * @return {bool}
+		 * @return {Boolean}
 		 */
 		isEmpty: function() {
-			var editableTrimedContent = jQuery.trim(this.getContents()),
-				onlyBrTag = (editableTrimedContent == '<br>') ? true : false;
-
-			if (editableTrimedContent.length === 0 || onlyBrTag) {
-				return true;
-			} else {
-				return false;
-			}
+			var editableTrimedContent = jQuery.trim( this.getContents() ),
+				onlyBrTag = ( editableTrimedContent === '<br>' ) ? true : false;
+			return ( editableTrimedContent.length === 0 || onlyBrTag );
 		},
 
 		/**
 		 * Check if the editable div is not empty. Fixes a FF browser bug
 		 * see issue: https://github.com/alohaeditor/Aloha-Editor/issues/269
 		 *
-		 * @return void
+		 * @return {undefined}
 		 */
-		initEmptyEditable: function() {
+		initEmptyEditable: function( ) {
 			var obj = this.obj;
-			
-			if (this.empty(this.getContents())) {
-				jQuery(obj).prepend('<br class="aloha-cleanme" />');
+			if ( this.empty( this.getContents() ) ) {
+				jQuery( obj ).prepend( '<br class="aloha-cleanme" />' );
 			}
 		},
 
@@ -403,31 +408,30 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, C
 		 * @return void
 		 */
 		addPlaceholder: function() {
+			var div = jQuery( '<div>' ),
+			    span = jQuery( '<span>' ),
+			    el,
+			    obj = this.obj;
 
-			var
-				div = jQuery('<div />'),
-				span = jQuery('<span />'),
-				el,
-				obj = this.obj;
-
-			if (GENTICS.Utils.Dom.allowsNesting(obj[0], div[0])) {
+			if ( GENTICS.Utils.Dom.allowsNesting( obj[0], div[0] ) ) {
 				el = div;
 			} else {
 				el = span;
 			}
 
-			jQuery(obj).append(el.addClass(this.placeholderClass));
+			jQuery( obj ).append( el.addClass( this.placeholderClass ) );
 			jQuery.each(
 				Aloha.settings.placeholder,
-				function (selector, selectorConfig) {
-					if (obj.is(selector)) {
-						el.html(selectorConfig);
+				function( selector, selectorConfig ) {
+					if ( obj.is( selector ) ) {
+						el.html( selectorConfig );
 					}
 				}
 			);
 
 			// remove browser br
-			jQuery('br', obj).remove();
+			jQuery( 'br', obj ).remove();
+
 			// delete div, span, el;
 		},
 
@@ -436,30 +440,33 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, C
 		 * will also set the cursor to the start of the selection. However,
 		 * this will be ASYNCHRONOUS, so if you rely on the fact that
 		 * the placeholder is removed after calling this method, setCursor
-		 * should be false (or not set)
+		 * should be false ( or not set )
 		 *
 		 * @return void
 		 */
-		removePlaceholder: function(obj, setCursor) {
-			var
-				placeholderClass = this.placeholderClass,
-				range;
+		removePlaceholder: function( obj, setCursor ) {
+			var placeholderClass = this.placeholderClass,
+			    range;
+
 	//		// remove browser br
-	//		jQuery('br', obj).remove();
+	//		jQuery( 'br', obj ).remove();
 
 			// set the cursor // remove placeholder
-			if (setCursor === true) {
+			if ( setCursor === true ) {
 				range = Selection.getRangeObject();
-				if ( !range.select ) {return;}
-				range.startContainer = range.endContainer = obj.get(0);
+				if ( !range.select ) {
+					return;
+				}
+				range.startContainer = range.endContainer = obj.get( 0 );
 				range.startOffset = range.endOffset = 0;
 				range.select();
 
-				window.setTimeout(function() {
-					jQuery('.' + placeholderClass, obj).remove();
-				}, 20);
+				window.setTimeout( function() {
+					jQuery( '.' + placeholderClass, obj ).remove();
+				}, 20 );
+
 			} else {
-				jQuery('.' + placeholderClass, obj).remove();
+				jQuery( '.' + placeholderClass, obj ).remove();
 			}
 		},
 
@@ -468,36 +475,26 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, C
 		 * @return void
 		 */
 		destroy: function() {
-
 			// leave the element just to get sure
-			if (this == Aloha.getActiveEditable()) {
+			if ( this === Aloha.getActiveEditable() ) {
 				this.blur();
 
 				// also hide the floating menu if the current editable was active
 				FloatingMenu.hide();
 			}
 
-			// original Object
-			var	me = this,
-				oo = this.originalObj.get(0),
-				onn = oo.nodeName.toLowerCase(),
-				val;
-
 			// special handled elements
-			switch ( onn ) {
+			switch ( this.originalObj.get( 0 ).nodeName.toLowerCase() ) {
 				case 'label':
 				case 'button':
 					// TODO need some special handling.
 					break;
-
 				case 'textarea':
 					// restore content to original textarea
-					val = this.getContents();
-					this.originalObj.val(val);
+					this.originalObj.val( this.getContents() );
 					this.obj.remove();
 					this.originalObj.show();
 					break;
-
 				default:
 					break;
 			}
@@ -506,37 +503,34 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, C
 			this.ready = false;
 
 			// remove the placeholder if needed.
-			this.removePlaceholder(this.obj);
+			this.removePlaceholder( this.obj );
 
-			// initialize the object
-			this.obj.removeClass('aloha-editable')
-			// Disable contentEditable
-						.contentEditable(false)
-
+			// initialize the object and disable contentEditable
 			// unbind all events
 			// TODO should only unbind the specific handlers.
-						.unbind('mousedown click dblclick focus keydown keypress keyup');
+			this.obj.removeClass( 'aloha-editable' )
+			    .contentEditable( false )
+			    .unbind( 'mousedown click dblclick focus keydown keypress keyup' );
 
 			/* TODO remove this event, it should implemented as bind and unbind
 			// register the onSelectionChange Event with the Editable field
-			this.obj.contentEditableSelectionChange(function (event) {
-				Aloha.Selection.onChange(me.obj, event);
+			this.obj.contentEditableSelectionChange( function( event ) {
+				Aloha.Selection.onChange( me.obj, event );
 				return me.obj;
-			});
+			} );
 			*/
 
 			// throw a new event when the editable has been created
 			/**
-			 * @event editableCreated fires after a new editable has been destroyes, eg. via $('#editme').mahalo()
+			 * @event editableCreated fires after a new editable has been destroyes, eg. via $( '#editme' ).mahalo()
 			 * The event is triggered in Aloha's global scope Aloha
 			 * @param {Event} e the event object
 			 * @param {Array} a an array which contains a reference to the currently created editable on its first position
 			 */
-			Aloha.trigger('aloha-editable-destroyed',[this]);
+			Aloha.trigger( 'aloha-editable-destroyed', [ this ] );
 
 			// finally register the editable with Aloha
-			Aloha.unregisterEditable(this);
-
+			Aloha.unregisterEditable( this );
 		},
 
 		/**
@@ -544,7 +538,7 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, C
 		 * that it's contents have been saved
 		 * @method
 		 */
-		setUnmodified: function () {
+		setUnmodified: function() {
 			this.originalContent = this.getContents();
 		},
 
@@ -553,8 +547,8 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, C
 		 * @method
 		 * @return boolean true if the editable has been modified, false otherwise
 		 */
-		isModified: function () {
-			return this.originalContent != this.getContents();
+		isModified: function() {
+			return this.originalContent !== this.getContents();
 		},
 
 		/**
@@ -569,8 +563,9 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, C
 		/**
 		 * check whether the editable has been disabled
 		 */
-		isDisabled: function () {
-			return !this.obj.contentEditable() || this.obj.contentEditable() === 'false';
+		isDisabled: function() {
+			return !this.obj.contentEditable()
+				|| this.obj.contentEditable() === 'false';
 		},
 
 		/**
@@ -578,7 +573,7 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, C
 		 * a disabled editable cannot be written on by keyboard
 		 */
 		disable: function() {
-			return this.isDisabled() || this.obj.contentEditable(false);
+			return this.isDisabled() || this.obj.contentEditable( false );
 		},
 
 		/**
@@ -586,7 +581,7 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, C
 		 * reenables a disabled editable to be writteable again
 		 */
 		enable: function() {
-			return this.isDisabled() && this.obj.contentEditable(true);
+			return this.isDisabled() && this.obj.contentEditable( true );
 		},
 
 
@@ -595,45 +590,42 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, C
 		 * disables all other active items
 		 * @method
 		 */
-		activate: function(e) {
+		activate: function( e ) {
 			// get active Editable before setting the new one.
 			var oldActive = Aloha.getActiveEditable();
 
-			// We need to ommit this call when this flag is set to true. 
-			// This flag will only be set to true before the removePlaceholder method 
-			// is called since that method invokes a focus event which will again trigger 
+			// We need to ommit this call when this flag is set to true.
+			// This flag will only be set to true before the removePlaceholder method
+			// is called since that method invokes a focus event which will again trigger
 			// this method. We want to avoid double invokation of this method.
 			if ( ignoreNextActivateEvent ) {
 				ignoreNextActivateEvent = false;
 				return;
 			}
-			
+
 			// handle special case in which a nested editable is focused by a click
 			// in this case the "focus" event would be triggered on the parent element
 			// which actually shifts the focus away to it's parent. this if is here to
 			// prevent this situation
-			if (e && e.type == 'focus' && oldActive !== null && oldActive.obj.parent().get(0) === e.currentTarget) {
+			if ( e && e.type === 'focus' && oldActive !== null
+			     && oldActive.obj.parent().get( 0 ) === e.currentTarget ) {
 				return;
 			}
 
 			// leave immediately if this is already the active editable
-			if (this.isActive || this.isDisabled()) {
+			if ( this.isActive || this.isDisabled() ) {
 				// we don't want parent editables to be triggered as well, so return false
 				return;
 			}
 
-			// set the class
-			this.obj.addClass('aloha-editable-active');
+			this.obj.addClass( 'aloha-editable-active' );
 
-			// set active Editable in core
 			Aloha.activateEditable( this );
 
 			ignoreNextActivateEvent = true;
-			// Placeholder handling
 			this.removePlaceholder ( this.obj, true );
 			ignoreNextActivateEvent = false;
 
-			// finally mark this object as active
 			this.isActive = true;
 
 			/**
@@ -644,10 +636,10 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, C
 			 * as the currently active editable on it's second position
 			 */
 			// trigger a 'general' editableActivated event
-			Aloha.trigger('aloha-editable-activated',{
+			Aloha.trigger( 'aloha-editable-activated', {
 				'oldActive' : oldActive,
 				'editable' : this
-			});
+			} );
 		},
 
 		/**
@@ -657,18 +649,10 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, C
 		 * @hide
 		 */
 		blur: function() {
-
-			// blur this contenteditable
 			this.obj.blur();
-
-			// disable active status
 			this.isActive = false;
-
-			// placeholder
 			this.initPlaceholder();
-
-			// remove the class
-			this.obj.removeClass('aloha-editable-active');
+			this.obj.removeClass( 'aloha-editable-active' );
 
 			/**
 			 * @event editableDeactivated fires after the editable has been activated by clicking on it.
@@ -676,15 +660,12 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, C
 			 * @param {Event} e the event object
 			 * @param {Array} a an array which contains a reference to this editable
 			 */
-			// trigger a 'general' editableDeactivated event
-			Aloha.trigger('aloha-editable-deactivated',{
-				'editable' : this
-			});
+			Aloha.trigger( 'aloha-editable-deactivated', { editable : this } );
 
 			/**
 			 * @event smartContentChanged
 			 */
-			Aloha.activeEditable.smartContentChange({type : 'blur'}, null);
+			Aloha.activeEditable.smartContentChange( { type : 'blur' }, null );
 		},
 
 		/**
@@ -693,10 +674,10 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, C
 		 * @return true if empty or string is null, false otherwise
 		 * @hide
 		 */
-		empty: function(str) {
-			return (null === str)
+		empty: function( str ) {
 			// br is needed for chrome
-			|| (jQuery.trim(str) === '' || str === '<br/>');
+			return ( null === str )
+				   || ( jQuery.trim( str ) === '' || str === '<br/>' );
 		},
 
 		/**
@@ -704,27 +685,23 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, C
 		 * @method
 		 * @return contents of the editable
 		 */
-		getContents: function(asObject) {
-			// clone the object
-			var clonedObj = this.obj.clone(false);
+		getContents: function( asObject ) {
+			var clonedObj = this.obj.clone( false );
 
 			// do core cleanup
-			clonedObj.find('.aloha-cleanme').remove();
+			clonedObj.find( '.aloha-cleanme' ).remove();
+			this.removePlaceholder( clonedObj );
+			PluginManager.makeClean( clonedObj );
 
-			// remove placeholder
-			this.removePlaceholder(clonedObj);
-
-			PluginManager.makeClean(clonedObj);
-
-			/* 
+			/*
 			//also deactivated for now. like initEditable. just in case ...
 			var content = clonedObj.html()
-			if (typeof Aloha.settings.contentHandler.getContents === 'undefined') {
+			if ( typeof Aloha.settings.contentHandler.getContents === 'undefined' ) {
 				Aloha.settings.contentHandler.getContents = Aloha.defaults.contentHandler.getContents;
 			}
-			content = ContentHandlerManager.handleContent( content, { 
-				contenthandler: Aloha.settings.contentHandler.getContents 
-			});
+			content = ContentHandlerManager.handleContent( content, {
+				contenthandler: Aloha.settings.contentHandler.getContents
+			} );
 			clonedObj.html( content );
 			*/
 
@@ -737,7 +714,7 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, C
 		 * @return id of this editable
 		 */
 		getId: function() {
-			return this.obj.attr('id');
+			return this.obj.attr( 'id' );
 		},
 
 		/**
@@ -749,15 +726,17 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, C
 		 * The smart content change event would therefore signal to any
 		 * component that is listening to this event, that content has been
 		 * inserted into the editable that may need to be prococessed in a
-		 * special way 
+		 * special way
 		 * This is used for smart actions within the content/while editing.
+		 * @param {Event} event
 		 * @hide
 		 */
 		smartContentChange: function( event ) {
 			var me = this,
-				uniChar = null,
-				re, match;
-			
+			    uniChar = null,
+			    re,
+			    match;
+
 			// ignore meta keys like crtl+v or crtl+l and so on
 			if ( event && ( event.metaKey || event.crtlKey || event.altKey ) ) {
 				return false;
@@ -769,13 +748,16 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, C
 				match = re.exec( event.originalEvent.keyIdentifier );
 
 				// Use keyIdentifier if available
-				if ( event.originalEvent.keyIdentifier && 1 == 2 ) {
+				if ( event.originalEvent.keyIdentifier && 1 === 2 ) {
+					// @fixme: Because of "&& 1 === 2" above, all the below is
+					// unreachable code
 					if ( match !== null ) {
-						uniChar = unescape( '%u' + match[ 1 ] );
+						uniChar = unescape( '%u' + match[1] );
 					}
 					if ( uniChar === null ) {
 						uniChar = event.originalEvent.keyIdentifier;
 					}
+
 				// FF & Opera don't support keyIdentifier
 				} else {
 					// Use among browsers reliable which http://api.jquery.com/keypress
@@ -783,32 +765,31 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, C
 									String.fromCharCode( event.which ) || 'unknown' );
 				}
 			}
-			
+
 			// handle "Enter" -- it's not "U+1234" -- when returned via "event.originalEvent.keyIdentifier"
 			// reference: http://www.w3.org/TR/2007/WD-DOM-Level-3-Events-20071221/keyset.html
 			if ( jQuery.inArray( uniChar, this.sccDelimiters ) >= 0 ) {
-
 				clearTimeout( this.sccTimerIdle );
 				clearTimeout( this.sccTimerDelay );
 
 				this.sccTimerDelay = setTimeout( function() {
-
 					Aloha.trigger( 'aloha-smart-content-changed', {
-						'editable' : me,
-						'keyIdentifier' : event.originalEvent.keyIdentifier,
-						'keyCode' : event.keyCode,
-						'char' : uniChar,
-						'triggerType' : 'keypress', // keypress, timer, blur, paste
+						'editable'        : me,
+						'keyIdentifier'   : event.originalEvent.keyIdentifier,
+						'keyCode'         : event.keyCode,
+						'char'            : uniChar,
+						'triggerType'     : 'keypress', // keypress, timer, blur, paste
 						'snapshotContent' : me.getSnapshotContent()
 					} );
 
-					Aloha.Log.debug( this, 'smartContentChanged: event type keypress triggered' );
+					console.debug( 'Aloha.Editable',
+						'smartContentChanged: event type keypress triggered' );
 	/*
 					var r = Aloha.Selection.rangeObject;
-					if (r.isCollapsed()
-						&& r.startContainer.nodeType == 3) {
+					if ( r.isCollapsed()
+						&& r.startContainer.nodeType == 3 ) {
 
-						var posDummy = jQuery('<span id="GENTICS-Aloha-PosDummy" />');
+						var posDummy = jQuery( '<span id="GENTICS-Aloha-PosDummy" />' );
 
 						GENTICS.Utils.Dom.insertIntoDOM(
 							posDummy,
@@ -819,7 +800,7 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, C
 							false
 						);
 
-						console.log(posDummy.offset().top, posDummy.offset().left);
+						console.log( posDummy.offset().top, posDummy.offset().left );
 
 						GENTICS.Utils.Dom.removeFromDOM(
 							posDummy,
@@ -832,46 +813,42 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, C
 					}
 	*/
 				}, this.sccDelay );
-			}
 
-			else if ( event && event.type === 'paste' ) {
+			} else if ( event && event.type === 'paste' ) {
 				Aloha.trigger( 'aloha-smart-content-changed', {
-					'editable' : me,
-					'keyIdentifier' : null,
-					'keyCode' : null,
-					'char' : null,
-					'triggerType' : 'paste',
+					'editable'        : me,
+					'keyIdentifier'   : null,
+					'keyCode'         : null,
+					'char'            : null,
+					'triggerType'     : 'paste',
 					'snapshotContent' : me.getSnapshotContent()
 				} );
-			}
 
-			else if ( event && event.type === 'blur' ) {
-				Aloha.trigger( 'aloha-smart-content-changed',{
-					'editable' : me,
-					'keyIdentifier' : null,
-					'keyCode' : null,
-					'char' : null,
-					'triggerType' : 'blur',
+			} else if ( event && event.type === 'blur' ) {
+				Aloha.trigger( 'aloha-smart-content-changed', {
+					'editable'        : me,
+					'keyIdentifier'   : null,
+					'keyCode'         : null,
+					'char'            : null,
+					'triggerType'     : 'blur',
 					'snapshotContent' : me.getSnapshotContent()
 				} );
-			}
 
-			else if ( uniChar !== null ) {
+			} else if ( uniChar !== null ) {
+				// in the rare case idle time is lower then delay time
+				clearTimeout( this.sccTimerDelay );
+				clearTimeout( this.sccTimerIdle );
 				this.sccTimerIdle = setTimeout( function() {
-					// in the rare case idle time is lower then delay time
-					clearTimeout( this.sccTimerDelay );
-
 					Aloha.trigger( 'aloha-smart-content-changed', {
-						'editable' : me,
-						'keyIdentifier' : null,
-						'keyCode' : null,
-						'char' : null,
-						'triggerType' : 'idle',
+						'editable'        : me,
+						'keyIdentifier'   : null,
+						'keyCode'         : null,
+						'char'            : null,
+						'triggerType'     : 'idle',
 						'snapshotContent' : me.getSnapshotContent()
 					} );
 				}, this.sccIdle );
 			}
-
 		},
 
 		/**
@@ -881,10 +858,9 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, C
 		 */
 		getSnapshotContent: function() {
 			var ret = this.snapshotContent;
-
 			this.snapshotContent = this.getContents();
-
 			return ret;
 		}
-	});
-});
+
+	} );
+} );
