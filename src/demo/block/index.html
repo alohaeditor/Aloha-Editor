@@ -61,10 +61,73 @@
 </head>
 <body>
 	<div id="main">
-		<div id="tree-div"></div>
 		<h1 id="title">Aloha, Blocks!</h1>
+		<p>This example demoes the following use cases:<br />
+		<table border="1">
+			<thead>
+				<tr>
+					<th>Editable/Non-Editable</th>
+					<th>Inline/Block-Level</th>
+					<th>inside editable/outside editable</th>
+					<th>Status</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>non-editable</td>
+					<td>block-level</td>
+					<td>outside editable</td>
+					<td>TODO</td>
+				</tr>
+				<tr>
+					<td>non-editable</td>
+					<td>block-level</td>
+					<td>inside editable</td>
+					<td><a href="#non-block-inside">Tested</a></td>
+				</tr>
+				<tr>
+					<td>non-editable</td>
+					<td>inline</td>
+					<td>outside editable</td>
+					<td>TODO</td>
+				</tr>
+				<tr>
+					<td>non-editable</td>
+					<td>inline</td>
+					<td>inside editable</td>
+					<td><a href="#non-inline-inside">Tested</a></td>
+				</tr>
+
+				<tr>
+					<td>editable</td>
+					<td>block-level</td>
+					<td>outside editable</td>
+					<td>TODO</td>
+				</tr>
+				<tr>
+					<td>editable</td>
+					<td>block-level</td>
+					<td>inside editable</td>
+					<td>TODO</td>
+				</tr>
+				<tr>
+					<td>editable</td>
+					<td>inline</td>
+					<td>outside editable</td>
+					<td>-- not relevant -- ?</td>
+				</tr>
+				<tr>
+					<td>editable</td>
+					<td>inline</td>
+					<td>inside editable</td>
+					<td>-- not relevant -- ?</td>
+				</tr>
+
+			</tbody>
+		</table>
+		</p>
 		<div id="bodyContent">
-			<h2>(1)Non-editable (2)Inline Blocks (3)inside editable</h2>
+			<h2><a name="non-inline-inside"></a>(1)Non-editable (2)Inline Blocks (3)inside editable</h2>
 			<div id="teaser" class="shorttext">
 				<h3>Inline Element</h3>
 				<p><b>This is the Product Teaser Example:</b> Try our new <span class="product-teaser" data-sku="2423423" data-title="Big can of fresh Aloha soup" data-price="27">Big can of fresh Aloha soup <span class="price">(27 €)</span></span>, it tastes delicious!</p>
@@ -83,7 +146,7 @@
 				</p>
 			</div>
 
-			<h2>(1)Non-editable (2)"Block"-Element Blocks (3)inside editable</h2>
+			<h2><a name="non-block-inside"></a>(1)Non-editable (2)"Block"-Element Blocks (3)inside editable</h2>
 			<div id="content" class="article">
 				<p>
 					 Blocks can be embedded right inside an editable. "Block" element blocks are not very
