@@ -66,12 +66,13 @@ h3. Future Work
 
 h3. Browser Compatibility
 
-|_.                |_. Firefox 7|_. Chrome 17|_. IE7 |_. IE8 |_. IE9 |_. Unit Test Written|
-|_. General Aloha  |  ✓         |  ✓         | (✓)   | ✓     | ✓     |     ✓              |
-|_. General Blocks |  ✓         |  ✓         | (✓)   | ✓     | ✓     |     ✓              |
-|_. Drag & Drop    |  ✓         |  ✓         |  ✘    | ✓slow | ✓     |     ✓              |
-|_. Copy & Paste   |  ✓         |  ✓         | (✓)   | ✓     | ✓     |     ✓              |
-|_. Cut & Paste    |  ✓         |  ✓         | (✓)   | ✓     | ✓     |     ✓              |
+|_.                                      |_. Firefox 7|_. Chrome 17|_. IE7 |_. IE8 |_. IE9 |_. Unit Test Written|
+|_. General Aloha                        |  ✓         |  ✓         |  ✓    | ✓     | ✓     |     ✓              |
+|_. General Blocks                       |  ✓         |  ✓         |  ✓    | ✓     | ✓     |     ✓              |
+|_. Drag & Drop of inline elements       |  ✓         |  ✓         |  ✘    | ✓     | ✓     |     ✓              |
+|_. Drag & Drop of block-level elements  |  ✓         |  ✓         |       | ✘     |(✓)    |     ✘              |
+|_. Copy & Paste                         |  ✓         |  ✓         |  ✓    | ✓     | ✓     |     ✓              |
+|_. Cut & Paste                          |  ✓         |  ✓         |  ✓    | ✓     | ✓     |     ✓              |
 
 h3. Changelog
 

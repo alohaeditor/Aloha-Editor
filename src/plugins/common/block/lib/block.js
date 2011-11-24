@@ -319,15 +319,17 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 			var that = this;
 			this.createEditablesIfNeeded();
 			this.renderDragHandlesIfNeeded();
-			if (this.isDraggable()) {
-				this._setupDragDrop();
+			if (this.isDraggable() && this.$element[0].tagName.toLowerCase() === 'span') {
+				this._setupDragDropForInlineElements();
+			} else if (this.isDraggable() && this.$element[0].tagName.toLowerCase() === 'div') {
+				this._setupDragDropForBlockElements();
 			}
 		},
 
 		/**************************
-		 * SECTION: Drag&Drop Setup
+		 * SECTION: Drag&Drop for INLINE elements
 		 **************************/
-		_setupDragDrop: function() {
+		_setupDragDropForInlineElements: function() {
 			var that = this;
 
 			// Here, we store the character DOM element which has been hovered upon recently.
@@ -337,6 +339,7 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 
 			this.$element.draggable({
 				handle: '.aloha-block-draghandle',
+				scope: 'aloha-block-inlinedragdrop',
 				revert: function(isDropped) {
 					if (!isDropped) {
 						return true;
@@ -352,11 +355,13 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 						// make block elements droppable
 						tolerance: 'pointer',
 						addClasses: false, // performance optimization
+						scope: 'aloha-block-inlinedragdrop',
 						over: function(event, ui) {
 							that._dd_traverseDomTreeAndWrapCharactersWithSpans(this);
 							jQuery('span[data-i]', this).droppable({
 								tolerance: 'pointer',
 								addClasses: false,
+								scope: 'aloha-block-inlinedragdrop',
 								hoverClass: 'aloha-block-droppable',
 								over: function() {
 									lastHoveredCharacter = this;
@@ -568,6 +573,29 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 				nodesToDelete[i].parentNode.removeChild(nodesToDelete[i]);
 			}
 		},
+
+		/**************************
+		 * SECTION: Drag&Drop for Block elements
+		 **************************/
+		_setupDragDropForBlockElements: function() {
+			// We only want to make "block-level" aloha blocks sortable. According to the docs,
+			// sortable.cancel should have a CSS selector and if this matches, the element is only
+			// a drop target but NOT draggable. However, passing :not(.aloha-block) does not work somehow :-(
+			// Alternative:
+			// Every "block-level" aloha block drag handle gets a new CSS class, and we only select this as
+			// drag handle. As only "block-level" aloha blocks have this CSS class, this will also only make
+			// aloha blocks draggable.
+			this.$element.find('.aloha-block-draghandle').addClass('aloha-block-draghandle-blocklevel');
+			this.$element.parents('.aloha-editable').sortable({
+				revert: 100,
+				handle: '.aloha-block-draghandle-blocklevel'
+			});
+		},
+
+
+		/**************************
+		 * SECTION: Other Rendering Helpers
+		 **************************/
 
 		/**
 		 * Create editables from the inner content that was
