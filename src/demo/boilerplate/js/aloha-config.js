@@ -156,6 +156,10 @@
 				"ins",
 				"del"]
 			}
+			,
+			'numerated-headers': {
+				numeratedactive: false
+			}
 		}
 	};
 } )( window );
