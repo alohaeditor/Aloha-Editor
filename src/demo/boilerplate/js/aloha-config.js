@@ -129,6 +129,10 @@
 			formatlesspaste: {
 				formatlessPasteOption: true
 			}
+			,
+			'numerated-headers': {
+				numeratedactive: false
+			}
 		}
 	};
 } )( window );
