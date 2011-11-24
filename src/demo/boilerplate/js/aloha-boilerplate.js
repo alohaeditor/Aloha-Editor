@@ -191,16 +191,16 @@ Aloha.ready(function() {
 						} );
 					
 					viewArea.css( {
-						background    : '#fff',
-						height        : 400,
-						margin        : 0,
-						padding       : 10,
-						border        : 0,
-						color		  : '#aaa',
+						'background'  : '#fff',
+						'height'      : 400,
+						'margin'      : 0,
+						'padding'     : 10,
+						'border'      : 0,
+						'color'		  : '#888',
 						'line-height' : '1.5em',
 						'font-size'   : '12px',
 						'font-family' : 'monospace',
-						overflow      : 'scroll'
+						'overflow'	  : 'scroll'
 						// 'white-space' : 'pre'
 					} );
 					
@@ -212,7 +212,7 @@ Aloha.ready(function() {
 								var sNode = range.startContainer;
 								var eNode = range.endContainer;
 								
-								if ( !sNode || !eNode ) {
+								if ( !sNode || !eNode || Aloha.activeEditable == null ) {
 									return;
 								}
 								

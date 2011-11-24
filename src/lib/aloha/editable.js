@@ -23,17 +23,19 @@ define(
 function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, ContentHandlerManager) {
 	"use strict";
 	
-	var
-//		Aloha = window.Aloha,
-//		Class = window.Class,
-		unescape = window.unescape,
-		GENTICS = window.GENTICS;
+	var	unescape = window.unescape,
+		GENTICS = window.GENTICS,
+		// True, if the next editable activate event should not be handled
+		ignoreNextActivateEvent = false;
 
 	// default supported and custom content handler settings
 	// @TODO move to new config when implemented in Aloha
 	Aloha.defaults.contentHandler = {};
-	Aloha.defaults.contentHandler.initEditable = [ 'generic', 'sanitize' ];
-	Aloha.defaults.contentHandler.getContents = [ 'generic', 'sanitize' ];
+	Aloha.defaults.contentHandler.initEditable = [ 'sanitize' ];
+	Aloha.defaults.contentHandler.getContents = [ 'sanitize' ];
+	// The insertHtml contenthandler (paste) will, by default, use all
+	// registered content handlers.
+	//Aloha.defaults.contentHandler.insertHtml = void 0;
 	
 	if (typeof Aloha.settings.contentHandler === 'undefined') {
 		Aloha.settings.contentHandler = {};
@@ -597,6 +599,15 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, C
 			// get active Editable before setting the new one.
 			var oldActive = Aloha.getActiveEditable();
 
+			// We need to ommit this call when this flag is set to true. 
+			// This flag will only be set to true before the removePlaceholder method 
+			// is called since that method invokes a focus event which will again trigger 
+			// this method. We want to avoid double invokation of this method.
+			if ( ignoreNextActivateEvent ) {
+				ignoreNextActivateEvent = false;
+				return;
+			}
+			
 			// handle special case in which a nested editable is focused by a click
 			// in this case the "focus" event would be triggered on the parent element
 			// which actually shifts the focus away to it's parent. this if is here to
@@ -617,9 +628,10 @@ function(Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection, Markup, C
 			// set active Editable in core
 			Aloha.activateEditable( this );
 
+			ignoreNextActivateEvent = true;
 			// Placeholder handling
-			this.removePlaceholder(this.obj, true);
-
+			this.removePlaceholder ( this.obj, true );
+			ignoreNextActivateEvent = false;
 
 			// finally mark this object as active
 			this.isActive = true;

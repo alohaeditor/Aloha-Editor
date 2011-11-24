@@ -146,8 +146,10 @@ function( Aloha, Class, jQuery ) {
 		query: function ( params, callback ) {
 			var that = this,
 				repo,
-				// The marged results, collected from repository responses
+				// The merged results, collected from repository responses
 				allitems = [],
+				// the merge metainfo, collected from repository responses
+				allmetainfo = {numItems: 0, hasMoreItems: false},
 				// The set of repositories towhich we want to delegate work
 				repositories = [],
 				// A counting semaphore (working in reverse, ie: 0 means free)
@@ -177,8 +179,9 @@ function( Aloha, Class, jQuery ) {
 				 * nb: "this" is reference to the calling repository
 				 *
 				 * @param {Array} items - Results returned by the repository
+				 * @param {Object} metainfo - optional Metainfo returned by the repository
 				 */
-				processResults = function ( items ) {
+				processResults = function ( items, metainfo ) {
 					if (numOpenCallbacks == 0) {
 						return;
 					}
@@ -198,9 +201,29 @@ function( Aloha, Class, jQuery ) {
 					if ( j ) {
 						jQuery.merge( allitems, items );
 					}
-					
+
+					if ( metainfo && allmetainfo ) {
+						if ( jQuery.isNumeric(metainfo.numItems)
+								&& jQuery.isNumeric(allmetainfo.numItems) ) {
+							allmetainfo.numItems += metainfo.numItems;
+						} else {
+							allmetainfo.numItems = undefined;
+						}
+
+						if (jQuery.isBoolean(metainfo.hasMoreItems)
+							&& jQuery.isBoolean(allmetainfo.hasMoreItems)) {
+							allmetainfo.hasMoreItems = allmetainfo.hasMoreItems || metainfo.hasMoreItems;
+						} else {
+							allmetainfo.hasMoreItems = undefined;
+						}
+					} else {
+						// at least one repository did not return metainfo, so we have no aggregated metainfo at all
+						allmetainfo = undefined;
+					}
+
+					// TODO how to return the metainfo here?
 					if ( --numOpenCallbacks == 0 ) {
-						that.queryCallback( callback, allitems, timer );
+						that.queryCallback( callback, allitems, allmetainfo, timer );
 					}
 				};
 			
@@ -212,7 +235,7 @@ function( Aloha, Class, jQuery ) {
 			var timeout = parseInt( params.timeout, 10 ) || 5000;
 			timer = setTimeout(function() {
 				numOpenCallbacks = 0;
-				that.queryCallback( callback, allitems, timer );
+				that.queryCallback( callback, allitems, allmetainfo, timer );
 			}, timeout);
 			
 			// If repositoryId or a list of repository ids, is not specified in
@@ -244,7 +267,7 @@ function( Aloha, Class, jQuery ) {
 			// If none of the repositories implemented the query method, then
 			// don't wait for the timeout, simply report to the client
 			if (numOpenCallbacks == 0) {
-				this.queryCallback( callback, allitems, timer );
+				this.queryCallback( callback, allitems, allmetainfo, timer );
 			}
 		},
 
@@ -255,11 +278,12 @@ function( Aloha, Class, jQuery ) {
 		 * @param {Function} callback - Callback specified by client when
 		 *								invoking the query method
 		 * @param {Array} items - Results, collected from all repositories
+		 * @param {Object} metainfo - optional object containing metainfo
 		 * @param {Timer} timer - We need to clear this timer
 		 * @return void
 		 * @hide
 		 */
-		queryCallback: function ( callback, items, timer ) {
+		queryCallback: function ( callback, items, metainfo, timer ) {
 			if ( timer ) {
 				clearTimeout( timer );
 				timer = undefined;
@@ -276,7 +300,12 @@ function( Aloha, Class, jQuery ) {
 				items   : items,
 				results : items.length
 			};
-			
+
+			if (metainfo) {
+				result.numItems = metainfo.numItems;
+				result.hasMoreItems = metainfo.hasMoreItems;
+			}
+
 			callback.call( this, result );
 		},
 		

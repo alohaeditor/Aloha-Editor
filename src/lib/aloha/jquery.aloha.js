@@ -313,4 +313,12 @@ function( Aloha, Selection, jQuery, console ) {
 		// Return the modified object
 		return target;
 	};
+
+	jQuery.isBoolean = function(b) {
+		return b === true || b === false;
+	},
+
+	jQuery.isNumeric = function(o) {
+		return ! isNaN (o-0);
+	}
 });
