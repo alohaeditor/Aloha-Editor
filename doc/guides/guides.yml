@@ -58,6 +58,9 @@ index:
     - title: "Content Handler"
       url: plugin_contenthandler
       text: "Learn how to use and extend the contenthandler plugin for advanced content editing."
+    - title: "Browser"
+      url: plugin_browser
+      text: "Learn how to use and extend the browser plugin for enhanced file browsing"
 
   Contributing to Aloha Editor:
     - title: Development Process

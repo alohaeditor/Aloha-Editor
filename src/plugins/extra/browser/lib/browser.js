@@ -39,8 +39,6 @@ var
 		'list-altrow'     : 'aloha-browser-list-altrow',
 		'list-resizable'  : 'aloha-browser-list-resizable',
 		'list-pager'      : 'aloha-browser-list-pager',
-		// TODO: consider removing: not used		
-		//'list-pager-left' : 'aloha-browser-list-pager-left',
 		'list-btns'       : 'aloha-browser-list-btns',
 		'search-btn'      : 'aloha-browser-search-btn',
 		'search-field'    : 'aloha-browser-search-field',
@@ -617,9 +615,9 @@ var Browser = Class.extend({
 		var listUID = 'aloha-browser-list-' + (++uid);
 
 		var list = jQuery(renderTemplate(
-				'<table id="'+listUID+'"\
-					class="{list}"></table>'
-			));
+			'<table id="'+listUID+'"\
+				class="{list}"></table>'
+		));
 
 		var colNames = [''];
 		// This is a hidden utility column to help us with auto sorting
@@ -642,10 +640,12 @@ var Browser = Class.extend({
 			});
 		});
 		
-		// jqGrid requires that we use an id, despite what the documentation says
-		// (http://www.trirand.com/jqgridwiki/doku.php?id=wiki:pager&s[]=pager).
-		// We need a unique id, however, in order to distinguish pager elements for
-		// each browser instance
+		/* 
+		* jqGrid requires that we use an id, despite what the documentation says
+		* (http://www.trirand.com/jqgridwiki/doku.php?id=wiki:pager&s[]=pager).
+		* We need a unique id, however, in order to distinguish pager elements for
+		* each browser instance
+		*/
 		var listPagerUID = 'aloha-browser-list-page-' + (++uid);
 		container.append(list, jQuery('<div id="' + listPagerUID + '">'));
 		
@@ -709,9 +709,6 @@ var Browser = Class.extend({
 		// TODO: implement this once repositories can handle it, hidding it for now
 		container.find('.ui-pg-input').parent().hide()
 		container.find('.ui-separator').parent().css('opacity', 0).first().hide();
-		
-		// TODO: consider removing this line, because no element with id: 'aloha-browser-list-pager-left' is ever created	
-		//container.find('#aloha-browser-list-pager-left').hide();
 		
 		this.createTitlebar(container);
 		
