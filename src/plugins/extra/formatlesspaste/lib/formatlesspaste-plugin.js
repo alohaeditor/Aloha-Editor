@@ -52,7 +52,7 @@ function(Aloha, Plugin, jQuery, FloatingMenu, FormatlessPasteHandler, ContentHan
 			"bdo",
 			"ins",
 			"del" 
-      ],
+		],
 
 		/**
 		 * Initialize the PastePlugin
@@ -68,12 +68,9 @@ function(Aloha, Plugin, jQuery, FloatingMenu, FormatlessPasteHandler, ContentHan
 				this.strippedElements = this.settings.strippedElements;
 			}
 
-			
-
-			  if(this.formatlessPasteOption) {
+			if ( this.formatlessPasteOption ) {
 				this.registerFormatlessPasteHandler(); 
-			  };
-
+			};
 
 		},
 
@@ -82,25 +79,25 @@ function(Aloha, Plugin, jQuery, FloatingMenu, FormatlessPasteHandler, ContentHan
 		 */
 		registerFormatlessPasteHandler: function(){
 		
-		  ContentHandlerManager.register( 'formatless', FormatlessPasteHandler );
-		  FormatlessPasteHandler.strippedElements = this.strippedElements;
-		  // add button to toggle format-less pasting
-		  this.formatlessPasteButton = new Aloha.ui.Button({
+			ContentHandlerManager.register( 'formatless', FormatlessPasteHandler );
+			FormatlessPasteHandler.strippedElements = this.strippedElements;
+			// add button to toggle format-less pasting
+			this.formatlessPasteButton = new Aloha.ui.Button({
 					'iconClass' : 'aloha-button aloha-button-formatless-paste',
 					'size' : 'small',
 					'onclick' : function () { 
-			  //toggle the value of allowFormatless
-			  FormatlessPasteHandler.enabled = !FormatlessPasteHandler.enabled;
-			},
-					'tooltip' : i18n.t('button.formatlessPaste.tooltip'),
+						//toggle the value of allowFormatless
+						FormatlessPasteHandler.enabled = !FormatlessPasteHandler.enabled;
+					},
+					'tooltip' : i18n.t( 'button.formatlessPaste.tooltip' ),
 					'toggle' : true
 				});
-		  FloatingMenu.addButton(
-					'Aloha.continuoustext',
-					this.formatlessPasteButton,
-					i18nCore.t('floatingmenu.tab.format'),
-					1
-				);
+			FloatingMenu.addButton(
+				'Aloha.continuoustext',
+				this.formatlessPasteButton,
+				i18nCore.t( 'floatingmenu.tab.format' ),
+				1
+			);
 		},
 	});
 });

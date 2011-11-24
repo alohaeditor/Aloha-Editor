@@ -4,6 +4,17 @@ This document is to serve as a "what has been done" in terms of the [Roadmap](ht
 
 ## 0.20.0-RC9 - 2011/11/23
 
+- formatlesspaste plugin: The elements stripped by the formatlesspaste plugin can now be configured like this
+```javascript
+	"formatlesspaste" :{
+				formatlessPasteOption : true,
+				strippedElements : [
+				"strong",
+				"i",
+				"b",
+				"u"]
+			}
+```
 - wai-lang plugin: The styling of the language input field, and dropdown suggestion box has been improved.
 - listenforcer-plugin: The enforce method is now a private function.
 - listenforcer-plugin: List enforcer plugin configuration should change
