@@ -65,7 +65,7 @@ function( Aloha, Registry, Engine, Dom, ContentHandlerManager ) {
 	var CommandManager = {
 			
 		execCommand: function( commandId, showUi, value, range ) {
-			
+			Aloha.trigger('aloha-command-will-execute', commandId);
 			// Read current selection if not passed
 			if ( !range ) {
 				if ( !Aloha.getSelection().getRangeCount() ) {
