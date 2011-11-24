@@ -70,7 +70,7 @@ h3. Browser Compatibility
 |_. General Aloha                               |  ✓         |  ✓         |  ✓    | ✓     | ✓     |     ✓              |
 |_. General Blocks                              |  ✓         |  ✓         |  ✓    | ✓     | ✓     |     ✓              |
 |_. Drag & Drop of inline elements              |  ✓         |  ✓         |  ✘    | ✓     | ✓     |     ✓              |
-|_. Drag & Drop of block-level elements         |  ✓         |  ✓         |  ✘    | ✘     |(✓)    |     ✘              |
+|_. Drag & Drop of block-level elements         |  ✓         |  ✓         |  ✘    | ✓     |(✓)    |     ✘              |
 |_. Copy & Paste                                |  ✓         |  ✓         |  ✓    | ✓     | ✓     |     ✓              |
 |_. Cut & Paste                                 |  ✓         |  ✓         |  ✓    | ✓     | ✓     |     ✓              |
 |_. Deletion of single blocks                   |  ✓         |  ✓         |       | ✘     |       |                    |

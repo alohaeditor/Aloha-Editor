@@ -325,9 +325,26 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 			this.renderDragHandlesIfNeeded();
 			if (this.isDraggable() && this.$element[0].tagName.toLowerCase() === 'span') {
 				this._setupDragDropForInlineElements();
+				this._disableUglyInternetExplorerDragHandles();
 			} else if (this.isDraggable() && this.$element[0].tagName.toLowerCase() === 'div') {
 				this._setupDragDropForBlockElements();
+				this._disableUglyInternetExplorerDragHandles();
 			}
+		},
+		_disableUglyInternetExplorerDragHandles: function() {
+
+			// :HINT The outest div (Editable) of the table is still in an editable
+			  // div. So IE will surround the the wrapper div with a resize-border
+			  // Workaround => just disable the handles so hopefully won't happen any ugly stuff.
+			  // Disable resize and selection of the controls (only IE)
+			  // Events only can be set to elements which are loaded from the DOM (if they
+			  // were created dynamically before) ;)
+
+			 this.$element.get( 0 ).onresizestart = function ( e ) { return false; };
+			 this.$element.get( 0 ).oncontrolselect = function ( e ) { return false; };
+			 //this.$element.get( 0 ).ondragstart = function ( e ) { return false; };
+			 this.$element.get( 0 ).onmovestart = function ( e ) { return false; };
+			 this.$element.get( 0 ).onselectstart = function ( e ) { return false; };
 		},
 
 		/**************************
