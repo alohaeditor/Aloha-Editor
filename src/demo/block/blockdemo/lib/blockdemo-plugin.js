@@ -17,10 +17,7 @@ define([
 			BlockManager.registerBlockType('ProductTeaserBlock', block.ProductTeaserBlock);
 			BlockManager.registerBlockType('CompanyBlock', block.CompanyBlock);
 			BlockManager.registerBlockType('EditableProductTeaserBlock', block.EditableProductTeaserBlock);
-			//BlockManager.registerBlockType('VCardBlock', block.VCardBlock);
-			BlockManager.registerBlockType('CustomHandleBlock', block.CustomHandleBlock);
-			BlockManager.registerBlockType('TwoColumnBlock', block.TwoColumnBlock);
-
+			
 			BlockManager.registerBlockType('ImageBlock', block.ImageBlock);
 			BlockManager.registerBlockType('EditableImageBlock', block.EditableImageBlock);
 			BlockManager.registerBlockType('NewsBlock', block.NewsBlock);
