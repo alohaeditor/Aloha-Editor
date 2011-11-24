@@ -728,6 +728,7 @@ define( [
 		 * inserted into the editable that may need to be prococessed in a
 		 * special way
 		 * This is used for smart actions within the content/while editing.
+		 * @param {Event} event
 		 * @hide
 		 */
 		smartContentChange: function( event ) {
