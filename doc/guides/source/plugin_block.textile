@@ -69,12 +69,13 @@ h3. Browser Compatibility
 |_.                                             |_. Firefox 7|_. Chrome 17|_. IE7 |_. IE8 |_. IE9 |_. Unit Test Written|
 |_. General Aloha                               |  ✓         |  ✓         |  ✓    | ✓     | ✓     |     ✓              |
 |_. General Blocks                              |  ✓         |  ✓         |  ✓    | ✓     | ✓     |     ✓              |
-|_. Drag & Drop of inline elements              |  ✓         |  ✓         |  ✘    | ✓     | ✓     |     ✓              |
-|_. Drag & Drop of block-level elements         |  ✓         |  ✓         |  ✘    | ✓     |(✓)    |     ✘              |
+|_. Drag & Drop of inline elements              |  ✓         |  ✓         | (✓)   | ✓     | ✓     |     ✓              |
+|_. Drag & Drop of block-level elements         |  ✓         |  ✓         |  ✓    | ✓     | ✓     |     ✘              |
 |_. Copy & Paste                                |  ✓         |  ✓         |  ✓    | ✓     | ✓     |     ✓              |
 |_. Cut & Paste                                 |  ✓         |  ✓         |  ✓    | ✓     | ✓     |     ✓              |
-|_. Deletion of single blocks                   |  ✓         |  ✓         |       | ✘     |       |                    |
-|_. Deletion of blocks being part of selection  |  ✓         |  ✓         |       | ✓     |       |                    |
+|_. Deletion of single blocks                   |  ✓         |  ✓         |  ✘    | ✘     | ✘     |      ✘              |
+|_. Deletion of blocks being part of selection  |  ✓         |  ✓         |  ✓    | ✓     | ✓     |      ✘              |
+|_. Caret handling of inline blocks             |  ✘         |  ✘         |  ✘    | ✘     | ✘     |      ✘              |
 
 h3. Changelog
 
