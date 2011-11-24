@@ -42,6 +42,7 @@ define([
 			EditorManager.register('number', editor.NumberEditor);
 			EditorManager.register('url', editor.UrlEditor);
 			EditorManager.register('email', editor.EmailEditor);
+			EditorManager.register('select', editor.SelectEditor);
 
 			// register content handler for block plugin
 			ContentHandlerManager.register('block', BlockContentHandler);

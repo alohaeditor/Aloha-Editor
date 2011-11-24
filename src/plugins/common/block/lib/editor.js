@@ -123,11 +123,23 @@ function(jQuery, Observable) {
 			var that = this;
 			this._$formInputElement = jQuery(this.formInputElementDefinition);
 
+			this.afterRenderFormElement(this._$formInputElement);
+
 			this._$formInputElement.change(function() {
 				that.trigger('change', that.getValue());
 			});
 
 			return this._$formInputElement;
+		},
+
+		/**
+		 * Callback which can be implemented by subclasses to adjust the rendered
+		 * form input element
+		 *
+		 * @param {jQuery} $formElement the form element being rendered
+		 */
+		afterRenderFormElement: function($formElement) {
+
 		},
 
 		/**
@@ -198,12 +210,31 @@ function(jQuery, Observable) {
 		formInputElementDefinition: '<input type="email" />'
 	});
 
+	/**
+	 * @name block.editor.SelectEditor
+	 * @class An editor for select fields
+	 * @extends block.editor.AbstractFormElementEditor
+	 */
+	var SelectEditor = AbstractFormElementEditor.extend(
+	/** @lends block.editor.SelectEditor */
+	{
+		formInputElementDefinition: '<select />',
+
+		afterRenderFormElement: function($formElement) {
+			jQuery.each(this.schema.values, function() {
+				var el = this;
+				$formElement.append(jQuery('<option />').attr('value', el.key).html(el.label));
+			});
+		}
+	});
+
 	return {
 		AbstractEditor: AbstractEditor,
 		AbstractFormElementEditor: AbstractFormElementEditor,
 		StringEditor: StringEditor,
 		NumberEditor: NumberEditor,
 		UrlEditor: UrlEditor,
-		EmailEditor: EmailEditor
+		EmailEditor: EmailEditor,
+		SelectEditor: SelectEditor
 	}
 });

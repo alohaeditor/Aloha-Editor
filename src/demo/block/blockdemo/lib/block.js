@@ -97,6 +97,17 @@ define([
 				'image': {
 					type: 'string',
 					label: 'Image URI'
+				},
+				'position': {
+					type: 'select',
+					label: 'Position',
+					values: [{
+						key: 'left',
+						label: 'Float left'
+					}, {
+						key: 'right',
+						label: 'Float right'
+					}]
 				}
 			}
 		},
@@ -104,6 +115,11 @@ define([
 			this.attr('image', $element.find('img').attr('src'));
 		},
 		update: function($element, postProcessFn) {
+			if (this.attr('position') === 'right') {
+				$element.css('float', 'right');
+			} else {
+				$element.css('float', 'left');
+			}
 			$element.find('img').attr('src', this.attr('image'));
 			postProcessFn();
 		}
