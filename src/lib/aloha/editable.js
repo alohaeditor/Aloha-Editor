@@ -32,8 +32,7 @@ define( [
 	         Markup, ContentHandlerManager, console ) {
 	'use strict';
 
-	var undefined = void 0,
-	    unescape = window.unescape,
+	var unescape = window.unescape,
 	    GENTICS = window.GENTICS,
 
 	    // True, if the next editable activate event should not be handled
@@ -146,21 +145,21 @@ define( [
 			if ( Aloha.settings && Aloha.settings.smartContentChange ) {
 				if ( Aloha.settings.smartContentChange.delimiters ) {
 					this.sccDelimiters = Aloha.settings.smartContentChange.delimiters;
-				} else {
+				} /* else {
 					this.sccDelimiters = this.sccDelimiters;
-				}
+				} */
 
 				if ( Aloha.settings.smartContentChange.idle ) {
 					this.sccIdle = Aloha.settings.smartContentChange.idle;
-				} else {
+				} /* else {
 					this.sccIdle = this.sccIdle;
-				}
+				} */
 
 				if ( Aloha.settings.smartContentChange.delay ) {
 					this.sccDelay = Aloha.settings.smartContentChange.delay;
-				} else {
+				} /* else {
 					this.sccDelay = this.sccDelay;
-				}
+				} */
 			}
 
 			// check if Aloha can handle the obj as Editable
@@ -313,9 +312,9 @@ define( [
 						'del', 'details', 'dfn', 'div', 'dl', 'em', 'footer',
 						'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'header', 'i',
 						'ins', 'menu', 'nav', 'p', 'pre', 'q', 'ruby',
-						'section', 'small', 'span', 'strong',  'sub', 'sup',
+						'section', 'small', 'span', 'strong', 'sub', 'sup',
 						'var' ],
-			    i, div, updateFunction;
+			    i, div;
 
 			for ( i = 0; i < textElements.length; i++ ) {
 				if ( nodeName === textElements[ i ] ) {
@@ -346,12 +345,9 @@ define( [
 
 					// Attach a onsubmit to the form to place the HTML of the
 					// div back into the textarea
-					updateFunction = function() {
-						var val = me.getContents();
-						obj.val( val );
-					};
-
-					obj.parents( 'form:first' ).submit( updateFunction );
+					obj.parents( 'form:first' ).submit( function() {
+						obj.val( me.getContents() );
+					} );
 
 					// Swap textarea reference with the new div
 					this.obj = div;
@@ -552,7 +548,7 @@ define( [
 		 * @return boolean true if the editable has been modified, false otherwise
 		 */
 		isModified: function() {
-			return this.originalContent != this.getContents();
+			return this.originalContent !== this.getContents();
 		},
 
 		/**
@@ -751,7 +747,9 @@ define( [
 				match = re.exec( event.originalEvent.keyIdentifier );
 
 				// Use keyIdentifier if available
-				if ( event.originalEvent.keyIdentifier && 1 == 2 ) {
+				if ( event.originalEvent.keyIdentifier && 1 === 2 ) {
+					// @fixme: Because of "&& 1 === 2" above, all the below is
+					// unreachable code
 					if ( match !== null ) {
 						uniChar = unescape( '%u' + match[1] );
 					}
@@ -815,7 +813,7 @@ define( [
 	*/
 				}, this.sccDelay );
 
-			} else if ( event && event.type == 'paste' ) {
+			} else if ( event && event.type === 'paste' ) {
 				Aloha.trigger( 'aloha-smart-content-changed', {
 					'editable'        : me,
 					'keyIdentifier'   : null,
@@ -825,7 +823,7 @@ define( [
 					'snapshotContent' : me.getSnapshotContent()
 				} );
 
-			} else if ( event && event.type == 'blur' ) {
+			} else if ( event && event.type === 'blur' ) {
 				Aloha.trigger( 'aloha-smart-content-changed', {
 					'editable'        : me,
 					'keyIdentifier'   : null,
