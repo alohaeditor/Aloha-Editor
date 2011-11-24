@@ -102,6 +102,9 @@ define([
 					type: 'select',
 					label: 'Position',
 					values: [{
+						key: '',
+						label: 'No Float'
+					}, {
 						key: 'left',
 						label: 'Float left'
 					}, {
@@ -123,6 +126,10 @@ define([
 			$element.find('img').attr('src', this.attr('image'));
 			postProcessFn();
 		}
+	});
+
+	var EditableImageBlock = ImageBlock.extend({
+
 	});
 
 	var NewsBlock = block.AbstractBlock.extend({
@@ -358,6 +365,7 @@ define([
 		CustomHandleBlock: CustomHandleBlock,
 		TwoColumnBlock: TwoColumnBlock,
 		ImageBlock: ImageBlock,
+		EditableImageBlock: EditableImageBlock,
 		NewsBlock: NewsBlock
 	};
 });
