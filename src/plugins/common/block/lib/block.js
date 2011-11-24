@@ -232,8 +232,12 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 			});
 
 			this.$element.addClass('aloha-block-active');
-			BlockManager.trigger('block-selection-change', highlightedBlocks);
 
+			// Internet Explorer does not remove the cursor, so we enforce it.
+			// However, this breaks editing of nested content elements.
+			//Aloha.getSelection().removeAllRanges();
+
+			BlockManager.trigger('block-selection-change', highlightedBlocks);
 			return false;
 		},
 

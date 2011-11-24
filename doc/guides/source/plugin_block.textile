@@ -73,8 +73,8 @@ h3. Browser Compatibility
 |_. Drag & Drop of block-level elements         |  ✓         |  ✓         |  ✘    | ✘     |(✓)    |     ✘              |
 |_. Copy & Paste                                |  ✓         |  ✓         |  ✓    | ✓     | ✓     |     ✓              |
 |_. Cut & Paste                                 |  ✓         |  ✓         |  ✓    | ✓     | ✓     |     ✓              |
-|_. Deletion of single blocks                   |  ✓         |  ✓         |       |       |       |                    |
-|_. Deletion of blocks being part of selection  |  ✓         |  ✓         |       |       |       |                    |
+|_. Deletion of single blocks                   |  ✓         |  ✓         |       | ✘     |       |                    |
+|_. Deletion of blocks being part of selection  |  ✓         |  ✓         |       | ✓     |       |                    |
 
 h3. Changelog
 
