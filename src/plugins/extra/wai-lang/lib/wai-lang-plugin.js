@@ -15,7 +15,7 @@ define( [
 	'wai-lang/languages',
 	'css!wai-lang/css/wai-lang.css'
 ], function ( Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore ) {
-	"use strict";
+	'use strict';
 	
 	var GENTICS = window.GENTICS;
 	
@@ -37,10 +37,11 @@ define( [
 		objectTypeFilter: [ 'language' ],
 		
 		/**
-		 * Initialize the plugin
+		 * Initialize the plugin:
+		 * Initializes UI components, and binds their event listeners.
 		 */
 		init: function () {
-			if ( typeof this.settings.objectTypeFilter != 'undefined' ) {
+			if ( this.settings.objectTypeFilter ) {
 				this.objectTypeFilter = this.settings.objectTypeFilter;
 			}
 			
@@ -62,7 +63,7 @@ define( [
 				if ( Aloha.activeEditable ) {
 					// show/hide the button according to the configuration
 					config = that.getEditableConfig( Aloha.activeEditable.obj );
-					if ( jQuery.inArray( 'span', config ) != -1) {
+					if ( jQuery.inArray( 'span', config ) != -1 ) {
 						that.addMarkupToSelectionButton.setPressed( false );
 					} else {
 						that.addMarkupToSelectionButton.setPressed( true );
@@ -83,7 +84,8 @@ define( [
 		},
 		
 		/**
-		 * Initialize the buttons
+		 * Initialize the buttons:
+		 * Places the Wai-Lang UI buttons into the floating menu.
 		 */
 		createButtons: function () {
 			var that = this;
@@ -111,10 +113,12 @@ define( [
 				'name'       : 'wailangfield',
 				'width'      : 320,
 				'valueField' : 'id',
-				'minChars'   : 1
+				'minChars'   : 1,
+				'cls'        : 'aloha-wailang-field'
 			} );
-			this.langField.setTemplate( '<img src="{url}" alt="{id}" ' +
-				'style="vertical-align: middle;"/> <a><b>{name}</b></a>' );
+			
+			this.langField.setTemplate(
+				'<div class="img-item"><img class="typeahead-image" src="{url}" /><div class="label-item">{name}</div></div>' );
 			this.langField.setObjectTypeFilter( this.objectTypeFilter );
 			
 			// add the input field for links
@@ -126,12 +130,12 @@ define( [
 			);
 			
 			this.removeButton = new Aloha.ui.Button( {
-				'name' : 'removewailang',
+				'name'      : 'removewailang',
 				'iconClass' : 'aloha-button aloha-button-wai-lang-remove',
-				'size' : 'small',
-				'onclick' : function () { that.removeLangMarkup(); },
-				'tooltip' : i18n.t( 'button.add-wai-lang-remove.tooltip' ),
-				'toggle' : false
+				'size'      : 'small',
+				'onclick'   : function () { that.removeLangMarkup(); },
+				'tooltip'   : i18n.t( 'button.add-wai-lang-remove.tooltip' ),
+				'toggle'    : false
 			} );
 			
 			FloatingMenu.addButton(
@@ -142,27 +146,53 @@ define( [
 			);
 		},
 		
+		/**
+		 * Given a range object, finds and returns a Wai-Lang wrapper DOM
+		 * element within the range.
+		 *
+		 * @param {GENTICS.Utils.RangeObject} range
+		 * @return {?DOMObject} the dom object found, or false if nothing found
+		 */
 		findLangMarkup: function ( range ) {
-			if ( typeof range == 'undefined' ) {
-		        var range = Aloha.Selection.getRangeObject();
-		    }
-			
+			var range = range || Aloha.Selection.getRangeObject();
 			if ( Aloha.activeEditable ) {
 			    return range.findMarkup( function () {
-			    	return jQuery( this ).hasClass( 'wai-lang' ) || jQuery( this ).is( '[lang]' );
+			    	return jQuery( this ).hasClass( 'wai-lang' ) ||
+								jQuery( this ).is( '[lang]' );
 			    }, Aloha.activeEditable.obj );
-			} else {
-				return null;
 			}
+			return null;
 		},
 		
+		/**
+		 * Check whether the range is within a span that contains a lang
+		 * attribute.
+		 *
+		 * @param {GENTICS.Utils.RangeObject} range range where to insert the
+		 *									  object (at start or end)
+		 * @return {?DOMObject} the dom object found, or false if nothing found
+		 * @hide
+		 */
+		findLanguageMarkup: function ( range ) {
+			var range = range || Aloha.Selection.getRangeObject();
+			if ( Aloha.activeEditable ) {
+				return range.findMarkup( function () {
+					return this.nodeName == 'SPAN';
+				}, Aloha.activeEditable.obj );
+			}
+			return null;
+		},
+		
+		/**
+		 *
+		 */
 		removeLangMarkup: function () {
-			var range = Aloha.Selection.getRangeObject();
-		    var foundMarkup = this.findLangMarkup( range );
+			var range = Aloha.Selection.getRangeObject(),
+			    foundMarkup = this.findLangMarkup( range );
+			
 		    if ( foundMarkup ) {
 		        // remove the abbr
 		        GENTICS.Utils.Dom.removeFromDOM( foundMarkup, range, true );
-
 		        // select the (possibly modified) range
 		        range.select();
 				FloatingMenu.setScope( 'Aloha.continousText' );
@@ -172,12 +202,13 @@ define( [
 		},
 		
 		/**
-		 * Parse a all editables for elements that have a lang attribute and bind an onclick event
+		 * Parse a all editables for elements that have a lang attribute and
+		 * bind an onclick event
 		 */
 		bindInteractions: function () {
 			var that = this;
 			
-			// on blur check if lang is empty. If so remove the a tag
+			// on blur check if lang is empty, if so remove the <a> tag
 			this.langField.addListener( 'blur', function ( obj, event ) {
 				// @todo check for a valid value -- now it's also possible to insert abcd; but that's not valid
 				if ( !this.getValue() ) {
@@ -186,7 +217,7 @@ define( [
 			} );
 			
 			Aloha.ready( function () {
-				that.handleExistingSpans( that ) ;
+				that.handleExistingSpans() ;
 			} );
 		},
 		
@@ -194,21 +225,28 @@ define( [
 		 * Find all existing spans and register hotkey hotkeys and make 
 		 * annotations of languages visible.
 		 */
-		handleExistingSpans: function ( that ) {
-			// add to all editables the Link shortcut
+		handleExistingSpans: function () {
+			var that = this;
+			
+			// Add the Link shortcut to all editables
 			jQuery.each( Aloha.editables, function ( key, editable ) {
 				// Hotkey for adding new language annotations: CTRL+I
 				editable.obj.keydown( that.handleKeyDown );
 			} );
 			
 			jQuery.each( Aloha.editables, function ( key, editable ) {
-				// Find all spans with lang attributes and add some css and event handlers
+				// Find all spans with lang attributes and add some css and
+				// event handlers
 				editable.obj.find( 'span[lang]' ).each( function ( i ) {
 					that.makeVisible( this );
 				} );
 			} );
 		},
 		
+		/**
+		 * @param {Event} e
+		 * @return {(Boolean|null)}
+		 */
 		handleKeyDown: function ( e ) {
 			if ( e.metaKey && e.which == 73 ) {
 				if ( this.findLangMarkup() ) {
@@ -217,8 +255,9 @@ define( [
 				} else {
 					this.addMarkupToSelection();
 				}
-				// prevent from further handling
-				// on a MAC Safari cursor would jump to location bar. Use ESC then META+I
+				// Prevent from further handling.
+				// on a MAC Safari, cursor would jump to location bar.
+				// We have to use ESC and then META+I instead.
 				return false;
 			}					
 		},
@@ -234,32 +273,12 @@ define( [
 		},
 		
 		/**
-		 * Check whether the range is within a span that contains a lang attribute
-		 * @param {GENTICS.Utils.RangeObject} range range where to insert the object (at start or end)
-		 * @return markup
-		 * @hide
-		 */
-		findLanguageMarkup: function ( range ) {
-			if ( typeof range == 'undefined' ) {
-				range = Aloha.Selection.getRangeObject();
-			}
-			
-			if ( Aloha.activeEditable ) {
-				return range.findMarkup( function () {
-					return this.nodeName.toLowerCase() == 'span';
-				}, Aloha.activeEditable.obj );
-			} else {
-				return null;
-			}
-		},
-		
-		/**
-		 * Format the current selection or if collapsed the current word as element that should be annotated.
+		 * Format the current selection or if collapsed the current word as
+		 * element that should be annotated.
 		 */
 		formatLanguageSpan: function () {
-			var range = Aloha.Selection.getRangeObject();
-			
 			if ( Aloha.activeEditable ) {
+				var range = Aloha.Selection.getRangeObject();
 				if ( this.findLanguageMarkup( range ) ) {
 					this.removeMarkup();
 				} else {
@@ -268,51 +287,54 @@ define( [
 			}
 		},
 		
+		/**
+		 * Toggles markup around selection.
+		 */
 		addRemoveMarkupToSelection: function () {
-			var that = this;
-			if ( that.addMarkupToSelectionButton.pressed ) {
-				that.removeLangMarkup();
+			if ( this.addMarkupToSelectionButton.pressed ) {
+				this.removeLangMarkup();
 			} else {
-				that.addMarkupToSelection( false );
+				this.addMarkupToSelection( false );
 			}
 		},
 		
+		/**
+		 * Retrieves the current selected range, and wraps it with wai-lang
+		 * content.
+		 */
 		addMarkupToSelection: function () {
-			var range, newSpan;
+			var range = Aloha.Selection.getRangeObject();
 			
 			// do not add markup to a area that already contains a markup
 			if ( this.findLangMarkup( range ) ) {
 				return;
 			}
 			
-			// activate floating menu tab
 			FloatingMenu.activateTabOfButton( 'wailangfield' );
             FloatingMenu.setScope( 'wai-lang' );
 			
-			// current selection or cursor position
-			range = Aloha.Selection.getRangeObject();
-			
-			// if selection is collapsed then extend to the word.
 			if ( range.isCollapsed() ) {
 				GENTICS.Utils.Dom.extendToWord( range );
 			}
+			
 			if ( !range.isCollapsed() ) {
-				newSpan = jQuery( '<span class="wai-lang"></span>' );
-				GENTICS.Utils.Dom.addMarkup( range, newSpan, false );
+				GENTICS.Utils.Dom.addMarkup(
+					range, jQuery( '<span class="wai-lang"></span>' ), false
+				);
 			}
 			
 			range.select();
-//			this.langField.focus();
+			// this.langField.focus();
 		},
 		
 		/**
 		 * Remove an a tag.
 		 */
 		removeMarkup: function () {
-			var	range = Aloha.Selection.getRangeObject(),
-				foundMarkup = this.findLangMarkup();
+			var foundMarkup = this.findLangMarkup();
+			
 			if ( foundMarkup ) {
-				// remove the markup
+				var	range = Aloha.Selection.getRangeObject();
 				GENTICS.Utils.Dom.removeFromDOM( foundMarkup, range, true );
 				// select the (possibly modified) range
 				range.select();
@@ -322,13 +344,11 @@ define( [
 		/**
 		 * Make the given jQuery object (representing an editable) clean for saving
 		 * Find all elements with lang attributes and remove the attribute.
-		 * @param obj jQuery object to make clean
-		 * @return void
+		 * @param {jQuery} obj jQuery object to make clean
 		 */
 		makeClean: function ( obj ) {
 			// find all lang spans
 			obj.find( 'span[lang]' ).each( function () {
-				//jQuery(this).css({'background-image' : ''})
 				jQuery( this ).removeClass( 'wai-lang' );
 			} );
 		}

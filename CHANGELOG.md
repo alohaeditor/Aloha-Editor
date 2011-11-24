@@ -2,8 +2,36 @@
 
 This document is to serve as a "what has been done" in terms of the [Roadmap](http://aloha-editor.org/wiki/Roadmap)
 
-## 0.20.0-RC8 - 2011/11/21
+## 0.20.0-RC9 - 2011/11/23
 
+- wai-lang plugin: The styling of the language input field, and dropdown suggestion box has been improved.
+- listenforcer-plugin: The enforce method is now a private function.
+- listenforcer-plugin: List enforcer plugin configuration should change
+
+	... from this:
+
+```javascript
+	"listenforcer" : {
+		"editables" : {
+			".myselector" : [ "true" ]
+		},
+		"config" : "false"
+	}
+```
+
+	... to this:
+
+```javascript
+	"listenforcer" : {
+		"editables" : [ ".myselector" ]
+	}
+```
+
+- listenforcer-plugin: The listenforcer plugin removes any non-list top-level elements to ensure that an editable in which lists are enforced will contain exactly one list as the only immediate child of the editable.
+
+## 0.20.0-RC8 - 2011/11/22
+
+- listenforcer-plugin: The listenforcer plugin was refactored. Method names were changed and the way the plugin works with lists was also changed. It will now no longer replace list dom elments. Instead it will move sibling lists into the first list element within the editable. Previously the whole element was replaced and thus the selection was lost. This caused problems with the floating menu. The user had to click two times into a list to make the floating menu appear since the selection was lost due to dom replacements. This is now fixed.
 - core: The aloha-editable-activated will now no longer invoked twice.
 - image-plugin: Fixed handling of width and height when the user entered the cropping mode. You can resize the crop area by entering values in the width and height field. 
 - list-plugin/link-plugin: The list plugin interfered with the link plugin behaviour. Previously it was not possible to create links within a list due to a bug within the list plugin. The list plugin will now no longer use the Aloha.List scope.
