@@ -39,6 +39,8 @@ This document is to serve as a "what has been done" in terms of the [Roadmap](ht
 ```
 
 - listenforcer-plugin: The listenforcer plugin removes any non-list top-level elements to ensure that an editable in which lists are enforced will contain exactly one list as the only immediate child of the editable.
+- some changes in the Browser Plugin (browser.js) to allow multiple, distinguishable instances of browsers on the same page
+- customizable numerated-header plugin. Fixed issue: when header content is deleted, the numeration tag will be deleted, too
 
 ## 0.20.0-RC8 - 2011/11/22
 
