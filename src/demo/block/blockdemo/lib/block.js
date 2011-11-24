@@ -125,6 +125,37 @@ define([
 		}
 	});
 
+	var NewsBlock = block.AbstractBlock.extend({
+		title: 'News',
+		getSchema: function() {
+			var that = this;
+			return {
+				'news': {
+					type: 'button',
+					buttonLabel: 'Change news',
+					callback: function() {
+						var numberOfNewsArticles = Math.floor((Math.random()*6)+1);
+						alert('Will render ' + numberOfNewsArticles + ' news articles. (This is a placeholder for selecting news articles)');
+						that.attr('numberofarticles', numberOfNewsArticles);
+					}
+				}
+			}
+		},
+		update: function($element, postProcessFn) {
+			var numberOfArticlesToBeCreated = this.attr('numberofarticles') - $element.find('.newselement').length;
+			if (numberOfArticlesToBeCreated > 0) {
+				// Insert specified number of articles
+				for (var i=0; i<numberOfArticlesToBeCreated; i++) {
+					$element.find('.newselement').first().clone().appendTo($element);
+				}
+			} else if (numberOfArticlesToBeCreated < 0) {
+				// Delete articles
+				$element.find('.newselement').slice(numberOfArticlesToBeCreated).remove();
+			}
+			postProcessFn();
+		}
+	});
+
 	var VCardBlock;
 
 /*	Aloha.require( ['text!blockdemo/res/vcard.html'] , function ( vcardTemplate ) {
@@ -326,6 +357,7 @@ define([
 		VCardBlock: VCardBlock,
 		CustomHandleBlock: CustomHandleBlock,
 		TwoColumnBlock: TwoColumnBlock,
-		ImageBlock: ImageBlock
+		ImageBlock: ImageBlock,
+		NewsBlock: NewsBlock
 	};
 });

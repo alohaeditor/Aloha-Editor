@@ -228,6 +228,25 @@ function(jQuery, Observable) {
 		}
 	});
 
+	/**
+	 * @name block.editor.ButtonEditor
+	 * @class An editor for buttons, executing a custom supplied callback "callback"
+	 * @extends block.editor.AbstractFormElementEditor
+	 */
+	var ButtonEditor = AbstractFormElementEditor.extend(
+	/** @lends block.editor.SelectEditor */
+	{
+		formInputElementDefinition: '<button />',
+
+		afterRenderFormElement: function($formElement) {
+			var that = this;
+			$formElement.html(this.schema.buttonLabel);
+			$formElement.click(function() {
+				that.schema.callback();
+			})
+		}
+	});
+
 	return {
 		AbstractEditor: AbstractEditor,
 		AbstractFormElementEditor: AbstractFormElementEditor,
@@ -235,6 +254,7 @@ function(jQuery, Observable) {
 		NumberEditor: NumberEditor,
 		UrlEditor: UrlEditor,
 		EmailEditor: EmailEditor,
-		SelectEditor: SelectEditor
+		SelectEditor: SelectEditor,
+		ButtonEditor: ButtonEditor
 	}
 });

@@ -22,6 +22,7 @@ define([
 			BlockManager.registerBlockType('TwoColumnBlock', block.TwoColumnBlock);
 
 			BlockManager.registerBlockType('ImageBlock', block.ImageBlock);
+			BlockManager.registerBlockType('NewsBlock', block.NewsBlock);
 		}
 	});
 });
