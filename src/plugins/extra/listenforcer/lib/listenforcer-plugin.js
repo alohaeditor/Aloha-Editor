@@ -108,7 +108,7 @@ define( [
 		 */
 		init: function () {
 			var that = this,
-			    elemsToEnforce = this.settings.editables,
+			    elemsToEnforce = this.settings.editables || [],
 				elemToEnforce;
 			
 			// Register all editables that are to enforce lists.
