@@ -58,6 +58,12 @@ index:
     - title: "Content Handler"
       url: plugin_contenthandler
       text: "Learn how to use and extend the contenthandler plugin for advanced content editing."
+    - title: "Browser"
+      url: plugin_browser
+      text: "Learn how to use and extend the browser plugin for enhanced file browsing"
+    - title: "Numerated Headers"
+      url: plugin_numeratedheaders
+      text: "Learn how to use the Numerated Headers Plugin"
 
   Contributing to Aloha Editor:
     - title: Development Process
