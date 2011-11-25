@@ -61,7 +61,8 @@ define( [
 
 			// add the event handler for selection change
 			Aloha.bind( 'aloha-selection-changed', function( event, rangeObject ) {
-				var config, foundMarkup;
+				var config,
+				    foundMarkup;
 
 				if ( Aloha.activeEditable ) {
 					// show/hide the button according to the configuration
@@ -99,7 +100,9 @@ define( [
 				'name'      : 'wailang',
 				'iconClass' : 'aloha-button aloha-button-wai-lang',
 				'size'      : 'small',
-				'onclick'   : function() { that.addRemoveMarkupToSelection(); },
+				'onclick'   : function() {
+					that.addRemoveMarkupToSelection();
+				},
 				'tooltip'   : i18n.t( 'button.add-wai-lang.tooltip' ),
 				'toggle'    : true
 			} );
@@ -143,7 +146,9 @@ define( [
 				'name'      : 'removewailang',
 				'iconClass' : 'aloha-button aloha-button-wai-lang-remove',
 				'size'      : 'small',
-				'onclick'   : function() { that.removeLangMarkup(); },
+				'onclick'   : function() {
+					that.removeLangMarkup();
+				},
 				'tooltip'   : i18n.t( 'button.add-wai-lang-remove.tooltip' ),
 				'toggle'    : false
 			} );
@@ -221,6 +226,7 @@ define( [
 
 			// on blur check if lang is empty, if so remove the <a> tag
 			langField.addListener( 'blur', function( obj, event ) {
+debugger;
 				// @todo check for a valid value -- now it's also possible to insert abcd; but that's not valid
 				if ( !this.getValue() ) {
 					that.removeMarkup();
@@ -228,7 +234,7 @@ define( [
 			} );
 
 			Aloha.ready( function() {
-				that.handleExistingSpans() ;
+				that.handleExistingSpans();
 			} );
 		},
 

@@ -25,6 +25,7 @@ authors:
 index:
   order:
     - "Start Here"
+    - "The Core"
     - "Plugins"
     - "Commands"
     - "Contributing to Aloha Editor"
@@ -44,6 +45,10 @@ index:
     - title: "Writing Plugins"
       url: writing_plugins
       text: "In this guide, we will explain the plugin structure, the usage of requireJS and the plugin lifecylce in Aloha Editor."
+  The Core:
+    - title: "The Core"
+      url: aloha_core
+      text: "Learn about how Aloha Editor's core components work."
   Commands:
     - title: "Using commands"
       url: using_commands

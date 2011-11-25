@@ -1,3 +1,0 @@
-h2. The List Plugin
-
-Documentation pending

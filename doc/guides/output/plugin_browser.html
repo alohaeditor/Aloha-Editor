@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Aloha Guides: The Content Handler Plugin</title>
+  <title>Aloha Guides: The Browser Plugin</title>
 
   <!-- guides styles -->
   <link rel="stylesheet" type="text/css" href="stylesheets/style.css" />
@@ -89,107 +89,89 @@
     <div class="wrapper">
       <div id="mainCol">
           <div class="headerSection">
-            <h2>The Content Handler Plugin</h2>
-<p>After reading this guide, you will be able to:</p>
+            <h2>The Browser Plugin</h2>
+<p>In this guide we give an overview about:</p>
 <ul>
-	<li>Understand what Content Handler are and how to use them</li>
-	<li>Use the Content Handler <span class="caps">API</span> to create, modify and</li>
-	<li>Extend Content Handler with custom implementations</li>
+	<li>What is this plugin used for</li>
+	<li>How you can use and</li>
+	<li>How you cann Extend it</li>
 </ul>
 
           </div>
         
 <div class="warning"><p>This guide is currently work-in-progress.</p></div>
-<h3 id="what-are-content-handler">1 What are Content Handler?</h3>
-<p><strong>Aloha Content Handler</strong> (Content Handler) are used to sanitize content loaded or pasted in Aloha Editor.</p>
-<p>There are some Content Handler available:</p>
+<h3 id="what-the-browser-plugin-can-do-for-you">1 What the Browser Plugin can do for you?</h3>
+<p>The <strong>Browser Plugin</strong> (Browser) provides a good possibility for users to browse, search and select any kind of files in repositories.</p>
+<p>These are some specific kinds of files the user can look for:</p>
 <ul>
-	<li>Generic</li>
-	<li>Word</li>
-	<li>oEmbed</li>
-	<li>Sanitize</li>
+	<li>Websites</li>
+	<li>Images</li>
+	<li>Folders</li>
+	<li>etc..</li>
 </ul>
-<p>Plugins also provide Content Handler:</p>
-<ul>
-	<li>Block <tt>common/block</tt> plugin</li>
-</ul>
-<p>There are two hocks available:</p>
-<ul>
-	<li>insertHtml in <tt>common/commands</tt> plugin</li>
-	<li>initEditable in core/editable.js</li>
-</ul>
-<h3 id="enabling-the-content-handler-plugin">2 Enabling the Content Handler Plugin</h3>
+<h3 id="extending-the-browser-for-your-needs">2 Extending the Browser for your needs</h3>
 <h4 id="using-configuration">2.1 Using Configuration</h4>
+<p>Here we can see the default options:</p>
 <div class="code_container">
 <pre class="brush: javascript; gutter: false; toolbar: false">
 
-	Aloha.settings.contentHandler: {
-		insertHtml: [ 'word', 'generic', 'oembed', 'sanitize' ],
-		initEditable: [ 'sanitize' ],
-		sanitize: 'relaxed' // relaxed, restricted, basic,
-		allows: {
-			elements: [
-				'strong', 'em', 'i', 'b', 'blockquote', 'br', 'cite', 'code', 'dd', 'div', 'dl', 'dt', 'em',
-				'i', 'li', 'ol', 'p', 'pre', 'q', 'small', 'strike', 'sub',
-				'sup', 'u', 'ul'],
-
-			attributes: {
-				'a'         : ['href'],
-				'blockquote': ['cite'],
-				'q'         : ['cite']
-			 },
-
-			protocols: {
-				'a'         : {'href': ['ftp', 'http', 'https', 'mailto', '__relative__']}, // Sanitize.RELATIVE
-				'blockquote': {'cite': ['http', 'https', '__relative__']},
-				'q'         : {'cite': ['http', 'https', '__relative__']}
-			}
-		}
-	}
-</pre></div><p>For the sanitize Content Handler you can use a predefined set of allowed <span class="caps">HTML</span>-tags and attributes (&#8220;sanitize&#8221; option) or your own set defined as &#8220;allows&#8221; option. The configuration option for &#8220;insertHtml&#8221; and &#8220;initEditable&#8221; defines which Content Handler should be used at that hook points. &#8220;initEditable&#8221; uses the &#8220;sanitize&#8221; Content Handler by default. &#8220;insertHtml&#8221; uses all registered Content Handler by default (including the Content Handler from other Plugins)</p>
-<div class="warning"><p>The order how the handlers are loaded and executed is important. If you first load the &#8220;sanitize&#8221; or &#8220;generic&#8221; handler the &#8220;word&#8221; handler will not be able to detect a MS Word document.</p></div>
-<h3 id="apis-and-extension-points">3 APIs and Extension Points</h3>
-<p>There is the Content Handler Manager in Aloha Core available where Content Handler can register themself.</p>
-<h4 id="writing-your-own-content-handler">3.1 Writing your own Content Handler</h4>
+	var options = jQuery.extend({
+			// Set to true for development and debugging
+			verbose : false,
+			// The repository manager which this browser will interface with
+			repositoryManager : null,
+			repositoryFilter  : [],
+			objectTypeFilter  : [],
+			renditionFilter   : ['cmis:none'], // ['*']
+			filter : ['url'],
+			// DOMObject to which this instance of browser is bound to
+			element : undefined,
+			// root folder id
+			rootFolderId : 'aloha',
+			// root path to where Browser resources are located
+			rootPath  : '',
+			treeWidth : 300,
+			listWidth : 'auto',
+			pageSize  : 10,
+			columns : {
+				icon    : {title: '',        width: 30,  sortable: false, resizable: false},
+				name    : {title: i18n.t('Name'),    width: 250, sorttype: 'text'},
+				url     : {title: i18n.t('URL'),     width: 250, sorttype: 'text'},
+				preview : {title: i18n.t('Preview'), width: 200, sorttype: 'text'}
+			},
+			isFloating : false
+		}, opts || {});
+</pre></div><h4 id="build-your-own-specific-extension">2.2 Build your own specific Extension</h4>
+<p>Basically you are able override every function, for example the init() to use custom options:</p>
 <div class="code_container">
 <pre class="brush: javascript; gutter: false; toolbar: false">
 
-	define(
-	['aloha', 'aloha/jquery', 'aloha/contenthandlermanager'],
-	function(Aloha, jQuery, ContentHandlerManager) {
-		&quot;use strict&quot;;
+var MyCustomBrowser = Browser.extend({
 	
-		var MyContentHandler = ContentHandlerManager.createHandler({
-			handleContent: function( content ) {
-				
-				// do something with the content
-				
-				return content; // return as HTML text not jQuery/DOM object
-			}
-		});
+	init: function (config, oneMoreParameter) {
+		this._super(config);
 
-		return MyContentHandler;
-	});
-</pre></div><p>All Content Handler needs to support the &#8220;handleContent&#8221; method and will receive and return the content as <span class="caps">HTML</span> text.</p>
-<h3 id="internals">4 Internals</h3>
-<h3 id="future-work">5 Future Work</h3>
-<h3 id="changelog">6 Changelog</h3>
+		this.moreParameter = oneMoreParameter;
+
+		... do something with it
+	}
+})
+</pre></div><h5 id="customize-table-rows-and-columns">2.2.1 Customize table rows and columns</h5>
+<h3 id="capability-for-multiple-instances">3 Capability for multiple Instances</h3>
+<p>In the current version (0.20) there is the possibility to add multiple browser instances to a page.</p>
 <ul>
-	<li>October 06, 2011: Initial version by <a href="credits.html#rene_kapusta">Rene Kapusta</a></li>
+	<li>November 24, 2011: Initial version by Leonard Osang</li>
 </ul>
 
       </div>
         <div id="subCol">
           <h3 class="chapter"><img src="images/strobe/chapters.png" alt="" />Chapters</h3>
           <ol class="chapters">
-            <li><a href="#what-are-content-handler"><p>What are Content Handler?</p>
-</a></li><li><a href="#enabling-the-content-handler-plugin"><p>Enabling the Content Handler Plugin</p>
+            <li><a href="#what-the-browser-plugin-can-do-for-you"><p>What the Browser Plugin can do for you?</p>
+</a></li><li><a href="#extending-the-browser-for-your-needs"><p>Extending the Browser for your needs</p>
 </a><ul><li><a href="#using-configuration"><p>Using Configuration</p>
-</a></li></ul></li><li><a href="#apis-and-extension-points"><p>APIs and Extension Points</p>
-</a><ul><li><a href="#writing-your-own-content-handler"><p>Writing your own Content Handler</p>
-</a></li></ul></li><li><a href="#internals"><p>Internals</p>
-</a></li><li><a href="#future-work"><p>Future Work</p>
-</a></li><li><a href="#changelog"><p>Changelog</p>
+</a></li> <li><a href="#build-your-own-specific-extension"><p>Build your own specific Extension</p>
+</a></li></ul></li><li><a href="#capability-for-multiple-instances"><p>Capability for multiple Instances</p>
 </a></li>
           </ol>
         </div>
