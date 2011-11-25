@@ -4,6 +4,7 @@ This document is to serve as a "what has been done" in terms of the [Roadmap](ht
 
 ## 0.20.0-RC9 - 2011/11/23
 
+- image-plugin: The saved aspect ratio will now be correcly recalculated when a cropping action is sucessfully ended. Previously the aspect ratio was not recalculated and therefore resizing of images resulted in unexpected image sizes.
 - formatlesspaste plugin: The elements stripped by the formatlesspaste plugin can now be configured like this
 ```javascript
 	"formatlesspaste" :{
