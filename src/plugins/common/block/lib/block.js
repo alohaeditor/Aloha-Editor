@@ -209,7 +209,7 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 		 * will select the block's contents, highlight it, update the floating menu and update the sidebar (if needed)
 		 * @api
 		 */
-		activate: function() {
+		activate: function(eventTarget) {
 			var previouslyHighlightedBlocks = BlockManager._getHighlightedBlocks(),
 				highlightedBlocks = [];
 
@@ -233,9 +233,11 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 
 			this.$element.addClass('aloha-block-active');
 
-			// Internet Explorer does not remove the cursor, so we enforce it.
-			// However, this breaks editing of nested content elements.
-			//Aloha.getSelection().removeAllRanges();
+			// Browsers do not remove the cursor, so we enforce it when an aditable is clicked.
+			// However, when the user clicked inside a nested editable, we will not remove the cursor (as the user wants to start typing then)
+			if (jQuery(eventTarget).closest('.aloha-editable,.aloha-block').first().hasClass('aloha-block')) {
+				Aloha.getSelection().removeAllRanges();
+			}
 
 			BlockManager.trigger('block-selection-change', highlightedBlocks);
 			return false;
