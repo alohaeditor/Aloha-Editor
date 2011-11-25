@@ -42,7 +42,7 @@ function ( Aloha, jQuery ) {
 		
 		markObject: function ( obj, item )  {
 			//copied from wai-lang-plugin makeVisible to avoid a circular dependency
-			jQuery( obj ).addClass( 'wai-lang' );
+			jQuery( obj ).addClass( 'aloha-wai-lang' );
 		},
 		
 		/**
