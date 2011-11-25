@@ -17,10 +17,10 @@ define( [
 ], function( Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore ) {
 	'use strict';
 
-	var WAI_LANG_CLASS = 'aloha-wai-lang';
-	var GENTICS = window.GENTICS;
-	var addMarkupToSelectionButton;
-	var langField;
+	var WAI_LANG_CLASS = 'aloha-wai-lang',
+	    GENTICS = window.GENTICS,
+	    addMarkupToSelectionButton,
+	    langField;
 
 	return Plugin.create( 'wai-lang', {
 
@@ -66,7 +66,7 @@ define( [
 				if ( Aloha.activeEditable ) {
 					// show/hide the button according to the configuration
 					config = that.getEditableConfig( Aloha.activeEditable.obj );
-					if ( jQuery.inArray( 'span', config ) != -1 ) {
+					if ( jQuery.inArray( 'span', config ) !== -1 ) {
 						addMarkupToSelectionButton.setPressed( false );
 					} else {
 						addMarkupToSelectionButton.setPressed( true );
@@ -128,7 +128,7 @@ define( [
 					'<div class="label-item">{name}</div>' +
 				'</div>'
 			);
-			
+
 			langField.setObjectTypeFilter( this.objectTypeFilter );
 
 			// add the input field for links
@@ -139,7 +139,7 @@ define( [
 				1
 			);
 
-			this.removeButton = new Aloha.ui.Button( {
+			var removeButton = new Aloha.ui.Button( {
 				'name'      : 'removewailang',
 				'iconClass' : 'aloha-button aloha-button-wai-lang-remove',
 				'size'      : 'small',
@@ -150,7 +150,7 @@ define( [
 
 			FloatingMenu.addButton(
 				'wai-lang',
-				this.removeButton,
+				removeButton,
 				i18n.t( 'floatingmenu.tab.wai-lang' ),
 				1
 			);
@@ -164,10 +164,10 @@ define( [
 		 * @return {?DOMObject} the dom object found, or false if nothing found
 		 */
 		findLangMarkup: function( range ) {
-			var range = range || Aloha.Selection.getRangeObject();
+			range = range || Aloha.Selection.getRangeObject();
 			if ( Aloha.activeEditable ) {
-			    return range.findMarkup( function() {
-			    	return jQuery( this ).hasClass( WAI_LANG_CLASS )
+				return range.findMarkup( function() {
+					return jQuery( this ).hasClass( WAI_LANG_CLASS )
 						|| jQuery( this ).is( '[lang]' );
 			    }, Aloha.activeEditable.obj );
 			}
@@ -184,7 +184,7 @@ define( [
 		 * @hide
 		 */
 		findLanguageMarkup: function( range ) {
-			var range = range || Aloha.Selection.getRangeObject();
+			range = range || Aloha.Selection.getRangeObject();
 			if ( Aloha.activeEditable ) {
 				return range.findMarkup( function() {
 					return this.nodeName === 'SPAN';
@@ -203,7 +203,7 @@ define( [
 		    if ( foundMarkup ) {
 		        // remove the abbr
 		        GENTICS.Utils.Dom.removeFromDOM( foundMarkup, range, true );
-				
+
 		        // select the (possibly modified) range
 		        range.select();
 				FloatingMenu.setScope( 'Aloha.continousText' );
@@ -259,7 +259,7 @@ define( [
 		 * @return {?Boolean}
 		 */
 		handleKeyDown: function( e ) {
-			if ( e.metaKey && e.which == 73 ) {
+			if ( e.metaKey && e.which === 73 ) {
 				if ( this.findLangMarkup() ) {
 					FloatingMenu.activateTabOfButton( 'wailangfield' );
 					langField.focus();
@@ -347,10 +347,11 @@ define( [
 		 * Remove an a tag.
 		 */
 		removeMarkup: function() {
-			var foundMarkup = this.findLangMarkup();
+			var foundMarkup = this.findLangMarkup(),
+			    range;
 
 			if ( foundMarkup ) {
-				var	range = Aloha.Selection.getRangeObject();
+				range = Aloha.Selection.getRangeObject();
 				GENTICS.Utils.Dom.removeFromDOM( foundMarkup, range, true );
 
 				// select the (possibly modified) range
