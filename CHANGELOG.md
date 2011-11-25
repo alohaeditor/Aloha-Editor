@@ -54,6 +54,7 @@ This document is to serve as a "what has been done" in terms of the [Roadmap](ht
 
 - link-plugin: Fixed javascript error that occured when linking items using the repository browser in Internet Explorer 8.
 - boilerplate demo: Fixed javascript error that occured in Internet Explorer 8.
+- flag-icons plugin: It is now necessary to add the flag-icons plugin in the aloha plugin load order before any plugins that need to use the shared flag icons.
 - metaview-plugin: Fixed metaview plugin to use shared flags icon from flag-icons plugin, for consistancy between plugins.
 - wai-lang-plugin: Improved wai-lang language selection ui. Organized flags to be in a plugin their own plugin so that the icons can be shared between other components.
 - link-plugin: The autocomplete list was not closed properly when esc was pressed.
