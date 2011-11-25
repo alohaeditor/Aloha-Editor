@@ -1,0 +1,59 @@
+h2. Understanding the Aloha Editor core
+
+After reading this guide, you will be able to:
+
+* Understand how Aloha Editor initialized
+* use basic functionality the core provides
+
+endprologue.
+
+h3. Core files
+
+WARNING: TODO describe file contents
+
+* +src/lib/aloha.js+
+* +src/lib/aloha-bootstrap.js+
+* +src/lib/aloha/core.js+
+* ...
+
+h3. Initialization Process
+
+When Aloha Editor is loading several steps are completed until the initialization process is finished.
+
+WARNING: TODO add description for init process and events!
+
+<javascript>
+// init process taken from core.js
+Aloha.stage = 'loadPlugins';
+Aloha.loadPlugins(function(){
+	Aloha.stage = 'initAloha';
+	Aloha.initAloha(function(){
+		Aloha.stage = 'initPlugins';
+		Aloha.initPlugins(function(){
+			Aloha.stage = 'initGui';
+			Aloha.initGui(function(){
+				Aloha.stage = 'alohaReady';
+				Aloha.trigger('aloha-ready');
+			});
+		});
+	});
+});
+</javascript>
+
+h3. How to use require
+
+WARNING: TODO describe how Aloha.require is used
+
+h3. Internationalization
+
+WARNING: TODO describe
+
+h3. Logging
+
+WARNING: TODO describe
+
+h3. Utilities
+
+WARNING: TODO describe GENTICS.Utils.dom and the like
+
+.
