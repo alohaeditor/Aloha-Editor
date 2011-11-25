@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Aloha Guides: Configure Aloha Editor</title>
+  <title>Aloha Guides: The Formatless Paste Plugin</title>
 
   <!-- guides styles -->
   <link rel="stylesheet" type="text/css" href="stylesheets/style.css" />
@@ -89,59 +89,62 @@
     <div class="wrapper">
       <div id="mainCol">
           <div class="headerSection">
-            <h2>Configure Aloha Editor</h2>
-<p>After reading this guide, you will be able to:</p>
+            <h2>The Formatless Paste Plugin</h2>
+<p>The formatless paste plugin can be used to further strip pasted content.</p>
+<p>It provides the following features</p>
 <ul>
-	<li>Add configuration settings to you page and</li>
-	<li>Adapt Aloha Editor to your needs by means of configuration</li>
+	<li>Strip a configurable set of tags from pasted content</li>
+	<li>Enabled / disabled via a button in the floating menu</li>
+	<li>Configure the default behaviour (enabled/disabled)</li>
 </ul>
 
           </div>
-        <h3 id="basic-configuration">1 Basic Configuration</h3>
-<div class="warning"><p>Please write sth.!</p></div>
-<h3 id="configuring-the-floatingmenu">2 Configuring the FloatingMenu</h3>
-<p>The floating menu can be adapted to your needs by configuring tabs, groups and buttons. You may reassemble all of the existing buttons provided by plugins in any combination you want.</p>
-<div class="info"><p>A button may only be added once to the configuration. Adding the same button twice will yield no results exept raising a warning message.</p></div>
-<p>The following simple example should help to understand how to configure the FloatingMenu. Basically, all you have to do is define an array of button names (those are provided by plugins). As you might have noticed, groups may be named in our example (&#8220;flow&#8221;, &#8220;phrasing&#8221; or &#8220;first&#8221;). However, at this time naming groups yields no visual result in the current FloatingMenu. It will just help you structure your configuration.</p>
+        <h3 id="plugin-settings">1 Plugin Settings</h3>
+<p>The default behaviour can be configured with the setting &#8220;formatlessPasteOption&#8221;. The set of elements that should be stripped can be configured with the setting &#8220;strippedElements&#8221;.</p>
+<p>A typical configuration could look like this. If no configuration is provided, this is also the default configuration.</p>
 <div class="code_container">
-<pre class="brush: xml; gutter: false; toolbar: false">
+<pre class="brush: plain; gutter: false; toolbar: false">
 
-&lt;head&gt;
-&lt;script type=&quot;text/javascript&quot;&gt;
-Aloha.settings.toolbar = {
-	tabs : {
-		// will generate a tab labeled &quot;formatting&quot;
-		formatting : {
-			// group &quot;flow&quot;
-			flow : [ 'b', 'em', 'u' ],
-			// group &quot;phrasing&quot;
-			phrasing : [ 'phrasing' ] // &quot;phrasing&quot; is the name of a 
-			// MultiSplitButton from the format plugin, which contains 
-			// elements like h1 ...
-		},
-		// will generate another tab labeled &quot;insert&quot;
-		insert : {
-			// as mentioned group names are not displayed anywhere,
-			// so you might pick an arbitrary name
-			first : [ 'image', 'insertLink' ]
-		}
-	},
-	components : {
-		// the phrasing MultiSplitButton is configured the same way 
-		// as groups are
-		phrasing : [ 'h1', 'h2', 'h3' ]
-	}
-};
-&lt;/script&gt;
-&lt;/head&gt;
-</pre></div>
+			formatlesspaste :{
+				formatlessPasteOption : true,
+				strippedElements : [
+				&quot;a&quot;,
+				&quot;em&quot;,
+				&quot;strong&quot;,
+				&quot;small&quot;,
+				&quot;s&quot;,
+				&quot;cite&quot;,
+				&quot;q&quot;,
+				&quot;dfn&quot;,
+				&quot;abbr&quot;,
+				&quot;time&quot;,
+				&quot;code&quot;,
+				&quot;var&quot;,
+				&quot;samp&quot;,
+				&quot;kbd&quot;,
+				&quot;sub&quot;,
+				&quot;sup&quot;,
+				&quot;i&quot;,
+				&quot;b&quot;,
+				&quot;u&quot;,
+				&quot;mark&quot;,
+				&quot;ruby&quot;,
+				&quot;rt&quot;,
+				&quot;rp&quot;,
+				&quot;bdi&quot;,
+				&quot;bdo&quot;,
+				&quot;ins&quot;,
+				&quot;del&quot;]
+			}
+</pre></div><h3 id="testing-the-plugin">2 Testing the Plugin</h3>
+<p>Have a look at the <a href="/plugin_formatlesspaste_test.html">test protocol</a></p>
 
       </div>
         <div id="subCol">
           <h3 class="chapter"><img src="images/strobe/chapters.png" alt="" />Chapters</h3>
           <ol class="chapters">
-            <li><a href="#basic-configuration"><p>Basic Configuration</p>
-</a></li><li><a href="#configuring-the-floatingmenu"><p>Configuring the FloatingMenu</p>
+            <li><a href="#plugin-settings"><p>Plugin Settings</p>
+</a></li><li><a href="#testing-the-plugin"><p>Testing the Plugin</p>
 </a></li>
           </ol>
         </div>

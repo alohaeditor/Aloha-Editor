@@ -5,6 +5,7 @@ This document is to serve as a "what has been done" in terms of the [Roadmap](ht
 ## 0.20.0-RC9 - 2011/11/23
 
 - formatlesspaste plugin: The elements stripped by the formatlesspaste plugin can now be configured like this
+
 ```javascript
 	"formatlesspaste" :{
 				formatlessPasteOption : true,
@@ -15,24 +16,23 @@ This document is to serve as a "what has been done" in terms of the [Roadmap](ht
 				"u"]
 			}
 ```
+
 - wai-lang plugin: The styling of the language input field, and dropdown suggestion box has been improved.
 - listenforcer-plugin: The enforce method is now a private function.
 - listenforcer-plugin: List enforcer plugin configuration should change
 
-	... from this:
-
 ```javascript
+	// ... from this:
+
 	"listenforcer" : {
 		"editables" : {
 			".myselector" : [ "true" ]
 		},
 		"config" : "false"
 	}
-```
 
-	... to this:
+	//... to this:
 
-```javascript
 	"listenforcer" : {
 		"editables" : [ ".myselector" ]
 	}
@@ -54,6 +54,7 @@ This document is to serve as a "what has been done" in terms of the [Roadmap](ht
 
 - link-plugin: Fixed javascript error that occured when linking items using the repository browser in Internet Explorer 8.
 - boilerplate demo: Fixed javascript error that occured in Internet Explorer 8.
+- flag-icons plugin: It is now necessary to add the flag-icons plugin in the aloha plugin load order before any plugins that need to use the shared flag icons.
 - metaview-plugin: Fixed metaview plugin to use shared flags icon from flag-icons plugin, for consistancy between plugins.
 - wai-lang-plugin: Improved wai-lang language selection ui. Organized flags to be in a plugin their own plugin so that the icons can be shared between other components.
 - link-plugin: The autocomplete list was not closed properly when esc was pressed.

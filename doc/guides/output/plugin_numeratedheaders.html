@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Aloha Guides: Configure Aloha Editor</title>
+  <title>Aloha Guides: The Numerated Headers Plugin</title>
 
   <!-- guides styles -->
   <link rel="stylesheet" type="text/css" href="stylesheets/style.css" />
@@ -89,59 +89,46 @@
     <div class="wrapper">
       <div id="mainCol">
           <div class="headerSection">
-            <h2>Configure Aloha Editor</h2>
-<p>After reading this guide, you will be able to:</p>
+            <h2>The Numerated Headers Plugin</h2>
+<p>With this plugin the editor has the possibility to auto generate numeration in the header Tags</p>
+<p>The main features are:</p>
 <ul>
-	<li>Add configuration settings to you page and</li>
-	<li>Adapt Aloha Editor to your needs by means of configuration</li>
+	<li>Auto generate numeration</li>
+	<li>Put it in a <span> that will be prepended to the headline</li>
+	<li>Auto remove the numeration if the editor deletes the header content</li>
+	<li>Customizable: which headers should be affected, and in which surrounding container should the plugin process</li>
 </ul>
+<p>So headers like:</p>
+<h3>Headline 1</h3>
+<h3>Headline 2</h3>
+<h4>Sub Headline 3</h4>
+<p>will be extended to</p>
+<h3>1 Headline 1</h3>
+<h3>2 Headline 2</h3>
+<h4>2.1 Sub Headline 3</h4>
 
           </div>
-        <h3 id="basic-configuration">1 Basic Configuration</h3>
-<div class="warning"><p>Please write sth.!</p></div>
-<h3 id="configuring-the-floatingmenu">2 Configuring the FloatingMenu</h3>
-<p>The floating menu can be adapted to your needs by configuring tabs, groups and buttons. You may reassemble all of the existing buttons provided by plugins in any combination you want.</p>
-<div class="info"><p>A button may only be added once to the configuration. Adding the same button twice will yield no results exept raising a warning message.</p></div>
-<p>The following simple example should help to understand how to configure the FloatingMenu. Basically, all you have to do is define an array of button names (those are provided by plugins). As you might have noticed, groups may be named in our example (&#8220;flow&#8221;, &#8220;phrasing&#8221; or &#8220;first&#8221;). However, at this time naming groups yields no visual result in the current FloatingMenu. It will just help you structure your configuration.</p>
+        <h3 id="plugin-settings">1 Plugin Settings</h3>
+<ul>
+	<li>auto activate the feature of the plugin with numeratedactive: true (default)</li>
+	<li>specify selector for affected headers</li>
+	<li>specifiy Base Object, if you want the plugin to process in a specific container, or on the hole page (e.g. &#8216;body&#8217;)</li>
+</ul>
 <div class="code_container">
-<pre class="brush: xml; gutter: false; toolbar: false">
+<pre class="brush: javascript; gutter: false; toolbar: false">
 
-&lt;head&gt;
-&lt;script type=&quot;text/javascript&quot;&gt;
-Aloha.settings.toolbar = {
-	tabs : {
-		// will generate a tab labeled &quot;formatting&quot;
-		formatting : {
-			// group &quot;flow&quot;
-			flow : [ 'b', 'em', 'u' ],
-			// group &quot;phrasing&quot;
-			phrasing : [ 'phrasing' ] // &quot;phrasing&quot; is the name of a 
-			// MultiSplitButton from the format plugin, which contains 
-			// elements like h1 ...
-		},
-		// will generate another tab labeled &quot;insert&quot;
-		insert : {
-			// as mentioned group names are not displayed anywhere,
-			// so you might pick an arbitrary name
-			first : [ 'image', 'insertLink' ]
-		}
-	},
-	components : {
-		// the phrasing MultiSplitButton is configured the same way 
-		// as groups are
-		phrasing : [ 'h1', 'h2', 'h3' ]
+	Aloha.settings.numerated-headers: {
+		numeratedactive: true,                     // default
+		headingselector: 'h1, h2, h3, h4, h5, h6', // default: all
+		baseobjectSelector: 'body'                 // if not set: Aloha.activeEditable
 	}
-};
-&lt;/script&gt;
-&lt;/head&gt;
 </pre></div>
 
       </div>
         <div id="subCol">
           <h3 class="chapter"><img src="images/strobe/chapters.png" alt="" />Chapters</h3>
           <ol class="chapters">
-            <li><a href="#basic-configuration"><p>Basic Configuration</p>
-</a></li><li><a href="#configuring-the-floatingmenu"><p>Configuring the FloatingMenu</p>
+            <li><a href="#plugin-settings"><p>Plugin Settings</p>
 </a></li>
           </ol>
         </div>

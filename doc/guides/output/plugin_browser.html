@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Aloha Guides: Configure Aloha Editor</title>
+  <title>Aloha Guides: The Browser Plugin</title>
 
   <!-- guides styles -->
   <link rel="stylesheet" type="text/css" href="stylesheets/style.css" />
@@ -89,59 +89,89 @@
     <div class="wrapper">
       <div id="mainCol">
           <div class="headerSection">
-            <h2>Configure Aloha Editor</h2>
-<p>After reading this guide, you will be able to:</p>
+            <h2>The Browser Plugin</h2>
+<p>In this guide we give an overview about:</p>
 <ul>
-	<li>Add configuration settings to you page and</li>
-	<li>Adapt Aloha Editor to your needs by means of configuration</li>
+	<li>What is this plugin used for</li>
+	<li>How you can use and</li>
+	<li>How you cann Extend it</li>
 </ul>
 
           </div>
-        <h3 id="basic-configuration">1 Basic Configuration</h3>
-<div class="warning"><p>Please write sth.!</p></div>
-<h3 id="configuring-the-floatingmenu">2 Configuring the FloatingMenu</h3>
-<p>The floating menu can be adapted to your needs by configuring tabs, groups and buttons. You may reassemble all of the existing buttons provided by plugins in any combination you want.</p>
-<div class="info"><p>A button may only be added once to the configuration. Adding the same button twice will yield no results exept raising a warning message.</p></div>
-<p>The following simple example should help to understand how to configure the FloatingMenu. Basically, all you have to do is define an array of button names (those are provided by plugins). As you might have noticed, groups may be named in our example (&#8220;flow&#8221;, &#8220;phrasing&#8221; or &#8220;first&#8221;). However, at this time naming groups yields no visual result in the current FloatingMenu. It will just help you structure your configuration.</p>
+        
+<div class="warning"><p>This guide is currently work-in-progress.</p></div>
+<h3 id="what-the-browser-plugin-can-do-for-you">1 What the Browser Plugin can do for you?</h3>
+<p>The <strong>Browser Plugin</strong> (Browser) provides a good possibility for users to browse, search and select any kind of files in repositories.</p>
+<p>These are some specific kinds of files the user can look for:</p>
+<ul>
+	<li>Websites</li>
+	<li>Images</li>
+	<li>Folders</li>
+	<li>etc..</li>
+</ul>
+<h3 id="extending-the-browser-for-your-needs">2 Extending the Browser for your needs</h3>
+<h4 id="using-configuration">2.1 Using Configuration</h4>
+<p>Here we can see the default options:</p>
 <div class="code_container">
-<pre class="brush: xml; gutter: false; toolbar: false">
+<pre class="brush: javascript; gutter: false; toolbar: false">
 
-&lt;head&gt;
-&lt;script type=&quot;text/javascript&quot;&gt;
-Aloha.settings.toolbar = {
-	tabs : {
-		// will generate a tab labeled &quot;formatting&quot;
-		formatting : {
-			// group &quot;flow&quot;
-			flow : [ 'b', 'em', 'u' ],
-			// group &quot;phrasing&quot;
-			phrasing : [ 'phrasing' ] // &quot;phrasing&quot; is the name of a 
-			// MultiSplitButton from the format plugin, which contains 
-			// elements like h1 ...
-		},
-		// will generate another tab labeled &quot;insert&quot;
-		insert : {
-			// as mentioned group names are not displayed anywhere,
-			// so you might pick an arbitrary name
-			first : [ 'image', 'insertLink' ]
-		}
-	},
-	components : {
-		// the phrasing MultiSplitButton is configured the same way 
-		// as groups are
-		phrasing : [ 'h1', 'h2', 'h3' ]
+	var options = jQuery.extend({
+			// Set to true for development and debugging
+			verbose : false,
+			// The repository manager which this browser will interface with
+			repositoryManager : null,
+			repositoryFilter  : [],
+			objectTypeFilter  : [],
+			renditionFilter   : ['cmis:none'], // ['*']
+			filter : ['url'],
+			// DOMObject to which this instance of browser is bound to
+			element : undefined,
+			// root folder id
+			rootFolderId : 'aloha',
+			// root path to where Browser resources are located
+			rootPath  : '',
+			treeWidth : 300,
+			listWidth : 'auto',
+			pageSize  : 10,
+			columns : {
+				icon    : {title: '',        width: 30,  sortable: false, resizable: false},
+				name    : {title: i18n.t('Name'),    width: 250, sorttype: 'text'},
+				url     : {title: i18n.t('URL'),     width: 250, sorttype: 'text'},
+				preview : {title: i18n.t('Preview'), width: 200, sorttype: 'text'}
+			},
+			isFloating : false
+		}, opts || {});
+</pre></div><h4 id="build-your-own-specific-extension">2.2 Build your own specific Extension</h4>
+<p>Basically you are able override every function, for example the init() to use custom options:</p>
+<div class="code_container">
+<pre class="brush: javascript; gutter: false; toolbar: false">
+
+var MyCustomBrowser = Browser.extend({
+	
+	init: function (config, oneMoreParameter) {
+		this._super(config);
+
+		this.moreParameter = oneMoreParameter;
+
+		... do something with it
 	}
-};
-&lt;/script&gt;
-&lt;/head&gt;
-</pre></div>
+})
+</pre></div><h5 id="customize-table-rows-and-columns">2.2.1 Customize table rows and columns</h5>
+<h3 id="capability-for-multiple-instances">3 Capability for multiple Instances</h3>
+<p>In the current version (0.20) there is the possibility to add multiple browser instances to a page.</p>
+<ul>
+	<li>November 24, 2011: Initial version by Leonard Osang</li>
+</ul>
 
       </div>
         <div id="subCol">
           <h3 class="chapter"><img src="images/strobe/chapters.png" alt="" />Chapters</h3>
           <ol class="chapters">
-            <li><a href="#basic-configuration"><p>Basic Configuration</p>
-</a></li><li><a href="#configuring-the-floatingmenu"><p>Configuring the FloatingMenu</p>
+            <li><a href="#what-the-browser-plugin-can-do-for-you"><p>What the Browser Plugin can do for you?</p>
+</a></li><li><a href="#extending-the-browser-for-your-needs"><p>Extending the Browser for your needs</p>
+</a><ul><li><a href="#using-configuration"><p>Using Configuration</p>
+</a></li> <li><a href="#build-your-own-specific-extension"><p>Build your own specific Extension</p>
+</a></li></ul></li><li><a href="#capability-for-multiple-instances"><p>Capability for multiple Instances</p>
 </a></li>
           </ol>
         </div>
