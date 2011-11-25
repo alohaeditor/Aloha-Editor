@@ -13,6 +13,8 @@ define(['aloha', 'aloha/jquery', 'block/blockmanager', 'aloha/observable', 'aloh
 function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 	"use strict";
 
+	var GENTICS = window.GENTICS;
+
 	/**
 	 * An aloha block has the following special properties, being readable through the
 	 * "attr" function:
@@ -99,7 +101,7 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 				event.stopPropagation();
 			});
 
-			// TODO: where is this executed?
+			// This is executed when a block is selected through caret handling
 			//Aloha.bind('aloha-block-selected', function(event,obj) {
 			//	if (that.$element.get(0) === obj) {
 			//		that.activate();
@@ -146,6 +148,12 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 		 */
 		destroy: function() {
 			var that = this;
+			var newRange = new GENTICS.Utils.RangeObject();
+
+			newRange.startContainer = newRange.endContainer = this.$element.parent()[0];
+			newRange.startOffset = newRange.endOffset = GENTICS.Utils.Dom.getIndexInParent(this.$element[0]);
+
+			GENTICS.Utils.Dom.setCursorAfter(that.$element[0]);
 			BlockManager.trigger('block-delete', this);
 			BlockManager._unregisterBlock(this);
 
@@ -154,6 +162,9 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 			this.$element.fadeOut('fast', function() {
 				that.$element.remove();
 				BlockManager.trigger('block-selection-change', []);
+				window.setTimeout(function() {
+					newRange.select();
+				}, 50);
 			});
 		},
 
