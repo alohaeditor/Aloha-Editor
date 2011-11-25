@@ -121,8 +121,7 @@ define( [
 				'name'       : 'wailangfield',
 				'width'      : 320,
 				'valueField' : 'id',
-				'minChars'   : 1,
-				'cls'        : 'aloha-wailang-field'
+				'minChars'   : 1
 			} );
 
 			langField.setTemplate(
@@ -226,7 +225,6 @@ define( [
 
 			// on blur check if lang is empty, if so remove the <a> tag
 			langField.addListener( 'blur', function( obj, event ) {
-debugger;
 				// @todo check for a valid value -- now it's also possible to insert abcd; but that's not valid
 				if ( !this.getValue() ) {
 					that.removeMarkup();
