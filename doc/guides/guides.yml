@@ -47,8 +47,8 @@ index:
       text: "In this guide, we will explain the plugin structure, the usage of requireJS and the plugin lifecylce in Aloha Editor."
   The Core:
     - title: "The Core"
-      url: aloha_core
-      text: "Learn about how Aloha Editor's core components work."
+      url: core
+      text: "Learn about the core of Aloha Editor and how to utilize it's functions."
   Commands:
     - title: "Using commands"
       url: using_commands
