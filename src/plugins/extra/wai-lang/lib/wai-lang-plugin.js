@@ -16,10 +16,11 @@ define( [
 	'css!wai-lang/css/wai-lang.css'
 ], function( Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore ) {
 	'use strict';
-	
+
 	var WAI_LANG_CLASS = 'aloha-wai-lang';
 	var GENTICS = window.GENTICS;
 	var addMarkupToSelectionButton;
+	var langField;
 
 	return Plugin.create( 'wai-lang', {
 
@@ -78,9 +79,9 @@ define( [
 					if ( foundMarkup ) {
 						addMarkupToSelectionButton.setPressed( true );
 						FloatingMenu.setScope( 'wai-lang' );
-						that.langField.setTargetObject( foundMarkup, 'lang' );
+						langField.setTargetObject( foundMarkup, 'lang' );
 					} else {
-						that.langField.setTargetObject( null );
+						langField.setTargetObject( null );
 					}
 				}
 			} );
@@ -102,6 +103,7 @@ define( [
 				'tooltip'   : i18n.t( 'button.add-wai-lang.tooltip' ),
 				'toggle'    : true
 			} );
+
 			FloatingMenu.addButton(
 				'Aloha.continuoustext',
 				addMarkupToSelectionButton,
@@ -112,7 +114,7 @@ define( [
 			// Add the new scope for the wai languages plugin tab
 			FloatingMenu.createScope( 'wai-lang', 'Aloha.continuoustext' );
 
-			this.langField = new Aloha.ui.AttributeField( {
+			langField = new Aloha.ui.AttributeField( {
 				'name'       : 'wailangfield',
 				'width'      : 320,
 				'valueField' : 'id',
@@ -120,18 +122,19 @@ define( [
 				'cls'        : 'aloha-wailang-field'
 			} );
 
-			this.langField.setTemplate(
+			langField.setTemplate(
 				'<div class="img-item">' +
 					'<img class="typeahead-image" src="{url}" />' +
 					'<div class="label-item">{name}</div>' +
 				'</div>'
 			);
-			this.langField.setObjectTypeFilter( this.objectTypeFilter );
+			
+			langField.setObjectTypeFilter( this.objectTypeFilter );
 
 			// add the input field for links
 			FloatingMenu.addButton(
 				'wai-lang',
-				this.langField,
+				langField,
 				i18n.t( 'floatingmenu.tab.wai-lang' ),
 				1
 			);
@@ -204,7 +207,7 @@ define( [
 		        // select the (possibly modified) range
 		        range.select();
 				FloatingMenu.setScope( 'Aloha.continousText' );
-				this.langField.setTargetObject( null );
+				langField.setTargetObject( null );
 				FloatingMenu.doLayout();
 		    }
 		},
@@ -217,7 +220,7 @@ define( [
 			var that = this;
 
 			// on blur check if lang is empty, if so remove the <a> tag
-			this.langField.addListener( 'blur', function( obj, event ) {
+			langField.addListener( 'blur', function( obj, event ) {
 				// @todo check for a valid value -- now it's also possible to insert abcd; but that's not valid
 				if ( !this.getValue() ) {
 					that.removeMarkup();
@@ -259,7 +262,7 @@ define( [
 			if ( e.metaKey && e.which == 73 ) {
 				if ( this.findLangMarkup() ) {
 					FloatingMenu.activateTabOfButton( 'wailangfield' );
-					this.langField.focus();
+					langField.focus();
 				} else {
 					this.addMarkupToSelection();
 				}
@@ -318,7 +321,7 @@ define( [
 		addMarkupToSelection: function() {
 			var range = Aloha.Selection.getRangeObject();
 
-			// do not add markup to a area that already contains a markup
+			// Do not add markup to an area that already contains a markup
 			if ( this.findLangMarkup( range ) ) {
 				return;
 			}
@@ -337,7 +340,7 @@ define( [
 			}
 
 			range.select();
-			// this.langField.focus();
+			// langField.focus();
 		},
 
 		/**
