@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Aloha Guides: Configure Aloha Editor</title>
+  <title>Aloha Guides: Testing the Formatless Paste Plugin</title>
 
   <!-- guides styles -->
   <link rel="stylesheet" type="text/css" href="stylesheets/style.css" />
@@ -89,59 +89,26 @@
     <div class="wrapper">
       <div id="mainCol">
           <div class="headerSection">
-            <h2>Configure Aloha Editor</h2>
-<p>After reading this guide, you will be able to:</p>
-<ul>
-	<li>Add configuration settings to you page and</li>
-	<li>Adapt Aloha Editor to your needs by means of configuration</li>
-</ul>
+            <h2>Testing the Formatless Paste Plugin</h2>
 
           </div>
-        <h3 id="basic-configuration">1 Basic Configuration</h3>
-<div class="warning"><p>Please write sth.!</p></div>
-<h3 id="configuring-the-floatingmenu">2 Configuring the FloatingMenu</h3>
-<p>The floating menu can be adapted to your needs by configuring tabs, groups and buttons. You may reassemble all of the existing buttons provided by plugins in any combination you want.</p>
-<div class="info"><p>A button may only be added once to the configuration. Adding the same button twice will yield no results exept raising a warning message.</p></div>
-<p>The following simple example should help to understand how to configure the FloatingMenu. Basically, all you have to do is define an array of button names (those are provided by plugins). As you might have noticed, groups may be named in our example (&#8220;flow&#8221;, &#8220;phrasing&#8221; or &#8220;first&#8221;). However, at this time naming groups yields no visual result in the current FloatingMenu. It will just help you structure your configuration.</p>
-<div class="code_container">
-<pre class="brush: xml; gutter: false; toolbar: false">
-
-&lt;head&gt;
-&lt;script type=&quot;text/javascript&quot;&gt;
-Aloha.settings.toolbar = {
-	tabs : {
-		// will generate a tab labeled &quot;formatting&quot;
-		formatting : {
-			// group &quot;flow&quot;
-			flow : [ 'b', 'em', 'u' ],
-			// group &quot;phrasing&quot;
-			phrasing : [ 'phrasing' ] // &quot;phrasing&quot; is the name of a 
-			// MultiSplitButton from the format plugin, which contains 
-			// elements like h1 ...
-		},
-		// will generate another tab labeled &quot;insert&quot;
-		insert : {
-			// as mentioned group names are not displayed anywhere,
-			// so you might pick an arbitrary name
-			first : [ 'image', 'insertLink' ]
-		}
-	},
-	components : {
-		// the phrasing MultiSplitButton is configured the same way 
-		// as groups are
-		phrasing : [ 'h1', 'h2', 'h3' ]
-	}
-};
-&lt;/script&gt;
-&lt;/head&gt;
-</pre></div>
+        <h3 id="step-1">1 Step 1</h3>
+<p>Enable the formatless paste plugin in the boilerplate page.</p>
+<h3 id="step-2">2 Step 2</h3>
+<p>Configure the formatless paste plugin according to the description in the guides page.</p>
+<h3 id="step-3">3 Step 3</h3>
+<p>Load the boilerplate and paste content from word with formatings you have configured to be stripped. e.g. add some italic text and configure &#8220;i&#8221; to be stripped.</p>
+<h3 id="step-4">4 Step 4</h3>
+<p>Check the pasted results. Everything went as expected if the configured formatings have been removed. e.g. if the italic text is in your editable but is not italic any longer</p>
 
       </div>
         <div id="subCol">
           <h3 class="chapter"><img src="images/strobe/chapters.png" alt="" />Chapters</h3>
           <ol class="chapters">
-            <li><a href="#basic-configuration"><p>Basic Configuration</p>
-</a></li><li><a href="#configuring-the-floatingmenu"><p>Configuring the FloatingMenu</p>
+            <li><a href="#step-1"><p>Step 1</p>
+</a></li><li><a href="#step-2"><p>Step 2</p>
+</a></li><li><a href="#step-3"><p>Step 3</p>
+</a></li><li><a href="#step-4"><p>Step 4</p>
 </a></li>
           </ol>
         </div>

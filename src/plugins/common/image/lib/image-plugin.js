@@ -1473,17 +1473,23 @@ function AlohaImagePlugin ( aQuery, Plugin, FloatingMenu, i18nCore, i18n ) {
 		 * Terminates a crop
 		 */
 		endCrop: function () {
-			if (this.jcAPI) {
+			if ( this.jcAPI ) {
 				this.jcAPI.destroy();
 				this.jcAPI = null;
 			}
 
 			this.destroyCropButtons();
 			this.cropButton.extButton.toggle(false);
-			if (this.settings.ui.resizable) {
+			
+			if ( this.settings.ui.resizable ) {
 				this.startResize();
 			}
 
+			if ( this.keepAspectRatio ) {
+				var currentRatio = this.imageObj.width() / this.imageObj.height();
+				this.startAspectRatio = currentRatio;
+			}
+			
 			$('body').trigger('aloha-image-crop-stop', [this.imageObj]);
 		},
 
@@ -1491,8 +1497,8 @@ function AlohaImagePlugin ( aQuery, Plugin, FloatingMenu, i18nCore, i18n ) {
 		 * Accept the current cropping area and apply the crop
 		 */
 		acceptCrop: function () {
-			this._onCropped(this.imageObj, this.jcAPI.tellSelect());
-			this.endCrop();
+			this._onCropped ( this.imageObj, this.jcAPI.tellSelect() );
+			this.endCrop ();
 		},
 
 		/**

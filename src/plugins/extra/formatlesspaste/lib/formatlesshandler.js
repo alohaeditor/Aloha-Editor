@@ -22,10 +22,7 @@ function(Aloha, jQuery, ContentHandlerManager) {
 		 */
 		enabled: false,
 
-		/**
-		 * Handle the pasting. Remove all unwanted stuff.
-		 * @param jqPasteDiv
-		 */
+		
 		/**
 		 * Handle the pasting. Remove all unwanted stuff.
 		 * @param content
@@ -40,13 +37,14 @@ function(Aloha, jQuery, ContentHandlerManager) {
 			// we do not modify the pasted stuff, as it most probably
 			// comes from Aloha and not from other sources, and does
 			// not need to be cleaned up.
-			if (content.find('.aloha-block').length > 0) {
+			if ( content.find('.aloha-block').length > 0 ) {
 				return;
 			};
 
-			  // remove formattings
-			  if(this.enabled)
-				this.removeFormatting(content);
+			// remove formattings
+			if ( this.enabled ) {
+				this.removeFormatting( content );
+			}
 				
 			return content.html();
 		},
@@ -55,42 +53,12 @@ function(Aloha, jQuery, ContentHandlerManager) {
 		 * Remove formatting
 		 * @param jqPasteDiv
 		 */
-		removeFormatting: function(jqPasteDiv) {
-      //Here we removes the text-level semantic and edit elements (http://dev.w3.org/html5/spec/text-level-semantics.html#usage-summary)
-      //Skipped br and spans as there usage is not merely for formatting purposes.
-      var formatting_elements = [
-        "a",
-        "em",
-        "strong",
-        "small",
-        "s",
-        "cite",
-        "q",
-        "dfn",
-        "abbr",
-        "time",
-        "code",
-        "var",
-        "samp",
-        "kbd",
-        "sub",
-        "sup",
-        "i",
-        "b",
-        "u",
-        "mark",
-        "ruby",
-        "rt",
-        "rp",
-        "bdi",
-        "bdo",
-        "ins",
-        "del" 
-      ];
+		removeFormatting: function( jqPasteDiv ) {
+			var formatting_elements = this.strippedElements;
 
 			// find all formattings we will transform
-			jqPasteDiv.find(formatting_elements.join(",")).each(function() {
-        jQuery(this).contents().unwrap();
+			jqPasteDiv.find( formatting_elements.join(",")).each(function() {
+				jQuery(this).contents().unwrap();
 			});
 		}
   });

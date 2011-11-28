@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Aloha Guides: Configure Aloha Editor</title>
+  <title>Aloha Guides: Understanding the Aloha Editor core</title>
 
   <!-- guides styles -->
   <link rel="stylesheet" type="text/css" href="stylesheets/style.css" />
@@ -89,59 +89,85 @@
     <div class="wrapper">
       <div id="mainCol">
           <div class="headerSection">
-            <h2>Configure Aloha Editor</h2>
+            <h2>Understanding the Aloha Editor core</h2>
 <p>After reading this guide, you will be able to:</p>
 <ul>
-	<li>Add configuration settings to you page and</li>
-	<li>Adapt Aloha Editor to your needs by means of configuration</li>
+	<li>Understand how Aloha Editor initialized</li>
+	<li>Use basic functionality the core provides</li>
+	<li>Understand Aloha Editables, and what they do</li>
+	<li>Core Aloha Editor events</li>
 </ul>
 
           </div>
-        <h3 id="basic-configuration">1 Basic Configuration</h3>
-<div class="warning"><p>Please write sth.!</p></div>
-<h3 id="configuring-the-floatingmenu">2 Configuring the FloatingMenu</h3>
-<p>The floating menu can be adapted to your needs by configuring tabs, groups and buttons. You may reassemble all of the existing buttons provided by plugins in any combination you want.</p>
-<div class="info"><p>A button may only be added once to the configuration. Adding the same button twice will yield no results exept raising a warning message.</p></div>
-<p>The following simple example should help to understand how to configure the FloatingMenu. Basically, all you have to do is define an array of button names (those are provided by plugins). As you might have noticed, groups may be named in our example (&#8220;flow&#8221;, &#8220;phrasing&#8221; or &#8220;first&#8221;). However, at this time naming groups yields no visual result in the current FloatingMenu. It will just help you structure your configuration.</p>
-<div class="code_container">
-<pre class="brush: xml; gutter: false; toolbar: false">
+        <h3 id="core-files">1 Core files</h3>
+<div class="warning"><p><span class="caps">TODO</span> describe file contents</p></div>
+<ul>
+	<li><tt>src/lib/aloha.js</tt></li>
+	<li><tt>src/lib/aloha-bootstrap.js</tt></li>
+	<li><tt>src/lib/aloha/core.js</tt></li>
+	<li>&#8230;</li>
+</ul>
+<h3 id="initialization-process">2 Initialization Process</h3>
+<p>When Aloha Editor is loading several steps are completed until the initialization process is finished.</p>
+<div class="warning"><p><span class="caps">TODO</span> add description for init process and events!</p></div>
 
-&lt;head&gt;
-&lt;script type=&quot;text/javascript&quot;&gt;
-Aloha.settings.toolbar = {
-	tabs : {
-		// will generate a tab labeled &quot;formatting&quot;
-		formatting : {
-			// group &quot;flow&quot;
-			flow : [ 'b', 'em', 'u' ],
-			// group &quot;phrasing&quot;
-			phrasing : [ 'phrasing' ] // &quot;phrasing&quot; is the name of a 
-			// MultiSplitButton from the format plugin, which contains 
-			// elements like h1 ...
-		},
-		// will generate another tab labeled &quot;insert&quot;
-		insert : {
-			// as mentioned group names are not displayed anywhere,
-			// so you might pick an arbitrary name
-			first : [ 'image', 'insertLink' ]
-		}
-	},
-	components : {
-		// the phrasing MultiSplitButton is configured the same way 
-		// as groups are
-		phrasing : [ 'h1', 'h2', 'h3' ]
-	}
-};
-&lt;/script&gt;
-&lt;/head&gt;
-</pre></div>
+<div class="code_container">
+<pre class="brush: javascript; gutter: false; toolbar: false">
+
+// init process taken from core.js
+Aloha.stage = 'loadPlugins';
+Aloha.loadPlugins(function(){
+	Aloha.stage = 'initAloha';
+	Aloha.initAloha(function(){
+		Aloha.stage = 'initPlugins';
+		Aloha.initPlugins(function(){
+			Aloha.stage = 'initGui';
+			Aloha.initGui(function(){
+				Aloha.stage = 'alohaReady';
+				Aloha.trigger('aloha-ready');
+			});
+		});
+	});
+});
+</pre></div><h3 id="how-to-use-require">3 How to use require</h3>
+<div class="warning"><p><span class="caps">TODO</span> describe how Aloha.require is used</p></div>
+<h3 id="internationalization">4 Internationalization</h3>
+<div class="warning"><p><span class="caps">TODO</span> describe</p></div>
+<h3 id="logging">5 Logging</h3>
+<div class="warning"><p><span class="caps">TODO</span> describe</p></div>
+<h3 id="utilities">6 Utilities</h3>
+<div class="warning"><p><span class="caps">TODO</span> describe <span class="caps">GENTICS</span>.Utils.dom and the like</p></div>
+<h3 id="events">7 Events</h3>
+<ul>
+	<li>aloha-smart-content-changed</li>
+	<li>aloha-editable-activated</li>
+	<li>aloha-editable-deactivated</li>
+</ul>
+<h4 id="aloha-smart-content-changed-event">7.1 aloha-smart-content-changed Event</h4>
+<p>A smart content change occurs when a special editing action, or a combination of interactions are performed by the user during the course of editing within an editable. The smart content change event would therefore signal to any component that is listening to this event, that content has been inserted into the editable that may need to be prococessed in a special way. The smart content change event is also triggered after an idle period that follows rapid, basic changes to the contents of an editable such as when the user is typing.</p>
+<h4 id="aloha-editable-activated-event">7.2 aloha-editable-activated Event</h4>
+<div class="warning"><p>Documentation pending.</p></div>
+<h4 id="aloha-editable-deactivated-event">7.3 aloha-editable-deactivated Event</h4>
+<div class="warning"><p>Documentation pending.</p></div>
+<h3 id="editables">8 Editables</h3>
+<div class="warning"><p>Documentation pending.</p></div>
+<p>.</p>
 
       </div>
         <div id="subCol">
           <h3 class="chapter"><img src="images/strobe/chapters.png" alt="" />Chapters</h3>
           <ol class="chapters">
-            <li><a href="#basic-configuration"><p>Basic Configuration</p>
-</a></li><li><a href="#configuring-the-floatingmenu"><p>Configuring the FloatingMenu</p>
+            <li><a href="#core-files"><p>Core files</p>
+</a></li><li><a href="#initialization-process"><p>Initialization Process</p>
+</a></li><li><a href="#how-to-use-require"><p>How to use require</p>
+</a></li><li><a href="#internationalization"><p>Internationalization</p>
+</a></li><li><a href="#logging"><p>Logging</p>
+</a></li><li><a href="#utilities"><p>Utilities</p>
+</a></li><li><a href="#events"><p>Events</p>
+</a><ul><li><a href="#aloha-smart-content-changed-event"><p>aloha-smart-content-changed Event</p>
+</a></li> <li><a href="#aloha-editable-activated-event"><p>aloha-editable-activated Event</p>
+</a></li> <li><a href="#aloha-editable-deactivated-event"><p>aloha-editable-deactivated Event</p>
+</a></li></ul></li><li><a href="#editables"><p>Editables</p>
 </a></li>
           </ol>
         </div>

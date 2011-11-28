@@ -1,0 +1,55 @@
+h2. The Formatless Paste Plugin
+
+The formatless paste plugin can be used to further strip pasted content.
+
+It provides the following features
+
+* Strip a configurable set of tags from pasted content
+* Enabled / disabled via a button in the floating menu
+* Configure the default behaviour (enabled/disabled)
+
+endprologue.
+
+h3. Plugin Settings
+
+The default behaviour can be configured with the setting "formatlessPasteOption".
+The set of elements that should be stripped can be configured with the setting "strippedElements".
+
+A typical configuration could look like this. If no configuration is provided, this is also the default configuration.
+<shell>
+			formatlesspaste :{
+				formatlessPasteOption : true,
+				strippedElements : [
+				"a",
+				"em",
+				"strong",
+				"small",
+				"s",
+				"cite",
+				"q",
+				"dfn",
+				"abbr",
+				"time",
+				"code",
+				"var",
+				"samp",
+				"kbd",
+				"sub",
+				"sup",
+				"i",
+				"b",
+				"u",
+				"mark",
+				"ruby",
+				"rt",
+				"rp",
+				"bdi",
+				"bdo",
+				"ins",
+				"del"]
+			}
+</shell>
+
+h3. Testing the Plugin
+
+Have a look at the "test protocol":/plugin_formatlesspaste_test.html

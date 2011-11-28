@@ -27,7 +27,6 @@ define( [
 	
 ], function ( jQuery, Class, i18n, Console ) {
 'use strict';
-
 var
 	uid = +(new Date),
 	nsClasses = {
@@ -40,7 +39,6 @@ var
 		'list-altrow'     : 'aloha-browser-list-altrow',
 		'list-resizable'  : 'aloha-browser-list-resizable',
 		'list-pager'      : 'aloha-browser-list-pager',
-		'list-pager-left' : 'aloha-browser-list-pager-left',
 		'list-btns'       : 'aloha-browser-list-btns',
 		'search-btn'      : 'aloha-browser-search-btn',
 		'search-field'    : 'aloha-browser-search-field',
@@ -612,10 +610,15 @@ var Browser = Class.extend({
 	
 	createList: function (container) {
 		var that = this;
+
+		// we need an unique identifier for our table to get multiple instances working
+		var listUID = 'aloha-browser-list-' + (++uid);
+
 		var list = jQuery(renderTemplate(
-				'<table id="jqgrid_needs_something_anything_here"\
-					class="{list}"></table>'
-			));
+			'<table id="'+listUID+'"\
+				class="{list}"></table>'
+		));
+
 		var colNames = [''];
 		// This is a hidden utility column to help us with auto sorting
 		var colModel = [{
@@ -637,9 +640,14 @@ var Browser = Class.extend({
 			});
 		});
 		
-		container.append(list,
-			jQuery(renderTemplate('<div id="{list-pager}">'))
-		);
+		/* 
+		* jqGrid requires that we use an id, despite what the documentation says
+		* (http://www.trirand.com/jqgridwiki/doku.php?id=wiki:pager&s[]=pager).
+		* We need a unique id, however, in order to distinguish pager elements for
+		* each browser instance
+		*/
+		var listPagerUID = 'aloha-browser-list-page-' + (++uid);
+		container.append(list, jQuery('<div id="' + listPagerUID + '">'));
 		
 		list.jqGrid({
 			datatype     : 'local',
@@ -651,7 +659,7 @@ var Browser = Class.extend({
 			altRows      : true,
 			altclass     : 'aloha-browser-list-altrow',
 			resizeclass  : 'aloha-browser-list-resizable',
-			pager        : '#aloha-browser-list-pager', // http://www.trirand.com/jqgridwiki/doku.php?id=wiki:pager&s[]=pager
+			pager        : '#' + listPagerUID,
 		//	rowNum       : this.pageSize,	  // # of records to view in the grid. Passed as parameter to url when retrieving data from server
 			viewrecords  : true,
 			// Event handlers: http://www.trirand.com/jqgridwiki/doku.php?id=wiki:events
@@ -701,7 +709,6 @@ var Browser = Class.extend({
 		// TODO: implement this once repositories can handle it, hidding it for now
 		container.find('.ui-pg-input').parent().hide()
 		container.find('.ui-separator').parent().css('opacity', 0).first().hide();
-		container.find('#aloha-browser-list-pager-left').hide();
 		
 		this.createTitlebar(container);
 		
@@ -988,16 +995,26 @@ var Browser = Class.extend({
 	createOverlay: function () {
 		var that = this;
 		
-		jQuery('body').append(renderTemplate(
-			'<div class="{modal-overlay}" style="top: -99999px; z-index: 99999;"></div>' +
-			'<div class="{modal-window}"  style="top: -99999px; z-index: 99999;"></div>'
-		));
+		// Create only one overlay for all browser instances
+		if (jQuery('.aloha-browser-modal-overlay').length == 0){
+			jQuery('body').append(renderTemplate(
+				'<div class="{modal-overlay}" style="top: -99999px; z-index: 99999;"></div>'
+			));
+		}
 		
+		// Register a close procedure for each browser instance
 		jQuery('.aloha-browser-modal-overlay').click(function () {
 			that.close();
 		});
+
+		// Create and return a unique modal window element for this browser instance
+		var element = jQuery(renderTemplate(
+			'<div class="{modal-window}"  style="top: -99999px; z-index: 99999;"></div>'
+		));
+	
+		jQuery('body').append(element);
 		
-		return jQuery('.aloha-browser-modal-window');
+		return element;
 	},
 	
 	setObjectTypeFilter: function (otf) {
