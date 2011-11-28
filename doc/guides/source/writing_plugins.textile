@@ -87,6 +87,17 @@ Aloha is capable showing its user interface in a wide variety of languages.
 INFO: Localization is done using a slightly adjusted version of the "@i18n@ module of
 RequireJS":http://requirejs.org/docs/api.html#i18n
 
+h4. Setting the current language
+
+You can use the following setting to switch the current language of Aloha Editor:
+
+<javascript>
+// set language to english
+Aloha.settings.locale: 'en';
+</javascript>
+
+As requirejs is used for localization you might want to check out "their documentation":http://requirejs.org/docs/api.html#i18n on i18n bundles and fallbacks.
+
 h4. Folder Structure for Labels
 
 Localized strings are stored in the folder @nls@ (Natural Language Support) of your plugin. The file/directory
