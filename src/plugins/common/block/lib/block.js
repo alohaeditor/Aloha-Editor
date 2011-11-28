@@ -79,7 +79,7 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 		 * Initialize the basic block. Do not call directly; instead use jQuery(...).alohaBlock() to
 		 * create new blocks.
 		 *
-		 * This function shall only be called through the BlockManager.
+		 * This function shall only be called through the BlockManager. See BlockManager::_blockify().
 		 *
 		 * @param {jQuery} $element Element that declares the block
 		 * @constructor

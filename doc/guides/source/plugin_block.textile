@@ -176,6 +176,7 @@ h4. Editing API
 
 * getSchema() getTitle() explained
 * disabling sidebar
+* Custom Floating Menu?
 
 h3. Writing custom editor
 

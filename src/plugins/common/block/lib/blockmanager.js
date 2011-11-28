@@ -13,6 +13,8 @@ function(Aloha, jQuery, FloatingMenu, Observable, Registry) {
 		GENTICS = window.GENTICS;
 
 	/**
+	 * This is the block manager, which is the central entity for maintaining the lifecycle of blocks.
+	 *
 	 * @name block.blockmanager
 	 * @class Block manager singleton
 	 */
@@ -32,6 +34,9 @@ function(Aloha, jQuery, FloatingMenu, Observable, Registry) {
 		 * @param {AbstractBlock} the block to be deleted
 		 */
 
+		/**
+		 * Default settings for blocks
+		 */
 		defaults: {
 			'aloha-block-type': 'DefaultBlock'
 		},
@@ -48,14 +53,21 @@ function(Aloha, jQuery, FloatingMenu, Observable, Registry) {
 		 */
 		blocks: null,
 
+		/**
+		 * Array of currently highlighted blocks
+		 * @type Array
+		 */
 		_highlightedBlocks: null,
 
 		/**
 		 * Reference to the currently active block, if any
+		 * @type AbstractBlock
 		 */
 		_activeBlock: null,
 
 		/**
+		 * Constructor. called immediately.
+		 *
 		 * @constructor
 		 */
 		_constructor: function() {
@@ -66,7 +78,8 @@ function(Aloha, jQuery, FloatingMenu, Observable, Registry) {
 		},
 
 		/**
-		 * Register initial event handlers. Called from block-plugin.
+		 * Register initial event handlers. Called from block-plugin when plugin
+		 * is loaded.
 		 *
 		 * @private
 		 */
