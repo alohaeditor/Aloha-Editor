@@ -200,14 +200,12 @@ define( [
 				// if it does not handle the keyStroke it returns true and therefore all other
 				// events (incl. browser's) continue
 				me.obj.keydown( function( event ) {
-window.console.log( 'keydown', event );
 					me.keyCode = event.which;
 					return Markup.preProcessKeyStrokes( event );
 				} );
 
 				// handle keypress
 				me.obj.keypress( function( event ) {
-window.console.log( 'keypress', event );
 					// triggers a smartContentChange to get the right charcode
 					// To test try http://www.w3.org/2002/09/tests/keys.html
 					Aloha.activeEditable.smartContentChange( event );
@@ -215,7 +213,6 @@ window.console.log( 'keypress', event );
 
 				// handle shortcut keys
 				me.obj.keyup( function( event ) {
-window.console.log( 'keyup', event );
 					if ( event.keyCode === 27 ) {
 						Aloha.deactivateEditable();
 						return false;
