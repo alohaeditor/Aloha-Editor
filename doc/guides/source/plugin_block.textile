@@ -163,7 +163,38 @@ When an attribute is changed through @attr@, the block is re-rendered automatica
 
 h3. Writing a Custom Aloha Block
 
-* basic sketch, registration inside BlockManager
+When writing a custom block, you should do so in your own *aloha plugin*. Inside the *plugin module*,
+you need to register the Aloha Blocks at the Block Manager. An example skeleton follows:
+
+<javascript filename="blockdemo/lib/blockdemo-plugin.js">
+define([
+	'aloha/plugin',
+	'block/blockmanager',
+	'blockdemo/block'
+], function(Plugin, BlockManager, block) {
+	"use strict";
+	return Plugin.create('blockdemo', {
+		init: function() {
+			BlockManager.registerBlockType('MyCustomBlock', block.MyCustomBlock);
+		}
+	});
+});
+</javascript>
+<javascript filename="blockdemo/lib/block.js">
+define([
+	'block/block'
+], function(block) {
+	var MyCustomBlock = block.AbstractBlock.extend({
+		// ... your custom code here ...
+	});
+
+	return {
+		MyCustomBlock: MyCustomBlock
+	};
+});
+</javascript>
+
+Now, you can implement the main API of the block.
 
 h4. Rendering API
 
