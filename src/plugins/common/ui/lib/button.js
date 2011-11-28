@@ -22,6 +22,12 @@ function ( jQuery, Ui ) {
 					primary: settings.icon
 				}
 			})
+			.tooltip({
+				position: {
+					my: "left top",
+					at: "right bottom"
+				}
+			})
 			.click( jQuery.proxy( function() {
 				this.click();
 			}, this ) );
