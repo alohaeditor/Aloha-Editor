@@ -120,7 +120,6 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 
 				// Activate the block element and stop event propagation
 				that.activate(event.target);
-				event.stopPropagation();
 			});
 
 			// This is executed when a block is selected through caret handling

@@ -76,8 +76,7 @@ function(Aloha, jQuery, FloatingMenu, Observable, Registry) {
 			// Register event handlers for deactivating an Aloha Block
 			jQuery(document).bind('click', function(event) {
 				if (that._highlightedBlocks == {}) return;
-				if (jQuery(event.target).parents('.aloha-sidebar-bar, .aloha-block-do-not-deactivate, .aloha-floatingmenu').length > 0
-					|| jQuery(event.target).is('.aloha-sidebar-bar, .aloha-block-do-not-deactivate, .aloha-floatingmenu')) {
+				if (jQuery(event.target).closest('.aloha-sidebar-bar, .aloha-block-do-not-deactivate, .aloha-floatingmenu, .aloha-block').length > 0) {
 					// If we are inside the sidebar, the floating menu or other elements which should not trigger the block deactivation, we do an early return.
 					return;
 				}
