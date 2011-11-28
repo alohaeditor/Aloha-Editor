@@ -6,8 +6,10 @@
  */
 
 /**
+ * Module which contains the base class for Blocks, and a Default/Debug block.
+ *
  * @name block.block
- * @namespace Block models
+ * @namespace block/block
  */
 define(['aloha', 'aloha/jquery', 'block/blockmanager', 'aloha/observable', 'aloha/floatingmenu'],
 function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
@@ -28,19 +30,22 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 	{
 
 		/**
+		 * Event which is triggered if the block attributes change.
+		 *
 		 * @name block.block.AbstractBlock#change
 		 * @event
 		 */
 
 		/**
-		 * Title for the block, used to display the name in the sidebar.
+		 * Title of the block, used to display the name in the sidebar editor.
+		 *
 		 * @type String
 		 * @api
 		 */
 		title: null,
 
 		/**
-		 * Id of the assigned element, used to identify a block
+		 * Id of the underlying $element, used to identify the block.
 		 * @type String
 		 */
 		id: null,
@@ -48,6 +53,7 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 		/**
 		 * The wrapping element of the block.
 		 * @type jQuery
+		 * @api
 		 */
 		$element: null,
 
@@ -59,7 +65,7 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 		_currentlyRendering: false,
 
 		/**
-		 * set to TRUE once the block is fully initialized and should be rendered.
+		 * set to TRUE once the block is fully initialized.
 		 *
 		 * @type Boolean
 		 */
@@ -70,6 +76,11 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 		 **************************/
 
 		/**
+		 * Initialize the basic block. Do not call directly; instead use jQuery(...).alohaBlock() to
+		 * create new blocks.
+		 *
+		 * This function shall only be called through the BlockManager.
+		 *
 		 * @param {jQuery} $element Element that declares the block
 		 * @constructor
 		 */
@@ -134,27 +145,23 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 
 			this._postProcessElementIfNeeded();
 
-			this._registerAsBlockified();
+			this._initialized = true;
 		},
 
 		/**
 		 * Template method to initialize the block. Can be used to set attributes
 		 * on the block, depending on the block contents. You will most probably
-		 * use this.$element and this.attr() inside this function.
+		 * use $element and this.attr() inside this function.
+		 *
+		 * @param {jQuery} $element the block-level element.
 		 * @api
 		 */
-		init: function() {},
-
-		_registerAsBlockified: function() {
-			this._initialized = true;
-			this.$element.trigger('block-initialized');
-		},
+		init: function($element) {},
 
 		/**
 		 * Destroy this block instance completely. Removes the element from the DOM,
-		 * unregisters it, and triggers a delete event on the BlockManager.
+		 * unregisters it, and triggers a block-delete event on the BlockManager.
 		 *
-		 * @return
 		 * @api
 		 */
 		destroy: function() {
@@ -191,18 +198,9 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 			return this.id;
 		},
 
-		serialize: function() {
-			// TODO: use ALL attributes, not just data-....
-			return {
-				tag: this.$element[0].tagName,
-				attributes: this._getAttributes() // contains data-properties
-			}
-		},
-
 		/**
-		 * Get a schema of attributes with
-		 *
-		 * TODO Document schema format
+		 * Get a schema of attributes which shall be rendered / edited
+		 * in the sidebar.
 		 *
 		 * @api
 		 * @returns {Object}
@@ -212,12 +210,20 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 		},
 
 		/**
-		 * Template Method which should return the block title. Needed for the sidebar.
+		 * Template Method which should return the block title. Needed for editing sidebar.
+		 * By default, the block title is returned.
+		 *
+		 * @api
 		 */
 		getTitle: function() {
 			return this.title;
 		},
 
+		/**
+		 * Returns true if the block is draggable because it is inside an aloha-editable, false otherwise.
+		 *
+		 * @return Boolean
+		 */
 		isDraggable: function() {
 			return this.$element.parents('.aloha-editable').length > 0;
 		},
@@ -286,11 +292,18 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 			return this.$element.hasClass('aloha-block-active');
 		},
 
+		/**
+		 * Internal helper which sets a block as highlighted, because the block itself
+		 * or a child block has been activated.
+		 */
 		_highlight: function() {
 			this.$element.addClass('aloha-block-highlighted');
 			BlockManager._setHighlighted(this);
 		},
 
+		/**
+		 * Internal helper which sets a block as un-highlighted.
+		 */
 		_unhighlight: function() {
 			this.$element.removeClass('aloha-block-highlighted');
 			BlockManager._setUnhighlighted(this);
@@ -355,14 +368,12 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 				this._disableUglyInternetExplorerDragHandles();
 			}
 		},
-		_disableUglyInternetExplorerDragHandles: function() {
-			// :HINT The outest div (Editable) of the table is still in an editable
-			// div. So IE will surround the the wrapper div with a resize-border
-			// Workaround => just disable the handles so hopefully won't happen any ugly stuff.
-			// Disable resize and selection of the controls (only IE)
-			// Events only can be set to elements which are loaded from the DOM (if they
-			// were created dynamically before) ;)
 
+		/**
+		 * Helper which disables the ugly IE drag handles. They are still shown, but at
+		 * least they do not work anymore
+		 */
+		_disableUglyInternetExplorerDragHandles: function() {
 			this.$element.get( 0 ).onresizestart = function ( e ) { return false; };
 			this.$element.get( 0 ).oncontrolselect = function ( e ) { return false; };
 			// We do NOT abort the "ondragstart" event as it is required for drag/drop.
@@ -400,6 +411,11 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 						tolerance: 'pointer',
 						addClasses: false, // performance optimization
 						scope: 'aloha-block-inlinedragdrop',
+
+						/**
+						 * When hovering over a paragraph, we make convert its contents into spans, to make
+						 * them droppable.
+						 */
 						over: function(event, ui) {
 							that._dd_traverseDomTreeAndWrapCharactersWithSpans(this);
 							jQuery('span[data-i]', this).droppable({
@@ -416,8 +432,15 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 									}
 								}
 							});
+							// Now that we updated the droppables in the system, we need to recalculate
+							// the Drag Drop offsets.
 							jQuery.ui.ddmanager.prepareOffsets(ui.draggable.data('draggable'), event);
 						},
+
+						/**
+						 * When dropping over a paragraph, we use the "lastHoveredCharacter"
+						 * as drop target.
+						 */
 						drop: function(event, ui) {
 							if (lastHoveredCharacter) {
 								// the user recently hovered over a character
@@ -505,6 +528,7 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 			}
 			return cleanedTextParts;
 		},
+
 		/**
 		 * This is a helper for _dd_traverseDomTreeAndWrapCharactersWithSpans,
 		 * performing the actual conversion.
@@ -563,6 +587,10 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 			return numberOfSpansInserted-1;
 		},
 
+		/**
+		 * After the Drag/Drop operation, we need to remove the SPAN elements
+		 * again.
+		 */
 		_dd_traverseDomTreeAndRemoveSpans: function(el) {
 			var nodesToDelete = [], convertBack;
 			convertBack = function(el) {
@@ -626,7 +654,8 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 			// We only want to make "block-level" aloha blocks sortable. According to the docs,
 			// sortable.cancel should have a CSS selector and if this matches, the element is only
 			// a drop target but NOT draggable. However, passing :not(.aloha-block) does not work somehow :-(
-			// Alternative:
+			//
+			// Thus, we implemented the following alternative:
 			// Every "block-level" aloha block drag handle gets a new CSS class, and we only select this as
 			// drag handle. As only "block-level" aloha blocks have this CSS class, this will also only make
 			// aloha blocks draggable.
@@ -645,8 +674,6 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 		/**
 		 * Create editables from the inner content that was
 		 * rendered for this block.
-		 *
-		 * TODO: this method should be idempotent
 		 *
 		 * This method must be idempotent. I.e. it must produce the same results
 		 * when called once or twice.
@@ -667,9 +694,9 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 		 * when called once or twice.
 		 *
 		 * Template method to render custom block UI.
+		 * @api
 		 */
 		renderDragHandlesIfNeeded: function() {
-			var that = this;
 			if (this.isDraggable()) {
 				if (this.$element.find('.aloha-block-draghandle').length == 0) {
 					this.$element.prepend('<span class="aloha-block-handle aloha-block-draghandle"></span>');
@@ -687,6 +714,8 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 		 * The attribute keys are converted internally to lowercase,
 		 * so attr('foo', 'bar') and attr('FoO', 'bar') are the same internally.
 		 * The same applies to reading.
+		 *
+		 * It is not allowed to set internal attributes (starting with aloha-block-) through this API.
 		 *
 		 * @api
 		 * @param {String|Object} attributeNameOrObject
@@ -725,17 +754,26 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 				this._update();
 				this.trigger('change');
 			}
-			return this;
+			return null;
 		},
 
+		/**
+		 * Internal helper for setting  a single attribute.
+		 */
 		_setAttribute: function(name, value) {
 			this.$element.attr('data-' + name.toLowerCase(), value);
 		},
 
+		/**
+		 * Internal helper for getting an attribute
+		 */
 		_getAttribute: function(name) {
-			return this._getAttributes()[name.toLowerCase()];
+			return this.$element.attr('data-' + name.toLowerCase());
 		},
 
+		/**
+		 * Internal helper for getting all attributes
+		 */
 		_getAttributes: function() {
 			var attributes = {};
 

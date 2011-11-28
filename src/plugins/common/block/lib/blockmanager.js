@@ -235,12 +235,9 @@ function(Aloha, jQuery, FloatingMenu, Observable, Registry) {
 		 * @private
 		 */
 		getConfig: function(blockElement, instanceDefaults) {
-			var settingsDefaults = {};
-
 			return jQuery.extend(
 				{},
 				this.defaults,
-				settingsDefaults,
 				instanceDefaults,
 				blockElement.data()
 			);
@@ -248,10 +245,12 @@ function(Aloha, jQuery, FloatingMenu, Observable, Registry) {
 
 		/**
 		 * Get a Block instance by id or DOM node. The DOM node can be either
-		 * the DOM node of the wrapping element ($_element), or $_innerElement
+		 * the DOM node of the wrapping element ($_element), the jQuery object of it,
+		 * or the ID string.
 		 *
 		 * @param {String|DOMNode} idOrDomNode
 		 * @return {block.block.AbstractBlock} Block instance
+		 * @api
 		 */
 		getBlock: function(idOrDomNode) {
 			var id, domNode;

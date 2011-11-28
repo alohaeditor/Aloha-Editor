@@ -1,56 +1,188 @@
-h2. The Block Plugin
+﻿h2. The Block Plugin
 
 After reading this guide, you will be able to:
 
-* Understand what Blocks are and how to use them
-* use the Block API to create, modify and
-* Extend Blocks with custom implementations
+* TODO
 
 endprologue.
 
 WARNING: This guide is currently work-in-progress.
 
+
 h3. What are Aloha Blocks?
 
-*Aloha Blocks* (Blocks) are non-editable areas of a website, which have some properties being editable
-through the Aloha user interface. Blocks can appear inside editables or outside editables, both
-inside inline elements and inside block-level elements.
-
-Blocks themselves can contain editables and other blocks.
+*Aloha Blocks* (Blocks) are non-editable areas of a website, which often have
+some properties being editable through the Aloha user interface.
 
 Some use cases for blocks include:
 
-* Displaying a vCard of a person from an address book.
-* Displaying product prices in continuous text. Here, the user should not be able to edit the prices.
-* Provide "templates" like a two-column block
-* TODO: add more use-cases
+* Displaying a vCard of a person from an address book as a paragraph inside
+  an editable, where the person can be chosen through the Aloha UI
+* Display a custom "inline image" in continuous text, which could float either left or right,
+  and where the image caption is again changeable using Aloha
+* Show a listing of news inside or outside an editable.
 
-Blocks are not fully implemented yet. See TODO LINK TO WIKI for the current roadmap.
+Some properties of blocks:
+
+* Blocks can occur inside or outside of Aloha Editables
+* Both +<span>+ and +<div>+ elements can be blockified (i.e. converted to blocks)
+* can contain nested editable areas
+* can be copy/pasted and dragged/dropped if they are inside an Aloha editable
+
 
 h3. Enabling the Block Plugin
 
+Aloha Blocks are implemented as a plugin called @block@, which is part of the @common@ bundle.
 
-h3. Creating Blocks
+Furthermore, you need to load the @paste@ plugin. Thus, just add +common/block,common/paste+ to the @data-aloha-plugins@ loading list.
 
-Aloha BLocks is implemented as a plugin called @block@, which is part of the @common@ bundle.
+WARNING: As the @contenthandler@ plugin currently cleans up the HTML very rigidly, this can interfere with blocks. If you use them together, make sure to test thoroughly that no unwanted HTML is removed.
 
-Thus, in order to use blocks, you need to load the +common/block+ and +common/contenthandler+ plugin (Blocks interact
-with the contenthandler plugin).
+h4. Initializing  Blocks
 
-After the plugin is loaded, you can create blocks.
+Blocks need to be initialized before they can be used. Most conveniently, it should be done when the page is loaded. The most simple way to initialize a block is by using the +.alohaBlock()+ function on a jQuery collection, i.e. to make @.vcard@ a block, just use @jQuery('.vcard').alohaBlock()@.
 
-h4. Using jQuery
+TIP: Make sure to wrap the initialization code inside an @Aloha.ready()@ callback, to make
+     sure Aloha is fully loaded by then.
+
+NOTE: It is only allowed to convert @span@ or @div@ elements into an Aloha Block. Otherwise,
+      an error will be thrown. So watch the browser's console output when debugging!
+
+The @alohaBlock@ function takes a configuration object of *Block Attributes*, which are set on the block.
+
+h4. Block Attributes
+
+Each block can have multiple *block attributes*, which are like configuration parameters and can influence the rendering of blocks. A block attribute key is only allowed to be lowercase, and shall contain only @a-z, 0-9, -@ and @_@ in the name. The block attribute value must be a string:
 
 <javascript>
-jQuery('.some-selector').alohaBlock();
+// Valid block attributes
+{
+	key: 'value',
+	_foo: 'bar',
+	'my-special-attr': 'Yeah',
+	'attr-09': 'Test some very long string',
+	another: '{"json": "encoded as string"}'
+}
+// Invalid block attributes
+{
+	kEy: 'value'
+	foo: false,
+	bar: {
+		json: "foo"
+	}
+}
 </javascript>
 
-h4. Using Configuration
+NOTE: Because block attributes are stored as @data@ attributes on the block DOM node, we must be
+      quite restrictive concerning the allowed keys, and only allow string values.
+
+Block attributes can be set at construction time through +.alohaBlock(attrs)+ or using the +block.attr()+ function at runtime.
+
+All block attributes which start with +aloha-block-+ are *internal* and can *only* be set during construction time.
+
+h4. Block Types
+
+One special block attribute is called +aloha-block-type+, which must be set to one of the block types registered at the @BlockManager@. It can be only set during construction time, and if it is not set, the @DefaultBlock@ is automatically chosen.
+
+Depending on the block type, a different @Block@ class is being instanciated. Later, you will be introduced in writing your own block type.
+
+TIP: Aloha shows configuration errors on the firebug or webkit console; so watch this place
+     for any errors, f.e. because block types were not found.
+
+h4. Block Attribute Overriding Sources
+
+When calling @.alohaBlock@ on an element, the following data is merged together:
+
+* @{ aloha-block-type: 'DefaultBlock' }@
+* The block attributes specified in the @.alohaBlock(attr)@ function
+* All @data-@ attributes on the corresponding DOM node.
+
+That is, if a DOM node which should be blockified has a @data-aloha-block-type@ property, this one is always used. Else, the @aloha-block-type@ property from the @.alohaBlock()@ function is used (if given). If nothing is specified, the @DefaultBlock@ is used.
+
+The same is done for all block attributes, not only @aloha-block-type@.
+
+h4. Default Settings
+
+Block construction such as the following is very common:
+
+<javascript>
+Aloha.ready(function() {
+	Aloha.jQuery('.foo').alohaBlock({
+		'aloha-block-type': 'MySpecialBlock'
+	});
+	Aloha.jQuery('.bar').alohaBlock({
+		'aloha-block-type': 'DebugBlock'
+	});
+});
+</javascript>
+
+To make such initialization code more easy to write and more declarative, this can be also written inside the Aloha settings:
+
+<javascript>
+Aloha.settings.plugins.block.defaults {
+	'.foo': {
+		'aloha-block-type': 'MySpecialBlock'
+	},
+	'.bar': {
+		'aloha-block-type': 'DebugBlock'
+	}
+}
+</javascript>
+
+Using Aloha settings is the preferred way of initialization, as it is more easy to read.
 
 h3. Interacting with Blocks
 
-* Getting "Block" instance (BlockManager.get or so...)
-* attr(...) explained
+After a block has been initialized, it can be retrieved through the +BlockManager.getBlock()+ method. This method accepts a variety of arguments:
+
+* the ID of the block (as in @<span id="....">@)
+* the DOM element of the block
+* the jQuery object of the block
+
+Thus, the following is all possible and returns the same @Block@ object instance:
+
+<javascript>
+require(['block/blockmanager'], function(BlockManager) {
+	var b1 = BlockManager.getBlock('myBlock'); // ID
+	var b2 = BlockManager.getBlock(jQuery('#myBlock')); // jQuery object
+	var b3 = BlockManager.getBlock(jQuery('#myBlock').get(0)); // DOM object
+});
+</javascript>
+
+After you retrieved a block instance, you can use the public API of it. The most important
+methods are:
+
+* +attr(key, value)+ to set @key@ to @value@
+* +attr({key1: value1, key2: value2})+ to set multiple values simultaneously
+* +attr(key)+ to retrieve the value for @key@
+* +attr()+ to retrieve all key/values as objecz
+* +activate()+ to activate the block
+* +deactivate()+ to deactivate the block
+
+When an attribute is changed through @attr@, the block is re-rendered automatically.
+
+h3. Writing a Custom Aloha Block
+
+* basic sketch, registration inside BlockManager
+
+h4. Rendering API
+
+* TODO init and render explained
+* Idempotency
+* custom handlers
+
+
+h4. Editing API
+
+* getSchema() getTitle() explained
+* disabling sidebar
+
+h3. Writing custom editor
+
+* TODO explain
+
+h3. Connecting Blocks to Backend system
+
 
 h3. APIs and Extension Points
 
@@ -63,6 +195,7 @@ h3. Internals
 
 h3. Future Work
 
+h3. Browser Compatibility Matrix
 
 h3. Browser Compatibility
 
@@ -73,9 +206,11 @@ h3. Browser Compatibility
 |_. Drag & Drop of block-level elements         |  ✓         |  ✓         |  ✓    | ✓     | ✓     |     ✘              |
 |_. Copy & Paste                                |  ✓         |  ✓         |  ✓    | ✓     | ✓     |     ✓              |
 |_. Cut & Paste                                 |  ✓         |  ✓         |  ✓    | ✓     | ✓     |     ✓              |
-|_. Deletion of single blocks                   |  ✓         |  ✓         |  ✘    | ✘     | ✘     |      ✘              |
+|_. Deletion of single blocks (block-level)     |  ✓         |  ✓         |  ✘TODO| ✓     | ✘TODO |      ✘              |
+|_. Deletion of single blocks (inline)          |  ✓         |  ✓         |  ✓    | ✓     | ✓     |      ✘              |
 |_. Deletion of blocks being part of selection  |  ✓         |  ✓         |  ✓    | ✓     | ✓     |      ✘              |
 |_. Caret handling of inline blocks             |  ✘         |  ✘         |  ✘    | ✘     | ✘     |      ✘              |
+
 
 h3. Changelog
 
