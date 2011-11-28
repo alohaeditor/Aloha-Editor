@@ -23,28 +23,10 @@ define([ 'aloha/jquery', 'block/blockmanager', 'aloha/sidebar', 'block/editorman
 		 * Initialize the sidebar attribute editor and bind events
 		 */
 		init: function() {
-			var that = this;
-			
-			//Obsolete: that._initSidebar();
 			this._sidebar = Sidebar.right.show();
-			
+
 			BlockManager.bind('block-selection-change', this._onBlockSelectionChange, this);
 		},
-		
-		/* Obsolete:
-			We no longer need to initialize our own sidebar.
-			We will use those that are provided to use by Aloha
-				
-		_initSidebar: function() {
-			return;
-			this._sidebar = new Sidebar({
-				position: 'right',
-				width: 250,
-				isOpen: true,
-				panels: []
-			});
-		},
-		 */
 
 		/**
 		 * @param {Array} selectedBlocks

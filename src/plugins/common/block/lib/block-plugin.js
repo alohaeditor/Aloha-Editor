@@ -25,11 +25,11 @@ define([
 ], function(Aloha, Plugin, jQuery, ContentHandlerManager, BlockManager, SidebarAttributeEditor, block, EditorManager, BlockContentHandler, editor) {
 	"use strict";
 	/**
-	 * Register the plugin with unique name
+	 * Register the 'block' plugin
 	 */
 	var BlockPlugin = Plugin.create( 'block', {
 		settings: {},
-//		dependencies: [ 'contenthandler' ],
+//		dependencies: [ 'paste' ],
 
 		init: function () {
 			var that = this;
@@ -58,6 +58,10 @@ define([
 				}
 			});
 		},
+
+		/**
+		 * Create blocks from default settings
+		 */
 		_createBlocks: function() {
 			if (!this.settings.defaults) {
 				this.settings.defaults = {};
