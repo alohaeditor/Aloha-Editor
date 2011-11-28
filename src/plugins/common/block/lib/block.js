@@ -535,6 +535,11 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 				// We use "floor" here such that sentence delimiters like "!" can have a block placed afterwards
 				leftWordPartLength = Math.floor(word.length/2);
 
+				// For Internet Explorer, we only make dropping AFTER words possible to improve performance
+				if (Ext.isIE && !Ext.isIE9) {
+					leftWordPartLength = 0;
+				}
+
 				if (leftWordPartLength > 0) {
 					x = document.createElement('span');
 					x.appendChild(document.createTextNode(word.substr(0, leftWordPartLength)));
