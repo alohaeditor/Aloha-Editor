@@ -65,6 +65,9 @@ function(Aloha, jQuery, FloatingMenu, Observable, Registry) {
 		 */
 		_activeBlock: null,
 
+		/**************************
+		 * SECTION: Initialization
+		 **************************/
 		/**
 		 * Constructor. called immediately.
 		 *
@@ -85,17 +88,12 @@ function(Aloha, jQuery, FloatingMenu, Observable, Registry) {
 		 */
 		registerEventHandlers: function() {
 			var that = this;
+			this._registerEventHandlersForDeactivatingAlohaBlock();
+			this._registerEventHandlersForDeterminingCurrentlyActiveBlock();
+			this._registerEventHandlersForBlockDeletion();
+			this._registerEventHandlersForCutCopyPaste();
 
-			// Register event handlers for deactivating an Aloha Block
-			jQuery(document).bind('click', function(event) {
-				if (that._highlightedBlocks == {}) return;
-				if (jQuery(event.target).closest('.aloha-sidebar-bar, .aloha-block-do-not-deactivate, .aloha-floatingmenu, .aloha-block').length > 0) {
-					// If we are inside the sidebar, the floating menu or other elements which should not trigger the block deactivation, we do an early return.
-					return;
-				}
-				BlockManager._deactivate_highlightedBlocks();
-			});
-
+			// TODO: not sure if we still need the code below. it is somehow related to caret handling
 			Aloha.bind('aloha-selection-changed', function(evt, selection, originalEvent) {
 				// the following line is needed to de-select blocks when navigating over them using the mouse cursors.
 				// We only want to execute it though, if we are not inside a block, as it would otherwise
@@ -103,9 +101,32 @@ function(Aloha, jQuery, FloatingMenu, Observable, Registry) {
 				if (selection && jQuery(selection.getCommonAncestorContainer()).parents('.aloha-block').length > 0) {
 					return;
 				}
-				that._deactivate_highlightedBlocks();
+				that._deactivateHighlightedBlocks();
 			});
+		},
 
+		/**
+		 * Register the event handlers which deactivate aloha blocks when the user clicks outside a block
+		 */
+		_registerEventHandlersForDeactivatingAlohaBlock: function() {
+			var that = this;
+
+			jQuery(document).bind('click', function(event) {
+				if (that._highlightedBlocks == {}) return;
+				if (jQuery(event.target).closest('.aloha-sidebar-bar, .aloha-block-do-not-deactivate, .aloha-floatingmenu, .aloha-block').length > 0) {
+					// If we are inside the sidebar, the floating menu or other elements which should not trigger the block deactivation, we do an early return.
+					return;
+				}
+				that._deactivateHighlightedBlocks();
+			});
+		},
+
+		/**
+		 * Register the event handler which listens to block-selection-change, and
+		 * sets _activeBlock accordingly.
+		 */
+		_registerEventHandlersForDeterminingCurrentlyActiveBlock: function() {
+			var that = this;
 			this.bind('block-selection-change', function(highlightedBlocks) {
 				if (highlightedBlocks.length > 0) {
 					that._activeBlock = highlightedBlocks[0];
@@ -113,11 +134,16 @@ function(Aloha, jQuery, FloatingMenu, Observable, Registry) {
 					that._activeBlock = null;
 				}
 			});
+		},
 
+		/**
+		 * Implementation of block deletions, both when the block is the only selected element,
+		 * and when the block is part of a bigger selection which should be deleted.
+		 */
+		_registerEventHandlersForBlockDeletion: function() {
+			var that = this;
 
-			// Implementation of block deletions, both when the block is the only selected element, and when the block is part of a bigger selection which should be deleted.
 			Aloha.bind('aloha-command-will-execute', function(e, commandId) {
-
 
 				// Internet Explorer *magically* sets the range to the "Body" object after deselecting everything. yeah :-D
 				var onlyBlockSelected = (Aloha.getSelection().getRangeCount() === 0) // Firefox / Chrome
@@ -146,12 +172,16 @@ function(Aloha, jQuery, FloatingMenu, Observable, Registry) {
 					traverseSelectionTree(Aloha.Selection.getSelectionTree());
 				}
 			});
+		},
 
+		/**
+		 * Implementation of cut/copy; selecting the currently active block.
+		 *
+		 * When pasting, the blockcontenthandler is triggered. This takes care of the pasting process.
+		 */
+		_registerEventHandlersForCutCopyPaste: function() {
+			var that = this, currentlyCopying = false, currentlyCutting = false, selectionBeforeCopying = null;
 
-			// Enabling copies of the active block
-			var currentlyCopying = false;
-			var currentlyCutting = false;
-			var selectionBeforeCopying = null;
 			jQuery(window.document).keydown(function(e) {
 				// IF: Ctrl/Command C pressed -- COPY
 				if (that._activeBlock && (e.ctrlKey || e.metaKey) && e.which === 67) {
@@ -186,8 +216,20 @@ function(Aloha, jQuery, FloatingMenu, Observable, Registry) {
 			});
 		},
 
-		_setActiveBlock: function() {
+		/**************************
+		 * SECTION: Blockify / Block Access
+		 **************************/
 
+		/**
+		 * Register the given block type
+		 *
+		 * @param {String} Identifier
+		 * @param {Class} A class that extends block.block.AbstractBlock
+		 * @api
+		 */
+		registerBlockType: function(identifier, blockType) {
+			FloatingMenu.createScope('Aloha.Block.' + identifier, 'Aloha.Block');
+			this.blockTypes.register(identifier, blockType);
 		},
 
 		/**
@@ -225,20 +267,6 @@ function(Aloha, jQuery, FloatingMenu, Observable, Registry) {
 
 			// Register block
 			this.blocks.register(block.getId(), block);
-		},
-
-		/**
-		 * Deactivate all active blocks
-		 *
-		 * @private
-		 */
-		_deactivate_highlightedBlocks: function() {
-			jQuery.each(jQuery.extend({}, this._highlightedBlocks), function(id) {
-				var block = BlockManager.getBlock(id);
-				if (block) {
-					block.deactivate();
-				}
-			});
 		},
 
 		/**
@@ -282,7 +310,8 @@ function(Aloha, jQuery, FloatingMenu, Observable, Registry) {
 		},
 
 		/**
-		 * Unregister (e.g. remove) the given block
+		 * Unregister (e.g. remove) the given block. Do not call directly,
+		 * instead use .destroy() on the block.
 		 *
 		 * @param {Object|String} blockOrBlockId Block or block id
 		 */
@@ -296,15 +325,23 @@ function(Aloha, jQuery, FloatingMenu, Observable, Registry) {
 			this.blocks.unregister(blockOrBlockId);
 		},
 
+
+		/**************************
+		 * Internal helpers
+		 **************************/
+
 		/**
-		 * Register the given block type
+		 * Deactivate all highlighted blocks
 		 *
-		 * @param {String} Identifier
-		 * @param {Class} A class that extends block.block.AbstractBlock
+		 * @private
 		 */
-		registerBlockType: function(identifier, blockType) {
-			FloatingMenu.createScope('Aloha.Block.' + identifier, 'Aloha.Block');
-			this.blockTypes.register(identifier, blockType);
+		_deactivateHighlightedBlocks: function() {
+			jQuery.each(jQuery.extend({}, this._highlightedBlocks), function(id) {
+				var block = BlockManager.getBlock(id);
+				if (block) {
+					block.deactivate();
+				}
+			});
 		},
 
 		/**
