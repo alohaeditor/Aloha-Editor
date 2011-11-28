@@ -1,5 +1,5 @@
-define([ 'aloha/core', 'ui/ui' ],
-function ( Aloha, Ui ) {
+define([ 'aloha/core', 'ui/ui', 'i18n!ui/nls/i18n' ],
+function ( Aloha, Ui, i18n ) {
 	
 	// The second part of the bold plugin is the bold component.
 	// The bold component is a [toggleCommandButton](toggleCommandButton.html) that ties into the bold command.
@@ -11,7 +11,10 @@ function ( Aloha, Ui ) {
 		[ "bold", "italic", "strikethrough", "subscript", "superscript", "underline" ],
 		function( i, command ) {
 			Ui.create( command, "toggleCommandButton", {
-				command: command
+				command: command,
+				label: i18n.t( "button." + command + ".label" ),
+				iconOnly: true,
+				icon: "aloha-ui-icon aloha-ui-icon-" + command
 			});
 		});
 	

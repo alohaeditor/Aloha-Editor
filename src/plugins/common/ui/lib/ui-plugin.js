@@ -8,6 +8,7 @@
 define([
     'aloha/plugin',
     'css!./vendor/jquery-ui-1.8.16.css',
+    'css!./css/ui.css',
     'jquery-plugin!./vendor/jquery-ui-1.8.16',
    	'./ui',
     './button',

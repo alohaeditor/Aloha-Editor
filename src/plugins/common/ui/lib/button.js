@@ -15,9 +15,13 @@ function ( jQuery, Ui ) {
 			this.element = jQuery( "<button>", {
 				'class': 'aloha-ui aloha-button'
 			})
-			/* this should be a localized label, not the name of the button */
-			.text( this.settings.name )
-			.button()
+			.text( this.settings.label )
+			.button({
+				text: !settings.iconOnly,
+				icons: {
+					primary: settings.icon
+				}
+			})
 			.click( jQuery.proxy( function() {
 				this.click();
 			}, this ) );
