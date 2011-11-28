@@ -81,7 +81,6 @@ define( [
 		_constructor: function(obj, settings) {
 			var me = this;
 
-		_constructor: function( obj ) {
 			// check wheter the object has an ID otherwise generate and set
 			// globally unique ID
 			if ( !obj.attr( 'id' ) ) {
