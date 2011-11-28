@@ -7,9 +7,9 @@
 
 define([
     'aloha/plugin',
-    'css!./vendor/jquery-ui-1.8.16.css',
+    'css!./vendor/jquery-ui-1.9m6.css',
     'css!./css/ui.css',
-    'jquery-plugin!./vendor/jquery-ui-1.8.16',
+    'jquery-plugin!./vendor/jquery-ui-1.9m6',
    	'./ui',
     './button',
     './togglebutton',
