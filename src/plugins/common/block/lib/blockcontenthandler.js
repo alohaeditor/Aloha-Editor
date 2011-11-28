@@ -14,7 +14,7 @@ function(jQuery, ContentHandlerManager, BlockManager) {
 	 * @class Special block content handler
 	 *
 	 * The blog content handler handles pasting of blocks in editables. Pasted
-	 * block markup will be replaced by a freshly rendered block instance.
+	 * block markup will be replaced by a newly created block instance.
 	 */
 	var BlockContentHandler = ContentHandlerManager.createHandler(
 	/** @lends block.BlockContentHandler */
@@ -40,7 +40,7 @@ function(jQuery, ContentHandlerManager, BlockManager) {
 			}
 
 			if (content.find('.aloha-block[data-aloha-block-copy-only-block="true"]').length > 0) {
-				// We are in case 1; so some more cleanup is needed.
+				// We are in case 1; so some more cleanup is needed (at least in webkit and firefox).
 
 				// Webkit seems to *duplicate* the block when copying. The duplicated
 				// block has *no ID property* set, that's how we can find and discard it.
