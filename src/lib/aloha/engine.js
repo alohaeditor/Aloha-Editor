@@ -6665,7 +6665,7 @@ commands.formatblock = {
 		}
 	}, indeterm: function() {
 		// "Block-extend the active range, and let new range be the result."
-		var newRange = blockExtend(range);
+		var newRange = blockExtend(getActiveRange());
 
 		// "Let node list be all visible editable nodes that are contained in
 		// new range and have no children."
@@ -6723,7 +6723,7 @@ commands.formatblock = {
 		return false;
 	}, value: function() {
 		// "Block-extend the active range, and let new range be the result."
-		var newRange = blockExtend(range);
+		var newRange = blockExtend(getActiveRange());
 
 		// "Let node be the first visible editable node that is contained in
 		// new range and has no children. If there is no such node, return the
