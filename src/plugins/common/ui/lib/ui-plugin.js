@@ -16,6 +16,7 @@ define([
     './togglecommandbutton',
     './dropdown',
 	'./text',
+	'./multiSplit',
 	'./toolbar',
 	'./components'
 ], function ( Plugin, Ui ) {

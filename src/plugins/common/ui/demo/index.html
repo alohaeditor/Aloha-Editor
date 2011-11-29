@@ -18,7 +18,7 @@
 				tabs: {},
 				components: [ [ 'bold', 'italic' ] ]
 			},
-			nativeCommands : true,
+			//nativeCommands : true,
 			locale: "en"
 		}
 	};
@@ -31,8 +31,10 @@
 			toolbar: {
 				components: [
 					[ "bold", "italic", "strikethrough", "subscript", "superscript", "underline" ],
+					[ "formatBlock" ]
 				]
-			}
+			},
+			formatBlock: [ "p", "h1", "h2", "h3", "pre" ]
 		});
 		$( "#uhoh" ).aloha({
 			font: [ "Tahoma", "Georgia" ],

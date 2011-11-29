@@ -68,4 +68,14 @@ function ( Aloha, Ui, i18n ) {
 			Aloha.execCommand( "createLink", false, value );
 		}
 	});
+	
+	
+	Aloha.settings.formatBlock = [ "p", "h1", "h2", "h3", "h4", "h5", "h6", "pre" ];
+	Ui.create( "formatBlock", "multiSplit", {
+		selectionChange: function() {
+			var value = Aloha.queryCommandValue( "formatBlock" );
+			console.log( value );
+			//this.setValue( value );
+		}
+	});
 });

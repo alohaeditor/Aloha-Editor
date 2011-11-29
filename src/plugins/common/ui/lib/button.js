@@ -12,30 +12,33 @@ function ( jQuery, Ui ) {
 		init: function( editable, settings ) {
 			this._super( editable, settings );
 			
-			this.element = jQuery( "<button>", {
-				'class': 'aloha-ui aloha-button'
-			})
-			.text( this.settings.label )
-			.button({
-				text: !settings.iconOnly,
-				icons: {
-					primary: settings.icon
-				}
-			})
-			.tooltip({
-				position: {
-					my: "left top",
-					at: "right bottom"
-				}
-			})
-			.click( jQuery.proxy( function() {
-				this.click();
-			}, this ) );
+			this.createButtonElement()
+				.button({
+					label: this.settings.label,
+					text: !settings.iconOnly,
+					icons: {
+						primary: settings.icon
+					}
+				})
+				.tooltip({
+					position: {
+						my: "left top",
+						at: "right bottom"
+					}
+				})
+				.click( jQuery.proxy(function() {
+					this.click();
+					return false;
+				}, this ) );
 		},
 		
 		// The `click()` method is invoked whenever the user clicks the rendered button.
 		click: function() {
 			this.settings.click.apply( this, arguments );
+		},
+		
+		createButtonElement: function() {
+			return this.element = this.buttonElement = jQuery( "<button>" );
 		}
 	});
 	

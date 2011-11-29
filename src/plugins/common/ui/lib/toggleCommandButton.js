@@ -8,7 +8,8 @@ function ( Aloha, Ui, ToggleButton ) {
 		// On click, we will always execute the command. Since toggleCommandButton is
 		// used for binary commands, there is no need to provide a value
 		click: function() {
-			Aloha.execCommand( this.settings.command );
+			Aloha.execCommand( this.settings.command, false, null, this.range );
+//			this.range.select();
 		},
 		// When the selection changes, the button will query the current state
 		// of the command to determine if the button should be rendered as
