@@ -20,16 +20,17 @@ function ( jQuery, Ui ) {
 						primary: settings.icon
 					}
 				})
-				.tooltip({
-					position: {
-						my: "left top",
-						at: "right bottom"
-					}
-				})
-				.click( jQuery.proxy(function() {
-					this.click();
-					return false;
-				}, this ) );
+				.button( "widget" )
+					.tooltip({
+						position: {
+							my: "left top",
+							at: "right bottom"
+						}
+					})
+					.click( jQuery.proxy(function() {
+						this.click();
+						return false;
+					}, this ) );
 		},
 		
 		// The `click()` method is invoked whenever the user clicks the rendered button.
