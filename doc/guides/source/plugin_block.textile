@@ -163,8 +163,9 @@ When an attribute is changed through @attr@, the block is re-rendered automatica
 
 h3. Writing a Custom Aloha Block
 
-When writing a custom block, you should do so in your own *aloha plugin*. Inside the *plugin module*,
-you need to register the Aloha Blocks at the Block Manager. An example skeleton follows:
+When writing a custom block, you should do so in your own *aloha plugin*.
+Inside the *plugin module*, you need to register the Aloha Blocks at the
+Block Manager. An example skeleton follows:
 
 <javascript filename="blockdemo/lib/blockdemo-plugin.js">
 define([
@@ -194,14 +195,47 @@ define([
 });
 </javascript>
 
-Now, you can implement the main API of the block.
+Now, you can implement the main API of the block, as explained in the next section.
 
-h4. Rendering API
+h4. Initialization and Rendering API
 
-* TODO init and render explained
-* Idempotency
-* custom handlers
+The first method you can override is the +init($element)+ method. There, you get the jQuery @$element@ as argument, and can use it to register f.e. custom event handlers or initialize the block contents. Furthermore, you can set block attributes using the @attr()@ method if needed.
 
+After the +init()+ method, the @$element@ is *augumented* by additional DOM nodes, which are needed f.e. for the drag/drop handles of the block.
+
+The second place you will most certainly override is the +update($element, postProcessFn)+ method. This method is called always when one or multiple block attributes changed, so you are able to run any code you want inside there, manipulating @$element@.
+
+In some use cases, you will want to do some asynchronous work inside the @update()@ method, like fetching an updated rendering of the element via AJAX from the server side. That is the reason of the @postProcessFn@ callback function you get as second method argument: This function must be *always called* after the @$element@ has been modified, as it renders the drag/drop handles if necessary.
+
+Because we add some special DOM nodes to the @$element@ (for displaying the drag/drop handles for example), you should not rely on stuff like the number of child elements of @$element@. If you still need to do this, make sure to filter out all elements which have an +aloha-block-handle+ CSS class applied (as they are internal elements).
+
+h4. Custom Block Handles
+
+If you wish to write custom block handles, e.g. for deleting a block or adding new blocks, you need to override the +renderBlockHandlesIfNeeded+ method. There, you can add DOM nodes to @this.$element@, and style them as handles using CSS.
+
+There are two rules to follow:
+
+* First, the method must be *idempotent*, that is, it needs to have the same behavior
+  no matter how often it is called. This means f.e. that if this method inserts a drag handle,
+  it is only allowed to do so if the drag handle is not yet inserted.
+* Second, the method must mark all DOM nodes which are added with the CSS class
+  +aloha-block-handle+ such that they are marked as internal.
+
+The default block handles function looks as follows, rendering a drag handle:
+
+<javascript>
+renderBlockHandlesIfNeeded: function() {
+	if (this.isDraggable()) {
+		if (this.$element.find('.aloha-block-draghandle').length == 0) {
+			this.$element.prepend('<span class="aloha-block-handle aloha-block-draghandle"></span>');
+		}
+	}
+}
+</javascript>
+
+h4. Nested Aloha Editables
+
+If you want to mark a certain area inside a block as aloha editable again, you just need to apply the +aloha-editable+ CSS class to it. If the default behavior is not what you want, you can also call @$element.find(...).aloha()@ in the @init()@ and/or @update()@ method.
 
 h4. Editing API
 
@@ -221,15 +255,9 @@ h3. APIs and Extension Points
 * Writing custom Blocks
 * Writing custom Editors
 
-h3. Writing your own Block
-
 h3. Internals
 
-h3. Future Work
-
 h3. Browser Compatibility Matrix
-
-h3. Browser Compatibility
 
 |_.                                             |_. Firefox 7|_. Chrome 17|_. IE7 |_. IE8 |_. IE9 |_. Unit Test Written|
 |_. General Aloha                               |  ✓         |  ✓         |  ✓    | ✓     | ✓     |     ✓              |
@@ -247,4 +275,5 @@ h3. Browser Compatibility
 h3. Changelog
 
 * July 7, 2011: Initial version by "Sebastian Kurfürst":credits.html#skurfuerst and "Christopher Hlubek":credits.html#hlubek
+* November 29, 2011: Greatly expanded version by "Sebastian Kurfürst":credits.html#skurfuerst 
 
