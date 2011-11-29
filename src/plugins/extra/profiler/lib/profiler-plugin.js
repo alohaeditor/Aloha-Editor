@@ -8,27 +8,34 @@
  * --------------
  * Provides a useful interface to profile some of Aloha components and their
  * methods.
+ *
+ * Potentially process intensive methods:
+ *		Aloha.Profiler.profileAlohaComponent('Markup.preProcessKeyStrokes') 0-10    500-700
+ *		Aloha.Profiler.profileAlohaComponent('Selection._updateSelection')
  */
 
 window.define( [
 	'aloha/core',
 	'aloha/plugin',
 	'aloha/editable',
+	// 'aloha/sidebar',
 	'aloha/selection',
 	'aloha/markup',
 	'aloha/contenthandlermanager',
 	'aloha/floatingmenu',
-	'aloha/console'
-], function( Aloha, Plugin, Editable, Selection, Markup,
+	'aloha/console',
+	'css!profiler/css/profiler'
+], function( Aloha, Plugin, /* Sidebar */ Editable, Selection, Markup,
              ContentHandlerManager, FloatingMenu, console ) {
 	// 'caller', 'callee', and 'arguments' properties may not be accessed on
 	// strict mode functions or the arguments objects for calls to them
 	// 'use strict';
 
-	var profiledFunctions = [],
+	var jQuery = Aloha.jQuery,
+	    profiledFunctions = [],
 
-		// get the arguments string literal of this function, and split it into
-		// an array of names
+	    // get the arguments string literal of this function, and split it into
+	    // an array of names
 	    argsStr = ( /function[^\(]*\(([^\)]+)/g ).exec( arguments.callee.toString() ),
 	    argNames = argsStr ? argsStr[1].replace( /^\s+|\s+$/g, '' ).split( /\,\s*/ ) : [],
 	    args = Array.prototype.slice.call( arguments );
@@ -68,7 +75,7 @@ window.define( [
 
 		return obj;
 	};
-	
+
 	function parseObjectPath( path, obj ) {
 		if ( typeof path !== 'string' ) {
 			return null;
@@ -103,6 +110,46 @@ window.define( [
 		};
 	};
 
+	var panel;
+	function initSidebarPanel(sidebar) {
+		sidebar.addPanel( {
+			id       : 'aloha-devtool-profiler-panel',
+			title    : 'Aloha Profiler',
+			expanded : true,
+			activeOn : true,
+			content  : '' +
+				'<div id="aloha-devtool-profiler-container">' +
+					'<input id="aloha-devtool-profiler-input" ' +
+						'value="Aloha.Profiler.profileAlohaComponent(\'Markup.preProcessKeyStrokes\')" />' +
+					'<ul id="aloha-devtool-profiler-console"></ul>' +
+				'</div>',
+			onInit   : function() {
+				this.content.find( 'input#aloha-devtool-profiler-input' ).keydown( function( event ) {
+					// Handle ENTER
+					if ( event.keyCode === 13 ) {
+						var input = jQuery( this );
+						var value = input.val();
+						if ( value ) {
+							eval( value );
+							PanelConsole.log( value );
+							input.val( '' );
+						}
+					}
+				} );
+			}
+		} );
+		sidebar.show().open();
+	};
+	
+	var PanelConsole = {
+		log: function() {
+			jQuery( '#aloha-devtool-profiler-console' )
+				.prepend( '<li>' +
+					Array.prototype.slice.call( arguments ).join( ' ' ) +
+					'</li>' );
+		}
+	}
+
 	Aloha.Profiler = Plugin.create( 'profiler', {
 
 		/**
@@ -118,6 +165,8 @@ window.define( [
 		 * eg: Aloha.Profiler.profile(Aloha.Profiler.alohaComponents[ 'Markup' ], 'preProcessKeyStrokes')
 		 */
 		alohaComponents: {},
+		
+		panel: null,
 
 		/**
 		 * Initializes Profiler plugin by populating alohaComponents with all
@@ -128,6 +177,18 @@ window.define( [
 			while ( --j >= 0 ) {
 				this.alohaComponents[ argNames[ j ] ] = args[ j ];
 			}
+			
+			var that = this;
+			
+			Aloha.ready( function() {
+				if ( Aloha.Sidebar && Aloha.Sidebar.right ) {
+					that.panel = initSidebarPanel( Aloha.Sidebar.right );
+				}
+			} );
+		},
+
+		log: function() {
+			PanelConsole.log.apply( PanelConsole, arguments );
 		},
 
 		/**
@@ -184,10 +245,11 @@ window.define( [
 			}
 
 			var fn = obj[ fnName ];
+			var that = this;
 
 			// In IE typeof window.console.log returns "object!!!"
 			if ( window.console && window.console.log ) {
-				if ( objIndex == -1 ) {
+				if ( objIndex === -1 ) {
 					objIndex = profiledFunctions.push( obj ) - 1;
 				}
 
@@ -203,7 +265,7 @@ window.define( [
 					var returnValue = fn.apply( obj, arguments );
 
 					// window.console.timeEnd( fnName );
-					window.console.log( ( path || fnName ) + ': ' +
+					that.log( ( path || fnName ) + ': ' +
 						( ( new Date() ) - start ) + 'ms' );
 
 					return returnValue;
