@@ -1,6 +1,6 @@
 define([ 'aloha/jquery', 'ui/ui' ],
-function ( jQuery, Ui ) {
-
+function( jQuery, Ui ) {
+	
 	// The button component type creates a simple button.
 	// Buttons have no state, they only respond to click events.
 	Ui.createType( "button", {

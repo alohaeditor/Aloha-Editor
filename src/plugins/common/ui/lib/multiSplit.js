@@ -1,14 +1,13 @@
 define([ 'aloha/jquery', 'ui/ui' ],
-function ( jQuery, Ui ) {
+function( jQuery, Ui ) {
 	Ui.createType( "multiSplit", {
 		init: function( editable, settings ) {
 			this._super( editable, settings );
 			
-			this.element = jQuery( "<div>", {
-				'class': 'aloha-multi-split'
+			var element = this.element = jQuery( "<div>", {
+				"class": "aloha-multi-split"
 			});
 			
-			var that = this;
 			jQuery.each( editable.settings.formatBlock, function( i, block ) {
 				jQuery( "<p>", {
 					text: block,
@@ -16,7 +15,7 @@ function ( jQuery, Ui ) {
 						Aloha.execCommand( "formatBlock", false, block, Ui.toolbar.range );
 					}
 				})
-				.appendTo( that.element );
+				.appendTo( element );
 			});
 		}
 	});

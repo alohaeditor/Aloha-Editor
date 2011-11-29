@@ -1,5 +1,5 @@
 define([ 'aloha/core', 'ui/ui', 'i18n!ui/nls/i18n' ],
-function ( Aloha, Ui, i18n ) {
+function( Aloha, Ui, i18n ) {
 	
 	// The second part of the bold plugin is the bold component.
 	// The bold component is a [toggleCommandButton](toggleCommandButton.html) that ties into the bold command.

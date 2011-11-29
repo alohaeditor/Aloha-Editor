@@ -1,7 +1,5 @@
-// The main UI objects are components.
-// Components can be placed inside any container, such as a toolbar or sidebar.
 define([ 'aloha/core', 'aloha/jquery', 'ui/ui' ],
-function ( Aloha, jQuery, Ui ) {
+function( Aloha, jQuery, Ui ) {
 	// There are separate components for each editable,
 	// but only the components for the active editable are shown.
 	Ui.toolbar = {
@@ -22,22 +20,21 @@ function ( Aloha, jQuery, Ui ) {
 			.appendTo( "body" );
 			
 			// When an editable is activated, we show its associated controls.
-			Aloha.bind('aloha-editable-activated', function( event, alohaEvent ) {
+			Aloha.bind( "aloha-editable-activated", function( event, alohaEvent ) {
 				toolbar.show( alohaEvent.editable );
 			});
 			
 			// When an editable is deactivated, we hide its associated controls.
 			// This is currently disabled because we didn't want to implement the
 			// logic for not deactivating the editable when the toolbar gains focus.
-			Aloha.bind('aloha-editable-deactivated', function( event, alohaEvent ) {
+			Aloha.bind( "aloha-editable-deactivated", function( event, alohaEvent ) {
 				toolbar.active = false;
 				// Wait if another editable activates the toolbar
 				setTimeout( function() {
 					if ( !toolbar.active ) {
-						// TODO bind live events on aloha-ui
 						toolbar.hide( alohaEvent.editable );
 					}
-				}, 10);
+				}, 10 );
 			});
 		},
 		
@@ -48,7 +45,7 @@ function ( Aloha, jQuery, Ui ) {
 			// to make it easy to show and hide the controls an activate/deactivate.
 			// The editable instance gets a reference to this div.
 			editable.toolbar = jQuery( "<div>", {
-				"class": "aloha-ui aloha-toolbar-wrap"
+				"class": "aloha-toolbar-wrap"
 			});
 			// The toolbar is configured via `settings.toolbar` and is defined as
 			// an array of groups, where the groups are arrays of controls.
@@ -80,21 +77,15 @@ function ( Aloha, jQuery, Ui ) {
 		},
 		
 		hide: function( editable ) {
-//			var toolbar = this;
 			if ( !Aloha.eventHandled ) {
 				this.active = null;
-//			setTimeout(function() {
-//				if ( !toolbar.active ) {
-					this.element.fadeOut(function() {
-						editable.toolbar.detach();
-					});
-				}
-//			}, 100 );
+				this.element.fadeOut(function() {
+					editable.toolbar.detach();
+				});
+			}
 		}
 	};
 	
 	Ui.toolbar.create();
-	
 	return Ui.toolbar;
-
 });

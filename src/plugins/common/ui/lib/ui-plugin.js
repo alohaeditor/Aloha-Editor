@@ -21,13 +21,5 @@ define([
 	'./components'
 ], function ( Plugin, Ui ) {
 	'use strict';
-	
-	return Plugin.create('ui', {
-		
-		init: function () {
-			// huhu
-		}
-	});
-	
+	return Plugin.create( "ui", {} );
 });
-

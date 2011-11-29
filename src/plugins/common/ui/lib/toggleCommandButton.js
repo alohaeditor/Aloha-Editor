@@ -1,7 +1,5 @@
-// The main UI objects are components.
-// Components can be placed inside any container, such as a toolbar or sidebar.
 define([ 'aloha/core', 'ui/ui', 'ui/togglebutton' ],
-function ( Aloha, Ui, ToggleButton ) {
+function( Aloha, Ui, ToggleButton ) {
 	// The toggleCommandButton extends the toggleButton component type to provide an easy
 	// way to create buttons for __commands__ that are either on or off.
 	Ui.createType( "toggleCommandButton", ToggleButton, {

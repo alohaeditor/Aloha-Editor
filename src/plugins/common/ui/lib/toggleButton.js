@@ -1,8 +1,7 @@
-// The main UI objects are components.
-// Components can be placed inside any container, such as a toolbar or sidebar.
 define([ 'aloha/core', 'aloha/jquery', 'ui/ui', 'ui/button' ],
-function ( Aloha, jQuery, Ui, Button ) {
-	var i = 0;
+function( Aloha, jQuery, Ui, Button ) {
+	var guid = 0;
+	
 	// The toggleButton extends the button component type to provide an easy
 	// way to create buttons for commands that are either on or off.
 	Ui.createType( "toggleButton", Button, {
@@ -16,7 +15,9 @@ function ( Aloha, jQuery, Ui, Button ) {
 		},
 		
 		createButtonElement: function() {
-			var id = "a-" + (i++);
+			// generate a unique id for the button until jQuery UI supports
+			// implicit labels (http://bugs.jqueryui.com/ticket/6063)
+			var id = "aloha-toggleButton-" + (guid++);
 			this.element = jQuery( "<span>" );
 			jQuery( "<label>", {
 				text: this.settings.label,
