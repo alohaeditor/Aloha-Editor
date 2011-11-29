@@ -1,4 +1,4 @@
-title: Aloha Guides
+﻿title: Aloha Guides
 description: These guides help you to make your content editable and to develop Aloha.
 
 team_name: The People That Make It Happen
@@ -28,6 +28,7 @@ index:
     - "The Core"
     - "Plugins"
     - "Commands"
+    - "Ui"
     - "Contributing to Aloha Editor"
   Start Here:
     - title: "Using Aloha Editor"
@@ -53,7 +54,23 @@ index:
     - title: "Using commands"
       url: using_commands
       text: "Learn how to use commands."
+  Ui:
+    - title: "Aloha Editor Ui"
+      url: ui
+      text: "Learn how the Aloha Editor Ui works."
+    - title: "Aloha Editor toolbar"
+      url: toolbar
+      text: "Learn how to configure the toolbar"
+    - title: "Aloha Editor sidebar"
+      url: sidebar
+      text: "Learn how to configure the sidebar"
+    - title: "Aloha Editor Ui API"
+      url: componenttypes
+      text: "Learn how to configure and implement components and componentTypes"
   Plugins:
+    - title: "Aloha Editor plugins"
+      url: plugins
+      text: "Learn configure Aloha Editor plugins"
     - title: "Block"
       url: plugin_block
       text: "Learn how to use and extend the block plugin for advanced content editing."

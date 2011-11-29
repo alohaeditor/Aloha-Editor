@@ -1,0 +1,407 @@
+h2. Aloha Core Plugins
+
+After reading this guide, you will
+
+* know which plugins are available and which functionality they provide
+* know which components are provided by each plugin
+* how to configure plugins
+
+endprologue.
+
+
+Each plugin will provide you with components (buttons, input fields, ...) that can be added to the toolbar or sidebar. 
+
+h3. Format Plugin
+
+The Format Plugin provides basic formatting choices for your content.
+
+h4. Components
+* cite - format content as a citation
+* quote - format content as a quote
+* code - format content as a code block
+* emphasize - emphasize content
+* strong (not def command) - put strong emphasis on content
+* bold - format content bold
+* italic - format content italic
+* strikethrough - add strikethrough formatting
+* subscript - add subscript formatting
+* superscript - add superscript formatting
+* underline - add underline formatting
+* paragraph - will allow you to add paragraph formattings (address, dd, div, dt, h1, h2, h3, h4, h5, h6, p, pre)
+
+h4. Configuration
+
+The format plugin provides the following config options:
+<javascript>
+Aloha.plugins.format = {
+	// configure buttons available in the toolbar
+	config : [ 'b', 'i', 'p', 'sub', 'sup', 'del', 'title', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'removeFormat' ],
+	// specific configuration for each editable identified by css selectors
+	editables : {
+		// the editable with id "teaser" won't offer any formatting options
+		'#teaser'	: [  ]
+	},
+	// those are the tags that will be cleaned when clicking "remove formatting"
+	removeFormats : [ 'strong', 'em', 'b', 'i', 'cite', 'q', 'code', 'abbr', 'del', 'sub', 'sup']
+};
+</javascript>
+
+h3. Link Plugin
+
+The Link Plugin allows you to add hyperlinks to your document, either by specifying them manually or by selecting from repositories using autocompletion.
+
+h4. Components
+* formatLink - will format a given selection as a link by wrapping it in an +<a>+ tag. If the selection is collapsed +createLink+ will be executed
+* createLink - will insert a new link tag with an empty href into the dom at the current cursor position
+* editLink - allows you to edit an existing link
+* unlink - removes an existing link by unwrapping
+
+h4. Configuration
+<javascript>
+Aloha.plugins.link: {
+	// all elements with no specific configuration may insert links
+	config : [ 'a' ],
+	editables : {
+	// No links in the title.
+	'#top-text'	: [  ]
+	},
+	// all links that match the targetregex will get set the target
+	// e.g. ^(?!.*aloha-editor.com).* matches all href except aloha-editor.com
+	targetregex : '^(?!.*aloha-editor.com).*',
+	// this target is set when either targetregex matches or not set
+	// e.g. _blank opens all links in new window
+	target : '_blank',
+	// the same for css class as for target
+	cssclassregex : '^(?!.*aloha-editor.com).*',
+	cssclass : 'aloha',
+	// use all resources of type website for autosuggest
+	objectTypeFilter: [ 'website' ],
+	// handle change of href
+	onHrefChange: function( obj, href, item ) {
+		var jQuery = Aloha.require('aloha/jquery');
+		if ( item ) {
+			jQuery(obj).attr('data-name', item.name);
+		} else {
+			jQuery(obj).removeAttr('data-name');
+		}
+	}
+};
+</javascript>
+
+h3. Abbr Plugin
+
+The Abbr Plugin will wrap selected contents within an +<abbr>+ tag. You can then specify a title text to describe the abbreviation.
+
+h4. Components
+
+* formatAbbr - format selection as an abbreviation
+* createAbbr - insert new abbreviation
+* editAbbr - edit existing abbreviation
+* abbrText - UIAttributeField for text input
+* removeAbbr - remove abbreviation from selection
+
+h4. Configuration settings
+
+Currently there are no configuration options for the Abbr Plugin.
+
+h3. Align Plugin
+
+WARNING: The Align Plugin is not working correctly right now.
+
+The Align Plugin allows you to align contents left, right, center, or justify the flow of text. It provides four components:
+
+h4. Components
+
+* alignLeft - align selected text left
+* alignRight - align selected text right
+* alignCenter - center selected text
+* alignJustify - justify selected text
+
+h4. Configuration settings
+
+The align plugin allows you to configure which of it's buttons are available:
+
+<javascript>
+Aloha.settings.plugins.align.config = {
+	alignment: [ 'right', 'left', 'center', 'justify' ]
+};
+</javascript>
+
+h3. Block Plugin
+
+WARNING: The Block Plugin is still being developed.
+TODO: update.
+
+h3. Characterpicker Plugin
+
+The Characterpicker Plugin allows you to insert special characters into your text. Position your cursor, click the icon and choose the character you'd like to insert from the overlay menu.
+
+h4. Components
+
+* characterpicker - brings up the overlay to select a character
+
+h4. Configuration settings
+
+<javascript>
+// specify characters for insertion in a space-separated string
+// this is the basic set of characters available for the plugin
+Aloha.settings.plugins.characterpicker.characters = '&#38; &#34; &#162; &#8364; &#163; &#165; &#169; &#174; &#8482; &#8240; &#181; &#183; &#8226; &#8230; &#8242; &#8243; &#167; &#182; &#223; &#8249; &#8250; &#171; &#187; &#8216; &#8217; &#8220; &#8221; &#8218; &#8222; &#60; &#62; &#8804; &#8805; &#8211; &#8212; &#175; &#8254; &#164; &#166; &#168; &#161; &#191; &#710; &#732; &#176; &#8722; &#177; &#247; &#8260; &#215; &#185; &#178; &#179; &#188; &#189; &#190; &#402; &#8747; &#8721; &#8734; &#8730; &#8764; &#8773; &#8776; &#8800; &#8801; &#8712; &#8713; &#8715; &#8719; &#8743; &#8744; &#172; &#8745; &#8746; &#8706; &#8704; &#8707; &#8709; &#8711; &#8727; &#8733; &#8736; &#180; &#184; &#170; &#186; &#8224; &#8225; &#192; &#193; &#194; &#195; &#196; &#197; &#198; &#199; &#200; &#201; &#202; &#203; &#204; &#205; &#206; &#207; &#208; &#209; &#210; &#211; &#212; &#213; &#214; &#216; &#338; &#352; &#217; &#218; &#219; &#220; &#221; &#376; &#222; &#224; &#225; &#226; &#227; &#228; &#229; &#230; &#231; &#232; &#233; &#234; &#235; &#236; &#237; &#238; &#239; &#240; &#241; &#242; &#243; &#244; &#245; &#246; &#248; &#339; &#353; &#249; &#250; &#251; &#252; &#253; &#254; &#255; &#913; &#914; &#915; &#916; &#917; &#918; &#919; &#920; &#921; &#922; &#923; &#924; &#925; &#926; &#927; &#928; &#929; &#931; &#932; &#933; &#934; &#935; &#936; &#937; &#945; &#946; &#947; &#948; &#949; &#950; &#951; &#952; &#953; &#954; &#955; &#956; &#957; &#958; &#959; &#960; &#961; &#962; &#963; &#964; &#965; &#966; &#967; &#968; &#969; &#8501; &#982; &#8476; &#977; &#978; &#8472; &#8465; &#8592; &#8593; &#8594; &#8595; &#8596; &#8629; &#8656; &#8657; &#8658; &#8659; &#8660; &#8756; &#8834; &#8835; &#8836; &#8838; &#8839; &#8853; &#8855; &#8869; &#8901; &#8968; &#8969; &#8970; &#8971; &#9001; &#9002; &#9674; &#9824; &#9827; &#9829; &#9830;';
+</javascript>
+
+h3. Commands Plugin
+
+The Commands Plugin has no user interface as it just provides the inserthtml command for use with the paste plugin.
+
+h3. Contenthandler Plugin
+
+The Contenthandler Plugin has no user interface and is used in conjunction with the paste plugin to be able to handle pasted content from Microsoft Word and the like. Currently it provides three so called "Content Handlers" which will be used to cleanup html content on various occasions like pasting or when initializing an editable. Those contenthandlers are:
+
+* word
+* generic
+* sanitize
+
+h4. Word Content Handler
+
+The Word Content Handler will detect content pasted from Microsoft Word 2003 and newer versions. It transforms and cleans the pasted html code so that deteriorating effects on mental health by staring at bogus and totally fubar html code can be kept to an acceptable minimum. Therefore it will
+
+* remove all "mso-whatever" classes
+* remove all divs from the pasted content
+* remove font tags
+* convert bullet points to real html lists with proper nesting
+* transform titles to h1 and subtitles to h2 tags
+
+h4. Generic Content Handler
+
+The Generic Content Handler is a bit less generic than his name might suggest as he will apply the following cleaning actions:
+
+* clean lists by removing any non-ul or li children
+* cleaning tables by removing the following attributes
+** border
+** cellpadding
+** cellspacing
+** width
+** height
+** valign
+* remove comments
+* unwrap font and span tags
+* remove styles
+* remove namespaced elements
+* transform formattings by turning
+** +<strong>+ tags into +<b>+ tags
+** +<em>+ to +<i>+
+** +<s>+ to +<del>+
+** and by removing +<u>+ tags (as underline text decoration should solely be used for links)
+
+h4. Sanitize Content Handler
+
+The Sanitize Content Handler will remove all dom elements and attributes not covered by it's configuration. You may specify your own configuration based on these default settings:
+
+<javascript>
+Aloha.settings.contentHandler.sanitize = {
+	// elements allowed in the content
+	elements: [
+		'a', 'abbr', 'b', 'blockquote', 'br', 'cite', 'code', 'dd', 'dl', 'dt', 'em',
+		'i', 'li', 'ol', 'p', 'pre', 'q', 'small', 'strike', 'strong', 'sub',
+		'sup', 'u', 'ul' ],
+	// attributes allowed for specific elements
+	attributes: {
+		'a' : ['href'],
+		'blockquote' : ['cite'],
+		'q' : ['cite'],
+		'abbr': ['title']
+	},
+	// protocols allowed for certain attributes of elements
+	protocols: {
+		'a' : {'href': ['ftp', 'http', 'https', 'mailto', '__relative__']},
+		'blockquote' : {'cite': ['http', 'https', '__relative__']},
+		'q' : {'cite': ['http', 'https', '__relative__']}
+	}
+}
+</javascript>
+
+h3. Highlight Editables Plugin
+
+The Highlight Editables Plugin has no user interface. Once loaded it will display a strong visual hint for editors to indicate the location of editables contents - so called "editables" - on the page.
+
+h3. Horizontalruler Plugin
+
+The Horizontalruler Plugin allows you to insert a horizontal ruler tag aka +<hr>+ at the current cursor position.
+
+h4. Components
+
+The plugin only offers a single component:
+
+* hr - a button which will insert a horizontal ruler at the cursor position
+
+h3. Image Plugin
+
+The Image Plugin will allow for basic image manipulation right within your content:
+
+* resize (by dragging and entering values)
+* resizing with fixed aspect ratio
+* resetting the image to it's initial state
+* crop
+
+NOTE: You need a server-sided script like image magick which will handle actual cropping for you.
+
+h4. Components
+
+* insertimage - a button that allows you to insert an image
+
+h4. Configuration settings
+
+<javascript>
+Aloha.plugins.image.settings = {
+	'maxWidth': 1600,
+	'minWidth': 3,
+	'maxHeight': 1200,
+	'minHeight': 3,
+	// This setting will correct manually values that are out of bounds
+	'autoCorrectManualInput': true,	 
+	// This setting will define a fixed aspect ratio for all resize actions
+	'fixedAspectRatio' : false, 
+	// When enabled this setting will order the plugin to automatically resize images to given bounds
+	'autoResize': false,
+	//Image manipulation options - ONLY in default config section
+	ui: {
+		oneTab		: false, //Place all ui components within one tab
+		insert      : true,
+		reset 		: true,
+		aspectRatioToggle: true, // Toggle button for the aspect ratio 
+		align		: true,	// Menu elements to show/hide in menu
+		resize		: true,	// Resize buttons
+		meta		: true,
+		margin		: true,
+		crop		: true,
+		resizable	: true,	// Resizable ui-drag image
+		handles     : 'ne, se, sw, nw'   
+	},
+	
+	/**
+	 * Crop callback is triggered after the user clicked accept to accept his crop
+	 * @param image jquery image object reference
+	 * @param props cropping properties
+	 */
+	onCropped: function ($image, props) {
+		Aloha.Log.info('Default onCropped invoked', $image, props);
+	},
+	
+	/**
+	 * Reset callback is triggered before the internal reset procedure is applied
+	 * if this function returns true, then the reset has been handled by the callback
+	 * which means that no other reset will be applied
+	 * if false is returned the internal reset procedure will be applied
+	 * @param image jquery image object reference
+	 * @return true if a reset has been applied, false otherwise
+	 */
+	onReset: function ($image) {
+		Aloha.Log.info('Default onReset invoked', $image);
+		return false;
+	},
+	
+	/**
+	 * Example callback method which gets called while the resize process is beeing executed.
+	 */
+	onResize: function ($image) {
+		Aloha.Log.info('Default onResize invoked', $image);
+	},
+	
+	/**
+	 * Resize callback is triggered after the internal resize procedure is applied.  
+	 */
+	onResized: function ($image) {
+		Aloha.Log.info('Default onResized invoked', $image);
+	}
+};
+</javascript>
+
+h3. List Plugin
+
+The List Plugin allows you to handle and create ordered and unordered lists within your contents. You either may select existing contents to be turned into a list, or just click the ordered or unordered list button to start a new one.
+
+NOTE: The list plugin will turn existing paragraphs into list items. Single lines separated by +<br>+ tags will NOT be turned into separate list items.
+
+You can remove lists by clicking the applied list type a second time, which will turn individual list items back into paragraphs.
+
+The List Plugin will indent list items when pressing the tab-key, or outdent when pressing shift-tab.
+
+h4. Components
+
+The List Plugin provides two components
+
+* ul - for inserting unordered lists
+* ol - for inserting ordered lists
+
+h4. Configuration settings
+
+<javascript>
+Aloha.plugins.list = {
+	// configure buttons available in the toolbar
+	config : [ 'ol', 'ul' ],
+};
+</javascript>
+
+h3. Paste Plugin
+
+The Paste Plugin provides means to handle pasting content from the clipboard and is a prerequisite if you want to handle contents pasted from Microsoft Word. In this case you will also have to enable the Contenthandler Plugin.
+
+h3. Table Plugin
+
+The Table Plugin will allow you to edit tables within your contents. You can do pretty much everything that you'd expect from editing tables, like adding and deleting rows and columns as well as merging and splitting cells. You can use the tab key to jump from one cell to the next.
+
+h4. Components
+
+* table - insert a table into the content
+* addrowbefore - adds a row before the current row
+* addrowafter - adds a row after the current row
+* deleterow - deletes the current row
+* deletecolumn - deletes the current column
+* rowheader - turns current row into a row of headers
+* columnheader - turns current column into a column of headers
+* romergecells - merge all cells within this row
+* rowsplitcells - split merged cells within this row
+* columnmergecells - merge all cells within this column
+* columnsplitcells - split merged cells within this column
+* addcolumnleft - add a column left of the current column
+* addcolumnright - add a column right of the current column
+* tablemergecells - merge selected cells
+* tablesplitcells - split selected cells
+* mergecells - merge selected cells
+* splitcells - split selected cells
+* tablecaption - input field which allows you to add a caption to the table
+
+h4. Configuration settings
+
+The table configuration allows for some special settings:
+<javascript>
+Aloha.settings.plugins.table: {
+	// all elements with no specific configuration are not allowed to insert tables
+	config : [ 'table' ],
+	// the table summary is editable in the sidebar
+	summaryinsidebar : true,
+	// the following settings allow the user to apply specific classes to
+	// either the whole table or a column or row. The name is used as a
+	// class attribute, while the iconClass is applied as a class attribute
+	// to style the buttons
+	tableConfig : [
+		{ name:'hor-minimalist-a' },
+		{ name:'box-table-a' },
+		{ name:'hor-zebra' },
+	],
+	columnConfig : [
+			{ name: 'table-style-bigbold',  iconClass: 'aloha-button-col-bigbold' },
+			{ name: 'table-style-redwhite', iconClass: 'aloha-button-col-redwhite' }
+	],
+	rowConfig : [
+			{ name: 'table-style-bigbold',  iconClass: 'aloha-button-row-bigbold' },
+			{ name: 'table-style-redwhite', iconClass: 'aloha-button-row-redwhite' }
+	]
+};
+</javascript>
+
+h3. Undo Plugin
+
+The Undo Plugin allows you to undo changes when pressing Ctrl+Z (or Cmd+Z on Mac). You may also reapply changes made undone by pressing Ctrl+Shift+Z or Cmd+Shift+Z on Mac. The Undo Plugin has no ui and no components.
+
+* September 1, 2011: Initial version by "Haymo Meran":credits.html#haymo and "Scott Gonzales":credits.html#scottgonzales
+

@@ -1,0 +1,64 @@
+h2. The Aloha Editor UI
+
+After reading this gUIde, you will be able to:
+
+* Understand the basic components of the Aloha Editor UI
+* Configure your Aloha Editor UI
+
+endprologue.
+
+WARNING: This guide is currently a draft for the Aloha Editor jQuery UI, which is supposed to 
+be the next generation UI for Aloha Editor. Your feedback is welcome!
+
+h3. What is the Aloha Editor UI
+
+WARNING: how will scopes work?
+
+The Aloha Editor UI is a plugin and provides 2 containers (toolbar, sidebar), a messaging interface and componenttypes to build a user interface.
+You may use, extend and configure these or implement your own. 
+Aloha Editor UI provides further component types and some components. A component is an instance of a componnent type. Any 
+component may accept other components depending on its implementation. Usually plugins provide components such as the +format+
+plugin provides the +bold+ component. 
+ 
+* The "+Aloha.toolbar+":toolbar.html provides context sensitive interaction items for main use. The toolbar contains tabs and tabs contain 
+groups. Each group may contain components.
+* The "+Aloha.sidebar+":sidebar.html provides attribute modification for more advanced users or extended functionality such as commenting.
+The sidebar contains tabs and each tab may contain components.
+* The "+Aloha.message+":message.html provides an interaction container, which informs users about status or other issues.
+* "+Aloha.componenttypes+":componenttypes.html are used as a basis to build your own UI components such as buttons and input fields.
+
+h3. Configuring the Aloha Editor UI
+
+Every interface or component may have its own configuration settings. The containers 
+and components come with default settings which are accessable in the namespace of the 
+container or component. The values of settings are implementation specific.
+
+<javascript>
+Aloha.defaults.container = { name: value };
+Aloha.defaults.component = { name: value };
+</javascript>
+
+You may define your site specific runtime settings may defining the settings for each container or 
+component. The settings are assigned during the *initialization* stop of plugins. 
+
+INFO: see plugin lifecycle. 
+ 
+
+<javascript>
+Aloha.settings.container = { name: value };
+Aloha.settings.component = { name: value };
+</javascript>
+
+Further more every editable may have its own settings which you may pass as argument to the 
++$( 'selector' ).aloha( settings )+ method. 
+
+<javascript>
+$( '#editable' ).aloha({
+	container: { name: value }
+	component: { name: value } 
+});
+</javascript>
+
+* September 1, 2011: Initial version by "Haymo Meran":credits.html#haymo and "Scott Gonzales":credits.html#scottgonzales
+
+ 
