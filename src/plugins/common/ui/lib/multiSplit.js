@@ -9,15 +9,11 @@ function ( jQuery, Ui ) {
 			});
 			
 			var that = this;
-			this.element.bind( "mousedown", function() {
-				that.range = Aloha.getSelection().getRangeAt( 0 );
-			});
-
 			jQuery.each( editable.settings.formatBlock, function( i, block ) {
 				jQuery( "<p>", {
 					text: block,
 					click: function() {
-						Aloha.execCommand( "formatBlock", false, block, that.range );
+						Aloha.execCommand( "formatBlock", false, block, Ui.toolbar.range );
 					}
 				})
 				.appendTo( that.element );

@@ -13,7 +13,10 @@ function ( Aloha, jQuery, Ui ) {
 		create: function() {
 			var toolbar = this;
 			this.element = jQuery( "<div>", {
-				"class": "aloha-ui aloha-toolbar"
+				"class": "aloha-ui aloha-toolbar",
+				mousedown: function() {
+					toolbar.range = Aloha.getSelection().getRangeAt( 0 );
+				}
 			})
 			.hide()
 			.appendTo( "body" );

@@ -8,10 +8,6 @@ function ( Aloha, jQuery, Ui, Button ) {
 	Ui.createType( "toggleButton", Button, {
 		init: function( editable, settings ) {
 			this._super( editable, settings );
-			var that = this;
-			this.element.bind( "mousedown", function() {
-				that.range = Aloha.getSelection().getRangeAt( 0 );
-			});
 		},
 		
 		// The `setState()` method updates the visual display of the toggleButton.

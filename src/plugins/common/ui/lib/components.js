@@ -74,7 +74,6 @@ function ( Aloha, Ui, i18n ) {
 	Ui.create( "formatBlock", "multiSplit", {
 		selectionChange: function() {
 			var value = Aloha.queryCommandValue( "formatBlock" );
-			console.log( value );
 			//this.setValue( value );
 		}
 	});
