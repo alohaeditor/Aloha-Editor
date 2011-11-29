@@ -346,7 +346,9 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 		 *
 		 * @api
 		 */
-		update: function($element, postProcessFn) {},
+		update: function($element, postProcessFn) {
+			postProcessFn();
+		},
 
 
 		/**
@@ -356,9 +358,8 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 		 * when called once or twice.
 		 */
 		_postProcessElementIfNeeded: function() {
-			var that = this;
 			this.createEditablesIfNeeded();
-			this.renderDragHandlesIfNeeded();
+			this.renderBlockHandlesIfNeeded();
 			if (this.isDraggable() && this.$element[0].tagName.toLowerCase() === 'span') {
 				this._setupDragDropForInlineElements();
 				this._disableUglyInternetExplorerDragHandles();
@@ -695,7 +696,7 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 		 * Template method to render custom block UI.
 		 * @api
 		 */
-		renderDragHandlesIfNeeded: function() {
+		renderBlockHandlesIfNeeded: function() {
 			if (this.isDraggable()) {
 				if (this.$element.find('.aloha-block-draghandle').length == 0) {
 					this.$element.prepend('<span class="aloha-block-handle aloha-block-draghandle"></span>');
@@ -797,7 +798,8 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 	{
 		init: function() {
 		},
-		update: function() {
+		update: function($element, postProcessFn) {
+			postProcessFn();
 		}
 	});
 
@@ -813,8 +815,8 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 		init: function() {
 			this.update();
 		},
-		update: function() {
-			this.$element.css({display: 'block'});
+		update: function($element, postProcessFn) {
+			$element.css({display: 'block'});
 			var renderedAttributes = '<table class="debug-block">';
 			jQuery.each(this.attr(), function(k, v) {
 				renderedAttributes += '<tr><th>' + k + '</th><td>' + v + '</td></tr>';
@@ -822,7 +824,8 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 
 			renderedAttributes += '</table>';
 
-			return renderedAttributes;
+			$element.html(renderedAttributes);
+			postProcessFn();
 		}
 	});
 
