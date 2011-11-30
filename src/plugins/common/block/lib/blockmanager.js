@@ -143,7 +143,8 @@ function(Aloha, jQuery, FloatingMenu, Observable, Registry) {
 		_registerEventHandlersForBlockDeletion: function() {
 			var that = this;
 
-			Aloha.bind('aloha-command-will-execute', function(e, commandId) {
+			Aloha.bind('aloha-command-will-execute', function(e, data) {
+				var commandId = data.commandId;
 
 				// Internet Explorer *magically* sets the range to the "Body" object after deselecting everything. yeah :-D
 				var onlyBlockSelected = (Aloha.getSelection().getRangeCount() === 0) // Firefox / Chrome
@@ -152,6 +153,9 @@ function(Aloha, jQuery, FloatingMenu, Observable, Registry) {
 
 				if (that._activeBlock && (commandId === 'delete' || commandId === 'forwarddelete') && onlyBlockSelected) {
 					// Deletion when a block is currently selected
+
+					// In this case, the default command shall not be executed.
+					data.preventDefault = true;
 					that._activeBlock.destroy();
 				} else if (!that._activeBlock && (commandId === 'delete' || commandId === 'forwarddelete') && Aloha.getSelection().getRangeCount() === 1 && Aloha.getSelection().getRangeAt(0).collapsed === false) {
 					// Deletion when a block is inside a bigger selection currently
