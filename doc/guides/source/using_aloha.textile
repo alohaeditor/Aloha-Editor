@@ -31,7 +31,7 @@ Put the following in the *head* of your web application to load Aloha with a bas
 
 <html>
 <head>
-	<script src="javascripts/aloha.js" data-aloha-plugins="common/format"></script>
+	<script src="javascripts/aloha/aloha.js" data-aloha-plugins="common/format"></script>
 </head>
 </html>
 
@@ -113,7 +113,7 @@ script tag loading Aloha:
 <html>
 <head>
 	<script 
-		src="scripts/aloha.js" 
+		src="javascripts/aloha/aloha.js" 
 		data-aloha-plugins="common/format,common/list,common/table" >
 	</script>
 </head>
@@ -175,7 +175,7 @@ You can now easily load plugins from that bundles as follows
 <html>
 <head>
 	<script 
-		src="scripts/aloha/aloha.js" 
+		src="javascripts/aloha/aloha.js" 
 		data-aloha-plugins="common/link,custom1/plugin1,custom2/plugin2,custom3/plugin3" >
 	</script>
 </head>
@@ -183,8 +183,8 @@ You can now easily load plugins from that bundles as follows
 
 This example will try to load following plugins:
 
-* +scripts/aloha/lib/../plugins/common/link/lib/link-plugin.js+
-* +scripts/aloha/lib/../../mybundle/plugin1/lib/plugin1-plugin.js+
+* +javascripts/aloha/lib/../plugins/common/link/lib/link-plugin.js+
+* +javascripts/aloha/lib/../../mybundle/plugin1/lib/plugin1-plugin.js+
 * +/yourbundle/plugin2/lib/plugin2-plugin.js+
 * +http://theserver.com/their/bundle/plugin3/lib/plugin3-plugin.js+
 
