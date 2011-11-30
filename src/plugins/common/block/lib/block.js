@@ -170,18 +170,22 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 			newRange.startContainer = newRange.endContainer = this.$element.parent()[0];
 			newRange.startOffset = newRange.endOffset = GENTICS.Utils.Dom.getIndexInParent(this.$element[0]);
 
-			GENTICS.Utils.Dom.setCursorAfter(that.$element[0]);
 			BlockManager.trigger('block-delete', this);
 			BlockManager._unregisterBlock(this);
 
 			this.unbindAll();
 
+
+			var isInlineElement = this.$element[0].tagName.toLowerCase() === 'span';
+
 			this.$element.fadeOut('fast', function() {
 				that.$element.remove();
 				BlockManager.trigger('block-selection-change', []);
 				window.setTimeout(function() {
-					newRange.select();
-				}, 50);
+					if (isInlineElement) {
+						newRange.select();
+					}
+				}, 5);
 			});
 		},
 
