@@ -1,0 +1,91 @@
+h2. Understanding the Aloha Editor core
+
+After reading this guide, you will be able to:
+
+* Understand how Aloha Editor initialized
+* Use basic functionality the core provides
+* Understand Aloha Editables, and what they do
+* Core Aloha Editor events
+
+endprologue.
+
+h3. Core files
+
+WARNING: TODO describe file contents
+
+* +src/lib/aloha.js+
+* +src/lib/aloha-bootstrap.js+
+* +src/lib/aloha/core.js+
+* ...
+
+h3. Initialization Process
+
+When Aloha Editor is loading several steps are completed until the initialization process is finished.
+
+WARNING: TODO add description for init process and events!
+
+<javascript>
+// init process taken from core.js
+Aloha.stage = 'loadPlugins';
+Aloha.loadPlugins(function(){
+	Aloha.stage = 'initAloha';
+	Aloha.initAloha(function(){
+		Aloha.stage = 'initPlugins';
+		Aloha.initPlugins(function(){
+			Aloha.stage = 'initGui';
+			Aloha.initGui(function(){
+				Aloha.stage = 'alohaReady';
+				Aloha.trigger('aloha-ready');
+			});
+		});
+	});
+});
+</javascript>
+
+h3. How to use require
+
+WARNING: TODO describe how Aloha.require is used
+
+h3. Internationalization
+
+WARNING: TODO describe
+
+h3. Logging
+
+WARNING: TODO describe
+
+h3. Utilities
+
+WARNING: TODO describe GENTICS.Utils.dom and the like
+
+h3. Events
+
+* aloha-smart-content-changed
+* aloha-editable-activated
+* aloha-editable-deactivated
+
+h4. aloha-smart-content-changed Event
+
+A smart content change occurs when a special editing action, or a
+combination of interactions are performed by the user during the
+course of editing within an editable.
+The smart content change event would therefore signal to any
+component that is listening to this event, that content has been
+inserted into the editable that may need to be prococessed in a
+special way.
+The smart content change event is also triggered after an idle period that follows
+rapid, basic changes to the contents of an editable such as when the user is typing.
+
+h4. aloha-editable-activated Event
+
+WARNING: Documentation pending.
+
+h4. aloha-editable-deactivated Event
+
+WARNING: Documentation pending.
+
+h3. Editables
+
+WARNING: Documentation pending.
+
+.

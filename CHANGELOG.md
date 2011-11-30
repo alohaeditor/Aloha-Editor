@@ -2,13 +2,62 @@
 
 This document is to serve as a "what has been done" in terms of the [Roadmap](http://aloha-editor.org/wiki/Roadmap)
 
-## 0.20.0-RC8 - 2011/11/21
+- doc/api: added first version of new API docs
+
+## 0.20.0-RC9 - 2011/11/23
+
+- image-plugin: The saved aspect ratio will now be correcly recalculated when a cropping action is sucessfully ended. Previously the aspect ratio was not recalculated and therefore resizing of images resulted in unexpected image sizes.
+- formatlesspaste plugin: The elements stripped by the formatlesspaste plugin can now be configured like this
+
+```javascript
+	"formatlesspaste" :{
+				formatlessPasteOption : true,
+				strippedElements : [
+				"strong",
+				"i",
+				"b",
+				"u"]
+			}
+```
+
+- wai-lang plugin: The styling of the language input field, and dropdown suggestion box has been improved.
+- listenforcer-plugin: The enforce method is now a private function.
+- listenforcer-plugin: List enforcer plugin configuration should change
+
+```javascript
+	// ... from this:
+
+	"listenforcer" : {
+		"editables" : {
+			".myselector" : [ "true" ]
+		},
+		"config" : "false"
+	}
+
+	//... to this:
+
+	"listenforcer" : {
+		"editables" : [ ".myselector" ]
+	}
+```
+
+- listenforcer-plugin: The listenforcer plugin removes any non-list top-level elements to ensure that an editable in which lists are enforced will contain exactly one list as the only immediate child of the editable.
+- some changes in the Browser Plugin (browser.js) to allow multiple, distinguishable instances of browsers on the same page
+- customizable numerated-header plugin. Fixed issue: when header content is deleted, the numeration tag will be deleted, too
+
+## 0.20.0-RC8 - 2011/11/22
+
+- listenforcer-plugin: The listenforcer plugin was refactored. Method names were changed and the way the plugin works with lists was also changed. It will now no longer replace list dom elments. Instead it will move sibling lists into the first list element within the editable. Previously the whole element was replaced and thus the selection was lost. This caused problems with the floating menu. The user had to click two times into a list to make the floating menu appear since the selection was lost due to dom replacements. This is now fixed.
+- core: The aloha-editable-activated will now no longer invoked twice.
+- image-plugin: Fixed handling of width and height when the user entered the cropping mode. You can resize the crop area by entering values in the width and height field. 
+- list-plugin/link-plugin: The list plugin interfered with the link plugin behaviour. Previously it was not possible to create links within a list due to a bug within the list plugin. The list plugin will now no longer use the Aloha.List scope.
 - link-plugin: Fixed problem with auto-suggestion mechanism for the link input field causing the the wrong href value to be taken.
 
 ## 0.20.0-RC7 - 2011/11
 
 - link-plugin: Fixed javascript error that occured when linking items using the repository browser in Internet Explorer 8.
 - boilerplate demo: Fixed javascript error that occured in Internet Explorer 8.
+- flag-icons plugin: It is now necessary to add the flag-icons plugin in the aloha plugin load order before any plugins that need to use the shared flag icons.
 - metaview-plugin: Fixed metaview plugin to use shared flags icon from flag-icons plugin, for consistancy between plugins.
 - wai-lang-plugin: Improved wai-lang language selection ui. Organized flags to be in a plugin their own plugin so that the icons can be shared between other components.
 - link-plugin: The autocomplete list was not closed properly when esc was pressed.

@@ -1,0 +1,33 @@
+<html><head><meta http-equiv="content-type" content="text/html; charset=utf8"> <style>
+	.KEYW {color: #933;}
+	.COMM {color: #bbb; font-style: italic;}
+	.NUMB {color: #393;}
+	.STRN {color: #393;}
+	.REGX {color: #339;}
+	.line {border-right: 1px dotted #666; color: #666; font-style: normal;}
+	</style></head><body><pre><span class='line'>  1</span> <span class="COMM">/**
+<span class='line'>  2</span>  * In order to choose the correct internationalization for among the
+<span class='line'>  3</span>  * grid.locale.{lang} files, we will manually require each of these
+<span class='line'>  4</span>  * grid.locale.* files (where * is the language code of the locale). These
+<span class='line'>  5</span>  * files have each been slightly modified to no longer extend Aloha.jQuery with
+<span class='line'>  6</span>  * a "jgrid" object, but rather a jgrid_* object. So instead of the jQuery
+<span class='line'>  7</span>  * object having a single "jgrid" object, it will have several objects with
+<span class='line'>  8</span>  * names like "jgrid_en", and "jgrid_de".
+<span class='line'>  9</span>  * In order to determine which of these i18n objects should be used with the
+<span class='line'> 10</span>  * browser, we read a "jgrid.locale" key from the i18n.js file in browser/nls,
+<span class='line'> 11</span>  * an use this value to choose which of the jgrid_* objects, Aloha.jQuery.jgrid
+<span class='line'> 12</span>  * should point to
+<span class='line'> 13</span>  */</span><span class="WHIT">
+<span class='line'> 14</span> </span><span class="NAME">define</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="WHIT">
+<span class='line'> 15</span> </span><span class="WHIT">	</span><span class="STRN">'aloha/jquery'</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 16</span> </span><span class="WHIT">	</span><span class="STRN">'i18n!browser/nls/i18n'</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 17</span> </span><span class="WHIT">	</span><span class="STRN">'jquery-plugin!browser/../vendor/grid.locale.en'</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 18</span> </span><span class="WHIT">	</span><span class="STRN">'jquery-plugin!browser/../vendor/grid.locale.de'</span><span class="WHIT">
+<span class='line'> 19</span> </span><span class="PUNC">]</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">jQuery</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">i18n</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 20</span> </span><span class="WHIT">	</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">locale</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">i18n</span><span class="PUNC">[</span><span class="WHIT"> </span><span class="STRN">'jgrid.locale'</span><span class="WHIT"> </span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="STRN">'en'</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 21</span> </span><span class="WHIT">	</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="KEYW">typeof</span><span class="WHIT"> </span><span class="NAME">jQuery.jgrid</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="STRN">'undefined'</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 22</span> </span><span class="WHIT">		</span><span class="NAME">jQuery.jgrid</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 23</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'> 24</span> </span><span class="WHIT">	</span><span class="NAME">jQuery.extend</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">jQuery.jgrid</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">jQuery</span><span class="PUNC">[</span><span class="WHIT"> </span><span class="STRN">'jgrid_'</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">locale</span><span class="WHIT"> </span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 25</span> </span><span class="WHIT">	</span><span class="NAME">jQuery.jgrid_en</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">jQuery.jgrid_de</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">void</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 26</span> </span><span class="PUNC">}</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span></pre></body></html>

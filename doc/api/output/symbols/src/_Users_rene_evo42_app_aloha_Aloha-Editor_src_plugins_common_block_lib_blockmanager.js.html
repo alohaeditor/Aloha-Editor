@@ -1,0 +1,250 @@
+<html><head><meta http-equiv="content-type" content="text/html; charset=utf8"> <style>
+	.KEYW {color: #933;}
+	.COMM {color: #bbb; font-style: italic;}
+	.NUMB {color: #393;}
+	.STRN {color: #393;}
+	.REGX {color: #339;}
+	.line {border-right: 1px dotted #666; color: #666; font-style: normal;}
+	</style></head><body><pre><span class='line'>  1</span> <span class="COMM">/*!
+<span class='line'>  2</span> * Aloha Editor
+<span class='line'>  3</span> * Author & Copyright (c) 2010 Gentics Software GmbH
+<span class='line'>  4</span> * aloha-sales@gentics.com
+<span class='line'>  5</span> * Licensed unter the terms of http://www.aloha-editor.com/license.html
+<span class='line'>  6</span> */</span><span class="WHIT">
+<span class='line'>  7</span> 
+<span class='line'>  8</span> </span><span class="NAME">define</span><span class="PUNC">(</span><span class="PUNC">[</span><span class="STRN">'aloha'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'aloha/jquery'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'aloha/floatingmenu'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'aloha/observable'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'aloha/registry'</span><span class="PUNC">]</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>  9</span> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">Aloha</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">jQuery</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">FloatingMenu</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">Observable</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">Registry</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 10</span> </span><span class="WHIT">	</span><span class="STRN">"use strict"</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 11</span> 
+<span class='line'> 12</span> </span><span class="WHIT">	</span><span class="KEYW">var</span><span class="WHIT">
+<span class='line'> 13</span> </span><span class="WHIT">		</span><span class="NAME">GENTICS</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">window.GENTICS</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 14</span> 
+<span class='line'> 15</span> </span><span class="WHIT">	</span><span class="COMM">/**
+<span class='line'> 16</span> 	 * @name block.blockmanager
+<span class='line'> 17</span> 	 * @class Block manager singleton
+<span class='line'> 18</span> 	 */</span><span class="WHIT">
+<span class='line'> 19</span> </span><span class="WHIT">	</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">BlockManager</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">Class.extend</span><span class="PUNC">(</span><span class="NAME">Observable</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 20</span> </span><span class="WHIT">	</span><span class="COMM">/** @lends block.blockmanager */</span><span class="WHIT">
+<span class='line'> 21</span> </span><span class="WHIT">	</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 22</span> 
+<span class='line'> 23</span> </span><span class="WHIT">		</span><span class="COMM">/**
+<span class='line'> 24</span> 		 * @name block.blockmanager#block-selection-change
+<span class='line'> 25</span> 		 * @event
+<span class='line'> 26</span> 		 * @param {Array} selectedBlocks Array of AbstractBlock objects, containing selected blocks. The first element in the array is the innermost block, and the other elements are the parent blocks.
+<span class='line'> 27</span> 		 */</span><span class="WHIT">
+<span class='line'> 28</span> 
+<span class='line'> 29</span> </span><span class="WHIT">		</span><span class="COMM">/**
+<span class='line'> 30</span> 		 * @name block.blockmanager#block-delete
+<span class='line'> 31</span> 		 * @event fired directly before a block is deleted
+<span class='line'> 32</span> 		 * @param {AbstractBlock} the block to be deleted
+<span class='line'> 33</span> 		 */</span><span class="WHIT">
+<span class='line'> 34</span> 
+<span class='line'> 35</span> </span><span class="WHIT">		</span><span class="NAME">defaults</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 36</span> </span><span class="WHIT">			</span><span class="STRN">'block-type'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">'DefaultBlock'</span><span class="WHIT">
+<span class='line'> 37</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 38</span> 
+<span class='line'> 39</span> </span><span class="WHIT">		</span><span class="COMM">/**
+<span class='line'> 40</span> 		 * Registry of block types
+<span class='line'> 41</span> 		 * @type Registry
+<span class='line'> 42</span> 		 */</span><span class="WHIT">
+<span class='line'> 43</span> </span><span class="WHIT">		</span><span class="NAME">blockTypes</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 44</span> 
+<span class='line'> 45</span> </span><span class="WHIT">		</span><span class="COMM">/**
+<span class='line'> 46</span> 		 * Registry of blocks
+<span class='line'> 47</span> 		 * @type Registry
+<span class='line'> 48</span> 		 */</span><span class="WHIT">
+<span class='line'> 49</span> </span><span class="WHIT">		</span><span class="NAME">blocks</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 50</span> 
+<span class='line'> 51</span> </span><span class="WHIT">		</span><span class="NAME">activeBlocks</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 52</span> 
+<span class='line'> 53</span> </span><span class="WHIT">		</span><span class="COMM">/**
+<span class='line'> 54</span> 		 * @constructor
+<span class='line'> 55</span> 		 */</span><span class="WHIT">
+<span class='line'> 56</span> </span><span class="WHIT">		</span><span class="NAME">_constructor</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 57</span> </span><span class="WHIT">			</span><span class="NAME">FloatingMenu.createScope</span><span class="PUNC">(</span><span class="STRN">'Aloha.Block'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 58</span> </span><span class="WHIT">			</span><span class="NAME">this.blockTypes</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">Registry</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 59</span> </span><span class="WHIT">			</span><span class="NAME">this.blocks</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">Registry</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 60</span> </span><span class="WHIT">			</span><span class="NAME">this.activeBlocks</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 61</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 62</span> 
+<span class='line'> 63</span> </span><span class="WHIT">		</span><span class="COMM">/**
+<span class='line'> 64</span> 		 * Register initial event handlers
+<span class='line'> 65</span> 		 *
+<span class='line'> 66</span> 		 * @private
+<span class='line'> 67</span> 		 */</span><span class="WHIT">
+<span class='line'> 68</span> </span><span class="WHIT">		</span><span class="NAME">registerEventHandlers</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 69</span> </span><span class="WHIT">			</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">that</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 70</span> 
+<span class='line'> 71</span> </span><span class="WHIT">			</span><span class="COMM">// Register event handlers for deactivating an Aloha Block</span><span class="WHIT">
+<span class='line'> 72</span> </span><span class="WHIT">			</span><span class="NAME">jQuery</span><span class="PUNC">(</span><span class="NAME">document</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">bind</span><span class="PUNC">(</span><span class="STRN">'click'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">event</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 73</span> </span><span class="WHIT">				</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">that.activeBlocks</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="PUNC">}</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="KEYW">return</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 74</span> </span><span class="WHIT">				</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">jQuery</span><span class="PUNC">(</span><span class="NAME">event.target</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">parents</span><span class="PUNC">(</span><span class="STRN">'.aloha-sidebar-bar, .aloha-block-do-not-deactivate, .aloha-floatingmenu'</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">length</span><span class="WHIT"> </span><span class="PUNC">></span><span class="WHIT"> </span><span class="NUMB">0</span><span class="WHIT">
+<span class='line'> 75</span> </span><span class="WHIT">					</span><span class="PUNC">||</span><span class="WHIT"> </span><span class="NAME">jQuery</span><span class="PUNC">(</span><span class="NAME">event.target</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">is</span><span class="PUNC">(</span><span class="STRN">'.aloha-sidebar-bar, .aloha-block-do-not-deactivate, .aloha-floatingmenu'</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 76</span> </span><span class="WHIT">					</span><span class="COMM">// If we are inside the sidebar, the floating menu or other elements which should not trigger the block deactivation, we do an early return.</span><span class="WHIT">
+<span class='line'> 77</span> </span><span class="WHIT">					</span><span class="KEYW">return</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 78</span> </span><span class="WHIT">				</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'> 79</span> </span><span class="WHIT">				</span><span class="NAME">BlockManager._deactivateActiveBlocks</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 80</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 81</span> 
+<span class='line'> 82</span> </span><span class="WHIT">			</span><span class="NAME">Aloha.bind</span><span class="PUNC">(</span><span class="STRN">'aloha-selection-changed'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">evt</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">selection</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">originalEvent</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 83</span> </span><span class="WHIT">				</span><span class="COMM">// the following line is needed to de-select blocks when navigating over them using the mouse cursors.</span><span class="WHIT">
+<span class='line'> 84</span> </span><span class="WHIT">				</span><span class="COMM">// We only want to execute it though, if we are not inside a block, as it would otherwise</span><span class="WHIT">
+<span class='line'> 85</span> </span><span class="WHIT">				</span><span class="COMM">// directly deselect the block we just selected. This is just a hotfix and not the final solution yet.</span><span class="WHIT">
+<span class='line'> 86</span> </span><span class="WHIT">				</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">selection</span><span class="WHIT"> </span><span class="PUNC">&&</span><span class="WHIT"> </span><span class="NAME">jQuery</span><span class="PUNC">(</span><span class="NAME">selection.getCommonAncestorContainer</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">parents</span><span class="PUNC">(</span><span class="STRN">'.aloha-block'</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">length</span><span class="WHIT"> </span><span class="PUNC">></span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 87</span> </span><span class="WHIT">					</span><span class="KEYW">return</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 88</span> </span><span class="WHIT">				</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'> 89</span> </span><span class="WHIT">				</span><span class="NAME">that._deactivateActiveBlocks</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 90</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 91</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 92</span> 
+<span class='line'> 93</span> </span><span class="WHIT">		</span><span class="COMM">/**
+<span class='line'> 94</span> 		 * Blockify a given element with the instance defaults
+<span class='line'> 95</span> 		 * Directly called when one does jQuery.alohaBlock(instanceDefaults)
+<span class='line'> 96</span> 		 *
+<span class='line'> 97</span> 		 * @private
+<span class='line'> 98</span> 		 */</span><span class="WHIT">
+<span class='line'> 99</span> </span><span class="WHIT">		</span><span class="NAME">_blockify</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">element</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">instanceDefaults</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>100</span> </span><span class="WHIT">			</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">attributes</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">block</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>101</span> </span><span class="WHIT">			</span><span class="NAME">element</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">jQuery</span><span class="PUNC">(</span><span class="NAME">element</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>102</span> 
+<span class='line'>103</span> </span><span class="WHIT">			</span><span class="COMM">// TODO: check if object is already Block-ified</span><span class="WHIT">
+<span class='line'>104</span> 
+<span class='line'>105</span> </span><span class="WHIT">			</span><span class="NAME">attributes</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.getConfig</span><span class="PUNC">(</span><span class="NAME">element</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">instanceDefaults</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>106</span> 
+<span class='line'>107</span> </span><span class="WHIT">			</span><span class="NAME">element.contentEditable</span><span class="PUNC">(</span><span class="KEYW">false</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>108</span> 
+<span class='line'>109</span> </span><span class="WHIT">			</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">this.blockTypes.has</span><span class="PUNC">(</span><span class="NAME">attributes</span><span class="PUNC">[</span><span class="STRN">'block-type'</span><span class="PUNC">]</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>110</span> </span><span class="WHIT">				</span><span class="NAME">Aloha.Log.error</span><span class="PUNC">(</span><span class="STRN">'block/blockmanager'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'Block Type '</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">attributes</span><span class="PUNC">[</span><span class="STRN">'block-type'</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">' not found!'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>111</span> </span><span class="WHIT">				</span><span class="KEYW">return</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>112</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>113</span> 
+<span class='line'>114</span> </span><span class="WHIT">			</span><span class="NAME">block</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">this.blockTypes.get</span><span class="PUNC">(</span><span class="NAME">attributes</span><span class="PUNC">[</span><span class="STRN">'block-type'</span><span class="PUNC">]</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="PUNC">(</span><span class="NAME">element</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>115</span> </span><span class="WHIT">			</span><span class="NAME">block.element.addClass</span><span class="PUNC">(</span><span class="STRN">'aloha-block-'</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">attributes</span><span class="PUNC">[</span><span class="STRN">'block-type'</span><span class="PUNC">]</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>116</span> 
+<span class='line'>117</span> </span><span class="WHIT">			</span><span class="COMM">// Save attributes on block, but ignore jquery attribute.</span><span class="WHIT">
+<span class='line'>118</span> </span><span class="WHIT">			</span><span class="NAME">jQuery.each</span><span class="PUNC">(</span><span class="NAME">attributes</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">k</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">v</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>119</span> </span><span class="WHIT">				</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">k.indexOf</span><span class="PUNC">(</span><span class="STRN">'jQuery'</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">===</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="KEYW">return</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>120</span> </span><span class="WHIT">				</span><span class="NAME">block.attr</span><span class="PUNC">(</span><span class="NAME">k</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">v</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>121</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>122</span> 
+<span class='line'>123</span> </span><span class="WHIT">			</span><span class="COMM">// Remove the attributes from the child element, as they have been moved to the parent element.</span><span class="WHIT">
+<span class='line'>124</span> </span><span class="WHIT">			</span><span class="NAME">jQuery.each</span><span class="PUNC">(</span><span class="NAME">element.data</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">k</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">v</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>125</span> </span><span class="WHIT">				</span><span class="NAME">element.removeAttr</span><span class="PUNC">(</span><span class="STRN">'data-'</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">k</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>126</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>127</span> </span><span class="WHIT">			</span><span class="NAME">element.removeAttr</span><span class="PUNC">(</span><span class="STRN">'about'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>128</span> 
+<span class='line'>129</span> </span><span class="WHIT">			</span><span class="COMM">// Register block</span><span class="WHIT">
+<span class='line'>130</span> </span><span class="WHIT">			</span><span class="NAME">this.blocks.register</span><span class="PUNC">(</span><span class="NAME">block.getId</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">block</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>131</span> 
+<span class='line'>132</span> </span><span class="WHIT">			</span><span class="NAME">block._renderAndSetContent</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>133</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>134</span> 
+<span class='line'>135</span> </span><span class="WHIT">		</span><span class="COMM">/**
+<span class='line'>136</span> 		 * Deactivate all active blocks
+<span class='line'>137</span> 		 *
+<span class='line'>138</span> 		 * @private
+<span class='line'>139</span> 		 */</span><span class="WHIT">
+<span class='line'>140</span> </span><span class="WHIT">		</span><span class="NAME">_deactivateActiveBlocks</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>141</span> </span><span class="WHIT">			</span><span class="NAME">jQuery.each</span><span class="PUNC">(</span><span class="NAME">jQuery.extend</span><span class="PUNC">(</span><span class="PUNC">{</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">this.activeBlocks</span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">id</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>142</span> </span><span class="WHIT">				</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">block</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">BlockManager.getBlock</span><span class="PUNC">(</span><span class="NAME">id</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>143</span> </span><span class="WHIT">				</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">block</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>144</span> </span><span class="WHIT">					</span><span class="NAME">block.deactivate</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>145</span> </span><span class="WHIT">				</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>146</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>147</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>148</span> 
+<span class='line'>149</span> </span><span class="WHIT">		</span><span class="COMM">/**
+<span class='line'>150</span> 		 * Merges the config from different places, and return the merged config.
+<span class='line'>151</span> 		 *
+<span class='line'>152</span> 		 * @private
+<span class='line'>153</span> 		 */</span><span class="WHIT">
+<span class='line'>154</span> </span><span class="WHIT">		</span><span class="NAME">getConfig</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">blockElement</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">instanceDefaults</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>155</span> </span><span class="WHIT">			</span><span class="COMM">// TODO: merge from plugin settings</span><span class="WHIT">
+<span class='line'>156</span> </span><span class="WHIT">			</span><span class="COMM">// TODO: What about double matches / overrides / multiple selectors applying?</span><span class="WHIT">
+<span class='line'>157</span> </span><span class="WHIT">			</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">settingsDefaults</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>158</span> 
+<span class='line'>159</span> </span><span class="WHIT">			</span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">jQuery.extend</span><span class="PUNC">(</span><span class="WHIT">
+<span class='line'>160</span> </span><span class="WHIT">				</span><span class="PUNC">{</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>161</span> </span><span class="WHIT">				</span><span class="NAME">this.defaults</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>162</span> </span><span class="WHIT">				</span><span class="NAME">settingsDefaults</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>163</span> </span><span class="WHIT">				</span><span class="NAME">instanceDefaults</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>164</span> </span><span class="WHIT">				</span><span class="NAME">blockElement.data</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>165</span> </span><span class="WHIT">				</span><span class="PUNC">{</span><span class="WHIT">	</span><span class="COMM">// Override the "about" property</span><span class="WHIT">
+<span class='line'>166</span> </span><span class="WHIT">					</span><span class="NAME">about</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">blockElement.attr</span><span class="PUNC">(</span><span class="STRN">'about'</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>167</span> </span><span class="WHIT">				</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>168</span> </span><span class="WHIT">			</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>169</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>170</span> 
+<span class='line'>171</span> </span><span class="WHIT">		</span><span class="COMM">/**
+<span class='line'>172</span> 		 * Get a Block instance by id or DOM node
+<span class='line'>173</span> 		 *
+<span class='line'>174</span> 		 * @param {String|DOMNode} idOrDomNode
+<span class='line'>175</span> 		 * @return {block.block.AbstractBlock} Block instance
+<span class='line'>176</span> 		 */</span><span class="WHIT">
+<span class='line'>177</span> </span><span class="WHIT">		</span><span class="NAME">getBlock</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">idOrDomNode</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>178</span> </span><span class="WHIT">			</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">id</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>179</span> </span><span class="WHIT">			</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="KEYW">typeof</span><span class="WHIT"> </span><span class="NAME">idOrDomNode</span><span class="WHIT"> </span><span class="PUNC">===</span><span class="WHIT"> </span><span class="STRN">'object'</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>180</span> </span><span class="WHIT">				</span><span class="NAME">id</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">jQuery</span><span class="PUNC">(</span><span class="NAME">idOrDomNode</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">attr</span><span class="PUNC">(</span><span class="STRN">'id'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>181</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>182</span> </span><span class="WHIT">				</span><span class="NAME">id</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">idOrDomNode</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>183</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>184</span> 
+<span class='line'>185</span> </span><span class="WHIT">			</span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">this.blocks.get</span><span class="PUNC">(</span><span class="NAME">id</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>186</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>187</span> <span class='line'>188</span> 
+</span><span class="WHIT">		</span><span class="COMM">/**
+<span class='line'>189</span> 		 * Unregister (e.g. remove) the given block
+<span class='line'>190</span> 		 *
+<span class='line'>191</span> 		 * @param {Object|String} blockOrBlockId Block or block id
+<span class='line'>192</span> 		 */</span><span class="WHIT">
+<span class='line'>193</span> </span><span class="WHIT">		</span><span class="NAME">_unregisterBlock</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">blockOrBlockId</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>194</span> </span><span class="WHIT">			</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">id</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>195</span> </span><span class="WHIT">			</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="KEYW">typeof</span><span class="WHIT"> </span><span class="NAME">blockOrBlockId</span><span class="WHIT"> </span><span class="PUNC">===</span><span class="WHIT"> </span><span class="STRN">'object'</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>196</span> </span><span class="WHIT">				</span><span class="NAME">id</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">blockOrBlockId.getId</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>197</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>198</span> </span><span class="WHIT">				</span><span class="NAME">id</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">blockOrBlockId</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>199</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>200</span> </span><span class="WHIT">			</span><span class="NAME">this.blocks.unregister</span><span class="PUNC">(</span><span class="NAME">blockOrBlockId</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>201</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>202</span> 
+<span class='line'>203</span> </span><span class="WHIT">		</span><span class="COMM">/**
+<span class='line'>204</span> 		 * Register the given block type
+<span class='line'>205</span> 		 *
+<span class='line'>206</span> 		 * @param {String} Identifier
+<span class='line'>207</span> 		 * @param {Class} A class that extends block.block.AbstractBlock
+<span class='line'>208</span> 		 */</span><span class="WHIT">
+<span class='line'>209</span> </span><span class="WHIT">		</span><span class="NAME">registerBlockType</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">identifier</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">blockType</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>210</span> </span><span class="WHIT">			</span><span class="NAME">FloatingMenu.createScope</span><span class="PUNC">(</span><span class="STRN">'Aloha.Block.'</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">identifier</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'Aloha.Block'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>211</span> </span><span class="WHIT">			</span><span class="NAME">this.blockTypes.register</span><span class="PUNC">(</span><span class="NAME">identifier</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">blockType</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>212</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>213</span> 
+<span class='line'>214</span> </span><span class="WHIT">		</span><span class="COMM">/**
+<span class='line'>215</span> 		 * Get all active blocks indexed by block id
+<span class='line'>216</span> 		 *
+<span class='line'>217</span> 		 * @return {Object}
+<span class='line'>218</span> 		 */</span><span class="WHIT">
+<span class='line'>219</span> </span><span class="WHIT">		</span><span class="NAME">getActiveBlocks</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>220</span> </span><span class="WHIT">			</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">activeBlocks</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>221</span> </span><span class="WHIT">			</span><span class="NAME">jQuery.each</span><span class="PUNC">(</span><span class="NAME">this.blocks.getEntries</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">blockId</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">block</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>222</span> </span><span class="WHIT">				</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">block.isActive</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>223</span> </span><span class="WHIT">					</span><span class="NAME">activeBlocks</span><span class="PUNC">[</span><span class="NAME">blockId</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">block</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>224</span> </span><span class="WHIT">				</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>225</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>226</span> </span><span class="WHIT">			</span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">activeBlocks</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>227</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>228</span> 
+<span class='line'>229</span> </span><span class="WHIT">		</span><span class="NAME">_setActive</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">block</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>230</span> </span><span class="WHIT">			</span><span class="NAME">this.activeBlocks</span><span class="PUNC">[</span><span class="NAME">block.id</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>231</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>232</span> 
+<span class='line'>233</span> </span><span class="WHIT">		</span><span class="NAME">_setInactive</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">block</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>234</span> </span><span class="WHIT">			</span><span class="KEYW">delete</span><span class="WHIT"> </span><span class="NAME">this.activeBlocks</span><span class="PUNC">[</span><span class="NAME">block.id</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>235</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>236</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>237</span> 
+<span class='line'>238</span> </span><span class="WHIT">	</span><span class="NAME">Aloha.Block</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">Aloha.Block</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>239</span> </span><span class="WHIT">	</span><span class="NAME">Aloha.Block.BlockManager</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">BlockManager</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>240</span> 
+<span class='line'>241</span> </span><span class="WHIT">	</span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">BlockManager</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>242</span> </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>243</span> </span></pre></body></html>

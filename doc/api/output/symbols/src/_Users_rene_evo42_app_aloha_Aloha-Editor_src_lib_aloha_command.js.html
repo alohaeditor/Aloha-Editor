@@ -1,0 +1,254 @@
+<html><head><meta http-equiv="content-type" content="text/html; charset=utf8"> <style>
+	.KEYW {color: #933;}
+	.COMM {color: #bbb; font-style: italic;}
+	.NUMB {color: #393;}
+	.STRN {color: #393;}
+	.REGX {color: #339;}
+	.line {border-right: 1px dotted #666; color: #666; font-style: normal;}
+	</style></head><body><pre><span class='line'>  1</span> <span class="COMM">/*!
+<span class='line'>  2</span> * CommandManager file is part of Aloha Editor Project http://aloha-editor.org
+<span class='line'>  3</span> * Copyright (c) 2010-2011 Gentics Software GmbH, aloha@gentics.com
+<span class='line'>  4</span> * Contributors http://aloha-editor.org/contribution.php 
+<span class='line'>  5</span> * Licensed unter the terms of http://www.aloha-editor.org/license.html
+<span class='line'>  6</span> */</span><span class="COMM">/*
+<span class='line'>  7</span> * Aloha Editor is free software: you can redistribute it and/or modify
+<span class='line'>  8</span> * it under the terms of the GNU Affero General Public License as published by
+<span class='line'>  9</span> * the Free Software Foundation, either version 3 of the License, or
+<span class='line'> 10</span> * (at your option) any later version.*
+<span class='line'> 11</span> *
+<span class='line'> 12</span> * Aloha Editor is distributed in the hope that it will be useful,
+<span class='line'> 13</span> * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<span class='line'> 14</span> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+<span class='line'> 15</span> * GNU Affero General Public License for more details.
+<span class='line'> 16</span> *
+<span class='line'> 17</span> * You should have received a copy of the GNU Affero General Public License
+<span class='line'> 18</span> * along with CommandManager program. If not, see &lt;http://www.gnu.org/licenses/>.
+<span class='line'> 19</span> */</span><span class="WHIT">
+<span class='line'> 20</span> </span><span class="STRN">"use strict"</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 21</span> </span><span class="NAME">define</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="WHIT"> </span><span class="STRN">'aloha/core'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'aloha/registry'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'aloha/engine'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'util/dom'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'aloha/contenthandlermanager'</span><span class="WHIT"> </span><span class="PUNC">]</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 22</span> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">Aloha</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">Registry</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">Engine</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">Dom</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">ContentHandlerManager</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 23</span> 
+<span class='line'> 24</span> </span><span class="COMM">//			Action: What the command does when executed via execCommand(). Every command defined</span><span class="WHIT">
+<span class='line'> 25</span> </span><span class="COMM">//			in CommandManager specification has an action defined for it in the relevant section. For example, </span><span class="WHIT">
+<span class='line'> 26</span> </span><span class="COMM">//			the bold command's action generally makes the current selection bold, or removes bold if </span><span class="WHIT">
+<span class='line'> 27</span> </span><span class="COMM">//			the selection is already bold. An editing toolbar might provide buttons that execute the</span><span class="WHIT">
+<span class='line'> 28</span> </span><span class="COMM">//			action for a command if clicked, or a script might run an action without user interaction</span><span class="WHIT">
+<span class='line'> 29</span> </span><span class="COMM">//			to achieve some particular effect.</span><span class="WHIT">
+<span class='line'> 30</span> </span><span class="COMM">//			</span><span class="WHIT">
+<span class='line'> 31</span> </span><span class="COMM">//			Indeterminate: A boolean value returned by queryCommandIndeterm(), depending on the</span><span class="WHIT">
+<span class='line'> 32</span> </span><span class="COMM">//			current state of the document. Generally, a command that has a state defined will be </span><span class="WHIT">
+<span class='line'> 33</span> </span><span class="COMM">//			indeterminate if the state is true for part but not all of the current selection, and a</span><span class="WHIT">
+<span class='line'> 34</span> </span><span class="COMM">//			command that has a value defined will be indeterminate if different parts of the </span><span class="WHIT">
+<span class='line'> 35</span> </span><span class="COMM">//			selection have different values. An editing toolbar might display a button or control</span><span class="WHIT">
+<span class='line'> 36</span> </span><span class="COMM">//			in a special way if the command is indeterminate, like showing a "bold" button as </span><span class="WHIT">
+<span class='line'> 37</span> </span><span class="COMM">//			partially depressed, or leaving a font size selector blank instead of showing the font</span><span class="WHIT">
+<span class='line'> 38</span> </span><span class="COMM">//			size of the current selection. As a rule, a command can only be indeterminate if its</span><span class="WHIT">
+<span class='line'> 39</span> </span><span class="COMM">//			state is false, supposing it has a state.</span><span class="WHIT">
+<span class='line'> 40</span> </span><span class="COMM">//			</span><span class="WHIT">
+<span class='line'> 41</span> </span><span class="COMM">//			State: A boolean value returned by queryCommandState(), depending on the current state</span><span class="WHIT">
+<span class='line'> 42</span> </span><span class="COMM">//			of the document. The state of a command is true if it is already in effect, in some </span><span class="WHIT">
+<span class='line'> 43</span> </span><span class="COMM">//			sense specific to the command. Most commands that have a state defined will take opposite</span><span class="WHIT">
+<span class='line'> 44</span> </span><span class="COMM">//			actions depending on whether the state is true or false, such as making the selection</span><span class="WHIT">
+<span class='line'> 45</span> </span><span class="COMM">//			bold if the state is false and removing bold if the state is true. Others will just </span><span class="WHIT">
+<span class='line'> 46</span> </span><span class="COMM">//			have no effect if the state is true, like the justifyCenter command. Still others will </span><span class="WHIT">
+<span class='line'> 47</span> </span><span class="COMM">//			have the same effect regardless, like the styleWithCss command. An editing toolbar might</span><span class="WHIT">
+<span class='line'> 48</span> </span><span class="COMM">//			display a button or control differently depending on the state and indeterminacy of the</span><span class="WHIT">
+<span class='line'> 49</span> </span><span class="COMM">//			command.</span><span class="WHIT">
+<span class='line'> 50</span> </span><span class="COMM">//			</span><span class="WHIT">
+<span class='line'> 51</span> </span><span class="COMM">//			Value: A string returned by queryCommandValue(), depending on the current state of the </span><span class="WHIT">
+<span class='line'> 52</span> </span><span class="COMM">//			document. A command usually has a value instead of a state if the property it modifies </span><span class="WHIT">
+<span class='line'> 53</span> </span><span class="COMM">//			can take more than two different values, like the foreColor command. If the command is </span><span class="WHIT">
+<span class='line'> 54</span> </span><span class="COMM">//			indeterminate, its value is generally based on the start of the selection. Otherwise, </span><span class="WHIT">
+<span class='line'> 55</span> </span><span class="COMM">//			in most cases the value holds true for the entire selection, but see the justifyCenter </span><span class="WHIT">
+<span class='line'> 56</span> </span><span class="COMM">//			command and its three companions for an exception. An editing toolbar might display the</span><span class="WHIT">
+<span class='line'> 57</span> </span><span class="COMM">//			value of a command as selected in a drop-down or filled in in a text box, if the command</span><span class="WHIT">
+<span class='line'> 58</span> </span><span class="COMM">//			isn't indeterminate.</span><span class="WHIT">
+<span class='line'> 59</span> </span><span class="COMM">//			</span><span class="WHIT">
+<span class='line'> 60</span> </span><span class="COMM">//			Relevant CSS property: CommandManager is defined for certain inline formatting commands, and </span><span class="WHIT">
+<span class='line'> 61</span> </span><span class="COMM">//			is used in algorithms specific to those commands. It is an implementation detail, and </span><span class="WHIT">
+<span class='line'> 62</span> </span><span class="COMM">//			is not exposed to authors. If a command does not have a relevant CSS property </span><span class="WHIT">
+<span class='line'> 63</span> </span><span class="COMM">//			specified, it defaults to null.</span><span class="WHIT">
+<span class='line'> 64</span> 
+<span class='line'> 65</span> </span><span class="WHIT">	</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">CommandManager</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 66</span> </span><span class="WHIT">			
+<span class='line'> 67</span> 		</span><span class="NAME">execCommand</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">commandId</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">showUi</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">value</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">range</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 68</span> </span><span class="WHIT">			
+<span class='line'> 69</span> 			</span><span class="COMM">// Read current selection if not passed</span><span class="WHIT">
+<span class='line'> 70</span> </span><span class="WHIT">			</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="PUNC">!</span><span class="NAME">range</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 71</span> </span><span class="WHIT">				</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="PUNC">!</span><span class="NAME">Aloha.getSelection</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">getRangeCount</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 72</span> </span><span class="WHIT">					</span><span class="KEYW">return</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 73</span> </span><span class="WHIT">				</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'> 74</span> </span><span class="WHIT">				</span><span class="NAME">range</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">Aloha.getSelection</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">getRangeAt</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 75</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'> 76</span> </span><span class="WHIT">			
+<span class='line'> 77</span> 			</span><span class="COMM">// For the insertHTML command we provide contenthandler API</span><span class="WHIT">
+<span class='line'> 78</span> </span><span class="WHIT">			</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">commandId</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="STRN">'insertHTML'</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 79</span> </span><span class="WHIT">				</span><span class="COMM">//if (typeof Aloha.settings.contentHandler.insertHtml === 'undefined') {</span><span class="WHIT">
+<span class='line'> 80</span> </span><span class="WHIT">				</span><span class="COMM">//	use all registered content handler; used for copy & paste atm (or write log message)</span><span class="WHIT">
+<span class='line'> 81</span> </span><span class="WHIT">				</span><span class="COMM">//	Aloha.settings.contentHandler.insertHtml = Aloha.defaults.contentHandler.insertHtml;</span><span class="WHIT">
+<span class='line'> 82</span> </span><span class="WHIT">				</span><span class="COMM">//}</span><span class="WHIT">
+<span class='line'> 83</span> </span><span class="WHIT">				</span><span class="NAME">value</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">ContentHandlerManager.handleContent</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">value</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 84</span> </span><span class="WHIT">					</span><span class="NAME">contenthandler</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">Aloha.settings.contentHandler.insertHtml</span><span class="WHIT">
+<span class='line'> 85</span> </span><span class="WHIT">				</span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 86</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'> 87</span> 
+<span class='line'> 88</span> </span><span class="WHIT">			</span><span class="NAME">Engine.execCommand</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">commandId</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">showUi</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">value</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">range</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 89</span> </span><span class="WHIT">			
+<span class='line'> 90</span> 			</span><span class="COMM">// Read range after engine modification</span><span class="WHIT">
+<span class='line'> 91</span> </span><span class="WHIT">			</span><span class="NAME">range</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">Aloha.getSelection</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">getRangeAt</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 92</span> 
+<span class='line'> 93</span> </span><span class="WHIT">			</span><span class="COMM">// FIX: doCleanup should work with W3C range</span><span class="WHIT">
+<span class='line'> 94</span> </span><span class="WHIT">			</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">startnode</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">range.commonAncestorContainer.parentNode</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 95</span> </span><span class="WHIT">			</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">rangeObject</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">window.GENTICS.Utils.RangeObject</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 96</span> </span><span class="WHIT">			</span><span class="NAME">rangeObject.startContainer</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">range.startContainer</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 97</span> </span><span class="WHIT">			</span><span class="NAME">rangeObject.startOffset</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">range.startOffset</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 98</span> </span><span class="WHIT">			</span><span class="NAME">rangeObject.endContainer</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">range.endContainer</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 99</span> </span><span class="WHIT">			</span><span class="NAME">rangeObject.endOffset</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">range.endOffset</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>100</span> </span><span class="WHIT">			</span><span class="NAME">Dom.doCleanup</span><span class="PUNC">(</span><span class="PUNC">{</span><span class="NAME">merge</span><span class="PUNC">:</span><span class="KEYW">true</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">removeempty</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">rangeObject</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">startnode</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>101</span> </span><span class="WHIT">			</span><span class="NAME">rangeObject.select</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>102</span> </span><span class="WHIT">			</span><span class="NAME">Aloha.trigger</span><span class="PUNC">(</span><span class="STRN">'aloha-command-executed'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">commandId</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>103</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>104</span> </span><span class="WHIT">		
+<span class='line'>105</span> 		</span><span class="COMM">// If command is available and not disabled or the active range is not null </span><span class="WHIT">
+<span class='line'>106</span> </span><span class="WHIT">		</span><span class="COMM">// the command is enabled</span><span class="WHIT">
+<span class='line'>107</span> </span><span class="WHIT">		</span><span class="NAME">queryCommandEnabled</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">commandId</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">range</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>108</span> 
+<span class='line'>109</span> </span><span class="WHIT">			</span><span class="COMM">// Take current selection if not passed</span><span class="WHIT">
+<span class='line'>110</span> </span><span class="WHIT">			</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="PUNC">!</span><span class="NAME">range</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>111</span> </span><span class="WHIT">				</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="PUNC">!</span><span class="NAME">Aloha.getSelection</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">getRangeCount</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>112</span> </span><span class="WHIT">					</span><span class="KEYW">return</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>113</span> </span><span class="WHIT">				</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>114</span> </span><span class="WHIT">				</span><span class="NAME">range</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">Aloha.getSelection</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">getRangeAt</span><span class="PUNC">(</span><span class="NUMB">0</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>115</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>116</span> </span><span class="WHIT">			</span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">Engine.queryCommandEnabled</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">commandId</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">range</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>117</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>118</span> 
+<span class='line'>119</span> <span class='line'>120</span> </span><span class="WHIT">		</span><span class="COMM">// "Return true if command is indeterminate, otherwise false."</span><span class="WHIT">
+<span class='line'>121</span> </span><span class="WHIT">		</span><span class="NAME">queryCommandIndeterm</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">commandId</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">range</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>122</span> 
+<span class='line'>123</span> </span><span class="WHIT">			</span><span class="COMM">// Take current selection if not passed</span><span class="WHIT">
+<span class='line'>124</span> </span><span class="WHIT">			</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="PUNC">!</span><span class="NAME">range</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>125</span> </span><span class="WHIT">				</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="PUNC">!</span><span class="NAME">Aloha.getSelection</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">getRangeCount</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>126</span> </span><span class="WHIT">					</span><span class="KEYW">return</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>127</span> </span><span class="WHIT">				</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>128</span> </span><span class="WHIT">				</span><span class="NAME">range</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">Aloha.getSelection</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">getRangeAt</span><span class="PUNC">(</span><span class="NUMB">0</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>129</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>130</span> </span><span class="WHIT">			</span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">Engine.queryCommandIndeterm</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">commandId</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">range</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>131</span> 
+<span class='line'>132</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>133</span> </span><span class="WHIT">		
+<span class='line'>134</span> 		</span><span class="NAME">queryCommandState</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">commandId</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">range</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>135</span> 
+<span class='line'>136</span> </span><span class="WHIT">			</span><span class="COMM">// Take current selection if not passed</span><span class="WHIT">
+<span class='line'>137</span> </span><span class="WHIT">			</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="PUNC">!</span><span class="NAME">range</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>138</span> </span><span class="WHIT">				</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="PUNC">!</span><span class="NAME">Aloha.getSelection</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">getRangeCount</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>139</span> </span><span class="WHIT">					</span><span class="KEYW">return</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>140</span> </span><span class="WHIT">				</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>141</span> </span><span class="WHIT">				</span><span class="NAME">range</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">Aloha.getSelection</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">getRangeAt</span><span class="PUNC">(</span><span class="NUMB">0</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>142</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>143</span> </span><span class="WHIT">			</span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">Engine.queryCommandState</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">commandId</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">range</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>144</span> 
+<span class='line'>145</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>146</span> </span><span class="WHIT">		
+<span class='line'>147</span> 		</span><span class="COMM">// "When the queryCommandSupported(command) method on the HTMLDocument</span><span class="WHIT">
+<span class='line'>148</span> </span><span class="WHIT">		</span><span class="COMM">// interface is invoked, the user agent must return true if command is</span><span class="WHIT">
+<span class='line'>149</span> </span><span class="WHIT">		</span><span class="COMM">// supported, and false otherwise."</span><span class="WHIT">
+<span class='line'>150</span> </span><span class="WHIT">		</span><span class="NAME">queryCommandSupported</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">commandId</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>151</span> 
+<span class='line'>152</span> </span><span class="WHIT">			</span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">Engine.queryCommandSupported</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">commandId</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">		
+<span class='line'>153</span> 		</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>154</span> </span><span class="WHIT">		
+<span class='line'>155</span> 		</span><span class="NAME">queryCommandValue</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">commandId</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">range</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>156</span> 
+<span class='line'>157</span> </span><span class="WHIT">			</span><span class="COMM">// Take current selection if not passed</span><span class="WHIT">
+<span class='line'>158</span> </span><span class="WHIT">			</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="PUNC">!</span><span class="NAME">range</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>159</span> </span><span class="WHIT">				</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="PUNC">!</span><span class="NAME">Aloha.getSelection</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">getRangeCount</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>160</span> </span><span class="WHIT">					</span><span class="KEYW">return</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>161</span> </span><span class="WHIT">				</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>162</span> </span><span class="WHIT">				</span><span class="NAME">range</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">Aloha.getSelection</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">getRangeAt</span><span class="PUNC">(</span><span class="NUMB">0</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>163</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>164</span> 
+<span class='line'>165</span> </span><span class="WHIT">			</span><span class="COMM">// "Return command's value."</span><span class="WHIT">
+<span class='line'>166</span> </span><span class="WHIT">			</span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">Engine.queryCommandValue</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">commandId</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">range</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>167</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>168</span> </span><span class="WHIT">		</span><span class="NAME">querySupportedCommands</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>169</span> 
+<span class='line'>170</span> </span><span class="WHIT">			</span><span class="KEYW">var</span><span class="WHIT"> 
+<span class='line'>171</span> 				</span><span class="NAME">commands</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="PUNC">]</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>172</span> </span><span class="WHIT">				</span><span class="NAME">command</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>173</span> </span><span class="WHIT">			
+<span class='line'>174</span> 			</span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">command</span><span class="WHIT"> </span><span class="KEYW">in</span><span class="WHIT"> </span><span class="NAME">Engine.commands</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>175</span> </span><span class="WHIT">				</span><span class="NAME">commands.push</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">command</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>176</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>177</span> </span><span class="WHIT">			</span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">commands</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>178</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>179</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>180</span> </span><span class="WHIT">	
+<span class='line'>181</span> 	</span><span class="COMM">// create an instance</span><span class="WHIT">
+<span class='line'>182</span> </span><span class="WHIT">	</span><span class="NAME">CommandManager</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">Registry.extend</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">CommandManager</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>183</span> </span><span class="WHIT">	
+<span class='line'>184</span> 	</span><span class="COMM">/**
+<span class='line'>185</span> 	 * Executes a registered command.
+<span class='line'>186</span> 	 * http://aryeh.name/spec/editing/editing.html#methods-of-the-htmldocument-interface
+<span class='line'>187</span> 	 * @method
+<span class='line'>188</span> 	 * @param command name of the command
+<span class='line'>189</span> 	 * @param showUI has no effect for Aloha Editor and is only here because in spec...
+<span class='line'>190</span> 	 * @param value depends on the used command and it impementation 
+<span class='line'>191</span> 	 * @range optional a range on which the command will be executed if not specified 
+<span class='line'>192</span> 	 * 		  the current selection will be used as range
+<span class='line'>193</span> 	 */</span><span class="WHIT">
+<span class='line'>194</span> </span><span class="WHIT">	</span><span class="NAME">Aloha.execCommand</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">CommandManager.execCommand</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>195</span> </span><span class="WHIT">	
+<span class='line'>196</span> 	</span><span class="COMM">/**
+<span class='line'>197</span> 	 * Check wheater the command in enabled.
+<span class='line'>198</span> 	 * If command is not supported, raise a NOT_SUPPORTED_ERR exception.
+<span class='line'>199</span> 	 * @param command name of the command
+<span class='line'>200</span> 	 * @return true if command is enabled, false otherwise.
+<span class='line'>201</span> 	 */</span><span class="WHIT">
+<span class='line'>202</span> </span><span class="WHIT">	</span><span class="NAME">Aloha.queryCommandEnabled</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">CommandManager.queryCommandEnabled</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>203</span> </span><span class="WHIT">	
+<span class='line'>204</span> 	</span><span class="COMM">/**
+<span class='line'>205</span> 	 * Check if the command has an indetermed state. 
+<span class='line'>206</span> 	 * If command is not supported, a NOT_SUPPORTED_ERR exception is thrown
+<span class='line'>207</span> 	 * If command has no indeterminacy, INVALID_ACCESS_ERR exception is thrown
+<span class='line'>208</span> 	 * If command is not enabled, return false.
+<span class='line'>209</span> 	 * @param command name of the command
+<span class='line'>210</span> 	 * @range optional a range on which the command will be executed if not specified 
+<span class='line'>211</span> 	 * 		  the current selection will be used as range
+<span class='line'>212</span> 	 * @return true if command is indeterminate, otherwise false.
+<span class='line'>213</span> 	 */</span><span class="WHIT">
+<span class='line'>214</span> </span><span class="WHIT">	</span><span class="NAME">Aloha.queryCommandIndeterm</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">CommandManager.queryCommandIndeterm</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>215</span> </span><span class="WHIT">	
+<span class='line'>216</span> 	</span><span class="COMM">/**
+<span class='line'>217</span> 	 * Returns the state of a given command
+<span class='line'>218</span> 	 * If command is not supported, a NOT_SUPPORTED_ERR exception is thrown
+<span class='line'>219</span> 	 * If command has no state, an INVALID_ACCESS_ERR exception is thrown
+<span class='line'>220</span> 	 * If command is not enabled, return false
+<span class='line'>221</span> 	 * If the state override for command is set, it returns the state
+<span class='line'>222</span> 	 * @param command name of the command
+<span class='line'>223</span> 	 * @return state override or true if command's state is true, otherwise false.
+<span class='line'>224</span> 	 */</span><span class="WHIT">
+<span class='line'>225</span> </span><span class="WHIT">	</span><span class="NAME">Aloha.queryCommandState</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">CommandManager.queryCommandState</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>226</span> 
+<span class='line'>227</span> </span><span class="WHIT">	</span><span class="COMM">/**
+<span class='line'>228</span> 	 * Check if a given command is supported
+<span class='line'>229</span> 	 * @return true if command is supported, and false otherwise.
+<span class='line'>230</span> 	 */</span><span class="WHIT">
+<span class='line'>231</span> </span><span class="WHIT">	</span><span class="NAME">Aloha.queryCommandSupported</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">CommandManager.queryCommandSupported</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>232</span> 
+<span class='line'>233</span> </span><span class="WHIT">	</span><span class="COMM">/**
+<span class='line'>234</span> 	 * Returns the Value of a given Command
+<span class='line'>235</span> 	 * If command is not supported, a NOT_SUPPORTED_ERR exception is thrown
+<span class='line'>236</span> 	 * If command is not enabled, returns an empty string
+<span class='line'>237</span> 	 * If command is "fontSize" and its value override is set, an integer 
+<span class='line'>238</span> 	 * number of pixels is returned as font size for the result.
+<span class='line'>239</span> 	 * If the value override for command is set, it returns that.
+<span class='line'>240</span> 	 * @return command's value.
+<span class='line'>241</span> 	 */</span><span class="WHIT">
+<span class='line'>242</span> </span><span class="WHIT">	</span><span class="NAME">Aloha.queryCommandValue</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">CommandManager.queryCommandValue</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>243</span> </span><span class="WHIT">	
+<span class='line'>244</span> 	</span><span class="NAME">Aloha.querySupportedCommands</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">CommandManager.querySupportedCommands</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>245</span> </span><span class="WHIT">	
+<span class='line'>246</span> 	</span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">CommandManager</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>247</span> </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>248</span> </span></pre></body></html>

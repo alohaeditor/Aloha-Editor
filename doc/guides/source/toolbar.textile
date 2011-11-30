@@ -1,0 +1,52 @@
+h2. Aloha Editor toolbar
+
+After reading this guide, you will be able to:
+
+* Configure Aloha Editor toolbar
+
+endprologue.
+
+WARNING: This guide is currently a draft for the Aloha Editor jQuery UI, which is supposed to be the next generation UI for Aloha Editor. Your feedback is welcome!
+
+h3. Toolbar concept
+
+The Toolbar provides tabs and groups. You may add ui components to groups. There ist only one instance of a the toolbar  and it changes its items depending on the acitvated editable.
+
+!../images/toolbar.png!
+
+h3. Toolbar integration
+
+You may embed the toolbar in a given container in your site or let it float. If you don&#8217;t provide a container the toolbar will append a <tt>div</tt> element as last element of the documents body and position the toolbar as defined.
+
+<javascript>
+	Aloha.ui.toolbar.appendTo('#aloha-toolbar');
+</javascript>
+
+h3. Component configuration
+
+You may define the name of your tabs and groups as key.  The following example defines a toolbar with the 3 tabs <strong>format</strong>, <strong>insert</strong> and <strong>link</strong>. The name of the tabs and groups is passed to <code>i18n</code> which translates them to the currently displayed language. The <strong>format</strong> tab has the two groups <strong>inline</strong> and <strong>paragraph</strong>. You may define the components that should be rendered by the group.
+
+<javascript>
+Aloha.settings.toolbar = {
+    tabs: {
+    	format : {
+    		inline: [ 'bold', 'italic', 'striketrough',
+    			'abbreviation', 'spacer', 'metaview' ]
+			paragraph: [ 'formatparagraph' ]
+    	},
+		insert: {
+			general: [ 'insertable', 'charakterpicker', 'insertlink' ]
+    		media: [ 'image', 'video' ]
+    	},
+    	link: {
+    		link: [ 'editlink' ]
+    	} 
+    }
+};
+</javascript>
+
+h3. Behavior configuration
+
+
+* September 1, 2011: Initial version by "Haymo Meran":credits.html#haymo and "Scott Gonzales":credits.html#scottgonzales
+
