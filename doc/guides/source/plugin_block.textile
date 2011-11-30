@@ -262,11 +262,11 @@ h3. Browser Compatibility Matrix
 |_.                                             |_. Firefox 7|_. Chrome 17|_. IE7 |_. IE8 |_. IE9 |_. Unit Test Written|
 |_. General Aloha                               |  ✓         |  ✓         |  ✓    | ✓     | ✓     |     ✓              |
 |_. General Blocks                              |  ✓         |  ✓         |  ✓    | ✓     | ✓     |     ✓              |
-|_. Drag & Drop of inline elements              |  ✓         |  ✓         | (✓)   | ✓     | ✓     |     ✓              |
-|_. Drag & Drop of block-level elements         |  ✓         |  ✓         |  ✓    | ✓     | ✓     |     ✘              |
-|_. Copy & Paste                                |  ✓         |  ✓         |  ✓    | ✓     | ✓     |     ✓              |
-|_. Cut & Paste                                 |  ✓         |  ✓         |  ✓    | ✓     | ✓     |     ✓              |
-|_. Deletion of single blocks (block-level)     |  ✓         |  ✓         |  ✘TODO| ✓     | ✘TODO |      ✘              |
+|_. Drag & Drop of inline elements              |  ✓         |  ✓         | (✓) only works sometimes   | ✓TODO jumps     | ✓     |     ✓              |
+|_. Drag & Drop of block-level elements         |  ✓         |  ✓         |  ✓    | (✓)Selection issues| ✓     |     ✘              |
+|_. Copy & Paste                                |  ✓         |  ✓         |  ✘ browser always dies on second copy/paste    | ✓     | ✓     |     ✓              |
+|_. Cut & Paste                                 |  ✓         |  ✓         |  ✘ browser always dies on second copy/paste    | ✓     | ✓     |     ✓              |
+|_. Deletion of single blocks (block-level)     |  ✓         |  ✓         |  ✘ always jumps to top of page| (✓) TODO selection issues, sometimes jumps to top of page| ✓     |      ✘              |
 |_. Deletion of single blocks (inline)          |  ✓         |  ✓         |  ✓    | ✓     | ✓     |      ✘              |
 |_. Deletion of blocks being part of selection  |  ✓         |  ✓         |  ✓    | ✓     | ✓     |      ✘              |
 |_. Caret handling of inline blocks             |  ✘         |  ✘         |  ✘    | ✘     | ✘     |      ✘              |
@@ -275,5 +275,5 @@ h3. Browser Compatibility Matrix
 h3. Changelog
 
 * July 7, 2011: Initial version by "Sebastian Kurfürst":credits.html#skurfuerst and "Christopher Hlubek":credits.html#hlubek
-* November 29, 2011: Greatly expanded version by "Sebastian Kurfürst":credits.html#skurfuerst 
+* November 29, 2011: Greatly expanded version by "Sebastian Kurfürst":credits.html#skurfuerst
 
