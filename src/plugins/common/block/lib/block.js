@@ -564,7 +564,7 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 				leftWordPartLength = Math.floor(word.length/2);
 
 				// For Internet Explorer, we only make dropping AFTER words possible to improve performance
-				if (Ext.isIE && !Ext.isIE9) {
+				if (Ext.isIE7 || Ext.isIE8) {
 					leftWordPartLength = 0;
 				}
 
