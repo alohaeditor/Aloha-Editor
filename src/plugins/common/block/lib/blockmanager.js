@@ -153,7 +153,7 @@ function(Aloha, jQuery, FloatingMenu, Observable, Registry) {
 				if (that._activeBlock && (commandId === 'delete' || commandId === 'forwarddelete') && onlyBlockSelected) {
 					// Deletion when a block is currently selected
 					that._activeBlock.destroy();
-				} else if ((commandId === 'delete' || commandId === 'forwarddelete') && Aloha.getSelection().getRangeCount() === 1) {
+				} else if (!that._activeBlock && (commandId === 'delete' || commandId === 'forwarddelete') && Aloha.getSelection().getRangeCount() === 1 && Aloha.getSelection().getRangeAt(0).collapsed === false) {
 					// Deletion when a block is inside a bigger selection currently
 					// In this case, we check if we find an aloha-block. If yes, we delete it right away as the browser does not delete it correctly by default
 					var traverseSelectionTree;
