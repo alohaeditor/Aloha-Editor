@@ -84,7 +84,11 @@ Aloha.plugins.link: {
 		} else {
 			jQuery(obj).removeAttr('data-name');
 		}
-	}
+	},
+	// hotKey to trigger insertLink method
+	hotKey: { insertLink: 'ctrl+l' },
+	// default href field input start value
+	hrefValue: 'http://', 
 };
 </javascript>
 
