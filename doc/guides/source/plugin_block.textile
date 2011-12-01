@@ -262,11 +262,11 @@ h3. Browser Compatibility Matrix
 |_.                                             |_. Firefox 7|_. Chrome 17|_. IE7 |_. IE8 |_. IE9 |_. Unit Test Written|
 |_. General Aloha                               |  ✓         |  ✓         |  ✓    | ✓     | ✓     |     ✓              |
 |_. General Blocks                              |  ✓         |  ✓         |  ✓    | ✓     | ✓     |     ✓              |
-|_. Drag & Drop of inline elements              |  ✓         |  ✓         | (✓) works in Emul. Mode; IE7 not tested yet   | ✓     | ✓     |     ✓              |
+|_. Drag & Drop of inline elements              |  ✓         |  ✓         |  ✓    | ✓     | ✓     |     ✓              |
 |_. Drag & Drop of block-level elements         |  ✓         |  ✓         |  ✓    | ✓     | ✓     |     ✘              |
 |_. Copy & Paste                                |  ✓         |  ✓         | (✓) works in Emul. Mode; IE7 always dies on second copy/paste    | ✓     | ✓     |     ✓              |
 |_. Cut & Paste                                 |  ✓         |  ✓         | (✓) works in Emul. Mode; IE7 always dies on second copy/paste    | ✓     | ✓     |     ✓              |
-|_. Deletion of single blocks (block-level)     |  ✓         |  ✓         | (✓) works in Emul. Mode; IE7 not tested yet| ✓ | ✓     |      ✘              |
+|_. Deletion of single blocks (block-level)     |  ✓         |  ✓         |  ✓    | ✓     | ✓     |      ✘              |
 |_. Deletion of single blocks (inline)          |  ✓         |  ✓         |  ✓    | ✓     | ✓     |      ✘              |
 |_. Deletion of blocks being part of selection  |  ✓         |  ✓         |  ✓    | ✓     | ✓     |      ✘              |
 |_. Caret handling of inline blocks             |  ✘         |  ✘         |  ✘    | ✘     | ✘     |      ✘              |
