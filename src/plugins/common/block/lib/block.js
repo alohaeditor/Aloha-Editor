@@ -677,6 +677,15 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 				revert: 100,
 				handle: '.aloha-block-draghandle-blocklevel'
 			});
+
+			// Hack for Internet Explorer 8:
+			// If you first click inside an editable, and THEN want to drag a block-level block,
+			// it sometimes occurs that the *whole editable* is selected and should be dragged away.
+			// This breaks dragging of Aloha Blocks.
+			// Bugfix: We disable the "ondragstart" event on the parent editable.
+			if (this.$element.find('.aloha-block-draghandle').length > 0 && this.$element.parents('.aloha-editable').length > 0) {
+				this.$element.parents('.aloha-editable').get(0).ondragstart = function () { return false; };
+			}
 		},
 
 
