@@ -237,27 +237,143 @@ h4. Nested Aloha Editables
 
 If you want to mark a certain area inside a block as aloha editable again, you just need to apply the +aloha-editable+ CSS class to it. If the default behavior is not what you want, you can also call @$element.find(...).aloha()@ in the @init()@ and/or @update()@ method.
 
-h4. Editing API
+h3. Editing API
 
-* getSchema() getTitle() explained
-* disabling sidebar
-* Custom Floating Menu?
+The attributes of an Aloha Block can be edited through an automatically generated User Interface in the *Aloha Sidebar*. Of course, this user interface needs to know which block attributes are editable. For that, an Aloha Block can contain a *schema* which defines this information. Simply override the @getSchema()@ method and make it return a schema.
 
-h3. Writing custom editor
+A basic schema can look like this:
 
-* TODO explain
+<javascript>
+getSchema: function() {
+	return {
+		symbol: {
+			type: 'string',
+			label: 'Stock Quote Name'
+		}
+	};
+},		
+</javascript>
 
-h3. Connecting Blocks to Backend system
+It just defines that the block attribute +symbol+ is of type @string@ and has a certain label.
 
+Additionally, the Aloha Block needs a title which is shown in the sidebar. Just set the +title+ property of your block, or for more advanced computations override the @getTitle()@ method.
 
-h3. APIs and Extension Points
+h4. Introducing Editors
 
-* Writing custom Blocks
-* Writing custom Editors
+Every form element in the sidebar is represented internally through an +editor+ class, which defines the behavior of the given form element.
+
+You might now wonder how the system knows that an element of type @string@ shall be edited through an input field. For that, the +EditorManager+ is responsible. It contains a mapping from data types to editor classes, for example a mapping from the @string@ data type to the @StringEditor@.
+
+h4. Available Editors
+
+So far, the following data types/editors are available (each with an example):
+
+h5. string
+
+<javascript>
+{
+	type: 'string',
+	label: 'My Label'
+}
+</javascript>
+
+Output: +<input type="text" />+
+
+h5. number
+
+<javascript>
+{
+	type: 'number',
+	label: 'My Label'
+}
+</javascript>
+
+Output: +<input type="range" />+
+
+h5. url
+
+<javascript>
+{
+	type: 'url',
+	label: 'My Label'
+}
+</javascript>
+
+Output: +<input type="url" />+
+
+h5. email
+
+<javascript>
+{
+	type: 'email',
+	label: 'My Label'
+}
+</javascript>
+
+Output: +<input type="email" />+
+
+h5. select
+
+<javascript>
+{
+	type: 'select',
+	label: 'Position',
+	values: [{
+		key: '',
+		label: 'No Float'
+	}, {
+		key: 'left',
+		label: 'Float left'
+	}, {
+		key: 'right',
+		label: 'Float right'
+	}]
+}
+</javascript>
+
+Output: +<select>...</select>+ (with the correctly active option pre-selected)
+
+h5. button
+
+<javascript>
+{
+	type: 'button',
+	buttonLabel: 'Click me!',
+	callback: function() {
+		// This function is executed when the button is clicked.
+	}
+}
+</javascript>
+
+Output: +<button />+
+
+h4. Writing a Custom Editor
+
+For writing custom editors, just check the +AbstractEditor+ and +AbstractFormElementEditor+ inside @lib/editor.js@, as well as the default editor implementations. It should be quite self-explanatory :-)
+
+In case you do not extend the @AbstractFormElementEditor@ you just need to remember one thing -- Make sure to throw a +change+ event on the editor class, with the changed value as parameter:
+
+<javascript>
+this.trigger('change', this.getValue());
+</javascript>
+
+Then the framework takes care of updating the attribute in the Aloha Block accordingly.
+
+h3. Advanced Topics
+
+h4. Custom Floating Menu?
+
+TODO
+
+h4. Connecting Blocks to Backend system
+
+* disabling sidebar, TODO
 
 h3. Internals
 
-h3. Browser Compatibility Matrix
+* IE hacks
+
+h4. Browser Compatibility Matrix
 
 |_.                                             |_. Firefox 7|_. Chrome 17|_. IE7 |_. IE8 |_. IE9 |_. Unit Test Written|
 |_. General Aloha                               |  ✓         |  ✓         |  ✓    | ✓     | ✓     |     ✓              |
