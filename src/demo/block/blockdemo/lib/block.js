@@ -169,7 +169,12 @@ define([
 	var SortableNewsBlock = NewsBlock.extend({
 		title: 'Sortable News',
 		init: function() {
-			this.$element.sortable();
+			var that = this;
+			this.$element.sortable({
+				stop: function() {
+					that._fixScrollPositionBugsInIE();
+				}
+			});
 		}
 	});
 

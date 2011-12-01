@@ -53,25 +53,3 @@
 	color: #333 !important;
 	padding: 3px;
 }
-
-.x-combo-list {
-	text-align: left;
-}
-
-.x-combo-list .x-combo-selected {
-	color: #fff !important;
-	background-color: #3B73D7 !important;
-}
-
-.x-form-field.x-form-text.aloha-link-href-field::selection {
-	color: #fff;
-	background: #3B73D7;
-}
-.x-form-field.x-form-text.aloha-link-href-field::-moz-selection {
-	color: #fff;
-	background: #3B73D7;
-}
-.x-form-field.x-form-text.aloha-link-href-field::-webkit-selection {
-	color: #fff;
-	background: #3B73D7;
-}

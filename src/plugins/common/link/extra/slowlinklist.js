@@ -1,46 +1,43 @@
 /*!
-* Aloha Editor
-* Author & Copyright (c) 2011 Gentics Software GmbH
-* aloha-sales@gentics.com
-* Licensed unter the terms of http://www.aloha-editor.com/license.html
-*/
-
-/**
+ * Aloha Editor
+ * Author & Copyright (c) 2011 Gentics Software GmbH
+ * aloha-sales@gentics.com
+ * Licensed unter the terms of http://www.aloha-editor.com/license.html
+ *
  * Aloha Link List Repository
  * --------------------------
  * A simple demo repository of links, which is deliberatly slow, in order to
- * simulate lags when querying repositories
+ * simulate lags when querying repositories.
  */
 
- 
-define( [ 'aloha/jquery', 'aloha/repository' ],
-function ( jQuery, repository ) {
-	'use strict';
+define(
+[ 'aloha', 'aloha/jquery' ],
+function ( Aloha, jQuery ) {
+	'use strict'
 	
-	new ( repository.extend( {
+	/**
+	 * Internal data as array with following format:
+	 *
+	 * [
+	 *   { name: 'Aloha Editor - The HTML5 Editor', url:'http://aloha-editor.com', type:'website' },
+	 *   { name: 'Aloha Logo', url:'http://www.aloha-editor.com/images/aloha-editor-logo.png', type:'image'  }
+	 * ];
+	 *
+	 * @private
+	 */
+	var urlset = [
+		{ name: 'Aloha Test', url: '#alohatest', type: 'website' },
+		{ name: 'Test One', url: '#test1', type: 'website' },
+		{ name: 'Test Two', url: '#test2', type: 'website' },
+		{ name: 'Test Three', url: '#test3', type: 'website' },
+		{ name: 'Test Four', url: '#test4', type: 'image' }
+	];
+	
+	new ( Aloha.AbstractRepository.extend( {
 		
 		_constructor: function () {
 			this._super( 'slowlinklist' );
 		},
-		
-		/**
-		 * configure data as array with following format:
-		 *
-		 * [
-		 *   { name: 'Aloha Editor - The HTML5 Editor', url:'http://aloha-editor.com', type:'website' },
-		 *   { name: 'Aloha Logo', url:'http://www.aloha-editor.com/images/aloha-editor-logo.png', type:'image'  }
-		 * ];
-		 *
-		 * @property
-		 * @cfg
-		 */
-		urlset: [
-			{ name: 'Aloha Test', url: '#alohatest', type: 'website' },
-			{ name: 'Test One', url: '#test1', type: 'website' },
-			{ name: 'Test Two', url: '#test2', type: 'website' },
-			{ name: 'Test Three', url: '#test3', type: 'website' },
-			{ name: 'Test Four', url: '#test4', type: 'image' }
-		],
 		
 		/**
 		 * Internal folder structure
@@ -58,11 +55,11 @@ function ( jQuery, repository ) {
 			// object so that we do not tamper with the native Array prototype
 			// object
 			if ( !( 'filter' in Array.prototype ) ) {
-				this.urlset.filter = function ( filter, that /*opt*/ ) {
+				urlset.filter = function ( filter, that /*opt*/ ) {
 					var other = [],
-						v,
-						i = 0,
-						n = this.length;
+					    v,
+					    i = 0,
+					    n = this.length;
 					
 					for ( ; i < n; i++ ) {
 						if ( i in this && filter.call( that, v = this[ i ], i, this ) ) {
@@ -74,11 +71,11 @@ function ( jQuery, repository ) {
 				};
 			}
 			
-			var l = this.urlset.length;
+			var l = urlset.length;
 			
 			// generate folder structure
 		    for ( var i = 0; i < l; ++i ) {
-		    	var e = this.urlset[ i ];
+		    	var e = urlset[ i ];
 		    	e.repositoryId = this.repositoryId;
 		    	e.id = e.id ? e.id : e.url;
 				
@@ -98,10 +95,10 @@ function ( jQuery, repository ) {
 				
 		    	e.parentId = path;
 		    	
-				this.urlset[ i ] = new Aloha.RepositoryDocument( e );
+				urlset[ i ] = new Aloha.RepositoryDocument( e );
 		    }
 			
-		    this.repositoryName = 'Slow Linklist';
+		    this.repositoryName = 'Linklist';
 		},
 		
 		/**
@@ -116,7 +113,7 @@ function ( jQuery, repository ) {
 			if ( name && !this.folder[ p ] ) {
 				this.folder[ p ] = new Aloha.RepositoryFolder( {
 					id: p,
-					name: ( name ) ? name : p,
+					name: name || p,
 					parentId: path,
 					type: 'host',
 					repositoryId: this.repositoryId
@@ -132,13 +129,12 @@ function ( jQuery, repository ) {
 		 *
 		 * @param {Object} p
 		 * @param {Function} callback
-		 * @return {null|Array}
 		 */
 		query: function ( p, callback ) {
 			// Not supported; filter, orderBy, maxItems, skipcount, renditionFilter
 			var r = new RegExp( p.queryString, 'i' );
 			
-			var d = this.urlset.filter( function ( e, i, a ) {
+			var d = urlset.filter( function ( e, i, a ) {
 				return (
 					( !p.queryString || e.name.match( r ) || e.url.match( r ) ) &&
 					( !p.objectTypeFilter || ( !p.objectTypeFilter.length ) || jQuery.inArray( e.type, p.objectTypeFilter ) > -1 ) &&
@@ -146,18 +142,16 @@ function ( jQuery, repository ) {
 				);
 			} );
 			
-			// Simulate 2 second lag
 			setTimeout( function () {
 				callback.call( this, d );
 			}, 2000 );
 		},
 		
 		/**
-		 * returns the folder structure as parsed at init.
+		 * returns the folder structure as parsed at init
 		 *
 		 * @param {Object} p
 		 * @param {Function} callback
-		 * @return {null|Array}
 		 */
 		getChildren: function ( p, callback ) {
 			var d = [],
@@ -173,7 +167,6 @@ function ( jQuery, repository ) {
 				}
 			}
 			
-			// Simulate 2 second lag
 			setTimeout( function () {
 				callback.call( this, d );
 			}, 2000 );
@@ -212,27 +205,24 @@ function ( jQuery, repository ) {
 		
 		/**
 		 * Get the repositoryItem with given id
-		 *
+		 * Callback: {GENTICS.Aloha.Repository.Object} item with given id
 		 * @param itemId {String} id of the repository item to fetch
 		 * @param callback {function} callback function
-		 * @return {GENTICS.Aloha.Repository.Object} item with given id
 		 */
 		getObjectById: function ( itemId, callback ) {
 			var i = 0,
-			    l = this.urlset.length,
+			    l = urlset.length,
 			    d = [];
 			
 			for ( ; i < l; i++ ) {
-				if ( this.urlset[ i ].id == itemId ) {
-					d.push( this.urlset[ i ] );
+				if ( urlset[ i ].id == itemId ) {
+					d.push( urlset[ i ] );
 				}
 			}
 			
 			callback.call( this, d );
-			
-			return true;
 		}
 		
-} ) )();
+	} ) )();
 
 } );

@@ -1,0 +1,32 @@
+<html><head><meta http-equiv="content-type" content="text/html; charset=utf8"> <style>
+	.KEYW {color: #933;}
+	.COMM {color: #bbb; font-style: italic;}
+	.NUMB {color: #393;}
+	.STRN {color: #393;}
+	.REGX {color: #339;}
+	.line {border-right: 1px dotted #666; color: #666; font-style: normal;}
+	</style></head><body><pre><span class='line'>  1</span> <span class="COMM">/*!
+<span class='line'>  2</span> * Aloha Editor
+<span class='line'>  3</span> * Author & Copyright (c) 2010 Gentics Software GmbH
+<span class='line'>  4</span> * aloha-sales@gentics.com
+<span class='line'>  5</span> * Licensed unter the terms of http://www.aloha-editor.com/license.html
+<span class='line'>  6</span> */</span><span class="WHIT">
+<span class='line'>  7</span> 
+<span class='line'>  8</span> </span><span class="NAME">define</span><span class="PUNC">(</span><span class="PUNC">[</span><span class="WHIT">
+<span class='line'>  9</span> </span><span class="WHIT">	</span><span class="STRN">'aloha/plugin'</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 10</span> </span><span class="WHIT">	</span><span class="STRN">'block/blockmanager'</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 11</span> </span><span class="WHIT">	</span><span class="STRN">'blockdemo/block'</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 12</span> </span><span class="WHIT">	</span><span class="STRN">'css!blockdemo/css/block.css'</span><span class="WHIT">
+<span class='line'> 13</span> </span><span class="PUNC">]</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">Plugin</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">BlockManager</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">block</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 14</span> </span><span class="WHIT">	</span><span class="STRN">"use strict"</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 15</span> </span><span class="WHIT">	</span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">Plugin.create</span><span class="PUNC">(</span><span class="STRN">'blockdemo'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 16</span> </span><span class="WHIT">		</span><span class="NAME">init</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 17</span> </span><span class="WHIT">			</span><span class="NAME">BlockManager.registerBlockType</span><span class="PUNC">(</span><span class="STRN">'ProductTeaserBlock'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">block.ProductTeaserBlock</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 18</span> </span><span class="WHIT">			</span><span class="NAME">BlockManager.registerBlockType</span><span class="PUNC">(</span><span class="STRN">'CompanyBlock'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">block.CompanyBlock</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 19</span> </span><span class="WHIT">			</span><span class="NAME">BlockManager.registerBlockType</span><span class="PUNC">(</span><span class="STRN">'EditableProductTeaserBlock'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">block.EditableProductTeaserBlock</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 20</span> </span><span class="WHIT">			</span><span class="NAME">BlockManager.registerBlockType</span><span class="PUNC">(</span><span class="STRN">'VCardBlock'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">block.VCardBlock</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 21</span> </span><span class="WHIT">			</span><span class="NAME">BlockManager.registerBlockType</span><span class="PUNC">(</span><span class="STRN">'CustomHandleBlock'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">block.CustomHandleBlock</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 22</span> </span><span class="WHIT">			</span><span class="NAME">BlockManager.registerBlockType</span><span class="PUNC">(</span><span class="STRN">'TwoColumnBlock'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">block.TwoColumnBlock</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 23</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'> 24</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 25</span> </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span></pre></body></html>

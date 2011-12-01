@@ -108,15 +108,7 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 
 			// Register event handlers for activating an Aloha Block
 			this.$element.bind('click', function(event) {
-
-				// IE HACK: Our beloved Internet Explorer sometimes scrolls to the top of the page when activating an aloha block.
-				// We can detect this and scroll right back; although this will flicker a little (but still a lot better than before)
-				var scrollPositionBefore = jQuery(window).scrollTop();
-				window.setTimeout(function() {
-					if (jQuery(window).scrollTop() !== scrollPositionBefore) {
-						jQuery(window).scrollTop(scrollPositionBefore);
-					}
-				}, 10);
+				that._fixScrollPositionBugsInIE();
 
 				// Activate the block element and stop event propagation
 				that.activate(event.target);
@@ -148,6 +140,22 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 		},
 
 		/**
+		 * IE HACK: Our beloved Internet Explorer sometimes scrolls to the top
+		 * of the page when activating an aloha block, and on numerous other occasions
+		 * like when an <span> block is moved via drag/drop.
+		 *
+		 * We can detect this and scroll right back; although this will flicker
+		 * a little (but still a lot better than before)
+		 */
+		_fixScrollPositionBugsInIE: function() {
+			var scrollPositionBefore = jQuery(window).scrollTop();
+			window.setTimeout(function() {
+				if (jQuery(window).scrollTop() !== scrollPositionBefore) {
+					jQuery(window).scrollTop(scrollPositionBefore);
+				}
+			}, 10);
+		},
+		/**
 		 * Template method to initialize the block. Can be used to set attributes
 		 * on the block, depending on the block contents. You will most probably
 		 * use $element and this.attr() inside this function.
@@ -170,18 +178,22 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 			newRange.startContainer = newRange.endContainer = this.$element.parent()[0];
 			newRange.startOffset = newRange.endOffset = GENTICS.Utils.Dom.getIndexInParent(this.$element[0]);
 
-			GENTICS.Utils.Dom.setCursorAfter(that.$element[0]);
 			BlockManager.trigger('block-delete', this);
 			BlockManager._unregisterBlock(this);
 
 			this.unbindAll();
 
+
+			var isInlineElement = this.$element[0].tagName.toLowerCase() === 'span';
+
 			this.$element.fadeOut('fast', function() {
 				that.$element.remove();
 				BlockManager.trigger('block-selection-change', []);
 				window.setTimeout(function() {
-					newRange.select();
-				}, 50);
+					if (isInlineElement) {
+						newRange.select();
+					}
+				}, 5);
 			});
 		},
 
@@ -464,6 +476,7 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 								}
 
 								ui.draggable.removeClass('ui-draggable').css({'left': 0, 'top': 0}); // Remove "draggable" options... somehow "Destroy" does not work
+								that._fixScrollPositionBugsInIE();
 							}
 						}
 					});
@@ -560,7 +573,7 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 				leftWordPartLength = Math.floor(word.length/2);
 
 				// For Internet Explorer, we only make dropping AFTER words possible to improve performance
-				if (Ext.isIE && !Ext.isIE9) {
+				if (Ext.isIE7 || Ext.isIE8) {
 					leftWordPartLength = 0;
 				}
 
@@ -664,6 +677,15 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 				revert: 100,
 				handle: '.aloha-block-draghandle-blocklevel'
 			});
+
+			// Hack for Internet Explorer 8:
+			// If you first click inside an editable, and THEN want to drag a block-level block,
+			// it sometimes occurs that the *whole editable* is selected and should be dragged away.
+			// This breaks dragging of Aloha Blocks.
+			// Bugfix: We disable the "ondragstart" event on the parent editable.
+			if (this.$element.find('.aloha-block-draghandle').length > 0 && this.$element.parents('.aloha-editable').length > 0) {
+				this.$element.parents('.aloha-editable').get(0).ondragstart = function () { return false; };
+			}
 		},
 
 

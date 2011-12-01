@@ -15,11 +15,19 @@
 }
 
 
-.ext-ie8 .aloha-block:hover, .ext-ie7 .aloha-block:hover {
+/* IE8 will use outline for highlighting */
+.ext-ie8 .aloha-block:hover {
+	outline: 1px solid #FFE98A; /* IE does not support box-shadow, thus we need to use border */
+}
+.ext-ie8 .aloha-block.aloha-block-active, .ext-ie8 .aloha-block.aloha-block-active:hover {
+	outline: 1px solid #2F7ECC; /* IE does not support box-shadow, thus we need to use border */
+}
+/* IE7 will use border for outlining */
+.ext-ie7 .aloha-block:hover {
 	border: 1px solid #FFE98A; /* IE does not support box-shadow, thus we need to use border */
 	margin: -1px;
 }
-.ext-ie8 .aloha-block.aloha-block-active, .ext-ie8 .aloha-block.aloha-block-active:hover,
+
 .ext-ie7 .aloha-block.aloha-block-active, .ext-ie7 .aloha-block.aloha-block-active:hover {
 	border: 1px solid #2F7ECC; /* IE does not support box-shadow, thus we need to use border */
 	margin: -1px;

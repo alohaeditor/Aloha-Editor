@@ -143,15 +143,29 @@ function(Aloha, jQuery, FloatingMenu, Observable, Registry) {
 		_registerEventHandlersForBlockDeletion: function() {
 			var that = this;
 
-			Aloha.bind('aloha-command-will-execute', function(e, commandId) {
+
+			// This case executes in:
+			// - Chrome
+			// - Firefox
+			// - IE9
+			// - IE8 for inline blocks and for block-level blocks which are part of a bigger selection
+			// it does NOT execute in the following cases:
+			// - IE8 for block-level blocks which are NOT part of a bigger selection. This case is handled separately below.
+			Aloha.bind('aloha-command-will-execute', function(e, data) {
+				var commandId = data.commandId;
 
 				// Internet Explorer *magically* sets the range to the "Body" object after deselecting everything. yeah :-D
 				var onlyBlockSelected = (Aloha.getSelection().getRangeCount() === 0) // Firefox / Chrome
-					|| (Aloha.getSelection().getRangeCount() === 1 && Aloha.getSelection().getRangeAt(0).endContainer === Aloha.getSelection().getRangeAt(0).startContainer && Aloha.getSelection().getRangeAt(0).endContainer === jQuery('body')[0]); // Internet explorer
+					|| (Aloha.getSelection().getRangeCount() === 1 && Aloha.getSelection().getRangeAt(0).endContainer === Aloha.getSelection().getRangeAt(0).startContainer && Aloha.getSelection().getRangeAt(0).endContainer === jQuery('body')[0]) // Internet explorer: Inline Elements
+					|| (Aloha.getSelection().getRangeCount() === 1 && Aloha.getSelection().getRangeAt(0).endContainer === Aloha.getSelection().getRangeAt(0).startContainer && Aloha.getSelection().getRangeAt(0).startOffset + 1 === Aloha.getSelection().getRangeAt(0).endOffset); // Internet explorer: Block level elements
+
 				if (that._activeBlock && (commandId === 'delete' || commandId === 'forwarddelete') && onlyBlockSelected) {
 					// Deletion when a block is currently selected
+
+					// In this case, the default command shall not be executed.
+					data.preventDefault = true;
 					that._activeBlock.destroy();
-				} else if ((commandId === 'delete' || commandId === 'forwarddelete') && Aloha.getSelection().getRangeCount() === 1) {
+				} else if (!that._activeBlock && (commandId === 'delete' || commandId === 'forwarddelete') && Aloha.getSelection().getRangeCount() === 1 && Aloha.getSelection().getRangeAt(0).collapsed === false) {
 					// Deletion when a block is inside a bigger selection currently
 					// In this case, we check if we find an aloha-block. If yes, we delete it right away as the browser does not delete it correctly by default
 					var traverseSelectionTree;
@@ -172,6 +186,23 @@ function(Aloha, jQuery, FloatingMenu, Observable, Registry) {
 					traverseSelectionTree(Aloha.Selection.getSelectionTree());
 				}
 			});
+
+			// BROWSER QUIRK WORKAROUND
+			// - IE8 for block-level blocks which are NOT part of a bigger selection.
+			if (Ext.isIE8) {
+				jQuery(window.document).keydown(function(e) {
+					// If a block is active AND DEL or BACKSPACE key pressed...
+					if (that._activeBlock && (e.which === 46 || e.which === 8)) {
+
+						// ...and active block is INSIDE editable
+						if (that._activeBlock.$element.parents('.aloha-editable,.aloha-block').first().hasClass('aloha-editable')) {
+							that._activeBlock.destroy();
+							e.preventDefault();
+							return false;
+						}
+					}
+				});
+			}
 		},
 
 		/**

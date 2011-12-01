@@ -1,0 +1,568 @@
+<html><head><meta http-equiv="content-type" content="text/html; charset=utf8"> <style>
+	.KEYW {color: #933;}
+	.COMM {color: #bbb; font-style: italic;}
+	.NUMB {color: #393;}
+	.STRN {color: #393;}
+	.REGX {color: #339;}
+	.line {border-right: 1px dotted #666; color: #666; font-style: normal;}
+	</style></head><body><pre><span class='line'>  1</span> <span class="COMM">/*!
+<span class='line'>  2</span> * This file is part of Aloha Editor Project http://aloha-editor.org
+<span class='line'>  3</span> * Copyright © 2010-2011 Gentics Software GmbH, aloha@gentics.com
+<span class='line'>  4</span> * Contributors http://aloha-editor.org/contribution.php 
+<span class='line'>  5</span> * Licensed unter the terms of http://www.aloha-editor.org/license.html
+<span class='line'>  6</span> */</span><span class="COMM">/*
+<span class='line'>  7</span> * Aloha Editor is free software: you can redistribute it and/or modify
+<span class='line'>  8</span> * it under the terms of the GNU Affero General Public License as published by
+<span class='line'>  9</span> * the Free Software Foundation, either version 3 of the License, or
+<span class='line'> 10</span> * (at your option) any later version.*
+<span class='line'> 11</span> *
+<span class='line'> 12</span> * Aloha Editor is distributed in the hope that it will be useful,
+<span class='line'> 13</span> * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<span class='line'> 14</span> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+<span class='line'> 15</span> * GNU Affero General Public License for more details.
+<span class='line'> 16</span> *
+<span class='line'> 17</span> * You should have received a copy of the GNU Affero General Public License
+<span class='line'> 18</span> * along with this program. If not, see &lt;http://www.gnu.org/licenses/>.
+<span class='line'> 19</span> */</span><span class="WHIT">
+<span class='line'> 20</span> 
+<span class='line'> 21</span> </span><span class="NAME">define</span><span class="PUNC">(</span><span class="WHIT">
+<span class='line'> 22</span> 
+<span class='line'> 23</span> </span><span class="PUNC">[</span><span class="WHIT">
+<span class='line'> 24</span> </span><span class="WHIT">	</span><span class="STRN">'aloha/jquery'</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 25</span> </span><span class="WHIT">	</span><span class="STRN">'aloha/pluginmanager'</span><span class="WHIT">
+<span class='line'> 26</span> </span><span class="PUNC">]</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 27</span> 
+<span class='line'> 28</span> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">jQuery</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">PluginManager</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 29</span> </span><span class="WHIT">	</span><span class="STRN">"use strict"</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 30</span> 
+<span class='line'> 31</span> 
+<span class='line'> 32</span> </span><span class="WHIT">	</span><span class="COMM">//----------------------------------------</span><span class="WHIT">
+<span class='line'> 33</span> </span><span class="WHIT">	</span><span class="COMM">// Private variables</span><span class="WHIT">
+<span class='line'> 34</span> </span><span class="WHIT">	</span><span class="COMM">//----------------------------------------</span><span class="WHIT">
+<span class='line'> 35</span> </span><span class="WHIT">	
+<span class='line'> 36</span> 	</span><span class="COMM">/**
+<span class='line'> 37</span> 	 * Hash table that will be populated through the loadPlugins method.
+<span class='line'> 38</span> 	 * Maps the names of plugins with their urls for easy assess in the getPluginsUrl method
+<span class='line'> 39</span> 	 */</span><span class="WHIT">
+<span class='line'> 40</span> </span><span class="WHIT">	</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">pluginPaths</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 41</span> 
+<span class='line'> 42</span> </span><span class="WHIT">	</span><span class="COMM">/**
+<span class='line'> 43</span> 	 * Base Aloha Object
+<span class='line'> 44</span> 	 * @namespace Aloha
+<span class='line'> 45</span> 	 * @class Aloha The Aloha base object, which contains all the core functionality
+<span class='line'> 46</span> 	 * @singleton
+<span class='line'> 47</span> 	 */</span><span class="WHIT">
+<span class='line'> 48</span> </span><span class="WHIT">	</span><span class="NAME">jQuery.extend</span><span class="PUNC">(</span><span class="KEYW">true</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">Aloha</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 49</span> 
+<span class='line'> 50</span> </span><span class="WHIT">		</span><span class="COMM">/**
+<span class='line'> 51</span> 		 * The Aloha Editor Version we are using
+<span class='line'> 52</span> 		 * It should be set by us and updated for the particular branch
+<span class='line'> 53</span> 		 * @property
+<span class='line'> 54</span> 		 */</span><span class="WHIT">
+<span class='line'> 55</span> </span><span class="WHIT">		</span><span class="NAME">version</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">'0.10.0'</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 56</span> 
+<span class='line'> 57</span> </span><span class="WHIT">		</span><span class="COMM">/**
+<span class='line'> 58</span> 		 * Array of editables that are managed by Aloha
+<span class='line'> 59</span> 		 * @property
+<span class='line'> 60</span> 		 * @type Array
+<span class='line'> 61</span> 		 */</span><span class="WHIT">
+<span class='line'> 62</span> </span><span class="WHIT">		</span><span class="NAME">editables</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="PUNC">]</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 63</span> 
+<span class='line'> 64</span> </span><span class="WHIT">		</span><span class="COMM">/**
+<span class='line'> 65</span> 		 * The currently active editable is referenced here
+<span class='line'> 66</span> 		 * @property
+<span class='line'> 67</span> 		 * @type Aloha.Editable
+<span class='line'> 68</span> 		 */</span><span class="WHIT">
+<span class='line'> 69</span> </span><span class="WHIT">		</span><span class="NAME">activeEditable</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 70</span> 
+<span class='line'> 71</span> </span><span class="WHIT">		</span><span class="COMM">/**
+<span class='line'> 72</span> 		 * settings object, which will contain all Aloha settings
+<span class='line'> 73</span> 		 * @cfg {Object} object Aloha's settings
+<span class='line'> 74</span> 		 */</span><span class="WHIT">
+<span class='line'> 75</span> </span><span class="WHIT">		</span><span class="NAME">settings</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 76</span> </span><span class="WHIT">		
+<span class='line'> 77</span> 		</span><span class="COMM">/**
+<span class='line'> 78</span> 		 * defaults object, which will contain all Aloha defaults
+<span class='line'> 79</span> 		 * @cfg {Object} object Aloha's settings
+<span class='line'> 80</span> 		 */</span><span class="WHIT">
+<span class='line'> 81</span> </span><span class="WHIT">		</span><span class="NAME">defaults</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 82</span> </span><span class="WHIT">		
+<span class='line'> 83</span> 		</span><span class="COMM">/**
+<span class='line'> 84</span> 		 * Namespace for ui components
+<span class='line'> 85</span> 		 */</span><span class="WHIT">
+<span class='line'> 86</span> </span><span class="WHIT">		</span><span class="NAME">ui</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 87</span> </span><span class="WHIT">		
+<span class='line'> 88</span> 		</span><span class="COMM">/**
+<span class='line'> 89</span> 		 * This represents the name of the users OS. Could be:
+<span class='line'> 90</span> 		 * 'Mac', 'Linux', 'Win', 'Unix', 'Unknown'
+<span class='line'> 91</span> 		 * @property
+<span class='line'> 92</span> 		 * @type string
+<span class='line'> 93</span> 		 */</span><span class="WHIT">
+<span class='line'> 94</span> </span><span class="WHIT">		</span><span class="NAME">OSName</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">'Unknown'</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 95</span> 
+<span class='line'> 96</span> </span><span class="WHIT">		</span><span class="COMM">/**
+<span class='line'> 97</span> 		 * Which stage is the aloha init process at?
+<span class='line'> 98</span> 		 * @property
+<span class='line'> 99</span> 		 * @type string
+<span class='line'>100</span> 		 */</span><span class="WHIT">
+<span class='line'>101</span> </span><span class="WHIT">		</span><span class="NAME">stage</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">'loadingAloha'</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>102</span> 
+<span class='line'>103</span> </span><span class="WHIT">		</span><span class="COMM">/**
+<span class='line'>104</span> 		 * A list of loaded plugin names. Available after the
+<span class='line'>105</span> 		 * "loadPlugins" stage.
+<span class='line'>106</span> 		 *
+<span class='line'>107</span> 		 * @property
+<span class='line'>108</span> 		 * @type array
+<span class='line'>109</span> 		 * @internal
+<span class='line'>110</span> 		 */</span><span class="WHIT">
+<span class='line'>111</span> </span><span class="WHIT">		</span><span class="NAME">loadedPlugins</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="PUNC">]</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>112</span> 
+<span class='line'>113</span> </span><span class="WHIT">		</span><span class="NAME">requirePaths</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="PUNC">]</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>114</span> </span><span class="WHIT">		</span><span class="COMM">/**
+<span class='line'>115</span> 		 * Initialize the initialization process
+<span class='line'>116</span> 		 */</span><span class="WHIT">
+<span class='line'>117</span> </span><span class="WHIT">		</span><span class="NAME">init</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>118</span> </span><span class="WHIT">				
+<span class='line'>119</span> 			</span><span class="COMM">// merge defaults and settings and provide all in settings</span><span class="WHIT">
+<span class='line'>120</span> </span><span class="WHIT">			</span><span class="NAME">Aloha.settings</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">jQuery.extendObjects</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">Aloha.defaults</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">Aloha.settings</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>121</span> 
+<span class='line'>122</span> </span><span class="WHIT">			</span><span class="COMM">// initialize rangy. This is probably necessary here,</span><span class="WHIT">
+<span class='line'>123</span> </span><span class="WHIT">			</span><span class="COMM">// because due to the current loading mechanism, rangy</span><span class="WHIT">
+<span class='line'>124</span> </span><span class="WHIT">			</span><span class="COMM">// doesn't initialize itself in all browsers</span><span class="WHIT">
+<span class='line'>125</span> </span><span class="WHIT">			</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">window.rangy</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>126</span> </span><span class="WHIT">				</span><span class="NAME">window.rangy.init</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>127</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>128</span> </span><span class="WHIT">			
+<span class='line'>129</span> 			</span><span class="COMM">// Load & Initialise</span><span class="WHIT">
+<span class='line'>130</span> </span><span class="WHIT">			</span><span class="NAME">Aloha.stage</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="STRN">'loadPlugins'</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>131</span> </span><span class="WHIT">			</span><span class="NAME">Aloha.loadPlugins</span><span class="PUNC">(</span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>132</span> </span><span class="WHIT">				</span><span class="NAME">Aloha.stage</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="STRN">'initAloha'</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>133</span> </span><span class="WHIT">				</span><span class="NAME">Aloha.initAloha</span><span class="PUNC">(</span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>134</span> </span><span class="WHIT">					</span><span class="NAME">Aloha.stage</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="STRN">'initPlugins'</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>135</span> </span><span class="WHIT">					</span><span class="NAME">Aloha.initPlugins</span><span class="PUNC">(</span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>136</span> </span><span class="WHIT">						</span><span class="NAME">Aloha.stage</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="STRN">'initGui'</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>137</span> </span><span class="WHIT">						</span><span class="NAME">Aloha.initGui</span><span class="PUNC">(</span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>138</span> </span><span class="WHIT">							</span><span class="NAME">Aloha.stage</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="STRN">'alohaReady'</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>139</span> </span><span class="WHIT">							</span><span class="NAME">Aloha.trigger</span><span class="PUNC">(</span><span class="STRN">'aloha-ready'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>140</span> </span><span class="WHIT">						</span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>141</span> </span><span class="WHIT">					</span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>142</span> </span><span class="WHIT">				</span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>143</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>144</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>145</span> 
+<span class='line'>146</span> </span><span class="WHIT">		</span><span class="COMM">/**
+<span class='line'>147</span> 		 * Load Plugins
+<span class='line'>148</span> 		 */</span><span class="WHIT">
+<span class='line'>149</span> </span><span class="WHIT">		</span><span class="NAME">loadPlugins</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">next</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>150</span> </span><span class="WHIT">			</span><span class="COMM">// contains an array like [common/format, common/block]</span><span class="WHIT">
+<span class='line'>151</span> </span><span class="WHIT">			</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">configuredPluginsWithBundle</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.getPluginsToBeLoaded</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>152</span> 
+<span class='line'>153</span> </span><span class="WHIT">			</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">configuredPluginsWithBundle.length</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>154</span> </span><span class="WHIT">				</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">paths</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>155</span> </span><span class="WHIT">				    </span><span class="NAME">pluginNames</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="PUNC">]</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>156</span> </span><span class="WHIT">				    </span><span class="NAME">requiredInitializers</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="PUNC">]</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>157</span> </span><span class="WHIT">				    </span><span class="NAME">pathsToPlugins</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>158</span> 
+<span class='line'>159</span> </span><span class="WHIT">				</span><span class="COMM">// Background: We do not use CommonJS packages for our Plugins</span><span class="WHIT">
+<span class='line'>160</span> </span><span class="WHIT">				</span><span class="COMM">// as this breaks the loading order when these modules have</span><span class="WHIT">
+<span class='line'>161</span> </span><span class="WHIT">				</span><span class="COMM">// other dependencies.</span><span class="WHIT">
+<span class='line'>162</span> </span><span class="WHIT">				</span><span class="COMM">// We "emulate" the commonjs modules with the path mapping.</span><span class="WHIT">
+<span class='line'>163</span> </span><span class="WHIT">				</span><span class="COMM">/* require(
+<span class='line'>164</span> 				 *  { paths: {
+<span class='line'>165</span> 				 *      'format': 'plugins/common/format/lib',
+<span class='line'>166</span> 				 *      'format/nls': 'plugins/common/format/nls',
+<span class='line'>167</span> 				 *      ... for every plugin ...
+<span class='line'>168</span> 				 *    }
+<span class='line'>169</span> 				 *  },
+<span class='line'>170</span> 				 *  ['format/format-plugin', ... for every plugin ...],
+<span class='line'>171</span> 				 *  next &lt;-- when everything is loaded, we continue
+<span class='line'>172</span> <span class='line'>173</span> 				 */</span><span class="WHIT">
+<span class='line'>174</span> </span><span class="WHIT">				</span><span class="NAME">jQuery.each</span><span class="PUNC">(</span><span class="NAME">configuredPluginsWithBundle</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">i</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">configuredPluginWithBundle</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>175</span> </span><span class="WHIT">					</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">tmp</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">bundleName</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">pluginName</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">bundlePath</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="STRN">''</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>176</span> 
+<span class='line'>177</span> </span><span class="WHIT">					</span><span class="NAME">tmp</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">configuredPluginWithBundle.split</span><span class="PUNC">(</span><span class="STRN">'/'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>178</span> </span><span class="WHIT">					</span><span class="NAME">bundleName</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">tmp</span><span class="PUNC">[</span><span class="NUMB">0</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>179</span> </span><span class="WHIT">					</span><span class="NAME">pluginName</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">tmp</span><span class="PUNC">[</span><span class="NUMB">1</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>180</span> 
+<span class='line'>181</span> </span><span class="WHIT">					</span><span class="COMM">// TODO assertion if pluginName or bundleName NULL _-> ERROR!!</span><span class="WHIT">
+<span class='line'>182</span> 
+<span class='line'>183</span> </span><span class="WHIT">					</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">Aloha.settings.basePath</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>184</span> </span><span class="WHIT">						</span><span class="NAME">bundlePath</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">Aloha.settings.basePath</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>185</span> </span><span class="WHIT">					</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>186</span> 
+<span class='line'>187</span> </span><span class="WHIT">					</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">Aloha.settings.bundles</span><span class="WHIT"> </span><span class="PUNC">&&</span><span class="WHIT"> </span><span class="NAME">Aloha.settings.bundles</span><span class="PUNC">[</span><span class="NAME">bundleName</span><span class="PUNC">]</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>188</span> </span><span class="WHIT">						</span><span class="NAME">bundlePath</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">Aloha.settings.bundles</span><span class="PUNC">[</span><span class="NAME">bundleName</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>189</span> </span><span class="WHIT">					</span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>190</span> </span><span class="WHIT">						</span><span class="NAME">bundlePath</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="STRN">'../plugins/'</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">bundleName</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>191</span> </span><span class="WHIT">					</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>192</span> 
+<span class='line'>193</span> </span><span class="WHIT">					</span><span class="NAME">pluginNames.push</span><span class="PUNC">(</span><span class="NAME">pluginName</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>194</span> </span><span class="WHIT">					</span><span class="NAME">paths</span><span class="PUNC">[</span><span class="NAME">pluginName</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">bundlePath</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">'/'</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">pluginName</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">'/lib'</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>195</span> 
+<span class='line'>196</span> </span><span class="WHIT">					</span><span class="NAME">pathsToPlugins</span><span class="PUNC">[</span><span class="NAME">pluginName</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">bundlePath</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">'/'</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">pluginName</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>197</span> 
+<span class='line'>198</span> </span><span class="WHIT">					</span><span class="COMM">// As the "nls" path lies NOT inside /lib/, but is a sibling to /lib/, we need</span><span class="WHIT">
+<span class='line'>199</span> </span><span class="WHIT">					</span><span class="COMM">// to register it explicitely. The same goes for the "css" folder.</span><span class="WHIT">
+<span class='line'>200</span> </span><span class="WHIT">					</span><span class="NAME">jQuery.each</span><span class="PUNC">(</span><span class="PUNC">[</span><span class="STRN">'nls'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'css'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'vendor'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'res'</span><span class="PUNC">]</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>201</span> </span><span class="WHIT">						</span><span class="NAME">paths</span><span class="PUNC">[</span><span class="NAME">pluginName</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">'/'</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">bundlePath</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">'/'</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">pluginName</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">'/'</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>202</span> </span><span class="WHIT">					</span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>203</span> 
+<span class='line'>204</span> </span><span class="WHIT">					</span><span class="NAME">requiredInitializers.push</span><span class="PUNC">(</span><span class="NAME">pluginName</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">'/'</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">pluginName</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">'-plugin'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>205</span> </span><span class="WHIT">				</span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>206</span> 
+<span class='line'>207</span> </span><span class="WHIT">				</span><span class="NAME">this.loadedPlugins</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">pluginNames</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>208</span> </span><span class="WHIT">				</span><span class="NAME">this.requirePaths</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">paths</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>209</span> </span><span class="WHIT">				
+<span class='line'>210</span> 				</span><span class="COMM">// Main Require.js loading call, which fetches all the plugins.</span><span class="WHIT">
+<span class='line'>211</span> </span><span class="WHIT">				</span><span class="NAME">require</span><span class="PUNC">(</span><span class="WHIT">
+<span class='line'>212</span> </span><span class="WHIT">					</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>213</span> </span><span class="WHIT">						</span><span class="NAME">context</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">'aloha'</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>214</span> </span><span class="WHIT">						</span><span class="NAME">paths</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">paths</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>215</span> </span><span class="WHIT">						</span><span class="NAME">locale</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">this.settings.locale</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="NAME">this.defaults.locale</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="STRN">'en'</span><span class="WHIT">
+<span class='line'>216</span> </span><span class="WHIT">					</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>217</span> </span><span class="WHIT">					</span><span class="NAME">requiredInitializers</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>218</span> </span><span class="WHIT">					</span><span class="NAME">next</span><span class="WHIT">
+<span class='line'>219</span> </span><span class="WHIT">				</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>220</span> 
+<span class='line'>221</span> </span><span class="WHIT">				</span><span class="NAME">pluginPaths</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">pathsToPlugins</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>222</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>223</span> </span><span class="WHIT">				</span><span class="NAME">next</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>224</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>225</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>226</span> 
+<span class='line'>227</span> </span><span class="WHIT">		</span><span class="COMM">/**
+<span class='line'>228</span> 		 * Fetches plugins the user wants to have loaded. Returns all plugins the user
+<span class='line'>229</span> 		 * has specified with the data-plugins property as array, with the bundle
+<span class='line'>230</span> 		 * name in front.
+<span class='line'>231</span> 		 *
+<span class='line'>232</span> 		 * @return array
+<span class='line'>233</span> 		 * @internal
+<span class='line'>234</span> 		 */</span><span class="WHIT">
+<span class='line'>235</span> </span><span class="WHIT">		</span><span class="NAME">getPluginsToBeLoaded</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>236</span> </span><span class="WHIT">			</span><span class="COMM">// look for data-aloha-plugins attributes and load values</span><span class="WHIT">
+<span class='line'>237</span> </span><span class="WHIT">			</span><span class="KEYW">var</span><span class="WHIT">
+<span class='line'>238</span> </span><span class="WHIT">				</span><span class="NAME">plugins</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">jQuery</span><span class="PUNC">(</span><span class="STRN">'[data-aloha-plugins]'</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">data</span><span class="PUNC">(</span><span class="STRN">'aloha-plugins'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>239</span> 
+<span class='line'>240</span> </span><span class="WHIT">			</span><span class="COMM">// Determine Plugins</span><span class="WHIT">
+<span class='line'>241</span> </span><span class="WHIT">			</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="KEYW">typeof</span><span class="WHIT"> </span><span class="NAME">plugins</span><span class="WHIT"> </span><span class="PUNC">===</span><span class="WHIT"> </span><span class="STRN">'string'</span><span class="WHIT"> </span><span class="PUNC">&&</span><span class="WHIT"> </span><span class="NAME">plugins</span><span class="WHIT"> </span><span class="PUNC">!==</span><span class="WHIT"> </span><span class="STRN">""</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>242</span> </span><span class="WHIT">				</span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">plugins.replace</span><span class="PUNC">(</span><span class="REGX">/\s+/g</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">''</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">split</span><span class="PUNC">(</span><span class="STRN">','</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>243</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>244</span> </span><span class="WHIT">			</span><span class="COMM">// Return</span><span class="WHIT">
+<span class='line'>245</span> </span><span class="WHIT">			</span><span class="KEYW">return</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>246</span> </span><span class="WHIT">			
+<span class='line'>247</span> 		</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>248</span> 
+<span class='line'>249</span> </span><span class="WHIT">		</span><span class="COMM">/**
+<span class='line'>250</span> 		 * Returns list of loaded plugins (without Bundle name)
+<span class='line'>251</span> 		 *
+<span class='line'>252</span> 		 * @return array
+<span class='line'>253</span> 		 */</span><span class="WHIT">
+<span class='line'>254</span> </span><span class="WHIT">		</span><span class="NAME">getLoadedPlugins</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>255</span> </span><span class="WHIT">			</span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">this.loadedPlugins</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>256</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>257</span> 
+<span class='line'>258</span> <span class='line'>259</span> </span><span class="WHIT">		</span><span class="COMM">/**
+<span class='line'>260</span> 		 * Returns true if a certain plugin is loaded, false otherwise.
+<span class='line'>261</span> 		 */</span><span class="WHIT">
+<span class='line'>262</span> </span><span class="WHIT">		</span><span class="NAME">isPluginLoaded</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">pluginName</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>263</span> </span><span class="WHIT">			</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">found</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>264</span> </span><span class="WHIT">			</span><span class="NAME">jQuery.each</span><span class="PUNC">(</span><span class="NAME">this.loadedPlugins</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>265</span> </span><span class="WHIT">				</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">pluginName.toString</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">===</span><span class="WHIT"> </span><span class="NAME">this.toString</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>266</span> </span><span class="WHIT">					</span><span class="NAME">found</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>267</span> </span><span class="WHIT">				</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>268</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>269</span> </span><span class="WHIT">			</span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">found</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>270</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>271</span> 
+<span class='line'>272</span> </span><span class="WHIT">		</span><span class="COMM">/**
+<span class='line'>273</span> 		 * Initialise Aloha
+<span class='line'>274</span> 		 */</span><span class="WHIT">
+<span class='line'>275</span> </span><span class="WHIT">		</span><span class="NAME">initAloha</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">next</span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>276</span> </span><span class="WHIT">			</span><span class="COMM">// check browser version on init</span><span class="WHIT">
+<span class='line'>277</span> </span><span class="WHIT">			</span><span class="COMM">// this has to be revamped, as</span><span class="WHIT">
+<span class='line'>278</span> </span><span class="WHIT">			</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">jQuery.browser.webkit</span><span class="WHIT"> </span><span class="PUNC">&&</span><span class="WHIT"> </span><span class="NAME">parseFloat</span><span class="PUNC">(</span><span class="NAME">jQuery.browser.version</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">&lt;</span><span class="WHIT"> </span><span class="NUMB">532.5</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="COMM">// Chrome/Safari 4</span><span class="WHIT">
+<span class='line'>279</span> </span><span class="WHIT">				</span><span class="NAME">jQuery.browser.mozilla</span><span class="WHIT"> </span><span class="PUNC">&&</span><span class="WHIT"> </span><span class="NAME">parseFloat</span><span class="PUNC">(</span><span class="NAME">jQuery.browser.version</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">&lt;</span><span class="WHIT"> </span><span class="NUMB">1.9</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="COMM">// FF 3.5</span><span class="WHIT">
+<span class='line'>280</span> </span><span class="WHIT">				</span><span class="NAME">jQuery.browser.msie</span><span class="WHIT"> </span><span class="PUNC">&&</span><span class="WHIT"> </span><span class="NAME">jQuery.browser.version</span><span class="WHIT"> </span><span class="PUNC">&lt;</span><span class="WHIT"> </span><span class="NUMB">7</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="COMM">// IE 7</span><span class="WHIT">
+<span class='line'>281</span> </span><span class="WHIT">				</span><span class="NAME">jQuery.browser.opera</span><span class="WHIT"> </span><span class="PUNC">&&</span><span class="WHIT"> </span><span class="NAME">jQuery.browser.version</span><span class="WHIT"> </span><span class="PUNC">&lt;</span><span class="WHIT"> </span><span class="NUMB">11</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT"> </span><span class="COMM">// right now, Opera needs some work</span><span class="WHIT">
+<span class='line'>282</span> </span><span class="WHIT">				</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">window.console</span><span class="WHIT"> </span><span class="PUNC">&&</span><span class="WHIT"> </span><span class="NAME">window.console.log</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>283</span> </span><span class="WHIT">					</span><span class="NAME">window.console.log</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="STRN">'Your browser is not supported.'</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>284</span> </span><span class="WHIT">				</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>285</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>286</span> 
+<span class='line'>287</span> </span><span class="WHIT">			</span><span class="COMM">// register the body click event to blur editables</span><span class="WHIT">
+<span class='line'>288</span> </span><span class="WHIT">			</span><span class="NAME">jQuery</span><span class="PUNC">(</span><span class="STRN">'html'</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">mousedown</span><span class="PUNC">(</span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">e</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>289</span> </span><span class="WHIT">				</span><span class="COMM">// if an Ext JS modal is visible, we don't want to loose the focus on</span><span class="WHIT">
+<span class='line'>290</span> </span><span class="WHIT">				</span><span class="COMM">// the editable as we assume that the user must have clicked somewhere</span><span class="WHIT">
+<span class='line'>291</span> </span><span class="WHIT">				</span><span class="COMM">// in the modal... where else could he click?</span><span class="WHIT">
+<span class='line'>292</span> </span><span class="WHIT">				</span><span class="COMM">// loosing the editable focus in this case hinders correct table</span><span class="WHIT">
+<span class='line'>293</span> </span><span class="WHIT">				</span><span class="COMM">// column/row deletion, as the table module will clean it's selection</span><span class="WHIT">
+<span class='line'>294</span> </span><span class="WHIT">				</span><span class="COMM">// as soon as the editable is deactivated. Fusubscriberthermore you'd have to</span><span class="WHIT">
+<span class='line'>295</span> </span><span class="WHIT">				</span><span class="COMM">// refocus the editable again, which is just strange UX</span><span class="WHIT">
+<span class='line'>296</span> </span><span class="WHIT">				</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">Aloha.activeEditable</span><span class="WHIT"> </span><span class="PUNC">&&</span><span class="WHIT"> </span><span class="PUNC">!</span><span class="NAME">Aloha.isMessageVisible</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">&&</span><span class="WHIT"> </span><span class="PUNC">!</span><span class="NAME">Aloha.eventHandled</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>297</span> </span><span class="WHIT">					</span><span class="NAME">Aloha.activeEditable.blur</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>298</span> </span><span class="WHIT">					</span><span class="NAME">Aloha.activeEditable</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>299</span> </span><span class="WHIT">				</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>300</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">mouseup</span><span class="PUNC">(</span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">e</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>301</span> </span><span class="WHIT">				</span><span class="NAME">Aloha.eventHandled</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>302</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>303</span> </span><span class="WHIT">			
+<span class='line'>304</span> 			</span><span class="COMM">// Initialise the base path to the aloha files</span><span class="WHIT">
+<span class='line'>305</span> </span><span class="WHIT">			</span><span class="NAME">Aloha.settings.base</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">Aloha.getAlohaUrl</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>306</span> 
+<span class='line'>307</span> </span><span class="WHIT">			</span><span class="COMM">// initialize the Log</span><span class="WHIT">
+<span class='line'>308</span> </span><span class="WHIT">			</span><span class="NAME">Aloha.Log.init</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>309</span> 
+<span class='line'>310</span> </span><span class="WHIT">			</span><span class="COMM">// initialize the error handler for general javascript errors</span><span class="WHIT">
+<span class='line'>311</span> </span><span class="WHIT">			</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">Aloha.settings.errorhandling</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>312</span> </span><span class="WHIT">				</span><span class="NAME">window.onerror</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">msg</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">url</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">linenumber</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>313</span> </span><span class="WHIT">					</span><span class="NAME">Aloha.Log.error</span><span class="PUNC">(</span><span class="NAME">Aloha</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'Error message: '</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">msg</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">'\nURL: '</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">url</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">'\nLine Number: '</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">linenumber</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>314</span> </span><span class="WHIT">					</span><span class="COMM">// TODO eventually add a message to the message line?</span><span class="WHIT">
+<span class='line'>315</span> </span><span class="WHIT">					</span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>316</span> </span><span class="WHIT">				</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>317</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>318</span> 
+<span class='line'>319</span> </span><span class="WHIT">			</span><span class="COMM">// OS detection</span><span class="WHIT">
+<span class='line'>320</span> </span><span class="WHIT">			</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">navigator.appVersion.indexOf</span><span class="PUNC">(</span><span class="STRN">'Win'</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">!=</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="NUMB">1</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>321</span> </span><span class="WHIT">				</span><span class="NAME">Aloha.OSName</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="STRN">'Win'</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>322</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>323</span> </span><span class="WHIT">			</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">navigator.appVersion.indexOf</span><span class="PUNC">(</span><span class="STRN">'Mac'</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">!=</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="NUMB">1</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>324</span> </span><span class="WHIT">				</span><span class="NAME">Aloha.OSName</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="STRN">'Mac'</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>325</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>326</span> </span><span class="WHIT">			</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">navigator.appVersion.indexOf</span><span class="PUNC">(</span><span class="STRN">'X11'</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">!=</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="NUMB">1</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>327</span> </span><span class="WHIT">				</span><span class="NAME">Aloha.OSName</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="STRN">'Unix'</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>328</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>329</span> </span><span class="WHIT">			</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">navigator.appVersion.indexOf</span><span class="PUNC">(</span><span class="STRN">'Linux'</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">!=</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="NUMB">1</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>330</span> </span><span class="WHIT">				</span><span class="NAME">Aloha.OSName</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="STRN">'Linux'</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>331</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>332</span> 
+<span class='line'>333</span> </span><span class="WHIT">			</span><span class="KEYW">try</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>334</span> </span><span class="WHIT">				</span><span class="COMM">// this will disable browsers image resizing facilities</span><span class="WHIT">
+<span class='line'>335</span> </span><span class="WHIT">				</span><span class="COMM">// disable resize handles</span><span class="WHIT">
+<span class='line'>336</span> </span><span class="WHIT">				</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">supported</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>337</span> </span><span class="WHIT">				</span><span class="KEYW">try</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>338</span> </span><span class="WHIT">					</span><span class="NAME">supported</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">document.queryCommandSupported</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="STRN">'enableObjectResizing'</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>339</span> </span><span class="WHIT">				</span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">catch</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">e</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>340</span> </span><span class="WHIT">					</span><span class="NAME">supported</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>341</span> </span><span class="WHIT">					</span><span class="NAME">Aloha.Log.log</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="STRN">'enableObjectResizing is not supported.'</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>342</span> </span><span class="WHIT">				</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>343</span> </span><span class="WHIT">				
+<span class='line'>344</span> 				</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">supported</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>345</span> </span><span class="WHIT">					</span><span class="NAME">document.execCommand</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="STRN">'enableObjectResizing'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>346</span> </span><span class="WHIT">					</span><span class="NAME">Aloha.Log.log</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="STRN">'enableObjectResizing disabled.'</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>347</span> </span><span class="WHIT">				</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>348</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">catch</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">e</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>349</span> </span><span class="WHIT">				</span><span class="NAME">Aloha.Log.error</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">e</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'Could not disable enableObjectResizing'</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>350</span> </span><span class="WHIT">				</span><span class="COMM">// this is just for others, who will not support disabling enableObjectResizing</span><span class="WHIT">
+<span class='line'>351</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>352</span> </span><span class="WHIT">			</span><span class="COMM">// Forward</span><span class="WHIT">
+<span class='line'>353</span> </span><span class="WHIT">			</span><span class="NAME">next</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>354</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>355</span> 
+<span class='line'>356</span> </span><span class="WHIT">		</span><span class="COMM">/**
+<span class='line'>357</span> 		 * Loads plugins Aloha
+<span class='line'>358</span> 		 * @return void
+<span class='line'>359</span> 		 */</span><span class="WHIT">
+<span class='line'>360</span> </span><span class="WHIT">		</span><span class="NAME">initPlugins</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">next</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>361</span> </span><span class="WHIT">			</span><span class="NAME">PluginManager.init</span><span class="PUNC">(</span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>362</span> </span><span class="WHIT">				</span><span class="NAME">next</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>363</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">this.getLoadedPlugins</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>364</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>365</span> 
+<span class='line'>366</span> </span><span class="WHIT">		</span><span class="COMM">/**
+<span class='line'>367</span> 		 * Loads GUI components
+<span class='line'>368</span> 		 * @return void
+<span class='line'>369</span> 		 */</span><span class="WHIT">
+<span class='line'>370</span> </span><span class="WHIT">		</span><span class="NAME">initGui</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">next</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>371</span> </span><span class="WHIT">			
+<span class='line'>372</span> 			</span><span class="NAME">Aloha.RepositoryManager.init</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>373</span> 
+<span class='line'>374</span> </span><span class="WHIT">			</span><span class="COMM">// activate registered editables</span><span class="WHIT">
+<span class='line'>375</span> </span><span class="WHIT">			</span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">editablesLength</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">Aloha.editables.length</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">&lt;</span><span class="WHIT"> </span><span class="NAME">editablesLength</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="PUNC">++</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>376</span> </span><span class="WHIT">				</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="PUNC">!</span><span class="NAME">Aloha.editables</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">ready</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>377</span> </span><span class="WHIT">					</span><span class="NAME">Aloha.editables</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">init</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>378</span> </span><span class="WHIT">				</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>379</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>380</span> 
+<span class='line'>381</span> </span><span class="WHIT">			</span><span class="COMM">// Forward</span><span class="WHIT">
+<span class='line'>382</span> </span><span class="WHIT">			</span><span class="NAME">next</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>383</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>384</span> 
+<span class='line'>385</span> </span><span class="WHIT">		</span><span class="COMM">/**
+<span class='line'>386</span> 		 * Activates editable and deactivates all other Editables
+<span class='line'>387</span> 		 * @param {Editable} editable the Editable to be activated
+<span class='line'>388</span> 		 * @return void
+<span class='line'>389</span> 		 */</span><span class="WHIT">
+<span class='line'>390</span> </span><span class="WHIT">		</span><span class="NAME">activateEditable</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">editable</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>391</span> 
+<span class='line'>392</span> </span><span class="WHIT">			</span><span class="COMM">// blur all editables, which are currently active</span><span class="WHIT">
+<span class='line'>393</span> </span><span class="WHIT">			</span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">editablesLength</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">Aloha.editables.length</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">&lt;</span><span class="WHIT"> </span><span class="NAME">editablesLength</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="PUNC">++</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>394</span> </span><span class="WHIT">				</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">Aloha.editables</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">!=</span><span class="WHIT"> </span><span class="NAME">editable</span><span class="WHIT"> </span><span class="PUNC">&&</span><span class="WHIT"> </span><span class="NAME">Aloha.editables</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">isActive</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>395</span> </span><span class="WHIT">					</span><span class="NAME">Aloha.editables</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">blur</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>396</span> </span><span class="WHIT">				</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>397</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>398</span> 
+<span class='line'>399</span> </span><span class="WHIT">			</span><span class="NAME">Aloha.activeEditable</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">editable</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>400</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>401</span> 
+<span class='line'>402</span> </span><span class="WHIT">		</span><span class="COMM">/**
+<span class='line'>403</span> 		 * Returns the current Editable
+<span class='line'>404</span> 		 * @return {Editable} returns the active Editable
+<span class='line'>405</span> 		 */</span><span class="WHIT">
+<span class='line'>406</span> </span><span class="WHIT">		</span><span class="NAME">getActiveEditable</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>407</span> </span><span class="WHIT">			</span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">Aloha.activeEditable</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>408</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>409</span> 
+<span class='line'>410</span> </span><span class="WHIT">		</span><span class="COMM">/**
+<span class='line'>411</span> 		 * deactivated the current Editable
+<span class='line'>412</span> 		 * @return void
+<span class='line'>413</span> 		 */</span><span class="WHIT">
+<span class='line'>414</span> </span><span class="WHIT">		</span><span class="NAME">deactivateEditable</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>415</span> 
+<span class='line'>416</span> </span><span class="WHIT">			</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="KEYW">typeof</span><span class="WHIT"> </span><span class="NAME">Aloha.activeEditable</span><span class="WHIT"> </span><span class="PUNC">===</span><span class="WHIT"> </span><span class="STRN">'undefined'</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="NAME">Aloha.activeEditable</span><span class="WHIT"> </span><span class="PUNC">===</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>417</span> </span><span class="WHIT">				</span><span class="KEYW">return</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>418</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>419</span> 
+<span class='line'>420</span> </span><span class="WHIT">			</span><span class="COMM">// blur the editable</span><span class="WHIT">
+<span class='line'>421</span> </span><span class="WHIT">			</span><span class="NAME">Aloha.activeEditable.blur</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>422</span> </span><span class="WHIT">			</span><span class="NAME">Aloha.activeEditable</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>423</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>424</span> 
+<span class='line'>425</span> </span><span class="WHIT">		</span><span class="COMM">/**
+<span class='line'>426</span> 		 * Gets an editable by an ID or null if no Editable with that ID registered.
+<span class='line'>427</span> 		 * @param {string} id the element id to look for.
+<span class='line'>428</span> 		 * @return {Aloha.Editable} editable
+<span class='line'>429</span> 		 */</span><span class="WHIT">
+<span class='line'>430</span> </span><span class="WHIT">		</span><span class="NAME">getEditableById</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">id</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>431</span> 
+<span class='line'>432</span> </span><span class="WHIT">			</span><span class="COMM">// if the element is a textarea than route to the editable div</span><span class="WHIT">
+<span class='line'>433</span> </span><span class="WHIT">			</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">jQuery</span><span class="PUNC">(</span><span class="STRN">'#'</span><span class="PUNC">+</span><span class="NAME">id</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">get</span><span class="PUNC">(</span><span class="NUMB">0</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">nodeName.toLowerCase</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">===</span><span class="WHIT"> </span><span class="STRN">'textarea'</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>434</span> </span><span class="WHIT">				</span><span class="NAME">id</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">id</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">'-aloha'</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>435</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>436</span> 
+<span class='line'>437</span> </span><span class="WHIT">			</span><span class="COMM">// serach all editables for id</span><span class="WHIT">
+<span class='line'>438</span> </span><span class="WHIT">			</span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">editablesLength</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">Aloha.editables.length</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">&lt;</span><span class="WHIT"> </span><span class="NAME">editablesLength</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="PUNC">++</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>439</span> </span><span class="WHIT">				</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">Aloha.editables</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">getId</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="NAME">id</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>440</span> </span><span class="WHIT">					</span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">Aloha.editables</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>441</span> </span><span class="WHIT">				</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>442</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>443</span> 
+<span class='line'>444</span> </span><span class="WHIT">			</span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>445</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>446</span> 
+<span class='line'>447</span> </span><span class="WHIT">		</span><span class="COMM">/**
+<span class='line'>448</span> 		 * Checks wheater an object is a registered Aloha Editable.
+<span class='line'>449</span> 		 * @param {jQuery} obj the jQuery object to be checked.
+<span class='line'>450</span> 		 * @return {boolean}
+<span class='line'>451</span> 		 */</span><span class="WHIT">
+<span class='line'>452</span> </span><span class="WHIT">		</span><span class="NAME">isEditable</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">obj</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>453</span> </span><span class="WHIT">			</span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">i</span><span class="PUNC">=</span><span class="NUMB">0</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">editablesLength</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">Aloha.editables.length</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">&lt;</span><span class="WHIT"> </span><span class="NAME">editablesLength</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="PUNC">++</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>454</span> </span><span class="WHIT">				</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">Aloha.editables</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">originalObj.get</span><span class="PUNC">(</span><span class="NUMB">0</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">===</span><span class="WHIT"> </span><span class="NAME">obj</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>455</span> </span><span class="WHIT">					</span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>456</span> </span><span class="WHIT">				</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>457</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>458</span> </span><span class="WHIT">			</span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>459</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>460</span> 
+<span class='line'>461</span> </span><span class="WHIT">		</span><span class="COMM">/**
+<span class='line'>462</span> 		 * Logs a message to the console
+<span class='line'>463</span> 		 * @param level Level of the log ("error", "warn" or "info", "debug")
+<span class='line'>464</span> 		 * @param component Component that calls the log
+<span class='line'>465</span> 		 * @param message log message
+<span class='line'>466</span> 		 * @return void
+<span class='line'>467</span> 		 * @hide
+<span class='line'>468</span> 		 */</span><span class="WHIT">
+<span class='line'>469</span> </span><span class="WHIT">		</span><span class="NAME">log</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">level</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">component</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">message</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>470</span> </span><span class="WHIT">			</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="KEYW">typeof</span><span class="WHIT"> </span><span class="NAME">Aloha.Log</span><span class="WHIT"> </span><span class="PUNC">!==</span><span class="WHIT"> </span><span class="STRN">"undefined"</span><span class="PUNC">)</span><span class="WHIT">
+<span class='line'>471</span> </span><span class="WHIT">				</span><span class="NAME">Aloha.Log.log</span><span class="PUNC">(</span><span class="NAME">level</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">component</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">message</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>472</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>473</span> </span><span class="WHIT">		
+<span class='line'>474</span> 		</span><span class="COMM">/**
+<span class='line'>475</span> 		 * Register the given editable
+<span class='line'>476</span> 		 * @param editable editable to register
+<span class='line'>477</span> 		 * @return void
+<span class='line'>478</span> 		 * @hide
+<span class='line'>479</span> 		 */</span><span class="WHIT">
+<span class='line'>480</span> </span><span class="WHIT">		</span><span class="NAME">registerEditable</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">editable</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>481</span> </span><span class="WHIT">			</span><span class="NAME">Aloha.editables.push</span><span class="PUNC">(</span><span class="NAME">editable</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>482</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>483</span> 
+<span class='line'>484</span> </span><span class="WHIT">		</span><span class="COMM">/**
+<span class='line'>485</span> 		 * Unregister the given editable. It will be deactivated and removed from editables.
+<span class='line'>486</span> 		 * @param editable editable to unregister
+<span class='line'>487</span> 		 * @return void
+<span class='line'>488</span> 		 * @hide
+<span class='line'>489</span> 		 */</span><span class="WHIT">
+<span class='line'>490</span> </span><span class="WHIT">		</span><span class="NAME">unregisterEditable</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">editable</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>491</span> 
+<span class='line'>492</span> </span><span class="WHIT">			</span><span class="COMM">// Find the index</span><span class="WHIT">
+<span class='line'>493</span> </span><span class="WHIT">			</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">id</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">Aloha.editables.indexOf</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">editable</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>494</span> </span><span class="WHIT">			</span><span class="COMM">// Remove it if really found!</span><span class="WHIT">
+<span class='line'>495</span> </span><span class="WHIT">			</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">id</span><span class="WHIT"> </span><span class="PUNC">!=</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="NUMB">1</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>496</span> </span><span class="WHIT">				</span><span class="NAME">Aloha.editables.splice</span><span class="PUNC">(</span><span class="NAME">id</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NUMB">1</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>497</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>498</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>499</span> 
+<span class='line'>500</span> </span><span class="WHIT">		</span><span class="COMM">/**
+<span class='line'>501</span> 		 * String representation
+<span class='line'>502</span> 		 * @hide
+<span class='line'>503</span> 		 */</span><span class="WHIT">
+<span class='line'>504</span> </span><span class="WHIT">		</span><span class="NAME">toString</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>505</span> </span><span class="WHIT">			</span><span class="KEYW">return</span><span class="WHIT"> </span><span class="STRN">'Aloha'</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>506</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>507</span> 
+<span class='line'>508</span> </span><span class="WHIT">		</span><span class="COMM">/**
+<span class='line'>509</span> 		 * Check whether at least one editable was modified
+<span class='line'>510</span> 		 * @method
+<span class='line'>511</span> 		 * @return {boolean} true when at least one editable was modified, false if not
+<span class='line'>512</span> 		 */</span><span class="WHIT">
+<span class='line'>513</span> </span><span class="WHIT">		</span><span class="NAME">isModified</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>514</span> </span><span class="WHIT">			</span><span class="COMM">// check if something needs top be saved</span><span class="WHIT">
+<span class='line'>515</span> </span><span class="WHIT">			</span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">&lt;</span><span class="WHIT"> </span><span class="NAME">Aloha.editables.length</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="PUNC">++</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>516</span> </span><span class="WHIT">				</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">Aloha.editables</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">isModified</span><span class="WHIT"> </span><span class="PUNC">&&</span><span class="WHIT"> </span><span class="NAME">Aloha.editables</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">isModified</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>517</span> </span><span class="WHIT">					</span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>518</span> </span><span class="WHIT">				</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>519</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>520</span> 
+<span class='line'>521</span> </span><span class="WHIT">			</span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>522</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>523</span> 
+<span class='line'>524</span> </span><span class="WHIT">		</span><span class="COMM">/**
+<span class='line'>525</span> 		 * Determines the Aloha Url
+<span class='line'>526</span> 		 * @method
+<span class='line'>527</span> 		 * @return {String} alohaUrl
+<span class='line'>528</span> 		 */</span><span class="WHIT">
+<span class='line'>529</span> </span><span class="WHIT">		</span><span class="NAME">getAlohaUrl</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">suffix</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>530</span> </span><span class="WHIT">			</span><span class="COMM">// aloha base path is defined by a script tag with 2 data attributes</span><span class="WHIT">
+<span class='line'>531</span> </span><span class="WHIT">			</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">requireJs</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">jQuery</span><span class="PUNC">(</span><span class="STRN">'[data-aloha-plugins]'</span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>532</span> </span><span class="WHIT">				</span><span class="NAME">baseUrl</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">requireJs.length</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">?</span><span class="WHIT"> </span><span class="NAME">requireJs</span><span class="PUNC">[</span><span class="NUMB">0</span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">src.replace</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="REGX">/\/?aloha.js$/</span><span class="WHIT"> </span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">''</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">''</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>533</span> </span><span class="WHIT">				
+<span class='line'>534</span> 			</span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">baseUrl</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>535</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>536</span> 
+<span class='line'>537</span> </span><span class="WHIT">		</span><span class="COMM">/**
+<span class='line'>538</span> 		 * Gets the Plugin Url
+<span class='line'>539</span> 		 * @method
+<span class='line'>540</span> 		 * @param {String} name
+<span class='line'>541</span> 		 * @return {String} url
+<span class='line'>542</span> 		 */</span><span class="WHIT">
+<span class='line'>543</span> </span><span class="WHIT">		</span><span class="NAME">getPluginUrl</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">name</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>544</span> </span><span class="WHIT">			</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">url</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>545</span> 
+<span class='line'>546</span> </span><span class="WHIT">			</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">name</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>547</span> </span><span class="WHIT">				</span><span class="NAME">url</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">pluginPaths</span><span class="PUNC">[</span><span class="NAME">name</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>548</span> </span><span class="WHIT">				</span><span class="KEYW">if</span><span class="PUNC">(</span><span class="NAME">url</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>549</span> </span><span class="WHIT">					</span><span class="COMM">//Check if url is absolute and attach base url if it is not</span><span class="WHIT">
+<span class='line'>550</span> </span><span class="WHIT">					</span><span class="KEYW">if</span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">url.match</span><span class="PUNC">(</span><span class="STRN">"^(\/|http[s]?:).*"</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>551</span> </span><span class="WHIT">						</span><span class="NAME">url</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">Aloha.getAlohaUrl</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">'/'</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">url</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>552</span> </span><span class="WHIT">					</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>553</span> </span><span class="WHIT">				</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>554</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>555</span> 
+<span class='line'>556</span> </span><span class="WHIT">			</span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">url</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>557</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>558</span> 
+<span class='line'>559</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>560</span> 
+<span class='line'>561</span> </span><span class="WHIT">	</span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">Aloha</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>562</span> </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>563</span> </span></pre></body></html>

@@ -1,0 +1,284 @@
+<html><head><meta http-equiv="content-type" content="text/html; charset=utf8"> <style>
+	.KEYW {color: #933;}
+	.COMM {color: #bbb; font-style: italic;}
+	.NUMB {color: #393;}
+	.STRN {color: #393;}
+	.REGX {color: #339;}
+	.line {border-right: 1px dotted #666; color: #666; font-style: normal;}
+	</style></head><body><pre><span class='line'>  1</span> <span class="COMM">/*!
+<span class='line'>  2</span> * This file is part of Aloha Editor Project http://aloha-editor.org
+<span class='line'>  3</span> * Copyright © 2010-2011 Gentics Software GmbH, aloha@gentics.com
+<span class='line'>  4</span> * Contributors http://aloha-editor.org/contribution.php 
+<span class='line'>  5</span> * Licensed unter the terms of http://www.aloha-editor.org/license.html
+<span class='line'>  6</span> */</span><span class="COMM">/*
+<span class='line'>  7</span> * Aloha Editor is free software: you can redistribute it and/or modify
+<span class='line'>  8</span> * it under the terms of the GNU Affero General Public License as published by
+<span class='line'>  9</span> * the Free Software Foundation, either version 3 of the License, or
+<span class='line'> 10</span> * (at your option) any later version.*
+<span class='line'> 11</span> *
+<span class='line'> 12</span> * Aloha Editor is distributed in the hope that it will be useful,
+<span class='line'> 13</span> * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<span class='line'> 14</span> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+<span class='line'> 15</span> * GNU Affero General Public License for more details.
+<span class='line'> 16</span> *
+<span class='line'> 17</span> * You should have received a copy of the GNU Affero General Public License
+<span class='line'> 18</span> * along with this program. If not, see &lt;http://www.gnu.org/licenses/>.
+<span class='line'> 19</span> */</span><span class="WHIT">
+<span class='line'> 20</span> 
+<span class='line'> 21</span> </span><span class="NAME">define</span><span class="PUNC">(</span><span class="WHIT">
+<span class='line'> 22</span> </span><span class="PUNC">[</span><span class="STRN">'aloha/core'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'aloha/jquery'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'util/class'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'aloha/pluginmanager'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'aloha/console'</span><span class="PUNC">]</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 23</span> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">Aloha</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">jQuery</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">Class</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">PluginManager</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">console</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 24</span> </span><span class="WHIT">	</span><span class="STRN">"use strict"</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 25</span> </span><span class="WHIT">	
+<span class='line'> 26</span> 	</span><span class="COMM">/**
+<span class='line'> 27</span> 	 * Abstract Plugin Object
+<span class='line'> 28</span> 	 * @namespace Aloha
+<span class='line'> 29</span> 	 * @class Plugin
+<span class='line'> 30</span> 	 * @constructor
+<span class='line'> 31</span> 	 * @param {String} pluginPrefix unique plugin prefix
+<span class='line'> 32</span> 	 */</span><span class="WHIT">
+<span class='line'> 33</span> </span><span class="WHIT">	</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">Plugin</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">Class.extend</span><span class="PUNC">(</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 34</span> </span><span class="WHIT">		
+<span class='line'> 35</span> 		</span><span class="NAME">name</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 36</span> 
+<span class='line'> 37</span> </span><span class="WHIT">		</span><span class="COMM">/**
+<span class='line'> 38</span> 		 * contains the plugin's default settings object
+<span class='line'> 39</span> 		 * @cfg {Object} default settings for the plugin
+<span class='line'> 40</span> 		 */</span><span class="WHIT">
+<span class='line'> 41</span> </span><span class="WHIT">		</span><span class="NAME">defaults</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 42</span> 
+<span class='line'> 43</span> </span><span class="WHIT">		</span><span class="COMM">/**
+<span class='line'> 44</span> 		 * contains the plugin's settings object
+<span class='line'> 45</span> 		 * @cfg {Object} settings the plugins settings stored in an object
+<span class='line'> 46</span> 		 */</span><span class="WHIT">
+<span class='line'> 47</span> </span><span class="WHIT">		</span><span class="NAME">settings</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 48</span> </span><span class="WHIT">		
+<span class='line'> 49</span> 		</span><span class="COMM">/**
+<span class='line'> 50</span> 		 * Names of other plugins which must be loaded in order for this plugin to
+<span class='line'> 51</span> 		 * function.
+<span class='line'> 52</span> 		 * @cfg {Array}
+<span class='line'> 53</span> 		 */</span><span class="WHIT">
+<span class='line'> 54</span> </span><span class="WHIT">		</span><span class="NAME">dependencies</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="PUNC">]</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 55</span> 
+<span class='line'> 56</span> </span><span class="WHIT">		</span><span class="NAME">_constructor</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">name</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 57</span> </span><span class="WHIT">			</span><span class="COMM">/**
+<span class='line'> 58</span> 			 * Settings of the plugin
+<span class='line'> 59</span> 			 */</span><span class="WHIT">
+<span class='line'> 60</span> </span><span class="WHIT">			</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="KEYW">typeof</span><span class="WHIT"> </span><span class="NAME">name</span><span class="WHIT"> </span><span class="PUNC">!==</span><span class="WHIT"> </span><span class="STRN">"string"</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 61</span> </span><span class="WHIT">				</span><span class="NAME">console.error</span><span class="PUNC">(</span><span class="STRN">'Cannot initialise unnamed plugin, skipping'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 62</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 63</span> </span><span class="WHIT">				</span><span class="NAME">this.name</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">name</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 64</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'> 65</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 66</span> 
+<span class='line'> 67</span> </span><span class="WHIT">		</span><span class="COMM">/**
+<span class='line'> 68</span> 		 * @return true if dependencies satisfied, false otherwise
+<span class='line'> 69</span> 		 */</span><span class="WHIT">
+<span class='line'> 70</span> </span><span class="WHIT">		</span><span class="NAME">checkDependencies</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 71</span> </span><span class="WHIT">			</span><span class="KEYW">var</span><span class="WHIT"> 
+<span class='line'> 72</span> 				</span><span class="NAME">dependenciesSatisfied</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">,</span><span class="WHIT"> 
+<span class='line'> 73</span> 				</span><span class="NAME">that</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 74</span> </span><span class="WHIT">			
+<span class='line'> 75</span> 			</span><span class="NAME">jQuery.each</span><span class="PUNC">(</span><span class="NAME">this.dependencies</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 76</span> </span><span class="WHIT">				
+<span class='line'> 77</span> 				</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">Aloha.isPluginLoaded</span><span class="PUNC">(</span><span class="KEYW">this</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 78</span> </span><span class="WHIT">					</span><span class="NAME">dependenciesSatisfied</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 79</span> </span><span class="WHIT">					</span><span class="NAME">console.error</span><span class="PUNC">(</span><span class="STRN">'plugin.'</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">that.name</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'Required plugin "'</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">'" not found.'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 80</span> </span><span class="WHIT">				</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'> 81</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 82</span> </span><span class="WHIT">			
+<span class='line'> 83</span> <span class='line'> 84</span> 			</span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">dependenciesSatisfied</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 85</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 86</span> 
+<span class='line'> 87</span> </span><span class="WHIT">		</span><span class="COMM">/**
+<span class='line'> 88</span> 		 * Init method of the plugin. Called from Aloha Core to initialize this plugin
+<span class='line'> 89</span> 		 * @return void
+<span class='line'> 90</span> 		 * @hide
+<span class='line'> 91</span> 		 */</span><span class="WHIT">
+<span class='line'> 92</span> </span><span class="WHIT">		</span><span class="NAME">init</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 93</span> 
+<span class='line'> 94</span> </span><span class="WHIT">		</span><span class="COMM">/**
+<span class='line'> 95</span> 		 * Get the configuration settings for an editable obj.
+<span class='line'> 96</span> 		 * Handles both conf arrays or conf objects
+<span class='line'> 97</span> 		 * &lt;ul>
+<span class='line'> 98</span> 		 * &lt;li>Array configuration parameters are:
+<span class='line'> 99</span> 		 * &lt;pre>
+<span class='line'>100</span> 		 * "list": {
+<span class='line'>101</span> 		 *		config : [ 'b', 'h1' ],
+<span class='line'>102</span> 		 *		editables : {
+<span class='line'>103</span> 		 *			'#title'	: [ ],
+<span class='line'>104</span> 		 *			'div'		: [ 'b', 'i' ],
+<span class='line'>105</span> 		 *			'.article'	: [ 'h1' ]
+<span class='line'>106</span> 		 *		}
+<span class='line'>107</span> 		 *	}
+<span class='line'>108</span> 		 * &lt;/pre>
+<span class='line'>109</span> 		 *
+<span class='line'>110</span> 		 * The hash keys of the editables are css selectors. For a
+<span class='line'>111</span> 		 *
+<span class='line'>112</span> 		 * &lt;pre>
+<span class='line'>113</span> 		 *  &lt;div class="article">content&lt;/div>
+<span class='line'>114</span> 		 * &lt;/pre>
+<span class='line'>115</span> 		 *
+<span class='line'>116</span> 		 *  the selectors 'div' and '.article' match and the returned configuration is
+<span class='line'>117</span> 		 *
+<span class='line'>118</span> 		 * &lt;pre>
+<span class='line'>119</span> 		 *  [ 'b', 'i', 'h1']
+<span class='line'>120</span> 		 * &lt;/pre>
+<span class='line'>121</span> 		 *
+<span class='line'>122</span> 		 * The '#title' object would return an empty configuration.
+<span class='line'>123</span> 		 *
+<span class='line'>124</span> 		 * &lt;pre>
+<span class='line'>125</span> 		 *  [ ]
+<span class='line'>126</span> 		 * &lt;/pre>
+<span class='line'>127</span> 		 *
+<span class='line'>128</span> 		 *  All other objects would get the 'config' configuration. If config is not set
+<span class='line'>129</span> 		 * the plugin default configuration is returned.
+<span class='line'>130</span> 		 *
+<span class='line'>131</span> 		 * &lt;pre>
+<span class='line'>132</span> 		 *  [ 'b', 'h1']
+<span class='line'>133</span> 		 * &lt;/pre>&lt;/li>
+<span class='line'>134</span> 		 * &lt;li>Object configuration parameters are :
+<span class='line'>135</span> 		 * &lt;pre>
+<span class='line'>136</span> 		 *	"image": {
+<span class='line'>137</span> 		 *		config : { 'img': { 'max_width': '50px',
+<span class='line'>138</span> 		 *		'max_height': '50px' }},
+<span class='line'>139</span> 		 *		editables : {
+<span class='line'>140</span> 		 *			'#title': {},
+<span class='line'>141</span> 		 *			'div': {'img': {}},
+<span class='line'>142</span> 		 *			'.article': {'img': { 'max_width': '150px',
+<span class='line'>143</span> 		 *			'max_height': '150px' }}
+<span class='line'>144</span> 		 *		}
+<span class='line'>145</span> 		 *	}
+<span class='line'>146</span> 		 * &lt;/pre>
+<span class='line'>147</span> 		 *  The '#title' object would return an empty configuration.&lt;br/>
+<span class='line'>148</span> 		 *  The 'div' object would return the default configuration.&lt;br/>
+<span class='line'>149</span> 		 *  the '.article' would return :
+<span class='line'>150</span> 		 *  &lt;pre>
+<span class='line'>151</span> 		 *		{'img': { 'max_width': '150px',
+<span class='line'>152</span> 		 *		'max_height': '150px' }}
+<span class='line'>153</span> 		 *  &lt;/pre>
+<span class='line'>154</span> 		 * &lt;/li>
+<span class='line'>155</span> 		 *
+<span class='line'>156</span> 		 * @param {jQuery} obj jQuery object of an Editable Object
+<span class='line'>157</span> 		 * @return {Array} config A Array with configuration entries
+<span class='line'>158</span> 		 */</span><span class="WHIT">
+<span class='line'>159</span> </span><span class="WHIT">		</span><span class="NAME">getEditableConfig</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">obj</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>160</span> </span><span class="WHIT">			</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">configObj</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>161</span> </span><span class="WHIT">				</span><span class="NAME">configSpecified</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>162</span> </span><span class="WHIT">				</span><span class="NAME">that</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>163</span> 
+<span class='line'>164</span> </span><span class="WHIT">			</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">this.settings.editables</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>165</span> </span><span class="WHIT">				</span><span class="COMM">// check if the editable's selector matches and if so add its configuration to object configuration</span><span class="WHIT">
+<span class='line'>166</span> </span><span class="WHIT">				</span><span class="NAME">jQuery.each</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">this.settings.editables</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">selector</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">selectorConfig</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>167</span> </span><span class="WHIT">					</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">obj.is</span><span class="PUNC">(</span><span class="NAME">selector</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>168</span> </span><span class="WHIT">						</span><span class="NAME">configSpecified</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>169</span> </span><span class="WHIT">						</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">selectorConfig</span><span class="WHIT"> </span><span class="KEYW">instanceof</span><span class="WHIT"> </span><span class="NAME">Array</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>170</span> </span><span class="WHIT">							</span><span class="NAME">configObj</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>171</span> </span><span class="WHIT">							</span><span class="NAME">configObj</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">jQuery.merge</span><span class="PUNC">(</span><span class="NAME">configObj</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">selectorConfig</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>172</span> </span><span class="WHIT">						</span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="KEYW">typeof</span><span class="WHIT"> </span><span class="NAME">selectorConfig</span><span class="WHIT"> </span><span class="PUNC">===</span><span class="WHIT"> </span><span class="STRN">"object"</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>173</span> </span><span class="WHIT">							</span><span class="NAME">configObj</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>174</span> </span><span class="WHIT">							</span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">k</span><span class="WHIT"> </span><span class="KEYW">in</span><span class="WHIT"> </span><span class="NAME">selectorConfig</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>175</span> </span><span class="WHIT">								</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">selectorConfig.hasOwnProperty</span><span class="PUNC">(</span><span class="NAME">k</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>176</span> </span><span class="WHIT">									</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">selectorConfig</span><span class="PUNC">[</span><span class="NAME">k</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="KEYW">instanceof</span><span class="WHIT"> </span><span class="NAME">Array</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>177</span> 
+<span class='line'>178</span> </span><span class="WHIT">									</span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="KEYW">typeof</span><span class="WHIT"> </span><span class="NAME">selectorConfig</span><span class="PUNC">[</span><span class="NAME">k</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">===</span><span class="WHIT"> </span><span class="STRN">"object"</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>179</span> </span><span class="WHIT">										</span><span class="NAME">configObj</span><span class="PUNC">[</span><span class="NAME">k</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>180</span> </span><span class="WHIT">										</span><span class="NAME">configObj</span><span class="PUNC">[</span><span class="NAME">k</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">jQuery.extend</span><span class="PUNC">(</span><span class="KEYW">true</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">configObj</span><span class="PUNC">[</span><span class="NAME">k</span><span class="PUNC">]</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">that.config</span><span class="PUNC">[</span><span class="NAME">k</span><span class="PUNC">]</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">selectorConfig</span><span class="PUNC">[</span><span class="NAME">k</span><span class="PUNC">]</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">									
+<span class='line'>181</span> 									</span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>182</span> </span><span class="WHIT">										</span><span class="NAME">configObj</span><span class="PUNC">[</span><span class="NAME">k</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">selectorConfig</span><span class="PUNC">[</span><span class="NAME">k</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>183</span> </span><span class="WHIT">									</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>184</span> </span><span class="WHIT">								</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>185</span> </span><span class="WHIT">							</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>186</span> </span><span class="WHIT">						</span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>187</span> </span><span class="WHIT">							</span><span class="NAME">configObj</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">selectorConfig</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>188</span> <span class='line'>189</span> </span><span class="WHIT">						</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>190</span> </span><span class="WHIT">					</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>191</span> </span><span class="WHIT">				</span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>192</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>193</span> 
+<span class='line'>194</span> </span><span class="WHIT">			</span><span class="COMM">// fall back to default configuration</span><span class="WHIT">
+<span class='line'>195</span> <span class='line'>196</span> </span><span class="WHIT">			</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="PUNC">!</span><span class="NAME">configSpecified</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>197</span> </span><span class="WHIT">				</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="KEYW">typeof</span><span class="WHIT"> </span><span class="NAME">this.settings.config</span><span class="WHIT"> </span><span class="PUNC">===</span><span class="WHIT"> </span><span class="STRN">'undefined'</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="PUNC">!</span><span class="NAME">this.settings.config</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>198</span> </span><span class="WHIT">					</span><span class="NAME">configObj</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.config</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>199</span> </span><span class="WHIT">				</span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>200</span> </span><span class="WHIT">					</span><span class="NAME">configObj</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.settings.config</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>201</span> </span><span class="WHIT">				</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>202</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>203</span> 
+<span class='line'>204</span> </span><span class="WHIT">			</span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">configObj</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>205</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>206</span> 
+<span class='line'>207</span> </span><span class="WHIT">		</span><span class="COMM">/**
+<span class='line'>208</span> 		 * Make the given jQuery object (representing an editable) clean for saving
+<span class='line'>209</span> 		 * @param obj jQuery object to make clean
+<span class='line'>210</span> 		 * @return void
+<span class='line'>211</span> 		 */</span><span class="WHIT">
+<span class='line'>212</span> </span><span class="WHIT">		</span><span class="NAME">makeClean</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">obj</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>213</span> 
+<span class='line'>214</span> </span><span class="WHIT">		</span><span class="COMM">/**
+<span class='line'>215</span> 		 * Make a system-wide unique id out of a plugin-wide unique id by prefixing it with the plugin prefix
+<span class='line'>216</span> 		 * @param id plugin-wide unique id
+<span class='line'>217</span> 		 * @return system-wide unique id
+<span class='line'>218</span> 		 * @hide
+<span class='line'>219</span> 		 * @deprecated
+<span class='line'>220</span> 		 */</span><span class="WHIT">
+<span class='line'>221</span> </span><span class="WHIT">		</span><span class="NAME">getUID</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">id</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>222</span> </span><span class="WHIT">			</span><span class="NAME">console.deprecated</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="STRN">'plugin'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'getUID() is deprecated. Use plugin.name instead.'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>223</span> </span><span class="WHIT">			</span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">this.name</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>224</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>225</span> 
+<span class='line'>226</span> </span><span class="WHIT">		</span><span class="COMM">/**
+<span class='line'>227</span> 		 * Localize the given key for the plugin.
+<span class='line'>228</span> 		 * @param key key to be localized
+<span class='line'>229</span> 		 * @param replacements array of replacement strings
+<span class='line'>230</span> 		 * @return localized string
+<span class='line'>231</span> 		 * @hide
+<span class='line'>232</span> 		 * @deprecated
+<span class='line'>233</span> 		 */</span><span class="WHIT">
+<span class='line'>234</span> </span><span class="WHIT">		</span><span class="NAME">i18n</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">key</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">replacements</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>235</span> </span><span class="WHIT">			</span><span class="NAME">console.deprecated</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="STRN">'plugin'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'i18n() is deprecated. Use plugin.t() instead.'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>236</span> </span><span class="WHIT">			</span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">Aloha.i18n</span><span class="PUNC">(</span><span class="KEYW">this</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">key</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">replacements</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>237</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>238</span> 
+<span class='line'>239</span> </span><span class="WHIT">		</span><span class="COMM">/**
+<span class='line'>240</span> 		 * Return string representation of the plugin, which is the prefix
+<span class='line'>241</span> 		 * @return name
+<span class='line'>242</span> 		 * @hide
+<span class='line'>243</span> 		 * @deprecated
+<span class='line'>244</span> 		 */</span><span class="WHIT">
+<span class='line'>245</span> </span><span class="WHIT">		</span><span class="NAME">toString</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>246</span> </span><span class="WHIT">			</span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">this.name</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>247</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>248</span> </span><span class="WHIT">		
+<span class='line'>249</span> 		</span><span class="COMM">/**
+<span class='line'>250</span> 		 * Log a plugin message to the logger
+<span class='line'>251</span> 		 * @param level log level
+<span class='line'>252</span> 		 * @param message log message
+<span class='line'>253</span> 		 * @return void
+<span class='line'>254</span> 		 * @hide
+<span class='line'>255</span> 		 * @deprecated
+<span class='line'>256</span> 		 */</span><span class="WHIT">
+<span class='line'>257</span> </span><span class="WHIT">		</span><span class="NAME">log</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">level</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">message</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>258</span> </span><span class="WHIT">			</span><span class="NAME">console.deprecated</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="STRN">'plugin'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'log() is deprecated. Use Aloha.console instead.'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>259</span> </span><span class="WHIT">			</span><span class="NAME">console.log</span><span class="PUNC">(</span><span class="NAME">level</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">message</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>260</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>261</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>262</span> </span><span class="WHIT">	
+<span class='line'>263</span> 	</span><span class="COMM">/**
+<span class='line'>264</span> 	 * Static method used as factory to create plugins.
+<span class='line'>265</span> 	 * 
+<span class='line'>266</span> 	 * @param {String} pluginName name of the plugin
+<span class='line'>267</span> 	 * @param {Object} definition definition of the plugin, should have at least an "init" and "destroy" method.
+<span class='line'>268</span> 	 */</span><span class="WHIT">
+<span class='line'>269</span> </span><span class="WHIT">	</span><span class="NAME">Plugin.create</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">pluginName</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">definition</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>270</span> </span><span class="WHIT">		
+<span class='line'>271</span> 		</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">pluginInstance</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">Plugin.extend</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">definition</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">pluginName</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>272</span> </span><span class="WHIT">		</span><span class="NAME">pluginInstance.settings</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">jQuery.extendObjects</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">pluginInstance.defaults</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">Aloha.settings</span><span class="PUNC">[</span><span class="NAME">pluginName</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>273</span> </span><span class="WHIT">		</span><span class="NAME">PluginManager.register</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">pluginInstance</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>274</span> </span><span class="WHIT">		
+<span class='line'>275</span> 		</span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">pluginInstance</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>276</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>277</span> 
+<span class='line'>278</span> </span><span class="WHIT">	</span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">Plugin</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>279</span> <span class='line'>280</span> </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>281</span> </span></pre></body></html>
