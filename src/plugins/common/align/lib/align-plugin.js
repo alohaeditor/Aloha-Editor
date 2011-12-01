@@ -12,7 +12,7 @@ function(Aloha, Plugin, FloatingMenu, i18n, i18nCore, jQuery) {
 
 	var
 		GENTICS = window.GENTICS;
-	
+
 	/**
 	 * register the plugin with unique name
 	 */
@@ -25,14 +25,14 @@ function(Aloha, Plugin, FloatingMenu, i18n, i18nCore, jQuery) {
 		 * Configure the available languages
 		 */
 		languages: ['en', 'fr'],
-		
+
 		/**
 		 * Configuration (available align options)
 		 */
 		config: {
 			alignment: ['right','left','center','justify']
 		},
-		
+
 		/**
 		 * Alignment wanted by the user
 		 */
@@ -42,7 +42,7 @@ function(Aloha, Plugin, FloatingMenu, i18n, i18nCore, jQuery) {
 		 * Alignment of the selection before modification
 		 */
 		lastAlignment: '',
-		
+
 		/**
 		 * Initialize the plugin and set initialize flag on true
 		 */
@@ -124,13 +124,13 @@ function(Aloha, Plugin, FloatingMenu, i18n, i18nCore, jQuery) {
 		 * @return void
 		 */
 		applyButtonConfig: function (obj) {
-			
+
 			if (typeof this.settings.alignment === 'undefined') {
 				var config = this.config.alignment;
 			} else {
 				var config = this.settings.alignment;
 			}
-			
+
 			if ( jQuery.inArray('right', config) != -1) {
 				this.alignRightButton.show();
 			} else {
@@ -234,7 +234,7 @@ function(Aloha, Plugin, FloatingMenu, i18n, i18nCore, jQuery) {
 		},
 
 		/**
-		 * Check whether inside a align tag 
+		 * Check whether inside a align tag
 		 * @param {GENTICS.Utils.RangeObject} range range where to insert the object (at start or end)
 		 * @return markup
 		 * @hide
@@ -244,7 +244,7 @@ function(Aloha, Plugin, FloatingMenu, i18n, i18nCore, jQuery) {
 			var that = this;
 
 			if ( typeof range === 'undefined' ) {
-		        var range = Aloha.Selection.getRangeObject();   
+		        var range = Aloha.Selection.getRangeObject();
 		    }
 			if ( Aloha.activeEditable ) {
 				return range.findMarkup(function() {
@@ -289,11 +289,14 @@ function(Aloha, Plugin, FloatingMenu, i18n, i18nCore, jQuery) {
 		    var range = Aloha.Selection.getRangeObject();
 
 		    // Iterates the whole selectionTree and align
-			jQuery.each(Aloha.Selection.getRangeObject().getSelectionTree(), function () {
-				if(this.selection !== 'none' && this.domobj.nodeType !== 3) {
-					jQuery(this.domobj).css('text-align', that.alignment);
-				}
-			});
+            if (!GENTICS.Utils.Dom.isEditingHost(range.getCommonAncestorContainer()))
+              jQuery(range.getCommonAncestorContainer()).css('text-align', this.alignment);
+            else
+              jQuery.each(Aloha.Selection.getRangeObject().getSelectionTree(), function () {
+                  if(this.selection !== 'none' && this.domobj.nodeType !== 3) {
+                      jQuery(this.domobj).css('text-align', that.alignment);
+                  }
+              });
 
 			if(this.alignment != this.lastAlignment)
 			{
@@ -339,7 +342,7 @@ function(Aloha, Plugin, FloatingMenu, i18n, i18nCore, jQuery) {
 		        range.select();
 		    }
 		}
-		
+
 	});
-	
+
 });
