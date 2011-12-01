@@ -1,5 +1,5 @@
 .ui-state-default .aloha-ui-icon {
-	background-image: url(../img/base.png);
+	background-image: url(../img/format-inline.png);
 }
 
 .aloha-ui-icon-bold {
@@ -24,4 +24,53 @@
 
 .aloha-ui-icon-superscript {
 	background-position: -80px 0;
+}
+
+button.aloha-ui-large-button {
+	width: 60px;
+	height: 50px;
+}
+
+.ui-state-default .aloha-ui-large-icon {
+	background-image: url(../img/format-block.png);
+	width: 54px;
+	height: 44px;
+	margin-left: -27px;
+	margin-top: -22px;
+}
+
+.aloha-ui-large-icon-p {
+	background-position: 0 0;
+}
+
+.aloha-ui-large-icon-h1 {
+	background-position: -52px 0;
+}
+
+.aloha-ui-large-icon-h2 {
+	background-position: -104px 0;
+}
+
+.aloha-ui-large-icon-h3 {
+	background-position: -156px 0;
+}
+
+.aloha-ui-large-icon-h4 {
+	background-position: -208px 0;
+}
+
+.aloha-ui-large-icon-h5 {
+	background-position: -260px 0;
+}
+
+.aloha-ui-large-icon-h6 {
+	background-position: -312px 0;
+}
+
+.aloha-ui-large-icon-pre {
+	background-position: -364px 0;
+}
+
+.aloha-ui-multisplit-active {
+	border-color: #00f;
 }

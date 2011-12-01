@@ -1,5 +1,5 @@
-define([ 'aloha/core', 'ui/ui', 'i18n!ui/nls/i18n' ],
-function( Aloha, Ui, i18n ) {
+define([ 'aloha/core', 'ui/ui', 'i18n!ui/nls/i18n', 'aloha/jquery' ],
+function( Aloha, Ui, i18n, jQuery ) {
 	
 	// The second part of the bold plugin is the bold component.
 	// The bold component is a [toggleCommandButton](toggleCommandButton.html) that ties into the bold command.
@@ -72,9 +72,23 @@ function( Aloha, Ui, i18n ) {
 	
 	Aloha.settings.formatBlock = [ "p", "h1", "h2", "h3", "h4", "h5", "h6", "pre" ];
 	Ui.create( "formatBlock", "multiSplit", {
-		selectionChange: function() {
-			var value = Aloha.queryCommandValue( "formatBlock" );
-			//this.setValue( value );
+		buttons: {},
+		items: function( editable ) {
+			return jQuery.map( editable.settings.formatBlock, function( item ) {
+				return Aloha.ui.components.formatBlock.buttons[ item ];
+			});
 		}
+	});
+	jQuery.each( Aloha.settings.formatBlock, function( i, block ) {
+		Aloha.ui.components.formatBlock.buttons[ block ] = {
+			label: i18n.t( "button." + block + ".label" ),
+			icon: "aloha-ui-large-icon-" + block,
+			click: function() {
+				Aloha.execCommand( "formatBlock", false, block, Ui.toolbar.range );
+			},
+			isActive: function() {
+				return Aloha.queryCommandValue( "formatBlock" ) === block;
+			}
+		};
 	});
 });

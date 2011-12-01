@@ -4,18 +4,41 @@ function( jQuery, Ui ) {
 		init: function( editable, settings ) {
 			this._super( editable, settings );
 			
-			var element = this.element = jQuery( "<div>", {
-				"class": "aloha-multi-split"
-			});
+			var multiSplit = this,
+				element = this.element = jQuery( "<div>", {
+					"class": "aloha-multi-split"
+				});
 			
-			jQuery.each( editable.settings.formatBlock, function( i, block ) {
-				jQuery( "<p>", {
-					text: block,
-					click: function() {
-						Aloha.execCommand( "formatBlock", false, block, Ui.toolbar.range );
-					}
-				})
-				.appendTo( element );
+			this.buttons = [];
+			jQuery( settings.items( editable ) ).map(function( i, button ) {
+				var component = new Aloha.ui.button();
+				component.init( editable, {
+					label: button.label,
+					icon: "aloha-ui-large-icon " + button.icon,
+					iconOnly: true,
+					click: button.click
+				});
+				component.element.addClass( "aloha-ui-large-button" );
+				
+				multiSplit.buttons.push({
+					settings: button,
+					component: component,
+					element: component.element
+				});
+				
+				return component.element[ 0 ];
+			})
+			.appendTo( element );
+		},
+		
+		selectionChange: function() {
+			this.element.find( ".aloha-ui-multisplit-active" )
+				.removeClass( "aloha-ui-multisplit-active" );
+			jQuery.each( this.buttons, function() {
+				if ( this.settings.isActive() ) {
+					this.element.addClass( "aloha-ui-multisplit-active" );
+					return false;
+				}
 			});
 		}
 	});
