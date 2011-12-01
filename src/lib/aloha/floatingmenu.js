@@ -247,7 +247,7 @@ function(Aloha, jQuery, Ext, Class, console) {
 				
 					if (buttonVisible && extButton.hidden) {
 						extButton.show();
-					} else if (!buttonVisible && extButton && !extButton.hidden) {
+					} else if (!buttonVisible && !extButton.hidden) {
 						extButton.hide();
 					}
 				
