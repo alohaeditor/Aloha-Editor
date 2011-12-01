@@ -71,6 +71,32 @@ button.aloha-ui-large-button {
 	background-position: -364px 0;
 }
 
-.aloha-ui-multisplit-active {
+.aloha-multisplit {
+	position: relative;
+	width: 260px;
+	height: 50px;
+	overflow: hidden;
+}
+
+.aloha-multisplit-open {
+	overflow: visible;
+}
+
+.aloha-multisplit-content {
+	position: relative;
+	width: 244px;
+}
+
+.aloha-multisplit-toggle {
+	position: absolute;
+	right: 0;
+	bottom: 0;
+}
+
+.aloha-multisplit-toggle .ui-button-text {
+	padding: 0;
+}
+
+.aloha-multisplit-active {
 	border-color: #00f;
 }

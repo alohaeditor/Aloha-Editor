@@ -6,8 +6,21 @@ function( jQuery, Ui ) {
 			
 			var multiSplit = this,
 				element = this.element = jQuery( "<div>", {
-					"class": "aloha-multi-split"
-				});
+					"class": "aloha-multisplit"
+				}),
+				content = this.contentElement = jQuery( "<div>", {
+					"class": "aloha-multisplit-content"
+				})
+					.appendTo( element ),
+				toggle = this.toggleButton = jQuery( "<button>", {
+					"class": "aloha-multisplit-toggle",
+					text: "x",
+					click: function() {
+						multiSplit.toggle();
+					}
+				})
+					.button()
+					.appendTo( element );
 			
 			this.buttons = [];
 			jQuery( settings.items( editable ) ).map(function( i, button ) {
@@ -16,7 +29,10 @@ function( jQuery, Ui ) {
 					label: button.label,
 					icon: "aloha-ui-large-icon " + button.icon,
 					iconOnly: true,
-					click: button.click
+					click: function() {
+						button.click();
+						multiSplit.close();
+					}
 				});
 				component.element.addClass( "aloha-ui-large-button" );
 				
@@ -28,18 +44,32 @@ function( jQuery, Ui ) {
 				
 				return component.element[ 0 ];
 			})
-			.appendTo( element );
+			.appendTo( content );
 		},
 		
 		selectionChange: function() {
-			this.element.find( ".aloha-ui-multisplit-active" )
-				.removeClass( "aloha-ui-multisplit-active" );
+			var content = this.contentElement;
+			this.element.find( ".aloha-multisplit-active" )
+				.removeClass( "aloha-multisplit-active" );
 			jQuery.each( this.buttons, function() {
 				if ( this.settings.isActive() ) {
-					this.element.addClass( "aloha-ui-multisplit-active" );
+					this.element.addClass( "aloha-multisplit-active" );
+					content.css( "top", -this.element.position().top );
 					return false;
 				}
 			});
+		},
+		
+		toggle: function() {
+			this.element.toggleClass( "aloha-multisplit-open" );
+		},
+		
+		open: function() {
+			this.element.addClass( "aloha-multisplit-open" );
+		},
+		
+		close: function() {
+			this.element.removeClass( "aloha-multisplit-open" );
 		}
 	});
 	
