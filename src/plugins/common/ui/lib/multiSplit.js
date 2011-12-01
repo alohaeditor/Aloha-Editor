@@ -27,14 +27,14 @@ function( jQuery, Ui ) {
 				var component = new Aloha.ui.button();
 				component.init( editable, {
 					label: button.label,
-					icon: "aloha-ui-large-icon " + button.icon,
+					icon: "aloha-large-icon " + button.icon,
 					iconOnly: true,
 					click: function() {
 						button.click();
 						multiSplit.close();
 					}
 				});
-				component.element.addClass( "aloha-ui-large-button" );
+				component.element.addClass( "aloha-large-button" );
 				
 				multiSplit.buttons.push({
 					settings: button,

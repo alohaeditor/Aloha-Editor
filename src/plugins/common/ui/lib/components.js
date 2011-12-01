@@ -14,7 +14,7 @@ function( Aloha, Ui, i18n, jQuery ) {
 				command: command,
 				label: i18n.t( "button." + command + ".label" ),
 				iconOnly: true,
-				icon: "aloha-ui-icon aloha-ui-icon-" + command
+				icon: "aloha-icon aloha-icon-" + command
 			});
 		});
 	
@@ -82,7 +82,7 @@ function( Aloha, Ui, i18n, jQuery ) {
 	jQuery.each( Aloha.settings.formatBlock, function( i, block ) {
 		Aloha.ui.components.formatBlock.buttons[ block ] = {
 			label: i18n.t( "button." + block + ".label" ),
-			icon: "aloha-ui-large-icon-" + block,
+			icon: "aloha-large-icon-" + block,
 			click: function() {
 				Aloha.execCommand( "formatBlock", false, block, Ui.toolbar.range );
 			},

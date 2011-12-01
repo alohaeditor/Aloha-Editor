@@ -1,37 +1,37 @@
-.ui-state-default .aloha-ui-icon {
+.ui-state-default .aloha-icon {
 	background-image: url(../img/format-inline.png);
 }
 
-.aloha-ui-icon-bold {
+.aloha-icon-bold {
 	background-position: 0 0;
 }
 
-.aloha-ui-icon-italic {
+.aloha-icon-italic {
 	background-position: -16px 0;
 }
 
-.aloha-ui-icon-underline {
+.aloha-icon-underline {
 	background-position: -32px 0;
 }
 
-.aloha-ui-icon-strikethrough {
+.aloha-icon-strikethrough {
 	background-position: -48px 0;
 }
 
-.aloha-ui-icon-subscript {
+.aloha-icon-subscript {
 	background-position: -64px 0;
 }
 
-.aloha-ui-icon-superscript {
+.aloha-icon-superscript {
 	background-position: -80px 0;
 }
 
-button.aloha-ui-large-button {
+button.aloha-large-button {
 	width: 60px;
 	height: 50px;
 }
 
-.ui-state-default .aloha-ui-large-icon {
+.ui-state-default .aloha-large-icon {
 	background-image: url(../img/format-block.png);
 	width: 54px;
 	height: 44px;
@@ -39,35 +39,35 @@ button.aloha-ui-large-button {
 	margin-top: -22px;
 }
 
-.aloha-ui-large-icon-p {
+.aloha-large-icon-p {
 	background-position: 0 0;
 }
 
-.aloha-ui-large-icon-h1 {
+.aloha-large-icon-h1 {
 	background-position: -52px 0;
 }
 
-.aloha-ui-large-icon-h2 {
+.aloha-large-icon-h2 {
 	background-position: -104px 0;
 }
 
-.aloha-ui-large-icon-h3 {
+.aloha-large-icon-h3 {
 	background-position: -156px 0;
 }
 
-.aloha-ui-large-icon-h4 {
+.aloha-large-icon-h4 {
 	background-position: -208px 0;
 }
 
-.aloha-ui-large-icon-h5 {
+.aloha-large-icon-h5 {
 	background-position: -260px 0;
 }
 
-.aloha-ui-large-icon-h6 {
+.aloha-large-icon-h6 {
 	background-position: -312px 0;
 }
 
-.aloha-ui-large-icon-pre {
+.aloha-large-icon-pre {
 	background-position: -364px 0;
 }
 
