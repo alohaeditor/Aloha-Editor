@@ -108,15 +108,7 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 
 			// Register event handlers for activating an Aloha Block
 			this.$element.bind('click', function(event) {
-
-				// IE HACK: Our beloved Internet Explorer sometimes scrolls to the top of the page when activating an aloha block.
-				// We can detect this and scroll right back; although this will flicker a little (but still a lot better than before)
-				var scrollPositionBefore = jQuery(window).scrollTop();
-				window.setTimeout(function() {
-					if (jQuery(window).scrollTop() !== scrollPositionBefore) {
-						jQuery(window).scrollTop(scrollPositionBefore);
-					}
-				}, 10);
+				that._fixScrollPositionBugsInIE();
 
 				// Activate the block element and stop event propagation
 				that.activate(event.target);
@@ -147,6 +139,22 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 			this._initialized = true;
 		},
 
+		/**
+		 * IE HACK: Our beloved Internet Explorer sometimes scrolls to the top
+		 * of the page when activating an aloha block, and on numerous other occasions
+		 * like when an <span> block is moved via drag/drop.
+		 *
+		 * We can detect this and scroll right back; although this will flicker
+		 * a little (but still a lot better than before)
+		 */
+		_fixScrollPositionBugsInIE: function() {
+			var scrollPositionBefore = jQuery(window).scrollTop();
+			window.setTimeout(function() {
+				if (jQuery(window).scrollTop() !== scrollPositionBefore) {
+					jQuery(window).scrollTop(scrollPositionBefore);
+				}
+			}, 10);
+		},
 		/**
 		 * Template method to initialize the block. Can be used to set attributes
 		 * on the block, depending on the block contents. You will most probably
@@ -468,6 +476,7 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 								}
 
 								ui.draggable.removeClass('ui-draggable').css({'left': 0, 'top': 0}); // Remove "draggable" options... somehow "Destroy" does not work
+								that._fixScrollPositionBugsInIE();
 							}
 						}
 					});
