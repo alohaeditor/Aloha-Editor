@@ -404,18 +404,60 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 			// Furthermore, we use it to know whether we need to "revert" the draggable to the original state or not.
 			var lastHoveredCharacter = null;
 
+			// HACK for IE7: Internet Explorer 7 has a very weird behavior in
+			// not always firing the "drop" callback of the inner droppable... However,
+			// the "over" and "out" callbacks are fired correctly.
+			// Because of this, we handle the "drop" inside the "stop" callback in IE7
+			// instead of the "drop" callback (where it is handled in all other browsers)
+
+			// This $currentDraggable is also needed as part of the IE 7 hack.
+			// $currentDraggable contains a reference to the current draggable, but
+			// only makes sense to read when lastHoveredCharacter !== NULL.
+			var $currentDraggable = null;
+
+			// This dropFn is the callback which handles the actual moving of
+			// nodes. We created a separate function for it, as it is called inside the "stop" callback
+			// in IE7 and inside the "drop" callback in all other browsers.
+			var dropFn = function() {
+				if (lastHoveredCharacter) {
+					// the user recently hovered over a character
+					var $dropReferenceNode = jQuery(lastHoveredCharacter);
+
+					if ($dropReferenceNode.is('.aloha-block-droppable-right')) {
+						$dropReferenceNode.html($dropReferenceNode.html() + ' ');
+
+						// Move draggable after drop reference node
+						$dropReferenceNode.after($currentDraggable);
+					} else {
+						// Insert space in the beginning of the drop reference node
+						if ($dropReferenceNode.prev('[data-i]').length > 0) {
+							// If not the last element, insert space in front of next element (i.e. after the moved block)
+							$dropReferenceNode.prev('[data-i]').html($dropReferenceNode.prev('[data-i]').html() + ' ');
+						}
+						$dropReferenceNode.html(' ' + $dropReferenceNode.html());
+
+						// Move draggable before drop reference node
+						$dropReferenceNode.before($currentDraggable);
+					}
+
+					$currentDraggable.removeClass('ui-draggable').css({'left': 0, 'top': 0}); // Remove "draggable" options... somehow "Destroy" does not work
+					that._fixScrollPositionBugsInIE();
+				}
+			}
+
 			this.$element.draggable({
 				handle: '.aloha-block-draghandle',
 				scope: 'aloha-block-inlinedragdrop',
-				revert: function(isDropped) {
-					if (!isDropped) {
-						return true;
-					}
+				revert: function() {
 					return (lastHoveredCharacter === null);
 				},
 				revertDuration: 250,
 				stop: function() {
+					if (Ext.isIE7) {
+						dropFn();
+					}
 					that._dd_traverseDomTreeAndRemoveSpans(that.$element.parents('.aloha-editable').get(0));
+					$currentDraggable = null;
 				},
 				start: function() {
 					that.$element.parents('.aloha-editable').children().droppable({
@@ -429,6 +471,8 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 						 * them droppable.
 						 */
 						over: function(event, ui) {
+							$currentDraggable = ui.draggable;
+
 							that._dd_traverseDomTreeAndWrapCharactersWithSpans(this);
 							jQuery('span[data-i]', this).droppable({
 								tolerance: 'pointer',
@@ -453,30 +497,9 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 						 * When dropping over a paragraph, we use the "lastHoveredCharacter"
 						 * as drop target.
 						 */
-						drop: function(event, ui) {
-							if (lastHoveredCharacter) {
-								// the user recently hovered over a character
-								var $dropReferenceNode = jQuery(lastHoveredCharacter);
-
-								if ($dropReferenceNode.is('.aloha-block-droppable-right')) {
-									$dropReferenceNode.html($dropReferenceNode.html() + ' ');
-
-									// Move draggable after drop reference node
-									$dropReferenceNode.after(ui.draggable);
-								} else {
-									// Insert space in the beginning of the drop reference node
-									if ($dropReferenceNode.prev('[data-i]').length > 0) {
-										// If not the last element, insert space in front of next element (i.e. after the moved block)
-										$dropReferenceNode.prev('[data-i]').html($dropReferenceNode.prev('[data-i]').html() + ' ');
-									}
-									$dropReferenceNode.html(' ' + $dropReferenceNode.html());
-
-									// Move draggable before drop reference node
-									$dropReferenceNode.before(ui.draggable);
-								}
-
-								ui.draggable.removeClass('ui-draggable').css({'left': 0, 'top': 0}); // Remove "draggable" options... somehow "Destroy" does not work
-								that._fixScrollPositionBugsInIE();
+						drop: function() {
+							if (!Ext.isIE7) {
+								dropFn();
 							}
 						}
 					});

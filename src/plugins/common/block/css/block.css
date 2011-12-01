@@ -39,6 +39,9 @@
 	border-left: 1px solid red;
 	margin-left:-1px;
 }
+.ext-ie7 .aloha-block-droppable {
+	margin-left:0; /* IE7 cannot handle the negative margin... */
+}
 
 .aloha-block-droppable.aloha-block-droppable-right {
 	margin-left:0 !important;

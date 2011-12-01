@@ -148,9 +148,9 @@ function(Aloha, jQuery, FloatingMenu, Observable, Registry) {
 			// - Chrome
 			// - Firefox
 			// - IE9
-			// - IE8 for inline blocks and for block-level blocks which are part of a bigger selection
+			// - IE7+8 for inline blocks and for block-level blocks which are part of a bigger selection
 			// it does NOT execute in the following cases:
-			// - IE8 for block-level blocks which are NOT part of a bigger selection. This case is handled separately below.
+			// - IE7+8 for block-level blocks which are NOT part of a bigger selection. This case is handled separately below.
 			Aloha.bind('aloha-command-will-execute', function(e, data) {
 				var commandId = data.commandId;
 
@@ -188,8 +188,8 @@ function(Aloha, jQuery, FloatingMenu, Observable, Registry) {
 			});
 
 			// BROWSER QUIRK WORKAROUND
-			// - IE8 for block-level blocks which are NOT part of a bigger selection.
-			if (Ext.isIE8) {
+			// - IE7+IE8 for block-level blocks which are NOT part of a bigger selection.
+			if (Ext.isIE8 || Ext.isIE7) {
 				jQuery(window.document).keydown(function(e) {
 					// If a block is active AND DEL or BACKSPACE key pressed...
 					if (that._activeBlock && (e.which === 46 || e.which === 8)) {
