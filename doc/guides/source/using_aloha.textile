@@ -113,7 +113,7 @@ script tag loading Aloha:
 <html>
 <head>
 	<script 
-		src="javascripts/aloha/aloha.js" 
+		src="javascripts/aloha/lib/aloha.js" 
 		data-aloha-plugins="common/format,common/list,common/table" >
 	</script>
 </head>
@@ -175,7 +175,7 @@ You can now easily load plugins from that bundles as follows
 <html>
 <head>
 	<script 
-		src="javascripts/aloha/aloha.js" 
+		src="javascripts/aloha/lib/aloha.js" 
 		data-aloha-plugins="common/link,custom1/plugin1,custom2/plugin2,custom3/plugin3" >
 	</script>
 </head>
