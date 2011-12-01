@@ -143,6 +143,14 @@ function(Aloha, jQuery, FloatingMenu, Observable, Registry) {
 		_registerEventHandlersForBlockDeletion: function() {
 			var that = this;
 
+
+			// This case executes in:
+			// - Chrome
+			// - Firefox
+			// - IE9
+			// - IE8 for inline blocks and for block-level blocks which are part of a bigger selection
+			// it does NOT execute in the following cases:
+			// - IE8 for block-level blocks which are NOT part of a bigger selection. This case is handled separately below.
 			Aloha.bind('aloha-command-will-execute', function(e, data) {
 				var commandId = data.commandId;
 
@@ -178,6 +186,23 @@ function(Aloha, jQuery, FloatingMenu, Observable, Registry) {
 					traverseSelectionTree(Aloha.Selection.getSelectionTree());
 				}
 			});
+
+			// BROWSER QUIRK WORKAROUND
+			// - IE8 for block-level blocks which are NOT part of a bigger selection.
+			if (Ext.isIE8) {
+				jQuery(window.document).keydown(function(e) {
+					// If a block is active AND DEL or BACKSPACE key pressed...
+					if (that._activeBlock && (e.which === 46 || e.which === 8)) {
+
+						// ...and active block is INSIDE editable
+						if (that._activeBlock.$element.parents('.aloha-editable,.aloha-block').first().hasClass('aloha-editable')) {
+							that._activeBlock.destroy();
+							e.preventDefault();
+							return false;
+						}
+					}
+				});
+			}
 		},
 
 		/**

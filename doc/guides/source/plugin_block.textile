@@ -266,7 +266,7 @@ h3. Browser Compatibility Matrix
 |_. Drag & Drop of block-level elements         |  ✓         |  ✓         |  ✓    | ✓     | ✓     |     ✘              |
 |_. Copy & Paste                                |  ✓         |  ✓         |  ✘ browser always dies on second copy/paste    | ✓     | ✓     |     ✓              |
 |_. Cut & Paste                                 |  ✓         |  ✓         |  ✘ browser always dies on second copy/paste    | ✓     | ✓     |     ✓              |
-|_. Deletion of single blocks (block-level)     |  ✓         |  ✓         |  ✘ always jumps to top of page| (✓) TODO selection issues, sometimes jumps to top of page| ✓     |      ✘              |
+|_. Deletion of single blocks (block-level)     |  ✓         |  ✓         |  ✘ always jumps to top of page| ✓ | ✓     |      ✘              |
 |_. Deletion of single blocks (inline)          |  ✓         |  ✓         |  ✓    | ✓     | ✓     |      ✘              |
 |_. Deletion of blocks being part of selection  |  ✓         |  ✓         |  ✓    | ✓     | ✓     |      ✘              |
 |_. Caret handling of inline blocks             |  ✘         |  ✘         |  ✘    | ✘     | ✘     |      ✘              |
