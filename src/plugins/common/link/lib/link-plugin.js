@@ -94,7 +94,9 @@ define( [
 		/**
 		 * HotKeys used for special actions
 		*/
-		hotKey: { insertLink: 'ctrl+l' },
+		hotKey: { 
+			insertLink: 'ctrl+l'
+		},
 		
 		/**
 		 * Default input value for a new link
@@ -126,7 +128,7 @@ define( [
 				this.onHrefChange = this.settings.onHrefChange;
 			}
 			if ( typeof this.settings.hotKey != 'undefined' ) {
-				this.hotKey = this.settings.hotKey;
+				jQuery.extend(true, this.hotKey, this.settings.hotKey);
 			}
 			if ( typeof this.settings.hrefValue != 'undefined' ) {
 				this.hrefValue = this.settings.hrefValue;
@@ -251,6 +253,8 @@ define( [
 						that.insertLink( true );
 						that.preventAutoSuggestionBoxFromExpanding();
 					}
+					
+					return false;
 				} );
 
 				editable.obj.find( 'a' ).each( function ( i ) {
