@@ -3,6 +3,7 @@
 This document is to serve as a "what has been done" in terms of the [Roadmap](http://aloha-editor.org/wiki/Roadmap)
 
 - doc/api: added first version of new API docs
+- commands.delete: fixed a bug with the delete command when contents are preceded by ignorable whitespace. also added a delete test for that.
 
 ## 0.20.0-RC9 - 2011/11/23
 

@@ -1364,6 +1364,10 @@ var tests = {
 		},
 		{	start: 'foo     []bar',
 			execResult: 'foo[]bar'
+		},
+		{
+			start:		'     fo[]o barbar fo bar-ba-bar',
+			execResult: ' f[]o barbar fo bar-ba-bar'
 		}
 	]
 }
