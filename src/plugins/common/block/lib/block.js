@@ -762,9 +762,10 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 			// drag handle. As only "block-level" aloha blocks have this CSS class, this will also only make
 			// aloha blocks draggable.
 			this.$element.find('.aloha-block-draghandle').addClass('aloha-block-draghandle-blocklevel');
-			this.$element.parents('.aloha-editable').sortable({
+			this.$element.parents('.aloha-editable').first().addClass('aloha-block-blocklevel-sortable').sortable({
 				revert: 100,
-				handle: '.aloha-block-draghandle-blocklevel'
+				handle: '.aloha-block-draghandle-blocklevel',
+				connectWith: '.aloha-block-blocklevel-sortable' // we want to be able to drag an element to other editables
 			});
 
 			// Hack for Internet Explorer 8:
