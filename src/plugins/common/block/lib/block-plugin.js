@@ -49,6 +49,7 @@ define([
 			ContentHandlerManager.register('block', BlockContentHandler);
 
 			BlockManager.registerEventHandlers();
+			BlockManager.initializeBlockLevelDragDrop();
 
 			Aloha.bind('aloha-ready', function() {
 				// When Aloha is fully loaded, we initialize the blocks.

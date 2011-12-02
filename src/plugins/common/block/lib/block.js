@@ -753,29 +753,8 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 		 * SECTION: Drag&Drop for Block elements
 		 **************************/
 		_setupDragDropForBlockElements: function() {
-			// We only want to make "block-level" aloha blocks sortable. According to the docs,
-			// sortable.cancel should have a CSS selector and if this matches, the element is only
-			// a drop target but NOT draggable. However, passing :not(.aloha-block) does not work somehow :-(
-			//
-			// Thus, we implemented the following alternative:
-			// Every "block-level" aloha block drag handle gets a new CSS class, and we only select this as
-			// drag handle. As only "block-level" aloha blocks have this CSS class, this will also only make
-			// aloha blocks draggable.
+			// Mark the drag handle with an extra CSS class, such that it is picked up by BlockManager.initializeBlockLevelDragDrop()
 			this.$element.find('.aloha-block-draghandle').addClass('aloha-block-draghandle-blocklevel');
-			this.$element.parents('.aloha-editable').first().addClass('aloha-block-blocklevel-sortable').sortable({
-				revert: 100,
-				handle: '.aloha-block-draghandle-blocklevel',
-				connectWith: '.aloha-block-blocklevel-sortable' // we want to be able to drag an element to other editables
-			});
-
-			// Hack for Internet Explorer 8:
-			// If you first click inside an editable, and THEN want to drag a block-level block,
-			// it sometimes occurs that the *whole editable* is selected and should be dragged away.
-			// This breaks dragging of Aloha Blocks.
-			// Bugfix: We disable the "ondragstart" event on the parent editable.
-			if (this.$element.find('.aloha-block-draghandle').length > 0 && this.$element.parents('.aloha-editable').length > 0) {
-				this.$element.parents('.aloha-editable').get(0).ondragstart = function () { return false; };
-			}
 		},
 
 
