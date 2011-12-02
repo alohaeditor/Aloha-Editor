@@ -221,7 +221,23 @@ function(jQuery, Observable) {
 	/** @lends block.editor.NumberEditor */
 	{
 		// TODO Range should be an option
-		formInputElementDefinition: '<input type="range" />'
+		formInputElementDefinition: '<input type="range" />',
+
+		afterRenderFormElement: function($formElement) {
+			if (!this.schema.range) return;
+
+			if (this.schema.range.min) {
+				$formElement.attr('min', this.schema.range.min);
+			}
+
+			if (this.schema.range.max) {
+				$formElement.attr('max', this.schema.range.max);
+			}
+
+			if (this.schema.range.step) {
+				$formElement.attr('step', this.schema.range.step);
+			}
+		}
 	});
 
 	/**

@@ -284,11 +284,16 @@ h5. number
 <javascript>
 {
 	type: 'number',
-	label: 'My Label'
+	label: 'My Label',
+	range: {
+		min: 0,
+		max: 5,
+		step: 0.5 // values 0, 0.5, ...,  4.5, 5
+	}
 }
 </javascript>
 
-Output: +<input type="range" />+
+Output: +<input type="range" min="0" max="5" step="0.5" />+
 
 h5. url
 
