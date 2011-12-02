@@ -526,7 +526,9 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 					$currentDraggable = null;
 				},
 				start: function() {
-					that.$element.parents('.aloha-editable').children().droppable({
+					// Make **ALL** editables on the page droppable, such that it is possible
+					// to drag/drop *across* editable boundaries
+					jQuery('.aloha-editable').children().droppable({
 						// make block elements droppable
 						tolerance: 'pointer',
 						addClasses: false, // performance optimization
