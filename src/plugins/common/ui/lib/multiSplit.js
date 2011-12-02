@@ -23,7 +23,7 @@ function( jQuery, Ui ) {
 					.appendTo( element );
 			
 			this.buttons = [];
-			jQuery( settings.items( editable ) ).map(function( i, button ) {
+			jQuery( settings.buttons( editable ) ).map(function( i, button ) {
 				var component = new Aloha.ui.button();
 				component.init( editable, {
 					label: button.label,
@@ -42,6 +42,17 @@ function( jQuery, Ui ) {
 					element: component.element
 				});
 				
+				return component.element[ 0 ];
+			})
+			.appendTo( content );
+			
+			jQuery( settings.items( editable ) ).map(function( i, item ) {
+				var component = new Aloha.ui.button();
+				component.init( editable, {
+					label: item.label,
+					icon: item.icon,
+					click: item.click
+				});
 				return component.element[ 0 ];
 			})
 			.appendTo( content );

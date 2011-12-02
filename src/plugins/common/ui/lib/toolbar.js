@@ -13,7 +13,11 @@ function( Aloha, jQuery, Ui ) {
 			this.element = jQuery( "<div>", {
 				"class": "aloha-ui aloha-toolbar",
 				mousedown: function() {
-					toolbar.range = Aloha.getSelection().getRangeAt( 0 );
+					if ( Aloha.activeEditable ) {
+						toolbar.range = Aloha.getSelection().getRangeAt( 0 );
+						// TODO: this overlaps with toolbar.active
+						toolbar.editable = Aloha.activeEditable;
+					}
 				}
 			})
 			.hide()
