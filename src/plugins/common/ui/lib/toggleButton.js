@@ -5,10 +5,6 @@ function( Aloha, jQuery, Ui, Button ) {
 	// The toggleButton extends the button component type to provide an easy
 	// way to create buttons for commands that are either on or off.
 	Ui.createType( "toggleButton", Button, {
-		init: function( editable, settings ) {
-			this._super( editable, settings );
-		},
-		
 		// The `setState()` method updates the visual display of the toggleButton.
 		setState: function( on ) {
 			this.buttonElement.prop( "checked", on ).button( "refresh" );
@@ -20,7 +16,7 @@ function( Aloha, jQuery, Ui, Button ) {
 			var id = "aloha-toggleButton-" + (guid++);
 			this.element = jQuery( "<span>" );
 			jQuery( "<label>", {
-				text: this.settings.label,
+				text: this.label,
 				"for": id
 			}).appendTo( this.element );
 			return this.buttonElement = jQuery( "<input type='checkbox'>" )

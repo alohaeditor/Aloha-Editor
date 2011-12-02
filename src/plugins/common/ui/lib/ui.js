@@ -1,6 +1,6 @@
 // The main UI objects are components.
 // Components can be placed inside any container, such as a toolbar or sidebar.
-define([ 'aloha/core', 'aloha/jquery', 'ui/component' ],
+define([ "aloha/core", "aloha/jquery", "ui/component" ],
 function( Aloha, jQuery, Component ) {
 	
 	jQuery( document )
@@ -49,9 +49,7 @@ function( Aloha, jQuery, Component ) {
 		// which is a reference to the main element of the component.
 		render: function( component, editable ) {
 			var settings = this.components[ component ];
-			var component = new Aloha.ui[ settings.type ]( editable, settings );
-			component.init( editable, settings );
-			return component;
+			return new Aloha.ui[ settings.type ]( editable, settings );
 		}
 	};
 	

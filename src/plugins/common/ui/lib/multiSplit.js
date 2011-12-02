@@ -1,10 +1,9 @@
-define([ 'aloha/jquery', 'ui/ui' ],
+define([ "aloha/jquery", "ui/ui" ],
 function( jQuery, Ui ) {
 	Ui.createType( "multiSplit", {
-		init: function( editable, settings ) {
-			this._super( editable, settings );
-			
-			var multiSplit = this,
+		init: function() {
+			var editable = this.editable,
+				multiSplit = this,
 				element = this.element = jQuery( "<div>", {
 					"class": "aloha-multisplit"
 				}),
@@ -23,14 +22,13 @@ function( jQuery, Ui ) {
 					.appendTo( element );
 			
 			this.buttons = [];
-			jQuery( settings.buttons( editable ) ).map(function( i, button ) {
-				var component = new Aloha.ui.button();
-				component.init( editable, {
+			jQuery( this.getButtons() ).map(function( i, button ) {
+				var component = new Aloha.ui.button( editable, {
 					label: button.label,
 					icon: "aloha-large-icon " + button.icon,
 					iconOnly: true,
 					click: function() {
-						button.click();
+						button.click.apply( multiSplit, arguments );
 						multiSplit.close();
 					}
 				});
@@ -46,12 +44,14 @@ function( jQuery, Ui ) {
 			})
 			.appendTo( content );
 			
-			jQuery( settings.items( editable ) ).map(function( i, item ) {
-				var component = new Aloha.ui.button();
-				component.init( editable, {
+			jQuery( this.getItems() ).map(function( i, item ) {
+				var component = new Aloha.ui.button( editable, {
 					label: item.label,
 					icon: item.icon,
-					click: item.click
+					click: function() {
+						item.click.apply( multiSplit, arguments );
+						multiSplit.close();
+					}
 				});
 				return component.element[ 0 ];
 			})

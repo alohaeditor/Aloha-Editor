@@ -76,35 +76,34 @@ function( Aloha, Ui, i18n, jQuery ) {
 	};
 	Ui.create( "formatBlock", "multiSplit", {
 		_buttons: {},
-		buttons: function( editable ) {
-			return jQuery.map( editable.settings.formatBlock.blocks, function( item ) {
+		getButtons: function() {
+			return jQuery.map( this.editable.settings.formatBlock.blocks, function( item ) {
 				return Aloha.ui.components.formatBlock._buttons[ item ];
 			});
 		},
 		
-		items: function( editable ) {
+		getItems: function() {
 			var formatBlock = this;
 			return [{
 				label: "Remove formatting",
 				click: function() {
-					formatBlock.removeFormatting( Ui.toolbar.range, Ui.toolbar.editable.obj );
+					formatBlock.removeFormatting( Ui.toolbar.range, this.editable );
 				}
 			}];
 		},
 		
-		removeFormatting: function( range, limit ) {
+		removeFormatting: function( range, editable ) {
 			range = new GENTICS.Utils.RangeObject( range || Aloha.getSelection().getRangeAt( 0 ) );
 			if ( range.collapsed ) {
 				return;
 			}
 			
-			var // TODO: instance-specific settings
-				formats = Aloha.settings.formatBlock.removeFormatting,
+			var formats = editable.settings.formatBlock.removeFormatting,
 				i = 0,
 				length = formats.length;
 			
 			for ( ; i < length; i++ ) {
-				GENTICS.Utils.Dom.removeMarkup( range, jQuery( "<" + formats[i] + ">" ), limit );
+				GENTICS.Utils.Dom.removeMarkup( range, jQuery( "<" + formats[i] + ">" ), editable.obj );
 			}
 		}
 	});
