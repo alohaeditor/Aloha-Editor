@@ -175,7 +175,8 @@ define([
 			$element.sortable({
 				stop: function() {
 					that._fixScrollPositionBugsInIE();
-				}
+				},
+				cancel: '.aloha-block-handle'
 			});
 
 			postProcessFn();
