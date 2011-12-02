@@ -291,7 +291,7 @@ function(Aloha, jQuery, FloatingMenu, Observable, Registry) {
 			block = new (this.blockTypes.get(attributes['aloha-block-type']))($element);
 			block.$element.addClass('aloha-block-' + attributes['aloha-block-type']);
 			jQuery.each(attributes, function(k, v) {
-				// We use the private API here, as we need to be able to set internal properties as well
+				// We use the private API here, as we need to be able to set internal properties as well, and we do not want to trigger renering.
 				block._setAttribute(k, v);
 			});
 

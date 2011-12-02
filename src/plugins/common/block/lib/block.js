@@ -93,26 +93,35 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 				this.id = $element.attr('id');
 			} else {
 				this.id = GENTICS.Utils.guid();
-				this.$element.attr('id', this.id);
+				$element.attr('id', this.id);
 			}
 
-			this.$element.contentEditable(false);
+			$element.contentEditable(false);
 
-			this.$element.addClass('aloha-block');
+			$element.addClass('aloha-block');
 
 			if (this.isDraggable()) {
 				// Remove default drag/drop behavior of the browser
-				this.$element.find('img').attr('draggable', 'false');
-				this.$element.find('a').attr('draggable', 'false');
+				$element.find('img').attr('draggable', 'false');
+				$element.find('a').attr('draggable', 'false');
 			}
 
-			// Register event handlers for activating an Aloha Block
-			this.$element.bind('click', function(event) {
+			// While the event handler is defined here, it is connected to the DOM element inside "_connectThisBlockToDomElement"
+			this._onElementClickHandler = function(event) {
 				that._fixScrollPositionBugsInIE();
 
-				// Activate the block element and stop event propagation
-				that.activate(event.target);
-			});
+
+				if (jQuery(event.target).closest('.aloha-block').get(0) !== that.$element.get(0)) {
+					BlockManager.getBlock(jQuery(event.target).closest('.aloha-block')).activate(event.target);
+				} else {
+					// Activate the block element and stop event propagation
+					that.activate(event.target);
+				}
+			};
+
+			// Register event handlers on the block
+			this._connectThisBlockToDomElement($element);
+
 
 			// This is executed when a block is selected through caret handling
 			//Aloha.bind('aloha-block-selected', function(event,obj) {
@@ -121,22 +130,62 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 			//	}
 			//});
 
-			// We need to tell Aloha that we handle the event already;
-			// else a selection of block contents will *not* select
-			// the block.
-			this.$element.bind('mousedown', function() {
-				Aloha.Selection.preventSelectionChanged();
-			}).bind('focus', function() {
-				Aloha.Selection.preventSelectionChanged();
-			}).bind('dblclick', function() {
-				Aloha.Selection.preventSelectionChanged();
-			});
-
 			this.init(this.$element);
 
 			this._postProcessElementIfNeeded();
 
 			this._initialized = true;
+		},
+
+		/**
+		 * Is set inside the constructor to the event handler function
+		 * which should be executed when the element is clicked.
+		 *
+		 * NOTE: Purely internal, "this" is not available inside this method!
+		 */
+		_onElementClickHandler: null,
+
+		/**
+		 * We need to tell Aloha that we handle the event already;
+		 * else a selection of a nested editable will *not* select
+		 * the block.
+		 *
+		 * This callback is bound to the mousedown, focus and dblclick events.
+		 *
+		 * NOTE: Purely internal, "this" is not available inside this method!
+		 */
+		_preventSelectionChangedEventHandler: function() {
+			Aloha.Selection.preventSelectionChanged();
+		},
+
+		/**
+		 * This method connects this block object to the passed DOM element.
+		 * In detail, this method does the following:
+		 *
+		 * - if this.$element is already set, remove all block event handlers
+		 * - sets this.$element = jQuery(newElement)
+		 * - initialize event listeners on this.$element
+		 * - TODO: call init??
+		 *
+		 * The method is called in two contexts: First, when a block is constructed
+		 * to initialize the event listeners etc. Second, it is ALSO called when
+		 * a block inside a nested block with editable in between is detected
+		 * as inconsistent.
+		 */
+		_connectThisBlockToDomElement: function(newElement) {
+			var $newElement = jQuery(newElement);
+			if (this.$element) {
+				this.$element.unbind('click', this._onElementClickHandler);
+				this.$element.unbind('mousedown', this._preventSelectionChangedEventHandler);
+				this.$element.unbind('focus', this._preventSelectionChangedEventHandler);
+				this.$element.unbind('dblclick', this._preventSelectionChangedEventHandler);
+			}
+			this.$element = $newElement;
+
+			this.$element.bind('click', this._onElementClickHandler);
+			this.$element.bind('mousedown', this._preventSelectionChangedEventHandler);
+			this.$element.bind('focus', this._preventSelectionChangedEventHandler);
+			this.$element.bind('dblclick', this._preventSelectionChangedEventHandler);
 		},
 
 		/**
@@ -371,6 +420,8 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 		 */
 		_postProcessElementIfNeeded: function() {
 			this.createEditablesIfNeeded();
+			this._checkThatNestedBlocksAreStillConsistent();
+
 			this.renderBlockHandlesIfNeeded();
 			if (this.isDraggable() && this.$element[0].tagName.toLowerCase() === 'span') {
 				this._setupDragDropForInlineElements();
@@ -379,6 +430,14 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 				this._setupDragDropForBlockElements();
 				this._disableUglyInternetExplorerDragHandles();
 			}
+		},
+		_checkThatNestedBlocksAreStillConsistent: function() {
+			this.$element.find('.aloha-block').each(function() {
+				var block = BlockManager.getBlock(this);
+				if (block && block.$element[0] !== this) {
+					block._connectThisBlockToDomElement(this);
+				}
+			});
 		},
 
 		/**

@@ -70,8 +70,8 @@
 .aloha-block {
 	position:relative;
 }
-.aloha-block:hover .aloha-block-draghandle,
-.aloha-block-active .aloha-block-draghandle {
+.aloha-block:hover > .aloha-block-draghandle,
+.aloha-block-active > .aloha-block-draghandle {
 	display:block;
 }
 .aloha-block-draghandle {

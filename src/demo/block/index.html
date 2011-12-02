@@ -16,6 +16,9 @@
 					defaults : {
 						'.default-block': {
 						},
+						'.columnBlock': {
+							'aloha-block-type': 'ColumnBlock'
+						},
 						'.product-teaser': {
 							'aloha-block-type': 'ProductTeaserBlock'
 						},
@@ -38,7 +41,7 @@
 
 						'.editable-product-teaser': {
 							'aloha-block-type': 'EditableProductTeaserBlock'
-						},
+						}
 						/*'.customhandles': {
 							'aloha-block-type': 'CustomHandleBlock'
 						},
@@ -46,9 +49,7 @@
 						'.two-columns': {
 							'aloha-block-type': 'TwoColumnBlock'
 						},*/
-						'.columnBlock': {
-							'aloha-block-type': 'ColumnBlock'
-						}
+
 
 					}
 				}
@@ -286,7 +287,7 @@
 						<p>This is a default aloha block without special type, which uses the <strong>DefaultRenderer</strong>. It
 						is not editable and embedded as a "block" element.</p>
 					</div>
-					<p>Some more text</p>
+					<p>Some more text with the <span class="company" data-symbol="AAPL">Apple</span> stocks</p>
 				</div>
 				<div class="clear"></div>
 			</div>
@@ -295,7 +296,7 @@
 
 			<hr /><hr /><hr />
 			<h2>TODO</h2>
-			<p>Here follows the <b>editable product teaser example</b>: Try our new <span class="editable-product-teaser" data-sku="2423423" data-title="Big can of fresh Aloha soup" data-price="27"><span class="aloha-block">Big can of fresh Aloha soup</span> (27 €)</span> - which enables some great stuff.
+			<p>Here follows the <b>editable product teaser example</b>: Try our new <span class="editable-product-teaser" data-sku="2423423" data-title="Big can of fresh Aloha soup" data-price="27"><span class="aloha-editable">Big can of fresh Aloha soup</span> (27 €)</span> - which enables some great stuff.
 			<h2>Inline blocks outside editable</h2>
 			<div>
 				<p><b>This is the Product Teaser Example:</b> Try our new <span class="product-teaser" data-sku="2423423" data-title="Big can of fresh Aloha soup" data-price="27">Big can of fresh Aloha soup <span class="price">(27 €)</span></span>, it tastes delicious!</p>
