@@ -510,7 +510,7 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 					that._fixScrollPositionBugsInIE();
 				}
 			}
-
+			var editablesWhichNeedToBeCleaned = [];
 			this.$element.draggable({
 				handle: '.aloha-block-draghandle',
 				scope: 'aloha-block-inlinedragdrop',
@@ -522,10 +522,15 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 					if (Ext.isIE7) {
 						dropFn();
 					}
-					that._dd_traverseDomTreeAndRemoveSpans(that.$element.parents('.aloha-editable').get(0));
+					jQuery.each(editablesWhichNeedToBeCleaned, function() {
+						that._dd_traverseDomTreeAndRemoveSpans(this);
+					})
 					$currentDraggable = null;
+
+					editablesWhichNeedToBeCleaned = [];
 				},
 				start: function() {
+					editablesWhichNeedToBeCleaned = [];
 					// Make **ALL** editables on the page droppable, such that it is possible
 					// to drag/drop *across* editable boundaries
 					jQuery('.aloha-editable').children().droppable({
@@ -539,6 +544,10 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 						 * them droppable.
 						 */
 						over: function(event, ui) {
+							if (editablesWhichNeedToBeCleaned.indexOf(this) === -1) {
+								editablesWhichNeedToBeCleaned.push(this);
+							}
+
 							$currentDraggable = ui.draggable;
 
 							that._dd_traverseDomTreeAndWrapCharactersWithSpans(this);
