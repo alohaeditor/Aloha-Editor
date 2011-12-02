@@ -398,15 +398,17 @@ h4. Browser Compatibility Matrix
 |_. Deletion of single blocks (block-level)     |  ✓         |  ✓         |  ✓    | ✓     | ✓     |      ✘              |
 |_. Deletion of single blocks (inline)          |  ✓         |  ✓         |  ✓    | ✓     | ✓     |      ✘              |
 |_. Deletion of blocks being part of selection  |  ✓         |  ✓         |  ✓    | ✓     | ✓     |      ✘              |
+|_. nested inline Blocks inside editables       |  ✓         |  ✓         |  ✓    | ✓     | ✓     |      -              |
+|_. nested block-level Blocks inside editables  |  ✓         |  ✓         |  ✓    | ✓     | ✓     |      -              |
+|_. nested inline Blocks drag/drop              |  ✓         |  ✓         |  ✓    | ✓     | ✓     |      -              |
+|_. nested block-level Blocks drag/drop         |  ✓         |  ✓         |  ✓    | ✓     | ✓     |      -              |
 |_. Caret handling of inline blocks             |  ✘         |  ✘         |  ✘    | ✘     | ✘     |      ✘              |
 
-|_. "Column Block" example                      |  TODO      |  ✓         |  TODO | TODO  | TODO  |      -              |
-|_. nested inline Blocks inside editables       |  TODO      |  ✘         |  TODO | TODO  | TODO  |      -              |
-|_. nested block-level Blocks inside editables  |  TODO      |  ✘         |  TODO | TODO  | TODO  |      -              | |
-|_. nested inline Blocks outside editables      |  TODO      |  ✘         |  TODO | TODO  | TODO  |      -              |
-|_. nested block-level Blocks outside editables |  TODO      |  ✘         |  TODO | TODO  | TODO  |      -              | |
 
-TODO: DragDrop across block boundaries
+|_. nested inline Blocks outside editables      |  TODO      |  TODO      |  TODO | TODO  | TODO  |      -              |
+|_. nested block-level Blocks outside editables |  TODO      |  TODO      |  TODO | TODO  | TODO  |      -              |
+
+
 
 h3. Changelog
 
