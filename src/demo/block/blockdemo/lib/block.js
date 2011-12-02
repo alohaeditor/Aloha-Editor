@@ -178,6 +178,64 @@ define([
 		}
 	});
 
+	var ColumnBlock = block.AbstractBlock.extend({
+		title: 'Columns',
+
+		getSchema: function() {
+			return {
+				'columns': {
+					type: 'number',
+					label: 'Number of Columns',
+					range: {
+						min: 1,
+						max: 4,
+						step: 1
+					}
+				}
+			}
+		},
+		init: function($element) {
+			this.calculateColumnWidths($element);
+		},
+		update: function($element, postProcessFn) {
+			this.updateDataAttributesFromColumnContents($element);
+
+			var numberOfColumns = parseInt(this.attr('columns'));
+			var columnDifference = numberOfColumns - $element.find('.column').length;
+			if (columnDifference < 0) {
+				// we need to remove the last N columns
+				$element.find('.column').slice(columnDifference).remove();
+			} else {
+				// add new columns
+				for (var i=0; i<columnDifference; i++) {
+					var $column = jQuery('<div class="column aloha-editable" />');
+					if (this.attr('column-contents-' + (numberOfColumns - columnDifference + i))) {
+						$column.html(this.attr('column-contents-' + (numberOfColumns - columnDifference + i)));
+					} else {
+						$column.html('Some content');
+					}
+
+					$element.append($column);
+				}
+			}
+
+			this.calculateColumnWidths($element);
+			this.$element.find('.clear').remove();
+			this.$element.append(jQuery('<div class="clear" />'));
+			postProcessFn();
+		},
+		updateDataAttributesFromColumnContents: function($element) {
+			var that = this;
+			$element.find('.column').each(function(i, el) {
+				that.attr('column-contents-' + i, jQuery(el).html());
+			});
+		},
+		calculateColumnWidths: function($element) {
+			var numberOfColumns = $element.find('.column').length;
+			$element.find('.column').css('width', Math.floor(100 / numberOfColumns) + '%');
+		}
+	});
+
 	return {
 		CompanyBlock: CompanyBlock,
 		EditableProductTeaserBlock: EditableProductTeaserBlock,
@@ -185,6 +243,7 @@ define([
 		ImageBlock: ImageBlock,
 		EditableImageBlock: EditableImageBlock,
 		NewsBlock: NewsBlock,
-		SortableNewsBlock: SortableNewsBlock
+		SortableNewsBlock: SortableNewsBlock,
+		ColumnBlock: ColumnBlock
 	};
 });

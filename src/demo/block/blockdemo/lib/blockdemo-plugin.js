@@ -22,6 +22,7 @@ define([
 			BlockManager.registerBlockType('EditableImageBlock', block.EditableImageBlock);
 			BlockManager.registerBlockType('NewsBlock', block.NewsBlock);
 			BlockManager.registerBlockType('SortableNewsBlock', block.SortableNewsBlock);
+			BlockManager.registerBlockType('ColumnBlock', block.ColumnBlock);
 		}
 	});
 });

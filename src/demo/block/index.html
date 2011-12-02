@@ -38,7 +38,7 @@
 
 						'.editable-product-teaser': {
 							'aloha-block-type': 'EditableProductTeaserBlock'
-						}
+						},
 						/*'.customhandles': {
 							'aloha-block-type': 'CustomHandleBlock'
 						},
@@ -46,6 +46,9 @@
 						'.two-columns': {
 							'aloha-block-type': 'TwoColumnBlock'
 						},*/
+						'.columnBlock': {
+							'aloha-block-type': 'ColumnBlock'
+						}
 
 					}
 				}
@@ -138,24 +141,24 @@
 		</p>
 		<div id="bodyContent">
 
-
-
 			<h2><a name="non-block-outside"></a>(1)Non-editable (2)"Block"-Element Blocks (3)outside editable</h2>
-			<h3>DefaultRenderer</h3>
-			<div class="default-block">
-				<p>This is a default aloha block without special type, which uses the <strong>DefaultRenderer</strong>. It
-				is not editable and embedded as a "block" element.</p>
-			</div>
-
-			<h3>News Listing example</h3>
-			<div class="news-block" data-numberofarticles="2">
-				<div class="newselement">
-					<h4>News Title 1</h4>
-					<p>Drosera brevifolia (the dwarf, small or red sundew), is a carnivorous plant of the family Droseraceae and is the smallest sundew species native to the United States. This species differs considerably from the pink sundew, Drosera capillaris, by its wedge-shaped leaves, and distinctly deeper red to reddish purple color, noticeable when side by side with D. capillaris.</p>
+			<div class="no-aloha-area">
+				<h3>DefaultRenderer</h3>
+				<div class="default-block">
+					<p>This is a default aloha block without special type, which uses the <strong>DefaultRenderer</strong>. It
+					is not editable and embedded as a "block" element.</p>
 				</div>
-				<div class="newselement">
-					<h4>News Title 2</h4>
-					<p>Bednarz studied Slavic studies, theatre and Eastern Europe history at universities in Hamburg, Wien and Moskow. His dissertation at university was over russian author Anton Chekhov. Since 1967 Bednarz worked for German television as Correspondent in Poland (1971–1977) and in Soviet Union (1977-1982). Later he was television presenter of german tv-programme Monitor on German broadcaster Westdeutscher Rundfunk. During these years Bednarz wrote several books over Eastern Europe countries and over the south of South America.</p>
+
+				<h3>News Listing example</h3>
+				<div class="news-block" data-numberofarticles="2">
+					<div class="newselement">
+						<h4>News Title 1</h4>
+						<p>Drosera brevifolia (the dwarf, small or red sundew), is a carnivorous plant of the family Droseraceae and is the smallest sundew species native to the United States. This species differs considerably from the pink sundew, Drosera capillaris, by its wedge-shaped leaves, and distinctly deeper red to reddish purple color, noticeable when side by side with D. capillaris.</p>
+					</div>
+					<div class="newselement">
+						<h4>News Title 2</h4>
+						<p>Bednarz studied Slavic studies, theatre and Eastern Europe history at universities in Hamburg, Wien and Moskow. His dissertation at university was over russian author Anton Chekhov. Since 1967 Bednarz worked for German television as Correspondent in Poland (1971–1977) and in Soviet Union (1977-1982). Later he was television presenter of german tv-programme Monitor on German broadcaster Westdeutscher Rundfunk. During these years Bednarz wrote several books over Eastern Europe countries and over the south of South America.</p>
+					</div>
 				</div>
 			</div>
 
@@ -199,21 +202,23 @@
 
 
 			<h2><a name="non-inline-outside"></a>(1)Non-editable (2)Inline Blocks (3)outside editable</h2>
-			<h3>Inline Element</h3>
-			<p><b>This is the Product Teaser Example:</b> Try our new <span class="product-teaser" data-sku="2423423" data-title="Big can of fresh Aloha soup" data-price="27">Big can of fresh Aloha soup <span class="price">(27 €)</span></span>, it tastes delicious!</p>
-			<p>Some other content here...</p>
-			<p><b>Stock Quote example:</b> When you hover over the name of the <span class="company" data-symbol="MSFT">Microsoft</span> company, the stock quotes are shown.</p>
-			<p>Some more content...</p>
-			<h3>Floating Element</h3>
-			<p><span class="imageBlock" data-position="right" style="float:right"><img src="blockdemo/img/stock-quote-aapl.gif" /></span>
-			Super Dodge Ball Advance,<span class="default-block">Some Text</span> released in Japan as Bakunetsu Dodgeball Fighters (爆熱ドッジボールファイターズ?, "Bakunetsu" meaning "Burning Heat"), dodge ball game based on the Super Dodge Ball. While based on the original Super Dodge Ball series, the game does not feature the Kunio-kun characters from the original game due to copyrights issues, as developer Million did not obtain the rights to the Kunio-kun characters until the following year.[citation needed] However, the game uses a remixed version of opening and ending songs from Technos Japan Corp's Super Dodge Ball games.
-			from WikipediaSuper Dodge Ball Advance, released in Japan as Bakunetsu Dodgeball Fighters (爆熱ドッジボールファイターズ?, "Bakunetsu" meaning "Burning Heat"), dodge ball game based on the Super Dodge Ball. While based on the original Super Dodge Ball series, the game does not feature the Kunio-kun characters from the original game due to copyrights issues, as developer Million did not obtain the rights to the Kunio-kun characters until the following year.[citation needed] However, the game uses a remixed version of opening and ending songs from Technos Japan Corp's Super Dodge Ball games.
-			from Wikipedia
-			</p>
-			<p>
-			Super Dodge Ball Advance, released in Japan as Bakunetsu Dodgeball Fighters (爆熱ドッジボールファイターズ?, "Bakunetsu" meaning "Burning Heat"), dodge ball game based on the Super Dodge Ball. While based on the original Super Dodge Ball series, the game does not feature the Kunio-kun characters from the original game due to copyrights issues, as developer Million did not obtain the rights to the Kunio-kun characters until the following year.[citation needed] However, the game uses a remixed version of opening and ending songs from Technos Japan Corp's Super Dodge Ball games.
-			from Wikipedia
-			</p>
+			<div class="no-aloha-area">
+				<h3>Inline Element</h3>
+				<p><b>This is the Product Teaser Example:</b> Try our new <span class="product-teaser" data-sku="2423423" data-title="Big can of fresh Aloha soup" data-price="27">Big can of fresh Aloha soup <span class="price">(27 €)</span></span>, it tastes delicious!</p>
+				<p>Some other content here...</p>
+				<p><b>Stock Quote example:</b> When you hover over the name of the <span class="company" data-symbol="MSFT">Microsoft</span> company, the stock quotes are shown.</p>
+				<p>Some more content...</p>
+				<h3>Floating Element</h3>
+				<p><span class="imageBlock" data-position="right" style="float:right"><img src="blockdemo/img/stock-quote-aapl.gif" /></span>
+				Super Dodge Ball Advance,<span class="default-block">Some Text</span> released in Japan as Bakunetsu Dodgeball Fighters (爆熱ドッジボールファイターズ?, "Bakunetsu" meaning "Burning Heat"), dodge ball game based on the Super Dodge Ball. While based on the original Super Dodge Ball series, the game does not feature the Kunio-kun characters from the original game due to copyrights issues, as developer Million did not obtain the rights to the Kunio-kun characters until the following year.[citation needed] However, the game uses a remixed version of opening and ending songs from Technos Japan Corp's Super Dodge Ball games.
+				from WikipediaSuper Dodge Ball Advance, released in Japan as Bakunetsu Dodgeball Fighters (爆熱ドッジボールファイターズ?, "Bakunetsu" meaning "Burning Heat"), dodge ball game based on the Super Dodge Ball. While based on the original Super Dodge Ball series, the game does not feature the Kunio-kun characters from the original game due to copyrights issues, as developer Million did not obtain the rights to the Kunio-kun characters until the following year.[citation needed] However, the game uses a remixed version of opening and ending songs from Technos Japan Corp's Super Dodge Ball games.
+				from Wikipedia
+				</p>
+				<p>
+				Super Dodge Ball Advance, released in Japan as Bakunetsu Dodgeball Fighters (爆熱ドッジボールファイターズ?, "Bakunetsu" meaning "Burning Heat"), dodge ball game based on the Super Dodge Ball. While based on the original Super Dodge Ball series, the game does not feature the Kunio-kun characters from the original game due to copyrights issues, as developer Million did not obtain the rights to the Kunio-kun characters until the following year.[citation needed] However, the game uses a remixed version of opening and ending songs from Technos Japan Corp's Super Dodge Ball games.
+				from Wikipedia
+				</p>
+			</div>
 
 
 
@@ -239,13 +244,14 @@
 
 
 			<h2><a name="edit-block-outside"></a>(1)editable (2)"Block"-Element Blocks (3)outside editable</h2>
-			<div class="editableImageBlock">
-				<img src="blockdemo/img/stock-quote-aapl.gif" />
-				<div class="aloha-editable">This Image Caption is editable through Aloha.</div>
+			<div class="no-aloha-area">
+				<div class="editableImageBlock">
+					<img src="blockdemo/img/stock-quote-aapl.gif" />
+					<div class="aloha-editable">This Image Caption is editable through Aloha.</div>
+				</div>
+				<p>Williams, and other pilots who worked for British Airways claimed that their holiday pay was too low, because it only reflected his fixed salary, and not his bonuses. Williams' comprised a fixed annual salary, a "flying pay supplement" that went up the more he flew, and a "time away from base" which went up the more he was away from home. The flying and time away allowances were capped. Properly construed, his contract suggested that his holiday pay would be at the rate of only his fixed salary. Williams, however, contended that this was contrary to the Civil Aviation Working Time Directive,[1] as implemented by the Civil Aviation (Working Time) Regulations 2004,[2] (sector-specific implementations with the same objective as the Working Time Directive and the Working Time Regulations 1998 in this respect). In absence of particular provisions, the pay while on leave should be "normal remuneration". British Airways contended that because the Employment Rights Act 1996 sections 221 to 224 did not have provisions on how to determine a week's pay, the rate should be determined with reference to the contract.
+	The Employment Appeal Tribunal allowed Williams' claim, but this was reversed in the Court of Appeal.[3] The Supreme Court made a reference to the European Court of Justice.</p>
 			</div>
-			<p>Williams, and other pilots who worked for British Airways claimed that their holiday pay was too low, because it only reflected his fixed salary, and not his bonuses. Williams' comprised a fixed annual salary, a "flying pay supplement" that went up the more he flew, and a "time away from base" which went up the more he was away from home. The flying and time away allowances were capped. Properly construed, his contract suggested that his holiday pay would be at the rate of only his fixed salary. Williams, however, contended that this was contrary to the Civil Aviation Working Time Directive,[1] as implemented by the Civil Aviation (Working Time) Regulations 2004,[2] (sector-specific implementations with the same objective as the Working Time Directive and the Working Time Regulations 1998 in this respect). In absence of particular provisions, the pay while on leave should be "normal remuneration". British Airways contended that because the Employment Rights Act 1996 sections 221 to 224 did not have provisions on how to determine a week's pay, the rate should be determined with reference to the contract.
-The Employment Appeal Tribunal allowed Williams' claim, but this was reversed in the Court of Appeal.[3] The Supreme Court made a reference to the European Court of Justice.</p>
-
 
 
 			<h2><a name="edit-block-inside"></a>(1)editable (2)"Block"-Element Blocks (3)inside editable</h2>
@@ -259,6 +265,30 @@ The Employment Appeal Tribunal allowed Williams' claim, but this was reversed in
 	The Employment Appeal Tribunal allowed Williams' claim, but this was reversed in the Court of Appeal.[3] The Supreme Court made a reference to the European Court of Justice.</p>
 				<p>Williams, and other pilots who worked for British Airways claimed that their holiday pay was too low, because it only reflected his fixed salary, and not his bonuses. Williams' comprised a fixed annual salary, a "flying pay supplement" that went up the more he flew, and a "time away from base" which went up the more he was away from home. The flying and time away allowances were capped. Properly construed, his contract suggested that his holiday pay would be at the rate of only his fixed salary. Williams, however, contended that this was contrary to the Civil Aviation Working Time Directive,[1] as implemented by the Civil Aviation (Working Time) Regulations 2004,[2] (sector-specific implementations with the same objective as the Working Time Directive and the Working Time Regulations 1998 in this respect). In absence of particular provisions, the pay while on leave should be "normal remuneration". British Airways contended that because the Employment Rights Act 1996 sections 221 to 224 did not have provisions on how to determine a week's pay, the rate should be determined with reference to the contract.
 	The Employment Appeal Tribunal allowed Williams' claim, but this was reversed in the Court of Appeal.[3] The Supreme Court made a reference to the European Court of Justice.</p>
+			</div>
+
+
+
+			<hr /><hr /><hr />
+			<h2>Block which contains a variable number of editable columns</h2>
+			<h3>The following CMS systems use Aloha:</h3>
+			<div class="columnBlock" data-columns="2">
+				<div class="column aloha-editable">
+					<h2>TYPO3 Phoenix</h2>
+					<p>TYPO3 Phoenix is the next-generation Open Source CMS system built on FLOW3. FLOW3 is a <b>PHP-based</b> Enterprise Web Framework suitable for large applications.</p>
+					<p>This is some test with a nested block: <span class="company" data-symbol="MSFT">Microsoft</span> -- curious if it works!</p>
+				</div>
+				<div class="column aloha-editable">
+					<h2>Gentics Content.Node</h2>
+					<p>Gentics Content.Node is a leading CMS for big organizations and governments. The team behind Content.Node puts a lot of work into Aloha.</p>
+					<p>Here follows a non-editable block</p>
+					<div class="default-block">
+						<p>This is a default aloha block without special type, which uses the <strong>DefaultRenderer</strong>. It
+						is not editable and embedded as a "block" element.</p>
+					</div>
+					<p>Some more text</p>
+				</div>
+				<div class="clear"></div>
 			</div>
 
 
