@@ -130,9 +130,6 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 			//	}
 			//});
 
-			this.init(this.$element);
-
-			this._postProcessElementIfNeeded();
 
 			this._initialized = true;
 		},
@@ -165,7 +162,7 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 		 * - if this.$element is already set, remove all block event handlers
 		 * - sets this.$element = jQuery(newElement)
 		 * - initialize event listeners on this.$element
-		 * - TODO: call init??
+		 * - call init()
 		 *
 		 * The method is called in two contexts: First, when a block is constructed
 		 * to initialize the event listeners etc. Second, it is ALSO called when
@@ -173,6 +170,7 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 		 * as inconsistent.
 		 */
 		_connectThisBlockToDomElement: function(newElement) {
+			var that = this;
 			var $newElement = jQuery(newElement);
 			if (this.$element) {
 				this.$element.unbind('click', this._onElementClickHandler);
@@ -186,6 +184,10 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 			this.$element.bind('mousedown', this._preventSelectionChangedEventHandler);
 			this.$element.bind('focus', this._preventSelectionChangedEventHandler);
 			this.$element.bind('dblclick', this._preventSelectionChangedEventHandler);
+
+			this.init(this.$element, function() {
+				that._postProcessElementIfNeeded();
+			});
 		},
 
 		/**
@@ -209,10 +211,21 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 		 * on the block, depending on the block contents. You will most probably
 		 * use $element and this.attr() inside this function.
 		 *
-		 * @param {jQuery} $element the block-level element.
+		 * !!! This method can be called *multiple times*, as it is called each time
+		 * when $element has been disconnected from the DOM (which can happen because of various reasons)
+		 * and the block needs to re-initialize. So make sure this method can be called *MULTIPLE TIMES*
+		 * and always returns predictable results. This method must be idempotent, same as update().
+		 *
+		 * Furthermore, always when this method is finished, you need to call postProcessFn() afterwards.
+		 * This function adds drag handles and other controls if necessary.
+		 *
+		 * @param {jQuery} $element a shortcut to the block's DOM element (this.$element) for easy processing
+		 * @param {Function} postProcessFn this function MUST be called at all times the $element has been updated; as it adds drag/drop/delete/... handles if necessary
 		 * @api
 		 */
-		init: function($element) {},
+		init: function($element, postProcessFn) {
+			postProcessFn();
+		},
 
 		/**
 		 * Destroy this block instance completely. Removes the element from the DOM,
@@ -900,8 +913,6 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 	var DefaultBlock = AbstractBlock.extend(
 	/** @lends block.block.DefaultBlock */
 	{
-		init: function() {
-		},
 		update: function($element, postProcessFn) {
 			postProcessFn();
 		}
@@ -916,8 +927,8 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 	/** @lends block.block.DebugBlock */
 	{
 		title: 'Debugging',
-		init: function() {
-			this.update();
+		init: function($element, postProcessFn) {
+			this.update($element, postProcessFn);
 		},
 		update: function($element, postProcessFn) {
 			$element.css({display: 'block'});

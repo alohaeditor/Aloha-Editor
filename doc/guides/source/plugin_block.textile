@@ -199,7 +199,11 @@ Now, you can implement the main API of the block, as explained in the next secti
 
 h4. Initialization and Rendering API
 
-The first method you can override is the +init($element)+ method. There, you get the jQuery @$element@ as argument, and can use it to register f.e. custom event handlers or initialize the block contents. Furthermore, you can set block attributes using the @attr()@ method if needed.
+The first method you can override is the +init($element, postProcessFn)+ method. There, you get the jQuery @$element@ as argument, and can use it to register f.e. custom event handlers or initialize the block contents. The second parameter is a function which needs to be run *always* after init() is complete. Furthermore, you can set block attributes using the @attr()@ method if needed.
+
+NOTE: init() requires you to call *postProcessFn*, as this enables you to do asynchronous queries inside init().
+
+WARNING: +init()+ can be called multiple times under some circumstances; so do *not* rely on the fact that init is only run once in your code. See the API doc about @init()@ for further explanations on this.
 
 After the +init()+ method, the @$element@ is *augumented* by additional DOM nodes, which are needed f.e. for the drag/drop handles of the block.
 

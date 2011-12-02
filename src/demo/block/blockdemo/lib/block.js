@@ -24,7 +24,7 @@ define([
 				}
 			};
 		},
-		init: function($element) {
+		init: function($element, postProcessFn) {
 			var that = this;
 			$element.mouseover(function() {
 				$element.append('<span class="stock-quote-overlay company-' + that.attr('symbol') + '"></span>');
@@ -32,6 +32,7 @@ define([
 			$element.mouseout(function() {
 				$element.find('.stock-quote-overlay').remove();
 			});
+			postProcessFn();
 		},
 		update: function($element, postProcessFn) {
 			// Mapping Stock-Symbol -- Company Name (Fake!)
@@ -114,8 +115,9 @@ define([
 				}
 			}
 		},
-		init: function($element) {
+		init: function($element, postProcessFn) {
 			this.attr('image', $element.find('img').attr('src'));
+			postProcessFn();
 		},
 		update: function($element, postProcessFn) {
 			if (this.attr('position') === 'right') {
@@ -168,13 +170,15 @@ define([
 
 	var SortableNewsBlock = NewsBlock.extend({
 		title: 'Sortable News',
-		init: function() {
+		init: function($element, postProcessFn) {
 			var that = this;
-			this.$element.sortable({
+			$element.sortable({
 				stop: function() {
 					that._fixScrollPositionBugsInIE();
 				}
 			});
+
+			postProcessFn();
 		}
 	});
 
@@ -194,8 +198,9 @@ define([
 				}
 			}
 		},
-		init: function($element) {
+		init: function($element, postProcessFn) {
 			this.calculateColumnWidths($element);
+			postProcessFn();
 		},
 		update: function($element, postProcessFn) {
 			this.updateDataAttributesFromColumnContents($element);
