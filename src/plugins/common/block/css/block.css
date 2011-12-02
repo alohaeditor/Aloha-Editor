@@ -6,7 +6,7 @@
 	padding: 4px;
 	width: 100%;
 }
-.aloha-block:hover {
+.aloha-block:hover, .aloha-block.aloha-block-highlighted {
 	cursor: pointer;
 	box-shadow: 0 0 0px 1px #FFE98A; /* We use box-shadow because of a Firefox rendering bug with "outline" */
 }

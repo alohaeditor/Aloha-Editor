@@ -108,13 +108,11 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 
 			// While the event handler is defined here, it is connected to the DOM element inside "_connectThisBlockToDomElement"
 			this._onElementClickHandler = function(event) {
-				that._fixScrollPositionBugsInIE();
-
-
-				if (jQuery(event.target).closest('.aloha-block').get(0) !== that.$element.get(0)) {
-					BlockManager.getBlock(jQuery(event.target).closest('.aloha-block')).activate(event.target);
-				} else {
-					// Activate the block element and stop event propagation
+				// We only activate ourselves if we are the innermost aloha-block.
+				// If we are not the innermost aloha-block, we get highlighted (but not activated) automatically
+				// by the innermost block.
+				if (jQuery(event.target).closest('.aloha-block').get(0) === that.$element.get(0)) {
+					that._fixScrollPositionBugsInIE();
 					that.activate(event.target);
 				}
 			};
@@ -311,37 +309,33 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 		 * @api
 		 */
 		activate: function(eventTarget) {
-			var previouslyHighlightedBlocks = BlockManager._getHighlightedBlocks(),
-				highlightedBlocks = [];
+			var highlightedBlocks = [];
 
-			delete previouslyHighlightedBlocks[this.id];
-
-			FloatingMenu.setScope('Aloha.Block.' + this.attr('aloha-block-type'));
-
-			this._highlight();
-			highlightedBlocks.push(this);
-
-			this.$element.parents('.aloha-block').each(function() {
-				var block = BlockManager.getBlock(this);
-				delete previouslyHighlightedBlocks[block.id];
-
-				block._highlight();
-				highlightedBlocks.push(block);
-			});
-			jQuery.each(previouslyHighlightedBlocks, function() {
+			// Deactivate currently highlighted blocks
+			jQuery.each(BlockManager._getHighlightedBlocks(), function() {
 				this.deactivate();
 			});
 
+			// Activate current block
+			FloatingMenu.setScope('Aloha.Block.' + this.attr('aloha-block-type'));
 			this.$element.addClass('aloha-block-active');
+			this._highlight();
+			highlightedBlocks.push(this);
+
+			// Highlight parent blocks
+			this.$element.parents('.aloha-block').each(function() {
+				var block = BlockManager.getBlock(this);
+				block._highlight();
+				highlightedBlocks.push(block);
+			});
 
 			// Browsers do not remove the cursor, so we enforce it when an aditable is clicked.
 			// However, when the user clicked inside a nested editable, we will not remove the cursor (as the user wants to start typing then)
 			if (jQuery(eventTarget).closest('.aloha-editable,.aloha-block').first().hasClass('aloha-block')) {
 				Aloha.getSelection().removeAllRanges();
 			}
-
+			// Trigger selection change event
 			BlockManager.trigger('block-selection-change', highlightedBlocks);
-			return false;
 		},
 
 		/**
