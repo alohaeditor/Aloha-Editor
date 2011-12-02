@@ -14,12 +14,22 @@ function(jQuery, Observable) {
 	"use strict";
 
 	/**
+	 * This is the base class for all editors in the sidebar. You need to extend
+	 * this class if you need to write your own editor. In most cases, however,
+	 * it is sufficent to subclass the AbstractFormElementEditor.
+	 *
 	 * @name block.editor.AbstractEditor
 	 * @class An abstract editor
 	 */
 	var AbstractEditor = Class.extend(Observable,
 	/** @lends block.editor.AbstractEditor */
 	{
+		/**
+		 * Schema of the current element
+		 *
+		 * @param {Object}
+		 * @api
+		 */
 		schema: null,
 
 		/**
@@ -30,24 +40,38 @@ function(jQuery, Observable) {
 		},
 
 		/**
-		 * Template method to render the editor elements
+		 * Template method to render the editor elements. Override it
+		 * in your subclass! Needs to return the jQuery element which
+		 * should be added to the DOM
+		 *
 		 * @return {jQuery}
+		 * @api
 		 */
 		render: function() {
 			// Implement in subclass!
 		},
 
 		/**
-		 * Template method to get the editor values
+		 * Template method to get the current editor value
+		 *
+		 * Override it in your subclass!
+		 *
+		 * @return {String}
+		 * @api
 		 */
 		getValue: function() {
 			// Implement in subclass!
 		},
 
 		/**
-		 * We do not throw any change event here, as we need to break the loop "Block" -> "Editor" -> "Block"
+		 * Method which is called at initialization time, to set the current value.
+		 *
+		 * Override it in your subclass!
+		 *
+		 * You should not throw any change event here, as we need to break the loop "Block" -> "Editor" -> "Block"
 		 *
 		 * @param {String} value
+		 * @api
 		 */
 		setValue: function(value) {
 			// Implement in subclass!
@@ -55,6 +79,7 @@ function(jQuery, Observable) {
 
 		/**
 		 * Destroy the editor elements and unbind events
+		 * @api
 		 */
 		destroy: function() {
 			// Implement in subclass!
@@ -72,6 +97,9 @@ function(jQuery, Observable) {
 	});
 
 	/**
+	 * This is a more specialized FormElementEditor which should be used
+	 * for form-based editors.
+	 *
 	 * @name block.editor.AbstractFormElementEditor
 	 * @class An abstract form editor with label
 	 * @extends block.editor.AbstractEditor
@@ -82,14 +110,19 @@ function(jQuery, Observable) {
 
 		/**
 		 * Input element HTML definition
+		 *
+		 * You need to override this in your subclass.
+		 *
 		 * @type String
 		 *
-		 * @private
+		 * @api
 		 */
 		formInputElementDefinition: null,
 
 		/**
-		 * @type jQuery
+		 * The jQuery element of the form input element.
+		 *
+		 * @type {jQuery}
 		 */
 		_$formInputElement: null,
 
@@ -106,7 +139,9 @@ function(jQuery, Observable) {
 		},
 
 		/**
-		 * Render the label for the editor
+		 * Render the label for the editor, by using the "label" property
+		 * from the schema.
+		 *
 		 * @return {jQuery}
 		 */
 		renderLabel: function() {
@@ -137,6 +172,7 @@ function(jQuery, Observable) {
 		 * form input element
 		 *
 		 * @param {jQuery} $formElement the form element being rendered
+		 * @api
 		 */
 		afterRenderFormElement: function($formElement) {
 

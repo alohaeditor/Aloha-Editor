@@ -359,6 +359,10 @@ this.trigger('change', this.getValue());
 
 Then the framework takes care of updating the attribute in the Aloha Block accordingly.
 
+If you subclass +AbstractFormElementEditor+, you mostly do not need to deal with the event handling yourself, as this is done for you. This can greatly simplify the editors.
+
+TIP: Check the example editors in @plugins/common/block/lib/editor.js@, they are really easy and small.
+
 h3. Advanced Topics
 
 h4. Custom Floating Menu?

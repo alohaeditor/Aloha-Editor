@@ -10,6 +10,10 @@ define([ 'aloha/jquery', 'block/blockmanager', 'aloha/sidebar', 'block/editorman
 	"use strict";
 
 	/**
+	 * The Sidebar Attribute Editor is the connector which listens on Aloha Blocks and
+	 * updates the sidebar accordingly. It builds the editors for the sidebar, initializes
+	 * them with initial values and updates the block attributes as soon as a value changes.
+	 *
 	 * @name block.sidebarattributeeditor
 	 * @class Sidebar attribute editor singleton
 	 */
@@ -84,7 +88,7 @@ define([ 'aloha/jquery', 'block/blockmanager', 'aloha/sidebar', 'block/editorman
 
 					deactivate: function() {
 						// On deactivating the panel, we need to tell each editor to deactivate itself,
-						// so it can throw another change event.
+						// so it can throw another change event if the value has been modified.
 						jQuery.each(editors, function(index, editor) {
 							editor._deactivate();
 						});
