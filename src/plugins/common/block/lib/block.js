@@ -544,11 +544,18 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 								tolerance: 'pointer',
 								addClasses: false,
 								scope: 'aloha-block-inlinedragdrop',
-								hoverClass: 'aloha-block-droppable',
 								over: function() {
+									if (lastHoveredCharacter) {
+										// Just to be sure, we remove the css class of the last hovered character.
+										// This is needed such that spans are deselected which contain multiple
+										// lines.
+										jQuery(lastHoveredCharacter).removeClass('aloha-block-droppable');
+									}
 									lastHoveredCharacter = this;
+									jQuery(this).addClass('aloha-block-droppable');
 								},
 								out: function() {
+									jQuery(this).removeClass('aloha-block-droppable');
 									if (lastHoveredCharacter === this) {
 										lastHoveredCharacter = null;
 									}
