@@ -533,7 +533,7 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 					editablesWhichNeedToBeCleaned = [];
 					// Make **ALL** editables on the page droppable, such that it is possible
 					// to drag/drop *across* editable boundaries
-					jQuery('.aloha-editable').children().droppable({
+					jQuery('.aloha-editable').children(':not(.aloha-block)').droppable({
 						// make block elements droppable
 						tolerance: 'pointer',
 						addClasses: false, // performance optimization

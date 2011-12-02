@@ -136,8 +136,9 @@
 				</tbody>
 			</table>
 			<ul>
-				<li>Nested blocks with editable in between - TODO</li>
-				<li>Nested blocks WITHOUT editable in between - <a href="#sortable-news-block">Tested</a></li>
+				<li>A block which has sortable contents - <a href="#sortable-news-block">Tested</a></li>
+				<li>Nested blocks with editable in between - <a href="#nested-blocks-editable">Tested</a></li>
+				<li>Nested blocks WITHOUT editable in between - TODO</li>
 			</ul>
 		</p>
 		<div id="bodyContent">
@@ -271,7 +272,7 @@
 
 
 			<hr /><hr /><hr />
-			<h2>Block which contains a variable number of editable columns</h2>
+			<h2><a name="nested-blocks-editable" />Block which contains a variable number of editable columns</h2>
 			<h3>The following CMS systems use Aloha:</h3>
 			<div class="columnBlock" data-columns="2">
 				<div class="column aloha-editable">
@@ -316,11 +317,6 @@
 		Aloha.jQuery('#teaser').aloha();
 		Aloha.jQuery('#content').aloha();
 		Aloha.jQuery('.textcontent').aloha();
-		// TODO: Find out why the below code crashes IE!!
-		/*Aloha.jQuery('#teaser').get(0).addEventListener('dragstart', function(e) {
-			e.preventDefault();
-			return false;
-		}, false);*/
 	});
 	</script>
 </body>
