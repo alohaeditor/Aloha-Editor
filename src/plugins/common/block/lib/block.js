@@ -335,6 +335,10 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 		 * @return Boolean
 		 */
 		isDraggable: function() {
+			if (this.$element[0].tagName.toLowerCase() === 'div' && this.$element.parents('.aloha-editable,.aloha-block,.aloha-block-collection').first().hasClass('aloha-block-collection')) {
+				// Here, we are inside an aloha-block-collection, and thus also need to be draggable.
+				return true;
+			}
 			return this.$element.parents('.aloha-editable,.aloha-block').first().hasClass('aloha-editable');
 		},
 
@@ -470,6 +474,7 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 		_postProcessElementIfNeeded: function() {
 			this.createEditablesIfNeeded();
 			this._checkThatNestedBlocksAreStillConsistent();
+			this._makeNestedBlockCollectionsSortable();
 
 			this.renderBlockHandlesIfNeeded();
 			if (this.isDraggable() && this.$element[0].tagName.toLowerCase() === 'span') {
@@ -480,6 +485,15 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 				this._disableUglyInternetExplorerDragHandles();
 			}
 		},
+
+		/**
+		 * Due to indeterminate initialization order of nested blocks,
+		 * it can happen that blockifying a parent block deconnects $element inside
+		 * child blocks.
+		 *
+		 * This is the case we detect here; and if it happens, we reconnect the
+		 * block to its currently visible DOM element.
+		 */
 		_checkThatNestedBlocksAreStillConsistent: function() {
 			this.$element.find('.aloha-block').each(function() {
 				var block = BlockManager.getBlock(this);
@@ -487,6 +501,23 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 					block._connectThisBlockToDomElement(this);
 				}
 			});
+		},
+
+		/**
+		 * If a nested element is marked as "aloha-block-collection",
+		 * we want to make it sortable, by calling the appropriate Block Manager
+		 * function.
+		 */
+		_makeNestedBlockCollectionsSortable: function() {
+			var that = this;
+			this.$element.find('.aloha-block-collection').each(function() {
+				var $blockCollection = jQuery(this);
+				if ($blockCollection.closest('.aloha-block').get(0) === that.$element.get(0)) {
+					// We are only responsible for one-level-down Block Collections, not
+					// for nested ones.
+					BlockManager.createBlockLevelSortableForEditableOrBlockCollection($blockCollection);
+				}
+			})
 		},
 
 		/**
@@ -849,7 +880,7 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 		 */
 		renderBlockHandlesIfNeeded: function() {
 			if (this.isDraggable()) {
-				if (this.$element.find('.aloha-block-draghandle').length == 0) {
+				if (this.$element.children('.aloha-block-draghandle').length === 0) {
 					this.$element.prepend('<span class="aloha-block-handle aloha-block-draghandle"></span>');
 				}
 			}

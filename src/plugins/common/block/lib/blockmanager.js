@@ -261,45 +261,53 @@ function(Aloha, jQuery, FloatingMenu, Observable, Registry) {
 		 * drop targets for block-level aloha blocks.
 		 */
 		initializeBlockLevelDragDrop: function() {
-			var createSortableForEditableIfNeeded = function($editable) {
-				if (!$editable.hasClass('aloha-block-blocklevel-sortable')) {
-
-					// We only want to make "block-level" aloha blocks sortable. According to the docs,
-					// sortable.cancel should have a CSS selector and if this matches, the element is only
-					// a drop target but NOT draggable. However, passing :not(.aloha-block) does not work somehow :-(
-					//
-					// Thus, we implemented the following alternative:
-					// Every "block-level" aloha block drag handle gets a new CSS class, and we only select this as
-					// drag handle. As only "block-level" aloha blocks have this CSS class, this will also only make
-					// aloha blocks draggable.
-					$editable.addClass('aloha-block-blocklevel-sortable').sortable({
-						revert: 100,
-						handle: '.aloha-block-draghandle-blocklevel',
-						connectWith: '.aloha-block-blocklevel-sortable' // we want to be able to drag an element to other editables
-					});
-
-
-					// Hack for Internet Explorer 8:
-					// If you first click inside an editable, and THEN want to drag a block-level block,
-					// it sometimes occurs that the *whole editable* is selected and should be dragged away.
-					// This breaks dragging of Aloha Blocks.
-					// Bugfix: We disable the "ondragstart" event on every editable.
-					// However, as the "ondragstart" is also fired when a nested (inline) editable is moved using drag/drop,
-					// we need to allow this case.
-					$editable.get(0).ondragstart = function (e, ui) {
-						if (!ui || !ui.helper || !ui.helper.is('.aloha-block')) {
-							// You tried to move something else than an aloha block
-							return false;
-						}
-					};
-				}
-			}
+			var that = this;
 			jQuery.each(Aloha.editables, function(i, editable) {
-				createSortableForEditableIfNeeded(editable.obj);
+				that.createBlockLevelSortableForEditableOrBlockCollection(editable.obj);
 			});
 			Aloha.bind('aloha-editable-created', function(e, editable) {
-				createSortableForEditableIfNeeded(editable.obj);
+				that.createBlockLevelSortableForEditableOrBlockCollection(editable.obj);
 			});
+		},
+
+		/**
+		 * We make editables or block collections sortable using jQuery UI here, if we
+		 * did not do this before.
+		 *
+		 * This is an internal method a user should never call!
+		 */
+		createBlockLevelSortableForEditableOrBlockCollection: function($editableOrBlockCollection) {
+			if (!$editableOrBlockCollection.hasClass('aloha-block-blocklevel-sortable')) {
+
+				// We only want to make "block-level" aloha blocks sortable. According to the docs,
+				// sortable.cancel should have a CSS selector and if this matches, the element is only
+				// a drop target but NOT draggable. However, passing :not(.aloha-block) does not work somehow :-(
+				//
+				// Thus, we implemented the following alternative:
+				// Every "block-level" aloha block drag handle gets a new CSS class, and we only select this as
+				// drag handle. As only "block-level" aloha blocks have this CSS class, this will also only make
+				// aloha blocks draggable.
+				$editableOrBlockCollection.addClass('aloha-block-blocklevel-sortable').sortable({
+					revert: 100,
+					handle: '.aloha-block-draghandle-blocklevel',
+					connectWith: '.aloha-block-blocklevel-sortable' // we want to be able to drag an element to other editables
+				});
+
+
+				// Hack for Internet Explorer 8:
+				// If you first click inside an editable, and THEN want to drag a block-level block,
+				// it sometimes occurs that the *whole editable* is selected and should be dragged away.
+				// This breaks dragging of Aloha Blocks.
+				// Bugfix: We disable the "ondragstart" event on every editable.
+				// However, as the "ondragstart" is also fired when a nested (inline) editable is moved using drag/drop,
+				// we need to allow this case.
+				$editableOrBlockCollection.get(0).ondragstart = function (e, ui) {
+					if (!ui || !ui.helper || !ui.helper.is('.aloha-block')) {
+						// You tried to move something else than an aloha block
+						return false;
+					}
+				};
+			}
 		},
 
 		/**************************
