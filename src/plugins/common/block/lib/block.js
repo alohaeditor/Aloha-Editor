@@ -120,7 +120,7 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 				// by the innermost block.
 				if (jQuery(event.target).closest('.aloha-block').get(0) === that.$element.get(0)) {
 					that._fixScrollPositionBugsInIE();
-					that.activate(event.target);
+					that.activate(event.target, event);
 				}
 			};
 
@@ -129,6 +129,7 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 
 
 			// This is executed when a block is selected through caret handling
+			// TODO!
 			//Aloha.bind('aloha-block-selected', function(event,obj) {
 			//	if (that.$element.get(0) === obj) {
 			//		that.activate();
@@ -348,10 +349,12 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 
 		/**
 		 * activates the block
-		 * will select the block's contents, highlight it, update the floating menu and update the sidebar (if needed)
+		 * will select the block's contents, highlight it, update the floating menu and update the sidebar (if needed).
+		 *
+		 * When calling programmatically, do not set eventTarget or event arguments.
 		 * @api
 		 */
-		activate: function(eventTarget) {
+		activate: function(eventTarget, event) {
 			var highlightedBlocks = [];
 
 			// Deactivate currently highlighted blocks
@@ -379,6 +382,10 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 				Aloha.getSelection().removeAllRanges();
 			} else {
 				this._isInsideNestedEditable = true;
+				if (event) {
+					// We now update the selection, as you clicked *inside* an editable inside the block
+					Aloha.Selection.updateSelection(event);
+				}
 			}
 			// Trigger selection change event
 			BlockManager.trigger('block-selection-change', highlightedBlocks);
