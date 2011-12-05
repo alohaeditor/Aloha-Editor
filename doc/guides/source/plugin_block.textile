@@ -409,9 +409,8 @@ h4. Browser Compatibility Matrix
 |_. Caret handling of inline blocks             |  ✘         |  ✘         |  ✘    | ✘     | ✘     |      ✘              |
 
 
-|_. nested inline Blocks outside editables      |  TODO      |  TODO      |  TODO | TODO  | TODO  |      -              |
-|_. nested block-level Blocks outside editables |  TODO      |  TODO      |  TODO | TODO  | TODO  |      -              |
-
+|_. nested block-level Blocks outside editables |  TODO      |  ✓         |  TODO | TODO  | ✓     |      -              |
+|_. block-collection: delete block-level blocks |  TODO      |  ✓         |  TODO | TODO  | ✓     |      -              |
 
 
 h3. Changelog

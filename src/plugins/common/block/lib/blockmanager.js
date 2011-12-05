@@ -187,22 +187,30 @@ function(Aloha, jQuery, FloatingMenu, Observable, Registry) {
 				}
 			});
 
-			// BROWSER QUIRK WORKAROUND
-			// - IE7+IE8 for block-level blocks which are NOT part of a bigger selection.
-			if (Ext.isIE8 || Ext.isIE7) {
-				jQuery(window.document).keydown(function(e) {
-					// If a block is active AND DEL or BACKSPACE key pressed...
-					if (that._activeBlock && (e.which === 46 || e.which === 8)) {
+			// - IE7/8 Workaround
+			// - deletion of blocks inside block collection
+			jQuery(window.document).keydown(function(e) {
 
-						// ...and active block is INSIDE editable
-						if (that._activeBlock.$element.parents('.aloha-editable,.aloha-block').first().hasClass('aloha-editable')) {
-							that._activeBlock.destroy();
-							e.preventDefault();
-							return false;
-						}
+				// If a block is active AND DEL or BACKSPACE key pressed, AND we are not inside a nested editable (FIX for IE7/8)
+				if (that._activeBlock && (e.which === 46 || e.which === 8) && that._activeBlock._isInsideNestedEditable === false) {
+					// ...and active block is INSIDE editable
+
+					// BROWSER QUIRK WORKAROUND
+					// - IE7+IE8 for block-level blocks which are NOT part of a bigger selection.
+					if ((Ext.isIE8 || Ext.isIE7) && that._activeBlock.$element.parents('.aloha-editable,.aloha-block').first().hasClass('aloha-editable')) {
+						that._activeBlock.destroy();
+						e.preventDefault();
+						return false;
+					} else if(that._activeBlock.shouldDestroy()) {
+						// .. in this case, the block should be destroyed because it
+						// is part of a block collection.
+
+						that._activeBlock.destroy();
+						e.preventDefault();
+						return false;
 					}
-				});
-			}
+				}
+			});
 		},
 
 		/**

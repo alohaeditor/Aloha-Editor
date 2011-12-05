@@ -71,6 +71,13 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 		 */
 		_initialized: false,
 
+		/**
+		 * Set to TRUE if the last click activated a *nested editable*.
+		 * If FALSE; the block itself is selected.
+		 * This is needed when a block is deleted in IE7/8.
+		 */
+		_isInsideNestedEditable: false,
+
 		/**************************
 		 * SECTION: Initialization and Lifecycle
 		 **************************/
@@ -364,7 +371,10 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 			// Browsers do not remove the cursor, so we enforce it when an aditable is clicked.
 			// However, when the user clicked inside a nested editable, we will not remove the cursor (as the user wants to start typing then)
 			if (jQuery(eventTarget).closest('.aloha-editable,.aloha-block').first().hasClass('aloha-block')) {
+				this._isInsideNestedEditable = false;
 				Aloha.getSelection().removeAllRanges();
+			} else {
+				this._isInsideNestedEditable = true;
 			}
 			// Trigger selection change event
 			BlockManager.trigger('block-selection-change', highlightedBlocks);
