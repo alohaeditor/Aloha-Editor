@@ -12,7 +12,6 @@
 
 			plugins: {
 				block: {
-					// all elements with no specific configuration get this configuration
 					defaults : {
 						'.default-block': {
 						},
@@ -37,23 +36,12 @@
 						'.news-block': {
 							'aloha-block-type': 'NewsBlock'
 						},
-
 						'.sortable-news-block': {
 							'aloha-block-type': 'SortableNewsBlock'
 						},
-
 						'.editable-product-teaser': {
 							'aloha-block-type': 'EditableProductTeaserBlock'
 						}
-						/*'.customhandles': {
-							'aloha-block-type': 'CustomHandleBlock'
-						},
-
-						'.two-columns': {
-							'aloha-block-type': 'TwoColumnBlock'
-						},*/
-
-
 					}
 				}
 			},
@@ -141,7 +129,8 @@
 			<ul>
 				<li>A block which has sortable contents - <a href="#sortable-news-block">Tested</a></li>
 				<li>Nested blocks with editable in between - <a href="#nested-blocks-editable">Tested</a></li>
-				<li>Nested blocks WITHOUT editable in between - TODO</li>
+				<li><b>Block Collections</b>: Nested blocks WITHOUT editable in between - <a href="#nested-blocks-noeditable">Tested</a></li>
+				<li><b>Block Collections</b>: Nested blocks WITHOUT editable in between (inside outer editable) - <a href="#nested-blocks-noeditable2">Tested</a></li>
 			</ul>
 		</p>
 		<div id="bodyContent">
@@ -296,8 +285,8 @@
 				<div class="clear"></div>
 			</div>
 
-			<hr /><hr /><hr />
-			<h2>Block which contains nested blocks (without editables in between)</h2>
+			<hr />
+			<h2><a name="nested-blocks-noeditable" />Block which contains nested blocks (without editables in between)</h2>
 			<div class="uneditableColumnBlock" data-columns="2">
 				<div class="column aloha-block-collection">
 					<h2>TYPO3 Phoenix</h2>
@@ -317,8 +306,8 @@
 				<div class="clear"></div>
 			</div>
 
-			<hr /><hr /><hr />
-			<h2>Block which contains nested blocks (without editables in between); all inside an outer editable</h2>
+			<hr />
+			<h2><a name="nested-blocks-noeditable2" />Block which contains nested blocks (without editables in between); all inside an outer editable</h2>
 			<div class="textcontent">
 				<h4>Some editable content before</h2>
 				<div class="uneditableColumnBlock" data-columns="2">
@@ -342,20 +331,9 @@
 				<p>Some editable content after</p>
 			</div>
 
-			<hr /><hr /><hr />
-			<h2>TODO</h2>
+			<hr />
+			<h2>Inline-Editable elements (not officially supported)</h2>
 			<p>Here follows the <b>editable product teaser example</b>: Try our new <span class="editable-product-teaser" data-sku="2423423" data-title="Big can of fresh Aloha soup" data-price="27"><span class="aloha-editable">Big can of fresh Aloha soup</span> (27 €)</span> - which enables some great stuff.
-			<h2>Inline blocks outside editable</h2>
-			<div>
-				<p><b>This is the Product Teaser Example:</b> Try our new <span class="product-teaser" data-sku="2423423" data-title="Big can of fresh Aloha soup" data-price="27">Big can of fresh Aloha soup <span class="price">(27 €)</span></span>, it tastes delicious!</p>
-				<p>Some other content here...</p>
-				<p><b>Stock Quote example:</b> When you hover over the name of the <span class="company" data-symbol="MSFT">Microsoft</span> company, the stock quotes are shown.</p>
-				<p>Some more content...</p>
-				<p>Here follows the <b>editable product teaser example</b>: Try our new <span class="editable-product-teaser" data-sku="2423423" data-title="Big can of fresh Aloha soup" data-price="27">Big can of fresh Aloha soup (27 €)</span> - which enables some great stuff.
-			</div>
-
-
-
 		</div>
 	</div>
 	<script type="text/javascript">

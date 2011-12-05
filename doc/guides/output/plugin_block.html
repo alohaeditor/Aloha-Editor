@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Aloha GuidesAloha Guides: The Block Plugin</title>
+  <title>: The Block Plugin</title>
 
   <!-- guides styles -->
   <link rel="stylesheet" type="text/css" href="stylesheets/style.css" />
@@ -42,7 +42,7 @@
     <div class="wrapper">
       <div class="feature_header">
         <a href="/"><img src="images/strobe/guides.png"></a>
-        <h2><a href="/">Aloha Guides</a></h2>
+        <h2><a href="/"></a></h2>
         <p>These guides help you to make your content editable and to develop Aloha.</p>
       </div>
       <div class="feature_sidebar">
@@ -63,11 +63,17 @@
       <dd><a href="writing_plugins.html">Writing Plugins</a></dd>
     <dt>The Core</dt>
       <dd><a href="core.html">The Core</a></dd>
-</dl>
-<dl class="R">
     <dt>Commands</dt>
       <dd><a href="using_commands.html">Using commands</a></dd>
+    <dt>Ui</dt>
+      <dd><a href="ui.html">Aloha Editor Ui</a></dd>
+      <dd><a href="toolbar.html">Aloha Editor toolbar</a></dd>
+      <dd><a href="sidebar.html">Aloha Editor sidebar</a></dd>
+      <dd><a href="componenttypes.html">Aloha Editor Ui API</a></dd>
+</dl>
+<dl class="R">
     <dt>Plugins</dt>
+      <dd><a href="plugins.html">Aloha Editor plugins</a></dd>
       <dd><a href="plugin_block.html">Block</a></dd>
       <dd><a href="plugin_image.html">Image</a></dd>
       <dd><a href="plugin_contenthandler.html">Content Handler</a></dd>
@@ -89,15 +95,19 @@
     <div class="wrapper">
       <div id="mainCol">
           <div class="headerSection">
-            <p>﻿h2. The Block Plugin</p>
+            <p>﻿</p>
+<h2>The Block Plugin</h2>
 <p>After reading this guide, you will be able to:</p>
 <ul>
-	<li><span class="caps">TODO</span></li>
+	<li>Understand what Aloha Blocks are</li>
+	<li>use already-given Aloha Blocks</li>
+	<li>write your own blocks and editors</li>
+	<li>Integrate Blocks into your <span class="caps">CMS</span> or backend system</li>
 </ul>
 
           </div>
         
-<div class="warning"><p>This guide is currently work-in-progress.</p></div>
+<div class="info"><p>We suggest that you open up the block demo located at <ins>src/demo/block/index.html</ins> of the Aloha Source, as it contains lots of usage examples and best practices.</p></div>
 <h3 id="what-are-aloha-blocks">1 What are Aloha Blocks?</h3>
 <p><strong>Aloha Blocks</strong> (Blocks) are non-editable areas of a website, which often have some properties being editable through the Aloha user interface.</p>
 <p>Some use cases for blocks include:</p>
@@ -105,6 +115,7 @@
 	<li>Displaying a vCard of a person from an address book as a paragraph inside   an editable, where the person can be chosen through the Aloha UI</li>
 	<li>Display a custom &#8220;inline image&#8221; in continuous text, which could float either left or right,   and where the image caption is again changeable using Aloha</li>
 	<li>Show a listing of news inside or outside an editable.</li>
+	<li>Create a &#8220;column&#8221; container which can contain other blocks or other contents</li>
 </ul>
 <p>Some properties of blocks:</p>
 <ul>
@@ -112,6 +123,7 @@
 	<li>Both <tt>&lt;span&gt;</tt> and <tt>&lt;div&gt;</tt> elements can be blockified (i.e. converted to blocks)</li>
 	<li>can contain nested editable areas</li>
 	<li>can be copy/pasted and dragged/dropped if they are inside an Aloha editable</li>
+	<li>can be deleted using backspace or <span class="caps">DEL</span> if inside an editable</li>
 </ul>
 <h3 id="enabling-the-block-plugin">2 Enabling the Block Plugin</h3>
 <p>Aloha Blocks are implemented as a plugin called <code>block</code>, which is part of the <code>common</code> bundle.</p>
@@ -249,7 +261,10 @@ define([
 });
 </pre></div><p>Now, you can implement the main <span class="caps">API</span> of the block, as explained in the next section.</p>
 <h4 id="initialization-and-rendering-api">4.1 Initialization and Rendering <span class="caps">API</span></h4>
-<p>The first method you can override is the <tt>init($element)</tt> method. There, you get the jQuery <code>$element</code> as argument, and can use it to register f.e. custom event handlers or initialize the block contents. Furthermore, you can set block attributes using the <code>attr()</code> method if needed.</p>
+<p>The first method you can override is the <tt>init($element, postProcessFn)</tt> method. There, you get the jQuery <code>$element</code> as argument, and can use it to register f.e. custom event handlers or initialize the block contents. The second parameter is a function which needs to be run <strong>always</strong> after init() is complete. Furthermore, you can set block attributes using the <code>attr()</code> method if needed.</p>
+<div class="note"><p>init() requires you to call <strong>postProcessFn</strong>, as this enables you to do asynchronous queries inside init().</p></div>
+
+<div class="warning"><p><ins>init()</ins> can be called multiple times under some circumstances; so do <strong>not</strong> rely on the fact that init is only run once in your code. See the <span class="caps">API</span> doc about <code>init()</code> for further explanations on this.</p></div>
 <p>After the <tt>init()</tt> method, the <code>$element</code> is <strong>augumented</strong> by additional <span class="caps">DOM</span> nodes, which are needed f.e. for the drag/drop handles of the block.</p>
 <p>The second place you will most certainly override is the <tt>update($element, postProcessFn)</tt> method. This method is called always when one or multiple block attributes changed, so you are able to run any code you want inside there, manipulating <code>$element</code>.</p>
 <p>In some use cases, you will want to do some asynchronous work inside the <code>update()</code> method, like fetching an updated rendering of the element via <span class="caps">AJAX</span> from the server side. That is the reason of the <code>postProcessFn</code> callback function you get as second method argument: This function must be <strong>always called</strong> after the <code>$element</code> has been modified, as it renders the drag/drop handles if necessary.</p>
@@ -274,31 +289,143 @@ renderBlockHandlesIfNeeded: function() {
 }
 </pre></div><h4 id="nested-aloha-editables">4.3 Nested Aloha Editables</h4>
 <p>If you want to mark a certain area inside a block as aloha editable again, you just need to apply the <tt>aloha-editable</tt> <span class="caps">CSS</span> class to it. If the default behavior is not what you want, you can also call <code>$element.find(...).aloha()</code> in the <code>init()</code> and/or <code>update()</code> method.</p>
-<h4 id="editing-api">4.4 Editing <span class="caps">API</span></h4>
-<ul>
-	<li>getSchema() getTitle() explained</li>
-	<li>disabling sidebar</li>
-	<li>Custom Floating Menu?</li>
-</ul>
-<h3 id="writing-custom-editor">5 Writing custom editor</h3>
-<ul>
-	<li><span class="caps">TODO</span> explain</li>
-</ul>
-<h3 id="connecting-blocks-to-backend-system">6 Connecting Blocks to Backend system</h3>
-<h3 id="apis-and-extension-points">7 APIs and Extension Points</h3>
-<ul>
-	<li>Writing custom Blocks</li>
-	<li>Writing custom Editors</li>
-</ul>
-<h3 id="internals">8 Internals</h3>
-<h3 id="browser-compatibility-matrix">9 Browser Compatibility Matrix</h3>
+<h3 id="editing-api">5 Editing <span class="caps">API</span></h3>
+<p>The attributes of an Aloha Block can be edited through an automatically generated User Interface in the <strong>Aloha Sidebar</strong>. Of course, this user interface needs to know which block attributes are editable. For that, an Aloha Block can contain a <strong>schema</strong> which defines this information. Simply override the <code>getSchema()</code> method and make it return a schema.</p>
+<p>A basic schema can look like this:</p>
+<div class="code_container">
+<pre class="brush: javascript; gutter: false; toolbar: false">
+
+getSchema: function() {
+	return {
+		symbol: {
+			type: 'string',
+			label: 'Stock Quote Name'
+		}
+	};
+},		
+</pre></div><p>It just defines that the block attribute <tt>symbol</tt> is of type <code>string</code> and has a certain label.</p>
+<p>Additionally, the Aloha Block needs a title which is shown in the sidebar. Just set the <tt>title</tt> property of your block, or for more advanced computations override the <code>getTitle()</code> method.</p>
+<h4 id="introducing-editors">5.1 Introducing Editors</h4>
+<p>Every form element in the sidebar is represented internally through an <tt>editor</tt> class, which defines the behavior of the given form element.</p>
+<p>You might now wonder how the system knows that an element of type <code>string</code> shall be edited through an input field. For that, the <tt>EditorManager</tt> is responsible. It contains a mapping from data types to editor classes, for example a mapping from the <code>string</code> data type to the <code>StringEditor</code>.</p>
+<h4 id="available-editors">5.2 Available Editors</h4>
+<p>So far, the following data types/editors are available (each with an example):</p>
+<h5 id="string">5.2.1 string</h5>
+<div class="code_container">
+<pre class="brush: javascript; gutter: false; toolbar: false">
+
+{
+	type: 'string',
+	label: 'My Label'
+}
+</pre></div><p>Output: <tt>&lt;input type=&quot;text&quot; /&gt;</tt></p>
+<h5 id="number">5.2.2 number</h5>
+<div class="code_container">
+<pre class="brush: javascript; gutter: false; toolbar: false">
+
+{
+	type: 'number',
+	label: 'My Label',
+	range: {
+		min: 0,
+		max: 5,
+		step: 0.5 // values 0, 0.5, ...,  4.5, 5
+	}
+}
+</pre></div><p>Output: <tt>&lt;input type=&quot;range&quot; min=&quot;0&quot; max=&quot;5&quot; step=&quot;0.5&quot; /&gt;</tt></p>
+<h5 id="url">5.2.3 url</h5>
+<div class="code_container">
+<pre class="brush: javascript; gutter: false; toolbar: false">
+
+{
+	type: 'url',
+	label: 'My Label'
+}
+</pre></div><p>Output: <tt>&lt;input type=&quot;url&quot; /&gt;</tt></p>
+<h5 id="email">5.2.4 email</h5>
+<div class="code_container">
+<pre class="brush: javascript; gutter: false; toolbar: false">
+
+{
+	type: 'email',
+	label: 'My Label'
+}
+</pre></div><p>Output: <tt>&lt;input type=&quot;email&quot; /&gt;</tt></p>
+<h5 id="select">5.2.5 select</h5>
+<div class="code_container">
+<pre class="brush: javascript; gutter: false; toolbar: false">
+
+{
+	type: 'select',
+	label: 'Position',
+	values: [{
+		key: '',
+		label: 'No Float'
+	}, {
+		key: 'left',
+		label: 'Float left'
+	}, {
+		key: 'right',
+		label: 'Float right'
+	}]
+}
+</pre></div><p>Output: <tt>&lt;select&gt;...&lt;/select&gt;</tt> (with the correctly active option pre-selected)</p>
+<h5 id="button">5.2.6 button</h5>
+<div class="code_container">
+<pre class="brush: javascript; gutter: false; toolbar: false">
+
+{
+	type: 'button',
+	buttonLabel: 'Click me!',
+	callback: function() {
+		// This function is executed when the button is clicked.
+	}
+}
+</pre></div><p>Output: <tt>&lt;button /&gt;</tt></p>
+<h4 id="writing-a-custom-editor">5.3 Writing a Custom Editor</h4>
+<p>For writing custom editors, just check the <tt>AbstractEditor</tt> and <tt>AbstractFormElementEditor</tt> inside <code>lib/editor.js</code>, as well as the default editor implementations. It should be quite self-explanatory :-)</p>
+<p>In case you do not extend the <code>AbstractFormElementEditor</code> you just need to remember one thing &#8212; Make sure to throw a <tt>change</tt> event on the editor class, with the changed value as parameter:</p>
+<div class="code_container">
+<pre class="brush: javascript; gutter: false; toolbar: false">
+
+this.trigger('change', this.getValue());
+</pre></div><p>Then the framework takes care of updating the attribute in the Aloha Block accordingly.</p>
+<p>If you subclass <tt>AbstractFormElementEditor</tt>, you mostly do not need to deal with the event handling yourself, as this is done for you. This can greatly simplify the editors.</p>
+<div class="info"><p>Check the example editors in <code>plugins/common/block/lib/editor.js</code>, they are really easy and small.</p></div>
+<h3 id="advanced-topics">6 Advanced Topics</h3>
+<p>Here, we want to show some advanced integration tips and tricks.</p>
+<h4 id="block-collections">6.1 Block Collections</h4>
+<p>Sometimes, you want to create blocks which are mainly a container for other blocks. An example is a &#8220;Column&#8221; block, which should accomodate other blocks. Now, there are two supported possibilities for that.</p>
+<p>First, you can mark your columns with the <span class="caps">CSS</span> class <tt>aloha-editable</tt>, and then these columns can contain other blocks. Use this when you want to allow content to be placed <strong>between</strong> your blocks.</p>
+<p>Second, you can mark your columns with the <span class="caps">CSS</span> class <tt>aloha-block-collection</tt>. Then, the Aloha Blocks inside become sortable: You see that they have a drag handle now. Furthermore, they can now be deleted using the standard backspace or delete keys.</p>
+<p>Check the example blocks for a demo of this feature.</p>
+<h4 id="custom-floating-menu">6.2 Custom Floating Menu</h4>
+<p>When the Aloha Blocks are active, we set a custom Floating Menu scope called:  <tt>Aloha.Block.(alohaBlockType}</tt>. so for example <code>Aloha.Block.DefaultBlock</code>, so you add buttons to the floating menu if you want to show them when a specific block is active.</p>
+<h4 id="disabling-the-sidebar-editor">6.3 Disabling the sidebar editor</h4>
+<p>Sometimes, you want to embed Aloha into a bigger system, and you do not want to use the default Aloha sidebar for editing. Because of this, it is possible to disable the sidebar attribute editor as follows:</p>
+<div class="code_container">
+<pre class="brush: javascript; gutter: false; toolbar: false">
+
+Aloha.settings.plugins.block.sidebarAttributeEditor = false;
+</pre></div><p>Then, you need to listen to some events on the BlockManager, most notably the <tt>block-selection-change</tt> event, which is triggered each time the block selection changes.</p>
+<div class="code_container">
+<pre class="brush: javascript; gutter: false; toolbar: false">
+
+BlockManager.bind('block-selection-change', function(blocks) {
+	// blocks is an array now, where the first element is the selected block
+	// and the other elements are the ancestor blocs.
+	// If the array is empty, no block has been selected.
+});
+</pre></div><h3 id="internals">7 Internals</h3>
+<p>For this work, numerous IE hacks were needed. Especially in areas like Drag/Drop, Deletion and Copy/Paste, especially IE7 and IE8 differ considerably in their behavior. See the compatibility matrix below for the tests which have been run.</p>
+<h4 id="browser-compatibility-matrix">7.1 Browser Compatibility Matrix</h4>
 <table>
 	<tr>
 		<th></th>
 		<th>Firefox 7</th>
 		<th>Chrome 17</th>
 		<th>IE7 </th>
-		<th>IE8 </th>
+		<th>IE8  </th>
 		<th>IE9 </th>
 		<th>Unit Test Written</th>
 	</tr>
@@ -324,7 +451,7 @@ renderBlockHandlesIfNeeded: function() {
 		<th>Drag &amp; Drop of inline elements              </th>
 		<td>  ✓         </td>
 		<td>  ✓         </td>
-		<td> (✓)   </td>
+		<td>  ✓    </td>
 		<td> ✓     </td>
 		<td> ✓     </td>
 		<td>     ✓              </td>
@@ -342,7 +469,7 @@ renderBlockHandlesIfNeeded: function() {
 		<th>Copy &amp; Paste                                </th>
 		<td>  ✓         </td>
 		<td>  ✓         </td>
-		<td>  ✓    </td>
+		<td> (✓) works in Emul. Mode; IE7 always dies on second copy/paste    </td>
 		<td> ✓     </td>
 		<td> ✓     </td>
 		<td>     ✓              </td>
@@ -351,7 +478,7 @@ renderBlockHandlesIfNeeded: function() {
 		<th>Cut &amp; Paste                                 </th>
 		<td>  ✓         </td>
 		<td>  ✓         </td>
-		<td>  ✓    </td>
+		<td> (✓) works in Emul. Mode; IE7 always dies on second copy/paste    </td>
 		<td> ✓     </td>
 		<td> ✓     </td>
 		<td>     ✓              </td>
@@ -360,9 +487,9 @@ renderBlockHandlesIfNeeded: function() {
 		<th>Deletion of single blocks (block-level)     </th>
 		<td>  ✓         </td>
 		<td>  ✓         </td>
-		<td>  ✘TODO</td>
+		<td>  ✓    </td>
 		<td> ✓     </td>
-		<td> ✘TODO </td>
+		<td> ✓     </td>
 		<td>      ✘              </td>
 	</tr>
 	<tr>
@@ -384,6 +511,69 @@ renderBlockHandlesIfNeeded: function() {
 		<td>      ✘              </td>
 	</tr>
 	<tr>
+		<th>nested inline Blocks inside editables       </th>
+		<td>  ✓         </td>
+		<td>  ✓         </td>
+		<td>  ✓    </td>
+		<td> ✓     </td>
+		<td> ✓     </td>
+		<td>      &#8211;              </td>
+	</tr>
+	<tr>
+		<th>nested block-level Blocks inside editables  </th>
+		<td>  ✓         </td>
+		<td>  ✓         </td>
+		<td>  ✓    </td>
+		<td> ✓     </td>
+		<td> ✓     </td>
+		<td>      &#8211;              </td>
+	</tr>
+	<tr>
+		<th>nested inline Blocks drag/drop              </th>
+		<td>  ✓         </td>
+		<td>  ✓         </td>
+		<td>  ✓    </td>
+		<td> ✓     </td>
+		<td> ✓     </td>
+		<td>      &#8211;              </td>
+	</tr>
+	<tr>
+		<th>nested block-level Blocks drag/drop         </th>
+		<td>  ✓         </td>
+		<td>  ✓         </td>
+		<td>  ✓    </td>
+		<td> ✓     </td>
+		<td> ✓     </td>
+		<td>      &#8211;              </td>
+	</tr>
+	<tr>
+		<th>block-collection: basic functionality       </th>
+		<td>  ✓         </td>
+		<td>  ✓         </td>
+		<td>  ✓    </td>
+		<td> ✓     </td>
+		<td> ✓     </td>
+		<td>      &#8211;              </td>
+	</tr>
+	<tr>
+		<th>block-collection: delete block-level blocks </th>
+		<td>  ✓         </td>
+		<td>  ✓         </td>
+		<td>  ✓    </td>
+		<td> ✓     </td>
+		<td> ✓     </td>
+		<td>      &#8211;              </td>
+	</tr>
+	<tr>
+		<th>block-collection: drag/drop of block-level b</th>
+		<td>  ✓         </td>
+		<td>  ✓         </td>
+		<td>  ✓    </td>
+		<td> ✓     </td>
+		<td> ✓     </td>
+		<td>      &#8211;              </td>
+	</tr>
+	<tr>
 		<th>Caret handling of inline blocks             </th>
 		<td>  ✘         </td>
 		<td>  ✘         </td>
@@ -393,7 +583,7 @@ renderBlockHandlesIfNeeded: function() {
 		<td>      ✘              </td>
 	</tr>
 </table>
-<h3 id="changelog">10 Changelog</h3>
+<h3 id="changelog">8 Changelog</h3>
 <ul>
 	<li>July 7, 2011: Initial version by <a href="credits.html#skurfuerst">Sebastian Kurfürst</a> and <a href="credits.html#hlubek">Christopher Hlubek</a></li>
 	<li>November 29, 2011: Greatly expanded version by <a href="credits.html#skurfuerst">Sebastian Kurfürst</a></li>
@@ -415,13 +605,17 @@ renderBlockHandlesIfNeeded: function() {
 </a><ul><li><a href="#initialization-and-rendering-api"><p>Initialization and Rendering <span class="caps">API</span></p>
 </a></li> <li><a href="#custom-block-handles"><p>Custom Block Handles</p>
 </a></li> <li><a href="#nested-aloha-editables"><p>Nested Aloha Editables</p>
-</a></li> <li><a href="#editing-api"><p>Editing <span class="caps">API</span></p>
-</a></li></ul></li><li><a href="#writing-custom-editor"><p>Writing custom editor</p>
-</a></li><li><a href="#connecting-blocks-to-backend-system"><p>Connecting Blocks to Backend system</p>
-</a></li><li><a href="#apis-and-extension-points"><p>APIs and Extension Points</p>
-</a></li><li><a href="#internals"><p>Internals</p>
-</a></li><li><a href="#browser-compatibility-matrix"><p>Browser Compatibility Matrix</p>
-</a></li><li><a href="#changelog"><p>Changelog</p>
+</a></li></ul></li><li><a href="#editing-api"><p>Editing <span class="caps">API</span></p>
+</a><ul><li><a href="#introducing-editors"><p>Introducing Editors</p>
+</a></li> <li><a href="#available-editors"><p>Available Editors</p>
+</a></li> <li><a href="#writing-a-custom-editor"><p>Writing a Custom Editor</p>
+</a></li></ul></li><li><a href="#advanced-topics"><p>Advanced Topics</p>
+</a><ul><li><a href="#block-collections"><p>Block Collections</p>
+</a></li> <li><a href="#custom-floating-menu"><p>Custom Floating Menu</p>
+</a></li> <li><a href="#disabling-the-sidebar-editor"><p>Disabling the sidebar editor</p>
+</a></li></ul></li><li><a href="#internals"><p>Internals</p>
+</a><ul><li><a href="#browser-compatibility-matrix"><p>Browser Compatibility Matrix</p>
+</a></li></ul></li><li><a href="#changelog"><p>Changelog</p>
 </a></li>
           </ol>
         </div>

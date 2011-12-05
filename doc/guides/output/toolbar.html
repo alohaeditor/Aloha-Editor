@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>: Aloha Editor toolbar</title>
+
+  <!-- guides styles -->
+  <link rel="stylesheet" type="text/css" href="stylesheets/style.css" />
+  <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+  <link rel="stylesheet" type="text/css" href="stylesheets/strobe.css" />
+  <link rel="stylesheet" type="text/css" href="stylesheets/overrides.style.css" />
+  <link rel="stylesheet" type="text/css" href="stylesheets/overrides.print.css" media="print" />
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <!-- syntax highlighting styles -->
+  <link rel="stylesheet" type="text/css" href="stylesheets/syntaxhighlighter/shCore.css" />
+  <link rel="stylesheet" type="text/css" href="stylesheets/shThemeStrobeGuides.css" />
+</head>
+<body class="guide">
+
+  <header role="banner">
+    <div class="container">
+      <h1 id="logo">
+        <a href="http://aloha-editor.org"><img src="images/header/logo.png" height="50" alt="Aloha Editor" /></a>
+      </h1>
+      <nav role="navigation">
+        <ul>
+			<li><a href="http://aloha-editor.org/features.php" title="A shortcut for Aloha Editor features" class="new">Features</a></li>
+			<li><a href="http://aloha-editor.org/plugins.php" title="A list of all known Aloha Editor plugins.">Plugins</a></li>
+	        <li class="active"><a href="http://aloha-editor.org/guides/" title="The Aloha Editor documentation">Guides</a></li>
+			<li><a href="http://aloha-editor.org/about.php" title="Why Aloha? Why HTML5? Lern more about Aloha Editor">About</a></li>
+			<li><a href="http://getsatisfaction.com/aloha_editor" title="Get help or help others">Forum</a></li>
+			<li><a href="http://aloha-editor.org/demos.php" title="Feel the Aloha">Try it</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <div id="feature">
+    <div class="wrapper">
+      <div class="feature_header">
+        <a href="/"><img src="images/strobe/guides.png"></a>
+        <h2><a href="/"></a></h2>
+        <p>These guides help you to make your content editable and to develop Aloha.</p>
+      </div>
+      <div class="feature_sidebar">
+        <a href="index.html" id="guidesMenu">
+          Guides Index <span id="guidesArrow">&#9656;</span>
+        </a>
+        <div id="guides" class="clearfix" style="display: none;">
+          <a href="index.html" class="guidesMenu">
+            Guides Index <span class="guidesArrow">&#9662;</span>
+          </a>
+          <hr style="clear:both;">
+          <dl class="L">
+    <dt>Start Here</dt>
+      <dd><a href="using_aloha.html">Using Aloha Editor</a></dd>
+      <dd><a href="develop_aloha.html">Developing and building Aloha Editor</a></dd>
+      <dd><a href="configure_aloha.html">Configuring Aloha Editor</a></dd>
+      <dd><a href="require.html">Aloha dependency management with requireJS</a></dd>
+      <dd><a href="writing_plugins.html">Writing Plugins</a></dd>
+    <dt>The Core</dt>
+      <dd><a href="core.html">The Core</a></dd>
+    <dt>Commands</dt>
+      <dd><a href="using_commands.html">Using commands</a></dd>
+    <dt>Ui</dt>
+      <dd><a href="ui.html">Aloha Editor Ui</a></dd>
+      <dd><a href="toolbar.html">Aloha Editor toolbar</a></dd>
+      <dd><a href="sidebar.html">Aloha Editor sidebar</a></dd>
+      <dd><a href="componenttypes.html">Aloha Editor Ui API</a></dd>
+</dl>
+<dl class="R">
+    <dt>Plugins</dt>
+      <dd><a href="plugins.html">Aloha Editor plugins</a></dd>
+      <dd><a href="plugin_block.html">Block</a></dd>
+      <dd><a href="plugin_image.html">Image</a></dd>
+      <dd><a href="plugin_contenthandler.html">Content Handler</a></dd>
+      <dd><a href="plugin_browser.html">Browser</a></dd>
+      <dd><a href="plugin_numeratedheaders.html">Numerated Headers</a></dd>
+    <dt>Contributing to Aloha Editor</dt>
+      <dd>Development Process</dd>
+      <dd><a href="style_guide.html">Javascript Style Guide</a></dd>
+      <dd><a href="documentation_guidelines.html">Documentation Guidelines</a></dd>
+</dl>
+
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="container">
+    <div class="wrapper">
+      <div id="mainCol">
+          <div class="headerSection">
+            <h2>Aloha Editor toolbar</h2>
+<p>After reading this guide, you will be able to:</p>
+<ul>
+	<li>Configure Aloha Editor toolbar</li>
+</ul>
+
+          </div>
+        
+<div class="warning"><p>This guide is currently a draft for the Aloha Editor jQuery UI, which is supposed to be the next generation UI for Aloha Editor. Your feedback is welcome!</p></div>
+<h3 id="toolbar-concept">1 Toolbar concept</h3>
+<p>The Toolbar provides tabs and groups. You may add ui components to groups. There ist only one instance of a the toolbar  and it changes its items depending on the acitvated editable.</p>
+<p><img src="../images/toolbar.png" alt="" /></p>
+<h3 id="toolbar-integration">2 Toolbar integration</h3>
+<p>You may embed the toolbar in a given container in your site or let it float. If you don&#8217;t provide a container the toolbar will append a <tt>div</tt> element as last element of the documents body and position the toolbar as defined.</p>
+<div class="code_container">
+<pre class="brush: javascript; gutter: false; toolbar: false">
+
+	Aloha.ui.toolbar.appendTo('#aloha-toolbar');
+</pre></div><h3 id="component-configuration">3 Component configuration</h3>
+<p>You may define the name of your tabs and groups as key.  The following example defines a toolbar with the 3 tabs <strong>format</strong>, <strong>insert</strong> and <strong>link</strong>. The name of the tabs and groups is passed to <code>i18n</code> which translates them to the currently displayed language. The <strong>format</strong> tab has the two groups <strong>inline</strong> and <strong>paragraph</strong>. You may define the components that should be rendered by the group.</p>
+<div class="code_container">
+<pre class="brush: javascript; gutter: false; toolbar: false">
+
+Aloha.settings.toolbar = {
+    tabs: {
+    	format : {
+    		inline: [ 'bold', 'italic', 'striketrough',
+    			'abbreviation', 'spacer', 'metaview' ]
+			paragraph: [ 'formatparagraph' ]
+    	},
+		insert: {
+			general: [ 'insertable', 'charakterpicker', 'insertlink' ]
+    		media: [ 'image', 'video' ]
+    	},
+    	link: {
+    		link: [ 'editlink' ]
+    	} 
+    }
+};
+</pre></div><h3 id="behavior-configuration">4 Behavior configuration</h3>
+<ul>
+	<li>September 1, 2011: Initial version by <a href="credits.html#haymo">Haymo Meran</a> and <a href="credits.html#scottgonzales">Scott Gonzales</a></li>
+</ul>
+
+      </div>
+        <div id="subCol">
+          <h3 class="chapter"><img src="images/strobe/chapters.png" alt="" />Chapters</h3>
+          <ol class="chapters">
+            <li><a href="#toolbar-concept"><p>Toolbar concept</p>
+</a></li><li><a href="#toolbar-integration"><p>Toolbar integration</p>
+</a></li><li><a href="#component-configuration"><p>Component configuration</p>
+</a></li><li><a href="#behavior-configuration"><p>Behavior configuration</p>
+</a></li>
+          </ol>
+        </div>
+    </div>
+  </div>
+
+  <hr class="hide" />
+	  <footer>
+	    <div class="container">
+	      <div class="col">
+	        <a href="index.html"><img src="images/footer/logo.png" alt="Aloha Editor" /></a>
+	        <p>
+	        	Templates based on <a href="https://github.com/sproutcore/sproutguides">SproutCore guides</a>.
+	        </p>
+	      </div>
+	      <a href="#feature" class="top">Back To Top</a>
+	    </div>
+	  </footer>
+
+  <script src="http://code.jquery.com/jquery-1.6.min.js" type="text/javascript" charset="utf-8"></script>
+  <script type="text/javascript" src="javascripts/alohaEditorGuides.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shCore.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushRuby.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushJScript.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushCss.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushXml.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushSql.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushPlain.js"></script>
+  <script type="text/javascript">
+    SyntaxHighlighter.all()
+  </script>
+</body>
+</html>

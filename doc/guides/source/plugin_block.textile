@@ -1,13 +1,18 @@
-﻿h2. The Block Plugin
+﻿
+
+
+h2. The Block Plugin
 
 After reading this guide, you will be able to:
 
-* TODO
+* Understand what Aloha Blocks are
+* use already-given Aloha Blocks
+* write your own blocks and editors
+* Integrate Blocks into your CMS or backend system
 
 endprologue.
 
-WARNING: This guide is currently work-in-progress.
-
+TIP: We suggest that you open up the block demo located at +src/demo/block/index.html+ of the Aloha Source, as it contains lots of usage examples and best practices.
 
 h3. What are Aloha Blocks?
 
@@ -21,6 +26,7 @@ Some use cases for blocks include:
 * Display a custom "inline image" in continuous text, which could float either left or right,
   and where the image caption is again changeable using Aloha
 * Show a listing of news inside or outside an editable.
+* Create a "column" container which can contain other blocks or other contents
 
 Some properties of blocks:
 
@@ -28,6 +34,7 @@ Some properties of blocks:
 * Both +<span>+ and +<div>+ elements can be blockified (i.e. converted to blocks)
 * can contain nested editable areas
 * can be copy/pasted and dragged/dropped if they are inside an Aloha editable
+* can be deleted using backspace or DEL if inside an editable
 
 
 h3. Enabling the Block Plugin
@@ -374,25 +381,47 @@ TIP: Check the example editors in @plugins/common/block/lib/editor.js@, they are
 
 h3. Advanced Topics
 
-h4. Block Collection
+Here, we want to show some advanced integration tips and tricks.
 
-.aloha-block-collection
+h4. Block Collections
 
-h4. Custom Floating Menu?
+Sometimes, you want to create blocks which are mainly a container for other blocks. An example is a "Column" block, which should accomodate other blocks. Now, there are two supported possibilities for that.
 
-TODO
+First, you can mark your columns with the CSS class +aloha-editable+, and then these columns can contain other blocks. Use this when you want to allow content to be placed *between* your blocks.
 
-h4. Connecting Blocks to Backend system
+Second, you can mark your columns with the CSS class +aloha-block-collection+. Then, the Aloha Blocks inside become sortable: You see that they have a drag handle now. Furthermore, they can now be deleted using the standard backspace or delete keys.
 
-* disabling sidebar, TODO
+Check the example blocks for a demo of this feature.
+
+h4. Custom Floating Menu
+
+When the Aloha Blocks are active, we set a custom Floating Menu scope called:  +Aloha.Block.(alohaBlockType}+. so for example @Aloha.Block.DefaultBlock@, so you add buttons to the floating menu if you want to show them when a specific block is active.
+
+h4. Disabling the sidebar editor
+
+Sometimes, you want to embed Aloha into a bigger system, and you do not want to use the default Aloha sidebar for editing. Because of this, it is possible to disable the sidebar attribute editor as follows:
+
+<javascript>
+Aloha.settings.plugins.block.sidebarAttributeEditor = false;
+</javascript>
+
+Then, you need to listen to some events on the BlockManager, most notably the +block-selection-change+ event, which is triggered each time the block selection changes.
+
+<javascript>
+BlockManager.bind('block-selection-change', function(blocks) {
+	// blocks is an array now, where the first element is the selected block
+	// and the other elements are the ancestor blocs.
+	// If the array is empty, no block has been selected.
+});
+</javascript>
 
 h3. Internals
 
-* IE hacks
+For this work, numerous IE hacks were needed. Especially in areas like Drag/Drop, Deletion and Copy/Paste, especially IE7 and IE8 differ considerably in their behavior. See the compatibility matrix below for the tests which have been run.
 
 h4. Browser Compatibility Matrix
 
-|_.                                             |_. Firefox 7|_. Chrome 17|_. IE7 |_. IE8 |_. IE9 |_. Unit Test Written|
+|_.                                             |_. Firefox 7|_. Chrome 17|_. IE7 |_. IE8  |_. IE9 |_. Unit Test Written|
 |_. General Aloha                               |  ✓         |  ✓         |  ✓    | ✓     | ✓     |     ✓              |
 |_. General Blocks                              |  ✓         |  ✓         |  ✓    | ✓     | ✓     |     ✓              |
 |_. Drag & Drop of inline elements              |  ✓         |  ✓         |  ✓    | ✓     | ✓     |     ✓              |
