@@ -374,6 +374,10 @@ TIP: Check the example editors in @plugins/common/block/lib/editor.js@, they are
 
 h3. Advanced Topics
 
+h4. Block Collection
+
+.aloha-block-collection
+
 h4. Custom Floating Menu?
 
 TODO

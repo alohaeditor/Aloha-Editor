@@ -237,12 +237,31 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 		},
 
 		/**
+		 * Callback which is executed when somebody triggers destroy().
+		 *
+		 * This only allows destruction if the block is *inside* an aloha-editable and *not* inside an aloha-block.
+		 *
+		 * @return {Boolean} true of destruction should happen, false otherwise
+		 */
+		shouldDestroy: function() {
+			var $closest = this.$element.parent().closest('.aloha-block,.aloha-editable,.aloha-block-collection');
+			if ($closest.hasClass('aloha-block-collection') && this.$element[0].tagName.toLowerCase() === 'div') {
+				return true;
+			} else {
+				return $closest.hasClass('aloha-editable');
+			}
+		},
+
+		/**
 		 * Destroy this block instance completely. Removes the element from the DOM,
 		 * unregisters it, and triggers a block-delete event on the BlockManager.
 		 *
+		 * @param {Boolean} force TRUE if you want to force deletion, despite shouldDestroy() returning false.
 		 * @api
 		 */
-		destroy: function() {
+		destroy: function(force) {
+			if (!this.shouldDestroy() && force !== true) return;
+
 			var that = this;
 			var newRange = new GENTICS.Utils.RangeObject();
 
@@ -253,7 +272,6 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 			BlockManager._unregisterBlock(this);
 
 			this.unbindAll();
-
 
 			var isInlineElement = this.$element[0].tagName.toLowerCase() === 'span';
 
