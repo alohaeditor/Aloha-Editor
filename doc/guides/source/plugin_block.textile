@@ -408,7 +408,7 @@ h4. Browser Compatibility Matrix
 |_. nested block-level Blocks drag/drop         |  ✓         |  ✓         |  ✓    | ✓     | ✓     |      -              |
 |_. block-collection: basic functionality       |  ✓         |  ✓         |  ✓    | ✓     | ✓     |      -              |
 |_. block-collection: delete block-level blocks |  ✓         |  ✓         |  ✓    | ✓     | ✓     |      -              |
-|_. block-collection: drag/drop of block-level b|  TODO      |  TODO      |  TODO  | TODO  | TODO  |      -              |
+|_. block-collection: drag/drop of block-level b|  ✓         |  ✓         |  ✓    | ✓     | ✓     |      -              |
 |_. Caret handling of inline blocks             |  ✘         |  ✘         |  ✘    | ✘     | ✘     |      ✘              |
 
 
