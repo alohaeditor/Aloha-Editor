@@ -184,7 +184,18 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 			this.$element.bind('dblclick', this._preventSelectionChangedEventHandler);
 
 			this.init(this.$element, function() {
-				that._postProcessElementIfNeeded();
+				// WORKAROUND against loading order dependencies. If we have
+				// nested Blocks inside each other (with no editables in between)
+				// it could be that the *inner* block is initialized *before* the outer one.
+				//
+				// However, the inner block needs to know whether it shall render drag handles or not,
+				// and this depends on whether it is inside an editable or a block.
+				//
+				// In order to fix this case, we delay the the drag-handle-rendering (and all the other
+				// post-processing) to the next JavaScript Run Loop using a small timeout.
+				window.setTimeout(function() {
+					that._postProcessElementIfNeeded();
+				}, 5);
 			});
 		},
 
@@ -293,10 +304,13 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 		/**
 		 * Returns true if the block is draggable because it is inside an aloha-editable, false otherwise.
 		 *
+		 * You cannot depend on this method's result during the *init* phase of the Aloha Block, as the
+		 * outer block might not be initialized at that point yet. Thus, do not call this method inside init().
+		 *
 		 * @return Boolean
 		 */
 		isDraggable: function() {
-			return this.$element.parents('.aloha-editable').length > 0;
+			return this.$element.parents('.aloha-editable,.aloha-block').first().hasClass('aloha-editable');
 		},
 
 		/**************************
