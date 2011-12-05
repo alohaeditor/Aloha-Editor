@@ -2,6 +2,7 @@
 
 This document is to serve as a "what has been done" in terms of the [Roadmap](http://aloha-editor.org/wiki/Roadmap)
 
+- block plugin: Aloha Block Plugin has now been greatly cleaned up and improved. Besides greatly cleaned up API and documentation, the new features include Drag/Drop, Deletion and Copy/Paste support. Now fully cross-browser (IE7, IE8, IE9, Chrome, Firefox).
 - doc/api: added first version of new API docs
 - commands.delete: fixed a bug with the delete command when contents are preceded by ignorable whitespace. also added a delete test for that.
 
