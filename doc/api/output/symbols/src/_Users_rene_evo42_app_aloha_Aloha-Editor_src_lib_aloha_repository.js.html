@@ -1,0 +1,249 @@
+<html><head><meta http-equiv="content-type" content="text/html; charset=utf8"> <style>
+	.KEYW {color: #933;}
+	.COMM {color: #bbb; font-style: italic;}
+	.NUMB {color: #393;}
+	.STRN {color: #393;}
+	.REGX {color: #339;}
+	.line {border-right: 1px dotted #666; color: #666; font-style: normal;}
+	</style></head><body><pre><span class='line'>  1</span> <span class="COMM">/*!
+<span class='line'>  2</span> * This file is part of Aloha Editor Project http://aloha-editor.org
+<span class='line'>  3</span> * Copyright (c) 2010-2011 Gentics Software GmbH, aloha@gentics.com
+<span class='line'>  4</span> * Contributors http://aloha-editor.org/contribution.php 
+<span class='line'>  5</span> * Licensed unter the terms of http://www.aloha-editor.org/license.html
+<span class='line'>  6</span> *
+<span class='line'>  7</span> * Aloha Editor is free software: you can redistribute it and/or modify
+<span class='line'>  8</span> * it under the terms of the GNU Affero General Public License as published by
+<span class='line'>  9</span> * the Free Software Foundation, either version 3 of the License, or
+<span class='line'> 10</span> * (at your option) any later version.*
+<span class='line'> 11</span> *
+<span class='line'> 12</span> * Aloha Editor is distributed in the hope that it will be useful,
+<span class='line'> 13</span> * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<span class='line'> 14</span> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+<span class='line'> 15</span> * GNU Affero General Public License for more details.
+<span class='line'> 16</span> *
+<span class='line'> 17</span> * You should have received a copy of the GNU Affero General Public License
+<span class='line'> 18</span> * along with this program. If not, see &lt;http://www.gnu.org/licenses/>.
+<span class='line'> 19</span> */</span><span class="WHIT">
+<span class='line'> 20</span> 
+<span class='line'> 21</span> </span><span class="NAME">define</span><span class="PUNC">(</span><span class="WHIT">
+<span class='line'> 22</span> </span><span class="PUNC">[</span><span class="WHIT"> </span><span class="STRN">'aloha/core'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'util/class'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'aloha/repositorymanager'</span><span class="WHIT"> </span><span class="PUNC">]</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 23</span> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">Aloha</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">Class</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">RepositoryManager</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 24</span> </span><span class="WHIT">	</span><span class="STRN">"use strict"</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 25</span> </span><span class="WHIT">	
+<span class='line'> 26</span> </span><span class="COMM">//	var</span><span class="WHIT">
+<span class='line'> 27</span> </span><span class="COMM">//		$ = jQuery,</span><span class="WHIT">
+<span class='line'> 28</span> </span><span class="COMM">//		GENTICS = window.GENTICS,</span><span class="WHIT">
+<span class='line'> 29</span> </span><span class="COMM">//		Aloha = window.Aloha,</span><span class="WHIT">
+<span class='line'> 30</span> </span><span class="COMM">//		Class = window.Class;</span><span class="WHIT">
+<span class='line'> 31</span> 
+<span class='line'> 32</span> </span><span class="COMM">/**
+<span class='line'> 33</span>  * Abstract Repository Class. Implement that class for your own repository.
+<span class='line'> 34</span>  * @namespace Aloha.Repository
+<span class='line'> 35</span>  * @class Repository
+<span class='line'> 36</span>  * @constructor
+<span class='line'> 37</span>  * @param {String} repositoryId unique repository identifier
+<span class='line'> 38</span>  * @param {String} repositoryName (optional) is the displyed name for this Repository instance
+<span class='line'> 39</span>  */</span><span class="WHIT">
+<span class='line'> 40</span> </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">AbstractRepository</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">Class.extend</span><span class="PUNC">(</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 41</span> </span><span class="WHIT">	</span><span class="NAME">_constructor</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">repositoryId</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">repositoryName</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 42</span> </span><span class="WHIT">		</span><span class="COMM">/**
+<span class='line'> 43</span> 		 * @property repositoryId is the unique Id for this Repository instance
+<span class='line'> 44</span> 		 */</span><span class="WHIT">
+<span class='line'> 45</span> </span><span class="WHIT">		</span><span class="NAME">this.repositoryId</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">repositoryId</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 46</span> 
+<span class='line'> 47</span> </span><span class="WHIT">		</span><span class="COMM">/**
+<span class='line'> 48</span> 		 * contains the repository's settings object
+<span class='line'> 49</span> 		 * @property settings {Object} the repository's settings stored in an object
+<span class='line'> 50</span> 		 */</span><span class="WHIT">
+<span class='line'> 51</span> </span><span class="WHIT">		</span><span class="NAME">this.settings</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 52</span> 
+<span class='line'> 53</span> </span><span class="WHIT">		</span><span class="COMM">/**
+<span class='line'> 54</span> 		 * @property repositoryName is the name for this Repository instance
+<span class='line'> 55</span> 		 */</span><span class="WHIT">
+<span class='line'> 56</span> </span><span class="WHIT">		</span><span class="NAME">this.repositoryName</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">repositoryName</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">?</span><span class="WHIT"> </span><span class="NAME">repositoryName</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">repositoryId</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 57</span> 
+<span class='line'> 58</span> </span><span class="WHIT">		</span><span class="NAME">RepositoryManager.register</span><span class="PUNC">(</span><span class="KEYW">this</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 59</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 60</span> 
+<span class='line'> 61</span> </span><span class="WHIT">	</span><span class="COMM">/**
+<span class='line'> 62</span> 	 * Init method of the repository. Called from Aloha Core to initialize this repository
+<span class='line'> 63</span> 	 * @return void
+<span class='line'> 64</span> 	 * @hide
+<span class='line'> 65</span> 	 */</span><span class="WHIT">
+<span class='line'> 66</span> </span><span class="WHIT">	</span><span class="NAME">init</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 67</span> 
+<span class='line'> 68</span> </span><span class="WHIT">	</span><span class="COMM">/**
+<span class='line'> 69</span> 	 * Searches a repository for object items matching queryString if none found returns null.
+<span class='line'> 70</span> 	 * The returned object items must be an array of Aloha.Repository.Object
+<span class='line'> 71</span> 	 *
+<span class='line'> 72</span> 	&lt;pre>&lt;code>
+<span class='line'> 73</span> 	// simple delicious implementation
+<span class='line'> 74</span> 	Aloha.Repositories.myRepository.query = function (params, callback) {
+<span class='line'> 75</span> 
+<span class='line'> 76</span> 		// make local var of this to use in ajax function
+<span class='line'> 77</span> 		var that = this;
+<span class='line'> 78</span> 
+<span class='line'> 79</span> 		// handle each word as tag
+<span class='line'> 80</span> 		var tags = p.queryString.split(' ');
+<span class='line'> 81</span> 
+<span class='line'> 82</span> 		// if we have a query and no tag matching return
+<span class='line'> 83</span> 		if ( p.queryString && tags.length == 0 ) {
+<span class='line'> 84</span> 			callback.call( that, []);
+<span class='line'> 85</span> 			return;
+<span class='line'> 86</span> 		}
+<span class='line'> 87</span> 
+<span class='line'> 88</span> 		// no handling of objectTypeFilter, filter, inFolderId, etc...
+<span class='line'> 89</span> 		// in real implementation you should handle all parameters
+<span class='line'> 90</span> 
+<span class='line'> 91</span> 		jQuery.ajax({ type: "GET",
+<span class='line'> 92</span> 			dataType: "jsonp",
+<span class='line'> 93</span> 			url: 'http://feeds.delicious.com/v2/json/' + tags.join('+'),
+<span class='line'> 94</span> 			success: function(data) {
+<span class='line'> 95</span> 				var items = [];
+<span class='line'> 96</span> 				// convert data to Aloha objects
+<span class='line'> 97</span> 				for (var i = 0; i &lt; data.length; i++) {
+<span class='line'> 98</span> 					if (typeof data[i] != 'function' ) {
+<span class='line'> 99</span> 						items.push(new Aloha.Repository.Document ({
+<span class='line'>100</span> 							id: data[i].u,
+<span class='line'>101</span> 							name: data[i].d,
+<span class='line'>102</span> 							repositoryId: that.repositoryId,
+<span class='line'>103</span> 							type: 'website',
+<span class='line'>104</span> 							url: data[i].u
+<span class='line'>105</span> 						}));
+<span class='line'>106</span> 					}
+<span class='line'>107</span> 				}
+<span class='line'>108</span> 				callback.call( that, items);
+<span class='line'>109</span> 			}
+<span class='line'>110</span> 		});
+<span class='line'>111</span> 	};
+<span class='line'>112</span> 	&lt;/code>&lt;/pre>
+<span class='line'>113</span> 	 *
+<span class='line'>114</span> 	 * @param {object} params object with properties
+<span class='line'>115</span> 	 * &lt;div class="mdetail-params">&lt;ul>
+<span class='line'>116</span> 	 * &lt;li>&lt;code> queryString&lt;/code> :  String &lt;div class="sub-desc">The query string for full text search&lt;/div>&lt;/li>
+<span class='line'>117</span> 	 * &lt;li>&lt;code> objectTypeFilter&lt;/code> : array  (optional) &lt;div class="sub-desc">Object types that will be returned.&lt;/div>&lt;/li>
+<span class='line'>118</span> 	 * &lt;li>&lt;code> filter&lt;/code> : array (optional) &lt;div class="sub-desc">Attributes that will be returned.&lt;/div>&lt;/li>
+<span class='line'>119</span> 	 * &lt;li>&lt;code> inFolderId&lt;/code> : boolean  (optional) &lt;div class="sub-desc">This is indicates whether or not a candidate object is a child-object of the folder object identified by the given inFolderId (objectId).&lt;/div>&lt;/li>
+<span class='line'>120</span> 	 * &lt;li>&lt;code> inTreeId&lt;/code> : boolean  (optional) &lt;div class="sub-desc">This indicates whether or not a candidate object is a descendant-object of the folder object identified by the given inTreeId (objectId).&lt;/div>&lt;/li>
+<span class='line'>121</span> 	 * &lt;li>&lt;code> orderBy&lt;/code> : array  (optional) &lt;div class="sub-desc">ex. [{lastModificationDate:’DESC’, name:’ASC’}]&lt;/div>&lt;/li>
+<span class='line'>122</span> 	 * &lt;li>&lt;code> maxItems&lt;/code> : Integer  (optional) &lt;div class="sub-desc">number items to return as result&lt;/div>&lt;/li>
+<span class='line'>123</span> 	 * &lt;li>&lt;code> skipCount&lt;/code> : Integer  (optional) &lt;div class="sub-desc">This is tricky in a merged multi repository scenario&lt;/div>&lt;/li>
+<span class='line'>124</span> 	 * &lt;li>&lt;code> renditionFilter&lt;/code> : array  (optional) &lt;div class="sub-desc">Instead of termlist an array of kind or mimetype is expected. If null or array.length == 0 all renditions are returned. See http://docs.oasis-open.org/cmis/CMIS/v1.0/cd04/cmis-spec-v1.0.html#_Ref237323310 for renditionFilter&lt;/div>&lt;/li>
+<span class='line'>125</span> 	 * &lt;/ul>&lt;/div>
+<span class='line'>126</span> 	 * @param {function} callback this method must be called with all result items&lt;/div>&lt;/li>
+<span class='line'>127</span> 	 */</span><span class="WHIT">
+<span class='line'>128</span> </span><span class="WHIT">	</span><span class="NAME">query</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>129</span> </span><span class="WHIT">	</span><span class="COMM">/*
+<span class='line'>130</span> 	query: function( params, callback ) {
+<span class='line'>131</span> 		if (typeof callback === 'function') {
+<span class='line'>132</span> 			callback([]);
+<span class='line'>133</span> 		}
+<span class='line'>134</span> 	},
+<span class='line'>135</span> 	*/</span><span class="WHIT">
+<span class='line'>136</span> 
+<span class='line'>137</span> </span><span class="WHIT">	</span><span class="COMM">/**
+<span class='line'>138</span> 	 * Returns all children of a given motherId.
+<span class='line'>139</span> 	 *
+<span class='line'>140</span> 	 * @param {object} params object with properties
+<span class='line'>141</span> 	 * &lt;div class="mdetail-params">&lt;ul>
+<span class='line'>142</span> 	 * &lt;li>&lt;code> objectTypeFilter&lt;/code> : array  (optional) &lt;div class="sub-desc">Object types that will be returned.&lt;/div>&lt;/li>
+<span class='line'>143</span> 	 * &lt;li>&lt;code> filter&lt;/code> : array  (optional) &lt;div class="sub-desc">Attributes that will be returned.&lt;/div>&lt;/li>
+<span class='line'>144</span> 	 * &lt;li>&lt;code> inFolderId&lt;/code> : boolean  (optional) &lt;div class="sub-desc">This indicates whether or not a candidate object is a child-object of the folder object identified by the given inFolderId (objectId).&lt;/div>&lt;/li>
+<span class='line'>145</span> 	 * &lt;li>&lt;code> orderBy&lt;/code> : array  (optional) &lt;div class="sub-desc">ex. [{lastModificationDate:’DESC’, name:’ASC’}]&lt;/div>&lt;/li>
+<span class='line'>146</span> 	 * &lt;li>&lt;code> maxItems&lt;/code> : Integer  (optional) &lt;div class="sub-desc">number items to return as result&lt;/div>&lt;/li>
+<span class='line'>147</span> 	 * &lt;li>&lt;code> skipCount&lt;/code> : Integer  (optional) &lt;div class="sub-desc">This is tricky in a merged multi repository scenario&lt;/div>&lt;/li>
+<span class='line'>148</span> 	 * &lt;li>&lt;code> renditionFilter&lt;/code> : array  (optional) &lt;div class="sub-desc">Instead of termlist an array of kind or mimetype is expected. If null or array.length == 0 all renditions are returned. See http://docs.oasis-open.org/cmis/CMIS/v1.0/cd04/cmis-spec-v1.0.html#_Ref237323310 for renditionFilter&lt;/div>&lt;/li>
+<span class='line'>149</span> 	 * &lt;/ul>&lt;/div>
+<span class='line'>150</span> 	 * @param {function} callback this method must be called with all result items
+<span class='line'>151</span> 	 */</span><span class="WHIT">
+<span class='line'>152</span> </span><span class="WHIT">	</span><span class="NAME">getChildren</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>153</span> </span><span class="WHIT">	</span><span class="COMM">/*
+<span class='line'>154</span> 	getChildren: function( params, callback ) {
+<span class='line'>155</span> 		if (typeof callback === 'function') {
+<span class='line'>156</span> 			callback([]);
+<span class='line'>157</span> 		}
+<span class='line'>158</span> 	},
+<span class='line'>159</span> 	*/</span><span class="WHIT">
+<span class='line'>160</span> 
+<span class='line'>161</span> </span><span class="WHIT">	</span><span class="COMM">/**
+<span class='line'>162</span> 	 * Make the given jQuery object (representing an object marked as object of this type)
+<span class='line'>163</span> 	 * clean. All attributes needed for handling should be removed.
+<span class='line'>164</span> 	 *
+<span class='line'>165</span> 	&lt;pre>&lt;code>
+<span class='line'>166</span> 	Aloha.Repositories.myRepository.makeClean = function (obj) {
+<span class='line'>167</span> 		obj.removeAttr('data-myRepository-name');
+<span class='line'>168</span> 	};
+<span class='line'>169</span> 	&lt;/code>&lt;/pre>
+<span class='line'>170</span> 	 * @param {jQuery} obj jQuery object to make clean
+<span class='line'>171</span> 	 * @return void
+<span class='line'>172</span> 	 */</span><span class="WHIT">
+<span class='line'>173</span> </span><span class="WHIT">	</span><span class="NAME">makeClean</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">obj</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>174</span> 
+<span class='line'>175</span> </span><span class="WHIT">	</span><span class="COMM">/**
+<span class='line'>176</span> 	 * This method will be called when a user chooses an item from a repository and wants
+<span class='line'>177</span> 	 * to insert this item in his content.
+<span class='line'>178</span> 	 * Mark or modify an object as needed by that repository for handling, processing or identification.
+<span class='line'>179</span> 	 * Objects can be any DOM object as A, SPAN, ABBR, etc. or
+<span class='line'>180</span> 	 * special objects such as aloha-aloha_block elements.
+<span class='line'>181</span> 	 * (see http://dev.w3.org/html5/spec/elements.html#embedding-custom-non-visible-data)
+<span class='line'>182</span> 	 *
+<span class='line'>183</span> 	&lt;pre>&lt;code>
+<span class='line'>184</span> 	Aloha.Repositories.myRepository.markObject = function (obj, resourceItem) {
+<span class='line'>185</span> <span class='line'>186</span> 		obj.attr('data-myRepository-name').text(resourceItem.name);
+<span class='line'>187</span> 	};
+<span class='line'>188</span> 	&lt;/code>&lt;/pre>
+<span class='line'>189</span> 	 *
+<span class='line'>190</span> 	 *
+<span class='line'>191</span> 	 * @param obj jQuery target object to which the repositoryItem will be applied
+<span class='line'>192</span> 	 * @param repositoryItem The selected item. A class constructed from Document or Folder.
+<span class='line'>193</span> 	 * @return void
+<span class='line'>194</span> 	 */</span><span class="WHIT">
+<span class='line'>195</span> </span><span class="WHIT">	</span><span class="NAME">markObject</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">obj</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">repositoryItem</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>196</span> 
+<span class='line'>197</span> </span><span class="WHIT">	</span><span class="COMM">/**
+<span class='line'>198</span> 	 * Set a template for rendering objects of this repository
+<span class='line'>199</span> 	 * @param {String} template
+<span class='line'>200</span> 	 * @return void
+<span class='line'>201</span> 	 * @method
+<span class='line'>202</span> 	 */</span><span class="WHIT">
+<span class='line'>203</span> </span><span class="WHIT">	</span><span class="NAME">setTemplate</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">template</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>204</span> </span><span class="WHIT">		</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">template</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>205</span> </span><span class="WHIT">			</span><span class="NAME">this.template</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">template</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>206</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>207</span> </span><span class="WHIT">			</span><span class="NAME">this.template</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>208</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>209</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>210</span> 
+<span class='line'>211</span> </span><span class="WHIT">	</span><span class="COMM">/**
+<span class='line'>212</span> 	 * Checks whether the repository has a template
+<span class='line'>213</span> 	 * @return {boolean} true when the repository has a template, false if not
+<span class='line'>214</span> 	 * @method
+<span class='line'>215</span> 	 */</span><span class="WHIT">
+<span class='line'>216</span> </span><span class="WHIT">	</span><span class="NAME">hasTemplate</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>217</span> </span><span class="WHIT">		</span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">this.template</span><span class="WHIT"> </span><span class="PUNC">?</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>218</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>219</span> 
+<span class='line'>220</span> </span><span class="WHIT">	</span><span class="COMM">/**
+<span class='line'>221</span> 	 * Get the parsed template
+<span class='line'>222</span> 	 * @return {Object} parsed template
+<span class='line'>223</span> 	 * @method
+<span class='line'>224</span> 	 */</span><span class="WHIT">
+<span class='line'>225</span> </span><span class="WHIT">	</span><span class="NAME">getTemplate</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>226</span> </span><span class="WHIT">		</span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">this.template</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>227</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>228</span> 
+<span class='line'>229</span> </span><span class="WHIT">	</span><span class="COMM">/**
+<span class='line'>230</span> 	 * Get the repositoryItem with given id
+<span class='line'>231</span> 	 * @param itemId {String} id of the repository item to fetch
+<span class='line'>232</span> 	 * @param callback {function} callback function
+<span class='line'>233</span> 	 * @return {Aloha.Repository.Object} item with given id
+<span class='line'>234</span> 	 */</span><span class="WHIT">
+<span class='line'>235</span> </span><span class="WHIT">	</span><span class="NAME">getObjectById</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">itemId</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">callback</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT"> </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>236</span> </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>237</span> 
+<span class='line'>238</span> <span class='line'>239</span> </span><span class="WHIT">	</span><span class="COMM">// expose the AbstractRepository</span><span class="WHIT">
+<span class='line'>240</span> </span><span class="WHIT">	</span><span class="NAME">Aloha.AbstractRepository</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">AbstractRepository</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>241</span> </span><span class="WHIT">	
+<span class='line'>242</span> 	</span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">AbstractRepository</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>243</span> </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>244</span> </span></pre></body></html>

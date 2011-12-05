@@ -1,0 +1,172 @@
+<html><head><meta http-equiv="content-type" content="text/html; charset=utf8"> <style>
+	.KEYW {color: #933;}
+	.COMM {color: #bbb; font-style: italic;}
+	.NUMB {color: #393;}
+	.STRN {color: #393;}
+	.REGX {color: #339;}
+	.line {border-right: 1px dotted #666; color: #666; font-style: normal;}
+	</style></head><body><pre><span class='line'>  1</span> <span class="COMM">/*!
+<span class='line'>  2</span>  * Aloha Editor
+<span class='line'>  3</span>  * Author & Copyright (c) 2010 Gentics Software GmbH
+<span class='line'>  4</span>  * aloha-sales@gentics.com
+<span class='line'>  5</span>  * Licensed unter the terms of http://www.aloha-editor.com/license.html
+<span class='line'>  6</span>  *
+<span class='line'>  7</span>  *
+<span class='line'>  8</span>  * Aloha List Enforcer
+<span class='line'>  9</span>  * -------------------
+<span class='line'> 10</span>  * Enforces a one top-level list per editable policy ;-)
+<span class='line'> 11</span>  * This plugin will register editables and enforce lists in them. List enforced
+<span class='line'> 12</span>  * editables will be permitted to contain, exactly one top-level element which
+<span class='line'> 13</span>  * must be a (OL or a UL) list element.
+<span class='line'> 14</span>  */</span><span class="WHIT">
+<span class='line'> 15</span> 
+<span class='line'> 16</span> </span><span class="NAME">define</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="WHIT">
+<span class='line'> 17</span> </span><span class="WHIT">	</span><span class="STRN">'aloha'</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 18</span> </span><span class="WHIT">	</span><span class="STRN">'aloha/jquery'</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 19</span> </span><span class="WHIT">	</span><span class="STRN">'aloha/plugin'</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 20</span> </span><span class="WHIT">	</span><span class="STRN">'aloha/floatingmenu'</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 21</span> </span><span class="WHIT">	</span><span class="STRN">'aloha/console'</span><span class="WHIT">
+<span class='line'> 22</span> </span><span class="PUNC">]</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">Aloha</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">jQuery</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">Plugin</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">FloatingMenu</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">console</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 23</span> </span><span class="WHIT">	</span><span class="STRN">'use strict'</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 24</span> 
+<span class='line'> 25</span> </span><span class="WHIT">	</span><span class="COMM">/**
+<span class='line'> 26</span> 	 * An internal array of all editables inwhich to enforce lists.
+<span class='line'> 27</span> 	 *
+<span class='line'> 28</span> 	 * @private
+<span class='line'> 29</span> 	 */</span><span class="WHIT">
+<span class='line'> 30</span> </span><span class="WHIT">	</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">listEnforcedEditables</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 31</span> 
+<span class='line'> 32</span> </span><span class="WHIT">	</span><span class="COMM">/**
+<span class='line'> 33</span> 	 * Given an editable which has been configured to enforce lists,
+<span class='line'> 34</span> 	 * ensures that there is exactly one top-level list in the editable.
+<span class='line'> 35</span> 	 * If there are no lists, one will be added, using the
+<span class='line'> 36</span> 	 * placeHolderListString. If there is more than one list, they will be
+<span class='line'> 37</span> 	 * merged into the first list.
+<span class='line'> 38</span> 	 *
+<span class='line'> 39</span> 	 * @private
+<span class='line'> 40</span> 	 * @param {jQuery} $editable
+<span class='line'> 41</span> 	 * @param {String} placeHolderListString
+<span class='line'> 42</span> 	 */</span><span class="WHIT">
+<span class='line'> 43</span> </span><span class="WHIT">	</span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">enforce</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">$editable</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">placeHolderListString</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 44</span> </span><span class="WHIT">		</span><span class="COMM">// Check if this editable is configured to enforce lists</span><span class="WHIT">
+<span class='line'> 45</span> </span><span class="WHIT">		</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">jQuery.inArray</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">$editable</span><span class="PUNC">[</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="WHIT"> </span><span class="PUNC">]</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">listEnforcedEditables</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">===</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="NUMB">1</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 46</span> </span><span class="WHIT">			</span><span class="KEYW">return</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 47</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'> 48</span> 
+<span class='line'> 49</span> </span><span class="WHIT">		</span><span class="COMM">// Remove all temporary &lt;br>s in the editable, which we may have</span><span class="WHIT">
+<span class='line'> 50</span> </span><span class="WHIT">		</span><span class="COMM">// inserted when we activated this editable and found it empty. These</span><span class="WHIT">
+<span class='line'> 51</span> </span><span class="WHIT">		</span><span class="COMM">// &lt;br>s are needed to make the otherwise emty &lt;li> visible (in IE).</span><span class="WHIT">
+<span class='line'> 52</span> </span><span class="WHIT">		</span><span class="NAME">$editable.find</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="STRN">'.GENTICS_temporary'</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">remove</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 53</span> 
+<span class='line'> 54</span> </span><span class="WHIT">		</span><span class="COMM">// Check for the presence of at least one non-empty list. We consider</span><span class="WHIT">
+<span class='line'> 55</span> </span><span class="WHIT">		</span><span class="COMM">// a list to be not empty if it has atleast one item whose contents are</span><span class="WHIT">
+<span class='line'> 56</span> </span><span class="WHIT">		</span><span class="COMM">// more than a single (propping) &lt;br> tag.</span><span class="WHIT">
+<span class='line'> 57</span> 
+<span class='line'> 58</span> </span><span class="WHIT">		</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">hasList</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 59</span> 
+<span class='line'> 60</span> </span><span class="WHIT">		</span><span class="NAME">$editable.find</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="STRN">'li'</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">each</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 61</span> </span><span class="WHIT">			</span><span class="COMM">// nb: jQuery text() method returns the text contents of the</span><span class="WHIT">
+<span class='line'> 62</span> </span><span class="WHIT">			</span><span class="COMM">// element without &lt;br>s being rendered.</span><span class="WHIT">
+<span class='line'> 63</span> </span><span class="WHIT">			</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">jQuery.trim</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">jQuery</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">text</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">!==</span><span class="WHIT"> </span><span class="STRN">''</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 64</span> </span><span class="WHIT">				</span><span class="NAME">hasList</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 65</span> </span><span class="WHIT">				</span><span class="COMM">// Stop looking for lists as soon as we find our first</span><span class="WHIT">
+<span class='line'> 66</span> </span><span class="WHIT">				</span><span class="COMM">// non-empty list</span><span class="WHIT">
+<span class='line'> 67</span> </span><span class="WHIT">				</span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 68</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'> 69</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 70</span> 
+<span class='line'> 71</span> </span><span class="WHIT">		</span><span class="COMM">// If we found no non-empty list, then we add our empty dummy list that</span><span class="WHIT">
+<span class='line'> 72</span> </span><span class="WHIT">		</span><span class="COMM">// the user can work with.</span><span class="WHIT">
+<span class='line'> 73</span> </span><span class="WHIT">		</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="PUNC">!</span><span class="NAME">hasList</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 74</span> </span><span class="WHIT">			</span><span class="NAME">$editable.html</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">placeHolderListString</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 75</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'> 76</span> 
+<span class='line'> 77</span> </span><span class="WHIT">		</span><span class="COMM">// Concatinate all top-level lists into the first, before, thereby</span><span class="WHIT">
+<span class='line'> 78</span> </span><span class="WHIT">		</span><span class="COMM">// merging all top-level lists into one.</span><span class="WHIT">
+<span class='line'> 79</span> </span><span class="WHIT">		</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">$lists</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">$editable.find</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="STRN">'>ul,>ol'</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 80</span> </span><span class="WHIT">		    </span><span class="NAME">j</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">$lists.length</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 81</span> </span><span class="WHIT">		    </span><span class="NAME">i</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 82</span> </span><span class="WHIT">		</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">j</span><span class="WHIT"> </span><span class="PUNC">></span><span class="WHIT"> </span><span class="NUMB">1</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 83</span> </span><span class="WHIT">			</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">$firstList</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">jQuery</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">$lists</span><span class="PUNC">[</span><span class="NUMB">0</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 84</span> </span><span class="WHIT">			</span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">1</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">&lt;</span><span class="WHIT"> </span><span class="NAME">j</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="PUNC">++</span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 85</span> </span><span class="WHIT">				</span><span class="NAME">$firstList.append</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">jQuery</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">$lists</span><span class="PUNC">[</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">find</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="STRN">'>li'</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 86</span> </span><span class="WHIT">				</span><span class="NAME">jQuery</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">$lists</span><span class="PUNC">[</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">remove</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 87</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'> 88</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'> 89</span> 
+<span class='line'> 90</span> </span><span class="WHIT">		</span><span class="COMM">// Remove all top-level elements which are not lists</span><span class="WHIT">
+<span class='line'> 91</span> </span><span class="WHIT">		</span><span class="NAME">$editable.find</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="STRN">'>*:not(ul,ol)'</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">remove</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 92</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 93</span> 
+<span class='line'> 94</span> </span><span class="WHIT">	</span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">Plugin.create</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="STRN">'listenforcer'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 95</span> 
+<span class='line'> 96</span> </span><span class="WHIT">		</span><span class="NAME">languages</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="WHIT"> </span><span class="STRN">'en'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'de'</span><span class="WHIT"> </span><span class="PUNC">]</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 97</span> 
+<span class='line'> 98</span> </span><span class="WHIT">		</span><span class="NAME">_constructor</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 99</span> </span><span class="WHIT">			</span><span class="NAME">this._super</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="STRN">'listenforcer'</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>100</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>101</span> 
+<span class='line'>102</span> </span><span class="WHIT">		</span><span class="COMM">/**
+<span class='line'>103</span> 		 * Initializes the listenforcer plugin:
+<span class='line'>104</span> 		 * We read the aloha configuration settings to determine which
+<span class='line'>105</span> 		 * editables are to have list enforced in them.
+<span class='line'>106</span> 		 * We bind handlers to 3 events (aloha-editable-activated,
+<span class='line'>107</span> 		 * aloha-editable-deactivated, and aloha-smart-content-changed) on
+<span class='line'>108</span> 		 * which we will process the current active editable and enfore lists
+<span class='line'>109</span> 		 * in it.
+<span class='line'>110</span> 		 */</span><span class="WHIT">
+<span class='line'>111</span> </span><span class="WHIT">		</span><span class="NAME">init</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>112</span> </span><span class="WHIT">			</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">that</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>113</span> </span><span class="WHIT">			    </span><span class="NAME">elemsToEnforce</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.settings.editables</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="PUNC">]</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>114</span> </span><span class="WHIT">				</span><span class="NAME">elemToEnforce</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>115</span> </span><span class="WHIT">				</span><span class="NAME">i</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>116</span> </span><span class="WHIT">				</span><span class="NAME">j</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">elemsToEnforce.length</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>117</span> 
+<span class='line'>118</span> </span><span class="WHIT">			</span><span class="COMM">// Register all editables that are to enforce lists.</span><span class="WHIT">
+<span class='line'>119</span> </span><span class="WHIT">			</span><span class="COMM">// The following types of items can be used as jQuery selectors:</span><span class="WHIT">
+<span class='line'>120</span> </span><span class="WHIT">			</span><span class="COMM">// String, DOMElement, and jQuery</span><span class="WHIT">
+<span class='line'>121</span> </span><span class="WHIT">			</span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">&lt;</span><span class="WHIT"> </span><span class="NAME">j</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="PUNC">++</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>122</span> </span><span class="WHIT">				</span><span class="NAME">elemToEnforce</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">elemsToEnforce</span><span class="PUNC">[</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>123</span> </span><span class="WHIT">				</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="KEYW">typeof</span><span class="WHIT"> </span><span class="NAME">elemToEnforce</span><span class="WHIT"> </span><span class="PUNC">===</span><span class="WHIT"> </span><span class="STRN">'string'</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT">
+<span class='line'>124</span> </span><span class="WHIT">						</span><span class="NAME">elemToEnforce.nodeName</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT">
+<span class='line'>125</span> </span><span class="WHIT">							</span><span class="NAME">elemToEnforce</span><span class="WHIT"> </span><span class="KEYW">instanceof</span><span class="WHIT"> </span><span class="NAME">jQuery</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>126</span> </span><span class="WHIT">					</span><span class="NAME">this.addEditableToEnforcementList</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">jQuery</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">elemToEnforce</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">[</span><span class="NUMB">0</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>127</span> </span><span class="WHIT">				</span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>128</span> </span><span class="WHIT">					</span><span class="NAME">console.warn</span><span class="PUNC">(</span><span class="WHIT">
+<span class='line'>129</span> </span><span class="WHIT">						</span><span class="STRN">'Aloha List Enforcer Plugin'</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>130</span> </span><span class="WHIT">						</span><span class="STRN">'Object "'</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">elemToEnforce.toString</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">'" can not '</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT">
+<span class='line'>131</span> </span><span class="WHIT">						</span><span class="STRN">'be used as a jQuery selector with which to register'</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT">
+<span class='line'>132</span> </span><span class="WHIT">						</span><span class="STRN">' an editable to be list enforced.'</span><span class="WHIT">
+<span class='line'>133</span> </span><span class="WHIT">					</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>134</span> </span><span class="WHIT">				</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>135</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>136</span> 
+<span class='line'>137</span> </span><span class="WHIT">			</span><span class="NAME">Aloha.bind</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="STRN">'aloha-editable-activated'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">$event</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">params</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>138</span> </span><span class="WHIT">				</span><span class="NAME">enforce</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">params.editable.obj</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>139</span> </span><span class="WHIT">					</span><span class="STRN">'&lt;ul>&lt;li>&lt;br class="GENTICS_temporary" />&lt;/li>&lt;/ul>'</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>140</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>141</span> 
+<span class='line'>142</span> </span><span class="WHIT">			</span><span class="NAME">Aloha.bind</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="STRN">'aloha-editable-deactivated'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">$event</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">params</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>143</span> </span><span class="WHIT">				</span><span class="NAME">enforce</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">params.editable.obj</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">''</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>144</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>145</span> 
+<span class='line'>146</span> </span><span class="WHIT">			</span><span class="NAME">Aloha.bind</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="STRN">'aloha-smart-content-changed'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">$event</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">params</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>147</span> </span><span class="WHIT">				</span><span class="COMM">// window.console.log( 'Smart content changed event' );</span><span class="WHIT">
+<span class='line'>148</span> </span><span class="WHIT">				</span><span class="NAME">enforce</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">params.editable.obj</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>149</span> </span><span class="WHIT">					</span><span class="STRN">'&lt;ul>&lt;li>&lt;br class="GENTICS_temporary" />&lt;/li>&lt;/ul>'</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>150</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>151</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>152</span> 
+<span class='line'>153</span> </span><span class="WHIT">		</span><span class="COMM">/**
+<span class='line'>154</span> 		 * Registers the given editable to be list-enforced.
+<span class='line'>155</span> 		 *
+<span class='line'>156</span> 		 * @param {DOMElement} editable
+<span class='line'>157</span> 		 */</span><span class="WHIT">
+<span class='line'>158</span> </span><span class="WHIT">		</span><span class="NAME">addEditableToEnforcementList</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">editable</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>159</span> </span><span class="WHIT">			</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">editable</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>160</span> </span><span class="WHIT">				</span><span class="NAME">listEnforcedEditables.push</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">editable</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>161</span> </span><span class="WHIT">			</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>162</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>163</span> 
+<span class='line'>164</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>165</span> </span><span class="PUNC">}</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span></pre></body></html>
