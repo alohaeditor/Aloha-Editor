@@ -19,5 +19,6 @@ define([
 	"./font",
 	"./format",
 	"./link",
+	"./list",
 	"./paragraph"
 ]);

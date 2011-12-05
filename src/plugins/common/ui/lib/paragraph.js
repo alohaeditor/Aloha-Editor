@@ -22,7 +22,7 @@ function( Aloha, Ui, i18n, jQuery ) {
 		getItems: function() {
 			var formatBlock = this;
 			return [{
-				label: "Remove formatting",
+				label: i18n.t( "button.removeFormatting.label" ),
 				click: function() {
 					formatBlock.removeFormatting( Ui.toolbar.range, this.editable );
 				}

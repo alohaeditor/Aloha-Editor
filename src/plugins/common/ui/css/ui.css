@@ -26,6 +26,22 @@
 	background-position: -80px 0;
 }
 
+.aloha-icon-orderedlist {
+	background-position: -272px 0;
+}
+
+.aloha-icon-unorderedlist {
+	background-position: -256px 0;
+}
+
+.ui-state-default .aloha-icon-indent {
+	background-image: url(../img/indent.png);
+}
+
+.ui-state-default .aloha-icon-outdent {
+	background-image: url(../img/outdent.png);
+}
+
 button.aloha-large-button {
 	width: 60px;
 	height: 50px;
