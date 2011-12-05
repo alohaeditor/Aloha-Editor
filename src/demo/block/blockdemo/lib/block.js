@@ -207,10 +207,10 @@ define([
 			this.updateDataAttributesFromColumnContents($element);
 
 			var numberOfColumns = parseInt(this.attr('columns'));
-			var columnDifference = numberOfColumns - $element.find('.column').length;
+			var columnDifference = numberOfColumns - $element.children('.column').length;
 			if (columnDifference < 0) {
 				// we need to remove the last N columns
-				$element.find('.column').slice(columnDifference).remove();
+				$element.children('.column').slice(columnDifference).remove();
 			} else {
 				// add new columns
 				for (var i=0; i<columnDifference; i++) {
@@ -228,7 +228,7 @@ define([
 			}
 
 			this.calculateColumnWidths($element);
-			this.$element.find('.clear').remove();
+			this.$element.children('.clear').remove();
 			this.$element.append(jQuery('<div class="clear" />'));
 			postProcessFn();
 		},
@@ -239,13 +239,13 @@ define([
 		},
 		updateDataAttributesFromColumnContents: function($element) {
 			var that = this;
-			$element.find('.column').each(function(i, el) {
+			$element.children('.column').each(function(i, el) {
 				that.attr('column-contents-' + i, jQuery(el).html());
 			});
 		},
 		calculateColumnWidths: function($element) {
-			var numberOfColumns = $element.find('.column').length;
-			$element.find('.column').css('width', Math.floor(100 / numberOfColumns) + '%');
+			var numberOfColumns = $element.children('.column').length;
+			$element.children('.column').css('width', Math.floor(100 / numberOfColumns) + '%');
 		}
 	});
 
@@ -253,7 +253,7 @@ define([
 		init: function($element, postProcessFn) {
 			var that = this;
 			this.calculateColumnWidths($element);
-			$element.find('.column').each(function() {
+			$element.children('.column').each(function() {
 				that.postProcessColumn(jQuery(this));
 			})
 			postProcessFn();
@@ -262,7 +262,7 @@ define([
 			return jQuery('<div class="column aloha-block-collection" />');
 		},
 		postProcessColumn: function($column) {
-			var $button = $column.find('button.addNewBlock');
+			var $button = $column.children('button.addNewBlock');
 			if ($button.length === 0) {
 				$button = jQuery('<button class="addNewBlock">Add new block</button>');
 				$column.append($button);
