@@ -23,6 +23,7 @@ define([
 			BlockManager.registerBlockType('NewsBlock', block.NewsBlock);
 			BlockManager.registerBlockType('SortableNewsBlock', block.SortableNewsBlock);
 			BlockManager.registerBlockType('ColumnBlock', block.ColumnBlock);
+			BlockManager.registerBlockType('UneditableColumnBlock', block.UneditableColumnBlock);
 		}
 	});
 });

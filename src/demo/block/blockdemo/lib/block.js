@@ -214,7 +214,8 @@ define([
 			} else {
 				// add new columns
 				for (var i=0; i<columnDifference; i++) {
-					var $column = jQuery('<div class="column aloha-editable" />');
+					var $column = this.getNewColumn();
+
 					if (this.attr('column-contents-' + (numberOfColumns - columnDifference + i))) {
 						$column.html(this.attr('column-contents-' + (numberOfColumns - columnDifference + i)));
 					} else {
@@ -222,6 +223,7 @@ define([
 					}
 
 					$element.append($column);
+					this.postProcessColumn($column);
 				}
 			}
 
@@ -229,6 +231,11 @@ define([
 			this.$element.find('.clear').remove();
 			this.$element.append(jQuery('<div class="clear" />'));
 			postProcessFn();
+		},
+		getNewColumn: function() {
+			return jQuery('<div class="column aloha-editable" />');
+		},
+		postProcessColumn: function($column) {
 		},
 		updateDataAttributesFromColumnContents: function($element) {
 			var that = this;
@@ -242,6 +249,34 @@ define([
 		}
 	});
 
+	var UneditableColumnBlock = ColumnBlock.extend({
+		init: function($element, postProcessFn) {
+			var that = this;
+			this.calculateColumnWidths($element);
+			$element.find('.column').each(function() {
+				that.postProcessColumn(jQuery(this));
+			})
+			postProcessFn();
+		},
+		getNewColumn: function() {
+			return jQuery('<div class="column" />');
+		},
+		postProcessColumn: function($column) {
+			if ($column.find('button.addNewBlock').length > 0) {
+				return;
+			}
+			var $button = jQuery('<button class="addNewBlock">Add new block</button>');
+			$button.click(function() {
+				var $newBlock = jQuery('<div>Test</div>');
+				$newBlock.insertBefore($button);
+				$newBlock.alohaBlock({
+
+				});
+			})
+			$column.append($button);
+		}
+	});
+
 	return {
 		CompanyBlock: CompanyBlock,
 		EditableProductTeaserBlock: EditableProductTeaserBlock,
@@ -250,6 +285,7 @@ define([
 		EditableImageBlock: EditableImageBlock,
 		NewsBlock: NewsBlock,
 		SortableNewsBlock: SortableNewsBlock,
-		ColumnBlock: ColumnBlock
+		ColumnBlock: ColumnBlock,
+		UneditableColumnBlock: UneditableColumnBlock
 	};
 });
