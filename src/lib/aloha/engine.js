@@ -6981,23 +6981,24 @@ commands.forwarddelete = {
 ///// The indent command /////
 //@{
 commands.indent = {
-	action: function() {
+	action: function(value, range) {
+		range = range || getActiveRange();
 		// "Let items be a list of all lis that are ancestor containers of the
 		// active range's start and/or end node."
 		//
 		// Has to be in tree order, remember!
 		var items = [];
-		for (var node = getActiveRange().endContainer; node != getActiveRange().commonAncestorContainer; node = node.parentNode) {
+		for (var node = range.endContainer; node != range.commonAncestorContainer; node = node.parentNode) {
 			if (isHtmlElement(node, "LI")) {
 				items.unshift(node);
 			}
 		}
-		for (var node = getActiveRange().startContainer; node != getActiveRange().commonAncestorContainer; node = node.parentNode) {
+		for (var node = range.startContainer; node != range.commonAncestorContainer; node = node.parentNode) {
 			if (isHtmlElement(node, "LI")) {
 				items.unshift(node);
 			}
 		}
-		for (var node = getActiveRange().commonAncestorContainer; node; node = node.parentNode) {
+		for (var node = range.commonAncestorContainer; node; node = node.parentNode) {
 			if (isHtmlElement(node, "LI")) {
 				items.unshift(node);
 			}
@@ -7005,11 +7006,11 @@ commands.indent = {
 
 		// "For each item in items, normalize sublists of item."
 		for (var i = 0; i < items.length; i++) {
-			normalizeSublists(items[i, range]);
+			normalizeSublists(items[i], range);
 		}
 
 		// "Block-extend the active range, and let new range be the result."
-		var newRange = blockExtend(getActiveRange());
+		var newRange = blockExtend(range);
 
 		// "Let node list be a list of nodes, initially empty."
 		var nodeList = [];
@@ -7355,7 +7356,9 @@ commands.insertlinebreak = {
 //@{
 commands.insertorderedlist = {
 	// "Toggle lists with tag name "ol"."
-	action: function() { toggleLists("ol") },
+	action: function(value, range) {
+		toggleLists("ol", range);
+	},
 	// "True if the selection's list state is "mixed" or "mixed ol", false
 	// otherwise."
 	indeterm: function() { return /^mixed( ol)?$/.test(getSelectionListState()) },
@@ -7858,7 +7861,9 @@ commands.inserttext = {
 //@{
 commands.insertunorderedlist = {
 	// "Toggle lists with tag name "ul"."
-	action: function() { toggleLists("ul") },
+	action: function(value, range) {
+		toggleLists("ul", range);
+	},
 	// "True if the selection's list state is "mixed" or "mixed ul", false
 	// otherwise."
 	indeterm: function() { return /^mixed( ul)?$/.test(getSelectionListState()) },
@@ -8034,7 +8039,8 @@ commands.justifyright = {
 ///// The outdent command /////
 //@{
 commands.outdent = {
-	action: function() {
+	action: function(value, range) {
+		range = range || getActiveRange();
 		// "Let items be a list of all lis that are ancestor containers of the
 		// range's start and/or end node."
 		//
@@ -8044,8 +8050,8 @@ commands.outdent = {
 		var items = [];
 		(function(){
 			for (
-				var ancestorContainer = getActiveRange().endContainer;
-				ancestorContainer != getActiveRange().commonAncestorContainer;
+				var ancestorContainer = range.endContainer;
+				ancestorContainer != range.commonAncestorContainer;
 				ancestorContainer = ancestorContainer.parentNode
 			) {
 				if (isHtmlElement(ancestorContainer, "li")) {
@@ -8053,7 +8059,7 @@ commands.outdent = {
 				}
 			}
 			for (
-				var ancestorContainer = getActiveRange().startContainer;
+				var ancestorContainer = range.startContainer;
 				ancestorContainer;
 				ancestorContainer = ancestorContainer.parentNode
 			) {
@@ -8069,7 +8075,7 @@ commands.outdent = {
 		});
 
 		// "Block-extend the active range, and let new range be the result."
-		var newRange = blockExtend(getActiveRange());
+		var newRange = blockExtend(range);
 
 		// "Let node list be a list of nodes, initially empty."
 		//
