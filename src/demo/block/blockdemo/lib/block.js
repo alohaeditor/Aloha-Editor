@@ -259,21 +259,21 @@ define([
 			postProcessFn();
 		},
 		getNewColumn: function() {
-			return jQuery('<div class="column" />');
+			return jQuery('<div class="column aloha-block-collection" />');
 		},
 		postProcessColumn: function($column) {
-			if ($column.find('button.addNewBlock').length > 0) {
-				return;
+			var $button = $column.find('button.addNewBlock');
+			if ($button.length === 0) {
+				$button = jQuery('<button class="addNewBlock">Add new block</button>');
+				$column.append($button);
 			}
-			var $button = jQuery('<button class="addNewBlock">Add new block</button>');
 			$button.click(function() {
 				var $newBlock = jQuery('<div>Test</div>');
 				$newBlock.insertBefore($button);
 				$newBlock.alohaBlock({
 
 				});
-			})
-			$column.append($button);
+			});
 		}
 	});
 
