@@ -7,48 +7,48 @@
  *		www.aloha-editor.org/wiki/Repository
  * 3rd party tools:
  *		www.jstree.com/documentation/core
- *		www.trirand.com/blog/ (jqGrid)
- *		layout.jquery-dev.net/
+ *		www.trirand.com/blog (jqGrid)
+ *		layout.jquery-dev.net
  */
-define([
+define( [
 	
 	'aloha/jquery',
 	'util/class',
 	'i18n!browser/nls/i18n',
+	'aloha/console',
+	// this will load the correct language pack needed for the browser
+	'browser/locale',
 	'css!browser/css/browsercombined.css',
+	// 'jquery-plugin!browser/vendor/grid.locale.en.js', // we use 'browser/locale' instead
 	'jquery-plugin!browser/vendor/jquery.ui',
 	'jquery-plugin!browser/vendor/ui-layout',
-	'jquery-plugin!browser/vendor/grid.locale.en', // TODO how can we load the correct language here?
 	'jquery-plugin!browser/vendor/jquery.jqGrid',
 	'jquery-plugin!browser/vendor/jquery.jstree'
 	
-], function (jQuery, Class, i18n) {
-
+], function ( jQuery, Class, i18n, Console ) {
 'use strict';
-
 var
 	uid = +(new Date),
 	nsClasses = {
-		tree              : 'aloha-browser-tree',
+		'tree'            : 'aloha-browser-tree',
 		'tree-header'     : 'aloha-browser-tree-header',
 		'grab-handle'     : 'aloha-browser-grab-handle',
-		shadow            : 'aloha-browser-shadow',
+		'shadow'          : 'aloha-browser-shadow',
 		'rounded-top'     : 'aloha-browser-rounded-top',
-		list              : 'aloha-browser-list',
+		'list'            : 'aloha-browser-list',
 		'list-altrow'     : 'aloha-browser-list-altrow',
 		'list-resizable'  : 'aloha-browser-list-resizable',
 		'list-pager'      : 'aloha-browser-list-pager',
-		'list-pager-left' : 'aloha-browser-list-pager-left',
 		'list-btns'       : 'aloha-browser-list-btns',
 		'search-btn'      : 'aloha-browser-search-btn',
 		'search-field'    : 'aloha-browser-search-field',
 		'search-icon'     : 'aloha-browser-search-icon',
 		'close-btn'       : 'aloha-browser-close-btn',
-		btn               : 'aloha-browser-btn',
-		btns              : 'aloha-browser-btns',
-		grid              : 'aloha-browser-grid',
-		clear             : 'aloha-browser-clear',
-		inner             : 'aloha-browser-inner',
+		'btn'             : 'aloha-browser-btn',
+		'btns'            : 'aloha-browser-btns',
+		'grid'            : 'aloha-browser-grid',
+		'clear'           : 'aloha-browser-clear',
+		'inner'           : 'aloha-browser-inner',
 		'modal-overlay'   : 'aloha-browser-modal-overlay',
 		'modal-window'    : 'aloha-browser-modal-window'
 	};
@@ -222,15 +222,6 @@ var Browser = Class.extend({
 		
 		disableSelection(this.grid);
 		
-		// Not working
-		jQuery('body').bind('aloha-repository-error', function (error) {
-			console && console.warn && console.warn(
-				'Error occured on request to repository: ',
-				error.repository.repositoryId +
-				'\nMessage: "' + error.message + '"'
-			);
-		});
-		
 		this.close();
 	},
 	
@@ -303,7 +294,7 @@ var Browser = Class.extend({
 	 */
 	callback: function (fn, cb) {
 		if (typeof this[fn] != 'function') {
-			console && console.warn(
+			Console.warn(
 				'Unable to add a callback to "' + fn +
 				'" because it is not a method in Aloha.Browser.'
 			);
@@ -312,7 +303,7 @@ var Browser = Class.extend({
 		}
 		
 		if (typeof cb !== 'function') {
-			console && console.warn(
+			Console.warn(
 				'Unable to add a callback to "' + fn + '" because '	+
 				'the callback object that was given is of type "'	+
 				(typeof cb) + '". '									+
@@ -349,7 +340,7 @@ var Browser = Class.extend({
 			
 			return true;
 		} else {
-			console && console.warn(
+			Console.warn(
 				'Cannot enable callbacks for function "' + fn +
 				'" because no such method was found in Aloha.Browser.'
 			);
@@ -554,9 +545,6 @@ var Browser = Class.extend({
 		container.append(header, tree);
 		
 		tree.height(this.grid.height() - header.outerHeight(true))
-			.bind('before.jstree', function (event, data) {
-				//console && console.log(data.func);
-			})
 			.bind('loaded.jstree', function (event, data) {
 				jQuery('>ul>li', this).first().css('padding-top', 5);
 				tree.jstree("open_node", "li[rel='repository']");
@@ -622,10 +610,15 @@ var Browser = Class.extend({
 	
 	createList: function (container) {
 		var that = this;
+
+		// we need an unique identifier for our table to get multiple instances working
+		var listUID = 'aloha-browser-list-' + (++uid);
+
 		var list = jQuery(renderTemplate(
-				'<table id="jqgrid_needs_something_anything_here"\
-					class="{list}"></table>'
-			));
+			'<table id="'+listUID+'"\
+				class="{list}"></table>'
+		));
+
 		var colNames = [''];
 		// This is a hidden utility column to help us with auto sorting
 		var colModel = [{
@@ -647,9 +640,14 @@ var Browser = Class.extend({
 			});
 		});
 		
-		container.append(list,
-			jQuery(renderTemplate('<div id="{list-pager}">'))
-		);
+		/* 
+		* jqGrid requires that we use an id, despite what the documentation says
+		* (http://www.trirand.com/jqgridwiki/doku.php?id=wiki:pager&s[]=pager).
+		* We need a unique id, however, in order to distinguish pager elements for
+		* each browser instance
+		*/
+		var listPagerUID = 'aloha-browser-list-page-' + (++uid);
+		container.append(list, jQuery('<div id="' + listPagerUID + '">'));
 		
 		list.jqGrid({
 			datatype     : 'local',
@@ -661,7 +659,7 @@ var Browser = Class.extend({
 			altRows      : true,
 			altclass     : 'aloha-browser-list-altrow',
 			resizeclass  : 'aloha-browser-list-resizable',
-			pager        : '#aloha-browser-list-pager', // http://www.trirand.com/jqgridwiki/doku.php?id=wiki:pager&s[]=pager
+			pager        : '#' + listPagerUID,
 		//	rowNum       : this.pageSize,	  // # of records to view in the grid. Passed as parameter to url when retrieving data from server
 			viewrecords  : true,
 			// Event handlers: http://www.trirand.com/jqgridwiki/doku.php?id=wiki:events
@@ -711,7 +709,6 @@ var Browser = Class.extend({
 		// TODO: implement this once repositories can handle it, hidding it for now
 		container.find('.ui-pg-input').parent().hide()
 		container.find('.ui-separator').parent().css('opacity', 0).first().hide();
-		container.find('#aloha-browser-list-pager-left').hide();
 		
 		this.createTitlebar(container);
 		
@@ -860,7 +857,12 @@ var Browser = Class.extend({
 				this._pagingOffset = 0;
 				break;
 			case 'end':
-				this._pagingOffset = this._pagingCount - this.pageSize;
+				if ((this._pagingCount % this.pageSize) === 0) {
+					// item count is exactly divisible by page size
+					this._pagingOffset = this._pagingCount - this.pageSize;
+				} else {
+					this._pagingOffset = this._pagingCount - (this._pagingCount % this.pageSize);
+				}
 				break;
 			case 'next':
 				this._pagingOffset += this.pageSize;
@@ -993,16 +995,26 @@ var Browser = Class.extend({
 	createOverlay: function () {
 		var that = this;
 		
-		jQuery('body').append(renderTemplate(
-			'<div class="{modal-overlay}" style="top: -99999px; z-index: 99999;"></div>' +
-			'<div class="{modal-window}"  style="top: -99999px; z-index: 99999;"></div>'
-		));
+		// Create only one overlay for all browser instances
+		if (jQuery('.aloha-browser-modal-overlay').length == 0){
+			jQuery('body').append(renderTemplate(
+				'<div class="{modal-overlay}" style="top: -99999px; z-index: 99999;"></div>'
+			));
+		}
 		
+		// Register a close procedure for each browser instance
 		jQuery('.aloha-browser-modal-overlay').click(function () {
 			that.close();
 		});
+
+		// Create and return a unique modal window element for this browser instance
+		var element = jQuery(renderTemplate(
+			'<div class="{modal-window}"  style="top: -99999px; z-index: 99999;"></div>'
+		));
+	
+		jQuery('body').append(element);
 		
-		return jQuery('.aloha-browser-modal-window');
+		return element;
 	},
 	
 	setObjectTypeFilter: function (otf) {

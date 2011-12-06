@@ -1,0 +1,20 @@
+h2. The Image Plugin
+
+Follow devs on http://twitter.com/search?q=%23aeimg
+
+* Insert a Image
+* Support for dragging the image around
+* Support for changing the title, src and alt attributes
+* Support for resizing the image
+* Support for changing the image padding
+
+endprologue.
+
+h3. Main Features
+* image SRC changeable 
+
+h3. Plugin Settings
+* make resizing configurable like in px: { steps: 50 } or {sizes: [50,150,300]}
+* max image width/height in px (for display)
+* make all configuration options optional (true/false)
+* make removing image on empty optional. Alternatively set a default image

@@ -1,0 +1,63 @@
+h2. Aloha Editors Guide
+
+endprologue.
+
+h3. Editables & the Floating Menu
+Editable areas are marked with colored outlines for you to recognize. Just click to start editing! As soon as you activated the editable, the Floating Menu will appear above the text to provide you with formatting options.
+
+[[Image:Floatingmenu.png]]
+
+The Floating Menu will adjust it's position according to your text cursor. If you want to pin the Floating Menu in place, you can achieve this by using the pin icon in the upper right corner of the panel.
+
+== Basic Formatting ==
+After you clicked inside an Editable, a cursor will appear. Start typing and using keyboard controls to add / modify text.
+
+By selecting a certain part of the text the Floating Menu will provide you with all possible formatting to be applied within the "Formatting" tab. You may also want to switch to the "Insert" tab, which allows you to insert new content elements. By clicking the respective buttons in the Floating Menu, a formatting can be applied and removed. If a formatting has already been applied to your text, the Floating Menu will display the corresponding buttons in pressed state, to reflect the markup.
+
+The Floating Menu also provides you with a Word-like button which is used to apply different headings or paragraph styles. You can also expand this dialog by clicking the icon on it's right-hand side.
+[[Image:floatingmenu-multisplit.png]]
+
+
+Some formattings (like paragraphs, headlines and lists) will replace other formattings. E.g. when you click "h1" when the cursors is inside a paragraph, the paragraph will be replaced by the heading.
+
+h4. Nesting unordered and ordered lists 
+
+You can create nested lists from one level lists by pressing Tab on the first item to be nested. Decrease level by pressing Shift+Tab.
+
+h3. Plugins
+h4. Table-Plugin 
+h5. Add a Table
+A table is added by selecting the corresponding icon in the floating menu of your editable area. By clicking the icon for "create table" a layer will open beneath the button. Here you can select the size (rows and columns) of your table. The table will be inserted at the given cursor position in your active editable area.
+
+To hide the "create table" move the mouse out of the layer and wait for one second, or click anywhere else in the document.
+
+h5. Edit the content
+The content of the table is editable once you double-clicked a editable area. The area will get a blue border and the the table editable. Then simple click in the cell whichs contents should be edited. If you clicked into the cell the first time, its whole contents will be selected.
+
+The text is formated by using the floating menu.
+
+h5. Shortcuts 
+* Tab
+** Jumps into the '''next''' cell and selects its whole contents
+* Shift Tab
+** Jumps into the '''previous''' cell and selects its whole contents
+
+h5. Known Issues
+h6. Backspace when cursor is on table-cell begin 
+If a user sets the cursor to the begin of of a table-cell and hits the backspace key, the contents of the cell before will be deleted.
+
+
+'''Appeared in:''' FF3.6.3
+h3. Resize handles are shown around the table
+If a user directly clicks on the table, resize handles are shown.
+
+Due to an IE behaviour all block elements whithin an editable area will get resize handles on its boundaries. So for this surrounding element of the table. Its function is disabled by implementation but the display couldn't be suppressed.
+
+'''Appeared in:''' IE8
+
+h3. Cursor and Selection behaviour in IE8 with doctype 'html'
+When using Aloha in IE8 and the doctype of the edited document is set to 'html' (HTML5), setting the cursor or selecting text does not work reliably.
+
+A possible solution is to activate the Compatibility View.
+
+'''Appeared in:''' IE8

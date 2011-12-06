@@ -61,14 +61,18 @@
       <dd><a href="configure_aloha.html">Configuring Aloha Editor</a></dd>
       <dd><a href="require.html">Aloha dependency management with requireJS</a></dd>
       <dd><a href="writing_plugins.html">Writing Plugins</a></dd>
+    <dt>The Core</dt>
+      <dd><a href="core.html">The Core</a></dd>
 </dl>
 <dl class="R">
     <dt>Commands</dt>
       <dd><a href="using_commands.html">Using commands</a></dd>
     <dt>Plugins</dt>
       <dd><a href="plugin_block.html">Block</a></dd>
-      <dd>Image</dd>
+      <dd><a href="plugin_image.html">Image</a></dd>
       <dd><a href="plugin_contenthandler.html">Content Handler</a></dd>
+      <dd><a href="plugin_browser.html">Browser</a></dd>
+      <dd><a href="plugin_numeratedheaders.html">Numerated Headers</a></dd>
     <dt>Contributing to Aloha Editor</dt>
       <dd>Development Process</dd>
       <dd><a href="style_guide.html">Javascript Style Guide</a></dd>
@@ -142,7 +146,7 @@ ln -s /Users/{username}/lib/node_modules/requirejs/bin/r.js /Users/{username}/bi
 <pre class="brush: plain; gutter: false; toolbar: false">
 
 cd alohaeditor
-./bin/build.sh aloha
+./bin/build.sh build/aloha
 </pre></div><h4 id="other-os">2.2 Other OS:</h4>
 <ul>
 	<li>Microsoft Windows: Not yet supported</li>
@@ -158,9 +162,10 @@ cd alohaeditor
 
 apt-get install build-essential
 apt-get install ruby1.9.1-full
-gem install guides
+cd /usr/bin
 ln -s ruby1.9.1  ruby
 ln -s gem1.9.1  gem
+gem install guides
 ln -s /var/lib/gems/1.9.1/gems/guides-0.7.1/bin/guides /usr/bin/guides
 guides preview 
 </pre></div><h5 id="mac-osx">3.1.2 Mac <span class="caps">OSX</span></h5>
