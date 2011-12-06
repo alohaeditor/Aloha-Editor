@@ -20,12 +20,24 @@ function( Aloha, Ui, i18n ) {
 		iconOnly: true
 	});
 	
+	function inList() {
+		return Aloha.queryCommandState( "insertorderedlist" ) ||
+			Aloha.queryCommandState( "insertunorderedlist" );
+	}
+	
 	Ui.create( "indentList", "button", {
 		label: i18n.t( "button.indent.label" ),
 		icon: "aloha-icon aloha-icon-indent",
 		iconOnly: true,
 		click: function() {
 			Aloha.execCommand( "indent", null, false, Ui.toolbar.range );
+		},
+		selectionChange: function() {
+			if ( inList() ) {
+				this.show();
+			} else {
+				this.hide();
+			}
 		}
 	});
 	
@@ -35,6 +47,13 @@ function( Aloha, Ui, i18n ) {
 		iconOnly: true,
 		click: function() {
 			Aloha.execCommand( "outdent", null, false, Ui.toolbar.range );
+		},
+		selectionChange: function() {
+			if ( inList() ) {
+				this.show();
+			} else {
+				this.hide();
+			}
 		}
 	});
 });
