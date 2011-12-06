@@ -3,9 +3,10 @@
 This document is to serve as a "what has been done" in terms of the [Roadmap](http://aloha-editor.org/wiki/Roadmap)
 
 
-## 0.20.0-RCx - 2011/12/xx
+## 0.20.0-dev - 2011/12
 - API docs: added first version of new API docs
 - HotKey feature added for link, format and wai-lang plugin
+- doc/api: added first version of new API docs
 
 
 ## 0.20.0-RC9 - 2011/11/23
@@ -185,3 +186,16 @@ Non of these releases reached a production ready state. We still increased the r
 	- Abbreviation
 	- LinkChecker Plugin
 
+<<<<<<< HEAD
+=======
+## 0.9.3 - October 2010
+	- Link/Href handling
+	- Repository browser
+		- As well as sample Delicious and LinkList Repositories
+	- Textarea and $('#myTextarea').aloha() support
+	- Table plugin
+	- Paste from Microsoft Word
+	- Plugins are now submodules
+	- Abbreviation plugin
+	- LinkChecker plugin
+>>>>>>> 2892736219b7cc34fd5e770ecc27975476f9b096
