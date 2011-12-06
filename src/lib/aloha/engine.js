@@ -3745,14 +3745,14 @@ commands.removeformat = {
 ///// The strikethrough command /////
 //@{
 commands.strikethrough = {
-	action: function() {
+	action: function(value, range) {
 		// "If queryCommandState("strikethrough") returns true, set the
 		// selection's value to null. Otherwise set the selection's value to
 		// "line-through"."
-		if (myQueryCommandState("strikethrough")) {
-			setSelectionValue("strikethrough", null);
+		if (myQueryCommandState("strikethrough", range)) {
+			setSelectionValue("strikethrough", null, range);
 		} else {
-			setSelectionValue("strikethrough", "line-through");
+			setSelectionValue("strikethrough", "line-through", range);
 		}
 	}, inlineCommandActivatedValues: ["line-through"]
 };
@@ -3761,16 +3761,16 @@ commands.strikethrough = {
 ///// The subscript command /////
 //@{
 commands.subscript = {
-	action: function() {
+	action: function(value, range) {
 		// "Call queryCommandState("subscript"), and let state be the result."
-		var state = myQueryCommandState("subscript");
+		var state = myQueryCommandState("subscript", range);
 
 		// "Set the selection's value to null."
-		setSelectionValue("subscript", null);
+		setSelectionValue("subscript", null, range);
 
 		// "If state is false, set the selection's value to "subscript"."
 		if (!state) {
-			setSelectionValue("subscript", "subscript");
+			setSelectionValue("subscript", "subscript", range);
 		}
 	}, indeterm: function() {
 		// "True if either among editable Text nodes that are effectively
@@ -3792,17 +3792,17 @@ commands.subscript = {
 ///// The superscript command /////
 //@{
 commands.superscript = {
-	action: function() {
+	action: function(value, range) {
 		// "Call queryCommandState("superscript"), and let state be the
 		// result."
-		var state = myQueryCommandState("superscript");
+		var state = myQueryCommandState("superscript", range);
 
 		// "Set the selection's value to null."
-		setSelectionValue("superscript", null);
+		setSelectionValue("superscript", null, range);
 
 		// "If state is false, set the selection's value to "superscript"."
 		if (!state) {
-			setSelectionValue("superscript", "superscript");
+			setSelectionValue("superscript", "superscript", range);
 		}
 	}, indeterm: function() {
 		// "True if either among editable Text nodes that are effectively
@@ -3825,13 +3825,13 @@ commands.superscript = {
 ///// The underline command /////
 //@{
 commands.underline = {
-	action: function() {
+	action: function(value, range) {
 		// "If queryCommandState("underline") returns true, set the selection's
 		// value to null. Otherwise set the selection's value to "underline"."
-		if (myQueryCommandState("underline")) {
-			setSelectionValue("underline", null);
+		if (myQueryCommandState("underline", range)) {
+			setSelectionValue("underline", null, range);
 		} else {
-			setSelectionValue("underline", "underline");
+			setSelectionValue("underline", "underline", range);
 		}
 	}, inlineCommandActivatedValues: ["underline"]
 };
