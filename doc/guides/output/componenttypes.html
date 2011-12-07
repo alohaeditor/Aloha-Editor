@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>: Aloha Editor componentTypes</title>
+
+  <!-- guides styles -->
+  <link rel="stylesheet" type="text/css" href="stylesheets/style.css" />
+  <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+  <link rel="stylesheet" type="text/css" href="stylesheets/strobe.css" />
+  <link rel="stylesheet" type="text/css" href="stylesheets/overrides.style.css" />
+  <link rel="stylesheet" type="text/css" href="stylesheets/overrides.print.css" media="print" />
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <!-- syntax highlighting styles -->
+  <link rel="stylesheet" type="text/css" href="stylesheets/syntaxhighlighter/shCore.css" />
+  <link rel="stylesheet" type="text/css" href="stylesheets/shThemeStrobeGuides.css" />
+</head>
+<body class="guide">
+
+  <header role="banner">
+    <div class="container">
+      <h1 id="logo">
+        <a href="http://aloha-editor.org"><img src="images/header/logo.png" height="50" alt="Aloha Editor" /></a>
+      </h1>
+      <nav role="navigation">
+        <ul>
+			<li><a href="http://aloha-editor.org/features.php" title="A shortcut for Aloha Editor features" class="new">Features</a></li>
+			<li><a href="http://aloha-editor.org/plugins.php" title="A list of all known Aloha Editor plugins.">Plugins</a></li>
+	        <li class="active"><a href="http://aloha-editor.org/guides/" title="The Aloha Editor documentation">Guides</a></li>
+			<li><a href="http://aloha-editor.org/about.php" title="Why Aloha? Why HTML5? Lern more about Aloha Editor">About</a></li>
+			<li><a href="http://getsatisfaction.com/aloha_editor" title="Get help or help others">Forum</a></li>
+			<li><a href="http://aloha-editor.org/demos.php" title="Feel the Aloha">Try it</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <div id="feature">
+    <div class="wrapper">
+      <div class="feature_header">
+        <a href="/"><img src="images/strobe/guides.png"></a>
+        <h2><a href="/"></a></h2>
+        <p>These guides help you to make your content editable and to develop Aloha.</p>
+      </div>
+      <div class="feature_sidebar">
+        <a href="index.html" id="guidesMenu">
+          Guides Index <span id="guidesArrow">&#9656;</span>
+        </a>
+        <div id="guides" class="clearfix" style="display: none;">
+          <a href="index.html" class="guidesMenu">
+            Guides Index <span class="guidesArrow">&#9662;</span>
+          </a>
+          <hr style="clear:both;">
+          <dl class="L">
+    <dt>Start Here</dt>
+      <dd><a href="using_aloha.html">Using Aloha Editor</a></dd>
+      <dd><a href="develop_aloha.html">Developing and building Aloha Editor</a></dd>
+      <dd><a href="configure_aloha.html">Configuring Aloha Editor</a></dd>
+      <dd><a href="require.html">Aloha dependency management with requireJS</a></dd>
+      <dd><a href="writing_plugins.html">Writing Plugins</a></dd>
+    <dt>The Core</dt>
+      <dd><a href="core.html">The Core</a></dd>
+    <dt>Commands</dt>
+      <dd><a href="using_commands.html">Using commands</a></dd>
+    <dt>Ui</dt>
+      <dd><a href="ui.html">Aloha Editor Ui</a></dd>
+      <dd><a href="toolbar.html">Aloha Editor toolbar</a></dd>
+      <dd><a href="sidebar.html">Aloha Editor sidebar</a></dd>
+      <dd><a href="componenttypes.html">Aloha Editor Ui API</a></dd>
+</dl>
+<dl class="R">
+    <dt>Plugins</dt>
+      <dd><a href="plugins.html">Aloha Editor plugins</a></dd>
+      <dd><a href="plugin_block.html">Block</a></dd>
+      <dd><a href="plugin_image.html">Image</a></dd>
+      <dd><a href="plugin_contenthandler.html">Content Handler</a></dd>
+      <dd><a href="plugin_browser.html">Browser</a></dd>
+      <dd><a href="plugin_numeratedheaders.html">Numerated Headers</a></dd>
+    <dt>Contributing to Aloha Editor</dt>
+      <dd>Development Process</dd>
+      <dd><a href="style_guide.html">Javascript Style Guide</a></dd>
+      <dd><a href="documentation_guidelines.html">Documentation Guidelines</a></dd>
+</dl>
+
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="container">
+    <div class="wrapper">
+      <div id="mainCol">
+          <div class="headerSection">
+            <h2>Aloha Editor componentTypes</h2>
+<p>After reading this guide, you will be able to:</p>
+<ul>
+	<li>Understand how to use Aloha component types</li>
+</ul>
+
+          </div>
+        
+<div class="warning"><p>This guide is currently a draft for the Aloha Editor jQuery UI, which is supposed to be the next generation UI for Aloha Editor. Your feedback is welcome!</p></div>
+<h3 id="aloha-editor-ui-component-types">1 Aloha Editor UI Component Types</h3>
+<p>Component types are your starting point to generate basic components. There is a set of component types that have to be implemented in order to create your own UI:</p>
+<ul>
+	<li>Button</li>
+	<li>Toggle Button</li>
+	<li>Toggle Command Button</li>
+	<li>Dropdown</li>
+	<li>Multi Split Button</li>
+	<li>Panel (for sidebar)</li>
+	<li>Autocomplete Repository Attribute</li>
+	<li>Splitter (vertical pipe for visual grouping)</li>
+	<li>Radiobutton</li>
+</ul>
+<h4 id="button-component-type-button">1.1 Button Component Type <tt>Button</tt></h4>
+<p>The button component type resembles a simple button input element, that can be clicked by the user to trigger an action.</p>
+<p>The Button Component must provide a <tt>click</tt> method to handle user clicks. Here&#8217;s an example implementation:</p>
+<div class="code_container">
+<pre class="brush: javascript; gutter: false; toolbar: false">
+
+define([ 'aloha/jquery', 'ui/ui' ],
+function ( jQuery, Ui ) {
+
+	// The button component type creates a simple button.
+	// Buttons have no state, they only respond to click events.
+	Ui.createType( &quot;button&quot;, {
+		
+		// The `init` method is invoked when the component is rendered, not when it
+		// is created. This is necessary to allow multiple renderings of the same
+		// component. For example, you may want a component to be in the toolbar
+		// and in the sidebar.
+		init: function( editable, settings ) {
+			this._super( editable, settings );
+			
+			this.element = jQuery( &quot;&lt;button&gt;&quot;, {
+				'class': 'aloha-ui aloha-button'
+			})
+			/* this should be a localized label, not the name of the button */
+			.text( this.settings.name )
+			.click( jQuery.proxy( function() {
+				this.click();
+			}, this ) );
+		},
+		
+		// The `click()` method is invoked whenever the user clicks the rendered button.
+		click: function() {
+			this.settings.click.apply( this, arguments );
+		}
+	});
+	
+	return Ui.button;
+});
+</pre></div><h4 id="toggle-button-component-type-togglebutton">1.2 Toggle Button Component Type <tt>ToggleButton</tt></h4>
+<p>A toggle button acts like the basic button component type, but will remain pressed when clicked. Clicking the toggle button once again will revert it back to normal state. The <tt>setState( on )</tt> method has to be implemented for Aloha Editor to be able to set the button state.</p>
+<p>Here&#8217;s an example implementation of the toggle button</p>
+<div class="code_container">
+<pre class="brush: javascript; gutter: false; toolbar: false">
+
+define([ 'aloha/core', 'ui/ui', 'ui/button' ],
+function ( Aloha, Ui, Button ) {
+	
+	// The toggleButton extends the button component type to provide an easy
+	// way to create buttons for commands that are either on or off.
+	Ui.createType( &quot;toggleButton&quot;, Button, {
+		// The `setState()` method updates the visual display of the toggleButton.
+		setState: function( on ) {
+			this.element.toggleClass( &quot;aloha-button-on&quot;, on );
+		}
+	});
+	
+	return Ui.toggleButton;
+});
+</pre></div><h4 id="toggle-command-button-type-togglecommandbutton">1.3 Toggle Command Button Type <tt>ToggleCommandButton</tt></h4>
+<p>The <tt>ToggleCommandButton</tt> is used to modify contents by triggering Aloha Editor&#8217;s internal commands <span class="caps">API</span> available via <tt>Aloha.execCommand( command )</tt>. The command will then modify the current user selection. A very common usecase for this would be to apply bold formatting.</p>
+<p>The <tt>ToggleCommandButton</tt> has to implement the following methods:</p>
+<ul>
+	<li><tt>click()</tt> which is triggered when clicking the button</li>
+	<li><tt>selectionChange()</tt> which will be triggered when the user updates the browser selection. This will enable the <tt>toggleCommandButton</tt> to change it&#8217;s current highlight state in order to reflect the current content formatting the cursor is placed within.</li>
+</ul>
+<div class="code_container">
+<pre class="brush: javascript; gutter: false; toolbar: false">
+
+define([ 'aloha/core', 'ui/ui', 'ui/togglebutton' ],
+function ( Aloha, Ui, ToggleButton ) {
+	// The toggleCommandButton extends the toggleButton component type to provide an easy
+	// way to create buttons for __commands__ that are either on or off.
+	Ui.createType( &quot;toggleCommandButton&quot;, ToggleButton, {
+		// On click, we will always execute the command. Since toggleCommandButton is
+		// used for binary commands, there is no need to provide a value
+		click: function() {
+			Aloha.execCommand( this.settings.command );
+		},
+		// When the selection changes, the button will query the current state
+		// of the command to determine if the button should be rendered as
+		// on or off.
+		selectionChange: function() {
+			this.setState( Aloha.queryCommandState(this.settings.command) );
+		}
+	});
+	
+	return Ui.toggleCommandButton;
+});
+</pre></div><h4 id="dropdown-component-type-dropdown">1.4 Dropdown Component Type <tt>Dropdown</tt></h4>
+<p>The dropdown component will provide functionality as known by the html <tt>&lt;select&gt;</tt> input field. The following methods have to be implemented:</p>
+<ul>
+	<li><tt>setValue()</tt> to switch the dropdown to another value</li>
+	<li><tt>getValue()</tt> to read the currently selected value from the dropdown</li>
+</ul>
+<h4 id="multisplitbutton-component-type-multisplitbutton">1.5 MultiSplitButton Component Type <tt>MultiSplitButton</tt></h4>
+<p>The <tt>MultiSplitButton</tt> is intended to provide an array of buttons to select from which will apply interchangeable stylings to selected content. The classic use for the MultiSplitButton is a selection of standard paragraph and header stylings. In case there are more than four buttons it can be extended to reveal additional buttons. The currently applied selection is highlighted. It&#8217;s also possible to add special buttons at the bottom which are reserved for actions such as removing formatting from selected content.</p>
+<p><img src="../images/MultiSplitButton.png" alt="" /></p>
+<p>The <tt>MultiSplitButton</tt> has to provide methods to read the currently active button as well as switching another button to highlight state.</p>
+<ul>
+	<li><tt>getActiveButton()</tt> will return the currently active button</li>
+	<li><tt>setActiveButton(button)</tt> will switch the current button to highlight state</li>
+</ul>
+<h4 id="panel">1.6 Panel</h4>
+<p>See the <a href="sidebar.html">Sidebar</a> for details.</p>
+<h4 id="autocompleterepositoryattribute-component-type-autocompleterepositoryattribute">1.7 AutocompleteRepositoryAttribute Component Type <tt>AutocompleteRepositoryAttribute</tt></h4>
+<p>This is a basic input field that is augmented with autocomplete (typeahead) capabilities from data repositories. When entering a value all configured repositories should be searched for it. The input field is linked to a dom element&#8217;s attribute by configuration and is able to update the element when changing the value.</p>
+<p>The following methods are provided:</p>
+<ul>
+	<li><tt>getValue()</tt> retrieve the current value</li>
+	<li><tt>getRepositoryItem()</tt> retrive the currently selected repository item if any</li>
+	<li><tt>setValue(val)</tt> set a value</li>
+	<li><tt>setRepositoryItem(item)</tt> set repository item</li>
+</ul>
+<h4 id="splitter-vertical-pipe-for-visual-grouping">1.8 Splitter (vertical pipe for visual grouping)</h4>
+<p>The splitter is just an optical seperator (like a pipe symbol) to organize buttons in the toolbar.</p>
+<h4 id="radiobutton-component-type-radiobutton">1.9 Radiobutton Component Type <tt>RadioButton</tt></h4>
+<p>Just your standard RadioButton as known from html.</p>
+<ul>
+	<li><tt>getValue()</tt> currently selected value</li>
+	<li><tt>getValues()</tt> array of all possible values</li>
+	<li><tt>setValue(value)</tt> set current value</li>
+</ul>
+<ul>
+	<li>September 1, 2011: Initial version by <a href="credits.html#haymo">Haymo Meran</a> and <a href="credits.html#scottgonzales">Scott Gonzales</a></li>
+</ul>
+
+      </div>
+        <div id="subCol">
+          <h3 class="chapter"><img src="images/strobe/chapters.png" alt="" />Chapters</h3>
+          <ol class="chapters">
+            <li><a href="#aloha-editor-ui-component-types"><p>Aloha Editor UI Component Types</p>
+</a><ul><li><a href="#button-component-type-button"><p>Button Component Type <tt>Button</tt></p>
+</a></li> <li><a href="#toggle-button-component-type-togglebutton"><p>Toggle Button Component Type <tt>ToggleButton</tt></p>
+</a></li> <li><a href="#toggle-command-button-type-togglecommandbutton"><p>Toggle Command Button Type <tt>ToggleCommandButton</tt></p>
+</a></li> <li><a href="#dropdown-component-type-dropdown"><p>Dropdown Component Type <tt>Dropdown</tt></p>
+</a></li> <li><a href="#multisplitbutton-component-type-multisplitbutton"><p>MultiSplitButton Component Type <tt>MultiSplitButton</tt></p>
+</a></li> <li><a href="#panel"><p>Panel</p>
+</a></li> <li><a href="#autocompleterepositoryattribute-component-type-autocompleterepositoryattribute"><p>AutocompleteRepositoryAttribute Component Type <tt>AutocompleteRepositoryAttribute</tt></p>
+</a></li> <li><a href="#splitter-vertical-pipe-for-visual-grouping"><p>Splitter (vertical pipe for visual grouping)</p>
+</a></li> <li><a href="#radiobutton-component-type-radiobutton"><p>Radiobutton Component Type <tt>RadioButton</tt></p>
+</a></li></ul></li>
+          </ol>
+        </div>
+    </div>
+  </div>
+
+  <hr class="hide" />
+	  <footer>
+	    <div class="container">
+	      <div class="col">
+	        <a href="index.html"><img src="images/footer/logo.png" alt="Aloha Editor" /></a>
+	        <p>
+	        	Templates based on <a href="https://github.com/sproutcore/sproutguides">SproutCore guides</a>.
+	        </p>
+	      </div>
+	      <a href="#feature" class="top">Back To Top</a>
+	    </div>
+	  </footer>
+
+  <script src="http://code.jquery.com/jquery-1.6.min.js" type="text/javascript" charset="utf-8"></script>
+  <script type="text/javascript" src="javascripts/alohaEditorGuides.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shCore.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushRuby.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushJScript.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushCss.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushXml.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushSql.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushPlain.js"></script>
+  <script type="text/javascript">
+    SyntaxHighlighter.all()
+  </script>
+</body>
+</html>
