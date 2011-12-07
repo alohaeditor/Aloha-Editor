@@ -448,6 +448,8 @@ define( [
 			var placeholderClass = this.placeholderClass,
 			    range;
 
+			if (jQuery( '.' + placeholderClass, obj).length === 0) return;
+
 	//		// remove browser br
 	//		jQuery( 'br', obj ).remove();
 

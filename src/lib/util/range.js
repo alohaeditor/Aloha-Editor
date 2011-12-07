@@ -234,7 +234,7 @@ GENTICS.Utils.RangeObject = Class.extend({
 		if (!commonAncestorContainer) {
 			// find the crossing between startContainer and endContainer parents (=commonAncestorContainer)
 			if (!(parentsStartContainer.length > 0 && parentsEndContainer.length > 0)) {
-				console.warn('could not find commonAncestorContainer');
+				console.warn('aloha/range', 'could not find commonAncestorContainer');
 				return false;
 			}
 
