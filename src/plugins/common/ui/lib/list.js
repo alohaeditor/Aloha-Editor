@@ -56,4 +56,10 @@ function( Aloha, Ui, i18n ) {
 			}
 		}
 	});
+	
+	Aloha.Markup.addKeyHandler( 9, function( event ) {
+		if ( inList() ) {
+			Aloha.execCommand( event.shiftKey ? "outdent" : "indent" );
+		}
+	});
 });
