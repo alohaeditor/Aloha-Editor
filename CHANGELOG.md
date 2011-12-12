@@ -5,6 +5,7 @@ This document is to serve as a "what has been done" in terms of the [Roadmap](ht
 ## 0.20.0-RC10
 
 - doc/api: added first version of new API docs
+- floatingmenu: fixed a bug with topalign behaviour where scrolling would attach the floatingmenu to the left side of the screen
 
 ## 0.20.0-RC9 - 2011/12/07
 
