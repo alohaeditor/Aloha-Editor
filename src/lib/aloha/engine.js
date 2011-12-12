@@ -723,7 +723,7 @@ function myQueryCommandValue(command, range) {
 		}
 
 		// "Return command's value."
-		return commands[command].value();
+		return commands[command].value(range);
 	});
 }
 //@}
@@ -3274,7 +3274,8 @@ commands.bold = {
 ///// The createLink command /////
 //@{
 commands.createlink = {
-	action: function(value) {
+	action: function(value, range) {
+		range = range || getActiveRange();
 		// "If value is the empty string, abort these steps and do nothing."
 		if (value === "") {
 			return;
@@ -3286,7 +3287,7 @@ commands.createlink = {
 		//
 		// TODO: We don't actually do this in tree order, not that it matters
 		// unless you're spying with mutation events.
-		$_( getAllEffectivelyContainedNodes(getActiveRange()) ).forEach(function(node) {
+		$_( getAllEffectivelyContainedNodes(range) ).forEach(function(node) {
 			$_( getAncestors(node) ).forEach(function(ancestor) {
 				if (isEditable(ancestor)
 				&& isHtmlElement(ancestor, "a")
@@ -3798,14 +3799,14 @@ commands.underline = {
 ///// The unlink command /////
 //@{
 commands.unlink = {
-	action: function() {
+	action: function(value, range) {
+		range = range || getActiveRange();
 		// "Let hyperlinks be a list of every a element that has an href
 		// attribute and is contained in the active range or is an ancestor of
 		// one of its boundary points."
 		//
 		// As usual, take care to ensure it's tree order.  The correctness of
 		// the following is left as an exercise for the reader.
-		var range = getActiveRange();
 		var hyperlinks = [];
 		for (
 			var node = range.startContainer;
