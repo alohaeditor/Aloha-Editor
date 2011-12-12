@@ -20,7 +20,10 @@ define({
 	
 	// list
 	"button.ol.label": "Sortierte Liste einf\u00fcgen",
-	"button.ul.label": "Unsortierte Liste einf\u00fcgen"
+	"button.ul.label": "Unsortierte Liste einf\u00fcgen",
 //	"button.indent.label": "",
-//	"button.outdent.label": ""
+//	"button.outdent.label": "",
+	
+	// link
+	"button.createLink.label": "Verweis einf\u00fcgen"
 });

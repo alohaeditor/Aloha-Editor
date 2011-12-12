@@ -23,7 +23,10 @@ define({
 		"button.ol.label": "Insert ordered list",
 		"button.ul.label": "Insert unordered list",
 		"button.indent.label": "Indent list",
-		"button.outdent.label": "Outdent list"
+		"button.outdent.label": "Outdent list",
+		
+		// link
+		"button.createLink.label": "Insert link"
 	},
 	"de": true
 });

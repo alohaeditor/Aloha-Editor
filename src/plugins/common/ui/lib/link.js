@@ -1,22 +1,26 @@
 define([
 	"aloha/core",
 	"ui/ui",
+	"i18n!ui/nls/i18n",
+	"ui/text",
 	"ui/toggleButton"
 ],
-function( Aloha, Ui ) {
+function( Aloha, Ui, i18n ) {
 	Ui.create( "link", "toggleButton", {
-		command: "createLink",
+		label: i18n.t( "button.createLink.label" ),
+		icon: "aloha-icon aloha-icon-link",
+		iconOnly: true,
 		click: function() {
-			var state = Aloha.queryCommandValue( "createLink" );
+			var state = Aloha.queryCommandValue( "createLink", Ui.toolbar.range );
 			if ( state ) {
-				Aloha.execCommand( "unlink" );
+				Aloha.execCommand( "unlink", false, null, Ui.toolbar.range );
 			} else {
-				Aloha.execCommand( "createLink", false, "http://example.com" );
+				Aloha.execCommand( "createLink", false, "http://example.com", Ui.toolbar.range );
 			}
 		},
 		selectionChange: function() {
-			var value = Aloha.queryCommandValue("createLink");
-			this.setState( !(value == '' || value === null ) );
+			var value = Aloha.queryCommandValue( "createLink" );
+			this.setState( !!value );
 		}
 	});
 	
@@ -33,7 +37,7 @@ function( Aloha, Ui ) {
 			}
 		},
 		setValue: function( value ) {
-			Aloha.execCommand( "createLink", false, value );
+			Aloha.execCommand( "createLink", false, value, Ui.toolbar.range );
 		}
 	});
 });

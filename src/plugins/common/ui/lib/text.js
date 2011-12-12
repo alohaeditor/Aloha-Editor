@@ -1,10 +1,7 @@
-define([ 'aloha/jquery', 'ui/ui' ],
+define([ "aloha/jquery", "ui/ui" ],
 function( jQuery, Ui ) {
-	
 	Aloha.ui.createType( "text", {
-		init: function( editable, settings ) {
-			this._super( editable, settings );
-			
+		init: function() {
 			this.element = jQuery( "<input>", {
 				keyup: jQuery.proxy( function( event ) {
 					if ( event.keyCode === 13 ) {
@@ -14,8 +11,8 @@ function( jQuery, Ui ) {
 			});
 		},
 		
-		setValue: function( value ) {
-			this.settings.setValue.apply( this, arguments );
-		}
+		// invoked when the user presses enter
+		// TODO: invoke on blur?
+		setValue: function( value ) {}
 	});
 });
