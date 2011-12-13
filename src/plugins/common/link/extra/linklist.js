@@ -70,7 +70,7 @@ function ( Aloha, jQuery ) {
 			}
 			
 			if ( typeof Aloha.settings.repositories.linklist.data != 'undefined' ) {
-				this.urlset = Aloha.settings.repositories.linklist.data;
+				urlset = Aloha.settings.repositories.linklist.data;
 			}
 			
 			var l = urlset.length;
