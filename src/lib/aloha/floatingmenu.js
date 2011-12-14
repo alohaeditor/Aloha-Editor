@@ -19,7 +19,8 @@
 */
 define(
 ['aloha/core', 'aloha/jquery', 'aloha/ext', 'util/class', 'aloha/console', 'vendor/jquery.store'],
-function(Aloha, jQuery, Ext, Class, console) {
+//function(Aloha, jQuery, Ext, Class, console) {
+function(Aloha, jQuery, Ext, Class) {
 	"use strict";
 	var GENTICS = window.GENTICS;
 
@@ -968,7 +969,7 @@ function(Aloha, jQuery, Ext, Class, console) {
 				floatingMenuVisible = false,
 				showUserActivatedTab = false,
 				pos;
-
+			
 			// let the tabs layout themselves
 			jQuery.each(this.tabs, function(index, tab) {
 				// remember the active tab
@@ -1045,6 +1046,18 @@ function(Aloha, jQuery, Ext, Class, console) {
 				this.top = pos[1] < 0 ? 100 : pos[1];
 				this.extTabPanel.hide();
 				this.extTabPanel.shadow.hide();
+			} else {
+				var target = that.calcFloatTarget(Aloha.Selection.getRangeObject());
+				if (target) {
+					this.left = target.left;
+					this.top = target.top;
+					this.extTabPanel.show();
+					this.refreshShadow();
+					this.extTabPanel.shadow.show();
+					this.extTabPanel.setPosition(this.left, this.top);
+
+					that.floatTo(target);
+				}
 			}
 
 			// let the Ext object render itself again
@@ -1174,7 +1187,7 @@ function(Aloha, jQuery, Ext, Class, console) {
 
 			// if the floating menu would be placed higher than the top of the screen...
 			if ( top < scrollTop) {
-				top += 50 + GENTICS.Utils.Position.ScrollCorrection.top;
+				top += 100 + GENTICS.Utils.Position.ScrollCorrection.top;
 			}
 
 			// if the floating menu would float off the bottom of the screen
@@ -1218,7 +1231,6 @@ function(Aloha, jQuery, Ext, Class, console) {
 						} else if (props.prop == 'left') {
 							that.left = props.now;
 						}
-
 						that.refreshShadow(false);
 					}
 				});
