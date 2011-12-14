@@ -26,7 +26,8 @@ define({
 		"button.outdent.label": "Outdent list",
 		
 		// link
-		"button.createLink.label": "Insert link"
+		"button.createLink.label": "Insert link",
+		"button.removeLink.label": "Remove link"
 	},
 	"de": true
 });

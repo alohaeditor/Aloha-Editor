@@ -25,5 +25,6 @@ define({
 //	"button.outdent.label": "",
 	
 	// link
-	"button.createLink.label": "Verweis einf\u00fcgen"
+	"button.createLink.label": "Verweis einf\u00fcgen",
+	"button.removeLink.label": "Verweis entfernen"
 });

@@ -4,6 +4,7 @@ define([
 	"i18n!ui/nls/i18n", 
 	"aloha/jquery",
 	"ui/autocomplete",
+	"ui/button",
 	"ui/toggleButton",
 	// TODO: remove (just for testing)
 	'ui/../../link/extra/linklist'
@@ -51,6 +52,25 @@ function( Aloha, Ui, i18n, jQuery ) {
 			Aloha.execCommand( "createLink", false, href, Ui.toolbar.range );
 			Aloha.RepositoryManager.markObject( anchor, item );
 			jQuery( anchor ).attr( "data-name", item ? item.name : null ); 
+		}
+	});
+	
+	Ui.create( "removeLink", "button", {
+		label: i18n.t( "button.removeLink.label" ),
+		icon: "aloha-icon aloha-icon-unlink",
+		iconOnly: true,
+		
+		click: function() {
+			Aloha.execCommand( "unlink", false, null, Ui.toolbar.range );
+		},
+		
+		selectionChange: function() {
+			var value = Aloha.queryCommandValue( "createLink" );
+			if ( value ) {
+				this.show();
+			} else {
+				this.hide();
+			}
 		}
 	});
 	
