@@ -69,7 +69,8 @@ function ( Aloha, jQuery ) {
 				};
 			}
 			
-			if ( typeof Aloha.settings.repositories.linklist.data != 'undefined' ) {
+			if ( typeof Aloha.settings.repositories != 'undefined' 
+					&& typeof Aloha.settings.repositories.linklist.data != 'undefined' ) {
 				urlset = Aloha.settings.repositories.linklist.data;
 			}
 			
