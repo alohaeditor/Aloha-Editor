@@ -101,7 +101,7 @@ function( Aloha, Ui, i18n, jQuery, Browser ) {
 	function setValue( value, item ) {
 		var anchor = findAnchor( Ui.toolbar.range ),
 			href = item ? item.url : value;
-		Aloha.execCommand( "createLink", false, href, Ui.toolbar.range );
+		Aloha.execCommand( href ? "createLink" : "unlink", false, href, Ui.toolbar.range );
 		Aloha.RepositoryManager.markObject( anchor, item );
 		jQuery( anchor ).attr( "data-name", item ? item.name : null );
 	}
