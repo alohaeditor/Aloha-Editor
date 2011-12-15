@@ -19,7 +19,7 @@ handleError $? "Could not find jslint within PATH. Please install jslint accordi
 
 echo -e "\n * Starting jslint check of aloha editor core"
   JSLINT_OUTPUT=$BASEDIR/../target/jslint-core.out
-  find $BASEDIR/../src/lib/aloha -name "*.js" -print0 | xargs -0 jslint > $JSLINT_OUTPUT
+  find $BASEDIR/../src/lib/aloha -name "*.js" -exec jslint {} \; > $JSLINT_OUTPUT
   JSLINT_EXIT_CODE=$?
   if [ $JSLINT_EXIT_CODE -ne "123" ]  ; then
      handleError $JSLINT_EXIT_CODE "JSLint check was not executed sucessfully"
@@ -30,7 +30,7 @@ echo "Done."
 
 echo -e "\n * Starting jslint check of plugins directory"
   JSLINT_OUTPUT=$BASEDIR/../target/jslint-plugins.out
-  find $BASEDIR/../src/plugins -name "*.js" -print0 | xargs -0 jslint | wc -l > $JSLINT_OUTPUT
+  find $BASEDIR/../src/plugins -name "*.js" -exec jslint {} \; > $JSLINT_OUTPUT
   JSLINT_EXIT_CODE=$?
   if [ $JSLINT_EXIT_CODE -ne "123" ]  ; then
      handleError $JSLINT_EXIT_CODE "JSLint check was not executed sucessfully"
