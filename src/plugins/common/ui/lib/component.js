@@ -8,6 +8,8 @@ function( Aloha, Class, jQuery ) {
 		
 		_constructor: function( editable, settings ) {
 			this.editable = editable;
+			var init = settings.init;
+			delete settings.init;
 			jQuery.extend( this, settings );
 			
 			// Components are responsible for updating their state and visibility
@@ -17,6 +19,9 @@ function( Aloha, Class, jQuery ) {
 			}, this ) );
 			
 			this.init();
+			if ( init ) {
+				init.call( this );
+			}
 		},
 		
 		init: function() {},

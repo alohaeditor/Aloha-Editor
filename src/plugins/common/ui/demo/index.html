@@ -9,7 +9,7 @@
 	}
 	.aloha-button-on {
 		background-color: green;
-	}	
+	}
 	</style>
 	<script>
 	var Aloha = {
@@ -23,7 +23,7 @@
 		}
 	};
 	</script>
-	<script src="../../../../lib/aloha.js" data-aloha-plugins="common/ui"></script>
+	<script src="../../../../lib/aloha.js" data-aloha-plugins="common/ui,extra/browser"></script>
 	<script>
 	Aloha.ready( function() {
 		var $ = Aloha.jQuery;
@@ -32,7 +32,7 @@
 				components: [
 					[ "bold", "italic", "strikethrough", "subscript", "superscript", "underline" ],
 					[ "orderedList", "unorderedList", "indentList", "outdentList", "formatBlock" ],
-					[ "link", "editLink", "removeLink" ]
+					[ "link", "editLink", "removeLink", "linkBrowser" ]
 				]
 			},
 			formatBlock: {

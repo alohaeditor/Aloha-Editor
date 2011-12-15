@@ -3,13 +3,14 @@ define([
 	"ui/ui",
 	"i18n!ui/nls/i18n", 
 	"aloha/jquery",
+	"browser/browser-plugin",
 	"ui/autocomplete",
 	"ui/button",
 	"ui/toggleButton",
 	// TODO: remove (just for testing)
 	'ui/../../link/extra/linklist'
 ],
-function( Aloha, Ui, i18n, jQuery ) {
+function( Aloha, Ui, i18n, jQuery, Browser ) {
 	Ui.create( "link", "toggleButton", {
 		label: i18n.t( "button.createLink.label" ),
 		icon: "aloha-icon aloha-icon-link",
@@ -46,13 +47,7 @@ function( Aloha, Ui, i18n, jQuery ) {
 			}
 		},
 		
-		setValue: function( value, item ) {
-			var anchor = findAnchor( Ui.toolbar.range ),
-				href = item ? item.url : value;
-			Aloha.execCommand( "createLink", false, href, Ui.toolbar.range );
-			Aloha.RepositoryManager.markObject( anchor, item );
-			jQuery( anchor ).attr( "data-name", item ? item.name : null ); 
-		}
+		setValue: setValue
 	});
 	
 	Ui.create( "removeLink", "button", {
@@ -73,6 +68,43 @@ function( Aloha, Ui, i18n, jQuery ) {
 			}
 		}
 	});
+	
+	Ui.create( "linkBrowser", "button", {
+		label: "...",
+		
+		init: function() {
+			var that = this;
+			this.browser = new Browser({
+				repositoryManager: Aloha.RepositoryManager,
+				rootPath: Aloha.getPluginUrl( "browser" ) + "/",
+				onSelect: function( item ) {
+					setValue( null, item );
+					that.browser.close();
+				}
+			});
+		},
+		
+		click: function(){
+			this.browser.show();
+		},
+		
+		selectionChange: function() {
+			var value = Aloha.queryCommandValue( "createLink" );
+			if ( value ) {
+				this.show();
+			} else {
+				this.hide();
+			}
+		}
+	});
+	
+	function setValue( value, item ) {
+		var anchor = findAnchor( Ui.toolbar.range ),
+			href = item ? item.url : value;
+		Aloha.execCommand( "createLink", false, href, Ui.toolbar.range );
+		Aloha.RepositoryManager.markObject( anchor, item );
+		jQuery( anchor ).attr( "data-name", item ? item.name : null );
+	}
 	
 	function findAnchor( range ) {
 		range = range || Aloha.getSelection().getRangeAt( 0 );
