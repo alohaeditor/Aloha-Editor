@@ -1,24 +1,25 @@
 define([
 	"aloha/jquery",
 	"ui/ui",
+	"aloha/repositorymanager",
 	
 	"jquery-plugin!./vendor/jquery-ui-autocomplete-html"
 ],
-function( jQuery, Ui ) {
+function( jQuery, Ui, RepositoryManager ) {
 	function parse( template, item ) {
 		return template.replace( /{{([^}]+)}}/g, function( _, name ) {
 			return name in item ? item[ name ] : "";
 		});
 	}
 	
-	Aloha.ui.createType( "autocomplete", {
+	Ui.createType( "autocomplete", {
 		init: function() {
 			var that = this;
 			this.element = jQuery( "<input>" )
 				.autocomplete({
 					html: true,
 					source: function( req, res ) {
-						Aloha.RepositoryManager.query({
+						RepositoryManager.query({
 							queryString: req.term,
 							objectTypeFilter: that.types
 						}, function( data ) {
