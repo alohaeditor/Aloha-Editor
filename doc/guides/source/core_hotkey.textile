@@ -6,17 +6,12 @@ WARNING: The HotKey feature is still being developed. Not all shortcuts are avai
 |_. Document action |_. Shortcut |
 | Select all | Ctrl+A |
 | Copy | Ctrl+C |
-| Print | Ctrl+P |
-| Save | Ctrl+S |
 | Paste | Ctrl+V |
 | Cut | Ctrl+X |
-| Undo | Ctrl+Z |
-| Redo | Ctrl+Y |
-| Show your browser's right-click options | Shift+right-click |
-| Increase paragraph indentation | Tab |
-| Decrease paragraph indentation | Shift+Tab |
-| Insert footnote | Ctrl+Alt+F |
-| Insert comment | Ctrl+Alt+M |
+| Undo* | Ctrl+Z |
+| Redo* | Ctrl+Y |
+| Increase paragraph indentation* | Tab |
+| Decrease paragraph indentation* | Shift+Tab |
 
 
 |_. Text formatting |_. Shortcut |
@@ -25,8 +20,6 @@ WARNING: The HotKey feature is still being developed. Not all shortcuts are avai
 | Underline | Ctrl+U |
 | Superscript | Ctrl+. |
 | Subscript | Ctrl+, |
-| Copy formatting | Ctrl+Alt+C |
-| Paste formatting | Ctrl+Alt+V |
 | Clear formatting | Ctrl+\ |
 
 
@@ -38,30 +31,27 @@ WARNING: The HotKey feature is still being developed. Not all shortcuts are avai
 | Header style 4 | Ctrl+Alt+4 |
 | Header style 5 | Ctrl+Alt+5 |
 | Header style 6 | Ctrl+Alt+6 |
-| Left alignment | Ctrl+Shift+L |
-| Center alignment | Ctrl+Shift+E |
-| Right alignment | Ctrl+Shift+R |
-| Full justify | Ctrl+Shift+J |
-| Numbered list | Ctrl+Shift+7 |
-| Bulleted list | Ctrl+Shift+8 |
+| Preformatted | Ctrl+Alt+P |
+| Left alignment* | Ctrl+Shift+L |
+| Center alignment* | Ctrl+Shift+E |
+| Right alignment* | Ctrl+Shift+R |
+| Full justify* | Ctrl+Shift+J |
+| Numbered list* | Ctrl+Shift+7 |
+| Bulleted list* | Ctrl+Shift+8 |
 
 
 |_. Actions |_. Shortcut |
 | Insert link | Ctrl+K |
-| Find | Ctrl+F |
-| Word count | Ctrl+ Shift + C |
-| Get definitions | Ctrl+ Shift + Y |
 
 
 |_. Navigation |_. Shortcut |
-| Move to next heading | Ctrl + Alt + N then Ctrl + Alt + H |
-| Move to previous heading | Ctrl + Alt + P then Ctrl + Alt + H |
-| Move to current footnote | Ctrl + Alt + F then Ctrl + Alt + E |
-| Move to next misspelling | Ctrl + ; |
+| Move to next heading* | Ctrl + Alt + N then Ctrl + Alt + H |
+| Move to previous heading* | Ctrl + Alt + P then Ctrl + Alt + H |
 
 
 |_. Plugins |_. Shortcut |
-| WAI Lang: Insert Annotation | ctrl+shift+l |
+| WAI Lang: Insert Annotation | Ctrl+Shift+l |
 
 
+*) not implemented yet
 Reference: https://docs.google.com/support/bin/answer.py?answer=179738

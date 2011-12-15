@@ -9,6 +9,32 @@ After reading this guide, you will be able to:
 
 endprologue.
 
+h3. Editable elements
+
+Aloha can be used with the following HTML text elements:
+
+<javascript>
+	[ 'a', 'abbr', 'address', 'article', 'aside',
+	'b', 'bdo', 'blockquote',  'cite', 'code', 'command',
+	'del', 'details', 'dfn', 'div', 'dl', 'em', 'footer',
+	'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'header', 'i',
+	'ins', 'menu', 'nav', 'p', 'pre', 'q', 'ruby',
+	'section', 'small', 'span', 'strong', 'sub', 'sup',
+	'textarea', 'var' ]
+</javascript>
+
+Not supported HTML elements:
+
+<javascript>
+	[ 'canvas', 'audio', 'br', 'embed', 'fieldset', 'hgroup', 'hr',
+	'iframe', 'img', 'input', 'map', 'script', 'select', 'style',
+	'svg', 'table', 'ul', 'video', 'ol', 'form', 'noscript' ]
+</javascript>
+
+Note if you are using a textarea with Aloha:
+If the textarea has a HTML ID (eg. mytxtarea) the ID of the Aloha editable will be "-aloha" suffixed (eg. mytxtarea-aloha).
+
+
 h3. Core files
 
 WARNING: TODO describe file contents
@@ -124,5 +150,6 @@ Others, (IE) either let you handle built-in short-cuts, but will add their funct
 
 
 Code from: https://github.com/jeresig/jquery.hotkeys
+
 
 .

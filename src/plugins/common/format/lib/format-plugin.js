@@ -30,20 +30,21 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 		/**
 		 * HotKeys used for special actions
 		*/
-		hotKey: { 
-			formatBold: 'ctrl+b',
-			formatItalic: 'ctrl+i',
-			formatParagraph: 'alt+ctrl+0',
-			formatH1: 'alt+ctrl+1',
-			formatH2: 'alt+ctrl+2',
-			formatH3: 'alt+ctrl+3',
-			formatH4: 'alt+ctrl+4',
-			formatH5: 'alt+ctrl+5',
-			formatH6: 'alt+ctrl+6',
-			formatPre: 'ctrl+p',
-			formatDel: 'ctrl+d',
-			formatSub: 'alt+shift+s',
-			formatSup: 'ctrl+shift+s'
+		hotKey: {
+			formatBold: i18n.t('formatBold', 'ctrl+b'),
+			formatItalic: i18n.t('formatItalic', 'ctrl+i'),
+			formatUnderline: i18n.t('formatUnderline', 'ctrl+u'),
+			formatParagraph: i18n.t('formatParagraph', 'alt+ctrl+0'),
+			formatH1: i18n.t('formatH1', 'alt+ctrl+1'),
+			formatH2: i18n.t('formatH2', 'alt+ctrl+2'),
+			formatH3: i18n.t('formatH3', 'alt+ctrl+3'),
+			formatH4: i18n.t('formatH4', 'alt+ctrl+4'),
+			formatH5: i18n.t('formatH5', 'alt+ctrl+5'),
+			formatH6: i18n.t('formatH6', 'alt+ctrl+6'),
+			formatPre: i18n.t('formatPre', 'alt+ctrl+p'),
+			formatDel: i18n.t('formatDel', 'ctrl+\\'),
+			formatSub: i18n.t('formatSub', 'ctrl+,'),
+			formatSup: i18n.t('formatSup', 'ctrl+.')
 		},
 
 		/**

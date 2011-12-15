@@ -20,7 +20,8 @@
 
 define(
 [ 'aloha/core', 'aloha/selection', 'aloha/jquery', 'aloha/console' ],
-function( Aloha, Selection, jQuery, console ) {
+//function( Aloha, Selection, jQuery, console ) {
+function( Aloha, Selection, jQuery ) {
 	"use strict";
 	
 	var
@@ -365,8 +366,10 @@ function( Aloha, Selection, jQuery, console ) {
 	
 		handleObj.handler = function( event ) {
 			// Don't fire in text-accepting inputs that we didn't directly bind to
+			// Don't fire in contentEditable true elements
 			if ( this !== event.target && (/textarea|select/i.test( event.target.nodeName ) ||
-				 event.target.type === "text") ) {
+				event.target.contentEditable !== true ||
+				event.target.type === "text") ) {
 				return;
 			}
 			
@@ -413,7 +416,7 @@ function( Aloha, Selection, jQuery, console ) {
 			}
 		};
 	}
-
+	
 	jQuery.each([ "keydown", "keyup", "keypress" ], function() {
 		jQuery.event.special[ this ] = { add: keyHandler };
 	});

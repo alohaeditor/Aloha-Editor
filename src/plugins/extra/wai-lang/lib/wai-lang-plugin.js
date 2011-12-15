@@ -42,8 +42,8 @@ define( [
 		/**
 		 * HotKeys used for special actions
 		*/
-		hotKey: { 
-			insertAnnotation: 'ctrl+shift+l'
+		hotKey: {
+			insertAnnotation: i18n.t('insertAnnotation', 'ctrl+shift+l')
 		},
 
 		/**
