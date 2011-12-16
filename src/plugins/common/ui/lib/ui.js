@@ -53,5 +53,17 @@ function( Aloha, jQuery, Component ) {
 		}
 	};
 	
+	// temporary location helper methods
+	// TODO: these need to live somewhere not tied to the UI
+	Aloha.ui.util = {
+		findElemFromRange: function( tag, range ) {
+			range = range || Aloha.getSelection().getRangeAt( 0 );
+			range = new GENTICS.Utils.RangeObject( range );
+			return range.findMarkup(function() {
+				return this.nodeName.toLowerCase() === tag;
+			});
+		}
+	};
+	
 	return Aloha.ui;
 });

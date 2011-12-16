@@ -15,9 +15,9 @@ function( Aloha, Ui, i18n, jQuery, Browser ) {
 		click: function() {
 			var abbr = findAbbr( Ui.toolbar.range );
 			if ( abbr ) {
-				removeAbbr( Ui.toolbar.range );
+				Ui.util.removeAbbr( Ui.toolbar.range );
 			} else {
-				createAbbr( Ui.toolbar.range );
+				Ui.util.createAbbr( "", Ui.toolbar.range );
 			}
 		},
 		
@@ -42,7 +42,7 @@ function( Aloha, Ui, i18n, jQuery, Browser ) {
 			if ( value ) {
 				findAbbr( Ui.toolbar.range ).title = value;
 			} else {
-				removeAbbr( Ui.toolbar.range );
+				Ui.util.removeAbbr( Ui.toolbar.range );
 			}
 		}
 	});
@@ -53,17 +53,15 @@ function( Aloha, Ui, i18n, jQuery, Browser ) {
 	}
 	
 	function findAbbr( range ) {
-		return getRange( range ).findMarkup(function() {
-			return this.nodeName.toLowerCase() == "abbr";
-		});
+		return Ui.util.findElemFromRange( "abbr", range );
 	}
 	
-	function createAbbr( range, title ) {
+	Ui.util.createAbbr = function( title, range ) {
 		GENTICS.Utils.Dom.addMarkup( getRange( range ),
 			jQuery( "<abbr>", { title: title } ), false );
-	}
+	};
 	
-	function removeAbbr( range, title ) {
+	Ui.util.removeAbbr = function( range ) {
 		GENTICS.Utils.Dom.removeFromDOM( findAbbr( range ), getRange( range ), true );
-	}
+	};
 });

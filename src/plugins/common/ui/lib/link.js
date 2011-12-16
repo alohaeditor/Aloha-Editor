@@ -45,7 +45,9 @@ function( Aloha, Ui, i18n, jQuery, Browser ) {
 			}
 		},
 		
-		setValue: setValue
+		setValue: function( href, item ) {
+			Ui.util.createLink( item || href, Ui.toolbar.range );
+		}
 	});
 	
 	Ui.create( "removeLink", "button", {
@@ -76,7 +78,7 @@ function( Aloha, Ui, i18n, jQuery, Browser ) {
 				repositoryManager: Aloha.RepositoryManager,
 				rootPath: Aloha.getPluginUrl( "browser" ) + "/",
 				onSelect: function( item ) {
-					setValue( null, item );
+					Ui.util.createLink( item, Ui.toolbar.range );
 					that.browser.close();
 				}
 			});
@@ -96,19 +98,23 @@ function( Aloha, Ui, i18n, jQuery, Browser ) {
 		}
 	});
 	
-	function setValue( value, item ) {
-		var anchor = findAnchor( Ui.toolbar.range ),
-			href = item ? item.url : value;
-		Aloha.execCommand( href ? "createLink" : "unlink", false, href, Ui.toolbar.range );
-		Aloha.RepositoryManager.markObject( anchor, item );
-		jQuery( anchor ).attr( "data-name", item ? item.name : null );
+	function findAnchor( range ) {
+		return Ui.util.findElemFromRange( "a", range );
 	}
 	
-	function findAnchor( range ) {
-		range = range || Aloha.getSelection().getRangeAt( 0 );
-		range = new GENTICS.Utils.RangeObject( range );
-		return range.findMarkup(function() {
-			return this.nodeName.toLowerCase() == "a";
-		});
-	}
+	Ui.util.createLink = function( item, range ) {
+		var href,
+			anchor = findAnchor( range );
+		
+		if ( item.url ) {
+			href = item.url;
+		} else {
+			href = item;
+			item = null;
+		}
+		
+		Aloha.execCommand( href ? "createLink" : "unlink", false, href, range );
+		Aloha.RepositoryManager.markObject( anchor, item );
+		jQuery( anchor ).attr( "data-name", item ? item.name : null );
+	};
 });
