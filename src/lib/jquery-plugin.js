@@ -26,13 +26,16 @@
 		load: function (name, require, load, config) {
 			var url = require.toUrl(name + '.js');
 
-			require(['aloha/jquery'], function(value) {
-				var $ = value;
+			require(['aloha/jquery', 'aloha/console'], function(jQuery,console) {
+				var $ = jQuery;
 				$.ajax({
 					type: 'GET',
 				  	url: url,
 				  	cache: true,
 				  	dataType: 'text',
+				  	error: function (reponse) {
+				  		console.error("Error while loading jquery plugin from url: " + this.url, response);
+				  	},
 				  	success: function(plugin) {
 //						plugin = '(function(jQuery) { var $ = jQuery;\n' + plugin + '}(window.alohaQuery));';
 						plugin = 'define([\'aloha/jquery\'], function(jQuery) { var $ = jQuery;\n' + plugin + '});'
