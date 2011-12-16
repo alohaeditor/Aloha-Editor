@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>: Aloha Editors Guide</title>
+
+  <!-- guides styles -->
+  <link rel="stylesheet" type="text/css" href="stylesheets/style.css" />
+  <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+  <link rel="stylesheet" type="text/css" href="stylesheets/strobe.css" />
+  <link rel="stylesheet" type="text/css" href="stylesheets/overrides.style.css" />
+  <link rel="stylesheet" type="text/css" href="stylesheets/overrides.print.css" media="print" />
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <!-- syntax highlighting styles -->
+  <link rel="stylesheet" type="text/css" href="stylesheets/syntaxhighlighter/shCore.css" />
+  <link rel="stylesheet" type="text/css" href="stylesheets/shThemeStrobeGuides.css" />
+</head>
+<body class="guide">
+
+  <header role="banner">
+    <div class="container">
+      <h1 id="logo">
+        <a href="http://aloha-editor.org"><img src="images/header/logo.png" height="50" alt="Aloha Editor" /></a>
+      </h1>
+      <nav role="navigation">
+        <ul>
+			<li><a href="http://aloha-editor.org/features.php" title="A shortcut for Aloha Editor features" class="new">Features</a></li>
+			<li><a href="http://aloha-editor.org/plugins.php" title="A list of all known Aloha Editor plugins.">Plugins</a></li>
+	        <li class="active"><a href="http://aloha-editor.org/guides/" title="The Aloha Editor documentation">Guides</a></li>
+			<li><a href="http://aloha-editor.org/about.php" title="Why Aloha? Why HTML5? Lern more about Aloha Editor">About</a></li>
+			<li><a href="http://getsatisfaction.com/aloha_editor" title="Get help or help others">Forum</a></li>
+			<li><a href="http://aloha-editor.org/demos.php" title="Feel the Aloha">Try it</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <div id="feature">
+    <div class="wrapper">
+      <div class="feature_header">
+        <a href="/"><img src="images/strobe/guides.png"></a>
+        <h2><a href="/"></a></h2>
+        <p>These guides help you to make your content editable and to develop Aloha.</p>
+      </div>
+      <div class="feature_sidebar">
+        <a href="index.html" id="guidesMenu">
+          Guides Index <span id="guidesArrow">&#9656;</span>
+        </a>
+        <div id="guides" class="clearfix" style="display: none;">
+          <a href="index.html" class="guidesMenu">
+            Guides Index <span class="guidesArrow">&#9662;</span>
+          </a>
+          <hr style="clear:both;">
+          <dl class="L">
+    <dt>Start Here</dt>
+      <dd><a href="using_aloha.html">Using Aloha Editor</a></dd>
+      <dd><a href="develop_aloha.html">Developing and building Aloha Editor</a></dd>
+      <dd><a href="configure_aloha.html">Configuring Aloha Editor</a></dd>
+      <dd><a href="require.html">Aloha dependency management with requireJS</a></dd>
+      <dd><a href="writing_plugins.html">Writing Plugins</a></dd>
+    <dt>The Core</dt>
+      <dd><a href="core.html">The Core</a></dd>
+    <dt>Commands</dt>
+      <dd><a href="using_commands.html">Using commands</a></dd>
+    <dt>Ui</dt>
+      <dd><a href="ui.html">Aloha Editor Ui</a></dd>
+      <dd><a href="toolbar.html">Aloha Editor toolbar</a></dd>
+      <dd><a href="sidebar.html">Aloha Editor sidebar</a></dd>
+      <dd><a href="componenttypes.html">Aloha Editor Ui API</a></dd>
+</dl>
+<dl class="R">
+    <dt>Plugins</dt>
+      <dd><a href="plugins.html">Aloha Editor plugins</a></dd>
+      <dd><a href="plugin_block.html">Block</a></dd>
+      <dd><a href="plugin_image.html">Image</a></dd>
+      <dd><a href="plugin_contenthandler.html">Content Handler</a></dd>
+      <dd><a href="plugin_browser.html">Browser</a></dd>
+      <dd><a href="plugin_numeratedheaders.html">Numerated Headers</a></dd>
+    <dt>Contributing to Aloha Editor</dt>
+      <dd>Development Process</dd>
+      <dd><a href="style_guide.html">Javascript Style Guide</a></dd>
+      <dd><a href="documentation_guidelines.html">Documentation Guidelines</a></dd>
+</dl>
+
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="container">
+    <div class="wrapper">
+      <div id="mainCol">
+          <div class="headerSection">
+            <h2>Aloha Editors Guide</h2>
+
+          </div>
+        <h3 id="editables-the-floating-menu">1 Editables &amp; the Floating Menu Editable areas are marked with colored outlines for you to recognize. Just click to start editing! As soon as you activated the editable, the Floating Menu will appear above the text to provide you with formatting options.</h3>
+<p>[[Image:Floatingmenu.png]]</p>
+<p>The Floating Menu will adjust it&#8217;s position according to your text cursor. If you want to pin the Floating Menu in place, you can achieve this by using the pin icon in the upper right corner of the panel.</p>
+<p>== Basic Formatting == After you clicked inside an Editable, a cursor will appear. Start typing and using keyboard controls to add / modify text.</p>
+<p>By selecting a certain part of the text the Floating Menu will provide you with all possible formatting to be applied within the &#8220;Formatting&#8221; tab. You may also want to switch to the &#8220;Insert&#8221; tab, which allows you to insert new content elements. By clicking the respective buttons in the Floating Menu, a formatting can be applied and removed. If a formatting has already been applied to your text, the Floating Menu will display the corresponding buttons in pressed state, to reflect the markup.</p>
+<p>The Floating Menu also provides you with a Word-like button which is used to apply different headings or paragraph styles. You can also expand this dialog by clicking the icon on it&#8217;s right-hand side. [[Image:floatingmenu-multisplit.png]]</p>
+<p>Some formattings (like paragraphs, headlines and lists) will replace other formattings. E.g. when you click &#8220;h1&#8221; when the cursors is inside a paragraph, the paragraph will be replaced by the heading.</p>
+<h4 id="nesting-unordered-and-ordered-lists">1.1 Nesting unordered and ordered lists</h4>
+<p>You can create nested lists from one level lists by pressing Tab on the first item to be nested. Decrease level by pressing Shift+Tab.</p>
+<h3 id="plugins">2 Plugins h4(#table-plugin). 2.1 Table-Plugin h5(#add-a-table). 2.1.1 Add a Table A table is added by selecting the corresponding icon in the floating menu of your editable area. By clicking the icon for &#8220;create table&#8221; a layer will open beneath the button. Here you can select the size (rows and columns) of your table. The table will be inserted at the given cursor position in your active editable area.</h3>
+<p>To hide the &#8220;create table&#8221; move the mouse out of the layer and wait for one second, or click anywhere else in the document.</p>
+<h5 id="edit-the-content">2.1.2 Edit the content The content of the table is editable once you double-clicked a editable area. The area will get a blue border and the the table editable. Then simple click in the cell whichs contents should be edited. If you clicked into the cell the first time, its whole contents will be selected.</h5>
+<p>The text is formated by using the floating menu.</p>
+<h5 id="shortcuts">2.1.3 Shortcuts</h5>
+<ul>
+	<li>Tab
+	<ul>
+		<li>Jumps into the &#8217;&#8217;&#8217;next&#8217;&#8217;&#8217; cell and selects its whole contents</li>
+	</ul></li>
+	<li>Shift Tab
+	<ul>
+		<li>Jumps into the &#8217;&#8217;&#8217;previous&#8217;&#8217;&#8217; cell and selects its whole contents</li>
+	</ul></li>
+</ul>
+<h5 id="known-issues">2.1.4 Known Issues h6(#backspace-when-cursor-is-on-table-cell-begin). 2.1.4.1 Backspace when cursor is on table-cell begin If a user sets the cursor to the begin of of a table-cell and hits the backspace key, the contents of the cell before will be deleted.</h5>
+<p>&#8217;&#8217;&#8217;Appeared in:&#8216;&#8217;&#8217; FF3.6.3 h3(#resize-handles-are-shown-around-the-table). 3 Resize handles are shown around the table If a user directly clicks on the table, resize handles are shown.</p>
+<p>Due to an IE behaviour all block elements whithin an editable area will get resize handles on its boundaries. So for this surrounding element of the table. Its function is disabled by implementation but the display couldn&#8217;t be suppressed.</p>
+<p>&#8217;&#8217;&#8217;Appeared in:&#8216;&#8217;&#8217; IE8</p>
+<h3 id="cursor-and-selection-behaviour-in-ie8-with-doctype-html">4 Cursor and Selection behaviour in IE8 with doctype &#8216;html&#8217; When using Aloha in IE8 and the doctype of the edited document is set to &#8216;html&#8217; (HTML5), setting the cursor or selecting text does not work reliably.</h3>
+<p>A possible solution is to activate the Compatibility View.</p>
+<p>&#8217;&#8217;&#8217;Appeared in:&#8216;&#8217;&#8217; IE8</p>
+
+      </div>
+        <div id="subCol">
+          <h3 class="chapter"><img src="images/strobe/chapters.png" alt="" />Chapters</h3>
+          <ol class="chapters">
+            <li><a href="#editables-the-floating-menu"><p>Editables &amp; the Floating Menu</p>
+</a><ul><li><a href="#nesting-unordered-and-ordered-lists"><p>Nesting unordered and ordered lists</p>
+</a></li></ul></li><li><a href="#plugins"><p>Plugins</p>
+</a><ul><li><a href="#table-plugin"><p>Table-Plugin</p>
+</a></li></ul></li><li><a href="#resize-handles-are-shown-around-the-table"><p>Resize handles are shown around the table</p>
+</a></li><li><a href="#cursor-and-selection-behaviour-in-ie8-with-doctype-html"><p>Cursor and Selection behaviour in IE8 with doctype &#8216;html&#8217;</p>
+</a></li>
+          </ol>
+        </div>
+    </div>
+  </div>
+
+  <hr class="hide" />
+	  <footer>
+	    <div class="container">
+	      <div class="col">
+	        <a href="index.html"><img src="images/footer/logo.png" alt="Aloha Editor" /></a>
+	        <p>
+	        	Templates based on <a href="https://github.com/sproutcore/sproutguides">SproutCore guides</a>.
+	        </p>
+	      </div>
+	      <a href="#feature" class="top">Back To Top</a>
+	    </div>
+	  </footer>
+
+  <script src="http://code.jquery.com/jquery-1.6.min.js" type="text/javascript" charset="utf-8"></script>
+  <script type="text/javascript" src="javascripts/alohaEditorGuides.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shCore.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushRuby.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushJScript.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushCss.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushXml.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushSql.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushPlain.js"></script>
+  <script type="text/javascript">
+    SyntaxHighlighter.all()
+  </script>
+</body>
+</html>

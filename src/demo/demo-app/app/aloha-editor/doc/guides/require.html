@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>: Writing Plugins</title>
+
+  <!-- guides styles -->
+  <link rel="stylesheet" type="text/css" href="stylesheets/style.css" />
+  <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+  <link rel="stylesheet" type="text/css" href="stylesheets/strobe.css" />
+  <link rel="stylesheet" type="text/css" href="stylesheets/overrides.style.css" />
+  <link rel="stylesheet" type="text/css" href="stylesheets/overrides.print.css" media="print" />
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <!-- syntax highlighting styles -->
+  <link rel="stylesheet" type="text/css" href="stylesheets/syntaxhighlighter/shCore.css" />
+  <link rel="stylesheet" type="text/css" href="stylesheets/shThemeStrobeGuides.css" />
+</head>
+<body class="guide">
+
+  <header role="banner">
+    <div class="container">
+      <h1 id="logo">
+        <a href="http://aloha-editor.org"><img src="images/header/logo.png" height="50" alt="Aloha Editor" /></a>
+      </h1>
+      <nav role="navigation">
+        <ul>
+			<li><a href="http://aloha-editor.org/features.php" title="A shortcut for Aloha Editor features" class="new">Features</a></li>
+			<li><a href="http://aloha-editor.org/plugins.php" title="A list of all known Aloha Editor plugins.">Plugins</a></li>
+	        <li class="active"><a href="http://aloha-editor.org/guides/" title="The Aloha Editor documentation">Guides</a></li>
+			<li><a href="http://aloha-editor.org/about.php" title="Why Aloha? Why HTML5? Lern more about Aloha Editor">About</a></li>
+			<li><a href="http://getsatisfaction.com/aloha_editor" title="Get help or help others">Forum</a></li>
+			<li><a href="http://aloha-editor.org/demos.php" title="Feel the Aloha">Try it</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <div id="feature">
+    <div class="wrapper">
+      <div class="feature_header">
+        <a href="/"><img src="images/strobe/guides.png"></a>
+        <h2><a href="/"></a></h2>
+        <p>These guides help you to make your content editable and to develop Aloha.</p>
+      </div>
+      <div class="feature_sidebar">
+        <a href="index.html" id="guidesMenu">
+          Guides Index <span id="guidesArrow">&#9656;</span>
+        </a>
+        <div id="guides" class="clearfix" style="display: none;">
+          <a href="index.html" class="guidesMenu">
+            Guides Index <span class="guidesArrow">&#9662;</span>
+          </a>
+          <hr style="clear:both;">
+          <dl class="L">
+    <dt>Start Here</dt>
+      <dd><a href="using_aloha.html">Using Aloha Editor</a></dd>
+      <dd><a href="develop_aloha.html">Developing and building Aloha Editor</a></dd>
+      <dd><a href="configure_aloha.html">Configuring Aloha Editor</a></dd>
+      <dd><a href="require.html">Aloha dependency management with requireJS</a></dd>
+      <dd><a href="writing_plugins.html">Writing Plugins</a></dd>
+    <dt>The Core</dt>
+      <dd><a href="core.html">The Core</a></dd>
+    <dt>Commands</dt>
+      <dd><a href="using_commands.html">Using commands</a></dd>
+    <dt>Ui</dt>
+      <dd><a href="ui.html">Aloha Editor Ui</a></dd>
+      <dd><a href="toolbar.html">Aloha Editor toolbar</a></dd>
+      <dd><a href="sidebar.html">Aloha Editor sidebar</a></dd>
+      <dd><a href="componenttypes.html">Aloha Editor Ui API</a></dd>
+</dl>
+<dl class="R">
+    <dt>Plugins</dt>
+      <dd><a href="plugins.html">Aloha Editor plugins</a></dd>
+      <dd><a href="plugin_block.html">Block</a></dd>
+      <dd><a href="plugin_image.html">Image</a></dd>
+      <dd><a href="plugin_contenthandler.html">Content Handler</a></dd>
+      <dd><a href="plugin_browser.html">Browser</a></dd>
+      <dd><a href="plugin_numeratedheaders.html">Numerated Headers</a></dd>
+    <dt>Contributing to Aloha Editor</dt>
+      <dd>Development Process</dd>
+      <dd><a href="style_guide.html">Javascript Style Guide</a></dd>
+      <dd><a href="documentation_guidelines.html">Documentation Guidelines</a></dd>
+</dl>
+
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="container">
+    <div class="wrapper">
+      <div id="mainCol">
+          <div class="headerSection">
+            <h2>Writing Plugins</h2>
+<p>After reading this guide, you will be able to:</p>
+<ul>
+	<li>Create plugins to adjust Aloha Editor to your needs.</li>
+	<li>Load and define dependencies with RequireJS.</li>
+	<li>Include other resources from your plugins</li>
+</ul>
+
+          </div>
+        <h3 id="requirejs-modules-explained">1 RequireJS modules explained</h3>
+<p>We use <a href="http://requirejs.org">RequireJS</a> to manage JavaScript dependencies, that&#8217;s why some basic understanding is very helpful. By using RequireJS, we gain some nice benefits: First, we the dependency management between JavaScript files is done for us, meaning they are included in the correct order.</p>
+<p>The basic element of RequireJS is a so called <tt>module</tt> which is one file that defines and exports a JavaScript object. This reference can be used in other modules by <strong>requiring</strong> that module.</p>
+<div class="note"><p>A module does not need to define its own name, it is simply named by its location on the file system.</p></div>
+<p>Modules are created using <tt>define(dependencies, callback)</tt>, where the first parameter <code>dependencies</code> is an array of other RequireJS modules this plugin needs in order to function properly. The second parameter is <code>callback</code> is a function which is executed <strong>as soon as all dependencies are loaded</strong>. The first dependency is passed to the <code>callback</code> as first parameter, the second dependency as the second, and so on.</p>
+<div class="note"><p>Circular dependencies need some special treatment. It is most often a sign of bad code, but if you need to do this, follow the <a href="http://requirejs.org/docs/api.html#circular">guide at the RequireJS website</a>.</p></div>
+<p>You may use modules by requireing them if you specified the dependency you may use:</p>
+<div class="code_container">
+<pre class="brush: javascript; gutter: false; toolbar: false">
+
+	var module = require( 'module' );
+</pre></div><p>If you want to load a module dynamically without defining a dependency you may use:</p>
+<div class="code_container">
+<pre class="brush: javascript; gutter: false; toolbar: false">
+
+	// note the array!
+	require( ['module'], function( module ) {
+		// module available here
+	});
+</pre></div><h3 id="using-require">2 Using require</h3>
+<p>You may user require to define modules as well as requiring dynamically other modules.</p>
+<p>To define a module you need to define it with its dependencies and a callback function. The callback function gets the defined modules as parameters in order you defined them.</p>
+<div class="code_container">
+<div class="filename">myplugin/lib/module.js</div>
+<pre class="brush: javascript; gutter: false; toolbar: false">
+
+define(
+[ 'dependendmodule1', 'dependendmodule2' ],
+function( dependendmodule1, dependendmodule2 ) {
+	&quot;use strict&quot;;
+
+	// you can use  dependendmodule1, dependendmodule2 here. 
+	// both are loaded.
+
+	return {};
+
+});
+</pre></div><p>You do not need to define all parameter of the callback function but <tt>require</tt> the module as needed. In order to not interfere with other modules we require all Aloha Editor modules in the <tt>aloha</tt> context. The configuration is available in <tt>Aloha.settings.requireConf</tt>. The method <tt>Aloha.require()</tt> is a shorthand to require with the Aloha Editor configuration and additionally gives you the <tt>Aloha</tt> object an argument if you pass only a callback function or as return if you pass no argument at all.</p>
+<div class="code_container">
+<div class="filename">myplugin/lib/module.js</div>
+<pre class="brush: javascript; gutter: false; toolbar: false">
+
+define(
+[ 'dependendmodule1', 'dependendmodule2' ],
+function() {
+	&quot;use strict&quot;;
+
+	var 
+		Aloha = Aloha.require(),
+		dependendmodule1 = require( Aloha.settings.requireConf, 'dependendmodule1' ),
+		dependendmodule2 = Aloha.require( 'dependendmodule2' ); // shorthand to the above
+		
+	Aloha.require( function( localAloha ) {
+		// localAloha is available here  
+	};
+	
+	return {};
+
+});
+</pre></div><p>You may also require module or Aloha itself on demand</p>
+<div class="code_container">
+<div class="filename">someJS.js</div>
+<pre class="brush: javascript; gutter: false; toolbar: false">
+
+( function() {
+	&quot;use strict&quot;;
+
+	Aloha.require( function( Aloha ) {
+		// localAloha is available here
+		// but not neccessarily fully initialized
+		Aloha.jQuery('body').bind('aloha', function() {
+			// Aloha is initialized here
+		});  
+	});
+	
+	Aloha.require( ['dependendmodule1'], function( dependendmodule1 ) {
+		// dependendmodule1 is available here  
+	};
+	
+	return {};
+
+});
+</pre></div><h3 id="aloha-plugins-and-their-dependencies">3 Aloha plugins and their dependencies</h3>
+<p>In the following example, we define a components plugin with two modules. The first module <code>componenttype</code> defines two classes. The second module <code>component</code> has a dependency to <code>componenttype</code>, and RequireJS injects what has been returned by <code>componenttype</code>.</p>
+<p>The plugin requires the module <tt>aloha/plugin</tt> which gives you the plugin factory method <tt>create()</tt></p>
+<div class="code_container">
+<div class="filename">plugin1/lib/plugin1-plugin.js</div>
+<pre class="brush: javascript; gutter: false; toolbar: false">
+
+define(
+[ 'aloha/plugin' ],
+function( plugin ) {
+    &quot;use strict&quot;;
+	// we do nothing but provide component modules...
+    return plugin.create( 'plugin1', {});
+});
+</pre></div><p>The <tt>componenttye</tt> has no dependency thus the dependency array is empty.</p>
+<div class="code_container">
+<div class="filename">plugin1/lib/abstractmodule.js</div>
+<pre class="brush: javascript; gutter: false; toolbar: false">
+
+define(
+[], // no dependency
+function() {
+	&quot;use strict&quot;;
+
+	var abstractModule = Class.extend({
+    	doOther: function() {
+    		return 'didOther';
+    	}
+    });
+
+	return abstractModule;
+
+});
+</pre></div><p>The <tt>component</tt> depends on the local module <tt>componenttype</tt> and defines its dependency.</p>
+<div class="code_container">
+<div class="filename">plugin1/lib/module.js</div>
+<pre class="brush: javascript; gutter: false; toolbar: false">
+
+define(
+['./abstractmodule'], // dependency in the same path
+function( abstractModule ) {
+    &quot;use strict&quot;;
+
+    var module = abstractModule.extend({
+		doSome: function() {
+			return 'didSome';
+		}
+    });
+    return new module();
+
+});
+</pre></div><h4 id="cross-plugin-dependencies">3.1 Cross plugin dependencies</h4>
+<p>If we want to use cross plugin modules you should not define a dependency on <tt>plugin1/module</tt> from plugin1 because that would hinder your plugin from working, because of the unfullfilled dependency. Instead require the module in your code with a <tt>Aloha.require()</tt> and extend the module with our own function when plugin2 is loaded. If another plugin would require <tt>plugin1/module</tt> it would have our extended functionality.</p>
+<div class="code_container">
+<div class="filename">plugin2/lib/plugin2-plugin.js</div>
+<pre class="brush: javascript; gutter: false; toolbar: false">
+
+define(
+[ 'aloha/plugin' ],
+function( plugin, module ) {
+    &quot;use strict&quot;;
+    
+    // now we require the the modue of plugin1
+    Aloha.require( [ 'plugin1/module' ], function( module ) }
+ 	   // module is available here
+    	module.doThis = function() {
+    		return 'didThis';
+    	};
+    });
+    
+	// we do nothing but provide component modules...
+    return plugin.create( 'plugin2', {});
+});
+</pre></div><h3 id="aloha-require-path-mapping-for-plugins">4 Aloha require path mapping for plugins</h3>
+<p>So, at which place does Aloha look up modules? We&#8217;ll explain this with a few examples:</p>
+<table>
+	<tr>
+		<th>Definition in RequireJS </th>
+		<th>File Name </th>
+	</tr>
+	<tr>
+		<td> <code>myplugin/foo</code> </td>
+		<td> <code>path_to_bundle/myplugin/lib/foo.js</code> <br /> Including other RequireJS modules is the most common case </td>
+	</tr>
+	<tr>
+		<td> <code>myplugin/vendor/legacy_lib</code> </td>
+		<td> <code>path_to_bundle/myplugin/vendor/legacy_lib.js</code> <br /> Include a legacy library </td>
+	</tr>
+	<tr>
+		<td> <code>css!myplugin/css/cssfile.css</code> </td>
+		<td> <code>path_to_bundle/myplugin/css/cssfile.css</code> <br /> Includes the <span class="caps">CSS</span> file in the document <code>&lt;head&gt;</code>. </td>
+	</tr>
+	<tr>
+		<td> <code>i18n!myplugin/nls/i18n.js</code> </td>
+		<td> uses <tt>Aloha.settings.locale</tt> or tries to detect the language from the browser. </td>
+	</tr>
+	<tr>
+		<td> <code>text!myplugin/res/template.html</code> </td>
+		<td> Load the content of a text file (e.g. templates). </td>
+	</tr>
+</table>
+<div class="note"><p>The bundle name is not part of the RequireJS definition, as this is installation-specific. You as plugin developer should not care about where other plugins are located on disk.</p></div>
+<h3 id="changelog">5 Changelog</h3>
+<ul>
+	<li>July 3, 2011: Initial version by <a href="credits.html#skurfuerst">Sebastian Kurfürst</a> and <a href="credits.html#hlubek">Christopher Hlubek</a></li>
+</ul>
+
+      </div>
+        <div id="subCol">
+          <h3 class="chapter"><img src="images/strobe/chapters.png" alt="" />Chapters</h3>
+          <ol class="chapters">
+            <li><a href="#requirejs-modules-explained"><p>RequireJS modules explained</p>
+</a></li><li><a href="#using-require"><p>Using require</p>
+</a></li><li><a href="#aloha-plugins-and-their-dependencies"><p>Aloha plugins and their dependencies</p>
+</a><ul><li><a href="#cross-plugin-dependencies"><p>Cross plugin dependencies</p>
+</a></li></ul></li><li><a href="#aloha-require-path-mapping-for-plugins"><p>Aloha require path mapping for plugins</p>
+</a></li><li><a href="#changelog"><p>Changelog</p>
+</a></li>
+          </ol>
+        </div>
+    </div>
+  </div>
+
+  <hr class="hide" />
+	  <footer>
+	    <div class="container">
+	      <div class="col">
+	        <a href="index.html"><img src="images/footer/logo.png" alt="Aloha Editor" /></a>
+	        <p>
+	        	Templates based on <a href="https://github.com/sproutcore/sproutguides">SproutCore guides</a>.
+	        </p>
+	      </div>
+	      <a href="#feature" class="top">Back To Top</a>
+	    </div>
+	  </footer>
+
+  <script src="http://code.jquery.com/jquery-1.6.min.js" type="text/javascript" charset="utf-8"></script>
+  <script type="text/javascript" src="javascripts/alohaEditorGuides.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shCore.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushRuby.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushJScript.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushCss.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushXml.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushSql.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushPlain.js"></script>
+  <script type="text/javascript">
+    SyntaxHighlighter.all()
+  </script>
+</body>
+</html>

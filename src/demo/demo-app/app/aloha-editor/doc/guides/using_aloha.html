@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>: Using Aloha Editor</title>
+
+  <!-- guides styles -->
+  <link rel="stylesheet" type="text/css" href="stylesheets/style.css" />
+  <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+  <link rel="stylesheet" type="text/css" href="stylesheets/strobe.css" />
+  <link rel="stylesheet" type="text/css" href="stylesheets/overrides.style.css" />
+  <link rel="stylesheet" type="text/css" href="stylesheets/overrides.print.css" media="print" />
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <!-- syntax highlighting styles -->
+  <link rel="stylesheet" type="text/css" href="stylesheets/syntaxhighlighter/shCore.css" />
+  <link rel="stylesheet" type="text/css" href="stylesheets/shThemeStrobeGuides.css" />
+</head>
+<body class="guide">
+
+  <header role="banner">
+    <div class="container">
+      <h1 id="logo">
+        <a href="http://aloha-editor.org"><img src="images/header/logo.png" height="50" alt="Aloha Editor" /></a>
+      </h1>
+      <nav role="navigation">
+        <ul>
+			<li><a href="http://aloha-editor.org/features.php" title="A shortcut for Aloha Editor features" class="new">Features</a></li>
+			<li><a href="http://aloha-editor.org/plugins.php" title="A list of all known Aloha Editor plugins.">Plugins</a></li>
+	        <li class="active"><a href="http://aloha-editor.org/guides/" title="The Aloha Editor documentation">Guides</a></li>
+			<li><a href="http://aloha-editor.org/about.php" title="Why Aloha? Why HTML5? Lern more about Aloha Editor">About</a></li>
+			<li><a href="http://getsatisfaction.com/aloha_editor" title="Get help or help others">Forum</a></li>
+			<li><a href="http://aloha-editor.org/demos.php" title="Feel the Aloha">Try it</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <div id="feature">
+    <div class="wrapper">
+      <div class="feature_header">
+        <a href="/"><img src="images/strobe/guides.png"></a>
+        <h2><a href="/"></a></h2>
+        <p>These guides help you to make your content editable and to develop Aloha.</p>
+      </div>
+      <div class="feature_sidebar">
+        <a href="index.html" id="guidesMenu">
+          Guides Index <span id="guidesArrow">&#9656;</span>
+        </a>
+        <div id="guides" class="clearfix" style="display: none;">
+          <a href="index.html" class="guidesMenu">
+            Guides Index <span class="guidesArrow">&#9662;</span>
+          </a>
+          <hr style="clear:both;">
+          <dl class="L">
+    <dt>Start Here</dt>
+      <dd><a href="using_aloha.html">Using Aloha Editor</a></dd>
+      <dd><a href="develop_aloha.html">Developing and building Aloha Editor</a></dd>
+      <dd><a href="configure_aloha.html">Configuring Aloha Editor</a></dd>
+      <dd><a href="require.html">Aloha dependency management with requireJS</a></dd>
+      <dd><a href="writing_plugins.html">Writing Plugins</a></dd>
+    <dt>The Core</dt>
+      <dd><a href="core.html">The Core</a></dd>
+    <dt>Commands</dt>
+      <dd><a href="using_commands.html">Using commands</a></dd>
+    <dt>Ui</dt>
+      <dd><a href="ui.html">Aloha Editor Ui</a></dd>
+      <dd><a href="toolbar.html">Aloha Editor toolbar</a></dd>
+      <dd><a href="sidebar.html">Aloha Editor sidebar</a></dd>
+      <dd><a href="componenttypes.html">Aloha Editor Ui API</a></dd>
+</dl>
+<dl class="R">
+    <dt>Plugins</dt>
+      <dd><a href="plugins.html">Aloha Editor plugins</a></dd>
+      <dd><a href="plugin_block.html">Block</a></dd>
+      <dd><a href="plugin_image.html">Image</a></dd>
+      <dd><a href="plugin_contenthandler.html">Content Handler</a></dd>
+      <dd><a href="plugin_browser.html">Browser</a></dd>
+      <dd><a href="plugin_numeratedheaders.html">Numerated Headers</a></dd>
+    <dt>Contributing to Aloha Editor</dt>
+      <dd>Development Process</dd>
+      <dd><a href="style_guide.html">Javascript Style Guide</a></dd>
+      <dd><a href="documentation_guidelines.html">Documentation Guidelines</a></dd>
+</dl>
+
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="container">
+    <div class="wrapper">
+      <div id="mainCol">
+          <div class="headerSection">
+            <h2>Using Aloha Editor</h2>
+<p>After reading this guide, you will be able to:</p>
+<ul>
+	<li>Embed Aloha Editor in your web application.</li>
+	<li>Load plugins to enrich your editing experience.</li>
+	<li>Configure Aloha Editor to make your content editable and persist changes.</li>
+	<li>Customize the editor in different contexts.</li>
+</ul>
+
+          </div>
+        <h3 id="install-aloha">1 Install Aloha</h3>
+<p>Let&#8217;s begin by installing the Aloha Editor library. There are two ways to choose right now.</p>
+<div class="info"><p>Actually you don’t &#8220;install&#8221; Aloha Editor, since it is neither a standalone <span class="caps">CMS</span> nor an <span class="caps">HTML</span> editor to create websites. It is a JavaScript Library which has to be embedded and integrated in your web application. Use it like a supersonic textarea. You can edit any <span class="caps">DOM</span> element with this supersonic textarea, but you need to care about configuration and storage.</p></div>
+
+<div class="code_container">
+<pre class="brush: plain; gutter: false; toolbar: false">
+
+cd aloha
+cp -r aloha-minified path_to_your_webapp/javascripts/aloha
+</pre></div><h3 id="embed-aloha">2 Embed Aloha</h3>
+<p>Let&#8217;s assume that you have installed Aloha to your webapplication in a path like <tt>javascripts/aloha</tt>.</p>
+<p>Put the following in the <strong>head</strong> of your web application to load Aloha with a basic formatting plugin:</p>
+<div class="code_container">
+<pre class="brush: xml; gutter: false; toolbar: false">
+
+&lt;head&gt;
+	&lt;script src=&quot;javascripts/aloha/aloha.js&quot; data-aloha-plugins=&quot;common/format&quot;&gt;&lt;/script&gt;
+&lt;/head&gt;
+</pre></div>
+<div class="info"><p>We will cover just enough about RequireJS to get you started here. To learn more about how RequireJS works, read our <a href="require.html">Aloha dependency management with requireJS</a> guide.</p></div>
+<p>In the script tag attribute <tt>data-aloha-plugins=&quot;common/format&quot;</tt> we tell Aloha which plugins should be loaded. We come to this later, but note that the mere inclusion does not yet change the behaviour of your web page.</p>
+<p>Aloha Editor tries to determ the baseUrl to load common plugins, css and localization files. Aloha Editor does the lookup the following way:</p>
+<ul>
+	<li>use <tt>Aloha.settings.baseUrl</tt></li>
+	<li>find first occureancy of a script tag, where the file name is <tt>aloha.js</tt></li>
+	<li>find the first script tag where a data attribute <tt>data-aloha-plugins</tt> is added</li>
+</ul>
+<p>By default the baseUrl is used to lookup at least following files:</p>
+<ul>
+	<li><code>baseUrl/aloha/nls/18n</code></li>
+	<li><code>baseUrl/plugins/common/plugin</code></li>
+	<li><code>baseUrl/aloha.css</code></li>
+</ul>
+<div class="note"><p>You may define different mappings for localization, common plugins and the aloha.css</p></div>
+<p>If all this fails Aloha Editor may not be able to load properly.</p>
+<h3 id="create-editables">3 Create editables</h3>
+<p>An editable is an <span class="caps">HTML</span> element that should be editable by Aloha. Aloha includes a jQuery plugin to create the editables through selectors. Once Aloha is loaded by RequireJS, we can call <tt>.aloha()</tt> on the matched elements. The <code>require</code> function takes care that Aloha is actually loaded, so you can put this code anywhere after the inclusion of <code>require.js</code>.</p>
+<div class="code_container">
+<pre class="brush: xml; gutter: false; toolbar: false">
+
+&lt;script type=&quot;text/javascript&quot;&gt;
+	Aloha.ready( function() {
+		
+		// Make #content editable once Aloha is loaded and ready.
+		Aloha.jQuery('#content').aloha();
+		
+	});
+&lt;/script&gt;
+</pre></div><p>Et voilà! You should now see the floating menu of Aloha when you click into your <tt>#content</tt> element.</p>
+<p>Since the <code>.aloha()</code> plugin can be called on any jQuery set, you could create many editables at once by specifying a <span class="caps">CSS</span> class or any other jQuery selector.</p>
+<div class="code_container">
+<pre class="brush: javascript; gutter: false; toolbar: false">
+
+// Make all elements with class=&quot;content&quot; editable
+Aloha.jQuery('.content').aloha();
+</pre></div><h3 id="css-loading">4 <span class="caps">CSS</span> loading</h3>
+<div class="warning"><p>Not yet done</p></div>
+<h3 id="localization">5 Localization</h3>
+<p>Use the &#8220;localization&#8221; setting to set the current language of Aloha:</p>
+<div class="code_container">
+<pre class="brush: xml; gutter: false; toolbar: false">
+
+&lt;script type=&quot;text/javascript&quot;&gt;
+// switch Aloha Editor's localization to french
+Aloha.settings.locale = 'fr';
+&lt;/script&gt;
+</pre></div><p>As Aloha Editor uses RequireJS to handle it&#8217;s localization needs a powerful fallback mechanism is in place. See http://requirejs.org/docs/api.html#i18n for additional details.</p>
+<h3 id="using-plugins">6 Using plugins</h3>
+<h4 id="laoding-plugins">6.1 Laoding plugins</h4>
+<p>Loading the new plugins is easy, just add it to the list of plugins in the main script tag loading Aloha:</p>
+<div class="code_container">
+<pre class="brush: xml; gutter: false; toolbar: false">
+
+&lt;head&gt;
+	&lt;script 
+		src=&quot;javascripts/aloha/aloha.js&quot; 
+		data-aloha-plugins=&quot;common/format,common/list,common/table&quot; &gt;
+	&lt;/script&gt;
+&lt;/head&gt;
+</pre></div><h4 id="configuring-plugins">6.2 Configuring plugins</h4>
+<p>Every plugin provides its configuration settings and namespace. Configuration settings are absolutely plugin specific.</p>
+<div class="code_container">
+<pre class="brush: javascript; gutter: false; toolbar: false">
+
+var Aloha = {};
+Aloha.settings = {
+	pluginA: {
+		// set value for pluginA
+		value: 20,
+		// set an array 
+		list: ['some', 'other'],
+		// set an object
+		object: {
+			huhu: 'hello'
+		}
+	}
+};
+</pre></div><h4 id="plugin-bundles">6.3 Plugin bundles</h4>
+<p>Aloha Editor comes with a bundle of common plugins. A bundle is a installation specific path where Aloha looks for plugins. The structure of a plugin is a follows:</p>
+<ul>
+	<li><code>mybundle</code>
+	<ul>
+		<li><code>plugin1</code></li>
+		<li><code>pluginX</code></li>
+	</ul></li>
+</ul>
+<p>Every plugin has the file structure as described above.</p>
+<p>You can use plugins from this bundle by adding the <tt>common/pluginname</tt>  to the <tt>data-aloha-plugins</tt> attribute of the script tag. See the example above.  Additionally you may add your own bundle, which can be located in a complete  different path. You can specify the path like this.</p>
+<div class="code_container">
+<pre class="brush: javascript; gutter: false; toolbar: false">
+
+var Aloha = {};
+Aloha.settings = {
+	bundles: {
+		// Path for custom bundle relative from Aloha.settings.baseUrl usually path of aloha.js
+		custom1: '../mybundle',
+		// Path for custom bundle with an absolute path at the server
+		custom2: '/yourbundle',
+		// Path for a custom bundle located at another server 
+		//(NOTE: cross site scritping issues with that configuration)
+		custom3: 'http://theserver.com/their/bundle'
+	}
+};
+</pre></div><p>You can now easily load plugins from that bundles as follows</p>
+<div class="code_container">
+<pre class="brush: xml; gutter: false; toolbar: false">
+
+&lt;head&gt;
+	&lt;script 
+		src=&quot;javascripts/aloha/aloha.js&quot; 
+		data-aloha-plugins=&quot;common/link,custom1/plugin1,custom2/plugin2,custom3/plugin3&quot; &gt;
+	&lt;/script&gt;
+&lt;/head&gt;
+</pre></div><p>This example will try to load following plugins:</p>
+<ul>
+	<li><tt>javascripts/aloha/lib/../plugins/common/link/lib/link-plugin.js</tt></li>
+	<li><tt>javascripts/aloha/lib/../../mybundle/plugin1/lib/plugin1-plugin.js</tt></li>
+	<li><tt>/yourbundle/plugin2/lib/plugin2-plugin.js</tt></li>
+	<li><tt>http://theserver.com/their/bundle/plugin3/lib/plugin3-plugin.js</tt></li>
+</ul>
+<h3 id="jquery-compatibility">7 jQuery compatibility</h3>
+<p>Aloha Editor currently puts 3 objects in the global namespace:</p>
+<ul>
+	<li><tt>Aloha</tt> the core Aloha Editor object which gives you access to the main functionality</li>
+	<li><tt>GENTICS</tt> the utilities to manipulate the <span class="caps">DOM</span> in a proper way</li>
+</ul>
+<p>Aloha Editor will not interfere with any jQuery version you use on your site. Anyway if you want to use the jQuery version of your site you may specify the jQuery to use for Aloha editor. All Aloha Editor jQuery plugins will then be attached to the specified jQuery version.</p>
+<div class="code_container">
+<pre class="brush: javascript; gutter: false; toolbar: false">
+
+	var Aloha = {};
+	Aloha.settings: {
+		jQuery: $
+	};
+</pre></div><p>The order Aloha Editor looks for a specified jQuery is:</p>
+<ul>
+	<li>Aloha.settings.jQuery</li>
+	<li>Aloha.jQuery</li>
+	<li>buildin jQuery</li>
+</ul>
+<h3 id="changelog">8 Changelog</h3>
+<ul>
+	<li>July 3, 2011: Initial version by <a href="credits.html#skurfuerst">Sebastian Kurfürst</a> and <a href="credits.html#hlubek">Christopher Hlubek</a></li>
+</ul>
+
+      </div>
+        <div id="subCol">
+          <h3 class="chapter"><img src="images/strobe/chapters.png" alt="" />Chapters</h3>
+          <ol class="chapters">
+            <li><a href="#install-aloha"><p>Install Aloha</p>
+</a></li><li><a href="#embed-aloha"><p>Embed Aloha</p>
+</a></li><li><a href="#create-editables"><p>Create editables</p>
+</a></li><li><a href="#css-loading"><p><span class="caps">CSS</span> loading</p>
+</a></li><li><a href="#localization"><p>Localization</p>
+</a></li><li><a href="#using-plugins"><p>Using plugins</p>
+</a><ul><li><a href="#laoding-plugins"><p>Laoding plugins</p>
+</a></li> <li><a href="#configuring-plugins"><p>Configuring plugins</p>
+</a></li> <li><a href="#plugin-bundles"><p>Plugin bundles</p>
+</a></li></ul></li><li><a href="#jquery-compatibility"><p>jQuery compatibility</p>
+</a></li><li><a href="#changelog"><p>Changelog</p>
+</a></li>
+          </ol>
+        </div>
+    </div>
+  </div>
+
+  <hr class="hide" />
+	  <footer>
+	    <div class="container">
+	      <div class="col">
+	        <a href="index.html"><img src="images/footer/logo.png" alt="Aloha Editor" /></a>
+	        <p>
+	        	Templates based on <a href="https://github.com/sproutcore/sproutguides">SproutCore guides</a>.
+	        </p>
+	      </div>
+	      <a href="#feature" class="top">Back To Top</a>
+	    </div>
+	  </footer>
+
+  <script src="http://code.jquery.com/jquery-1.6.min.js" type="text/javascript" charset="utf-8"></script>
+  <script type="text/javascript" src="javascripts/alohaEditorGuides.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shCore.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushRuby.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushJScript.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushCss.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushXml.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushSql.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushPlain.js"></script>
+  <script type="text/javascript">
+    SyntaxHighlighter.all()
+  </script>
+</body>
+</html>

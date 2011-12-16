@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>: Release Guide</title>
+
+  <!-- guides styles -->
+  <link rel="stylesheet" type="text/css" href="stylesheets/style.css" />
+  <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+  <link rel="stylesheet" type="text/css" href="stylesheets/strobe.css" />
+  <link rel="stylesheet" type="text/css" href="stylesheets/overrides.style.css" />
+  <link rel="stylesheet" type="text/css" href="stylesheets/overrides.print.css" media="print" />
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <!-- syntax highlighting styles -->
+  <link rel="stylesheet" type="text/css" href="stylesheets/syntaxhighlighter/shCore.css" />
+  <link rel="stylesheet" type="text/css" href="stylesheets/shThemeStrobeGuides.css" />
+</head>
+<body class="guide">
+
+  <header role="banner">
+    <div class="container">
+      <h1 id="logo">
+        <a href="http://aloha-editor.org"><img src="images/header/logo.png" height="50" alt="Aloha Editor" /></a>
+      </h1>
+      <nav role="navigation">
+        <ul>
+			<li><a href="http://aloha-editor.org/features.php" title="A shortcut for Aloha Editor features" class="new">Features</a></li>
+			<li><a href="http://aloha-editor.org/plugins.php" title="A list of all known Aloha Editor plugins.">Plugins</a></li>
+	        <li class="active"><a href="http://aloha-editor.org/guides/" title="The Aloha Editor documentation">Guides</a></li>
+			<li><a href="http://aloha-editor.org/about.php" title="Why Aloha? Why HTML5? Lern more about Aloha Editor">About</a></li>
+			<li><a href="http://getsatisfaction.com/aloha_editor" title="Get help or help others">Forum</a></li>
+			<li><a href="http://aloha-editor.org/demos.php" title="Feel the Aloha">Try it</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <div id="feature">
+    <div class="wrapper">
+      <div class="feature_header">
+        <a href="/"><img src="images/strobe/guides.png"></a>
+        <h2><a href="/"></a></h2>
+        <p>These guides help you to make your content editable and to develop Aloha.</p>
+      </div>
+      <div class="feature_sidebar">
+        <a href="index.html" id="guidesMenu">
+          Guides Index <span id="guidesArrow">&#9656;</span>
+        </a>
+        <div id="guides" class="clearfix" style="display: none;">
+          <a href="index.html" class="guidesMenu">
+            Guides Index <span class="guidesArrow">&#9662;</span>
+          </a>
+          <hr style="clear:both;">
+          <dl class="L">
+    <dt>Start Here</dt>
+      <dd><a href="using_aloha.html">Using Aloha Editor</a></dd>
+      <dd><a href="develop_aloha.html">Developing and building Aloha Editor</a></dd>
+      <dd><a href="configure_aloha.html">Configuring Aloha Editor</a></dd>
+      <dd><a href="require.html">Aloha dependency management with requireJS</a></dd>
+      <dd><a href="writing_plugins.html">Writing Plugins</a></dd>
+    <dt>The Core</dt>
+      <dd><a href="core.html">The Core</a></dd>
+    <dt>Commands</dt>
+      <dd><a href="using_commands.html">Using commands</a></dd>
+    <dt>Ui</dt>
+      <dd><a href="ui.html">Aloha Editor Ui</a></dd>
+      <dd><a href="toolbar.html">Aloha Editor toolbar</a></dd>
+      <dd><a href="sidebar.html">Aloha Editor sidebar</a></dd>
+      <dd><a href="componenttypes.html">Aloha Editor Ui API</a></dd>
+</dl>
+<dl class="R">
+    <dt>Plugins</dt>
+      <dd><a href="plugins.html">Aloha Editor plugins</a></dd>
+      <dd><a href="plugin_block.html">Block</a></dd>
+      <dd><a href="plugin_image.html">Image</a></dd>
+      <dd><a href="plugin_contenthandler.html">Content Handler</a></dd>
+      <dd><a href="plugin_browser.html">Browser</a></dd>
+      <dd><a href="plugin_numeratedheaders.html">Numerated Headers</a></dd>
+    <dt>Contributing to Aloha Editor</dt>
+      <dd>Development Process</dd>
+      <dd><a href="style_guide.html">Javascript Style Guide</a></dd>
+      <dd><a href="documentation_guidelines.html">Documentation Guidelines</a></dd>
+</dl>
+
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="container">
+    <div class="wrapper">
+      <div id="mainCol">
+          <div class="headerSection">
+            <h2>Release Guide</h2>
+<p>This guide will describe the aloha editor release lifecyle and practical releasing example. Please read http://nvie.com/posts/a-successful-git-branching-model/ which describes in detail the branch structure and release process as seen from git.</p>
+
+          </div>
+        <h3 id="release-lifecycle">1 Release Lifecycle</h3>
+<h4 id="feature-release">1.1 Feature Release</h4>
+<p>For every feature release a new release branch will be created. This branch must be named using the targeted release version. If you want to release 0.20.0 it will be named: <tt>release-0.20.0</tt>. The release branch will always be created from the <tt>dev</tt> branch.</p>
+<h4 id="hotfix-release">1.2 Hotfix Release</h4>
+<p>A hotfix release can be done from an existing hotfix branch. The hotfix level of the version will be raised one leve. (eg. 0.20.0 &#8594; 0.20.1)</p>
+<h4 id="post-release-steps">1.3 Post Release Steps</h4>
+<ul>
+	<li>After a release has been done the tagged version will be merged into the master branch.</li>
+	<li>A hotfix branch for the release will be created in which hotfixes can be applied.</li>
+	<li>The tagged version will be merged into the dev branch. Please note that the dev version should always be one level above the current major release version. (eg. current stable is 0.20.0 than the dev branch version would be 0.30.0-dev.)</li>
+</ul>
+<h3 id="practical-maven-feature-release-example-for-version-0-20-0">2 Practical Maven Feature Release Example For Version 0.20.0</h3>
+<p>1. Switch into the dev branch.</p>
+<div class="code_container">
+<pre class="brush: plain; gutter: false; toolbar: false">
+
+  git checkout dev
+</pre></div><p>2. Create a new release branch.</p>
+<div class="code_container">
+<pre class="brush: plain; gutter: false; toolbar: false">
+
+  git checkout -b release-0.20.0
+</pre></div>
+<p>3. Prepare the release and define the release version.</p>
+<div class="code_container">
+<pre class="brush: plain; gutter: false; toolbar: false">
+
+  mvn release:prepare
+</pre></div><p>Next development version will be 0.20.1-<span class="caps">SNAPSHOT</span>. We just raise the bugfix level.</p>
+<div class="code_container">
+<pre class="brush: plain; gutter: false; toolbar: false">
+
+[INFO] Scanning for projects...
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building Aloha Editor 0.20.0-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-release-plugin:2.0:prepare (default-cli) @ alohaeditor ---
+[INFO] Verifying that there are no local modifications...
+[INFO] Executing: /bin/sh -c cd /home/release_prepare/alohaeditor-fork &amp;&amp; git status
+[INFO] Working directory: /home/release_prepare/alohaeditor-fork
+[INFO] Checking dependencies and plugins for snapshots ...
+What is the release version for &quot;Aloha Editor&quot;? (org.alohaeditor:alohaeditor) 0.20.0: : 
+What is SCM release tag or label for &quot;Aloha Editor&quot;? (org.alohaeditor:alohaeditor) alohaeditor-0.20.0: : 
+What is the new development version for &quot;Aloha Editor&quot;? (org.alohaeditor:alohaeditor) 0.20.1-SNAPSHOT: : 
+[INFO] Transforming 'Aloha Editor'...
+[INFO] Not generating release POMs
+[INFO] Executing goals 'clean verify'...
+[WARNING] Maven will be executed in interactive mode, but no input stream has been configured for this MavenInvoker instance.
+[INFO] [INFO] Scanning for projects...
+[INFO] [INFO]                                                                         
+[INFO] [INFO] ------------------------------------------------------------------------
+[INFO] [INFO] Building Aloha Editor 0.20.0
+[INFO] [INFO] ------------------------------------------------------------------------
+[INFO] [INFO] 
+[INFO] [INFO] --- maven-clean-plugin:2.4.1:clean (default-clean) @ alohaeditor ---
+[INFO] [INFO] Deleting /home/release_prepare/alohaeditor-fork/target
+</pre></div><p>4. Test the created preview release in all supported browsers.</p>
+<p>5. Perform the maven release. This will push the artifact to archiva.</p>
+<div class="code_container">
+<pre class="brush: plain; gutter: false; toolbar: false">
+
+  git add .
+  git commit -m &quot;Maven release prepare&quot;
+  git push origin release-0.20.0
+  mvn release:perform
+</pre></div><p>6. Checkout the master branch and merge the tag into that branch</p>
+<div class="code_container">
+<pre class="brush: plain; gutter: false; toolbar: false">
+
+  git checkout master
+  git merge tags/release-0.20.0
+</pre></div><p>8. Update the dev branch</p>
+<div class="code_container">
+<pre class="brush: plain; gutter: false; toolbar: false">
+ 
+  git checkout dev
+  git pull hotfix-0.20.0
+</pre></div><p>9. Update the dev branch version to 0.21.0-dev-<span class="caps">SNAPSHOT</span></p>
+<div class="code_container">
+<pre class="brush: plain; gutter: false; toolbar: false">
+
+  mvn release:update-versions -DdevelopmentVersion=0.21-dev-SNAPSHOT -DautoVersionSubmodules=true
+</pre></div><h3 id="practical-maven-hotfix-release-example">3 Practical Maven Hotfix Release Example</h3>
+<p>1. Create a new hotfix branch from master</p>
+<div class="code_container">
+<pre class="brush: plain; gutter: false; toolbar: false">
+  
+  git checkout -b hotfix-0.20.0 master
+  git push origin hotfix-0.20.0
+</pre></div><p>2. Continue with step 3 from the feature release example</p>
+
+      </div>
+        <div id="subCol">
+          <h3 class="chapter"><img src="images/strobe/chapters.png" alt="" />Chapters</h3>
+          <ol class="chapters">
+            <li><a href="#release-lifecycle"><p>Release Lifecycle</p>
+</a><ul><li><a href="#feature-release"><p>Feature Release</p>
+</a></li> <li><a href="#hotfix-release"><p>Hotfix Release</p>
+</a></li> <li><a href="#post-release-steps"><p>Post Release Steps</p>
+</a></li></ul></li><li><a href="#practical-maven-feature-release-example-for-version-0-20-0"><p>Practical Maven Feature Release Example For Version 0.20.0</p>
+</a></li><li><a href="#practical-maven-hotfix-release-example"><p>Practical Maven Hotfix Release Example</p>
+</a></li>
+          </ol>
+        </div>
+    </div>
+  </div>
+
+  <hr class="hide" />
+	  <footer>
+	    <div class="container">
+	      <div class="col">
+	        <a href="index.html"><img src="images/footer/logo.png" alt="Aloha Editor" /></a>
+	        <p>
+	        	Templates based on <a href="https://github.com/sproutcore/sproutguides">SproutCore guides</a>.
+	        </p>
+	      </div>
+	      <a href="#feature" class="top">Back To Top</a>
+	    </div>
+	  </footer>
+
+  <script src="http://code.jquery.com/jquery-1.6.min.js" type="text/javascript" charset="utf-8"></script>
+  <script type="text/javascript" src="javascripts/alohaEditorGuides.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shCore.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushRuby.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushJScript.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushCss.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushXml.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushSql.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushPlain.js"></script>
+  <script type="text/javascript">
+    SyntaxHighlighter.all()
+  </script>
+</body>
+</html>
