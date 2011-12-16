@@ -26,5 +26,8 @@ define({
 	
 	// link
 	"button.createLink.label": "Verweis einf\u00fcgen",
-	"button.removeLink.label": "Verweis entfernen"
+	"button.removeLink.label": "Verweis entfernen",
+	
+	// abbr
+	"button.createAbbr.label": "Abk\u00fcrzung einf\u00fcgen"
 });

@@ -27,7 +27,10 @@ define({
 		
 		// link
 		"button.createLink.label": "Insert link",
-		"button.removeLink.label": "Remove link"
+		"button.removeLink.label": "Remove link",
+		
+		// abbr
+		"button.createAbbr.label": "Insert abbreviation"
 	},
 	"de": true
 });

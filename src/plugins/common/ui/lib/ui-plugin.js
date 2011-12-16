@@ -16,6 +16,7 @@ define([
 	"./toolbar",
 	
 	// components
+	"./abbr",
 	"./font",
 	"./format",
 	"./link",

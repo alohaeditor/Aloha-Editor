@@ -41,8 +41,6 @@ function( Aloha, Ui, i18n, jQuery, Browser ) {
 				value = jQuery( findAnchor() ).attr( "data-name" ) || value;
 				this.element.val( value );
 			} else {
-				// this needs to be commented out to actually be able to use
-				// the component (see comment in setValue about range management)
 				this.hide();
 			}
 		},
@@ -109,8 +107,8 @@ function( Aloha, Ui, i18n, jQuery, Browser ) {
 	function findAnchor( range ) {
 		range = range || Aloha.getSelection().getRangeAt( 0 );
 		range = new GENTICS.Utils.RangeObject( range );
-		return range.findMarkup(function () {
-			return this.nodeName.toLowerCase() == 'a';
+		return range.findMarkup(function() {
+			return this.nodeName.toLowerCase() == "a";
 		});
 	}
 });

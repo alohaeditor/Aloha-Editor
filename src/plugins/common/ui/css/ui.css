@@ -42,6 +42,10 @@
 	background-position: -304px 0;
 }
 
+.aloha-icon-abbr {
+	background-position: -336px 0;
+}
+
 .ui-state-default .aloha-icon-indent {
 	background-image: url(../img/indent.png);
 }
