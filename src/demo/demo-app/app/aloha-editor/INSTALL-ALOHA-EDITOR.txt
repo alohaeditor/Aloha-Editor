@@ -1,0 +1,6 @@
+Download the latest version of Aloha Editor (v0.20.x) from http://aloha-editor.org and extract the archive here.
+
+Check that you have the following structure:
+app/aloha-editor/aloha/lib/aloha.js
+
+( and app/aloha-editor/aloha/css/aloha.css )

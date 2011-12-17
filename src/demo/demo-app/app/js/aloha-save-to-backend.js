@@ -13,7 +13,7 @@ Aloha.ready(function() {
 				pageId = window.location.pathname; // page URL / ID
 
 			// textarea handling -- html id is "xy" and will be "xy-aloha" for the aloha editable
-			if (contentId.match( /-aloha$/gi )) {
+			if ( contentId.match(/-aloha$/gi) ) {
 				contentId = contentId.replace( /-aloha/gi, '' );
 			}
 

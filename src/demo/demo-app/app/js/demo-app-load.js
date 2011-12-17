@@ -35,7 +35,9 @@ loadJS('app/js/jquery-1.7.min.js');
 	
 	eg. load the navigation and show / hide page elements where aloha is not needed...
 */
-loadJS('app/js/demo-app-prepare.js');
+setTimeout(function() {
+	loadJS('app/js/demo-app-prepare.js');
+}, 100);
 
 
 
@@ -50,9 +52,36 @@ loadJS('app/js/demo-app-prepare.js');
 
 	And the final step is to include the needed stylesheet for Aloha Editor.
 */
-loadJS('app/aloha-config/minimal.js');
+// we need all running on a server (ajax stuff)
+if ( document.location.href.match(/^file:\/\//gi ) ) {
+	alert( 'This demo needs to run on a server over http:// not file:// ' );
+}
 
-loadJS('app/aloha-editor/aloha/lib/aloha.js', 	'common/format, \
+// check for aloha environment
+// local app version
+var alohaEditorPath = 'app/aloha-editor/aloha/';
+
+// config for local app version
+// enable this when the aloha check below is disabled
+//loadJS('app/aloha-config/minimal.js');
+
+
+//* this can be disabled
+if ( !fileExists( alohaEditorPath ) ) {
+	// or aloha editor from dev git repository
+	alohaEditorPath = '../../';
+	// config for dev git repository version
+	loadJS('app/aloha-config/minimal-demo.js');
+
+	if ( !fileExists( alohaEditorPath ) ) {
+		alert('Aloha Editor not found. Have a look at the README.txt for instructions.');
+	}
+} else {
+	loadJS('app/aloha-config/minimal.js');
+}
+//*/ end disable option
+
+loadJS( alohaEditorPath + 'lib/aloha.js', 	'common/format, \
 													common/table, \
 													common/list, \
 													common/link,  \
@@ -68,8 +97,7 @@ loadJS('app/aloha-editor/aloha/lib/aloha.js', 	'common/format, \
 													extra/linkbrowser, \
 													cmsplugin/cms');
 
-loadCSS('app/aloha-editor/aloha/css/aloha.css');
-
+loadCSS( alohaEditorPath + 'css/aloha.css');
 
 
 setTimeout(function() {
@@ -92,6 +120,7 @@ loadJS('app/js/demo-app.js');
 	Note: If you don't want to enable saving on every deactivation of an editable
 	you can disable this script and use the "save button" provided with demo-app.js
 */
+// uncomment if you want to save to the backend after every deactivation of an editable
 //loadJS('app/js/aloha-save-to-backend.js');
 
 /*
@@ -101,9 +130,10 @@ loadJS('app/js/demo-app.js');
 	On the server we read the database and send the results to the client.
 	Note: This just shows how it can be used and we do not care about SEO / disabled JavaScript on the client.
 */
+// uncomment if you use the store to file backend
 loadJS('app/js/aloha-read-from-backend.js');
 
-}, 500);
+}, 400);
 
 
 /**
@@ -141,4 +171,14 @@ function loadJS( src, plugins ) {
 	}
 	
 	headID.appendChild(newScript);
+}
+
+/**
+ * check if a file exists
+*/
+function fileExists( url ) {
+	oHttp = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject("Microsoft.XMLHTTP");
+	oHttp.open("HEAD", url, false);
+	oHttp.send();
+	return ( oHttp.status == 404 ) ? false : true;
 }

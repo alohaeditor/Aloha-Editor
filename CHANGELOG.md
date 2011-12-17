@@ -7,6 +7,8 @@ This document is to serve as a "what has been done" in terms of the [Roadmap](ht
 - API docs: added first version of new API docs
 - HotKey feature added for link, format and wai-lang plugin
 - doc/api: added first version of new API docs
+- defaultValue for i18n.t() added
+- floatingmenu position fixed -- prevent from floating out of the window
 
 
 ## 0.20.0-RC9 - 2011/11/23
