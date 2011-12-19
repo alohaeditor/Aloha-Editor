@@ -46,8 +46,7 @@ function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 			});
 			// hide the layer if user clicks anywhere in the body
 			jQuery('body').click(function(e) {
-				var overlayVisibleAndNotTarget
-					=  (self.$node.css('display') === 'table')
+				var overlayVisibleAndNotTarget = (self.$node.css('display') === 'table')
 					&& (e.target != self.$node[0])
 				    // don't consider clicks to the 'show' button.
 					&& !jQuery(e.target).is('button.aloha-button-characterpicker');
@@ -141,7 +140,7 @@ function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 				return textarea.value;
 			}
 			function mkButton(c) {
-				var character = htmlEntityToSingleCharacter(c)
+				var character = htmlEntityToSingleCharacter(c);
 				return jQuery('<td>' + character + '</td>')
 					.mouseover(function() {
 						jQuery(this).addClass('mouseover');
@@ -161,7 +160,7 @@ function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 			var characterList = jQuery.grep(
 				characters.split(' '),
 				function filterOutEmptyOnces(e) {
-					return e != '';
+					return e !== '';
 				}
 			);
 			var i=0, char;
@@ -185,7 +184,7 @@ function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 		init: function() {
 			var self = this;
 			if (!Aloha.settings.plugins.characterpicker) {
-				Aloha.settings.plugins.characterpicker = {}
+				Aloha.settings.plugins.characterpicker = {};
 			}
 			self.settings = Aloha.settings.plugins.characterpicker || {};
 			if(!self.settings.characters) {
@@ -203,8 +202,7 @@ function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 				'Aloha.continuoustext',
 				insertButton,
 				i18nCore.t('floatingmenu.tab.insert'),
-				1
-			);
+				1);
 			self.characterOverlay = new CharacterOverlay(self.settings.characters, self.onCharacterSelect);
 		},
 		onCharacterSelect: function(character) {

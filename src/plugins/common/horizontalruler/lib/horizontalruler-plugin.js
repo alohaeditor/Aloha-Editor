@@ -31,8 +31,7 @@ function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 				'Aloha.continuoustext',
 				insertButton,
 				i18nCore.t('floatingmenu.tab.insert'),
-				1
-			);
+				1);
 			
 		},
 		insertHR: function(character) {

@@ -38,7 +38,7 @@ function(jQuery, ContentHandlerManager, BlockManager) {
 				var dataAttributes = {};
 				jQuery.each(oldBlock.data(), function(k, v) {
 					dataAttributes['data-' + k] = v;
-				})
+				});
 
 				var newBlock = jQuery('<' + this.tagName + '/>')
 					.attr(jQuery.extend({

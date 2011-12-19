@@ -5,7 +5,7 @@
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
 define(
-['aloha/jquery','aloha/plugin', 'aloha/floatingmenu', 'i18n!numerated-headers/nls/i18n', 'i18n!aloha/nls/i18n','css!numerated-headers/css/numerated-headers.css',],
+['aloha/jquery','aloha/plugin', 'aloha/floatingmenu', 'i18n!numerated-headers/nls/i18n', 'i18n!aloha/nls/i18n','css!numerated-headers/css/numerated-headers.css'],
 function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 	"use strict";
 
@@ -94,7 +94,7 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 				return false;
 			}
 		} else {
-			if ( typeof Aloha.activeEditable == "undefined" || Aloha.activeEditable == null ) {
+			if ( typeof Aloha.activeEditable === "undefined" || Aloha.activeEditable === null ) {
         			return false;
         		} else {
 				return Aloha.activeEditable.obj;
@@ -208,7 +208,7 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 
         	var annotation_result = current_annotation[0];
         	for( var i = 1; i < current_annotation.length; i++ ){
-          		if(current_annotation[i] != 0){
+          		if(current_annotation[i] !== 0){
              			annotation_result += ("." + current_annotation[i]); 
           		} 
         	}
@@ -226,7 +226,7 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 		
 	}
 
-      })
+      });
      }
      
    });

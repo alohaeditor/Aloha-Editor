@@ -70,7 +70,7 @@ function supplant (str, obj) {
 		 var replacement = obj[p1] || str;
 		 return (typeof replacement === 'function') ? replacement() : replacement;
 	 });
-};
+}
 
 /**
  * Wrapper to call the supplant method on a given string, taking the
@@ -82,7 +82,7 @@ function supplant (str, obj) {
  */
 function renderTemplate (str) {
 	return (typeof str === 'string') ? supplant(str, nsClasses) : str;
-};
+}
 
 /** 
  * @param {jQuery} el
@@ -100,7 +100,7 @@ function disableSelection (el) {
 			   this.onselectstart = function() { return false; };
 			});
 	});
-};
+}
 
 var Browser = Class.extend({
 	_constructor: function() {
@@ -294,11 +294,7 @@ var Browser = Class.extend({
 	 */
 	callback: function (fn, cb) {
 		if (typeof this[fn] != 'function') {
-			Console.warn(
-				'Unable to add a callback to "' + fn +
-				'" because it is not a method in Aloha.Browser.'
-			);
-			
+			Console.warn('Unable to add a callback to "' + fn + '" because it is not a method in Aloha.Browser.');
 			return this;
 		}
 		
@@ -307,13 +303,12 @@ var Browser = Class.extend({
 				'Unable to add a callback to "' + fn + '" because '	+
 				'the callback object that was given is of type "'	+
 				(typeof cb) + '". '									+
-				'The callback object needs to be of type "function".'
-			);
+				'The callback object needs to be of type "function".');
 			
 			return this;
 		}
 		
-		if (this._callbacks[fn] == undefined) {
+		if (this._callbacks[fn] === undefined) {
 			if (this.enableCallbacks(fn)) {
 				this._callbacks[fn] = [cb];
 			}
@@ -340,11 +335,7 @@ var Browser = Class.extend({
 			
 			return true;
 		} else {
-			Console.warn(
-				'Cannot enable callbacks for function "' + fn +
-				'" because no such method was found in Aloha.Browser.'
-			);
-			
+			Console.warn('Cannot enable callbacks for function "' + fn + '" because no such method was found in Aloha.Browser.');		
 			return false;
 		}
 	},
@@ -367,8 +358,7 @@ var Browser = Class.extend({
 				that.processRepoResponse(
 					(response.results > 0) ? response.items : [],
 					{ numItems: response.numItems, hasMoreItems: response.hasMoreItems},
-					callback
-				);
+					callback);
 			});
 		}
 	},

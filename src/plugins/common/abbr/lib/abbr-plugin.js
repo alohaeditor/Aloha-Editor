@@ -60,8 +60,7 @@ define( [
 		        'Aloha.continuoustext',
 		        this.formatAbbrButton,
 		        i18nCore.t( 'floatingmenu.tab.format' ),
-		        1
-		    );
+		        1);
 
 		    // insert Abbr
 		    // always inserts a new abbr
@@ -77,8 +76,7 @@ define( [
 		        'Aloha.continuoustext',
 		        this.insertAbbrButton,
 		        i18nCore.t( 'floatingmenu.tab.insert' ),
-		        1
-		    );
+		        1);
 
 		    // add the new scope for abbr
 		    FloatingMenu.createScope( 'abbr', 'Aloha.continuoustext' );
@@ -92,8 +90,7 @@ define( [
 		        'abbr',
 		        this.abbrField,
 		        i18n.t( 'floatingmenu.tab.abbr' ),
-		        1
-		    );
+		        1);
 		},
 
 		/**
@@ -105,7 +102,7 @@ define( [
 			
 		    // on blur check if abbr title is empty. If so remove the a tag
 		    this.abbrField.addListener( 'blur', function ( obj, event ) {
-		        if ( this.getValue() == '' ) {
+		        if ( this.getValue() === '' ) {
 		            me.removeAbbr();
 		        }
 		    } );
@@ -233,7 +230,7 @@ define( [
 		    FloatingMenu.activateTabOfButton('abbrText');
 
 		    // if selection is collapsed then extend to the word.
-		    if ( range.isCollapsed() && extendToWord != false ) {
+		    if ( range.isCollapsed() && extendToWord !== false ) {
 		        GENTICS.Utils.Dom.extendToWord( range );
 		    }
 			
@@ -246,8 +243,8 @@ define( [
 		        range.startOffset = 0;
 		        range.endOffset = abbrText.length;
 		    } else {
-		        var newAbbr = jQuery( '<abbr title=""></abbr>' );
-		        GENTICS.Utils.Dom.addMarkup( range, newAbbr, false );
+		        var newAbbrElement = jQuery( '<abbr title=""></abbr>' );
+		        GENTICS.Utils.Dom.addMarkup( range, newAbbrElement, false );
 		    }
 			
 		    range.select();

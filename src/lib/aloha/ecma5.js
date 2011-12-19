@@ -28,64 +28,94 @@ if (!('trim' in String.prototype)) {
 //
 if (!('indexOf' in Array.prototype)) {
     Array.prototype.indexOf= function(find, i /*opt*/) {
-        if (i===undefined) i= 0;
-        if (i<0) i+= this.length;
-        if (i<0) i= 0;
-        for (var n= this.length; i<n; i++)
-            if (i in this && this[i]===find)
+        if ( i === undefined ) { 
+        	i = 0;
+        }
+        
+        if ( i < 0 ) {
+         i+= this.length;
+        }
+        
+        if ( i < 0 ) { 
+        	i= 0;
+        }
+        
+        for (var n= this.length; i<n; i++) {
+            if (i in this && this[i]===find) {
                 return i;
+            }
+        }
         return -1;
     };
 }
 if (!('lastIndexOf' in Array.prototype)) {
     Array.prototype.lastIndexOf= function(find, i /*opt*/) {
-        if (i===undefined) i= this.length-1;
-        if (i<0) i+= this.length;
-        if (i>this.length-1) i= this.length-1;
-        for (i++; i-->0;) /* i++ because from-argument is sadly inclusive */
-            if (i in this && this[i]===find)
+        if (i===undefined) { 
+        	i = this.length-1;
+        }
+        if (i<0) { 
+        	i+= this.length;
+        }
+        if (i>this.length-1) { 
+        	i = this.length-1;
+        }
+        for (i++; i-->0;) {
+        	/* i++ because from-argument is sadly inclusive */
+            if (i in this && this[i]===find) {
                 return i;
+            }
+        }
         return -1;
     };
 }
 if (!('forEach' in Array.prototype)) {
     Array.prototype.forEach= function(action, that /*opt*/) {
-        for (var i= 0, n= this.length; i<n; i++)
-            if (i in this)
+        for (var i= 0, n= this.length; i<n; i++) {
+            if (i in this) {
                 action.call(that, this[i], i, this);
+            }
+        }
     };
 }
 if (!('map' in Array.prototype)) {
     Array.prototype.map= function(mapper, that /*opt*/) {
-        var other= new Array(this.length);
-        for (var i= 0, n= this.length; i<n; i++)
-            if (i in this)
+        var other = new Array(this.length);
+        for (var i= 0, n= this.length; i<n; i++) {
+            if (i in this) {
                 other[i]= mapper.call(that, this[i], i, this);
+            }
+        }
         return other;
     };
 }
 if (!('filter' in Array.prototype)) {
     Array.prototype.filter= function(filter, that /*opt*/) {
-        var other= [], v;
-        for (var i=0, n= this.length; i<n; i++)
-            if (i in this && filter.call(that, v= this[i], i, this))
+        var other = [], v;
+        for (var i=0, n= this.length; i<n; i++) {
+            if (i in this && filter.call(that, v= this[i], i, this)) {
                 other.push(v);
+            }
+        }
         return other;
     };
 }
 if (!('every' in Array.prototype)) {
     Array.prototype.every= function(tester, that /*opt*/) {
-        for (var i= 0, n= this.length; i<n; i++)
-            if (i in this && !tester.call(that, this[i], i, this))
+        for (var i= 0, n= this.length; i<n; i++) {
+            if (i in this && !tester.call(that, this[i], i, this)) {
                 return false;
+            }
+        }
         return true;
     };
 }
 if (!('some' in Array.prototype)) {
     Array.prototype.some= function(tester, that /*opt*/) {
-        for (var i= 0, n= this.length; i<n; i++)
-            if (i in this && tester.call(that, this[i], i, this))
+        for (var i= 0, n= this.length; i<n; i++) {
+            if (i in this && tester.call(that, this[i], i, this)) {
                 return true;
+            }
+        }
         return false;
     };
 }
@@ -131,10 +161,14 @@ window.compareDocumentPosition = function(node1, node2) {
 		throw 'compareDocumentPosition nor contains is not supported by this browser.';
 	}
 	
-	if (node1 == node2) return 0;
+	if (node1 == node2) {
+		return 0;
+	}
 	
 	//if they don't have the same parent, there's a disconnect
-	if (getRootParent(node1) != getRootParent(node2)) return 1;
+	if (getRootParent(node1) != getRootParent(node2)) {
+		return 1;
+	}
 	
 	//use this if both nodes have a sourceIndex (text nodes don't)
 	if ("sourceIndex" in node1 && "sourceIndex" in node2) {
@@ -142,8 +176,11 @@ window.compareDocumentPosition = function(node1, node2) {
 	}
 	
 	//document will definitely contain the other node
-	if (node1 == document) return 20;
-	else if (node2 == document) return 10;
+	if (node1 == document) {
+		return 20;
+	} else if (node2 == document) {
+		return 10;
+	}
 	
 	//get sourceIndexes to use for both nodes
 	var useNode1 = getUseNode(node1), useNode2 = getUseNode(node2);
@@ -152,8 +189,13 @@ window.compareDocumentPosition = function(node1, node2) {
 	var result = comparePosition(useNode1, useNode2);
 	
 	//clean up if needed
-	if (node1 != useNode1) useNode1.parentNode.removeChild(useNode1);
-	if (node2 != useNode2) useNode2.parentNode.removeChild(useNode2);
+	if (node1 != useNode1) { 
+		useNode1.parentNode.removeChild(useNode1);
+	}
+	
+	if (node2 != useNode2) {
+		useNode2.parentNode.removeChild(useNode2);
+	}
 	return result;
 
 
@@ -178,7 +220,9 @@ window.compareDocumentPosition = function(node1, node2) {
 	//get a node with a sourceIndex to use
 	function getUseNode(node) {
 		//if the node already has a sourceIndex, use that node
-		if ("sourceIndex" in node) return node;
+		if ("sourceIndex" in node) {
+			return node;
+		}
 		//otherwise, insert a comment (which has a sourceIndex but minimal DOM impact) before the node and use that
 		return node.parentNode.insertBefore(document.createComment(""), node);
 	}
@@ -190,5 +234,5 @@ if (!('getComputedStyle' in window)) {
 			return node.currentStyle;
 		}
 		return null;
-	}
+	};
 }

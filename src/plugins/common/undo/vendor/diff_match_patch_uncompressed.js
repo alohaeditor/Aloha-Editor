@@ -97,7 +97,7 @@ diff_match_patch.prototype.diff_main = function(text1, text2, opt_checklines,
   var deadline = opt_deadline;
 
   // Check for null inputs.
-  if (text1 == null || text2 == null) {
+  if (text1 === null || text2 === null) {
     throw new Error('Null input. (diff_main)');
   }
 
@@ -312,7 +312,7 @@ diff_match_patch.prototype.diff_bisect_ = function(text1, text2, deadline) {
   var delta = text1_length - text2_length;
   // If the total number of characters is odd, then the front path will collide
   // with the reverse path.
-  var front = (delta % 2 != 0);
+  var front = (delta % 2 !== 0);
   // Offsets for start and end of k loop.
   // Prevents mapping of space beyond the grid.
   var k1start = 0;
@@ -587,7 +587,7 @@ diff_match_patch.prototype.diff_commonOverlap_ = function(text1, text2) {
   var text1_length = text1.length;
   var text2_length = text2.length;
   // Eliminate the null case.
-  if (text1_length == 0 || text2_length == 0) {
+  if (text1_length === 0 || text2_length === 0) {
     return 0;
   }
   // Truncate the longer string.
@@ -614,7 +614,7 @@ diff_match_patch.prototype.diff_commonOverlap_ = function(text1, text2) {
       return best;
     }
     length += found;
-    if (found == 0 || text1.substring(text_length - length) ==
+    if (found === 0 || text1.substring(text_length - length) ==
         text2.substring(0, length)) {
       best = length;
       length++;
@@ -1369,7 +1369,7 @@ diff_match_patch.prototype.diff_fromDelta = function(text1, delta) {
  */
 diff_match_patch.prototype.match_main = function(text, pattern, loc) {
   // Check for null inputs.
-  if (text == null || pattern == null || loc == null) {
+  if (text === null || pattern === null || loc === null) {
     throw new Error('Null input. (match_main)');
   }
 
@@ -1519,8 +1519,8 @@ diff_match_patch.prototype.match_alphabet_ = function(pattern) {
   for (var i = 0; i < pattern.length; i++) {
     s[pattern.charAt(i)] = 0;
   }
-  for (var i = 0; i < pattern.length; i++) {
-    s[pattern.charAt(i)] |= 1 << (pattern.length - i - 1);
+  for (var e = 0; e < pattern.length; e++) {
+    s[pattern.charAt(e)] |= 1 << (pattern.length - e - 1);
   }
   return s;
 };
@@ -1537,7 +1537,7 @@ diff_match_patch.prototype.match_alphabet_ = function(pattern) {
  * @private
  */
 diff_match_patch.prototype.patch_addContext_ = function(patch, text) {
-  if (text.length == 0) {
+  if (text.length === 0) {
     return;
   }
   var pattern = text.substring(patch.start2, patch.start2 + patch.length1);
@@ -1745,7 +1745,7 @@ diff_match_patch.prototype.patch_deepCopy = function(patches) {
  *      new text and an array of boolean values.
  */
 diff_match_patch.prototype.patch_apply = function(patches, text) {
-  if (patches.length == 0) {
+  if (patches.length === 0) {
     return [text, []];
   }
 
@@ -1858,15 +1858,15 @@ diff_match_patch.prototype.patch_addPadding = function(patches) {
   }
 
   // Bump all the patches forward.
-  for (var x = 0; x < patches.length; x++) {
-    patches[x].start1 += paddingLength;
-    patches[x].start2 += paddingLength;
+  for (var y = 0; y < patches.length; y++) {
+    patches[y].start1 += paddingLength;
+    patches[y].start2 += paddingLength;
   }
 
   // Add some padding on start of first diff.
   var patch = patches[0];
   var diffs = patch.diffs;
-  if (diffs.length == 0 || diffs[0][0] != DIFF_EQUAL) {
+  if (diffs.length === 0 || diffs[0][0] != DIFF_EQUAL) {
     // Add nullPadding equality.
     diffs.unshift([DIFF_EQUAL, nullPadding]);
     patch.start1 -= paddingLength;  // Should be 0.
@@ -1886,7 +1886,7 @@ diff_match_patch.prototype.patch_addPadding = function(patches) {
   // Add some padding on end of last diff.
   patch = patches[patches.length - 1];
   diffs = patch.diffs;
-  if (diffs.length == 0 || diffs[diffs.length - 1][0] != DIFF_EQUAL) {
+  if (diffs.length === 0 || diffs[diffs.length - 1][0] != DIFF_EQUAL) {
     // Add nullPadding equality.
     diffs.push([DIFF_EQUAL, nullPadding]);
     patch.length1 += paddingLength;

@@ -10,7 +10,9 @@
  * Create the Repositories object. Namespace for Repositories
  * @hide
  */
-if ( !GENTICS.Aloha.Repositories ) GENTICS.Aloha.Repositories = {};
+if ( !GENTICS.Aloha.Repositories ) {
+	GENTICS.Aloha.Repositories = {};
+}
 
 /**
  * register the plugin with unique name
@@ -126,7 +128,7 @@ GENTICS.Aloha.Repositories.delicious.query = function( p, callback) {
 		jQuery.extend(tags, folderTags);
 
 		// if we have a query and no tag matching return
-		if ( p.queryString && tags.length == 0 ) {
+		if ( p.queryString && tags.length === 0 ) {
 			callback.call( that, []);
 			return;
 		}

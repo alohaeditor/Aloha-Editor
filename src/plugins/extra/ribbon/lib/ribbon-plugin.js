@@ -133,7 +133,7 @@ define(
 					}
 					button.pressed = !button.pressed;
 				}
-			}
+			};
 
 			var extButton;
 

@@ -213,9 +213,7 @@ function ( jQuery, PluginManager ) {
 						paths: paths,
 						locale: this.settings.locale || this.defaults.locale || 'en'
 					},
-					requiredInitializers,
-					next
-				);
+					requiredInitializers, next);
 
 				pluginPaths = pathsToPlugins;
 			} else {
@@ -334,7 +332,7 @@ function ( jQuery, PluginManager ) {
 				var supported;
 				try {
 					supported = document.queryCommandSupported( 'enableObjectResizing' );
-				} catch ( e ) {
+				} catch ( e1 ) {
 					supported = false;
 					Aloha.Log.log( 'enableObjectResizing is not supported.' );
 				}
@@ -465,8 +463,9 @@ function ( jQuery, PluginManager ) {
 		 * @hide
 		 */
 		log: function(level, component, message) {
-			if (typeof Aloha.Log !== "undefined")
+			if (typeof Aloha.Log !== "undefined") {
 				Aloha.Log.log(level, component, message);
+			}
 		},
 		
 		/**
@@ -526,9 +525,7 @@ function ( jQuery, PluginManager ) {
 		 */
 		getAlohaUrl: function( suffix ) {
 			// aloha base path is defined by a script tag with 2 data attributes
-			var requireJs = jQuery('[data-aloha-plugins]'),
-				baseUrl = ( requireJs.length ) ? requireJs[0].src.replace( /\/?aloha.js$/ , '' ) : '';
-				
+			var requireJs = jQuery('[data-aloha-plugins]'), baseUrl = ( requireJs.length ) ? requireJs[0].src.replace( /\/?aloha.js$/ , '' ) : '';
 			return baseUrl;
 		},
 

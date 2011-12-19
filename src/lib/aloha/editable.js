@@ -564,8 +564,7 @@ define( [
 		 * check whether the editable has been disabled
 		 */
 		isDisabled: function() {
-			return !this.obj.contentEditable()
-				|| this.obj.contentEditable() === 'false';
+			return !this.obj.contentEditable() || this.obj.contentEditable() === 'false';
 		},
 
 		/**
@@ -676,8 +675,7 @@ define( [
 		 */
 		empty: function( str ) {
 			// br is needed for chrome
-			return ( null === str )
-				   || ( jQuery.trim( str ) === '' || str === '<br/>' );
+			return ( null === str ) || ( jQuery.trim( str ) === '' || str === '<br/>' );
 		},
 
 		/**

@@ -125,7 +125,7 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 				tag: this.element[0].tagName,
 				attributes: this._getAttributes(), // contains data-properties AND about
 				classes: this.$innerElement.attr('class') // TODO: filter out aloha-block-active...
-			}
+			};
 		},
 
 		_registerAsBlockified: function() {
@@ -235,7 +235,7 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 				return;
 			}
 
-			if (this.element.parents('.aloha-editable').length == 0) {
+			if (this.element.parents('.aloha-editable').length === 0) {
 				// If the block is not inside an editable, there is no need to select it (as it gets highlighted in an ugly way then)
 				return;
 			}
@@ -281,8 +281,13 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 		render: function() {},
 
 		_renderAndSetContent: function() {
-			if (this._currentlyRendering) return;
-			if (!this._initialized) return;
+			if (this._currentlyRendering) { 
+				return;
+			}
+			
+			if (!this._initialized) {
+				return;
+			}
 
 			this._currentlyRendering = true;
 

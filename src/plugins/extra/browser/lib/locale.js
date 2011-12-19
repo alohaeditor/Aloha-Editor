@@ -22,5 +22,6 @@ define( [
 		jQuery.jgrid = {};
 	}
 	jQuery.extend( jQuery.jgrid, jQuery[ 'jgrid_' + locale ] );
-	jQuery.jgrid_en = jQuery.jgrid_de = void 0;
+    jQuery.jgrid_de = void 0;
+	jQuery.jgrid_en = void 0;
 } );

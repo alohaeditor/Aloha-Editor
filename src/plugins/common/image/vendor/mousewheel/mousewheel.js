@@ -23,11 +23,13 @@ $.event.special.mousewheel = {
     },
     
     teardown: function() {
-        if ( this.removeEventListener )
-            for ( var i=types.length; i; )
+        if ( this.removeEventListener ) {
+            for ( var i=types.length; i; ) {
                 this.removeEventListener( types[--i], handler, false );
-        else
+            }
+        } else {
             this.onmousewheel = null;
+        }
     }
 };
 
@@ -48,8 +50,13 @@ function handler(event) {
     event = $.event.fix(event || window.event);
     event.type = "mousewheel";
     
-    if ( event.wheelDelta ) delta = event.wheelDelta/120;
-    if ( event.detail     ) delta = -event.detail/3;
+    if ( event.wheelDelta ) {
+        delta = event.wheelDelta/120;
+    }
+    
+    if ( event.detail ) {
+        delta = -event.detail/3;
+    }
     
     // Add event and delta to the front of the arguments
     args.unshift(event, delta);

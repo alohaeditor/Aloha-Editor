@@ -72,8 +72,7 @@ function previousNode(node) {
 		}
 		return node;
 	}
-	if (node.parentNode
-	&& node.parentNode.nodeType == $_.Node.ELEMENT_NODE) {
+	if (node.parentNode && node.parentNode.nodeType == $_.Node.ELEMENT_NODE) {
 		return node.parentNode;
 	}
 	return null;
@@ -93,8 +92,7 @@ function nextNodeDescendants(node) {
  * Returns true if ancestor is an ancestor of descendant, false otherwise.
  */
 function isAncestor(ancestor, descendant) {
-	return ancestor
-		&& descendant
+	return ancestor && descendant
 		&& Boolean($_.compareDocumentPosition(ancestor, descendant) & $_.Node.DOCUMENT_POSITION_CONTAINED_BY);
 }
 
@@ -103,17 +101,14 @@ function isAncestor(ancestor, descendant) {
  * otherwise.
  */
 function isAncestorContainer(ancestor, descendant) {
-	return (ancestor || descendant)
-		&& (ancestor == descendant || isAncestor(ancestor, descendant));
+	return (ancestor || descendant) && (ancestor == descendant || isAncestor(ancestor, descendant));
 }
 
 /**
  * Returns true if descendant is a descendant of ancestor, false otherwise.
  */
 function isDescendant(descendant, ancestor) {
-	return ancestor
-		&& descendant
-		&& Boolean($_.compareDocumentPosition(ancestor, descendant) & $_.Node.DOCUMENT_POSITION_CONTAINED_BY);
+	return ancestor && descendant && Boolean($_.compareDocumentPosition(ancestor, descendant) & $_.Node.DOCUMENT_POSITION_CONTAINED_BY);
 }
 
 /**
@@ -194,9 +189,7 @@ function legacySizeToCss(legacyVal) {
 
 // Opera 11 puts HTML elements in the null namespace, it seems.
 function isHtmlNamespace(ns) {
-	return ns === null
-		|| !ns
-		|| ns === htmlNamespace;
+	return ns === null || !ns || ns === htmlNamespace;
 }
 
 // "the directionality" from HTML.  I don't bother caring about non-HTML
@@ -338,7 +331,7 @@ function getPosition(nodeA, offsetA, nodeB, offsetB) {
  */
 function getFurthestAncestor(node) {
 	var root = node;
-	while (root.parentNode != null) {
+	while (root.parentNode !== null) {
 		root = root.parentNode;
 	}
 	return root;
@@ -353,9 +346,7 @@ function isContained(node, range) {
 	var pos1 = getPosition(node, 0, range.startContainer, range.startOffset);
 	var pos2 = getPosition(node, getNodeLength(node), range.endContainer, range.endOffset);
 
-	return getFurthestAncestor(node) == getFurthestAncestor(range.startContainer)
-		&& pos1 == "after"
-		&& pos2 == "before";
+	return getFurthestAncestor(node) == getFurthestAncestor(range.startContainer) && pos1 == "after" && pos2 == "before";
 }
 
 /**
@@ -367,8 +358,7 @@ function getContainedNodes(range, condition) {
 		condition = function() { return true };
 	}
 	var node = range.startContainer;
-	if (node.hasChildNodes()
-	&& range.startOffset < node.childNodes.length) {
+	if (node.hasChildNodes() && range.startOffset < node.childNodes.length) {
 		// A child is contained
 		node = node.childNodes[range.startOffset];
 	} else if (range.startOffset == getNodeLength(node)) {
@@ -380,8 +370,7 @@ function getContainedNodes(range, condition) {
 	}
 
 	var stop = range.endContainer;
-	if (stop.hasChildNodes()
-	&& range.endOffset < stop.childNodes.length) {
+	if (stop.hasChildNodes() && range.endOffset < stop.childNodes.length) {
 		// The node after the last contained node is a child
 		stop = stop.childNodes[range.endOffset];
 	} else {
@@ -391,8 +380,7 @@ function getContainedNodes(range, condition) {
 
 	var nodeList = [];
 	while (isBefore(node, stop)) {
-		if (isContained(node, range)
-		&& condition(node)) {
+		if (isContained(node, range) && condition(node)) {
 			nodeList.push(node);
 			node = nextNodeDescendants(node);
 			continue;
@@ -407,7 +395,7 @@ function getContainedNodes(range, condition) {
  */
 function getAllContainedNodes(range, condition) {
 	if (typeof condition == "undefined") {
-		condition = function() { return true };
+		condition = function() { return true; };
 	}
 	var node = range.startContainer;
 	if (node.hasChildNodes()
@@ -434,8 +422,7 @@ function getAllContainedNodes(range, condition) {
 
 	var nodeList = [];
 	while (isBefore(node, stop)) {
-		if (isContained(node, range)
-		&& condition(node)) {
+		if (isContained(node, range) && condition(node)) {
 			nodeList.push(node);
 		}
 		node = nextNode(node);
@@ -523,10 +510,9 @@ function parseSimpleColor(color) {
 	color = normalizeColor(color);
 	var matches = /^rgb\(([0-9]+), ([0-9]+), ([0-9]+)\)$/.exec(color);
 	if (matches) {
-		return "#"
-			+ parseInt(matches[1]).toString(16).replace(/^.$/, "0$&")
-			+ parseInt(matches[2]).toString(16).replace(/^.$/, "0$&")
-			+ parseInt(matches[3]).toString(16).replace(/^.$/, "0$&");
+		return "#" + parseInt(matches[1], 10).toString(16).replace(/^.$/, "0$&")
+			+ parseInt(matches[2], 10).toString(16).replace(/^.$/, "0$&")
+			+ parseInt(matches[3], 10).toString(16).replace(/^.$/, "0$&");
 	}
 	return null;
 }
@@ -547,9 +533,9 @@ var executionStackDepth = 0;
 // Helper function for common behavior.
 function editCommandMethod(command, prop, range, callback) {
 	// Set up our global range magic, but only if we're the outermost function
-	if (executionStackDepth == 0 && typeof range != "undefined") {
+	if (executionStackDepth === 0 && typeof range != "undefined") {
 		globalRange = range;
-	} else if (executionStackDepth == 0) {
+	} else if (executionStackDepth === 0) {
 		globalRange = null;
 		globalRange = range;
 	}
@@ -566,8 +552,7 @@ function editCommandMethod(command, prop, range, callback) {
 	// exception."
 	// "If command has no state, raise an INVALID_ACCESS_ERR exception."
 	// "If command has no value, raise an INVALID_ACCESS_ERR exception."
-	if (prop != "enabled"
-	&& !(prop in commands[command])) {
+	if (prop != "enabled" && !(prop in commands[command])) {
 		throw "INVALID_ACCESS_ERR";
 	}
 
@@ -591,15 +576,13 @@ function myExecCommand(command, showUi, value, range) {
 	//
 	// If range was passed, I can't actually detect how many args were passed
 	// . . .
-	if (arguments.length == 1
-	|| (arguments.length >=4 && typeof showUi == "undefined")) {
+	if (arguments.length == 1 || (arguments.length >=4 && typeof showUi == "undefined")) {
 		showUi = false;
 	}
 
 	// "If only one or two arguments were provided, let value be the empty
 	// string."
-	if (arguments.length <= 2
-	|| (arguments.length >=4 && typeof value == "undefined")) {
+	if (arguments.length <= 2 || (arguments.length >=4 && typeof value == "undefined")) {
 		value = "";
 	}
 
@@ -635,8 +618,7 @@ function myQueryCommandEnabled(command, range) {
 		// Miscellaneous commands are always enabled. The other commands defined
 		// here are enabled if the active range is not null, and disabled
 		// otherwise."
-		return $_( ["copy", "cut", "paste", "selectall", "stylewithcss", "usecss"] ).indexOf(command) != -1
-			|| range !== null;
+		return $_( ["copy", "cut", "paste", "selectall", "stylewithcss", "usecss"] ).indexOf(command) != -1 || range !== null;
 	}})(command));
 }
 
@@ -712,8 +694,7 @@ function myQueryCommandValue(command, range) {
 		// "If command is "fontSize" and its value override is set, convert the
 		// value override to an integer number of pixels and return the legacy
 		// font size for the result."
-		if (command == "fontsize"
-		&& getValueOverride("fontsize", range) !== undefined) {
+		if (command == "fontsize" && getValueOverride("fontsize", range) !== undefined) {
 			return getLegacyFontSize(getValueOverride("fontsize", range));
 		}
 
@@ -743,12 +724,9 @@ function isHtmlElement(node, tags) {
 		tags = [tags];
 	}
 	if (typeof tags == "object") {
-		tags = $_( tags ).map(function(tag) { return tag.toUpperCase() });
+		tags = $_( tags ).map(function(tag) { return tag.toUpperCase(); });
 	}
-	return node
-		&& node.nodeType == $_.Node.ELEMENT_NODE
-		&& isHtmlNamespace(node.namespaceURI)
-		&& (typeof tags == "undefined" || $_( tags ).indexOf(node.tagName) != -1);
+	return node && node.nodeType == $_.Node.ELEMENT_NODE && isHtmlNamespace(node.namespaceURI) && (typeof tags == "undefined" || $_( tags ).indexOf(node.tagName) != -1);
 }
 
 // "A prohibited paragraph child name is "address", "article", "aside",
@@ -777,8 +755,7 @@ function isProhibitedParagraphChild(node) {
 // Document, or a DocumentFragment."
 function isBlockNode(node) {
 	
-	return node
-		&& ((node.nodeType == $_.Node.ELEMENT_NODE && $_( ["inline", "inline-block", "inline-table", "none"] ).indexOf($_.getComputedStyle(node).display) == -1)
+	return node && ((node.nodeType == $_.Node.ELEMENT_NODE && $_( ["inline", "inline-block", "inline-table", "none"] ).indexOf($_.getComputedStyle(node).display) == -1)
 		|| node.nodeType == $_.Node.DOCUMENT_NODE
 		|| node.nodeType == $_.Node.DOCUMENT_FRAGMENT_NODE);
 }
@@ -793,11 +770,7 @@ function isInlineNode(node) {
 // designMode is enabled."
 function isEditingHost(node) {
 	return node
-		&& node.nodeType == $_.Node.ELEMENT_NODE
-		&& (node.contentEditable == "true"
-		|| (node.parentNode
-		&& node.parentNode.nodeType == $_.Node.DOCUMENT_NODE
-		&& node.parentNode.designMode == "on"));
+		&& node.nodeType == $_.Node.ELEMENT_NODE && (node.contentEditable == "true"	|| (node.parentNode && node.parentNode.nodeType == $_.Node.DOCUMENT_NODE && node.parentNode.designMode == "on"));
 }
 
 // "Something is editable if it is a node which is not an editing host, does
@@ -806,17 +779,14 @@ function isEditingHost(node) {
 function isEditable(node) {
 	// This is slightly a lie, because we're excluding non-HTML elements with
 	// contentEditable attributes.
-	return node
-		&& !isEditingHost(node)
-		&& (node.nodeType != $_.Node.ELEMENT_NODE || node.contentEditable != "false" || jQuery(node).hasClass('aloha-table-wrapper'))
+	return node && !isEditingHost(node) && (node.nodeType != $_.Node.ELEMENT_NODE || node.contentEditable != "false" || jQuery(node).hasClass('aloha-table-wrapper'))
 		&& (isEditingHost(node.parentNode) || isEditable(node.parentNode));
 }
 
 // Helper function, not defined in the spec
 function hasEditableDescendants(node) {
 	for (var i = 0; i < node.childNodes.length; i++) {
-		if (isEditable(node.childNodes[i])
-		|| hasEditableDescendants(node.childNodes[i])) {
+		if (isEditable(node.childNodes[i]) || hasEditableDescendants(node.childNodes[i])) {
 			return true;
 		}
 	}
@@ -868,7 +838,7 @@ function isCollapsedLineBreak(br) {
 	ref.style.minHeight = "0";
 	var space = document.createTextNode("\u200b");
 	var origHeight = ref.offsetHeight;
-	if (origHeight == 0) {
+	if (origHeight === 0) {
 		throw "isCollapsedLineBreak: original height is zero, bug?";
 	}
 	br.parentNode.insertBefore(space, br.nextSibling);
@@ -900,8 +870,7 @@ function isExtraneousLineBreak(br) {
 		return false;
 	}
 
-	if (isHtmlElement(br.parentNode, "li")
-	&& br.parentNode.childNodes.length == 1) {
+	if (isHtmlElement(br.parentNode, "li") && br.parentNode.childNodes.length == 1) {
 		return false;
 	}
 
@@ -919,7 +888,7 @@ function isExtraneousLineBreak(br) {
 	ref.style.minHeight = "0";
 	var brStyle = $_( br ).hasAttribute("style") ? br.getAttribute("style") : null;
 	var origHeight = ref.offsetHeight;
-	if (origHeight == 0) {
+	if (origHeight === 0) {
 		throw "isExtraneousLineBreak: original height is zero, bug?";
 	}
 	br.setAttribute("style", "display:none");
@@ -951,20 +920,11 @@ function isExtraneousLineBreak(br) {
 function isWhitespaceNode(node) {
 	return node
 		&& node.nodeType == $_.Node.TEXT_NODE
-		&& (node.data == ""
-		|| (
-			/^[\t\n\r ]+$/.test(node.data)
-			&& node.parentNode
-			&& node.parentNode.nodeType == $_.Node.ELEMENT_NODE
+		&& (node.data === "" || (/^[\t\n\r ]+$/.test(node.data) && node.parentNode && node.parentNode.nodeType == $_.Node.ELEMENT_NODE
 			&& $_( ["normal", "nowrap"] ).indexOf($_.getComputedStyle(node.parentNode).whiteSpace) != -1
-		) || (
-			/^[\t\r ]+$/.test(node.data)
-			&& node.parentNode
-			&& node.parentNode.nodeType == $_.Node.ELEMENT_NODE
+		) || ( /^[\t\r ]+$/.test(node.data) && node.parentNode && node.parentNode.nodeType == $_.Node.ELEMENT_NODE
 			&& $_.getComputedStyle(node.parentNode).whiteSpace == "pre-line"
-		) || (
-			/^[\t\n\r ]+$/.test(node.data)
-			&& node.parentNode
+		) || ( /^[\t\n\r ]+$/.test(node.data) && node.parentNode
 			&& node.parentNode.nodeType == $_.Node.DOCUMENT_FRAGMENT_NODE
 		));
 }
@@ -1039,7 +999,7 @@ function isCollapsedWhitespaceNode(node) {
 	}
 
 	// "If node's data is the empty string, return true."
-	if (node.data == "") {
+	if (node.data === "") {
 		return true;
 	}
 
@@ -1076,8 +1036,7 @@ function isCollapsedWhitespaceNode(node) {
 		reference = previousNode(reference);
 
 		// "If reference is a block node or a br, return true."
-		if (isBlockNode(reference)
-		|| isHtmlElement(reference, "br")) {
+		if (isBlockNode(reference) || isHtmlElement(reference, "br")) {
 			return true;
 		}
 
@@ -1133,10 +1092,7 @@ function isVisible(node) {
 		return false;
 	}
 
-	if (isBlockNode(node)
-	|| (node.nodeType == $_.Node.TEXT_NODE && !isCollapsedWhitespaceNode(node))
-	|| isHtmlElement(node, "img")
-	|| (isHtmlElement(node, "br") && !isExtraneousLineBreak(node))) {
+	if (isBlockNode(node) || (node.nodeType == $_.Node.TEXT_NODE && !isCollapsedWhitespaceNode(node)) || isHtmlElement(node, "img") || (isHtmlElement(node, "br") && !isExtraneousLineBreak(node))) {
 		return true;
 	}
 
@@ -1272,12 +1228,12 @@ var getStateOverride, setStateOverride, unsetStateOverride,
 	unsetStateOverride = function(command, range) {
 		resetOverrides(range);
 		delete stateOverrides[command];
-	}
+	};
 
 	getValueOverride = function(command, range) {
 		resetOverrides(range);
 		return valueOverrides[command];
-	}
+	};
 
 	// "The value override for the backColor command must be the same as the
 	// value override for the hiliteColor command, such that setting one sets

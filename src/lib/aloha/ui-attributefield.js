@@ -25,8 +25,6 @@ define( [ 'aloha/core', 'aloha/jquery', 'aloha/ext', 'i18n!aloha/nls/i18n', 'alo
 // TODO add parameter for UI class after refactoring UI to requirejs
 	'use strict';
 
-var undefined = void 0;
-
 var extTemplate = function ( tpl ) {
 	if ( tpl ) {
 		tpl = '<tpl for="."><div class="x-combo-list-item">' +

@@ -205,5 +205,5 @@ function(jQuery, Observable) {
 		NumberEditor: NumberEditor,
 		UrlEditor: UrlEditor,
 		EmailEditor: EmailEditor
-	}
+	};
 });

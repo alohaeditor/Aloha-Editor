@@ -158,8 +158,7 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 							scope,
 							that.buttons[button].button,
 							i18nCore.t('floatingmenu.tab.format'),
-							1
-						);
+							1);
 						break;
 
 					case 'p':
@@ -210,8 +209,7 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 					scope,
 					this.multiSplitButton,
 					i18nCore.t('floatingmenu.tab.format'),
-					3
-				);
+					3);
 			}
 
 			// add the event handler for selection change

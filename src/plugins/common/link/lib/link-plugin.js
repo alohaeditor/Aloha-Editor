@@ -137,7 +137,7 @@ define( [
 		nsClass: function () {
 			var stringBuilder = [], prefix = pluginNamespace;
 			jQuery.each( arguments, function () {
-				stringBuilder.push( this == '' ? prefix : prefix + '-' + this );
+				stringBuilder.push( this === '' ? prefix : prefix + '-' + this );
 			} );
 			return stringBuilder.join( ' ' ).trim();
 		},
@@ -186,7 +186,7 @@ define( [
 				onActivate: function ( effective ) {
 					var that = this;
 					that.effective = effective;
-					if ( jQuery( that.effective ).attr( 'target' ) != null ) {
+					if ( jQuery( that.effective ).attr( 'target' ) !== null ) {
 						var isFramename = true;
 						jQuery( pl.nsSel( 'framename' ) ).hide().val( '' );
 						jQuery( pl.nsSel( 'radioTarget' ) ).each( function () {
@@ -256,7 +256,7 @@ define( [
 				// editable area.
 				if ( !that.ignoreNextSelectionChangedEvent &&
 						Aloha.Selection.isSelectionEditable() &&
-							Aloha.activeEditable != null ) {
+							Aloha.activeEditable !== null ) {
 					// show/hide the button according to the configuration
 					config = that.getEditableConfig( Aloha.activeEditable.obj );
 					if ( jQuery.inArray( 'a', config ) != -1 ) {
@@ -292,7 +292,7 @@ define( [
 						// the hrefField component might not be initialized. When the user switches to the link
 						// tab to edit the link the field would be empty. We check for that situation and add a
 						// special interval check to set the value once again
-						if ( jQuery( '#' + that.hrefField.extButton.id ).length == 0 ) {
+						if ( jQuery( '#' + that.hrefField.extButton.id ).length === 0 ) {
 							// there must only be one update interval running at the same time
 							if ( that.hrefUpdateInt !== null ) {
 								clearInterval( that.hrefUpdateInt );
@@ -488,7 +488,7 @@ define( [
 					
 					var hrefValue = jQuery( that.hrefField.extButton.el.dom ).attr( 'value' );
 					
-					if ( hrefValue == 'http://' || hrefValue == '' ) {
+					if ( hrefValue == 'http://' || hrefValue === '' ) {
 						that.removeLink( false );
 					}
 					
@@ -681,7 +681,7 @@ define( [
 			// For now hard coded attribute handling with regex.
 			// Avoid creating the target attribute, if it's unnecessary, so
 			// that XSS scanners (AntiSamy) don't complain.
-			if ( this.target != '' ) {
+			if ( this.target !== '' ) {
 				this.hrefField.setAttribute(
 					'target',
 					this.target,

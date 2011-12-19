@@ -18,13 +18,13 @@ function( Aloha, jQuery, ContentHandlerManager, console ) {
 	
 	// predefined set of sanitize options if no dynamic or custom config is used
 	if( !Aloha.defaults.sanitize ) {
-		Aloha.defaults.sanitize = {}
+		Aloha.defaults.sanitize = {};
 	}
 
 	// very restricted sanitize config
 	Aloha.defaults.sanitize.restricted = {
 		elements: [ 'b', 'em', 'i', 'strong', 'u', 'p', 'span', 'div', 'br' ]
-	}
+	};
 
 	// sanitize  config allowing a bit more (no tables)
 	Aloha.defaults.sanitize.basic = {
