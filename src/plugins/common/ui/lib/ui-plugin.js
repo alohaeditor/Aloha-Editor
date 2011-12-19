@@ -7,11 +7,10 @@
 
 define([
 	// jQuery UI
-	"css!./vendor/jquery-ui-1.9m6.css",
-	"jquery-plugin!./vendor/jquery-ui-1.9m6",
+	"aloha/jquery-ui",
 	
 	// UI core
-	"css!./css/ui.css",
+	"order!css!./css/ui.css",
 	"./ui",
 	"./toolbar",
 	

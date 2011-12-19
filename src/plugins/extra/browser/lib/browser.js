@@ -18,10 +18,9 @@ define( [
 	'aloha/console',
 	// this will load the correct language pack needed for the browser
 	'browser/locale',
-	'css!browser/css/browsercombined.css',
+	'aloha/jquery-ui',
+	'order!css!browser/css/browsercombined.css',
 	// 'jquery-plugin!browser/vendor/grid.locale.en.js', // we use 'browser/locale' instead
-//	'jquery-plugin!browser/vendor/jquery.ui',
-	'jquery-plugin!ui/vendor/jquery-ui-1.9m6',
 	'jquery-plugin!browser/vendor/ui-layout',
 	'jquery-plugin!browser/vendor/jquery.jqGrid',
 	'jquery-plugin!browser/vendor/jquery.jstree'
