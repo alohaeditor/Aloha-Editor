@@ -20,19 +20,22 @@ function(Aloha, jQuery, ContentHandlerManager) {
 	/* Private Methods */
 	getOEmbedProvider = function(url) {
 		for (var i = 0; i < providers.length; i++) {
-			if (providers[i].matches(url))
+			if ( providers[i].matches(url) ) {
 				return providers[i];
+			}
 		}
 		return null;
 	};
 	
 	getNormalizedParams = function (params) {
 		var normalizedParams = {}, key;
-		if (params == null)
+		if ( params == null ) {
 			return null;
+		}
 		for ( key in params) {
-			if (key != null)
+			if ( key != null ) {
 				normalizedParams[key.toLowerCase()] = params[key];
+			}
 		}
 		return normalizedParams;
 	};
@@ -40,7 +43,7 @@ function(Aloha, jQuery, ContentHandlerManager) {
 	OEmbedProvider = function(name, urlPattern, oEmbedUrl, callbackparameter) {
 		this.name = name;
 		this.urlPattern = urlPattern;
-		this.oEmbedUrl = (oEmbedUrl != null) ? oEmbedUrl : "http://oohembed.com/oohembed/";
+		this.oEmbedUrl = (oEmbedUrl !== null) ? oEmbedUrl : "http://oohembed.com/oohembed/";
 		this.callbackparameter = (callbackparameter != null) ? callbackparameter : "callback";
 		this.maxWidth = 500;
 		this.maxHeight = 400;
@@ -54,26 +57,31 @@ function(Aloha, jQuery, ContentHandlerManager) {
 
 			var url = this.oEmbedUrl, qs = "", i;
 
-			if (url.indexOf("?") <= 0)
+			if ( url.indexOf("?") <= 0 ) {
 				url = url + "?";
-			else
+			} else {
 				url = url + "&";
+			}
 
-			if (this.maxWidth != null && this.params.maxwidth == null)
+			if ( this.maxWidth !== null && this.params.maxwidth === null ) {
 				this.params.maxwidth = this.maxWidth;				
+			}
 				
-			if (this.maxHeight != null && this.params.maxheight == null)
+			if ( this.maxHeight != null && this.params.maxheight === null ) {
 				this.params.maxheight = this.maxHeight;
+			}
 
 			for ( i in this.params) {
 				// We don't want them to jack everything up by changing the callback parameter
-				if (i == this.callbackparameter)
+				if ( i == this.callbackparameter ) {
 				  continue;
+				}
 				
 				// allows the options to be set to null, don't send null values to the server as parameters
-				if (this.params[i] != null)
+				if ( this.params[i] !== null ) {
 					qs += "&" + escape(i) + "=" + this.params[i];
-			}		   
+				}
+			}
 			
 				
 			url += "format=json&url=" + escape(externalUrl) +		   
@@ -196,8 +204,9 @@ function(Aloha, jQuery, ContentHandlerManager) {
 					oembedContainer = container
 						.after('<div class="oembed-container"></div>')
 						.next(".oembed-container");
-					if (oembed != null && oembed.provider_name != null)
-						oembedContainer.toggleClass("oembed-container-" + oembed.provider_name);		
+					if ( oembed != null && oembed.provider_name !== null ) {
+						oembedContainer.toggleClass("oembed-container-" + oembed.provider_name);
+				    }		
 				}
 				oembedContainer.html(oembed.code);				
 				break;			
@@ -226,16 +235,17 @@ function(Aloha, jQuery, ContentHandlerManager) {
 	};
 
 	jQuery.fn.oembed.getGenericCode = function(url, data) {
-		var title = (data.title != null) ? data.title : url,
+		var title = (data.title !== null) ? data.title : url,
 			code = '<a href="' + url + '">' + title + '</a>';
-		if (data.html)
+		if ( data.html ) {
 			code += "<div>" + data.html + "</div>";
+		}
 		return code;
 	};
 
 	jQuery.fn.oembed.isAvailable = function(url) {
 		var provider = getOEmbedProvider(url);
-		return (provider != null);
+		return (provider !== null);
 	};
 
 	/**

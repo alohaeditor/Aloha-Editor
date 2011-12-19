@@ -76,7 +76,7 @@ function (jQuery) {
 			for (var j = 0; j < this.get('numX'); j++) {
 				td = jQuery('<td>\u00a0</td>');
 
-				if (i == 0 && j == 0) {
+				if (i === 0 && j === 0) {
 					td.addClass('hover');
 				}
 

@@ -195,7 +195,7 @@ function ($) {
 		 *        a numeric value indicating the number of rows the cell spans
 		 */
 		'rowspan': function (cell) {
-			return parseInt( $( cell ).attr('rowspan') ) || 1;
+			return parseInt( $( cell ).attr('rowspan'), 10) || 1;
 		},
 		/**
 		 * @param cell
@@ -204,7 +204,7 @@ function ($) {
 		 *        a numeric value indicating the number of columns the cell spans
 		 */
 		'colspan': function (cell) {
-			return parseInt( $( cell ).attr('colspan') ) || 1;
+			return parseInt( $( cell ).attr('colspan'), 10) || 1;
 		},
 		/**
 		 * Calls the given callback with each object in the given
@@ -299,13 +299,13 @@ function ($) {
 					if ( null == left[ y ] || x < left[ y ] ) {
 						left[ y ] = x;
 					}
-					if ( null == right[ y ] || x > right[ y ] ) {
+					if ( null === right[ y ] || x > right[ y ] ) {
 						right[ y ] = x;
 					}
-					if ( null == top[ x ] || y < top[ x ] ) {
+					if ( null === top[ x ] || y < top[ x ] ) {
 						top[ x ] = y;
 					}
-					if ( null == bottom[ x ] || y > bottom[ x ] ) {
+					if ( null === bottom[ x ] || y > bottom[ x ] ) {
 						bottom[ x ] = y;
 					}
 				}

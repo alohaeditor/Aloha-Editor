@@ -233,8 +233,7 @@ function(Aloha, jQuery, ContentHandlerManager) {
 				// try to determine the namespace prefix ('prefix' works for W3C
 				// compliant browsers, 'scopeName' for IE)
 
-				var nsPrefix = this.prefix ? this.prefix
-						: (this.scopeName ? this.scopeName : undefined);
+				var nsPrefix = this.prefix ? this.prefix : (this.scopeName ? this.scopeName : undefined);
 				// when the prefix is set (and different from 'HTML'), we remove the
 				// element
 				if ((nsPrefix && nsPrefix != 'HTML') || this.nodeName.indexOf(':') >= 0 ) {

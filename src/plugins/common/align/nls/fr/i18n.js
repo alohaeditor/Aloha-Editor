@@ -1,1 +1,1 @@
-define({"button.alignright.tooltip":"Aligner à droite","button.alignleft.tooltip":"Aligner à gauche","button.aligncenter.tooltip":"Centrer","button.alignjustify.tooltip":"Justifier"});
+define({"button.alignright.tooltip":"Aligner Ã  droite","button.alignleft.tooltip":"Aligner Ã  gauche","button.aligncenter.tooltip":"Centrer","button.alignjustify.tooltip":"Justifier"});

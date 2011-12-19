@@ -46,7 +46,7 @@ function(Aloha, jQuery, command, selection, dom, ContentHandlerManager, console)
 						pasteElement(contents[i]);
 					}
 				}
-			};
+			}
 
 			// apply content handler to cleanup inserted data
 			//if (typeof Aloha.settings.contentHandler.insertHtml === 'undefined') {

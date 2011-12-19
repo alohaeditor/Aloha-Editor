@@ -273,14 +273,14 @@ define( [
 		var stringBuilder = [], prefix = tableNamespace;
 		jQuery.each(arguments, function () { stringBuilder.push('.' + (this == '' ? prefix : prefix + '-' + this)); });
 		return stringBuilder.join(' ').trim();
-	};
+	}
 
 	//Creates string with this component's namepsace prefixed the each classname
 	function nsClass () {
 		var stringBuilder = [], prefix = tableNamespace;
 		jQuery.each(arguments, function () { stringBuilder.push(this == '' ? prefix : prefix + '-' + this); });
 		return stringBuilder.join(' ').trim();
-	};
+	}
 
 	TablePlugin.initSidebar = function(sidebar) {
 		var pl = this;
@@ -448,8 +448,7 @@ define( [
 				}
 			}),
 			i18n.t('floatingmenu.tab.table'),
-			1
-		);
+			1);
 		
 		/*
 		// TODO: This would add a icon what would be toggled if the active
@@ -482,8 +481,7 @@ define( [
 				}
 			}),
 			i18n.t('floatingmenu.tab.table'),
-			1
-		);
+			1);
 
 		// delete selected rows
 		FloatingMenu.addButton(
@@ -510,8 +508,7 @@ define( [
 				}
 			}),
 			i18n.t('floatingmenu.tab.table'),
-			1
-		);
+			1);
 
       this.rowHeader = new Aloha.ui.Button({
     	  name : 'rowheader',
@@ -592,8 +589,7 @@ define( [
 			  }
 		  }),
 		  i18n.t('floatingmenu.tab.table'),
-		  1
-      );
+		  1);
 
       FloatingMenu.addButton(
 		  this.name + '.row',
@@ -610,8 +606,7 @@ define( [
 			  }
 		  }),
 		  i18n.t('floatingmenu.tab.table'),
-		  1
-      );
+		  1);
     
       // generate formatting buttons
       this.rowMSItems = [];
@@ -679,8 +674,7 @@ define( [
         this.name + '.row',
         this.rowMSButton,
         i18n.t('floatingmenu.tab.table'),
-        3
-      );
+        3);
     }
   };
 
@@ -705,8 +699,7 @@ define( [
 			}
 		}),
 		i18n.t('floatingmenu.tab.table'),
-		1
-	);
+		1);
 
     // add column right btn
 	FloatingMenu.addButton(
@@ -723,8 +716,7 @@ define( [
 			}
 		}),
 		i18n.t('floatingmenu.tab.table'),
-		1
-	);
+		1);
 
     // delete columns btn
     FloatingMenu.addButton(
@@ -751,8 +743,7 @@ define( [
 			}
 		}),
 		i18n.t('floatingmenu.tab.table'),
-		1
-	);
+		1);
 
     this.columnHeader = new Aloha.ui.Button({
     	name      : 'columnheader',
@@ -817,8 +808,7 @@ define( [
 			}
 		}),
       i18n.t('floatingmenu.tab.table'),
-      1
-    );
+      1);
 
     FloatingMenu.addButton(
       this.name + '.column',
@@ -835,8 +825,7 @@ define( [
 			}
 		}),
       i18n.t('floatingmenu.tab.table'),
-      1
-    );
+      1);
 
     
     // generate formatting buttons
@@ -1000,9 +989,8 @@ define( [
         this.name + '.cell',
         this.tableMSButton,
         i18n.t('floatingmenu.tab.tablelayout'),
-        3
-      );
-    };
+        3);
+    }
 
 	// Add merge/split cells buttons
     FloatingMenu.addButton(
@@ -1038,8 +1026,7 @@ define( [
 			}
 		}),
       i18n.t('floatingmenu.tab.table'),
-      1
-    );
+      1);
 
 	// Add caption button
     this.captionButton = new Aloha.ui.Button({
@@ -1085,8 +1072,7 @@ define( [
 			this.name + '.cell',
 			this.captionButton,
 			i18n.t('floatingmenu.tab.table'),
-			1
-		);
+			1);
 
 		// for cells
 		// add summary field
