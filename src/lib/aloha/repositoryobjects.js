@@ -8,10 +8,7 @@ define(
 function( Aloha, Class ) {
 	"use strict";
 	
-	var
-//		Aloha = window.Aloha,
-//		Class = window.Class,
-	GENTICS = window.GENTICS;
+	var GENTICS = window.GENTICS;
 
 	Aloha.RepositoryObject = function() {};
 	
@@ -62,10 +59,7 @@ function( Aloha, Class ) {
 				this.type = 'document';
 	
 				// Basic error checking for MUST attributes
-				if (!p.id ||
-					!p.name ||
-					!p.repositoryId
-				) {
+				if (!p.id || !p.name || !p.repositoryId ) {
 	//				Aloha.Log.error(this, "No valid Aloha Object. Missing MUST property");
 					return;
 				}
@@ -124,10 +118,7 @@ function( Aloha, Class ) {
 			this.type = 'folder';
 		
 			// Basic error checking for MUST attributes
-			if (!p.id ||
-				!p.name ||
-				!p.repositoryId
-			) {
+			if (!p.id || !p.name || !p.repositoryId ) {
 		//		Aloha.Log.error(this, "No valid Aloha Object. Missing MUST property");
 				return;
 			}

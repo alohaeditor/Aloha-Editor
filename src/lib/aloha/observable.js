@@ -1,6 +1,6 @@
 /*!
 * This file is part of Aloha Editor Project http://aloha-editor.org
-* Copyright © 2010-2011 Gentics Software GmbH, aloha@gentics.com
+* Copyright (c) 2010-2011 Gentics Software GmbH, aloha@gentics.com
 * Contributors http://aloha-editor.org/contribution.php 
 * Licensed unter the terms of http://www.aloha-editor.org/license.html
 *//*
@@ -23,8 +23,7 @@ define(
 function(jQuery, undefined) {
 	"use strict";
 	
-	var
-		$ = jQuery;
+	var	$ = jQuery;
 
 	return {
 		_eventHandlers: null,

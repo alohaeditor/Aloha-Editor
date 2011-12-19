@@ -1,6 +1,6 @@
 /*!
 * This file is part of Aloha Editor Project http://aloha-editor.org
-* Copyright © 2010-2011 Gentics Software GmbH, aloha@gentics.com
+* Copyright (c) 2010-2011 Gentics Software GmbH, aloha@gentics.com
 * Contributors http://aloha-editor.org/contribution.php 
 * Licensed unter the terms of http://www.aloha-editor.org/license.html
 *//*
@@ -255,9 +255,7 @@ Aloha.Markup = Class.extend({
 					rangeObject.correctRange();
 				} else if (el.domobj && el.domobj.nodeType === 3) { // textNode
 					// when the textnode is immediately followed by a blocklevel element (like p, h1, ...) we need to add an additional br in between
-					if (el.domobj.nextSibling
-							&& el.domobj.nextSibling.nodeType == 1
-							&& Aloha.Selection.replacingElements[el.domobj.nextSibling.nodeName
+					if (el.domobj.nextSibling && el.domobj.nextSibling.nodeType == 1 && Aloha.Selection.replacingElements[el.domobj.nextSibling.nodeName
 									.toLowerCase()]) {
 						// TODO check whether this depends on the browser
 						jqEl.after('<br/>');
