@@ -15,7 +15,7 @@ function(){
       else{
         return function() {
           return obj.apply(owner, arguments.length===0? args : args.concat(Array.prototype.slice.call(arguments)));
-        }
+        };
       }
     },
 
@@ -39,14 +39,21 @@ function(){
 
       if(native_method){
         return native_method.call(obj, find, i); 
-      }
-      else {
-        if (i===undefined) i= 0;
-        if (i<0) i+= obj.length;
-        if (i<0) i= 0;
-        for (var n = obj.length; i<n; i++)
-            if (i in obj && obj[i]===find)
+      } else {
+        if ( i === undefined ) { 
+        	i = 0;
+        } 
+        if ( i < 0 ) { 
+        	i+= obj.length;
+        }
+        if ( i < 0 ) { 
+        	i = 0; 
+        }
+        for ( var n = obj.length; i<n; i++ ) {
+            if (i in obj && obj[i] === find) {
                 return i;
+            }
+        }
         return -1;
       }
     },
@@ -55,13 +62,14 @@ function(){
       var obj = this.obj || this;
       var native_method = Array.prototype.forEach;          
 
-      if(native_method){
+      if (native_method) {
         return native_method.call(obj, action, that); 
-      }
-      else {
-        for (var i= 0, n = obj.length; i<n; i++)
-          if (i in obj)
+      } else {
+        for (var i= 0, n = obj.length; i<n; i++) {
+          if (i in obj) {
             action.call(that, obj[i], i, obj);
+          }
+        }
       }
     },
 
@@ -76,9 +84,11 @@ function(){
       }
       else {
         var other= new Array(obj.length);
-        for (var i= 0, n= obj.length; i<n; i++)
-            if (i in obj)
+        for (var i= 0, n= obj.length; i<n; i++) {
+            if (i in obj) {
                 other[i]= mapper.call(that, obj[i], i, obj);
+            }
+        }
         result = other;
       }
 
@@ -91,14 +101,16 @@ function(){
       var returnWrapper = (typeof arguments[arguments.length - 1] == "boolean") ? Array.prototype.pop.call(arguments) : false;
       var result = [];
 
-      if(native_method){
+      if (native_method) {
        result = native_method.call(obj, filterFunc, that); 
       }
       else {
         var other= [], v;
-        for (var i=0, n= obj.length; i<n; i++)
-            if (i in obj && filterFunc.call(that, v= obj[i], i, obj))
+        for (var i=0, n= obj.length; i<n; i++) {
+            if (i in obj && filterFunc.call(that, v= obj[i], i, obj)) {
                 other.push(v);
+            }
+        }
         result = other;
       }
 
@@ -113,9 +125,11 @@ function(){
          return native_method.call(obj, tester, that); 
        }
        else {
-         for (var i= 0, n= obj.length; i<n; i++)
-            if (i in obj && !tester.call(that, obj[i], i, obj))
+         for (var i= 0, n= obj.length; i<n; i++) {
+            if (i in obj && !tester.call(that, obj[i], i, obj)) {
                 return false;
+            }
+         }
          return true;
        }
     },
@@ -128,9 +142,11 @@ function(){
          return native_method.call(obj, tester, that); 
        }
        else {
-         for (var i= 0, n= obj.length; i<n; i++)
-           if (i in obj && tester.call(that, obj[i], i, obj))
+         for (var i= 0, n= obj.length; i<n; i++) {
+           if (i in obj && tester.call(that, obj[i], i, obj)) {
                return true;
+           }
+         }
          return false;
        }
     },
@@ -141,11 +157,10 @@ function(){
       var obj = this.obj || this;
       var native_method = obj.hasAttribute;  
 
-      if(native_method){
+      if ( native_method ) {
         return obj.hasAttribute(attr); 
-      }
-      else {
-        return (typeof obj.attributes[attr] != "undefined")
+      } else {
+        return (typeof obj.attributes[attr] != "undefined");
       }         
     }
 
@@ -169,8 +184,7 @@ function(){
   // http://www.w3.org/TR/DOM-Level-3-Core/core.html#ID-1841493061
   if(typeof Node != 'undefined'){
     $_.Node = Node;
-  }                
-  else {
+  } else {
     $_.Node = {
       'ELEMENT_NODE' : 1,
       'ATTRIBUTE_NODE': 2,
@@ -196,8 +210,8 @@ function(){
       'DOCUMENT_POSITION_CONTAINED_BY': 0x10,
       //The determination of preceding versus following is implementation-specific.
       'DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC': 0x20
-    } 
-  };
+    }; 
+  }
 
   // http://www.w3.org/TR/DOM-Level-3-Core/core.html#Node3-compareDocumentPosition
   // FIXME: Check if the DOMNode prototype can be set.
@@ -211,10 +225,14 @@ function(){
       throw 'compareDocumentPosition nor contains is not supported by this browser.';
     }
     
-    if (node1 == node2) return 0;
+    if (node1 == node2) { 
+    	return 0;
+    }
     
     //if they don't have the same parent, there's a disconnect
-    if (getRootParent(node1) != getRootParent(node2)) return 1;
+    if (getRootParent(node1) != getRootParent(node2)) { 
+    	return 1;
+    }
     
     //use this if both nodes have a sourceIndex (text nodes don't)
     if ("sourceIndex" in node1 && "sourceIndex" in node2) {
@@ -222,8 +240,11 @@ function(){
     }
     
     //document will definitely contain the other node
-    if (node1 == document) return 20;
-    else if (node2 == document) return 10;
+    if (node1 == document) { 
+    	return 20;
+    } else if (node2 == document) {
+    	return 10;
+    }
     
     //get sourceIndexes to use for both nodes
     var useNode1 = getUseNode(node1), useNode2 = getUseNode(node2);
@@ -232,8 +253,12 @@ function(){
     var result = comparePosition(useNode1, useNode2);
     
     //clean up if needed
-    if (node1 != useNode1) useNode1.parentNode.removeChild(useNode1);
-    if (node2 != useNode2) useNode2.parentNode.removeChild(useNode2);
+    if (node1 != useNode1) {
+    	useNode1.parentNode.removeChild(useNode1);
+    }
+    if (node2 != useNode2) {
+    	useNode2.parentNode.removeChild(useNode2);
+    }
     return result;
 
 
@@ -258,7 +283,9 @@ function(){
     //get a node with a sourceIndex to use
     function getUseNode(node) {
       //if the node already has a sourceIndex, use that node
-      if ("sourceIndex" in node) return node;
+      if ("sourceIndex" in node) {
+      	return node;
+      }
       //otherwise, insert a comment (which has a sourceIndex but minimal DOM impact) before the node and use that
       return node.parentNode.insertBefore(document.createComment(""), node);
     }
