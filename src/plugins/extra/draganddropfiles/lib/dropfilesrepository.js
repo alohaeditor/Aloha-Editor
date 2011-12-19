@@ -74,8 +74,8 @@ function($, repository, i18nCore){
 				'max_height': 800
 			},
 			'fieldName': function(){
-				return 'filename'
-				}
+				return 'filename';
+			}
 		},
 		/**
 		 * Repository's Query function
@@ -83,7 +83,7 @@ function($, repository, i18nCore){
 		query: function( p, callback) {
 			Aloha.Log.info(this,"Query Uploader");
 			var d = [];
-			if (p.inFolderId == this.repositoryId && p.queryString == null) {
+			if (p.inFolderId == this.repositoryId && p.queryString === null) {
 				d = this.objects;
 			} else {
 				d = this.objects.filter(function(e, i, a) {
@@ -108,11 +108,13 @@ function($, repository, i18nCore){
 		getChildren: function( p, callback) {
 			d = [];
 			var parentFolder = p.inFolderId.split("")[0];
-			if (parentFolder == "") {
+			if (parentFolder === "") {
 				parentFolder = "/";
 			}
 			d = this.objects.filter(function(e, i, a) {
-				if (e.parentId == parentFolder) return true;
+				if (e.parentId == parentFolder) {
+					return true;
+				}
 				return false;
 			});
 //			if (p.inFolderId == "com.gentics.aloha.plugins.DragAndDropFiles") {
@@ -129,7 +131,9 @@ function($, repository, i18nCore){
 			//this.browser.show();
 
 			var d = this.objects.filter(function(e, i, a) {
-				if (e.name == file.name) return true;
+				if (e.name == file.name) {
+					return true;
+				}
 				return false;
 			});
 			if (d.length > 0 ) {
@@ -184,7 +188,9 @@ function($, repository, i18nCore){
 			getDataObject: function(record) {
 				repo = Aloha.RepositoryManager.getRepository(record.data.repositoryId);
 				d = repo.objects.filter(function(e, i, a) {
-					if (e.id == record.data.id && e.file) return true;
+					if (e.id == record.data.id && e.file) {
+						return true;
+					}
 					return false;
 				});
 				if (d.length > 0 ) {
@@ -224,7 +230,7 @@ function($, repository, i18nCore){
 					xhr.onerror = function(e) {
 						Aloha.trigger('aloha-upload-error', that);
 					};
-				}
+				};
 			},
 			xhr: new XMLHttpRequest(),
 			contentTypeHeader: 'text/plain; charset=x-user-defined-binary',
@@ -281,8 +287,8 @@ function($, repository, i18nCore){
 							0,
 							0,
 							targetsize.width,
-							targetsize.height
-						);
+							targetsize.height);
+							
 						data = canvas.toDataURL(that.file.type);
 						Aloha.Log.debug(Aloha,"Sent Data (length:" + data.length + ") = " + data.substring(0,30));
 						xhr.send(data);

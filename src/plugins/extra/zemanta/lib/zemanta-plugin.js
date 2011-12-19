@@ -13,7 +13,7 @@ define(
 'i18n!zemanta/nls/i18n', 
 'i18n!aloha/nls/i18n', 
 'aloha/console',
-'css!zemanta/css/zemanta-widget-alohaeditor.css', 
+'css!zemanta/css/zemanta-widget-alohaeditor.css'
 ],
 function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore, console) {
 	"use strict";
@@ -42,7 +42,7 @@ function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore, console) {
 	*/
 	window.ZemantaGetAPIKey = function () {
 		return settings.apiKey || false;
-	}
+	};
 
 	/**
 	 * register the plugin with unique name
@@ -87,12 +87,10 @@ function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore, console) {
 				'Aloha.continuoustext',
 				this.zemantaButton,
 				i18n.t('floatingmenu.tab.related'),
-				1
-			);
+				1);
 		},
 
 		_initEvents: function() {
-			var self = this;
 			// update suggestions with smart content change ...
 			Aloha.bind('aloha-editable-deactivated', function(event, rangeObject) {
 				// do something ... 
@@ -105,12 +103,12 @@ function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore, console) {
 				tags = document.createElement('div'),
 				links = document.createElement('div'),
 				insertionSpaceId = false,
-				insertionSpace = false,
-				t0 = this.now();
+				insertionSpace = false;
+				
 
 				this.editableId = Aloha.activeEditable.obj[0].id;
 
-				if (this.active == true) {
+				if (this.active === true) {
 					// remove zemanta widgets (button click to activate/deactivate)
 					$('#zemanta-sidebar').remove();
 					$('#zemanta-suggested-tags').remove();
@@ -201,7 +199,7 @@ function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore, console) {
 								property: 'innerHTML', 
 								type: 'div',
 								win: null
-							}
+							};
 						} catch ( er ) {
 							Aloha.Log.error( 'Plugin.Zemanta.setPlatform', er );
 						}
@@ -212,14 +210,13 @@ function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore, console) {
 		},
 
 		waitForLoad: function() {
-			var done = false, t0 = null;
+			var done = false;
 
 			if (typeof $.zemanta === "undefined") {
 				$('#zemanta-message').html('Waiting...');
 				return;
 			}
 
-			t0 = this.now();
 			$('#zemanta-message').html('Initializing...');
 
 			try {

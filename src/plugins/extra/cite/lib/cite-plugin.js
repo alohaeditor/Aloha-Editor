@@ -55,7 +55,7 @@ define([
 			 var replacement = obj[p1] || str;
 			 return (typeof replacement === 'function') ? replacement() : replacement;
 		 });
-	};
+	}
 	
 	/**
 	 * Wrapper to call the supplant method on a given string, taking the
@@ -67,7 +67,7 @@ define([
 	 */
 	function renderTemplate (str) {
 		return (typeof str === 'string') ? supplant(str, nsClasses) : str;
-	};
+	}
 	
 	/**
 	 * Generates a selector string with this plugins's namespace prefixed the
@@ -84,7 +84,7 @@ define([
 		var strBldr = [], prx = ns;
 		$.each(arguments, function () { strBldr.push('.' + (this == '' ? prx : prx + '-' + this)); });
 		return $.trim(strBldr.join(' '));
-	};
+	}
 	
 	/**
 	 * Generates a string with this plugins's namespace prefixed the each
@@ -101,7 +101,7 @@ define([
 		var strBldr = [], prx = ns;
 		$.each(arguments, function () { strBldr.push(this == '' ? prx : prx + '-' + this); });
 		return $.trim(strBldr.join(' '));
-	};
+	}
 	
 	/**
 	 * Coverts hexidecimal string #00ffcc into rgb array [0, 255, 127]
@@ -126,7 +126,7 @@ define([
 		}
 		
 		return rgb;
-	};
+	}
 	
 	// ------------------------------------------------------------------------
 	// Plugin
@@ -171,8 +171,7 @@ define([
 				'Aloha.continuoustext',
 				this.buttons[0],
 				i18nCore.t('floatingmenu.tab.format'),
-				1
-			);
+				1);
 			
 			// We brute-forcishly push our button settings into the
 			// multiSplitButton. The multiSplitButton will pick it up and

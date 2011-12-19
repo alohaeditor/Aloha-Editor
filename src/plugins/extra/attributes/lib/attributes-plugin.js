@@ -12,9 +12,8 @@ function(Aloha, Plugin, FloatingMenu, i18n, i18nCore) {
 	var
 		jQuery = Aloha.jQuery,
 		$ = jQuery,
-		GENTICS = window.GENTICS,
-		Aloha = window.Aloha;
-	
+		GENTICS = window.GENTICS;
+
     return Plugin.create('attributes', {
 		_constructor: function(){
 			this._super('attributes');
@@ -60,7 +59,7 @@ function(Aloha, Plugin, FloatingMenu, i18n, i18nCore) {
 		 */
 		nsSel : function() {
 			var strBldr = [], prx = this.ns;
-			$.each(arguments, function () { strBldr.push('.' + (this == '' ? prx : prx + '-' + this)); });
+			$.each(arguments, function () { strBldr.push('.' + (this === '' ? prx : prx + '-' + this)); });
 			return strBldr.join(' ').trim();
 		},
 		
@@ -77,7 +76,7 @@ function(Aloha, Plugin, FloatingMenu, i18n, i18nCore) {
 		 */
 		nsClass : function (){
 			var strBldr = [], prx = this.ns;
-			$.each(arguments, function () { strBldr.push(this == '' ? prx : prx + '-' + this); });
+			$.each(arguments, function () { strBldr.push(this === '' ? prx : prx + '-' + this); });
 			return strBldr.join(' ').trim();
 		},
 		
@@ -89,7 +88,7 @@ function(Aloha, Plugin, FloatingMenu, i18n, i18nCore) {
 			if (typeof this.settings.disabled === 'boolean' && this.settings.disabled) {
 				return false;
 			}
-			if (typeof effective != 'undefined' && effective != null) {
+			if (typeof effective !== 'undefined' && effective !== null) {
 				return true;
 			}
 			return false;

@@ -203,8 +203,7 @@ function($, Plugin,DropFilesRepository) {
 			if (this.targetEditable[0] === null) { // Process files out of editables
 				while(--len >= 0) {
 					if  ( // Set of conditions, can we resize the image, and do we have a conf to do it
-							!(!!document.createElement('canvas').getContext &&
-							  files[len].type.match(/image\//) &&
+							!(!!document.createElement('canvas').getContext && files[len].type.match(/image\//) &&
 							  edConfig.upload.config.image)
 						) {
 						if (files[len].size <= that.settings.max_file_size) {

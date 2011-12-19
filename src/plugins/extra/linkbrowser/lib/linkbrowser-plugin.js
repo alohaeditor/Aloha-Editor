@@ -55,7 +55,8 @@ define( [
 			// 1. We need to save the current cursor position since the a activate editable event will be fired and this will 
 			// set the cursor in the upper left cornor of the editable.
 			var	range = Aloha.Selection.getRangeObject();
-			var currentStartContainer = range.startContainer = range.endContainer; 
+			range.startContainer = range.endContainer;
+			var currentStartContainer = range.startContainer;
 			var currentStartOffset = range.startOffset = range.endOffset;
 			
 			// 2. Do the first select - this will invoke the activate editable event
