@@ -6,7 +6,7 @@ define([
 	"ui/toggleButton",
 	"ui/text"
 ],
-function( Aloha, Ui, i18n, jQuery, Browser ) {
+function( Aloha, Ui, i18n, jQuery ) {
 	Ui.create( "abbr", "toggleButton", {
 		label: i18n.t( "button.createAbbr.label" ),
 		icon: "aloha-icon aloha-icon-abbr",

@@ -21,5 +21,6 @@ define([
 	"./format",
 	"./link",
 	"./list",
-	"./paragraph"
+	"./paragraph",
+	"./pipe"
 ]);
