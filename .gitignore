@@ -1,6 +1,7 @@
 .project
 .settings
 .DS_Store
+.externalToolBuilders
 target
 doc/guides/staging
 *.js~
