@@ -59,27 +59,13 @@ if ( document.location.href.match(/^file:\/\//gi ) ) {
 
 // check for aloha environment
 // local app version
-var alohaEditorPath = 'app/aloha-editor/aloha/';
-
-// config for local app version
-// enable this when the aloha check below is disabled
+//var alohaEditorPath = 'app/aloha-editor/aloha/';
 //loadJS('app/aloha-config/minimal.js');
 
+// config for demo-app in aloha dev github repos
+var alohaEditorPath = '../../';
+loadJS('app/aloha-config/minimal-demo.js');
 
-//* this can be disabled
-if ( !fileExists( alohaEditorPath ) ) {
-	// or aloha editor from dev git repository
-	alohaEditorPath = '../../';
-	// config for dev git repository version
-	loadJS('app/aloha-config/minimal-demo.js');
-
-	if ( !fileExists( alohaEditorPath ) ) {
-		alert('Aloha Editor not found. Have a look at the README.txt for instructions.');
-	}
-} else {
-	loadJS('app/aloha-config/minimal.js');
-}
-//*/ end disable option
 
 loadJS( alohaEditorPath + 'lib/aloha.js', 	'common/format, \
 													common/table, \
@@ -88,8 +74,8 @@ loadJS( alohaEditorPath + 'lib/aloha.js', 	'common/format, \
 													common/highlighteditables, \
 													common/block, \
 													common/undo, \
-													common/paste, \
 													common/commands, \
+													common/paste, \
 													common/abbr, \
 													common/image,  \
 													common/contenthandler, \
