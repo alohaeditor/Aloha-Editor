@@ -1,11 +1,11 @@
 define([
 	"aloha/core",
-	"ui/ui",
-	"i18n!ui/nls/i18n",
 	"aloha/jquery",
+	"i18n!ui/nls/i18n",
+	"ui/ui",
 	"ui/multiSplit"
 ],
-function( Aloha, Ui, i18n, jQuery ) {
+function( Aloha, jQuery, i18n, Ui ) {
 	Aloha.settings.formatBlock = {
 		blocks: [ "p", "h1", "h2", "h3", "h4", "h5", "h6", "pre" ],
 		removeFormatting: [ "strong", "em", "b", "i", "cite", "q", "code", "abbr", "del", "sub", "sup" ]

@@ -1,4 +1,7 @@
-define([ "aloha/jquery", "ui/ui" ],
+define([
+	"aloha/jquery",
+	"ui/ui"
+],
 function( jQuery, Ui ) {
 	Ui.createType( "multiSplit", {
 		init: function() {

@@ -1,4 +1,9 @@
-define([ 'aloha/core', 'aloha/jquery', 'ui/ui', 'ui/button' ],
+define([
+	"aloha/core",
+	"aloha/jquery",
+	"ui/ui",
+	"ui/button"
+],
 function( Aloha, jQuery, Ui, Button ) {
 	var guid = 0;
 	

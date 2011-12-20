@@ -1,16 +1,16 @@
 define([
 	"aloha/core",
-	"ui/ui",
-	"i18n!ui/nls/i18n", 
 	"aloha/jquery",
+	"i18n!ui/nls/i18n", 
 	"browser/browser-plugin",
+	"ui/ui",
 	"ui/autocomplete",
 	"ui/button",
 	"ui/toggleButton",
 	// TODO: remove (just for testing)
 	'ui/../../link/extra/linklist'
 ],
-function( Aloha, Ui, i18n, jQuery, Browser ) {
+function( Aloha, jQuery, i18n, Browser, Ui ) {
 	Ui.create( "link", "toggleButton", {
 		label: i18n.t( "button.createLink.label" ),
 		icon: "aloha-icon aloha-icon-link",

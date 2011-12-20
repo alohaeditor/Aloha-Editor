@@ -1,4 +1,8 @@
-define([ 'aloha/core', 'ui/ui', 'ui/togglebutton' ],
+define([
+	"aloha/core",
+	"ui/ui",
+	"ui/togglebutton"
+],
 function( Aloha, Ui, ToggleButton ) {
 	// The toggleCommandButton extends the toggleButton component type to provide an easy
 	// way to create buttons for __commands__ that are either on or off.

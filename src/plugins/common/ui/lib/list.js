@@ -1,11 +1,11 @@
 define([
 	"aloha/core",
-	"ui/ui",
 	"i18n!ui/nls/i18n",
+	"ui/ui",
 	"ui/button",
 	"ui/toggleCommandButton"
 ],
-function( Aloha, Ui, i18n ) {
+function( Aloha, i18n, Ui ) {
 	Ui.create( "orderedList", "toggleCommandButton", {
 		label: i18n.t( "button.ol.label" ),
 		command: "insertorderedlist",

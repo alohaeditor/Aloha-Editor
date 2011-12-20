@@ -1,7 +1,11 @@
 // The main UI objects are components.
 // Components can be placed inside any container, such as a toolbar or sidebar.
-define([ "aloha/core", "util/class", "aloha/jquery" ],
-function( Aloha, Class, jQuery ) {
+define([
+	"aloha/core",
+	"aloha/jquery",
+	"util/class",
+],
+function( Aloha, jQuery, Class ) {
 	// All components inherit from `Aloha.ui.component`.
 	Aloha.ui.component = Class.extend({
 		visible: true,

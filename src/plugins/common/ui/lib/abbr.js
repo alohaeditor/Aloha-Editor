@@ -1,12 +1,12 @@
 define([
 	"aloha/core",
-	"ui/ui",
-	"i18n!ui/nls/i18n", 
 	"aloha/jquery",
+	"i18n!ui/nls/i18n", 
+	"ui/ui",
 	"ui/toggleButton",
 	"ui/text"
 ],
-function( Aloha, Ui, i18n, jQuery ) {
+function( Aloha, jQuery, i18n, Ui ) {
 	Ui.create( "abbr", "toggleButton", {
 		label: i18n.t( "button.createAbbr.label" ),
 		icon: "aloha-icon aloha-icon-abbr",

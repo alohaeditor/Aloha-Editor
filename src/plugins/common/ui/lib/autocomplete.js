@@ -1,11 +1,11 @@
 define([
 	"aloha/jquery",
-	"ui/ui",
 	"aloha/repositorymanager",
+	"ui/ui",
 	
 	"jquery-plugin!./vendor/jquery-ui-autocomplete-html"
 ],
-function( jQuery, Ui, RepositoryManager ) {
+function( jQuery, RepositoryManager, Ui ) {
 	function parse( template, item ) {
 		return template.replace( /{{([^}]+)}}/g, function( _, name ) {
 			return name in item ? item[ name ] : "";
@@ -41,4 +41,6 @@ function( jQuery, Ui, RepositoryManager ) {
 		// invoked when the user has changed the value and blurred the field
 		setValue: function( value, item ) {}
 	});
+	
+	return Ui.autocomplete;
 });

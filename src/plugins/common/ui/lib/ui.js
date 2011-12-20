@@ -1,8 +1,11 @@
 // The main UI objects are components.
 // Components can be placed inside any container, such as a toolbar or sidebar.
-define([ "aloha/core", "aloha/jquery", "ui/component" ],
+define([
+	"aloha/core",
+	"aloha/jquery",
+	"ui/component"
+],
 function( Aloha, jQuery, Component ) {
-	
 	jQuery( document )
 		.delegate( ".aloha-ui", "mousedown", function() {
 			Aloha.eventHandled = true;

@@ -8,4 +8,6 @@ function( jQuery, Ui ) {
 			this.element = jQuery( this.html );
 		}
 	});
+	
+	return Ui.html;
 });

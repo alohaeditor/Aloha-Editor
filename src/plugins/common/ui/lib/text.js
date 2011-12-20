@@ -14,4 +14,6 @@ function( jQuery, Ui ) {
 		// invoked when the user has changed the value
 		setValue: function( value ) {}
 	});
+	
+	return Ui.text;
 });
