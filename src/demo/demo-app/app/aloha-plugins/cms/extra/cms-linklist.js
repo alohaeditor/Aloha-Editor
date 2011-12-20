@@ -77,8 +77,6 @@ function ( jQuery, repository ) {
 			// Not supported; filter, orderBy, maxItems, skipcount, renditionFilter
 			var r = new RegExp( p.queryString, 'i' );
 
-			console.log('query', this.urlset);
-			
 			var d = this.urlset.filter( function ( e, i, a ) {
 				return (
 					( !p.queryString || e.name.match( r ) || e.url.match( r ) ) &&

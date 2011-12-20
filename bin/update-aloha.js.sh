@@ -4,7 +4,7 @@
 
 # relative to src/lib/
 REQUIRE='require.js'
-JQUERY='vendor/jquery-1.7.1.js'
+JQUERY='vendor/jquery-1.6.1.js'
 EXT_ADAPT='vendor/ext-3.2.1/adapter/jquery/ext-jquery-adapter-debug.js'
 EXT_ALL='vendor/ext-3.2.1/ext-all-debug.js'
 
