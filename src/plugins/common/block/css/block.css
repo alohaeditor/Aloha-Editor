@@ -98,3 +98,8 @@
 	display:block;
 }
 
+
+
+.aloha-block-dropInlineElementIntoEmptyBlock {
+	border: 1px solid red;
+}

@@ -570,7 +570,11 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 					// the user recently hovered over a character
 					var $dropReferenceNode = jQuery(lastHoveredCharacter);
 
-					if ($dropReferenceNode.is('.aloha-block-droppable-right')) {
+					if ($dropReferenceNode.is('.aloha-block-dropInlineElementIntoEmptyBlock')) {
+						// the user wanted to drop INTO an empty block!
+						$dropReferenceNode.children().remove();
+						$dropReferenceNode.append($currentDraggable);
+					} else if ($dropReferenceNode.is('.aloha-block-droppable-right')) {
 						$dropReferenceNode.html($dropReferenceNode.html() + ' ');
 
 						// Move draggable after drop reference node
@@ -590,7 +594,8 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 					$currentDraggable.removeClass('ui-draggable').css({'left': 0, 'top': 0}); // Remove "draggable" options... somehow "Destroy" does not work
 					that._fixScrollPositionBugsInIE();
 				}
-			}
+				jQuery('.aloha-block-dropInlineElementIntoEmptyBlock').removeClass('aloha-block-dropInlineElementIntoEmptyBlock');
+			};
 			var editablesWhichNeedToBeCleaned = [];
 			this.$element.draggable({
 				handle: '.aloha-block-draghandle',
@@ -612,6 +617,12 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 				},
 				start: function() {
 					editablesWhichNeedToBeCleaned = [];
+
+					// In order to make Inline Blocks droppable into empty paragraphs, we insert a &nbsp; manually before the placeholder-br.
+					// -> for IE
+					jQuery('.aloha-editable').children('p:empty').html('&nbsp;');
+
+
 					// Make **ALL** editables on the page droppable, such that it is possible
 					// to drag/drop *across* editable boundaries
 					var droppableCfg = {
@@ -630,6 +641,12 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 							}
 
 							$currentDraggable = ui.draggable;
+							if (jQuery(this).is(':empty') || jQuery(this).children('br.aloha-end-br').length > 0 || jQuery(this).html() === '&nbsp;') {
+								// the user tries to drop into an empty container, thus we highlight the container and do an early return
+								jQuery(this).addClass('aloha-block-dropInlineElementIntoEmptyBlock');
+								lastHoveredCharacter = this;
+								return;
+							}
 
 							that._dd_traverseDomTreeAndWrapCharactersWithSpans(this);
 							jQuery('span[data-i]', this).droppable({
@@ -656,6 +673,9 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 							// Now that we updated the droppables in the system, we need to recalculate
 							// the Drag Drop offsets.
 							jQuery.ui.ddmanager.prepareOffsets(ui.draggable.data('draggable'), event);
+						},
+						out: function() {
+							jQuery(this).removeClass('aloha-block-dropInlineElementIntoEmptyBlock');
 						},
 
 						/**
