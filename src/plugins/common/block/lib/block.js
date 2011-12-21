@@ -815,8 +815,14 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 							}
 							if (currentlyTraversingExpandedText) {
 								// We are currently traversing the expanded text nodes, so we collect their data
-								// together in the currentText variable
-								currentText += child.innerHTML;
+								// together in the currentText variable. We know that they only
+								// have one TextNode child, as this is the way we constructed them.
+								//
+								// Note: we do NOT use child.innerHTML here, as this returns HTML entities;
+								// but we need the HTML entities already processed:
+								// - child.innerHTML returns "Hello&nbsp;World"
+								// - child.firstChild.nodeValue returns "Hello World"
+								currentText += child.firstChild.nodeValue;
 
 								if (lastNode) {
 									nodesToDelete.push(lastNode);
