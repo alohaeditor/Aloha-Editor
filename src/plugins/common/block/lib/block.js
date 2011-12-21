@@ -614,7 +614,7 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 					editablesWhichNeedToBeCleaned = [];
 					// Make **ALL** editables on the page droppable, such that it is possible
 					// to drag/drop *across* editable boundaries
-					jQuery('.aloha-editable').children(':not(.aloha-block)').droppable({
+					var droppableCfg = {
 						// make block elements droppable
 						tolerance: 'pointer',
 						addClasses: false, // performance optimization
@@ -667,7 +667,12 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 								dropFn();
 							}
 						}
-					});
+					};
+
+
+					jQuery('.aloha-editable').children(':not(.aloha-block)').droppable(droppableCfg);
+					// Small HACK: Also make table cells droppable
+					jQuery('.aloha-table-cell-editable').droppable(droppableCfg);
 				}
 			});
 		},
