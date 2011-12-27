@@ -229,21 +229,22 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		 * Internal version of updateSelection that adds the range parameter to be
 		 * able to work around an IE bug that caused the current user selection
 		 * sometimes to be on the body element.
-		 * @param range a substitute for the current user selection. if not provided,
+		 * @param {Object} event
+		 * @param {Object} range a substitute for the current user selection. if not provided,
 		 *   the current user selection will be used.
 		 * @hide
 		 */
-		_updateSelection: function(event, range) {
-			if (event !== undefined && event.originalEvent !== undefined &&
-					event.originalEvent.stopSelectionUpdate === true) {
-				return false;
-			}
-			
-			if (typeof range === "undefined") {
+		_updateSelection: function( event, range ) {
+			if ( event && event.originalEvent
+			     && event.originalEvent.stopSelectionUpdate === true ) {
 				return false;
 			}
 
-			this.rangeObject = range || new Aloha.Selection.SelectionRange(true);
+			if ( typeof range === 'undefined' ) {
+				return false;
+			}
+
+			this.rangeObject = range || new Aloha.Selection.SelectionRange( true );
 			
 			// Only execute the workaround when a valid rangeObject was provided
 			if ( typeof this.rangeObject !== "undefined" && typeof this.rangeObject.startContainer !== "undefined" && this.rangeObject.endContainer !== "undefined") {
