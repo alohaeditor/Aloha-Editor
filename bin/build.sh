@@ -74,6 +74,11 @@ OUT="$BASEDIR/../target/out/"
 cleanup $OUT
 cleanup $TMP
 
+echo -e "\n * Executing jslint checks"
+  $BASEDIR/jslint.sh
+  handleError $? "Error while checking for jslint errors"
+echo "Done."
+
 echo -e "\n * Build core JS files"
   cd "$CONFDIR"
   r.js -o build.js
@@ -103,6 +108,11 @@ echo "Done."
 echo -e "\n * Building guide"
   $BASEDIR/build-guide.sh
   handleError $? "Error while building the guide"
+#echo "Done."
+
+echo -e "\n * Building api doc"
+  $BASEDIR/build-api.sh
+  handleError $? "Error while building the api doc"
 echo "Done."
 
 echo -e "\n * Adding build information"
