@@ -10,7 +10,7 @@
  * methods.
  *
  * Potentially process intensive methods:
- *		Aloha.Profiler.profileAlohaComponent('Markup.preProcessKeyStrokes') 0-10    500-700
+ *		Aloha.Profiler.profileAlohaComponent('Markup.preProcessKeyStrokes')
  *		Aloha.Profiler.profileAlohaComponent('Selection._updateSelection')
  */
 
