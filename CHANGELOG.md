@@ -2,7 +2,7 @@
 
 This document is to serve as a "what has been done" in terms of the [Roadmap](http://aloha-editor.org/wiki/Roadmap)
 
-## 0.20.0-RC10
+## 0.20.0
 
 - doc/api: added first version of new API docs. Please note that the API docs are currently work in progress.
 - floatingmenu: fixed a bug with topalign behaviour where scrolling would attach the floatingmenu to the left side of the screen
