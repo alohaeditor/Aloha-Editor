@@ -771,7 +771,7 @@ function(Aloha, jQuery, Ext, Class, console) {
 					// scroll pos is above top of editable
 					if (that.behaviour === 'topalign') {
 						pos.top = Aloha.activeEditable.obj.offset().top - that.topalignOffset;
-						pos.left = that.horizontalOffset;
+						pos.left = Aloha.activeEditable.obj.offset().left + that.horizontalOffset;
 					} else {
 						pos.top -= fmHeight + 6;
 					}

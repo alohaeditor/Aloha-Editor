@@ -1,11 +1,15 @@
 # Aloha Editor Changelog
 
 This document is to serve as a "what has been done" in terms of the [Roadmap](http://aloha-editor.org/wiki/Roadmap)
+## 0.21.0 - dev
 
-## 0.20.0-dev - 2011/12
-- doc/api: added first version of new API docs
 
-## 0.20.0-RC9 - 2011/11/23
+## 0.20.0
+
+- doc/api: added first version of new API docs. Please note that the API docs are currently work in progress.
+- floatingmenu: fixed a bug with topalign behaviour where scrolling would attach the floatingmenu to the left side of the screen
+
+## 0.20.0-RC9 - 2011/12/07
 
 - image-plugin: The saved aspect ratio will now be correcly recalculated when a cropping action is sucessfully ended. Previously the aspect ratio was not recalculated and therefore resizing of images resulted in unexpected image sizes.
 - formatlesspaste plugin: The elements stripped by the formatlesspaste plugin can now be configured like this
