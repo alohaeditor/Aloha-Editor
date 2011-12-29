@@ -14,7 +14,7 @@ $exportUrl = 'http://mygengo.com/string/p/aloha-editor-1/export/all/34a78b1cb2c6
 // test project
 //$exportUrl = 'http://mygengo.com/string/p/aloha-test-1/export/all/8fced2397fb2dcec3761431ad4dbc4f007998ddc16e2f188b684d99aa8e839d3';
 
-$exportDir = './export-new/';
+$exportDir = './export/';
 $exportZipFile = './export.zip';
 
 
@@ -23,7 +23,7 @@ $exportZipFile = './export.zip';
  
 //deactivated for now to test new structure
 
-/*
+
 $command = "rm $exportZipFile"; 
 system($command);
 
@@ -42,7 +42,6 @@ if ($res === TRUE) {
 } else {
 	echo "\n[error] Translations not downloaded or extracted\n";
 }
-// */
 
 // process all downloaded php language files and convert it to the aloha i8ln format
 $languages =  get_directories($exportDir);
