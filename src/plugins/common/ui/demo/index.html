@@ -15,7 +15,20 @@
 	var Aloha = {
 		settings: {
 			toolbar: {
-				tabs: {},
+				tabs: [
+					{
+						label: "Tab <b>1</b>",
+						activateOn: "a",
+						components: [ [ "bold" ], [ "bold", "bold" ] ]
+					},
+					{
+						label: "Tab 2",
+						components: [
+							[ "italic", "italic" ],
+							[ "bold", "bold", "bold" ]
+						]
+					}
+				],
 				components: [ [ "bold", "italic" ], [ "formatBlock" ] ]
 			},
 			//nativeCommands : true,
@@ -29,10 +42,12 @@
 		var $ = Aloha.jQuery;
 		$( "#main" ).aloha({
 			toolbar: {
+				tabs: [],
 				components: [
 					[ "bold", "italic", "underline", "pipe", "strikethrough", "pipe", "subscript", "superscript" ],
 					[ "orderedList", "unorderedList", "indentList", "outdentList", "pipe", "formatBlock" ],
-					[ "link", "editLink", "removeLink", "linkBrowser", "pipe", "abbr", "editAbbr" ]
+					[ "link", "editLink", "removeLink", "linkBrowser", "pipe", "abbr", "editAbbr" ],
+					[ "bold", "bold", "bold", "bold" ]
 				]
 			},
 			formatBlock: {
