@@ -171,7 +171,6 @@ function( Aloha, jQuery, Ui ) {
 
 	}).call( Tab.prototype );
 
-
 	// The toolbar is configured via `settings.toolbar` and is defined as
 	// an array of tabs with component groups, where the groups are arrays of
 	// controls.
@@ -231,6 +230,8 @@ function( Aloha, jQuery, Ui ) {
 					}
 				}, 10 );
 			});
+
+			this.subscribeEventHandlers( toolbar );
 		},
 
 		initializeTabs: function( tabs, editable ) {
@@ -321,7 +322,41 @@ debugger;
 					editable.toolbar.detach();
 				});
 			}
+		},
+
+		subscribeEventHandlers: function( toolbar ) {
+			var that = this;
+
+			Aloha.bind( 'aloha-selection-changed', function( event, range ) {
+				that.checkActiveTabs( range );
+			});
+
+			Aloha.bind( 'aloha-editable-deactivated', function( event, params ) {
+				that.checkActiveTabs();
+			});
+			
+			// Flag the next selection change event to be ignored
+
+			var editable = Aloha.activeEditable && Aloha.activeEditable.obj;
+
+			if ( editable ) {
+				editable.mousedown( function( ev ) {
+					ev.originalEvent.stopSelectionUpdate = true;
+					Aloha.eventHandled = true;
+					//e.stopSelectionUpdate = true;
+				});
+
+				editable.mouseup( function( ev ) {
+					ev.originalEvent.stopSelectionUpdate = true;
+					Aloha.eventHandled = false;
+				});
+			}
+		},
+
+		checkActiveTabs: function( range ) {
+// debugger;
 		}
+
 	};
 
 	Ui.toolbar.create();
