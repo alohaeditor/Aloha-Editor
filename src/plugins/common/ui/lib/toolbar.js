@@ -188,6 +188,31 @@ function( Aloha, jQuery, Ui ) {
 		};
 
 		/**
+		 * Given an array of elements, activate this tab if any of the nodes in
+		 * `elements` returns true when passed to the `shouldActivate`
+		 * predicate. Otherwise deactivate the tab.
+		 * @param {Array.<HTMLElement>} elements The effective elements any of
+		 *                                       which may activate the tab.
+		 */
+		this.shouldActivateForElements = function( elements ) {
+			// Add a null object to the elements array so that we can test
+			// whether the panel should be activated when we have no effective
+			// elements in the current selection.
+			elements.push( null );
+
+			var shouldActivate = this.shouldActivate;
+			var j = elements.length;
+
+			while ( j ) {
+				if ( shouldActivate( elements[ --j ] ) ) {
+					return true;
+				}
+			}
+
+			return false;
+		};
+
+		/**
 		 * Make this tab accessible on the toolbar.
 		 */
 		this.activate = function() {
@@ -431,48 +456,18 @@ function( Aloha, jQuery, Ui ) {
 				}
 			}
 
-			var that = this;
-
 			if ( this.active ) {
 				jQuery.each( this.active.tabs, function() {
-					that.showActiveTab( this, effective );
+					if ( this.shouldActivateForElements( effective ) ) {
+						if ( !this.activated ) {
+							this.activate();
+						}
+					} else {
+						if ( this.activated ) {
+							this.deactivate();
+						}
+					}
 				});
-			}
-       },
-
-		/**
-		 * Given a tab and an array of elements, activate the tab if any of the
-		 * nodes in `elements` returns true when passed to `tab`'s
-		 * shouldActivate predicate. Otherwise deactivate the tab.
-		 * @param {Tab} tab
-		 * @param {Array.<HTMLElement>} elements The effective elements any of
-		 *                                       which may activate the tab.
-		 */
-		showActiveTab: function( tab, elements ) {
-			// Add a null object to the elements array so that we can test
-			// whether the panel should be activated when we have no effective
-			// elements in the current selection.
-			elements.push(null);
-
-			var shouldActivate = tab.shouldActivate;
-			var isActive = false;
-			var j = elements.length;
-
-			while ( j ) {
-				if ( shouldActivate( elements[ --j ] ) ) {
-					isActive = true;
-					break;
-				}
-			}
-
-			if ( isActive ) {
-				if ( !tab.activated ) {
-					tab.activate();
-				}
-			} else {
-				if ( tab.activated ) {
-					tab.deactivate();
-				}
 			}
 		}
 
