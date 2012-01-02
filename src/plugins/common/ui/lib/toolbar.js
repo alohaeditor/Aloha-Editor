@@ -52,14 +52,6 @@ function( Aloha, jQuery, Ui ) {
 		this.handle = null;
 
 		/**
-		 * A reference to the inner element which holds the text and icon for
-		 * this tab's handle. We keep a reference to it for easy access.
-		 * TODO: Currently unused.
-		 * @type {jQuery<HTMLElement>}
-		 */
-		this.title = null;
-
-		/**
 		 * The container element for this tab's panel.
 		 * TODO: Currently unused.
 		 * @type {jQuery<HTMLElement>}
@@ -147,18 +139,14 @@ function( Aloha, jQuery, Ui ) {
 			}).appendTo( container.find( '.aloha-toolbar-tabs-panels' ));
 
 			this.handle = jQuery(
-				  '<li class="' + this.uid + '">'
+				  '<li>'
 				+   '<a href="#' + this.uid + '">'
-				+     '<span>' + options.label + '</span>'
+				+		options.label
 				+   '</a>'
 				+ '</li>'
 			).appendTo( container.find( 'ul.aloha-toolbar-tab-handles' ));
 
-			this.title = this.handle.find('>a>span');
-
-			// console.assert( this.title.length === 1 )
-
-			container.tabs( 'add', '#' + this.uid, options.label );
+			// container.tabs( 'add', '#' + this.uid, options.label );
 
 			jQuery.each( options.components, function() {
 				var group = jQuery( '<div>', {
@@ -327,6 +315,8 @@ function( Aloha, jQuery, Ui ) {
 				tab.label = tab.label || '';
 				editable.tabs.push( new Tab( tabs[i], editable ));
 			};
+
+			container.tabs();
 		},
 
 		// The `render()` method is called once per editable to create all components
@@ -348,7 +338,7 @@ function( Aloha, jQuery, Ui ) {
 			     && editable.settings.toolbar.tabs.length ) {
 				 tabs = editable.settings.toolbar.tabs;
 			} else {
-				// TODO (petro@gentics.com): For now we automatically create
+				// TODO(petro@gentics.com): For now we automatically create
 				// a tab if we encounter a `components` property that has not
 				// been defined within a tab. But we should move to canonize
 				// the way that the toolbar is configured so that the
@@ -364,8 +354,7 @@ function( Aloha, jQuery, Ui ) {
 			jQuery( '<div>', {
 				'class': 'aloha-toolbar-tabs-container'
 			})
-			.appendTo( editable.toolbar )
-			.tabs();
+			.appendTo( editable.toolbar );
 
 			this.initializeTabs( tabs, editable );
 		},
