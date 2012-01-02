@@ -31,7 +31,7 @@ function( Aloha, jQuery, Ui ) {
 	 *
 	 * @param {object} options Information about the tab to be created,
 	 *                         including the tab's label, and array of
-	 *                         components groups it will contail.
+	 *                         component groups it will contain.
 	 * @param {Aloha.Editable} editable The editable who's toolbar this tab
 	 *                                  will belong to.
 	 * @constructor
@@ -46,6 +46,7 @@ function( Aloha, jQuery, Ui ) {
 
 		/**
 		 * Clickable tab handle which pairs with a corresponding panel element.
+		 * TODO: Currently unused.
 		 * @type {jQuery<HTMLElement>}
 		 */
 		this.handle = null;
@@ -53,12 +54,14 @@ function( Aloha, jQuery, Ui ) {
 		/**
 		 * A reference to the inner element which holds the text and icon for
 		 * this tab's handle. We keep a reference to it for easy access.
+		 * TODO: Currently unused.
 		 * @type {jQuery<HTMLElement>}
 		 */
 		this.title = null;
 
 		/**
 		 * The container element for this tab's panel.
+		 * TODO: Currently unused.
 		 * @type {jQuery<HTMLElement>}
 		 */
 		this.panel = null;
@@ -70,7 +73,7 @@ function( Aloha, jQuery, Ui ) {
 		this.editable = null;
 
 		/**
-		 * A positive integer denoting the position of this tab in among
+		 * A positive integer denoting the zero-base index of this tab among
 		 * the toolbar tabs.
 		 * @type {number}
 		 */
@@ -83,10 +86,8 @@ function( Aloha, jQuery, Ui ) {
 		this.activated = true;
 
         /**
-         * Given a value which represents an activateOn test, this function
-		 * will coerce the `activateOn` value into a predicate function.
-		 * This function is used to generate the `Tab.shouldActivate` method
-		 * for each tab instance.
+         * Given a value which represents an activateOn test, coerce the value
+		 * into a predicate function.
 		 * @param {string|boolean|function():boolean} activateOn
 		 * @return {function():boolean}
          */
@@ -117,25 +118,24 @@ function( Aloha, jQuery, Ui ) {
 		this.init.apply( this, arguments );
 	};
 
-	// Tab prototype methods
+	//
+	// Prototype methods for Tab the object.
+	//
 
 	(function() {
 
 		/**
-		 * Initializes the tab, with its options.
+		 * Initialize a tab, with its options.
 		 * @param {object} options Information about the tab to be created,
 		 *                         including the tab's label, and array of
-		 *                         components.
+		 *                         component groups.
 		 * @param {Aloha.Editable} editable The editable who's toolbar this tab
 	 	 *                                  will belong to.
 	 	 */
 		this.init = function( options, editable ) {
 			var container = editable.toolbar.find( '.aloha-toolbar-tabs-container' );
 
-			if ( !container.length ) {
-				// TODO: raise an error
-				return;
-			}
+			// console.assert( container.length === 1 )	
 
 			this.uid = options.uid;
 			this.editable = editable;
@@ -155,6 +155,8 @@ function( Aloha, jQuery, Ui ) {
 			).appendTo( container.find( 'ul.aloha-toolbar-tab-handles' ));
 
 			this.title = this.handle.find('>a>span');
+
+			// console.assert( this.title.length === 1 )
 
 			container.tabs( 'add', '#' + this.uid, options.label );
 
@@ -186,7 +188,7 @@ function( Aloha, jQuery, Ui ) {
 		};
 
 		/**
-		 *
+		 * Make this tab accessible on the toolbar.
 		 */
 		this.activate = function() {
 			var tabs = this.container.find( 'ul.aloha-toolbar-tab-handles>li' );
@@ -196,8 +198,8 @@ function( Aloha, jQuery, Ui ) {
 
 				this.activated = true;
 
-				// If no tabs are selected, the select this tab which we have
-				// just activated.
+				// If no tabs are selected, then select the tab which just
+				// activated.
 				if ( this.container.tabs( 'option', 'selected' ) == -1 ) {
 					this.container.tabs( 'select', this.index );
 				}
@@ -205,7 +207,7 @@ function( Aloha, jQuery, Ui ) {
 		};
 
 		/**
-		 *
+		 * Make this tab disappear from the toolbar.
 		 */
 		this.deactivate = function() {
 			var tabs = this.container.find( 'ul.aloha-toolbar-tab-handles>li' );
@@ -242,20 +244,12 @@ function( Aloha, jQuery, Ui ) {
 	// There are separate components for each editable,
 	// but only the components for the active editable are shown.
 	//
-	// The toolbar is a container for tabs. Tabs serve to group together
-	// groups of control components so that they can be shown and hidden
-	// together in their feature/functional set. For exmaple groups of
-	// table controls would be placed in a table tab, groups of list
-	// controls in an image tab, and so forth.
-	// A typical toolbar config
+	// As a container for tabs, the toolbar serves to group together groupes of
+	// control components so that they can be shown and hidden together in their
+	// feature/functional set. For exmaple groups of table controls would be
+	// placed in a table tab, groups of list controls in an image tab, and so
+	// forth.
 	Ui.toolbar = {
-
-		/**
-		 * This array holds the collection of tabs attached to this toolbar
-		 * instance.
-		 * @type {Array.<Tab>}
-		 */
-		tabs: [],
 
 		// The `active` property tracks which editable instance is currently active.
 		active: null,
@@ -277,24 +271,6 @@ function( Aloha, jQuery, Ui ) {
 			.hide()
 			.appendTo( "body" );
 
-			// When an editable is activated, we show its associated controls.
-			Aloha.bind( "aloha-editable-activated", function( event, alohaEvent ) {
-				toolbar.show( alohaEvent.editable );
-			});
-
-			// When an editable is deactivated, we hide its associated controls.
-			// This is currently disabled because we didn't want to implement the
-			// logic for not deactivating the editable when the toolbar gains focus.
-			Aloha.bind( "aloha-editable-deactivated", function( event, alohaEvent ) {
-				toolbar.active = false;
-				// Wait if another editable activates the toolbar
-				setTimeout( function() {
-					if ( !toolbar.active ) {
-						toolbar.hide( alohaEvent.editable );
-					}
-				}, 10 );
-			});
-
 			this.subscribeEventHandlers( toolbar );
 		},
 
@@ -314,7 +290,7 @@ function( Aloha, jQuery, Ui ) {
 				'class': 'aloha-toolbar-tabs-panels'
 			}).appendTo( container );
 
-			// Inflate tabs defined in `toolbar.settings` information.
+			// Inflate tabs defined in `toolbar.settings`
 
 			var tab;
 			var tabsUidPrefix = GENTICS.Utils.guid() + '-';
@@ -338,17 +314,24 @@ function( Aloha, jQuery, Ui ) {
 				"class": "aloha-toolbar-wrap"
 			});
 
-			// Prepare a list of tabs--either read from the toolbar settings,
-			// or constructed form the `components` property if no tabs have
-			// been specified in this editable's settings.
+			// Prepare a list of tabs by reading the toolbar settings.
+
 			var tabs;
+			var numUnnamedTabs = 0;
 
 			if ( editable.settings.toolbar.tabs
 			     && editable.settings.toolbar.tabs.length ) {
 				 tabs = editable.settings.toolbar.tabs;
 			} else {
+				// TODO (petro@gentics.com): For now we automatically create
+				// a tab if we encounter a `components` property that has not
+				// been defined within a tab. But we should move to canonize
+				// the way that the toolbar is configured so that the
+				// `component` array must be defined within a tab object.
+
 				tabs = [{
-					name: '',
+					label: 'Unnamed #' + ( ++numUnnamedTabs ),
+					activateOn: true, // never hide this tab
 					components: editable.settings.toolbar.components
 				}];
 			}
@@ -384,14 +367,35 @@ function( Aloha, jQuery, Ui ) {
 			}
 		},
 
+		/**
+		 * Bind the necessary event handlers for the toolbar.
+		 * @param {ui.toolbar} toolbar
+		 */
 		subscribeEventHandlers: function( toolbar ) {
-			var that = this;
-
 			Aloha.bind( 'aloha-selection-changed', function( event, range ) {
-				that.checkActiveTabs( range );
+				toolbar.checkActiveTabs( range );
 			});
 
-			// Flag the next selection change event to be ignored
+			// When an editable is activated, we show its associated controls.
+			Aloha.bind( "aloha-editable-activated", function( event, alohaEvent ) {
+				toolbar.show( alohaEvent.editable );
+			});
+
+			// When an editable is deactivated, we hide its associated controls.
+			// This is currently disabled because we didn't want to implement the
+			// logic for not deactivating the editable when the toolbar gains focus.
+			Aloha.bind( "aloha-editable-deactivated", function( event, alohaEvent ) {
+				toolbar.active = false;
+				// Wait if another editable activates the toolbar
+				setTimeout( function() {
+					if ( !toolbar.active ) {
+						toolbar.hide( alohaEvent.editable );
+					}
+				}, 10 );
+			});
+
+			// Flag the next selection change event to be ignored whenever the
+			// toolbar is clicked.
 
 			var editable = Aloha.activeEditable && Aloha.activeEditable.obj;
 
@@ -410,9 +414,10 @@ function( Aloha, jQuery, Ui ) {
 		},
 
 		/**
-		 * Determines the effective elements at the current selection. Iterates
-		 * all tabs and checks whether the tab should be activated for any of the
-		 * effective elements in the selection.
+		 * Determine the effective elements at the current selection. Then
+		 * iterates all tabs associated with this editable's toolbar and check
+		 * whether the tab should be activated for any of the effective elements
+		 * in the current selection.
 		 * @param {Aloha.RangeObject} range
 		 */
 		 checkActiveTabs: function( range ) {
@@ -444,9 +449,9 @@ function( Aloha, jQuery, Ui ) {
 		 *                                       which may activate the tab.
 		 */
 		showActiveTab: function( tab, elements ) {
-			// We have to add a null object to the list of elements to allow us
-			// to check whether the panel should be visible when we have no
-			// effective elements in the current selection.
+			// Add a null object to the elements array so that we can test
+			// whether the panel should be activated when we have no effective
+			// elements in the current selection.
 			elements.push(null);
 
 			var shouldActivate = tab.shouldActivate;
