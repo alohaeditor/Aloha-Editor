@@ -17,17 +17,25 @@
 			toolbar: {
 				tabs: [
 					{
-						label: "Tab <b>1</b>",
+						label: "Tab <i>on italic</i>",
 						activateOn: "i",
-						components: [ [ "bold" ], [ "bold", "bold" ] ]
+						components: [
+							[ "bold" ],
+							[ "italic", "italic" ]
+						]
 					},
 					{
-						label: "Tab 2",
-						activateOn: "p",
+						label: "Tab <b>on bold</b>",
+						activateOn: "b",
 						components: [
-							[ "italic", "italic" ],
-							[ "bold", "bold", "bold" ]
+							[ "italic" ],
+							[ "bold", "bold" ]
 						]
+					},
+					{
+						label: "Another Tab",
+						activateOn: true,
+						components: [ [ "bold", "italic" ], [ "formatBlock" ] ]
 					}
 				],
 				components: [ [ "bold", "italic" ], [ "formatBlock" ] ]
