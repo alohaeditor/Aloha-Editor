@@ -21,6 +21,10 @@ function( Aloha, jQuery, Class ) {
 			Aloha.bind( "aloha-selection-changed aloha-command-executed", jQuery.proxy( function( event, range ) {
 				this.selectionChange( range );
 			}, this ) );
+
+			// TODO(p.salema@gentics.com): Consider implementing "aloha-node-changed'
+			// which would be trigger only when the user selection moves from one node
+			// into another.
 			
 			this.init();
 			if ( init ) {
