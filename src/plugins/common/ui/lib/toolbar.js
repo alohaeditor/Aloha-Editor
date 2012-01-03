@@ -15,14 +15,13 @@ function( Aloha, jQuery, Ui ) {
 	 * Tabs can be defined declaritivly in the Aloha configuration in the
 	 * following manner:
 
-	   Aloha.settings.toolbar.tabs: [
-		{
-			label: 'Lists',
-			activateOn: 'ul,ol,*.parent(ul,ol)',
-			components: [
-				[ 'orderedList', 'unorderedList' ],
-			]
-		}
+		Aloha.settings.toolbar.tabs: [
+			{
+				label: 'Lists',
+				activateOn: 'ul,ol,*.parent(.aloha-editable ul,.aloha-editable ol)',
+				components: [ [ 'orderedList', 'unorderedList' ] ]
+			}
+		]
 
 	 * Alternatively, tabs can also be created imperatively in this way:
 	 * `new Tab( options, editable )`.
@@ -65,17 +64,17 @@ function( Aloha, jQuery, Ui ) {
 		this.editable = null;
 
 		/**
-		 * A positive integer denoting the zero-base index of this tab among
-		 * the toolbar tabs.
+		 * A positive integer denoting the zero-base index of this tab's
+		 * position in the set toolbar tabs for a given editable.
 		 * @type {number}
 		 */
 		this.index = null;
 
 		/**
-		 * True if the tab is activated.
+		 * True if this tab is activated.
 		 * @type {boolean}
 		 */
-		this.activated = true;
+		this.activated = false;
 
         /**
          * Given a value which represents an activateOn test, coerce the value
@@ -111,7 +110,7 @@ function( Aloha, jQuery, Ui ) {
 	};
 
 	//
-	// Prototype methods for Tab the object.
+	// Prototype methods for the Tab object.
 	//
 
 	(function() {
@@ -125,18 +124,13 @@ function( Aloha, jQuery, Ui ) {
 	 	 *                                  will belong to.
 	 	 */
 		this.init = function( options, editable ) {
-			var container = editable.toolbar.find( '.aloha-toolbar-tabs-container' );
+			this.container = editable.toolbar.find( '.aloha-toolbar-tabs-container' );
 
-			// console.assert( container.length === 1 )	
+			// console.assert( this.container.length === 1 )	
 
 			this.uid = options.uid;
 			this.editable = editable;
 			this.index = editable.tabs.length;
-			this.container = container;
-
-			var panel = this.panel = jQuery( '<div>', {
-				id : this.uid
-			}).appendTo( container.find( '.aloha-toolbar-tabs-panels' ));
 
 			this.handle = jQuery(
 				  '<li>'
@@ -144,9 +138,9 @@ function( Aloha, jQuery, Ui ) {
 				+		options.label
 				+   '</a>'
 				+ '</li>'
-			).appendTo( container.find( 'ul.aloha-toolbar-tab-handles' ));
+			);
 
-			// container.tabs( 'add', '#' + this.uid, options.label );
+			var panel = this.panel = jQuery( '<div>', { id : this.uid });
 
 			jQuery.each( options.components, function() {
 				var group = jQuery( '<div>', {
@@ -161,6 +155,14 @@ function( Aloha, jQuery, Ui ) {
 					group.append( component.element );
 				});
 			});
+
+			this.handle
+			    .appendTo( this.container.find( 'ul.aloha-toolbar-tab-handles' ))
+				.hide();
+
+			this.panel
+			    .appendTo( this.container.find( '.aloha-toolbar-tabs-panels' ))
+				.hide();
 		};
 
 		/**
@@ -207,13 +209,15 @@ function( Aloha, jQuery, Ui ) {
 			var tabs = this.container.find( 'ul.aloha-toolbar-tab-handles>li' );
 
 			if ( tabs.length ) {
-				jQuery( tabs[ this.index ] ).show();
-
+				this.show();
 				this.activated = true;
 
-				// If no tabs are selected, then select the tab which just
+				// If no tabs are selected, then select the tab which was just
 				// activated.
-				if ( this.container.tabs( 'option', 'selected' ) == -1 ) {
+				if ( this.container.find( '.ui-tabs-active' ).length == 0 ) {
+					this.container.tabs( 'select', this.index );
+				} else if ( this.container.tabs( 'option', 'selected' )
+				            == this.index ) {
 					this.container.tabs( 'select', this.index );
 				}
 			}
@@ -226,8 +230,7 @@ function( Aloha, jQuery, Ui ) {
 			var tabs = this.container.find( 'ul.aloha-toolbar-tab-handles>li' );
 
 			if ( tabs.length ) {
-				jQuery( tabs[ this.index ] ).hide();
-
+				this.hide();
 				this.activated = false;
 
 				// If the tab we just deactivated was the selected tab, then we
@@ -243,9 +246,23 @@ function( Aloha, jQuery, Ui ) {
 						}
 					}
 
-					this.container.tabs( 'select', -1 );
+					// This does not work...
+					// this.container.tabs( 'select', -1 );
+
+					this.handle.removeClass( 'ui-tabs-active' );
 				}
 			}
+		};
+
+		this.hide = function() {
+			this.handle.hide();
+			// this.panel.hide();
+		};
+
+		this.show = function() {
+			this.handle.show();
+			// Defere the showing of tab panels to when the tab is selected.
+			// this.panel.show();
 		};
 
 	}).call( Tab.prototype );
@@ -365,6 +382,7 @@ function( Aloha, jQuery, Ui ) {
 			if ( !editable.toolbar ) {
 				this.render( editable );
 			}
+
 			// We hide any active controls and show this editable's controls.
 			this.element.children().detach();
 			this.element.append( editable.toolbar );

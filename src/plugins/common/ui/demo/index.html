@@ -51,13 +51,24 @@
 		var $ = Aloha.jQuery;
 		$( "#main" ).aloha({
 			toolbar: {
-				tabs: [],
-				components: [
-					[ "bold", "italic", "underline", "pipe", "strikethrough", "pipe", "subscript", "superscript" ],
-					[ "orderedList", "unorderedList", "indentList", "outdentList", "pipe", "formatBlock" ],
-					[ "link", "editLink", "removeLink", "linkBrowser", "pipe", "abbr", "editAbbr" ],
-					[ "bold", "bold", "bold", "bold" ]
-				]
+				tabs: [
+					{
+						label: 'Formatting',
+						activateOn: true,
+						components: [
+							[ "bold", "italic", "underline", "pipe", "strikethrough", "pipe", "subscript", "superscript" ],
+							[ "orderedList", "unorderedList", "indentList", "outdentList", "pipe", "formatBlock" ],
+							[ "link", "editLink", "removeLink", "linkBrowser", "pipe", "abbr", "editAbbr" ]
+						]
+					},
+					{
+						label: 'Lists',
+						activateOn: 'ul,ol,*.parent(.aloha-editable ul, .aloha-editable ol)',
+						components: [
+							[ "orderedList", "unorderedList", "pipe", "indentList", "outdentList" ]
+						]
+					},
+				],
 			},
 			formatBlock: {
 				blocks: [ "pre", "h1", "p", "h2", "h3" ],
@@ -79,7 +90,7 @@
 
 <div id="uhoh" contenteditable>
 <p>More than one instance...</p>
-<p>This is gonna be trouble!</p>
+<p>This <b>is</b> <i>gonna</i> be <i><b>trouble!</b></i></p>
 </div>
 
 </body>
