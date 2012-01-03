@@ -45,14 +45,12 @@ function( Aloha, jQuery, Ui ) {
 
 		/**
 		 * Clickable tab handle which pairs with a corresponding panel element.
-		 * TODO: Currently unused.
 		 * @type {jQuery<HTMLElement>}
 		 */
 		this.handle = null;
 
 		/**
 		 * The container element for this tab's panel.
-		 * TODO: Currently unused.
 		 * @type {jQuery<HTMLElement>}
 		 */
 		this.panel = null;
@@ -261,7 +259,8 @@ function( Aloha, jQuery, Ui ) {
 
 		this.show = function() {
 			this.handle.show();
-			// Defere the showing of tab panels to when the tab is selected.
+			// Defer the showing of tab panels to occure when the tab is
+			// selected.
 			// this.panel.show();
 		};
 
@@ -274,7 +273,7 @@ function( Aloha, jQuery, Ui ) {
 	// There are separate components for each editable,
 	// but only the components for the active editable are shown.
 	//
-	// As a container for tabs, the toolbar serves to group together groupes of
+	// As a container for tabs, the toolbar serves to group together groups of
 	// control components so that they can be shown and hidden together in their
 	// feature/functional set. For exmaple groups of table controls would be
 	// placed in a table tab, groups of list controls in an image tab, and so
@@ -304,9 +303,15 @@ function( Aloha, jQuery, Ui ) {
 			this.subscribeEventHandlers( toolbar );
 		},
 
+		/**
+		 * Generate containers for tabs inside the toolbar wrapper div, and
+		 * inflates tabs from an of tab definition.
+		 * Invokes jQueryUI Tabs on the container created inside the toolbar.
+		 * @param {Array.<Object>} tabs Tab settings from `toolbar.settings`.
+		 * @param {Aloha.Editable} editable The editable whose toolbar will
+		 *                                  hold the inflated tags.
+		 */
 		initializeTabs: function( tabs, editable ) {
-			// Generate containers for tabs inside the toolbar wrapper div.
-
 			editable.tabs = editable.tabs || [];
 
 			var container = jQuery( editable.toolbar )
@@ -320,7 +325,6 @@ function( Aloha, jQuery, Ui ) {
 				'class': 'aloha-toolbar-tabs-panels'
 			}).appendTo( container );
 
-			// Inflate tabs defined in `toolbar.settings`
 
 			var tab;
 			var tabsUidPrefix = GENTICS.Utils.guid() + '-';
