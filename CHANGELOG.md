@@ -2,6 +2,10 @@
 
 This document is to serve as a "what has been done" in terms of the [Roadmap](http://aloha-editor.org/wiki/Roadmap)
 
+## 0.20.1
+
+- table-plugin: fixed incorrect repairing of tables (cells were appended to rows containing th elements)
+
 ## 0.20.0
 
 - doc/api: added first version of new API docs. Please note that the API docs are currently work in progress.
