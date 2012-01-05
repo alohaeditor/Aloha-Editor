@@ -10,12 +10,12 @@
  *
  * Note
  * ===
- *		* This documentation is a "thinking out load," and very much "work in
- *		  work in progress--as is the Aloha UI API itself.
+ *    * This documentation is a "thinking out loud," and very much "work in
+ *      work in progress--as is the Aloha UI API itself.
  *
- *		* For flexibility and ease, the Aloha UI API will not contrain the
- *		  developer to these semantics, but will naively assume that these
- *		  semantics are observed.
+ *    * For flexibility and ease, it seems that it would be best that the Aloha
+ *      UI API will not contrain the developer to these semantics, but will
+ *      naively assume that these semantics are observed.
  *
  * Components
  * ---
@@ -54,10 +54,10 @@ function( Aloha, jQuery, Class ) {
 	/**
 	 * This object provides a unique associative container which maps hashed
 	 * `showOn` values (see `generateKeyForShowOnValue()`) with objects that
-	 * hold a corresponding `shouldShow` function (that is derived from the
-	 * `showOn` value) and an array of containers which share this predicate.
-	 * The main advantage we get from a hash set is that lookups can be done in
-	 * constant time.
+	 * hold a corresponding `shouldShow` function (which is also derived from
+	 * the `showOn` value), and an array of containers which share this
+	 * predicate.  The main advantage we get from a hash set is that lookups
+	 * can be done in constant time.
 	 * @type {object.<string, object>}
 	 */
 	var showGroups = {};
@@ -140,11 +140,11 @@ function( Aloha, jQuery, Class ) {
 	 * if we were to test each container's `shouldShow` function individually,
 	 * we would do so at a cost of O(num_of_elements * N) in any and all cases.
 	 * But by grouping containers into sets that have functionally equivalent
-	 * `showOn` conditions, minimizes the work we have to do for most cases,
+	 * `showOn` conditions, we minimize the work we have to do for most cases,
 	 * since it is likely that there will often be containers which have the same
-	 * condition when they are to be shown.
+	 * condition regarding when they are to be shown.
 	 *
-	 * Having organized our data in this way allows this function to perform 1 *
+	 * Organized our data in this way allows this function to perform 1 *
 	 * (number of elements) `shouldShow` test for N containers in most cases,
 	 * rather than N * (number of elements) tests for N containers in all
 	 * cases.
@@ -158,7 +158,6 @@ function( Aloha, jQuery, Class ) {
 		// the current selection.
 		elements.push( null );
 
-		// For all groups ... 
 		for ( var group in showGroups ) {
 			var shouldShow = group.shouldShow;
 
@@ -168,7 +167,6 @@ function( Aloha, jQuery, Class ) {
 
 			var j = elements.length;
 
-			// ... test group's `shouldShow` function ...
 			while ( j ) {
 				if ( shouldShow( elements[ --j ] ) ) {
 					toggleContainers( group.container, 'show' );	
@@ -363,8 +361,8 @@ function( Aloha, jQuery, Class ) {
 	// ------------------------------------------------------------------------
 	// Tests
 	// ------------------------------------------------------------------------
-	/*
 	var c1 = new Container();
+	/*
 	var c2 = new Container({
 		showOn: 'p>i'
 	});
