@@ -34,68 +34,68 @@
 	<script>
 	var tests = {
 			defaultValue: '',
-			defaultCommand: 'strikethrough',
-			defaultAttributes: [ 'line-through' ],
+			defaultCommand: 'underline',
+			defaultAttributes: [ 'underline' ],
 			tests: [		        
-					{  	start: 'fo[o<s>b]ar</s>baz',
+					{  	start: 'fo[o<u>b]ar</u>baz',
 					   	indetermResult: true,
 					   	stateResult: false
 					},
-					{  	start: 'foo<s>ba[r</s>b]az',
+					{  	start: 'foo<u>ba[r</u>b]az',
 					   	indetermResult: true,
 					   	stateResult: false
 					},
-					{  	start: 'fo[o<s>bar</s>b]az',
+					{  	start: 'fo[o<u>bar</u>b]az',
 					   	indetermResult: true,
 					   	stateResult: false
 					},
-					{  	start: 'foo[<s>b]ar</s>baz',
+					{  	start: 'foo[<u>b]ar</u>baz',
 					   	indetermResult: false,
 					   	stateResult: true
 					},
-					{  	start: 'foo<s>ba[r</s>]baz',
+					{  	start: 'foo<u>ba[r</u>]baz',
 					   	indetermResult: false,
 					   	stateResult: true
 					},
-					{  	start: 'foo[<s>bar</s>]baz',
+					{  	start: 'foo[<u>bar</u>]baz',
 					   	indetermResult: false,
 					   	stateResult: true
 					},
-					{  	start: 'foo<s>[bar]</s>baz',
+					{  	start: 'foo<u>[bar]</u>baz',
 					   	indetermResult: false,
 					   	stateResult: true
 					},
-					{  	start: 'foo{<s>bar</s>}baz',
+					{  	start: 'foo{<u>bar</u>}baz',
 					   	indetermResult: false,
 					   	stateResult: true
 					},
-					{  	start: 'fo[o<span style=text-decoration:line-through>b]ar</span>baz',
+					{  	start: 'fo[o<span style=text-decoration:underline>b]ar</span>baz',
 					   	indetermResult: true,
 					   	stateResult: false
 					},
 					{  	start: 'foo[bar]baz',
-              execResult: 'foo<s>[bar]</s>baz'
+              execResult: 'foo<u>[bar]</u>baz'
           },
-          {  	start: 'foo<s>[bar]</s>baz',
+          {  	start: 'foo<u>[bar]</u>baz',
               execResult: 'foo[bar]baz'
           },
-					{  	start: 'foo<s>[bar</s>]baz',
+					{  	start: 'foo<u>[bar</u>]baz',
               execResult: 'foo[bar]baz' 
           },
-					{  	start: 'foo<s>b[ar</s>]baz',
-              execResult: 'foo<s>b</s>[ar]baz' 
+					{  	start: 'foo<u>b[ar</u>]baz',
+              execResult: 'foo<u>b</u>[ar]baz' 
           },
-					{  	start: 'foo<s>bar[</s>b]az',
-              execResult: 'foo<s>bar[b]</s>az'
+					{  	start: 'foo<u>bar[</u>b]az',
+              execResult: 'foo<u>bar[b]</u>az'
           },
-					{  	start: 'foo<s>bar[</s>b]az',
-              execResult: 'foo<s>bar[b]</s>az' 
+					{  	start: 'foo<u>bar[</u>b]az',
+              execResult: 'foo<u>bar[b]</u>az' 
           },
 					{  	start: 'foo[]bar',
               execResult: 'foo[]bar' 
           },
-					{  	start: '<s>foo[]bar</s>',
-              execResult: '<s>foo[]bar</s>' 
+					{  	start: '<u>foo[]bar</u>',
+              execResult: '<u>foo[]bar</u>' 
           },
 					{  	start: '<span>foo</span>{}<span>bar</span>',
               execResult: '<span>foo[]</span><span>bar</span>' 
@@ -104,212 +104,212 @@
               execResult: '<span>foo[]</span><span>bar</span>' 
           },
 					{  	start: 'foo[bar<b>bam]baz</b>',
-              execResult: 'foo<s>[bar</s><b><s>bam]</s>baz</b>' 
+              execResult: 'foo<u>[bar</u><b><u>bam]</u>baz</b>' 
           },
 					{  	start: 'foo<span contenteditable=false>[bar]</span>baz',
 					   	execResult: 'foo<span contenteditable=false>[bar]</span>baz' 
 					},
 					{  	start: 'fo[o<span contenteditable=false>bar</span>b]az',
-					   	execResult: 'fo<s>[o</s><span contenteditable=false>bar</span><s>b]</s>az' 
+					   	execResult: 'fo<u>[o</u><span contenteditable=false>bar</span><u>b]</u>az' 
 					},
 					{  	start: 'foo<span contenteditable=false>ba[r]</span>baz',
 					   	execResult: 'foo<span contenteditable=false>ba[r]</span>baz' 
 					},
 					{  	start: 'fo[o<span contenteditable=false>b]ar</span>baz',
-					   	execResult: 'fo<s>[o]</s><span contenteditable=false>bar</span>baz' 
+					   	execResult: 'fo<u>[o]</u><span contenteditable=false>bar</span>baz' 
 					},
-					{  	start: 'fo[<s>o</s><span contenteditable=false>bar</span><s>b</s>]az',
+					{  	start: 'fo[<u>o</u><span contenteditable=false>bar</span><u>b</u>]az',
 					   	execResult: 'fo[o<span contenteditable=false>bar</span>b]az' 
 					},
 					{  	start: '<span contenteditable=false>foo<span contenteditable=true>[bar]</span>baz</span>',
-					   	execResult: '<span contenteditable=false>foo<span contenteditable=true><s>[bar]</s></span>baz</span>' 
+					   	execResult: '<span contenteditable=false>foo<span contenteditable=true><u>[bar]</u></span>baz</span>' 
 					},
 					{  	start: '<span contenteditable=false>fo[o<span contenteditable=true>bar</span>b]az</span>',
-					   	execResult: '<span contenteditable=false>fo[o<span contenteditable=true><s>bar</s></span>b]az</span>' 
+					   	execResult: '<span contenteditable=false>fo[o<span contenteditable=true><u>bar</u></span>b]az</span>' 
 					},
 					{  	start: '<span contenteditable=false>foo<span contenteditable=true>ba[r</span>b]az</span>',
-					   	execResult: '<span contenteditable=false>foo<span contenteditable=true>ba<s>[r]</s></span>baz</span>' 
+					   	execResult: '<span contenteditable=false>foo<span contenteditable=true>ba<u>[r]</u></span>baz</span>' 
 					},
 					{  	start: '<span contenteditable=false>fo[o<span contenteditable=true>b]ar</span>baz</span>',
 					   	execResult: '<span contenteditable=false>fo[o]<span contenteditable=true>bar</span>baz</span>' 
 					},
-					{  	start: '<span contenteditable=false>fo[<s>o<span contenteditable=true>bar</span>b</s>]az</span>',
+					{  	start: '<span contenteditable=false>fo[<u>o<span contenteditable=true>bar</span>b</u>]az</span>',
 					   	execResult: '<span contenteditable=false>fo<i>[o<span contenteditable=true><span style="font-style: normal;">bar</span></span>b]</i>az</span>' 
 					},
 					{  	start: '<table><tbody><tr><td>foo<td>b[a]r<td>baz</table>',
-					   	execResult: '<table><tbody><tr><td>foo<td>b<s>[a]</s>r<td>baz</table>' 
+					   	execResult: '<table><tbody><tr><td>foo<td>b<u>[a]</u>r<td>baz</table>' 
 					},
 					{  	start: '<table><tbody><tr data-start=1 data-end=2><td>foo<td>bar<td>baz</table>',
-					   	execResult: '<table><tbody><tr><td>foo<td><s>[bar</s><td>}baz</table>' 
+					   	execResult: '<table><tbody><tr><td>foo<td><u>[bar</u><td>}baz</table>' 
 					},
 					{  	start: '<table><tbody><tr data-start=0 data-end=2><td>foo<td>bar<td>baz</table>',
-					   	execResult: '<table><tbody><tr><td><s>[foo</s><td><s>bar</s><td>}baz</table>' 
+					   	execResult: '<table><tbody><tr><td><u>[foo</u><td><u>bar</u><td>}baz</table>' 
 					},
 					{  	start: '<table><tbody data-start=0 data-end=1><tr><td>foo<td>bar<td>baz</table>',
-					   	execResult: '<table><tbody><tr><td><s>[foo</s><td><b>bar</b><td><b>baz</b></table>}' 
+					   	execResult: '<table><tbody><tr><td><u>[foo</u><td><b>bar</b><td><b>baz</b></table>}' 
 					},
 					{  	start: '<table data-start=0 data-end=1><tbody><tr><td>foo<td>bar<td>baz</table>',
-					   	execResult: '{<table><tbody><tr><td><s>foo</s><td><s>bar</s><td><s>baz</s></table>}' 
+					   	execResult: '{<table><tbody><tr><td><u>foo</u><td><u>bar</u><td><u>baz</u></table>}' 
 					},
 					{  	start: '{<table><tr><td>foo<td>bar<td>baz</table>}',
-					   	execResult: '{<table><tr><td><s>foo</s><td><s>bar</s><td><s>baz</s></table>}' 
+					   	execResult: '{<table><tr><td><u>foo</u><td><u>bar</u><td><u>baz</u></table>}' 
 					},
-					{  	start: 'foo<span style="text-decoration: line-through">[bar]</span>baz',
+					{  	start: 'foo<span style="text-decoration: underline">[bar]</span>baz',
 					   	execResult: 'foo[bar]baz' 
 					},
-					{  	start: 'foo<s>[bar]</s>baz',
+					{  	start: 'foo<u>[bar]</u>baz',
 					   	execResult: 'foo[bar]baz' 
 					},
-					{  	start: 'foo<s>bar</s>[baz]',
-					   	execResult: 'foo<s>bar[baz]</s>' 
+					{  	start: 'foo<u>bar</u>[baz]',
+					   	execResult: 'foo<u>bar[baz]</u>' 
 					},
-					{  	start: '[foo]<s>bar</s>baz',
-					   	execResult: '<s>[foo]bar</s>baz' 
+					{  	start: '[foo]<u>bar</u>baz',
+					   	execResult: '<u>[foo]bar</u>baz' 
 					},
-					{  	start: '<s>foo</s>[bar]<s>baz</s>',
-					   	execResult: '<s>foo[bar]baz</s>' 
+					{  	start: '<u>foo</u>[bar]<u>baz</u>',
+					   	execResult: '<u>foo[bar]baz</u>' 
 					},
 					{  	start: '[foo]<strong>bar</strong>baz',
-					   	execResult: '<s>[foo]</s><strong>bar</strong>baz' 
+					   	execResult: '<u>[foo]</u><strong>bar</strong>baz' 
 					},
 					{  	start: '<strong>foo</strong>[bar]<strong>baz</strong>',
-					   	execResult: '<strong>foo</strong><s>[bar]</s><strong>baz</strong>' 
+					   	execResult: '<strong>foo</strong><u>[bar]</u><strong>baz</strong>' 
 					},
-					{  	start: '<s>foo</s>[bar]<strong>baz</strong>',
-					   	execResult: '<s>foo[bar]</s><strong>baz</strong>' 
+					{  	start: '<u>foo</u>[bar]<strong>baz</strong>',
+					   	execResult: '<u>foo[bar]</u><strong>baz</strong>' 
 					},
-					{  	start: '<strong>foo</strong>[bar]<s>baz</s>',
-					   	execResult: '<strong>foo</strong><s>[bar]baz</s>' 
+					{  	start: '<strong>foo</strong>[bar]<u>baz</u>',
+					   	execResult: '<strong>foo</strong><u>[bar]baz</u>' 
 					},
-					{  	start: 'foo[<s>bar</s>]baz',
+					{  	start: 'foo[<u>bar</u>]baz',
 					   	execResult: 'foo[bar]baz' 
 					},
-					{  	start: 'foo[<s>bar]</s>baz',
+					{  	start: 'foo[<u>bar]</u>baz',
 					   	execResult: 'foo[bar]baz' 
 					},
-					{  	start: 'foo<s>[bar</s>]baz',
+					{  	start: 'foo<u>[bar</u>]baz',
 					   	execResult: 'foo[bar]baz' 
 					},
-					{  	start: 'foo{<s></s>}baz',
+					{  	start: 'foo{<u></u>}baz',
 					   	execResult: 'foo[]baz' 
 					},
 					{  	start: 'foo{<b></b>}baz',
 					   	execResult: 'foo[]baz' 
 					},
-					{  	start: 'foo{<s><b></b></s>}baz',
+					{  	start: 'foo{<u><b></b></u>}baz',
 					   	execResult: 'foo[]baz' 
 					},
-					{  	start: 'foo{<b><s></s></b>}baz',
+					{  	start: 'foo{<b><u></u></b>}baz',
 					   	execResult: 'foo[]baz' 
 					},
-					{  	start: 'foo<span style="text-decoration: line-through">[bar]</span>baz',
+					{  	start: 'foo<span style="text-decoration: underline">[bar]</span>baz',
 					   	execResult: 'foo[bar]baz' 
 					},
-					{  	start: 'foo[<span style="text-decoration: line-through">bar</span>]baz',
+					{  	start: 'foo[<span style="text-decoration: underline">bar</span>]baz',
 					   	execResult: 'foo[bar]baz' 
 					},
-					{  	start: 'foo[<span style="text-decoration: line-through">bar]</span>baz',
+					{  	start: 'foo[<span style="text-decoration: underline">bar]</span>baz',
 					   	execResult: 'foo[bar]baz' 
 					},
-					{  	start: 'foo<span style="text-decoration: line-through">[bar</span>]baz',
+					{  	start: 'foo<span style="text-decoration: underline">[bar</span>]baz',
 					   	execResult: 'foo[bar]baz' 
 					},
-					{  	start: '<s>{<p>foo</p><p>bar</p>}<p>baz</p></s>',
-					   	execResult: '<p>[foo</p><p>bar</p><p>}<s>baz</s></p>' 
+					{  	start: '<u>{<p>foo</p><p>bar</p>}<p>baz</p></u>',
+					   	execResult: '<p>[foo</p><p>bar</p><p>}<u>baz</u></p>' 
 					},
-					{  	start: '<p>[foo</p><p>bar]</p><s><p>baz</s></b>',
+					{  	start: '<p>[foo</p><p>bar]</p><u><p>baz</u></b>',
 						indetermStart: false,
 						stateStart: false,
-					   	execResult: '<p><s>[foo</s></p><p><s>bar]</s></p><s><p>baz</s></b>', 
+					   	execResult: '<p><u>[foo</u></p><p><u>bar]</u></p><u><p>baz</u></b>', 
 						indetermResult: false,
 						stateResult: true   
 					},
-					{  	start: 'foo [bar <s>baz] bam</s> bom',
+					{  	start: 'foo [bar <u>baz] bam</u> bom',
 						indetermStart: true,
 						stateStart: false,
-					   	execResult: 'foo <s>[bar baz] bam</s> bom', 
+					   	execResult: 'foo <u>[bar baz] bam</u> bom', 
 						indetermResult: false,
 						stateResult: true,
-					   	execToggle: 'foo [bar baz]<s> bam</s> bom', 
+					   	execToggle: 'foo [bar baz]<u> bam</u> bom', 
 						indetermToggle: false,
 						stateToggle: false
 					},
-					{  	start: 'foo <s>[bar baz] bam</s> bom',
+					{  	start: 'foo <u>[bar baz] bam</u> bom',
 						stateStart: true,
-					   	execResult: 'foo [bar baz]<s> bam</s> bom', 
+					   	execResult: 'foo [bar baz]<u> bam</u> bom', 
 						stateResult: false   
 					},
-					{  	start: '<s><p>foo[<b>bar</b>}</p><p>baz</p></s>',
+					{  	start: '<u><p>foo[<b>bar</b>}</p><p>baz</p></u>',
 						stateStart: true,
-					   	execResult: '<p><s>foo</s><b>[bar]</b></p><p><s>baz</s></p>', 
+					   	execResult: '<p><u>foo</u><b>[bar]</b></p><p><u>baz</u></p>', 
 						stateResult: false   
 					},
-					{  	start: '<s><p>foo</p></s><b>[bar</b>}<s><p>baz</p></s>',
+					{  	start: '<u><p>foo</p></u><b>[bar</b>}<u><p>baz</p></u>',
 						stateStart: false,
-					   	execResult: '<s><p>foo</p><b>[bar]</b><p>baz</p></s>', 
+					   	execResult: '<u><p>foo</p><b>[bar]</b><p>baz</p></u>', 
 						stateResult: true,   
-					   	execToggle: '<p><s>foo</s></p><b>[bar]</b><p><s>baz</s></p>', 
+					   	execToggle: '<p><u>foo</u></p><b>[bar]</b><p><u>baz</u></p>', 
 						stateToggle: false   
 					},
-					{  	start: 'foo bar <s>baz [bam</s> bom] bus',
+					{  	start: 'foo bar <u>baz [bam</u> bom] bus',
 						indetermStart: true,
 						stateStart: false,
-					   	execResult: 'foo bar <s>baz [bam bom]</s> bus', 
+					   	execResult: 'foo bar <u>baz [bam bom]</u> bus', 
 						indetermResult: false,
 						stateResult: true   
 					},
-					{  	start: '<s id=purple>bar [baz] qoz</s>',
+					{  	start: '<u id=purple>bar [baz] qoz</u>',
 						stateStart: true,
-					   	execResult: '<span id=purple><s>bar </s>[baz]<s> qoz</s></span>', 
+					   	execResult: '<span id=purple><u>bar </u>[baz]<u> qoz</u></span>', 
 						stateResult: false   
 					},
-					{  	start: '<b><s>foo</s></b>[bar]<b><s>baz</s></b>',
-					   	execResult: '<s><b>foo</b>[bar]<b>baz</b></s>'
+					{  	start: '<b><u>foo</u></b>[bar]<b><u>baz</u></b>',
+					   	execResult: '<u><b>foo</b>[bar]<b>baz</b></u>'
 					},
-					{  	start: '<s>foo</s>[bar]<b><s>baz</s></b>',
-					   	execResult: '<s>foo[bar]<b>baz</s></b>'
+					{  	start: '<u>foo</u>[bar]<b><u>baz</u></b>',
+					   	execResult: '<u>foo[bar]<b>baz</u></b>'
 					},
-					{  	start: '<font color=blue face=monospace><s>foo</s></font>[bar]',
-					   	execResult: '<s><font color=blue face=monospace>foo</font>[bar]</s>'
+					{  	start: '<font color=blue face=monospace><u>foo</u></font>[bar]',
+					   	execResult: '<u><font color=blue face=monospace>foo</font>[bar]</u>'
 					},
-					{  	start: '<s>foo<span style="text-decoration: none">bar<s>[baz]</s>quz</span>qoz</s>',
+					{  	start: '<u>foo<span style="text-decoration: none">bar<u>[baz]</u>quz</span>qoz</u>',
 						indetermStart: false,
 						stateStart: true,
-					   	execResult: '<s>foo<span style="text-decoration: none">bar[baz]quz</span>qoz</s>',
+					   	execResult: '<u>foo<span style="text-decoration: none">bar[baz]quz</span>qoz</u>',
 						indetermResult: false,
 						stateResult: false
 					},
-					{  	start: '<s>foo<span style="text-decoration: none">[bar]</span>baz</s>',
-					   	execResult: '<s>foo[bar]baz</s>'
+					{  	start: '<u>foo<span style="text-decoration: none">[bar]</span>baz</u>',
+					   	execResult: '<u>foo[bar]baz</u>'
 					},
-					{  	start: 'foo<span style="text-decoration: none"><s>{bar}</s></span>baz',
+					{  	start: 'foo<span style="text-decoration: none"><u>{bar}</u></span>baz',
 						stateStart: true,
 					   	execResult: 'foo[bar]baz',
 						stateResult: false,
-					   	execToggle: 'foo<s>[bar]</s>baz',
+					   	execToggle: 'foo<u>[bar]</u>baz',
 						stateToggle: true
 					},
-					{  	start: 'foo<span style="text-decoration: line-through; color: red"><s>{bar}</s></span>baz',
+					{  	start: 'foo<span style="text-decoration: underline; color: red"><u>{bar}</u></span>baz',
 					   	execResult: 'foo<span style="color: red">[bar]</span>baz'
 					},
 					{  	start: '[foo<span class=nostrike>bar</span>baz]',
-					   	execResult: '<s>[foo<span class=nostrike><s>bar</s></span>baz]</s>'
+					   	execResult: '<u>[foo<span class=nostrike><u>bar</u></span>baz]</u>'
 					},
-					{  	start: '<s><span class=nostrike>[foo]</span></s>',
+					{  	start: '<u><span class=nostrike>[foo]</span></u>',
 						stateResult: false,
-					   	execResult: '<span class=nostrike><s>[foo]</s></span>',
+					   	execResult: '<span class=nostrike><u>[foo]</u></span>',
 						stateResult: true
 					},
-					{  	start: '<s><span class=nostrike>foo[bar]baz</span></s>',
-					   	execResult: '<s><span class=nostrike>foo<s>[bar]</s>baz</span></s>'
+					{  	start: '<u><span class=nostrike>foo[bar]baz</span></u>',
+					   	execResult: '<u><span class=nostrike>foo<u>[bar]</u>baz</span></u>'
 					},
-					{  	start: '<p style="text-decoration: line-through">foo[bar]baz</p>',
-					   	execResult: '<p><s>foo</s>[bar]<s>baz</s></p>'
+					{  	start: '<p style="text-decoration: underline">foo[bar]baz</p>',
+					   	execResult: '<p><u>foo</u>[bar]<u>baz</u></p>'
 					}
 			]
 	}
 	</script>
-	<h1 id="qunit-header">Aloha Editor command strikethrough tests</h1>
+	<h1 id="qunit-header">Aloha Editor command underline tests</h1>
 	<h2 id="qunit-banner"></h2>
 	<div id="qunit-testrunner-toolbar"></div>
 	<h2 id="qunit-userAgent"></h2>
