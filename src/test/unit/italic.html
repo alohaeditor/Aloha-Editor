@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<title>Aloha Editor command bold tests</title>
+	<!-- include qunit -->
+	<link rel="stylesheet" href="../vendor/qunit.css" type="text/css"/>
+
+	<script type="text/javascript" src="../vendor/qunit.js"></script>
+
+	<!-- include jquery -->
+	<script	src="../vendor/jquery-1.6.1.js" ></script>
+	<script type="text/javascript" src="../vendor/jquery.simulate.js"></script>
+	<script>
+		window.alohaQuery = jQuery.noConflict();
+	</script>
+
+	<!-- include aloha -->
+	<script src="../../lib/aloha.js" ></script>
+
+	<!-- inject into testswarm -->
+	<script type="text/javascript" src="../vendor/swarminject.js"></script>
+	<script>
+		// load command test suite
+		require( ['commandtest'] );
+	</script>
+	<style type="text/css">
+		.aloha-editable ol li { list-style-type: decimal; margin: 1.5em; }
+		.aloha-editable ol li ol li{ list-style-type: decimal; margin: 2em; }
+	</style>
+</head>
+<body>
+	<!-- include the tests -->
+	<script>
+	var tests = {
+			defaultValue: '',
+			defaultCommand: 'italic',
+			defaultAttributes: [ 'font-style' ],
+			tests: [		        
+					{  	start: 'fo[o<i>b]ar</i>baz',
+					   	indetermResult: true,
+					   	stateResult: false
+					},
+					{  	start: 'foo<i>ba[r</i>b]az',
+					   	indetermResult: true,
+					   	stateResult: false
+					},
+					{  	start: 'fo[o<i>bar</i>b]az',
+					   	indetermResult: true,
+					   	stateResult: false
+					},
+					{  	start: 'foo[<i>b]ar</i>baz',
+					   	indetermResult: false,
+					   	stateResult: true
+					},
+					{  	start: 'foo<i>ba[r</i>]baz',
+					   	indetermResult: false,
+					   	stateResult: true
+					},
+					{  	start: 'foo[<i>bar</i>]baz',
+					   	indetermResult: false,
+					   	stateResult: true
+					},
+					{  	start: 'foo<i>[bar]</i>baz',
+					   	indetermResult: false,
+					   	stateResult: true
+					},
+					{  	start: 'foo{<i>bar</i>}baz',
+					   	indetermResult: false,
+					   	stateResult: true
+					},
+					{  	start: 'fo[o<span style=font-style:italic>b]ar</span>baz',
+					   	indetermResult: true,
+					   	stateResult: false
+					},
+					{  	start: 'foo[bar]baz',
+              execResult: 'foo<i>[bar]</i>baz'
+          },
+          {  	start: 'foo<i>[bar]</i>baz',
+              execResult: 'foo[bar]baz'
+          },
+					{  	start: 'foo<i>[bar</i>]baz',
+              execResult: 'foo[bar]baz' 
+          },
+					{  	start: 'foo<i>b[ar</i>]baz',
+              execResult: 'foo<i>b</i>[ar]baz' 
+          },
+					{  	start: 'foo<i>bar[</i>b]az',
+              execResult: 'foo<i>bar[b]</i>az'
+          },
+					{  	start: 'foo<i>bar[</i>b]az',
+              execResult: 'foo<i>bar[b]</i>az' 
+          },
+					{  	start: 'foo[]bar',
+              execResult: 'foo[]bar' 
+          },
+					{  	start: '<i>foo[]bar</i>',
+              execResult: '<i>foo[]bar</i>' 
+          },
+					{  	start: '<span>foo</span>{}<span>bar</span>',
+              execResult: '<span>foo[]</span><span>bar</span>' 
+          },
+					{  	start: '<span>foo[</span><span>]bar</span>',
+              execResult: '<span>foo[]</span><span>bar</span>' 
+          },
+					{  	start: 'foo[bar<b>bam]baz</b>',
+              execResult: 'foo<i>[bar</i><b><i>bam]</i>baz</b>' 
+          },
+					{  	start: 'foo<span contenteditable=false>[bar]</span>baz',
+					   	execResult: 'foo<span contenteditable=false>[bar]</span>baz' 
+					},
+					{  	start: 'fo[o<span contenteditable=false>bar</span>b]az',
+					   	execResult: 'fo<i>[o</i><span contenteditable=false>bar</span><i>b]</i>az' 
+					},
+					{  	start: 'foo<span contenteditable=false>ba[r]</span>baz',
+					   	execResult: 'foo<span contenteditable=false>ba[r]</span>baz' 
+					},
+					{  	start: 'fo[o<span contenteditable=false>b]ar</span>baz',
+					   	execResult: 'fo<i>[o]</i><span contenteditable=false>bar</span>baz' 
+					},
+					{  	start: 'fo[<i>o</i><span contenteditable=false>bar</span><i>b</i>]az',
+					   	execResult: 'fo[o<span contenteditable=false>bar</span>b]az' 
+					},
+					{  	start: '<span contenteditable=false>foo<span contenteditable=true>[bar]</span>baz</span>',
+					   	execResult: '<span contenteditable=false>foo<span contenteditable=true><i>[bar]</i></span>baz</span>' 
+					},
+					{  	start: '<span contenteditable=false>fo[o<span contenteditable=true>bar</span>b]az</span>',
+					   	execResult: '<span contenteditable=false>fo[o<span contenteditable=true><i>bar</i></span>b]az</span>' 
+					},
+					{  	start: '<span contenteditable=false>foo<span contenteditable=true>ba[r</span>b]az</span>',
+					   	execResult: '<span contenteditable=false>foo<span contenteditable=true>ba<i>[r]</i></span>baz</span>' 
+					},
+					{  	start: '<span contenteditable=false>fo[o<span contenteditable=true>b]ar</span>baz</span>',
+					   	execResult: '<span contenteditable=false>fo[o]<span contenteditable=true>bar</span>baz</span>' 
+					},
+					{  	start: '<span contenteditable=false>fo[<i>o<span contenteditable=true>bar</span>b</i>]az</span>',
+					   	execResult: '<span contenteditable=false>fo<i>[o<span contenteditable=true><span style="font-style: normal;">bar</span></span>b]</i>az</span>' 
+					},
+					{  	start: '<table><tbody><tr><td>foo<td>b[a]r<td>baz</table>',
+					   	execResult: '<table><tbody><tr><td>foo<td>b<i>[a]</i>r<td>baz</table>' 
+					},
+					{  	start: '<table><tbody><tr data-start=1 data-end=2><td>foo<td>bar<td>baz</table>',
+					   	execResult: '<table><tbody><tr><td>foo<td><i>[bar</i><td>}baz</table>' 
+					},
+					{  	start: '<table><tbody><tr data-start=0 data-end=2><td>foo<td>bar<td>baz</table>',
+					   	execResult: '<table><tbody><tr><td><i>[foo</i><td><i>bar</i><td>}baz</table>' 
+					},
+					{  	start: '<table><tbody data-start=0 data-end=1><tr><td>foo<td>bar<td>baz</table>',
+					   	execResult: '<table><tbody><tr><td><i>[foo</i><td><b>bar</b><td><b>baz</b></table>}' 
+					},
+					{  	start: '<table data-start=0 data-end=1><tbody><tr><td>foo<td>bar<td>baz</table>',
+					   	execResult: '{<table><tbody><tr><td><i>foo</i><td><i>bar</i><td><i>baz</i></table>}' 
+					},
+					{  	start: '{<table><tr><td>foo<td>bar<td>baz</table>}',
+					   	execResult: '{<table><tr><td><i>foo</i><td><i>bar</i><td><i>baz</i></table>}' 
+					},
+					{  	start: 'foo<span style="font-style: italic">[bar]</span>baz',
+					   	execResult: 'foo[bar]baz' 
+					},
+					{  	start: 'foo<i>[bar]</i>baz',
+					   	execResult: 'foo[bar]baz' 
+					},
+					{  	start: 'foo<i>bar</i>[baz]',
+					   	execResult: 'foo<i>bar[baz]</i>' 
+					},
+					{  	start: '[foo]<i>bar</i>baz',
+					   	execResult: '<i>[foo]bar</i>baz' 
+					},
+					{  	start: '<i>foo</i>[bar]<i>baz</i>',
+					   	execResult: '<i>foo[bar]baz</i>' 
+					},
+					{  	start: 'foo<em>bar</em>[baz]',
+					   	execResult: 'foo<em>bar</em><i>[baz]</i>' 
+					},
+					{  	start: '[foo]<strong>bar</strong>baz',
+					   	execResult: '<i>[foo]</i><strong>bar</strong>baz' 
+					},
+					{  	start: '<strong>foo</strong>[bar]<strong>baz</strong>',
+					   	execResult: '<strong>foo</strong><i>[bar]</i><strong>baz</strong>' 
+					},
+					{  	start: '<i>foo</i>[bar]<strong>baz</strong>',
+					   	execResult: '<i>foo[bar]</i><strong>baz</strong>' 
+					},
+					{  	start: '<strong>foo</strong>[bar]<i>baz</i>',
+					   	execResult: '<strong>foo</strong><i>[bar]baz</i>' 
+					},
+					{  	start: 'foo[<i>bar</i>]baz',
+					   	execResult: 'foo[bar]baz' 
+					},
+					{  	start: 'foo[<i>bar]</i>baz',
+					   	execResult: 'foo[bar]baz' 
+					},
+					{  	start: 'foo<i>[bar</i>]baz',
+					   	execResult: 'foo[bar]baz' 
+					},
+					{  	start: 'foo{<i></i>}baz',
+					   	execResult: 'foo[]baz' 
+					},
+					{  	start: 'foo{<b></b>}baz',
+					   	execResult: 'foo[]baz' 
+					},
+					{  	start: 'foo{<i><b></b></i>}baz',
+					   	execResult: 'foo[]baz' 
+					},
+					{  	start: 'foo{<b><i></i></b>}baz',
+					   	execResult: 'foo[]baz' 
+					},
+					{  	start: 'foo<em>[bar]</em>baz',
+					   	execResult: 'foo<i>[bar]</i>baz' 
+					},
+					{  	start: 'foo[<em>bar</em>]baz',
+					   	execResult: 'foo<i>[bar]</i>baz' 
+					},
+					{  	start: 'foo[<em>bar]</em>baz',
+					   	execResult: 'foo<i>[bar]</i>baz' 
+					},
+					{  	start: 'foo<em>[bar</em>]baz',
+					   	execResult: 'foo<i>[bar]</i>baz' 
+					},
+					{  	start: 'foo<span style="font-style: italic">[bar]</span>baz',
+					   	execResult: 'foo[bar]baz' 
+					},
+					{  	start: 'foo[<span style="font-style: italic">bar</span>]baz',
+					   	execResult: 'foo[bar]baz' 
+					},
+					{  	start: 'foo[<span style="font-style: italic">bar]</span>baz',
+					   	execResult: 'foo[bar]baz' 
+					},
+					{  	start: 'foo<span style="font-style: italic">[bar</span>]baz',
+					   	execResult: 'foo[bar]baz' 
+					},
+					{  	start: '<i>{<p>foo</p><p>bar</p>}<p>baz</p></i>',
+					   	execResult: '<p>[foo</p><p>bar</p><p>}<i>baz</i></p>' 
+					},
+					{  	start: '<p>[foo</p><p>bar]</p><i><p>baz</i></b>',
+						indetermStart: false,
+						stateStart: false,
+					   	execResult: '<p><i>[foo</i></p><p><i>bar]</i></p><i><p>baz</i></b>', 
+						indetermResult: false,
+						stateResult: true   
+					},
+					{  	start: 'foo [bar <i>baz] bam</i> bom',
+						indetermStart: true,
+						stateStart: false,
+					   	execResult: 'foo <i>[bar baz] bam</i> bom', 
+						indetermResult: false,
+						stateResult: true,
+					   	execToggle: 'foo [bar baz]<i> bam</i> bom', 
+						indetermToggle: false,
+						stateToggle: false
+					},
+					{  	start: 'foo <i>[bar baz] bam</i> bom',
+						stateStart: true,
+					   	execResult: 'foo [bar baz]<i> bam</i> bom', 
+						stateResult: false   
+					},
+					{  	start: '<i><p>foo[<b>bar</b>}</p><p>baz</p></i>',
+						stateStart: true,
+					   	execResult: '<p><i>foo</i><b>[bar]</b></p><p><i>baz</i></p>', 
+						stateResult: false   
+					},
+					{  	start: '<i><p>foo</p></i><b>[bar</b>}<i><p>baz</p></i>',
+						stateStart: false,
+					   	execResult: '<i><p>foo</p><b>[bar]</b><p>baz</p></i>', 
+						stateResult: true,   
+					   	execToggle: '<p><i>foo</i></p><b>[bar]</b><p><i>baz</i></p>', 
+						stateToggle: false   
+					},
+					{  	start: 'foo bar <i>baz [bam</i> bom] bus',
+						indetermStart: true,
+						stateStart: false,
+					   	execResult: 'foo bar <i>baz [bam bom]</i> bus', 
+						indetermResult: false,
+						stateResult: true   
+					},
+					{  	start: '<i id=purple>bar [baz] qoz</i>',
+						stateStart: true,
+					   	execResult: '<span id=purple><i>bar </i>[baz]<i> qoz</i></span>', 
+						stateResult: false   
+					},
+					{  	start: '<b><i>foo</i></b>[bar]<b><i>baz</i></b>',
+					   	execResult: '<i><b>foo</b>[bar]<b>baz</b></i>'
+					},
+					{  	start: '<i>foo</i>[bar]<b><i>baz</i></b>',
+					   	execResult: '<i>foo[bar]<b>baz</i></b>'
+					},
+					{  	start: '<font color=blue face=monospace><i>foo</i></font>[bar]',
+					   	execResult: '<i><font color=blue face=monospace>foo</font>[bar]</i>'
+					},
+					{  	start: '<i>foo<span style="font-style: normal">bar<i>[baz]</i>quz</span>qoz</i>',
+						indetermStart: false,
+						stateStart: true,
+					   	execResult: '<i>foo<span style="font-style: normal">bar[baz]quz</span>qoz</i>',
+						indetermResult: false,
+						stateResult: false
+					},
+					{  	start: '<i>foo<span style="font-style: normal">[bar]</span>baz</i>',
+					   	execResult: '<i>foo[bar]baz</i>'
+					},
+					{  	start: 'foo<span style="font-style: normal"><i>{bar}</i></span>baz',
+						stateStart: true,
+					   	execResult: 'foo[bar]baz',
+						stateResult: false,
+					   	execToggle: 'foo<b>[bar]</b>baz',
+						stateToggle: true
+					},
+					{  	start: 'foo<span style="font-style: normal; color: red"><i>{bar}</i></span>baz',
+					   	execResult: 'foo<span style="color: red">[bar]</span>baz'
+					},
+					{  	start: '[foo<span class=notitalic>bar</span>baz]',
+					   	execResult: '<i>[foo<span class=notitalic><i>bar</i></span>baz]</i>'
+					},
+					{  	start: '<i><span class=notitalic>[foo]</span></i>',
+						stateResult: false,
+					   	execResult: '<span class=notitalic><i>[foo]</i></span>',
+						stateResult: true
+					},
+					{  	start: '<i><span class=notbold>foo[bar]baz</span></i>',
+					   	execResult: '<i><span class=notbold>foo<i>[bar]</i>baz</span></i>'
+					},
+					{  	start: '<p style="font-style: italic">foo[bar]baz</p>',
+					   	execResult: '<p><i>foo</i>[bar]<i>baz</i></p>'
+					}
+			]
+	}
+	</script>
+	<h1 id="qunit-header">Aloha Editor command bold tests</h1>
+	<h2 id="qunit-banner"></h2>
+	<div id="qunit-testrunner-toolbar"></div>
+	<h2 id="qunit-userAgent"></h2>
+	<ol id="qunit-tests"></ol>
+	<div id="qunit-fixture"></div>
+	<div id="edit" style="margin:20px; border:1px solid #000000;"></div>
+	<div id="logBody"></div>
+	</div>
+</body>
+</html>
