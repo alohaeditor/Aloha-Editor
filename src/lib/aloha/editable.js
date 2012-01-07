@@ -52,6 +52,12 @@ define( [
 		Aloha.settings.contentHandler = {};
 	}
 
+	var defaultContentSerializer = function(editableElement){
+		return jQuery(editableElement).html();
+	};
+
+	var contentSerializer = defaultContentSerializer;
+
 	/**
 	 * Editable object
 	 * @namespace Aloha
@@ -688,19 +694,7 @@ define( [
 			this.removePlaceholder( clonedObj );
 			PluginManager.makeClean( clonedObj );
 
-			/*
-			//also deactivated for now. like initEditable. just in case ...
-			var content = clonedObj.html()
-			if ( typeof Aloha.settings.contentHandler.getContents === 'undefined' ) {
-				Aloha.settings.contentHandler.getContents = Aloha.defaults.contentHandler.getContents;
-			}
-			content = ContentHandlerManager.handleContent( content, {
-				contenthandler: Aloha.settings.contentHandler.getContents
-			} );
-			clonedObj.html( content );
-			*/
-
-			return asObject ? clonedObj.contents() : clonedObj.html();
+			return asObject ? clonedObj.contents() : contentSerializer(clonedObj[0]);
 		},
 
 		/**
@@ -849,6 +843,24 @@ define( [
 			this.snapshotContent = this.getContents();
 			return ret;
 		}
-
 	} );
+
+	/**
+	 * Sets the serializer function to be used for the contents of all editables.
+	 *
+	 * The default content serializer will just call the jQuery.html()
+	 * function on the editable element (which gets the innerHTML property).
+	 *
+	 * This method is a static class method and will affect the result
+	 * of editable.getContents() for all editables that have been or
+	 * will be constructed.
+	 *
+	 * @param serializerFunction
+	 *        A function that accepts a DOM element and returns the serialized
+	 *        XHTML of the element contents (excluding the start and end tag of
+	 *        the passed element).
+	 */
+	Aloha.Editable.setContentSerializer = function( serializerFunction ) {
+		contentSerializer = serializerFunction;
+	};
 } );
