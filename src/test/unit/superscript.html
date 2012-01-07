@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8" />
-	<title>Aloha Editor command bold tests</title>
+	<title>Aloha Editor command superscript tests</title>
 	<!-- include qunit -->
 	<link rel="stylesheet" href="../vendor/qunit.css" type="text/css"/>
 
@@ -34,64 +34,64 @@
 	<script>
 	var tests = {
 			defaultValue: '',
-			defaultCommand: 'subscript',
-			defaultAttributes: [ 'subscript' ],
+			defaultCommand: 'superscript',
+			defaultAttributes: [ 'superscript' ],
 			tests: [		        
-					{  	start: 'fo[o<sub>b]ar</sub>baz',
+					{  	start: 'fo[o<sup>b]ar</sup>baz',
 					   	indetermResult: true,
 					   	stateResult: false
 					},
-					{  	start: 'foo<sub>ba[r</sub>b]az',
+					{  	start: 'foo<sup>ba[r</sup>b]az',
 					   	indetermResult: true,
 					   	stateResult: false
 					},
-					{  	start: 'fo[o<sub>bar</sub>b]az',
+					{  	start: 'fo[o<sup>bar</sup>b]az',
 					   	indetermResult: true,
 					   	stateResult: false
 					},
-					{  	start: 'foo[<sub>b]ar</sub>baz',
+					{  	start: 'foo[<sup>b]ar</sup>baz',
 					   	indetermResult: false,
 					   	stateResult: true
 					},
-					{  	start: 'foo<sub>ba[r</sub>]baz',
+					{  	start: 'foo<sup>ba[r</sup>]baz',
 					   	indetermResult: false,
 					   	stateResult: true
 					},
-					{  	start: 'foo[<sub>bar</sub>]baz',
+					{  	start: 'foo[<sup>bar</sup>]baz',
 					   	indetermResult: false,
 					   	stateResult: true
 					},
-					{  	start: 'foo<sub>[bar]</sub>baz',
+					{  	start: 'foo<sup>[bar]</sup>baz',
 					   	indetermResult: false,
 					   	stateResult: true
 					},
-					{  	start: 'foo{<sub>bar</sub>}baz',
+					{  	start: 'foo{<sup>bar</sup>}baz',
 					   	indetermResult: false,
 					   	stateResult: true
 					},
 					{  	start: 'foo[bar]baz',
-              execResult: 'foo<sub>[bar]</sub>baz'
+              execResult: 'foo<sup>[bar]</sup>baz'
           },
-          {  	start: 'foo<sub>[bar]</sub>baz',
+          {  	start: 'foo<sup>[bar]</sup>baz',
               execResult: 'foo[bar]baz'
           },
-					{  	start: 'foo<sub>[bar</sub>]baz',
+					{  	start: 'foo<sup>[bar</sup>]baz',
               execResult: 'foo[bar]baz' 
           },
-					{  	start: 'foo<sub>b[ar</sub>]baz',
-              execResult: 'foo<sub>b</sub>[ar]baz' 
+					{  	start: 'foo<sup>b[ar</sup>]baz',
+              execResult: 'foo<sup>b</sup>[ar]baz' 
           },
-					{  	start: 'foo<sub>bar[</sub>b]az',
-              execResult: 'foo<sub>bar[b]</sub>az'
+					{  	start: 'foo<sup>bar[</sup>b]az',
+              execResult: 'foo<sup>bar[b]</sup>az'
           },
-					{  	start: 'foo<sub>bar[</sub>b]az',
-              execResult: 'foo<sub>bar[b]</sub>az' 
+					{  	start: 'foo<sup>bar[</sup>b]az',
+              execResult: 'foo<sup>bar[b]</sup>az' 
           },
 					{  	start: 'foo[]bar',
               execResult: 'foo[]bar' 
           },
-					{  	start: '<sub>foo[]bar</sub>',
-              execResult: '<sub>foo[]bar</sub>' 
+					{  	start: '<sup>foo[]bar</sup>',
+              execResult: '<sup>foo[]bar</sup>' 
           },
 					{  	start: '<span>foo</span>{}<span>bar</span>',
               execResult: '<span>foo[]</span><span>bar</span>' 
@@ -100,170 +100,170 @@
               execResult: '<span>foo[]</span><span>bar</span>' 
           },
 					{  	start: 'foo[bar<b>bam]baz</b>',
-              execResult: 'foo<sub>[bar</sub><b><sub>bam]</sub>baz</b>' 
+              execResult: 'foo<sup>[bar</sup><b><sup>bam]</sup>baz</b>' 
           },
 					{  	start: 'foo<span contenteditable=false>[bar]</span>baz',
 					   	execResult: 'foo<span contenteditable=false>[bar]</span>baz' 
 					},
 					{  	start: 'fo[o<span contenteditable=false>bar</span>b]az',
-					   	execResult: 'fo<sub>[o</sub><span contenteditable=false>bar</span><sub>b]</sub>az' 
+					   	execResult: 'fo<sup>[o</sup><span contenteditable=false>bar</span><sup>b]</sup>az' 
 					},
 					{  	start: 'foo<span contenteditable=false>ba[r]</span>baz',
 					   	execResult: 'foo<span contenteditable=false>ba[r]</span>baz' 
 					},
 					{  	start: 'fo[o<span contenteditable=false>b]ar</span>baz',
-					   	execResult: 'fo<sub>[o]</sub><span contenteditable=false>bar</span>baz' 
+					   	execResult: 'fo<sup>[o]</sup><span contenteditable=false>bar</span>baz' 
 					},
-					{  	start: 'fo[<sub>o</sub><span contenteditable=false>bar</span><sub>b</sub>]az',
+					{  	start: 'fo[<sup>o</sup><span contenteditable=false>bar</span><sup>b</sup>]az',
 					   	execResult: 'fo[o<span contenteditable=false>bar</span>b]az' 
 					},
 					{  	start: '<span contenteditable=false>foo<span contenteditable=true>[bar]</span>baz</span>',
-					   	execResult: '<span contenteditable=false>foo<span contenteditable=true><sub>[bar]</sub></span>baz</span>' 
+					   	execResult: '<span contenteditable=false>foo<span contenteditable=true><sup>[bar]</sup></span>baz</span>' 
 					},
 					{  	start: '<span contenteditable=false>fo[o<span contenteditable=true>bar</span>b]az</span>',
-					   	execResult: '<span contenteditable=false>fo[o<span contenteditable=true><sub>bar</sub></span>b]az</span>' 
+					   	execResult: '<span contenteditable=false>fo[o<span contenteditable=true><sup>bar</sup></span>b]az</span>' 
 					},
 					{  	start: '<span contenteditable=false>foo<span contenteditable=true>ba[r</span>b]az</span>',
-					   	execResult: '<span contenteditable=false>foo<span contenteditable=true>ba<sub>[r]</sub></span>baz</span>' 
+					   	execResult: '<span contenteditable=false>foo<span contenteditable=true>ba<sup>[r]</sup></span>baz</span>' 
 					},
 					{  	start: '<span contenteditable=false>fo[o<span contenteditable=true>b]ar</span>baz</span>',
 					   	execResult: '<span contenteditable=false>fo[o]<span contenteditable=true>bar</span>baz</span>' 
 					},
 					{  	start: '<table><tbody><tr><td>foo<td>b[a]r<td>baz</table>',
-					   	execResult: '<table><tbody><tr><td>foo<td>b<sub>[a]</sub>r<td>baz</table>' 
+					   	execResult: '<table><tbody><tr><td>foo<td>b<sup>[a]</sup>r<td>baz</table>' 
 					},
 					{  	start: '<table><tbody><tr data-start=1 data-end=2><td>foo<td>bar<td>baz</table>',
-					   	execResult: '<table><tbody><tr><td>foo<td><sub>[bar</sub><td>}baz</table>' 
+					   	execResult: '<table><tbody><tr><td>foo<td><sup>[bar</sup><td>}baz</table>' 
 					},
 					{  	start: '<table><tbody><tr data-start=0 data-end=2><td>foo<td>bar<td>baz</table>',
-					   	execResult: '<table><tbody><tr><td><sub>[foo</sub><td><sub>bar</sub><td>}baz</table>' 
+					   	execResult: '<table><tbody><tr><td><sup>[foo</sup><td><sup>bar</sup><td>}baz</table>' 
 					},
 					{  	start: '<table><tbody data-start=0 data-end=1><tr><td>foo<td>bar<td>baz</table>',
-					   	execResult: '<table><tbody><tr><td><sub>[foo</sub><td><sub>bar</b><td><sub>baz</sub></table>}' 
+					   	execResult: '<table><tbody><tr><td><sup>[foo</sup><td><sup>bar</b><td><sup>baz</sup></table>}' 
 					},
 					{  	start: '<table data-start=0 data-end=1><tbody><tr><td>foo<td>bar<td>baz</table>',
-					   	execResult: '{<table><tbody><tr><td><sub>foo</sub><td><sub>bar</sub><td><sub>baz</sub></table>}' 
+					   	execResult: '{<table><tbody><tr><td><sup>foo</sup><td><sup>bar</sup><td><sup>baz</sup></table>}' 
 					},
 					{  	start: '{<table><tr><td>foo<td>bar<td>baz</table>}',
-					   	execResult: '{<table><tr><td><sub>foo</sub><td><sub>bar</sub><td><sub>baz</sub></table>}' 
+					   	execResult: '{<table><tr><td><sup>foo</sup><td><sup>bar</sup><td><sup>baz</sup></table>}' 
 					},
-					{  	start: 'foo<sub>[bar]</sub>baz',
+					{  	start: 'foo<sup>[bar]</sup>baz',
 					   	execResult: 'foo[bar]baz' 
 					},
-					{  	start: 'foo<sub>bar</sub>[baz]',
-					   	execResult: 'foo<sub>bar[baz]</sub>' 
+					{  	start: 'foo<sup>bar</sup>[baz]',
+					   	execResult: 'foo<sup>bar[baz]</sup>' 
 					},
-					{  	start: '[foo]<sub>bar</sub>baz',
-					   	execResult: '<sub>[foo]bar</sub>baz' 
+					{  	start: '[foo]<sup>bar</sup>baz',
+					   	execResult: '<sup>[foo]bar</sup>baz' 
 					},
-					{  	start: '<sub>foo</sub>[bar]<sub>baz</sub>',
-					   	execResult: '<sub>foo[bar]baz</sub>' 
+					{  	start: '<sup>foo</sup>[bar]<sup>baz</sup>',
+					   	execResult: '<sup>foo[bar]baz</sup>' 
 					},
-					{  	start: 'foo[<sub>bar</sub>]baz',
+					{  	start: 'foo[<sup>bar</sup>]baz',
 					   	execResult: 'foo[bar]baz' 
 					},
-					{  	start: 'foo[<sub>bar]</sub>baz',
+					{  	start: 'foo[<sup>bar]</sup>baz',
 					   	execResult: 'foo[bar]baz' 
 					},
-					{  	start: 'foo<sub>[bar</sub>]baz',
+					{  	start: 'foo<sup>[bar</sup>]baz',
 					   	execResult: 'foo[bar]baz' 
 					},
-					{  	start: 'foo{<sub></sub>}baz',
+					{  	start: 'foo{<sup></sup>}baz',
 					   	execResult: 'foo[]baz' 
 					},
 					{  	start: 'foo{<b></b>}baz',
 					   	execResult: 'foo[]baz' 
 					},
-					{  	start: 'foo{<sub><b></b></sub>}baz',
+					{  	start: 'foo{<sup><b></b></sup>}baz',
 					   	execResult: 'foo[]baz' 
 					},
-					{  	start: 'foo{<b><sub></sub></b>}baz',
+					{  	start: 'foo{<b><sup></sup></b>}baz',
 					   	execResult: 'foo[]baz' 
 					},
-					{  	start: '<sub>{<p>foo</p><p>bar</p>}<p>baz</p></sub>',
-					   	execResult: '<p>[foo</p><p>bar</p><p>}<sub>baz</sub></p>' 
+					{  	start: '<sup>{<p>foo</p><p>bar</p>}<p>baz</p></sup>',
+					   	execResult: '<p>[foo</p><p>bar</p><p>}<sup>baz</sup></p>' 
 					},
-					{  	start: '<p>[foo</p><p>bar]</p><sub><p>baz</sub></b>',
+					{  	start: '<p>[foo</p><p>bar]</p><sup><p>baz</sup></b>',
 						indetermStart: false,
 						stateStart: false,
-					   	execResult: '<p><sub>[foo</sub></p><p><sub>bar]</sub></p><sub><p>baz</sub></b>', 
+					   	execResult: '<p><sup>[foo</sup></p><p><sup>bar]</sup></p><sup><p>baz</sup></b>', 
 						indetermResult: false,
 						stateResult: true   
 					},
-					{  	start: 'foo [bar <sub>baz] bam</sub> bom',
+					{  	start: 'foo [bar <sup>baz] bam</sup> bom',
 						indetermStart: true,
 						stateStart: false,
-					   	execResult: 'foo <sub>[bar baz] bam</sub> bom', 
+					   	execResult: 'foo <sup>[bar baz] bam</sup> bom', 
 						indetermResult: false,
 						stateResult: true,
-					   	execToggle: 'foo [bar baz]<sub> bam</sub> bom', 
+					   	execToggle: 'foo [bar baz]<sup> bam</sup> bom', 
 						indetermToggle: false,
 						stateToggle: false
 					},
-					{  	start: 'foo <sub>[bar baz] bam</sub> bom',
+					{  	start: 'foo <sup>[bar baz] bam</sup> bom',
 						stateStart: true,
-					   	execResult: 'foo [bar baz]<sub> bam</sub> bom', 
+					   	execResult: 'foo [bar baz]<sup> bam</sup> bom', 
 						stateResult: false   
 					},
-					{  	start: '<sub><p>foo[<b>bar</b>}</p><p>baz</p></sub>',
+					{  	start: '<sup><p>foo[<b>bar</b>}</p><p>baz</p></sup>',
 						stateStart: true,
-					   	execResult: '<p><sub>foo</sub><b>[bar]</b></p><p><sub>baz</sub></p>', 
+					   	execResult: '<p><sup>foo</sup><b>[bar]</b></p><p><sup>baz</sup></p>', 
 						stateResult: false   
 					},
-					{  	start: '<sub><p>foo</p></sub><b>[bar</b>}<sub><p>baz</p></sub>',
+					{  	start: '<sup><p>foo</p></sup><b>[bar</b>}<sup><p>baz</p></sup>',
 						stateStart: false,
-					   	execResult: '<sub><p>foo</p><b>[bar]</b><p>baz</p></sub>', 
+					   	execResult: '<sup><p>foo</p><b>[bar]</b><p>baz</p></sup>', 
 						stateResult: true,   
-					   	execToggle: '<p><sub>foo</sub></p><b>[bar]</b><p><sub>baz</sub></p>', 
+					   	execToggle: '<p><sup>foo</sup></p><b>[bar]</b><p><sup>baz</sup></p>', 
 						stateToggle: false   
 					},
-					{  	start: 'foo bar <sub>baz [bam</sub> bom] bus',
+					{  	start: 'foo bar <sup>baz [bam</sup> bom] bus',
 						indetermStart: true,
 						stateStart: false,
-					   	execResult: 'foo bar <sub>baz [bam bom]</sub> bus', 
+					   	execResult: 'foo bar <sup>baz [bam bom]</sup> bus', 
 						indetermResult: false,
 						stateResult: true   
 					},
-					{  	start: '<sub id=purple>bar [baz] qoz</sub>',
+					{  	start: '<sup id=purple>bar [baz] qoz</sup>',
 						stateStart: true,
-					   	execResult: '<span id=purple><sub>bar </sub>[baz]<sub> qoz</sub></span>', 
+					   	execResult: '<span id=purple><sup>bar </sup>[baz]<sup> qoz</sup></span>', 
 						stateResult: false   
 					},
-					{  	start: '<b><sub>foo</sub></b>[bar]<b><sub>baz</sub></b>',
-					   	execResult: '<sub><b>foo</b>[bar]<b>baz</b></sub>'
+					{  	start: '<b><sup>foo</sup></b>[bar]<b><sup>baz</sup></b>',
+					   	execResult: '<sup><b>foo</b>[bar]<b>baz</b></sup>'
 					},
-					{  	start: '<sub>foo</sub>[bar]<b><sub>baz</sub></b>',
-					   	execResult: '<sub>foo[bar]<b>baz</sub></b>'
+					{  	start: '<sup>foo</sup>[bar]<b><sup>baz</sup></b>',
+					   	execResult: '<sup>foo[bar]<b>baz</sup></b>'
 					},
-					{  	start: '<font color=blue face=monospace><sub>foo</sub></font>[bar]',
-					   	execResult: '<sub><font color=blue face=monospace>foo</font>[bar]</sub>'
+					{  	start: '<font color=blue face=monospace><sup>foo</sup></font>[bar]',
+					   	execResult: '<sup><font color=blue face=monospace>foo</font>[bar]</sup>'
 					},
           //nodes wrapped with superscript
-					{  	start: 'foo<sup>[bar]</sup>baz',
-              execResult: 'foo<sub>[bar]</sub>baz' 
+					{  	start: 'foo<sub>[bar]</sub>baz',
+              execResult: 'foo<sup>[bar]</sup>baz' 
 					},
-					{  	start: 'foo[<sup>bar</sup>]baz',
-              execResult: 'foo<sub>[bar]</sub>baz' 
+					{  	start: 'foo[<sub>bar</sub>]baz',
+              execResult: 'foo<sup>[bar]</sup>baz' 
 					},
-					{  	start: 'foo[<sup>bar]</sup>baz',
-              execResult: 'foo<sub>[bar]</sub>baz' 
+					{  	start: 'foo[<sub>bar]</sub>baz',
+              execResult: 'foo<sup>[bar]</sup>baz' 
 					},
-					{  	start: 'foo<sup>[bar</sup>]baz',
-              execResult: 'foo<sub>[bar]</sub>baz' 
+					{  	start: 'foo<sub>[bar</sub>]baz',
+              execResult: 'foo<sup>[bar]</sup>baz' 
 					},
-          {  	start: '[foo<sup>bar]</sup>baz',
-              execResult: '<sub>[foobar]</sub>baz' 
+          {  	start: '[foo<sub>bar]</sub>baz',
+              execResult: '<sup>[foobar]</sup>baz' 
 					},
-          {  	start: 'foo[<sup>bar</sup>baz]',
-              execResult: 'foo<sub>[barbaz]</sub>' 
+          {  	start: 'foo[<sub>bar</sub>baz]',
+              execResult: 'foo<sup>[barbaz]</sup>' 
 					},
-					{  	start: 'foo{<sup></sup>}baz',
+					{  	start: 'foo{<sub></sub>}baz',
 					   	execResult: 'foo[]baz' 
 					}
 			]
 	}
 	</script>
-	<h1 id="qunit-header">Aloha Editor command subscript tests</h1>
+	<h1 id="qunit-header">Aloha Editor command superscript tests</h1>
 	<h2 id="qunit-banner"></h2>
 	<div id="qunit-testrunner-toolbar"></div>
 	<h2 id="qunit-userAgent"></h2>
