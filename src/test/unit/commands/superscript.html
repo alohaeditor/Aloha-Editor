@@ -4,23 +4,26 @@
 	<meta charset="UTF-8" />
 	<title>Aloha Editor command superscript tests</title>
 	<!-- include qunit -->
-	<link rel="stylesheet" href="../vendor/qunit.css" type="text/css"/>
+	<link rel="stylesheet" href="../../vendor/qunit.css" type="text/css"/>
 
-	<script type="text/javascript" src="../vendor/qunit.js"></script>
+	<script type="text/javascript" src="../../vendor/qunit.js"></script>
 
 	<!-- include jquery -->
-	<script	src="../vendor/jquery-1.6.1.js" ></script>
-	<script type="text/javascript" src="../vendor/jquery.simulate.js"></script>
+	<script	src="../../vendor/jquery-1.6.1.js" ></script>
+	<script type="text/javascript" src="../../vendor/jquery.simulate.js"></script>
 	<script>
 		window.alohaQuery = jQuery.noConflict();
 	</script>
 
 	<!-- include aloha -->
-	<script src="../../lib/aloha.js" ></script>
+	<script src="../../../lib/aloha.js" ></script>
 
 	<!-- inject into testswarm -->
-	<script type="text/javascript" src="../vendor/swarminject.js"></script>
+	<script type="text/javascript" src="../../vendor/swarminject.js"></script>
 	<script>
+    require.config({
+      baseUrl: "../",
+    });
 		// load command test suite
 		require( ['commandtest'] );
 	</script>
@@ -69,6 +72,30 @@
 					   	indetermResult: false,
 					   	stateResult: true
 					},
+
+          // specific to the context of subscript & superscript
+					{  	start: "<sup>fo[o</sup><sub>b]ar</sub>",
+					   	indetermResult: true,
+					   	stateResult: false 
+					},
+          {  	start: "<sup>fo[o</sup><span style=vertical-align:super>b]ar</span>",
+					   	indetermResult: true,
+					   	stateResult: false 
+					},
+          {  	start: "foo<span style=vertical-align:bottom>[bar]</span>baz",
+					   	indetermResult: false,
+					   	stateResult: false 
+					},
+          {  	start: "<sup>fo[o</sup><span style=vertical-align:bottom>b]ar</span>",
+					   	indetermResult: true,
+					   	stateResult: false 
+					},
+          {  	start: "foo<sup>[bar]<br></sup>",
+					   	indetermResult: false,
+					   	stateResult: true 
+					},
+
+
 					{  	start: 'foo[bar]baz',
               execResult: 'foo<sup>[bar]</sup>baz'
           },
@@ -238,27 +265,64 @@
 					{  	start: '<font color=blue face=monospace><sup>foo</sup></font>[bar]',
 					   	execResult: '<sup><font color=blue face=monospace>foo</font>[bar]</sup>'
 					},
-          //nodes wrapped with superscript
-					{  	start: 'foo<sub>[bar]</sub>baz',
-              execResult: 'foo<sup>[bar]</sup>baz' 
+
+          // specific to the context of subscript & superscript
+					{  	start: "foo<sub>[bar]</sub>baz",
+					   	execResult: "foo<sup>[bar]</sup>baz"
 					},
-					{  	start: 'foo[<sub>bar</sub>]baz',
-              execResult: 'foo<sup>[bar]</sup>baz' 
+          {  	start: "foo<sub>b[a]r</sub>baz",
+					   	execResult: "foo<sub>b</sub><sup>[a]</sup><sub>r</sub>baz"
 					},
-					{  	start: 'foo[<sub>bar]</sub>baz',
-              execResult: 'foo<sup>[bar]</sup>baz' 
+          {  	start: "foo<sup>[bar]</sup>baz",
+					   	execResult: "foo[bar]baz"
 					},
-					{  	start: 'foo<sub>[bar</sub>]baz',
-              execResult: 'foo<sup>[bar]</sup>baz' 
+          {  	start: "foo<sup>b[a]r</sup>baz",
+					   	execResult: "foo<sup>b</sup>[a]<sup>r</sup>baz"
 					},
-          {  	start: '[foo<sub>bar]</sub>baz',
-              execResult: '<sup>[foobar]</sup>baz' 
+          {  	start: "foo<span style=vertical-align:sub>[bar]</span>baz",
+					   	execResult: "foo<sup><span style=\"vertical-align:sub\">[bar]</span></sup>baz"
 					},
-          {  	start: 'foo[<sub>bar</sub>baz]',
-              execResult: 'foo<sup>[barbaz]</sup>' 
+          {  	start: "foo<span style=vertical-align:super>[bar]</span>baz",
+					   	execResult: "foo<sup><span style=\"vertical-align:super\">[bar]</span></sup>baz"
 					},
-					{  	start: 'foo{<sub></sub>}baz',
-					   	execResult: 'foo[]baz' 
+          {  	start: "foo<sub><sub>[bar]</sub></sub>baz",
+					   	execResult: "foo<sup>[bar]</sup>baz"
+					},
+          {  	start: "foo<sub><sub>b[a]r</sub></sub>baz",
+					   	execResult: "foo<sub>b</sub><sup>[a]</sup><sub>r</sub>baz"
+					},
+          {  	start: "foo<sub>b<sub>[a]</sub>r</sub>baz",
+					   	execResult: "foo<sub>b</sub><sup>[a]</sup><sub>r</sub>baz"
+					},
+          {  	start: "foo<sup><sup>[bar]</sup></sup>baz",
+					   	execResult: "foo[bar]baz"
+					},
+          {  	start: "foo<sup><sup>b[a]r</sup></sup>baz",
+					   	execResult: "foo<sup>b</sup>[a]<sup>r</sup>baz"
+					},
+          {  	start: "foo<sup>b<sup>[a]</sup>r</sup>baz",
+					   	execResult: "foo<sup>b</sup>[a]<sup>r</sup>baz"
+					},
+          {  	start: "foo<sub><sup>[bar]</sup></sub>baz",
+					   	execResult: "foo<sup>[bar]</sup>baz"
+					},
+          {  	start: "foo<sub><sup>b[a]r</sup></sub>baz",
+					   	execResult: "foo<sup>b[a]r</sup>baz"
+					},
+          {  	start: "foo<sub>b<sup>[a]</sup>r</sub>baz",
+					   	execResult: "foo<sub>b</sub><sup>[a]</sup><sub>r</sub>baz"
+					},
+          {  	start: "foo<sup><sub>[bar]</sub></sup>baz",
+					   	execResult: "foo<sup>[bar]</sup>baz"
+					},
+          {  	start: "foo<sup><sub>b[a]r</sub></sup>baz",
+					   	execResult: "foo<sub>b</sub><sup>[a]</sup><sub>r</sub>baz"
+					},
+          {  	start: "foo<sup>b<sub>[a]</sub>r</sup>baz",
+					   	execResult: "foo<sup>b[a]r</sup>baz"
+					},
+          {  	start: "foo<sup>b<sub>[a]</sub>r</sup>baz",
+					   	execResult: "foo<sup>b[a]r</sup>baz"
 					}
 			]
 	}

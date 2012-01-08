@@ -2,25 +2,28 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8" />
-	<title>Aloha Editor command bold tests</title>
+	<title>Aloha Editor command underline tests</title>
 	<!-- include qunit -->
-	<link rel="stylesheet" href="../vendor/qunit.css" type="text/css"/>
+	<link rel="stylesheet" href="../../vendor/qunit.css" type="text/css"/>
 
-	<script type="text/javascript" src="../vendor/qunit.js"></script>
+	<script type="text/javascript" src="../../vendor/qunit.js"></script>
 
 	<!-- include jquery -->
-	<script	src="../vendor/jquery-1.6.1.js" ></script>
-	<script type="text/javascript" src="../vendor/jquery.simulate.js"></script>
+	<script	src="../../vendor/jquery-1.6.1.js" ></script>
+	<script type="text/javascript" src="../../vendor/jquery.simulate.js"></script>
 	<script>
 		window.alohaQuery = jQuery.noConflict();
 	</script>
 
 	<!-- include aloha -->
-	<script src="../../lib/aloha.js" ></script>
+	<script src="../../../lib/aloha.js" ></script>
 
 	<!-- inject into testswarm -->
-	<script type="text/javascript" src="../vendor/swarminject.js"></script>
+	<script type="text/javascript" src="../../vendor/swarminject.js"></script>
 	<script>
+    require.config({
+      baseUrl: "../",
+    });
 		// load command test suite
 		require( ['commandtest'] );
 	</script>
@@ -146,7 +149,7 @@
 					   	execResult: '<table><tbody><tr><td><u>[foo</u><td><u>bar</u><td>}baz</table>' 
 					},
 					{  	start: '<table><tbody data-start=0 data-end=1><tr><td>foo<td>bar<td>baz</table>',
-					   	execResult: '<table><tbody><tr><td><u>[foo</u><td><b>bar</b><td><b>baz</b></table>}' 
+					   	execResult: '<table><tbody><tr><td><u>[foo</u><td><u>bar</u><td><u>baz</u></table>}' 
 					},
 					{  	start: '<table data-start=0 data-end=1><tbody><tr><td>foo<td>bar<td>baz</table>',
 					   	execResult: '{<table><tbody><tr><td><u>foo</u><td><u>bar</u><td><u>baz</u></table>}' 
