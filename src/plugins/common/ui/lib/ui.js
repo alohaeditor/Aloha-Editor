@@ -1,5 +1,42 @@
-// The main UI objects are components.
-// Components can be placed inside any container, such as a toolbar or sidebar.
+/**
+ * Aloha Editor User Interface API Semantics
+ * =========================================
+ *
+ * Note
+ * ===
+ *    * This documentation is "thinking out loud," and very much "work in work
+ *      in progress--as is the Aloha UI API itself.
+ *
+ *    * For flexibility and ease, it seems that it would be best that the Aloha
+ *      UI API will not constrain the developer to these semantics, but will
+ *      naively assume that these semantics are observed.
+ *
+ * Components (Buttons, Labels, Icons)
+ * ---
+ * Aloha Editor represents its user interface using objects called
+ * `components`.  A uniform interface for these components allows them to be
+ * agnostic to what container they are rendered on.
+ *
+ * Controls (Buttons)
+ * ---
+ * Interactive components like buttons, are called `controls`, to distinguish
+ * them from non-interactive components like labels, and icons.
+ *
+ * Containers (Tabs, Panels)
+ * ---
+ * In rendering the UI, components are organized in visual groups, and these
+ * groups are in turn bundled onto `containers`.  Containers can be tabs, as in
+ * the case of the floating menu, or panels like in the sidebar.  Containers
+ * allow a collection of controls that represent a feature set to be rendered
+ * as a group and to be brought in and out of view together.
+ *
+ * Surfaces (Toolbar, Ribbon)
+ * ---
+ * `Surfaces` are areas on a web page in which containers can be placed.  The
+ * sidebar, and the toolbar are examples of such surfaces.  The possibility
+ * exists for other surfaces to be defined--such as a ribbon, or a footer menu.
+ */
+
 define([
 	"aloha/core",
 	"aloha/jquery",
@@ -15,11 +52,11 @@ function( Aloha, jQuery, Component, Container ) {
 		.delegate( ".aloha-ui", "mouseup", function() {
 			Aloha.eventHandled = false;
 		});
-	
+
 	Aloha.ui = {
 		components: {},
 
-		container: Container,
+		Container: Container,
 		
 		// The first step of creating a component is to define a component type.
 		// Component types define how a component is displayed and what types of

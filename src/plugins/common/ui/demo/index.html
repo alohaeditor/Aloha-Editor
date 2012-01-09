@@ -14,32 +14,29 @@
 	<script>
 	var Aloha = {
 		settings: {
-			toolbar: {
-				tabs: [
-					{
-						label: "Tab <i>on italic</i>",
-						activateOn: "i",
-						components: [
-							[ "bold" ],
-							[ "italic", "italic" ]
-						]
-					},
-					{
-						label: "Tab <b>on bold</b>",
-						activateOn: "b",
-						components: [
-							[ "italic" ],
-							[ "bold", "bold" ]
-						]
-					},
-					{
-						label: "Another Tab",
-						activateOn: true,
-						components: [ [ "bold", "italic" ], [ "formatBlock" ] ]
-					}
-				],
-				components: [ [ "bold", "italic" ], [ "formatBlock" ] ]
-			},
+			toolbar: [
+				{
+					label: "Tab <i>on italic</i>",
+					showOn: "i",
+					components: [
+						[ "bold" ],
+						[ "italic", "italic" ]
+					]
+				},
+				{
+					label: "Tab <b>on bold</b>",
+					showOn: "b",
+					components: [
+						[ "italic" ],
+						[ "bold", "bold" ]
+					]
+				},
+				{
+					label: "Another Tab",
+					showOn: true,
+					components: [ [ "bold", "italic" ], [ "formatBlock" ] ]
+				}
+			],
 			//nativeCommands : true,
 			locale: "en"
 		}
@@ -50,26 +47,24 @@
 	Aloha.ready( function() {
 		var $ = Aloha.jQuery;
 		$( "#main" ).aloha({
-			toolbar: {
-				tabs: [
-					{
-						label: 'Formatting',
-						activateOn: true,
-						components: [
-							[ "bold", "italic", "underline", "pipe", "strikethrough", "pipe", "subscript", "superscript" ],
-							[ "orderedList", "unorderedList", "indentList", "outdentList", "pipe", "formatBlock" ],
-							[ "link", "editLink", "removeLink", "linkBrowser", "pipe", "abbr", "editAbbr" ]
-						]
-					},
-					{
-						label: 'Lists',
-						activateOn: 'ul,ol,*.parent(.aloha-editable ul, .aloha-editable ol)',
-						components: [
-							[ "orderedList", "unorderedList", "pipe", "indentList", "outdentList" ]
-						]
-					},
-				],
-			},
+			toolbar: [
+				{
+					label: 'Formatting',
+					showOn: true,
+					components: [
+						[ "bold", "italic", "underline", "pipe", "strikethrough", "pipe", "subscript", "superscript" ],
+						[ "orderedList", "unorderedList", "indentList", "outdentList", "pipe", "formatBlock" ],
+						[ "link", "editLink", "removeLink", "linkBrowser", "pipe", "abbr", "editAbbr" ]
+					]
+				},
+				{
+					label: 'Lists',
+					showOn: 'ul,ol,*.parent(.aloha-editable ul, .aloha-editable ol)',
+					components: [
+						[ "orderedList", "unorderedList", "pipe", "indentList", "outdentList" ]
+					]
+				},
+			],
 			formatBlock: {
 				blocks: [ "pre", "h1", "p", "h2", "h3" ],
 				removeFormatting: [ "b", "strong" ]
