@@ -10,11 +10,11 @@
  *
  * Note
  * ===
- *    * This documentation is a "thinking out loud," and very much "work in
- *      work in progress--as is the Aloha UI API itself.
+ *    * This documentation is "thinking out loud," and very much "work in work
+ *      in progress--as is the Aloha UI API itself.
  *
  *    * For flexibility and ease, it seems that it would be best that the Aloha
- *      UI API will not contrain the developer to these semantics, but will
+ *      UI API will not constrain the developer to these semantics, but will
  *      naively assume that these semantics are observed.
  *
  * Components
@@ -64,7 +64,7 @@ function( Aloha, jQuery, Class ) {
 
 	/**
 	 * Given a `showOn` value, generate a string from a concatenation of its
-	 * type and value. We need to include the typeof the `showOn` value onto
+	 * type and value. We need to include the typeof of the `showOn` value onto
 	 * the returned string so that we can distinguish a value of "true"
 	 * (string) and a value `true` (boolean) which would be coerced to
 	 * different `shouldShow` functions but would otherwise be stringified as
@@ -351,10 +351,10 @@ function( Aloha, jQuery, Class ) {
 		// Events handlers
 		//
 
-		onInit: function() {},
+		onInit:   function() {},
 		onRender: function() {},
-		onShow: function() {},
-		onHide: function() {}
+		onShow:   function() {},
+		onHide:   function() {}
 
 	});
 
