@@ -227,6 +227,8 @@ function ( jQuery, PluginManager ) {
 		 * Fetches plugins the user wants to have loaded. Returns all plugins the user
 		 * has specified with the data-plugins property as array, with the bundle
 		 * name in front.
+		 * It's also possible to use 'Aloha.settings.plugins.load' to define the plugins
+		 * to load.
 		 *
 		 * @return array
 		 * @internal
@@ -247,7 +249,6 @@ function ( jQuery, PluginManager ) {
 			}
 			// Return
 			return [];
-			
 		},
 
 		/**

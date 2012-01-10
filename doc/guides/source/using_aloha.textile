@@ -126,6 +126,14 @@ script tag loading Aloha:
 </head>
 </html>
 
+Note: Instead of the data attribute +data-aloha-plugins+ you can also use Aloha settings to define plugins to load:
+<html>
+<script type="text/javascript">
+// load Aloha Editor plugins
+Aloha.settings.plugins.load = 'common/format, common/table, common/list, common/link, common/block, common/undo, common/contenthandler, common/paste, common/commands, common/abbr';
+</script>
+</html>
+
 
 h4. Configuring plugins
 
