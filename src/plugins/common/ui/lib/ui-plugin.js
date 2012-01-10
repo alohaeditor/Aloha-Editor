@@ -16,7 +16,6 @@ define([
 	
 	// components
 	"./abbr",
-	"./font",
 	"./format",
 	"./link",
 	"./list",
