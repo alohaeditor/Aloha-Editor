@@ -6,3 +6,6 @@
 */
 button.aloha-button-strong{ background: url(../img/strong.png) no-repeat 0px 0px !important; }
 button.aloha-button-em{ background: url(../img/em.png) no-repeat 0px 0px !important; }
+
+button.aloha-button-s{ background: url(../img/strong.png) no-repeat 0px 0px !important; }
+button.aloha-button-u{ background: url(../img/em.png) no-repeat 0px 0px !important; }

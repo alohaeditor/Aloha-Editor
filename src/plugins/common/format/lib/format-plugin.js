@@ -25,7 +25,7 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 		/**
 		 * default button configuration
 		 */
-		config: [ 'strong', 'em', 'b', 'i','del','sub','sup', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'removeFormat'],
+		config: [ 'b', 'i', 's', 'u', 'sub','sup', 'strong', 'em', 'del', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'removeFormat'],
 
 		/**
 		 * Initialize the plugin and set initialize flag on true
@@ -101,18 +101,48 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 			//iterate configuration array an push buttons to buttons array
 			jQuery.each(this.config, function(j, button) {
 				switch( button ) {
+          // inline formatting commands
+          case 'b':
+          case 'i':
+          case 's':
+          case 'u':
+          case 'sub':
+          case 'sup':
+            that.buttons[button] = {'button' : new Aloha.ui.Button({
+							'name' : button,
+							'iconClass' : 'aloha-button aloha-button-' + button,
+							'size' : 'small',
+							'onclick' : function () {
+                var command_for = {
+                  'b': 'bold',
+                  'i': 'italic',
+                  's': 'strikethrough',
+                  'u': 'underline',
+                  'sub': 'subscript',
+                  'sup': 'superscript' 
+                }
+                Aloha.execCommand(command_for[button], false);
+							},
+							'tooltip' : i18n.t('button.' + button + '.tooltip'),
+							'toggle' : true
+						}), 'markup' : jQuery('<'+button+'></'+button+'>')};
+
+						FloatingMenu.addButton(
+							scope,
+							that.buttons[button].button,
+							i18nCore.t('floatingmenu.tab.format'),
+							1
+						);
+						break;
+
 					// text level semantics:
 					case 'em':
 					case 'strong':
-					case 'b':
-					case 'i':
 					case 'cite':
 					case 'q':
 					case 'code':
 					case 'abbr':
 					case 'del':
-					case 'sub':
-					case 'sup':
 						that.buttons[button] = {'button' : new Aloha.ui.Button({
 							'name' : button,
 							'iconClass' : 'aloha-button aloha-button-' + button,
@@ -176,7 +206,8 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 							'iconClass' : 'aloha-button ' + i18n.t('aloha-button-' + button),
 							'markup' : jQuery('<'+button+'></'+button+'>'),
 							'click' : function() {
-								Aloha.Selection.changeMarkupOnSelection(jQuery('<' + button + '></' + button + '>'));
+								//Aloha.Selection.changeMarkupOnSelection(jQuery('<' + button + '></' + button + '>'));
+                Aloha.execCommand('formatBlock', false, button);
 							}
 						});
 						break;
