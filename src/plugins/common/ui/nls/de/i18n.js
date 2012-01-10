@@ -29,5 +29,8 @@ define({
 	"button.removeLink.label": "Verweis entfernen",
 	
 	// abbr
-	"button.createAbbr.label": "Abk\u00fcrzung einf\u00fcgen"
+	"button.createAbbr.label": "Abk\u00fcrzung einf\u00fcgen",
+	
+	// character picker
+	"button.characterPicker.label": "Sonderzeichen einf&uuml;gen"
 });

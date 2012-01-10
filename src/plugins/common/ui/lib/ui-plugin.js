@@ -16,6 +16,7 @@ define([
 	
 	// components
 	"./abbr",
+	"./characterPicker",
 	"./format",
 	"./link",
 	"./list",

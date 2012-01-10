@@ -30,7 +30,10 @@ define({
 		"button.removeLink.label": "Remove link",
 		
 		// abbr
-		"button.createAbbr.label": "Insert abbreviation"
+		"button.createAbbr.label": "Insert abbreviation",
+		
+		// character picker
+		"button.characterPicker.label": "Pick special characters"
 	},
 	"de": true
 });

@@ -54,6 +54,10 @@
 	background-image: url(../img/outdent.png);
 }
 
+.ui-state-default .aloha-icon-character-picker {
+	background-image: url(../img/character-picker.png);
+}
+
 button.aloha-large-button {
 	width: 60px;
 	height: 50px;
@@ -127,4 +131,16 @@ button.aloha-large-button {
 
 .aloha-multisplit-active {
 	border-color: #00f;
+}
+
+.aloha-characterpicker {
+	border-collapse: collapse;
+	background-color: #fff;
+}
+
+.aloha-characterpicker td {
+	width: 1.5em;
+	height: 1.5em;
+	border: 1px solid #afafaf;
+	text-align: center;
 }
