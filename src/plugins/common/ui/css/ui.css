@@ -82,6 +82,10 @@
 	background-position: -48px 0;
 }
 
+.aloha-icon-horizontal-rule {
+	background: red;
+}
+
 button.aloha-large-button {
 	width: 60px;
 	height: 50px;

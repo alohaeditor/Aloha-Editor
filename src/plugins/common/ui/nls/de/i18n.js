@@ -1,4 +1,5 @@
 define({
+	// TODO: fill out missing values
 	// format
 	"button.bold.label": "Fett",
 	"button.italic.label": "Kursiv",
@@ -38,5 +39,8 @@ define({
 //	"button.justifyLeft.label": "",
 //	"button.justifyRight.label": "",
 //	"button.justifyCenter.label": "",
-//	"button.justifyFull.label": ""
+//	"button.justifyFull.label": "",
+	
+	// horizontal rule
+//	"button.horizontalRule.label: ""
 });

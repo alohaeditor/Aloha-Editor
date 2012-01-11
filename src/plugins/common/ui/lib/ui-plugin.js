@@ -18,6 +18,7 @@ define([
 	"./abbr",
 	"./characterPicker",
 	"./format",
+	"./horizontalRule",
 	"./justify",
 	"./link",
 	"./list",

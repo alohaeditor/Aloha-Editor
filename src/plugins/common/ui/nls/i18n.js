@@ -39,7 +39,10 @@ define({
 		"button.justifyLeft.label": "Align to the left",
 		"button.justifyRight.label": "Align to the right",
 		"button.justifyCenter.label": "Center",
-		"button.justifyFull.label": "Justify"
+		"button.justifyFull.label": "Justify",
+		
+		// horizontal rule
+		"button.horizontalRule.label": "Insert horizontal rule"
 	},
 	"de": true
 });
