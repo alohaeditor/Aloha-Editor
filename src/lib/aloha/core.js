@@ -239,7 +239,7 @@ function ( jQuery, PluginManager ) {
 				plugins = jQuery('[data-aloha-plugins]').data('aloha-plugins');
 
 			// load aloha plugins from config
-			if ( typeof Aloha.settings.plugins.load != 'undefined' ) {
+			if ( typeof Aloha.settings.plugins != 'undefined' && typeof Aloha.settings.plugins.load != 'undefined' ) {
 				plugins = Aloha.settings.plugins.load;
 			}
 
