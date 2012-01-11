@@ -527,6 +527,7 @@ function ( jQuery, PluginManager ) {
 
 		/**
 		 * Determines the Aloha Url
+		 * Uses Aloha.settings.baseUrl if set.
 		 * @method
 		 * @return {String} alohaUrl
 		 */
@@ -534,7 +535,11 @@ function ( jQuery, PluginManager ) {
 			// aloha base path is defined by a script tag with 2 data attributes
 			var requireJs = jQuery('[data-aloha-plugins]'),
 				baseUrl = ( requireJs.length ) ? requireJs[0].src.replace( /\/?aloha.js$/ , '' ) : '';
-				
+			
+			if ( typeof Aloha.settings.baseUrl === "string" ) {
+				baseUrl = Aloha.settings.baseUrl;
+			}
+			
 			return baseUrl;
 		},
 
