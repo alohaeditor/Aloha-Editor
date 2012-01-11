@@ -628,7 +628,7 @@ function(Aloha, jQuery, Ext, Class, console) {
 										}
 									}
 								});
-						
+								
 								// adapt the shadow
 								that.extTabPanel.shadow.show();
 								that.refreshShadow();
@@ -715,7 +715,7 @@ function(Aloha, jQuery, Ext, Class, console) {
 			this.obj.mousedown(function (e) {
 				e.originalEvent.stopSelectionUpdate = true;
 				Aloha.eventHandled = true;
-		//		e.stopSelectionUpdate = true;
+				//e.stopSelectionUpdate = true;
 			});
 			this.obj.mouseup(function (e) {
 				e.originalEvent.stopSelectionUpdate = true;
@@ -754,7 +754,8 @@ function(Aloha, jQuery, Ext, Class, console) {
 			    }
 			});
 
-				// fm scroll behaviour
+			// fm scroll behaviour
+			// @todo does this work? doesn't look so ...
 			jQuery(window).scroll(function () {
 			    if (!Aloha.activeEditable) {
 					return;
@@ -968,7 +969,7 @@ function(Aloha, jQuery, Ext, Class, console) {
 				floatingMenuVisible = false,
 				showUserActivatedTab = false,
 				pos;
-
+			
 			// let the tabs layout themselves
 			jQuery.each(this.tabs, function(index, tab) {
 				// remember the active tab
@@ -1059,7 +1060,7 @@ function(Aloha, jQuery, Ext, Class, console) {
 		setScope: function(scope) {
 			// get the scope object
 			var scopeObject = this.scopes[scope];
-
+			
 			if (typeof scopeObject === 'undefined') {
 				// TODO log an error
 			} else if (this.currentScope != scope) {
@@ -1144,7 +1145,7 @@ function(Aloha, jQuery, Ext, Class, console) {
 		 */
 		calcFloatTarget: function(range) {
 			var
-				i, editableLength, target,
+				i, documentWidth, editableLength, left, target,
 				targetObj, scrollTop, top;
 
 			// TODO in IE8 somteimes a broken range is handed to this function - investigate this
@@ -1182,9 +1183,16 @@ function(Aloha, jQuery, Ext, Class, console) {
 			if (top > this.window.height() + this.window.scrollTop()) {
 				return false;
 			}
-
+			
+			// check if the floating menu does not float off the right side
+			left = Aloha.activeEditable.obj.offset().left;
+			documentWidth = jQuery(document).width();
+			if ( documentWidth - this.width < left ) {
+				left = documentWidth - this.width - GENTICS.Utils.Position.ScrollCorrection.left;
+			}
+			
 			return {
-				left : Aloha.activeEditable.obj.offset().left,
+				left : left,
 				top : top
 			};
 		},
@@ -1218,7 +1226,6 @@ function(Aloha, jQuery, Ext, Class, console) {
 						} else if (props.prop == 'left') {
 							that.left = props.now;
 						}
-
 						that.refreshShadow(false);
 					}
 				});

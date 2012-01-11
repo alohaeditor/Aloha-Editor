@@ -134,9 +134,11 @@
                         }
 						
 						// MODIFICATION FROM ALOHA START: add a t() function
-						value.t = function(key) {
-							if (this[key]) {
+						value.t = function( key, defaultValue ) {
+							if ( this[key] ) {
 								return this[key];
+							} else if ( defaultValue ) {
+								return defaultValue;
 							} else {
 								return key;
 							}

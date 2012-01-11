@@ -170,14 +170,16 @@ define( [
 			}
 
 			// apply content handler to clean up content
-			var content = me.obj.html();
-			if ( typeof Aloha.settings.contentHandler.initEditable === 'undefined' ) {
-				Aloha.settings.contentHandler.initEditable = Aloha.defaults.contentHandler.initEditable;
-			}
-			content = ContentHandlerManager.handleContent( content, {
-				contenthandler: Aloha.settings.contentHandler.initEditable
-			} );
-			me.obj.html( content );
+			// this was activated by accident; see comments around line 240 regarding plugins!
+			// does look like here it would be fine regarding the plugins... 
+			//var content = me.obj.html();
+			//if ( typeof Aloha.settings.contentHandler.initEditable === 'undefined' ) {
+			//	Aloha.settings.contentHandler.initEditable = Aloha.defaults.contentHandler.initEditable;
+			//}
+			//content = ContentHandlerManager.handleContent( content, {
+			//	contenthandler: Aloha.settings.contentHandler.initEditable
+			//} );
+			//me.obj.html( content );
 
 			// only initialize the editable when Aloha is fully ready ( including plugins )
 			Aloha.bind( 'aloha-ready', function() {
@@ -217,6 +219,7 @@ define( [
 				} );
 
 				// handle shortcut keys
+				// @todo replace with hotkey
 				me.obj.keyup( function( event ) {
 					if ( event.keyCode === 27 ) {
 						Aloha.deactivateEditable();
@@ -709,12 +712,62 @@ define( [
 		},
 
 		/**
+		 * Set the contents of this editable as a HTML string
+		 * @param content as html
+		 * @return contents of the editable
+		 */
+		/*setContents: function( content, asObject ) {
+			// @todo also option so set id of editable to change?
+			// @note work in progress!
+			var clonedObj = this.obj.clone( false ),
+				reactivate = null;
+
+			if ( Aloha.getActiveEditable() === this.editable ) {
+				Aloha.deactivateEditable();
+				reactivate = this.editable;
+			}
+
+			this.editable.obj.html( content );
+
+			if ( null !== reactivate ) {
+				reactivate.activate();
+			}
+
+			//TODO: this is a call to an internal
+			//function. There should be an API to generate
+			//new smartContentChangeEvents.
+			this.editable.smartContentChange({type : 'blur'});
+
+
+			//also deactivated for now. like initEditable. just in case ...
+			//var content = clonedObj.html()
+			//if ( typeof Aloha.settings.contentHandler.getContents === 'undefined' ) {
+			//	Aloha.settings.contentHandler.getContents = Aloha.defaults.contentHandler.getContents;
+			//}
+			//content = ContentHandlerManager.handleContent( content, {
+			//	contenthandler: Aloha.settings.contentHandler.getContents
+			//} );
+			//clonedObj.html( content );
+
+			return asObject ? clonedObj.contents() : clonedObj.html();
+		},*/
+
+		/**
 		 * Get the id of this editable
 		 * @method
 		 * @return id of this editable
 		 */
 		getId: function() {
 			return this.obj.attr( 'id' );
+		},
+
+		/**
+		 * Get the id of the original object of this editable
+		 * @method
+		 * @return id of the original object of the editable
+		 */
+		getOriginalId: function() {
+			return this.originalObj.attr( 'id' );
 		},
 
 		/**
