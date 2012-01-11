@@ -3,8 +3,7 @@ define([
 	'aloha/jquery',
 	'ui/ui',
 	'ui/tab'
-],
-function( Aloha, jQuery, Ui, Tab ) {
+], function( Aloha, jQuery, Ui, Tab ) {
 
 	// The toolbar is configured via `settings.toolbar` and is defined as
 	// an array of tabs with component groups, where the groups are arrays of
@@ -15,7 +14,7 @@ function( Aloha, jQuery, Ui, Tab ) {
 	//
 	// As a container for tabs, the toolbar serves to group together groups of
 	// control components so that they can be shown and hidden together in their
-	// feature/functional set. For exmaple groups of table controls would be
+	// feature/functional set.  For exmaple groups of table controls would be
 	// placed in a table tab, groups of list controls in an image tab, and so
 	// forth.
 	Ui.toolbar = {
@@ -58,15 +57,22 @@ function( Aloha, jQuery, Ui, Tab ) {
 				}, 10 );
 			});
 
-			// Event handler for aloha-selection-changed. Determine the
+			// Event handler for aloha-selection-changed.  Determine the
 			// effective elements at the current selection, and then invoke
 			// `Ui.Container.showContainersForElements()` to show and hide the
 			// appropriate containers.
+			//
+			// TODO: Is there a more reliable alternative to
+			//       `range.markupEffectiveAtStart`? It seems that it needs to
+			//       be fixed. There are times when you would click in the
+			//       editable and the `markupEffectiveAtStart` array will have
+			//       "incorrect" elements--that is, not the element or parents
+			//       of the element you clicked on.
+
 			Aloha.bind( 'aloha-selection-changed', function( event, range ) {
 				var effective = [];
 
-				if ( typeof range != 'undefined'
-				     && range.markupEffectiveAtStart ) {
+				if ( range && range.markupEffectiveAtStart ) {
 					var j = range.markupEffectiveAtStart.length;
 
 					while ( j ) {
@@ -79,25 +85,24 @@ function( Aloha, jQuery, Ui, Tab ) {
 		},
 
 		/**
-		 * Generate containers for tabs inside the toolbar wrapper div, and
-		 * inflates tabs from an of tab definition.
-		 * Invokes jQueryUI Tabs on the container created inside the toolbar.
-		 * @param {Array.<Object>} tabs Tab settings from `toolbar.settings`.
+		 * Generate tabs inside the toolbar wrapper div, and inflates tabs from
+		 * an of tab definition.  Invokes jQueryUI Tabs on the container created
+		 * inside the toolbar.
+		 * @param {Array.<object>} tabs Tab settings from `toolbar.settings`.
 		 * @param {Aloha.Editable} editable The editable whose toolbar will
 		 *                                  hold the inflated tags.
 		 */
 		renderContainers: function( tabs, editable ) {
 			editable.tabs = editable.tabs || [];
 
-			var tabs_container = editable.toolbar.find( '.' + Ui.TABS_CONTAINER_CLASS );
+			var tabs_container = editable.toolbar.find(
+				'.' + Ui.TABS_CONTAINER_CLASS );
 
-			var tabsHandles = jQuery( '<ul>', {
-				'class': Ui.HANDLES_CONTAINER_CLASS
-			}).appendTo( tabs_container );
+			jQuery( '<ul>', { 'class': Ui.TABS_HANDLES_CLASS } )
+				.appendTo( tabs_container );
 
-			var tabsPanels = jQuery( '<div>', {
-				'class': Ui.PANELS_CONTAINER_CLASS
-			}).appendTo( tabs_container );
+			jQuery( '<div>', { 'class': Ui.TABS_PANELS_CLASS } )
+				.appendTo( tabs_container );
 
 			var settings;
 			var tabsUidPrefix = GENTICS.Utils.guid() + '-';
@@ -112,23 +117,25 @@ function( Aloha, jQuery, Ui, Tab ) {
 					showOn: settings.showOn,
 					editable: editable
 				}, settings.components ));
-			};
+			}
 
 			tabs_container.tabs();
+
+			Ui.Container.showContainersForElements( [] );
 		},
 
 		/**
-		 * The `render()` method is called once per editable to create all components
-		 * associated with the editable.
+		 * The `render()` method is called once per editable to create all
+		 * components associated with the editable.
 		 * @param {Aloha.Editable} editable
 		 */
 		render: function( editable ) {
 			// All containers are rendered in a div specific to the editable to
 			// make it easy to show and hide the toolbar containers on
-			// activate/deactivate. The editable instance gets a reference to
+			// activate/deactivate.  The editable instance gets a reference to
 			// this div.
-			editable.toolbar = jQuery( "<div>", {
-				"class": "aloha-toolbar-wrap"
+			editable.toolbar = jQuery( '<div>', {
+				'class': 'aloha-toolbar-wrap'
 			});
 
 			jQuery( '<div>', {
@@ -136,6 +143,7 @@ function( Aloha, jQuery, Ui, Tab ) {
 			}).appendTo( editable.toolbar );
 
 			var tabs;
+
 			if ( editable.settings.toolbar
 			     && editable.settings.toolbar ) {
 				tabs = editable.settings.toolbar;
@@ -144,8 +152,6 @@ function( Aloha, jQuery, Ui, Tab ) {
 			}
 
 			this.renderContainers( tabs, editable );
-
-			this.subscribeEventHandlers( editable.toolbar );
 		},
 
 		show: function( editable ) {
@@ -167,31 +173,6 @@ function( Aloha, jQuery, Ui, Tab ) {
 				this.active = null;
 				this.element.fadeOut(function() {
 					editable.toolbar.detach();
-				});
-			}
-		},
-
-		/**
-		 * Bind the necessary event handlers for the toolbar.
-		 * @param {ui.toolbar} toolbar
-		 */
-		subscribeEventHandlers: function( toolbar ) {
-return;
-			// Flag the next selection change event to be ignored whenever the
-			// toolbar is clicked.
-
-			var editable = Aloha.activeEditable && Aloha.activeEditable.obj;
-
-			if ( editable ) {
-				editable.mousedown( function( ev ) {
-					ev.originalEvent.stopSelectionUpdate = true;
-					Aloha.eventHandled = true;
-					//e.stopSelectionUpdate = true;
-				});
-
-				editable.mouseup( function( ev ) {
-					ev.originalEvent.stopSelectionUpdate = true;
-					Aloha.eventHandled = false;
 				});
 			}
 		}
