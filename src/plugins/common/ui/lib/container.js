@@ -1,9 +1,26 @@
+/**
+ * Defines a `Container` Class.
+ * Panels and tabs, extend this class.
+ */
+
 define([
 	'aloha/core',
 	'aloha/jquery',
 	'util/class'
 ], function( Aloha, jQuery, Class ) {
 	'use strict';
+
+	/**
+	 * Temporary helper function.
+	 * TODO: Remove me when you no longer needed (don't forget to remove
+	 *       invocations of this function in this source file.
+	 * @param {string} str
+	 */
+	function debug( str ) {
+		if ( true ) {
+			console.log( str );
+		}
+	};
 
 	/**
 	 * This object provides a unique associative container which maps hashed
@@ -18,26 +35,25 @@ define([
 
 	/**
 	 * Given a `showOn` value, generate a string from a concatenation of its
-	 * type and value. We need to include the typeof of the `showOn` value onto
+	 * type and value.  We need to include the typeof of the `showOn` value onto
 	 * the returned string so that we can distinguish a value of "true"
 	 * (string) and a value `true` (boolean) which would be coerced to
 	 * different `shouldShow` functions but would otherwise be stringified as
 	 * simply "true".
 	 * @param {string|boolean|function():boolean} showOn
 	 * @return {string} A key that distinguishes the type and value of the
-	 *                  given `showOn` value. eg: "boolean:true".
+	 *                  given `showOn` value.  eg: "boolean:true".
 	 */
 	function generateKeyForShowOnValue( showOn ) {
 		return jQuery.type( showOn ) + ':' + showOn.toString();
 	};
 
 	/**
-	 * Place the a container into the appropriate a group in the `showGroups`
+	 * Place the a container into the appropriate group in the `showGroups`
 	 * hash.  Containers with functionally equivalent `showOn` values are
 	 * grouped together so that instead of having to perform N number of tests
 	 * to determine whether N number of containers should be shown or hidden,
-	 * we can instead perform 1 test for N number of containers in many some
-	 * cases.
+	 * we can instead perform 1 test for N number of containers in many cases.
 	 * @param {Aloha.ui.Container} container
 	 */
 	function addToShowGroup( container ) {
@@ -98,12 +114,15 @@ define([
 		var j = containers.length;
 
 		while ( j ) {
+			debug( 'toggleContainers: ' + action + ' `'
+				+ containers[ j - 1 ].label + '`.' );
+
 			containers[ --j ][ action ]();
 		}
 	};
 
 	// ------------------------------------------------------------------------
-	// API methods, and properties
+	// "Public" methods, and properties
 	// ------------------------------------------------------------------------
 
 	var Container = Class.extend({
@@ -166,7 +185,7 @@ define([
 		 * `shouldShow` method is invoked.
 		 * @param {string|boolean|function():boolean}
 		 */
-		 showOn: true,
+		showOn: true,
 
 		/**
 		 * A predicate that tests whether this container should be shown.  This
@@ -210,20 +229,13 @@ define([
 		 *                               container.
 		 */
 		render: function() {
-			var el = this.element = jQuery( '<div>', {
+			this.element = jQuery( '<div>', {
 				'class': 'aloha-ui-container, aloha-ui-tab'
 			});
 
-			switch( this.type ) {
-			case 'tab':
-				break;
-			case 'panel':
-				break;
-			}
-
 			this.onRender.call( this );
 
-			return el;
+			return this.element;
 		},
 
 		show: function() {
@@ -242,17 +254,17 @@ define([
 		// Events handlers
 		//
 
-		onInit:   function() {},
-		onRender: function() {},
-		onShow:   function() {},
-		onHide:   function() {}
+		onInit   : function() {},
+		onRender : function() {},
+		onShow   : function() {},
+		onHide   : function() {}
 
 	});
 
 	/**
 	 * Given an array of elements, show all containers whose group's
 	 * `shouldShow` function returns true for any of the nodes in the `elements`
-	 * array. Otherwise hide those containers.
+	 * array.  Otherwise hide those containers.
 	 *
 	 * We test a group of containers instead of individual containers because,
 	 * if we were to test each container's `shouldShow` function individually,
@@ -262,7 +274,7 @@ define([
 	 * since it is likely that there will often be containers which have the
 	 * same condition regarding when they are to be shown.
 	 *
-	 * Organized our data in this way allows this function to perform 1 *
+	 * Organizing our data in this way allows this function to perform 1 *
 	 * (number of elements) `shouldShow` test for N containers in most cases,
 	 * rather than N * (number of elements) tests for N containers in all
 	 * cases.
@@ -275,32 +287,52 @@ define([
 		// Add a null object to the elements array so that we can test whether
 		// the panel should be activated when we have no effective elements in
 		// the current selection.
-		elements.push( null );
+		if ( elements && jQuery.type( elements.push ) == 'function' ) {
+			elements.push( null );
+		} else {
+			elements = [ null ];
+		}
 
-		for ( var groupKey in showGroups ) {
-			var group = showGroups[ groupKey ];
-			var shouldShow = group.shouldShow;
+		var group,
+		    groupKey,
+		    shouldShow,
+		    j,
+		    show;
+
+		for ( groupKey in showGroups ) {
+			group = showGroups[ groupKey ];
+			shouldShow = group.shouldShow;
 
 			if ( !shouldShow ) {
 				continue;
 			}
 
-			var j = elements.length;
+			j = elements.length;
+			show = false;
 
 			while ( j ) {
+				debug( 'shouldShow `' + groupKey + '` group for '
+					+ ( elements[ j - 1 ] && '`<' + elements[ j - 1 ].nodeName + '>`' )
+					+ '? ' + ( shouldShow( elements[ j - 1 ] ) ? 'Yes' : 'No' )
+					+ '.' );
+
+				var element = elements[ j - 1 ];
+
 				if ( shouldShow( elements[ --j ] ) ) {
-					toggleContainers( group.containers, 'show' );
+					show = true;
 					break;
-				} else {
-					toggleContainers( group.containers, 'hide' );
 				}
 			}
+
+			toggleContainers( group.containers, show ? 'show' : 'hide' );
 		}
 	};
 
 	// ------------------------------------------------------------------------
 	// Tests
 	// ------------------------------------------------------------------------
+
+	// TODO: more!
 
 	/*
 	var c1 = new Container();
