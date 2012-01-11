@@ -19,8 +19,7 @@
 */
 define(
 ['aloha/core', 'aloha/jquery', 'aloha/ext', 'util/class', 'aloha/console', 'vendor/jquery.store'],
-//function(Aloha, jQuery, Ext, Class, console) {
-function(Aloha, jQuery, Ext, Class) {
+function(Aloha, jQuery, Ext, Class, console) {
 	"use strict";
 	var GENTICS = window.GENTICS;
 
@@ -1046,7 +1045,7 @@ function(Aloha, jQuery, Ext, Class) {
 				this.top = pos[1] < 0 ? 100 : pos[1];
 				this.extTabPanel.hide();
 				this.extTabPanel.shadow.hide();
-			} else {
+			} /*else {
 				var target = that.calcFloatTarget(Aloha.Selection.getRangeObject());
 				if (target) {
 					this.left = target.left;
@@ -1058,7 +1057,7 @@ function(Aloha, jQuery, Ext, Class) {
 
 					that.floatTo(target);
 				}
-			}
+			}*/
 
 			// let the Ext object render itself again
 			this.extTabPanel.doLayout();
@@ -1157,7 +1156,7 @@ function(Aloha, jQuery, Ext, Class) {
 		 */
 		calcFloatTarget: function(range) {
 			var
-				i, editableLength, target,
+				i, documentWidth, editableLength, left, target,
 				targetObj, scrollTop, top;
 
 			// TODO in IE8 somteimes a broken range is handed to this function - investigate this
@@ -1187,7 +1186,7 @@ function(Aloha, jQuery, Ext, Class) {
 
 			// if the floating menu would be placed higher than the top of the screen...
 			if ( top < scrollTop) {
-				top += 100 + GENTICS.Utils.Position.ScrollCorrection.top;
+				top += 50 + GENTICS.Utils.Position.ScrollCorrection.top;
 			}
 
 			// if the floating menu would float off the bottom of the screen
@@ -1196,8 +1195,15 @@ function(Aloha, jQuery, Ext, Class) {
 				return false;
 			}
 
+			// check if the floating menu does not float off the right side
+			left = Aloha.activeEditable.obj.offset().left;
+			documentWidth = jQuery(document).width();
+			if ( documentWidth - this.width < left ) {
+					left = documentWidth - this.width - GENTICS.Utils.Position.ScrollCorrection.left;
+			}
+			
 			return {
-				left : Aloha.activeEditable.obj.offset().left,
+				left : left,
 				top : top
 			};
 		},
