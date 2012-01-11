@@ -33,4 +33,10 @@ define({
 	
 	// character picker
 	"button.characterPicker.label": "Sonderzeichen einf&uuml;gen"
+	
+	// justify
+//	"button.justifyLeft.label": "",
+//	"button.justifyRight.label": "",
+//	"button.justifyCenter.label": "",
+//	"button.justifyFull.label": ""
 });

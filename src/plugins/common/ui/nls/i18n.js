@@ -33,7 +33,13 @@ define({
 		"button.createAbbr.label": "Insert abbreviation",
 		
 		// character picker
-		"button.characterPicker.label": "Pick special characters"
+		"button.characterPicker.label": "Pick special characters",
+		
+		// justify
+		"button.justifyLeft.label": "Align to the left",
+		"button.justifyRight.label": "Align to the right",
+		"button.justifyCenter.label": "Center",
+		"button.justifyFull.label": "Justify"
 	},
 	"de": true
 });

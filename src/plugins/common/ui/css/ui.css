@@ -1,3 +1,7 @@
+/** TODO:
+ * - Standardize naming: orderedlist vs. character-picker vs. justifyLeft
+ * - merge all icons into a single sprite
+ **/
 .ui-state-default .aloha-icon {
 	background-image: url(../img/format-inline.png);
 }
@@ -56,6 +60,26 @@
 
 .ui-state-default .aloha-icon-character-picker {
 	background-image: url(../img/character-picker.png);
+}
+
+.ui-state-default .aloha-icon-justify {
+	background-image: url(../img/justify.png);
+}
+
+.aloha-icon-justifyLeft {
+	background-position: 0 0;
+}
+
+.aloha-icon-justifyCenter {
+	background-position: -16px 0;
+}
+
+.aloha-icon-justifyRight {
+	background-position: -32px 0;
+}
+
+.aloha-icon-justifyFull {
+	background-position: -48px 0;
 }
 
 button.aloha-large-button {

@@ -18,6 +18,7 @@ define([
 	"./abbr",
 	"./characterPicker",
 	"./format",
+	"./justify",
 	"./link",
 	"./list",
 	"./paragraph",
