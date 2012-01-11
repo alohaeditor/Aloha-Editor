@@ -1,5 +1,6 @@
 /**
- * Define a `Tab` Class that extends Aloha.ui.Container.
+ * Defines a `Tab` Class that extends Aloha.ui.Container.
+ * Adds class name constants to the Aloha.Ui namespace.
  */
 
 define([
@@ -15,19 +16,19 @@ define([
 	 */
 
 	Ui.TABS_CONTAINER_CLASS = 'aloha-ui-tabs-container';
-	Ui.HANDLES_CONTAINER_CLASS = 'aloha-ui-tabs-handles';
-	Ui.PANELS_CONTAINER_CLASS = 'aloha-ui-tabs-panels';
+	Ui.TABS_HANDLES_CLASS = 'aloha-ui-tabs-handles';
+	Ui.TABS_PANELS_CLASS = 'aloha-ui-tabs-panels';
 
-	// Used to store a local, and temporary copy of the components setting
-	// passed to the Tab constructor and needed during initialization.
+	// Used to store a local, and temporary copy of the components settings
+	// passed to the Tab constructor to be used during initialization.
 	var components_settings;
 
 	/**
-	 * `Tab` defines an object that represents a collection
-	 * of related component groups to be rendered together on the toolbar. Tabs
-	 * are organized by feature and functionality so that related controls can
-	 * be brought in and out of view depending on whether they are appropriate
-	 * for a given user context.
+	 * `Tab` defines a Aloha.Ui.Container object that represents a collection
+	 * of related component groups to be rendered together on the toolbar.
+	 * Tabs are organized by feature and functionality so that related controls
+	 * can be brought in and out of view depending on whether they are
+	 * appropriate for a given user context.
 	 *
 	 * Tabs can be defined declaritivly in the Aloha configuration in the
 	 * following manner:
@@ -41,16 +42,17 @@ define([
 		]
 
 	 * Alternatively, tabs can also be created imperatively in this way:
-	 * `new Tab( options, editable )`.
+	 * `new Tab( options, components )`.
 	 */
 	var Tab = Aloha.ui.Container.extend({
 
 		/**
-		 * All that this constructor does save the components array into a
+		 * All that this constructor does is save the `components` array into a
 		 * local variable, to be used during instantialization.
 		 * @param {object<string, *>} settings
 		 * @param {Array.<Array<string>>} components
 		 * @constructor
+		 * @override
 		 */
 		_constructor: function( settings, components ) {
 			components_settings = components;
@@ -59,13 +61,10 @@ define([
 
 		/**
 		 * Initialze this tab instance.
+		 * @override
 		 */
 		init: function() {
 			this._super();
-
-			if ( !components_settings ) {
-				return;
-			}
 
 			var editable = this.editable;
 
@@ -75,30 +74,29 @@ define([
 
 			this.index = editable.tabs.length;
 
-			this.handle = jQuery( '<li><a href="#' + this.uid + '">'
-				+ this.label + '</a></li>' );
-
 			var panel = this.panel = jQuery( '<div>', { id : this.uid } );
 
-			jQuery.each( components_settings, function() {
-				var group = jQuery( '<div>', {
-					'class': 'aloha-toolbar-group'
-				}).appendTo( panel );
+			var handle = this.handle = jQuery( '<li><a href="#' + this.uid
+				+ '">' + this.label + '</a></li>' );
 
-				// <a id="render-components"></a>
-				// For each control, we render a new instance and append it to
-				// the group.
-				jQuery.each( this, function() {
-					var component = Aloha.ui.render( this, editable );
-					group.append( component.element );
+			if ( components_settings ) {
+				jQuery.each( components_settings, function() {
+					var group = jQuery( '<div>', {
+						'class': 'aloha-toolbar-group'
+					}).appendTo( panel );
+
+					// <a id="render-components"></a>
+					// For each control, we render a new instance and append it to
+					// the group.
+					jQuery.each( this, function() {
+						var component = Aloha.ui.render( this, editable );
+						group.append( component.element );
+					});
 				});
-			});
+			}
 
-			this.handle.appendTo( this.container.find(
-				'ul.' + Ui.HANDLES_CONTAINER_CLASS )).hide();
-
-			this.panel.appendTo( this.container.find(
-				'.' + Ui.PANELS_CONTAINER_CLASS )).hide();
+			handle.appendTo( this.container.find( 'ul.' + Ui.TABS_HANDLES_CLASS ) );
+			panel.appendTo( this.container.find( '.' + Ui.TABS_PANELS_CLASS ) );
 		},
 
 		/**
@@ -106,7 +104,7 @@ define([
 		 * @override
 		 */
 		show: function() {
-			var tabs = this.container.find( 'ul.' + Ui.HANDLES_CONTAINER_CLASS + '>li' );
+			var tabs = this.container.find( 'ul.' + Ui.TABS_HANDLES_CLASS + '>li' );
 
 			if ( tabs.length == 0 ) {
 				return;
@@ -130,7 +128,7 @@ define([
 		 * @override
 		 */
 		hide: function() {
-			var tabs = this.container.find( 'ul.' + Ui.HANDLES_CONTAINER_CLASS + '>li' );
+			var tabs = this.container.find( 'ul.' + Ui.TABS_HANDLES_CLASS + '>li' );
 
 			if ( tabs.length == 0 ) {
 				return;
