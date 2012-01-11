@@ -35,6 +35,11 @@
  * `Surfaces` are areas on a web page in which containers can be placed.  The
  * sidebar, and the toolbar are examples of such surfaces.  The possibility
  * exists for other surfaces to be defined--such as a ribbon, or a footer menu.
+ *
+ *
+ * Class structure
+ * ===
+ * TODO(petro@gentics.com)
  */
 
 define([
