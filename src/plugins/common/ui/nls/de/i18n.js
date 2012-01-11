@@ -1,4 +1,5 @@
 define({
+	// TODO: fill out missing values
 	// format
 	"button.bold.label": "Fett",
 	"button.italic.label": "Kursiv",
@@ -29,5 +30,17 @@ define({
 	"button.removeLink.label": "Verweis entfernen",
 	
 	// abbr
-	"button.createAbbr.label": "Abk\u00fcrzung einf\u00fcgen"
+	"button.createAbbr.label": "Abk\u00fcrzung einf\u00fcgen",
+	
+	// character picker
+	"button.characterPicker.label": "Sonderzeichen einf&uuml;gen"
+	
+	// justify
+//	"button.justifyLeft.label": "",
+//	"button.justifyRight.label": "",
+//	"button.justifyCenter.label": "",
+//	"button.justifyFull.label": "",
+	
+	// horizontal rule
+//	"button.horizontalRule.label: ""
 });

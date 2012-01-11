@@ -16,8 +16,10 @@ define([
 	
 	// components
 	"./abbr",
-	// "./font",
+	"./characterPicker",
 	"./format",
+	"./horizontalRule",
+	"./justify",
 	"./link",
 	"./list",
 	"./paragraph",

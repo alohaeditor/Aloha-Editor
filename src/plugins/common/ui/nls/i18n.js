@@ -30,7 +30,19 @@ define({
 		"button.removeLink.label": "Remove link",
 		
 		// abbr
-		"button.createAbbr.label": "Insert abbreviation"
+		"button.createAbbr.label": "Insert abbreviation",
+		
+		// character picker
+		"button.characterPicker.label": "Pick special characters",
+		
+		// justify
+		"button.justifyLeft.label": "Align to the left",
+		"button.justifyRight.label": "Align to the right",
+		"button.justifyCenter.label": "Center",
+		"button.justifyFull.label": "Justify",
+		
+		// horizontal rule
+		"button.horizontalRule.label": "Insert horizontal rule"
 	},
 	"de": true
 });
