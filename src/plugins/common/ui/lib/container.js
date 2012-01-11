@@ -17,7 +17,7 @@ define([
 	 * @param {string} str
 	 */
 	function debug( str ) {
-		if ( true ) {
+		if ( false ) {
 			console.log( str );
 		}
 	};
