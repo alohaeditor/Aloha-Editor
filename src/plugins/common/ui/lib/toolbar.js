@@ -93,29 +93,22 @@ define([
 
 		/**
 		 * Generate tabs inside the toolbar wrapper div, and inflates tabs from
-		 * an of tab definition.  Invokes jQueryUI Tabs on the container created
-		 * inside the toolbar.
+		 * toolbar settings.  Invokes jQueryUI Tabs on the tabs container
+		 * created inside the toolbar.
 		 * @param {Array.<object>} tabs Tab settings from `toolbar.settings`.
 		 * @param {Aloha.Editable} editable The editable whose toolbar will
 		 *                                  hold the inflated tags.
 		 */
 		renderContainers: function( tabs, editable ) {
+			var settings,
+			    holder = Tab.createHolders( editable.toolbar ),
+			    tabsUidPrefix = GENTICS.Utils.guid() + '-',
+			    j = tabs.length,
+			    i = 0;
+
 			editable.tabs = editable.tabs || [];
 
-			var tabs_container = editable.toolbar.find(
-				'.' + Ui.TABS_CONTAINER_CLASS );
-
-			jQuery( '<ul>', { 'class': Ui.TABS_HANDLES_CLASS } )
-				.appendTo( tabs_container );
-
-			jQuery( '<div>', { 'class': Ui.TABS_PANELS_CLASS } )
-				.appendTo( tabs_container );
-
-			var settings;
-			var tabsUidPrefix = GENTICS.Utils.guid() + '-';
-			var j = tabs.length;
-
-			for ( var i = 0; i < j; ++i ) {
+			for ( ; i < j; ++i ) {
 				settings = tabs[i];
 
 				editable.tabs.push( new Tab({
@@ -126,9 +119,9 @@ define([
 				}, settings.components ));
 			}
 
-			tabs_container.tabs();
+			holder.tabs();
 
-			Ui.Container.showContainersForElements( [] );
+			Ui.Container.showContainersForElements([]);
 		},
 
 		/**

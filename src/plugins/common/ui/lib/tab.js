@@ -159,5 +159,28 @@ define([
 
 	});
 
+	/**
+	 * Creates holding elements for jQuery UI Tabs on the given surface
+	 * element.
+	 * @param {jQuery<HTMLElement>} surface The DOM element which represents
+	 *                                      a Aloha.ui.Surface .
+	 * @return {jQuery<HTMLElement>} The holder container onwhich we invoke
+	 *                               jQuery UI Tabs once it is populated with
+	 *                               tab containers.
+	 * @static
+	 */
+	Tab.createHolders = function( surface ) {
+		var container_holder = surface.find(
+			'.' + Ui.TABS_CONTAINER_CLASS );
+
+		jQuery( '<ul>', { 'class': Ui.TABS_HANDLES_CLASS } )
+			.appendTo( container_holder );
+
+		jQuery( '<div>', { 'class': Ui.TABS_PANELS_CLASS } )
+			.appendTo( container_holder );
+
+		return container_holder;
+	};
+
 	return Tab;
 });
