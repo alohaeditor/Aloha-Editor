@@ -189,7 +189,7 @@ define([
 
 		/**
 		 * A predicate that tests whether this container should be shown.  This
-		 * done by testing the elements in the current selected range against
+		 * is done by testing the elements in the current selected range against
 		 * the `showOn` value.
 		 * @param {Array.<HTMLElement>=} elements A set of elements to test.
 		 * @return {boolean} True if this container should be made visible.
@@ -270,14 +270,17 @@ define([
 	 * if we were to test each container's `shouldShow` function individually,
 	 * we would do so at a cost of O(num_of_elements * N) in any and all cases.
 	 * But by grouping containers into sets that have functionally equivalent
-	 * `showOn` conditions, we minimize the work we have to do for most cases,
-	 * since it is likely that there will often be containers which have the
-	 * same condition regarding when they are to be shown.
+	 * `showOn` conditions, we can minimize the work we have to do for most
+	 * cases, since it is likely that there will often be containers which have
+	 * the same condition regarding when they are to be shown.
 	 *
 	 * Organizing our data in this way allows this function to perform 1 *
 	 * (number of elements) `shouldShow` test for N containers in most cases,
 	 * rather than N * (number of elements) tests for N containers in all
 	 * cases.
+	 * @TODO(petro): Figure out a way to leave out containers which belong in
+	 *               deactivated (hidden) toolbars from being shown, since this
+	 *               is unnecessary work.
 	 * @param {Array.<HTMLElement>} elements The effective elements any of
 	 *                                       which may cause the container to
 	 *                                       shown.
