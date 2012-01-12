@@ -29,6 +29,7 @@ h4. Components
 * underline - add underline formatting
 * paragraph - will allow you to add paragraph formattings (address, dd, div, dt, h1, h2, h3, h4, h5, h6, p, pre)
 
+
 h4. Configuration
 
 The format plugin provides the following config options:
@@ -84,7 +85,11 @@ Aloha.plugins.link: {
 		} else {
 			jQuery(obj).removeAttr('data-name');
 		}
-	}
+	},
+	// hotKey to trigger insertLink method
+	hotKey: { insertLink: 'ctrl+l' },
+	// default href field input start value
+	hrefValue: 'http://', 
 };
 </javascript>
 

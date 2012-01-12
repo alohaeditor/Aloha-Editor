@@ -25,7 +25,7 @@ define( [
 	'i18n!aloha/nls/i18n',
 	'aloha/console',
 	'link/../extra/linklist',
-	'link/../extra/slowlinklist',
+	/*'link/../extra/slowlinklist', // deactivated */
 	'css!link/css/link.css'
 ], function ( Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, console ) {
 	'use strict';
@@ -92,6 +92,18 @@ define( [
 		hrefUpdateInt: null,
 		
 		/**
+		 * HotKeys used for special actions
+		*/
+		hotKey: {
+			insertLink: i18n.t('insertLink', 'ctrl+k')
+		},
+		
+		/**
+		 * Default input value for a new link
+		*/
+		hrefValue: 'http://',
+		
+		/**
 		 * Initialize the plugin
 		 */
 		init: function () {
@@ -114,6 +126,12 @@ define( [
 			}
 			if ( typeof this.settings.onHrefChange != 'undefined' ) {
 				this.onHrefChange = this.settings.onHrefChange;
+			}
+			if ( typeof this.settings.hotKey != 'undefined' ) {
+				jQuery.extend(true, this.hotKey, this.settings.hotKey);
+			}
+			if ( typeof this.settings.hrefValue != 'undefined' ) {
+				this.hrefValue = this.settings.hrefValue;
 			}
 			
 			this.createButtons();
@@ -225,20 +243,18 @@ define( [
 
 			// add the event handler for creation of editables
 			Aloha.bind( 'aloha-editable-created', function ( event, editable ) {
-				// CTRL+L
-				editable.obj.keydown( function ( e ) {
-					if ( e.metaKey && e.which == 76 ) {
-						if ( that.findLinkMarkup() ) {
-							// open the tab containing the href
-							FloatingMenu.activateTabOfButton( 'href' );
-							that.hrefField.focus();
-						} else {
-							that.insertLink();
-						}
-						// prevent from further handling
-						// on a MAC Safari cursor would jump to location bar. Use ESC then META+L
-						return false;
+				// enable hotkey for inserting links
+				editable.obj.bind( 'keydown', that.hotKey.insertLink, function ( e ) {
+					if ( that.findLinkMarkup() ) {
+						// open the tab containing the href
+						FloatingMenu.activateTabOfButton( 'href' );
+						that.hrefField.focus();
+					} else {
+						that.insertLink( true );
+						that.preventAutoSuggestionBoxFromExpanding();
 					}
+					
+					return false;
 				} );
 
 				editable.obj.find( 'a' ).each( function ( i ) {
@@ -256,7 +272,7 @@ define( [
 				// editable area.
 				if ( !that.ignoreNextSelectionChangedEvent &&
 						Aloha.Selection.isSelectionEditable() &&
-							Aloha.activeEditable != null ) {
+						Aloha.activeEditable != null ) {
 					// show/hide the button according to the configuration
 					config = that.getEditableConfig( Aloha.activeEditable.obj );
 					if ( jQuery.inArray( 'a', config ) != -1 ) {
@@ -287,7 +303,7 @@ define( [
 						}
 						// now we are ready to set the target object
 						that.hrefField.setTargetObject( foundMarkup, 'href' );
-						
+
 						// if the selection-changed event was raised by the first click interaction on this page
 						// the hrefField component might not be initialized. When the user switches to the link
 						// tab to edit the link the field would be empty. We check for that situation and add a
@@ -448,16 +464,22 @@ define( [
 					if ( curval[ 0 ] == '/' || // local link
 						 curval[ 0 ] == '#' || // inner document link
 						 curval.match( /^.*\.([a-z]){2,4}$/i ) || // local file with extension
-						 curval.match( /^htt.*/i ) // external link
+						 curval.match( /^([a-z]){3,10}:\/\/.+/i ) || // external link (http(s), ftp(s), ssh, file, skype, ... )
+						 curval.match( /^(mailto|tel):.+/i ) // mailto / tel link
 					) {
 						// could be a link better leave it as it is
 					} else {
 						// the user searched for something and aborted
-						// restore original value
-						that.hrefField.setValue( that.hrefField.getValue() );
-						// or clean the field value
-						// that.hrefField.setValue();
+						var hrefValue = that.hrefField.getValue();
+						
+						// restore original value and hide combo list
+						that.hrefField.setValue( hrefValue );
 						that.hideComboList();
+						
+						if ( hrefValue == that.hrefValue || hrefValue == '' ) {
+							that.removeLink( false );
+						}
+						
 					}
 				}
 				
@@ -488,7 +510,7 @@ define( [
 					
 					var hrefValue = jQuery( that.hrefField.extButton.el.dom ).attr( 'value' );
 					
-					if ( hrefValue == 'http://' || hrefValue == '' ) {
+					if ( hrefValue == that.hrefValue || hrefValue == '' ) {
 						that.removeLink( false );
 					}
 					
@@ -617,13 +639,13 @@ define( [
 			if ( range.isCollapsed() ) {
 				// insert a link with text here
 				linkText = i18n.t( 'newlink.defaulttext' );
-				newLink = jQuery( '<a href="" class="aloha-new-link">' + linkText + '</a>' );
+				newLink = jQuery( '<a href="' + that.hrefValue + '" class="aloha-new-link">' + linkText + '</a>' );
 				GENTICS.Utils.Dom.insertIntoDOM( newLink, range, jQuery( Aloha.activeEditable.obj ) );
 				range.startContainer = range.endContainer = newLink.contents().get( 0 );
 				range.startOffset = 0;
 				range.endOffset = linkText.length;
 			} else {
-				newLink = jQuery( '<a href="" class="aloha-new-link"></a>' );
+				newLink = jQuery( '<a href="' + that.hrefValue + '" class="aloha-new-link"></a>' );
 				GENTICS.Utils.Dom.addMarkup( range, newLink, false );
 			}
 
@@ -637,12 +659,14 @@ define( [
 			// focus has to become before prefilling the attribute, otherwise
 			// Chrome and Firefox will not focus the element correctly.
 			this.hrefField.focus();
+			
 			// prefill and select the new href
 			// We need this guard because there are time when the extButton's
 			// el element has not yet available
 			if ( this.hrefField.extButton.el ) {
-				jQuery( this.hrefField.extButton.el.dom ).attr( 'value', 'http://' ).select();
+				jQuery( this.hrefField.extButton.el.dom ).attr( 'value', that.hrefValue ).select();
 			}
+			
 			this.hrefChange();
 		},
 
@@ -677,7 +701,7 @@ define( [
 		 */
 		hrefChange: function () {
 			var that = this;
-			
+
 			// For now hard coded attribute handling with regex.
 			// Avoid creating the target attribute, if it's unnecessary, so
 			// that XSS scanners (AntiSamy) don't complain.
