@@ -968,7 +968,7 @@ function(Aloha, jQuery, Ext, Class, console) {
 				floatingMenuVisible = false,
 				showUserActivatedTab = false,
 				pos;
-
+			
 			// let the tabs layout themselves
 			jQuery.each(this.tabs, function(index, tab) {
 				// remember the active tab
@@ -1045,7 +1045,19 @@ function(Aloha, jQuery, Ext, Class, console) {
 				this.top = pos[1] < 0 ? 100 : pos[1];
 				this.extTabPanel.hide();
 				this.extTabPanel.shadow.hide();
-			}
+			} /*else {
+				var target = that.calcFloatTarget(Aloha.Selection.getRangeObject());
+				if (target) {
+					this.left = target.left;
+					this.top = target.top;
+					this.extTabPanel.show();
+					this.refreshShadow();
+					this.extTabPanel.shadow.show();
+					this.extTabPanel.setPosition(this.left, this.top);
+
+					that.floatTo(target);
+				}
+			}*/
 
 			// let the Ext object render itself again
 			this.extTabPanel.doLayout();
@@ -1144,7 +1156,7 @@ function(Aloha, jQuery, Ext, Class, console) {
 		 */
 		calcFloatTarget: function(range) {
 			var
-				i, editableLength, target,
+				i, documentWidth, editableLength, left, target,
 				targetObj, scrollTop, top;
 
 			// TODO in IE8 somteimes a broken range is handed to this function - investigate this
@@ -1183,8 +1195,15 @@ function(Aloha, jQuery, Ext, Class, console) {
 				return false;
 			}
 
+			// check if the floating menu does not float off the right side
+			left = Aloha.activeEditable.obj.offset().left;
+			documentWidth = jQuery(document).width();
+			if ( documentWidth - this.width < left ) {
+					left = documentWidth - this.width - GENTICS.Utils.Position.ScrollCorrection.left;
+			}
+			
 			return {
-				left : Aloha.activeEditable.obj.offset().left,
+				left : left,
 				top : top
 			};
 		},
@@ -1218,7 +1237,6 @@ function(Aloha, jQuery, Ext, Class, console) {
 						} else if (props.prop == 'left') {
 							that.left = props.now;
 						}
-
 						that.refreshShadow(false);
 					}
 				});
