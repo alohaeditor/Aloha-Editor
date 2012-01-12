@@ -1,8 +1,6 @@
 /**
- * FIXME(petro@gentics.com): Fix showing and hiding of toolbars when multiple
- *                           toolbar when we have mutliple editables. Problem
- *                           will be in tab.js .
- *
+ * FIXME(petro): Fix showing and hiding of toolbars when we have mutliple
+ *               editables on the page.  Problem will be in tab.js .
  */
 
 define([
@@ -65,29 +63,23 @@ define([
 			});
 
 			// Event handler for aloha-selection-changed.  Determine the
-			// effective elements at the current selection, and then invoke
+			// elements "under" the current selection, and then invoke
 			// `Ui.Container.showContainersForElements()` to show and hide the
 			// appropriate containers.
-			//
-			// TODO: Is there a more reliable alternative to
-			//       `range.markupEffectiveAtStart`? It seems that it needs to
-			//       be fixed. There are times when you would click in the
-			//       editable and the `markupEffectiveAtStart` array will have
-			//       "incorrect" elements--that is, not the element or parents
-			//       of the element you clicked on.
 
 			Aloha.bind( 'aloha-selection-changed', function( event, range ) {
-				var effective = [];
+// console.log( range );
+				var isEditingHost = GENTICS.Utils.Dom.isEditingHost,
+				    elements = [],
+				    element;
 
-				if ( range && range.markupEffectiveAtStart ) {
-					var j = range.markupEffectiveAtStart.length;
-
-					while ( j ) {
-						effective.push( range.markupEffectiveAtStart[ --j ] );
-					}
+				for ( element = range.startContainer;
+				      !isEditingHost( element );
+				      element = element.parentNode ) {
+					elements.push( element );
 				}
-
-				Ui.Container.showContainersForElements( effective );
+// console.log( elements );
+				Ui.Container.showContainersForElements( elements );
 			});
 		},
 

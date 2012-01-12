@@ -281,15 +281,14 @@ define([
 	 * @TODO(petro): Figure out a way to leave out containers which belong in
 	 *               deactivated (hidden) toolbars from being shown, since this
 	 *               is unnecessary work.
-	 * @param {Array.<HTMLElement>} elements The effective elements any of
-	 *                                       which may cause the container to
-	 *                                       shown.
+	 * @param {Array.<HTMLElement>} elements A list of elements, any of which
+	 *                                       may cause the container to shown.
 	 * @static
 	 */
 	Container.showContainersForElements = function( elements ) {
 		// Add a null object to the elements array so that we can test whether
-		// the panel should be activated when we have no effective elements in
-		// the current selection.
+		// the panel should be activated when we have no elements in the
+		// current selection.
 		if ( elements && jQuery.type( elements.push ) == 'function' ) {
 			elements.push( null );
 		} else {
