@@ -1,7 +1,7 @@
 /*!
 * This file is part of Aloha Editor Project http://aloha-editor.org
 * Copyright (c) 2010-2011 Gentics Software GmbH, aloha@gentics.com
-* Contributors http://aloha-editor.org/contribution.php 
+* Contributors http://aloha-editor.org/contribution.php
 * Licensed unter the terms of http://www.aloha-editor.org/license.html
 *//*
 * Aloha Editor is free software: you can redistribute it and/or modify
@@ -23,11 +23,9 @@ define( [
 	'util/class',
 	'aloha/jquery',
 	'aloha/console'
-], function ( Aloha, Class, jQuery, console ) {
+], function( Aloha, Class, jQuery, console ) {
 	'use strict';
-	
-	var undefined = void 0;
-	
+
 	/**
 	 * Repository Manager
 	 * @namespace Aloha
@@ -35,9 +33,9 @@ define( [
 	 * @singleton
 	 */
 	Aloha.RepositoryManager = Class.extend( {
-		
+
 		repositories  : [],
-		
+
 		/**
 		 * Initialize all registered repositories
 		 * Before we invoke each repositories init method, we merge the global
@@ -49,43 +47,43 @@ define( [
 		 * @return void
 		 * @hide
 		 */
-		init: function () {
+		init: function() {
 			var repositories = this.repositories,
 			    i = 0,
 			    j = repositories.length,
 			    repository,
 			    settings;
-			
+
 			if ( Aloha.settings && Aloha.settings.repositories ) {
 				settings = Aloha.settings.repositories;
 			} else {
 				settings = {};
 			}
-			
+
 			for ( ; i < j; ++i ) {
 				repository = repositories[ i ];
-				
+
 				if ( !repository.settings ) {
 					repository.settings = {};
 				}
-				
+
 				if ( settings[ repository.repositoryId ] ) {
 					jQuery.extend(
 						repository.settings,
 						settings[ repository.repositoryId ]
 					);
 				}
-				
+
 				repository.init();
 			}
 		},
-		
+
 		/**
 		 * Register a Repository.
 		 *
 		 * @param {Aloha.Repository} repository Repository to register
 		 */
-		register: function ( repository ) {
+		register: function( repository ) {
 			if ( !this.getRepository( repository.repositoryId ) ) {
 				this.repositories.push( repository );
 			} else {
@@ -94,24 +92,24 @@ define( [
 					' } already registerd. Ignoring this.' );
 			}
 		},
-		
+
 		/**
 		 * Returns the repository object identified by repositoryId.
 		 *
 		 * @param {String} repositoryId - the name of the repository
 		 * @return {?Aloha.Repository} a repository or null if name not found
 		 */
-		getRepository: function ( repositoryId ) {
+		getRepository: function( repositoryId ) {
 			var repositories = this.repositories,
 			    i = 0,
 			    j = repositories.length;
-			
+
 			for ( ; i < j; ++i ) {
-				if ( repositories[ i ].repositoryId == repositoryId ) {
+				if ( repositories[ i ].repositoryId === repositoryId ) {
 					return repositories[ i ];
 				}
 			}
-			
+
 			return null;
 		},
 
@@ -153,7 +151,7 @@ define( [
 		 * "items" is an Array of objects construced with Document/Folder.
 		 * @void
 		 */
-		query: function ( params, callback ) {
+		query: function( params, callback ) {
 			var that = this,
 			    repo,
 			    // The merged results, collected from repository responses
@@ -191,26 +189,27 @@ define( [
 				 * @param {Array} items - Results returned by the repository
 				 * @param {Object<String,Number>} metainfo - optional Metainfo returned by the repository
 				 */
-				processResults = function ( items, metainfo ) {
-					if ( numOpenCallbacks == 0 ) {
+				processResults = function( items, metainfo ) {
+					if ( numOpenCallbacks === 0 ) {
 						return;
 					}
-					
+
 					var j = items ? items.length : 0;
-					
+
 					if ( j ) {
 						// Add the repositoryId for each item if a negligent
 						// repository did not do so.
-						if ( !items[ 0 ].repositoryId ) {
-							var repoId = this.repositoryId;
-							for ( var i = 0; i < j; ++i ) {
+						if ( !items[0].repositoryId ) {
+							var repoId = this.repositoryId,
+							    i;
+							for ( i = 0; i < j; ++i ) {
 								items[ i ].repositoryId = repoId;
 							}
 						}
-						
+
 						jQuery.merge( allitems, items );
 					}
-					
+
 					if ( metainfo && allmetainfo ) {
 						if ( jQuery.isNumeric( metainfo.numItems ) &&
 								jQuery.isNumeric( allmetainfo.numItems ) ) {
@@ -218,7 +217,7 @@ define( [
 						} else {
 							allmetainfo.numItems = undefined;
 						}
-						
+
 						if ( jQuery.isBoolean( metainfo.hasMoreItems ) &&
 								jQuery.isBoolean( allmetainfo.hasMoreItems ) ) {
 							allmetainfo.hasMoreItems = allmetainfo.hasMoreItems || metainfo.hasMoreItems;
@@ -230,13 +229,13 @@ define( [
 						// we have no aggregated metainfo at all
 						allmetainfo = undefined;
 					}
-					
+
 					// TODO how to return the metainfo here?
-					if ( --numOpenCallbacks == 0 ) {
+					if ( --numOpenCallbacks === 0 ) {
 						that.queryCallback( callback, allitems, allmetainfo, timer );
 					}
 				};
-			
+
 			// Unless the calling client specifies otherwise, we will wait a
 			// maximum of 5 seconds for all repositories to be queried and
 			// respond. 5 seconds is deemed to be the reasonable time to wait
@@ -247,7 +246,7 @@ define( [
 				numOpenCallbacks = 0;
 				that.queryCallback( callback, allitems, allmetainfo, timer );
 			}, timeout );
-			
+
 			// If repositoryId or a list of repository ids, is not specified in
 			// the params object, then we will query all registered
 			// repositories
@@ -256,40 +255,40 @@ define( [
 			} else {
 				repositories = this.repositories;
 			}
-			
+
 			j = repositories.length;
-			
+
 			var repoQueue = [];
-			
+
 			// We need to know how many callbacks we will open before invoking
 			// the query method on each, so that as soon as the first one does
 			// callback, the correct number of open callbacks will be available
 			// to check.
-			
+
 			for ( i = 0; i < j; ++i ) {
 				repo = repositories[ i ];
-				
-				if ( typeof repo.query == 'function' ) {
+
+				if ( typeof repo.query === 'function' ) {
 					++numOpenCallbacks;
 					repoQueue.push( repo );
 				}
 			}
-			
+
 			j = repoQueue.length;
-			
+
 			for ( i = 0; i < j; ++i ) {
 				repo = repoQueue[ i ];
 				repo.query(
 					params,
-					function () {
+					function() {
 						processResults.apply( repo, arguments );
 					}
 				);
 			}
-			
+
 			// If none of the repositories implemented the query method, then
 			// don't wait for the timeout, simply report to the client
-			if ( numOpenCallbacks == 0 ) {
+			if ( numOpenCallbacks === 0 ) {
 				this.queryCallback( callback, allitems, allmetainfo, timer );
 			}
 		},
@@ -306,32 +305,32 @@ define( [
 		 * @return void
 		 * @hide
 		 */
-		queryCallback: function ( callback, items, metainfo, timer ) {
+		queryCallback: function( callback, items, metainfo, timer ) {
 			if ( timer ) {
 				clearTimeout( timer );
 				timer = undefined;
 			}
-			
+
 			// TODO: Implement sorting based on repository specification
 			// sort items by weight
-			//items.sort(function (a,b) {
-			//	return (b.weight || 0) - (a.weight || 0);
-			//});
-			
+			//items.sort( function( a, b ) {
+			//	return ( b.weight || 0 ) - ( a.weight || 0 );
+			//} );
+
 			// prepare result data for the JSON Reader
 			var result = {
 				items   : items,
 				results : items.length
 			};
-			
+
 			if ( metainfo ) {
 				result.numItems = metainfo.numItems;
 				result.hasMoreItems = metainfo.hasMoreItems;
 			}
-			
+
 			callback.call( this, result );
 		},
-		
+
 		/**
 		 * @todo: This method needs to be covered with some unit tests
 		 *
@@ -350,7 +349,7 @@ define( [
 		 * "items" is an Array of objects construced with Document/Folder.
 		 * @void
 		 */
-		getChildren: function ( params, callback ) {
+		getChildren: function( params, callback ) {
 			var that = this,
 			    repo,
 			    // The marged results, collected from repository responses
@@ -364,28 +363,28 @@ define( [
 			    // numOpenCallbacks will be reset to 0
 			    timer,
 			    i, j,
-			    processResults = function ( items ) {
-					if ( numOpenCallbacks == 0 ) {
+			    processResults = function( items ) {
+					if ( numOpenCallbacks === 0 ) {
 						return;
 					}
-					
+
 					jQuery.merge( allitems, items );
-					
-					if ( --numOpenCallbacks == 0 ) {
+
+					if ( --numOpenCallbacks === 0 ) {
 						that.getChildrenCallback( callback, allitems, timer );
 					}
 				};
-			
+
 			// If the inFolderId is the default id of 'aloha', then return all
 			// registered repositories
-			if ( params.inFolderId == 'aloha' ) {
+			if ( params.inFolderId === 'aloha' ) {
 				var repoFilter = params.repositoryFilter,
 				    hasRepoFilter = ( repoFilter && repoFilter.length );
-				
+
 				j = this.repositories.length;
-				
+
 				for ( i = 0; i < j; ++i ) {
-					var repo = this.repositories[ i ];
+					repo = this.repositories[ i ];
 					if ( !hasRepoFilter || jQuery.inArray( repo.repositoryId, repoFilter ) > -1 ) {
 						repositories.push(
 							new Aloha.RepositoryFolder( {
@@ -398,57 +397,57 @@ define( [
 						);
 					}
 				}
-				
+
 				that.getChildrenCallback( callback, repositories, null );
-				
+
 				return;
 			} else {
 				repositories = this.repositories;
 			}
-			
+
 			var timeout = parseInt( params.timeout, 10 ) || 5000;
-			timer = setTimeout( function () {
+			timer = setTimeout( function() {
 				numOpenCallbacks = 0;
 				that.getChildrenCallback( callback, allitems, timer );
 			}, timeout );
-			
+
 			j = repositories.length;
-			
+
 			for ( i = 0; i < j; ++i ) {
 				repo = repositories[ i ];
-				
+
 				if ( typeof repo.getChildren === 'function' ) {
 					++numOpenCallbacks;
-					
+
 					repo.getChildren(
 						params,
-						function () {
+						function() {
 							processResults.apply( repo, arguments );
 						}
 					);
 				}
 			}
-			
-			if ( numOpenCallbacks == 0 ) {
+
+			if ( numOpenCallbacks === 0 ) {
 				this.getChildrenCallback( callback, allitems, timer );
 			}
 		},
-		
+
 		/**
 		 * Returns results for getChildren to calling client
 		 *
 		 * @return void
 		 * @hide
 		 */
-		getChildrenCallback: function ( callback, items, timer ) {
+		getChildrenCallback: function( callback, items, timer ) {
 			if ( timer ) {
 				clearTimeout( timer );
 				timer = undefined;
 			}
-			
+
 			callback.call( this, items );
 		},
-		
+
 		/**
 		 * @fixme: Not tested, but the code for this function does not seem to
 		 *        compute repository.makeClean will be undefined
@@ -461,29 +460,29 @@ define( [
 		 * @param {jQuery} obj - representing an editable
 		 * @return void
 		 */
-		makeClean: function ( obj ) {
+		makeClean: function( obj ) {
 			// iterate through all registered repositories
 			var that = this,
 			    repository = {},
 			    i = 0,
 			    j = that.repositories.length;
-			
+
 			// find all repository tags
 			obj.find( '[data-gentics-aloha-repository=' + this.prefix + ']' )
-				.each( function () {
+				.each( function() {
 					for ( ; i < j; ++i ) {
 						repository.makeClean( obj );
 					}
 					console.debug( that,
 						'Passing contents of HTML Element with id { ' +
-						this.attr('id') + ' } for cleaning to repository { ' +
+						this.attr( 'id' ) + ' } for cleaning to repository { ' +
 						repository.repositoryId + ' }' );
 					repository.makeClean( this );
 				} );
 		},
 
 		/**
-		 * Markes an object as repository of this type and with this item.id.
+		 * Marks an object as repository of this type and with this item.id.
 		 * Objects can be any DOM objects as A, SPAN, ABBR, etc. or
 		 * special objects such as aloha-aloha_block elements.
 		 * This method marks the target obj with two private attributes:
@@ -493,23 +492,23 @@ define( [
 		 *
 		 * @param {DOMObject} obj - DOM object to mark
 		 * @param {Aloha.Repository.Object} item - the item which is applied to obj,
-		 *  	if set to null, the data-GENTICS-... attributes are removed
+		 *		if set to null, the data-GENTICS-... attributes are removed
 		 * @return void
 		 */
-		markObject: function ( obj, item ) {
+		markObject: function( obj, item ) {
 			if ( !obj ) {
 				return;
 			}
-			
+
 			if ( item ) {
 				var repository = this.getRepository( item.repositoryId );
-				
+
 				if ( repository ) {
 					jQuery( obj ).attr( {
 						'data-gentics-aloha-repository' : item.repositoryId,
 						'data-gentics-aloha-object-id'  : item.id
 					} );
-					
+
 					repository.markObject( obj, item );
 				} else {
 					console.error( this,
@@ -517,12 +516,12 @@ define( [
 						' } to an object, but item has no repositoryId.' );
 				}
 			} else {
-				// remove the data attributes
-				jQuery( obj ).removeAttr( 'data-gentics-aloha-repository' );
-				jQuery( obj ).removeAttr( 'data-gentics-aloha-object-id' );
+				jQuery( obj )
+					.removeAttr( 'data-gentics-aloha-repository' )
+					.removeAttr( 'data-gentics-aloha-object-id' );
 			}
 		},
-		
+
 		/**
 		 * Get the object for which the given DOM object is marked from the
 		 * repository.
@@ -530,12 +529,12 @@ define( [
 		 * @param {DOMObject} obj - DOM object which probably is marked
 		 * @param {Function} callback - callback function
 		 */
-		getObject: function ( obj, callback ) {
+		getObject: function( obj, callback ) {
 			var that = this,
 			    $obj = jQuery( obj ),
 			    repository = this.getRepository( $obj.attr( 'data-gentics-aloha-repository' ) ),
 			    itemId = $obj.attr( 'data-gentics-aloha-object-id' );
-			
+
 			if ( repository && itemId ) {
 				// initialize the item cache (per repository) if not already done
 				this.itemCache = this.itemCache || [];
@@ -546,26 +545,26 @@ define( [
 					callback.call( this, [ this.itemCache[ repository.repositoryId ][ itemId ] ] );
 				} else {
 					// otherwise we get the object from the repository
-					repository.getObjectById( itemId, function ( items ) {
+					repository.getObjectById( itemId, function( items ) {
 						// make sure the item is in the cache (for subsequent calls)
-						that.itemCache[ repository.repositoryId ][ itemId ] = items[ 0 ];
+						that.itemCache[ repository.repositoryId ][ itemId ] = items[0];
 						callback.call( this, items );
 					} );
 				}
 			}
 		},
-		
+
 		/**
 		 * @return {String} name of repository manager object
 		 */
-		toString: function () {
+		toString: function() {
 			return 'repositorymanager';
 		}
-		
+
 	} );
-	
+
 	Aloha.RepositoryManager = new Aloha.RepositoryManager();
-	
+
 	// We return the constructor, not the instance of Aloha.RepositoryManager
 	return Aloha.RepositoryManager;
 } );
