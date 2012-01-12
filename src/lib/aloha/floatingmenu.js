@@ -412,7 +412,7 @@ function(Aloha, jQuery, Ext, Class, console) {
 				if (typeof Aloha.settings.floatingmenu.width !== 'undefined') {
 					//Try to pars it
 					try {
-						var parsed = parseInt(Aloha.settings.floatingmenu.width);
+						var parsed = parseInt(Aloha.settings.floatingmenu.width, 10);
 						this.width = Aloha.settings.floatingmenu.width;
 					} catch(e) {
 						//do nothing.
@@ -430,8 +430,7 @@ function(Aloha, jQuery, Ext, Class, console) {
 					jQuery.storage.set('Aloha.FloatingMenu.top', that.top);
 					jQuery.storage.set('Aloha.FloatingMenu.left', that.left);
 					if (Aloha.Log.isInfoEnabled()) {
-						Aloha.Log.info(this, 'stored FloatingMenu pinned position {' + that.left
-								+ ', ' + that.top + '}');
+						Aloha.Log.info(this, 'stored FloatingMenu pinned position {' + that.left + ', ' + that.top + '}');
 					}
 				} else {
 					// delete old localStorages
@@ -619,9 +618,7 @@ function(Aloha, jQuery, Ext, Class, console) {
 								// if a DOM Element is queued to be set active, we try to do this now.
 								// the reason for this is that the active DOM element can only be set when the multisplit button is currently visible.
 								jQuery.each(that.allButtons, function(index, buttonInfo) {
-									if (typeof buttonInfo.button !== 'undefined'
-										&& typeof buttonInfo.button.extButton !== 'undefined'
-										&& buttonInfo.button.extButton !== null
+									if (typeof buttonInfo.button !== 'undefined' && typeof buttonInfo.button.extButton !== 'undefined' && buttonInfo.button.extButton !== null
 										&& typeof buttonInfo.button.extButton.setActiveDOMElement === 'function') {
 										if (typeof buttonInfo.button.extButton.activeDOMElement !== 'undefined') {
 											buttonInfo.button.extButton.setActiveDOMElement(buttonInfo.button.extButton.activeDOMElement);

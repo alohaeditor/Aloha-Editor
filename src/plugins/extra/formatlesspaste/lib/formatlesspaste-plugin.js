@@ -96,8 +96,7 @@ function(Aloha, Plugin, jQuery, FloatingMenu, FormatlessPasteHandler, ContentHan
 				'Aloha.continuoustext',
 				this.formatlessPasteButton,
 				i18nCore.t( 'floatingmenu.tab.format' ),
-				1
-			);
-		},
+				1);
+		}
 	});
 });

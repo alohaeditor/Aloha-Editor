@@ -124,11 +124,11 @@ function(Aloha, Plugin, FloatingMenu, i18n, i18nCore, jQuery) {
 		 * @return void
 		 */
 		applyButtonConfig: function (obj) {
-			
+			var config = null;
 			if (typeof this.settings.alignment === 'undefined') {
-				var config = this.config.alignment;
+				config = this.config.alignment;
 			} else {
-				var config = this.settings.alignment;
+				config = this.settings.alignment;
 			}
 			
 			if ( jQuery.inArray('right', config) != -1) {
@@ -174,8 +174,7 @@ function(Aloha, Plugin, FloatingMenu, i18n, i18nCore, jQuery) {
 		      'Aloha.continuoustext',
 		      this.alignLeftButton,
 		      i18nCore.t('floatingmenu.tab.format'),
-		      1
-		    );
+		      1);
 
 		    // create a new button
 		    this.alignCenterButton = new Aloha.ui.Button({
@@ -192,8 +191,7 @@ function(Aloha, Plugin, FloatingMenu, i18n, i18nCore, jQuery) {
 		      'Aloha.continuoustext',
 		      this.alignCenterButton,
 		      i18nCore.t('floatingmenu.tab.format'),
-		      1
-		    );
+		      1);
 
 		    // create a new button
 		    this.alignRightButton = new Aloha.ui.Button({
@@ -210,8 +208,7 @@ function(Aloha, Plugin, FloatingMenu, i18n, i18nCore, jQuery) {
 		      'Aloha.continuoustext',
 		      this.alignRightButton,
 		      i18nCore.t('floatingmenu.tab.format'),
-		      1
-		    );
+		      1);
 
 		    // create a new button
 		    this.alignJustifyButton = new Aloha.ui.Button({
@@ -228,8 +225,7 @@ function(Aloha, Plugin, FloatingMenu, i18n, i18nCore, jQuery) {
 		      'Aloha.continuoustext',
 		      this.alignJustifyButton,
 		      i18nCore.t('floatingmenu.tab.format'),
-		      1
-		    );
+		      1);
 
 		},
 

@@ -270,8 +270,7 @@ var alohaConsole = Class.extend({
 
 		// when maxEntries is set to something illegal, we do nothing (log history is disabled)
 		// check whether the level is one we like to have logged
-		if ( Aloha.settings.logHistory.maxEntries <= 0
-				|| !Aloha.settings.logHistory.levels[ entry.level ]
+		if ( Aloha.settings.logHistory.maxEntries <= 0 || !Aloha.settings.logHistory.levels[ entry.level ]
 			) {
 			
 			return;
@@ -325,6 +324,8 @@ var alohaConsole = Class.extend({
 alohaConsole = new alohaConsole();
 
 // add to log namespace for compatiblility.
-return Aloha.Log = Aloha.Console = alohaConsole;
+Aloha.Log = alohaConsole;
+Aloha.Console = alohaConsole;
+return alohaConsole;
 
 });

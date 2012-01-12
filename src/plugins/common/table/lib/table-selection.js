@@ -163,7 +163,7 @@ function (Aloha, $, Utils, TableCell, i18n) {
 			}
 		}
 		return true;
-	}
+	};
 	
 	/**
 	 * This method removes the "selected" class from all selected cells
@@ -269,7 +269,7 @@ function (Aloha, $, Utils, TableCell, i18n) {
 		} else {
 			// the outside of the selected area is a rectangle, but we
 			// must also ensore that there are no holes in the selection
-			var rect = getRectFromContour( contour )
+			var rect = getRectFromContour( contour );
 			Utils.walkGridInsideRect( grid, rect, function ( cellInfo ) {
 				if ( ! isSelected( cellInfo ) ) {
 					mergeable = false;

@@ -4,8 +4,10 @@ This document is to serve as a "what has been done" in terms of the [Roadmap](ht
 ## 0.21.0 - dev
 
 
-## 0.20.0
+## 0.20.1-RC1
+- core/plugins: Multiple jslint errors where fixed within core and plugins
 
+## 0.20.0 
 - doc/api: added first version of new API docs. Please note that the API docs are currently work in progress.
 - floatingmenu: fixed a bug with topalign behaviour where scrolling would attach the floatingmenu to the left side of the screen
 

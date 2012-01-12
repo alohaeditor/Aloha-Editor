@@ -1,5 +1,5 @@
 (function(window, undefined) {
-	var jQuery = window.jQuery
+	var jQuery = window.jQuery;
 	if (window.Aloha === undefined || window.Aloha === null) {
 		window.Aloha = {};		
 	}
@@ -91,7 +91,7 @@
 						tableConfig : [
 											{name:'hor-minimalist-a'},
 											{name:'box-table-a'},
-											{name:'hor-zebra'},
+											{name:'hor-zebra'}
 							],
 							columnConfig : [
 											{name:'bigbold', iconClass:'GENTICS_button_col_bigbold'},

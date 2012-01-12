@@ -19,7 +19,7 @@ define([
 			
 			Aloha.require(['speak/speak','css!speak/css/speak.css']);
 			
-			Aloha.jQuery('body').append('<div id="audio"></div>')
+			Aloha.jQuery('body').append('<div id="audio"></div>');
 			
 			var button = new Aloha.ui.Button({
 				name      : 'speak',
@@ -35,8 +35,7 @@ define([
 				'Aloha.continuoustext',
 				button,
 				i18nCore.t('floatingmenu.tab.format'),
-				1
-			);
+				1);
 		}
 	});
 	

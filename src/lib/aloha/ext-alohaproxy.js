@@ -1,6 +1,6 @@
 /*!
 * This file is part of Aloha Editor Project http://aloha-editor.org
-* Copyright © 2010-2011 Gentics Software GmbH, aloha@gentics.com
+* Copyright (c) 2010-2011 Gentics Software GmbH, aloha@gentics.com
 * Contributors http://aloha-editor.org/contribution.php 
 * Licensed unter the terms of http://www.aloha-editor.org/license.html
 *//*
@@ -25,7 +25,7 @@ define( [
 	'aloha/console',
 	'i18n!aloha/nls/i18n'
 ], function ( jQuery, Ext, RepositoryManager, console ) {
-	'use strict';
+	"use strict";
 	
 	Ext.data.AlohaProxy = function () {
 		// Must define a dummy api with "read" action to satisfy

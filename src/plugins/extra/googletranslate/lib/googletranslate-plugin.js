@@ -11,7 +11,7 @@
 define([
     'aloha',
 	'aloha/plugin',
-	'aloha/floatingmenu',
+	'aloha/floatingmenu'
 ], function CiteClosure (Aloha, Plugin, FloatingMenu ) {
 	'use strict';
 
@@ -62,8 +62,7 @@ define([
 			            'toggle' : false
 			        }),
 			        'Translate',
-			        1
-			    );
+			        1);
 			}
 		},
 		

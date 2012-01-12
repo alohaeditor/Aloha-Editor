@@ -32,7 +32,6 @@ define([
 	'css!image/vendor/jcrop/jquery.jcrop.css'
 ],
 function AlohaImagePlugin ( aQuery, Plugin, FloatingMenu, i18nCore, i18n ) {
-	
 	'use strict';
 	
 	var jQuery = aQuery;
@@ -294,43 +293,43 @@ function AlohaImagePlugin ( aQuery, Plugin, FloatingMenu, i18nCore, i18n ) {
 			FloatingMenu.createScope(this.name, 'Aloha.empty');
 			
 			if (this.settings.ui.insert) {
-				var tabId = this.settings.ui.oneTab ? tabImage : tabInsert; 
-				that._addUIInsertButton(tabId);
+				var activeTabId = this.settings.ui.oneTab ? tabImage : tabInsert; 
+				that._addUIInsertButton(activeTabId);
 			}
 			
 			if (this.settings.ui.meta) {
-				var tabId = this.settings.ui.oneTab ? tabImage : tabImage;
-				that._addUIMetaButtons(tabId);
+				var activeTabId = this.settings.ui.oneTab ? tabImage : tabImage;
+				that._addUIMetaButtons(activeTabId);
 			}
 			
 			if (this.settings.ui.reset) {
-				var tabId = this.settings.ui.reset ? tabImage : tabImage;
-				that._addUIResetButton(tabId);
+				var activeTabId = this.settings.ui.reset ? tabImage : tabImage;
+				that._addUIResetButton(activeTabId);
 			}
 			
 			if (this.settings.ui.align) {
-				var tabId = this.settings.ui.oneTab ? tabImage : tabFormatting;
-				that._addUIAlignButtons(tabId);
+				var activeTabId = this.settings.ui.oneTab ? tabImage : tabFormatting;
+				that._addUIAlignButtons(activeTabId);
 			}
 			
 			if (this.settings.ui.margin) {
-				var tabId = this.settings.ui.oneTab ? tabImage : tabFormatting;
-				that._addUIMarginButtons(tabId);
+				var activeTabId = this.settings.ui.oneTab ? tabImage : tabFormatting;
+				that._addUIMarginButtons(activeTabId);
 			}
 		
 			if (this.settings.ui.crop) {
-				var tabId = this.settings.ui.oneTab ? tabImage : tabCrop;
-				that._addUICropButtons(tabId);
+				var activeTabId = this.settings.ui.oneTab ? tabImage : tabCrop;
+				that._addUICropButtons(activeTabId);
 			}
 			
 			if (this.settings.ui.resize) {
-				var tabId = this.settings.ui.oneTab ? tabImage : tabResize;
-				that._addUIResizeButtons(tabId);
+				var activeTabId = this.settings.ui.oneTab ? tabImage : tabResize;
+				that._addUIResizeButtons(activeTabId);
 			}
 			
 			if (this.settings.ui.aspectRatioToggle) {
-				var tabId = this.settings.ui.oneTab ? tabImage : tabResize;
-				that.__addUIAspectRatioToggleButton(tabId);
+				var activeTabId = this.settings.ui.oneTab ? tabImage : tabResize;
+				that.__addUIAspectRatioToggleButton(activeTabId);
 			}
 
 			// TODO fix the function and reenable this button 
@@ -356,7 +355,7 @@ function AlohaImagePlugin ( aQuery, Plugin, FloatingMenu, i18nCore, i18n ) {
 
 			// If the setting has been set to a number or false we need to activate the 
 			// toggle button to indicate that the aspect ratio will be preserved.
-			if (this.settings.fixedAspectRatio != false) {
+			if (this.settings.fixedAspectRatio !== false) {
 				toggleButton.pressed = true;
 				this.keepAspectRatio = true;
 			}
@@ -365,8 +364,7 @@ function AlohaImagePlugin ( aQuery, Plugin, FloatingMenu, i18nCore, i18n ) {
 				that.name,
 				toggleButton,
 				tabId,
-				20
-			);
+				20);
 			
 
 		},
@@ -392,8 +390,7 @@ function AlohaImagePlugin ( aQuery, Plugin, FloatingMenu, i18nCore, i18n ) {
 				that.name,
 				resetButton,
 				tabId,
-				2
-			);
+				2);
 		},
 
 		/**
@@ -414,8 +411,7 @@ function AlohaImagePlugin ( aQuery, Plugin, FloatingMenu, i18nCore, i18n ) {
 				'Aloha.continuoustext',
 				this.insertImgButton,
 				tabId,
-				1
-			);
+				1);
 		},
 		
 		/**
@@ -444,8 +440,7 @@ function AlohaImagePlugin ( aQuery, Plugin, FloatingMenu, i18nCore, i18n ) {
 				this.name,
 				this.imgSrcField,
 				tabId,
-				1
-			);
+				1);
 			
 		},
 		
@@ -469,8 +464,7 @@ function AlohaImagePlugin ( aQuery, Plugin, FloatingMenu, i18nCore, i18n ) {
 				that.name,
 				alignLeftButton,
 				tabId,
-				1
-			);
+				1);
 			
 			var alignRightButton = new Aloha.ui.Button({
 				'iconClass': 'aloha-img aloha-image-align-right',
@@ -486,8 +480,7 @@ function AlohaImagePlugin ( aQuery, Plugin, FloatingMenu, i18nCore, i18n ) {
 				that.name,
 				alignRightButton,
 				tabId,
-				1
-			);
+				1);
 			
 			var alignNoneButton = new Aloha.ui.Button({
 				'iconClass': 'aloha-img aloha-image-align-none',
@@ -506,8 +499,7 @@ function AlohaImagePlugin ( aQuery, Plugin, FloatingMenu, i18nCore, i18n ) {
 				that.name,
 				alignNoneButton,
 				tabId,
-				1
-			);
+				1);
 		
 		},
 		
@@ -529,8 +521,7 @@ function AlohaImagePlugin ( aQuery, Plugin, FloatingMenu, i18nCore, i18n ) {
 				that.name,
 				incPadding,
 				tabId,
-				2
-			);
+				2);
 			
 			var decPadding = new Aloha.ui.Button({
 				iconClass: 'aloha-img aloha-image-padding-decrease',
@@ -545,8 +536,7 @@ function AlohaImagePlugin ( aQuery, Plugin, FloatingMenu, i18nCore, i18n ) {
 				that.name,
 				decPadding,
 				tabId,
-				2
-			);
+				2);
 		},
 
 		/**
@@ -575,8 +565,7 @@ function AlohaImagePlugin ( aQuery, Plugin, FloatingMenu, i18nCore, i18n ) {
 				this.name,
 				this.cropButton,
 				tabId,
-				3
-			);
+				3);
 	
  		},
  	
@@ -608,15 +597,13 @@ function AlohaImagePlugin ( aQuery, Plugin, FloatingMenu, i18nCore, i18n ) {
 					this.name,
 					widthLabel,
 					tabId,
-					30
-			);
+					30);
 			
 			FloatingMenu.addButton(
 					this.name,
 					this.imgResizeWidthField,
 					tabId,
-					40
-			);
+					40);
 			
 			
 			var heightLabel = new Aloha.ui.Button({
@@ -629,15 +616,13 @@ function AlohaImagePlugin ( aQuery, Plugin, FloatingMenu, i18nCore, i18n ) {
 					this.name,
 					heightLabel,
 					tabId,
-					50
-			);
+					50);
 			
 			FloatingMenu.addButton(
 					this.name,
 					this.imgResizeHeightField,
 					tabId,
-					60
-			);
+					60);
 			
 		
  		},
@@ -677,8 +662,7 @@ function AlohaImagePlugin ( aQuery, Plugin, FloatingMenu, i18nCore, i18n ) {
 				this.name,
 				naturalSize,
 				tabResize,
-				2
-			);
+				2);
 		},
 
 		/**
@@ -752,7 +736,7 @@ function AlohaImagePlugin ( aQuery, Plugin, FloatingMenu, i18nCore, i18n ) {
 
 				while (--len >= 0) {
 					fileObj = data.filesObjs[len];
-					if (fileObj.file.type.match(/image\//)) {
+					if ( fileObj.file.type.match(/image\//) ) {
 						config = that.getEditableConfig(data.editable);
 						// Prepare
 						img = jQuery('<img/>');

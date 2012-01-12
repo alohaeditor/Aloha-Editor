@@ -50,8 +50,9 @@ if(document.attachEvent && document.selection) {
 
 	DOMUtils = {
 		findChildPosition: function (node) {
-			for (var i = 0; node = node.previousSibling; i++)
+			for (var i = 0; node = node.previousSibling; i++) {
 				continue;
+			}
 			return i;
 		},
 		isDataNode: function (node) {
@@ -66,17 +67,20 @@ if(document.attachEvent && document.selection) {
 			return DOMUtils.isAncestorOf(root, node) || root == node;
 		},
 		findClosestAncestor: function (root, node) {
-			if (DOMUtils.isAncestorOf(root, node))
-				while (node && node.parentNode != root)
+			if (DOMUtils.isAncestorOf(root, node)) {
+				while (node && node.parentNode != root) {
 					node = node.parentNode;
+				}
+			}
 			return node;
 		},
 		getNodeLength: function (node) {
 			return DOMUtils.isDataNode(node) ? node.length : node.childNodes.length;
 		},
 		splitDataNode: function (node, offset) {
-			if (!DOMUtils.isDataNode(node))
+			if (!DOMUtils.isDataNode(node)) {
 				return false;
+			}
 			var newNode = node.cloneNode(false);
 			node.deleteData(offset, node.length);
 			newNode.deleteData(0, offset);
@@ -235,10 +239,11 @@ if(document.attachEvent && document.selection) {
 			this.setEnd(refNode, DOMUtils.getNodeLength(refNode));
 		},
 		collapse: function (toStart) {
-			if (toStart)
+			if (toStart) {
 				this.setEnd(this.startContainer, this.startOffset);
-			else
+			} else {
 				this.setStart(this.endContainer, this.endOffset);
+			}
 		},
 
 		// editing methods
@@ -247,8 +252,9 @@ if(document.attachEvent && document.selection) {
 			return (function cloneSubtree(iterator) {
 				for (var node, frag = document.createDocumentFragment(); node = iterator.next(); ) {
 					node = node.cloneNode(!iterator.hasPartialSubtree());
-					if (iterator.hasPartialSubtree())
+					if (iterator.hasPartialSubtree()) {
 						node.appendChild(cloneSubtree(iterator.getSubtreeIterator()));
+					}
 					frag.appendChild(node);
 				}
 				return frag;
@@ -257,8 +263,9 @@ if(document.attachEvent && document.selection) {
 		extractContents: function () {
 			// cache range and move anchor points
 			var range = this.cloneRange();
-			if (this.startContainer != this.commonAncestorContainer)
+			if (this.startContainer != this.commonAncestorContainer) {
 				this.setStartAfter(DOMUtils.findClosestAncestor(this.commonAncestorContainer, this.startContainer));
+			}
 			this.collapse(true);
 			// extract range
 			return (function extractSubtree(iterator) {
@@ -279,8 +286,9 @@ if(document.attachEvent && document.selection) {
 		deleteContents: function () {
 			// cache range and move anchor points
 			var range = this.cloneRange();
-			if (this.startContainer != this.commonAncestorContainer)
+			if (this.startContainer != this.commonAncestorContainer) {
 				this.setStartAfter(DOMUtils.findClosestAncestor(this.commonAncestorContainer, this.startContainer));
+			}
 			this.collapse(true);
 			// delete range
 			(function deleteSubtree(iterator) {
@@ -345,8 +353,7 @@ if(document.attachEvent && document.selection) {
 			// compare
 			return containerA.sourceIndex < containerB.sourceIndex ? -1 :
 			    containerA.sourceIndex == containerB.sourceIndex ?
-			        offsetA < offsetB ? -1 : offsetA == offsetB ? 0 : 1
-			        : 1;
+			        offsetA < offsetB ? -1 : offsetA == offsetB ? 0 : 1 : 1;
 		},
 		cloneRange: function () {
 			// return cloned range

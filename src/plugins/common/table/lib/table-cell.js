@@ -11,7 +11,7 @@ function (jQuery, Utils) {
 	 *        activated/dactivated with the table.
 	 */
 	var TableCell = function(originalTd, tableObj) {
-        if (null == originalTd) {
+        if (null === originalTd) {
             originalTd = '<td>&nbsp;</td>';
         }
 
@@ -138,7 +138,7 @@ function (jQuery, Utils) {
 			// remove the click event of the
 			this.obj.unbind('click');
 
-			if (jQuery.trim(this.obj.attr('class')) == '') {
+			if (jQuery.trim(this.obj.attr('class')) === '') {
 				this.obj.removeAttr('class');
 			}
 
@@ -146,7 +146,7 @@ function (jQuery, Utils) {
 			// field
 			this.obj.html(innerHtml);
 		}
-	}
+	};
 
 	/**
 	 * Native toString-method
@@ -328,8 +328,7 @@ function (jQuery, Utils) {
 			// Firefox and Opera
 			else {
 				// workaround for bug # 42885
-				if (window.opera
-					&& e.innerHTML.substring(e.innerHTML.length - 4) == '<BR>') {
+				if (window.opera && e.innerHTML.substring(e.innerHTML.length - 4) == '<BR>') {
 					e.innerHTML = e.innerHTML + '&#160;';
 				}
 

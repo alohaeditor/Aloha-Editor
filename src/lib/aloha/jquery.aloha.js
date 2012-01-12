@@ -126,7 +126,7 @@ function( Aloha, Selection, jQuery, console ) {
 			$this.each( function() {
 				// create a new aloha editable object for each passed object
 				if ( !Aloha.isEditable( this ) ) {
-					new Aloha.Editable( jQuery( this ) );
+					var editable = new Aloha.Editable( jQuery( this ) );
 				}
 			});
 		});
@@ -210,7 +210,7 @@ function( Aloha, Selection, jQuery, console ) {
 					try {
 					  // Internet Explorer.
 					  return el.xml;
-					} catch (e) {}
+					} catch (e1) {}
 				}
 			}
 	
@@ -273,7 +273,7 @@ function( Aloha, Selection, jQuery, console ) {
 
 		for ( ; i < length; i++ ) {
 			// Only deal with non-null/undefined values
-			if ( (options = arguments[ i ]) != null ) {
+			if ( (options = arguments[ i ]) !== null ) {
 				// Extend the base object
 				for ( name in options ) {
 					src = target[ name ];
@@ -316,9 +316,9 @@ function( Aloha, Selection, jQuery, console ) {
 
 	jQuery.isBoolean = function(b) {
 		return b === true || b === false;
-	},
+	};
 
 	jQuery.isNumeric = function(o) {
 		return ! isNaN (o-0);
-	}
+	};
 });

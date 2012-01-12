@@ -192,7 +192,7 @@ define( [
 				 * @param {Object<String,Number>} metainfo - optional Metainfo returned by the repository
 				 */
 				processResults = function ( items, metainfo ) {
-					if ( numOpenCallbacks == 0 ) {
+					if ( numOpenCallbacks === 0 ) {
 						return;
 					}
 					
@@ -232,7 +232,7 @@ define( [
 					}
 					
 					// TODO how to return the metainfo here?
-					if ( --numOpenCallbacks == 0 ) {
+					if ( --numOpenCallbacks === 0 ) {
 						that.queryCallback( callback, allitems, allmetainfo, timer );
 					}
 				};
@@ -289,7 +289,7 @@ define( [
 			
 			// If none of the repositories implemented the query method, then
 			// don't wait for the timeout, simply report to the client
-			if ( numOpenCallbacks == 0 ) {
+			if ( numOpenCallbacks === 0 ) {
 				this.queryCallback( callback, allitems, allmetainfo, timer );
 			}
 		},
@@ -352,7 +352,6 @@ define( [
 		 */
 		getChildren: function ( params, callback ) {
 			var that = this,
-			    repo,
 			    // The marged results, collected from repository responses
 			    allitems = [],
 			    // The set of repositories towhich we want to delegate work
@@ -365,13 +364,13 @@ define( [
 			    timer,
 			    i, j,
 			    processResults = function ( items ) {
-					if ( numOpenCallbacks == 0 ) {
+					if ( numOpenCallbacks === 0 ) {
 						return;
 					}
 					
 					jQuery.merge( allitems, items );
 					
-					if ( --numOpenCallbacks == 0 ) {
+					if ( --numOpenCallbacks === 0 ) {
 						that.getChildrenCallback( callback, allitems, timer );
 					}
 				};
@@ -429,7 +428,7 @@ define( [
 				}
 			}
 			
-			if ( numOpenCallbacks == 0 ) {
+			if ( numOpenCallbacks === 0 ) {
 				this.getChildrenCallback( callback, allitems, timer );
 			}
 		},
