@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="utf-8" />
-    <title>impress.js | presentation tool based on the power of CSS3 transforms and transitions in modern browsers | by Bartek Szopka @bartaz</title>
+    <title>Aloha editable impress.js | presentation tool based on the power of CSS3 transforms and transitions in modern browsers </title>
     
-    <meta name="description" content="impress.js is a presentation tool based on the power of CSS3 transforms and transitions in modern browsers and inspired by the idea behind prezi.com.">
+    <meta name="description" content="impress.js is a presentation tool based on the power of CSS3 transforms and transitions in modern browsers and inspired by the idea behind prezi.com. It's using Aloha Editor to make the content inline editable.">
     <meta name="author" content="Bartek Szopka" />
 
     <link href="http://fonts.googleapis.com/css?family=Open+Sans:regular,semibold,italic,italicsemibold|PT+Sans:400,700,400italic,700italic|PT+Serif:400,700,400italic,700italic" rel="stylesheet" />
@@ -13,6 +13,7 @@
 
 	<!-- add aloha -->
 	<link rel="stylesheet" href="../../css/aloha.css" type="text/css" />
+	<script src="js/aloha-config.js"></script>
 	<script src="../../lib/aloha.js"
 	        data-aloha-plugins="common/format,
 	                            common/table,
@@ -36,21 +37,36 @@
     </div>
 
     <div id="bored" class="step slide" data-x="-1000" data-y="-1500">
-        <q>Aren't you just <b>bored</b> with all those slides-based presentations?</q>
+        <q>Aren't you just <b>bored</b> with all those WYSIWYG editors?</q>
+        <p>You like <b>impress.js / jmpress.js</b>?</p>
+        <p>You would love to have an easy way to <b>edit</b> this slides?</p>
+
+		<q>Just click and edit!</q>
     </div>
 
     <div id="bored-2" class="step slide" data-x="0" data-y="-1500">
-        <q>Don't you think that presentations given <strong>in modern browsers</strong> shouldn't <strong>copy the limits</strong> of 'classic' slide decks?</q>
+
+		        <q>Aloha Editor - HTML5 inline Editor</q>
+				<a href="http://www.aloha-editor.org/">
+				<img src="http://aloha-editor.org/logo/Aloha Editor HTML5 contenteditable transparent 256.png" width="256" height="128" alt="Content editing powered with Aloha Editor using HTML5contenteditable." title="Content editing powered with Aloha Editor useing HTML5contenteditable.">
+				</a>
+
+<p>&nbsp;</p>
+
+		<p>The world's most advanced browser HTML5 based WYSIWYG editor lets you experience a whole new way of editing. It's faster than existing technologies and offers unprecedented WYSIWYG functionalities. <br /><br />Visit: <a href="http://www.aloha-editor.org/">Aloha-Editor.org</a> for more information</p>
+
+<p></p>
     </div>
 
     <div id="bored-3" class="step slide" data-x="1000" data-y="-1500">
-        <q>Would you like to <strong>impress your audience</strong> with <strong>stunning visualization</strong> of your talk?</q>
+        <q><strong>impress your audience</strong> with <strong>stunning visualization</strong>. <strong>save time &amp; money</strong> with <strong>advanced web editing</strong>.</q>
+<p><br /><small><i>howto:</i> <strong>click</strong> on text you want </strong>to edit</strong>. <strong>click</strong> outside the editable area to deactivate the edit mode and <strong>use the keybord navigation</strong> to switch slides.<br /><br /><i>known issue</i> in this version: the cursor does not always move correctly -- but you can edit where you click.</small></p>
     </div>
 
-    <div id="title" class="step" data-x="0" data-y="0" data-scale="4">
-        <span class="try">then you should try</span>
-        <h1>impress.js<sup>*</sup></h1>
-        <span class="footnote"><sup>*</sup> no rhyme intended</span>
+    <div id="title" class="step" data-x="0" data-y="0" data-scale="3">
+        <span class="try">you should try </span>
+        <h1>Aloha <sup>*</sup></h1>
+        <span class="footnote"><sup>*</sup> just click to edit.</span>
     </div>
 
     <div id="its" class="step" data-x="850" data-y="3000" data-rotate="90" data-scale="5">
@@ -64,7 +80,8 @@
     </div>
 
     <div id="tiny" class="step" data-x="2825" data-y="2325" data-z="-3000" data-rotate="300" data-scale="1">
-        <p>and <b>tiny</b> ideas</p>
+        <p>and <b>tiny</b> ideas.</p>
+        <p><b>edit everywhere!</b></p>
     </div>
 
     <div id="ing" class="step" data-x="3500" data-y="-850" data-rotate="270" data-scale="6">
@@ -77,7 +94,7 @@
 
     <div id="source" class="step" data-x="6300" data-y="2000" data-rotate="20" data-scale="4">
         <p>want to know more?</p>
-        <q><a href="http://github.com/bartaz/impress.js">use the source</a>, Luke!</q>
+        <q><a href="https://github.com/evo42/Aloha-Editor/tree/dev/src/demo/impress.js">fork me</a> on github!</q>
     </div>
 
     <div id="one-more-thing" class="step" data-x="6000" data-y="4000" data-scale="2">
@@ -98,15 +115,10 @@
     <p>Use a spacebar or arrow keys to navigate</p>
 </div>
 
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+<script src="js/app.js"></script>
 <script src="js/impress.js"></script>
 
-<script type="text/javascript">
-	Aloha.ready( function(){
-		var $ = Aloha.jQuery;
-		// register all editable areas
-		$('.step').aloha();
-	});
-</script>
 
 </body>
 </html>

@@ -9,7 +9,11 @@
  * Copyright 2011 Bartek Szopka (@bartaz)
  */
 
-(function ( document, window ) {
+// (function ( document, window ) {
+
+
+	Aloha.ready(function() {
+		Aloha.require( ['aloha', 'aloha/jquery' ], function( Aloha, jQuery ) {
 
     // HELPER FUNCTIONS
     
@@ -257,7 +261,19 @@
     // EVENTS
     
     document.addEventListener("keydown", function ( event ) {
-        if ( event.keyCode == 9 || ( event.keyCode >= 32 && event.keyCode <= 34 ) || (event.keyCode >= 37 && event.keyCode <= 40) ) {
+		var content = false, // this is the cleaned content of the last active editable
+		contentId = false; // this HTML ID of the DOM element
+		
+		if ( Aloha.activeEditable ) {
+			content = Aloha.activeEditable.getContents(); // this is the cleaned content of the last active editable
+			contentId = Aloha.activeEditable.getId(); // this HTML ID of the DOM element
+		}
+		//console.log(contentId, content);
+
+        if ( !contentId && (event.keyCode == 9 || ( event.keyCode >= 32 && event.keyCode <= 34 ) || (event.keyCode >= 37 && event.keyCode <= 40)) ) {
+			//alert('keycode nav deactivated');
+			
+
             var next = active;
             switch( event.keyCode ) {
                 case 33: ; // pg up
@@ -320,5 +336,7 @@
     // by selecting step defined in url or first step of the presentation
     select(getElementFromUrl() || steps[0]);
 
-})(document, window);
+//})(document, window);
 
+	});
+});
