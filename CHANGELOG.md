@@ -2,11 +2,13 @@
 
 This document is to serve as a "what has been done" in terms of the [Roadmap](http://aloha-editor.org/wiki/Roadmap)
 
-## 0.20.1
+## 0.20.2-SNAPSHOT
+
+## 0.20.1 2012/01/13
 
 - table-plugin: fixed incorrect repairing of tables (cells were appended to rows containing th elements)
 
-## 0.20.0
+## 0.20.0 2011/12/27
 
 - doc/api: added first version of new API docs. Please note that the API docs are currently work in progress.
 - floatingmenu: fixed a bug with topalign behaviour where scrolling would attach the floatingmenu to the left side of the screen
