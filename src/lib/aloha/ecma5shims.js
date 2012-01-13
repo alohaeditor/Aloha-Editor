@@ -1,6 +1,18 @@
-"use strict";
-define([],
-function(){
+/**
+ * ecma5schims.js - Shim for ECMA5 compatibility
+ * (http://en.wikipedia.org/wiki/Shim_%28computing%29)
+ *
+ * A shim library that implements common functions that are missing on some
+ * environments in order to complete ECMA5 compatibility across all major
+ * browsers.
+ *
+ * TODO: This code needs to be refactored so as to conform to Aloha coding
+ *       standards.  It is also severly lacking in documentation.  Please take
+ *       note of: https://github.com/alohaeditor/Aloha-Editor/wiki/Commit-Checklist .
+ */
+
+define([], function(){
+  'use strict';
 
   var shims = {
     // Function bind
