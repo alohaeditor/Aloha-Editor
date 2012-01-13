@@ -248,12 +248,16 @@ define([], function(){
     if (node2 != useNode2) useNode2.parentNode.removeChild(useNode2);
     return result;
 
-
     //node.ownerDocument gives the document object, which isn't the right info for a disconnect
-    function getRootParent(node) {
-      do { var parent = node; }
-      while (node = node.parentNode);
-      return parent;
+    function getRootParent( node ) {
+		var parent = null;
+
+		if ( node ) {
+			do { parent = node; }
+			while ( node = node.parentNode );
+		}
+
+		return parent;
     }
 
     //Compare Position - MIT Licensed, John Resig; http://ejohn.org/blog/comparing-document-position/
