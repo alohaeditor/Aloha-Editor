@@ -122,9 +122,14 @@ define([
 	};
 
 	// ------------------------------------------------------------------------
-	// "Public" methods, and properties
+	// Instance methods, and properties
 	// ------------------------------------------------------------------------
 
+	/**
+	 * Aloha.ui.Container class.  Aloha.ui.Tab and Aloha.ui.Panel classes extend
+	 * this class.
+	 * @class
+	 */
 	var Container = Class.extend({
 
 		/**
@@ -260,6 +265,11 @@ define([
 		onHide   : function() {}
 
 	});
+
+	// ------------------------------------------------------------------------
+	// Class methods, and properties
+	// ------------------------------------------------------------------------
+
 
 	/**
 	 * Given an array of elements, show all containers whose group's
