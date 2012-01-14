@@ -363,6 +363,16 @@
           },
 					{  	start: "<table data-start=0 data-end=1><tr><td><b>foo</b></table>",
               execResult: "<table>{<tbody><tr><td>foo</td></tr></tbody>}</table>"
+          },
+
+          // providing elements to remove
+          {  	start: "[foo<span>bar</span>baz]",
+              value: ["span", "strike", "strong"],
+              execResult: "[foobarbaz]"
+          },
+          {  	start: "[foo<span>bar</span>baz]",
+              value: ["abbr", "acronym"],
+              execResult: "[foo<span>bar</span>baz]"
           }
       ]
 	}

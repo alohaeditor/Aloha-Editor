@@ -3597,18 +3597,23 @@ commands.italic = {
 ///// The removeFormat command /////
 //@{
 commands.removeformat = {
-	action: function(range) {
+	action: function(value, range) {
 		// "A removeFormat candidate is an editable HTML element with local
 		// name "abbr", "acronym", "b", "bdi", "bdo", "big", "blink", "cite",
 		// "code", "dfn", "em", "font", "i", "ins", "kbd", "mark", "nobr", "q",
 		// "s", "samp", "small", "span", "strike", "strong", "sub", "sup",
 		// "tt", "u", or "var"."
 		function isRemoveFormatCandidate(node) {
-			return isEditable(node)
-				&& isHtmlElement(node, ["abbr", "acronym", "b", "bdi", "bdo",
+      var defaultRemoveFormatCandidates = ["abbr", "acronym", "b", "bdi", "bdo",
 				"big", "blink", "cite", "code", "dfn", "em", "font", "i",
 				"ins", "kbd", "mark", "nobr", "q", "s", "samp", "small",
-				"span", "strike", "strong", "sub", "sup", "tt", "u", "var"]);
+				"span", "strike", "strong", "sub", "sup", "tt", "u", "var"];
+
+      //remove only the selected candidates
+      var candidates = value || defaultRemoveFormatCandidates;
+
+			return isEditable(node)
+				&& isHtmlElement(node, candidates);
 		}
 
     //set the range
