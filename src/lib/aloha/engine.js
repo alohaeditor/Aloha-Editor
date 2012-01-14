@@ -3595,6 +3595,7 @@ commands.italic = {
 
 //@}
 ///// The removeFormat command /////
+// value: array of elements to remove
 //@{
 commands.removeformat = {
 	action: function(value, range) {
@@ -3692,19 +3693,24 @@ commands.removeformat = {
 
 		// "For each of the entries in the following list, in the given order,
 		// set the selection's value to null, with command as given."
-		$_( [
-			"subscript",
-			"bold",
-			"fontname",
-			"fontsize",
-			"forecolor",
-			"hilitecolor",
-			"italic",
-			"strikethrough",
-			"underline",
-		] ).forEach(function(command) {
-			setSelectionValue(command, null);
-		});
+    
+    // Note: if the removeformat candidates are explicitly supplied,
+    // these commands will not be applied
+    if(!value){
+      $_( [
+        "subscript",
+        "bold",
+        "fontname",
+        "fontsize",
+        "forecolor",
+        "hilitecolor",
+        "italic",
+        "strikethrough",
+        "underline",
+      ] ).forEach(function(command) {
+        setSelectionValue(command, null);
+      });
+    }
 	}
 };
 
