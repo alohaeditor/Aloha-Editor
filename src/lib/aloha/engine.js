@@ -3597,7 +3597,7 @@ commands.italic = {
 ///// The removeFormat command /////
 //@{
 commands.removeformat = {
-	action: function() {
+	action: function(range) {
 		// "A removeFormat candidate is an editable HTML element with local
 		// name "abbr", "acronym", "b", "bdi", "bdo", "big", "blink", "cite",
 		// "code", "dfn", "em", "font", "i", "ins", "kbd", "mark", "nobr", "q",
@@ -3611,9 +3611,12 @@ commands.removeformat = {
 				"span", "strike", "strong", "sub", "sup", "tt", "u", "var"]);
 		}
 
+    //set the range
+    range = range || getActiveRange(); 
+
 		// "Let elements to remove be a list of every removeFormat candidate
 		// effectively contained in the active range."
-		var elementsToRemove = getAllEffectivelyContainedNodes(getActiveRange(), isRemoveFormatCandidate);
+		var elementsToRemove = getAllEffectivelyContainedNodes(range, isRemoveFormatCandidate);
 
 		// "For each element in elements to remove:"
 		$_( elementsToRemove ).forEach(function(element) {
@@ -3633,18 +3636,18 @@ commands.removeformat = {
 		// splitText() on the active range's start node, with argument equal to
 		// the active range's start offset. Then set the active range's start
 		// node to the result, and its start offset to zero."
-		if (isEditable(getActiveRange().startContainer)
-		&& getActiveRange().startContainer.nodeType == $_.Node.TEXT_NODE
-		&& getActiveRange().startOffset != 0
-		&& getActiveRange().startOffset != getNodeLength(getActiveRange().startContainer)) {
+		if (isEditable(range.startContainer)
+		&& range.startContainer.nodeType == $_.Node.TEXT_NODE
+		&& range.startOffset != 0
+		&& range.startOffset != getNodeLength(range.startContainer)) {
 			// Account for browsers not following range mutation rules
-			if (getActiveRange().startContainer == getActiveRange().endContainer) {
-				var newEnd = getActiveRange().endOffset - getActiveRange().startOffset;
-				var newNode = getActiveRange().startContainer.splitText(getActiveRange().startOffset);
-				getActiveRange().setStart(newNode, 0);
-				getActiveRange().setEnd(newNode, newEnd);
+			if (range.startContainer == range.endContainer) {
+				var newEnd = range.endOffset - range.startOffset;
+				var newNode = range.startContainer.splitText(range.startOffset);
+				range.setStart(newNode, 0);
+				range.setEnd(newNode, newEnd);
 			} else {
-				getActiveRange().setStart(getActiveRange().startContainer.splitText(getActiveRange().startOffset), 0);
+				range.setStart(range.startContainer.splitText(range.startOffset), 0);
 			}
 		}
 
@@ -3652,21 +3655,21 @@ commands.removeformat = {
 		// end offset is neither zero nor its end node's length, call
 		// splitText() on the active range's end node, with argument equal to
 		// the active range's end offset."
-		if (isEditable(getActiveRange().endContainer)
-		&& getActiveRange().endContainer.nodeType == $_.Node.TEXT_NODE
-		&& getActiveRange().endOffset != 0
-		&& getActiveRange().endOffset != getNodeLength(getActiveRange().endContainer)) {
+		if (isEditable(range.endContainer)
+		&& range.endContainer.nodeType == $_.Node.TEXT_NODE
+		&& range.endOffset != 0
+		&& range.endOffset != getNodeLength(range.endContainer)) {
 			// IE seems to mutate the range incorrectly here, so we need
 			// correction here as well.  Have to be careful to set the range to
 			// something not including the text node so that getActiveRange()
 			// doesn't throw an exception due to a temporarily detached
 			// endpoint.
-			var newStart = [getActiveRange().startContainer, getActiveRange().startOffset];
-			var newEnd = [getActiveRange().endContainer, getActiveRange().endOffset];
-			getActiveRange().setEnd(document.documentElement, 0);
+			var newStart = [range.startContainer, range.startOffset];
+			var newEnd = [range.endContainer, range.endOffset];
+			range.setEnd(document.documentElement, 0);
 			newEnd[0].splitText(newEnd[1]);
-			getActiveRange().setStart(newStart[0], newStart[1]);
-			getActiveRange().setEnd(newEnd[0], newEnd[1]);
+			range.setStart(newStart[0], newStart[1]);
+			range.setEnd(newEnd[0], newEnd[1]);
 		}
 
 		// "Let node list consist of all editable nodes effectively contained
@@ -3675,7 +3678,7 @@ commands.removeformat = {
 		// "For each node in node list, while node's parent is a removeFormat
 		// candidate in the same editing host as node, split the parent of the
 		// one-node list consisting of node."
-		$_( getAllEffectivelyContainedNodes(getActiveRange(), isEditable) ).forEach(function(node) {
+		$_( getAllEffectivelyContainedNodes(range, isEditable) ).forEach(function(node) {
 			while (isRemoveFormatCandidate(node.parentNode)
 			&& inSameEditingHost(node.parentNode, node)) {
 				splitParent([node], range);
@@ -6559,7 +6562,7 @@ commands.formatblock = {
 		}
 
 		// "Block-extend the active range, and let new range be the result."
-		var newRange = blockExtend(range);
+		var newRange = blockExtend(range || getActiveRange());
 
 		// "Let node list be an empty list of nodes."
 		//
