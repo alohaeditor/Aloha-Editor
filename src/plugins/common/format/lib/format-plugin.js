@@ -317,7 +317,9 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 		 * Removes all formatting from the current selection.
 		 */
 		removeFormat: function() {
-			var formats = [ 'strong', 'em', 'b', 'i', 'cite', 'q', 'code', 'abbr', 'del', 'sub', 'sup'],
+			//var formats = [ 'strong', 'em', 'b', 'i', 'cite', 'q', 'code', 'abbr', 'del', 'sub', 'sup'],
+      // set the default formats according to the removeformat command.
+      var formats = ["abbr", "acronym", "b", "bdi", "bdo", "big", "blink", "cite", "code", "dfn", "em", "font", "i", "ins", "kbd", "mark", "nobr", "q", "s", "samp", "small", "span", "strike", "strong", "sub", "sup", "tt", "u", "var"],
 				rangeObject = Aloha.Selection.rangeObject,
 				i;
 			
@@ -330,9 +332,12 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 				return;
 			}
 
-			for (i = 0; i < formats.length; i++) {
-				GENTICS.Utils.Dom.removeMarkup(rangeObject, jQuery('<' + formats[i] + '></' + formats[i] + '>'), Aloha.activeEditable.obj);
-			}
+			// for (i = 0; i < formats.length; i++) {
+			// 	GENTICS.Utils.Dom.removeMarkup(rangeObject, jQuery('<' + formats[i] + '></' + formats[i] + '>'), Aloha.activeEditable.obj);
+			// }
+
+      // run removeformat command on the selected range
+      Aloha.execCommand("removeformat", false, formats);
 
 			// select the modified range
 			rangeObject.select();
