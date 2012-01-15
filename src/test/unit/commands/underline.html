@@ -22,7 +22,7 @@
 	<script type="text/javascript" src="../../vendor/swarminject.js"></script>
 	<script>
     require.config({
-      baseUrl: "../",
+      baseUrl: "../"
     });
 		// load command test suite
 		require( ['commandtest'] );
@@ -137,7 +137,7 @@
 					   	execResult: '<span contenteditable=false>fo[o]<span contenteditable=true>bar</span>baz</span>' 
 					},
 					{  	start: '<span contenteditable=false>fo[<u>o<span contenteditable=true>bar</span>b</u>]az</span>',
-					   	execResult: '<span contenteditable=false>fo<i>[o<span contenteditable=true><span style="font-style: normal;">bar</span></span>b]</i>az</span>' 
+					   	execResult: '<span contenteditable=false>fo<u>[o<span contenteditable=true><span style="font-style: normal;">bar</span></span>b]</u>az</span>' 
 					},
 					{  	start: '<table><tbody><tr><td>foo<td>b[a]r<td>baz</table>',
 					   	execResult: '<table><tbody><tr><td>foo<td>b<u>[a]</u>r<td>baz</table>' 

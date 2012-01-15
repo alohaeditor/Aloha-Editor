@@ -22,7 +22,7 @@
 	<script type="text/javascript" src="../../vendor/swarminject.js"></script>
 	<script>
     require.config({
-      baseUrl: "../",
+      baseUrl: "../"
     });
 		// load command test suite
 		require( ['commandtest'] );
@@ -45,6 +45,7 @@
           },
 					{  	start: "<span>foo</span>{}<span>bar</span>",
               execResult: "<span>foo</span>{}<span>bar</span>"
+              // while firefox handles this correctly, chrome and IE outputs "<span>foo[]</span><span>bar</span>"
           },
 					{  	start: "<span>foo[</span><span>]bar</span>",
               execResult: "<span>foo[</span><span>]bar</span>"
@@ -352,14 +353,14 @@
 					{  	start: "<p style=\"font-variant: small-caps\">foo[bar]baz</p>",
               execResult: "<p style=\"font-variant:small-caps\">foo[bar]baz</p>"
           },
-					{  	start: "<p style=\"font-variant: small-caps\">foobarbaz</p>}",
-              execResult: "<p style=\"font-variant:small-caps\">foobarbaz</p>}"
+          {  	start: "{<p style=\"font-variant: small-caps\">foobarbaz</p>}",
+              execResult: "{<p style=\"font-variant:small-caps\">foobarbaz</p>}"
           },
 					{  	start: "<p style=\"text-indent: 2em\">foo[bar]baz</p>",
               execResult: "<p style=\"text-indent:2em\">foo[bar]baz</p>"
           },
-					{  	start: "<p style=\"text-indent: 2em\">foobarbaz</p>}",
-              execResult: "<p style=\"text-indent:2em\">foobarbaz</p>}"
+          {  	start: "{<p style=\"text-indent: 2em\">foobarbaz</p>}",
+              execResult: "{<p style=\"text-indent:2em\">foobarbaz</p>}"
           },
 					{  	start: "<table data-start=0 data-end=1><tr><td><b>foo</b></table>",
               execResult: "<table>{<tbody><tr><td>foo</td></tr></tbody>}</table>"
@@ -374,9 +375,9 @@
               value: ["abbr", "acronym"],
               execResult: "[foo<span>bar</span>baz]"
           },
-          {  	start: "{<i>foo</i><span>bar</span><b>baz</b>}",
+          {  	start: "{<p><i>foo</i><span>bar</span><b>baz</b></p>}",
               value: ["abbr", "b", "span"],
-              execResult: "<i>[foo</i>barbaz]"
+              execResult: "<p><i>[foo</i>barbaz]</p>}"
           },
           {  	start: "[foo<span>b<b>a</b><i>r</i></span>baz]",
               value: ["abbr", "b", "span"],
