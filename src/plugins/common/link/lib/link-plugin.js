@@ -26,8 +26,9 @@ define( [
 	'aloha/console',
 	'link/../extra/linklist',
 	'link/../extra/slowlinklist',
-	'css!link/css/link.css'
-], function ( Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, console ) {
+	'css!link/css/link.css',
+	'aloha/ui-classifier'
+], function ( Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, console, UiClassifier ) {
 	'use strict';
 	
 	var GENTICS = window.GENTICS,
@@ -116,6 +117,11 @@ define( [
 				this.onHrefChange = this.settings.onHrefChange;
 			}
 			
+			UiClassifier.registerUiClasses([
+				'aloha-link-pointer',
+				'aloha-link-text'
+			]);
+
 			this.createButtons();
 			this.subscribeEvents();
 			this.bindInteractions();
@@ -737,23 +743,6 @@ define( [
 			jQuery( '.x-layer x-combo-list,' +
 				    '.x-combo-list-inner,' +
 				    '.x-combo-list' ).hide();
-		},
-		
-		/**
-		 * Make the given jQuery object (representing an editable) clean for saving
-		 * Find all links and remove editing objects
-		 * @param obj jQuery object to make clean
-		 * @return void
-		 */
-		makeClean: function ( obj ) {
-			// find all link tags
-			obj.find( 'a' ).each( function () {
-				jQuery( this )
-					.removeClass( 'aloha-link-pointer' )
-					.removeClass( 'aloha-link-text' );
-			} );
 		}
-		
-	} );
-	
-} );
+	});
+});
