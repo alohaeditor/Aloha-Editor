@@ -208,7 +208,7 @@ var Dom = Class.extend({
 		'rt' : 'phrasing',
 		'ruby' : ['phrasing', 'rt', 'rp'],
 		's' : 'phrasing',
-		'samp' : 'pharsing',
+		'samp' : 'phrasing',
 		'script' : '#script', //script
 		'section' : 'flow',
 		'select' : ['option', 'optgroup'],
