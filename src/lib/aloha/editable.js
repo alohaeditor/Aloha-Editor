@@ -27,9 +27,10 @@ define( [
 	'aloha/selection',
 	'aloha/markup',
 	'aloha/contenthandlermanager',
-	'aloha/console'
+	'aloha/console',
+	'aloha/ui-classifier'
 ], function( Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection,
-	         Markup, ContentHandlerManager, console ) {
+	         Markup, ContentHandlerManager, console, UiClassifier ) {
 	'use strict';
 
 	var unescape = window.unescape,
@@ -52,11 +53,39 @@ define( [
 		Aloha.settings.contentHandler = {};
 	}
 
+	var placeholderClass = 'aloha-placeholder';
+
 	var defaultContentSerializer = function(editableElement){
 		return jQuery(editableElement).html();
 	};
 
 	var contentSerializer = defaultContentSerializer;
+
+	/**
+	 * Implements the deprecated functionality of the PluginManager
+	 * which lets plugins implement their own makeClean() method.
+	 *
+	 * @param obj
+	 *        The object to clean of DOM elements and attributes
+	 *        injected purely for presentational purposes.
+	 * @deprecated
+	 *        To be removed once all plugins have been rewritten to use
+	 *        the new functionality provided by registerUiClasses() and
+	 *        stripUi().
+	 */
+	function makeCleanObsolete( obj ) {
+		var i, plugin, plugins = PluginManager.plugins;
+		// iterate through all registered plugins
+		for ( plugin in plugins ) {
+			if ( plugins.hasOwnProperty( plugin ) ) {
+				if (Aloha.Log.isDebugEnabled()) {
+					Aloha.Log.debug(this, "Passing contents of HTML Element with id { " + obj.attr("id") +
+									" } for cleaning to plugin { " + plugin + " }");
+				}
+				plugins[plugin].makeClean(obj);
+			}
+		}
+	}
 
 	/**
 	 * Editable object
@@ -127,8 +156,6 @@ define( [
 				 91 : "Win",          // The left Windows Logo key.
 				 92 : "Win"           // The right Windows Logo key.
 			};
-
-			this.placeholderClass = 'aloha-placeholder';
 
 			Aloha.registerEditable( this );
 
@@ -425,7 +452,9 @@ define( [
 				el = span;
 			}
 
-			jQuery( obj ).append( el.addClass( this.placeholderClass ) );
+			jQuery( obj ).append( el.addClass( placeholderClass ) );
+			UiClassifier.letUiElement( obj );
+
 			jQuery.each(
 				Aloha.settings.placeholder,
 				function( selector, selectorConfig ) {
@@ -451,8 +480,7 @@ define( [
 		 * @return void
 		 */
 		removePlaceholder: function( obj, setCursor ) {
-			var placeholderClass = this.placeholderClass,
-			    range;
+			var range;
 
 	//		// remove browser br
 	//		jQuery( 'br', obj ).remove();
@@ -693,13 +721,9 @@ define( [
 		 */
 		getContents: function( asObject ) {
 			var clonedObj = this.obj.clone( false );
-
-			// do core cleanup
-			clonedObj.find( '.aloha-cleanme' ).remove();
-			this.removePlaceholder( clonedObj );
-			PluginManager.makeClean( clonedObj );
-
-			return asObject ? clonedObj.contents() : contentSerializer(clonedObj[0]);
+			makeCleanObsolete( clonedObj );
+			UiClassifier.stripUi( clonedObj );
+			return asObject ? clonedObj.contents() : serializeContents( clonedObj[0] );
 		},
 
 		/**

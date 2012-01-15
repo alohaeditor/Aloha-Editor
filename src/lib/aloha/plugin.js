@@ -205,6 +205,10 @@ function(Aloha, jQuery, Class, PluginManager, console ) {
 		 * Make the given jQuery object (representing an editable) clean for saving
 		 * @param obj jQuery object to make clean
 		 * @return void
+		 * @deprecated
+		 *        Plugins must use Aloha.Editable.registerUiClasses() to
+		 *        register any content injected by it into the DOM purely for
+		 *        presentational purposes.
 		 */
 		makeClean: function ( obj ) {},
 
