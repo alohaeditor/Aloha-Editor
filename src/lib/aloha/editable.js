@@ -722,7 +722,7 @@ define( [
 		getContents: function( asObject ) {
 			var clonedObj = this.obj.clone( false );
 			makeCleanObsolete( clonedObj );
-			UiClassifier.stripUi( clonedObj );
+			UiClassifier.stripUiDeeply( clonedObj );
 			return asObject ? clonedObj.contents() : serializeContents( clonedObj[0] );
 		},
 
