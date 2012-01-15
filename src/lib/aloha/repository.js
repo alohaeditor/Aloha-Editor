@@ -159,20 +159,6 @@ var AbstractRepository = Class.extend({
 	*/
 
 	/**
-	 * Make the given jQuery object (representing an object marked as object of this type)
-	 * clean. All attributes needed for handling should be removed.
-	 *
-	<pre><code>
-	Aloha.Repositories.myRepository.makeClean = function (obj) {
-		obj.removeAttr('data-myRepository-name');
-	};
-	</code></pre>
-	 * @param {jQuery} obj jQuery object to make clean
-	 * @return void
-	 */
-	makeClean: function (obj) {},
-
-	/**
 	 * This method will be called when a user chooses an item from a repository and wants
 	 * to insert this item in his content.
 	 * Mark or modify an object as needed by that repository for handling, processing or identification.

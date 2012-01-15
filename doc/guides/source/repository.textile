@@ -75,17 +75,6 @@ GENTICS.Aloha.Repository.myRepository.getChildren = function( params, callback )
 	callback.call( this, items);
 };
 
-
-/**
- * Make the given jQuery object (representing an object marked as object of this type)
- * clean. All attributes needed for handling should be removed. 
- * @param {jQuery} obj jQuery object to make clean
- * @return void
- */
-GENTICS.Aloha.Repository.myRepository.makeClean = function (obj) {
-	obj.removeAttr('data-myRepository-name');
-};
-
 /**
  * Mark or modify an object as needed by that repository for handling, processing or identification.
  * Objects can be any DOM object as A, SPAN, ABBR, etc. or

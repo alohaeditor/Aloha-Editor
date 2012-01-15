@@ -448,39 +448,6 @@ define( [
 			
 			callback.call( this, items );
 		},
-		
-		/**
-		 * @fixme: Not tested, but the code for this function does not seem to
-		 *        compute repository.makeClean will be undefined
-		 *
-		 * @todo: Rewrite this function header comment so that is clearer
-		 *
-		 * Pass an object, which represents an marked repository to corresponding
-		 * repository, so that it can make the content clean (prepare for saving)
-		 *
-		 * @param {jQuery} obj - representing an editable
-		 * @return void
-		 */
-		makeClean: function ( obj ) {
-			// iterate through all registered repositories
-			var that = this,
-			    repository = {},
-			    i = 0,
-			    j = that.repositories.length;
-			
-			// find all repository tags
-			obj.find( '[data-gentics-aloha-repository=' + this.prefix + ']' )
-				.each( function () {
-					for ( ; i < j; ++i ) {
-						repository.makeClean( obj );
-					}
-					console.debug( that,
-						'Passing contents of HTML Element with id { ' +
-						this.attr('id') + ' } for cleaning to repository { ' +
-						repository.repositoryId + ' }' );
-					repository.makeClean( this );
-				} );
-		},
 
 		/**
 		 * Markes an object as repository of this type and with this item.id.
