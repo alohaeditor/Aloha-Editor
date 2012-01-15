@@ -64,11 +64,6 @@ define( [
 		obj: undefined,
 
 		/**
-		 * The DOM-element of the outest div-container wrapped around the cell
-		 */
-		tableWrapper: undefined,
-
-		/**
 		 * An array of all Cells contained in the Table
 		 *
 		 * @see TableCell
@@ -357,10 +352,11 @@ define( [
 			'<div class="' + this.get( 'classTableWrapper' ) + '"></div>'
 		);
 		tableWrapper.contentEditable( false );
-
+		UiClassifier.letUiWrapper( tableWrapper );
 		// wrap the tableWrapper around the table
 		this.obj.wrap( tableWrapper );
-		UiClassifier.letUiWrapper( tableWrapper );
+		// $.wrap copies the wrapper
+		tableWrapper = this.obj.parent( "." + this.get( 'classTableWrapper' ) );
 
 		// :HINT The outest div (Editable) of the table is still in an editable
 		// div. So IE will surround the the wrapper div with a resize-border
@@ -368,14 +364,13 @@ define( [
 		// Disable resize and selection of the controls (only IE)
 		// Events only can be set to elements which are loaded from the DOM (if they
 		// were created dynamically before) ;)
-		htmlTableWrapper = this.obj.parents( '.' + this.get( 'classTableWrapper' ) );
-		htmlTableWrapper.get( 0 ).onresizestart = function ( e ) { return false; };
-		htmlTableWrapper.get( 0 ).oncontrolselect = function ( e ) { return false; };
-		htmlTableWrapper.get( 0 ).ondragstart = function ( e ) { return false; };
-		htmlTableWrapper.get( 0 ).onmovestart = function ( e ) { return false; };
-		htmlTableWrapper.get( 0 ).onselectstart = function ( e ) { return false; };
-
-		this.tableWrapper = this.obj.parents( '.' + this.get( 'classTableWrapper' ) ).get( 0 );
+		var wrapperElem = tableWrapper[0];
+		var returnFalse = function(){ return false; };
+		wrapperElem.onresizestart = returnFalse;
+		wrapperElem.oncontrolselect = returnFalse;
+		wrapperElem.ondragstart = returnFalse;
+		wrapperElem.onmovestart = returnFalse;
+		wrapperElem.onselectstart = returnFalse;
 
 		jQuery( this.cells ).each( function () {
 			this.activate();
@@ -1472,7 +1467,8 @@ define( [
 		// Select everything below the table that is not a cell or
 		// inside a cell, but include the cells in the selectionColumn.
 		var selector = "*:not(td:not(." + selectionColumn + "), td *, th, th *)";
-		UiClassifier.stripUi( this.obj.find( selector ).add( this.obj ) );
+		var wrapper = this.obj.parent( "." + this.get( 'classTableWrapper' ) );
+		UiClassifier.stripUi( this.obj.find( selector ).add( this.obj ).add( wrapper ) );
 
 		this.isActive = false;
 	};

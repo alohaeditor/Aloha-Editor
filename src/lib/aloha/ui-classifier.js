@@ -36,7 +36,7 @@ define( [
 			if ( element.hasClass( "aloha-ui-element" ) || element.hasClass( "aloha-cleanme" ) ) {
 				element.remove();
 			} else if ( element.hasClass( "aloha-ui-wrapper" ) ) {
-				element.children().unwrap();
+				element.replaceWith( element.contents() );
 			} else if ( element.hasClass( "aloha-ui-attr" ) ) {
 				var attrData = element.attr( "data-aloha-ui-attr" );
 				if ( null != attrData ) {
@@ -80,10 +80,8 @@ define( [
 		letUiAttr: function( element, attr ) {
 			element = $( element );
 			var attrData = element.attr( "data-aloha-ui-attr" );
-			if ( null != attrData && "" !== attrData ) {
-				attrData += " ";
-			}
-			element.attr( "data-aloha-ui-attr", attrData + attr );
+			attrData = (null != attrData && "" !== attrData) ? " " + attr : attr;
+			element.attr( "data-aloha-ui-attr", attrData );
 			element.addClass( "aloha-ui-attr" );
 		},
 
