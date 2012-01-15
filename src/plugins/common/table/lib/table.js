@@ -1461,14 +1461,14 @@ define( [
 			Cell.deactivate();
 		}
 
-		var selectionColumn = this.get("classSelectionColumn");
-		// This is not clean and probably not efficient, but the
-		// alternative of managing the elements internally is too error-prone.
-		// Select everything below the table that is not a cell or
-		// inside a cell, but include the cells in the selectionColumn.
-		var selector = "*:not(td:not(." + selectionColumn + "), td *, th, th *)";
-		var wrapper = this.obj.parent( "." + this.get( 'classTableWrapper' ) );
-		UiClassifier.stripUi( this.obj.find( selector ).add( this.obj ).add( wrapper ) );
+		var classCol = this.get( "classSelectionColumn" );
+		var classRow = this.get( "classSelectionRow" );
+		var tbody = this.obj.children( "tbody" );
+		var table = tbody.length ? tbody : this.obj;
+		var selection = table.children( "tr." + classRow )
+			.add( table.children( "tr" ).children( "tr > td." + classCol ) );
+		var wrapper = this.obj.parent( "." + this.get( "classTableWrapper" ) );
+		UiClassifier.stripUi( selection.add( this.obj ).add( wrapper ) );
 
 		this.isActive = false;
 	};
