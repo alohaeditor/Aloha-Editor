@@ -23,17 +23,16 @@ define( [
 	"use strict";
 
 	var uiClasses = [
-		"aloha-ui-element",
+		"aloha-cleanme",
 		"aloha-ui-wrapper",
-		"aloha-ui-attr",
-		"aloha-cleanme"
+		"aloha-ui-attr"
 	];
 
 	function stripUiShallow( elements ) {
 		var classesToRemove = uiClasses.join(" ");
 		elements.each(function() {
 			var element = $( this );
-			if ( element.hasClass( "aloha-ui-element" ) || element.hasClass( "aloha-cleanme" ) ) {
+			if ( element.hasClass( "aloha-cleanme" ) ) {
 				element.remove();
 			} else if ( element.hasClass( "aloha-ui-wrapper" ) ) {
 				element.replaceWith( element.contents() );
@@ -71,7 +70,7 @@ define( [
 
 		letUiElement: function( element ) {
 			element = $( element );
-			element.addClass( "aloha-ui-element" );
+			element.addClass( "aloha-cleanme" );
 		},
 
 		/**
