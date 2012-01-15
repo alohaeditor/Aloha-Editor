@@ -14,10 +14,29 @@
 	<script>
 	var Aloha = {
 		settings: {
-			toolbar: {
-				tabs: {},
-				components: [ [ "bold", "italic" ], [ "formatBlock" ] ]
-			},
+			toolbar: [
+				{
+					label: "Tab <i>on italic</i>",
+					showOn: "i",
+					components: [
+						[ "bold" ],
+						[ "italic", "italic" ]
+					]
+				},
+				{
+					label: "Tab <b>on bold</b>",
+					showOn: "b",
+					components: [
+						[ "italic" ],
+						[ "bold", "bold" ]
+					]
+				},
+				{
+					label: "Another Tab",
+					showOn: true,
+					components: [ [ "bold", "italic" ], [ "formatBlock" ] ]
+				}
+			],
 			//nativeCommands : true,
 			locale: "en"
 		}
@@ -28,13 +47,24 @@
 	Aloha.ready( function() {
 		var $ = Aloha.jQuery;
 		$( "#main" ).aloha({
-			toolbar: {
-				components: [
-					[ "bold", "italic", "underline", "pipe", "strikethrough", "pipe", "subscript", "superscript" ],
-					[ "orderedList", "unorderedList", "indentList", "outdentList", "pipe", "formatBlock" ],
-					[ "link", "editLink", "removeLink", "linkBrowser", "pipe", "abbr", "editAbbr" ]
-				]
-			},
+			toolbar: [
+				{
+					label: 'Formatting',
+					showOn: true,
+					components: [
+						[ "bold", "italic", "underline", "pipe", "strikethrough", "pipe", "subscript", "superscript" ],
+						[ "orderedList", "unorderedList", "indentList", "outdentList", "pipe", "formatBlock" ],
+						[ "link", "editLink", "removeLink", "linkBrowser", "pipe", "abbr", "editAbbr" ]
+					]
+				},
+				{
+					label: 'Lists',
+					showOn: 'ul,ol,*.parent(.aloha-editable ul, .aloha-editable ol)',
+					components: [
+						[ "orderedList", "unorderedList", "pipe", "indentList", "outdentList" ]
+					]
+				},
+			],
 			formatBlock: {
 				blocks: [ "pre", "h1", "p", "h2", "h3" ],
 				removeFormatting: [ "b", "strong" ]
@@ -55,7 +85,7 @@
 
 <div id="uhoh" contenteditable>
 <p>More than one instance...</p>
-<p>This is gonna be trouble!</p>
+<p>This <b>is</b> <i>gonna</i> be <i><b>trouble!</b></i></p>
 </div>
 
 </body>
