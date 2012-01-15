@@ -21,14 +21,14 @@ define( [
 	'aloha/plugin',
 	'aloha/jquery',
 	'aloha/floatingmenu',
+	'aloha/ui-classifier',
 	'i18n!link/nls/i18n',
 	'i18n!aloha/nls/i18n',
 	'aloha/console',
 	'link/../extra/linklist',
 	'link/../extra/slowlinklist',
-	'css!link/css/link.css',
-	'aloha/ui-classifier'
-], function ( Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, console, UiClassifier ) {
+	'css!link/css/link.css'
+], function ( Aloha, Plugin, jQuery, FloatingMenu, UiClassifier, i18n, i18nCore, console ) {
 	'use strict';
 	
 	var GENTICS = window.GENTICS,

@@ -25,11 +25,12 @@ define( [
 	'aloha',
 	'aloha/jquery',
 	'aloha/floatingmenu',
+	'aloha/ui-classifier',
 	'i18n!table/nls/i18n',
 	'table/table-cell',
 	'table/table-selection',
 	'table/table-plugin-utils'
-], function ( Aloha, jQuery, FloatingMenu, i18n, TableCell, TableSelection,
+], function ( Aloha, jQuery, FloatingMenu, UiClassifier, i18n, TableCell, TableSelection,
 	          Utils ) {
 	var undefined = void 0;
 	var GENTICS = window.GENTICS;
@@ -1519,7 +1520,6 @@ define( [
 			cSpan.addClass('aloha-ui');
 			cSpan.addClass('aloha-editable-caption');
 			UiClassifier.letUiWrapper( cSpan );
-			this._uiElements.push( cSpan );
 
 			if (caption.contents().length > 0) {
 				// when the caption has content, we wrap it with the new div
