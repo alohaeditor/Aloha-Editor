@@ -11,6 +11,7 @@ define( [
 	'aloha/plugin',
 	'aloha/pluginmanager',
 	'aloha/floatingmenu',
+	'aloha/ui-classifier',
 	'i18n!table/nls/i18n',
 	'i18n!aloha/nls/i18n',
 	'table/table-create-layer',
@@ -21,6 +22,7 @@ define( [
 	         jQuery,
 	         Plugin,
 	         PluginManager,
+			 UiClassifier,
 	         FloatingMenu,
 	         i18n,
 	         i18nCore,
@@ -125,6 +127,11 @@ define( [
 		this.createLayer = new CreateLayer( this );
 
 		var that = this;
+
+		UiClassifier.registerUiClasses([
+			this.get('className'),
+			this.get('classCellSelected'),
+		]);
 
 		// subscribe for the 'editableActivated' event to activate all tables in the editable
 		Aloha.bind( 'aloha-editable-created', function ( event, editable ) {
@@ -1058,7 +1065,7 @@ define( [
 						var captionText = i18n.t('empty.caption');
 						var c = jQuery('<caption></caption>');
 						that.activeTable.obj.append(c);
-						that.makeCaptionEditable(c, captionText);
+						that.activeTable.makeCaptionEditable(captionText);
 
 						// get the editable span within the caption and select it
 						var cDiv = c.find('div').eq(0);
@@ -1107,44 +1114,6 @@ define( [
 				1
 			);
 		}
-	};
-
-	/**
-	 * Helper method to make the caption editable
-	 * @param caption caption as jQuery object
-	 * @param captionText default text for the caption
-	 */
-	TablePlugin.makeCaptionEditable = function(caption, captionText) {
-		var that = this;
-		var cSpan = caption.children('div').eq(0);
-		if (cSpan.length == 0) {
-			// generate a new div
-			cSpan = jQuery('<div></div>');
-			jQuery(cSpan).addClass('aloha-ui');
-			jQuery(cSpan).addClass('aloha-editable-caption');
-			if (caption.contents().length > 0) {
-				// when the caption has content, we wrap it with the new div
-				caption.contents().wrap(cSpan);
-			} else {
-				// caption has no content, so insert the default caption text
-				if (captionText) {
-					cSpan.text(captionText);
-				}
-				// and append the div into the caption
-				caption.append(cSpan);
-			}
-		}
-		// make the div editable
-		cSpan.contentEditable(true);
-		cSpan.unbind('mousedown');
-		// focus on click
-		cSpan.bind('mousedown', function(jqEvent) {
-			cSpan.focus();
-			// stop bubble, otherwise the mousedown of the table is called ...
-			jqEvent.preventDefault();
-			jqEvent.stopPropagation();
-			return false;
-		});
 	};
 
 	/**
@@ -1259,8 +1228,7 @@ define( [
 			if ( focusTable.obj.children("caption").is('caption') ) {
 				// set caption button
 				that.captionButton.setPressed(true);
-				var c = focusTable.obj.children("caption");
-				that.makeCaptionEditable(c);
+				focusTable.makeCaptionEditable();
 			}
 			focusTable.hasFocus = true;
 		}
@@ -1369,23 +1337,6 @@ define( [
 		}
 	};
 
-	/**
-	 * Make the given jQuery object (representing an editable) clean for saving
-	 * Find all tables and deactivate them
-	 * @param obj jQuery object to make clean
-	 * @return void
-	 */
-	TablePlugin.makeClean = function ( obj ) {
-		var that = this;
-		obj.find( 'table' ).each( function () {
-			// Make sure that we only deactivate tables in obj which have the
-			// same id as tables which have been activated and registered
-			if ( that.getTableFromRegistry( this ) ) {
-				( new Table( this, that ) ).deactivate();
-			}
-		} );
-	};
-	
 	/**
 	 * String representation of the Table-object
 	 *

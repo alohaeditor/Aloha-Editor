@@ -1,6 +1,6 @@
 define(
-['aloha/jquery', 'table/table-plugin-utils'],
-function (jQuery, Utils) {
+['aloha/jquery', 'aloha/ui-classifier', 'table/table-plugin-utils'],
+function (jQuery, UiClassifier, Utils) {
 	/**
 	 * Constructs a TableCell.
 	 *
@@ -56,6 +56,7 @@ function (jQuery, Utils) {
 
 		wrapper.contentEditable( true );
 		wrapper.addClass( 'aloha-table-cell-editable' );
+		UiClassifier.letUiWrapper( wrapper );
 
 		var that = this;
 		
@@ -126,25 +127,10 @@ function (jQuery, Utils) {
 	 * @return void
 	 */
 	TableCell.prototype.deactivate = function() {
-		var wrapper = this.obj.children('.aloha-table-cell-editable');
-
+		var wrapper = this.obj.children( '.aloha-table-cell-editable' );
 		if (wrapper.length) {
-			// get the inner html of the contenteditable div
-			var innerHtml = wrapper.html();
-
-			// remove the contenteditable div and its attached events
-			wrapper.remove();
-
-			// remove the click event of the
-			this.obj.unbind('click');
-
-			if (jQuery.trim(this.obj.attr('class')) == '') {
-				this.obj.removeAttr('class');
-			}
-
-			// set the inner html of the contenteditable div as html for the table-data
-			// field
-			this.obj.html(innerHtml);
+			UiClassifier.stripUi( wrapper );
+			this.obj.unbind( 'click' );
 		}
 	}
 
