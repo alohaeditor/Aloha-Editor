@@ -1,6 +1,6 @@
 h2. The Aloha Editor UI
 
-After reading this gUIde, you will be able to:
+After reading this guide, you will be able to:
 
 * Understand the basic components of the Aloha Editor UI
 * Configure your Aloha Editor UI
