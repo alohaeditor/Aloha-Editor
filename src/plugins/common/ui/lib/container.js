@@ -169,7 +169,7 @@ define([
 			var group = showGroups[ key ];
 
 			if ( group ) {
-				group.containers.push( container );
+				group.containers.push( this );
 			} else {
 				group = showGroups[ key ] = {
 					shouldShow: Container.coerceShowOnToPredicate( this.showOn ),
