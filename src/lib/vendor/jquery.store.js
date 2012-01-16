@@ -34,9 +34,9 @@
 define(
 [
  'aloha/jquery',
- 'vendor/jquery.json-2.2.min'
+ 'util/json2'
 ],
-function($, _1, undefined) {
+function($, __unused_json, undefined) {
 
 /**********************************************************************************
  * $.store base and convinience accessor
