@@ -10,18 +10,16 @@ define([
 ], function( Aloha, jQuery, Ui ) {
 	'use strict';
 
+	var uid = 0;
+
 	/**
 	 * Classname constants...
 	 * @type {string}
 	 */
 
-	Ui.TABS_CONTAINER_CLASS = 'aloha-ui-tabs-container';
-	Ui.TABS_HANDLES_CLASS = 'aloha-ui-tabs-handles';
-	Ui.TABS_PANELS_CLASS = 'aloha-ui-tabs-panels';
-
-	// Used to store a local, and temporary copy of the components settings
-	// passed to the Tab constructor to be used during initialization.
-	var components_settings;
+	var TABS_CONTAINER_CLASS = 'aloha-ui-tabs-container';
+	var TABS_HANDLES_CLASS = 'aloha-ui-tabs-handles';
+	var TABS_PANELS_CLASS = 'aloha-ui-tabs-panels';
 
 	/**
 	 * `Tab` defines a Aloha.Ui.Container object that represents a collection
@@ -55,32 +53,21 @@ define([
 		 * @override
 		 */
 		_constructor: function( settings, components ) {
-			components_settings = components;
-			this._super( settings );
-		},
+			this._super( settings, components );
+			var editable = this.editable = settings.editable;
 
-		/**
-		 * Initialze this tab instance.
-		 * @override
-		 */
-		init: function() {
-			this._super();
-
-			var editable = this.editable;
-
-			this.container = editable.toolbar.find( '.' + Ui.TABS_CONTAINER_CLASS );
-
-			// console.assert( this.container.length === 1 )
+			this.container = editable.toolbar.find( '.' + TABS_CONTAINER_CLASS );
 
 			this.index = editable.tabs.length;
 
-			var panel = this.panel = jQuery( '<div>', { id : this.uid } );
+			this.id = "tab-container-" + (uid++);
+			var panel = this.panel = jQuery( '<div>', { id : this.id } );
 
-			var handle = this.handle = jQuery( '<li><a href="#' + this.uid
-				+ '">' + this.label + '</a></li>' );
+			var handle = this.handle = jQuery( '<li><a href="#' + this.id
+				+ '">' + settings.label + '</a></li>' );
 
-			if ( components_settings ) {
-				jQuery.each( components_settings, function() {
+			if ( components ) {
+				jQuery.each( components, function() {
 					var group = jQuery( '<div>', {
 						'class': 'aloha-toolbar-group'
 					}).appendTo( panel );
@@ -95,8 +82,8 @@ define([
 				});
 			}
 
-			handle.appendTo( this.container.find( 'ul.' + Ui.TABS_HANDLES_CLASS ) );
-			panel.appendTo( this.container.find( '.' + Ui.TABS_PANELS_CLASS ) );
+			handle.appendTo( this.container.find( 'ul.' + TABS_HANDLES_CLASS ) );
+			panel.appendTo( this.container.find( '.' + TABS_PANELS_CLASS ) );
 		},
 
 		/**
@@ -104,7 +91,7 @@ define([
 		 * @override
 		 */
 		show: function() {
-			var tabs = this.container.find( 'ul.' + Ui.TABS_HANDLES_CLASS + '>li' );
+			var tabs = this.container.find( 'ul.' + TABS_HANDLES_CLASS + '>li' );
 
 			if ( tabs.length == 0 ) {
 				return;
@@ -128,7 +115,7 @@ define([
 		 * @override
 		 */
 		hide: function() {
-			var tabs = this.container.find( 'ul.' + Ui.TABS_HANDLES_CLASS + '>li' );
+			var tabs = this.container.find( 'ul.' + TABS_HANDLES_CLASS + '>li' );
 
 			if ( tabs.length == 0 ) {
 				return;
@@ -160,23 +147,21 @@ define([
 	});
 
 	/**
-	 * Creates holding elements for jQuery UI Tabs on the given surface
-	 * element.
-	 * @param {jQuery<HTMLElement>} surface The DOM element which represents
-	 *                                      a Aloha.ui.Surface .
+	 * Creates holding elements for jQuery UI Tabs for a surface.
 	 * @return {jQuery<HTMLElement>} The holder container onwhich we invoke
 	 *                               jQuery UI Tabs once it is populated with
 	 *                               tab containers.
 	 * @static
 	 */
-	Tab.createHolders = function( surface ) {
-		var container_holder = surface.find(
-			'.' + Ui.TABS_CONTAINER_CLASS );
+	Tab.createContainer = function() {
+		var container_holder = jQuery( '<div>', {
+			'class': TABS_CONTAINER_CLASS
+		});
 
-		jQuery( '<ul>', { 'class': Ui.TABS_HANDLES_CLASS } )
+		jQuery( '<ul>', { 'class': TABS_HANDLES_CLASS } )
 			.appendTo( container_holder );
 
-		jQuery( '<div>', { 'class': Ui.TABS_PANELS_CLASS } )
+		jQuery( '<div>', { 'class': TABS_PANELS_CLASS } )
 			.appendTo( container_holder );
 
 		return container_holder;

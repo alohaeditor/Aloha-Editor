@@ -1,6 +1,5 @@
 /**
  * Defines a `Container` Class.
- * Panels and tabs, extend this class.
  */
 
 define([
@@ -9,18 +8,6 @@ define([
 	'util/class'
 ], function( Aloha, jQuery, Class ) {
 	'use strict';
-
-	/**
-	 * Temporary helper function.
-	 * TODO: Remove me when you no longer needed (don't forget to remove
-	 *       invocations of this function in this source file.
-	 * @param {string} str
-	 */
-	function debug( str ) {
-		if ( false ) {
-			console.log( str );
-		}
-	};
 
 	/**
 	 * This object provides a unique associative container which maps hashed
@@ -114,9 +101,6 @@ define([
 		var j = containers.length;
 
 		while ( j ) {
-			debug( 'toggleContainers: ' + action + ' `'
-				+ containers[ j - 1 ].label + '`.' );
-
 			containers[ --j ][ action ]();
 		}
 	};
@@ -134,43 +118,10 @@ define([
 		visible: true,
 
 		/**
-		 * Indicates the type of the container: "tab" or "panel".
-		 * @type {string}
-		 */
-		type: 'tab',
-
-		/**
-		 * A unique identifier for this container.
-		 * @type {string}
-		 */
-		uid: null,
-
-		/**
 		 * The containing (wrapper) element for this container.
 		 * @type {jQuery<HTMLElement>}
 		 */
 		element: null,
-
-		/**
-		 * Clickable handle for this container, which pairs with a
-		 * corresponding panel element.
-		 * @type {jQuery<HTMLElement>}
-		 */
-		handle: null,
-
-		/**
-		 * The panel element for this container on which components will be
-		 * rendered.
-		 * @type {jQuery<HTMLElement>}
-		 */
-		panel: null,
-
-		/**
-		 * Zero-base index of this container's position in the `surface` that
-		 * it is rendered on.
-		 * @type {number}
-		 */
-		index: null,
 
 		/**
 		 * True if this tab is activated (ie: having focus, so that not only is
@@ -204,23 +155,7 @@ define([
 		 * @constructor
 		 */
 		_constructor: function( settings ) {
-			var init;
-
-			if ( settings ) {
-				init = settings.init;
-				delete settings.init;
-				jQuery.extend( this, settings );
-			}
-
-			this.init();
-
-			if ( jQuery.type( init ) == 'function' ) {
-				init.call( this );
-			}
-		},
-
-		init: function() {
-			this.onInit.call( this );
+			this.showOn = settings.showOn;
 			addToShowGroup( this );
 		},
 
@@ -230,10 +165,8 @@ define([
 		 */
 		render: function() {
 			this.element = jQuery( '<div>', {
-				'class': 'aloha-ui-container, aloha-ui-tab'
+				'class': 'aloha-ui-container'
 			});
-
-			this.onRender.call( this );
 
 			return this.element;
 		},
@@ -241,24 +174,12 @@ define([
 		show: function() {
 			this.element.show();
 			this.visible = true;
-			this.onShow.call( this );
 		},
 
 		hide: function() {
 			this.element.hide();
 			this.visible = false;
-			this.onHide.call( this );
-		},
-
-		//
-		// Events handlers
-		//
-
-		onInit   : function() {},
-		onRender : function() {},
-		onShow   : function() {},
-		onHide   : function() {}
-
+		}
 	});
 
 	/**
@@ -314,11 +235,6 @@ define([
 			show = false;
 
 			while ( j ) {
-				debug( 'shouldShow `' + groupKey + '` group for '
-					+ ( elements[ j - 1 ] && '`<' + elements[ j - 1 ].nodeName + '>`' )
-					+ '? ' + ( shouldShow( elements[ j - 1 ] ) ? 'Yes' : 'No' )
-					+ '.' );
-
 				var element = elements[ j - 1 ];
 
 				if ( shouldShow( elements[ --j ] ) ) {
@@ -330,30 +246,6 @@ define([
 			toggleContainers( group.containers, show ? 'show' : 'hide' );
 		}
 	};
-
-	// ------------------------------------------------------------------------
-	// Tests
-	// ------------------------------------------------------------------------
-
-	// TODO: more!
-
-	/*
-	var c1 = new Container();
-	var c2 = new Container({
-		showOn: 'p>i'
-	});
-	var c3 = new Container({
-		showOn: function(el) {
-			return el.is('a');
-		}
-	});
-	var c4 = new Container({
-		showOn: 'p>i'
-	});
-	var c5 = new Container({
-		showOn: 'p>a'
-	});
-	*/
 
 	return Container;
 });

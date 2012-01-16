@@ -37,14 +37,9 @@ define([
 				'class': 'aloha-toolbar-wrap'
 			});
 
-			jQuery( '<div>', {
-				'class': Ui.TABS_CONTAINER_CLASS
-			}).appendTo( editable.toolbar );
-
 			var settings,
 				tabs = editable.settings.toolbar,
-				holder = Tab.createHolders( editable.toolbar ),
-				tabsUidPrefix = GENTICS.Utils.guid() + '-',
+				holder = Tab.createContainer().appendTo( editable.toolbar ),
 				j = tabs.length,
 				i = 0;
 
@@ -54,7 +49,6 @@ define([
 				settings = tabs[i];
 
 				editable.tabs.push( new Tab({
-					uid: tabsUidPrefix + i,
 					label: settings.label || '',
 					showOn: settings.showOn,
 					editable: editable
@@ -62,8 +56,6 @@ define([
 			}
 
 			holder.tabs();
-
-			Ui.Container.showContainersForElements([]);
 		},
 
 		show: function() {
