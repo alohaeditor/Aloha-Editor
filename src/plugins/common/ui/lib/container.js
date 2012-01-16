@@ -82,21 +82,13 @@ define([
 		switch( jQuery.type( showOn ) ) {
 		case 'function':
 			return showOn;
-		case 'boolean':
-			return function() {
-				return showOn;
-			};
 		case 'string':
 			return function( el ) {
 				return el ? jQuery( el ).is( showOn ) : false;
 			};
-		case 'undefined':
-			return function() {
-				return true;
-			};
 		default:
 			return function() {
-				return false;
+				return true;
 			};
 		}
 	};
