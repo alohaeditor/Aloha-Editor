@@ -2,6 +2,11 @@
 
 This document is to serve as a "what has been done" in terms of the [Roadmap](http://aloha-editor.org/wiki/Roadmap)
 
+## 0.20.2 2012/01/16
+
+- core: fixed incorrect dependency on jquery.json-2.2 where util/json2 is needed instead and made it globally available
+- core: Removed unneeded JSON empty function definition that surpressed errors in IE
+
 ## 0.20.2-SNAPSHOT
 
 ## 0.20.1 2012/01/13

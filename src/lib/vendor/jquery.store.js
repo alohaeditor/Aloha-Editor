@@ -34,9 +34,9 @@
 define(
 [
  'aloha/jquery',
- 'vendor/jquery.json-2.2.min'
+ 'util/json2'
 ],
-function($, _1, undefined) {
+function($, __unused_json, undefined) {
 
 /**********************************************************************************
  * $.store base and convinience accessor
@@ -46,19 +46,6 @@ $.store = function( driver, serializers )
 {
 	var JSON = window.JSON
 		that = this;
-	
-	// IE fix
-	if (typeof JSON === 'undefined' || !JSON) {
-		/*
-		 * The GENTICS global namespace object. If GENTICS is already defined, the
-		 * existing GENTICS object will not be overwritten so that defined
-		 * namespaces are preserved.
-		 */
-		var JSON = function () {
-			this.stringigy = function () {};
-			this.parse = function () {};
-		};
-	}
 
 	if( typeof driver == 'string' )
 	{
