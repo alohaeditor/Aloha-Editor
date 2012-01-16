@@ -7,8 +7,9 @@ We're currently writing new guides. You can find these at doc/guides/output
 
 For help there is:
 
-- [the development guide](http://aloha-editor.org/wiki/Development_guide) for developers
-- [the wiki](http://aloha-editor.org/wiki/Main_Page) for end-users and implementors
+- [the wiki](https://github.com/alohaeditor/Aloha-Editor/wiki) for end-users and implementors
+- [the guides](http://www.alohaeditor.org/guides/) for developers
+
 - [the issues tracker](https://github.com/alohaeditor/Aloha-Editor/issues) for developer support requests
 - [the support forum](http://getsatisfaction.com/aloha_editor) for end-user and implementor support requests
 - IRC #alohaeditor @ freenode.net (We are there every Wednesday 9:00 to 18:00 GMT+1)

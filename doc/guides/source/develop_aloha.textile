@@ -20,6 +20,38 @@ cd alohaeditor
 git checkout dev
 </shell>
 
+h3. Repository Directory Structure
+
+* /
+* /bin - Build scripts
+* /build - Build configuration
+
+* /doc
+* /doc/api - The API documentation
+* /doc/guides - This document
+
+* /vendor - Vendor source code. (e.g. ExtJS, require-js, jquery)
+* /target - Build output folder
+
+* /src
+* /src/css - Aloha core css files
+* /src/demo - Aloha demos
+* /src/img - Aloha core images
+
+* /src/lib - Require plugins and bootstrap files
+* /src/lib/aloha - Main Aloha Editor core sources
+* /src/lib/vendor - Vendor source code. E.g. ExtJS, jquery
+* /src/lib/util - Utility sources. (e.g. json2.js, class.js)
+
+* /src/plugins
+* /src/plugins/common - Common plugin bundle
+* /src/plugins/extra - Extra plugin bundle
+
+* /src/test - QUnit tests
+
+
+
+
 h3. Building  - Aloha Building
 
 h4. Debian Linux / Mac OS X
