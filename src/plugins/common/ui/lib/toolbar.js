@@ -70,6 +70,10 @@ define([
 
 			Aloha.bind( 'aloha-selection-changed', function( event, range ) {
 // console.log( range );
+				if ( !Aloha.activeEditable ) {
+					return;
+				}
+
 				var isEditingHost = GENTICS.Utils.Dom.isEditingHost,
 				    elements = [],
 				    element;
@@ -80,7 +84,8 @@ define([
 					elements.push( element );
 				}
 // console.log( elements );
-				Container.showContainersForElements( elements );
+				Container.showContainersForElements( Aloha.activeEditable,
+					elements );
 			});
 		},
 
@@ -114,7 +119,7 @@ define([
 
 			holder.tabs();
 
-			Container.showContainersForElements([]);
+			Container.showContainersForElements( editable, [] );
 		},
 
 		/**

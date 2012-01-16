@@ -10,12 +10,9 @@ define([
 ], function( Aloha, jQuery, Ui, Container ) {
 	'use strict';
 
-	/**
-	 * Classname constants. Will be exposed as static variables in the Tab
-	 * class.
-	 * @type {string}
-	 */
-
+	 // Classname constants.  Will be exposed as static variables in the Tab
+	 // class.
+	 // @type {string}
 	var CONTAINER_CLASS = 'aloha-ui-tabs-container';
 	var HANDLES_CLASS = 'aloha-ui-tabs-handles';
 	var PANELS_CLASS = 'aloha-ui-tabs-panels';
@@ -141,7 +138,7 @@ define([
 			this.visible = false;
 
 			// If the tab we just hid was the selected tab, then we need to
-			// select another tab in its stead. We select the first visible
+			// select another tab in its stead.  We select the first visible
 			// tab we find, or else we deselect all tabs.
 			if ( this.index == this.container.tabs( 'option', 'selected' ) ) {
 				tabs = this.editable.tabs;
@@ -188,7 +185,6 @@ define([
 	Tab.CONTAINER_CLASS = CONTAINER_CLASS;
 	Tab.HANDLES_CLASS = HANDLES_CLASS;
 	Tab.PANELS_CLASS = PANELS_CLASS;
-
 
 	return Tab;
 });

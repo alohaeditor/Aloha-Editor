@@ -23,16 +23,6 @@ define([
 		}
 	};
 
-	/**
-	 * This object provides a unique associative container which maps hashed
-	 * `showOn` values (see `Container.generateKeyForShowOnValue()`) with
-	 * objects that hold a corresponding `shouldShow` function (which is also
-	 * derived from the `showOn` value), and an array of containers which share
-	 * this predicate.  The main advantage we get from a hash set is that
-	 * lookups can be done in constant time.
-	 * @type {object.<string, object>}
-	 */
-	var showGroups = {};
 
 	// ------------------------------------------------------------------------
 	// Instance methods, and properties
@@ -139,6 +129,20 @@ define([
 		},
 
 		init: function() {
+			if ( !this.editable.showGroups ) {
+				/**
+				 * This object provides a unique associative container which
+				 * maps hashed `showOn` values (see
+				 * `Container.generateKeyForShowOnValue()`) with objects that
+				 * hold a corresponding `shouldShow` function (which is also
+				 * derived from the `showOn` value), and an array of containers
+				 * which share this predicate.  The main advantage we get from
+				 * a hash set is that lookups can be done in constant time.
+				 * @type {object.<string, object>}
+				 */
+				this.editable.showGroups = {};
+			}
+
 			this.addToShowGroup();
 			this.onInit.call( this );
 		},
@@ -166,12 +170,12 @@ define([
 		 */
 		addToShowGroup: function() {
 			var key = Container.generateKeyForShowOnValue( this.showOn );
-			var group = showGroups[ key ];
+			var group = this.editable.showGroups[ key ];
 
 			if ( group ) {
 				group.containers.push( this );
 			} else {
-				group = showGroups[ key ] = {
+				group = this.editable.showGroups[ key ] = {
 					shouldShow: Container.coerceShowOnToPredicate( this.showOn ),
 					containers: [ this ]
 				};
@@ -288,10 +292,12 @@ define([
 	 *               deactivated (hidden) toolbars from being shown, since this
 	 *               is unnecessary work.
 	 * @static
+	 * @param {Aloha.Editable} editable The editale object whose containers we
+	 *                                  will check to either show or hide.
 	 * @param {Array.<HTMLElement>} elements A list of elements, any of which
 	 *                                       may cause the container to shown.
 	 */
-	Container.showContainersForElements = function( elements ) {
+	Container.showContainersForElements = function( editable, elements ) {
 		// Add a null object to the elements array so that we can test whether
 		// the panel should be activated when we have no elements in the
 		// current selection.
@@ -305,7 +311,8 @@ define([
 		    groupKey,
 		    shouldShow,
 		    j,
-		    show;
+		    show,
+		    showGroups = editable.showGroups;
 
 		for ( groupKey in showGroups ) {
 			group = showGroups[ groupKey ];
