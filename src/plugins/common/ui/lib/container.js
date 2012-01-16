@@ -169,6 +169,11 @@ define([
 		 * we can instead perform 1 test for N number of containers in many cases.
 		 */
 		addToShowGroup: function() {
+			if ( this.showOn === true ) {
+				return;
+				this.show();
+			}
+
 			var key = Container.generateKeyForShowOnValue( this.showOn );
 			var group = this.editable.showGroups[ key ];
 
