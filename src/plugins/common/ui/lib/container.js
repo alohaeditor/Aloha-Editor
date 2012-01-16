@@ -24,94 +24,14 @@ define([
 
 	/**
 	 * This object provides a unique associative container which maps hashed
-	 * `showOn` values (see `generateKeyForShowOnValue()`) with objects that
-	 * hold a corresponding `shouldShow` function (which is also derived from
-	 * the `showOn` value), and an array of containers which share this
-	 * predicate.  The main advantage we get from a hash set is that lookups
-	 * can be done in constant time.
+	 * `showOn` values (see `Container.generateKeyForShowOnValue()`) with
+	 * objects that hold a corresponding `shouldShow` function (which is also
+	 * derived from the `showOn` value), and an array of containers which share
+	 * this predicate.  The main advantage we get from a hash set is that
+	 * lookups can be done in constant time.
 	 * @type {object.<string, object>}
 	 */
 	var showGroups = {};
-
-	/**
-	 * Given a `showOn` value, generate a string from a concatenation of its
-	 * type and value.  We need to include the typeof of the `showOn` value onto
-	 * the returned string so that we can distinguish a value of "true"
-	 * (string) and a value `true` (boolean) which would be coerced to
-	 * different `shouldShow` functions but would otherwise be stringified as
-	 * simply "true".
-	 * @param {string|boolean|function():boolean} showOn
-	 * @return {string} A key that distinguishes the type and value of the
-	 *                  given `showOn` value.  eg: "boolean:true".
-	 */
-	function generateKeyForShowOnValue( showOn ) {
-		return jQuery.type( showOn ) + ':' + showOn.toString();
-	};
-
-	/**
-	 * Place the a container into the appropriate group in the `showGroups`
-	 * hash.  Containers with functionally equivalent `showOn` values are
-	 * grouped together so that instead of having to perform N number of tests
-	 * to determine whether N number of containers should be shown or hidden,
-	 * we can instead perform 1 test for N number of containers in many cases.
-	 * @param {Aloha.ui.Container} container
-	 */
-	function addToShowGroup( container ) {
-		var key = generateKeyForShowOnValue( container.showOn );
-		var group = showGroups[ key ];
-
-		if ( group ) {
-			group.containers.push( container );
-		} else {
-			group = showGroups[ key ] = {
-				shouldShow: coerceShowOnToPredicate( container.showOn ),
-				containers: [ container ]
-			};
-		}
-
-		container.shouldShow = group.shouldShow;
-	};
-
-	/**
-	 * Given a value which represents a `showOn` test, coerce the value into a
-	 * predicate function.
-	 * @param {string|boolean|function():boolean} showOn
-	 * @return {function():boolean}
-	 */
-	function coerceShowOnToPredicate( showOn ) {
-		switch( jQuery.type( showOn ) ) {
-		case 'function':
-			return showOn;
-		case 'string':
-			return function( el ) {
-				return el ? jQuery( el ).is( showOn ) : false;
-			};
-		default:
-			return function() {
-				return true;
-			};
-		}
-	};
-
-	/**
-	 * Show or hide a set of containers.
-	 * @param {Array.<Aloha.ui.Container>} containers
-	 * @param {string} action Either "hide" or "show", and nothing else.
-	 */
-	function toggleContainers( containers, action ) {
-		if ( action != 'show' && action != 'hide' ) {
-			return;
-		}
-
-		var j = containers.length;
-
-		while ( j ) {
-			debug( 'toggleContainers: ' + action + ' `'
-				+ containers[ j - 1 ].label + '`.' );
-
-			containers[ --j ][ action ]();
-		}
-	};
 
 	// ------------------------------------------------------------------------
 	// Instance methods, and properties
@@ -217,8 +137,8 @@ define([
 		},
 
 		init: function() {
+			this.addToShowGroup();
 			this.onInit.call( this );
-			addToShowGroup( this );
 		},
 
 		/**
@@ -233,6 +153,30 @@ define([
 			this.onRender.call( this );
 
 			return this.element;
+		},
+
+		/**
+		 * Place the a container into the appropriate group in the `showGroups`
+		 * hash.  Containers with functionally equivalent `showOn` values are
+		 * grouped together so that instead of having to perform N number of tests
+		 * to determine whether N number of containers should be shown or hidden,
+		 * we can instead perform 1 test for N number of containers in many cases.
+		 * @static
+		 */
+		addToShowGroup: function() {
+			var key = Container.generateKeyForShowOnValue( this.showOn );
+			var group = showGroups[ key ];
+
+			if ( group ) {
+				group.containers.push( container );
+			} else {
+				group = showGroups[ key ] = {
+					shouldShow: Container.coerceShowOnToPredicate( this.showOn ),
+					containers: [ this ]
+				};
+			}
+
+			this.shouldShow = group.shouldShow;
 		},
 
 		show: function() {
@@ -258,10 +202,69 @@ define([
 
 	});
 
+
 	// ------------------------------------------------------------------------
 	// Class methods, and properties
 	// ------------------------------------------------------------------------
 
+	/**
+	 * Given a `showOn` value, generate a string from a concatenation of its
+	 * type and value.  We need to include the typeof of the `showOn` value onto
+	 * the returned string so that we can distinguish a value of "true"
+	 * (string) and a value `true` (boolean) which would be coerced to
+	 * different `shouldShow` functions but would otherwise be stringified as
+	 * simply "true".
+	 * @param {string|boolean|function():boolean} showOn
+	 * @return {string} A key that distinguishes the type and value of the
+	 *                  given `showOn` value.  eg: "boolean:true".
+	 * @static
+	 */
+	Container.generateKeyForShowOnValue = function( showOn ) {
+		return jQuery.type( showOn ) + ':' + showOn.toString();
+	};
+
+	/**
+	 * Given a value which represents a `showOn` test, coerce the value into a
+	 * predicate function.
+	 * @param {string|boolean|function():boolean} showOn
+	 * @return {function():boolean}
+	 * @static
+	 */
+	Container.coerceShowOnToPredicate = function( showOn ) {
+		switch( jQuery.type( showOn ) ) {
+		case 'function':
+			return showOn;
+		case 'string':
+			return function( el ) {
+				return el ? jQuery( el ).is( showOn ) : false;
+			};
+		default:
+			return function() {
+				return true;
+			};
+		}
+	};
+
+	/**
+	 * Show or hide a set of containers.
+	 * @param {Array.<Aloha.ui.Container>} containers
+	 * @param {string} action Either "hide" or "show", and nothing else.
+	 * @static
+	 */
+	Container.toggleContainers = function( containers, action ) {
+		if ( action != 'show' && action != 'hide' ) {
+			return;
+		}
+
+		var j = containers.length;
+
+		while ( j ) {
+			debug( 'Container.toggleContainers: ' + action + ' `'
+				+ containers[ j - 1 ].label + '`.' );
+
+			containers[ --j ][ action ]();
+		}
+	};
 
 	/**
 	 * Given an array of elements, show all containers whose group's
@@ -328,7 +331,8 @@ define([
 				}
 			}
 
-			toggleContainers( group.containers, show ? 'show' : 'hide' );
+			Container.toggleContainers( group.containers,
+				show ? 'show' : 'hide' );
 		}
 	};
 
