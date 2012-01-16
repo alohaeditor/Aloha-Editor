@@ -2,10 +2,11 @@ define([
 	"aloha/core",
 	"i18n!ui/nls/i18n",
 	"ui/ui",
+	"ui/surface",
 	"ui/button",
 	"ui/toggleCommandButton"
 ],
-function( Aloha, i18n, Ui ) {
+function( Aloha, i18n, Ui, Surface ) {
 	Ui.create( "orderedList", "toggleCommandButton", {
 		label: i18n.t( "button.ol.label" ),
 		command: "insertorderedlist",
@@ -30,7 +31,7 @@ function( Aloha, i18n, Ui ) {
 		icon: "aloha-icon aloha-icon-indent",
 		iconOnly: true,
 		click: function() {
-			Aloha.execCommand( "indent", null, false, Ui.toolbar.range );
+			Aloha.execCommand( "indent", null, false, Surface.range );
 		},
 		selectionChange: function() {
 			if ( inList() ) {
@@ -46,7 +47,7 @@ function( Aloha, i18n, Ui ) {
 		icon: "aloha-icon aloha-icon-outdent",
 		iconOnly: true,
 		click: function() {
-			Aloha.execCommand( "outdent", null, false, Ui.toolbar.range );
+			Aloha.execCommand( "outdent", null, false, Surface.range );
 		},
 		selectionChange: function() {
 			if ( inList() ) {

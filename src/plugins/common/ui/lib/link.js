@@ -4,24 +4,25 @@ define([
 	"i18n!ui/nls/i18n", 
 	"browser/browser-plugin",
 	"ui/ui",
+	"ui/surface",
 	"ui/autocomplete",
 	"ui/button",
 	"ui/toggleButton",
 	// TODO: remove (just for testing)
 	'ui/../../link/extra/linklist'
 ],
-function( Aloha, jQuery, i18n, Browser, Ui ) {
+function( Aloha, jQuery, i18n, Browser, Ui, Surface ) {
 	Ui.create( "link", "toggleButton", {
 		label: i18n.t( "button.createLink.label" ),
 		icon: "aloha-icon aloha-icon-link",
 		iconOnly: true,
 		
 		click: function() {
-			var state = Aloha.queryCommandValue( "createLink", Ui.toolbar.range );
+			var state = Aloha.queryCommandValue( "createLink", Surface.range );
 			if ( state ) {
-				Aloha.execCommand( "unlink", false, null, Ui.toolbar.range );
+				Aloha.execCommand( "unlink", false, null, Surface.range );
 			} else {
-				Aloha.execCommand( "createLink", false, "http://example.com", Ui.toolbar.range );
+				Aloha.execCommand( "createLink", false, "http://example.com", Surface.range );
 			}
 		},
 		
@@ -46,7 +47,7 @@ function( Aloha, jQuery, i18n, Browser, Ui ) {
 		},
 		
 		setValue: function( href, item ) {
-			Ui.util.createLink( item || href, Ui.toolbar.range );
+			Ui.util.createLink( item || href, Surface.range );
 		}
 	});
 	
@@ -56,7 +57,7 @@ function( Aloha, jQuery, i18n, Browser, Ui ) {
 		iconOnly: true,
 		
 		click: function() {
-			Aloha.execCommand( "unlink", false, null, Ui.toolbar.range );
+			Aloha.execCommand( "unlink", false, null, Surface.range );
 		},
 		
 		selectionChange: function() {
@@ -78,7 +79,7 @@ function( Aloha, jQuery, i18n, Browser, Ui ) {
 				repositoryManager: Aloha.RepositoryManager,
 				rootPath: Aloha.getPluginUrl( "browser" ) + "/",
 				onSelect: function( item ) {
-					Ui.util.createLink( item, Ui.toolbar.range );
+					Ui.util.createLink( item, Surface.range );
 					that.browser.close();
 				}
 			});

@@ -12,6 +12,7 @@ define([
 	// UI core
 	"order!css!./css/ui.css",
 	"./ui",
+	"./surface",
 	"./toolbar",
 	
 	// components

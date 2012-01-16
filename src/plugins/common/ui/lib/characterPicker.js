@@ -2,9 +2,10 @@ define([
 	"aloha/jquery",
 	"i18n!ui/nls/i18n",
 	"ui/ui",
+	"ui/surface",
 	"ui/button"
 ],
-function( jQuery, i18n, Ui ) {
+function( jQuery, i18n, Ui, Surface ) {
 	Ui.create( "characterPicker", "button", {
 		label: i18n.t( "button.characterPicker.label" ),
 		iconOnly: true,
@@ -135,10 +136,10 @@ function( jQuery, i18n, Ui ) {
 		},
 		
 		_select: function( elem ) {
-			var range = new GENTICS.Utils.RangeObject( Ui.toolbar.range ),
+			var range = new GENTICS.Utils.RangeObject( Surface.range ),
 				charNode = jQuery( document.createTextNode( elem.html() ) );
 			GENTICS.Utils.Dom.insertIntoDOM( charNode, range,
-				jQuery( Ui.toolbar.editable ), true );
+				jQuery( Surface.editable ), true );
 			range.select();
 			this._close();
 		},
