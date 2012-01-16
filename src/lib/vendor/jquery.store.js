@@ -46,19 +46,6 @@ $.store = function( driver, serializers )
 {
 	var JSON = window.JSON
 		that = this;
-	
-	// IE fix
-	if (typeof JSON === 'undefined' || !JSON) {
-		/*
-		 * The GENTICS global namespace object. If GENTICS is already defined, the
-		 * existing GENTICS object will not be overwritten so that defined
-		 * namespaces are preserved.
-		 */
-		var JSON = function () {
-			this.stringigy = function () {};
-			this.parse = function () {};
-		};
-	}
 
 	if( typeof driver == 'string' )
 	{
