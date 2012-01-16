@@ -45,10 +45,9 @@
 define([
 	"aloha/core",
 	"aloha/jquery",
-	"ui/component",
-	"ui/container"
+	"ui/component"
 ],
-function( Aloha, jQuery, Component, Container ) {
+function( Aloha, jQuery, Component ) {
 
 	jQuery( document )
 		.delegate( ".aloha-ui", "mousedown", function() {
@@ -61,8 +60,6 @@ function( Aloha, jQuery, Component, Container ) {
 	Aloha.ui = {
 		components: {},
 
-		Container: Container,
-		
 		// The first step of creating a component is to define a component type.
 		// Component types define how a component is displayed and what types of
 		// interactions the component allows.

@@ -7,8 +7,9 @@ define([
 	'aloha/core',
 	'aloha/jquery',
 	'ui/ui',
-	'ui/tab'
-], function( Aloha, jQuery, Ui, Tab ) {
+	'ui/tab',
+	'ui/container'
+], function( Aloha, jQuery, Ui, Tab, Container ) {
 
 	// The toolbar is configured via `settings.toolbar` and is defined as
 	// an array of tabs with component groups, where the groups are arrays of
@@ -64,7 +65,7 @@ define([
 
 			// Event handler for aloha-selection-changed.  Determine the
 			// elements "under" the current selection, and then invoke
-			// `Ui.Container.showContainersForElements()` to show and hide the
+			// `Container.showContainersForElements()` to show and hide the
 			// appropriate containers.
 
 			Aloha.bind( 'aloha-selection-changed', function( event, range ) {
@@ -79,7 +80,7 @@ define([
 					elements.push( element );
 				}
 // console.log( elements );
-				Ui.Container.showContainersForElements( elements );
+				Container.showContainersForElements( elements );
 			});
 		},
 
@@ -113,7 +114,7 @@ define([
 
 			holder.tabs();
 
-			Ui.Container.showContainersForElements([]);
+			Container.showContainersForElements([]);
 		},
 
 		/**
@@ -131,7 +132,7 @@ define([
 			});
 
 			jQuery( '<div>', {
-				'class': Ui.TABS_CONTAINER_CLASS
+				'class': Tab.CONTAINER_CLASS
 			}).appendTo( editable.toolbar );
 
 			var tabs;

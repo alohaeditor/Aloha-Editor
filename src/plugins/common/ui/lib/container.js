@@ -14,6 +14,7 @@ define([
 	 * Temporary helper function.
 	 * TODO: Remove me when you no longer needed (don't forget to remove
 	 *       invocations of this function in this source file.
+	 * @ignore
 	 * @param {string} str
 	 */
 	function debug( str ) {
@@ -41,6 +42,7 @@ define([
 	 * Aloha.ui.Container class.  Aloha.ui.Tab and Aloha.ui.Panel classes extend
 	 * this class.
 	 * @class
+	 * @base
 	 */
 	var Container = Class.extend({
 
@@ -161,7 +163,6 @@ define([
 		 * grouped together so that instead of having to perform N number of tests
 		 * to determine whether N number of containers should be shown or hidden,
 		 * we can instead perform 1 test for N number of containers in many cases.
-		 * @static
 		 */
 		addToShowGroup: function() {
 			var key = Container.generateKeyForShowOnValue( this.showOn );
@@ -214,10 +215,10 @@ define([
 	 * (string) and a value `true` (boolean) which would be coerced to
 	 * different `shouldShow` functions but would otherwise be stringified as
 	 * simply "true".
+	 * @static
 	 * @param {string|boolean|function():boolean} showOn
 	 * @return {string} A key that distinguishes the type and value of the
 	 *                  given `showOn` value.  eg: "boolean:true".
-	 * @static
 	 */
 	Container.generateKeyForShowOnValue = function( showOn ) {
 		return jQuery.type( showOn ) + ':' + showOn.toString();
@@ -226,9 +227,9 @@ define([
 	/**
 	 * Given a value which represents a `showOn` test, coerce the value into a
 	 * predicate function.
+	 * @static
 	 * @param {string|boolean|function():boolean} showOn
 	 * @return {function():boolean}
-	 * @static
 	 */
 	Container.coerceShowOnToPredicate = function( showOn ) {
 		switch( jQuery.type( showOn ) ) {
@@ -247,9 +248,9 @@ define([
 
 	/**
 	 * Show or hide a set of containers.
+	 * @static
 	 * @param {Array.<Aloha.ui.Container>} containers
 	 * @param {string} action Either "hide" or "show", and nothing else.
-	 * @static
 	 */
 	Container.toggleContainers = function( containers, action ) {
 		if ( action != 'show' && action != 'hide' ) {
@@ -286,9 +287,9 @@ define([
 	 * @TODO(petro): Figure out a way to leave out containers which belong in
 	 *               deactivated (hidden) toolbars from being shown, since this
 	 *               is unnecessary work.
+	 * @static
 	 * @param {Array.<HTMLElement>} elements A list of elements, any of which
 	 *                                       may cause the container to shown.
-	 * @static
 	 */
 	Container.showContainersForElements = function( elements ) {
 		// Add a null object to the elements array so that we can test whether

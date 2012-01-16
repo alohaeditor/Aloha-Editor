@@ -1,23 +1,24 @@
 /**
- * Defines a `Tab` Class that extends Aloha.ui.Container.
- * Adds class name constants to the Aloha.Ui namespace.
+ * Defines a `Tab` Class that extends Aloha.ui's `Container`.
  */
 
 define([
 	'aloha/core',
 	'aloha/jquery',
-	'ui/ui'
-], function( Aloha, jQuery, Ui ) {
+	'ui/ui',
+	'ui/container'
+], function( Aloha, jQuery, Ui, Container ) {
 	'use strict';
 
 	/**
-	 * Classname constants...
+	 * Classname constants. Will be exposed as static variables in the Tab
+	 * class.
 	 * @type {string}
 	 */
 
-	Ui.TABS_CONTAINER_CLASS = 'aloha-ui-tabs-container';
-	Ui.TABS_HANDLES_CLASS = 'aloha-ui-tabs-handles';
-	Ui.TABS_PANELS_CLASS = 'aloha-ui-tabs-panels';
+	var CONTAINER_CLASS = 'aloha-ui-tabs-container';
+	var HANDLES_CLASS = 'aloha-ui-tabs-handles';
+	var PANELS_CLASS = 'aloha-ui-tabs-panels';
 
 	// Used to store a local, and temporary copy of the components settings
 	// passed to the Tab constructor to be used during initialization.
@@ -33,18 +34,20 @@ define([
 	 * Tabs can be defined declaritivly in the Aloha configuration in the
 	 * following manner:
 
-		Aloha.settings.toolbar: [
+	   Aloha.settings.toolbar: [
 			{
 				label: 'Lists',
 				showOn: 'ul,ol,*.parent(.aloha-editable ul,.aloha-editable ol)',
 				components: [ [ 'orderedList', 'unorderedList' ] ]
 			}
-		]
+	   ]
 
 	 * Alternatively, tabs can also be created imperatively in this way:
 	 * `new Tab( options, components )`.
+	 * @class
+	 * @extends {Aloha.ui Container}
 	 */
-	var Tab = Aloha.ui.Container.extend({
+	var Tab = Container.extend({
 
 		/**
 		 * All that this constructor does is save the `components` array into a
@@ -68,7 +71,7 @@ define([
 
 			var editable = this.editable;
 
-			this.container = editable.toolbar.find( '.' + Ui.TABS_CONTAINER_CLASS );
+			this.container = editable.toolbar.find( '.' + CONTAINER_CLASS );
 
 			// console.assert( this.container.length === 1 )
 
@@ -95,8 +98,8 @@ define([
 				});
 			}
 
-			handle.appendTo( this.container.find( 'ul.' + Ui.TABS_HANDLES_CLASS ) );
-			panel.appendTo( this.container.find( '.' + Ui.TABS_PANELS_CLASS ) );
+			handle.appendTo( this.container.find( 'ul.' + HANDLES_CLASS ) );
+			panel.appendTo( this.container.find( '.' + PANELS_CLASS ) );
 		},
 
 		/**
@@ -104,7 +107,7 @@ define([
 		 * @override
 		 */
 		show: function() {
-			var tabs = this.container.find( 'ul.' + Ui.TABS_HANDLES_CLASS + '>li' );
+			var tabs = this.container.find( 'ul.' + HANDLES_CLASS + '>li' );
 
 			if ( tabs.length == 0 ) {
 				return;
@@ -128,7 +131,7 @@ define([
 		 * @override
 		 */
 		hide: function() {
-			var tabs = this.container.find( 'ul.' + Ui.TABS_HANDLES_CLASS + '>li' );
+			var tabs = this.container.find( 'ul.' + HANDLES_CLASS + '>li' );
 
 			if ( tabs.length == 0 ) {
 				return;
@@ -162,25 +165,30 @@ define([
 	/**
 	 * Creates holding elements for jQuery UI Tabs on the given surface
 	 * element.
+	 * @static
 	 * @param {jQuery<HTMLElement>} surface The DOM element which represents
 	 *                                      a Aloha.ui.Surface .
 	 * @return {jQuery<HTMLElement>} The holder container onwhich we invoke
 	 *                               jQuery UI Tabs once it is populated with
 	 *                               tab containers.
-	 * @static
 	 */
 	Tab.createHolders = function( surface ) {
 		var container_holder = surface.find(
-			'.' + Ui.TABS_CONTAINER_CLASS );
+			'.' + CONTAINER_CLASS );
 
-		jQuery( '<ul>', { 'class': Ui.TABS_HANDLES_CLASS } )
+		jQuery( '<ul>', { 'class': HANDLES_CLASS } )
 			.appendTo( container_holder );
 
-		jQuery( '<div>', { 'class': Ui.TABS_PANELS_CLASS } )
+		jQuery( '<div>', { 'class': PANELS_CLASS } )
 			.appendTo( container_holder );
 
 		return container_holder;
 	};
+
+	Tab.CONTAINER_CLASS = CONTAINER_CLASS;
+	Tab.HANDLES_CLASS = HANDLES_CLASS;
+	Tab.PANELS_CLASS = PANELS_CLASS;
+
 
 	return Tab;
 });
