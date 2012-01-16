@@ -41,7 +41,7 @@ h3. Repository Directory Structure
 * /src/lib - Require plugins and bootstrap files
 * /src/lib/aloha - Main Aloha Editor core sources
 * /src/lib/vendor - Vendor source code. E.g. ExtJS, jquery
-* /src/lib/util - Utility souces. (e.g. json2.js, class.js)
+* /src/lib/util - Utility sources. (e.g. json2.js, class.js)
 
 * /src/plugins
 * /src/plugins/common - Common plugin bundle
