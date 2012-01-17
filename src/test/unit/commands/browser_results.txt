@@ -1,0 +1,55 @@
+bold:
+IE7 - 87 tests of 164 passed, 77 failed.
+IE8 - 93 tests of 157 passed, 64 failed. 
+IE9 - 104 tests of 163 passed, 59 failed.
+Firefox (7 & 9) - 114 tests of 164 passed, 50 failed.
+Chrome (17) - 142 tests of 164 passed, 22 failed.
+
+italic:
+IE7 - 58 tests of 119 passed, 61 failed.
+IE8 - 73 tests of 112 passed, 39 failed.
+IE9 - 76 tests of 118 passed, 42 failed.
+Firefox (7 & 9) - 88 tests of 124 passed, 36 failed. 
+Chrome (17) - 106 tests of 124 passed, 18 failed.
+
+underline:
+IE7 - 58 tests of 114 passed, 56 failed.
+IE8 - 73 tests of 107 passed, 35 failed.
+IE9 - 76 tests of 118 passed, 42 failed.
+Firefox(7 & 9) - 80 tests of 119 passed, 39 failed.
+Chrome (17) - 102 tests of 119 passed, 17 failed.
+
+subscript:
+IE7  - 57 tests of 112 passed, 55 failed.
+IE8 - 83 tests of 105 passed, 22 failed.
+IE9 - 82 tests of 116 passed, 34 failed.
+Firefox(7 & 9) - 93 tests of 117 passed, 24 failed.
+Chrome(17) - 105 tests of 117 passed, 12 failed.
+
+superscript:
+IE7 -59 tests of 114 passed, 55 failed.
+IE8 - 85 tests of 107 passed, 22 failed.
+IE9 - 84 tests of 118 passed, 34 failed.
+Firefox(7 & 9) - 95 tests of 119 passed, 24 failed.
+Chrome(17) - 107 tests of 119 passed, 12 failed.
+
+strikethrough:
+IE7 - 58 tests of 114 passed, 56 failed.
+IE8 - 72 tests of 107 passed, 35 failed.
+IE9 - 82 tests of 116 passed, 34 failed.
+Firefox(7 & 9) - 80 tests of 119 passed, 39 failed.
+Chrome(17) - 102 tests of 119 passed, 17 failed.
+
+formatBlock:
+IE7 - 105 tests of 199 passed, 94 failed.
+IE8 - 93 tests of 157 passed, 64 failed.
+IE9 - 176 tests of 199 passed, 23 failed.
+Firefox(7 & 9) - 192 tests of 199 passed, 7 failed.
+Chrome(17) - 187 tests of 199 passed, 12 failed.
+
+removeformat:
+IE7 - 101 tests of 113 passed, 12 failed.
+IE8 - 102 tests of 113 passed, 11 failed.
+IE9 - 109 tests of 113 passed, 4 failed.
+Firefox(7 & 9) - 111 tests of 113 passed, 2 failed. 
+Chrome(17) - 107 tests of 113 passed, 6 failed.

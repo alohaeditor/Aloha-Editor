@@ -25,7 +25,7 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 		/**
 		 * default button configuration
 		 */
-		config: [ 'strong', 'em', 'b', 'i','del','sub','sup', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'removeFormat'],
+		config: [ 'b', 'i', 's', 'u', 'sub','sup', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'removeFormat'],
 
 		/**
 		 * Initialize the plugin and set initialize flag on true
@@ -91,6 +91,15 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 				scope = 'Aloha.continuoustext',
 				that = this;
 
+       var command_for = {
+         'b': 'bold',
+         'i': 'italic',
+         's': 'strikethrough',
+         'u': 'underline',
+         'sub': 'subscript',
+         'sup': 'superscript' 
+       };
+
 			// reset
 			this.buttons = {};
 
@@ -101,18 +110,45 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 			//iterate configuration array an push buttons to buttons array
 			jQuery.each(this.config, function(j, button) {
 				switch( button ) {
+          // inline formatting commands
+          case 'b':
+          case 'i':
+          case 's':
+          case 'u':
+          case 'sub':
+          case 'sup':
+            that.buttons[button] = {
+              'button' : new Aloha.ui.Button({
+                'name' : button,
+                'iconClass' : 'aloha-button aloha-button-' + button,
+                'size' : 'small',
+                'onclick' : function () {
+                  Aloha.execCommand(command_for[button], false);
+                },
+                'tooltip' : i18n.t('button.' + button + '.tooltip'),
+                'toggle' : true
+              }), 
+              'markup' : jQuery('<'+button+'></'+button+'>'),
+              'command': command_for[button]
+            };
+
+						FloatingMenu.addButton(
+							scope,
+							that.buttons[button].button,
+							i18nCore.t('floatingmenu.tab.format'),
+							1
+						);
+						break;
+
+          /*
 					// text level semantics:
 					case 'em':
 					case 'strong':
-					case 'b':
-					case 'i':
 					case 'cite':
 					case 'q':
 					case 'code':
 					case 'abbr':
 					case 'del':
-					case 'sub':
-					case 'sup':
 						that.buttons[button] = {'button' : new Aloha.ui.Button({
 							'name' : button,
 							'iconClass' : 'aloha-button aloha-button-' + button,
@@ -161,6 +197,7 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 							1
 						);
 						break;
+          */
 
 					case 'p':
 					case 'h1':
@@ -176,7 +213,8 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 							'iconClass' : 'aloha-button ' + i18n.t('aloha-button-' + button),
 							'markup' : jQuery('<'+button+'></'+button+'>'),
 							'click' : function() {
-								Aloha.Selection.changeMarkupOnSelection(jQuery('<' + button + '></' + button + '>'));
+								//Aloha.Selection.changeMarkupOnSelection(jQuery('<' + button + '></' + button + '>'));
+                Aloha.execCommand('formatBlock', false, button);
 							}
 						});
 						break;
@@ -222,44 +260,54 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 					foundMultiSplit, i, j, multiSplitItem;
 
 				jQuery.each(that.buttons, function(index, button) {
-					statusWasSet = false;
-					for ( i = 0; i < rangeObject.markupEffectiveAtStart.length; i++) {
-						effectiveMarkup = rangeObject.markupEffectiveAtStart[ i ];
-						if (Aloha.Selection.standardTextLevelSemanticsComparator(effectiveMarkup, button.markup)) {
-							button.button.setPressed(true);
-							statusWasSet = true;
-						}
-					}
-					if (!statusWasSet) {
-						button.button.setPressed(false);
-					}
+					// statusWasSet = false;
+					// for ( i = 0; i < rangeObject.markupEffectiveAtStart.length; i++) {
+					// 	effectiveMarkup = rangeObject.markupEffectiveAtStart[ i ];
+					// 	if (Aloha.Selection.standardTextLevelSemanticsComparator(effectiveMarkup, button.markup)) {
+					// 		button.button.setPressed(true);
+					// 		statusWasSet = true;
+					// 	}
+					// }
+					// if (!statusWasSet) {
+					// 	button.button.setPressed(false);
+					// }
+          if(Aloha.queryCommandState(button.command)){
+            button.button.setPressed(true);
+          }
+          else {
+            button.button.setPressed(false);
+          }
 				});
 
 				if (that.multiSplitItems.length > 0) {
-					foundMultiSplit = false;
+					// foundMultiSplit = false;
 
-					// iterate over the markup elements
-					for ( i = 0; i < rangeObject.markupEffectiveAtStart.length && !foundMultiSplit; i++) {
-						effectiveMarkup = rangeObject.markupEffectiveAtStart[ i ];
+					// // iterate over the markup elements
+					// for ( i = 0; i < rangeObject.markupEffectiveAtStart.length && !foundMultiSplit; i++) {
+					// 	effectiveMarkup = rangeObject.markupEffectiveAtStart[ i ];
 
-						for ( j = 0; j < that.multiSplitItems.length && !foundMultiSplit; j++) {
-							multiSplitItem = that.multiSplitItems[j];
+					// 	for ( j = 0; j < that.multiSplitItems.length && !foundMultiSplit; j++) {
+					// 		multiSplitItem = that.multiSplitItems[j];
 
-							if (!multiSplitItem.markup) {
-								continue;
-							}
+					// 		if (!multiSplitItem.markup) {
+					// 			continue;
+					// 		}
 
-							// now check whether one of the multiSplitItems fits to the effective markup
-							if (Aloha.Selection.standardTextLevelSemanticsComparator(effectiveMarkup, multiSplitItem.markup)) {
-								that.multiSplitButton.setActiveItem(multiSplitItem.name);
-								foundMultiSplit = true;
-							}
-						}
-					}
+					// 		// now check whether one of the multiSplitItems fits to the effective markup
+					// 		if (Aloha.Selection.standardTextLevelSemanticsComparator(effectiveMarkup, multiSplitItem.markup)) {
+					// 			that.multiSplitButton.setActiveItem(multiSplitItem.name);
+					// 			foundMultiSplit = true;
+					// 		}
+					// 	}
+					// }
 
-					if (!foundMultiSplit) {
-						that.multiSplitButton.setActiveItem(null);
-					}
+					// if (!foundMultiSplit) {
+					// 	that.multiSplitButton.setActiveItem(null);
+					// }
+
+          var command_value = Aloha.queryCommandValue('formatBlock');
+					that.multiSplitButton.setActiveItem(command_value);
+
 				}
 			});
 
@@ -269,7 +317,9 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 		 * Removes all formatting from the current selection.
 		 */
 		removeFormat: function() {
-			var formats = [ 'strong', 'em', 'b', 'i', 'cite', 'q', 'code', 'abbr', 'del', 'sub', 'sup'],
+			//var formats = [ 'strong', 'em', 'b', 'i', 'cite', 'q', 'code', 'abbr', 'del', 'sub', 'sup'],
+      // set the default formats according to the removeformat command.
+      var formats = ["abbr", "acronym", "b", "bdi", "bdo", "big", "blink", "cite", "code", "dfn", "em", "font", "i", "ins", "kbd", "mark", "nobr", "q", "s", "samp", "small", "span", "strike", "strong", "sub", "sup", "tt", "u", "var"],
 				rangeObject = Aloha.Selection.rangeObject,
 				i;
 			
@@ -282,9 +332,12 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 				return;
 			}
 
-			for (i = 0; i < formats.length; i++) {
-				GENTICS.Utils.Dom.removeMarkup(rangeObject, jQuery('<' + formats[i] + '></' + formats[i] + '>'), Aloha.activeEditable.obj);
-			}
+			// for (i = 0; i < formats.length; i++) {
+			// 	GENTICS.Utils.Dom.removeMarkup(rangeObject, jQuery('<' + formats[i] + '></' + formats[i] + '>'), Aloha.activeEditable.obj);
+			// }
+
+      // run removeformat command on the selected range
+      Aloha.execCommand("removeformat", false, formats);
 
 			// select the modified range
 			rangeObject.select();
