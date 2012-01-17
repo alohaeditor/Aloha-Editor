@@ -4,6 +4,7 @@ This document is to serve as a "what has been done" in terms of the [Roadmap](ht
 
 ## 0.20.2-SNAPSHOT
 
+- core: Fixed problem of Internet Explorer 7 crashing when invoking jQuery's `removeAttr`.
 - ecma5shims: Function `getRootParent` in ecma5schims.js no longer throws an
               error when `null` or `undefined` is passed to it.
 - core: fixed incorrect dependency on jquery.json-2.2 where util/json2 is needed instead and made it globally available
