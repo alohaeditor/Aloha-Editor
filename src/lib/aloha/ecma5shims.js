@@ -1,6 +1,18 @@
-"use strict";
-define([],
-function(){
+/**
+ * ecma5schims.js - Shim for ECMA5 compatibility
+ * (http://en.wikipedia.org/wiki/Shim_%28computing%29)
+ *
+ * A shim library that implements common functions that are missing on some
+ * environments in order to complete ECMA5 compatibility across all major
+ * browsers.
+ *
+ * TODO: This code needs to be refactored so as to conform to Aloha coding
+ *       standards.  It is also severly lacking in documentation.  Please take
+ *       note of: https://github.com/alohaeditor/Aloha-Editor/wiki/Commit-Checklist .
+ */
+
+define([], function(){
+  'use strict';
 
   var shims = {
     // Function bind
@@ -236,12 +248,16 @@ function(){
     if (node2 != useNode2) useNode2.parentNode.removeChild(useNode2);
     return result;
 
-
     //node.ownerDocument gives the document object, which isn't the right info for a disconnect
-    function getRootParent(node) {
-      do { var parent = node; }
-      while (node = node.parentNode);
-      return parent;
+    function getRootParent( node ) {
+		var parent = null;
+
+		if ( node ) {
+			do { parent = node; }
+			while ( node = node.parentNode );
+		}
+
+		return parent;
     }
 
     //Compare Position - MIT Licensed, John Resig; http://ejohn.org/blog/comparing-document-position/
