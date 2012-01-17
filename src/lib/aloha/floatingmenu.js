@@ -1057,6 +1057,10 @@ function(Aloha, jQuery, Ext, Class, console) {
 		 * @param {String} scope name of the new current scope
 		 */
 		setScope: function(scope) {
+			// Petro: prevent current scope changes as we move to deprecate
+			// scopes all together.
+			return;
+
 			// get the scope object
 			var scopeObject = this.scopes[scope];
 
