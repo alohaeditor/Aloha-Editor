@@ -39,6 +39,11 @@ define([
 			Aloha.bind( "aloha-editable-activated", function( event, alohaEvent ) {
 				Surface.active = alohaEvent.editable;
 				Surface.show( alohaEvent.editable );
+				// The range isn't set until after the activated event
+				// and selection-changed doesn't fire on activation
+				setTimeout(function() {
+					Container.showContainers( Aloha.getSelection().getRangeAt( 0 ) );
+				}, 1 );
 			});
 
 			// When an editable is deactivated, we hide its associated surfaces.
@@ -56,18 +61,7 @@ define([
 			//       "incorrect" elements--that is, not the element or parents
 			//       of the element you clicked on.
 			Aloha.bind( "aloha-selection-changed", function( event, range ) {
-				var effective = [];
-
-				if ( range && range.markupEffectiveAtStart ) {
-					var j = range.markupEffectiveAtStart.length;
-
-					while ( j ) {
-						effective.push( range.markupEffectiveAtStart[ --j ] );
-					}
-				}
-
-				// TODO: update surfaces
-				Container.showContainersForElements( effective );
+				Container.showContainers( range );
 			});
 		},
 
