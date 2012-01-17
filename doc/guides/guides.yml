@@ -7,20 +7,21 @@ authors:
     - name: Haymo Meran
       nick: haymo
       image: credits/haymo.jpg
-      description: Haymo is one of the founders of the Aloha project.
+      description: "Haymo is one of the founders of the Aloha project."
+      
   Contributors:
     - name: Christopher Hlubek
       nick: hlubek
       image: credits/hlubek.jpg
-      description: Christopher Hlubek is a proud contributor of the Aloha project.
+      description: "Christopher Hlubek is a proud contributor of the Aloha project."
     - name: Sebastian Kurfürst
       nick: skurfuerst
       image: credits/skurfuerst.jpg
-      description: Sebastian Kurfürst is a proud contributor of the Aloha project.
+      description: "Sebastian Kurfürst is a proud contributor of the Aloha project."
     - name: Rene Kapusta
       nick: rene_kapusta
       image: credits/rene_kapusta.jpg
-      description: Rene Kapusta is a proud contributor of the Aloha project.
+      description: "Rene Kapusta is a proud contributor of the Aloha project."
 
 index:
   order:
@@ -28,8 +29,9 @@ index:
     - "The Core"
     - "Plugins"
     - "Commands"
-    - "Ui"
+    - "UI"
     - "Contributing to Aloha Editor"
+    
   Start Here:
     - title: "Using Aloha Editor"
       url: using_aloha
@@ -40,37 +42,41 @@ index:
     - title: "Configuring Aloha Editor"
       url: configure_aloha
       text: "Learn how to configure Aloha Editor."
-    - title: "Aloha dependency management with requireJS"
+    - title: "Aloha dependency management"
       url: require
       text: "In this guide, we will explain how dependencies are managed with Aloha Editor."
     - title: "Writing Plugins"
       url: writing_plugins
       text: "In this guide, we will explain the plugin structure, the usage of requireJS and the plugin lifecylce in Aloha Editor."
+      
   The Core:
     - title: "The Core"
       url: core
       text: "Learn about the core of Aloha Editor and how to utilize it's functions."
+      
   Commands:
     - title: "Using commands"
       url: using_commands
       text: "Learn how to use commands."
-  Ui:
+      
+  UI:
     - title: "Aloha Editor Ui"
       url: ui
-      text: "Learn how the Aloha Editor Ui works."
+      text: "Learn how the Aloha Editor UI works."
     - title: "Aloha Editor toolbar"
       url: toolbar
-      text: "Learn how to configure the toolbar"
+      text: "Learn how to configure the toolbar."
     - title: "Aloha Editor sidebar"
       url: sidebar
-      text: "Learn how to configure the sidebar"
-    - title: "Aloha Editor Ui API"
+      text: "Learn how to configure the sidebar."
+    - title: "Aloha Editor UI API"
       url: componenttypes
-      text: "Learn how to configure and implement components and componentTypes"
+      text: "Learn how to configure and implement components and componentTypes."
+      
   Plugins:
     - title: "Aloha Editor plugins"
       url: plugins
-      text: "Learn configure Aloha Editor plugins"
+      text: "Learn configure Aloha Editor plugins."
     - title: "Block"
       url: plugin_block
       text: "Learn how to use and extend the block plugin for advanced content editing."
@@ -82,12 +88,27 @@ index:
       text: "Learn how to use and extend the contenthandler plugin for advanced content editing."
     - title: "Browser"
       url: plugin_browser
-      text: "Learn how to use and extend the browser plugin for enhanced file browsing"
+      text: "Learn how to use and extend the browser plugin for enhanced file browsing."
     - title: "Numerated Headers"
       url: plugin_numeratedheaders
-      text: "Learn how to use the Numerated Headers Plugin"
+      text: "Learn how to use the Numerated Headers Plugin."
+    - title: "Undo"
+      url: plugin_undo
+      text: "The undo plugin."
+    - title: "Table"
+      url: plugin_table
+      text: "The table plugin."
+    - title: "Paste"
+      url: plugin_paste
+      text: "The paste plugin."
+    - title: "Formatless paste"
+      url: plugin_formatlesspaste
+      text: "The formatlesspaste plugin."
 
   Contributing to Aloha Editor:
+    - title: Releasing
+      url: releasing
+      text: "Our release process and scripts."
     - title: Development Process
       url: development_process
       text: "Everything about the Aloha Editor development process and being a good contributor."

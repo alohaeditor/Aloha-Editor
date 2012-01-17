@@ -115,7 +115,7 @@ Ext.ux.AlohaAttributeField = Ext.extend( Ext.form.ComboBox, {
 
 		if ( this.getValue() === '' ) {
 			if ( this.wrap ) {
-				jQuery( this.wrap.dom.children[ 0 ] ).css( 'color', '#AAA' );
+				jQuery( this.wrap.dom.children[0] ).css( 'color', '#AAA' );
 			}
 			this.setValue( this.placeholder );
 		}
@@ -135,7 +135,7 @@ Ext.ux.AlohaAttributeField = Ext.extend( Ext.form.ComboBox, {
 			}
 		},
 		'afterrender': function ( obj, event ) {
-			jQuery( this.wrap.dom.children[ 0 ] ).css( 'color', '#AAA' );
+			jQuery( this.wrap.dom.children[0] ).css( 'color', '#AAA' );
 			this.setValue( this.placeholder );
 		},
 		'keydown': function ( obj, event ) {
@@ -164,14 +164,14 @@ Ext.ux.AlohaAttributeField = Ext.extend( Ext.form.ComboBox, {
 			// when a resource item was (initially) set, but the current value
 			// is different from the reference value, we unset the resource item
 			if ( this.resourceItem &&
-					this.resourceValue !== this.wrap.dom.children[ 0 ].value ) {
+					this.resourceValue !== this.wrap.dom.children[0].value ) {
 				this.resourceItem = null;
 				this.resourceValue = null;
 			}
 
 			// update attribute, but only if no resource item was selected
 			if ( !this.resourceItem ) {
-				var v = this.wrap.dom.children[ 0 ].value;
+				var v = this.wrap.dom.children[0].value;
 				this.setAttribute( this.targetAttribute, v );
 			}
 		},
@@ -182,7 +182,7 @@ Ext.ux.AlohaAttributeField = Ext.extend( Ext.form.ComboBox, {
 			
 			if ( this.getValue() === this.placeholder ) {
 				this.setValue( '' );
-				jQuery( this.wrap.dom.children[ 0 ] ).css( 'color', 'black' );
+				jQuery( this.wrap.dom.children[0] ).css( 'color', 'black' );
 			}
 			if ( target && target.context && target.context.style &&
 					target.context.style[ 'background-color' ] ) {
@@ -280,7 +280,7 @@ Ext.ux.AlohaAttributeField = Ext.extend( Ext.form.ComboBox, {
 		var that = this;
 		RepositoryManager.getObject( obj, function ( items ) {
 			if ( items && items.length > 0 ) {
-				that.setItem( items[ 0 ] );
+				that.setItem( items[0] );
 			}
 		} );
 	},
@@ -468,7 +468,7 @@ Ui.AttributeField = Ui.Button.extend( {
 
 	/**
 	 * Sets the current value
-	 * @param {String} va attributeValue
+	 * @param {String} v an attributeValue
 	 */
 	setValue: function ( v ) {
 		if ( this.extButton ) {
@@ -482,8 +482,14 @@ Ui.AttributeField = Ui.Button.extend( {
 	 */
 	getQueryValue: function () {
 		if ( this.extButton ) {
-			//return this.extButton.getValue();
-			return this.extButton.wrap.dom.children[ 0 ].value;
+			return this.extButton.getValue();
+
+			// Petro:
+			// It is not clear why the value was being read in this "low-level" way and
+			// not through `getValue()'. In any case, doing so, occasionally caused
+			// errors, when this.extButton.wrap is `undefined'. We will therefore read
+			// the value in the manner we do above.
+			// return this.extButton.wrap.dom.children[0].value;
 		}
 		return null;
 	},

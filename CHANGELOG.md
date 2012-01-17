@@ -2,7 +2,17 @@
 
 This document is to serve as a "what has been done" in terms of the [Roadmap](http://aloha-editor.org/wiki/Roadmap)
 
-## 0.20.0
+## 0.20.2-SNAPSHOT
+
+- core: fixed incorrect dependency on jquery.json-2.2 where util/json2 is needed instead and made it globally available
+- core: Removed unneeded JSON empty function definition that surpressed errors in IE
+- guides: Updated guides. They now include a directory structure explanation and a detailed release guide.
+
+## 0.20.1 2012/01/13
+
+- table-plugin: fixed incorrect repairing of tables (cells were appended to rows containing th elements)
+
+## 0.20.0 2011/12/27
 
 - doc/api: added first version of new API docs. Please note that the API docs are currently work in progress.
 - floatingmenu: fixed a bug with topalign behaviour where scrolling would attach the floatingmenu to the left side of the screen
