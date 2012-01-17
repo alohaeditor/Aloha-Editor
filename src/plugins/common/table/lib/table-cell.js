@@ -56,7 +56,7 @@ function (jQuery, UiClassifier, Utils) {
 
 		wrapper.contentEditable( true );
 		wrapper.addClass( 'aloha-table-cell-editable' );
-		UiClassifier.letUiWrapper( wrapper );
+		UiClassifier.letUiFiller( wrapper );
 
 		var that = this;
 		

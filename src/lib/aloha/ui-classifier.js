@@ -34,7 +34,8 @@ define( [
 			var element = $( this );
 			if ( element.hasClass( "aloha-cleanme" ) ) {
 				element.remove();
-			} else if ( element.hasClass( "aloha-ui-wrapper" ) ) {
+			} else if (    element.hasClass( "aloha-ui-wrapper" )
+						|| element.hasClass( "aloha-ui-filler" ) ) {
 				element.replaceWith( element.contents() );
 			} else if ( element.hasClass( "aloha-ui-attr" ) ) {
 				var attrData = element.attr( "data-aloha-ui-attr" );
@@ -85,8 +86,11 @@ define( [
 		},
 
 		letUiWrapper: function( element ) {
-			element = $( element );
-			element.addClass( "aloha-ui-wrapper" );
+			$( element ).addClass( "aloha-ui-wrapper" );
+		},
+
+		letUiFiller: function( element ) {
+			$( element ).addClass( "aloha-ui-filler" );
 		},
 
 		/**
