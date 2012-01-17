@@ -71,7 +71,7 @@ define([
 			// If this is the first time we're showing the surfaces for this
 			// editable, then we need to initialize the surfaces first.
 			if ( !editable.surface ) {
-				this.initEditable( editable );
+				this.initForEditable( editable );
 			}
 
 			jQuery.each( editable.surface.surfaces, function( i, surface ) {
@@ -85,7 +85,7 @@ define([
 			});
 		},
 
-		initEditable: function( editable ) {
+		initForEditable: function( editable ) {
 			editable.surface = {
 				surfaces: []
 			};
