@@ -61,7 +61,9 @@ define([
 			//       "incorrect" elements--that is, not the element or parents
 			//       of the element you clicked on.
 			Aloha.bind( "aloha-selection-changed", function( event, range ) {
-				Container.showContainers( range );
+				if ( Aloha.activeEditable ) {
+					Container.showContainers( range );
+				}
 			});
 		},
 

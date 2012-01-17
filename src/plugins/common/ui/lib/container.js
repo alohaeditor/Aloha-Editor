@@ -44,9 +44,15 @@ define([
 	};
 
 	// ------------------------------------------------------------------------
-	// "Public" methods, and properties
+	// Instance methods, and properties
 	// ------------------------------------------------------------------------
 
+	/**
+	 * Aloha.ui.Container class.  Aloha.ui.Tab and Aloha.ui.Panel classes extend
+	 * this class.
+	 * @class
+	 * @base
+	 */
 	var Container = Class.extend({
 		/**
 		 * The containing (wrapper) element for this container.
@@ -117,17 +123,17 @@ define([
 		 * @static
 		 */
 		showContainers: function( range ) {
-			var group, groupKey, show, j,
+			var group, groupKey, show, j, element,
+				isEditingHost = GENTICS.Utils.Dom.isEditingHost,
 				// Add a null object to the elements array so that we can test whether
 				// the panel should be activated when we have no effective elements in
 				// the current selection.
 				elements = [ null ];
 
-			if ( range && range.markupEffectiveAtStart ) {
-				j = range.markupEffectiveAtStart.length;
-				while ( j ) {
-					elements.push( range.markupEffectiveAtStart[ --j ] );
-				}
+			for ( element = range.startContainer;
+					!isEditingHost( element );
+					element = element.parentNode ) {
+				elements.push( element );
 			}
 
 			for ( groupKey in showGroups ) {

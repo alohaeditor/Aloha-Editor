@@ -1,10 +1,3 @@
-/**
- * FIXME(petro@gentics.com): Fix showing and hiding of toolbars when multiple
- *                           toolbar when we have mutliple editables. Problem
- *                           will be in tab.js .
- *
- */
-
 define([
 	'aloha/core',
 	'aloha/jquery',
