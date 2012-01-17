@@ -1515,7 +1515,7 @@ define( [
 			cSpan = jQuery('<div></div>');
 			cSpan.addClass('aloha-ui');
 			cSpan.addClass('aloha-editable-caption');
-			UiClassifier.letUiWrapper( cSpan );
+			UiClassifier.letUiFiller( cSpan );
 
 			if (caption.contents().length > 0) {
 				// when the caption has content, we wrap it with the new div
