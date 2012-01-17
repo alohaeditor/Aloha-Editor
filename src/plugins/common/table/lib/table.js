@@ -1467,8 +1467,9 @@ define( [
 		var table = tbody.length ? tbody : this.obj;
 		var selection = table.children( "tr." + classRow )
 			.add( table.children( "tr" ).children( "tr > td." + classCol ) );
-		var wrapper = this.obj.parent( "." + this.get( "classTableWrapper" ) );
-		UiClassifier.stripUi( selection.add( this.obj ).add( wrapper ) );
+		var tableWrapper = this.obj.parent( "." + this.get( "classTableWrapper" ) );
+		var captionWrapper = this.obj.children("caption").children(".aloha-editable-caption");
+		UiClassifier.stripUi( selection.add( this.obj ).add( tableWrapper ).add( captionWrapper) );
 
 		this.isActive = false;
 	};
@@ -1513,7 +1514,6 @@ define( [
 		if (cSpan.length == 0) {
 			// generate a new div
 			cSpan = jQuery('<div></div>');
-			cSpan.addClass('aloha-ui');
 			cSpan.addClass('aloha-editable-caption');
 			UiClassifier.letUiFiller( cSpan );
 
