@@ -1,5 +1,5 @@
 /**
- * Defines a `Tab` Class that extends Aloha.ui's `Container`.
+ * Defines a `Tab` Class that extends `Container`.
  */
 
 define([
@@ -25,7 +25,7 @@ define([
 	var PANELS_CLASS = 'aloha-ui-tabs-panels';
 
 	/**
-	 * `Tab` defines a Aloha.Ui.Container object that represents a collection
+	 * `Tab` defines a Container object that represents a collection
 	 * of related component groups to be rendered together on the toolbar.
 	 * Tabs are organized by feature and functionality so that related controls
 	 * can be brought in and out of view depending on whether they are
@@ -45,7 +45,7 @@ define([
 	 * Alternatively, tabs can also be created imperatively in this way:
 	 * `new Tab( options, components )`.
 	 * @class
-	 * @extends {Aloha.ui Container}
+	 * @extends {Container}
 	 */
 	var Tab = Container.extend({
 
@@ -81,7 +81,7 @@ define([
 					// For each control, we render a new instance and append it to
 					// the group.
 					jQuery.each( this, function() {
-						var component = Aloha.ui.render( this, editable );
+						var component = Ui.render( this, editable );
 						group.append( component.element );
 					});
 				});

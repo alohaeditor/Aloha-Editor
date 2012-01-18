@@ -39,7 +39,7 @@ define([
 
 	/**
 	 * Show or hide a set of containers.
-	 * @param {Array.<Aloha.ui.Container>} containers
+	 * @param {Array.<Container>} containers
 	 * @param {boolean} show Whether to show or hide
 	 */
 	function toggleContainers( containers, show ) {
@@ -56,8 +56,7 @@ define([
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Aloha.ui.Container class.  Aloha.ui.Tab and Aloha.ui.Panel classes extend
-	 * this class.
+	 * Container class.
 	 * @class
 	 * @base
 	 */
