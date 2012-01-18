@@ -3,21 +3,22 @@ define([
 	"aloha/jquery",
 	"i18n!ui/nls/i18n", 
 	"ui/ui",
+	"ui/surface",
 	"ui/toggleButton",
 	"ui/text"
 ],
-function( Aloha, jQuery, i18n, Ui ) {
+function( Aloha, jQuery, i18n, Ui, Surface ) {
 	Ui.create( "abbr", "toggleButton", {
 		label: i18n.t( "button.createAbbr.label" ),
 		icon: "aloha-icon aloha-icon-abbr",
 		iconOnly: true,
 		
 		click: function() {
-			var abbr = findAbbr( Ui.toolbar.range );
+			var abbr = findAbbr( Surface.range );
 			if ( abbr ) {
-				Ui.util.removeAbbr( Ui.toolbar.range );
+				Ui.util.removeAbbr( Surface.range );
 			} else {
-				Ui.util.createAbbr( "", Ui.toolbar.range );
+				Ui.util.createAbbr( "", Surface.range );
 			}
 		},
 		
@@ -40,9 +41,9 @@ function( Aloha, jQuery, i18n, Ui ) {
 		
 		setValue: function( value ) {
 			if ( value ) {
-				findAbbr( Ui.toolbar.range ).title = value;
+				findAbbr( Surface.range ).title = value;
 			} else {
-				Ui.util.removeAbbr( Ui.toolbar.range );
+				Ui.util.removeAbbr( Surface.range );
 			}
 		}
 	});

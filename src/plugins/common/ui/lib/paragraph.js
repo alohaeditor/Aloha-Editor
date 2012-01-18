@@ -3,9 +3,10 @@ define([
 	"aloha/jquery",
 	"i18n!ui/nls/i18n",
 	"ui/ui",
+	"ui/surface",
 	"ui/multiSplit"
 ],
-function( Aloha, jQuery, i18n, Ui ) {
+function( Aloha, jQuery, i18n, Ui, Surface ) {
 	Aloha.settings.formatBlock = {
 		blocks: [ "p", "h1", "h2", "h3", "h4", "h5", "h6", "pre" ],
 		removeFormatting: [ "strong", "em", "b", "i", "cite", "q", "code", "abbr", "del", "sub", "sup" ]
@@ -24,7 +25,7 @@ function( Aloha, jQuery, i18n, Ui ) {
 			return [{
 				label: i18n.t( "button.removeFormatting.label" ),
 				click: function() {
-					formatBlock.removeFormatting( Ui.toolbar.range, this.editable );
+					formatBlock.removeFormatting( Surface.range, this.editable );
 				}
 			}];
 		},
@@ -50,7 +51,7 @@ function( Aloha, jQuery, i18n, Ui ) {
 			label: i18n.t( "button." + block + ".label" ),
 			icon: "aloha-large-icon-" + block,
 			click: function() {
-				Aloha.execCommand( "formatBlock", false, block, Ui.toolbar.range );
+				Aloha.execCommand( "formatBlock", false, block, Surface.range );
 			},
 			isActive: function() {
 				return Aloha.queryCommandValue( "formatBlock" ) === block;

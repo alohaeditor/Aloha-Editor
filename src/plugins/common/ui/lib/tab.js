@@ -1,27 +1,28 @@
 /**
- * Defines a `Tab` Class that extends Aloha.ui.Container.
- * Adds class name constants to the Aloha.Ui namespace.
+ * Defines a `Tab` Class that extends Aloha.ui's `Container`.
  */
 
 define([
 	'aloha/core',
 	'aloha/jquery',
-	'ui/ui'
-], function( Aloha, jQuery, Ui ) {
+	'ui/ui',
+	'ui/container'
+], function( Aloha, jQuery, Ui, Container ) {
 	'use strict';
+
+	var uid = 0;
 
 	/**
 	 * Classname constants...
 	 * @type {string}
 	 */
 
-	Ui.TABS_CONTAINER_CLASS = 'aloha-ui-tabs-container';
-	Ui.TABS_HANDLES_CLASS = 'aloha-ui-tabs-handles';
-	Ui.TABS_PANELS_CLASS = 'aloha-ui-tabs-panels';
-
-	// Used to store a local, and temporary copy of the components settings
-	// passed to the Tab constructor to be used during initialization.
-	var components_settings;
+	 // Classname constants.  Will be exposed as static variables in the Tab
+	 // class.
+	 // @type {string}
+	var CONTAINER_CLASS = 'aloha-ui-tabs-container';
+	var HANDLES_CLASS = 'aloha-ui-tabs-handles';
+	var PANELS_CLASS = 'aloha-ui-tabs-panels';
 
 	/**
 	 * `Tab` defines a Aloha.Ui.Container object that represents a collection
@@ -33,18 +34,20 @@ define([
 	 * Tabs can be defined declaritivly in the Aloha configuration in the
 	 * following manner:
 
-		Aloha.settings.toolbar: [
+	   Aloha.settings.toolbar: [
 			{
 				label: 'Lists',
 				showOn: 'ul,ol,*.parent(.aloha-editable ul,.aloha-editable ol)',
 				components: [ [ 'orderedList', 'unorderedList' ] ]
 			}
-		]
+	   ]
 
 	 * Alternatively, tabs can also be created imperatively in this way:
 	 * `new Tab( options, components )`.
+	 * @class
+	 * @extends {Aloha.ui Container}
 	 */
-	var Tab = Aloha.ui.Container.extend({
+	var Tab = Container.extend({
 
 		/**
 		 * All that this constructor does is save the `components` array into a
@@ -55,32 +58,21 @@ define([
 		 * @override
 		 */
 		_constructor: function( settings, components ) {
-			components_settings = components;
-			this._super( settings );
-		},
+			this._super( settings, components );
+			var editable = this.editable = settings.editable;
 
-		/**
-		 * Initialze this tab instance.
-		 * @override
-		 */
-		init: function() {
-			this._super();
-
-			var editable = this.editable;
-
-			this.container = editable.toolbar.find( '.' + Ui.TABS_CONTAINER_CLASS );
-
-			// console.assert( this.container.length === 1 )
+			this.container = editable.toolbar.find( '.' + CONTAINER_CLASS );
 
 			this.index = editable.tabs.length;
 
-			var panel = this.panel = jQuery( '<div>', { id : this.uid } );
+			this.id = "tab-container-" + (uid++);
+			var panel = this.panel = jQuery( '<div>', { id : this.id } );
 
-			var handle = this.handle = jQuery( '<li><a href="#' + this.uid
-				+ '">' + this.label + '</a></li>' );
+			var handle = this.handle = jQuery( '<li><a href="#' + this.id
+				+ '">' + settings.label + '</a></li>' );
 
-			if ( components_settings ) {
-				jQuery.each( components_settings, function() {
+			if ( components ) {
+				jQuery.each( components, function() {
 					var group = jQuery( '<div>', {
 						'class': 'aloha-toolbar-group'
 					}).appendTo( panel );
@@ -95,8 +87,8 @@ define([
 				});
 			}
 
-			handle.appendTo( this.container.find( 'ul.' + Ui.TABS_HANDLES_CLASS ) );
-			panel.appendTo( this.container.find( '.' + Ui.TABS_PANELS_CLASS ) );
+			handle.appendTo( this.container.find( 'ul.' + HANDLES_CLASS ) );
+			panel.appendTo( this.container.find( '.' + PANELS_CLASS ) );
 		},
 
 		/**
@@ -104,7 +96,7 @@ define([
 		 * @override
 		 */
 		show: function() {
-			var tabs = this.container.find( 'ul.' + Ui.TABS_HANDLES_CLASS + '>li' );
+			var tabs = this.container.find( 'ul.' + HANDLES_CLASS + '>li' );
 
 			if ( tabs.length == 0 ) {
 				return;
@@ -128,7 +120,7 @@ define([
 		 * @override
 		 */
 		hide: function() {
-			var tabs = this.container.find( 'ul.' + Ui.TABS_HANDLES_CLASS + '>li' );
+			var tabs = this.container.find( 'ul.' + HANDLES_CLASS + '>li' );
 
 			if ( tabs.length == 0 ) {
 				return;
@@ -138,7 +130,7 @@ define([
 			this.visible = false;
 
 			// If the tab we just hid was the selected tab, then we need to
-			// select another tab in its stead. We select the first visible
+			// select another tab in its stead.  We select the first visible
 			// tab we find, or else we deselect all tabs.
 			if ( this.index == this.container.tabs( 'option', 'selected' ) ) {
 				tabs = this.editable.tabs;
@@ -160,27 +152,29 @@ define([
 	});
 
 	/**
-	 * Creates holding elements for jQuery UI Tabs on the given surface
-	 * element.
-	 * @param {jQuery<HTMLElement>} surface The DOM element which represents
-	 *                                      a Aloha.ui.Surface .
+	 * Creates holding elements for jQuery UI Tabs for a surface.
+	 * @static
 	 * @return {jQuery<HTMLElement>} The holder container onwhich we invoke
 	 *                               jQuery UI Tabs once it is populated with
 	 *                               tab containers.
-	 * @static
 	 */
-	Tab.createHolders = function( surface ) {
-		var container_holder = surface.find(
-			'.' + Ui.TABS_CONTAINER_CLASS );
+	Tab.createContainer = function() {
+		var container_holder = jQuery( '<div>', {
+			'class': CONTAINER_CLASS
+		});
 
-		jQuery( '<ul>', { 'class': Ui.TABS_HANDLES_CLASS } )
+		jQuery( '<ul>', { 'class': HANDLES_CLASS } )
 			.appendTo( container_holder );
 
-		jQuery( '<div>', { 'class': Ui.TABS_PANELS_CLASS } )
+		jQuery( '<div>', { 'class': PANELS_CLASS } )
 			.appendTo( container_holder );
 
 		return container_holder;
 	};
+
+	Tab.CONTAINER_CLASS = CONTAINER_CLASS;
+	Tab.HANDLES_CLASS = HANDLES_CLASS;
+	Tab.PANELS_CLASS = PANELS_CLASS;
 
 	return Tab;
 });

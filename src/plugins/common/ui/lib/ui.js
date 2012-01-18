@@ -30,7 +30,7 @@
  * allow a collection of controls that represent a feature set to be rendered
  * as a group and to be brought in and out of view together.
  *
- * Surfaces (Toolbar, Ribbon)
+ * Surfaces (Toolbar, Sidebar, Ribbon)
  * ---
  * `Surfaces` are areas on a web page in which containers can be placed.  The
  * sidebar, and the toolbar are examples of such surfaces.  The possibility
@@ -39,16 +39,58 @@
  *
  * Class structure
  * ===
- * TODO(petro@gentics.com)
+ *
+ *         Surface
+ *	          |
+ *	     ,----+----.
+ *       |         |
+ *	  Toolbar   Sidebar
+ *
+ *
+ *        Container
+ *	          |
+ *	     ,----+----.
+ *       |         |
+ *	   Panel      Tab
+ *
+ *
+ *        Component
+ *            |
+ *	     ,----+----.
+ *       |         |
+ *	   Label    Control
+ *
+ *
+ * Enforcing good dependencies
+ * ===
+ * In order to void subtle errors that arise from erroneous dependency
+ * declarations, we will have ill-defined or missing dependencies fail early
+ * and noisily.  We achieve this by never exposing individual modules through
+ * the Aloha.ui hash unless absolutely necessary. Modules are accessibly only
+ * through require.
+ *
+ * How this works:
+ * For example, a ui module "uiModule" would not be exposed through
+ * `Aloha.ui.uiModule` but from require's `define` call:
+
+ *		define([ 'ui/uiModule' ], function( uiModule ) {});
+
+ * or
+
+ *		var uiModule = Aloha.require( 'ui/uiModule' );
+ * 
+ * This will force more deliberate and precise usage of dependencies.  The
+ * developer will have to know exactly which direct dependencies they are using;
+ * any missing or unsuccessfully require dependency will not inadvertantly be
+ * provided from another require somewhere else in Aloha thereby silencing an
+ * error that will emerge unexpectedly if that require is ever removed.
  */
 
 define([
-	"aloha/core",
-	"aloha/jquery",
-	"ui/component",
-	"ui/container"
-],
-function( Aloha, jQuery, Component, Container ) {
+	'aloha/core',
+	'aloha/jquery',
+	'ui/component'
+], function( Aloha, jQuery, Component ) {
 
 	jQuery( document )
 		.delegate( ".aloha-ui", "mousedown", function() {
@@ -61,8 +103,6 @@ function( Aloha, jQuery, Component, Container ) {
 	Aloha.ui = {
 		components: {},
 
-		Container: Container,
-		
 		// The first step of creating a component is to define a component type.
 		// Component types define how a component is displayed and what types of
 		// interactions the component allows.
