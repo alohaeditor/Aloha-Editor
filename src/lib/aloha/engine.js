@@ -6163,9 +6163,17 @@ function createEndBreak() {
 }
 
 
-//@}
-///// The delete command /////
-//@{
+/**
+ * implementation of the delete command
+ * will attempt to delete contents within range if non-collapsed
+ * or delete the character left of the cursor position if range
+ * is collapsed. Is used to define the behaviour of the backspace
+ * button.
+ *
+ * @param	value	is just there for compatibility with the commands api. parameter is ignored.
+ * @param	range	the range to execute the delete command for
+ * @return	void
+ */
 commands["delete"] = {
 	action: function(value, range) {
 		// "If the active range is not collapsed, delete the contents of the
@@ -6178,13 +6186,16 @@ commands["delete"] = {
 		// "Canonicalize whitespace at (active range's start node, active
 		// range's start offset)."
 		canonicalizeWhitespace(range.startContainer, range.startOffset);
+		
+		// collapse whitespace sequences
+		collapseWhitespace(range.startContainer, range);
 
 		// "Let node and offset be the active range's start node and offset."
 		var node = range.startContainer;
 		var offset = range.startOffset;
 		var isBr = false;
 		var isHr = false;
-
+		
 		// "Repeat the following steps:"
 		while ( true ) {
 			// we need to reset isBr and isHr on every interation of the loop
@@ -6249,9 +6260,6 @@ commands["delete"] = {
 				break;
 			}
 		}
-
-		// collapse whitespace sequences
-		collapseWhitespace(node, range);
 
 		// "If node is a Text node and offset is not zero, call collapse(node,
 		// offset) on the Selection. Then delete the contents of the range with
