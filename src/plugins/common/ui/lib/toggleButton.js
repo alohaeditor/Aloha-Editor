@@ -1,20 +1,19 @@
 define([
 	"aloha/core",
 	"aloha/jquery",
-	"ui/ui",
 	"ui/button"
 ],
-function( Aloha, jQuery, Ui, Button ) {
+function( Aloha, jQuery, Button ) {
 	var guid = 0;
-	
+
 	// The toggleButton extends the button component type to provide an easy
 	// way to create buttons for commands that are either on or off.
-	Ui.createType( "toggleButton", Button, {
+	var ToggleButton = Button.extend({
 		// The `setState()` method updates the visual display of the toggleButton.
 		setState: function( on ) {
 			this.buttonElement.prop( "checked", on ).button( "refresh" );
 		},
-		
+
 		createButtonElement: function() {
 			// generate a unique id for the button until jQuery UI supports
 			// implicit labels (http://bugs.jqueryui.com/ticket/6063)
@@ -29,6 +28,6 @@ function( Aloha, jQuery, Ui, Button ) {
 				.appendTo( this.element );
 		}
 	});
-	
-	return Ui.toggleButton;
+
+	return ToggleButton;
 });

@@ -111,13 +111,19 @@ define([
 		 * Track editable and range when interacting with a surface
 		 */
 		trackRange: function( element ) {
-			element.bind( "mousedown", function() {
-				if ( Aloha.activeEditable ) {
-					Surface.range = Aloha.getSelection().getRangeAt( 0 );
-					// TODO: this overlaps with Surface.active
-					Surface.editable = Aloha.activeEditable;
-				}
-			});
+			element
+				.bind( "mousedown", function() {
+					Aloha.eventHandled = true;
+
+					if ( Aloha.activeEditable ) {
+						Surface.range = Aloha.getSelection().getRangeAt( 0 );
+						// TODO: this overlaps with Surface.active
+						Surface.editable = Aloha.activeEditable;
+					}
+				})
+				.bind( "mouseup", function() {
+					Aloha.eventHandled = false;
+				});
 		}
 	});
 

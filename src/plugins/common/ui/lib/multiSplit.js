@@ -1,9 +1,10 @@
 define([
 	"aloha/jquery",
-	"ui/ui"
+	"ui/component",
+	"ui/button"
 ],
-function( jQuery, Ui ) {
-	Ui.createType( "multiSplit", {
+function( jQuery, Component, Button ) {
+	var MultiSplit = Component.extend({
 		init: function() {
 			var editable = this.editable,
 				multiSplit = this,
@@ -23,10 +24,10 @@ function( jQuery, Ui ) {
 				})
 					.button()
 					.appendTo( element );
-			
+
 			this.buttons = [];
 			jQuery( this.getButtons() ).map(function( i, button ) {
-				var component = new Aloha.ui.button( editable, {
+				var component = new Button( editable, {
 					label: button.label,
 					icon: "aloha-large-icon " + button.icon,
 					iconOnly: true,
@@ -36,19 +37,19 @@ function( jQuery, Ui ) {
 					}
 				});
 				component.element.addClass( "aloha-large-button" );
-				
+
 				multiSplit.buttons.push({
 					settings: button,
 					component: component,
 					element: component.element
 				});
-				
+
 				return component.element[ 0 ];
 			})
 			.appendTo( content );
-			
+
 			jQuery( this.getItems() ).map(function( i, item ) {
-				var component = new Aloha.ui.button( editable, {
+				var component = new Button( editable, {
 					label: item.label,
 					icon: item.icon,
 					click: function() {
@@ -60,7 +61,7 @@ function( jQuery, Ui ) {
 			})
 			.appendTo( content );
 		},
-		
+
 		selectionChange: function() {
 			var content = this.contentElement;
 			this.element.find( ".aloha-multisplit-active" )
@@ -73,19 +74,19 @@ function( jQuery, Ui ) {
 				}
 			});
 		},
-		
+
 		toggle: function() {
 			this.element.toggleClass( "aloha-multisplit-open" );
 		},
-		
+
 		open: function() {
 			this.element.addClass( "aloha-multisplit-open" );
 		},
-		
+
 		close: function() {
 			this.element.removeClass( "aloha-multisplit-open" );
 		}
 	});
-	
-	return Ui.multiSplit;
+
+	return MultiSplit;
 });

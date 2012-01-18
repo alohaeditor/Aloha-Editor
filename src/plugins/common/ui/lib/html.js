@@ -1,13 +1,13 @@
 define([
 	"aloha/jquery",
-	"ui/ui"
+	"ui/component"
 ],
-function( jQuery, Ui ) {
-	Ui.createType( "html", {
+function( jQuery, Component ) {
+	var Html = Component.extend({
 		init: function() {
 			this.element = jQuery( this.html );
 		}
 	});
-	
-	return Ui.html;
+
+	return Html;
 });

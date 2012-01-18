@@ -1,10 +1,10 @@
 define([
 	"aloha/core",
-	"ui/ui",
+	"ui/component",
 	"ui/html"
 ],
-function( Aloha, Ui ) {
-	Ui.create( "pipe", "html", {
+function( Aloha, Component, Html ) {
+	Component.define( "pipe", Html, {
 		html: "<span>&nbsp;|&nbsp;</span>"
 	});
 });

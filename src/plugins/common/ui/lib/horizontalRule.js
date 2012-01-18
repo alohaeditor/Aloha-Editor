@@ -1,12 +1,12 @@
 define([
 	"aloha/jquery",
 	"i18n!ui/nls/i18n",
-	"ui/ui",
+	"ui/component",
 	"ui/surface",
 	"ui/button"
 ],
-function( jQuery, i18n, Ui, Surface ) {
-	Ui.create( "horizontalRule", "button", {
+function( jQuery, i18n, Component, Surface, Button ) {
+	Component.define( "horizontalRule", Button, {
 		label: i18n.t( "button.horizontalRule.label" ),
 		iconOnly: true,
 		icon: "aloha-icon aloha-icon-horizontal-rule",

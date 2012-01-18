@@ -5,9 +5,9 @@
 define([
 	'aloha/core',
 	'aloha/jquery',
-	'ui/ui',
-	'ui/container'
-], function( Aloha, jQuery, Ui, Container ) {
+	'ui/container',
+	'ui/component',
+], function( Aloha, jQuery, Container, Component ) {
 	'use strict';
 
 	var uid = 0;
@@ -81,7 +81,7 @@ define([
 					// For each control, we render a new instance and append it to
 					// the group.
 					jQuery.each( this, function() {
-						var component = Ui.render( this, editable );
+						var component = Component.render( this, editable );
 						group.append( component.element );
 					});
 				});

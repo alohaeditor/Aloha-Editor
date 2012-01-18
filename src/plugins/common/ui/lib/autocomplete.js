@@ -1,18 +1,18 @@
 define([
 	"aloha/jquery",
 	"aloha/repositorymanager",
-	"ui/ui",
+	"ui/component",
 	
 	"jquery-plugin!./vendor/jquery-ui-autocomplete-html"
 ],
-function( jQuery, RepositoryManager, Ui ) {
+function( jQuery, RepositoryManager, Component ) {
 	function parse( template, item ) {
 		return template.replace( /{{([^}]+)}}/g, function( _, name ) {
 			return name in item ? item[ name ] : "";
 		});
 	}
-	
-	Ui.createType( "autocomplete", {
+
+	var Autocomplete = Component.extend({
 		init: function() {
 			var that = this;
 			this.element = jQuery( "<input>" )
@@ -37,10 +37,10 @@ function( jQuery, RepositoryManager, Ui ) {
 					this.setValue( event.target.value, ui.item ? ui.item.obj : null );
 				}, this ) );
 		},
-		
+
 		// invoked when the user has changed the value and blurred the field
 		setValue: function( value, item ) {}
 	});
-	
-	return Ui.autocomplete;
+
+	return Autocomplete;
 });

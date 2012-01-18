@@ -1,11 +1,11 @@
 define([
 	"aloha/jquery",
-	"ui/ui"
+	"ui/component"
 ],
-function( jQuery, Ui ) {
+function( jQuery, Component ) {
 	// The button component type creates a simple button.
 	// Buttons have no state, they only respond to click events.
-	Ui.createType( "button", {
+	var Button = Component.extend({
 		// The `init` method is invoked when the component is rendered, not when it
 		// is created. This is necessary to allow multiple renderings of the same
 		// component. For example, you may want a component to be in the toolbar
@@ -30,14 +30,14 @@ function( jQuery, Ui ) {
 						this.click();
 					}, this ) );
 		},
-		
+
 		// The `click()` method is invoked whenever the user clicks the rendered button.
 		click: function() {},
-		
+
 		createButtonElement: function() {
 			return this.element = this.buttonElement = jQuery( "<button>" );
 		}
 	});
-	
-	return Ui.button;
+
+	return Button;
 });

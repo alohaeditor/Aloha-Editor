@@ -1,15 +1,15 @@
 define([
 	"aloha/jquery",
 	"i18n!ui/nls/i18n",
-	"ui/ui",
+	"ui/component",
 	"ui/toggleCommandButton"
 ],
-function( jQuery, i18n, Ui ) {
+function( jQuery, i18n, Component, ToggleCommandButton ) {
 	jQuery.each(
 		[ "Left", "Right", "Center", "Full" ],
 		function( i, command ) {
 			command = "justify" + command;
-			Ui.create( command, "toggleCommandButton", {
+			Component.define( command, ToggleCommandButton, {
 				command: command,
 				label: i18n.t( "button." + command + ".label" ),
 				iconOnly: true,

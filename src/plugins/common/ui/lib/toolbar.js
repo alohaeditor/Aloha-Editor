@@ -59,10 +59,12 @@ define([
 
 		// TODO: figure out what needs to move up a level
 		hide: function() {
-			var toolbar = this;
-			Toolbar.element.stop().fadeOut( 200, function() {
-				toolbar.editable.toolbar.detach();
-			});
+			if ( !Aloha.eventHandled ) {
+				var toolbar = this;
+				Toolbar.element.stop().fadeOut( 200, function() {
+					toolbar.editable.toolbar.detach();
+				});
+			}
 		}
 	});
 

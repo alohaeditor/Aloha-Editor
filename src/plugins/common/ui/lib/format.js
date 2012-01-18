@@ -1,10 +1,10 @@
 define([
 	"aloha/jquery",
 	"i18n!ui/nls/i18n",
-	"ui/ui",
+	"ui/component",
 	"ui/toggleCommandButton"
 ],
-function( jQuery, i18n, Ui ) {
+function( jQuery, i18n, Component, ToggleCommandButton ) {
 	// The second part of the bold plugin is the bold component.
 	// The bold component is a [toggleCommandButton](toggleCommandButton.html) that ties into the bold command.
 	// The button will automatically update its state whenever the selection changes
@@ -14,7 +14,7 @@ function( jQuery, i18n, Ui ) {
 	jQuery.each(
 		[ "bold", "italic", "strikethrough", "subscript", "superscript", "underline" ],
 		function( i, command ) {
-			Ui.create( command, "toggleCommandButton", {
+			Component.define( command, ToggleCommandButton, {
 				command: command,
 				label: i18n.t( "button." + command + ".label" ),
 				iconOnly: true,

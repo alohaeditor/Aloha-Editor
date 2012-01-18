@@ -8,13 +8,13 @@
 define([
 	// jQuery UI
 	"aloha/jquery-ui",
-	
+
 	// UI core
 	"order!css!./css/ui.css",
 	"./ui",
 	"./surface",
 	"./toolbar",
-	
+
 	// components
 	"./abbr",
 	"./characterPicker",
