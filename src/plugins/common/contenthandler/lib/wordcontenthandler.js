@@ -21,9 +21,9 @@ function( Aloha, jQuery, ContentHandlerManager ) {
 				content = jQuery( '<div>' ).append(content);
 			}
 
-			//if (this.detectWordContent(content)) {
+			if (this.detectWordContent(content)) {
 				this.transformWordContent(content);
-			//}
+			}
 
 			return content.html();
 		},
