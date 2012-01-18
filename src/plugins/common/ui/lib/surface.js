@@ -42,7 +42,8 @@ define([
 				// The range isn't set until after the activated event
 				// and selection-changed doesn't fire on activation
 				setTimeout(function() {
-					Container.showContainers( Aloha.getSelection().getRangeAt( 0 ) );
+					Container.showContainers( Surface.active,
+						Aloha.getSelection().getRangeAt( 0 ) );
 				}, 1 );
 			});
 
@@ -61,8 +62,8 @@ define([
 			//       "incorrect" elements--that is, not the element or parents
 			//       of the element you clicked on.
 			Aloha.bind( "aloha-selection-changed", function( event, range ) {
-				if ( Aloha.activeEditable ) {
-					Container.showContainers( range );
+				if ( Surface.active ) {
+					Container.showContainers( Surface.active, range );
 				}
 			});
 		},

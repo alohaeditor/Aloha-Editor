@@ -2,6 +2,24 @@
  * Defines a `Container` Class.
  */
 
+/* 
+ * Containers are activated based on the `showOn` setting for the container.
+ * The values are normalized to functions which accept an element and return a
+ * boolean; true means the container should be shown.
+ * 
+ * For efficiency, we group all containers that have the same normalized
+ * `showOn` function together, so we can evaluate it once, regardless of how
+ * many containers are using the same logic. In order for this to work, the
+ * exact same function must be returned from `Container.normalizeShowOn` when
+ * the logic is the same.
+ * 
+ * The list of containers is then stored on the editable instance as
+ * `editable.container.groups`, which is a hash of `showOn` ids to an array of
+ * containers. The `showOn` ids are unique identifiers that are stored as
+ * properties of the `showOn` function (see `getShowOnId()`). This gives us
+ * constant lookup times when grouping containers.
+ */
+
 define([
 	'aloha/core',
 	'aloha/jquery',
@@ -9,20 +27,10 @@ define([
 ], function( Aloha, jQuery, Class ) {
 	'use strict';
 
-	/**
-	 * This object provides a unique associative container which maps hashed
-	 * `showOn` values (see `getShowOnId()`) with objects that
-	 * hold a corresponding `shouldShow` function (which is also derived from
-	 * the `showOn` value), and an array of containers which share this
-	 * predicate.  The main advantage we get from a hash set is that lookups
-	 * can be done in constant time.
-	 * @type {object.<string, object>}
-	 */
-	var showGroups = {};
-
 	var uid = 1;
-
 	function getShowOnId( showOn ) {
+		// store a unique id on the showOn function
+		// see full explanation at top of file
 		if ( !showOn.showOnId ) {
 			showOn.showOnId = uid++;
 		}
@@ -66,12 +74,20 @@ define([
 		 * @constructor
 		 */
 		_constructor: function( settings ) {
-			var showOn = Container.normalizeShowOn( settings.showOn ),
-				key = getShowOnId( showOn ),
-				group = showGroups[ key ];
+			var group,
+				containerSettings = settings.editable.container,
+				showOn = Container.normalizeShowOn( settings.showOn ),
+				key = getShowOnId( showOn );
 
+			if ( !containerSettings ) {
+				containerSettings = settings.editable.container = {
+					groups: {}
+				};
+			}
+
+			group = containerSettings.groups[ key ];
 			if ( !group ) {
-				group = showGroups[ key ] = {
+				group = containerSettings.groups[ key ] = {
 					shouldShow: showOn,
 					containers: []
 				};
@@ -122,7 +138,7 @@ define([
 		 * @param {object} range The range to show containers for
 		 * @static
 		 */
-		showContainers: function( range ) {
+		showContainers: function( editable, range ) {
 			var group, groupKey, show, j, element,
 				isEditingHost = GENTICS.Utils.Dom.isEditingHost,
 				// Add a null object to the elements array so that we can test whether
@@ -136,9 +152,9 @@ define([
 				elements.push( element );
 			}
 
-			for ( groupKey in showGroups ) {
+			for ( groupKey in editable.container.groups ) {
 				show = false;
-				group = showGroups[ groupKey ];
+				group = editable.container.groups[ groupKey ];
 
 				j = elements.length;
 				while ( j ) {
