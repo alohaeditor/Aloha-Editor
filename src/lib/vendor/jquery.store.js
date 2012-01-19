@@ -430,4 +430,41 @@ $.store.serializers = {
 	}
 };
 
+
+	// We don't want to use window storage for ie7 with aloha because this causes massive issues when dealing with frames. 
+	// Window.name will change the framename and this will cause links with target attribute to stop working properly. 
+	// We remove the windowName driver and add the void driver which won't store any information.
+	if ( $.browser.msie && $.browser.version  == "7.0" ) {
+		delete($.store.drivers.windowName);
+		var voidDriver = {
+				ident: "$.store.drivers.voidDriver",
+				scope: 'void',
+				cache: {},
+				encodes: true,
+				available: function()
+				{
+					return true;
+				},
+				init: function()
+				{
+				},
+				save: function()
+				{
+				},
+				get: function( key )
+				{
+				},
+				set: function( key, value )
+				{
+				},
+				del: function( key )
+				{
+				},
+				flush: function()
+				{
+				}
+			};
+		$.store.drivers.voidDriver=voidDriver;
+	} 
+
 });
