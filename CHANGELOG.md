@@ -3,7 +3,7 @@
 This document is to serve as a "what has been done" in terms of the [Roadmap](http://aloha-editor.org/wiki/Roadmap)
 
 ## 0.20.2-SNAPSHOT
-
+- image-plugin: Replaced unicode characters in the crop buttons with images to fix display issues within Internet Explorer 7.
 - core: Fixed problem of Internet Explorer 7 crashing when invoking jQuery's `removeAttr`.
 - ecma5shims: Function `getRootParent` in ecma5schims.js no longer throws an
               error when `null` or `undefined` is passed to it.
