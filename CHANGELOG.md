@@ -2,6 +2,8 @@
 
 This document is to serve as a "what has been done" in terms of the [Roadmap](http://aloha-editor.org/wiki/Roadmap)
 
+## 0.20.3-SNAPSHOT
+
 ## 0.20.2 - 2012/01/19
 - image-plugin: Replaced unicode characters in the crop buttons with images to fix display issues within Internet Explorer 7.
 - core: Fixed problem where Internet Explorer 7 and jquery.store will not work with frames since it will fallback to window.name storage. We'll now use a void storage for IE7. This means that IE7 will not be able to store floating menu postion and other settings.
