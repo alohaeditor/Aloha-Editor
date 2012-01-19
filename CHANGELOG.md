@@ -10,6 +10,8 @@ This document is to serve as a "what has been done" in terms of the [Roadmap](ht
 - core: fixed incorrect dependency on jquery.json-2.2 where util/json2 is needed instead and made it globally available
 - core: Removed unneeded JSON empty function definition that surpressed errors in IE
 - guides: Updated guides. They now include a directory structure explanation and a detailed release guide.
+- word contenthandler: html cleanup for empty tags, removal of spans and the paragraph numbering from TOC feature
+- core: fixed floating menu pinning with topalign behaviour (topalignOffset, horizontalOffset)
 
 ## 0.20.1 2012/01/13
 
