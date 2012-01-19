@@ -353,7 +353,7 @@ function(Aloha, jQuery, Ext, Class, console) {
 		/**
 		 * topalign offset to be used for topalign behavior
 		 */
-		topalignOffset: 90,
+		topalignOffset: 0,
 		
 		/**
 		 * topalign offset to be used for topalign behavior
@@ -364,7 +364,7 @@ function(Aloha, jQuery, Ext, Class, console) {
 		 * will only be hounoured when behaviour is set to 'topalign'. Adds a margin,
 		 * so the floating menu is not directly attached to the top of the page
 		 */
-		marginTop: 0,
+		marginTop: 10,
 		
 		/**
 		 * Define whether the floating menu shall be draggable or not via Aloha.settings.floatingmanu.draggable
@@ -686,7 +686,7 @@ function(Aloha, jQuery, Ext, Class, console) {
 			this.obj = jQuery(this.extTabPanel.getEl().dom);
 
 			if (jQuery.storage.get('Aloha.FloatingMenu.pinned') == 'true') {
-				this.togglePin();
+				//this.togglePin();
 
 				this.top = parseInt(jQuery.storage.get('Aloha.FloatingMenu.top'),10);
 				this.left = parseInt(jQuery.storage.get('Aloha.FloatingMenu.left'),10);
@@ -715,7 +715,7 @@ function(Aloha, jQuery, Ext, Class, console) {
 			this.obj.mousedown(function (e) {
 				e.originalEvent.stopSelectionUpdate = true;
 				Aloha.eventHandled = true;
-		//		e.stopSelectionUpdate = true;
+				//e.stopSelectionUpdate = true;
 			});
 			this.obj.mouseup(function (e) {
 				e.originalEvent.stopSelectionUpdate = true;
@@ -741,28 +741,44 @@ function(Aloha, jQuery, Ext, Class, console) {
 				// float the fm to each editable that is activated
 				Aloha.bind('aloha-editable-activated', function(event, data) {
 					var p = data.editable.obj.offset();
-					p.top -= that.topalignOffset;
+
+					p.top -= (90 + that.topalignOffset);
 					p.left += that.horizontalOffset;
-			    if (p.top < jQuery(document).scrollTop()) {
-					// scrollpos is below top of editable
-					that.obj.css('top', jQuery(document).scrollTop() + that.marginTop);
-					that.obj.css('left', p.left);
-					that.togglePin(true);
-			    } else {
-					// scroll pos is above top of editable
-					that.floatTo(p);
-			    }
+
+					if (that.pinned) {
+						that.floatTo(p);
+						return;
+					}
+
+					if (p.top < jQuery(document).scrollTop()) {
+						// scrollpos is below top of editable
+						that.obj.css('top', jQuery(document).scrollTop() + that.marginTop);
+						that.obj.css('left', p.left);
+						that.togglePin(false);
+			    	} else {
+						// scroll pos is above top of editable
+						that.togglePin(false);
+						that.floatTo(p);
+			    	}
 			});
 
-				// fm scroll behaviour
+			// fm scroll behaviour
 			jQuery(window).scroll(function () {
-			    if (!Aloha.activeEditable) {
+			    if (!Aloha.activeEditable ) {
 					return;
 			    }
+			
 			    var pos = Aloha.activeEditable.obj.offset(),
 					fmHeight = that.obj.height(),
 					scrollTop = jQuery(document).scrollTop();
-
+				
+				// do not unpin a pinned fm when topalign is set and fm position is not the auto calc position
+				if (that.behaviour === 'topalign' && 
+					that.pinned && 
+					parseInt(that.obj.css('left'),10) != (pos.left + that.horizontalOffset)) {
+					return;
+				}
+				
 				if (scrollTop > (pos.top - fmHeight - 6 - that.marginTop)) {
 					// scroll pos is lower than top of editable
 					that.togglePin(true);
@@ -770,7 +786,7 @@ function(Aloha, jQuery, Ext, Class, console) {
 			    } else if (scrollTop <= (pos.top - fmHeight - 6 - that.marginTop)) {
 					// scroll pos is above top of editable
 					if (that.behaviour === 'topalign') {
-						pos.top = Aloha.activeEditable.obj.offset().top - that.topalignOffset;
+						pos.top = Aloha.activeEditable.obj.offset().top - 90 - that.topalignOffset + that.marginTop;
 						pos.left = Aloha.activeEditable.obj.offset().left + that.horizontalOffset;
 					} else {
 						pos.top -= fmHeight + 6;
