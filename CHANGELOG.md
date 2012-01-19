@@ -4,6 +4,7 @@ This document is to serve as a "what has been done" in terms of the [Roadmap](ht
 
 ## 0.20.2-SNAPSHOT
 
+- core: Fixed problem where Internet Explorer 7 and jquery.store will not work with frames since it will fallback to window.name storage. We'll now use a void storage for IE7. This means that IE7 will not be able to store floating menu postion and other settings.
 - core: Fixed problem of Internet Explorer 7 crashing when invoking jQuery's `removeAttr`.
 - ecma5shims: Function `getRootParent` in ecma5schims.js no longer throws an
               error when `null` or `undefined` is passed to it.
