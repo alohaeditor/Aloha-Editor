@@ -16,10 +16,6 @@ define([
 	 * Classname constants...
 	 * @type {string}
 	 */
-
-	 // Classname constants.  Will be exposed as static variables in the Tab
-	 // class.
-	 // @type {string}
 	var CONTAINER_CLASS = 'aloha-ui-tabs-container';
 	var HANDLES_CLASS = 'aloha-ui-tabs-handles';
 	var PANELS_CLASS = 'aloha-ui-tabs-panels';
@@ -151,30 +147,28 @@ define([
 
 	});
 
-	/**
-	 * Creates holding elements for jQuery UI Tabs for a surface.
-	 * @static
-	 * @return {jQuery<HTMLElement>} The holder container onwhich we invoke
-	 *                               jQuery UI Tabs once it is populated with
-	 *                               tab containers.
-	 */
-	Tab.createContainer = function() {
-		var container_holder = jQuery( '<div>', {
-			'class': CONTAINER_CLASS
-		});
+	jQuery.extend( Tab, {
+		/**
+		 * Creates holding elements for jQuery UI Tabs for a surface.
+		 * @static
+		 * @return {jQuery<HTMLElement>} The holder container onwhich we invoke
+		 *                               jQuery UI Tabs once it is populated with
+		 *                               tab containers.
+		 */
+		createContainer: function() {
+			var container = jQuery( '<div>', {
+				'class': CONTAINER_CLASS
+			});
 
-		jQuery( '<ul>', { 'class': HANDLES_CLASS } )
-			.appendTo( container_holder );
+			jQuery( '<ul>', { 'class': HANDLES_CLASS } )
+				.appendTo( container );
 
-		jQuery( '<div>', { 'class': PANELS_CLASS } )
-			.appendTo( container_holder );
+			jQuery( '<div>', { 'class': PANELS_CLASS } )
+				.appendTo( container );
 
-		return container_holder;
-	};
-
-	Tab.CONTAINER_CLASS = CONTAINER_CLASS;
-	Tab.HANDLES_CLASS = HANDLES_CLASS;
-	Tab.PANELS_CLASS = PANELS_CLASS;
+			return container;
+		}
+	});
 
 	return Tab;
 });
