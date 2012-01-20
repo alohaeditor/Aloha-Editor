@@ -20,16 +20,16 @@ define([
 	'block/editormanager',
 	'block/blockcontenthandler',
 	'block/editor',
-	'css!block/css/block.css'
+	'css!block/css/block.css',
+	'block/jquery-ui-1.8.16.custom.min'
 ], function(Aloha, Plugin, jQuery, ContentHandlerManager, BlockManager, SidebarAttributeEditor, block, EditorManager, BlockContentHandler, editor) {
 	"use strict";
-
 	/**
-	 * Register the plugin with unique name
+	 * Register the 'block' plugin
 	 */
 	var BlockPlugin = Plugin.create( 'block', {
 		settings: {},
-//		dependencies: [ 'contenthandler' ],
+//		dependencies: [ 'paste' ],
 
 		init: function () {
 			var that = this;
@@ -42,11 +42,14 @@ define([
 			EditorManager.register('number', editor.NumberEditor);
 			EditorManager.register('url', editor.UrlEditor);
 			EditorManager.register('email', editor.EmailEditor);
-			
+			EditorManager.register('select', editor.SelectEditor);
+			EditorManager.register('button', editor.ButtonEditor);
+
 			// register content handler for block plugin
 			ContentHandlerManager.register('block', BlockContentHandler);
 
 			BlockManager.registerEventHandlers();
+			BlockManager.initializeBlockLevelDragDrop();
 
 			Aloha.bind('aloha-ready', function() {
 				// When Aloha is fully loaded, we initialize the blocks.
@@ -56,9 +59,11 @@ define([
 				}
 			});
 		},
-		_createBlocks: function() {
-			var defaultBlockSettings;
 
+		/**
+		 * Create blocks from default settings
+		 */
+		_createBlocks: function() {
 			if (!this.settings.defaults) {
 				this.settings.defaults = {};
 			}
@@ -67,14 +72,6 @@ define([
 			});
 		}
 	});
-
-	/**
-	 * See (http://jquery.com/).
-	 * @name jQuery
-	 * @class
-	 * See the jQuery Library  (http://jquery.com/) for full details.  This just
-	 * documents the function and classes that are added to jQuery by this plug-in.
-	 */
 
 	/**
 	 * See (http://jquery.com/).
