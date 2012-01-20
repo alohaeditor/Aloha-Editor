@@ -44,8 +44,8 @@ GENTICS.Utils.Position.Scroll = {
  * @api
  */
 GENTICS.Utils.Position.ScrollCorrection = {
-		top : 0,
-		left : 0
+		top : 100,
+		left : 50
 };
 
 /**
