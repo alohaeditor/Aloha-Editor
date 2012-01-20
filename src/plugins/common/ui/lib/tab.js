@@ -55,7 +55,7 @@ define([
 		 */
 		_constructor: function( settings, components ) {
 			this._super( settings, components );
-			var editable = this.editable = settings.editable;
+			var editable = this.editable;
 
 			this.container = editable.toolbar.find( '.' + CONTAINER_CLASS );
 

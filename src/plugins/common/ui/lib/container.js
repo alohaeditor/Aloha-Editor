@@ -74,12 +74,13 @@ define([
 		 */
 		_constructor: function( settings ) {
 			var group,
-				containerSettings = settings.editable.container,
+				editable = this.editable = settings.editable,
+				containerSettings = editable.container,
 				showOn = Container.normalizeShowOn( settings.showOn ),
 				key = getShowOnId( showOn );
 
 			if ( !containerSettings ) {
-				containerSettings = settings.editable.container = {
+				containerSettings = editable.container = {
 					groups: {}
 				};
 			}
