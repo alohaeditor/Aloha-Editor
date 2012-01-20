@@ -31,7 +31,7 @@ define([
 
 			var settings,
 				tabs = editable.settings.toolbar,
-				holder = Tab.createContainer().appendTo( editable.toolbar ),
+				container = Tab.createContainer().appendTo( editable.toolbar ),
 				j = tabs.length,
 				i = 0;
 
@@ -43,11 +43,10 @@ define([
 				editable.tabs.push( new Tab({
 					label: settings.label || '',
 					showOn: settings.showOn,
-					editable: editable
+					editable: editable,
+					container: container
 				}, settings.components ));
 			}
-
-			holder.tabs();
 		},
 
 		show: function() {
@@ -71,7 +70,7 @@ define([
 	jQuery.extend( Toolbar, {
 		init: function() {
 			Toolbar.element = jQuery( "<div>", {
-				"class": "aloha-ui aloha-surface aloha-toolbar"
+				"class": "aloha-surface aloha-toolbar"
 			})
 			.hide()
 			.appendTo( "body" );

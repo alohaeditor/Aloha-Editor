@@ -96,13 +96,9 @@ define([
 			group.containers.push( this );
 		},
 
-		show: function() {
-			this.element.show();
-		},
-
-		hide: function() {
-			this.element.hide();
-		}
+		// must be implemented by extending classes
+		show: function() {},
+		hide: function() {}
 	});
 
 	jQuery.extend( Container, {

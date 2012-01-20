@@ -13,14 +13,6 @@ define([
 	var uid = 0;
 
 	/**
-	 * Classname constants...
-	 * @type {string}
-	 */
-	var CONTAINER_CLASS = 'aloha-ui-tabs-container';
-	var HANDLES_CLASS = 'aloha-ui-tabs-handles';
-	var PANELS_CLASS = 'aloha-ui-tabs-panels';
-
-	/**
 	 * `Tab` defines a Container object that represents a collection
 	 * of related component groups to be rendered together on the toolbar.
 	 * Tabs are organized by feature and functionality so that related controls
@@ -57,34 +49,33 @@ define([
 			this._super( settings, components );
 			var editable = this.editable;
 
-			this.container = editable.toolbar.find( '.' + CONTAINER_CLASS );
-
+			this.container = settings.container;
+			this.list = this.container.data( "list" );
+			this.panels = this.container.data( "panels" );
 			this.index = editable.tabs.length;
-
 			this.id = "tab-container-" + (uid++);
-			var panel = this.panel = jQuery( '<div>', { id : this.id } );
 
+			var panel = this.panel = jQuery( '<div>', { id : this.id } );
 			var handle = this.handle = jQuery( '<li><a href="#' + this.id
 				+ '">' + settings.label + '</a></li>' );
 
-			if ( components ) {
-				jQuery.each( components, function() {
-					var group = jQuery( '<div>', {
-						'class': 'aloha-toolbar-group'
-					}).appendTo( panel );
+			jQuery.each( components, function() {
+				var group = jQuery( '<div>', {
+					'class': 'aloha-toolbar-group'
+				}).appendTo( panel );
 
-					// <a id="render-components"></a>
-					// For each control, we render a new instance and append it to
-					// the group.
-					jQuery.each( this, function() {
-						var component = Component.render( this, editable );
-						group.append( component.element );
-					});
+				// <a id="render-components"></a>
+				// For each control, we render a new instance and append it to
+				// the group.
+				jQuery.each( this, function() {
+					var component = Component.render( this, editable );
+					group.append( component.element );
 				});
-			}
+			});
 
-			handle.appendTo( this.container.find( 'ul.' + HANDLES_CLASS ) );
-			panel.appendTo( this.container.find( '.' + PANELS_CLASS ) );
+			handle.appendTo( this.list );
+			panel.appendTo( this.panels );
+			this.container.tabs( "refresh" );
 		},
 
 		/**
@@ -92,7 +83,7 @@ define([
 		 * @override
 		 */
 		show: function() {
-			var tabs = this.container.find( 'ul.' + HANDLES_CLASS + '>li' );
+			var tabs = this.list.children();
 
 			if ( tabs.length == 0 ) {
 				return;
@@ -116,7 +107,7 @@ define([
 		 * @override
 		 */
 		hide: function() {
-			var tabs = this.container.find( 'ul.' + HANDLES_CLASS + '>li' );
+			var tabs = this.list.children();
 
 			if ( tabs.length == 0 ) {
 				return;
@@ -144,7 +135,6 @@ define([
 				this.handle.removeClass( 'ui-tabs-active' );
 			}
 		}
-
 	});
 
 	jQuery.extend( Tab, {
@@ -156,17 +146,14 @@ define([
 		 *                               tab containers.
 		 */
 		createContainer: function() {
-			var container = jQuery( '<div>', {
-				'class': CONTAINER_CLASS
-			});
+			var container = jQuery( "<div>" ),
+				list = jQuery( "<ul>" ).appendTo( container ),
+				panels = jQuery( "<div>" ).appendTo( container );
 
-			jQuery( '<ul>', { 'class': HANDLES_CLASS } )
-				.appendTo( container );
-
-			jQuery( '<div>', { 'class': PANELS_CLASS } )
-				.appendTo( container );
-
-			return container;
+			return container
+				.data( "list", list )
+				.data( "panels", panels )
+				.tabs();
 		}
 	});
 
