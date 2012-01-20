@@ -1358,8 +1358,8 @@ function AlohaImagePlugin ( aQuery, Plugin, FloatingMenu, i18nCore, i18n ) {
 
 			jQuery('body').append(
 				'<div id="aloha-CropNResize-btns">\
-					<button class="cnr-crop-apply" title="' + i18n.t('Accept') + '">&#10004;</button>\
-					<button class="cnr-crop-cancel" title="' + i18n.t('Cancel') + '">&#10006;</button>\
+					<button class="cnr-crop-apply" title="' + i18n.t('Accept') + '"></button>\
+					<button class="cnr-crop-cancel" title="' + i18n.t('Cancel') + '"></button>\
 				</div>'
 			);
 

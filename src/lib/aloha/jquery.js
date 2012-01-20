@@ -19,6 +19,16 @@
 */
 
 // define jquery and ext modules. They need to be available in global namespace
-define('aloha/jquery',[], function() { 
+define('aloha/jquery',[], function() {
+	// Work-around for http://bugs.jquery.com/ticket/9905
+	// and https://github.com/alohaeditor/Aloha-Editor/issues/397
+	if ( !Aloha.jQuery.support.getSetAttribute ) {
+		( function( global ) {
+			Aloha.jQuery.removeAttr = function( elem, name ) {
+				elem.removeAttribute( name );
+			};
+		}( Aloha ));
+	}
+
 	return Aloha.jQuery;
 });

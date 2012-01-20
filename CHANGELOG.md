@@ -6,7 +6,21 @@ This document is to serve as a "what has been done" in terms of the [Roadmap](ht
 - block plugin: Aloha Block Plugin has now been greatly cleaned up and improved. Besides greatly cleaned up API and documentation, the new features include Drag/Drop, Deletion and Copy/Paste support. Now fully cross-browser (IE7, IE8, IE9, Chrome, Firefox).
 - commands.delete: fixed a bug with the delete command when contents are preceded by ignorable whitespace. also added a delete test for that.
 
-## 0.20.0
+## 0.20.2 - 2012/01/19
+- image-plugin: Replaced unicode characters in the crop buttons with images to fix display issues within Internet Explorer 7.
+- core: Fixed problem where Internet Explorer 7 and jquery.store will not work with frames since it will fallback to window.name storage. We'll now use a void storage for IE7. This means that IE7 will not be able to store floating menu postion and other settings.
+- core: Fixed problem of Internet Explorer 7 crashing when invoking jQuery's `removeAttr`.
+- ecma5shims: Function `getRootParent` in ecma5schims.js no longer throws an
+              error when `null` or `undefined` is passed to it.
+- core: fixed incorrect dependency on jquery.json-2.2 where util/json2 is needed instead and made it globally available
+- core: Removed unneeded JSON empty function definition that surpressed errors in IE
+- guides: Updated guides. They now include a directory structure explanation and a detailed release guide.
+
+## 0.20.1 2012/01/13
+
+- table-plugin: fixed incorrect repairing of tables (cells were appended to rows containing th elements)
+
+## 0.20.0 2011/12/27
 
 - doc/api: added first version of new API docs. Please note that the API docs are currently work in progress.
 - floatingmenu: fixed a bug with topalign behaviour where scrolling would attach the floatingmenu to the left side of the screen

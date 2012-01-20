@@ -99,8 +99,15 @@ h3. Practical Maven Hotfix Release Example
 
 1. Create a new hotfix branch from master
 <shell>  
-  git checkout -b hotfix-0.20.0 master
-  git push origin hotfix-0.20.0
+  git checkout -b hotfix-0.20.1 master
+  git push origin hotfix-0.20.1
 </shell>
 
-2. Continue with step 3 from the feature release example
+2. Rename the old release/hotfix branch
+  git checkout release-0.20.0
+  git checkout -b release-0.20.0-closed
+  git branch -d release-0.20.0
+  git push upstream release-0.20.0-closed
+  git push upstream :release-0.20.0
+
+3. Continue with step 3 from the feature release example
