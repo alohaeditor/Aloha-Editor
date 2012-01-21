@@ -58,7 +58,7 @@ define( [
 	 * An Array which holds all newly created tables contains DOM-Nodes of
 	 * table-objects
 	 */
-	TablePlugin.TableRegistry = new Array();
+	TablePlugin.TableRegistry = [];
 
 	/**
 	 * Holds the active table-object
@@ -141,18 +141,7 @@ define( [
 				TablePlugin.setFocusedTable( undefined );
 			} );
 
-			editable.obj.find( 'table' ).each( function () {
-				// only convert tables which are editable
-				if ( that.isEditableTable( this ) &&
-						!TablePlugin.isWithinTable( this ) ) {
-					var table = new Table( this, TablePlugin );
-					table.parentEditable = editable;
-					// table.activate();
-					TablePlugin.TableRegistry.push( table );
-				}
-				
-				TablePlugin.checkForNestedTables( editable.obj );
-			} );
+			registerNewTables( editable );
 		} );
 
 		// initialize the table buttons
@@ -207,30 +196,7 @@ define( [
 
 		// subscribe for the 'editableActivated' event to activate all tables in the editable
 		Aloha.bind( 'aloha-editable-activated', function (event, props) {
-			props.editable.obj.find('table').each(function () {
-				// shortcut for TableRegistry
-				var tr = TablePlugin.TableRegistry;
-				for (var i = 0; i < tr.length; i++) {
-					if (tr[i].obj.attr('id') == jQuery(this).attr('id')) {
-						// activate the table
-						tr[i].activate();
-						// and continue with the next table tag
-						return true;
-					}
-				}
-
-				// if we come here, we did not find the table in our registry, so we need to create a new one
-				// only convert tables which are editable
-				if ( that.isEditableTable( this ) &&
-						!TablePlugin.isWithinTable( this ) ) {
-					var table = new Table( this, TablePlugin );
-					table.parentEditable = props.editable;
-					table.activate();
-					TablePlugin.TableRegistry.push( table );
-				}
-				
-				TablePlugin.checkForNestedTables( props.editable.obj );
-			});
+			registerNewTables( props.editable );
 		});
 
 		// subscribe for the 'editableDeactivated' event to deactivate all tables in the editable
@@ -250,19 +216,7 @@ define( [
 		
 		Aloha.bind( 'aloha-smart-content-changed', function ( event ) {
 			if ( Aloha.activeEditable ) {
-				Aloha.activeEditable.obj.find( 'table' ).each( function () {
-					if ( TablePlugin.indexOfTableInRegistry( this ) == -1 &&
-							!TablePlugin.isWithinTable( this ) ) {
-						this.id = GENTICS.Utils.guid();
-						
-						var table = new Table( this, TablePlugin );
-						table.parentEditable = Aloha.activeEditable;
-						TablePlugin.TableRegistry.push( table );
-						table.activate();
-					}
-					
-					TablePlugin.checkForNestedTables( Aloha.activeEditable.obj );
-				} );
+				registerNewTables( Aloha.activeEditable );
 			}
 		} );
 		
@@ -271,6 +225,40 @@ define( [
 				that.initSidebar( Aloha.Sidebar.right.show() );  
 			} );
 		}
+
+		Aloha.bind( "wikidocs-document-changed", function( event, insertionMap, deletionMap, editable ) {
+			var managedElems = [ "table", "td", "tr", "caption" ];
+			for ( var i = 0; i < managedElems.length; i++ ) {
+				if (   deletionMap.hasOwnProperty( managedElems[ i ] )
+					|| insertionMap.hasOwnProperty( managedElems[ i ] ) ) {
+					unregisterTables( editable );
+
+					// Although unregisterTables() will deactivate
+					// tables, we may still have some UI elements
+					// floating around if a table object itself was
+					// removed since the deactivation code can't re-find
+					// the UI elements if the object changed.
+					// Ideally we'd have a before-document-changes event
+					// which would make this step unnecessary.
+					var remove
+						= "." + TablePlugin.get( "classSelectionColumn" )
+						+ ", ." + TablePlugin.get( "classSelectionRow" )
+					editable.obj.find( remove ).each(function(){
+						$( this ).remove();
+					});
+					var unwrapChildren
+						= "." + TablePlugin.get( "classTableWrapper" )
+						+ ", .aloha-editable-caption"
+					    + ", .aloha-table-cell-editable";
+					editable.obj.find( unwrapChildren  ).each(function(){
+						$( this ).replaceWith( $( this ).contents() );
+					});
+
+					registerNewTables( editable );
+					break;
+				}
+			}
+		});
 	};
 
 	//namespace prefix for this plugin
@@ -419,19 +407,6 @@ define( [
 		return ( jQuery( elem )
 					.parents( '.aloha-editable table' )
 						.length > 0 );
-	};
-	
-	/**
-	 * Checks for the presence of nested tables in the given editable.
-	 * @todo complete
-	 * @param {jQuery} editable
-	 */
-	TablePlugin.checkForNestedTables = function ( editable ) {
-		if ( editable.find( 'table table' ).length ) {
-			// show warning
-		} else {
-			// hide warning
-		}
 	};
 	
 	/**
@@ -1203,9 +1178,6 @@ define( [
 
 				TablePlugin.TableRegistry.push( tableObj );
 			}
-			
-			TablePlugin.checkForNestedTables( Aloha.activeEditable.obj );
-		// no active editable => error
 		} else {
 			this.error( 'There is no active Editable where the table can be\
 				inserted!' );
@@ -1445,5 +1417,36 @@ define( [
 		}
 	};
 	
+	function registerNewTables( editable ) {
+		editable.obj.find( "table" ).each(function () {
+			var table = TablePlugin.getTableFromRegistry( this );
+			if ( null == table ) {
+				if (   TablePlugin.isEditableTable( this )
+					&& ! TablePlugin.isWithinTable( this ) ) {
+					table = new Table( this, TablePlugin );
+					table.parentEditable = editable;
+					TablePlugin.TableRegistry.push( table );
+				}
+			}
+			if ( null != table && ! table.isActive && editable.isActive ) {
+				table.activate();
+			}
+		});
+	}
+
+	function unregisterTables( editable ) {
+		var registry = TablePlugin.TableRegistry;
+		var numEntries = registry.length;
+		while ( numEntries-- ) {
+			var table = registry[ numEntries ];
+			if ( table.parentEditable === editable ) {
+				if ( table.isActive ) {
+					table.deactivate();
+				}
+				registry.splice( numEntries, 1 );
+			}
+		}
+	}
+
 	return TablePlugin;
 });

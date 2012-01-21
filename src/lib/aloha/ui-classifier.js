@@ -28,28 +28,28 @@ define( [
 		"aloha-ui-attr"
 	];
 
-	function stripUiShallow( elements ) {
+	function stripUiShallow( elems ) {
 		var classesToRemove = uiClasses.join(" ");
-		elements.each(function() {
-			var element = $( this );
-			if ( element.hasClass( "aloha-cleanme" ) ) {
-				element.remove();
-			} else if (    element.hasClass( "aloha-ui-wrapper" )
-						|| element.hasClass( "aloha-ui-filler" ) ) {
-				element.replaceWith( element.contents() );
-			} else if ( element.hasClass( "aloha-ui-attr" ) ) {
-				var attrData = element.attr( "data-aloha-ui-attr" );
+		elems.each(function() {
+			var elem = $( this );
+			if ( elem.hasClass( "aloha-cleanme" ) ) {
+				elem.remove();
+			} else if (    elem.hasClass( "aloha-ui-wrapper" )
+						|| elem.hasClass( "aloha-ui-filler" ) ) {
+				elem.replaceWith( elem.contents() );
+			} else if ( elem.hasClass( "aloha-ui-attr" ) ) {
+				var attrData = elem.attr( "data-aloha-ui-attr" );
 				if ( null != attrData ) {
 					var attrs = attrData.split(" ");
 					var numAttrs = attrs.length;
 					while ( numAttrs-- ) {
-						element.removeAttr( attrs[ numAttrs ] );
+						elem.removeAttr( attrs[ numAttrs ] );
 					}
 				}
-				element.removeAttr( "data-aloha-ui-attr" );
-				element.removeClass( classesToRemove );
-				if ( "" === element.attr( "class" ) ) {
-					element.removeAttr( "class" );
+				elem.removeAttr( "data-aloha-ui-attr" );
+				elem.removeClass( classesToRemove );
+				if ( "" === elem.attr( "class" ) ) {
+					elem.removeAttr( "class" );
 				}
 			}
 		});
@@ -62,54 +62,55 @@ define( [
 		 * The class-name should be of the form /^[a-z][a-z-]*$/.
 		 */
 		registerUiClasses: function( classes ) {
-			if ( $.isArray( classes ) ) {
-				uiClasses = uiClasses.concat( classes );
-			} else {
-				uiClasses.push( classes );
-			}
+			uiClasses = uiClasses.concat( classes );
+			Aloha.trigger( "aloha-ui-classes-registered", [ classes ] );
 		},
 
-		letUiElement: function( element ) {
-			element = $( element );
-			element.addClass( "aloha-cleanme" );
+		getRegisteredUiClasses: function() {
+			return uiClasses;
+		},
+
+		letUiElement: function( elem ) {
+			elem = $( elem );
+			elem.addClass( "aloha-cleanme" );
 		},
 
 		/**
 		 * Lets an attribute be qualified as a UI attribute.
 		 */
-		letUiAttr: function( element, attr ) {
-			element = $( element );
-			var attrData = element.attr( "data-aloha-ui-attr" );
+		letUiAttr: function( elem, attr ) {
+			elem = $( elem );
+			var attrData = elem.attr( "data-aloha-ui-attr" );
 			attrData = (null != attrData && "" !== attrData) ? " " + attr : attr;
-			element.attr( "data-aloha-ui-attr", attrData );
-			element.addClass( "aloha-ui-attr" );
+			elem.attr( "data-aloha-ui-attr", attrData );
+			elem.addClass( "aloha-ui-attr" );
 		},
 
-		letUiWrapper: function( element ) {
-			$( element ).addClass( "aloha-ui-wrapper" );
+		letUiWrapper: function( elem ) {
+			$( elem ).addClass( "aloha-ui-wrapper" );
 		},
 
-		letUiFiller: function( element ) {
-			$( element ).addClass( "aloha-ui-filler" );
+		letUiFiller: function( elem ) {
+			$( elem ).addClass( "aloha-ui-filler" );
 		},
 
 		/**
 		 * Strips content injected into an editable for presentational purposes.
 		 */
-		stripUiDeeply: function( elements ) {
-			elements = $( elements );
-			if ( elements.length ) {
+		stripUiDeeply: function( elems ) {
+			elems = $( elems );
+			if ( elems.length ) {
 				// We assume the class names don't need escaping
 				var selector = "." + uiClasses.join(", .");
-				stripUiShallow( elements.filter( selector ).add( elements.find( selector ) ) );
+				stripUiShallow( elems.filter( selector ).add( elems.find( selector ) ) );
 			}
 		},
 
 		/**
 		 * Strips content injected into an editable for presentational purposes.
 		 */
-		stripUi: function( elements ) {
-			stripUiShallow( $( elements ) );
+		stripUi: function( elems ) {
+			stripUiShallow( $( elems ) );
 		}
 	};
 

@@ -127,10 +127,10 @@ function (jQuery, UiClassifier, Utils) {
 	 * @return void
 	 */
 	TableCell.prototype.deactivate = function() {
-		var wrapper = this.obj.children( '.aloha-table-cell-editable' );
+		var wrapper = this.obj.children( ".aloha-table-cell-editable" );
 		if (wrapper.length) {
 			UiClassifier.stripUi( wrapper );
-			this.obj.unbind( 'click' );
+			this.obj.unbind( "click" );
 		}
 	}
 

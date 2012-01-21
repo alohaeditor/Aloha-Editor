@@ -1466,9 +1466,9 @@ define( [
 		var tbody = this.obj.children( "tbody" );
 		var table = tbody.length ? tbody : this.obj;
 		var selection = table.children( "tr." + classRow )
-			.add( table.children( "tr" ).children( "tr > td." + classCol ) );
+			.add( table.children( "tr" ).children( "td." + classCol ) );
 		var tableWrapper = this.obj.parent( "." + this.get( "classTableWrapper" ) );
-		var captionWrapper = this.obj.children("caption").children(".aloha-editable-caption");
+		var captionWrapper = this.obj.children( "caption" ).children( ".aloha-editable-caption" );
 		UiClassifier.stripUi( selection.add( this.obj ).add( tableWrapper ).add( captionWrapper) );
 
 		this.isActive = false;
