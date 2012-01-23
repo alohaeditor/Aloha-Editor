@@ -14,6 +14,7 @@ define([
 	"./ui",
 	"./surface",
 	"./toolbar",
+	"./sidebar",
 
 	// components
 	"./abbr",

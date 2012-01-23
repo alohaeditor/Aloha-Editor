@@ -2,6 +2,37 @@
  * - Standardize naming: orderedlist vs. character-picker vs. justifyLeft
  * - merge all icons into a single sprite
  **/
+
+.aloha-toolbar {
+	width: 500px;
+}
+
+.aloha-sidebar {
+	position: fixed;
+	right: 0;
+	top: 0;
+	width: 250px;
+	height: 100%;
+	border: 1px solid #000;
+	border-width: 0 0 0 1px;
+	background-color: #fff;
+	padding: 10px;
+}
+
+.aloha-panel {
+	border: 1px solid #000;
+}
+
+.aloha-panel-title {
+	background-color: #000;
+	color: #fff;
+	padding: 5px 10px;
+}
+
+.aloha-panel-content {
+	padding: 5px 10px;
+}
+
 .ui-state-default .aloha-icon {
 	background-image: url(../img/format-inline.png);
 }

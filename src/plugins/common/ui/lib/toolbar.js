@@ -1,9 +1,8 @@
 define([
-	'aloha/core',
 	'aloha/jquery',
 	'ui/surface',
 	'ui/tab'
-], function( Aloha, jQuery, Surface, Tab ) {
+], function( jQuery, Surface, Tab ) {
 
 	// The toolbar is configured via `settings.toolbar` and is defined as
 	// an array of tabs with component groups, where the groups are arrays of
