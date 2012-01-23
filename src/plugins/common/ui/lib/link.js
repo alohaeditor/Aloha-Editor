@@ -108,9 +108,40 @@ function( Aloha, jQuery, i18n, Browser, Component, Surface, Autocomplete, Button
 			this.createTitleFieldset();
 		},
 
+		selectionChange: function() {
+			var target, foundTarget,
+				anchor = findAnchor();
+
+			if ( !anchor ) {
+				this.hide();
+				return;
+			}
+
+			this.show();
+			target = anchor.target || "_self";
+			foundTarget = this.targetFieldset
+				.find( "[type=radio]" )
+				.filter(function() {
+					return this.value === target;
+				})
+				.prop( "checked", true )
+				.length;
+			if ( !foundTarget ) {
+				this.targetFieldset.find( "[type=radio][value=framename]" )
+					.prop( "checked", true );
+				this.frameName
+					.slideDown()
+					.find( "input" )
+						.val( anchor.target );
+			} else {
+				this.frameName.slideUp();
+			}
+
+			this.titleFieldset.find( "input" ).val( anchor.title || "" );
+		},
+
 		createTargetFieldset: function() {
-			var frameName,
-				that = this;
+			var that = this;
 
 			this.targetFieldset = jQuery(
 				"<fieldset><legend>Target</legend></fieldset>"
@@ -118,9 +149,9 @@ function( Aloha, jQuery, i18n, Browser, Component, Surface, Autocomplete, Button
 			.appendTo( this.element )
 			.delegate( "[type=radio]", "change", function( event ) {
 				if ( this.value === "framename" ) {
-					frameName.slideDown();
+					that.frameName.slideDown();
 				} else {
-					frameName
+					that.frameName
 						.slideUp()
 						.find( "input" )
 							.val( "" );
@@ -133,7 +164,7 @@ function( Aloha, jQuery, i18n, Browser, Component, Surface, Autocomplete, Button
 			});
 
 			this.createTarget( "framename", "Framename" );
-			frameName = jQuery( "<div><input></div>" )
+			this.frameName = jQuery( "<div><input></div>" )
 				.appendTo( this.targetFieldset )
 				.hide()
 				.bind( "keyup", function() {
@@ -151,7 +182,7 @@ function( Aloha, jQuery, i18n, Browser, Component, Surface, Autocomplete, Button
 		},
 
 		createTitleFieldset: function() {
-			jQuery(
+			this.titleFieldset = jQuery(
 				"<fieldset>" +
 					"<legend>Title</legend>" +
 					"<div><input></div>" +
