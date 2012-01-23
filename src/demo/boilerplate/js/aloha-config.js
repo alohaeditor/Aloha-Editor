@@ -7,7 +7,8 @@
 		ribbon: false,
 		locale: 'en',
 		floatingmenu: {
-			width: 630
+			width: 630,
+			behaviour: 'topalign'
 		},
 		repositories: {
 			linklist: {
