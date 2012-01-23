@@ -75,6 +75,7 @@ function( Aloha, jQuery, i18n, Browser, Component, Surface, Autocomplete, Button
 		label: "...",
 
 		init: function() {
+			this._super();
 			var that = this;
 			this.browser = new Browser({
 				repositoryManager: Aloha.RepositoryManager,

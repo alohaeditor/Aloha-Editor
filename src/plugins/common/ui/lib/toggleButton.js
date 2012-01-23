@@ -1,9 +1,8 @@
 define([
-	"aloha/core",
 	"aloha/jquery",
 	"ui/button"
 ],
-function( Aloha, jQuery, Button ) {
+function( jQuery, Button ) {
 	var guid = 0;
 
 	// The toggleButton extends the button component type to provide an easy

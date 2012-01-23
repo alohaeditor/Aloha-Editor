@@ -21,10 +21,9 @@
  */
 
 define([
-	'aloha/core',
 	'aloha/jquery',
 	'util/class'
-], function( Aloha, jQuery, Class ) {
+], function( jQuery, Class ) {
 	'use strict';
 
 	var uid = 1;

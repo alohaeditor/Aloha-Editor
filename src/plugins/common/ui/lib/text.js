@@ -5,6 +5,7 @@ define([
 function( jQuery, Component ) {
 	var Text = Component.extend({
 		init: function() {
+			this._super();
 			this.element = jQuery( "<input>" )
 				.bind( "change", jQuery.proxy(function( event ) {
 					this.setValue( event.target.value );

@@ -10,11 +10,8 @@ function( Aloha, jQuery, Class ) {
 	var Component = Class.extend({
 		visible: true,
 
-		_constructor: function( editable, settings ) {
+		_constructor: function( editable ) {
 			this.editable = editable;
-			var init = settings.init;
-			delete settings.init;
-			jQuery.extend( this, settings );
 
 			// Components are responsible for updating their state and visibility
 			// whenever the selection changes.
@@ -26,9 +23,6 @@ function( Aloha, jQuery, Class ) {
 			}, this ) );
 
 			this.init();
-			if ( init ) {
-				init.call( this );
-			}
 		},
 
 		init: function() {},
@@ -55,16 +49,12 @@ function( Aloha, jQuery, Class ) {
 		components: {},
 
 		define: function( name, type, settings ) {
-			Component.components[ name ] = {
-				type: type,
-				settings: settings
-			};
-			return settings;
+			return Component.components[ name ] = type.extend( settings );
 		},
 
 		render: function( name, editable ) {
 			var component = Component.components[ name ];
-			return new component.type( editable, component.settings );
+			return new component( editable );
 		}
 	});
 

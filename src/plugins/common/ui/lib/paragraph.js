@@ -13,7 +13,6 @@ function( Aloha, jQuery, i18n, Component, Surface, MultiSplit ) {
 	};
 
 	var FormatBlock = Component.define( "formatBlock", MultiSplit, {
-		_buttons: {},
 		getButtons: function() {
 			return jQuery.map( this.editable.settings.formatBlock.blocks, function( item ) {
 				return FormatBlock._buttons[ item ];
@@ -46,6 +45,7 @@ function( Aloha, jQuery, i18n, Component, Surface, MultiSplit ) {
 		}
 	});
 
+	FormatBlock._buttons = {};
 	jQuery.each( Aloha.settings.formatBlock.blocks, function( i, block ) {
 		FormatBlock._buttons[ block ] = {
 			label: i18n.t( "button." + block + ".label" ),

@@ -14,6 +14,7 @@ function( jQuery, RepositoryManager, Component ) {
 
 	var Autocomplete = Component.extend({
 		init: function() {
+			this._super();
 			var that = this;
 			this.element = jQuery( "<input>" )
 				.autocomplete({

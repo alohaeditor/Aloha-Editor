@@ -6,6 +6,7 @@ define([
 function( jQuery, Component, Button ) {
 	var MultiSplit = Component.extend({
 		init: function() {
+			this._super();
 			var editable = this.editable,
 				multiSplit = this,
 				element = this.element = jQuery( "<div>", {
@@ -27,7 +28,7 @@ function( jQuery, Component, Button ) {
 
 			this.buttons = [];
 			jQuery( this.getButtons() ).map(function( i, button ) {
-				var component = new Button( editable, {
+				var component = new (Button.extend({
 					label: button.label,
 					icon: "aloha-large-icon " + button.icon,
 					iconOnly: true,
@@ -35,7 +36,7 @@ function( jQuery, Component, Button ) {
 						button.click.apply( multiSplit, arguments );
 						multiSplit.close();
 					}
-				});
+				}))( editable );
 				component.element.addClass( "aloha-large-button" );
 
 				multiSplit.buttons.push({
@@ -49,14 +50,14 @@ function( jQuery, Component, Button ) {
 			.appendTo( content );
 
 			jQuery( this.getItems() ).map(function( i, item ) {
-				var component = new Button( editable, {
+				var component = new (Button.extend({
 					label: item.label,
 					icon: item.icon,
 					click: function() {
 						item.click.apply( multiSplit, arguments );
 						multiSplit.close();
 					}
-				});
+				}))( editable );
 				return component.element[ 0 ];
 			})
 			.appendTo( content );

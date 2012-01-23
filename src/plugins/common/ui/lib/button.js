@@ -11,6 +11,7 @@ function( jQuery, Component ) {
 		// component. For example, you may want a component to be in the toolbar
 		// and in the sidebar.
 		init: function() {
+			this._super();
 			this.createButtonElement()
 				.button({
 					label: this.label,
