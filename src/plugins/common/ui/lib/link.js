@@ -101,6 +101,69 @@ function( Aloha, jQuery, i18n, Browser, Component, Surface, Autocomplete, Button
 		}
 	});
 
+	Component.define( "linkPanel", Component, {
+		init: function() {
+			this.element = jQuery( "<div></div>" );
+			this.createTargetFieldset();
+			this.createTitleFieldset();
+		},
+
+		createTargetFieldset: function() {
+			var frameName,
+				that = this;
+
+			this.targetFieldset = jQuery(
+				"<fieldset><legend>Target</legend></fieldset>"
+			)
+			.appendTo( this.element )
+			.delegate( "[type=radio]", "change", function( event ) {
+				if ( this.value === "framename" ) {
+					frameName.slideDown();
+				} else {
+					frameName
+						.slideUp()
+						.find( "input" )
+							.val( "" );
+					findAnchor( Surface.range ).target = this.value;
+				}
+			});
+
+			jQuery.each( [ "Self", "Blank", "Parent", "Top" ], function() {
+				that.createTarget( "_" + this.toLowerCase(), this );
+			});
+
+			this.createTarget( "framename", "Framename" );
+			frameName = jQuery( "<div><input></div>" )
+				.appendTo( this.targetFieldset )
+				.hide()
+				.bind( "keyup", function() {
+					findAnchor( Surface.range ).target = event.target.value;
+				});
+		},
+
+		createTarget: function( value, label ) {
+			return jQuery(
+				"<div>" +
+					"<input type='radio' name='targetGroup' value='" + value + "'>" +
+					"<span>" + label + "</span>" +
+				"</div>"
+			).appendTo( this.targetFieldset );
+		},
+
+		createTitleFieldset: function() {
+			jQuery(
+				"<fieldset>" +
+					"<legend>Title</legend>" +
+					"<div><input></div>" +
+				"</fieldset>"
+			)
+			.appendTo( this.element )
+			.bind( "keyup", function( event ) {
+				findAnchor( Surface.range ).title = event.target.value;
+			});
+		}
+	});
+
 	function findAnchor( range ) {
 		return Ui.util.findElemFromRange( "a", range );
 	}
