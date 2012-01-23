@@ -56,14 +56,11 @@ define([
 			Toolbar.element.stop().fadeTo( 200, 1 );
 		},
 
-		// TODO: figure out what needs to move up a level
 		hide: function() {
-			if ( !Aloha.eventHandled ) {
-				var toolbar = this;
-				Toolbar.element.stop().fadeOut( 200, function() {
-					toolbar.editable.toolbar.detach();
-				});
-			}
+			var toolbar = this;
+			Toolbar.element.stop().fadeOut( 200, function() {
+				toolbar.editable.toolbar.detach();
+			});
 		}
 	});
 

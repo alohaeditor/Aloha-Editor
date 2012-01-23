@@ -49,8 +49,11 @@ define([
 
 			// When an editable is deactivated, we hide its associated surfaces.
 			Aloha.bind( "aloha-editable-deactivated", function( event, alohaEvent ) {
-				Surface.hide( alohaEvent.editable );
-				Surface.active = null;
+				// TODO: handle a click on a surface, then a click outside
+				if ( !Surface.suppressHide ) {
+					Surface.hide( alohaEvent.editable );
+					Surface.active = null;
+				}
 			});
 
 			// When the selection changes, toggle the appropriate containers
@@ -113,7 +116,7 @@ define([
 		trackRange: function( element ) {
 			element
 				.bind( "mousedown", function() {
-					Aloha.eventHandled = true;
+					Surface.suppressHide = true;
 
 					if ( Aloha.activeEditable ) {
 						Surface.range = Aloha.getSelection().getRangeAt( 0 );
@@ -122,7 +125,7 @@ define([
 					}
 				})
 				.bind( "mouseup", function() {
-					Aloha.eventHandled = false;
+					Surface.suppressHide = false;
 				});
 		}
 	});
