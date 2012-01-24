@@ -816,8 +816,9 @@ function(Aloha, jQuery, Ext, Class, console) {
 					// FIXME: that.obj.height() does not return the correct
 					//        height of the editable.  We need to fix this, and
 					//        not hard-code the height as we currently do.
+					var editable = data.editable.obj;
 					var floatingmenuHeight = 90;
-					var editablePos = data.editable.obj.offset();
+					var editablePos = editable.offset();
 					var isFloatingmenuAboveViewport = ( (
 						editablePos.top - floatingmenuHeight )
 						    < jQuery( document ).scrollTop() );
@@ -829,9 +830,9 @@ function(Aloha, jQuery, Ext, Class, console) {
 						// than the floatingmenu, it would be completely
 						// covered by it, and so, in such cases, we position
 						// the editable at the bottom of the short editable.
-						editablePos.top = ( data.editable.obj.height()
+						editablePos.top = ( editable.height()
 						         < floatingmenuHeight )
-							? editablePos.top + data.editable.obj.height()
+							? editablePos.top + editable.height()
 							: jQuery( document ).scrollTop();
 
 						editablePos.top += that.marginTop;
@@ -841,6 +842,18 @@ function(Aloha, jQuery, Ext, Class, console) {
 					}
 
 					editablePos.left += that.horizontalOffset;
+
+					var HORIZONTAL_PADDING = 10;
+					// Calculate by how much the floating menu is pocking
+					// outside the width of the viewport.  A positive number
+					// means that is is outside the viewport, negative means
+					// it is within the viewport.
+					var overhang = ( ( editablePos.left + that.width
+						+ HORIZONTAL_PADDING ) - jQuery(window).width() );
+
+					if ( overhang > 0 ) {
+						editablePos.left -= overhang;	
+					}
 
 					that.floatTo( editablePos );
 				});
