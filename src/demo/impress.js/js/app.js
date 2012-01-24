@@ -2,7 +2,10 @@ Aloha.ready(function() {
 	Aloha.require( ['aloha', 'aloha/jquery'], function( Aloha, jQuery) {
 		
 		// init aloha
-		jQuery('.step').aloha();
+		//jQuery('.step').dblclick(function(e) {
+		    //jQuery(this).aloha();
+		    jQuery('.step').aloha();
+		//});
 		
 		// start: save content on deactivation of an Aloha Editable
 		Aloha.bind('aloha-editable-deactivated', function() {
