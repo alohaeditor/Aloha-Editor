@@ -2,6 +2,9 @@
 
 This document is to serve as a "what has been done" in terms of the [Roadmap](http://aloha-editor.org/wiki/Roadmap)
 
+## 0.20.4 - SNAPSHOT
+
+
 ## 0.20.3 - 2012/01/24
 - image-plugin: The imageplugin will now only display the crop buttons when the cropping area selection was finished. This avoids a bug in Internet Explorer 7 where the crop area could not be resized once the user entered those crop buttons.
 - core: fixed floating menu pinning with topalign behaviour (topalignOffset, horizontalOffset)
