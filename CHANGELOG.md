@@ -3,6 +3,8 @@
 This document is to serve as a "what has been done" in terms of the [Roadmap](http://aloha-editor.org/wiki/Roadmap)
 
 ## 0.20.3-SNAPSHOT
+- image-plugin: The imageplugin will now only display the crop buttons when the cropping area selection was finished. This avoids a bug in Internet Explorer 7 where the crop area could not be resized once the user entered those crop buttons.
+- core: fixed floating menu pinning with topalign behaviour (topalignOffset, horizontalOffset)
 
 ## 0.20.2 - 2012/01/19
 - image-plugin: Replaced unicode characters in the crop buttons with images to fix display issues within Internet Explorer 7.
@@ -14,7 +16,6 @@ This document is to serve as a "what has been done" in terms of the [Roadmap](ht
 - core: Removed unneeded JSON empty function definition that surpressed errors in IE
 - guides: Updated guides. They now include a directory structure explanation and a detailed release guide.
 - word contenthandler: html cleanup for empty tags, removal of spans and the paragraph numbering from TOC feature
-- core: fixed floating menu pinning with topalign behaviour (topalignOffset, horizontalOffset)
 
 ## 0.20.1 2012/01/13
 
