@@ -37,7 +37,9 @@ function AlohaImagePlugin ( aQuery, Plugin, FloatingMenu, i18nCore, i18n ) {
 	
 	var jQuery = aQuery;
 	var $ = aQuery;
-	var GENTICS = window.GENTICS,	Aloha = window.Aloha;
+	var GENTICS = window.GENTICS;
+	var Aloha = window.Aloha;
+	var isCropNResizeBtnSetVisible = true;
 	
 	// Attributes manipulation utilities
 	// Aloha team may want to factorize, it could be useful for other plugins
@@ -162,7 +164,6 @@ function AlohaImagePlugin ( aQuery, Plugin, FloatingMenu, i18nCore, i18n ) {
 		 * Internal callback hook which gets invoked when cropping has been finished
 		 */
 		_onCropped: function ($image, props) {
-			
 			$('#' + this.imgResizeHeightField.id).val($image.height());
 			$('#' + this.imgResizeWidthField.id).val($image.width());
 			
@@ -1357,13 +1358,13 @@ function AlohaImagePlugin ( aQuery, Plugin, FloatingMenu, i18nCore, i18n ) {
 				oldTop = 0;
 
 			jQuery('body').append(
-				'<div id="aloha-CropNResize-btns">\
-					<button class="cnr-crop-apply" title="' + i18n.t('Accept') + '"></button>\
-					<button class="cnr-crop-cancel" title="' + i18n.t('Cancel') + '"></button>\
-				</div>'
+				'<div id="aloha-CropNResize-btns">' +
+					'<button class="cnr-crop-apply" title="' + i18n.t('Accept') + '"></button>' +
+					'<button class="cnr-crop-cancel" title="' + i18n.t('Cancel') + '"></button>' +
+				'</div>'
 			);
 
-			btns = jQuery('#aloha-CropNResize-btns')
+			btns = jQuery('#aloha-CropNResize-btns');
 			
 			btns.find('.cnr-crop-apply').click(function () {
 				that.acceptCrop();
@@ -1381,9 +1382,11 @@ function AlohaImagePlugin ( aQuery, Plugin, FloatingMenu, i18nCore, i18n ) {
 					jth = jt.height(),
 					jtw = jt.width();
 
+				/* Moving this to jCrop onSelect callaback
 				if (jth && jtw) {
 					btns.fadeIn('slow');
 				}
+				*/
 
 				// move the icons to the bottom right side
 				jtt = parseInt(jtt + jth + 3, 10);
@@ -1432,13 +1435,36 @@ function AlohaImagePlugin ( aQuery, Plugin, FloatingMenu, i18nCore, i18n ) {
 			var that = this;
 			var config = this.config;
 
+			isCropNResizeBtnSetVisible = true;
+
 			this.initCropButtons();
 			if (this.settings.ui.resizable) {
 				this.endResize();
 			}
 			
 			this.jcAPI = jQuery.Jcrop(this.imageObj, {
+				onChange: function() {
+					if ( isCropNResizeBtnSetVisible ) {
+						jQuery('#aloha-CropNResize-btns').hide();
+						isCropNResizeBtnSetVisible = false;
+					}
+				},
+				/**
+				 * onSelect is invoked when cropping is stopped.
+				 */
 				onSelect : function () {
+window.console.log('onSelect', isCropNResizeBtnSetVisible, '>>>', jQuery('#aloha-CropNResize-btns').length );
+					
+					var jtOffsets = jQuery('.jcrop-tracker:first').offset();
+					jQuery('#aloha-CropNResize-btns').offset({
+						left: jtOffsets.left,
+						top: jtOffsets.top
+					}).show();
+					
+debugger;
+
+					isCropNResizeBtnSetVisible = true;
+					
 					that._onCropSelect();
 					// ugly hack to keep scope :(
 					setTimeout(function () {
