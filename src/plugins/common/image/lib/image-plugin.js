@@ -39,7 +39,6 @@ function AlohaImagePlugin ( aQuery, Plugin, FloatingMenu, i18nCore, i18n ) {
 	var $ = aQuery;
 	var GENTICS = window.GENTICS;
 	var Aloha = window.Aloha;
-	var isCropNResizeBtnSetVisible = true;
 	
 	// Attributes manipulation utilities
 	// Aloha team may want to factorize, it could be useful for other plugins
@@ -1348,17 +1347,50 @@ function AlohaImagePlugin ( aQuery, Plugin, FloatingMenu, i18nCore, i18n ) {
 		},
 
 		/**
+		 * Reposition the crop buttons below the crop area
+		 */
+		positionCropButtons: function() {
+		
+			var jt = jQuery('.jcrop-tracker:first'),
+				off = jt.offset(),
+				jtt = off.top,
+				jtl = off.left,
+				jth = jt.height(),
+				jtw = jt.width();
+
+			var oldLeft = 0,
+				oldTop = 0;
+
+			var btns = jQuery('#aloha-CropNResize-btns');
+			
+			// Hack to hide the buttons when the user just clicked into the image
+			if ( jtt == 0 && jtl == 0 ) {
+				btns.hide();
+			}
+			
+			// move the icons to the bottom right side
+			jtt = parseInt(jtt + jth + 3, 10);
+			jtl = parseInt(jtl + (jtw/2)-(btns.width()/2)+10, 10);
+
+			// comparison to old values hinders flickering bug in FF
+			if (oldLeft != jtl || oldTop != jtt) {
+				btns.offset({top: jtt, left: jtl});
+			}
+
+			oldLeft = jtl;
+			oldTop = jtt;
+		},
+
+		/**
 		 * Code imported from CropnResize Plugin
 		 *
 		 */
 		initCropButtons: function() {
 			var that = this,
-				btns,
-				oldLeft = 0,
-				oldTop = 0;
+				btns;
 
 			jQuery('body').append(
-				'<div id="aloha-CropNResize-btns">' +
+				'<div id="aloha-CropNResize-btns" display="none">' +
 					'<button class="cnr-crop-apply" title="' + i18n.t('Accept') + '"></button>' +
 					'<button class="cnr-crop-cancel" title="' + i18n.t('Cancel') + '"></button>' +
 				'</div>'
@@ -1375,30 +1407,7 @@ function AlohaImagePlugin ( aQuery, Plugin, FloatingMenu, i18nCore, i18n ) {
 			});
 
 			this.interval = setInterval(function () {
-				var jt = jQuery('.jcrop-tracker:first'),
-					off = jt.offset(),
-					jtt = off.top,
-					jtl = off.left,
-					jth = jt.height(),
-					jtw = jt.width();
-
-				/* Moving this to jCrop onSelect callaback
-				if (jth && jtw) {
-					btns.fadeIn('slow');
-				}
-				*/
-
-				// move the icons to the bottom right side
-				jtt = parseInt(jtt + jth + 3, 10);
-				jtl = parseInt(jtl + jtw - 55, 10);
-
-				// comparison to old values hinders flickering bug in FF
-				if (oldLeft != jtl || oldTop != jtt) {
-					btns.offset({top: jtt, left: jtl});
-				}
-
-				oldLeft = jtl;
-				oldTop = jtt;
+				that.positionCropButtons();
 			}, 10);
 		},
 
@@ -1435,36 +1444,13 @@ function AlohaImagePlugin ( aQuery, Plugin, FloatingMenu, i18nCore, i18n ) {
 			var that = this;
 			var config = this.config;
 
-			isCropNResizeBtnSetVisible = true;
-
 			this.initCropButtons();
 			if (this.settings.ui.resizable) {
 				this.endResize();
 			}
 			
 			this.jcAPI = jQuery.Jcrop(this.imageObj, {
-				onChange: function() {
-					if ( isCropNResizeBtnSetVisible ) {
-						jQuery('#aloha-CropNResize-btns').hide();
-						isCropNResizeBtnSetVisible = false;
-					}
-				},
-				/**
-				 * onSelect is invoked when cropping is stopped.
-				 */
 				onSelect : function () {
-window.console.log('onSelect', isCropNResizeBtnSetVisible, '>>>', jQuery('#aloha-CropNResize-btns').length );
-					
-					var jtOffsets = jQuery('.jcrop-tracker:first').offset();
-					jQuery('#aloha-CropNResize-btns').offset({
-						left: jtOffsets.left,
-						top: jtOffsets.top
-					}).show();
-					
-debugger;
-
-					isCropNResizeBtnSetVisible = true;
-					
 					that._onCropSelect();
 					// ugly hack to keep scope :(
 					setTimeout(function () {
@@ -1485,9 +1471,23 @@ debugger;
 		_onCropSelect: function() {
 			var that = this;
 			
+			jQuery('#aloha-CropNResize-btns').fadeIn('slow');
+			
+			// Hide the crop buttons when the one of the handles is clicked
+			jQuery('.jcrop-handle').mousedown(function() {
+				jQuery('#aloha-CropNResize-btns').hide();
+			});
+			
+			jQuery('.jcrop-tracker').mousedown(function() {
+				jQuery('#aloha-CropNResize-btns').hide();
+			});
+			
 			// Update the width and height field using the intiial active crop area values
 			if(typeof that.jcAPI !== 'undefined' && that.jcAPI != null) {
+
+				that.positionCropButtons();
 				var currentCropArea = that.jcAPI.tellSelect();
+				
 				var widthField = jQuery("#" + that.imgResizeWidthField.id).val(currentCropArea['w']);
 				var heightField = jQuery("#" + that.imgResizeHeightField.id).val(currentCropArea['h']);
 			}
