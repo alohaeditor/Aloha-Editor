@@ -7,6 +7,8 @@ This document is to serve as a "what has been done" in terms of the [Roadmap](ht
 - core: fixed floating menu pinning with topalign behaviour (topalignOffset, horizontalOffset)
 
 ## 0.20.2 - 2012/01/19
+- floatingmenu.js: Fixed positioning of floatingmenu when it extends beyond the width of the viewport.
+- floatingmenu.js: Fixed float position of floatingmenu when it moves between editables.
 - image-plugin: Replaced unicode characters in the crop buttons with images to fix display issues within Internet Explorer 7.
 - core: Fixed problem where Internet Explorer 7 and jquery.store will not work with frames since it will fallback to window.name storage. We'll now use a void storage for IE7. This means that IE7 will not be able to store floating menu postion and other settings.
 - core: Fixed problem of Internet Explorer 7 crashing when invoking jQuery's `removeAttr`.
