@@ -47,16 +47,18 @@ define([
 		 */
 		_constructor: function( settings, components ) {
 			this._super( settings, components );
-			var editable = this.editable;
+			var panel, handle,
+				editable = this.editable,
+				alohaTabs = settings.container.data( "alohaTabs" );
 
 			this.container = settings.container;
 			this.list = this.container.data( "list" );
 			this.panels = this.container.data( "panels" );
-			this.index = editable.tabs.length;
+			this.index = alohaTabs.length;
 			this.id = "tab-container-" + (uid++);
 
-			var panel = this.panel = jQuery( '<div>', { id : this.id } );
-			var handle = this.handle = jQuery( '<li><a href="#' + this.id
+			panel = this.panel = jQuery( '<div>', { id : this.id } );
+			handle = this.handle = jQuery( '<li><a href="#' + this.id
 				+ '">' + settings.label + '</a></li>' );
 
 			jQuery.each( components, function() {
@@ -76,6 +78,8 @@ define([
 			handle.appendTo( this.list );
 			panel.appendTo( this.panels );
 			this.container.tabs( "refresh" );
+
+			alohaTabs.push( this );
 		},
 
 		/**
@@ -120,7 +124,7 @@ define([
 			// select another tab in its stead.  We select the first visible
 			// tab we find, or else we deselect all tabs.
 			if ( this.index == this.container.tabs( 'option', 'selected' ) ) {
-				tabs = this.editable.tabs;
+				tabs = this.container.data( "alohaTabs" );
 
 				for ( var i = 0; i < tabs.length; ++i ) {
 					if ( tabs[i].visible ) {
@@ -153,6 +157,7 @@ define([
 			return container
 				.data( "list", list )
 				.data( "panels", panels )
+				.data( "alohaTabs", [] )
 				.tabs();
 		}
 	});

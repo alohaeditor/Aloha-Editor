@@ -34,17 +34,15 @@ define([
 				j = tabs.length,
 				i = 0;
 
-			editable.tabs = editable.tabs || [];
-
 			for ( ; i < j; ++i ) {
 				settings = tabs[i];
 
-				editable.tabs.push( new Tab({
+				new Tab({
 					label: settings.label || '',
 					showOn: settings.showOn,
 					editable: editable,
 					container: container
-				}, settings.components ));
+				}, settings.components );
 			}
 		},
 
