@@ -1,6 +1,7 @@
 # Aloha Editor Changelog
 
-This document is to serve as a "what has been done" in terms of the [Roadmap](http://aloha-editor.org/wiki/Roadmap)
+This document is to serve as a "what has been done" in terms of the [Roadmap](https://github.com/alohaeditor/Aloha-Editor/wiki/Roadmap)
+
 ## 0.21.0 - dev
 
 - block plugin: Aloha Block Plugin has now been greatly cleaned up and improved. Besides greatly cleaned up API and documentation, the new features include Drag/Drop, Deletion and Copy/Paste support. Now fully cross-browser (IE7, IE8, IE9, Chrome, Firefox).
