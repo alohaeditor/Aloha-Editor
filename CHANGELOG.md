@@ -1,6 +1,6 @@
 # Aloha Editor Changelog
 
-This document is to serve as a "what has been done" in terms of the [Roadmap](http://aloha-editor.org/wiki/Roadmap)
+This document is to serve as a "what has been done" in terms of the [Roadmap](https://github.com/alohaeditor/Aloha-Editor/wiki/Roadmap)
 
 ## 0.20.4 - SNAPSHOT
 
