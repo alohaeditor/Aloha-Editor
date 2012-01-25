@@ -257,21 +257,73 @@ function( Aloha, jQuery, ContentHandlerManager ) {
 				Aloha.Markup.transformDomObject(jQuery(this), 'h1');
 			});
 			content.find('p.MsoSubtitle').each(function() {
-				// titles will be transformed to h1
+				// sub titles will be transformed to h2
 				Aloha.Markup.transformDomObject(jQuery(this), 'h2');
 			});
+		},
+		
+		/**
+		 * Cleanup MS Word HTML
+		 * @param content
+		 */
+		cleanHtml: function ( content ) {
+			
+			// remove empty tags
+			content.find('*').filter( function() {
+			    return jQuery.trim(jQuery(this).html()) == '';
+			}).remove();
+			
+			// http://stackoverflow.com/questions/4232961/jquery-remove-a-tag-but-keep-innerhtml
+			content.find('span').contents().unwrap();
+		},
+		
+		/**
+		 * Remove paragraph numbering from TOC feature
+		 * @param content
+		*/
+		removeParagraphNumbering: function( content ) {
+			var detectionFilter = 'h1,h2,h3,h4,h5,h6',
+				paragraphs = content.find(detectionFilter);
+			
+			paragraphs.each(function() {
+				var jqElem = jQuery(this),
+					spans = jqElem.find('span'),
+					links = jqElem.find('a');
+				
+				// remove TOC numbering
+				spans.each(function() {
+					if (jQuery(this).text().trim().match(/^([0-9]{1,3}\.)|([0-9]{1,3}\))|([a-zA-Z]{1,5}\.)|([a-zA-Z]{1,5}\))$/)) {
+						jQuery(this).remove();
+					}
+				})
+				
+				// remove TOC anchor links
+				links.each(function() {
+					if ( typeof jQuery(this).attr('href') === 'undefined' ) {
+						jQuery(this).contents().unwrap();
+					}
+				});
+				
+			});
+			
 		},
 
 		/**
 		 * This is the main transformation method
 		 * @param content
 		 */
-		transformWordContent: function (content) {
+		transformWordContent: function( content ) {
+			// remove paragraph numbering
+			this.removeParagraphNumbering( content );
+			
 			// transform lists
-			this.transformListsFromWord(content);
+			this.transformListsFromWord( content );
 
 			// transform titles
-			this.transformTitles(content);
+			this.transformTitles( content );
+			
+			// clean html
+			this.cleanHtml( content );
 		}
 	});
 	

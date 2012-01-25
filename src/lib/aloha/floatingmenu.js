@@ -266,6 +266,59 @@ function(Aloha, jQuery, Ext, Class, console) {
 	});
 
 	/**
+	 * Handler for window scroll event. Positions the floating menu
+	 * appropriately.
+	 *
+	 * @param {Aloha.FloatingMenu} floatingmenu
+	 */
+	function onWindowScroll( floatingmenu ) {
+		if ( !Aloha.activeEditable ) {
+			return;
+		}
+
+		var element = floatingmenu.obj;
+		var editablePos = Aloha.activeEditable.obj.offset();
+		var isTopAligned = floatingmenu.behaviour === 'topalign';
+		var isManuallyPinned = floatingmenu.pinned
+							 && ( parseInt( element.css( 'left' ), 10 )
+								  != ( editablePos.left
+									   + floatingmenu.horizontalOffset
+									 ) );
+
+		if ( isTopAligned && isManuallyPinned ) {
+			return;
+		}
+
+		var floatingmenuHeight = element.height();
+		var scrollTop = jQuery(document).scrollTop();
+
+		// This value is what the top position of the floating menu
+		// *would* be if we tried to position it above the active
+		// editable.
+		var floatingmenuTop = editablePos.top - floatingmenuHeight
+							+ floatingmenu.marginTop;
+
+		// The floating menu does not fit in the space between the top
+		// of the viewport and the editable, so position it at the top
+		// of the viewport, and over the editable.
+		if ( scrollTop > floatingmenuTop ) {
+			editablePos.top = isTopAligned
+							? scrollTop + floatingmenu.marginTop
+							: floatingmenu.marginTop;
+
+		// There is enough space on top of the editable to fit the
+		// entire floating menu, so we do so.
+		} else if ( scrollTop <= floatingmenuTop ) {
+			editablePos.top -= floatingmenuHeight
+							 + ( isTopAligned
+								 ? floatingmenu.marginTop
+								 : 0 );
+		}
+
+		floatingmenu.floatTo( editablePos );
+	}
+
+	/**
 	 * Aloha's Floating Menu
 	 * @namespace Aloha
 	 * @class FloatingMenu
@@ -353,7 +406,7 @@ function(Aloha, jQuery, Ext, Class, console) {
 		/**
 		 * topalign offset to be used for topalign behavior
 		 */
-		topalignOffset: 90,
+		topalignOffset: 0,
 		
 		/**
 		 * topalign offset to be used for topalign behavior
@@ -364,7 +417,7 @@ function(Aloha, jQuery, Ext, Class, console) {
 		 * will only be hounoured when behaviour is set to 'topalign'. Adds a margin,
 		 * so the floating menu is not directly attached to the top of the page
 		 */
-		marginTop: 0,
+		marginTop: 10,
 		
 		/**
 		 * Define whether the floating menu shall be draggable or not via Aloha.settings.floatingmanu.draggable
@@ -686,7 +739,7 @@ function(Aloha, jQuery, Ext, Class, console) {
 			this.obj = jQuery(this.extTabPanel.getEl().dom);
 
 			if (jQuery.storage.get('Aloha.FloatingMenu.pinned') == 'true') {
-				this.togglePin();
+				//this.togglePin();
 
 				this.top = parseInt(jQuery.storage.get('Aloha.FloatingMenu.top'),10);
 				this.left = parseInt(jQuery.storage.get('Aloha.FloatingMenu.left'),10);
@@ -715,11 +768,16 @@ function(Aloha, jQuery, Ext, Class, console) {
 			this.obj.mousedown(function (e) {
 				e.originalEvent.stopSelectionUpdate = true;
 				Aloha.eventHandled = true;
-		//		e.stopSelectionUpdate = true;
+				//e.stopSelectionUpdate = true;
 			});
+
 			this.obj.mouseup(function (e) {
 				e.originalEvent.stopSelectionUpdate = true;
 				Aloha.eventHandled = false;
+			});
+
+			jQuery( window ).scroll(function() {
+				onWindowScroll( that );
 			});
 
 			// adjust float behaviour
@@ -733,56 +791,40 @@ function(Aloha, jQuery, Ext, Class, console) {
 						}
 					}
 				});
-		    } else if (this.behaviour === 'topalign') {
+		    } else if ( this.behaviour === 'topalign' ) {
 				// topalign will retain the user's pinned status
 				// TODO maybe the pin should be hidden in that case?
-				this.togglePin(false);
+				this.togglePin( false );
 
-				// float the fm to each editable that is activated
-				Aloha.bind('aloha-editable-activated', function(event, data) {
-					var p = data.editable.obj.offset();
-					p.top -= that.topalignOffset;
-					p.left += that.horizontalOffset;
-			    if (p.top < jQuery(document).scrollTop()) {
-					// scrollpos is below top of editable
-					that.obj.css('top', jQuery(document).scrollTop() + that.marginTop);
-					that.obj.css('left', p.left);
-					that.togglePin(true);
-			    } else {
-					// scroll pos is above top of editable
-					that.floatTo(p);
-			    }
-			});
+				// Float the menu to the editable that is activated.
+				Aloha.bind( 'aloha-editable-activated', function( event, data ) {
+					var pos = data.editable.obj.offset();
 
-				// fm scroll behaviour
-			jQuery(window).scroll(function () {
-			    if (!Aloha.activeEditable) {
-					return;
-			    }
-			    var pos = Aloha.activeEditable.obj.offset(),
-					fmHeight = that.obj.height(),
-					scrollTop = jQuery(document).scrollTop();
+					// FIXME: that.obj.height() does not return the correct
+					//        height of the editable.  We need to fix this, and
+					//        not hard-code the height as we currently do.
+					var floatingmenuHeight = 90;
 
-				if (scrollTop > (pos.top - fmHeight - 6 - that.marginTop)) {
-					// scroll pos is lower than top of editable
-					that.togglePin(true);
-					that.obj.css('top', that.marginTop);
-			    } else if (scrollTop <= (pos.top - fmHeight - 6 - that.marginTop)) {
-					// scroll pos is above top of editable
-					if (that.behaviour === 'topalign') {
-						pos.top = Aloha.activeEditable.obj.offset().top - that.topalignOffset;
-						pos.left = Aloha.activeEditable.obj.offset().left + that.horizontalOffset;
+					pos.top -= ( floatingmenuHeight + that.topalignOffset );
+					pos.left += that.horizontalOffset;
+
+					if ( that.pinned ) {
+						that.floatTo( pos );
+
+					// Top of editable is above top of viewport.
+					} else if ( pos.top < jQuery( document ).scrollTop() ) {
+						that.obj.css( 'top',
+							jQuery( document ).scrollTop() + that.marginTop );
+						that.obj.css( 'left', pos.left );
+						that.togglePin( false );
+
+					// Top of editable is below the top of the viewport.
 					} else {
-						pos.top -= fmHeight + 6;
+						that.togglePin( false );
+						that.floatTo( pos );
 					}
-					that.togglePin(false);
-					that.floatTo(pos);
-			    } else if (scrollTop > pos.top + Aloha.activeEditable.obj.height() - fmHeight) {
-					// scroll pos is below editable
-					that.togglePin(false);
-			    }
-			});
-		    }
+				});
+			}
 		},
 
 		/**
