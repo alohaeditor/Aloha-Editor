@@ -207,10 +207,10 @@ define( [
 		    cachedColsCounts = [],
 		    colsCountDiff,
 		    colSpan;
-		
+
 		for ( i = 0; i < rowsNum; i++ ) {
 			row = jQuery( rows[ i ] );
-			cols = row.find( '>td' );
+			cols = row.children( 'td, th' );
 			colsNum = cols.length;
 			colsCount = Utils.cellIndexToGridColumn( rows, i, colsNum - 1 ) + 1;
 			
@@ -232,7 +232,7 @@ define( [
 				if ( colSpan == 1 ) {
 					cols.last().removeAttr( 'colspan' );
 				}
-				
+
 				colsCount += ( colSpan - 1 );
 			}
 			
@@ -267,7 +267,7 @@ define( [
 		if ( this.isActive ) {
 			return;
 		}
-		
+
 		var that = this,
 		    htmlTableWrapper,
 		    tableWrapper;

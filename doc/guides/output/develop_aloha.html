@@ -59,17 +59,17 @@
       <dd><a href="using_aloha.html">Using Aloha Editor</a></dd>
       <dd><a href="develop_aloha.html">Developing and building Aloha Editor</a></dd>
       <dd><a href="configure_aloha.html">Configuring Aloha Editor</a></dd>
-      <dd><a href="require.html">Aloha dependency management with requireJS</a></dd>
+      <dd><a href="require.html">Aloha dependency management</a></dd>
       <dd><a href="writing_plugins.html">Writing Plugins</a></dd>
     <dt>The Core</dt>
       <dd><a href="core.html">The Core</a></dd>
     <dt>Commands</dt>
       <dd><a href="using_commands.html">Using commands</a></dd>
-    <dt>Ui</dt>
+    <dt>UI</dt>
       <dd><a href="ui.html">Aloha Editor Ui</a></dd>
       <dd><a href="toolbar.html">Aloha Editor toolbar</a></dd>
       <dd><a href="sidebar.html">Aloha Editor sidebar</a></dd>
-      <dd><a href="componenttypes.html">Aloha Editor Ui API</a></dd>
+      <dd><a href="componenttypes.html">Aloha Editor UI API</a></dd>
 </dl>
 <dl class="R">
     <dt>Plugins</dt>
@@ -79,7 +79,12 @@
       <dd><a href="plugin_contenthandler.html">Content Handler</a></dd>
       <dd><a href="plugin_browser.html">Browser</a></dd>
       <dd><a href="plugin_numeratedheaders.html">Numerated Headers</a></dd>
+      <dd><a href="plugin_undo.html">Undo</a></dd>
+      <dd><a href="plugin_table.html">Table</a></dd>
+      <dd><a href="plugin_paste.html">Paste</a></dd>
+      <dd><a href="plugin_formatlesspaste.html">Formatless paste</a></dd>
     <dt>Contributing to Aloha Editor</dt>
+      <dd><a href="releasing.html">Releasing</a></dd>
       <dd>Development Process</dd>
       <dd><a href="style_guide.html">Javascript Style Guide</a></dd>
       <dd><a href="documentation_guidelines.html">Documentation Guidelines</a></dd>
@@ -114,8 +119,43 @@
 git clone git@github.com:YOURNAME/Aloha-Editor.git alohaeditor
 cd alohaeditor
 git checkout dev
-</pre></div><h3 id="building-aloha-building">2 Building  &#8211; Aloha Building</h3>
-<h4 id="debian-linux-mac-os-x">2.1 Debian Linux / Mac OS X</h4>
+</pre></div><h3 id="repository-directory-structure">2 Repository Directory Structure</h3>
+<ul>
+	<li>/</li>
+	<li>/bin &#8211; Build scripts</li>
+	<li>/build &#8211; Build configuration</li>
+</ul>
+<ul>
+	<li>/doc</li>
+	<li>/doc/api &#8211; The <span class="caps">API</span> documentation</li>
+	<li>/doc/guides &#8211; This document</li>
+</ul>
+<ul>
+	<li>/vendor &#8211; Vendor source code. (e.g. ExtJS, require-js, jquery)</li>
+	<li>/target &#8211; Build output folder</li>
+</ul>
+<ul>
+	<li>/src</li>
+	<li>/src/css &#8211; Aloha core css files</li>
+	<li>/src/demo &#8211; Aloha demos</li>
+	<li>/src/img &#8211; Aloha core images</li>
+</ul>
+<ul>
+	<li>/src/lib &#8211; Require plugins and bootstrap files</li>
+	<li>/src/lib/aloha &#8211; Main Aloha Editor core sources</li>
+	<li>/src/lib/vendor &#8211; Vendor source code. E.g. ExtJS, jquery</li>
+	<li>/src/lib/util &#8211; Utility sources. (e.g. json2.js, class.js)</li>
+</ul>
+<ul>
+	<li>/src/plugins</li>
+	<li>/src/plugins/common &#8211; Common plugin bundle</li>
+	<li>/src/plugins/extra &#8211; Extra plugin bundle</li>
+</ul>
+<ul>
+	<li>/src/test &#8211; QUnit tests</li>
+</ul>
+<h3 id="building-aloha-building">3 Building  &#8211; Aloha Building</h3>
+<h4 id="debian-linux-mac-os-x">3.1 Debian Linux / Mac OS X</h4>
 <ul>
 	<li>Install nodejs See: http://nodejs.org</li>
 </ul>
@@ -153,16 +193,16 @@ ln -s /Users/{username}/lib/node_modules/requirejs/bin/r.js /Users/{username}/bi
 
 cd alohaeditor
 ./bin/build.sh build/aloha
-</pre></div><h4 id="other-os">2.2 Other OS:</h4>
+</pre></div><h4 id="other-os">3.2 Other OS:</h4>
 <ul>
 	<li>Microsoft Windows: Not yet supported</li>
 </ul>
-<h3 id="guide">3 Guide</h3>
+<h3 id="guide">4 Guide</h3>
 <ul>
 	<li><a href="http://redcloth.org/hobix.com/textile/">Textile manual</a></li>
 </ul>
-<h4 id="installation">3.1 Installation</h4>
-<h5 id="debian-linux">3.1.1 Debian Linux</h5>
+<h4 id="installation">4.1 Installation</h4>
+<h5 id="debian-linux">4.1.1 Debian Linux</h5>
 <div class="code_container">
 <pre class="brush: plain; gutter: false; toolbar: false">
 
@@ -174,16 +214,16 @@ ln -s gem1.9.1  gem
 gem install guides
 ln -s /var/lib/gems/1.9.1/gems/guides-0.7.1/bin/guides /usr/bin/guides
 guides preview 
-</pre></div><h5 id="mac-osx">3.1.2 Mac <span class="caps">OSX</span></h5>
+</pre></div><h5 id="mac-osx">4.1.2 Mac <span class="caps">OSX</span></h5>
 <div class="code_container">
 <pre class="brush: plain; gutter: false; toolbar: false">
 
 gem install guides
-</pre></div><h5 id="microsoft-windows">3.1.3 Microsoft Windows</h5>
+</pre></div><h5 id="microsoft-windows">4.1.3 Microsoft Windows</h5>
 <ul>
 	<li><a href="http://guides-pkg.strobeapp.com/Guides.exe">Download Guides.exe</a></li>
 </ul>
-<h4 id="using-the-guides">3.2 Using the Guides</h4>
+<h4 id="using-the-guides">4.2 Using the Guides</h4>
 <ul>
 	<li>Preview Guides:</li>
 </ul>
@@ -200,7 +240,7 @@ guides preview
 <pre class="brush: plain; gutter: false; toolbar: false">
 
 guides build
-</pre></div><h3 id="changelog">4 Changelog</h3>
+</pre></div><h3 id="changelog">5 Changelog</h3>
 <ul>
 	<li>October 11, 2011: Added building information</li>
 	<li>July 3, 2011: Initial version by <a href="credits.html#skurfuerst">Sebastian Kurfürst</a> and <a href="credits.html#hlubek">Christopher Hlubek</a></li>
@@ -211,6 +251,7 @@ guides build
           <h3 class="chapter"><img src="images/strobe/chapters.png" alt="" />Chapters</h3>
           <ol class="chapters">
             <li><a href="#clone-from-github"><p>Clone from Github</p>
+</a></li><li><a href="#repository-directory-structure"><p>Repository Directory Structure</p>
 </a></li><li><a href="#building-aloha-building"><p>Building  &#8211; Aloha Building</p>
 </a><ul><li><a href="#debian-linux-mac-os-x"><p>Debian Linux / Mac OS X</p>
 </a></li> <li><a href="#other-os"><p>Other OS:</p>

@@ -19,6 +19,17 @@
 	*height: 9px;
 }
 
+.cnr-crop-apply {
+	background-image: url(../../img/crop-buttons.gif) !important;
+	background-position: -2px -2px !important;
+}
+
+
+.cnr-crop-cancel {
+	background-image: url(../../img/crop-buttons.gif) !important;
+	background-position: 23px -2px !important;
+}
+
 .jcrop-tracker { width: 100%; height: 100%; }
 
 .custom .jcrop-vline,

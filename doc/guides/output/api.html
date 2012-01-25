@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>: The Aloha Editor Ui</title>
+  <title>: The Aloha Editor UI</title>
 
   <!-- guides styles -->
   <link rel="stylesheet" type="text/css" href="stylesheets/style.css" />
@@ -59,17 +59,17 @@
       <dd><a href="using_aloha.html">Using Aloha Editor</a></dd>
       <dd><a href="develop_aloha.html">Developing and building Aloha Editor</a></dd>
       <dd><a href="configure_aloha.html">Configuring Aloha Editor</a></dd>
-      <dd><a href="require.html">Aloha dependency management with requireJS</a></dd>
+      <dd><a href="require.html">Aloha dependency management</a></dd>
       <dd><a href="writing_plugins.html">Writing Plugins</a></dd>
     <dt>The Core</dt>
       <dd><a href="core.html">The Core</a></dd>
     <dt>Commands</dt>
       <dd><a href="using_commands.html">Using commands</a></dd>
-    <dt>Ui</dt>
+    <dt>UI</dt>
       <dd><a href="ui.html">Aloha Editor Ui</a></dd>
       <dd><a href="toolbar.html">Aloha Editor toolbar</a></dd>
       <dd><a href="sidebar.html">Aloha Editor sidebar</a></dd>
-      <dd><a href="componenttypes.html">Aloha Editor Ui API</a></dd>
+      <dd><a href="componenttypes.html">Aloha Editor UI API</a></dd>
 </dl>
 <dl class="R">
     <dt>Plugins</dt>
@@ -79,7 +79,12 @@
       <dd><a href="plugin_contenthandler.html">Content Handler</a></dd>
       <dd><a href="plugin_browser.html">Browser</a></dd>
       <dd><a href="plugin_numeratedheaders.html">Numerated Headers</a></dd>
+      <dd><a href="plugin_undo.html">Undo</a></dd>
+      <dd><a href="plugin_table.html">Table</a></dd>
+      <dd><a href="plugin_paste.html">Paste</a></dd>
+      <dd><a href="plugin_formatlesspaste.html">Formatless paste</a></dd>
     <dt>Contributing to Aloha Editor</dt>
+      <dd><a href="releasing.html">Releasing</a></dd>
       <dd>Development Process</dd>
       <dd><a href="style_guide.html">Javascript Style Guide</a></dd>
       <dd><a href="documentation_guidelines.html">Documentation Guidelines</a></dd>
@@ -95,20 +100,20 @@
     <div class="wrapper">
       <div id="mainCol">
           <div class="headerSection">
-            <h2>The Aloha Editor Ui</h2>
+            <h2>The Aloha Editor UI</h2>
 <p>After reading this guide, you will be able to:</p>
 <ul>
-	<li>Understand how the Aloha Ui works</li>
-	<li>Configure your Aloha Editor Ui</li>
-	<li>Write your own Aloha Editor Ui components</li>
+	<li>Understand how the Aloha UI works</li>
+	<li>Configure your Aloha Editor UI</li>
+	<li>Write your own Aloha Editor UI components</li>
 	<li>Write your own Aloha Editor component types</li>
 </ul>
 
           </div>
         
-<div class="warning"><p>This guide is currently a draft for the Aloha Editor jQuery Ui, which is supposed to be the next generation Ui for Aloha Editor. Your feedback is welcome!</p></div>
-<h3 id="what-is-the-aloha-editor-ui">1 What is the Aloha Editor Ui</h3>
-<p>The Aloha Editor Ui consists of 4 root containers. A container may accept components. A component is an implementation of a specific component type. The provided containers are:</p>
+<div class="warning"><p>This guide is currently a draft for the Aloha Editor jQuery UI, which is supposed to be the next generation UI for Aloha Editor. Your feedback is welcome!</p></div>
+<h3 id="what-is-the-aloha-editor-ui">1 What is the Aloha Editor UI</h3>
+<p>The Aloha Editor UI consists of 4 root containers. A container may accept components. A component is an implementation of a specific component type. The provided containers are:</p>
 <ul>
 	<li>The <tt>Aloha.ui.toolbar</tt> provides context sensitive interaction items for main use. The toolbar may contain components in each group, where a tab contains groups.</li>
 	<li>The <tt>Aloha.ui.sidebar</tt> provides attribute modification or extended functionality like commenting for more advanced users. The sidebar may contain components in each tab.</li>
@@ -124,8 +129,8 @@
 	<li><tt>Aloha.ui.bold</tt> is a togglecommandbutton compontentype that removes the bold tag if the selections start in a bold tag or surrounds the word (if selection collapsed) or selection into a bold tag.</li>
 	<li>and many more (see <span class="caps">TODO</span> link for more components)</li>
 </ul>
-<p>The default Aloha Editor Ui containers and components can be extended or replaced completely. All modifications of content are decoupled and available as <strong>commands</strong>. See the command api for more details on specific <strong>commands</strong>.</p>
-<h3 id="configuring-the-aloha-editor-ui">2 Configuring the Aloha Editor Ui</h3>
+<p>The default Aloha Editor UI containers and components can be extended or replaced completely. All modifications of content are decoupled and available as <strong>commands</strong>. See the command api for more details on specific <strong>commands</strong>.</p>
+<h3 id="configuring-the-aloha-editor-ui">2 Configuring the Aloha Editor UI</h3>
 <p>Every Container and every component may have its own configuration settings. The containers and components come with default settings which are accessable in the namespace of the container or component. The values of settings are contianer and component specific.</p>
 <div class="code_container">
 <pre class="brush: javascript; gutter: false; toolbar: false">
@@ -144,7 +149,7 @@ Aloha.settings.ui.component = { name: value };
 <div class="code_container">
 <pre class="brush: javascript; gutter: false; toolbar: false">
 
-$('.editable).aloha( { ui.component: { name: value } } );
+$('.editable).aloha( { UI.component: { name: value } } );
 </pre></div><h3 id="containers">3 Containers</h3>
 <div class="warning"><p>How to initialize containers?</p></div>
 <h4 id="toolbar">3.1 Toolbar</h4>
@@ -203,8 +208,8 @@ Aloha.settings.sidebar = {
         <div id="subCol">
           <h3 class="chapter"><img src="images/strobe/chapters.png" alt="" />Chapters</h3>
           <ol class="chapters">
-            <li><a href="#what-is-the-aloha-editor-ui"><p>What is the Aloha Editor Ui</p>
-</a></li><li><a href="#configuring-the-aloha-editor-ui"><p>Configuring the Aloha Editor Ui</p>
+            <li><a href="#what-is-the-aloha-editor-ui"><p>What is the Aloha Editor UI</p>
+</a></li><li><a href="#configuring-the-aloha-editor-ui"><p>Configuring the Aloha Editor UI</p>
 </a></li><li><a href="#containers"><p>Containers</p>
 </a><ul><li><a href="#toolbar"><p>Toolbar</p>
 </a></li> <li><a href="#sidebar"><p>Sidebar</p>
