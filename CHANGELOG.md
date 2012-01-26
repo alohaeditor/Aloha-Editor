@@ -6,33 +6,51 @@ This document is to serve as a "what has been done" in terms of the [Roadmap](ht
 
 
 ## 0.20.3 - 2012/01/24
-- image-plugin: The imageplugin will now only display the crop buttons when the cropping area selection was finished. This avoids a bug in Internet Explorer 7 where the crop area could not be resized once the user entered those crop buttons.
-- core: fixed floating menu pinning with topalign behaviour (topalignOffset, horizontalOffset)
+- **BUG** core: Removes ExtJS' IE6 style fixes which break layout in IE9.
+- **BUG** image-plugin: The image plugin will now only display the crop buttons
+          when the cropping area selection was finished. This avoids a bug in
+		  Internet Explorer 7 where the crop area could not be resized once the
+		  user entered those crop buttons.
+- **BUG** core: Fixed floating menu pinning with topalign behaviour
+          (topalignOffset, horizontalOffset)
 
 ## 0.20.2 - 2012/01/19
-- image-plugin: Replaced unicode characters in the crop buttons with images to fix display issues within Internet Explorer 7.
-- core: Fixed problem where Internet Explorer 7 and jquery.store will not work with frames since it will fallback to window.name storage. We'll now use a void storage for IE7. This means that IE7 will not be able to store floating menu postion and other settings.
-- core: Fixed problem of Internet Explorer 7 crashing when invoking jQuery's `removeAttr`.
-- ecma5shims: Function `getRootParent` in ecma5schims.js no longer throws an
-              error when `null` or `undefined` is passed to it.
-- core: fixed incorrect dependency on jquery.json-2.2 where util/json2 is needed instead and made it globally available
-- core: Removed unneeded JSON empty function definition that surpressed errors in IE
-- guides: Updated guides. They now include a directory structure explanation and a detailed release guide.
-- word contenthandler: html cleanup for empty tags, removal of spans and the paragraph numbering from TOC feature
+- **BUG** image-plugin: Replaced unicode characters in the crop buttons with
+          images to fix display issues within Internet Explorer 7.
+- **BUG** core: Fixed problem where Internet Explorer 7 and jquery.store will
+          not work with frames since it will fallback to window.name storage.
+		  We'll now use a void storage for IE7. This means that IE7 will not be
+		  able to store floating menu postion and other settings.
+- **BUG** core: Fixed problem of Internet Explorer 7 crashing when invoking
+          jQuery's `removeAttr`.
+- **BUG** html5shims: Function `getRootParent` in ecma5schims.js no longer
+          throws an error when `null` or `undefined` is passed to it.
+- **BUG** core: fixed incorrect dependency on jquery.json-2.2 where util/json2
+          is needed instead and made it globally available
+- **ENHANCEMENT** core: Removed unneeded JSON empty function definition that
+                  surpressed errors in IE.
+- **ENHANCEMENT** guides: Updated guides. They now include a directory
+                  structure explanation and a detailed release guide.
+- **ENHANCEMENT** word contenthandler: html cleanup for empty tags, removal of
+                  spans and the paragraph numbering from TOC feature.
 
 ## 0.20.1 2012/01/13
-
-- table-plugin: fixed incorrect repairing of tables (cells were appended to rows containing th elements)
+- **ENHANCEMENT** table-plugin: fixed incorrect repairing of tables (cells were
+                  appended to rows containing th elements).
 
 ## 0.20.0 2011/12/27
-
-- doc/api: added first version of new API docs. Please note that the API docs are currently work in progress.
-- floatingmenu: fixed a bug with topalign behaviour where scrolling would attach the floatingmenu to the left side of the screen
+- **ENHANCEMENT** doc/api: added first version of new API docs. Please note
+                  that the API docs are currently work in progress.
+- **BUG** floatingmenu: fixed a bug with topalign behaviour where scrolling
+          would attach the floatingmenu to the left side of the screen.
 
 ## 0.20.0-RC9 - 2011/12/07
-
-- image-plugin: The saved aspect ratio will now be correcly recalculated when a cropping action is sucessfully ended. Previously the aspect ratio was not recalculated and therefore resizing of images resulted in unexpected image sizes.
-- formatlesspaste plugin: The elements stripped by the formatlesspaste plugin can now be configured like this
+- **BUG** image-plugin: The saved aspect ratio will now be correcly
+          recalculated when a cropping action is sucessfully ended. Previously
+		  the aspect ratio was not recalculated and therefore resizing of
+		  images resulted in unexpected image sizes.
+- **FEATURE** formatlesspaste plugin: The elements stripped by the
+              formatlesspaste plugin can now be configured like this
 
 ```javascript
 	"formatlesspaste" :{
@@ -45,9 +63,12 @@ This document is to serve as a "what has been done" in terms of the [Roadmap](ht
 			}
 ```
 
-- wai-lang plugin: The styling of the language input field, and dropdown suggestion box has been improved.
-- listenforcer-plugin: The enforce method is now a private function.
-- listenforcer-plugin: List enforcer plugin configuration should change
+- **FEATURE** wai-lang plugin: The styling of the language input field, and
+              dropdown suggestion box has been improved.
+- **ENHANCEMENT** listenforcer-plugin: The enforce method is now a private
+                  function.
+- **FEATURE** listenforcer-plugin: List enforcer plugin configuration should
+              change
 
 ```javascript
 	// ... from this:
@@ -66,53 +87,96 @@ This document is to serve as a "what has been done" in terms of the [Roadmap](ht
 	}
 ```
 
-- listenforcer-plugin: The listenforcer plugin removes any non-list top-level elements to ensure that an editable in which lists are enforced will contain exactly one list as the only immediate child of the editable.
-- some changes in the Browser Plugin (browser.js) to allow multiple, distinguishable instances of browsers on the same page
-- customizable numerated-header plugin. Fixed issue: when header content is deleted, the numeration tag will be deleted, too
+- **FEATURE** listenforcer-plugin: The listenforcer plugin removes any non-list
+              top-level elements to ensure that an editable in which lists are
+			  enforced will contain exactly one list as the only immediate
+			  child of the editable.
+- **ENHANCEMENT** some changes in the Browser Plugin (browser.js) to allow
+                  multiple, distinguishable instances of browsers on the same
+				  page
+- **BUG** customizable numerated-header plugin: when header content is deleted,
+          the numeration tag will be deleted, too
 
 ## 0.20.0-RC8 - 2011/11/22
-
-- listenforcer-plugin: The listenforcer plugin was refactored. Method names were changed and the way the plugin works with lists was also changed. It will now no longer replace list dom elments. Instead it will move sibling lists into the first list element within the editable. Previously the whole element was replaced and thus the selection was lost. This caused problems with the floating menu. The user had to click two times into a list to make the floating menu appear since the selection was lost due to dom replacements. This is now fixed.
-- core: The aloha-editable-activated will now no longer invoked twice.
-- image-plugin: Fixed handling of width and height when the user entered the cropping mode. You can resize the crop area by entering values in the width and height field. 
-- list-plugin/link-plugin: The list plugin interfered with the link plugin behaviour. Previously it was not possible to create links within a list due to a bug within the list plugin. The list plugin will now no longer use the Aloha.List scope.
-- link-plugin: Fixed problem with auto-suggestion mechanism for the link input field causing the the wrong href value to be taken.
+- **ENHANCEMENT** listenforcer-plugin: The listenforcer plugin was refactored.
+                  Method names were changed and the way the plugin works with
+				  lists was also changed. It will now no longer replace list
+				  dom elments. Instead it will move sibling lists into the
+				  first list element within the editable. Previously the whole
+				  element was replaced and thus the selection was lost. This
+				  caused problems with the floating menu. The user had to click
+				  two times into a list to make the floating menu appear since
+				  the selection was lost due to dom replacements. This is now
+				  fixed.
+- **BUG** core: The aloha-editable-activated will now no longer invoked twice.
+- **BUG** image-plugin: Fixed handling of width and height when the user
+          entered the cropping mode. You can resize the crop area by entering
+		  values in the width and height field. 
+- **BUG** list-plugin/link-plugin: The list plugin interfered with the link
+          plugin behaviour. Previously it was not possible to create links
+		  within a list due to a bug within the list plugin. The list plugin
+		  will now no longer use the Aloha.List scope.
+- **BUG** link-plugin: Fixed problem with auto-suggestion mechanism for the
+          link input field causing the the wrong href value to be taken.
 
 ## 0.20.0-RC7 - 2011/11
-
-- link-plugin: Fixed javascript error that occured when linking items using the repository browser in Internet Explorer 8.
-- boilerplate demo: Fixed javascript error that occured in Internet Explorer 8.
-- flag-icons plugin: It is now necessary to add the flag-icons plugin in the aloha plugin load order before any plugins that need to use the shared flag icons.
-- metaview-plugin: Fixed metaview plugin to use shared flags icon from flag-icons plugin, for consistancy between plugins.
-- wai-lang-plugin: Improved wai-lang language selection ui. Organized flags to be in a plugin their own plugin so that the icons can be shared between other components.
-- link-plugin: The autocomplete list was not closed properly when esc was pressed.
+- **BUG** link-plugin: Fixed javascript error that occured when linking items
+          using the repository browser in Internet Explorer 8.
+- **BUG** boilerplate demo: Fixed javascript error that occured in Internet
+          Explorer 8.
+- **ENHANCEMENT** flag-icons plugin: It is now necessary to add the flag-icons
+                  plugin in the aloha plugin load order before any plugins that
+				  need to use the shared flag icons.
+- **ENHANCEMENT** metaview-plugin: Fixed metaview plugin to use shared flags
+                  icon from flag-icons plugin, for consistancy between plugins.
+- **ENHANCEMENT** wai-lang-plugin: Improved wai-lang language selection ui.
+                  Organized flags to be in a plugin their own plugin so that
+				  the icons can be shared between other components.
+- **BUG** link-plugin: The autocomplete list is now closed properly when esc
+          was pressed.
 
 ## 0.20.0-RC6 - 2011/11
-
-- link-plugin/linkbrowser-plugin: Previously the highlight css for a link was not removed after an item was selected by the linkbrowser. Now highlight css will be correctly removed and the cursor will be placed back into the content. Previously the selection was lost.
-- table-plugin: Fixed a bug that deactivated tables after 5 seconds. This issue was caused by a failure within the table registry. Instead of loading the cloned object the original table was loaded and deactivated.
+- **BUG** link-plugin/linkbrowser-plugin: Previously the highlight css for a
+          link was not removed after an item was selected by the linkbrowser.
+		  Now highlight css will be correctly removed and the cursor will be
+		  placed back into the content. Previously the selection was lost.
+- **BUG** table-plugin: Fixed a bug that deactivated tables after 5 seconds.
+          This issue was caused by a failure within the table registry. Instead
+		  of loading the cloned object the original table was loaded and
+		  deactivated.
 
 ## 0.20.0-RC5 - 2011/11
-
-- link-plugin: The link plugin will no longer remove repository data attributes from the link when the user clicks a link and leaves it imediately. Previously those repository data attributes where removed when the repository lookup was not finished on time (before the user left the link). For the user the repository link was transformed to a normal link. This is now fixed.
+- **BUG** link-plugin: The link plugin will no longer remove repository data
+          attributes from the link when the user clicks a link and leaves it
+		  imediately. Previously those repository data attributes where removed
+		  when the repository lookup was not finished on time (before the user
+		  left the link). For the user the repository link was transformed to a
+		  normal link. This is now fixed.
 
 
 ## 0.20.0-RC4 - 2011/11
-
-- FloatingMenu: The FloatingMenu will now check the Aloha.settings.floatingmenu.topalignOffset parameter to be not undefined, as checking for 'number' was too strict
+- **BUG** FloatingMenu: The FloatingMenu will now check the
+          Aloha.settings.floatingmenu.topalignOffset parameter to be not
+		  undefined, as checking for 'number' was too strict
 
 ## 0.20.0-RC3 - 2011/11
-
-- link-plugin: The default behaviour for the link plugin has changed. Links with empty hrefs will not be removed automatically any longer - removing the current href has to be confirmed by pressing enter to delete the link itself. Use the unlink button to remove the link directly.
+- **FEATURE** link-plugin: The default behaviour for the link plugin has
+              changed. Links with empty hrefs will not be removed automatically
+			  any longer - removing the current href has to be confirmed by
+			  pressing enter to delete the link itself. Use the unlink button
+			  to remove the link directly.
 
 ## 0.20.0-RC2 - 2011/11
-
-- link-plugin: Fixed bug in link-plugin, which prevented correct selection of items from the repository browser when creating a link on a fresh page
-- browser-plugin: Fixed a bug that prevented the browser plugin to load its dependencies correctly.
+- **BUG** link-plugin: Fixed bug in link-plugin, which prevented correct
+          selection of items from the repository browser when creating a link
+		  on a fresh page
+- **BUG** browser-plugin: Fixed a bug that prevented the browser plugin to load
+          its dependencies correctly.
 
 ## 0.20.0-RC1 - 2011/11
-
-- link-plugin: Fixed a bug that prevented correct selection of items from the repository browser when a new link was created on a fresh loaded page.
+- **BUG** link-plugin: Fixed a bug that prevented correct selection of items
+          from the repository browser when a new link was created on a fresh
+		  loaded page.
 
 ## 0.20-BETA - 2011/11
 - core: Add option for "cls" property to be added to ui-attributefields. cls will be an optional extra CSS class that will be added to this component's Element. This can be useful for adding customized styles to the component or any of its children using standard CSS rules. (http://docs.sencha.com/ext-js/4-0/#!/api/Ext.AbstractComponent-cfg-cls)
