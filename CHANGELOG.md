@@ -1,6 +1,15 @@
 # Aloha Editor Changelog
 
-This document is to serve as a "what has been done" in terms of the [Roadmap](http://aloha-editor.org/wiki/Roadmap)
+This document is to serve as a "what has been done" in terms of the [Roadmap]
+(http://aloha-editor.org/wiki/Roadmap).
+
+All changes are categorized into one of the following keywords:
+
+- **BUG**: The change fixes a bug.
+- **ENHANCEMENT**: The change improves the software, but otherwise makes no
+                   functional change to any feature.
+- **FEATURE**: The change introduces a new feature, or modifies the function,
+               usage, or intent of an existing one.
 
 ## 0.20.4 - SNAPSHOT
 
@@ -270,7 +279,6 @@ This document is to serve as a "what has been done" in terms of the [Roadmap](ht
 ## 0.10.-0.19.0
 The reason for not releasing this builds was the ongoing refactoring of the core engine to implement all functionallities based on execCommand.
 Non of these releases reached a production ready state. We still increased the release number due to the fact that we also tested the new release process with maven and archivia and it would brake dependencies if we wouldn't have increased the version number.
-
 
 ## 0.9.3 - October 2010
 	- Link/Href handling
