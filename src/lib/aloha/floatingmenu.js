@@ -265,6 +265,17 @@ function(Aloha, jQuery, Ext, Class, console) {
 		}
 	});
 
+	//=========================================================================
+	//
+	// Floating Menu
+	//
+	//=========================================================================
+
+	var lastFloatingMenuPos = {
+		top: null,
+		left: null
+	};
+
 	/**
 	 * Handler for window scroll event. Positions the floating menu
 	 * appropriately.
@@ -798,31 +809,53 @@ function(Aloha, jQuery, Ext, Class, console) {
 
 				// Float the menu to the editable that is activated.
 				Aloha.bind( 'aloha-editable-activated', function( event, data ) {
-					var pos = data.editable.obj.offset();
+					if ( that.pinned ) {
+						return;
+					}
 
 					// FIXME: that.obj.height() does not return the correct
 					//        height of the editable.  We need to fix this, and
 					//        not hard-code the height as we currently do.
+					var editable = data.editable.obj;
 					var floatingmenuHeight = 90;
+					var editablePos = editable.offset();
+					var isFloatingmenuAboveViewport = ( (
+						editablePos.top - floatingmenuHeight )
+						    < jQuery( document ).scrollTop() );
 
-					pos.top -= ( floatingmenuHeight + that.topalignOffset );
-					pos.left += that.horizontalOffset;
+					if ( isFloatingmenuAboveViewport ) {
+						// Since we don't have space to place the floatingmenu
+						// above the editable, we want to place it over the
+						// editable instead.  But if the editable is shorter
+						// than the floatingmenu, it would be completely
+						// covered by it, and so, in such cases, we position
+						// the editable at the bottom of the short editable.
+						editablePos.top = ( editable.height()
+						         < floatingmenuHeight )
+							? editablePos.top + editable.height()
+							: jQuery( document ).scrollTop();
 
-					if ( that.pinned ) {
-						that.floatTo( pos );
-
-					// Top of editable is above top of viewport.
-					} else if ( pos.top < jQuery( document ).scrollTop() ) {
-						that.obj.css( 'top',
-							jQuery( document ).scrollTop() + that.marginTop );
-						that.obj.css( 'left', pos.left );
-						that.togglePin( false );
-
-					// Top of editable is below the top of the viewport.
+						editablePos.top += that.marginTop;
 					} else {
-						that.togglePin( false );
-						that.floatTo( pos );
+						editablePos.top -= floatingmenuHeight
+						                 + that.topalignOffset;
 					}
+
+					editablePos.left += that.horizontalOffset;
+
+					var HORIZONTAL_PADDING = 10;
+					// Calculate by how much the floating menu is pocking
+					// outside the width of the viewport.  A positive number
+					// means that is is outside the viewport, negative means
+					// it is within the viewport.
+					var overhang = ( ( editablePos.left + that.width
+						+ HORIZONTAL_PADDING ) - jQuery(window).width() );
+
+					if ( overhang > 0 ) {
+						editablePos.left -= overhang;	
+					}
+
+					that.floatTo( editablePos );
 				});
 			}
 		},
@@ -1262,24 +1295,47 @@ function(Aloha, jQuery, Ext, Class, console) {
 				return;
 			}
 
-			var that = this,
-			    fmpos = this.obj.offset();
+			var floatingmenu = this,
+			    fmpos = this.obj.offset(),
+				lastLeft,
+				lastTop;
+			
+			if ( lastFloatingMenuPos.left === null ) {
+				lastLeft = fmpos.left;
+				lastTop = fmpos.top;
+			} else {
+				lastLeft = lastFloatingMenuPos.left;
+				lastTop = lastFloatingMenuPos.top;
+			}
 
-			// move to the new position
-			if (fmpos.left != position.left || fmpos.top != position.top) {
-				this.obj.animate({
-					top:  position.top,
+			// Place the floatingmenu to the last place the user had seen it,
+			// then animate it into its new position.
+			if ( lastLeft != position.left || lastTop != position.top ) {
+				this.obj.offset({
+					left: lastLeft,
+					top: lastTop
+				});
+
+				this.obj.animate( {
+					top: position.top,
 					left: position.left
 				}, {
 					queue : false,
-					step : function (step, props) {
+					step : function( step, props ) {
 						// update position reference
-						if (props.prop == 'top') {
-							that.top = props.now;
-						} else if (props.prop == 'left') {
-							that.left = props.now;
+						if ( props.prop === 'top' ) {
+							floatingmenu.top = props.now;
+						} else if ( props.prop === 'left' ) {
+							floatingmenu.left = props.now;
 						}
-						that.refreshShadow(false);
+
+						floatingmenu.refreshShadow( false );
+					},
+					complete: function() {
+						// When the animation is over, remember the floatingmenu's
+						// final resting position.
+						lastFloatingMenuPos.left = floatingmenu.left;
+						lastFloatingMenuPos.top = floatingmenu.top;
 					}
 				});
 			}
@@ -1344,3 +1400,4 @@ function(Aloha, jQuery, Ext, Class, console) {
 	
 	return menu;
 });
+
