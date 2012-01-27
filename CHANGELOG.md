@@ -12,7 +12,7 @@ All changes are categorized into one of the following keywords:
                usage, or intent of an existing one.
 
 ## 0.20.4 - SNAPSHOT
-
+- word contenthandler: cleanup for pasted word documents with table of contents
 
 ## 0.20.3 - 2012/01/24
 - **BUG** floatingmenu: Fixed positioning of floating menu when it extends
