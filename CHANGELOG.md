@@ -11,7 +11,7 @@ All changes are categorized into one of the following keywords:
 - **FEATURE**: The change introduces a new feature, or modifies the function,
                usage, or intent of an existing one.
 
-## 0.20.4 - SNAPSHOT
+## 0.20.4 - 2012/01/27
 
 - **BUG** core: fixed IE7 browser crash caused by dereferencing element attributes.
 - **BUG** floatingmenu: Fixed positioning of floating menu when it extends
