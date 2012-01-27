@@ -4,6 +4,7 @@ This document is to serve as a "what has been done" in terms of the [Roadmap](ht
 
 ## 0.20.4 - SNAPSHOT
 
+- core: fixed IE7 browser crash caused by dereferencing element attributes.
 
 ## 0.20.3 - 2012/01/24
 - image-plugin: The imageplugin will now only display the crop buttons when the cropping area selection was finished. This avoids a bug in Internet Explorer 7 where the crop area could not be resized once the user entered those crop buttons.
