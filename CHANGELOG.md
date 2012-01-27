@@ -13,11 +13,12 @@ All changes are categorized into one of the following keywords:
 
 ## 0.20.4 - SNAPSHOT
 
-- core: fixed IE7 browser crash caused by dereferencing element attributes.
+- **BUG** core: fixed IE7 browser crash caused by dereferencing element attributes.
+- **BUG** floatingmenu: Fixed positioning of floating menu when it extends
+          beyond the width of the viewport
+
 
 ## 0.20.3 - 2012/01/24
-- **BUG** floatingmenu: Fixed positioning of floating menu when it extends
-          beyond the width of the viewport.
 - **BUG** floatingmenu: Fixed float position of floatingmenu when it moves
           between editables.
 - **BUG** core: Removes ExtJS' IE6 style fixes which break layout in IE9.
