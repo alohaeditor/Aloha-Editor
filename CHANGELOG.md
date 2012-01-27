@@ -13,6 +13,7 @@ All changes are categorized into one of the following keywords:
 
 ## 0.20.4 - SNAPSHOT
 
+- core: fixed IE7 browser crash caused by dereferencing element attributes.
 
 ## 0.20.3 - 2012/01/24
 - **BUG** floatingmenu: Fixed positioning of floating menu when it extends
