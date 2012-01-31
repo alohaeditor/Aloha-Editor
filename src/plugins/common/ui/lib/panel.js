@@ -3,7 +3,19 @@ define([
 	'ui/container',
 	'ui/component',
 ], function( jQuery, Container, Component ) {
+	/**
+	 * Panel class
+	 * @class
+	 * @extends {Container}
+	 */
 	var Panel = Container.extend({
+		/**
+		 * Panel constructor
+		 * @param settings {Object}
+		 * @param components {Array}
+		 * @constructor
+		 * @override
+		 */
 		_constructor: function( settings, components ) {
 			this._super( settings, components );
 
@@ -26,10 +38,16 @@ define([
 			});
 		},
 
+		/**
+		 * Shows the panel
+		 */
 		show: function() {
 			this.element.show();
 		},
 
+		/**
+		 * Hides the panel
+		 */
 		hide: function() {
 			this.element.hide();
 		}
