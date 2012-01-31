@@ -13,7 +13,7 @@ h3. Sidebar concept
 The Sidebar provides to *bars* (left, right) and each bar may contain *tabs*. You may add ui components to tabs. There is only one instance of a the sidebar 
 and it changes its items depending on the acitvated editable.  
 
-<img src=../images/toolbar.png style="width:600px">
+<img src="images/toolbar.png" style="width:600px">
 
 h3. Sidebar integration
 
