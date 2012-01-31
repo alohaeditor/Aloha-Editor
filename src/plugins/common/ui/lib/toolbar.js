@@ -16,7 +16,18 @@ define([
 	// feature/functional set.  For exmaple groups of table controls would be
 	// placed in a table tab, groups of list controls in an image tab, and so
 	// forth.
+	/**
+	 * The Toolbar class and manager.
+	 * @class
+	 * @extends {Surface}
+	 */
 	var Toolbar = Surface.extend({
+		/**
+		 * Toolbar constructor
+		 * @param editable {Aloha.Editable}
+		 * @constructor
+		 * @override
+		 */
 		_constructor: function( editable ) {
 			this._super( editable );
 
@@ -46,6 +57,9 @@ define([
 			}
 		},
 
+		/**
+		 * Shows the toolbar
+		 */
 		show: function() {
 			// We hide any active controls and show this editable's controls.
 			Toolbar.element.children().detach();
@@ -53,6 +67,9 @@ define([
 			Toolbar.element.stop().fadeTo( 200, 1 );
 		},
 
+		/**
+		 * Hides the toolbar
+		 */
 		hide: function() {
 			var toolbar = this;
 			Toolbar.element.stop().fadeOut( 200, function() {
@@ -62,6 +79,9 @@ define([
 	});
 
 	jQuery.extend( Toolbar, {
+		/**
+		 * Initializes the toolbar manager
+		 */
 		init: function() {
 			Toolbar.element = jQuery( "<div>", {
 				"class": "aloha-surface aloha-toolbar"
@@ -72,6 +92,11 @@ define([
 			Surface.trackRange( Toolbar.element );
 		},
 
+		/**
+		 * Creates a toolbar for an editable
+		 * @param editable {Aloha.Editable}
+		 * @returns {Toolbar}
+		 */
 		createSurface: function( editable ) {
 			if ( editable.settings.toolbar && editable.settings.toolbar.length ) {
 				return new Toolbar( editable );

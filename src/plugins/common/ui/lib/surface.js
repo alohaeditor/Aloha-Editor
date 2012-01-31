@@ -4,7 +4,18 @@ define([
 	'util/class',
 	'ui/container'
 ], function( Aloha, jQuery, Class, Container ) {
+	/**
+	 * The base implementation for surface classes. Surface also acts as a
+	 * manager for all surfaces.
+	 * @class
+	 * @base
+	 */
 	var Surface = Class.extend({
+		/**
+		 * Surface constructor
+		 * @param editable {Aloha.Editable}
+		 * @constructor
+		 */
 		_constructor: function( editable ) {
 			this.editable = editable;
 		}
@@ -13,7 +24,7 @@ define([
 	jQuery.extend( Surface, {
 		/**
 		 * The currently active editable that the components interact with.
-		 * @type {object}
+		 * @type {Aloha.Editable}
 		 */
 		active: null,
 
@@ -29,11 +40,14 @@ define([
 		range: null,
 
 		/**
-		 * List of surface types.
-		 * @type {array}
+		 * List of surface types. Each type must extend Surface.
+		 * @type {Array.<{Surface}>}
 		 */
 		surfaceTypes: [],
 
+		/**
+		 * Initializes the surface manager.
+		 */
 		init: function() {
 			// When an editable is activated, we show its associated surfaces.
 			Aloha.bind( "aloha-editable-activated", function( event, alohaEvent ) {
@@ -71,6 +85,10 @@ define([
 			});
 		},
 
+		/**
+		 * Shows all surfaces for an editable.
+		 * @param editable {Aloha.Editable}
+		 */
 		show: function( editable ) {
 			// If this is the first time we're showing the surfaces for this
 			// editable, then we need to initialize the surfaces first.
@@ -83,12 +101,20 @@ define([
 			});
 		},
 
+		/**
+		 * Hides all surfaces for an editable.
+		 * @param editable {Aloha.Editable}
+		 */
 		hide: function( editable ) {
 			jQuery.each( editable.surface.surfaces, function( i, surface ) {
 				surface.hide();
 			});
 		},
 
+		/**
+		 * Initializes all surfaces for an editable.
+		 * @param editable {Aloha.Editable}
+		 */
 		initForEditable: function( editable ) {
 			editable.surface = {
 				surfaces: []

@@ -27,6 +27,12 @@ define([
 	'use strict';
 
 	var uid = 1;
+
+	/**
+	 * Gets the id of a normalized showOn option
+	 * @param showOn {function}
+	 * @return {number}
+	 */
 	function getShowOnId( showOn ) {
 		// store a unique id on the showOn function
 		// see full explanation at top of file
@@ -101,6 +107,11 @@ define([
 	});
 
 	jQuery.extend( Container, {
+		/**
+		 * Normalizes a showOn option into a function
+		 * @param showOwn {(string|boolean|function)}
+		 * @return function
+		 */
 		normalizeShowOn: (function() {
 			var stringFns = [],
 				returnTrue = function() {
