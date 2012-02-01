@@ -20,8 +20,8 @@
 
 "use strict";
 define(
-[ 'aloha/core', 'aloha/jquery', 'aloha/floatingmenu', 'util/class', 'util/range', 'aloha/rangy-core' ],
-function(Aloha, jQuery, FloatingMenu, Class, Range) {
+[ 'aloha/core', 'aloha/jquery', 'aloha/floatingmenu', 'util/class', 'util/range', 'aloha/ecma5shims', 'aloha/rangy-core' ],
+function(Aloha, jQuery, FloatingMenu, Class, Range, $_) {
 	var
 //		$ = jQuery,
 //		Aloha = window.Aloha,
@@ -537,7 +537,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		 */
 		standardSectionsAndGroupingContentComparator: function(domobj, markupObject) {
 			if  (domobj.nodeType === 1) {
-				if (markupObject[0].tagName && Aloha.Selection.replacingElements[ domobj.tagName.toLowerCase() ] && Aloha.Selection.replacingElements[ domobj.tagName.toLowerCase() ].indexOf(markupObject[0].tagName.toLowerCase()) != -1) {
+				if (markupObject[0].tagName && Aloha.Selection.replacingElements[ domobj.tagName.toLowerCase() ] && $_( Aloha.Selection.replacingElements[ domobj.tagName.toLowerCase() ] ).indexOf(markupObject[0].tagName.toLowerCase()) != -1) {
 					return true;
 				}
 			} else {
@@ -1437,7 +1437,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 				return false;
 			}
 			// if something is defined, but the specifig tag is not in the list
-			if (this.allowedToStealElements[ markupName ].indexOf(nodeName) == -1) {
+			if ($_( this.allowedToStealElements[ markupName ] ).indexOf(nodeName) == -1) {
 				return false;
 			}
 			return true;
@@ -1497,7 +1497,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 				return true;
 			}
 			var t1Array = this.tagHierarchy[ t1 ],
-				returnVal = (t1Array.indexOf( t2 ) != -1) ? true : false;
+				returnVal = ($_( t1Array ).indexOf( t2 ) != -1) ? true : false;
 			return returnVal;
 		},
 
@@ -1796,7 +1796,7 @@ function nestedListInIEWorkaround ( range ) {
 		&& range.startContainer.nodeType == 3
 		&& range.startOffset == range.startContainer.data.length
 		&& range.startContainer.nextSibling
-		&& ["OL", "UL"].indexOf(range.startContainer.nextSibling.nodeName) !== -1) {
+		&& $_( ["OL", "UL"] ).indexOf(range.startContainer.nextSibling.nodeName) !== -1) {
 		if (range.startContainer.data[range.startContainer.data.length-1] == ' ') {
 			range.startOffset = range.endOffset = range.startOffset-1;
 		} else {
