@@ -13,11 +13,34 @@ define([
 	'ui/../../link/extra/linklist'
 ],
 function( Aloha, jQuery, i18n, Browser, Component, Surface, Autocomplete, Button, ToggleButton, Ui ) {
+	/**
+	 * Link component
+	 * @class
+	 * @override {ToggleButton}
+	 */
 	Component.define( "link", ToggleButton, {
+		/**
+		 * Localized label
+		 * @type {string}
+		 */
 		label: i18n.t( "button.createLink.label" ),
-		icon: "aloha-icon aloha-icon-link",
+
+		/**
+		 * Whether or not to show only the icon
+		 * @type {boolean}
+		 */
 		iconOnly: true,
 
+		/**
+		 * Which icon to render
+		 * @type {string}
+		 */
+		icon: "aloha-icon aloha-icon-link",
+
+		/**
+		 * Click callback
+		 * @override
+		 */
 		click: function() {
 			var state = Aloha.queryCommandValue( "createLink", Surface.range );
 			if ( state ) {
@@ -27,15 +50,32 @@ function( Aloha, jQuery, i18n, Browser, Component, Surface, Autocomplete, Button
 			}
 		},
 
+		/**
+		 * Selection change callback
+		 * @override
+		 */
 		selectionChange: function() {
 			var value = Aloha.queryCommandValue( "createLink" );
 			this.setState( !!value );
 		}
 	});
 
+	/**
+	 * Edit link component
+	 * @class
+	 * @extends {Autocomplete}
+	 */
 	Component.define( "editLink", Autocomplete, {
+		/**
+		 * Template for link items
+		 * @type {string}
+		 */
 		template: "{{name}}<br>{{url}}",
 
+		/**
+		 * Selection change callback
+		 * @override
+		 */
 		selectionChange: function() {
 			var value = Aloha.queryCommandValue( "createLink" );
 			if ( value ) {
@@ -47,20 +87,52 @@ function( Aloha, jQuery, i18n, Browser, Component, Surface, Autocomplete, Button
 			}
 		},
 
+		/**
+		 * Sets the value of the link
+		 * @param {string} href
+		 * @param {Aloha.Repository.Object} item
+		 */
 		setValue: function( href, item ) {
 			Ui.util.createLink( item || href, Surface.range );
 		}
 	});
 
+	/**
+	 * Remove link component
+	 * @class
+	 * @extends {Button}
+	 */
 	Component.define( "removeLink", Button, {
+		/**
+		 * Localized label
+		 * @type {string}
+		 */
 		label: i18n.t( "button.removeLink.label" ),
-		icon: "aloha-icon aloha-icon-unlink",
+
+		/**
+		 * Whether or not to show only the icon
+		 * @type {boolean}
+		 */
 		iconOnly: true,
 
+		/**
+		 * Which icon to render
+		 * @type {string}
+		 */
+		icon: "aloha-icon aloha-icon-unlink",
+
+		/**
+		 * Click callback
+		 * @override
+		 */
 		click: function() {
 			Aloha.execCommand( "unlink", false, null, Surface.range );
 		},
 
+		/**
+		 * Selection change callback
+		 * @override
+		 */
 		selectionChange: function() {
 			var value = Aloha.queryCommandValue( "createLink" );
 			if ( value ) {
@@ -71,9 +143,22 @@ function( Aloha, jQuery, i18n, Browser, Component, Surface, Autocomplete, Button
 		}
 	});
 
+	/**
+	 * Link browser component
+	 * @class
+	 * @extends {Button}
+	 */
 	Component.define( "linkBrowser", Button, {
+		/**
+		 * Localized label
+		 * @type {string}
+		 */
 		label: "...",
 
+		/**
+		 * Initializes the link browser
+		 * @override
+		 */
 		init: function() {
 			this._super();
 			var that = this;
@@ -87,10 +172,18 @@ function( Aloha, jQuery, i18n, Browser, Component, Surface, Autocomplete, Button
 			});
 		},
 
+		/**
+		 * Click callback
+		 * @override
+		 */
 		click: function(){
 			this.browser.show();
 		},
 
+		/**
+		 * Selection change callback
+		 * @override
+		 */
 		selectionChange: function() {
 			var value = Aloha.queryCommandValue( "createLink" );
 			if ( value ) {
@@ -101,13 +194,26 @@ function( Aloha, jQuery, i18n, Browser, Component, Surface, Autocomplete, Button
 		}
 	});
 
+	/**
+	 * Link panel component
+	 * @class
+	 * @extends {Component}
+	 */
 	Component.define( "linkPanel", Component, {
+		/**
+		 * Initializes the link panel
+		 * @override
+		 */
 		init: function() {
 			this.element = jQuery( "<div></div>" );
 			this.createTargetFieldset();
 			this.createTitleFieldset();
 		},
 
+		/**
+		 * Selection change callback
+		 * @override
+		 */
 		selectionChange: function() {
 			var target, foundTarget,
 				anchor = findAnchor();
@@ -140,6 +246,9 @@ function( Aloha, jQuery, i18n, Browser, Component, Surface, Autocomplete, Button
 			this.titleFieldset.find( "input" ).val( anchor.title || "" );
 		},
 
+		/**
+		 * Creates the fieldset for the link target
+		 */
 		createTargetFieldset: function() {
 			var that = this;
 
@@ -172,6 +281,12 @@ function( Aloha, jQuery, i18n, Browser, Component, Surface, Autocomplete, Button
 				});
 		},
 
+		/**
+		 * Creates a link target option
+		 * @param {string} value
+		 * @param {string} label
+		 * @returns {jQuery}
+		 */
 		createTarget: function( value, label ) {
 			return jQuery(
 				"<div>" +
@@ -181,6 +296,9 @@ function( Aloha, jQuery, i18n, Browser, Component, Surface, Autocomplete, Button
 			).appendTo( this.targetFieldset );
 		},
 
+		/**
+		 * Creates the fieldset for the title
+		 */
 		createTitleFieldset: function() {
 			this.titleFieldset = jQuery(
 				"<fieldset>" +
@@ -195,10 +313,20 @@ function( Aloha, jQuery, i18n, Browser, Component, Surface, Autocomplete, Button
 		}
 	});
 
+	/**
+	 * Finds an anchor from a range
+	 * @param {Aloha.Selection} range
+	 * @return {(DOMElement|null)}
+	 */
 	function findAnchor( range ) {
 		return Ui.util.findElemFromRange( "a", range );
 	}
 
+	/**
+	 * Creates an anchor in a range
+	 * @param {string} title
+	 * @param {Aloha.Selection} range
+	 */
 	Ui.util.createLink = function( item, range ) {
 		var href,
 			anchor = findAnchor( range );

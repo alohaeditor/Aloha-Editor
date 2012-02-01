@@ -17,7 +17,7 @@ function( Aloha, jQuery, Class ) {
 
 		/**
 		 * Component constructor
-		 * @param editable {Aloha.Editable}
+		 * @param {Aloha.Editable} editable
 		 * @constructor
 		 */
 		_constructor: function( editable ) {
@@ -62,7 +62,7 @@ function( Aloha, jQuery, Class ) {
 
 		// usually overridden by the component or the settings
 		/**
-		 * Event listener for selection change
+		 * Selection change callback
 		 */
 		selectionChange: function() {}
 	});
@@ -76,10 +76,10 @@ function( Aloha, jQuery, Class ) {
 
 		/**
 		 * Defines a component
-		 * @param name {string} component name
-		 * @param type {Component} component type to inherit from
-		 * @param settings {Object} settings to configure component type
-		 * @returns {Component} generated component class
+		 * @param {string} name Component name
+		 * @param {Component} type Component type to inherit from
+		 * @param {Object} settings Settings to configure component type
+		 * @returns {Component} Generated component class
 		 */
 		define: function( name, type, settings ) {
 			return Component.components[ name ] = type.extend( settings );
@@ -87,8 +87,8 @@ function( Aloha, jQuery, Class ) {
 
 		/**
 		 * Renders a component for an editable
-		 * @param name {string} name of component to render
-		 * @param editable {Aloha.Editable} editable to associate component with
+		 * @param {string} name Name of component to render
+		 * @param {Aloha.Editable} editable Editable to associate component with
 		 * @returns {Component}
 		 */
 		render: function( name, editable ) {

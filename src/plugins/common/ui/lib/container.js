@@ -30,7 +30,7 @@ define([
 
 	/**
 	 * Gets the id of a normalized showOn option
-	 * @param showOn {function}
+	 * @param {function} showOn
 	 * @return {number}
 	 */
 	function getShowOnId( showOn ) {
@@ -109,7 +109,7 @@ define([
 	jQuery.extend( Container, {
 		/**
 		 * Normalizes a showOn option into a function
-		 * @param showOwn {(string|boolean|function)}
+		 * @param {(string|boolean|function)} showOwn
 		 * @return function
 		 */
 		normalizeShowOn: (function() {

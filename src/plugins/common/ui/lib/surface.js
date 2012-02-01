@@ -5,15 +5,14 @@ define([
 	'ui/container'
 ], function( Aloha, jQuery, Class, Container ) {
 	/**
-	 * The base implementation for surface classes. Surface also acts as a
-	 * manager for all surfaces.
+	 * Surface class and manager
 	 * @class
 	 * @base
 	 */
 	var Surface = Class.extend({
 		/**
 		 * Surface constructor
-		 * @param editable {Aloha.Editable}
+		 * @param {Aloha.Editable} editable
 		 * @constructor
 		 */
 		_constructor: function( editable ) {
@@ -23,19 +22,19 @@ define([
 
 	jQuery.extend( Surface, {
 		/**
-		 * The currently active editable that the components interact with.
+		 * Currently active editable that the components interact with
 		 * @type {Aloha.Editable}
 		 */
 		active: null,
 
 		/**
-		 * The currently active range.
+		 * Currently active range
 		 * 
 		 * Interacting with a surface removes focus from the editable, so the
 		 * surface is responsible for keeping track of the range that should
 		 * be modified by the components.
 		 * 
-		 * @type {object}
+		 * @type {Aloha.Selection}
 		 */
 		range: null,
 
@@ -46,7 +45,7 @@ define([
 		surfaceTypes: [],
 
 		/**
-		 * Initializes the surface manager.
+		 * Initializes the surface manager
 		 */
 		init: function() {
 			// When an editable is activated, we show its associated surfaces.
@@ -86,8 +85,8 @@ define([
 		},
 
 		/**
-		 * Shows all surfaces for an editable.
-		 * @param editable {Aloha.Editable}
+		 * Shows all surfaces for an editable
+		 * @param {Aloha.Editable} editable
 		 */
 		show: function( editable ) {
 			// If this is the first time we're showing the surfaces for this
@@ -102,8 +101,8 @@ define([
 		},
 
 		/**
-		 * Hides all surfaces for an editable.
-		 * @param editable {Aloha.Editable}
+		 * Hides all surfaces for an editable
+		 * @param {Aloha.Editable} editable
 		 */
 		hide: function( editable ) {
 			jQuery.each( editable.surface.surfaces, function( i, surface ) {
@@ -112,8 +111,8 @@ define([
 		},
 
 		/**
-		 * Initializes all surfaces for an editable.
-		 * @param editable {Aloha.Editable}
+		 * Initializes all surfaces for an editable
+		 * @param {Aloha.Editable} editable
 		 */
 		initForEditable: function( editable ) {
 			editable.surface = {
@@ -129,8 +128,8 @@ define([
 		},
 
 		/**
-		 * Registers a new surface type.
-		 * @param {object} surface
+		 * Registers a new surface type
+		 * @param {Surface} surface
 		 */
 		registerType: function( surface ) {
 			Surface.surfaceTypes.push( surface );

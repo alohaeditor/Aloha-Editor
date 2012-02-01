@@ -6,13 +6,28 @@ define([
 	"jquery-plugin!./vendor/jquery-ui-autocomplete-html"
 ],
 function( jQuery, RepositoryManager, Component ) {
+	/**
+	 * Generates the HTML for an item
+	 * @param {string} template
+	 * @param {object} item
+	 * @return {string}
+	 */
 	function parse( template, item ) {
 		return template.replace( /{{([^}]+)}}/g, function( _, name ) {
 			return name in item ? item[ name ] : "";
 		});
 	}
 
+	/**
+	 * Autocomplete component type
+	 * @class
+	 * @extends {Component}
+	 */
 	var Autocomplete = Component.extend({
+		/**
+		 * Initializes the autocomplete component
+		 * @override
+		 */
 		init: function() {
 			this._super();
 			var that = this;
@@ -40,6 +55,11 @@ function( jQuery, RepositoryManager, Component ) {
 		},
 
 		// invoked when the user has changed the value and blurred the field
+		/**
+		 * Sets the value of the component
+		 * @param {string} value Raw value
+		 * @param {object} item Structured value
+		 */
 		setValue: function( value, item ) {}
 	});
 

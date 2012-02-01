@@ -17,14 +17,14 @@ define([
 	// placed in a table tab, groups of list controls in an image tab, and so
 	// forth.
 	/**
-	 * The Toolbar class and manager.
+	 * Toolbar class and manager
 	 * @class
 	 * @extends {Surface}
 	 */
 	var Toolbar = Surface.extend({
 		/**
 		 * Toolbar constructor
-		 * @param editable {Aloha.Editable}
+		 * @param {Aloha.Editable} editable
 		 * @constructor
 		 * @override
 		 */
@@ -94,7 +94,7 @@ define([
 
 		/**
 		 * Creates a toolbar for an editable
-		 * @param editable {Aloha.Editable}
+		 * @param {Aloha.Editable} editable
 		 * @returns {Toolbar}
 		 */
 		createSurface: function( editable ) {

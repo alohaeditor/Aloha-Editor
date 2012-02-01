@@ -4,7 +4,16 @@ define([
 	"ui/button"
 ],
 function( jQuery, Component, Button ) {
+	/**
+	 * MultiSplit component type
+	 * @class
+	 * @extends {Component}
+	 */
 	var MultiSplit = Component.extend({
+		/**
+		 * Initializes the multisplit component
+		 * @override
+		 */
 		init: function() {
 			this._super();
 			var editable = this.editable,
@@ -63,6 +72,10 @@ function( jQuery, Component, Button ) {
 			.appendTo( content );
 		},
 
+		/**
+		 * Selection change callback
+		 * @override
+		 */
 		selectionChange: function() {
 			var content = this.contentElement;
 			this.element.find( ".aloha-multisplit-active" )
@@ -76,14 +89,23 @@ function( jQuery, Component, Button ) {
 			});
 		},
 
+		/**
+		 * Toggles the multisplit menu
+		 */
 		toggle: function() {
 			this.element.toggleClass( "aloha-multisplit-open" );
 		},
 
+		/**
+		 * Opens the multisplit menu
+		 */
 		open: function() {
 			this.element.addClass( "aloha-multisplit-open" );
 		},
 
+		/**
+		 * Closes the multisplit menu
+		 */
 		close: function() {
 			this.element.removeClass( "aloha-multisplit-open" );
 		}

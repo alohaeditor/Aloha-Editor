@@ -5,11 +5,20 @@ define([
 function( jQuery, Component ) {
 	// The button component type creates a simple button.
 	// Buttons have no state, they only respond to click events.
+	/**
+	 * Button component type
+	 * @class
+	 * @extends {Component}
+	 */
 	var Button = Component.extend({
 		// The `init` method is invoked when the component is rendered, not when it
 		// is created. This is necessary to allow multiple renderings of the same
 		// component. For example, you may want a component to be in the toolbar
 		// and in the sidebar.
+		/**
+		 * Initializes the button
+		 * @override
+		 */
 		init: function() {
 			this._super();
 			this.createButtonElement()
@@ -33,8 +42,15 @@ function( jQuery, Component ) {
 		},
 
 		// The `click()` method is invoked whenever the user clicks the rendered button.
+		/**
+		 * Click callback
+		 */
 		click: function() {},
 
+		/**
+		 * Creates the element to be used as the button
+		 * @returns {jQuery}
+		 */
 		createButtonElement: function() {
 			return this.element = this.buttonElement = jQuery( "<button>" );
 		}

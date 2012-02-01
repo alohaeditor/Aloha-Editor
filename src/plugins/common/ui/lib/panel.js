@@ -11,8 +11,8 @@ define([
 	var Panel = Container.extend({
 		/**
 		 * Panel constructor
-		 * @param settings {Object}
-		 * @param components {Array}
+		 * @param {Object} settings
+		 * @param {Array} components
 		 * @constructor
 		 * @override
 		 */

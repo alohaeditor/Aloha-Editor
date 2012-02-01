@@ -4,14 +4,14 @@ define([
 	"ui/panel"
 ], function( jQuery, Surface, Panel ) {
 	/**
-	 * The Sidebar class and manager.
+	 * Sidebar class and manager
 	 * @class
 	 * @extends {Surface}
 	 */
 	var Sidebar = Surface.extend({
 		/**
 		 * Sidebar constructor
-		 * @param editable {Aloha.Editable}
+		 * @param {Aloha.Editable} editable
 		 * @constructor
 		 * @override
 		 */
@@ -69,7 +69,7 @@ define([
 
 		/**
 		 * Creates a sidebar for an editable
-		 * @param editable {Aloha.Editable}
+		 * @param {Aloha.Editable} editable
 		 * @returns {Sidebar}
 		 */
 		createSurface: function( editable ) {
