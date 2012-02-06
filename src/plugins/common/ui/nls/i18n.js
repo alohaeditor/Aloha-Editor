@@ -42,7 +42,10 @@ define({
 		"button.justifyFull.label": "Justify",
 		
 		// horizontal rule
-		"button.horizontalRule.label": "Insert horizontal rule"
+		"button.horizontalRule.label": "Insert horizontal rule",
+
+		// language annotation
+		"button.createLanguageAnnotation.label": "Insert language annotation"
 	},
 	"de": true
 });

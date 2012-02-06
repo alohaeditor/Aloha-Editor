@@ -87,17 +87,18 @@
  */
 
 define([
-	'aloha/core'
-], function( Aloha ) {
+	"aloha/core",
+	"aloha/jquery"
+], function( Aloha, jQuery ) {
 	// temporary location helper methods
 	// TODO: these need to live somewhere not tied to the UI
 	var Ui = {
 		util: {
-			findElemFromRange: function( tag, range ) {
+			findElemFromRange: function( selector, range ) {
 				range = range || Aloha.getSelection().getRangeAt( 0 );
 				range = new GENTICS.Utils.RangeObject( range );
 				return range.findMarkup(function() {
-					return this.nodeName.toLowerCase() === tag;
+					return jQuery( this ).is( selector );
 				});
 			}
 		}

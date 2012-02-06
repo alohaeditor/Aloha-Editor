@@ -33,7 +33,7 @@ define({
 	"button.createAbbr.label": "Abk\u00fcrzung einf\u00fcgen",
 	
 	// character picker
-	"button.characterPicker.label": "Sonderzeichen einf&uuml;gen"
+	"button.characterPicker.label": "Sonderzeichen einf&uuml;gen",
 	
 	// justify
 //	"button.justifyLeft.label": "",
@@ -42,5 +42,8 @@ define({
 //	"button.justifyFull.label": "",
 	
 	// horizontal rule
-//	"button.horizontalRule.label: ""
+//	"button.horizontalRule.label: "",
+
+	// language annotation
+	"button.createLanguageAnnotation.label": "Sprachauszeichnung"
 });

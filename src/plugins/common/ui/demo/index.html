@@ -42,7 +42,7 @@
 		}
 	};
 	</script>
-	<script src="../../../../lib/aloha.js" data-aloha-plugins="common/ui,extra/browser"></script>
+	<script src="../../../../lib/aloha.js" data-aloha-plugins="common/ui,extra/browser,extra/wai-lang,extra/flag-icons"></script>
 	<script>
 	Aloha.ready( function() {
 		var $ = Aloha.jQuery;
@@ -54,7 +54,7 @@
 					components: [
 						[ "bold", "italic", "underline", "pipe", "strikethrough", "pipe", "subscript", "superscript" ],
 						[ "orderedList", "unorderedList", "indentList", "outdentList", "pipe", "formatBlock" ],
-						[ "link", "editLink", "removeLink", "linkBrowser", "pipe", "abbr", "editAbbr" ]
+						[ "link", "editLink", "removeLink", "linkBrowser", "pipe", "abbr", "editAbbr", "pipe", "languageAnnotation", "editLanguageAnnotation", "languageBrowser" ]
 					]
 				},
 				{

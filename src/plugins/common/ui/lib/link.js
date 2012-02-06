@@ -324,7 +324,7 @@ function( Aloha, jQuery, i18n, Browser, Component, Surface, Autocomplete, Button
 
 	/**
 	 * Creates an anchor in a range
-	 * @param {string} title
+	 * @param {(string|object)} item URL or repository item
 	 * @param {Aloha.Selection} range
 	 */
 	Ui.util.createLink = function( item, range ) {
