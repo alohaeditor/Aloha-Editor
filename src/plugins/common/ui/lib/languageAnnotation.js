@@ -3,15 +3,15 @@ define([
 	"aloha/jquery",
 	"i18n!ui/nls/i18n", 
 	"browser/browser-plugin",
-	"wai-lang/languages",
 	"ui/component",
 	"ui/surface",
 	"ui/autocomplete",
 	"ui/button",
 	"ui/toggleButton",
-	"ui/ui"
+	"ui/ui",
+	"wai-lang/languages"
 ],
-function( Aloha, jQuery, i18n, Browser, LanguagesRepository, Component, Surface, Autocomplete, Button, ToggleButton, Ui ) {
+function( Aloha, jQuery, i18n, Browser, Component, Surface, Autocomplete, Button, ToggleButton, Ui ) {
 	/**
 	 * Language annotation component
 	 * @class
@@ -75,7 +75,8 @@ function( Aloha, jQuery, i18n, Browser, LanguagesRepository, Component, Surface,
 		 * @override
 		 */
 		selectionChange: function() {
-			var elem = findLangElement();
+			var value,
+				elem = findLangElement();
 			if ( elem ) {
 				this.show();
 				elem = jQuery( elem );
