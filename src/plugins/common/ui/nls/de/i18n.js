@@ -45,5 +45,8 @@ define({
 //	"button.horizontalRule.label: "",
 
 	// language annotation
-	"button.createLanguageAnnotation.label": "Sprachauszeichnung"
+	"button.createLanguageAnnotation.label": "Sprachauszeichnung",
+
+	// metaview
+	"button.metaview.label": "Zwischen Metaansicht und normaler Ansicht umschalten"
 });

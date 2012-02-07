@@ -25,6 +25,7 @@ define([
 	"./languageAnnotation",
 	"./link",
 	"./list",
+	"./metaview",
 	"./paragraph",
 	"./pipe"
 ]);

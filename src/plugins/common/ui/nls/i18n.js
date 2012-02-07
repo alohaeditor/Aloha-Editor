@@ -45,7 +45,10 @@ define({
 		"button.horizontalRule.label": "Insert horizontal rule",
 
 		// language annotation
-		"button.createLanguageAnnotation.label": "Insert language annotation"
+		"button.createLanguageAnnotation.label": "Insert language annotation",
+
+		// metaview
+		"button.metaview.label": "Switch between meta and normal view"
 	},
 	"de": true
 });
