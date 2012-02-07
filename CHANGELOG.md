@@ -14,7 +14,7 @@ All changes are categorized into one of the following keywords:
 
 ## 0.20.5 - SNAPSHOT
 
-
+- **BUG**: paste plugin: removed trim of pasted contents -- test[ text] + 2x c&p results now in test text text instead of testtexttext
 
 
 ## 0.20.4 - 2012/01/27
