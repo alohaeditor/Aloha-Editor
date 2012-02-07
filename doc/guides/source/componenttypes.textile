@@ -130,7 +130,7 @@ h4. MultiSplitButton Component Type +MultiSplitButton+
 
 The +MultiSplitButton+ is intended to provide an array of buttons to select from which will apply interchangeable stylings to selected content. The classic use for the MultiSplitButton is a selection of standard paragraph and header stylings. In case there are more than four buttons it can be extended to reveal additional buttons. The currently applied selection is highlighted. It's also possible to add special buttons at the bottom which are reserved for actions such as removing formatting from selected content.
 
-!../images/MultiSplitButton.png!
+!images/MultiSplitButton.png!
 
 The +MultiSplitButton+ has to provide methods to read the currently active button as well as switching another button to highlight state.
 
