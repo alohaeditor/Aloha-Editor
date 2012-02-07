@@ -244,14 +244,14 @@ define( [
 						= "." + TablePlugin.get( "classSelectionColumn" )
 						+ ", ." + TablePlugin.get( "classSelectionRow" )
 					editable.obj.find( remove ).each(function(){
-						$( this ).remove();
+						jQuery( this ).remove();
 					});
 					var unwrapChildren
 						= "." + TablePlugin.get( "classTableWrapper" )
 						+ ", .aloha-editable-caption"
 					    + ", .aloha-table-cell-editable";
 					editable.obj.find( unwrapChildren  ).each(function(){
-						$( this ).replaceWith( $( this ).contents() );
+						jQuery( this ).replaceWith( jQuery( this ).contents() );
 					});
 
 					registerNewTables( editable );
