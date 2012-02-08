@@ -608,24 +608,27 @@ define( [
 					  var sc = that.activeTable.selection.selectedCells;
 					  // if a selection was made, transform the selected cells
 					  for (var i = 0; i < sc.length; i++) {
-						  for (var j = 0; j < sc[i].length; j++) {
-							  // remove all row formattings
-							  for (var f = 0; f < that.rowConfig.length; f++) {
-								  jQuery(sc[i][j]).removeClass(that.rowConfig[f].cssClass);
-							  }
-							  // set new style 
-							  jQuery(sc[i][j]).addClass(itemConf.cssClass);
-						  }
-					  }
-					  
-					  // selection could have changed.
-					  that.activeTable.selectRows();
-				  }
-			  }
-		  });
-      });
-    
-      if (this.rowMSItems.length > 0) {
+						if ( jQuery(sc[i]).attr('class').indexOf(itemConf.cssClass) > -1 ) {
+							jQuery(sc[i]).removeClass(itemConf.cssClass);
+						} else {
+							jQuery(sc[i]).addClass(itemConf.cssClass);
+							// remove all row formattings
+							for (var f = 0; f < that.rowConfig.length; f++) {
+								if (that.rowConfig[f].cssClass != itemConf.cssClass) {
+									jQuery(sc[i]).removeClass(that.rowConfig[f].cssClass);
+								}
+							}
+							
+						}
+					}
+					// selection could have changed.
+					that.activeTable.selectRows();
+				}
+			}
+		});
+	});
+
+	if (this.rowMSItems.length > 0) {
 		  this.rowMSItems.push({
 			  name: 'removeFormat',
 			  text: i18n.t('button.removeFormat.text'),
@@ -834,13 +837,16 @@ define( [
 				var sc = that.activeTable.selection.selectedCells;
 				// if a selection was made, transform the selected cells
 				for (var i = 0; i < sc.length; i++) {
-					for (var j = 0; j < sc[i].length; j++) {
-						// remove all columnformattings
+					if ( jQuery(sc[i]).attr('class').indexOf(itemConf.cssClass) > -1 ) {
+						jQuery(sc[i]).removeClass(itemConf.cssClass);
+					} else {
+						jQuery(sc[i]).addClass(itemConf.cssClass);
+						// remove all column formattings
 						for (var f = 0; f < that.columnConfig.length; f++) {
-							jQuery(sc[i][j]).removeClass(that.columnConfig[f].cssClass);
+							if (that.columnConfig[f].cssClass != itemConf.cssClass) {
+								jQuery(sc[i]).removeClass(that.columnConfig[f].cssClass);
+							}
 						}
-						// set new style
-						jQuery(sc[i][j]).addClass(itemConf.cssClass);
 					}
 				}
 				// selection could have changed.
