@@ -819,7 +819,6 @@ define( [
       i18n.t('floatingmenu.tab.table'),
       1
     );
-
     
     // generate formatting buttons
     this.columnMSItems = [];
