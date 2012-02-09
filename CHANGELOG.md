@@ -14,7 +14,9 @@ All changes are categorized into one of the following keywords:
 
 ## 0.20.5 - SNAPSHOT
 
-- **BUG**: paste plugin: removed trim of pasted contents -- test[ text] + 2x c&p results now in test text text instead of testtexttext
+- **BUG** paste plugin: removed trim of pasted contents -- test[ text] + 2x c&p results now in test text text instead of testtexttext
+- **BUG** format/table plugin: added a workaround in the format plugin to enable formating of selected cells
+- **ENHANCEMENT** cite plugin: config option if sidebar should auto open or not (Aloha.settings.plugins.cite.sidebar.open: true|false)
 
 
 ## 0.20.4 - 2012/01/27

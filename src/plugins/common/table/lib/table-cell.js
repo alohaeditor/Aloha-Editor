@@ -115,7 +115,6 @@ function (jQuery, Utils) {
 			// Disabled the dragging of content, since it makes cell selection difficult
 			this.wrapper.get( 0 ).ondragstart = function () { return false };
 		}
-
 		return this;
 	};
 
@@ -228,20 +227,23 @@ function (jQuery, Utils) {
 	 */
 	TableCell.prototype._startCellSelection = function(){
 		if(!this.tableObj.selection.cellSelectionMode){
-
+			
 			//unselect currently selected cells
 			this.tableObj.selection.unselectCells();
 
 			// activate cell selection mode
 			this.tableObj.selection.cellSelectionMode = true; 
-
+			
 			//bind a global mouseup event handler to stop cell selection
 			var that = this;
 			jQuery('body').bind('mouseup.cellselection', function(){
 				that._endCellSelection();
+				
 			});
 
 			this.tableObj.selection.baseCellPosition = [this._virtualY(), this._virtualX()];
+			
+			
 		}
 	};
 

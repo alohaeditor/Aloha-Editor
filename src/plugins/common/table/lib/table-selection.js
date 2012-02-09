@@ -128,6 +128,9 @@ function (Aloha, $, Utils, TableCell, i18n) {
 	TableSelection.prototype.notifyCellsSelected = function () {
 		Aloha.trigger( 'aloha-table-selection-changed' );
 
+		// @workaround to enable formating of all selected cells with eg. bold style from format plugin
+		//$('.aloha-table').contentEditable( true );
+		
 		// the UI feels more consisten when we remove the non-table
 		// selection when cells are selected
 		// TODO this code doesn't work right in IE as it causes the table
@@ -143,6 +146,9 @@ function (Aloha, $, Utils, TableCell, i18n) {
 	 */
 	TableSelection.prototype._notifyCellsUnselected = function () {
 		Aloha.trigger( 'aloha-table-selection-changed' );
+
+		// @workaround to disable formating of all selected cells with eg. bold style from format plugin
+		//$('.aloha-table').contentEditable( false );
 	};
 
 	/**
