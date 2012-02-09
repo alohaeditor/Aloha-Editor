@@ -127,7 +127,7 @@ function (Aloha, $, Utils, TableCell, i18n) {
 	 */
 	TableSelection.prototype.notifyCellsSelected = function () {
 		Aloha.trigger( 'aloha-table-selection-changed' );
-
+		
 		// the UI feels more consisten when we remove the non-table
 		// selection when cells are selected
 		// TODO this code doesn't work right in IE as it causes the table
