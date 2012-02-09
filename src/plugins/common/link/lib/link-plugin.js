@@ -244,9 +244,6 @@ define( [
         //delegate event handler to all a elements in the current editable region
         that.addLinkEventHandlers( editable.obj );
 
-        //TODO: Remove this
-				// editable.obj.find( 'a' ).each( function ( i ) {
-				// } );
 			} );
 
 			// add the event handler for selection change
@@ -275,9 +272,9 @@ define( [
 					foundMarkup = that.findLinkMarkup( rangeObject );
 					
 					if ( foundMarkup ) {
-						 that.insertLinkButton.hide();
-						 that.formatLinkButton.setPressed( true );
-						 FloatingMenu.setScope( 'link' );
+						that.insertLinkButton.hide();
+						that.formatLinkButton.setPressed( true );
+						FloatingMenu.setScope( 'link' );
 
 						// remember the current tab selected by the user
 						var currentTab = FloatingMenu.userActivatedTab;
@@ -597,30 +594,29 @@ define( [
 		insertLink: function ( extendToWord ) {
 			var that = this,
 			    range = Aloha.Selection.getRangeObject(),
-          startContainer = range.startContainer,
 			    linkText,
 			    newLink;
 
 			// There are occasions where we do not get a valid range, in such
 			// cases we should not try and add a link
-		  if ( !( range.startContainer && range.endContainer ) ) {
-			 	return;
-			}
+      if ( !( range.startContainer && range.endContainer ) ) {
+        return;
+      }
 			
 			// do not nest a link inside a link
 			if ( this.findLinkMarkup( range ) ) {
 			 	return;
 			}
+
+      // activate floating menu tab
+			FloatingMenu.activateTabOfButton( 'href' );
 			
 			// if selection is collapsed then extend to the word.
 			if ( range.isCollapsed() && extendToWord !== false ) {
 				GENTICS.Utils.Dom.extendToWord( range );
 			}
 
-      // activate floating menu tab
-			FloatingMenu.activateTabOfButton( 'href' );
-
-			if ( range.isCollapsed() ) {
+      if ( range.isCollapsed() ) {
 				// insert a link with text here
 				 linkText = i18n.t( 'newlink.defaulttext' );
 				 newLink = '<a href="" class="aloha-new-link">' + linkText + '</a>';
