@@ -12,7 +12,7 @@ All changes are categorized into one of the following keywords:
                usage, or intent of an existing one.
 
 
-## 0.20.5 - SNAPSHOT
+## 0.20.5 - 2012/02/09
 
 - **ENHANCEMENT** word contenthandler: cleanup for pasted word documents with table of contents
 - **BUG** paste plugin: removed trim of pasted contents -- test[ text] + 2x c&p results now in test text text instead of testtexttext
