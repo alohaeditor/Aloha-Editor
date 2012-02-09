@@ -39,13 +39,23 @@ define( [
 			} );
 			
 			FloatingMenu.addButton(
-				Links.name,
+				'Aloha.continuoustext',
 				repositoryButton,
 				i18n.t( 'floatingmenu.tab.link' ),
 				1
 			);
+			repositoryButton.hide();
 			
 			this.url = Aloha.getAlohaUrl() + '/../plugins/extra/linkbrowser/';
+			
+			Aloha.bind( 'aloha-link-selected', function ( event, rangeObject ) {
+				repositoryButton.show();
+				FloatingMenu.doLayout();
+			});
+			Aloha.bind( 'aloha-link-unselected', function ( event, rangeObject ) {
+				repositoryButton.hide();
+				FloatingMenu.doLayout();
+			});
 		},
 		
 		onSelect: function ( item ) {

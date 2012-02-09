@@ -12,7 +12,7 @@ h3. Toolbar concept
 
 The Toolbar provides tabs and groups. You may add ui components to groups. There ist only one instance of a the toolbar  and it changes its items depending on the acitvated editable.
 
-!../images/toolbar.png!
+!images/toolbar.png!
 
 h3. Toolbar integration
 

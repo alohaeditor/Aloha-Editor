@@ -272,10 +272,8 @@ define( [
 					foundMarkup = that.findLinkMarkup( rangeObject );
 					
 					if ( foundMarkup ) {
-						that.insertLinkButton.hide();
-						that.formatLinkButton.setPressed( true );
-						FloatingMenu.setScope( 'link' );
-
+						that.toggleLinkScope( true );
+						
 						// remember the current tab selected by the user
 						var currentTab = FloatingMenu.userActivatedTab;
 
@@ -306,9 +304,11 @@ define( [
 								}
 							}, 200 );
 						}
+						Aloha.trigger( 'aloha-link-selected' );
 					} else {
-						that.formatLinkButton.setPressed( false );
+						that.toggleLinkScope( false );
 						that.hrefField.setTargetObject( null );
+						Aloha.trigger( 'aloha-link-unselected' );
 					}
 				}
 				
@@ -316,6 +316,25 @@ define( [
 			} );
 		},
 
+		/**
+		 * lets you toggle the link scope to true (link buttons are visible)
+		 * or false (link buttons are hidden)
+		 * @param show bool true to show link buttons, false otherwise
+		 */
+		toggleLinkScope: function ( show ) {
+			if ( show ) {
+				this.insertLinkButton.hide();
+				this.hrefField.show();
+				this.removeLinkButton.show();
+				this.formatLinkButton.setPressed( true );
+			} else {
+				this.insertLinkButton.show();
+				this.hrefField.hide();
+				this.removeLinkButton.hide();
+				this.formatLinkButton.setPressed( false );
+			}
+		},
+		
 		/**
 		 * Add event handlers to the given link object
 		 * @param link object
@@ -393,9 +412,6 @@ define( [
 				1
 			);
 			
-			// add the new scope for links
-			FloatingMenu.createScope( 'link', 'Aloha.continuoustext' );
-			
 			this.hrefField = new Aloha.ui.AttributeField( {
 				'name': 'href',
 				'width': 320,
@@ -406,7 +422,7 @@ define( [
 			this.hrefField.setObjectTypeFilter( this.objectTypeFilter );
 			// add the input field for links
 			FloatingMenu.addButton(
-				'link',
+				'Aloha.continuoustext',
 				this.hrefField,
 				i18n.t( 'floatingmenu.tab.link' ),
 				1
@@ -422,7 +438,7 @@ define( [
 			} );
 			// add a button for removing the currently set link
 			FloatingMenu.addButton(
-				'link',
+				'Aloha.continuoustext',
 				this.removeLinkButton,
 				i18n.t( 'floatingmenu.tab.link' ),
 				1
