@@ -614,23 +614,25 @@ define( [
 			// if selection is collapsed then extend to the word.
 			if ( range.isCollapsed() && extendToWord !== false ) {
 				GENTICS.Utils.Dom.extendToWord( range );
+        range.select();
 			}
 
       if ( range.isCollapsed() ) {
 				// insert a link with text here
-				 linkText = i18n.t( 'newlink.defaulttext' );
-				 newLink = '<a href="" class="aloha-new-link">' + linkText + '</a>';
+				linkText = i18n.t( 'newlink.defaulttext' );
+				newLink = '<a href="" class="aloha-new-link">' + linkText + '</a>';
 
-         Aloha.execCommand("inserthtml", false, newLink)
+        Aloha.execCommand("inserthtml", false, newLink)
+
       } else {
         Aloha.execCommand("createLink", false, "http://");
 			}
 
       //update the range
       if(range.startOffset > 0){
-        range.startContainer = range.endContainer = range.searchElementToRight(range.startContainer, range.startOffset).element.childNodes[0];
-        range.startOffset = 0;
-        range.endOffset = range.startContainer.length;
+         range.startContainer = range.endContainer = range.searchElementToRight(range.startContainer, range.startOffset).element.childNodes[0];
+         range.startOffset = 0;
+         range.endOffset = range.startContainer.length;
       }
       else {
         range.correctRange()
