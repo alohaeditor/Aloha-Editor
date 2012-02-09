@@ -359,6 +359,7 @@ define( [
 		// Disable resize and selection of the controls (only IE)
 		// Events only can be set to elements which are loaded from the DOM (if they
 		// were created dynamically before) ;)
+		 
 		htmlTableWrapper = this.obj.parents( '.' + this.get( 'classTableWrapper' ) );
 		htmlTableWrapper.get( 0 ).onresizestart = function ( e ) { return false; };
 		htmlTableWrapper.get( 0 ).oncontrolselect = function ( e ) { return false; };

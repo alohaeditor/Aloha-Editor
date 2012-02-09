@@ -136,6 +136,7 @@ define([
 		
 		citations: [],
 		referenceContainer: null,
+		settings: null,
 		
 		init: function () {
 			var that = this;
@@ -144,12 +145,23 @@ define([
 			// the plugin
 			if (Aloha.settings				&&
 				Aloha.settings.plugins		&&
-				Aloha.settings.plugins.cite &&
 				Aloha.settings.plugins.cite) {
 				var referenceContainer = $(Aloha.settings.plugins.cite.referenceContainer);
 				
 				if (referenceContainer.length > 0) {
 					this.referenceContainer = referenceContainer;
+				}
+				
+				if ( typeof Aloha.settings.plugins.cite != 'undefinded' ) {
+					that.settings = Aloha.settings.plugins.cite;
+				}
+
+				if ( typeof that.settings.sidebar === 'undefinded' ) {
+					that.settings.sidebar = {};
+				}
+
+				if ( typeof that.settings.sidebar.open === 'undefinded' ) {
+					that.settings.sidebar.open = true;
 				}
 			}
 			
@@ -332,6 +344,7 @@ define([
 		},
 		
 		addBlockQuote: function () {
+			var that = this;
 			var classes = [nsClass('wrapper'), nsClass(++uid)].join(' ');
 			var markup = $(supplant(
 					'<blockquote class="{classes}" data-cite-id="{uid}"></blockquote>',
@@ -347,7 +360,7 @@ define([
 			
 			this.referenceContainer && this.addCiteToReferences(uid);
 			
-			if (this.sidebar) {
+			if (this.sidebar && that.settings.sidebar.open === true) {
 				this.sidebar.open();
 			}
 			//	.activatePanel(nsClass('sidebar-panel'), markup);
@@ -361,6 +374,7 @@ define([
 				));
 			var rangeObject = Aloha.Selection.rangeObject;
 			var foundMarkup;
+			var that = this;
 
 			// now re enable the editable
 			if (Aloha.activeEditable) {
@@ -401,8 +415,8 @@ define([
 			rangeObject.select();
 			
 			this.referenceContainer && this.addCiteToReferences(uid);
-			
-			if (this.sidebar) {
+
+			if (this.sidebar && that.settings.sidebar.open === true) {
 				this.sidebar.open();
 			}
 			//	.activatePanel(nsClass('sidebar-panel'), markup);
