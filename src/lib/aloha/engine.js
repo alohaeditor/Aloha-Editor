@@ -5758,6 +5758,10 @@ function outdentNode(node, range) {
 //@{
 
 function toggleLists(tagName, range) {
+
+  // get the range if the range is not set
+	range = range || getActiveRange();
+
 	// "Let mode be "disable" if the selection's list state is tag name, and
 	// "enable" otherwise."
 	var mode = getSelectionListState() == tagName ? "disable" : "enable";
@@ -7150,7 +7154,8 @@ commands.inserthorizontalrule = {
 //@{
 commands.inserthtml = {
 	action: function(value, range) {
-		
+
+    range = range || getActiveRange();
 		
 		// "Delete the contents of the active range."
 		deleteContents(range);
