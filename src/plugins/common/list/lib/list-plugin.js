@@ -135,25 +135,19 @@ function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore, Engine) {
 				that.createUnorderedListButton.setPressed(false);
 				that.createOrderedListButton.setPressed(false);
 				
+        if(Aloha.queryCommandState("insertunorderedlist")){
+          that.createUnorderedListButton.setPressed(true);
+          // Show all buttons in the list tab
+          that.outdentListButton.show();
+          that.indentListButton.show();
+        }
 
-				//for ( i = 0; i < rangeObject.markupEffectiveAtStart.length; i++) {
-			  //	effectiveMarkup = rangeObject.markupEffectiveAtStart[ i ];
-				//	if (Aloha.Selection.standardTagNameComparator(effectiveMarkup, jQuery('<ul></ul>'))) {
-          if(Aloha.queryCommandState("insertunorderedlist")){
-						that.createUnorderedListButton.setPressed(true);
-						// Show all buttons in the list tab
-						that.outdentListButton.show();
-						that.indentListButton.show();
-					}
-
-					//if (Aloha.Selection.standardTagNameComparator(effectiveMarkup, jQuery('<ol></ol>'))) {
-          if(Aloha.queryCommandState("insertorderedlist")){
-						that.createOrderedListButton.setPressed(true);
-						// Show all buttons in the list tab
-						that.outdentListButton.show();
-						that.indentListButton.show();
-					}
-				//}
+        if(Aloha.queryCommandState("insertorderedlist")){
+          that.createOrderedListButton.setPressed(true);
+          // Show all buttons in the list tab
+          that.outdentListButton.show();
+          that.indentListButton.show();
+        }
 
 				if (Aloha.activeEditable) {
 					that.applyButtonConfig(Aloha.activeEditable.obj);
