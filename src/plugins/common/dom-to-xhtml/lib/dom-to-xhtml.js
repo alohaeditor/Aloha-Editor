@@ -289,10 +289,6 @@ function( Aloha, $, console) {
 		 * Element attributes with an empty string as value will not
 		 * appear in the serialized output.
 		 *
-		 * Element attribute names are case-insensitive in HTML5, so
-		 * they may come out in mixed-case depending on what the browser
-		 * provides.
-		 *
 		 * When iterating over the DOM, CDATA sections are comment nodes
 		 * on some browsers (Chrome) and not there at all on others (IE).
 		 * This is the same as what comes out from element.innerHTML.
