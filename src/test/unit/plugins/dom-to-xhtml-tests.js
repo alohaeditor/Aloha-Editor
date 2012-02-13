@@ -170,6 +170,7 @@ function() {
 				// IE7 adds size="20" which we can't strip since we can't know
 				// whether it's just a default or a real attribute.
 			    '<input type="checkbox" size="20" checked="checked"/>']);
+			testGc('<button disabled>', '<button disabled="disabled"></button>');
 		});
 		test('"pre" preserves spaces tabs and newlines', function() {
 			var pre = "<pre>\n"
