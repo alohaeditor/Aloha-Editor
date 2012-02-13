@@ -15,9 +15,23 @@ function( Aloha, jQuery, i18n, Component, Surface, ToggleButton, Text, Ui ) {
 	 * @extends {ToggleButton}
 	 */
 	Component.define( "abbr", ToggleButton, {
+		/**
+		 * Localized label
+		 * @type {string}
+		 */
 		label: i18n.t( "button.createAbbr.label" ),
-		icon: "aloha-icon aloha-icon-abbr",
+
+		/**
+		 * Whether or not to show only the icon
+		 * @type {boolean}
+		 */
 		iconOnly: true,
+
+		/**
+		 * Which icon to render
+		 * @type {string}
+		 */
+		icon: "aloha-icon aloha-icon-abbr",
 
 		/**
 		 * Click callback
