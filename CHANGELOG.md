@@ -1,7 +1,6 @@
 # Aloha Editor Changelog
 
-This document is to serve as a "what has been done" in terms of the [Roadmap]
-(http://aloha-editor.org/wiki/Roadmap).
+This document is to serve as a "what has been done" in terms of the [Roadmap](https://github.com/alohaeditor/Aloha-Editor/wiki/Roadmap)
 
 All changes are categorized into one of the following keywords:
 
@@ -11,8 +10,10 @@ All changes are categorized into one of the following keywords:
 - **FEATURE**: The change introduces a new feature, or modifies the function,
                usage, or intent of an existing one.
 
-## 0.20.6 - SNAPSHOT
+## 0.21.0 - dev
 
+- block plugin: Aloha Block Plugin has now been greatly cleaned up and improved. Besides greatly cleaned up API and documentation, the new features include Drag/Drop, Deletion and Copy/Paste support. Now fully cross-browser (IE7, IE8, IE9, Chrome, Firefox).
+- commands.delete: fixed a bug with the delete command when contents are preceded by ignorable whitespace. also added a delete test for that.
 - **ENHANCEMENT** The new plugin dom-to-xhtml attempts to create a valid XHTML serialization of the document when getContents() is called.
 
 ## 0.20.5 - 2012/02/09

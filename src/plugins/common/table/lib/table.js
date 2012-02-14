@@ -348,10 +348,11 @@ define( [
 		tableWrapper = jQuery(
 			'<div class="' + this.get( 'classTableWrapper' ) + '"></div>'
 		);
-		tableWrapper.contentEditable( false );
+		//tableWrapper.contentEditable( false );
 
 		// wrap the tableWrapper around the table
 		this.obj.wrap( tableWrapper );
+		this.obj.parent().alohaBlock();
 
 		// :HINT The outest div (Editable) of the table is still in an editable
 		// div. So IE will surround the the wrapper div with a resize-border

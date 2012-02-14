@@ -247,7 +247,7 @@ function(Aloha, jQuery, Ext, Class, console) {
 				
 					if (buttonVisible && extButton.hidden) {
 						extButton.show();
-					} else if (!buttonVisible && extButton && !extButton.hidden) {
+					} else if (!buttonVisible && !extButton.hidden) {
 						extButton.hide();
 					}
 				
@@ -1148,7 +1148,7 @@ function(Aloha, jQuery, Ext, Class, console) {
 			var scopeObject = this.scopes[scope];
 
 			if (typeof scopeObject === 'undefined') {
-				// TODO log an error
+				Aloha.Log.error('aloha/floatingmenu', 'Floating Menu Scope "' + scope + '" not found.');
 			} else if (this.currentScope != scope) {
 				this.currentScope = scope;
 
