@@ -85,7 +85,7 @@ Aloha.settings.toolbar = {
 };
 </javascript>
 
-<img src=../images/toolbar.png style="width:600px">
+<img src="images/toolbar.png" style="width:600px">
 
 h4. Sidebar
 

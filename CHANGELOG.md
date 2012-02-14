@@ -11,9 +11,13 @@ All changes are categorized into one of the following keywords:
 - **FEATURE**: The change introduces a new feature, or modifies the function,
                usage, or intent of an existing one.
 
+## 0.20.6 - SNAPSHOT
 
-## 0.20.5 - SNAPSHOT
+- **ENHANCEMENT** The new plugin dom-to-xhtml attempts to create a valid XHTML serialization of the document when getContents() is called.
 
+## 0.20.5 - 2012/02/09
+
+- **ENHANCEMENT** word contenthandler: cleanup for pasted word documents with table of contents
 - **BUG** paste plugin: removed trim of pasted contents -- test[ text] + 2x c&p results now in test text text instead of testtexttext
 - **BUG** format/table plugin: added a workaround in the format plugin to enable formating of selected cells
 - **ENHANCEMENT** cite plugin: config option if sidebar should auto open or not (Aloha.settings.plugins.cite.sidebar.open: true|false)

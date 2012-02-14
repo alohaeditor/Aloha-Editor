@@ -50,9 +50,11 @@ define( [
 			
 			Aloha.bind( 'aloha-link-selected', function ( event, rangeObject ) {
 				repositoryButton.show();
+				FloatingMenu.doLayout();
 			});
 			Aloha.bind( 'aloha-link-unselected', function ( event, rangeObject ) {
 				repositoryButton.hide();
+				FloatingMenu.doLayout();
 			});
 		},
 		
