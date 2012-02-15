@@ -94,7 +94,9 @@ Aloha.jQuery('.content').aloha();
 
 h3. CSS loading
 
-WARNING: Not yet done
+<html>
+	<link href="javascripts/aloha/css/aloha.css" type="text/css" rel="stylesheet" />
+</html>
 
 h3. Localization
 
