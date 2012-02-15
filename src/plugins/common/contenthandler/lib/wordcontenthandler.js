@@ -15,6 +15,7 @@ function( Aloha, jQuery, ContentHandlerManager ) {
 		 * @param content
 		 */
 		handleContent: function( content ) {
+
 			if ( typeof content === 'string' ){
 				content = jQuery( '<div>' + content + '</div>' );
 			} else if ( content instanceof jQuery ) {
@@ -120,7 +121,7 @@ function( Aloha, jQuery, ContentHandlerManager ) {
 				var jqElem = jQuery(this),
 					innerText = jqElem.text().trim().replace(/&nbsp;/g, ''),
 					outerText;
-
+				
 				if (innerText.length === 0) {
 					// check whether the outermost of the three spans contains nothing more than numbering
 					outerText = jqElem.parent().parent().text().trim().replace(/&nbsp;/g, '');
@@ -257,8 +258,104 @@ function( Aloha, jQuery, ContentHandlerManager ) {
 				Aloha.Markup.transformDomObject(jQuery(this), 'h1');
 			});
 			content.find('p.MsoSubtitle').each(function() {
-				// titles will be transformed to h1
+				// sub titles will be transformed to h2
 				Aloha.Markup.transformDomObject(jQuery(this), 'h2');
+			});
+		},
+		
+		/**
+		 * Cleanup MS Word HTML
+		 * @param content
+		 */
+		cleanHtml: function ( content ) {
+			
+			// unwrap empty tags
+			// do not remove them here because of eg. spaces wrapped in spans which are needed
+			content.find('*').filter( function() {
+				return jQuery.trim(jQuery(this).text()) == '';
+			}).contents().unwrap();
+			
+			// unwrap all spans
+			content.find('span').contents().unwrap();
+			
+			// when href starts with #, it's the link to an anchor. remove it.
+			content.find('a').each(function() {
+				if ( jQuery(this).attr('href') && jQuery(this).attr('href').trim().match(/^#(.*)$/) ) {
+					jQuery(this).contents().unwrap();
+				}
+			});
+			
+			// eg. footnotes are wrapped in divs. unwrap them.
+			content.find('div').contents().unwrap();
+			
+			// remove empty tags
+			content.find('*').filter( function() {
+			    return jQuery.trim(jQuery(this).text()) == '';
+			}).remove();
+			
+		},
+		
+		/**
+		 * Remove paragraph numbering from TOC feature
+		 * @param content
+		*/
+		removeParagraphNumbering: function( content ) {
+			var detectionFilter = 'h1,h2,h3,h4,h5,h6',
+				paragraphs = content.find(detectionFilter);
+			
+			if (paragraphs.length > 0) {
+				paragraphs.each(function() {
+					var jqElem = jQuery(this),
+						spans = jqElem.find('span'),
+						links = jqElem.find('a');
+				
+					// remove TOC numbering
+					spans.each(function() {
+						if ( jQuery(this).text().trim().match(/^([\.\(]?[\d\D][\.\(]?){1,4}$/) ) {
+							jQuery(this).remove();
+						}
+					})
+				
+					// remove TOC anchor links
+					links.each(function() {
+						// no href, so it's an anchor
+						if ( typeof jQuery(this).attr('href') === 'undefined' ) {
+							jQuery(this).contents().unwrap();
+						}
+					});
+				
+				});
+			}
+		},
+
+		
+		/**
+		 * Transform TOC
+		 * @param content
+		*/
+		transformToc: function( content ) {
+			var detectionFilter = '[class*=MsoToc]',
+				paragraphs = content.find(detectionFilter);
+
+			paragraphs.each(function() {
+				var jqElem = jQuery(this),
+					spans = jqElem.find('span'),
+					links = jqElem.find('a');
+
+				// a table of contents entry looks like
+				// 1. Title text ... 5
+				// we get rid of the "... 5" part which repesents the page number
+				spans.each(function() {
+					if ( jQuery(this).attr('style') && jQuery(this).attr('style').search('mso-hide') > -1 ) {
+						jQuery(this).remove();
+					}
+					jQuery(this).contents().unwrap();
+				});
+
+				// remove the anchor link of the toc item
+				links.each(function() {
+					jQuery(this).contents().unwrap();
+				});
 			});
 		},
 
@@ -266,12 +363,21 @@ function( Aloha, jQuery, ContentHandlerManager ) {
 		 * This is the main transformation method
 		 * @param content
 		 */
-		transformWordContent: function (content) {
+		transformWordContent: function( content ) {
+			// transform table of contents
+			this.transformToc( content );
+
+			// remove paragraph numbering
+			this.removeParagraphNumbering( content );
+
 			// transform lists
-			this.transformListsFromWord(content);
+			this.transformListsFromWord( content );
 
 			// transform titles
-			this.transformTitles(content);
+			this.transformTitles( content );
+
+			// clean html
+			this.cleanHtml( content );
 		}
 	});
 	

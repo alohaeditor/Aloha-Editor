@@ -59,17 +59,17 @@
       <dd><a href="using_aloha.html">Using Aloha Editor</a></dd>
       <dd><a href="develop_aloha.html">Developing and building Aloha Editor</a></dd>
       <dd><a href="configure_aloha.html">Configuring Aloha Editor</a></dd>
-      <dd><a href="require.html">Aloha dependency management with requireJS</a></dd>
+      <dd><a href="require.html">Aloha dependency management</a></dd>
       <dd><a href="writing_plugins.html">Writing Plugins</a></dd>
     <dt>The Core</dt>
       <dd><a href="core.html">The Core</a></dd>
     <dt>Commands</dt>
       <dd><a href="using_commands.html">Using commands</a></dd>
-    <dt>Ui</dt>
+    <dt>UI</dt>
       <dd><a href="ui.html">Aloha Editor Ui</a></dd>
       <dd><a href="toolbar.html">Aloha Editor toolbar</a></dd>
       <dd><a href="sidebar.html">Aloha Editor sidebar</a></dd>
-      <dd><a href="componenttypes.html">Aloha Editor Ui API</a></dd>
+      <dd><a href="componenttypes.html">Aloha Editor UI API</a></dd>
 </dl>
 <dl class="R">
     <dt>Plugins</dt>
@@ -79,7 +79,12 @@
       <dd><a href="plugin_contenthandler.html">Content Handler</a></dd>
       <dd><a href="plugin_browser.html">Browser</a></dd>
       <dd><a href="plugin_numeratedheaders.html">Numerated Headers</a></dd>
+      <dd><a href="plugin_undo.html">Undo</a></dd>
+      <dd><a href="plugin_table.html">Table</a></dd>
+      <dd><a href="plugin_paste.html">Paste</a></dd>
+      <dd><a href="plugin_formatlesspaste.html">Formatless paste</a></dd>
     <dt>Contributing to Aloha Editor</dt>
+      <dd><a href="releasing.html">Releasing</a></dd>
       <dd>Development Process</dd>
       <dd><a href="style_guide.html">Javascript Style Guide</a></dd>
       <dd><a href="documentation_guidelines.html">Documentation Guidelines</a></dd>
@@ -301,20 +306,11 @@ Aloha.settings.contentHandler.sanitize = {
 <ul>
 	<li>hr &#8211; a button which will insert a horizontal ruler at the cursor position</li>
 </ul>
-<h3 id="image-plugin">11 Image Plugin</h3>
-<p>The Image Plugin will allow for basic image manipulation right within your content:</p>
-<ul>
-	<li>resize (by dragging and entering values)</li>
-	<li>resizing with fixed aspect ratio</li>
-	<li>resetting the image to it&#8217;s initial state</li>
-	<li>crop</li>
-</ul>
-<div class="note"><p>You need a server-sided script like image magick which will handle actual cropping for you.</p></div>
-<h4 id="components">11.1 Components</h4>
+<h4 id="components">10.2 Components</h4>
 <ul>
 	<li>insertimage &#8211; a button that allows you to insert an image</li>
 </ul>
-<h4 id="configuration-settings">11.2 Configuration settings</h4>
+<h4 id="configuration-settings">10.3 Configuration settings</h4>
 <div class="code_container">
 <pre class="brush: javascript; gutter: false; toolbar: false">
 
@@ -380,18 +376,18 @@ Aloha.plugins.image.settings = {
 		Aloha.Log.info('Default onResized invoked', $image);
 	}
 };
-</pre></div><h3 id="list-plugin">12 List Plugin</h3>
+</pre></div><h3 id="list-plugin">11 List Plugin</h3>
 <p>The List Plugin allows you to handle and create ordered and unordered lists within your contents. You either may select existing contents to be turned into a list, or just click the ordered or unordered list button to start a new one.</p>
 <div class="note"><p>The list plugin will turn existing paragraphs into list items. Single lines separated by <ins><br></ins> tags will <span class="caps">NOT</span> be turned into separate list items.</p></div>
 <p>You can remove lists by clicking the applied list type a second time, which will turn individual list items back into paragraphs.</p>
 <p>The List Plugin will indent list items when pressing the tab-key, or outdent when pressing shift-tab.</p>
-<h4 id="components">12.1 Components</h4>
+<h4 id="components">11.1 Components</h4>
 <p>The List Plugin provides two components</p>
 <ul>
 	<li>ul &#8211; for inserting unordered lists</li>
 	<li>ol &#8211; for inserting ordered lists</li>
 </ul>
-<h4 id="configuration-settings">12.2 Configuration settings</h4>
+<h4 id="configuration-settings">11.2 Configuration settings</h4>
 <div class="code_container">
 <pre class="brush: javascript; gutter: false; toolbar: false">
 
@@ -399,11 +395,11 @@ Aloha.plugins.list = {
 	// configure buttons available in the toolbar
 	config : [ 'ol', 'ul' ],
 };
-</pre></div><h3 id="paste-plugin">13 Paste Plugin</h3>
+</pre></div><h3 id="paste-plugin">12 Paste Plugin</h3>
 <p>The Paste Plugin provides means to handle pasting content from the clipboard and is a prerequisite if you want to handle contents pasted from Microsoft Word. In this case you will also have to enable the Contenthandler Plugin.</p>
-<h3 id="table-plugin">14 Table Plugin</h3>
+<h3 id="table-plugin">13 Table Plugin</h3>
 <p>The Table Plugin will allow you to edit tables within your contents. You can do pretty much everything that you&#8217;d expect from editing tables, like adding and deleting rows and columns as well as merging and splitting cells. You can use the tab key to jump from one cell to the next.</p>
-<h4 id="components">14.1 Components</h4>
+<h4 id="components">13.1 Components</h4>
 <ul>
 	<li>table &#8211; insert a table into the content</li>
 	<li>addrowbefore &#8211; adds a row before the current row</li>
@@ -424,7 +420,7 @@ Aloha.plugins.list = {
 	<li>splitcells &#8211; split selected cells</li>
 	<li>tablecaption &#8211; input field which allows you to add a caption to the table</li>
 </ul>
-<h4 id="configuration-settings">14.2 Configuration settings</h4>
+<h4 id="configuration-settings">13.2 Configuration settings</h4>
 <p>The table configuration allows for some special settings:</p>
 <div class="code_container">
 <pre class="brush: javascript; gutter: false; toolbar: false">
@@ -452,7 +448,7 @@ Aloha.settings.plugins.table: {
 			{ name: 'table-style-redwhite', iconClass: 'aloha-button-row-redwhite' }
 	]
 };
-</pre></div><h3 id="undo-plugin">15 Undo Plugin</h3>
+</pre></div><h3 id="undo-plugin">14 Undo Plugin</h3>
 <p>The Undo Plugin allows you to undo changes when pressing Ctrl<tt>Z (or Cmd</tt>Z on Mac). You may also reapply changes made undone by pressing Ctrl<tt>Shift</tt>Z or Cmd<tt>Shift</tt>Z on Mac. The Undo Plugin has no ui and no components.</p>
 <ul>
 	<li>September 1, 2011: Initial version by <a href="credits.html#haymo">Haymo Meran</a> and <a href="credits.html#scottgonzales">Scott Gonzales</a></li>
@@ -485,8 +481,6 @@ Aloha.settings.plugins.table: {
 </a></li> <li><a href="#sanitize-content-handler"><p>Sanitize Content Handler</p>
 </a></li></ul></li><li><a href="#highlight-editables-plugin"><p>Highlight Editables Plugin</p>
 </a></li><li><a href="#horizontalruler-plugin"><p>Horizontalruler Plugin</p>
-</a><ul><li><a href="#components"><p>Components</p>
-</a></li></ul></li><li><a href="#image-plugin"><p>Image Plugin</p>
 </a><ul><li><a href="#components"><p>Components</p>
 </a></li> <li><a href="#configuration-settings"><p>Configuration settings</p>
 </a></li></ul></li><li><a href="#list-plugin"><p>List Plugin</p>

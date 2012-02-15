@@ -177,6 +177,7 @@ require(
 	[
 		'aloha/jquery',
 		'aloha/ext',
+		'util/json2',
 	],
 	function () {
 		// load Aloha core files
@@ -186,7 +187,6 @@ require(
 				'vendor/jquery.json-2.2.min',
 				'vendor/jquery.store',
 				'aloha/rangy-core',
-				'util/json2',
 				'util/class',
 				'util/lang',
 				'util/range',

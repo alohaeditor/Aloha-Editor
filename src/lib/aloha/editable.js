@@ -52,6 +52,12 @@ define( [
 		Aloha.settings.contentHandler = {};
 	}
 
+	var defaultContentSerializer = function(editableElement){
+		return jQuery(editableElement).html();
+	};
+
+	var contentSerializer = defaultContentSerializer;
+
 	/**
 	 * Editable object
 	 * @namespace Aloha
@@ -85,41 +91,41 @@ define( [
 
 			// see keyset http://www.w3.org/TR/2007/WD-DOM-Level-3-Events-20071221/keyset.html
 			this.keyCodeMap = {
-				 93 : "Apps",         // The Application key
-				 18 : "Alt",          // The Alt ( Menu ) key.
-				 20 : "CapsLock",     // The Caps Lock ( Capital ) key.
-				 17 : "Control",      // The Control ( Ctrl ) key.
-				 40 : "Down",         // The Down Arrow key.
-				 35 : "End",          // The End key.
-				 13 : "Enter",        // The Enter key.
-				112 : "F1",           // The F1 key.
-				113 : "F2",           // The F2 key.
-				114 : "F3",           // The F3 key.
-				115 : "F4",           // The F4 key.
-				116 : "F5",           // The F5 key.
-				117 : "F6",           // The F6 key.
-				118 : "F7",           // The F7 key.
-				119 : "F8",           // The F8 key.
-				120 : "F9",           // The F9 key.
-				121 : "F10",          // The F10 key.
-				122 : "F11",          // The F11 key.
-				123 : "F12",          // The F12 key.
+				 93 : 'Apps',         // The Application key
+				 18 : 'Alt',          // The Alt ( Menu ) key.
+				 20 : 'CapsLock',     // The Caps Lock ( Capital ) key.
+				 17 : 'Control',      // The Control ( Ctrl ) key.
+				 40 : 'Down',         // The Down Arrow key.
+				 35 : 'End',          // The End key.
+				 13 : 'Enter',        // The Enter key.
+				112 : 'F1',           // The F1 key.
+				113 : 'F2',           // The F2 key.
+				114 : 'F3',           // The F3 key.
+				115 : 'F4',           // The F4 key.
+				116 : 'F5',           // The F5 key.
+				117 : 'F6',           // The F6 key.
+				118 : 'F7',           // The F7 key.
+				119 : 'F8',           // The F8 key.
+				120 : 'F9',           // The F9 key.
+				121 : 'F10',          // The F10 key.
+				122 : 'F11',          // The F11 key.
+				123 : 'F12',          // The F12 key.
 
 				// Anybody knows the keycode for F13-F24?
-				 36 : "Home",         // The Home key.
-				 45 : "Insert",       // The Insert ( Ins ) key.
-				 37 : "Left",         // The Left Arrow key.
-				224 : "Meta",         // The Meta key.
-				 34 : "PageDown",     // The Page Down ( Next ) key.
-				 33 : "PageUp",       // The Page Up key.
-				 19 : "Pause",        // The Pause key.
-				 44 : "PrintScreen",  // The Print Screen ( PrintScrn, SnapShot ) key.
-				 39 : "Right",        // The Right Arrow key.
-				145 : "Scroll",       // The scroll lock key
-				 16 : "Shift",        // The Shift key.
-				 38 : "Up",           // The Up Arrow key.
-				 91 : "Win",          // The left Windows Logo key.
-				 92 : "Win"           // The right Windows Logo key.
+				 36 : 'Home',         // The Home key.
+				 45 : 'Insert',       // The Insert ( Ins ) key.
+				 37 : 'Left',         // The Left Arrow key.
+				224 : 'Meta',         // The Meta key.
+				 34 : 'PageDown',     // The Page Down ( Next ) key.
+				 33 : 'PageUp',       // The Page Up key.
+				 19 : 'Pause',        // The Pause key.
+				 44 : 'PrintScreen',  // The Print Screen ( PrintScrn, SnapShot ) key.
+				 39 : 'Right',        // The Right Arrow key.
+				145 : 'Scroll',       // The scroll lock key
+				 16 : 'Shift',        // The Shift key.
+				 38 : 'Up',           // The Up Arrow key.
+				 91 : 'Win',          // The left Windows Logo key.
+				 92 : 'Win'           // The right Windows Logo key.
 			};
 
 			this.placeholderClass = 'aloha-placeholder';
@@ -145,21 +151,15 @@ define( [
 			if ( Aloha.settings && Aloha.settings.smartContentChange ) {
 				if ( Aloha.settings.smartContentChange.delimiters ) {
 					this.sccDelimiters = Aloha.settings.smartContentChange.delimiters;
-				} /* else {
-					this.sccDelimiters = this.sccDelimiters;
-				} */
+				}
 
 				if ( Aloha.settings.smartContentChange.idle ) {
 					this.sccIdle = Aloha.settings.smartContentChange.idle;
-				} /* else {
-					this.sccIdle = this.sccIdle;
-				} */
+				}
 
 				if ( Aloha.settings.smartContentChange.delay ) {
 					this.sccDelay = Aloha.settings.smartContentChange.delay;
-				} /* else {
-					this.sccDelay = this.sccDelay;
-				} */
+				}
 			}
 
 			// check if Aloha can handle the obj as Editable
@@ -181,7 +181,7 @@ define( [
 			//} );
 			//me.obj.html( content );
 
-			// only initialize the editable when Aloha is fully ready ( including plugins )
+			// only initialize the editable when Aloha is fully ready (including plugins)
 			Aloha.bind( 'aloha-ready', function() {
 				// initialize the object
 				me.obj.addClass( 'aloha-editable' ).contentEditable( true );
@@ -205,7 +205,7 @@ define( [
 
 				// by catching the keydown we can prevent the browser from doing its own thing
 				// if it does not handle the keyStroke it returns true and therefore all other
-				// events ( incl. browser's ) continue
+				// events (incl. browser's) continue
 				me.obj.keydown( function( event ) {
 					me.keyCode = event.which;
 					return Markup.preProcessKeyStrokes( event );
@@ -319,7 +319,7 @@ define( [
 						'var' ],
 			    i, div;
 
-			for ( i = 0; i < textElements.length; i++ ) {
+			for ( i = 0; i < textElements.length; ++i ) {
 				if ( nodeName === textElements[ i ] ) {
 					return true;
 				}
@@ -451,8 +451,10 @@ define( [
 			var placeholderClass = this.placeholderClass,
 			    range;
 
-	//		// remove browser br
-	//		jQuery( 'br', obj ).remove();
+			if (jQuery( '.' + placeholderClass, obj).length === 0) return;
+
+			// remove browser br
+			// jQuery( 'br', obj ).remove();
 
 			// set the cursor // remove placeholder
 			if ( setCursor === true ) {
@@ -641,7 +643,7 @@ define( [
 			// trigger a 'general' editableActivated event
 			Aloha.trigger( 'aloha-editable-activated', {
 				'oldActive' : oldActive,
-				'editable' : this
+				'editable'  : this
 			} );
 		},
 
@@ -680,7 +682,7 @@ define( [
 		empty: function( str ) {
 			// br is needed for chrome
 			return ( null === str )
-				   || ( jQuery.trim( str ) === '' || str === '<br/>' );
+				|| ( jQuery.trim( str ) === '' || str === '<br/>' );
 		},
 
 		/**
@@ -696,19 +698,7 @@ define( [
 			this.removePlaceholder( clonedObj );
 			PluginManager.makeClean( clonedObj );
 
-			/*
-			//also deactivated for now. like initEditable. just in case ...
-			var content = clonedObj.html()
-			if ( typeof Aloha.settings.contentHandler.getContents === 'undefined' ) {
-				Aloha.settings.contentHandler.getContents = Aloha.defaults.contentHandler.getContents;
-			}
-			content = ContentHandlerManager.handleContent( content, {
-				contenthandler: Aloha.settings.contentHandler.getContents
-			} );
-			clonedObj.html( content );
-			*/
-
-			return asObject ? clonedObj.contents() : clonedObj.html();
+			return asObject ? clonedObj.contents() : contentSerializer(clonedObj[0]);
 		},
 
 		/**
@@ -802,7 +792,7 @@ define( [
 
 				// Use keyIdentifier if available
 				if ( event.originalEvent.keyIdentifier && 1 === 2 ) {
-					// @fixme: Because of "&& 1 === 2" above, all the below is
+					// @fixme: Because of "&& 1 === 2" above, this block is
 					// unreachable code
 					if ( match !== null ) {
 						uniChar = unescape( '%u' + match[1] );
@@ -815,7 +805,7 @@ define( [
 				} else {
 					// Use among browsers reliable which http://api.jquery.com/keypress
 					uniChar = ( this.keyCodeMap[ this.keyCode ] ||
-									String.fromCharCode( event.which ) || 'unknown' );
+								String.fromCharCode( event.which ) || 'unknown' );
 				}
 			}
 
@@ -837,13 +827,10 @@ define( [
 
 					console.debug( 'Aloha.Editable',
 						'smartContentChanged: event type keypress triggered' );
-	/*
+					/*
 					var r = Aloha.Selection.rangeObject;
-					if ( r.isCollapsed()
-						&& r.startContainer.nodeType == 3 ) {
-
+					if ( r.isCollapsed() && r.startContainer.nodeType == 3 ) {
 						var posDummy = jQuery( '<span id="GENTICS-Aloha-PosDummy" />' );
-
 						GENTICS.Utils.Dom.insertIntoDOM(
 							posDummy,
 							r,
@@ -852,19 +839,15 @@ define( [
 							false,
 							false
 						);
-
 						console.log( posDummy.offset().top, posDummy.offset().left );
-
 						GENTICS.Utils.Dom.removeFromDOM(
 							posDummy,
 							r,
 							false
 						);
-
 						r.select();
-
 					}
-	*/
+					*/
 				}, this.sccDelay );
 
 			} else if ( event && event.type === 'paste' ) {
@@ -914,6 +897,24 @@ define( [
 			this.snapshotContent = this.getContents();
 			return ret;
 		}
-
 	} );
+
+	/**
+	 * Sets the serializer function to be used for the contents of all editables.
+	 *
+	 * The default content serializer will just call the jQuery.html()
+	 * function on the editable element (which gets the innerHTML property).
+	 *
+	 * This method is a static class method and will affect the result
+	 * of editable.getContents() for all editables that have been or
+	 * will be constructed.
+	 *
+	 * @param serializerFunction
+	 *        A function that accepts a DOM element and returns the serialized
+	 *        XHTML of the element contents (excluding the start and end tag of
+	 *        the passed element).
+	 */
+	Aloha.Editable.setContentSerializer = function( serializerFunction ) {
+		contentSerializer = serializerFunction;
+	};
 } );

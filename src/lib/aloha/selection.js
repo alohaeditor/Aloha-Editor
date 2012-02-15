@@ -20,8 +20,8 @@
 
 "use strict";
 define(
-[ 'aloha/core', 'aloha/jquery', 'aloha/floatingmenu', 'util/class', 'util/range', 'aloha/rangy-core' ],
-function(Aloha, jQuery, FloatingMenu, Class, Range) {
+[ 'aloha/core', 'aloha/jquery', 'aloha/floatingmenu', 'util/class', 'util/range', 'aloha/ecma5shims', 'aloha/rangy-core' ],
+function(Aloha, jQuery, FloatingMenu, Class, Range, $_) {
 	var
 //		$ = jQuery,
 //		Aloha = window.Aloha,
@@ -229,21 +229,22 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		 * Internal version of updateSelection that adds the range parameter to be
 		 * able to work around an IE bug that caused the current user selection
 		 * sometimes to be on the body element.
-		 * @param range a substitute for the current user selection. if not provided,
+		 * @param {Object} event
+		 * @param {Object} range a substitute for the current user selection. if not provided,
 		 *   the current user selection will be used.
 		 * @hide
 		 */
-		_updateSelection: function(event, range) {
-			if (event !== undefined && event.originalEvent !== undefined &&
-					event.originalEvent.stopSelectionUpdate === true) {
-				return false;
-			}
-			
-			if (typeof range === "undefined") {
+		_updateSelection: function( event, range ) {
+			if ( event && event.originalEvent
+			     && event.originalEvent.stopSelectionUpdate === true ) {
 				return false;
 			}
 
-			this.rangeObject = range || new Aloha.Selection.SelectionRange(true);
+			if ( typeof range === 'undefined' ) {
+				return false;
+			}
+
+			this.rangeObject = range || new Aloha.Selection.SelectionRange( true );
 			
 			// Only execute the workaround when a valid rangeObject was provided
 			if ( typeof this.rangeObject !== "undefined" && typeof this.rangeObject.startContainer !== "undefined" && this.rangeObject.endContainer !== "undefined") {
@@ -536,7 +537,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		 */
 		standardSectionsAndGroupingContentComparator: function(domobj, markupObject) {
 			if  (domobj.nodeType === 1) {
-				if (markupObject[0].tagName && Aloha.Selection.replacingElements[ domobj.tagName.toLowerCase() ] && Aloha.Selection.replacingElements[ domobj.tagName.toLowerCase() ].indexOf(markupObject[0].tagName.toLowerCase()) != -1) {
+				if (markupObject[0].tagName && Aloha.Selection.replacingElements[ domobj.tagName.toLowerCase() ] && $_( Aloha.Selection.replacingElements[ domobj.tagName.toLowerCase() ] ).indexOf(markupObject[0].tagName.toLowerCase()) != -1) {
 					return true;
 				}
 			} else {
@@ -602,8 +603,17 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		standardAttributesComparator: function(domobj, markupObject) {
 			var i, attr, classString, classes, classes2, classLength, attrLength, domAttrLength;
 
+			// Cloning the domobj works around an IE7 bug that crashes
+			// the browser. The exact place where IE7 crashes is when
+			// the domobj.attribute[i] is read below.
+			// The bug can be reproduced with an editable that contains
+			// some text and and image, by clicking inside and outside the
+			// editable a few times.
+			domobj = domobj.cloneNode(false);
+
 			if (domobj.attributes && domobj.attributes.length && domobj.attributes.length > 0) {
 				for (i = 0, domAttrLength = domobj.attributes.length; i < domAttrLength; i++) {
+					// Dereferencing attributes[i] here would crash IE7 if domobj were not cloned above
 					attr = domobj.attributes[i];
 					if (attr.nodeName.toLowerCase() == 'class' && attr.nodeValue.length > 0) {
 						classString = attr.nodeValue;
@@ -1427,7 +1437,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 				return false;
 			}
 			// if something is defined, but the specifig tag is not in the list
-			if (this.allowedToStealElements[ markupName ].indexOf(nodeName) == -1) {
+			if ($_( this.allowedToStealElements[ markupName ] ).indexOf(nodeName) == -1) {
 				return false;
 			}
 			return true;
@@ -1487,7 +1497,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 				return true;
 			}
 			var t1Array = this.tagHierarchy[ t1 ],
-				returnVal = (t1Array.indexOf( t2 ) != -1) ? true : false;
+				returnVal = ($_( t1Array ).indexOf( t2 ) != -1) ? true : false;
 			return returnVal;
 		},
 
@@ -1786,7 +1796,7 @@ function nestedListInIEWorkaround ( range ) {
 		&& range.startContainer.nodeType == 3
 		&& range.startOffset == range.startContainer.data.length
 		&& range.startContainer.nextSibling
-		&& ["OL", "UL"].indexOf(range.startContainer.nextSibling.nodeName) !== -1) {
+		&& $_( ["OL", "UL"] ).indexOf(range.startContainer.nextSibling.nodeName) !== -1) {
 		if (range.startContainer.data[range.startContainer.data.length-1] == ' ') {
 			range.startOffset = range.endOffset = range.startOffset-1;
 		} else {
@@ -1993,25 +2003,6 @@ function correctRange ( range ) {
 		 */
 		removeAllRanges: function() {
 			this._nativeSelection.removeAllRanges();
-		},
-				
-		/**
-		 * prevents the next aloha-selection-changed event from
-		 * being triggered
-		 * @param flag boolean defines weather to update the selection on change or not
-		 */
-		preventedChange: function( flag ) {
-//			this.preventChange = typeof flag === 'undefined' ? false : flag;
-		},
-
-		/**
-		 * will return wheter selection change event was prevented or not, and reset the
-		 * preventSelectionChangedFlag
-		 * @return boolean true if aloha-selection-change event
-		 *         was prevented
-		 */
-		isChangedPrevented: function() {
-//			return this.preventSelectionChangedFlag;
 		},
 
 		/**

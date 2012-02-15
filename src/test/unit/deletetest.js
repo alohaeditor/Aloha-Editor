@@ -1365,6 +1365,10 @@ var tests = {
 		{	exclude: ['mozilla'], // broken in FF 7.01; NS_ERROR_DOM_INDEX_SIZE_ERR
 			start: 'foo     []bar',
 			execResult: 'foo[]bar'
+		},
+		{
+			start:		'     fo[]o barbar fo bar-ba-bar',
+			execResult: ' f[]o barbar fo bar-ba-bar'
 		}
 	]
 }

@@ -207,10 +207,10 @@ define( [
 		    cachedColsCounts = [],
 		    colsCountDiff,
 		    colSpan;
-		
+
 		for ( i = 0; i < rowsNum; i++ ) {
 			row = jQuery( rows[ i ] );
-			cols = row.find( '>td' );
+			cols = row.children( 'td, th' );
 			colsNum = cols.length;
 			colsCount = Utils.cellIndexToGridColumn( rows, i, colsNum - 1 ) + 1;
 			
@@ -232,7 +232,7 @@ define( [
 				if ( colSpan == 1 ) {
 					cols.last().removeAttr( 'colspan' );
 				}
-				
+
 				colsCount += ( colSpan - 1 );
 			}
 			
@@ -267,7 +267,7 @@ define( [
 		if ( this.isActive ) {
 			return;
 		}
-		
+
 		var that = this,
 		    htmlTableWrapper,
 		    tableWrapper;
@@ -348,10 +348,11 @@ define( [
 		tableWrapper = jQuery(
 			'<div class="' + this.get( 'classTableWrapper' ) + '"></div>'
 		);
-		tableWrapper.contentEditable( false );
+		//tableWrapper.contentEditable( false );
 
 		// wrap the tableWrapper around the table
 		this.obj.wrap( tableWrapper );
+		this.obj.parent().alohaBlock();
 
 		// :HINT The outest div (Editable) of the table is still in an editable
 		// div. So IE will surround the the wrapper div with a resize-border
@@ -359,6 +360,7 @@ define( [
 		// Disable resize and selection of the controls (only IE)
 		// Events only can be set to elements which are loaded from the DOM (if they
 		// were created dynamically before) ;)
+		 
 		htmlTableWrapper = this.obj.parents( '.' + this.get( 'classTableWrapper' ) );
 		htmlTableWrapper.get( 0 ).onresizestart = function ( e ) { return false; };
 		htmlTableWrapper.get( 0 ).oncontrolselect = function ( e ) { return false; };

@@ -1,12 +1,20 @@
 h2. The Image Plugin
 
-Follow devs on http://twitter.com/search?q=%23aeimg
+The Image Plugin will allow for basic image manipulation right within your content:
 
+* resize (by dragging and entering values)
+* resizing with fixed aspect ratio
+* resetting the image to it's initial state
+* Image cropping
 * Insert a Image
 * Support for dragging the image around
 * Support for changing the title, src and alt attributes
 * Support for resizing the image
 * Support for changing the image padding
+
+NOTE: You need a server-sided script like image magick which will handle actual cropping for you.
+
+Follow devs on http://twitter.com/search?q=%23aeimg
 
 endprologue.
 

@@ -59,17 +59,17 @@
       <dd><a href="using_aloha.html">Using Aloha Editor</a></dd>
       <dd><a href="develop_aloha.html">Developing and building Aloha Editor</a></dd>
       <dd><a href="configure_aloha.html">Configuring Aloha Editor</a></dd>
-      <dd><a href="require.html">Aloha dependency management with requireJS</a></dd>
+      <dd><a href="require.html">Aloha dependency management</a></dd>
       <dd><a href="writing_plugins.html">Writing Plugins</a></dd>
     <dt>The Core</dt>
       <dd><a href="core.html">The Core</a></dd>
     <dt>Commands</dt>
       <dd><a href="using_commands.html">Using commands</a></dd>
-    <dt>Ui</dt>
+    <dt>UI</dt>
       <dd><a href="ui.html">Aloha Editor Ui</a></dd>
       <dd><a href="toolbar.html">Aloha Editor toolbar</a></dd>
       <dd><a href="sidebar.html">Aloha Editor sidebar</a></dd>
-      <dd><a href="componenttypes.html">Aloha Editor Ui API</a></dd>
+      <dd><a href="componenttypes.html">Aloha Editor UI API</a></dd>
 </dl>
 <dl class="R">
     <dt>Plugins</dt>
@@ -79,7 +79,12 @@
       <dd><a href="plugin_contenthandler.html">Content Handler</a></dd>
       <dd><a href="plugin_browser.html">Browser</a></dd>
       <dd><a href="plugin_numeratedheaders.html">Numerated Headers</a></dd>
+      <dd><a href="plugin_undo.html">Undo</a></dd>
+      <dd><a href="plugin_table.html">Table</a></dd>
+      <dd><a href="plugin_paste.html">Paste</a></dd>
+      <dd><a href="plugin_formatlesspaste.html">Formatless paste</a></dd>
     <dt>Contributing to Aloha Editor</dt>
+      <dd><a href="releasing.html">Releasing</a></dd>
       <dd>Development Process</dd>
       <dd><a href="style_guide.html">Javascript Style Guide</a></dd>
       <dd><a href="documentation_guidelines.html">Documentation Guidelines</a></dd>
@@ -213,7 +218,7 @@ function ( Aloha, Ui, ToggleButton ) {
 </ul>
 <h4 id="multisplitbutton-component-type-multisplitbutton">1.5 MultiSplitButton Component Type <tt>MultiSplitButton</tt></h4>
 <p>The <tt>MultiSplitButton</tt> is intended to provide an array of buttons to select from which will apply interchangeable stylings to selected content. The classic use for the MultiSplitButton is a selection of standard paragraph and header stylings. In case there are more than four buttons it can be extended to reveal additional buttons. The currently applied selection is highlighted. It&#8217;s also possible to add special buttons at the bottom which are reserved for actions such as removing formatting from selected content.</p>
-<p><img src="../images/MultiSplitButton.png" alt="" /></p>
+<p><img src="images/MultiSplitButton.png" alt="" /></p>
 <p>The <tt>MultiSplitButton</tt> has to provide methods to read the currently active button as well as switching another button to highlight state.</p>
 <ul>
 	<li><tt>getActiveButton()</tt> will return the currently active button</li>

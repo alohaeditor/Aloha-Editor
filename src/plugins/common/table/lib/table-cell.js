@@ -115,7 +115,6 @@ function (jQuery, Utils) {
 			// Disabled the dragging of content, since it makes cell selection difficult
 			this.wrapper.get( 0 ).ondragstart = function () { return false };
 		}
-
 		return this;
 	};
 
@@ -126,14 +125,17 @@ function (jQuery, Utils) {
 	 * @return void
 	 */
 	TableCell.prototype.deactivate = function() {
-		var wrapper = this.obj.children('.aloha-table-cell-editable');
+		var wrapper = jQuery(this.obj.children('.aloha-table-cell-editable'));
 
 		if (wrapper.length) {
-			// get the inner html of the contenteditable div
-			var innerHtml = wrapper.html();
-
+			// unwrap cell contents without re-creating dom nodes
+			wrapper.parent().append(
+				wrapper.contents()
+			);
+			
 			// remove the contenteditable div and its attached events
 			wrapper.remove();
+			
 
 			// remove the click event of the
 			this.obj.unbind('click');
@@ -141,10 +143,6 @@ function (jQuery, Utils) {
 			if (jQuery.trim(this.obj.attr('class')) == '') {
 				this.obj.removeAttr('class');
 			}
-
-			// set the inner html of the contenteditable div as html for the table-data
-			// field
-			this.obj.html(innerHtml);
 		}
 	}
 
@@ -228,20 +226,23 @@ function (jQuery, Utils) {
 	 */
 	TableCell.prototype._startCellSelection = function(){
 		if(!this.tableObj.selection.cellSelectionMode){
-
+			
 			//unselect currently selected cells
 			this.tableObj.selection.unselectCells();
 
 			// activate cell selection mode
 			this.tableObj.selection.cellSelectionMode = true; 
-
+			
 			//bind a global mouseup event handler to stop cell selection
 			var that = this;
 			jQuery('body').bind('mouseup.cellselection', function(){
 				that._endCellSelection();
+				
 			});
 
 			this.tableObj.selection.baseCellPosition = [this._virtualY(), this._virtualX()];
+			
+			
 		}
 	};
 

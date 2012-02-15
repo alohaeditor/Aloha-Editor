@@ -9,6 +9,7 @@ For help there is:
 
 - [the development guide](https://github.com/alohaeditor/Aloha-Editor/wiki/Development_guide) for developers
 - [the wiki](https://github.com/alohaeditor/Aloha-Editor/wiki) for end-users and implementors
+
 - [the issues tracker](https://github.com/alohaeditor/Aloha-Editor/issues) for developer support requests
 - [the support forum](http://getsatisfaction.com/aloha_editor) for end-user and implementor support requests
 - IRC #alohaeditor @ freenode.net (We are there every Wednesday 9:00 to 18:00 GMT+1)

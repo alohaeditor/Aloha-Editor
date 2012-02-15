@@ -28,57 +28,18 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 		config: [ 'strong', 'em', 'b', 'i','del','sub','sup', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'removeFormat'],
 
 		/**
-		 * HotKeys used for special actions
-		*/
-		hotKey: {
-			formatBold: i18n.t('formatBold', 'ctrl+b'),
-			formatItalic: i18n.t('formatItalic', 'ctrl+i'),
-			formatUnderline: i18n.t('formatUnderline', 'ctrl+u'),
-			formatParagraph: i18n.t('formatParagraph', 'alt+ctrl+0'),
-			formatH1: i18n.t('formatH1', 'alt+ctrl+1'),
-			formatH2: i18n.t('formatH2', 'alt+ctrl+2'),
-			formatH3: i18n.t('formatH3', 'alt+ctrl+3'),
-			formatH4: i18n.t('formatH4', 'alt+ctrl+4'),
-			formatH5: i18n.t('formatH5', 'alt+ctrl+5'),
-			formatH6: i18n.t('formatH6', 'alt+ctrl+6'),
-			formatPre: i18n.t('formatPre', 'alt+ctrl+p'),
-			formatDel: i18n.t('formatDel', 'ctrl+\\'),
-			formatSub: i18n.t('formatSub', 'ctrl+,'),
-			formatSup: i18n.t('formatSup', 'ctrl+.')
-		},
-
-		/**
 		 * Initialize the plugin and set initialize flag on true
 		 */
 		init: function () {
 			// Prepare
-			var that = this;
-
-			if ( typeof this.settings.hotKey != 'undefined' ) {
-				jQuery.extend(true, this.hotKey, this.settings.hotKey);
-			}
+			var me = this;
 
 			this.initButtons();
 
 			// apply specific configuration if an editable has been activated
 			Aloha.bind('aloha-editable-activated',function (e, params) {
 				//debugger;
-				that.applyButtonConfig(params.editable.obj);
-				
-				// handle hotKeys
-				params.editable.obj.bind( 'keydown', that.hotKey.formatBold, function() { that.addMarkup( 'b' ); return false; });
-				params.editable.obj.bind( 'keydown', that.hotKey.formatItalic, function() { that.addMarkup( 'i' ); return false; });
-				params.editable.obj.bind( 'keydown', that.hotKey.formatParagraph, function() { that.changeMarkup( 'p' ); return false; });
-				params.editable.obj.bind( 'keydown', that.hotKey.formatH1, function() { that.changeMarkup( 'h1' ); return false; });
-				params.editable.obj.bind( 'keydown', that.hotKey.formatH2, function() { that.changeMarkup( 'h2' ); return false; });
-				params.editable.obj.bind( 'keydown', that.hotKey.formatH3, function() { that.changeMarkup( 'h3' ); return false; });
-				params.editable.obj.bind( 'keydown', that.hotKey.formatH4, function() { that.changeMarkup( 'h4' ); return false; });
-				params.editable.obj.bind( 'keydown', that.hotKey.formatH5, function() { that.changeMarkup( 'h5' ); return false; });
-				params.editable.obj.bind( 'keydown', that.hotKey.formatH6, function() { that.changeMarkup( 'h6' ); return false; });
-				params.editable.obj.bind( 'keydown', that.hotKey.formatPre, function() { that.changeMarkup( 'pre' ); return false; });
-				params.editable.obj.bind( 'keydown', that.hotKey.formatDel, function() { that.addMarkup( 'del' ); return false; });
-				params.editable.obj.bind( 'keydown', that.hotKey.formatSub, function() { that.addMarkup( 'sub' ); return false; });
-				params.editable.obj.bind( 'keydown', that.hotKey.formatSup, function() { that.addMarkup( 'sup' ); return false; });
+				me.applyButtonConfig(params.editable.obj);
 			});
 
 			/*
@@ -86,6 +47,7 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 					elements: [ 'strong', 'em', 'b', 'i','del','sub','sup', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre' ]
 			});
 			*/
+
 		},
 
 		/**
@@ -155,8 +117,65 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 							'name' : button,
 							'iconClass' : 'aloha-button aloha-button-' + button,
 							'size' : 'small',
-							'onclick' : function () { 
-								that.addMarkup( button ); 
+							'onclick' : function () {
+								var
+									markup = jQuery('<'+button+'></'+button+'>'),
+									rangeObject = Aloha.Selection.rangeObject,
+									foundMarkup,
+									selectedCells = jQuery('.aloha-cell-selected');
+
+								// formating workaround for table plugin
+								if ( selectedCells.length > 0 ) {
+									var cellMarkupCounter = 0;
+									selectedCells.each( function () {
+										var cellContent = jQuery(this).find('div'),
+											cellMarkup = cellContent.find(button);
+										
+										if ( cellMarkup.length > 0 ) {
+											// unwrap all found markup text
+											// <td><b>text</b> foo <b>bar</b></td>
+											// and wrap the whole contents of the <td> into <b> tags
+											// <td><b>text foo bar</b></td>
+											cellMarkup.contents().unwrap();
+											cellMarkupCounter++;
+										}
+										cellContent.contents().wrap('<'+button+'></'+button+'>');
+									});
+
+									// remove all markup if all cells have markup
+									if ( cellMarkupCounter == selectedCells.length ) {
+										selectedCells.find(button).contents().unwrap();
+									}
+									return false;
+								}
+								// formating workaround for table plugin
+
+								// check whether the markup is found in the range (at the start of the range)
+								foundMarkup = rangeObject.findMarkup(function() {
+									return this.nodeName.toLowerCase() == markup.get(0).nodeName.toLowerCase();
+								}, Aloha.activeEditable.obj);
+
+								if (foundMarkup) {
+									// remove the markup
+									if (rangeObject.isCollapsed()) {
+										// when the range is collapsed, we remove exactly the one DOM element
+										GENTICS.Utils.Dom.removeFromDOM(foundMarkup, rangeObject, true);
+									} else {
+										// the range is not collapsed, so we remove the markup from the range
+										GENTICS.Utils.Dom.removeMarkup(rangeObject, markup, Aloha.activeEditable.obj);
+									}
+								} else {
+									// when the range is collapsed, extend it to a word
+									if (rangeObject.isCollapsed()) {
+										GENTICS.Utils.Dom.extendToWord(rangeObject);
+									}
+
+									// add the markup
+									GENTICS.Utils.Dom.addMarkup(rangeObject, markup);
+								}
+								// select the modified range
+								rangeObject.select();
+								return false;
 							},
 							'tooltip' : i18n.t('button.' + button + '.tooltip'),
 							'toggle' : true
@@ -184,7 +203,34 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 							'iconClass' : 'aloha-button ' + i18n.t('aloha-button-' + button),
 							'markup' : jQuery('<'+button+'></'+button+'>'),
 							'click' : function() {
-								that.changeMarkup( button );
+								var selectedCells = jQuery('.aloha-cell-selected');
+								// formating workaround for table plugin
+								if ( selectedCells.length > 0 ) {
+									var cellMarkupCounter = 0;
+									selectedCells.each( function () {
+										var cellContent = jQuery(this).find('div'),
+											cellMarkup = cellContent.find(button);
+										
+										if ( cellMarkup.length > 0 ) {
+											// unwrap all found markup text
+											// <td><b>text</b> foo <b>bar</b></td>
+											// and wrap the whole contents of the <td> into <b> tags
+											// <td><b>text foo bar</b></td>
+											cellMarkup.contents().unwrap();
+											cellMarkupCounter++;
+										}
+										cellContent.contents().wrap('<'+button+'></'+button+'>');
+									});
+
+									// remove all markup if all cells have markup
+									if ( cellMarkupCounter == selectedCells.length ) {
+										selectedCells.find(button).contents().unwrap();
+									}
+									return false;
+								}
+								// formating workaround for table plugin
+
+								Aloha.Selection.changeMarkupOnSelection(jQuery('<' + button + '></' + button + '>'));
 							}
 						});
 						break;
@@ -290,7 +336,7 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 				return;
 			}
 
-			for ( i = 0; i < formats.length; i++ ) {
+			for (i = 0; i < formats.length; i++) {
 				GENTICS.Utils.Dom.removeMarkup(rangeObject, jQuery('<' + formats[i] + '></' + formats[i] + '>'), Aloha.activeEditable.obj);
 			}
 
@@ -298,54 +344,6 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 			rangeObject.select();
 			// TODO: trigger event - removed Format
 
-		},
-		
-		/**
-		 * Adds markup to the current selection
-		*/
-		addMarkup: function( button ) {
-			var
-				markup = jQuery('<'+button+'></'+button+'>'),
-				rangeObject = Aloha.Selection.rangeObject,
-				foundMarkup;
-			
-			if ( typeof button === "undefined" || button == "" ) {
-				return false;
-			}
-			
-			// check whether the markup is found in the range (at the start of the range)
-			foundMarkup = rangeObject.findMarkup( function() {
-				return this.nodeName.toLowerCase() == markup.get(0).nodeName.toLowerCase();
-			}, Aloha.activeEditable.obj );
-
-			if ( foundMarkup ) {
-				// remove the markup
-				if ( rangeObject.isCollapsed() ) {
-					// when the range is collapsed, we remove exactly the one DOM element
-					GENTICS.Utils.Dom.removeFromDOM( foundMarkup, rangeObject, true );
-				} else {
-					// the range is not collapsed, so we remove the markup from the range
-					GENTICS.Utils.Dom.removeMarkup( rangeObject, markup, Aloha.activeEditable.obj );
-				}
-			} else {
-				// when the range is collapsed, extend it to a word
-				if ( rangeObject.isCollapsed() ) {
-					GENTICS.Utils.Dom.extendToWord( rangeObject );
-				}
-
-				// add the markup
-				GENTICS.Utils.Dom.addMarkup( rangeObject, markup );
-			}
-			// select the modified range
-			rangeObject.select();
-			return false;
-		},
-		
-		/**
-		 * Change markup
-		*/
-		changeMarkup: function( button ) {
-			Aloha.Selection.changeMarkupOnSelection(jQuery('<' + button + '></' + button + '>'));
 		},
 
 		/**

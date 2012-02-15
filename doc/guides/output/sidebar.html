@@ -59,17 +59,17 @@
       <dd><a href="using_aloha.html">Using Aloha Editor</a></dd>
       <dd><a href="develop_aloha.html">Developing and building Aloha Editor</a></dd>
       <dd><a href="configure_aloha.html">Configuring Aloha Editor</a></dd>
-      <dd><a href="require.html">Aloha dependency management with requireJS</a></dd>
+      <dd><a href="require.html">Aloha dependency management</a></dd>
       <dd><a href="writing_plugins.html">Writing Plugins</a></dd>
     <dt>The Core</dt>
       <dd><a href="core.html">The Core</a></dd>
     <dt>Commands</dt>
       <dd><a href="using_commands.html">Using commands</a></dd>
-    <dt>Ui</dt>
+    <dt>UI</dt>
       <dd><a href="ui.html">Aloha Editor Ui</a></dd>
       <dd><a href="toolbar.html">Aloha Editor toolbar</a></dd>
       <dd><a href="sidebar.html">Aloha Editor sidebar</a></dd>
-      <dd><a href="componenttypes.html">Aloha Editor Ui API</a></dd>
+      <dd><a href="componenttypes.html">Aloha Editor UI API</a></dd>
 </dl>
 <dl class="R">
     <dt>Plugins</dt>
@@ -79,7 +79,12 @@
       <dd><a href="plugin_contenthandler.html">Content Handler</a></dd>
       <dd><a href="plugin_browser.html">Browser</a></dd>
       <dd><a href="plugin_numeratedheaders.html">Numerated Headers</a></dd>
+      <dd><a href="plugin_undo.html">Undo</a></dd>
+      <dd><a href="plugin_table.html">Table</a></dd>
+      <dd><a href="plugin_paste.html">Paste</a></dd>
+      <dd><a href="plugin_formatlesspaste.html">Formatless paste</a></dd>
     <dt>Contributing to Aloha Editor</dt>
+      <dd><a href="releasing.html">Releasing</a></dd>
       <dd>Development Process</dd>
       <dd><a href="style_guide.html">Javascript Style Guide</a></dd>
       <dd><a href="documentation_guidelines.html">Documentation Guidelines</a></dd>
@@ -106,7 +111,7 @@
 <div class="warning"><p>This guide is currently a draft for the Aloha Editor jQuery Ui, which is supposed to be the next generation Ui for Aloha Editor. Your feedback is welcome!</p></div>
 <h3 id="sidebar-concept">1 Sidebar concept</h3>
 <p>The Sidebar provides to <strong>bars</strong> (left, right) and each bar may contain <strong>tabs</strong>. You may add ui components to tabs. There is only one instance of a the sidebar  and it changes its items depending on the acitvated editable.</p>
-<p>&lt;img src=../images/toolbar.png style=&#8220;width:600px&#8221;&gt;</p>
+<p><img src="images/toolbar.png" style="width:600px"></p>
 <h3 id="sidebar-integration">2 Sidebar integration</h3>
 <p>You may embed the toolbar in a given container in your site or let it float. If you don&#8217;t provide a container the toolbar will append a <tt>div</tt> element as last element of the documents body and position the toolbar as defined.</p>
 <p>The Sidebar provides <strong>tabs</strong>. You may define the name of your tabs as key.  The following example defines a toolbar with the 2 tabs <strong>attributes</strong> and <strong>comments</strong>. The name of the tabs is passed to <code>i18n</code> which translates them to the currently displayed language. The <strong>attributes</strong> tab has on component <strong>attributepanel</strong>. You may define the components that should be rendered by the group.</p>

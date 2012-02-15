@@ -28,6 +28,12 @@ define(
 function ( jQuery, PluginManager ) {
 	"use strict";
 
+	// Aloha Editor does not support Internet Explorer 6.  ExtJS style fixes for
+	// IE6 which are applied through the "ext-ie6" class cause visual bugs in
+	// IE9, and so we remove it so that IE6 fixes are not applied.
+	Aloha.ready(function() {
+		jQuery('.ext-ie6').removeClass('ext-ie6');
+	});
 
 	//----------------------------------------
 	// Private variables
