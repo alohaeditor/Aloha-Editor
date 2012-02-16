@@ -1,5 +1,5 @@
 /**
- * @license RequireJS i18n 0.24.0 Copyright (c) 2010-2011, The Dojo Foundation All Rights Reserved.
+ * @license RequireJS i18n 1.0.0 Copyright (c) 2010-2011, The Dojo Foundation All Rights Reserved.
  * Available via the MIT or new BSD license.
  * see: http://github.com/jrburke/requirejs for details
  */
@@ -41,7 +41,8 @@
     //nlsRegExp.exec("foo/bar/baz/nls/foo") gives:
     //["foo/bar/baz/nls/foo", "foo/bar/baz/nls/", "/", "/", "foo", ""]
     //so, if match[5] is blank, it means this is the top bundle definition.
-    var nlsRegExp = /(^.*(^|\/)nls(\/|$))([^\/]*)\/?([^\/]*)/;
+    var nlsRegExp = /(^.*(^|\/)nls(\/|$))([^\/]*)\/?([^\/]*)/,
+        empty = {};
 
     //Helper function to avoid repeating code. Lots of arguments in the
     //desire to stay functional and support RequireJS contexts without having
@@ -57,13 +58,28 @@
 
     function addIfExists(req, locale, toLoad, prefix, suffix) {
         var fullName = prefix + locale + '/' + suffix;
-        if (require._fileExists(req.nameToUrl(fullName, null))) {
+        if (require._fileExists(req.toUrl(fullName))) {
             toLoad.push(fullName);
         }
     }
 
+    /**
+     * Simple function to mix in properties from source into target,
+     * but only if target does not already have a property of the same name.
+     * This is not robust in IE for transferring methods that match
+     * Object.prototype names, but the uses of mixin here seem unlikely to
+     * trigger a problem related to that.
+     */
+    function mixin(target, source, force) {
+        for (var prop in source) {
+            if (!(prop in empty) && (!(prop in target) || force)) {
+                target[prop] = source[prop];
+            }
+        }
+    }
+
     define({
-        version: '0.24.0',
+        version: '1.0.0',
         /**
          * Called when a dependency needs to be loaded.
          */
@@ -107,8 +123,10 @@
                     current += (current ? "-" : "") + part;
                     addIfExists(req, current, toLoad, prefix, suffix);
                 }
-                req(toLoad);
-                onLoad();
+
+                req(toLoad, function () {
+                    onLoad();
+                });
             } else {
                 //First, fetch the master bundle, it knows what locales are available.
                 req([masterName], function (master) {
@@ -130,9 +148,9 @@
                             if (partBundle === true || partBundle === 1) {
                                 partBundle = req(prefix + part + '/' + suffix);
                             }
-                            require.mixin(value, partBundle);
+                            mixin(value, partBundle);
                         }
-						
+
 						// MODIFICATION FROM ALOHA START: add a t() function
 						value.t = function( key, defaultValue ) {
 							if ( this[key] ) {
@@ -145,7 +163,7 @@
 						}
 						// END OF ALOHA MODIFICATION
 
-						//All done, notify the loader.
+                        //All done, notify the loader.
                         onLoad(value);
                     });
                 });
