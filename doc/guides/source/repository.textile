@@ -5,6 +5,20 @@ endprologue.
 
 For clearer rendering of the tree nodes in a browser the "has children" should be a property of the folder object, and not the "hasChildren" method return value
 
+h3. Configuring the repository manager
+
+You may define a timeout when the repository manger should stop waiting for repository implementation response.
+ 
+<shell>
+var Aloha = {
+	settings : {
+		repositories: {
+			timeout: 10000 // default 5000 (5 sec)
+		}
+	}
+};
+</shell>
+
 h3. Concept: Repositories, Repository Manager, Repository Resource Items
 
 * everthing that can be done automatically should be done automatically
@@ -114,7 +128,6 @@ h4. Document
 * name MUST
 * baseType MUST (document|folder)
 * type MUST
-<div style="color: #888;">
 * parentId OPTIONAL
 * renditions OPTIONAL
 * localName OPTIONAL
@@ -126,7 +139,6 @@ h4. Document
 * mimeType OPTIONAL
 * fileName OPTIONAL
 * url OPTIONAL
-</div>
 
 h4. Folder
 * id MUST
@@ -134,13 +146,11 @@ h4. Folder
 * baseType MUST (document|folder)
 * type MUST
 * parentId MUST
-<div style="color: #888;">
 * localName OPTIONAL
 * createdBy OPTIONAL
 * creationDate OPTIONAL
 * lastModifiedBy OPTIONAL
 * lastModificationDate OPTIONAL
-</div>
 
 h3. Rendition
 * documentId ID identfies the rendition document (baseObjectType == document)
@@ -214,7 +224,6 @@ This differes to the CMIS spec because we do not support a query language and do
 
 h4. Input attributes
 * queryString [String]
-<div style="color: #888;">
 * filter [array] OPTIONAL Attributes that will be returned. 
 * orderBy [array] OPTIONAL ex. [{lastModificationDate:’DESC’, name:’ASC’}]
 * maxItems [Integer] OPTIONAL
@@ -223,30 +232,23 @@ h4. Input attributes
 * skipCount [Integer]  OPTIONAL This is tricky in a merged multi repository scenario
 * renditionFilter [array] OPTIONAL
 ** Instead of termlist an array of '''kind''' or '''mimetype''' is expected. If '''null''' or '''array.length == 0''' all renditions are returned. See http://docs.oasis-open.org/cmis/CMIS/v1.0/cd04/cmis-spec-v1.0.html#_Ref237323310 for renditionFilter
-</div>
 
 h4. Output attributes
 * [array] Objects Aloha objects as result of a fulltext search
 * Boolean hasMoreItems
-<div style="color: #888;">
 * Integer numItems OPTIONAL
-</div>
 
 h3. getChildren
 
 h4. Input attributes 
-<div style="color: #888;">
 * folderId [ResourceItem]  OPTIONAL If null the root folderId should be used
 * maxItems [Integer] OPTIONAL
 * skipCount [Integer] OPTIONAL This is tricky in a merged multi repository scenario
 * filter [array] OPTIONAL Attributes that will be returned
 * renditionFilter [array] OPTIONAL
 ** Instead of termlist an array of '''kind''' or '''mimetype''' is expected. If '''null''' or '''array.length == 0''' all renditions are returned. See http://docs.oasis-open.org/cmis/CMIS/v1.0/cd04/cmis-spec-v1.0.html#_Ref237323310
-</div>
 
 h4.  Output attributes 
 * [array] Objects Aloha objects as result of a fulltext search
 * Boolean hasMoreItems
-<div style="color: #888;">
 * Integer numItems OPTIONAL
-</div>

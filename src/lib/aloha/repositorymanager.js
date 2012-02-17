@@ -55,11 +55,11 @@ define( [
 			    repository;
 
 			if ( Aloha.settings && Aloha.settings.repositories ) {
-				settings = Aloha.settings.repositories;
+				this.settings = Aloha.settings.repositories;
 			}
 			
 			// use the configured repository manger query timeout or 5 sec
-			settings.timeout = settings.timeout || 5000;
+			this.settings.timeout = this.settings.timeout || 5000;
 			
 			for ( ; i < j; ++i ) {
 				repository = repositories[ i ];
@@ -68,10 +68,10 @@ define( [
 					repository.settings = {};
 				}
 
-				if ( settings[ repository.repositoryId ] ) {
+				if ( this.settings[ repository.repositoryId ] ) {
 					jQuery.extend(
 						repository.settings,
-						settings[ repository.repositoryId ]
+						this.settings[ repository.repositoryId ]
 					);
 				}
 
@@ -242,7 +242,7 @@ define( [
 			// respond. 5 seconds is deemed to be the reasonable time to wait
 			// when querying the repository manager in the context of something
 			// like autocomplete
-			var timeout = parseInt( params.timeout, 10 ) || settings.timeout;
+			var timeout = parseInt( params.timeout, 10 ) || this.settings.timeout;
 			timer = setTimeout( function() {
 				numOpenCallbacks = 0;
 				that.queryCallback( callback, allitems, allmetainfo, timer );
@@ -406,7 +406,7 @@ define( [
 				repositories = this.repositories;
 			}
 
-			var timeout = parseInt( params.timeout, 10 ) || settings.timeout;
+			var timeout = parseInt( params.timeout, 10 ) || this.settings.timeout;
 			timer = setTimeout( function() {
 				numOpenCallbacks = 0;
 				that.getChildrenCallback( callback, allitems, timer );
