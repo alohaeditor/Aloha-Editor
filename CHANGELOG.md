@@ -14,6 +14,9 @@ All changes are categorized into one of the following keywords:
 
 - block plugin: Aloha Block Plugin has now been greatly cleaned up and improved. Besides greatly cleaned up API and documentation, the new features include Drag/Drop, Deletion and Copy/Paste support. Now fully cross-browser (IE7, IE8, IE9, Chrome, Firefox).
 - commands.delete: fixed a bug with the delete command when contents are preceded by ignorable whitespace. also added a delete test for that.
+- **ENHANCEMENT**: image plugin: splititng main fat file (1500 lines) for easying maintenance and evolutions
+                          - new file : image-floatingMenu.js
+- **ENHANCEMENT**: image plugin: abstracting ui calls and removing FloatingMenu dependency from main plugin file
 
 ## 0.20.5 - 2012/02/09
 
