@@ -46,105 +46,78 @@
           {  	start: "<p>[foo</p> <p>bar]</p>",
               execResult: "<p>[foo</p> <p>bar]</p>"
           },
-          {  	start: "<span>[foo</span> <span>bar]</span>",
-              execResult: "<span>[foo</span> <span>bar]</span>"
-          },
-          {  	start: "<p>[foo</p><p> <span>bar</span> </p><p>baz]</p>",
-              execResult: "<p>[foo</p><p> <span>bar</span> </p><p>baz]</p>"
-          },
-          {  	start: "<b>foo[]bar</b>",
-              execResult: "<b>foo[]bar</b>"
-          },
-          {  	start: "<i>foo[]bar</i>",
-              execResult: "<i>foo[]bar</i>"
-          },
-          {  	start: "<span>foo</span>{}<span>bar</span>",
-              execResult: "<span>foo</span>{}<span>bar</span>"
-          },
-          {  	start: "<span>foo[</span><span>]bar</span>",
-              execResult: "<span>foo[</span><span>]bar</span>"
-          },
-          {  	start: "foo[bar]baz",
+          {  	start: "<a href='http://www.google.com/'>foo[bar]baz</a>",
               execResult: "foo[bar]baz"
-          },
-          {  	start: "foo[bar<b>baz]qoz</b>quz",
-              execResult: "foo[bar<b>baz]qoz</b>quz"
-          },
-          {  	start: "foo[bar<i>baz]qoz</i>quz",
-              execResult: "foo[bar<i>baz]qoz</i>quz"
-          },
-          {  	start: "{<p><p> <p>foo</p>}",
-              execResult: "{<p></p><p> </p><p>foo</p>}"
-          },
-          {  	start: "<a href=http://www.google.com/>foo[bar]baz</a>",
-              execResult: "foo[bar]baz"
-          },
-          {  	start: "<a href=http://www.google.com/>foo[barbaz</a>}",
-              execResult: "foo[barbaz}"
-          },
-          {  	start: "{<a href=http://www.google.com/>foobar]baz</a>",
-              execResult: "{foobar]baz"
-          },
-          {  	start: "{<a href=http://www.google.com/>foobarbaz</a>}",
-              execResult: "{foobarbaz}"
-          },
-          {  	start: "<a href=http://www.google.com/>[foobarbaz]</a>",
+          }, 
+          {   exclude: ['mozilla'],	
+               start: "<a href='http://www.google.com/'>foo[barbaz</a>}",
+               execResult: "foo[barbaz]"
+           },
+           {   exclude: ['mozilla'],	
+               start: "{<a href='http://www.google.com/'>foobar]baz</a>",
+               execResult: "[foobar]baz"
+           },
+           {   exclude: ['mozilla'],	
+               start: "{<a href='http://www.google.com/'>foobarbaz</a>}",
+               execResult: "[foobarbaz]"
+           },
+           {  start: "<a href='http://www.google.com/'>[foobarbaz]</a>",
               execResult: "[foobarbaz]"
-          },
-          {  	start: "foo<a href=http://www.google.com/>b[]ar</a>baz",
+           },
+           {  start: "foo<a href='http://www.google.com/'>b[]ar</a>baz",
               execResult: "foob[]arbaz"
-          },
-          {  	start: "foo<a href=http://www.google.com/>[bar]</a>baz",
+           },
+           {  start: "foo<a href='http://www.google.com/'>[bar]</a>baz", 
+              execResult: "foo[bar]baz" 
+           },
+           {  start: "foo[<a href='http://www.google.com/'>bar</a>]baz",
               execResult: "foo[bar]baz"
-          },
-          {  	start: "foo[<a href=http://www.google.com/>bar</a>]baz",
-              execResult: "foo[bar]baz"
-          },
-          {  	start: "foo<a href=http://www.google.com/>[bar</a>baz]",
+           },
+           {  start: "foo<a href='http://www.google.com/'>[bar</a>baz]",
               execResult: "foo[barbaz]"
-          },
-          {  	start: "[foo<a href=http://www.google.com/>bar]</a>baz",
+           },
+           {  start: "[foo<a href='http://www.google.com/'>bar]</a>baz",
               execResult: "[foobar]baz"
-          },
-          {  	start: "[foo<a href=http://www.google.com/>bar</a>baz]",
+           },
+           {  start: "[foo<a href='http://www.google.com/'>bar</a>baz]",
               execResult: "[foobarbaz]"
-          },
-          {  	start: "<a id=foo href=http://www.google.com/>foobar[]baz</a>",
-              execResult: "<a id=\"foo\">foobar[]baz</a>"
-          },
-          {  	start: "<a id=foo href=http://www.google.com/>foo[bar]baz</a>",
-              execResult: "<a id=\"foo\">foo[bar]baz</a>"
-          },
-          {  	start: "<a id=foo href=http://www.google.com/>[foobarbaz]</a>",
-              execResult: "<a id=\"foo\">[foobarbaz]</a>"
-          },
-          {  	start: "foo<a id=foo href=http://www.google.com/>[bar]</a>baz",
-              execResult: "foo<a id=\"foo\">[bar]</a>baz"
-          },
-          {  	start: "foo[<a id=foo href=http://www.google.com/>bar</a>]baz",
-              execResult: "foo[<a id=\"foo\">bar</a>]baz"
-          },
-          {  	start: "[foo<a id=foo href=http://www.google.com/>bar</a>baz]",
-              execResult: "[foo<a id=\"foo\">bar</a>baz]"
-          },
-          {  	start: "<a name=foo>foobar[]baz</a>",
-              execResult: "<a name=\"foo\">foobar[]baz</a>"
-          },
-          {  	start: "<a name=foo>foo[bar]baz</a>",
-              execResult: "<a name=\"foo\">foo[bar]baz</a>"
-          },
-          {  	start: "<a name=foo>[foobarbaz]</a>",
-              execResult: "<a name=\"foo\">[foobarbaz]</a>"
-          },
-          {  	start: "foo<a name=foo>[bar]</a>baz",
-              execResult: "foo<a name=\"foo\">[bar]</a>baz"
-          },
-          {  	start: "foo[<a name=foo>bar</a>]baz",
-              execResult: "foo[<a name=\"foo\">bar</a>]baz"
-          },
-          {  	start: "[foo<a name=foo>bar</a>baz]",
-              execResult: "[foo<a name=\"foo\">bar</a>baz]"
-          }
+           },
+           {  start: "<a id=foo href='http://www.google.com/'>foobar[]baz</a>",
+              execResult: "<a id='foo'>foobar[]baz</a>"
+           },
+           { 	start: "<a id=foo href='http://www.google.com/'>foo[bar]baz</a>",
+              execResult: "<a id='foo'>foo[bar]baz</a>"
+           },
+           { 	start: "<a id=foo href='http://www.google.com/'>[foobarbaz]</a>",
+              execResult: "<a id='foo'>[foobarbaz]</a>"
+           },
+           { 	start: "foo<a id=foo href='http://www.google.com/'>[bar]</a>baz",
+              execResult: "foo<a id='foo'>[bar]</a>baz"
+           },
+           { 	start: "foo[<a id=foo href='http://www.google.com/'>bar</a>]baz",
+              execResult: "foo[<a id='foo'>bar</a>]baz"
+           },
+           { 	start: "[foo<a id=foo href='http://www.google.com/'>bar</a>baz]",
+              execResult: "[foo<a id='foo'>bar</a>baz]"
+           },
+           { 	start: "<a name=foo>foobar[]baz</a>",
+              execResult: "<a name='foo'>foobar[]baz</a>"
+           },
+           { 	start: "<a name=foo>foo[bar]baz</a>", 
+              execResult: "<a name='foo'>foo[bar]baz</a>"
+           },
+           { 	start: "<a name=foo>[foobarbaz]</a>",
+              execResult: "<a name='foo'>[foobarbaz]</a>"
+           },
+           { 	start: "foo<a name=foo>[bar]</a>baz",
+              execResult: "foo<a name='foo'>[bar]</a>baz"
+           },
+           { 	start: "foo[<a name=foo>bar</a>]baz",
+              execResult: "foo[<a name='foo'>bar</a>]baz"
+           },
+           { 	start: "[foo<a name=foo>bar</a>baz]", 
+              execResult: "[foo<a name='foo'>bar</a>baz]"
+           }
 			]
 	}
 	</script>
