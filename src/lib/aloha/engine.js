@@ -2037,14 +2037,22 @@ function isSimpleModifiableElement(node) {
 		return false;
 	}
 
+  //Note: In IE 6,7 & 8 returns both system & user defined attributes
+  //since, we need only the user-defiend ones filter using specified property.
+  var specified_attributes = $_(node.attributes).filter(function(attr){
+    if(attr.specified){
+      return true 
+    }
+  });
+  
 	// "It is an a, b, em, font, i, s, span, strike, strong, sub, sup, or u
 	// element with no attributes."
-	if (node.attributes.length == 0) {
+	if (specified_attributes.length == 0) {
 		return true;
 	}
 
 	// If it's got more than one attribute, everything after this fails.
-	if (node.attributes.length > 1) {
+	if (specified_attributes.length > 1) {
 		return false;
 	}
 
