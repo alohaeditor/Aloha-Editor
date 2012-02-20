@@ -48,6 +48,9 @@ index:
     - title: "Writing Plugins"
       url: writing_plugins
       text: "In this guide, we will explain the plugin structure, the usage of requireJS and the plugin lifecylce in Aloha Editor."
+    - title: "Working with repositories"
+      url: repository
+      text: "In this guide, we will explain how repositories work."
       
   The Core:
     - title: "The Core"
