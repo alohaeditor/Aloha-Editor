@@ -29,7 +29,57 @@ var Aloha = {
 </shell>
 
 
-h3. Repository implementation example 
+h3. Repository API 
+
+h4. query
+
+http://docs.oasis-open.org/cmis/CMIS/v1.0/cd04/cmis-spec-v1.0.html#_Toc234072402
+
+Does a fulltext search in all attributes and properties which have '''fulltextIndexed == true’’’.
+This differes to the CMIS spec because we do not support a query language and do always a fulltext search.
+
+h5. Input attributes
+
+* queryString [String]
+* filter [array] OPTIONAL Attributes that will be returned. 
+* orderBy [array] OPTIONAL ex. [{lastModificationDate:’DESC’, name:’ASC’}]
+* maxItems [Integer] OPTIONAL
+* in FolderId [ResourceItem] OPTIONAL his is a predicate function that tests whether or not a candidate object is a child-object of the folder object identified by the given inFolderId.
+* inTreeId [ResourceItem] OPTIONAL This is a predicate function that tests whether or not a candidate object is a descendant-object of the folder object identified by the given inTreeId.
+* skipCount [Integer]  OPTIONAL This is tricky in a merged multi repository scenario
+* renditionFilter [array] OPTIONAL
+** Instead of termlist an array of '''kind''' or '''mimetype''' is expected. If '''null''' or '''array.length == 0''' all renditions are returned. See http://docs.oasis-open.org/cmis/CMIS/v1.0/cd04/cmis-spec-v1.0.html#_Ref237323310 for renditionFilter
+
+h5. Output attributes
+
+* [array] Objects Aloha objects as result of a fulltext search
+* Boolean hasMoreItems
+* Integer numItems OPTIONAL
+
+h4. getChildren
+
+h5. Input attributes
+ 
+* folderId [ResourceItem]  OPTIONAL If null the root folderId should be used
+* maxItems [Integer] OPTIONAL
+* skipCount [Integer] OPTIONAL This is tricky in a merged multi repository scenario
+* filter [array] OPTIONAL Attributes that will be returned
+* renditionFilter [array] OPTIONAL
+** Instead of termlist an array of '''kind''' or '''mimetype''' is expected. If '''null''' or '''array.length == 0''' all renditions are returned. See http://docs.oasis-open.org/cmis/CMIS/v1.0/cd04/cmis-spec-v1.0.html#_Ref237323310
+
+h5.  Output attributes
+ 
+* [array] Objects Aloha objects as result of a fulltext search
+* Boolean hasMoreItems
+* Integer numItems OPTIONAL
+
+h4. getObjectById
+
+h4. markObject
+
+h4. makeClean
+
+h4. example 
 
 <shell>
 /**
@@ -188,7 +238,7 @@ h4. Folder
 * lastModifiedBy OPTIONAL
 * lastModificationDate OPTIONAL
 
-h3. Rendition
+h4. Rendition
 
 * documentId ID identfies the rendition document (baseObjectType == document)
 * url URL identifies the rendition stream.
@@ -210,7 +260,7 @@ h3. Rendition
 * width Integer (optional) Typically used for ‘image’ renditions (expressed as pixels).  SHOULD be present if kind = cmis:thumbnail.
 
 
-h4. What are renditions, and why are they so useful?
+h5. What are renditions, and why are they so useful?
 
 A repository may implement renditions for any object that has "document" as its baseObjectType.
 A rendition is simply an alternative representation (rendering) of a given object.
@@ -222,7 +272,7 @@ Each of these pages may be a stand-alone document in the repository as well.
 In fact, different renditions for a single document type will likely be different files
 which the repository will server back in response to a request for a specific rendition of a given object.
 
-h3. Example Flickr Image Object  (Document Object) 
+h4. Example Flickr Image Object  (Document Object) 
 
 * id - gailenejane/5008283282
 * name - Quiet moment
@@ -248,48 +298,3 @@ renditions: [{
   }]
 }
 </shell>
-
-h3. Methods 
-
-[[Image:repositoryManager.png]]
-
-h4. query
-http://docs.oasis-open.org/cmis/CMIS/v1.0/cd04/cmis-spec-v1.0.html#_Toc234072402
-
-Does a fulltext search in all attributes and properties which have '''fulltextIndexed == true’’’.
-This differes to the CMIS spec because we do not support a query language and do always a fulltext search.
-
-h4. Input attributes
-
-* queryString [String]
-* filter [array] OPTIONAL Attributes that will be returned. 
-* orderBy [array] OPTIONAL ex. [{lastModificationDate:’DESC’, name:’ASC’}]
-* maxItems [Integer] OPTIONAL
-* in FolderId [ResourceItem] OPTIONAL his is a predicate function that tests whether or not a candidate object is a child-object of the folder object identified by the given inFolderId.
-* inTreeId [ResourceItem] OPTIONAL This is a predicate function that tests whether or not a candidate object is a descendant-object of the folder object identified by the given inTreeId.
-* skipCount [Integer]  OPTIONAL This is tricky in a merged multi repository scenario
-* renditionFilter [array] OPTIONAL
-** Instead of termlist an array of '''kind''' or '''mimetype''' is expected. If '''null''' or '''array.length == 0''' all renditions are returned. See http://docs.oasis-open.org/cmis/CMIS/v1.0/cd04/cmis-spec-v1.0.html#_Ref237323310 for renditionFilter
-
-h4. Output attributes
-
-* [array] Objects Aloha objects as result of a fulltext search
-* Boolean hasMoreItems
-* Integer numItems OPTIONAL
-
-h3. getChildren
-
-h4. Input attributes
- 
-* folderId [ResourceItem]  OPTIONAL If null the root folderId should be used
-* maxItems [Integer] OPTIONAL
-* skipCount [Integer] OPTIONAL This is tricky in a merged multi repository scenario
-* filter [array] OPTIONAL Attributes that will be returned
-* renditionFilter [array] OPTIONAL
-** Instead of termlist an array of '''kind''' or '''mimetype''' is expected. If '''null''' or '''array.length == 0''' all renditions are returned. See http://docs.oasis-open.org/cmis/CMIS/v1.0/cd04/cmis-spec-v1.0.html#_Ref237323310
-
-h4.  Output attributes
- 
-* [array] Objects Aloha objects as result of a fulltext search
-* Boolean hasMoreItems
-* Integer numItems OPTIONAL
