@@ -382,7 +382,6 @@ function AlohaImagePlugin ( aQuery, Plugin, ImageFloatingMenu, i18nCore, i18n ) 
 				}
 				
 			});
-
 			/*
 			 * Add the event handler for selection change
 			 */
@@ -392,6 +391,7 @@ function AlohaImagePlugin ( aQuery, Plugin, ImageFloatingMenu, i18nCore, i18n ) 
 					// Check if the element is currently beeing resized
 					if (plugin.settings.ui.resizable && !jQuery(originalEvent.target).hasClass('ui-resizable-handle')) {
 						plugin.endResize();
+						plugin.imageObj = null;
 					}
 				}
 
@@ -705,15 +705,19 @@ function AlohaImagePlugin ( aQuery, Plugin, ImageFloatingMenu, i18nCore, i18n ) 
 		clickImage: function( e ) {
 
 			var plugin = this;
+			plugin.endResize(); // removes previous resize handler
 			plugin.imageObj = jQuery(e.target);
 			var currentImage = plugin.imageObj;
+			
 			
 			plugin.ui.setScope();
 			
 			var editable = currentImage.closest('.aloha-editable');
 			
 			// Disabling the content editable. This will disable the resizeHandles in internet explorer
-			jQuery(editable).contentEditable(false);
+			// already done in resize on a smaller scope, this block next aloha-selection-change event
+			// to be thrown
+			// editable.contentEditable(false);
 			
 			//Store the current props of the image
 			this.restoreProps.push({
@@ -744,48 +748,49 @@ function AlohaImagePlugin ( aQuery, Plugin, ImageFloatingMenu, i18nCore, i18n ) 
 		 */
 		findImgMarkup: function ( range ) {
 
-			var plugin = this;
-			var config = this.config;
-			var result, targetObj;
-
-			if ( typeof range === 'undefined' ) {
-				range = Aloha.Selection.getRangeObject();
-			}
-
-			targetObj = jQuery(range.startContainer);
-
-			try {
-				if ( Aloha.activeEditable ) {
-					if ((  typeof range.startContainer !== 'undefined'
-						&& typeof range.startContainer.childNodes !== 'undefined'
-						&& typeof range.startOffset !== 'undefined'
-						&& typeof range.startContainer.childNodes[range.startOffset] !== 'undefined'
-						&& range.startContainer.childNodes[range.startOffset].nodeName.toLowerCase() === 'img'
-						&& range.startOffset+1 === range.endOffset) ||
-						(targetObj.hasClass('Aloha_Image_Resize')))
-					{
-						result = targetObj.find('img')[0];
-						if (! result.css) {
-							result.css = '';
-						}
-						
-						if (! result.title) {
-  							result.title = '';
-						}
-						
-						if (! result.src) {
-							result.src = ''; 
-						}
-						return result;
-					}
-					else {
-						return null;
-					}
-				}
-			} catch (e) {
-				Aloha.Log.debug(e, "Error finding img markup.");
-			}
-			return null;
+//			var plugin = this;
+//			var config = this.config;
+//			var result, targetObj;
+//
+//			if ( typeof range === 'undefined' ) {
+//				range = Aloha.Selection.getRangeObject();
+//			}
+//
+//			targetObj = jQuery(range.startContainer);
+//
+//			try {
+//				if ( Aloha.activeEditable ) {
+//					if ((  typeof range.startContainer !== 'undefined'
+//						&& typeof range.startContainer.childNodes !== 'undefined'
+//						&& typeof range.startOffset !== 'undefined'
+//						&& typeof range.startContainer.childNodes[range.startOffset] !== 'undefined'
+//						&& range.startContainer.childNodes[range.startOffset].nodeName.toLowerCase() === 'img'
+//						&& range.startOffset+1 === range.endOffset) ||
+//						(targetObj.hasClass('Aloha_Image_Resize')))
+//					{
+//						result = targetObj.find('img')[0];
+//						if (! result.css) {
+//							result.css = '';
+//						}
+//						
+//						if (! result.title) {
+//  							result.title = '';
+//						}
+//						
+//						if (! result.src) {
+//							result.src = ''; 
+//						}
+//						return result;
+//					}
+//					else {
+//						return null;
+//					}
+//				}
+//			} catch (e) {
+//				Aloha.Log.debug(e, "Error finding img markup.");
+//			}
+//			return null;
+			return this.imageObj;
 
 		},
 		
@@ -1211,7 +1216,7 @@ function AlohaImagePlugin ( aQuery, Plugin, ImageFloatingMenu, i18nCore, i18n ) 
 			// Find the nearest contenteditable and reenable it since resizing is finished
 			if (this.imageObj) {
 				var editable = this.imageObj.closest('.aloha-editable');
-				jQuery(editable).contentEditable(true);
+				//this.imageObj.contentEditable(true);
 			}
 			
 			if (this.imageObj) {

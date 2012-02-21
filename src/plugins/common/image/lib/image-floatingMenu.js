@@ -85,8 +85,9 @@ function(aQuery, i18n, i18nCore, FloatingMenu){
  				imageFloatingMenu.__addUIAspectRatioToggleButton(tabId);
  			}
 
- 			// TODO fix the function and reenable this button 
- 			//that._addNaturalSizeButton();
+// 			 TODO fix the function and reenable this button 
+ 			var tabId = plugin.settings.ui.oneTab ? tabImage : tabResize;
+ 			imageFloatingMenu._addNaturalSizeButton(tabId);
      	},
      	
      	/**
@@ -391,7 +392,7 @@ function(aQuery, i18n, i18nCore, FloatingMenu){
  		/**
 		 * Adds the natural size button to the floating menu
 		 */
-		 _addNaturalSizeButton: function () {
+		 _addNaturalSizeButton: function (tabId) {
 	    	var plugin = this.plugin;
 			var naturalSize = new Aloha.ui.Button({
 				iconClass: 'aloha-img aloha-image-size-natural',
@@ -404,7 +405,7 @@ function(aQuery, i18n, i18nCore, FloatingMenu){
 						if (plugin.settings.ui.resizable) {
 							plugin.endResize();
 						}
-						jQuery(myimage).css({
+						jQuery(myimage).add(myimage.parent()).css({
 								'width': img.width + 'px',
 								'height': img.height + 'px',
 								'max-width': '',
@@ -414,7 +415,7 @@ function(aQuery, i18n, i18nCore, FloatingMenu){
 							plugin.resize();
 						}
 					};
-					img.src = plugin.findImgMarkup().src;
+					img.src = plugin.findImgMarkup().attr('src');
 						
 				},
 				tooltip: i18n.t('size.natural')
@@ -422,7 +423,7 @@ function(aQuery, i18n, i18nCore, FloatingMenu){
 			FloatingMenu.addButton(
 				plugin.name,
 				naturalSize,
-				tabResize,
+				tabId,
 				2
 			);
 		},

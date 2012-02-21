@@ -17,6 +17,10 @@ All changes are categorized into one of the following keywords:
 - **ENHANCEMENT**: image plugin: splititng main fat file (1500 lines) for easying maintenance and evolutions
                           - new file : image-floatingMenu.js
 - **ENHANCEMENT**: image plugin: abstracting ui calls and removing FloatingMenu dependency from main plugin file
+- **BUG**: image plugin: containing editable not selectable after image plugin activation.
+- **BUG**: image plugin: when plugin activated on an image, clicking a second image don't disable resize on first one.
+- **BUG**: image plugin: activating plugin when clicking an image doesn't change the selection, fixing broken findImgMarkup() then it fixes all the floatingmenu buttons relying on findImgMarkup
+- **BUG**: image plugin: fixing naturalSize button
 
 ## 0.20.5 - 2012/02/09
 
