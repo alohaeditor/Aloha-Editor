@@ -17,7 +17,7 @@ function handleError() {
 
 
 which sc-docs > /dev/null
-handleError $? "Could not find guides within PATH. Please install guides according to described procedure within genered guides."
+handleError $? "Could not find sc-docs within PATH. Please install sc-docs according to described procedure within genered guides."
 
 mkdir -p $TARGETDIR
 
