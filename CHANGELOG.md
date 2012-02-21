@@ -11,6 +11,11 @@ All changes are categorized into one of the following keywords:
 - **FEATURE**: The change introduces a new feature, or modifies the function,
                usage, or intent of an existing one.
 
+## 0.20.6 - 2012/
+
+- **ENHANCEMENT** Browser plugin: loading of required jQuery plugins is now changed so all can be loaded via CDN
+
+
 ## 0.20.5 - 2012/02/09
 
 - **ENHANCEMENT** word contenthandler: cleanup for pasted word documents with table of contents

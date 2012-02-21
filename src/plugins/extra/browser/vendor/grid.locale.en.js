@@ -1,3 +1,6 @@
+define(['aloha/jquery'], function(jQuery) { 
+	var $ = jQuery;
+
 ;(function($){
 /**
  * jqGrid English Translation
@@ -127,3 +130,5 @@ $.jgrid_en = {
 	}
 };
 })(jQuery);
+
+});
