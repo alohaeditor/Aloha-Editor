@@ -13,6 +13,7 @@ All changes are categorized into one of the following keywords:
 
 ## 0.20.6 - SNAPSHOT
 
+- **ENHANCEMENT** Added jslint setup to guides and fixed error output in build script.
 - **ENHANCEMENT** The new plugin dom-to-xhtml attempts to create a valid XHTML serialization of the document when getContents() is called.
 - **ENHANCEMENT** Repositories: It is now possible to configure the timeout for querying repositories.
 
