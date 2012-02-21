@@ -48,7 +48,11 @@ define({
 		"button.createLanguageAnnotation.label": "Insert language annotation",
 
 		// metaview
-		"button.metaview.label": "Switch between meta and normal view"
+		"button.metaview.label": "Switch between meta and normal view",
+
+		// cite
+		"button.quote.label": "Format selection as quote",
+		"button.blockquote.label": "Format selection as blockquote"
 	},
 	"de": true
 });

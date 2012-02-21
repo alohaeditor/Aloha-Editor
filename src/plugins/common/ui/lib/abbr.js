@@ -35,6 +35,7 @@ function( Aloha, jQuery, i18n, Component, Surface, ToggleButton, Text, Ui ) {
 
 		/**
 		 * Click callback
+		 * @override
 		 */
 		click: function() {
 			var abbr = findAbbr( Surface.range );

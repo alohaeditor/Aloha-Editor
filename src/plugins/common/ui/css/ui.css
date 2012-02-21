@@ -345,3 +345,8 @@ button.aloha-large-button {
 .aloha-metaview [lang="rs"] {
 	background-image: url(../../flag-icons/img/flags/rs.png);
 }
+
+.aloha-ui-fill {
+	display: block;
+	width: 100%;
+}

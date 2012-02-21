@@ -48,5 +48,9 @@ define({
 	"button.createLanguageAnnotation.label": "Sprachauszeichnung",
 
 	// metaview
-	"button.metaview.label": "Zwischen Metaansicht und normaler Ansicht umschalten"
+	"button.metaview.label": "Zwischen Metaansicht und normaler Ansicht umschalten",
+
+	// cite
+	"button.quote.label": "Selektion als Zitat formatieren",
+	"button.blockquote.label": "Selektion als Blockzitat formatieren"
 });

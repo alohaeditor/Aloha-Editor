@@ -19,6 +19,7 @@ define([
 	// components
 	"./abbr",
 	"./characterPicker",
+	"./cite",
 	"./format",
 	"./horizontalRule",
 	"./justify",

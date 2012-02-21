@@ -54,7 +54,8 @@
 					components: [
 						[ "bold", "italic", "underline", "pipe", "strikethrough", "pipe", "subscript", "superscript", "metaview" ],
 						[ "orderedList", "unorderedList", "indentList", "outdentList", "pipe", "formatBlock" ],
-						[ "link", "editLink", "removeLink", "linkBrowser", "pipe", "abbr", "editAbbr", "pipe", "languageAnnotation", "editLanguageAnnotation", "languageBrowser" ]
+						[ "link", "editLink", "removeLink", "linkBrowser", "pipe", "abbr", "editAbbr", "pipe",
+							"languageAnnotation", "editLanguageAnnotation", "languageBrowser", "pipe", "quote" ]
 					]
 				},
 				{
@@ -72,11 +73,18 @@
 					components: [
 						"linkPanel"
 					]
+				},
+				{
+					label: "Citations",
+					components: [ "citeDetails" ]
 				}
 			],
 			formatBlock: {
-				blocks: [ "pre", "h1", "p", "h2", "h3" ],
+				blocks: [ "pre", "h1", "p", "h2", "h3", "blockquote" ],
 				removeFormatting: [ "b", "strong" ]
+			},
+			cite: {
+				referenceContainer: "#references"
 			}
 		});
 		$( "#uhoh" ).aloha();
@@ -96,6 +104,8 @@
 <p>More than one instance...</p>
 <p>This <b>is</b> <i>gonna</i> be <i><b>trouble!</b></i></p>
 </div>
+
+<div id="references"></div>
 
 </body>
 </html>
