@@ -27,6 +27,7 @@
  * http://requirejs.org/docs/jquery.html
  *
  * others: depend.js from https://github.com/millermedeiros/requirejs-plugins
+ * http://yepnopejs.com
  *
  * todo: think about if using order plugin or priority config can help us here
  */

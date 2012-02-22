@@ -115,23 +115,23 @@ Aloha.Markup = Class.extend( {
 		if ( event.keyCode === 8 ) {
 			event.preventDefault(); // prevent history.back() even on exception
 			Aloha.execCommand( 'delete', false );
-			return true;
+			return false;
 		}
 
 		// DELETE
 		if ( event.keyCode === 46 ) {
 			Aloha.execCommand( 'forwarddelete', false );
-			return true;
+			return false;
 		}
 
 		// ENTER
 		if  ( event.keyCode === 13 ) {
 			if ( event.shiftKey ) {
 				Aloha.execCommand( 'insertlinebreak', false );
-				return true;
+				return false;
 			} else {
 				Aloha.execCommand( 'insertparagraph', false );
-				return true;
+				return false;
 			}
 		}
 
