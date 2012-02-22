@@ -814,6 +814,14 @@ function(Aloha, jQuery, Ext, Class, console) {
 				onWindowScroll( that );
 			});
 
+			// don't display the drag handle bar / pin when floating menu is not draggable
+			if ( !that.draggable ) {
+				jQuery('.aloha-floatingmenu').hover( function() {
+					jQuery(this).css({background: 'none'});
+					jQuery('.aloha-floatingmenu-pin').hide();
+				});
+			}
+
 			// adjust float behaviour
 			if (this.behaviour === 'float') {
 				// listen to selectionChanged event
@@ -826,8 +834,6 @@ function(Aloha, jQuery, Ext, Class, console) {
 					}
 				});
 			} else if (this.behaviour === 'append' ) {
-				//this.togglePin( false );
-				// fixme: fm is flickering when clicking around editables and not moved around
 				var p = jQuery( "#" + that.element );
 				var position = p.offset();
 
@@ -836,30 +842,13 @@ function(Aloha, jQuery, Ext, Class, console) {
 					return false;
 				}
 
+				// set the position so that it does not float on the first editable activation
 				that.floatTo( position );
-				
+
 				Aloha.bind( 'aloha-editable-activated', function( event, data ) {
-					// to discuss:
-					// the floating menu can still be dragged around -- but will not float back on de-/activate
-					// * should it be configurable to have it dragable?
-					// * if dragable should it float back to the container position on activation of editables?
 					if ( that.pinned ) {
-						// fixme: fm is flickering when clicking around editables and not moved around
 						return;
 					}
-
-					// fixme: without that the floating menu does not float back to the 
-					// defined position when unpinned an dragged somewhere
-					//lastFloatingMenuPos.left = null;
-
-					var p = jQuery( "#" + that.element );
-					var position = p.offset();
-
-					if ( !position ) {
-						Aloha.Log.warn(that, 'Invalid element HTML ID for floating menu: ' + that.element);
-						return false;
-					}
-					that.extTabPanel.setPosition(position.left, position.top);
 					that.floatTo( position );
 				});
 				
