@@ -110,16 +110,16 @@ function AlohaImagePlugin ( aQuery, Plugin, ImageFloatingMenu, i18nCore, i18n ) 
 			//Image manipulation options - ONLY in default config section
 			ui: {
 				oneTab		: false, //Place all ui components within one tab
-				insert      : true,
-				reset 		: true,
+				insert      : true, // Shows an insert button on std floatingMenu scope
+				reset 		: true, // Reset to default size
 				aspectRatioToggle: true, // Toggle button for the aspect ratio 
 				align		: true,	// Menu elements to show/hide in menu
 				resize		: true,	// Resize buttons
-				meta		: true,
-				margin		: true,
-				crop		: true,
+				meta		: true, // Shows field for changing src and title attributes of an image
+				margin		: true, // shows button to increase/decrease image margin properties
+				crop		: true, // enable/show crop actions on a image
 				resizable	: true,	// Resizable ui-drag image
-				handles     : 'ne, se, sw, nw'   
+				handles     : 'ne, se, sw, nw'   // set handles for resize
 			},
 			
 			/**
@@ -408,15 +408,23 @@ function AlohaImagePlugin ( aQuery, Plugin, ImageFloatingMenu, i18nCore, i18n ) 
 					}
 
 					// Enable image specific ui components if the element is an image
-					if (foundMarkup) {
+					if (foundMarkup) { // TODO : this is always null (below is dead code, moving it to clickImage)
 						plugin.ui.insertImgButton.hide();
 						plugin.ui.setScope();
 						
-						if (plugin.settings.ui.meta) {
-							plugin.ui.imgSrcField.setTargetObject(foundMarkup, 'src');
-							plugin.ui.imgTitleField.setTargetObject(foundMarkup, 'title');
-						}
-						plugin.ui.imgSrcField.focus();
+
+																						if (plugin.settings.ui.meta) {
+																	plugin.ui.imgSrcField
+																			.setTargetObject(
+																					foundMarkup,
+																					'src');
+																	plugin.ui.imgTitleField
+																			.setTargetObject(
+																					foundMarkup,
+																					'title');
+																}
+																plugin.ui.imgSrcField
+																		.focus();
 						plugin.ui.activateView('imgsrc');
 						
 					} else {
@@ -730,7 +738,12 @@ function AlohaImagePlugin ( aQuery, Plugin, ImageFloatingMenu, i18nCore, i18n ) 
 			// Update the resize input fields with the new width and height
 			$('#' + plugin.ui.imgResizeHeightField.id).val(plugin.imageObj.height());
 			$('#' + plugin.ui.imgResizeWidthField.id).val(plugin.imageObj.width());
-
+			
+			if (plugin.settings.ui.meta) {
+				plugin.ui.imgSrcField.setTargetObject(plugin.imageObj, 'src');
+				plugin.ui.imgTitleField.setTargetObject(plugin.imageObj, 'title');
+			}
+			plugin.ui.imgSrcField.focus();
 
 			if (plugin.settings.ui.resizable) {
 				plugin.startResize();
@@ -745,53 +758,60 @@ function AlohaImagePlugin ( aQuery, Plugin, ImageFloatingMenu, i18nCore, i18n ) 
 
 		/**
 		 * This method extracts determins if the range selection contains an image
+		 * 
+		 * UNUSED as long as clickImage don't change the selection
+		 * @see getPluginFocus instead
 		 */
 		findImgMarkup: function ( range ) {
 
-//			var plugin = this;
-//			var config = this.config;
-//			var result, targetObj;
-//
-//			if ( typeof range === 'undefined' ) {
-//				range = Aloha.Selection.getRangeObject();
-//			}
-//
-//			targetObj = jQuery(range.startContainer);
-//
-//			try {
-//				if ( Aloha.activeEditable ) {
-//					if ((  typeof range.startContainer !== 'undefined'
-//						&& typeof range.startContainer.childNodes !== 'undefined'
-//						&& typeof range.startOffset !== 'undefined'
-//						&& typeof range.startContainer.childNodes[range.startOffset] !== 'undefined'
-//						&& range.startContainer.childNodes[range.startOffset].nodeName.toLowerCase() === 'img'
-//						&& range.startOffset+1 === range.endOffset) ||
-//						(targetObj.hasClass('Aloha_Image_Resize')))
-//					{
-//						result = targetObj.find('img')[0];
-//						if (! result.css) {
-//							result.css = '';
-//						}
-//						
-//						if (! result.title) {
-//  							result.title = '';
-//						}
-//						
-//						if (! result.src) {
-//							result.src = ''; 
-//						}
-//						return result;
-//					}
-//					else {
-//						return null;
-//					}
-//				}
-//			} catch (e) {
-//				Aloha.Log.debug(e, "Error finding img markup.");
-//			}
-//			return null;
-			return this.imageObj;
+			var plugin = this;
+			var config = this.config;
+			var result, targetObj;
 
+			if ( typeof range === 'undefined' ) {
+				range = Aloha.Selection.getRangeObject();
+			}
+
+			targetObj = jQuery(range.startContainer);
+
+			try {
+				if ( Aloha.activeEditable ) {
+					if ((  typeof range.startContainer !== 'undefined'
+						&& typeof range.startContainer.childNodes !== 'undefined'
+						&& typeof range.startOffset !== 'undefined'
+						&& typeof range.startContainer.childNodes[range.startOffset] !== 'undefined'
+						&& range.startContainer.childNodes[range.startOffset].nodeName.toLowerCase() === 'img'
+						&& range.startOffset+1 === range.endOffset) ||
+						(targetObj.hasClass('Aloha_Image_Resize')))
+					{
+						result = targetObj.find('img')[0];
+						if (! result.css) {
+							result.css = '';
+						}
+						
+						if (! result.title) {
+  							result.title = '';
+						}
+						
+						if (! result.src) {
+							result.src = ''; 
+						}
+						return result;
+					}
+					else {
+						return null;
+					}
+				}
+			} catch (e) {
+				Aloha.Log.debug(e, "Error finding img markup.");
+			}
+			return null;
+		},
+		/**
+		 * Gets the plugin focus target
+		 */
+		getPluginFocus: function() {
+			return this.imageObj;
 		},
 		
 		

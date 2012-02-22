@@ -208,7 +208,7 @@ function(aQuery, i18n, i18nCore, FloatingMenu){
 				'iconClass': 'aloha-img aloha-image-align-left',
 				'size': 'small',
 				'onclick' : function() {
-					var el = jQuery(plugin.findImgMarkup());
+					var el = jQuery(plugin.getPluginFocus());
 					el.add(el.parent()).css('float', 'left');
 				},
 				'tooltip': i18n.t('button.img.align.left.tooltip')
@@ -225,7 +225,7 @@ function(aQuery, i18n, i18nCore, FloatingMenu){
 				'iconClass': 'aloha-img aloha-image-align-right',
 				'size': 'small',
 				'onclick' : function() {
-					var el = jQuery(plugin.findImgMarkup());
+					var el = jQuery(plugin.getPluginFocus());
 					el.add(el.parent()).css('float', 'right');
 				},
 				'tooltip': i18n.t('button.img.align.right.tooltip')
@@ -242,7 +242,7 @@ function(aQuery, i18n, i18nCore, FloatingMenu){
 				'iconClass': 'aloha-img aloha-image-align-none',
 				'size': 'small',
 				'onclick' : function() {
-					var el = jQuery(plugin.findImgMarkup());
+					var el = jQuery(plugin.getPluginFocus());
 					el.add(el.parent()).css({
 						'float': 'none',
 						display: 'inline-block'
@@ -270,7 +270,7 @@ function(aQuery, i18n, i18nCore, FloatingMenu){
 				toggle: false,
 				size: 'small',
 				onclick: function() {
-					jQuery(plugin.findImgMarkup()).increase('padding');
+					jQuery(plugin.getPluginFocus()).increase('padding');
 				},
 				tooltip: i18n.t('padding.increase')
 			});
@@ -286,7 +286,7 @@ function(aQuery, i18n, i18nCore, FloatingMenu){
 				toggle: false,
 				size: 'small',
 				onclick: function() {
-					jQuery(plugin.findImgMarkup()).decrease('padding');
+					jQuery(plugin.getPluginFocus()).decrease('padding');
 				},
 				tooltip: i18n.t('padding.decrease')
 			});
@@ -401,7 +401,7 @@ function(aQuery, i18n, i18nCore, FloatingMenu){
 				onclick: function() {
 					var	img = new Image();
 					img.onload = function() {
-						var myimage = plugin.findImgMarkup();
+						var myimage = plugin.getPluginFocus();
 						if (plugin.settings.ui.resizable) {
 							plugin.endResize();
 						}
@@ -415,7 +415,7 @@ function(aQuery, i18n, i18nCore, FloatingMenu){
 							plugin.resize();
 						}
 					};
-					img.src = plugin.findImgMarkup().attr('src');
+					img.src = plugin.getPluginFocus().attr('src');
 						
 				},
 				tooltip: i18n.t('size.natural')
