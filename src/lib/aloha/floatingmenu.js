@@ -420,6 +420,7 @@ function(Aloha, jQuery, Ext, Class, console) {
 		 *  'append' the fm is appended to the defined 'element' element position (top/left)
 		 */
 		behaviour: 'float',
+
 		/**
 		 * Aloha.settings.floatingmenu.element
 		 *
@@ -450,6 +451,12 @@ function(Aloha, jQuery, Ext, Class, console) {
 		 * Default is: true 
 		 */
 		draggable: true,
+		
+		/**
+		 * Define whether the floating menu shall be pinned or not via Aloha.settings.floatingmanu.pin
+		 * Default is: false 
+		 */
+		pin: false,
 		
 		/**
 		 * A list of all buttons that have been added to the floatingmenu
@@ -489,6 +496,9 @@ function(Aloha, jQuery, Ext, Class, console) {
 				}
 				if ( typeof Aloha.settings.floatingmenu.element === 'string' ) {
 					this.element = Aloha.settings.floatingmenu.element;
+				}
+				if ( typeof Aloha.settings.floatingmenu.pin === 'boolean' ) {
+					this.pin = Aloha.settings.floatingmenu.pin;
 				}
 
 				//We just check for undefined
@@ -843,7 +853,11 @@ function(Aloha, jQuery, Ext, Class, console) {
 				}
 
 				// set the position so that it does not float on the first editable activation
-				that.floatTo( position );
+				this.floatTo( position );
+				
+				if ( this.pin ) {
+					this.togglePin( true );
+				}
 
 				Aloha.bind( 'aloha-editable-activated', function( event, data ) {
 					if ( that.pinned ) {

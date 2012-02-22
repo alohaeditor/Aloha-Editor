@@ -60,7 +60,8 @@ Aloha.settings.floatingmenu = {
 	width: 630, // with of the floating menu; auto calculated when not set
 	behaviour: 'float', // 'float' (default), 'topalign', 'append'
 	element: 'my-html-element-id', // use with 'append' behaviour option: HTML DOM ID of the element the FM should get the position from
-	draggable: true, // boolen
+	pin: false, // boolean if set to true with behaviour 'append' the fm will be pinned to that position and scroll with the window
+	draggable: true, // boolean
 	marginTop: 10, // number in px
 	horizontalOffset: 0, // number in px -- used with 'topalign' behaviour
 	topalignOffset: 0, // number in px -- used with 'topalign' behaviour
