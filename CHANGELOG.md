@@ -13,9 +13,12 @@ All changes are categorized into one of the following keywords:
 
 ## 0.20.6 - SNAPSHOT
 
+- **ENHANCEMENT** Added jslint setup to guides and fixed error output in build script.
 - **ENHANCEMENT** The new plugin dom-to-xhtml attempts to create a valid XHTML serialization of the document when getContents() is called.
 - **BUG** Paste plugin: paste into an editable in an editable is now working
 - **BUG** Selection of content in an contenteditable=false which is not a child of an Aloha Editor instance now works like expected
+- **ENHANCEMENT** Repositories: It is now possible to configure the timeout for querying repositories.
+
 
 ## 0.20.5 - 2012/02/09
 
