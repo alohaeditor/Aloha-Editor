@@ -125,6 +125,10 @@
 	background-image: url(../img/language-annotation.png);
 }
 
+.ui-state-default .aloha-icon-quote {
+	background-image: url(../img/quote.png);
+}
+
 button.aloha-large-button {
 	width: 60px;
 	height: 50px;
@@ -169,6 +173,10 @@ button.aloha-large-button {
 .aloha-large-icon-pre {
 	background-position: -364px 0;
 }
+
+.ui-state-default .aloha-large-icon-blockquote {
+	background-image: url(../img/blockquote.png);
+}	
 
 .aloha-multisplit {
 	position: relative;

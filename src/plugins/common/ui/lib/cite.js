@@ -31,7 +31,6 @@ function( jQuery, i18n, Component, Surface, ToggleButton, Ui ) {
 		/**
 		 * Which icon to render
 		 * @type {string}
-		 * @TODO
 		 */
 		icon: "aloha-icon aloha-icon-quote",
 
