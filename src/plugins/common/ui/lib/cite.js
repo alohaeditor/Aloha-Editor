@@ -2,12 +2,13 @@ define([
 	"aloha/jquery",
 	"i18n!ui/nls/i18n",
 	"ui/component",
+	"ui/text",
 	"ui/surface",
 	"ui/toggleButton",
 	"ui/ui",
 	"ui/paragraph"
 ],
-function( jQuery, i18n, Component, Surface, ToggleButton, Ui ) {
+function( jQuery, i18n, Component, Text, Surface, ToggleButton, Ui ) {
 	var citeId = 0;
 
 	/**
@@ -59,6 +60,40 @@ function( jQuery, i18n, Component, Surface, ToggleButton, Ui ) {
 	});
 
 	/**
+	 * Edit quote component
+	 * @class
+	 * @extends {Text}
+	 */
+	Component.define( "editQuote", Text, {
+		/**
+		 * Selection change callback
+		 * @override
+		 */
+		selectionChange: function() {
+			var quote = findQuote();
+			if ( quote ) {
+				this.show();
+				this.element.val( jQuery( quote ).attr( "cite" ) );
+			} else {
+				this.hide();
+			}
+		},
+
+		/**
+		 * Sets the value of the citation
+		 * @param {string} value
+		 * @override
+		 */
+		setValue: function( value ) {
+			if ( value ) {
+				Ui.util.updateQuote( findQuote( Surface.range ), value );
+			} else {
+				Ui.util.removeQuote( Surface.range );
+			}
+		}
+	});
+
+	/**
 	 * Cite details component
 	 * @class
 	 * @extends {Component}
@@ -76,18 +111,9 @@ function( jQuery, i18n, Component, Surface, ToggleButton, Ui ) {
 				.children( "input" )
 					.addClass( "aloha-ui-fill" )
 					.bind( "keyup", function() {
-						var link = this.value,
-							quote = jQuery(
-								findQuote( Surface.range ) ||
-								findBlockquote( Surface.range ) ),
-							note = findNote( quote );
-						quote.attr( "cite", link );
-						note.children( ".aloha-cite-link" ).remove();
-						jQuery( "<a>", {
-							href: link,
-							text: link,
-							"class": "aloha-cite-link"
-						}).insertAfter( note.children().first() );
+						var quote = findQuote( Surface.range ) ||
+							findBlockquote( Surface.range );
+						Ui.util.updateQuote( quote, this.value );
 					});
 
 			this.noteElem = jQuery( "<label>Note: <input></label>" )
@@ -226,6 +252,16 @@ function( jQuery, i18n, Component, Surface, ToggleButton, Ui ) {
 	 */
 	Ui.util.createBlockquote = function( link, range, referenceContainer ) {
 		createQuote( "blockquote", link, range, referenceContainer );
+	};
+
+	Ui.util.updateQuote = function( quote, link ) {
+		var note = findNote( jQuery( quote ).attr( "cite", link ) );
+		note.children( ".aloha-cite-link" ).remove();
+		jQuery( "<a>", {
+			href: link,
+			text: link,
+			"class": "aloha-cite-link"
+		}).insertAfter( note.children().first() );
 	};
 
 	/**
