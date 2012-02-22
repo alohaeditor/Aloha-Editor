@@ -88,7 +88,8 @@ function( jQuery, i18n, Component, Text, Surface, ToggleButton, Ui ) {
 			if ( value ) {
 				Ui.util.updateQuote( findQuote( Surface.range ), value );
 			} else {
-				Ui.util.removeQuote( Surface.range );
+				Ui.util.removeQuote( Surface.range,
+					Ui.util.getReferenceContainer( Surface.active ) );
 			}
 		}
 	});
@@ -220,7 +221,7 @@ function( jQuery, i18n, Component, Text, Surface, ToggleButton, Ui ) {
 				.prop( "contentEditable", false )
 				.children()
 					.attr( "href", "#" + note )
-					.text( "[" + id + "]" )
+					.text( "[" + (list.children().length + 1) + "]" )
 				.end()
 				.appendTo( quote );
 
@@ -270,9 +271,25 @@ function( jQuery, i18n, Component, Text, Surface, ToggleButton, Ui ) {
 	 * @param {jQuery} referenceContainer
 	 */
 	Ui.util.removeQuote = function( range, referenceContainer ) {
-		var quote = findQuote( range );
-		// TODO: remove reference
-		GENTICS.Utils.Dom.removeFromDOM( quote, getRange( range ), true );
+		var references = referenceContainer.find( "ol.references" ),
+			quote = jQuery( findQuote( range ) );
+		// remove note
+		findNote( quote ).remove();
+		// remove note reference
+		quote.find( "sup" ).remove();
+		// unwrap quote
+		GENTICS.Utils.Dom.removeFromDOM( quote[ 0 ], getRange( range ), true );
+
+		// re-order references
+		if ( !references.children().length ) {
+			references.remove();
+		} else {
+			references.children().each(function( i ) {
+				var index = i + 1,
+					id = this.id.replace( /^\D+/, "" );
+				jQuery( "#cite-ref-" + id ).find( "sup a" ).text( "[" + index + "]" );
+			});
+		}
 	};
 
 	/**
