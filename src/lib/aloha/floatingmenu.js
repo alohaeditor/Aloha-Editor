@@ -290,13 +290,15 @@ function(Aloha, jQuery, Ext, Class, console) {
 		var element = floatingmenu.obj;
 		var editablePos = Aloha.activeEditable.obj.offset();
 		var isTopAligned = floatingmenu.behaviour === 'topalign';
+		var isAppended = floatingmenu.behaviour === 'append';
 		var isManuallyPinned = floatingmenu.pinned
 							 && ( parseInt( element.css( 'left' ), 10 )
 								  != ( editablePos.left
 									   + floatingmenu.horizontalOffset
 									 ) );
 
-		if ( isTopAligned && isManuallyPinned ) {
+		// no calculation when pinned manually or has behaviour 'append'
+		if ( isTopAligned && isManuallyPinned || isAppended ) {
 			return;
 		}
 
@@ -408,11 +410,24 @@ function(Aloha, jQuery, Ext, Class, console) {
 		window: jQuery(window),
 
 		/**
-		 * define floating menu float behaviour. meant to be adjusted via
-		 * GENTICS.Aloha.settings.floatingmenu.behaviour
-		 * set it to 'float' for standard behaviour, or 'topalign' for a fixed fm 
+		 * Aloha.settings.floatingmenu.behaviour
+		 * 
+		 * Is used to define the floating menu (fm) float behaviour.
+		 *
+		 * available: 
+		 *  'float' (default) the fm will float next to the position where the caret is,
+		 *  'topalign' the fm is fixed above the contentEditable which is active,
+		 *  'append' the fm is appended to the defined 'element' element position (top/left)
 		 */
 		behaviour: 'float',
+		/**
+		 * Aloha.settings.floatingmenu.element
+		 *
+		 * Is used to define the element where the floating menu is positioned when
+		 * Aloha.settings.floatingmenu.behaviour is set to 'append'
+		 * 
+		 */
+		element: 'floatingmenu',
 
 		/**
 		 * topalign offset to be used for topalign behavior
@@ -472,6 +487,10 @@ function(Aloha, jQuery, Ext, Class, console) {
 				if (typeof Aloha.settings.floatingmenu.marginTop === 'number') {
 				    this.marginTop = Aloha.settings.floatingmenu.marginTop;
 				}
+				if ( typeof Aloha.settings.floatingmenu.element === 'string' ) {
+					this.element = Aloha.settings.floatingmenu.element;
+				}
+
 				//We just check for undefined
 				if (typeof Aloha.settings.floatingmenu.width !== 'undefined') {
 					//Try to pars it
@@ -526,7 +545,7 @@ function(Aloha, jQuery, Ext, Class, console) {
 			});
 			
 			if (typeof Aloha.settings.toolbar === 'object') {
-				this.fromConfig = true;				
+				this.fromConfig = true;
 			}
 		},
 
@@ -643,6 +662,10 @@ function(Aloha, jQuery, Ext, Class, console) {
 					
 							that.left = this.x;
 							that.top = top;
+
+							// store the last floating menu position when the floating menu was dragged around
+							lastFloatingMenuPos.left = that.left;
+							lastFloatingMenuPos.top = that.top;
 
 							this.panel.setPosition(this.x, top);
 							that.refreshShadow();
@@ -802,6 +825,44 @@ function(Aloha, jQuery, Ext, Class, console) {
 						}
 					}
 				});
+			} else if (this.behaviour === 'append' ) {
+				//this.togglePin( false );
+				// fixme: fm is flickering when clicking around editables and not moved around
+				var p = jQuery( "#" + that.element );
+				var position = p.offset();
+
+				if ( !position ) {
+					Aloha.Log.warn(that, 'Invalid element HTML ID for floating menu: ' + that.element);
+					return false;
+				}
+
+				that.floatTo( position );
+				
+				Aloha.bind( 'aloha-editable-activated', function( event, data ) {
+					// to discuss:
+					// the floating menu can still be dragged around -- but will not float back on de-/activate
+					// * should it be configurable to have it dragable?
+					// * if dragable should it float back to the container position on activation of editables?
+					if ( that.pinned ) {
+						// fixme: fm is flickering when clicking around editables and not moved around
+						return;
+					}
+
+					// fixme: without that the floating menu does not float back to the 
+					// defined position when unpinned an dragged somewhere
+					//lastFloatingMenuPos.left = null;
+
+					var p = jQuery( "#" + that.element );
+					var position = p.offset();
+
+					if ( !position ) {
+						Aloha.Log.warn(that, 'Invalid element HTML ID for floating menu: ' + that.element);
+						return false;
+					}
+					that.extTabPanel.setPosition(position.left, position.top);
+					that.floatTo( position );
+				});
+				
 		    } else if ( this.behaviour === 'topalign' ) {
 				// topalign will retain the user's pinned status
 				// TODO maybe the pin should be hidden in that case?
@@ -1261,7 +1322,10 @@ function(Aloha, jQuery, Ext, Class, console) {
 
 			// if the floating menu would be placed higher than the top of the screen...
 			if ( top < scrollTop) {
-				top += 50 + GENTICS.Utils.Position.ScrollCorrection.top;
+				top += 80 + GENTICS.Utils.Position.ScrollCorrection.top;
+				// 80px if editable element is eg h1; 50px was fine for p;
+				// todo: maybe just use GENTICS.Utils.Position.ScrollCorrection.top with a better value?
+				// check where this is also used ...
 			}
 
 			// if the floating menu would float off the bottom of the screen

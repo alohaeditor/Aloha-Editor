@@ -18,6 +18,7 @@ All changes are categorized into one of the following keywords:
 - **BUG** Paste plugin: paste into an editable in an editable is now working
 - **BUG** Selection of content in an contenteditable=false which is not a child of an Aloha Editor instance now works like expected
 - **ENHANCEMENT** Repositories: It is now possible to configure the timeout for querying repositories.
+- **ENHANCEMENT** Floating menu: It is now possible to configure the position of the floating menu to append to an other element ('append'). It is needed to set an extra option 'element' with the ID of the HTML DOM element where the fm should attach to.
 
 
 ## 0.20.5 - 2012/02/09
