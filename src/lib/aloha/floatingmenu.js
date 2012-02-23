@@ -277,7 +277,7 @@ function(Aloha, jQuery, Ext, Class, console) {
 	};
 
 	/**
-	 * Handler for window scroll event. Positions the floating menu
+	 * Handler for window scroll event.  Positions the floating menu
 	 * appropriately.
 	 *
 	 * @param {Aloha.FloatingMenu} floatingmenu
