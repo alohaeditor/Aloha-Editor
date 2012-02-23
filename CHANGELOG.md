@@ -10,6 +10,10 @@ All changes are categorized into one of the following keywords:
 - **FEATURE**: The change introduces a new feature, or modifies the function,
                usage, or intent of an existing one.
 
+## 0.21.1 - 2012/02/23
+
+- **FEATURE** hints plugin: Implemented using Tipsy as tooltip library and the latest Aloha-Editor plugin standard.
+
 ## 0.21.0 - dev
 
 - block plugin: Aloha Block Plugin has now been greatly cleaned up and improved. Besides greatly cleaned up API and documentation, the new features include Drag/Drop, Deletion and Copy/Paste support. Now fully cross-browser (IE7, IE8, IE9, Chrome, Firefox).
