@@ -12,6 +12,10 @@ All changes are categorized into one of the following keywords:
                usage, or intent of an existing one.
 
 ## 0.20.6 - SNAPSHOT
+- **BUG** floatingmenu: Fixed floating menu's reading of configuration values
+          so that they are parsed into numbers.
+- **BUG** floatingmenu: Fixed floating menu positioning when view port is
+          scrolled so that it takes into account the aligntopOffset setting.
 
 - **ENHANCEMENT** Added jslint setup to guides and fixed error output in build script.
 - **ENHANCEMENT** The new plugin dom-to-xhtml attempts to create a valid XHTML serialization of the document when getContents() is called.
