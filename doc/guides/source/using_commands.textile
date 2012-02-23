@@ -89,8 +89,8 @@ This simple example shows how you could implement a bold button.
 <shell> 
 <html>
 <head>
-	<link rel="stylesheet" href="http://aloha-editor.org/builds/development/latest/aloha/css/aloha.css" type="text/css">
-	<script src="http://aloha-editor.org/builds/development/latest/aloha/lib/aloha.js"></script>
+    <link rel="stylesheet" href="http://aloha-editor.org/builds/development/latest/src/css/aloha.css" type="text/css">
+    <script src="http://aloha-editor.org/builds/development/latest/src/lib/aloha.js"></script>
 </head>
 <body>
 <button id="bold">Bold</button>
@@ -98,37 +98,37 @@ This simple example shows how you could implement a bold button.
 <script>
 // Bind to Aloha Ready Event
 Aloha.ready( function() {
-	var $ = jQuery = Aloha.jQuery;
-	$('.edit').aloha();
-
-var button = jQuery('#bold');
- 
-button.attr( 'disabled',
-    ( Aloha.queryCommandSupported( 'bold' ) &&
-    Aloha.queryCommandEnabled( 'bold' ) )
-);
- 
-button.click( function() {
-    Aloha.execCommand( 'bold', false, '' );
-    updateBoldColor();
-});
- 
-Aloha.bind('aloha-selection-changed', function() {
+    var $ = jQuery = Aloha.jQuery;
+    $('.edit').aloha();
+ 
+	var button = jQuery('#bold');
+	  
+	button.attr( 'disabled',
+	    ( Aloha.queryCommandSupported( 'bold' ) &&
+	    Aloha.queryCommandEnabled( 'bold' ) )
+	);
+	  
+	button.click( function() {
+	    Aloha.execCommand( 'bold', false, '' );
+	    updateBoldColor();
+	});
+	  
+	Aloha.bind('aloha-selection-changed', function() {
+	    updateBoldColor();
+	});
+	 
+	function updateBoldColor() {
+	    if ( Aloha.queryCommandIndeterm( 'bold' ) ) {
+	        button.css( 'background-color', 'yellow' );
+	        return;
+	    }
+	    button.css( 'background-color', 
+	            Aloha.queryCommandState( 'bold' ) ? 'lightgreen' : 'orange'
+	    );
+	}
+	// update the color on startup
 	updateBoldColor();
 });
-
-function updateBoldColor() {
-	if ( Aloha.queryCommandIndeterm( 'bold' ) ) {
-		button.css( 'background-color', 'yellow' );
-		return;
-	}
-    button.css( 'background-color', 
-            Aloha.queryCommandState( 'bold' ) ? 'lightgreen' : 'orange'
-    );
-}
-// update the color on startup
-updateBoldColor();
-}
 </script>
 </body>
 </html>
