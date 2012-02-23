@@ -277,7 +277,7 @@ function(Aloha, jQuery, Ext, Class, console) {
 	};
 
 	/**
-	 * Handler for window scroll event. Positions the floating menu
+	 * Handler for window scroll event.  Positions the floating menu
 	 * appropriately.
 	 *
 	 * @param {Aloha.FloatingMenu} floatingmenu
@@ -303,28 +303,29 @@ function(Aloha, jQuery, Ext, Class, console) {
 		}
 
 		var floatingmenuHeight = element.height();
-		var scrollTop = jQuery(document).scrollTop();
+		var scrollTop = jQuery( document ).scrollTop();
 
-		// This value is what the top position of the floating menu
-		// *would* be if we tried to position it above the active
-		// editable.
+		// This value is what the top position of the floating menu *would* be
+		// if we tried to position it above the active editable.
 		var floatingmenuTop = editablePos.top - floatingmenuHeight
-							+ floatingmenu.marginTop;
+		                    + floatingmenu.marginTop
+		                    - floatingmenu.topalignOffset;
 
-		// The floating menu does not fit in the space between the top
-		// of the viewport and the editable, so position it at the top
-		// of the viewport, and over the editable.
+		// The floating menu does not fit in the space between the top of the
+		// viewport and the editable, so position it at the top of the viewport
+		// and over the editable.
 		if ( scrollTop > floatingmenuTop ) {
 			editablePos.top = isTopAligned
 							? scrollTop + floatingmenu.marginTop
 							: floatingmenu.marginTop;
 
-		// There is enough space on top of the editable to fit the
-		// entire floating menu, so we do so.
+		// There is enough space on top of the editable to fit the entire
+		// floating menu, so we do so.
 		} else if ( scrollTop <= floatingmenuTop ) {
 			editablePos.top -= floatingmenuHeight
 							 + ( isTopAligned
-								 ? floatingmenu.marginTop
+								 ? floatingmenu.marginTop +
+								   floatingmenu.topalignOffset
 								 : 0 );
 		}
 
@@ -477,45 +478,58 @@ function(Aloha, jQuery, Ext, Class, console) {
 		init: function() {
 
 			// check for behaviour setting of the floating menu
-		    if (Aloha.settings.floatingmenu) {
-		    	
-		    	if (typeof Aloha.settings.floatingmenu.draggable === 'boolean') {
+		    if ( Aloha.settings.floatingmenu ) {
+		    	if ( typeof Aloha.settings.floatingmenu.draggable ===
+				         'boolean' ) {
 		    		this.draggable = Aloha.settings.floatingmenu.draggable;
 		    	}
-				if (typeof Aloha.settings.floatingmenu.behaviour === 'string') {
+
+				if ( typeof Aloha.settings.floatingmenu.behaviour ===
+				         'string' ) {
 					this.behaviour = Aloha.settings.floatingmenu.behaviour;
 				}
-				if (typeof Aloha.settings.floatingmenu.topalignOffset !== 'undefined') {
-					this.topalignOffset = Aloha.settings.floatingmenu.topalignOffset;
+
+				if ( typeof Aloha.settings.floatingmenu.topalignOffset !==
+					    'undefined' ) {
+					this.topalignOffset = parseInt(
+						Aloha.settings.floatingmenu.topalignOffset, 10 );
 				}
-				if (typeof Aloha.settings.floatingmenu.horizontalOffset !== 'undefined') {
-					this.horizontalOffset = Aloha.settings.floatingmenu.horizontalOffset;
+
+				if ( typeof Aloha.settings.floatingmenu.horizontalOffset !==
+				         'undefined' ) {
+					this.horizontalOffset = parseInt(
+						Aloha.settings.floatingmenu.horizontalOffset , 10 );
 				}
-				if (typeof Aloha.settings.floatingmenu.marginTop === 'number') {
-				    this.marginTop = Aloha.settings.floatingmenu.marginTop;
+
+				if ( typeof Aloha.settings.floatingmenu.marginTop ===
+				         'number' ) {
+				    this.marginTop = parseInt(
+						Aloha.settings.floatingmenu.marginTop , 10 );
 				}
-				if ( typeof Aloha.settings.floatingmenu.element === 'string' ) {
+
+				if ( typeof Aloha.settings.floatingmenu.element ===
+						'string' ) {
 					this.element = Aloha.settings.floatingmenu.element;
 				}
-				if ( typeof Aloha.settings.floatingmenu.pin === 'boolean' ) {
+				if ( typeof Aloha.settings.floatingmenu.pin ===
+						'boolean' ) {
 					this.pin = Aloha.settings.floatingmenu.pin;
 				}
 
-				//We just check for undefined
-				if (typeof Aloha.settings.floatingmenu.width !== 'undefined') {
-					//Try to pars it
-					try {
-						var parsed = parseInt(Aloha.settings.floatingmenu.width);
-						this.width = Aloha.settings.floatingmenu.width;
-					} catch(e) {
-						//do nothing.
-					}
+
+				if ( typeof Aloha.settings.floatingmenu.width !==
+				         'undefined' ) {
+					this.width = parseInt( Aloha.settings.floatingmenu.width,
+						10 );
 				}
 		    }
 
 			jQuery.storage = new jQuery.store();
+
 			this.currentScope = 'Aloha.global';
+
 			var that = this;
+
 			this.window.unload(function () {
 				// store fm position if the panel is pinned to be able to restore it next time
 				if (that.pinned) {
@@ -910,7 +924,7 @@ function(Aloha, jQuery, Ext, Class, console) {
 					var HORIZONTAL_PADDING = 10;
 					// Calculate by how much the floating menu is pocking
 					// outside the width of the viewport.  A positive number
-					// means that is is outside the viewport, negative means
+					// means that it is outside the viewport, negative means
 					// it is within the viewport.
 					var overhang = ( ( editablePos.left + that.width
 						+ HORIZONTAL_PADDING ) - jQuery(window).width() );
