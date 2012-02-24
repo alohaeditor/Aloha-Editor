@@ -247,6 +247,9 @@ function ( jQuery, PluginManager ) {
 			// load aloha plugins from config
 			if ( typeof Aloha.settings.plugins != 'undefined' && typeof Aloha.settings.plugins.load != 'undefined' ) {
 				plugins = Aloha.settings.plugins.load;
+				if (plugins instanceof Array) {
+					return plugins;
+				}
 			}
 
 			// Determine Plugins
