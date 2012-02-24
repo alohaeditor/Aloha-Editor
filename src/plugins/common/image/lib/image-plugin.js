@@ -264,20 +264,20 @@ function AlohaImagePlugin ( aQuery, Plugin, ImageFloatingMenu, i18nCore, i18n ) 
 		 */
 		init: function() {
 
-			var that = this;
+			var plugin = this;
 			
 			var imagePluginUrl = Aloha.getPluginUrl('image');
 			
 			
 			
 			// Extend the default settings with the custom ones (done by default)
-			this.startAspectRatio = this.settings.fixedAspectRatio; 
-			this.config = this.defaultSettings;
-			this.settings = jQuery.extend(true, this.defaultSettings, this.settings);
+			plugin.startAspectRatio = plugin.settings.fixedAspectRatio; 
+			plugin.config = plugin.defaultSettings;
+			plugin.settings = jQuery.extend(true, plugin.defaultSettings, plugin.settings);
 			
-			that.initializeUI();
-			that.bindInteractions();
-			that.subscribeEvents();
+			plugin.initializeUI();
+			plugin.bindInteractions();
+			plugin.subscribeEvents();
 
 		},
 
