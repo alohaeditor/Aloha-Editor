@@ -177,7 +177,7 @@ function ( Aloha, jQuery ) {
 		 * @param obj jQuery object to make clean
 		 * @return void
 		 */
-		markObject = function (obj, repositoryItem) {
+		markObject: function (obj, repositoryItem) {
 			obj.attr('data-myRepository-temporary-data').text( resourceItem.name );
 		},
 
@@ -187,7 +187,7 @@ function ( Aloha, jQuery ) {
 		 * @param {jQuery} obj jQuery object to make clean
 		 * @return void
 		 */
-		makeClean = function ( obj ) {
+		makeClean: function ( obj ) {
 			obj.removeAttr('data-myRepository-temporary-data');
 		};
 
