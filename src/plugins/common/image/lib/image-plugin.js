@@ -743,7 +743,13 @@ function AlohaImagePlugin ( aQuery, Plugin, ImageFloatingMenu, i18nCore, i18n ) 
 				plugin.ui.imgSrcField.setTargetObject(plugin.imageObj, 'src');
 				plugin.ui.imgTitleField.setTargetObject(plugin.imageObj, 'title');
 			}
-			plugin.ui.imgSrcField.focus();
+			Aloha.Selection.preventSelectionChanged();
+			try {
+				plugin.ui.imgSrcField.focus();
+			} catch(e) {
+				// for some reason execution breaks at this point
+				
+			}
 
 			if (plugin.settings.ui.resizable) {
 				plugin.startResize();
@@ -753,7 +759,7 @@ function AlohaImagePlugin ( aQuery, Plugin, ImageFloatingMenu, i18nCore, i18n ) 
 			if (plugin.settings.autoResize) {
 				plugin.autoResize();
 			}
-
+			Aloha.Selection.preventSelectionChangedFlag = false;
 		},
 
 		/**
