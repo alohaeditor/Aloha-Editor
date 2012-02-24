@@ -1,3 +1,6 @@
+define(['aloha/jquery'], function(jQuery) { 
+	var $ = jQuery;
+
 /* 
 * jqGrid  4.0.0 - jQuery Grid 
 * Copyright (c) 2008, Tony Tomov, tony@trirand.com 
@@ -465,3 +468,5 @@ true;if(e.beforedrop&&a.isFunction(e.beforedrop)){d=e.beforedrop.call(this,h,j,i
 hoverClass:"ui-state-hover"},drag_opts:{revert:"invalid",helper:"clone",cursor:"move",appendTo:"#jqgrid_dnd",zIndex:5E3},dropbyname:false,droppos:"first",autoid:true,autoidprefix:"dnd_"},b||{});if(b.connectWith){b.connectWith=b.connectWith.split(",");b.connectWith=a.map(b.connectWith,function(e){return a.trim(e)});a.data(c,"dnd",b);c.p.reccount!="0"&&!c.p.jqgdnd&&g();c.p.jqgdnd=true;for(var f=0;f<b.connectWith.length;f++)a(b.connectWith[f]).droppable(a.isFunction(b.drop)?b.drop.call(a(c),b):b.drop)}}}})},
 gridResize:function(b){return this.each(function(){var g=this;if(g.grid&&a.fn.resizable){b=a.extend({},b||{});if(b.alsoResize){b._alsoResize_=b.alsoResize;delete b.alsoResize}else b._alsoResize_=false;if(b.stop&&a.isFunction(b.stop)){b._stop_=b.stop;delete b.stop}else b._stop_=false;b.stop=function(c,f){a(g).jqGrid("setGridParam",{height:a("#gview_"+g.p.id+" .ui-jqgrid-bdiv").height()});a(g).jqGrid("setGridWidth",f.size.width,b.shrinkToFit);b._stop_&&b._stop_.call(g,c,f)};b.alsoResize=b._alsoResize_?
 eval("("+("{'#gview_"+g.p.id+" .ui-jqgrid-bdiv':true,'"+b._alsoResize_+"':true}")+")"):a(".ui-jqgrid-bdiv","#gview_"+g.p.id);delete b._alsoResize_;a("#gbox_"+g.p.id).resizable(b)}})}})})(jQuery);
+
+});
