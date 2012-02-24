@@ -7,8 +7,10 @@
 		ribbon: false,
 		locale: 'en',
 		floatingmenu: {
-			width: 630,
-			behaviour: 'topalign'
+			"horizontalOffset" : "5",
+			"behaviour" : "topalign",
+			"width" : "510",
+			"topalignOffset" : "110" 
 		},
 		repositories: {
 			linklist: {
