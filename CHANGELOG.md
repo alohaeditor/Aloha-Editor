@@ -11,6 +11,24 @@ All changes are categorized into one of the following keywords:
 - **FEATURE**: The change introduces a new feature, or modifies the function,
                usage, or intent of an existing one.
 
+## SNATSHOT
+
+- **ENHANCEMENT**: block plugin: Aloha Block Plugin has now been greatly cleaned up and improved. Besides greatly cleaned up API and documentation, the new features include Drag/Drop, Deletion and Copy/Paste support. Now fully cross-browser (IE7, IE8, IE9, Chrome, Firefox).
+- **ENHANCEMENT**: commands.delete: fixed a bug with the delete command when contents are preceded by ignorable whitespace. also added a delete test for that.
+- **ENHANCEMENT**: image plugin: splitting main fat file (1500 lines) for easying maintenance and evolutions
+                          - new file : image-floatingMenu.js
+- **ENHANCEMENT**: image plugin: abstracting ui calls and removing FloatingMenu dependency from main plugin file
+- **BUG**: image plugin: building a selection from scratch when an image is clicked isn't safe as conflictual browser behaviours
+- **ENHANCEMENT**: image plugin: new method getImgFocus used in place of findImgMarkup which is pointless now
+- **BUG**: image plugin: containing editable not selectable after image plugin activation.
+- **BUG**: image plugin: when plugin activated on an image, clicking a second image don't disable resize on first one.
+- **BUG**: image plugin: fixing naturalSize button
+- **BUG**: image plugin: fixing focus and value of srcField when image is clicked (previously handled by selectionChange)
+- **ENHANCEMENT**: core: #448 Aloha Editor possibility to be loaded as requireJS module
+- **FEATURE**: added hotkey functionality
+- **FEATURE**: added Aloha.settings.plugins.load to load plugins also via config
+- **BUG**: fixes #424 -- SmartContentChanged is nott triggered when hitting
+ 
 ## 0.20.6 - 2012/
 
 - **ENHANCEMENT** Browser plugin: loading of required jQuery plugins is now changed so all can be loaded via CDN

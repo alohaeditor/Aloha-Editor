@@ -11,7 +11,7 @@ function() {
 	
 	var repositoryId1 = 'testRepo1',
 		repositoryId2 = 'testRepo2',
-		timeout = 5000,
+		timeout = 3000,
 		manager,
 		repository,
 		testOrder = [
@@ -37,7 +37,11 @@ function() {
 				function ( Repository, Manager ) {
 			manager = Manager;
 			repository = Repository;
-			Aloha.ready( runNextTest );
+			Aloha.ready( function() {
+				
+				runNextTest();
+			}
+			);
 			clearTimeout(timeout);
 			ok(true, 'Aloha Event was fired');
 			start();
