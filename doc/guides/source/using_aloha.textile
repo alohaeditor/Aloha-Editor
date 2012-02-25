@@ -136,6 +136,17 @@ Aloha.settings.plugins.load = 'common/format, common/table, common/list, common/
 </script>
 </html>
 
+You may also specify an Array as parameter :
+<html>
+<script type="text/javascript">
+// load Aloha Editor plugins
+Aloha.settings.plugins.load = [ 'common/format',
+                                'common/link',
+                                'common/image',
+                                'common/link'
+                                ];
+</script>
+</html>
 
 h4. Configuring plugins
 
