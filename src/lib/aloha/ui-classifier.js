@@ -32,7 +32,7 @@ define( [
 		var classesToRemove = uiClasses.join(" ");
 		elems.each(function() {
 			var elem = $( this );
-			if ( elem.hasClass( "aloha-cleanme" ) ) {
+			if ( elem.hasClass( "aloha-cleanme" ) || elem.hasClass( "aloha-ui-synced" ) ) {
 				elem.remove();
 			} else if (    elem.hasClass( "aloha-ui-wrapper" )
 						|| elem.hasClass( "aloha-ui-filler" ) ) {
