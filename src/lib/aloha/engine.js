@@ -7643,11 +7643,13 @@ commands.insertparagraph = {
 		// container name) on the context object."
 		var newContainer = document.createElement(newContainerName);
 
-		// "Copy all attributes of container to new container."
-		for (var i = 0; i < container.attributes.length; i++) {
-			if (typeof newContainer.setAttributeNS === 'function') {
+		// "Copy all non empty attributes of the container to new container."
+		for ( var i = 0; i < container.attributes.length; i++ ) {
+			if ( typeof newContainer.setAttributeNS === 'function' ) {
 				newContainer.setAttributeNS(container.attributes[i].namespaceURI, container.attributes[i].name, container.attributes[i].value);
-			} else {
+			} else if ( container.attributes[i].value.length > 0 
+						&& container.attributes[i].value != 'null'
+						&& container.attributes[i].value > 0) {
 				newContainer.setAttribute(container.attributes[i].name, container.attributes[i].value);
 			}
 		}
