@@ -226,39 +226,36 @@ define( [
 			} );
 		}
 
-		Aloha.bind( "wikidocs-document-changed", function( event, insertionMap, deletionMap, editable ) {
-			var managedElems = [ "table", "td", "tr", "caption" ];
-			for ( var i = 0; i < managedElems.length; i++ ) {
-				if (   deletionMap.hasOwnProperty( managedElems[ i ] )
-					|| insertionMap.hasOwnProperty( managedElems[ i ] ) ) {
-					unregisterTables( editable );
+		Wikidocs.bindElementsChanged(
+			{ withName: [ "table", "td", "tr", "caption" ] },
+			function ( inserted, deleted, editable ) {
+				unregisterTables( editable );
 
-					// Although unregisterTables() will deactivate
-					// tables, we may still have some UI elements
-					// floating around if a table object itself was
-					// removed since the deactivation code can't re-find
-					// the UI elements if the object changed.
-					// Ideally we'd have a before-document-changes event
-					// which would make this step unnecessary.
-					var remove
-						= "." + TablePlugin.get( "classSelectionColumn" )
-						+ ", ." + TablePlugin.get( "classSelectionRow" )
-					editable.obj.find( remove ).each(function(){
-						jQuery( this ).remove();
-					});
-					var unwrapChildren
-						= "." + TablePlugin.get( "classTableWrapper" )
-						+ ", .aloha-editable-caption"
-					    + ", .aloha-table-cell-editable";
-					editable.obj.find( unwrapChildren  ).each(function(){
-						jQuery( this ).replaceWith( jQuery( this ).contents() );
-					});
+				// Although unregisterTables() will deactivate tables,
+				// we may still have some UI elements floating around if
+				// a table object itself was removed since the
+				// deactivation code can't re-find the UI elements if
+				// for example the table element itself was
+				// deleted.
+				// TODO: Optimizable with something like a
+				// before-document-changes event so that we could remove
+				// the ui code before the changes are actually applied.
+				var remove
+					= "." + TablePlugin.get( "classSelectionColumn" )
+					+ ", ." + TablePlugin.get( "classSelectionRow" )
+				editable.obj.find( remove ).each(function(){
+					jQuery( this ).remove();
+				});
+				var unwrapChildren
+					= "." + TablePlugin.get( "classTableWrapper" )
+					+ ", .aloha-editable-caption"
+					+ ", .aloha-table-cell-editable";
+				editable.obj.find( unwrapChildren  ).each(function(){
+					jQuery( this ).replaceWith( jQuery( this ).contents() );
+				});
 
-					registerNewTables( editable );
-					break;
-				}
-			}
-		});
+				registerNewTables( editable );
+			});
 	};
 
 	//namespace prefix for this plugin
