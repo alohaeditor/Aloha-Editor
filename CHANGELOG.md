@@ -27,6 +27,8 @@ All changes are categorized into one of the following keywords:
 - **ENHANCEMENT** Floating menu: It is now possible to configure the floating menu to be 'append' to an other element. It is needed to set an extra option 'element' with the ID of the HTML DOM element where the fm should be attach to. The floating menu is attached to the same position as the 'element'.
 - **ENHANCEMENT** Floating menu: If the floating menu is set to be not draggable, the drag&drop bar + pin will not be shown
 - **BUG** engine.js: insert paragraph was sometimes broken in IE7 (copy of empty/all p-element attributes)
+- **ENHANCEMENT** updated plugin: table of contents (toc) to work with the current Aloha Editor version
+
 
 ## 0.20.5 - 2012/02/09
 
