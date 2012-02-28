@@ -136,8 +136,10 @@ function( Aloha, $, console) {
 				// never set.
 				continue;
 			}
+			// The XHTML spec says attributes are lowercase
+			name = name.toLowerCase();
 			//TODO it's only a boolean attribute if the element is in an HTML namespace
-			var isBool = (-1 !== $.inArray(name.toLowerCase(), booleanAttrs));
+			var isBool = (-1 !== $.inArray(name, booleanAttrs));
 			if ( ! isBool || (isBool && value) ) {
 				str += " " + name + '="' + encodeDqAttrValue( "" + (isBool ? name : value) ) + '"';
 			}
@@ -286,10 +288,6 @@ function( Aloha, $, console) {
 		 *
 		 * Element attributes with an empty string as value will not
 		 * appear in the serialized output.
-		 *
-		 * Element attribute names are case-insensitive in HTML5, so
-		 * they may come out in mixed-case depending on what the browser
-		 * provides.
 		 *
 		 * When iterating over the DOM, CDATA sections are comment nodes
 		 * on some browsers (Chrome) and not there at all on others (IE).
