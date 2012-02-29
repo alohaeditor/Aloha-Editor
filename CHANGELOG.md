@@ -29,7 +29,9 @@ All changes are categorized into one of the following keywords:
 - **FEATURE**: added Aloha.settings.plugins.load to load plugins also via config
 - **BUG**: fixes #424 -- SmartContentChanged is nott triggered when hitting
 - **BUG**: fixes alohaeditor/Aloha-Editor#415 -- Repositorie entries appears twice in explorer
- 
+- **FEATURE**: images browser plugin
+- **ENHANCEMENT**: browser: commenting some methods and coding guidelines
+
 ## 0.20.6 - 2012/
 
 - **ENHANCEMENT** Browser plugin: loading of required jQuery plugins is now changed so all can be loaded via CDN

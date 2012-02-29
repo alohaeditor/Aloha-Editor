@@ -392,6 +392,7 @@ function AlohaImagePlugin ( aQuery, Plugin, ImageFloatingMenu, i18nCore, i18n ) 
 					if (plugin.settings.ui.resizable && !jQuery(originalEvent.target).hasClass('ui-resizable-handle')) {
 						plugin.endResize();
 						plugin.imageObj = null;
+						Aloha.trigger('aloha-image-unselected');
 					}
 				}
 
@@ -760,6 +761,7 @@ function AlohaImagePlugin ( aQuery, Plugin, ImageFloatingMenu, i18nCore, i18n ) 
 				plugin.autoResize();
 			}
 			Aloha.Selection.preventSelectionChangedFlag = false;
+			Aloha.trigger('aloha-image-selected');
 		},
 
 		/**
