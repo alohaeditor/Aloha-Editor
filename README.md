@@ -2,7 +2,7 @@
 
 ## New Documentation
 
-We're currently writing new guides. You can find these at doc/guides/output
+We're currently writing new [new guides](http://www.alohaeditor.org/guides). You can find these at **<repos>/doc/guides/output** and on our website: [http://aloha-editor.org](http://aloha-editor.org)
 
 
 For help there is:
