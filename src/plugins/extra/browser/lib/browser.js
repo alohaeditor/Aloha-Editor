@@ -428,10 +428,8 @@ var Browser = Class.extend({
 				uid    : md5uid,
 				loaded : false
 			});
-		} else {
-			repo_obj = this._objs[md5uid];
 		}
-		
+
 		if ( repo_obj ) {
 			return this.processRepoObject(repo_obj);
 		}
