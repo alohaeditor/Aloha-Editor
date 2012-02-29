@@ -6252,6 +6252,7 @@ commands["delete"] = {
 
 		// collapse whitespace sequences
 		collapseWhitespace(node, range);
+		offset = range.startOffset;
 
 		// "If node is a Text node and offset is not zero, call collapse(node,
 		// offset) on the Selection. Then delete the contents of the range with
@@ -6845,6 +6846,7 @@ commands.forwarddelete = {
 
 		// collapse whitespace in the node, if it is a text node
 		collapseWhitespace(node, range);
+		offset = range.startOffset;
 
 		// "If node is a Text node and offset is not node's length:"
 		if (node.nodeType == $_.Node.TEXT_NODE
@@ -7641,11 +7643,13 @@ commands.insertparagraph = {
 		// container name) on the context object."
 		var newContainer = document.createElement(newContainerName);
 
-		// "Copy all attributes of container to new container."
-		for (var i = 0; i < container.attributes.length; i++) {
-			if (typeof newContainer.setAttributeNS === 'function') {
+		// "Copy all non empty attributes of the container to new container."
+		for ( var i = 0; i < container.attributes.length; i++ ) {
+			if ( typeof newContainer.setAttributeNS === 'function' ) {
 				newContainer.setAttributeNS(container.attributes[i].namespaceURI, container.attributes[i].name, container.attributes[i].value);
-			} else {
+			} else if ( container.attributes[i].value.length > 0 
+						&& container.attributes[i].value != 'null'
+						&& container.attributes[i].value > 0) {
 				newContainer.setAttribute(container.attributes[i].name, container.attributes[i].value);
 			}
 		}

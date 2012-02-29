@@ -1,3 +1,6 @@
+define(['aloha/jquery'], function(jQuery) { 
+	var $ = jQuery;
+
 ;(function($){
 /**
  * jqGrid German Translation
@@ -132,3 +135,5 @@ $.jgrid_de = {
 	}
 };
 })(jQuery);
+
+});
