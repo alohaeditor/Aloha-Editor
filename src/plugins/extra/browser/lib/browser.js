@@ -420,7 +420,6 @@ var Browser = Class.extend({
 	 * and all other attributes are optional.
 	 */
 	harvestRepoObject: function (obj) {
-		window.console.log(obj.id);
 		var md5uid = md5lib.hex_md5(obj.id),
 			repo_obj = false;
 		
@@ -955,7 +954,6 @@ var Browser = Class.extend({
 	},
 	
 	listItems: function (items) {
-		window.console.log(items);
 		var that = this;
 		var list = this.list.clearGridData();
 		
