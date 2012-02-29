@@ -5,8 +5,14 @@
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
 define(
-['aloha', 'aloha/jquery', 'aloha/plugin', 'aloha/floatingmenu', 'i18n!characterpicker/nls/i18n', 'i18n!aloha/nls/i18n', 'css!characterpicker/css/characterpicker.css'],
-function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
+	['aloha', 
+	'aloha/jquery', 
+	'aloha/plugin', 
+	'aloha/floatingmenu', 
+	'i18n!characterpicker/nls/i18n', 
+	'i18n!aloha/nls/i18n', 
+	'css!characterpicker/css/characterpicker.css'],
+function( Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore ) {
 	"use strict";
 
 	var
@@ -212,10 +218,14 @@ function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 			);
 			self.characterOverlay = new CharacterOverlay(self.settings.characters, self.onCharacterSelect);
 		},
+		/**
+		 * insert a character after selecting it from the list
+		*/
 		onCharacterSelect: function(character) {
 			var self = this;
 			var range = Aloha.Selection.getRangeObject();
-			if(Aloha.activeEditable) {
+			
+			if( Aloha.activeEditable ) {
 				var charNode = jQuery(document.createTextNode(character));
 				GENTICS.Utils.Dom.insertIntoDOM(
 					charNode,
@@ -223,6 +233,8 @@ function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 					jQuery(Aloha.activeEditable.obj),
 					true
 				);
+				range.startContainer = range.endContainer = charNode.get( 0 );
+				range.startOffset = range.endOffset = charNode.length;
 				range.select();
 			}
 		}

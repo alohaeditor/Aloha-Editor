@@ -1367,8 +1367,11 @@ var tests = {
 			execResult: 'foo[]bar'
 		},
 		{
-			start:		'     fo[]o barbar fo bar-ba-bar',
+			start: '     fo[]o barbar fo bar-ba-bar',
 			execResult: ' f[]o barbar fo bar-ba-bar'
 		}
+		{	start: '<p>\n\t\t\tf[]oo bar</p>',
+			execResult: '<p> []oo bar</p>'
+		},
 	]
 }

@@ -124,7 +124,52 @@ var Aloha = {
 		}
 	}
 };
-</pre></div><h3 id="repository-implementation-example">3 Repository implementation example</h3>
+</pre></div><h3 id="repository-api">3 Repository <span class="caps">API</span></h3>
+<h4 id="query">3.1 query</h4>
+<p>http://docs.oasis-open.org/cmis/<span class="caps">CMIS</span>/v1.0/cd04/cmis-spec-v1.0.html#_Toc234072402</p>
+<p>Does a fulltext search in all attributes and properties which have &#8217;&#8217;&#8217;fulltextIndexed == true’’’. This differes to the <span class="caps">CMIS</span> spec because we do not support a query language and do always a fulltext search.</p>
+<h5 id="input-attributes">3.1.1 Input attributes</h5>
+<ul>
+	<li>queryString [String]</li>
+	<li>filter [array] <span class="caps">OPTIONAL</span> Attributes that will be returned.</li>
+	<li>orderBy [array] <span class="caps">OPTIONAL</span> ex. [{lastModificationDate:’DESC’, name:’ASC’}]</li>
+	<li>maxItems [Integer] <span class="caps">OPTIONAL</span></li>
+	<li>in FolderId [ResourceItem] <span class="caps">OPTIONAL</span> his is a predicate function that tests whether or not a candidate object is a child-object of the folder object identified by the given inFolderId.</li>
+	<li>inTreeId [ResourceItem] <span class="caps">OPTIONAL</span> This is a predicate function that tests whether or not a candidate object is a descendant-object of the folder object identified by the given inTreeId.</li>
+	<li>skipCount [Integer]  <span class="caps">OPTIONAL</span> This is tricky in a merged multi repository scenario</li>
+	<li>renditionFilter [array] <span class="caps">OPTIONAL</span>
+	<ul>
+		<li>Instead of termlist an array of &#8217;&#8217;&#8217;kind&#8217;&#8217;&#8217; or &#8217;&#8217;&#8217;mimetype&#8217;&#8217;&#8217; is expected. If &#8217;&#8217;&#8217;null&#8217;&#8217;&#8217; or &#8217;&#8217;&#8217;array.length == 0&#8217;&#8217;&#8217; all renditions are returned. See http://docs.oasis-open.org/cmis/<span class="caps">CMIS</span>/v1.0/cd04/cmis-spec-v1.0.html#_Ref237323310 for renditionFilter</li>
+	</ul></li>
+</ul>
+<h5 id="output-attributes">3.1.2 Output attributes</h5>
+<ul>
+	<li>[array] Objects Aloha objects as result of a fulltext search</li>
+	<li>Boolean hasMoreItems</li>
+	<li>Integer numItems <span class="caps">OPTIONAL</span></li>
+</ul>
+<h4 id="getchildren">3.2 getChildren</h4>
+<h5 id="input-attributes">3.2.1 Input attributes</h5>
+<ul>
+	<li>folderId [ResourceItem]  <span class="caps">OPTIONAL</span> If null the root folderId should be used</li>
+	<li>maxItems [Integer] <span class="caps">OPTIONAL</span></li>
+	<li>skipCount [Integer] <span class="caps">OPTIONAL</span> This is tricky in a merged multi repository scenario</li>
+	<li>filter [array] <span class="caps">OPTIONAL</span> Attributes that will be returned</li>
+	<li>renditionFilter [array] <span class="caps">OPTIONAL</span>
+	<ul>
+		<li>Instead of termlist an array of &#8217;&#8217;&#8217;kind&#8217;&#8217;&#8217; or &#8217;&#8217;&#8217;mimetype&#8217;&#8217;&#8217; is expected. If &#8217;&#8217;&#8217;null&#8217;&#8217;&#8217; or &#8217;&#8217;&#8217;array.length == 0&#8217;&#8217;&#8217; all renditions are returned. See http://docs.oasis-open.org/cmis/<span class="caps">CMIS</span>/v1.0/cd04/cmis-spec-v1.0.html#_Ref237323310</li>
+	</ul></li>
+</ul>
+<h5 id="output-attributes">3.2.2 Output attributes</h5>
+<ul>
+	<li>[array] Objects Aloha objects as result of a fulltext search</li>
+	<li>Boolean hasMoreItems</li>
+	<li>Integer numItems <span class="caps">OPTIONAL</span></li>
+</ul>
+<h4 id="getobjectbyid">3.3 getObjectById</h4>
+<h4 id="markobject">3.4 markObject</h4>
+<h4 id="makeclean">3.5 makeClean</h4>
+<h4 id="example">3.6 example</h4>
 <div class="code_container">
 <pre class="brush: plain; gutter: false; toolbar: false">
 
@@ -276,7 +321,7 @@ function ( Aloha, jQuery ) {
 	<li>lastModifiedBy <span class="caps">OPTIONAL</span></li>
 	<li>lastModificationDate <span class="caps">OPTIONAL</span></li>
 </ul>
-<h3 id="rendition">5 Rendition</h3>
+<h4 id="rendition">4.4 Rendition</h4>
 <ul>
 	<li>documentId ID identfies the rendition document (baseObjectType == document)</li>
 	<li>url <span class="caps">URL</span> identifies the rendition stream.</li>
@@ -299,9 +344,9 @@ function ( Aloha, jQuery ) {
 	<li>height Integer (optional) Typically used for ‘image’ renditions (expressed as pixels).  <span class="caps">SHOULD</span> be present if kind = cmis:thumbnail.</li>
 	<li>width Integer (optional) Typically used for ‘image’ renditions (expressed as pixels).  <span class="caps">SHOULD</span> be present if kind = cmis:thumbnail.</li>
 </ul>
-<h4 id="what-are-renditions-and-why-are-they-so-useful">5.1 What are renditions, and why are they so useful?</h4>
+<h5 id="what-are-renditions-and-why-are-they-so-useful">4.4.1 What are renditions, and why are they so useful?</h5>
 <p>A repository may implement renditions for any object that has &#8220;document&#8221; as its baseObjectType. A rendition is simply an alternative representation (rendering) of a given object. Any document may have any number of renditions. For example: A page document in a repositroy may be rendered in 3 different languages. Each of these 3 variations of that page can be served by the repository as a rendition of any of the other 2 translations that correspond with it. Each of these pages may be a stand-alone document in the repository as well. In fact, different renditions for a single document type will likely be different files which the repository will server back in response to a request for a specific rendition of a given object.</p>
-<h3 id="example-flickr-image-object-document-object">6 Example Flickr Image Object  (Document Object)</h3>
+<h4 id="example-flickr-image-object-document-object">4.5 Example Flickr Image Object  (Document Object)</h4>
 <ul>
 	<li>id &#8211; gailenejane/5008283282</li>
 	<li>name &#8211; Quiet moment</li>
@@ -327,48 +372,7 @@ renditions: [{
   width: 75
   }]
 }
-</pre></div><h3 id="methods">7 Methods</h3>
-<p>[[Image:repositoryManager.png]]</p>
-<h4 id="query">7.1 query http://docs.oasis-open.org/cmis/<span class="caps">CMIS</span>/v1.0/cd04/cmis-spec-v1.0.html#_Toc234072402</h4>
-<p>Does a fulltext search in all attributes and properties which have &#8217;&#8217;&#8217;fulltextIndexed == true’’’. This differes to the <span class="caps">CMIS</span> spec because we do not support a query language and do always a fulltext search.</p>
-<h4 id="input-attributes">7.2 Input attributes</h4>
-<ul>
-	<li>queryString [String]</li>
-	<li>filter [array] <span class="caps">OPTIONAL</span> Attributes that will be returned.</li>
-	<li>orderBy [array] <span class="caps">OPTIONAL</span> ex. [{lastModificationDate:’DESC’, name:’ASC’}]</li>
-	<li>maxItems [Integer] <span class="caps">OPTIONAL</span></li>
-	<li>in FolderId [ResourceItem] <span class="caps">OPTIONAL</span> his is a predicate function that tests whether or not a candidate object is a child-object of the folder object identified by the given inFolderId.</li>
-	<li>inTreeId [ResourceItem] <span class="caps">OPTIONAL</span> This is a predicate function that tests whether or not a candidate object is a descendant-object of the folder object identified by the given inTreeId.</li>
-	<li>skipCount [Integer]  <span class="caps">OPTIONAL</span> This is tricky in a merged multi repository scenario</li>
-	<li>renditionFilter [array] <span class="caps">OPTIONAL</span>
-	<ul>
-		<li>Instead of termlist an array of &#8217;&#8217;&#8217;kind&#8217;&#8217;&#8217; or &#8217;&#8217;&#8217;mimetype&#8217;&#8217;&#8217; is expected. If &#8217;&#8217;&#8217;null&#8217;&#8217;&#8217; or &#8217;&#8217;&#8217;array.length == 0&#8217;&#8217;&#8217; all renditions are returned. See http://docs.oasis-open.org/cmis/<span class="caps">CMIS</span>/v1.0/cd04/cmis-spec-v1.0.html#_Ref237323310 for renditionFilter</li>
-	</ul></li>
-</ul>
-<h4 id="output-attributes">7.3 Output attributes</h4>
-<ul>
-	<li>[array] Objects Aloha objects as result of a fulltext search</li>
-	<li>Boolean hasMoreItems</li>
-	<li>Integer numItems <span class="caps">OPTIONAL</span></li>
-</ul>
-<h3 id="getchildren">8 getChildren</h3>
-<h4 id="input-attributes">8.1 Input attributes</h4>
-<ul>
-	<li>folderId [ResourceItem]  <span class="caps">OPTIONAL</span> If null the root folderId should be used</li>
-	<li>maxItems [Integer] <span class="caps">OPTIONAL</span></li>
-	<li>skipCount [Integer] <span class="caps">OPTIONAL</span> This is tricky in a merged multi repository scenario</li>
-	<li>filter [array] <span class="caps">OPTIONAL</span> Attributes that will be returned</li>
-	<li>renditionFilter [array] <span class="caps">OPTIONAL</span>
-	<ul>
-		<li>Instead of termlist an array of &#8217;&#8217;&#8217;kind&#8217;&#8217;&#8217; or &#8217;&#8217;&#8217;mimetype&#8217;&#8217;&#8217; is expected. If &#8217;&#8217;&#8217;null&#8217;&#8217;&#8217; or &#8217;&#8217;&#8217;array.length == 0&#8217;&#8217;&#8217; all renditions are returned. See http://docs.oasis-open.org/cmis/<span class="caps">CMIS</span>/v1.0/cd04/cmis-spec-v1.0.html#_Ref237323310</li>
-	</ul></li>
-</ul>
-<h4 id="output-attributes">8.2 Output attributes</h4>
-<ul>
-	<li>[array] Objects Aloha objects as result of a fulltext search</li>
-	<li>Boolean hasMoreItems</li>
-	<li>Integer numItems <span class="caps">OPTIONAL</span></li>
-</ul>
+</pre></div>
 
       </div>
         <div id="subCol">
@@ -376,21 +380,19 @@ renditions: [{
           <ol class="chapters">
             <li><a href="#concept"><p>Concept</p>
 </a></li><li><a href="#configuring-the-repositorymanager"><p>Configuring the repositoryManager</p>
-</a></li><li><a href="#repository-implementation-example"><p>Repository implementation example</p>
-</a></li><li><a href="#reccomandation-of-repository-item-attributes"><p>Reccomandation of repository item attributes</p>
+</a></li><li><a href="#repository-api"><p>Repository <span class="caps">API</span></p>
+</a><ul><li><a href="#query"><p>query</p>
+</a></li> <li><a href="#getchildren"><p>getChildren</p>
+</a></li> <li><a href="#getobjectbyid"><p>getObjectById</p>
+</a></li> <li><a href="#markobject"><p>markObject</p>
+</a></li> <li><a href="#makeclean"><p>makeClean</p>
+</a></li> <li><a href="#example"><p>example</p>
+</a></li></ul></li><li><a href="#reccomandation-of-repository-item-attributes"><p>Reccomandation of repository item attributes</p>
 </a><ul><li><a href="#objecttypes"><p>ObjectTypes</p>
 </a></li> <li><a href="#document"><p>Document</p>
 </a></li> <li><a href="#folder"><p>Folder</p>
-</a></li></ul></li><li><a href="#rendition"><p>Rendition</p>
-</a><ul><li><a href="#what-are-renditions-and-why-are-they-so-useful"><p>What are renditions, and why are they so useful?</p>
-</a></li></ul></li><li><a href="#example-flickr-image-object-document-object"><p>Example Flickr Image Object  (Document Object)</p>
-</a></li><li><a href="#methods"><p>Methods</p>
-</a><ul><li><a href="#query"><p>query</p>
-</a></li> <li><a href="#input-attributes"><p>Input attributes</p>
-</a></li> <li><a href="#output-attributes"><p>Output attributes</p>
-</a></li></ul></li><li><a href="#getchildren"><p>getChildren</p>
-</a><ul><li><a href="#input-attributes"><p>Input attributes</p>
-</a></li> <li><a href="#output-attributes"><p>Output attributes</p>
+</a></li> <li><a href="#rendition"><p>Rendition</p>
+</a></li> <li><a href="#example-flickr-image-object-document-object"><p>Example Flickr Image Object  (Document Object)</p>
 </a></li></ul></li>
           </ol>
         </div>

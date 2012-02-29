@@ -136,8 +136,10 @@ function( Aloha, $, console) {
 				// never set.
 				continue;
 			}
+			// The XHTML spec says attributes are lowercase
+			name = name.toLowerCase();
 			//TODO it's only a boolean attribute if the element is in an HTML namespace
-			var isBool = (-1 !== $.inArray(name.toLowerCase(), booleanAttrs));
+			var isBool = (-1 !== $.inArray(name, booleanAttrs));
 			if ( ! isBool || (isBool && value) ) {
 				str += " " + name + '="' + encodeDqAttrValue( "" + (isBool ? name : value) ) + '"';
 			}

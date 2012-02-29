@@ -35,6 +35,27 @@ All changes are categorized into one of the following keywords:
 - **ENHANCEMENT** Browser plugin: loading of required jQuery plugins is now changed so all can be loaded via CDN
 
 
+## 0.20.6 - SNAPSHOT
+
+- **BUG** dom-to-xhtml plugin: fixed attribute names are not lowercased
+- **BUG** floatingmenu: fixed floating menu's reading of configuration values
+          so that they are parsed into numbers.
+- **BUG** floatingmenu: fixed floating menu positioning when view port is
+          scrolled so that it takes into account the aligntopOffset setting.
+
+- **ENHANCEMENT** Added jslint setup to guides and fixed error output in build script.
+- **ENHANCEMENT** The new plugin dom-to-xhtml attempts to create a valid XHTML serialization of the document when getContents() is called.
+- **BUG** Paste plugin: paste into an editable in an editable is now working
+- **BUG** Selection of content in an contenteditable=false which is not a child of an Aloha Editor instance now works like expected
+- **ENHANCEMENT** Repositories: It is now possible to configure the timeout for querying repositories.
+- **ENHANCEMENT** Floating menu: It is now possible to configure the floating menu to be 'append' to an other element. It is needed to set an extra option 'element' with the ID of the HTML DOM element where the fm should be attach to. The floating menu is attached to the same position as the 'element'.
+- **ENHANCEMENT** Floating menu: If the floating menu is set to be not draggable, the drag&drop bar + pin will not be shown
+- **BUG** engine.js: insert paragraph was sometimes broken in IE7 (copy of empty/all p-element attributes)
+- **ENHANCEMENT** updated plugin: table of contents (toc) to work with the current Aloha Editor version
+- **BUG** characterpicker plugin: fixed cursor position after inserting a character
+- **ENHANCEMENT** Browser plugin: loading of required jQuery plugins is now changed so all can be loaded via CDN
+
+
 ## 0.20.5 - 2012/02/09
 
 - **ENHANCEMENT** word contenthandler: cleanup for pasted word documents with table of contents

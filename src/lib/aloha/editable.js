@@ -742,6 +742,7 @@ define( [
 			return asObject ? clonedObj.contents() : clonedObj.html();
 		},*/
 
+
 		/**
 		 * Get the id of this editable
 		 * @method

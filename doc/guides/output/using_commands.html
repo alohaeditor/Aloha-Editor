@@ -151,8 +151,8 @@ var value = Aloha.queryCommandValue( 'link' );
  
 &lt;html&gt;
 &lt;head&gt;
-	&lt;link rel=&quot;stylesheet&quot; href=&quot;http://aloha-editor.org/builds/development/latest/aloha/css/aloha.css&quot; type=&quot;text/css&quot;&gt;
-	&lt;script src=&quot;http://aloha-editor.org/builds/development/latest/aloha/lib/aloha.js&quot;&gt;&lt;/script&gt;
+    &lt;link rel=&quot;stylesheet&quot; href=&quot;http://aloha-editor.org/builds/development/latest/src/css/aloha.css&quot; type=&quot;text/css&quot;&gt;
+    &lt;script src=&quot;http://aloha-editor.org/builds/development/latest/src/lib/aloha.js&quot;&gt;&lt;/script&gt;
 &lt;/head&gt;
 &lt;body&gt;
 &lt;button id=&quot;bold&quot;&gt;Bold&lt;/button&gt;
@@ -160,37 +160,37 @@ var value = Aloha.queryCommandValue( 'link' );
 &lt;script&gt;
 // Bind to Aloha Ready Event
 Aloha.ready( function() {
-	var $ = jQuery = Aloha.jQuery;
-	$('.edit').aloha();
-
-var button = jQuery('#bold');
- 
-button.attr( 'disabled',
-    ( Aloha.queryCommandSupported( 'bold' ) &amp;&amp;
-    Aloha.queryCommandEnabled( 'bold' ) )
-);
- 
-button.click( function() {
-    Aloha.execCommand( 'bold', false, '' );
-    updateBoldColor();
-});
- 
-Aloha.bind('aloha-selection-changed', function() {
+    var $ = jQuery = Aloha.jQuery;
+    $('.edit').aloha();
+ 
+	var button = jQuery('#bold');
+	  
+	button.attr( 'disabled',
+	    ( Aloha.queryCommandSupported( 'bold' ) &amp;&amp;
+	    Aloha.queryCommandEnabled( 'bold' ) )
+	);
+	  
+	button.click( function() {
+	    Aloha.execCommand( 'bold', false, '' );
+	    updateBoldColor();
+	});
+	  
+	Aloha.bind('aloha-selection-changed', function() {
+	    updateBoldColor();
+	});
+	 
+	function updateBoldColor() {
+	    if ( Aloha.queryCommandIndeterm( 'bold' ) ) {
+	        button.css( 'background-color', 'yellow' );
+	        return;
+	    }
+	    button.css( 'background-color', 
+	            Aloha.queryCommandState( 'bold' ) ? 'lightgreen' : 'orange'
+	    );
+	}
+	// update the color on startup
 	updateBoldColor();
 });
-
-function updateBoldColor() {
-	if ( Aloha.queryCommandIndeterm( 'bold' ) ) {
-		button.css( 'background-color', 'yellow' );
-		return;
-	}
-    button.css( 'background-color', 
-            Aloha.queryCommandState( 'bold' ) ? 'lightgreen' : 'orange'
-    );
-}
-// update the color on startup
-updateBoldColor();
-}
 &lt;/script&gt;
 &lt;/body&gt;
 &lt;/html&gt;
