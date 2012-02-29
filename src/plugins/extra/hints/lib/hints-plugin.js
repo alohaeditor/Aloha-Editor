@@ -26,10 +26,10 @@ function( Aloha, jquery, plugin, tipsy ) {
 		// initialize plugin
 		init: function() {
 			if ( typeof this.settings.delayIn != 'undefined' ) {
-				this.delayIn = this.settings.delayIn;
+				this.delayIn = parseFloat(this.settings.delayIn);
 			}
 			if ( typeof this.settings.delayOut != 'undefined' ) {
-				this.delayOut = this.settings.delayOut;
+				this.delayOut = parseFloat(this.settings.delayOut);
 			}
 			if ( typeof this.settings.fade != 'undefined' ) {
 				this.fade = this.settings.fade;
@@ -47,10 +47,10 @@ function( Aloha, jquery, plugin, tipsy ) {
 				this.live = this.settings.live;
 			}
 			if ( typeof this.settings.offset != 'undefined' ) {
-				this.offset = this.settings.offset;
+				this.offset = parseFloat(this.settings.offset);
 			}
 			if ( typeof this.settings.opacity != 'undefined' ) {
-				this.opacity = this.settings.opacity;
+				this.opacity = parseFloat(this.settings.opacity);
 			}
 			if ( typeof this.settings.title != 'undefined' ) {
 				this.title = this.settings.title;
