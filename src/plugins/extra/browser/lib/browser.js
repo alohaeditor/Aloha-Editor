@@ -9,6 +9,26 @@
  *		www.jstree.com/documentation/core
  *		www.trirand.com/blog (jqGrid)
  *		layout.jquery-dev.net
+ *
+ * NOTE: regarding 'jquery-plugin' RequireJS loader:
+ * due to Cross-Origin Resource Sharing (CORS) / Access-Control-Allow-Origin 
+ * problems with the CDN the jQuery plugins got a litte rewrite.
+ *
+ * ATTENTION: when updating the plugins you need to insert at the top of the file:
+ * 
+ * define(['aloha/jquery'], function(jQuery) { 
+ * 	var $ = jQuery;
+ * 
+ * and at the end of the file:
+ * 
+ * });
+ *
+ * see: README https://github.com/jrburke/require-jquery/ or
+ * http://requirejs.org/docs/jquery.html
+ *
+ * others: depend.js from https://github.com/millermedeiros/requirejs-plugins
+ *
+ * todo: think about if using order plugin or priority config can help us here
  */
 define( [
 	
@@ -19,11 +39,10 @@ define( [
 	// this will load the correct language pack needed for the browser
 	'browser/locale',
 	'css!browser/css/browsercombined.css',
-	// 'jquery-plugin!browser/vendor/grid.locale.en.js', // we use 'browser/locale' instead
-	'jquery-plugin!browser/vendor/jquery.ui',
-	'jquery-plugin!browser/vendor/ui-layout',
-	'jquery-plugin!browser/vendor/jquery.jqGrid',
-	'jquery-plugin!browser/vendor/jquery.jstree'
+	'browser/vendor/jquery.ui',
+	'browser/vendor/ui-layout',
+	'browser/vendor/jquery.jqGrid',
+	'browser/vendor/jquery.jstree'
 	
 ], function ( jQuery, Class, i18n, Console ) {
 'use strict';

@@ -11,6 +11,7 @@ All changes are categorized into one of the following keywords:
 - **FEATURE**: The change introduces a new feature, or modifies the function,
                usage, or intent of an existing one.
 
+
 ## 0.20.6 - SNAPSHOT
 
 - **BUG** dom-to-xhtml plugin: fixed attribute names are not lowercased
@@ -29,6 +30,8 @@ All changes are categorized into one of the following keywords:
 - **BUG** engine.js: insert paragraph was sometimes broken in IE7 (copy of empty/all p-element attributes)
 - **ENHANCEMENT** updated plugin: table of contents (toc) to work with the current Aloha Editor version
 - **BUG** characterpicker plugin: fixed cursor position after inserting a character
+- **ENHANCEMENT** Browser plugin: loading of required jQuery plugins is now changed so all can be loaded via CDN
+
 
 ## 0.20.5 - 2012/02/09
 
