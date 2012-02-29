@@ -2,13 +2,13 @@
 
 ## New Documentation
 
-We're currently writing new [new guides](http://www.alohaeditor.org/guides). You can find these at **<repos>/doc/guides/output** and on our website: [http://aloha-editor.org](http://aloha-editor.org)
+We're currently writing new [new guides](http://aloha-editor.org/guides). You can find these at **<repos>/doc/guides/output** and on our website: [http://aloha-editor.org](http://aloha-editor.org)
 
 
 For help there is:
 
 - [the wiki](https://github.com/alohaeditor/Aloha-Editor/wiki) for end-users and implementors
-- [the guides](http://www.alohaeditor.org/guides/) for developers
+- [the guides](http://aloha-editor.org/guides) for developers
 
 - [the issues tracker](https://github.com/alohaeditor/Aloha-Editor/issues) for developer support requests
 - [the support forum](http://getsatisfaction.com/aloha_editor) for end-user and implementor support requests
