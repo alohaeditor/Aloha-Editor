@@ -13,13 +13,43 @@ define(
 	'i18n!toc/nls/i18n', 
 	'i18n!aloha/nls/i18n', 
 	'aloha/console'],
-function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
+
+function( Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, console ) {
 	"use strict";
+
 	var
 		GENTICS = window.GENTICS,
 		namespace = 'toc',
 		$containers = null,
 		allTocs = [];
+
+	/* helper functions */
+	function last(a) { return a[a.length - 1]; }
+	function head(a) { return a[0]; }
+	function tail(a) { return a.slice(1); }
+	function indexOf(a, item) {
+		return detect(a, function(cmp){
+			return cmp === item;
+		});
+	}
+	function detect(a, f) {
+		for (var i = 0; i < a.length; i++) {
+			if (f(a[i])) {
+				return a[i];
+			}
+		}
+		return null;
+	}
+	function map(a, f) {
+		var result = [];
+		for (var i = 0; i < a.length; i++) {
+			result.push(f(a[i]));
+		}
+		return result;
+	}
+	function each(a, f) {
+		map(a, f);
+	}
 
 	/**
 	 * register the plugin with unique name
@@ -334,33 +364,3 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 		//unreachable
 	}
 });
-
-
-function last(a) { return a[a.length - 1]; }
-function head(a) { return a[0]; }
-function tail(a) { return a.slice(1); }
-function indexOf(a, item) {
-	return detect(a, function(cmp){
-		return cmp === item;
-	});
-}
-function detect(a, f) {
-	for (var i = 0; i < a.length; i++) {
-		if (f(a[i])) {
-			return a[i];
-		}
-	}
-	return null;
-}
-function map(a, f) {
-	var result = [];
-	for (var i = 0; i < a.length; i++) {
-		result.push(f(a[i]));
-	}
-	return result;
-}
-function each(a, f) {
-	map(a, f);
-}
-
-
