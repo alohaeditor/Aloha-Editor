@@ -100,3 +100,8 @@ h4. Example (the default plugin config)
 			}
 		}
 </javascript>
+
+h4. Enable the image browser button
+
+If you have configured or integrated a repository containing images, you can enable an image browser button in the floating menu image scope.
+I will help user to choose an image picked from the repository. To enable this feature, just add 'extra/imagebrowser' to the plugins list to be loaded.
