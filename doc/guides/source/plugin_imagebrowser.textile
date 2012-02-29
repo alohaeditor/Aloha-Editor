@@ -1,0 +1,11 @@
+h2. The Image Browser Plugin
+
+In this guide we give an overview about:
+
+* What this plugin is used for
+* How you can configure it
+
+endprologue.
+
+WARNING: This guide is currently work-in-progress.
+

@@ -428,6 +428,8 @@ var Browser = Class.extend({
 				uid    : md5uid,
 				loaded : false
 			});
+		} else {
+			repo_obj = this._objs[md5uid];
 		}
 		
 		if ( repo_obj ) {
@@ -906,6 +908,7 @@ var Browser = Class.extend({
 	},
 	
 	fetchItems: function (folder, callback) {
+		var browser = this;
 		if (!folder) {
 			return;
 		}
@@ -919,7 +922,6 @@ var Browser = Class.extend({
 		this.list.hide();
 		this.grid.find('.loading').show();
 		
-		var that = this;
 		
 		this.queryRepository(
 			{
@@ -936,7 +938,7 @@ var Browser = Class.extend({
 			},
 			function (data, metainfo) {
 				if (typeof callback === 'function') {
-					callback.call(that, data, metainfo);
+					callback.call(browser, data, metainfo);
 				}
 			}
 		);
@@ -953,20 +955,19 @@ var Browser = Class.extend({
 		}
 	},
 	
+	/**
+	 * Shows the list of items contained in a node to the grid panel
+	 */
 	listItems: function (items) {
-		var that = this;
+		var browser = this;
 		var list = this.list.clearGridData();
-		
-		if ( typeof this.resource === 'undefined') {
-			return;
-		}
 		
 		jQuery.each(items, function () {
 			var obj = this.resource;
 
 			list.addRowData(
 				obj.uid,
-				jQuery.extend({id: obj.id}, that.renderRowCols(obj))
+				jQuery.extend({id: obj.id}, browser.renderRowCols(obj))
 			);
 		});
 	},
