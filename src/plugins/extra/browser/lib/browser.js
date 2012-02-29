@@ -37,6 +37,7 @@ define( [
 	'util/class',
 	'i18n!browser/nls/i18n',
 	'aloha/console',
+	'browser/vendor/md5lib',
 	// this will load the correct language pack needed for the browser
 	'browser/locale',
 	'css!browser/css/browsercombined.css',
@@ -45,7 +46,7 @@ define( [
 	'browser/vendor/jquery.jqGrid',
 	'browser/vendor/jquery.jstree'
 	
-], function ( jQuery, Class, i18n, Console ) {
+], function ( jQuery, Class, i18n, Console, md5lib ) {
 'use strict';
 var
 	uid = +(new Date),
@@ -419,12 +420,13 @@ var Browser = Class.extend({
 	 * and all other attributes are optional.
 	 */
 	harvestRepoObject: function (obj) {
-		++uid;
-		
-		var repo_obj = this._objs[uid] = jQuery.extend(obj, {
-			uid    : uid,
-			loaded : false
-		});
+		var md5uid = md5lib.hex_md5(obj.id);
+		if (typeof this._objs[md5uid] === "undefined") {
+			var repo_obj = this._objs[md5uid] = jQuery.extend(obj, {
+				uid    : md5uid,
+				loaded : false
+			});
+		}
 		
 		return this.processRepoObject(repo_obj);
 	},

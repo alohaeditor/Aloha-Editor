@@ -28,6 +28,7 @@ All changes are categorized into one of the following keywords:
 - **FEATURE**: added hotkey functionality
 - **FEATURE**: added Aloha.settings.plugins.load to load plugins also via config
 - **BUG**: fixes #424 -- SmartContentChanged is nott triggered when hitting
+- **BUG**: fixes alohaeditor/Aloha-Editor#415 -- Repositorie entries appears twice in explorer
  
 ## 0.20.6 - 2012/
 
