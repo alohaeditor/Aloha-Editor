@@ -420,15 +420,20 @@ var Browser = Class.extend({
 	 * and all other attributes are optional.
 	 */
 	harvestRepoObject: function (obj) {
-		var md5uid = md5lib.hex_md5(obj.id);
-		if (typeof this._objs[md5uid] === "undefined") {
-			var repo_obj = this._objs[md5uid] = jQuery.extend(obj, {
+		window.console.log(obj.id);
+		var md5uid = md5lib.hex_md5(obj.id),
+			repo_obj = false;
+		
+		if ( typeof this._objs[md5uid] === "undefined" ) {
+			repo_obj = this._objs[md5uid] = jQuery.extend(obj, {
 				uid    : md5uid,
 				loaded : false
 			});
 		}
 		
-		return this.processRepoObject(repo_obj);
+		if ( repo_obj ) {
+			return this.processRepoObject(repo_obj);
+		}
 	},
 	
 	/**
@@ -950,11 +955,17 @@ var Browser = Class.extend({
 	},
 	
 	listItems: function (items) {
-		var that = this;		
+		window.console.log(items);
+		var that = this;
 		var list = this.list.clearGridData();
+		
+		if ( typeof this.resource === 'undefined') {
+			return;
+		}
 		
 		jQuery.each(items, function () {
 			var obj = this.resource;
+
 			list.addRowData(
 				obj.uid,
 				jQuery.extend({id: obj.id}, that.renderRowCols(obj))
