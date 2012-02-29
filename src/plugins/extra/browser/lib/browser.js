@@ -168,6 +168,8 @@ var Browser = Class.extend({
 		this._callbacks = {};
 		// Cache of repository objects
 		this._objs = {};
+		// list of tree objects
+		this._tree_objs = {};
 		//
 		this._searchQuery = null;
 		this._orderBy = null;
@@ -424,15 +426,13 @@ var Browser = Class.extend({
 			repo_obj = false;
 		
 		if ( typeof this._objs[md5uid] === "undefined" ) {
-			repo_obj = this._objs[md5uid] = jQuery.extend(obj, {
+			this._objs[md5uid] = jQuery.extend(obj, {
 				uid    : md5uid,
 				loaded : false
 			});
 		}
-
-		if ( repo_obj ) {
-			return this.processRepoObject(repo_obj);
-		}
+		return this.processRepoObject(this._objs[md5uid]);
+//		repo_obj = this._objs[md5uid];
 	},
 	
 	/**
@@ -440,31 +440,34 @@ var Browser = Class.extend({
 	 */
 	processRepoObject: function (obj) {
 		var icon = '', attr;
+		if (typeof this._tree_objs[obj.uid] === "undefined") {
+			switch (obj.baseType) {
+			case 'folder':
+				icon = 'folder';
+				break;
+			case 'document':
+				icon = 'document';
+				break;
+			}
+
+			// if the object has a type set, we set it as type to the node
+			if (obj.type) {
+				attr = {rel: obj.type};
+			}
+
+			 this._tree_objs[obj.uid] = {
+				data: {
+					title : obj.name, 
+					attr  : {'data-rep-oobj': obj.uid}, 
+					icon  : icon
+				},
+				attr : attr,
+				state: (obj.hasMoreItems || obj.baseType === 'folder') ? 'closed' : null,
+				resource: obj
+			};
+		}
+		return this._tree_objs[obj.uid];
 		
-		switch (obj.baseType) {
-		case 'folder':
-			icon = 'folder';
-			break;
-		case 'document':
-			icon = 'document';
-			break;
-		}
-
-		// if the object has a type set, we set it as type to the node
-		if (obj.type) {
-			attr = {rel: obj.type};
-		}
-
-		return {
-			data: {
-				title : obj.name, 
-				attr  : {'data-rep-oobj': obj.uid}, 
-				icon  : icon
-			},
-			attr : attr,
-			state: (obj.hasMoreItems || obj.baseType === 'folder') ? 'closed' : null,
-			resource: obj
-		};
 	},
 	
 	fetchRepoRoot: function (callback) {
@@ -516,18 +519,20 @@ var Browser = Class.extend({
 	fetchChildren: function (obj, callback) {
 		var that = this;
 		
-		if (obj.hasMoreItems == true || obj.baseType === 'folder') {
-			if (obj.loaded == false) {
+		if (obj.hasMoreItems === true || obj.baseType === 'folder') {
+			if (obj.loaded === false) {
 				this.getRepoChildren(
 					{
 						inFolderId   : obj.id,
 						repositoryId : obj.repositoryId
 					},
-					function (data) {
-						that._objs[obj.uid].loaded = true;
-						
-						if (typeof callback === 'function') {
-							callback(data);
+					function (data) { 
+						if (that._objs[obj.uid].loaded === false) {// should not be called twice
+							that._objs[obj.uid].loaded = true;
+							
+							if (typeof callback === 'function') {
+								callback(data);
+							}
 						}
 					}
 				);
@@ -559,8 +564,11 @@ var Browser = Class.extend({
 		return item;
 	},
 	
+	/**
+	 * Creates the tree using jstree
+	 */
 	createTree: function (container) {
-		var that = this;
+		var plugin = this;
 		var tree = jQuery(renderTemplate('<div class="{tree}">'));
 		var header = jQuery(renderTemplate(
 				'<div class="{tree-header} {grab-handle}">\
@@ -582,17 +590,17 @@ var Browser = Class.extend({
 				}
 				
 				var node = data.rslt.obj;
-				var folder = that.getObjectFromCache(node);
+				var folder = plugin.getObjectFromCache(node);
 				
 				if (typeof folder === 'object') {
-					that._pagingOffset = 0;
-					that._searchQuery = null;
-					that._currentFolder = folder;
-					that.fetchItems(folder, that.processItems);
+					plugin._pagingOffset = 0;
+					plugin._searchQuery = null;
+					plugin._currentFolder = folder;
+					plugin.fetchItems(folder, plugin.processItems);
 				}
 			})
 			.jstree({
-				types: that.types,
+				types: plugin.types,
 				rootFolderId: this.rootFolderId,
 				plugins: ['themes', 'json_data', 'ui', 'types'],
 				core: {
@@ -600,15 +608,15 @@ var Browser = Class.extend({
 				},
 				themes: {
 					theme : 'browser',
-					url   : that.rootPath + 'css/jstree.css',
+					url   : plugin.rootPath + 'css/jstree.css',
 					dots  : true,
 					icons : true
 				},
 				json_data: {
 					data: function (node, callback) {
-						if (that.repositoryManager) {
-							that.jstree_callback = callback;
-							that.fetchSubnodes.call(that, node, callback);
+						if (plugin.repositoryManager) {
+							plugin.jstree_callback = callback;
+							plugin.fetchSubnodes.call(plugin, node, callback);
 						} else {
 							callback();
 						}

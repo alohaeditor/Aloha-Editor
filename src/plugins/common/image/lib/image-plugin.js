@@ -1256,7 +1256,26 @@ function AlohaImagePlugin ( aQuery, Plugin, ImageFloatingMenu, i18nCore, i18n ) 
 					});
 			}
 		},
-
+		resetSize: function() {
+			var	plugin = this
+				, img = new Image();
+			img.onload = function() {
+				var myimage = plugin.getPluginFocus();
+				if (plugin.settings.ui.resizable) {
+					plugin.endResize();
+				}
+				jQuery(myimage).add(myimage.parent()).css({
+						'width': img.width + 'px',
+						'height': img.height + 'px',
+						'max-width': '',
+						'max-height': ''
+					});
+				if (plugin.settings.ui.resizable) {
+					plugin.resize();
+				}
+			};
+			img.src = plugin.getPluginFocus().attr('src');
+		},
 		/**
 		 * Reset the image to it's original properties
 		 */

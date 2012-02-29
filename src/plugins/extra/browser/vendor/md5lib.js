@@ -3,6 +3,7 @@
  * Digest Algorithm, as defined in RFC 1321.
  * Version 2.2 Copyright (C) Paul Johnston 1999 - 2009
  * Other contributors: Greg Holt, Andrew Kepert, Ydnar, Lostinet
+ * Adaptated as require.js module by Nicolas Karageuzian for Aloha Editor
  * Distributed under the BSD License
  * See http://pajhome.org.uk/crypt/md5 for more info.
  */

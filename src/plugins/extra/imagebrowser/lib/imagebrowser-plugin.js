@@ -57,10 +57,10 @@ define( [
 				FloatingMenu.doLayout();
 			});
 		},
-		
 		onSelect: function ( item ) {
 			if (item.type.match("image") !== null) {
 				Images.ui.imgSrcField.setItem( item );
+				Images.resetSize(); // reset to original image size
 				this.close();
 			}
 		},
