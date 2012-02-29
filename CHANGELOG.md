@@ -28,7 +28,7 @@ All changes are categorized into one of the following keywords:
 - **ENHANCEMENT** Floating menu: If the floating menu is set to be not draggable, the drag&drop bar + pin will not be shown
 - **BUG** engine.js: insert paragraph was sometimes broken in IE7 (copy of empty/all p-element attributes)
 - **ENHANCEMENT** updated plugin: table of contents (toc) to work with the current Aloha Editor version
-
+- **BUG** characterpicker plugin: fixed cursor position after inserting a character
 
 ## 0.20.5 - 2012/02/09
 
