@@ -1364,6 +1364,9 @@ var tests = {
 		},
 		{	start: 'foo     []bar',
 			execResult: 'foo[]bar'
-		}
+		},
+		{	start: '<p>\n\t\t\tf[]oo bar</p>',
+			execResult: '<p> []oo bar</p>'
+		},
 	]
 }

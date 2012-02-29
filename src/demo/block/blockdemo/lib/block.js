@@ -89,11 +89,11 @@ define([
 	var VCardBlock;
 	
 	Aloha.require( ['text!blockdemo/res/vcard.html'] , function ( vcardTemplate ) {
-
+		
 		// Compile the template through underscore
 		var template = _.template( vcardTemplate );
 
-		VCardBlock = block.AbstractBlock.extend({
+		var VCardBlock = block.AbstractBlock.extend({
 			title: 'vCard',
 
 			getSchema: function() {

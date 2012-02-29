@@ -139,7 +139,6 @@ GENTICS.Utils.RangeObject = Class.extend({
 			// sometimes it's cached (or was set)
 			return this.commonAncestorContainer;
 		}
-
 		// if it's not cached, calculate and then cache it
 		this.updateCommonAncestorContainer();
 
@@ -225,13 +224,13 @@ GENTICS.Utils.RangeObject = Class.extend({
 	 * @hide
 	 */
 	updateCommonAncestorContainer: function(commonAncestorContainer) {
-		// this will be needed either right now for finding the CAC or later for the crossing index
-		var parentsStartContainer = this.getStartContainerParents(),
-			parentsEndContainer = this.getEndContainerParents(),
-			i;
-
 		// if no parameter was passed, calculate it
 		if (!commonAncestorContainer) {
+			// this will be needed either right now for finding the CAC or later for the crossing index
+			var parentsStartContainer = this.getStartContainerParents(),
+				parentsEndContainer = this.getEndContainerParents(),
+				i;
+
 			// find the crossing between startContainer and endContainer parents (=commonAncestorContainer)
 			if (!(parentsStartContainer.length > 0 && parentsEndContainer.length > 0)) {
 				console.warn('could not find commonAncestorContainer');
@@ -412,6 +411,7 @@ GENTICS.Utils.RangeObject = Class.extend({
 	 */
 	update: function(event) {
 		console.debug('now updating rangeObject');
+		
 		this.initializeFromUserSelection(event);
 		this.updateCommonAncestorContainer();
 	},

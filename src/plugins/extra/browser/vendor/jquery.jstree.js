@@ -1,3 +1,6 @@
+define(['aloha/jquery'], function(jQuery) { 
+	var $ = jQuery;
+
 /*
  * jsTree 1.0-rc3
  * http://jstree.com/
@@ -4542,3 +4545,5 @@
 //*/
 
 })();
+
+});
