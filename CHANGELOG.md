@@ -14,6 +14,7 @@ All changes are categorized into one of the following keywords:
 
 ## 0.20.6 - 2012/03/01
 
+- **BUG** link: fixed a bug in the link list static repository plugin that caused Internet Explorer to fail handling repository links.
 - **BUG** dom-to-xhtml plugin: fixed attribute names are not lowercased
 - **BUG** floatingmenu: fixed floating menu's reading of configuration values
           so that they are parsed into numbers.
