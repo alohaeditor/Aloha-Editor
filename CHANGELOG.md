@@ -27,10 +27,11 @@ All changes are categorized into one of the following keywords:
 - **ENHANCEMENT**: core: #448 Aloha Editor possibility to be loaded as requireJS module
 - **FEATURE**: added hotkey functionality
 - **FEATURE**: added Aloha.settings.plugins.load to load plugins also via config
-- **BUG**: fixes #424 -- SmartContentChanged is nott triggered when hitting
-- **BUG**: fixes alohaeditor/Aloha-Editor#415 -- Repositorie entries appears twice in explorer
+- **BUG**: fixes alohaeditor/Aloha-Editor##424 -- SmartContentChanged is not triggered when hitting
+- **BUG**: browser: fixes alohaeditor/Aloha-Editor#415 -- Repositorie entries appears twice in explorer
 - **FEATURE**: images browser plugin
 - **ENHANCEMENT**: browser: commenting some methods and coding guidelines
+- **BUG**: browser: fixes alohaeditor/Aloha-Editor#460 -- Error when multiple repositories are configured
 
 ## 0.20.6 - 2012/
 

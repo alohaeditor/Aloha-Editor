@@ -1,3 +1,12 @@
+/*!
+ * Aloha Editor
+ * Browser for images
+ * Author & Copyright (c) 2011 Gentics Software GmbH
+ * aloha-sales@gentics.com
+ * Licensed under the terms of http://www.aloha-editor.com/license.html
+ * 
+ * Author : Nicolas Karageuzian - http://nka.me
+ */
 define( [
 
 	// js
