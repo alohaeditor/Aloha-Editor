@@ -633,20 +633,17 @@ define( [
 			  iconClass: 'aloha-button aloha-button-removeFormat',
 			  wide: true,
 			  click: function () {
-				  if (that.activeTable) {
-					  var sc = that.activeTable.selection.selectedCells;
-					  // if a selection was made, transform the selected cells
-					  for (var i = 0; i < sc.length; i++) {
-						  for (var j = 0; j < sc[i].length; j++) {
-							  for (var f = 0; f < that.rowConfig.length; f++) {
-								  jQuery(sc[i][j]).removeClass(that.rowConfig[f].cssClass);
-							  }
-						  }
-					  }
-					  
-					  // selection could have changed.
-					  that.activeTable.selectRows();
-				  }
+				if (that.activeTable) {
+					var sc = that.activeTable.selection.selectedCells;
+					// if a selection was made, transform the selected cells
+					for (var i = 0; i < sc.length; i++) {
+						for (var f = 0; f < that.rowConfig.length; f++) {
+							jQuery(sc[i]).removeClass(that.rowConfig[f].cssClass);
+						}
+					}
+					// selection could have changed.
+					that.activeTable.selectRows();
+				}
 			  }
 		  });
       }
@@ -819,7 +816,6 @@ define( [
       i18n.t('floatingmenu.tab.table'),
       1
     );
-
     
     // generate formatting buttons
     this.columnMSItems = [];
@@ -867,13 +863,10 @@ define( [
 				var sc = that.activeTable.selection.selectedCells;
 				// if a selection was made, transform the selected cells
 				for (var i = 0; i < sc.length; i++) {
-					for (var j = 0; j < sc[i].length; j++) {
-						for (var f = 0; f < that.columnConfig.length; f++) {
-							jQuery(sc[i][j]).removeClass(that.columnConfig[f].cssClass);
-						}
+					for (var f = 0; f < that.columnConfig.length; f++) {
+						jQuery(sc[i]).removeClass(that.columnConfig[f].cssClass);
 					}
 				}
-				
 				// selection could have changed.
 				that.activeTable.selectColumns();
 			}
