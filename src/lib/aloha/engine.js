@@ -5593,7 +5593,7 @@ function indentNodes(nodeList, range) {
 	}
 
   // Note: Disabled simple indention as it breaks Aloha's conventions.
-  // Original implementation was left commented out for future reference.
+  // Original implementation was left commented for future reference.
   
 	// "Wrap node list, with sibling criteria returning true for a simple
 	// indentation element and false otherwise, and new parent instructions
@@ -7044,7 +7044,8 @@ commands.indent = {
 			}
 		}
 
-    // Node: Avoid normalizing sublists as it breaks Aloha's current behaviour
+    // Note: Avoid normalizing sublists as it breaks Aloha's current behaviour
+    // Original implementation was left commented for future reference.
 		// "For each item in items, normalize sublists of item."
 		// for (var i = 0; i < items.length; i++) {
 		// 	normalizeSublists(items[i], range);
