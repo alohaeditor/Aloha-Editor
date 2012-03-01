@@ -2037,14 +2037,22 @@ function isSimpleModifiableElement(node) {
 		return false;
 	}
 
+  //Note: In IE 6,7 & 8 returns both system & user defined attributes
+  //since, we need only the user-defiend ones filter using specified property.
+  var specified_attributes = $_(node.attributes).filter(function(attr){
+    if(attr.specified){
+      return true 
+    }
+  });
+  
 	// "It is an a, b, em, font, i, s, span, strike, strong, sub, sup, or u
 	// element with no attributes."
-	if (node.attributes.length == 0) {
+	if (specified_attributes.length == 0) {
 		return true;
 	}
 
 	// If it's got more than one attribute, everything after this fails.
-	if (node.attributes.length > 1) {
+	if (specified_attributes.length > 1) {
 		return false;
 	}
 
@@ -5570,22 +5578,35 @@ function indentNodes(nodeList, range) {
 			range
 		);
 
+    //Note: This is not part of editing API spec
+    //Adding this to conform with Aloha's intended behaviour
+    //
+    //if the sublist's previousSibling is also a li
+    //move the sublist to previousSibling
+    $_( nodeList ).forEach( function( node ) {
+      var parentNode = node.parentNode
+      movePreservingRanges(parentNode, parentNode.previousSibling, -1, range);
+    });
+
 		// "Abort these steps."
 		return;
 	}
 
+  // Note: Disabled simple indention as it breaks Aloha's conventions.
+  // Original implementation was left commented for future reference.
+  
 	// "Wrap node list, with sibling criteria returning true for a simple
 	// indentation element and false otherwise, and new parent instructions
 	// returning the result of calling createElement("blockquote") on the
 	// ownerDocument of first node. Let new parent be the result."
-	var newParent = wrap(nodeList,
-		function(node) { return isSimpleIndentationElement(node) },
-		function() { return firstNode.ownerDocument.createElement("blockquote") },
-		range
-	);
+	// var newParent = wrap(nodeList,
+	// 	function(node) { return isSimpleIndentationElement(node) },
+	// 	function() { return firstNode.ownerDocument.createElement("blockquote") },
+	// 	range
+	// );
 
-	// "Fix disallowed ancestors of new parent."
-	fixDisallowedAncestors(newParent, range);
+	// // "Fix disallowed ancestors of new parent."
+	// fixDisallowedAncestors(newParent, range);
 }
 
 function outdentNode(node, range) {
@@ -5758,6 +5779,10 @@ function outdentNode(node, range) {
 //@{
 
 function toggleLists(tagName, range) {
+
+  // get the range if the range is not set
+	range = range || getActiveRange();
+
 	// "Let mode be "disable" if the selection's list state is tag name, and
 	// "enable" otherwise."
 	var mode = getSelectionListState() == tagName ? "disable" : "enable";
@@ -7019,10 +7044,12 @@ commands.indent = {
 			}
 		}
 
+    // Note: Avoid normalizing sublists as it breaks Aloha's current behaviour
+    // Original implementation was left commented for future reference.
 		// "For each item in items, normalize sublists of item."
-		for (var i = 0; i < items.length; i++) {
-			normalizeSublists(items[i], range);
-		}
+		// for (var i = 0; i < items.length; i++) {
+		// 	normalizeSublists(items[i], range);
+		// }
 
 		// "Block-extend the active range, and let new range be the result."
 		var newRange = blockExtend(range);
@@ -7067,6 +7094,8 @@ commands.indent = {
 
 			// "Indent sublist."
 			indentNodes(sublist, range);
+
+      
 		}
 	}
 };
@@ -7150,7 +7179,8 @@ commands.inserthorizontalrule = {
 //@{
 commands.inserthtml = {
 	action: function(value, range) {
-		
+
+    range = range || getActiveRange();
 		
 		// "Delete the contents of the active range."
 		deleteContents(range);

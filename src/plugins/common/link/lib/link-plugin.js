@@ -90,7 +90,7 @@ define( [
 		 * Internal update interval reference to work around an ExtJS bug
 		 */
 		hrefUpdateInt: null,
-		
+
 		/**
 		 * Initialize the plugin
 		 */
@@ -229,11 +229,11 @@ define( [
 				editable.obj.keydown( function ( e ) {
 					if ( e.metaKey && e.which == 76 ) {
 						if ( that.findLinkMarkup() ) {
-							// open the tab containing the href
-							FloatingMenu.activateTabOfButton( 'href' );
-							that.hrefField.focus();
+						 	// open the tab containing the href
+						 	FloatingMenu.activateTabOfButton( 'href' );
+						 	that.hrefField.focus();
 						} else {
-							that.insertLink();
+						 	that.insertLink();
 						}
 						// prevent from further handling
 						// on a MAC Safari cursor would jump to location bar. Use ESC then META+L
@@ -241,9 +241,9 @@ define( [
 					}
 				} );
 
-				editable.obj.find( 'a' ).each( function ( i ) {
-					that.addLinkEventHandlers( this );
-				} );
+        //delegate event handler to all a elements in the current editable region
+        that.addLinkEventHandlers( editable.obj );
+
 			} );
 
 			// add the event handler for selection change
@@ -283,8 +283,9 @@ define( [
 						FloatingMenu.activateTabOfButton( 'href' );
 						if ( currentTab ) {
 							// switch back to the original tab
-							FloatingMenu.userActivatedTab = currentTab;
+						 	FloatingMenu.userActivatedTab = currentTab;
 						}
+
 						// now we are ready to set the target object
 						that.hrefField.setTargetObject( foundMarkup, 'href' );
 						
@@ -317,28 +318,28 @@ define( [
 		},
 
 		/**
-		 * Add event handlers to the given link object
-		 * @param link object
+		 * Add event handlers to all link objects in the given editable region
+		 * @param editable object
 		 */
-		addLinkEventHandlers: function ( link ) {
+		addLinkEventHandlers: function ( editable ) {
 			var that = this;
 
 			// show pointer on mouse over
-			jQuery( link ).mouseenter( function ( e ) {
+      jQuery(editable).delegate("a", "mouseenter", function ( e ) {
 				Aloha.Log.debug( that, 'mouse over link.' );
-				that.mouseOverLink = link;
+				that.mouseOverLink = this;
 				that.updateMousePointer();
 			} );
 
 			// in any case on leave show text cursor
-			jQuery( link ).mouseleave( function ( e ) {
+      jQuery(editable).delegate("a", "mouseleave", function ( e ) {
 				Aloha.Log.debug( that, 'mouse left link.' );
 				that.mouseOverLink = null;
 				that.updateMousePointer();
 			} );
 
 			// follow link on ctrl or meta + click
-			jQuery( link ).click( function ( e ) {
+      jQuery(editable).delegate("a", "click", function ( e ) {
 				if ( e.metaKey ) {
 					// blur current editable. user is waiting for the link to load
 					Aloha.activeEditable.blur();
@@ -595,53 +596,59 @@ define( [
 			    range = Aloha.Selection.getRangeObject(),
 			    linkText,
 			    newLink;
-			
+
 			// There are occasions where we do not get a valid range, in such
 			// cases we should not try and add a link
-			if ( !( range.startContainer && range.endContainer ) ) {
-				return;
-			}
+      if ( !( range.startContainer && range.endContainer ) ) {
+        return;
+      }
 			
 			// do not nest a link inside a link
 			if ( this.findLinkMarkup( range ) ) {
-				return;
+			 	return;
 			}
-			
-			// activate floating menu tab
+
+      // activate floating menu tab
 			FloatingMenu.activateTabOfButton( 'href' );
 			
 			// if selection is collapsed then extend to the word.
 			if ( range.isCollapsed() && extendToWord !== false ) {
 				GENTICS.Utils.Dom.extendToWord( range );
+        range.select();
 			}
-			if ( range.isCollapsed() ) {
+
+      if ( range.isCollapsed() ) {
 				// insert a link with text here
 				linkText = i18n.t( 'newlink.defaulttext' );
-				newLink = jQuery( '<a href="" class="aloha-new-link">' + linkText + '</a>' );
-				GENTICS.Utils.Dom.insertIntoDOM( newLink, range, jQuery( Aloha.activeEditable.obj ) );
-				range.startContainer = range.endContainer = newLink.contents().get( 0 );
-				range.startOffset = 0;
-				range.endOffset = linkText.length;
-			} else {
-				newLink = jQuery( '<a href="" class="aloha-new-link"></a>' );
-				GENTICS.Utils.Dom.addMarkup( range, newLink, false );
+				newLink = '<a href="" class="aloha-new-link">' + linkText + '</a>';
+
+        Aloha.execCommand("inserthtml", false, newLink)
+
+      } else {
+        Aloha.execCommand("createLink", false, "http://");
 			}
 
-			Aloha.activeEditable.obj.find( 'a.aloha-new-link' ).each( function ( i ) {
-				that.addLinkEventHandlers( this );
-				jQuery(this).removeClass( 'aloha-new-link' );
-			} );
-
+      //update the range
+      if(range.startOffset > 0){
+         range.startContainer = range.endContainer = range.searchElementToRight(range.startContainer, range.startOffset).element.childNodes[0];
+         range.startOffset = 0;
+         range.endOffset = range.startContainer.length;
+      }
+      else {
+        range.correctRange()
+      }
+      
 			range.select();
 
 			// focus has to become before prefilling the attribute, otherwise
 			// Chrome and Firefox will not focus the element correctly.
 			this.hrefField.focus();
+      
 			// prefill and select the new href
 			// We need this guard because there are time when the extButton's
 			// el element has not yet available
 			if ( this.hrefField.extButton.el ) {
-				jQuery( this.hrefField.extButton.el.dom ).attr( 'value', 'http://' ).select();
+				jQuery( this.hrefField.extButton.el.dom ).attr( 'value', 'http://' );
 			}
 			this.hrefChange();
 		},
@@ -656,8 +663,20 @@ define( [
 			// clear the current item from the href field
 			this.hrefField.setItem(null);
 			if ( foundMarkup ) {
-				// remove the link
-				GENTICS.Utils.Dom.removeFromDOM( foundMarkup, range, true );
+
+        var active_element = jQuery( foundMarkup );
+
+        //remove empty attributes
+        for(var i = 0; i < active_element[0].attributes.length; i++){
+          window.console.log(cur_attr);
+          var cur_attr = active_element[0].attributes[i];
+          if(cur_attr.specified && (cur_attr.name === "class" || cur_attr.name === "title" || cur_attr.name === "target")){
+             active_element.removeAttr(cur_attr.name); 
+          }
+        }
+
+        //unlink using the command
+        Aloha.execCommand('unlink', false);
 
 				range.startContainer = range.endContainer;
 				range.startOffset = range.endOffset;
@@ -738,7 +757,7 @@ define( [
 				    '.x-combo-list-inner,' +
 				    '.x-combo-list' ).hide();
 		},
-		
+
 		/**
 		 * Make the given jQuery object (representing an editable) clean for saving
 		 * Find all links and remove editing objects

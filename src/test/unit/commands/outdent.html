@@ -4,24 +4,27 @@
 	<meta charset="UTF-8" />
 	<title>Aloha Editor command outdent tests</title>
 	<!-- include qunit -->
-	<link rel="stylesheet" href="../vendor/qunit.css" type="text/css"/>
+	<link rel="stylesheet" href="../../vendor/qunit.css" type="text/css"/>
 
-	<script type="text/javascript" src="../vendor/qunit.js"></script>
+	<script type="text/javascript" src="../../vendor/qunit.js"></script>
 
 	<!-- include jquery -->
-	<script	src="../vendor/jquery-1.6.1.js" ></script>
-	<script type="text/javascript" src="../vendor/jquery.simulate.js"></script>
+	<script	src="../../vendor/jquery-1.6.1.js" ></script>
+	<script type="text/javascript" src="../../vendor/jquery.simulate.js"></script>
 	<script>
 		window.alohaQuery = jQuery.noConflict();
 	</script>
 
 	<!-- include aloha -->
-	<script src="../../lib/aloha.js" data-aloha-plugins="common/list"></script>
+	<script src="../../../lib/aloha.js" ></script>
 
 	<!-- inject into testswarm -->
-	<script type="text/javascript" src="../vendor/swarminject.js"></script>
+	<script type="text/javascript" src="../../vendor/swarminject.js"></script>
 	<script>
-		// load command test suite
+    require.config({
+      baseUrl: "../"
+    });
+    // load command test suite
 		require( ['commandtest'] );
 	</script>
 	<style type="text/css">
