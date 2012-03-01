@@ -2,7 +2,7 @@
 
 This document is to serve as a "what has been done" in terms of the [Roadmap](http://aloha-editor.org/wiki/Roadmap)
 ## 0.21.0 - dev
-
+- table plugin: remove row / column formating is now working; added possibility to format text elements in selected cells
 
 ## 0.20.0
 
