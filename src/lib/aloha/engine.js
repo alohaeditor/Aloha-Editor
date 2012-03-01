@@ -5592,7 +5592,8 @@ function indentNodes(nodeList, range) {
 		return;
 	}
 
-  // Note: Disable simple indention as it breaks Aloha's conventions.
+  // Note: Disabled simple indention as it breaks Aloha's conventions.
+  // Original implementation was left commented out for future reference.
   
 	// "Wrap node list, with sibling criteria returning true for a simple
 	// indentation element and false otherwise, and new parent instructions

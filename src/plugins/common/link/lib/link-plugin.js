@@ -648,7 +648,7 @@ define( [
 			// We need this guard because there are time when the extButton's
 			// el element has not yet available
 			if ( this.hrefField.extButton.el ) {
-				jQuery( this.hrefField.extButton.el.dom ).attr( 'value', 'http://' )//.select();
+				jQuery( this.hrefField.extButton.el.dom ).attr( 'value', 'http://' );
 			}
 			this.hrefChange();
 		},
@@ -677,19 +677,6 @@ define( [
 
         //unlink using the command
         Aloha.execCommand('unlink', false);
-
-        //create a new span to wrap link contents
-        //var new_wrapper = jQuery("<span></span>")
-
-        //extract the remaining attributes
-        //var elem_attrs = jQuery(foundMarkup).get(0).attributes;
-        // for(var i=0; i < elem_attrs.length; i++){
-        //   new_wrapper.attr(elem_attrs[i].name.toLowerCase(), elem_attrs[i].value); 
-        // }
-
-        // //change the link object to span
-        // //without loosing semantic attributes
-        // jQuery(foundMarkup).contents().unwrap().wrap(new_wrapper);
 
 				range.startContainer = range.endContainer;
 				range.startOffset = range.endOffset;
