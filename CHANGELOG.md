@@ -42,7 +42,6 @@ All changes are categorized into one of the following keywords:
 - **BUG** The link plugin won't use a scope but will now hide/show it's buttons directly.
 - **BUG** Fixed the way the table plugin unwrapped it's cell contents when deactivating a table - all dom object references where lost before. Now the objects are truly unwrapped, and just moved up one step within the dom structure.
 
-
 ## 0.20.4 - 2012/01/27
 
 - **BUG** core: fixed IE7 browser crash caused by dereferencing element attributes.
