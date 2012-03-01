@@ -373,21 +373,21 @@ var Browser = Class.extend({
 	},
 	
 	getRepoChildren: function (params, callback) {
-		var that = this;
+		var browser = this;
 		
-		if (this.repositoryManager) {
-			this.repositoryManager.getChildren(params, function (items) {
-				that.processRepoResponse(items, callback);
+		if (browser.repositoryManager) {
+			browser.repositoryManager.getChildren(params, function (items) {
+				browser.processRepoResponse(items, callback);
 			});
 		}
 	},
 	
 	queryRepository: function (params, callback) {
-		var that = this;
+		var browser = this;
 		
-		if (this.repositoryManager) {
-			this.repositoryManager.query(params, function (response) {
-				that.processRepoResponse(
+		if (browser.repositoryManager) {
+			browser.repositoryManager.query(params, function (response) {
+				browser.processRepoResponse(
 					(response.results > 0) ? response.items : [],
 					{ numItems: response.numItems, hasMoreItems: response.hasMoreItems},
 					callback
@@ -397,7 +397,7 @@ var Browser = Class.extend({
 	},
 	
 	processRepoResponse: function (items, metainfo, callback) {
-		var that = this;
+		var browser = this;
 		var data = [];
 		// if the second parameter is a function, it is the callback
 		if (typeof metainfo === 'function') {
@@ -406,7 +406,7 @@ var Browser = Class.extend({
 		}
 		
 		jQuery.each(items, function () {
-			data.push(that.harvestRepoObject(this));
+			data.push(browser.harvestRepoObject(this));
 		});
 		
 		if (typeof callback === 'function') {
@@ -422,7 +422,7 @@ var Browser = Class.extend({
 	 * and all other attributes are optional.
 	 */
 	harvestRepoObject: function (obj) {
-		var md5uid = md5lib.hex_md5(obj.id),
+		var md5uid = md5lib.hex_md5(obj.repositoryId + "://" + obj.id),
 			repo_obj = false;
 		
 		if ( typeof this._objs[md5uid] === "undefined" ) {
@@ -517,7 +517,7 @@ var Browser = Class.extend({
 	 * Fetch an object's  children if we haven't already done so
 	 */
 	fetchChildren: function (obj, callback) {
-		var that = this;
+		var browser = this;
 		
 		if (obj.hasMoreItems === true || obj.baseType === 'folder') {
 			if (obj.loaded === false) {
@@ -527,8 +527,8 @@ var Browser = Class.extend({
 						repositoryId : obj.repositoryId
 					},
 					function (data) { 
-						if (that._objs[obj.uid].loaded === false) {// should not be called twice
-							that._objs[obj.uid].loaded = true;
+						if (obj.loaded === false) {// should not be called twice
+							obj.loaded = true;
 							
 							if (typeof callback === 'function') {
 								callback(data);
@@ -568,7 +568,7 @@ var Browser = Class.extend({
 	 * Creates the tree using jstree
 	 */
 	createTree: function (container) {
-		var plugin = this;
+		var browser = this;
 		var tree = jQuery(renderTemplate('<div class="{tree}">'));
 		var header = jQuery(renderTemplate(
 				'<div class="{tree-header} {grab-handle}">\
@@ -578,10 +578,16 @@ var Browser = Class.extend({
 		
 		container.append(header, tree);
 		
-		tree.height(this.grid.height() - header.outerHeight(true))
+		tree.height(browser.grid.height() - header.outerHeight(true))
 			.bind('loaded.jstree', function (event, data) {
-				jQuery('>ul>li', this).first().css('padding-top', 5);
-				tree.jstree("open_node", "li[rel='repository']");
+				var roots = jQuery('>ul>li', this), rootindex = 0;
+				roots.first().css('padding-top', 5);
+				roots.each(function() {
+					var rootid = md5lib.hex_md5("Repository" + rootindex);
+					rootindex++;
+					$(this).attr('id', rootid);
+					tree.jstree("open_node", "#" + rootid);
+				});
 			})
 			.bind('select_node.jstree', function (event, data) {
 				// Suppresses a bug in jsTree
@@ -590,33 +596,34 @@ var Browser = Class.extend({
 				}
 				
 				var node = data.rslt.obj;
-				var folder = plugin.getObjectFromCache(node);
+				var folder = browser.getObjectFromCache(node);
 				
 				if (typeof folder === 'object') {
-					plugin._pagingOffset = 0;
-					plugin._searchQuery = null;
-					plugin._currentFolder = folder;
-					plugin.fetchItems(folder, plugin.processItems);
+					browser._pagingOffset = 0;
+					browser._searchQuery = null;
+					browser._currentFolder = folder;
+					browser.fetchItems(folder, browser.processItems);
 				}
 			})
 			.jstree({
-				types: plugin.types,
-				rootFolderId: this.rootFolderId,
+				types: browser.types,
+				rootFolderId: browser.rootFolderId,
 				plugins: ['themes', 'json_data', 'ui', 'types'],
 				core: {
 					animation: 250
 				},
 				themes: {
 					theme : 'browser',
-					url   : plugin.rootPath + 'css/jstree.css',
+					url   : browser.rootPath + 'css/jstree.css',
 					dots  : true,
 					icons : true
 				},
 				json_data: {
 					data: function (node, callback) {
-						if (plugin.repositoryManager) {
-							plugin.jstree_callback = callback;
-							plugin.fetchSubnodes.call(plugin, node, callback);
+						if (browser.repositoryManager) {
+							browser.jstree_callback = callback;
+							browser.fetchSubnodes.call(browser, node, callback);
+							
 						} else {
 							callback();
 						}
