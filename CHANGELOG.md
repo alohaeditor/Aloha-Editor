@@ -12,7 +12,7 @@ All changes are categorized into one of the following keywords:
                usage, or intent of an existing one.
 
 
-## 0.20.6 - SNAPSHOT
+## 0.20.6 - 2012/03/01
 
 - **BUG** dom-to-xhtml plugin: fixed attribute names are not lowercased
 - **BUG** floatingmenu: fixed floating menu's reading of configuration values
