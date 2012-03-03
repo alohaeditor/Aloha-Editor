@@ -14,7 +14,7 @@ All changes are categorized into one of the following keywords:
 
 ## 0.20.7 - SNAPSHOT
 
-
+- **ENHANCEMENT** dom-to-xhtml plugin: non-specified attributes are excluded from serialization, making attribute serialization more consistent on IE7 and IE8.
 
 ## 0.20.6 - 2012/03/01
 
