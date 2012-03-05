@@ -10,7 +10,6 @@ All changes are categorized into one of the following keywords:
 - **FEATURE**: The change introduces a new feature, or modifies the function,
                usage, or intent of an existing one.
 
-
 ## 0.21.0 - dev
 
 - block plugin: Aloha Block Plugin has now been greatly cleaned up and improved. Besides greatly cleaned up API and documentation, the new features include Drag/Drop, Deletion and Copy/Paste support. Now fully cross-browser (IE7, IE8, IE9, Chrome, Firefox).i
@@ -18,10 +17,14 @@ All changes are categorized into one of the following keywords:
 - block plugin: revamped colors for highlighting blocks
 - commands.delete: fixed a bug with the delete command when contents are preceded by ignorable whitespace. also added a delete test for that.
 
+## 0.20.5 - 2012/02/09
 
-## 0.20.5 - SNAPSHOT
-
-
+- **ENHANCEMENT** word contenthandler: cleanup for pasted word documents with table of contents
+- **BUG** paste plugin: removed trim of pasted contents -- test[ text] + 2x c&p results now in test text text instead of testtexttext
+- **BUG** format/table plugin: added a workaround in the format plugin to enable formating of selected cells
+- **ENHANCEMENT** cite plugin: config option if sidebar should auto open or not (Aloha.settings.plugins.cite.sidebar.open: true|false)
+- **BUG** The link plugin won't use a scope but will now hide/show it's buttons directly.
+- **BUG** Fixed the way the table plugin unwrapped it's cell contents when deactivating a table - all dom object references where lost before. Now the objects are truly unwrapped, and just moved up one step within the dom structure.
 
 
 ## 0.20.4 - 2012/01/27
@@ -32,6 +35,7 @@ All changes are categorized into one of the following keywords:
 
 
 ## 0.20.3 - 2012/01/24
+
 - **BUG** floatingmenu: Fixed float position of floatingmenu when it moves
           between editables.
 - **BUG** core: Removes ExtJS' IE6 style fixes which break layout in IE9.
@@ -42,7 +46,9 @@ All changes are categorized into one of the following keywords:
 - **BUG** core: Fixed floating menu pinning with topalign behaviour
           (topalignOffset, horizontalOffset)
 
+
 ## 0.20.2 - 2012/01/19
+
 - **BUG** image-plugin: Replaced unicode characters in the crop buttons with
           images to fix display issues within Internet Explorer 7.
 - **BUG** core: Fixed problem where Internet Explorer 7 and jquery.store will
@@ -62,17 +68,23 @@ All changes are categorized into one of the following keywords:
 - **ENHANCEMENT** word contenthandler: html cleanup for empty tags, removal of
                   spans and the paragraph numbering from TOC feature.
 
+
 ## 0.20.1 2012/01/13
+
 - **ENHANCEMENT** table-plugin: fixed incorrect repairing of tables (cells were
                   appended to rows containing th elements).
 
+
 ## 0.20.0 2011/12/27
+
 - **ENHANCEMENT** doc/api: added first version of new API docs. Please note
                   that the API docs are currently work in progress.
 - **BUG** floatingmenu: fixed a bug with topalign behaviour where scrolling
           would attach the floatingmenu to the left side of the screen.
 
+
 ## 0.20.0-RC9 - 2011/12/07
+
 - **BUG** image-plugin: The saved aspect ratio will now be correcly
           recalculated when a cropping action is sucessfully ended. Previously
 		  the aspect ratio was not recalculated and therefore resizing of
@@ -125,7 +137,9 @@ All changes are categorized into one of the following keywords:
 - **BUG** customizable numerated-header plugin: when header content is deleted,
           the numeration tag will be deleted, too
 
+
 ## 0.20.0-RC8 - 2011/11/22
+
 - **ENHANCEMENT** listenforcer-plugin: The listenforcer plugin was refactored.
                   Method names were changed and the way the plugin works with
 				  lists was also changed. It will now no longer replace list
@@ -147,7 +161,9 @@ All changes are categorized into one of the following keywords:
 - **BUG** link-plugin: Fixed problem with auto-suggestion mechanism for the
           link input field causing the the wrong href value to be taken.
 
+
 ## 0.20.0-RC7 - 2011/11
+
 - **BUG** link-plugin: Fixed javascript error that occured when linking items
           using the repository browser in Internet Explorer 8.
 - **BUG** boilerplate demo: Fixed javascript error that occured in Internet
@@ -164,6 +180,7 @@ All changes are categorized into one of the following keywords:
           was pressed.
 
 ## 0.20.0-RC6 - 2011/11
+
 - **BUG** link-plugin/linkbrowser-plugin: Previously the highlight css for a
           link was not removed after an item was selected by the linkbrowser.
 		  Now highlight css will be correctly removed and the cursor will be
@@ -173,7 +190,9 @@ All changes are categorized into one of the following keywords:
 		  of loading the cloned object the original table was loaded and
 		  deactivated.
 
+
 ## 0.20.0-RC5 - 2011/11
+
 - **BUG** link-plugin: The link plugin will no longer remove repository data
           attributes from the link when the user clicks a link and leaves it
 		  imediately. Previously those repository data attributes where removed
@@ -183,30 +202,39 @@ All changes are categorized into one of the following keywords:
 
 
 ## 0.20.0-RC4 - 2011/11
+
 - **BUG** FloatingMenu: The FloatingMenu will now check the
           Aloha.settings.floatingmenu.topalignOffset parameter to be not
 		  undefined, as checking for 'number' was too strict
 
+
 ## 0.20.0-RC3 - 2011/11
+
 - **FEATURE** link-plugin: The default behaviour for the link plugin has
               changed. Links with empty hrefs will not be removed automatically
 			  any longer - removing the current href has to be confirmed by
 			  pressing enter to delete the link itself. Use the unlink button
 			  to remove the link directly.
 
+
 ## 0.20.0-RC2 - 2011/11
+
 - **BUG** link-plugin: Fixed bug in link-plugin, which prevented correct
           selection of items from the repository browser when creating a link
 		  on a fresh page
 - **BUG** browser-plugin: Fixed a bug that prevented the browser plugin to load
           its dependencies correctly.
 
+
 ## 0.20.0-RC1 - 2011/11
+
 - **BUG** link-plugin: Fixed a bug that prevented correct selection of items
           from the repository browser when a new link was created on a fresh
 		  loaded page.
 
+
 ## 0.20-BETA - 2011/11
+
 - core: Add option for "cls" property to be added to ui-attributefields. cls will be an optional extra CSS class that will be added to this component's Element. This can be useful for adding customized styles to the component or any of its children using standard CSS rules. (http://docs.sencha.com/ext-js/4-0/#!/api/Ext.AbstractComponent-cfg-cls)
 - ribbon-plugin: The ribbon will no longer be visible by default. Instead you can use the show function to make it appear.
 - image-plugin: The plugin will now use a different method to calculate the width/height when using a fixed aspect ratio.

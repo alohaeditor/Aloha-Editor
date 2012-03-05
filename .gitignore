@@ -5,4 +5,5 @@ target
 doc/guides/staging
 *.js~
 *.orig
+*.swp
 .externalToolBuilders

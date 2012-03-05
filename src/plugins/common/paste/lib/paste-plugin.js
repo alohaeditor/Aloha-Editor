@@ -84,8 +84,6 @@ function ( Aloha, Plugin, jQuery, Commands, console ) {
 				pasteDivContents = pasteDivContents.substring( 6 );
 			}
 			
-			pasteDivContents = jQuery.trim( pasteDivContents );
-			
 			// Detects a situation where we are about to paste into a selection
 			// that looks like this: <p> [</p>...
 			// The nbsp inside the <p> node was placed there to make the empty

@@ -87,7 +87,9 @@ Aloha.jQuery('.content').aloha();
 
 h3. CSS loading
 
-WARNING: Not yet done
+<html>
+	<link href="javascripts/aloha/css/aloha.css" type="text/css" rel="stylesheet" />
+</html>
 
 h3. Localization
 
@@ -105,7 +107,7 @@ As Aloha Editor uses RequireJS to handle it's localization needs a powerful fall
 
 h3. Using plugins
 
-h4. Laoding plugins
+h4. Loading plugins
 
 Loading the new plugins is easy, just add it to the list of plugins in the main
 script tag loading Aloha:
