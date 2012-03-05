@@ -14,6 +14,7 @@ All changes are categorized into one of the following keywords:
 
 ## 0.20.7 - SNAPSHOT
 
+- **BUG** link: fixed a bug in the link list static repository plugin that would cause aloha to fail when no settings for the linklist repository were specified.
 
 
 ## 0.20.6 - 2012/03/01
