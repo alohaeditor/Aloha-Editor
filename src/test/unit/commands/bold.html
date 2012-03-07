@@ -229,28 +229,28 @@
 					   	execResult: 'foo[bar]baz' 
 					},
 					{  	start: 'foo{<b></b>}baz',
-					   	execResult: 'foo[]baz' 
+					   	execResult: 'foo{<b></b>}baz' 
 					},
 					{  	start: 'foo{<i></i>}baz',
-					   	execResult: 'foo[]baz' 
+					   	execResult: 'foo{<i></i>}baz' 
 					},
 					{  	start: 'foo{<b><i></i></b>}baz',
-					   	execResult: 'foo[]baz' 
+					   	execResult: 'foo{<b><i></i></b>}baz' 
 					},
 					{  	start: 'foo{<i><b></b></i>}baz',
-					   	execResult: 'foo[]baz' 
+					   	execResult: 'foo{<i><b></b></i>}baz' 
 					},
 					{  	start: 'foo<strong>[bar]</strong>baz',
-					   	execResult: 'foo<b>[bar]</b>baz' 
+					   	execResult: 'foo[bar]baz' 
 					},
 					{  	start: 'foo[<strong>bar</strong>]baz',
-					   	execResult: 'foo<b>[bar]</b>baz' 
+					   	execResult: 'foo[bar]baz' 
 					},
 					{  	start: 'foo[<strong>bar]</strong>baz',
-					   	execResult: 'foo<b>[bar]</b>baz' 
+					   	execResult: 'foo[bar]baz' 
 					},
 					{  	start: 'foo<strong>[bar</strong>]baz',
-					   	execResult: 'foo<b>[bar]</b>baz' 
+					   	execResult: 'foo[bar]baz' 
 					},
 					{  	start: 'foo<span style="font-weight: bold">[bar]</span>baz',
 					   	execResult: 'foo[bar]baz' 
