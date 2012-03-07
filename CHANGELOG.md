@@ -11,6 +11,8 @@ All changes are categorized into one of the following keywords:
 - **FEATURE**: The change introduces a new feature, or modifies the function,
                usage, or intent of an existing one.
 
+## 0.20.8 - SNAPSHOT
+
 
 ## 0.20.7 - 2012/03/7
 
