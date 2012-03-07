@@ -54,6 +54,7 @@ define([ 'aloha/jquery', 'block/blockmanager', 'aloha/sidebar', 'block/editorman
 					// If no schema returned, we do not want to add panels.
 					return;
 				}
+
 				that._sidebar.addPanel({
 					title: block.getTitle(),
 					expanded: true,
