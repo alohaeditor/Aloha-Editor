@@ -32,11 +32,8 @@ All changes are categorized into one of the following keywords:
 - **FEATURE**: images browser plugin
 - **ENHANCEMENT**: browser: commenting some methods and coding guidelines
 - **BUG**: browser: fixes alohaeditor/Aloha-Editor#460 -- Error when multiple repositories are configured
-
-## 0.20.6 - 2012/
-
-- **ENHANCEMENT** Browser plugin: loading of required jQuery plugins is now changed so all can be loaded via CDN
-
+- **BUG** block sidebar attribute editor: when using backspace/del in an input field the block was removed
+- **FEATURE** plugin extra/proxy: as multiple plugins need a proxy script to access external resources there's now one for all to use
 
 ## 0.20.6 - SNAPSHOT
 
