@@ -205,19 +205,19 @@
 					   	execResult: '<b>foo[bar]baz</b>' 
 					},
 					{  	start: 'foo<strong>bar</strong>[baz]',
-					   	execResult: 'foo<strong>bar</strong><b>[baz]</b>' 
+					   	execResult: 'foo<strong>bar[baz]</strong>' 
 					},
 					{  	start: '[foo]<strong>bar</strong>baz',
-					   	execResult: '<b>[foo]</b><strong>bar</strong>baz' 
+					   	execResult: '<strong>[foo]bar</strong>baz' 
 					},
 					{  	start: '<strong>foo</strong>[bar]<strong>baz</strong>',
-					   	execResult: '<strong>foo</strong><b>[bar]</b><strong>baz</strong>' 
+					   	execResult: '<strong>foo[bar]baz</strong>' 
 					},
 					{  	start: '<b>foo</b>[bar]<strong>baz</strong>',
-					   	execResult: '<b>foo[bar]</b><strong>baz</strong>' 
+					   	execResult: '<b>foo[bar]baz</b>' 
 					},
 					{  	start: '<strong>foo</strong>[bar]<b>baz</b>',
-					   	execResult: '<strong>foo</strong><b>[bar]baz</b>' 
+					   	execResult: '<strong>foo[bar]baz</strong>' 
 					},
 					{  	start: 'foo[<b>bar</b>]baz',
 					   	execResult: 'foo[bar]baz' 
