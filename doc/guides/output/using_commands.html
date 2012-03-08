@@ -55,11 +55,24 @@
           </a>
           <hr style="clear:both;">
           <dl class="L">
-    <dt>Contributing to Aloha Editor</dt>
-      <dd><a href="releasing.html">Releasing</a></dd>
-      <dd>Development Process</dd>
-      <dd><a href="style_guide.html">Javascript Style Guide</a></dd>
-      <dd><a href="documentation_guidelines.html">Documentation Guidelines</a></dd>
+    <dt>Start Here</dt>
+      <dd><a href="using_aloha.html">Using Aloha Editor</a></dd>
+      <dd><a href="develop_aloha.html">Developing and building Aloha Editor</a></dd>
+      <dd><a href="configure_aloha.html">Configuring Aloha Editor</a></dd>
+      <dd><a href="require.html">Aloha dependency management</a></dd>
+      <dd><a href="writing_plugins.html">Writing Plugins</a></dd>
+      <dd><a href="repository.html">Working with repositories</a></dd>
+    <dt>The Core</dt>
+      <dd><a href="core.html">The Core</a></dd>
+    <dt>Commands</dt>
+      <dd><a href="using_commands.html">Using commands</a></dd>
+    <dt>UI</dt>
+      <dd><a href="ui.html">Aloha Editor Ui</a></dd>
+      <dd><a href="toolbar.html">Aloha Editor toolbar</a></dd>
+      <dd><a href="sidebar.html">Aloha Editor sidebar</a></dd>
+      <dd><a href="componenttypes.html">Aloha Editor UI API</a></dd>
+</dl>
+<dl class="R">
     <dt>Plugins</dt>
       <dd><a href="plugins.html">Aloha Editor plugins</a></dd>
       <dd><a href="plugin_block.html">Block</a></dd>
@@ -71,24 +84,11 @@
       <dd><a href="plugin_table.html">Table</a></dd>
       <dd><a href="plugin_paste.html">Paste</a></dd>
       <dd><a href="plugin_formatlesspaste.html">Formatless paste</a></dd>
-    <dt>Start Here</dt>
-      <dd><a href="using_aloha.html">Using Aloha Editor</a></dd>
-      <dd><a href="develop_aloha.html">Developing and building Aloha Editor</a></dd>
-      <dd><a href="configure_aloha.html">Configuring Aloha Editor</a></dd>
-      <dd><a href="require.html">Aloha dependency management</a></dd>
-      <dd><a href="writing_plugins.html">Writing Plugins</a></dd>
-      <dd><a href="repository.html">Working with repositories</a></dd>
-</dl>
-<dl class="R">
-    <dt>The Core</dt>
-      <dd><a href="core.html">The Core</a></dd>
-    <dt>UI</dt>
-      <dd><a href="ui.html">Aloha Editor Ui</a></dd>
-      <dd><a href="toolbar.html">Aloha Editor toolbar</a></dd>
-      <dd><a href="sidebar.html">Aloha Editor sidebar</a></dd>
-      <dd><a href="componenttypes.html">Aloha Editor UI API</a></dd>
-    <dt>Commands</dt>
-      <dd><a href="using_commands.html">Using commands</a></dd>
+    <dt>Contributing to Aloha Editor</dt>
+      <dd><a href="releasing.html">Releasing</a></dd>
+      <dd>Development Process</dd>
+      <dd><a href="style_guide.html">Javascript Style Guide</a></dd>
+      <dd><a href="documentation_guidelines.html">Documentation Guidelines</a></dd>
 </dl>
 
 
@@ -151,8 +151,8 @@ var value = Aloha.queryCommandValue( 'link' );
  
 &lt;html&gt;
 &lt;head&gt;
-	&lt;link rel=&quot;stylesheet&quot; href=&quot;http://aloha-editor.org/builds/development/latest/aloha/css/aloha.css&quot; type=&quot;text/css&quot;&gt;
-	&lt;script src=&quot;http://aloha-editor.org/builds/development/latest/aloha/lib/aloha.js&quot;&gt;&lt;/script&gt;
+    &lt;link rel=&quot;stylesheet&quot; href=&quot;http://aloha-editor.org/builds/development/latest/src/css/aloha.css&quot; type=&quot;text/css&quot;&gt;
+    &lt;script src=&quot;http://aloha-editor.org/builds/development/latest/src/lib/aloha.js&quot;&gt;&lt;/script&gt;
 &lt;/head&gt;
 &lt;body&gt;
 &lt;button id=&quot;bold&quot;&gt;Bold&lt;/button&gt;
@@ -160,37 +160,37 @@ var value = Aloha.queryCommandValue( 'link' );
 &lt;script&gt;
 // Bind to Aloha Ready Event
 Aloha.ready( function() {
-	var $ = jQuery = Aloha.jQuery;
-	$('.edit').aloha();
-
-var button = jQuery('#bold');
- 
-button.attr( 'disabled',
-    ( Aloha.queryCommandSupported( 'bold' ) &amp;&amp;
-    Aloha.queryCommandEnabled( 'bold' ) )
-);
- 
-button.click( function() {
-    Aloha.execCommand( 'bold', false, '' );
-    updateBoldColor();
-});
- 
-Aloha.bind('aloha-selection-changed', function() {
+    var $ = jQuery = Aloha.jQuery;
+    $('.edit').aloha();
+ 
+	var button = jQuery('#bold');
+	  
+	button.attr( 'disabled',
+	    ( Aloha.queryCommandSupported( 'bold' ) &amp;&amp;
+	    Aloha.queryCommandEnabled( 'bold' ) )
+	);
+	  
+	button.click( function() {
+	    Aloha.execCommand( 'bold', false, '' );
+	    updateBoldColor();
+	});
+	  
+	Aloha.bind('aloha-selection-changed', function() {
+	    updateBoldColor();
+	});
+	 
+	function updateBoldColor() {
+	    if ( Aloha.queryCommandIndeterm( 'bold' ) ) {
+	        button.css( 'background-color', 'yellow' );
+	        return;
+	    }
+	    button.css( 'background-color', 
+	            Aloha.queryCommandState( 'bold' ) ? 'lightgreen' : 'orange'
+	    );
+	}
+	// update the color on startup
 	updateBoldColor();
 });
-
-function updateBoldColor() {
-	if ( Aloha.queryCommandIndeterm( 'bold' ) ) {
-		button.css( 'background-color', 'yellow' );
-		return;
-	}
-    button.css( 'background-color', 
-            Aloha.queryCommandState( 'bold' ) ? 'lightgreen' : 'orange'
-    );
-}
-// update the color on startup
-updateBoldColor();
-}
 &lt;/script&gt;
 &lt;/body&gt;
 &lt;/html&gt;

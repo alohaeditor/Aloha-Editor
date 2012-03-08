@@ -277,7 +277,7 @@ function(Aloha, jQuery, Ext, Class, console) {
 	};
 
 	/**
-	 * Handler for window scroll event. Positions the floating menu
+	 * Handler for window scroll event.  Positions the floating menu
 	 * appropriately.
 	 *
 	 * @param {Aloha.FloatingMenu} floatingmenu
@@ -290,39 +290,42 @@ function(Aloha, jQuery, Ext, Class, console) {
 		var element = floatingmenu.obj;
 		var editablePos = Aloha.activeEditable.obj.offset();
 		var isTopAligned = floatingmenu.behaviour === 'topalign';
+		var isAppended = floatingmenu.behaviour === 'append';
 		var isManuallyPinned = floatingmenu.pinned
 							 && ( parseInt( element.css( 'left' ), 10 )
 								  != ( editablePos.left
 									   + floatingmenu.horizontalOffset
 									 ) );
 
-		if ( isTopAligned && isManuallyPinned ) {
+		// no calculation when pinned manually or has behaviour 'append'
+		if ( isTopAligned && isManuallyPinned || isAppended ) {
 			return;
 		}
 
 		var floatingmenuHeight = element.height();
-		var scrollTop = jQuery(document).scrollTop();
+		var scrollTop = jQuery( document ).scrollTop();
 
-		// This value is what the top position of the floating menu
-		// *would* be if we tried to position it above the active
-		// editable.
+		// This value is what the top position of the floating menu *would* be
+		// if we tried to position it above the active editable.
 		var floatingmenuTop = editablePos.top - floatingmenuHeight
-							+ floatingmenu.marginTop;
+		                    + floatingmenu.marginTop
+		                    - floatingmenu.topalignOffset;
 
-		// The floating menu does not fit in the space between the top
-		// of the viewport and the editable, so position it at the top
-		// of the viewport, and over the editable.
+		// The floating menu does not fit in the space between the top of the
+		// viewport and the editable, so position it at the top of the viewport
+		// and over the editable.
 		if ( scrollTop > floatingmenuTop ) {
 			editablePos.top = isTopAligned
 							? scrollTop + floatingmenu.marginTop
 							: floatingmenu.marginTop;
 
-		// There is enough space on top of the editable to fit the
-		// entire floating menu, so we do so.
+		// There is enough space on top of the editable to fit the entire
+		// floating menu, so we do so.
 		} else if ( scrollTop <= floatingmenuTop ) {
 			editablePos.top -= floatingmenuHeight
 							 + ( isTopAligned
-								 ? floatingmenu.marginTop
+								 ? floatingmenu.marginTop +
+								   floatingmenu.topalignOffset
 								 : 0 );
 		}
 
@@ -408,11 +411,25 @@ function(Aloha, jQuery, Ext, Class, console) {
 		window: jQuery(window),
 
 		/**
-		 * define floating menu float behaviour. meant to be adjusted via
-		 * GENTICS.Aloha.settings.floatingmenu.behaviour
-		 * set it to 'float' for standard behaviour, or 'topalign' for a fixed fm 
+		 * Aloha.settings.floatingmenu.behaviour
+		 * 
+		 * Is used to define the floating menu (fm) float behaviour.
+		 *
+		 * available: 
+		 *  'float' (default) the fm will float next to the position where the caret is,
+		 *  'topalign' the fm is fixed above the contentEditable which is active,
+		 *  'append' the fm is appended to the defined 'element' element position (top/left)
 		 */
 		behaviour: 'float',
+
+		/**
+		 * Aloha.settings.floatingmenu.element
+		 *
+		 * Is used to define the element where the floating menu is positioned when
+		 * Aloha.settings.floatingmenu.behaviour is set to 'append'
+		 * 
+		 */
+		element: 'floatingmenu',
 
 		/**
 		 * topalign offset to be used for topalign behavior
@@ -437,6 +454,12 @@ function(Aloha, jQuery, Ext, Class, console) {
 		draggable: true,
 		
 		/**
+		 * Define whether the floating menu shall be pinned or not via Aloha.settings.floatingmanu.pin
+		 * Default is: false 
+		 */
+		pin: false,
+		
+		/**
 		 * A list of all buttons that have been added to the floatingmenu
 		 * This needs to be tracked, as adding buttons twice will break the fm
 		 */
@@ -455,38 +478,58 @@ function(Aloha, jQuery, Ext, Class, console) {
 		init: function() {
 
 			// check for behaviour setting of the floating menu
-		    if (Aloha.settings.floatingmenu) {
-		    	
-		    	if (typeof Aloha.settings.floatingmenu.draggable === 'boolean') {
+		    if ( Aloha.settings.floatingmenu ) {
+		    	if ( typeof Aloha.settings.floatingmenu.draggable ===
+				         'boolean' ) {
 		    		this.draggable = Aloha.settings.floatingmenu.draggable;
 		    	}
-				if (typeof Aloha.settings.floatingmenu.behaviour === 'string') {
+
+				if ( typeof Aloha.settings.floatingmenu.behaviour ===
+				         'string' ) {
 					this.behaviour = Aloha.settings.floatingmenu.behaviour;
 				}
-				if (typeof Aloha.settings.floatingmenu.topalignOffset !== 'undefined') {
-					this.topalignOffset = Aloha.settings.floatingmenu.topalignOffset;
+
+				if ( typeof Aloha.settings.floatingmenu.topalignOffset !==
+					    'undefined' ) {
+					this.topalignOffset = parseInt(
+						Aloha.settings.floatingmenu.topalignOffset, 10 );
 				}
-				if (typeof Aloha.settings.floatingmenu.horizontalOffset !== 'undefined') {
-					this.horizontalOffset = Aloha.settings.floatingmenu.horizontalOffset;
+
+				if ( typeof Aloha.settings.floatingmenu.horizontalOffset !==
+				         'undefined' ) {
+					this.horizontalOffset = parseInt(
+						Aloha.settings.floatingmenu.horizontalOffset , 10 );
 				}
-				if (typeof Aloha.settings.floatingmenu.marginTop === 'number') {
-				    this.marginTop = Aloha.settings.floatingmenu.marginTop;
+
+				if ( typeof Aloha.settings.floatingmenu.marginTop ===
+				         'number' ) {
+				    this.marginTop = parseInt(
+						Aloha.settings.floatingmenu.marginTop , 10 );
 				}
-				//We just check for undefined
-				if (typeof Aloha.settings.floatingmenu.width !== 'undefined') {
-					//Try to pars it
-					try {
-						var parsed = parseInt(Aloha.settings.floatingmenu.width);
-						this.width = Aloha.settings.floatingmenu.width;
-					} catch(e) {
-						//do nothing.
-					}
+
+				if ( typeof Aloha.settings.floatingmenu.element ===
+						'string' ) {
+					this.element = Aloha.settings.floatingmenu.element;
+				}
+				if ( typeof Aloha.settings.floatingmenu.pin ===
+						'boolean' ) {
+					this.pin = Aloha.settings.floatingmenu.pin;
+				}
+
+
+				if ( typeof Aloha.settings.floatingmenu.width !==
+				         'undefined' ) {
+					this.width = parseInt( Aloha.settings.floatingmenu.width,
+						10 );
 				}
 		    }
 
 			jQuery.storage = new jQuery.store();
+
 			this.currentScope = 'Aloha.global';
+
 			var that = this;
+
 			this.window.unload(function () {
 				// store fm position if the panel is pinned to be able to restore it next time
 				if (that.pinned) {
@@ -526,7 +569,7 @@ function(Aloha, jQuery, Ext, Class, console) {
 			});
 			
 			if (typeof Aloha.settings.toolbar === 'object') {
-				this.fromConfig = true;				
+				this.fromConfig = true;
 			}
 		},
 
@@ -643,6 +686,10 @@ function(Aloha, jQuery, Ext, Class, console) {
 					
 							that.left = this.x;
 							that.top = top;
+
+							// store the last floating menu position when the floating menu was dragged around
+							lastFloatingMenuPos.left = that.left;
+							lastFloatingMenuPos.top = that.top;
 
 							this.panel.setPosition(this.x, top);
 							that.refreshShadow();
@@ -791,6 +838,14 @@ function(Aloha, jQuery, Ext, Class, console) {
 				onWindowScroll( that );
 			});
 
+			// don't display the drag handle bar / pin when floating menu is not draggable
+			if ( !that.draggable ) {
+				jQuery('.aloha-floatingmenu').hover( function() {
+					jQuery(this).css({background: 'none'});
+					jQuery('.aloha-floatingmenu-pin').hide();
+				});
+			}
+
 			// adjust float behaviour
 			if (this.behaviour === 'float') {
 				// listen to selectionChanged event
@@ -802,6 +857,29 @@ function(Aloha, jQuery, Ext, Class, console) {
 						}
 					}
 				});
+			} else if (this.behaviour === 'append' ) {
+				var p = jQuery( "#" + that.element );
+				var position = p.offset();
+
+				if ( !position ) {
+					Aloha.Log.warn(that, 'Invalid element HTML ID for floating menu: ' + that.element);
+					return false;
+				}
+
+				// set the position so that it does not float on the first editable activation
+				this.floatTo( position );
+				
+				if ( this.pin ) {
+					this.togglePin( true );
+				}
+
+				Aloha.bind( 'aloha-editable-activated', function( event, data ) {
+					if ( that.pinned ) {
+						return;
+					}
+					that.floatTo( position );
+				});
+				
 		    } else if ( this.behaviour === 'topalign' ) {
 				// topalign will retain the user's pinned status
 				// TODO maybe the pin should be hidden in that case?
@@ -846,7 +924,7 @@ function(Aloha, jQuery, Ext, Class, console) {
 					var HORIZONTAL_PADDING = 10;
 					// Calculate by how much the floating menu is pocking
 					// outside the width of the viewport.  A positive number
-					// means that is is outside the viewport, negative means
+					// means that it is outside the viewport, negative means
 					// it is within the viewport.
 					var overhang = ( ( editablePos.left + that.width
 						+ HORIZONTAL_PADDING ) - jQuery(window).width() );
@@ -1261,7 +1339,10 @@ function(Aloha, jQuery, Ext, Class, console) {
 
 			// if the floating menu would be placed higher than the top of the screen...
 			if ( top < scrollTop) {
-				top += 50 + GENTICS.Utils.Position.ScrollCorrection.top;
+				top += 80 + GENTICS.Utils.Position.ScrollCorrection.top;
+				// 80px if editable element is eg h1; 50px was fine for p;
+				// todo: maybe just use GENTICS.Utils.Position.ScrollCorrection.top with a better value?
+				// check where this is also used ...
 			}
 
 			// if the floating menu would float off the bottom of the screen

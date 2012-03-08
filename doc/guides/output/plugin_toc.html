@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>: The Undo Plugin</title>
+  <title>: The Table of Contents (toc) Plugin</title>
 
   <!-- guides styles -->
   <link rel="stylesheet" type="text/css" href="stylesheets/style.css" />
@@ -101,29 +101,26 @@
     <div class="wrapper">
       <div id="mainCol">
           <div class="headerSection">
-            <h2>The Undo Plugin</h2>
+            <h2>The Table of Contents (toc) Plugin</h2>
+<p>With this plugin the editor has the possibility to insert a table of contents (<span class="caps">TOC</span>).</p>
+<p>All H1 &#8211; H6 elements will be extracted and presented as a table of contents. There are also anchor links from the <span class="caps">TOC</span> entries to the sections available.</p>
 
           </div>
-        <h3 id="goal">1 Goal</h3>
-<ul>
-	<li>Undo changes to the content of an element.</li>
-	<li>Undo changes to the <span class="caps">DOM</span> hierarchy of nodes that are descendants of the HTMLDocument object (parentNode, childNodes).</li>
-	<li>Undo changes to internal state, such as a form control&#8217;s value or dirty checkedness flag.</li>
-	<li>Undo changes to all attributes</li>
-	<li>Undo changes to any occurred <span class="caps">DOM</span> manipulation</li>
-</ul>
-<h3 id="reference">2 Reference</h3>
-<ul>
-	<li>http://www.whatwg.org/specs/web-apps/current-work/#undo</li>
-	<li>https://github.com/jzaefferer/undo (Undo/Redo Stack Abstraction by Jörn Zaefferer from jQuery UI)</li>
-</ul>
+        <h3 id="plugin-settings">1 Plugin Settings</h3>
+<div class="code_container">
+<pre class="brush: javascript; gutter: false; toolbar: false">
+
+	Aloha.settings.plugins.toc: {
+		minEntries: 5,					// minimum TOC entries to display; default: 0 (show always all)
+		updateInterval: 5000,			// update interval for the TOC in milliseconds; default: 5000 (5 seconds)
+	}
+</pre></div>
 
       </div>
         <div id="subCol">
           <h3 class="chapter"><img src="images/strobe/chapters.png" alt="" />Chapters</h3>
           <ol class="chapters">
-            <li><a href="#goal"><p>Goal</p>
-</a></li><li><a href="#reference"><p>Reference</p>
+            <li><a href="#plugin-settings"><p>Plugin Settings</p>
 </a></li>
           </ol>
         </div>

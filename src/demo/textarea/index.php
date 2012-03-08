@@ -115,8 +115,7 @@
 				alert(e.getContents());
 			});
 
-		});
-	})(window);
+	});
 	</script>
 </body>
 </html>
