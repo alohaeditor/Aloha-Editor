@@ -48,6 +48,13 @@ function ( Aloha, jQuery ) {
 		 * additional properties to the items
 		 */
 		init: function () {
+
+                        if ( typeof Aloha.settings.repositories !== 'undefined'
+                                        && typeof Aloha.settings.repositories.linklist !== 'undefined' 
+					&& typeof Aloha.settings.repositories.linklist.data !== 'undefined' ) {
+                                urlset = Aloha.settings.repositories.linklist.data;
+                        }
+
 			// Add ECMA262-5 Array method filter if not supported natively.
 			// But we will be very conservative and add to this single array
 			// object so that we do not tamper with the native Array prototype
@@ -67,11 +74,6 @@ function ( Aloha, jQuery ) {
 					
 					return other;
 				};
-			}
-			
-			if ( typeof Aloha.settings.repositories != 'undefined' 
-					&& typeof Aloha.settings.repositories.linklist.data != 'undefined' ) {
-				urlset = Aloha.settings.repositories.linklist.data;
 			}
 			
 			var l = urlset.length;

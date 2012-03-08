@@ -6,6 +6,7 @@ We're currently writing new [new guides](http://aloha-editor.org/guides). You ca
 
 
 For help there is:
+
 - [the Aloha Editor wiki](https://github.com/alohaeditor/Aloha-Editor/wiki) for end-users and implementors
 - [the Aloha Editor guides](http://www.alohaeditor.org/guides/) for developers
 

@@ -37,8 +37,13 @@ All changes are categorized into one of the following keywords:
 - **FEATURE** editable.js: introduced method setContents() -- use Aloha.getEditableById('my-editable').setContents('Aloha World') to set the contents of the editable with the ID my-editable
 
 
-## 0.20.6 - SNAPSHOT
+## 0.20.7 - 2012/03/7
 
+- **BUG** link: fixed a bug in the link list static repository plugin that would cause aloha to fail when no settings for the linklist repository were specified.
+
+## 0.20.6 - 2012/03/01
+
+- **BUG** link: fixed a bug in the link list static repository plugin that caused Internet Explorer to fail handling repository links.
 - **BUG** dom-to-xhtml plugin: fixed attribute names are not lowercased
 - **BUG** floatingmenu: fixed floating menu's reading of configuration values
           so that they are parsed into numbers.
@@ -66,7 +71,6 @@ All changes are categorized into one of the following keywords:
 - **ENHANCEMENT** cite plugin: config option if sidebar should auto open or not (Aloha.settings.plugins.cite.sidebar.open: true|false)
 - **BUG** The link plugin won't use a scope but will now hide/show it's buttons directly.
 - **BUG** Fixed the way the table plugin unwrapped it's cell contents when deactivating a table - all dom object references where lost before. Now the objects are truly unwrapped, and just moved up one step within the dom structure.
-
 
 ## 0.20.4 - 2012/01/27
 

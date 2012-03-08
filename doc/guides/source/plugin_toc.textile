@@ -4,6 +4,7 @@ With this plugin the editor has the possibility to insert a table of contents (T
 
 All H1 - H6 elements will be extracted and presented as a table of contents. There are also anchor links from the TOC entries to the sections available.
 
+endprologue.
 
 h3. Plugin Settings
 
