@@ -14,6 +14,7 @@ All changes are categorized into one of the following keywords:
 ## 0.20.8 - SNAPSHOT
 
 - **FEATURE** editable.js: introduced method setContents() -- use Aloha.getEditableById('my-editable').setContents('Aloha World') to set the contents of the editable with the ID my-editable
+- **BUG** smartContentChange is now again triggered when pressing enter key; and new: delete / backspace keys
 
 ## 0.20.7 - 2012/03/7
 
