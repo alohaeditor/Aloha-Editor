@@ -34,6 +34,8 @@ All changes are categorized into one of the following keywords:
 - **BUG**: browser: fixes alohaeditor/Aloha-Editor#460 -- Error when multiple repositories are configured
 - **BUG** block sidebar attribute editor: when using backspace/del in an input field the block was removed
 - **FEATURE** plugin extra/proxy: as multiple plugins need a proxy script to access external resources there's now one for all to use
+- **FEATURE** editable.js: introduced method setContents() -- use Aloha.getEditableById('my-editable').setContents('Aloha World') to set the contents of the editable with the ID my-editable
+
 
 ## 0.20.6 - SNAPSHOT
 

@@ -704,44 +704,27 @@ define( [
 		/**
 		 * Set the contents of this editable as a HTML string
 		 * @param content as html
+		 * @param return as object or html string
 		 * @return contents of the editable
 		 */
-		/*setContents: function( content, asObject ) {
-			// @todo also option so set id of editable to change?
-			// @note work in progress!
-			var clonedObj = this.obj.clone( false ),
-				reactivate = null;
+		setContents: function( content, asObject ) {
+			var reactivate = null;
 
-			if ( Aloha.getActiveEditable() === this.editable ) {
+			if ( Aloha.getActiveEditable() === this ) {
 				Aloha.deactivateEditable();
-				reactivate = this.editable;
+				reactivate = this;
 			}
 
-			this.editable.obj.html( content );
+			this.obj.html( content );
 
 			if ( null !== reactivate ) {
 				reactivate.activate();
 			}
 
-			//TODO: this is a call to an internal
-			//function. There should be an API to generate
-			//new smartContentChangeEvents.
-			this.editable.smartContentChange({type : 'blur'});
+			this.smartContentChange({type : 'set-contents'});
 
-
-			//also deactivated for now. like initEditable. just in case ...
-			//var content = clonedObj.html()
-			//if ( typeof Aloha.settings.contentHandler.getContents === 'undefined' ) {
-			//	Aloha.settings.contentHandler.getContents = Aloha.defaults.contentHandler.getContents;
-			//}
-			//content = ContentHandlerManager.handleContent( content, {
-			//	contenthandler: Aloha.settings.contentHandler.getContents
-			//} );
-			//clonedObj.html( content );
-
-			return asObject ? clonedObj.contents() : clonedObj.html();
-		},*/
-
+			return asObject ? this.obj.contents() : contentSerializer(this.obj[0]);
+		},
 
 		/**
 		 * Get the id of this editable
