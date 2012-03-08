@@ -134,7 +134,7 @@ function( TestUtils ) {
 					r.setEnd( range.endContainer, range.endOffset);
 					Aloha.getSelection().removeAllRanges();
 					Aloha.getSelection().addRange(r);
-					
+
 					// Start
 					if ( typeof check.indetermStart !== 'undefined' ) {
 						// query command indeterminacy and compare
@@ -155,7 +155,7 @@ function( TestUtils ) {
 					// ExecCommand
 					if ( typeof check.execResult !== 'undefined' ) {
 						// execute the command
-						Aloha.execCommand( command, false, check.value );
+						Aloha.execCommand( command, false, check.value, range );
 						// place the marker at the selection and add brackets
 						range = rangy.getSelection().getRangeAt(0);
 						TestUtils.addBrackets(range);
