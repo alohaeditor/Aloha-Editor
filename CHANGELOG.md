@@ -12,8 +12,9 @@ All changes are categorized into one of the following keywords:
 
 ## 0.21.0 - dev
 
-- block plugin: Aloha Block Plugin has now been greatly cleaned up and improved. Besides greatly cleaned up API and documentation, the new features include Drag/Drop, Deletion and Copy/Paste support. Now fully cross-browser (IE7, IE8, IE9, Chrome, Firefox).
+- align plugin: Fixed alignment behavior and place the buttons in the format tab instead of a new one.
 - commands.delete: fixed a bug with the delete command when contents are preceded by ignorable whitespace. also added a delete test for that.
+- block plugin: Aloha Block Plugin has now been greatly cleaned up and improved. Besides greatly cleaned up API and documentation, the new features include Drag/Drop, Deletion and Copy/Paste support. Now fully cross-browser (IE7, IE8, IE9, Chrome, Firefox).
 
 ## 0.20.7 - 2012/03/7
 
@@ -176,7 +177,7 @@ All changes are categorized into one of the following keywords:
 - **BUG** core: The aloha-editable-activated will now no longer invoked twice.
 - **BUG** image-plugin: Fixed handling of width and height when the user
           entered the cropping mode. You can resize the crop area by entering
-		  values in the width and height field. 
+		  values in the width and height field.
 - **BUG** list-plugin/link-plugin: The list plugin interfered with the link
           plugin behaviour. Previously it was not possible to create links
 		  within a list due to a bug within the list plugin. The list plugin
@@ -271,13 +272,13 @@ All changes are categorized into one of the following keywords:
 	- initially clicking on an existing link before the link tab has been rendered would leave you with an empty href field. This is actually an ExtJS issue, which has been workarounded.
 	- fixed: autosuggest sometimes left fragments on the screen when closing the autosuggest field early.
 - listenforcer-plugin: fixed a bug which would cause an error when activating or deactivating an editable
-- listenforcer-plugins: Fixed a possible jquery error within the listforcer plugin. Previously this plugin was not requiring aloha using require.js. This was now corrected. 
+- listenforcer-plugins: Fixed a possible jquery error within the listforcer plugin. Previously this plugin was not requiring aloha using require.js. This was now corrected.
 - format-plugin: tags removed by the "remove format" button may now be configured by setting Aloha.settings.plugins.format.removeFormats = ['b', 'strong', 'whatever']; The default set of formats to be removed is: 'strong', 'em', 'b', 'i', 'cite', 'q', 'code', 'abbr', 'del', 'sub', 'sup'
 - browser-plugin
 	- The browser now supports i18n and has better paging support, if the repositories provides meta information (numItems, hasMoreItems)
 	- fixed a bug with the paging algorithm when jumping to the last page
 - sidebar: The sidebar can now be disabled using the Aloha.settings.sidebar.disabled flag.
-- core: added +Aloha.ready( function() {} )+ 
+- core: added +Aloha.ready( function() {} )+
 - core: Aloha base url is now auto-detected
 - core: Aloha plugins are now loaded in through `data-plugins="format,table"` on the aloha `script` element
 	- See demos for more usage information
@@ -289,7 +290,7 @@ All changes are categorized into one of the following keywords:
 	- refactored respecting commonJS package structure
 	- AMD loading	- Convert Plugins to RequireJS structure	- improved plugin lodaing (lib, css, doc, i18n)	- Major Source Code Structure Refinements	- build		- CSS Bundling & Compression		- JavaScript Bundling & Compression		- The GENTICS namespace has been completely removed from all objects in Aloha Editor's core	- Building overhaul		- Building has moved from Java + Ant to Node.js + Buildr		- Building now runs in seconds instead of minutes, with greater compression ratios		- Building will run strict JSHint code quality tests		- Output is now more consistent with source, demos can remain untouched between using the src and out versions		- JavaScript and CSS files are now bundled into `aloha.js` and `aloha.css`- core: documentation
 	- guides for using Aloha Editor
-	- JSdoc	
+	- JSdoc
 - core: tests
 	- added testbox for developer
 	- commandAPI test suite
@@ -318,10 +319,10 @@ All changes are categorized into one of the following keywords:
 	- merging and splitting
 	- repair tables if they are broken
 - list-plugin
-	- fixed issues in IE with empty list nodes 
-- sidebar-plugin: new 
+	- fixed issues in IE with empty list nodes
+- sidebar-plugin: new
 - image: new
-- horizontalruler-plugin: new 
+- horizontalruler-plugin: new
 - characterpicker-plugin: new
 - undo-plugin: new
 - new extra plugins
@@ -342,7 +343,7 @@ All changes are categorized into one of the following keywords:
 
   An issue was created for a replacement of the genericcontenthandler for the initialization of editables:
   https://github.com/alohaeditor/Aloha-Editor/issues/348
-  
+
 - FloatingMenu
 	The FloatingMenu now accepts the Aloha.settings.floatingmenu.topalignOffset setting, which will define the vertical offset to the editable when the "topalign" behavior is used. The default value is 90px, so if you activate the FloatingMenu's topalign behaviour the FloatingMenu will hover 90px above the currently active editable. Switch it to any meaningful integer offset you prefer.
 
