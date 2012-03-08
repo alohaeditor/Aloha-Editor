@@ -61,6 +61,7 @@
       <dd><a href="configure_aloha.html">Configuring Aloha Editor</a></dd>
       <dd><a href="require.html">Aloha dependency management</a></dd>
       <dd><a href="writing_plugins.html">Writing Plugins</a></dd>
+      <dd><a href="repository.html">Working with repositories</a></dd>
     <dt>The Core</dt>
       <dd><a href="core.html">The Core</a></dd>
     <dt>Commands</dt>
@@ -186,6 +187,16 @@ ln -s /root/node_modules/requirejs/bin/r.js /usr/local/bin/
 ln -s /Users/{username}/lib/node_modules/requirejs/bin/r.js /Users/{username}/bin/r.js
 </pre></div><p>Manually from <a href="https://github.com/jrburke/r.js">github</a></p>
 <ul>
+	<li>Install jslint</li>
+</ul>
+<div class="code_container">
+<pre class="brush: plain; gutter: false; toolbar: false">
+
+cd /tmp
+npm install jslint
+mv /tmp/node_modules/jslint /usr/lib/node_modules/
+ln -s /usr/lib/node_modules/jslint/bin/jslint.js  jslint
+</pre></div><ul>
 	<li>Invoke Building:</li>
 </ul>
 <div class="code_container">
