@@ -698,6 +698,31 @@ define( [
 		},
 
 		/**
+		 * Set the contents of this editable as a HTML string
+		 * @param content as html
+		 * @param return as object or html string
+		 * @return contents of the editable
+		 */
+		setContents: function( content, asObject ) {
+			var reactivate = null;
+
+			if ( Aloha.getActiveEditable() === this ) {
+				Aloha.deactivateEditable();
+				reactivate = this;
+			}
+
+			this.obj.html( content );
+
+			if ( null !== reactivate ) {
+				reactivate.activate();
+			}
+
+			this.smartContentChange({type : 'set-contents'});
+
+			return asObject ? this.obj.contents() : contentSerializer(this.obj[0]);
+		},
+
+		/**
 		 * Get the id of this editable
 		 * @method
 		 * @return id of this editable

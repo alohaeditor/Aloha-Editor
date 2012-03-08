@@ -12,7 +12,8 @@ All changes are categorized into one of the following keywords:
                usage, or intent of an existing one.
 
 ## 0.20.8 - SNAPSHOT
-- **ENHANCEMENT** the sanitize contenthandler now allows some more attributes
+
+- **FEATURE** editable.js: introduced method setContents() -- use Aloha.getEditableById('my-editable').setContents('Aloha World') to set the contents of the editable with the ID my-editable
 
 ## 0.20.7 - 2012/03/7
 
