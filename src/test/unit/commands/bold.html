@@ -131,13 +131,17 @@
 				    },
 					{  	start: '<b>foo[]bar</b>',
 				       	execResult: '<b>foo[]bar</b>' 
-				    },
-					{  	start: '<span>foo</span>{}<span>bar</span>',
-				       	execResult: '<span>foo[]</span><span>bar</span>' 
-				    },
-					{  	start: '<span>foo[</span><span>]bar</span>',
-				       	execResult: '<span>foo[]</span><span>bar</span>' 
-				    },
+          },
+          // Note: Webkit's cursor position yields an invalid results 
+          // for the following two cases.
+          {   exclude: 'webkit',	
+              start: '<span>foo</span>{}<span>bar</span>',
+              execResult: '<span>foo</span>{}<span>bar</span>' 
+          },
+          {   exclude: 'webkit',	
+              start: '<span>foo[</span><span>]bar</span>',
+              execResult: '<span>foo[</span><span>]bar</span>' 
+          },
 					{  	start: 'foo[bar<i>bam]baz</i>',
 				       	execResult: 'foo<b>[bar</b><i><b>bam]</b>baz</i>' 
 				    },
