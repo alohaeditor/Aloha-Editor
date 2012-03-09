@@ -616,9 +616,9 @@ function myExecCommand(command, showUi, value, range) {
 		// argument."
 		commands[command].action(value, range);
 
-		// always fix the range after the command is complete
+    // always fix the range after the command is complete
 		setActiveRange(range);
-		
+
 		// "Return true."
 		return true;
 	}})(command, showUi, value));
@@ -1185,7 +1185,7 @@ function isCollapsedBlockProp(node) {
 
 function setActiveRange( range ) {
 	var rangeObject = new window.GENTICS.Utils.RangeObject();
-	
+
 	rangeObject.startContainer = range.startContainer;
 	rangeObject.startOffset = range.startOffset;
 	rangeObject.endContainer = range.endContainer;
@@ -1380,11 +1380,14 @@ function movePreservingRanges(node, newParent, newIndex, range) {
 		newParent.insertBefore(node, newParent.childNodes[newIndex]);
 	}
 
+  // when node boundaries are not text nodes and
 	// if we're off actual node boundaries this implies that the move was
 	// part of a deletion process (backspace). If that's the case we 
 	// attempt to fix this by restoring the range to the first index of
 	// the node that has been moved
-	if (boundaryPoints[0][1] > boundaryPoints[0][0].childNodes.length
+	if (boundaryPoints[0][0].nodeType !== $_.Node.TEXT_NODE 
+  && boundaryPoints[1][0].nodeType !== $_.Node.TEXT_NODE
+  && boundaryPoints[0][1] > boundaryPoints[0][0].childNodes.length
 	&& boundaryPoints[1][1] > boundaryPoints[1][0].childNodes.length) {
 		range.setStart(node, 0);
 		range.setEnd(node, 0);
@@ -3103,10 +3106,10 @@ function forceValue(node, command, newValue, range) {
 //@{
 
 function setSelectionValue(command, newValue, range) {
-	
+
 	// Use current selected range if no range passed
 	range = range || getActiveRange();
-	
+
 	// "If there is no editable text node effectively contained in the active
 	// range:"
 	if (!$_( getAllEffectivelyContainedNodes(range) )
@@ -3198,7 +3201,7 @@ function setSelectionValue(command, newValue, range) {
 	// active range.
 	//
 	// "For each element in element list, clear the value of element."
-	$_( getAllEffectivelyContainedNodes(getActiveRange(), function(node) {
+	$_( getAllEffectivelyContainedNodes(range, function(node) {
 		return isEditable(node) && node.nodeType == $_.Node.ELEMENT_NODE;
 	}) ).forEach(function(element) {
 		clearValue(element, command, range);
@@ -7023,7 +7026,7 @@ commands.forwarddelete = {
 commands.indent = {
 	action: function(value, range) {
 		range = range || getActiveRange();
-		// "Let items be a list of all lis that are ancestor containers of the
+		// "Let items be a list of all lists that are ancestor containers of the
 		// active range's start and/or end node."
 		//
 		// Has to be in tree order, remember!
@@ -8086,7 +8089,7 @@ commands.justifyright = {
 commands.outdent = {
 	action: function(value, range) {
 		range = range || getActiveRange();
-		// "Let items be a list of all lis that are ancestor containers of the
+		// "Let items be a list of all lists that are ancestor containers of the
 		// range's start and/or end node."
 		//
 		// It's annoying to get this in tree order using functional stuff
@@ -8124,7 +8127,7 @@ commands.outdent = {
 
 		// "Let node list be a list of nodes, initially empty."
 		//
-		// "For each node node contained in new range, append node to node list
+		// "For each node contained in new range, append node to node list
 		// if the last member of node list (if any) is not an ancestor of node;
 		// node is editable; and either node has no editable descendants, or is
 		// an ol or ul, or is an li whose parent is an ol or ul."
