@@ -28,6 +28,9 @@ var Aloha = {
 };
 </shell>
 
+If you want to figure out the optimal value for your timeout, you should test the server-sided script for your repository to find
+it's typical response times under heavy load. After determining the maximum time it takes to load a result you might want to add 
+a buffer (eg. 2-5 seconds) to allow for adapting to even higher server load.
 
 h3. Repository API 
 

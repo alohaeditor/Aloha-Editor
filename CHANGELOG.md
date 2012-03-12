@@ -17,6 +17,32 @@ All changes are categorized into one of the following keywords:
 - block plugin: revamped colors for highlighting blocks
 - commands.delete: fixed a bug with the delete command when contents are preceded by ignorable whitespace. also added a delete test for that.
 
+## 0.20.7 - 2012/03/7
+
+- **BUG** link: fixed a bug in the link list static repository plugin that would cause aloha to fail when no settings for the linklist repository were specified.
+
+## 0.20.6 - 2012/03/01
+
+- **BUG** link: fixed a bug in the link list static repository plugin that caused Internet Explorer to fail handling repository links.
+- **BUG** dom-to-xhtml plugin: fixed attribute names are not lowercased
+- **BUG** floatingmenu: fixed floating menu's reading of configuration values
+          so that they are parsed into numbers.
+- **BUG** floatingmenu: fixed floating menu positioning when view port is
+          scrolled so that it takes into account the aligntopOffset setting.
+
+- **ENHANCEMENT** Added jslint setup to guides and fixed error output in build script.
+- **ENHANCEMENT** The new plugin dom-to-xhtml attempts to create a valid XHTML serialization of the document when getContents() is called.
+- **BUG** Paste plugin: paste into an editable in an editable is now working
+- **BUG** Selection of content in an contenteditable=false which is not a child of an Aloha Editor instance now works like expected
+- **ENHANCEMENT** Repositories: It is now possible to configure the timeout for querying repositories.
+- **ENHANCEMENT** Floating menu: It is now possible to configure the floating menu to be 'append' to an other element. It is needed to set an extra option 'element' with the ID of the HTML DOM element where the fm should be attach to. The floating menu is attached to the same position as the 'element'.
+- **ENHANCEMENT** Floating menu: If the floating menu is set to be not draggable, the drag&drop bar + pin will not be shown
+- **BUG** engine.js: insert paragraph was sometimes broken in IE7 (copy of empty/all p-element attributes)
+- **ENHANCEMENT** updated plugin: table of contents (toc) to work with the current Aloha Editor version
+- **BUG** characterpicker plugin: fixed cursor position after inserting a character
+- **ENHANCEMENT** Browser plugin: loading of required jQuery plugins is now changed so all can be loaded via CDN
+
+
 ## 0.20.5 - 2012/02/09
 
 - **ENHANCEMENT** word contenthandler: cleanup for pasted word documents with table of contents
@@ -25,7 +51,6 @@ All changes are categorized into one of the following keywords:
 - **ENHANCEMENT** cite plugin: config option if sidebar should auto open or not (Aloha.settings.plugins.cite.sidebar.open: true|false)
 - **BUG** The link plugin won't use a scope but will now hide/show it's buttons directly.
 - **BUG** Fixed the way the table plugin unwrapped it's cell contents when deactivating a table - all dom object references where lost before. Now the objects are truly unwrapped, and just moved up one step within the dom structure.
-
 
 ## 0.20.4 - 2012/01/27
 

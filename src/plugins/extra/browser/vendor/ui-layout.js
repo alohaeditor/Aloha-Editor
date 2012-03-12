@@ -1,3 +1,6 @@
+define(['aloha/jquery'], function(jQuery) { 
+	var $ = jQuery;
+
 /*
  jquery.layout 1.3.0 - Release Candidate 29.14
  $Date: 2011-02-13 08:00:00 (Sun, 13 Feb 2011) $
@@ -106,3 +109,5 @@ a.useStateCookie&&a.cookie.autoLoad&&Ea();l.browser={mozilla:f.browser.mozilla,w
 overflow:b.css("overflow"),overflowX:b.css("overflowX"),overflowY:b.css("overflowY")}),c=f("html"),c.data("layoutCSS",{height:"auto",overflow:c.css("overflow"),overflowX:c.css("overflowX"),overflowY:c.css("overflowY")})):e=na(b,"position,margin,padding,border,top,bottom,left,right,width,height,overflow,overflowX,overflowY"),b.data("layoutCSS",e));try{if(d)f("html").css({height:"100%",overflow:"hidden",overflowX:"hidden",overflowY:"hidden"}),f("body").css({position:"relative",height:"100%",overflow:"hidden",
 overflowX:"hidden",overflowY:"hidden",margin:0,padding:0,border:"none"});else{var e={overflow:"hidden"},h=b.css("position");b.css("height");if(!b.data("layoutRole")&&(!h||!h.match(/fixed|absolute|relative/)))e.position="relative";b.css(e);b.is(":visible")&&b.innerHeight()<2&&alert(D.errContainerHeight.replace(/CONTAINER/,u.ref))}}catch(g){}f.extend(l.container,$(b));Xa();fa();if(a.scrollToBookmarkOnLoad)b=self.location,b.hash&&b.replace(b.hash);Na();a.autoBindCustomButtons&&Za();a.resizeWithWindow&&
 !G.data("layoutRole")&&f(window).bind("resize."+v,Va);f(window).bind("unload."+v,Ma);l.initialized=!0;t(null,a.onload_end||a.onload)})();return da}})(jQuery);
+
+});

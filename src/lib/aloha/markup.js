@@ -163,29 +163,33 @@ Aloha.Markup = Class.extend( {
 			return true;
 		}
 
-		for ( ;i < rt.length; ++i ) {
-			if ( typeof rt[i].domobj === 'undefined'
-				 || range.startOffset === rt[i].domobj.length ) {
+		for (;i < rt.length; i++) {
+			cursorAtLastPos = range.startOffset === rt[i].domobj.length;
+			if ( !cursorAtLastPos || typeof rt[i].domobj === 'undefined' ) {
 				continue;
 			}
+				
+			if ( cursorAtLastPos ) {
+				nextSiblingIsBlock = jQuery( rt[i].domobj.nextSibling ).attr('contenteditable') === 'false';
+				cursorIsWithinBlock = jQuery( rt[i].domobj ).parents('[contenteditable=false]').length > 0;
 
-			nextSiblingIsBlock = jQuery( rt[i].domobj.nextSibling ).attr( 'contenteditable' ) === 'false';
-			cursorIsWithinBlock = jQuery( rt[i].domobj ).parents( '[contenteditable=false]' ).length > 0;
+				if ( cursorRight && nextSiblingIsBlock ) {
+					obj = rt[i].domobj.nextSibling;
+					GENTICS.Utils.Dom.selectDomNode( obj );
+					Aloha.trigger( 'aloha-block-selected', obj );
+					Aloha.Selection.preventSelectionChanged();
+					return false;
+				}
 
-			if ( cursorRight && nextSiblingIsBlock ) {
-				obj = rt[i].domobj.nextSibling;
-				GENTICS.Utils.Dom.selectDomNode( obj );
-				Aloha.trigger( 'aloha-block-selected', obj );
-				Aloha.Selection.preventSelectionChanged();
-				return false;
-			}
-
-			if ( cursorLeft && cursorIsWithinBlock ) {
-				obj = jQuery( rt[i].domobj ).parents( '[contenteditable=false]' ).get( 0 );
-				GENTICS.Utils.Dom.selectDomNode( obj );
-				Aloha.trigger( 'aloha-block-selected', obj );
-				Aloha.Selection.preventSelectionChanged();
-				return false;
+				if ( cursorLeft && cursorIsWithinBlock ) {
+					obj = jQuery( rt[i].domobj ).parents('[contenteditable=false]').get(0);
+					if ( jQuery( obj ).parent().hasClass('aloha-editable') ) {
+						GENTICS.Utils.Dom.selectDomNode( obj );
+						Aloha.trigger( 'aloha-block-selected', obj );
+						Aloha.Selection.preventSelectionChanged();
+						return false;
+					}
+				}
 			}
 		}
 	},

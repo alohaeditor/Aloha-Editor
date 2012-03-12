@@ -85,6 +85,14 @@ ln -s /Users/{username}/lib/node_modules/requirejs/bin/r.js /Users/{username}/bi
 
 Manually from "github":https://github.com/jrburke/r.js
 
+* Install jslint
+
+<shell>
+cd /tmp
+npm install jslint
+mv /tmp/node_modules/jslint /usr/lib/node_modules/
+ln -s /usr/lib/node_modules/jslint/bin/jslint.js  jslint
+</shell>
 
 * Invoke Building:
 <shell>

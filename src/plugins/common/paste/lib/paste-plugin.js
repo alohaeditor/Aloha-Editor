@@ -140,7 +140,7 @@ function ( Aloha, Plugin, jQuery, Commands, console ) {
 			
 			jQuery( 'body' ).append( $pasteDiv );
 			
-			// subscribe to the event editableCreated to redirect paste events
+			// subscribe to the event aloha-editable-created to redirect paste events
 			// into our hidden pasteDiv
 			// TODO: move to paste command
 			// http://support.mozilla.com/en-US/kb/Granting%20JavaScript%20access%20to%20the%20clipboard
@@ -184,8 +184,9 @@ function ( Aloha, Plugin, jQuery, Commands, console ) {
 						window.setTimeout( function () {
 							getPastedContent();
 							Aloha.activeEditable.smartContentChange( event );
-							event.stopPropagation();
 						}, 10 );
+						
+						event.stopPropagation();
 					} );
 				}
 			} );
