@@ -82,8 +82,9 @@ define( [
 
 			// delimiters, timer and idle for smartContentChange
 			// smartContentChange triggers -- tab: '\u0009' - space: '\u0020' - enter: 'Enter'
+			// backspace: U+0008 - delete: U+007F
 			this.sccDelimiters = [ ':', ';', '.', '!', '?', ',',
-				unescape( '%u0009' ), unescape( '%u0020' ), 'Enter' ];
+				unescape( '%u0009' ), unescape( '%u0020' ), unescape( '%u0008' ), unescape( '%u007F' ), 'Enter' ];
 			this.sccIdle = 5000;
 			this.sccDelay = 500;
 			this.sccTimerIdle = false;
@@ -207,8 +208,13 @@ define( [
 				// if it does not handle the keyStroke it returns true and therefore all other
 				// events (incl. browser's) continue
 				me.obj.keydown( function( event ) {
+					var letEventPass = Markup.preProcessKeyStrokes( event );
 					me.keyCode = event.which;
-					return Markup.preProcessKeyStrokes( event );
+					if (!letEventPass) {
+						// the event will not proceed to key press, therefore trigger smartContentChange
+						me.smartContentChange( event );
+					}
+					return letEventPass;
 				} );
 
 				// handle keypress

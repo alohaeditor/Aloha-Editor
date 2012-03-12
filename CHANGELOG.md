@@ -36,6 +36,9 @@ All changes are categorized into one of the following keywords:
 - **FEATURE** plugin extra/proxy: as multiple plugins need a proxy script to access external resources there's now one for all to use
 - **FEATURE** editable.js: introduced method setContents() -- use Aloha.getEditableById('my-editable').setContents('Aloha World') to set the contents of the editable with the ID my-editable
 
+- **FEATURE** editable.js: introduced method setContents() -- use Aloha.getEditableById('my-editable').setContents('Aloha World') to set the contents of the editable with the ID my-editable
+- **BUG** smartContentChange is now again triggered when pressing enter key; and new: delete / backspace keys
+- **ENHANCEMENT** enabled image plugin in boilerplate demo. needs some enhancements to be more user friendly
 
 ## 0.20.7 - 2012/03/7
 
@@ -355,16 +358,14 @@ All changes are categorized into one of the following keywords:
 The reason for not releasing this builds was the ongoing refactoring of the core engine to implement all functionallities based on execCommand.
 Non of these releases reached a production ready state. We still increased the release number due to the fact that we also tested the new release process with maven and archivia and it would brake dependencies if we wouldn't have increased the version number.
 
-## 0.9.3 - 2010/10
 
-- Link/Href Handling
-- Repositories
-	- Delicious repository 
-	- LinkList repository
-- Textarea and `$('#myTextarea').aloha()` Support
-- Plugins are now SubModules
-- new plugins
-- MS Word pastehandler
-	- Table
-	- Abbreviation
-	- LinkChecker Plugin
+## 0.9.3 - October 2010
+	- Link/Href handling
+	- Repository browser
+		- As well as sample Delicious and LinkList Repositories
+	- Textarea and $('#myTextarea').aloha() support
+	- Table plugin
+	- Paste from Microsoft Word
+	- Plugins are now submodules
+	- Abbreviation plugin
+	- LinkChecker plugin
