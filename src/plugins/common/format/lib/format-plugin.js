@@ -11,7 +11,8 @@ define(
 function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 	"use strict";
 	var
-		GENTICS = window.GENTICS;
+		GENTICS = window.GENTICS,
+	    pluginNamespace = 'aloha-format';
 
 	/**
 	 * register the plugin with unique name
@@ -25,7 +26,29 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 		/**
 		 * default button configuration
 		 */
-		config: [ 'strong', 'em', 'b', 'i','del','sub','sup', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'removeFormat'],
+		//config: [ 'strong', 'em', 'b', 'i','del','sub','sup', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'removeFormat'],
+		//*
+		config: { 
+					'em': {
+						'class': {
+							'warn': 'Warning',
+							'ok': 'Success',
+							'error': 'Error',
+						},
+						'aloha-data': {}
+					},
+					'strong': 'big-bold',
+					'b': ['big','small'], 
+					'i': false,
+					'p': [], 
+					'h1': {}, 
+					'h2': null, 
+					'h3': 'subheadline', 
+					'removeFormat': true
+				},
+		
+		formatOptions: [],
+		//*/
 
 		/**
 		 * Initialize the plugin and set initialize flag on true
@@ -42,12 +65,15 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 				me.applyButtonConfig(params.editable.obj);
 			});
 
+			Aloha.ready( function () { 
+				me.initSidebar( Aloha.Sidebar.right ); 
+			} );
+
 			/*
 			Aloha.defaults.supports = jQuery.merge(Aloha.defaults.supports, {
 					elements: [ 'strong', 'em', 'b', 'i','del','sub','sup', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre' ]
 			});
 			*/
-
 		},
 
 		/**
@@ -60,6 +86,42 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 
 			var config = this.getEditableConfig(obj),
 				button, i, len;
+
+			/*if ( typeof this.config === 'object' ) {
+			//window.console.log(config);
+			var config_full = config
+			config = [];
+			jQuery.each(config_full, function(j, button) {
+				//window.console.log(j);
+				//if ( typeof button === 'object' ) {
+					config.push(j);
+				//}
+			});
+			//window.console.log(config);
+			}*/
+			window.console.log(config);
+			if ( typeof config === 'object' ) {
+				var config_old = [];
+				jQuery.each(config, function(j, button) {
+					//window.console.log('zzz check', j, button);
+					if ( typeof j === 'number' && typeof button === 'string' ) {
+						//config_old.push(j);
+					} else {
+						config_old.push(j);
+					}
+				});
+				
+				if ( config_old.length > 0 ) {
+					config = config_old;
+					window.console.log('use config_old');
+				}
+			}
+			this.formatOptions = config;
+
+			window.console.log('config', config);
+			window.console.log('this.config', this.config);
+			window.console.log('buttons', this.buttons);
+			
 
 			// now iterate all buttons and show/hide them according to the config
 			for ( button in this.buttons) {
@@ -100,6 +162,21 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 
 			//iterate configuration array an push buttons to buttons array
 			jQuery.each(this.config, function(j, button) {
+				var button_config = false;
+
+				if ( typeof j === 'number' && typeof button === 'string' ) {
+					window.console.log('xxx', button);
+				} else {
+					var button_config = button;
+					button = j;
+				}
+//				window.console.log('button', button);
+//				window.console.log('b-config', button_config);
+/*
+				window.console.log('b-config', button_config);
+				window.console.log('button', button);
+				window.console.log('j', j);
+*/
 				switch( button ) {
 					// text level semantics:
 					case 'em':
@@ -123,6 +200,13 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 									rangeObject = Aloha.Selection.rangeObject,
 									foundMarkup,
 									selectedCells = jQuery('.aloha-cell-selected');
+
+									if ( typeof button_config === 'string' ) {
+										markup.attr('class', button_config);
+									} else if ( typeof button_config === 'object' ) {
+									//} else if ( typeof button_config === 'object' ) { // check for class and other html-attr
+										markup.attr('class', button_config[0]);
+									}
 
 								// formating workaround for table plugin
 								if ( selectedCells.length > 0 ) {
@@ -154,7 +238,12 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 								foundMarkup = rangeObject.findMarkup(function() {
 									return this.nodeName.toLowerCase() == markup.get(0).nodeName.toLowerCase();
 								}, Aloha.activeEditable.obj);
-
+								
+/*
+								window.console.log('markup.attr(css)', markup.attr('class'));
+								window.console.log('markup.get(0).getAttribute(class)', markup.get(0).getAttribute('class').toLowerCase());
+								window.console.log('found markup', foundMarkup);
+*/
 								if (foundMarkup) {
 									// remove the markup
 									if (rangeObject.isCollapsed()) {
@@ -179,7 +268,7 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 							},
 							'tooltip' : i18n.t('button.' + button + '.tooltip'),
 							'toggle' : true
-						}), 'markup' : jQuery('<'+button+'></'+button+'>')};
+						}), 'markup' : jQuery('<'+button+'></'+button+'>').attr('class', button_config)};
 
 						FloatingMenu.addButton(
 							scope,
@@ -318,6 +407,108 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 			});
 
 		},
+
+
+		initSidebar: function ( sidebar ) {
+			var pl = this;
+			pl.sidebar = sidebar;
+			sidebar.addPanel( {
+
+				id       : pl.nsClass( 'sidebar-panel-class' ),
+				title    : i18n.t( 'floatingmenu.tab.format' ),
+				content  : '',
+				expanded : true,
+				activeOn : this.formatOptions,
+
+				onInit: function () {
+				},
+
+				onActivate: function ( effective ) {
+					var that = this;
+					that.effective = effective,
+					that.format = effective[0].nodeName.toLowerCase();
+
+					//window.console.log(effective[0].nodeName.toLowerCase());
+					/*
+					if ( jQuery( that.effective ).attr( 'target' ) != null ) {
+						var isFramename = true;
+						jQuery( pl.nsSel( 'framename' ) ).hide().val( '' );
+						jQuery( pl.nsSel( 'radioTarget' ) ).each( function () {
+							jQuery( this ).removeAttr('checked');
+							if ( jQuery( this ).val() === jQuery( that.effective ).attr( 'target' ) ) {
+								isFramename = false;
+								jQuery( this ).attr( 'checked', 'checked' );
+							}
+						} );
+						if ( isFramename ) {
+							jQuery( pl.nsSel( 'radioTarget[value="framename"]' ) ).attr( 'checked', 'checked' );
+							jQuery( pl.nsSel( 'framename' ) )
+								.val( jQuery( that.effective ).attr( 'target' ) )
+								.show();
+						}
+					} else {
+						jQuery( pl.nsSel( 'radioTarget' ) ).first().attr( 'checked', 'checked' );
+						jQuery( that.effective ).attr( 'target', jQuery( pl.nsSel( 'radioTarget' ) ).first().val() );
+					}
+					*/
+					
+					var dom = jQuery('<div>').attr('class', pl.nsClass( 'target-container' ));
+					var fieldset = jQuery('<fieldset>');
+					fieldset.append(jQuery('<legend>' + that.format + ' ' + i18n.t( 'format.class.legend' )).append(jQuery('<select>')));
+					
+					dom.append(fieldset);
+					window.console.log(dom);
+					
+					var html = 
+						'<div class="' + pl.nsClass( 'target-container' ) + '"><fieldset><legend>' + i18n.t( 'format.class.legend' ) + '</legend><select name="targetGroup" class="' + pl.nsClass( 'radioTarget' ) + '">' + 
+						'<option value="">' + i18n.t( 'format.class.none' ) + '</option>';
+						
+						//window.console.log('css classes', pl.config[that.format].class);
+						jQuery.each(pl.config[that.format].class, function(i ,v) {
+							html += '<option value="' + i + '" >' + v + '</option>';
+						});
+						
+						html += '</select></fieldset></div>'
+					
+					 var that = this,
+						 content = this.setContent(html).content; 
+
+					 jQuery( pl.nsSel( 'framename' ) ).live( 'keyup', function () {
+						jQuery( that.effective ).attr( 'target', jQuery( this ).val().replace( '\"', '&quot;' ).replace( "'", "&#39;" ) );
+					 } );
+					
+
+					var that = this;
+					that.effective = effective;
+					jQuery( pl.nsSel( 'linkTitle' ) ).val( jQuery( that.effective ).attr( 'title' ) );
+				}
+
+			} );
+
+			sidebar.show();
+		},
+
+		// duplicated code from link-plugin
+		//Creates string with this component's namepsace prefixed the each classname
+		nsClass: function () {
+			var stringBuilder = [], prefix = pluginNamespace;
+			jQuery.each( arguments, function () {
+				stringBuilder.push( this == '' ? prefix : prefix + '-' + this );
+			} );
+			return stringBuilder.join( ' ' ).trim();
+		},
+
+		// duplicated code from link-plugin
+		nsSel: function () {
+			var stringBuilder = [], prefix = pluginNamespace;
+			jQuery.each( arguments, function () {
+				stringBuilder.push( '.' + ( this == '' ? prefix : prefix + '-' + this ) );
+			} );
+			return stringBuilder.join( ' ' ).trim();
+		},
+
+
+
 
 		/**
 		 * Removes all formatting from the current selection.

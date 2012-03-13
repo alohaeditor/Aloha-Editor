@@ -45,7 +45,10 @@ define({
 		"formatPre":"Alt+Ctrl+P",
 		"formatDel":"Ctrl+\\",
 		"formatSub":"Ctrl+,",
-		"formatSup":"Ctrl+."
+		"formatSup":"Ctrl+.",
+		"floatingmenu.tab.format":"Format",
+		"format.class.legend":"CSS class",
+		"format.class.none":"none"
 	},
 	"de":true,
 	"eo":true,
