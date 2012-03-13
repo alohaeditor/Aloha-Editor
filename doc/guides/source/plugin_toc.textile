@@ -12,5 +12,8 @@ h3. Plugin Settings
 	Aloha.settings.plugins.toc: {
 		minEntries: 5,					// minimum TOC entries to display; default: 0 (show always all)
 		updateInterval: 5000,			// update interval for the TOC in milliseconds; default: 5000 (5 seconds)
+		editables: {
+			'#my-editable': []			// disable toc plugin for editable with ID my-editable
+		}
 	}
 </javascript>
