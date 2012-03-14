@@ -124,7 +124,8 @@ var Aloha = {
 		}
 	}
 };
-</pre></div><h3 id="repository-api">3 Repository <span class="caps">API</span></h3>
+</pre></div><p>If you want to figure out the optimal value for your timeout, you should test the server-sided script for your repository to find it&#8217;s typical response times under heavy load. After determining the maximum time it takes to load a result you might want to add  a buffer (eg. 2-5 seconds) to allow for adapting to even higher server load.</p>
+<h3 id="repository-api">3 Repository <span class="caps">API</span></h3>
 <h4 id="query">3.1 query</h4>
 <p>http://docs.oasis-open.org/cmis/<span class="caps">CMIS</span>/v1.0/cd04/cmis-spec-v1.0.html#_Toc234072402</p>
 <p>Does a fulltext search in all attributes and properties which have &#8217;&#8217;&#8217;fulltextIndexed == true’’’. This differes to the <span class="caps">CMIS</span> spec because we do not support a query language and do always a fulltext search.</p>
