@@ -19,6 +19,7 @@ All changes are categorized into one of the following keywords:
 - **BUG** updated dom.js to reflect HTML5 spec changes; format with u and i tags is now available; updated default button config
 - **ENHANCEMENT** config options per editable for plugin common/horizontalruler and extra/toc
 - **ENHANCEMENT** configure the sidebar handle position via Aloha.settings.sidebar.handle.top
+- **ENHANCEMENT** table plugin: disable split / merge cell buttons when not possible to use
 
 
 ## 0.20.7 - 2012/03/7

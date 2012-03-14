@@ -156,6 +156,28 @@ define( [
 					0 !== TablePlugin.activeTable.selection.selectedCells.length ) {
 				TablePlugin.updateFloatingMenuScope();
 			}
+
+			// check if selected cells are split/merge able and set button status
+			if ( typeof TablePlugin.activeTable !== 'undefined' &&
+				TablePlugin.activeTable.selection ) {
+
+				if ( TablePlugin.activeTable.selection.cellsAreSplitable() ) {
+					jQuery('button.aloha-button-split-cells').removeAttr("disabled");
+					jQuery('button.aloha-button-split-cells').removeClass('aloha-button-disabled');
+				} else {
+					jQuery('button.aloha-button-split-cells').attr('disabled', 'disabled');
+					jQuery('button.aloha-button-split-cells').addClass('aloha-button-disabled');
+				}
+
+				if ( TablePlugin.activeTable.selection.cellsAreMergeable() ) {
+					jQuery('button.aloha-button-merge-cells').removeAttr("disabled");
+					jQuery('button.aloha-button-merge-cells').removeClass('aloha-button-disabled');
+				} else {
+					jQuery('button.aloha-button-merge-cells').attr('disabled', 'disabled');
+					jQuery('button.aloha-button-merge-cells').addClass('aloha-button-disabled');
+				}
+			}
+
 		});
 
 		Aloha.bind( 'aloha-selection-changed', function (event, rangeObject) {
@@ -942,6 +964,12 @@ define( [
 		);
 
     // now the specific table buttons
+
+	// disable cell merge/split buttons
+	jQuery('button.aloha-button-merge-cells').attr('disabled', 'disabled');
+	jQuery('button.aloha-button-merge-cells').addClass('aloha-button-disabled');
+	jQuery('button.aloha-button-split-cells').attr('disabled', 'disabled');
+	jQuery('button.aloha-button-split-cells').addClass('aloha-button-disabled');
 
     // generate formatting buttons for columns
     this.initColumnBtns();
