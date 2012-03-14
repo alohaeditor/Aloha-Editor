@@ -162,19 +162,23 @@ define( [
 				TablePlugin.activeTable.selection ) {
 
 				if ( TablePlugin.activeTable.selection.cellsAreSplitable() ) {
-					jQuery('button.aloha-button-split-cells').removeAttr("disabled");
-					jQuery('button.aloha-button-split-cells').removeClass('aloha-button-disabled');
+					that.btnSplitcells.enable();
+					that.btnRowsplitcells.enable();
+					that.btnTablesplitcells.enable();
 				} else {
-					jQuery('button.aloha-button-split-cells').attr('disabled', 'disabled');
-					jQuery('button.aloha-button-split-cells').addClass('aloha-button-disabled');
+					that.btnSplitcells.disable();
+					that.btnRowsplitcells.disable();
+					that.btnTablesplitcells.disable();
 				}
 
 				if ( TablePlugin.activeTable.selection.cellsAreMergeable() ) {
-					jQuery('button.aloha-button-merge-cells').removeAttr("disabled");
-					jQuery('button.aloha-button-merge-cells').removeClass('aloha-button-disabled');
+					that.btnMergecells.enable();
+					that.btnRowmergecells.enable();
+					that.btnTablemergecells.enable();
 				} else {
-					jQuery('button.aloha-button-merge-cells').attr('disabled', 'disabled');
-					jQuery('button.aloha-button-merge-cells').addClass('aloha-button-disabled');
+					that.btnMergecells.disable();
+					that.btnRowmergecells.disable();
+					that.btnTablemergecells.disable();
 				}
 			}
 
@@ -222,6 +226,14 @@ define( [
 
 		// subscribe for the 'editableActivated' event to activate all tables in the editable
 		Aloha.bind( 'aloha-editable-activated', function (event, props) {
+			// disable all split / merge buttons
+			that.btnSplitcells.disable();
+			that.btnRowsplitcells.disable();
+			that.btnTablesplitcells.disable();
+			that.btnMergecells.disable();
+			that.btnRowmergecells.disable();
+			that.btnTablemergecells.disable();
+
 			props.editable.obj.find('table').each(function () {
 				// shortcut for TableRegistry
 				var tr = TablePlugin.TableRegistry;
@@ -598,10 +610,7 @@ define( [
 		  1
       );
     
-    	// Add merge/split cells buttons
-      FloatingMenu.addButton(
-		  this.name + '.row',
-		  new Aloha.ui.Button({
+	this.btnRowmergecells = new Aloha.ui.Button({
 			  'name' : 'rowmergecells',
 			  'iconClass' : 'aloha-button aloha-button-merge-cells',
 			  'size' : 'small',
@@ -612,14 +621,17 @@ define( [
 					  that.activeTable.selection.mergeCells();
 				  }
 			  }
-		  }),
+		  });
+
+		// Add merge/split cells buttons
+      FloatingMenu.addButton(
+		  this.name + '.row',
+		  this.btnRowmergecells,
 		  i18n.t('floatingmenu.tab.table'),
 		  1
       );
 
-      FloatingMenu.addButton(
-		  this.name + '.row',
-		  new Aloha.ui.Button({
+	this.btnRowsplitcells = new Aloha.ui.Button({
 			  'name' : 'rowsplitcells',
 			  'iconClass' : 'aloha-button aloha-button-split-cells',
 			  'size' : 'small',
@@ -630,7 +642,11 @@ define( [
 					  that.activeTable.selection.splitCells();
 				  }
 			  }
-		  }),
+		  });
+
+      FloatingMenu.addButton(
+		  this.name + '.row',
+		  this.btnRowsplitcells,
 		  i18n.t('floatingmenu.tab.table'),
 		  1
       );
@@ -823,10 +839,7 @@ define( [
       1
     );
     
-    // Add merge/split cells buttons
-    FloatingMenu.addButton(
-      this.name + '.column',
-      new Aloha.ui.Button({
+	this.btnTablemergecells = new Aloha.ui.Button({
     	  	'name' : 'tablemergecells',
 			'iconClass' : 'aloha-button aloha-button-merge-cells',
 			'size' : 'small',
@@ -837,14 +850,17 @@ define( [
 					that.activeTable.selection.mergeCells();
 				}
 			}
-		}),
+		});
+	
+    // Add merge/split cells buttons
+    FloatingMenu.addButton(
+      this.name + '.column',
+      this.btnTablemergecells,
       i18n.t('floatingmenu.tab.table'),
       1
     );
 
-    FloatingMenu.addButton(
-      this.name + '.column',
-      new Aloha.ui.Button({
+	this.btnTablesplitcells = new Aloha.ui.Button({
     	  	'name' : 'tablesplitcells',
 			'iconClass' : 'aloha-button aloha-button-split-cells',
 			'size' : 'small',
@@ -855,7 +871,11 @@ define( [
 					that.activeTable.selection.splitCells();
 				}
 			}
-		}),
+		});
+
+    FloatingMenu.addButton(
+      this.name + '.column',
+      this.btnTablesplitcells,
       i18n.t('floatingmenu.tab.table'),
       1
     );
@@ -965,12 +985,6 @@ define( [
 
     // now the specific table buttons
 
-	// disable cell merge/split buttons
-	jQuery('button.aloha-button-merge-cells').attr('disabled', 'disabled');
-	jQuery('button.aloha-button-merge-cells').addClass('aloha-button-disabled');
-	jQuery('button.aloha-button-split-cells').attr('disabled', 'disabled');
-	jQuery('button.aloha-button-split-cells').addClass('aloha-button-disabled');
-
     // generate formatting buttons for columns
     this.initColumnBtns();
 
@@ -1032,10 +1046,7 @@ define( [
       );
     };
 
-	// Add merge/split cells buttons
-    FloatingMenu.addButton(
-      this.name + '.cell',
-      new Aloha.ui.Button({
+	this.btnMergecells = new Aloha.ui.Button({
     	  	'name' : 'mergecells',
 			'iconClass' : 'aloha-button aloha-button-merge-cells',
 			'size' : 'small',
@@ -1046,14 +1057,17 @@ define( [
 					that.activeTable.selection.mergeCells();
 				}
 			}
-		}),
+		});
+
+	// Add merge/split cells buttons
+    FloatingMenu.addButton(
+      this.name + '.cell',
+      this.btnMergecells,
       i18n.t('floatingmenu.tab.table'),
       1
     );
 
-    FloatingMenu.addButton(
-      this.name + '.cell',
-      new Aloha.ui.Button({
+	this.btnSplitcells = new Aloha.ui.Button({
     	  	'name' : 'splitcells',
 			'iconClass' : 'aloha-button aloha-button-split-cells',
 			'size' : 'small',
@@ -1064,7 +1078,11 @@ define( [
 					that.activeTable.selection.splitCells();
 				}
 			}
-		}),
+		});
+
+    FloatingMenu.addButton(
+      this.name + '.cell',
+      this.btnSplitcells,
       i18n.t('floatingmenu.tab.table'),
       1
     );
@@ -1135,6 +1153,7 @@ define( [
 				1
 			);
 		}
+
 	};
 
 	/**

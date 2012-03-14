@@ -204,12 +204,6 @@ button.aloha-button-col-header {
 button.aloha-button-tree {
 	background-position: -0 0 !important;
 }
-button.aloha-button-disabled {
-	filter:alpha(opacity=30);
-	-moz-opacity:0.3;
-	-khtml-opacity: 0.3;
-	opacity: 0.3;
-}
 div.aloha-button a:hover {
 	border: 1px solid #b2cbff;
 }
