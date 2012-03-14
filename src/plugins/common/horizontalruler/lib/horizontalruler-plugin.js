@@ -17,9 +17,11 @@ function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 			this._super('horizontalruler');
 		},
 		languages: ['en'],
+		config: ['hr'],
 		init: function() {
 			var that = this;
-			var insertButton = new Aloha.ui.Button({
+
+			this.insertButton = new Aloha.ui.Button({
 				'name': 'hr',
 				'iconClass': 'aloha-button-horizontalruler',
 				'size': 'small',
@@ -29,11 +31,24 @@ function(Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 			});
 			FloatingMenu.addButton(
 				'Aloha.continuoustext',
-				insertButton,
+				this.insertButton,
 				i18nCore.t('floatingmenu.tab.insert'),
 				1
 			);
-			
+
+			Aloha.bind( 'aloha-editable-activated', function ( event, rangeObject ) {
+				if (Aloha.activeEditable) {
+					that.cfg = that.getEditableConfig( Aloha.activeEditable.obj );
+
+					if ( jQuery.inArray( 'hr', that.cfg ) != -1 ) {
+		        		that.insertButton.show();
+		        	} else {
+		        		that.insertButton.hide();
+		        		return;
+		        	}
+				}
+			});
+
 		},
 		insertHR: function(character) {
 			var self = this;

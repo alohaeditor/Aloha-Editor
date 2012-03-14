@@ -13,7 +13,15 @@ All changes are categorized into one of the following keywords:
 
 ## 0.20.8 - SNAPSHOT
 
+- **FEATURE** editable.js: introduced method setContents() -- use Aloha.getEditableById('my-editable').setContents('Aloha World') to set the contents of the editable with the ID my-editable
+- **BUG** smartContentChange is now again triggered when pressing enter key; and new: delete / backspace keys
+- **ENHANCEMENT** enabled image plugin in boilerplate demo. needs some enhancements to be more user friendly
+- **BUG** updated dom.js to reflect HTML5 spec changes; format with u and i tags is now available; updated default button config
+- **ENHANCEMENT** config options per editable for plugin common/horizontalruler and extra/toc
+- **ENHANCEMENT** configure the sidebar handle position via Aloha.settings.sidebar.handle.top
+- **ENHANCEMENT** table plugin: disable split / merge cell buttons when not possible to use
 - **ENHANCEMENT** dom-to-xhtml plugin: non-specified attributes are excluded from serialization, making attribute serialization more consistent on IE7 and IE8.
+
 
 ## 0.20.7 - 2012/03/7
 

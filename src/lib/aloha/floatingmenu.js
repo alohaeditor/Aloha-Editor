@@ -1114,6 +1114,11 @@ function(Aloha, jQuery, Ext, Class, console) {
 				Aloha.Log.debug(this, 'doLayout called for FloatingMenu, scope is ' + this.currentScope);
 			}
 
+			// if there's no floatingmenu don't do anything
+			if ( typeof this.extTabPanel === 'undefined' ) {
+				return false;
+			}
+
 			var that = this,
 				firstVisibleTab = false,
 				activeExtTab = this.extTabPanel.getActiveTab(),
