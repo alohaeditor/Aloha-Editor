@@ -20,6 +20,7 @@ All changes are categorized into one of the following keywords:
 - **ENHANCEMENT** config options per editable for plugin common/horizontalruler and extra/toc
 - **ENHANCEMENT** configure the sidebar handle position via Aloha.settings.sidebar.handle.top
 - **ENHANCEMENT** table plugin: disable split / merge cell buttons when not possible to use
+- **ENHANCEMENT** dom-to-xhtml plugin: non-specified attributes are excluded from serialization, making attribute serialization more consistent on IE7 and IE8.
 
 
 ## 0.20.7 - 2012/03/7
