@@ -41,6 +41,13 @@ read our "Aloha dependency management with requireJS":require.html guide.
 In the script tag attribute +data-aloha-plugins="common/format"+ we tell Aloha which plugins should be loaded. We come
 to this later, but note that the mere inclusion does not yet change the behaviour of your web page.
 
+Don't forget to include the default Aloha Editor CSS style in the *head* of your HTML page:
+<html>
+<head>
+	<link rel="stylesheet" href="javascripts/aloha/css/aloha.css" id="aloha-style-include" type="text/css" />
+</head>
+</html>
+
 Aloha Editor tries to determ the baseUrl to load common plugins, css and localization files. Aloha Editor does the lookup the following way:
 
 * use +Aloha.settings.baseUrl+
@@ -115,12 +122,31 @@ script tag loading Aloha:
 <html>
 <head>
 	<script 
-		src="javascripts/aloha/aloha.js" 
+		src="javascripts/aloha/lib/aloha.js" 
 		data-aloha-plugins="common/format,common/list,common/table" >
 	</script>
 </head>
 </html>
 
+Note: Instead of the data attribute +data-aloha-plugins+ you can also use Aloha settings to define plugins to load:
+<html>
+<script type="text/javascript">
+// load Aloha Editor plugins
+Aloha.settings.plugins.load = 'common/format, common/table, common/list, common/link, common/block, common/undo, common/contenthandler, common/paste, common/commands, common/abbr';
+</script>
+</html>
+
+You may also specify an Array as parameter :
+<html>
+<script type="text/javascript">
+// load Aloha Editor plugins
+Aloha.settings.plugins.load = [ 'common/format',
+                                'common/link',
+                                'common/image',
+                                'common/link'
+                                ];
+</script>
+</html>
 
 h4. Configuring plugins
 
@@ -177,7 +203,7 @@ You can now easily load plugins from that bundles as follows
 <html>
 <head>
 	<script 
-		src="javascripts/aloha/aloha.js" 
+		src="javascripts/aloha/lib/aloha.js" 
 		data-aloha-plugins="common/link,custom1/plugin1,custom2/plugin2,custom3/plugin3" >
 	</script>
 </head>
@@ -213,6 +239,28 @@ The order Aloha Editor looks for a specified jQuery is:
 * Aloha.jQuery
 * buildin jQuery
 
+
+h3. Example code
+<html>
+<head>
+	<title>Aloha Editor - Just a simple demo page</title>
+	<script src="javascripts/aloha/lib/aloha.js" data-aloha-plugins="common/format,common/highlighteditables"></script>
+	<link rel="stylesheet" href="javascripts/aloha/css/aloha.css" type="text/css" />
+</head>
+<body>
+	<div class="textbox" id="content">
+		<h2>Formatting content</h2>
+		<p>Editing any content with Aloha Editor is similar to editing with state of the art word processors on your desktop. No need to learn any HTML, Wiki or other markup language. Writing content has never been that easy.</p>
+	</div>
+		
+	<script type="text/javascript">
+		Aloha.ready( function(){
+			Aloha.jQuery('#content').aloha();
+		});
+	</script>
+	</div>
+</body>
+</html>
 
 h3. Changelog
 

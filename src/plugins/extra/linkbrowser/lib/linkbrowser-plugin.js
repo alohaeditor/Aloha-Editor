@@ -76,7 +76,9 @@ define( [
 			range.startOffset = range.endOffset = currentStartOffset;
 			// 4. Invoke the final selection
 			range.select();
-						
+			
+			Aloha.trigger( 'aloha-link-selected-in-linkbrowser' , item );
+			
 			// Close the browser lightbox
 			this.close();
 		},

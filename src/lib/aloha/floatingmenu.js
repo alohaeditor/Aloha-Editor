@@ -247,7 +247,7 @@ function(Aloha, jQuery, Ext, Class, console) {
 				
 					if (buttonVisible && extButton.hidden) {
 						extButton.show();
-					} else if (!buttonVisible && !extButton.hidden) {
+					} else if (!buttonVisible && extButton && !extButton.hidden) {
 						extButton.hide();
 					}
 				
@@ -1114,6 +1114,11 @@ function(Aloha, jQuery, Ext, Class, console) {
 				Aloha.Log.debug(this, 'doLayout called for FloatingMenu, scope is ' + this.currentScope);
 			}
 
+			// if there's no floatingmenu don't do anything
+			if ( typeof this.extTabPanel === 'undefined' ) {
+				return false;
+			}
+
 			var that = this,
 				firstVisibleTab = false,
 				activeExtTab = this.extTabPanel.getActiveTab(),
@@ -1226,7 +1231,7 @@ function(Aloha, jQuery, Ext, Class, console) {
 			var scopeObject = this.scopes[scope];
 
 			if (typeof scopeObject === 'undefined') {
-				Aloha.Log.error('aloha/floatingmenu', 'Floating Menu Scope "' + scope + '" not found.');
+				// TODO log an error
 			} else if (this.currentScope != scope) {
 				this.currentScope = scope;
 
@@ -1481,4 +1486,3 @@ function(Aloha, jQuery, Ext, Class, console) {
 	
 	return menu;
 });
-
