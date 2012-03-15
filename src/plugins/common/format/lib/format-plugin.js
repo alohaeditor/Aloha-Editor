@@ -99,7 +99,6 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 			});
 			//window.console.log(config);
 			}*/
-			window.console.log(config);
 			if ( typeof config === 'object' ) {
 				var config_old = [];
 				jQuery.each(config, function(j, button) {
@@ -113,15 +112,13 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 				
 				if ( config_old.length > 0 ) {
 					config = config_old;
-					window.console.log('use config_old');
 				}
 			}
 			this.formatOptions = config;
 
-			window.console.log('config', config);
-			window.console.log('this.config', this.config);
-			window.console.log('buttons', this.buttons);
-			
+			//window.console.log('config', config);
+			//window.console.log('this.config', this.config);
+			//window.console.log('buttons', this.buttons);
 
 			// now iterate all buttons and show/hide them according to the config
 			for ( button in this.buttons) {
@@ -164,19 +161,13 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 			jQuery.each(this.config, function(j, button) {
 				var button_config = false;
 
-				if ( typeof j === 'number' && typeof button === 'string' ) {
-					window.console.log('xxx', button);
-				} else {
+				if ( typeof j !== 'number' && typeof button !== 'string' ) {
 					var button_config = button;
 					button = j;
 				}
 //				window.console.log('button', button);
 //				window.console.log('b-config', button_config);
-/*
-				window.console.log('b-config', button_config);
-				window.console.log('button', button);
-				window.console.log('j', j);
-*/
+
 				switch( button ) {
 					// text level semantics:
 					case 'em':

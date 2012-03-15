@@ -585,7 +585,7 @@ var Browser = Class.extend({
 				roots.each(function() {
 					var rootid = md5lib.hex_md5("Repository" + rootindex);
 					rootindex++;
-					$(this).attr('id', rootid);
+					jQuery(this).attr('id', rootid);
 					tree.jstree("open_node", "#" + rootid);
 				});
 			})
