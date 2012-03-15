@@ -24,51 +24,19 @@ function( Aloha, $, console) {
 	function getAttrs(element) {
 		var attrs = element.attributes;
 		var cleanAttrs = [];
-		var elementName = element.nodeName;
-		for (var i = 0; i < attrs.length; i++) {
-			var name  = attrs[i].nodeName;
-			if ($.browser.msie) {
-				// attrs[i].nodeValue would stringify the object; getAttribute doesn't.
-				var value = element.getAttribute(name);
-				if (
-					// The check for not null and not undefined is required to exclude most of
-					// the 84 attributes that are always defined for IE7.
-				       null == value
-					// In IE, some attributes are reported with non-null default
-					// values, even if the attribute isn't set on the element.
-					// More of these attributes appear in IE7 than in IE8.
-					|| 'tabIndex' == name && 0 === value
-					|| 'contentEditable' == name && 'inherit' === value
-					|| 'hideFocus' == name && false === value
-					|| 'disabled' == name && false === value
-					|| 'compact' == name && false === value
-					|| 'noWrap' == name && false === value //div, th
-					|| ('INPUT' == elementName || 'IMG' == elementName)
-						&& (   ('start' == name && 'fileopen' == value)
-							|| ('hspace' == name && 0 === value)
-							|| ('maxLength' == name && 2147483647 === value)
-							|| ('indeterminate' == name && false === value)
-							|| ('vspace' == name && 0 === value)
-						    || ('loop' == name && 1 === value) )
-					// ordered lists start with 1 by default
-					|| 'OL' == elementName && 'start' == name && 1 === value
-					|| 'IMG' == elementName && ('isMap' == name || 'loop' == name) && false === value
-					|| 'TABLE' == elementName && ('cols' == name || 'dataPageSize' == name) && 0 === value
-					|| 'LI' == elementName && 'value' == name && 0 === value
-					|| ('TH' == elementName || 'TD' == elementName) && ('colSpan' == name || 'rowSpan' == name) && 1 == value) {
-					continue;
-				}
-				// IE sets the attribute value="on" when a checkbox is checked, and ignores the "checkbox" attribute.
-				// Setting value="on" will not make the checkbox checked (Chrome).
-				if ('INPUT' == elementName && 'value' == name && 'on' == value) {
-					var type = element.type.toLowerCase();
-					if ('checkbox' == type || 'radio' == type) {
-						cleanAttrs.push(['checked', 'checked']);
-						continue;
-					}
-				}
+		for ( var i = 0; i < attrs.length; i++ ) {
+			var attr = attrs[ i ];
+			if ( typeof attr.specified === "undefined" || attr.specified ) {
+				var name = attr.nodeName;
+				// Use jQuery to get a corrected style attribute on IE.
+				// Otherwise prefer getAttribute() over attr.nodeValue as the
+				// latter stringifies the attribute value.
+				// There seems to be a jQuery bug that returns undefined
+				// for the "checked" attribute on IE7, otherwise we
+				// could always use jquery.
+				var value = ( "style" === name ? $.attr(element, name) : element.getAttribute(name) );
+				cleanAttrs.push( [ name, value ] );
 			}
-			cleanAttrs.push([name, $.attr(element, name)]);
 		}
 		return cleanAttrs;
 	}
@@ -130,10 +98,6 @@ function( Aloha, $, console) {
 			if ( "" === value || null == value ) {
 				// I don't think it is ever an error to make an
 				// attribute not appear if its string value is empty.
-				// This works around an IE8 bug, for example, where the
-				// "shape" attribute is reported to appear on "a"
-				// elements with an empty string value, even if it was
-				// never set.
 				continue;
 			}
 			// The XHTML spec says attributes are lowercase

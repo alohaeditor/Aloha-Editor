@@ -26,7 +26,7 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 		/**
 		 * default button configuration
 		 */
-		//config: [ 'strong', 'em', 'b', 'i','del','sub','sup', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'removeFormat'],
+		//config: [ 'strong', 'em', 'b', 'i','s','sub','sup', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'removeFormat'],
 		//*
 		config: { 
 					'em': {
@@ -61,7 +61,6 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 
 			// apply specific configuration if an editable has been activated
 			Aloha.bind('aloha-editable-activated',function (e, params) {
-				//debugger;
 				me.applyButtonConfig(params.editable.obj);
 			});
 
@@ -170,6 +169,7 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 
 				switch( button ) {
 					// text level semantics:
+					case 'u':
 					case 'em':
 					case 'strong':
 					case 'b':
@@ -179,6 +179,7 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 					case 'code':
 					case 'abbr':
 					case 'del':
+					case 's':
 					case 'sub':
 					case 'sup':
 						that.buttons[button] = {'button' : new Aloha.ui.Button({
@@ -229,12 +230,7 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 								foundMarkup = rangeObject.findMarkup(function() {
 									return this.nodeName.toLowerCase() == markup.get(0).nodeName.toLowerCase();
 								}, Aloha.activeEditable.obj);
-								
-/*
-								window.console.log('markup.attr(css)', markup.attr('class'));
-								window.console.log('markup.get(0).getAttribute(class)', markup.get(0).getAttribute('class').toLowerCase());
-								window.console.log('found markup', foundMarkup);
-*/
+
 								if (foundMarkup) {
 									// remove the markup
 									if (rangeObject.isCollapsed()) {

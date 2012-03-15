@@ -165,12 +165,14 @@ function() {
 			]);
 		});
 		test('boolean attributes', function() {
-			testGc('<input type="checkbox" checked>', [
-				'<input type="checkbox" checked="checked"/>',
-				// IE7 adds size="20" which we can't strip since we can't know
-				// whether it's just a default or a real attribute.
-			    '<input type="checkbox" size="20" checked="checked"/>']);
-			testGc('<button disabled>', '<button disabled="disabled"></button>');
+			testGc('<input type="checkbox" checked>',
+				   [ '<input type="checkbox" checked="checked"/>',
+					 // IE8 adds the value="on" even though it's not specified
+				     '<input type="checkbox" checked="checked" value="on"/>' ]);
+			testGc('<button disabled>',
+				   [ '<button disabled="disabled"></button>',
+					 // IE8 adds the type="submit" even though it's not specified
+				     '<button disabled="disabled" type="submit"></button>' ]);
 		});
 		test('"pre" preserves spaces tabs and newlines', function() {
 			var pre = "<pre>\n"
@@ -180,8 +182,8 @@ function() {
 			withEditable(function(editable) {
 				// On IE8, \n characters become \r characters
 				equal(editable.getContents().replace(/\n/g, '\r'),
-					   // The newline after the opening pre tag is lost (Chrome).
-					   // This is the same behaviour as with element.innerHTML (Chrome).
+					   // The newline after the opening pre tag is lost.
+					   // This is the same behaviour as with element.innerHTML.
 					  ("<pre>		two leading tabs\n"
 					   + "        leading whitespace\n"
 					   + "</pre>").replace(/\n/g, '\r'));

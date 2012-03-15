@@ -43,6 +43,11 @@ All changes are categorized into one of the following keywords:
 - **FEATURE** hints plugin: Implemented using Tipsy as tooltip library and the latest Aloha-Editor plugin standard.
 - **ENHANCEMENT** block plugin: added data-attribute to prevent triggering scope changes when a block is activated
 - **ENHANCEMENT** block plugin: revamped colors for highlighting blocks
+- **BUG** updated dom.js to reflect HTML5 spec changes; format with u and i tags is now available; updated default button config
+- **ENHANCEMENT** config options per editable for plugin common/horizontalruler and extra/toc
+- **ENHANCEMENT** configure the sidebar handle position via Aloha.settings.sidebar.handle.top
+- **ENHANCEMENT** table plugin: disable split / merge cell buttons when not possible to use
+- **ENHANCEMENT** dom-to-xhtml plugin: non-specified attributes are excluded from serialization, making attribute serialization more consistent on IE7 and IE8.
 
 
 ## 0.20.7 - 2012/03/7
