@@ -363,7 +363,9 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 			});
 
 			// Activate current block
-			FloatingMenu.setScope('Aloha.Block.' + this.attr('aloha-block-type'));
+			if (this.$element.attr('data-block-skip-scope') !== 'true') {
+				FloatingMenu.setScope('Aloha.Block.' + this.attr('aloha-block-type'));
+			}
 			this.$element.addClass('aloha-block-active');
 			this._highlight();
 			highlightedBlocks.push(this);

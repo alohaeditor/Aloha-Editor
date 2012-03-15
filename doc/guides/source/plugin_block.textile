@@ -415,6 +415,10 @@ BlockManager.bind('block-selection-change', function(blocks) {
 });
 </javascript>
 
+h4. Preventing switch of scope for a block
+
+The block plugin will switch the current scope to a block-specific one whenever a block is activated. To prevent it from doing so just add the +data-block-skip-scope="true"+ attribute to the element you plan to turn into a block. As long as it's value is "true" the scope will not be switched. 
+
 h3. Internals
 
 For this work, numerous IE hacks were needed. Especially in areas like Drag/Drop, Deletion and Copy/Paste, especially IE7 and IE8 differ considerably in their behavior. See the compatibility matrix below for the tests which have been run.

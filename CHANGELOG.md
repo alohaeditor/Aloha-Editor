@@ -11,6 +11,7 @@ All changes are categorized into one of the following keywords:
 - **FEATURE**: The change introduces a new feature, or modifies the function,
                usage, or intent of an existing one.
 
+
 ## SNATSHOT
 
 - **ENHANCEMENT**: block plugin: Aloha Block Plugin has now been greatly cleaned up and improved. Besides greatly cleaned up API and documentation, the new features include Drag/Drop, Deletion and Copy/Paste support. Now fully cross-browser (IE7, IE8, IE9, Chrome, Firefox).
@@ -35,11 +36,14 @@ All changes are categorized into one of the following keywords:
 - **BUG** block sidebar attribute editor: when using backspace/del in an input field the block was removed
 - **FEATURE** plugin extra/proxy: as multiple plugins need a proxy script to access external resources there's now one for all to use
 - **FEATURE** editable.js: introduced method setContents() -- use Aloha.getEditableById('my-editable').setContents('Aloha World') to set the contents of the editable with the ID my-editable
-
 - **FEATURE** editable.js: introduced method setContents() -- use Aloha.getEditableById('my-editable').setContents('Aloha World') to set the contents of the editable with the ID my-editable
 - **BUG** smartContentChange is now again triggered when pressing enter key; and new: delete / backspace keys
 - **ENHANCEMENT** enabled image plugin in boilerplate demo. needs some enhancements to be more user friendly
 - **BUG** align plugin: Fixed alignment behavior and place the buttons in the format tab instead of a new one.
+- **FEATURE** hints plugin: Implemented using Tipsy as tooltip library and the latest Aloha-Editor plugin standard.
+- **ENHANCEMENT** block plugin: added data-attribute to prevent triggering scope changes when a block is activated
+- **ENHANCEMENT** block plugin: revamped colors for highlighting blocks
+
 
 ## 0.20.7 - 2012/03/7
 
