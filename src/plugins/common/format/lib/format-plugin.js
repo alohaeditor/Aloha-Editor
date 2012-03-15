@@ -26,8 +26,8 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 		/**
 		 * default button configuration
 		 */
-		//config: [ 'strong', 'em', 'b', 'i','s','sub','sup', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'removeFormat'],
-		//*
+		config: [ 'strong', 'em', 'b', 'i','s','sub','sup', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'removeFormat'],
+		/*
 		config: { 
 					'em': {
 						'class': {
@@ -64,7 +64,8 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 				me.applyButtonConfig(params.editable.obj);
 			});
 
-			Aloha.ready( function () { 
+			Aloha.ready( function () {
+				// @todo add config option for sidebar panel
 				me.initSidebar( Aloha.Sidebar.right ); 
 			} );
 
@@ -412,7 +413,11 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 
 				onActivate: function ( effective ) {
 					var that = this;
-					that.effective = effective,
+					that.effective = effective;
+					
+					if ( !effective[0] ) {
+						return;
+					}
 					that.format = effective[0].nodeName.toLowerCase();
 
 					//window.console.log(effective[0].nodeName.toLowerCase());
@@ -444,19 +449,20 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 					fieldset.append(jQuery('<legend>' + that.format + ' ' + i18n.t( 'format.class.legend' )).append(jQuery('<select>')));
 					
 					dom.append(fieldset);
-					window.console.log(dom);
+					//window.console.log(dom);
 					
 					var html = 
 						'<div class="' + pl.nsClass( 'target-container' ) + '"><fieldset><legend>' + i18n.t( 'format.class.legend' ) + '</legend><select name="targetGroup" class="' + pl.nsClass( 'radioTarget' ) + '">' + 
 						'<option value="">' + i18n.t( 'format.class.none' ) + '</option>';
 						
-						//window.console.log('css classes', pl.config[that.format].class);
-						jQuery.each(pl.config[that.format].class, function(i ,v) {
-							html += '<option value="' + i + '" >' + v + '</option>';
-						});
-						
+						if ( pl.config[that.format] && pl.config[that.format].class ) {
+							jQuery.each(pl.config[that.format].class, function(i ,v) {
+								html += '<option value="' + i + '" >' + v + '</option>';
+							});
+						}
+
 						html += '</select></fieldset></div>'
-					
+
 					 var that = this,
 						 content = this.setContent(html).content; 
 
