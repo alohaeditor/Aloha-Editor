@@ -187,16 +187,20 @@
 					{  	start: '<table><tbody><tr><td>foo<td>b[a]r<td>baz</table>',
 					   	execResult: '<table><tbody><tr><td>foo<td>b<b>[a]</b>r<td>baz</table>' 
 					},
-					{  	start: '<table><tbody><tr data-start=1 data-end=2><td>foo<td>bar<td>baz</table>',
+          {   exclude: ['mozilla', 'msie'],	
+              start: '<table><tbody><tr data-start=1 data-end=2><td>foo<td>bar<td>baz</table>',
 					   	execResult: '<table><tbody><tr><td>foo<td><b>[bar</b><td>}baz</table>' 
 					},
-					{  	start: '<table><tbody><tr data-start=0 data-end=2><td>foo<td>bar<td>baz</table>',
+					{  	exclude: ['mozilla', 'msie'],	
+              start: '<table><tbody><tr data-start=0 data-end=2><td>foo<td>bar<td>baz</table>',
 					   	execResult: '<table><tbody><tr><td><b>[foo</b><td><b>bar</b><td>}baz</table>' 
 					},
-					{  	start: '<table><tbody data-start=0 data-end=1><tr><td>foo<td>bar<td>baz</table>',
+					{  	exclude: ['mozilla', 'msie'],	
+              start: '<table><tbody data-start=0 data-end=1><tr><td>foo<td>bar<td>baz</table>',
 					   	execResult: '<table><tbody><tr><td><b>[foo</b><td><b>bar</b><td><b>baz</b></table>}' 
 					},
-					{  	start: '<table data-start=0 data-end=1><tbody><tr><td>foo<td>bar<td>baz</table>',
+					{  	exclude: ['mozilla', 'msie'],	
+              start: '<table data-start=0 data-end=1><tbody><tr><td>foo<td>bar<td>baz</table>',
 					   	execResult: '{<table><tbody><tr><td><b>foo</b><td><b>bar</b><td><b>baz</b></table>}' 
 					},
 					{  	start: '{<table><tr><td>foo<td>bar<td>baz</table>}',
