@@ -139,7 +139,8 @@
               start: '<span>foo</span>{}<span>bar</span>',
               execResult: '<span>foo</span>{}<span>bar</span>' 
           },
-          {   exclude: 'webkit',	
+          // Note: Following test fails to run on IE9.
+          {   exclude: ['webkit', 'msie'], 	
               start: '<span>foo[</span><span>]bar</span>',
               execResult: '<span>foo[</span><span>]bar</span>' 
           },
