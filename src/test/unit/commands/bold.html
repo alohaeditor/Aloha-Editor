@@ -424,14 +424,16 @@
 					{  	start: 'foo<span style="font-weight: 900">[bar]</span>baz',
 					   	execResult: 'foo[bar]baz'
 					},
-					{  	start: 'foo<span style="font-weight: 400">[bar</span>]baz',
-					   	execResult: 'foo<b>[bar]</b>baz'
+          {   exclude: 'webkit',	
+              start: 'foo<span style="font-weight: 400">[bar</span>]baz',
+					   	execResult: 'foo<b>[bar</b>]baz'
 					},
 					{  	start: 'foo<span style="font-weight: 700">[bar</span>]baz',
 					   	execResult: 'foo[bar]baz'
 					},
-					{  	start: 'foo[<span style="font-weight: 400">bar]</span>baz',
-					   	execResult: 'foo<b>[bar]</b>baz'
+          {   exclude: 'webkit',	
+              start: 'foo[<span style="font-weight: 400">bar]</span>baz',
+					   	execResult: 'foo[<b>bar]</b>baz'
 					},
 					{  	start: 'foo[<span style="font-weight: 700">bar]</span>baz',
 					   	execResult: 'foo[bar]baz'
