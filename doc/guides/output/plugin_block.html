@@ -84,6 +84,7 @@
       <dd><a href="plugin_table.html">Table</a></dd>
       <dd><a href="plugin_paste.html">Paste</a></dd>
       <dd><a href="plugin_formatlesspaste.html">Formatless paste</a></dd>
+      <dd><a href="plugin_dom_to_xhtml.html">DOM to XHTML</a></dd>
     <dt>Contributing to Aloha Editor</dt>
       <dd><a href="releasing.html">Releasing</a></dd>
       <dd>Development Process</dd>
@@ -422,7 +423,9 @@ BlockManager.bind('block-selection-change', function(blocks) {
 	// and the other elements are the ancestor blocs.
 	// If the array is empty, no block has been selected.
 });
-</pre></div><h3 id="internals">7 Internals</h3>
+</pre></div><h4 id="preventing-switch-of-scope-for-a-block">6.4 Preventing switch of scope for a block</h4>
+<p>The block plugin will switch the current scope to a block-specific one whenever a block is activated. To prevent it from doing so just add the <tt>data-block-skip-scope=&quot;true&quot;</tt> attribute to the element you plan to turn into a block. As long as it&#8217;s value is &#8220;true&#8221; the scope will not be switched.</p>
+<h3 id="internals">7 Internals</h3>
 <p>For this work, numerous IE hacks were needed. Especially in areas like Drag/Drop, Deletion and Copy/Paste, especially IE7 and IE8 differ considerably in their behavior. See the compatibility matrix below for the tests which have been run.</p>
 <h4 id="browser-compatibility-matrix">7.1 Browser Compatibility Matrix</h4>
 <table>
@@ -619,6 +622,7 @@ BlockManager.bind('block-selection-change', function(blocks) {
 </a><ul><li><a href="#block-collections"><p>Block Collections</p>
 </a></li> <li><a href="#custom-floating-menu"><p>Custom Floating Menu</p>
 </a></li> <li><a href="#disabling-the-sidebar-editor"><p>Disabling the sidebar editor</p>
+</a></li> <li><a href="#preventing-switch-of-scope-for-a-block"><p>Preventing switch of scope for a block</p>
 </a></li></ul></li><li><a href="#internals"><p>Internals</p>
 </a><ul><li><a href="#browser-compatibility-matrix"><p>Browser Compatibility Matrix</p>
 </a></li></ul></li><li><a href="#changelog"><p>Changelog</p>
