@@ -84,6 +84,7 @@
       <dd><a href="plugin_table.html">Table</a></dd>
       <dd><a href="plugin_paste.html">Paste</a></dd>
       <dd><a href="plugin_formatlesspaste.html">Formatless paste</a></dd>
+      <dd><a href="plugin_dom_to_xhtml.html">DOM to XHTML</a></dd>
     <dt>Contributing to Aloha Editor</dt>
       <dd><a href="releasing.html">Releasing</a></dd>
       <dd>Development Process</dd>
@@ -167,8 +168,11 @@ cp -r aloha-minified path_to_your_webapp/javascripts/aloha
 // Make all elements with class=&quot;content&quot; editable
 Aloha.jQuery('.content').aloha();
 </pre></div><h3 id="css-loading">4 <span class="caps">CSS</span> loading</h3>
-<div class="warning"><p>Not yet done</p></div>
-<h3 id="localization">5 Localization</h3>
+<div class="code_container">
+<pre class="brush: xml; gutter: false; toolbar: false">
+
+	&lt;link href=&quot;javascripts/aloha/css/aloha.css&quot; type=&quot;text/css&quot; rel=&quot;stylesheet&quot; /&gt;
+</pre></div><h3 id="localization">5 Localization</h3>
 <p>Use the &#8220;localization&#8221; setting to set the current language of Aloha:</p>
 <div class="code_container">
 <pre class="brush: xml; gutter: false; toolbar: false">
@@ -179,7 +183,7 @@ Aloha.settings.locale = 'fr';
 &lt;/script&gt;
 </pre></div><p>As Aloha Editor uses RequireJS to handle it&#8217;s localization needs a powerful fallback mechanism is in place. See http://requirejs.org/docs/api.html#i18n for additional details.</p>
 <h3 id="using-plugins">6 Using plugins</h3>
-<h4 id="laoding-plugins">6.1 Laoding plugins</h4>
+<h4 id="loading-plugins">6.1 Loading plugins</h4>
 <p>Loading the new plugins is easy, just add it to the list of plugins in the main script tag loading Aloha:</p>
 <div class="code_container">
 <pre class="brush: xml; gutter: false; toolbar: false">
@@ -286,7 +290,7 @@ Aloha.settings = {
 </a></li><li><a href="#css-loading"><p><span class="caps">CSS</span> loading</p>
 </a></li><li><a href="#localization"><p>Localization</p>
 </a></li><li><a href="#using-plugins"><p>Using plugins</p>
-</a><ul><li><a href="#laoding-plugins"><p>Laoding plugins</p>
+</a><ul><li><a href="#loading-plugins"><p>Loading plugins</p>
 </a></li> <li><a href="#configuring-plugins"><p>Configuring plugins</p>
 </a></li> <li><a href="#plugin-bundles"><p>Plugin bundles</p>
 </a></li></ul></li><li><a href="#jquery-compatibility"><p>jQuery compatibility</p>
