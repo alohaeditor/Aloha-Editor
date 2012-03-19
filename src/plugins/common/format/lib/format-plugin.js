@@ -25,7 +25,7 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 		/**
 		 * default button configuration
 		 */
-		config: [ 'strong', 'em', 'b', 'i','del','sub','sup', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'removeFormat'],
+		config: [ 'strong', 'em', 'b', 'i','s','sub','sup', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'removeFormat'],
 
 		/**
 		 * Initialize the plugin and set initialize flag on true
@@ -38,7 +38,6 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 
 			// apply specific configuration if an editable has been activated
 			Aloha.bind('aloha-editable-activated',function (e, params) {
-				//debugger;
 				me.applyButtonConfig(params.editable.obj);
 			});
 
@@ -60,7 +59,6 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 
 			var config = this.getEditableConfig(obj),
 				button, i, len;
-
 			// now iterate all buttons and show/hide them according to the config
 			for ( button in this.buttons) {
 				if (jQuery.inArray(button, config) != -1) {
@@ -102,6 +100,7 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 			jQuery.each(this.config, function(j, button) {
 				switch( button ) {
 					// text level semantics:
+					case 'u':
 					case 'em':
 					case 'strong':
 					case 'b':
@@ -111,6 +110,7 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 					case 'code':
 					case 'abbr':
 					case 'del':
+					case 's':
 					case 'sub':
 					case 'sup':
 						that.buttons[button] = {'button' : new Aloha.ui.Button({
@@ -155,7 +155,7 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 									return this.nodeName.toLowerCase() == markup.get(0).nodeName.toLowerCase();
 								}, Aloha.activeEditable.obj);
 
-								if (foundMarkup) {
+								if ( foundMarkup ) {
 									// remove the markup
 									if (rangeObject.isCollapsed()) {
 										// when the range is collapsed, we remove exactly the one DOM element

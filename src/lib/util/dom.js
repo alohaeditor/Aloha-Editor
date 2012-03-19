@@ -103,22 +103,22 @@ var Dom = Class.extend({
 	 */
 	tags: {
 		'flow' : [ 'a', 'abbr', 'address', 'area', 'article', 'aside', 'audio',
-				'b', 'bdo', 'blockquote', 'br', 'button', 'canvas', 'cite', 'code',
+				'b', 'bdi','bdo', 'blockquote', 'br', 'button', 'canvas', 'cite', 'code',
 				'command', 'datalist', 'del', 'details', 'dfn', 'div', 'dl', 'em',
 				'embed', 'fieldset', 'figure', 'footer', 'form', 'h1', 'h2', 'h3',
 				'h4', 'h5', 'h6', 'header', 'hgroup', 'hr', 'i', 'iframe', 'img',
 				'input', 'ins', 'kbd', 'keygen', 'label', 'map', 'mark', 'math',
 				'menu', 'meter', 'nav', 'noscript', 'object', 'ol', 'output', 'p',
-				'pre', 'progress', 'q', 'ruby', 'samp', 'script', 'section',
+				'pre', 'progress', 'q', 'ruby', 's', 'samp', 'script', 'section',
 				'select', 'small', 'span', 'strong', 'style', 'sub', 'sup', 'svg',
-				'table', 'textarea', 'time', 'ul', 'var', 'video', 'wbr', '#text' ],
-		'phrasing' : [ 'a', 'abbr', 'area', 'audio', 'b', 'bdo', 'br', 'button',
+				'table', 'textarea', 'time', 'u', 'ul', 'var', 'video', 'wbr', '#text' ],
+		'phrasing' : [ 'a', 'abbr', 'area', 'audio', 'b', 'bdi', 'bdo', 'br', 'button',
 				'canvas', 'cite', 'code', 'command', 'datalist', 'del', 'dfn',
 				'em', 'embed', 'i', 'iframe', 'img', 'input', 'ins', 'kbd',
 				'keygen', 'label', 'map', 'mark', 'math', 'meter', 'noscript',
 				'object', 'output', 'progress', 'q', 'ruby', 'samp', 'script',
 				'select', 'small', 'span', 'strong', 'sub', 'sup', 'svg',
-				'textarea', 'time', 'var', 'video', 'wbr', '#text' ]
+				'textarea', 'time', 'u', 'var', 'video', 'wbr', '#text' ]
 	},
 
 	/**
@@ -231,6 +231,7 @@ var Dom = Class.extend({
 		'title' : '#text',
 		'tr' : ['th', 'td'],
 		'track' : 'empty',
+		'u' : 'phrasing',
 		'ul' : 'li',
 		'var' : 'phrasing',
 		'video' : 'source', // transparent
