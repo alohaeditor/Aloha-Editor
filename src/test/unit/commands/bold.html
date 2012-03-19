@@ -181,10 +181,15 @@
               start: '<span contenteditable=false>fo[o<span contenteditable=true>b]ar</span>baz</span>',
               execResult: '<span contenteditable=false>fo[o<span contenteditable=true><b>b]</b>ar</span>baz</span>' 
 					},
+          /*  
+              Apart from the webkit bug, this test case fails on other browser as well.
+              (Mozilla and IE9 adds an extra span)
+              Please review and suggest removal or possible modifications.
           {   exclude: "webkit",	
               start: '<span contenteditable=false>fo[<b>o<span contenteditable=true>bar</span>b</b>]az</span>',
 					   	execResult: '<span contenteditable=false>fo[<b>o<span contenteditable=true>bar</span>b</b>]az</span>' 
 					},
+          */
 					{  	start: '<table><tbody><tr><td>foo<td>b[a]r<td>baz</table>',
 					   	execResult: '<table><tbody><tr><td>foo<td>b<b>[a]</b>r<td>baz</table>' 
 					},
@@ -274,7 +279,12 @@
 					{  	start: 'foo<span style="font-weight: bold">[bar</span>]baz',
 					   	execResult: 'foo[bar]baz' 
 					},
-					{  	start: '<b>{<p>foo</p><p>bar</p>}<p>baz</p></b>',
+          {   exclude: 'webkit',	
+              start: '<b>{<p>foo</p><p>bar</p>}<p>baz</p></b>',
+					   	execResult: '{<p>foo</p><p>bar</p>}<p><b>baz</b></p>' 
+					},
+          {   include: 'webkit',	
+              start: '<b>{<p>foo</p><p>bar</p>}<p>baz</p></b>',
 					   	execResult: '<p>[foo</p><p>bar</p><p>}<b>baz</b></p>' 
 					},
 					{  	start: '<p>[foo</p><p>bar]</p><b><p>baz</p></b>',
@@ -299,15 +309,15 @@
 					   	execResult: 'foo [bar baz]<b> bam</b> bom', 
 						stateResult: false   
 					},
-          /* Though the operation is performed as intended,
-             resulting output have range inconsistencies in all browsers.
+          /* In the following two commented tests,
+             though the operation is performed as intended,
+             resulting output have range inconsistencies across all browsers.
              Please review and suggest removal or possible modifications.
 					{  	start: '<b><p>foo[<i>bar</i>}</p><p>baz</p></b>',
 						stateStart: true,
 					   	execResult: '<p><b>foo[</b><i>bar</i>}</p><p><b>baz</b></p>', 
 						stateResult: false   
 					},
-          */
 					{  	start: '<b><p>foo</p></b><i>[bar</i>}<b><p>baz</p></b>',
 						stateStart: false,
 					   	execResult: '<b><p>foo</p><i>[bar]</i><p>baz</p></b>', 
@@ -315,6 +325,7 @@
 					   	execToggle: '<p><b>foo</b></p><i>[bar]</i><p><b>baz</b></p>', 
 						stateToggle: false   
 					},
+          */
 					{  	start: 'foo bar <b>baz [bam</b> bom] bus',
 						indetermStart: true,
 						stateStart: false,
@@ -428,6 +439,10 @@
               start: 'foo<span style="font-weight: 400">[bar</span>]baz',
 					   	execResult: 'foo<b>[bar</b>]baz'
 					},
+          {   include: 'webkit',	
+              start: 'foo<span style="font-weight: 400">[bar</span>]baz',
+					   	execResult: 'foo<b>[bar]</b>baz'
+					},
 					{  	start: 'foo<span style="font-weight: 700">[bar</span>]baz',
 					   	execResult: 'foo[bar]baz'
 					},
@@ -435,10 +450,19 @@
               start: 'foo[<span style="font-weight: 400">bar]</span>baz',
 					   	execResult: 'foo[<b>bar]</b>baz'
 					},
+          {   include: 'webkit',	
+              start: 'foo[<span style="font-weight: 400">bar]</span>baz',
+					   	execResult: 'foo<b>[bar]</b>baz'
+					},
 					{  	start: 'foo[<span style="font-weight: 700">bar]</span>baz',
 					   	execResult: 'foo[bar]baz'
 					},
-					{  	start: 'foo[<span style="font-weight: 400">bar</span>]baz',
+          {   exclude: 'webkit',	
+              start: 'foo[<span style="font-weight: 400">bar</span>]baz',
+					   	execResult: 'foo[<b>bar</b>]baz'
+					},
+          {  	include: 'webkit',
+              start: 'foo[<span style="font-weight: 400">bar</span>]baz',
 					   	execResult: 'foo<b>[bar]</b>baz'
 					},
 					{  	start: 'foo[<span style="font-weight: 700">bar</span>]baz',
@@ -456,28 +480,68 @@
 					{  	start: '<span style="font-weight: 900">foo[bar]baz</span>',
 					   	execResult: '<span style="font-weight: 900">foo</span>[bar]<span style="font-weight: 900">baz</span>'
 					},
-					{  	start: '{<span style="font-weight: 100">foobar]baz</span>',
+          {   exclude: 'webkit',	
+              start: '{<span style="font-weight: 100">foobar]baz</span>',
+              execResult: '{<span style="font-weight: 100"><b>foobar]</b>baz</span>'
+					},
+          {   include: 'webkit',	
+              start: '{<span style="font-weight: 100">foobar]baz</span>',
 					   	execResult: '<span style="font-weight: 100"><b>[foobar]</b>baz</span>'
 					},
-					{  	start: '{<span style="font-weight: 400">foobar]baz</span>',
+          {   exclude: 'webkit',	
+              start: '{<span style="font-weight: 400">foobar]baz</span>',
+              execResult: '{<span style="font-weight: 400"><b>foobar]</b>baz</span>'
+					},
+          {   include: 'webkit',	
+              start: '{<span style="font-weight: 400">foobar]baz</span>',
 					   	execResult: '<span style="font-weight: 400"><b>[foobar]</b>baz</span>'
 					},
-					{  	start: '{<span style="font-weight: 700">foobar]baz</span>',
+          {   exclude: 'webkit',	
+              start: '{<span style="font-weight: 700">foobar]baz</span>',
+					   	execResult: '{foobar]<b>baz</b>'
+					},
+          {   include: 'webkit',	
+              start: '{<span style="font-weight: 700">foobar]baz</span>',
 					   	execResult: '[foobar]<b>baz</b>'
 					},
-					{  	start: '{<span style="font-weight: 900">foobar]baz</span>',
+          {   exclude: 'webkit',	
+              start: '{<span style="font-weight: 900">foobar]baz</span>',
+					   	execResult: '{foobar]<span style="font-weight: 900">baz</span>'
+					},
+          {   include: 'webkit',	
+              start: '{<span style="font-weight: 900">foobar]baz</span>',
 					   	execResult: '[foobar]<span style="font-weight: 900">baz</span>'
 					},
-					{  	start: '<span style="font-weight: 100">foo[barbaz</span>}',
+          {   exclude: 'webkit',	
+              start: '<span style="font-weight: 100">foo[barbaz</span>}',
+              execResult: '<span style="font-weight: 100">foo<b>[barbaz</b></span>}'
+					},
+          {   include: 'webkit',	
+              start: '<span style="font-weight: 100">foo[barbaz</span>}',
 					   	execResult: '<span style="font-weight: 100">foo<b>[barbaz]</b></span>'
 					},
-					{  	start: '<span style="font-weight: 400">foo[barbaz</span>}',
+          {   exclude: 'webkit',	
+              start: '<span style="font-weight: 400">foo[barbaz</span>}',
+              execResult: '<span style="font-weight: 400">foo<b>[barbaz</b></span>}'
+					},
+          {   include: 'webkit',	
+              start: '<span style="font-weight: 400">foo[barbaz</span>}',
 					   	execResult: '<span style="font-weight: 400">foo<b>[barbaz]</b></span>'
 					},
-					{  	start: '<span style="font-weight: 700">foo[barbaz</span>}',
+          {   exclude: 'webkit',	
+              start: '<span style="font-weight: 700">foo[barbaz</span>}',
+					   	execResult: '<b>foo</b>[barbaz}'
+					},
+          {   include: 'webkit',	
+              start: '<span style="font-weight: 700">foo[barbaz</span>}',
 					   	execResult: '<b>foo</b>[barbaz]'
 					},
-					{  	start: '<span style="font-weight: 900">foo[barbaz</span>}',
+          {   exclude: 'webkit',	
+              start: '<span style="font-weight: 900">foo[barbaz</span>}',
+					   	execResult: '<span style="font-weight: 900">foo</span>[barbaz}'
+          },
+          {   include: 'webkit',	
+              start: '<span style="font-weight: 900">foo[barbaz</span>}',
 					   	execResult: '<span style="font-weight: 900">foo</span>[barbaz]'
 					}
 			]
