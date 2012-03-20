@@ -1,0 +1,37 @@
+h2. Aloha and jQuery
+
+This guide covers
+
+* Aloha using its own jQuery
+* Telling Aloha to use another version of jQuery
+
+endprologue.
+
+h3. Using embedded jQuery Version
+
+The full bundled version of Aloha Editor contains a copy of jQuery to be independent from other libraries. This embedded jQuery version will not interfere with any other version of jQuery loaded before or after Aloha Editor.
+
+h3. Using a custom jQuery Version
+
+When your web site already uses jQuery (in a version that is compatible with Aloha Editor), you might want to configure Aloha Editor to use that jQuery instead of its own. This can be done by setting +Aloha.settings.jQuery+ *before* Aloha Editor is loaded.
+
+<html>
+<!-- Load your own version of jQuery -->
+<script src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+<!-- Tell Aloha Editor to use this jQuery version -->
+<script language="javascript">
+	var Aloha = {
+		settings: {
+			jQuery: $
+		}
+	};
+</script>
+<!-- Load Aloha Editor -->
+<script src="/javascripts/aloha/lib/aloha.js"></script>
+</html>
+
+NOTE: Aloha Editor will attache some jQuery plugins to the jQuery version it uses. This has to be considered when telling Aloha Editor to use a customer jQuery version.
+
+h3. Further reading
+
+* Read the section "Configure Aloha Editor":configure_aloha.html to learn how to configure the behavior of Aloha Editor

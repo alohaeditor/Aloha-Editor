@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>: Using Aloha Editor</title>
+  <title>: Aloha and jQuery</title>
 
   <!-- guides styles -->
   <link rel="stylesheet" type="text/css" href="stylesheets/style.css" />
@@ -102,90 +102,43 @@
     <div class="wrapper">
       <div id="mainCol">
           <div class="headerSection">
-            <h2>Using Aloha Editor</h2>
-<p>After reading this guide, you will be able to:</p>
+            <h2>Aloha and jQuery</h2>
+<p>This guide covers</p>
 <ul>
-	<li>Embed Aloha Editor in your web application.</li>
-	<li>Make areas of your web page editable with Aloha Editor</li>
+	<li>Aloha using its own jQuery</li>
+	<li>Telling Aloha to use another version of jQuery</li>
 </ul>
 
           </div>
-        <h3 id="prerequisites">1 Prerequisites</h3>
-<p>For a start, let&#8217;s assume that you have a simple web page, you want to make editable with Aloha Editor and you already have placed Aloha Editor on your web server.</p>
-<p>This is your web page:</p>
+        <h3 id="using-embedded-jquery-version">1 Using embedded jQuery Version</h3>
+<p>The full bundled version of Aloha Editor contains a copy of jQuery to be independent from other libraries. This embedded jQuery version will not interfere with any other version of jQuery loaded before or after Aloha Editor.</p>
+<h3 id="using-a-custom-jquery-version">2 Using a custom jQuery Version</h3>
+<p>When your web site already uses jQuery (in a version that is compatible with Aloha Editor), you might want to configure Aloha Editor to use that jQuery instead of its own. This can be done by setting <tt>Aloha.settings.jQuery</tt> <strong>before</strong> Aloha Editor is loaded.</p>
 <div class="code_container">
 <pre class="brush: xml; gutter: false; toolbar: false">
 
-&lt;head&gt;
-	&lt;meta http-equiv=&quot;content-type&quot; content=&quot;text/html; charset=utf-8&quot;&gt;
-	&lt;title&gt;Getting Started with Aloha Editor&lt;/title&gt;
-	&lt;link rel=&quot;stylesheet&quot; href=&quot;index.css&quot; type=&quot;text/css&quot;&gt;
-&lt;/head&gt;
-&lt;body&gt;
-	&lt;div id=&quot;main&quot;&gt;
-		&lt;div id=&quot;content&quot;&gt;&lt;p&gt;Getting started with Aloha Editor!&lt;/p&gt;&lt;/div&gt;
-	&lt;/div&gt;
-&lt;/body&gt;
-</pre></div><p>Aloha Editor is located in the path <tt>/javascripts</tt> of your web server.</p>
-<h3 id="embed-aloha-editor">2 Embed Aloha Editor</h3>
-<p>To embed Aloha Editor, you just need to load a single css <tt>/javascripts/aloha/css/aloha.css</tt> and a javascript file <tt>/javascripts/aloha/lib/aloha.js</tt> into the <strong>head</strong> section of your page.</p>
-<div class="code_container">
-<pre class="brush: xml; gutter: false; toolbar: false">
-
-&lt;head&gt;
-	&lt;meta http-equiv=&quot;content-type&quot; content=&quot;text/html; charset=utf-8&quot;&gt;
-	&lt;title&gt;Getting Started with Aloha Editor&lt;/title&gt;
-	&lt;link rel=&quot;stylesheet&quot; href=&quot;index.css&quot; type=&quot;text/css&quot;&gt;
-	&lt;!-- Load Aloha Editor css and js --&gt;
-	&lt;link rel=&quot;stylesheet&quot; href=&quot;/javascripts/aloha/css/aloha.css&quot; type=&quot;text/css&quot;&gt;
-	&lt;script src=&quot;/javascripts/aloha/lib/aloha.js&quot;
-	  data-aloha-plugins=&quot;common/format,common/highlighteditables,common/link&quot;&gt;&lt;/script&gt;
-&lt;/head&gt;
-&lt;body&gt;
-	&lt;div id=&quot;main&quot;&gt;
-		&lt;div id=&quot;content&quot;&gt;&lt;p&gt;Getting started with Aloha Editor!&lt;/p&gt;&lt;/div&gt;
-	&lt;/div&gt;
-&lt;/body&gt;
-</pre></div><h3 id="create-editables">3 Create editables</h3>
-<p>An editable is an <span class="caps">HTML</span> element that should be editable by Aloha Editor. You can specify the element with a jQuery selector, and simply call <tt>.aloha</tt> for it.</p>
-<p>When we want to make the div with ID <strong>content</strong> editable, we add the script</p>
-<div class="code_container">
-<pre class="brush: xml; gutter: false; toolbar: false">
-
-&lt;head&gt;
-	&lt;meta http-equiv=&quot;content-type&quot; content=&quot;text/html; charset=utf-8&quot;&gt;
-	&lt;title&gt;Getting Started with Aloha Editor&lt;/title&gt;
-	&lt;link rel=&quot;stylesheet&quot; href=&quot;index.css&quot; type=&quot;text/css&quot;&gt;
-	&lt;!-- Load Aloha Editor css and js --&gt;
-	&lt;link rel=&quot;stylesheet&quot; href=&quot;/javascripts/aloha/css/aloha.css&quot; type=&quot;text/css&quot;&gt;
-	&lt;script src=&quot;/javascripts/aloha/lib/aloha.js&quot;
-	  data-aloha-plugins=&quot;common/format,common/highlighteditables,common/link&quot;&gt;&lt;/script&gt;
-&lt;/head&gt;
-&lt;body&gt;
-	&lt;div id=&quot;main&quot;&gt;
-		&lt;div id=&quot;content&quot;&gt;&lt;p&gt;Getting started with Aloha Editor!&lt;/p&gt;&lt;/div&gt;
-	&lt;/div&gt;
-	&lt;script type=&quot;text/javascript&quot;&gt;
-		Aloha.ready( function() {
-			Aloha.jQuery('#content').aloha();
-		});
-	&lt;/script&gt;
-&lt;/body&gt;
+&lt;script src=&quot;http://code.jquery.com/jquery-1.7.1.min.js&quot;&gt;&lt;/script&gt;
+&lt;script language=&quot;javascript&quot;&gt;
+	var Aloha = {
+		settings: {
+			jQuery: $
+		}
+	};
+&lt;/script&gt;
+&lt;script src=&quot;/javascripts/aloha/lib/aloha.js&quot;&gt;&lt;/script&gt;
 </pre></div>
-<div class="note"><p>In this example, the <span class="caps">HTML</span> element is made editable in the event handler of the <ins>Aloha.ready</ins> event. This ensures that aloha is fully loaded, before actually using it and is therefore the recommended way of using Aloha Editor.</p></div>
-<h3 id="further-reading">4 Further reading</h3>
+<div class="note"><p>Aloha Editor will attache some jQuery plugins to the jQuery version it uses. This has to be considered when telling Aloha Editor to use a customer jQuery version.</p></div>
+<h3 id="further-reading">3 Further reading</h3>
 <ul>
 	<li>Read the section <a href="configure_aloha.html">Configure Aloha Editor</a> to learn how to configure the behavior of Aloha Editor</li>
-	<li>Read more about <a href="aloha_jquery.html">Aloha and jQuery</a></li>
 </ul>
 
       </div>
         <div id="subCol">
           <h3 class="chapter"><img src="images/strobe/chapters.png" alt="" />Chapters</h3>
           <ol class="chapters">
-            <li><a href="#prerequisites"><p>Prerequisites</p>
-</a></li><li><a href="#embed-aloha-editor"><p>Embed Aloha Editor</p>
-</a></li><li><a href="#create-editables"><p>Create editables</p>
+            <li><a href="#using-embedded-jquery-version"><p>Using embedded jQuery Version</p>
+</a></li><li><a href="#using-a-custom-jquery-version"><p>Using a custom jQuery Version</p>
 </a></li><li><a href="#further-reading"><p>Further reading</p>
 </a></li>
           </ol>

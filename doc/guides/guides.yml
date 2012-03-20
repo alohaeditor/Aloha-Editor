@@ -35,13 +35,16 @@ index:
   Start Here:
     - title: "Using Aloha Editor"
       url: using_aloha
-      text: "Learn how to embed Aloha Editor and make your content editable and how to use and configure Aloha Editor plugins."
-    - title: "Developing and building Aloha Editor"
-      url: develop_aloha
-      text: "Learn how to develop or make a custom build of Aloha Editor."
+      text: "Learn how to embed Aloha Editor and make your content editable."
     - title: "Configuring Aloha Editor"
       url: configure_aloha
       text: "Learn how to configure Aloha Editor."
+    - title: "Aloha and jQuery"
+      url: aloha_jquery
+      text: "Read about Aloha and jQuery"
+    - title: "Developing and building Aloha Editor"
+      url: develop_aloha
+      text: "Learn how to develop or make a custom build of Aloha Editor."
     - title: "Aloha dependency management"
       url: require
       text: "In this guide, we will explain how dependencies are managed with Aloha Editor."
