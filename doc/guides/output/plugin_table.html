@@ -103,14 +103,68 @@
       <div id="mainCol">
           <div class="headerSection">
             <h2>The Table Plugin</h2>
+<p>The Table Plugin will allow you to edit tables within your contents. You can do pretty much everything that you&#8217;d expect from editing tables, like adding and deleting rows and columns as well as merging and splitting cells. You can use the tab key to jump from one cell to the next.</p>
 
           </div>
-        <p><span class="caps">TBD</span></p>
+        <h3 id="configuration">1 Configuration</h3>
+<p>The table configuration allows for some special settings:</p>
+<div class="code_container">
+<pre class="brush: javascript; gutter: false; toolbar: false">
+
+Aloha.settings.plugins.table: {
+	// all elements with no specific configuration are not allowed to insert tables
+	config : [ 'table' ],
+	// the table summary is editable in the sidebar
+	summaryinsidebar : true,
+	// the following settings allow the user to apply specific classes to
+	// either the whole table or a column or row. The name is used as a
+	// class attribute, while the iconClass is applied as a class attribute
+	// to style the buttons
+	tableConfig : [
+		{ name:'hor-minimalist-a' },
+		{ name:'box-table-a' },
+		{ name:'hor-zebra' },
+	],
+	columnConfig : [
+			{ name: 'table-style-bigbold',  iconClass: 'aloha-button-col-bigbold' },
+			{ name: 'table-style-redwhite', iconClass: 'aloha-button-col-redwhite' }
+	],
+	rowConfig : [
+			{ name: 'table-style-bigbold',  iconClass: 'aloha-button-row-bigbold' },
+			{ name: 'table-style-redwhite', iconClass: 'aloha-button-row-redwhite' }
+	]
+};
+</pre></div><h3 id="components">2 Components</h3>
+<ul>
+	<li>table &#8211; insert a table into the content</li>
+	<li>addrowbefore &#8211; adds a row before the current row</li>
+	<li>addrowafter &#8211; adds a row after the current row</li>
+	<li>deleterow &#8211; deletes the current row</li>
+	<li>deletecolumn &#8211; deletes the current column</li>
+	<li>rowheader &#8211; turns current row into a row of headers</li>
+	<li>columnheader &#8211; turns current column into a column of headers</li>
+	<li>romergecells &#8211; merge all cells within this row</li>
+	<li>rowsplitcells &#8211; split merged cells within this row</li>
+	<li>columnmergecells &#8211; merge all cells within this column</li>
+	<li>columnsplitcells &#8211; split merged cells within this column</li>
+	<li>addcolumnleft &#8211; add a column left of the current column</li>
+	<li>addcolumnright &#8211; add a column right of the current column</li>
+	<li>tablemergecells &#8211; merge selected cells</li>
+	<li>tablesplitcells &#8211; split selected cells</li>
+	<li>mergecells &#8211; merge selected cells</li>
+	<li>splitcells &#8211; split selected cells</li>
+	<li>tablecaption &#8211; input field which allows you to add a caption to the table</li>
+</ul>
 
       </div>
-      <div id="subCol">
-        
-      </div>
+        <div id="subCol">
+          <h3 class="chapter"><img src="images/strobe/chapters.png" alt="" />Chapters</h3>
+          <ol class="chapters">
+            <li><a href="#configuration"><p>Configuration</p>
+</a></li><li><a href="#components"><p>Components</p>
+</a></li>
+          </ol>
+        </div>
     </div>
   </div>
 

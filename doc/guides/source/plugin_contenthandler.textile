@@ -1,41 +1,34 @@
 h2. The Content Handler Plugin
 
-After reading this guide, you will be able to:
-
-* Understand what Content Handler are and how to use them
-* Use the Content Handler API to create, modify and
-* Extend Content Handler with custom implementations
+The Contenthandler Plugin has no user interface and is used for example in conjunction with the paste plugin to be able to handle pasted content from Microsoft Word and the like. Currently it provides three so called "Content Handlers" which will be used to cleanup html content on various occasions like pasting or when initializing an editable.
 
 endprologue.
 
-WARNING: This guide is currently work-in-progress.
+h3. Available Content Handlers
 
-h3. What are Content Handler?
+The available contenthandlers are:
 
-*Aloha Content Handler* (Content Handler) are used to sanitize content loaded or pasted in Aloha Editor.
-
-There are some Content Handler available:
-* Generic
-* Word
+* word
+* generic
+* sanitize
 * oEmbed
-* Sanitize
 
 Plugins also provide Content Handler:
-* Block +common/block+ plugin
+
+* Block @common/block@ plugin
+
+h3. Configuration
 
 There are two hooks available:
-* insertHtml in +common/commands+ plugin
+
+* insertHtml in @common/commands@ plugin
 * initEditable in core/editable.js
-
-
-h3. Enabling the Content Handler Plugin
-
-
-h4. Using Configuration
 
 <javascript>
 	Aloha.settings.contentHandler: {
+        // The following content handlers will be called when HTML is inserted into an editable (pasted, for example).
 		insertHtml: [ 'word', 'generic', 'oembed', 'sanitize' ],
+        // The following content handlers will be called when the editable is initialized (editable.aloha()).
 		initEditable: [ 'sanitize' ],
 		sanitize: 'relaxed' // relaxed, restricted, basic,
 		allows: {
@@ -59,6 +52,65 @@ h4. Using Configuration
 	}
 </javascript>
 
+h3. Word Content Handler
+
+The Word Content Handler will detect content pasted from Microsoft Word 2003 and newer versions. It transforms and cleans the pasted html code so that deteriorating effects on mental health by staring at bogus and totally fubar html code can be kept to an acceptable minimum. Therefore it will
+
+* remove all "mso-whatever" classes
+* remove all divs from the pasted content
+* remove font tags
+* convert bullet points to real html lists with proper nesting
+* transform titles to h1 and subtitles to h2 tags
+
+h3. Generic Content Handler
+
+The Generic Content Handler is a bit less generic than his name might suggest as he will apply the following cleaning actions:
+
+* clean lists by removing any non-ul or li children
+* cleaning tables by removing the following attributes
+** border
+** cellpadding
+** cellspacing
+** width
+** height
+** valign
+* remove comments
+* unwrap font and span tags
+* remove styles
+* remove namespaced elements
+* transform formattings by turning
+** @<strong>@ tags into @<b>@ tags
+** @<em>@ to @<i>@
+** @<s>@ to @<del>@
+** and by removing @<u>@ tags (as underline text decoration should solely be used for links)
+
+h3. Sanitize Content Handler
+
+The Sanitize Content Handler will remove all dom elements and attributes not covered by it's configuration. You may specify your own configuration based on these default settings:
+
+<javascript>
+Aloha.settings.contentHandler.sanitize = {
+	// elements allowed in the content
+	elements: [
+		'a', 'abbr', 'b', 'blockquote', 'br', 'cite', 'code', 'dd', 'dl', 'dt', 'em',
+		'i', 'li', 'ol', 'p', 'pre', 'q', 'small', 'strike', 'strong', 'sub',
+		'sup', 'u', 'ul' ],
+	// attributes allowed for specific elements
+	attributes: {
+		'a' : ['href'],
+		'blockquote' : ['cite'],
+		'q' : ['cite'],
+		'abbr': ['title']
+	},
+	// protocols allowed for certain attributes of elements
+	protocols: {
+		'a' : {'href': ['ftp', 'http', 'https', 'mailto', '__relative__']},
+		'blockquote' : {'cite': ['http', 'https', '__relative__']},
+		'q' : {'cite': ['http', 'https', '__relative__']}
+	}
+}
+</javascript>
+
 For the sanitize Content Handler you can use a predefined set of allowed HTML-tags and attributes ("sanitize" option) or your own set defined as "allows" option.
 The configuration option for "insertHtml" and "initEditable" defines which Content Handler should be used at that hook points.
 "initEditable" uses the "sanitize" Content Handler by default.
@@ -66,12 +118,13 @@ The configuration option for "insertHtml" and "initEditable" defines which Conte
 
 WARNING: The order how the handlers are loaded and executed is important. If you first load the "sanitize" or "generic" handler the "word" handler will not be able to detect a MS Word document.
 
-
 h3. APIs and Extension Points
 
 There is the Content Handler Manager in Aloha Core available where Content Handler can register themself.
 
-h4. Writing your own Content Handler
+h3. Writing your own Content Handler
+
+All Content Handler needs to support the "handleContent" method and will receive and return the content as HTML text.
 
 <javascript>
 	define(
@@ -91,14 +144,4 @@ h4. Writing your own Content Handler
 		return MyContentHandler;
 	});
 </javascript>
-
-All Content Handler needs to support the "handleContent" method and will receive and return the content as HTML text.
-
-h3. Internals
-
-h3. Future Work
-
-h3. Changelog
-
-* October 06, 2011: Initial version by "Rene Kapusta":credits.html#rene_kapusta
 

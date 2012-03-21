@@ -1,0 +1,24 @@
+h2. Align Plugin
+
+WARNING: The Align Plugin is not working correctly right now.
+
+The Align Plugin allows you to align contents left, right, center, or justify the flow of text.
+
+endprologue.
+
+h4. Configuration settings
+
+The align plugin allows you to configure which of it's buttons are available:
+
+<javascript>
+Aloha.settings.plugins.align.config = {
+	alignment: [ 'right', 'left', 'center', 'justify' ]
+};
+</javascript>
+
+h4. Components
+
+* alignLeft - align selected text left
+* alignRight - align selected text right
+* alignCenter - center selected text
+* alignJustify - justify selected text
