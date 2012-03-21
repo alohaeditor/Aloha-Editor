@@ -107,6 +107,9 @@ index:
     - title: "Formatless paste"
       url: plugin_formatlesspaste
       text: "The formatlesspaste plugin."
+    - title: "DOM to XHTML"
+      url: plugin_dom_to_xhtml
+      text: "The DOM to XHTML plugin."
 
   Contributing to Aloha Editor:
     - title: Releasing
