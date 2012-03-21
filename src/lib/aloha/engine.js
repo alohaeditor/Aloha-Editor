@@ -89,6 +89,26 @@ function nextNodeDescendants(node) {
 	return node.nextSibling;
 }
 
+// Note that we cannot use splitText() because it is bugridden in IE 9.
+// A workaround method as suggested in http://stackoverflow.com/questions/7378186/ie9-childnodes-not-updated-after-splittext
+function insertAfter(node, precedingNode) {
+    var nextNode = precedingNode.nextSibling, parent = precedingNode.parentNode;
+    if (nextNode) {
+        parent.insertBefore(node, nextNode);
+    } else {
+        parent.appendChild(node);
+    }
+    return node;
+}
+
+function splitDataNode(node, index) {
+    var newNode = node.cloneNode(false);
+    newNode.deleteData(0, index);
+    node.deleteData(index, node.length - index);
+    insertAfter(newNode, node);
+    return newNode;
+}
+
 /**
  * Returns true if ancestor is an ancestor of descendant, false otherwise.
  */
@@ -1201,7 +1221,7 @@ function setActiveRange( range ) {
 	rangeObject.startOffset = range.startOffset;
 	rangeObject.endContainer = range.endContainer;
 	rangeObject.endOffset = range.endOffset;
-	
+
 	rangeObject.select();
 }
 
@@ -3106,7 +3126,7 @@ function forceValue(node, command, newValue, range) {
 
 	// "Append node to new parent as its last child, preserving ranges."
 	movePreservingRanges(node, newParent, newParent.childNodes.length, range);
-
+  
 	// "If node is an Element and the effective command value of command for
 	// node is not loosely equivalent to new value:"
 	if (node.nodeType == $_.Node.ELEMENT_NODE
@@ -3201,7 +3221,7 @@ function setSelectionValue(command, newValue, range) {
 	&& range.startOffset != 0
 	&& range.startOffset != getNodeLength(range.startContainer)) {
 		// Account for browsers not following range mutation rules
-		var newNode = range.startContainer.splitText(range.startOffset);
+    var newNode = splitDataNode(range.startContainer, range.startOffset);
 		var newActiveRange = Aloha.createRange();
 		if (range.startContainer == range.endContainer) {
 			var newEndOffset = range.endOffset - range.startOffset;
@@ -3223,17 +3243,10 @@ function setSelectionValue(command, newValue, range) {
 	&& range.endContainer.nodeType == $_.Node.TEXT_NODE
 	&& range.endOffset != 0
 	&& range.endOffset != getNodeLength(range.endContainer)) {
-		// IE seems to mutate the range incorrectly here, so we need correction
-		// here as well.  The active range will be temporarily in orphaned
-		// nodes, so calling getActiveRange() after splitText() but before
-		// fixing the range will throw an exception.
-		// TODO: check if this is still neccessary 
-		var activeRange = range;
+    var activeRange = range;
 		var newStart = [activeRange.startContainer, activeRange.startOffset];
 		var newEnd = [activeRange.endContainer, activeRange.endOffset];
-		activeRange.endContainer.splitText(activeRange.endOffset);
-		activeRange.setStart(newStart[0], newStart[1]);
-		activeRange.setEnd(newEnd[0], newEnd[1]);
+    splitDataNode(activeRange.endContainer, activeRange.endOffset);
 
 		Aloha.getSelection().removeAllRanges();
 		Aloha.getSelection().addRange(activeRange);
@@ -3257,8 +3270,10 @@ function setSelectionValue(command, newValue, range) {
 		// "Push down values on node."
 		pushDownValues(node, command, newValue, range);
 
-		// "Force the value of node."
-		forceValue(node, command, newValue, range);
+    // "If node is an allowed child of span, force the value of node."
+		if (isAllowedChild(node, "span")) {
+      forceValue(node, command, newValue, range);
+    }
 	});
 }
 
@@ -8408,8 +8423,8 @@ $_( commandNames ).forEach(function(command) {
 	// active range, or if there is no such node, the effective command
 	// value of the active range's start node."
 	if ("standardInlineValueCommand" in commands[command]) {
-		commands[command].indeterm = function() {
-			var values = $_(getAllEffectivelyContainedNodes(getActiveRange()))
+		commands[command].indeterm = function(range) {
+			var values = $_(getAllEffectivelyContainedNodes(range))
 				.filter(function(node) { return isEditable(node) && node.nodeType == $_.Node.TEXT_NODE }, true)
 				.map(function(node) { return getEffectiveCommandValue(node, command) });
 			for (var i = 1; i < values.length; i++) {
