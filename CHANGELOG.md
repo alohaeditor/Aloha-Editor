@@ -13,6 +13,8 @@ All changes are categorized into one of the following keywords:
 ## 0.21.1 - 2012/02/23
 
 - **FEATURE** hints plugin: Implemented using Tipsy as tooltip library and the latest Aloha-Editor plugin standard.
+- **FEATURE** API docs: added first version of new API docs
+- **FEATURE** HotKey feature added for link, format and wai-lang plugin
 
 ## 0.21.0 - dev
 
