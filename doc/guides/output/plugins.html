@@ -184,7 +184,11 @@ Aloha.plugins.link: {
 		} else {
 			jQuery(obj).removeAttr('data-name');
 		}
-	}
+	},
+	// hotKey to trigger insertLink method
+	hotKey: { insertLink: 'ctrl+l' },
+	// default href field input start value
+	hrefValue: 'http://', 
 };
 </pre></div><h3 id="abbr-plugin">3 Abbr Plugin</h3>
 <p>The Abbr Plugin will wrap selected contents within an <tt>&lt;abbr&gt;</tt> tag. You can then specify a title text to describe the abbreviation.</p>

@@ -164,6 +164,34 @@ Aloha.loadPlugins(function(){
 <div class="warning"><p>Documentation pending.</p></div>
 <h3 id="editables">8 Editables</h3>
 <div class="warning"><p>Documentation pending.</p></div>
+<h3 id="hotkeys">9 HotKeys</h3>
+<div class="warning"><p>Documentation pending.</p></div>
+<p>Add and remove HotKey handler for keyboard events supporting almost any key combination.</p>
+<p>The syntax is as follows:</p>
+<div class="code_container">
+<pre class="brush: javascript; gutter: false; toolbar: false">
+
+    $(document).bind('keydown', 'ctrl+a', fn);
+</pre></div><p>Example configuration for inserting a Link with the HotKey `Ctrl-u` (default: `Ctrl-l`)</p>
+<div class="code_container">
+<pre class="brush: javascript; gutter: false; toolbar: false">
+
+Aloha.settings = {
+	plugins: {
+		link: {
+			hotKey: { insertLink: 'ctrl+u' }
+		}
+	}
+}
+</pre></div>
+	<ol>
+		<li>Types Supported types are `&#8216;keydown&#8217;`, `&#8216;keyup&#8217;` and `&#8216;keypress&#8217;`</li>
+	</ol>
+		<ol>
+			<li>Addendum Firefox is the most liberal one in the manner of letting you capture all short-cuts even those that are built-in in the browser such as `Ctrl-t` for new tab, or `Ctrl-a` for selecting all text. You can always bubble them up to the browser by returning `true` in your handler.</li>
+		</ol><p>Others, (IE) either let you handle built-in short-cuts, but will add their functionality after your code has executed. Or (Opera/Safari) will <strong>not</strong> pass those events to the <span class="caps">DOM</span> at all.</p>
+<p><strong>So, if you bind `Ctrl-Q` or `Alt-F4` and your Safari/Opera window is closed don&#8217;t be surprised.</strong></p>
+<p>Code from: https://github.com/jeresig/jquery.hotkeys</p>
 <p>.</p>
 
       </div>
@@ -181,6 +209,7 @@ Aloha.loadPlugins(function(){
 </a></li> <li><a href="#aloha-editable-activated-event"><p>aloha-editable-activated Event</p>
 </a></li> <li><a href="#aloha-editable-deactivated-event"><p>aloha-editable-deactivated Event</p>
 </a></li></ul></li><li><a href="#editables"><p>Editables</p>
+</a></li><li><a href="#hotkeys"><p>HotKeys</p>
 </a></li>
           </ol>
         </div>
