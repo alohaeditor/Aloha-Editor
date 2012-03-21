@@ -399,3 +399,6 @@ The Undo Plugin allows you to undo changes when pressing Ctrl+Z (or Cmd+Z on Mac
 
 * September 1, 2011: Initial version by "Haymo Meran":credits.html#haymo and "Scott Gonzales":credits.html#scottgonzales
 
+h3. DOM to XHTML Plugin
+
+This plugin provides support for XHTML serialization. This plugin doesn't provide configuration settings. See the "plugin page":plugin_dom_to_xhtml.html for more information.

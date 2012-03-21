@@ -188,11 +188,7 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 							'iconClass' : 'aloha-button aloha-button-' + button,
 							'size' : 'small',
 							'onclick' : function () {
-								var
-									markup = jQuery('<'+button+'></'+button+'>'),
-									rangeObject = Aloha.Selection.rangeObject,
-									foundMarkup,
-									selectedCells = jQuery('.aloha-cell-selected');
+								var selectedCells = jQuery('.aloha-cell-selected');
 
 									if ( typeof button_config === 'string' ) {
 										markup.attr('class', button_config);
@@ -227,31 +223,7 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 								}
 								// formating workaround for table plugin
 
-								// check whether the markup is found in the range (at the start of the range)
-								foundMarkup = rangeObject.findMarkup(function() {
-									return this.nodeName.toLowerCase() == markup.get(0).nodeName.toLowerCase();
-								}, Aloha.activeEditable.obj);
-
-								if (foundMarkup) {
-									// remove the markup
-									if (rangeObject.isCollapsed()) {
-										// when the range is collapsed, we remove exactly the one DOM element
-										GENTICS.Utils.Dom.removeFromDOM(foundMarkup, rangeObject, true);
-									} else {
-										// the range is not collapsed, so we remove the markup from the range
-										GENTICS.Utils.Dom.removeMarkup(rangeObject, markup, Aloha.activeEditable.obj);
-									}
-								} else {
-									// when the range is collapsed, extend it to a word
-									if (rangeObject.isCollapsed()) {
-										GENTICS.Utils.Dom.extendToWord(rangeObject);
-									}
-
-									// add the markup
-									GENTICS.Utils.Dom.addMarkup(rangeObject, markup);
-								}
-								// select the modified range
-								rangeObject.select();
+								that.addMarkup( button ); 
 								return false;
 							},
 							'tooltip' : i18n.t('button.' + button + '.tooltip'),
@@ -281,6 +253,7 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 							'markup' : jQuery('<'+button+'></'+button+'>'),
 							'click' : function() {
 								var selectedCells = jQuery('.aloha-cell-selected');
+
 								// formating workaround for table plugin
 								if ( selectedCells.length > 0 ) {
 									var cellMarkupCounter = 0;
@@ -307,7 +280,11 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 								}
 								// formating workaround for table plugin
 
+<<<<<<< HEAD
 								Aloha.Selection.changeMarkupOnSelection(jQuery('<' + button + '></' + button + '>'));
+=======
+								that.changeMarkup( button );
+>>>>>>> 451bd0feb224a08112f45f360540cbc45c16faa7
 							}
 						});
 						break;

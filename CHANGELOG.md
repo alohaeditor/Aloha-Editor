@@ -41,6 +41,7 @@ All changes are categorized into one of the following keywords:
 - **ENHANCEMENT** enabled image plugin in boilerplate demo. needs some enhancements to be more user friendly
 - **BUG** align plugin: Fixed alignment behavior and place the buttons in the format tab instead of a new one.
 - **FEATURE** hints plugin: Implemented using Tipsy as tooltip library and the latest Aloha-Editor plugin standard.
+<<<<<<< HEAD
 - **ENHANCEMENT** block plugin: added data-attribute to prevent triggering scope changes when a block is activated
 - **ENHANCEMENT** block plugin: revamped colors for highlighting blocks
 - **BUG** updated dom.js to reflect HTML5 spec changes; format with u and i tags is now available; updated default button config
@@ -48,6 +49,10 @@ All changes are categorized into one of the following keywords:
 - **ENHANCEMENT** configure the sidebar handle position via Aloha.settings.sidebar.handle.top
 - **ENHANCEMENT** table plugin: disable split / merge cell buttons when not possible to use
 - **ENHANCEMENT** dom-to-xhtml plugin: non-specified attributes are excluded from serialization, making attribute serialization more consistent on IE7 and IE8.
+=======
+- **FEATURE** API docs: added first version of new API docs
+- **FEATURE** HotKey feature added for link, format and wai-lang plugin
+>>>>>>> 451bd0feb224a08112f45f360540cbc45c16faa7
 
 
 ## 0.20.7 - 2012/03/7
@@ -291,6 +296,7 @@ All changes are categorized into one of the following keywords:
 		  loaded page.
 
 
+<<<<<<< HEAD
 ## 0.20.0 - 2011/11
 - core: Adds option for "cls" property to be added to ui-attributefields.
        cls will be an optional extra CSS class that will be added to this component's Element. This can be useful for adding customized styles to the component or any of its children using standard CSS rules. (http://docs.sencha.com/ext-js/4-0/#!/api/Ext.AbstractComponent-cfg-cls)
@@ -301,37 +307,56 @@ All changes are categorized into one of the following keywords:
        Fixed all plugins to not use FloatingMenu.userActivatedTab, but FloatingMenu.activateTabOfButton instead. This will ensure that switching Tabs will also work, if floatingmenu is configured individually.
 - link-plugin: Fixed link-plugin to bind events to links when editables are created. Also bind events to new created links. This ensures that Hotkey CTRL+L to create a new link works, and links can be followed by clicking on them while holding CTRL
     - link-plugin: Fixed handling of external links. Previously it was not possible to change a repository link to an external link.
+=======
+## 0.20-BETA - 2011/11
+
+- core: Add option for "cls" property to be added to ui-attributefields. cls will be an optional extra CSS class that will be added to this component's Element. This can be useful for adding customized styles to the component or any of its children using standard CSS rules. (http://docs.sencha.com/ext-js/4-0/#!/api/Ext.AbstractComponent-cfg-cls)
+- ribbon-plugin: The ribbon will no longer be visible by default. Instead you can use the show function to make it appear.
+- image-plugin: The plugin will now use a different method to calculate the width/height when using a fixed aspect ratio.
+- core: Fixed floatingmenu to stay visible, if pinned and window is resized.
+- core: Added new Method to FloatingMenu: activateTabOfButton(name) will activate the tab containing the button with given name (if tab is visible)
+- core: Fixed all plugins to not use FloatingMenu.userActivatedTab, but FloatingMenu.activateTabOfButton instead. This will ensure that switching Tabs will also work, if floatingmenu is configured individually.
+- link-plugin
+	- fixed link-plugin to bind events to links when editables are created. Also bind events to new created links. This ensures that Hotkey CTRL+L to create a new link works, and links can be followed by clicking on them while holding CTRL
+	- enforced correct highlighting of selection within the input field
+	- fixed handling of external links. Previously it was not possible to change a repository link to an external link.
+	- initially clicking on an existing link before the link tab has been rendered would leave you with an empty href field. This is actually an ExtJS issue, which has been workarounded.
+	- fixed: autosuggest sometimes left fragments on the screen when closing the autosuggest field early.
+>>>>>>> 451bd0feb224a08112f45f360540cbc45c16faa7
 - listenforcer-plugin: fixed a bug which would cause an error when activating or deactivating an editable
+- listenforcer-plugins: Fixed a possible jquery error within the listforcer plugin. Previously this plugin was not requiring aloha using require.js. This was now corrected. 
 - format-plugin: tags removed by the "remove format" button may now be configured by setting Aloha.settings.plugins.format.removeFormats = ['b', 'strong', 'whatever']; The default set of formats to be removed is: 'strong', 'em', 'b', 'i', 'cite', 'q', 'code', 'abbr', 'del', 'sub', 'sup'
-- browser-plugin: The browser now supports i18n and has better paging support, if the repositories provides meta information (numItems, hasMoreItems)
-
-## 0.20.0 - 2011/11
-
-- moved to requireJS
+- browser-plugin
+	- The browser now supports i18n and has better paging support, if the repositories provides meta information (numItems, hasMoreItems)
+	- fixed a bug with the paging algorithm when jumping to the last page
+- sidebar: The sidebar can now be disabled using the Aloha.settings.sidebar.disabled flag.
+- core: added +Aloha.ready( function() {} )+ 
+- core: Aloha base url is now auto-detected
+- core: Aloha plugins are now loaded in through `data-plugins="format,table"` on the aloha `script` element
+	- See demos for more usage information
+- core: moved to requireJS
+	- Structure overhaul
+		- `WebContent` is now `src`
+		- `build/out` is now `out`
+		- Plugins are now nicely named, and have dropped their ExtJS prefixes. Eg. the format plugin was renamed from 'com.gentics.aloha.plugins.Format' to 'format'. Have a look at the plugin folder for a complete overview of new plugin names.
 	- refactored respecting commonJS package structure
-	- AMD loading
-	- Convert Plugins to RequireJS structure
-	- improved plugin lodaing (lib, css, doc, i18n)
-	- Major Source Code Structure Refinements
-	- CSS Bundling & Compression
-	- JavaScript Bundling & Compression
-- Documentation
+	- AMD loading	- Convert Plugins to RequireJS structure	- improved plugin lodaing (lib, css, doc, i18n)	- Major Source Code Structure Refinements	- build		- CSS Bundling & Compression		- JavaScript Bundling & Compression		- The GENTICS namespace has been completely removed from all objects in Aloha Editor's core	- Building overhaul		- Building has moved from Java + Ant to Node.js + Buildr		- Building now runs in seconds instead of minutes, with greater compression ratios		- Building will run strict JSHint code quality tests		- Output is now more consistent with source, demos can remain untouched between using the src and out versions		- JavaScript and CSS files are now bundled into `aloha.js` and `aloha.css`- core: documentation
 	- guides for using Aloha Editor
 	- JSdoc	
-- tests
+- core: tests
 	- added testbox for developer
 	- commandAPI test suite
 	- improve core tests
 	- added plugin API tests
 	- added repository API tests
-- Translations as JSON files
-- Support for Opera (>11)
-- update jQuery to 1.7
-- contenthandler (for copy/paste)
+- core: ranslations as JSON files
+- core: Support for Opera (>11)
+- core: update jQuery to 1.7
+- contenthandler-plugin: (for copy/paste)
 	- sanitize (configureable HTML elements and attributes)
 	- word
 	- generic (for html and text)
-- Implement Aloha.execCommand stack
+- core: implemented Aloha.execCommand stack
 	- Bold
 	- Delete
 	- ForwardDelete
@@ -342,18 +367,16 @@ All changes are categorized into one of the following keywords:
 	- InsertUnorderedList
 	- Indent
 	- Outdent
-- updated plugins
-	- tables
-		- merging and splitting
-		- repair tables if they are broken
-	- lists
-		- fixed issues in IE with empty list nodes 
-- new common plugins
-	- sidebar
-	- image
-	- horizontal ruler
-	- character picker
-	- undo
+- table-plugin
+	- merging and splitting
+	- repair tables if they are broken
+- list-plugin
+	- fixed issues in IE with empty list nodes 
+- sidebar-plugin: new 
+- image: new
+- horizontalruler-plugin: new 
+- characterpicker-plugin: new
+- undo-plugin: new
 - new extra plugins
 	- cite
 	- headerids
@@ -361,14 +384,29 @@ All changes are categorized into one of the following keywords:
 	- wai-lang
 	- speak
 	- googletranslate
+	- Introduced a new plugin that numerates all headers. (e.g. 1. Header1 1.1 Header2 2 Header1 ....)
+	- Introduced a new plugin that lets you paste from word without formating. It will strip formatings like bold, italic, ...
 
+- Fixed: the genericcontenthandler caused problems when an editable was initialized
+
+  The genericcontenthandler was enabled by default for the initialization of editables. The genericcontenthandler is too brutal and does more cleanups and conversions than one would normally want. The fix was to remove the genericcontenthandler from the default setting.
+
+  In particular, the conversion from strong tags to b tags (and other tag conversions) is unwanted.
+
+  An issue was created for a replacement of the genericcontenthandler for the initialization of editables:
+  https://github.com/alohaeditor/Aloha-Editor/issues/348
+  
+- FloatingMenu
+	The FloatingMenu now accepts the Aloha.settings.floatingmenu.topalignOffset setting, which will define the vertical offset to the editable when the "topalign" behavior is used. The default value is 90px, so if you activate the FloatingMenu's topalign behaviour the FloatingMenu will hover 90px above the currently active editable. Switch it to any meaningful integer offset you prefer.
 
 ## 0.10.-0.19.0
-
 The reason for not releasing this builds was the ongoing refactoring of the core engine to implement all functionallities based on execCommand.
 Non of these releases reached a production ready state. We still increased the release number due to the fact that we also tested the new release process with maven and archivia and it would brake dependencies if we wouldn't have increased the version number.
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 451bd0feb224a08112f45f360540cbc45c16faa7
 ## 0.9.3 - October 2010
 	- Link/Href handling
 	- Repository browser

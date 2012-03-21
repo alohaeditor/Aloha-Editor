@@ -84,6 +84,7 @@
       <dd><a href="plugin_table.html">Table</a></dd>
       <dd><a href="plugin_paste.html">Paste</a></dd>
       <dd><a href="plugin_formatlesspaste.html">Formatless paste</a></dd>
+      <dd><a href="plugin_dom_to_xhtml.html">DOM to XHTML</a></dd>
     <dt>Contributing to Aloha Editor</dt>
       <dd><a href="releasing.html">Releasing</a></dd>
       <dd>Development Process</dd>
@@ -183,7 +184,11 @@ Aloha.plugins.link: {
 		} else {
 			jQuery(obj).removeAttr('data-name');
 		}
-	}
+	},
+	// hotKey to trigger insertLink method
+	hotKey: { insertLink: 'ctrl+l' },
+	// default href field input start value
+	hrefValue: 'http://', 
 };
 </pre></div><h3 id="abbr-plugin">3 Abbr Plugin</h3>
 <p>The Abbr Plugin will wrap selected contents within an <tt>&lt;abbr&gt;</tt> tag. You can then specify a title text to describe the abbreviation.</p>
@@ -454,6 +459,8 @@ Aloha.settings.plugins.table: {
 <ul>
 	<li>September 1, 2011: Initial version by <a href="credits.html#haymo">Haymo Meran</a> and <a href="credits.html#scottgonzales">Scott Gonzales</a></li>
 </ul>
+<h3 id="dom-to-xhtml-plugin">15 <span class="caps">DOM</span> to <span class="caps">XHTML</span> Plugin</h3>
+<p>This plugin provides support for <span class="caps">XHTML</span> serialization. This plugin doesn&#8217;t provide configuration settings. See the <a href="plugin_dom_to_xhtml.html">plugin page</a> for more information.</p>
 
       </div>
         <div id="subCol">
@@ -492,6 +499,7 @@ Aloha.settings.plugins.table: {
 </a><ul><li><a href="#components"><p>Components</p>
 </a></li> <li><a href="#configuration-settings"><p>Configuration settings</p>
 </a></li></ul></li><li><a href="#undo-plugin"><p>Undo Plugin</p>
+</a></li><li><a href="#dom-to-xhtml-plugin"><p><span class="caps">DOM</span> to <span class="caps">XHTML</span> Plugin</p>
 </a></li>
           </ol>
         </div>
