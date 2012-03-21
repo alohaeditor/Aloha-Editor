@@ -41,7 +41,6 @@ All changes are categorized into one of the following keywords:
 - **ENHANCEMENT** enabled image plugin in boilerplate demo. needs some enhancements to be more user friendly
 - **BUG** align plugin: Fixed alignment behavior and place the buttons in the format tab instead of a new one.
 - **FEATURE** hints plugin: Implemented using Tipsy as tooltip library and the latest Aloha-Editor plugin standard.
-<<<<<<< HEAD
 - **ENHANCEMENT** block plugin: added data-attribute to prevent triggering scope changes when a block is activated
 - **ENHANCEMENT** block plugin: revamped colors for highlighting blocks
 - **BUG** updated dom.js to reflect HTML5 spec changes; format with u and i tags is now available; updated default button config
@@ -49,10 +48,8 @@ All changes are categorized into one of the following keywords:
 - **ENHANCEMENT** configure the sidebar handle position via Aloha.settings.sidebar.handle.top
 - **ENHANCEMENT** table plugin: disable split / merge cell buttons when not possible to use
 - **ENHANCEMENT** dom-to-xhtml plugin: non-specified attributes are excluded from serialization, making attribute serialization more consistent on IE7 and IE8.
-=======
 - **FEATURE** API docs: added first version of new API docs
 - **FEATURE** HotKey feature added for link, format and wai-lang plugin
->>>>>>> 451bd0feb224a08112f45f360540cbc45c16faa7
 
 
 ## 0.20.7 - 2012/03/7
@@ -296,33 +293,18 @@ All changes are categorized into one of the following keywords:
 		  loaded page.
 
 
-<<<<<<< HEAD
 ## 0.20.0 - 2011/11
-- core: Adds option for "cls" property to be added to ui-attributefields.
-       cls will be an optional extra CSS class that will be added to this component's Element. This can be useful for adding customized styles to the component or any of its children using standard CSS rules. (http://docs.sencha.com/ext-js/4-0/#!/api/Ext.AbstractComponent-cfg-cls)
-	- ribbon-plugin: The ribbon will no longer be visible by default. Instead you can use the show function to make it appear.
-	- image-plugin: The plugin will now use a different method to calculate the width/height when using a fixed aspect ratio.
-	- core: Fixed floatingmenu to stay visible, if pinned and window is resized.
-	- core: Added new Method to FloatingMenu: activateTabOfButton(name) will activate the tab containing the button with given name (if tab is visible)
-       Fixed all plugins to not use FloatingMenu.userActivatedTab, but FloatingMenu.activateTabOfButton instead. This will ensure that switching Tabs will also work, if floatingmenu is configured individually.
-- link-plugin: Fixed link-plugin to bind events to links when editables are created. Also bind events to new created links. This ensures that Hotkey CTRL+L to create a new link works, and links can be followed by clicking on them while holding CTRL
-    - link-plugin: Fixed handling of external links. Previously it was not possible to change a repository link to an external link.
-=======
-## 0.20-BETA - 2011/11
-
 - core: Add option for "cls" property to be added to ui-attributefields. cls will be an optional extra CSS class that will be added to this component's Element. This can be useful for adding customized styles to the component or any of its children using standard CSS rules. (http://docs.sencha.com/ext-js/4-0/#!/api/Ext.AbstractComponent-cfg-cls)
 - ribbon-plugin: The ribbon will no longer be visible by default. Instead you can use the show function to make it appear.
 - image-plugin: The plugin will now use a different method to calculate the width/height when using a fixed aspect ratio.
 - core: Fixed floatingmenu to stay visible, if pinned and window is resized.
 - core: Added new Method to FloatingMenu: activateTabOfButton(name) will activate the tab containing the button with given name (if tab is visible)
 - core: Fixed all plugins to not use FloatingMenu.userActivatedTab, but FloatingMenu.activateTabOfButton instead. This will ensure that switching Tabs will also work, if floatingmenu is configured individually.
-- link-plugin
 	- fixed link-plugin to bind events to links when editables are created. Also bind events to new created links. This ensures that Hotkey CTRL+L to create a new link works, and links can be followed by clicking on them while holding CTRL
 	- enforced correct highlighting of selection within the input field
 	- fixed handling of external links. Previously it was not possible to change a repository link to an external link.
 	- initially clicking on an existing link before the link tab has been rendered would leave you with an empty href field. This is actually an ExtJS issue, which has been workarounded.
 	- fixed: autosuggest sometimes left fragments on the screen when closing the autosuggest field early.
->>>>>>> 451bd0feb224a08112f45f360540cbc45c16faa7
 - listenforcer-plugin: fixed a bug which would cause an error when activating or deactivating an editable
 - listenforcer-plugins: Fixed a possible jquery error within the listforcer plugin. Previously this plugin was not requiring aloha using require.js. This was now corrected. 
 - format-plugin: tags removed by the "remove format" button may now be configured by setting Aloha.settings.plugins.format.removeFormats = ['b', 'strong', 'whatever']; The default set of formats to be removed is: 'strong', 'em', 'b', 'i', 'cite', 'q', 'code', 'abbr', 'del', 'sub', 'sup'
@@ -403,10 +385,6 @@ All changes are categorized into one of the following keywords:
 The reason for not releasing this builds was the ongoing refactoring of the core engine to implement all functionallities based on execCommand.
 Non of these releases reached a production ready state. We still increased the release number due to the fact that we also tested the new release process with maven and archivia and it would brake dependencies if we wouldn't have increased the version number.
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 451bd0feb224a08112f45f360540cbc45c16faa7
 ## 0.9.3 - October 2010
 	- Link/Href handling
 	- Repository browser
