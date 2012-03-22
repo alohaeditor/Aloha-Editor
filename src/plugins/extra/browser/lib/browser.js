@@ -27,6 +27,7 @@
  * http://requirejs.org/docs/jquery.html
  *
  * others: depend.js from https://github.com/millermedeiros/requirejs-plugins
+ * http://yepnopejs.com
  *
  * todo: think about if using order plugin or priority config can help us here
  */
@@ -36,6 +37,7 @@ define( [
 	'util/class',
 	'i18n!browser/nls/i18n',
 	'aloha/console',
+	'browser/vendor/md5lib',
 	// this will load the correct language pack needed for the browser
 	'browser/locale',
 	'css!browser/css/browsercombined.css',
@@ -44,7 +46,7 @@ define( [
 	'browser/vendor/jquery.jqGrid',
 	'browser/vendor/jquery.jstree'
 	
-], function ( jQuery, Class, i18n, Console ) {
+], function ( jQuery, Class, i18n, Console, md5lib ) {
 'use strict';
 var
 	uid = +(new Date),
@@ -166,6 +168,8 @@ var Browser = Class.extend({
 		this._callbacks = {};
 		// Cache of repository objects
 		this._objs = {};
+		// list of tree objects
+		this._tree_objs = {};
 		//
 		this._searchQuery = null;
 		this._orderBy = null;
@@ -369,21 +373,21 @@ var Browser = Class.extend({
 	},
 	
 	getRepoChildren: function (params, callback) {
-		var that = this;
+		var browser = this;
 		
-		if (this.repositoryManager) {
-			this.repositoryManager.getChildren(params, function (items) {
-				that.processRepoResponse(items, callback);
+		if (browser.repositoryManager) {
+			browser.repositoryManager.getChildren(params, function (items) {
+				browser.processRepoResponse(items, callback);
 			});
 		}
 	},
 	
 	queryRepository: function (params, callback) {
-		var that = this;
+		var browser = this;
 		
-		if (this.repositoryManager) {
-			this.repositoryManager.query(params, function (response) {
-				that.processRepoResponse(
+		if (browser.repositoryManager) {
+			browser.repositoryManager.query(params, function (response) {
+				browser.processRepoResponse(
 					(response.results > 0) ? response.items : [],
 					{ numItems: response.numItems, hasMoreItems: response.hasMoreItems},
 					callback
@@ -393,7 +397,7 @@ var Browser = Class.extend({
 	},
 	
 	processRepoResponse: function (items, metainfo, callback) {
-		var that = this;
+		var browser = this;
 		var data = [];
 		// if the second parameter is a function, it is the callback
 		if (typeof metainfo === 'function') {
@@ -402,7 +406,7 @@ var Browser = Class.extend({
 		}
 		
 		jQuery.each(items, function () {
-			data.push(that.harvestRepoObject(this));
+			data.push(browser.harvestRepoObject(this));
 		});
 		
 		if (typeof callback === 'function') {
@@ -418,14 +422,17 @@ var Browser = Class.extend({
 	 * and all other attributes are optional.
 	 */
 	harvestRepoObject: function (obj) {
-		++uid;
+		var md5uid = md5lib.hex_md5(obj.repositoryId + "://" + obj.id),
+			repo_obj = false;
 		
-		var repo_obj = this._objs[uid] = jQuery.extend(obj, {
-			uid    : uid,
-			loaded : false
-		});
-		
-		return this.processRepoObject(repo_obj);
+		if ( typeof this._objs[md5uid] === "undefined" ) {
+			this._objs[md5uid] = jQuery.extend(obj, {
+				uid    : md5uid,
+				loaded : false
+			});
+		}
+		return this.processRepoObject(this._objs[md5uid]);
+//		repo_obj = this._objs[md5uid];
 	},
 	
 	/**
@@ -433,31 +440,34 @@ var Browser = Class.extend({
 	 */
 	processRepoObject: function (obj) {
 		var icon = '', attr;
+		if (typeof this._tree_objs[obj.uid] === "undefined") {
+			switch (obj.baseType) {
+			case 'folder':
+				icon = 'folder';
+				break;
+			case 'document':
+				icon = 'document';
+				break;
+			}
+
+			// if the object has a type set, we set it as type to the node
+			if (obj.type) {
+				attr = {rel: obj.type};
+			}
+
+			 this._tree_objs[obj.uid] = {
+				data: {
+					title : obj.name, 
+					attr  : {'data-rep-oobj': obj.uid}, 
+					icon  : icon
+				},
+				attr : attr,
+				state: (obj.hasMoreItems || obj.baseType === 'folder') ? 'closed' : null,
+				resource: obj
+			};
+		}
+		return this._tree_objs[obj.uid];
 		
-		switch (obj.baseType) {
-		case 'folder':
-			icon = 'folder';
-			break;
-		case 'document':
-			icon = 'document';
-			break;
-		}
-
-		// if the object has a type set, we set it as type to the node
-		if (obj.type) {
-			attr = {rel: obj.type};
-		}
-
-		return {
-			data: {
-				title : obj.name, 
-				attr  : {'data-rep-oobj': obj.uid}, 
-				icon  : icon
-			},
-			attr : attr,
-			state: (obj.hasMoreItems || obj.baseType === 'folder') ? 'closed' : null,
-			resource: obj
-		};
 	},
 	
 	fetchRepoRoot: function (callback) {
@@ -507,20 +517,22 @@ var Browser = Class.extend({
 	 * Fetch an object's  children if we haven't already done so
 	 */
 	fetchChildren: function (obj, callback) {
-		var that = this;
+		var browser = this;
 		
-		if (obj.hasMoreItems == true || obj.baseType === 'folder') {
-			if (obj.loaded == false) {
+		if (obj.hasMoreItems === true || obj.baseType === 'folder') {
+			if (obj.loaded === false) {
 				this.getRepoChildren(
 					{
 						inFolderId   : obj.id,
 						repositoryId : obj.repositoryId
 					},
-					function (data) {
-						that._objs[obj.uid].loaded = true;
-						
-						if (typeof callback === 'function') {
-							callback(data);
+					function (data) { 
+						if (obj.loaded === false) {// should not be called twice
+							obj.loaded = true;
+							
+							if (typeof callback === 'function') {
+								callback(data);
+							}
 						}
 					}
 				);
@@ -552,8 +564,11 @@ var Browser = Class.extend({
 		return item;
 	},
 	
+	/**
+	 * Creates the tree using jstree
+	 */
 	createTree: function (container) {
-		var that = this;
+		var browser = this;
 		var tree = jQuery(renderTemplate('<div class="{tree}">'));
 		var header = jQuery(renderTemplate(
 				'<div class="{tree-header} {grab-handle}">\
@@ -563,10 +578,16 @@ var Browser = Class.extend({
 		
 		container.append(header, tree);
 		
-		tree.height(this.grid.height() - header.outerHeight(true))
+		tree.height(browser.grid.height() - header.outerHeight(true))
 			.bind('loaded.jstree', function (event, data) {
-				jQuery('>ul>li', this).first().css('padding-top', 5);
-				tree.jstree("open_node", "li[rel='repository']");
+				var roots = jQuery('>ul>li', this), rootindex = 0;
+				roots.first().css('padding-top', 5);
+				roots.each(function() {
+					var rootid = md5lib.hex_md5("Repository" + rootindex);
+					rootindex++;
+					jQuery(this).attr('id', rootid);
+					tree.jstree("open_node", "#" + rootid);
+				});
 			})
 			.bind('select_node.jstree', function (event, data) {
 				// Suppresses a bug in jsTree
@@ -575,33 +596,34 @@ var Browser = Class.extend({
 				}
 				
 				var node = data.rslt.obj;
-				var folder = that.getObjectFromCache(node);
+				var folder = browser.getObjectFromCache(node);
 				
 				if (typeof folder === 'object') {
-					that._pagingOffset = 0;
-					that._searchQuery = null;
-					that._currentFolder = folder;
-					that.fetchItems(folder, that.processItems);
+					browser._pagingOffset = 0;
+					browser._searchQuery = null;
+					browser._currentFolder = folder;
+					browser.fetchItems(folder, browser.processItems);
 				}
 			})
 			.jstree({
-				types: that.types,
-				rootFolderId: this.rootFolderId,
+				types: browser.types,
+				rootFolderId: browser.rootFolderId,
 				plugins: ['themes', 'json_data', 'ui', 'types'],
 				core: {
 					animation: 250
 				},
 				themes: {
 					theme : 'browser',
-					url   : that.rootPath + 'css/jstree.css',
+					url   : browser.rootPath + 'css/jstree.css',
 					dots  : true,
 					icons : true
 				},
 				json_data: {
 					data: function (node, callback) {
-						if (that.repositoryManager) {
-							that.jstree_callback = callback;
-							that.fetchSubnodes.call(that, node, callback);
+						if (browser.repositoryManager) {
+							browser.jstree_callback = callback;
+							browser.fetchSubnodes.call(browser, node, callback);
+							
 						} else {
 							callback();
 						}
@@ -899,6 +921,7 @@ var Browser = Class.extend({
 	},
 	
 	fetchItems: function (folder, callback) {
+		var browser = this;
 		if (!folder) {
 			return;
 		}
@@ -912,7 +935,6 @@ var Browser = Class.extend({
 		this.list.hide();
 		this.grid.find('.loading').show();
 		
-		var that = this;
 		
 		this.queryRepository(
 			{
@@ -929,7 +951,7 @@ var Browser = Class.extend({
 			},
 			function (data, metainfo) {
 				if (typeof callback === 'function') {
-					callback.call(that, data, metainfo);
+					callback.call(browser, data, metainfo);
 				}
 			}
 		);
@@ -946,15 +968,19 @@ var Browser = Class.extend({
 		}
 	},
 	
+	/**
+	 * Shows the list of items contained in a node to the grid panel
+	 */
 	listItems: function (items) {
-		var that = this;		
+		var browser = this;
 		var list = this.list.clearGridData();
 		
 		jQuery.each(items, function () {
 			var obj = this.resource;
+
 			list.addRowData(
 				obj.uid,
-				jQuery.extend({id: obj.id}, that.renderRowCols(obj))
+				jQuery.extend({id: obj.id}, browser.renderRowCols(obj))
 			);
 		});
 	},

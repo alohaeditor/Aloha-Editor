@@ -54,6 +54,10 @@
 			link: {
 				// all elements with no specific configuration may insert links
 				config: [ 'a' ],
+				hotKey: { 
+					// use ctrl+l instead of ctrl+k as hotkey for inserting a link
+					//insertLink: 'ctrl+l'
+				},
 				editables: {
 					// No links in the title.
 					'#top-text': []

@@ -1362,11 +1362,12 @@ var tests = {
 		{	start: 'foo\n\t\t\t[]bar',
 			execResult: 'foo[]bar'
 		},
-		{	start: 'foo     []bar',
+		{	exclude: ['mozilla'], // broken in FF 7.01; NS_ERROR_DOM_INDEX_SIZE_ERR
+			start: 'foo     []bar',
 			execResult: 'foo[]bar'
 		},
 		{
-			start:		'     fo[]o barbar fo bar-ba-bar',
+			start: '     fo[]o barbar fo bar-ba-bar',
 			execResult: ' f[]o barbar fo bar-ba-bar'
 		},
 		{	start: '<p>\n\t\t\tf[]oo bar</p>',

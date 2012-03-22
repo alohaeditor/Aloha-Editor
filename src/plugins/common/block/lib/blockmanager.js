@@ -143,7 +143,6 @@ function(Aloha, jQuery, FloatingMenu, Observable, Registry) {
 		_registerEventHandlersForBlockDeletion: function() {
 			var that = this;
 
-
 			// This case executes in:
 			// - Chrome
 			// - Firefox
@@ -191,12 +190,20 @@ function(Aloha, jQuery, FloatingMenu, Observable, Registry) {
 			// - deletion of blocks inside block collection
 			jQuery(window.document).keydown(function(e) {
 
+				// Pressing DEL or BACKSPACE in a sidebar attribute editor form input
+				// causes the destruction of the block;
+				// if the keypress comes from a form element do nothing
+				if ( typeof e.srcElement.form !== 'undefined' ) {
+					return true;
+				}
+
 				// If a block is active AND DEL or BACKSPACE key pressed, AND we are not inside a nested editable (FIX for IE7/8)
 				if (that._activeBlock && (e.which === 46 || e.which === 8) && that._activeBlock._isInsideNestedEditable === false) {
 					// ...and active block is INSIDE editable
 
 					// BROWSER QUIRK WORKAROUND
 					// - IE7+IE8 for block-level blocks which are NOT part of a bigger selection.
+					// TODO as we're going to remove Ext this browser checks should be made with jQuery
 					if ((Ext.isIE8 || Ext.isIE7) && that._activeBlock.$element.parents('.aloha-editable,.aloha-block').first().hasClass('aloha-editable')) {
 						that._activeBlock.destroy();
 						e.preventDefault();
@@ -219,7 +226,10 @@ function(Aloha, jQuery, FloatingMenu, Observable, Registry) {
 		 * When pasting, the blockcontenthandler is triggered. This takes care of the pasting process.
 		 */
 		_registerEventHandlersForCutCopyPaste: function() {
-			var that = this, currentlyCopying = false, currentlyCutting = false, selectionBeforeCopying = null;
+			var that = this,
+				currentlyCopying = false,
+				currentlyCutting = false,
+				selectionBeforeCopying = null;
 
 			jQuery(window.document).keydown(function(e) {
 				// IF: Ctrl/Command C pressed -- COPY

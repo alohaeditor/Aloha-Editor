@@ -185,6 +185,7 @@ define( [
 				sidebar.init( opts );
 			}
 		} );
+		
 	};
 	
 	// ------------------------------------------------------------------------
@@ -447,7 +448,16 @@ define( [
 			if (this.opened) {
 				this.rotateHandleArrow(isRight ? 0 : 180, 0);
 			}
-			
+
+			// configure the position of the sidebar handle
+			jQuery( function () {
+				if ( typeof Aloha.settings.sidebar != 'undefined' &&
+						Aloha.settings.sidebar.handle &&
+						Aloha.settings.sidebar.handle.top ) {
+					jQuery(bar.find(nsSel('handle'))).get(0).style.top = Aloha.settings.sidebar.handle.top;
+				}
+			} );
+
 			bar.find(nsSel('handle'))
 				.click(function () {
 					if (bounceTimer) {

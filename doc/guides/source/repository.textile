@@ -180,7 +180,7 @@ function ( Aloha, jQuery ) {
 		 * @param obj jQuery object to make clean
 		 * @return void
 		 */
-		markObject = function (obj, repositoryItem) {
+		markObject: function (obj, repositoryItem) {
 			obj.attr('data-myRepository-temporary-data').text( resourceItem.name );
 		},
 
@@ -190,7 +190,7 @@ function ( Aloha, jQuery ) {
 		 * @param {jQuery} obj jQuery object to make clean
 		 * @return void
 		 */
-		makeClean = function ( obj ) {
+		makeClean: function ( obj ) {
 			obj.removeAttr('data-myRepository-temporary-data');
 		};
 
@@ -213,6 +213,7 @@ There are 2 BaseTypes: document and folder. All other objectTypes may extend eit
 h4. Document
 
 * id MUST
+* repositoryId MUST
 * name MUST
 * baseType MUST (document|folder)
 * type MUST
@@ -231,6 +232,7 @@ h4. Document
 h4. Folder
 
 * id MUST
+* repositoryId MUST
 * name MUST
 * baseType MUST (document|folder)
 * type MUST
@@ -288,6 +290,7 @@ The JSON response could look like:
 <shell>
 {
 id: 'gailenejane/5008283282’,
+repositoryId: 'flickr',
 name: 'Quiet moment’,
 type: ‘image/jpeg’,
 url: 'http://www.flickr.com/photos/gailenejane/5008283282/‘,

@@ -89,6 +89,7 @@ function( Aloha, jQuery, Plugin) {
 				// update UI
 			};
 
+			// @todo use aloha hotkeys here
 			jQuery(document).keydown(function(event) {
 				if (!event.metaKey || event.keyCode != 90) {
 					return;
