@@ -135,7 +135,7 @@
           },
           // Note: Webkit's cursor position yields an invalid results 
           // for the following two cases.
-          {   exclude: 'webkit',	
+          {   exclude: ['webkit', 'msie8'],	
               start: '<span>foo</span>{}<span>bar</span>',
               execResult: '<span>foo</span>{}<span>bar</span>' 
           },
@@ -153,7 +153,8 @@
 					{  	start: 'fo[o<span contenteditable=false>bar</span>b]az',
 					   	execResult: 'fo<b>[o</b><span contenteditable=false>bar</span><b>b]</b>az' 
 					},
-					{  	start: 'foo<span contenteditable=false>ba[r]</span>baz',
+          {   exclude: 'msie8',	
+              start: 'foo<span contenteditable=false>ba[r]</span>baz',
 					   	execResult: 'foo<span contenteditable=false>ba[r]</span>baz' 
 					},
           {   exclude: 'webkit',	
@@ -173,11 +174,11 @@
               start: '<span contenteditable=false>fo[o<span contenteditable=true>bar</span>b]az</span>',
               execResult: '<span contenteditable=false>fo[o<span contenteditable=true><b>bar</b></span>b]az</span>' 
 					},
-          {   exclude: "webkit",	
+          {   exclude: ["webkit", "msie8"],	
               start: '<span contenteditable=false>foo<span contenteditable=true>ba[r</span>b]az</span>',
               execResult: '<span contenteditable=false>foo<span contenteditable=true>ba<b>[r</b></span>b]az</span>' 
 					},
-          {   exclude: "webkit",	
+          {   exclude: ["webkit", "msie8"],	
               start: '<span contenteditable=false>fo[o<span contenteditable=true>b]ar</span>baz</span>',
               execResult: '<span contenteditable=false>fo[o<span contenteditable=true><b>b]</b>ar</span>baz</span>' 
 					},
@@ -369,7 +370,7 @@
 					   	execResult: '<b><i>foo</i>[bar]<i>baz</i></b>'
 					},
 					{  	start: '<b>foo</b>[bar]<i><b>baz</b></i>',
-					   	execResult: '<b>foo[bar]<i>baz</b></i>'
+					   	execResult: '<b>foo[bar]<i>baz</i></b>'
 					},
 					{  	start: '<font color=blue face=monospace><b>foo</b></font>[bar]',
 					   	execResult: '<b><font color=blue face=monospace>foo</font>[bar]</b>'
