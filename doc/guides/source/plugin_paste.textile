@@ -1,11 +1,15 @@
 h2. The Paste Plugin
 
+The Paste Plugin provides means to handle pasting content from the
+clipboard and is a prerequisite if you want to handle contents pasted
+from Microsoft Word. In this case you will also have to enable the
+"Contenthandler Plugin":plugin_contenthandler.html.
 
 endprologue.
 
-
 h3. Goal
-Provide a method to "copy", "copyLink", "copyMove", "link", "linkMove", “move” selected content (editable text, non editable text and blocks) 
+
+Provide a method to "copy", "copyLink", "copyMove", "link", "linkMove", "move" selected content (editable text, non editable text and blocks) 
 * inside the same HTML doc
 * from one HTML doc to another
 * from any host system app to the HTML doc

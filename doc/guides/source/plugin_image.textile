@@ -14,14 +14,81 @@ The Image Plugin will allow for basic image manipulation right within your conte
 
 NOTE: You need a server-sided script like image magick which will handle actual cropping for you.
 
-Follow devs on http://twitter.com/search?q=%23aeimg
+NOTE: Follow devs on http://twitter.com/search?q=%23aeimg
 
 endprologue.
 
-h3. Main Features
-* image SRC changeable 
+h3. Configuration
+
+<javascript>
+Aloha.settings.plugins.image.settings = {
+	'maxWidth': 1600,
+	'minWidth': 3,
+	'maxHeight': 1200,
+	'minHeight': 3,
+	// This setting will correct manually values that are out of bounds
+	'autoCorrectManualInput': true,	 
+	// This setting will define a fixed aspect ratio for all resize actions
+	'fixedAspectRatio' : false, 
+	// When enabled this setting will order the plugin to automatically resize images to given bounds
+	'autoResize': false,
+	//Image manipulation options - ONLY in default config section
+	ui: {
+		oneTab		: false, //Place all ui components within one tab
+		insert      : true,
+		reset 		: true,
+		aspectRatioToggle: true, // Toggle button for the aspect ratio 
+		align		: true,	// Menu elements to show/hide in menu
+		resize		: true,	// Resize buttons
+		meta		: true,
+		margin		: true,
+		crop		: true,
+		resizable	: true,	// Resizable ui-drag image
+		handles     : 'ne, se, sw, nw'   
+	},
+	
+	/**
+	 * Crop callback is triggered after the user clicked accept to accept his crop
+	 * @param image jquery image object reference
+	 * @param props cropping properties
+	 */
+	onCropped: function ($image, props) {
+		Aloha.Log.info('Default onCropped invoked', $image, props);
+	},
+	
+	/**
+	 * Reset callback is triggered before the internal reset procedure is applied
+	 * if this function returns true, then the reset has been handled by the callback
+	 * which means that no other reset will be applied
+	 * if false is returned the internal reset procedure will be applied
+	 * @param image jquery image object reference
+	 * @return true if a reset has been applied, false otherwise
+	 */
+	onReset: function ($image) {
+		Aloha.Log.info('Default onReset invoked', $image);
+		return false;
+	},
+	
+	/**
+	 * Example callback method which gets called while the resize process is beeing executed.
+	 */
+	onResize: function ($image) {
+		Aloha.Log.info('Default onResize invoked', $image);
+	},
+	
+	/**
+	 * Resize callback is triggered after the internal resize procedure is applied.  
+	 */
+	onResized: function ($image) {
+		Aloha.Log.info('Default onResized invoked', $image);
+	}
+};
+</javascript>
 
 h3. Plugin Settings
+
+TODO verify these settings and merge with configuration above
+
 * make resizing configurable like in px: { steps: 50 } or {sizes: [50,150,300]}
 * max image width/height in px (for display)
 * make all configuration options optional (true/false)

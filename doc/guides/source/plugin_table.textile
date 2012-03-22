@@ -1,5 +1,59 @@
 h2. The Table Plugin
 
+The Table Plugin will allow you to edit tables within your contents. You
+can do pretty much everything that you'd expect from editing tables,
+like adding and deleting rows and columns as well as merging and
+splitting cells. You can use the tab key to jump from one cell to the
+next.
+
 endprologue.
 
-TBD
+h3. Configuration
+
+The table configuration allows for some special settings:
+<javascript>
+Aloha.settings.plugins.table: {
+	// all elements with no specific configuration are not allowed to insert tables
+	config : [ 'table' ],
+	// the table summary is editable in the sidebar
+	summaryinsidebar : true,
+	// the following settings allow the user to apply specific classes to
+	// either the whole table or a column or row. The name is used as a
+	// class attribute, while the iconClass is applied as a class attribute
+	// to style the buttons
+	tableConfig : [
+		{ name:'hor-minimalist-a' },
+		{ name:'box-table-a' },
+		{ name:'hor-zebra' },
+	],
+	columnConfig : [
+			{ name: 'table-style-bigbold',  iconClass: 'aloha-button-col-bigbold' },
+			{ name: 'table-style-redwhite', iconClass: 'aloha-button-col-redwhite' }
+	],
+	rowConfig : [
+			{ name: 'table-style-bigbold',  iconClass: 'aloha-button-row-bigbold' },
+			{ name: 'table-style-redwhite', iconClass: 'aloha-button-row-redwhite' }
+	]
+};
+</javascript>
+
+h3. Components
+
+* table - insert a table into the content
+* addrowbefore - adds a row before the current row
+* addrowafter - adds a row after the current row
+* deleterow - deletes the current row
+* deletecolumn - deletes the current column
+* rowheader - turns current row into a row of headers
+* columnheader - turns current column into a column of headers
+* romergecells - merge all cells within this row
+* rowsplitcells - split merged cells within this row
+* columnmergecells - merge all cells within this column
+* columnsplitcells - split merged cells within this column
+* addcolumnleft - add a column left of the current column
+* addcolumnright - add a column right of the current column
+* tablemergecells - merge selected cells
+* tablesplitcells - split selected cells
+* mergecells - merge selected cells
+* splitcells - split selected cells
+* tablecaption - input field which allows you to add a caption to the table

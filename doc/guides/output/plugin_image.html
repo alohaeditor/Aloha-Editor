@@ -116,14 +116,79 @@
 	<li>Support for changing the image padding</li>
 </ul>
 <div class="note"><p>You need a server-sided script like image magick which will handle actual cropping for you.</p></div>
-<p>Follow devs on http://twitter.com/search?q=%23aeimg</p>
+
+<div class="note"><p>Follow devs on http://twitter.com/search?q=%23aeimg</p></div>
+
 
           </div>
-        <h3 id="main-features">1 Main Features</h3>
-<ul>
-	<li>image <span class="caps">SRC</span> changeable</li>
-</ul>
-<h3 id="plugin-settings">2 Plugin Settings</h3>
+        <h3 id="configuration">1 Configuration</h3>
+<div class="code_container">
+<pre class="brush: javascript; gutter: false; toolbar: false">
+
+Aloha.settings.plugins.image.settings = {
+	'maxWidth': 1600,
+	'minWidth': 3,
+	'maxHeight': 1200,
+	'minHeight': 3,
+	// This setting will correct manually values that are out of bounds
+	'autoCorrectManualInput': true,	 
+	// This setting will define a fixed aspect ratio for all resize actions
+	'fixedAspectRatio' : false, 
+	// When enabled this setting will order the plugin to automatically resize images to given bounds
+	'autoResize': false,
+	//Image manipulation options - ONLY in default config section
+	ui: {
+		oneTab		: false, //Place all ui components within one tab
+		insert      : true,
+		reset 		: true,
+		aspectRatioToggle: true, // Toggle button for the aspect ratio 
+		align		: true,	// Menu elements to show/hide in menu
+		resize		: true,	// Resize buttons
+		meta		: true,
+		margin		: true,
+		crop		: true,
+		resizable	: true,	// Resizable ui-drag image
+		handles     : 'ne, se, sw, nw'   
+	},
+	
+	/**
+	 * Crop callback is triggered after the user clicked accept to accept his crop
+	 * @param image jquery image object reference
+	 * @param props cropping properties
+	 */
+	onCropped: function ($image, props) {
+		Aloha.Log.info('Default onCropped invoked', $image, props);
+	},
+	
+	/**
+	 * Reset callback is triggered before the internal reset procedure is applied
+	 * if this function returns true, then the reset has been handled by the callback
+	 * which means that no other reset will be applied
+	 * if false is returned the internal reset procedure will be applied
+	 * @param image jquery image object reference
+	 * @return true if a reset has been applied, false otherwise
+	 */
+	onReset: function ($image) {
+		Aloha.Log.info('Default onReset invoked', $image);
+		return false;
+	},
+	
+	/**
+	 * Example callback method which gets called while the resize process is beeing executed.
+	 */
+	onResize: function ($image) {
+		Aloha.Log.info('Default onResize invoked', $image);
+	},
+	
+	/**
+	 * Resize callback is triggered after the internal resize procedure is applied.  
+	 */
+	onResized: function ($image) {
+		Aloha.Log.info('Default onResized invoked', $image);
+	}
+};
+</pre></div><h3 id="plugin-settings">2 Plugin Settings</h3>
+<p><span class="caps">TODO</span> verify these settings and merge with configuration above</p>
 <ul>
 	<li>make resizing configurable like in px: { steps: 50 } or {sizes: [50,150,300]}</li>
 	<li>max image width/height in px (for display)</li>
@@ -135,7 +200,7 @@
         <div id="subCol">
           <h3 class="chapter"><img src="images/strobe/chapters.png" alt="" />Chapters</h3>
           <ol class="chapters">
-            <li><a href="#main-features"><p>Main Features</p>
+            <li><a href="#configuration"><p>Configuration</p>
 </a></li><li><a href="#plugin-settings"><p>Plugin Settings</p>
 </a></li>
           </ol>

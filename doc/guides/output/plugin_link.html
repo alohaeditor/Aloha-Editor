@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>: The Undo Plugin</title>
+  <title>: Link Plugin</title>
 
   <!-- guides styles -->
   <link rel="stylesheet" type="text/css" href="stylesheets/style.css" />
@@ -102,38 +102,56 @@
     <div class="wrapper">
       <div id="mainCol">
           <div class="headerSection">
-            <h2>The Undo Plugin</h2>
-<p>The Undo plugin replaces native browser undo/redo functionality.</p>
+            <h2>Link Plugin</h2>
+<p>The Link Plugin allows you to add hyperlinks to your document, either by specifying them manually or by selecting from repositories using autocompletion.</p>
 
           </div>
-        <h3 id="usage">1 Usage</h3>
-<p>The Undo Plugin allows you to undo changes to an editable by pressing <code>Ctrl&#43;Z</code> (or <code>Cmd&#43;Z</code> on Mac). You may also reapply changes made undone by pressing <code>Ctrl&#43;Shift&#43;Z</code> or <code>Cmd&#43;Shift&#43;Z</code> on Mac. The Undo Plugin has no UI and no components.</p>
-<h3 id="configuration">2 Configuration</h3>
-<p>This plugin does not provide any configuration settings itself.</p>
-<p>However, the Undo plugin relies on the <code>aloha-smart-content-changed</code> event for creating undo snapshots. All undo and redo actions will jump from one undo snapshot to another.</p>
-<p>The <code>aloha-smart-content-changed</code> fires after content changes. The event doesn&#8217;t fire immediately, but only if the content didn&#8217;t change again for a certain amount of time. By default the timeout is 5 seconds (the <code>idle</code> setting). If the user types a character that is in the list configured by the <code>delimiters</code> settings, the timeout is drastically shortened to half a second (the <code>delay</code> setting).</p>
-<p>The timeouts and delimiters can be configured as follows (timeouts are in milliseconds):</p>
+        <h3 id="configuration">1 Configuration</h3>
 <div class="code_container">
 <pre class="brush: javascript; gutter: false; toolbar: false">
 
-Aloha.settings.smartContentChange = {
-    delimiters: [ ':', ';', '.', '!', '?', ',', unescape( '%u0009' ), unescape( '%u0020' ), 'Enter' ],
-    idle: 5000,
-    delay: 500
+Aloha.plugins.link: {
+	// all elements with no specific configuration may insert links
+	config : [ 'a' ],
+	editables : {
+	// No links in the title.
+	'#top-text'	: [  ]
+	},
+	// all links that match the targetregex will get set the target
+	// e.g. ^(?!.*aloha-editor.com).* matches all href except aloha-editor.com
+	targetregex : '^(?!.*aloha-editor.com).*',
+	// this target is set when either targetregex matches or not set
+	// e.g. _blank opens all links in new window
+	target : '_blank',
+	// the same for css class as for target
+	cssclassregex : '^(?!.*aloha-editor.com).*',
+	cssclass : 'aloha',
+	// use all resources of type website for autosuggest
+	objectTypeFilter: [ 'website' ],
+	// handle change of href
+	onHrefChange: function( obj, href, item ) {
+		var jQuery = Aloha.require('aloha/jquery');
+		if ( item ) {
+			jQuery(obj).attr('data-name', item.name);
+		} else {
+			jQuery(obj).removeAttr('data-name');
+		}
+	}
 };
-</pre></div><h3 id="references">3 References</h3>
+</pre></div><h3 id="components">2 Components</h3>
 <ul>
-	<li><a href="http://www.whatwg.org/specs/web-apps/current-work/#undo">http://www.whatwg.org/specs/web-apps/current-work</a></li>
-	<li><a href="https://github.com/jzaefferer/undo">Undo/Redo Stack Abstraction by Jörn Zaefferer from jQuery UI</a></li>
+	<li>formatLink &#8211; will format a given selection as a link by wrapping it in an <code>&lt;a&gt;</code> tag. If the selection is collapsed <code>createLink</code> will be executed</li>
+	<li>createLink &#8211; will insert a new link tag with an empty href into the dom at the current cursor position</li>
+	<li>editLink &#8211; allows you to edit an existing link</li>
+	<li>unlink &#8211; removes an existing link by unwrapping</li>
 </ul>
 
       </div>
         <div id="subCol">
           <h3 class="chapter"><img src="images/strobe/chapters.png" alt="" />Chapters</h3>
           <ol class="chapters">
-            <li><a href="#usage"><p>Usage</p>
-</a></li><li><a href="#configuration"><p>Configuration</p>
-</a></li><li><a href="#references"><p>References</p>
+            <li><a href="#configuration"><p>Configuration</p>
+</a></li><li><a href="#components"><p>Components</p>
 </a></li>
           </ol>
         </div>

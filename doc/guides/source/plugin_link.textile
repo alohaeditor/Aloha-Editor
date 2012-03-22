@@ -1,0 +1,45 @@
+h2. Link Plugin
+
+The Link Plugin allows you to add hyperlinks to your document, either by specifying them manually or by selecting from repositories using autocompletion.
+
+endprologue.
+
+h3. Configuration
+
+<javascript>
+Aloha.plugins.link: {
+	// all elements with no specific configuration may insert links
+	config : [ 'a' ],
+	editables : {
+	// No links in the title.
+	'#top-text'	: [  ]
+	},
+	// all links that match the targetregex will get set the target
+	// e.g. ^(?!.*aloha-editor.com).* matches all href except aloha-editor.com
+	targetregex : '^(?!.*aloha-editor.com).*',
+	// this target is set when either targetregex matches or not set
+	// e.g. _blank opens all links in new window
+	target : '_blank',
+	// the same for css class as for target
+	cssclassregex : '^(?!.*aloha-editor.com).*',
+	cssclass : 'aloha',
+	// use all resources of type website for autosuggest
+	objectTypeFilter: [ 'website' ],
+	// handle change of href
+	onHrefChange: function( obj, href, item ) {
+		var jQuery = Aloha.require('aloha/jquery');
+		if ( item ) {
+			jQuery(obj).attr('data-name', item.name);
+		} else {
+			jQuery(obj).removeAttr('data-name');
+		}
+	}
+};
+</javascript>
+
+h3. Components
+
+* formatLink - will format a given selection as a link by wrapping it in an @<a>@ tag. If the selection is collapsed @createLink@ will be executed
+* createLink - will insert a new link tag with an empty href into the dom at the current cursor position
+* editLink - allows you to edit an existing link
+* unlink - removes an existing link by unwrapping
