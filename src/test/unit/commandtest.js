@@ -211,7 +211,7 @@ function( TestUtils ) {
 						Aloha.getSelection().removeAllRanges();
 						Aloha.getSelection().addRange(r);
 						
-						// toggle ExecCommand
+            // toggle ExecCommand
 						if ( typeof check.execToggle !== 'undefined' ) {
 							// execute the command
 							result = Aloha.execCommand( command, false, check.value );
