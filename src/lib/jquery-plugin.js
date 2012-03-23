@@ -1,3 +1,4 @@
+/*global define: true */
 /*!
 * This file is part of Aloha Editor Project http://aloha-editor.org
 * Copyright © 2010-2011 Gentics Software GmbH, aloha@gentics.com
@@ -26,18 +27,20 @@
 		load: function (name, require, load, config) {
 			var url = require.toUrl(name + '.js');
 
-			require(['aloha/jquery'], function(value) {
+			require(['aloha/jquery'], function (value) {
 				var $ = value;
 				$.ajax({
 					type: 'GET',
-				  	url: url,
-				  	cache: true,
-				  	dataType: 'text',
-				  	success: function(plugin) {
+					url: url,
+					cache: true,
+					dataType: 'text',
+					success: function (plugin) {
 //						plugin = '(function(jQuery) { var $ = jQuery;\n' + plugin + '}(window.alohaQuery));';
-						plugin = 'define([\'aloha/jquery\'], function(jQuery) { var $ = jQuery;\n' + plugin + '});'
+						plugin = 'define([\'aloha/jquery\'], function(jQuery) { var $ = jQuery;\n' + plugin + '});';
 						load.fromText(name, plugin);
-						load(null);
+						require([name], function (value) {
+							load(value);
+						});
 					}
 				});
 			});
