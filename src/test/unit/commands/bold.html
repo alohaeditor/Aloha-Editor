@@ -135,7 +135,7 @@
           },
           // Note: Webkit's cursor position yields an invalid results 
           // for the following two cases.
-          {   exclude: ['webkit', 'msie8'],	
+          {   exclude: ['webkit', 'msie8.0'],	
               start: '<span>foo</span>{}<span>bar</span>',
               execResult: '<span>foo</span>{}<span>bar</span>' 
           },
@@ -153,7 +153,7 @@
 					{  	start: 'fo[o<span contenteditable=false>bar</span>b]az',
 					   	execResult: 'fo<b>[o</b><span contenteditable=false>bar</span><b>b]</b>az' 
 					},
-          {   exclude: 'msie8',	
+          {   exclude: 'msie8.0',	
               start: 'foo<span contenteditable=false>ba[r]</span>baz',
 					   	execResult: 'foo<span contenteditable=false>ba[r]</span>baz' 
 					},
@@ -174,11 +174,11 @@
               start: '<span contenteditable=false>fo[o<span contenteditable=true>bar</span>b]az</span>',
               execResult: '<span contenteditable=false>fo[o<span contenteditable=true><b>bar</b></span>b]az</span>' 
 					},
-          {   exclude: ["webkit", "msie8"],	
+          {   exclude: ["webkit", "msie8.0"],	
               start: '<span contenteditable=false>foo<span contenteditable=true>ba[r</span>b]az</span>',
               execResult: '<span contenteditable=false>foo<span contenteditable=true>ba<b>[r</b></span>b]az</span>' 
 					},
-          {   exclude: ["webkit", "msie8"],	
+          {   exclude: ["webkit", "msie8.0"],	
               start: '<span contenteditable=false>fo[o<span contenteditable=true>b]ar</span>baz</span>',
               execResult: '<span contenteditable=false>fo[o<span contenteditable=true><b>b]</b>ar</span>baz</span>' 
 					},
@@ -191,7 +191,8 @@
 					   	execResult: '<span contenteditable=false>fo[<b>o<span contenteditable=true>bar</span>b</b>]az</span>' 
 					},
           */
-					{  	start: '<table><tbody><tr><td>foo<td>b[a]r<td>baz</table>',
+          {   exclude: 'msie8.0',	
+              start: '<table><tbody><tr><td>foo<td>b[a]r<td>baz</table>',
 					   	execResult: '<table><tbody><tr><td>foo<td>b<b>[a]</b>r<td>baz</table>' 
 					},
           {   exclude: ['mozilla', 'msie'],	
@@ -210,7 +211,8 @@
               start: '<table data-start=0 data-end=1><tbody><tr><td>foo<td>bar<td>baz</table>',
 					   	execResult: '{<table><tbody><tr><td><b>foo</b><td><b>bar</b><td><b>baz</b></table>}' 
 					},
-					{  	start: '{<table><tr><td>foo<td>bar<td>baz</table>}',
+          {   exclude: 'msie8.0',
+					  	start: '{<table><tr><td>foo<td>bar<td>baz</table>}',
 					   	execResult: '{<table><tr><td><b>foo</b><td><b>bar</b><td><b>baz</b></table>}' 
 					},
 					{  	start: 'foo<span style="font-weight: bold">[bar]</span>baz',
