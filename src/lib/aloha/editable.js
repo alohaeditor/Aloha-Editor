@@ -171,15 +171,16 @@ define( [
 			}
 
 			// apply content handler to clean up content
-			if ( typeof Aloha.settings.contentHandler.initEditable === 'undefined' ) {
-				Aloha.settings.contentHandler.initEditable = Aloha.defaults.contentHandler.initEditable;
-			}
-			
-			var content = me.obj.html();
-			content = ContentHandlerManager.handleContent( content, {
-				contenthandler: Aloha.settings.contentHandler.initEditable
-			} );
-			me.obj.html( content );
+			// this was activated by accident; see comments around line 240 regarding plugins!
+			// does look like here it would be fine regarding the plugins... 
+			//var content = me.obj.html();
+			//if ( typeof Aloha.settings.contentHandler.initEditable === 'undefined' ) {
+			//	Aloha.settings.contentHandler.initEditable = Aloha.defaults.contentHandler.initEditable;
+			//}
+			//content = ContentHandlerManager.handleContent( content, {
+			//	contenthandler: Aloha.settings.contentHandler.initEditable
+			//} );
+			//me.obj.html( content );
 
 			// only initialize the editable when Aloha is fully ready (including plugins)
 			Aloha.bind( 'aloha-ready', function() {
@@ -224,6 +225,7 @@ define( [
 				} );
 
 				// handle shortcut keys
+				// @todo replace with hotkey
 				me.obj.keyup( function( event ) {
 					if ( event.keyCode === 27 ) {
 						Aloha.deactivateEditable();
@@ -454,6 +456,8 @@ define( [
 		removePlaceholder: function( obj, setCursor ) {
 			var placeholderClass = this.placeholderClass,
 			    range;
+
+			if (jQuery( '.' + placeholderClass, obj).length === 0) return;
 
 			// remove browser br
 			// jQuery( 'br', obj ).remove();
@@ -735,6 +739,15 @@ define( [
 		 */
 		getId: function() {
 			return this.obj.attr( 'id' );
+		},
+
+		/**
+		 * Get the id of the original object of this editable
+		 * @method
+		 * @return id of the original object of the editable
+		 */
+		getOriginalId: function() {
+			return this.originalObj.attr( 'id' );
 		},
 
 		/**

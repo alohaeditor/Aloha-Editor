@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><title>Aloha Editor Demo</title><meta name="description" content="Aloha Editor Demo"><meta name="author" content="Aloha Editor Team"><script src="app/js/demo-app-load.js"></script><!-- Le HTML5 shim, for IE6-8 support of HTML elements --><!--[if lt IE 9]>
+	<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]--></head><body>
+
+    <div class="topbar">
+      <div class="fill">
+        <div class="container">
+          <span id="brand"><a class="brand" href="#">Aloha Editor Demo</a></span>
+          <ul class="nav" id="navigation">
+			<li class="active"><a href="./">Home</a></li>
+            <li><a href="./">Sitemap</a></li>
+          </ul>
+
+			
+            <a id="edit-page" href="#"><span class="label notice">Edit</span></a>
+            <a id="save-page" href="#"><span class="label warning">Save</span></a>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+
+		<div id="aloha-loading" class="alert-message notice">
+		  <p>Loading Aloha Editor</p>
+		</div>
+		
+
+		
+      <!-- Main hero unit for a primary marketing message or call to action -->
+      <div class="hero-unit">
+        <h2>CMS Input form</h2>
+		<p>This shows how to use Aloha Editor with texareas.</p>
+
+		<form>
+		<fieldset><legend>MyCMS | create new content page</legend>
+		<div class="clearfix">
+		<label for="">Title</label>
+		<div class="input">
+		<input type="text" size="30" name="xlInput" id="xlInput" class="xlarge"></div>
+		</div> <!-- /clearfix -->
+		<fieldset>
+
+		<div class="clearfix">
+		<label for="textarea">Page Body</label>
+		<div class="input">
+		<textarea name="textarea" id="textarea" rows="10" class="xxlarge aloha-editor-demo-editable"></textarea><span class="help-block">
+		The page body of your content page.</span>
+		</div> </div> <!-- /clearfix -->
+		<div class="actions">
+		<button class="btn primary" type="submit">Save Changes</button>&nbsp;<button class="btn" type="reset">Cancel</button>
+		</div>
+		</fieldset></fieldset></form>
+	</div>
+
+
+      <div id="footer"><p>Aloha Editor Demo</p>
+      </div><!-- /container -->
+
+		<script type="text/javascript">
+			Aloha.ready( function(){
+				var $ = Aloha.jQuery;
+				// register all editable areas
+				$('#textarea').aloha();
+				
+				// disable edit button
+				setTimeout(function() {
+					$('#edit-page').hide();
+				}, 700);
+			});
+		</script>
+</div></body></html>

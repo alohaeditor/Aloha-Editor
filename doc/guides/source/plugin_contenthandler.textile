@@ -23,7 +23,7 @@ There are some Content Handler available:
 Plugins also provide Content Handler:
 * Block +common/block+ plugin
 
-There are two hocks available:
+There are two hooks available:
 * insertHtml in +common/commands+ plugin
 * initEditable in core/editable.js
 

@@ -1486,4 +1486,3 @@ function(Aloha, jQuery, Ext, Class, console) {
 	
 	return menu;
 });
-

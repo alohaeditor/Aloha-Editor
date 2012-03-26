@@ -345,13 +345,16 @@ define( [
 		// ### create a wrapper for the table (@see HINT below)
 		// wrapping div for the table to suppress the display of the resize-controls of
 		// the editable divs within the cells
+		// tha data-block-skip-scope attribute will keep the block plugin from setting the
+		// FloatingMenu's scope when the block is clicked
 		tableWrapper = jQuery(
-			'<div class="' + this.get( 'classTableWrapper' ) + '"></div>'
+			'<div class="' + this.get( 'classTableWrapper' ) + '" data-block-skip-scope="true"></div>'
 		);
-		tableWrapper.contentEditable( false );
+		//tableWrapper.contentEditable( false );
 
 		// wrap the tableWrapper around the table
 		this.obj.wrap( tableWrapper );
+		this.obj.parent().alohaBlock();
 
 		// :HINT The outest div (Editable) of the table is still in an editable
 		// div. So IE will surround the the wrapper div with a resize-border

@@ -1,5 +1,5 @@
 /**
- * @license RequireJS text 0.26.0 Copyright (c) 2010-2011, The Dojo Foundation All Rights Reserved.
+ * @license RequireJS text 1.0.6+ Copyright (c) 2010-2011, The Dojo Foundation All Rights Reserved.
  * Available via the MIT or new BSD license.
  * see: http://github.com/jrburke/requirejs for details
  */
@@ -13,6 +13,9 @@
         xmlRegExp = /^\s*<\?xml(\s)+version=[\'\"](\d)*.(\d)*[\'\"](\s)*\?>/im,
         bodyRegExp = /<body[^>]*>\s*([\s\S]+)\s*<\/body>/im,
         hasLocation = typeof location !== 'undefined' && location.href,
+        defaultProtocol = hasLocation && location.protocol && location.protocol.replace(/\:/, ''),
+        defaultHostName = hasLocation && location.hostname,
+        defaultPort = hasLocation && (location.port || undefined),
         buildMap = [];
 
     define(function () {
@@ -38,7 +41,12 @@
             fs = require.nodeRequire('fs');
 
             get = function (url, callback) {
-                callback(fs.readFileSync(url, 'utf8'));
+                var file = fs.readFileSync(url, 'utf8');
+                //Remove BOM (Byte Mark Order) from utf8 files if it is there.
+                if (file.indexOf('\uFEFF') === 0) {
+                    file = file.substring(1);
+                }
+                callback(file);
             };
         } else if (typeof Packages !== 'undefined') {
             //Why Java, why is this so awkward?
@@ -81,7 +89,7 @@
         }
 
         text = {
-            version: '0.26.0',
+            version: '1.0.6+',
 
             strip: function (content) {
                 //Strips <?xml ...?> declarations so that external SVG and XML
@@ -174,7 +182,7 @@
              * @param {String} url
              * @returns Boolean
              */
-            canUseXhr: function (url, protocol, hostname, port) {
+            useXhr: function (url, protocol, hostname, port) {
                 var match = text.xdRegExp.exec(url),
                     uProtocol, uHostName, uPort;
                 if (!match) {
@@ -194,7 +202,7 @@
 
             finishLoad: function (name, strip, content, onLoad, config) {
                 content = strip ? text.strip(content) : content;
-                if (config.isBuild && config.inlineText) {
+                if (config.isBuild) {
                     buildMap[name] = content;
                 }
                 onLoad(content);
@@ -208,12 +216,21 @@
                 //removing the <?xml ...?> declarations so the content can be inserted
                 //into the current doc without problems.
 
+                // Do not bother with the work if a build and text will
+                // not be inlined.
+                if (config.isBuild && !config.inlineText) {
+                    onLoad();
+                    return;
+                }
+
                 var parsed = text.parseName(name),
                     nonStripName = parsed.moduleName + '.' + parsed.ext,
-                    url = req.toUrl(nonStripName);
+                    url = req.toUrl(nonStripName),
+                    useXhr = (config && config.text && config.text.useXhr) ||
+                             text.useXhr;
 
                 //Load the text. Use XHR if possible and in a browser.
-                if (!hasLocation || text.canUseXhr(url)) {
+                if (!hasLocation || useXhr(url, defaultProtocol, defaultHostName, defaultPort)) {
                     text.get(url, function (content) {
                         text.finishLoad(name, parsed.strip, content, onLoad, config);
                     });
@@ -232,8 +249,10 @@
             write: function (pluginName, moduleName, write, config) {
                 if (moduleName in buildMap) {
                     var content = text.jsEscape(buildMap[moduleName]);
-                    write("define('" + pluginName + "!" + moduleName  +
-                          "', function () { return '" + content + "';});\n");
+                    write.asModule(pluginName + "!" + moduleName,
+                                   "define(function () { return '" +
+                                       content +
+                                   "';});\n");
                 }
             },
 
@@ -250,9 +269,16 @@
                 //to avoid any potential issues with ! in file names.
                 text.load(nonStripName, req, function (value) {
                     //Use own write() method to construct full module value.
-                    text.write(pluginName, nonStripName, function (contents) {
-                        write(fileName, contents);
-                    }, config);
+                    //But need to create shell that translates writeFile's
+                    //write() to the right interface.
+                    var textWrite = function (contents) {
+                        return write(fileName, contents);
+                    };
+                    textWrite.asModule = function (moduleName, contents) {
+                        return write.asModule(moduleName, fileName, contents);
+                    };
+
+                    text.write(pluginName, nonStripName, textWrite, config);
                 }, config);
             }
         };

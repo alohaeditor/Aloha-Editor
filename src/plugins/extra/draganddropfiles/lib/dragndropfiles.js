@@ -221,6 +221,7 @@ function($, Plugin,DropFilesRepository) {
 				Aloha.getEditableById(this.targetEditable.attr('id')).activate();
 				that.targetRange = that.initializeRangeForDropEvent(event, this.targetEditable);
 				edConfig = that.getEditableConfig(this.targetEditable);
+				edConfig.upload = $.extend({},edConfig.upload,that.settings.upload);
 				if (edConfig) {
 					that.dropInEditable = true;
 				}

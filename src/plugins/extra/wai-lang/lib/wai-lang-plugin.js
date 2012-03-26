@@ -38,14 +38,24 @@ define( [
 		 * the defined object types to be used for this instance
 		 */
 		objectTypeFilter: [ 'language' ],
+		
+		/**
+		 * HotKeys used for special actions
+		*/
+		hotKey: {
+			insertAnnotation: i18n.t('insertAnnotation', 'ctrl+shift+l')
+		},
 
 		/**
 		 * Initialize the plugin:
 		 * Initializes UI components, and binds their event listeners.
 		 */
 		init: function() {
-			if ( this.settings.objectTypeFilter ) {
+			if ( typeof this.settings.objectTypeFilter != 'undefined' ) {
 				this.objectTypeFilter = this.settings.objectTypeFilter;
+			}
+			if ( typeof this.settings.hotKey != 'undefined' ) {
+				jQuery.extend(true, this.hotKey, this.settings.hotKey);
 			}
 
 			this.createButtons();
@@ -246,7 +256,8 @@ define( [
 			// Add the Link shortcut to all editables
 			jQuery.each( Aloha.editables, function( key, editable ) {
 				// Hotkey for adding new language annotations: CTRL+I
-				editable.obj.keydown( that.handleKeyDown );
+				//editable.obj.keydown( that.handleKeyDown );
+				editable.obj.bind( 'keydown', that.hotKey.insertAnnotation, function () { that.insertLanguageAnnotation(); });
 			} );
 
 			jQuery.each( Aloha.editables, function( key, editable ) {
@@ -259,23 +270,20 @@ define( [
 		},
 
 		/**
-		 * @param {Event} e
 		 * @return {?Boolean}
 		 */
-		handleKeyDown: function( e ) {
-			if ( e.metaKey && e.which === 73 ) {
-				if ( this.findLangMarkup() ) {
-					FloatingMenu.activateTabOfButton( 'wailangfield' );
-					langField.focus();
-				} else {
-					this.addMarkupToSelection();
-				}
-
-				// Prevent from further handling.
-				// on a MAC Safari, cursor would jump to location bar.
-				// We have to use ESC and then META+I instead.
-				return false;
+		insertLanguageAnnotation: function() {
+			if ( this.findLangMarkup() ) {
+				FloatingMenu.activateTabOfButton( 'wailangfield' );
+				langField.focus();
+			} else {
+				this.addMarkupToSelection();
 			}
+
+			// Prevent from further handling.
+			// on a MAC Safari, cursor would jump to location bar.
+			// We have to use ESC and then META+I instead.
+			return false;
 		},
 
 		/**

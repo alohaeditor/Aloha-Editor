@@ -24,27 +24,30 @@ define([
 				}
 			};
 		},
-		render: function($innerElement) {
-
+		init: function($element, postProcessFn) {
+			var that = this;
+			$element.mouseover(function() {
+				$element.append('<span class="stock-quote-overlay company-' + that.attr('symbol') + '"></span>');
+			});
+			$element.mouseout(function() {
+				$element.find('.stock-quote-overlay').remove();
+			});
+			postProcessFn();
+		},
+		update: function($element, postProcessFn) {
 			// Mapping Stock-Symbol -- Company Name (Fake!)
 			switch (this.attr('symbol')) {
 				case 'MSFT':
-					$innerElement.html('Microsoft');
+					$element.html('Microsoft');
 					break;
 				case 'AAPL':
-					$innerElement.html('Apple Inc.');
+					$element.html('Apple Inc.');
 					break;
 				default:
-					$innerElement.html(this.attr('symbol'));
+					$element.html(this.attr('symbol'));
 			}
 
-			var that = this;
-			this.element.mouseover(function() {
-				that.element.append('<span class="stock-quote-overlay company-' + that.attr('symbol') + '"></span>');
-			});
-			this.element.mouseout(function() {
-				that.element.find('.stock-quote-overlay').remove();
-			});
+			postProcessFn();
 		}
 	});
 
@@ -60,8 +63,9 @@ define([
 			}
 		},
 
-		render: function() {
-			return '<span class="aloha-editable">' + this.attr('title') + '</span> <strong class="price">(' + this.attr('price') + ')</strong>';
+		update: function($element, postProcessFn) {
+			$element.html('<span class="aloha-editable">' + this.attr('title') + '</span> <strong class="price">(' + this.attr('price') + ')</strong>');
+			postProcessFn();
 		}
 	});
 
@@ -81,200 +85,195 @@ define([
 			}
 		},
 
-		render: function() {
-			return this.attr('title') + ' <strong class="price">(' + this.attr('price') + ' &euro;)</strong>';
+		update: function($element, postProcessFn) {
+			$element.html(this.attr('title') + ' <span class="price">(' + this.attr('price') + ' &euro;)</span>');
+			postProcessFn();
 		}
 	});
 
-	var VCardBlock;
-	
-	Aloha.require( ['text!blockdemo/res/vcard.html'] , function ( vcardTemplate ) {
-		
-		// Compile the template through underscore
-		var template = _.template( vcardTemplate );
-
-		var VCardBlock = block.AbstractBlock.extend({
-			title: 'vCard',
-
-			getSchema: function() {
-				return {
-					firstname: {
-						type: 'string',
-						label: 'First Name'
-					},
-					lastname: {
-						type: 'string',
-						label: 'Last Name'
-					},
-					url: {
-						type: 'url',
-						label: 'URL'
-					},
-					org: {
-						type: 'string',
-						label: 'Organization'
-					},
-					email: {
-						type: 'email',
-						label: 'E-Mail'
-					}
-				};
-			},
-
-			render: function() {
-				return template(jQuery.extend(
-					{
-						url: '',
-						org: '',
-						email: '',
-						firstname: '',
-						lastname: ''
-					}, this.attr()));
-			}
-		});
-	});
-
-
-	var CustomHandleBlock = block.DefaultBlock.extend({
-		renderToolbar: function() {
-			var that = this;
-			var deleteHandle = jQuery('<span class="block-draghandle-topleft"><a href="#"><span>x</span> delete</a></span>');
-			this.element.prepend(deleteHandle);
-			deleteHandle.click(function() {
-				that.destroy();
-				return false;
-			});
-		}
-	});
-
-	var AbstractTwoColumnBlock = block.AbstractBlock.extend({
-		containerDefinitions: {
-			left: {
-				selector: '.column-left'
-			},
-			right: {
-				selector: '.column-right'
-			}
-		},
-
-		contents: null,
-
-		_initialized: false,
-
-		_registerAsBlockified: function() {
-			// do NOT register myself as blockified yet, as we have to wait for our children to be blockified.
-		},
-
-		whenAllChildrenBlockified: function(next) {
-			var that = this, numberOfNotYetBlockifiedElements = 0, $containersWithDomBlocks = {};
-
-			var template = jQuery('<div />').html(this.$innerElement.html());
-
-			var findBlocksForDomElements = function() {
-				var containersWithBlocks = {};
-				jQuery.each($containersWithDomBlocks, function(containerName, $domBlocks) {
-					containersWithBlocks[containerName] = jQuery.map($domBlocks, function($domBlock) {
-						return BlockManager.getBlock($domBlock);
-					})
-				});
-				return containersWithBlocks;
-			}
-
-			var decrementAndCheckNumberOfBlockifiedElements = function() {
-				numberOfNotYetBlockifiedElements--;
-				if (numberOfNotYetBlockifiedElements <= 0) {
-					next(findBlocksForDomElements());
-				}
-			}
-			jQuery.each(this.containerDefinitions, function(name, config) {
-				template.find(config.selector).empty();
-
-				var $container = that.element.find(config.selector).first();
-				var $elements = $container.children(); // TODO: block container only contains other blocks as children, nothing else!
-				$elements.each(function() {
-					var $element = jQuery(this);
-					if (!BlockManager.getBlock($element)) {
-						// Not blockified yet
-						numberOfNotYetBlockifiedElements++;
-						$element.bind('block-initialized', decrementAndCheckNumberOfBlockifiedElements);
-					}
-				});
-				$containersWithDomBlocks[name] = $elements;
-			});
-
-			if (!this.attr('template')) {
-				this.attr('template', template.html());
-			}
-
-			if (numberOfNotYetBlockifiedElements <= 0) {
-				next(findBlocksForDomElements());
-			}
-		},
-		init: function() {
-			var that = this;
-			this.whenAllChildrenBlockified(function(containersWithBlocks) {
-
-				// Serialize child containers / blocks
-				jQuery.each(containersWithBlocks, function(containerName, blockList) {
-					var serializedBlocks = [];
-
-					jQuery.each(blockList, function() {
-						var block = this;
-						serializedBlocks.push(block.serialize());
-						// TODO for later -- if we have stuff between blocks - block.element.children().remove() might be helpful.
-					});
-					that.attr(containerName, JSON.stringify(serializedBlocks)); // TODO: use cross-browser version of JSON.stringify.
-				});
-
-				that._initialized = true;
-				that.element.trigger('block-initialized');
-			});
-		},
-
-		render: function(innerElement) {
-			var that = this;
-			if (!this._initialized) {
-				// If block is not yet initialized, we will defer rendering internally.
-				this.element.bind('block-initialized', function() {
-					that.element.unbind('block-initialized');
-					that.render(innerElement);
-				});
-
-				return;
-			}
-			innerElement.html(this.attr('template'));
-			jQuery.each(this.containerDefinitions, function(name, config) {
-				var serializedBlocks = JSON.parse(that.attr(name)); // TODO: use cross-browser version of JSON.parse.
-				jQuery.each(serializedBlocks, function() {
-					var serializedBlock = this;
-					// TODO: copy/paste code from BlockPasteHandler
-					var newBlock = jQuery('<' + serializedBlock.tag + '/>');
-					newBlock.attr('class', serializedBlock.classes);
-
-					jQuery.each(serializedBlock.attributes, function(k, v) {
-						if (k === 'about') {
-							newBlock.attr('about', v);
-						} else {
-							newBlock.attr('data-' + k, v);
-						}
-					});
-
-					innerElement.find(config.selector).append(newBlock);
-					BlockManager._blockify(newBlock);
-				});
-			});
-			this._currentlyRendering = false;
-		}
-	});
-
-	var TwoColumnBlock = AbstractTwoColumnBlock.extend({
-		title: 'Two Column block',
+	var ImageBlock = block.AbstractBlock.extend({
+		title: 'Image',
 		getSchema: function() {
 			return {
-				template: {
-					type: 'string'
+				'image': {
+					type: 'string',
+					label: 'Image URI'
+				},
+				'position': {
+					type: 'select',
+					label: 'Position',
+					values: [{
+						key: '',
+						label: 'No Float'
+					}, {
+						key: 'left',
+						label: 'Float left'
+					}, {
+						key: 'right',
+						label: 'Float right'
+					}]
 				}
-			};
+			}
+		},
+		init: function($element, postProcessFn) {
+			this.attr('image', $element.find('img').attr('src'));
+			postProcessFn();
+		},
+		update: function($element, postProcessFn) {
+			if (this.attr('position') === 'right') {
+				$element.css('float', 'right');
+			} else if (this.attr('position') === 'left') {
+				$element.css('float', 'left');
+			} else {
+				$element.css('float', '');
+			}
+
+			$element.find('img').attr('src', this.attr('image'));
+			postProcessFn();
+		}
+	});
+
+	var EditableImageBlock = ImageBlock.extend({
+
+	});
+
+	var NewsBlock = block.AbstractBlock.extend({
+		title: 'News',
+		getSchema: function() {
+			var that = this;
+			return {
+				'news': {
+					type: 'button',
+					buttonLabel: 'Change news',
+					callback: function() {
+						var numberOfNewsArticles = Math.floor((Math.random()*6)+1);
+						alert('Will render ' + numberOfNewsArticles + ' news articles. (This is a placeholder for selecting news articles)');
+						that.attr('numberofarticles', numberOfNewsArticles);
+					}
+				}
+			}
+		},
+		update: function($element, postProcessFn) {
+			var numberOfArticlesToBeCreated = this.attr('numberofarticles') - $element.find('.newselement').length;
+			if (numberOfArticlesToBeCreated > 0) {
+				// Insert specified number of articles
+				for (var i=0; i<numberOfArticlesToBeCreated; i++) {
+					$element.find('.newselement').first().clone().appendTo($element);
+				}
+			} else if (numberOfArticlesToBeCreated < 0) {
+				// Delete articles
+				$element.find('.newselement').slice(numberOfArticlesToBeCreated).remove();
+			}
+			postProcessFn();
+		}
+	});
+
+	var SortableNewsBlock = NewsBlock.extend({
+		title: 'Sortable News',
+		init: function($element, postProcessFn) {
+			var that = this;
+			$element.sortable({
+				stop: function() {
+					that._fixScrollPositionBugsInIE();
+				},
+				cancel: '.aloha-block-handle'
+			});
+
+			postProcessFn();
+		}
+	});
+
+	var ColumnBlock = block.AbstractBlock.extend({
+		title: 'Columns',
+
+		getSchema: function() {
+			return {
+				'columns': {
+					type: 'number',
+					label: 'Number of Columns',
+					range: {
+						min: 1,
+						max: 4,
+						step: 1
+					}
+				}
+			}
+		},
+		init: function($element, postProcessFn) {
+			this.calculateColumnWidths($element);
+			postProcessFn();
+		},
+		update: function($element, postProcessFn) {
+			this.updateDataAttributesFromColumnContents($element);
+
+			var numberOfColumns = parseInt(this.attr('columns'));
+			var columnDifference = numberOfColumns - $element.children('.column').length;
+			if (columnDifference < 0) {
+				// we need to remove the last N columns
+				$element.children('.column').slice(columnDifference).remove();
+			} else {
+				// add new columns
+				for (var i=0; i<columnDifference; i++) {
+					var $column = this.getNewColumn();
+
+					if (this.attr('column-contents-' + (numberOfColumns - columnDifference + i))) {
+						$column.html(this.attr('column-contents-' + (numberOfColumns - columnDifference + i)));
+					} else {
+						$column.html('Some content');
+					}
+
+					$element.append($column);
+					this.postProcessColumn($column);
+				}
+			}
+
+			this.calculateColumnWidths($element);
+			this.$element.children('.clear').remove();
+			this.$element.append(jQuery('<div class="clear" />'));
+			postProcessFn();
+		},
+		getNewColumn: function() {
+			return jQuery('<div class="column aloha-editable" />');
+		},
+		postProcessColumn: function($column) {
+		},
+		updateDataAttributesFromColumnContents: function($element) {
+			var that = this;
+			$element.children('.column').each(function(i, el) {
+				that.attr('column-contents-' + i, jQuery(el).html());
+			});
+		},
+		calculateColumnWidths: function($element) {
+			var numberOfColumns = $element.children('.column').length;
+			$element.children('.column').css('width', Math.floor(100 / numberOfColumns) + '%');
+		}
+	});
+
+	var UneditableColumnBlock = ColumnBlock.extend({
+		init: function($element, postProcessFn) {
+			var that = this;
+			this.calculateColumnWidths($element);
+			$element.children('.column').each(function() {
+				that.postProcessColumn(jQuery(this));
+			})
+			postProcessFn();
+		},
+		getNewColumn: function() {
+			return jQuery('<div class="column aloha-block-collection" />');
+		},
+		postProcessColumn: function($column) {
+			var $button = $column.children('button.addNewBlock');
+			if ($button.length === 0) {
+				$button = jQuery('<button class="addNewBlock">Add new block</button>');
+				$column.append($button);
+			}
+			$button.click(function() {
+				var $newBlock = jQuery('<div>Test</div>');
+				$newBlock.insertBefore($button);
+				$newBlock.alohaBlock({
+
+				});
+			});
 		}
 	});
 
@@ -282,8 +281,11 @@ define([
 		CompanyBlock: CompanyBlock,
 		EditableProductTeaserBlock: EditableProductTeaserBlock,
 		ProductTeaserBlock: ProductTeaserBlock,
-		VCardBlock: VCardBlock,
-		CustomHandleBlock: CustomHandleBlock,
-		TwoColumnBlock: TwoColumnBlock
+		ImageBlock: ImageBlock,
+		EditableImageBlock: EditableImageBlock,
+		NewsBlock: NewsBlock,
+		SortableNewsBlock: SortableNewsBlock,
+		ColumnBlock: ColumnBlock,
+		UneditableColumnBlock: UneditableColumnBlock
 	};
 });

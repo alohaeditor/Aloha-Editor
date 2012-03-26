@@ -22,6 +22,10 @@ authors:
       nick: rene_kapusta
       image: credits/rene_kapusta.jpg
       description: "Rene Kapusta is a proud contributor of the Aloha project."
+    - name: Nicolas Karageuzian
+      nick: nka
+      image: credits/nka.jpg
+      description: "Nicolas Karageuzian is a proud contributor of the Aloha project."
 
 index:
   order:
@@ -85,7 +89,7 @@ index:
       text: "Learn how to use and extend the block plugin for advanced content editing."
     - title: "Image"
       url: plugin_image
-      text: "Learn how to use and extend the block plugin for advanced content editing."
+      text: "Learn how to use and extend the image plugin for inline image manipulation."
     - title: "Content Handler"
       url: plugin_contenthandler
       text: "Learn how to use and extend the contenthandler plugin for advanced content editing."
