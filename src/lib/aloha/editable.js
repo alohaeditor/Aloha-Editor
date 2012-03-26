@@ -632,11 +632,10 @@ define( [
 			this.isActive = true;
 
 			/**
-			 * @event editableActivated fires after the editable has been activated by clicking on it.
+			 * @event aloha-editable-activated fires after the editable has been activated by clicking on it.
 			 * This event is triggered in Aloha's global scope Aloha
-			 * @param {Event} e the event object
-			 * @param {Array} a an array which contains a reference to last active editable on its first position, as well
-			 * as the currently active editable on it's second position
+			 * @param {Object} an object which contains a reference to last active editable (oldActive), as well
+			 * as the currently active editable (editable)
 			 */
 			// trigger a 'general' editableActivated event
 			Aloha.trigger( 'aloha-editable-activated', {
@@ -658,10 +657,10 @@ define( [
 			this.obj.removeClass( 'aloha-editable-active' );
 
 			/**
-			 * @event editableDeactivated fires after the editable has been activated by clicking on it.
+			 * @event aloha-editable-deactivated fires after the editable has been deactivated 
+			 * by clicking on an other editable or a non editable part of the page
 			 * This event is triggered in Aloha's global scope Aloha
-			 * @param {Event} e the event object
-			 * @param {Array} a an array which contains a reference to this editable
+			 * @param {Object} a an object which contains a reference to this editable
 			 */
 			Aloha.trigger( 'aloha-editable-deactivated', { editable : this } );
 

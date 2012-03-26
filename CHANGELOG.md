@@ -21,6 +21,8 @@ All changes are categorized into one of the following keywords:
 - block plugin: revamped colors for highlighting blocks
 - commands.delete: fixed a bug with the delete command when contents are preceded by ignorable whitespace. also added a delete test for that.
 
+- **ENHANCEMENT** adding documentation about Aloha Editor events
+
 ## 0.20.7 - 2012/03/7
 
 - **BUG** link: fixed a bug in the link list static repository plugin that would cause aloha to fail when no settings for the linklist repository were specified.

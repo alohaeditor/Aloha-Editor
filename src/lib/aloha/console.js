@@ -293,6 +293,7 @@ var alohaConsole = Class.extend({
 		}
 
 		// check whether the log is full and eventually remove the oldest entries
+		// @todo remove old entries when aloha-log-full event is triggered
 		while ( this.logHistory.length > Aloha.settings.logHistory.maxEntries ) {
 			this.logHistory.shift();
 		}
