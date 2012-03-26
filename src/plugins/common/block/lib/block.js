@@ -405,10 +405,11 @@ function(Aloha, jQuery, BlockManager, Observable, FloatingMenu) {
 	/** @lends block.block.DefaultBlock */
 	{
 		init: function() {
-			this.attr('default-content', this.element.html());
+			//this.attr('default-content', this.element.html());
 		},
 		render: function() {
-			return this.attr('default-content');
+			//return this.attr('default-content');
+			return;
 		}
 	});
 
