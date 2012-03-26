@@ -233,6 +233,8 @@ function ( jQuery, PluginManager ) {
 		 * Fetches plugins the user wants to have loaded. Returns all plugins the user
 		 * has specified with the data-plugins property as array, with the bundle
 		 * name in front.
+		 * It's also possible to use 'Aloha.settings.plugins.load' to define the plugins
+		 * to load.
 		 *
 		 * @return array
 		 * @internal
@@ -242,13 +244,20 @@ function ( jQuery, PluginManager ) {
 			var
 				plugins = jQuery('[data-aloha-plugins]').data('aloha-plugins');
 
+			// load aloha plugins from config
+			if ( typeof Aloha.settings.plugins != 'undefined' && typeof Aloha.settings.plugins.load != 'undefined' ) {
+				plugins = Aloha.settings.plugins.load;
+				if (plugins instanceof Array) {
+					return plugins;
+				}
+			}
+
 			// Determine Plugins
 			if ( typeof plugins === 'string' && plugins !== "") {
 				return plugins.replace(/\s+/g, '').split(',');
 			}
 			// Return
 			return [];
-			
 		},
 
 		/**
@@ -527,6 +536,7 @@ function ( jQuery, PluginManager ) {
 
 		/**
 		 * Determines the Aloha Url
+		 * Uses Aloha.settings.baseUrl if set.
 		 * @method
 		 * @return {String} alohaUrl
 		 */
@@ -534,7 +544,11 @@ function ( jQuery, PluginManager ) {
 			// aloha base path is defined by a script tag with 2 data attributes
 			var requireJs = jQuery('[data-aloha-plugins]'),
 				baseUrl = ( requireJs.length ) ? requireJs[0].src.replace( /\/?aloha.js$/ , '' ) : '';
-				
+			
+			if ( typeof Aloha.settings.baseUrl === "string" ) {
+				baseUrl = Aloha.settings.baseUrl;
+			}
+			
 			return baseUrl;
 		},
 
