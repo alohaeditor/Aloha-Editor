@@ -143,6 +143,7 @@ define( [
 			Aloha.bind( 'aloha-selection-changed', function ( event, rangeObject ) {
 		        if ( Aloha.activeEditable ) {
 		        	// show/hide the button according to the configuration
+					// @todo this part should be done at aloha-editable-activated event
 		        	var config = me.getEditableConfig( Aloha.activeEditable.obj );
 
 		        	if ( jQuery.inArray( 'abbr', config ) != -1 ) {

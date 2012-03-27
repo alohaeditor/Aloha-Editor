@@ -6,31 +6,30 @@
 	padding: 4px;
 	width: 100%;
 }
-.aloha-block:hover, .aloha-block.aloha-block-highlighted {
+.aloha-editable-active .aloha-block, .aloha-block.aloha-block-highlighted {
 	cursor: pointer;
-	box-shadow: 0 0 0px 1px #FFE98A; /* We use box-shadow because of a Firefox rendering bug with "outline" */
+	box-shadow: 0 0 0px 3px #FFE767; /* We use box-shadow because of a Firefox rendering bug with "outline" */
 }
 .aloha-block.aloha-block-active, .aloha-block.aloha-block-active:hover {
-	box-shadow: 0 0 0px 1px #2F7ECC; /* We use box-shadow because of a Firefox rendering bug with "outline" */
+	box-shadow: 0 0 0px 3px #80B5F2; /* We use box-shadow because of a Firefox rendering bug with "outline" */
 }
 
 
 /* IE8 will use outline for highlighting */
 .ext-ie8 .aloha-block:hover {
-	outline: 1px solid #FFE98A; /* IE does not support box-shadow, thus we need to use border */
+	outline: 3px solid #FFE767; /* IE does not support box-shadow, thus we need to use border */
 }
 .ext-ie8 .aloha-block.aloha-block-active, .ext-ie8 .aloha-block.aloha-block-active:hover {
-	outline: 1px solid #2F7ECC; /* IE does not support box-shadow, thus we need to use border */
+	outline: 3px solid #80B5F2; /* IE does not support box-shadow, thus we need to use border */
 }
 /* IE7 will use border for outlining */
 .ext-ie7 .aloha-block:hover {
-	border: 1px solid #FFE98A; /* IE does not support box-shadow, thus we need to use border */
-	margin: -1px;
+	border: 3px solid #FFE767; /* IE does not support box-shadow, thus we need to use border */
+	margin: -3px;
 }
-
 .ext-ie7 .aloha-block.aloha-block-active, .ext-ie7 .aloha-block.aloha-block-active:hover {
-	border: 1px solid #2F7ECC; /* IE does not support box-shadow, thus we need to use border */
-	margin: -1px;
+	border: 3px solid #80B5F2; /* IE does not support box-shadow, thus we need to use border */
+	margin: -3px;
 }
 
 /** DRAG DROP **/

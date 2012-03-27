@@ -1,5 +1,11 @@
 h2. Aloha Core Plugins
 
+Plugins are optional components of Aloha Editor.
+
+Most plugins can be configured via @Aloha.settings.plugins@ and some
+plugins provide UI components (buttons, input fields, ...) that can be
+added to the toolbar or sidebar.
+
 After reading this guide, you will
 
 * know which plugins are available and which functionality they provide
@@ -8,6 +14,29 @@ After reading this guide, you will
 
 endprologue.
 
+h3. Usage
+
+To load a plugin, it must be listed in the @data-aloha-plugins@ attribute
+of the aloha script tag. For example, to load the format and link plugin the
+script tag would look like the following
+
+<html>
+<script src="javascripts/aloha/aloha.js" data-aloha-plugins="common/format, common/link"></script>
+</html>
+
+To load plugins, css and localization files, Aloha-Editor tries to
+determine a baseUrl. The baseUrl is used to lookup at least the
+following files:
+
+* @baseUrl/aloha/nls/18n@
+* @baseUrl/plugins/common/*@
+* @baseUrl/aloha.css@
+
+The baseUrl is determined by looking at the following places
+
+* the @Aloha.settings.baseUrl@ settings
+* the first occureancy of a script tag, where the file name is @aloha.js@
+* the first script tag where a data attribute @data-aloha-plugins@ is added
 
 Each plugin will provide you with components (buttons, input fields, ...) that can be added to the toolbar or sidebar. 
 
@@ -29,6 +58,8 @@ h4. Components
 * underline - add underline formatting
 * paragraph - will allow you to add paragraph formattings (address, dd, div, dt, h1, h2, h3, h4, h5, h6, p, pre)
 
+The baseUrl is determined by looking at the following places
+
 h4. Configuration
 
 The format plugin provides the following config options:
@@ -45,6 +76,27 @@ Aloha.plugins.format = {
 	removeFormats : [ 'strong', 'em', 'b', 'i', 'cite', 'q', 'code', 'abbr', 'del', 'sub', 'sup']
 };
 </javascript>
+
+
+h3. Core Plugins
+
+* "common/abbr":plugin_abbr.html - the Abbr plugin provides an interface to wrap content with a @<abbr>@ element.
+* "common/align":plugin_align.html - the Align plugin provides an interface to align contents left, right, center, or justify the flow of text.
+* "common/block":plugin_block.html - Blocks are non-editable areas of a website, which often have some properties being editable through the Aloha user interface.
+* "common/characterpicker":plugin_characterpicker.html - the Character Picker plugin provides an interface to insert special characters.
+* common/commands - the Commands plugin provides the inserthtml command for use with the paste plugin.
+* "common/contenthandler":plugin_contenthandler.html - the Content Handler plugin allows automatic processing of HTML inserted into an editable.
+* "common/dom-to-xhtml":plugin_dom_to_xhtml.html - the DOM to XHTML plugin provides support for editable.getContents() XHTML serialization.
+* "common/format":plugin_format.html - the Format plugin provides basic formatting choices.
+* "common/highlighteditables":plugin_highlighteditables.html - the Highlight Editables plugin provides a visual hint of where editables are in the page.
+* "common/horizontalruler":plugin_horizontalruler.html - the Horizontalruler plugin provides an interface to insert a horizontal ruler element.
+* "common/link":plugin_link.html - the Link plugin provides an interface to add hyperlinks.
+* "common/list":plugin_list.html - the List plugin provides an interface to format or insert ordered and unordered lists.
+* "common/paste":plugin_paste.html - the Paste plugin provides the means to process content pasted from the clipboard.
+* "common/table":plugin_table.html - the Table plugin provides specialized controls for table insertion and manipulation.
+* "common/undo":plugin_undo.html - the Undo plugin replaces the native browser undo and redo functionality.
+
+
 
 h3. Link Plugin
 
@@ -84,7 +136,11 @@ Aloha.plugins.link: {
 		} else {
 			jQuery(obj).removeAttr('data-name');
 		}
-	}
+	},
+	// hotKey to trigger insertLink method
+	hotKey: { insertLink: 'ctrl+l' },
+	// default href field input start value
+	hrefValue: 'http://', 
 };
 </javascript>
 
@@ -391,6 +447,13 @@ Aloha.settings.plugins.table: {
 h3. Undo Plugin
 
 The Undo Plugin allows you to undo changes when pressing Ctrl+Z (or Cmd+Z on Mac). You may also reapply changes made undone by pressing Ctrl+Shift+Z or Cmd+Shift+Z on Mac. The Undo Plugin has no ui and no components.
+
+h3. Additional Plugins
+
+Additional plugins are located in the @src/plugins/extra@ folder. These
+plugins will be moved to a separate repository at a future date as they
+are too specific to warrant the overhead of supporting and maintaining
+them as part of Aloha-Editor.
 
 * September 1, 2011: Initial version by "Haymo Meran":credits.html#haymo and "Scott Gonzales":credits.html#scottgonzales
 
