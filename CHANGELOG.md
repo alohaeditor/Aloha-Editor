@@ -13,6 +13,7 @@ All changes are categorized into one of the following keywords:
 
 ## 0.20.8 - SNAPSHOT
 
+- **ENHANCEMENT** core: The jquery-plugin require plugin will now be able to return loaded plugins. Previously loaded plugins were just accessible through the extended jquery object.
 - **FEATURE** editable.js: introduced method setContents() -- use Aloha.getEditableById('my-editable').setContents('Aloha World') to set the contents of the editable with the ID my-editable
 - **BUG** smartContentChange is now again triggered when pressing enter key; and new: delete / backspace keys
 - **ENHANCEMENT** enabled image plugin in boilerplate demo. needs some enhancements to be more user friendly
@@ -26,6 +27,7 @@ All changes are categorized into one of the following keywords:
 ## 0.20.7 - 2012/03/7
 
 - **BUG** link: fixed a bug in the link list static repository plugin that would cause aloha to fail when no settings for the linklist repository were specified.
+- **BUG** formatlesspaste plugin: fixed IE syntax error caused by a comma at the end of a list.
 
 ## 0.20.6 - 2012/03/01
 

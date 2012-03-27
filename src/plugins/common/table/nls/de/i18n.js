@@ -17,7 +17,7 @@ define({
     "button.removeFormat.tooltip": "Formatierung entfernen",
     "button.removeFormat.text": "Formatierung entfernen",
     "button.rowheader.tooltip": "Zeile als Tabellen\u00fcberschrift formatieren",
-    "button.columnheader.tooltip": "Spalte als Tabellen\u00fcberschrift formatieren"
+    "button.columnheader.tooltip": "Spalte als Tabellen\u00fcberschrift formatieren",
     "button.mergecells.tooltip": "Zellen verbinden",
     "button.splitcells.tooltip": "Zelle teilen",
     "table.label.target": "Zusammenfassung",
