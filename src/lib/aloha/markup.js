@@ -107,7 +107,6 @@ Aloha.Markup = Class.extend( {
 		}
 
 		// handle left (37) and right (39) keys for block detection
-		// @todo add also up + down keys
 		if ( event.keyCode === 37 || event.keyCode === 39 ) {
 			return this.processCursor( rangeObject, event.keyCode );
 		}
@@ -154,143 +153,42 @@ Aloha.Markup = Class.extend( {
 		var rt = range.getRangeTree(), // RangeTree reference
 		    i = 0,
 		    cursorLeft = keyCode === 37,
-		    cursorRight = keyCode === 39, // @todo add also cursor up + down
+		    cursorRight = keyCode === 39,
 		    nextSiblingIsBlock = false, // check whether the next sibling is a block (contenteditable = false)
 		    cursorIsWithinBlock = false, // check whether the cursor is positioned within a block (contenteditable = false)
 		    cursorAtLastPos = false, // check if the cursor is within the last position of the currently active dom element
-		    obj, // will contain references to dom objects
-			block; 
+		    obj; // will contain references to dom objects
 
-			if ( !range.isCollapsed() ) {
-				return true;
-			}
+		if ( !range.isCollapsed() ) {
+			return true;
+		}
 
 		for (;i < rt.length; i++) {
-			if ( typeof rt[i].domobj === 'undefined' ) {
+			cursorAtLastPos = range.startOffset === rt[i].domobj.length;
+			if ( !cursorAtLastPos || typeof rt[i].domobj === 'undefined' ) {
 				continue;
 			}
-			
-			cursorIsWithinBlock = jQuery( rt[i].domobj ).parents('[contenteditable=false]').length > 0;
-			
-			console.log(cursorIsWithinBlock ? 'I am in block' : 'I am NOT in block');
-			
-			if ( cursorIsWithinBlock ) {
-				//console.log('block', jQuery( rt[i].domobj ).parents('[contenteditable=false]'));
-				//console.log('block', jQuery( rt[i].domobj ).parents('[contenteditable=false]').hasClass('aloha-block'));
 				
-				jQuery( rt[i].domobj ).parents('[contenteditable=false]').each( function() {
-					if ( jQuery(this).hasClass('aloha-block') ) {
-						//console.log(this);
-						block = this;
-					}
-				});
-				
-				if ( block ) {
-					console.log('we have a aloha block');
-					
-					//GENTICS.Utils.Dom.selectDomNode( block );
-					//Aloha.trigger( 'aloha-block-selected', block );
-					var elem = jQuery( '<br class="aloha-cleanme aloha-empty-line" />' );
-					
-					if ( cursorRight ) {
-						obj = block.nextSibling;
-						console.log('nextSibling', obj);
-						//GENTICS.Utils.Dom.selectDomNode( obj );
-						//Aloha.trigger( 'aloha-block-selected', obj );
-						console.log('nextSibling', obj.nextSibling);
-						var nextIsEditable = jQuery(obj.nextSibling).attr('contenteditable');
-						console.log('nextSibling content editable', nextIsEditable);
-						console.log(obj.nodeType);
-						
-						if ( obj.nodeType == 3 && (obj.nextSibling == null || nextIsEditable == 'false') ) {
-							if ( jQuery.trim(obj.nodeValue) == '' || nextIsEditable == 'false') {
-								obj = jQuery(elem).insertAfter(jQuery(block)).get(0);
-							}
-						}
-					}
+			if ( cursorAtLastPos ) {
+				nextSiblingIsBlock = jQuery( rt[i].domobj.nextSibling ).attr('contenteditable') === 'false';
+				cursorIsWithinBlock = jQuery( rt[i].domobj ).parents('[contenteditable=false]').length > 0;
 
-					if ( cursorLeft ) {
-						obj = block.previousSibling;
-						console.log('previousSibling', obj);
-						//GENTICS.Utils.Dom.selectDomNode( obj );
-						//Aloha.trigger( 'aloha-block-selected', obj );
-						var prevIsEditable = jQuery(obj.previousSibling).attr('contenteditable');
-						if ( obj.nodeType == 3 && (obj.previousSibling == null || prevIsEditable == 'false')) {
-							if ( jQuery.trim(obj.nodeValue) == '' || prevIsEditable == 'false' ) {
-								obj = jQuery(elem).insertBefore(jQuery(block)).get(0);
-							}
-						}
-					}
-
-/*
-					console.log('obj', obj);
-					console.log('obj.nextSibling', obj.nextSibling);
-					console.log('obj.previousSibling', obj.previousSibling);
-					console.log('typeof obj.nextSibling', typeof obj.nextSibling);
-					console.log('typeof obj.previousSibling', typeof obj.previousSibling);
-					console.log('nodetype', obj.nodeType);
-*/
-
-/*
-					if ( obj.nodeType == 3 && obj.nextSibling == null) {
-						console.log(jQuery.trim(obj.nodeValue));
-						if ( jQuery.trim(obj.nodeValue) == '' ) {
-							console.log('empty node');
-							//obj = jQuery('<br />').get(0);
-							
-							var elem = jQuery( '<br class="aloha-cleanme" />' );
-							
-							//console.log('b1', block);
-							if ( cursorRight ) {
-								obj = jQuery(elem).insertAfter(jQuery(block)).get(0);
-							}
-							
-							if ( cursorLeft ) {
-								obj = block = jQuery(elem).insertBefore(jQuery(block)).get(0);
-							}
-							//console.log('b2', block);
-							//obj = block;
-						}
-					}
-					*/
-					//obj = jQuery(obj).append('<br />').get(0);
-					console.log('o', obj);
-					
-
-					
-					
-					
-					GENTICS.Utils.Dom.selectDomNode( obj );
-					//Aloha.Selection.preventSelectionChanged();
-					return false;
-				}
-			}
-			
-			// Don't do anything special unless we are at the end position of the container.
-			if ( range.startOffset !== rt[i].domobj.length ) {
-				continue;
-			}
-			
-			if ( cursorRight ) {
-				// Blocks have their "contenteditable" attribute set to `false'.
-				var rightSiblingIsBlock = jQuery( rt[i].domobj.nextSibling ).attr('contenteditable') === 'false';
-				
-				if (rightSiblingIsBlock ) {
+				if ( cursorRight && nextSiblingIsBlock ) {
 					obj = rt[i].domobj.nextSibling;
 					GENTICS.Utils.Dom.selectDomNode( obj );
 					Aloha.trigger( 'aloha-block-selected', obj );
 					Aloha.Selection.preventSelectionChanged();
 					return false;
 				}
-			}
 
-			if ( cursorLeft && cursorIsWithinBlock ) {
-				obj = jQuery( rt[i].domobj ).parents('[contenteditable=false]').get(0);
-				if ( jQuery( obj ).parent().hasClass('aloha-editable') ) {
-					GENTICS.Utils.Dom.selectDomNode( obj );
-					Aloha.trigger( 'aloha-block-selected', obj );
-					Aloha.Selection.preventSelectionChanged();
-					return false;
+				if ( cursorLeft && cursorIsWithinBlock ) {
+					obj = jQuery( rt[i].domobj ).parents('[contenteditable=false]').get(0);
+					if ( jQuery( obj ).parent().hasClass('aloha-editable') ) {
+						GENTICS.Utils.Dom.selectDomNode( obj );
+						Aloha.trigger( 'aloha-block-selected', obj );
+						Aloha.Selection.preventSelectionChanged();
+						return false;
+					}
 				}
 			}
 		}
