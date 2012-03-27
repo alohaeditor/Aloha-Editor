@@ -53,8 +53,8 @@ All changes are categorized into one of the following keywords:
 - **FEATURE** HotKey feature added for link, format and wai-lang plugin
 - **BUG** added missing endprologue. and regenerated guides; jslint for image plugin
 - **ENHANCEMENT** Added very simple example for loading Aloha Editor. Simplyfied "Using Aloha Editor" guides page.
-
 - **ENHANCEMENT** adding documentation about Aloha Editor events
+
 
 ## 0.20.7 - 2012/03/7
 
