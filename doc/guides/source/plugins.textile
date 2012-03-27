@@ -21,7 +21,17 @@ of the aloha script tag. For example, to load the format and link plugin the
 script tag would look like the following
 
 <html>
-<script src="javascripts/aloha/aloha.js" data-aloha-plugins="common/format, common/link"></script>
+<script src="javascripts/aloha/aloha.js"
+  data-aloha-plugins="common/format, common/link"></script>
+</html>
+
+NOTE: Instead of the data attribute +data-aloha-plugins+ you can also use Aloha settings to define plugins to load (see example below).
+
+<html>
+<script type="text/javascript">
+// load Aloha Editor plugins
+Aloha.settings.plugins.load = 'common/format, common/table, common/list, common/link, common/block, common/undo, common/contenthandler, common/paste, common/commands, common/abbr';
+</script>
 </html>
 
 To load plugins, css and localization files, Aloha-Editor tries to

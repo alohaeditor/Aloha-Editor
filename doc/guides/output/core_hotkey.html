@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>: Using Aloha Editor</title>
+  <title>: Aloha HotKeys</title>
 
   <!-- guides styles -->
   <link rel="stylesheet" type="text/css" href="stylesheets/style.css" />
@@ -103,95 +103,183 @@
     <div class="wrapper">
       <div id="mainCol">
           <div class="headerSection">
-            <h2>Using Aloha Editor</h2>
-<p>After reading this guide, you will be able to:</p>
-<ul>
-	<li>Embed Aloha Editor in your web application.</li>
-	<li>Make areas of your web page editable with Aloha Editor</li>
-</ul>
+            <h2>Aloha HotKeys</h2>
+<div class="warning"><p>The HotKey feature is still being developed. Not all shortcuts are available at the moment.</p></div>
+
 
           </div>
-        <h3 id="prerequisites">1 Prerequisites</h3>
-<p>For a start, let&#8217;s assume that you have a simple web page, you want to make editable with Aloha Editor and you already have placed Aloha Editor on your web server.</p>
-<p>This is your web page:</p>
-<div class="code_container">
-<pre class="brush: xml; gutter: false; toolbar: false">
-
-&lt;head&gt;
-	&lt;meta http-equiv=&quot;content-type&quot; content=&quot;text/html; charset=utf-8&quot;&gt;
-	&lt;title&gt;Getting Started with Aloha Editor&lt;/title&gt;
-	&lt;link rel=&quot;stylesheet&quot; href=&quot;index.css&quot; type=&quot;text/css&quot;&gt;
-&lt;/head&gt;
-&lt;body&gt;
-	&lt;div id=&quot;main&quot;&gt;
-		&lt;div id=&quot;content&quot;&gt;&lt;p&gt;Getting started with Aloha Editor!&lt;/p&gt;&lt;/div&gt;
-	&lt;/div&gt;
-&lt;/body&gt;
-</pre></div><p>Aloha Editor is located in the path <tt>/javascripts</tt> of your web server.</p>
-<h3 id="embed-aloha-editor">2 Embed Aloha Editor</h3>
-<p>To embed Aloha Editor, you just need to load a single css <tt>/javascripts/aloha/css/aloha.css</tt> and a javascript file <tt>/javascripts/aloha/lib/aloha.js</tt> into the <strong>head</strong> section of your page.</p>
-<div class="code_container">
-<pre class="brush: xml; gutter: false; toolbar: false">
-
-&lt;head&gt;
-	&lt;meta http-equiv=&quot;content-type&quot; content=&quot;text/html; charset=utf-8&quot;&gt;
-	&lt;title&gt;Getting Started with Aloha Editor&lt;/title&gt;
-	&lt;link rel=&quot;stylesheet&quot; href=&quot;index.css&quot; type=&quot;text/css&quot;&gt;
-	&lt;!-- Load Aloha Editor css and js --&gt;
-	&lt;link rel=&quot;stylesheet&quot; href=&quot;/javascripts/aloha/css/aloha.css&quot; type=&quot;text/css&quot;&gt;
-	&lt;script src=&quot;/javascripts/aloha/lib/aloha.js&quot;
-	  data-aloha-plugins=&quot;common/format,common/highlighteditables,common/link&quot;&gt;&lt;/script&gt;
-&lt;/head&gt;
-&lt;body&gt;
-	&lt;div id=&quot;main&quot;&gt;
-		&lt;div id=&quot;content&quot;&gt;&lt;p&gt;Getting started with Aloha Editor!&lt;/p&gt;&lt;/div&gt;
-	&lt;/div&gt;
-&lt;/body&gt;
-</pre></div><h3 id="create-editables">3 Create editables</h3>
-<p>An editable is an <span class="caps">HTML</span> element that should be editable by Aloha Editor. You can specify the element with a jQuery selector, and simply call <tt>.aloha</tt> for it.</p>
-<p>When we want to make the div with ID <strong>content</strong> editable, we add the script</p>
-<div class="code_container">
-<pre class="brush: xml; gutter: false; toolbar: false">
-
-&lt;head&gt;
-	&lt;meta http-equiv=&quot;content-type&quot; content=&quot;text/html; charset=utf-8&quot;&gt;
-	&lt;title&gt;Getting Started with Aloha Editor&lt;/title&gt;
-	&lt;link rel=&quot;stylesheet&quot; href=&quot;index.css&quot; type=&quot;text/css&quot;&gt;
-	&lt;!-- Load Aloha Editor css and js --&gt;
-	&lt;link rel=&quot;stylesheet&quot; href=&quot;/javascripts/aloha/css/aloha.css&quot; type=&quot;text/css&quot;&gt;
-	&lt;script src=&quot;/javascripts/aloha/lib/aloha.js&quot;
-	  data-aloha-plugins=&quot;common/format,common/highlighteditables,common/link&quot;&gt;&lt;/script&gt;
-&lt;/head&gt;
-&lt;body&gt;
-	&lt;div id=&quot;main&quot;&gt;
-		&lt;div id=&quot;content&quot;&gt;&lt;p&gt;Getting started with Aloha Editor!&lt;/p&gt;&lt;/div&gt;
-	&lt;/div&gt;
-	&lt;script type=&quot;text/javascript&quot;&gt;
-		Aloha.ready( function() {
-			Aloha.jQuery('#content').aloha();
-		});
-	&lt;/script&gt;
-&lt;/body&gt;
-</pre></div>
-<div class="note"><p>In this example, the <span class="caps">HTML</span> element is made editable in the event handler of the <ins>Aloha.ready</ins> event. This ensures that aloha is fully loaded, before actually using it and is therefore the recommended way of using Aloha Editor.</p></div>
-<h3 id="further-reading">4 Further reading</h3>
+        <table>
+	<tr>
+		<th>Document action </th>
+		<th>Shortcut </th>
+	</tr>
+	<tr>
+		<td> Select all </td>
+		<td> Ctrl<tt>A </td>
+	</tr>
+	<tr>
+		<td> Copy </td>
+		<td> Ctrl</tt></notextile>C </td>
+	</tr>
+	<tr>
+		<td> Paste </td>
+		<td> Ctrl<tt>V </td>
+	</tr>
+	<tr>
+		<td> Cut </td>
+		<td> Ctrl</tt></notextile>X </td>
+	</tr>
+	<tr>
+		<td> Undo* </td>
+		<td> Ctrl<tt>Z </td>
+	</tr>
+	<tr>
+		<td> Redo* </td>
+		<td> Ctrl</tt></notextile>Y </td>
+	</tr>
+	<tr>
+		<td> Increase paragraph indentation* </td>
+		<td> Tab </td>
+	</tr>
+	<tr>
+		<td> Decrease paragraph indentation* </td>
+		<td> Shift<tt>Tab </td>
+	</tr>
+</table>
+<table>
+	<tr>
+		<th>Text formatting </th>
+		<th>Shortcut </th>
+	</tr>
+	<tr>
+		<td> Bold </td>
+		<td> Ctrl</tt></notextile>B </td>
+	</tr>
+	<tr>
+		<td> Italicize </td>
+		<td> Ctrl<tt>I </td>
+	</tr>
+	<tr>
+		<td> Underline </td>
+		<td> Ctrl</tt></notextile>U </td>
+	</tr>
+	<tr>
+		<td> Superscript </td>
+		<td> Ctrl<tt>. </td>
+	</tr>
+	<tr>
+		<td> Subscript </td>
+		<td> Ctrl</tt></notextile>, </td>
+	</tr>
+	<tr>
+		<td> Clear formatting </td>
+		<td> Ctrl<tt>\ </td>
+	</tr>
+</table>
+<table>
+	<tr>
+		<th>Paragraph formatting </th>
+		<th>Shortcut </th>
+	</tr>
+	<tr>
+		<td> Normal paragraph style </td>
+		<td> Ctrl</tt></notextile>Alt<tt>0 </td>
+	</tr>
+	<tr>
+		<td> Header style 1 </td>
+		<td> Ctrl</tt></notextile>Alt<tt>1 </td>
+	</tr>
+	<tr>
+		<td> Header style 2 </td>
+		<td> Ctrl</tt></notextile>Alt<tt>2 </td>
+	</tr>
+	<tr>
+		<td> Header style 3 </td>
+		<td> Ctrl</tt></notextile>Alt<tt>3 </td>
+	</tr>
+	<tr>
+		<td> Header style 4 </td>
+		<td> Ctrl</tt></notextile>Alt<tt>4 </td>
+	</tr>
+	<tr>
+		<td> Header style 5 </td>
+		<td> Ctrl</tt></notextile>Alt<tt>5 </td>
+	</tr>
+	<tr>
+		<td> Header style 6 </td>
+		<td> Ctrl</tt></notextile>Alt<tt>6 </td>
+	</tr>
+	<tr>
+		<td> Preformatted </td>
+		<td> Ctrl</tt></notextile>Alt<tt>P </td>
+	</tr>
+	<tr>
+		<td> Left alignment* </td>
+		<td> Ctrl</tt></notextile>Shift<tt>L </td>
+	</tr>
+	<tr>
+		<td> Center alignment* </td>
+		<td> Ctrl</tt></notextile>Shift<tt>E </td>
+	</tr>
+	<tr>
+		<td> Right alignment* </td>
+		<td> Ctrl</tt></notextile>Shift<tt>R </td>
+	</tr>
+	<tr>
+		<td> Full justify* </td>
+		<td> Ctrl</tt></notextile>Shift<tt>J </td>
+	</tr>
+	<tr>
+		<td> Numbered list* </td>
+		<td> Ctrl</tt></notextile>Shift<tt>7 </td>
+	</tr>
+	<tr>
+		<td> Bulleted list* </td>
+		<td> Ctrl</tt></notextile>Shift<tt>8 </td>
+	</tr>
+</table>
+<table>
+	<tr>
+		<th>Actions </th>
+		<th>Shortcut </th>
+	</tr>
+	<tr>
+		<td> Insert link </td>
+		<td> Ctrl</tt></notextile>K </td>
+	</tr>
+</table>
+<table>
+	<tr>
+		<th>Navigation </th>
+		<th>Shortcut </th>
+	</tr>
+	<tr>
+		<td> Move to next heading* </td>
+		<td> Ctrl + Alt + N then Ctrl + Alt + H </td>
+	</tr>
+	<tr>
+		<td> Move to previous heading* </td>
+		<td> Ctrl + Alt + P then Ctrl + Alt + H </td>
+	</tr>
+</table>
+<table>
+	<tr>
+		<th>Plugins </th>
+		<th>Shortcut </th>
+	</tr>
+	<tr>
+		<td> <span class="caps">WAI</span> Lang: Insert Annotation </td>
+		<td> Ctrl<tt>Shift</tt>l </td>
+	</tr>
+</table>
 <ul>
-	<li>Read the section <a href="configure_aloha.html">Configure Aloha Editor</a> to learn how to configure the behavior of Aloha Editor</li>
-	<li>Read more about <a href="aloha_jquery.html">Aloha and jQuery</a></li>
-	<li>Learn about <a href="plugins.html">Plugins</a></li>
+	<li style="padding-right:1em;">not implemented yet Reference: https://docs.google.com/support/bin/answer.py?answer=179738</li>
 </ul>
 
       </div>
-        <div id="subCol">
-          <h3 class="chapter"><img src="images/strobe/chapters.png" alt="" />Chapters</h3>
-          <ol class="chapters">
-            <li><a href="#prerequisites"><p>Prerequisites</p>
-</a></li><li><a href="#embed-aloha-editor"><p>Embed Aloha Editor</p>
-</a></li><li><a href="#create-editables"><p>Create editables</p>
-</a></li><li><a href="#further-reading"><p>Further reading</p>
-</a></li>
-          </ol>
-        </div>
+      <div id="subCol">
+        
+      </div>
     </div>
   </div>
 
