@@ -24,8 +24,6 @@ define( [
 	'i18n!link/nls/i18n',
 	'i18n!aloha/nls/i18n',
 	'aloha/console',
-	'link/../extra/linklist',
-	/*'link/../extra/slowlinklist', // deactivated */
 	'css!link/css/link.css'
 ], function ( Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, console ) {
 	'use strict';
