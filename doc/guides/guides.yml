@@ -22,6 +22,10 @@ authors:
       nick: rene_kapusta
       image: credits/rene_kapusta.jpg
       description: "Rene Kapusta is a proud contributor of the Aloha project."
+    - name: Nicolas Karageuzian
+      nick: nka
+      image: credits/nka.jpg
+      description: "Nicolas Karageuzian is a proud contributor of the Aloha project."
 
 index:
   order:
@@ -35,13 +39,16 @@ index:
   Start Here:
     - title: "Using Aloha Editor"
       url: using_aloha
-      text: "Learn how to embed Aloha Editor and make your content editable and how to use and configure Aloha Editor plugins."
-    - title: "Developing and building Aloha Editor"
-      url: develop_aloha
-      text: "Learn how to develop or make a custom build of Aloha Editor."
+      text: "Learn how to embed Aloha Editor and make your content editable."
     - title: "Configuring Aloha Editor"
       url: configure_aloha
       text: "Learn how to configure Aloha Editor."
+    - title: "Aloha and jQuery"
+      url: aloha_jquery
+      text: "Read about Aloha and jQuery"
+    - title: "Developing and building Aloha Editor"
+      url: develop_aloha
+      text: "Learn how to develop or make a custom build of Aloha Editor."
     - title: "Aloha dependency management"
       url: require
       text: "In this guide, we will explain how dependencies are managed with Aloha Editor."
@@ -85,7 +92,7 @@ index:
       text: "Learn how to use and extend the block plugin for advanced content editing."
     - title: "Image"
       url: plugin_image
-      text: "Learn how to use and extend the block plugin for advanced content editing."
+      text: "Learn how to use and extend the image plugin for inline image manipulation."
     - title: "Content Handler"
       url: plugin_contenthandler
       text: "Learn how to use and extend the contenthandler plugin for advanced content editing."
@@ -107,6 +114,9 @@ index:
     - title: "Formatless paste"
       url: plugin_formatlesspaste
       text: "The formatlesspaste plugin."
+    - title: "DOM to XHTML"
+      url: plugin_dom_to_xhtml
+      text: "The DOM to XHTML plugin."
 
   Contributing to Aloha Editor:
     - title: Releasing

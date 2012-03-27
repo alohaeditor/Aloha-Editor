@@ -7,9 +7,12 @@
 
 // TODO: SHIFT + ENTER => submit comment  |
 
-(function (window, undefined) {
-	
-	'use strict';
+define(
+['aloha', 'aloha/plugin', 'aloha/jquery', 'aloha/floatingmenu', 'i18n!format/nls/i18n', 'i18n!aloha/nls/i18n', 'aloha/console',
+ 		'css!format/css/format.css'],
+function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
+	"use strict";
+
 	
 	var  jQuery	= window.alohaQuery || window.jQuery,
 			  $ = jQuery,
@@ -67,7 +70,8 @@
 		current_comment,
 		comments_hash = {};
 	
-	Aloha.Comments = new (Aloha.Plugin.extend({
+	//Aloha.Comments = Plugin.create('format', {
+	return Plugin.create('format', {
 		
 		user	 : null,
 		comments : {},
@@ -139,12 +143,12 @@
 					tooltip: 'Show all comments on document'
 				});
 			
-			Aloha.FloatingMenu.addButton(
+			FloatingMenu.addButton(
 				'Aloha.continuoustext',
 				add_btn, 'Comments', 1
 			);
 			
-			Aloha.FloatingMenu.addButton(
+			FloatingMenu.addButton(
 				'Aloha.continuoustext',
 				reveal_btn, 'Comments', 1
 			);
@@ -664,6 +668,6 @@
 			], function () {(new Image()).src = '../../plugin/comments/img/' + this;});
 		}
 		
-	}))(); // Aloha.Comments
+	}); // Aloha.Comments
 	
-})(window);
+});

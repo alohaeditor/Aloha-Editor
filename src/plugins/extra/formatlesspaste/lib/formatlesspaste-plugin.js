@@ -98,6 +98,6 @@ function(Aloha, Plugin, jQuery, FloatingMenu, FormatlessPasteHandler, ContentHan
 				i18nCore.t( 'floatingmenu.tab.format' ),
 				1
 			);
-		},
+		}
 	});
 });

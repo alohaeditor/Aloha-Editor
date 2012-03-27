@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Aloha Editor</title>
+  <meta name="description" content="The world's most advanced browser HTML5 based WYSIWYG editor lets you experience a whole new way of editing." />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="css/api.css" />
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.js"></script>
+  <script src="js/jquery-bbq.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/lib/modernizr-1.7.min.js"></script>
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+</head>
+
+  <body id="docs">
+<!-- ============================== header ================================= -->
+    <!-- begin static/header.html -->
+      <header role="banner">
+    <div class="container">
+      <h1 id="logo">
+        <a href="http://aloha-editor.org"><img src="img/logo.png" alt="Aloha Editor" /></a>
+        </h1>
+
+      <nav role="navigation">
+        <ul>
+          <li><a href="http://aloha-editor.org/about.php">About</a></li>
+          <li><a href="#">Guides</a></li>
+          <li class="active"><a href="http://aloha-editor.org/api" >API Docs</a></li>
+          <li><a href="http://getsatisfaction.com/aloha_editor">Forum</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+  
+
+
+    <!-- end static/header.html -->
+
+<!-- ============================== classes index ============================ -->
+
+    <section id="list">
+      <header>
+        <form action="#" role="search">
+          <input type="text" />
+          <a href="#" class="search-reset"></a>
+        </form>
+      </header>
+      <div>
+        <span class="odd active"><a href="/">API Documentation Index</a></span>
+	
+	<span class='even' global><a href="../symbols/_global_.html">_global_</a></span>
+	
+	<span class='odd'><a href="../symbols/Aloha.Editable.html">Aloha.Editable</a></span>
+	
+	<span class='even'><a href="../symbols/Aloha.Message.html">Aloha.Message</a></span>
+	
+	<span class='odd'><a href="../symbols/Aloha.RepositoryDocument.html">Aloha.RepositoryDocument</a></span>
+	
+	<span class='even'><a href="../symbols/Aloha.RepositoryFolder.html">Aloha.RepositoryFolder</a></span>
+	
+	<span class='odd'><a href="../symbols/Aloha.RepositoryManager.html">Aloha.RepositoryManager</a></span>
+	
+	<span class='even'><a href="../symbols/Aloha.ui.Button.html">Aloha.ui.Button</a></span>
+	
+	<span class='odd'><a href="../symbols/Aloha.ui.MultiSplitButton.html">Aloha.ui.MultiSplitButton</a></span>
+	
+	<span class='even'><a href="../symbols/Array.html">Array</a></span>
+	
+	<span class='odd'><a href="../symbols/block.html">block</a></span>
+	
+	<span class='even'><a href="../symbols/block.block.html">block.block</a></span>
+	
+	<span class='odd'><a href="../symbols/block.block.AbstractBlock.html">block.block.AbstractBlock</a></span>
+	
+	<span class='even'><a href="../symbols/block.block.DebugBlock.html">block.block.DebugBlock</a></span>
+	
+	<span class='odd'><a href="../symbols/block.block.DefaultBlock.html">block.block.DefaultBlock</a></span>
+	
+	<span class='even'><a href="../symbols/block.BlockContentHandler.html">block.BlockContentHandler</a></span>
+	
+	<span class='odd'><a href="../symbols/block.blockmanager.html">block.blockmanager</a></span>
+	
+	<span class='even'><a href="../symbols/block.editor.html">block.editor</a></span>
+	
+	<span class='odd'><a href="../symbols/block.editor.AbstractEditor.html">block.editor.AbstractEditor</a></span>
+	
+	<span class='even'><a href="../symbols/block.editor.AbstractFormElementEditor.html">block.editor.AbstractFormElementEditor</a></span>
+	
+	<span class='odd'><a href="../symbols/block.editor.EmailEditor.html">block.editor.EmailEditor</a></span>
+	
+	<span class='even'><a href="../symbols/block.editor.NumberEditor.html">block.editor.NumberEditor</a></span>
+	
+	<span class='odd'><a href="../symbols/block.editor.StringEditor.html">block.editor.StringEditor</a></span>
+	
+	<span class='even'><a href="../symbols/block.editor.UrlEditor.html">block.editor.UrlEditor</a></span>
+	
+	<span class='odd'><a href="../symbols/block.editormanager.html">block.editormanager</a></span>
+	
+	<span class='even'><a href="../symbols/block.sidebarattributeeditor.html">block.sidebarattributeeditor</a></span>
+	
+	<span class='odd'><a href="../symbols/Boolean.html">Boolean</a></span>
+	
+	<span class='even'><a href="../symbols/contenthandler.html">contenthandler</a></span>
+	
+	<span class='odd'><a href="../symbols/Date.html">Date</a></span>
+	
+	<span class='even'><a href="../symbols/diff_match_patch.html">diff_match_patch</a></span>
+	
+	<span class='odd'><a href="../symbols/Ext.html">Ext</a></span>
+	
+	<span class='even'><a href="../symbols/Ext.DomQuery.html">Ext.DomQuery</a></span>
+	
+	<span class='odd'><a href="../symbols/Ext.TaskMgr.html">Ext.TaskMgr</a></span>
+	
+	<span class='even'><a href="../symbols/Ext.util.TaskRunner.html">Ext.util.TaskRunner</a></span>
+	
+	<span class='odd'><a href="../symbols/Function.html">Function</a></span>
+	
+	<span class='even'><a href="../symbols/GENTICS.Utils.RangeObject.html">GENTICS.Utils.RangeObject</a></span>
+	
+	<span class='odd'><a href="../symbols/GENTICS.Utils.RangeTree.html">GENTICS.Utils.RangeTree</a></span>
+	
+	<span class='even'><a href="../symbols/jQuery.html">jQuery</a></span>
+	
+	<span class='odd'><a href="../symbols/jQuery.fn.html">jQuery.fn</a></span>
+	
+	<span class='even'><a href="../symbols/patch_obj.html">patch_obj</a></span>
+	
+	<span class='odd'><a href="../symbols/rangy-Module.html">rangy-Module</a></span>
+	
+	<span class='even'><a href="../symbols/String.html">String</a></span>
+	
+	<span class='odd'><a href="../symbols/Ui.AttributeField.html">Ui.AttributeField</a></span>
+	
+
+      </div>
+    </section>
+    <footer>
+      <a href="https://github.com/alohaeditor/Aloha-Editor/issues" class="button secondary">REPORT AN ISSUE</a>
+    </footer>
+
+    <div role="main">
+      <section id="documentation">
+<!-- ============================== class title ============================ -->
+        <h1 class="classTitle">
+          
+          Class: jQuery.fn
+        </h1>
+
+<!-- ============================== class summary ========================== -->
+        <p class="description">
+          <span class="extends">
+          
+          </span>
+
+          <p>See the <code class='syntax js'><span class="variable">jQuery</span></code> Library  (http://jquery.com/) for full details.  This just
+documents the function and classes that are added to <code class='syntax js'><span class="variable">jQuery</span></code> by this plug-in.</p>
+
+          
+            <span class="definedin">Defined in: <a href="../symbols/src/_Users_rene_evo42_app_aloha_Aloha-Editor_src_plugins_common_block_lib_block-plugin.js.html">block-plugin.js</a>.</span>
+          
+        </p>
+
+
+<!-- ============================== properties summary ===================== -->
+      
+      
+        
+        <h2>Field Summary</h2>
+        <div id="properties">
+        
+          <ul>
+          
+            <li>
+              jQuery.fn.<a href="../symbols/jQuery.fn.html#.outerHtml">outerHtml</a>
+            </li>
+          
+          </ul>
+        
+
+        
+        </div>
+      
+
+
+
+
+<!-- ============================== methods summary ======================== -->
+      
+      
+        
+        
+          <h2>Class Methods</h2>
+          <ul class="methods">
+          
+            <li class="fixedFont"><a href="../symbols/jQuery.fn.html#.aloha">aloha</a></li>
+          
+            <li class="fixedFont"><a href="../symbols/jQuery.fn.html#.alohaBlock">alohaBlock</a></li>
+          
+            <li class="fixedFont"><a href="../symbols/jQuery.fn.html#.between">between</a></li>
+          
+            <li class="fixedFont"><a href="../symbols/jQuery.fn.html#.contentEditable">contentEditable</a></li>
+          
+            <li class="fixedFont"><a href="../symbols/jQuery.fn.html#.contentEditableSelectionChange">contentEditableSelectionChange</a></li>
+          
+            <li class="fixedFont"><a href="../symbols/jQuery.fn.html#.css">css</a></li>
+          
+            <li class="fixedFont"><a href="../symbols/jQuery.fn.html#.dequeue">dequeue</a></li>
+          
+            <li class="fixedFont"><a href="../symbols/jQuery.fn.html#.extend">extend</a></li>
+          
+            <li class="fixedFont"><a href="../symbols/jQuery.fn.html#.extendObjects">extendObjects</a></li>
+          
+            <li class="fixedFont"><a href="../symbols/jQuery.fn.html#.extractHTML">extractHTML</a></li>
+          
+            <li class="fixedFont"><a href="../symbols/jQuery.fn.html#.mahalo">mahalo</a></li>
+          
+            <li class="fixedFont"><a href="../symbols/jQuery.fn.html#.oembed">oembed</a></li>
+          
+            <li class="fixedFont"><a href="../symbols/jQuery.fn.html#.offset">offset</a></li>
+          
+            <li class="fixedFont"><a href="../symbols/jQuery.fn.html#.textNodes">textNodes</a></li>
+          
+            <li class="fixedFont"><a href="../symbols/jQuery.fn.html#.zap">zap</a></li>
+          
+          </ul>
+        
+      
+        
+        
+      
+<!-- ============================== events summary ======================== -->
+      
+
+
+
+<!-- ============================== field details ========================== -->
+      
+        <h2>
+          Field Detail
+        </h2>
+        
+          <a name=".outerHtml"> </a>
+          <span class="light"><a href="../symbols/String.html">String</a></span>
+          <span class="property"><span class="light">jQuery.fn.</span><b>outerHtml</b></span>
+
+          <div class="description">
+            Fetch the outerHTML of an Element
+            
+              <br />
+              <span class="definedin">Defined in: </span> <a href="../symbols/src/_Users_rene_evo42_app_aloha_Aloha-Editor_src_lib_aloha_jquery.aloha.js.html">jquery.aloha.js</a>.
+            
+            <br /><i>Author: </i>Benjamin Arthur Lupton {@link http://balupton.com}.
+          </div>
+
+          
+
+            
+            
+            
+            
+
+        
+      
+
+
+<!-- ============================== method details ========================= -->
+      
+        
+        
+          <h2>Class Method Detail</h2>
+          
+            <a name=".aloha"> </a>
+            <div class="fixedFont">
+              <span class="methodname">aloha</span>
+            </div>
+            <div class="description">
+              <p><code class='syntax js'><span class="variable">jQuery</span></code> Aloha Plugin</p>
+
+<p>turn all dom elements to continous text</p>
+              
+                <br />
+                <span class="definedin">Defined in: <a href="../symbols/src/_Users_rene_evo42_app_aloha_Aloha-Editor_src_lib_aloha_jquery.aloha.js.html">jquery.aloha.js</a>.</span>
+              
+              
+            </div>
+
+            
+
+              
+              
+              
+              
+              
+                <dl class="returns">
+                <dt class="heading">Returns:</dt>
+                
+                  <dd>jQuery object for the matched elements</dd>
+                
+                </dl>
+              
+              
+              
+
+          
+            <a name=".alohaBlock"> </a>
+            <div class="fixedFont">
+              <span class="methodname">alohaBlock</span>
+            </div>
+            <div class="description">
+              Create Aloha blocks from the matched elements
+              
+              
+            </div>
+
+            
+
+              
+                <dl class="parameters">
+                <dt class="heading">Parameters:</dt>
+                
+                  <dt>
+                    <span class="light fixedFont">Object</span> <b>instanceDefaults</b>
+                    
+                  </dt>
+                  <dd></dd>
+                
+                </dl>
+              
+              
+              
+              
+              
+              
+              
+
+          
+            <a name=".between"> </a>
+            <div class="fixedFont">
+              <span class="methodname">between</span>
+            </div>
+            <div class="description">
+              <p><code class='syntax js'><span class="variable">jQuery</span></code> between Extension</p>
+
+<p>insert either html code, a dom object OR a <code class='syntax js'><span class="variable">jQuery</span></code> object inside of an existing text node.
+if the chained <code class='syntax js'><span class="variable">jQuery</span></code> object is not a text node, nothing will happen.</p>
+              
+                <br />
+                <span class="definedin">Defined in: <a href="../symbols/src/_Users_rene_evo42_app_aloha_Aloha-Editor_src_lib_aloha_jquery.aloha.js.html">jquery.aloha.js</a>.</span>
+              
+              
+            </div>
+
+            
+
+              
+                <dl class="parameters">
+                <dt class="heading">Parameters:</dt>
+                
+                  <dt>
+                    <b>content</b>
+                    
+                  </dt>
+                  <dd>HTML Code, DOM object or jQuery object to be inserted</dd>
+                
+                  <dt>
+                    <b>offset</b>
+                    
+                  </dt>
+                  <dd>character offset from the start where the content should be inserted</dd>
+                
+                </dl>
+              
+              
+              
+              
+              
+              
+              
+
+          
+            <a name=".contentEditable"> </a>
+            <div class="fixedFont">
+              <span class="methodname">contentEditable</span>
+            </div>
+            <div class="description">
+              Make the object contenteditable. Care about browser version (name of contenteditable attribute depends on it)
+              
+                <br />
+                <span class="definedin">Defined in: <a href="../symbols/src/_Users_rene_evo42_app_aloha_Aloha-Editor_src_lib_aloha_jquery.aloha.js.html">jquery.aloha.js</a>.</span>
+              
+              
+            </div>
+
+            
+
+              
+                <dl class="parameters">
+                <dt class="heading">Parameters:</dt>
+                
+                  <dt>
+                    <b>b</b>
+                    
+                  </dt>
+                  <dd></dd>
+                
+                </dl>
+              
+              
+              
+              
+              
+              
+              
+
+          
+            <a name=".contentEditableSelectionChange"> </a>
+            <div class="fixedFont">
+              <span class="methodname">contentEditableSelectionChange</span>
+            </div>
+            <div class="description">
+              <p><code class='syntax js'><span class="variable">jQuery</span></code> Extension
+new Event which is triggered whenever a selection (length >= 0) is made in
+an Aloha Editable element</p>
+              
+                <br />
+                <span class="definedin">Defined in: <a href="../symbols/src/_Users_rene_evo42_app_aloha_Aloha-Editor_src_lib_aloha_jquery.aloha.js.html">jquery.aloha.js</a>.</span>
+              
+              
+            </div>
+
+            
+
+              
+                <dl class="parameters">
+                <dt class="heading">Parameters:</dt>
+                
+                  <dt>
+                    <b>callback</b>
+                    
+                  </dt>
+                  <dd></dd>
+                
+                </dl>
+              
+              
+              
+              
+              
+              
+              
+
+          
+            <a name=".css"> </a>
+            <div class="fixedFont">
+              <span class="methodname">css</span>
+            </div>
+            <div class="description">
+              
+              
+                <br />
+                <span class="definedin">Defined in: <a href="../symbols/src/_Users_rene_evo42_app_aloha_Aloha-Editor_src_test_vendor_jquery-1.6.1.js.html">jquery-1.6.1.js</a>.</span>
+              
+              
+            </div>
+
+            
+
+              
+                <dl class="parameters">
+                <dt class="heading">Parameters:</dt>
+                
+                  <dt>
+                    <b>name</b>
+                    
+                  </dt>
+                  <dd></dd>
+                
+                  <dt>
+                    <b>value</b>
+                    
+                  </dt>
+                  <dd></dd>
+                
+                </dl>
+              
+              
+              
+              
+              
+              
+              
+
+          
+            <a name=".dequeue"> </a>
+            <div class="fixedFont">
+              <span class="methodname">dequeue</span>
+            </div>
+            <div class="description">
+              
+              
+                <br />
+                <span class="definedin">Defined in: <a href="../symbols/src/_Users_rene_evo42_app_aloha_Aloha-Editor_src_test_vendor_jquery-1.2.1.js.html">jquery-1.2.1.js</a>.</span>
+              
+              
+            </div>
+
+            
+
+              
+                <dl class="parameters">
+                <dt class="heading">Parameters:</dt>
+                
+                  <dt>
+                    <b>type</b>
+                    
+                  </dt>
+                  <dd></dd>
+                
+                </dl>
+              
+              
+              
+              
+              
+              
+              
+
+          
+            <a name=".extend"> </a>
+            <div class="fixedFont">
+              <span class="methodname">extend</span>
+            </div>
+            <div class="description">
+              
+              
+                <br />
+                <span class="definedin">Defined in: <a href="../symbols/src/_Users_rene_evo42_app_aloha_Aloha-Editor_src_test_vendor_jquery-1.6.1.js.html">jquery-1.6.1.js</a>.</span>
+              
+              
+            </div>
+
+            
+
+              
+              
+              
+              
+              
+              
+              
+
+          
+            <a name=".extendObjects"> </a>
+            <div class="fixedFont">
+              <span class="methodname">extendObjects</span>
+            </div>
+            <div class="description">
+              
+              
+                <br />
+                <span class="definedin">Defined in: <a href="../symbols/src/_Users_rene_evo42_app_aloha_Aloha-Editor_src_lib_aloha_jquery.aloha.js.html">jquery.aloha.js</a>.</span>
+              
+              
+            </div>
+
+            
+
+              
+              
+              
+              
+              
+              
+              
+
+          
+            <a name=".extractHTML"> </a>
+            <div class="fixedFont">
+              <span class="methodname">extractHTML</span>
+            </div>
+            <div class="description">
+              Create a jQuery plugin to extract the HTML of a given jQuery object
+              
+                <br />
+                <span class="definedin">Defined in: <a href="../symbols/src/_Users_rene_evo42_app_aloha_Aloha-Editor_src_test_unit_testutils.js.html">testutils.js</a>.</span>
+              
+              
+            </div>
+
+            
+
+              
+                <dl class="parameters">
+                <dt class="heading">Parameters:</dt>
+                
+                  <dt>
+                    <b>attributes</b>
+                    
+                  </dt>
+                  <dd></dd>
+                
+                </dl>
+              
+              
+              
+              
+              
+              
+              
+
+          
+            <a name=".mahalo"> </a>
+            <div class="fixedFont">
+              <span class="methodname">mahalo</span>
+            </div>
+            <div class="description">
+              <p><code class='syntax js'><span class="variable">jQuery</span></code> destroy elements as editable</p>
+
+<p>destroy all mached elements editable capabilities</p>
+              
+                <br />
+                <span class="definedin">Defined in: <a href="../symbols/src/_Users_rene_evo42_app_aloha_Aloha-Editor_src_lib_aloha_jquery.aloha.js.html">jquery.aloha.js</a>.</span>
+              
+              
+            </div>
+
+            
+
+              
+              
+              
+              
+              
+                <dl class="returns">
+                <dt class="heading">Returns:</dt>
+                
+                  <dd>jQuery object for the matched elements</dd>
+                
+                </dl>
+              
+              
+              
+
+          
+            <a name=".oembed"> </a>
+            <div class="fixedFont">
+              <span class="methodname">oembed</span>
+            </div>
+            <div class="description">
+              
+              
+                <br />
+                <span class="definedin">Defined in: <a href="../symbols/src/_Users_rene_evo42_app_aloha_Aloha-Editor_src_plugins_common_contenthandler_lib_oembedcontenthandler.js.html">oembedcontenthandler.js</a>.</span>
+              
+              
+            </div>
+
+            
+
+              
+                <dl class="parameters">
+                <dt class="heading">Parameters:</dt>
+                
+                  <dt>
+                    <b>url</b>
+                    
+                  </dt>
+                  <dd></dd>
+                
+                  <dt>
+                    <b>options</b>
+                    
+                  </dt>
+                  <dd></dd>
+                
+                  <dt>
+                    <b>callback</b>
+                    
+                  </dt>
+                  <dd></dd>
+                
+                </dl>
+              
+              
+              
+              
+              
+              
+              
+
+          
+            <a name=".offset"> </a>
+            <div class="fixedFont">
+              <span class="methodname">offset</span>
+            </div>
+            <div class="description">
+              
+              
+                <br />
+                <span class="definedin">Defined in: <a href="../symbols/src/_Users_rene_evo42_app_aloha_Aloha-Editor_src_test_vendor_jquery-1.6.1.js.html">jquery-1.6.1.js</a>.</span>
+              
+              
+            </div>
+
+            
+
+              
+                <dl class="parameters">
+                <dt class="heading">Parameters:</dt>
+                
+                  <dt>
+                    <b>options</b>
+                    
+                  </dt>
+                  <dd></dd>
+                
+                </dl>
+              
+              
+              
+              
+              
+              
+              
+
+          
+            <a name=".textNodes"> </a>
+            <div class="fixedFont">
+              <span class="methodname">textNodes</span>
+            </div>
+            <div class="description">
+              
+              
+                <br />
+                <span class="definedin">Defined in: <a href="../symbols/src/_Users_rene_evo42_app_aloha_Aloha-Editor_src_lib_aloha_jquery.aloha.js.html">jquery.aloha.js</a>.</span>
+              
+              
+            </div>
+
+            
+
+              
+                <dl class="parameters">
+                <dt class="heading">Parameters:</dt>
+                
+                  <dt>
+                    <b>excludeBreaks</b>
+                    
+                  </dt>
+                  <dd></dd>
+                
+                  <dt>
+                    <b>includeEmptyTextNodes</b>
+                    
+                  </dt>
+                  <dd></dd>
+                
+                </dl>
+              
+              
+              
+              
+              
+              
+              
+
+          
+            <a name=".zap"> </a>
+            <div class="fixedFont">
+              <span class="methodname">zap</span>
+            </div>
+            <div class="description">
+              
+              
+                <br />
+                <span class="definedin">Defined in: <a href="../symbols/src/_Users_rene_evo42_app_aloha_Aloha-Editor_src_lib_aloha_jquery.aloha.js.html">jquery.aloha.js</a>.</span>
+              
+              
+            </div>
+
+            
+
+              
+              
+              
+              
+              
+              
+              
+
+          
+        
+      
+        
+        
+      
+
+<!-- ============================== event details ========================= -->
+      
+
+
+
+<!-- ============================== footer ================================= -->
+        <div class="fineprint" style="clear:both">
+          
+          Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Wed Nov 30 2011 13:33:45 GMT+0100 (CET)
+        </div>
+      </section>
+    </div>
+  </body>
+</html>

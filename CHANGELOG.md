@@ -2,6 +2,7 @@
 
 This document is to serve as a "what has been done" in terms of the [Roadmap](https://github.com/alohaeditor/Aloha-Editor/wiki/Roadmap)
 
+
 All changes are categorized into one of the following keywords:
 
 - **BUG**: The change fixes a bug.
@@ -10,22 +11,55 @@ All changes are categorized into one of the following keywords:
 - **FEATURE**: The change introduces a new feature, or modifies the function,
                usage, or intent of an existing one.
 
-## 0.21.1 - 2012/02/23
-
-- **FEATURE** hints plugin: Implemented using Tipsy as tooltip library and the latest Aloha-Editor plugin standard.
-
 ## 0.21.0 - dev
 
-- block plugin: Aloha Block Plugin has now been greatly cleaned up and improved. Besides greatly cleaned up API and documentation, the new features include Drag/Drop, Deletion and Copy/Paste support. Now fully cross-browser (IE7, IE8, IE9, Chrome, Firefox).i
-- block plugin: added data-attribute to prevent triggering scope changes when a block is activated
-- block plugin: revamped colors for highlighting blocks
-- commands.delete: fixed a bug with the delete command when contents are preceded by ignorable whitespace. also added a delete test for that.
+- **ENHANCEMENT**: block plugin: Aloha Block Plugin has now been greatly cleaned up and improved. Besides greatly cleaned up API and documentation, the new features include Drag/Drop, Deletion and Copy/Paste support. Now fully cross-browser (IE7, IE8, IE9, Chrome, Firefox).
+- **BUG**: commands.delete: fixed a bug with the delete command when contents are preceded by ignorable whitespace. also added a delete test for that.
+- **ENHANCEMENT**: The new plugin dom-to-xhtml attempts to create a valid XHTML serialization of the document when getContents() is called.
+- **ENHANCEMENT**: core: The jquery-plugin require plugin will now be able to return loaded plugins. Previously loaded plugins were just accessible through the extended jquery object.
+- **ENHANCEMENT**: block plugin: Aloha Block Plugin has now been greatly cleaned up and improved. Besides greatly cleaned up API and documentation, the new features include Drag/Drop, Deletion and Copy/Paste support. Now fully cross-browser (IE7, IE8, IE9, Chrome, Firefox).
+- **ENHANCEMENT**: commands.delete: fixed a bug with the delete command when contents are preceded by ignorable whitespace. also added a delete test for that.
+- **ENHANCEMENT**: image plugin: splitting main fat file (1500 lines) for easying maintenance and evolutions. The new file which contains the gui is called 'image-floatingMenu.js'. The all sources of the image plugin were jslinted.
+- **ENHANCEMENT**: image plugin: abstracting ui calls and removing FloatingMenu dependency from main plugin file
+- **BUG**: image plugin: building a selection from scratch when an image is clicked isn't safe as conflictual browser behaviours
+- **ENHANCEMENT**: image plugin: new method getImgFocus used in place of findImgMarkup which is pointless now
+- **BUG**: image plugin: containing editable not selectable after image plugin activation.
+- **BUG**: image plugin: when plugin activated on an image, clicking a second image don't disable resize on first one.
+- **BUG**: image plugin: fixing focus and value of srcField when image is clicked (previously handled by selectionChange)
+- **ENHANCEMENT**: core: #448 Aloha Editor possibility to be loaded as requireJS module
+- **FEATURE**: added hotkey functionality
+- **FEATURE**: added Aloha.settings.plugins.load to load plugins also via config
+- **BUG**: fixes alohaeditor/Aloha-Editor##424 -- SmartContentChanged is not triggered when hitting
+- **BUG**: browser: fixes alohaeditor/Aloha-Editor#415 -- Repositorie entries appears twice in explorer
+- **FEATURE**: images browser plugin
+- **ENHANCEMENT**: browser: commenting some methods and coding guidelines
+- **BUG**: browser: fixes alohaeditor/Aloha-Editor#460 -- Error when multiple repositories are configured
+- **BUG** block sidebar attribute editor: when using backspace/del in an input field the block was removed
+- **FEATURE** plugin extra/proxy: as multiple plugins need a proxy script to access external resources there's now one for all to use
+- **FEATURE** editable.js: introduced method setContents() -- use Aloha.getEditableById('my-editable').setContents('Aloha World') to set the contents of the editable with the ID my-editable
+- **FEATURE** editable.js: introduced method setContents() -- use Aloha.getEditableById('my-editable').setContents('Aloha World') to set the contents of the editable with the ID my-editable
+- **BUG** smartContentChange is now again triggered when pressing enter key; and new: delete / backspace keys
+- **ENHANCEMENT** enabled image plugin in boilerplate demo. needs some enhancements to be more user friendly
+- **BUG** align plugin: Fixed alignment behavior and place the buttons in the format tab instead of a new one.
+- **FEATURE** hints plugin: Implemented using Tipsy as tooltip library and the latest Aloha-Editor plugin standard.
+- **ENHANCEMENT** block plugin: added data-attribute to prevent triggering scope changes when a block is activated
+- **ENHANCEMENT** block plugin: revamped colors for highlighting blocks
+- **BUG** updated dom.js to reflect HTML5 spec changes; format with u and i tags is now available; updated default button config
+- **ENHANCEMENT** config options per editable for plugin common/horizontalruler and extra/toc
+- **ENHANCEMENT** configure the sidebar handle position via Aloha.settings.sidebar.handle.top
+- **ENHANCEMENT** table plugin: disable split / merge cell buttons when not possible to use
+- **ENHANCEMENT** dom-to-xhtml plugin: non-specified attributes are excluded from serialization, making attribute serialization more consistent on IE7 and IE8.
+- **FEATURE** API docs: added first version of new API docs
+- **FEATURE** HotKey feature added for link, format and wai-lang plugin
+- **BUG** added missing endprologue. and regenerated guides; jslint for image plugin
+- **ENHANCEMENT** Added very simple example for loading Aloha Editor. Simplyfied "Using Aloha Editor" guides page.
 
 - **ENHANCEMENT** adding documentation about Aloha Editor events
 
 ## 0.20.7 - 2012/03/7
 
 - **BUG** link: fixed a bug in the link list static repository plugin that would cause aloha to fail when no settings for the linklist repository were specified.
+- **BUG** formatlesspaste plugin: fixed IE syntax error caused by a comma at the end of a list.
 
 ## 0.20.6 - 2012/03/01
 
@@ -264,15 +298,13 @@ All changes are categorized into one of the following keywords:
 		  loaded page.
 
 
-## 0.20-BETA - 2011/11
-
+## 0.20.0 - 2011/11
 - core: Add option for "cls" property to be added to ui-attributefields. cls will be an optional extra CSS class that will be added to this component's Element. This can be useful for adding customized styles to the component or any of its children using standard CSS rules. (http://docs.sencha.com/ext-js/4-0/#!/api/Ext.AbstractComponent-cfg-cls)
 - ribbon-plugin: The ribbon will no longer be visible by default. Instead you can use the show function to make it appear.
 - image-plugin: The plugin will now use a different method to calculate the width/height when using a fixed aspect ratio.
 - core: Fixed floatingmenu to stay visible, if pinned and window is resized.
 - core: Added new Method to FloatingMenu: activateTabOfButton(name) will activate the tab containing the button with given name (if tab is visible)
 - core: Fixed all plugins to not use FloatingMenu.userActivatedTab, but FloatingMenu.activateTabOfButton instead. This will ensure that switching Tabs will also work, if floatingmenu is configured individually.
-- link-plugin
 	- fixed link-plugin to bind events to links when editables are created. Also bind events to new created links. This ensures that Hotkey CTRL+L to create a new link works, and links can be followed by clicking on them while holding CTRL
 	- enforced correct highlighting of selection within the input field
 	- fixed handling of external links. Previously it was not possible to change a repository link to an external link.
