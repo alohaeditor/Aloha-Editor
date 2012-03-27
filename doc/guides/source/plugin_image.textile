@@ -20,6 +20,8 @@ endprologue.
 
 h3. Configuration
 
+You can inject a full config object per editable, simply set selector as key in "editables" section of your plugin conf.
+
 <javascript>
 Aloha.settings.plugins.image.settings = {
 	'maxWidth': 1600,
@@ -87,9 +89,16 @@ Aloha.settings.plugins.image.settings = {
 
 h3. Plugin Settings
 
-TODO verify these settings and merge with configuration above
+h4. What is configurable
 
-* make resizing configurable like in px: { steps: 50 } or {sizes: [50,150,300]}
+* make resizing configurable like in px: { steps: 50 } or {sizes: [50,150,300]} (TODO)
 * max image width/height in px (for display)
 * make all configuration options optional (true/false)
-* make removing image on empty optional. Alternatively set a default image
+* make removing image on empty optional. Alternatively set a default image (TODO)
+* inject callback for backend interaction integration
+
+
+h4. Enable the image browser button
+
+If you have configured or integrated a repository containing images, you can enable an image browser button in the floating menu image scope.
+I will help user to choose an image picked from the repository. To enable this feature, just add 'extra/imagebrowser' to the plugins list to be loaded.

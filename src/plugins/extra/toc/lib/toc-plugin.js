@@ -59,6 +59,7 @@ function( Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, console ) {
 		languages: ['en', 'de'],
 		minEntries: 0,
 		updateInterval: 5000,
+		config: ['toc'],
 
 		init: function () {
 			var that = this;
@@ -70,10 +71,25 @@ function( Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore, console ) {
 				this.settings.updateInterval = this.updateInterval;
 			}
 
+			Aloha.bind( 'aloha-editable-activated', function ( event, rangeObject ) {
+				if (Aloha.activeEditable) {
+					that.cfg = that.getEditableConfig( Aloha.activeEditable.obj );
+
+					if ( jQuery.inArray( 'toc', that.cfg ) != -1 ) {
+		        		that.insertTocButton.show();
+		        	} else {
+		        		that.insertTocButton.hide();
+		        		return;
+		        	}
+				}
+			});
+
 	        this.initButtons();
 			jQuery(document).ready(function(){
 				that.spawn();
 			});
+			
+			
 	    },
 	
 		initButtons: function () {

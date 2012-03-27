@@ -1,5 +1,8 @@
 h2. Aloha Editor PHP Example
 
+WARNING: The example uses Aloha Editor 0.9.x code! Needs update.
+
+
 This examples demonstrates how to use Aloha Editor in combination with PHP. 
 
 In this example an ajax call will be invoked each time you deactivate a contenteditable. The ajax call contains information about the content and the editable. Finally the information will be stored within a php session.

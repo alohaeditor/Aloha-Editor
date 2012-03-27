@@ -46,14 +46,18 @@ fi
 echo "Generating aloha.js in $TARGET:"
 echo > "$TARGET/aloha.js"
 
+# add RequireJS
+# uncomment to build Aloha Editor without RequireJS
 echo -e "\n * 1. Adding $REQUIRE"
 cat "$TARGET/$REQUIRE" >> "$TARGET/aloha.js"
 handleError $? "Could not add file to aloha.js"
 
+# add jQuery
 echo -e "\n * 2. Adding $JQUERY"
 cat "$TARGET/$JQUERY" >> "$TARGET/aloha.js"
 handleError $? "Could not add file to aloha.js"
 
+# add extJS
 echo -e "\n * 3. Adding $EXT_ADAPT"
 echo -e "\n * 4. Adding $EXT_ALL"
 echo "(function( jQuery ) {" >> "$TARGET/aloha.js"
@@ -61,9 +65,16 @@ cat "$TARGET/$EXT_ADAPT" "$TARGET/$EXT_ALL" >> "$TARGET/aloha.js"
 handleError $? "Could not add file to aloha.js"
 echo "})( jQuery );" >> "$TARGET/aloha.js"
 
+# aloha-bootstrap
 echo -e "\n * 5. Adding previously generated $TARGET/aloha-bootstrap.js"
 cat "$TARGET/aloha-bootstrap.js" >> "$TARGET/aloha.js"
-handleError $? "Could not add file to aloha.js"
+handleError $? "Could not add file aloha-bootstrap.js to aloha.js"
+
+# aloha-require
+# uncomment if you want to load aloha as RequireJS module
+echo -e "\n * 6. Adding previously generated $TARGET/aloha-require.js"
+cat "$TARGET/aloha-require.js" >> "$TARGET/aloha.js"
+handleError $? "Could not add file aloha-require.js to aloha.js"
 
 echo -e "\n\nGenerated $TARGET/aloha.js."
 echo

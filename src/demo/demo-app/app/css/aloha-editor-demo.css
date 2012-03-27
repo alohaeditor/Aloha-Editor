@@ -1,0 +1,17 @@
+body {
+	padding-top: 60px;
+}
+
+#save-page, #edit-page {
+	display: none; // does not work with jquery hide/show (and twitter bootstrap) 
+}
+
+.cms-actions {
+	font-size: 10px;
+}
+
+#footer {
+  margin-top: 17px;
+  padding-top: 17px;
+  border-top: 1px solid #eee;
+}

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><title>Aloha Editor Demo</title><meta name="description" content="Aloha Editor Demo"><meta name="author" content="Aloha Editor Team"><script src="app/js/demo-app-load.js"></script><!-- Le HTML5 shim, for IE6-8 support of HTML elements --><!--[if lt IE 9]>
+	<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]--></head><body>
+
+    <div class="topbar">
+      <div class="fill">
+        <div class="container">
+          <span id="brand"><a class="brand" href="#">Aloha Editor Demo</a></span>
+          <ul class="nav" id="navigation">
+			<li class="active"><a href="./">Home</a></li>
+            <li><a href="./">Sitemap</a></li>
+          </ul>
+
+            <a id="edit-page" href="#"><span class="label notice">Edit</span></a>
+            <a id="save-page" href="#"><span class="label warning">Save</span></a>
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+
+		<div id="aloha-loading" class="alert-message notice">
+		  <p>Loading Aloha Editor</p>
+		</div>
+
+      <!-- Main hero unit for a primary marketing message or call to action -->
+      <div class="hero-unit">
+        <h2>Feedback</h2>
+		<p>Send us your feedback. This shows how to use Aloha Editor with texarea.</p>
+		
+		<form>
+		<fieldset><legend>How do you like Aloha Editor?</legend>
+		<div class="clearfix">
+		<label for="">Name</label>
+		<div class="input">
+		<input type="text" size="30" name="xlInput" id="xlInput" class="xlarge"></div>
+		</div> <!-- /clearfix -->
+		<fieldset><div class="clearfix">
+		<label for="prependedInput">Twitter ID</label>
+		<div class="input">
+		<div class="input-prepend">
+		<span class="add-on">@</span>
+		<input type="text" size="16" name="prependedInput" id="prependedInput" class="medium"></div>
+		</div>
+		</div> <!-- /clearfix -->
+		<div class="clearfix">
+		<label for="prependedInput2">Like Aloha Editor?</label>
+		<div class="input">
+		<div class="input-prepend">
+		<label class="add-on"><input type="checkbox" value="" id="" name=""></label>
+		<input type="text" size="16" name="prependedInput2" id="prependedInput2" class="medium"></div>
+		</div>
+		</div> <!-- /clearfix -->
+		</fieldset><fieldset><div class="clearfix">
+		<label id="optionsCheckboxes">List of Options</label>
+		<div class="input">
+		<ul class="inputs-list"><li>
+		<label>
+		<input type="checkbox" value="option1" name="optionsCheckboxes"><span>I like to use Aloha Editor</span>
+		</label>
+		</li>
+		<li>
+		<label>
+		<input type="checkbox" value="option2" name="optionsCheckboxes"><span>I like to support Aloha Editor</span>
+		</label>
+		</li>
+		<li>
+		<label class="disabled">
+		<input type="checkbox" disabled value="option2" name="optionsCheckboxes"><span>I like an invitation for the next hackathon.</span>
+		</label>
+		</li>
+		</ul><span class="help-block">
+		<strong>Note:</strong> Labels surround all the options for much larger click areas and a more usable form.
+		</span>
+		</div>
+		</div> <!-- /clearfix -->
+
+		<div class="clearfix">
+		<label for="textarea">Message</label>
+		<div class="input">
+		<textarea name="textarea" id="textarea" class="xxlarge aloha-editor-demo-editable"></textarea><span class="help-block">
+		Write about your experience with Aloha Editor.</span>
+		</div> </div> <!-- /clearfix -->
+		<div class="actions">
+		<button class="btn primary" type="submit">Send feedback</button>&nbsp;<button class="btn" type="reset">Cancel</button>
+		</div>
+		</fieldset></fieldset></form>
+	</div>
+
+      <div id="footer"><p>Aloha Editor Demo</p>
+      </div><!-- /container -->
+		<script type="text/javascript">
+			Aloha.ready( function(){
+				var $ = Aloha.jQuery;
+				// disable edit button
+				setTimeout(function() {
+					$('#edit-page').hide();
+				}, 1000);
+			});
+		</script>
+</div></body></html>
