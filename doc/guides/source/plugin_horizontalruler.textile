@@ -1,0 +1,21 @@
+h2. Horizontalruler Plugin
+
+The Horizontalruler Plugin allows you to insert a horizontal ruler tag aka @<hr>@ at the current cursor position.
+
+endprologue.
+
+h3. Components
+
+The plugin only offers a single component:
+
+* hr - a button which will insert a horizontal ruler at the cursor position
+
+h3. Plugin Settings
+
+<javascript>
+	Aloha.settings.plugins.horizontalruler: {
+		editables: {
+			'#my-editable': []			// disable the plugin for the editable with ID my-editable
+		}
+	}
+</javascript>

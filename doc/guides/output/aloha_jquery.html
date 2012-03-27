@@ -85,6 +85,7 @@
       <dd><a href="plugin_table.html">Table</a></dd>
       <dd><a href="plugin_paste.html">Paste</a></dd>
       <dd><a href="plugin_formatlesspaste.html">Formatless paste</a></dd>
+      <dd><a href="plugin_dom_to_xhtml.html">DOM to XHTML</a></dd>
     <dt>Contributing to Aloha Editor</dt>
       <dd><a href="releasing.html">Releasing</a></dd>
       <dd>Development Process</dd>
@@ -117,7 +118,9 @@
 <div class="code_container">
 <pre class="brush: xml; gutter: false; toolbar: false">
 
+&lt;!-- Load your own version of jQuery --&gt;
 &lt;script src=&quot;http://code.jquery.com/jquery-1.7.1.min.js&quot;&gt;&lt;/script&gt;
+&lt;!-- Tell Aloha Editor to use this jQuery version --&gt;
 &lt;script language=&quot;javascript&quot;&gt;
 	var Aloha = {
 		settings: {
@@ -125,6 +128,7 @@
 		}
 	};
 &lt;/script&gt;
+&lt;!-- Load Aloha Editor --&gt;
 &lt;script src=&quot;/javascripts/aloha/lib/aloha.js&quot;&gt;&lt;/script&gt;
 </pre></div>
 <div class="note"><p>Aloha Editor will attache some jQuery plugins to the jQuery version it uses. This has to be considered when telling Aloha Editor to use a customer jQuery version.</p></div>

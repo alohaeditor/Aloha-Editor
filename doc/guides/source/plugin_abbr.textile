@@ -1,0 +1,17 @@
+h2. Abbr Plugin
+
+The Abbr Plugin will wrap selected contents within an @<abbr>@ tag. You can then specify a title text to describe the abbreviation.
+
+endprologue.
+
+h3. Configuration settings
+
+Currently there are no configuration options for the Abbr Plugin.
+
+h3. Components
+
+* formatAbbr - format selection as an abbreviation
+* createAbbr - insert new abbreviation
+* editAbbr - edit existing abbreviation
+* abbrText - UIAttributeField for text input
+* removeAbbr - remove abbreviation from selection

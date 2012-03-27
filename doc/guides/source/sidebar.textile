@@ -59,7 +59,10 @@ Aloha.settings.sidebar = {
     	link: {
     		link: [ 'editlink' ]
     	} 
-    }
+    },
+	handle: {
+		top: '100px'
+	}
 };
 </javascript>
 

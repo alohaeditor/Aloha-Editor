@@ -83,3 +83,4 @@ h3. Further reading
 
 * Read the section "Configure Aloha Editor":configure_aloha.html to learn how to configure the behavior of Aloha Editor
 * Read more about "Aloha and jQuery":aloha_jquery.html
+* Learn about "Plugins":plugins.html

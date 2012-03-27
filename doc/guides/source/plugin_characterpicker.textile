@@ -1,0 +1,21 @@
+h2. The Character Picker Plugin
+
+The Characterpicker Plugin allows you to insert special characters into your text. Position your cursor, click the icon and choose the character you'd like to insert from the overlay menu.
+
+endprologue.
+
+h3. Components
+
+* characterpicker - brings up the overlay to select a character
+
+With this plugin the editor has the possibility to insert special characters via a button in the insert menu of the floating menu.
+
+h3. Plugin Settings
+
+<javascript>
+    // specify characters for insertion in a space-separated string
+    // this is the basic set of characters available for the plugin
+    Aloha.settings.plugins.characterpicker: {
+		characters: '&#8592; &#8593; &#8594; &#8595; &#8596; &#8629; &#8656; &#8657; &#8658; &#8659; &#8660; &#9824; &#9827; &#9829; &#9830;'			// define your set of allowed special characters
+	}
+</javascript>

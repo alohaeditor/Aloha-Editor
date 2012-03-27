@@ -82,8 +82,9 @@ define( [
 
 			// delimiters, timer and idle for smartContentChange
 			// smartContentChange triggers -- tab: '\u0009' - space: '\u0020' - enter: 'Enter'
+			// backspace: U+0008 - delete: U+007F
 			this.sccDelimiters = [ ':', ';', '.', '!', '?', ',',
-				unescape( '%u0009' ), unescape( '%u0020' ), 'Enter' ];
+				unescape( '%u0009' ), unescape( '%u0020' ), unescape( '%u0008' ), unescape( '%u007F' ), 'Enter' ];
 			this.sccIdle = 5000;
 			this.sccDelay = 500;
 			this.sccTimerIdle = false;
@@ -170,15 +171,16 @@ define( [
 			}
 
 			// apply content handler to clean up content
-			if ( typeof Aloha.settings.contentHandler.initEditable === 'undefined' ) {
-				Aloha.settings.contentHandler.initEditable = Aloha.defaults.contentHandler.initEditable;
-			}
-			
-			var content = me.obj.html();
-			content = ContentHandlerManager.handleContent( content, {
-				contenthandler: Aloha.settings.contentHandler.initEditable
-			} );
-			me.obj.html( content );
+			// this was activated by accident; see comments around line 240 regarding plugins!
+			// does look like here it would be fine regarding the plugins... 
+			//var content = me.obj.html();
+			//if ( typeof Aloha.settings.contentHandler.initEditable === 'undefined' ) {
+			//	Aloha.settings.contentHandler.initEditable = Aloha.defaults.contentHandler.initEditable;
+			//}
+			//content = ContentHandlerManager.handleContent( content, {
+			//	contenthandler: Aloha.settings.contentHandler.initEditable
+			//} );
+			//me.obj.html( content );
 
 			// only initialize the editable when Aloha is fully ready (including plugins)
 			Aloha.bind( 'aloha-ready', function() {
@@ -206,8 +208,13 @@ define( [
 				// if it does not handle the keyStroke it returns true and therefore all other
 				// events (incl. browser's) continue
 				me.obj.keydown( function( event ) {
+					var letEventPass = Markup.preProcessKeyStrokes( event );
 					me.keyCode = event.which;
-					return Markup.preProcessKeyStrokes( event );
+					if (!letEventPass) {
+						// the event will not proceed to key press, therefore trigger smartContentChange
+						me.smartContentChange( event );
+					}
+					return letEventPass;
 				} );
 
 				// handle keypress
@@ -218,6 +225,7 @@ define( [
 				} );
 
 				// handle shortcut keys
+				// @todo replace with hotkey
 				me.obj.keyup( function( event ) {
 					if ( event.keyCode === 27 ) {
 						Aloha.deactivateEditable();
@@ -700,12 +708,46 @@ define( [
 		},
 
 		/**
+		 * Set the contents of this editable as a HTML string
+		 * @param content as html
+		 * @param return as object or html string
+		 * @return contents of the editable
+		 */
+		setContents: function( content, asObject ) {
+			var reactivate = null;
+
+			if ( Aloha.getActiveEditable() === this ) {
+				Aloha.deactivateEditable();
+				reactivate = this;
+			}
+
+			this.obj.html( content );
+
+			if ( null !== reactivate ) {
+				reactivate.activate();
+			}
+
+			this.smartContentChange({type : 'set-contents'});
+
+			return asObject ? this.obj.contents() : contentSerializer(this.obj[0]);
+		},
+
+		/**
 		 * Get the id of this editable
 		 * @method
 		 * @return id of this editable
 		 */
 		getId: function() {
 			return this.obj.attr( 'id' );
+		},
+
+		/**
+		 * Get the id of the original object of this editable
+		 * @method
+		 * @return id of the original object of the editable
+		 */
+		getOriginalId: function() {
+			return this.originalObj.attr( 'id' );
 		},
 
 		/**

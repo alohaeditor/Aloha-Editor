@@ -342,6 +342,8 @@ function (Aloha, $, Utils, TableCell, i18n) {
 		this.baseCellPosition = null;
 		this.lastSelectionRange = null; 
 		this.selectionType = 'cell';
+
+		Aloha.trigger( 'aloha-table-selection-changed' );
 	};
 
 	/**
@@ -367,6 +369,64 @@ function (Aloha, $, Utils, TableCell, i18n) {
 			this.baseCellPosition = null;
 			this.lastSelectionRange = null; 
 			this.selectionType = 'cell';
+
+			Aloha.trigger( 'aloha-table-selection-changed' );
+		}
+	};
+
+	/**
+	 * This method checks if the current selection of cells is merge able
+	 *
+	 * @return {boolean}
+	 *        true if more than one cell is selected.
+	 */
+	TableSelection.prototype.cellsAreMergeable = function() {
+		var selectedCells = this.selectedCells;
+
+		if ( selectedCells.length < 2 ) {
+			return false;
+		}
+
+		var isSelected = function ( cellInfo ) {
+			return -1 != $.inArray( cellInfo.cell, selectedCells );
+		};
+
+		var grid = Utils.makeGrid( this.table.getRows() );
+		var contour = Utils.makeContour( grid, isSelected );
+
+		if ( ! isMergeable( grid, contour, isSelected ) ) {
+			return false;
+		} else {
+			return true;
+		}
+	};
+
+	/**
+	 * This method checks if the current selection of cells is split able
+	 *
+	 * @return {boolean}
+	 *        true if more than one cell is selected.
+	 */
+	TableSelection.prototype.cellsAreSplitable = function() {
+		var splitable = 0;
+		if ( this.selectedCells.length > 0 ) {
+			$(this.selectedCells).each(function(){
+				var cell = this;
+				var colspan = Utils.colspan( cell );
+				var rowspan = Utils.rowspan( cell );
+
+				if ( colspan > 1 || rowspan > 1 ) {
+					splitable++;
+				}
+			});
+			
+			if ( splitable > 0 ) {
+				return true;
+			} else {
+				return false;
+			}
+		} else {
+			return false;
 		}
 	};
 

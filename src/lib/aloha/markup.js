@@ -181,6 +181,13 @@ Aloha.Markup = Class.extend( {
 					return false;
 				}
 
+				if ( cursorRight && !nextSiblingIsBlock ) {
+					obj = jQuery( rt[i].domobj ).get(0);
+					//obj = rt[i].domobj.nextSibling;
+					GENTICS.Utils.Dom.selectDomNode( obj );
+					return true;
+				}
+
 				if ( cursorLeft && cursorIsWithinBlock ) {
 					obj = jQuery( rt[i].domobj ).parents('[contenteditable=false]').get(0);
 					if ( jQuery( obj ).parent().hasClass('aloha-editable') ) {
