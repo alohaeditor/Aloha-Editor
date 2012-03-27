@@ -51,6 +51,7 @@ All changes are categorized into one of the following keywords:
 - **ENHANCEMENT** dom-to-xhtml plugin: non-specified attributes are excluded from serialization, making attribute serialization more consistent on IE7 and IE8.
 - **FEATURE** API docs: added first version of new API docs
 - **FEATURE** HotKey feature added for link, format and wai-lang plugin
+- **BUG** added missing endprologue. and regenerated guides; jslint for image plugin
 
 
 ## 0.20.7 - 2012/03/7
