@@ -2,6 +2,7 @@ h2. Aloha HotKeys
 
 WARNING: The HotKey feature is still being developed. Not all shortcuts are available at the moment.
 
+endprologue.
 
 |_. Document action |_. Shortcut |
 | Select all | Ctrl+A |

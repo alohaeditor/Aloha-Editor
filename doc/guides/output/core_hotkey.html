@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Aloha GuidesAloha Guides: The Table Plugin</title>
+  <title>Aloha GuidesAloha Guides: Aloha HotKeys</title>
 
   <!-- guides styles -->
   <link rel="stylesheet" type="text/css" href="stylesheets/style.css" />
@@ -102,69 +102,183 @@
     <div class="wrapper">
       <div id="mainCol">
           <div class="headerSection">
-            <h2>The Table Plugin</h2>
-<p>The Table Plugin will allow you to edit tables within your contents. You can do pretty much everything that you&#8217;d expect from editing tables, like adding and deleting rows and columns as well as merging and splitting cells. You can use the tab key to jump from one cell to the next.</p>
+            <h2>Aloha HotKeys</h2>
+<div class="warning"><p>The HotKey feature is still being developed. Not all shortcuts are available at the moment.</p></div>
+
 
           </div>
-        <h3 id="configuration">1 Configuration</h3>
-<p>The table configuration allows for some special settings:</p>
-<div class="code_container">
-<pre class="brush: javascript; gutter: false; toolbar: false">
-
-Aloha.settings.plugins.table: {
-	// all elements with no specific configuration are not allowed to insert tables
-	config : [ 'table' ],
-	// the table summary is editable in the sidebar
-	summaryinsidebar : true,
-	// the following settings allow the user to apply specific classes to
-	// either the whole table or a column or row. The name is used as a
-	// class attribute, while the iconClass is applied as a class attribute
-	// to style the buttons
-	tableConfig : [
-		{ name:'hor-minimalist-a' },
-		{ name:'box-table-a' },
-		{ name:'hor-zebra' },
-	],
-	columnConfig : [
-			{ name: 'table-style-bigbold',  iconClass: 'aloha-button-col-bigbold' },
-			{ name: 'table-style-redwhite', iconClass: 'aloha-button-col-redwhite' }
-	],
-	rowConfig : [
-			{ name: 'table-style-bigbold',  iconClass: 'aloha-button-row-bigbold' },
-			{ name: 'table-style-redwhite', iconClass: 'aloha-button-row-redwhite' }
-	]
-};
-</pre></div><h3 id="components">2 Components</h3>
+        <table>
+	<tr>
+		<th>Document action </th>
+		<th>Shortcut </th>
+	</tr>
+	<tr>
+		<td> Select all </td>
+		<td> Ctrl<tt>A </td>
+	</tr>
+	<tr>
+		<td> Copy </td>
+		<td> Ctrl</tt></notextile>C </td>
+	</tr>
+	<tr>
+		<td> Paste </td>
+		<td> Ctrl<tt>V </td>
+	</tr>
+	<tr>
+		<td> Cut </td>
+		<td> Ctrl</tt></notextile>X </td>
+	</tr>
+	<tr>
+		<td> Undo* </td>
+		<td> Ctrl<tt>Z </td>
+	</tr>
+	<tr>
+		<td> Redo* </td>
+		<td> Ctrl</tt></notextile>Y </td>
+	</tr>
+	<tr>
+		<td> Increase paragraph indentation* </td>
+		<td> Tab </td>
+	</tr>
+	<tr>
+		<td> Decrease paragraph indentation* </td>
+		<td> Shift<tt>Tab </td>
+	</tr>
+</table>
+<table>
+	<tr>
+		<th>Text formatting </th>
+		<th>Shortcut </th>
+	</tr>
+	<tr>
+		<td> Bold </td>
+		<td> Ctrl</tt></notextile>B </td>
+	</tr>
+	<tr>
+		<td> Italicize </td>
+		<td> Ctrl<tt>I </td>
+	</tr>
+	<tr>
+		<td> Underline </td>
+		<td> Ctrl</tt></notextile>U </td>
+	</tr>
+	<tr>
+		<td> Superscript </td>
+		<td> Ctrl<tt>. </td>
+	</tr>
+	<tr>
+		<td> Subscript </td>
+		<td> Ctrl</tt></notextile>, </td>
+	</tr>
+	<tr>
+		<td> Clear formatting </td>
+		<td> Ctrl<tt>\ </td>
+	</tr>
+</table>
+<table>
+	<tr>
+		<th>Paragraph formatting </th>
+		<th>Shortcut </th>
+	</tr>
+	<tr>
+		<td> Normal paragraph style </td>
+		<td> Ctrl</tt></notextile>Alt<tt>0 </td>
+	</tr>
+	<tr>
+		<td> Header style 1 </td>
+		<td> Ctrl</tt></notextile>Alt<tt>1 </td>
+	</tr>
+	<tr>
+		<td> Header style 2 </td>
+		<td> Ctrl</tt></notextile>Alt<tt>2 </td>
+	</tr>
+	<tr>
+		<td> Header style 3 </td>
+		<td> Ctrl</tt></notextile>Alt<tt>3 </td>
+	</tr>
+	<tr>
+		<td> Header style 4 </td>
+		<td> Ctrl</tt></notextile>Alt<tt>4 </td>
+	</tr>
+	<tr>
+		<td> Header style 5 </td>
+		<td> Ctrl</tt></notextile>Alt<tt>5 </td>
+	</tr>
+	<tr>
+		<td> Header style 6 </td>
+		<td> Ctrl</tt></notextile>Alt<tt>6 </td>
+	</tr>
+	<tr>
+		<td> Preformatted </td>
+		<td> Ctrl</tt></notextile>Alt<tt>P </td>
+	</tr>
+	<tr>
+		<td> Left alignment* </td>
+		<td> Ctrl</tt></notextile>Shift<tt>L </td>
+	</tr>
+	<tr>
+		<td> Center alignment* </td>
+		<td> Ctrl</tt></notextile>Shift<tt>E </td>
+	</tr>
+	<tr>
+		<td> Right alignment* </td>
+		<td> Ctrl</tt></notextile>Shift<tt>R </td>
+	</tr>
+	<tr>
+		<td> Full justify* </td>
+		<td> Ctrl</tt></notextile>Shift<tt>J </td>
+	</tr>
+	<tr>
+		<td> Numbered list* </td>
+		<td> Ctrl</tt></notextile>Shift<tt>7 </td>
+	</tr>
+	<tr>
+		<td> Bulleted list* </td>
+		<td> Ctrl</tt></notextile>Shift<tt>8 </td>
+	</tr>
+</table>
+<table>
+	<tr>
+		<th>Actions </th>
+		<th>Shortcut </th>
+	</tr>
+	<tr>
+		<td> Insert link </td>
+		<td> Ctrl</tt></notextile>K </td>
+	</tr>
+</table>
+<table>
+	<tr>
+		<th>Navigation </th>
+		<th>Shortcut </th>
+	</tr>
+	<tr>
+		<td> Move to next heading* </td>
+		<td> Ctrl + Alt + N then Ctrl + Alt + H </td>
+	</tr>
+	<tr>
+		<td> Move to previous heading* </td>
+		<td> Ctrl + Alt + P then Ctrl + Alt + H </td>
+	</tr>
+</table>
+<table>
+	<tr>
+		<th>Plugins </th>
+		<th>Shortcut </th>
+	</tr>
+	<tr>
+		<td> <span class="caps">WAI</span> Lang: Insert Annotation </td>
+		<td> Ctrl<tt>Shift</tt>l </td>
+	</tr>
+</table>
 <ul>
-	<li>table &#8211; insert a table into the content</li>
-	<li>addrowbefore &#8211; adds a row before the current row</li>
-	<li>addrowafter &#8211; adds a row after the current row</li>
-	<li>deleterow &#8211; deletes the current row</li>
-	<li>deletecolumn &#8211; deletes the current column</li>
-	<li>rowheader &#8211; turns current row into a row of headers</li>
-	<li>columnheader &#8211; turns current column into a column of headers</li>
-	<li>romergecells &#8211; merge all cells within this row</li>
-	<li>rowsplitcells &#8211; split merged cells within this row</li>
-	<li>columnmergecells &#8211; merge all cells within this column</li>
-	<li>columnsplitcells &#8211; split merged cells within this column</li>
-	<li>addcolumnleft &#8211; add a column left of the current column</li>
-	<li>addcolumnright &#8211; add a column right of the current column</li>
-	<li>tablemergecells &#8211; merge selected cells</li>
-	<li>tablesplitcells &#8211; split selected cells</li>
-	<li>mergecells &#8211; merge selected cells</li>
-	<li>splitcells &#8211; split selected cells</li>
-	<li>tablecaption &#8211; input field which allows you to add a caption to the table</li>
+	<li style="padding-right:1em;">not implemented yet Reference: https://docs.google.com/support/bin/answer.py?answer=179738</li>
 </ul>
 
       </div>
-        <div id="subCol">
-          <h3 class="chapter"><img src="images/strobe/chapters.png" alt="" />Chapters</h3>
-          <ol class="chapters">
-            <li><a href="#configuration"><p>Configuration</p>
-</a></li><li><a href="#components"><p>Components</p>
-</a></li>
-          </ol>
-        </div>
+      <div id="subCol">
+        
+      </div>
     </div>
   </div>
 

@@ -2,7 +2,7 @@ h2. Aloha Editor and RequireJS
 
 WARNING: The RequireJS guides needs improvement.
 
-
+endprologue.
 
 
 <!DOCTYPE html>

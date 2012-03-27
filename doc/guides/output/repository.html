@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>: The Repository API</title>
+  <title>Aloha GuidesAloha Guides: The Repository API</title>
 
   <!-- guides styles -->
   <link rel="stylesheet" type="text/css" href="stylesheets/style.css" />
@@ -42,7 +42,7 @@
     <div class="wrapper">
       <div class="feature_header">
         <a href="/"><img src="images/strobe/guides.png"></a>
-        <h2><a href="/"></a></h2>
+        <h2><a href="/">Aloha Guides</a></h2>
         <p>These guides help you to make your content editable and to develop Aloha.</p>
       </div>
       <div class="feature_sidebar">
@@ -270,7 +270,7 @@ function ( Aloha, jQuery ) {
 		 * @param obj jQuery object to make clean
 		 * @return void
 		 */
-		markObject = function (obj, repositoryItem) {
+		markObject: function (obj, repositoryItem) {
 			obj.attr('data-myRepository-temporary-data').text( resourceItem.name );
 		},
 
@@ -280,7 +280,7 @@ function ( Aloha, jQuery ) {
 		 * @param {jQuery} obj jQuery object to make clean
 		 * @return void
 		 */
-		makeClean = function ( obj ) {
+		makeClean: function ( obj ) {
 			obj.removeAttr('data-myRepository-temporary-data');
 		};
 
@@ -295,6 +295,7 @@ function ( Aloha, jQuery ) {
 <h4 id="document">4.2 Document</h4>
 <ul>
 	<li>id <span class="caps">MUST</span></li>
+	<li>repositoryId <span class="caps">MUST</span></li>
 	<li>name <span class="caps">MUST</span></li>
 	<li>baseType <span class="caps">MUST</span> (document|folder)</li>
 	<li>type <span class="caps">MUST</span></li>
@@ -313,6 +314,7 @@ function ( Aloha, jQuery ) {
 <h4 id="folder">4.3 Folder</h4>
 <ul>
 	<li>id <span class="caps">MUST</span></li>
+	<li>repositoryId <span class="caps">MUST</span></li>
 	<li>name <span class="caps">MUST</span></li>
 	<li>baseType <span class="caps">MUST</span> (document|folder)</li>
 	<li>type <span class="caps">MUST</span></li>
@@ -362,6 +364,7 @@ function ( Aloha, jQuery ) {
 
 {
 id: 'gailenejane/5008283282’,
+repositoryId: 'flickr',
 name: 'Quiet moment’,
 type: ‘image/jpeg’,
 url: 'http://www.flickr.com/photos/gailenejane/5008283282/‘,
