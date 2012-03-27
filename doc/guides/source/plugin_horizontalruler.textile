@@ -1,8 +1,14 @@
-h2. The Horizontalruler Plugin
+h2. Horizontalruler Plugin
 
-With this plugin the editor has the possibility to insert a horizontal ruler <hr>-element.
+The Horizontalruler Plugin allows you to insert a horizontal ruler tag aka @<hr>@ at the current cursor position.
 
 endprologue.
+
+h3. Components
+
+The plugin only offers a single component:
+
+* hr - a button which will insert a horizontal ruler at the cursor position
 
 h3. Plugin Settings
 

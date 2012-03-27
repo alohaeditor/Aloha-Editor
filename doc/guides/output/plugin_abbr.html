@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>: The Undo Plugin</title>
+  <title>: Abbr Plugin</title>
 
   <!-- guides styles -->
   <link rel="stylesheet" type="text/css" href="stylesheets/style.css" />
@@ -102,38 +102,27 @@
     <div class="wrapper">
       <div id="mainCol">
           <div class="headerSection">
-            <h2>The Undo Plugin</h2>
-<p>The Undo plugin replaces native browser undo/redo functionality.</p>
+            <h2>Abbr Plugin</h2>
+<p>The Abbr Plugin will wrap selected contents within an <code>&lt;abbr&gt;</code> tag. You can then specify a title text to describe the abbreviation.</p>
 
           </div>
-        <h3 id="usage">1 Usage</h3>
-<p>The Undo Plugin allows you to undo changes to an editable by pressing <code>Ctrl&#43;Z</code> (or <code>Cmd&#43;Z</code> on Mac). You may also reapply changes made undone by pressing <code>Ctrl&#43;Shift&#43;Z</code> or <code>Cmd&#43;Shift&#43;Z</code> on Mac. The Undo Plugin has no UI and no components.</p>
-<h3 id="configuration">2 Configuration</h3>
-<p>This plugin does not provide any configuration settings itself.</p>
-<p>However, the Undo plugin relies on the <code>aloha-smart-content-changed</code> event for creating undo snapshots. All undo and redo actions will jump from one undo snapshot to another.</p>
-<p>The <code>aloha-smart-content-changed</code> fires after content changes. The event doesn&#8217;t fire immediately, but only if the content didn&#8217;t change again for a certain amount of time. By default the timeout is 5 seconds (the <code>idle</code> setting). If the user types a character that is in the list configured by the <code>delimiters</code> settings, the timeout is drastically shortened to half a second (the <code>delay</code> setting).</p>
-<p>The timeouts and delimiters can be configured as follows (timeouts are in milliseconds):</p>
-<div class="code_container">
-<pre class="brush: javascript; gutter: false; toolbar: false">
-
-Aloha.settings.smartContentChange = {
-    delimiters: [ ':', ';', '.', '!', '?', ',', unescape( '%u0009' ), unescape( '%u0020' ), 'Enter' ],
-    idle: 5000,
-    delay: 500
-};
-</pre></div><h3 id="references">3 References</h3>
+        <h3 id="configuration-settings">1 Configuration settings</h3>
+<p>Currently there are no configuration options for the Abbr Plugin.</p>
+<h3 id="components">2 Components</h3>
 <ul>
-	<li><a href="http://www.whatwg.org/specs/web-apps/current-work/#undo">http://www.whatwg.org/specs/web-apps/current-work</a></li>
-	<li><a href="https://github.com/jzaefferer/undo">Undo/Redo Stack Abstraction by Jörn Zaefferer from jQuery UI</a></li>
+	<li>formatAbbr &#8211; format selection as an abbreviation</li>
+	<li>createAbbr &#8211; insert new abbreviation</li>
+	<li>editAbbr &#8211; edit existing abbreviation</li>
+	<li>abbrText &#8211; UIAttributeField for text input</li>
+	<li>removeAbbr &#8211; remove abbreviation from selection</li>
 </ul>
 
       </div>
         <div id="subCol">
           <h3 class="chapter"><img src="images/strobe/chapters.png" alt="" />Chapters</h3>
           <ol class="chapters">
-            <li><a href="#usage"><p>Usage</p>
-</a></li><li><a href="#configuration"><p>Configuration</p>
-</a></li><li><a href="#references"><p>References</p>
+            <li><a href="#configuration-settings"><p>Configuration settings</p>
+</a></li><li><a href="#components"><p>Components</p>
 </a></li>
           </ol>
         </div>

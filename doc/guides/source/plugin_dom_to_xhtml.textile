@@ -25,6 +25,28 @@ and attributes that are encountered in the DOM are serialized, whether
 or not they are allowed according to a schema. Element nesting rules
 aren't checked either.
 
+h3. Usage
+
+It suffices to include the dom-to-xhtml plugin in the plugin list of the
+Aloha-Editor script tag.
+
+When the plugin is initialized, it will automatically replace the
+default editable serializer, which has the effect that calls to
+editable.getContents() return a valid XML fragment.
+
+The serialization functions can also be used directly, for example:
+
+<javascript>
+    Aloha.require(['dom-to-xhtml/dom-to-xhtml'], function(DomToXhtml) {	
+        DomToXhtml.contentsToXhtml(elementNode);
+        DomToXhtml.nodeToXhtml(anyDomNode);
+    });
+</javascript>
+
+h3. Configuration
+
+This plugin does not provide any configuration settings.
+
 h3. Known Issues
 
 There are some known issues especially with Internet Explorer. These
@@ -44,23 +66,3 @@ practices to avoid these issues:
 * IE7 only - expect URLs in href and src attributes to be turned into absolute URLs,
 * all browsers - don't expect comments, conditional comments, processing
   instructions or CDATA sections to be preserved correctly.
-
-h3. Configuration and Usage
-
-It suffices to include the dom-to-xhtml plugin in the plugin list of the
-Aloha-Editor script tag.
-
-When the plugin is initialized, it will automatically replace the
-default editable serializer, which has the effect that calls to
-editable.getContents() return a valid XML fragment.
-
-This plugin does not provide any configuration settings.
-
-The serialization functions can also be used directly, for example:
-
-<javascript>
-    Aloha.require(['dom-to-xhtml/dom-to-xhtml'], function(DomToXhtml) {	
-        DomToXhtml.contentsToXhtml(elementNode);
-        DomToXhtml.nodeToXhtml(anyDomNode);
-    });
-</javascript>

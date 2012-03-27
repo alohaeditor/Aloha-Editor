@@ -11,20 +11,20 @@ All changes are categorized into one of the following keywords:
 - **FEATURE**: The change introduces a new feature, or modifies the function,
                usage, or intent of an existing one.
 
+## 0.21.0 - dev
 
-## SNATSHOT
-
-- **ENHANCEMENT** core: The jquery-plugin require plugin will now be able to return loaded plugins. Previously loaded plugins were just accessible through the extended jquery object.
+- **ENHANCEMENT**: block plugin: Aloha Block Plugin has now been greatly cleaned up and improved. Besides greatly cleaned up API and documentation, the new features include Drag/Drop, Deletion and Copy/Paste support. Now fully cross-browser (IE7, IE8, IE9, Chrome, Firefox).
+- **BUG**: commands.delete: fixed a bug with the delete command when contents are preceded by ignorable whitespace. also added a delete test for that.
+- **ENHANCEMENT**: The new plugin dom-to-xhtml attempts to create a valid XHTML serialization of the document when getContents() is called.
+- **ENHANCEMENT**: core: The jquery-plugin require plugin will now be able to return loaded plugins. Previously loaded plugins were just accessible through the extended jquery object.
 - **ENHANCEMENT**: block plugin: Aloha Block Plugin has now been greatly cleaned up and improved. Besides greatly cleaned up API and documentation, the new features include Drag/Drop, Deletion and Copy/Paste support. Now fully cross-browser (IE7, IE8, IE9, Chrome, Firefox).
 - **ENHANCEMENT**: commands.delete: fixed a bug with the delete command when contents are preceded by ignorable whitespace. also added a delete test for that.
-- **ENHANCEMENT**: image plugin: splitting main fat file (1500 lines) for easying maintenance and evolutions
-                          - new file : image-floatingMenu.js
+- **ENHANCEMENT**: image plugin: splitting main fat file (1500 lines) for easying maintenance and evolutions. The new file which contains the gui is called 'image-floatingMenu.js'. The all sources of the image plugin were jslinted.
 - **ENHANCEMENT**: image plugin: abstracting ui calls and removing FloatingMenu dependency from main plugin file
 - **BUG**: image plugin: building a selection from scratch when an image is clicked isn't safe as conflictual browser behaviours
 - **ENHANCEMENT**: image plugin: new method getImgFocus used in place of findImgMarkup which is pointless now
 - **BUG**: image plugin: containing editable not selectable after image plugin activation.
 - **BUG**: image plugin: when plugin activated on an image, clicking a second image don't disable resize on first one.
-- **BUG**: image plugin: fixing naturalSize button
 - **BUG**: image plugin: fixing focus and value of srcField when image is clicked (previously handled by selectionChange)
 - **ENHANCEMENT**: core: #448 Aloha Editor possibility to be loaded as requireJS module
 - **FEATURE**: added hotkey functionality
@@ -51,11 +51,13 @@ All changes are categorized into one of the following keywords:
 - **ENHANCEMENT** dom-to-xhtml plugin: non-specified attributes are excluded from serialization, making attribute serialization more consistent on IE7 and IE8.
 - **FEATURE** API docs: added first version of new API docs
 - **FEATURE** HotKey feature added for link, format and wai-lang plugin
+- **BUG** added missing endprologue. and regenerated guides; jslint for image plugin
 
 
 ## 0.20.7 - 2012/03/7
 
 - **BUG** link: fixed a bug in the link list static repository plugin that would cause aloha to fail when no settings for the linklist repository were specified.
+- **BUG** formatlesspaste plugin: fixed IE syntax error caused by a comma at the end of a list.
 
 ## 0.20.6 - 2012/03/01
 

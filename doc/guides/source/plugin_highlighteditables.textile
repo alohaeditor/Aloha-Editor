@@ -1,0 +1,15 @@
+h2. Highlight Editables Plugin
+
+The Highlight Editables Plugin has no user interface. Once loaded it will display a strong visual hint for editors to indicate the location of editables contents - so called "editables" - on the page.
+
+endprologue.
+
+h3. Known Issues
+
+"github issue 327":https://github.com/alohaeditor/Aloha-Editor/issues/327
+
+IE 7 doesn't support the outline CSS property.
+IE 8.0.6001.18702 also doesn't support the outline property.
+IE 8.0.7600.16385 does support the outline property.
+
+The highlighteditables plugin uses the outline property to display the yellow/blue outline to indicate the non-active/active editables. This feature is missing in the aforementioned versions.
