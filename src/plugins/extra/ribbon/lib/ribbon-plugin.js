@@ -92,6 +92,10 @@ define(
 		 * @param {String} iconClass CSS class for the icon
 		 */
 		setIcon: function (iconClass) {
+			if ( typeof this.icon === 'undefined') {
+				return;
+			}
+
 			if (typeof this.icon.cls !== 'undefined') {
 				this.icon.removeClass(this.icon.cls);
 			}
@@ -146,8 +150,10 @@ define(
 				extButton = new Ext.Button(buttonConfig);
 			}
 
-			this.toolbar.insert(this.toolbar.items.getCount() - 3, extButton);
-			this.toolbar.doLayout();
+			if ( this.toolbar ) {
+				this.toolbar.insert(this.toolbar.items.getCount() - 3, extButton);
+				this.toolbar.doLayout();
+			}
 		},
 
 		/**

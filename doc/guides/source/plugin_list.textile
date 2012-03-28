@@ -1,0 +1,31 @@
+h2. List Plugin
+
+The List Plugin allows you to handle and create ordered and unordered lists within your contents.
+
+endprologue.
+
+h3. Usage
+
+You may either select existing contents to be turned into a list, or just click the ordered or unordered list button to start a new one.
+
+You can remove lists by clicking the applied list type a second time, which will turn individual list items back into paragraphs.
+
+The List Plugin will indent list items when pressing the tab-key, or outdent when pressing shift-tab.
+
+NOTE: The list plugin will turn existing paragraphs into list items. Single lines separated by @<br>@ tags will NOT be turned into separate list items.
+
+h3. Configuration
+
+<javascript>
+Aloha.settings.plugins.list = {
+	// configure buttons available in the toolbar
+	config : [ 'ol', 'ul' ],
+};
+</javascript>
+
+h3. Components
+
+The List Plugin provides two components
+
+* ul - for inserting unordered lists
+* ol - for inserting ordered lists
