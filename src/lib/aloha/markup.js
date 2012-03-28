@@ -160,7 +160,11 @@ Aloha.Markup = Class.extend( {
 
 		// remove empty lines we needed for jumping with the cursor
 		Aloha.bind( 'aloha-editable-deactivated', function() {
-			jQuery('p.aloha-empty-line > br.aloha-cleanme', '.aloha-editable-active').parent().remove();
+			jQuery('p.aloha-empty-line > br.aloha-cleanme', '.aloha-editable-active').each(function() {
+				if ( jQuery.trim(jQuery(this).parent().text()) == '' ) {
+					jQuery(this).parent().remove();
+				}
+			});
 		});
 
 		var rt = range.getRangeTree(), // RangeTree reference
@@ -216,8 +220,7 @@ Aloha.Markup = Class.extend( {
 							}
 						}
 					}
-					//GENTICS.Utils.Dom.selectDomNode( obj );
-					GENTICS.Utils.Dom.setCursorAfter( obj );
+					GENTICS.Utils.Dom.setCursorInto( obj );
 
 					return false;
 				}
