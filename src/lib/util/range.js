@@ -649,16 +649,14 @@ GENTICS.Utils.RangeObject = Class.extend({
 	 */
 	getRangeTree: function (root) {
 		// TODO cache rangeTrees
-		if (typeof root === 'undefined') {
+		if ( typeof root === 'undefined' ) {
 			root = this.getCommonAncestorContainer();
-			window.console.log('getCommonAncestorContainer');
 		}
 
-		if (typeof root === 'undefined') {
+		if ( typeof root === 'undefined' ) {
+			//window.console.log('getRangeTree: root is missing');
 			//return;
-			window.console.log('root', root);
 		}
-//window.console.log('root', root);
 
 		this.inselection = false;
 		return this.recursiveGetRangeTree(root);

@@ -209,6 +209,7 @@ define( [
 				me.obj.keydown( function( event ) {
 					var letEventPass = Markup.preProcessKeyStrokes( event );
 					me.keyCode = event.which;
+
 					if (!letEventPass) {
 						// the event will not proceed to key press, therefore trigger smartContentChange
 						me.smartContentChange( event );
@@ -659,7 +660,6 @@ define( [
 			this.obj.blur();
 			this.isActive = false;
 			this.initPlaceholder();
-			this.obj.removeClass( 'aloha-editable-active' );
 
 			/**
 			 * @event editableDeactivated fires after the editable has been activated by clicking on it.
