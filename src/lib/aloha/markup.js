@@ -314,7 +314,6 @@ Aloha.Markup = Class.extend( {
 
 	},
 
-
 	/**
 	 * method handling shiftEnter
 	 * @param Aloha.Selection.SelectionRange of the current selection

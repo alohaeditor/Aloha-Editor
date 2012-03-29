@@ -653,11 +653,6 @@ GENTICS.Utils.RangeObject = Class.extend({
 			root = this.getCommonAncestorContainer();
 		}
 
-		if ( typeof root === 'undefined' ) {
-			//window.console.log('getRangeTree: root is missing');
-			//return;
-		}
-
 		this.inselection = false;
 		return this.recursiveGetRangeTree(root);
 	},
