@@ -663,6 +663,7 @@ define( [
 			this.obj.blur();
 			this.isActive = false;
 			this.initPlaceholder();
+			this.obj.removeClass( 'aloha-editable-active' );
 
 			/**
 			 * @event editableDeactivated fires after the editable has been activated by clicking on it.
