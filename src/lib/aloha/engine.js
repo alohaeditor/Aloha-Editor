@@ -36,7 +36,7 @@ function getStyleLength(node) {
 		// others don't, so we will count
 		var styleLength = 0;
 		for (var s in node.style) {
-			if (node.style[s] && node.style[s] !== 0 && node.style[s] !== 'false') {
+			if (s !== "cssText" && node.style[s] && node.style[s] !== 0 && node.style[s] !== 'false') {
 				styleLength++;
 			}
 		}
@@ -2067,7 +2067,7 @@ function isSimpleModifiableElement(node) {
       return true 
     }
   });
-  
+
 	// "It is an a, b, em, font, i, s, span, strike, strong, sub, sup, or u
 	// element with no attributes."
 	if (specified_attributes.length == 0) {
@@ -3225,6 +3225,7 @@ function setSelectionValue(command, newValue, range) {
 	//
 	// "For each node in node list:"
 	$_( getAllEffectivelyContainedNodes(range, isEditable) ).forEach(function(node) {
+
 		// "Push down values on node."
 		pushDownValues(node, command, newValue, range);
 
@@ -3276,7 +3277,7 @@ commands.backcolor = {
 commands.bold = {
 	action: function(value, range) {
 		// "If queryCommandState("bold") returns true, set the selection's
-		// value to "normal". Otherwise set the selection's value to "bold"."
+		// vale to "normal". Otherwise set the selection's value to "bold"."
 		if (myQueryCommandState("bold", range)) {
 			setSelectionValue("bold", "normal", range);
 		} else {
