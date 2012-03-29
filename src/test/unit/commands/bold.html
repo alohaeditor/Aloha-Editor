@@ -146,18 +146,21 @@
           },
 					{  	start: 'foo[bar<i>bam]baz</i>',
 				       	execResult: 'foo<b>[bar</b><i><b>bam]</b>baz</i>' 
-				    },
-					{  	start: 'foo<span contenteditable=false>[bar]</span>baz',
+          },
+          // Fragments with contenteditable false are not selected in IE 7 & 8.
+          {   exclude: [ 'msie8.0', 'msie7.0'],	
+              start: 'foo<span contenteditable=false>[bar]</span>baz',
 					   	execResult: 'foo<span contenteditable=false>[bar]</span>baz' 
 					},
-					{  	start: 'fo[o<span contenteditable=false>bar</span>b]az',
+          {   exclude: [ 'msie8.0', 'msie7.0'],	
+              start: 'fo[o<span contenteditable=false>bar</span>b]az',
 					   	execResult: 'fo<b>[o</b><span contenteditable=false>bar</span><b>b]</b>az' 
 					},
-          {   exclude: 'msie8.0',	
+          {   exclude: ['msie8.0', 'msie7.0'],	
               start: 'foo<span contenteditable=false>ba[r]</span>baz',
 					   	execResult: 'foo<span contenteditable=false>ba[r]</span>baz' 
 					},
-          {   exclude: 'webkit',	
+          {   exclude: ['webkit', 'msie8.0', 'msie7.0'],	
               start: 'fo[o<span contenteditable=false>b]ar</span>baz',
 					   	execResult: 'fo<b>[o</b><span contenteditable=false>b]ar</span>baz' 
 					},
@@ -170,15 +173,15 @@
           // Following 4 test cases were excluded from Webkit,
           // as it has a bug in range selection implementation.
           // There's an opened ticket for this in Webkit's bugzilla - https://bugs.webkit.org/show_bug.cgi?id=80763
-          {   exclude: "webkit",	
+          {   exclude: ["webkit", "msie8.0", "msie7.0"],	
               start: '<span contenteditable=false>fo[o<span contenteditable=true>bar</span>b]az</span>',
               execResult: '<span contenteditable=false>fo[o<span contenteditable=true><b>bar</b></span>b]az</span>' 
 					},
-          {   exclude: ["webkit", "msie8.0"],	
+          {   exclude: ["webkit", "msie8.0", "msie7.0"],	
               start: '<span contenteditable=false>foo<span contenteditable=true>ba[r</span>b]az</span>',
               execResult: '<span contenteditable=false>foo<span contenteditable=true>ba<b>[r</b></span>b]az</span>' 
 					},
-          {   exclude: ["webkit", "msie8.0"],	
+          {   exclude: ["webkit", "msie8.0", "msie7.0"],	
               start: '<span contenteditable=false>fo[o<span contenteditable=true>b]ar</span>baz</span>',
               execResult: '<span contenteditable=false>fo[o<span contenteditable=true><b>b]</b>ar</span>baz</span>' 
 					},
@@ -191,7 +194,7 @@
 					   	execResult: '<span contenteditable=false>fo[<b>o<span contenteditable=true>bar</span>b</b>]az</span>' 
 					},
           */
-          {   exclude: 'msie8.0',	
+          {   exclude: ['msie8.0', 'msie7.0'],	
               start: '<table><tbody><tr><td>foo<td>b[a]r<td>baz</table>',
 					   	execResult: '<table><tbody><tr><td>foo<td>b<b>[a]</b>r<td>baz</table>' 
 					},
