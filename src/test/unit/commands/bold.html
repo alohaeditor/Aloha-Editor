@@ -285,11 +285,11 @@
 					{  	start: 'foo<span style="font-weight: bold">[bar</span>]baz',
 					   	execResult: 'foo[bar]baz' 
 					},
-          {   exclude: 'webkit',	
+          {   exclude: ['webkit'],	
               start: '<b>{<p>foo</p><p>bar</p>}<p>baz</p></b>',
 					   	execResult: '{<p>foo</p><p>bar</p>}<p><b>baz</b></p>' 
 					},
-          {   include: 'webkit',	
+          {   include: ['webkit'],	
               start: '<b>{<p>foo</p><p>bar</p>}<p>baz</p></b>',
 					   	execResult: '<p>[foo</p><p>bar</p><p>}<b>baz</b></p>' 
 					},
@@ -441,33 +441,33 @@
 					{  	start: 'foo<span style="font-weight: 900">[bar]</span>baz',
 					   	execResult: 'foo[bar]baz'
 					},
-          {   exclude: 'webkit',	
+          {   exclude: ['webkit', 'msie8.0', 'msie7.0'],	
               start: 'foo<span style="font-weight: 400">[bar</span>]baz',
 					   	execResult: 'foo<b>[bar</b>]baz'
 					},
-          {   include: 'webkit',	
+          {   include: ['webkit', 'msie8.0', 'msie7.0'],	
               start: 'foo<span style="font-weight: 400">[bar</span>]baz',
 					   	execResult: 'foo<b>[bar]</b>baz'
 					},
 					{  	start: 'foo<span style="font-weight: 700">[bar</span>]baz',
 					   	execResult: 'foo[bar]baz'
 					},
-          {   exclude: 'webkit',	
+          {   exclude: ['webkit'],	
               start: 'foo[<span style="font-weight: 400">bar]</span>baz',
 					   	execResult: 'foo[<b>bar]</b>baz'
 					},
-          {   include: 'webkit',	
+          {   include: ['webkit'],	
               start: 'foo[<span style="font-weight: 400">bar]</span>baz',
 					   	execResult: 'foo<b>[bar]</b>baz'
 					},
 					{  	start: 'foo[<span style="font-weight: 700">bar]</span>baz',
 					   	execResult: 'foo[bar]baz'
 					},
-          {   exclude: 'webkit',	
+          {   exclude: ['webkit'],	
               start: 'foo[<span style="font-weight: 400">bar</span>]baz',
 					   	execResult: 'foo[<b>bar</b>]baz'
 					},
-          {  	include: 'webkit',
+          {   include: ['webkit'],	
               start: 'foo[<span style="font-weight: 400">bar</span>]baz',
 					   	execResult: 'foo<b>[bar]</b>baz'
 					},
@@ -486,67 +486,67 @@
 					{  	start: '<span style="font-weight: 900">foo[bar]baz</span>',
 					   	execResult: '<span style="font-weight: 900">foo</span>[bar]<span style="font-weight: 900">baz</span>'
 					},
-          {   exclude: 'webkit',	
+          {   exclude: ['webkit', 'msie8.0', 'msie7.0'],	
               start: '{<span style="font-weight: 100">foobar]baz</span>',
               execResult: '{<span style="font-weight: 100"><b>foobar]</b>baz</span>'
 					},
-          {   include: 'webkit',	
+          {   include: ['webkit', 'msie8.0', 'msie7.0'],	
               start: '{<span style="font-weight: 100">foobar]baz</span>',
 					   	execResult: '<span style="font-weight: 100"><b>[foobar]</b>baz</span>'
 					},
-          {   exclude: 'webkit',	
+          {   exclude: ['webkit', 'msie8.0', 'msie7.0'],	
               start: '{<span style="font-weight: 400">foobar]baz</span>',
               execResult: '{<span style="font-weight: 400"><b>foobar]</b>baz</span>'
 					},
-          {   include: 'webkit',	
+          {   include: ['webkit', 'msie8.0', 'msie7.0'],	
               start: '{<span style="font-weight: 400">foobar]baz</span>',
 					   	execResult: '<span style="font-weight: 400"><b>[foobar]</b>baz</span>'
 					},
-          {   exclude: 'webkit',	
+          {   exclude: ['webkit', 'msie8.0', 'msie7.0'],	
               start: '{<span style="font-weight: 700">foobar]baz</span>',
 					   	execResult: '{foobar]<b>baz</b>'
 					},
-          {   include: 'webkit',	
+          {   include: ['webkit', 'msie8.0', 'msie7.0'],	
               start: '{<span style="font-weight: 700">foobar]baz</span>',
 					   	execResult: '[foobar]<b>baz</b>'
 					},
-          {   exclude: 'webkit',	
+          {   exclude: ['webkit', 'msie8.0', 'msie7.0'],	
               start: '{<span style="font-weight: 900">foobar]baz</span>',
 					   	execResult: '{foobar]<span style="font-weight: 900">baz</span>'
 					},
-          {   include: 'webkit',	
+          {   include: ['webkit', 'msie8.0', 'msie7.0'],	
               start: '{<span style="font-weight: 900">foobar]baz</span>',
 					   	execResult: '[foobar]<span style="font-weight: 900">baz</span>'
 					},
-          {   exclude: 'webkit',	
+          {   exclude: ['webkit', 'msie8.0', 'msie7.0'],	
               start: '<span style="font-weight: 100">foo[barbaz</span>}',
               execResult: '<span style="font-weight: 100">foo<b>[barbaz</b></span>}'
 					},
-          {   include: 'webkit',	
+          {   include: ['webkit', 'msie8.0', 'msie7.0'],	
               start: '<span style="font-weight: 100">foo[barbaz</span>}',
 					   	execResult: '<span style="font-weight: 100">foo<b>[barbaz]</b></span>'
 					},
-          {   exclude: 'webkit',	
+          {   exclude: ['webkit', 'msie8.0', 'msie7.0'],	
               start: '<span style="font-weight: 400">foo[barbaz</span>}',
               execResult: '<span style="font-weight: 400">foo<b>[barbaz</b></span>}'
 					},
-          {   include: 'webkit',	
+          {   include: ['webkit', 'msie8.0', 'msie7.0'],	
               start: '<span style="font-weight: 400">foo[barbaz</span>}',
 					   	execResult: '<span style="font-weight: 400">foo<b>[barbaz]</b></span>'
 					},
-          {   exclude: 'webkit',	
+          {   exclude: ['webkit', 'msie8.0', 'msie7.0'],	
               start: '<span style="font-weight: 700">foo[barbaz</span>}',
 					   	execResult: '<b>foo</b>[barbaz}'
 					},
-          {   include: 'webkit',	
+          {   include: ['webkit', 'msie8.0', 'msie7.0'],	
               start: '<span style="font-weight: 700">foo[barbaz</span>}',
 					   	execResult: '<b>foo</b>[barbaz]'
 					},
-          {   exclude: 'webkit',	
+          {   exclude: ['webkit', 'msie8.0', 'msie7.0'],	
               start: '<span style="font-weight: 900">foo[barbaz</span>}',
 					   	execResult: '<span style="font-weight: 900">foo</span>[barbaz}'
           },
-          {   include: 'webkit',	
+          {   include: ['webkit', 'msie8.0', 'msie7.0'],	
               start: '<span style="font-weight: 900">foo[barbaz</span>}',
 					   	execResult: '<span style="font-weight: 900">foo</span>[barbaz]'
 					}
