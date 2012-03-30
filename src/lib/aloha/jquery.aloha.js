@@ -89,7 +89,7 @@ function( Aloha, Selection, jQuery, console ) {
 			// return 'inherit' for nested elements of a contenteditable.
 			// The isContentEditable is a w3c standard compliant property which works in IE7,8,FF36+, Chrome 12+
 			if (typeof $el[0] === 'undefined' ) {
-				console.error('The jquery object did not contain any valid elements.');
+				console.warn('The jquery object did not contain any valid elements.'); // die silent
 				return undefined;
 			}
 			if (typeof $el[0].isContentEditable === 'undefined') {
