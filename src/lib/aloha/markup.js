@@ -181,7 +181,16 @@ Aloha.Markup = Class.extend( {
 		    cursorAtLastPos = false, // check if the cursor is within the last position of the currently active dom element
 		    obj, // will contain references to dom objects
 			block = null,
-			emptyLine = jQuery( '<p class="aloha-empty-line"><br class="aloha-cleanme" /></p>' );
+			emptyLine = jQuery( '<p class="aloha-empty-line"></p>' );
+			//emptyLine = jQuery( '<p class="aloha-empty-line"><br class="aloha-cleanme" /></p>' );
+
+/*
+var startP = jQuery('<p class="aloha-editing-p"></p>');
+params.editable.obj.prepend(startP);
+if (startP[0].offsetHeight === 0) {
+	startP.append(jQuery('<br class="aloha-end-br"/>'));
+}
+*/
 
 		// inserts empty lines between blocks
 		if ( range && range.startContainer && cursorRight) {
@@ -207,6 +216,9 @@ Aloha.Markup = Class.extend( {
 				&& next
 				&& next2 ) {
 				obj = jQuery( emptyLine ).insertAfter( next3 ).get(0);
+				if (emptyLine[0].offsetHeight === 0) {
+					emptyLine.append(jQuery('<br class="aloha-end-br"/>'));
+				}
 				GENTICS.Utils.Dom.setCursorInto( obj );
 				Aloha.Selection.preventSelectionChanged();
 				return false;
@@ -228,6 +240,9 @@ Aloha.Markup = Class.extend( {
 				&& prev
 				&& prev2 ) {
 				obj = jQuery( emptyLine ).insertAfter( prev3 ).get(0);
+				if (emptyLine[0].offsetHeight === 0) {
+					emptyLine.append(jQuery('<br class="aloha-end-br"/>'));
+				}
 				GENTICS.Utils.Dom.setCursorInto( obj );
 				Aloha.Selection.preventSelectionChanged();
 				return false;
