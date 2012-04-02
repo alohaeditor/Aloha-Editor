@@ -120,8 +120,7 @@ fi
 
 echo -e "\n * Adding build information"
   echo "build-date: `date`" >> $OUT/aloha/build.txt
-  echo "build-target: $TARGET" >> $OUT/aloha/build.txt
 echo "Done."
 
 
-echo -e "\n\nAll Done. Built Aloha Editor for $TARGET"
+echo -e "\n\nAll Done."
