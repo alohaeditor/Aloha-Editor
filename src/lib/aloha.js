@@ -61313,8 +61313,7 @@ Ext.grid.GroupingView.GROUP_ID = 1000;
 // define aloha object
 define( 'aloha', [], function () {
 	//load Aloha dependencies
-	if ( !Aloha.stage ) require(
-		Aloha.settings.requireConfig, 
+	require(Aloha.settings.requireConfig, 
 		[
 			'aloha/jquery',
 			'aloha/ext',
