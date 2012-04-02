@@ -207,9 +207,13 @@ define( [
 				// by catching the keydown we can prevent the browser from doing its own thing
 				// if it does not handle the keyStroke it returns true and therefore all other
 				// events (incl. browser's) continue
-				me.obj.keydown( function( event ) {
+				//me.obj.keydown( function( event ) {
+				//me.obj.add('.aloha-block', me.obj).live('keydown', function (event) {
+				me.obj.add('.aloha-block', me.obj).keydown(function (event) {
+					//window.console.log('keydown preProcessKeyStrokes');
 					var letEventPass = Markup.preProcessKeyStrokes( event );
 					me.keyCode = event.which;
+
 					if (!letEventPass) {
 						// the event will not proceed to key press, therefore trigger smartContentChange
 						me.smartContentChange( event );
