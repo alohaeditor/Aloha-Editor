@@ -1,0 +1,1 @@
+- **BUG** table-plugin: fixed a javascript error when the block plugin wasn't loaded.

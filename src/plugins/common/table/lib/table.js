@@ -354,7 +354,12 @@ define( [
 
 		// wrap the tableWrapper around the table
 		this.obj.wrap( tableWrapper );
-		this.obj.parent().alohaBlock();
+
+		// Check because the aloha block plugin may not be loaded
+		var parent = this.obj.parent();
+		if (parent.alohaBlock) {
+			parent.alohaBlock();
+		}
 
 		// :HINT The outest div (Editable) of the table is still in an editable
 		// div. So IE will surround the the wrapper div with a resize-border
