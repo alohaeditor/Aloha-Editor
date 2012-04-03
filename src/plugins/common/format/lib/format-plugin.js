@@ -428,17 +428,17 @@ function(Aloha, Plugin, jQuery, FloatingMenu, i18n, i18nCore) {
 					var html = 
 						'<div class="' + pl.nsClass( 'target-container' ) + '"><fieldset><legend>' + i18n.t( 'format.class.legend' ) + '</legend><select name="targetGroup" class="' + pl.nsClass( 'radioTarget' ) + '">' + 
 						'<option value="">' + i18n.t( 'format.class.none' ) + '</option>';
-						
-						if ( pl.config[that.format] && pl.config[that.format].class ) {
-							jQuery.each(pl.config[that.format].class, function(i ,v) {
+
+						if ( pl.config[that.format] && pl.config[that.format]['class'] ) {
+							jQuery.each(pl.config[that.format]['class'], function(i ,v) {
 								html += '<option value="' + i + '" >' + v + '</option>';
 							});
 						}
 
-						html += '</select></fieldset></div>'
+						html += '</select></fieldset></div>';
 
-					 var that = this,
-						 content = this.setContent(html).content; 
+					var that = this,
+						content = this.setContent(html).content; 
 
 					 jQuery( pl.nsSel( 'framename' ) ).live( 'keyup', function () {
 						jQuery( that.effective ).attr( 'target', jQuery( this ).val().replace( '\"', '&quot;' ).replace( "'", "&#39;" ) );
