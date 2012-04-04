@@ -324,20 +324,22 @@ Aloha.Markup = Class.extend( {
 				// movements, when the following conditions are true:
 				//
 				//  * The range is collapsed.
-				//  * startContainer is a content editable text node.
+				//  * startContainer is a contenteditable text node.
 				//  * startOffset is 1.
 				//  * There is a non-conenteditable element left of the
 				//    startContainer.
-				//  * You attempt to move to left to offset 0.
+				//  * You attempt to move left to offset 0 (we consider a range
+				//    to be at "frontposition" if it is at offset 0 within its
+				//    startContainer).
 				//
 				// What happens in IE 7, and IE 8, is that the selection will
-				// jump to the adjacent non-contenteditable element(s), but the
-				// offset will be stuck at 0--even as the cursor is jumping
-				// around the screen!
+				// jump to the adjacent non-contenteditable element(s), instead
+				// moving to the front of the container, and the offset will be
+				// stuck at 1--even as the cursor is jumping around the screen!
 				//
 				// Our imperfect work-around is to reckon ourselves to be at
 				// the front of the next node (ie: offset 0 in other browsers),
-				// as soon as we detect that we are at offset 1.
+				// as soon as we detect that we are at offset 1 in IEv<9.
 				//
 				// Considering the bug, I think this is acceptable because the
 				// user can still position themselve right between the block
