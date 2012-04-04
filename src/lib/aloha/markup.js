@@ -153,39 +153,49 @@ Aloha.Markup = Class.extend( {
 	 *                   true otherwise.
 	 */
 	processCursor: function( range, keyCode ) {
-		console.log( 'processCursor()' );
-
 		if ( !range.isCollapsed() ) {
 			return true;
 		}
 
-		function nextNode ( node ) {
+		function nextVisibleNode ( node ) {
 			if ( !node ) {
 				return null;
 			}
 
 			if ( node.nextSibling ) {
+				// Skip over nodes that the user cannot see...
+				if ( isTextNode( node.nextSibling ) &&
+				     !isVisibleTextNode( node.nextSibling ) ) {
+				 	return nextVisibleNode( node.nextSibling );
+				}
+
 				return node.nextSibling;
 			}
 
 			if ( node.parentNode ) {
-				return nextNode( node.parentNode );
+				return nextVisibleNode( node.parentNode );
 			}
 
 			return null;
 		}
 
-		function prevNode ( node ) {
+		function prevVisibleNode ( node ) {
 			if ( !node ) {
 				return null;
 			}
 
 			if ( node.previousSibling ) {
+				// Skip over nodes that the user cannot see...
+				if ( isTextNode( node.previousSibling ) &&
+				     !isVisibleTextNode( node.previousSibling ) ) {
+				 	return prevVisibleNode( node.previousSibling );
+				}
+
 				return node.previousSibling;
 			}
 
 			if ( node.parentNode ) {
-				return prevNode( node.parentNode );
+				return prevVisibleNode( node.parentNode );
 			}
 
 			return null;
@@ -267,7 +277,7 @@ Aloha.Markup = Class.extend( {
 
 			if ( !sibling ||
 			     ( isTextNode( sibling ) && !isVisibleTextNode( sibling ) ) ||
-				 isBlock( sibling ) ) {
+			     isBlock( sibling ) ) {
 				var landing = jQuery(
 					'<div style="background:#f34" class="aloha-selection-landing-dirt">&nbsp;</div>'
 				)[0];
@@ -292,8 +302,8 @@ Aloha.Markup = Class.extend( {
 			return $block.parent().hasClass( 'aloha-editable' );
 		}
 
-		var isOldIE = jQuery.browser.msie &&
-		              9 > parseInt(jQuery.browser.version, 10);
+		var isOldIE = !!(jQuery.browser.msie &&
+		                 9 > parseInt(jQuery.browser.version, 10));
 
 		// True if keyCode denotes < or ^, otherwise they keyCode is for > or v
 		// in which this value will be false.
@@ -363,7 +373,7 @@ Aloha.Markup = Class.extend( {
 		}
 
 		if ( !sibling ) {
-			sibling = isLeft ? prevNode( node ) : nextNode( node );
+			sibling = isLeft ? prevVisibleNode( node ) : nextVisibleNode( node );
 		}
 
 		if ( isBlock( sibling ) ) {
