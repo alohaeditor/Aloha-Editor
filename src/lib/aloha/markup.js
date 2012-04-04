@@ -153,6 +153,8 @@ Aloha.Markup = Class.extend( {
 	 *                   true otherwise.
 	 */
 	processCursor: function( range, keyCode ) {
+		console.log( 'processCursor()' );
+
 		if ( !range.isCollapsed() ) {
 			return true;
 		}
@@ -207,7 +209,6 @@ Aloha.Markup = Class.extend( {
 			return ( offset === 0 ) ||
 			       // IE 7 & 8 have a bug with the offset value near
 			       // non-contenteditable elements within editables.
-			       ( isIE9Plus && offset === 1 ) ||
 			       ( offset <=
 				     node.data.length - node.data.replace(/^\s+/, '').length );
 		}
@@ -293,7 +294,8 @@ Aloha.Markup = Class.extend( {
 			return $block.parent().hasClass( 'aloha-editable' );
 		}
 
-		var isIE9Plus = 9 <= parseInt(Aloha.jQuery.browser.version, 10);
+		var isOldIE = jQuery.browser.msie &&
+		              9 > parseInt(jQuery.browser.version, 10);
 
 		// True if keyCode denotes < or ^, otherwise they keyCode is for > or v
 		// in which this value will be false.
@@ -312,11 +314,15 @@ Aloha.Markup = Class.extend( {
 			}
 
 		} else if ( isTextNode( node ) ) {
-			if ( isLeft && !isFrontPosition( node, offset ) ) {
-				return true;
-			}
+			if ( isLeft ) {
+				var isFrontPositionInIE = isOldIE && offset === 1;
 
-			if ( !isLeft && !isEndPosition( node, offset ) ) {
+				if ( !isFrontPositionInIE &&
+				     !isFrontPosition( node, offset ) ) {
+					return true;
+				}
+
+			} else if ( !isEndPosition( node, offset ) ) {
 				return true;
 			}
 
