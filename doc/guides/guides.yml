@@ -1,5 +1,5 @@
-﻿title: Aloha Guides
-description: These guides help you to make your content editable and to develop Aloha.
+﻿title: Aloha Editor Guides
+description: These guides help you to make your content editable and to develop Aloha Editor.
 
 team_name: The People That Make It Happen
 authors:
@@ -7,25 +7,25 @@ authors:
     - name: Haymo Meran
       nick: haymo
       image: credits/haymo.jpg
-      description: "Haymo is one of the founders of the Aloha project."
+      description: "Haymo is one of the founders of the Aloha Editor project."
       
   Contributors:
     - name: Christopher Hlubek
       nick: hlubek
       image: credits/hlubek.jpg
-      description: "Christopher Hlubek is a proud contributor of the Aloha project."
+      description: "Christopher Hlubek is a proud contributor of the Aloha Editor project."
     - name: Sebastian Kurfürst
       nick: skurfuerst
       image: credits/skurfuerst.jpg
-      description: "Sebastian Kurfürst is a proud contributor of the Aloha project."
+      description: "Sebastian Kurfürst is a proud contributor of the Aloha Editor project."
     - name: Rene Kapusta
       nick: rene_kapusta
       image: credits/rene_kapusta.jpg
-      description: "Rene Kapusta is a proud contributor of the Aloha project."
+      description: "Rene Kapusta is a proud contributor of the Aloha Editor project."
     - name: Nicolas Karageuzian
       nick: nka
       image: credits/nka.jpg
-      description: "Nicolas Karageuzian is a proud contributor of the Aloha project."
+      description: "Nicolas Karageuzian is a proud contributor of the Aloha Editor project."
 
 index:
   order:
@@ -39,14 +39,17 @@ index:
   Start Here:
     - title: "Using Aloha Editor"
       url: using_aloha
-      text: "Learn how to embed Aloha Editor and make your content editable and how to use and configure Aloha Editor plugins."
-    - title: "Developing and building Aloha Editor"
-      url: develop_aloha
-      text: "Learn how to develop or make a custom build of Aloha Editor."
+      text: "Learn how to embed Aloha Editor and make your content editable."
     - title: "Configuring Aloha Editor"
       url: configure_aloha
       text: "Learn how to configure Aloha Editor."
-    - title: "Aloha dependency management"
+    - title: "Aloha Editor and jQuery"
+      url: aloha_jquery
+      text: "Read about Aloha Editor and jQuery"
+    - title: "Developing and building Aloha Editor"
+      url: develop_aloha
+      text: "Learn how to develop or make a custom build of Aloha Editor."
+    - title: "Aloha Editor dependency management"
       url: require
       text: "In this guide, we will explain how dependencies are managed with Aloha Editor."
     - title: "Writing Plugins"
@@ -67,7 +70,7 @@ index:
       text: "Learn how to use commands."
       
   UI:
-    - title: "Aloha Editor Ui"
+    - title: "Aloha Editor UI"
       url: ui
       text: "Learn how the Aloha Editor UI works."
     - title: "Aloha Editor toolbar"
