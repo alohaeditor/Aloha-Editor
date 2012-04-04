@@ -106,8 +106,9 @@ Aloha.Markup = Class.extend( {
 			}
 		}
 
-		// handle left (37) and right (39) keys for block detection
-		if ( event.keyCode === 37 || event.keyCode === 39 ) {
+		// LEFT (37), RIGHT (39), UP (38), DOWN (40) keys for block detection
+		if ( event.keyCode === 37 || event.keyCode === 38 ||
+		     event.keyCode === 39 || event.keyCode === 40 ) {
 			return this.processCursor( rangeObject, event.keyCode );
 		}
 
@@ -139,59 +140,189 @@ Aloha.Markup = Class.extend( {
 	},
 
 	/**
-	 * Processing of cursor keys
-	 * will currently detect blocks (elements with contenteditable=false)
-	 * and selects them (normally the cursor would jump right past them)
+	 * Processing of cursor keys.
+	 * Detect blocks (elements with contenteditable=false) and will select them
+	 * (normally the cursor would simply jump right past them).
 	 *
-	 * For each block an 'aloha-block-selected' event will be triggered.
+	 * For each block that is selected, an 'aloha-block-selected' event will be
+	 * triggered.
 	 *
-	 * @param range the current range object
-	 * @param keyCode keyCode of current keypress
-	 * @return false if a block was found to prevent further events, true otherwise
+	 * @param {RangyRange} range A range object for the current selection.
+	 * @param {number} keyCode Code of the currently pressed key.
+	 * @return {boolean} False if a block was found, to prevent further events,
+	 *                   true otherwise.
 	 */
 	processCursor: function( range, keyCode ) {
-		var rt = range.getRangeTree(), // RangeTree reference
-		    i = 0,
-		    cursorLeft = keyCode === 37,
-		    cursorRight = keyCode === 39,
-		    nextSiblingIsBlock = false, // check whether the next sibling is a block (contenteditable = false)
-		    cursorIsWithinBlock = false, // check whether the cursor is positioned within a block (contenteditable = false)
-		    cursorAtLastPos = false, // check if the cursor is within the last position of the currently active dom element
-		    obj; // will contain references to dom objects
-
 		if ( !range.isCollapsed() ) {
 			return true;
 		}
 
-		for (;i < rt.length; i++) {
-			cursorAtLastPos = range.startOffset === rt[i].domobj.length;
-			if ( !cursorAtLastPos || typeof rt[i].domobj === 'undefined' ) {
-				continue;
+		function nextNode ( node ) {
+			if ( !node ) {
+				return null;
 			}
-				
-			if ( cursorAtLastPos ) {
-				nextSiblingIsBlock = jQuery( rt[i].domobj.nextSibling ).attr('contenteditable') === 'false';
-				cursorIsWithinBlock = jQuery( rt[i].domobj ).parents('[contenteditable=false]').length > 0;
 
-				if ( cursorRight && nextSiblingIsBlock ) {
-					obj = rt[i].domobj.nextSibling;
-					GENTICS.Utils.Dom.selectDomNode( obj );
-					Aloha.trigger( 'aloha-block-selected', obj );
-					Aloha.Selection.preventSelectionChanged();
-					return false;
-				}
-
-				if ( cursorLeft && cursorIsWithinBlock ) {
-					obj = jQuery( rt[i].domobj ).parents('[contenteditable=false]').get(0);
-					if ( jQuery( obj ).parent().hasClass('aloha-editable') ) {
-						GENTICS.Utils.Dom.selectDomNode( obj );
-						Aloha.trigger( 'aloha-block-selected', obj );
-						Aloha.Selection.preventSelectionChanged();
-						return false;
-					}
-				}
+			if ( node.nextSibling ) {
+				return node.nextSibling;
 			}
+
+			if ( node.parentNode ) {
+				return nextNode( node.parentNode );
+			}
+
+			return null;
 		}
+
+		function prevNode ( node ) {
+			if ( !node ) {
+				return null;
+			}
+
+			if ( node.previousSibling ) {
+				return node.previousSibling;
+			}
+
+			if ( node.parentNode ) {
+				return prevNode( node.parentNode );
+			}
+
+			return null;
+		}
+
+		function isBlock ( node ) {
+			return jQuery( node ).attr('contenteditable') === 'false';
+		}
+
+		function isTextNode ( node ) {
+			return node && node.nodeType === 3; // Node.TEXT_NODE
+		}
+
+		function nodeLength ( node ) {
+			return !node ? 0
+			             : ( isTextNode( node ) ? node.length
+			                                    : node.childNodes.length );
+		}
+
+		function isFrontPosition ( node, offset ) {
+			return ( offset === 0 ) ||
+			       // IE 7 & 8 have a bug with the offset value near
+			       // non-contenteditable elements within editables.
+			       ( isIE9Plus && offset === 1 ) ||
+			       ( offset <=
+				     node.data.length - node.data.replace(/^\s+/, '').length );
+		}
+
+		function isEndPosition ( node, offset ) {
+			var length = nodeLength( node );
+
+			if ( length === offset ) {
+				return true;
+			}
+
+			var isText = isTextNode( node );
+
+			// If `node' is a text node, we can reckon the end of the node to
+			// be before any superfluous white-spaces begin, since that is
+			// where the end is visually.
+			if ( isText &&
+			     node.data.replace( /\s+$/, '' ).length === offset ) {
+				return true;
+			}
+
+			if ( length === 1 && !isText ) {
+				return node.childNodes[0].nodeName === 'BR';
+			}
+
+			return false;
+		}
+
+		function blink ( node ) {
+			jQuery( node )
+				.stop( true )
+				.css({ opacity: 0 })
+				.fadeIn( 0 ).delay( 100 )
+				.fadeIn(function () {
+					jQuery( node ).css({ opacity: 1 });
+				});
+
+			return node;
+		}
+
+		function jumpBlock ( block, isGoingLeft ) {
+			blink(block);
+
+			return;
+
+			var sibling = block[ isLeft ? 'previousSibling' : 'nextSibling' ];
+
+			if ( !sibling || isBlock( sibling ) ) {
+				var range = new GENTICS.Utils.RangeObject();
+				var landing = jQuery(
+					'<div class="aloha-selection-landing-dirt">&nbsp;</div>'
+				)[0];
+
+				if ( isLeft ) {
+					jQuery( block ).before( landing );
+				} else {
+					jQuery( block ).after( landing );
+					
+					range.startOffset = range.endOffset = 0;
+					range.startContainer = range.endContainer = landing;
+				}
+
+				range.select();
+			}
+
+			Aloha.trigger( 'aloha-block-selected', block );
+			Aloha.Selection.preventSelectionChanged();
+		}
+
+		function isBlockInsideEditable ( $block ) {
+			return $block.parent().hasClass( 'aloha-editable' );
+		}
+
+		var isIE9Plus = 9 <= parseInt(Aloha.jQuery.browser.version, 10);
+
+		// True if keyCode denotes < or ^, otherwise they keyCode is for > or v
+		// in which this value will be false.
+		var isLeft = (keyCode === 37 || keyCode === 38);
+		var node = range.startContainer;
+		var offset = range.startOffset;
+		var sibling;
+		var $parentBlock = jQuery( node ).parents( '[contenteditable=false]' );
+		var isInsideBlock = $parentBlock.length > 0;
+
+		if ( isInsideBlock ) {
+			if ( isBlockInsideEditable( $parentBlock ) ) {
+				sibling = $parentBlock[0];
+			} else {
+				return true;
+			}
+
+		} else if ( isTextNode( node ) ) {
+			if ( isLeft && !isFrontPosition( node, offset ) ) {
+				return true;
+			}
+
+			if ( !isLeft && !isEndPosition( node, offset ) ) {
+				return true;
+			}
+
+		} else {
+			node = node.childNodes[ offset === nodeLength( node ) ? offset - 1
+			                                                      : offset ];
+		}
+
+		if ( !sibling ) {
+			sibling = isLeft ? prevNode( node ) : nextNode( node );
+		}
+
+		if ( isBlock( sibling ) ) {
+			jumpBlock( sibling, isLeft );
+			return false;
+		}
+
+		return true;
 	},
 
 	/**
