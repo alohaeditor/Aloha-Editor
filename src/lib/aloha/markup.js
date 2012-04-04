@@ -207,8 +207,6 @@ Aloha.Markup = Class.extend( {
 
 		function isFrontPosition ( node, offset ) {
 			return ( offset === 0 ) ||
-			       // IE 7 & 8 have a bug with the offset value near
-			       // non-contenteditable elements within editables.
 			       ( offset <=
 				     node.data.length - node.data.replace(/^\s+/, '').length );
 		}
@@ -315,6 +313,37 @@ Aloha.Markup = Class.extend( {
 
 		} else if ( isTextNode( node ) ) {
 			if ( isLeft ) {
+				// FIXME(Petro): Please consider if you have a better idea of
+				//               how we can work around this.
+				//
+				// Here is the problem... with Internet Explorer:
+				// ----------------------------------------------
+				//
+				// Versions of Internet Explorer older than 9, are buggy in how
+				// they `select()', or position a selection from cursor
+				// movements, when the following conditions are true:
+				//
+				//  * The range is collapsed.
+				//  * startContainer is a content editable text node.
+				//  * startOffset is 1.
+				//  * There is a non-conenteditable element left of the
+				//    startContainer.
+				//  * You attempt to move to left to offset 0.
+				//
+				// What happens in IE 7, and IE 8, is that the selection will
+				// jump to the adjacent non-contenteditable element(s), but the
+				// offset will be stuck at 0--even as the cursor is jumping
+				// around the screen!
+				//
+				// Our imperfect work-around is to reckon ourselves to be at
+				// the front of the next node (ie: offset 0 in other browsers),
+				// as soon as we detect that we are at offset 1.
+				//
+				// Considering the bug, I think this is acceptable because the
+				// user can still position themselve right between the block
+				// (non-contenteditable element) and the first characater of
+				// the text node by clicking there with the mouse, since this
+				// seems to work fine in all IE versions.
 				var isFrontPositionInIE = isOldIE && offset === 1;
 
 				if ( !isFrontPositionInIE &&
