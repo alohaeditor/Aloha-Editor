@@ -527,12 +527,9 @@ var Browser = Class.extend({
 						repositoryId : obj.repositoryId
 					},
 					function (data) { 
-						if (obj.loaded === false) {// should not be called twice
-							obj.loaded = true;
-							
-							if (typeof callback === 'function') {
-								callback(data);
-							}
+						obj.loaded = true;
+						if (typeof callback === 'function') {
+							callback(data);
 						}
 					}
 				);
