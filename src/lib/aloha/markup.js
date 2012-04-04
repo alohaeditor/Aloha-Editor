@@ -248,28 +248,40 @@ Aloha.Markup = Class.extend( {
 			return node;
 		}
 
+		/**
+		 * Determines whether the given text node is visible to the the user,
+		 * based on our understanding of how browsers display superfluous white
+		 * spaces.
+		 *
+		 * @param {HTMLEmenent} node The text node to be checked.
+		 */
+		function isVisibleTextNode ( node ) {
+			return 0 < node.data.replace( /\s+/g, '' ).length;
+		}
+
+		// TODO: test with <pre>
 		function jumpBlock ( block, isGoingLeft ) {
 			blink(block);
 
-			return;
+			var sibling = block[ isGoingLeft ? 'previousSibling'
+			                                 : 'nextSibling' ];
 
-			var sibling = block[ isLeft ? 'previousSibling' : 'nextSibling' ];
-
-			if ( !sibling || isBlock( sibling ) ) {
-				var range = new GENTICS.Utils.RangeObject();
+			if ( !sibling ||
+			     ( isTextNode( sibling ) && !isVisibleTextNode( sibling ) ) ||
+				 isBlock( sibling ) ) {
 				var landing = jQuery(
-					'<div class="aloha-selection-landing-dirt">&nbsp;</div>'
+					'<div style="background:#f34" class="aloha-selection-landing-dirt">&nbsp;</div>'
 				)[0];
 
-				if ( isLeft ) {
+				if ( isGoingLeft ) {
 					jQuery( block ).before( landing );
 				} else {
 					jQuery( block ).after( landing );
-					
-					range.startOffset = range.endOffset = 0;
-					range.startContainer = range.endContainer = landing;
 				}
 
+				var range = new GENTICS.Utils.RangeObject();
+				range.startOffset = range.endOffset = 0;
+				range.startContainer = range.endContainer = landing;
 				range.select();
 			}
 
