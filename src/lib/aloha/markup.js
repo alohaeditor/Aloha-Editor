@@ -271,28 +271,32 @@ Aloha.Markup = Class.extend( {
 		function jumpBlock ( block, isGoingLeft ) {
 			blink(block);
 
+			var range = new GENTICS.Utils.RangeObject();
 			var sibling = block[ isGoingLeft ? 'previousSibling'
 			                                 : 'nextSibling' ];
 
 			if ( !sibling ||
 			     ( isTextNode( sibling ) && !isVisibleTextNode( sibling ) ) ||
 			     isBlock( sibling ) ) {
-				var landing = jQuery(
+				var $landing = jQuery(
 					'<div style="background:#f34" class="aloha-selection-landing-dirt">&nbsp;</div>'
-				)[0];
+				);
 
 				if ( isGoingLeft ) {
-					jQuery( block ).before( landing );
+					jQuery( block ).before( $landing );
 				} else {
-					jQuery( block ).after( landing );
+					jQuery( block ).after( $landing );
 				}
 
-				var range = new GENTICS.Utils.RangeObject();
 				range.startOffset = range.endOffset = 0;
-				range.startContainer = range.endContainer = landing;
-				range.select();
+				range.startContainer = range.endContainer = $landing[0];
+			} else {
+				range.startContainer = range.endContainer = sibling;
+				range.startOffset = range.endOffset = isGoingLeft ?
+					nodeLength( sibling ) : 0;
 			}
 
+			range.select();
 			Aloha.trigger( 'aloha-block-selected', block );
 			Aloha.Selection.preventSelectionChanged();
 		}
