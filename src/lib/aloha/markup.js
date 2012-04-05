@@ -190,15 +190,15 @@ Aloha.Markup = Class.extend( {
 			}
 
 			if ( node.nextSibling ) {
-				// Skip over nodes that the user cannot see...
+				// Skip over nodes that the user cannot see ...
 				if ( isTextNode( node.nextSibling ) &&
 				     !isVisibleTextNode( node.nextSibling ) ) {
 				 	return nextVisibleNode( node.nextSibling );
 				}
 
-				if ( isBR( node.nextSibling ) && 0 ===
-				     node.nextSibling.parentNode.innerHTML
-					     .replace( /^<br[^\>]*>$/, '' ).length ) {
+				// Skip over propping <br>s ...
+				if ( isBR( node.nextSibling ) &&
+				     node.nextSibling === node.parentNode.lastChild ) {
 					return nextVisibleNode( node.nextSibling );	
 				}
 
