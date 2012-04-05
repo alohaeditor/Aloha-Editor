@@ -230,9 +230,8 @@ Aloha.Markup = Class.extend( {
 
 			var isText = isTextNode( node );
 
-			// If `node' is a text node, we can reckon the end of the node to
-			// be before any superfluous white-spaces begin, since that is
-			// where the end is visually.
+			// If within a text node, then ignore superfluous white-spaces,
+			// since they are invisible to the user.
 			if ( isText &&
 			     node.data.replace( /\s+$/, '' ).length === offset ) {
 				return true;
@@ -259,8 +258,8 @@ Aloha.Markup = Class.extend( {
 
 		/**
 		 * Determines whether the given text node is visible to the the user,
-		 * based on our understanding of how browsers display superfluous white
-		 * spaces.
+		 * based on our understanding that browsers will not display
+		 * superfluous white spaces.
 		 *
 		 * @param {HTMLEmenent} node The text node to be checked.
 		 */
