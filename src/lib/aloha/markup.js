@@ -18,9 +18,14 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-define(
-[ 'aloha/core', 'util/class', 'aloha/jquery' ],
-function( Aloha, Class, jQuery ) {
+define([
+	'aloha/core',
+	'util/class',
+	'aloha/jquery',
+	'aloha/ecma5shims'
+],
+function( Aloha, Class, jQuery, shims ) {
+
 "use strict";
 
 var GENTICS = window.GENTICS;
@@ -28,25 +33,25 @@ var GENTICS = window.GENTICS;
 var isOldIE = !!( jQuery.browser.msie &&
 				  9 > parseInt( jQuery.browser.version, 10 ) );
 
-function isBR ( node ) {
+function isBR( node ) {
 	return 'BR' === node.nodeName;
 }
 
-function isBlock ( node ) {
+function isBlock( node ) {
 	return 'false' === jQuery( node ).attr( 'contenteditable' );
 }
 
-function isTextNode ( node ) {
+function isTextNode( node ) {
 	return node && 3 === node.nodeType; // Node.TEXT_NODE
 }
 
-function nodeLength ( node ) {
+function nodeLength( node ) {
 	return !node ? 0
 				 : ( isTextNode( node ) ? node.length
 										: node.childNodes.length );
 }
 
-function nextVisibleNode ( node ) {
+function nextVisibleNode( node ) {
 	if ( !node ) {
 		return null;
 	}
@@ -74,7 +79,7 @@ function nextVisibleNode ( node ) {
 	return null;
 }
 
-function prevVisibleNode ( node ) {
+function prevVisibleNode( node ) {
 	if ( !node ) {
 		return null;
 	}
@@ -103,21 +108,21 @@ function prevVisibleNode ( node ) {
  *
  * @param {HTMLEmenent} node The text node to be checked.
  */
-function isVisibleTextNode ( node ) {
+function isVisibleTextNode( node ) {
 	return 0 < node.data.replace( /\s+/g, '' ).length;
 }
 
-function isFrontPosition ( node, offset ) {
+function isFrontPosition( node, offset ) {
 	return ( 0 === offset ) ||
 		   ( offset <= node.data.length -
 					   node.data.replace( /^\s+/, '' ).length );
 }
 
-function isBlockInsideEditable ( $block ) {
+function isBlockInsideEditable( $block ) {
 	return $block.parent().hasClass( 'aloha-editable' );
 }
 
-function isEndPosition ( node, offset ) {
+function isEndPosition( node, offset ) {
 	var length = nodeLength( node );
 
 	if ( length === offset ) {
@@ -140,7 +145,7 @@ function isEndPosition ( node, offset ) {
 	return false;
 }
 
-function blink ( node ) {
+function blink( node ) {
 	jQuery( node )
 		.stop( true )
 		.css({ opacity: 0 })
@@ -152,8 +157,12 @@ function blink ( node ) {
 	return node;
 }
 
-// TODO: test with <pre>
-function jumpBlock ( block, isGoingLeft ) {
+/**
+ * @TODO(petro): We need to be more intelligent about whether we insert a
+ *               block-level placeholder or a phrasing level element.
+ * @TODO(petro): test with <pre>
+ */
+function jumpBlock( block, isGoingLeft ) {
 	blink(block);
 
 	var range = new GENTICS.Utils.RangeObject();
@@ -191,14 +200,23 @@ function jumpBlock ( block, isGoingLeft ) {
 	Aloha.Selection.preventSelectionChanged();
 }
 
-function isInsidePlaceholder ( range ) {
-	var $containers = jQuery( range.startContainer ).add( range.endContainer );
-
-	return $containers.is( window.$_alohaPlaceholder ) ||
-		   0 < window.$_alohaPlaceholder.find( $containers ).length;
+function nodeContains( node1, node2 ) {
+	return isOldIE ? ( shims.compareDocumentPosition( node1, node2 ) & 16 )
+	               : 0 < jQuery( node1 ).find( node2 ).length;
 }
 
-function cleanupPlaceholders ( range ) {
+function isInsidePlaceholder( range ) {
+	var start = range.startContainer;
+	var end = range.endContainer;
+	var $placeholder = window.$_alohaPlaceholder;
+
+	return $placeholder.is( start )               ||
+	       $placeholder.is( end )                 ||
+	       nodeContains( $placeholder[0], start ) ||
+	       nodeContains( $placeholder[0], end );
+}
+
+function cleanupPlaceholders( range ) {
 	if ( window.$_alohaPlaceholder && !isInsidePlaceholder( range ) ) {
 		if ( 0 === window.$_alohaPlaceholder.html()
 		                 .replace( /^(&nbsp;)*$/, '' ).length ) {
