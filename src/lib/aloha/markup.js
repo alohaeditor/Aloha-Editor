@@ -25,6 +25,172 @@ function( Aloha, Class, jQuery ) {
 
 var GENTICS = window.GENTICS;
 
+var isOldIE = !!( jQuery.browser.msie &&
+				  9 > parseInt( jQuery.browser.version, 10 ) );
+
+function isBR ( node ) {
+	return 'BR' === node.nodeName;
+}
+
+function isBlock ( node ) {
+	return 'false' === jQuery( node ).attr( 'contenteditable' );
+}
+
+function isTextNode ( node ) {
+	return node && 3 === node.nodeType; // Node.TEXT_NODE
+}
+
+function nodeLength ( node ) {
+	return !node ? 0
+				 : ( isTextNode( node ) ? node.length
+										: node.childNodes.length );
+}
+
+function nextVisibleNode ( node ) {
+	if ( !node ) {
+		return null;
+	}
+
+	if ( node.nextSibling ) {
+		// Skip over nodes that the user cannot see ...
+		if ( isTextNode( node.nextSibling ) &&
+			 !isVisibleTextNode( node.nextSibling ) ) {
+			return nextVisibleNode( node.nextSibling );
+		}
+
+		// Skip over propping <br>s ...
+		if ( isBR( node.nextSibling ) &&
+			 node.nextSibling === node.parentNode.lastChild ) {
+			return nextVisibleNode( node.nextSibling );	
+		}
+
+		return node.nextSibling;
+	}
+
+	if ( node.parentNode ) {
+		return nextVisibleNode( node.parentNode );
+	}
+
+	return null;
+}
+
+function prevVisibleNode ( node ) {
+	if ( !node ) {
+		return null;
+	}
+
+	if ( node.previousSibling ) {
+		// Skip over nodes that the user cannot see...
+		if ( isTextNode( node.previousSibling ) &&
+			 !isVisibleTextNode( node.previousSibling ) ) {
+			return prevVisibleNode( node.previousSibling );
+		}
+
+		return node.previousSibling;
+	}
+
+	if ( node.parentNode ) {
+		return prevVisibleNode( node.parentNode );
+	}
+
+	return null;
+}
+
+/**
+ * Determines whether the given text node is visible to the the user,
+ * based on our understanding that browsers will not display
+ * superfluous white spaces.
+ *
+ * @param {HTMLEmenent} node The text node to be checked.
+ */
+function isVisibleTextNode ( node ) {
+	return 0 < node.data.replace( /\s+/g, '' ).length;
+}
+
+function isFrontPosition ( node, offset ) {
+	return ( 0 === offset ) ||
+		   ( offset <= node.data.length -
+					   node.data.replace( /^\s+/, '' ).length );
+}
+
+function isBlockInsideEditable ( $block ) {
+	return $block.parent().hasClass( 'aloha-editable' );
+}
+
+function isEndPosition ( node, offset ) {
+	var length = nodeLength( node );
+
+	if ( length === offset ) {
+		return true;
+	}
+
+	var isText = isTextNode( node );
+
+	// If within a text node, then ignore superfluous white-spaces,
+	// since they are invisible to the user.
+	if ( isText &&
+		 node.data.replace( /\s+$/, '' ).length === offset ) {
+		return true;
+	}
+
+	if ( 1 === length && !isText ) {
+		return isBR( node.childNodes[0] );
+	}
+
+	return false;
+}
+
+function blink ( node ) {
+	jQuery( node )
+		.stop( true )
+		.css({ opacity: 0 })
+		.fadeIn( 0 ).delay( 100 )
+		.fadeIn(function () {
+			jQuery( node ).css({ opacity: 1 });
+		});
+
+	return node;
+}
+
+// TODO: test with <pre>
+function jumpBlock ( block, isGoingLeft ) {
+	blink(block);
+
+	var range = new GENTICS.Utils.RangeObject();
+	var sibling = isGoingLeft ? prevVisibleNode( block )
+							  : nextVisibleNode( block );
+
+	if ( !sibling || isBlock( sibling ) ) {
+		var $landing = jQuery(
+			'<div style="background:#f34">&nbsp;</div>' );
+
+		if ( isGoingLeft ) {
+			jQuery( block ).before( $landing );
+		} else {
+			jQuery( block ).after( $landing );
+		}
+
+		range.startContainer = range.endContainer = $landing[0];
+		range.startOffset = range.endOffset = 0;
+
+		// Clear out any old placeholder first ...
+		cleanupPlaceholders( range );
+
+		window.$_alohaPlaceholder = $landing;
+	} else {
+		range.startContainer = range.endContainer = sibling;
+		range.startOffset = range.endOffset = isGoingLeft ?
+			nodeLength( sibling ) : 0;
+
+		cleanupPlaceholders( range );
+	}
+
+	range.select();
+
+	Aloha.trigger( 'aloha-block-selected', block );
+	Aloha.Selection.preventSelectionChanged();
+}
+
 function isInsidePlaceholder ( range ) {
 	var $containers = jQuery( range.startContainer ).add( range.endContainer );
 
@@ -179,172 +345,6 @@ Aloha.Markup = Class.extend( {
 		if ( !range.isCollapsed() ) {
 			return true;
 		}
-
-		function isBR ( node ) {
-			return 'BR' === node.nodeName;
-		}
-
-		function nextVisibleNode ( node ) {
-			if ( !node ) {
-				return null;
-			}
-
-			if ( node.nextSibling ) {
-				// Skip over nodes that the user cannot see ...
-				if ( isTextNode( node.nextSibling ) &&
-				     !isVisibleTextNode( node.nextSibling ) ) {
-				 	return nextVisibleNode( node.nextSibling );
-				}
-
-				// Skip over propping <br>s ...
-				if ( isBR( node.nextSibling ) &&
-				     node.nextSibling === node.parentNode.lastChild ) {
-					return nextVisibleNode( node.nextSibling );	
-				}
-
-				return node.nextSibling;
-			}
-
-			if ( node.parentNode ) {
-				return nextVisibleNode( node.parentNode );
-			}
-
-			return null;
-		}
-
-		function prevVisibleNode ( node ) {
-			if ( !node ) {
-				return null;
-			}
-
-			if ( node.previousSibling ) {
-				// Skip over nodes that the user cannot see...
-				if ( isTextNode( node.previousSibling ) &&
-				     !isVisibleTextNode( node.previousSibling ) ) {
-				 	return prevVisibleNode( node.previousSibling );
-				}
-
-				return node.previousSibling;
-			}
-
-			if ( node.parentNode ) {
-				return prevVisibleNode( node.parentNode );
-			}
-
-			return null;
-		}
-
-		function isBlock ( node ) {
-			return 'false' === jQuery( node ).attr( 'contenteditable' );
-		}
-
-		function isTextNode ( node ) {
-			return node && 3 === node.nodeType; // Node.TEXT_NODE
-		}
-
-		function nodeLength ( node ) {
-			return !node ? 0
-			             : ( isTextNode( node ) ? node.length
-			                                    : node.childNodes.length );
-		}
-
-		function isFrontPosition ( node, offset ) {
-			return ( 0 === offset ) ||
-			       ( offset <= node.data.length -
-					           node.data.replace( /^\s+/, '' ).length );
-		}
-
-		function isEndPosition ( node, offset ) {
-			var length = nodeLength( node );
-
-			if ( length === offset ) {
-				return true;
-			}
-
-			var isText = isTextNode( node );
-
-			// If within a text node, then ignore superfluous white-spaces,
-			// since they are invisible to the user.
-			if ( isText &&
-			     node.data.replace( /\s+$/, '' ).length === offset ) {
-				return true;
-			}
-
-			if ( 1 === length && !isText ) {
-				return isBR( node.childNodes[0] );
-			}
-
-			return false;
-		}
-
-		function blink ( node ) {
-			jQuery( node )
-				.stop( true )
-				.css({ opacity: 0 })
-				.fadeIn( 0 ).delay( 100 )
-				.fadeIn(function () {
-					jQuery( node ).css({ opacity: 1 });
-				});
-
-			return node;
-		}
-
-		/**
-		 * Determines whether the given text node is visible to the the user,
-		 * based on our understanding that browsers will not display
-		 * superfluous white spaces.
-		 *
-		 * @param {HTMLEmenent} node The text node to be checked.
-		 */
-		function isVisibleTextNode ( node ) {
-			return 0 < node.data.replace( /\s+/g, '' ).length;
-		}
-
-		// TODO: test with <pre>
-		function jumpBlock ( block, isGoingLeft ) {
-			blink(block);
-
-			var range = new GENTICS.Utils.RangeObject();
-			var sibling = isGoingLeft ? prevVisibleNode( block )
-			                          : nextVisibleNode( block );
-
-			if ( !sibling || isBlock( sibling ) ) {
-				var $landing = jQuery(
-					'<div style="background:#f34">&nbsp;</div>' );
-
-				if ( isGoingLeft ) {
-					jQuery( block ).before( $landing );
-				} else {
-					jQuery( block ).after( $landing );
-				}
-
-				range.startContainer = range.endContainer = $landing[0];
-				range.startOffset = range.endOffset = 0;
-
-				// Clear out any old placeholder first ...
-				cleanupPlaceholders( range );
-
-				window.$_alohaPlaceholder = $landing;
-			} else {
-				range.startContainer = range.endContainer = sibling;
-				range.startOffset = range.endOffset = isGoingLeft ?
-					nodeLength( sibling ) : 0;
-
-				cleanupPlaceholders( range );
-			}
-
-			range.select();
-
-			Aloha.trigger( 'aloha-block-selected', block );
-			Aloha.Selection.preventSelectionChanged();
-		}
-
-		function isBlockInsideEditable ( $block ) {
-			return $block.parent().hasClass( 'aloha-editable' );
-		}
-
-		var isOldIE = !!( jQuery.browser.msie &&
-		                  9 > parseInt( jQuery.browser.version, 10 ) );
 
 		var node = range.startContainer;
 		var sibling;
