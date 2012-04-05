@@ -25,6 +25,24 @@ function( Aloha, Class, jQuery ) {
 
 var GENTICS = window.GENTICS;
 
+function isInsidePlaceholder ( range ) {
+	var $containers = jQuery( range.startContainer ).add( range.endContainer );
+
+	return $containers.is( window.$_alohaPlaceholder ) ||
+		   0 < window.$_alohaPlaceholder.find( $containers ).length;
+}
+
+function cleanupPlaceholders ( range ) {
+	if ( window.$_alohaPlaceholder && !isInsidePlaceholder( range ) ) {
+		if ( 0 === window.$_alohaPlaceholder.html()
+		                 .replace( /^(&nbsp;)*$/, '' ).length ) {
+			window.$_alohaPlaceholder.remove();
+		}
+
+		window.$_alohaPlaceholder = null;
+	}
+}
+
 /**
  * Markup object
  */
@@ -109,7 +127,12 @@ Aloha.Markup = Class.extend( {
 		// LEFT (37), RIGHT (39), UP (38), DOWN (40) keys for block detection
 		if ( event.keyCode === 37 || event.keyCode === 38 ||
 		     event.keyCode === 39 || event.keyCode === 40 ) {
-			return this.processCursor( rangeObject, event.keyCode );
+			if ( this.processCursor( rangeObject, event.keyCode ) ) {
+				cleanupPlaceholders( Aloha.Selection.rangeObject );
+				return true;
+			}
+
+			return false;
 		}
 
 		// BACKSPACE
@@ -157,6 +180,10 @@ Aloha.Markup = Class.extend( {
 			return true;
 		}
 
+		function isBR ( node ) {
+			return 'BR' === node.nodeName;
+		}
+
 		function nextVisibleNode ( node ) {
 			if ( !node ) {
 				return null;
@@ -167,6 +194,12 @@ Aloha.Markup = Class.extend( {
 				if ( isTextNode( node.nextSibling ) &&
 				     !isVisibleTextNode( node.nextSibling ) ) {
 				 	return nextVisibleNode( node.nextSibling );
+				}
+
+				if ( isBR( node.nextSibling ) && 0 ===
+				     node.nextSibling.parentNode.innerHTML
+					     .replace( /^<br[^\>]*>$/, '' ).length ) {
+					return nextVisibleNode( node.nextSibling );	
 				}
 
 				return node.nextSibling;
@@ -202,11 +235,11 @@ Aloha.Markup = Class.extend( {
 		}
 
 		function isBlock ( node ) {
-			return jQuery( node ).attr('contenteditable') === 'false';
+			return 'false' === jQuery( node ).attr( 'contenteditable' );
 		}
 
 		function isTextNode ( node ) {
-			return node && node.nodeType === 3; // Node.TEXT_NODE
+			return node && 3 === node.nodeType; // Node.TEXT_NODE
 		}
 
 		function nodeLength ( node ) {
@@ -216,9 +249,9 @@ Aloha.Markup = Class.extend( {
 		}
 
 		function isFrontPosition ( node, offset ) {
-			return ( offset === 0 ) ||
-			       ( offset <=
-				     node.data.length - node.data.replace(/^\s+/, '').length );
+			return ( 0 === offset ) ||
+			       ( offset <= node.data.length -
+					           node.data.replace( /^\s+/, '' ).length );
 		}
 
 		function isEndPosition ( node, offset ) {
@@ -237,8 +270,8 @@ Aloha.Markup = Class.extend( {
 				return true;
 			}
 
-			if ( length === 1 && !isText ) {
-				return node.childNodes[0].nodeName === 'BR';
+			if ( 1 === length && !isText ) {
+				return isBR( node.childNodes[0] );
 			}
 
 			return false;
@@ -272,15 +305,12 @@ Aloha.Markup = Class.extend( {
 			blink(block);
 
 			var range = new GENTICS.Utils.RangeObject();
-			var sibling = block[ isGoingLeft ? 'previousSibling'
-			                                 : 'nextSibling' ];
+			var sibling = isGoingLeft ? prevVisibleNode( block )
+			                          : nextVisibleNode( block );
 
-			if ( !sibling ||
-			     ( isTextNode( sibling ) && !isVisibleTextNode( sibling ) ) ||
-			     isBlock( sibling ) ) {
+			if ( !sibling || isBlock( sibling ) ) {
 				var $landing = jQuery(
-					'<div style="background:#f34" class="aloha-selection-landing-dirt">&nbsp;</div>'
-				);
+					'<div style="background:#f34">&nbsp;</div>' );
 
 				if ( isGoingLeft ) {
 					jQuery( block ).before( $landing );
@@ -288,15 +318,23 @@ Aloha.Markup = Class.extend( {
 					jQuery( block ).after( $landing );
 				}
 
-				range.startOffset = range.endOffset = 0;
 				range.startContainer = range.endContainer = $landing[0];
+				range.startOffset = range.endOffset = 0;
+
+				// Clear out any old placeholder first ...
+				cleanupPlaceholders( range );
+
+				window.$_alohaPlaceholder = $landing;
 			} else {
 				range.startContainer = range.endContainer = sibling;
 				range.startOffset = range.endOffset = isGoingLeft ?
 					nodeLength( sibling ) : 0;
+
+				cleanupPlaceholders( range );
 			}
 
 			range.select();
+
 			Aloha.trigger( 'aloha-block-selected', block );
 			Aloha.Selection.preventSelectionChanged();
 		}
@@ -305,78 +343,90 @@ Aloha.Markup = Class.extend( {
 			return $block.parent().hasClass( 'aloha-editable' );
 		}
 
-		var isOldIE = !!(jQuery.browser.msie &&
-		                 9 > parseInt(jQuery.browser.version, 10));
+		var isOldIE = !!( jQuery.browser.msie &&
+		                  9 > parseInt( jQuery.browser.version, 10 ) );
 
-		// True if keyCode denotes < or ^, otherwise they keyCode is for > or v
-		// in which this value will be false.
-		var isLeft = (keyCode === 37 || keyCode === 38);
 		var node = range.startContainer;
-		var offset = range.startOffset;
 		var sibling;
-		var $parentBlock = jQuery( node ).parents( '[contenteditable=false]' );
-		var isInsideBlock = $parentBlock.length > 0;
 
-		if ( isInsideBlock ) {
-			if ( isBlockInsideEditable( $parentBlock ) ) {
-				sibling = $parentBlock[0];
-			} else {
-				return true;
+		// Versions of Internet Explorer that are older that 9, will
+		// erroneously allow you to enter and edit inside elements which have
+		// their contenteditable attribute set to false...
+		if ( isOldIE ) {
+			var $parentBlock = jQuery( node ).parents(
+				'[contenteditable=false]' );
+			var isInsideBlock = $parentBlock.length > 0;
+
+			if ( isInsideBlock ) {
+				if ( isBlockInsideEditable( $parentBlock ) ) {
+					sibling = $parentBlock[0];
+				} else {
+					return true;
+				}
 			}
+		}
+		
+		if ( !sibling ) {
+			// True if keyCode denotes LEFT or UP arrow key, otherwise they
+			// keyCode is for RIGHT or DOWN in which this value will be false.
+			var isLeft = (37 === keyCode || 38 === keyCode);
+			var offset = range.startOffset;
 
-		} else if ( isTextNode( node ) ) {
-			if ( isLeft ) {
-				// FIXME(Petro): Please consider if you have a better idea of
-				//               how we can work around this.
-				//
-				// Here is the problem... with Internet Explorer:
-				// ----------------------------------------------
-				//
-				// Versions of Internet Explorer older than 9, are buggy in how
-				// they `select()', or position a selection from cursor
-				// movements, when the following conditions are true:
-				//
-				//  * The range is collapsed.
-				//  * startContainer is a contenteditable text node.
-				//  * startOffset is 1.
-				//  * There is a non-conenteditable element left of the
-				//    startContainer.
-				//  * You attempt to move left to offset 0 (we consider a range
-				//    to be at "frontposition" if it is at offset 0 within its
-				//    startContainer).
-				//
-				// What happens in IE 7, and IE 8, is that the selection will
-				// jump to the adjacent non-contenteditable element(s), instead
-				// moving to the front of the container, and the offset will be
-				// stuck at 1--even as the cursor is jumping around the screen!
-				//
-				// Our imperfect work-around is to reckon ourselves to be at
-				// the front of the next node (ie: offset 0 in other browsers),
-				// as soon as we detect that we are at offset 1 in IEv<9.
-				//
-				// Considering the bug, I think this is acceptable because the
-				// user can still position themselve right between the block
-				// (non-contenteditable element) and the first characater of
-				// the text node by clicking there with the mouse, since this
-				// seems to work fine in all IE versions.
-				var isFrontPositionInIE = isOldIE && offset === 1;
+			if ( isTextNode( node ) ) {
+				if ( isLeft ) {
+					// FIXME(Petro): Please consider if you have a better idea
+					//               of how we can work around this.
+					//
+					// Here is the problem... with Internet Explorer:
+					// ----------------------------------------------
+					//
+					// Versions of Internet Explorer older than 9, are buggy in
+					// how they `select()', or position a selection from cursor
+					// movements, when the following conditions are true:
+					//
+					//  * The range is collapsed.
+					//  * startContainer is a contenteditable text node.
+					//  * startOffset is 1.
+					//  * There is a non-conenteditable element left of the
+					//    startContainer.
+					//  * You attempt to move left to offset 0 (we consider a
+					//    range to be at "frontposition" if it is at offset 0
+					//    within its startContainer).
+					//
+					// What happens in IE 7, and IE 8, is that the selection
+					// will jump to the adjacent non-contenteditable
+					// element(s), instead moving to the front of the
+					// container, and the offset will be stuck at 1--even as
+					// the cursor is jumping around the screen!
+					//
+					// Our imperfect work-around is to reckon ourselves to be
+					// at the front of the next node (ie: offset 0 in other
+					// browsers), as soon as we detect that we are at offset 1
+					// in IEv<9.
+					//
+					// Considering the bug, I think this is acceptable because
+					// the user can still position themselve right between the
+					// block (non-contenteditable element) and the first
+					// characater of the text node by clicking there with the
+					// mouse, since this seems to work fine in all IE versions.
+					var isFrontPositionInIE = isOldIE && 1 === offset;
 
-				if ( !isFrontPositionInIE &&
-				     !isFrontPosition( node, offset ) ) {
+					if ( !isFrontPositionInIE &&
+						 !isFrontPosition( node, offset ) ) {
+						return true;
+					}
+
+				} else if ( !isEndPosition( node, offset ) ) {
 					return true;
 				}
 
-			} else if ( !isEndPosition( node, offset ) ) {
-				return true;
+			} else {
+				node = node.childNodes[
+					offset === nodeLength( node ) ? offset - 1 : offset ];
 			}
 
-		} else {
-			node = node.childNodes[ offset === nodeLength( node ) ? offset - 1
-			                                                      : offset ];
-		}
-
-		if ( !sibling ) {
-			sibling = isLeft ? prevVisibleNode( node ) : nextVisibleNode( node );
+			sibling = isLeft ? prevVisibleNode( node )
+			                 : nextVisibleNode( node );
 		}
 
 		if ( isBlock( sibling ) ) {
