@@ -163,15 +163,12 @@ function blink( node ) {
  * @TODO(petro): test with <pre>
  */
 function jumpBlock( block, isGoingLeft ) {
-	blink(block);
-
 	var range = new GENTICS.Utils.RangeObject();
 	var sibling = isGoingLeft ? prevVisibleNode( block )
 							  : nextVisibleNode( block );
 
 	if ( !sibling || isBlock( sibling ) ) {
-		var $landing = jQuery(
-			'<div style="background:#f34">&nbsp;</div>' );
+		var $landing = jQuery( '<div>&nbsp;</div>' );
 
 		if ( isGoingLeft ) {
 			jQuery( block ).before( $landing );
@@ -189,7 +186,7 @@ function jumpBlock( block, isGoingLeft ) {
 	} else {
 		range.startContainer = range.endContainer = sibling;
 		range.startOffset = range.endOffset = isGoingLeft ?
-			nodeLength( sibling ) : 0;
+			nodeLength( sibling ) : ( isOldIE ? 1 : 0 );
 
 		cleanupPlaceholders( range );
 	}
@@ -365,6 +362,11 @@ Aloha.Markup = Class.extend( {
 		}
 
 		var node = range.startContainer;
+
+		if ( !node ) {
+			return true;
+		}
+
 		var sibling;
 
 		// Versions of Internet Explorer that are older that 9, will
