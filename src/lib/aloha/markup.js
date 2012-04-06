@@ -69,6 +69,12 @@ function nextVisibleNode( node ) {
 			return nextVisibleNode( node.nextSibling );	
 		}
 
+		// Skip over empty editable elements ...
+		if ( '' === node.nextSibling.innerHTML &&
+		     !isBlock( node.nextSibling ) ) {
+			return nextVisibleNode( node.nextSibling );
+		}
+
 		return node.nextSibling;
 	}
 
@@ -89,6 +95,12 @@ function prevVisibleNode( node ) {
 		if ( isTextNode( node.previousSibling ) &&
 			 !isVisibleTextNode( node.previousSibling ) ) {
 			return prevVisibleNode( node.previousSibling );
+		}
+
+		// Skip over empty editable elements ...
+		if ( '' === node.previousSibling.innerHTML &&
+		     !isBlock( node.previousSibling ) ) {
+			return prevVisibleNode( node.previouSibling );
 		}
 
 		return node.previousSibling;
@@ -165,7 +177,7 @@ function blink( node ) {
 function jumpBlock( block, isGoingLeft ) {
 	var range = new GENTICS.Utils.RangeObject();
 	var sibling = isGoingLeft ? prevVisibleNode( block )
-							  : nextVisibleNode( block );
+	                          : nextVisibleNode( block );
 
 	if ( !sibling || isBlock( sibling ) ) {
 		var $landing = jQuery( '<div>&nbsp;</div>' );
@@ -305,9 +317,8 @@ Aloha.Markup = Class.extend( {
 			}
 		}
 
-		// LEFT (37), RIGHT (39), UP (38), DOWN (40) keys for block detection
-		if ( event.keyCode === 37 || event.keyCode === 38 ||
-		     event.keyCode === 39 || event.keyCode === 40 ) {
+		// LEFT (37), RIGHT (39) keys for block detection
+		if ( event.keyCode === 37 || event.keyCode === 39 ) {
 			if ( this.processCursor( rangeObject, event.keyCode ) ) {
 				cleanupPlaceholders( Aloha.Selection.rangeObject );
 				return true;
