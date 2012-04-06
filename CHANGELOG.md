@@ -11,8 +11,13 @@ All changes are categorized into one of the following keywords:
 - **FEATURE**: The change introduces a new feature, or modifies the function,
                usage, or intent of an existing one.
 
-## 0.20.8 - SNAPSHOT
+## 0.20.8 - 2012/04/06
 
+- **BUG** core: UP and DOWN cursor key will now not be processed specially by Aloha, they will be left to native handeling.
+- **BUG** core: Adds a guard in `execCommand()' to prevent `INDEX_SIZE_ERR' exceptions.
+- **BUG** core: The cursor processing around non-contenteditable elements (blocks) was not functioning as described or desired.  It now behaves with more stability especially on Internet Explorer.
+- **ENHANCEMENT** core: Improved efficiency of cursor processing, especially around blocks.
+- **FEATURE** core: It is now possible to place the caret between two adjecent non-contenteditable elements.
 - **ENHANCEMENT** core: The jquery-plugin require plugin will now be able to return loaded plugins. Previously loaded plugins were just accessible through the extended jquery object.
 - **FEATURE** editable.js: introduced method setContents() -- use Aloha.getEditableById('my-editable').setContents('Aloha World') to set the contents of the editable with the ID my-editable
 - **BUG** smartContentChange is now again triggered when pressing enter key; and new: delete / backspace keys
@@ -24,7 +29,7 @@ All changes are categorized into one of the following keywords:
 - **ENHANCEMENT** dom-to-xhtml plugin: non-specified attributes are excluded from serialization, making attribute serialization more consistent on IE7 and IE8.
 - **ENHANCEMENT** load plugins via config option
 
-## 0.20.7 - 2012/03/7
+## 0.20.7 - 2012/03/07
 
 - **BUG** link: fixed a bug in the link list static repository plugin that would cause aloha to fail when no settings for the linklist repository were specified.
 - **BUG** formatlesspaste plugin: fixed IE syntax error caused by a comma at the end of a list.
