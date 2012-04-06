@@ -305,9 +305,8 @@ Aloha.Markup = Class.extend( {
 			}
 		}
 
-		// LEFT (37), RIGHT (39), UP (38), DOWN (40) keys for block detection
-		if ( event.keyCode === 37 || event.keyCode === 38 ||
-		     event.keyCode === 39 || event.keyCode === 40 ) {
+		// LEFT (37), RIGHT (39) keys for block detection
+		if ( event.keyCode === 37 || event.keyCode === 39 ) {
 			if ( this.processCursor( rangeObject, event.keyCode ) ) {
 				cleanupPlaceholders( Aloha.Selection.rangeObject );
 				return true;
