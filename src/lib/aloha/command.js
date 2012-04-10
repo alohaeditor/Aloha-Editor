@@ -86,19 +86,22 @@ function( Aloha, Registry, Engine, Dom, ContentHandlerManager ) {
 			}
 
 			Engine.execCommand( commandId, showUi, value, range );
-			
-			// Read range after engine modification
-			range = Aloha.getSelection().getRangeAt( 0 );
 
-			// FIX: doCleanup should work with W3C range
-			var startnode = range.commonAncestorContainer.parentNode;
-			var rangeObject = new window.GENTICS.Utils.RangeObject();
-			rangeObject.startContainer = range.startContainer;
-			rangeObject.startOffset = range.startOffset;
-			rangeObject.endContainer = range.endContainer;
-			rangeObject.endOffset = range.endOffset;
-			Dom.doCleanup({merge:true, removeempty: false}, rangeObject, startnode);
-			rangeObject.select();
+			if ( Aloha.getSelection().getRangeCount() ) {
+				// Read range after engine modification
+				range = Aloha.getSelection().getRangeAt( 0 );
+
+				// FIX: doCleanup should work with W3C range
+				var startnode = range.commonAncestorContainer.parentNode;
+				var rangeObject = new window.GENTICS.Utils.RangeObject();
+				rangeObject.startContainer = range.startContainer;
+				rangeObject.startOffset = range.startOffset;
+				rangeObject.endContainer = range.endContainer;
+				rangeObject.endOffset = range.endOffset;
+				Dom.doCleanup({merge:true, removeempty: false}, rangeObject, startnode);
+				rangeObject.select();
+			}
+
 			Aloha.trigger('aloha-command-executed', commandId);
 		},
 		
