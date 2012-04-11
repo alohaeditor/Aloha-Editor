@@ -599,6 +599,7 @@ var Browser = Class.extend({
 				},
 				json_data: {
 					data: function (node, callback) {
+						if (!GCN.sid) return;
 						if (that.repositoryManager) {
 							that.jstree_callback = callback;
 							that.fetchSubnodes.call(that, node, callback);
