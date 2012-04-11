@@ -1,0 +1,1 @@
+- **BUG** image plugin: fixes distorted images when in portrait format
