@@ -139,6 +139,7 @@ function (jQuery, Utils) {
 
 			// remove the click event of the
 			this.obj.unbind('click');
+			this.obj.unbind('mousedown');
 
 			if (jQuery.trim(this.obj.attr('class')) == '') {
 				this.obj.removeAttr('class');

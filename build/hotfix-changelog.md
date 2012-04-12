@@ -1,1 +1,2 @@
 - **BUG** image plugin: fixes distorted images when in portrait format
+- **BUG** table plugin: fixes bug in IE7 that second click on table cell was not activating the table
