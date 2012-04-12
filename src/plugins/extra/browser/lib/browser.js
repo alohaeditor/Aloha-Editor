@@ -599,7 +599,10 @@ var Browser = Class.extend({
 				},
 				json_data: {
 					data: function (node, callback) {
-						if (!GCN.sid) return;
+						if (GCN && !GCN.sid) {
+							// return early if used in GCN context but no session id is set
+							return;
+						}
 						if (that.repositoryManager) {
 							that.jstree_callback = callback;
 							that.fetchSubnodes.call(that, node, callback);
