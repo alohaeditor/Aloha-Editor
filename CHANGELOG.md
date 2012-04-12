@@ -11,10 +11,6 @@ All changes are categorized into one of the following keywords:
 - **FEATURE**: The change introduces a new feature, or modifies the function,
                usage, or intent of an existing one.
 
-## 0.20.9
-
-- **ENHANCEMENT**: updated integration of Aloha Blocks to the most recent version
-
 ## 0.20.8 - 2012/04/06
 
 - **BUG** core: UP and DOWN cursor key will now not be processed specially by Aloha, they will be left to native handeling.

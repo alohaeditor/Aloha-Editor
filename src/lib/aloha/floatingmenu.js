@@ -743,8 +743,10 @@ function(Aloha, jQuery, Ext, Class, console) {
 								});
 						
 								// adapt the shadow
-								that.extTabPanel.shadow.show();
-								that.refreshShadow();
+								if (that.extTabPanel.isVisible()) {
+									that.extTabPanel.shadow.show();
+									that.refreshShadow();
+								}
 							}
 						}
 					},
@@ -765,8 +767,10 @@ function(Aloha, jQuery, Ext, Class, console) {
 			});
 
 			// add the dropshadow
-			this.extTabPanel.shadow = jQuery('<div id="aloha-floatingmenu-shadow" class="aloha-shadow">&#160;</div>');
-			jQuery('body').append(this.extTabPanel.shadow);
+			if (!this.extTabPanel.shadow) {
+				this.extTabPanel.shadow = jQuery('<div id="aloha-floatingmenu-shadow" class="aloha-shadow">&#160;</div>').hide();
+				jQuery('body').append(this.extTabPanel.shadow);
+			}
 
 			// add an empty pin tab item, store reference
 			pinTab = this.extTabPanel.add({
