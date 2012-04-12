@@ -352,8 +352,18 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 					// the start of the selection was not yet found, so look for it now
 					// check whether the start of the selection is found here
 
+					// Try to read the nodeType property and return if we do not have permission
+					// ie.: frame document to an external URL
+					var nodeType;
+					try {
+						nodeType = this.nodeType;
+					}
+					catch (e) {
+						return;
+					}
+
 					// check is dependent on the node type
-					switch(this.nodeType) {
+					switch(nodeType) {
 					case 3: // text node
 						if (this === rangeObject.startContainer) {
 							// the selection starts here
