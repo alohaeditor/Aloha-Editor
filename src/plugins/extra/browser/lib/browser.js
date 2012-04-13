@@ -599,7 +599,7 @@ var Browser = Class.extend({
 				},
 				json_data: {
 					data: function (node, callback) {
-						if (GCN && !GCN.sid) {
+						if (windows.GCN && !window.GCN.sid) {
 							// return early if used in GCN context but no session id is set
 							return;
 						}
