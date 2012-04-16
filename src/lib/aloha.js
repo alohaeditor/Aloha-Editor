@@ -13608,14 +13608,38 @@ Ext.DomHelper = function(){
                 setStart = 'setStart' + (endRe.test(where) ? 'After' : 'Before');
                 if (hash[where]) {
                     range[setStart](el);
-                    frag = range.createContextualFragment(html);
+
+                    // Workaround for IE9, because it does not have this method anymore
+                    // When we have moved to jQuery we won't need this anymore
+                    if (typeof range.createContextualFragmen == 'function') {
+                    	frag = range.createContextualFragment(html);
+                    }
+                    else {
+                    	frag = document.createDocumentFragment(), 
+                        div = document.createElement("div");
+                        frag.appendChild(div);
+                        div.outerHTML = html;
+                    }
+
                     el.parentNode.insertBefore(frag, where == beforebegin ? el : el.nextSibling);
                     return el[(where == beforebegin ? 'previous' : 'next') + 'Sibling'];
                 } else {
                     rangeEl = (where == afterbegin ? 'first' : 'last') + 'Child';
                     if (el.firstChild) {
                         range[setStart](el[rangeEl]);
-                        frag = range.createContextualFragment(html);
+
+                        // Workaround for IE9, because it does not have this method anymore
+                        // When we have moved to jQuery we won't need this anymore
+                        if (typeof range.createContextualFragmen == 'function') {
+                        	frag = range.createContextualFragment(html);
+                        }
+                        else {
+                        	frag = document.createDocumentFragment(), 
+                            div = document.createElement("div");
+                            frag.appendChild(div);
+                            div.outerHTML = html;
+                        }
+
                         if(where == afterbegin){
                             el.insertBefore(frag, el.firstChild);
                         }else{
@@ -61282,6 +61306,7 @@ require(
 	[
 		'aloha/jquery',
 		'aloha/ext',
+		'util/json2',
 	],
 	function () {
 		// load Aloha core files
@@ -61291,7 +61316,6 @@ require(
 				'vendor/jquery.json-2.2.min',
 				'vendor/jquery.store',
 				'aloha/rangy-core',
-				'util/json2',
 				'util/class',
 				'util/lang',
 				'util/range',
