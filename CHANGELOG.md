@@ -13,6 +13,7 @@ All changes are categorized into one of the following keywords:
 
 ## 0.20.9 - 2012/04/16
 
+- **BUG**: block-plugin: Fixed 'e.srcElement is undefined' error in blockmanager.js which affected firefox 11
 - **BUG** floatingmenu: Fixed problem with creating new buttons after Aloha is ready.
 - **ENHANCEMENT**: updated integration of Aloha Blocks to the most recent version
 - **BUG** floatingmenu: Fixed problem with showing floatingmenu shadow too early
