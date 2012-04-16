@@ -11,6 +11,8 @@ function(Registry) {
 	"use strict";
 
 	/**
+	 * The Editor Manager maps data types to editor classes.
+	 *
 	 * @name block.editormanager
 	 * @class Editor manager singleton
 	 */
