@@ -201,7 +201,7 @@ function (jQuery, Utils) {
 		this.hasFocus = false;
 
 		// remove "active class"
-		this.obj.removeClass('aloha-table-cell-active');
+		this.obj.removeClass('aloha-table-cell_active');
 	};
 
 	/**
