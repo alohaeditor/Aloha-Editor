@@ -8,4 +8,3 @@ All changes are categorized into one of the following keywords:
 
 ----
 
-**BUG**: core: Fixed a typo in the previous bugfix: Fixed a javascript error in IE9 stating that the method createContextualFragment doesn't exist

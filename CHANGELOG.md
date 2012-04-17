@@ -11,6 +11,10 @@ All changes are categorized into one of the following keywords:
 - **FEATURE**: The change introduces a new feature, or modifies the function,
                usage, or intent of an existing one.
 
+## 0.20.10 - 2012/04/17
+
+- **BUG**: core: Fixed a typo in the previous bugfix: Fixed a javascript error in IE9 stating that the method createContextualFragment doesn't exist
+
 ## 0.20.9 - 2012/04/16
 
 - **BUG**: block-plugin: Fixed 'e.srcElement is undefined' error in blockmanager.js which affected firefox 11
