@@ -2,7 +2,7 @@ define([
 	"aloha/core",
 	"ui/surface",
 	"ui/component",
-	"ui/togglebutton"
+	"ui/toggleButton"
 ],
 function( Aloha, Surface, Component, ToggleButton ) {
 	// The toggleCommandButton extends the toggleButton component type to provide an easy

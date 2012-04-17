@@ -2,7 +2,7 @@ define([
 	"i18n!ui/nls/i18n",
 	"ui/component",
 	"ui/surface",
-	"ui/togglebutton"
+	"ui/toggleButton"
 ],
 function( i18n, Component, Surface, ToggleButton ) {
 	/**

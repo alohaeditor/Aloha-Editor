@@ -1,7 +1,7 @@
 define([
 	"aloha/jquery",
 	"i18n!ui/nls/i18n",
-	"ui/Component",
+	"ui/component",
 	"ui/surface",
 	"ui/button"
 ],
