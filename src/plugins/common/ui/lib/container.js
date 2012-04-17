@@ -152,6 +152,14 @@ define([
 				// the current selection.
 				elements = [ null ];
 
+			if ( ! editable.container ) {
+				// This case, where the container property is undefined, occurred while
+				// implementing a custom toolbar containing plugin defined components.
+				// The container is undefined error occurred when clicking into an editable.
+				// TODO: This is a quick fix and the real cause should probably be fixed somewhere else.
+				return;
+			}
+
 			for ( element = range.startContainer;
 					!isEditingHost( element );
 					element = element.parentNode ) {
