@@ -1,0 +1,1 @@
+- **BUG** format-plugin: added missing methods / hotkey functionality (seems to be missing after merge)
