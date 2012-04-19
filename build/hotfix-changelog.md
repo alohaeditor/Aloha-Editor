@@ -8,3 +8,5 @@ All changes are categorized into one of the following keywords:
 
 ----
 
+**ENHANCEMENT**: Removed unwanted behaviour from the block plugin's sidebarattributeedtior, which will clear out the whole sidebar when loaded
+

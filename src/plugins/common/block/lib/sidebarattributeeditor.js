@@ -42,8 +42,8 @@ define([ 'aloha/jquery', 'block/blockmanager', 'aloha/sidebar', 'block/editorman
 			}
 			// TODO: Clearing the whole sidebar might not be what we want; instead we might only want
 			// to clear certain panels.
-			that._sidebar.container.find('.aloha-sidebar-panels').children().remove();
-			that._sidebar.panels = {};
+			// that._sidebar.container.find('.aloha-sidebar-panels').children().remove();
+			// that._sidebar.panels = {};
 
 			jQuery.each(selectedBlocks, function() {
 				var schema = this.getSchema(),
@@ -96,7 +96,8 @@ define([ 'aloha/jquery', 'block/blockmanager', 'aloha/sidebar', 'block/editorman
 
 						// This code is from the superclass
 						this.isActive = false;
-						this.content.parent('li').hide();
+						// TODO check if this is needed in current block implementation
+						// this.content.parent('li').hide();
 						this.effectiveElement = null;
 					}
 				});
