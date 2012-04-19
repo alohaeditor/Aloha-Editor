@@ -13611,7 +13611,7 @@ Ext.DomHelper = function(){
 
                     // Workaround for IE9, because it does not have this method anymore
                     // When we have moved to jQuery we won't need this anymore
-                    if (typeof range.createContextualFragmen == 'function') {
+                    if (typeof range.createContextualFragment === 'function') {
                     	frag = range.createContextualFragment(html);
                     }
                     else {
@@ -13630,7 +13630,7 @@ Ext.DomHelper = function(){
 
                         // Workaround for IE9, because it does not have this method anymore
                         // When we have moved to jQuery we won't need this anymore
-                        if (typeof range.createContextualFragmen == 'function') {
+                        if (typeof range.createContextualFragment === 'function') {
                         	frag = range.createContextualFragment(html);
                         }
                         else {
