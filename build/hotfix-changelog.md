@@ -8,3 +8,5 @@ All changes are categorized into one of the following keywords:
 
 ----
 
+- **BUG**: browser-plugin: In some cases a javascript error would be thrown when using the browser plugin with Internet Explorer. IE does not support 'new Image' calls within popups. 
+
