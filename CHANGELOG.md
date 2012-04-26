@@ -11,6 +11,20 @@ All changes are categorized into one of the following keywords:
 - **FEATURE**: The change introduces a new feature, or modifies the function,
                usage, or intent of an existing one.
 
+## 0.20.10 - 2012/04/17
+
+- **BUG**: core: Fixed a typo in the previous bugfix: Fixed a javascript error in IE9 stating that the method createContextualFragment doesn't exist
+
+## 0.20.9 - 2012/04/16
+
+- **BUG**: block-plugin: Fixed 'e.srcElement is undefined' error in blockmanager.js which affected firefox 11
+- **BUG** floatingmenu: Fixed problem with creating new buttons after Aloha is ready.
+- **ENHANCEMENT**: updated integration of Aloha Blocks to the most recent version
+- **BUG** floatingmenu: Fixed problem with showing floatingmenu shadow too early
+- **BUG** core: Fixed a permission error in Firefox, when Aloha Editor tried to access a document property of an external ressource
+- **BUG** table-plugin: Fixed the cleanup of the table cells on blur not cleaning up correctly (caused by a typo in the element class)
+- **BUG** core: Fixed a javascript error in IE9 stating that the method createContextualFragment doesn't exist (fixed in extjs)
+
 ## 0.20.8 - 2012/04/06
 
 - **BUG** core: UP and DOWN cursor key will now not be processed specially by Aloha, they will be left to native handeling.

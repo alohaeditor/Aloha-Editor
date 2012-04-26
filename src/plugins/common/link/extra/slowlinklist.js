@@ -142,7 +142,7 @@ function ( Aloha, jQuery ) {
 				);
 			} );
 			
-			setTimeout( function () {
+			window.setTimeout( function () {
 				callback.call( this, d );
 			}, 2000 );
 		},
@@ -167,7 +167,7 @@ function ( Aloha, jQuery ) {
 				}
 			}
 			
-			setTimeout( function () {
+			window.setTimeout( function () {
 				callback.call( this, d );
 			}, 2000 );
 		},

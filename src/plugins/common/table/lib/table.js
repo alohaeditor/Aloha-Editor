@@ -491,6 +491,9 @@ define( [
 	Table.prototype.rowSelectionMouseDown = function ( jqEvent ) {
 		// focus the table (if not already done)
 		this.focus();
+		//this.get(0).hideFocus = true;
+		//window.console.log('rowSelectionMouseDown');
+		//window.console.log(this.get(0));
 
 		// if no cells are selected, reset the selection-array
 		if ( this.selection.selectedCells.length == 0 ) {
@@ -534,6 +537,8 @@ define( [
 
 		// stop bubble, otherwise the mousedown of the table is called ...
 		jqEvent.stopPropagation();
+		
+		this.tablePlugin.summary.focus();
 
 		// prevent ff/chrome/safare from selecting the contents of the table
 		return false;
@@ -886,9 +891,9 @@ define( [
 			this.numRows -= rowIDs.length;
 
 			// IE needs a timeout to work properly
-			setTimeout( function() {
+			window.setTimeout( function() {
 				var lastCell = jQuery( rows[1].cells[ focusRowId +1 ] );
-				lastCell.focus()
+				lastCell.focus();
 			}, 5);
 
 			// finally unselect the marked cells
@@ -979,9 +984,9 @@ define( [
 			this.numCols -= colIDs.length;
 
 			// IE needs a timeout to work properly
-			setTimeout( function() {
+			window.setTimeout( function() {
 				var lastCell = jQuery( rows[1].cells[ focusColID +1 ] );
-				lastCell.focus()
+				lastCell.focus();
 			}, 5);
 
 			this.selection.unselectCells();
@@ -1237,12 +1242,13 @@ define( [
 				this.parentEditable.obj.focus();
 			}
 
+			// @iefix
 			this.tablePlugin.setFocusedTable(this);
 
 			// select first cell
 			// TODO put cursor in first cell without selecting
-	//		var firstCell = this.obj.find('tr:nth-child(2) td:nth-child(2)').children('div[contenteditable=true]').get(0);
-	//		jQuery(firstCell).get(0).focus();
+			//var firstCell = this.obj.find('tr:nth-child(2) td:nth-child(2)').children('div[contenteditable=true]').get(0);
+			//jQuery(firstCell).get(0).focus();
 
 		}
 
@@ -1295,31 +1301,41 @@ define( [
 		// leave the cursor-selection outside of the table, since
 		// otherwise the floating menu scope will be incorrect when one
 		// CTRL-clicks on the rows or columns.
-		var selection = Aloha.getSelection();
 		
+		return;
+		
+		var selection = Aloha.getSelection();
+
 		if ( !selection ||
 				!selection._nativeSelection ||
 					selection._nativeSelection._ranges.length == 0 ) {
+						window.console.log('no selection');
 			return;
 		}
 
 		var range = selection.getRangeAt( 0 );
 		if ( null == range.startContainer ) {
+			window.console.log('no range.startContainer');
 			return;
 		}
+		window.console.log('range.startContainer', range.startContainer);
 
 		// if the selection is  already in the table, do nothing
 		if ( 0 !== jQuery( range.startContainer ).closest('table').length ) {
+			window.console.log('the selection is  already in the table, do nothing');
 			return;
 		}
 		
 		// if no cells are selected, do nothing
 		if ( 0 === this.selection.selectedCells.length ) {
+			window.console.log('no cells are selected, do nothing');
 			return;
 		}
 
 		// set the foces to the first selected cell
+		window.console.log('!!!!! first selected cell (should not be here)', this.selection.selectedCells[ 0 ]);
 		var container = TableCell.getContainer( this.selection.selectedCells[ 0 ] );
+		window.console.log('select container', container.outerHTML);
 		jQuery( container ).focus();
 	}
 

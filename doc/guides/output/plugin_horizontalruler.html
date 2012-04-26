@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>: The Table of Contents (toc) Plugin</title>
+  <title>: The Horizontalruler Plugin</title>
 
   <!-- guides styles -->
   <link rel="stylesheet" type="text/css" href="stylesheets/style.css" />
@@ -101,20 +101,17 @@
     <div class="wrapper">
       <div id="mainCol">
           <div class="headerSection">
-            <h2>The Table of Contents (toc) Plugin</h2>
-<p>With this plugin the editor has the possibility to insert a table of contents (<span class="caps">TOC</span>).</p>
-<p>All H1 &#8211; H6 elements will be extracted and presented as a table of contents. There are also anchor links from the <span class="caps">TOC</span> entries to the sections available.</p>
+            <h2>The Horizontalruler Plugin</h2>
+<p>With this plugin the editor has the possibility to insert a horizontal ruler <hr>-element.</p>
 
           </div>
         <h3 id="plugin-settings">1 Plugin Settings</h3>
 <div class="code_container">
 <pre class="brush: javascript; gutter: false; toolbar: false">
 
-	Aloha.settings.plugins.toc: {
-		minEntries: 5,					// minimum TOC entries to display; default: 0 (show always all)
-		updateInterval: 5000,			// update interval for the TOC in milliseconds; default: 5000 (5 seconds)
+	Aloha.settings.plugins.horizontalruler: {
 		editables: {
-			'#my-editable': []			// disable toc plugin for editable with ID my-editable
+			'#my-editable': []			// disable the plugin for the editable with ID my-editable
 		}
 	}
 </pre></div>

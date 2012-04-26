@@ -896,6 +896,13 @@ function isCollapsedLineBreak(br) {
 // FIXME: This doesn't work in IE, since IE ignores display: none in
 // contenteditable.
 function isExtraneousLineBreak(br) {
+
+	// https://github.com/alohaeditor/Aloha-Editor/issues/516
+	// look like it works in msie > 7
+	if (jQuery.browser.msie && jQuery.browser.version < 8) {
+		return false;
+	}
+
 	if (!isHtmlElement(br, "br")) {
 		return false;
 	}
@@ -1405,6 +1412,24 @@ function movePreservingRanges(node, newParent, newIndex, range) {
 	}
 }
 
+/**
+ * Copy all non empty attributes from an existing to a new element
+ */
+function copyAttributes( container,  newContainer ) {
+	for ( var i = 0; i < container.attributes.length; i++ ) {
+		if ( typeof newContainer.setAttributeNS === 'function' ) {
+			newContainer.setAttributeNS(container.attributes[i].namespaceURI, container.attributes[i].name, container.attributes[i].value);
+		} else if ( container.attributes[i].value.length > 0 
+					&& container.attributes[i].value != 'null'
+					&& container.attributes[i].value > 0) {
+			// in IE 7 all attributes where copied; we do not want null or -1 / 0 values in attributes
+			// fixes https://github.com/alohaeditor/Aloha-Editor/issues/515 
+			// @todo maybe check for a better solution... contenthandler sanitize would be nice too...
+			newContainer.setAttribute(container.attributes[i].name, container.attributes[i].value);
+		}
+	}
+}
+
 function setTagName(element, newName, range) {
 	// "If element is an HTML element with local name equal to new name, return
 	// element."
@@ -1426,14 +1451,8 @@ function setTagName(element, newName, range) {
 	element.parentNode.insertBefore(replacementElement, element);
 
 	// "Copy all attributes of element to replacement element, in order."
-	for (var i = 0; i < element.attributes.length; i++) {
-		if (typeof replacementElement.setAttributeNS === 'function') {
-			replacementElement.setAttributeNS(element.attributes[i].namespaceURI, element.attributes[i].name, element.attributes[i].value);
-		} else {
-			replacementElement.setAttribute(element.attributes[i].name, element.attributes[i].value);
-		}
-	}
-
+	copyAttributes( element,  replacementElement );
+	
 	// "While element has children, append the first child of element as the
 	// last child of replacement element, preserving ranges."
 	while (element.childNodes.length) {
@@ -6168,6 +6187,7 @@ function createEndBreak() {
 //@{
 commands["delete"] = {
 	action: function(value, range) {
+
 		// "If the active range is not collapsed, delete the contents of the
 		// active range and abort these steps."
 		if (!range.collapsed) {
@@ -6266,6 +6286,20 @@ commands["delete"] = {
 			// so we can still pass our range and have it modified, but
 			// also conform with the previous implementation
 			range.startOffset -= 1;
+			deleteContents(range);
+			return;
+		}
+
+		// @iebug
+		// when inserting a special char via the plugin 
+		// there where problems deleting them again with backspace after insertation
+		// see https://github.com/alohaeditor/Aloha-Editor/issues/517
+		if (node.nodeType == $_.Node.TEXT_NODE
+		&& offset == 0 && jQuery.browser.msie) {
+			offset = 1;
+			range.setStart(node, offset);
+			range.setEnd(node, offset);
+			range.startOffset = 0;
 			deleteContents(range);
 			return;
 		}
@@ -7370,7 +7404,7 @@ commands.insertorderedlist = {
 //@{
 commands.insertparagraph = {
 	action: function(value, range) {
-		
+
 		// "Delete the contents of the active range."
 		deleteContents(range);
 
@@ -7644,15 +7678,7 @@ commands.insertparagraph = {
 		var newContainer = document.createElement(newContainerName);
 
 		// "Copy all non empty attributes of the container to new container."
-		for ( var i = 0; i < container.attributes.length; i++ ) {
-			if ( typeof newContainer.setAttributeNS === 'function' ) {
-				newContainer.setAttributeNS(container.attributes[i].namespaceURI, container.attributes[i].name, container.attributes[i].value);
-			} else if ( container.attributes[i].value.length > 0 
-						&& container.attributes[i].value != 'null'
-						&& container.attributes[i].value > 0) {
-				newContainer.setAttribute(container.attributes[i].name, container.attributes[i].value);
-			}
-		}
+		copyAttributes( container,  newContainer );
 
 		// "If new container has an id attribute, unset it."
 		newContainer.removeAttribute("id");

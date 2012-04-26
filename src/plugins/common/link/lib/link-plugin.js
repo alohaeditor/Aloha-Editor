@@ -360,7 +360,7 @@ define( [
 					// blur current editable. user is waiting for the link to load
 					Aloha.activeEditable.blur();
 					// hack to guarantee a browser history entry
-					setTimeout( function () {
+					window.setTimeout( function () {
 						location.href = e.target;
 					}, 0 );
 					e.stopPropagation();
@@ -506,7 +506,7 @@ define( [
 						that.removeLink( false );
 					}
 					
-					setTimeout( function () {
+					window.setTimeout( function () {
 						FloatingMenu.setScope( 'Aloha.continuoustext' );
 					}, 100 );
 					

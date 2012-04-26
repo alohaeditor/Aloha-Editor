@@ -4952,10 +4952,11 @@ jQuery.event = {
 				}
 			}
 		}
+
 		return event.result;
 	},
 
-	props: "altKey attrChange attrName bubbles button cancelable charCode clientX clientY ctrlKey currentTarget data detail eventPhase fromElement handler keyCode layerX layerY metaKey newValue offsetX offsetY pageX pageY prevValue relatedNode relatedTarget screenX screenY shiftKey srcElement target toElement view wheelDelta which".split(" "),
+	props: "altKey attrChange attrName bubbles button cancelable charCode clientX clientY ctrlKey currentTarget data detail eventPhase fromElement handler keyCode metaKey newValue offsetX offsetY pageX pageY prevValue relatedNode relatedTarget screenX screenY shiftKey srcElement target toElement view wheelDelta which".split(" "),
 
 	fix: function( event ) {
 		if ( event[ jQuery.expando ] ) {
@@ -13608,14 +13609,38 @@ Ext.DomHelper = function(){
                 setStart = 'setStart' + (endRe.test(where) ? 'After' : 'Before');
                 if (hash[where]) {
                     range[setStart](el);
-                    frag = range.createContextualFragment(html);
+
+                    // Workaround for IE9, because it does not have this method anymore
+                    // When we have moved to jQuery we won't need this anymore
+                    if (typeof range.createContextualFragment === 'function') {
+                    	frag = range.createContextualFragment(html);
+                    }
+                    else {
+                    	frag = document.createDocumentFragment(), 
+                        div = document.createElement("div");
+                        frag.appendChild(div);
+                        div.outerHTML = html;
+                    }
+
                     el.parentNode.insertBefore(frag, where == beforebegin ? el : el.nextSibling);
                     return el[(where == beforebegin ? 'previous' : 'next') + 'Sibling'];
                 } else {
                     rangeEl = (where == afterbegin ? 'first' : 'last') + 'Child';
                     if (el.firstChild) {
                         range[setStart](el[rangeEl]);
-                        frag = range.createContextualFragment(html);
+
+                        // Workaround for IE9, because it does not have this method anymore
+                        // When we have moved to jQuery we won't need this anymore
+                        if (typeof range.createContextualFragment === 'function') {
+                        	frag = range.createContextualFragment(html);
+                        }
+                        else {
+                        	frag = document.createDocumentFragment(), 
+                            div = document.createElement("div");
+                            frag.appendChild(div);
+                            div.outerHTML = html;
+                        }
+
                         if(where == afterbegin){
                             el.insertBefore(frag, el.firstChild);
                         }else{
@@ -61263,6 +61288,7 @@ Ext.grid.GroupingView.GROUP_ID = 1000;
 				}
 			}
 			
+			// @todo IE error thrown that this is not catched ...
 			throw 'Aloha-Editor Exception: The following core file' +
 				( fatalTimeouts.length ? 's have' : ' has' ) +
 				' timed-out while loading: ' + fatalTimeouts.join( ', ' );
