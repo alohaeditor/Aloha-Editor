@@ -274,7 +274,8 @@ var Browser = Class.extend({
 			'sort-alphabet-descending.png',
 			'sort-alphabet.png'
 		], function () {
-			(new Image()).src = that.rootPath + 'img/' + this;
+			var img = document.createElement("img");
+			img.src = that.rootPath + 'img/' + this;
 		});
 	},
 	
