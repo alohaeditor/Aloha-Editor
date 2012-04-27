@@ -143,6 +143,7 @@ var Browser = Class.extend({
 			rootFolderId : 'aloha',
 			// root path to where Browser resources are located
 			rootPath  : '',
+			minimalWidth: 660,
 			treeWidth : 300,
 			listWidth : 'auto',
 			pageSize  : 10,
@@ -155,6 +156,11 @@ var Browser = Class.extend({
 			isFloating : false
 		}, opts || {});
 		
+		// Check whether the given width is acceptable
+		if (options.totalWidth < options.minimalWidth) {
+			options.totalWidth = options.minimalWidth;
+		}
+				
 		// If no element, the we will an overlay element onto which we will bind
 		// our browser
 		if (!options.element || !options.element.length) {
@@ -223,7 +229,7 @@ var Browser = Class.extend({
 		this.tree = this.createTree(this.grid.find('.ui-layout-west'));
 		this.list = this.createList(this.grid.find('.ui-layout-center'));
 		
-		this.grid.layout({
+		var layout = this.grid.layout({
 			west__size    : tree_width - 1,
 			west__minSize : tree_width - give,
 			west__maxSize : tree_width + give,
@@ -237,11 +243,37 @@ var Browser = Class.extend({
 				}
 			}
 			// , applyDefaultStyles: true // debugging
-		}).sizePane('west', tree_width); // *** Fix for a ui-layout bug in chrome ***
-		
+		});
+		layout.sizePane('west', tree_width); // *** Fix for a ui-layout bug in chrome ***
+
 		disableSelection(this.grid);
+
+		this.options = options;
 		
+		jQuery(document).ready(function () { 
+			jQuery(window).resize(function () {
+				that.onWindowResized();
+			});
+		});
 		this.close();
+		
+		// IE7 Workaround - Somehow it needs to be set otherwise the tree will not be displayed correctly
+		jQuery('.aloha-browser-grid').css('width', options.totalWidth);
+		
+	},
+
+	/**
+	 * Resize the browser view automatically
+	 */
+	onWindowResized: function () {
+		var width = this.element.width();
+		var padding = 50;
+		var overflow = (width - jQuery(window).width()) + padding;
+		// Don't resize the window any smaller than the given amout of pixel
+		if (width - overflow > this.options.minimalWidth) {
+			this.list.setGridWidth(this.list.width() - overflow - padding);
+			this.element.width(width - overflow - padding);
+		}
 	},
 	
 	destroy: function () {

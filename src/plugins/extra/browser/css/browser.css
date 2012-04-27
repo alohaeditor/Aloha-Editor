@@ -125,8 +125,8 @@
 	-webkit-border-top-right-radius: 6px;
 }
 .aloha-browser-grid {
-	width: 1000px;
-	height: 400px;
+	/*width: 500px;*/
+	height: 300px;
 	border: 1px solid #33363b;
 }
 .aloha-browser-clear {
