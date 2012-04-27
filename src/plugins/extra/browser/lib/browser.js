@@ -252,7 +252,7 @@ var Browser = Class.extend({
 		
 		jQuery(document).ready(function () { 
 			jQuery(window).resize(function () {
-				that.onWindowResized();
+				that._onWindowResized();
 			});
 		});
 		this.close();
@@ -265,14 +265,18 @@ var Browser = Class.extend({
 	/**
 	 * Resize the browser view automatically
 	 */
-	onWindowResized: function () {
+	_onWindowResized: function () {
+	    
 		var width = this.element.width();
 		var padding = 50;
 		var overflow = (width - jQuery(window).width()) + padding;
+		
 		// Don't resize the window any smaller than the given amout of pixel
 		if (width - overflow > this.options.minimalWidth) {
 			this.list.setGridWidth(this.list.width() - overflow - padding);
 			this.element.width(width - overflow - padding);
+			jQuery('.aloha-browser-grid').css('width', (width - overflow));
+			
 		}
 	},
 	
