@@ -287,13 +287,17 @@
 					{  	start: 'foo<span style="font-weight: bold">[bar</span>]baz',
 					   	execResult: 'foo[bar]baz' 
 					},
-          {   exclude: ['webkit'],	
+          {   exclude: ['webkit', 'msie7.0', 'msie8.0'],	
               start: '<b>{<p>foo</p><p>bar</p>}<p>baz</p></b>',
 					   	execResult: '{<p>foo</p><p>bar</p>}<p><b>baz</b></p>' 
 					},
           {   include: ['webkit'],	
               start: '<b>{<p>foo</p><p>bar</p>}<p>baz</p></b>',
 					   	execResult: '<p>[foo</p><p>bar</p><p>}<b>baz</b></p>' 
+					},
+          {   include: ['msie7.0', 'msie8.0'],	
+              start: '<b>{<p>foo</p><p>bar</p>}<p>baz</p></b>',
+					   	execResult: '<p>[foo</p><p>bar]</p><p><b>baz</b></p>' 
 					},
 					{  	start: '<p>[foo</p><p>bar]</p><b><p>baz</p></b>',
 						indetermStart: false,
@@ -341,9 +345,10 @@
 						indetermResult: false,
 						stateResult: true   
 					},
-					{  	start: '<b id=purple>bar [baz] qoz</b>',
+          {  	
+            start: '<b id=purple>bar [baz] qoz</b>',
 						stateStart: true,
-					   	execResult: '<span id=purple><b>bar </b>[baz]<b> qoz</b></span>', 
+					  execResult: '<span id=purple><b>bar </b>[baz]<b> qoz</b></span>', 
 						stateResult: false   
 					},
 /** No want			{  	start: '<h3>foo[bar]baz</h3>',

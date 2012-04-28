@@ -255,13 +255,17 @@
 					{  	start: 'foo<span style="font-style: italic">[bar</span>]baz',
 					   	execResult: 'foo[bar]baz' 
 					},
-          {   exclude: ['webkit'],	
+          {   exclude: ['webkit', 'msie7.0', 'msie8.0'],	
 					  	start: '<i>{<p>foo</p><p>bar</p>}<p>baz</p></i>',
               execResult: '{<p>foo</p><p>bar</p>}<p><i>baz</i></p>' 
 					},
           {   include: ['webkit'],	
               start: '<i>{<p>foo</p><p>bar</p>}<p>baz</p></i>',
 					   	execResult: '<p>[foo</p><p>bar</p><p>}<i>baz</i></p>' 
+					},
+          {   include: ['msie7.0', 'msie8.0],	
+              start: '<i>{<p>foo</p><p>bar</p>}<p>baz</p></i>',
+					   	execResult: '<p>[foo</p><p>bar]</p><p><i>baz</i></p>' 
 					},
 					{  	start: '<p>[foo</p><p>bar]</p><i><p>baz</i></b>',
 						indetermStart: false,
