@@ -345,7 +345,8 @@
 						indetermResult: false,
 						stateResult: true   
 					},
-          {  	
+          { 
+            exclude: ['msie7.0'],  
             start: '<b id=purple>bar [baz] qoz</b>',
 						stateStart: true,
 					  execResult: '<span id=purple><b>bar </b>[baz]<b> qoz</b></span>', 
@@ -378,14 +379,37 @@
 					{  	start: '{<h3>foo</h3><b>bar</b>}',
 					   	execResult: '<h3><span style="font-weight: normal;">[foo</span></h3>bar]'
 					},
-**/					{  	start: '<i><b>foo</b></i>[bar]<i><b>baz</b></i>',
+          **/					
+          // IE 7.0 gives a different markup for the following two test cases.
+          // However, since the result is visibly same,
+          // I added a test with the alternate markup.
+
+          {   exclude: ['msie7.0'],
+              start: '<i><b>foo</b></i>[bar]<i><b>baz</b></i>',
 					   	execResult: '<b><i>foo</i>[bar]<i>baz</i></b>'
 					},
-					{  	start: '<b>foo</b>[bar]<i><b>baz</b></i>',
+          {   include: ['msie7.0'],
+              start: '<i><b>foo</b></i>[bar]<i><b>baz</b></i>',
+              execResult: '<i><b>foo</b></i><b>[bar]</b><i><b>baz</b></i>'
+					},
+          {  	
+              exclude: ['msie7.0'],
+              start: '<b>foo</b>[bar]<i><b>baz</b></i>',
 					   	execResult: '<b>foo[bar]<i>baz</i></b>'
 					},
-					{  	start: '<font color=blue face=monospace><b>foo</b></font>[bar]',
+          {  	
+              include: ['msie7.0'],
+              start: '<b>foo</b>[bar]<i><b>baz</b></i>',
+              execResult: '<b>foo[bar]</b><i><b>baz</b></i>'
+					},
+          {   exclude: ['msie7.0'],	
+              start: '<font color=blue face=monospace><b>foo</b></font>[bar]',
 					   	execResult: '<b><font color=blue face=monospace>foo</font>[bar]</b>'
+					},
+          {  	
+              include: ['msie7.0'],	
+              start: '<font color=blue face=monospace><b>foo</b></font>[bar]',
+              execResult: '<font color=blue face=monospace><b>foo</b></font><b>[bar]</b>'
 					},
 					{  	start: '<b>foo<span style="font-weight: normal">bar<b>[baz]</b>quz</span>qoz</b>',
 						indetermStart: false,
@@ -459,7 +483,7 @@
 					{  	start: 'foo<span style="font-weight: 700">[bar</span>]baz',
 					   	execResult: 'foo[bar]baz'
 					},
-          {   exclude: ['webkit'],	
+          {   exclude: ['webkit', 'msie7.0', 'msie8.0'],	
               start: 'foo[<span style="font-weight: 400">bar]</span>baz',
 					   	execResult: 'foo[<b>bar]</b>baz'
 					},
@@ -467,16 +491,24 @@
               start: 'foo[<span style="font-weight: 400">bar]</span>baz',
 					   	execResult: 'foo<b>[bar]</b>baz'
 					},
+          {   include: ['msie7.0', 'msie8.0'],	
+              start: 'foo[<span style="font-weight: 400">bar]</span>baz',
+					   	execResult: 'foo{<b>bar]</b>baz'
+					},
 					{  	start: 'foo[<span style="font-weight: 700">bar]</span>baz',
 					   	execResult: 'foo[bar]baz'
 					},
-          {   exclude: ['webkit'],	
+          {   exclude: ['webkit', 'msie7.0', 'msie8.0'],	
               start: 'foo[<span style="font-weight: 400">bar</span>]baz',
 					   	execResult: 'foo[<b>bar</b>]baz'
 					},
           {   include: ['webkit'],	
               start: 'foo[<span style="font-weight: 400">bar</span>]baz',
 					   	execResult: 'foo<b>[bar]</b>baz'
+					},
+          {   include: ['msie7.0', 'msie8.0'],	
+              start: 'foo[<span style="font-weight: 400">bar</span>]baz',
+					   	execResult: 'foo{<b>bar]</b>baz'
 					},
 					{  	start: 'foo[<span style="font-weight: 700">bar</span>]baz',
 					   	execResult: 'foo[bar]baz'
