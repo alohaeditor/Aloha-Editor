@@ -121,9 +121,13 @@
 					{  	start: '<sup>foo[]bar</sup>',
               execResult: '<sup>foo[]bar</sup>' 
           },
-          {   exclude: ['webkit', 'msie8.0'],	
-					  	start: '<span>foo</span>{}<span>bar</span>',
+          {   exclude: ['webkit', 'msie7.0', 'msie8.0'],	
+              start: '<span>foo</span>{}<span>bar</span>',
               execResult: '<span>foo</span>{}<span>bar</span>' 
+          },
+          {   include: ['webkit', 'msie7.0', 'msie8.0'],	
+              start: '<span>foo</span>{}<span>bar</span>',
+              execResult: '<span>foo[]</span><span>bar</span>' 
           },
           // Note: Following test also fails to run on IE9.
           {   exclude: ['webkit', 'msie'], 	

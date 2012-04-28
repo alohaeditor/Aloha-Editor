@@ -101,11 +101,13 @@
 					{  	start: '<i>foo[]bar</i>',
               execResult: '<i>foo[]bar</i>' 
           },
-          // Note: Webkit's cursor position yields an invalid results 
-          // for the following two cases.
-          {   exclude: ['webkit', 'msie8.0'],	
-					  	start: '<span>foo</span>{}<span>bar</span>',
+          {   exclude: ['webkit', 'msie7.0', 'msie8.0'],	
+              start: '<span>foo</span>{}<span>bar</span>',
               execResult: '<span>foo</span>{}<span>bar</span>' 
+          },
+          {   include: ['webkit', 'msie7.0', 'msie8.0'],	
+              start: '<span>foo</span>{}<span>bar</span>',
+              execResult: '<span>foo[]</span><span>bar</span>' 
           },
           // Note: Following test also fails to run on IE9.
           {   exclude: ['webkit', 'msie'], 	

@@ -133,13 +133,15 @@
 					{  	start: '<b>foo[]bar</b>',
 				       	execResult: '<b>foo[]bar</b>' 
           },
-          // Note: Webkit's cursor position yields an invalid results 
-          // for the following two cases.
-          {   exclude: ['webkit', 'msie8.0'],	
+          {   exclude: ['webkit', 'msie7.0', 'msie8.0'],	
               start: '<span>foo</span>{}<span>bar</span>',
               execResult: '<span>foo</span>{}<span>bar</span>' 
           },
-          // Note: Following test fails to run on IE9.
+          {   include: ['webkit', 'msie7.0', 'msie8.0'],	
+              start: '<span>foo</span>{}<span>bar</span>',
+              execResult: '<span>foo[]</span><span>bar</span>' 
+          },
+          // Note: Following test also fails to run on IE9.
           {   exclude: ['webkit', 'msie'], 	
               start: '<span>foo[</span><span>]bar</span>',
               execResult: '<span>foo[</span><span>]bar</span>' 
@@ -214,7 +216,7 @@
               start: '<table data-start=0 data-end=1><tbody><tr><td>foo<td>bar<td>baz</table>',
 					   	execResult: '{<table><tbody><tr><td><b>foo</b><td><b>bar</b><td><b>baz</b></table>}' 
 					},
-          {   exclude: 'msie8.0',
+          {   exclude: ['msie8.0', 'msie7.0'],
 					  	start: '{<table><tr><td>foo<td>bar<td>baz</table>}',
 					   	execResult: '{<table><tr><td><b>foo</b><td><b>bar</b><td><b>baz</b></table>}' 
 					},
