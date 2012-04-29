@@ -127,16 +127,19 @@
 					{  	start: '<span contenteditable=false>foo<span contenteditable=true>[bar]</span>baz</span>',
 					   	execResult: '<span contenteditable=false>foo<span contenteditable=true><s>[bar]</s></span>baz</span>' 
 					},
-					{  	start: '<span contenteditable=false>fo[o<span contenteditable=true>bar</span>b]az</span>',
+          {   exclude: ["webkit"],	
+              start: '<span contenteditable=false>fo[o<span contenteditable=true>bar</span>b]az</span>',
 					   	execResult: '<span contenteditable=false>fo[o<span contenteditable=true><s>bar</s></span>b]az</span>' 
 					},
 					{  	start: '<span contenteditable=false>foo<span contenteditable=true>ba[r</span>b]az</span>',
 					   	execResult: '<span contenteditable=false>foo<span contenteditable=true>ba<s>[r]</s></span>baz</span>' 
 					},
-					{  	start: '<span contenteditable=false>fo[o<span contenteditable=true>b]ar</span>baz</span>',
+          {  	exclude: ['webkit'],
+              start: '<span contenteditable=false>fo[o<span contenteditable=true>b]ar</span>baz</span>',
 					   	execResult: '<span contenteditable=false>fo[o]<span contenteditable=true>bar</span>baz</span>' 
 					},
-					{  	start: '<span contenteditable=false>fo[<s>o<span contenteditable=true>bar</span>b</s>]az</span>',
+          {  	exclude: ['webkit'],
+            	start: '<span contenteditable=false>fo[<s>o<span contenteditable=true>bar</span>b</s>]az</span>',
 					   	execResult: '<span contenteditable=false>fo<i>[o<span contenteditable=true><span style="font-style: normal;">bar</span></span>b]</i>az</span>' 
 					},
 					{  	start: '<table><tbody><tr><td>foo<td>b[a]r<td>baz</table>',
@@ -193,17 +196,9 @@
 					{  	start: 'foo<s>[bar</s>]baz',
 					   	execResult: 'foo[bar]baz' 
 					},
-					{  	start: 'foo{<s></s>}baz',
-					   	execResult: 'foo[]baz' 
-					},
-					{  	start: 'foo{<b></b>}baz',
-					   	execResult: 'foo[]baz' 
-					},
-					{  	start: 'foo{<s><b></b></s>}baz',
-					   	execResult: 'foo[]baz' 
-					},
-					{  	start: 'foo{<b><s></s></b>}baz',
-					   	execResult: 'foo[]baz' 
+          {   exclude: ["webkit"],	
+              start: 'foo{<s></s>}baz',
+              execResult: 'foo{<s></s>}baz' 
 					},
 					{  	start: 'foo<span style="text-decoration: line-through">[bar]</span>baz',
 					   	execResult: 'foo[bar]baz' 
@@ -242,9 +237,16 @@
 					   	execResult: 'foo [bar baz]<s> bam</s> bom', 
 						stateResult: false   
 					},
-					{  	start: '<s><p>foo[<b>bar</b>}</p><p>baz</p></s>',
+          { exclude: ['webkit'], 
+            start: '<s><p>foo[<b>bar</b>}</p><p>baz</p></s>',
 						stateStart: true,
-					   	execResult: '<p><s>foo</s><b>[bar]</b></p><p><s>baz</s></p>', 
+            execResult: '<p><s>foo</s><b>[bar]</b></p><p><s>baz</s></p>', 
+						stateResult: false   
+					},
+          { exclude: ['webkit'], 
+            start: '<s><p>foo[<b>bar</b>}</p><p>baz</p></s>',
+						stateStart: true,
+            execResult: '<p><s>foo[]</s><b>bar</b></p><p><s>baz</s></p>', 
 						stateResult: false   
 					},
 					{  	start: '<s><p>foo</p></s><b>[bar</b>}<s><p>baz</p></s>',
@@ -275,22 +277,45 @@
 					{  	start: '<font color=blue face=monospace><s>foo</s></font>[bar]',
 					   	execResult: '<s><font color=blue face=monospace>foo</font>[bar]</s>'
 					},
-					{  	start: '<s>foo<span style="text-decoration: none">bar<s>[baz]</s>quz</span>qoz</s>',
-						indetermStart: false,
-						stateStart: true,
+          {   exclude: ['webkit'],	
+              start: '<s>foo<span style="text-decoration: none">bar<s>[baz]</s>quz</span>qoz</s>',
+              indetermStart: false,
+              stateStart: true,
 					   	execResult: '<s>foo<span style="text-decoration: none">bar[baz]quz</span>qoz</s>',
-						indetermResult: false,
-						stateResult: false
+              indetermResult: false,
+              stateResult: false
 					},
-					{  	start: '<s>foo<span style="text-decoration: none">[bar]</span>baz</s>',
+          {   include: ['webkit'],	
+              start: '<s>foo<span style="text-decoration: none">bar<s>[baz]</s>quz</span>qoz</s>',
+              indetermStart: false,
+              stateStart: true,
+              execResult: '<s>foo</s><span style="text-decoration: none"><s>bar</s>[baz]<s>quz</s></span><s>qoz</s>',
+              indetermResult: false,
+              stateResult: false
+					},
+          {   exclude: ['webkit'],	
+              start: '<s>foo<span style="text-decoration: none">[bar]</span>baz</s>',
 					   	execResult: '<s>foo[bar]baz</s>'
 					},
-					{  	start: 'foo<span style="text-decoration: none"><s>{bar}</s></span>baz',
-						stateStart: true,
+          {   include: ['webkit'],	
+              start: '<s>foo<span style="text-decoration: none">[bar]</span>baz</s>',
+              execResult: '<s>foo</s><span style="text-decoration: none">[bar]</span><s>baz</s>'
+					},
+          {   exclude: ['webkit'],	
+              start: 'foo<span style="text-decoration: none"><s>{bar}</s></span>baz',
+              stateStart: true,
 					   	execResult: 'foo[bar]baz',
-						stateResult: false,
+              stateResult: false,
 					   	execToggle: 'foo<s>[bar]</s>baz',
-						stateToggle: true
+              stateToggle: true
+					},
+          {   include: ['webkit'],	
+              start: 'foo<span style="text-decoration: none"><s>{bar}</s></span>baz',
+              stateStart: true,
+              execResult: 'foo<span style="text-decoration: none">[bar]</span>baz',
+              stateResult: false,
+              execToggle: 'foo<s><span style="text-decoration: none">[bar]</span></s>baz',
+              stateToggle: true
 					},
 					{  	start: 'foo<span style="text-decoration: line-through; color: red"><s>{bar}</s></span>baz',
 					   	execResult: 'foo<span style="color: red">[bar]</span>baz'
