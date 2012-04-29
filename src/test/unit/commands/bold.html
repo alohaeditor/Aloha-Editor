@@ -380,7 +380,7 @@
 					   	execResult: '<h3><span style="font-weight: normal;">[foo</span></h3>bar]'
 					},
           **/					
-          // IE 7.0 gives a different markup for the following two test cases.
+          // IE 7.0 gives a different markup for the following 3 test cases.
           // However, since the result is visibly same,
           // I added a test with the alternate markup.
 
@@ -392,13 +392,11 @@
               start: '<i><b>foo</b></i>[bar]<i><b>baz</b></i>',
               execResult: '<i><b>foo</b></i><b>[bar]</b><i><b>baz</b></i>'
 					},
-          {  	
-              exclude: ['msie7.0'],
+          {  	exclude: ['msie7.0'],
               start: '<b>foo</b>[bar]<i><b>baz</b></i>',
 					   	execResult: '<b>foo[bar]<i>baz</i></b>'
 					},
-          {  	
-              include: ['msie7.0'],
+          {  	include: ['msie7.0'],
               start: '<b>foo</b>[bar]<i><b>baz</b></i>',
               execResult: '<b>foo[bar]</b><i><b>baz</b></i>'
 					},
