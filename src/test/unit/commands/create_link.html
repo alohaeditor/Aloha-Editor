@@ -69,12 +69,15 @@
               value: "http://www.google.com/",
               execResult: "<i>foo[]bar</i>"
           },
-          // Note: Webkit's cursor position yields an invalid results 
-          // for the following two cases.
-          {   exclude: ['webkit', 'msie8.0'],	
+          {   exclude: ['webkit', 'msie7.0', 'msie8.0'],	
             	start: "<span>foo</span>{}<span>bar</span>",
               value: "http://www.google.com/",
               execResult: "<span>foo</span>{}<span>bar</span>"
+          },
+          {   include: ['webkit', 'msie7.0', 'msie8.0'],	
+            	start: "<span>foo</span>{}<span>bar</span>",
+              value: "http://www.google.com/",
+              execResult: "<span>foo[]</span><span>bar</span>"
           },
           // Note: Following test also fails to run on IE9.
           {   exclude: ['webkit', 'msie'], 	
@@ -335,11 +338,13 @@
               value: "http://www.google.com/",
               execResult: "<a href=\"http://www.google.com/\"><b>[foobarbaz]</b></a>"
           },
-          {  	start: "<a name='abc'>foo[bar]baz</a>",
+          {   exclude: ['msie7.0'],	
+              start: "<a name='abc'>foo[bar]baz</a>",
               value: "http://www.google.com/",
               execResult: "<span name=\"abc\">foo<a href=\"http://www.google.com/\">[bar]</a>baz</span>"
           },
-          {  	start: "<a name='abc'><b>foo[bar]baz</b></a>",
+          {   exclude: ['msie7.0'],	
+              start: "<a name='abc'><b>foo[bar]baz</b></a>",
               value: "http://www.google.com/",
               execResult: "<span name=\"abc\"><b>foo<a href=\"http://www.google.com/\">[bar]</a>baz</b></span>"
           },
