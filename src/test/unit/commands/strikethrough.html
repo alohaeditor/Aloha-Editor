@@ -320,17 +320,6 @@
 					{  	start: 'foo<span style="text-decoration: line-through; color: red"><s>{bar}</s></span>baz',
 					   	execResult: 'foo<span style="color: red">[bar]</span>baz'
 					},
-					{  	start: '[foo<span class=nostrike>bar</span>baz]',
-					   	execResult: '<s>[foo<span class=nostrike><s>bar</s></span>baz]</s>'
-					},
-					{  	start: '<s><span class=nostrike>[foo]</span></s>',
-						stateResult: false,
-					   	execResult: '<span class=nostrike><s>[foo]</s></span>',
-						stateResult: true
-					},
-					{  	start: '<s><span class=nostrike>foo[bar]baz</span></s>',
-					   	execResult: '<s><span class=nostrike>foo<s>[bar]</s>baz</span></s>'
-					},
 					{  	start: '<p style="text-decoration: line-through">foo[bar]baz</p>',
 					   	execResult: '<p><s>foo</s>[bar]<s>baz</s></p>'
 					}
