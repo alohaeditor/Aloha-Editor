@@ -114,6 +114,10 @@
 					  	start: '<span>foo[</span><span>]bar</span>',
               execResult: '<span>foo[</span><span>]bar</span>' 
           },
+          {   include: ['webkit', 'msie'], 	
+					  	start: '<span>foo[</span><span>]bar</span>',
+              execResult: '<span>foo[]</span><span>bar</span>' 
+          },
 					{  	start: 'foo[bar<b>bam]baz</b>',
               execResult: 'foo<i>[bar</i><b><i>bam]</i>baz</b>' 
           },
@@ -133,6 +137,10 @@
           {   exclude: ['webkit', 'msie8.0', 'msie7.0'],	
 					  	start: 'fo[o<span contenteditable=false>b]ar</span>baz',
 					   	execResult: 'fo<i>[o</i><span contenteditable=false>b]ar</span>baz' 
+					},
+          {   exclude: ['webkit', 'msie8.0', 'msie7.0'],	
+					  	start: 'fo[o<span contenteditable=false>b]ar</span>baz',
+					   	execResult: 'fo<i>[o]</i><span contenteditable=false>bar</span>baz' 
 					},
 					{  	start: 'fo[<i>o</i><span contenteditable=false>bar</span><i>b</i>]az',
 					   	execResult: 'fo[o<span contenteditable=false>bar</span>b]az' 
