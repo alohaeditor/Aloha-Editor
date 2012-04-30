@@ -209,7 +209,8 @@
           {  	start: 'foo<s>[bar]</s>baz',
 					   	execResult:	'foo[bar]baz' 
 					},
-          {  	start: 'foo<span style=\"text-decoration: line-through\">[bar]</span>baz',
+          {   exclude: ['mozilla'], //mozilla doesn't remove the span	
+              start: 'foo<span style=\"text-decoration: line-through\">[bar]</span>baz',
 					   	execResult:	'foo[bar]baz' 
 					},
           {  	start: '<s>foo[bar]baz</s>',
@@ -275,10 +276,12 @@
           {  	start: 'foo<s style=\"text-decoration: underline\">b[a]r</s>baz',
 					   	execResult:	'foo<s style=\"text-decoration:underline\">b<s>[a]</s>r</s>baz' 
 					},
-          {  	start: 'foo<u style=\"text-decoration: line-through\">[bar]</u>baz',
+          {   exclude: ['mozilla'], //mozilla doesn't remove the span	
+            	start: 'foo<u style=\"text-decoration: line-through\">[bar]</u>baz',
 					   	execResult:	'foo[bar]baz' 
 					},
-          {  	start: 'foo<u style=\"text-decoration: line-through\">b[a]r</u>baz',
+          {   exclude: ['mozilla'], //mozilla doesn't remove the span	
+            	start: 'foo<u style=\"text-decoration: line-through\">b[a]r</u>baz',
 					   	execResult:	'foo<s>b</s>[a]<s>r</s>baz' 
 					},
           {  	start: 'foo<s style=\"text-decoration: overline\">[bar]</s>baz',
@@ -335,7 +338,8 @@
           {  	start: 'foo<s>[bar]</s>baz',
 					   	execResult:	'foo[bar]baz' 
 					},
-          {  	start: 'fo[o<span style=text-decoration:line-through>b]ar</span>baz',
+          {   exclude: ['mozilla'], //mozilla doesn't extend the span
+            	start: 'fo[o<span style=text-decoration:line-through>b]ar</span>baz',
 					   	execResult:	'fo<span style=\"text-decoration:line-through\">[ob]ar</span>baz' 
 					},
           {  	start: '<strike>fo[o</strike><s>b]ar</s>',
