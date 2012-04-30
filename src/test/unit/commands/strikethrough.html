@@ -39,7 +39,7 @@
 	var tests = {
 			defaultValue: '',
 			defaultCommand: 'strikethrough',
-			defaultAttributes: [ 'line-through' ],
+			defaultAttributes: [ ],
 			tests: [		        
 					{  	start: 'fo[o<s>b]ar</s>baz',
 					   	indetermResult: true,
@@ -134,7 +134,7 @@
 					  	start: 'foo<span contenteditable=false>ba[r]</span>baz',
 					   	execResult: 'foo<span contenteditable=false>ba[r]</span>baz' 
 					},
-          {   exclude: ['webkit'],	
+          {   exclude: ['webkit', 'msie8.0'],	
 					  	start: 'fo[o<span contenteditable=false>b]ar</span>baz',
 					   	execResult: 'fo<s>[o</s><span contenteditable=false>b]ar</span>baz' 
 					},
@@ -142,13 +142,14 @@
 					  	start: 'fo[o<span contenteditable=false>b]ar</span>baz',
 					   	execResult: 'fo<s>[o]</s><span contenteditable=false>bar</span>baz' 
 					},
-					{  	start: 'fo[<s>o</s><span contenteditable=false>bar</span><s>b</s>]az',
+          {   exclude: ['msie8.0'],
+					  	start: 'fo[<s>o</s><span contenteditable=false>bar</span><s>b</s>]az',
 					   	execResult: 'fo[o<span contenteditable=false>bar</span>b]az' 
 					},
 					{  	start: '<span contenteditable=false>foo<span contenteditable=true>[bar]</span>baz</span>',
 					   	execResult: '<span contenteditable=false>foo<span contenteditable=true><s>[bar]</s></span>baz</span>' 
 					},
-          {   exclude: ["webkit"],	
+          {   exclude: ["webkit", "msie8.0"],	
               start: '<span contenteditable=false>fo[o<span contenteditable=true>bar</span>b]az</span>',
 					   	execResult: '<span contenteditable=false>fo[o<span contenteditable=true><s>bar</s></span>b]az</span>' 
 					},
