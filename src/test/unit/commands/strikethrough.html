@@ -134,11 +134,11 @@
 					  	start: 'foo<span contenteditable=false>ba[r]</span>baz',
 					   	execResult: 'foo<span contenteditable=false>ba[r]</span>baz' 
 					},
-          {   exclude: ['webkit', 'msie8.0', 'msie7.0'],	
+          {   exclude: ['webkit'],	
 					  	start: 'fo[o<span contenteditable=false>b]ar</span>baz',
 					   	execResult: 'fo<s>[o</s><span contenteditable=false>b]ar</span>baz' 
 					},
-          {   include: ['webkit', 'msie8.0', 'msie7.0'],	
+          {   include: ['webkit'],	
 					  	start: 'fo[o<span contenteditable=false>b]ar</span>baz',
 					   	execResult: 'fo<s>[o]</s><span contenteditable=false>bar</span>baz' 
 					},
@@ -166,7 +166,8 @@
 					   	execResult: '<span contenteditable=false>fo<s>[o<span contenteditable=true><span style="text-decoration: none;">bar</span></span>b]</s>az</span>' 
 					},
           */
-					{  	start: '<table><tbody><tr><td>foo<td>b[a]r<td>baz</table>',
+          {   exclude: ['msie7.0', 'msie8.0'],	
+              start: '<table><tbody><tr><td>foo<td>b[a]r<td>baz</table>',
 					   	execResult: '<table><tbody><tr><td>foo<td>b<s>[a]</s>r<td>baz</table>' 
 					},
           {   exclude: ['mozilla', 'msie'],	
@@ -185,7 +186,8 @@
 					  	start: '<table data-start=0 data-end=1><tbody><tr><td>foo<td>bar<td>baz</table>',
 					   	execResult: '{<table><tbody><tr><td><s>foo</s><td><s>bar</s><td><s>baz</s></table>}' 
 					},
-					{  	start: '{<table><tr><td>foo<td>bar<td>baz</table>}',
+          {   exclude: ['msie7.0', 'msie8.0'],	
+              start: '{<table><tr><td>foo<td>bar<td>baz</table>}',
 					   	execResult: '{<table><tr><td><s>foo</s><td><s>bar</s><td><s>baz</s></table>}' 
 					},
 					{  	start: 'foo<u>[bar]</u>baz',
@@ -209,7 +211,7 @@
           {  	start: 'foo<s>[bar]</s>baz',
 					   	execResult:	'foo[bar]baz' 
 					},
-          {   exclude: ['mozilla'], //mozilla doesn't remove the span	
+          {   exclude: ['mozilla', 'msie7.0', 'msie8.0'], //mozilla & ie doesn't remove the span	
               start: 'foo<span style=\"text-decoration: line-through\">[bar]</span>baz',
 					   	execResult:	'foo[bar]baz' 
 					},
@@ -276,11 +278,11 @@
           {  	start: 'foo<s style=\"text-decoration: underline\">b[a]r</s>baz',
 					   	execResult:	'foo<s style=\"text-decoration:underline\">b<s>[a]</s>r</s>baz' 
 					},
-          {   exclude: ['mozilla'], //mozilla doesn't remove the span	
+          {   exclude: ['mozilla', 'msie7.0', 'msie8.0'], //mozilla & ie doesn't remove the span	
             	start: 'foo<u style=\"text-decoration: line-through\">[bar]</u>baz',
 					   	execResult:	'foo[bar]baz' 
 					},
-          {   exclude: ['mozilla'], //mozilla doesn't remove the span	
+          {   exclude: ['mozilla', 'msie7.0', 'msie8.0'], //mozilla & ie doesn't change	the element
             	start: 'foo<u style=\"text-decoration: line-through\">b[a]r</u>baz',
 					   	execResult:	'foo<s>b</s>[a]<s>r</s>baz' 
 					},
@@ -338,7 +340,7 @@
           {  	start: 'foo<s>[bar]</s>baz',
 					   	execResult:	'foo[bar]baz' 
 					},
-          {   exclude: ['mozilla'], //mozilla doesn't extend the span
+          {   exclude: ['mozilla', 'msie7.0', 'msie8.0'], //mozilla & ie doesn't extend the span
             	start: 'fo[o<span style=text-decoration:line-through>b]ar</span>baz',
 					   	execResult:	'fo<span style=\"text-decoration:line-through\">[ob]ar</span>baz' 
 					},
