@@ -121,52 +121,6 @@
 					{  	start: 'foo[bar<b>bam]baz</b>',
               execResult: 'foo<s>[bar</s><b><s>bam]</s>baz</b>' 
           },
-          // Fragments with contenteditable false are not selected in IE 7 & 8.
-          {   exclude: [ 'msie8.0', 'msie7.0'],	
-					  	start: 'foo<span contenteditable=false>[bar]</span>baz',
-					   	execResult: 'foo<span contenteditable=false>[bar]</span>baz' 
-					},
-          {   exclude: [ 'msie8.0', 'msie7.0'],	
-					  	start: 'fo[o<span contenteditable=false>bar</span>b]az',
-					   	execResult: 'fo<s>[o</s><span contenteditable=false>bar</span><s>b]</s>az' 
-					},
-          {   exclude: ['msie8.0', 'msie7.0'],	
-					  	start: 'foo<span contenteditable=false>ba[r]</span>baz',
-					   	execResult: 'foo<span contenteditable=false>ba[r]</span>baz' 
-					},
-          {   exclude: ['webkit', 'msie8.0'],	
-					  	start: 'fo[o<span contenteditable=false>b]ar</span>baz',
-					   	execResult: 'fo<s>[o</s><span contenteditable=false>b]ar</span>baz' 
-					},
-          {   include: ['webkit'],	
-					  	start: 'fo[o<span contenteditable=false>b]ar</span>baz',
-					   	execResult: 'fo<s>[o]</s><span contenteditable=false>bar</span>baz' 
-					},
-          {   exclude: ['msie8.0'],
-					  	start: 'fo[<s>o</s><span contenteditable=false>bar</span><s>b</s>]az',
-					   	execResult: 'fo[o<span contenteditable=false>bar</span>b]az' 
-					},
-					{  	start: '<span contenteditable=false>foo<span contenteditable=true>[bar]</span>baz</span>',
-					   	execResult: '<span contenteditable=false>foo<span contenteditable=true><s>[bar]</s></span>baz</span>' 
-					},
-          {   exclude: ["webkit", "msie8.0"],	
-              start: '<span contenteditable=false>fo[o<span contenteditable=true>bar</span>b]az</span>',
-					   	execResult: '<span contenteditable=false>fo[o<span contenteditable=true><s>bar</s></span>b]az</span>' 
-					},
-          {   exclude: ["webkit", "msie8.0", "msie7.0"],	
-					  	start: '<span contenteditable=false>foo<span contenteditable=true>ba[r</span>b]az</span>',
-					   	execResult: '<span contenteditable=false>foo<span contenteditable=true>ba<s>[r</s></span>b]az</span>' 
-					},
-          {   exclude: ["webkit", "msie8.0", "msie7.0"],	
-              start: '<span contenteditable=false>fo[o<span contenteditable=true>b]ar</span>baz</span>',
-              execResult: '<span contenteditable=false>fo[o<span contenteditable=true><s>b]</s>ar</span>baz</span>' 
-					},
-          /* doesn't work in any browser
-          {
-            	start: '<span contenteditable=false>fo[<s>o<span contenteditable=true>bar</span>b</s>]az</span>',
-					   	execResult: '<span contenteditable=false>fo<s>[o<span contenteditable=true><span style="text-decoration: none;">bar</span></span>b]</s>az</span>' 
-					},
-          */
           {   exclude: ['msie7.0', 'msie8.0'],	
               start: '<table><tbody><tr><td>foo<td>b[a]r<td>baz</table>',
 					   	execResult: '<table><tbody><tr><td>foo<td>b<s>[a]</s>r<td>baz</table>' 
