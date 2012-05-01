@@ -40,26 +40,18 @@
 			defaultCommand: 'unlink',
 			defaultAttributes: [ ],
 			tests: [		        
-          {  	start: "foo[]bar",
+           {  start: "foo[]bar",
               execResult: "foo[]bar"
-          },
-          {  	start: "<p>[foo</p> <p>bar]</p>",
+           },
+           {  start: "<p>[foo</p> <p>bar]</p>",
               execResult: "<p>[foo</p> <p>bar]</p>"
-          },
-          {  	start: "<a href='http://www.google.com/'>foo[bar]baz</a>",
+           },
+           {  start: "<a href='http://www.google.com/'>foo[bar]baz</a>",
               execResult: "foo[bar]baz"
-          }, 
-          {   exclude: ['mozilla'],	
-               start: "<a href='http://www.google.com/'>foo[barbaz</a>}",
-               execResult: "foo[barbaz]"
-           },
-           {   exclude: ['mozilla'],	
-               start: "{<a href='http://www.google.com/'>foobar]baz</a>",
-               execResult: "[foobar]baz"
-           },
-           {   exclude: ['mozilla'],	
-               start: "{<a href='http://www.google.com/'>foobarbaz</a>}",
-               execResult: "[foobarbaz]"
+           }, 
+           {  exclude: ['mozilla', 'msie9.0'],	
+              start: "{<a href='http://www.google.com/'>foobar]baz</a>",
+              execResult: "[foobar]baz"
            },
            {  start: "<a href='http://www.google.com/'>[foobarbaz]</a>",
               execResult: "[foobarbaz]"
@@ -94,8 +86,13 @@
            { 	start: "foo<a id=foo href='http://www.google.com/'>[bar]</a>baz",
               execResult: "foo<a id='foo'>[bar]</a>baz"
            },
-           { 	start: "foo[<a id=foo href='http://www.google.com/'>bar</a>]baz",
+           {  exclude: ["webkit", "msie7.0", "msie8.0"],
+              start: "foo[<a id=foo href='http://www.google.com/'>bar</a>]baz",
               execResult: "foo[<a id='foo'>bar</a>]baz"
+           },
+           {  include: ["webkit"],
+            	start: "foo[<a id=foo href='http://www.google.com/'>bar</a>]baz",
+              execResult: "foo<a id='foo'>[bar]</a>baz"
            },
            { 	start: "[foo<a id=foo href='http://www.google.com/'>bar</a>baz]",
               execResult: "[foo<a id='foo'>bar</a>baz]"
@@ -112,8 +109,13 @@
            { 	start: "foo<a name=foo>[bar]</a>baz",
               execResult: "foo<a name='foo'>[bar]</a>baz"
            },
-           { 	start: "foo[<a name=foo>bar</a>]baz",
+           {  exclude: ["webkit", "msie7.0", "msie8.0"],
+            	start: "foo[<a name=foo>bar</a>]baz",
               execResult: "foo[<a name='foo'>bar</a>]baz"
+           },
+           {  include: ["webkit"],
+            	start: "foo[<a name=foo>bar</a>]baz",
+              execResult: "foo<a name='foo'>[bar]</a>baz"
            },
            { 	start: "[foo<a name=foo>bar</a>baz]", 
               execResult: "[foo<a name='foo'>bar</a>baz]"
