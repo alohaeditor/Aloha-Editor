@@ -47,11 +47,11 @@ function ( Aloha, jQuery, TestUtils ) {
 	 * Given a node, and a container node, ensures that node is a child node of
 	 * that container, or at least the closest node to its original index.
 	 *
-	 * @param {HTMLElement} container
+	 * @param {HTMLElement} container The container node inwhich to determine
+	 *                                the correct child node.
 	 * @param {HTMLElement} node A child node of container.
-	 * @param {HTMLElement} A node element that is guarenteed to be a child
-	 *                      node of the given container node.
-	 * @return {HTMLElement}
+	 * @return {HTMLElement} A node element that is guarenteed to be a child
+	 *                       node of the given container node.
 	 */
 	function getCorrectCloneNode( container, node ) {
 		var correctNode;
@@ -256,7 +256,7 @@ function ( Aloha, jQuery, TestUtils ) {
 				}
 
 				showSource( clonedContainer );
-			}); // Aloha.bind()
-		} // onInit:
-	}); // addPanel()
-}); // require()
+			});
+		}
+	});
+});
