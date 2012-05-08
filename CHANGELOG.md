@@ -16,10 +16,7 @@ All changes are categorized into one of the following keywords:
 - **ENHANCEMENT**: block plugin: It is now possible to navigate with arrow keys when there are blocks.
 - **ENHANCEMENT**: block plugin: Aloha Block Plugin has now been greatly cleaned up and improved. Besides greatly cleaned up API and documentation, the new features include Drag/Drop, Deletion and Copy/Paste support. Now fully cross-browser (IE7, IE8, IE9, Chrome, Firefox).
 - **BUG**: commands.delete: fixed a bug with the delete command when contents are preceded by ignorable whitespace. also added a delete test for that.
-- **ENHANCEMENT**: The new plugin dom-to-xhtml attempts to create a valid XHTML serialization of the document when getContents() is called.
 - **ENHANCEMENT**: core: The jquery-plugin require plugin will now be able to return loaded plugins. Previously loaded plugins were just accessible through the extended jquery object.
-- **ENHANCEMENT**: block plugin: Aloha Block Plugin has now been greatly cleaned up and improved. Besides greatly cleaned up API and documentation, the new features include Drag/Drop, Deletion and Copy/Paste support. Now fully cross-browser (IE7, IE8, IE9, Chrome, Firefox).
-- **ENHANCEMENT**: commands.delete: fixed a bug with the delete command when contents are preceded by ignorable whitespace. also added a delete test for that.
 - **ENHANCEMENT**: image plugin: splitting main fat file (1500 lines) for easying maintenance and evolutions. The new file which contains the gui is called 'image-floatingMenu.js'. The all sources of the image plugin were jslinted.
 - **ENHANCEMENT**: image plugin: abstracting ui calls and removing FloatingMenu dependency from main plugin file
 - **BUG**: image plugin: building a selection from scratch when an image is clicked isn't safe as conflictual browser behaviours
@@ -37,7 +34,28 @@ All changes are categorized into one of the following keywords:
 - **BUG**: browser: fixes alohaeditor/Aloha-Editor#460 -- Error when multiple repositories are configured
 - **BUG** block sidebar attribute editor: when using backspace/del in an input field the block was removed
 - **FEATURE** plugin extra/proxy: as multiple plugins need a proxy script to access external resources there's now one for all to use
-- **FEATURE** editable.js: introduced method setContents() -- use Aloha.getEditableById('my-editable').setContents('Aloha World') to set the contents of the editable with the ID my-editable
+
+
+## 0.20.10 - 2012/04/17
+
+- **BUG**: core: Fixed a typo in the previous bugfix: Fixed a javascript error in IE9 stating that the method createContextualFragment doesn't exist
+
+## 0.20.9 - 2012/04/16
+
+- **BUG**: block-plugin: Fixed 'e.srcElement is undefined' error in blockmanager.js which affected firefox 11
+- **BUG** floatingmenu: Fixed problem with creating new buttons after Aloha is ready.
+- **ENHANCEMENT**: updated integration of Aloha Blocks to the most recent version
+- **BUG** floatingmenu: Fixed problem with showing floatingmenu shadow too early
+- **BUG** core: Fixed a permission error in Firefox, when Aloha Editor tried to access a document property of an external ressource
+- **BUG** table-plugin: Fixed the cleanup of the table cells on blur not cleaning up correctly (caused by a typo in the element class)
+
+## 0.20.8 - 2012/04/06
+
+- **BUG** core: UP and DOWN cursor key will now not be processed specially by Aloha, they will be left to native handeling.
+- **BUG** core: Adds a guard in `execCommand()' to prevent `INDEX_SIZE_ERR' exceptions.
+- **BUG** core: The cursor processing around non-contenteditable elements (blocks) was not functioning as described or desired.  It now behaves with more stability especially on Internet Explorer.
+- **ENHANCEMENT** core: Improved efficiency of cursor processing, especially around blocks.
+- **FEATURE** core: It is now possible to place the caret between two adjecent non-contenteditable elements.
 - **FEATURE** editable.js: introduced method setContents() -- use Aloha.getEditableById('my-editable').setContents('Aloha World') to set the contents of the editable with the ID my-editable
 - **BUG** smartContentChange is now again triggered when pressing enter key; and new: delete / backspace keys
 - **ENHANCEMENT** enabled image plugin in boilerplate demo. needs some enhancements to be more user friendly
@@ -57,7 +75,7 @@ All changes are categorized into one of the following keywords:
 - **ENHANCEMENT** Added very simple example for loading Aloha Editor. Simplyfied "Using Aloha Editor" guides page.
 - **ENHANCEMENT** adding documentation about Aloha Editor events
 
-## 0.20.7 - 2012/03/7
+## 0.20.7 - 2012/03/07
 
 - **BUG** link: fixed a bug in the link list static repository plugin that would cause aloha to fail when no settings for the linklist repository were specified.
 - **BUG** formatlesspaste plugin: fixed IE syntax error caused by a comma at the end of a list.

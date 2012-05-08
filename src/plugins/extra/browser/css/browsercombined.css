@@ -518,7 +518,6 @@ tr.ui-search-toolbar select {margin: 1px 0px 0px 0px}
 	-webkit-border-top-right-radius: 2px;
 }
 .aloha-browser-grid {
-	width: 950px;
 	height: 400px;
 	border: 1px solid #53565b;
 	text-align: left;
@@ -620,9 +619,6 @@ tr.ui-search-toolbar select {margin: 1px 0px 0px 0px}
 		}
 	.aloha-browser-btns input {
 		float: left;
-		
-		width: 200px;
-		/* height: 22px; */
 		height: 15px;
 		padding: 4px 2px;
 		

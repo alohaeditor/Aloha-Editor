@@ -669,8 +669,19 @@ var Dom = Class.extend({
 
 		// iterate through all sub nodes
 		startObject.contents().each(function(index) {
+
+			// Try to read the nodeType property and return if we do not have permission
+			// ie.: frame document to an external URL
+			var nodeType;
+			try {
+				nodeType = this.nodeType;
+			}
+			catch (e) {
+				return;
+			}
+
 			// decide further actions by node type
-			switch(this.nodeType) {
+			switch(nodeType) {
 			// found a non-text node
 			case 1:
 				if (prevNode && prevNode.nodeName == this.nodeName) {

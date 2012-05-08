@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+	<meta charset="UTF-8" />
+	<title>Aloha Editor: Blocks caret positioning</title>
+	<link rel="stylesheet" href="../../css/aloha.css" id="aloha-style-include" type="text/css">
+	<script src="../../lib/aloha.js" data-aloha-plugins="common/format,
+	                                                     common/highlighteditables,
+	                                                     common/contenthandler,
+	                                                     common/commands"></script>
+	<style>
+		.test-block {
+			width: 200px;
+			height: 100px;
+			background: #f3f3f3;
+			border:1px solid #e3e3e3;
+		}
+		.aloha-editable {
+			margin: 40px 20px;
+		}
+	</style>
+
+	<script>
+		Aloha.ready(function () {
+			Aloha.jQuery('#editable').aloha();
+		});
+	</script>
+</head>
+
+<body>
+	<div id="editable">
+		one
+		
+		<div class="test-block" contenteditable="false"></div>
+		two
+		<div class="test-block" contenteditable="false"></div>
+		three
+		<div class="test-block" contenteditable="false"></div>
+		<div></div>
+		<div class="test-block" contenteditable="false"></div>
+		<div class="test-block" contenteditable="false"></div>
+		<div class="test-block" contenteditable="false"></div>
+		four
+	</div>
+</body>
+
+</html>

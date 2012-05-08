@@ -577,7 +577,7 @@ define( [
 					  
 					  jQuery(sc[i]).bind('mousedown', function (jqEvent) {
 						  var wrapper = jQuery(this).children('div').eq(0);
-						  setTimeout(function () {
+						  window.setTimeout(function () {
 							  wrapper.trigger('focus');
 						  }, 1);
 						  // unselect cells
@@ -817,7 +817,7 @@ define( [
 			        jQuery( that.activeTable.selection.selectedCells[j] ).bind( 'mousedown', function ( jqEvent ) {
 			            var wrapper = jQuery(this).children('div').eq(0);
 			            // lovely IE ;-)
-			            setTimeout(function () {
+			            window.setTimeout(function () {
 			            	wrapper.trigger( 'focus' );
 			            }, 1);
 			            // unselect cells

@@ -64,8 +64,7 @@ function(Aloha, jQuery, Ext, Class, console) {
 		getExtComponent: function () {
 			var that = this;
 
-			if (typeof this.extPanel === 'undefined') {
-				// generate the panel here
+			if (!this.extPanel) {
 				this.extPanel = new Ext.Panel({
 					'tbar' : [],
 					'title' : this.label,
@@ -73,13 +72,15 @@ function(Aloha, jQuery, Ext, Class, console) {
 					'bodyStyle': 'display:none',
 					'autoScroll': true
 				});
-
-				// add the groups
-				jQuery.each(this.groups, function(index, group) {
-					// let each group generate its ext component and add them to the panel
-					that.extPanel.getTopToolbar().add(group.getExtComponent());
-				});
 			}
+
+			jQuery.each(this.groups, function(index, group) {
+				// let each group generate its ext component and add them to
+				// the panel once.
+				if (!group.extButtonGroup) {
+					that.extPanel.getTopToolbar().add(group.getExtComponent());
+				}
+			});
 
 			return this.extPanel;
 		},
@@ -192,6 +193,7 @@ function(Aloha, jQuery, Ext, Class, console) {
 					'columns' : columnCount,
 					'items': items
 				});
+
 	//			jQuery.each(this.fields, function(id, field){
 	//				that.buttons.push(field);
 	//			});
@@ -741,8 +743,10 @@ function(Aloha, jQuery, Ext, Class, console) {
 								});
 						
 								// adapt the shadow
-								that.extTabPanel.shadow.show();
-								that.refreshShadow();
+								if (that.extTabPanel.isVisible()) {
+									that.extTabPanel.shadow.show();
+									that.refreshShadow();
+								}
 							}
 						}
 					},
@@ -751,6 +755,7 @@ function(Aloha, jQuery, Ext, Class, console) {
 		
 		
 			}
+
 			// add the tabs
 			jQuery.each(this.tabs, function(index, tab) {
 				// let each tab generate its ext component and add them to the panel
@@ -762,8 +767,10 @@ function(Aloha, jQuery, Ext, Class, console) {
 			});
 
 			// add the dropshadow
-			this.extTabPanel.shadow = jQuery('<div id="aloha-floatingmenu-shadow" class="aloha-shadow">&#160;</div>');
-			jQuery('body').append(this.extTabPanel.shadow);
+			if (!this.extTabPanel.shadow) {
+				this.extTabPanel.shadow = jQuery('<div id="aloha-floatingmenu-shadow" class="aloha-shadow">&#160;</div>').hide();
+				jQuery('body').append(this.extTabPanel.shadow);
+			}
 
 			// add an empty pin tab item, store reference
 			pinTab = this.extTabPanel.add({

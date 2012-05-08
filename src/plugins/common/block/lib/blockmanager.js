@@ -193,7 +193,7 @@ function(Aloha, jQuery, FloatingMenu, Observable, Registry) {
 				// Pressing DEL or BACKSPACE in a sidebar attribute editor form input
 				// causes the destruction of the block;
 				// if the keypress comes from a form element do nothing
-				if ( typeof e.srcElement.form !== 'undefined' ) {
+				if ( typeof e.srcElement !== 'undefined' && typeof e.srcElement.form !== 'undefined' ) {
 					return true;
 				}
 
