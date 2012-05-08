@@ -6182,7 +6182,7 @@ function createEndBreak() {
 
 	if ( jQuery.browser.msie && jQuery.browser.version < 8 ) {
 		var endTextNode = document.createTextNode(' ');
-		endBr.appendChild(endTextNode);
+		endBr.insertBefore(endTextNode);
 	}
 
 	return endBr;
