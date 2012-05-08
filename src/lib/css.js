@@ -209,7 +209,7 @@ function ssWatcher (params, cb) {
         cb();
     }
     else if (!failed) {
-        setTimeout(function () { ssWatcher(params, cb); }, params.wait);
+        window.setTimeout(function () { ssWatcher(params, cb); }, params.wait);
     }
 }
 
@@ -254,7 +254,7 @@ var plugin = {
 				// (so 0 msec is enough time).
 				if(--loadingCount == 0){
 					// TODO: move this setTimeout to loadHandler
-					setTimeout(function () { callback(link); }, 0);
+					window.setTimeout(function () { callback(link); }, 0);
 				}
 			}
 
