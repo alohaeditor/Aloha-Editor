@@ -243,7 +243,7 @@ define( [
 			// when querying the repository manager in the context of something
 			// like autocomplete
 			var timeout = parseInt( params.timeout, 10 ) || this.settings.timeout;
-			timer = setTimeout( function() {
+			timer = window.setTimeout( function() {
 				numOpenCallbacks = 0;
 				that.queryCallback( callback, allitems, allmetainfo, timer );
 			}, timeout );
@@ -407,7 +407,7 @@ define( [
 			}
 
 			var timeout = parseInt( params.timeout, 10 ) || this.settings.timeout;
-			timer = setTimeout( function() {
+			timer = window.setTimeout( function() {
 				numOpenCallbacks = 0;
 				that.getChildrenCallback( callback, allitems, timer );
 			}, timeout );
