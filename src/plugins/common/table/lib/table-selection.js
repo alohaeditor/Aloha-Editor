@@ -354,8 +354,6 @@ function (Aloha, $, Utils, TableCell, i18n) {
 	TableSelection.prototype.splitCells = function(){
 		var selection = this;
 
-debugger;
-
 		// split the selected cells or currently active cell
 		var cells_to_split = this.selectedCells;
 		if (cells_to_split.length > 0) {

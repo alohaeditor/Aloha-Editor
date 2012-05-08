@@ -1415,18 +1415,18 @@ function movePreservingRanges(node, newParent, newIndex, range) {
 
 /**
  * Copy all non empty attributes from an existing to a new element
+ * 
+ * @param {dom} element The source DOM element
+ * @param {dom} newElement The new DOM element which will get the attributes of the source DOM element
+ * @return void
  */
-function copyAttributes( container,  newContainer ) {
-	for ( var i = 0; i < container.attributes.length; i++ ) {
-		if ( typeof newContainer.setAttributeNS === 'function' ) {
-			newContainer.setAttributeNS(container.attributes[i].namespaceURI, container.attributes[i].name, container.attributes[i].value);
-		} else if ( container.attributes[i].value.length > 0 
-					&& container.attributes[i].value != 'null'
-					&& container.attributes[i].value > 0) {
-			// in IE 7 all attributes where copied; we do not want null or -1 / 0 values in attributes
+function copyAttributes( element,  newElement ) {
+	for ( var i = 0; i < element.attributes.length; i++ ) {
+		if ( typeof newElement.setAttributeNS === 'function' ) {
+			newElement.setAttributeNS( element.attributes[i].namespaceURI, element.attributes[i].name, element.attributes[i].value );
+		} else if ( element.attributes[i].specified ) {
 			// fixes https://github.com/alohaeditor/Aloha-Editor/issues/515 
-			// @todo maybe check for a better solution... contenthandler sanitize would be nice too...
-			newContainer.setAttribute(container.attributes[i].name, container.attributes[i].value);
+			newElement.setAttribute( element.attributes[i].name, element.attributes[i].value );
 		}
 	}
 }

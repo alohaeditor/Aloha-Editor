@@ -491,9 +491,6 @@ define( [
 	Table.prototype.rowSelectionMouseDown = function ( jqEvent ) {
 		// focus the table (if not already done)
 		this.focus();
-		//this.get(0).hideFocus = true;
-		//window.console.log('rowSelectionMouseDown');
-		//window.console.log(this.get(0));
 
 		// if no cells are selected, reset the selection-array
 		if ( this.selection.selectedCells.length == 0 ) {
