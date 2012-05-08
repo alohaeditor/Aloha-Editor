@@ -542,6 +542,8 @@ define( [
 
 		// stop bubble, otherwise the mousedown of the table is called ...
 		jqEvent.stopPropagation();
+		
+		this.tablePlugin.summary.focus();
 
 		// prevent ff/chrome/safare from selecting the contents of the table
 		return false;
@@ -894,9 +896,9 @@ define( [
 			this.numRows -= rowIDs.length;
 
 			// IE needs a timeout to work properly
-			setTimeout( function() {
+			window.setTimeout( function() {
 				var lastCell = jQuery( rows[1].cells[ focusRowId +1 ] );
-				lastCell.focus()
+				lastCell.focus();
 			}, 5);
 
 			// finally unselect the marked cells
@@ -987,9 +989,9 @@ define( [
 			this.numCols -= colIDs.length;
 
 			// IE needs a timeout to work properly
-			setTimeout( function() {
+			window.setTimeout( function() {
 				var lastCell = jQuery( rows[1].cells[ focusColID +1 ] );
-				lastCell.focus()
+				lastCell.focus();
 			}, 5);
 
 			this.selection.unselectCells();
@@ -1245,12 +1247,13 @@ define( [
 				this.parentEditable.obj.focus();
 			}
 
+			// @iefix
 			this.tablePlugin.setFocusedTable(this);
 
 			// select first cell
 			// TODO put cursor in first cell without selecting
-	//		var firstCell = this.obj.find('tr:nth-child(2) td:nth-child(2)').children('div[contenteditable=true]').get(0);
-	//		jQuery(firstCell).get(0).focus();
+			//var firstCell = this.obj.find('tr:nth-child(2) td:nth-child(2)').children('div[contenteditable=true]').get(0);
+			//jQuery(firstCell).get(0).focus();
 
 		}
 
@@ -1303,8 +1306,9 @@ define( [
 		// leave the cursor-selection outside of the table, since
 		// otherwise the floating menu scope will be incorrect when one
 		// CTRL-clicks on the rows or columns.
+
 		var selection = Aloha.getSelection();
-		
+
 		if ( !selection ||
 				!selection._nativeSelection ||
 					selection._nativeSelection._ranges.length == 0 ) {

@@ -18,12 +18,223 @@
 * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-define(
-[ 'aloha/core', 'util/class', 'aloha/jquery' ],
-function( Aloha, Class, jQuery ) {
+define([
+	'aloha/core',
+	'util/class',
+	'aloha/jquery',
+	'aloha/ecma5shims'
+],
+function( Aloha, Class, jQuery, shims ) {
+
 "use strict";
 
 var GENTICS = window.GENTICS;
+
+var isOldIE = !!( jQuery.browser.msie &&
+				  9 > parseInt( jQuery.browser.version, 10 ) );
+
+function isBR( node ) {
+	return 'BR' === node.nodeName;
+}
+
+function isBlock( node ) {
+	return 'false' === jQuery( node ).attr( 'contenteditable' );
+}
+
+function isTextNode( node ) {
+	return node && 3 === node.nodeType; // Node.TEXT_NODE
+}
+
+function nodeLength( node ) {
+	return !node ? 0
+				 : ( isTextNode( node ) ? node.length
+										: node.childNodes.length );
+}
+
+function nextVisibleNode( node ) {
+	if ( !node ) {
+		return null;
+	}
+
+	if ( node.nextSibling ) {
+		// Skip over nodes that the user cannot see ...
+		if ( isTextNode( node.nextSibling ) &&
+			 !isVisibleTextNode( node.nextSibling ) ) {
+			return nextVisibleNode( node.nextSibling );
+		}
+
+		// Skip over propping <br>s ...
+		if ( isBR( node.nextSibling ) &&
+			 node.nextSibling === node.parentNode.lastChild ) {
+			return nextVisibleNode( node.nextSibling );	
+		}
+
+		// Skip over empty editable elements ...
+		if ( '' === node.nextSibling.innerHTML &&
+		     !isBlock( node.nextSibling ) ) {
+			return nextVisibleNode( node.nextSibling );
+		}
+
+		return node.nextSibling;
+	}
+
+	if ( node.parentNode ) {
+		return nextVisibleNode( node.parentNode );
+	}
+
+	return null;
+}
+
+function prevVisibleNode( node ) {
+	if ( !node ) {
+		return null;
+	}
+
+	if ( node.previousSibling ) {
+		// Skip over nodes that the user cannot see...
+		if ( isTextNode( node.previousSibling ) &&
+			 !isVisibleTextNode( node.previousSibling ) ) {
+			return prevVisibleNode( node.previousSibling );
+		}
+
+		// Skip over empty editable elements ...
+		if ( '' === node.previousSibling.innerHTML &&
+		     !isBlock( node.previousSibling ) ) {
+			return prevVisibleNode( node.previouSibling );
+		}
+
+		return node.previousSibling;
+	}
+
+	if ( node.parentNode ) {
+		return prevVisibleNode( node.parentNode );
+	}
+
+	return null;
+}
+
+/**
+ * Determines whether the given text node is visible to the the user,
+ * based on our understanding that browsers will not display
+ * superfluous white spaces.
+ *
+ * @param {HTMLEmenent} node The text node to be checked.
+ */
+function isVisibleTextNode( node ) {
+	return 0 < node.data.replace( /\s+/g, '' ).length;
+}
+
+function isFrontPosition( node, offset ) {
+	return ( 0 === offset ) ||
+		   ( offset <= node.data.length -
+					   node.data.replace( /^\s+/, '' ).length );
+}
+
+function isBlockInsideEditable( $block ) {
+	return $block.parent().hasClass( 'aloha-editable' );
+}
+
+function isEndPosition( node, offset ) {
+	var length = nodeLength( node );
+
+	if ( length === offset ) {
+		return true;
+	}
+
+	var isText = isTextNode( node );
+
+	// If within a text node, then ignore superfluous white-spaces,
+	// since they are invisible to the user.
+	if ( isText &&
+		 node.data.replace( /\s+$/, '' ).length === offset ) {
+		return true;
+	}
+
+	if ( 1 === length && !isText ) {
+		return isBR( node.childNodes[0] );
+	}
+
+	return false;
+}
+
+function blink( node ) {
+	jQuery( node )
+		.stop( true )
+		.css({ opacity: 0 })
+		.fadeIn( 0 ).delay( 100 )
+		.fadeIn(function () {
+			jQuery( node ).css({ opacity: 1 });
+		});
+
+	return node;
+}
+
+/**
+ * @TODO(petro): We need to be more intelligent about whether we insert a
+ *               block-level placeholder or a phrasing level element.
+ * @TODO(petro): test with <pre>
+ */
+function jumpBlock( block, isGoingLeft ) {
+	var range = new GENTICS.Utils.RangeObject();
+	var sibling = isGoingLeft ? prevVisibleNode( block )
+	                          : nextVisibleNode( block );
+
+	if ( !sibling || isBlock( sibling ) ) {
+		var $landing = jQuery( '<div>&nbsp;</div>' );
+
+		if ( isGoingLeft ) {
+			jQuery( block ).before( $landing );
+		} else {
+			jQuery( block ).after( $landing );
+		}
+
+		range.startContainer = range.endContainer = $landing[0];
+		range.startOffset = range.endOffset = 0;
+
+		// Clear out any old placeholder first ...
+		cleanupPlaceholders( range );
+
+		window.$_alohaPlaceholder = $landing;
+	} else {
+		range.startContainer = range.endContainer = sibling;
+		range.startOffset = range.endOffset = isGoingLeft ?
+			nodeLength( sibling ) : ( isOldIE ? 1 : 0 );
+
+		cleanupPlaceholders( range );
+	}
+
+	range.select();
+
+	Aloha.trigger( 'aloha-block-selected', block );
+	Aloha.Selection.preventSelectionChanged();
+}
+
+function nodeContains( node1, node2 ) {
+	return isOldIE ? ( shims.compareDocumentPosition( node1, node2 ) & 16 )
+	               : 0 < jQuery( node1 ).find( node2 ).length;
+}
+
+function isInsidePlaceholder( range ) {
+	var start = range.startContainer;
+	var end = range.endContainer;
+	var $placeholder = window.$_alohaPlaceholder;
+
+	return $placeholder.is( start )               ||
+	       $placeholder.is( end )                 ||
+	       nodeContains( $placeholder[0], start ) ||
+	       nodeContains( $placeholder[0], end );
+}
+
+function cleanupPlaceholders( range ) {
+	if ( window.$_alohaPlaceholder && !isInsidePlaceholder( range ) ) {
+		if ( 0 === window.$_alohaPlaceholder.html()
+		                 .replace( /^(&nbsp;)*$/, '' ).length ) {
+			window.$_alohaPlaceholder.remove();
+		}
+
+		window.$_alohaPlaceholder = null;
+	}
+}
 
 /**
  * Markup object
@@ -95,8 +306,7 @@ Aloha.Markup = Class.extend( {
 
 		var rangeObject = Aloha.Selection.rangeObject,
 		    handlers,
-		    i,
-			arrowKeys = [37, 38, 39, 40];
+		    i;
 
 		if ( this.keyHandlers[ event.keyCode ] ) {
 			handlers = this.keyHandlers[ event.keyCode ];
@@ -107,10 +317,14 @@ Aloha.Markup = Class.extend( {
 			}
 		}
 
-		// handle left (37) and right (39), up (38) and down (40) arrow keys 
-		// for block detection
-		if ( jQuery.inArray(event.keyCode, arrowKeys) != -1 ) {
-			return this.processCursor( rangeObject, event.keyCode );
+		// LEFT (37), RIGHT (39) keys for block detection
+		if ( event.keyCode === 37 || event.keyCode === 39 ) {
+			if ( this.processCursor( rangeObject, event.keyCode ) ) {
+				cleanupPlaceholders( Aloha.Selection.rangeObject );
+				return true;
+			}
+
+			return false;
 		}
 
 		// BACKSPACE
@@ -141,199 +355,117 @@ Aloha.Markup = Class.extend( {
 	},
 
 	/**
-	 * Processing of cursor keys
-	 * will currently detect blocks (elements with contenteditable=false)
-	 * and selects them (normally the cursor would jump right past them)
+	 * Processing of cursor keys.
+	 * Detect blocks (elements with contenteditable=false) and will select them
+	 * (normally the cursor would simply jump right past them).
 	 *
-	 * For each block an 'aloha-block-selected' event will be triggered.
+	 * For each block that is selected, an 'aloha-block-selected' event will be
+	 * triggered.
 	 *
-	 * @param range the current range object
-	 * @param keyCode keyCode of current keypress
-	 * @return false if a block was found to prevent further events, true otherwise
+	 * @param {RangyRange} range A range object for the current selection.
+	 * @param {number} keyCode Code of the currently pressed key.
+	 * @return {boolean} False if a block was found, to prevent further events,
+	 *                   true otherwise.
 	 */
 	processCursor: function( range, keyCode ) {
-		// happens some times :-(
-		//if ( range && range.limitObject && range.limitObject.selector == 'body' ) {
-		//	console.log('no correct range!');
-		//	return false;
-		//}
-		//window.console.log('range', range.startContainer.data);
-
-		// remove empty lines we needed for jumping with the cursor
-		Aloha.bind( 'aloha-editable-deactivated', function() {
-			jQuery('p.aloha-empty-line > br.aloha-cleanme', '.aloha-editable-active').each(function() {
-				if ( jQuery.trim(jQuery(this).parent().text()) == '' ) {
-					jQuery(this).parent().remove();
-				}
-			});
-		});
-
 		if ( !range.isCollapsed() ) {
 			return true;
 		}
 
-		var rt = range.getRangeTree(), // RangeTree reference
-		    i = 0,
-		    cursorLeft = (keyCode === 37 || keyCode === 38),
-		    cursorRight = (keyCode === 39 || keyCode === 40),
-		    nextSiblingIsBlock = false, // check whether the next sibling is a block (contenteditable = false)
-		    cursorIsWithinBlock = false, // check whether the cursor is positioned within a block (contenteditable = false)
-		    cursorAtLastPos = false, // check if the cursor is within the last position of the currently active dom element
-		    obj, // will contain references to dom objects
-			block = null,
-			emptyLine = jQuery( '<p class="aloha-empty-line"></p>' );
-			//emptyLine = jQuery( '<p class="aloha-empty-line"><br class="aloha-cleanme" /></p>' );
+		var node = range.startContainer;
 
-/*
-var startP = jQuery('<p class="aloha-editing-p"></p>');
-params.editable.obj.prepend(startP);
-if (startP[0].offsetHeight === 0) {
-	startP.append(jQuery('<br class="aloha-end-br"/>'));
-}
-*/
+		if ( !node ) {
+			return true;
+		}
 
-		// inserts empty lines between blocks
-		if ( range && range.startContainer && cursorRight) {
-			
-			//var rangeLength = (range.startContainer.length ||  );
-			var rangeLength = range.endOffset;
-			if ( range.startContainer.nodeValue && range.startContainer.nodeValue.length) {
-				rangeLength = range.startContainer.nodeValue.length;
-			}
-			
-			if ( !GENTICS.Utils.Dom.isEmpty(jQuery(range.startContainer).next().get(0)) ) {
-				var next = !jQuery(range.startContainer).next().contentEditable();
-				var next2 = !jQuery(range.startContainer).next().next().contentEditable();
-				var next3 = jQuery(range.startContainer).next();
-			} else if ( !GENTICS.Utils.Dom.isEmpty(jQuery(range.startContainer).parent().next().get(0)) /*&& jQuery(range.startContainer).parent().next().contentEditable() */ ) {
-				var next = !jQuery(range.startContainer).parent().next().contentEditable();
-				var next2 = !jQuery(range.startContainer).parent().next().next().contentEditable(); // produces some warnings
-				var next3 = jQuery(range.startContainer).parent().next();
-			}
-			
-			if ( cursorRight && typeof jQuery(range.startContainer).parent().next().get(0) !== 'undefined'
-				&& range.startOffset === rangeLength 
-				&& next
-				&& next2 ) {
-				obj = jQuery( emptyLine ).insertAfter( next3 ).get(0);
-				if (emptyLine[0].offsetHeight === 0) {
-					emptyLine.append(jQuery('<br class="aloha-end-br"/>'));
+		var sibling;
+
+		// Versions of Internet Explorer that are older that 9, will
+		// erroneously allow you to enter and edit inside elements which have
+		// their contenteditable attribute set to false...
+		if ( isOldIE ) {
+			var $parentBlock = jQuery( node ).parents(
+				'[contenteditable=false]' );
+			var isInsideBlock = $parentBlock.length > 0;
+
+			if ( isInsideBlock ) {
+				if ( isBlockInsideEditable( $parentBlock ) ) {
+					sibling = $parentBlock[0];
+				} else {
+					return true;
 				}
-				GENTICS.Utils.Dom.setCursorInto( obj );
-				Aloha.Selection.preventSelectionChanged();
-				return false;
 			}
 		}
 		
-		if ( range && range.startContainer && cursorLeft) {
-			if ( !GENTICS.Utils.Dom.isEmpty(jQuery(range.startContainer).prev().get(0)) ) {
-				var prev = !jQuery(range.startContainer).prev().contentEditable();
-				var prev2 = !jQuery(range.startContainer).prev().prev().contentEditable();
-				var prev3 = jQuery(range.startContainer).prev().prev();
-			} else if ( !GENTICS.Utils.Dom.isEmpty(jQuery(range.startContainer).parent().prev().get(0)) ) {
-				var prev = !jQuery(range.startContainer).parent().prev().contentEditable();
-				var prev2 = !jQuery(range.startContainer).parent().prev().prev().contentEditable();
-				var prev3 = jQuery(range.startContainer).parent().prev().prev();
-			}
+		if ( !sibling ) {
+			// True if keyCode denotes LEFT or UP arrow key, otherwise they
+			// keyCode is for RIGHT or DOWN in which this value will be false.
+			var isLeft = (37 === keyCode || 38 === keyCode);
+			var offset = range.startOffset;
 
-			if ( cursorLeft && range.startOffset === 0 
-				&& prev
-				&& prev2 ) {
-				obj = jQuery( emptyLine ).insertAfter( prev3 ).get(0);
-				if (emptyLine[0].offsetHeight === 0) {
-					emptyLine.append(jQuery('<br class="aloha-end-br"/>'));
-				}
-				GENTICS.Utils.Dom.setCursorInto( obj );
-				Aloha.Selection.preventSelectionChanged();
-				return false;
-			}
+			if ( isTextNode( node ) ) {
+				if ( isLeft ) {
+					// FIXME(Petro): Please consider if you have a better idea
+					//               of how we can work around this.
+					//
+					// Here is the problem... with Internet Explorer:
+					// ----------------------------------------------
+					//
+					// Versions of Internet Explorer older than 9, are buggy in
+					// how they `select()', or position a selection from cursor
+					// movements, when the following conditions are true:
+					//
+					//  * The range is collapsed.
+					//  * startContainer is a contenteditable text node.
+					//  * startOffset is 1.
+					//  * There is a non-conenteditable element left of the
+					//    startContainer.
+					//  * You attempt to move left to offset 0 (we consider a
+					//    range to be at "frontposition" if it is at offset 0
+					//    within its startContainer).
+					//
+					// What happens in IE 7, and IE 8, is that the selection
+					// will jump to the adjacent non-contenteditable
+					// element(s), instead moving to the front of the
+					// container, and the offset will be stuck at 1--even as
+					// the cursor is jumping around the screen!
+					//
+					// Our imperfect work-around is to reckon ourselves to be
+					// at the front of the next node (ie: offset 0 in other
+					// browsers), as soon as we detect that we are at offset 1
+					// in IEv<9.
+					//
+					// Considering the bug, I think this is acceptable because
+					// the user can still position themselve right between the
+					// block (non-contenteditable element) and the first
+					// characater of the text node by clicking there with the
+					// mouse, since this seems to work fine in all IE versions.
+					var isFrontPositionInIE = isOldIE && 1 === offset;
 
-		}
+					if ( !isFrontPositionInIE &&
+						 !isFrontPosition( node, offset ) ) {
+						return true;
+					}
 
-		// @todo refactor this ... is used if a block is selected
-		for (;i < rt.length; i++) {
-			if ( typeof rt[i].domobj === 'undefined' ) {
-				continue;
-			}
-
-			cursorAtLastPos = range.startOffset === rt[i].domobj.length;
-
-			/*if ( !cursorAtLastPos ) {
-				//continue;
-			}
-			if ( cursorAtLastPos ) {
-				nextSiblingIsBlock = jQuery( rt[i].domobj.nextSibling ).attr('contenteditable') === 'false';
-				cursorIsWithinBlock = jQuery( rt[i].domobj ).parents('[contenteditable=false]').length > 0;
-
-				if ( cursorRight && nextSiblingIsBlock ) {
-					obj = rt[i].domobj.nextSibling;
-					GENTICS.Utils.Dom.selectDomNode( obj );
-					Aloha.trigger( 'aloha-block-selected', obj );
-					Aloha.Selection.preventSelectionChanged();
-					return false;
-				}
-
-				if ( cursorRight && !nextSiblingIsBlock ) {
-					obj = jQuery( rt[i].domobj ).get(0);
-					//obj = rt[i].domobj.nextSibling;
-					GENTICS.Utils.Dom.selectDomNode( obj );
+				} else if ( !isEndPosition( node, offset ) ) {
 					return true;
 				}
 
-				if ( cursorLeft && cursorIsWithinBlock ) {
-					obj = jQuery( rt[i].domobj ).parents('[contenteditable=false]').get(0);
-					if ( jQuery( obj ).parent().hasClass('aloha-editable') ) {
-						GENTICS.Utils.Dom.selectDomNode( obj );
-						Aloha.trigger( 'aloha-block-selected', obj );
-						Aloha.Selection.preventSelectionChanged();
-						return false;
-					}
-				}
-			}
-			*/
-
-			cursorIsWithinBlock = jQuery( rt[i].domobj ).parents('[contenteditable=false]').length > 0;
-			block = null;
-
-			if ( cursorIsWithinBlock ) {
-				jQuery( rt[i].domobj ).parents('[contenteditable=false]').each( function() {
-					if ( jQuery(this).hasClass('aloha-block') ) {
-						block = this;
-					}
-				});
-
-				if ( block ) {
-
-					if ( cursorRight ) {
-						obj = block.nextSibling;
-						var nextIsEditable = jQuery(obj.nextSibling).attr('contenteditable');
-						if ( (obj.nodeType == 3 || obj.nodeType == 1) && (obj.nextSibling == null || nextIsEditable == 'false' || nextIsEditable == 'inherit') ) {
-							
-							if ( jQuery.trim(obj.nodeValue) == '' || nextIsEditable == 'false' || nextIsEditable == 'inherit') {
-								obj = jQuery( emptyLine ).insertAfter(jQuery(block)).get(0);
-							}
-						}
-					}
-
-					if ( cursorLeft ) {
-						obj = block.previousSibling;
-						var prevIsEditable = jQuery(obj.previousSibling).attr('contenteditable');
-
-						if ( (obj.nodeType == 3 || obj.nodeType == 1) && (obj.previousSibling == null || prevIsEditable == 'false' || nextIsEditable == 'inherit')) {
-							if ( jQuery.trim(obj.nodeValue) == '' || prevIsEditable == 'false' ) {
-								obj = jQuery( emptyLine ).insertBefore(jQuery(block)).get(0);
-							}
-						}
-					}
-					GENTICS.Utils.Dom.setCursorInto( obj );
-
-					return false;
-				}
 			} else {
-				// cursor is not in a block
+				node = node.childNodes[
+					offset === nodeLength( node ) ? offset - 1 : offset ];
 			}
+
+			sibling = isLeft ? prevVisibleNode( node )
+			                 : nextVisibleNode( node );
 		}
 
+		if ( isBlock( sibling ) ) {
+			jumpBlock( sibling, isLeft );
+			return false;
+		}
+
+		return true;
 	},
 
 	/**
@@ -551,8 +683,9 @@ if (startP[0].offsetHeight === 0) {
 					if ( astext ) {
 						text += this.getFromSelectionTree( el.children, astext );
 					} else {
-						// when the html shall be fetched, we create a clone of the element and remove all the children
-						clone = jQuery( el.domobj ).clone( false ).empty();
+						// when the html shall be fetched, we create a clone of
+						// the element and remove all the children
+						clone = jQuery( el.domobj.outerHTML ).empty();
 						// then we do the recursion and add the selection into the clone
 						clone.html( this.getFromSelectionTree( el.children, astext ) );
 						// finally we get the html of the clone
@@ -1027,7 +1160,7 @@ if (startP[0].offsetHeight === 0) {
 				if ( lastObj && rangeObject.startContainer === lastObj
 					 && rangeObject.startOffset === lastObj.length ) {
 					returnObj = jQuery( '<p></p>' );
-					inside = jQuery( rangeObject.splitObject ).clone().contents();
+					inside = jQuery( rangeObject.splitObject.outerHTML ).contents();
 					returnObj.append( inside );
 					return returnObj;
 				}
@@ -1039,7 +1172,7 @@ if (startP[0].offsetHeight === 0) {
 				if ( rangeObject.startContainer.nodeName.toLowerCase() === 'br'
 					 && jQuery( rangeObject.startContainer ).hasClass( 'aloha-ephemera' ) ) {
 					returnObj = jQuery( '<p></p>' );
-					inside = jQuery( rangeObject.splitObject ).clone().contents();
+					inside = jQuery( rangeObject.splitObject.outerHTML ).contents();
 					returnObj.append( inside );
 					return returnObj;
 				}
@@ -1051,7 +1184,7 @@ if (startP[0].offsetHeight === 0) {
 				}
 		}
 
-		return jQuery( rangeObject.splitObject ).clone();
+		return jQuery( rangeObject.splitObject.outerHTML );
 	},
 
 	/**

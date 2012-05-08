@@ -161,7 +161,7 @@
 		delay = (delay != null && typeof delay !== 'undefined' ) ? delay : 700;
 
 		// start timer for delayed request
-		newTimer = setTimeout( function() {
+		newTimer = window.setTimeout( function() {
 
 			// start request
 			that.xhr[scope] = jQuery.ajax({
