@@ -897,12 +897,6 @@ function isCollapsedLineBreak(br) {
 // contenteditable.
 function isExtraneousLineBreak(br) {
 
-	// https://github.com/alohaeditor/Aloha-Editor/issues/516
-	// look like it works in msie > 7
-	if (jQuery.browser.msie && jQuery.browser.version < 8) {
-		return false;
-	}
-
 	if (!isHtmlElement(br, "br")) {
 		return false;
 	}
@@ -943,6 +937,13 @@ function isExtraneousLineBreak(br) {
 		br.removeAttribute("style");
 	} else {
 		br.setAttribute("style", brStyle);
+	}
+
+	// https://github.com/alohaeditor/Aloha-Editor/issues/516
+	// look like it works in msie > 7
+	if (jQuery.browser.msie && jQuery.browser.version < 8) {
+		br.removeAttribute("style");
+		ref.removeAttribute("style");
 	}
 
 	return origHeight == finalHeight;
@@ -6171,13 +6172,19 @@ function justifySelection(alignment, range) {
 	}
 }
 
-
 //@}
 ///// Create an end break /////
 //@{
 function createEndBreak() {
+	// https://github.com/alohaeditor/Aloha-Editor/issues/516
 	var endBr = document.createElement("br");
 	endBr.setAttribute("class", "aloha-end-br");
+
+	if ( jQuery.browser.msie && jQuery.browser.version < 8 ) {
+		var endTextNode = document.createTextNode(' ');
+		endBr.appendChild(endTextNode);
+	}
+
 	return endBr;
 }
 
@@ -7383,6 +7390,12 @@ commands.insertlinebreak = {
 			range.setStart(br.parentNode, 1 + getNodeIndex(br));
 			range.setEnd(br.parentNode, 1 + getNodeIndex(br));
 		}
+		
+		// IE7 is adding this styles: height: auto; min-height: 0px; max-height: none;
+		// with that there is the ugly "IE-editable-outline"
+		if (jQuery.browser.msie && jQuery.browser.version < 8) {
+			br.parentNode.removeAttribute("style");
+		}
 	}
 };
 
@@ -7737,7 +7750,8 @@ commands.insertparagraph = {
 		// "If new container has no visible children, call createElement("br")
 		// on the context object, and append the result as the last child of
 		// new container."
-		if (newContainer.offsetHeight == 0 && !$_(newContainer.childNodes).some(isVisible)) {
+		if (newContainer.offsetHeight == 0 &&
+			!$_(newContainer.childNodes).some(isVisible)) {
 			newContainer.appendChild(createEndBreak());
 		}
 
