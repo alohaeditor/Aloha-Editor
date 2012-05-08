@@ -218,7 +218,7 @@ function ( Aloha, jQuery, TestUtils ) {
 					return;
 				}
 
-				var clonedContainer = jQuery( jQuery( common ).clone() );
+				var clonedContainer = jQuery( common.outerHTML );
 
 				var clonedStartContainer = clonedContainer.is( '.' + sClass )
 						? clonedContainer
