@@ -14,5 +14,4 @@ All changes are categorized into one of the following keywords:
 - **ENHANCEMENT**: browser-plugin: The browser plugin will now calculate the browser width automatically.
 - **BUG**: IE7 - #516 navigate with arrow keys through several paragraphs
 - **BUG**: IE7 - #515 gray text after list
-- **BUG**: IE7 - #515 gray text after list
 - **ENHANCEMENT**: Removed unwanted behaviour from the block plugin's sidebarattributeedtior, which will clear out the whole sidebar when loaded
