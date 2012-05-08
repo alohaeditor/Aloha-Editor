@@ -1298,41 +1298,32 @@ define( [
 		// leave the cursor-selection outside of the table, since
 		// otherwise the floating menu scope will be incorrect when one
 		// CTRL-clicks on the rows or columns.
-		
-		return;
-		
+
 		var selection = Aloha.getSelection();
 
 		if ( !selection ||
 				!selection._nativeSelection ||
 					selection._nativeSelection._ranges.length == 0 ) {
-						window.console.log('no selection');
 			return;
 		}
 
 		var range = selection.getRangeAt( 0 );
 		if ( null == range.startContainer ) {
-			window.console.log('no range.startContainer');
 			return;
 		}
-		window.console.log('range.startContainer', range.startContainer);
 
 		// if the selection is  already in the table, do nothing
 		if ( 0 !== jQuery( range.startContainer ).closest('table').length ) {
-			window.console.log('the selection is  already in the table, do nothing');
 			return;
 		}
 		
 		// if no cells are selected, do nothing
 		if ( 0 === this.selection.selectedCells.length ) {
-			window.console.log('no cells are selected, do nothing');
 			return;
 		}
 
 		// set the foces to the first selected cell
-		window.console.log('!!!!! first selected cell (should not be here)', this.selection.selectedCells[ 0 ]);
 		var container = TableCell.getContainer( this.selection.selectedCells[ 0 ] );
-		window.console.log('select container', container.outerHTML);
 		jQuery( container ).focus();
 	}
 
