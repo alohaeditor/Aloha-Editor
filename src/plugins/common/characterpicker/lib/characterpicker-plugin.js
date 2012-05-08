@@ -228,9 +228,11 @@ function( Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore ) {
 					jQuery(Aloha.activeEditable.obj),
 					true
 				);
+
 				range.startContainer = range.endContainer = charNode.get( 0 );
 				range.startOffset = range.endOffset = charNode.length;
 				range.select();
+
 			}
 		}
 	});

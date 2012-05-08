@@ -94,7 +94,7 @@ function (jQuery, Utils) {
 		} );
 
 		this.obj.bind( 'mousedown', function ( jqEvent ) {
-			setTimeout( function () {
+			window.setTimeout( function () {
 				that.wrapper.trigger( 'focus' );
 			}, 1 );
 			that.tableObj.selection.unselectCells();
@@ -139,6 +139,7 @@ function (jQuery, Utils) {
 
 			// remove the click event of the
 			this.obj.unbind('click');
+			this.obj.unbind('mousedown');
 
 			if (jQuery.trim(this.obj.attr('class')) == '') {
 				this.obj.removeAttr('class');
