@@ -12,3 +12,6 @@ All changes are categorized into one of the following keywords:
 - **BUG**: browser-plugin: In some cases a javascript error would be thrown when using the browser plugin with Internet Explorer. IE does not support 'new Image' calls within popups.
 - **BUG**: browser-plugin: In some cases a javascript error would be thrown when using the browser plugin with Internet Explorer. IE does not support 'new Image' calls within popups. 
 - **ENHANCEMENT**: browser-plugin: The browser plugin will now calculate the browser width automatically.
+- **BUG**: IE7 - #516 navigate with arrow keys through several paragraphs
+- **BUG**: IE7 - #515 gray text after list
+- **BUG**: IE7 - #515 gray text after list
