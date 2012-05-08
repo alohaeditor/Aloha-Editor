@@ -952,7 +952,7 @@ function(Aloha, jQuery, FloatingMenu, Class, Range) {
 		 * @hide
 		 */
 		getClonedMarkup4Wrapping: function(domobj) {
-			var wrapper = jQuery(domobj).clone().removeClass('preparedForRemoval').empty();
+			var wrapper = jQuery(domobj.outerHTML).removeClass('preparedForRemoval').empty();
 			if (wrapper.attr('class').length === 0) {
 				wrapper.removeAttr('class');
 			}
