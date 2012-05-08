@@ -79,4 +79,3 @@ h3. Capability for multiple Instances
 In the current version (0.20) there is the possibility to add multiple browser instances to a page.
 
 * November 24, 2011: Initial version by Leonard Osang
-

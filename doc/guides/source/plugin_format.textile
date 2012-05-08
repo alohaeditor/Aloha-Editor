@@ -1,0 +1,37 @@
+h2. Format Plugin
+
+The Format Plugin provides basic formatting choices for your content.
+
+endprologue.
+
+h3. Configuration
+
+The format plugin provides the following config options:
+<javascript>
+Aloha.settings.plugins.format = {
+	// configure buttons available in the toolbar
+	config : [ 'b', 'i', 'p', 'sub', 'sup', 'del', 'title', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'removeFormat' ],
+	// specific configuration for each editable identified by css selectors
+	editables : {
+		// the editable with id "teaser" won't offer any formatting options
+		'#teaser'	: [  ]
+	},
+	// those are the tags that will be cleaned when clicking "remove formatting"
+	removeFormats : [ 'strong', 'em', 'b', 'i', 'cite', 'q', 'code', 'abbr', 'del', 'sub', 'sup']
+};
+</javascript>
+
+h3. Components
+
+* cite - format content as a citation
+* quote - format content as a quote
+* code - format content as a code block
+* emphasize - emphasize content
+* strong (not def command) - put strong emphasis on content
+* bold - format content bold
+* italic - format content italic
+* strikethrough - add strikethrough formatting
+* subscript - add subscript formatting
+* superscript - add superscript formatting
+* underline - add underline formatting
+* paragraph - will allow you to add paragraph formattings (address, dd, div, dt, h1, h2, h3, h4, h5, h6, p, pre)
