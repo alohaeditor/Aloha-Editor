@@ -74,7 +74,7 @@
 							<goal>exec</goal>
 						</goals>
 						<configuration>
-							<executable>bin/deploy-aloha.sh</executable>
+							<executable>build/bin/deploy-aloha.sh</executable>
 							<arguments>
 								<argument>${ALOHADEPLOYMENTURL}</argument>
 								<argument>${ALOHADEPLOYMENTPATH}</argument>
@@ -89,7 +89,7 @@
 							<goal>exec</goal>
 						</goals>
 						<configuration>
-							<executable>bin/build.sh</executable>
+							<executable>build/bin/build.sh</executable>
 							<arguments>
 								<argument>${ALOHABUILDCONF}</argument>
 							</arguments>
