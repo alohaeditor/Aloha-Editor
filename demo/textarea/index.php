@@ -39,10 +39,10 @@
 			ribbon: false
 		};
 	</script>
-	<script src="../../lib/aloha.js" data-aloha-plugins="common/format,common/highlighteditables,common/list,common/undo,common/paste,common/block"></script>
+	<script src="../../src/lib/aloha.js" data-aloha-plugins="common/format,common/highlighteditables,common/list,common/undo,common/paste,common/block"></script>
 
 	
-	<link rel="stylesheet" href="../../css/aloha.css" id="aloha-style-include" type="text/css">
+	<link rel="stylesheet" href="../../src/css/aloha.css" id="aloha-style-include" type="text/css">
 	<link rel="stylesheet" href="../common/index.css" type="text/css">
 	<style>
 		textarea {
