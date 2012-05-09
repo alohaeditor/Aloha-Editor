@@ -1,0 +1,14 @@
+h2. WAI Language Plugin
+
+endprologue.
+
+<html>
+<span 
+	class="aloha-wai-lang" 
+	style="" 
+	lang="de" 
+	data-gentics-aloha-repository="wai-languages" 
+	data-gentics-aloha-object-id="de">
+	Hallo
+</span>
+</html>

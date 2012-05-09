@@ -50,16 +50,13 @@ h3. Contenthandler Plugin
 
 The Contenthandler Plugin has no user interface and is used in conjunction with the paste plugin to be able to handle pasted content from Microsoft Word and the like. Currently it provides three so called "Content Handlers" which will be used to cleanup html content on various occasions like pasting or when initializing an editable. Those contenthandlers are:
 
-h4. Word Content Handler
-
+*Word Content Handler*
 The Word Content Handler will detect content pasted from Microsoft Word 2003 and newer versions. It transforms and cleans the pasted html code so that deteriorating effects on mental health by staring at bogus and totally fubar html code can be kept to an acceptable minimum. Therefore it will
 
-h4. Generic Content Handler
-
+*Generic Content Handler*
 The Generic Content Handler is a bit less generic than his name might suggest as he will apply the following cleaning actions:
 
-h4. Sanitize Content Handler
-
+*Sanitize Content Handler*
 The Sanitize Content Handler will remove all dom elements and attributes not covered by it's configuration. You may specify your own configuration based on these default settings:
 
 
@@ -80,11 +77,11 @@ h3. List Plugin
 
 The List Plugin allows you to handle and create ordered and unordered lists within your contents. You either may select existing contents to be turned into a list, or just click the ordered or unordered list button to start a new one.
 
-NOTE: The list plugin will turn existing paragraphs into list items. Single lines separated by +<br>+ tags will NOT be turned into separate list items.
-
 You can remove lists by clicking the applied list type a second time, which will turn individual list items back into paragraphs.
 
 The List Plugin will indent list items when pressing the tab-key, or outdent when pressing shift-tab.
+
+NOTE: The list plugin will turn existing paragraphs into list items. Single lines separated by +<br>+ tags will NOT be turned into separate list items.
 
 
 h3. Paste Plugin
@@ -98,4 +95,4 @@ The Table Plugin will allow you to edit tables within your contents. You can do 
 
 h3. Undo Plugin
 
-The Undo Plugin allows you to undo changes when pressing Ctrl+Z (or Cmd+Z on Mac). You may also reapply changes made undone by pressing Ctrl+Shift+Z or Cmd+Shift+Z on Mac. The Undo Plugin has no ui and no components.
+The Undo Plugin allows you to undo changes when pressing Ctrl+Z (or +Cmd+Z+ on Mac). You may also reapply changes made undone by pressing +Ctrl+Shift+Z+ or +Cmd + Shift + Z+ on Mac. The Undo Plugin has no ui and no components.

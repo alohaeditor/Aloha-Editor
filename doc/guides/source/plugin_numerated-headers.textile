@@ -1,4 +1,4 @@
-h2. The Numerated Headers Plugin
+h2. Numerated Headers Plugin
 
 With this plugin the editor has the possibility to auto generate numeration in the header Tags
 

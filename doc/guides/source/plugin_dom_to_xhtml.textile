@@ -1,4 +1,4 @@
-h2. The DOM to XHTML plugin
+h2. DOM to XHTML Plugin
 
 The dom-to-xhtml plugin provides a more XHTML conformant
 serialization than element.innerHTML for editable.getContents().

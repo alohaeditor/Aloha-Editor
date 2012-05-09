@@ -1,4 +1,4 @@
-h2. The Browser Plugin
+h2. Browser Plugin
 
 In this guide we give an overview about:
 

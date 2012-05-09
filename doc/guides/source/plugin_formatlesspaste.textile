@@ -1,4 +1,4 @@
-h2. The Formatless Paste Plugin
+h2. Formatless Paste Plugin
 
 The formatless paste plugin can be used to further strip pasted content.
 
