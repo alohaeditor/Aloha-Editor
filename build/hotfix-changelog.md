@@ -15,3 +15,4 @@ All changes are categorized into one of the following keywords:
 - **BUG**: IE7 - #516 navigate with arrow keys through several paragraphs
 - **BUG**: IE7 - #515 gray text after list
 - **ENHANCEMENT**: Removed unwanted behaviour from the block plugin's sidebarattributeedtior, which will clear out the whole sidebar when loaded
+- **BUT**: floatingmenu: Fixed regeneration of ext components for floatingmenu, when buttons are added after the floatingmenu was initialized

@@ -760,7 +760,13 @@ function(Aloha, jQuery, Ext, Class, console) {
 			jQuery.each(this.tabs, function(index, tab) {
 				// let each tab generate its ext component and add them to the panel
 				try {
-					that.extTabPanel.add(tab.getExtComponent());
+					if (!tab.extPanel) {
+						// if the tab itself was not generated, we do this and add it to the panel
+						that.extTabPanel.add(tab.getExtComponent());
+					} else {
+						// otherwise, we will make sure that probably missing groups are generated, but don't add the tab to the menu (again)
+						tab.getExtComponent();
+					}
 				} catch(e) {
 					Aloha.Log.error(that,"Error while inserting tab: " + e);
 				}
