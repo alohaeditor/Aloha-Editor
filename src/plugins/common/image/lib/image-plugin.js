@@ -682,6 +682,8 @@ function AlohaImagePlugin(aQuery, Plugin, ImageFloatingMenu, i18nCore, i18n) {
 		
 		/**
 		 * This helper function will keep the aspect ratio for the field with the given name.
+		 *
+		 * @param {string} primaryFieldName What should be used as primary option to calculate (can be 'width' or 'height')
 		 */
 		_setNormalizedFieldValues: function (primaryFieldName) {
 
@@ -697,7 +699,7 @@ function AlohaImagePlugin(aQuery, Plugin, ImageFloatingMenu, i18nCore, i18n) {
 			heightField.val(size.height);
 			
 		},
-		
+
 		/**
 		 * Manually set the given size for the current image
 		 */
@@ -827,107 +829,108 @@ function AlohaImagePlugin(aQuery, Plugin, ImageFloatingMenu, i18nCore, i18n) {
 		getPluginFocus: function () {
 			return this.imageObj;
 		},
-		
-		
+
 		/**
 		 * This helper function will calculate the new width and height while keeping 
-		 * the aspect ratio when the keepAspectRatio flat is set to true. The primarySize 
-		 * can be 'width' or 'height'. The function will first try to normalize the oposite size. 
+		 * the aspect ratio when the keepAspectRatio flag is set to true. The primarySize 
+		 * can be 'width' or 'height'. The function will first try to normalize the opposite size.
+		 *
+		 * @param {integer} width Target width for the new image size
+		 * @param {integer} height Target height for the new image size
+		 * @param {integer} primarySize can be 'width' or 'height'
+		 * @return Image width and height.
 		 */
-		_normalizeSize: function (width, height, primarySize) {
-			
-			var plugin = this;
+		_normalizeSize: function( width, height, primarySize ) {
+			var that = this;
 			// Convert string values to numbers
-			width = parseInt(width, 10); 
-			height = parseInt(height, 10);
-			
+			width = parseInt(width); 
+			height = parseInt(height);
+
 			/**
 			 * Inner function that calculates the new height by examining the width 
 			 */
-			function handleHeight(callHandleWidth) {
-		
+			function handleHeight( callHandleWidth ) {
 				// Check whether the value is within bounds 
-				if (height > plugin.settings.maxHeight) {
-					
+				if ( height > that.settings.maxHeight ) {
 					// Throw a notification event
-					var eventProps = { 'org': height, 'new': plugin.settings.maxHeight};
+					var eventProps = { 'org': height, 'new': that.settings.maxHeight};
 					$('body').trigger('aloha-image-resize-outofbounds', ["height", "max", eventProps]);
-					height = plugin.settings.maxHeight;
-					
-				} else if (height < plugin.settings.minHeight) {
-					
+					height = that.settings.maxHeight;
+				} else if ( height < that.settings.minHeight ) {
 					// Throw a notification event
-					var eventProps = { 'org': height, 'new': plugin.settings.minHeight};
+					var eventProps = { 'org': height, 'new': that.settings.minHeight};
 					$('body').trigger('aloha-image-resize-outofbounds', ["height", "min", eventProps]);
-					height = plugin.settings.minHeight;
+					height = that.settings.minHeight;
 				}
 
-				if (that.keepAspectRatio) {
+				if ( that.keepAspectRatio ) {
 					width = height * aspectRatio;
 
 					// We don't want to invoke handleWidth again. This would mess up our previously calculated width
-					if (callHandleWidth) {
-						handleWidth(false);
+					if ( callHandleWidth ) {
+						handleWidth( false );
 					}
 				}
-				
-				
 			}
-			
+
 			/**
 			 * Inner function that calculates the new width by examining the width
 			 */
-			function handleWidth(callHandleHeight) {
+			function handleWidth( callHandleHeight ) {
 
 				// Check whether the value is within bounds 
-				if (width > plugin.settings.maxWidth) {
-					
+				if (width > that.settings.maxWidth) {
+				
 					// Throw a notification event
-					var eventProps = { 'org': width, 'new': plugin.settings.maxWidth};
+					var eventProps = { 'org': width, 'new': that.settings.maxWidth};
 					$('body').trigger('aloha-image-resize-outofbounds', ["width", "max", eventProps]);
-					
-					width = plugin.settings.maxWidth;
-				} else if (width < plugin.settings.minWidth) {
-
+				
+					width = that.settings.maxWidth;
+				} else if ( width < that.settings.minWidth ) {
 					// Throw a notification event
-					var eventProps = { 'org': width, 'new': plugin.settings.minWidth};
+					var eventProps = { 'org': width, 'new': that.settings.minWidth};
 					$('body').trigger('aloha-image-resize-outofbounds', ["width", "min", eventProps]);
 
-					width = plugin.settings.minWidth;
+					width = that.settings.minWidth;
 				}
 
 				// Calculate the new height
-				if (plugin.keepAspectRatio) {
+				if ( that.keepAspectRatio ) {
 					height = width / aspectRatio;
-					
-					// We don't want to invoke handleHeight again. This would mess up our previously calculated height
-					if (callHandleHeight) {
-						handleHeight(false);
-					}
-					
-				}
 				
+					// We don't want to invoke handleHeight again. This would mess up our previously calculated height
+					if ( callHandleHeight ) {
+						handleHeight( false );
+					}
+				
+				}
+			
 			}
 
-			// Load the aspect ratio and use the 4:3 ratio as default value.
+			// use the 4:3 ratio as default value.
 			var aspectRatio = 1.33333;
-			if (typeof that.startAspectRatio === 'number') {
-				aspectRatio = plugin.startAspectRatio;
+
+			// if keepAspectRatio is set to true, calculate it from the image size
+			if ( that.keepAspectRatio ) {
+				aspectRatio = width / height;
 			}
-			
+
+			if ( typeof that.startAspectRatio === 'number' ) {
+				aspectRatio = that.startAspectRatio;
+			}  
+
 			// Determin which size should be handled
-			if (primarySize === 'width') {
-				handleWidth(true);
+			if ( primarySize == 'width' ) {
+				handleWidth( true );
 			}
-			
-			if (primarySize === 'height') {
-				handleHeight(true);
+
+			if ( primarySize == 'height' ) {
+				handleHeight( true );
 			}
 
 			// Floor the values return them
-			return {'width': Math.floor(width), 'height': Math.floor(height)};
+			return { 'width': Math.floor( width ), 'height': Math.floor( height ) };
 		},
-
 
 		/**
 		 * Helper function that will set the new image size using the field values
