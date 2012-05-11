@@ -11,30 +11,19 @@ All changes are categorized into one of the following keywords:
 - **FEATURE**: The change introduces a new feature, or modifies the function,
                usage, or intent of an existing one.
 
-## 0.21.0 - dev
+## 0.20.11 - 2012/05/10
 
-- **ENHANCEMENT**: block plugin: It is now possible to navigate with arrow keys when there are blocks.
-- **ENHANCEMENT**: block plugin: Aloha Block Plugin has now been greatly cleaned up and improved. Besides greatly cleaned up API and documentation, the new features include Drag/Drop, Deletion and Copy/Paste support. Now fully cross-browser (IE7, IE8, IE9, Chrome, Firefox).
-- **BUG**: commands.delete: fixed a bug with the delete command when contents are preceded by ignorable whitespace. also added a delete test for that.
-- **ENHANCEMENT**: core: The jquery-plugin require plugin will now be able to return loaded plugins. Previously loaded plugins were just accessible through the extended jquery object.
-- **ENHANCEMENT**: image plugin: splitting main fat file (1500 lines) for easying maintenance and evolutions. The new file which contains the gui is called 'image-floatingMenu.js'. The all sources of the image plugin were jslinted.
-- **ENHANCEMENT**: image plugin: abstracting ui calls and removing FloatingMenu dependency from main plugin file
-- **BUG**: image plugin: building a selection from scratch when an image is clicked isn't safe as conflictual browser behaviours
-- **ENHANCEMENT**: image plugin: new method getImgFocus used in place of findImgMarkup which is pointless now
-- **BUG**: image plugin: containing editable not selectable after image plugin activation.
-- **BUG**: image plugin: when plugin activated on an image, clicking a second image don't disable resize on first one.
-- **BUG**: image plugin: fixing focus and value of srcField when image is clicked (previously handled by selectionChange)
-- **ENHANCEMENT**: core: #448 Aloha Editor possibility to be loaded as requireJS module
-- **FEATURE**: added hotkey functionality
-- **FEATURE**: added Aloha.settings.plugins.load to load plugins also via config
-- **BUG**: fixes alohaeditor/Aloha-Editor##424 -- SmartContentChanged is not triggered when hitting
-- **BUG**: browser: fixes alohaeditor/Aloha-Editor#415 -- Repositorie entries appears twice in explorer
-- **FEATURE**: images browser plugin
-- **ENHANCEMENT**: browser: commenting some methods and coding guidelines
-- **BUG**: browser: fixes alohaeditor/Aloha-Editor#460 -- Error when multiple repositories are configured
-- **BUG** block sidebar attribute editor: when using backspace/del in an input field the block was removed
-- **FEATURE** plugin extra/proxy: as multiple plugins need a proxy script to access external resources there's now one for all to use
-
+- **BUG** image plugin: fixes distorted images when in portrait format
+- **BUG** table plugin: fixes bug in IE7 that second click on table cell was not activating the table
+- **ENHANCEMENT** link plugin: removed linklist (and slowlinklist) which where loaded by default (we should not force everyone to have them active by default)
+- **BUG**: browser-plugin: In some cases a javascript error would be thrown when using the browser plugin with Internet Explorer. IE does not support 'new Image' calls within popups.
+- **BUG**: browser-plugin: In some cases a javascript error would be thrown when using the browser plugin with Internet Explorer. IE does not support 'new Image' calls within popups.
+- **ENHANCEMENT**: browser-plugin: The browser plugin will now calculate the browser width automatically.
+- **BUG**: IE7 - #516 navigate with arrow keys through several paragraphs
+- **BUG**: IE7 - #515 gray text after list
+- **ENHANCEMENT**: Removed unwanted behaviour from the block plugin's sidebarattributeedtior, which will clear out the whole sidebar when loaded
+- **BUT**: floatingmenu: Fixed regeneration of ext components for floatingmenu, when buttons are added after the floatingmenu was initialized
+- **FEATURE** plugin: Adding the sourceview plugin, which visualizes the current selection in the sidebar to help developers of Aloha Editor with debugging.
 
 ## 0.20.10 - 2012/04/17
 
