@@ -1333,6 +1333,7 @@ var getStateOverride, setStateOverride, unsetStateOverride,
 //@{
 
 function movePreservingRanges(node, newParent, newIndex, range) {
+
 	// For convenience, I allow newIndex to be -1 to mean "insert at the end".
 	if (newIndex == -1) {
 		newIndex = newParent.childNodes.length;
@@ -2665,6 +2666,7 @@ function clearValue(element, command, range) {
 		return children;
 	}
 
+
 	// "If command is "strikethrough", and element has a style attribute that
 	// sets "text-decoration" to some value containing "line-through", delete
 	// "line-through" from the value."
@@ -3171,7 +3173,8 @@ function setSelectionValue(command, newValue, range) {
 
 	// "If the active range's start node is an editable Text node, and its
 	// start offset is neither zero nor its start node's length, call
-	// splitText() on the active range's start node, with argument equal to the
+	// splitText() (replaced with custom splitDataNode() for cross-browser support)
+  // on the active range's start node, with argument equal to the
 	// active range's start offset. Then set the active range's start node to
 	// the result, and its start offset to zero."
 	if (isEditable(range.startContainer)
@@ -3194,7 +3197,8 @@ function setSelectionValue(command, newValue, range) {
 	}
 
 	// "If the active range's end node is an editable Text node, and its end
-	// offset is neither zero nor its end node's length, call splitText() on
+	// offset is neither zero nor its end node's length, 
+	// call splitText() (replaced with custom splitDataNode() for cross-browser support) on
 	// the active range's end node, with argument equal to the active range's
 	// end offset."
 	if (isEditable(range.endContainer)
@@ -3666,7 +3670,8 @@ commands.removeformat = {
 
 		// "If the active range's start node is an editable Text node, and its
 		// start offset is neither zero nor its start node's length, call
-		// splitText() on the active range's start node, with argument equal to
+    // splitText() (replaced with custom splitDataNode() for cross-browser support) on
+		// the active range's start node, with argument equal to
 		// the active range's start offset. Then set the active range's start
 		// node to the result, and its start offset to zero."
 		if (isEditable(range.startContainer)
@@ -3676,17 +3681,18 @@ commands.removeformat = {
 			// Account for browsers not following range mutation rules
 			if (range.startContainer == range.endContainer) {
 				var newEnd = range.endOffset - range.startOffset;
-				var newNode = range.startContainer.splitText(range.startOffset);
+        var newNode = splitDataNode(range.startContainer, range.startOffset);
 				range.setStart(newNode, 0);
 				range.setEnd(newNode, newEnd);
 			} else {
-				range.setStart(range.startContainer.splitText(range.startOffset), 0);
+        range.setStart(splitDataNode(range.startContainer, range.startOffset), 0);
 			}
 		}
 
 		// "If the active range's end node is an editable Text node, and its
 		// end offset is neither zero nor its end node's length, call
-		// splitText() on the active range's end node, with argument equal to
+    // splitText() (replaced with custom splitDataNode() for cross-browser support) on
+		// the active range's end node, with argument equal to
 		// the active range's end offset."
 		if (isEditable(range.endContainer)
 		&& range.endContainer.nodeType == $_.Node.TEXT_NODE
@@ -3700,7 +3706,7 @@ commands.removeformat = {
 			var newStart = [range.startContainer, range.startOffset];
 			var newEnd = [range.endContainer, range.endOffset];
 			range.setEnd(document.documentElement, 0);
-			newEnd[0].splitText(newEnd[1]);
+      splitDataNode(newEnd[0], newEnd[1]);
 			range.setStart(newStart[0], newStart[1]);
 			range.setEnd(newEnd[0], newEnd[1]);
 		}
@@ -7451,11 +7457,12 @@ commands.insertparagraph = {
 		var offset = range.startOffset;
 
 		// "If node is a Text node, and offset is neither 0 nor the length of
-		// node, call splitText(offset) on node."
+    // call splitText(offset) (replaced with custom splitDataNode() for cross-browser support)
+    // on node."
 		if (node.nodeType == $_.Node.TEXT_NODE
 		&& offset != 0
 		&& offset != getNodeLength(node)) {
-			node.splitText(offset);
+      splitDataNode(node, offset);
 		}
 
 		// "If node is a Text node and offset is its length, set offset to one

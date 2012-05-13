@@ -43,12 +43,21 @@
 					{  	start: "foo[]bar",
               execResult: "foo[]bar"
           },
-					{  	start: "<span>foo</span>{}<span>bar</span>",
+          {   exclude: ["webkit", "msie7.0", "msie8.0"],	
+					  	start: "<span>foo</span>{}<span>bar</span>",
               execResult: "<span>foo</span>{}<span>bar</span>"
-              // while firefox handles this correctly, chrome and IE outputs "<span>foo[]</span><span>bar</span>"
           },
-					{  	start: "<span>foo[</span><span>]bar</span>",
+          {   include: ["webkit"],	
+					  	start: "<span>foo</span>{}<span>bar</span>",
+              execResult: "<span>foo[]</span><span>bar</span>"
+          },
+          {   exclude: ["webkit", "msie"],	
+              start: "<span>foo[</span><span>]bar</span>",
               execResult: "<span>foo[</span><span>]bar</span>"
+          },
+          {   include: ["webkit"],	
+              start: "<span>foo[</span><span>]bar</span>",
+              execResult: "<span>foo[]</span><span>bar</span>"
           },
 					{  	start: "[foo<b>bar</b>baz]",
               execResult: "[foobarbaz]"
@@ -116,10 +125,13 @@
 					{  	start: "foo<b>b[a]r</b>baz",
               execResult: "foo<b>b</b>[a]<b>r</b>baz"
           },
-					{  	start: "[foo<bdi dir=rtl>bar</bdi>baz]",
+          // Test fails as MSIE 7/8 doesn't support HTML5 tags.
+          {   exclude: ["msie7.0", "msie8.0"],	
+              start: "[foo<bdi dir=rtl>bar</bdi>baz]",
               execResult: "[foobarbaz]"
           },
-					{  	start: "foo<bdi dir=rtl>b[a]r</bdi>baz",
+          {   exclude: ["msie7.0", "msie8.0"],	
+					  	start: "foo<bdi dir=rtl>b[a]r</bdi>baz",
               execResult: "foo<bdi dir=\"rtl\">b</bdi>[a]<bdi dir=\"rtl\">r</bdi>baz"
           },
 					{  	start: "[foo<bdo dir=rtl>bar</bdo>baz]",
@@ -200,10 +212,13 @@
 					{  	start: "foo<kbd>b[a]r</kbd>baz",
               execResult: "foo<kbd>b</kbd>[a]<kbd>r</kbd>baz"
           },
-					{  	start: "[foo<mark>bar</mark>baz]",
+          // Test fails as MSIE 7/8 doesn't support HTML5 tags.
+          {   exclude: ["msie7.0", "msie8.0"],	
+					  	start: "[foo<mark>bar</mark>baz]",
               execResult: "[foobarbaz]"
           },
-					{  	start: "foo<mark>b[a]r</mark>baz",
+          {   exclude: ["msie7.0", "msie8.0"],	
+					  	start: "foo<mark>b[a]r</mark>baz",
               execResult: "foo<mark>b</mark>[a]<mark>r</mark>baz"
           },
 					{  	start: "[foo<nobr>bar</nobr>baz]",
@@ -287,7 +302,8 @@
 					{  	start: "[foo<br>bar]",
               execResult: "[foo<br>bar]"
           },
-					{  	start: "[foo<hr>bar]",
+          {   exclude: ["msie7.0", "msie8.0"],	
+              start: "[foo<hr>bar]",
               execResult: "[foo<hr>bar]"
           },
 					{  	start: "[foo<wbr>bar]",
@@ -353,17 +369,32 @@
 					{  	start: "<p style=\"font-variant: small-caps\">foo[bar]baz</p>",
               execResult: "<p style=\"font-variant:small-caps\">foo[bar]baz</p>"
           },
-          {  	start: "{<p style=\"font-variant: small-caps\">foobarbaz</p>}",
+          {   exclude: ["webkit", "msie7.0", "msie8.0"],	
+              start: "{<p style=\"font-variant: small-caps\">foobarbaz</p>}",
               execResult: "{<p style=\"font-variant:small-caps\">foobarbaz</p>}"
+          },
+          {   include: ["webkit", "msie7.0", "msie8.0"],	
+              start: "{<p style=\"font-variant: small-caps\">foobarbaz</p>}",
+              execResult: "<p style=\"font-variant:small-caps\">[foobarbaz]</p>"
           },
 					{  	start: "<p style=\"text-indent: 2em\">foo[bar]baz</p>",
               execResult: "<p style=\"text-indent:2em\">foo[bar]baz</p>"
           },
-          {  	start: "{<p style=\"text-indent: 2em\">foobarbaz</p>}",
+          {   exclude: ["webkit", "msie7.0", "msie8.0"],	
+              start: "{<p style=\"text-indent: 2em\">foobarbaz</p>}",
               execResult: "{<p style=\"text-indent:2em\">foobarbaz</p>}"
           },
-					{  	start: "<table data-start=0 data-end=1><tr><td><b>foo</b></table>",
+          {   include: ["webkit", "msie7.0", "msie8.0"],	
+              start: "{<p style=\"text-indent: 2em\">foobarbaz</p>}",
+              execResult: "<p style=\"text-indent:2em\">[foobarbaz]</p>"
+          },
+          {   exclude: ["webkit", "msie7.0", "msie8.0"],	
+              start: "<table data-start=0 data-end=1><tr><td><b>foo</b></table>",
               execResult: "<table>{<tbody><tr><td>foo</td></tr></tbody>}</table>"
+          },
+          {   include: ["webkit"],	
+              start: "<table data-start=0 data-end=1><tr><td><b>foo</b></table>",
+              execResult: "{<table><tbody><tr><td>foo</td></tr></tbody></table>}"
           },
 
           // providing elements to remove
@@ -375,9 +406,15 @@
               value: ["abbr", "acronym"],
               execResult: "[foo<span>bar</span>baz]"
           },
-          {  	start: "{<p><i>foo</i><span>bar</span><b>baz</b></p>}",
+          {   exclude: ["webkit", "msie7.0", "msie8.0"],	
+              start: "{<p><i>foo</i><span>bar</span><b>baz</b></p>}",
               value: ["abbr", "b", "span"],
-              execResult: "<p><i>[foo</i>barbaz]</p>}"
+              execResult: "{<p><i>foo</i>barbaz</p>}"
+          },
+          {   include: ["webkit", "msie7.0", "msie8.0"],	
+              start: "{<p><i>foo</i><span>bar</span><b>baz</b></p>}",
+              value: ["abbr", "b", "span"],
+              execResult: "<p><i>[foo</i>barbaz]</p>"
           },
           {  	start: "[foo<span>b<b>a</b><i>r</i></span>baz]",
               value: ["abbr", "b", "span"],
