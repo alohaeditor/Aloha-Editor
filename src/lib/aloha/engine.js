@@ -5199,6 +5199,7 @@ function deleteContents() {
 //@{
 
 function splitParent(nodeList, range) {
+
 	// "Let original parent be the parent of the first member of node list."
 	var originalParent = nodeList[0].parentNode;
 
@@ -5235,7 +5236,9 @@ function splitParent(nodeList, range) {
 		// parent of original parent immediately after original parent,
 		// preserving ranges."
 		for (var i = nodeList.length - 1; i >= 0; i--) {
-			movePreservingRanges(nodeList[i], originalParent.parentNode, 1 + getNodeIndex(originalParent), range);
+      if(isHtmlElement(originalParent.parentNode, ["UL", "OL", "LI"])){
+        movePreservingRanges(nodeList[i], originalParent.parentNode, 1 + getNodeIndex(originalParent), range);
+      }
 		}
 
 		// "If precedes line break is true, and the last member of node list
@@ -5278,7 +5281,15 @@ function splitParent(nodeList, range) {
 	// "For each node in node list, insert node into the parent of original
 	// parent immediately before original parent, preserving ranges."
 	for (var i = 0; i < nodeList.length; i++) {
-    movePreservingRanges(nodeList[i], originalParent.parentNode, getNodeIndex(originalParent), range);
+    if(isHtmlElement(originalParent.parentNode, ["LI"])){
+      var newParent = originalParent.parentNode.parentNode;
+      var newIndex = getNodeIndex(originalParent.parentNode) + 1;
+
+      movePreservingRanges(nodeList[i], newParent, newIndex, range);
+      movePreservingRanges(originalParent, nodeList[i], -1, range);
+    } else {
+      movePreservingRanges(nodeList[i], originalParent.parentNode, getNodeIndex(originalParent), range);
+    }
 	}
 
 	// "If follows line break is true, and the first member of node list does
@@ -5610,8 +5621,6 @@ function indentNodes(nodeList, range) {
     //move the sublist to previousSibling
     $_( nodeList ).forEach( function( node ) {
       var parentNode = node.parentNode
-      console.log(parentNode);
-      alert("");
       movePreservingRanges(parentNode, parentNode.previousSibling, -1, range);
     });
 
@@ -8119,37 +8128,39 @@ commands.justifyright = {
 commands.outdent = {
 	action: function(value, range) {
 		range = range || getActiveRange();
-		// "Let items be a list of all lists that are ancestor containers of the
-		// range's start and/or end node."
-		//
-		// It's annoying to get this in tree order using functional stuff
-		// without doing getDescendants(document), which is slow, so I do it
-		// imperatively.
-		var items = [];
-		(function(){
-			for (
-				var ancestorContainer = range.endContainer;
-				ancestorContainer != range.commonAncestorContainer;
-				ancestorContainer = ancestorContainer.parentNode
-			) {
-				if (isHtmlElement(ancestorContainer, "li")) {
-					items.unshift(ancestorContainer);
-				}
-			}
-			for (
-				var ancestorContainer = range.startContainer;
-				ancestorContainer;
-				ancestorContainer = ancestorContainer.parentNode
-			) {
-				if (isHtmlElement(ancestorContainer, "li")) {
-					items.unshift(ancestorContainer);
-				}
-			}
-		})();
 
     // Note: Avoid normalizing sublists as it breaks Aloha's current behaviour
     // Original implementation was left commented for future reference.
-		// // "For each item in items, normalize sublists of item."
+
+		// // "Let items be a list of all lists that are ancestor containers of the
+		// // range's start and/or end node."
+		// //
+		// // It's annoying to get this in tree order using functional stuff
+		// // without doing getDescendants(document), which is slow, so I do it
+		// // imperatively.
+		// var items = [];
+		// (function(){
+		// 	for (
+		// 		var ancestorContainer = range.endContainer;
+		// 		ancestorContainer != range.commonAncestorContainer;
+		// 		ancestorContainer = ancestorContainer.parentNode
+		// 	) {
+		// 		if (isHtmlElement(ancestorContainer, "li")) {
+		// 			items.unshift(ancestorContainer);
+		// 		}
+		// 	}
+		// 	for (
+		// 		var ancestorContainer = range.startContainer;
+		// 		ancestorContainer;
+		// 		ancestorContainer = ancestorContainer.parentNode
+		// 	) {
+		// 		if (isHtmlElement(ancestorContainer, "li")) {
+		// 			items.unshift(ancestorContainer);
+		// 		}
+		// 	}
+		// });
+
+    // // "For each item in items, normalize sublists of item."
 		// $_( items ).forEach( function( thisArg) {
 		// 	normalizeSublists( thisArg, range);
 		// });
@@ -8172,6 +8183,7 @@ commands.outdent = {
 
 		// "While node list is not empty:"
 		while (nodeList.length) {
+
 			// "While the first member of node list is an ol or ul or is not
 			// the child of an ol or ul, outdent it and remove it from node
 			// list."

@@ -56,10 +56,6 @@
 				start: '<ol><li>foo<ul><li>bar</li><li>baz[]</li></ul></li></ol>',
 				execResult: '<ol><li>foo<ul><li>bar</li></ul></li><li>baz[]</li></ol>'
 			},
-			{	include: ["msie7.0", "msie8.0"],
-				start: '<ol><li>foo <ul><li>bar</li><li>baz[]</li></ul></li></ol>',
-				execResult: '<ol><li>foo <ul><li>bar</li></ul></li><li>baz[]</li></ol>'
-			},
 			{	exclude: ["msie7.0", "msie8.0"],
 				start: '<ol><li>foo<ol><li>bar<ol><li>b[]az</li></ol></li></ol></li></ol>',
 				execResult: '<ol><li>foo<ol><li>bar</li><li>b[]az</li></ol></li></ol>'
@@ -94,11 +90,11 @@
 			},
 			{	exclude: ["msie7.0", "msie8.0"],
 				start: '<ol><li>foo<ul><li>ba[r</li><li>ba]z</li><li>quz</li></ul></li></ol>',
-				execResult: '<ol><li>foo</li><li>ba[r</li><li>ba]z<ul><li>quz</li></ul></li></ol>'
+				execResult: '<ol><li>foo</li><li>bar</li><li>ba[]z<ul><li>quz</li></ul></li></ol>'
 			},
 			{	include: ["msie7.0", "msie8.0"],
 				start: '<ol><li>foo <ul><li>ba[r</li><li>ba]z</li><li>quz</li></ul></li></ol>',
-				execResult: '<ol><li>foo </li><li>ba[r</li><li>ba]z <ul><li>quz</li></ul></li></ol>'
+				execResult: '<ol><li>foo </li><li>bar</li><li>ba[]z <ul><li>quz</li></ul></li></ol>'
 			},
 			{	exclude: ["msie7.0", "msie8.0"],
 				start: '<ol><li>foo<ul><li>bar</li><li>b[a]z</li><li>quz</li></ul></li></ol>',
@@ -112,17 +108,9 @@
 				start: '<ol><li>foo<ul><li>bar</li><li>b[az</li><li>quz]</li></ul></li></ol>',
 				execResult: '<ol><li>foo<ul><li>bar</li></ul></li><li>b[az</li><li>quz]</li></ol>'
 			},
-			{	include: ["msie7.0", "msie8.0"],
-				start: '<ol><li>foo <ul><li>bar</li><li>b[az</li><li>quz]</li></ul></li></ol>',
-				execResult: '<ol><li>foo <ul><li>bar</li></ul></li><li>b[az</li><li>quz]</li></ol>'
-			},
 			{	exclude: ["msie7.0", "msie8.0"],
 				start: '<ol><li>foo<ul><li>bar</li><li>baz</li><li>qu[z]</li></ul></li></ol>',
 				execResult: '<ol><li>foo<ul><li>bar</li><li>baz</li></ul></li><li>qu[z]</li></ol>'
-			},
-			{	include: ["msie7.0", "msie8.0"],
-				start: '<ol><li>foo <ul><li>bar</li><li>baz</li><li>qu[z]</li></ul></li></ol>',
-				execResult: '<ol><li>foo <ul><li>bar</li><li>baz</li></ul></li><li>qu[z]</li></ol>'
 			}
 		]
 	}
