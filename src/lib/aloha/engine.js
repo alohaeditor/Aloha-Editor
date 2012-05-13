@@ -5278,7 +5278,7 @@ function splitParent(nodeList, range) {
 	// "For each node in node list, insert node into the parent of original
 	// parent immediately before original parent, preserving ranges."
 	for (var i = 0; i < nodeList.length; i++) {
-		movePreservingRanges(nodeList[i], originalParent.parentNode, getNodeIndex(originalParent), range);
+    movePreservingRanges(nodeList[i], originalParent.parentNode, getNodeIndex(originalParent), range);
 	}
 
 	// "If follows line break is true, and the first member of node list does
@@ -5610,6 +5610,8 @@ function indentNodes(nodeList, range) {
     //move the sublist to previousSibling
     $_( nodeList ).forEach( function( node ) {
       var parentNode = node.parentNode
+      console.log(parentNode);
+      alert("");
       movePreservingRanges(parentNode, parentNode.previousSibling, -1, range);
     });
 
@@ -5635,7 +5637,7 @@ function indentNodes(nodeList, range) {
 }
 
 function outdentNode(node, range) {
-	// "If node is not editable, abort these steps."
+ 	// "If node is not editable, abort these steps."
 	if (!isEditable(node)) {
 		return;
 	}
@@ -5706,11 +5708,16 @@ function outdentNode(node, range) {
 		}
 	}
 
-	// "If node is an ol or ul and current ancestor is not an editable
+  // Note - Modified the default conditions of editing spec API.
+  //
+	// "If node and current ancestor is an ol or ul 
+  // and current ancestor is not an editable
 	// indentation element:"
 	if (isHtmlElement(node, ["OL", "UL"])
+  && isHtmlElement(currentAncestor, ["OL", "UL"])
 	&& (!isEditable(currentAncestor)
 	|| !isIndentationElement(currentAncestor))) {
+
 		// "Unset the reversed, start, and type attributes of node, if any are
 		// set."
 		node.removeAttribute("reversed");
@@ -8140,10 +8147,12 @@ commands.outdent = {
 			}
 		})();
 
-		// "For each item in items, normalize sublists of item."
-		$_( items ).forEach( function( thisArg) {
-			normalizeSublists( thisArg, range);
-		});
+    // Note: Avoid normalizing sublists as it breaks Aloha's current behaviour
+    // Original implementation was left commented for future reference.
+		// // "For each item in items, normalize sublists of item."
+		// $_( items ).forEach( function( thisArg) {
+		// 	normalizeSublists( thisArg, range);
+		// });
 
 		// "Block-extend the active range, and let new range be the result."
 		var newRange = blockExtend(range);
@@ -8200,7 +8209,9 @@ commands.outdent = {
 			splitParent(sublist, range);
 
 			// "Fix disallowed ancestors of each member of sublist."
-			$_( sublist ).forEach(fixDisallowedAncestors);
+			$_( sublist ).forEach(function(){
+        fixDisallowedAncestors(this, range);
+      });
 
 			// "Restore the values from values."
 			restoreValues(values, range);
