@@ -200,7 +200,8 @@ function ( Aloha, jQuery, TestUtils ) {
 				// will use the parent node of the commonAncestorContainer.
 				var common;
 
-				if ( showEntireEditableSource ) {
+				if ( showEntireEditableSource && Aloha.activeEditable &&
+				     Aloha.activeEditable.obj ) {
 					common = Aloha.activeEditable.obj[0];
 				} else {
 					if ( ( sNode.nodeType === 3 ||
@@ -213,7 +214,11 @@ function ( Aloha, jQuery, TestUtils ) {
 					}
 				}
 
-				var clonedContainer = jQuery( jQuery( common ).clone() );
+				if (!common) {
+					return;
+				}
+
+				var clonedContainer = jQuery( common.outerHTML );
 
 				var clonedStartContainer = clonedContainer.is( '.' + sClass )
 						? clonedContainer

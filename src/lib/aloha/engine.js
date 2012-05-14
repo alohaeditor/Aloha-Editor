@@ -862,26 +862,27 @@ function isCollapsedLineBreak(br) {
 		ref = ref.parentNode;
 	}
 
-	var refStyle = $_( ref ).hasAttribute("style") ? ref.getAttribute("style") : null;
-	ref.style.height = "auto";
-	ref.style.maxHeight = "none";
-	ref.style.minHeight = "0";
-	var space = document.createTextNode("\u200b");
+	var origStyle = {
+		height: ref.style.height,
+		maxHeight: ref.style.maxHeight,
+		minHeight: ref.style.minHeight
+	};
+
+	ref.style.height = 'auto';
+	ref.style.maxHeight = 'none';
+	ref.style.minHeight = '0';
+	var space = document.createTextNode('\u200b');
 	var origHeight = ref.offsetHeight;
 	if (origHeight == 0) {
-		throw "isCollapsedLineBreak: original height is zero, bug?";
+		throw 'isCollapsedLineBreak: original height is zero, bug?';
 	}
 	br.parentNode.insertBefore(space, br.nextSibling);
 	var finalHeight = ref.offsetHeight;
 	space.parentNode.removeChild(space);
-	if (refStyle === null) {
-		// Without the setAttribute() line, removeAttribute() doesn't work in
-		// Chrome 14 dev.  I have no idea why.
-		ref.setAttribute("style", "");
-		ref.removeAttribute("style");
-	} else {
-		ref.setAttribute("style", refStyle);
-	}
+
+	ref.style.height = origStyle.height;
+	ref.style.maxHeight = origStyle.maxHeight;
+	ref.style.minHeight = origStyle.minHeight;
 
 	// Allow some leeway in case the zwsp didn't create a whole new line, but
 	// only made an existing line slightly higher.  Firefox 6.0a2 shows this
@@ -892,6 +893,7 @@ function isCollapsedLineBreak(br) {
 // "An extraneous line break is a br that has no visual effect, in that
 // removing it from the DOM would not change layout, except that a br that is
 // the sole child of an li is not extraneous."
+
 //
 // FIXME: This doesn't work in IE, since IE ignores display: none in
 // contenteditable.
@@ -914,37 +916,38 @@ function isExtraneousLineBreak(br) {
 	while ($_.getComputedStyle(ref).display == "inline") {
 		ref = ref.parentNode;
 	}
-	var refStyle = $_( ref ).hasAttribute("style") ? ref.getAttribute("style") : null;
-	ref.style.height = "auto";
-	ref.style.maxHeight = "none";
-	ref.style.minHeight = "0";
-	var brStyle = $_( br ).hasAttribute("style") ? br.getAttribute("style") : null;
+
+	var origStyle = {
+		height: ref.style.height,
+		maxHeight: ref.style.maxHeight,
+		minHeight: ref.style.minHeight
+	};
+
+	ref.style.height = 'auto';
+	ref.style.maxHeight = 'none';
+	ref.style.minHeight = '0';
+
 	var origHeight = ref.offsetHeight;
 	if (origHeight == 0) {
 		throw "isExtraneousLineBreak: original height is zero, bug?";
 	}
-	br.setAttribute("style", "display:none");
+
+	var origBrDisplay = br.style.display;
+	br.style.display = 'none';
 	var finalHeight = ref.offsetHeight;
-	if (refStyle === null) {
-		// Without the setAttribute() line, removeAttribute() doesn't work in
-		// Chrome 14 dev.  I have no idea why.
-		ref.setAttribute("style", "");
-		ref.removeAttribute("style");
-	} else {
-		ref.setAttribute("style", refStyle);
-	}
-	if (brStyle === null) {
-		br.removeAttribute("style");
-	} else {
-		br.setAttribute("style", brStyle);
-	}
+
+	// Restore original styles to the touched elements.
+	ref.style.height = origStyle.height;
+	ref.style.maxHeight = origStyle.maxHeight;
+	ref.style.minHeight = origStyle.minHeight;
+	br.style.display = origBrDisplay;
 
 	// https://github.com/alohaeditor/Aloha-Editor/issues/516
 	// look like it works in msie > 7
-	if (jQuery.browser.msie && jQuery.browser.version < 8) {
+	/* if (jQuery.browser.msie && jQuery.browser.version < 8) {
 		br.removeAttribute("style");
 		ref.removeAttribute("style");
-	}
+	} */
 
 	return origHeight == finalHeight;
 }
