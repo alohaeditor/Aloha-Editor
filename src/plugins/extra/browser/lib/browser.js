@@ -275,7 +275,7 @@ var Browser = Class.extend({
 		if (width - overflow > this.options.minimalWidth) {
 			this.list.setGridWidth(this.list.width() - overflow - padding);
 			this.element.width(width - overflow - padding);
-			jQuery('.aloha-browser-grid').css('width', (width - overflow));
+			jQuery('.aloha-browser-grid').css('width', (width - overflow - padding));
 			
 		}
 	},
