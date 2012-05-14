@@ -5717,13 +5717,10 @@ function outdentNode(node, range) {
 		}
 	}
 
-  // Note - Modified the default conditions of editing spec API.
-  //
-	// "If node and current ancestor is an ol or ul 
+	// "If node is an ol or ul 
   // and current ancestor is not an editable
 	// indentation element:"
 	if (isHtmlElement(node, ["OL", "UL"])
-  && isHtmlElement(currentAncestor, ["OL", "UL"])
 	&& (!isEditable(currentAncestor)
 	|| !isIndentationElement(currentAncestor))) {
 
@@ -5834,37 +5831,40 @@ function toggleLists(tagName, range) {
 	// "ol"."
 	var otherTagName = tagName == "OL" ? "UL" : "OL";
 
-	// "Let items be a list of all lis that are ancestor containers of the
-	// range's start and/or end node."
-	//
-	// It's annoying to get this in tree order using functional stuff without
-	// doing getDescendants(document), which is slow, so I do it imperatively.
-	var items = [];
-	(function(){
-		for (
-			var ancestorContainer = range.endContainer;
-			ancestorContainer != range.commonAncestorContainer;
-			ancestorContainer = ancestorContainer.parentNode
-		) {
-			if (isHtmlElement(ancestorContainer, "li")) {
-				items.unshift(ancestorContainer);
-			}
-		}
-		for (
-			var ancestorContainer = range.startContainer;
-			ancestorContainer;
-			ancestorContainer = ancestorContainer.parentNode
-		) {
-			if (isHtmlElement(ancestorContainer, "li")) {
-				items.unshift(ancestorContainer);
-			}
-		}
-	})();
+  // Note: Disabled the normalization of sublists,
+  // as it breaks Aloha's default conventions.
+  
+	// // "Let items be a list of all lis that are ancestor containers of the
+	// // range's start and/or end node."
+	// //
+	// // It's annoying to get this in tree order using functional stuff without
+	// // doing getDescendants(document), which is slow, so I do it imperatively.
+	// var items = [];
+	// (function(){
+	// 	for (
+	// 		var ancestorContainer = range.endContainer;
+	// 		ancestorContainer != range.commonAncestorContainer;
+	// 		ancestorContainer = ancestorContainer.parentNode
+	// 	) {
+	// 		if (isHtmlElement(ancestorContainer, "li")) {
+	// 			items.unshift(ancestorContainer);
+	// 		}
+	// 	}
+	// 	for (
+	// 		var ancestorContainer = range.startContainer;
+	// 		ancestorContainer;
+	// 		ancestorContainer = ancestorContainer.parentNode
+	// 	) {
+	// 		if (isHtmlElement(ancestorContainer, "li")) {
+	// 			items.unshift(ancestorContainer);
+	// 		}
+	// 	}
+	// })();
 
-	// "For each item in items, normalize sublists of item."
-	$_( items ).forEach( function( thisArg ) {
-			normalizeSublists( thisArg, range);
-	});
+	// // "For each item in items, normalize sublists of item."
+	// $_( items ).forEach( function( thisArg ) {
+	// 		normalizeSublists( thisArg, range);
+	// });
 
 	// "Block-extend the range, and let new range be the result."
 	var newRange = blockExtend(range);
@@ -6047,8 +6047,13 @@ function toggleLists(tagName, range) {
 				// result."
 				var values = recordValues(sublist);
 
-				// "Split the parent of sublist."
-				splitParent(sublist, range);
+        // Move each node in sublist into the parent node of
+        // its original parent
+        // (Modified behaviour from editing API spec)
+        var originalParent = sublist[0].parentNode;
+        for (var i = sublist.length - 1; i >= 0; i--) {
+          movePreservingRanges(sublist[i], originalParent.parentNode, getNodeIndex(originalParent), range);
+        }
 
 				// "Wrap sublist, with sibling criteria returning true for an
 				// HTML element with local name tag name and false otherwise,
@@ -8184,12 +8189,14 @@ commands.outdent = {
 		// "While node list is not empty:"
 		while (nodeList.length) {
 
-			// "While the first member of node list is an ol or ul or is not
-			// the child of an ol or ul, outdent it and remove it from node
+      // Note - Modified from the Editing API spec.
+      //
+			// "While the first member of node list is an ol or ul or is a 
+			// child of an li, outdent it and remove it from node
 			// list."
 			while (nodeList.length
 			&& (isHtmlElement(nodeList[0], ["OL", "UL"])
-			|| !isHtmlElement(nodeList[0].parentNode, ["OL", "UL"]))) {
+			&& isHtmlElement(nodeList[0].parentNode, ["LI"]))) {
 				outdentNode(nodeList.shift(), range);
 			}
 
