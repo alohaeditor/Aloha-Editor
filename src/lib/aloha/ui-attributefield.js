@@ -155,7 +155,7 @@ Ext.ux.AlohaAttributeField = Ext.extend( Ext.form.ComboBox, {
 			if ( ( event.keyCode == 13 || event.keyCode == 27 ) &&
 					!this.ALOHAwasExpanded ) {
 				// work around stupid behavior when moving focus
-				setTimeout( function () {
+				window.setTimeout( function () {
 					// Set focus to link element and select the object
 					Selection.getRangeObject().select();
 				}, 0 );

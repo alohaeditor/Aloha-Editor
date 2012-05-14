@@ -14,6 +14,7 @@
 	border:none; 
 	background:none;
 	outline: 0px solid transparent;
+	zoom:1;
 }
 
 /* editable wrappers in cells */

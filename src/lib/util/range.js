@@ -649,7 +649,7 @@ GENTICS.Utils.RangeObject = Class.extend({
 	 */
 	getRangeTree: function (root) {
 		// TODO cache rangeTrees
-		if (typeof root === 'undefined') {
+		if ( typeof root === 'undefined' ) {
 			root = this.getCommonAncestorContainer();
 		}
 

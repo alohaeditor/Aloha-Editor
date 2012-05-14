@@ -1202,7 +1202,7 @@ Aloha.Markup = Class.extend( {
 		    jqNewObj = jQuery( '<' + nodeName + '></' + nodeName + '>' ),
 		    i;
 
-		// TODO what about events? css properties?
+		// TODO what about events?
 
 		// copy attributes
 		if ( jqOldObj[0].attributes ) {
