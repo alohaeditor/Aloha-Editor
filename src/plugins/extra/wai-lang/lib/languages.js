@@ -9,9 +9,8 @@
  * Provides a set of language codes and images
  */
 
-define(
-[ 'aloha', 'aloha/jquery' ],
-function( Aloha, jQuery ) {
+define( [ 'aloha', 'aloha/jquery', 'flag-icons/flag-icons-plugin' ],
+function( Aloha, jQuery, FlagIcons ) {
 	'use strict';
 
 	return new ( Aloha.AbstractRepository.extend( {
@@ -58,17 +57,15 @@ function( Aloha, jQuery ) {
 		 * Stores the retrieved language code data in this object
 		 */
 		storeLanguageCodes: function( data ) {
-			var that = this,
-			    flagsIconsPath = Aloha.getPluginUrl( 'flag-icons' ),
-			    el;
+			var that = this;
 
 			// Transform loaded json into a set of repository documents
 			jQuery.each( data, function( key, value ) {
-				el = value;
+				var el = value;
 				el.id = key;
 				el.repositoryId = that.repositoryId;
 				el.type = 'language';
-				el.url =  flagsIconsPath + '/img/flags/' + el.id + '.png';
+				el.url =  FlagIcons.path + '/img/flags/' + el.id + '.png';
 				// el.renditions.url = "img/flags/" + e.id + ".png";
 				// el.renditions.kind.thumbnail = true;
 				that.languageCodes.push( new Aloha.RepositoryDocument( el ) );
