@@ -515,27 +515,31 @@ function CiteClosure( Aloha, jQuery, Plugin, FloatingMenu, Format, domUtils,
 				// Update link attribute
 				var el = jQuery( nsSel( uid ) ).attr( 'cite', link );
 
-				// Highlight animation for happy user.
-				var round = Math.round;
-				var from  = hex2rgb( '#fdff9a' );
-				var to    = hex2rgb( '#fdff9a' );
-
-				from.push( 1 );
-				to.push( 0 );
-
-				var diff = [ to[ 0 ] - from[ 0 ],
-							 to[ 1 ] - from[ 1 ],
-							 to[ 2 ] - from[ 2 ],
-							 to[ 3 ] - from[ 3 ] ];
-
-				el.css({
-					__tick: 0,
-					'background-color': 'rgba(' + from.join( ',' ) + ')',
-					'box-shadow': '0 0 20px rgba(' + from.join( ',' ) + ')'
-				});
-
 				if ( !animating ) {
+					// Highlight animation for happy user.
+					var round = Math.round;
+					var from  = hex2rgb( '#fdff9a' );
+					var to    = hex2rgb( '#fdff9a' );
+
+					from.push( 1 );
+					to.push( 0 );
+
+					var diff = [ to[ 0 ] - from[ 0 ],
+								 to[ 1 ] - from[ 1 ],
+								 to[ 2 ] - from[ 2 ],
+								 to[ 3 ] - from[ 3 ] ];
+
+					var origBg = el[0].style.backgroundColor;
+					var origShadow = el[0].style.boxShadow;
+
+					el.css({
+						__tick: 0, // Our increment.
+						'background-color': 'rgba(' + from.join( ',' ) + ')',
+						'box-shadow': '0 0 20px rgba(' + from.join( ',' ) + ')'
+					});
+
 					animating = true;
+
 					el.animate( { __tick: 1 }, {
 						duration: 500,
 						easing: 'linear',
@@ -548,11 +552,13 @@ function CiteClosure( Aloha, jQuery, Plugin, FloatingMenu, Format, domUtils,
 							jQuery( this ).css({
 								'background-color': 'rgba(' + rgba.join( ',' ) + ')',
 								'box-shadow': '0 0 ' + ( 20 * ( 1 - val ) ) +
-								'px rgba(' + from.join( ',' ) + ')'
+									'px rgba(' + from.join( ',' ) + ')'
 							});
 						},
 						complete: function() {
 							animating = false;
+							this.style.backgroundColor = origBg;
+							this.style.boxShadow = origShadow;
 						}
 					} );
 				}
