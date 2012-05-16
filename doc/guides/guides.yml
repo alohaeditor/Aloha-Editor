@@ -107,6 +107,9 @@ index:
     - title: "Formatless paste"
       url: plugin_formatlesspaste
       text: "The formatlesspaste plugin."
+    - title: "WAI Language"
+      url: plugin_wai-lang
+      text: "Add WAI conform language annotations to your content."
 
   Contributing to Aloha Editor:
     - title: Releasing
