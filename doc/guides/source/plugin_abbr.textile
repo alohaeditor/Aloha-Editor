@@ -1,4 +1,4 @@
-h3. Abbr Plugin
+h2. Abbr Plugin
 
 The Abbr Plugin will wrap selected contents within an +<abbr>+ tag. You can then specify a title text to describe the abbreviation.
 

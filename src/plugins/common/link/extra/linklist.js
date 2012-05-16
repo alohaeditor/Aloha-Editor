@@ -18,18 +18,15 @@ function ( Aloha, jQuery ) {
 	 * Internal data as array with following format:
 	 *
 	 * [
-	 *   { name: 'Aloha Editor - The HTML5 Editor', url:'http://aloha-editor.com', type:'website' },
-	 *   { name: 'Aloha Logo', url:'http://www.aloha-editor.com/images/aloha-editor-logo.png', type:'image'  }
+	 *		{ name: 'Aloha Editor - The HTML5 Editor', url: 'http://aloha-editor.org', type: 'website' },
+	 *		{ name: 'Aloha Editor - Wiki', url: 'http://github.com/alohaeditor/Aloha-Editor/wiki', type: 'website' },
+	 *		{ name: 'Aloha Editor - GitHub', url: 'http://github.com/alohaeditor/Aloha-Editor', type: 'website' },
+	 *		{ name: 'Aloha Logo', url: 'http://www.aloha-editor.com/images/aloha-editor-logo.png', type: 'image'  }
 	 * ];
 	 *
 	 * @private
 	 */
-	var urlset = [
-		{ name: 'Aloha Editor - The HTML5 Editor', url: 'http://aloha-editor.org', type: 'website' },
-		{ name: 'Aloha Editor - Wiki', url: 'http://github.com/alohaeditor/Aloha-Editor/wiki', type: 'website' },
-		{ name: 'Aloha Editor - GitHub', url: 'http://github.com/alohaeditor/Aloha-Editor', type: 'website' },
-		{ name: 'Aloha Logo', url: 'http://www.aloha-editor.com/images/aloha-editor-logo.png', type: 'image'  }
-	];
+	var urlset = [ ];
 	
 	new ( Aloha.AbstractRepository.extend( {
 		

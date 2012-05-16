@@ -4,8 +4,14 @@
 * aloha-sales@gentics.com
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
-define(
-['aloha/jquery','aloha/plugin', 'aloha/floatingmenu', 'i18n!headerids/nls/i18n', 'i18n!aloha/nls/i18n', 'css!headerids/css/headerids.css'],
+define([
+	'aloha/jquery',
+	'aloha/plugin',
+	'aloha/floatingmenu',
+	'i18n!headerids/nls/i18n',
+	'i18n!aloha/nls/i18n',
+	'css!headerids/css/headerids.css'
+],
 function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 	"use strict";
 
@@ -91,7 +97,7 @@ function(jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 			sidebar.addPanel({
                     
                     id         : nsClass('sidebar-panel'),
-                    title     : 'Sprungmarken',
+                    title     : i18n.t('internal_hyperlink'),
                     content     : '',
                     expanded : true,
                     activeOn : 'h1, h2, h3, h4, h5, h6',

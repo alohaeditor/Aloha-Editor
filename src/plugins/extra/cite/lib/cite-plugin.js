@@ -160,7 +160,7 @@ define([
 					that.settings.sidebar = {};
 				}
 
-				if ( typeof that.settings.sidebar.open === 'undefinded' ) {
+				if ( that.settings.sidebar && typeof that.settings.sidebar.open === 'undefinded' ) {
 					that.settings.sidebar.open = true;
 				}
 			}
@@ -416,7 +416,7 @@ define([
 			
 			this.referenceContainer && this.addCiteToReferences(uid);
 
-			if (this.sidebar && that.settings.sidebar.open === true) {
+			if (this.sidebar && that.settings.sidebar && that.settings.sidebar.open === true) {
 				this.sidebar.open();
 			}
 			//	.activatePanel(nsClass('sidebar-panel'), markup);

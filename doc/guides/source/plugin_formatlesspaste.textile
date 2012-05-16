@@ -1,6 +1,12 @@
 h2. Formatless Paste Plugin
 
-The formatless paste plugin can be used to further strip pasted content.
+The formatless paste plugin can be used to strip HTML tags from pasted content.
+
+endprologue.
+
+h3. Overview
+
+With this plugin HTML tags can be removed from pasted content.
 
 It provides the following features
 
@@ -8,18 +14,36 @@ It provides the following features
 * Enabled / disabled via a button in the floating menu
 * Configure the default behaviour (enabled/disabled)
 
-endprologue.
 
-h3. Plugin Settings
+h3. Usage
+
+Select some text from a website or document you want to insert and copy it to your clipboard Crtl + C
+
+Position the cursor where you want the pasted content to be placed.<br />
+If you want the content to be pasted "formatless" click the "Toggle Formatless Pasting" button.
+<img src="images/plugins/formatlesspaste-01.png" style="width:620px">
+
+Press Crtl + V to insert the content from the clipboard.<br />
+In this case we strip all formating like bold, italic and so on but allow a-Tags.
+<img src="images/plugins/formatlesspaste-02.png" style="width:620px">
+
+
+h3. Components
+
+* Button to toggle enable / disable the button
+
+h3. Configuration
 
 The default behaviour can be configured with the setting "formatlessPasteOption".
 The set of elements that should be stripped can be configured with the setting "strippedElements".
 
 A typical configuration could look like this. If no configuration is provided, this is also the default configuration.
-<shell>
-			formatlesspaste :{
-				formatlessPasteOption : true,
-				strippedElements : [
+
+<javascript>
+	Aloha.settings.plugins: {
+		formatlesspaste: {
+			formatlessPasteOption: true,
+			strippedElements: [
 				"a",
 				"em",
 				"strong",
@@ -46,9 +70,13 @@ A typical configuration could look like this. If no configuration is provided, t
 				"bdi",
 				"bdo",
 				"ins",
-				"del"]
-			}
-</shell>
+				"del"
+			]
+		}
+	}
+</javascript>
+
+
 
 h3. Testing the Plugin
 

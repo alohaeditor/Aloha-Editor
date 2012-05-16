@@ -1,98 +1,105 @@
 h2. Aloha Editor Plugins
 
+Plugins are optional components of Aloha Editor.
+
 Aloha Editor exists of the core which is dealing with the editable and the different browser browser implementations of the contentEditable element and generated HTML code.
 
 Almost all other functionality is designed to be implemented as Aloha Editor Plugin.
 
+Each plugin will provide you with *components* (buttons, input fields, ... ) that can be added to the *toolbar* or *sidebar*, provides an API for other plugins or hooks into the AE core API.
+
 After reading this guide, you will
 
+* how to load and configure plugins
 * know which plugins are available and which functionality they provide
-* know which components are provided by each plugin
-* how to configure plugins
 
 endprologue.
 
 
-Each plugin will provide you with *components* (buttons, input fields, ... ) that can be added to the *toolbar* or *sidebar*, provides an API for other plugins or hooks into the AE core API.
+h3. Load Plugins
 
-h3. Format Plugin
+To load a plugin, it must be listed in the @data-aloha-plugins@ attribute
+of the Aloha Editor script tag. For example, to load the format and link plugin the
+script tag would look like the following
 
-The Format Plugin provides basic formatting choices for your content.
+<html>
+<script src="javascripts/aloha/aloha.js"
+  data-aloha-plugins="common/format, common/link"></script>
+</html>
 
-h3. Link Plugin
+h3. Configure Plugins
 
-The Link Plugin allows you to add hyperlinks to your document, either by specifying them manually or by selecting from repositories using autocompletion.
+To change the configuration parameters of plugins you can use the @Aloha.settings.plugins@ option.
+All possible settings are listed on the Guides page for that plugin.
 
-h3. Abbr Plugin
-
-The Abbr Plugin will wrap selected contents within an +<abbr>+ tag. You can then specify a title text to describe the abbreviation.
-
-
-h3. Align Plugin
-
-The Align Plugin allows you to align contents left, right, center, or justify the flow of text. It provides four components:
-
-
-h3. Block Plugin
-
-The Block Plugin is still being developed.
-
-h3. Characterpicker Plugin
-
-The Characterpicker Plugin allows you to insert special characters into your text. Position your cursor, click the icon and choose the character you'd like to insert from the overlay menu.
-
-
-h3. Commands Plugin
-
-The Commands Plugin has no user interface as it just provides the inserthtml command for use with the paste plugin.
-
-h3. Contenthandler Plugin
-
-The Contenthandler Plugin has no user interface and is used in conjunction with the paste plugin to be able to handle pasted content from Microsoft Word and the like. Currently it provides three so called "Content Handlers" which will be used to cleanup html content on various occasions like pasting or when initializing an editable. Those contenthandlers are:
-
-*Word Content Handler*
-The Word Content Handler will detect content pasted from Microsoft Word 2003 and newer versions. It transforms and cleans the pasted html code so that deteriorating effects on mental health by staring at bogus and totally fubar html code can be kept to an acceptable minimum. Therefore it will
-
-*Generic Content Handler*
-The Generic Content Handler is a bit less generic than his name might suggest as he will apply the following cleaning actions:
-
-*Sanitize Content Handler*
-The Sanitize Content Handler will remove all dom elements and attributes not covered by it's configuration. You may specify your own configuration based on these default settings:
+<html>
+<script type="text/javascript">
+	Aloha.settings = {
+		plugins: {
+			format: {
+				// all elements with no specific configuration get this configuration
+				config: [  'b', 'i', 'sub', 'sup', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6' ],
+				editables: {
+					// no formatting allowed for title
+					'#title': [],
+					// just bold and italic for the teaser
+					'#teaser': [ 'b', 'i' ]
+				}
+			}
+		}
+	}
+</script>
+</html>
 
 
-h3. Highlight Editables Plugin
+h3. Available Plugins
 
-The Highlight Editables Plugin has no user interface. Once loaded it will display a strong visual hint for editors to indicate the location of editables contents - so called "editables" - on the page.
+Plugins in the @common@ directory:
 
-h3. Horizontalruler Plugin
-
-The Horizontalruler Plugin allows you to insert a horizontal ruler tag aka +<hr>+ at the current cursor position.
-
-h3. Image Plugin
-
-The Image Plugin will allow for basic image manipulation right within your content.
-
-
-h3. List Plugin
-
-The List Plugin allows you to handle and create ordered and unordered lists within your contents. You either may select existing contents to be turned into a list, or just click the ordered or unordered list button to start a new one.
-
-You can remove lists by clicking the applied list type a second time, which will turn individual list items back into paragraphs.
-
-The List Plugin will indent list items when pressing the tab-key, or outdent when pressing shift-tab.
-
-NOTE: The list plugin will turn existing paragraphs into list items. Single lines separated by +<br>+ tags will NOT be turned into separate list items.
+* "common/abbr":plugin_abbr.html - the Abbr plugin provides an interface to wrap content with a @<abbr>@ element.
+* "common/align":plugin_align.html - the Align plugin provides an interface to align contents left, right, center, or justify the flow of text.
+* "common/block":plugin_block.html - Blocks are non-editable areas of a website, which often have some properties being editable through the Aloha user interface.
+* "common/characterpicker":plugin_characterpicker.html - the Character Picker plugin provides an interface to insert special characters.
+* "common/commands":plugin_commands.html - the Commands plugin provides the inserthtml command for use with the paste plugin.
+* "common/contenthandler":plugin_contenthandler.html - the Content Handler plugin allows automatic processing of HTML inserted into an editable.
+* "common/dom-to-xhtml":plugin_dom_to_xhtml.html - the DOM to XHTML plugin provides support for editable.getContents() XHTML serialization.
+* "common/format":plugin_format.html - the Format plugin provides basic formatting choices for your content.
+* "common/highlighteditables":plugin_highlighteditables.html - the Highlight Editables plugin provides a visual hint of where editables are in the page.
+* "common/horizontalruler":plugin_horizontalruler.html - the Horizontalruler plugin provides an interface to insert a horizontal ruler element.
+* "common/image":plugin_image.html - the Image plugin provides an interface to add and manipulate images.
+* "common/link":plugin_link.html - the Link Plugin allows you to add hyperlinks to your document, either by specifying them manually or by selecting from repositories using autocompletion.
+* "common/list":plugin_list.html - the List plugin provides an interface to format or insert ordered and unordered lists.
+* "common/paste":plugin_paste.html - the Paste plugin provides the means to process content pasted from the clipboard.
+* "common/table":plugin_table.html - the Table plugin provides specialized controls for table insertion and manipulation.
+* "common/undo":plugin_undo.html - the Undo plugin replaces the native browser undo and redo functionality.
 
 
-h3. Paste Plugin
+Plugins in the @extra@ directory:
 
-The Paste Plugin provides means to handle pasting content from the clipboard and is a prerequisite if you want to handle contents pasted from Microsoft Word. In this case you will also have to enable the Contenthandler Plugin.
+* "extra/attributes":plugin_attributes.html - 
+* "extra/browser":plugin_browser.html - provides a browser for the Repository API to insert links or images
+* "extra/cite":plugin_cite.html - provides the possibility to add references to content quoted from another source
+* "extra/comments":plugin_comments.html - add inline comments which are stored in the DOM
+* "extra/draganddropfiles":plugin_draganddropfiles.html - use Drag and Drop to upload files
+* "extra/flag-icons":plugin_flag-icons.html - this plugin is used by other plugins (wai-lang / metaview) and provides country and language icons
+* "extra/formatlesspaste":plugin_formatlesspaste.html - the formatless paste plugin can be used to strip HTML tags from pasted content
+* "extra/googletranslate":plugin_googletranslate.html - translate content with Google Translate
+* "extra/headerids":plugin_headerids.html - insert jump labels for internal hyperlinks
+* "extra/hints":plugin_hints.html - (old plugin)
+* "extra/linkbrowser":plugin_linkbrowser.html - a browser for the link plugin
+* "extra/linkchecker":plugin_linkchecker.html - (old plugin)
+* "extra/listenforcer":plugin_listenforcer.html - allow just one top-level list in an editable
+* "extra/metaview":plugin_metaview.html - the Meta View Plugin is used to visualize HTML elements for the editor
+* "extra/numerated-headers":plugin_numerated-headers.html - with this plugin the editor has the possibility to auto generate numeration in the heading tags
+* "extra/profiler":plugin_profiler.html - 
+* "extra/ribbon":plugin_ribbon.html - this plugin is intended to provide a Ribbon which is displayed on top of the page and some controls can be added to it dynamically
+* "extra/sourceview":plugin_sourceview.html - view the source of an editable including selection marks in the sidebar
+* "extra/speak":plugin_speak.html - integrates speak.js into Aloha Editor
+* "extra/toc":plugin_toc.html - add a table of contents into your editable
+* "extra/vie":plugin_vie.html - integrates VIE.js into Aloha Editor
+* "extra/wai-lang":plugin_wai-lang.html - annotate parts of the content with @lang@ attributes
+* "extra/zemanta":plugin_zemanta.html - integrates Zemanta into Aloha Editor
 
-h3. Table Plugin
 
-The Table Plugin will allow you to edit tables within your contents. You can do pretty much everything that you'd expect from editing tables, like adding and deleting rows and columns as well as merging and splitting cells. You can use the tab key to jump from one cell to the next.
-
-
-h3. Undo Plugin
-
-The Undo Plugin allows you to undo changes when pressing Ctrl+Z (or +Cmd+Z+ on Mac). You may also reapply changes made undone by pressing +Ctrl+Shift+Z+ or +Cmd + Shift + Z+ on Mac. The Undo Plugin has no ui and no components.
+Community Plugins:
+* "colorselector":https://github.com/mihaisimi/Aloha-Plugin-Colorselector - add font color or background color

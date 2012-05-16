@@ -1,6 +1,8 @@
-h3. List Plugin
+h2. List Plugin
 
 The List Plugin allows you to handle and create ordered and unordered lists within your contents. You either may select existing contents to be turned into a list, or just click the ordered or unordered list button to start a new one.
+
+endprologue.
 
 NOTE: The list plugin will turn existing paragraphs into list items. Single lines separated by +<br>+ tags will NOT be turned into separate list items.
 

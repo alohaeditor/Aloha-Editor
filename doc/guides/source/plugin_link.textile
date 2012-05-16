@@ -1,4 +1,4 @@
-h3. Link Plugin
+h2. Link Plugin
 
 The Link Plugin allows you to add hyperlinks to your document, either by specifying them manually or by selecting from repositories using autocompletion.
 

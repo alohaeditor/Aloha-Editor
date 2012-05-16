@@ -1,6 +1,8 @@
-h3. Characterpicker Plugin
+h2. Characterpicker Plugin
 
 The Characterpicker Plugin allows you to insert special characters into your text. Position your cursor, click the icon and choose the character you'd like to insert from the overlay menu.
+
+endprologue.
 
 h4. Components
 
