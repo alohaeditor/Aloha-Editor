@@ -1,0 +1,1 @@
+- **BUG**: browser-plugin: The browser will now open at a more centered position.

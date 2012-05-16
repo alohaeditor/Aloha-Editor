@@ -683,8 +683,9 @@ Aloha.Markup = Class.extend( {
 					if ( astext ) {
 						text += this.getFromSelectionTree( el.children, astext );
 					} else {
-						// when the html shall be fetched, we create a clone of the element and remove all the children
-						clone = jQuery( el.domobj ).clone( false ).empty();
+						// when the html shall be fetched, we create a clone of
+						// the element and remove all the children
+						clone = jQuery( el.domobj.outerHTML ).empty();
 						// then we do the recursion and add the selection into the clone
 						clone.html( this.getFromSelectionTree( el.children, astext ) );
 						// finally we get the html of the clone
@@ -1159,7 +1160,7 @@ Aloha.Markup = Class.extend( {
 				if ( lastObj && rangeObject.startContainer === lastObj
 					 && rangeObject.startOffset === lastObj.length ) {
 					returnObj = jQuery( '<p></p>' );
-					inside = jQuery( rangeObject.splitObject ).clone().contents();
+					inside = jQuery( rangeObject.splitObject.outerHTML ).contents();
 					returnObj.append( inside );
 					return returnObj;
 				}
@@ -1171,7 +1172,7 @@ Aloha.Markup = Class.extend( {
 				if ( rangeObject.startContainer.nodeName.toLowerCase() === 'br'
 					 && jQuery( rangeObject.startContainer ).hasClass( 'aloha-ephemera' ) ) {
 					returnObj = jQuery( '<p></p>' );
-					inside = jQuery( rangeObject.splitObject ).clone().contents();
+					inside = jQuery( rangeObject.splitObject.outerHTML ).contents();
 					returnObj.append( inside );
 					return returnObj;
 				}
@@ -1183,7 +1184,7 @@ Aloha.Markup = Class.extend( {
 				}
 		}
 
-		return jQuery( rangeObject.splitObject ).clone();
+		return jQuery( rangeObject.splitObject.outerHTML );
 	},
 
 	/**
