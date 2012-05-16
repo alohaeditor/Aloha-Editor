@@ -6,3 +6,5 @@ All changes are categorized into one of the following keywords:
 - **FEATURE**: The change introduces a new feature, or modifies the function,
                usage, or intent of an existing one.
 
+- **ENHANCEMENT**: added / updated guides for plugins
+- **ENHANCEMENT**: enabled linklist.js so it's possible to use the settings for your own list (removed the default entries)
