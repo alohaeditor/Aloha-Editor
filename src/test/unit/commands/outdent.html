@@ -82,11 +82,11 @@
 			},
 			{	exclude: ["msie7.0", "msie8.0"],
 				start: '<ol><li>foo<ul><li>[bar</li></ul></li><li>baz]</li></ol>',
-				execResult: '<ol><li>foo</li><li>[bar</li><li>baz]</li></ol>'
+				execResult: '<ol><li>foo</li><li>[bar</li></ol><p>baz]</p>'
 			},
 			{	include: ["msie7.0", "msie8.0"],
 				start: '<ol><li>foo <ul><li>[bar</li></ul></li><li>baz]</li></ol>',
-				execResult: '<ol><li>foo </li><li>[bar</li><li>baz]</li></ol>'
+				execResult: '<ol><li>foo </li><li>[bar</li></ol><p>baz]</p>'
 			},
 			{	exclude: ["msie7.0", "msie8.0"],
 				start: '<ol><li>foo<ul><li>ba[r</li><li>ba]z</li><li>quz</li></ul></li></ol>',

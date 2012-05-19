@@ -4021,6 +4021,7 @@ function fixDisallowedAncestors(node, range) {
 			return;
 		}
 
+
 		// "If node is not a prohibited paragraph child, abort these steps."
 		if (!isProhibitedParagraphChild(node)) {
 			return;
@@ -5236,9 +5237,7 @@ function splitParent(nodeList, range) {
 		// parent of original parent immediately after original parent,
 		// preserving ranges."
 		for (var i = nodeList.length - 1; i >= 0; i--) {
-      if(isHtmlElement(originalParent.parentNode, ["UL", "OL", "LI"])){
-        movePreservingRanges(nodeList[i], originalParent.parentNode, 1 + getNodeIndex(originalParent), range);
-      }
+      movePreservingRanges(nodeList[i], originalParent.parentNode, 1 + getNodeIndex(originalParent), range);
 		}
 
 		// "If precedes line break is true, and the last member of node list
@@ -8227,9 +8226,11 @@ commands.outdent = {
 			// "Split the parent of sublist, with new parent null."
 			splitParent(sublist, range);
 
-			// "Fix disallowed ancestors of each member of sublist."
-			$_( sublist ).forEach(function(){
-        fixDisallowedAncestors(this, range);
+			// "Fix disallowed ancestors and isolated lis of each member of sublist."
+			$_( sublist ).forEach(function(node){
+
+        fixDisallowedAncestors(node, range);
+
       });
 
 			// "Restore the values from values."
