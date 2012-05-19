@@ -5592,9 +5592,7 @@ function splitParent(nodeList, range) {
 		// parent of original parent immediately after original parent,
 		// preserving ranges."
 		for (var i = nodeList.length - 1; i >= 0; i--) {
-      if(isHtmlElement(originalParent.parentNode, ["UL", "OL", "LI"])){
-        movePreservingRanges(nodeList[i], originalParent.parentNode, 1 + getNodeIndex(originalParent), range);
-      }
+      movePreservingRanges(nodeList[i], originalParent.parentNode, 1 + getNodeIndex(originalParent), range);
 		}
 
 		// "If precedes line break is true, and the last member of node list
