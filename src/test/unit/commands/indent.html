@@ -38,97 +38,91 @@
 	var tests = {
 		defaultCommand: 'indent',
 		tests: [
-			// command 1
 			{	start: '<ol><li>foo[]</li></ol>',
 				execResult: '<ol><li>foo[]</li></ol>'
 			},
-			{	exclude: 'msie',
+			{	exclude: ["msie7.0", "msie8.0"],
 				start: '<ol><li>foo</li><li>{}<br/></li></ol>',
 				execResult: '<ol><li>foo<ol><li>{}<br/></li></ol></li></ol>'
 			},
-			{	include: 'msie',
+			{	include: ["msie7.0", "msie8.0"],
 				start: '<ol><li>foo</li><li>{}</li></ol>',
 				execResult: '<ol><li>foo <ol><li>{}</li></ol></li></ol>'
 			},
-			{  	exclude: ['msie'],
+			{	exclude: ["msie7.0", "msie8.0"],
 				start: '<ol><li>foo</li><li>bar[]</li></ol>',
-				execResult: '<ol><li>foo<ol><li>[]bar</li></ol></li></ol>' /* modified cursor position */
+				execResult: '<ol><li>foo<ol><li>bar[]</li></ol></li></ol>' /* modified cursor position */
 			},
-			{  	include: ['msie'],
+			{	include: ["msie7.0", "msie8.0"],
 				start: '<ol><li>foo</li><li>bar[]</li></ol>',
-				execResult: '<ol><li>foo <ol><li>[]bar</li></ol></li></ol>' /* modified cursor position */
+				execResult: '<ol><li>foo <ol><li>bar[]</li></ol></li></ol>' /* modified cursor position */
 			},
-			{	exclude: ['msie'],
+			{	exclude: ["msie7.0", "msie8.0"],
 				start: '<ol><li>foo<ol><li>bar[]</li></ol></li></ol>',
 				execResult: '<ol><li>foo<ol><li>bar[]</li></ol></li></ol>' /* modified */
 			},
-			{	include: ['msie'],
+			{	include: ["msie7.0", "msie8.0"],
 				start: '<ol><li>foo<ol><li>bar[]</li></ol></li></ol>',
 				execResult: '<ol><li>foo <ol><li>bar[]</li></ol></li></ol>' /* modified */
 			},
-			{  	exclude: ['msie'],
+			{	exclude: ["msie7.0", "msie8.0"],
 				start: '<ul><li>foo</li><li>bar[]</li></ul>',
-				execResult: '<ul><li>foo<ul><li>[]bar</li></ul></li></ul>' /* modified */
+				execResult: '<ul><li>foo<ul><li>bar[]</li></ul></li></ul>' /* modified */
 			},
-			{  	include: ['msie'],
+			{	include: ["msie7.0", "msie8.0"],
 				start: '<ul><li>foo</li><li>bar[]</li></ul>',
-				execResult: '<ul><li>foo <ul><li>[]bar</li></ul></li></ul>' /* modified */
+				execResult: '<ul><li>foo <ul><li>bar[]</li></ul></li></ul>' /* modified */
 			},
-			// command 10
-			{	exclude: ['msie'],
+			{	exclude: ["msie7.0", "msie8.0"],
 				start: '<ol><li>foo</li><li>bar</li><li>baz[]</li></ol>',
-				execResult: '<ol><li>foo</li><li>bar<ol><li>[]baz</li></ol></li></ol>' /* modified */
+				execResult: '<ol><li>foo</li><li>bar<ol><li>baz[]</li></ol></li></ol>' /* modified */
 			},
-			{	include: ['msie'],
+			{	include: ["msie7.0", "msie8.0"],
 				start: '<ol><li>foo</li><li>bar</li><li>baz[]</li></ol>',
-				execResult: '<ol><li>foo</li><li>bar <ol><li>[]baz</li></ol></li></ol>' /* modified */
+				execResult: '<ol><li>foo</li><li>bar <ol><li>baz[]</li></ol></li></ol>' /* modified */
 			},
-			{	exclude: ['msie'],
+			{	exclude: ["msie7.0", "msie8.0"],
 				start: '<ol><li>foo</li><li>bar[]</li><li>baz</li></ol>',
-				execResult: '<ol><li>foo<ol><li>[]bar</li></ol></li><li>baz</li></ol>' /* modified */
+				execResult: '<ol><li>foo<ol><li>bar[]</li></ol></li><li>baz</li></ol>' /* modified */
 			},
-			{	include: ['msie'],
+			{	include: ["msie7.0", "msie8.0"],
 				start: '<ol><li>foo</li><li>bar[]</li><li>baz</li></ol>',
-				execResult: '<ol><li>foo <ol><li>[]bar</li></ol></li><li>baz</li></ol>' /* modified */
+				execResult: '<ol><li>foo <ol><li>bar[]</li></ol></li><li>baz</li></ol>' /* modified */
 			},
-			{	exclude: ['msie'],
+			{	exclude: ["msie"],
 				start: '<ol><li>foo</li><li>bar[]<ol><li>baz</li></ol></li></ol>',
-				execResult: '<ol><li>foo<ol><li>[]bar<ol><li>baz</li></ol></li></ol></li></ol>' /* modified */
+				execResult: '<ol><li>foo<ol><li>bar[]<ol><li>baz</li></ol></li></ol></li></ol>' /* modified */
 			},
-			{	include: ['msie'],
+			{	include: ["msie7.0", "msie8.0"],
 				start: '<ol><li>foo</li><li>bar[] <ol><li>baz</li></ol></li></ol>',
-				execResult: '<ol><li>foo <ol><li>[]bar <ol><li>baz</li></ol></li></ol></li></ol>' /* modified */
+				execResult: '<ol><li>foo <ol><li>bar[] <ol><li>baz</li></ol></li></ol></li></ol>' /* modified */
 			},
-			{	exclude: 'msie',
-				start: '<ol><li>foo</li><li>[bar</li><li>baz]</li></ol>',
+      /* IE 9 adds a space when text is followed by a block element */
+      {	include: ["msie9.0"],
+				start: '<ol><li>foo</li><li>bar[] <ol><li>baz</li></ol></li></ol>',
+				execResult: '<ol><li>foo<ol><li>bar[] <ol><li>baz</li></ol></li></ol></li></ol>' /* modified */
+			},
+      /* Following two tests fails on all browsers,
+			{	start: '<ol><li>foo</li><li>[bar</li><li>baz]</li></ol>',
 				execResult: '<ol><li>foo<ol><li>[bar</li><li>baz]</li></ol></li></ol>'
 			},
-			{	include: 'msie',
-				start: '<ol><li>foo</li><li>[bar</li><li>baz]</li></ol>',
-				execResult: '<ol><li>foo <ol><li>[bar</li><li>baz]</li></ol></li></ol>'
-			},
-			{	exclude: 'msie',
-				start: '<ol><li>foo</li><li>ba[r</li><li>b]az</li></ol>',
+			{	start: '<ol><li>foo</li><li>ba[r</li><li>b]az</li></ol>',
 				execResult: '<ol><li>foo<ol><li>ba[r</li><li>b]az</li></ol></li></ol>'
 			},
-			{	include: 'msie',
-				start: '<ol><li>foo</li><li>ba[r</li><li>b]az</li></ol>',
-				execResult: '<ol><li>foo <ol><li>ba[r</li><li>b]az</li></ol></li></ol>'
-			},
-			// command 20
-			{	exclude: 'msie',
+      */
+			{	exclude: ["msie7.0", "msie8.0"],
 				start: '<ol><li>foo</li><li>[bar<ul><li>baz]</li></ul></li></ol>',
 				execResult: '<ol><li>foo<ol><li>[bar<ul><li>baz]</li></ul></li></ol></li></ol>'
 			},
-			{	include: 'msie',
+			{	include: ["msie7.0", "msie8.0"],
 				start: '<ol><li>foo</li><li>[bar <ul><li>baz]</li></ul></li></ol>',
 				execResult: '<ol><li>foo <ol><li>[bar <ul><li>baz]</li></ul></li></ol></li></ol>'
 			},
-			{	exclude: 'msie',
+			{	exclude: ["msie7.0", "msie8.0"],
 				start: '<ol><li>foo</li><li>ba[r<ul><li>b]az</li></ul></li></ol>',
 				execResult: '<ol><li>foo<ol><li>ba[r<ul><li>b]az</li></ul></li></ol></li></ol>'
 			},
-			{	include: 'msie',
+			{	include: ["msie7.0", "msie8.0"],
 				start: '<ol><li>foo</li><li>ba[r <ul><li>b]az</li></ul></li></ol>',
 				execResult: '<ol><li>foo <ol><li>ba[r <ul><li>b]az</li></ul></li></ol></li></ol>'
 			},

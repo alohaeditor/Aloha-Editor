@@ -31,6 +31,7 @@
 		.aloha-editable ol li { list-style-type: decimal; margin: 1.5em; }
 		.aloha-editable ol li ol li{ list-style-type: decimal; margin: 2em; }
 	</style>
+	<link rel="stylesheet" href="../commandtest.css" type="text/css"/>
 </head>
 <body>
 	<!-- include the tests -->
@@ -76,239 +77,278 @@
 					   	indetermResult: true,
 					   	stateResult: false
 					},
-					{  	start: 'foo[bar]baz',
-              execResult: 'foo<u>[bar]</u>baz'
+					{  	start: "foo[]bar",
+              execResult: "foo[]bar"
           },
-          {  	start: 'foo<u>[bar]</u>baz',
-              execResult: 'foo[bar]baz'
+					{  	start: "<p>[foo</p><p>bar]</p>",
+              execResult: "<p><u>[foo</u></p><p><u>bar]</u></p>"
           },
-					{  	start: 'foo<u>[bar</u>]baz',
-              execResult: 'foo[bar]baz' 
+					{  	start: "<span>[foo</span><span>bar]</span>",
+              execResult: "<u><span>[foo</span><span>bar]</span></u>"
           },
-					{  	start: 'foo<u>b[ar</u>]baz',
-              execResult: 'foo<u>b</u>[ar]baz' 
+					{  	start: "<p>[foo</p><p><span>bar</span></p><p>baz]</p>",
+              execResult: "<p><u>[foo</u></p><p><u><span>bar</span></u></p><p><u>baz]</u></p>"
           },
-					{  	start: 'foo<u>bar[</u>b]az',
-              execResult: 'foo<u>bar[b]</u>az'
+          {   exclude: ['msie7.0', 'msie8.0'], //inserts an extra whitespace in the middle of the result
+					  	start: "<p>[foo<p><br><p>bar]",
+              execResult: "<p><u>[foo</u></p><p><u><br></u></p><p><u>bar]</u></p>"
           },
-					{  	start: 'foo<u>bar[</u>b]az',
-              execResult: 'foo<u>bar[b]</u>az' 
+          {   exclude: ['webkit', 'msie7.0', 'msie8.0'],	
+					  	start: "<span>foo</span>{}<span>bar</span>",
+              execResult: "<span>foo</span>{}<span>bar</span>"
           },
-					{  	start: 'foo[]bar',
-              execResult: 'foo[]bar' 
+          {   include: ['webkit', 'msie7.0', 'msie8.0'],	
+					  	start: "<span>foo</span>{}<span>bar</span>",
+              execResult: "<span>foo[]</span><span>bar</span>"
           },
-					{  	start: '<u>foo[]bar</u>',
-              execResult: '<u>foo[]bar</u>' 
+          // Note: Following test also fails to run on IE9.
+          {   exclude: ['webkit', 'msie'], 	
+					  	start: "<span>foo[</span><span>]bar</span>",
+              execResult: "<span>foo[</span><span>]bar</span>"
           },
-					{  	start: '<span>foo</span>{}<span>bar</span>',
-              execResult: '<span>foo[]</span><span>bar</span>' 
+					{  	start: "foo[bar]baz",
+              execResult: "foo<u>[bar]</u>baz"
           },
-					{  	start: '<span>foo[</span><span>]bar</span>',
-              execResult: '<span>foo[]</span><span>bar</span>' 
+					{  	start: "foo[bar<b>baz]qoz</b>quz",
+              execResult: "foo<u>[bar</u><b><u>baz]</u>qoz</b>quz"
           },
-					{  	start: 'foo[bar<b>bam]baz</b>',
-              execResult: 'foo<u>[bar</u><b><u>bam]</u>baz</b>' 
+					{  	start: "foo[bar<i>baz]qoz</i>quz",
+              execResult: "foo<u>[bar</u><i><u>baz]</u>qoz</i>quz"
           },
-					{  	start: 'foo<span contenteditable=false>[bar]</span>baz',
-					   	execResult: 'foo<span contenteditable=false>[bar]</span>baz' 
-					},
-					{  	start: 'fo[o<span contenteditable=false>bar</span>b]az',
-					   	execResult: 'fo<u>[o</u><span contenteditable=false>bar</span><u>b]</u>az' 
-					},
-					{  	start: 'foo<span contenteditable=false>ba[r]</span>baz',
-					   	execResult: 'foo<span contenteditable=false>ba[r]</span>baz' 
-					},
-					{  	start: 'fo[o<span contenteditable=false>b]ar</span>baz',
-					   	execResult: 'fo<u>[o]</u><span contenteditable=false>bar</span>baz' 
-					},
-					{  	start: 'fo[<u>o</u><span contenteditable=false>bar</span><u>b</u>]az',
-					   	execResult: 'fo[o<span contenteditable=false>bar</span>b]az' 
-					},
-					{  	start: '<span contenteditable=false>foo<span contenteditable=true>[bar]</span>baz</span>',
-					   	execResult: '<span contenteditable=false>foo<span contenteditable=true><u>[bar]</u></span>baz</span>' 
-					},
-					{  	start: '<span contenteditable=false>fo[o<span contenteditable=true>bar</span>b]az</span>',
-					   	execResult: '<span contenteditable=false>fo[o<span contenteditable=true><u>bar</u></span>b]az</span>' 
-					},
-					{  	start: '<span contenteditable=false>foo<span contenteditable=true>ba[r</span>b]az</span>',
-					   	execResult: '<span contenteditable=false>foo<span contenteditable=true>ba<u>[r]</u></span>baz</span>' 
-					},
-					{  	start: '<span contenteditable=false>fo[o<span contenteditable=true>b]ar</span>baz</span>',
-					   	execResult: '<span contenteditable=false>fo[o]<span contenteditable=true>bar</span>baz</span>' 
-					},
-					{  	start: '<span contenteditable=false>fo[<u>o<span contenteditable=true>bar</span>b</u>]az</span>',
-					   	execResult: '<span contenteditable=false>fo<u>[o<span contenteditable=true><span style="font-style: normal;">bar</span></span>b]</u>az</span>' 
-					},
-					{  	start: '<table><tbody><tr><td>foo<td>b[a]r<td>baz</table>',
-					   	execResult: '<table><tbody><tr><td>foo<td>b<u>[a]</u>r<td>baz</table>' 
-					},
-					{  	start: '<table><tbody><tr data-start=1 data-end=2><td>foo<td>bar<td>baz</table>',
-					   	execResult: '<table><tbody><tr><td>foo<td><u>[bar</u><td>}baz</table>' 
-					},
-					{  	start: '<table><tbody><tr data-start=0 data-end=2><td>foo<td>bar<td>baz</table>',
-					   	execResult: '<table><tbody><tr><td><u>[foo</u><td><u>bar</u><td>}baz</table>' 
-					},
-					{  	start: '<table><tbody data-start=0 data-end=1><tr><td>foo<td>bar<td>baz</table>',
-					   	execResult: '<table><tbody><tr><td><u>[foo</u><td><u>bar</u><td><u>baz</u></table>}' 
-					},
-					{  	start: '<table data-start=0 data-end=1><tbody><tr><td>foo<td>bar<td>baz</table>',
-					   	execResult: '{<table><tbody><tr><td><u>foo</u><td><u>bar</u><td><u>baz</u></table>}' 
-					},
-					{  	start: '{<table><tr><td>foo<td>bar<td>baz</table>}',
-					   	execResult: '{<table><tr><td><u>foo</u><td><u>bar</u><td><u>baz</u></table>}' 
-					},
-					{  	start: 'foo<span style="text-decoration: underline">[bar]</span>baz',
-					   	execResult: 'foo[bar]baz' 
-					},
-					{  	start: 'foo<u>[bar]</u>baz',
-					   	execResult: 'foo[bar]baz' 
-					},
-					{  	start: 'foo<u>bar</u>[baz]',
-					   	execResult: 'foo<u>bar[baz]</u>' 
-					},
-					{  	start: '[foo]<u>bar</u>baz',
-					   	execResult: '<u>[foo]bar</u>baz' 
-					},
-					{  	start: '<u>foo</u>[bar]<u>baz</u>',
-					   	execResult: '<u>foo[bar]baz</u>' 
-					},
-					{  	start: '[foo]<strong>bar</strong>baz',
-					   	execResult: '<u>[foo]</u><strong>bar</strong>baz' 
-					},
-					{  	start: '<strong>foo</strong>[bar]<strong>baz</strong>',
-					   	execResult: '<strong>foo</strong><u>[bar]</u><strong>baz</strong>' 
-					},
-					{  	start: '<u>foo</u>[bar]<strong>baz</strong>',
-					   	execResult: '<u>foo[bar]</u><strong>baz</strong>' 
-					},
-					{  	start: '<strong>foo</strong>[bar]<u>baz</u>',
-					   	execResult: '<strong>foo</strong><u>[bar]baz</u>' 
-					},
-					{  	start: 'foo[<u>bar</u>]baz',
-					   	execResult: 'foo[bar]baz' 
-					},
-					{  	start: 'foo[<u>bar]</u>baz',
-					   	execResult: 'foo[bar]baz' 
-					},
-					{  	start: 'foo<u>[bar</u>]baz',
-					   	execResult: 'foo[bar]baz' 
-					},
-					{  	start: 'foo{<u></u>}baz',
-					   	execResult: 'foo[]baz' 
-					},
-					{  	start: 'foo{<b></b>}baz',
-					   	execResult: 'foo[]baz' 
-					},
-					{  	start: 'foo{<u><b></b></u>}baz',
-					   	execResult: 'foo[]baz' 
-					},
-					{  	start: 'foo{<b><u></u></b>}baz',
-					   	execResult: 'foo[]baz' 
-					},
-					{  	start: 'foo<span style="text-decoration: underline">[bar]</span>baz',
-					   	execResult: 'foo[bar]baz' 
-					},
-					{  	start: 'foo[<span style="text-decoration: underline">bar</span>]baz',
-					   	execResult: 'foo[bar]baz' 
-					},
-					{  	start: 'foo[<span style="text-decoration: underline">bar]</span>baz',
-					   	execResult: 'foo[bar]baz' 
-					},
-					{  	start: 'foo<span style="text-decoration: underline">[bar</span>]baz',
-					   	execResult: 'foo[bar]baz' 
-					},
-					{  	start: '<u>{<p>foo</p><p>bar</p>}<p>baz</p></u>',
-					   	execResult: '<p>[foo</p><p>bar</p><p>}<u>baz</u></p>' 
-					},
-					{  	start: '<p>[foo</p><p>bar]</p><u><p>baz</u></b>',
-						indetermStart: false,
-						stateStart: false,
-					   	execResult: '<p><u>[foo</u></p><p><u>bar]</u></p><u><p>baz</u></b>', 
-						indetermResult: false,
-						stateResult: true   
-					},
-					{  	start: 'foo [bar <u>baz] bam</u> bom',
-						indetermStart: true,
-						stateStart: false,
-					   	execResult: 'foo <u>[bar baz] bam</u> bom', 
-						indetermResult: false,
-						stateResult: true,
-					   	execToggle: 'foo [bar baz]<u> bam</u> bom', 
-						indetermToggle: false,
-						stateToggle: false
-					},
-					{  	start: 'foo <u>[bar baz] bam</u> bom',
-						stateStart: true,
-					   	execResult: 'foo [bar baz]<u> bam</u> bom', 
-						stateResult: false   
-					},
-					{  	start: '<u><p>foo[<b>bar</b>}</p><p>baz</p></u>',
-						stateStart: true,
-					   	execResult: '<p><u>foo</u><b>[bar]</b></p><p><u>baz</u></p>', 
-						stateResult: false   
-					},
-					{  	start: '<u><p>foo</p></u><b>[bar</b>}<u><p>baz</p></u>',
-						stateStart: false,
-					   	execResult: '<u><p>foo</p><b>[bar]</b><p>baz</p></u>', 
-						stateResult: true,   
-					   	execToggle: '<p><u>foo</u></p><b>[bar]</b><p><u>baz</u></p>', 
-						stateToggle: false   
-					},
-					{  	start: 'foo bar <u>baz [bam</u> bom] bus',
-						indetermStart: true,
-						stateStart: false,
-					   	execResult: 'foo bar <u>baz [bam bom]</u> bus', 
-						indetermResult: false,
-						stateResult: true   
-					},
-					{  	start: '<u id=purple>bar [baz] qoz</u>',
-						stateStart: true,
-					   	execResult: '<span id=purple><u>bar </u>[baz]<u> qoz</u></span>', 
-						stateResult: false   
-					},
-					{  	start: '<b><u>foo</u></b>[bar]<b><u>baz</u></b>',
-					   	execResult: '<u><b>foo</b>[bar]<b>baz</b></u>'
-					},
-					{  	start: '<u>foo</u>[bar]<b><u>baz</u></b>',
-					   	execResult: '<u>foo[bar]<b>baz</u></b>'
-					},
-					{  	start: '<font color=blue face=monospace><u>foo</u></font>[bar]',
-					   	execResult: '<u><font color=blue face=monospace>foo</font>[bar]</u>'
-					},
-					{  	start: '<u>foo<span style="text-decoration: none">bar<u>[baz]</u>quz</span>qoz</u>',
-						indetermStart: false,
-						stateStart: true,
-					   	execResult: '<u>foo<span style="text-decoration: none">bar[baz]quz</span>qoz</u>',
-						indetermResult: false,
-						stateResult: false
-					},
-					{  	start: '<u>foo<span style="text-decoration: none">[bar]</span>baz</u>',
-					   	execResult: '<u>foo[bar]baz</u>'
-					},
-					{  	start: 'foo<span style="text-decoration: none"><u>{bar}</u></span>baz',
-						stateStart: true,
-					   	execResult: 'foo[bar]baz',
-						stateResult: false,
-					   	execToggle: 'foo<u>[bar]</u>baz',
-						stateToggle: true
-					},
-					{  	start: 'foo<span style="text-decoration: underline; color: red"><u>{bar}</u></span>baz',
-					   	execResult: 'foo<span style="color: red">[bar]</span>baz'
-					},
-					{  	start: '[foo<span class=nostrike>bar</span>baz]',
-					   	execResult: '<u>[foo<span class=nostrike><u>bar</u></span>baz]</u>'
-					},
-					{  	start: '<u><span class=nostrike>[foo]</span></u>',
-						stateResult: false,
-					   	execResult: '<span class=nostrike><u>[foo]</u></span>',
-						stateResult: true
-					},
-					{  	start: '<u><span class=nostrike>foo[bar]baz</span></u>',
-					   	execResult: '<u><span class=nostrike>foo<u>[bar]</u>baz</span></u>'
-					},
-					{  	start: '<p style="text-decoration: underline">foo[bar]baz</p>',
-					   	execResult: '<p><u>foo</u>[bar]<u>baz</u></p>'
-					}
+          {   exclude: ['webkit', 'msie7.0', 'msie8.0'], //cursor selection is wrong	
+              start: "{<p><p><p>foo</p>}",
+              execResult: "{<p></p><p></p><p><u>foo</u></p>}"
+          },
+          {   exclude: ['msie7.0', 'msie8.0'], //adds extra whitespaces in the result
+              start: "<table><tbody><tr><td>foo<td>b[a]r<td>baz</table>",
+              execResult: "<table><tbody><tr><td>foo</td><td>b<u>[a]</u>r</td><td>baz</td></tr></tbody></table>"
+          },
+          {   exclude: ["webkit", "msie7.0", "msie8.0"],	
+					  	start: "<table><tbody><tr data-start=1 data-end=2><td>foo<td>bar<td>baz</table>",
+              execResult: "<table><tbody><tr><td>foo</td>{<td><u>bar</u></td>}<td>baz</td></tr></tbody></table>"
+          },
+          {   include: ["webkit"],	
+					  	start: "<table><tbody><tr data-start=1 data-end=2><td>foo<td>bar<td>baz</table>",
+              execResult: "<table><tbody><tr><td>foo</td><td><u>[bar</u></td><td>}baz</td></tr></tbody></table>"
+          },
+          {   exclude: ["webkit", "msie7.0", "msie8.0"],	
+					  	start: "<table><tbody><tr data-start=0 data-end=2><td>foo<td>bar<td>baz</table>",
+              execResult: "<table><tbody><tr>{<td><u>foo</u></td><td><u>bar</u></td>}<td>baz</td></tr></tbody></table>"
+          },
+          {   include: ["webkit"],	
+					  	start: "<table><tbody><tr data-start=0 data-end=2><td>foo<td>bar<td>baz</table>",
+              execResult: "<table><tbody><tr><td><u>[foo</u></td><td><u>bar</u></td><td>}baz</td></tr></tbody></table>"
+          },
+          {   exclude: ["webkit", "msie7.0", "msie8.0", "msie9.0",],	
+					  	start: "<table><tbody data-start=0 data-end=1><tr><td>foo<td>bar<td>baz</table>",
+              execResult: "<table><tbody>{<tr><td><u>foo</u></td><td><u>bar</u></td><td><u>baz</u></td></tr>}</tbody></table>"
+          },
+          {   include: ["webkit"],	
+					  	start: "<table><tbody data-start=0 data-end=1><tr><td>foo<td>bar<td>baz</table>",
+              execResult: "<table><tbody><tr><td><u>[foo</u></td><td><u>bar</u></td><td><u>baz</u></td></tr></tbody></table>}"
+          },
+          {   exclude: ["webkit", "msie7.0", "msie8.0"],	
+					  	start: "<table data-start=0 data-end=1><tbody><tr><td>foo<td>bar<td>baz</table>",
+              execResult: "<table>{<tbody><tr><td><u>foo</u></td><td><u>bar</u></td><td><u>baz</u></td></tr></tbody>}</table>"
+          },
+          {   include: ["webkit"],	
+					  	start: "<table data-start=0 data-end=1><tbody><tr><td>foo<td>bar<td>baz</table>",
+              execResult: "{<table><tbody><tr><td><u>foo</u></td><td><u>bar</u></td><td><u>baz</u></td></tr></tbody></table>}"
+          },
+          {   exclude: ['msie7.0', 'msie8.0'], //adds extra whitespaces in the result
+              start: "{<table><tr><td>foo<td>bar<td>baz</table>}",
+              execResult: "{<table><tbody><tr><td><u>foo</u></td><td><u>bar</u></td><td><u>baz</u></td></tr></tbody></table>}"
+          },
+					{  	start: "foo<u>[bar]</u>baz",
+              execResult: "foo[bar]baz"
+          },
+          {   exclude: ['mozilla', 'msie7.0', 'msie8.0'], //mozilla & ie doesn't remove the span	
+					  	start: "foo<span style=\"text-decoration: underline\">[bar]</span>baz",
+              execResult: "foo[bar]baz"
+          },
+					{  	start: "<u>foo[bar]baz</u>",
+              execResult: "<u>foo</u>[bar]<u>baz</u>"
+          },
+					{  	start: "<u>foo[b<span style=\"color:blue\">ar]ba</span>z</u>",
+              execResult: "<u>foo</u>[b<span style=\"color:rgb(0, 0, 255)\">ar]<u>ba</u></span><u>z</u>"
+          },
+					{  	start: "<u>foo[b<span style=\"color:blue\" id=foo>ar]ba</span>z</u>",
+              execResult: "<u>foo</u>[b<span style=\"color:rgb(0, 0, 255)\" id=\"foo\">ar]<u>ba</u></span><u>z</u>"
+          },
+					{  	start: "<u>foo[b<span style=\"font-size:3em\">ar]ba</span>z</u>",
+              execResult: "<u>foo</u>[b<span style=\"font-size:3em\">ar]<u>ba</u></span><u>z</u>"
+          },
+					{  	start: "<u>foo[b<i>ar]ba</i>z</u>",
+              execResult: "<u>foo</u>[b<i>ar]<u>ba</u></i><u>z</u>"
+          },
+					{  	start: "<p style=\"text-decoration: underline\">foo[bar]baz</p>",
+              execResult: "<p><u>foo</u>[bar]<u>baz</u></p>"
+          },
+					{  	start: "foo<s>[bar]</s>baz",
+              execResult: "foo<u><s>[bar]</s></u>baz"
+          },
+					{  	start: "foo<span style=\"text-decoration: line-through\">[bar]</span>baz",
+              execResult: "foo<u><span style=\"text-decoration:line-through\">[bar]</span></u>baz"
+          },
+					{  	start: "<s>foo[bar]baz</s>",
+              execResult: "<s>foo<u>[bar]</u>baz</s>"
+          },
+					{  	start: "<s>foo[b<span style=\"color:blue\">ar]ba</span>z</s>",
+              execResult: "<s>foo<u>[b</u><span style=\"color:rgb(0, 0, 255)\"><u>ar]</u>ba</span>z</s>"
+          },
+					{  	start: "<s>foo[b<span style=\"color:blue\" id=foo>ar]ba</span>z</s>",
+              execResult: "<s>foo<u>[b</u><span style=\"color:rgb(0, 0, 255)\" id=\"foo\"><u>ar]</u>ba</span>z</s>"
+          },
+					{  	start: "<s>foo[b<span style=\"font-size:3em\">ar]ba</span>z</s>",
+              execResult: "<s>foo<u>[b</u><span style=\"font-size:3em\"><u>ar]</u>ba</span>z</s>"
+          },
+					{  	start: "<s>foo[b<i>ar]ba</i>z</s>",
+              execResult: "<s>foo<u>[b</u><i><u>ar]</u>ba</i>z</s>"
+          },
+					{  	start: "<p style=\"text-decoration: line-through\">foo[bar]baz</p>",
+              execResult: "<p style=\"text-decoration:line-through\">foo<u>[bar]</u>baz</p>"
+          },
+					{  	start: "foo<strike>[bar]</strike>baz",
+              execResult: "foo<u><strike>[bar]</strike></u>baz"
+          },
+					{  	start: "<strike>foo[bar]baz</strike>",
+              execResult: "<strike>foo<u>[bar]</u>baz</strike>"
+          },
+					{  	start: "<strike>foo[b<span style=\"color:blue\">ar]ba</span>z</strike>",
+              execResult: "<strike>foo<u>[b</u><span style=\"color:rgb(0, 0, 255)\"><u>ar]</u>ba</span>z</strike>"
+          },
+					{  	start: "<strike>foo[b<span style=\"color:blue\" id=foo>ar]ba</span>z</strike>",
+              execResult: "<strike>foo<u>[b</u><span style=\"color:rgb(0, 0, 255)\" id=\"foo\"><u>ar]</u>ba</span>z</strike>"
+          },
+					{  	start: "<strike>foo[b<span style=\"font-size:3em\">ar]ba</span>z</strike>",
+              execResult: "<strike>foo<u>[b</u><span style=\"font-size:3em\"><u>ar]</u>ba</span>z</strike>"
+          },
+					{  	start: "<strike>foo[b<i>ar]ba</i>z</strike>",
+              execResult: "<strike>foo<u>[b</u><i><u>ar]</u>ba</i>z</strike>"
+          },
+					{  	start: "foo<ins>[bar]</ins>baz",
+              execResult: "foo<ins>[bar]</ins>baz"
+          },
+					{  	start: "<ins>foo[bar]baz</ins>",
+              execResult: "<ins>foo[bar]baz</ins>"
+          },
+					{  	start: "<ins>foo[b<span style=\"color:blue\">ar]ba</span>z</ins>",
+              execResult: "<ins>foo[b<span style=\"color:rgb(0, 0, 255)\">ar]ba</span>z</ins>"
+          },
+					{  	start: "<ins>foo[b<span style=\"color:blue\" id=foo>ar]ba</span>z</ins>",
+              execResult: "<ins>foo[b<span style=\"color:rgb(0, 0, 255)\" id=\"foo\">ar]ba</span>z</ins>"
+          },
+					{  	start: "<ins>foo[b<span style=\"font-size:3em\">ar]ba</span>z</ins>",
+              execResult: "<ins>foo[b<span style=\"font-size:3em\">ar]ba</span>z</ins>"
+          },
+					{  	start: "<ins>foo[b<i>ar]ba</i>z</ins>",
+              execResult: "<ins>foo[b<i>ar]ba</i>z</ins>"
+          },
+					{  	start: "foo<del>[bar]</del>baz",
+              execResult: "foo<u><del>[bar]</del></u>baz"
+          },
+					{  	start: "<del>foo[bar]baz</del>",
+              execResult: "<del>foo<u>[bar]</u>baz</del>"
+          },
+					{  	start: "<del>foo[b<span style=\"color:blue\">ar]ba</span>z</del>",
+              execResult: "<del>foo<u>[b</u><span style=\"color:rgb(0, 0, 255)\"><u>ar]</u>ba</span>z</del>"
+          },
+					{  	start: "<del>foo[b<span style=\"color:blue\" id=foo>ar]ba</span>z</del>",
+              execResult: "<del>foo<u>[b</u><span style=\"color:rgb(0, 0, 255)\" id=\"foo\"><u>ar]</u>ba</span>z</del>"
+          },
+					{  	start: "<del>foo[b<span style=\"font-size:3em\">ar]ba</span>z</del>",
+              execResult: "<del>foo<u>[b</u><span style=\"font-size:3em\"><u>ar]</u>ba</span>z</del>"
+          },
+					{  	start: "<del>foo[b<i>ar]ba</i>z</del>",
+              execResult: "<del>foo<u>[b</u><i><u>ar]</u>ba</i>z</del>"
+          },
+					{  	start: "foo<span style=\"text-decoration: underline line-through\">[bar]</span>baz",
+              execResult: "foo<span style=\"text-decoration:line-through\">[bar]</span>baz"
+          },
+					{  	start: "foo<span style=\"text-decoration: underline line-through\">b[a]r</span>baz",
+              execResult: "foo<span style=\"text-decoration:line-through\"><u>b</u>[a]<u>r</u></span>baz"
+          },
+          {   exclude: ['mozilla', 'msie7.0', 'msie8.0'], //mozilla & ie doesn't remove the span	
+					  	start: "foo<s style=\"text-decoration: underline\">[bar]</s>baz",
+              execResult: "foo[bar]baz"
+          },
+          {   exclude: ['mozilla', 'msie7.0', 'msie8.0'], //mozilla & ie doesn't remove the span	
+					  	start: "foo<s style=\"text-decoration: underline\">b[a]r</s>baz",
+              execResult: "foo<u>b</u>[a]<u>r</u>baz"
+          },
+					{  	start: "foo<u style=\"text-decoration: line-through\">[bar]</u>baz",
+              execResult: "foo<u><u style=\"text-decoration:line-through\">[bar]</u></u>baz"
+          },
+					{  	start: "foo<u style=\"text-decoration: line-through\">b[a]r</u>baz",
+              execResult: "foo<u style=\"text-decoration:line-through\">b<u>[a]</u>r</u>baz"
+          },
+					{  	start: "foo<s style=\"text-decoration: overline\">[bar]</s>baz",
+              execResult: "foo<u><s style=\"text-decoration:overline\">[bar]</s></u>baz"
+          },
+					{  	start: "foo<s style=\"text-decoration: overline\">b[a]r</s>baz",
+              execResult: "foo<s style=\"text-decoration:overline\">b<u>[a]</u>r</s>baz"
+          },
+					{  	start: "foo<u style=\"text-decoration: overline\">[bar]</u>baz",
+              execResult: "foo<u><u style=\"text-decoration:overline\">[bar]</u></u>baz"
+          },
+					{  	start: "foo<u style=\"text-decoration: overline\">b[a]r</u>baz",
+              execResult: "foo<u style=\"text-decoration:overline\">b<u>[a]</u>r</u>baz"
+          },
+					{  	start: "<p style=\"text-decoration: line-through\">foo[bar]baz</p>",
+              execResult: "<p style=\"text-decoration:line-through\">foo<u>[bar]</u>baz</p>"
+          },
+					{  	start: "<p style=\"text-decoration: overline\">foo[bar]baz</p>",
+              execResult: "<p style=\"text-decoration:overline\">foo<u>[bar]</u>baz</p>"
+          },
+					{  	start: "foo<span class=\"underline\">[bar]</span>baz",
+              execResult: "foo<span class=\"underline\">[bar]</span>baz"
+          },
+					{  	start: "foo<span class=\"underline\">b[a]r</span>baz",
+              execResult: "foo<span class=\"underline\">b[a]r</span>baz"
+          },
+					{  	start: "foo<span class=\"line-through\">[bar]</span>baz",
+              execResult: "foo<u><span class=\"line-through\">[bar]</span></u>baz"
+          },
+					{  	start: "foo<span class=\"line-through\">b[a]r</span>baz",
+              execResult: "foo<span class=\"line-through\">b<u>[a]</u>r</span>baz"
+          },
+					{  	start: "foo<span class=\"underline-and-line-through\">[bar]</span>baz",
+              execResult: "foo<span class=\"underline-and-line-through\">[bar]</span>baz"
+          },
+					{  	start: "foo<span class=\"underline-and-line-through\">b[a]r</span>baz",
+              execResult: "foo<span class=\"underline-and-line-through\">b[a]r</span>baz"
+          },
+					{  	start: "fo[o<u>b]ar</u>baz",
+              execResult: "fo<u>[ob]ar</u>baz"
+          },
+					{  	start: "foo<u>ba[r</u>b]az",
+              execResult: "foo<u>ba[rb]</u>az"
+          },
+					{  	start: "fo[o<u>bar</u>b]az",
+              execResult: "fo<u>[obarb]</u>az"
+          },
+					{  	start: "foo[<u>b]ar</u>baz",
+              execResult: "foo[b]<u>ar</u>baz"
+          },
+					{  	start: "foo<u>ba[r</u>]baz",
+              execResult: "foo<u>ba</u>[r]baz"
+          },
+					{  	start: "foo[<u>bar</u>]baz",
+              execResult: "foo[bar]baz"
+          },
+					{  	start: "foo<u>[bar]</u>baz",
+              execResult: "foo[bar]baz"
+          },
+          {   exclude: ['mozilla', 'msie7.0', 'msie8.0'], //mozilla & ie doesn't remove the span	
+					  	start: "fo[o<span style=text-decoration:underline>b]ar</span>baz",
+              execResult: "fo<span style=\"text-decoration:underline\">[ob]ar</span>baz"
+          },
+					{  	start: "<ins>fo[o</ins><u>b]ar</u>",
+              execResult: "<ins>fo[o</ins>b]<u>ar</u>"
+          },
+					{  	start: "<u>fo[o</u><ins>b]ar</ins>",
+              execResult: "<u>fo</u>[o<ins>b]ar</ins>"
+          }
 			]
 	}
 	</script>
