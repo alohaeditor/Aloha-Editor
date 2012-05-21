@@ -6282,7 +6282,6 @@ commands["delete"] = {
 
 		// collapse whitespace sequences
 		collapseWhitespace(node, range);
-		offset = range.startOffset;
 
 		// "If node is a Text node and offset is not zero, call collapse(node,
 		// offset) on the Selection. Then delete the contents of the range with
@@ -6890,7 +6889,6 @@ commands.forwarddelete = {
 
 		// collapse whitespace in the node, if it is a text node
 		collapseWhitespace(node, range);
-		offset = range.startOffset;
 
 		// "If node is a Text node and offset is not node's length:"
 		if (node.nodeType == $_.Node.TEXT_NODE
