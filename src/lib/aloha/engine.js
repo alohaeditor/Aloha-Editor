@@ -1421,12 +1421,17 @@ function movePreservingRanges(node, newParent, newIndex, range) {
  * @return void
  */
 function copyAttributes( element,  newElement ) {
-	for ( var i = 0; i < element.attributes.length; i++ ) {
-		if ( typeof newElement.setAttributeNS === 'function' ) {
-			newElement.setAttributeNS( element.attributes[i].namespaceURI, element.attributes[i].name, element.attributes[i].value );
-		} else if ( element.attributes[i].specified ) {
-			// fixes https://github.com/alohaeditor/Aloha-Editor/issues/515 
-			newElement.setAttribute( element.attributes[i].name, element.attributes[i].value );
+	var attrs = element.attributes;
+	for ( var i = 0; i < attrs.length; i++ ) {
+		var attr = attrs[i];
+		// attr.specified is an IE specific check to exclude attributes that were never really set.
+		if (typeof attr.specified == "undefined" || attr.specified) {
+			if ( typeof newElement.setAttributeNS === 'function' ) {
+				newElement.setAttributeNS( attr.namespaceURI, attr.name, attr.value );
+			} else {
+				// fixes https://github.com/alohaeditor/Aloha-Editor/issues/515 
+				newElement.setAttribute( attr.name, attr.value );
+			}
 		}
 	}
 }
