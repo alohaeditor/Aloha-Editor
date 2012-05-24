@@ -559,8 +559,8 @@ define( [
 		if (this.mousedown && this.clickedRowId >= 0) {
 
 			// select first cell
-	//		var firstCell = this.obj.find('tr:nth-child(2) td:nth-child(2)').children('div[contenteditable=true]').get(0);
-	//		jQuery(firstCell).get(0).focus();
+			//var firstCell = this.obj.find('tr:nth-child(2) td:nth-child(2)').children('div[contenteditable=true]').get(0);
+			//jQuery(firstCell).get(0).focus();
 
 			indexInArray = jQuery.inArray(rowIndex, this.rowsToSelect);
 
@@ -1412,7 +1412,6 @@ define( [
 		for (var i = 0; i < this.rowsToSelect.length; i++) {
 			var rowId = this.rowsToSelect[i];
 			var rowCells = jQuery(this.getRows()[rowId].cells).toArray();
-			
 			if (i == 0) {
 				// set the status of the table header button to the status of the first 2 selected
 				// cells (index 1 + 2). The first cell is the selection-helper
