@@ -698,9 +698,10 @@ define( [
 		getContents: function( asObject ) {
 			// Cloned nodes are problematic in IE7.  When trying to read/write
 			// to them, they can sometimes cause the browser to crash.
-			//var clonedObj = this.obj.clone( false );
-
-			var clonedObj = jQuery(this.obj[0].outerHTML);
+			// The IE7 fix was moved to engine#copyAttributes() 
+			
+			var clonedObj = this.obj.clone( false );
+			//var clonedObj = jQuery(this.obj[0].outerHTML);
 
 			// do core cleanup
 			clonedObj.find( '.aloha-cleanme' ).remove();
