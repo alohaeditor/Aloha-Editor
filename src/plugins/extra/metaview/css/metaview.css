@@ -78,6 +78,8 @@ button.aloha-button-metaview { background: url(../img/button.png) no-repeat 0px 
 .aloha-metaview [lang="pl"] { background-image:url(../../flag-icons/img/flags/pl.png); }
 .aloha-metaview [lang="rs"] { background-image:url(../../flag-icons/img/flags/rs.png); }
 
+/* @todo add also the other languages which are available */
+
 .aloha-metaview q { background-image:url(../img/icon_cite.png); padding-left: 20px; border: 1px dotted #ddd; background-color: #ccc; background-repeat: no-repeat; background-position: left center;}
 
 .aloha-metaview a { background-image:url(../img/anchor.png); padding-left: 20px; border: 1px dotted #ddd; background-color: #ccc; background-repeat: no-repeat; background-position: left center;}

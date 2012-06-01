@@ -62,7 +62,7 @@ function( Aloha, jQuery, ContentHandlerManager, console ) {
 		],
 
 		attributes: {
-			'a': ['href', 'title', 'id', 'class', 'data-gentics-aloha-repository', 'data-gentics-aloha-object-id'],
+			'a': ['href', 'title', 'id', 'class', 'target', 'data-gentics-aloha-repository', 'data-gentics-aloha-object-id'],
 			'div': [ 'id', 'class'],
 			'abbr': ['title'],
 			'blockquote': ['cite'],
@@ -76,7 +76,7 @@ function( Aloha, jQuery, ContentHandlerManager, console ) {
 			'td': ['abbr', 'axis', 'colspan', 'rowspan', 'width'],
 			'th': ['abbr', 'axis', 'colspan', 'rowspan', 'scope', 'width'],
 			'ul': ['type'],
-			'span': ['class']
+			'span': ['class','style']
 		},
 
 		protocols: {
