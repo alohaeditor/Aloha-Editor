@@ -862,26 +862,27 @@ function isCollapsedLineBreak(br) {
 		ref = ref.parentNode;
 	}
 
-	var refStyle = $_( ref ).hasAttribute("style") ? ref.getAttribute("style") : null;
-	ref.style.height = "auto";
-	ref.style.maxHeight = "none";
-	ref.style.minHeight = "0";
-	var space = document.createTextNode("\u200b");
+	var origStyle = {
+		height: ref.style.height,
+		maxHeight: ref.style.maxHeight,
+		minHeight: ref.style.minHeight
+	};
+
+	ref.style.height = 'auto';
+	ref.style.maxHeight = 'none';
+	ref.style.minHeight = '0';
+	var space = document.createTextNode('\u200b');
 	var origHeight = ref.offsetHeight;
 	if (origHeight == 0) {
-		throw "isCollapsedLineBreak: original height is zero, bug?";
+		throw 'isCollapsedLineBreak: original height is zero, bug?';
 	}
 	br.parentNode.insertBefore(space, br.nextSibling);
 	var finalHeight = ref.offsetHeight;
 	space.parentNode.removeChild(space);
-	if (refStyle === null) {
-		// Without the setAttribute() line, removeAttribute() doesn't work in
-		// Chrome 14 dev.  I have no idea why.
-		ref.setAttribute("style", "");
-		ref.removeAttribute("style");
-	} else {
-		ref.setAttribute("style", refStyle);
-	}
+
+	ref.style.height = origStyle.height;
+	ref.style.maxHeight = origStyle.maxHeight;
+	ref.style.minHeight = origStyle.minHeight;
 
 	// Allow some leeway in case the zwsp didn't create a whole new line, but
 	// only made an existing line slightly higher.  Firefox 6.0a2 shows this
@@ -892,10 +893,12 @@ function isCollapsedLineBreak(br) {
 // "An extraneous line break is a br that has no visual effect, in that
 // removing it from the DOM would not change layout, except that a br that is
 // the sole child of an li is not extraneous."
+
 //
 // FIXME: This doesn't work in IE, since IE ignores display: none in
 // contenteditable.
 function isExtraneousLineBreak(br) {
+
 	if (!isHtmlElement(br, "br")) {
 		return false;
 	}
@@ -913,30 +916,38 @@ function isExtraneousLineBreak(br) {
 	while ($_.getComputedStyle(ref).display == "inline") {
 		ref = ref.parentNode;
 	}
-	var refStyle = $_( ref ).hasAttribute("style") ? ref.getAttribute("style") : null;
-	ref.style.height = "auto";
-	ref.style.maxHeight = "none";
-	ref.style.minHeight = "0";
-	var brStyle = $_( br ).hasAttribute("style") ? br.getAttribute("style") : null;
+
+	var origStyle = {
+		height: ref.style.height,
+		maxHeight: ref.style.maxHeight,
+		minHeight: ref.style.minHeight
+	};
+
+	ref.style.height = 'auto';
+	ref.style.maxHeight = 'none';
+	ref.style.minHeight = '0';
+
 	var origHeight = ref.offsetHeight;
 	if (origHeight == 0) {
 		throw "isExtraneousLineBreak: original height is zero, bug?";
 	}
-	br.setAttribute("style", "display:none");
+
+	var origBrDisplay = br.style.display;
+	br.style.display = 'none';
 	var finalHeight = ref.offsetHeight;
-	if (refStyle === null) {
-		// Without the setAttribute() line, removeAttribute() doesn't work in
-		// Chrome 14 dev.  I have no idea why.
-		ref.setAttribute("style", "");
-		ref.removeAttribute("style");
-	} else {
-		ref.setAttribute("style", refStyle);
-	}
-	if (brStyle === null) {
+
+	// Restore original styles to the touched elements.
+	ref.style.height = origStyle.height;
+	ref.style.maxHeight = origStyle.maxHeight;
+	ref.style.minHeight = origStyle.minHeight;
+	br.style.display = origBrDisplay;
+
+	// https://github.com/alohaeditor/Aloha-Editor/issues/516
+	// look like it works in msie > 7
+	/* if (jQuery.browser.msie && jQuery.browser.version < 8) {
 		br.removeAttribute("style");
-	} else {
-		br.setAttribute("style", brStyle);
-	}
+		ref.removeAttribute("style");
+	} */
 
 	return origHeight == finalHeight;
 }
@@ -1405,6 +1416,38 @@ function movePreservingRanges(node, newParent, newIndex, range) {
 	}
 }
 
+/**
+ * Copy all non empty attributes from an existing to a new element
+ * 
+ * @param {dom} element The source DOM element
+ * @param {dom} newElement The new DOM element which will get the attributes of the source DOM element
+ * @return void
+ */
+function copyAttributes( element, newElement ) {
+
+	// This is an IE7 workaround. We identified three places that were connected 
+	// to the mysterious ie7 crash:
+	// 1. Add attribute to dom element (Initialization of jquery-ui sortable)
+	// 2. Access the jquery expando attribute. Just reading the name is 
+	//    sufficient to make the browser vulnerable for the crash (Press enter)
+	// 3. On editable blur the Aloha.editables[0].getContents(); gets invoked.
+	//    This invokation somehow crashes the ie7. We assume that the access of 
+	//    shared expando attribute updates internal references which are not 
+	//    correclty handled during clone(); 
+	if ( jQuery.browser === 'msie' && jQuery.browser.version >=7 && typeof element.attributes[jQuery.expando] !== 'undefined' ) {
+		jQuery(element).removeAttr(jQuery.expando);
+	}
+
+	for ( var i = 0; i < element.attributes.length; i++ ) {
+		if ( typeof newElement.setAttributeNS === 'function' ) {
+			newElement.setAttributeNS( element.attributes[i].namespaceURI, element.attributes[i].name, element.attributes[i].value );
+		} else if ( element.attributes[i].specified ) {
+			// fixes https://github.com/alohaeditor/Aloha-Editor/issues/515 
+			newElement.setAttribute( element.attributes[i].name, element.attributes[i].value );
+		}
+	}
+}
+
 function setTagName(element, newName, range) {
 	// "If element is an HTML element with local name equal to new name, return
 	// element."
@@ -1426,14 +1469,8 @@ function setTagName(element, newName, range) {
 	element.parentNode.insertBefore(replacementElement, element);
 
 	// "Copy all attributes of element to replacement element, in order."
-	for (var i = 0; i < element.attributes.length; i++) {
-		if (typeof replacementElement.setAttributeNS === 'function') {
-			replacementElement.setAttributeNS(element.attributes[i].namespaceURI, element.attributes[i].name, element.attributes[i].value);
-		} else {
-			replacementElement.setAttribute(element.attributes[i].name, element.attributes[i].value);
-		}
-	}
-
+	copyAttributes( element,  replacementElement );
+	
 	// "While element has children, append the first child of element as the
 	// last child of replacement element, preserving ranges."
 	while (element.childNodes.length) {
@@ -6152,13 +6189,19 @@ function justifySelection(alignment, range) {
 	}
 }
 
-
 //@}
 ///// Create an end break /////
 //@{
 function createEndBreak() {
+	// https://github.com/alohaeditor/Aloha-Editor/issues/516
 	var endBr = document.createElement("br");
 	endBr.setAttribute("class", "aloha-end-br");
+
+	if ( jQuery.browser.msie && jQuery.browser.version < 8 ) {
+		var endTextNode = document.createTextNode(' ');
+		endBr.insertBefore(endTextNode);
+	}
+
 	return endBr;
 }
 
@@ -6168,6 +6211,7 @@ function createEndBreak() {
 //@{
 commands["delete"] = {
 	action: function(value, range) {
+
 		// "If the active range is not collapsed, delete the contents of the
 		// active range and abort these steps."
 		if (!range.collapsed) {
@@ -6252,7 +6296,6 @@ commands["delete"] = {
 
 		// collapse whitespace sequences
 		collapseWhitespace(node, range);
-		offset = range.startOffset;
 
 		// "If node is a Text node and offset is not zero, call collapse(node,
 		// offset) on the Selection. Then delete the contents of the range with
@@ -6266,6 +6309,20 @@ commands["delete"] = {
 			// so we can still pass our range and have it modified, but
 			// also conform with the previous implementation
 			range.startOffset -= 1;
+			deleteContents(range);
+			return;
+		}
+
+		// @iebug
+		// when inserting a special char via the plugin 
+		// there where problems deleting them again with backspace after insertation
+		// see https://github.com/alohaeditor/Aloha-Editor/issues/517
+		if (node.nodeType == $_.Node.TEXT_NODE
+		&& offset == 0 && jQuery.browser.msie) {
+			offset = 1;
+			range.setStart(node, offset);
+			range.setEnd(node, offset);
+			range.startOffset = 0;
 			deleteContents(range);
 			return;
 		}
@@ -6846,7 +6903,6 @@ commands.forwarddelete = {
 
 		// collapse whitespace in the node, if it is a text node
 		collapseWhitespace(node, range);
-		offset = range.startOffset;
 
 		// "If node is a Text node and offset is not node's length:"
 		if (node.nodeType == $_.Node.TEXT_NODE
@@ -7349,6 +7405,12 @@ commands.insertlinebreak = {
 			range.setStart(br.parentNode, 1 + getNodeIndex(br));
 			range.setEnd(br.parentNode, 1 + getNodeIndex(br));
 		}
+		
+		// IE7 is adding this styles: height: auto; min-height: 0px; max-height: none;
+		// with that there is the ugly "IE-editable-outline"
+		if (jQuery.browser.msie && jQuery.browser.version < 8) {
+			br.parentNode.removeAttribute("style");
+		}
 	}
 };
 
@@ -7370,7 +7432,7 @@ commands.insertorderedlist = {
 //@{
 commands.insertparagraph = {
 	action: function(value, range) {
-		
+
 		// "Delete the contents of the active range."
 		deleteContents(range);
 
@@ -7644,15 +7706,7 @@ commands.insertparagraph = {
 		var newContainer = document.createElement(newContainerName);
 
 		// "Copy all non empty attributes of the container to new container."
-		for ( var i = 0; i < container.attributes.length; i++ ) {
-			if ( typeof newContainer.setAttributeNS === 'function' ) {
-				newContainer.setAttributeNS(container.attributes[i].namespaceURI, container.attributes[i].name, container.attributes[i].value);
-			} else if ( container.attributes[i].value.length > 0 
-						&& container.attributes[i].value != 'null'
-						&& container.attributes[i].value > 0) {
-				newContainer.setAttribute(container.attributes[i].name, container.attributes[i].value);
-			}
-		}
+		copyAttributes( container,  newContainer );
 
 		// "If new container has an id attribute, unset it."
 		newContainer.removeAttribute("id");
@@ -7711,7 +7765,8 @@ commands.insertparagraph = {
 		// "If new container has no visible children, call createElement("br")
 		// on the context object, and append the result as the last child of
 		// new container."
-		if (newContainer.offsetHeight == 0 && !$_(newContainer.childNodes).some(isVisible)) {
+		if (newContainer.offsetHeight == 0 &&
+			!$_(newContainer.childNodes).some(isVisible)) {
 			newContainer.appendChild(createEndBreak());
 		}
 

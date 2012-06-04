@@ -206,9 +206,12 @@ define( [
 				// by catching the keydown we can prevent the browser from doing its own thing
 				// if it does not handle the keyStroke it returns true and therefore all other
 				// events (incl. browser's) continue
-				me.obj.keydown( function( event ) {
+				//me.obj.keydown( function( event ) {
+				//me.obj.add('.aloha-block', me.obj).live('keydown', function (event) { // live not working but would be usefull
+				me.obj.add('.aloha-block', me.obj).keydown(function (event) {
 					var letEventPass = Markup.preProcessKeyStrokes( event );
 					me.keyCode = event.which;
+
 					if (!letEventPass) {
 						// the event will not proceed to key press, therefore trigger smartContentChange
 						me.smartContentChange( event );
@@ -693,7 +696,12 @@ define( [
 		 * @return contents of the editable
 		 */
 		getContents: function( asObject ) {
+			// Cloned nodes are problematic in IE7.  When trying to read/write
+			// to them, they can sometimes cause the browser to crash.
+			// The IE7 fix was moved to engine#copyAttributes() 
+			
 			var clonedObj = this.obj.clone( false );
+			//var clonedObj = jQuery(this.obj[0].outerHTML);
 
 			// do core cleanup
 			clonedObj.find( '.aloha-cleanme' ).remove();
@@ -792,7 +800,7 @@ define( [
 				clearTimeout( this.sccTimerIdle );
 				clearTimeout( this.sccTimerDelay );
 
-				this.sccTimerDelay = setTimeout( function() {
+				this.sccTimerDelay = window.setTimeout( function() {
 					Aloha.trigger( 'aloha-smart-content-changed', {
 						'editable'        : me,
 						'keyIdentifier'   : event.originalEvent.keyIdentifier,
@@ -851,7 +859,7 @@ define( [
 				// in the rare case idle time is lower then delay time
 				clearTimeout( this.sccTimerDelay );
 				clearTimeout( this.sccTimerIdle );
-				this.sccTimerIdle = setTimeout( function() {
+				this.sccTimerIdle = window.setTimeout( function() {
 					Aloha.trigger( 'aloha-smart-content-changed', {
 						'editable'        : me,
 						'keyIdentifier'   : null,

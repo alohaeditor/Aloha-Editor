@@ -577,7 +577,7 @@ define( [
 					  
 					  jQuery(sc[i]).bind('mousedown', function (jqEvent) {
 						  var wrapper = jQuery(this).children('div').eq(0);
-						  setTimeout(function () {
+						  window.setTimeout(function () {
 							  wrapper.trigger('focus');
 						  }, 1);
 						  // unselect cells
@@ -817,7 +817,7 @@ define( [
 			        jQuery( that.activeTable.selection.selectedCells[j] ).bind( 'mousedown', function ( jqEvent ) {
 			            var wrapper = jQuery(this).children('div').eq(0);
 			            // lovely IE ;-)
-			            setTimeout(function () {
+			            window.setTimeout(function () {
 			            	wrapper.trigger( 'focus' );
 			            }, 1);
 			            // unselect cells
@@ -960,8 +960,8 @@ define( [
 		var that = this;
 
 		// generate the new scopes
-		FloatingMenu.createScope(this.name + '.row', 'Aloha.global');
-		FloatingMenu.createScope(this.name + '.column', 'Aloha.global');
+		FloatingMenu.createScope(this.name + '.row', 'Aloha.continuoustext');
+		FloatingMenu.createScope(this.name + '.column', 'Aloha.continuoustext');
 		FloatingMenu.createScope(this.name + '.cell', 'Aloha.continuoustext');
 
 		// the 'create table' button

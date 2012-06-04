@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8" />
+	
+	<title>Aloha Editor Sandbox</title>
+	
+	<link rel="stylesheet" type="text/css" href="../../css/aloha.css" />
+	<script>var Aloha = {};</script>
+	<script src="../vendor/jquery-1.5.1.js"></script>
+	<script src="../../lib/aloha.js" data-aloha-plugins="common/format,
+	                                                     common/highlighteditables,
+														 extra/cite,
+	                                                     extra/flag-icons,
+	                                                     extra/metaview,
+	                                                     extra/wai-lang,
+	                                                     common/table,
+	                                                     common/list,
+	                                                     common/link,
+	                                                     common/block,
+	                                                     common/undo,
+	                                                     common/contenthandler,
+	                                                     common/paste,
+	                                                     common/commands,
+	                                                     common/image,
+	                                                     common/abbr,
+	                                                     extra/browser,
+	                                                     extra/linkbrowser,
+	                                                     extra/sourceview"></script>
+</head>
+
+<body>
+	<h1 class="aloha">Sandbox</h1>
+	<div class="aloha"><p>Hello, world!</p></div>
+	<script>
+		Aloha.ready(function () {
+			Aloha.jQuery('.aloha').aloha();
+			Aloha.Sidebar.right.show().open();
+		});
+	</script>
+</body>
+
+</html>

@@ -13,3 +13,15 @@ h3. Plugin Settings
 		}
 	}
 </javascript>
+
+
+h3. Horizontalruler Plugin
+
+The Horizontalruler Plugin allows you to insert a horizontal ruler tag aka +<hr>+ at the current cursor position.
+
+h4. Components
+
+The plugin only offers a single component:
+
+* hr - a button which will insert a horizontal ruler at the cursor position
+
