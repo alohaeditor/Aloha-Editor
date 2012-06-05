@@ -1434,7 +1434,7 @@ function copyAttributes( element, newElement ) {
 	//    This invokation somehow crashes the ie7. We assume that the access of 
 	//    shared expando attribute updates internal references which are not 
 	//    correclty handled during clone(); 
-	if ( jQuery.browser === 'msie' && jQuery.browser.version >=7 && typeof element.attributes[jQuery.expando] !== 'undefined' ) {
+	if ( jQuery.browser.msie && jQuery.browser.version >=7 && typeof element.attributes[jQuery.expando] !== 'undefined' ) {
 		jQuery(element).removeAttr(jQuery.expando);
 	}
 
@@ -3729,7 +3729,7 @@ commands.removeformat = {
 			"hilitecolor",
 			"italic",
 			"strikethrough",
-			"underline",
+			"underline"
 		] ).forEach(function(command) {
 			setSelectionValue(command, null);
 		});
@@ -6197,10 +6197,11 @@ function createEndBreak() {
 	var endBr = document.createElement("br");
 	endBr.setAttribute("class", "aloha-end-br");
 
-	if ( jQuery.browser.msie && jQuery.browser.version < 8 ) {
-		var endTextNode = document.createTextNode(' ');
-		endBr.insertBefore(endTextNode);
-	}
+	// the code below cannot work, since the endBr is created right above and not inserted into the DOM tree.
+//	if ( jQuery.browser.msie && jQuery.browser.version < 8 ) {
+//		var endTextNode = document.createTextNode(' ');
+//		endBr.insertBefore(endTextNode);
+//	}
 
 	return endBr;
 }

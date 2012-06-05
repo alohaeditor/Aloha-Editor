@@ -185,8 +185,9 @@ function ($) {
 					}
 				}
 			}
-			$cell.removeAttr('colspan');
-			$cell.removeAttr('rowspan');
+			// Note that attribute case (colSpan instead of colspan) matters on IE7.
+			$cell.removeAttr('colSpan');
+			$cell.removeAttr('rowSpan');
 		},
 		/**
 		 * @param cell
