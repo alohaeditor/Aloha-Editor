@@ -1434,7 +1434,7 @@ function copyAttributes( element, newElement ) {
 	//    This invokation somehow crashes the ie7. We assume that the access of 
 	//    shared expando attribute updates internal references which are not 
 	//    correclty handled during clone(); 
-	if ( jQuery.browser === 'msie' && jQuery.browser.version >=7 && typeof element.attributes[jQuery.expando] !== 'undefined' ) {
+	if ( jQuery.browser.msie && jQuery.browser.version >=7 && typeof element.attributes[jQuery.expando] !== 'undefined' ) {
 		jQuery(element).removeAttr(jQuery.expando);
 	}
 
