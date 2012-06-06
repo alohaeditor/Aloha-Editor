@@ -4094,23 +4094,20 @@ function fixDisallowedAncestors(node, range) {
 			// in such cases, we just unwrap the contents of the paragraph
 			if (originalParent === node.parentNode) {
 				// so we unwrap now
-				var correctStart = false;
-				var correctEnd = false;
-				if (range.startContainer === node.parentNode) {
-					correctStart = true;
+				var newStartOffset = range.startOffset;
+				var newEndOffset = range.endOffset;
+
+				if (range.startContainer === node.parentNode && range.startOffset > getNodeIndex(node)) {
+					// the node (1 element) will be replaced by its contents (contents().length elements)
+					newStartOffset = range.startOffset + (jQuery(node).contents().length - 1);
 				}
-				if (range.endContainer === node.parentNode) {
-					correctEnd = true;
-				}
-				if (correctStart) {
-					range.startContainer = node.parentNode;
-					range.startOffset = range.startOffset + getNodeIndex(node);
-				}
-				if (correctEnd) {
-					range.endContainer = node.parentNode;
-					range.endOffset = range.endOffset + getNodeIndex(node);
+				if (range.endContainer === node.parentNode && range.endOffset > getNodeIndex(node)) {
+					// the node (1 element) will be replaced by its contents (contents().length elements)
+					newEndOffset = range.endOffset + (jQuery(node).contents().length - 1);
 				}
 				jQuery(node).contents().unwrap();
+				range.startOffset = newStartOffset;
+				range.endOffset = newEndOffset;
 				// after unwrapping, we are done
 				break;
 			}
