@@ -668,13 +668,15 @@ var Dom = Class.extend({
 		endOffset = rangeObject.endOffset;
 
 		// iterate through all sub nodes
-		startObject.contents().each(function(index) {
+		startObject.contents().each(function() {
+			var index;
 
 			// Try to read the nodeType property and return if we do not have permission
 			// ie.: frame document to an external URL
 			var nodeType;
 			try {
 				nodeType = this.nodeType;
+				index = that.getIndexInParent(this);
 			}
 			catch (e) {
 				return;

@@ -16,3 +16,4 @@ All changes are categorized into one of the following keywords:
 - **ENHANCEMENT**: sanitize contenthandler: allow attribute target for the a element in the relaxed config
 - **BUG**: core: Fixed the fix for IE7 crashes
 - **BUG**: core: Fixed Javascript errors that occurred in IE7 when pressing Enter at the end of paragraphs (multiple times).
+- **BUG**: core: Fixed possible Javascript error when cleanup operation is done (e.g. after pasting text into an editable).
