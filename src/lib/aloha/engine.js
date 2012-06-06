@@ -4085,7 +4085,35 @@ function fixDisallowedAncestors(node, range) {
 				range.endOffset = range.endOffset + getNodeIndex(node);
 			}
 		} else {
+			// store the original parent
+			var originalParent = node.parentNode;
 			splitParent([node], range);
+			// check whether the parent did not change, so the split did not work, e.g.
+			// because we already reached the editing host itself.
+			// this situation can occur, e.g. when we insert a paragraph into an contenteditable span
+			// in such cases, we just unwrap the contents of the paragraph
+			if (originalParent === node.parentNode) {
+				// so we unwrap now
+				var correctStart = false;
+				var correctEnd = false;
+				if (range.startContainer === node.parentNode) {
+					correctStart = true;
+				}
+				if (range.endContainer === node.parentNode) {
+					correctEnd = true;
+				}
+				if (correctStart) {
+					range.startContainer = node.parentNode;
+					range.startOffset = range.startOffset + getNodeIndex(node);
+				}
+				if (correctEnd) {
+					range.endContainer = node.parentNode;
+					range.endOffset = range.endOffset + getNodeIndex(node);
+				}
+				jQuery(node).contents().unwrap();
+				// after unwrapping, we are done
+				break;
+			}
 		}
 	}
 

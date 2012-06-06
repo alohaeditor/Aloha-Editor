@@ -17,3 +17,5 @@ All changes are categorized into one of the following keywords:
 - **BUG**: core: Fixed the fix for IE7 crashes
 - **BUG**: core: Fixed Javascript errors that occurred in IE7 when pressing Enter at the end of paragraphs (multiple times).
 - **BUG**: core: Fixed possible Javascript error when cleanup operation is done (e.g. after pasting text into an editable).
+- **BUG**: commands: Fixed possible browser hang (due to an infinite loop) that occurred, when using the command 'inserthtml' to insert content into an editable span, that is not allowed inside a span (e.g. a h1). This browser hang could occur when using the paste plugin to paste content, since that uses the command 'inserthtml'.
+ 
