@@ -11,3 +11,4 @@ All changes are categorized into one of the following keywords:
 - **ENHANCEMENT**: table plugin: enabled format tab when a whole row/column is selected via click on the row/column header
 - **ENHANCEMENT**: sanitize contenthandler: allow attribute target for the a element in the relaxed config
 - **ENHANCEMENT**: plugin highlighteditables: configurable per editable; CSS can be adapted;
+- **ENHANCEMENT**: added a new helper function jQuery.isEmpty() to check if a mixed var is empty or not
