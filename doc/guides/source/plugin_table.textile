@@ -1,10 +1,6 @@
 h2. The Table Plugin
 
-The Table Plugin will allow you to edit tables within your contents. You
-can do pretty much everything that you'd expect from editing tables,
-like adding and deleting rows and columns as well as merging and
-splitting cells. You can use the tab key to jump from one cell to the
-next.
+The Table Plugin will allow you to edit tables within your contents. You can do pretty much everything that you'd expect from editing tables, like adding and deleting rows and columns as well as merging and splitting cells. You can use the tab key to jump from one cell to the next.
 
 endprologue.
 
@@ -35,6 +31,7 @@ Aloha.settings.plugins.table: {
 			{ name: 'table-style-redwhite', iconClass: 'aloha-button-row-redwhite' }
 	]
 };
+
 </javascript>
 
 h3. Components
@@ -57,3 +54,4 @@ h3. Components
 * mergecells - merge selected cells
 * splitcells - split selected cells
 * tablecaption - input field which allows you to add a caption to the table
+

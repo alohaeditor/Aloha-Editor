@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Aloha GuidesAloha Guides: The DOM to XHTML plugin</title>
+  <title>: DOM to XHTML Plugin</title>
 
   <!-- guides styles -->
   <link rel="stylesheet" type="text/css" href="stylesheets/style.css" />
@@ -42,8 +42,8 @@
     <div class="wrapper">
       <div class="feature_header">
         <a href="/"><img src="images/strobe/guides.png"></a>
-        <h2><a href="/">Aloha Guides</a></h2>
-        <p>These guides help you to make your content editable and to develop Aloha.</p>
+        <h2><a href="/"></a></h2>
+        <p>These guides help you to make your content editable and to develop Aloha Editor.</p>
       </div>
       <div class="feature_sidebar">
         <a href="index.html" id="guidesMenu">
@@ -58,9 +58,9 @@
     <dt>Start Here</dt>
       <dd><a href="using_aloha.html">Using Aloha Editor</a></dd>
       <dd><a href="configure_aloha.html">Configuring Aloha Editor</a></dd>
-      <dd><a href="aloha_jquery.html">Aloha and jQuery</a></dd>
+      <dd><a href="aloha_jquery.html">Aloha Editor and jQuery</a></dd>
       <dd><a href="develop_aloha.html">Developing and building Aloha Editor</a></dd>
-      <dd><a href="require.html">Aloha dependency management</a></dd>
+      <dd><a href="require.html">Aloha Editor dependency management</a></dd>
       <dd><a href="writing_plugins.html">Writing Plugins</a></dd>
       <dd><a href="repository.html">Working with repositories</a></dd>
     <dt>The Core</dt>
@@ -68,7 +68,7 @@
     <dt>Commands</dt>
       <dd><a href="using_commands.html">Using commands</a></dd>
     <dt>UI</dt>
-      <dd><a href="ui.html">Aloha Editor Ui</a></dd>
+      <dd><a href="ui.html">Aloha Editor UI</a></dd>
       <dd><a href="toolbar.html">Aloha Editor toolbar</a></dd>
       <dd><a href="sidebar.html">Aloha Editor sidebar</a></dd>
       <dd><a href="componenttypes.html">Aloha Editor UI API</a></dd>
@@ -80,12 +80,13 @@
       <dd><a href="plugin_image.html">Image</a></dd>
       <dd><a href="plugin_contenthandler.html">Content Handler</a></dd>
       <dd><a href="plugin_browser.html">Browser</a></dd>
-      <dd><a href="plugin_numeratedheaders.html">Numerated Headers</a></dd>
+      <dd>Numerated Headers</dd>
       <dd><a href="plugin_undo.html">Undo</a></dd>
       <dd><a href="plugin_table.html">Table</a></dd>
       <dd><a href="plugin_paste.html">Paste</a></dd>
       <dd><a href="plugin_formatlesspaste.html">Formatless paste</a></dd>
       <dd><a href="plugin_dom_to_xhtml.html">DOM to XHTML</a></dd>
+      <dd><a href="plugin_wai-lang.html">WAI Language</a></dd>
     <dt>Contributing to Aloha Editor</dt>
       <dd><a href="releasing.html">Releasing</a></dd>
       <dd>Development Process</dd>
@@ -103,7 +104,7 @@
     <div class="wrapper">
       <div id="mainCol">
           <div class="headerSection">
-            <h2>The <span class="caps">DOM</span> to <span class="caps">XHTML</span> plugin</h2>
+            <h2><span class="caps">DOM</span> to <span class="caps">XHTML</span> Plugin</h2>
 <p>The dom-to-xhtml plugin provides a more <span class="caps">XHTML</span> conformant serialization than element.innerHTML for editable.getContents().</p>
 
           </div>
@@ -112,11 +113,12 @@
 <p>The plugin tries to make the result <span class="caps">XHTML</span> and <span class="caps">HTML</span> comformant:</p>
 <ul>
 	<li>element and attribute names are lowercased,</li>
-	<li>certain elements are not serialized with an end tag (&lt;br/&gt;, &lt;img/&gt;),</li>
+	<li>certain elements are serialized as self-closing tags without an end tag (&lt;br/&gt;, &lt;img/&gt;),</li>
 	<li>boolean attributes that are true are serialized like checked=&#8220;checked&#8221;</li>
 </ul>
+<p>Please find the list of elements that are serialized as self-closed and the list of boolean attributes in the <a href="https://github.com/alohaeditor/Aloha-Editor/blob/dev/src/plugins/common/dom-to-xhtml/lib/dom-to-xhtml.js">source code</a> (see vars emptyElements and booleanAttrs)</p>
 <p>Also, empty attributes (for example value=&quot;&quot;) will not be serialized at all (will not appear in the serialization). There is not yet a definite reason for this, so it may be changed at some time.</p>
-<p>The result may still violate <span class="caps">HTML</span> or <span class="caps">XHTML</span> schemas because all elements and attributes that are encountered in the <span class="caps">DOM</span> are serialized, whether or not they are allowed according to a schema. Element nesting rules aren&#8217;t checked either.</p>
+<p>The result may still violate <span class="caps">HTML</span> or <span class="caps">XHTML</span> schemas because all elements and attributes in the <span class="caps">DOM</span> are serialized the way they are encountered, regardless of whether they are correctly nested or are valid according to a schema.</p>
 <h3 id="usage">2 Usage</h3>
 <p>It suffices to include the dom-to-xhtml plugin in the plugin list of the Aloha-Editor script tag.</p>
 <p>When the plugin is initialized, it will automatically replace the default editable serializer, which has the effect that calls to editable.getContents() return a valid <span class="caps">XML</span> fragment.</p>
@@ -139,7 +141,7 @@
 	<li>IE &#8211; don&#8217;t expect whitespace to be preserved correctly except in &lt;pre&gt; elements,</li>
 	<li>IE &#8211; but don&#8217;t use white-space:pre <span class="caps">CSS</span> styles (and similar whitespace modifying styles),   or expect whitespace to sometimes be preserved and sometimes not,</li>
 	<li>IE7 only &#8211; expect URLs in href and src attributes to be turned into absolute URLs,</li>
-	<li>all browsers &#8211; don&#8217;t expect comments, conditional comments, processing   instructions or <span class="caps">CDATA</span> sections to be preserved correctly.</li>
+	<li>all browsers &#8211; don&#8217;t expect comments, conditional comments, processing instructions or <span class="caps">CDATA</span> sections to be preserved correctly.</li>
 </ul>
 
       </div>

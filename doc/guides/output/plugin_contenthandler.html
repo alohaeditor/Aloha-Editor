@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Aloha GuidesAloha Guides: The Content Handler Plugin</title>
+  <title>: The Content Handler Plugin</title>
 
   <!-- guides styles -->
   <link rel="stylesheet" type="text/css" href="stylesheets/style.css" />
@@ -42,8 +42,8 @@
     <div class="wrapper">
       <div class="feature_header">
         <a href="/"><img src="images/strobe/guides.png"></a>
-        <h2><a href="/">Aloha Guides</a></h2>
-        <p>These guides help you to make your content editable and to develop Aloha.</p>
+        <h2><a href="/"></a></h2>
+        <p>These guides help you to make your content editable and to develop Aloha Editor.</p>
       </div>
       <div class="feature_sidebar">
         <a href="index.html" id="guidesMenu">
@@ -58,9 +58,9 @@
     <dt>Start Here</dt>
       <dd><a href="using_aloha.html">Using Aloha Editor</a></dd>
       <dd><a href="configure_aloha.html">Configuring Aloha Editor</a></dd>
-      <dd><a href="aloha_jquery.html">Aloha and jQuery</a></dd>
+      <dd><a href="aloha_jquery.html">Aloha Editor and jQuery</a></dd>
       <dd><a href="develop_aloha.html">Developing and building Aloha Editor</a></dd>
-      <dd><a href="require.html">Aloha dependency management</a></dd>
+      <dd><a href="require.html">Aloha Editor dependency management</a></dd>
       <dd><a href="writing_plugins.html">Writing Plugins</a></dd>
       <dd><a href="repository.html">Working with repositories</a></dd>
     <dt>The Core</dt>
@@ -68,7 +68,7 @@
     <dt>Commands</dt>
       <dd><a href="using_commands.html">Using commands</a></dd>
     <dt>UI</dt>
-      <dd><a href="ui.html">Aloha Editor Ui</a></dd>
+      <dd><a href="ui.html">Aloha Editor UI</a></dd>
       <dd><a href="toolbar.html">Aloha Editor toolbar</a></dd>
       <dd><a href="sidebar.html">Aloha Editor sidebar</a></dd>
       <dd><a href="componenttypes.html">Aloha Editor UI API</a></dd>
@@ -80,12 +80,13 @@
       <dd><a href="plugin_image.html">Image</a></dd>
       <dd><a href="plugin_contenthandler.html">Content Handler</a></dd>
       <dd><a href="plugin_browser.html">Browser</a></dd>
-      <dd><a href="plugin_numeratedheaders.html">Numerated Headers</a></dd>
+      <dd>Numerated Headers</dd>
       <dd><a href="plugin_undo.html">Undo</a></dd>
       <dd><a href="plugin_table.html">Table</a></dd>
       <dd><a href="plugin_paste.html">Paste</a></dd>
       <dd><a href="plugin_formatlesspaste.html">Formatless paste</a></dd>
       <dd><a href="plugin_dom_to_xhtml.html">DOM to XHTML</a></dd>
+      <dd><a href="plugin_wai-lang.html">WAI Language</a></dd>
     <dt>Contributing to Aloha Editor</dt>
       <dd><a href="releasing.html">Releasing</a></dd>
       <dd>Development Process</dd>
@@ -115,7 +116,7 @@
 	<li>sanitize</li>
 	<li>oEmbed</li>
 </ul>
-<p>Plugins also provide Content Handler:</p>
+<p>Plugins may also provide content handlers:</p>
 <ul>
 	<li>Block <code>common/block</code> plugin</li>
 </ul>
@@ -217,7 +218,7 @@ Aloha.settings.contentHandler.sanitize = {
 <h3 id="apis-and-extension-points">6 APIs and Extension Points</h3>
 <p>There is the Content Handler Manager in Aloha Core available where Content Handler can register themself.</p>
 <h3 id="writing-your-own-content-handler">7 Writing your own Content Handler</h3>
-<p>All Content Handler needs to support the &#8220;handleContent&#8221; method and will receive and return the content as <span class="caps">HTML</span> text.</p>
+<p>A content handler implements the &#8220;handleContent&#8221; method which will receive and return the content as <span class="caps">HTML</span> text.</p>
 <div class="code_container">
 <pre class="brush: javascript; gutter: false; toolbar: false">
 

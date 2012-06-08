@@ -117,6 +117,9 @@ index:
     - title: "DOM to XHTML"
       url: plugin_dom_to_xhtml
       text: "The DOM to XHTML plugin."
+    - title: "WAI Language"
+      url: plugin_wai-lang
+      text: "Add WAI conform language annotations to your content."
 
   Contributing to Aloha Editor:
     - title: Releasing

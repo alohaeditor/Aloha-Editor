@@ -13,7 +13,7 @@ The available contenthandlers are:
 * sanitize
 * oEmbed
 
-Plugins also provide Content Handler:
+Plugins may also provide content handlers:
 
 * Block @common/block@ plugin
 
@@ -124,7 +124,7 @@ There is the Content Handler Manager in Aloha Core available where Content Handl
 
 h3. Writing your own Content Handler
 
-All Content Handler needs to support the "handleContent" method and will receive and return the content as HTML text.
+A content handler implements the "handleContent" method which will receive and return the content as HTML text.
 
 <javascript>
 	define(

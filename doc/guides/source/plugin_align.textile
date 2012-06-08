@@ -6,7 +6,7 @@ The Align Plugin allows you to align contents left, right, center, or justify th
 
 endprologue.
 
-h4. Configuration settings
+h3. Configuration settings
 
 The align plugin allows you to configure which of it's buttons are available:
 
@@ -16,7 +16,7 @@ Aloha.settings.plugins.align.config = {
 };
 </javascript>
 
-h4. Components
+h3. Components
 
 * alignLeft - align selected text left
 * alignRight - align selected text right
