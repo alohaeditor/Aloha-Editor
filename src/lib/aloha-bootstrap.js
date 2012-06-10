@@ -201,7 +201,6 @@ define( 'aloha', [], function () {
 					'util/position',
 					'aloha/ext-alohaproxy',
 					'aloha/ext-alohareader',
-					'aloha/ext-alohatreeloader',
 					'aloha/ui',
 					'aloha/ui-attributefield',
 					'aloha/floatingmenu',
