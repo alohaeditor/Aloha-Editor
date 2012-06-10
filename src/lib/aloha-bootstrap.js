@@ -204,7 +204,6 @@ define( 'aloha', [], function () {
 					'aloha/ext-alohatreeloader',
 					'aloha/ui',
 					'aloha/ui-attributefield',
-					'aloha/ui-browser',
 					'aloha/floatingmenu',
 					'aloha/repositorymanager',
 					'aloha/repository',
