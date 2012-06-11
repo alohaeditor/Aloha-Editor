@@ -31,6 +31,7 @@ function( Aloha, jQuery, Plugin) {
 		 * Initialize the plugin and set initialize flag on true
 		 */
 		init: function () {
+
 			var stack = new Undo.Stack(),
 			    EditCommand = Undo.Command.extend({
 					constructor: function(editable, patch) {
@@ -121,6 +122,7 @@ function( Aloha, jQuery, Plugin) {
 				}
 			});
 		},
+
 
 		/**
 		 * toString method
