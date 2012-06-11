@@ -41,9 +41,6 @@ function(Aloha, jQuery, ContentHandlerManager) {
 				return;
 			};
 
-			// remove formattings
-			window.console.log('handlecontent formatlesspaste', this.enabled);
-			
 			if ( this.enabled ) {
 				this.removeFormatting( content );
 			}

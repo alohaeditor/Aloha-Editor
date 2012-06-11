@@ -1492,25 +1492,7 @@ function(Aloha, jQuery, Ext, Class, console) {
 				this.userActivatedTab = tabOfButton.label;
 				this.doLayout();
 			}
-		},
-		
-		/*hideTab: function(name) {
-			var that = this;
-
-			for (var t = 0; t < this.tabs.length; t++) {
-				var tab = this.tabs[t];
-				if (tab.label == name) {
-					window.console.log('hide', name, tab.extPanel);
-					that.extTabPanel.hideTabStripItem(tab.extPanel);
-				}
-			}
-			this.doLayout();
-			this.extTabPanel.doLayout();
-			//if (tab.label == 'Link') {
-			//	window.console.log('set invisible');
-			//	that.extTabPanel.hideTabStripItem(tab.extPanel);
-			//}
-		}*/
+		}
 	});
 	
 	var menu =  new FloatingMenu();
