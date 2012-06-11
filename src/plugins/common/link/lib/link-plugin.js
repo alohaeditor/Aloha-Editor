@@ -215,7 +215,7 @@ define( [
 			
 			sidebar.show();
 		},
-		
+
 		/**
 		 * Subscribe for events
 		 */
@@ -224,6 +224,13 @@ define( [
 
 			// add the event handler for creation of editables
 			Aloha.bind( 'aloha-editable-created', function ( event, editable ) {
+				var config;
+
+				config = that.getEditableConfig( editable.obj );
+				if ( jQuery.inArray( 'a', config ) == -1 ) {
+					return;
+				}
+
 				// CTRL+L
 				editable.obj.keydown( function ( e ) {
 					if ( e.metaKey && e.which == 76 ) {
@@ -245,31 +252,39 @@ define( [
 				} );
 			} );
 
+			Aloha.bind( 'aloha-editable-activated', function ( event, rangeObject ) {
+				var config;
+
+				// show/hide the button according to the configuration
+				config = that.getEditableConfig( Aloha.activeEditable.obj );
+				if ( jQuery.inArray( 'a', config ) != -1 ) {
+					that.formatLinkButton.show();
+					that.insertLinkButton.show();
+					FloatingMenu.hideTab = false;
+				} else {
+					that.formatLinkButton.hide();
+					that.insertLinkButton.hide();
+					FloatingMenu.hideTab = i18n.t( 'floatingmenu.tab.link' );
+				}
+			});
+
 			// add the event handler for selection change
 			Aloha.bind( 'aloha-selection-changed', function ( event, rangeObject ) {
 				var config,
-				    foundMarkup;
+					foundMarkup;
 				
+				config = that.getEditableConfig( Aloha.activeEditable.obj );
+
 				// Check if we need to ignore this selection changed event for
 				// now and check whether the selection was placed within a
 				// editable area.
 				if ( !that.ignoreNextSelectionChangedEvent &&
 						Aloha.Selection.isSelectionEditable() &&
-							Aloha.activeEditable != null ) {
-					// show/hide the button according to the configuration
-					config = that.getEditableConfig( Aloha.activeEditable.obj );
-					if ( jQuery.inArray( 'a', config ) != -1 ) {
-						that.formatLinkButton.show();
-						that.insertLinkButton.show();
-					} else {
-						that.formatLinkButton.hide();
-						that.insertLinkButton.hide();
-						// leave if a is not allowed
-						return;
-					}
-					
+							Aloha.activeEditable != null &&
+							jQuery.inArray( 'a', config ) !== -1 ) {
+
 					foundMarkup = that.findLinkMarkup( rangeObject );
-					
+
 					if ( foundMarkup ) {
 						that.toggleLinkScope( true );
 						
