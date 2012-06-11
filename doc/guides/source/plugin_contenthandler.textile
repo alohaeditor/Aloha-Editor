@@ -137,7 +137,7 @@ The Generic Content Handler is a bit less generic than his name might suggest as
 ** height
 ** valign
 * remove comments
-* unwrap font and span tags
+* unwrap contents of div, font and span tags
 * remove styles
 * remove namespaced elements
 * transform formattings by turning

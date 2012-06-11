@@ -184,9 +184,7 @@ function(Aloha, jQuery, ContentHandlerManager) {
 		unwrapTags: function( content ) {
 			var that = this;
 
-			content.children('span,font,div').filter(function() {
-				return this.contentEditable != 'false';
-			}).each(function() {
+			content.find('span,font,div').each(function() {
 				if (this.nodeName == 'DIV') {
 					// safari and chrome cleanup for plain text paste with working linebreaks
 					if (this.innerHTML == '<br>') {
@@ -197,8 +195,6 @@ function(Aloha, jQuery, ContentHandlerManager) {
 				} else {
 					jQuery(this).contents().unwrap();
 				}
-
-				that.unwrapTags(jQuery(this));
 			});
 		},
 
