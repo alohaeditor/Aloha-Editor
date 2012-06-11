@@ -148,6 +148,8 @@ The Generic Content Handler is a bit less generic than his name might suggest as
 
 h4. Sanitize Content Handler
 
+WARNING: The Sanitize Content Handler does not work reliably on IE7, and will therefore just do nothing, if this browser is detected.
+
 The Sanitize Content Handler will remove all dom elements and attributes not covered by it's configuration. You may specify your own configuration based on these default settings:
 
 <javascript>
