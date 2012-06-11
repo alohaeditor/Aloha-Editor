@@ -781,37 +781,39 @@ define([
 				 */
 				Aloha.bind('aloha-selection-changed', function(event, rangeObject, originalEvent) {
 					var config, foundMarkup;
+
 					if (originalEvent && originalEvent.target) {
 						// Check if the element is currently beeing resized
-						if (that.settings.ui.resizable && !jQuery(originalEvent.target).hasClass('ui-resizable-handle')) {
+						if (that.settings.ui.resizable &&
+							!jQuery(originalEvent.target).hasClass('ui-resizable-handle')) {
 							that.endResize();
 						}
 					}
 
 					if (Aloha.activeEditable !== null) {
 						foundMarkup = that.findImgMarkup( rangeObject );
-						//var config = that.getEditableConfig(Aloha.activeEditable.obj);
 						config = that.getEditableConfig(Aloha.activeEditable.obj);
+						that.settings = this.settings = jQuery.extend(true, that.defaultSettings, config);
 
-						if (typeof config !== 'undefined' ) {
-							that.insertImgButton.show();
-						} else {
+						if ( jQuery.isEmpty(config) ) {
 							that.insertImgButton.hide();
 							return;
+						} else {
+							that.insertImgButton.show();
 						}
 
 						// Enable image specific ui components if the element is an image
 						if (foundMarkup) {
 							that.insertImgButton.hide();
 							FloatingMenu.setScope(that.name);
-							if (that.settings.ui.meta) {
+							if ( that.settings.ui.meta ) {
 								that.imgSrcField.setTargetObject(foundMarkup, 'src');
 								that.imgTitleField.setTargetObject(foundMarkup, 'title');
 							}
 							that.imgSrcField.focus();
 							FloatingMenu.activateTabOfButton('imgsrc');
 						} else {
-							if (that.settings.ui.meta) {
+							if ( that.settings.ui.meta) {
 								that.imgSrcField.setTargetObject(null);
 							}
 						}
@@ -1133,7 +1135,7 @@ define([
 				$('#' + that.imgResizeWidthField.id).val(that.imageObj.width());
 
 
-				if (this.settings.ui.resizable) {
+				if ( this.settings.ui.resizable ) {
 					this.startResize();
 				}
 			

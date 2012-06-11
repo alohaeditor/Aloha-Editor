@@ -38,6 +38,16 @@ h3. Components
 
 h3. Configuration
 
-No configuration options are available.
+You can adjust the used CSS styles for your needs and enable it for single editables.
 
-You can adjust the used CSS styles for your needs.
+<javascript>
+Aloha.settings.plugins: {
+	metaview: {
+		config: [ 'metaview' ],
+		editables: {
+			'#one': [ 'metaview' ],
+			'#two': [ ]
+		}
+	}
+};
+</javascript>

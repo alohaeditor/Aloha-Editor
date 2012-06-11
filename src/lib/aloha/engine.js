@@ -1434,7 +1434,7 @@ function copyAttributes( element, newElement ) {
 	//    This invokation somehow crashes the ie7. We assume that the access of 
 	//    shared expando attribute updates internal references which are not 
 	//    correclty handled during clone(); 
-	if ( jQuery.browser === 'msie' && jQuery.browser.version >=7 && typeof element.attributes[jQuery.expando] !== 'undefined' ) {
+	if ( jQuery.browser.msie && jQuery.browser.version >=7 && typeof element.attributes[jQuery.expando] !== 'undefined' ) {
 		jQuery(element).removeAttr(jQuery.expando);
 	}
 
@@ -3729,7 +3729,7 @@ commands.removeformat = {
 			"hilitecolor",
 			"italic",
 			"strikethrough",
-			"underline",
+			"underline"
 		] ).forEach(function(command) {
 			setSelectionValue(command, null);
 		});
@@ -4085,7 +4085,32 @@ function fixDisallowedAncestors(node, range) {
 				range.endOffset = range.endOffset + getNodeIndex(node);
 			}
 		} else {
+			// store the original parent
+			var originalParent = node.parentNode;
 			splitParent([node], range);
+			// check whether the parent did not change, so the split did not work, e.g.
+			// because we already reached the editing host itself.
+			// this situation can occur, e.g. when we insert a paragraph into an contenteditable span
+			// in such cases, we just unwrap the contents of the paragraph
+			if (originalParent === node.parentNode) {
+				// so we unwrap now
+				var newStartOffset = range.startOffset;
+				var newEndOffset = range.endOffset;
+
+				if (range.startContainer === node.parentNode && range.startOffset > getNodeIndex(node)) {
+					// the node (1 element) will be replaced by its contents (contents().length elements)
+					newStartOffset = range.startOffset + (jQuery(node).contents().length - 1);
+				}
+				if (range.endContainer === node.parentNode && range.endOffset > getNodeIndex(node)) {
+					// the node (1 element) will be replaced by its contents (contents().length elements)
+					newEndOffset = range.endOffset + (jQuery(node).contents().length - 1);
+				}
+				jQuery(node).contents().unwrap();
+				range.startOffset = newStartOffset;
+				range.endOffset = newEndOffset;
+				// after unwrapping, we are done
+				break;
+			}
 		}
 	}
 
@@ -6197,10 +6222,11 @@ function createEndBreak() {
 	var endBr = document.createElement("br");
 	endBr.setAttribute("class", "aloha-end-br");
 
-	if ( jQuery.browser.msie && jQuery.browser.version < 8 ) {
-		var endTextNode = document.createTextNode(' ');
-		endBr.insertBefore(endTextNode);
-	}
+	// the code below cannot work, since the endBr is created right above and not inserted into the DOM tree.
+//	if ( jQuery.browser.msie && jQuery.browser.version < 8 ) {
+//		var endTextNode = document.createTextNode(' ');
+//		endBr.insertBefore(endTextNode);
+//	}
 
 	return endBr;
 }

@@ -13,17 +13,20 @@ attribute values must be quoted and elements must be closed.
 
 The plugin tries to make the result XHTML and HTML comformant:
 * element and attribute names are lowercased,
-* certain elements are not serialized with an end tag (&lt;br/>, &lt;img/>),
+* certain elements are serialized as self-closing tags without an end tag (&lt;br/>, &lt;img/>),
 * boolean attributes that are true are serialized like checked="checked"
+
+Please find the list of elements that are serialized as self-closed and
+the list of boolean attributes in the "source code":https://github.com/alohaeditor/Aloha-Editor/blob/dev/src/plugins/common/dom-to-xhtml/lib/dom-to-xhtml.js (see vars emptyElements and booleanAttrs)
 
 Also, empty attributes (for example value="") will not be serialized at
 all (will not appear in the serialization). There is not yet a definite
 reason for this, so it may be changed at some time.
 
 The result may still violate HTML or XHTML schemas because all elements
-and attributes that are encountered in the DOM are serialized, whether
-or not they are allowed according to a schema. Element nesting rules
-aren't checked either.
+and attributes in the DOM are serialized the way they are encountered,
+regardless of whether they are correctly nested or are valid according
+to a schema.
 
 h3. Usage
 

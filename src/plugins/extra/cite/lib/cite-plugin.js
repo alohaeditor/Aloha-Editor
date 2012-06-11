@@ -277,7 +277,7 @@ function CiteClosure( Aloha, jQuery, Plugin, FloatingMenu, Format, domUtils,
 
 			Aloha.bind( 'aloha-editable-activated', function( event, params) {
 				var config = that.getEditableConfig( params.editable.obj );
-				
+				console.log(config);
 				if ( !config.active ) {
 					that.buttons[ 0 ].hide();
 					return;

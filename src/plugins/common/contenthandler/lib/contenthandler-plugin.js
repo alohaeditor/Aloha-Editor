@@ -47,6 +47,23 @@ define( [
 				ContentHandlerManager
 					.register( handler, eval( cc + 'ContentHandler' ) );
 			}
+			
+			Aloha.bind( 'aloha-editable-activated', function( event, params) {
+				var config = that.getEditableConfig( params.editable.obj );
+				window.console.log('contenthandler config', config);
+				
+				if ( !jQuery.isEmpty(config) ) {
+					window.console.log('ContentHandlerManager.getEntries', ContentHandlerManager.getEntries());
+					
+					jQuery.each(ContentHandlerManager.getEntries(), function(handler) {
+						window.console.log('handler: ', handler);
+						if ( jQuery.inArray( handler, config ) < 0 ) {
+							window.console.log('unregister handler: ', handler);
+							ContentHandlerManager.unregister(handler);
+						}
+					});
+				}
+			});
 		}
 	} );
 

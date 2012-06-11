@@ -35,6 +35,11 @@ Aloha.settings.plugins: {
 		referenceContainer: '#Cites', // a jQuery selector for an
 		sidebar: {
 			open: true // will open the sidebar when the cite button is clicked
+		},
+		config: [ 'quote', 'blockquote' ],
+		editables: {
+			'#one': [ 'quote' ],
+			'#two': [ ]
 		}
 	}
 };
