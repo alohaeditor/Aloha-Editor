@@ -6248,6 +6248,9 @@ commands["delete"] = {
 		// range's start offset)."
 		canonicalizeWhitespace(range.startContainer, range.startOffset);
 
+		// collapse whitespace sequences
+		collapseWhitespace(node, range);
+
 		// "Let node and offset be the active range's start node and offset."
 		var node = range.startContainer;
 		var offset = range.startOffset;
@@ -6318,9 +6321,6 @@ commands["delete"] = {
 				break;
 			}
 		}
-
-		// collapse whitespace sequences
-		collapseWhitespace(node, range);
 
 		// "If node is a Text node and offset is not zero, call collapse(node,
 		// offset) on the Selection. Then delete the contents of the range with
