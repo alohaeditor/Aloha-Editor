@@ -4065,25 +4065,24 @@ function fixDisallowedAncestors(node, range) {
 
 		// now that the parent has only the node as child (because we
 		// removed any existing empty text nodes), we can safely unwrap the
-		// node, and correct the range if necessary
+		// node's contents, and correct the range if necessary
 		if (node.parentNode.childNodes.length == 1) {
-			var correctStart = false;
-			var correctEnd = false;
-			if (range.startContainer === node.parentNode) {
-				correctStart = true;
+			var newStartOffset = range.startOffset;
+			var newEndOffset = range.endOffset;
+
+			if (range.startContainer === node.parentNode && range.startOffset > getNodeIndex(node)) {
+				// the node (1 element) will be replaced by its contents (contents().length elements)
+				newStartOffset = range.startOffset + (jQuery(node).contents().length - 1);
 			}
-			if (range.endContainer === node.parentNode) {
-				correctEnd = true;
+			if (range.endContainer === node.parentNode && range.endOffset > getNodeIndex(node)) {
+				// the node (1 element) will be replaced by its contents (contents().length elements)
+				newEndOffset = range.endOffset + (jQuery(node).contents().length - 1);
 			}
-			jQuery(node).unwrap();
-			if (correctStart) {
-				range.startContainer = node.parentNode;
-				range.startOffset = range.startOffset + getNodeIndex(node);
-			}
-			if (correctEnd) {
-				range.endContainer = node.parentNode;
-				range.endOffset = range.endOffset + getNodeIndex(node);
-			}
+			jQuery(node).contents().unwrap();
+			range.startOffset = newStartOffset;
+			range.endOffset = newEndOffset;
+			// after unwrapping, we are done
+			break;
 		} else {
 			// store the original parent
 			var originalParent = node.parentNode;
