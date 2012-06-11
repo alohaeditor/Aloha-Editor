@@ -285,7 +285,6 @@ function CiteClosure( Aloha, jQuery, Plugin, FloatingMenu, Format, domUtils,
 			});
 
 			Aloha.bind( 'aloha-selection-changed', function( event, rangeObject ) {
-				Format.multiSplitButton.showItem( 'blockquote' );
 				var buttons = jQuery( 'button' + nsSel( 'button' ) ); // not used?
 
 				jQuery.each( that.buttons, function( index, button ) {
@@ -326,6 +325,28 @@ function CiteClosure( Aloha, jQuery, Plugin, FloatingMenu, Format, domUtils,
 						return false;
 					}
 				});
+				
+				// switch item visibility according to config
+				var config = [];
+				if ( Aloha.activeEditable ) {
+		        	var config = that.getEditableConfig( Aloha.activeEditable.obj );
+				}
+				
+				// quote
+				if ( jQuery.inArray( 'quote', config ) != -1 ) {
+	        		that.buttons[0].show();
+	        	} else {
+	        		that.buttons[0].hide();
+	        	}
+				
+				// blockquote
+				if ( jQuery.inArray( 'blockquote', config ) != -1 ) {
+					Format.multiSplitButton.showItem( 'blockquote' );
+	        	} else {
+	        		Format.multiSplitButton.hideItem( 'blockquote' );
+	        	}
+				
+				FloatingMenu.doLayout();
 			});
 		},
 
