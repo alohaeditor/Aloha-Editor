@@ -1492,7 +1492,7 @@ function(Aloha, jQuery, Ext, Class, console) {
 				this.userActivatedTab = tabOfButton.label;
 				this.doLayout();
 			}
-		},
+		}
 		
 		/*hideTab: function(name) {
 			var that = this;
