@@ -30,8 +30,8 @@ h3. Configuration
 			editables: {
 				'#one': [ 'highlight' ],
 				'#two': [ ] // do not show visual effect for this editable
-			},
-		},
+			}
+		}
 	}
 </javascript>
 

@@ -12,9 +12,7 @@ The Image Plugin will allow for basic image manipulation right within your conte
 * Support for resizing the image
 * Support for changing the image padding
 
-NOTE: You need a server-sided script like image magick which will handle actual cropping for you.
-
-Follow devs on http://twitter.com/search?q=%23aeimg
+NOTE: You need a server side script like ImageMagick which will handle actual cropping for you.
 
 endprologue.
 
@@ -35,7 +33,7 @@ h4. Components
 h4. Configuration settings
 
 <javascript>
-Aloha.plugins.image.settings = {
+Aloha.plugins.image = {
 	'maxWidth': 1600,
 	'minWidth': 3,
 	'maxHeight': 1200,

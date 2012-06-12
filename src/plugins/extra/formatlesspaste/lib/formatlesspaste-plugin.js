@@ -60,10 +60,12 @@ function(Aloha, Plugin, jQuery, FloatingMenu, FormatlessPasteHandler, ContentHan
 		init: function() {
 			var that = this;
 
+			this.registerFormatlessPasteHandler();
+
 			if ( typeof this.settings.formatlessPasteOption !== 'undefined') {
 				this.formatlessPasteOption = this.settings.formatlessPasteOption;
 			}
-			
+
 			if ( typeof this.settings.strippedElements !== 'undefined') {
 				this.strippedElements = this.settings.strippedElements;
 			}
@@ -72,13 +74,25 @@ function(Aloha, Plugin, jQuery, FloatingMenu, FormatlessPasteHandler, ContentHan
 				this.registerFormatlessPasteHandler(); 
 			};
 
+			Aloha.bind( 'aloha-editable-activated', function( event, params) {
+				var config = that.getEditableConfig( params.editable.obj );
+				if ( config.formatlessPasteOption ) {
+					that.formatlessPasteOption = true;
+					that.registerFormatlessPasteHandler(); 
+				};
+
+				if ( typeof config.strippedElements !== 'undefined') {
+					that.strippedElements = config.strippedElements;
+				}
+				
+			});
+
 		},
 
 		/**
 		 * Register Formatless paste handler
 		 */
 		registerFormatlessPasteHandler: function(){
-		
 			ContentHandlerManager.register( 'formatless', FormatlessPasteHandler );
 			FormatlessPasteHandler.strippedElements = this.strippedElements;
 			// add button to toggle format-less pasting
