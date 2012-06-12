@@ -20,18 +20,86 @@
 	-->
 	<link rel="stylesheet" href="../../css/aloha.css" type="text/css">
 
+	<style>
+		/* Place the new UI toolbar somewhere where we can see it */
+		.aloha-toolbar {
+			position: fixed;
+			top: 5px;
+			left: 5px;
+			width: 700px !important;
+			z-index: 99999;
+		}
+
+    /* Basic Styling for Sidebar */
+    .aloha-sidebar {
+      position: fixed;
+      right: 0;
+      top: 0;
+      width: 250px;
+      height: 100%;
+      border: 1px solid #000;
+      border-width: 0 0 0 1px;
+      background-color: #fff;
+      padding: 10px;
+    }
+
+    .aloha-panel {
+      border: 1px solid #000;
+    }
+
+    .aloha-panel-title {
+      background-color: #000;
+      color: #fff;
+      padding: 5px 10px;
+    }
+
+    .aloha-panel-content {
+     padding: 5px 10px;
+    }
+	</style>
+
 	<!--
 		All configuration for Aloha Editor for this demo is stored in js/aloha-config.js
 		It can also be placed inline here before loading Aloha Editor itself.
 	-->
 	<script src="js/aloha-config.js"></script>
 
+    <script>
+		Aloha.settings.toolbar = [
+			// Format Tab
+			{
+				label: "Format",
+				showOn: true,
+				components: [
+					[ "formatLink" ]
+				]
+			},
+			// Insert Tab
+			{
+				label: "Insert",
+				showOn: true,
+				components: [
+					[ "insertLink" ]
+				]
+			},
+			// Link Tab
+			{
+				label: "Link", 
+				showOn: "a",
+				components: [
+					[ "editLink", "removeLink" ] //, "linkBrowser", "removeLink" ]
+				]
+			}
+		];
+    </script>
+
 	<!--
 		Load the Aloha Editor library.
 		The plugin list could also be added to the configuration.
 	-->
 	<script src="../../lib/aloha.js"
-	        data-aloha-plugins="common/format,
+	        data-aloha-plugins="common/ui,
+	                            common/format,
 	                            common/table,
 	                            common/list,
 	                            common/link,
@@ -41,14 +109,11 @@
 	                            common/paste,
 	                            common/characterpicker,
 	                            common/commands,
-								common/image,
+	                            common/image,
 	                            common/abbr,
-	                            extra/browser,
-	                            extra/linkbrowser,
-								extra/imagebrowser,
+	                            extra/wai-lang,
+	                            extra/flag-icons,
 	                            extra/sourceview"></script>
-
-
 	<!--
 		Application specific code
 	-->

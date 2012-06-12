@@ -6,12 +6,6 @@
 		errorhandling: false,
 		ribbon: false,
 		locale: 'en',
-		floatingmenu: {
-			"horizontalOffset" : "5",
-			"behaviour" : "topalign",
-			"width" : "510",
-			"topalignOffset" : "110" 
-		},
 		repositories: {
 			linklist: {
 				data: [
