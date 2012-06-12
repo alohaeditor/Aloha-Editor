@@ -793,7 +793,7 @@ define([
 					if (Aloha.activeEditable !== null) {
 						foundMarkup = that.findImgMarkup( rangeObject );
 						config = that.getEditableConfig(Aloha.activeEditable.obj);
-						that.settings = this.settings = jQuery.extend(true, that.defaultSettings, config);
+						//that.settings = this.settings = jQuery.extend(true, that.defaultSettings, config);
 
 						if ( jQuery.isEmpty(config) ) {
 							that.insertImgButton.hide();
@@ -1134,16 +1134,13 @@ define([
 				$('#' + that.imgResizeHeightField.id).val(that.imageObj.height());
 				$('#' + that.imgResizeWidthField.id).val(that.imageObj.width());
 
-
 				if ( this.settings.ui.resizable ) {
 					this.startResize();
 				}
-			
-			
+
 				if (this.settings.autoResize) {
 					this.autoResize();
 				}
-
 			},
 
 			/**
