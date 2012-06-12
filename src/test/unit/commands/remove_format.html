@@ -373,6 +373,14 @@
           {  	start: "[foo<span>bar</span>baz]",
               value: ["abbr", "acronym"],
               execResult: "[foo<span>bar</span>baz]"
+          },
+          {  	start: "{<i>foo</i><span>bar</span><b>baz</b>}",
+              value: ["abbr", "b", "span"],
+              execResult: "<i>[foo</i>barbaz]"
+          },
+          {  	start: "[foo<span>b<b>a</b><i>r</i></span>baz]",
+              value: ["abbr", "b", "span"],
+              execResult: "[fooba<i>r</i>baz]"
           }
       ]
 	}
