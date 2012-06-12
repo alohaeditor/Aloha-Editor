@@ -6,24 +6,10 @@
 */
 
 define([
-	// jQuery UI
+	// All components depend on jquery-ui and the css.
 	'aloha/jquery-ui',
-
-	// UI core
 	'order!css!./css/ui.css',
-	'./ui',
-	'./surface',
-	'./toolbar',
-	'./sidebar',
-
-	// components
-	'./characterPicker',
-	'./cite',
-	'./horizontalRule',
-	'./justify',
-	'./languageAnnotation',
-	'./link',
-	'./metaview',
-	'./paragraph',
-	'./pipe'
+	// Include the toolbar by default so it is automatically
+	// instantiated and displayed according to the configuration.
+	'order!ui/toolbar'
 ]);
