@@ -1,0 +1,408 @@
+/** TODO:
+ * - Standardize naming: orderedlist vs. character-picker vs. justifyLeft
+ * - merge all icons into a single sprite
+ **/
+
+.aloha-toolbar {
+	width: 500px;
+}
+
+.aloha-sidebar {
+	position: fixed;
+	right: 0;
+	top: 0;
+	width: 250px;
+	height: 100%;
+	border: 1px solid #000;
+	border-width: 0 0 0 1px;
+	background-color: #fff;
+	padding: 10px;
+}
+
+.aloha-panel {
+	border: 1px solid #000;
+}
+
+.aloha-panel-title {
+	background-color: #000;
+	color: #fff;
+	padding: 5px 10px;
+}
+
+.aloha-panel-content {
+	padding: 5px 10px;
+}
+
+.ui-state-default .aloha-icon {
+	background-image: url(../img/format-inline.png);
+}
+
+.aloha-icon-bold {
+	background-position: 0 0;
+}
+
+.aloha-icon-italic {
+	background-position: -16px 0;
+}
+
+.aloha-icon-underline {
+	background-position: -32px 0;
+}
+
+.aloha-icon-strikethrough {
+	background-position: -48px 0;
+}
+
+.aloha-icon-subscript {
+	background-position: -64px 0;
+}
+
+.aloha-icon-superscript {
+	background-position: -80px 0;
+}
+
+.aloha-icon-createTable {
+	background-position: -96px 0;
+}
+
+.aloha-icon-addcolumnleft {
+	background-position: -112px 0;
+}
+
+.aloha-icon-addcolumnright {
+	background-position: -128px 0;
+}
+
+.aloha-icon-addrowbefore {
+	background-position: -144px 0;
+}
+
+.aloha-icon-addrowafter {
+	background-position: -160px 0;
+}
+
+.aloha-icon-deleterows {
+	background-position: -176px 0;
+}
+
+.aloha-icon-deletecolumns {
+	background-position: -192px 0;
+}
+
+.aloha-icon-table-caption {
+	background-position: -320px 0;
+}
+
+.aloha-icon-rowheader {
+	background-position: -352px 0;
+}
+
+.aloha-icon-columnheader {
+	background-position: -368px 0;
+}
+
+.aloha-icon-mergecells {
+	background-position: -384px 0;
+}
+
+.aloha-icon-splitcells {
+	background-position: -400px 0;
+}
+
+.aloha-icon-orderedlist {
+	background-position: -272px 0;
+}
+
+.aloha-icon-unorderedlist {
+	background-position: -256px 0;
+}
+
+.aloha-icon-link {
+	background-position: -288px 0;
+}
+
+.aloha-icon-unlink {
+	background-position: -304px 0;
+}
+
+.aloha-icon-abbr {
+	background-position: -336px 0;
+}
+
+.ui-state-default .aloha-icon-indent {
+	background-image: url(../img/indent.png);
+}
+
+.ui-state-default .aloha-icon-outdent {
+	background-image: url(../img/outdent.png);
+}
+
+.ui-state-default .aloha-icon-character-picker {
+	background-image: url(../img/character-picker.png);
+}
+
+.ui-state-default .aloha-icon-metaview {
+	background-image: url(../img/metaview.png);
+}
+
+.ui-state-default .aloha-icon-justify {
+	background-image: url(../img/justify.png);
+}
+
+.aloha-icon-justifyLeft {
+	background-position: 0 0;
+}
+
+.aloha-icon-justifyCenter {
+	background-position: -16px 0;
+}
+
+.aloha-icon-justifyRight {
+	background-position: -32px 0;
+}
+
+.aloha-icon-justifyFull {
+	background-position: -48px 0;
+}
+
+.aloha-icon-horizontal-rule {
+	background: red;
+}
+
+.ui-state-default .aloha-icon-language-annotation {
+	background-image: url(../img/language-annotation.png);
+}
+
+.ui-state-default .aloha-icon-quote {
+	background-image: url(../img/quote.png);
+}
+
+button.aloha-large-button {
+	width: 60px;
+	height: 50px;
+}
+
+.ui-state-default .aloha-large-icon {
+	background-image: url(../img/format-block.png);
+	width: 54px;
+	height: 44px;
+	margin-left: -27px;
+	margin-top: -22px;
+}
+
+.aloha-large-icon-p {
+	background-position: 0 0;
+}
+
+.aloha-large-icon-h1 {
+	background-position: -52px 0;
+}
+
+.aloha-large-icon-h2 {
+	background-position: -104px 0;
+}
+
+.aloha-large-icon-h3 {
+	background-position: -156px 0;
+}
+
+.aloha-large-icon-h4 {
+	background-position: -208px 0;
+}
+
+.aloha-large-icon-h5 {
+	background-position: -260px 0;
+}
+
+.aloha-large-icon-h6 {
+	background-position: -312px 0;
+}
+
+.aloha-large-icon-pre {
+	background-position: -364px 0;
+}
+
+.ui-state-default .aloha-large-icon-blockquote {
+	background-image: url(../img/blockquote.png);
+}	
+
+.aloha-multisplit {
+	position: relative;
+	width: 260px;
+	height: 50px;
+	overflow: hidden;
+}
+
+.aloha-multisplit-open {
+	overflow: visible;
+}
+
+.aloha-multisplit-content {
+	position: relative;
+	width: 244px;
+}
+
+.aloha-multisplit-toggle {
+	position: absolute;
+	right: 0;
+	bottom: 0;
+}
+
+.aloha-multisplit-toggle .ui-button-text {
+	padding: 0;
+}
+
+.aloha-multisplit-active {
+	border-color: #00f;
+}
+
+.aloha-characterpicker {
+	border-collapse: collapse;
+	background-color: #fff;
+}
+
+.aloha-characterpicker td {
+	width: 1.5em;
+	height: 1.5em;
+	border: 1px solid #afafaf;
+	text-align: center;
+}
+
+
+
+/** METAVIEW **/
+
+/** metaview - blocks **/
+.aloha-metaview blockquote,
+.aloha-metaview caption,
+.aloha-metaview dd,
+.aloha-metaview div,
+.aloha-metaview dl,
+.aloha-metaview dt,
+.aloha-metaview h1,
+.aloha-metaview h2,
+.aloha-metaview h3,
+.aloha-metaview h4,
+.aloha-metaview h5,
+.aloha-metaview h6,
+.aloha-metaview ol,
+.aloha-metaview p,
+.aloha-metaview pre,
+.aloha-metaview table, 
+.aloha-metaview td,
+.aloha-metaview th,
+.aloha-metaview ul {
+	background: #fff no-repeat 2px 2px;
+	border: 1px solid #ddd;
+	padding: 8px 5px 5px;
+	margin: 10px;
+	min-height: 1em;
+}
+.aloha-metaview blockquote {
+	background-image: url(../img/metaview/blockquote.png);
+}
+.aloha-metaview caption {
+	background-image: url(../img/metaview/caption.png);
+	margin-bottom: 0;
+}
+.aloha-metaview dd {
+	background-image: url(../img/metaview/dd.png);
+}
+.aloha-metaview div {
+	background-image: url(../img/metaview/div.png);
+}
+.aloha-metaview dl {
+	background-image: url(../img/metaview/dl.png);
+}
+.aloha-metaview dt {
+	background-image: url(../img/metaview/dt.png);
+}
+.aloha-metaview h1 {
+	background-image: url(../img/metaview/h1.png);
+}
+.aloha-metaview h2 {
+	background-image: url(../img/metaview/h2.png);
+}
+.aloha-metaview h3 {
+	background-image: url(../img/metaview/h3.png);
+}
+.aloha-metaview h4 {
+	background-image: url(../img/metaview/h4.png);
+}
+.aloha-metaview h5 {
+	background-image: url(../img/metaview/h5.png);
+}
+.aloha-metaview h6 {
+	background-image: url(../img/metaview/h6.png);
+}
+.aloha-metaview ol,
+.aloha-metaview ul {
+	border-left: 20px solid #ddd; padding: 0px 5px;
+}
+.aloha-metaview p {
+	background-image: url(../img/metaview/p.png);
+}
+.aloha-metaview pre {
+	background-image: url(../img/metaview/pre.png);
+}
+.aloha-metaview table {
+	background-image: url(../img/metaview/table.png);
+}
+.aloha-metaview td {
+	background-image: url(../img/metaview/td.png);
+}
+.aloha-metaview th {
+	background-image: url(../img/metaview/th.png);
+}
+
+/** metaview - inlines **/
+.aloha-metaview abbr[title],
+.aloha-metaview dfn[title] {
+	border-bottom: 1px dotted;
+	cursor: help;
+}
+.aloha-metaview a,
+.aloha-metaview q,
+.aloha-metaview [lang] {
+	background: #ccc no-repeat left center;
+	padding-left: 20px;
+	border: 1px dotted #ddd;
+}
+.aloha-metaview a {
+	background-image: url(../img/metaview/anchor.png);
+}
+.aloha-metaview q {
+	background-image: url(../img/metaview/q.png);
+}
+.aloha-metaview [lang="de"] {
+	background-image: url(../../flag-icons/img/flags/de.png);
+}
+.aloha-metaview [lang="en"] {
+	background-image: url(../../flag-icons/img/flags/en.png);
+}
+.aloha-metaview [lang="es"] {
+	background-image: url(../../flag-icons/img/flags/es.png);
+}
+.aloha-metaview [lang="fr"] {
+	background-image: url(../../flag-icons/img/flags/fr.png);
+}
+.aloha-metaview [lang="it"] {
+	background-image: url(../../flag-icons/img/flags/it.png);
+}
+.aloha-metaview [lang="nl"] {
+	background-image: url(../../flag-icons/img/flags/nl.png);
+}
+.aloha-metaview [lang="no"] {
+	background-image: url(../../flag-icons/img/flags/no.png);
+}
+.aloha-metaview [lang="pl"] {
+	background-image: url(../../flag-icons/img/flags/pl.png);
+}
+.aloha-metaview [lang="rs"] {
+	background-image: url(../../flag-icons/img/flags/rs.png);
+}
+
+.aloha-ui-fill {
+	display: block;
+	width: 100%;
+}
