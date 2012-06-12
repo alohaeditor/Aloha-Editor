@@ -511,7 +511,6 @@ define( [
 					that.ignoreNextSelectionChangedEvent = true;
 					range.startContainer = range.endContainer;
 					range.startOffset = range.endOffset;
-					if (range.select)//XX
 					range.select();
 					that.ignoreNextSelectionChangedEvent = true;
 					
