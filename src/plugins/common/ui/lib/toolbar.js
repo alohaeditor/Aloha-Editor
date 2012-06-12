@@ -102,6 +102,22 @@ function( jQuery, Surface, Tab ) {
 				return new Toolbar( editable );
 			}
 			return null;
+		},
+
+		/**
+		 * @param name
+		 *        The name of a component that exists in the tab that should be activated.
+		 */
+		activateTabOfButton: function(name) {
+			// TODO
+		},
+
+		setScope: function(scope) {
+			// Only added so that the calls that originally wen to
+			// FloatingMenu.setScope can be preserved for the time
+			// being. When it is clear that the setScope calls can be
+			// safely removed from the plugins, this method can be
+			// removed as well.
 		}
 	});
 

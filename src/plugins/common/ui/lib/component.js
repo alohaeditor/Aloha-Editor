@@ -29,6 +29,13 @@ function( Aloha, jQuery, Class ) {
 		 *                                  the extent of its lifetime.
 		 * @constructor
 		 */
+		//TODO components must not be bound to a single editable for
+		//  their lifetime. This may make sense for a menu tab pops up
+		//  when the editable has focus and disappers when the editable
+		//  looses focus, but doesn't make sense for a menu that is
+		//  always present. Also, it's harder to refactor existing
+		//  plugins this way because there isn't a global instance of
+		//  the component anymore.
 		_constructor: function( editable ) {
 			this.editable = editable;
 
@@ -93,6 +100,8 @@ function( Aloha, jQuery, Class ) {
 		 */
 		components: {},
 
+		_instances: {},
+
 		/**
 		 * Defines a component type.
 		 *
@@ -119,14 +128,25 @@ function( Aloha, jQuery, Class ) {
 		 * @return {Component} The component matching the given name.
 		 */
 		render: function( name, editable ) {
+			if (this._instances.hasOwnProperty(name)) {
+				var instance = this._instances[name];
+				instance.editable = editable;
+				return instance;
+			}
+
 			var ComponentType = Component.components[ name ];
 			if ( !ComponentType ) {
 				throw new Error( 'Component type "' + name +
 					'" is not defined.' );
 			}
-			return new ComponentType( editable );
-		}
+			var instance = new ComponentType( editable );
+			this._instances[name] = instance;
+			return instance;
+		},
 
+		getGlobalInstance: function( name ) {
+			return this.render( name, Aloha.activeEditable );
+		}
 	});
 
 	return Component;
