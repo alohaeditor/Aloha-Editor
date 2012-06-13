@@ -1482,10 +1482,10 @@ function setTagName(element, newName, range) {
 
 	// if the range still uses the old element, we modify it to the new one
 	if (range.startContainer === element) {
-		range.setStart(replacementElement, range.startOffset);
+		range.startContainer = replacementElement;
 	}
 	if (range.endContainer === element) {
-		range.setEnd(replacementElement, range.endOffset);
+		range.endContainer = replacementElement;
 	}
 
 	// "Return replacement element."
@@ -5592,6 +5592,42 @@ function canonicalizeWhitespace(node, offset) {
 ///// Indenting and outdenting /////
 //@{
 
+function cleanLists(node, range) {
+	// remove any whitespace nodes around list nodes
+	if (node) {
+		jQuery(node).find('ul,ol,li').each(function () {
+			jQuery(this).contents().each(function () {
+				if (isWhitespaceNode(this)) {
+					var index = getNodeIndex(this);
+
+					// if the range points to somewhere behind the removed text node, we reduce the offset
+					if (range.startContainer === this.parentNode && range.startOffset > index) {
+						range.startOffset--;
+					} else if (range.startContainer === this) {
+						// the range starts in the removed text node, let it start right before
+						range.startContainer = this.parentNode;
+						range.startOffset = index;
+					}
+					// same thing for end of the range
+					if (range.endContainer === this.parentNode && range.endOffset > index) {
+						range.endOffset--;
+					} else if (range.endContainer === this) {
+						range.endContainer = this.parentNode;
+						range.endOffset = index;
+					}
+					// finally remove the whitespace node
+					jQuery(this).remove();
+				}
+			});
+		});
+	}
+}
+
+
+//@}
+///// Indenting and outdenting /////
+//@{
+
 function indentNodes(nodeList, range) {
 	// "If node list is empty, do nothing and abort these steps."
 	if (!nodeList.length) {
@@ -7461,6 +7497,10 @@ commands.insertparagraph = {
 		// "Delete the contents of the active range."
 		deleteContents(range);
 
+		// clean lists in the editing host, this will remove any whitespace nodes around lists
+		// because the following algorithm is not prepared to deal with them
+		cleanLists(getEditingHostOf(range.startContainer), range);
+
 		// "If the active range's start node is neither editable nor an editing
 		// host, abort these steps."
 		if (!isEditable(range.startContainer)
@@ -7662,7 +7702,8 @@ commands.insertparagraph = {
 				// we found a li containing only a br followed by a li containing a list as first element: merge the two li's
 				var listParent = container.nextSibling, length = container.nextSibling.childNodes.length;
 				for (var i = 0; i < length; i++) {
-					container.appendChild(listParent.childNodes[i]);
+					// we always move the first child into the container
+					container.appendChild(listParent.childNodes[0]);
 				}
 				listParent.parentNode.removeChild(listParent);
 			}
