@@ -20,6 +20,8 @@
 	-->
 	<link rel="stylesheet" href="../../css/aloha.css" type="text/css">
 
+	<link rel="stylesheet" href="../../shared/repository-browser/css/repository-browser.css" type="text/css">
+
 	<style>
 		/* Place the new UI toolbar somewhere where we can see it */
 		.aloha-toolbar {
@@ -147,6 +149,18 @@
 		Load the Aloha Editor library.
 		The plugin list could also be added to the configuration.
 	-->
+	<!-- script>
+		var __DEPS__ = {
+			lang: 'en',
+			root: '../'
+		};
+	</script>
+	<script src="../../shared/module-paths.js"></script>
+	<script>
+		Aloha.settings.requireConfig = {
+			paths: __DEPS__.paths
+		};
+	</script -->
 	<script src="../../lib/aloha.js"
 	        data-aloha-plugins="common/ui,
 	                            common/format,
