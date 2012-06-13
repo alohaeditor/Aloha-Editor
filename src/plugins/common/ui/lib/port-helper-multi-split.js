@@ -1,3 +1,8 @@
+/**
+ * This is a helper module for porting plugins from the old
+ * ui-attributefield.js in the aloha core to the new ui-plugin.
+ * This interface is obsolete and must not be used for new implementations.
+ */
 define(["aloha/core",
 		"aloha/jquery",
 		"ui/component",

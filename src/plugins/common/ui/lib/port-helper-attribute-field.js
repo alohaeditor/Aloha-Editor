@@ -1,10 +1,27 @@
-define(["aloha/core", "aloha/jquery", "ui/component", "aloha/repositorymanager", 'ui/vendor/jquery-ui-autocomplete-html'], function(Aloha, $, Component, RepositoryManager){
+/**
+ * This is a helper module for porting plugins from the old
+ * ui-attributefield.js in the aloha core to the new ui-plugin.
+ * This interface is obsolete and must not be used for new implementations.
+ */
+define(["aloha/core",
+		"aloha/jquery",
+		"ui/component",
+		"aloha/repositorymanager",
+		'ui/vendor/jquery-ui-autocomplete-html'],
+function(Aloha, $, Component, RepositoryManager){
 
-// target attribute
-// get/set current item
-// placeholder with foreground color
-// link background color
-// repository manager markObject
+// Main responsibilities implemented by the attribute-field are
+//
+// * setting a target object and attribute and the subsequent change of
+//   that target attribute (example link plugin, table plugin)
+// * background color highlighting of the target object (example link plugin)
+// * a placeholder in the attribute field with a grey foreground color
+//   (example link plugin)
+// * maintain a current repository item to distinguish link plugin
+//   repository items from literal values typed in the attribute field
+//   (example link plugin)
+// * repository manager markObject on the target object if a repository
+//   item was selected (example link plugin)
 
 var component = Component.extend({
 	init: function(){
