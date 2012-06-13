@@ -273,7 +273,11 @@ define( [
 				var config,
 					foundMarkup;
 				
-				config = that.getEditableConfig( Aloha.activeEditable.obj );
+				if ( Aloha.activeEditable && Aloha.activeEditable.obj ) {
+					config = that.getEditableConfig( Aloha.activeEditable.obj );
+				} else {
+					config = {};
+				}
 
 				// Check if we need to ignore this selection changed event for
 				// now and check whether the selection was placed within a

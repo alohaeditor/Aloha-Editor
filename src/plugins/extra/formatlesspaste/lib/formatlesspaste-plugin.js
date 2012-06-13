@@ -76,12 +76,12 @@ function(Aloha, Plugin, jQuery, FloatingMenu, FormatlessPasteHandler, ContentHan
 
 			Aloha.bind( 'aloha-editable-activated', function( event, params) {
 				var config = that.getEditableConfig( params.editable.obj );
-				if ( config.formatlessPasteOption ) {
+				if ( config && config.formatlessPasteOption ) {
 					that.formatlessPasteOption = true;
 					that.registerFormatlessPasteHandler(); 
 				};
 
-				if ( typeof config.strippedElements !== 'undefined') {
+				if ( config && typeof config.strippedElements !== 'undefined') {
 					that.strippedElements = config.strippedElements;
 				}
 				

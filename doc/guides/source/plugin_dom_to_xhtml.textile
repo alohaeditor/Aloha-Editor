@@ -48,7 +48,20 @@ The serialization functions can also be used directly, for example:
 
 h3. Configuration
 
-This plugin does not provide any configuration settings.
+To 
+
+<javascript>
+	Aloha.settings.plugins: {
+		'dom-to-xhtml': {
+			config: [ 'dom-to-xhtml' ],
+			editables: {
+				'#one': [ 'dom-to-xhtml' ],
+				'#two': [ ]
+			}
+		}
+	}
+</javascript>
+
 
 h3. Known Issues
 
