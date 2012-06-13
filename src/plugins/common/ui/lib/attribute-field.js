@@ -19,7 +19,8 @@ var attributeField = function(props){
 		_displayField: props.displayField || "name",
 		_objectTypeFilter: props.objectTypeFilter || "all",
 		_placeholder: props.placeholder,
-		_element: $("<input>")
+		_element: $("<input>"),
+		_noTargetHighlight: !!props.noTargetHighlight
 	});
 
 	if (props.cls) {
@@ -70,12 +71,12 @@ var attributeField = function(props){
 	}
 
 	function onFocus(event, ui) {
+		changeTargetBackground();
+
 		// Remove placeholder
 		if (attrField.getValue() === attrField._placeholder) {
 			attrField.setValue('');
 		}
-
-		changeTargetBackground();
 	}
 
 	function onKeyup(){
@@ -112,6 +113,9 @@ var attributeField = function(props){
 	}
 
 	function changeTargetBackground() {
+		if (attrField._noTargetHighlight) {
+			return;
+		}
 		// set background color to give visual feedback which link is modified
 		var	target = $(attrField.getTargetObject());
 		if (target && target.context && target.context.style &&
@@ -123,6 +127,9 @@ var attributeField = function(props){
 	}
 
 	function restoreTargetBackground() {
+		if (attrField._noTargetHighlight) {
+			return;
+		}
 		var target = $(attrField.getTargetObject()),
             color;
 		// Remove the highlighting and restore original color if was set before
