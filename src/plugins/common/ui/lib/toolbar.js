@@ -112,13 +112,12 @@ function( jQuery, Surface, Tab ) {
 			// TODO
 		},
 
-		setScope: function(scope) {
-			// Only added so that the calls that originally wen to
-			// FloatingMenu.setScope can be preserved for the time
-			// being. When it is clear that the setScope calls can be
-			// safely removed from the plugins, this method can be
-			// removed as well.
-		}
+		// Only added so that the calls that originally went to
+		// FloatingMenu.* can be preserved for the time being. When it
+		// is clear that the calls can be safely removed from
+		// the plugins, these methods can be removed as well.
+		setScope: function(scope) { },
+		createScope: function(scope, extendsScope) {}
 	});
 
 	Toolbar.init();

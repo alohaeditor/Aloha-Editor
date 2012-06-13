@@ -68,8 +68,21 @@ function( jQuery, Component ) {
 		createButtonElement: function() {
 			this.element = this.buttonElement = jQuery( '<button>' );
 			return this.buttonElement;
-		}
+		},
 
+		/**
+		 * Shows the button in a greyed-out inactive (unclickable) state.
+		 */
+		disable: function() {
+			// TODO
+		},
+
+		/**
+		 * Enables the button again after it has previously been disabled.
+		 */
+		enable: function() {
+			// TODO
+		}
 	});
 
 	return Button;
