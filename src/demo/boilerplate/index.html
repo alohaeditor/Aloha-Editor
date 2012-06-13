@@ -89,6 +89,22 @@
 				components: [
 					[ "editLink", "removeLink" ] //, "linkBrowser", "removeLink" ]
 				]
+			},
+			// Table Tabs
+			{
+				label: "Table",
+				showOn: true,
+				components: [ [ "mergecells", "splitcells", "tableCaption", "formatTable" ] ]
+			},
+			{ 
+				label: "Column",
+				showOn: true,
+				components: [ [ "addcolumnleft", "addcolumnright", "deletecolumns", "columnheader", "mergecells", "splitcells", "formatColumn" ] ]
+			},
+			{
+				label: "Row",
+				showOn: true,
+				components: [ [ "addrowbefore", "addrowafter", "deleterows", "rowheader", "mergecells", "splitcells", "formatRow" ] ]
 			}
 		];
     </script>
