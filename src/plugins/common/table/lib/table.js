@@ -25,11 +25,12 @@ define( [
 	'aloha',
 	'aloha/jquery',
 	'ui/toolbar',
+	'ui/message',
 	'i18n!table/nls/i18n',
 	'table/table-cell',
 	'table/table-selection',
 	'table/table-plugin-utils'
-], function ( Aloha, jQuery, Toolbar, i18n, TableCell, TableSelection,
+], function ( Aloha, jQuery, Toolbar, Message, i18n, TableCell, TableSelection,
 	          Utils ) {
 	var undefined = void 0;
 	var GENTICS = window.GENTICS;
@@ -843,16 +844,13 @@ define( [
 		// delete the whole table
 		if (deleteTable) {
 			var that = this;
-			Aloha.showMessage(new Aloha.Message({
+			Message.confirm({
 				title : i18n.t('Table'),
 				text : i18n.t('deletetable.confirm'),
-				type : Aloha.Message.Type.CONFIRM,
-				callback : function (sel) {
-					if (sel == 'yes') {
-						that.deleteTable();
-					}
+				yes : function () {
+					that.deleteTable();
 				}
-			}));
+			});
 		} else {
 
 			rowIDs.sort(function(a,b){return a - b;});
@@ -932,16 +930,13 @@ define( [
 		// delete the whole table
 		if ( this.selection.selectedColumnIdxs.length == grid[0].length - selectColWidth ) {
 			
-			Aloha.showMessage(new Aloha.Message({
+			Message.confirm({
 				title : i18n.t('Table'),
 				text : i18n.t('deletetable.confirm'),
-				type : Aloha.Message.Type.CONFIRM,
-				callback : function (sel) {
-					if (sel == 'yes') {
-						that.deleteTable();
-					}
+				yes : function () {
+					that.deleteTable();
 				}
-			}));
+			});
 			
 		} else {
 			
@@ -1185,11 +1180,10 @@ define( [
 		
 		// refuse to insert a column unless a consecutive range has been selected
 		if ( ! Utils.isConsecutive( selectedColumnIdxs ) ) {
-			Aloha.showMessage( new Aloha.Message( {
+			Message.alert( {
 				title : i18n.t( 'Table' ),
-				text  : i18n.t( 'table.addColumns.nonConsecutive' ),
-				type  : Aloha.Message.Type.ALERT
-			} ) );
+				text  : i18n.t( 'table.addColumns.nonConsecutive' )
+			});
 			return;
 		}
 		

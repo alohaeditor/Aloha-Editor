@@ -14,6 +14,7 @@ define( [
 	'ui/component',
 	'ui/button',
 	'ui/toggleButton',
+	'ui/message',
 	'ui/attribute-field',
 	'ui/multi-split-button',
 	'i18n!table/nls/i18n',
@@ -30,6 +31,7 @@ define( [
 			 Component,
 			 Button,
 			 ToggleButton,
+			 Message,
 			 AttributeField,
 			 MultiSplitButton,
 	         i18n,
@@ -441,11 +443,10 @@ define( [
 	
 	TablePlugin.preventNestedTables = function () {
 		if ( this.isSelectionInTable() ) {
-			Aloha.showMessage( new Aloha.Message( {
+			Message.alert({
 				title : i18n.t( 'Table' ),
-				text  : i18n.t( 'table.createTable.nestedTablesNoSupported' ),
-				type  : Aloha.Message.Type.ALERT
-			} ) );
+				text  : i18n.t( 'table.createTable.nestedTablesNoSupported' )
+			});
 			
 			return true;
 		}
@@ -538,16 +539,13 @@ define( [
 			click: function() {
 				if (that.activeTable) {
 					var aTable = that.activeTable;
-					Aloha.showMessage(new Aloha.Message({
-						title : i18n.t('Table'),
-						text : i18n.t('deleterows.confirm'),
-						type : Aloha.Message.Type.CONFIRM,
-						callback : function (sel) {
-							if (sel == 'yes') {
-								aTable.deleteRows();
-							}
+					Message.confirm({
+						title: i18n.t('Table'),
+						text: i18n.t('deleterows.confirm'),
+						yes: function(){
+							aTable.deleteRows();
 						}
-					}));
+					});
 				}
 			}
 		});
@@ -707,16 +705,13 @@ define( [
 			click: function() {
 				if (that.activeTable) {
 					var aTable = that.activeTable;
-					Aloha.showMessage(new Aloha.Message({
-						title : i18n.t('Table'),
-						text : i18n.t('deletecolumns.confirm'),
-						type : Aloha.Message.Type.CONFIRM,
-						callback : function (sel) {
-							if (sel == 'yes') {
-								aTable.deleteColumns();
-							}
+					Message.confirm({
+						title: i18n.t('Table'),
+						text: i18n.t('deletecolumns.confirm'),
+						yes: function(){
+							aTable.deleteColumns();
 						}
-					}));
+					});
 				}
 			}
 		});

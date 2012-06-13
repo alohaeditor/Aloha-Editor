@@ -1,6 +1,11 @@
 define(
-['aloha', 'aloha/jquery', 'table/table-plugin-utils', 'table/table-cell', 'i18n!table/nls/i18n'],
-function (Aloha, $, Utils, TableCell, i18n) {
+['aloha',
+ 'aloha/jquery',
+ 'table/table-plugin-utils',
+ 'table/table-cell',
+ 'ui/message',
+ 'i18n!table/nls/i18n'],
+function (Aloha, $, Utils, TableCell, Message, i18n) {
 	/**
 	 * The TableSelection object is a helper-object
 	 */
@@ -300,11 +305,10 @@ function (Aloha, $, Utils, TableCell, i18n) {
 		var contour = Utils.makeContour( grid, isSelected );
 
 		if ( ! isMergeable( grid, contour, isSelected ) ) {
-			Aloha.showMessage(new Aloha.Message({
+			Message.alert({
 				title : i18n.t('Table'),
-				text : i18n.t('table.mergeCells.notRectangular'),
-				type : Aloha.Message.Type.ALERT
-			}));
+				text : i18n.t('table.mergeCells.notRectangular')
+			});
 			return;
 		}
 
