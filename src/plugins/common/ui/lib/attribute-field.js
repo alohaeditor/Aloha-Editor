@@ -70,12 +70,12 @@ var attributeField = function(props){
 	}
 
 	function onFocus(event, ui) {
-		changeTargetBackground();
-
 		// Remove placeholder
 		if (attrField.getValue() === attrField._placeholder) {
 			attrField.setValue('');
 		}
+
+		changeTargetBackground();
 	}
 
 	function onKeyup(){

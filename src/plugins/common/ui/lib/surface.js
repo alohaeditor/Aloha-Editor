@@ -102,7 +102,17 @@ function( Aloha, jQuery, Class, Container ) {
 			//       "incorrect" elements--that is, not the element or parents
 			//       of the element you clicked on.
 			Aloha.bind( 'aloha-selection-changed', function( event, range ) {
-				if ( Surface.active ) {
+				if ( ! Surface.active ) {
+					return;
+				}
+				// Always take the rangy range. The Aloha range is
+				// broken and something should be done about removing it
+				// from Aloha and the aloha-selection-changed event. The
+				// particular javascript error this fixes is that
+				// range.startContainer is not defined.
+				var selection = Aloha.getSelection();
+				if (0 < selection.getRangeCount()) {
+					range = selection.getRangeAt(0);
 					Container.showContainers( Surface.active, range );
 				}
 			});
