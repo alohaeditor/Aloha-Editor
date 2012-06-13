@@ -1,16 +1,45 @@
-- **MANUAL CHANGE**: Changed the meaning of a setting
-                     Aloha.settings.plugins.table.summaryinsidebar
+- **MANUAL CHANGE**: Added the ui-plugin and removed ui specific code from the Aloha core
 
-                     This setting decided whether the summary was
-                     displayed either in the side bar or in the
-                     floating-menu. This setting now only decides
-                     whether or not a summary is displayed in the
-                     sidebar.
+                     Due to a complete re-implementation of the Aloha
+                     user interface in the form of the ui-plugin, most
+                     of the ui specific Aloha API has changed.
 
-                     The table-plugin defines a component with the name
-                     tableSummary. It is up to the toolbar configuration
-                     whether or not this component is displayed in the
-                     toolbar.
+                     (In the following, ui/x.js refers to src/plugins/common/ui/lib/x.js.)
 
-                     For further information see the setting
-                     Aloha.settings.toolbar
+                     * Aloha.ui.AttributeField
+                       See ui/autocomplete.js
+
+                     * Aloha.ui.Button
+                       See ui/button.js and ui/toggleButton.js
+
+                     * Aloha.ui.MultiSplitButton
+                       See ui/multiSplitButton
+
+                     * Aloha.Message
+                       See ui/message
+
+                     * Aloha.settings.plugins.table.summaryinsidebar
+
+                       This setting decided whether the summary was
+                       displayed either in the side bar or in the
+                       floating-menu. This setting now only decides
+                       whether or not a summary is displayed in the
+                       sidebar.
+
+                       The table-plugin defines a component with the name
+                       tableSummary. It is up to the toolbar configuration
+                       whether or not this component is displayed in the
+                       toolbar.
+
+                     Also note that any references to the Ext.* namespace
+                     may not resolve any more.
+
+- **MANUAL CHANGE**: The following files have been removed
+                     src/lib/aloha/ext-alohatreeloader.js
+                     src/lib/aloha/ui-browser.js
+
+                     These files are not in use by any of the main Aloha
+                     plugins and as such are deemed obsolete.
+
+                     Custom plugins should be checked for a possible
+                     dependency on these files.
