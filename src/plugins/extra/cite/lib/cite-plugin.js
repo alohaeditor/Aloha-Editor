@@ -150,15 +150,15 @@ function CiteClosure( Aloha, jQuery, Plugin, FloatingMenu, Format, domUtils,
 					this.referenceContainer = referenceContainer;
 				}
 
-				if ( typeof Aloha.settings.plugins.cite !== 'undefinded' ) {
+				if ( typeof Aloha.settings.plugins.cite !== 'undefined' ) {
 					that.settings = Aloha.settings.plugins.cite;
 				}
 
-				if ( typeof that.settings.sidebar === 'undefinded' ) {
+				if ( typeof that.settings.sidebar === 'undefined' ) {
 					that.settings.sidebar = {};
 				}
 
-				if ( typeof that.settings.sidebar.open === 'undefinded' ) {
+				if ( typeof that.settings.sidebar.open === 'undefined' ) {
 					that.settings.sidebar.open = true;
 				}
 			}
@@ -342,7 +342,7 @@ function CiteClosure( Aloha, jQuery, Plugin, FloatingMenu, Format, domUtils,
 				mid = ( min + max ) >> 1; // Math.floor(i) / 2 == i >> 1 == ~~(i / 2)
 				cuid = c[ mid ].uid;
 
-				if ( cuid === uid ) {
+				if ( cuid == uid ) {
 					return mid;
 				}
 				
