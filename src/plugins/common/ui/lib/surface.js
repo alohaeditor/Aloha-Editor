@@ -77,8 +77,10 @@ function( Aloha, jQuery, Class, Container ) {
 				// selection-changed doesn't fire on activation.  So we
 				// "yeild."
 				setTimeout( function() {
-					Container.showContainers( Surface.active,
-						Aloha.getSelection().getRangeAt( 0 ) );
+					var selection = Aloha.getSelection();
+					if (0 < selection.getRangeCount()) {
+						Container.showContainers( Surface.active, selection.getRangeAt( 0 ) );
+					}
 				}, 1 );
 			});
 
@@ -185,7 +187,8 @@ function( Aloha, jQuery, Class, Container ) {
 				Surface.suppressHide = true;
 
 				if ( Aloha.activeEditable ) {
-					Surface.range = Aloha.getSelection().getRangeAt( 0 );
+					var selection = Aloha.getSelection();
+					Surface.range = (0 < selection.getRangeCount()) ? selection.getRangeAt( 0 ) : null;
 					// TODO: this overlaps with Surface.active
 					Surface.editable = Aloha.activeEditable;
 				}
