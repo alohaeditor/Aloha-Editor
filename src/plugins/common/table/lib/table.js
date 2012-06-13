@@ -24,12 +24,12 @@
 define( [
 	'aloha',
 	'aloha/jquery',
-	'aloha/floatingmenu',
+	'ui/toolbar',
 	'i18n!table/nls/i18n',
 	'table/table-cell',
 	'table/table-selection',
 	'table/table-plugin-utils'
-], function ( Aloha, jQuery, FloatingMenu, i18n, TableCell, TableSelection,
+], function ( Aloha, jQuery, Toolbar, i18n, TableCell, TableSelection,
 	          Utils ) {
 	var undefined = void 0;
 	var GENTICS = window.GENTICS;
@@ -649,7 +649,7 @@ define( [
 					that.tablePlugin.activeTable.selection.selectionType = 'cell';
 					that.tablePlugin.updateFloatingMenuScope();
 
-					FloatingMenu.activateTabOfButton('rowheader');
+					Toolbar.activateTabOfButton('rowheader');
 					
 					// As side-effect of the following call the focus
 					// will be set on the first selected cell. 
@@ -1355,9 +1355,9 @@ define( [
 			this.tablePlugin.columnMSButton.showItem(this.tablePlugin.columnMSItems[i].name);
 		}
 		
-		FloatingMenu.setScope(this.tablePlugin.name + '.column');
+		Toolbar.setScope(this.tablePlugin.name + '.column');
 		
-		this.tablePlugin.columnHeader.setPressed( this.selection.isHeader() );
+		this.tablePlugin.columnHeader.setState( this.selection.isHeader() );
 		
 		var rows = this.getRows();
 		
@@ -1388,47 +1388,15 @@ define( [
 	 */
 	Table.prototype.selectRows = function () {
 		
-		//	// get the class which selected cells should have
-		//    var selectClass = this.get('classCellSelected');
-		//
-		//    // unselect selected cells
-		//    TableSelection.unselectCells();
-		
 		// activate all row formatting button
 		for (var i = 0; i < this.tablePlugin.rowMSItems.length; i++ ) {
 			this.tablePlugin.rowMSButton.showItem(this.tablePlugin.rowMSItems[i].name);
 		}
-		
-		//    this.rowsToSelect.sort(function (a,b) {return a - b;});
 
-
-		// set the status of the table header button to the status of the 
-		// frist 2 selected cells (index 1+2). First cell is for selection.
-		//	if ( this.rowsToSelect &&  this.rowsToSelect.length > 0 &&
-		//		rowCells && rowCells[0] ) {
-		//	    if ( rowCells[1]  ) {
-		//	    	TablePlugin.rowHeader.setPressed(
-		//	    			// take 1 column to detect if the header button is pressd
-		//	    			rowsCells[1].nodeName.toLowerCase() == 'th' &&
-		//	    			rowsCells[2].nodeName.toLowerCase() == 'th'
-		//	    	);
-		//	    } else {
-		//	    	TablePlugin.rowHeader.setPressed( rowCells[1].nodeName.toLowerCase() == 'th');
-		//	    }
-		//	}
-		// 
 		for (var i = 0; i < this.rowsToSelect.length; i++) {
 			var rowId = this.rowsToSelect[i];
 			var rowCells = jQuery(this.getRows()[rowId].cells).toArray();
 			if (i == 0) {
-				// set the status of the table header button to the status of the first 2 selected
-				// cells (index 1 + 2). The first cell is the selection-helper
-				//        TablePlugin.rowHeader.setPressed(
-				//          rowCells[1].nodeName.toLowerCase() == 'th'  &&
-				//          rowCells[2].nodeName.toLowerCase() == 'th'
-				////          jQuery(rowCells[1]).attr('scope') == 'col'
-				//        );
-
 				// set the first class found as active item in the multisplit button
 				for (var j = 0; j < rowCells.length; j++) {
 					this.tablePlugin.rowMSButton.setActiveItem();
@@ -1440,20 +1408,13 @@ define( [
 					}
 				}
 			}
-
-			//      // shift the first element (which is a selection-helper cell)
-			//      rowCells.shift();
-			//
-			//      TableSelection.selectedCells = TableSelection.selectedCells.concat(rowCells);
-			//      
-			//      jQuery(rowCells).addClass(this.get('classCellSelected'));
 		}
 		
 		//    TableSelection.selectionType = 'row';
-		FloatingMenu.setScope(this.tablePlugin.name + '.row');
+		Toolbar.setScope(this.tablePlugin.name + '.row');
 		
 		this.selection.selectRows( this.rowsToSelect );
-		this.tablePlugin.columnHeader.setPressed( this.selection.isHeader() );
+		this.tablePlugin.columnHeader.setState( this.selection.isHeader() );
 
 		// blur all editables within the table
 		this.obj.find('div.aloha-ui-table-cell-editable').blur();

@@ -10,7 +10,12 @@ define( [
 	'aloha/jquery',
 	'aloha/plugin',
 	'aloha/pluginmanager',
-	'aloha/floatingmenu',
+	'ui/toolbar',
+	'ui/component',
+	'ui/button',
+	'ui/toggleButton',
+	'ui/attribute-field',
+	'ui/multi-split-button',
 	'i18n!table/nls/i18n',
 	'i18n!aloha/nls/i18n',
 	'table/table-create-layer',
@@ -21,7 +26,12 @@ define( [
 	         jQuery,
 	         Plugin,
 	         PluginManager,
-	         FloatingMenu,
+	         Toolbar,
+			 Component,
+			 Button,
+			 ToggleButton,
+			 AttributeField,
+			 MultiSplitButton,
 	         i18n,
 	         i18nCore,
 	         CreateLayer,
@@ -150,6 +160,16 @@ define( [
 
 		// initialize the table buttons
 		this.initTableButtons();
+		this.rowHeader          = Component.getGlobalInstance("rowheader");
+		this.btnRowmergecells   = Component.getGlobalInstance("mergecells");
+		this.btnRowsplitcells   = Component.getGlobalInstance("splitcells");
+		this.columnHeader       = Component.getGlobalInstance("columnheader");
+		this.btnTablemergecells = Component.getGlobalInstance("mergecells");
+		this.btnTablesplitcells = Component.getGlobalInstance("splitcells");
+		this.btnMergecells      = Component.getGlobalInstance("mergecells");
+		this.btnSplitcells      = Component.getGlobalInstance("splitcells");
+		this.captionButton      = Component.getGlobalInstance("tableCaption");
+		this.createTableButton  = Component.getGlobalInstance("createTable");
 
 		Aloha.bind( 'aloha-table-selection-changed', function () {
 			if ( null != TablePlugin.activeTable &&
@@ -218,9 +238,6 @@ define( [
 						that.activeTable.focusOut();
 					}
 				}
-
-				// TODO this should not be necessary here!
-				FloatingMenu.doLayout();
 			}
 		});
 
@@ -460,6 +477,31 @@ define( [
 			// hide warning
 		}
 	};
+
+	TablePlugin.initMergeSplitCellsBtns = function(){
+
+		Component.define( "mergecells", Button, {
+			label: i18n.t( "button.mergecells.label" ),
+			iconOnly: true,
+			icon: "aloha-icon aloha-icon-mergecells",
+			click: function() {
+				if (TablePlugin.activeTable) {
+					TablePlugin.activeTable.selection.mergeCells();
+				}
+			}
+		});
+
+		Component.define( "splitcells", Button, {
+			label: i18n.t( "button.splitcells.label" ),
+			iconOnly: true,
+			icon: "aloha-icon aloha-icon-splitcells",
+			click: function() {
+				if (TablePlugin.activeTable) {
+					TablePlugin.activeTable.selection.splitCells();
+				}
+			}
+		});
+	};
 	
 	/**
 	 * Adds default row buttons, and custom formatting buttons to floating menu
@@ -467,312 +509,202 @@ define( [
 	TablePlugin.initRowsBtns = function () {
 		var that = this;
 
-		// add row before
-		FloatingMenu.addButton(
-			this.name + '.row',
-			new Aloha.ui.Button({
-				'name' : 'addrowbefore',
-				'iconClass' : 'aloha-button aloha-button-addRowBefore',
-				'size' : 'small',
-				'tooltip' : i18n.t('button.addrowbefore.tooltip'),
-				'onclick' : function () {
-					if (that.activeTable) {
-						that.activeTable.addRowBeforeSelection();
-					}
+		Component.define( "addrowbefore", Button, {
+			label: i18n.t( "button.addrowbefore.label" ),
+			iconOnly: true,
+			icon: "aloha-icon aloha-icon-addrowbefore",
+			click: function() {
+				if (that.activeTable) {
+					that.activeTable.addRowBeforeSelection();
 				}
-			}),
-			i18n.t('floatingmenu.tab.table'),
-			1
-		);
-		
-		/*
-		// TODO: This would add a icon what would be toggled if the active
-		// editable contains nested tables. We show a warning to indicate to
-		// the user that we do not support nested tables
-		var tabs = FloatingMenu.tabs;
-		var j = tabs.length;
-		for ( var i = 0; i < j; i++ ) {
-			if ( tabs[ i ].label == i18n.t( 'floatingmenu.tab.table' ) ) {
-				tabs[ i ].label += '&nbsp<img\
-					src="../img/warning-icon.png"\
-					style="vertical-align:middle;"\
-					alt="" />';
 			}
-		}
-		*/
-		
-		// add row after
-		FloatingMenu.addButton(
-			this.name + '.row',
-			new Aloha.ui.Button({
-				'name' : 'addrowafter',
-				'iconClass' : 'aloha-button aloha-button-addRowAfter',
-				'size' : 'small',
-				'tooltip' : i18n.t('button.addrowafter.tooltip'),
-				'onclick' : function () {
-					if (that.activeTable) {
-						that.activeTable.addRowAfterSelection();
-					}
+		});
+
+		Component.define( "addrowafter", Button, {
+			label: i18n.t( "button.addrowafter.label" ),
+			iconOnly: true,
+			icon: "aloha-icon aloha-icon-addrowafter",
+			click: function() {
+				if (that.activeTable) {
+					that.activeTable.addRowAfterSelection();
 				}
-			}),
-			i18n.t('floatingmenu.tab.table'),
-			1
-		);
+			}
+		});
 
-		// delete selected rows
-		FloatingMenu.addButton(
-			this.name + '.row',
-			new Aloha.ui.Button({
-				'name' : 'deleterow',
-				'iconClass' : 'aloha-button aloha-button-deleteRows',
-				'size' : 'small',
-				'tooltip' : i18n.t('button.delrows.tooltip'),
-				'onclick' : function () {
-					if (that.activeTable) {
-						var aTable = that.activeTable;
-						Aloha.showMessage(new Aloha.Message({
-							title : i18n.t('Table'),
-							text : i18n.t('deleterows.confirm'),
-							type : Aloha.Message.Type.CONFIRM,
-							callback : function (sel) {
-								if (sel == 'yes') {
-									aTable.deleteRows();
-								}
+		Component.define( "deleterows", Button, {
+			label: i18n.t( "button.deleterows.label" ),
+			iconOnly: true,
+			icon: "aloha-icon aloha-icon-deleterows",
+			click: function() {
+				if (that.activeTable) {
+					var aTable = that.activeTable;
+					Aloha.showMessage(new Aloha.Message({
+						title : i18n.t('Table'),
+						text : i18n.t('deleterows.confirm'),
+						type : Aloha.Message.Type.CONFIRM,
+						callback : function (sel) {
+							if (sel == 'yes') {
+								aTable.deleteRows();
 							}
-						}));
-					}
-				}
-			}),
-			i18n.t('floatingmenu.tab.table'),
-			1
-		);
-
-      this.rowHeader = new Aloha.ui.Button({
-    	  name : 'rowheader',
-		  iconClass : 'aloha-button aloha-button-row-header',
-		  size	  :  'small',
-		  tooltip	  :  i18n.t('button.rowheader.tooltip'),
-		  toggle	  :  true,
-		  onclick	  :  function () {
-			  // table header
-			  if (that.activeTable) {
-				  var sc = that.activeTable.selection.selectedCells;
-				  that.rowsToSelect = [];
-				  var makeHeader = ( 
-        			  sc[0] && sc[0].nodeName.toLowerCase() == 'td' && sc.length == 1 ||
-        				  sc[0] && sc[0].nodeName.toLowerCase() == 'td' && 
-        				  sc[1].nodeName.toLowerCase() == 'td' );
-				  // if a selection was made, transform the selected cells
-				  for (var i = 0; i < sc.length; i++) {
-					  //            for (var j = 0; j < sc[i].length; j++) {
-					  if (i == 0) {
-						  that.rowsToSelect.push(sc[i].rowIndex);
-					  }
-					  
-					  if ( makeHeader ) {
-            			  sc[i] = Aloha.Markup.transformDomObject(sc[i], 'th').attr('scope', 'col')[0];
-					  } else { 
-            			  sc[i] = Aloha.Markup.transformDomObject(sc[i], 'td').removeAttr('scope')[0];
-					  }
-					  
-					  jQuery(sc[i]).bind('mousedown', function (jqEvent) {
-						  var wrapper = jQuery(this).children('div').eq(0);
-						  window.setTimeout(function () {
-							  wrapper.trigger('focus');
-						  }, 1);
-						  // unselect cells
-						  if (that.activeTable) {
-							  that.activeTable.selection.unselectCells();
-						  }
-					  });
-					  
-					  /*
-						Destructive. For debugging.
-						Indicate directionality of header
-						jQuery(sc[i][j]).html('v');
-					  */
-					  //            }
-				  }
-				  
-				  // selection could have changed.
-				  if (that.activeTable) {
-					  that.activeTable.refresh();
-					  that.activeTable.selectRows();
-				  }
-			  }
-		  }
-      });
-    
-      FloatingMenu.addButton(
-		  this.name + '.row',
-		  this.rowHeader,
-		  i18n.t('floatingmenu.tab.table'),
-		  1
-      );
-    
-	this.btnRowmergecells = new Aloha.ui.Button({
-			  'name' : 'rowmergecells',
-			  'iconClass' : 'aloha-button aloha-button-merge-cells',
-			  'size' : 'small',
-			  'tooltip' : i18n.t('button.mergecells.tooltip'),
-			  'toggle' : false,
-			  'onclick' : function () {
-				  if (that.activeTable) {
-					  that.activeTable.selection.mergeCells();
-				  }
-			  }
-		  });
-
-		// Add merge/split cells buttons
-      FloatingMenu.addButton(
-		  this.name + '.row',
-		  this.btnRowmergecells,
-		  i18n.t('floatingmenu.tab.table'),
-		  1
-      );
-
-	this.btnRowsplitcells = new Aloha.ui.Button({
-			  'name' : 'rowsplitcells',
-			  'iconClass' : 'aloha-button aloha-button-split-cells',
-			  'size' : 'small',
-			  'tooltip' : i18n.t('button.splitcells.tooltip'),
-			  'toggle' : false,
-			  'onclick' : function () {
-				  if (that.activeTable) {
-					  that.activeTable.selection.splitCells();
-				  }
-			  }
-		  });
-
-      FloatingMenu.addButton(
-		  this.name + '.row',
-		  this.btnRowsplitcells,
-		  i18n.t('floatingmenu.tab.table'),
-		  1
-      );
-    
-      // generate formatting buttons
-      this.rowMSItems = [];
-      jQuery.each(this.rowConfig, function (j, itemConf) {
-		  that.rowMSItems.push({
-			  name: itemConf.name,
-			  text: i18n.t(itemConf.text),
-			  tooltip: i18n.t(itemConf.tooltip),
-			  iconClass: 'aloha-button aloha-row-layout ' + itemConf.iconClass,
-			  click: function () {
-				  if (that.activeTable) {
-					  var sc = that.activeTable.selection.selectedCells;
-					  // if a selection was made, transform the selected cells
-					  for (var i = 0; i < sc.length; i++) {
-						if ( jQuery(sc[i]).attr('class').indexOf(itemConf.cssClass) > -1 ) {
-							jQuery(sc[i]).removeClass(itemConf.cssClass);
-						} else {
-							jQuery(sc[i]).addClass(itemConf.cssClass);
-							// remove all row formattings
-							for (var f = 0; f < that.rowConfig.length; f++) {
-								if (that.rowConfig[f].cssClass != itemConf.cssClass) {
-									jQuery(sc[i]).removeClass(that.rowConfig[f].cssClass);
-								}
-							}
-							
 						}
-					  }
-					  // selection could have changed.
-					  that.activeTable.selectRows();
-				  }
-			  }
-		  });
-      });
-    
-      if (this.rowMSItems.length > 0) {
-		  this.rowMSItems.push({
-			  name: 'removeFormat',
-			  text: i18n.t('button.removeFormat.text'),
-			  tooltip: i18n.t('button.removeFormat.tooltip'),
-			  iconClass: 'aloha-button aloha-button-removeFormat',
-			  wide: true,
-			  click: function () {
+					}));
+				}
+			}
+		});
+
+		Component.define( "rowheader", ToggleButton, {
+			label: i18n.t( "button.rowheader.label" ),
+			iconOnly: true,
+			icon: "aloha-icon aloha-icon-rowheader",
+			click: function() {
+				// table header
 				if (that.activeTable) {
 					var sc = that.activeTable.selection.selectedCells;
+					that.rowsToSelect = [];
+					var makeHeader = ( 
+        				sc[0] && sc[0].nodeName.toLowerCase() == 'td' && sc.length == 1 ||
+        					sc[0] && sc[0].nodeName.toLowerCase() == 'td' && 
+        					sc[1].nodeName.toLowerCase() == 'td' );
+
 					// if a selection was made, transform the selected cells
 					for (var i = 0; i < sc.length; i++) {
-						for (var f = 0; f < that.rowConfig.length; f++) {
-							jQuery(sc[i]).removeClass(that.rowConfig[f].cssClass);
+						if (i == 0) {
+							that.rowsToSelect.push(sc[i].rowIndex);
 						}
+						
+						if ( makeHeader ) {
+            				sc[i] = Aloha.Markup.transformDomObject(sc[i], 'th').attr('scope', 'col')[0];
+						} else { 
+            				sc[i] = Aloha.Markup.transformDomObject(sc[i], 'td').removeAttr('scope')[0];
+						}
+						
+						jQuery(sc[i]).bind('mousedown', function (jqEvent) {
+							var wrapper = jQuery(this).children('div').eq(0);
+							window.setTimeout(function () {
+								wrapper.trigger('focus');
+							}, 1);
+							// unselect cells
+							if (that.activeTable) {
+								that.activeTable.selection.unselectCells();
+							}
+						});
 					}
+					
 					// selection could have changed.
-					that.activeTable.selectRows();
+					if (that.activeTable) {
+						that.activeTable.refresh();
+						that.activeTable.selectRows();
+					}
 				}
- 			  }
-		  });
-      }
-    
-    this.rowMSButton = new Aloha.ui.MultiSplitButton({
-      items : this.rowMSItems,
-      name : 'tableRowActions'
-    });
-    
-    if (this.rowMSItems.length > 0) {
-      FloatingMenu.addButton(
-        this.name + '.row',
-        this.rowMSButton,
-        i18n.t('floatingmenu.tab.table'),
-        3
-      );
-    }
-  };
+			},
+			selectionChange: function(range){
+				if(that.activeTable){
+					var sc = that.activeTable.selection.selectedCells;
+					var isHeader = that.activeTable.selection.isHeader();
 
-  /**
-   * Adds default column buttons, and custom formatting buttons to floating menu
-   */
-  TablePlugin.initColumnBtns = function () {
-    var that = this;
+					this.setState( isHeader ); 
+				} else {
+					this.setState( false ); 
+				} 
+			}
+		});
+		
+		// generate formatting buttons
+		this.rowMSItems = [];
+		jQuery.each(this.rowConfig, function (j, itemConf) {
+			that.rowMSItems.push({
+				name: itemConf.name,
+				text: i18n.t(itemConf.text),
+				tooltip: i18n.t(itemConf.tooltip),
+				iconClass: 'aloha-button aloha-row-layout ' + itemConf.iconClass,
+				click: function () {
+					if (that.activeTable) {
+						var sc = that.activeTable.selection.selectedCells;
+						// if a selection was made, transform the selected cells
+						for (var i = 0; i < sc.length; i++) {
+							if ( jQuery(sc[i]).attr('class').indexOf(itemConf.cssClass) > -1 ) {
+								jQuery(sc[i]).removeClass(itemConf.cssClass);
+							} else {
+								jQuery(sc[i]).addClass(itemConf.cssClass);
+								// remove all row formattings
+								for (var f = 0; f < that.rowConfig.length; f++) {
+									if (that.rowConfig[f].cssClass != itemConf.cssClass) {
+										jQuery(sc[i]).removeClass(that.rowConfig[f].cssClass);
+									}
+								}
+								
+							}
+						}
+						// selection could have changed.
+						that.activeTable.selectRows();
+					}
+				}
+			});
+		});
+		
+		if (this.rowMSItems.length > 0) {
+			this.rowMSItems.push({
+				name: 'removeFormat',
+				text: i18n.t('button.removeFormat.text'),
+				tooltip: i18n.t('button.removeFormat.tooltip'),
+				iconClass: 'aloha-button aloha-button-removeFormat',
+				wide: true,
+				click: function () {
+					if (that.activeTable) {
+						var sc = that.activeTable.selection.selectedCells;
+						// if a selection was made, transform the selected cells
+						for (var i = 0; i < sc.length; i++) {
+							for (var f = 0; f < that.rowConfig.length; f++) {
+								jQuery(sc[i]).removeClass(that.rowConfig[f].cssClass);
+							}
+						}
+						// selection could have changed.
+						that.activeTable.selectRows();
+					}
+ 				}
+			});
+		}
+		
+		this.rowMSButton = MultiSplitButton({
+			items: this.rowMSItems,
+			name: 'formatRow',
+			hideIfEmpty: true
+		});
+	};
 
-    // add column left btn
-    FloatingMenu.addButton(
-		this.name + '.column',
-		new Aloha.ui.Button({
-			'name' : 'addcolumnleft',
-			'iconClass' : 'aloha-button aloha-button-addColumnLeft',
-			'size' : 'small',
-			'tooltip' : i18n.t('button.addcolleft.tooltip'),
-			'onclick' : function () {
+	/**
+	 * Adds default column buttons, and custom formatting buttons to floating menu
+	 */
+	TablePlugin.initColumnBtns = function () {
+		var that = this;
+
+		Component.define( "addcolumnleft", Button, {
+			label: i18n.t( "button.addcolumnleft.label" ),
+			iconOnly: true,
+			icon: "aloha-icon aloha-icon-addcolumnleft",
+			click: function() {
 				if (that.activeTable) {
 					that.activeTable.addColumnsLeft();
 				}
 			}
-		}),
-		i18n.t('floatingmenu.tab.table'),
-		1
-	);
+		});
 
-    // add column right btn
-	FloatingMenu.addButton(
-		this.name + '.column',
-		new Aloha.ui.Button({
-			'name' : 'addcolumnright',
-			'iconClass' : 'aloha-button aloha-button-addColumnRight',
-			'size' : 'small',
-			'tooltip' : i18n.t('button.addcolright.tooltip'),
-			'onclick' : function () {
+		Component.define( "addcolumnright", Button, {
+			label: i18n.t( "button.addcolumnright.label" ),
+			iconOnly: true,
+			icon: "aloha-icon aloha-icon-addcolumnright",
+			click: function() {
 				if (that.activeTable) {
 					that.activeTable.addColumnsRight();
 				}
 			}
-		}),
-		i18n.t('floatingmenu.tab.table'),
-		1
-	);
+		});
 
-    // delete columns btn
-    FloatingMenu.addButton(
-		this.name + '.column',
-		new Aloha.ui.Button({
-			'name' : 'deletecolumns',
-			'iconClass' : 'aloha-button aloha-button-deleteColumns',
-			'size' : 'small',
-			'tooltip' : i18n.t('button.delcols.tooltip'),
-			'onclick' : function () {
+		Component.define( "deletecolumns", Button, {
+			label: i18n.t( "button.deletecolumns.label" ),
+			iconOnly: true,
+			icon: "aloha-icon aloha-icon-deletecolumns",
+			click: function() {
 				if (that.activeTable) {
 					var aTable = that.activeTable;
 					Aloha.showMessage(new Aloha.Message({
@@ -787,171 +719,116 @@ define( [
 					}));
 				}
 			}
-		}),
-		i18n.t('floatingmenu.tab.table'),
-		1
-	);
-
-    this.columnHeader = new Aloha.ui.Button({
-    	name      : 'columnheader',
-        iconClass : 'aloha-button aloha-button-col-header',
-        size      : 'small',
-        tooltip   : i18n.t('button.columnheader.tooltip'),
-        toggle    : true,
-        onclick   : function () {
-			// table header
-			if (that.activeTable) {
-    			var 
-    	  		    selectedColumnIdxs = that.activeTable.selection.selectedColumnIdxs,
-    	  		    cell,
-    	  		    isHeader = that.activeTable.selection.isHeader();
-
-			    for (var j = 0; j < that.activeTable.selection.selectedCells.length; j++) {
-			    	cell = that.activeTable.selection.selectedCells[j];
-			        if ( isHeader ) {
-			        	cell = Aloha.Markup.transformDomObject( cell, 'td' ).removeAttr( 'scope' ).get(0);
-			        } else { 
-			        	cell = Aloha.Markup.transformDomObject( cell, 'th' ).attr( 'scope', 'row' ).get(0);
-			        }
-			      
-			        jQuery( that.activeTable.selection.selectedCells[j] ).bind( 'mousedown', function ( jqEvent ) {
-			            var wrapper = jQuery(this).children('div').eq(0);
-			            // lovely IE ;-)
-			            window.setTimeout(function () {
-			            	wrapper.trigger( 'focus' );
-			            }, 1);
-			            // unselect cells
-			        });
-			      
-			    }
-			    // selection the column.
-			    that.activeTable.refresh();
-			    that.activeTable.selection.unselectCells();
-			    that.activeTable.selection.selectColumns( selectedColumnIdxs );
-			}
-        }
-    });
-    
-    FloatingMenu.addButton(
-      this.name + '.column',
-      this.columnHeader,
-      i18n.t('floatingmenu.tab.table'),
-      1
-    );
-    
-	this.btnTablemergecells = new Aloha.ui.Button({
-    	  	'name' : 'tablemergecells',
-			'iconClass' : 'aloha-button aloha-button-merge-cells',
-			'size' : 'small',
-			'tooltip' : i18n.t('button.mergecells.tooltip'),
-			'toggle' : false,
-			'onclick' : function () {
-				if (that.activeTable) {
-					that.activeTable.selection.mergeCells();
-				}
-			}
-		});
-	
-    // Add merge/split cells buttons
-    FloatingMenu.addButton(
-      this.name + '.column',
-      this.btnTablemergecells,
-      i18n.t('floatingmenu.tab.table'),
-      1
-    );
-
-	this.btnTablesplitcells = new Aloha.ui.Button({
-    	  	'name' : 'tablesplitcells',
-			'iconClass' : 'aloha-button aloha-button-split-cells',
-			'size' : 'small',
-			'tooltip' : i18n.t('button.splitcells.tooltip'),
-			'toggle' : false,
-			'onclick' : function () {
-				if (that.activeTable) {
-					that.activeTable.selection.splitCells();
-				}
-			}
 		});
 
-    FloatingMenu.addButton(
-      this.name + '.column',
-      this.btnTablesplitcells,
-      i18n.t('floatingmenu.tab.table'),
-      1
-    );
+	    Component.define( "columnheader", ToggleButton, {
+			label: i18n.t( "button.columnheader.label" ),
+			iconOnly: true,
+			icon: "aloha-icon aloha-icon-columnheader",
+			click: function() {
+				if (that.activeTable) {
+    				var 
+    	  			selectedColumnIdxs = that.activeTable.selection.selectedColumnIdxs,
+    	  			cell,
+    	  			isHeader = that.activeTable.selection.isHeader();
 
-    
-    // generate formatting buttons
-    this.columnMSItems = [];
-      jQuery.each(this.columnConfig, function (j, itemConf) {
-      var item = {
-        name	  : itemConf.name,
-        text	  : i18n.t(itemConf.text),
-        tooltip	  : i18n.t(itemConf.tooltip),
-        iconClass : 'aloha-button aloha-column-layout ' + itemConf.iconClass,
-        click	  : function (x,y,z) {
-			if (that.activeTable) {
-				var sc = that.activeTable.selection.selectedCells;
-				// if a selection was made, transform the selected cells
-				for (var i = 0; i < sc.length; i++) {
-					if ( jQuery(sc[i]).attr('class').indexOf(itemConf.cssClass) > -1 ) {
-						jQuery(sc[i]).removeClass(itemConf.cssClass);
-					} else {
-						jQuery(sc[i]).addClass(itemConf.cssClass);
-						// remove all column formattings
-						for (var f = 0; f < that.columnConfig.length; f++) {
-							if (that.columnConfig[f].cssClass != itemConf.cssClass) {
+					for (var j = 0; j < that.activeTable.selection.selectedCells.length; j++) {
+			    		cell = that.activeTable.selection.selectedCells[j];
+						if ( isHeader ) {
+			        		cell = Aloha.Markup.transformDomObject( cell, 'td' ).removeAttr( 'scope' ).get(0);
+						} else { 
+			        		cell = Aloha.Markup.transformDomObject( cell, 'th' ).attr( 'scope', 'row' ).get(0);
+						}
+						
+						jQuery( that.activeTable.selection.selectedCells[j] ).bind( 'mousedown', function ( jqEvent ) {
+							var wrapper = jQuery(this).children('div').eq(0);
+							// lovely IE ;-)
+							window.setTimeout(function () {
+			            		wrapper.trigger( 'focus' );
+							}, 1);
+							// unselect cells
+						});
+						
+					}
+					// selection the column.
+					that.activeTable.refresh();
+					that.activeTable.selection.unselectCells();
+					that.activeTable.selection.selectColumns( selectedColumnIdxs );
+				}
+			},
+			selectionChange: function(){
+				if(that.activeTable){
+					var isHeader = that.activeTable.selection.isHeader();
+					this.setState( isHeader ); 
+				} else {
+					this.setState( false ); 
+				} 
+			}
+		});
+		
+		// generate formatting buttons
+		this.columnMSItems = [];
+		jQuery.each(this.columnConfig, function (j, itemConf) {
+			var item = {
+				name	  : itemConf.name,
+				text	  : i18n.t(itemConf.text),
+				tooltip	  : i18n.t(itemConf.tooltip),
+				iconClass : 'aloha-button aloha-column-layout ' + itemConf.iconClass,
+				click	  : function (x,y,z) {
+					if (that.activeTable) {
+						var sc = that.activeTable.selection.selectedCells;
+						// if a selection was made, transform the selected cells
+						for (var i = 0; i < sc.length; i++) {
+							if ( jQuery(sc[i]).attr('class').indexOf(itemConf.cssClass) > -1 ) {
+								jQuery(sc[i]).removeClass(itemConf.cssClass);
+							} else {
+								jQuery(sc[i]).addClass(itemConf.cssClass);
+								// remove all column formattings
+								for (var f = 0; f < that.columnConfig.length; f++) {
+									if (that.columnConfig[f].cssClass != itemConf.cssClass) {
+										jQuery(sc[i]).removeClass(that.columnConfig[f].cssClass);
+									}
+								}
+							}
+						}
+						// selection could have changed.
+						that.activeTable.selectColumns();
+					}
+				}
+			};
+			
+			that.columnMSItems.push(item);
+		});
+		
+		if (this.columnMSItems.length > 0) {
+			this.columnMSItems.push({
+				name	  : 'removeFormat',
+				text	  : i18n.t('button.removeFormat.text'),
+				tooltip	  : i18n.t('button.removeFormat.tooltip'),
+				iconClass : 'aloha-button aloha-button-removeFormat',
+				wide	  : true,
+				click	  : function () {
+					if (that.activeTable) {
+						var sc = that.activeTable.selection.selectedCells;
+						// if a selection was made, transform the selected cells
+						for (var i = 0; i < sc.length; i++) {
+							for (var f = 0; f < that.columnConfig.length; f++) {
 								jQuery(sc[i]).removeClass(that.columnConfig[f].cssClass);
 							}
 						}
+						// selection could have changed.
+						that.activeTable.selectColumns();
 					}
 				}
-				// selection could have changed.
-				that.activeTable.selectColumns();
-			}
-        }
-      };
-      
-      that.columnMSItems.push(item);
-    });
-    
-    if (this.columnMSItems.length > 0) {
-      this.columnMSItems.push({
-        name	  : 'removeFormat',
-        text	  : i18n.t('button.removeFormat.text'),
-        tooltip	  : i18n.t('button.removeFormat.tooltip'),
-        iconClass : 'aloha-button aloha-button-removeFormat',
-        wide	  : true,
-        click	  : function () {
-			if (that.activeTable) {
-				var sc = that.activeTable.selection.selectedCells;
-				// if a selection was made, transform the selected cells
-				for (var i = 0; i < sc.length; i++) {
-					for (var f = 0; f < that.columnConfig.length; f++) {
-						jQuery(sc[i]).removeClass(that.columnConfig[f].cssClass);
-					}
-				}
-				// selection could have changed.
-				that.activeTable.selectColumns();
-			}
-        }
-      });
-    }
-    
-    this.columnMSButton = new Aloha.ui.MultiSplitButton({
-      items : this.columnMSItems,
-      name  : 'tableColumnActions'
-    });
-    
-    if (this.columnMSItems.length > 0) {
-      FloatingMenu.addButton(
-        this.name + '.column',
-        this.columnMSButton,
-        i18n.t('floatingmenu.tab.table'),
-        3
-      );
-    }
-  };
+			});
+		}
+		
+		this.columnMSButton = MultiSplitButton({
+			items: this.columnMSItems,
+			name: 'formatColumn',
+			hideIfEmpty: true
+		});
+	};
 
 	/**
 	 * initialize the buttons and register them on floating menu
@@ -960,146 +837,85 @@ define( [
 		var that = this;
 
 		// generate the new scopes
-		FloatingMenu.createScope(this.name + '.row', 'Aloha.continuoustext');
-		FloatingMenu.createScope(this.name + '.column', 'Aloha.continuoustext');
-		FloatingMenu.createScope(this.name + '.cell', 'Aloha.continuoustext');
+		Toolbar.createScope(this.name + '.row', 'Aloha.continuoustext');
+		Toolbar.createScope(this.name + '.column', 'Aloha.continuoustext');
+		Toolbar.createScope(this.name + '.cell', 'Aloha.continuoustext');
 
-		// the 'create table' button
-		this.createTableButton = new Aloha.ui.Button({
-			'name' : 'table',
-			'iconClass' : 'aloha-button aloha-button-table',
-			'size' : 'small',
-			'tooltip' : i18n.t('button.createtable.tooltip'),
-			'onclick' : function (element, event) {
-				TablePlugin.createDialog(element.btnEl.dom);
+		Component.define( "createTable", Button, {
+			label: i18n.t( "button.createTable.label" ),
+			iconOnly: true,
+			icon: "aloha-icon aloha-icon-createTable",
+			click: function() {
+				TablePlugin.createDialog(this.element);
 			}
 		});
 
-		// add to floating menu
-		FloatingMenu.addButton(
-			'Aloha.continuoustext',
-			this.createTableButton,
-			i18nCore.t('floatingmenu.tab.insert'),
-			1
-		);
+		// now the specific table buttons
 
-    // now the specific table buttons
+		// generate formatting buttons for columns
+		this.initColumnBtns();
 
-    // generate formatting buttons for columns
-    this.initColumnBtns();
+		// generate formatting buttons for rows
+		this.initRowsBtns();
 
-    // generate formatting buttons for rows
-    this.initRowsBtns();
+		this.initMergeSplitCellsBtns();
 
-    // generate formatting buttons for tables
-    this.tableMSItems = [];
-    
-    var tableConfig = this.tableConfig;
-    
-    jQuery.each(tableConfig, function(j, itemConf){
-      that.tableMSItems.push({
-        name: itemConf.name,
-        text: i18n.t(itemConf.text),
-        tooltip: i18n.t(itemConf.tooltip),
-        iconClass: 'aloha-button aloha-table-layout ' + itemConf.iconClass,
-        click: function(){
-          // set table css class
-          if (that.activeTable) {
-            for (var f = 0; f < tableConfig.length; f++) {
-              that.activeTable.obj.removeClass(tableConfig[f].cssClass);
-            }
-            that.activeTable.obj.addClass(itemConf.cssClass);
-          }
-        }
-      });
-    });
-    
-    if(this.tableMSItems.length > 0) {
-      this.tableMSItems.push({
-        name: 'removeFormat',
-        text: i18n.t('button.removeFormat.text'),
-        tooltip: i18n.t('button.removeFormat.tooltip'),
-        iconClass: 'aloha-button aloha-button-removeFormat',
-        wide: true,
-        click: function () {
-          // remove all table classes
-          if (that.activeTable) {
-            for (var f = 0; f < tableConfig.length; f++) {
-              that.activeTable.obj.removeClass(that.tableConfig[f].cssClass);
-            }
-          }
-        }
-      });
-    }
-    
-    this.tableMSButton = new Aloha.ui.MultiSplitButton({
-      items : this.tableMSItems,
-      name : 'tableActions'
-    });
-    
-    if(this.tableMSItems.length > 0) {
-      FloatingMenu.addButton(
-        this.name + '.cell',
-        this.tableMSButton,
-        i18n.t('floatingmenu.tab.tablelayout'),
-        3
-      );
-    };
-
-	this.btnMergecells = new Aloha.ui.Button({
-    	  	'name' : 'mergecells',
-			'iconClass' : 'aloha-button aloha-button-merge-cells',
-			'size' : 'small',
-			'tooltip' : i18n.t('button.mergecells.tooltip'),
-			'toggle' : false,
-			'onclick' : function () {
-				if (that.activeTable) {
-					that.activeTable.selection.mergeCells();
+		// generate formatting buttons for tables
+		this.tableMSItems = [];
+		
+		var tableConfig = this.tableConfig;
+		
+		jQuery.each(tableConfig, function(j, itemConf){
+			that.tableMSItems.push({
+				name: itemConf.name,
+				text: i18n.t(itemConf.text),
+				tooltip: i18n.t(itemConf.tooltip),
+				iconClass: 'aloha-button aloha-table-layout ' + itemConf.iconClass,
+				click: function(){
+					// set table css class
+					if (that.activeTable) {
+						for (var f = 0; f < tableConfig.length; f++) {
+							that.activeTable.obj.removeClass(tableConfig[f].cssClass);
+						}
+						that.activeTable.obj.addClass(itemConf.cssClass);
+					}
 				}
-			}
+			});
 		});
-
-	// Add merge/split cells buttons
-    FloatingMenu.addButton(
-      this.name + '.cell',
-      this.btnMergecells,
-      i18n.t('floatingmenu.tab.table'),
-      1
-    );
-
-	this.btnSplitcells = new Aloha.ui.Button({
-    	  	'name' : 'splitcells',
-			'iconClass' : 'aloha-button aloha-button-split-cells',
-			'size' : 'small',
-			'tooltip' : i18n.t('button.splitcells.tooltip'),
-			'toggle' : false,
-			'onclick' : function () {
-				if (that.activeTable) {
-					that.activeTable.selection.splitCells();
+		
+		if(this.tableMSItems.length > 0) {
+			this.tableMSItems.push({
+				name: 'removeFormat',
+				text: i18n.t('button.removeFormat.text'),
+				tooltip: i18n.t('button.removeFormat.tooltip'),
+				iconClass: 'aloha-button aloha-button-removeFormat',
+				wide: true,
+				click: function () {
+					// remove all table classes
+					if (that.activeTable) {
+						for (var f = 0; f < tableConfig.length; f++) {
+							that.activeTable.obj.removeClass(that.tableConfig[f].cssClass);
+						}
+					}
 				}
-			}
+			});
+		}
+		
+		this.tableMSButton = MultiSplitButton({
+			items : this.tableMSItems,
+			name : 'formatTable',
+			hideIfEmpty: true
 		});
 
-    FloatingMenu.addButton(
-      this.name + '.cell',
-      this.btnSplitcells,
-      i18n.t('floatingmenu.tab.table'),
-      1
-    );
-
-	// Add caption button
-    this.captionButton = new Aloha.ui.Button({
-    		'name' : 'tablecaption',
-			'iconClass' : 'aloha-button aloha-button-table-caption',
-			'size' : 'small',
-			'tooltip' : i18n.t('button.caption.tooltip'),
-			'toggle' : true,
-			'onclick' : function () {
+		Component.define( "tableCaption", ToggleButton, {
+			label: i18n.t( "button.tableCaption.label" ),
+			iconOnly: true,
+			icon: "aloha-icon aloha-icon-table-caption",
+			click: function() {
 				if (that.activeTable) {
 					// look if table object has a child caption
 					if ( that.activeTable.obj.children("caption").is('caption') ) {
 						that.activeTable.obj.children("caption").remove();
-						// select first cell of table
 					} else {
 						var captionText = i18n.t('empty.caption');
 						var c = jQuery('<caption></caption>');
@@ -1127,33 +943,15 @@ define( [
 			}
 		});
 
-		FloatingMenu.addButton(
-			this.name + '.cell',
-			this.captionButton,
-			i18n.t('floatingmenu.tab.table'),
-			1
-		);
-
-		// for cells
-		// add summary field
-		this.summary = new Aloha.ui.AttributeField( {
+		this.summary = new AttributeField( {
 			width : 275,
-			name  : 'tableSummary'
+			name  : 'tableSummary',
+			noTargetHighlight: true
 		} );
 		
-		this.summary.addListener( 'keyup', function( obj, event ) {
+		this.summary.addListener( 'keyup', function( event ) {
 			that.activeTable.checkWai();
 		} );
-		
-		if(!this.settings.summaryinsidebar) {
-			FloatingMenu.addButton(
-				this.name + '.cell',
-				this.summary,
-				i18n.t('floatingmenu.tab.table'),
-				1
-			);
-		}
-
 	};
 
 	/**
@@ -1305,7 +1103,7 @@ define( [
 			this.summary.setTargetObject(focusTable.obj, 'summary');
 			if ( focusTable.obj.children("caption").is('caption') ) {
 				// set caption button
-				that.captionButton.setPressed(true);
+				that.captionButton.setState(true);
 				var c = focusTable.obj.children("caption");
 				that.makeCaptionEditable(c);
 			}
@@ -1313,23 +1111,20 @@ define( [
 		}
 		TablePlugin.activeTable = focusTable;
 
-	if (this.tableMSButton.extButton) {
 		// show configured formatting classes
 		for (var i = 0; i < this.tableMSItems.length; i++) {
-		  this.tableMSButton.showItem(this.tableMSItems[i].name);
+			this.tableMSButton.showItem(this.tableMSItems[i].name);
 		}
 		this.tableMSButton.setActiveItem();
-    }
-    
-    if (this.activeTable) {
-      for (var i = 0; i < this.tableConfig.length; i++) {
-        if (this.activeTable.obj.hasClass(this.tableConfig[i].cssClass)) {
-          this.tableMSButton.setActiveItem(this.tableConfig[i].name);
-          // TODO ???? k = this.tableConfig.length;
-        }
-      }
-    }
-  };
+		
+		if (this.activeTable) {
+			for (var i = 0; i < this.tableConfig.length; i++) {
+				if (this.activeTable.obj.hasClass(this.tableConfig[i].cssClass)) {
+					this.tableMSButton.setActiveItem(this.tableConfig[i].name);
+				}
+			}
+		}
+	};
 
 	/**
 	 * Calls the Aloha.log function with 'error' level
@@ -1444,7 +1239,7 @@ define( [
 
 	TablePlugin.updateFloatingMenuScope = function () {
 		if ( null != TablePlugin.activeTable && null != TablePlugin.activeTable.selection.selectionType ) {
-			FloatingMenu.setScope(TablePlugin.name + '.' + TablePlugin.activeTable.selection.selectionType);
+			Toolbar.setScope(TablePlugin.name + '.' + TablePlugin.activeTable.selection.selectionType);
 		}
 	};
 	
