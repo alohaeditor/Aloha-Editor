@@ -9,12 +9,16 @@ define( [
 	'aloha',
 	'aloha/jquery',
 	'aloha/plugin',
-	'aloha/floatingmenu',
+	'ui/component',
+	'ui/toolbar',
+	'ui/button',
+	'ui/toggleButton',
+	'ui/port-helper-attribute-field',
 	'i18n!wai-lang/nls/i18n',
 	'i18n!aloha/nls/i18n',
 	'wai-lang/languages',
 	'css!wai-lang/css/wai-lang.css'
-], function( Aloha, jQuery, Plugin, FloatingMenu, i18n, i18nCore ) {
+], function( Aloha, jQuery, Plugin, Component, Toolbar, Button, ToggleButton, AttributeField, i18n, i18nCore ) {
 	'use strict';
 
 	var WAI_LANG_CLASS = 'aloha-wai-lang',
@@ -78,9 +82,9 @@ define( [
 					// show/hide the button according to the configuration
 					config = that.getEditableConfig( Aloha.activeEditable.obj );
 					if ( jQuery.inArray( 'span', config ) !== -1 ) {
-						addMarkupToSelectionButton.setPressed( false );
+						addMarkupToSelectionButton.setState( false );
 					} else {
-						addMarkupToSelectionButton.setPressed( true );
+						addMarkupToSelectionButton.setState( true );
 
 						// leave if a is not allowed
 						return;
@@ -88,8 +92,8 @@ define( [
 
 					foundMarkup = that.findLangMarkup( rangeObject );
 					if ( foundMarkup ) {
-						addMarkupToSelectionButton.setPressed( true );
-						FloatingMenu.setScope( 'wai-lang' );
+						addMarkupToSelectionButton.setState( true );
+						Toolbar.setScope( 'wai-lang' );
 						langField.setTargetObject( foundMarkup, 'lang' );
 					} else {
 						langField.setTargetObject( null );
@@ -105,34 +109,25 @@ define( [
 		createButtons: function() {
 			var that = this;
 
-			// Button for adding a language markup to the current selection
-			addMarkupToSelectionButton = new Aloha.ui.Button( {
-				'name'      : 'wailang',
-				'iconClass' : 'aloha-button aloha-button-wai-lang',
-				'size'      : 'small',
-				'onclick'   : function() {
+			Component.define("wailang", ToggleButton, {
+				label: i18n.t( 'button.add-wai-lang.tooltip' ),
+				iconOnly: true,
+				icon: 'aloha-button aloha-button-wai-lang',
+				click: function(){
 					that.addRemoveMarkupToSelection();
-				},
-				'tooltip'   : i18n.t( 'button.add-wai-lang.tooltip' ),
-				'toggle'    : true
-			} );
+				}
+			});
 
-			FloatingMenu.addButton(
-				'Aloha.continuoustext',
-				addMarkupToSelectionButton,
-				i18nCore.t( 'floatingmenu.tab.format' ),
-				1
-			);
+			addMarkupToSelectionButton = Component.getGlobalInstance("wailang");
 
-			// Add the new scope for the wai languages plugin tab
-			FloatingMenu.createScope( 'wai-lang', 'Aloha.continuoustext' );
+			Toolbar.createScope('wai-lang', 'Aloha.continuoustext');
 
-			langField = new Aloha.ui.AttributeField( {
+			langField = new AttributeField({
 				'name'       : 'wailangfield',
 				'width'      : 320,
 				'valueField' : 'id',
 				'minChars'   : 1
-			} );
+			});
 
 			langField.setTemplate(
 				'<div class="img-item">' +
@@ -143,31 +138,14 @@ define( [
 
 			langField.setObjectTypeFilter( this.objectTypeFilter );
 
-			// add the input field for links
-			FloatingMenu.addButton(
-				'wai-lang',
-				langField,
-				i18n.t( 'floatingmenu.tab.wai-lang' ),
-				1
-			);
-
-			var removeButton = new Aloha.ui.Button( {
-				'name'      : 'removewailang',
-				'iconClass' : 'aloha-button aloha-button-wai-lang-remove',
-				'size'      : 'small',
-				'onclick'   : function() {
+			Component.define('removewailang', Button, {
+				label: i18n.t('button.add-wai-lang-remove.tooltip'),
+				icon: 'aloha-button aloha-button-wai-lang-remove',
+				iconOnly: true,
+				click: function(){
 					that.removeLangMarkup();
-				},
-				'tooltip'   : i18n.t( 'button.add-wai-lang-remove.tooltip' ),
-				'toggle'    : false
-			} );
-
-			FloatingMenu.addButton(
-				'wai-lang',
-				removeButton,
-				i18n.t( 'floatingmenu.tab.wai-lang' ),
-				1
-			);
+				}
+			});
 		},
 
 		/**
@@ -220,9 +198,8 @@ define( [
 
 		        // select the (possibly modified) range
 		        range.select();
-				FloatingMenu.setScope( 'Aloha.continousText' );
+				Toolbar.setScope( 'Aloha.continousText' );
 				langField.setTargetObject( null );
-				FloatingMenu.doLayout();
 		    }
 		},
 
@@ -274,7 +251,7 @@ define( [
 		 */
 		insertLanguageAnnotation: function() {
 			if ( this.findLangMarkup() ) {
-				FloatingMenu.activateTabOfButton( 'wailangfield' );
+				Toolbar.activateTabOfButton( 'wailangfield' );
 				langField.focus();
 			} else {
 				this.addMarkupToSelection();
@@ -338,8 +315,8 @@ define( [
 				return;
 			}
 
-			FloatingMenu.activateTabOfButton( 'wailangfield' );
-            FloatingMenu.setScope( 'wai-lang' );
+			Toolbar.activateTabOfButton( 'wailangfield' );
+            Toolbar.setScope( 'wai-lang' );
 
 			if ( range.isCollapsed() ) {
 				GENTICS.Utils.Dom.extendToWord( range );
