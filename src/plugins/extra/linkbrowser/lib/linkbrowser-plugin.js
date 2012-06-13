@@ -1,5 +1,4 @@
-define( [
-
+define([
 	// js
 	'aloha',
 	'aloha/jquery',
@@ -7,47 +6,39 @@ define( [
 	'aloha/pluginmanager',
 	'aloha/floatingmenu',
 	'link/link-plugin',
-	'browser/browser-plugin', 
+	'RepositoryBrowser',
 	// i18n
 	'i18n!linkbrowser/nls/i18n',
 	'i18n!aloha/nls/i18n'
-
-], function( Aloha,
-			 jQuery,
-			 Plugin,
-			 PluginManager,
-			 FloatingMenu,
-			 Links,
-			 Browser,
-			 i18n,
-			 i18nCore ) {
-	
+], function( Aloha, jQuery, Plugin, PluginManager, FloatingMenu, Links,
+			 RepositoryBrowser, i18n, i18nCore ) {
 	'use strict';
-	
-	var LinkBrowser = Browser.extend( {
-		
+
+	var LinkBrowser = RepositoryBrowser.extend({
+
 		init: function ( config ) {
 			this._super( config );
-			
+
 			var that = this;
-			var repositoryButton = new Aloha.ui.Button( {
+			var repositoryButton = new Aloha.ui.Button({
 				iconClass : 'aloha-button-big aloha-button-tree',
 				size      : 'large',
-				onclick   : function () { that.show(); },
+				onclick   : function () { that.open(); },
 				tooltip   : i18n.t( 'button.addlink.tooltip' ),
 				toggle    : false
-			} );
-			
+			});
+
 			FloatingMenu.addButton(
 				'Aloha.continuoustext',
 				repositoryButton,
 				i18n.t( 'floatingmenu.tab.link' ),
 				1
 			);
+
 			repositoryButton.hide();
-			
+
 			this.url = Aloha.getAlohaUrl() + '/../plugins/extra/linkbrowser/';
-			
+
 			Aloha.bind( 'aloha-link-selected', function ( event, rangeObject ) {
 				repositoryButton.show();
 				FloatingMenu.doLayout();
@@ -57,38 +48,38 @@ define( [
 				FloatingMenu.doLayout();
 			});
 		},
-		
+
 		onSelect: function ( item ) {
 			Links.hrefField.setItem( item );
-			
+
 			// Now create a selection within the editable since the user should be able to type once the link has been created.
-			// 1. We need to save the current cursor position since the a activate editable event will be fired and this will 
+			// 1. We need to save the current cursor position since the a activate editable event will be fired and this will
 			// set the cursor in the upper left cornor of the editable.
 			var	range = Aloha.Selection.getRangeObject();
-			var currentStartContainer = range.startContainer = range.endContainer; 
+			var currentStartContainer = range.startContainer = range.endContainer;
 			var currentStartOffset = range.startOffset = range.endOffset;
-			
+
 			// 2. Do the first select - this will invoke the activate editable event
 			range.select();
 
 			// 3. Restore the range
-			range.startContainer = range.endContainer = currentStartContainer; 
+			range.startContainer = range.endContainer = currentStartContainer;
 			range.startOffset = range.endOffset = currentStartOffset;
 			// 4. Invoke the final selection
 			range.select();
-			
+
 			Aloha.trigger( 'aloha-link-selected-in-linkbrowser' , item );
-			
+
 			// Close the browser lightbox
 			this.close();
 		},
-		
+
 		renderRowCols: function ( item ) {
 			var row = {},
 			    pluginUrl = this.url,
 			    icon = '__page__',
 			    idMatch = item.id.match( /(\d+)\./ );
-			
+
 			jQuery.each( this.columns, function ( colName, v ) {
 				switch ( colName ) {
 				case 'icon':
@@ -99,12 +90,12 @@ define( [
 					if ( !item.renditions ) {
 						break;
 					}
-					
+
 					var rends = item.renditions,
 					    i = rends.length,
 					    strBldr = [],
 					    r;
-					
+
 					for ( ; i > 0; --i ) {
 						r = rends[ i ];
 						if ( r.kind == 'translation' ) {
@@ -117,7 +108,7 @@ define( [
 							);
 						}
 					}
-					
+
 					row.translations = strBldr.join( '' );
 					break;
 				case 'language':
@@ -127,39 +118,37 @@ define( [
 					row[ colName ] = item[ colName ] || '--';
 				}
 			} );
-			
+
 			return row;
 		}
-	
-	} );
+
+	});
 
 	var LinkBrowserPlugin = Plugin.create( 'linkbrowser', {
-		dependencies: [ 'link', 'browser' ],
+		dependencies: [ 'link' ],
 
 		browser: null,
 
 		init: function () {
 			var config = {
 				repositoryManager : Aloha.RepositoryManager,
-				
+
 				repositoryFilter  : [],
 				objectTypeFilter  : [ 'website', 'file', 'image', 'language' /*, '*' */ ],
 				renditionFilter	  : [ '*' ],
 				filter			  : [ 'language' ],
-				
 				columns : {
 					icon         : { title: '',     width: 30,  sortable: false, resizable: false },
 					name         : { title: 'Name', width: 320, sorttype: 'text' },
 					language     : { title: '',     width: 30,  sorttype: 'text' },
 					translations : { title: '',     width: 350, sorttype: 'text' }
 				},
-				
-				rootPath : Aloha.getPluginUrl( 'browser' ) + '/'
+				rootPath : window.__DEPS__.root + '../shared/repository-browser/'
 			};
-			
+
 			this.browser = new LinkBrowser( config );
 		}
-	} );
+	});
 
 	return LinkBrowserPlugin;
 });

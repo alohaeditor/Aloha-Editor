@@ -16,9 +16,22 @@
 	<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 	<link rel="stylesheet" href="css/style.css">
 	<link rel="stylesheet" href="../../css/aloha.css" id="aloha-style-include" type="text/css">
+	<link rel="stylesheet" href="../../shared/repository-browser/css/repository-browser.css" type="text/css">
 	
 	<script src="js/aloha-config.js"></script>
-	<!--  extra/attributes,extra/googletranslate,extra/metaview,extra/wai-lang,extra/headerids,extra/cite  -->
+	<script>
+		var __DEPS__ = {
+			lang: 'en',
+			root: '../'
+		};
+	</script>
+	<script src="../../shared/module-paths.js"></script>
+	<script>
+		Aloha.settings.requireConfig = {
+			paths: __DEPS__.paths
+		};
+	</script>
+	<!-- extra/attributes,extra/googletranslate,extra/metaview,extra/wai-lang,extra/headerids,extra/cite -->
 	<script src="../../lib/aloha.js"
 	        data-aloha-plugins="common/format,
 	                            common/table,
@@ -31,7 +44,8 @@
 	                            common/characterpicker,
 	                            common/commands,
 	                            common/abbr,
-	                            extra/sourceview"></script>
+	                            extra/sourceview,
+								extra/linkbrowser"></script>
 
 	<script src="js/aloha-boilerplate.js"></script>
 </head>
