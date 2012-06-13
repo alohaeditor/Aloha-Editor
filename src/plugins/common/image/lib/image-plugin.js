@@ -161,8 +161,8 @@ function AlohaImagePlugin(aQuery, Plugin, ImageFloatingMenu, i18nCore, i18n) {
 		 * Internal callback hook which gets invoked when cropping has been finished
 		 */
 		_onCropped: function ($image, props) {
-			$('#' + this.ui.imgResizeHeightField.id).val($image.height());
-			$('#' + this.ui.imgResizeWidthField.id).val($image.width());
+			$('#' + this.ui.imgResizeHeightField.getInputId()).val($image.height());
+			$('#' + this.ui.imgResizeWidthField.getInputId()).val($image.width());
 			
 			
 			$('body').trigger('aloha-image-cropped', [$image, props]);
@@ -176,8 +176,8 @@ function AlohaImagePlugin(aQuery, Plugin, ImageFloatingMenu, i18nCore, i18n) {
 		 */
 		_onReset: function ($image) {
 			
-			$('#' + this.ui.imgResizeHeightField.id).val($image.height());
-			$('#' + this.ui.imgResizeWidthField.id).val($image.width());
+			$('#' + this.ui.imgResizeHeightField.getInputId()).val($image.height());
+			$('#' + this.ui.imgResizeWidthField.getInputId()).val($image.width());
 			
 			// No default behaviour defined besides event triggering
 			$('body').trigger('aloha-image-reset', $image);
@@ -191,8 +191,8 @@ function AlohaImagePlugin(aQuery, Plugin, ImageFloatingMenu, i18nCore, i18n) {
 		 */
 		_onResize: function ($image) {
 
-			$('#' + this.ui.imgResizeHeightField.id).val($image.height());
-			$('#' + this.ui.imgResizeWidthField.id).val($image.width());
+			$('#' + this.ui.imgResizeHeightField.getInputId()).val($image.height());
+			$('#' + this.ui.imgResizeWidthField.getInputId()).val($image.width());
 			
 			// No default behaviour defined besides event triggering
 			$('body').trigger('aloha-image-resize', $image);
@@ -206,8 +206,8 @@ function AlohaImagePlugin(aQuery, Plugin, ImageFloatingMenu, i18nCore, i18n) {
 		 */
 		_onResized: function ($image) {
 			
-			$('#' + this.ui.imgResizeHeightField.id).val($image.height());
-			$('#' + this.ui.imgResizeWidthField.id).val($image.width());
+			$('#' + this.ui.imgResizeHeightField.getInputId()).val($image.height());
+			$('#' + this.ui.imgResizeWidthField.getInputId()).val($image.width());
 
 			$('body').trigger('aloha-image-resized', $image);
 			
@@ -307,14 +307,14 @@ function AlohaImagePlugin(aQuery, Plugin, ImageFloatingMenu, i18nCore, i18n) {
 
 			if (plugin.settings.ui.meta) {
 				// update image object when src changes
-				plugin.ui.imgSrcField.addListener('keyup', function (obj, event) {
+				plugin.ui.imgSrcField.addListener('keyup', function (event) {
 					plugin.srcChange();
 				});
 
-				plugin.ui.imgSrcField.addListener('blur', function (obj, event) {
+				plugin.ui.imgSrcField.addListener('blur', function (event) {
 					// TODO remove image or do something usefull if the user leaves the
 					// image without defining a valid image src.
-					var img = jQuery(obj.getTargetObject());
+					var img = jQuery(plugin.ui.imgSrcField.getTargetObject());
 					if (img.attr('src') === '') {
 						img.remove();
 					} // image removal when src field is blank
@@ -417,7 +417,7 @@ function AlohaImagePlugin(aQuery, Plugin, ImageFloatingMenu, i18nCore, i18n) {
 							plugin.ui.imgTitleField.setTargetObject(foundMarkup, 'title');
 						}
 						plugin.ui.imgSrcField.focus();
-						plugin.ui.activateView('imgsrc');
+						plugin.ui.activateView('imageSource');
 						
 					} else {
 						if (plugin.settings.ui.meta) {
@@ -667,12 +667,12 @@ function AlohaImagePlugin(aQuery, Plugin, ImageFloatingMenu, i18nCore, i18n) {
 			/**
 			 * Handle mousewheel,keyup actions on both fields
 			 */
-			var $heightField = $('#' + plugin.ui.imgResizeHeightField.id);
+			var $heightField = $('#' + plugin.ui.imgResizeHeightField.getInputId());
 			var heightEventData = {fieldName: 'height', maxValue: plugin.ui.imgResizeHeightField.maxValue, minValue: plugin.ui.imgResizeHeightField.minValue };
 			$heightField.live('keyup', heightEventData, handleKeyUpEventOnField);
 			$heightField.live('mousewheel', heightEventData, handleMouseWheelEventOnField);
 			
-			var $widthField = $('#' + plugin.ui.imgResizeWidthField.id);
+			var $widthField = $('#' + plugin.ui.imgResizeWidthField.getInputId());
 			var widthEventData = {fieldName: 'width', maxValue: plugin.ui.imgResizeWidthField.maxValue, minValue: plugin.ui.imgResizeWidthField.minValue};
 			$widthField.live('keyup', widthEventData, handleKeyUpEventOnField);
 			$widthField.live('mousewheel', widthEventData, handleMouseWheelEventOnField);
@@ -688,8 +688,8 @@ function AlohaImagePlugin(aQuery, Plugin, ImageFloatingMenu, i18nCore, i18n) {
 		_setNormalizedFieldValues: function (primaryFieldName) {
 
 			var plugin = this;
-			var widthField = jQuery("#" + plugin.ui.imgResizeWidthField.id);
-			var heightField = jQuery("#" + plugin.ui.imgResizeHeightField.id);
+			var widthField = jQuery("#" + plugin.ui.imgResizeWidthField.getInputId());
+			var heightField = jQuery("#" + plugin.ui.imgResizeHeightField.getInputId());
 			var width = widthField.val();
 			var height = heightField.val();
 
@@ -746,8 +746,8 @@ function AlohaImagePlugin(aQuery, Plugin, ImageFloatingMenu, i18nCore, i18n) {
 			});
 
 			// Update the resize input fields with the new width and height
-			$('#' + plugin.ui.imgResizeHeightField.id).val(plugin.imageObj.height());
-			$('#' + plugin.ui.imgResizeWidthField.id).val(plugin.imageObj.width());
+			$('#' + plugin.ui.imgResizeHeightField.getInputId()).val(plugin.imageObj.height());
+			$('#' + plugin.ui.imgResizeWidthField.getInputId()).val(plugin.imageObj.width());
 			
 			if (plugin.settings.ui.meta) {
 				plugin.ui.imgSrcField.setTargetObject(plugin.imageObj, 'src');
@@ -937,8 +937,8 @@ function AlohaImagePlugin(aQuery, Plugin, ImageFloatingMenu, i18nCore, i18n) {
 		 */
 		setSizeByFieldValue: function () {
 			var plugin = this;
-			var width =  $('#' + plugin.ui.imgResizeWidthField.id).val();
-			var height = $('#' + plugin.ui.imgResizeHeightField.id).val();
+			var width =  $('#' + plugin.ui.imgResizeWidthField.getInputId()).val();
+			var height = $('#' + plugin.ui.imgResizeHeightField.getInputId()).val();
 			plugin.setSize(width, height);
 		},
 		
@@ -949,9 +949,9 @@ function AlohaImagePlugin(aQuery, Plugin, ImageFloatingMenu, i18nCore, i18n) {
 			var plugin = this;
 			var currentCropArea = plugin.jcAPI.tellSelect();
 
-			var width =  $('#' + plugin.ui.imgResizeWidthField.id).val();
+			var width =  $('#' + plugin.ui.imgResizeWidthField.getInputId()).val();
 			width = parseInt(width, 10);
-			var height = $('#' + plugin.ui.imgResizeHeightField.id).val();
+			var height = $('#' + plugin.ui.imgResizeHeightField.getInputId()).val();
 			height = parseInt(height, 10);
 
 			var selection = [currentCropArea['x'], currentCropArea['y'], currentCropArea['x'] + width,currentCropArea['y'] + height];
@@ -1142,8 +1142,8 @@ function AlohaImagePlugin(aQuery, Plugin, ImageFloatingMenu, i18nCore, i18n) {
 				plugin.positionCropButtons();
 				var currentCropArea = plugin.jcAPI.tellSelect();
 				
-				var widthField = jQuery("#" + plugin.ui.imgResizeWidthField.id).val(currentCropArea['w']);
-				var heightField = jQuery("#" + plugin.ui.imgResizeHeightField.id).val(currentCropArea['h']);
+				var widthField = jQuery("#" + plugin.ui.imgResizeWidthField.getInputId()).val(currentCropArea['w']);
+				var heightField = jQuery("#" + plugin.ui.imgResizeHeightField.getInputId()).val(currentCropArea['h']);
 			}
 			
 		},
@@ -1159,10 +1159,7 @@ function AlohaImagePlugin(aQuery, Plugin, ImageFloatingMenu, i18nCore, i18n) {
 			}
 
 			this.destroyCropButtons();
-			// WARNING: ext dependency found in main plugin file
-			//TODO (nka)
-			// This should be recoded...
-			this.ui.cropButton.extButton.toggle(false);
+			this.ui.cropButton.setState(false);
 
 			if (this.settings.ui.resizable) {
 				this.startResize();

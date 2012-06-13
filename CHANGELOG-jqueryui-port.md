@@ -31,6 +31,21 @@
                        whether or not this component is displayed in the
                        toolbar.
 
+                     * image-plugin - the following settings are obsolete
+
+                        plugin.settings.ui.oneTab
+            			plugin.settings.ui.insert
+                        plugin.settings.ui.meta
+                        plugin.settings.ui.reset
+                        plugin.settings.ui.align
+                        plugin.settings.ui.margin
+                        plugin.settings.ui.crop
+                        plugin.settings.ui.resize
+                        plugin.settings.ui.aspectRatioToggle
+
+                       It is now up to the toolbar configuration whether or
+                       not and how to display these components.
+
                      Also note that any references to the Ext.* namespace
                      may not resolve any more.
 
