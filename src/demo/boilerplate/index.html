@@ -71,7 +71,12 @@
 				label: "Format",
 				showOn: true,
 				components: [
-					[ "formatLink", "bold", "bold2", "italic", "italic2", "strikethrough", "subscript", "superscript", "orderedList", "unorderedList", "indentList", "outdentList", "formatBlock" ]
+					[ "bold", "bold2", "italic", "italic2",
+                      "strikethrough", "subscript", "superscript",
+                      "orderedList", "unorderedList",
+                      "indentList", "outdentList",
+                      "formatLink", "formatAbbr",
+                      "formatBlock" ]
 				]
 			},
 			// Insert Tab
@@ -79,7 +84,7 @@
 				label: "Insert",
 				showOn: true,
 				components: [
-					[ "insertLink", "createTable", "characterPicker" ]
+					[  "createTable", "characterPicker", "insertLink", "insertAbbr" ]
 				]
 			},
 			// Link Tab
@@ -90,6 +95,13 @@
 					[ "editLink", "removeLink" ] //, "linkBrowser" ]
 				]
 			},
+            // Abbr Tab
+            {   label: "Abbreviation",
+                showOn: "abbr",
+                components: [
+                    [ "abbrText" ]
+                ]
+            },
 			// Table Tabs
 			{
 				label: "Table",
