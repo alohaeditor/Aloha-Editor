@@ -85,7 +85,7 @@
 				label: "Insert",
 				showOn: true,
 				components: [
-					[ "createTable", "characterPicker", "insertLink", "insertAbbr", "insertHorizontalRule" ]
+					[ "createTable", "characterPicker", "insertLink", "insertImage", "insertAbbr", "insertHorizontalRule" ]
 				]
 			},
 			// Link Tab
@@ -96,6 +96,19 @@
 					[ "editLink", "removeLink" ] //, "linkBrowser" ]
 				]
 			},
+            // Image Tab
+            {
+                label: "Image",
+                showOn: true,
+                components: [
+                    [ "imageSource", "imageTitle",
+                      "imageAlignLeft", "imageAlignRight", "imageAlignNone",
+                      "imageIncPadding", "imageDecPadding",
+                      "imageCropButton",
+                      "imageResizeHeightLabel", "imageResizeHeight",
+                      "imageResizeWidthLabel", "imageResizeWidth" ]
+                ]
+            },
             // Abbr Tab
             {   label: "Abbreviation",
                 showOn: "abbr",
