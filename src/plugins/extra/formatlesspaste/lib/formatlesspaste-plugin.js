@@ -9,10 +9,8 @@ define(
 ['aloha/core', 'aloha/plugin', 'aloha/jquery', 'aloha/floatingmenu', 
  'formatlesspaste/formatlesshandler', 'aloha/contenthandlermanager',
  'i18n!formatlesspaste/nls/i18n', 'i18n!aloha/nls/i18n','css!formatlesspaste/css/formatless.css'],
-function(Aloha, Plugin, jQuery, FloatingMenu, FormatlessPasteHandler, ContentHandlerManager, i18n, i18nCore) {
+function(Aloha, Plugin, jQuery, FloatingMenu, FormatlessContentHandler, ContentHandlerManager, i18n, i18nCore) {
 	"use strict";
-
-	
 
 	// Public Methods
 	return Plugin.create('formatlesspaste', {
@@ -76,32 +74,36 @@ function(Aloha, Plugin, jQuery, FloatingMenu, FormatlessPasteHandler, ContentHan
 
 			Aloha.bind( 'aloha-editable-activated', function( event, params) {
 				var config = that.getEditableConfig( params.editable.obj );
+
 				if ( config && config.formatlessPasteOption ) {
 					that.formatlessPasteOption = true;
 					that.registerFormatlessPasteHandler(); 
-				};
+				}
+
+				if ( config && !config.formatlessPasteOption ) {
+					that.formatlessPasteButton.hide();
+					FormatlessContentHandler.enabled = false;
+				}
 
 				if ( config && typeof config.strippedElements !== 'undefined') {
 					that.strippedElements = config.strippedElements;
 				}
-				
 			});
-
 		},
 
 		/**
 		 * Register Formatless paste handler
 		 */
 		registerFormatlessPasteHandler: function(){
-			ContentHandlerManager.register( 'formatless', FormatlessPasteHandler );
-			FormatlessPasteHandler.strippedElements = this.strippedElements;
+			ContentHandlerManager.register( 'formatless', FormatlessContentHandler );
+			FormatlessContentHandler.strippedElements = this.strippedElements;
 			// add button to toggle format-less pasting
 			this.formatlessPasteButton = new Aloha.ui.Button({
 					'iconClass' : 'aloha-button aloha-button-formatless-paste',
 					'size' : 'small',
 					'onclick' : function () { 
 						//toggle the value of allowFormatless
-						FormatlessPasteHandler.enabled = !FormatlessPasteHandler.enabled;
+						FormatlessContentHandler.enabled = !FormatlessContentHandler.enabled;
 					},
 					'tooltip' : i18n.t( 'button.formatlessPaste.tooltip' ),
 					'toggle' : true

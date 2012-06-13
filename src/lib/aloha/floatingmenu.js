@@ -756,8 +756,6 @@ function(Aloha, jQuery, Ext, Class, console) {
 					},
 					enableTabScroll : true
 				});
-		
-		
 			}
 
 			// add the tabs
@@ -1191,11 +1189,18 @@ function(Aloha, jQuery, Ext, Class, console) {
 				if ( tab.label == that.hideTab ) {
 					that.extTabPanel.hideTabStripItem(tab.extPanel);
 
-					if ( activeExtTab.title == that.hideTab ) {
+					if ( activeExtTab.title == that.hideTab && firstVisibleTab && firstVisibleTab != that.hideTab ) {
 						showUserActivatedTab = firstVisibleTab;
 					}
 				}
 			});
+
+			if ( that.hideTab == activeTab.label && (!firstVisibleTab || firstVisibleTab && that.hideTab == firstVisibleTab.label) ) {
+				activeTab = null;
+				this.extTabPanel.hide();
+				this.extTabPanel.shadow.hide();
+				return;
+			}
 
 			// check whether the last tab which was selected by the user is visible and not the active tab
 			if (showUserActivatedTab) {

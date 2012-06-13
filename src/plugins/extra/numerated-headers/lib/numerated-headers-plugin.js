@@ -173,12 +173,13 @@ function (jQuery, Plugin, FloatingMenu, i18n, i18nCore) {
 		createNumeratedHeaders: function() {
 			var active_editable_obj = this.getBaseElement(),
 				that = this,
-				headers = active_editable_obj.find(this.headingselector),
 				config = that.getEditableConfig( active_editable_obj );
 
 			if( !active_editable_obj || config.numeratedactive !== true ) {
 				return;
 			}
+
+			var headers = active_editable_obj.find(this.headingselector);
 
 			if ( typeof headers == "undefined" || headers.length == 0 ) {
 				return;
