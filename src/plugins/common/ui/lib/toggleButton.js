@@ -18,6 +18,8 @@ function( jQuery, Button ) {
 	 */
 	var ToggleButton = Button.extend({
 
+		checked: false,
+
 		/**
 		 * Sets the state of the toggleButton and updates its visual display
 		 * accordingly.
@@ -26,6 +28,7 @@ function( jQuery, Button ) {
 		 *                          "toggled/checked" state.
 		 */
 		setState: function( toggled ) {
+			this.checked = toggled;
 			this.buttonElement.prop( 'checked', toggled ).button( 'refresh' );
 		},
 
