@@ -23,3 +23,4 @@ All changes are categorized into one of the following keywords:
 - **BUG**: sanitize contenthandler: disabled for IE7, because it does not work well in IE7 (sanitize tries to set attributes via setAttributeNode() to DOM Elements, and this does not work for the "style" attribute in IE7)
 - **BUG**: commands: fixed weird behaviour when using the backspace key to delete text (cursor was jumping).
 - **BUG**: core: Fixed enter behaviour in lists. Before executing command "insertparagraph", whitespace textnodes around list elements are removed, because the algorithm isn't prepared to handle whitespace textnodes.
+- **BUG**: citation plugin: Fixed javascript errors on initialization and possible endless loop when adding inline citations.
