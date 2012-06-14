@@ -31,12 +31,14 @@ var component = Component.extend({
 
 var attributeField = function(props){
 
+	var id = "aloha-attribute-field-" + props.name;
+
 	var attrField = $.extend(this, {
 		_valueField: props.valueField || "id",
 		_displayField: props.displayField || "name",
 		_objectTypeFilter: props.objectTypeFilter || "all",
 		_placeholder: props.placeholder,
-		_element: $("<input>"),
+		_element: $("<input id='" + id + "'>"),
 		_noTargetHighlight: !!props.noTargetHighlight
 	});
 
