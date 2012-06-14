@@ -607,7 +607,7 @@ function(Aloha, jQuery, BlockManager, Observable, Toolbar) {
 				},
 				revertDuration: 250,
 				stop: function() {
-					if ($.browser.msie && 7 === parseInt($.browser.version, 10)) {
+					if (jQuery.browser.msie && 7 === parseInt(jQuery.browser.version, 10)) {
 						dropFn();
 					}
 					jQuery.each(editablesWhichNeedToBeCleaned, function() {
@@ -685,7 +685,7 @@ function(Aloha, jQuery, BlockManager, Observable, Toolbar) {
 						 * as drop target.
 						 */
 						drop: function() {
-							if (! ($.browser.msie && 7 === parseInt($.browser.version, 10)) ) {
+							if (! (jQuery.browser.msie && 7 === parseInt(jQuery.browser.version, 10)) ) {
 								dropFn();
 							}
 						}
@@ -788,8 +788,8 @@ function(Aloha, jQuery, BlockManager, Observable, Toolbar) {
 				leftWordPartLength = Math.floor(word.length/2);
 
 				// For Internet Explorer, we only make dropping AFTER words possible to improve performance
-				var browserMajorVersion = parseInt($.browser.version, 10);
-				if ($.browser.msie && (7 === browserMajorVersion || 8 === browserMajorVersion)) {
+				var browserMajorVersion = parseInt(jQuery.browser.version, 10);
+				if (jQuery.browser.msie && (7 === browserMajorVersion || 8 === browserMajorVersion)) {
 					leftWordPartLength = 0;
 				}
 
