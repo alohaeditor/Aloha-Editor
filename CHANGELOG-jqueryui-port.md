@@ -7,16 +7,19 @@
                      (In the following, ui/x.js refers to src/plugins/common/ui/lib/x.js.)
 
                      * Aloha.ui.AttributeField
-                       See ui/autocomplete.js
+                       Also Ext.data.AlohaProxy and Ext.data.AlohaReader
+                       were removed, both of which should only have been
+                       used by the AttributeField.
+                       See ui/autocomplete.js.
 
                      * Aloha.ui.Button
-                       See ui/button.js and ui/toggleButton.js
+                       See ui/button.js and ui/toggleButton.js.
 
                      * Aloha.ui.MultiSplitButton
-                       See ui/multiSplitButton
+                       See ui/multiSplitButton.
 
                      * Aloha.Message
-                       See ui/message
+                       See ui/message.
 
                      * Aloha.settings.plugins.table.summaryinsidebar
 
