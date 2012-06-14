@@ -14,7 +14,8 @@ define( [
 	'aloha/jquery',
 	'aloha/plugin',
 	'aloha/pluginmanager',
-	'aloha/floatingmenu',
+	'ui/component',
+	'ui/button',
 	'image/image-plugin',
 	'browser/browser-plugin', 
 	// i18n
@@ -25,7 +26,8 @@ define( [
 			 jQuery,
 			 Plugin,
 			 PluginManager,
-			 FloatingMenu,
+			 Component,
+			 Button,
 			 Images,
 			 Browser,
 			 i18n,
@@ -39,31 +41,24 @@ define( [
 			this._super( config );
 			
 			var browser = this;
-			var repositoryButton = new Aloha.ui.Button( {
-				iconClass : 'aloha-button-big aloha-button-tree',
-				size      : 'large',
-				onclick   : function () { browser.show(); },
-				tooltip   : i18n.t( 'button.addimage.tooltip' ),
-				toggle    : false
-			} );
-			
-			FloatingMenu.addButton(
-				Images.name,
-				repositoryButton,
-				i18n.t( 'floatingmenu.tab.img' ),
-				3
-			);
+
+			Component.define("imageBrowser", Button, {
+				icon: 'aloha-button-big aloha-button-tree',
+				label: i18n.t('button.addimage.tooltip'),
+				click: function () { browser.show(); }
+			});
+
+			var repositoryButton = Component.getGlobalInstance("imageBrowser");
+
 			repositoryButton.hide();
 			
 			this.url = Aloha.getAlohaUrl() + '/../plugins/extra/imagebrowser/';
 			
 			Aloha.bind( 'aloha-image-selected', function ( event, rangeObject ) {
 				repositoryButton.show();
-				FloatingMenu.doLayout();
 			});
 			Aloha.bind( 'aloha-image-unselected', function ( event, rangeObject ) {
 				repositoryButton.hide();
-				FloatingMenu.doLayout();
 			});
 		},
 		onSelect: function ( item ) {
