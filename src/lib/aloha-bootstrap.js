@@ -172,7 +172,6 @@ define( 'aloha', [], function () {
 	require(Aloha.settings.requireConfig, 
 		[
 			'aloha/jquery',
-			'aloha/ext',
 			'util/json2',
 		],
 		function () {
@@ -199,11 +198,6 @@ define( 'aloha', [], function () {
 					'aloha/jquery.aloha',
 					'aloha/sidebar',
 					'util/position',
-					'aloha/ext-alohaproxy',
-					'aloha/ext-alohareader',
-					'aloha/ui',
-					'aloha/ui-attributefield',
-					'aloha/floatingmenu',
 					'aloha/repositorymanager',
 					'aloha/repository',
 					'aloha/repositoryobjects',

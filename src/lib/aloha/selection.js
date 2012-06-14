@@ -20,8 +20,8 @@
 
 "use strict";
 define(
-[ 'aloha/core', 'aloha/jquery', 'aloha/floatingmenu', 'util/class', 'util/range', 'aloha/ecma5shims', 'aloha/rangy-core' ],
-function(Aloha, jQuery, FloatingMenu, Class, Range, $_) {
+[ 'aloha/core', 'aloha/jquery', 'util/class', 'util/range', 'aloha/ecma5shims', 'aloha/rangy-core' ],
+function(Aloha, jQuery, Class, Range, $_) {
 	var
 //		$ = jQuery,
 //		Aloha = window.Aloha,
@@ -197,23 +197,6 @@ function(Aloha, jQuery, FloatingMenu, Class, Range, $_) {
 		},
 
 		/**
-		 * This method checks, if the current rangeObject common ancestor container has a 'data-aloha-floatingmenu-visible' Attribute.
-		 * Needed in Floating Menu for exceptional display of floatingmenu.
-		 */
-		isFloatingMenuVisible: function() {
-			var visible = jQuery(Aloha.Selection.rangeObject
-				.commonAncestorContainer).attr('data-aloha-floatingmenu-visible');
-			if(visible !== 'undefined'){
-				if (visible === 'true'){
-					return true;
-				} else {
-					return false;
-				}
-			}
-			return false;
-		},
-
-		/**
 		 * INFO: Method is used for integration with Gentics Aloha, has no use otherwise
 		 * Updates the rangeObject according to the current user selection
 		 * Method is always called on selection change
@@ -262,14 +245,6 @@ function(Aloha, jQuery, FloatingMenu, Class, Range, $_) {
 			// check if aloha-selection-changed event has been prevented
 			if (this.isSelectionChangedPrevented()) {
 				return true;
-			}
-
-			// Only set the specific scope if an event was provided, which means
-			// that somehow an editable was selected
-			// TODO Bind code to aloha-selection-changed event to remove coupling to floatingmenu
-			if (event !== undefined) {
-				// Initiallly set the scope to 'continuoustext'
-				FloatingMenu.setScope('Aloha.continuoustext');
 			}
 
 			// throw the event that the selection has changed. Plugins now have the

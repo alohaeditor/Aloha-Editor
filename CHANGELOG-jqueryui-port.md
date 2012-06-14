@@ -6,19 +6,25 @@
 
                      (In the following, ui/x.js refers to src/plugins/common/ui/lib/x.js.)
 
-                     * Aloha.ui.AttributeField
-                       See ui/autocomplete.js
+                     * FloatingMenu - removed
+                       There is now a new toolbar implementation in the ui plugin.
 
-                     * Aloha.ui.Button
-                       See ui/button.js and ui/toggleButton.js
+                     * Aloha.ui - removed
+                       Affects
+                       Aloha.ui.AttributeField
+                       Aloha.ui.Button
+                       Aloha.ui.MultiSplitButton
+                       Aloha.isMessageVisible
+                       Aloha.hideMessage
+                       Aloha.ui.MultiSplitButton.idCounter
+                       Aloha.showMessage
+                       Aloha.i18n
+                       Plugin.i18n (has been deprecated for some time now)
 
-                     * Aloha.ui.MultiSplitButton
-                       See ui/multiSplitButton
+                     * Aloha.Message - removed
+                       See ui/message.
 
-                     * Aloha.Message
-                       See ui/message
-
-                     * Aloha.settings.plugins.table.summaryinsidebar
+                     * Aloha.settings.plugins.table.summaryinsidebar - meaning changed
 
                        This setting decided whether the summary was
                        displayed either in the side bar or in the
@@ -46,8 +52,29 @@
                        It is now up to the toolbar configuration whether or
                        not and how to display these components.
 
-                     Also note that any references to the Ext.* namespace
-                     may not resolve any more.
+                     * Selection.isFloatingMenuVisible - removed
+ 
+                     All settings associated with the removed components
+                     do not have any effect any more.
+
+                     Many plugins exposed buttons, attribute-field and
+                     multi-split-button components as non-private
+                     members. For example, as in the case of the cite
+                     plugin, buttons were pushed from other plugins onto
+                     the multi-split-button of the Format plugin. This
+                     kind of hack is obsolete and many of these
+                     component properties were removed. Even if the
+                     non-private property still exists, this kind of
+                     hack will not work any more. For this reason
+                     plugins must be refactored so that they do not
+                     depend on the user interface of other plugins. Any
+                     non-private component properties may be removed at
+                     any time in the future.
+
+                     Also note that the removal of the Ext.* namespace
+                     and the ExtJs css may inadvertently affect the
+                     behaviour and display of any site that includes
+                     Aloha.
 
 - **MANUAL CHANGE**: The following files have been removed
                      src/lib/aloha/ext-alohatreeloader.js

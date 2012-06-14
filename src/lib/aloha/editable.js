@@ -23,13 +23,20 @@ define( [
 	'util/class',
 	'aloha/jquery',
 	'aloha/pluginmanager',
-	'aloha/floatingmenu',
 	'aloha/selection',
 	'aloha/markup',
 	'aloha/contenthandlermanager',
 	'aloha/console'
-], function( Aloha, Class, jQuery, PluginManager, FloatingMenu, Selection,
-	         Markup, ContentHandlerManager, console ) {
+], function(
+	Aloha,
+	Class,
+	jQuery,
+	PluginManager,
+	Selection,
+	Markup,
+	ContentHandlerManager,
+	console
+) {
 	'use strict';
 
 	var unescape = window.unescape,
@@ -492,9 +499,6 @@ define( [
 			// leave the element just to get sure
 			if ( this === Aloha.getActiveEditable() ) {
 				this.blur();
-
-				// also hide the floating menu if the current editable was active
-				FloatingMenu.hide();
 			}
 
 			// special handled elements

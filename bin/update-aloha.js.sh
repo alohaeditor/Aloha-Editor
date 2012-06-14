@@ -5,9 +5,6 @@
 # relative to src/lib/
 REQUIRE='require.js'
 JQUERY='vendor/jquery-1.6.1.js'
-EXT_ADAPT='vendor/ext-3.2.1/adapter/jquery/ext-jquery-adapter-debug.js'
-EXT_ALL='vendor/ext-3.2.1/ext-all-debug.js'
-
 
 # Generic error check and abort method
 function handleError() {
@@ -53,13 +50,6 @@ handleError $? "Could not add file to aloha.js"
 echo -e "\n * 2. Adding $JQUERY"
 cat "$TARGET/$JQUERY" >> "$TARGET/aloha.js"
 handleError $? "Could not add file to aloha.js"
-
-echo -e "\n * 3. Adding $EXT_ADAPT"
-echo -e "\n * 4. Adding $EXT_ALL"
-echo "(function( jQuery ) {" >> "$TARGET/aloha.js"
-cat "$TARGET/$EXT_ADAPT" "$TARGET/$EXT_ALL" >> "$TARGET/aloha.js" 
-handleError $? "Could not add file to aloha.js"
-echo "})( jQuery );" >> "$TARGET/aloha.js"
 
 echo -e "\n * 5. Adding previously generated $TARGET/aloha-bootstrap.js"
 cat "$TARGET/aloha-bootstrap.js" >> "$TARGET/aloha.js"
