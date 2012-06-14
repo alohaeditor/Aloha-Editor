@@ -54,6 +54,9 @@
 
                      * Selection.isFloatingMenuVisible - removed
  
+                     All settings associated with the removed components
+                     do not have any effect any more.
+
                      Many plugins exposed buttons, attribute-field and
                      multi-split-button components as non-private
                      members. For example, as in the case of the cite
@@ -68,8 +71,10 @@
                      non-private component properties may be removed at
                      any time in the future.
 
-                     Also note that any references to the Ext.* namespace
-                     may not resolve any more.
+                     Also note that the removal of the Ext.* namespace
+                     and the ExtJs css may inadvertently affect the
+                     behaviour and display of any site that includes
+                     Aloha.
 
 - **MANUAL CHANGE**: The following files have been removed
                      src/lib/aloha/ext-alohatreeloader.js
