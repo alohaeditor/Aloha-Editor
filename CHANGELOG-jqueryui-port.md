@@ -46,6 +46,20 @@
                        It is now up to the toolbar configuration whether or
                        not and how to display these components.
 
+                     Many plugins exposed buttons, attribute-field and
+                     multi-split-button components as non-private
+                     members. For example, as in the case of the cite
+                     plugin, buttons were pushed from other plugins onto
+                     the multi-split-button of the Format plugin. This
+                     kind of hack is obsolete and many of these
+                     component properties were removed. Even if the
+                     non-private property still exists, this kind of
+                     hack will not work any more. For this reason
+                     plugins must be refactored so that they do not
+                     depend on the user interface of other plugins. Any
+                     non-private component properties may be removed at
+                     any time in the future.
+
                      Also note that any references to the Ext.* namespace
                      may not resolve any more.
 
