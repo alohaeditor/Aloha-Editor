@@ -6,22 +6,25 @@
 
                      (In the following, ui/x.js refers to src/plugins/common/ui/lib/x.js.)
 
+                     * FloatingMenu - removed
+                       There is now a new toolbar implementation in the ui plugin.
+
                      * Aloha.ui.AttributeField
                        Also Ext.data.AlohaProxy and Ext.data.AlohaReader
                        were removed, both of which should only have been
                        used by the AttributeField.
                        See ui/autocomplete.js.
 
-                     * Aloha.ui.Button
+                     * Aloha.ui.Button - removed
                        See ui/button.js and ui/toggleButton.js.
 
-                     * Aloha.ui.MultiSplitButton
+                     * Aloha.ui.MultiSplitButton - removed
                        See ui/multiSplitButton.
 
-                     * Aloha.Message
+                     * Aloha.Message - removed
                        See ui/message.
 
-                     * Aloha.settings.plugins.table.summaryinsidebar
+                     * Aloha.settings.plugins.table.summaryinsidebar - meaning changed
 
                        This setting decided whether the summary was
                        displayed either in the side bar or in the
