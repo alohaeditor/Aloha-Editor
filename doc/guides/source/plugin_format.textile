@@ -4,22 +4,9 @@ The Format Plugin provides basic formatting choices for your content.
 
 endprologue.
 
-h3. Configuration
+With the Format Plugin you are able to format paragraph formattings (p, h1, ...) and other content formats like bold or subscript. You can also use Aloha Editor to annotate parts of your content as e.g. citation or code.
 
-The format plugin provides the following config options:
-<javascript>
-Aloha.settings.plugins.format = {
-	// configure buttons available in the toolbar
-	config : [ 'b', 'i', 'p', 'sub', 'sup', 'del', 'title', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'removeFormat' ],
-	// specific configuration for each editable identified by css selectors
-	editables : {
-		// the editable with id "teaser" won't offer any formatting options
-		'#teaser'	: [  ]
-	},
-	// those are the tags that will be cleaned when clicking "remove formatting"
-	removeFormats : [ 'strong', 'em', 'b', 'i', 'cite', 'q', 'code', 'abbr', 'del', 'sub', 'sup']
-};
-</javascript>
+The following components are available:
 
 h3. Components
 
@@ -35,4 +22,23 @@ h3. Components
 * superscript - add superscript formatting
 * underline - add underline formatting
 * paragraph - will allow you to add paragraph formattings (address, dd, div, dt, h1, h2, h3, h4, h5, h6, p, pre)
+
+
+h3. Configuration
+
+The format plugin provides the following config options:
+
+<javascript>
+Aloha.settings.plugins.format = {
+	// configure buttons available in the toolbar
+	config : [ 'b', 'i', 'p', 'sub', 'sup', 'del', 'title', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'removeFormat' ],
+	// specific configuration for each editable identified by css selectors
+	editables : {
+		// the editable with id "teaser" won't offer any formatting options
+		'#teaser'	: [  ]
+	},
+	// those are the tags that will be cleaned when clicking "remove formatting"
+	removeFormats : [ 'strong', 'em', 'b', 'i', 'cite', 'q', 'code', 'abbr', 'del', 'sub', 'sup']
+};
+</javascript>
 

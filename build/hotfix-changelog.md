@@ -9,11 +9,12 @@ All changes are categorized into one of the following keywords:
 ----
 
 - **ENHANCEMENT**: Removed unwanted behaviour from the block plugin's sidebarattributeedtior, which will clear out the whole sidebar when loaded
-
 - **ENHANCEMENT**: added / updated guides for plugins
 - **ENHANCEMENT**: enabled linklist.js so it's possible to use the settings for your own list (removed the default entries)
 - **ENHANCEMENT**: table plugin: enabled format tab when a whole row/column is selected via click on the row/column header
 - **ENHANCEMENT**: sanitize contenthandler: allow attribute target for the a element in the relaxed config
+- **ENHANCEMENT**: plugin highlighteditables: configurable per editable; CSS can be adapted;
+- **ENHANCEMENT**: added a new helper function jQuery.isEmpty() to check if a mixed var is empty or not
 - **BUG**: core: Fixed the fix for IE7 crashes
 - **BUG**: core: Fixed Javascript errors that occurred in IE7 when pressing Enter at the end of paragraphs (multiple times).
 - **BUG**: core: Fixed possible Javascript error when cleanup operation is done (e.g. after pasting text into an editable).
@@ -24,3 +25,4 @@ All changes are categorized into one of the following keywords:
 - **BUG**: commands: fixed weird behaviour when using the backspace key to delete text (cursor was jumping).
 - **BUG**: core: Fixed enter behaviour in lists. Before executing command "insertparagraph", whitespace textnodes around list elements are removed, because the algorithm isn't prepared to handle whitespace textnodes.
 - **BUG**: citation plugin: Fixed javascript errors on initialization and possible endless loop when adding inline citations.
+- **ENHANCEMENT**: A whole lot of Plugins can now be configured editable-specific configuration: abbr, highlighteditables, list, horizontalruler, link, paste, headerids, listenforcer, metaview, numerated-headers, wai-lang, cite, characterpicker, formatlesspaste, dom-to-xhtml. Have a look at the individual plugin guides for detailed information on how to configure them.

@@ -1,7 +1,7 @@
 
 # The AlohaEditor Image Plugin
 
-Image Plugin for enabling basic images manipulations in Aloha HTML5 Editor
+Image Plugin for enabling basic images manipulations in Aloha Editor
 
 ## Features
 
