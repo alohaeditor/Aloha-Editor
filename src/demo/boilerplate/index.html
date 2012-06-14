@@ -77,6 +77,7 @@
                       "indentList", "outdentList",
                       "formatLink", "formatAbbr", "wailang",
                       "alignLeft", "alignCenter", "alignRight", "alignJustify",
+                      "toggleMetaView", "toggleFormatlessPaste", "formatNumeratedHeaders",
                       "formatBlock" ]
 				]
 			},
@@ -85,7 +86,7 @@
 				label: "Insert",
 				showOn: true,
 				components: [
-					[ "createTable", "characterPicker", "insertLink", "insertImage", "insertAbbr", "insertHorizontalRule" ]
+					[ "createTable", "characterPicker", "insertLink", "insertImage", "insertAbbr", "insertToc", "insertHorizontalRule" ]
 				]
 			},
 			// Link Tab
@@ -93,7 +94,7 @@
 				label: "Link", 
 				showOn: "a",
 				components: [
-					[ "editLink", "removeLink" ] //, "linkBrowser" ]
+					[ "editLink", "removeLink" ] //"linkBrowser" ]
 				]
 			},
             // Image Tab
@@ -118,7 +119,7 @@
             },
             // Wailang Tab
             {   label: "Wailang",
-                showOn: true, // <span class="aloha-wai-lang"></span>
+                showOn: true, // Should show on this element <span class="aloha-wai-lang"></span>
                 components: [
                     [ "wailangfield", "removewailang" ]
                 ]
@@ -158,13 +159,27 @@
 	                            common/paste,
 	                            common/characterpicker,
 	                            common/commands,
+                                common/block,
 	                            common/image,
 	                            common/abbr,
                                 common/horizontalruler,
                                 common/align,
+                                extra/formatlesspaste,
+                                extra/toc,
+                                extra/headerids,
+                                extra/listenforcer,
+                                extra/metaview,
+                                extra/numerated-headers,
 	                            extra/wai-lang,
 	                            extra/flag-icons,
 	                            extra/sourceview"></script>
+    <!--
+    TODO not yet ready for jqueryui 
+                                extra/cite,
+                                extra/browser,
+	                            extra/linkbrowser,
+								extra/imagebrowser,
+    -->
 	<!--
 		Application specific code
 	-->
