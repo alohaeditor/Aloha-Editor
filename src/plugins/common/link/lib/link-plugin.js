@@ -398,10 +398,6 @@ define( [
 				click: function() {
 					setSelectionFromSurfaceRange();
 					that.formatLink();
-				},
-				selectionChange: function() {
-					var value = Aloha.queryCommandValue( "createLink" );
-					this.setState( !!value );
 				}
 			});
 
@@ -412,10 +408,6 @@ define( [
 				click: function() {
 					setSelectionFromSurfaceRange();
 					that.insertLink(false);
-				},
-				selectionChange: function() {
-					var value = Aloha.queryCommandValue( "createLink" );
-					this.setState( !!value );
 				}
 			});
 			
@@ -435,14 +427,6 @@ define( [
 				click: function() {
 					setSelectionFromSurfaceRange();
 					that.removeLink();
-				},
-				selectionChange: function() {
-					var value = Aloha.queryCommandValue( "createLink" );
-					if ( value ) {
-						this.show();
-					} else {
-						this.hide();
-					}
 				}
 			});
 
