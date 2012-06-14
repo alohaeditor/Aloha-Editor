@@ -79,8 +79,8 @@
                       "indentList", "outdentList",
                       "formatLink", "formatAbbr", "wailang",
                       "alignLeft", "alignCenter", "alignRight", "alignJustify",
-                      "toggleMetaView", "toggleFormatlessPaste", "formatNumeratedHeaders",
-                      "formatBlock" ]
+                      "toggleMetaView", "toggleFormatlessPaste",
+					  "formatNumeratedHeaders", "formatBlock" ]
 				]
 			},
 			// Insert Tab
@@ -88,16 +88,16 @@
 				label: "Insert",
 				showOn: true,
 				components: [
-					[ "createTable", "characterPicker", "insertLink", "insertImage", "insertAbbr", "insertToc", "insertHorizontalRule" ]
+					[ "createTable", "characterPicker", "insertLink",
+					  "insertImage", "insertAbbr", "insertToc",
+					  "insertHorizontalRule" ]
 				]
 			},
 			// Link Tab
 			{
 				label: "Link", 
 				showOn: "a",
-				components: [
-					[ "editLink", "removeLink" ] //"linkBrowser" ]
-				]
+				components: [ [ "editLink", "removeLink", "linkBrowser" ] ]
 			},
             // Image Tab
             {
@@ -122,25 +122,33 @@
             // Wailang Tab
             {   label: "Wailang",
                 showOn: true, // Should show on this element <span class="aloha-wai-lang"></span>
-                components: [
-                    [ "wailangfield", "removewailang" ]
-                ]
+                components: [ [ "wailangfield", "removewailang" ] ]
             },
 			// Table Tabs
 			{
 				label: "Table",
 				showOn: true,
-				components: [ [ "mergecells", "splitcells", "tableCaption", "formatTable" ] ]
+				components: [
+					[ "mergecells", "splitcells", "tableCaption",
+					  "formatTable" ]
+				]
 			},
 			{ 
 				label: "Column",
 				showOn: true,
-				components: [ [ "addcolumnleft", "addcolumnright", "deletecolumns", "columnheader", "mergecells", "splitcells", "formatColumn" ] ]
+				components: [
+					[ "addcolumnleft", "addcolumnright", "deletecolumns",
+					  "columnheader", "mergecells", "splitcells",
+					  "formatColumn" ]
+				]
 			},
 			{
 				label: "Row",
 				showOn: true,
-				components: [ [ "addrowbefore", "addrowafter", "deleterows", "rowheader", "mergecells", "splitcells", "formatRow" ] ]
+				components: [
+					[ "addrowbefore", "addrowafter", "deleterows", "rowheader",
+					  "mergecells", "splitcells", "formatRow" ]
+				]
 			}
 		];
     </script>
