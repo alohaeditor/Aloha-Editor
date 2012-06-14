@@ -31,7 +31,11 @@ The Header IDs plugin provides the following configuration options:
 <javascript>
 Aloha.settings.plugins: {
 	headerids: {
-		config: [ true ] // false to deactivate the plugin
+		config: [ 'true' ],
+		editables: {
+			'#one': [ 'true' ],
+			'#two': [ ]
+		}
 	}
 };
 </javascript>

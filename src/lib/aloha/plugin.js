@@ -174,8 +174,9 @@ function(Aloha, jQuery, Class, PluginManager, console ) {
 							for (var k in selectorConfig) {
 								if ( selectorConfig.hasOwnProperty(k) ) {
 									if (selectorConfig[k] instanceof Array) {
-										configObj[k] = [];
-										configObj[k] = jQuery.merge(configObj[k], selectorConfig[k]);
+										//configObj[k] = [];
+										//configObj[k] = jQuery.extend(true, configObj[k], that.config[k], selectorConfig[k]);
+										configObj[k] = selectorConfig[k];
 									} else if (typeof selectorConfig[k] === "object") {
 										configObj[k] = {};
 										configObj[k] = jQuery.extend(true, configObj[k], that.config[k], selectorConfig[k]);									

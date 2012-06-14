@@ -5,7 +5,7 @@ With this plugin the editor has the possibility to auto generate numeration in t
 The main features are:
 
 * Auto generate numeration
-* Put it in a <span> that will be prepended to the headline
+* Put it in a +<span>+ that will be prepended to the headline
 * Auto remove the numeration if the editor deletes the header content
 * Customizable: which headers should be affected, and in which surrounding container should the plugin process 
 
@@ -50,6 +50,8 @@ h3. Configuration
 * auto activate the feature of the plugin with numeratedactive: true (default)
 * specify selector for affected headers
 * specifiy Base Object, if you want the plugin to process in a specific container, or on the hole page (e.g. 'body')
+
+This settings can be applied for individual editables.
 
 <javascript>
 	Aloha.settings.plugins: {
