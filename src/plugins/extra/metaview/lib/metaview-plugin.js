@@ -5,8 +5,15 @@
 * Licensed unter the terms of http://www.aloha-editor.com/license.html
 */
 define(
-['aloha/plugin', 'aloha/floatingmenu', 'flag-icons/flag-icons-plugin', 'i18n!metaview/nls/i18n', 'i18n!aloha/nls/i18n', 'aloha/jquery', 'css!metaview/css/metaview.css'],
-function(Plugin, FloatingMenu, FlagIcons, i18n, i18nCore, jQuery) {
+['aloha/plugin',
+ 'ui/component',
+ 'ui/toggleButton',
+ 'flag-icons/flag-icons-plugin',
+ 'i18n!metaview/nls/i18n',
+ 'i18n!aloha/nls/i18n',
+ 'aloha/jquery',
+ 'css!metaview/css/metaview.css'],
+function(Plugin, Component, ToggleButton, FlagIcons, i18n, i18nCore, jQuery) {
 	"use strict";
 
 	var
@@ -38,9 +45,9 @@ function(Plugin, FloatingMenu, FlagIcons, i18n, i18nCore, jQuery) {
 					"aloha-editable-activated",
 					function (jEvent, aEvent) {
 						if(jQuery(Aloha.activeEditable.obj).hasClass('aloha-metaview')) {
-							that.button.setPressed(true);
+							that.button.setState(true);
 						} else {
-							that.button.setPressed(false);
+							that.button.setState(false);
 						}
 					}
 			);
@@ -50,10 +57,10 @@ function(Plugin, FloatingMenu, FlagIcons, i18n, i18nCore, jQuery) {
 			var that = this;
 			if(jQuery(Aloha.activeEditable.obj).hasClass('aloha-metaview')) {
 				jQuery(Aloha.activeEditable.obj).removeClass('aloha-metaview');
-				that.button.setPressed(false);
+				that.button.setState(false);
 			} else {
 				jQuery(Aloha.activeEditable.obj).addClass('aloha-metaview');
-				that.button.setPressed(true);
+				that.button.setState(true);
 			}
 		},
 		
@@ -63,20 +70,13 @@ function(Plugin, FloatingMenu, FlagIcons, i18n, i18nCore, jQuery) {
 		createButtons: function () {
 			var that = this;
 	
-			that.button = new Aloha.ui.Button({
-				'name' : 'meta',
-				'iconClass' : 'aloha-button aloha-button-metaview',
-				'size' : 'small',
-				'onclick' : function () { that.buttonClick(); },
-				'tooltip' : i18n.t('button.switch-metaview.tooltip'),
-				'toggle' : true
+			Component.define("toggleMetaView", ToggleButton, {
+				label : i18n.t('button.switch-metaview.tooltip'),
+				icon: 'aloha-button aloha-button-metaview',
+				click : function () { that.buttonClick(); }
 			});
-			FloatingMenu.addButton(
-				'Aloha.continuoustext',
-				that.button,
-				i18nCore.t('floatingmenu.tab.format'),
-				1
-			);			
+
+			that.button = Component.getGlobalInstance("toggleMetaView");
 		}
 	});
 });
