@@ -3781,7 +3781,7 @@ commands.removeformat = {
         "hilitecolor",
         "italic",
         "strikethrough",
-        "underline",
+        "underline"
       ] ).forEach(function(command) {
         setSelectionValue(command, null);
       });

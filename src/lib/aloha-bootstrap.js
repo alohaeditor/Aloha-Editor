@@ -172,7 +172,7 @@ define( 'aloha', [], function () {
 	require(Aloha.settings.requireConfig, 
 		[
 			'aloha/jquery',
-			'util/json2',
+			'util/json2'
 		],
 		function () {
 			// load Aloha core files
