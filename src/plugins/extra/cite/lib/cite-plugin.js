@@ -340,7 +340,7 @@ function CiteClosure( Aloha, jQuery, Plugin, FloatingMenu, Format, domUtils,
 				mid = ( min + max ) >> 1; // Math.floor(i) / 2 == i >> 1 == ~~(i / 2)
 				cuid = c[ mid ].uid;
 
-				if ( cuid === uid ) {
+				if ( parseInt(cuid, 10) === parseInt(uid, 10) ) {
 					return mid;
 				}
 				
