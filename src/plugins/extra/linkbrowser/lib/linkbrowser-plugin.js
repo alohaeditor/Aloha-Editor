@@ -11,8 +11,8 @@ define([
 	// i18n
 	'i18n!linkbrowser/nls/i18n',
 	'i18n!aloha/nls/i18n'
-], function( Aloha, jQuery, Plugin, PluginManager, FloatingMenu, Links,
-			 RepositoryBrowser, i18n, i18nCore ) {
+], function( Aloha, jQuery, Plugin, PluginManager, Component, Button, Links,
+             RepositoryBrowser, i18n, i18nCore ) {
 	'use strict';
 
 	var LinkBrowser = RepositoryBrowser.extend({
@@ -22,13 +22,13 @@ define([
 
 			var that = this;
 
-			Component.define("linkBrowser", Button, {
+			Component.define( 'linkBrowser', Button, {
 				icon: 'aloha-button-big aloha-button-tree',
 				label: i18n.t( 'button.addlink.tooltip' ),
 				click: function () { that.show(); }
 			});
 
-			var repositoryButton = Component.getGloblaInstance("linkBrowser");
+			var repositoryButton = Component.getGlobalInstance( 'linkBrowser' );
 			
 			repositoryButton.hide();
 
@@ -45,25 +45,30 @@ define([
 		onSelect: function ( item ) {
 			Links.hrefField.setItem( item );
 
-			// Now create a selection within the editable since the user should be able to type once the link has been created.
-			// 1. We need to save the current cursor position since the a activate editable event will be fired and this will
-			// set the cursor in the upper left cornor of the editable.
+			// Now create a selection within the editable since the user should
+			// be able to type once the link has been created.
+
+			// 1. We need to save the current cursor position since the a
+			//    activate editable event will be fired and this will set the
+			//    cursor in the upper left cornor of the editable.
 			var	range = Aloha.Selection.getRangeObject();
 			var currentStartContainer = range.startContainer = range.endContainer;
 			var currentStartOffset = range.startOffset = range.endOffset;
 
-			// 2. Do the first select - this will invoke the activate editable event
+			// 2. Do the first select - this will invoke the activate editable
+			//    event.
 			range.select();
 
-			// 3. Restore the range
+			// 3. Restore the range.
 			range.startContainer = range.endContainer = currentStartContainer;
 			range.startOffset = range.endOffset = currentStartOffset;
-			// 4. Invoke the final selection
+
+			// 4. Invoke the final selection.
 			range.select();
 
 			Aloha.trigger( 'aloha-link-selected-in-linkbrowser' , item );
 
-			// Close the browser lightbox
+			// Close the browser lightbox.
 			this.close();
 		},
 
