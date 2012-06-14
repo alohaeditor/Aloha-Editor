@@ -1090,9 +1090,9 @@ define('RepositoryBrowser', [
 				jQuery(this).css('top', 0).hide();
 				if (0 === openedBrowserInstances || 0 === --openedBrowserInstances) {
 					jQuery('.repository-browser-modal-overlay').hide();
+					jQuery('body').css('overflow', 'visible');
 				}
 			});
-			jQuery('body').css('overflow', 'auto');
 		}
 
 	});
