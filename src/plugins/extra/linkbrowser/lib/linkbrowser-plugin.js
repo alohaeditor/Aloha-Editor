@@ -5,7 +5,8 @@ define( [
 	'aloha/jquery',
 	'aloha/plugin',
 	'aloha/pluginmanager',
-	'aloha/floatingmenu',
+	'ui/component',
+	'ui/button',
 	'link/link-plugin',
 	'browser/browser-plugin', 
 	// i18n
@@ -16,7 +17,8 @@ define( [
 			 jQuery,
 			 Plugin,
 			 PluginManager,
-			 FloatingMenu,
+			 Component,
+			 Button,
 			 Links,
 			 Browser,
 			 i18n,
@@ -30,31 +32,24 @@ define( [
 			this._super( config );
 			
 			var that = this;
-			var repositoryButton = new Aloha.ui.Button( {
-				iconClass : 'aloha-button-big aloha-button-tree',
-				size      : 'large',
-				onclick   : function () { that.show(); },
-				tooltip   : i18n.t( 'button.addlink.tooltip' ),
-				toggle    : false
-			} );
+
+			Component.define("linkBrowser", Button, {
+				icon: 'aloha-button-big aloha-button-tree',
+				label: i18n.t( 'button.addlink.tooltip' ),
+				click: function () { that.show(); }
+			});
+
+			var repositoryButton = Component.getGloblaInstance("linkBrowser");
 			
-			FloatingMenu.addButton(
-				'Aloha.continuoustext',
-				repositoryButton,
-				i18n.t( 'floatingmenu.tab.link' ),
-				1
-			);
 			repositoryButton.hide();
 			
 			this.url = Aloha.getAlohaUrl() + '/../plugins/extra/linkbrowser/';
 			
 			Aloha.bind( 'aloha-link-selected', function ( event, rangeObject ) {
 				repositoryButton.show();
-				FloatingMenu.doLayout();
 			});
 			Aloha.bind( 'aloha-link-unselected', function ( event, rangeObject ) {
 				repositoryButton.hide();
-				FloatingMenu.doLayout();
 			});
 		},
 		
