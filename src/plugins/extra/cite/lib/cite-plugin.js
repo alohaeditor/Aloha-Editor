@@ -134,7 +134,10 @@ function CiteClosure( Aloha, jQuery, Plugin, FloatingMenu, Format, domUtils,
 		referenceContainer: null,
 		settings: null,
 		sidebar: null,
-
+		config: {
+			active: true
+		},
+		
 		init: function() {
 			var that = this;
 
@@ -277,9 +280,21 @@ function CiteClosure( Aloha, jQuery, Plugin, FloatingMenu, Format, domUtils,
 
 			Aloha.bind( 'aloha-editable-activated', function( event, params) {
 				var config = that.getEditableConfig( params.editable.obj );
-				if ( !config.active ) {
-					that.buttons[ 0 ].hide();
+				
+				if ( !config ) {
 					return;
+				}
+				
+				if ( jQuery.inArray( 'quote', config ) !== -1 ) {
+					that.buttons[ 0 ].show();
+				} else {
+					that.buttons[ 0 ].hide();
+				}
+				
+				if ( jQuery.inArray( 'blockquote', config ) !== -1 ) {
+					Format.multiSplitButton.showItem( 'blockquote' );
+				} else {
+					Format.multiSplitButton.hideItem( 'blockquote' );
 				}
 			});
 
