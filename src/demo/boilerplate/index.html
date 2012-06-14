@@ -20,6 +20,8 @@
 	-->
 	<link rel="stylesheet" href="../../css/aloha.css" type="text/css">
 
+	<link rel="stylesheet" href="../../shared/repository-browser/css/repository-browser.css" type="text/css">
+
 	<style>
 		/* Place the new UI toolbar somewhere where we can see it */
 		.aloha-toolbar {
@@ -77,8 +79,8 @@
                       "indentList", "outdentList",
                       "formatLink", "formatAbbr", "wailang",
                       "alignLeft", "alignCenter", "alignRight", "alignJustify",
-                      "toggleMetaView", "toggleFormatlessPaste", "formatNumeratedHeaders",
-                      "formatBlock" ]
+                      "toggleMetaView", "toggleFormatlessPaste",
+					  "formatNumeratedHeaders", "formatBlock" ]
 				]
 			},
 			// Insert Tab
@@ -86,16 +88,16 @@
 				label: "Insert",
 				showOn: true,
 				components: [
-					[ "createTable", "characterPicker", "insertLink", "insertImage", "insertAbbr", "insertToc", "insertHorizontalRule" ]
+					[ "createTable", "characterPicker", "insertLink",
+					  "insertImage", "insertAbbr", "insertToc",
+					  "insertHorizontalRule" ]
 				]
 			},
 			// Link Tab
 			{
 				label: "Link", 
 				showOn: "a",
-				components: [
-					[ "editLink", "removeLink" ] //"linkBrowser" ]
-				]
+				components: [ [ "editLink", "removeLink", "linkBrowser" ] ]
 			},
             // Image Tab
             {
@@ -120,25 +122,33 @@
             // Wailang Tab
             {   label: "Wailang",
                 showOn: true, // Should show on this element <span class="aloha-wai-lang"></span>
-                components: [
-                    [ "wailangfield", "removewailang" ]
-                ]
+                components: [ [ "wailangfield", "removewailang" ] ]
             },
 			// Table Tabs
 			{
 				label: "Table",
 				showOn: true,
-				components: [ [ "mergecells", "splitcells", "tableCaption", "formatTable" ] ]
+				components: [
+					[ "mergecells", "splitcells", "tableCaption",
+					  "formatTable" ]
+				]
 			},
 			{ 
 				label: "Column",
 				showOn: true,
-				components: [ [ "addcolumnleft", "addcolumnright", "deletecolumns", "columnheader", "mergecells", "splitcells", "formatColumn" ] ]
+				components: [
+					[ "addcolumnleft", "addcolumnright", "deletecolumns",
+					  "columnheader", "mergecells", "splitcells",
+					  "formatColumn" ]
+				]
 			},
 			{
 				label: "Row",
 				showOn: true,
-				components: [ [ "addrowbefore", "addrowafter", "deleterows", "rowheader", "mergecells", "splitcells", "formatRow" ] ]
+				components: [
+					[ "addrowbefore", "addrowafter", "deleterows", "rowheader",
+					  "mergecells", "splitcells", "formatRow" ]
+				]
 			}
 		];
     </script>
@@ -147,6 +157,18 @@
 		Load the Aloha Editor library.
 		The plugin list could also be added to the configuration.
 	-->
+	<script>
+		var __DEPS__ = {
+			lang: 'en',
+			root: '../'
+		};
+	</script>
+	<script src="../../shared/module-paths.js"></script>
+	<script>
+		Aloha.settings.requireConfig = {
+			paths: __DEPS__.paths
+		};
+	</script>
 	<script src="../../lib/aloha.js"
 	        data-aloha-plugins="common/ui,
 	                            common/format,
@@ -159,19 +181,20 @@
 	                            common/paste,
 	                            common/characterpicker,
 	                            common/commands,
-                                common/block,
+	                            common/block,
 	                            common/image,
 	                            common/abbr,
-                                common/horizontalruler,
-                                common/align,
-                                extra/formatlesspaste,
-                                extra/toc,
-                                extra/headerids,
-                                extra/listenforcer,
-                                extra/metaview,
-                                extra/numerated-headers,
+	                            common/horizontalruler,
+	                            common/align,
+	                            extra/formatlesspaste,
+	                            extra/toc,
+	                            extra/headerids,
+	                            extra/listenforcer,
+	                            extra/metaview,
+	                            extra/numerated-headers,
 	                            extra/wai-lang,
 	                            extra/flag-icons,
+	                            extra/linkbrowser,
 	                            extra/sourceview"></script>
     <!--
     TODO not yet ready for jqueryui 
