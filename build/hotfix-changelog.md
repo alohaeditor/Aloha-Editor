@@ -26,3 +26,4 @@ All changes are categorized into one of the following keywords:
 - **BUG**: core: Fixed enter behaviour in lists. Before executing command "insertparagraph", whitespace textnodes around list elements are removed, because the algorithm isn't prepared to handle whitespace textnodes.
 - **BUG**: citation plugin: Fixed javascript errors on initialization and possible endless loop when adding inline citations.
 - **ENHANCEMENT**: A whole lot of Plugins can now be configured editable-specific configuration: abbr, highlighteditables, list, horizontalruler, link, paste, headerids, listenforcer, metaview, numerated-headers, wai-lang, cite, characterpicker, formatlesspaste, dom-to-xhtml. Have a look at the individual plugin guides for detailed information on how to configure them.
+- **ENHANCEMENT**: Added functional description for plugins
