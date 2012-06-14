@@ -6,9 +6,9 @@
 */
 
 .aloha-editable-highlight {
-	outline: #FFE767 solid 5px;
+	outline: #FFE767 solid 5px !important;
 }
 
 .aloha-editable-active, .aloha-editable-active[contenteditable=true]:focus {
-	outline: #80B5F2 solid 5px;
+	outline: #80B5F2 solid 5px !important;
 }
