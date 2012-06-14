@@ -25,7 +25,7 @@ define([
 			Component.define( 'linkBrowser', Button, {
 				icon: 'aloha-button-big aloha-button-tree',
 				label: i18n.t( 'button.addlink.tooltip' ),
-				click: function () { that.show(); }
+				click: function () { that.open(); }
 			});
 
 			var repositoryButton = Component.getGlobalInstance( 'linkBrowser' );
