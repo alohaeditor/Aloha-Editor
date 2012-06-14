@@ -58,3 +58,5 @@
 
                      Custom plugins should be checked for a possible
                      dependency on these files.
+
+- **BUG**: cite-plugin: Fixed a javascript error when the cite plugin had no explicit sidebar configuration.
