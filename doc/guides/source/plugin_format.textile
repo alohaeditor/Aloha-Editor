@@ -8,6 +8,40 @@ With the Format Plugin you are able to format paragraph formattings (p, h1, ...)
 
 The following components are available:
 
+h3. Functional Description
+
+The Format plugin allows you to format texts and headlines.
+
+h4. Paragraph, Headline, Preformatted or remove formatting
+
+In order to enter normal text choose the paragraph layout at the Aloha Editor or select an entered text and choose the layout. In order to create a headline choose one of the headlines (h2 to h6) at Aloha Editor. Normal text will be wrapped into a +<p>+ tag, headlines into e.g. a +<h2>+ tag and preformatted text into a +<pre>+ tag.
+You can change the layout each time or remove a formatting via clicking the remove formatting button at the Aloha Editor.
+ 
+h4. Bold and Italic
+
+Every text or headline can be formatted into bold or italic via selecting the text or headline and click on the bold or italic button at Aloha Editor. This wraps the selected text or headline into a +<b>+ tag if bold or a +<i>+ tag if italic.
+To undo this select the text or headline and click the button again.
+
+h4. Strong and Emphasize
+
+Texts or headlines can be formatted into strong or emphasized texts or headlines via selecting the text or headline and click on the strong or emphasize button at the Aloha Editor. This wraps the selected text or headline into a +<strong>+ tag if strong or +<em>+ tag if emphasized.
+To undo this select the text or headline and click the button again.
+
+h4. Underline and Strikethrough
+
+Texts or headlines can be underlined or have strikethrough applied as well. Just selecting the text or headline and click on the underline or strikethrough button at the Aloha Editor. This wrap the selected text or headline into a +<u>+ tag if underlined or +<del>+ tag if strikethrough is chosen.
+To undo this select the text or headline and click the button again.
+
+h4. Subscript and Superscript
+
+In order to make subscript and superscript texts or headlines selecting the text or headline and click on the subscript or superscript button at the Aloha Editor. This wrap the selected text or headline into a +<sub>+ tag if subscript or +<sup>+ tag if superscript.
+To undo this select the text or headline and click the button again.
+
+h4. Code
+
+Texts or headlines can a layout for codes via selecting the text or headline and click on the code button at Aloha Editor. This wraps the selected text or headline into a +<code>+ tag.
+To undo this select the text or headline and click the button again.
+
 h3. Components
 
 * cite - format content as a citation

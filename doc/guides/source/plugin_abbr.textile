@@ -13,6 +13,10 @@ h3. Components
 * abbrText - UIAttributeField for text input
 * removeAbbr - remove abbreviation from selection
 
+h3. Functional Description
+
+To create an abbreviation highlight some text and click the abbreviation icon from the format tab. Now you can enter the description of the abbreviation which will be shown when hovering over the annotated word. For editing an abbreviation just click on the entered abbreviation and edit the text in the FloatingMenu.
+To delete an abbreviation just move the cursor to the abbreviation and click on the abbreviation button at the Aloha Editor again.
 
 h3. Configuration settings
 

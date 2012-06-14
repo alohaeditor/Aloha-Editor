@@ -4,6 +4,10 @@ The Characterpicker Plugin allows you to insert special characters into your tex
 
 endprologue.
 
+h3. Functional Description
+
+In order to insert a special character move the cursor to the desired position and open the "Insert" tab at the Aloha Editor. Now click on the characterpicker button and choose a special character from the table. To delete a special character just mark the special character and press backspace or delete.
+
 h4. Components
 
 * characterpicker - brings up the overlay to select a character
