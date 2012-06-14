@@ -154,7 +154,7 @@ function( jQuery, Class ) {
 			var elements = [ null ];
 			var element;
 			var isEditingHost = GENTICS.Utils.Dom.isEditingHost;
-			for ( element = range.startContainer; !isEditingHost( element );
+			for ( element = range.startContainer; element && !isEditingHost( element );
 			      element = element.parentNode ) {
 				elements.push( element );
 			}

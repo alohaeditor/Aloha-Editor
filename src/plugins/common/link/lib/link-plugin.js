@@ -396,12 +396,7 @@ define( [
 				iconOnly: true,
 				icon: "aloha-icon aloha-icon-link",
 				click: function() {
-					setSelectionFromSurfaceRange();
 					that.formatLink();
-				},
-				selectionChange: function() {
-					var value = Aloha.queryCommandValue( "createLink" );
-					this.setState( !!value );
 				}
 			});
 
@@ -410,12 +405,7 @@ define( [
 				iconOnly: true,
 				icon: "aloha-icon aloha-icon-link",
 				click: function() {
-					setSelectionFromSurfaceRange();
 					that.insertLink(false);
-				},
-				selectionChange: function() {
-					var value = Aloha.queryCommandValue( "createLink" );
-					this.setState( !!value );
 				}
 			});
 			
@@ -433,16 +423,7 @@ define( [
 				iconOnly: true,
 				icon: "aloha-icon aloha-icon-unlink",
 				click: function() {
-					setSelectionFromSurfaceRange();
 					that.removeLink();
-				},
-				selectionChange: function() {
-					var value = Aloha.queryCommandValue( "createLink" );
-					if ( value ) {
-						this.show();
-					} else {
-						this.hide();
-					}
 				}
 			});
 
@@ -764,11 +745,4 @@ define( [
 		}
 		
 	} );
-	
-    function setSelectionFromSurfaceRange() {
-        var selection = Aloha.getSelection();
-        selection.removeAllRanges();
-        selection.addRange(Surface.range);
-        Aloha.Selection.rangeObject.update();
-    }
 } );

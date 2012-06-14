@@ -594,16 +594,6 @@ define( [
 						that.activeTable.selectRows();
 					}
 				}
-			},
-			selectionChange: function(range){
-				if(that.activeTable){
-					var sc = that.activeTable.selection.selectedCells;
-					var isHeader = that.activeTable.selection.isHeader();
-
-					this.setState( isHeader ); 
-				} else {
-					this.setState( false ); 
-				} 
 			}
 		});
 		
@@ -750,14 +740,6 @@ define( [
 					that.activeTable.selection.unselectCells();
 					that.activeTable.selection.selectColumns( selectedColumnIdxs );
 				}
-			},
-			selectionChange: function(){
-				if(that.activeTable){
-					var isHeader = that.activeTable.selection.isHeader();
-					this.setState( isHeader ); 
-				} else {
-					this.setState( false ); 
-				} 
 			}
 		});
 		
