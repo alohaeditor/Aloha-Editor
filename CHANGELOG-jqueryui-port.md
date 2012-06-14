@@ -52,6 +52,8 @@
                        It is now up to the toolbar configuration whether or
                        not and how to display these components.
 
+                     * Selection.isFloatingMenuVisible - removed
+ 
                      Many plugins exposed buttons, attribute-field and
                      multi-split-button components as non-private
                      members. For example, as in the case of the cite
