@@ -9,17 +9,17 @@
                      * FloatingMenu - removed
                        There is now a new toolbar implementation in the ui plugin.
 
-                     * Aloha.ui.AttributeField
-                       Also Ext.data.AlohaProxy and Ext.data.AlohaReader
-                       were removed, both of which should only have been
-                       used by the AttributeField.
-                       See ui/autocomplete.js.
-
-                     * Aloha.ui.Button - removed
-                       See ui/button.js and ui/toggleButton.js.
-
-                     * Aloha.ui.MultiSplitButton - removed
-                       See ui/multiSplitButton.
+                     * Aloha.ui - removed
+                       Affects
+                       Aloha.ui.AttributeField
+                       Aloha.ui.Button
+                       Aloha.ui.MultiSplitButton
+                       Aloha.isMessageVisible
+                       Aloha.hideMessage
+                       Aloha.ui.MultiSplitButton.idCounter
+                       Aloha.showMessage
+                       Aloha.i18n
+                       Plugin.i18n (has been deprecated for some time now)
 
                      * Aloha.Message - removed
                        See ui/message.

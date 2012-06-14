@@ -221,19 +221,6 @@ function(Aloha, jQuery, Class, PluginManager, console ) {
 		},
 
 		/**
-		 * Localize the given key for the plugin.
-		 * @param key key to be localized
-		 * @param replacements array of replacement strings
-		 * @return localized string
-		 * @hide
-		 * @deprecated
-		 */
-		i18n: function(key, replacements) {
-			console.deprecated ('plugin', 'i18n() is deprecated. Use plugin.t() instead.');
-			return Aloha.i18n(this, key, replacements);
-		},
-
-		/**
 		 * Return string representation of the plugin, which is the prefix
 		 * @return name
 		 * @hide
