@@ -396,7 +396,6 @@ define( [
 				iconOnly: true,
 				icon: "aloha-icon aloha-icon-link",
 				click: function() {
-					setSelectionFromSurfaceRange();
 					that.formatLink();
 				}
 			});
@@ -406,7 +405,6 @@ define( [
 				iconOnly: true,
 				icon: "aloha-icon aloha-icon-link",
 				click: function() {
-					setSelectionFromSurfaceRange();
 					that.insertLink(false);
 				}
 			});
@@ -425,7 +423,6 @@ define( [
 				iconOnly: true,
 				icon: "aloha-icon aloha-icon-unlink",
 				click: function() {
-					setSelectionFromSurfaceRange();
 					that.removeLink();
 				}
 			});
@@ -748,11 +745,4 @@ define( [
 		}
 		
 	} );
-	
-    function setSelectionFromSurfaceRange() {
-        var selection = Aloha.getSelection();
-        selection.removeAllRanges();
-        selection.addRange(Surface.range);
-        Aloha.Selection.rangeObject.update();
-    }
 } );
