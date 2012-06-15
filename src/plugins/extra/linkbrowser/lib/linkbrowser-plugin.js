@@ -29,7 +29,7 @@ define([
 			});
 
 			var repositoryButton = Component.getGlobalInstance( 'linkBrowser' );
-			
+
 			repositoryButton.hide();
 
 			this.url = Aloha.getAlohaUrl() + '/../plugins/extra/linkbrowser/';
