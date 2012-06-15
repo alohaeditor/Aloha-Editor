@@ -23,6 +23,11 @@ function(Aloha, Plugin, jQuery, FloatingMenu, FormatlessPasteHandler, ContentHan
 		 */
 		formatlessPasteOption: false, 
 		
+		/**
+		 * Whether to display a button in the floating menu that allows to switch formatless pasting on and off
+		 */
+		button: true,
+		
 		//Here we removes the text-level semantic and edit elements (http://dev.w3.org/html5/spec/text-level-semantics.html#usage-summary)
 		strippedElements : [
 			"a",
@@ -60,6 +65,7 @@ function(Aloha, Plugin, jQuery, FloatingMenu, FormatlessPasteHandler, ContentHan
 		init: function() {
 			var that = this;
 
+			// look for old configuration directly in settings
 			if ( typeof this.settings.formatlessPasteOption !== 'undefined') {
 				this.formatlessPasteOption = this.settings.formatlessPasteOption;
 			}
@@ -67,18 +73,49 @@ function(Aloha, Plugin, jQuery, FloatingMenu, FormatlessPasteHandler, ContentHan
 			if ( typeof this.settings.strippedElements !== 'undefined') {
 				this.strippedElements = this.settings.strippedElements;
 			}
-
-			if ( this.formatlessPasteOption ) {
-				this.registerFormatlessPasteHandler(); 
-			};
-
+			
+			// look for newer config in settings.config
+			if (this.settings.config) {
+				if (this.settings.config.formatlessPasteOption) {
+					this.formatlessPasteOption = this.settings.config.formatlessPasteOption;
+				}
+				if (this.settings.config.strippedElements) {
+					this.strippedElements = this.settings.config.strippedElements;
+				}
+				if (this.settings.config.button === false) {
+					this.button = false;
+				}
+			}
+			
+			this.registerFormatlessPasteHandler(); 
+			var formatlessPasteHandlerLastState;
+			Aloha.bind( 'aloha-editable-activated', function( event, params) {
+				var config = that.getEditableConfig( params.editable.obj );
+				if ( !config ) {
+					return;
+				}
+				if ( config.strippedElements ) {
+					FormatlessPasteHandler.strippedElements = config.strippedElements;
+				}
+				if (config.formatlessPasteOption === true) {
+					that.formatlessPasteButton.setPressed(true);
+					FormatlessPasteHandler.enabled = true;
+				} else if (config.formatlessPasteOption === false) {
+					that.formatlessPasteButton.setPressed(false);
+					FormatlessPasteHandler.enabled = false;
+				}
+				if ( config.button === false ) {
+					that.formatlessPasteButton.hide();
+				} else {
+					that.formatlessPasteButton.show();
+				}
+			});
 		},
 
 		/**
 		 * Register Formatless paste handler
 		 */
 		registerFormatlessPasteHandler: function(){
-		
 			ContentHandlerManager.register( 'formatless', FormatlessPasteHandler );
 			FormatlessPasteHandler.strippedElements = this.strippedElements;
 			// add button to toggle format-less pasting
@@ -98,6 +135,17 @@ function(Aloha, Plugin, jQuery, FloatingMenu, FormatlessPasteHandler, ContentHan
 				i18nCore.t( 'floatingmenu.tab.format' ),
 				1
 			);
+			
+			// activate formatless paste button if option is set
+			if (this.formatlessPasteOption === true) {
+				this.formatlessPasteButton.setPressed(true);
+				FormatlessPasteHandler.enabled = true;
+			}
+			
+			// hide button by default if configured
+			if (this.button === false) {
+				this.formatlessPasteButton.hide();
+			}
 		}
 	});
 });

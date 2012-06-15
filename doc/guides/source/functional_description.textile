@@ -1,0 +1,60 @@
+h2. Functional Description
+
+After reading this guide, you will
+
+* Understand how Aloha Editor will handle paragraphs and line breaks
+* Contents will be deleted
+
+endprologue.
+
+h3. Paragraphs & Line Breaks
+
+Paragraphs and line breaks are a fundamental part of editing text.
+Aloha Editor will decide for you which kind of line break to use
+if certain preconditions are met. Both kind of line breaks can be
+created using the enter key.
+
+Pressing enter when contents are selected will remove those contents.
+
+h4. Creating Paragraphs +<p>+
+
+To have the enter key create a new paragraph the cursor has to be
+located inside an existing paragraph. Every time you press enter,
+the existing paragraph will be split at the cursor position
+resulting in two paragraphs.
+
+h4. Creating Line Breaks +<br>+
+
+If the cursor is within an editable, but no wrapping paragraph
+can be detected a +<br>+ is inserted instead of a +<p>+. If you
+are inside a paragraph you may insert a line break at any time
+by pressing +Shift+++Enter+.
+
+h3. Deletion of Contents
+
+If you want to delete contents you may use the +Del+ Button to
+issue a +forwardDelete+ command or the +Backspace+ key to trigger
+a +delete+ command.
+
+If contents have been selected both +forwardDelete+ and +delete+
+will remove the selected contents in the same manner.
+
+h4. +forwardDelete+
+
+Forward delete means deleting characters that are right of your
+current caret position. If the selection is collapsed every time
+the +Del+ key is hit a single character will be deleted. If you
+keep pressing +Del+ and an inline formatting (like +<b>+) is encountered, the
+formatting will be kept for the remaining characters unless all
+of the formatted content is gone. If you encounter a phrasing
+element like a +<h1>+ tag the contents will be unwrapped before
+character deletion is continued.
+
+h4. +delete+
+
+The +delete+ command will delte characters left of your current
+caret position. Deleting inline formattings will work the same
+way as with +forwardDelete+, but deleting phrasing elements will
+open up the end of the phrasing element which will then engulf
+the rest of the contents until the end of the current paragraph
+or comparable wrapping phrasing element is hit.

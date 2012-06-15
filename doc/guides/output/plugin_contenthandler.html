@@ -57,6 +57,7 @@
           <dl class="L">
     <dt>Start Here</dt>
       <dd><a href="using_aloha.html">Using Aloha Editor</a></dd>
+      <dd><a href="functional_description.html">Functional Description</a></dd>
       <dd><a href="develop_aloha.html">Developing and building Aloha Editor</a></dd>
       <dd><a href="configure_aloha.html">Configuring Aloha Editor</a></dd>
       <dd><a href="require.html">Aloha dependency management</a></dd>
@@ -79,11 +80,12 @@
       <dd><a href="plugin_image.html">Image</a></dd>
       <dd><a href="plugin_contenthandler.html">Content Handler</a></dd>
       <dd><a href="plugin_browser.html">Browser</a></dd>
-      <dd><a href="plugin_numeratedheaders.html">Numerated Headers</a></dd>
+      <dd>Numerated Headers</dd>
       <dd><a href="plugin_undo.html">Undo</a></dd>
       <dd><a href="plugin_table.html">Table</a></dd>
       <dd><a href="plugin_paste.html">Paste</a></dd>
       <dd><a href="plugin_formatlesspaste.html">Formatless paste</a></dd>
+      <dd><a href="plugin_wai-lang.html">WAI Language</a></dd>
     <dt>Contributing to Aloha Editor</dt>
       <dd><a href="releasing.html">Releasing</a></dd>
       <dd>Development Process</dd>
@@ -189,6 +191,75 @@
 <ul>
 	<li>October 06, 2011: Initial version by <a href="credits.html#rene_kapusta">Rene Kapusta</a></li>
 </ul>
+<p>From plugins.texile</p>
+<h3 id="contenthandler-plugin">7 Contenthandler Plugin</h3>
+<p>The Contenthandler Plugin has no user interface and is used in conjunction with the paste plugin to be able to handle pasted content from Microsoft Word and the like. Currently it provides three so called &#8220;Content Handlers&#8221; which will be used to cleanup html content on various occasions like pasting or when initializing an editable. Those contenthandlers are:</p>
+<ul>
+	<li>word</li>
+	<li>generic</li>
+	<li>sanitize</li>
+</ul>
+<h4 id="word-content-handler">7.1 Word Content Handler</h4>
+<p>The Word Content Handler will detect content pasted from Microsoft Word 2003 and newer versions. It transforms and cleans the pasted html code so that deteriorating effects on mental health by staring at bogus and totally fubar html code can be kept to an acceptable minimum. Therefore it will</p>
+<ul>
+	<li>remove all &#8220;mso-whatever&#8221; classes</li>
+	<li>remove all divs from the pasted content</li>
+	<li>remove font tags</li>
+	<li>convert bullet points to real html lists with proper nesting</li>
+	<li>transform titles to h1 and subtitles to h2 tags</li>
+</ul>
+<h4 id="generic-content-handler">7.2 Generic Content Handler</h4>
+<p>The Generic Content Handler is a bit less generic than his name might suggest as he will apply the following cleaning actions:</p>
+<ul>
+	<li>clean lists by removing any non-ul or li children</li>
+	<li>cleaning tables by removing the following attributes
+	<ul>
+		<li>border</li>
+		<li>cellpadding</li>
+		<li>cellspacing</li>
+		<li>width</li>
+		<li>height</li>
+		<li>valign</li>
+	</ul></li>
+	<li>remove comments</li>
+	<li>unwrap contents of div, font and span tags</li>
+	<li>remove styles</li>
+	<li>remove namespaced elements</li>
+	<li>transform formattings by turning
+	<ul>
+		<li><tt>&lt;strong&gt;</tt> tags into <tt>&lt;b&gt;</tt> tags</li>
+		<li><tt>&lt;em&gt;</tt> to <tt>&lt;i&gt;</tt></li>
+		<li><tt>&lt;s&gt;</tt> to <tt>&lt;del&gt;</tt></li>
+		<li>and by removing <tt>&lt;u&gt;</tt> tags (as underline text decoration should solely be used for links)</li>
+	</ul></li>
+</ul>
+<h4 id="sanitize-content-handler">7.3 Sanitize Content Handler</h4>
+<div class="warning"><p>The Sanitize Content Handler does not work reliably on IE7, and will therefore just do nothing, if this browser is detected.</p></div>
+<p>The Sanitize Content Handler will remove all dom elements and attributes not covered by it&#8217;s configuration. You may specify your own configuration based on these default settings:</p>
+<div class="code_container">
+<pre class="brush: javascript; gutter: false; toolbar: false">
+
+Aloha.settings.contentHandler.sanitize = {
+	// elements allowed in the content
+	elements: [
+		'a', 'abbr', 'b', 'blockquote', 'br', 'cite', 'code', 'dd', 'dl', 'dt', 'em',
+		'i', 'li', 'ol', 'p', 'pre', 'q', 'small', 'strike', 'strong', 'sub',
+		'sup', 'u', 'ul' ],
+	// attributes allowed for specific elements
+	attributes: {
+		'a' : ['href'],
+		'blockquote' : ['cite'],
+		'q' : ['cite'],
+		'abbr': ['title']
+	},
+	// protocols allowed for certain attributes of elements
+	protocols: {
+		'a' : {'href': ['ftp', 'http', 'https', 'mailto', '__relative__']},
+		'blockquote' : {'cite': ['http', 'https', '__relative__']},
+		'q' : {'cite': ['http', 'https', '__relative__']}
+	}
+}
+</pre></div>
 
       </div>
         <div id="subCol">
@@ -202,7 +273,11 @@
 </a></li></ul></li><li><a href="#internals"><p>Internals</p>
 </a></li><li><a href="#future-work"><p>Future Work</p>
 </a></li><li><a href="#changelog"><p>Changelog</p>
-</a></li>
+</a></li><li><a href="#contenthandler-plugin"><p>Contenthandler Plugin</p>
+</a><ul><li><a href="#word-content-handler"><p>Word Content Handler</p>
+</a></li> <li><a href="#generic-content-handler"><p>Generic Content Handler</p>
+</a></li> <li><a href="#sanitize-content-handler"><p>Sanitize Content Handler</p>
+</a></li></ul></li>
           </ol>
         </div>
     </div>

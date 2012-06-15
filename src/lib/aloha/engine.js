@@ -1434,7 +1434,7 @@ function copyAttributes( element, newElement ) {
 	//    This invokation somehow crashes the ie7. We assume that the access of 
 	//    shared expando attribute updates internal references which are not 
 	//    correclty handled during clone(); 
-	if ( jQuery.browser === 'msie' && jQuery.browser.version >=7 && typeof element.attributes[jQuery.expando] !== 'undefined' ) {
+	if ( jQuery.browser.msie && jQuery.browser.version >=7 && typeof element.attributes[jQuery.expando] !== 'undefined' ) {
 		jQuery(element).removeAttr(jQuery.expando);
 	}
 
@@ -1482,10 +1482,10 @@ function setTagName(element, newName, range) {
 
 	// if the range still uses the old element, we modify it to the new one
 	if (range.startContainer === element) {
-		range.setStart(replacementElement, range.startOffset);
+		range.startContainer = replacementElement;
 	}
 	if (range.endContainer === element) {
-		range.setEnd(replacementElement, range.endOffset);
+		range.endContainer = replacementElement;
 	}
 
 	// "Return replacement element."
@@ -3729,7 +3729,7 @@ commands.removeformat = {
 			"hilitecolor",
 			"italic",
 			"strikethrough",
-			"underline",
+			"underline"
 		] ).forEach(function(command) {
 			setSelectionValue(command, null);
 		});
@@ -4065,27 +4065,51 @@ function fixDisallowedAncestors(node, range) {
 
 		// now that the parent has only the node as child (because we
 		// removed any existing empty text nodes), we can safely unwrap the
-		// node, and correct the range if necessary
+		// node's contents, and correct the range if necessary
 		if (node.parentNode.childNodes.length == 1) {
-			var correctStart = false;
-			var correctEnd = false;
-			if (range.startContainer === node.parentNode) {
-				correctStart = true;
+			var newStartOffset = range.startOffset;
+			var newEndOffset = range.endOffset;
+
+			if (range.startContainer === node.parentNode && range.startOffset > getNodeIndex(node)) {
+				// the node (1 element) will be replaced by its contents (contents().length elements)
+				newStartOffset = range.startOffset + (jQuery(node).contents().length - 1);
 			}
-			if (range.endContainer === node.parentNode) {
-				correctEnd = true;
+			if (range.endContainer === node.parentNode && range.endOffset > getNodeIndex(node)) {
+				// the node (1 element) will be replaced by its contents (contents().length elements)
+				newEndOffset = range.endOffset + (jQuery(node).contents().length - 1);
 			}
-			jQuery(node).unwrap();
-			if (correctStart) {
-				range.startContainer = node.parentNode;
-				range.startOffset = range.startOffset + getNodeIndex(node);
-			}
-			if (correctEnd) {
-				range.endContainer = node.parentNode;
-				range.endOffset = range.endOffset + getNodeIndex(node);
-			}
+			jQuery(node).contents().unwrap();
+			range.startOffset = newStartOffset;
+			range.endOffset = newEndOffset;
+			// after unwrapping, we are done
+			break;
 		} else {
+			// store the original parent
+			var originalParent = node.parentNode;
 			splitParent([node], range);
+			// check whether the parent did not change, so the split did not work, e.g.
+			// because we already reached the editing host itself.
+			// this situation can occur, e.g. when we insert a paragraph into an contenteditable span
+			// in such cases, we just unwrap the contents of the paragraph
+			if (originalParent === node.parentNode) {
+				// so we unwrap now
+				var newStartOffset = range.startOffset;
+				var newEndOffset = range.endOffset;
+
+				if (range.startContainer === node.parentNode && range.startOffset > getNodeIndex(node)) {
+					// the node (1 element) will be replaced by its contents (contents().length elements)
+					newStartOffset = range.startOffset + (jQuery(node).contents().length - 1);
+				}
+				if (range.endContainer === node.parentNode && range.endOffset > getNodeIndex(node)) {
+					// the node (1 element) will be replaced by its contents (contents().length elements)
+					newEndOffset = range.endOffset + (jQuery(node).contents().length - 1);
+				}
+				jQuery(node).contents().unwrap();
+				range.startOffset = newStartOffset;
+				range.endOffset = newEndOffset;
+				// after unwrapping, we are done
+				break;
+			}
 		}
 	}
 
@@ -5568,6 +5592,42 @@ function canonicalizeWhitespace(node, offset) {
 ///// Indenting and outdenting /////
 //@{
 
+function cleanLists(node, range) {
+	// remove any whitespace nodes around list nodes
+	if (node) {
+		jQuery(node).find('ul,ol,li').each(function () {
+			jQuery(this).contents().each(function () {
+				if (isWhitespaceNode(this)) {
+					var index = getNodeIndex(this);
+
+					// if the range points to somewhere behind the removed text node, we reduce the offset
+					if (range.startContainer === this.parentNode && range.startOffset > index) {
+						range.startOffset--;
+					} else if (range.startContainer === this) {
+						// the range starts in the removed text node, let it start right before
+						range.startContainer = this.parentNode;
+						range.startOffset = index;
+					}
+					// same thing for end of the range
+					if (range.endContainer === this.parentNode && range.endOffset > index) {
+						range.endOffset--;
+					} else if (range.endContainer === this) {
+						range.endContainer = this.parentNode;
+						range.endOffset = index;
+					}
+					// finally remove the whitespace node
+					jQuery(this).remove();
+				}
+			});
+		});
+	}
+}
+
+
+//@}
+///// Indenting and outdenting /////
+//@{
+
 function indentNodes(nodeList, range) {
 	// "If node list is empty, do nothing and abort these steps."
 	if (!nodeList.length) {
@@ -6197,10 +6257,11 @@ function createEndBreak() {
 	var endBr = document.createElement("br");
 	endBr.setAttribute("class", "aloha-end-br");
 
-	if ( jQuery.browser.msie && jQuery.browser.version < 8 ) {
-		var endTextNode = document.createTextNode(' ');
-		endBr.insertBefore(endTextNode);
-	}
+	// the code below cannot work, since the endBr is created right above and not inserted into the DOM tree.
+//	if ( jQuery.browser.msie && jQuery.browser.version < 8 ) {
+//		var endTextNode = document.createTextNode(' ');
+//		endBr.insertBefore(endTextNode);
+//	}
 
 	return endBr;
 }
@@ -6222,6 +6283,9 @@ commands["delete"] = {
 		// "Canonicalize whitespace at (active range's start node, active
 		// range's start offset)."
 		canonicalizeWhitespace(range.startContainer, range.startOffset);
+
+		// collapse whitespace sequences
+		collapseWhitespace(node, range);
 
 		// "Let node and offset be the active range's start node and offset."
 		var node = range.startContainer;
@@ -6293,9 +6357,6 @@ commands["delete"] = {
 				break;
 			}
 		}
-
-		// collapse whitespace sequences
-		collapseWhitespace(node, range);
 
 		// "If node is a Text node and offset is not zero, call collapse(node,
 		// offset) on the Selection. Then delete the contents of the range with
@@ -7436,6 +7497,10 @@ commands.insertparagraph = {
 		// "Delete the contents of the active range."
 		deleteContents(range);
 
+		// clean lists in the editing host, this will remove any whitespace nodes around lists
+		// because the following algorithm is not prepared to deal with them
+		cleanLists(getEditingHostOf(range.startContainer), range);
+
 		// "If the active range's start node is neither editable nor an editing
 		// host, abort these steps."
 		if (!isEditable(range.startContainer)
@@ -7637,7 +7702,8 @@ commands.insertparagraph = {
 				// we found a li containing only a br followed by a li containing a list as first element: merge the two li's
 				var listParent = container.nextSibling, length = container.nextSibling.childNodes.length;
 				for (var i = 0; i < length; i++) {
-					container.appendChild(listParent.childNodes[i]);
+					// we always move the first child into the container
+					container.appendChild(listParent.childNodes[0]);
 				}
 				listParent.parentNode.removeChild(listParent);
 			}

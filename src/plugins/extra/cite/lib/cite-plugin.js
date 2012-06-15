@@ -134,7 +134,10 @@ function CiteClosure( Aloha, jQuery, Plugin, FloatingMenu, Format, domUtils,
 		referenceContainer: null,
 		settings: null,
 		sidebar: null,
-
+		config: {
+			active: true
+		},
+		
 		init: function() {
 			var that = this;
 
@@ -147,20 +150,21 @@ function CiteClosure( Aloha, jQuery, Plugin, FloatingMenu, Format, domUtils,
 					Aloha.settings.plugins.cite.referenceContainer );
 
 				if ( referenceContainer.length ) {
-					this.referenceContainer = referenceContainer;
+					that.referenceContainer = referenceContainer;
 				}
 
-				if ( typeof Aloha.settings.plugins.cite !== 'undefinded' ) {
+				if ( typeof Aloha.settings.plugins.cite !== 'undefined' ) {
 					that.settings = Aloha.settings.plugins.cite;
 				}
 
-				if ( typeof that.settings.sidebar === 'undefinded' ) {
+				if ( typeof that.settings.sidebar === 'undefined' ) {
 					that.settings.sidebar = {};
 				}
 
-				if ( typeof that.settings.sidebar.open === 'undefinded' ) {
+				if ( typeof that.settings.sidebar.open === 'undefined' ) {
 					that.settings.sidebar.open = true;
 				}
+
 			}
 
 			// Add the inline quote button in the floating menu, in the
@@ -274,9 +278,28 @@ function CiteClosure( Aloha, jQuery, Plugin, FloatingMenu, Format, domUtils,
 				});
 			});
 
+			Aloha.bind( 'aloha-editable-activated', function( event, params) {
+				var config = that.getEditableConfig( params.editable.obj );
+				
+				if ( !config ) {
+					return;
+				}
+				
+				if ( jQuery.inArray( 'quote', config ) !== -1 ) {
+					that.buttons[ 0 ].show();
+				} else {
+					that.buttons[ 0 ].hide();
+				}
+				
+				if ( jQuery.inArray( 'blockquote', config ) !== -1 ) {
+					Format.multiSplitButton.showItem( 'blockquote' );
+				} else {
+					Format.multiSplitButton.hideItem( 'blockquote' );
+				}
+			});
+
 			Aloha.bind( 'aloha-selection-changed', function( event, rangeObject ) {
-				Format.multiSplitButton.showItem( 'blockquote' );
-				var buttons = jQuery( 'button' + nsSel( 'button' ) );
+				var buttons = jQuery( 'button' + nsSel( 'button' ) ); // not used?
 
 				jQuery.each( that.buttons, function( index, button ) {
 					// Set to false to prevent multiple buttons being active
@@ -300,10 +323,12 @@ function CiteClosure( Aloha, jQuery, Plugin, FloatingMenu, Format, domUtils,
 					       .removeClass( nsClass( 'pressed' ) );
 
 					that.buttons[ 0 ].setPressed( false );
+					//button.setPressed( false ); // should it be this instead of that.buttons...?
 
 					if ( statusWasSet ) {
 						if( 'q' === tagName ) {
 							that.buttons[ 0 ].setPressed( true );
+							//button.setPressed( true ); // should it be this instead of that.buttons...?
 						} else {
 							buttons.filter( nsSel( 'block-button' ) )
 							       .addClass( nsClass( 'pressed' ) );
@@ -314,6 +339,28 @@ function CiteClosure( Aloha, jQuery, Plugin, FloatingMenu, Format, domUtils,
 						return false;
 					}
 				});
+				
+				// switch item visibility according to config
+				var config = [];
+				if ( Aloha.activeEditable ) {
+		        	var config = that.getEditableConfig( Aloha.activeEditable.obj );
+				}
+				
+				// quote
+				if ( jQuery.inArray( 'quote', config ) != -1 ) {
+	        		that.buttons[0].show();
+	        	} else {
+	        		that.buttons[0].hide();
+	        	}
+				
+				// blockquote
+				if ( jQuery.inArray( 'blockquote', config ) != -1 ) {
+					Format.multiSplitButton.showItem( 'blockquote' );
+	        	} else {
+	        		Format.multiSplitButton.hideItem( 'blockquote' );
+	        	}
+				
+				FloatingMenu.doLayout();
 			});
 		},
 
@@ -342,7 +389,7 @@ function CiteClosure( Aloha, jQuery, Plugin, FloatingMenu, Format, domUtils,
 				mid = ( min + max ) >> 1; // Math.floor(i) / 2 == i >> 1 == ~~(i / 2)
 				cuid = c[ mid ].uid;
 
-				if ( cuid === uid ) {
+				if ( cuid == uid ) {
 					return mid;
 				}
 				

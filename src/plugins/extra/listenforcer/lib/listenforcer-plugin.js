@@ -35,6 +35,7 @@ define( [
 	 * If there are no lists, one will be added, using the
 	 * placeHolderListString. If there is more than one list, they will be
 	 * merged into the first list.
+	 * If there is any other content in the editable it will be removed.
 	 *
 	 * @private
 	 * @param {jQuery} $editable
@@ -49,7 +50,7 @@ define( [
 		// Remove all temporary <br>s in the editable, which we may have
 		// inserted when we activated this editable and found it empty. These
 		// <br>s are needed to make the otherwise emty <li> visible (in IE).
-		$editable.find( '.GENTICS_temporary' ).remove();
+		$editable.find( '.aloha-end-br' ).remove();
 
 		// Check for the presence of at least one non-empty list. We consider
 		// a list to be not empty if it has atleast one item whose contents are
@@ -136,7 +137,7 @@ define( [
 
 			Aloha.bind( 'aloha-editable-activated', function( $event, params ) {
 				enforce( params.editable.obj,
-					'<ul><li><br class="GENTICS_temporary" /></li></ul>' );
+					'<ul><li><br class="aloha-end-br" /></li></ul>' );
 			} );
 
 			Aloha.bind( 'aloha-editable-deactivated', function( $event, params ) {
@@ -144,9 +145,8 @@ define( [
 			} );
 
 			Aloha.bind( 'aloha-smart-content-changed', function( $event, params ) {
-				// window.console.log( 'Smart content changed event' );
 				enforce( params.editable.obj,
-					'<ul><li><br class="GENTICS_temporary" /></li></ul>' );
+					'<ul><li><br class="aloha-end-br" /></li></ul>' );
 			} );
 		},
 

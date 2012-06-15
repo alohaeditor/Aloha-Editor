@@ -40,8 +40,9 @@ function ( jQuery, PluginManager ) {
 	//----------------------------------------
 	
 	/**
-	 * Hash table that will be populated through the loadPlugins method.
-	 * Maps the names of plugins with their urls for easy assess in the getPluginsUrl method
+	 * Maps the names of plugins with their urls for easy assess in the
+	 * getPluginUrl method.  Hash table that will be populated through the
+	 * loadPlugins method.
 	 */
 	var pluginPaths = {};
 
@@ -58,7 +59,7 @@ function ( jQuery, PluginManager ) {
 		 * It should be set by us and updated for the particular branch
 		 * @property
 		 */
-		version: '0.10.0',
+		version: '0.20.0',
 
 		/**
 		 * Array of editables that are managed by Aloha
@@ -553,10 +554,12 @@ function ( jQuery, PluginManager ) {
 		},
 
 		/**
-		 * Gets the Plugin Url
+		 * Gets the plugin's url.
+		 *
 		 * @method
-		 * @param {String} name
-		 * @return {String} url
+		 * @param {string} name The name with which the plugin was registered
+		 *                      with.
+		 * @return {string} The fully qualified url of this plugin.
 		 */
 		getPluginUrl: function (name) {
 			var url;

@@ -62,7 +62,7 @@ function( Aloha, jQuery, ContentHandlerManager, console ) {
 		],
 
 		attributes: {
-			'a': ['href', 'title', 'id', 'class', 'data-gentics-aloha-repository', 'data-gentics-aloha-object-id'],
+			'a': ['href', 'title', 'id', 'class', 'target', 'data-gentics-aloha-repository', 'data-gentics-aloha-object-id'],
 			'div': [ 'id', 'class'],
 			'abbr': ['title'],
 			'blockquote': ['cite'],
@@ -76,7 +76,7 @@ function( Aloha, jQuery, ContentHandlerManager, console ) {
 			'td': ['abbr', 'axis', 'colspan', 'rowspan', 'width'],
 			'th': ['abbr', 'axis', 'colspan', 'rowspan', 'scope', 'width'],
 			'ul': ['type'],
-			'span': ['class']
+			'span': ['class','style']
 		},
 
 		protocols: {
@@ -119,6 +119,11 @@ function( Aloha, jQuery, ContentHandlerManager, console ) {
 		 * @param content
 		 */
 		handleContent: function( content )  {
+			// sanitize does not work in IE7. It tries to set the style attribute via setAttributeNode() and this is know to not work in IE7
+			// (see http://www.it-blogger.com/2007-06-22/microsofts-internetexplorer-und-mitglied-nicht-gefunden/ as a reference)
+			if (jQuery.browser.msie && jQuery.browser.version <= 7) {
+				return content;
+			}
 			if ( typeof sanitize === 'undefined' ) {
 			   initSanitize();
 			}

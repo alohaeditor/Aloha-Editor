@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>: Meta View Plugin</title>
+
+  <!-- guides styles -->
+  <link rel="stylesheet" type="text/css" href="stylesheets/style.css" />
+  <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+  <link rel="stylesheet" type="text/css" href="stylesheets/strobe.css" />
+  <link rel="stylesheet" type="text/css" href="stylesheets/overrides.style.css" />
+  <link rel="stylesheet" type="text/css" href="stylesheets/overrides.print.css" media="print" />
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <!-- syntax highlighting styles -->
+  <link rel="stylesheet" type="text/css" href="stylesheets/syntaxhighlighter/shCore.css" />
+  <link rel="stylesheet" type="text/css" href="stylesheets/shThemeStrobeGuides.css" />
+</head>
+<body class="guide">
+
+  <header role="banner">
+    <div class="container">
+      <h1 id="logo">
+        <a href="http://aloha-editor.org"><img src="images/header/logo.png" height="50" alt="Aloha Editor" /></a>
+      </h1>
+      <nav role="navigation">
+        <ul>
+			<li><a href="http://aloha-editor.org/features.php" title="A shortcut for Aloha Editor features" class="new">Features</a></li>
+			<li><a href="http://aloha-editor.org/plugins.php" title="A list of all known Aloha Editor plugins.">Plugins</a></li>
+	        <li class="active"><a href="http://aloha-editor.org/guides/" title="The Aloha Editor documentation">Guides</a></li>
+			<li><a href="http://aloha-editor.org/about.php" title="Why Aloha? Why HTML5? Lern more about Aloha Editor">About</a></li>
+			<li><a href="http://getsatisfaction.com/aloha_editor" title="Get help or help others">Forum</a></li>
+			<li><a href="http://aloha-editor.org/demos.php" title="Feel the Aloha">Try it</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <div id="feature">
+    <div class="wrapper">
+      <div class="feature_header">
+        <a href="/"><img src="images/strobe/guides.png"></a>
+        <h2><a href="/"></a></h2>
+        <p>These guides help you to make your content editable and to develop Aloha.</p>
+      </div>
+      <div class="feature_sidebar">
+        <a href="index.html" id="guidesMenu">
+          Guides Index <span id="guidesArrow">&#9656;</span>
+        </a>
+        <div id="guides" class="clearfix" style="display: none;">
+          <a href="index.html" class="guidesMenu">
+            Guides Index <span class="guidesArrow">&#9662;</span>
+          </a>
+          <hr style="clear:both;">
+          <dl class="L">
+    <dt>Start Here</dt>
+      <dd><a href="using_aloha.html">Using Aloha Editor</a></dd>
+      <dd><a href="functional_description.html">Functional Description</a></dd>
+      <dd><a href="develop_aloha.html">Developing and building Aloha Editor</a></dd>
+      <dd><a href="configure_aloha.html">Configuring Aloha Editor</a></dd>
+      <dd><a href="require.html">Aloha dependency management</a></dd>
+      <dd><a href="writing_plugins.html">Writing Plugins</a></dd>
+      <dd><a href="repository.html">Working with repositories</a></dd>
+    <dt>The Core</dt>
+      <dd><a href="core.html">The Core</a></dd>
+    <dt>Commands</dt>
+      <dd><a href="using_commands.html">Using commands</a></dd>
+    <dt>UI</dt>
+      <dd><a href="ui.html">Aloha Editor Ui</a></dd>
+      <dd><a href="toolbar.html">Aloha Editor toolbar</a></dd>
+      <dd><a href="sidebar.html">Aloha Editor sidebar</a></dd>
+      <dd><a href="componenttypes.html">Aloha Editor UI API</a></dd>
+</dl>
+<dl class="R">
+    <dt>Plugins</dt>
+      <dd><a href="plugins.html">Aloha Editor plugins</a></dd>
+      <dd><a href="plugin_block.html">Block</a></dd>
+      <dd><a href="plugin_image.html">Image</a></dd>
+      <dd><a href="plugin_contenthandler.html">Content Handler</a></dd>
+      <dd><a href="plugin_browser.html">Browser</a></dd>
+      <dd>Numerated Headers</dd>
+      <dd><a href="plugin_undo.html">Undo</a></dd>
+      <dd><a href="plugin_table.html">Table</a></dd>
+      <dd><a href="plugin_paste.html">Paste</a></dd>
+      <dd><a href="plugin_formatlesspaste.html">Formatless paste</a></dd>
+      <dd><a href="plugin_wai-lang.html">WAI Language</a></dd>
+    <dt>Contributing to Aloha Editor</dt>
+      <dd><a href="releasing.html">Releasing</a></dd>
+      <dd>Development Process</dd>
+      <dd><a href="style_guide.html">Javascript Style Guide</a></dd>
+      <dd><a href="documentation_guidelines.html">Documentation Guidelines</a></dd>
+</dl>
+
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="container">
+    <div class="wrapper">
+      <div id="mainCol">
+          <div class="headerSection">
+            <h2>Meta View Plugin</h2>
+<p>The Meta View Plugin is used to visualize <span class="caps">HTML</span> elements for the editor.</p>
+
+          </div>
+        <h3 id="overview">1 Overview</h3>
+<p>The following elements will be highlighted:</p>
+<ul>
+	<li>p</li>
+	<li>h1 &#8211; h6</li>
+	<li>pre</li>
+	<li>blockquote</li>
+	<li>ol / ul</li>
+	<li>div</li>
+	<li>dl / dt / dd</li>
+	<li>table / td / th</li>
+	<li>caption</li>
+	<li>abbr</li>
+	<li>dfn</li>
+	<li>q</li>
+	<li>a and elements with a <code>lang</code> attribute</li>
+</ul>
+<h3 id="usage">2 Usage</h3>
+<p>Click the &#8220;Switch between meta and normal view&#8221; button to show block level elements. <img src="images/plugins/metaview-01.png" style="width:620px"></p>
+<p>Elements are indicated with icons added via <span class="caps">CSS</span>. <img src="images/plugins/metaview-02.png" style="width:620px"></p>
+<h3 id="components">3 Components</h3>
+<ul>
+	<li>A button in the floating menu to toggle between meta and normal view.</li>
+</ul>
+<h3 id="configuration">4 Configuration</h3>
+<p>You can adjust the used <span class="caps">CSS</span> styles for your needs and enable it for single editables.</p>
+<div class="code_container">
+<pre class="brush: javascript; gutter: false; toolbar: false">
+
+Aloha.settings.plugins: {
+	metaview: {
+		config: [ 'metaview' ],
+		editables: {
+			'#one': [ 'metaview' ],
+			'#two': [ ]
+		}
+	}
+};
+</pre></div>
+
+      </div>
+        <div id="subCol">
+          <h3 class="chapter"><img src="images/strobe/chapters.png" alt="" />Chapters</h3>
+          <ol class="chapters">
+            <li><a href="#overview"><p>Overview</p>
+</a></li><li><a href="#usage"><p>Usage</p>
+</a></li><li><a href="#components"><p>Components</p>
+</a></li><li><a href="#configuration"><p>Configuration</p>
+</a></li>
+          </ol>
+        </div>
+    </div>
+  </div>
+
+  <hr class="hide" />
+	  <footer>
+	    <div class="container">
+	      <div class="col">
+	        <a href="index.html"><img src="images/footer/logo.png" alt="Aloha Editor" /></a>
+	        <p>
+	        	Templates based on <a href="https://github.com/sproutcore/sproutguides">SproutCore guides</a>.
+	        </p>
+	      </div>
+	      <a href="#feature" class="top">Back To Top</a>
+	    </div>
+	  </footer>
+
+  <script src="http://code.jquery.com/jquery-1.6.min.js" type="text/javascript" charset="utf-8"></script>
+  <script type="text/javascript" src="javascripts/alohaEditorGuides.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shCore.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushRuby.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushJScript.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushCss.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushXml.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushSql.js"></script>
+  <script type="text/javascript" src="javascripts/syntaxhighlighter/shBrushPlain.js"></script>
+  <script type="text/javascript">
+    SyntaxHighlighter.all()
+  </script>
+</body>
+</html>

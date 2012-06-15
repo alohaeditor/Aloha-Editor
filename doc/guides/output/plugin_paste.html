@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>: The Paste Plugin</title>
+  <title>: Paste Plugin</title>
 
   <!-- guides styles -->
   <link rel="stylesheet" type="text/css" href="stylesheets/style.css" />
@@ -57,6 +57,7 @@
           <dl class="L">
     <dt>Start Here</dt>
       <dd><a href="using_aloha.html">Using Aloha Editor</a></dd>
+      <dd><a href="functional_description.html">Functional Description</a></dd>
       <dd><a href="develop_aloha.html">Developing and building Aloha Editor</a></dd>
       <dd><a href="configure_aloha.html">Configuring Aloha Editor</a></dd>
       <dd><a href="require.html">Aloha dependency management</a></dd>
@@ -79,11 +80,12 @@
       <dd><a href="plugin_image.html">Image</a></dd>
       <dd><a href="plugin_contenthandler.html">Content Handler</a></dd>
       <dd><a href="plugin_browser.html">Browser</a></dd>
-      <dd><a href="plugin_numeratedheaders.html">Numerated Headers</a></dd>
+      <dd>Numerated Headers</dd>
       <dd><a href="plugin_undo.html">Undo</a></dd>
       <dd><a href="plugin_table.html">Table</a></dd>
       <dd><a href="plugin_paste.html">Paste</a></dd>
       <dd><a href="plugin_formatlesspaste.html">Formatless paste</a></dd>
+      <dd><a href="plugin_wai-lang.html">WAI Language</a></dd>
     <dt>Contributing to Aloha Editor</dt>
       <dd><a href="releasing.html">Releasing</a></dd>
       <dd>Development Process</dd>
@@ -101,28 +103,24 @@
     <div class="wrapper">
       <div id="mainCol">
           <div class="headerSection">
-            <h2>The Paste Plugin</h2>
+            <h2>Paste Plugin</h2>
+<p>The Paste plugin enables copy and paste action for Aloha Editor editables.</p>
 
           </div>
-        <h3 id="goal">1 Goal Provide a method to &#8220;copy&#8221;, &#8220;copyLink&#8221;, &#8220;copyMove&#8221;, &#8220;link&#8221;, &#8220;linkMove&#8221;, “move” selected content (editable text, non editable text and blocks)</h3>
+        <p>The Paste plugin is used to handle the paste action in an editable. ContentHanlder can be used to configure how pasted content will be handled.</p>
 <ul>
-	<li>inside the same <span class="caps">HTML</span> doc</li>
-	<li>from one <span class="caps">HTML</span> doc to another</li>
-	<li>from any host system app to the <span class="caps">HTML</span> doc</li>
-	<li>from the <span class="caps">HTML</span> doc to any application</li>
+	<li>The source of a pasted Microsoft Word&#8482; document will be cleaned up</li>
+	<li>URLs to media content can be embeded after the paste action using the oEmbed contentHandler</li>
 </ul>
-<h3 id="reference">2 Reference Please read carefully the bug 7721 from the HTML5 draft and the spec section the-drag-data-store</h3>
-<ul>
-	<li>http://www.w3.org/Bugs/Public/show_bug.cgi?id=7721</li>
-	<li>http://www.whatwg.org/specs/web-apps/current-work/#the-drag-data-store</li>
-</ul>
+<p>See also: Plugin ContentHandler</p>
+<h3 id="configuration">1 Configuration</h3>
+<p>Enable the paste plugin <tt>common/paste</tt>. There are no configuration options for single editables. Use the <code>contentHandler</code> with <code>insertHtml</code> action or the <code>smartContentChange</code> event.</p>
 
       </div>
         <div id="subCol">
           <h3 class="chapter"><img src="images/strobe/chapters.png" alt="" />Chapters</h3>
           <ol class="chapters">
-            <li><a href="#goal"><p>Goal</p>
-</a></li><li><a href="#reference"><p>Reference</p>
+            <li><a href="#configuration"><p>Configuration</p>
 </a></li>
           </ol>
         </div>

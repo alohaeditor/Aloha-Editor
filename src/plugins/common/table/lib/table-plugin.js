@@ -292,7 +292,7 @@ define( [
 				} );
 			}
 		} );
-		
+
 		if ( this.settings.summaryinsidebar ) {
 			Aloha.ready( function () { 
 				that.initSidebar( Aloha.Sidebar.right.show() );  
@@ -960,8 +960,8 @@ define( [
 		var that = this;
 
 		// generate the new scopes
-		FloatingMenu.createScope(this.name + '.row', 'Aloha.global');
-		FloatingMenu.createScope(this.name + '.column', 'Aloha.global');
+		FloatingMenu.createScope(this.name + '.row', 'Aloha.continuoustext');
+		FloatingMenu.createScope(this.name + '.column', 'Aloha.continuoustext');
 		FloatingMenu.createScope(this.name + '.cell', 'Aloha.continuoustext');
 
 		// the 'create table' button

@@ -92,7 +92,7 @@ function( Aloha, Registry, Engine, Dom, ContentHandlerManager ) {
 				range = Aloha.getSelection().getRangeAt( 0 );
 
 				// FIX: doCleanup should work with W3C range
-				var startnode = range.commonAncestorContainer.parentNode;
+				var startnode = range.commonAncestorContainer;
 				var rangeObject = new window.GENTICS.Utils.RangeObject();
 				rangeObject.startContainer = range.startContainer;
 				rangeObject.startOffset = range.startOffset;
