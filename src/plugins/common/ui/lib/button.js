@@ -51,8 +51,18 @@ function( jQuery, Component ) {
 						}
 					})
 					.click( jQuery.proxy(function() {
-						this.click();
+						this._onClick();
 					}, this ) );
+		},
+
+		/**
+		 * May be overridden by component subclasses to implement component-specific behaviour.
+		 * The default implementation just calls the public click method.
+		 *
+		 * @protected
+		 */
+		_onClick: function() {
+			this.click();
 		},
 
 		/**

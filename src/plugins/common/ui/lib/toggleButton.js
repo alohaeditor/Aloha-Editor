@@ -18,7 +18,7 @@ function( jQuery, Button ) {
 	 */
 	var ToggleButton = Button.extend({
 
-		checked: false,
+		_checked: false,
 
 		/**
 		 * Sets the state of the toggleButton and updates its visual display
@@ -28,8 +28,27 @@ function( jQuery, Button ) {
 		 *                          "toggled/checked" state.
 		 */
 		setState: function( toggled ) {
-			this.checked = toggled;
-			this.buttonElement.prop( 'checked', toggled ).button( 'refresh' );
+			this._checked = toggled;
+			this.buttonElement.prop('checked', toggled).button('refresh');
+		},
+
+		getState: function() {
+			return this._checked;
+		},
+
+		_onClick: function() {
+			this._checked = ! this._checked;
+			// Implementations of the click method must be able to
+			// change the toggled state reliably with setState(). For
+			// some reason that doesn't work as the state of the button
+			// is sometimes wrong after the event handler returns if the
+			// state was modified with
+			// this.buttonElement.prop('checked', toggled).button('refresh')
+			// It is not known why updating the state this way in an event handler
+			// sets the button state incorrectly and it should be further investigated.
+			// To work around this issue we call the click method in a timeout which
+			// seems to work fine. This problem occurs with Chrome.
+			setTimeout(jQuery.proxy(this.click, this), 0);
 		},
 
 		/**

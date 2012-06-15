@@ -217,7 +217,7 @@ function (aQuery, i18n, i18nCore, Component, Toolbar, Button, ToggleButton, Labe
 				icon: 'cnr-crop',
 				label : i18n.t('Crop'),
 				click: function () {
-					if (this.checked) {
+					if (this.getState()) {
 						plugin.crop();
 					} else {
 						plugin.endCrop();
